@@ -22,12 +22,12 @@ namespace WithTop
 
 variable [DecidableEq α]
 
-instance : DecidableEq (WithTop α) := instDecidableEqOption
+instance (priority := 10000) : DecidableEq (WithTop α) := instDecidableEqOption
 
 section MulZeroClass
 variable [MulZeroClass α] {a b : WithTop α}
 
-instance instMulZeroClass : MulZeroClass (WithTop α) where
+instance (priority := 10000) instMulZeroClass : MulZeroClass (WithTop α) where
   zero := 0
   mul a b := match a, b with
     | (a : α), (b : α) => ↑(a * b)
@@ -98,7 +98,7 @@ theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) 
   mul_lt_top' (WithTop.lt_top_iff_ne_top.2 ha) (WithTop.lt_top_iff_ne_top.2 hb)
 #align with_top.mul_lt_top WithTop.mul_lt_top
 
-instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
+instance (priority := 10000) instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) := by
   refine ⟨fun h₁ => Decidable.by_contradiction fun h₂ => ?_⟩
   rw [mul_def, if_neg h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
@@ -107,7 +107,7 @@ instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
 end MulZeroClass
 
 /-- `Nontrivial α` is needed here as otherwise we have `1 * ⊤ = ⊤` but also `0 * ⊤ = 0`. -/
-instance instMulZeroOneClass [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) where
+instance (priority := 10000) instMulZeroOneClass [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithTop α) where
   __ := instMulZeroClass
   one_mul a := match a with
     | ⊤ => mul_top (mt coe_eq_coe.1 one_ne_zero)
@@ -139,7 +139,7 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
         simp only [map_coe, ← coe_mul, map_mul] }
 #align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
 
-instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
+instance (priority := 10000) instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     SemigroupWithZero (WithTop α) where
   __ := instMulZeroClass
   mul_assoc a b c := by
@@ -158,7 +158,7 @@ instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
 section MonoidWithZero
 variable [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α]
 
-instance instMonoidWithZero : MonoidWithZero (WithTop α) where
+instance (priority := 10000) instMonoidWithZero : MonoidWithZero (WithTop α) where
   __ := instMulZeroOneClass
   __ := instSemigroupWithZero
   npow n a := match a, n with
@@ -172,7 +172,7 @@ instance instMonoidWithZero : MonoidWithZero (WithTop α) where
 
 end MonoidWithZero
 
-instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
+instance (priority := 10000) instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithTop α) where
   __ := instMonoidWithZero
   mul_comm a b := by simp_rw [mul_def]; exact if_congr or_comm rfl (Option.map₂_comm mul_comm)
@@ -191,13 +191,13 @@ private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := b
 /-- This instance requires `CanonicallyOrderedCommSemiring` as it is the smallest class
 that derives from both `NonAssocNonUnitalSemiring` and `CanonicallyOrderedAddCommMonoid`, both
 of which are required for distributivity. -/
-instance commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
+instance (priority := 10000) commSemiring [Nontrivial α] : CommSemiring (WithTop α) :=
   { addCommMonoidWithOne, instCommMonoidWithZero with
     right_distrib := distrib'
     left_distrib := fun a b c => by
       rw [mul_comm, distrib', mul_comm b, mul_comm c] }
 
-instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
+instance (priority := 10000) [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
   { WithTop.commSemiring, WithTop.canonicallyOrderedAddCommMonoid with
   eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero}
 
@@ -215,12 +215,12 @@ namespace WithBot
 
 variable [DecidableEq α]
 
-instance : DecidableEq (WithBot α) := instDecidableEqOption
+instance (priority := 10000) : DecidableEq (WithBot α) := instDecidableEqOption
 
 section MulZeroClass
 variable [MulZeroClass α] {a b : WithBot α}
 
-instance : MulZeroClass (WithBot α) := WithTop.instMulZeroClass
+instance (priority := 10000) : MulZeroClass (WithBot α) := WithTop.instMulZeroClass
 
 @[simp, norm_cast] lemma coe_mul (a b : α) : (↑(a * b) : WithBot α) = a * b := rfl
 #align with_bot.coe_mul WithBot.coe_mul
@@ -279,35 +279,35 @@ theorem bot_lt_mul [LT α] {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) 
   WithTop.mul_lt_top (α := αᵒᵈ) ha hb
 #align with_bot.bot_lt_mul WithBot.bot_lt_mul
 
-instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithBot α) :=
+instance (priority := 10000) instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithBot α) :=
   WithTop.instNoZeroDivisors
 
 end MulZeroClass
 
 /-- `Nontrivial α` is needed here as otherwise we have `1 * ⊥ = ⊥` but also `= 0 * ⊥ = 0`. -/
-instance instMulZeroOneClass [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithBot α) :=
+instance (priority := 10000) instMulZeroOneClass [MulZeroOneClass α] [Nontrivial α] : MulZeroOneClass (WithBot α) :=
   WithTop.instMulZeroOneClass
 
-instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
+instance (priority := 10000) instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     SemigroupWithZero (WithBot α) := WithTop.instSemigroupWithZero
 
 section MonoidWithZero
 variable [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α]
 
-instance instMonoidWithZero : MonoidWithZero (WithBot α) := WithTop.instMonoidWithZero
+instance (priority := 10000) instMonoidWithZero : MonoidWithZero (WithBot α) := WithTop.instMonoidWithZero
 
 @[simp, norm_cast] lemma coe_pow (a : α) (n : ℕ) : (↑(a ^ n) : WithBot α) = a ^ n := rfl
 
 end MonoidWithZero
 
-instance commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
+instance (priority := 10000) commMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] :
     CommMonoidWithZero (WithBot α) := WithTop.instCommMonoidWithZero
 
-instance commSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+instance (priority := 10000) commSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
     CommSemiring (WithBot α) :=
   WithTop.commSemiring
 
-instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot α) :=
+instance (priority := 10000) [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
@@ -324,7 +324,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot �
     norm_cast at x0
     exact mul_le_mul_of_nonneg_left h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot α) :=
+instance (priority := 10000) [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
@@ -341,7 +341,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot �
     norm_cast at x0
     exact mul_le_mul_of_nonneg_right h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMono (WithBot α) :=
+instance (priority := 10000) [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMono (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
@@ -354,7 +354,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMon
     norm_cast at x0
     exact mul_lt_mul_of_pos_left h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMono (WithBot α) :=
+instance (priority := 10000) [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMono (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk]
@@ -367,7 +367,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMon
     norm_cast at x0
     exact mul_lt_mul_of_pos_right h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT (WithBot α) :=
+instance (priority := 10000) [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
@@ -385,7 +385,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT 
     norm_cast at x0
     exact lt_of_mul_lt_mul_left h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT (WithBot α) :=
+instance (priority := 10000) [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
@@ -403,7 +403,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
     norm_cast at x0
     exact lt_of_mul_lt_mul_right h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE (WithBot α) :=
+instance (priority := 10000) [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
@@ -417,7 +417,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE 
     norm_cast at x0
     exact le_of_mul_le_mul_left h x0 ⟩
 
-instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE (WithBot α) :=
+instance (priority := 10000) [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE (WithBot α) :=
   ⟨by
     intro ⟨x, x0⟩ a b h
     simp only [Subtype.coe_mk] at h
@@ -431,7 +431,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
     norm_cast at x0
     exact le_of_mul_le_mul_right h x0 ⟩
 
-instance orderedCommSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
+instance (priority := 10000) orderedCommSemiring [CanonicallyOrderedCommSemiring α] [Nontrivial α] :
     OrderedCommSemiring (WithBot α) :=
   { WithBot.zeroLEOneClass, WithBot.orderedAddCommMonoid, WithBot.commSemiring with
     mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left

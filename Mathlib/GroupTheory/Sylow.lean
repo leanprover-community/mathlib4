@@ -62,7 +62,7 @@ namespace Sylow
 attribute [coe] Sylow.toSubgroup
 
 --Porting note: Changed to `CoeOut`
-instance : CoeOut (Sylow p G) (Subgroup G) :=
+instance (priority := 10000) : CoeOut (Sylow p G) (Subgroup G) :=
   ⟨Sylow.toSubgroup⟩
 
 -- Porting note: syntactic tautology
@@ -79,11 +79,11 @@ theorem ext_iff {P Q : Sylow p G} : P = Q ↔ (P : Subgroup G) = Q :=
   ⟨congr_arg _, ext⟩
 #align sylow.ext_iff Sylow.ext_iff
 
-instance : SetLike (Sylow p G) G where
+instance (priority := 10000) : SetLike (Sylow p G) G where
   coe := (↑)
   coe_injective' _ _ h := ext (SetLike.coe_injective h)
 
-instance : SubgroupClass (Sylow p G) G where
+instance (priority := 10000) : SubgroupClass (Sylow p G) G where
   mul_mem := Subgroup.mul_mem _
   one_mem _ := Subgroup.one_mem _
   inv_mem := Subgroup.inv_mem _
@@ -91,7 +91,7 @@ instance : SubgroupClass (Sylow p G) G where
 variable (P : Sylow p G)
 
 /-- The action by a Sylow subgroup is the action by the underlying group. -/
-instance mulActionLeft {α : Type*} [MulAction G α] : MulAction P α :=
+instance (priority := 10000) mulActionLeft {α : Type*} [MulAction G α] : MulAction P α :=
   inferInstanceAs (MulAction (P : Subgroup G) α)
 #align sylow.mul_action_left Sylow.mulActionLeft
 
@@ -161,11 +161,11 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
     fun {Q} ⟨hQ1, hQ2, hQ3⟩ => ⟨⟨Q, hQ1, hQ3 _⟩, hQ2⟩
 #align is_p_group.exists_le_sylow IsPGroup.exists_le_sylow
 
-instance Sylow.nonempty : Nonempty (Sylow p G) :=
+instance (priority := 10000) Sylow.nonempty : Nonempty (Sylow p G) :=
   nonempty_of_exists IsPGroup.of_bot.exists_le_sylow
 #align sylow.nonempty Sylow.nonempty
 
-noncomputable instance Sylow.inhabited : Inhabited (Sylow p G) :=
+noncomputable instance (priority := 10000) Sylow.inhabited : Inhabited (Sylow p G) :=
   Classical.inhabited_of_nonempty Sylow.nonempty
 #align sylow.inhabited Sylow.inhabited
 
@@ -202,18 +202,18 @@ noncomputable def Sylow.fintypeOfInjective {H : Type*} [Group H] {f : H →* G}
 #align sylow.fintype_of_injective Sylow.fintypeOfInjective
 
 /-- If `H` is a subgroup of `G`, then `Fintype (Sylow p G)` implies `Fintype (Sylow p H)`. -/
-noncomputable instance (H : Subgroup G) [Fintype (Sylow p G)] : Fintype (Sylow p H) :=
+noncomputable instance (priority := 10000) (H : Subgroup G) [Fintype (Sylow p G)] : Fintype (Sylow p H) :=
   Sylow.fintypeOfInjective H.subtype_injective
 
 /-- If `H` is a subgroup of `G`, then `Finite (Sylow p G)` implies `Finite (Sylow p H)`. -/
-instance (H : Subgroup G) [Finite (Sylow p G)] : Finite (Sylow p H) := by
+instance (priority := 10000) (H : Subgroup G) [Finite (Sylow p G)] : Finite (Sylow p H) := by
   cases nonempty_fintype (Sylow p G)
   infer_instance
 
 open Pointwise
 
 /-- `Subgroup.pointwiseMulAction` preserves Sylow subgroups. -/
-instance Sylow.pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :
+instance (priority := 10000) Sylow.pointwiseMulAction {α : Type*} [Group α] [MulDistribMulAction α G] :
     MulAction α (Sylow p G) where
   smul g P :=
     ⟨(g • P.toSubgroup : Subgroup G), P.2.map _, fun {Q} hQ hS =>
@@ -230,7 +230,7 @@ theorem Sylow.pointwise_smul_def {α : Type*} [Group α] [MulDistribMulAction α
   rfl
 #align sylow.pointwise_smul_def Sylow.pointwise_smul_def
 
-instance Sylow.mulAction : MulAction G (Sylow p G) :=
+instance (priority := 10000) Sylow.mulAction : MulAction G (Sylow p G) :=
   compHom _ MulAut.conj
 #align sylow.mul_action Sylow.mulAction
 
@@ -292,7 +292,7 @@ theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) 
 
 /-- A generalization of **Sylow's second theorem**.
   If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate. -/
-instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G) :=
+instance (priority := 10000) [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G) :=
   ⟨fun P Q => by
     classical
       cases nonempty_fintype (Sylow p G)
@@ -404,7 +404,7 @@ noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Fintype (Sylow p
 
 #align sylow.equiv_quotient_normalizer Sylow.equivQuotientNormalizer
 
-noncomputable instance [Fact p.Prime] [Fintype (Sylow p G)] (P : Sylow p G) :
+noncomputable instance (priority := 10000) [Fact p.Prime] [Fintype (Sylow p G)] (P : Sylow p G) :
     Fintype (G ⧸ (P : Subgroup G).normalizer) :=
   ofEquiv (Sylow p G) P.equivQuotientNormalizer
 

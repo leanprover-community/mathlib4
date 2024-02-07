@@ -47,7 +47,7 @@ abbrev AssocRingHom (M N : Type*) [Semiring M] [Semiring N] :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing.assoc_ring_hom SemiRingCat.AssocRingHom
 
-instance bundledHom : BundledHom AssocRingHom where
+instance (priority := 10000) bundledHom : BundledHom AssocRingHom where
   toFun _ _ f := f
   id _ := RingHom.id _
   comp _ _ _ f g := f.comp g
@@ -60,29 +60,29 @@ deriving instance LargeCategory for SemiRingCat
 --deriving instance LargeCategory, ConcreteCategory for SemiRingCat
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 
-instance : ConcreteCategory SemiRingCat := by
+instance (priority := 10000) : ConcreteCategory SemiRingCat := by
   dsimp [SemiRingCat]
   infer_instance
 
-instance : CoeSort SemiRingCat (Type*) where
+instance (priority := 10000) : CoeSort SemiRingCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : SemiRingCat) where ⊢
   (forget SemiRingCat).obj R ≟ R
 
-instance instSemiring (X : SemiRingCat) : Semiring X := X.str
+instance (priority := 10000) instSemiring (X : SemiRingCat) : Semiring X := X.str
 
-instance instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := X.str
+instance (priority := 10000) instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := X.str
 
-instance instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) instFunLike {X Y : SemiRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible and instance
   -- transparency. It seems that `(CategoryTheory.forget SemiRingCat).toPrefunctor` is not
   -- unfolding during unification
   ConcreteCategory.instFunLike
 
 -- Porting note: added
-instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
+instance (priority := 10000) instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
 -- porting note: added
@@ -115,10 +115,10 @@ lemma RingEquiv_coe_eq {X Y : Type _} [Semiring X] [Semiring Y] (e : X ≃+* Y) 
       ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
-instance : Inhabited SemiRingCat :=
+instance (priority := 10000) : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
 
-instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat :=
+instance (priority := 10000) hasForgetToMonCat : HasForget₂ SemiRingCat MonCat :=
   BundledHom.mkHasForget₂
     (fun R hR => @MonoidWithZero.toMonoid R (@Semiring.toMonoidWithZero R hR))
     (fun {_ _} => RingHom.toMonoidHom)
@@ -126,7 +126,7 @@ instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing.has_forget_to_Mon SemiRingCat.hasForgetToMonCat
 
-instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
+instance (priority := 10000) hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
    -- can't use BundledHom.mkHasForget₂, since AddCommMon is an induced category
   forget₂ :=
     { obj := fun R => AddCommMonCat.of R
@@ -159,7 +159,7 @@ def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) 
   hom := e.toRingHom
   inv := e.symm.toRingHom
 
-instance forgetReflectIsos : ReflectsIsomorphisms (forget SemiRingCat) where
+instance (priority := 10000) forgetReflectIsos : ReflectsIsomorphisms (forget SemiRingCat) where
   reflects {X Y} f _ := by
     let i := asIso ((forget SemiRingCat).map f)
     let ff : X →+* Y := f
@@ -176,7 +176,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace RingCat
 
-instance : BundledHom.ParentProjection @Ring.toSemiring :=
+instance (priority := 10000) : BundledHom.ParentProjection @Ring.toSemiring :=
   ⟨⟩
 
 -- Porting note: Another place where mathlib had derived a concrete category
@@ -184,29 +184,29 @@ instance : BundledHom.ParentProjection @Ring.toSemiring :=
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for RingCat
 
-instance : ConcreteCategory RingCat := by
+instance (priority := 10000) : ConcreteCategory RingCat := by
   dsimp [RingCat]
   infer_instance
 
-instance : CoeSort RingCat (Type*) where
+instance (priority := 10000) : CoeSort RingCat (Type*) where
   coe X := X.α
 
-instance (X : RingCat) : Ring X := X.str
+instance (priority := 10000) (X : RingCat) : Ring X := X.str
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : RingCat) where ⊢
   (forget RingCat).obj R ≟ R
 
-instance instRing (X : RingCat) : Ring X := X.str
+instance (priority := 10000) instRing (X : RingCat) : Ring X := X.str
 
-instance instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := X.str
+instance (priority := 10000) instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := X.str
 
-instance instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) instFunLike {X Y : RingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 -- Porting note: added
-instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
+instance (priority := 10000) instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
 -- porting note: added
@@ -240,10 +240,10 @@ set_option linter.uppercaseLean3 false in
 -- set_option linter.uppercaseLean3 false in
 -- #align Ring.of_hom_apply RingCat.ofHom_apply
 
-instance : Inhabited RingCat :=
+instance (priority := 10000) : Inhabited RingCat :=
   ⟨of PUnit⟩
 
-instance (R : RingCat) : Ring R :=
+instance (priority := 10000) (R : RingCat) : Ring R :=
   R.str
 
 @[simp]
@@ -258,12 +258,12 @@ lemma RingEquiv_coe_eq {X Y : Type _} [Ring X] [Ring Y] (e : X ≃+* Y) :
       ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
-instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
+instance (priority := 10000) hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align Ring.has_forget_to_SemiRing RingCat.hasForgetToSemiRingCat
 
-instance hasForgetToAddCommGroupCat : HasForget₂ RingCat AddCommGroupCat where
+instance (priority := 10000) hasForgetToAddCommGroupCat : HasForget₂ RingCat AddCommGroupCat where
   -- can't use BundledHom.mkHasForget₂, since AddCommGroup is an induced category
   forget₂ :=
     { obj := fun R => AddCommGroupCat.of R
@@ -282,37 +282,37 @@ set_option linter.uppercaseLean3 false in
 
 namespace CommSemiRingCat
 
-instance : BundledHom.ParentProjection @CommSemiring.toSemiring :=
+instance (priority := 10000) : BundledHom.ParentProjection @CommSemiring.toSemiring :=
   ⟨⟩
 
 -- Porting note: again, deriving fails for concrete category instances.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for CommSemiRingCat
 
-instance : ConcreteCategory CommSemiRingCat := by
+instance (priority := 10000) : ConcreteCategory CommSemiRingCat := by
   dsimp [CommSemiRingCat]
   infer_instance
 
-instance : CoeSort CommSemiRingCat (Type*) where
+instance (priority := 10000) : CoeSort CommSemiRingCat (Type*) where
   coe X := X.α
 
-instance (X : CommSemiRingCat) : CommSemiring X := X.str
+instance (priority := 10000) (X : CommSemiRingCat) : CommSemiring X := X.str
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : CommSemiRingCat) where ⊢
   (forget CommSemiRingCat).obj R ≟ R
 
-instance instCommSemiring (X : CommSemiRingCat) : CommSemiring X := X.str
+instance (priority := 10000) instCommSemiring (X : CommSemiRingCat) : CommSemiring X := X.str
 
-instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommSemiRingCat).obj X :=
+instance (priority := 10000) instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommSemiRingCat).obj X :=
   X.str
 
-instance instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) instFunLike {X Y : CommSemiRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 -- Porting note: added
-instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
+instance (priority := 10000) instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
 -- porting note: added
@@ -354,10 +354,10 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X �
 -- set_option linter.uppercaseLean3 false in
 #noalign CommSemiRing.of_hom_apply
 
-instance : Inhabited CommSemiRingCat :=
+instance (priority := 10000) : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
 
-instance (R : CommSemiRingCat) : CommSemiring R :=
+instance (priority := 10000) (R : CommSemiRingCat) : CommSemiring R :=
   R.str
 
 @[simp]
@@ -366,13 +366,13 @@ theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) =
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.coe_of CommSemiRingCat.coe_of
 
-instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat :=
+instance (priority := 10000) hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_forget_to_SemiRing CommSemiRingCat.hasForgetToSemiRingCat
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
-instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
+instance (priority := 10000) hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
   HasForget₂.mk' (fun R : CommSemiRingCat => CommMonCat.of R) (fun R => rfl)
     -- Porting note: `(_ := _)` trick
     (fun {R₁ R₂} f => RingHom.toMonoidHom (α := R₁) (β := R₂) f) (by rfl)
@@ -388,7 +388,7 @@ def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e :
   hom := e.toRingHom
   inv := e.symm.toRingHom
 
-instance forgetReflectIsos : ReflectsIsomorphisms (forget CommSemiRingCat) where
+instance (priority := 10000) forgetReflectIsos : ReflectsIsomorphisms (forget CommSemiRingCat) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommSemiRingCat).map f)
     let ff : X →+* Y := f
@@ -405,34 +405,34 @@ set_option linter.uppercaseLean3 false in
 
 namespace CommRingCat
 
-instance : BundledHom.ParentProjection @CommRing.toRing :=
+instance (priority := 10000) : BundledHom.ParentProjection @CommRing.toRing :=
   ⟨⟩
 
 -- Porting note: deriving fails for concrete category.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for CommRingCat
 
-instance : ConcreteCategory CommRingCat := by
+instance (priority := 10000) : ConcreteCategory CommRingCat := by
   dsimp [CommRingCat]
   infer_instance
 
-instance : CoeSort CommRingCat (Type*) where
+instance (priority := 10000) : CoeSort CommRingCat (Type*) where
   coe X := X.α
 
 -- Porting note : Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
   (forget CommRingCat).obj R ≟ R
 
-instance instCommRing (X : CommRingCat) : CommRing X := X.str
+instance (priority := 10000) instCommRing (X : CommRingCat) : CommRing X := X.str
 
-instance instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
+instance (priority := 10000) instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
 
-instance instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) instFunLike {X Y : CommRingCat} : FunLike (X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
 -- Porting note: added
-instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
+instance (priority := 10000) instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
   RingHom.instRingHomClass
 
 -- porting note: added
@@ -453,17 +453,17 @@ def of (R : Type u) [CommRing R] : CommRingCat :=
 set_option linter.uppercaseLean3 false in
 #align CommRing.of CommRingCat.of
 
-instance instFunLike' {X : Type*} [CommRing X] {Y : CommRingCat} :
+instance (priority := 10000) instFunLike' {X : Type*} [CommRing X] {Y : CommRingCat} :
     FunLike (CommRingCat.of X ⟶ Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
-instance instFunLike'' {X : CommRingCat} {Y : Type*} [CommRing Y] :
+instance (priority := 10000) instFunLike'' {X : CommRingCat} {Y : Type*} [CommRing Y] :
     FunLike (X ⟶ CommRingCat.of Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
 
-instance instFunLike''' {X Y : Type _} [CommRing X] [CommRing Y] :
+instance (priority := 10000) instFunLike''' {X Y : Type _} [CommRing X] [CommRing Y] :
     FunLike (CommRingCat.of X ⟶ CommRingCat.of Y) X Y :=
   -- Note: this is apparently _not_ defeq to RingHom.instFunLike with reducible transparency
   ConcreteCategory.instFunLike
@@ -488,10 +488,10 @@ lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) 
 -- set_option linter.uppercaseLean3 false in
 #noalign CommRing.of_hom_apply
 
-instance : Inhabited CommRingCat :=
+instance (priority := 10000) : Inhabited CommRingCat :=
   ⟨of PUnit⟩
 
-instance (R : CommRingCat) : CommRing R :=
+instance (priority := 10000) (R : CommRingCat) : CommRing R :=
   R.str
 
 @[simp]
@@ -500,19 +500,19 @@ theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
 set_option linter.uppercaseLean3 false in
 #align CommRing.coe_of CommRingCat.coe_of
 
-instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat :=
+instance (priority := 10000) hasForgetToRingCat : HasForget₂ CommRingCat RingCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_Ring CommRingCat.hasForgetToRingCat
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
-instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=
+instance (priority := 10000) hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=
   HasForget₂.mk' (fun R : CommRingCat => CommSemiRingCat.of R) (fun R => rfl)
     (fun {R₁ R₂} f => f) (by rfl)
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_CommSemiRing CommRingCat.hasForgetToCommSemiRingCat
 
-instance : Full (forget₂ CommRingCat CommSemiRingCat) where preimage {X Y} f := f
+instance (priority := 10000) : Full (forget₂ CommRingCat CommSemiRingCat) where preimage {X Y} f := f
 
 end CommRingCat
 
@@ -596,7 +596,7 @@ def ringEquivIsoCommRingIso {X Y : Type u} [CommRing X] [CommRing Y] :
 set_option linter.uppercaseLean3 false in
 #align ring_equiv_iso_CommRing_iso ringEquivIsoCommRingIso
 
-instance RingCat.forget_reflects_isos : ReflectsIsomorphisms (forget RingCat.{u}) where
+instance (priority := 10000) RingCat.forget_reflects_isos : ReflectsIsomorphisms (forget RingCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget RingCat).map f)
     let ff : X →+* Y := f
@@ -605,7 +605,7 @@ instance RingCat.forget_reflects_isos : ReflectsIsomorphisms (forget RingCat.{u}
 set_option linter.uppercaseLean3 false in
 #align Ring.forget_reflects_isos RingCat.forget_reflects_isos
 
-instance CommRingCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommRingCat.{u}) where
+instance (priority := 10000) CommRingCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommRingCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommRingCat).map f)
     let ff : X →+* Y := f

@@ -38,7 +38,7 @@ def subMulAction (A : ValuationSubring L) : SubMulAction (A.decompositionSubgrou
 #align valuation_subring.sub_mul_action ValuationSubring.subMulAction
 
 /-- The multiplicative action of the decomposition subgroup on `A`. -/
-instance decompositionSubgroupMulSemiringAction (A : ValuationSubring L) :
+instance (priority := 10000) decompositionSubgroupMulSemiringAction (A : ValuationSubring L) :
     MulSemiringAction (A.decompositionSubgroup K) A :=
   { SubMulAction.mulAction (A.subMulAction K) with
     smul_add := fun g k l => Subtype.ext <| smul_add (A := L) g k l

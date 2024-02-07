@@ -162,7 +162,7 @@ variable (f : V →A[𝕜] W)
 
 /-- Note that unlike the operator norm for linear maps, this norm is _not_ submultiplicative:
 we do _not_ necessarily have `‖f.comp g‖ ≤ ‖f‖ * ‖g‖`. See `norm_comp_le` for what we can say. -/
-noncomputable instance hasNorm : Norm (V →A[𝕜] W) :=
+noncomputable instance (priority := 10000) hasNorm : Norm (V →A[𝕜] W) :=
   ⟨fun f => max ‖f 0‖ ‖f.contLinear‖⟩
 #align continuous_affine_map.has_norm ContinuousAffineMap.hasNorm
 
@@ -187,7 +187,7 @@ theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
 
 #align continuous_affine_map.norm_eq ContinuousAffineMap.norm_eq
 
-noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
+noncomputable instance (priority := 10000) : NormedAddCommGroup (V →A[𝕜] W) :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := fun f => max ‖f 0‖ ‖f.contLinear‖
       map_zero' := by simp [(ContinuousAffineMap.zero_apply)]
@@ -220,7 +220,7 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
           rw [h₂]
           rfl }
 
-instance : NormedSpace 𝕜 (V →A[𝕜] W) where
+instance (priority := 10000) : NormedSpace 𝕜 (V →A[𝕜] W) where
   norm_smul_le t f := by
     simp only [norm_def, (smul_contLinear), norm_smul]
     -- Porting note: previously all these rewrites were in the `simp only`,

@@ -79,7 +79,7 @@ def inl [Zero A] (r : R) : Unitization R A :=
 def inr [Zero R] (a : A) : Unitization R A :=
   (0, a)
 
-instance [Zero R] : CoeTC A (Unitization R A) where
+instance (priority := 10000) [Zero R] : CoeTC A (Unitization R A) where
   coe := inr
 
 /-- The canonical projection `Unitization R A → R`. -/
@@ -137,11 +137,11 @@ theorem inr_injective [Zero R] : Function.Injective ((↑) : A → Unitization R
   Function.LeftInverse.injective <| snd_inr _
 #align unitization.coe_injective Unitization.inr_injective
 
-instance instNontrivialLeft {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
+instance (priority := 10000) instNontrivialLeft {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
     Nontrivial (Unitization 𝕜 A) :=
   nontrivial_prod_left
 
-instance instNontrivialRight {𝕜 A} [Nonempty 𝕜] [Nontrivial A] :
+instance (priority := 10000) instNontrivialRight {𝕜 A} [Nonempty 𝕜] [Nontrivial A] :
     Nontrivial (Unitization 𝕜 A) :=
   nontrivial_prod_right
 
@@ -156,63 +156,63 @@ section Additive
 
 variable {T : Type*} {S : Type*} {R : Type*} {A : Type*}
 
-instance instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) :=
+instance (priority := 10000) instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) :=
   instInhabitedProd
 
-instance instZero [Zero R] [Zero A] : Zero (Unitization R A) :=
+instance (priority := 10000) instZero [Zero R] [Zero A] : Zero (Unitization R A) :=
   Prod.instZero
 
-instance instAdd [Add R] [Add A] : Add (Unitization R A) :=
+instance (priority := 10000) instAdd [Add R] [Add A] : Add (Unitization R A) :=
   Prod.instAdd
 
-instance instNeg [Neg R] [Neg A] : Neg (Unitization R A) :=
+instance (priority := 10000) instNeg [Neg R] [Neg A] : Neg (Unitization R A) :=
   Prod.instNeg
 
-instance instAddSemigroup [AddSemigroup R] [AddSemigroup A] : AddSemigroup (Unitization R A) :=
+instance (priority := 10000) instAddSemigroup [AddSemigroup R] [AddSemigroup A] : AddSemigroup (Unitization R A) :=
   Prod.instAddSemigroup
 
-instance instAddZeroClass [AddZeroClass R] [AddZeroClass A] : AddZeroClass (Unitization R A) :=
+instance (priority := 10000) instAddZeroClass [AddZeroClass R] [AddZeroClass A] : AddZeroClass (Unitization R A) :=
   Prod.instAddZeroClass
 
-instance instAddMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A) :=
+instance (priority := 10000) instAddMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A) :=
   Prod.instAddMonoid
 
-instance instAddGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) :=
+instance (priority := 10000) instAddGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) :=
   Prod.instAddGroup
 
-instance instAddCommSemigroup [AddCommSemigroup R] [AddCommSemigroup A] :
+instance (priority := 10000) instAddCommSemigroup [AddCommSemigroup R] [AddCommSemigroup A] :
     AddCommSemigroup (Unitization R A) :=
   Prod.instAddCommSemigroup
 
-instance instAddCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) :=
+instance (priority := 10000) instAddCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) :=
   Prod.instAddCommMonoid
 
-instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
+instance (priority := 10000) instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
   Prod.instAddCommGroup
 
-instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
+instance (priority := 10000) instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
   Prod.smul
 
-instance instIsScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S]
+instance (priority := 10000) instIsScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S A] : IsScalarTower T S (Unitization R A) :=
   Prod.isScalarTower
 
-instance instSMulCommClass [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMulCommClass T S R]
+instance (priority := 10000) instSMulCommClass [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMulCommClass T S R]
     [SMulCommClass T S A] : SMulCommClass T S (Unitization R A) :=
   Prod.smulCommClass
 
-instance instIsCentralScalar [SMul S R] [SMul S A] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ A] [IsCentralScalar S R]
+instance (priority := 10000) instIsCentralScalar [SMul S R] [SMul S A] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ A] [IsCentralScalar S R]
     [IsCentralScalar S A] : IsCentralScalar S (Unitization R A) :=
   Prod.isCentralScalar
 
-instance instMulAction [Monoid S] [MulAction S R] [MulAction S A] : MulAction S (Unitization R A) :=
+instance (priority := 10000) instMulAction [Monoid S] [MulAction S R] [MulAction S A] : MulAction S (Unitization R A) :=
   Prod.mulAction
 
-instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMulAction S R]
+instance (priority := 10000) instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMulAction S R]
     [DistribMulAction S A] : DistribMulAction S (Unitization R A) :=
   Prod.distribMulAction
 
-instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
+instance (priority := 10000) instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
     Module S (Unitization R A) :=
   Prod.instModule
 
@@ -361,10 +361,10 @@ section Mul
 
 variable {R A : Type*}
 
-instance instOne [One R] [Zero A] : One (Unitization R A) :=
+instance (priority := 10000) instOne [One R] [Zero A] : One (Unitization R A) :=
   ⟨(1, 0)⟩
 
-instance instMul [Mul R] [Add A] [Mul A] [SMul R A] : Mul (Unitization R A) :=
+instance (priority := 10000) instMul [Mul R] [Add A] [Mul A] [SMul R A] : Mul (Unitization R A) :=
   ⟨fun x y => (x.1 * y.1, x.1 • y.2 + y.1 • x.2 + x.2 * y.2)⟩
 
 @[simp]
@@ -440,7 +440,7 @@ theorem inr_mul_inl [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction
       rw [smul_zero, zero_add, mul_zero, add_zero]
 #align unitization.coe_mul_inl Unitization.inr_mul_inl
 
-instance instMulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] :
+instance (priority := 10000) instMulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] :
     MulOneClass (Unitization R A) :=
   { Unitization.instOne, Unitization.instMul with
     one_mul := fun x =>
@@ -453,7 +453,7 @@ instance instMulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAct
           rw [smul_zero, zero_add, one_smul, mul_zero, add_zero] }
 #align unitization.mul_one_class Unitization.instMulOneClass
 
-instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
+instance (priority := 10000) instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
     NonAssocSemiring (Unitization R A) :=
   { Unitization.instMulOneClass,
     Unitization.instAddCommMonoid with
@@ -478,7 +478,7 @@ instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module
           simp only [add_smul, smul_add, add_mul]
           abel }
 
-instance instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
+instance (priority := 10000) instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Monoid (Unitization R A) :=
   { Unitization.instMulOneClass with
     mul_assoc := fun x y z =>
@@ -493,7 +493,7 @@ instance instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
           rw [mul_comm z.1 y.1]
           abel }
 
-instance instCommMonoid [CommMonoid R] [NonUnitalCommSemiring A] [DistribMulAction R A]
+instance (priority := 10000) instCommMonoid [CommMonoid R] [NonUnitalCommSemiring A] [DistribMulAction R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : CommMonoid (Unitization R A) :=
   { Unitization.instMonoid with
     mul_comm := fun x₁ x₂ =>
@@ -501,23 +501,23 @@ instance instCommMonoid [CommMonoid R] [NonUnitalCommSemiring A] [DistribMulActi
         show x₁.1 • x₂.2 + x₂.1 • x₁.2 + x₁.2 * x₂.2 = x₂.1 • x₁.2 + x₁.1 • x₂.2 + x₂.2 * x₁.2 by
           rw [add_comm (x₁.1 • x₂.2), mul_comm] }
 
-instance instSemiring [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
+instance (priority := 10000) instSemiring [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Semiring (Unitization R A) :=
   { Unitization.instMonoid, Unitization.instNonAssocSemiring with }
 
-instance instCommSemiring [CommSemiring R] [NonUnitalCommSemiring A] [Module R A]
+instance (priority := 10000) instCommSemiring [CommSemiring R] [NonUnitalCommSemiring A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : CommSemiring (Unitization R A) :=
   { Unitization.instCommMonoid, Unitization.instNonAssocSemiring with }
 
-instance instNonAssocRing [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
+instance (priority := 10000) instNonAssocRing [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
     NonAssocRing (Unitization R A) :=
   { Unitization.instAddCommGroup, Unitization.instNonAssocSemiring with }
 
-instance instRing [CommRing R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
+instance (priority := 10000) instRing [CommRing R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Ring (Unitization R A) :=
   { Unitization.instAddCommGroup, Unitization.instSemiring with }
 
-instance instCommRing [CommRing R] [NonUnitalCommRing A] [Module R A] [IsScalarTower R A A]
+instance (priority := 10000) instCommRing [CommRing R] [NonUnitalCommRing A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : CommRing (Unitization R A) :=
   { Unitization.instAddCommGroup, Unitization.instCommSemiring with }
 
@@ -543,7 +543,7 @@ section Star
 
 variable {R A : Type*}
 
-instance instStar [Star R] [Star A] : Star (Unitization R A) :=
+instance (priority := 10000) instStar [Star R] [Star A] : Star (Unitization R A) :=
   ⟨fun ra => (star ra.fst, star ra.snd)⟩
 
 @[simp]
@@ -568,17 +568,17 @@ theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
   ext (by simp only [fst_star, star_zero, fst_inr]) rfl
 #align unitization.coe_star Unitization.inr_star
 
-instance instStarAddMonoid [AddMonoid R] [AddMonoid A] [StarAddMonoid R] [StarAddMonoid A] :
+instance (priority := 10000) instStarAddMonoid [AddMonoid R] [AddMonoid A] [StarAddMonoid R] [StarAddMonoid A] :
     StarAddMonoid (Unitization R A)
     where
   star_involutive x := ext (star_star x.fst) (star_star x.snd)
   star_add x y := ext (star_add x.fst y.fst) (star_add x.snd y.snd)
 
-instance instStarModule [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAddMonoid A]
+instance (priority := 10000) instStarModule [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAddMonoid A]
     [Module R A] [StarModule R A] : StarModule R (Unitization R A) where
   star_smul r x := ext (by simp) (by simp)
 
-instance instStarRing [CommSemiring R] [StarRing R] [NonUnitalNonAssocSemiring A] [StarRing A]
+instance (priority := 10000) instStarRing [CommSemiring R] [StarRing R] [NonUnitalNonAssocSemiring A] [StarRing A]
     [Module R A] [StarModule R A] :
     StarRing (Unitization R A) :=
   { Unitization.instStarAddMonoid with
@@ -596,7 +596,7 @@ variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
   [IsScalarTower R A A] [SMulCommClass R A A] [Algebra S R] [DistribMulAction S A]
   [IsScalarTower S R A]
 
-instance instAlgebra : Algebra S (Unitization R A) :=
+instance (priority := 10000) instAlgebra : Algebra S (Unitization R A) :=
   { (Unitization.inlRingHom R A).comp (algebraMap S R) with
     commutes' := fun s x => by
       induction' x using Unitization.ind with r a

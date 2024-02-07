@@ -534,7 +534,7 @@ def IsTorsionBySet.module : Module (R ⧸ I) M :=
     (IsTorsionBySet.mk_smul hM)
 #align module.is_torsion_by_set.module Module.IsTorsionBySet.module
 
-instance IsTorsionBySet.isScalarTower
+instance (priority := 10000) IsTorsionBySet.isScalarTower
     {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
     @IsScalarTower S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
@@ -542,7 +542,7 @@ instance IsTorsionBySet.isScalarTower
     (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
 #align module.is_torsion_by_set.is_scalar_tower Module.IsTorsionBySet.isScalarTower
 
-instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
+instance (priority := 10000) : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
   IsTorsionBySet.module (R := R) (I := I) fun x r => by
     induction x using Quotient.inductionOn
     refine' (Submodule.Quotient.mk_eq_zero _).mpr (Submodule.smul_mem_smul r.prop _)
@@ -552,7 +552,7 @@ end Module
 
 namespace Submodule
 
-instance (I : Ideal R) : Module (R ⧸ I) (torsionBySet R M I) :=
+instance (priority := 10000) (I : Ideal R) : Module (R ⧸ I) (torsionBySet R M I) :=
   -- Porting note: times out without the (R := R)
   Module.IsTorsionBySet.module <| torsionBySet_isTorsionBySet (R := R) I
 
@@ -562,17 +562,17 @@ theorem torsionBySet.mk_smul (I : Ideal R) (b : R) (x : torsionBySet R M I) :
   rfl
 #align submodule.torsion_by_set.mk_smul Submodule.torsionBySet.mk_smul
 
-instance (I : Ideal R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M]
+instance (priority := 10000) (I : Ideal R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M]
     [IsScalarTower S R R] : IsScalarTower S (R ⧸ I) (torsionBySet R M I) :=
   inferInstance
 
 /-- The `a`-torsion submodule as an `(R ⧸ R∙a)`-module. -/
-instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy R M a) :=
+instance (priority := 10000) instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy R M a) :=
   Module.IsTorsionBySet.module <|
     (Module.isTorsionBySet_span_singleton_iff a).mpr <| torsionBy_isTorsionBy a
 
 -- Porting note: added for torsionBy.mk_ideal_smul
-instance (a : R) : Module (R ⧸ Ideal.span {a}) (torsionBy R M a) :=
+instance (priority := 10000) (a : R) : Module (R ⧸ Ideal.span {a}) (torsionBy R M a) :=
    inferInstanceAs <| Module (R ⧸ R ∙ a) (torsionBy R M a)
 
 -- Porting note: added because torsionBy.mk_smul simplifies
@@ -586,7 +586,7 @@ theorem torsionBy.mk_smul (a b : R) (x : torsionBy R M a) :
   rfl
 #align submodule.torsion_by.mk_smul Submodule.torsionBy.mk_smul
 
-instance (a : R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
+instance (priority := 10000) (a : R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
     IsScalarTower S (R ⧸ R ∙ a) (torsionBy R M a) :=
   inferInstance
 
@@ -628,7 +628,7 @@ theorem mem_torsion_iff (x : M) : x ∈ torsion R M ↔ ∃ a : R⁰, a • x = 
 #align submodule.mem_torsion_iff Submodule.mem_torsion_iff
 
 @[simps]
-instance : SMul S (torsion' R M S) :=
+instance (priority := 10000) : SMul S (torsion' R M S) :=
   ⟨fun s x =>
     ⟨s • (x : M), by
       obtain ⟨x, a, h⟩ := x
@@ -636,11 +636,11 @@ instance : SMul S (torsion' R M S) :=
       dsimp
       rw [smul_comm, h, smul_zero]⟩⟩
 
-instance : DistribMulAction S (torsion' R M S) :=
+instance (priority := 10000) : DistribMulAction S (torsion' R M S) :=
   Subtype.coe_injective.distribMulAction (torsion' R M S).subtype.toAddMonoidHom fun (_ : S) _ =>
     rfl
 
-instance : SMulCommClass S R (torsion' R M S) :=
+instance (priority := 10000) : SMulCommClass S R (torsion' R M S) :=
   ⟨fun _ _ _ => Subtype.ext <| smul_comm _ _ _⟩
 
 /-- An `S`-torsion module is a module whose `S`-torsion submodule is the full space. -/
@@ -762,7 +762,7 @@ theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
       exact ⟨b * a, (mul_smul _ _ _).trans h⟩
 #align submodule.quotient_torsion.torsion_eq_bot Submodule.QuotientTorsion.torsion_eq_bot
 
-instance noZeroSMulDivisors [IsDomain R] : NoZeroSMulDivisors R (M ⧸ torsion R M) :=
+instance (priority := 10000) noZeroSMulDivisors [IsDomain R] : NoZeroSMulDivisors R (M ⧸ torsion R M) :=
   noZeroSMulDivisors_iff_torsion_eq_bot.mpr torsion_eq_bot
 #align submodule.quotient_torsion.no_zero_smul_divisors Submodule.QuotientTorsion.noZeroSMulDivisors
 

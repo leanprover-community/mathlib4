@@ -78,7 +78,7 @@ theorem mul_apply_mul_eq_mul_of_uniqueMul [Mul A] {f g : MonoidAlgebra R A} {a0 
     · rw [not_mem_support_iff.mp af, zero_mul]
     · rw [not_mem_support_iff.mp bg, mul_zero]
 
-instance instNoZeroDivisorsOfUniqueProds [NoZeroDivisors R] [Mul A] [UniqueProds A] :
+instance (priority := 10000) instNoZeroDivisorsOfUniqueProds [NoZeroDivisors R] [Mul A] [UniqueProds A] :
     NoZeroDivisors (MonoidAlgebra R A) where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab := by
     contrapose! ab
@@ -99,7 +99,7 @@ theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : R[A]} {a0 b0 : A}
     (f * g) (a0 + b0) = f a0 * g b0 :=
   MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul (A := Multiplicative A) h
 
-instance [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors R[A] :=
+instance (priority := 10000) [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors R[A] :=
   MonoidAlgebra.instNoZeroDivisorsOfUniqueProds (A := Multiplicative A)
 
 end AddMonoidAlgebra

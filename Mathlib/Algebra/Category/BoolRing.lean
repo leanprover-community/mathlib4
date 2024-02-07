@@ -32,10 +32,10 @@ def BoolRing :=
 
 namespace BoolRing
 
-instance : CoeSort BoolRing (Type*) :=
+instance (priority := 10000) : CoeSort BoolRing (Type*) :=
   Bundled.coeSort
 
-instance (X : BoolRing) : BooleanRing X :=
+instance (priority := 10000) (X : BoolRing) : BooleanRing X :=
   X.str
 
 /-- Construct a bundled `BoolRing` from a `BooleanRing`. -/
@@ -48,17 +48,17 @@ theorem coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
   rfl
 #align BoolRing.coe_of BoolRing.coe_of
 
-instance : Inhabited BoolRing :=
+instance (priority := 10000) : Inhabited BoolRing :=
   ⟨of PUnit⟩
 
-instance : BundledHom.ParentProjection @BooleanRing.toCommRing :=
+instance (priority := 10000) : BundledHom.ParentProjection @BooleanRing.toCommRing :=
   ⟨⟩
 
 -- Porting note: `deriving` `ConcreteCategory` failed, added it manually
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for BoolRing
 
-instance : ConcreteCategory BoolRing := by
+instance (priority := 10000) : ConcreteCategory BoolRing := by
   dsimp [BoolRing]
   infer_instance
 
@@ -67,7 +67,7 @@ instance : ConcreteCategory BoolRing := by
 --   The given definition is not a constructor application:
 --     inferInstance.1
 -- @[simps]
-instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat :=
+instance (priority := 10000) hasForgetToCommRing : HasForget₂ BoolRing CommRingCat :=
   BundledHom.forget₂ _ _
 #align BoolRing.has_forget_to_CommRing BoolRing.hasForgetToCommRing
 
@@ -85,19 +85,19 @@ end BoolRing
 /-! ### Equivalence between `BoolAlg` and `BoolRing` -/
 
 @[simps]
-instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
+instance (priority := 10000) BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
   forget₂ :=
     { obj := fun X => BoolAlg.of (AsBoolAlg X)
       map := fun {X Y} => RingHom.asBoolAlg }
 #align BoolRing.has_forget_to_BoolAlg BoolRing.hasForgetToBoolAlg
 
 -- Porting note: Added. somehow it does not find this instance.
-instance {X : BoolAlg} :
+instance (priority := 10000) {X : BoolAlg} :
     BooleanAlgebra ↑(BddDistLat.toBddLat (X.toBddDistLat)).toLat :=
   BoolAlg.instBooleanAlgebra _
 
 @[simps]
-instance BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
+instance (priority := 10000) BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
   forget₂ :=
     { obj := fun X => BoolRing.of (AsBoolRing X)
       map := fun {X Y} => BoundedLatticeHom.asBoolRing }

@@ -30,13 +30,13 @@ def SetSemiring (α : Type*) : Type _ :=
   Set α
 #align set_semiring SetSemiring
 
-noncomputable instance (α : Type*) : Inhabited (SetSemiring α) :=
+noncomputable instance (priority := 10000) (α : Type*) : Inhabited (SetSemiring α) :=
   (inferInstance : Inhabited (Set _))
 
-instance (α : Type*) : PartialOrder (SetSemiring α) :=
+instance (priority := 10000) (α : Type*) : PartialOrder (SetSemiring α) :=
   (inferInstance : PartialOrder (Set _))
 
-instance (α : Type*) : OrderBot (SetSemiring α) :=
+instance (priority := 10000) (α : Type*) : OrderBot (SetSemiring α) :=
   (inferInstance : OrderBot (Set _))
 
 /-- The identity function `Set α → SetSemiring α`. -/
@@ -91,7 +91,7 @@ theorem down_ssubset_down {s t : SetSemiring α} : SetSemiring.down s ⊂ SetSem
 #align set_semiring.down_ssubset_down SetSemiring.down_ssubset_down
 
 --Porting note: dot notation no longer works
-instance : AddCommMonoid (SetSemiring α) where
+instance (priority := 10000) : AddCommMonoid (SetSemiring α) where
   add s t := Set.up (SetSemiring.down s ∪ SetSemiring.down t)
   zero := Set.up (∅ : Set α)
   add_assoc := union_assoc
@@ -129,7 +129,7 @@ theorem _root_.Set.up_union (s t : Set α) : up (s ∪ t) = up s + up t :=
 
 /- Since addition on `SetSemiring` is commutative (it is set union), there is no need
 to also have the instance `CovariantClass (SetSemiring α) (SetSemiring α) (swap (+)) (≤)`. -/
-instance covariantClass_add : CovariantClass (SetSemiring α) (SetSemiring α) (· + ·) (· ≤ ·) :=
+instance (priority := 10000) covariantClass_add : CovariantClass (SetSemiring α) (SetSemiring α) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ => union_subset_union_right _⟩
 #align set_semiring.covariant_class_add SetSemiring.covariantClass_add
 
@@ -138,7 +138,7 @@ section Mul
 variable [Mul α]
 
 --Porting note: dot notation no longer works
-instance : NonUnitalNonAssocSemiring (SetSemiring α) :=
+instance (priority := 10000) : NonUnitalNonAssocSemiring (SetSemiring α) :=
   { (inferInstance : AddCommMonoid (SetSemiring α)) with
     mul := fun s t => Set.up (image2 (· * ·) (SetSemiring.down s) (SetSemiring.down t))
     zero_mul := fun _ => empty_mul
@@ -161,18 +161,18 @@ theorem _root_.Set.up_mul (s t : Set α) : up (s * t) = up s * up t :=
   rfl
 #align set.up_mul Set.up_mul
 
-instance : NoZeroDivisors (SetSemiring α) :=
+instance (priority := 10000) : NoZeroDivisors (SetSemiring α) :=
   ⟨fun {a b} ab =>
     a.eq_empty_or_nonempty.imp_right fun ha =>
       b.eq_empty_or_nonempty.resolve_right fun hb =>
         Nonempty.ne_empty ⟨_, mul_mem_mul ha.some_mem hb.some_mem⟩ ab⟩
 
-instance covariantClass_mul_left :
+instance (priority := 10000) covariantClass_mul_left :
     CovariantClass (SetSemiring α) (SetSemiring α) (· * ·) (· ≤ ·) :=
   ⟨fun _ _ _ => mul_subset_mul_left⟩
 #align set_semiring.covariant_class_mul_left SetSemiring.covariantClass_mul_left
 
-instance covariantClass_mul_right :
+instance (priority := 10000) covariantClass_mul_right :
     CovariantClass (SetSemiring α) (SetSemiring α) (swap (· * ·)) (· ≤ ·) :=
   ⟨fun _ _ _ => mul_subset_mul_right⟩
 #align set_semiring.covariant_class_mul_right SetSemiring.covariantClass_mul_right
@@ -184,7 +184,7 @@ section One
 
 variable [One α]
 
-instance : One (SetSemiring α) where one := Set.up (1 : Set α)
+instance (priority := 10000) : One (SetSemiring α) where one := Set.up (1 : Set α)
 
 theorem one_def : (1 : SetSemiring α) = Set.up 1 :=
   rfl
@@ -202,29 +202,29 @@ theorem _root_.Set.up_one : up (1 : Set α) = 1 :=
 
 end One
 
-instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
+instance (priority := 10000) [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
     Set.mulOneClass with }
 
-instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
+instance (priority := 10000) [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)), Set.semigroup with }
 
-instance [Monoid α] : IdemSemiring (SetSemiring α) :=
+instance (priority := 10000) [Monoid α] : IdemSemiring (SetSemiring α) :=
   { (inferInstance : NonAssocSemiring (SetSemiring α)),
     (inferInstance : NonUnitalSemiring (SetSemiring α)),
     (inferInstance : CompleteBooleanAlgebra (Set α)) with }
 
-instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
+instance (priority := 10000) [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalSemiring (SetSemiring α)), Set.commSemigroup with }
 
-instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
+instance (priority := 10000) [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
   { (inferInstance : IdemSemiring (SetSemiring α)),
     (inferInstance : CommMonoid (Set α)) with }
 
-instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
+instance (priority := 10000) [CommMonoid α] : CommMonoid (SetSemiring α) :=
   { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
 
-instance [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
+instance (priority := 10000) [CommMonoid α] : CanonicallyOrderedCommSemiring (SetSemiring α) :=
   { (inferInstance : Semiring (SetSemiring α)), (inferInstance : CommMonoid (SetSemiring α)),
     (inferInstance : PartialOrder (SetSemiring α)), (inferInstance : OrderBot (SetSemiring α)),
     (inferInstance : NoZeroDivisors (SetSemiring α)) with

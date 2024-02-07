@@ -99,60 +99,60 @@ section CommSemiring
 
 section Instances
 
-instance decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq R] :
+instance (priority := 10000) decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq R] :
     DecidableEq (MvPolynomial σ R) :=
   Finsupp.decidableEq
 #align mv_polynomial.decidable_eq_mv_polynomial MvPolynomial.decidableEqMvPolynomial
 
-instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
+instance (priority := 10000) commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
   AddMonoidAlgebra.commSemiring
 
-instance inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
+instance (priority := 10000) inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
   ⟨0⟩
 
-instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
+instance (priority := 10000) distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
     DistribMulAction R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.distribMulAction
 
-instance smulZeroClass [CommSemiring S₁] [SMulZeroClass R S₁] :
+instance (priority := 10000) smulZeroClass [CommSemiring S₁] [SMulZeroClass R S₁] :
     SMulZeroClass R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.smulZeroClass
 
-instance faithfulSMul [CommSemiring S₁] [SMulZeroClass R S₁] [FaithfulSMul R S₁] :
+instance (priority := 10000) faithfulSMul [CommSemiring S₁] [SMulZeroClass R S₁] [FaithfulSMul R S₁] :
     FaithfulSMul R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.faithfulSMul
 
-instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
+instance (priority := 10000) module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.module
 
-instance isScalarTower [CommSemiring S₂] [SMul R S₁] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
+instance (priority := 10000) isScalarTower [CommSemiring S₂] [SMul R S₁] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
     [IsScalarTower R S₁ S₂] : IsScalarTower R S₁ (MvPolynomial σ S₂) :=
   AddMonoidAlgebra.isScalarTower
 
-instance smulCommClass [CommSemiring S₂] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
+instance (priority := 10000) smulCommClass [CommSemiring S₂] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
     [SMulCommClass R S₁ S₂] : SMulCommClass R S₁ (MvPolynomial σ S₂) :=
   AddMonoidAlgebra.smulCommClass
 
-instance isCentralScalar [CommSemiring S₁] [SMulZeroClass R S₁] [SMulZeroClass Rᵐᵒᵖ S₁]
+instance (priority := 10000) isCentralScalar [CommSemiring S₁] [SMulZeroClass R S₁] [SMulZeroClass Rᵐᵒᵖ S₁]
     [IsCentralScalar R S₁] : IsCentralScalar R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.isCentralScalar
 
-instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
+instance (priority := 10000) algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
     Algebra R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.algebra
 
-instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarTower R S₁ S₁] :
+instance (priority := 10000) isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarTower R S₁ S₁] :
     IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.isScalarTower_self _
 #align mv_polynomial.is_scalar_tower_right MvPolynomial.isScalarTower_right
 
-instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommClass R S₁ S₁] :
+instance (priority := 10000) smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommClass R S₁ S₁] :
     SMulCommClass R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.smulCommClass_self _
 #align mv_polynomial.smul_comm_class_right MvPolynomial.smulCommClass_right
 
 /-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
-instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
+instance (priority := 10000) unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
   AddMonoidAlgebra.unique
 #align mv_polynomial.unique MvPolynomial.unique
 
@@ -255,12 +255,12 @@ theorem C_inj {σ : Type*} (R : Type*) [CommSemiring R] (r s : R) :
   (C_injective σ R).eq_iff
 #align mv_polynomial.C_inj MvPolynomial.C_inj
 
-instance infinite_of_infinite (σ : Type*) (R : Type*) [CommSemiring R] [Infinite R] :
+instance (priority := 10000) infinite_of_infinite (σ : Type*) (R : Type*) [CommSemiring R] [Infinite R] :
     Infinite (MvPolynomial σ R) :=
   Infinite.of_injective C (C_injective _ _)
 #align mv_polynomial.infinite_of_infinite MvPolynomial.infinite_of_infinite
 
-instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiring R]
+instance (priority := 10000) infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiring R]
     [Nontrivial R] : Infinite (MvPolynomial σ R) :=
   Infinite.of_injective ((fun s : σ →₀ ℕ => monomial s 1) ∘ Finsupp.single (Classical.arbitrary σ))
     <| (monomial_left_injective one_ne_zero).comp (Finsupp.single_injective _)

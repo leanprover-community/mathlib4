@@ -27,10 +27,10 @@ def CompleteLat :=
 
 namespace CompleteLat
 
-instance : CoeSort CompleteLat (Type*) :=
+instance (priority := 10000) : CoeSort CompleteLat (Type*) :=
   Bundled.coeSort
 
-instance (X : CompleteLat) : CompleteLattice X :=
+instance (priority := 10000) (X : CompleteLat) : CompleteLattice X :=
   X.str
 
 /-- Construct a bundled `CompleteLat` from a `CompleteLattice`. -/
@@ -43,10 +43,10 @@ theorem coe_of (α : Type*) [CompleteLattice α] : ↥(of α) = α :=
   rfl
 #align CompleteLat.coe_of CompleteLat.coe_of
 
-instance : Inhabited CompleteLat :=
+instance (priority := 10000) : Inhabited CompleteLat :=
   ⟨of PUnit⟩
 
-instance : BundledHom @CompleteLatticeHom where
+instance (priority := 10000) : BundledHom @CompleteLatticeHom where
   toFun _ _ f := f.toFun
   id := @CompleteLatticeHom.id
   comp := @CompleteLatticeHom.comp
@@ -54,10 +54,10 @@ instance : BundledHom @CompleteLatticeHom where
 
 deriving instance LargeCategory for CompleteLat
 
-instance : ConcreteCategory CompleteLat := by
+instance (priority := 10000) : ConcreteCategory CompleteLat := by
   dsimp [CompleteLat]; infer_instance
 
-instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
+instance (priority := 10000) hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
   forget₂ :=
     { obj := fun X => BddLat.of X
       map := fun {X Y} => CompleteLatticeHom.toBoundedLatticeHom }

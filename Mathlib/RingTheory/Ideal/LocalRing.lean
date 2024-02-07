@@ -110,7 +110,7 @@ def maximalIdeal : Ideal R where
   smul_mem' _ _ := mul_mem_nonunits_right
 #align local_ring.maximal_ideal LocalRing.maximalIdeal
 
-instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
+instance (priority := 10000) maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
   rw [Ideal.isMaximal_iff]
   constructor
   · intro h
@@ -211,7 +211,7 @@ section
 
 variable [Semiring R] [Semiring S] [Semiring T]
 
-instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) where
+instance (priority := 10000) isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) where
   map_nonunit _ := id
 #align is_local_ring_hom_id isLocalRingHom_id
 
@@ -227,12 +227,12 @@ theorem map_mem_nonunits_iff (f : R →+* S) [IsLocalRingHom f] (a) :
   ⟨fun h ha => h <| (isUnit_map_iff f a).mpr ha, fun h ha => h <| (isUnit_map_iff f a).mp ha⟩
 #align map_mem_nonunits_iff map_mem_nonunits_iff
 
-instance isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g] [IsLocalRingHom f] :
+instance (priority := 10000) isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g] [IsLocalRingHom f] :
     IsLocalRingHom (g.comp f) where
   map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f a)
 #align is_local_ring_hom_comp isLocalRingHom_comp
 
-instance isLocalRingHom_equiv (f : R ≃+* S) : IsLocalRingHom (f : R →+* S) where
+instance (priority := 10000) isLocalRingHom_equiv (f : R ≃+* S) : IsLocalRingHom (f : R →+* S) where
   map_nonunit a ha := by
     convert RingHom.isUnit_map (f.symm : S →+* R) ha
     exact (RingEquiv.symm_apply_apply f a).symm
@@ -351,13 +351,13 @@ def ResidueField :=
 #align local_ring.residue_field LocalRing.ResidueField
 
 -- Porting note : failed at `deriving` instances automatically
-instance ResidueFieldCommRing : CommRing (ResidueField R) :=
+instance (priority := 10000) ResidueFieldCommRing : CommRing (ResidueField R) :=
   show CommRing (R ⧸ maximalIdeal R) from inferInstance
 
-instance ResidueFieldInhabited : Inhabited (ResidueField R) :=
+instance (priority := 10000) ResidueFieldInhabited : Inhabited (ResidueField R) :=
   show Inhabited (R ⧸ maximalIdeal R) from inferInstance
 
-noncomputable instance ResidueField.field : Field (ResidueField R) :=
+noncomputable instance (priority := 10000) ResidueField.field : Field (ResidueField R) :=
   Ideal.Quotient.field (maximalIdeal R)
 #align local_ring.residue_field.field LocalRing.ResidueField.field
 
@@ -366,7 +366,7 @@ def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 #align local_ring.residue LocalRing.residue
 
-instance ResidueField.algebra : Algebra R (ResidueField R) :=
+instance (priority := 10000) ResidueField.algebra : Algebra R (ResidueField R) :=
   Ideal.Quotient.algebra _
 #align local_ring.residue_field.algebra LocalRing.ResidueField.algebra
 
@@ -374,7 +374,7 @@ theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :
   rfl
 #align local_ring.residue_field.algebra_map_eq LocalRing.ResidueField.algebraMap_eq
 
-instance : IsLocalRingHom (LocalRing.residue R) :=
+instance (priority := 10000) : IsLocalRingHom (LocalRing.residue R) :=
   ⟨fun _ ha =>
     Classical.not_not.mp (Ideal.Quotient.eq_zero_iff_mem.not.mp (isUnit_iff_ne_zero.mp ha))⟩
 
@@ -484,7 +484,7 @@ section MulSemiringAction
 variable (G : Type*) [Group G] [MulSemiringAction G R]
 
 /-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `LocalRing.ResidueField R`. -/
-instance : MulSemiringAction G (LocalRing.ResidueField R) :=
+instance (priority := 10000) : MulSemiringAction G (LocalRing.ResidueField R) :=
   MulSemiringAction.compHom _ <| mapAut.comp (MulSemiringAction.toRingAut G R)
 
 @[simp]

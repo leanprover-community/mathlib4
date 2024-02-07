@@ -684,7 +684,7 @@ example : 1 + 100 + a = a + 101 := by
   norm_num [add_comm]
 
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
-noncomputable instance : LinearOrderedField (R a b) := test_sorry
+noncomputable instance (priority := 10000) : LinearOrderedField (R a b) := test_sorry
 
 example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
   norm_num

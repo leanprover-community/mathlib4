@@ -115,34 +115,34 @@ theorem Continuous.const_smul (hg : Continuous g) (c : M) : Continuous fun x => 
 /-- If a scalar is central, then its right action is continuous when its left action is. -/
 @[to_additive "If an additive action is central, then its right action is continuous when its left
 action is."]
-instance ContinuousConstSMul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
+instance (priority := 10000) ContinuousConstSMul.op [SMul Mᵐᵒᵖ α] [IsCentralScalar M α] :
     ContinuousConstSMul Mᵐᵒᵖ α :=
   ⟨MulOpposite.rec' fun c => by simpa only [op_smul_eq_smul] using continuous_const_smul c⟩
 #align has_continuous_const_smul.op ContinuousConstSMul.op
 #align has_continuous_const_vadd.op ContinuousConstVAdd.op
 
 @[to_additive]
-instance MulOpposite.continuousConstSMul : ContinuousConstSMul M αᵐᵒᵖ :=
+instance (priority := 10000) MulOpposite.continuousConstSMul : ContinuousConstSMul M αᵐᵒᵖ :=
   ⟨fun c => MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.const_smul c⟩
 #align mul_opposite.has_continuous_const_smul MulOpposite.continuousConstSMul
 #align add_opposite.has_continuous_const_vadd AddOpposite.continuousConstVAdd
 
 @[to_additive]
-instance : ContinuousConstSMul M αᵒᵈ := ‹ContinuousConstSMul M α›
+instance (priority := 10000) : ContinuousConstSMul M αᵒᵈ := ‹ContinuousConstSMul M α›
 
 @[to_additive]
-instance OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
+instance (priority := 10000) OrderDual.continuousConstSMul' : ContinuousConstSMul Mᵒᵈ α :=
   ‹ContinuousConstSMul M α›
 #align order_dual.has_continuous_const_smul' OrderDual.continuousConstSMul'
 #align order_dual.has_continuous_const_vadd' OrderDual.continuousConstVAdd'
 
 @[to_additive]
-instance Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :
+instance (priority := 10000) Prod.continuousConstSMul [SMul M β] [ContinuousConstSMul M β] :
     ContinuousConstSMul M (α × β) :=
   ⟨fun _ => (continuous_fst.const_smul _).prod_mk (continuous_snd.const_smul _)⟩
 
 @[to_additive]
-instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
+instance (priority := 10000) {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
     [∀ i, ContinuousConstSMul M (γ i)] : ContinuousConstSMul M (∀ i, γ i) :=
   ⟨fun _ => continuous_pi fun i => (continuous_apply i).const_smul _⟩
 
@@ -162,7 +162,7 @@ variable [TopologicalSpace α]
 variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
 @[to_additive]
-instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
+instance (priority := 10000) Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
   continuous_const_smul m := (continuous_const_smul (m : M) : _)
 #align units.has_continuous_const_smul Units.continuousConstSMul
 #align add_units.has_continuous_const_vadd AddUnits.continuousConstVAdd

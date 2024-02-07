@@ -78,8 +78,8 @@ decreasing_by assumption
 /-- `O(1)`. Build a new empty heap. -/
 def empty (lt) : BinaryHeap α lt := ⟨#[]⟩
 
-instance (lt) : Inhabited (BinaryHeap α lt) := ⟨empty _⟩
-instance (lt) : EmptyCollection (BinaryHeap α lt) := ⟨empty _⟩
+instance (priority := 10000) (lt) : Inhabited (BinaryHeap α lt) := ⟨empty _⟩
+instance (priority := 10000) (lt) : EmptyCollection (BinaryHeap α lt) := ⟨empty _⟩
 
 /-- `O(1)`. Build a one-element heap. -/
 def singleton (lt) (x : α) : BinaryHeap α lt := ⟨#[x]⟩

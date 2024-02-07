@@ -242,7 +242,7 @@ theorem lt_wf : WellFounded (@LT.lt (ι →₀ ℕ) _) :=
 #align finsupp.lt_wf Finsupp.lt_wf
 
 -- TODO: generalize to `[WellFoundedRelation α] → WellFoundedRelation (ι →₀ α)`
-instance : WellFoundedRelation (ι →₀ ℕ) where
+instance (priority := 10000) : WellFoundedRelation (ι →₀ ℕ) where
   rel := (· < ·)
   wf := lt_wf _
 

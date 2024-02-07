@@ -33,10 +33,10 @@ attribute [pp_with_univ] toLevel
 #align reflected_univ Lean.ToLevel
 #align reflected_univ.lvl Lean.ToLevel.toLevel
 
-instance : ToLevel.{0} where
+instance (priority := 10000) : ToLevel.{0} where
   toLevel := .zero
 
-instance [ToLevel.{u}] : ToLevel.{u+1} where
+instance (priority := 10000) [ToLevel.{u}] : ToLevel.{u+1} where
   toLevel := .succ toLevel.{u}
 
 /-- `ToLevel` for `max u v`. This is not an instance since it causes divergence. -/

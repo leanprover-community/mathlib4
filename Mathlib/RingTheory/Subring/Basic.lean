@@ -195,11 +195,11 @@ namespace Subring
 -- projection `s.toSubmonoid`
 #noalign subring.to_submonoid
 
-instance : SetLike (Subring R) R where
+instance (priority := 10000) : SetLike (Subring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-instance : SubringClass (Subring R) R where
+instance (priority := 10000) : SubringClass (Subring R) R where
   zero_mem s := s.zero_mem'
   add_mem {s} := s.add_mem'
   one_mem s := s.one_mem'
@@ -403,7 +403,7 @@ protected theorem sum_mem {R : Type*} [Ring R] (s : Subring R) {ι : Type*} {t :
 #align subring.sum_mem Subring.sum_mem
 
 /-- A subring of a ring inherits a ring structure -/
-instance toRing : Ring s := SubringClass.toRing s
+instance (priority := 10000) toRing : Ring s := SubringClass.toRing s
 #align subring.to_ring Subring.toRing
 
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
@@ -451,39 +451,39 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
 #align subring.coe_eq_zero_iff Subring.coe_eq_zero_iff
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
-instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
+instance (priority := 10000) toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
   SubringClass.toCommRing s
 #align subring.to_comm_ring Subring.toCommRing
 
 /-- A subring of a non-trivial ring is non-trivial. -/
-instance {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
+instance (priority := 10000) {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
   s.toSubsemiring.nontrivial
 
 /-- A subring of a ring with no zero divisors has no zero divisors. -/
-instance {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
+instance (priority := 10000) {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
   s.toSubsemiring.noZeroDivisors
 
 /-- A subring of a domain is a domain. -/
-instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
+instance (priority := 10000) {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
   NoZeroDivisors.to_isDomain _
 
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
+instance (priority := 10000) toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
   SubringClass.toOrderedRing s
 #align subring.to_ordered_ring Subring.toOrderedRing
 
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
+instance (priority := 10000) toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
   SubringClass.toOrderedCommRing s
 #align subring.to_ordered_comm_ring Subring.toOrderedCommRing
 
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
+instance (priority := 10000) toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
   SubringClass.toLinearOrderedRing s
 #align subring.to_linear_ordered_ring Subring.toLinearOrderedRing
 
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-instance toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
+instance (priority := 10000) toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
     LinearOrderedCommRing s :=
   SubringClass.toLinearOrderedCommRing s
 #align subring.to_linear_ordered_comm_ring Subring.toLinearOrderedCommRing
@@ -539,7 +539,7 @@ theorem coe_toAddSubgroup (s : Subring R) : (s.toAddSubgroup : Set R) = s :=
 
 
 /-- The subring `R` of the ring `R`. -/
-instance : Top (Subring R) :=
+instance (priority := 10000) : Top (Subring R) :=
   ⟨{ (⊤ : Submonoid R), (⊤ : AddSubgroup R) with }⟩
 
 @[simp]
@@ -675,7 +675,7 @@ theorem map_range : f.range.map g = (g.comp f).range := by
 /-- The range of a ring homomorphism is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
   presence of `Fintype S`. -/
-instance fintypeRange [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (range f) :=
+instance (priority := 10000) fintypeRange [Fintype R] [DecidableEq S] (f : R →+* S) : Fintype (range f) :=
   Set.fintypeRange f
 #align ring_hom.fintype_range RingHom.fintypeRange
 
@@ -686,10 +686,10 @@ namespace Subring
 /-! ## bot -/
 
 
-instance : Bot (Subring R) :=
+instance (priority := 10000) : Bot (Subring R) :=
   ⟨(Int.castRingHom R).range⟩
 
-instance : Inhabited (Subring R) :=
+instance (priority := 10000) : Inhabited (Subring R) :=
   ⟨⊥⟩
 
 theorem coe_bot : ((⊥ : Subring R) : Set R) = Set.range ((↑) : ℤ → R) :=
@@ -704,7 +704,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : Subring R) ↔ ∃ n : ℤ, ↑n = x :=
 
 
 /-- The inf of two subrings is their intersection. -/
-instance : Inf (Subring R) :=
+instance (priority := 10000) : Inf (Subring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubgroup ⊓ t.toAddSubgroup with carrier := s ∩ t }⟩
 
@@ -718,7 +718,7 @@ theorem mem_inf {p p' : Subring R} {x : R} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x �
   Iff.rfl
 #align subring.mem_inf Subring.mem_inf
 
-instance : InfSet (Subring R) :=
+instance (priority := 10000) : InfSet (Subring R) :=
   ⟨fun s =>
     Subring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, t.toSubmonoid) (⨅ t ∈ s, Subring.toAddSubgroup t)
       (by simp) (by simp)⟩
@@ -754,7 +754,7 @@ theorem sInf_toAddSubgroup (s : Set (Subring R)) :
 #align subring.Inf_to_add_subgroup Subring.sInf_toAddSubgroup
 
 /-- Subrings of a ring form a complete lattice. -/
-instance : CompleteLattice (Subring R) :=
+instance (priority := 10000) : CompleteLattice (Subring R) :=
   { completeLatticeOfInf (Subring R) fun _ =>
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
@@ -801,7 +801,7 @@ theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
   Subsemigroup.mem_center_iff
 #align subring.mem_center_iff Subring.mem_center_iff
 
-instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
+instance (priority := 10000) decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
   decidable_of_iff' _ mem_center_iff
 #align subring.decidable_mem_center Subring.decidableMemCenter
 
@@ -811,7 +811,7 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
 #align subring.center_eq_top Subring.center_eq_top
 
 /-- The center is commutative. -/
-instance : CommRing (center R) :=
+instance (priority := 10000) : CommRing (center R) :=
   { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
 end
@@ -820,7 +820,7 @@ section DivisionRing
 
 variable {K : Type u} [DivisionRing K]
 
-instance : Field (center K) :=
+instance (priority := 10000) : Field (center K) :=
   { inferInstanceAs (CommRing (center K)) with
     inv := fun a => ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
     mul_inv_cancel := fun ⟨a, ha⟩ h => Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne h
@@ -1452,7 +1452,7 @@ variable {α β : Type*}
 
 -- Porting note: Lean can find this instance already
 /-- The action by a subring is the action by the underlying ring. -/
-instance [SMul R α] (S : Subring R) : SMul S α :=
+instance (priority := 10000) [SMul R α] (S : Subring R) : SMul S α :=
   inferInstanceAs (SMul S.toSubsemiring α)
 
 theorem smul_def [SMul R α] {S : Subring R} (g : S) (m : α) : g • m = (g : R) • m :=
@@ -1460,69 +1460,69 @@ theorem smul_def [SMul R α] {S : Subring R} (g : S) (m : α) : g • m = (g : R
 #align subring.smul_def Subring.smul_def
 
 -- Porting note: Lean can find this instance already
-instance smulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
+instance (priority := 10000) smulCommClass_left [SMul R β] [SMul α β] [SMulCommClass R α β] (S : Subring R) :
     SMulCommClass S α β :=
   inferInstanceAs (SMulCommClass S.toSubsemiring α β)
 #align subring.smul_comm_class_left Subring.smulCommClass_left
 
 -- Porting note: Lean can find this instance already
-instance smulCommClass_right [SMul α β] [SMul R β] [SMulCommClass α R β] (S : Subring R) :
+instance (priority := 10000) smulCommClass_right [SMul α β] [SMul R β] [SMulCommClass α R β] (S : Subring R) :
     SMulCommClass α S β :=
   inferInstanceAs (SMulCommClass α S.toSubsemiring β)
 #align subring.smul_comm_class_right Subring.smulCommClass_right
 
 -- Porting note: Lean can find this instance already
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
-instance [SMul α β] [SMul R α] [SMul R β] [IsScalarTower R α β] (S : Subring R) :
+instance (priority := 10000) [SMul α β] [SMul R α] [SMul R β] [IsScalarTower R α β] (S : Subring R) :
     IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubsemiring α β)
 
 -- Porting note: Lean can find this instance already
-instance [SMul R α] [FaithfulSMul R α] (S : Subring R) : FaithfulSMul S α :=
+instance (priority := 10000) [SMul R α] [FaithfulSMul R α] (S : Subring R) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
 
 -- Porting note: Lean can find this instance already
 /-- The action by a subring is the action by the underlying ring. -/
-instance [MulAction R α] (S : Subring R) : MulAction S α :=
+instance (priority := 10000) [MulAction R α] (S : Subring R) : MulAction S α :=
   inferInstanceAs (MulAction S.toSubsemiring α)
 
 -- Porting note: Lean can find this instance already
 /-- The action by a subring is the action by the underlying ring. -/
-instance [AddMonoid α] [DistribMulAction R α] (S : Subring R) : DistribMulAction S α :=
+instance (priority := 10000) [AddMonoid α] [DistribMulAction R α] (S : Subring R) : DistribMulAction S α :=
   inferInstanceAs (DistribMulAction S.toSubsemiring α)
 
 -- Porting note: Lean can find this instance already
 /-- The action by a subring is the action by the underlying ring. -/
-instance [Monoid α] [MulDistribMulAction R α] (S : Subring R) : MulDistribMulAction S α :=
+instance (priority := 10000) [Monoid α] [MulDistribMulAction R α] (S : Subring R) : MulDistribMulAction S α :=
   inferInstanceAs (MulDistribMulAction S.toSubsemiring α)
 
 -- Porting note: Lean can find this instance already
 /-- The action by a subring is the action by the underlying ring. -/
-instance [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α :=
+instance (priority := 10000) [Zero α] [SMulWithZero R α] (S : Subring R) : SMulWithZero S α :=
   inferInstanceAs (SMulWithZero S.toSubsemiring α)
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [Zero α] [MulActionWithZero R α] (S : Subring R) : MulActionWithZero S α :=
+instance (priority := 10000) [Zero α] [MulActionWithZero R α] (S : Subring R) : MulActionWithZero S α :=
   -- inferInstanceAs (MulActionWithZero S.toSubsemiring α) -- Porting note: does not work
   Subsemiring.mulActionWithZero S.toSubsemiring
 
 /-- The action by a subring is the action by the underlying ring. -/
-instance [AddCommMonoid α] [Module R α] (S : Subring R) : Module S α :=
+instance (priority := 10000) [AddCommMonoid α] [Module R α] (S : Subring R) : Module S α :=
   -- inferInstanceAs (Module S.toSubsemiring α) -- Porting note: does not work
   Subsemiring.module S.toSubsemiring
 
 -- Porting note: Lean can find this instance already
 /-- The action by a subsemiring is the action by the underlying ring. -/
-instance [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAction S α :=
+instance (priority := 10000) [Semiring α] [MulSemiringAction R α] (S : Subring R) : MulSemiringAction S α :=
   inferInstanceAs (MulSemiringAction S.toSubmonoid α)
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.smulCommClass_left : SMulCommClass (center R) R R :=
+instance (priority := 10000) center.smulCommClass_left : SMulCommClass (center R) R R :=
   Subsemiring.center.smulCommClass_left
 #align subring.center.smul_comm_class_left Subring.center.smulCommClass_left
 
 /-- The center of a semiring acts commutatively on that semiring. -/
-instance center.smulCommClass_right : SMulCommClass R (center R) R :=
+instance (priority := 10000) center.smulCommClass_right : SMulCommClass R (center R) R :=
   Subsemiring.center.smulCommClass_right
 #align subring.center.smul_comm_class_right Subring.center.smulCommClass_right
 

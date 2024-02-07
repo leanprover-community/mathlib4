@@ -91,7 +91,7 @@ protected def Mem (a : α) (o : Part α) : Prop :=
   ∃ h, o.get h = a
 #align part.mem Part.Mem
 
-instance : Membership α (Part α) :=
+instance (priority := 10000) : Membership α (Part α) :=
   ⟨Part.Mem⟩
 
 theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
@@ -123,7 +123,7 @@ def none : Part α :=
   ⟨False, False.rec⟩
 #align part.none Part.none
 
-instance : Inhabited (Part α) :=
+instance (priority := 10000) : Inhabited (Part α) :=
   ⟨none⟩
 
 @[simp]
@@ -252,11 +252,11 @@ theorem some_toOption (a : α) [Decidable (some a).Dom] : (some a).toOption = Op
   dif_pos trivial
 #align part.some_to_option Part.some_toOption
 
-instance noneDecidable : Decidable (@none α).Dom :=
+instance (priority := 10000) noneDecidable : Decidable (@none α).Dom :=
   instDecidableFalse
 #align part.none_decidable Part.noneDecidable
 
-instance someDecidable (a : α) : Decidable (some a).Dom :=
+instance (priority := 10000) someDecidable (a : α) : Decidable (some a).Dom :=
   instDecidableTrue
 #align part.some_decidable Part.someDecidable
 
@@ -345,7 +345,7 @@ theorem ofOption_eq_get {α} (o : Option α) : ofOption o = ⟨_, @Option.get _ 
     · rfl
 #align part.of_option_eq_get Part.ofOption_eq_get
 
-instance : Coe (Option α) (Part α) :=
+instance (priority := 10000) : Coe (Option α) (Part α) :=
   ⟨ofOption⟩
 
 theorem mem_coe {a : α} {o : Option α} : a ∈ (o : Part α) ↔ a ∈ o :=
@@ -369,7 +369,7 @@ protected theorem induction_on {P : Part α → Prop} (a : Part α) (hnone : P n
     (eq_none_iff'.2 h).symm ▸ hnone
 #align part.induction_on Part.induction_on
 
-instance ofOptionDecidable : ∀ o : Option α, Decidable (ofOption o).Dom
+instance (priority := 10000) ofOptionDecidable : ∀ o : Option α, Decidable (ofOption o).Dom
   | Option.none => Part.noneDecidable
   | Option.some a => Part.someDecidable a
 #align part.of_option_decidable Part.ofOptionDecidable
@@ -391,14 +391,14 @@ noncomputable def equivOption : Part α ≃ Option α :=
 #align part.equiv_option Part.equivOption
 
 /-- We give `Part α` the order where everything is greater than `none`. -/
-instance : PartialOrder (Part
+instance (priority := 10000) : PartialOrder (Part
         α) where
   le x y := ∀ i, i ∈ x → i ∈ y
   le_refl x y := id
   le_trans x y z f g i := g _ ∘ f _
   le_antisymm x y f g := Part.ext fun z => ⟨f _, g _⟩
 
-instance : OrderBot (Part α) where
+instance (priority := 10000) : OrderBot (Part α) where
   bot := none
   bot_le := by rintro x _ ⟨⟨_⟩, _⟩
 
@@ -558,12 +558,12 @@ theorem map_map (g : β → γ) (f : α → β) (o : Part α) : map g (map f o) 
   erw [← bind_some_eq_map, bind_map, bind_some_eq_map]
 #align part.map_map Part.map_map
 
-instance : Monad Part where
+instance (priority := 10000) : Monad Part where
   pure := @some
   map := @map
   bind := @Part.bind
 
-instance : LawfulMonad
+instance (priority := 10000) : LawfulMonad
       Part where
   bind_pure_comp := @bind_some_eq_map
   id_map f := by cases f; rfl
@@ -673,26 +673,26 @@ This section could be moved to a separate file to avoid the import of `Mathlib.A
 -/
 
 @[to_additive]
-instance [One α] : One (Part α) where one := pure 1
+instance (priority := 10000) [One α] : One (Part α) where one := pure 1
 
 @[to_additive]
-instance [Mul α] : Mul (Part α) where mul a b := (· * ·) <$> a <*> b
+instance (priority := 10000) [Mul α] : Mul (Part α) where mul a b := (· * ·) <$> a <*> b
 
 @[to_additive]
-instance [Inv α] : Inv (Part α) where inv := map Inv.inv
+instance (priority := 10000) [Inv α] : Inv (Part α) where inv := map Inv.inv
 
 @[to_additive]
-instance [Div α] : Div (Part α) where div a b := (· / ·) <$> a <*> b
+instance (priority := 10000) [Div α] : Div (Part α) where div a b := (· / ·) <$> a <*> b
 
-instance [Mod α] : Mod (Part α) where mod a b := (· % ·) <$> a <*> b
+instance (priority := 10000) [Mod α] : Mod (Part α) where mod a b := (· % ·) <$> a <*> b
 
-instance [Append α] : Append (Part α) where append a b := (· ++ ·) <$> a <*> b
+instance (priority := 10000) [Append α] : Append (Part α) where append a b := (· ++ ·) <$> a <*> b
 
-instance [Inter α] : Inter (Part α) where inter a b := (· ∩ ·) <$> a <*> b
+instance (priority := 10000) [Inter α] : Inter (Part α) where inter a b := (· ∩ ·) <$> a <*> b
 
-instance [Union α] : Union (Part α) where union a b := (· ∪ ·) <$> a <*> b
+instance (priority := 10000) [Union α] : Union (Part α) where union a b := (· ∪ ·) <$> a <*> b
 
-instance [SDiff α] : SDiff (Part α) where sdiff a b := (· \ ·) <$> a <*> b
+instance (priority := 10000) [SDiff α] : SDiff (Part α) where sdiff a b := (· \ ·) <$> a <*> b
 
 section
 -- Porting note : new theorems to unfold definitions

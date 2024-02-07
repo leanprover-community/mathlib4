@@ -54,7 +54,7 @@ section TVS
 
 variable [TopologicalSpace V] [AddCommGroup V] [Module ℝ V]
 
-instance : SetLike (ConvexBody V) V where
+instance (priority := 10000) : SetLike (ConvexBody V) V where
   coe := ConvexBody.carrier
   coe_injective' K L h := by
     cases K
@@ -100,15 +100,15 @@ variable [ContinuousAdd V]
 
 -- we cannot write K + L to avoid reducibility issues with the set.has_add instance
 -- porting note: todo: is this^ still true?
-instance : Add (ConvexBody V) where
+instance (priority := 10000) : Add (ConvexBody V) where
   add K L :=
     ⟨Set.image2 (· + ·) K L, K.convex.add L.convex, K.isCompact.add L.isCompact,
       K.nonempty.add L.nonempty⟩
 
-instance : Zero (ConvexBody V) where
+instance (priority := 10000) : Zero (ConvexBody V) where
   zero := ⟨0, convex_singleton 0, isCompact_singleton, Set.singleton_nonempty 0⟩
 
-instance : SMul ℕ (ConvexBody V) where
+instance (priority := 10000) : SMul ℕ (ConvexBody V) where
   smul := nsmulRec
 
 -- porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
@@ -116,7 +116,7 @@ theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : 
   | 0, _ => rfl
   | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) rfl (coe_nsmul n K)
 
-instance : AddMonoid (ConvexBody V) :=
+instance (priority := 10000) : AddMonoid (ConvexBody V) :=
   SetLike.coe_injective.addMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
 @[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
@@ -129,17 +129,17 @@ theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
   rfl
 #align convex_body.coe_zero ConvexBody.coe_zero
 
-instance : Inhabited (ConvexBody V) :=
+instance (priority := 10000) : Inhabited (ConvexBody V) :=
   ⟨0⟩
 
-instance : AddCommMonoid (ConvexBody V) :=
+instance (priority := 10000) : AddCommMonoid (ConvexBody V) :=
   SetLike.coe_injective.addCommMonoid (↑) rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
 end ContinuousAdd
 
 variable [ContinuousSMul ℝ V]
 
-instance : SMul ℝ (ConvexBody V) where
+instance (priority := 10000) : SMul ℝ (ConvexBody V) where
   smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
 
 @[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
@@ -149,7 +149,7 @@ theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (
 
 variable [ContinuousAdd V]
 
-instance : DistribMulAction ℝ (ConvexBody V) :=
+instance (priority := 10000) : DistribMulAction ℝ (ConvexBody V) :=
   SetLike.coe_injective.distribMulAction ⟨⟨(↑), coe_zero⟩, coe_add⟩ coe_smul
 
 @[simp] -- porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
@@ -159,7 +159,7 @@ theorem coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c 
 
 /-- The convex bodies in a fixed space $V$ form a module over the nonnegative reals.
 -/
-instance : Module ℝ≥0 (ConvexBody V) where
+instance (priority := 10000) : Module ℝ≥0 (ConvexBody V) where
   add_smul c d K := SetLike.ext' <| Convex.add_smul K.convex c.coe_nonneg d.coe_nonneg
   zero_smul K := SetLike.ext' <| Set.zero_smul_set K.nonempty
 
@@ -192,7 +192,7 @@ theorem hausdorffEdist_ne_top {K L : ConvexBody V} : EMetric.hausdorffEdist (K :
 
 /-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff
 metric. -/
-noncomputable instance : PseudoMetricSpace (ConvexBody V) where
+noncomputable instance (priority := 10000) : PseudoMetricSpace (ConvexBody V) where
   dist K L := Metric.hausdorffDist (K : Set V) L
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
@@ -243,7 +243,7 @@ section NormedAddCommGroup
 variable [NormedAddCommGroup V] [NormedSpace ℝ V]
 
 /-- Convex bodies in a fixed normed space `V` form a metric space under the Hausdorff metric. -/
-noncomputable instance : MetricSpace (ConvexBody V) where
+noncomputable instance (priority := 10000) : MetricSpace (ConvexBody V) where
   eq_of_dist_eq_zero {K L} hd := ConvexBody.ext <|
     (K.isClosed.hausdorffDist_zero_iff_eq L.isClosed hausdorffEdist_ne_top).1 hd
 

@@ -312,7 +312,7 @@ latter should be used as a typeclass argument in theorems because Lean can autom
 deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
 
 Porting note: TODO: the previous paragraph describes the state of the art in Lean 3. We can have
-instance cycles in Lean 4 but we might want to postpone adding them till after the port. -/
+instance (priority := 10000) cycles in Lean 4 but we might want to postpone adding them till after the port. -/
 @[mk_iff] class SeparableSpace : Prop where
   /-- There exists a countable dense set. -/
   exists_countable_dense : ∃ s : Set α, s.Countable ∧ Dense s
@@ -376,13 +376,13 @@ theorem _root_.QuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace 
   hf.surjective.denseRange.separableSpace hf.continuous
 
 /-- The product of two separable spaces is a separable space. -/
-instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
+instance (priority := 10000) [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
   rcases exists_countable_dense β with ⟨t, htc, htd⟩
   exact ⟨⟨s ×ˢ t, hsc.prod htc, hsd.prod htd⟩⟩
 
 /-- The product of a countable family of separable spaces is a separable space. -/
-instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SeparableSpace (X i)]
+instance (priority := 10000) {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SeparableSpace (X i)]
     [Countable ι] : SeparableSpace (∀ i, X i) := by
   choose t htc htd using (exists_countable_dense <| X ·)
   haveI := fun i ↦ (htc i).to_subtype
@@ -400,10 +400,10 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
     simp only [dif_pos hi]
     exact hyu _
 
-instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
+instance (priority := 10000) [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
   quotientMap_quot_mk.separableSpace
 
-instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
+instance (priority := 10000) [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
   quotientMap_quot_mk.separableSpace
 
 /-- A topological space with discrete topology is separable iff it is countable. -/
@@ -632,7 +632,7 @@ theorem Dense.exists_countable_dense_subset_bot_top {α : Type*} [TopologicalSpa
     fun x hx hxs => ⟨Or.inr <| Or.inr hx, hxs⟩]
 #align dense.exists_countable_dense_subset_bot_top Dense.exists_countable_dense_subset_bot_top
 
-instance separableSpace_univ {α : Type*} [TopologicalSpace α] [SeparableSpace α] :
+instance (priority := 10000) separableSpace_univ {α : Type*} [TopologicalSpace α] [SeparableSpace α] :
     SeparableSpace (univ : Set α) :=
   (Equiv.Set.univ α).symm.surjective.denseRange.separableSpace (continuous_id.subtype_mk _)
 #align separable_space_univ separableSpace_univ
@@ -677,19 +677,19 @@ end FirstCountableTopology
 
 variable {α}
 
-instance {β} [TopologicalSpace β] [FirstCountableTopology α] [FirstCountableTopology β] :
+instance (priority := 10000) {β} [TopologicalSpace β] [FirstCountableTopology α] [FirstCountableTopology β] :
     FirstCountableTopology (α × β) :=
   ⟨fun ⟨x, y⟩ => by rw [nhds_prod_eq]; infer_instance⟩
 
 section Pi
 
-instance {ι : Type*} {π : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (π i)]
+instance (priority := 10000) {ι : Type*} {π : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (π i)]
     [∀ i, FirstCountableTopology (π i)] : FirstCountableTopology (∀ i, π i) :=
   ⟨fun f => by rw [nhds_pi]; infer_instance⟩
 
 end Pi
 
-instance isCountablyGenerated_nhdsWithin (x : α) [IsCountablyGenerated (𝓝 x)] (s : Set α) :
+instance (priority := 10000) isCountablyGenerated_nhdsWithin (x : α) [IsCountablyGenerated (𝓝 x)] (s : Set α) :
     IsCountablyGenerated (𝓝[s] x) :=
   Inf.isCountablyGenerated _ _
 #align topological_space.is_countably_generated_nhds_within TopologicalSpace.isCountablyGenerated_nhdsWithin
@@ -713,7 +713,7 @@ lemma SecondCountableTopology.mk' {b : Set (Set α)} (hc : b.Countable) :
     @SecondCountableTopology α (generateFrom b) :=
   @SecondCountableTopology.mk α (generateFrom b) ⟨b, hc, rfl⟩
 
-instance _root_.Finite.toSecondCountableTopology [Finite α] : SecondCountableTopology α where
+instance (priority := 10000) _root_.Finite.toSecondCountableTopology [Finite α] : SecondCountableTopology α where
   is_open_generated_countable :=
     ⟨_, {U | IsOpen U}.to_countable, TopologicalSpace.isTopologicalBasis_opens.eq_generateFrom⟩
 
@@ -735,7 +735,7 @@ theorem countable_countableBasis [SecondCountableTopology α] : (countableBasis 
   (exists_countable_basis α).choose_spec.1
 #align topological_space.countable_countable_basis TopologicalSpace.countable_countableBasis
 
-instance encodableCountableBasis [SecondCountableTopology α] : Encodable (countableBasis α) :=
+instance (priority := 10000) encodableCountableBasis [SecondCountableTopology α] : Encodable (countableBasis α) :=
   (countable_countableBasis α).toEncodable
 #align topological_space.encodable_countable_basis TopologicalSpace.encodableCountableBasis
 
@@ -787,7 +787,7 @@ theorem secondCountableTopology_induced (β) [t : TopologicalSpace β] [SecondCo
 
 variable {α}
 
-instance Subtype.secondCountableTopology (s : Set α) [SecondCountableTopology α] :
+instance (priority := 10000) Subtype.secondCountableTopology (s : Set α) [SecondCountableTopology α] :
     SecondCountableTopology s :=
   secondCountableTopology_induced s α (↑)
 #align topological_space.subtype.second_countable_topology TopologicalSpace.Subtype.secondCountableTopology
@@ -799,12 +799,12 @@ lemma secondCountableTopology_iInf {ι} [Countable ι] {t : ι → TopologicalSp
     countable_iUnion fun i => @countable_countableBasis _ (t i) (ht i)
 
 -- TODO: more fine grained instances for first_countable_topology, separable_space, t2_space, ...
-instance {β : Type*} [TopologicalSpace β] [SecondCountableTopology α] [SecondCountableTopology β] :
+instance (priority := 10000) {β : Type*} [TopologicalSpace β] [SecondCountableTopology α] [SecondCountableTopology β] :
     SecondCountableTopology (α × β) :=
   ((isBasis_countableBasis α).prod (isBasis_countableBasis β)).secondCountableTopology <|
     (countable_countableBasis α).image2 (countable_countableBasis β) _
 
-instance {ι : Type*} {π : ι → Type*} [Countable ι] [∀ a, TopologicalSpace (π a)]
+instance (priority := 10000) {ι : Type*} {π : ι → Type*} [Countable ι] [∀ a, TopologicalSpace (π a)]
     [∀ a, SecondCountableTopology (π a)] : SecondCountableTopology (∀ a, π a) :=
   secondCountableTopology_iInf fun _ => secondCountableTopology_induced _ _ _
 
@@ -899,7 +899,7 @@ theorem IsTopologicalBasis.sigma {s : ∀ i : ι, Set (Set (E i))}
 #align topological_space.is_topological_basis.sigma TopologicalSpace.IsTopologicalBasis.sigma
 
 /-- A countable disjoint union of second countable spaces is second countable. -/
-instance [Countable ι] [∀ i, SecondCountableTopology (E i)] :
+instance (priority := 10000) [Countable ι] [∀ i, SecondCountableTopology (E i)] :
     SecondCountableTopology (Σi, E i) := by
   let b := ⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σi, E i))) '' countableBasis (E i)
   have A : IsTopologicalBasis b := IsTopologicalBasis.sigma fun i => isBasis_countableBasis _
@@ -933,7 +933,7 @@ theorem IsTopologicalBasis.sum {s : Set (Set α)} (hs : IsTopologicalBasis s) {t
 #align topological_space.is_topological_basis.sum TopologicalSpace.IsTopologicalBasis.sum
 
 /-- A sum type of two second countable spaces is second countable. -/
-instance [SecondCountableTopology α] [SecondCountableTopology β] :
+instance (priority := 10000) [SecondCountableTopology α] [SecondCountableTopology β] :
     SecondCountableTopology (α ⊕ β) := by
   let b :=
     (fun u => Sum.inl '' u) '' countableBasis α ∪ (fun u => Sum.inr '' u) '' countableBasis β

@@ -74,7 +74,7 @@ class Preregular : Prop where
   exists_fac : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Z ⟶ Y) [EffectiveEpi g],
     (∃ (W : C) (h : W ⟶ X) (_ : EffectiveEpi h) (i : W ⟶ Z), i ≫ g = h ≫ f)
 
-instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
+instance (priority := 10000) [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
   exists_fac {X Y Z} f g _ := by
     have hp := Precoherent.pullback f PUnit (fun () ↦ Z) (fun () ↦ g)
     simp only [exists_const] at hp
@@ -131,7 +131,7 @@ theorem effectiveEpi_desc_iff_effectiveEpiFamily [FinitaryPreExtensive C] {α : 
     (FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g inferInstance).epi_of_iso)⟩⟩,
     fun _ ↦ inferInstance⟩
 
-instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
+instance (priority := 10000) [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ h := by
     refine ⟨α, inferInstance, ?_⟩
     obtain ⟨Y, g, _, g', hg⟩ := Preregular.exists_fac f (Sigma.desc π₁)
@@ -336,14 +336,14 @@ class Presieve.extensive {X : C} (R : Presieve X) :
   arrows_nonempty_isColimit : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
     R = Presieve.ofArrows Z π ∧ Nonempty (IsColimit (Cofan.mk X π))
 
-instance {X : C} (S : Presieve X) [S.extensive] : S.hasPullbacks where
+instance (priority := 10000) {X : C} (S : Presieve X) [S.extensive] : S.hasPullbacks where
   has_pullbacks := by
     obtain ⟨_, _, _, _, rfl, ⟨hc⟩⟩ := Presieve.extensive.arrows_nonempty_isColimit (R := S)
     intro _ _ _ _ _ hg
     cases hg
     apply FinitaryPreExtensive.hasPullbacks_of_is_coproduct hc
 
-instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
+instance (priority := 10000) {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
     [PreservesFiniteProducts F] : PreservesLimit (Discrete.functor fun a => (Z a)) F :=
   (PreservesFiniteProducts.preserves α).preservesLimit
 
@@ -360,7 +360,7 @@ theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X)
     (inferInstance : (ofArrows Z π).hasPullbacks)
   exact isSheafFor_of_preservesProduct _ _ hc
 
-instance {α : Type} [Fintype α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).extensive :=
+instance (priority := 10000) {α : Type} [Fintype α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).extensive :=
   ⟨⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ⟨coproductIsCoproduct _⟩⟩⟩
 
 /--

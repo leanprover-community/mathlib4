@@ -102,7 +102,7 @@ theorem slash_action_eqn' (k : ℤ) (Γ : Subgroup SL(2, ℤ)) [SlashInvariantFo
   rw [← ModularForm.slash_action_eq'_iff, slash_action_eqn]
 #align slash_invariant_form.slash_action_eqn' SlashInvariantForm.slash_action_eqn'
 
-instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
+instance (priority := 10000) [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
   ⟨fun f =>
     { toFun := f
       slash_action_eq' := slash_action_eqn f }⟩
@@ -113,7 +113,7 @@ theorem SlashInvariantFormClass.coe_coe [SlashInvariantFormClass F Γ k] (f : F)
   rfl
 #align slash_invariant_form.slash_invariant_form_class.coe_coe SlashInvariantForm.SlashInvariantFormClass.coe_coe
 
-instance instAdd : Add (SlashInvariantForm Γ k) :=
+instance (priority := 10000) instAdd : Add (SlashInvariantForm Γ k) :=
   ⟨fun f g =>
     { toFun := f + g
       slash_action_eq' := fun γ => by
@@ -130,7 +130,7 @@ theorem add_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f + g) z = f z + 
   rfl
 #align slash_invariant_form.add_apply SlashInvariantForm.add_apply
 
-instance instZero : Zero (SlashInvariantForm Γ k) :=
+instance (priority := 10000) instZero : Zero (SlashInvariantForm Γ k) :=
   ⟨{toFun := 0
     slash_action_eq' := SlashAction.zero_slash _}⟩
 #align slash_invariant_form.has_zero SlashInvariantForm.instZero
@@ -144,7 +144,7 @@ section
 
 variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
-instance instSMul : SMul α (SlashInvariantForm Γ k) :=
+instance (priority := 10000) instSMul : SMul α (SlashInvariantForm Γ k) :=
   ⟨fun c f =>
     { toFun := c • ↑f
       slash_action_eq' := fun γ => by rw [SlashAction.smul_slash_of_tower, slash_action_eqn] }⟩
@@ -162,7 +162,7 @@ theorem smul_apply (f : SlashInvariantForm Γ k) (n : α) (z : ℍ) : (n • f) 
 
 end
 
-instance instNeg : Neg (SlashInvariantForm Γ k) :=
+instance (priority := 10000) instNeg : Neg (SlashInvariantForm Γ k) :=
   ⟨fun f =>
     { toFun := -f
       slash_action_eq' := fun γ => by rw [SlashAction.neg_slash, slash_action_eqn] }⟩
@@ -178,7 +178,7 @@ theorem neg_apply (f : SlashInvariantForm Γ k) (z : ℍ) : (-f) z = -f z :=
   rfl
 #align slash_invariant_form.neg_apply SlashInvariantForm.neg_apply
 
-instance instSub : Sub (SlashInvariantForm Γ k) :=
+instance (priority := 10000) instSub : Sub (SlashInvariantForm Γ k) :=
   ⟨fun f g => f + -g⟩
 #align slash_invariant_form.has_sub SlashInvariantForm.instSub
 
@@ -192,7 +192,7 @@ theorem sub_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f - g) z = f z - 
   rfl
 #align slash_invariant_form.sub_apply SlashInvariantForm.sub_apply
 
-instance : AddCommGroup (SlashInvariantForm Γ k) :=
+instance (priority := 10000) : AddCommGroup (SlashInvariantForm Γ k) :=
   DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
 
 /-- Additive coercion from `SlashInvariantForm` to `ℍ → ℂ`.-/
@@ -206,7 +206,7 @@ theorem coeHom_injective : Function.Injective (@coeHom Γ k) :=
   DFunLike.coe_injective
 #align slash_invariant_form.coe_hom_injective SlashInvariantForm.coeHom_injective
 
-instance : Module ℂ (SlashInvariantForm Γ k) :=
+instance (priority := 10000) : Module ℂ (SlashInvariantForm Γ k) :=
   coeHom_injective.module ℂ coeHom fun _ _ => rfl
 
 /-- The `SlashInvariantForm` corresponding to `Function.const _ x`. -/
@@ -215,7 +215,7 @@ def const (x : ℂ) : SlashInvariantForm Γ 0 where
   toFun := Function.const _ x
   slash_action_eq' A := ModularForm.is_invariant_const A x
 
-instance : One (SlashInvariantForm Γ 0) where
+instance (priority := 10000) : One (SlashInvariantForm Γ 0) where
   one := { const 1 with toFun := 1 }
 
 @[simp]
@@ -223,7 +223,7 @@ theorem one_coe_eq_one : ((1 : SlashInvariantForm Γ 0) : ℍ → ℂ) = 1 :=
   rfl
 #align slash_invariant_form.one_coe_eq_one SlashInvariantForm.one_coe_eq_one
 
-instance : Inhabited (SlashInvariantForm Γ k) :=
+instance (priority := 10000) : Inhabited (SlashInvariantForm Γ k) :=
   ⟨0⟩
 
 /-- The slash invariant form of weight `k₁ + k₂` given by the product of two modular forms of
@@ -239,13 +239,13 @@ theorem coe_mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariant
     (g : SlashInvariantForm Γ k₂) : ⇑(f.mul g) = ⇑f * ⇑g :=
   rfl
 
-instance (Γ : Subgroup SL(2, ℤ)) : NatCast (SlashInvariantForm Γ 0) where
+instance (priority := 10000) (Γ : Subgroup SL(2, ℤ)) : NatCast (SlashInvariantForm Γ 0) where
   natCast n := const n
 
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ⇑(n : SlashInvariantForm Γ 0) = n := rfl
 
-instance (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
+instance (priority := 10000) (Γ : Subgroup SL(2, ℤ)) : IntCast (SlashInvariantForm Γ 0) where
   intCast z := const z
 
 @[simp, norm_cast]

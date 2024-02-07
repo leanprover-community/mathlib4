@@ -263,7 +263,7 @@ theorem IsMaximal.closure_eq {I : Ideal R} (hI : I.IsMaximal) : I.closure = I :=
 #align ideal.is_maximal.closure_eq Ideal.IsMaximal.closure_eq
 
 /-- Maximal ideals in complete normed rings are closed. -/
-instance IsMaximal.isClosed {I : Ideal R} [hI : I.IsMaximal] : IsClosed (I : Set R) :=
+instance (priority := 10000) IsMaximal.isClosed {I : Ideal R} [hI : I.IsMaximal] : IsClosed (I : Set R) :=
   isClosed_of_closure_subset <| Eq.subset <| congr_arg ((↑) : Ideal R → Set R) hI.closure_eq
 #align ideal.is_maximal.is_closed Ideal.IsMaximal.isClosed
 

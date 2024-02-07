@@ -34,7 +34,7 @@ namespace Algebra.Flat
 
 attribute [instance] out
 
-instance self (R : Type u) [CommRing R] : Algebra.Flat R R where
+instance (priority := 10000) self (R : Type u) [CommRing R] : Algebra.Flat R R where
   out := Module.Flat.self R
 
 variable (R : Type u) (S : Type v) (T : Type w) [CommRing R] [CommRing S] [CommRing T]
@@ -56,13 +56,13 @@ namespace RingHom.Flat
 attribute [instance] out
 
 /-- The identity of a ring is flat. -/
-instance identity (R : Type u) [CommRing R] : RingHom.Flat (1 : R →+* R) where
+instance (priority := 10000) identity (R : Type u) [CommRing R] : RingHom.Flat (1 : R →+* R) where
 
 variable {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [CommRing T]
   (f : R →+* S) (g : S →+* T)
 
 /-- Composition of flat ring homomorphisms is flat. -/
-instance comp [RingHom.Flat f] [RingHom.Flat g] : RingHom.Flat (g.comp f) where
+instance (priority := 10000) comp [RingHom.Flat f] [RingHom.Flat g] : RingHom.Flat (g.comp f) where
   out :=
     letI : Algebra R S := f.toAlgebra
     letI : Algebra S T := g.toAlgebra

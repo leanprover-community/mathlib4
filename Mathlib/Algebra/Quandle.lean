@@ -255,7 +255,7 @@ theorem ad_conj {R : Type*} [Rack R] (x y : R) : act' (x ◃ y) = act' x * act' 
 
 /-- The opposite rack, swapping the roles of `◃` and `◃⁻¹`.
 -/
-instance oppositeRack : Rack Rᵐᵒᵖ
+instance (priority := 10000) oppositeRack : Rack Rᵐᵒᵖ
     where
   act x y := op (invAct (unop x) (unop y))
   self_distrib := by
@@ -358,7 +358,7 @@ namespace ShelfHom
 
 variable {S₁ : Type*} {S₂ : Type*} {S₃ : Type*} [Shelf S₁] [Shelf S₂] [Shelf S₃]
 
-instance : FunLike (S₁ →◃ S₂) S₁ S₂ where
+instance (priority := 10000) : FunLike (S₁ →◃ S₂) S₁ S₂ where
   coe := toFun
   coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
@@ -376,7 +376,7 @@ def id (S : Type*) [Shelf S] : S →◃ S where
   map_act' := by simp
 #align shelf_hom.id ShelfHom.id
 
-instance inhabited (S : Type*) [Shelf S] : Inhabited (S →◃ S) :=
+instance (priority := 10000) inhabited (S : Type*) [Shelf S] : Inhabited (S →◃ S) :=
   ⟨id S⟩
 #align shelf_hom.inhabited ShelfHom.inhabited
 
@@ -415,7 +415,7 @@ theorem fix_inv {x : Q} : x ◃⁻¹ x = x := by
   simp
 #align quandle.fix_inv Quandle.fix_inv
 
-instance oppositeQuandle : Quandle Qᵐᵒᵖ where
+instance (priority := 10000) oppositeQuandle : Quandle Qᵐᵒᵖ where
   fix := by
     intro x
     induction' x using MulOpposite.rec'
@@ -430,7 +430,7 @@ the corresponding inner automorphism.
 def Conj (G : Type*) := G
 #align quandle.conj Quandle.Conj
 
-instance Conj.quandle (G : Type*) [Group G] : Quandle (Conj G)
+instance (priority := 10000) Conj.quandle (G : Type*) [Group G] : Quandle (Conj G)
     where
   act x := @MulAut.conj G _ x
   self_distrib := by
@@ -489,7 +489,7 @@ theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAc
   simp
 #align quandle.dihedral_act.inv Quandle.dihedralAct.inv
 
-instance (n : ℕ) : Quandle (Dihedral n)
+instance (priority := 10000) (n : ℕ) : Quandle (Dihedral n)
     where
   act := dihedralAct n
   self_distrib := by
@@ -589,7 +589,7 @@ inductive PreEnvelGroup (R : Type u) : Type u
   | inv (a : PreEnvelGroup R) : PreEnvelGroup R
 #align rack.pre_envel_group Rack.PreEnvelGroup
 
-instance PreEnvelGroup.inhabited (R : Type u) : Inhabited (PreEnvelGroup R) :=
+instance (priority := 10000) PreEnvelGroup.inhabited (R : Type u) : Inhabited (PreEnvelGroup R) :=
   ⟨PreEnvelGroup.unit⟩
 #align rack.pre_envel_group.inhabited Rack.PreEnvelGroup.inhabited
 
@@ -617,7 +617,7 @@ inductive PreEnvelGroupRel' (R : Type u) [Rack R] : PreEnvelGroup R → PreEnvel
     PreEnvelGroupRel' R (mul (mul (incl x) (incl y)) (inv (incl x))) (incl (x ◃ y))
 #align rack.pre_envel_group_rel' Rack.PreEnvelGroupRel'
 
-instance PreEnvelGroupRel'.inhabited (R : Type u) [Rack R] :
+instance (priority := 10000) PreEnvelGroupRel'.inhabited (R : Type u) [Rack R] :
     Inhabited (PreEnvelGroupRel' R unit unit) :=
   ⟨PreEnvelGroupRel'.refl⟩
 #align rack.pre_envel_group_rel'.inhabited Rack.PreEnvelGroupRel'.inhabited
@@ -653,7 +653,7 @@ theorem PreEnvelGroupRel.trans {R : Type u} [Rack R] {a b c : PreEnvelGroup R} :
   | ⟨rab⟩, ⟨rbc⟩ => (rab.trans rbc).rel
 #align rack.pre_envel_group_rel.trans Rack.PreEnvelGroupRel.trans
 
-instance PreEnvelGroup.setoid (R : Type*) [Rack R] : Setoid (PreEnvelGroup R)
+instance (priority := 10000) PreEnvelGroup.setoid (R : Type*) [Rack R] : Setoid (PreEnvelGroup R)
     where
   r := PreEnvelGroupRel R
   iseqv := by
@@ -670,7 +670,7 @@ def EnvelGroup (R : Type*) [Rack R] :=
 
 -- Define the `Group` instances in two steps so `inv` can be inferred correctly.
 -- TODO: is there a non-invasive way of defining the instance directly?
-instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R)
+instance (priority := 10000) (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R)
     where
   mul a b :=
     Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun a b a' b' ⟨ha⟩ ⟨hb⟩ =>
@@ -684,11 +684,11 @@ instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R)
   one_mul a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.one_mul a).rel
   mul_one a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
 
-instance (R : Type*) [Rack R] : Group (EnvelGroup R) :=
+instance (priority := 10000) (R : Type*) [Rack R] : Group (EnvelGroup R) :=
   { mul_left_inv := fun a =>
       Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_left_inv a).rel }
 
-instance EnvelGroup.inhabited (R : Type*) [Rack R] : Inhabited (EnvelGroup R) :=
+instance (priority := 10000) EnvelGroup.inhabited (R : Type*) [Rack R] : Inhabited (EnvelGroup R) :=
   ⟨1⟩
 #align rack.envel_group.inhabited Rack.EnvelGroup.inhabited
 

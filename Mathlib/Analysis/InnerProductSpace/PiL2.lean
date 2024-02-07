@@ -79,7 +79,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 then `Π i, f i` is an inner product space as well. Since `Π i, f i` is endowed with the sup norm,
 we use instead `PiLp 2 f` for the product space, which is endowed with the `L^2` norm.
 -/
-instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
+instance (priority := 10000) PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     [∀ i, NormedAddCommGroup (f i)] [∀ i, InnerProductSpace 𝕜 (f i)] :
     InnerProductSpace 𝕜 (PiLp 2 f) where
   inner x y := ∑ i, inner (x i) (y i)
@@ -163,11 +163,11 @@ section
 -- Porting note: no longer supported
 -- attribute [local reducible] PiLp
 
-instance EuclideanSpace.instFiniteDimensional : FiniteDimensional 𝕜 (EuclideanSpace 𝕜 ι) := by
+instance (priority := 10000) EuclideanSpace.instFiniteDimensional : FiniteDimensional 𝕜 (EuclideanSpace 𝕜 ι) := by
   infer_instance
 #align euclidean_space.finite_dimensional EuclideanSpace.instFiniteDimensional
 
-instance EuclideanSpace.instInnerProductSpace : InnerProductSpace 𝕜 (EuclideanSpace 𝕜 ι) := by
+instance (priority := 10000) EuclideanSpace.instInnerProductSpace : InnerProductSpace 𝕜 (EuclideanSpace 𝕜 ι) := by
   infer_instance
 #align euclidean_space.inner_product_space EuclideanSpace.instInnerProductSpace
 
@@ -358,7 +358,7 @@ theorem repr_injective :
 
 -- Porting note: `CoeFun` → `FunLike`
 /-- `b i` is the `i`th basis vector. -/
-instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
+instance (priority := 10000) instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
   coe b i := by classical exact b.repr.symm (EuclideanSpace.single i (1 : 𝕜))
   coe_injective' b b' h := repr_injective <| LinearIsometryEquiv.toLinearEquiv_injective <|
     LinearEquiv.symm_bijective.injective <| LinearEquiv.toLinearMap_injective <| by
@@ -644,7 +644,7 @@ theorem basisFun_toBasis : (basisFun ι 𝕜).toBasis = PiLp.basisFun _ 𝕜 ι 
 
 end EuclideanSpace
 
-instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
+instance (priority := 10000) OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (EuclideanSpace 𝕜 ι)) :=
   ⟨EuclideanSpace.basisFun ι 𝕜⟩
 #align orthonormal_basis.inhabited OrthonormalBasis.instInhabited
 

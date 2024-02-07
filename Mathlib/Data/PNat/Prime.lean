@@ -23,7 +23,7 @@ namespace Nat.Primes
 @[coe] def toPNat : Nat.Primes → ℕ+ :=
   fun p => ⟨(p : ℕ), p.property.pos⟩
 
-instance coePNat : Coe Nat.Primes ℕ+ :=
+instance (priority := 10000) coePNat : Coe Nat.Primes ℕ+ :=
   ⟨toPNat⟩
 #align nat.primes.coe_pnat Nat.Primes.coePNat
 

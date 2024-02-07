@@ -92,7 +92,7 @@ def NonUnitalRingHomClass.toNonUnitalRingHom (f : F) : α →ₙ+* β :=
 
 /-- Any type satisfying `NonUnitalRingHomClass` can be cast into `NonUnitalRingHom` via
 `NonUnitalRingHomClass.toNonUnitalRingHom`. -/
-instance : CoeTC F (α →ₙ+* β) :=
+instance (priority := 10000) : CoeTC F (α →ₙ+* β) :=
   ⟨NonUnitalRingHomClass.toNonUnitalRingHom⟩
 
 end NonUnitalRingHomClass
@@ -103,7 +103,7 @@ section coe
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
 
-instance : FunLike (α →ₙ+* β) α β where
+instance (priority := 10000) : FunLike (α →ₙ+* β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -112,7 +112,7 @@ instance : FunLike (α →ₙ+* β) α β where
     apply DFunLike.coe_injective'
     exact h
 
-instance : NonUnitalRingHomClass (α →ₙ+* β) α β where
+instance (priority := 10000) : NonUnitalRingHomClass (α →ₙ+* β) α β where
   map_add := NonUnitalRingHom.map_add'
   map_zero := NonUnitalRingHom.map_zero'
   map_mul f := f.map_mul'
@@ -198,11 +198,11 @@ protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α :=
   refine' { toFun := id.. } <;> intros <;> rfl
 #align non_unital_ring_hom.id NonUnitalRingHom.id
 
-instance : Zero (α →ₙ+* β) :=
+instance (priority := 10000) : Zero (α →ₙ+* β) :=
   ⟨{ toFun := 0, map_mul' := fun _ _ => (mul_zero (0 : β)).symm, map_zero' := rfl,
       map_add' := fun _ _ => (add_zero (0 : β)).symm }⟩
 
-instance : Inhabited (α →ₙ+* β) :=
+instance (priority := 10000) : Inhabited (α →ₙ+* β) :=
   ⟨0⟩
 
 @[simp]
@@ -288,7 +288,7 @@ theorem id_comp (f : α →ₙ+* β) : (NonUnitalRingHom.id β).comp f = f :=
   ext fun _ => rfl
 #align non_unital_ring_hom.id_comp NonUnitalRingHom.id_comp
 
-instance : MonoidWithZero (α →ₙ+* α) where
+instance (priority := 10000) : MonoidWithZero (α →ₙ+* α) where
   one := NonUnitalRingHom.id α
   mul := comp
   mul_one := comp_id
@@ -392,7 +392,7 @@ def RingHomClass.toRingHom (f : F) : α →+* β :=
   { (f : α →* β), (f : α →+ β) with }
 
 /-- Any type satisfying `RingHomClass` can be cast into `RingHom` via `RingHomClass.toRingHom`. -/
-instance : CoeTC F (α →+* β) :=
+instance (priority := 10000) : CoeTC F (α →+* β) :=
   ⟨RingHomClass.toRingHom⟩
 
 instance (priority := 100) RingHomClass.toNonUnitalRingHomClass : NonUnitalRingHomClass F α β :=
@@ -412,7 +412,7 @@ See note [implicit instance arguments].
 
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
-instance instFunLike : FunLike (α →+* β) α β where
+instance (priority := 10000) instFunLike : FunLike (α →+* β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -421,7 +421,7 @@ instance instFunLike : FunLike (α →+* β) α β where
     apply DFunLike.coe_injective'
     exact h
 
-instance instRingHomClass : RingHomClass (α →+* β) α β where
+instance (priority := 10000) instRingHomClass : RingHomClass (α →+* β) α β where
   map_add := RingHom.map_add'
   map_zero := RingHom.map_zero'
   map_mul f := f.map_mul'
@@ -451,7 +451,7 @@ theorem coe_coe {F : Type*} [FunLike F α β] [RingHomClass F α β] (f : F) :
 
 attribute [coe] RingHom.toMonoidHom
 
-instance coeToMonoidHom : Coe (α →+* β) (α →* β) :=
+instance (priority := 10000) coeToMonoidHom : Coe (α →+* β) (α →* β) :=
   ⟨RingHom.toMonoidHom⟩
 #align ring_hom.has_coe_monoid_hom RingHom.coeToMonoidHom
 
@@ -629,7 +629,7 @@ def id (α : Type*) [NonAssocSemiring α] : α →+* α := by
   refine' { toFun := _root_.id.. } <;> intros <;> rfl
 #align ring_hom.id RingHom.id
 
-instance : Inhabited (α →+* α) :=
+instance (priority := 10000) : Inhabited (α →+* α) :=
   ⟨id α⟩
 
 @[simp]
@@ -680,7 +680,7 @@ theorem id_comp (f : α →+* β) : (id β).comp f = f :=
   ext fun _ => rfl
 #align ring_hom.id_comp RingHom.id_comp
 
-instance : Monoid (α →+* α) where
+instance (priority := 10000) : Monoid (α →+* α) where
   one := id α
   mul := comp
   mul_one := comp_id

@@ -113,7 +113,7 @@ namespace ProbabilityMeasure
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
+instance (priority := 10000) [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
   ⟨⟨Measure.dirac default, Measure.dirac.isProbabilityMeasure⟩⟩
 
 -- porting note: as with other subtype synonyms (e.g., `ℝ≥0`), we need a new function for the
@@ -123,13 +123,13 @@ instance [Inhabited Ω] : Inhabited (ProbabilityMeasure Ω) :=
 def toMeasure : ProbabilityMeasure Ω → Measure Ω := Subtype.val
 
 /-- A probability measure can be interpreted as a measure. -/
-instance : Coe (ProbabilityMeasure Ω) (MeasureTheory.Measure Ω) where
+instance (priority := 10000) : Coe (ProbabilityMeasure Ω) (MeasureTheory.Measure Ω) where
   coe := toMeasure
 
-instance : CoeFun (ProbabilityMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
+instance (priority := 10000) : CoeFun (ProbabilityMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
   ⟨fun μ s => ((μ : Measure Ω) s).toNNReal⟩
 
-instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :=
+instance (priority := 10000) (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :=
   μ.prop
 
 -- porting note: syntactic tautology because of the way coercions work in Lean 4
@@ -231,7 +231,7 @@ theorem testAgainstNN_lipschitz (μ : ProbabilityMeasure Ω) :
 /-- The topology of weak convergence on `MeasureTheory.ProbabilityMeasure Ω`. This is inherited
 (induced) from the topology of weak convergence of finite measures via the inclusion
 `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`. -/
-instance : TopologicalSpace (ProbabilityMeasure Ω) :=
+instance (priority := 10000) : TopologicalSpace (ProbabilityMeasure Ω) :=
   TopologicalSpace.induced toFiniteMeasure inferInstance
 
 theorem toFiniteMeasure_continuous :
@@ -318,7 +318,7 @@ variable (Ω)
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of convergence in distribution of Borel
 probability measures is Hausdorff (`T2Space`). -/
-instance t2Space : T2Space (ProbabilityMeasure Ω) :=
+instance (priority := 10000) t2Space : T2Space (ProbabilityMeasure Ω) :=
   Embedding.t2Space (toFiniteMeasure_embedding Ω)
 
 end Hausdorff -- section

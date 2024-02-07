@@ -61,7 +61,7 @@ def graph : SimpleGraph Verts where
     decide
 #align konigsberg.graph Konigsberg.graph
 
-instance : DecidableRel graph.Adj := fun a b => inferInstanceAs <| Decidable (adj a b)
+instance (priority := 10000) : DecidableRel graph.Adj := fun a b => inferInstanceAs <| Decidable (adj a b)
 
 /-- To speed up the proof, this is a cache of all the degrees of each vertex,
 proved in `Konigsberg.degree_eq_degree`. -/

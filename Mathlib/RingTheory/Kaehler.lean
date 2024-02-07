@@ -147,29 +147,29 @@ def KaehlerDifferential : Type v :=
   (KaehlerDifferential.ideal R S).Cotangent
 #align kaehler_differential KaehlerDifferential
 
-instance : AddCommGroup (KaehlerDifferential R S) := by
+instance (priority := 10000) : AddCommGroup (KaehlerDifferential R S) := by
   unfold KaehlerDifferential
   infer_instance
 
-instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R S) :=
+instance (priority := 10000) KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R S) :=
   Ideal.Cotangent.moduleOfTower _
 #align kaehler_differential.module KaehlerDifferential.module
 
 @[inherit_doc KaehlerDifferential]
 notation:100 "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
-instance : Nonempty (Ω[S⁄R]) := ⟨0⟩
+instance (priority := 10000) : Nonempty (Ω[S⁄R]) := ⟨0⟩
 
-instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
+instance (priority := 10000) KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
   [SMulCommClass R R' S] :
     Module R' (Ω[S⁄R]) :=
   Submodule.Quotient.module' _
 #align kaehler_differential.module' KaehlerDifferential.module'
 
-instance : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) :=
+instance (priority := 10000) : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) :=
   Ideal.Cotangent.isScalarTower _
 
-instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
+instance (priority := 10000) KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
     [SMulCommClass R R₁ S] [SMulCommClass R R₂ S] [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ (Ω[S⁄R]) :=
@@ -177,7 +177,7 @@ instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRin
 
 #align kaehler_differential.is_scalar_tower_of_tower KaehlerDifferential.isScalarTower_of_tower
 
-instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) (Ω[S⁄R]) :=
+instance (priority := 10000) KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) (Ω[S⁄R]) :=
   Submodule.Quotient.isScalarTower _ _
 #align kaehler_differential.is_scalar_tower' KaehlerDifferential.isScalarTower'
 

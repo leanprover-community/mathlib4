@@ -239,7 +239,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes.hom CategoryTheory.SheafOfTypes.Hom
 
 @[simps]
-instance : Category (SheafOfTypes J) where
+instance (priority := 10000) : Category (SheafOfTypes J) where
   Hom := Hom
   id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.val ≫ g.val⟩
@@ -255,7 +255,7 @@ theorem Hom.ext' {X Y : SheafOfTypes J} (f g : X ⟶ Y) (w : f.val = g.val) : f 
   Hom.ext f g w
 
 -- Let's make the inhabited linter happy...
-instance (X : SheafOfTypes J) : Inhabited (Hom X X) :=
+instance (priority := 10000) (X : SheafOfTypes J) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
 
 end SheafOfTypes
@@ -270,9 +270,9 @@ def sheafOfTypesToPresheaf : SheafOfTypes J ⥤ Cᵒᵖ ⥤ Type w where
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_to_presheaf CategoryTheory.sheafOfTypesToPresheaf
 
-instance : Full (sheafOfTypesToPresheaf J) where preimage f := ⟨f⟩
+instance (priority := 10000) : Full (sheafOfTypesToPresheaf J) where preimage f := ⟨f⟩
 
-instance : Faithful (sheafOfTypesToPresheaf J) where
+instance (priority := 10000) : Faithful (sheafOfTypesToPresheaf J) where
 
 /--
 The category of sheaves on the bottom (trivial) grothendieck topology is equivalent to the category
@@ -291,7 +291,7 @@ def sheafOfTypesBotEquiv : SheafOfTypes (⊥ : GrothendieckTopology C) ≌ Cᵒ�
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_bot_equiv CategoryTheory.sheafOfTypesBotEquiv
 
-instance : Inhabited (SheafOfTypes (⊥ : GrothendieckTopology C)) :=
+instance (priority := 10000) : Inhabited (SheafOfTypes (⊥ : GrothendieckTopology C)) :=
   ⟨sheafOfTypesBotEquiv.inverse.obj ((Functor.const _).obj PUnit)⟩
 
 end CategoryTheory

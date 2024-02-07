@@ -47,7 +47,7 @@ protected theorem IsRegular.eq : IsRegular a → aᶜᶜ = a :=
   id
 #align heyting.is_regular.eq Heyting.IsRegular.eq
 
-instance IsRegular.decidablePred [DecidableEq α] : @DecidablePred α IsRegular := fun _ =>
+instance (priority := 10000) IsRegular.decidablePred [DecidableEq α] : @DecidablePred α IsRegular := fun _ =>
   ‹DecidableEq α› _ _
 #align heyting.is_regular.decidable_pred Heyting.IsRegular.decidablePred
 
@@ -116,7 +116,7 @@ namespace Regular
 
 theorem prop : ∀ a : Regular α, IsRegular a.val := Subtype.prop
 
-instance : CoeOut (Regular α) α := ⟨Regular.val⟩
+instance (priority := 10000) : CoeOut (Regular α) α := ⟨Regular.val⟩
 
 theorem coe_injective : Injective ((↑) : Regular α → α) :=
   Subtype.coe_injective
@@ -127,19 +127,19 @@ theorem coe_inj {a b : Regular α} : (a : α) = b ↔ a = b :=
   Subtype.coe_inj
 #align heyting.regular.coe_inj Heyting.Regular.coe_inj
 
-instance top : Top (Regular α) :=
+instance (priority := 10000) top : Top (Regular α) :=
   ⟨⟨⊤, isRegular_top⟩⟩
 
-instance bot : Bot (Regular α) :=
+instance (priority := 10000) bot : Bot (Regular α) :=
   ⟨⟨⊥, isRegular_bot⟩⟩
 
-instance inf : Inf (Regular α) :=
+instance (priority := 10000) inf : Inf (Regular α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
-instance himp : HImp (Regular α) :=
+instance (priority := 10000) himp : HImp (Regular α) :=
   ⟨fun a b => ⟨a ⇨ b, a.2.himp b.2⟩⟩
 
-instance hasCompl : HasCompl (Regular α) :=
+instance (priority := 10000) hasCompl : HasCompl (Regular α) :=
   ⟨fun a => ⟨aᶜ, isRegular_compl _⟩⟩
 
 @[simp, norm_cast]
@@ -167,13 +167,13 @@ theorem coe_compl (a : Regular α) : (↑aᶜ : α) = (a : α)ᶜ :=
   rfl
 #align heyting.regular.coe_compl Heyting.Regular.coe_compl
 
-instance : Inhabited (Regular α) :=
+instance (priority := 10000) : Inhabited (Regular α) :=
   ⟨⊥⟩
 
-instance : SemilatticeInf (Regular α) :=
+instance (priority := 10000) : SemilatticeInf (Regular α) :=
   coe_injective.semilatticeInf _ coe_inf
 
-instance boundedOrder : BoundedOrder (Regular α) :=
+instance (priority := 10000) boundedOrder : BoundedOrder (Regular α) :=
   BoundedOrder.lift ((↑) : Regular α → α) (fun _ _ => id) coe_top coe_bot
 
 @[simp, norm_cast]
@@ -213,7 +213,7 @@ def gi : GaloisInsertion toRegular ((↑) : Regular α → α)
   choice_eq _ ha := coe_injective <| le_compl_compl.antisymm ha
 #align heyting.regular.gi Heyting.Regular.gi
 
-instance lattice : Lattice (Regular α) :=
+instance (priority := 10000) lattice : Lattice (Regular α) :=
   gi.liftLattice
 
 @[simp, norm_cast]
@@ -221,7 +221,7 @@ theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜ�
   rfl
 #align heyting.regular.coe_sup Heyting.Regular.coe_sup
 
-instance : BooleanAlgebra (Regular α) :=
+instance (priority := 10000) : BooleanAlgebra (Regular α) :=
   { Regular.lattice, Regular.boundedOrder, Regular.himp,
     Regular.hasCompl with
     le_sup_inf := fun a b c =>

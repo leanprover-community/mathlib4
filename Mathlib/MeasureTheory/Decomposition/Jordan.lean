@@ -75,24 +75,24 @@ open Measure VectorMeasure
 
 variable (j : JordanDecomposition α)
 
-instance instZero : Zero (JordanDecomposition α) where zero := ⟨0, 0, MutuallySingular.zero_right⟩
+instance (priority := 10000) instZero : Zero (JordanDecomposition α) where zero := ⟨0, 0, MutuallySingular.zero_right⟩
 #align measure_theory.jordan_decomposition.has_zero MeasureTheory.JordanDecomposition.instZero
 
-instance instInhabited : Inhabited (JordanDecomposition α) where default := 0
+instance (priority := 10000) instInhabited : Inhabited (JordanDecomposition α) where default := 0
 #align measure_theory.jordan_decomposition.inhabited MeasureTheory.JordanDecomposition.instInhabited
 
-instance instInvolutiveNeg : InvolutiveNeg (JordanDecomposition α) where
+instance (priority := 10000) instInvolutiveNeg : InvolutiveNeg (JordanDecomposition α) where
   neg j := ⟨j.negPart, j.posPart, j.mutuallySingular.symm⟩
   neg_neg _ := JordanDecomposition.ext _ _ rfl rfl
 #align measure_theory.jordan_decomposition.has_involutive_neg MeasureTheory.JordanDecomposition.instInvolutiveNeg
 
-instance instSMul : SMul ℝ≥0 (JordanDecomposition α) where
+instance (priority := 10000) instSMul : SMul ℝ≥0 (JordanDecomposition α) where
   smul r j :=
     ⟨r • j.posPart, r • j.negPart,
       MutuallySingular.smul _ (MutuallySingular.smul _ j.mutuallySingular.symm).symm⟩
 #align measure_theory.jordan_decomposition.has_smul MeasureTheory.JordanDecomposition.instSMul
 
-instance instSMulReal : SMul ℝ (JordanDecomposition α) where
+instance (priority := 10000) instSMulReal : SMul ℝ (JordanDecomposition α) where
   smul r j := if 0 ≤ r then r.toNNReal • j else -((-r).toNNReal • j)
 #align measure_theory.jordan_decomposition.has_smul_real MeasureTheory.JordanDecomposition.instSMulReal
 

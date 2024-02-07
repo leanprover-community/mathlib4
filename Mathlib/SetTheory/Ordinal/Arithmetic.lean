@@ -79,7 +79,7 @@ theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) := b
   rfl
 #align ordinal.lift_succ Ordinal.lift_succ
 
-instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) :=
+instance (priority := 10000) add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) :=
   ⟨fun a b c =>
     inductionOn a fun α r hr =>
       inductionOn b fun β₁ s₁ hs₁ =>
@@ -119,15 +119,15 @@ theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c := by
 private theorem add_lt_add_iff_left' (a) {b c : Ordinal} : a + b < a + c ↔ b < c := by
   rw [← not_le, ← not_le, add_le_add_iff_left]
 
-instance add_covariantClass_lt : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
+instance (priority := 10000) add_covariantClass_lt : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
   ⟨fun a _b _c => (add_lt_add_iff_left' a).2⟩
 #align ordinal.add_covariant_class_lt Ordinal.add_covariantClass_lt
 
-instance add_contravariantClass_lt : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
+instance (priority := 10000) add_contravariantClass_lt : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
   ⟨fun a _b _c => (add_lt_add_iff_left' a).1⟩
 #align ordinal.add_contravariant_class_lt Ordinal.add_contravariantClass_lt
 
-instance add_swap_contravariantClass_lt :
+instance (priority := 10000) add_swap_contravariantClass_lt :
     ContravariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· < ·) :=
   ⟨fun _a _b _c => lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
 #align ordinal.add_swap_contravariant_class_lt Ordinal.add_swap_contravariantClass_lt
@@ -338,7 +338,7 @@ theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
   rw [limitRecOn, lt_wf.fix_eq, dif_neg h.1, dif_neg (not_succ_of_isLimit h)]; rfl
 #align ordinal.limit_rec_on_limit Ordinal.limitRecOn_limit
 
-instance orderTopOutSucc (o : Ordinal) : OrderTop (succ o).out.α :=
+instance (priority := 10000) orderTopOutSucc (o : Ordinal) : OrderTop (succ o).out.α :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 #align ordinal.order_top_out_succ Ordinal.orderTopOutSucc
 
@@ -532,7 +532,7 @@ theorem sub_nonempty {a b : Ordinal} : { o | a ≤ b + o }.Nonempty :=
 #align ordinal.sub_nonempty Ordinal.sub_nonempty
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
-instance sub : Sub Ordinal :=
+instance (priority := 10000) sub : Sub Ordinal :=
   ⟨fun a b => sInf { o | a ≤ b + o }⟩
 
 theorem le_add_sub (a b : Ordinal) : a ≤ b + (a - b) :=
@@ -577,7 +577,7 @@ theorem sub_lt_of_le {a b c : Ordinal} (h : b ≤ a) : a - b < c ↔ a < b + c :
   lt_iff_lt_of_le_iff_le (le_sub_of_le h)
 #align ordinal.sub_lt_of_le Ordinal.sub_lt_of_le
 
-instance existsAddOfLE : ExistsAddOfLE Ordinal :=
+instance (priority := 10000) existsAddOfLE : ExistsAddOfLE Ordinal :=
   ⟨fun h => ⟨_, (Ordinal.add_sub_cancel_of_le h).symm⟩⟩
 
 @[simp]
@@ -634,7 +634,7 @@ theorem one_add_of_omega_le {o} (h : ω ≤ o) : 1 + o = o := by
 
 /-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
 `o₂ × o₁`. -/
-instance monoid : Monoid Ordinal.{u}
+instance (priority := 10000) monoid : Monoid Ordinal.{u}
     where
   mul a b :=
     Quotient.liftOn₂ a b
@@ -680,13 +680,13 @@ private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 :=
       rw [or_comm]
       exact isEmpty_prod
 
-instance monoidWithZero : MonoidWithZero Ordinal :=
+instance (priority := 10000) monoidWithZero : MonoidWithZero Ordinal :=
   { Ordinal.monoid with
     zero := 0
     mul_zero := fun _a => mul_eq_zero'.2 <| Or.inr rfl
     zero_mul := fun _a => mul_eq_zero'.2 <| Or.inl rfl }
 
-instance noZeroDivisors : NoZeroDivisors Ordinal :=
+instance (priority := 10000) noZeroDivisors : NoZeroDivisors Ordinal :=
   ⟨fun {_ _} => mul_eq_zero'.1⟩
 
 @[simp]
@@ -703,7 +703,7 @@ theorem card_mul (a b) : card (a * b) = card a * card b :=
   Quotient.inductionOn₂ a b fun ⟨α, _r, _⟩ ⟨β, _s, _⟩ => mul_comm #β #α
 #align ordinal.card_mul Ordinal.card_mul
 
-instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
+instance (priority := 10000) leftDistribClass : LeftDistribClass Ordinal.{u} :=
   ⟨fun a b c =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
       Quotient.sound
@@ -719,7 +719,7 @@ theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
 #align ordinal.mul_succ Ordinal.mul_succ
 
-instance mul_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· * ·) (· ≤ ·) :=
+instance (priority := 10000) mul_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· * ·) (· ≤ ·) :=
   ⟨fun c a b =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
       refine'
@@ -729,7 +729,7 @@ instance mul_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· * ·
       · exact Prod.Lex.right _ h'⟩
 #align ordinal.mul_covariant_class_le Ordinal.mul_covariantClass_le
 
-instance mul_swap_covariantClass_le :
+instance (priority := 10000) mul_swap_covariantClass_le :
     CovariantClass Ordinal.{u} Ordinal.{u} (swap (· * ·)) (· ≤ ·) :=
   ⟨fun c a b =>
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ ⟨f⟩ => by
@@ -870,7 +870,7 @@ theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.None
 #align ordinal.div_nonempty Ordinal.div_nonempty
 
 /-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
-instance div : Div Ordinal :=
+instance (priority := 10000) div : Div Ordinal :=
   ⟨fun a b => if _h : b = 0 then 0 else sInf { o | a < b * succ o }⟩
 
 @[simp]
@@ -1014,12 +1014,12 @@ theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :
     else (le_of_dvd b0 h₁).antisymm (le_of_dvd a0 h₂)
 #align ordinal.dvd_antisymm Ordinal.dvd_antisymm
 
-instance isAntisymm : IsAntisymm Ordinal (· ∣ ·) :=
+instance (priority := 10000) isAntisymm : IsAntisymm Ordinal (· ∣ ·) :=
   ⟨@dvd_antisymm⟩
 
 /-- `a % b` is the unique ordinal `o'` satisfying
   `a = b * o + o'` with `o' < b`. -/
-instance mod : Mod Ordinal :=
+instance (priority := 10000) mod : Mod Ordinal :=
   ⟨fun a b => a - b * (a / b)⟩
 
 theorem mod_def (a b : Ordinal) : a % b = a - b * (a / b) :=
@@ -1360,7 +1360,7 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
   rw [symm_apply_apply]
 #align ordinal.le_sup_shrink_equiv Ordinal.le_sup_shrink_equiv
 
-instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
+instance (priority := 10000) small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
   let f : o.out.α → Set.Iio o :=
     fun x => ⟨typein ((· < ·) : o.out.α → o.out.α → Prop) x, typein_lt_self x⟩
   let hf : Surjective f := fun b =>
@@ -1372,7 +1372,7 @@ instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
   small_of_surjective hf
 #align ordinal.small_Iio Ordinal.small_Iio
 
-instance small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
+instance (priority := 10000) small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
   rw [← Iio_succ]
   infer_instance
 #align ordinal.small_Iic Ordinal.small_Iic

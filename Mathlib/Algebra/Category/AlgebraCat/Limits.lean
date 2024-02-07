@@ -34,12 +34,12 @@ variable {R : Type u} [CommRing R]
 
 variable {J : Type v} [SmallCategory J]
 
-instance semiringObj (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
+instance (priority := 10000) semiringObj (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
     Semiring ((F ⋙ forget (AlgebraCat R)).obj j) :=
   inferInstanceAs <| Semiring (F.obj j)
 #align Algebra.semiring_obj AlgebraCat.semiringObj
 
-instance algebraObj (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
+instance (priority := 10000) algebraObj (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
     Algebra R ((F ⋙ forget (AlgebraCat R)).obj j) :=
   inferInstanceAs <| Algebra R (F.obj j)
 #align Algebra.algebra_obj AlgebraCat.algebraObj
@@ -52,12 +52,12 @@ def sectionsSubalgebra (F : J ⥤ AlgebraCatMax.{v, w} R) : Subalgebra R (∀ j,
     algebraMap_mem' := fun r _ _ f => (F.map f).commutes r }
 #align Algebra.sections_subalgebra AlgebraCat.sectionsSubalgebra
 
-instance limitSemiring (F : J ⥤ AlgebraCatMax.{v, w} R) :
+instance (priority := 10000) limitSemiring (F : J ⥤ AlgebraCatMax.{v, w} R) :
     Ring.{max v w} (Types.limitCone.{v, w} (F ⋙ forget (AlgebraCatMax.{v, w} R))).pt :=
   inferInstanceAs <| Ring (sectionsSubalgebra F)
 #align Algebra.limit_semiring AlgebraCat.limitSemiring
 
-instance limitAlgebra (F : J ⥤ AlgebraCatMax.{v, w} R) :
+instance (priority := 10000) limitAlgebra (F : J ⥤ AlgebraCatMax.{v, w} R) :
     Algebra R (Types.limitCone (F ⋙ forget (AlgebraCatMax.{v, w} R))).pt :=
   inferInstanceAs <| Algebra R (sectionsSubalgebra F)
 #align Algebra.limit_algebra AlgebraCat.limitAlgebra
@@ -159,13 +159,13 @@ lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (AlgebraCatMax.{v, w} R) :=
           isLimit := limitConeIsLimit F } } }
 #align Algebra.has_limits_of_size AlgebraCat.hasLimitsOfSize
 
-instance hasLimits : HasLimits (AlgebraCat.{w} R) :=
+instance (priority := 10000) hasLimits : HasLimits (AlgebraCat.{w} R) :=
   AlgebraCat.hasLimitsOfSize.{w, w, u}
 #align Algebra.has_limits AlgebraCat.hasLimits
 
 /-- The forgetful functor from R-algebras to rings preserves all limits.
 -/
-instance forget₂RingPreservesLimitsOfSize :
+instance (priority := 10000) forget₂RingPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget₂ (AlgebraCatMax.{v, w} R) RingCatMax.{v, w}) where
   preservesLimitsOfShape :=
     { preservesLimit :=
@@ -174,13 +174,13 @@ instance forget₂RingPreservesLimitsOfSize :
             (_ ⋙ forget₂ (AlgebraCatMax.{v, w} R) RingCatMax.{v, w})) }
 #align Algebra.forget₂_Ring_preserves_limits_of_size AlgebraCat.forget₂RingPreservesLimitsOfSize
 
-instance forget₂RingPreservesLimits : PreservesLimits (forget₂ (AlgebraCat R) RingCat.{w}) :=
+instance (priority := 10000) forget₂RingPreservesLimits : PreservesLimits (forget₂ (AlgebraCat R) RingCat.{w}) :=
   AlgebraCat.forget₂RingPreservesLimitsOfSize.{w, w}
 #align Algebra.forget₂_Ring_preserves_limits AlgebraCat.forget₂RingPreservesLimits
 
 /-- The forgetful functor from R-algebras to R-modules preserves all limits.
 -/
-instance forget₂ModulePreservesLimitsOfSize : PreservesLimitsOfSize.{v, v}
+instance (priority := 10000) forget₂ModulePreservesLimitsOfSize : PreservesLimitsOfSize.{v, v}
     (forget₂ (AlgebraCatMax.{v, w} R) (ModuleCatMax.{v, w} R)) where
   preservesLimitsOfShape :=
     { preservesLimit :=
@@ -189,14 +189,14 @@ instance forget₂ModulePreservesLimitsOfSize : PreservesLimitsOfSize.{v, v}
             (_ ⋙ forget₂ (AlgebraCatMax.{v, w} R) (ModuleCatMax.{v, w} R))) }
 #align Algebra.forget₂_Module_preserves_limits_of_size AlgebraCat.forget₂ModulePreservesLimitsOfSize
 
-instance forget₂ModulePreservesLimits :
+instance (priority := 10000) forget₂ModulePreservesLimits :
     PreservesLimits (forget₂ (AlgebraCat R) (ModuleCat.{w} R)) :=
   AlgebraCat.forget₂ModulePreservesLimitsOfSize.{w, w}
 #align Algebra.forget₂_Module_preserves_limits AlgebraCat.forget₂ModulePreservesLimits
 
 /-- The forgetful functor from R-algebras to types preserves all limits.
 -/
-instance forgetPreservesLimitsOfSize :
+instance (priority := 10000) forgetPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget (AlgebraCatMax.{v, w} R)) where
   preservesLimitsOfShape :=
     { preservesLimit :=
@@ -204,7 +204,7 @@ instance forgetPreservesLimitsOfSize :
           (Types.limitConeIsLimit (_ ⋙ forget _)) }
 #align Algebra.forget_preserves_limits_of_size AlgebraCat.forgetPreservesLimitsOfSize
 
-instance forgetPreservesLimits : PreservesLimits (forget (AlgebraCat.{w} R)) :=
+instance (priority := 10000) forgetPreservesLimits : PreservesLimits (forget (AlgebraCat.{w} R)) :=
   AlgebraCat.forgetPreservesLimitsOfSize.{w, w}
 #align Algebra.forget_preserves_limits AlgebraCat.forgetPreservesLimits
 

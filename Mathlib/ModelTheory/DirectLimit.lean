@@ -73,7 +73,7 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
       Embedding.comp_apply, ih]
 #align first_order.language.directed_system.coe_nat_le_rec FirstOrder.Language.DirectedSystem.coe_natLERec
 
-instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
+instance (priority := 10000) natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
   ⟨fun i x _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
    fun hij hjk => by simp [Nat.leRecOn_trans hij hjk]⟩
 #align first_order.language.directed_system.nat_le_rec.directed_system FirstOrder.Language.DirectedSystem.natLERec.directedSystem
@@ -170,7 +170,7 @@ attribute [local instance] DirectLimit.setoid
 attribute [local instance] DirectLimit.sigmaStructure
 
 
-instance [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] [Inhabited ι]
+instance (priority := 10000) [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] [Inhabited ι]
     [Inhabited (G default)] : Inhabited (DirectLimit G f) :=
   ⟨⟦⟨default, default⟩⟧⟩
 
@@ -231,7 +231,7 @@ theorem relMap_equiv_unify {n : ℕ} (R : L.Relations n) (x : Fin n → Σˣ f) 
 
 /-- The direct limit `setoid` respects the structure `sigmaStructure`, so quotienting by it
   gives rise to a valid structure. -/
-noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) where
+noncomputable instance (priority := 10000) prestructure : L.Prestructure (DirectLimit.setoid G f) where
   toStructure := sigmaStructure G f
   fun_equiv {n} {F} x y xy := by
     obtain ⟨i, hx, hy, h⟩ := exists_unify_eq G f xy
@@ -247,7 +247,7 @@ noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) wh
 #align first_order.language.direct_limit.prestructure FirstOrder.Language.DirectLimit.prestructure
 
 /-- The `L.Structure` on a direct limit of `L.Structure`s. -/
-noncomputable instance instStructureDirectLimit : L.Structure (DirectLimit G f) :=
+noncomputable instance (priority := 10000) instStructureDirectLimit : L.Structure (DirectLimit G f) :=
   Language.quotientStructure
 set_option linter.uppercaseLean3 false in
 #align first_order.language.direct_limit.Structure FirstOrder.Language.DirectLimit.instStructureDirectLimit
@@ -409,7 +409,7 @@ theorem cg {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     · simp only [Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
 #align first_order.language.direct_limit.cg FirstOrder.Language.DirectLimit.cg
 
-instance cg' {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
+instance (priority := 10000) cg' {ι : Type*} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     [h : ∀ i, Structure.CG L (G i)] [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) :=

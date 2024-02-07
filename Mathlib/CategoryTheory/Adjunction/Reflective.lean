@@ -56,7 +56,7 @@ When restricted to objects in `D` given by `i : D ⥤ C`, the unit is an isomorp
 More generally this applies to objects essentially in the reflective subcategory, see
 `Functor.essImage.unit_isIso`.
 -/
-instance isIso_unit_obj [Reflective i] {B : D} : IsIso ((ofRightAdjoint i).unit.app (i.obj B)) := by
+instance (priority := 10000) isIso_unit_obj [Reflective i] {B : D} : IsIso ((ofRightAdjoint i).unit.app (i.obj B)) := by
   have : (ofRightAdjoint i).unit.app (i.obj B) = inv (i.map ((ofRightAdjoint i).counit.app B)) := by
     rw [← comp_hom_eq_id]
     apply (ofRightAdjoint i).right_triangle_components
@@ -103,7 +103,7 @@ theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
 #align category_theory.mem_ess_image_of_unit_is_split_mono CategoryTheory.mem_essImage_of_unit_isSplitMono
 
 /-- Composition of reflective functors. -/
-instance Reflective.comp (F : C ⥤ D) (G : D ⥤ E) [Reflective F] [Reflective G] :
+instance (priority := 10000) Reflective.comp (F : C ⥤ D) (G : D ⥤ E) [Reflective F] [Reflective G] :
     Reflective (F ⋙ G) where toFaithful := Faithful.comp F G
 #align category_theory.reflective.comp CategoryTheory.Reflective.comp
 
@@ -158,7 +158,7 @@ theorem unitCompPartialBijective_natural [Reflective i] (A : C) {B B' : C} (h : 
   rw [← Equiv.eq_symm_apply, unitCompPartialBijective_symm_natural A h, Equiv.symm_apply_apply]
 #align category_theory.unit_comp_partial_bijective_natural CategoryTheory.unitCompPartialBijective_natural
 
-instance [Reflective i] (X : Functor.EssImageSubcategory i) :
+instance (priority := 10000) [Reflective i] (X : Functor.EssImageSubcategory i) :
   IsIso (NatTrans.app (ofRightAdjoint i).unit X.obj) :=
 Functor.essImage.unit_isIso X.property
 

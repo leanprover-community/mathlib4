@@ -81,7 +81,7 @@ variable [TopologicalSpace F] [TopologicalSpace (TotalSpace F E)] [∀ x, Topolo
 
 /-- A fiber bundle `E` over a base `B` with model fiber `F` is naturally a charted space modelled on
 `B × F`. -/
-instance FiberBundle.chartedSpace' : ChartedSpace (B × F) (TotalSpace F E) where
+instance (priority := 10000) FiberBundle.chartedSpace' : ChartedSpace (B × F) (TotalSpace F E) where
   atlas := (fun e : Trivialization F (π F E) => e.toPartialHomeomorph) '' trivializationAtlas F E
   chartAt x := (trivializationAt F E x.proj).toPartialHomeomorph
   mem_chart_source x :=
@@ -101,7 +101,7 @@ gives the same instance.
 
 /-- Let `B` be a charted space modelled on `HB`.  Then a fiber bundle `E` over a base `B` with model
 fiber `F` is naturally a charted space modelled on `HB.prod F`. -/
-instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F E) :=
+instance (priority := 10000) FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F E) :=
   ChartedSpace.comp _ (B × F) _
 #align fiber_bundle.charted_space' FiberBundle.chartedSpace
 
@@ -467,7 +467,7 @@ end SmoothCoordChange
 /-- For a smooth vector bundle `E` over `B` with fiber modelled on `F`, the change-of-co-ordinates
 between two trivializations `e`, `e'` for `E`, considered as charts to `B × F`, is smooth and
 fiberwise linear. -/
-instance SmoothFiberwiseLinear.hasGroupoid :
+instance (priority := 10000) SmoothFiberwiseLinear.hasGroupoid :
     HasGroupoid (TotalSpace F E) (smoothFiberwiseLinear B F IB) where
   compatible := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
@@ -484,7 +484,7 @@ instance SmoothFiberwiseLinear.hasGroupoid :
 #align smooth_fiberwise_linear.has_groupoid SmoothFiberwiseLinear.hasGroupoid
 
 /-- A smooth vector bundle `E` is naturally a smooth manifold. -/
-instance Bundle.TotalSpace.smoothManifoldWithCorners :
+instance (priority := 10000) Bundle.TotalSpace.smoothManifoldWithCorners :
     SmoothManifoldWithCorners (IB.prod 𝓘(𝕜, F)) (TotalSpace F E) := by
   refine' { StructureGroupoid.HasGroupoid.comp (smoothFiberwiseLinear B F IB) _ with }
   intro e he
@@ -592,7 +592,7 @@ variable [Z.IsSmooth IB]
 
 /-- If a `VectorBundleCore` has the `IsSmooth` mixin, then the vector bundle constructed from it
 is a smooth vector bundle. -/
-instance smoothVectorBundle : SmoothVectorBundle F Z.Fiber IB where
+instance (priority := 10000) smoothVectorBundle : SmoothVectorBundle F Z.Fiber IB where
   smoothOn_coordChangeL := by
     rintro - - ⟨i, rfl⟩ ⟨i', rfl⟩
     -- Porting note: Originally `Z.smoothOn_coordChange IB i i'`
@@ -607,7 +607,7 @@ end VectorBundleCore
 /-! ### The trivial smooth vector bundle -/
 
 /-- A trivial vector bundle over a smooth manifold is a smooth vector bundle. -/
-instance Bundle.Trivial.smoothVectorBundle : SmoothVectorBundle F (Bundle.Trivial B F) IB where
+instance (priority := 10000) Bundle.Trivial.smoothVectorBundle : SmoothVectorBundle F (Bundle.Trivial B F) IB where
   smoothOn_coordChangeL := by
     intro e e' he he'
     obtain rfl := Bundle.Trivial.eq_trivialization B F e
@@ -632,7 +632,7 @@ variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E�
   [SmoothVectorBundle F₂ E₂ IB]
 
 /-- The direct sum of two smooth vector bundles over the same base is a smooth vector bundle. -/
-instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E₁ ×ᵇ E₂) IB where
+instance (priority := 10000) Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E₁ ×ᵇ E₂) IB where
   smoothOn_coordChangeL := by
     rintro _ _ ⟨e₁, e₂, i₁, i₂, rfl⟩ ⟨e₁', e₂', i₁', i₂', rfl⟩
     rw [SmoothOn]

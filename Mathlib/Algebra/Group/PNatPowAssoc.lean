@@ -76,12 +76,12 @@ theorem ppow_mul' (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ n) ^ m := by
 
 end Mul
 
-instance Pi.instPNatPowAssoc {ι : Type*} {α : ι → Type*} [∀ i, Mul <| α i] [∀ i, Pow (α i) ℕ+]
+instance (priority := 10000) Pi.instPNatPowAssoc {ι : Type*} {α : ι → Type*} [∀ i, Mul <| α i] [∀ i, Pow (α i) ℕ+]
     [∀ i, PNatPowAssoc <| α i] : PNatPowAssoc (∀ i, α i) where
   ppow_add _ _ _ := by ext; simp [ppow_add]
   ppow_one _ := by ext; simp
 
-instance Prod.instPNatPowAssoc {N : Type*} [Mul M] [Pow M ℕ+] [PNatPowAssoc M] [Mul N] [Pow N ℕ+]
+instance (priority := 10000) Prod.instPNatPowAssoc {N : Type*} [Mul M] [Pow M ℕ+] [PNatPowAssoc M] [Mul N] [Pow N ℕ+]
     [PNatPowAssoc N] : PNatPowAssoc (M × N) where
   ppow_add _ _ _ := by ext <;> simp [ppow_add]
   ppow_one _ := by ext <;> simp

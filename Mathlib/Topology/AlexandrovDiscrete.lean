@@ -50,10 +50,10 @@ class AlexandrovDiscrete (α : Type*) [TopologicalSpace α] : Prop where
 
 variable {ι : Sort*} {κ : ι → Sort*} {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
-instance DiscreteTopology.toAlexandrovDiscrete [DiscreteTopology α] : AlexandrovDiscrete α where
+instance (priority := 10000) DiscreteTopology.toAlexandrovDiscrete [DiscreteTopology α] : AlexandrovDiscrete α where
   isOpen_sInter _ _ := isOpen_discrete _
 
-instance Finite.toAlexandrovDiscrete [Finite α] : AlexandrovDiscrete α where
+instance (priority := 10000) Finite.toAlexandrovDiscrete [Finite α] : AlexandrovDiscrete α where
   isOpen_sInter S := (toFinite S).isOpen_sInter
 
 section AlexandrovDiscrete
@@ -247,23 +247,23 @@ lemma alexandrovDiscrete_iSup {t : ι → TopologicalSpace α} (_ : ∀ i, @Alex
       fun i ↦ @isOpen_sInter _ (t i) _ _
         fun _s hs ↦ isOpen_iSup_iff.1 (hS _ hs) _
 
-instance AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
+instance (priority := 10000) AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
   nhds_generated_countable a := ⟨{exterior {a}}, countable_singleton _, by simp⟩
 
-instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
+instance (priority := 10000) AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
   local_compact_nhds a _U hU := ⟨exterior {a},
     isOpen_exterior.mem_nhds <| subset_exterior <| mem_singleton _,
       exterior_singleton_subset_iff_mem_nhds.2 hU, (finite_singleton _).isCompact_exterior⟩
 
-instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=
+instance (priority := 10000) Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=
   inducing_subtype_val.alexandrovDiscrete
 
-instance Quotient.instAlexandrovDiscrete {s : Setoid α} : AlexandrovDiscrete (Quotient s) :=
+instance (priority := 10000) Quotient.instAlexandrovDiscrete {s : Setoid α} : AlexandrovDiscrete (Quotient s) :=
   alexandrovDiscrete_coinduced
 
-instance Sum.instAlexandrovDiscrete : AlexandrovDiscrete (α ⊕ β) :=
+instance (priority := 10000) Sum.instAlexandrovDiscrete : AlexandrovDiscrete (α ⊕ β) :=
   alexandrovDiscrete_coinduced.sup alexandrovDiscrete_coinduced
 
-instance Sigma.instAlexandrovDiscrete {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+instance (priority := 10000) Sigma.instAlexandrovDiscrete {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [∀ i, AlexandrovDiscrete (π i)] : AlexandrovDiscrete (Σ i, π i) :=
   alexandrovDiscrete_iSup fun _ ↦ alexandrovDiscrete_coinduced

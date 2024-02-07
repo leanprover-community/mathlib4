@@ -114,7 +114,7 @@ def SimpleGraph.mk' {V : Type u} :
 
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
-instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where
+instance (priority := 10000) {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) where
   elems := Finset.univ.map SimpleGraph.mk'
   complete := by
     classical
@@ -219,7 +219,7 @@ def IsSubgraph (x y : SimpleGraph V) : Prop :=
   ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
 #align simple_graph.is_subgraph SimpleGraph.IsSubgraph
 
-instance : LE (SimpleGraph V) :=
+instance (priority := 10000) : LE (SimpleGraph V) :=
   ⟨IsSubgraph⟩
 
 @[simp]
@@ -228,7 +228,7 @@ theorem isSubgraph_eq_le : (IsSubgraph : SimpleGraph V → SimpleGraph V → Pro
 #align simple_graph.is_subgraph_eq_le SimpleGraph.isSubgraph_eq_le
 
 /-- The supremum of two graphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
-instance : Sup (SimpleGraph V) where
+instance (priority := 10000) : Sup (SimpleGraph V) where
   sup x y :=
     { Adj := x.Adj ⊔ y.Adj
       symm := fun v w h => by rwa [Pi.sup_apply, Pi.sup_apply, x.adj_comm, y.adj_comm] }
@@ -239,7 +239,7 @@ theorem sup_adj (x y : SimpleGraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v 
 #align simple_graph.sup_adj SimpleGraph.sup_adj
 
 /-- The infimum of two graphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
-instance : Inf (SimpleGraph V) where
+instance (priority := 10000) : Inf (SimpleGraph V) where
   inf x y :=
     { Adj := x.Adj ⊓ y.Adj
       symm := fun v w h => by rwa [Pi.inf_apply, Pi.inf_apply, x.adj_comm, y.adj_comm] }
@@ -252,7 +252,7 @@ theorem inf_adj (x y : SimpleGraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v 
 /-- We define `Gᶜ` to be the `SimpleGraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent
 (still ensuring that vertices are not adjacent to themselves). -/
-instance hasCompl : HasCompl (SimpleGraph V) where
+instance (priority := 10000) hasCompl : HasCompl (SimpleGraph V) where
   compl G :=
     { Adj := fun v w => v ≠ w ∧ ¬G.Adj v w
       symm := fun v w ⟨hne, _⟩ => ⟨hne.symm, by rwa [adj_comm]⟩
@@ -264,7 +264,7 @@ theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ �
 #align simple_graph.compl_adj SimpleGraph.compl_adj
 
 /-- The difference of two graphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
-instance sdiff : SDiff (SimpleGraph V) where
+instance (priority := 10000) sdiff : SDiff (SimpleGraph V) where
   sdiff x y :=
     { Adj := x.Adj \ y.Adj
       symm := fun v w h => by change x.Adj w v ∧ ¬y.Adj w v; rwa [x.adj_comm, y.adj_comm] }
@@ -274,7 +274,7 @@ theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v 
   Iff.rfl
 #align simple_graph.sdiff_adj SimpleGraph.sdiff_adj
 
-instance supSet : SupSet (SimpleGraph V) where
+instance (priority := 10000) supSet : SupSet (SimpleGraph V) where
   sSup s :=
     { Adj := fun a b => ∃ G ∈ s, Adj G a b
       symm := fun a b => Exists.imp fun _ => And.imp_right Adj.symm
@@ -282,7 +282,7 @@ instance supSet : SupSet (SimpleGraph V) where
         rintro a ⟨G, _, ha⟩
         exact ha.ne rfl }
 
-instance infSet : InfSet (SimpleGraph V) where
+instance (priority := 10000) infSet : InfSet (SimpleGraph V) where
   sInf s :=
     { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
       symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
@@ -321,12 +321,12 @@ theorem iInf_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
 #align simple_graph.infi_adj_of_nonempty SimpleGraph.iInf_adj_of_nonempty
 
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
-instance distribLattice : DistribLattice (SimpleGraph V) :=
+instance (priority := 10000) distribLattice : DistribLattice (SimpleGraph V) :=
   { show DistribLattice (SimpleGraph V) from
       adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
     le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) :=
+instance (priority := 10000) completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) :=
   { SimpleGraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
@@ -378,14 +378,14 @@ theorem emptyGraph_eq_bot (V : Type u) : emptyGraph V = ⊥ :=
 #align simple_graph.empty_graph_eq_bot SimpleGraph.emptyGraph_eq_bot
 
 @[simps]
-instance (V : Type u) : Inhabited (SimpleGraph V) :=
+instance (priority := 10000) (V : Type u) : Inhabited (SimpleGraph V) :=
   ⟨⊥⟩
 
-instance [Subsingleton V] : Unique (SimpleGraph V) where
+instance (priority := 10000) [Subsingleton V] : Unique (SimpleGraph V) where
   default := ⊥
   uniq G := by ext a b; have := Subsingleton.elim a b; simp [this]
 
-instance [Nontrivial V] : Nontrivial (SimpleGraph V) :=
+instance (priority := 10000) [Nontrivial V] : Nontrivial (SimpleGraph V) :=
   ⟨⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by simpa only [← adj_inj, Function.funext_iff, bot_adj,
     top_adj, ne_eq, eq_iff_iff, false_iff, not_not] using h⟩⟩⟩
 
@@ -393,29 +393,29 @@ section Decidable
 
 variable (V) (H : SimpleGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
 
-instance Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj :=
+instance (priority := 10000) Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ => False
 #align simple_graph.bot.adj_decidable SimpleGraph.Bot.adjDecidable
 
-instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
+instance (priority := 10000) Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
   inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∨ H.Adj v w
 #align simple_graph.sup.adj_decidable SimpleGraph.Sup.adjDecidable
 
-instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
+instance (priority := 10000) Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
   inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ H.Adj v w
 #align simple_graph.inf.adj_decidable SimpleGraph.Inf.adjDecidable
 
-instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj :=
+instance (priority := 10000) Sdiff.adjDecidable : DecidableRel (G \ H).Adj :=
   inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ ¬H.Adj v w
 #align simple_graph.sdiff.adj_decidable SimpleGraph.Sdiff.adjDecidable
 
 variable [DecidableEq V]
 
-instance Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj :=
+instance (priority := 10000) Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj :=
   inferInstanceAs <| DecidableRel fun v w => v ≠ w
 #align simple_graph.top.adj_decidable SimpleGraph.Top.adjDecidable
 
-instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
+instance (priority := 10000) Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
   inferInstanceAs <| DecidableRel fun v w => v ≠ w ∧ ¬G.Adj v w
 #align simple_graph.compl.adj_decidable SimpleGraph.Compl.adjDecidable
 
@@ -440,7 +440,7 @@ theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.su
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
 #align simple_graph.neighbor_set SimpleGraph.neighborSet
 
-instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
+instance (priority := 10000) neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
   inferInstanceAs <| DecidablePred (Adj G v)
 #align simple_graph.neighbor_set.mem_decidable SimpleGraph.neighborSet.memDecidable
@@ -584,32 +584,32 @@ theorem edge_other_ne {e : Sym2 V} (he : e ∈ G.edgeSet) {v : V} (h : v ∈ e) 
   exact G.ne_of_adj he
 #align simple_graph.edge_other_ne SimpleGraph.edge_other_ne
 
-instance decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ G.edgeSet) :=
+instance (priority := 10000) decidableMemEdgeSet [DecidableRel G.Adj] : DecidablePred (· ∈ G.edgeSet) :=
   Sym2.fromRel.decidablePred G.symm
 #align simple_graph.decidable_mem_edge_set SimpleGraph.decidableMemEdgeSet
 
-instance fintypeEdgeSet [Fintype (Sym2 V)] [DecidableRel G.Adj] : Fintype G.edgeSet :=
+instance (priority := 10000) fintypeEdgeSet [Fintype (Sym2 V)] [DecidableRel G.Adj] : Fintype G.edgeSet :=
   Subtype.fintype _
 #align simple_graph.fintype_edge_set SimpleGraph.fintypeEdgeSet
 
-instance fintypeEdgeSetBot : Fintype (⊥ : SimpleGraph V).edgeSet := by
+instance (priority := 10000) fintypeEdgeSetBot : Fintype (⊥ : SimpleGraph V).edgeSet := by
   rw [edgeSet_bot]
   infer_instance
 #align simple_graph.fintype_edge_set_bot SimpleGraph.fintypeEdgeSetBot
 
-instance fintypeEdgeSetSup [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet] :
+instance (priority := 10000) fintypeEdgeSetSup [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet] :
     Fintype (G₁ ⊔ G₂).edgeSet := by
   rw [edgeSet_sup]
   infer_instance
 #align simple_graph.fintype_edge_set_sup SimpleGraph.fintypeEdgeSetSup
 
-instance fintypeEdgeSetInf [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet] :
+instance (priority := 10000) fintypeEdgeSetInf [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet] :
     Fintype (G₁ ⊓ G₂).edgeSet := by
   rw [edgeSet_inf]
   exact Set.fintypeInter _ _
 #align simple_graph.fintype_edge_set_inf SimpleGraph.fintypeEdgeSetInf
 
-instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet] :
+instance (priority := 10000) fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G₂.edgeSet] :
     Fintype (G₁ \ G₂).edgeSet := by
   rw [edgeSet_sdiff]
   exact Set.fintypeDiff _ _
@@ -698,7 +698,7 @@ theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ 
   rw [disjoint_comm, disjoint_fromEdgeSet, disjoint_comm]
 #align simple_graph.from_edge_set_disjoint SimpleGraph.fromEdgeSet_disjoint
 
-instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
+instance (priority := 10000) [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
   rw [edgeSet_fromEdgeSet s]
   infer_instance
 
@@ -756,7 +756,7 @@ theorem incidenceSet_inter_incidenceSet_of_not_adj (h : ¬G.Adj a b) (hn : a ≠
   exact h (G.adj_of_mem_incidenceSet hn ha hb)
 #align simple_graph.incidence_set_inter_incidence_set_of_not_adj SimpleGraph.incidenceSet_inter_incidenceSet_of_not_adj
 
-instance decidableMemIncidenceSet [DecidableEq V] [DecidableRel G.Adj] (v : V) :
+instance (priority := 10000) decidableMemIncidenceSet [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     DecidablePred (· ∈ G.incidenceSet v) :=
   inferInstanceAs <| DecidablePred fun e => e ∈ G.edgeSet ∧ v ∈ e
 #align simple_graph.decidable_mem_incidence_set SimpleGraph.decidableMemIncidenceSet
@@ -854,7 +854,7 @@ theorem commonNeighbors_subset_neighborSet_right (v w : V) :
   Set.inter_subset_right _ _
 #align simple_graph.common_neighbors_subset_neighbor_set_right SimpleGraph.commonNeighbors_subset_neighborSet_right
 
-instance decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
+instance (priority := 10000) decidableMemCommonNeighbors [DecidableRel G.Adj] (v w : V) :
     DecidablePred (· ∈ G.commonNeighbors v w) :=
   inferInstanceAs <| DecidablePred fun u => u ∈ G.neighborSet v ∧ u ∈ G.neighborSet w
 #align simple_graph.decidable_mem_common_neighbors SimpleGraph.decidableMemCommonNeighbors

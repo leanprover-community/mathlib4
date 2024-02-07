@@ -292,7 +292,7 @@ lemma isEmpty_iff (X : Type*) :
     IsEmpty (FundamentalGroupoid X) ↔ IsEmpty X :=
   equiv _ |>.isEmpty_congr
 
-instance (X : Type*) [IsEmpty X] :
+instance (priority := 10000) (X : Type*) [IsEmpty X] :
     IsEmpty (FundamentalGroupoid X) :=
   equiv _ |>.isEmpty
 
@@ -301,7 +301,7 @@ lemma nonempty_iff (X : Type*) :
     Nonempty (FundamentalGroupoid X) ↔ Nonempty X :=
   equiv _ |>.nonempty_congr
 
-instance (X : Type*) [Nonempty X] :
+instance (priority := 10000) (X : Type*) [Nonempty X] :
     Nonempty (FundamentalGroupoid X) :=
   equiv _ |>.nonempty
 
@@ -310,19 +310,19 @@ lemma subsingleton_iff (X : Type*) :
     Subsingleton (FundamentalGroupoid X) ↔ Subsingleton X :=
   equiv _ |>.subsingleton_congr
 
-instance (X : Type*) [Subsingleton X] :
+instance (priority := 10000) (X : Type*) [Subsingleton X] :
     Subsingleton (FundamentalGroupoid X) :=
   equiv _ |>.subsingleton
 
 -- TODO: It seems that `Equiv.nontrivial_congr` doesn't exist.
 -- Once it is added, please add the corresponding lemma and instance.
 
-instance {X : Type u} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
+instance (priority := 10000) {X : Type u} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
   ⟨⟨default⟩⟩
 
 attribute [local instance] Path.Homotopic.setoid
 
-instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
+instance (priority := 10000) : CategoryTheory.Groupoid (FundamentalGroupoid X) where
   Hom x y := Path.Homotopic.Quotient x.as y.as
   id x := ⟦Path.refl x.as⟧
   comp {x y z} := Path.Homotopic.Quotient.comp

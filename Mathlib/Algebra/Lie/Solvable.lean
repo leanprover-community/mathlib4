@@ -203,11 +203,11 @@ class IsSolvable : Prop where
   solvable : ∃ k, derivedSeries R L k = ⊥
 #align lie_algebra.is_solvable LieAlgebra.IsSolvable
 
-instance isSolvableBot : IsSolvable R (↥(⊥ : LieIdeal R L)) :=
+instance (priority := 10000) isSolvableBot : IsSolvable R (↥(⊥ : LieIdeal R L)) :=
   ⟨⟨0, Subsingleton.elim _ ⊥⟩⟩
 #align lie_algebra.is_solvable_bot LieAlgebra.isSolvableBot
 
-instance isSolvableAdd {I J : LieIdeal R L} [hI : IsSolvable R I] [hJ : IsSolvable R J] :
+instance (priority := 10000) isSolvableAdd {I J : LieIdeal R L} [hI : IsSolvable R I] [hJ : IsSolvable R J] :
     IsSolvable R (↥(I + J)) := by
   obtain ⟨k, hk⟩ := id hI; obtain ⟨l, hl⟩ := id hJ
   exact ⟨⟨k + l, LieIdeal.derivedSeries_add_eq_bot hk hl⟩⟩
@@ -271,7 +271,7 @@ def radical :=
 #align lie_algebra.radical LieAlgebra.radical
 
 /-- The radical of a Noetherian Lie algebra is solvable. -/
-instance radicalIsSolvable [IsNoetherian R L] : IsSolvable R (radical R L) := by
+instance (priority := 10000) radicalIsSolvable [IsNoetherian R L] : IsSolvable R (radical R L) := by
   have hwf := LieSubmodule.wellFounded_of_noetherian R L L
   rw [← CompleteLattice.isSupClosedCompact_iff_wellFounded] at hwf
   refine' hwf { I : LieIdeal R L | IsSolvable R I } ⟨⊥, _⟩ fun I hI J hJ => _
@@ -291,7 +291,7 @@ theorem center_le_radical : center R L ≤ radical R L :=
   le_sSup h
 #align lie_algebra.center_le_radical LieAlgebra.center_le_radical
 
-instance [IsSolvable R L] : IsSolvable R (⊤ : LieSubalgebra R L) := by
+instance (priority := 10000) [IsSolvable R L] : IsSolvable R (⊤ : LieSubalgebra R L) := by
   rwa [solvable_iff_equiv_solvable LieSubalgebra.topEquiv]
 
 @[simp] lemma radical_eq_top_of_isSolvable [IsSolvable R L] :

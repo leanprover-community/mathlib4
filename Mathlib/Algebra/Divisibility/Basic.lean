@@ -75,7 +75,7 @@ theorem dvd_trans : a ∣ b → b ∣ c → a ∣ c
 alias Dvd.dvd.trans := dvd_trans
 
 /-- Transitivity of `|` for use in `calc` blocks. -/
-instance : IsTrans α Dvd.dvd :=
+instance (priority := 10000) : IsTrans α Dvd.dvd :=
   ⟨fun _ _ _ => dvd_trans⟩
 
 @[simp]
@@ -125,7 +125,7 @@ theorem dvd_refl (a : α) : a ∣ a :=
 theorem dvd_rfl : ∀ {a : α}, a ∣ a := fun {a} => dvd_refl a
 #align dvd_rfl dvd_rfl
 
-instance : IsRefl α (· ∣ ·) :=
+instance (priority := 10000) : IsRefl α (· ∣ ·) :=
   ⟨dvd_refl⟩
 
 theorem one_dvd (a : α) : 1 ∣ a :=

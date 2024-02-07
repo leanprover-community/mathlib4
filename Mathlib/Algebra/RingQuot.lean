@@ -37,7 +37,7 @@ variable {A : Type uA} [Semiring A] [Algebra S A]
 
 namespace RingCon
 
-instance (c : RingCon A) : Algebra S c.Quotient where
+instance (priority := 10000) (c : RingCon A) : Algebra S c.Quotient where
   smul := (· • ·)
   toRingHom := c.mk'.comp (algebraMap S A)
   commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
@@ -203,31 +203,31 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
 private def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
 
-instance : NatCast (RingQuot r) :=
+instance (priority := 10000) : NatCast (RingQuot r) :=
   ⟨natCast r⟩
 
-instance : Zero (RingQuot r) :=
+instance (priority := 10000) : Zero (RingQuot r) :=
   ⟨zero r⟩
 
-instance : One (RingQuot r) :=
+instance (priority := 10000) : One (RingQuot r) :=
   ⟨one r⟩
 
-instance : Add (RingQuot r) :=
+instance (priority := 10000) : Add (RingQuot r) :=
   ⟨add r⟩
 
-instance : Mul (RingQuot r) :=
+instance (priority := 10000) : Mul (RingQuot r) :=
   ⟨mul r⟩
 
-instance : NatPow (RingQuot r) :=
+instance (priority := 10000) : NatPow (RingQuot r) :=
   ⟨fun x n ↦ npow r n x⟩
 
-instance {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=
+instance (priority := 10000) {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=
   ⟨neg r⟩
 
-instance {R : Type uR} [Ring R] (r : R → R → Prop) : Sub (RingQuot r) :=
+instance (priority := 10000) {R : Type uR} [Ring R] (r : R → R → Prop) : Sub (RingQuot r) :=
   ⟨sub r⟩
 
-instance [Algebra S R] : SMul S (RingQuot r) :=
+instance (priority := 10000) [Algebra S R] : SMul S (RingQuot r) :=
   ⟨smul r⟩
 
 theorem zero_quot : (⟨Quot.mk _ 0⟩ : RingQuot r) = 0 :=
@@ -276,15 +276,15 @@ theorem smul_quot [Algebra S R] {n : S} {a : R} :
   rfl
 #align ring_quot.smul_quot RingQuot.smul_quot
 
-instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
+instance (priority := 10000) instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
 
-instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
+instance (priority := 10000) instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
-instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
+instance (priority := 10000) instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
   add := (· + ·)
   zero := 0
   add_assoc := by
@@ -308,7 +308,7 @@ instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) w
     simp only [smul_quot, nsmul_eq_mul, Nat.cast_add, Nat.cast_one, add_mul, one_mul,
                add_comm, add_quot]
 
-instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r) where
+instance (priority := 10000) instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r) where
   mul_assoc := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [mul_quot, mul_assoc]
@@ -332,7 +332,7 @@ instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r)
     rintro n ⟨⟨⟩⟩
     simp only [pow_quot, mul_quot, pow_succ]
 
-instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
+instance (priority := 10000) instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   natCast := natCast r
   natCast_zero := by simp [Nat.cast, natCast, ← zero_quot]
   natCast_succ := by simp [Nat.cast, natCast, ← one_quot, add_quot]
@@ -357,7 +357,7 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
 private def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
-instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
+instance (priority := 10000) instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
     neg := Neg.neg
     add_left_neg := by
@@ -384,20 +384,20 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       simp_rw [neg_def]
       exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
 
-instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
+instance (priority := 10000) instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
   CommSemiring (RingQuot r) :=
   { RingQuot.instSemiring r with
     mul_comm := by
       rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
       simp [mul_quot, mul_comm] }
 
-instance {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
+instance (priority := 10000) {R : Type uR} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
   { RingQuot.instCommSemiring r, RingQuot.instRing r with }
 
-instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
+instance (priority := 10000) instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
 
-instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
+instance (priority := 10000) instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
   smul := (· • ·)
   toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
   map_one' := by simp [← one_quot]

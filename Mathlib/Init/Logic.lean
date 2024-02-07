@@ -114,7 +114,7 @@ attribute [trans] Iff.trans
 attribute [symm] Iff.symm
 
 -- This is needed for `calc` to work with `iff`.
-instance : Trans Iff Iff Iff where
+instance (priority := 10000) : Trans Iff Iff Iff where
   trans := fun p q ↦ p.trans q
 
 #align not_congr not_congr
@@ -315,7 +315,7 @@ alias decidableFalse := instDecidableFalse
 #align not.decidable Not.decidable
 #align iff.decidable Iff.decidable
 
-instance [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (Decidable (Or ..))
+instance (priority := 10000) [Decidable p] [Decidable q] : Decidable (Xor' p q) := inferInstanceAs (Decidable (Or ..))
 
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
 def IsDecRefl {α : Sort u} (p : α → α → Bool) : Prop := ∀ x, p x x = true

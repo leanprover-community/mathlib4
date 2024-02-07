@@ -51,7 +51,7 @@ def completion : SemiNormedGroupCat.{u} ⥤ SemiNormedGroupCat.{u} where
   map_comp f g := (completion_comp f g).symm
 #align SemiNormedGroup.Completion SemiNormedGroupCat.completion
 
-instance completion_completeSpace {V : SemiNormedGroupCat} : CompleteSpace (completion.obj V) :=
+instance (priority := 10000) completion_completeSpace {V : SemiNormedGroupCat} : CompleteSpace (completion.obj V) :=
   Completion.completeSpace _
 #align SemiNormedGroup.Completion_complete_space SemiNormedGroupCat.completion_completeSpace
 
@@ -97,7 +97,7 @@ theorem completion.map_zero (V W : SemiNormedGroupCat) : completion.map (0 : V �
   @AddMonoidHom.map_zero _ _ (_) (_) (completion.mapHom V W)
 #align SemiNormedGroup.Completion.map_zero SemiNormedGroupCat.completion.map_zero
 
-instance : Preadditive SemiNormedGroupCat.{u} where
+instance (priority := 10000) : Preadditive SemiNormedGroupCat.{u} where
   homGroup P Q := inferInstanceAs <| AddCommGroup <| NormedAddGroupHom P Q
   add_comp _ Q _ f f' g := by
     ext x
@@ -119,7 +119,7 @@ instance : Preadditive SemiNormedGroupCat.{u} where
       CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
     rfl
 
-instance : Functor.Additive completion where
+instance (priority := 10000) : Functor.Additive completion where
   map_add := NormedAddGroupHom.completion_add _ _
 
 /-- Given a normed group hom `f : V → W` with `W` complete, this provides a lift of `f` to

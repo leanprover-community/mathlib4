@@ -34,10 +34,10 @@ def Frm :=
 
 namespace Frm
 
-instance : CoeSort Frm (Type*) :=
+instance (priority := 10000) : CoeSort Frm (Type*) :=
   Bundled.coeSort
 
-instance (X : Frm) : Frame X :=
+instance (priority := 10000) (X : Frm) : Frame X :=
   X.str
 
 /-- Construct a bundled `Frm` from a `Frame`. -/
@@ -49,7 +49,7 @@ def of (α : Type*) [Frame α] : Frm :=
 theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α := rfl
 #align Frm.coe_of Frm.coe_of
 
-instance : Inhabited Frm :=
+instance (priority := 10000) : Inhabited Frm :=
   ⟨of PUnit⟩
 
 /-- An abbreviation of `FrameHom` that assumes `Frame` instead of the weaker `CompleteLattice`.
@@ -58,7 +58,7 @@ abbrev Hom (α β : Type*) [Frame α] [Frame β] : Type _ :=
   FrameHom α β
 #align Frm.hom Frm.Hom
 
-instance bundledHom : BundledHom Hom where
+instance (priority := 10000) bundledHom : BundledHom Hom where
   toFun {α β} _ _ := ((↑) : FrameHom α β → α → β)
   id {α} _ := FrameHom.id α
   comp _ _ _ := FrameHom.comp
@@ -69,11 +69,11 @@ instance bundledHom : BundledHom Hom where
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory, Category for Frm
 
-instance : ConcreteCategory Frm := by
+instance (priority := 10000) : ConcreteCategory Frm := by
   unfold Frm
   infer_instance
 
-instance hasForgetToLat : HasForget₂ Frm Lat where
+instance (priority := 10000) hasForgetToLat : HasForget₂ Frm Lat where
   forget₂ :=
     { obj := fun X => ⟨X, _⟩
       map := fun {X Y} => FrameHom.toLatticeHom }
@@ -103,6 +103,6 @@ def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
 #align Top_op_to_Frame topCatOpToFrm
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
-instance CompHausOpToFrame.faithful : Faithful (compHausToTop.op ⋙ topCatOpToFrm.{u}) :=
+instance (priority := 10000) CompHausOpToFrame.faithful : Faithful (compHausToTop.op ⋙ topCatOpToFrm.{u}) :=
   ⟨fun h => Quiver.Hom.unop_inj <| Opens.comap_injective h⟩
 #align CompHaus_op_to_Frame.faithful CompHausOpToFrame.faithful

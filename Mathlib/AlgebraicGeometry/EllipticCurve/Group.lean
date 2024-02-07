@@ -95,14 +95,14 @@ section Ring
 
 /-! ### Ideals in the coordinate ring over a ring -/
 
-instance instIsDomainCoordinateRing [IsDomain R] [NormalizedGCDMonoid R] :
+instance (priority := 10000) instIsDomainCoordinateRing [IsDomain R] [NormalizedGCDMonoid R] :
     IsDomain W.CoordinateRing :=
   (Quotient.isDomain_iff_prime _).mpr <| by
     simpa only [span_singleton_prime W.polynomial_ne_zero, ← GCDMonoid.irreducible_iff_prime]
       using W.irreducible_polynomial
 #align weierstrass_curve.coordinate_ring.is_domain WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing
 
-instance instIsDomainCoordinateRing_of_Field {F : Type u} [Field F] (W : Affine F) :
+instance (priority := 10000) instIsDomainCoordinateRing_of_Field {F : Type u} [Field F] (W : Affine F) :
     IsDomain W.CoordinateRing := by
   classical exact instIsDomainCoordinateRing W
 #align weierstrass_curve.coordinate_ring.is_domain_of_field WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing_of_Field
@@ -343,19 +343,19 @@ section Algebra
 
 /-! ### The coordinate ring as an `R[X]`-algebra -/
 
-noncomputable instance instAlgebraCoordinateRing : Algebra R[X] W.CoordinateRing :=
+noncomputable instance (priority := 10000) instAlgebraCoordinateRing : Algebra R[X] W.CoordinateRing :=
   Quotient.algebra R[X]
 #align weierstrass_curve.coordinate_ring.algebra WeierstrassCurve.Affine.CoordinateRing.instAlgebraCoordinateRing
 
-noncomputable instance instAlgebraCoordinateRing' : Algebra R W.CoordinateRing :=
+noncomputable instance (priority := 10000) instAlgebraCoordinateRing' : Algebra R W.CoordinateRing :=
   Quotient.algebra R
 #align weierstrass_curve.coordinate_ring.algebra' WeierstrassCurve.Affine.CoordinateRing.instAlgebraCoordinateRing'
 
-instance instIsScalarTowerCoordinateRing : IsScalarTower R R[X] W.CoordinateRing :=
+instance (priority := 10000) instIsScalarTowerCoordinateRing : IsScalarTower R R[X] W.CoordinateRing :=
   Quotient.isScalarTower R R[X] _
 #align weierstrass_curve.coordinate_ring.is_scalar_tower WeierstrassCurve.Affine.CoordinateRing.instIsScalarTowerCoordinateRing
 
-instance instSubsingletonCoordinateRing [Subsingleton R] : Subsingleton W.CoordinateRing :=
+instance (priority := 10000) instSubsingletonCoordinateRing [Subsingleton R] : Subsingleton W.CoordinateRing :=
   Module.subsingleton R[X] _
 #align weierstrass_curve.coordinate_ring.subsingleton WeierstrassCurve.Affine.CoordinateRing.instSubsingletonCoordinateRing
 
@@ -630,7 +630,7 @@ lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
   toClass_injective <| by simp only [map_add, _root_.add_assoc]
 #align weierstrass_curve.point.add_assoc WeierstrassCurve.Affine.Point.add_assoc
 
-noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
+noncomputable instance (priority := 10000) instAddCommGroupPoint : AddCommGroup W.Point where
   zero_add := zero_add
   add_zero := add_zero
   add_left_neg := add_left_neg

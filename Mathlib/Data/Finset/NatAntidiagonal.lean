@@ -19,7 +19,7 @@ generally for sums going from `0` to `n`.
 ## Notes
 
 This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`, providing an
-instance enabling `Finset.antidiagonal` on `Nat`.
+instance (priority := 10000) enabling `Finset.antidiagonal` on `Nat`.
 -/
 
 open Function
@@ -30,7 +30,7 @@ namespace Nat
 
 /-- The antidiagonal of a natural number `n` is
     the finset of pairs `(i, j)` such that `i + j = n`. -/
-instance instHasAntidiagonal : HasAntidiagonal ℕ where
+instance (priority := 10000) instHasAntidiagonal : HasAntidiagonal ℕ where
   antidiagonal n := ⟨Multiset.Nat.antidiagonal n, Multiset.Nat.nodup_antidiagonal n⟩
   mem_antidiagonal {n} {xy} := by
     rw [mem_def, Multiset.Nat.mem_antidiagonal]

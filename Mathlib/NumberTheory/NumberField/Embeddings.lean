@@ -45,7 +45,7 @@ variable (K : Type*) [Field K] [NumberField K]
 variable (A : Type*) [Field A] [CharZero A]
 
 /-- There are finitely many embeddings of a number field. -/
-noncomputable instance : Fintype (K →+* A) :=
+noncomputable instance (priority := 10000) : Fintype (K →+* A) :=
   Fintype.ofEquiv (K →ₐ[ℚ] A) RingHom.equivRatAlgHom.symm
 
 variable [IsAlgClosed A]
@@ -55,7 +55,7 @@ theorem card : Fintype.card (K →+* A) = finrank ℚ K := by
   rw [Fintype.ofEquiv_card RingHom.equivRatAlgHom.symm, AlgHom.card]
 #align number_field.embeddings.card NumberField.Embeddings.card
 
-instance : Nonempty (K →+* A) := by
+instance (priority := 10000) : Nonempty (K →+* A) := by
   rw [← Fintype.card_pos_iff, NumberField.Embeddings.card K A]
   exact FiniteDimensional.finrank_pos
 
@@ -265,7 +265,7 @@ variable {k : Type*} [Field k] (K : Type*) [Field K] {F : Type*} [Field F]
 def NumberField.InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
 #align number_field.infinite_place NumberField.InfinitePlace
 
-instance [NumberField K] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyRange _
+instance (priority := 10000) [NumberField K] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyRange _
 
 variable {K}
 
@@ -278,16 +278,16 @@ namespace NumberField.InfinitePlace
 
 open NumberField
 
-instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ :=
+instance (priority := 10000) {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ :=
 { coe := fun w x => w.1 x
   coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)}
 
-instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
+instance (priority := 10000) : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_mul w _ _ := w.1.map_mul _ _
   map_one w := w.1.map_one
   map_zero w := w.1.map_zero
 
-instance : NonnegHomClass (InfinitePlace K) K ℝ where
+instance (priority := 10000) : NonnegHomClass (InfinitePlace K) K ℝ where
   map_nonneg w _ := w.1.nonneg _
 
 @[simp]
@@ -462,7 +462,7 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) :
 
 open scoped BigOperators
 
-noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
+noncomputable instance (priority := 10000) NumberField.InfinitePlace.fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
 #align number_field.infinite_place.number_field.infinite_place.fintype NumberField.InfinitePlace.NumberField.InfinitePlace.fintype
 
@@ -607,7 +607,7 @@ variable {k K}
 
 /-- The action of the galois group on infinite places. -/
 @[simps! smul_coe_apply]
-instance : MulAction (K ≃ₐ[k] K) (InfinitePlace K) where
+instance (priority := 10000) : MulAction (K ≃ₐ[k] K) (InfinitePlace K) where
   smul := fun σ w ↦ w.comap σ.symm
   one_smul := fun _ ↦ rfl
   mul_smul := fun _ _ _ ↦ rfl
@@ -936,7 +936,7 @@ variable [Algebra k K] [Algebra k F] [Algebra K F] [IsScalarTower k K F]
 class IsUnramifiedAtInfinitePlaces : Prop where
   isUnramified : ∀ w : InfinitePlace K, w.IsUnramified k
 
-instance IsUnramifiedAtInfinitePlaces.id : IsUnramifiedAtInfinitePlaces K K where
+instance (priority := 10000) IsUnramifiedAtInfinitePlaces.id : IsUnramifiedAtInfinitePlaces K K where
   isUnramified w := w.isUnramified_self
 
 lemma IsUnramifiedAtInfinitePlaces.trans

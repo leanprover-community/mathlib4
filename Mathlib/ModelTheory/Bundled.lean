@@ -59,7 +59,7 @@ namespace FirstOrder
 namespace Language
 
 /-- The equivalence relation on bundled `L.Structure`s indicating that they are isomorphic. -/
-instance equivSetoid : Setoid (CategoryTheory.Bundled L.Structure) where
+instance (priority := 10000) equivSetoid : Setoid (CategoryTheory.Bundled L.Structure) where
   r M N := Nonempty (M ≃[L] N)
   iseqv :=
     ⟨fun M => ⟨Equiv.refl L M⟩, fun {_ _} => Nonempty.map Equiv.symm, fun {_ _} _ =>
@@ -90,7 +90,7 @@ namespace ModelType
 
 attribute [coe] ModelType.Carrier
 
-instance instCoeSort : CoeSort T.ModelType (Type w) :=
+instance (priority := 10000) instCoeSort : CoeSort T.ModelType (Type w) :=
   ⟨ModelType.Carrier⟩
 #align first_order.language.Theory.Model.has_coe_to_sort FirstOrder.Language.Theory.ModelType.instCoeSort
 
@@ -107,7 +107,7 @@ theorem coe_of (M : Type w) [L.Structure M] [M ⊨ T] [Nonempty M] : (of T M : T
   rfl
 #align first_order.language.Theory.Model.coe_of FirstOrder.Language.Theory.ModelType.coe_of
 
-instance instNonempty (M : T.ModelType) : Nonempty M :=
+instance (priority := 10000) instNonempty (M : T.ModelType) : Nonempty M :=
   inferInstance
 #align first_order.language.Theory.Model.nonempty FirstOrder.Language.Theory.ModelType.instNonempty
 
@@ -115,7 +115,7 @@ section Inhabited
 
 attribute [local instance] Inhabited.trivialStructure
 
-instance instInhabited : Inhabited (ModelType.{u, v, w} (∅ : L.Theory)) :=
+instance (priority := 10000) instInhabited : Inhabited (ModelType.{u, v, w} (∅ : L.Theory)) :=
   ⟨ModelType.of _ PUnit⟩
 #align first_order.language.Theory.Model.inhabited FirstOrder.Language.Theory.ModelType.instInhabited
 
@@ -132,7 +132,7 @@ def equivInduced {M : ModelType.{u, v, w} T} {N : Type w'} (e : M ≃ N) :
   nonempty' := e.symm.nonempty
 #align first_order.language.Theory.Model.equiv_induced FirstOrder.Language.Theory.ModelType.equivInduced
 
-instance of_small (M : Type w) [Nonempty M] [L.Structure M] [M ⊨ T] [h : Small.{w'} M] :
+instance (priority := 10000) of_small (M : Type w) [Nonempty M] [L.Structure M] [M ⊨ T] [h : Small.{w'} M] :
     Small.{w'} (ModelType.of T M) :=
   h
 #align first_order.language.Theory.Model.of_small FirstOrder.Language.Theory.ModelType.of_small
@@ -171,11 +171,11 @@ noncomputable def defaultExpansion {L' : Language} {φ : L →ᴸ L'} (h : φ.In
       M.is_model
 #align first_order.language.Theory.Model.default_expansion FirstOrder.Language.Theory.ModelType.defaultExpansion
 
-instance leftStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType) : L.Structure M :=
+instance (priority := 10000) leftStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType) : L.Structure M :=
   (LHom.sumInl : L →ᴸ L.sum L').reduct M
 #align first_order.language.Theory.Model.left_Structure FirstOrder.Language.Theory.ModelType.leftStructure
 
-instance rightStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType) :
+instance (priority := 10000) rightStructure {L' : Language} {T : (L.sum L').Theory} (M : T.ModelType) :
     L'.Structure M :=
   (LHom.sumInr : L' →ᴸ L.sum L').reduct M
 #align first_order.language.Theory.Model.right_Structure FirstOrder.Language.Theory.ModelType.rightStructure
@@ -187,7 +187,7 @@ def subtheoryModel (M : T.ModelType) {T' : L.Theory} (h : T' ⊆ T) : T'.ModelTy
   is_model := ⟨fun _φ hφ => realize_sentence_of_mem T (h hφ)⟩
 #align first_order.language.Theory.Model.subtheory_Model FirstOrder.Language.Theory.ModelType.subtheoryModel
 
-instance subtheoryModel_models (M : T.ModelType) {T' : L.Theory} (h : T' ⊆ T) :
+instance (priority := 10000) subtheoryModel_models (M : T.ModelType) {T' : L.Theory} (h : T' ⊆ T) :
     M.subtheoryModel h ⊨ T :=
   M.is_model
 #align first_order.language.Theory.Model.subtheory_Model_models FirstOrder.Language.Theory.ModelType.subtheoryModel_models
@@ -223,7 +223,7 @@ def ElementarySubstructure.toModel {M : T.ModelType} (S : L.ElementarySubstructu
   S.elementarilyEquivalent.symm.toModel T
 #align first_order.language.elementary_substructure.to_Model FirstOrder.Language.ElementarySubstructure.toModel
 
-instance ElementarySubstructure.toModel.instSmall {M : T.ModelType}
+instance (priority := 10000) ElementarySubstructure.toModel.instSmall {M : T.ModelType}
     (S : L.ElementarySubstructure M) [h : Small S] : Small (S.toModel T) :=
   h
 #align first_order.language.to_Model.small FirstOrder.Language.ElementarySubstructure.toModel.instSmall

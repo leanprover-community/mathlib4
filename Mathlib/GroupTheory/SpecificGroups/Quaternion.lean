@@ -73,7 +73,7 @@ private def mul : QuaternionGroup n → QuaternionGroup n → QuaternionGroup n
 private def one : QuaternionGroup n :=
   a 0
 
-instance : Inhabited (QuaternionGroup n) :=
+instance (priority := 10000) : Inhabited (QuaternionGroup n) :=
   ⟨one⟩
 
 /-- The inverse of an element of the quaternion group.
@@ -84,7 +84,7 @@ private def inv : QuaternionGroup n → QuaternionGroup n
 
 /-- The group structure on `QuaternionGroup n`.
 -/
-instance : Group (QuaternionGroup n) where
+instance (priority := 10000) : Group (QuaternionGroup n) where
   mul := mul
   mul_assoc := by
     rintro (i | i) (j | j) (k | k) <;> simp only [(· * ·), mul] <;> ring_nf
@@ -163,10 +163,10 @@ def quaternionGroupZeroEquivDihedralGroupZero : QuaternionGroup 0 ≃* DihedralG
 
 /-- If `0 < n`, then `QuaternionGroup n` is a finite group.
 -/
-instance [NeZero n] : Fintype (QuaternionGroup n) :=
+instance (priority := 10000) [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
-instance : Nontrivial (QuaternionGroup n) :=
+instance (priority := 10000) : Nontrivial (QuaternionGroup n) :=
   ⟨⟨a 0, xa 0, by revert n; simp⟩⟩ -- Porting note: `revert n; simp` was `decide`
 
 /-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.

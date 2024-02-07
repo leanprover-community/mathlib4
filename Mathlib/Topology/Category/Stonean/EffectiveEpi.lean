@@ -75,7 +75,7 @@ theorem effectiveEpi_tfae
   · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
   tfae_finish
 
-instance : Preregular Stonean where
+instance (priority := 10000) : Preregular Stonean where
   exists_fac := by
     intro X Y Z f π hπ
     have := epiOfEffectiveEpi π

@@ -92,7 +92,7 @@ def finiteCoproduct.isColimit (F : Discrete α ⥤ Stonean) :
 
 /-- The category of extremally disconnected spaces has finite coproducts.
 -/
-instance hasFiniteCoproducts : HasFiniteCoproducts Stonean.{u} where
+instance (priority := 10000) hasFiniteCoproducts : HasFiniteCoproducts Stonean.{u} where
   out _ := {
     has_colimit := fun F => {
       exists_colimit := ⟨{
@@ -141,7 +141,7 @@ lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a
   simp only [coproductIsoCoproduct, colimit.comp_coconePointUniqueUpToIso_inv,
     finiteCoproduct.explicitCocone_pt, finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app]
 
-instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
+instance (priority := 10000) : PreservesFiniteCoproducts Stonean.toCompHaus := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
   suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toCompHaus
   · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
@@ -316,14 +316,14 @@ def createsPullbacksOfOpenEmbedding :
     refine ?_ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
     exact (TopCat.pullbackConeIsLimit f i).conePointUniqueUpToIso (limit.isLimit _))
 
-instance : HasPullbacksOfInclusions Stonean where
+instance (priority := 10000) : HasPullbacksOfInclusions Stonean where
   hasPullbackInl f := by
     apply (config := { allowSynthFailures := true }) hasPullback_symmetry
     apply Stonean.HasPullbackOpenEmbedding
     apply Stonean.Sigma.openEmbedding_ι
 
 noncomputable
-instance : PreservesPullbacksOfInclusions Stonean.toCompHaus.{u} where
+instance (priority := 10000) : PreservesPullbacksOfInclusions Stonean.toCompHaus.{u} where
   preservesPullbackInl := by
     intros X Y Z f
     apply (config := { allowSynthFailures := true }) preservesPullbackSymmetry
@@ -331,7 +331,7 @@ instance : PreservesPullbacksOfInclusions Stonean.toCompHaus.{u} where
     have := Stonean.createsPullbacksOfOpenEmbedding f this
     exact preservesLimitOfReflectsOfPreserves Stonean.toCompHaus compHausToTop
 
-instance : FinitaryExtensive Stonean.{u} :=
+instance (priority := 10000) : FinitaryExtensive Stonean.{u} :=
   finitaryExtensive_of_preserves_and_reflects Stonean.toCompHaus
 
 end Stonean

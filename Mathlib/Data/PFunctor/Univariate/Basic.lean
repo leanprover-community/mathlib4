@@ -37,7 +37,7 @@ structure PFunctor where
 
 namespace PFunctor
 
-instance : Inhabited PFunctor :=
+instance (priority := 10000) : Inhabited PFunctor :=
   ⟨⟨default, default⟩⟩
 
 variable (P : PFunctor.{u}) {α : Type v₁} {β : Type v₂} {γ : Type v₃}
@@ -48,7 +48,7 @@ def Obj (α : Type v) :=
   Σ x : P.A, P.B x → α
 #align pfunctor.obj PFunctor.Obj
 
-instance : CoeFun PFunctor.{u} (fun _ => Type v → Type (max u v)) where
+instance (priority := 10000) : CoeFun PFunctor.{u} (fun _ => Type v → Type (max u v)) where
   coe := Obj
 
 /-- Applying `P` to a morphism of `Type` -/
@@ -56,11 +56,11 @@ def map (f : α → β) : P α → P β :=
   fun ⟨a, g⟩ => ⟨a, f ∘ g⟩
 #align pfunctor.map PFunctor.map
 
-instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
+instance (priority := 10000) Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
   ⟨⟨default, default⟩⟩
 #align pfunctor.obj.inhabited PFunctor.Obj.inhabited
 
-instance : Functor.{v, max u v} P.Obj where map := @map P
+instance (priority := 10000) : Functor.{v, max u v} P.Obj where map := @map P
 
 /-- We prefer `PFunctor.map` to `Functor.map` because it is universe-polymorphic. -/
 @[simp]
@@ -82,7 +82,7 @@ protected theorem map_map (f : α → β) (g : β → γ) :
     ∀ x : P α, P.map g (P.map f x) = P.map (g ∘ f) x := fun ⟨_, _⟩ => rfl
 #align pfunctor.comp_map PFunctor.map_map
 
-instance : LawfulFunctor.{v, max u v} P.Obj where
+instance (priority := 10000) : LawfulFunctor.{v, max u v} P.Obj where
   map_const := rfl
   id_map x := P.id_map x
   comp_map f g x := P.map_map f g x |>.symm
@@ -137,7 +137,7 @@ def Idx :=
   Σ x : P.A, P.B x
 #align pfunctor.Idx PFunctor.Idx
 
-instance Idx.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.Idx :=
+instance (priority := 10000) Idx.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.Idx :=
   ⟨⟨default, default⟩⟩
 #align pfunctor.Idx.inhabited PFunctor.Idx.inhabited
 

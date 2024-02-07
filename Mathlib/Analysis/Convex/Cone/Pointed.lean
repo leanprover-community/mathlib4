@@ -41,7 +41,7 @@ def toConvexCone (S : PointedCone 𝕜 E) : ConvexCone 𝕜 E where
   smul_mem' c hc _ hx := S.smul_mem ⟨c, le_of_lt hc⟩ hx
   add_mem' _ hx _ hy := S.add_mem hx hy
 
-instance : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) where
+instance (priority := 10000) : Coe (PointedCone 𝕜 E) (ConvexCone 𝕜 E) where
   coe := toConvexCone
 
 theorem toConvexCone_injective : Injective ((↑) : PointedCone 𝕜 E → ConvexCone 𝕜 E) :=
@@ -55,7 +55,7 @@ theorem toConvexCone_pointed (S : PointedCone 𝕜 E) : (S : ConvexCone 𝕜 E).
 theorem ext {S T : PointedCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 
-instance instZero (S : PointedCone 𝕜 E) : Zero S :=
+instance (priority := 10000) instZero (S : PointedCone 𝕜 E) : Zero S :=
   ⟨0, S.zero_mem⟩
 
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
@@ -83,7 +83,7 @@ lemma _root_.ConvexCone.coe_toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointe
     S.toPointedCone hS = S :=
   rfl
 
-instance canLift : CanLift (ConvexCone 𝕜 E) (PointedCone 𝕜 E) (↑) ConvexCone.Pointed where
+instance (priority := 10000) canLift : CanLift (ConvexCone 𝕜 E) (PointedCone 𝕜 E) (↑) ConvexCone.Pointed where
   prf S hS := ⟨S.toPointedCone hS, rfl⟩
 
 end Definitions

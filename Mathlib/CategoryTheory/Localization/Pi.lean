@@ -23,7 +23,7 @@ universe w v₁ v₂ u₁ u₂
 
 namespace CategoryTheory.Functor.IsLocalization
 
-instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
+instance (priority := 10000) pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
     [∀ j, Category.{v₁} (C j)] [∀ j, Category.{v₂} (D j)]
     (L : ∀ j, C j ⥤ D j) (W : ∀ j, MorphismProperty (C j))
     [∀ j, (W j).ContainsIdentities] [∀ j, (L j).IsLocalization (W j)] :

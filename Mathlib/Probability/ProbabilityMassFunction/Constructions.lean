@@ -137,12 +137,12 @@ theorem mem_support_seq_iff : b ∈ (seq q p).support ↔ ∃ f ∈ q.support, b
 
 end Seq
 
-instance : LawfulFunctor PMF where
+instance (priority := 10000) : LawfulFunctor PMF where
   map_const := rfl
   id_map := bind_pure
   comp_map _ _ _ := (map_comp _ _ _).symm
 
-instance : LawfulMonad PMF := LawfulMonad.mk'
+instance (priority := 10000) : LawfulMonad PMF := LawfulMonad.mk'
   (bind_pure_comp := fun f x => rfl)
   (id_map := id_map)
   (pure_bind := pure_bind)

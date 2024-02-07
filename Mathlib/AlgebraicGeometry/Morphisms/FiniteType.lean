@@ -57,7 +57,7 @@ theorem locallyOfFiniteType_stableUnderComposition :
   locallyOfFiniteType_eq.symm ▸ RingHom.finiteType_is_local.affineLocally_stableUnderComposition
 #align algebraic_geometry.locally_of_finite_type_stable_under_composition AlgebraicGeometry.locallyOfFiniteType_stableUnderComposition
 
-instance locallyOfFiniteTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+instance (priority := 10000) locallyOfFiniteTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : LocallyOfFiniteType f] [hg : LocallyOfFiniteType g] : LocallyOfFiniteType (f ≫ g) :=
   locallyOfFiniteType_stableUnderComposition f g hf hg
 #align algebraic_geometry.locally_of_finite_type_comp AlgebraicGeometry.locallyOfFiniteTypeComp
@@ -95,4 +95,3 @@ theorem locallyOfFiniteType_respectsIso : MorphismProperty.RespectsIso @LocallyO
 #align algebraic_geometry.locally_of_finite_type_respects_iso AlgebraicGeometry.locallyOfFiniteType_respectsIso
 
 end AlgebraicGeometry
-

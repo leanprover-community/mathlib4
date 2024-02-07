@@ -69,7 +69,7 @@ namespace PadicInt
 
 variable {p : ℕ} [Fact p.Prime]
 
-instance : Coe ℤ_[p] ℚ_[p] :=
+instance (priority := 10000) : Coe ℤ_[p] ℚ_[p] :=
   ⟨Subtype.val⟩
 
 theorem ext {x y : ℤ_[p]} : (x : ℚ_[p]) = y → x = y :=
@@ -95,24 +95,24 @@ theorem mem_subring_iff {x : ℚ_[p]} : x ∈ subring p ↔ ‖x‖ ≤ 1 := Iff
 variable {p}
 
 /-- Addition on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Add ℤ_[p] := (by infer_instance : Add (subring p))
+instance (priority := 10000) : Add ℤ_[p] := (by infer_instance : Add (subring p))
 
 /-- Multiplication on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Mul ℤ_[p] := (by infer_instance : Mul (subring p))
+instance (priority := 10000) : Mul ℤ_[p] := (by infer_instance : Mul (subring p))
 
 /-- Negation on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Neg ℤ_[p] := (by infer_instance : Neg (subring p))
+instance (priority := 10000) : Neg ℤ_[p] := (by infer_instance : Neg (subring p))
 
 /-- Subtraction on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Sub ℤ_[p] := (by infer_instance : Sub (subring p))
+instance (priority := 10000) : Sub ℤ_[p] := (by infer_instance : Sub (subring p))
 
 /-- Zero on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Zero ℤ_[p] := (by infer_instance : Zero (subring p))
+instance (priority := 10000) : Zero ℤ_[p] := (by infer_instance : Zero (subring p))
 
-instance : Inhabited ℤ_[p] := ⟨0⟩
+instance (priority := 10000) : Inhabited ℤ_[p] := ⟨0⟩
 
 /-- One on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : One ℤ_[p] := ⟨⟨1, by norm_num⟩⟩
+instance (priority := 10000) : One ℤ_[p] := ⟨⟨1, by norm_num⟩⟩
 
 @[simp]
 theorem mk_zero {h} : (⟨0, h⟩ : ℤ_[p]) = (0 : ℤ_[p]) := rfl
@@ -148,9 +148,9 @@ theorem coe_eq_zero (z : ℤ_[p]) : (z : ℚ_[p]) = 0 ↔ z = 0 := by rw [← co
 theorem coe_ne_zero (z : ℤ_[p]) : (z : ℚ_[p]) ≠ 0 ↔ z ≠ 0 := z.coe_eq_zero.not
 #align padic_int.coe_ne_zero PadicInt.coe_ne_zero
 
-instance : AddCommGroup ℤ_[p] := (by infer_instance : AddCommGroup (subring p))
+instance (priority := 10000) : AddCommGroup ℤ_[p] := (by infer_instance : AddCommGroup (subring p))
 
-instance instCommRing : CommRing ℤ_[p] := (by infer_instance : CommRing (subring p))
+instance (priority := 10000) instCommRing : CommRing ℤ_[p] := (by infer_instance : CommRing (subring p))
 
 @[simp, norm_cast]
 theorem coe_nat_cast (n : ℕ) : ((n : ℤ_[p]) : ℚ_[p]) = n := rfl
@@ -178,7 +178,7 @@ def inv : ℤ_[p] → ℤ_[p]
   | ⟨k, _⟩ => if h : ‖k‖ = 1 then ⟨k⁻¹, by simp [h]⟩ else 0
 #align padic_int.inv PadicInt.inv
 
-instance : CharZero ℤ_[p] where
+instance (priority := 10000) : CharZero ℤ_[p] where
   cast_injective m n h := Nat.cast_injective (by rw [Subtype.ext_iff] at h; norm_cast at h)
 
 @[norm_cast] -- @[simp] -- Porting note: not in simpNF
@@ -212,14 +212,14 @@ We now show that `ℤ_[p]` is a
 
 variable (p : ℕ) [Fact p.Prime]
 
-instance : MetricSpace ℤ_[p] := Subtype.metricSpace
+instance (priority := 10000) : MetricSpace ℤ_[p] := Subtype.metricSpace
 
-instance completeSpace : CompleteSpace ℤ_[p] :=
+instance (priority := 10000) completeSpace : CompleteSpace ℤ_[p] :=
   have : IsClosed { x : ℚ_[p] | ‖x‖ ≤ 1 } := isClosed_le continuous_norm continuous_const
   this.completeSpace_coe
 #align padic_int.complete_space PadicInt.completeSpace
 
-instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
+instance (priority := 10000) : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
 
 variable {p}
 
@@ -228,16 +228,16 @@ theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
 variable (p)
 
-instance : NormedCommRing ℤ_[p] :=
+instance (priority := 10000) : NormedCommRing ℤ_[p] :=
   { PadicInt.instCommRing with
     dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ => rfl
     norm_mul := by simp [norm_def]
     norm := norm }
 
-instance : NormOneClass ℤ_[p] :=
+instance (priority := 10000) : NormOneClass ℤ_[p] :=
   ⟨norm_def.trans norm_one⟩
 
-instance isAbsoluteValue : IsAbsoluteValue fun z : ℤ_[p] => ‖z‖ where
+instance (priority := 10000) isAbsoluteValue : IsAbsoluteValue fun z : ℤ_[p] => ‖z‖ where
   abv_nonneg' := norm_nonneg
   abv_eq_zero' := by simp [norm_eq_zero]
   abv_add' := fun ⟨_, _⟩ ⟨_, _⟩ => norm_add_le _ _
@@ -246,7 +246,7 @@ instance isAbsoluteValue : IsAbsoluteValue fun z : ℤ_[p] => ‖z‖ where
 
 variable {p}
 
-instance : IsDomain ℤ_[p] := Function.Injective.isDomain (subring p).subtype Subtype.coe_injective
+instance (priority := 10000) : IsDomain ℤ_[p] := Function.Injective.isDomain (subring p).subtype Subtype.coe_injective
 
 end PadicInt
 
@@ -314,7 +314,7 @@ private def cauSeq_to_rat_cauSeq (f : CauSeq ℤ_[p] norm) : CauSeq ℚ_[p] fun 
 
 variable (p)
 
-instance complete : CauSeq.IsComplete ℤ_[p] norm :=
+instance (priority := 10000) complete : CauSeq.IsComplete ℤ_[p] norm :=
   ⟨fun f =>
     have hqn : ‖CauSeq.lim (cauSeq_to_rat_cauSeq f)‖ ≤ 1 :=
       padicNormE_lim_le zero_lt_one fun _ => norm_le_one _
@@ -582,7 +582,7 @@ section Dvr
 /-! ### Discrete valuation ring -/
 
 
-instance : LocalRing ℤ_[p] :=
+instance (priority := 10000) : LocalRing ℤ_[p] :=
   LocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
 
 theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
@@ -608,7 +608,7 @@ theorem prime_p : Prime (p : ℤ_[p]) := by
 theorem irreducible_p : Irreducible (p : ℤ_[p]) := Prime.irreducible prime_p
 #align padic_int.irreducible_p PadicInt.irreducible_p
 
-instance : DiscreteValuationRing ℤ_[p] :=
+instance (priority := 10000) : DiscreteValuationRing ℤ_[p] :=
   DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization
     ⟨p, irreducible_p, fun {x hx} =>
       ⟨x.valuation.natAbs, unitCoeff hx, by rw [mul_comm, ← unitCoeff_spec hx]⟩⟩
@@ -620,7 +620,7 @@ theorem ideal_eq_span_pow_p {s : Ideal ℤ_[p]} (hs : s ≠ ⊥) :
 
 open CauSeq
 
-instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
+instance (priority := 10000) : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
   prec' x hx := by
     simp only [← Ideal.one_eq_top, smul_eq_mul, mul_one, SModEq.sub_mem, maximalIdeal_eq_span_p,
       Ideal.span_singleton_pow, ← norm_le_pow_iff_mem_span_pow] at hx ⊢
@@ -648,7 +648,7 @@ end Dvr
 
 section FractionRing
 
-instance algebra : Algebra ℤ_[p] ℚ_[p] :=
+instance (priority := 10000) algebra : Algebra ℤ_[p] ℚ_[p] :=
   Algebra.ofSubring (subring p)
 #align padic_int.algebra PadicInt.algebra
 
@@ -657,7 +657,7 @@ theorem algebraMap_apply (x : ℤ_[p]) : algebraMap ℤ_[p] ℚ_[p] x = x :=
   rfl
 #align padic_int.algebra_map_apply PadicInt.algebraMap_apply
 
-instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
+instance (priority := 10000) isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
   map_units' := fun ⟨x, hx⟩ => by
     rwa [algebraMap_apply, isUnit_iff_ne_zero, PadicInt.coe_ne_zero, ←
       mem_nonZeroDivisors_iff_ne_zero]

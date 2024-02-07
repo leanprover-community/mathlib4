@@ -75,7 +75,7 @@ variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂
 
 namespace BilinForm
 
-instance : CoeFun (BilinForm R M) fun _ => M → M → R :=
+instance (priority := 10000) : CoeFun (BilinForm R M) fun _ => M → M → R :=
   ⟨bilin⟩
 
 initialize_simps_projections BilinForm (bilin → apply)
@@ -171,7 +171,7 @@ theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y :=
   ⟨congr_fun, ext⟩
 #align bilin_form.ext_iff BilinForm.ext_iff
 
-instance : Zero (BilinForm R M) where
+instance (priority := 10000) : Zero (BilinForm R M) where
   zero :=
     { bilin := fun _ _ => 0
       bilin_add_left := fun _ _ _ => (add_zero 0).symm
@@ -191,7 +191,7 @@ theorem zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
 
 variable (B D B₁ D₁)
 
-instance : Add (BilinForm R M) where
+instance (priority := 10000) : Add (BilinForm R M) where
   add B D :=
     { bilin := fun x y => B x y + D x y
       bilin_add_left := fun x y z => by simp only [add_left, add_left, add_add_add_comm]
@@ -213,7 +213,7 @@ theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
 multiplication.
 
 When `R` itself is commutative, this provides an `R`-action via `Algebra.id`. -/
-instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] : SMul α (BilinForm R M) where
+instance (priority := 10000) {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] : SMul α (BilinForm R M) where
   smul c B :=
     { bilin := fun x y => c • B x y
       bilin_add_left := fun x y z => by simp only [add_left, smul_add]
@@ -233,25 +233,25 @@ theorem smul_apply {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R 
   rfl
 #align bilin_form.smul_apply BilinForm.smul_apply
 
-instance {α β} [Monoid α] [Monoid β] [DistribMulAction α R] [DistribMulAction β R]
+instance (priority := 10000) {α β} [Monoid α] [Monoid β] [DistribMulAction α R] [DistribMulAction β R]
     [SMulCommClass α R R] [SMulCommClass β R R] [SMulCommClass α β R] :
     SMulCommClass α β (BilinForm R M) :=
   ⟨fun a b B => ext fun x y => smul_comm a b (B x y)⟩
 
-instance {α β} [Monoid α] [Monoid β] [SMul α β] [DistribMulAction α R] [DistribMulAction β R]
+instance (priority := 10000) {α β} [Monoid α] [Monoid β] [SMul α β] [DistribMulAction α R] [DistribMulAction β R]
     [SMulCommClass α R R] [SMulCommClass β R R] [IsScalarTower α β R] :
     IsScalarTower α β (BilinForm R M) :=
   ⟨fun a b B => ext fun x y => smul_assoc a b (B x y)⟩
 
-instance {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ R]
+instance (priority := 10000) {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ R]
     [SMulCommClass α R R] [IsCentralScalar α R] :
     IsCentralScalar α (BilinForm R M) :=
   ⟨fun a B => ext fun x y => op_smul_eq_smul a (B x y)⟩
 
-instance : AddCommMonoid (BilinForm R M) :=
+instance (priority := 10000) : AddCommMonoid (BilinForm R M) :=
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
-instance : Neg (BilinForm R₁ M₁) where
+instance (priority := 10000) : Neg (BilinForm R₁ M₁) where
   neg B :=
     { bilin := fun x y => -B x y
       bilin_add_left := fun x y z => by simp only [add_left, neg_add]
@@ -269,7 +269,7 @@ theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
   rfl
 #align bilin_form.neg_apply BilinForm.neg_apply
 
-instance : Sub (BilinForm R₁ M₁) where
+instance (priority := 10000) : Sub (BilinForm R₁ M₁) where
   sub B D :=
     { bilin := fun x y => B x y - D x y
       bilin_add_left := fun x y z => by simp only [add_left, add_left, add_sub_add_comm]
@@ -287,11 +287,11 @@ theorem sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
   rfl
 #align bilin_form.sub_apply BilinForm.sub_apply
 
-instance : AddCommGroup (BilinForm R₁ M₁) :=
+instance (priority := 10000) : AddCommGroup (BilinForm R₁ M₁) :=
   Function.Injective.addCommGroup _ coe_injective coe_zero coe_add coe_neg coe_sub
     (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
-instance : Inhabited (BilinForm R M) :=
+instance (priority := 10000) : Inhabited (BilinForm R M) :=
   ⟨0⟩
 
 /-- `coeFn` as an `AddMonoidHom` -/
@@ -301,11 +301,11 @@ def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
   map_add' := coe_add
 #align bilin_form.coe_fn_add_monoid_hom BilinForm.coeFnAddMonoidHom
 
-instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] :
+instance (priority := 10000) {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] :
     DistribMulAction α (BilinForm R M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
-instance {α} [Semiring α] [Module α R] [SMulCommClass α R R] : Module α (BilinForm R M) :=
+instance (priority := 10000) {α} [Semiring α] [Module α R] [SMulCommClass α R R] : Module α (BilinForm R M) :=
   Function.Injective.module _ coeFnAddMonoidHom coe_injective coe_smul
 
 section flip

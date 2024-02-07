@@ -86,7 +86,7 @@ variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
 
 variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 
-instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
+instance (priority := 10000) : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
   ⟨λ η => η.app _⟩
 
 variable {F G}
@@ -165,7 +165,7 @@ def idTransformation : ApplicativeTransformation F F where
   preserves_seq' x y := by simp
 #align applicative_transformation.id_transformation ApplicativeTransformation.idTransformation
 
-instance : Inhabited (ApplicativeTransformation F F) :=
+instance (priority := 10000) : Inhabited (ApplicativeTransformation F F) :=
   ⟨idTransformation⟩
 
 universe s t
@@ -267,19 +267,19 @@ class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFu
       η (traverse f x) = traverse (@η _ ∘ f) x
 #align is_lawful_traversable LawfulTraversable
 
-instance : Traversable Id :=
+instance (priority := 10000) : Traversable Id :=
   ⟨id⟩
 
-instance : LawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
+instance (priority := 10000) : LawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
 
 section
 
 variable {F : Type u → Type v} [Applicative F]
 
-instance : Traversable Option :=
+instance (priority := 10000) : Traversable Option :=
   ⟨Option.traverse⟩
 
-instance : Traversable List :=
+instance (priority := 10000) : Traversable List :=
   ⟨List.traverse⟩
 
 end
@@ -317,5 +317,5 @@ protected def traverse {α β} (f : α → F β) : Sum σ α → F (Sum σ β)
 
 end Sum
 
-instance {σ : Type u} : Traversable.{u} (Sum σ) :=
+instance (priority := 10000) {σ : Type u} : Traversable.{u} (Sum σ) :=
   ⟨@Sum.traverse _⟩

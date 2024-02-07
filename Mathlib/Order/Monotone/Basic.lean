@@ -121,22 +121,22 @@ section Decidable
 
 variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
 
-instance [i : Decidable (∀ a b, a ≤ b → f a ≤ f b)] : Decidable (Monotone f) := i
-instance [i : Decidable (∀ a b, a ≤ b → f b ≤ f a)] : Decidable (Antitone f) := i
+instance (priority := 10000) [i : Decidable (∀ a b, a ≤ b → f a ≤ f b)] : Decidable (Monotone f) := i
+instance (priority := 10000) [i : Decidable (∀ a b, a ≤ b → f b ≤ f a)] : Decidable (Antitone f) := i
 
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f a ≤ f b)] :
+instance (priority := 10000) [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f a ≤ f b)] :
     Decidable (MonotoneOn f s) := i
 
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f b ≤ f a)] :
+instance (priority := 10000) [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a ≤ b → f b ≤ f a)] :
     Decidable (AntitoneOn f s) := i
 
-instance [i : Decidable (∀ a b, a < b → f a < f b)] : Decidable (StrictMono f) := i
-instance [i : Decidable (∀ a b, a < b → f b < f a)] : Decidable (StrictAnti f) := i
+instance (priority := 10000) [i : Decidable (∀ a b, a < b → f a < f b)] : Decidable (StrictMono f) := i
+instance (priority := 10000) [i : Decidable (∀ a b, a < b → f b < f a)] : Decidable (StrictAnti f) := i
 
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f a < f b)] :
+instance (priority := 10000) [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f a < f b)] :
     Decidable (StrictMonoOn f s) := i
 
-instance [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
+instance (priority := 10000) [i : Decidable (∀ a ∈ s, ∀ b ∈ s, a < b → f b < f a)] :
     Decidable (StrictAntiOn f s) := i
 
 end Decidable

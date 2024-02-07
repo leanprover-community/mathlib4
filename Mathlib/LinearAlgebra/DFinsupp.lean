@@ -105,7 +105,7 @@ section Lsum
 /-- Typeclass inference can't find `DFinsupp.addCommMonoid` without help for this case.
 This instance allows it to be found where it is needed on the LHS of the colon in
 `DFinsupp.moduleOfLinearMap`. -/
-instance addCommMonoidOfLinearMap : AddCommMonoid (Π₀ i : ι, M i →ₗ[R] N) :=
+instance (priority := 10000) addCommMonoidOfLinearMap : AddCommMonoid (Π₀ i : ι, M i →ₗ[R] N) :=
   inferInstance
 #align dfinsupp.add_comm_monoid_of_linear_map DFinsupp.addCommMonoidOfLinearMap
 
@@ -115,7 +115,7 @@ This is needed to define `DFinsupp.lsum` below.
 The cause seems to be an inability to unify the `∀ i, AddCommMonoid (M i →ₗ[R] N)` instance that
 we have with the `∀ i, Zero (M i →ₗ[R] N)` instance which appears as a parameter to the
 `DFinsupp` type. -/
-instance moduleOfLinearMap [Semiring S] [Module S N] [SMulCommClass R S N] :
+instance (priority := 10000) moduleOfLinearMap [Semiring S] [Module S N] [SMulCommClass R S N] :
     Module S (Π₀ i : ι, M i →ₗ[R] N) :=
   DFinsupp.module
 #align dfinsupp.module_of_linear_map DFinsupp.moduleOfLinearMap
@@ -123,7 +123,7 @@ instance moduleOfLinearMap [Semiring S] [Module S N] [SMulCommClass R S N] :
 variable (S)
 
 
-instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
+instance (priority := 10000) {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
     [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
     EquivLike (LinearEquiv σ M M₂) M M₂ :=

@@ -41,17 +41,17 @@ def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
 #align direct_sum DirectSum
 
 -- Porting note: Added inhabited instance manually
-instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
+instance (priority := 10000) [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
   inferInstanceAs (Inhabited (Π₀ i, β i))
 
 -- Porting note: Added addCommMonoid instance manually
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
+instance (priority := 10000) [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
-instance [∀ i, AddCommMonoid (β i)] : DFunLike (DirectSum ι β) _ fun i : ι => β i :=
+instance (priority := 10000) [∀ i, AddCommMonoid (β i)] : DFunLike (DirectSum ι β) _ fun i : ι => β i :=
   inferInstanceAs (DFunLike (Π₀ i, β i) _ _)
 
-instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
+instance (priority := 10000) [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
   inferInstanceAs (CoeFun (Π₀ i, β i) fun _ => ∀ i : ι, β i)
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
@@ -77,7 +77,7 @@ section AddCommGroup
 
 variable [∀ i, AddCommGroup (β i)]
 
-instance : AddCommGroup (DirectSum ι β) :=
+instance (priority := 10000) : AddCommGroup (DirectSum ι β) :=
   inferInstanceAs (AddCommGroup (Π₀ i, β i))
 variable {β}
 
@@ -259,12 +259,12 @@ variable {β}
 -- Porting note: commented out
 -- omit dec_ι
 
-instance unique [∀ i, Subsingleton (β i)] : Unique (⨁ i, β i) :=
+instance (priority := 10000) unique [∀ i, Subsingleton (β i)] : Unique (⨁ i, β i) :=
   DFinsupp.unique
 #align direct_sum.unique DirectSum.unique
 
 /-- A direct sum over an empty type is trivial. -/
-instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
+instance (priority := 10000) uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
   DFinsupp.uniqueOfIsEmpty
 #align direct_sum.unique_of_is_empty DirectSum.uniqueOfIsEmpty
 

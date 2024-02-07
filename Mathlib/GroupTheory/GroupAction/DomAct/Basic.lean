@@ -152,26 +152,26 @@ lemma symm_mk_zpow [DivInvMonoid M] (a : Mᵈᵐᵃ) (n : ℤ) : mk.symm (a ^ n)
 variable {β : Type*}
 
 @[to_additive]
-instance [SMul M α] : SMul Mᵈᵐᵃ (α → β) where
+instance (priority := 10000) [SMul M α] : SMul Mᵈᵐᵃ (α → β) where
   smul c f a := f (mk.symm c • a)
 
 @[to_additive]
 theorem smul_apply [SMul M α] (c : Mᵈᵐᵃ) (f : α → β) (a : α) : (c • f) a = f (mk.symm c • a) := rfl
 
 @[to_additive]
-instance [SMul M α] [SMul N β] : SMulCommClass Mᵈᵐᵃ N (α → β) where
+instance (priority := 10000) [SMul M α] [SMul N β] : SMulCommClass Mᵈᵐᵃ N (α → β) where
   smul_comm _ _ _ := rfl
 
 @[to_additive]
-instance [SMul M α] [SMul N β] : SMulCommClass N Mᵈᵐᵃ (α → β) where
+instance (priority := 10000) [SMul M α] [SMul N β] : SMulCommClass N Mᵈᵐᵃ (α → β) where
   smul_comm _ _ _ := rfl
 
 @[to_additive]
-instance [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ (α → β) where
+instance (priority := 10000) [SMul M α] [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ (α → β) where
   smul_comm _ _ f := funext fun _ ↦ congr_arg f (smul_comm _ _ _).symm
 
 @[to_additive]
-instance [SMul M α] [FaithfulSMul M α] [Nontrivial β] : FaithfulSMul Mᵈᵐᵃ (α → β) where
+instance (priority := 10000) [SMul M α] [FaithfulSMul M α] [Nontrivial β] : FaithfulSMul Mᵈᵐᵃ (α → β) where
   eq_of_smul_eq_smul {c₁ c₂} h := mk.symm.injective <| eq_of_smul_eq_smul fun a : α ↦ by
     rcases exists_pair_ne β with ⟨x, y, hne⟩
     contrapose! hne
@@ -179,18 +179,18 @@ instance [SMul M α] [FaithfulSMul M α] [Nontrivial β] : FaithfulSMul Mᵈᵐ�
     replace h := congr_fun (h (update (const α x) (mk.symm c₂ • a) y)) a
     simpa [smul_apply, hne] using h
 
-instance [SMul M α] [Zero β] : SMulZeroClass Mᵈᵐᵃ (α → β) where
+instance (priority := 10000) [SMul M α] [Zero β] : SMulZeroClass Mᵈᵐᵃ (α → β) where
   smul_zero _ := rfl
 
-instance [SMul M α] [AddZeroClass A] : DistribSMul Mᵈᵐᵃ (α → A) where
+instance (priority := 10000) [SMul M α] [AddZeroClass A] : DistribSMul Mᵈᵐᵃ (α → A) where
   smul_add _ _ _ := rfl
 
 @[to_additive]
-instance [Monoid M] [MulAction M α] : MulAction Mᵈᵐᵃ (α → β) where
+instance (priority := 10000) [Monoid M] [MulAction M α] : MulAction Mᵈᵐᵃ (α → β) where
   one_smul f := funext fun _ ↦ congr_arg f (one_smul _ _)
   mul_smul _ _ f := funext fun _ ↦ congr_arg f (mul_smul _ _ _)
 
-instance [Monoid M] [MulAction M α] [AddMonoid A] : DistribMulAction Mᵈᵐᵃ (α → A) where
+instance (priority := 10000) [Monoid M] [MulAction M α] [AddMonoid A] : DistribMulAction Mᵈᵐᵃ (α → A) where
   smul_zero _ := rfl
   smul_add _ _ _ := rfl
 
@@ -198,10 +198,10 @@ section MonoidHom
 
 variable [Monoid M] [Monoid A] [MulDistribMulAction M A] [MulOneClass B]
 
-instance : SMul Mᵈᵐᵃ (A →* B) where
+instance (priority := 10000) : SMul Mᵈᵐᵃ (A →* B) where
   smul c f := f.comp (MulDistribMulAction.toMonoidHom _ (mk.symm c))
 
-instance [Monoid M'] [MulDistribMulAction M' A] [SMulCommClass M M' A] :
+instance (priority := 10000) [Monoid M'] [MulDistribMulAction M' A] [SMulCommClass M M' A] :
     SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (A →* B) :=
   DFunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
@@ -211,7 +211,7 @@ theorem smul_monoidHom_apply (c : Mᵈᵐᵃ) (f : A →* B) (a : A) : (c • f)
 @[simp]
 theorem mk_smul_monoidHom_apply (c : M) (f : A →* B) (a : A) : (mk c • f) a = f (c • a) := rfl
 
-instance : MulAction Mᵈᵐᵃ (A →* B) := DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
+instance (priority := 10000) : MulAction Mᵈᵐᵃ (A →* B) := DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
 
 end MonoidHom
 
@@ -221,13 +221,13 @@ section DistribSMul
 
 variable [AddMonoid A] [DistribSMul M A] [AddZeroClass B]
 
-instance : SMul Mᵈᵐᵃ (A →+ B) where
+instance (priority := 10000) : SMul Mᵈᵐᵃ (A →+ B) where
   smul c f := f.comp (DistribSMul.toAddMonoidHom _ (mk.symm c))
 
-instance [DistribSMul M' A] [SMulCommClass M M' A] : SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (A →+ B) :=
+instance (priority := 10000) [DistribSMul M' A] [SMulCommClass M M' A] : SMulCommClass Mᵈᵐᵃ M'ᵈᵐᵃ (A →+ B) :=
   DFunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
-instance [DistribSMul M' B] : SMulCommClass Mᵈᵐᵃ M' (A →+ B) :=
+instance (priority := 10000) [DistribSMul M' B] : SMulCommClass Mᵈᵐᵃ M' (A →+ B) :=
   DFunLike.coe_injective.smulCommClass (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 theorem smul_addMonoidHom_apply (c : Mᵈᵐᵃ) (f : A →+ B) (a : A) : (c • f) a = f (mk.symm c • a) :=
@@ -238,10 +238,10 @@ theorem mk_smul_addMonoidHom_apply (c : M) (f : A →+ B) (a : A) : (mk c • f)
 
 end DistribSMul
 
-instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddZeroClass B] :
+instance (priority := 10000) [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddZeroClass B] :
     MulAction Mᵈᵐᵃ (A →+ B) := DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
 
-instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddCommMonoid B] :
+instance (priority := 10000) [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddCommMonoid B] :
     DistribMulAction Mᵈᵐᵃ (A →+ B) :=
   DFunLike.coe_injective.distribMulAction (AddMonoidHom.coeFn A B) fun _ _ ↦ rfl
 

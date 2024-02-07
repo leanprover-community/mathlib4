@@ -110,13 +110,13 @@ protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σi, α i) :=
         rw [mk_le_mk_iff] at h
         exact mk_lt_mk_iff.2 (hab.lt_of_not_le h) }
 
-instance [∀ i, PartialOrder (α i)] : PartialOrder (Σi, α i) :=
+instance (priority := 10000) [∀ i, PartialOrder (α i)] : PartialOrder (Σi, α i) :=
   { Sigma.preorder with
     le_antisymm := by
       rintro _ _ ⟨i, a, b, hab⟩ ⟨_, _, _, hba⟩
       exact ext rfl (heq_of_eq <| hab.antisymm hba) }
 
-instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σi, α i) where
+instance (priority := 10000) [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σi, α i) where
   dense := by
     rintro ⟨i, a⟩ ⟨_, _⟩ ⟨_, _, b, h⟩
     obtain ⟨c, ha, hb⟩ := exists_between h
@@ -151,7 +151,7 @@ theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
 #align sigma.lex.lt_def Sigma.Lex.lt_def
 
 /-- The lexicographical preorder on a sigma type. -/
-instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
+instance (priority := 10000) preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
   { Sigma.Lex.LE, Sigma.Lex.LT with
     le_refl := fun ⟨i, a⟩ => Lex.right a a le_rfl,
     le_trans := fun _ _ _ => trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
@@ -168,7 +168,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α
 #align sigma.lex.preorder Sigma.Lex.preorder
 
 /-- The lexicographical partial order on a sigma type. -/
-instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
+instance (priority := 10000) partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
     PartialOrder (Σₗ i, α i) :=
   { Lex.preorder with
     le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
@@ -177,7 +177,7 @@ instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
 
 
 /-- The lexicographical linear order on a sigma type. -/
-instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
+instance (priority := 10000) linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
     LinearOrder (Σₗ i, α i) :=
   { Lex.partialOrder with
     le_total := total_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
@@ -186,7 +186,7 @@ instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] :
 #align sigma.lex.linear_order Sigma.Lex.linearOrder
 
 /-- The lexicographical linear order on a sigma type. -/
-instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :
+instance (priority := 10000) orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)] :
     OrderBot (Σₗ i, α i) where
   bot := ⟨⊥, ⊥⟩
   bot_le := fun ⟨a, b⟩ => by
@@ -196,7 +196,7 @@ instance orderBot [PartialOrder ι] [OrderBot ι] [∀ i, Preorder (α i)] [Orde
 #align sigma.lex.order_bot Sigma.Lex.orderBot
 
 /-- The lexicographical linear order on a sigma type. -/
-instance orderTop [PartialOrder ι] [OrderTop ι] [∀ i, Preorder (α i)] [OrderTop (α ⊤)] :
+instance (priority := 10000) orderTop [PartialOrder ι] [OrderTop ι] [∀ i, Preorder (α i)] [OrderTop (α ⊤)] :
     OrderTop (Σₗ i, α i) where
   top := ⟨⊤, ⊤⟩
   le_top := fun ⟨a, b⟩ => by
@@ -206,12 +206,12 @@ instance orderTop [PartialOrder ι] [OrderTop ι] [∀ i, Preorder (α i)] [Orde
 #align sigma.lex.order_top Sigma.Lex.orderTop
 
 /-- The lexicographical linear order on a sigma type. -/
-instance boundedOrder [PartialOrder ι] [BoundedOrder ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)]
+instance (priority := 10000) boundedOrder [PartialOrder ι] [BoundedOrder ι] [∀ i, Preorder (α i)] [OrderBot (α ⊥)]
     [OrderTop (α ⊤)] : BoundedOrder (Σₗ i, α i) :=
   { Lex.orderBot, Lex.orderTop with }
 #align sigma.lex.bounded_order Sigma.Lex.boundedOrder
 
-instance denselyOrdered [Preorder ι] [DenselyOrdered ι] [∀ i, Nonempty (α i)] [∀ i, Preorder (α i)]
+instance (priority := 10000) denselyOrdered [Preorder ι] [DenselyOrdered ι] [∀ i, Nonempty (α i)] [∀ i, Preorder (α i)]
     [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σₗ i, α i) where
   dense := by
     rintro ⟨i, a⟩ ⟨j, b⟩ (⟨_, _, h⟩ | ⟨_, b, h⟩)
@@ -222,7 +222,7 @@ instance denselyOrdered [Preorder ι] [DenselyOrdered ι] [∀ i, Nonempty (α i
       exact ⟨⟨i, c⟩, right _ _ ha, right _ _ hb⟩
 #align sigma.lex.densely_ordered Sigma.Lex.denselyOrdered
 
-instance denselyOrdered_of_noMaxOrder [Preorder ι] [∀ i, Preorder (α i)]
+instance (priority := 10000) denselyOrdered_of_noMaxOrder [Preorder ι] [∀ i, Preorder (α i)]
     [∀ i, DenselyOrdered (α i)] [∀ i, NoMaxOrder (α i)] :
     DenselyOrdered (Σₗ i, α i) where
   dense := by
@@ -233,7 +233,7 @@ instance denselyOrdered_of_noMaxOrder [Preorder ι] [∀ i, Preorder (α i)]
       exact ⟨⟨i, c⟩, right _ _ ha, right _ _ hb⟩
 #align sigma.lex.densely_ordered_of_no_max_order Sigma.Lex.denselyOrdered_of_noMaxOrder
 
-instance denselyOrdered_of_noMinOrder [Preorder ι] [∀ i, Preorder (α i)]
+instance (priority := 10000) denselyOrdered_of_noMinOrder [Preorder ι] [∀ i, Preorder (α i)]
     [∀ i, DenselyOrdered (α i)] [∀ i, NoMinOrder (α i)] :
     DenselyOrdered (Σₗ i, α i) where
   dense := by
@@ -244,7 +244,7 @@ instance denselyOrdered_of_noMinOrder [Preorder ι] [∀ i, Preorder (α i)]
       exact ⟨⟨i, c⟩, right _ _ ha, right _ _ hb⟩
 #align sigma.lex.densely_ordered_of_no_min_order Sigma.Lex.denselyOrdered_of_noMinOrder
 
-instance noMaxOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrder ι]
+instance (priority := 10000) noMaxOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrder ι]
     [∀ i, Nonempty (α i)] : NoMaxOrder (Σₗ i, α i) where
   exists_gt := by
     rintro ⟨i, a⟩
@@ -254,7 +254,7 @@ instance noMaxOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMaxOrd
 #align sigma.lex.no_max_order_of_nonempty Sigma.Lex.noMaxOrder_of_nonempty
 
 -- porting note: this statement was incorrect in mathlib3, hence the `#noalign`.
-instance noMinOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMinOrder ι]
+instance (priority := 10000) noMinOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMinOrder ι]
     [∀ i, Nonempty (α i)] : NoMinOrder (Σₗ i, α i) where
   exists_lt := by
     rintro ⟨i, a⟩
@@ -263,7 +263,7 @@ instance noMinOrder_of_nonempty [Preorder ι] [∀ i, Preorder (α i)] [NoMinOrd
     exact ⟨⟨j, b⟩, left _ _ h⟩
 #noalign sigma.lex.no_min_order_of_nonempty
 
-instance noMaxOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMaxOrder (α i)] :
+instance (priority := 10000) noMaxOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMaxOrder (α i)] :
     NoMaxOrder (Σₗ i, α i) where
   exists_gt := by
     rintro ⟨i, a⟩
@@ -271,7 +271,7 @@ instance noMaxOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMaxOrder (�
     exact ⟨⟨i, b⟩, right _ _ h⟩
 #align sigma.lex.no_max_order Sigma.Lex.noMaxOrder
 
-instance noMinOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMinOrder (α i)] :
+instance (priority := 10000) noMinOrder [Preorder ι] [∀ i, Preorder (α i)] [∀ i, NoMinOrder (α i)] :
     NoMinOrder (Σₗ i, α i) where
   exists_lt := by
     rintro ⟨i, a⟩

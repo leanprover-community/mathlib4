@@ -34,7 +34,7 @@ The top element `⊤` is the trivial quotient, meaning that every element of `X`
 to a point. Given `h : A ≤ B`, the map `A → B` is `DiscreteQuotient.ofLE h`.
 
 Whenever `X` is a locally connected space, the type `DiscreteQuotient X` is also endowed with an
-instance of an `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
+instance (priority := 10000) of an `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
 i.e., `x ~ y` means that `x` and `y` belong to the same connected component. In particular, if `X`
 is a discrete topological space, then `x ~ y` is equivalent (propositionally, not definitionally) to
 `x = y`.
@@ -99,10 +99,10 @@ theorem trans (x y z : X) : S.Rel x y → S.Rel y z → S.Rel x z := S.trans'
 /-- The setoid whose quotient yields the discrete quotient. -/
 add_decl_doc toSetoid
 
-instance : CoeSort (DiscreteQuotient X) (Type _) :=
+instance (priority := 10000) : CoeSort (DiscreteQuotient X) (Type _) :=
   ⟨fun S => Quotient S.toSetoid⟩
 
-instance : TopologicalSpace S :=
+instance (priority := 10000) : TopologicalSpace S :=
   inferInstanceAs (TopologicalSpace (Quotient S.toSetoid))
 
 /-- The projection from `X` to the given discrete quotient. -/
@@ -125,7 +125,7 @@ theorem proj_continuous : Continuous S.proj :=
   S.proj_quotientMap.continuous
 #align discrete_quotient.proj_continuous DiscreteQuotient.proj_continuous
 
-instance : DiscreteTopology S :=
+instance (priority := 10000) : DiscreteTopology S :=
   singletons_open_iff_discrete.1 <| S.proj_surjective.forall.2 fun x => by
     rw [← S.proj_quotientMap.isOpen_preimage, fiber_eq]
     exact S.isOpen_setOf_rel _
@@ -151,27 +151,27 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.Rel x)) := by
   apply isClopen_preimage
 #align discrete_quotient.is_clopen_set_of_rel DiscreteQuotient.isClopen_setOf_rel
 
-instance : Inf (DiscreteQuotient X) :=
+instance (priority := 10000) : Inf (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
-instance : SemilatticeInf (DiscreteQuotient X) :=
+instance (priority := 10000) : SemilatticeInf (DiscreteQuotient X) :=
   Injective.semilatticeInf toSetoid toSetoid_injective fun _ _ => rfl
 
-instance : OrderTop (DiscreteQuotient X) where
+instance (priority := 10000) : OrderTop (DiscreteQuotient X) where
   top := ⟨⊤, fun _ => isOpen_univ⟩
   le_top a := by tauto
 
-instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
+instance (priority := 10000) : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 
-instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
+instance (priority := 10000) inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 #align discrete_quotient.inhabited_quotient DiscreteQuotient.inhabitedQuotient
 
 -- porting note: TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
-instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
+instance (priority := 10000) [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
 -- porting note: new lemma
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/
-instance : Subsingleton (⊤ : DiscreteQuotient X) where
+instance (priority := 10000) : Subsingleton (⊤ : DiscreteQuotient X) where
   allEq := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound trivial
 
 section Comap
@@ -248,7 +248,7 @@ end OfLE
 /-- When `X` is a locally connected space, there is an `OrderBot` instance on
 `DiscreteQuotient X`. The bottom element is given by `connectedComponentSetoid X`
 -/
-instance [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
+instance (priority := 10000) [LocallyConnectedSpace X] : OrderBot (DiscreteQuotient X) where
   bot :=
     { toSetoid := connectedComponentSetoid X
       isOpen_setOf_rel := fun x => by
@@ -390,7 +390,7 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
 #align discrete_quotient.exists_of_compat DiscreteQuotient.exists_of_compat
 
 /-- If `X` is a compact space, then any discrete quotient of `X` is finite. -/
-instance [CompactSpace X] : Finite S := by
+instance (priority := 10000) [CompactSpace X] : Finite S := by
   have : CompactSpace S := Quotient.compactSpace
   rwa [← isCompact_univ_iff, isCompact_iff_finite, finite_univ_iff] at this
 

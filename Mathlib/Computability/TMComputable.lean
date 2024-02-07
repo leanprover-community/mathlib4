@@ -59,11 +59,11 @@ section
 
 variable (tm : FinTM2)
 
-instance decidableEqK : DecidableEq tm.K :=
+instance (priority := 10000) decidableEqK : DecidableEq tm.K :=
   tm.kDecidableEq
 #align turing.fin_tm2.K.decidable_eq Turing.FinTM2.decidableEqK
 
-instance inhabitedσ : Inhabited tm.σ :=
+instance (priority := 10000) inhabitedσ : Inhabited tm.σ :=
   ⟨tm.initialState⟩
 #align turing.fin_tm2.σ.inhabited Turing.FinTM2.inhabitedσ
 
@@ -73,7 +73,7 @@ def Stmt : Type :=
 #align turing.fin_tm2.stmt Turing.FinTM2.Stmt
 
 -- Porting note: The `deriving Inhabited` handler couldn't derive this.
-instance inhabitedStmt : Inhabited (Stmt tm) :=
+instance (priority := 10000) inhabitedStmt : Inhabited (Stmt tm) :=
   inferInstanceAs (Inhabited (Turing.TM2.Stmt tm.Γ tm.Λ tm.σ))
 #align turing.fin_tm2.stmt.inhabited Turing.FinTM2.inhabitedStmt
 
@@ -82,7 +82,7 @@ def Cfg : Type :=
   Turing.TM2.Cfg tm.Γ tm.Λ tm.σ
 #align turing.fin_tm2.cfg Turing.FinTM2.Cfg
 
-instance inhabitedCfg : Inhabited (Cfg tm) :=
+instance (priority := 10000) inhabitedCfg : Inhabited (Cfg tm) :=
   Turing.TM2.Cfg.inhabited _ _ _
 #align turing.fin_tm2.inhabited_cfg Turing.FinTM2.inhabitedCfg
 
@@ -244,7 +244,7 @@ def idComputer {α : Type} (ea : FinEncoding α) : FinTM2 where
   m _ := halt
 #align turing.id_computer Turing.idComputer
 
-instance inhabitedFinTM2 : Inhabited FinTM2 :=
+instance (priority := 10000) inhabitedFinTM2 : Inhabited FinTM2 :=
   ⟨idComputer Computability.inhabitedFinEncoding.default⟩
 #align turing.inhabited_fin_tm2 Turing.inhabitedFinTM2
 
@@ -263,31 +263,31 @@ def idComputableInPolyTime {α : Type} (ea : FinEncoding α) :
       steps_le_m := by simp only [Polynomial.eval_one, le_refl] }
 #align turing.id_computable_in_poly_time Turing.idComputableInPolyTime
 
-instance inhabitedTM2ComputableInPolyTime :
+instance (priority := 10000) inhabitedTM2ComputableInPolyTime :
     Inhabited (TM2ComputableInPolyTime (default : FinEncoding Bool) default id) :=
   ⟨idComputableInPolyTime Computability.inhabitedFinEncoding.default⟩
 #align turing.inhabited_tm2_computable_in_poly_time Turing.inhabitedTM2ComputableInPolyTime
 
-instance inhabitedTM2OutputsInTime :
+instance (priority := 10000) inhabitedTM2OutputsInTime :
     Inhabited
       (TM2OutputsInTime (idComputer finEncodingBoolBool) (List.map (Equiv.cast rfl).invFun [false])
         (some (List.map (Equiv.cast rfl).invFun [false])) (Polynomial.eval 1 1)) :=
   ⟨(idComputableInPolyTime finEncodingBoolBool).outputsFun false⟩
 #align turing.inhabited_tm2_outputs_in_time Turing.inhabitedTM2OutputsInTime
 
-instance inhabitedTM2Outputs :
+instance (priority := 10000) inhabitedTM2Outputs :
     Inhabited
       (TM2Outputs (idComputer finEncodingBoolBool) (List.map (Equiv.cast rfl).invFun [false])
         (some (List.map (Equiv.cast rfl).invFun [false]))) :=
   ⟨TM2OutputsInTime.toTM2Outputs Turing.inhabitedTM2OutputsInTime.default⟩
 #align turing.inhabited_tm2_outputs Turing.inhabitedTM2Outputs
 
-instance inhabitedEvalsToInTime :
+instance (priority := 10000) inhabitedEvalsToInTime :
     Inhabited (EvalsToInTime (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩) 0) :=
   ⟨EvalsToInTime.refl _ _⟩
 #align turing.inhabited_evals_to_in_time Turing.inhabitedEvalsToInTime
 
-instance inhabitedTM2EvalsTo : Inhabited (EvalsTo (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩)) :=
+instance (priority := 10000) inhabitedTM2EvalsTo : Inhabited (EvalsTo (fun _ : Unit => some ⟨⟩) ⟨⟩ (some ⟨⟩)) :=
   ⟨EvalsTo.refl _ _⟩
 #align turing.inhabited_tm2_evals_to Turing.inhabitedTM2EvalsTo
 
@@ -296,7 +296,7 @@ def idComputableInTime {α : Type} (ea : FinEncoding α) : @TM2ComputableInTime 
   TM2ComputableInPolyTime.toTM2ComputableInTime <| idComputableInPolyTime ea
 #align turing.id_computable_in_time Turing.idComputableInTime
 
-instance inhabitedTM2ComputableInTime :
+instance (priority := 10000) inhabitedTM2ComputableInTime :
     Inhabited (TM2ComputableInTime finEncodingBoolBool finEncodingBoolBool id) :=
   ⟨idComputableInTime Computability.inhabitedFinEncoding.default⟩
 #align turing.inhabited_tm2_computable_in_time Turing.inhabitedTM2ComputableInTime
@@ -306,12 +306,12 @@ def idComputable {α : Type} (ea : FinEncoding α) : @TM2Computable α α ea ea 
   TM2ComputableInTime.toTM2Computable <| idComputableInTime ea
 #align turing.id_computable Turing.idComputable
 
-instance inhabitedTM2Computable :
+instance (priority := 10000) inhabitedTM2Computable :
     Inhabited (TM2Computable finEncodingBoolBool finEncodingBoolBool id) :=
   ⟨idComputable Computability.inhabitedFinEncoding.default⟩
 #align turing.inhabited_tm2_computable Turing.inhabitedTM2Computable
 
-instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
+instance (priority := 10000) inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
   ⟨(default : TM2Computable finEncodingBoolBool finEncodingBoolBool id).toTM2ComputableAux⟩
 #align turing.inhabited_tm2_computable_aux Turing.inhabitedTM2ComputableAux
 

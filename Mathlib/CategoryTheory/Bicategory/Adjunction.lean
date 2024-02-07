@@ -102,7 +102,7 @@ def id (a : B) : 𝟙 a ⊣ 𝟙 a where
   left_triangle := by dsimp; coherence
   right_triangle := by dsimp; coherence
 
-instance : Inhabited (Adjunction (𝟙 a) (𝟙 a)) :=
+instance (priority := 10000) : Inhabited (Adjunction (𝟙 a) (𝟙 a)) :=
   ⟨id a⟩
 
 section Composition
@@ -240,7 +240,7 @@ namespace Equivalence
 /-- The identity 1-morphism is an equivalence. -/
 def id (a : B) : a ≌ a := ⟨_, _, (ρ_ _).symm, ρ_ _, by ext; simp [bicategoricalIsoComp]⟩
 
-instance : Inhabited (Equivalence a a) := ⟨id a⟩
+instance (priority := 10000) : Inhabited (Equivalence a a) := ⟨id a⟩
 
 /-- Construct an adjoint equivalence from 2-isomorphisms by upgrading `ε` to a counit. -/
 def mkOfAdjointifyCounit (η : 𝟙 a ≅ f ≫ g) (ε : g ≫ f ≅ 𝟙 b) : a ≌ b where

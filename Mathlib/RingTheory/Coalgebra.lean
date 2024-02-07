@@ -89,7 +89,7 @@ namespace CommSemiring
 variable (R : Type u) [CommSemiring R]
 
 /-- Every commutative (semi)ring is a coalgebra over itself, with `Δ r = 1 ⊗ₜ r`. -/
-instance toCoalgebra : Coalgebra R R where
+instance (priority := 10000) toCoalgebra : Coalgebra R R where
   comul := (TensorProduct.mk R R R) 1
   counit := .id
   coassoc := rfl
@@ -111,7 +111,7 @@ variable [Coalgebra R A] [Coalgebra R B]
 
 open LinearMap
 
-instance instCoalgebraStruct : CoalgebraStruct R (A × B) where
+instance (priority := 10000) instCoalgebraStruct : CoalgebraStruct R (A × B) where
   comul := .coprod
     (TensorProduct.map (.inl R A B) (.inl R A B) ∘ₗ comul)
     (TensorProduct.map (.inr R A B) (.inr R A B) ∘ₗ comul)
@@ -154,7 +154,7 @@ theorem comul_comp_snd :
 
 @[simp] theorem counit_comp_inl : counit ∘ₗ inl R A B = counit := by ext; simp
 
-instance instCoalgebra : Coalgebra R (A × B) where
+instance (priority := 10000) instCoalgebra : Coalgebra R (A × B) where
   rTensor_counit_comp_comul := by
     ext : 1
     · rw [comp_assoc, comul_comp_inl, ← comp_assoc, rTensor_comp_map, counit_comp_inl,
@@ -187,7 +187,7 @@ variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 
 open LinearMap
 
-instance instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
+instance (priority := 10000) instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
   comul := Finsupp.lsum R fun i =>
     TensorProduct.map (Finsupp.lsingle i) (Finsupp.lsingle i) ∘ₗ comul
   counit := Finsupp.lsum R fun _ => counit
@@ -222,7 +222,7 @@ theorem comul_comp_lapply (i : ι) :
 elements of `ι` has a coalgebra structure. The coproduct `Δ` is given by `Δ(fᵢ a) = fᵢ a₁ ⊗ fᵢ a₂`
 where `Δ(a) = a₁ ⊗ a₂` and the counit `ε` by `ε(fᵢ a) = ε(a)`, where `fᵢ a` is the function sending
 `i` to `a` and all other elements of `ι` to zero. -/
-instance instCoalgebra : Coalgebra R (ι →₀ A) where
+instance (priority := 10000) instCoalgebra : Coalgebra R (ι →₀ A) where
   rTensor_counit_comp_comul := by
     ext : 1
     rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, rTensor_comp_map, counit_comp_lsingle,

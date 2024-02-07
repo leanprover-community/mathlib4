@@ -107,7 +107,7 @@ attribute [reassoc (attr := simp)] BiconeMorphism.wπ
 
 /-- The category of bicones on a given diagram. -/
 @[simps]
-instance Bicone.category : Category (Bicone F) where
+instance (priority := 10000) Bicone.category : Category (Bicone F) where
   Hom A B := BiconeMorphism A B
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
@@ -263,7 +263,7 @@ attribute [-simp, nolint simpNF] IsBilimit.mk.injEq
 
 attribute [local ext] Bicone.IsBilimit
 
-instance subsingleton_isBilimit {f : J → C} {c : Bicone f} : Subsingleton c.IsBilimit :=
+instance (priority := 10000) subsingleton_isBilimit {f : J → C} {c : Bicone f} : Subsingleton c.IsBilimit :=
   ⟨fun _ _ => Bicone.IsBilimit.ext _ _ (Subsingleton.elim _ _) (Subsingleton.elim _ _)⟩
 #align category_theory.limits.bicone.subsingleton_is_bilimit CategoryTheory.Limits.Bicone.subsingleton_isBilimit
 
@@ -699,7 +699,7 @@ lemma biproduct.whiskerEquiv_inv_eq_lift {f : J → C} {g : K → C} (e : J ≃ 
     · rintro rfl
       simp at h
 
-instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
+instance (priority := 10000) {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
     [∀ i, HasBiproduct (g i)] [HasBiproduct fun i => ⨁ g i] :
     HasBiproduct fun p : Σ i, f i => g p.1 p.2 where
   exists_biproduct := Nonempty.intro
@@ -860,7 +860,7 @@ def biproduct.isLimitFromSubtype :
       exact (Category.comp_id _).symm⟩
 #align category_theory.limits.biproduct.is_limit_from_subtype CategoryTheory.Limits.biproduct.isLimitFromSubtype
 
-instance : HasKernel (biproduct.π f i) :=
+instance (priority := 10000) : HasKernel (biproduct.π f i) :=
   HasLimit.mk ⟨_, biproduct.isLimitFromSubtype f i⟩
 
 /-- The kernel of `biproduct.π f i` is `⨁ Subtype.restrict {i}ᶜ f`. -/
@@ -886,7 +886,7 @@ def biproduct.isColimitToSubtype :
       exact (Category.id_comp _).symm⟩
 #align category_theory.limits.biproduct.is_colimit_to_subtype CategoryTheory.Limits.biproduct.isColimitToSubtype
 
-instance : HasCokernel (biproduct.ι f i) :=
+instance (priority := 10000) : HasCokernel (biproduct.ι f i) :=
   HasColimit.mk ⟨_, biproduct.isColimitToSubtype f i⟩
 
 /-- The cokernel of `biproduct.ι f i` is `⨁ Subtype.restrict {i}ᶜ f`. -/
@@ -931,7 +931,7 @@ def kernelForkBiproductToSubtype (p : Set K) : LimitCone (parallelPair (biproduc
       (by aesop_cat)
 #align category_theory.limits.kernel_fork_biproduct_to_subtype CategoryTheory.Limits.kernelForkBiproductToSubtype
 
-instance (p : Set K) : HasKernel (biproduct.toSubtype f p) :=
+instance (priority := 10000) (p : Set K) : HasKernel (biproduct.toSubtype f p) :=
   HasLimit.mk (kernelForkBiproductToSubtype f p)
 
 /-- The kernel of `biproduct.toSubtype f p` is `⨁ Subtype.restrict pᶜ f`. -/
@@ -968,7 +968,7 @@ def cokernelCoforkBiproductFromSubtype (p : Set K) :
       (by aesop_cat)
 #align category_theory.limits.cokernel_cofork_biproduct_from_subtype CategoryTheory.Limits.cokernelCoforkBiproductFromSubtype
 
-instance (p : Set K) : HasCokernel (biproduct.fromSubtype f p) :=
+instance (priority := 10000) (p : Set K) : HasCokernel (biproduct.fromSubtype f p) :=
   HasColimit.mk (cokernelCoforkBiproductFromSubtype f p)
 
 /-- The cokernel of `biproduct.fromSubtype f p` is `⨁ Subtype.restrict pᶜ f`. -/
@@ -1045,11 +1045,11 @@ end FiniteBiproducts
 
 variable {J : Type w} {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 
-instance biproduct.ι_mono (f : J → C) [HasBiproduct f] (b : J) : IsSplitMono (biproduct.ι f b) :=
+instance (priority := 10000) biproduct.ι_mono (f : J → C) [HasBiproduct f] (b : J) : IsSplitMono (biproduct.ι f b) :=
   IsSplitMono.mk' { retraction := biproduct.desc <| Pi.single b _ }
 #align category_theory.limits.biproduct.ι_mono CategoryTheory.Limits.biproduct.ι_mono
 
-instance biproduct.π_epi (f : J → C) [HasBiproduct f] (b : J) : IsSplitEpi (biproduct.π f b) :=
+instance (priority := 10000) biproduct.π_epi (f : J → C) [HasBiproduct f] (b : J) : IsSplitEpi (biproduct.π f b) :=
   IsSplitEpi.mk' { section_ := biproduct.lift <| Pi.single b _ }
 #align category_theory.limits.biproduct.π_epi CategoryTheory.Limits.biproduct.π_epi
 
@@ -1217,22 +1217,22 @@ theorem binary_cofan_inr_toCocone (c : BinaryBicone P Q) : BinaryCofan.inr c.toC
   rfl
 #align category_theory.limits.binary_bicone.binary_cofan_inr_to_cocone CategoryTheory.Limits.BinaryBicone.binary_cofan_inr_toCocone
 
-instance (c : BinaryBicone P Q) : IsSplitMono c.inl :=
+instance (priority := 10000) (c : BinaryBicone P Q) : IsSplitMono c.inl :=
   IsSplitMono.mk'
     { retraction := c.fst
       id := c.inl_fst }
 
-instance (c : BinaryBicone P Q) : IsSplitMono c.inr :=
+instance (priority := 10000) (c : BinaryBicone P Q) : IsSplitMono c.inr :=
   IsSplitMono.mk'
     { retraction := c.snd
       id := c.inr_snd }
 
-instance (c : BinaryBicone P Q) : IsSplitEpi c.fst :=
+instance (priority := 10000) (c : BinaryBicone P Q) : IsSplitEpi c.fst :=
   IsSplitEpi.mk'
     { section_ := c.inl
       id := c.inl_fst }
 
-instance (c : BinaryBicone P Q) : IsSplitEpi c.snd :=
+instance (priority := 10000) (c : BinaryBicone P Q) : IsSplitEpi c.snd :=
   IsSplitEpi.mk'
     { section_ := c.inr
       id := c.inr_snd }
@@ -1414,11 +1414,11 @@ end
 
 variable {P Q : C}
 
-instance HasBinaryBiproduct.hasLimit_pair [HasBinaryBiproduct P Q] : HasLimit (pair P Q) :=
+instance (priority := 10000) HasBinaryBiproduct.hasLimit_pair [HasBinaryBiproduct P Q] : HasLimit (pair P Q) :=
   HasLimit.mk ⟨_, BinaryBiproduct.isLimit P Q⟩
 #align category_theory.limits.has_binary_biproduct.has_limit_pair CategoryTheory.Limits.HasBinaryBiproduct.hasLimit_pair
 
-instance HasBinaryBiproduct.hasColimit_pair [HasBinaryBiproduct P Q] : HasColimit (pair P Q) :=
+instance (priority := 10000) HasBinaryBiproduct.hasColimit_pair [HasBinaryBiproduct P Q] : HasColimit (pair P Q) :=
   HasColimit.mk ⟨_, BinaryBiproduct.isColimit P Q⟩
 #align category_theory.limits.has_binary_biproduct.has_colimit_pair CategoryTheory.Limits.HasBinaryBiproduct.hasColimit_pair
 
@@ -1554,22 +1554,22 @@ theorem biprod.inr_desc {W X Y : C} [HasBinaryBiproduct X Y] (f : X ⟶ W) (g : 
   (BinaryBiproduct.isColimit X Y).fac _ ⟨WalkingPair.right⟩
 #align category_theory.limits.biprod.inr_desc CategoryTheory.Limits.biprod.inr_desc
 
-instance biprod.mono_lift_of_mono_left {W X Y : C} [HasBinaryBiproduct X Y] (f : W ⟶ X) (g : W ⟶ Y)
+instance (priority := 10000) biprod.mono_lift_of_mono_left {W X Y : C} [HasBinaryBiproduct X Y] (f : W ⟶ X) (g : W ⟶ Y)
     [Mono f] : Mono (biprod.lift f g) :=
   mono_of_mono_fac <| biprod.lift_fst _ _
 #align category_theory.limits.biprod.mono_lift_of_mono_left CategoryTheory.Limits.biprod.mono_lift_of_mono_left
 
-instance biprod.mono_lift_of_mono_right {W X Y : C} [HasBinaryBiproduct X Y] (f : W ⟶ X) (g : W ⟶ Y)
+instance (priority := 10000) biprod.mono_lift_of_mono_right {W X Y : C} [HasBinaryBiproduct X Y] (f : W ⟶ X) (g : W ⟶ Y)
     [Mono g] : Mono (biprod.lift f g) :=
   mono_of_mono_fac <| biprod.lift_snd _ _
 #align category_theory.limits.biprod.mono_lift_of_mono_right CategoryTheory.Limits.biprod.mono_lift_of_mono_right
 
-instance biprod.epi_desc_of_epi_left {W X Y : C} [HasBinaryBiproduct X Y] (f : X ⟶ W) (g : Y ⟶ W)
+instance (priority := 10000) biprod.epi_desc_of_epi_left {W X Y : C} [HasBinaryBiproduct X Y] (f : X ⟶ W) (g : Y ⟶ W)
     [Epi f] : Epi (biprod.desc f g) :=
   epi_of_epi_fac <| biprod.inl_desc _ _
 #align category_theory.limits.biprod.epi_desc_of_epi_left CategoryTheory.Limits.biprod.epi_desc_of_epi_left
 
-instance biprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryBiproduct X Y] (f : X ⟶ W) (g : Y ⟶ W)
+instance (priority := 10000) biprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryBiproduct X Y] (f : X ⟶ W) (g : Y ⟶ W)
     [Epi g] : Epi (biprod.desc f g) :=
   epi_of_epi_fac <| biprod.inr_desc _ _
 #align category_theory.limits.biprod.epi_desc_of_epi_right CategoryTheory.Limits.biprod.epi_desc_of_epi_right
@@ -1657,21 +1657,21 @@ theorem biprod.map_eq_map' {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBipr
     simp
 #align category_theory.limits.biprod.map_eq_map' CategoryTheory.Limits.biprod.map_eq_map'
 
-instance biprod.inl_mono {X Y : C} [HasBinaryBiproduct X Y] :
+instance (priority := 10000) biprod.inl_mono {X Y : C} [HasBinaryBiproduct X Y] :
     IsSplitMono (biprod.inl : X ⟶ X ⊞ Y) :=
   IsSplitMono.mk' { retraction := biprod.fst }
 #align category_theory.limits.biprod.inl_mono CategoryTheory.Limits.biprod.inl_mono
 
-instance biprod.inr_mono {X Y : C} [HasBinaryBiproduct X Y] :
+instance (priority := 10000) biprod.inr_mono {X Y : C} [HasBinaryBiproduct X Y] :
     IsSplitMono (biprod.inr : Y ⟶ X ⊞ Y) :=
   IsSplitMono.mk' { retraction := biprod.snd }
 #align category_theory.limits.biprod.inr_mono CategoryTheory.Limits.biprod.inr_mono
 
-instance biprod.fst_epi {X Y : C} [HasBinaryBiproduct X Y] : IsSplitEpi (biprod.fst : X ⊞ Y ⟶ X) :=
+instance (priority := 10000) biprod.fst_epi {X Y : C} [HasBinaryBiproduct X Y] : IsSplitEpi (biprod.fst : X ⊞ Y ⟶ X) :=
   IsSplitEpi.mk' { section_ := biprod.inl }
 #align category_theory.limits.biprod.fst_epi CategoryTheory.Limits.biprod.fst_epi
 
-instance biprod.snd_epi {X Y : C} [HasBinaryBiproduct X Y] : IsSplitEpi (biprod.snd : X ⊞ Y ⟶ Y) :=
+instance (priority := 10000) biprod.snd_epi {X Y : C} [HasBinaryBiproduct X Y] : IsSplitEpi (biprod.snd : X ⊞ Y ⟶ Y) :=
   IsSplitEpi.mk' { section_ := biprod.inr }
 #align category_theory.limits.biprod.snd_epi CategoryTheory.Limits.biprod.snd_epi
 
@@ -1911,7 +1911,7 @@ end HasBinaryBiproduct
 
 variable {X Y : C} [HasBinaryBiproduct X Y]
 
-instance : HasKernel (biprod.fst : X ⊞ Y ⟶ X) :=
+instance (priority := 10000) : HasKernel (biprod.fst : X ⊞ Y ⟶ X) :=
   HasLimit.mk ⟨_, biprod.isKernelFstKernelFork X Y⟩
 
 /-- The kernel of `biprod.fst : X ⊞ Y ⟶ X` is `Y`. -/
@@ -1920,7 +1920,7 @@ def kernelBiprodFstIso : kernel (biprod.fst : X ⊞ Y ⟶ X) ≅ Y :=
   limit.isoLimitCone ⟨_, biprod.isKernelFstKernelFork X Y⟩
 #align category_theory.limits.kernel_biprod_fst_iso CategoryTheory.Limits.kernelBiprodFstIso
 
-instance : HasKernel (biprod.snd : X ⊞ Y ⟶ Y) :=
+instance (priority := 10000) : HasKernel (biprod.snd : X ⊞ Y ⟶ Y) :=
   HasLimit.mk ⟨_, biprod.isKernelSndKernelFork X Y⟩
 
 /-- The kernel of `biprod.snd : X ⊞ Y ⟶ Y` is `X`. -/
@@ -1929,7 +1929,7 @@ def kernelBiprodSndIso : kernel (biprod.snd : X ⊞ Y ⟶ Y) ≅ X :=
   limit.isoLimitCone ⟨_, biprod.isKernelSndKernelFork X Y⟩
 #align category_theory.limits.kernel_biprod_snd_iso CategoryTheory.Limits.kernelBiprodSndIso
 
-instance : HasCokernel (biprod.inl : X ⟶ X ⊞ Y) :=
+instance (priority := 10000) : HasCokernel (biprod.inl : X ⟶ X ⊞ Y) :=
   HasColimit.mk ⟨_, biprod.isCokernelInlCokernelFork X Y⟩
 
 /-- The cokernel of `biprod.inl : X ⟶ X ⊞ Y` is `Y`. -/
@@ -1938,7 +1938,7 @@ def cokernelBiprodInlIso : cokernel (biprod.inl : X ⟶ X ⊞ Y) ≅ Y :=
   colimit.isoColimitCocone ⟨_, biprod.isCokernelInlCokernelFork X Y⟩
 #align category_theory.limits.cokernel_biprod_inl_iso CategoryTheory.Limits.cokernelBiprodInlIso
 
-instance : HasCokernel (biprod.inr : Y ⟶ X ⊞ Y) :=
+instance (priority := 10000) : HasCokernel (biprod.inr : Y ⟶ X ⊞ Y) :=
   HasColimit.mk ⟨_, biprod.isCokernelInrCokernelFork X Y⟩
 
 /-- The cokernel of `biprod.inr : Y ⟶ X ⊞ Y` is `X`. -/

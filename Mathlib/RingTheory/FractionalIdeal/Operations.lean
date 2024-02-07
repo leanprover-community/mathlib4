@@ -385,7 +385,7 @@ variable {R₁ : Type*} [CommRing R₁] {K : Type*} [Field K]
 
 variable [Algebra R₁ K] [frac : IsFractionRing R₁ K]
 
-instance : Nontrivial (FractionalIdeal R₁⁰ K) :=
+instance (priority := 10000) : Nontrivial (FractionalIdeal R₁⁰ K) :=
   ⟨⟨0, 1, fun h =>
       have this : (1 : K) ∈ (0 : FractionalIdeal R₁⁰ K) := by
         rw [← (algebraMap R₁ K).map_one]
@@ -430,7 +430,7 @@ theorem fractional_div_of_nonzero {I J : FractionalIdeal R₁⁰ K} (h : J ≠ 0
     h <| coeToSubmodule_injective <| H.trans coe_zero.symm
 #align fractional_ideal.fractional_div_of_nonzero FractionalIdeal.fractional_div_of_nonzero
 
-noncomputable instance : Div (FractionalIdeal R₁⁰ K) :=
+noncomputable instance (priority := 10000) : Div (FractionalIdeal R₁⁰ K) :=
   ⟨fun I J => if h : J = 0 then 0 else ⟨I / J, fractional_div_of_nonzero h⟩⟩
 
 variable {I J : FractionalIdeal R₁⁰ K}
@@ -856,7 +856,7 @@ theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
     rwa [hx', ← mul_assoc, inv_mul_cancel map_a_nonzero, one_mul]
 #align fractional_ideal.exists_eq_span_singleton_mul FractionalIdeal.exists_eq_spanSingleton_mul
 
-instance isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Algebra R K]
+instance (priority := 10000) isPrincipal {R} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [Algebra R K]
     [IsFractionRing R K] (I : FractionalIdeal R⁰ K) : (I : Submodule R K).IsPrincipal := by
   obtain ⟨a, aI, -, ha⟩ := exists_eq_spanSingleton_mul I
   use (algebraMap R K a)⁻¹ * algebraMap R K (generator aI)

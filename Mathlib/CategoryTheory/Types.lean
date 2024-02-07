@@ -41,7 +41,7 @@ universe v v' w u u'
 /- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
   still be additivized. -/
 @[to_additive existing CategoryTheory.types]
-instance types : LargeCategory (Type u)
+instance (priority := 10000) types : LargeCategory (Type u)
     where
   Hom a b := a → b
   id a := id
@@ -223,10 +223,10 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
   rfl
 #align category_theory.ulift_functor_map CategoryTheory.uliftFunctor_map
 
-instance uliftFunctorFull : Full.{u} uliftFunctor where preimage f x := (f (ULift.up x)).down
+instance (priority := 10000) uliftFunctorFull : Full.{u} uliftFunctor where preimage f x := (f (ULift.up x)).down
 #align category_theory.ulift_functor_full CategoryTheory.uliftFunctorFull
 
-instance uliftFunctor_faithful : Faithful uliftFunctor where
+instance (priority := 10000) uliftFunctor_faithful : Faithful uliftFunctor where
   map_injective {_X} {_Y} f g p :=
     funext fun x =>
       congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
@@ -392,7 +392,7 @@ theorem isIso_iff_bijective {X Y : Type u} (f : X ⟶ Y) : IsIso f ↔ Function.
     IsIso.of_iso (Equiv.ofBijective f b).toIso
 #align category_theory.is_iso_iff_bijective CategoryTheory.isIso_iff_bijective
 
-instance : SplitEpiCategory (Type u) where
+instance (priority := 10000) : SplitEpiCategory (Type u) where
   isSplitEpi_of_epi f hf :=
     IsSplitEpi.mk' <|
       { section_ := Function.surjInv <| (epi_iff_surjective f).1 hf

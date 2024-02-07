@@ -84,9 +84,9 @@ attribute [reassoc (attr := simp)] wi wπ
 variable {S}
 variable (h : S.LeftHomologyData) {A : C}
 
-instance : Mono h.i := ⟨fun _ _ => Fork.IsLimit.hom_ext h.hi⟩
+instance (priority := 10000) : Mono h.i := ⟨fun _ _ => Fork.IsLimit.hom_ext h.hi⟩
 
-instance : Epi h.π := ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hπ⟩
+instance (priority := 10000) : Epi h.π := ⟨fun _ _ => Cofork.IsColimit.hom_ext h.hπ⟩
 
 /-- Any morphism `k : A ⟶ S.X₂` that is a cycle (i.e. `k ≫ S.g = 0`) lifts
 to a morphism `A ⟶ K` -/
@@ -228,18 +228,18 @@ namespace HasLeftHomology
 
 lemma mk' (h : S.LeftHomologyData) : HasLeftHomology S := ⟨Nonempty.intro h⟩
 
-instance of_hasKernel_of_hasCokernel [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
+instance (priority := 10000) of_hasKernel_of_hasCokernel [HasKernel S.g] [HasCokernel (kernel.lift S.g S.f S.zero)] :
   S.HasLeftHomology := HasLeftHomology.mk' (LeftHomologyData.ofHasKernelOfHasCokernel S)
 
-instance of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
+instance (priority := 10000) of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
     (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).HasLeftHomology :=
   HasLeftHomology.mk' (LeftHomologyData.ofHasCokernel _ rfl)
 
-instance of_hasKernel {Y Z : C} (g : Y ⟶ Z) (X : C) [HasKernel g] :
+instance (priority := 10000) of_hasKernel {Y Z : C} (g : Y ⟶ Z) (X : C) [HasKernel g] :
     (ShortComplex.mk (0 : X ⟶ Y) g zero_comp).HasLeftHomology :=
   HasLeftHomology.mk' (LeftHomologyData.ofHasKernel _ rfl)
 
-instance of_zeros (X Y Z : C) :
+instance (priority := 10000) of_zeros (X Y Z : C) :
     (ShortComplex.mk (0 : X ⟶ Y) (0 : Y ⟶ Z) zero_comp).HasLeftHomology :=
   HasLeftHomology.mk' (LeftHomologyData.ofZeros _ rfl rfl)
 
@@ -292,7 +292,7 @@ def comp {φ : S₁ ⟶ S₂} {φ' : S₂ ⟶ S₃}
   φK := ψ.φK ≫ ψ'.φK
   φH := ψ.φH ≫ ψ'.φH
 
-instance : Subsingleton (LeftHomologyMapData φ h₁ h₂) :=
+instance (priority := 10000) : Subsingleton (LeftHomologyMapData φ h₁ h₂) :=
   ⟨fun ψ₁ ψ₂ => by
     have hK : ψ₁.φK = ψ₂.φK := by rw [← cancel_mono h₂.i, commi, commi]
     have hH : ψ₁.φH = ψ₂.φH := by rw [← cancel_epi h₁.π, commπ, commπ, hK]
@@ -300,7 +300,7 @@ instance : Subsingleton (LeftHomologyMapData φ h₁ h₂) :=
     cases ψ₂
     congr⟩
 
-instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
+instance (priority := 10000) : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
   let φK : h₁.K ⟶ h₂.K := h₂.liftK (h₁.i ≫ φ.τ₂)
     (by rw [assoc, φ.comm₂₃, h₁.wi_assoc, zero_comp])
   have commf' : h₁.f' ≫ φK = φ.τ₁ ≫ h₂.f' := by
@@ -310,7 +310,7 @@ instance : Inhabited (LeftHomologyMapData φ h₁ h₂) := ⟨by
     (by rw [reassoc_of% commf', h₂.f'_π, comp_zero])
   exact ⟨φK, φH, by simp, commf', by simp⟩⟩
 
-instance : Unique (LeftHomologyMapData φ h₁ h₂) := Unique.mk' _
+instance (priority := 10000) : Unique (LeftHomologyMapData φ h₁ h₂) := Unique.mk' _
 
 variable {φ h₁ h₂}
 
@@ -413,11 +413,11 @@ lemma iCycles_g : S.iCycles ≫ S.g = 0 := S.leftHomologyData.wi
 @[reassoc (attr := simp)]
 lemma toCycles_i : S.toCycles ≫ S.iCycles = S.f := S.leftHomologyData.f'_i
 
-instance : Mono S.iCycles := by
+instance (priority := 10000) : Mono S.iCycles := by
   dsimp only [iCycles]
   infer_instance
 
-instance : Epi S.leftHomologyπ := by
+instance (priority := 10000) : Epi S.leftHomologyπ := by
   dsimp only [leftHomologyπ]
   infer_instance
 
@@ -638,7 +638,7 @@ def leftHomologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.LeftHomologyData)
   hom_inv_id := by rw [← leftHomologyMap'_comp, e.hom_inv_id, leftHomologyMap'_id]
   inv_hom_id := by rw [← leftHomologyMap'_comp, e.inv_hom_id, leftHomologyMap'_id]
 
-instance isIso_leftHomologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
+instance (priority := 10000) isIso_leftHomologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     IsIso (leftHomologyMap' φ h₁ h₂) :=
   (inferInstance : IsIso (leftHomologyMapIso' (asIso φ) h₁ h₂).hom)
@@ -653,7 +653,7 @@ def cyclesMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.LeftHomologyData)
   hom_inv_id := by rw [← cyclesMap'_comp, e.hom_inv_id, cyclesMap'_id]
   inv_hom_id := by rw [← cyclesMap'_comp, e.inv_hom_id, cyclesMap'_id]
 
-instance isIso_cyclesMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
+instance (priority := 10000) isIso_cyclesMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     IsIso (cyclesMap' φ h₁ h₂) :=
   (inferInstance : IsIso (cyclesMapIso' (asIso φ) h₁ h₂).hom)
@@ -668,7 +668,7 @@ noncomputable def leftHomologyMapIso (e : S₁ ≅ S₂) [S₁.HasLeftHomology]
   hom_inv_id := by rw [← leftHomologyMap_comp, e.hom_inv_id, leftHomologyMap_id]
   inv_hom_id := by rw [← leftHomologyMap_comp, e.inv_hom_id, leftHomologyMap_id]
 
-instance isIso_leftHomologyMap_of_iso (φ : S₁ ⟶ S₂)
+instance (priority := 10000) isIso_leftHomologyMap_of_iso (φ : S₁ ⟶ S₂)
     [IsIso φ] [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     IsIso (leftHomologyMap φ) :=
   (inferInstance : IsIso (leftHomologyMapIso (asIso φ)).hom)
@@ -683,7 +683,7 @@ noncomputable def cyclesMapIso (e : S₁ ≅ S₂) [S₁.HasLeftHomology]
   hom_inv_id := by rw [← cyclesMap_comp, e.hom_inv_id, cyclesMap_id]
   inv_hom_id := by rw [← cyclesMap_comp, e.inv_hom_id, cyclesMap_id]
 
-instance isIso_cyclesMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasLeftHomology]
+instance (priority := 10000) isIso_cyclesMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasLeftHomology]
     [S₂.HasLeftHomology] : IsIso (cyclesMap φ) :=
   (inferInstance : IsIso (cyclesMapIso (asIso φ)).hom)
 
@@ -906,7 +906,7 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
 
 end LeftHomologyMapData
 
-instance (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData)
+instance (priority := 10000) (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (leftHomologyMap' φ h₁ h₂) := by
   let h₂' := LeftHomologyData.ofEpiOfIsIsoOfMono φ h₁
@@ -921,7 +921,7 @@ instance (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHo
 
 /-- If a morphism of short complexes `φ : S₁ ⟶ S₂` is such that `φ.τ₁` is epi, `φ.τ₂` is an iso,
 and `φ.τ₃` is mono, then the induced morphism on left homology is an isomorphism. -/
-instance (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology]
+instance (priority := 10000) (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (leftHomologyMap φ) := by
   dsimp only [leftHomologyMap]
@@ -1040,7 +1040,7 @@ lemma isIso_cyclesMap_of_isIso_of_mono' (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ
     IsIso (cyclesMap φ) :=
   isIso_cyclesMap'_of_isIso_of_mono φ h₂ h₃ _ _
 
-instance isIso_cyclesMap_of_isIso_of_mono (φ : S₁ ⟶ S₂) [IsIso φ.τ₂] [Mono φ.τ₃]
+instance (priority := 10000) isIso_cyclesMap_of_isIso_of_mono (φ : S₁ ⟶ S₂) [IsIso φ.τ₂] [Mono φ.τ₃]
     [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     IsIso (cyclesMap φ) :=
   isIso_cyclesMap_of_isIso_of_mono' φ inferInstance inferInstance

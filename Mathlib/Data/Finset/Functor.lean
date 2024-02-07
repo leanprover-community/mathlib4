@@ -38,7 +38,7 @@ variable {α β : Type u} [∀ P, Decidable P]
 construct `Functor Finset` when working classically. -/
 protected instance functor : Functor Finset where map f s := s.image f
 
-instance lawfulFunctor : LawfulFunctor Finset where
+instance (priority := 10000) lawfulFunctor : LawfulFunctor Finset where
   id_map s := image_id
   comp_map f g s := image_image.symm
   map_const {α} {β} := by simp only [Functor.mapConst, Functor.map]
@@ -95,7 +95,7 @@ theorem image₂_def {α β γ : Type u} (f : α → β → γ) (s : Finset α) 
   simp [mem_sup]
 #align finset.image₂_def Finset.image₂_def
 
-instance lawfulApplicative : LawfulApplicative Finset :=
+instance (priority := 10000) lawfulApplicative : LawfulApplicative Finset :=
   { Finset.lawfulFunctor with
     seqLeft_eq := fun s t => by
       rw [seq_def, fmap_def, seqLeft_def]
@@ -135,7 +135,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
       · rintro ⟨c, ⟨_, ⟨g, hg, rfl⟩, f, hf, rfl⟩, a, ha, rfl⟩
         exact ⟨g, hg, f a, ⟨f, hf, a, ha, rfl⟩, rfl⟩ }
 
-instance commApplicative : CommApplicative Finset :=
+instance (priority := 10000) commApplicative : CommApplicative Finset :=
   { Finset.lawfulApplicative with
     commutative_prod := fun s t => by
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
@@ -152,7 +152,7 @@ section Monad
 
 variable [∀ P, Decidable P]
 
-instance : Monad Finset :=
+instance (priority := 10000) : Monad Finset :=
   { Finset.applicative with bind := sup }
 
 @[simp]
@@ -160,7 +160,7 @@ theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
   rfl
 #align finset.bind_def Finset.bind_def
 
-instance : LawfulMonad Finset :=
+instance (priority := 10000) : LawfulMonad Finset :=
   { Finset.lawfulApplicative with
     bind_pure_comp := fun f s => sup_singleton'' _ _
     bind_map := fun t s => rfl
@@ -176,7 +176,7 @@ section Alternative
 
 variable [∀ P, Decidable P]
 
-instance : Alternative Finset :=
+instance (priority := 10000) : Alternative Finset :=
   { Finset.applicative with
     orElse := fun s t => (s ∪ t ())
     failure := ∅ }

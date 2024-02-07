@@ -233,7 +233,7 @@ theorem exact_kernel_ι : Exact (kernel.ι f) f := by
   exact exact_kernelSubobject_arrow
 #align category_theory.exact_kernel_ι CategoryTheory.exact_kernel_ι
 
-instance Exact.epi_factorThruKernelSubobject (h : Exact f g) :
+instance (priority := 10000) Exact.epi_factorThruKernelSubobject (h : Exact f g) :
   Epi (factorThruKernelSubobject g f h.w) := by
   rw [← factorThruImageSubobject_comp_imageToKernel]
   haveI := h.epi

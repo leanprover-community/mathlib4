@@ -196,7 +196,7 @@ theorem atom_iff_nonzero_span (W : Submodule K V) :
 #align atom_iff_nonzero_span atom_iff_nonzero_span
 
 /-- The lattice of submodules of a module over a division ring is atomistic. -/
-instance : IsAtomistic (Submodule K V) where
+instance (priority := 10000) : IsAtomistic (Submodule K V) where
   eq_sSup_atoms W := by
     refine ⟨_, submodule_eq_sSup_le_nonzero_spans W, ?_⟩
     rintro _ ⟨w, ⟨_, ⟨hw, rfl⟩⟩⟩
@@ -234,7 +234,7 @@ theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, Is
   ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
 #align submodule.exists_is_compl Submodule.exists_isCompl
 
-instance Module.Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
+instance (priority := 10000) Module.Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
   ⟨Submodule.exists_isCompl⟩
 #align module.submodule.complemented_lattice Module.Submodule.complementedLattice
 

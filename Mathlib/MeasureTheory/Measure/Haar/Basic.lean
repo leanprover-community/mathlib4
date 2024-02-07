@@ -621,7 +621,7 @@ theorem haarMeasure_apply {K₀ : PositiveCompacts G} {s : Set G} (hs : Measurab
 #align measure_theory.measure.add_haar_measure_apply MeasureTheory.Measure.addHaarMeasure_apply
 
 @[to_additive]
-instance isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
+instance (priority := 10000) isMulLeftInvariant_haarMeasure (K₀ : PositiveCompacts G) :
     IsMulLeftInvariant (haarMeasure K₀) := by
   rw [← forall_measure_preimage_mul_iff]
   intro g A hA
@@ -647,7 +647,7 @@ theorem haarMeasure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ K₀ = 1
 
 /-- The Haar measure is regular. -/
 @[to_additive "The additive Haar measure is regular."]
-instance regular_haarMeasure {K₀ : PositiveCompacts G} : (haarMeasure K₀).Regular := by
+instance (priority := 10000) regular_haarMeasure {K₀ : PositiveCompacts G} : (haarMeasure K₀).Regular := by
   haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group
   apply Regular.smul
   rw [← OuterRegular.measure_closure_eq_of_isCompact K₀.isCompact,
@@ -662,7 +662,7 @@ theorem haarMeasure_closure_self {K₀ : PositiveCompacts G} : haarMeasure K₀ 
 
 /-- The Haar measure is sigma-finite in a second countable group. -/
 @[to_additive "The additive Haar measure is sigma-finite in a second countable group."]
-instance sigmaFinite_haarMeasure [SecondCountableTopology G] {K₀ : PositiveCompacts G} :
+instance (priority := 10000) sigmaFinite_haarMeasure [SecondCountableTopology G] {K₀ : PositiveCompacts G} :
     SigmaFinite (haarMeasure K₀) := by
   haveI : LocallyCompactSpace G := K₀.locallyCompactSpace_of_group; infer_instance
 #align measure_theory.measure.sigma_finite_haar_measure MeasureTheory.Measure.sigmaFinite_haarMeasure
@@ -673,7 +673,7 @@ sets and positive mass to nonempty open sets. -/
 @[to_additive
 "The additive Haar measure is an additive Haar measure, i.e., it is invariant and gives finite mass
 to compact sets and positive mass to nonempty open sets."]
-instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (haarMeasure K₀) := by
+instance (priority := 10000) isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (haarMeasure K₀) := by
   apply
     isHaarMeasure_of_isCompact_nonempty_interior (haarMeasure K₀) K₀ K₀.isCompact
       K₀.interior_nonempty

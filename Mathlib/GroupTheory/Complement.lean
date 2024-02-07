@@ -628,7 +628,7 @@ open Pointwise MulAction MemLeftTransversals
 variable {F : Type*} [Group F] [MulAction F G] [QuotientAction F H]
 
 @[to_additive]
-noncomputable instance : MulAction F (leftTransversals (H : Set G)) where
+noncomputable instance (priority := 10000) : MulAction F (leftTransversals (H : Set G)) where
   smul f T :=
     ⟨f • (T : Set G), by
       refine' mem_leftTransversals_iff_existsUnique_inv_mul_mem.mpr fun g => _
@@ -669,11 +669,11 @@ theorem smul_apply_eq_smul_apply_inv_smul (f : F) (T : leftTransversals (H : Set
 end Action
 
 @[to_additive]
-instance : Inhabited (leftTransversals (H : Set G)) :=
+instance (priority := 10000) : Inhabited (leftTransversals (H : Set G)) :=
   ⟨⟨Set.range Quotient.out', range_mem_leftTransversals Quotient.out_eq'⟩⟩
 
 @[to_additive]
-instance : Inhabited (rightTransversals (H : Set G)) :=
+instance (priority := 10000) : Inhabited (rightTransversals (H : Set G)) :=
   ⟨⟨Set.range Quotient.out', range_mem_rightTransversals Quotient.out_eq'⟩⟩
 
 theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by

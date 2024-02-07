@@ -419,14 +419,14 @@ theorem of_eq_of {p : α → Prop} {q : β → Prop} : of p = of q ↔ ManyOneEq
   simp
 #align many_one_degree.of_eq_of ManyOneDegree.of_eq_of
 
-instance instInhabited : Inhabited ManyOneDegree :=
+instance (priority := 10000) instInhabited : Inhabited ManyOneDegree :=
   ⟨of (∅ : Set ℕ)⟩
 #align many_one_degree.inhabited ManyOneDegree.instInhabited
 
 /-- For many-one degrees `d₁` and `d₂`, `d₁ ≤ d₂` if the sets in `d₁` are many-one reducible to the
 sets in `d₂`.
 -/
-instance instLE : LE ManyOneDegree :=
+instance (priority := 10000) instLE : LE ManyOneDegree :=
   ⟨fun d₁ d₂ =>
     ManyOneDegree.liftOn₂ d₁ d₂ (· ≤₀ ·) fun _p₁ _p₂ _q₁ _q₂ hp hq =>
       propext (hp.le_congr_left.trans hq.le_congr_right)⟩
@@ -452,7 +452,7 @@ private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d�
   induction d₃ using ManyOneDegree.ind_on
   apply ManyOneReducible.trans
 
-instance instPartialOrder : PartialOrder ManyOneDegree where
+instance (priority := 10000) instPartialOrder : PartialOrder ManyOneDegree where
   le := (· ≤ ·)
   le_refl := le_refl
   le_trans _ _ _ := le_trans
@@ -460,7 +460,7 @@ instance instPartialOrder : PartialOrder ManyOneDegree where
 #align many_one_degree.partial_order ManyOneDegree.instPartialOrder
 
 /-- The join of two degrees, induced by the disjoint union of two underlying sets. -/
-instance instAdd : Add ManyOneDegree :=
+instance (priority := 10000) instAdd : Add ManyOneDegree :=
   ⟨fun d₁ d₂ =>
     d₁.liftOn₂ d₂ (fun a b => of (a ⊕' b))
       (by
@@ -502,7 +502,7 @@ protected theorem le_add_right (d₁ d₂ : ManyOneDegree) : d₂ ≤ d₁ + d�
   (ManyOneDegree.add_le.1 (by rfl)).2
 #align many_one_degree.le_add_right ManyOneDegree.le_add_right
 
-instance instSemilatticeSup : SemilatticeSup ManyOneDegree :=
+instance (priority := 10000) instSemilatticeSup : SemilatticeSup ManyOneDegree :=
   { ManyOneDegree.instPartialOrder with
     sup := (· + ·)
     le_sup_left := ManyOneDegree.le_add_left

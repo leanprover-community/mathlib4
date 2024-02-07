@@ -46,12 +46,12 @@ namespace Submodule
 -/
 
 /-- The set `{0}` is the bottom element of the lattice of submodules. -/
-instance : Bot (Submodule R M) :=
+instance (priority := 10000) : Bot (Submodule R M) :=
   ⟨{ (⊥ : AddSubmonoid M) with
       carrier := {0}
       smul_mem' := by simp }⟩
 
-instance inhabited' : Inhabited (Submodule R M) :=
+instance (priority := 10000) inhabited' : Inhabited (Submodule R M) :=
   ⟨⊥⟩
 #align submodule.inhabited' Submodule.inhabited'
 
@@ -75,11 +75,11 @@ theorem mem_bot {x : M} : x ∈ (⊥ : Submodule R M) ↔ x = 0 :=
   Set.mem_singleton_iff
 #align submodule.mem_bot Submodule.mem_bot
 
-instance uniqueBot : Unique (⊥ : Submodule R M) :=
+instance (priority := 10000) uniqueBot : Unique (⊥ : Submodule R M) :=
   ⟨inferInstance, fun x ↦ Subtype.ext <| (mem_bot R).1 x.mem⟩
 #align submodule.unique_bot Submodule.uniqueBot
 
-instance : OrderBot (Submodule R M) where
+instance (priority := 10000) : OrderBot (Submodule R M) where
   bot := ⊥
   bot_le p x := by simp (config := { contextual := true }) [zero_mem]
 
@@ -138,7 +138,7 @@ theorem nontrivial_iff_ne_bot : Nontrivial p ↔ p ≠ ⊥ := by
 -/
 
 /-- The universal set is the top element of the lattice of submodules. -/
-instance : Top (Submodule R M) :=
+instance (priority := 10000) : Top (Submodule R M) :=
   ⟨{ (⊤ : AddSubmonoid M) with
       carrier := Set.univ
       smul_mem' := fun _ _ _ ↦ trivial }⟩
@@ -162,7 +162,7 @@ theorem mem_top {x : M} : x ∈ (⊤ : Submodule R M) :=
   trivial
 #align submodule.mem_top Submodule.mem_top
 
-instance : OrderTop (Submodule R M) where
+instance (priority := 10000) : OrderTop (Submodule R M) where
   top := ⊤
   le_top _ _ _ := trivial
 
@@ -187,7 +187,7 @@ def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M where
 ## Infima & suprema in a submodule
 -/
 
-instance : InfSet (Submodule R M) :=
+instance (priority := 10000) : InfSet (Submodule R M) :=
   ⟨fun S ↦
     { carrier := ⋂ s ∈ S, (s : Set M)
       zero_mem' := by simp [zero_mem]
@@ -200,14 +200,14 @@ private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ 
 private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
   Set.subset_iInter₂
 
-instance : Inf (Submodule R M) :=
+instance (priority := 10000) : Inf (Submodule R M) :=
   ⟨fun p q ↦
     { carrier := p ∩ q
       zero_mem' := by simp [zero_mem]
       add_mem' := by simp (config := { contextual := true }) [add_mem]
       smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
 
-instance completeLattice : CompleteLattice (Submodule R M) :=
+instance (priority := 10000) completeLattice : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
     (inferInstance : OrderBot (Submodule R M)) with
     sup := fun a b ↦ sInf { x | a ≤ x ∧ b ≤ x }
@@ -360,14 +360,14 @@ theorem nontrivial_iff : Nontrivial (Submodule R M) ↔ Nontrivial M :=
 
 variable {R}
 
-instance [Subsingleton M] : Unique (Submodule R M) :=
+instance (priority := 10000) [Subsingleton M] : Unique (Submodule R M) :=
   ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ ((subsingleton_iff R).mpr ‹_›) a _⟩
 
-instance unique' [Subsingleton R] : Unique (Submodule R M) := by
+instance (priority := 10000) unique' [Subsingleton R] : Unique (Submodule R M) := by
   haveI := Module.subsingleton R M; infer_instance
 #align submodule.unique' Submodule.unique'
 
-instance [Nontrivial M] : Nontrivial (Submodule R M) :=
+instance (priority := 10000) [Nontrivial M] : Nontrivial (Submodule R M) :=
   (nontrivial_iff R).mpr ‹_›
 
 /-!

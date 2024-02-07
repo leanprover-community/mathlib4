@@ -36,10 +36,10 @@ structure FinPartOrd where
 
 namespace FinPartOrd
 
-instance : CoeSort FinPartOrd (Type*) :=
+instance (priority := 10000) : CoeSort FinPartOrd (Type*) :=
   ⟨fun X => X.toPartOrd⟩
 
-instance (X : FinPartOrd) : PartialOrder X :=
+instance (priority := 10000) (X : FinPartOrd) : PartialOrder X :=
   X.toPartOrd.str
 
 attribute [instance] FinPartOrd.isFintype
@@ -56,22 +56,22 @@ def of (α : Type*) [PartialOrder α] [Fintype α] : FinPartOrd :=
 theorem coe_of (α : Type*) [PartialOrder α] [Fintype α] : ↥(of α) = α := rfl
 #align FinPartOrd.coe_of FinPartOrd.coe_of
 
-instance : Inhabited FinPartOrd :=
+instance (priority := 10000) : Inhabited FinPartOrd :=
   ⟨of PUnit⟩
 
-instance largeCategory : LargeCategory FinPartOrd :=
+instance (priority := 10000) largeCategory : LargeCategory FinPartOrd :=
   InducedCategory.category FinPartOrd.toPartOrd
 #align FinPartOrd.large_category FinPartOrd.largeCategory
 
-instance concreteCategory : ConcreteCategory FinPartOrd :=
+instance (priority := 10000) concreteCategory : ConcreteCategory FinPartOrd :=
   InducedCategory.concreteCategory FinPartOrd.toPartOrd
 #align FinPartOrd.concrete_category FinPartOrd.concreteCategory
 
-instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
+instance (priority := 10000) hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
   InducedCategory.hasForget₂ FinPartOrd.toPartOrd
 #align FinPartOrd.has_forget_to_PartOrd FinPartOrd.hasForgetToPartOrd
 
-instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
+instance (priority := 10000) hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
   forget₂ :=
     { obj := fun X => ⟨X, inferInstance⟩
       -- Porting note: Originally `map := fun X Y => coeFn`

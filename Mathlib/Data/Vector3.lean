@@ -30,7 +30,7 @@ def Vector3 (α : Type u) (n : ℕ) : Type u :=
   Fin2 n → α
 #align vector3 Vector3
 
-instance [Inhabited α] : Inhabited (Vector3 α n) where
+instance (priority := 10000) [Inhabited α] : Inhabited (Vector3 α n) where
   default := fun _ => default
 
 namespace Vector3

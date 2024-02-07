@@ -32,7 +32,7 @@ namespace Quiver
 def Symmetrify (V : Type*) := V
 #align quiver.symmetrify Quiver.Symmetrify
 
-instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
+instance (priority := 10000) symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
   ⟨fun a b : V ↦ Sum (a ⟶ b) (b ⟶ a)⟩
 
 variable (U V W : Type*) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
@@ -93,24 +93,24 @@ theorem _root_.Prefunctor.map_reverse (φ : U ⥤q V) [φ.MapReverse]
   Prefunctor.MapReverse.map_reverse' e
 #align prefunctor.map_reverse' Prefunctor.map_reverse
 
-instance _root_.Prefunctor.mapReverseComp
+instance (priority := 10000) _root_.Prefunctor.mapReverseComp
     (φ : U ⥤q V) (ψ : V ⥤q W) [φ.MapReverse] [ψ.MapReverse] :
     (φ ⋙q ψ).MapReverse where
   map_reverse' e := by
     simp only [Prefunctor.comp_map, Prefunctor.MapReverse.map_reverse']
 #align prefunctor.map_reverse_comp Prefunctor.mapReverseComp
 
-instance _root_.Prefunctor.mapReverseId :
+instance (priority := 10000) _root_.Prefunctor.mapReverseId :
     (Prefunctor.id U).MapReverse where
   map_reverse' _ := rfl
 #align prefunctor.map_reverse_id Prefunctor.mapReverseId
 
 end MapReverse
 
-instance : HasReverse (Symmetrify V) :=
+instance (priority := 10000) : HasReverse (Symmetrify V) :=
   ⟨fun e => e.swap⟩
 
-instance :
+instance (priority := 10000) :
     HasInvolutiveReverse
       (Symmetrify V) where
   toHasReverse := ⟨fun e ↦ e.swap⟩
@@ -227,7 +227,7 @@ def _root_.Prefunctor.symmetrify (φ : U ⥤q V) : Symmetrify U ⥤q Symmetrify 
   map := Sum.map φ.map φ.map
 #align prefunctor.symmetrify Prefunctor.symmetrify
 
-instance _root_.Prefunctor.symmetrify_mapReverse (φ : U ⥤q V) :
+instance (priority := 10000) _root_.Prefunctor.symmetrify_mapReverse (φ : U ⥤q V) :
     Prefunctor.MapReverse φ.symmetrify :=
   ⟨fun e => by cases e <;> rfl⟩
 #align prefunctor.symmetrify_map_reverse Prefunctor.symmetrify_mapReverse
@@ -238,11 +238,11 @@ namespace Push
 
 variable {V' : Type*} (σ : V → V')
 
-instance [HasReverse V] : HasReverse (Quiver.Push σ) where
+instance (priority := 10000) [HasReverse V] : HasReverse (Quiver.Push σ) where
   reverse' := fun
               | PushQuiver.arrow f => PushQuiver.arrow (reverse f)
 
-instance [h : HasInvolutiveReverse V] :
+instance (priority := 10000) [h : HasInvolutiveReverse V] :
     HasInvolutiveReverse (Push σ) where
   reverse' := fun
   | PushQuiver.arrow f => PushQuiver.arrow (reverse f)
@@ -254,7 +254,7 @@ theorem of_reverse [HasInvolutiveReverse V] (X Y : V) (f : X ⟶ Y) :
   rfl
 #align quiver.push.of_reverse Quiver.Push.of_reverse
 
-instance ofMapReverse [h : HasInvolutiveReverse V] : (Push.of σ).MapReverse :=
+instance (priority := 10000) ofMapReverse [h : HasInvolutiveReverse V] : (Push.of σ).MapReverse :=
   ⟨by simp [of_reverse]⟩
 #align quiver.push.of_map_reverse Quiver.Push.ofMapReverse
 

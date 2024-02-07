@@ -30,10 +30,10 @@ structure BddOrd where
 
 namespace BddOrd
 
-instance : CoeSort BddOrd (Type*) :=
+instance (priority := 10000) : CoeSort BddOrd (Type*) :=
   InducedCategory.hasCoeToSort toPartOrd
 
-instance (X : BddOrd) : PartialOrder X :=
+instance (priority := 10000) (X : BddOrd) : PartialOrder X :=
   X.toPartOrd.str
 
 attribute [instance] BddOrd.isBoundedOrder
@@ -49,10 +49,10 @@ theorem coe_of (α : Type*) [PartialOrder α] [BoundedOrder α] : ↥(of α) = �
   rfl
 #align BddOrd.coe_of BddOrd.coe_of
 
-instance : Inhabited BddOrd :=
+instance (priority := 10000) : Inhabited BddOrd :=
   ⟨of PUnit⟩
 
-instance largeCategory : LargeCategory.{u} BddOrd where
+instance (priority := 10000) largeCategory : LargeCategory.{u} BddOrd where
   Hom X Y := BoundedOrderHom X Y
   id X := BoundedOrderHom.id X
   comp f g := g.comp f
@@ -63,23 +63,23 @@ instance largeCategory : LargeCategory.{u} BddOrd where
 
 -- Porting note: added.
 -- see https://github.com/leanprover-community/mathlib4/issues/5017
-instance instFunLike (X Y : BddOrd) : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) instFunLike (X Y : BddOrd) : FunLike (X ⟶ Y) X Y :=
   show FunLike (BoundedOrderHom X Y) X Y from inferInstance
 
-instance concreteCategory : ConcreteCategory BddOrd where
+instance (priority := 10000) concreteCategory : ConcreteCategory BddOrd where
   forget :=
     { obj := (↥)
       map := DFunLike.coe }
   forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 #align BddOrd.concrete_category BddOrd.concreteCategory
 
-instance hasForgetToPartOrd : HasForget₂ BddOrd PartOrd where
+instance (priority := 10000) hasForgetToPartOrd : HasForget₂ BddOrd PartOrd where
   forget₂ :=
     { obj := fun X => X.toPartOrd
       map := fun {X Y} => BoundedOrderHom.toOrderHom }
 #align BddOrd.has_forget_to_PartOrd BddOrd.hasForgetToPartOrd
 
-instance hasForgetToBipointed : HasForget₂ BddOrd Bipointed where
+instance (priority := 10000) hasForgetToBipointed : HasForget₂ BddOrd Bipointed where
   forget₂ :=
     { obj := fun X => ⟨X, ⊥, ⊤⟩
       map := fun f => ⟨f, f.map_bot', f.map_top'⟩ }

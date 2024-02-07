@@ -15,7 +15,7 @@ An orphaned lemma about casting from `ℕ` to `WithBot ℕ`,
 exiled here to minimize imports to `data.rat.order` for porting purposes.
 -/
 
-instance : WellFoundedRelation (WithTop ℕ) where
+instance (priority := 10000) : WellFoundedRelation (WithTop ℕ) where
   rel := (· < ·)
   wf := IsWellFounded.wf
 

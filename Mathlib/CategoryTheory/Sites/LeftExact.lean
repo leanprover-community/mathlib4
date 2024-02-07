@@ -74,7 +74,7 @@ abbrev liftToDiagramLimitObj {X : C} {K : Type max v u} [SmallCategory K] [HasLi
       rfl)
 #align category_theory.grothendieck_topology.lift_to_diagram_limit_obj CategoryTheory.GrothendieckTopology.liftToDiagramLimitObj
 
-instance preservesLimit_diagramFunctor
+instance (priority := 10000) preservesLimit_diagramFunctor
     (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] (F : K ⥤ Cᵒᵖ ⥤ D) :
     PreservesLimit F (J.diagramFunctor D X) :=
   preservesLimitOfEvaluation _ _ fun W =>
@@ -102,12 +102,12 @@ instance preservesLimit_diagramFunctor
           dsimp [diagramNatTrans]
           simp }
 
-instance preservesLimitsOfShape_diagramFunctor
+instance (priority := 10000) preservesLimitsOfShape_diagramFunctor
     (X : C) (K : Type max v u) [SmallCategory K] [HasLimitsOfShape K D] :
     PreservesLimitsOfShape K (J.diagramFunctor D X) :=
   ⟨by apply preservesLimit_diagramFunctor.{w, v, u}⟩
 
-instance preservesLimits_diagramFunctor (X : C) [HasLimits D] :
+instance (priority := 10000) preservesLimits_diagramFunctor (X : C) [HasLimits D] :
     PreservesLimits (J.diagramFunctor D X) := by
   constructor
   intro _ _
@@ -177,7 +177,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCateg
   rfl
 #align category_theory.grothendieck_topology.lift_to_plus_obj_limit_obj_fac CategoryTheory.GrothendieckTopology.liftToPlusObjLimitObj_fac
 
-instance preservesLimitsOfShape_plusFunctor
+instance (priority := 10000) preservesLimitsOfShape_plusFunctor
     (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
     PreservesLimitsOfShape K (J.plusFunctor D) := by
@@ -205,7 +205,7 @@ instance preservesLimitsOfShape_plusFunctor
     rw [← Category.assoc, ← NatTrans.comp_app, limit.lift_π]
     rfl
 
-instance preserveFiniteLimits_plusFunctor
+instance (priority := 10000) preserveFiniteLimits_plusFunctor
     [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
     PreservesFiniteLimits (J.plusFunctor D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
@@ -213,13 +213,13 @@ instance preserveFiniteLimits_plusFunctor
   have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShapeOfReflectsIsomorphisms
   apply preservesLimitsOfShape_plusFunctor.{w, v, u}
 
-instance preservesLimitsOfShape_sheafification
+instance (priority := 10000) preservesLimitsOfShape_sheafification
     (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
     PreservesLimitsOfShape K (J.sheafification D) :=
   Limits.compPreservesLimitsOfShape _ _
 
-instance preservesFiniteLimits_sheafification
+instance (priority := 10000) preservesFiniteLimits_sheafification
     [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
     PreservesFiniteLimits (J.sheafification D) :=
   Limits.compPreservesFiniteLimits _ _
@@ -242,7 +242,7 @@ variable (K : Type w')
 
 variable [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
 
-instance preservesLimitsOfShape_presheafToSheaf :
+instance (priority := 10000) preservesLimitsOfShape_presheafToSheaf :
     PreservesLimitsOfShape K (plusPlusSheaf J D) := by
   let e := (FinCategory.equivAsType K).symm.trans (AsSmall.equiv.{0, 0, max v u})
   haveI : HasLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) D :=
@@ -265,13 +265,13 @@ instance preservesLimitsOfShape_presheafToSheaf :
     preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)
   exact isLimitOfPreserves (plusPlusSheaf J D ⋙ sheafToPresheaf J D) hS
 
-instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
+instance (priority := 10000) preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
     PreservesFiniteLimits (plusPlusSheaf J D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intros
   infer_instance
 
-instance : HasWeakSheafify J D := ⟨sheafToPresheafIsRightAdjoint J D⟩
+instance (priority := 10000) : HasWeakSheafify J D := ⟨sheafToPresheafIsRightAdjoint J D⟩
 
 variable (J D)
 
@@ -287,26 +287,26 @@ def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso  ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 
-instance [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)
+instance (priority := 10000) [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)
 
 variable {J D}
 
-instance [FinitaryExtensive D] [HasFiniteCoproducts D] [HasPullbacks D] :
+instance (priority := 10000) [FinitaryExtensive D] [HasFiniteCoproducts D] [HasPullbacks D] :
     FinitaryExtensive (Sheaf J D) :=
   finitaryExtensive_of_reflective (plusPlusAdjunction _ _)
 
-instance [Adhesive D] [HasPullbacks D] [HasPushouts D] : Adhesive (Sheaf J D) :=
+instance (priority := 10000) [Adhesive D] [HasPullbacks D] [HasPushouts D] : Adhesive (Sheaf J D) :=
   adhesive_of_reflective (plusPlusAdjunction _ _)
 
-instance SheafOfTypes.finitary_extensive {C : Type u} [SmallCategory C]
+instance (priority := 10000) SheafOfTypes.finitary_extensive {C : Type u} [SmallCategory C]
     (J : GrothendieckTopology C) : FinitaryExtensive (Sheaf J (Type u)) :=
   inferInstance
 
-instance SheafOfTypes.adhesive {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
+instance (priority := 10000) SheafOfTypes.adhesive {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
     Adhesive (Sheaf J (Type u)) :=
   inferInstance
 
-instance SheafOfTypes.balanced {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
+instance (priority := 10000) SheafOfTypes.balanced {C : Type u} [SmallCategory C] (J : GrothendieckTopology C) :
     Balanced (Sheaf J (Type u)) :=
   inferInstance
 

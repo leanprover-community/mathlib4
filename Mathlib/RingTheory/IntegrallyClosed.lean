@@ -83,7 +83,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [id : IsDomain R] [iic : IsInte
 
 variable {K : Type*} [CommRing K] [Algebra R K] [ifr : IsFractionRing R K]
 
-instance : IsIntegralClosure R R K :=
+instance (priority := 10000) : IsIntegralClosure R R K :=
   (isIntegrallyClosed_iff_isIntegralClosure K).mp iic
 
 theorem isIntegral_iff {x : K} : IsIntegral R x ↔ ∃ y : R, algebraMap R K y = x :=

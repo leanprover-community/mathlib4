@@ -77,7 +77,7 @@ inductive Prequotient -- There's always `of`
 set_option linter.uppercaseLean3 false
 #align CommRing.colimits.prequotient CommRingCat.Colimits.Prequotient
 
-instance : Inhabited (Prequotient F) :=
+instance (priority := 10000) : Inhabited (Prequotient F) :=
   ⟨Prequotient.zero⟩
 
 open Prequotient
@@ -140,7 +140,7 @@ def ColimitType : Type v :=
   Quotient (colimitSetoid F)
 #align CommRing.colimits.colimit_type CommRingCat.Colimits.ColimitType
 
-instance ColimitType.AddGroup : AddGroup (ColimitType F) where
+instance (priority := 10000) ColimitType.AddGroup : AddGroup (ColimitType F) where
   zero := Quotient.mk _ zero
   neg := Quotient.map neg Relation.neg_1
   add := Quotient.map₂ add fun x x' rx y y' ry =>
@@ -152,13 +152,13 @@ instance ColimitType.AddGroup : AddGroup (ColimitType F) where
     Quotient.sound <| Relation.add_assoc _ _ _
 
 -- Porting note : failed to derive `Inhabited` instance
-instance InhabitedColimitType : Inhabited <| ColimitType F where
+instance (priority := 10000) InhabitedColimitType : Inhabited <| ColimitType F where
   default := 0
 
-instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
+instance (priority := 10000) ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
   { ColimitType.AddGroup F with one := Quotient.mk _ one }
 
-instance : CommRing (ColimitType.{v} F) :=
+instance (priority := 10000) : CommRing (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
     mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
     one_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.one_mul _
@@ -336,7 +336,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
         erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]; rfl
 #align CommRing.colimits.colimit_is_colimit CommRingCat.Colimits.colimitIsColimit
 
-instance hasColimits_commRingCat : HasColimits CommRingCat where
+instance (priority := 10000) hasColimits_commRingCat : HasColimits CommRingCat where
   has_colimits_of_shape _ _ :=
     { has_colimit := fun F =>
         HasColimit.mk

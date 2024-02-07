@@ -49,13 +49,13 @@ def FiniteIntegralAdeles : Type _ :=
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section DerivedInstances
 
-instance : CommRing (FiniteIntegralAdeles R K) :=
+instance (priority := 10000) : CommRing (FiniteIntegralAdeles R K) :=
   inferInstanceAs (CommRing (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
-instance : TopologicalSpace (FiniteIntegralAdeles R K) :=
+instance (priority := 10000) : TopologicalSpace (FiniteIntegralAdeles R K) :=
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
-instance : Inhabited (FiniteIntegralAdeles R K) :=
+instance (priority := 10000) : Inhabited (FiniteIntegralAdeles R K) :=
   inferInstanceAs (Inhabited (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
 end DerivedInstances
@@ -70,19 +70,19 @@ def ProdAdicCompletions :=
 
 section DerivedInstances
 
-instance : NonUnitalNonAssocRing (ProdAdicCompletions R K) :=
+instance (priority := 10000) : NonUnitalNonAssocRing (ProdAdicCompletions R K) :=
   inferInstanceAs (NonUnitalNonAssocRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
-instance : TopologicalSpace (ProdAdicCompletions R K) :=
+instance (priority := 10000) : TopologicalSpace (ProdAdicCompletions R K) :=
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
-instance : TopologicalRing (ProdAdicCompletions R K) :=
+instance (priority := 10000) : TopologicalRing (ProdAdicCompletions R K) :=
   inferInstanceAs (TopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
-instance : CommRing (ProdAdicCompletions R K) :=
+instance (priority := 10000) : CommRing (ProdAdicCompletions R K) :=
   inferInstanceAs (CommRing (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
-instance : Inhabited (ProdAdicCompletions R K) :=
+instance (priority := 10000) : Inhabited (ProdAdicCompletions R K) :=
   inferInstanceAs (Inhabited (∀ v : HeightOneSpectrum R, v.adicCompletion K))
 
 end DerivedInstances
@@ -91,7 +91,7 @@ local notation "K_hat" => ProdAdicCompletions
 
 namespace FiniteIntegralAdeles
 
-noncomputable instance : Coe (R_hat R K) (K_hat R K) where coe x v := x v
+noncomputable instance (priority := 10000) : Coe (R_hat R K) (K_hat R K) where coe x v := x v
 
 theorem coe_apply (x : R_hat R K) (v : HeightOneSpectrum R) : (x : K_hat R K) v = ↑(x v) :=
   rfl
@@ -128,24 +128,24 @@ end FiniteIntegralAdeles
 
 section AlgebraInstances
 
-instance : Algebra K (K_hat R K) :=
+instance (priority := 10000) : Algebra K (K_hat R K) :=
   (by infer_instance : Algebra K <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 
-instance ProdAdicCompletions.algebra' : Algebra R (K_hat R K) :=
+instance (priority := 10000) ProdAdicCompletions.algebra' : Algebra R (K_hat R K) :=
   (by infer_instance : Algebra R <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 #align dedekind_domain.prod_adic_completions.algebra' DedekindDomain.ProdAdicCompletions.algebra'
 
-instance : IsScalarTower R K (K_hat R K) :=
+instance (priority := 10000) : IsScalarTower R K (K_hat R K) :=
   (by infer_instance : IsScalarTower R K <| ∀ v : HeightOneSpectrum R, v.adicCompletion K)
 
-instance : Algebra R (R_hat R K) :=
+instance (priority := 10000) : Algebra R (R_hat R K) :=
   (by infer_instance : Algebra R <| ∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K)
 
-instance ProdAdicCompletions.algebraCompletions : Algebra (R_hat R K) (K_hat R K) :=
+instance (priority := 10000) ProdAdicCompletions.algebraCompletions : Algebra (R_hat R K) (K_hat R K) :=
   (FiniteIntegralAdeles.Coe.ringHom R K).toAlgebra
 #align dedekind_domain.prod_adic_completions.algebra_completions DedekindDomain.ProdAdicCompletions.algebraCompletions
 
-instance ProdAdicCompletions.isScalarTower_completions : IsScalarTower R (R_hat R K) (K_hat R K) :=
+instance (priority := 10000) ProdAdicCompletions.isScalarTower_completions : IsScalarTower R (R_hat R K) (K_hat R K) :=
   (by infer_instance :
     IsScalarTower R (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K) <|
       ∀ v : HeightOneSpectrum R, v.adicCompletion K)

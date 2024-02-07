@@ -172,7 +172,7 @@ def LucasLehmerTest (p : ℕ) : Prop :=
 -- Porting note: We have a fast `norm_num` extension, and we would rather use that than accidentally
 -- have `simp` use `decide`!
 /-
-instance : DecidablePred LucasLehmerTest :=
+instance (priority := 10000) : DecidablePred LucasLehmerTest :=
   inferInstanceAs (DecidablePred (lucasLehmerResidue · = 0))
 -/
 
@@ -196,10 +196,10 @@ namespace X
 
 variable {q : ℕ+}
 
-instance : Inhabited (X q) := inferInstanceAs (Inhabited (ZMod q × ZMod q))
-instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
-instance : DecidableEq (X q) := inferInstanceAs (DecidableEq (ZMod q × ZMod q))
-instance : AddCommGroup (X q) := inferInstanceAs (AddCommGroup (ZMod q × ZMod q))
+instance (priority := 10000) : Inhabited (X q) := inferInstanceAs (Inhabited (ZMod q × ZMod q))
+instance (priority := 10000) : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
+instance (priority := 10000) : DecidableEq (X q) := inferInstanceAs (DecidableEq (ZMod q × ZMod q))
+instance (priority := 10000) : AddCommGroup (X q) := inferInstanceAs (AddCommGroup (ZMod q × ZMod q))
 
 @[ext]
 theorem ext {x y : X q} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y := by
@@ -234,7 +234,7 @@ theorem neg_snd (x : X q) : (-x).2 = -x.2 :=
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.neg_snd LucasLehmer.X.neg_snd
 
-instance : Mul (X q) where mul x y := (x.1 * y.1 + 3 * x.2 * y.2, x.1 * y.2 + x.2 * y.1)
+instance (priority := 10000) : Mul (X q) where mul x y := (x.1 * y.1 + 3 * x.2 * y.2, x.1 * y.2 + x.2 * y.1)
 
 @[simp]
 theorem mul_fst (x y : X q) : (x * y).1 = x.1 * y.1 + 3 * x.2 * y.2 :=
@@ -248,7 +248,7 @@ theorem mul_snd (x y : X q) : (x * y).2 = x.1 * y.2 + x.2 * y.1 :=
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.mul_snd LucasLehmer.X.mul_snd
 
-instance : One (X q) where one := ⟨1, 0⟩
+instance (priority := 10000) : One (X q) where one := ⟨1, 0⟩
 
 @[simp]
 theorem one_fst : (1 : X q).1 = 1 :=
@@ -267,13 +267,13 @@ set_option linter.uppercaseLean3 false in
 #noalign lucas_lehmer.X.bit1_fst
 #noalign lucas_lehmer.X.bit1_snd
 
-instance : Monoid (X q) :=
+instance (priority := 10000) : Monoid (X q) :=
   { inferInstanceAs (Mul (X q)), inferInstanceAs (One (X q)) with
     mul_assoc := fun x y z => by ext <;> dsimp <;> ring
     one_mul := fun x => by ext <;> simp
     mul_one := fun x => by ext <;> simp }
 
-instance : NatCast (X q) where
+instance (priority := 10000) : NatCast (X q) where
     natCast := fun n => ⟨n, 0⟩
 
 @[simp] theorem nat_coe_fst (n : ℕ) : (n : X q).fst = (n : ZMod q) := rfl
@@ -294,7 +294,7 @@ set_option linter.uppercaseLean3 false in
     (no_index (OfNat.ofNat n) : X q).snd = 0 :=
   rfl
 
-instance : AddGroupWithOne (X q) :=
+instance (priority := 10000) : AddGroupWithOne (X q) :=
   { inferInstanceAs (Monoid (X q)), inferInstanceAs (AddCommGroup (X q)),
       inferInstanceAs (NatCast (X q)) with
     natCast_zero := by ext <;> simp
@@ -313,7 +313,7 @@ theorem right_distrib (x y z : X q) : (x + y) * z = x * z + y * z := by
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.right_distrib LucasLehmer.X.right_distrib
 
-instance : Ring (X q) :=
+instance (priority := 10000) : Ring (X q) :=
   { inferInstanceAs (AddGroupWithOne (X q)), inferInstanceAs (AddCommGroup (X q)),
       inferInstanceAs (Monoid (X q)) with
     left_distrib := left_distrib
@@ -321,11 +321,11 @@ instance : Ring (X q) :=
     mul_zero := fun _ ↦ by ext <;> simp
     zero_mul := fun _ ↦ by ext <;> simp }
 
-instance : CommRing (X q) :=
+instance (priority := 10000) : CommRing (X q) :=
   { inferInstanceAs (Ring (X q)) with
     mul_comm := fun _ _ ↦ by ext <;> dsimp <;> ring }
 
-instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
+instance (priority := 10000) [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
   ⟨⟨0, 1, ne_of_apply_ne Prod.fst zero_ne_one⟩⟩
 
 @[simp]

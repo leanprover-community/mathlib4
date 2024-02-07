@@ -76,7 +76,7 @@ abbrev PiLp (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
   WithLp p (∀ i : ι, α i)
 #align pi_Lp PiLp
 
-instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
+instance (priority := 10000) (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
 
 @[ext] -- porting note: new lemma
@@ -159,7 +159,7 @@ separate from `pi_Lp.pseudo_emetric` since the latter requires the type class hy
 Registering this separately allows for a future emetric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance : EDist (PiLp p β) where
+instance (priority := 10000) : EDist (PiLp p β) where
   edist f g :=
     if p = 0 then {i | edist (f i) (g i) ≠ 0}.toFinite.toFinset.card
     else
@@ -221,7 +221,7 @@ separate from `pi_Lp.pseudo_metric` since the latter requires the type class hyp
 Registering this separately allows for a future metric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance : Dist (PiLp p α) where
+instance (priority := 10000) : Dist (PiLp p α) where
   dist f g :=
     if p = 0 then {i | dist (f i) (g i) ≠ 0}.toFinite.toFinset.card
     else
@@ -257,7 +257,7 @@ separate from `PiLp.seminormedAddCommGroup` since the latter requires the type c
 
 Registering this separately allows for a future norm-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
-instance instNorm : Norm (PiLp p β) where
+instance (priority := 10000) instNorm : Norm (PiLp p β) where
   norm f :=
     if p = 0 then {i | ‖f i‖ ≠ 0}.toFinite.toFinset.card
     else if p = ∞ then ⨆ i, ‖f i‖ else (∑ i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal)
@@ -463,7 +463,7 @@ end Aux
 /-! ### Instances on finite `L^p` products -/
 
 
-instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
+instance (priority := 10000) uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
   Pi.uniformSpace _
 #align pi_Lp.uniform_space PiLp.uniformSpace
 
@@ -490,7 +490,7 @@ theorem continuous_equiv_symm [∀ i, UniformSpace (β i)] :
 
 variable [Fintype ι]
 
-instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
+instance (priority := 10000) bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
   Pi.instBornology
 #align pi_Lp.bornology PiLp.bornology
 
@@ -499,23 +499,23 @@ variable [Fact (1 ≤ p)]
 
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
-instance [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) :=
+instance (priority := 10000) [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) :=
   (pseudoEmetricAux p β).replaceUniformity (aux_uniformity_eq p β).symm
 
 /-- emetric space instance on the product of finitely many emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
-instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
+instance (priority := 10000) [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
   @EMetricSpace.ofT0PseudoEMetricSpace (PiLp p α) _ Pi.instT0Space
 
 /-- pseudometric space instance on the product of finitely many pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
-instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
+instance (priority := 10000) [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
   ((pseudoMetricAux p β).replaceUniformity (aux_uniformity_eq p β).symm).replaceBornology fun s =>
     Filter.ext_iff.1 (aux_cobounded_eq p β).symm sᶜ
 
 /-- metric space instance on the product of finitely many metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
-instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
+instance (priority := 10000) [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
   MetricSpace.ofT0PseudoMetricSpace _
 
 theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)]
@@ -556,7 +556,7 @@ theorem infty_equiv_isometry [∀ i, PseudoEMetricSpace (β i)] :
 
 /-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
 norm. -/
-instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
+instance (priority := 10000) seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
     SeminormedAddCommGroup (PiLp p β) :=
   { Pi.addCommGroup with
     dist_eq := fun x y => by
@@ -571,7 +571,7 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
 #align pi_Lp.seminormed_add_comm_group PiLp.seminormedAddCommGroup
 
 /-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
-instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) :=
+instance (priority := 10000) normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) :=
   { PiLp.seminormedAddCommGroup p α with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 #align pi_Lp.normed_add_comm_group PiLp.normedAddCommGroup
@@ -654,7 +654,7 @@ theorem edist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)
     edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) := by simp [PiLp.edist_eq_sum]
 #align pi_Lp.edist_eq_of_L2 PiLp.edist_eq_of_L2
 
-instance instBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+instance (priority := 10000) instBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
     [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] :
     BoundedSMul 𝕜 (PiLp p β) :=
   .of_nnnorm_smul_le fun c f => by
@@ -669,7 +669,7 @@ instance instBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (�
       exact Finset.sum_le_sum fun i _ => NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le
 
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
-instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+instance (priority := 10000) normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
     [∀ i, NormedSpace 𝕜 (β i)] : NormedSpace 𝕜 (PiLp p β) where
   norm_smul_le := norm_smul_le
 #align pi_Lp.normed_space PiLp.normedSpace

@@ -16,12 +16,12 @@ import Mathlib.RingTheory.Ideal.LocalRing
 
 open CategoryTheory
 
-instance localization_unit_isIso (R : CommRingCat) :
+instance (priority := 10000) localization_unit_isIso (R : CommRingCat) :
     IsIso (CommRingCat.ofHom <| algebraMap R (Localization.Away (1 : R))) :=
   IsIso.of_iso (IsLocalization.atOne R (Localization.Away (1 : R))).toRingEquiv.toCommRingCatIso
 #align localization_unit_is_iso localization_unit_isIso
 
-instance localization_unit_isIso' (R : CommRingCat) :
+instance (priority := 10000) localization_unit_isIso' (R : CommRingCat) :
     @IsIso CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R (Localization.Away (1 : R))) := by
   cases R
   exact localization_unit_isIso _
@@ -32,18 +32,18 @@ theorem IsLocalization.epi {R : Type*} [CommRing R] (M : Submonoid R) (S : Type 
   ⟨fun {T} _ _ => @IsLocalization.ringHom_ext R _ M S _ _ T _ _ _ _⟩
 #align is_localization.epi IsLocalization.epi
 
-instance Localization.epi {R : Type*} [CommRing R] (M : Submonoid R) :
+instance (priority := 10000) Localization.epi {R : Type*} [CommRing R] (M : Submonoid R) :
     Epi (CommRingCat.ofHom <| algebraMap R <| Localization M) :=
   IsLocalization.epi M _
 #align localization.epi Localization.epi
 
-instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
+instance (priority := 10000) Localization.epi' {R : CommRingCat} (M : Submonoid R) :
     @Epi CommRingCat _ R _ (CommRingCat.ofHom <| algebraMap R <| Localization M : _) := by
   rcases R with ⟨α, str⟩
   exact IsLocalization.epi M _
 #align localization.epi' Localization.epi'
 
-instance CommRingCat.isLocalRingHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
+instance (priority := 10000) CommRingCat.isLocalRingHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
     [IsLocalRingHom g] [IsLocalRingHom f] : IsLocalRingHom (f ≫ g) :=
   _root_.isLocalRingHom_comp _ _
 set_option linter.uppercaseLean3 false in

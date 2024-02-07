@@ -63,7 +63,7 @@ set_option synthInstance.checkSynthOrder false in
 This instance generates the type-class problem `BundledHom ?m`.
 Currently that is not a problem, as there are almost no instances of `BundledHom`.
 -/
-instance category : Category (Bundled c) := by
+instance (priority := 10000) category : Category (Bundled c) := by
   refine' { Hom := fun X Y => @hom X Y X.str Y.str
             id := fun X => @BundledHom.id c hom 𝒞 X X.str
             comp := @fun X Y Z f g => @BundledHom.comp c hom 𝒞 X Y Z X.str Y.str Z.str g f
@@ -74,7 +74,7 @@ instance category : Category (Bundled c) := by
 #align category_theory.bundled_hom.category CategoryTheory.BundledHom.category
 
 /-- A category given by `BundledHom` is a concrete category. -/
-instance concreteCategory : ConcreteCategory.{u} (Bundled c)
+instance (priority := 10000) concreteCategory : ConcreteCategory.{u} (Bundled c)
     where
   forget :=
     { obj := fun X => X
@@ -149,19 +149,19 @@ end
 
 -- The `ParentProjection` typeclass is just a marker, so won't be used.
 @[nolint unusedArguments]
-instance bundledHomOfParentProjection (F : ∀ {α}, d α → c α) [ParentProjection @F] :
+instance (priority := 10000) bundledHomOfParentProjection (F : ∀ {α}, d α → c α) [ParentProjection @F] :
     BundledHom (MapHom hom @F) :=
   map hom @F
 #align category_theory.bundled_hom.bundled_hom_of_parent_projection CategoryTheory.BundledHom.bundledHomOfParentProjection
 
-instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] :
+instance (priority := 10000) forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] :
     HasForget₂ (Bundled d) (Bundled c) where
   forget₂ :=
     { obj := fun X => ⟨X, F X.2⟩
       map := @fun X Y f => f }
 #align category_theory.bundled_hom.forget₂ CategoryTheory.BundledHom.forget₂
 
-instance forget₂Full (F : ∀ {α}, d α → c α) [ParentProjection @F] :
+instance (priority := 10000) forget₂Full (F : ∀ {α}, d α → c α) [ParentProjection @F] :
     Full (CategoryTheory.forget₂ (Bundled d) (Bundled c)) where preimage X Y {f} := f
 #align category_theory.bundled_hom.forget₂_full CategoryTheory.BundledHom.forget₂Full
 

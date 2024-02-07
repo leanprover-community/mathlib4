@@ -67,7 +67,7 @@ theorem LDL.lowerInv_eq_gramSchmidtBasis :
   rfl
 #align LDL.lower_inv_eq_gram_schmidt_basis LDL.lowerInv_eq_gramSchmidtBasis
 
-noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := by
+noncomputable instance (priority := 10000) LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := by
   rw [LDL.lowerInv_eq_gramSchmidtBasis]
   haveI :=
     Basis.invertibleToMatrix (Pi.basisFun 𝕜 n)

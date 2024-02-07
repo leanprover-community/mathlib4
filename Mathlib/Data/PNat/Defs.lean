@@ -30,22 +30,22 @@ def PNat := { n : ℕ // 0 < n }
 @[inherit_doc]
 notation "ℕ+" => PNat
 
-instance : One ℕ+ :=
+instance (priority := 10000) : One ℕ+ :=
   ⟨⟨1, Nat.zero_lt_one⟩⟩
 
 /-- The underlying natural number -/
 @[coe]
 def PNat.val : ℕ+ → ℕ := Subtype.val
 
-instance coePNatNat : Coe ℕ+ ℕ :=
+instance (priority := 10000) coePNatNat : Coe ℕ+ ℕ :=
   ⟨PNat.val⟩
 #align coe_pnat_nat coePNatNat
 
-instance : Repr ℕ+ :=
+instance (priority := 10000) : Repr ℕ+ :=
   ⟨fun n n' => reprPrec n.1 n'⟩
 
 --Porting note: New instance not in Lean3
-instance (n : ℕ) : OfNat ℕ+ (n+1) :=
+instance (priority := 10000) (n : ℕ) : OfNat ℕ+ (n+1) :=
   ⟨⟨n + 1, Nat.succ_pos n⟩⟩
 
 namespace PNat
@@ -159,7 +159,7 @@ theorem ne_zero (n : ℕ+) : (n : ℕ) ≠ 0 :=
   n.2.ne'
 #align pnat.ne_zero PNat.ne_zero
 
-instance _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
+instance (priority := 10000) _root_.NeZero.pnat {a : ℕ+} : NeZero (a : ℕ) :=
   ⟨a.ne_zero⟩
 #align ne_zero.pnat NeZero.pnat
 
@@ -182,7 +182,7 @@ theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
   not_lt_of_le n.one_le
 #align pnat.not_lt_one PNat.not_lt_one
 
-instance : Inhabited ℕ+ :=
+instance (priority := 10000) : Inhabited ℕ+ :=
   ⟨1⟩
 
 -- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
@@ -201,7 +201,7 @@ theorem coe_eq_one_iff {m : ℕ+} : (m : ℕ) = 1 ↔ m = 1 :=
   Subtype.coe_injective.eq_iff' one_coe
 #align pnat.coe_eq_one_iff PNat.coe_eq_one_iff
 
-instance : WellFoundedRelation ℕ+ :=
+instance (priority := 10000) : WellFoundedRelation ℕ+ :=
   measure (fun (a : ℕ+) => (a : ℕ))
 
 /-- Strong induction on `ℕ+`. -/
@@ -282,11 +282,11 @@ end PNat
 
 section CanLift
 
-instance Nat.canLiftPNat : CanLift ℕ ℕ+ (↑) (fun n => 0 < n) :=
+instance (priority := 10000) Nat.canLiftPNat : CanLift ℕ ℕ+ (↑) (fun n => 0 < n) :=
   ⟨fun n hn => ⟨Nat.toPNat' n, PNat.toPNat'_coe hn⟩⟩
 #align nat.can_lift_pnat Nat.canLiftPNat
 
-instance Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
+instance (priority := 10000) Int.canLiftPNat : CanLift ℤ ℕ+ (↑) ((0 < ·)) :=
   ⟨fun n hn =>
     ⟨Nat.toPNat' (Int.natAbs n), by
       rw [Nat.toPNat'_coe, if_pos (Int.natAbs_pos.2 hn.ne'),

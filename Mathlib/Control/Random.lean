@@ -44,7 +44,7 @@ abbrev RandT := RandGT StdGen
 /-- A monad to generate random objects using the generator type `StdGen`.  -/
 abbrev Rand := RandG StdGen
 
-instance [MonadLift m n] : MonadLiftT (RandGT g m) (RandGT g n) where
+instance (priority := 10000) [MonadLift m n] : MonadLiftT (RandGT g m) (RandGT g n) where
   monadLift x := fun s => x s
 
 /-- `Random m α` gives us machinery to generate values of type `α` in the monad `m`.
@@ -97,19 +97,19 @@ def randBound (α : Type u)
 def randFin {n : Nat} [RandomGen g] : RandGT g m (Fin n.succ) :=
   λ ⟨g⟩ => pure <| randNat g 0 n.succ |>.map Fin.ofNat ULift.up
 
-instance {n : Nat} : Random m (Fin n.succ) where
+instance (priority := 10000) {n : Nat} : Random m (Fin n.succ) where
   random := randFin
 
 def randBool [RandomGen g] : RandGT g m Bool :=
   return (← rand (Fin 2)) == 1
 
-instance : Random m Bool where
+instance (priority := 10000) : Random m Bool where
   random := randBool
 
-instance {α : Type u} [ULiftable m m'] [Random m α] : Random m' (ULift.{v} α) where
+instance (priority := 10000) {α : Type u} [ULiftable m m'] [Random m α] : Random m' (ULift.{v} α) where
   random := ULiftable.up random
 
-instance : BoundedRandom m Nat where
+instance (priority := 10000) : BoundedRandom m Nat where
   randomR lo hi h _ := do
     let z ← rand (Fin (hi - lo).succ)
     pure ⟨
@@ -117,7 +117,7 @@ instance : BoundedRandom m Nat where
       Nat.add_le_of_le_sub' h (Nat.le_of_succ_le_succ z.isLt)
     ⟩
 
-instance : BoundedRandom m Int where
+instance (priority := 10000) : BoundedRandom m Int where
   randomR lo hi h _ := do
     let ⟨z, _, h2⟩ ← randBound Nat 0 (Int.natAbs <| hi - lo) (Nat.zero_le _)
     pure ⟨
@@ -127,12 +127,12 @@ instance : BoundedRandom m Int where
         (Int.ofNat_le.mpr h2)
         (le_of_eq <| Int.natAbs_of_nonneg <| Int.sub_nonneg_of_le h)⟩
 
-instance {n : Nat} : BoundedRandom m (Fin n) where
+instance (priority := 10000) {n : Nat} : BoundedRandom m (Fin n) where
   randomR lo hi h _ := do
     let ⟨r, h1, h2⟩ ← randBound Nat lo.val hi.val h
     pure ⟨⟨r, Nat.lt_of_le_of_lt h2 hi.isLt⟩, h1, h2⟩
 
-instance {α : Type u} [Preorder α] [ULiftable m m'] [BoundedRandom m α] [Monad m'] :
+instance (priority := 10000) {α : Type u} [Preorder α] [ULiftable m m'] [BoundedRandom m α] [Monad m'] :
     BoundedRandom m' (ULift.{v} α) where
   randomR lo hi h := do
     let ⟨x⟩ ← ULiftable.up.{v} (BoundedRandom.randomR lo.down hi.down h)

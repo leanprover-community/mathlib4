@@ -266,7 +266,7 @@ attribute [pp_dot] Indep E
     indep_empty indep_subset indep_aug indep_compact subset_ground : (IndepMatroid.ofFinitary
       E Indep indep_empty indep_subset indep_aug indep_compact subset_ground).Indep = Indep := rfl
 
-instance ofFinitary_finitary (E : Set α) (Indep : Set α → Prop)
+instance (priority := 10000) ofFinitary_finitary (E : Set α) (Indep : Set α → Prop)
     indep_empty indep_subset indep_aug indep_compact subset_ground : Finitary
     (IndepMatroid.ofFinitary
       E Indep indep_empty indep_subset indep_aug indep_compact subset_ground).matroid :=
@@ -314,7 +314,7 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
       E Indep indep_empty indep_subset indep_aug subset_ground h_bdd).Indep = Indep := rfl
 
 /-- `IndepMatroid.ofBdd` constructs a `FiniteRk` matroid. -/
-instance (E : Set α) (Indep : Set α → Prop) indep_empty indep_subset indep_aug subset_ground h_bdd :
+instance (priority := 10000) (E : Set α) (Indep : Set α → Prop) indep_empty indep_subset indep_aug subset_ground h_bdd :
     FiniteRk (IndepMatroid.ofBdd
       E Indep indep_empty indep_subset indep_aug subset_ground h_bdd).matroid := by
   obtain ⟨B, hB⟩ := (IndepMatroid.ofBdd E Indep _ _ _ _ _).matroid.exists_base
@@ -360,7 +360,7 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
     indep_bdd subset_ground : (IndepMatroid.ofBddAugment
       E Indep indep_empty indep_subset indep_aug indep_bdd subset_ground).Indep = Indep := rfl
 
-instance ofBddAugment_finiteRk (E : Set α) Indep indep_empty indep_subset indep_aug
+instance (priority := 10000) ofBddAugment_finiteRk (E : Set α) Indep indep_empty indep_subset indep_aug
     indep_bdd subset_ground : FiniteRk (IndepMatroid.ofBddAugment
       E Indep indep_empty indep_subset indep_aug indep_bdd subset_ground).matroid := by
   rw [IndepMatroid.ofBddAugment]
@@ -393,7 +393,7 @@ protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)
     subset_ground : (IndepMatroid.ofFinite
       (hE : E.Finite) Indep indep_empty indep_subset indep_aug subset_ground).Indep = Indep := rfl
 
-instance ofFinite_finite {E : Set α} hE Indep indep_empty indep_subset indep_aug subset_ground :
+instance (priority := 10000) ofFinite_finite {E : Set α} hE Indep indep_empty indep_subset indep_aug subset_ground :
     (IndepMatroid.ofFinite
       (hE : E.Finite) Indep indep_empty indep_subset indep_aug subset_ground).matroid.Finite :=
   ⟨hE⟩
@@ -478,7 +478,7 @@ namespace Matroid
     base_exchange subset_ground : (Matroid.ofExistsFiniteBase
       E Base exists_finite_base base_exchange subset_ground).Base = Base := rfl
 
-instance ofExistsFiniteBase_finiteRk (E : Set α) Base exists_finite_base
+instance (priority := 10000) ofExistsFiniteBase_finiteRk (E : Set α) Base exists_finite_base
     base_exchange subset_ground : FiniteRk (Matroid.ofExistsFiniteBase
       E Base exists_finite_base base_exchange subset_ground) := by
   obtain ⟨B, hB, hfin⟩ := exists_finite_base
@@ -504,7 +504,7 @@ protected def ofBaseOfFinite {E : Set α} (hE : E.Finite) (Base : Set α → Pro
     base_exchange subset_ground : (Matroid.ofBaseOfFinite
       hE Base exists_base base_exchange subset_ground).Base = Base := rfl
 
-instance ofBaseOfFinite_finite {E : Set α} (hE : E.Finite) Base exists_base
+instance (priority := 10000) ofBaseOfFinite_finite {E : Set α} (hE : E.Finite) Base exists_base
     base_exchange subset_ground : (Matroid.ofBaseOfFinite
       hE Base exists_base base_exchange subset_ground).Finite :=
   ⟨hE⟩

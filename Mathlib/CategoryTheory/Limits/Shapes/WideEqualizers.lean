@@ -62,13 +62,13 @@ inductive WalkingParallelFamily (J : Type w) : Type w
 
 open WalkingParallelFamily
 
-instance : DecidableEq (WalkingParallelFamily J)
+instance (priority := 10000) : DecidableEq (WalkingParallelFamily J)
   | zero, zero => isTrue rfl
   | zero, one => isFalse fun t => WalkingParallelFamily.noConfusion t
   | one, zero => isFalse fun t => WalkingParallelFamily.noConfusion t
   | one, one => isTrue rfl
 
-instance : Inhabited (WalkingParallelFamily J) :=
+instance (priority := 10000) : Inhabited (WalkingParallelFamily J) :=
   ⟨zero⟩
 
 /-- The type family of morphisms for the diagram indexing a wide (co)equalizer. -/
@@ -82,7 +82,7 @@ inductive WalkingParallelFamily.Hom (J : Type w) :
   CategoryTheory.Limits.WalkingParallelFamily.Hom
 
 /-- Satisfying the inhabited linter -/
-instance (J : Type v) : Inhabited (WalkingParallelFamily.Hom J zero zero) where default := Hom.id _
+instance (priority := 10000) (J : Type v) : Inhabited (WalkingParallelFamily.Hom J zero zero) where default := Hom.id _
 
 open WalkingParallelFamily.Hom
 
@@ -98,7 +98,7 @@ def WalkingParallelFamily.Hom.comp :
 
 -- attribute [local tidy] tactic.case_bash Porting note: no tidy, no local
 
-instance WalkingParallelFamily.category : SmallCategory (WalkingParallelFamily J) where
+instance (priority := 10000) WalkingParallelFamily.category : SmallCategory (WalkingParallelFamily J) where
   Hom := WalkingParallelFamily.Hom J
   id := WalkingParallelFamily.Hom.id
   comp := WalkingParallelFamily.Hom.comp
@@ -641,7 +641,7 @@ theorem wideEqualizer.hom_ext [Nonempty J] {W : C} {k l : W ⟶ wideEqualizer f}
 #align category_theory.limits.wide_equalizer.hom_ext CategoryTheory.Limits.wideEqualizer.hom_ext
 
 /-- A wide equalizer morphism is a monomorphism -/
-instance wideEqualizer.ι_mono [Nonempty J] : Mono (wideEqualizer.ι f) where
+instance (priority := 10000) wideEqualizer.ι_mono [Nonempty J] : Mono (wideEqualizer.ι f) where
   right_cancellation _ _ w := wideEqualizer.hom_ext w
 #align category_theory.limits.wide_equalizer.ι_mono CategoryTheory.Limits.wideEqualizer.ι_mono
 
@@ -755,7 +755,7 @@ theorem wideCoequalizer.hom_ext [Nonempty J] {W : C} {k l : wideCoequalizer f �
 #align category_theory.limits.wide_coequalizer.hom_ext CategoryTheory.Limits.wideCoequalizer.hom_ext
 
 /-- A wide coequalizer morphism is an epimorphism -/
-instance wideCoequalizer.π_epi [Nonempty J] : Epi (wideCoequalizer.π f) where
+instance (priority := 10000) wideCoequalizer.π_epi [Nonempty J] : Epi (wideCoequalizer.π f) where
   left_cancellation _ _ w := wideCoequalizer.hom_ext w
 #align category_theory.limits.wide_coequalizer.π_epi CategoryTheory.Limits.wideCoequalizer.π_epi
 

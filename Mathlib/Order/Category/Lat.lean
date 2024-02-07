@@ -35,10 +35,10 @@ set_option linter.uppercaseLean3 false
 
 namespace Lat
 
-instance : CoeSort Lat Type* :=
+instance (priority := 10000) : CoeSort Lat Type* :=
   Bundled.coeSort
 
-instance (X : Lat) : Lattice X :=
+instance (priority := 10000) (X : Lat) : Lattice X :=
   X.str
 
 /-- Construct a bundled `Lat` from a `Lattice`. -/
@@ -51,22 +51,22 @@ theorem coe_of (α : Type*) [Lattice α] : ↥(of α) = α :=
   rfl
 #align Lat.coe_of Lat.coe_of
 
-instance : Inhabited Lat :=
+instance (priority := 10000) : Inhabited Lat :=
   ⟨of Bool⟩
 
-instance : BundledHom @LatticeHom where
+instance (priority := 10000) : BundledHom @LatticeHom where
   toFun _ _ f := f.toFun
   id := @LatticeHom.id
   comp := @LatticeHom.comp
   hom_ext _ _ _ _ h := DFunLike.coe_injective h
 
-instance : LargeCategory.{u} Lat :=
+instance (priority := 10000) : LargeCategory.{u} Lat :=
   BundledHom.category LatticeHom
 
-instance : ConcreteCategory Lat :=
+instance (priority := 10000) : ConcreteCategory Lat :=
   BundledHom.concreteCategory LatticeHom
 
-instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where
+instance (priority := 10000) hasForgetToPartOrd : HasForget₂ Lat PartOrd where
   forget₂ :=
     { obj := fun X => Bundled.mk X inferInstance
       map := fun {X Y} (f : LatticeHom X Y) => (f : OrderHom X Y) }

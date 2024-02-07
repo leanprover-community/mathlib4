@@ -66,7 +66,7 @@ theorem evenOdd_mul_le (i j : ZMod 2) : evenOdd Q i * evenOdd Q j ≤ evenOdd Q 
   exact Submodule.mul_mem_mul hx hy
 #align clifford_algebra.even_odd_mul_le CliffordAlgebra.evenOdd_mul_le
 
-instance evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
+instance (priority := 10000) evenOdd.gradedMonoid : SetLike.GradedMonoid (evenOdd Q) where
   one_mem := Submodule.one_le.mp (one_le_evenOdd_zero Q)
   mul_mem _i _j _p _q hp hq := Submodule.mul_le.mp (evenOdd_mul_le Q _ _) _ hp _ hq
 #align clifford_algebra.even_odd.graded_monoid CliffordAlgebra.evenOdd.gradedMonoid
@@ -124,7 +124,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
 #align clifford_algebra.graded_algebra.lift_ι_eq CliffordAlgebra.GradedAlgebra.lift_ι_eq
 
 /-- The clifford algebra is graded by the even and odd parts. -/
-instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
+instance (priority := 10000) gradedAlgebra : GradedAlgebra (evenOdd Q) :=
   GradedAlgebra.ofAlgHom (evenOdd Q)
     -- while not necessary, the `by apply` makes this elaborate faster
     (lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)

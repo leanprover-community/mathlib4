@@ -107,7 +107,7 @@ def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
 
 variable {C} {D} {E}
 
-instance faithful_whiskeringRight_obj {F : D ⥤ E} [Faithful F] :
+instance (priority := 10000) faithful_whiskeringRight_obj {F : D ⥤ E} [Faithful F] :
     Faithful ((whiskeringRight C D E).obj F) where
   map_injective hαβ := by
     ext X
@@ -186,12 +186,12 @@ theorem isoWhiskerRight_inv {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
   rfl
 #align category_theory.iso_whisker_right_inv CategoryTheory.isoWhiskerRight_inv
 
-instance isIso_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso α] :
+instance (priority := 10000) isIso_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso α] :
     IsIso (whiskerLeft F α) :=
   IsIso.of_iso (isoWhiskerLeft F (asIso α))
 #align category_theory.is_iso_whisker_left CategoryTheory.isIso_whiskerLeft
 
-instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso α] :
+instance (priority := 10000) isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso α] :
     IsIso (whiskerRight α F) :=
   IsIso.of_iso (isoWhiskerRight (asIso α) F)
 #align category_theory.is_iso_whisker_right CategoryTheory.isIso_whiskerRight

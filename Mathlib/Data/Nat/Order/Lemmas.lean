@@ -30,12 +30,12 @@ namespace Nat
 /-! ### Sets -/
 
 
-instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty s] : OrderBot s where
+instance (priority := 10000) Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty s] : OrderBot s where
   bot := ⟨Nat.find (nonempty_subtype.1 h), Nat.find_spec (nonempty_subtype.1 h)⟩
   bot_le x := Nat.find_min' _ x.2
 #align nat.subtype.order_bot Nat.Subtype.orderBot
 
-instance Subtype.semilatticeSup (s : Set ℕ) : SemilatticeSup s :=
+instance (priority := 10000) Subtype.semilatticeSup (s : Set ℕ) : SemilatticeSup s :=
   { Subtype.linearOrder s, LinearOrder.toLattice with }
 #align nat.subtype.semilattice_sup Nat.Subtype.semilatticeSup
 

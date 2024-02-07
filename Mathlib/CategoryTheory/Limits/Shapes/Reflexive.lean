@@ -123,7 +123,7 @@ theorem IsCoreflexivePair.swap [IsCoreflexivePair f g] : IsCoreflexivePair g f :
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
 /-- For an adjunction `F ⊣ G` with counit `ε`, the pair `(FGε_B, ε_FGB)` is reflexive. -/
-instance (B : D) :
+instance (priority := 10000) (B : D) :
     IsReflexivePair (F.map (G.map (adj.counit.app B))) (adj.counit.app (F.obj (G.obj B))) :=
   IsReflexivePair.mk' (F.map (adj.unit.app (G.obj B)))
     (by

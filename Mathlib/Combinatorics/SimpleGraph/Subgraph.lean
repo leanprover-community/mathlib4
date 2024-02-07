@@ -290,7 +290,7 @@ theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
 #align simple_graph.subgraph.copy_eq SimpleGraph.Subgraph.copy_eq
 
 /-- The union of two subgraphs. -/
-instance : Sup G.Subgraph where
+instance (priority := 10000) : Sup G.Subgraph where
   sup G₁ G₂ :=
     { verts := G₁.verts ∪ G₂.verts
       Adj := G₁.Adj ⊔ G₂.Adj
@@ -299,7 +299,7 @@ instance : Sup G.Subgraph where
       symm := fun _ _ => Or.imp G₁.adj_symm G₂.adj_symm }
 
 /-- The intersection of two subgraphs. -/
-instance : Inf G.Subgraph where
+instance (priority := 10000) : Inf G.Subgraph where
   inf G₁ G₂ :=
     { verts := G₁.verts ∩ G₂.verts
       Adj := G₁.Adj ⊓ G₂.Adj
@@ -308,7 +308,7 @@ instance : Inf G.Subgraph where
       symm := fun _ _ => And.imp G₁.adj_symm G₂.adj_symm }
 
 /-- The `top` subgraph is `G` as a subgraph of itself. -/
-instance : Top G.Subgraph where
+instance (priority := 10000) : Top G.Subgraph where
   top :=
     { verts := Set.univ
       Adj := G.Adj
@@ -317,7 +317,7 @@ instance : Top G.Subgraph where
       symm := G.symm }
 
 /-- The `bot` subgraph is the subgraph with no vertices or edges. -/
-instance : Bot G.Subgraph where
+instance (priority := 10000) : Bot G.Subgraph where
   bot :=
     { verts := ∅
       Adj := ⊥
@@ -325,7 +325,7 @@ instance : Bot G.Subgraph where
       edge_vert := False.elim
       symm := fun _ _ => id }
 
-instance : SupSet G.Subgraph where
+instance (priority := 10000) : SupSet G.Subgraph where
   sSup s :=
     { verts := ⋃ G' ∈ s, verts G'
       Adj := fun a b => ∃ G' ∈ s, Adj G' a b
@@ -337,7 +337,7 @@ instance : SupSet G.Subgraph where
         exact Set.mem_iUnion₂_of_mem hG' (G'.edge_vert hab)
       symm := fun a b h => by simpa [adj_comm] using h }
 
-instance : InfSet G.Subgraph where
+instance (priority := 10000) : InfSet G.Subgraph where
   sInf s :=
     { verts := ⋂ G' ∈ s, verts G'
       Adj := fun a b => (∀ ⦃G'⦄, G' ∈ s → Adj G' a b) ∧ G.Adj a b
@@ -445,20 +445,20 @@ theorem verts_spanningCoe_injective :
 
 /-- For subgraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
 `∀ a b, G₁.adj a b → G₂.adj a b`. -/
-instance distribLattice : DistribLattice G.Subgraph :=
+instance (priority := 10000) distribLattice : DistribLattice G.Subgraph :=
   { show DistribLattice G.Subgraph from
       verts_spanningCoe_injective.distribLattice _
         (fun _ _ => rfl) fun _ _ => rfl with
     le := fun x y => x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w }
 
-instance : BoundedOrder (Subgraph G) where
+instance (priority := 10000) : BoundedOrder (Subgraph G) where
   top := ⊤
   bot := ⊥
   le_top x := ⟨Set.subset_univ _, fun _ _ => x.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
 -- Note that subgraphs do not form a Boolean algebra, because of `verts`.
-instance : CompletelyDistribLattice G.Subgraph :=
+instance (priority := 10000) : CompletelyDistribLattice G.Subgraph :=
   { Subgraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
@@ -483,7 +483,7 @@ instance : CompletelyDistribLattice G.Subgraph :=
       (by ext; simp [Classical.skolem]) }
 
 @[simps]
-instance subgraphInhabited : Inhabited (Subgraph G) := ⟨⊥⟩
+instance (priority := 10000) subgraphInhabited : Inhabited (Subgraph G) := ⟨⊥⟩
 #align simple_graph.subgraph.subgraph_inhabited SimpleGraph.Subgraph.subgraphInhabited
 
 @[simp]
@@ -756,13 +756,13 @@ theorem neighborSet_subset_of_subgraph {x y : Subgraph G} (h : x ≤ y) (v : V) 
   fun _ h' ↦ h.2 h'
 #align simple_graph.subgraph.neighbor_set_subset_of_subgraph SimpleGraph.Subgraph.neighborSet_subset_of_subgraph
 
-instance neighborSet.decidablePred (G' : Subgraph G) [h : DecidableRel G'.Adj] (v : V) :
+instance (priority := 10000) neighborSet.decidablePred (G' : Subgraph G) [h : DecidableRel G'.Adj] (v : V) :
     DecidablePred (· ∈ G'.neighborSet v) :=
   h v
 #align simple_graph.subgraph.neighbor_set.decidable_pred SimpleGraph.Subgraph.neighborSet.decidablePred
 
 /-- If a graph is locally finite at a vertex, then so is a subgraph of that graph. -/
-instance finiteAt {G' : Subgraph G} (v : G'.verts) [DecidableRel G'.Adj]
+instance (priority := 10000) finiteAt {G' : Subgraph G} (v : G'.verts) [DecidableRel G'.Adj]
     [Fintype (G.neighborSet v)] : Fintype (G'.neighborSet v) :=
   Set.fintypeSubset (G.neighborSet v) (G'.neighborSet_subset v)
 #align simple_graph.subgraph.finite_at SimpleGraph.Subgraph.finiteAt
@@ -775,11 +775,11 @@ def finiteAtOfSubgraph {G' G'' : Subgraph G} [DecidableRel G'.Adj] (h : G' ≤ G
   Set.fintypeSubset (G''.neighborSet v) (neighborSet_subset_of_subgraph h v)
 #align simple_graph.subgraph.finite_at_of_subgraph SimpleGraph.Subgraph.finiteAtOfSubgraph
 
-instance (G' : Subgraph G) [Fintype G'.verts] (v : V) [DecidablePred (· ∈ G'.neighborSet v)] :
+instance (priority := 10000) (G' : Subgraph G) [Fintype G'.verts] (v : V) [DecidablePred (· ∈ G'.neighborSet v)] :
     Fintype (G'.neighborSet v) :=
   Set.fintypeSubset G'.verts (neighborSet_subset_verts G' v)
 
-instance coeFiniteAt {G' : Subgraph G} (v : G'.verts) [Fintype (G'.neighborSet v)] :
+instance (priority := 10000) coeFiniteAt {G' : Subgraph G} (v : G'.verts) [Fintype (G'.neighborSet v)] :
     Fintype (G'.coe.neighborSet v) :=
   Fintype.ofEquiv _ (coeNeighborSetEquiv v).symm
 #align simple_graph.subgraph.coe_finite_at SimpleGraph.Subgraph.coeFiniteAt
@@ -840,7 +840,7 @@ section MkProperties
 
 variable {G : SimpleGraph V} {G' : SimpleGraph W}
 
-instance nonempty_singletonSubgraph_verts (v : V) : Nonempty (G.singletonSubgraph v).verts :=
+instance (priority := 10000) nonempty_singletonSubgraph_verts (v : V) : Nonempty (G.singletonSubgraph v).verts :=
   ⟨⟨v, Set.mem_singleton v⟩⟩
 #align simple_graph.nonempty_singleton_subgraph_verts SimpleGraph.nonempty_singletonSubgraph_verts
 
@@ -887,7 +887,7 @@ theorem eq_singletonSubgraph_iff_verts_eq (H : G.Subgraph) {v : V} :
     exact ha.ne rfl
 #align simple_graph.eq_singleton_subgraph_iff_verts_eq SimpleGraph.eq_singletonSubgraph_iff_verts_eq
 
-instance nonempty_subgraphOfAdj_verts {v w : V} (hvw : G.Adj v w) :
+instance (priority := 10000) nonempty_subgraphOfAdj_verts {v w : V} (hvw : G.Adj v w) :
     Nonempty (G.subgraphOfAdj hvw).verts :=
   ⟨⟨v, by simp⟩⟩
 #align simple_graph.nonempty_subgraph_of_adj_verts SimpleGraph.nonempty_subgraphOfAdj_verts

@@ -38,14 +38,14 @@ set_option linter.uppercaseLean3 false in
 
 namespace Cat
 
-instance : Inhabited Cat :=
+instance (priority := 10000) : Inhabited Cat :=
   ⟨⟨Type u, CategoryTheory.types⟩⟩
 
 --Porting note: maybe this coercion should be defined to be `objects.obj`?
-instance : CoeSort Cat (Type u) :=
+instance (priority := 10000) : CoeSort Cat (Type u) :=
   ⟨Bundled.α⟩
 
-instance str (C : Cat.{v, u}) : Category.{v, u} C :=
+instance (priority := 10000) str (C : Cat.{v, u}) : Category.{v, u} C :=
   Bundled.str C
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.str CategoryTheory.Cat.str
@@ -57,7 +57,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.of CategoryTheory.Cat.of
 
 /-- Bicategory structure on `Cat` -/
-instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u}
+instance (priority := 10000) bicategory : Bicategory.{max v u, max v u} Cat.{v, u}
     where
   Hom C D := C ⥤ D
   id C := 𝟭 C
@@ -74,7 +74,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.bicategory CategoryTheory.Cat.bicategory
 
 /-- `Cat` is a strict bicategory. -/
-instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
+instance (priority := 10000) bicategory.strict : Bicategory.Strict Cat.{v, u} where
   id_comp {C} {D} F := by cases F; rfl
   comp_id {C} {D} F := by cases F; rfl
   assoc := by intros; rfl
@@ -82,7 +82,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.bicategory.strict CategoryTheory.Cat.bicategory.strict
 
 /-- Category structure on `Cat` -/
-instance category : LargeCategory.{max v u} Cat.{v, u} :=
+instance (priority := 10000) category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
 set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.category CategoryTheory.Cat.category
@@ -115,7 +115,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.objects CategoryTheory.Cat.objects
 
 -- porting note: this instance was needed for CategoryTheory.Category.Cat.Limit
-instance (X : Cat.{v, u}) : Category (objects.obj X) := (inferInstance : Category X)
+instance (priority := 10000) (X : Cat.{v, u}) : Category (objects.obj X) := (inferInstance : Category X)
 
 section
 
@@ -157,11 +157,11 @@ def typeToCat : Type u ⥤ Cat where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Type_to_Cat CategoryTheory.typeToCat
 
-instance : Faithful typeToCat.{u} where
+instance (priority := 10000) : Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
     funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
 
-instance : Full typeToCat.{u} where
+instance (priority := 10000) : Full typeToCat.{u} where
   preimage F := Discrete.as ∘ F.obj ∘ Discrete.mk
   witness := by
     intro X Y F

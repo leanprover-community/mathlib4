@@ -53,7 +53,7 @@ theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   simp only [mem_val]
 #align finset.mem_sym2_iff Finset.mem_sym2_iff
 
-instance _root_.Sym2.instFintype [Fintype α] : Fintype (Sym2 α) where
+instance (priority := 10000) _root_.Sym2.instFintype [Fintype α] : Fintype (Sym2 α) where
   elems := Finset.univ.sym2
   complete := fun x ↦ by rw [mem_sym2_iff]; exact (fun a _ ↦ mem_univ a)
 
@@ -168,7 +168,7 @@ section Sym
 variable {n : ℕ} {m : Sym α n}
 
 -- Porting note: instance needed
-instance : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
+instance (priority := 10000) : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
 
 /-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/

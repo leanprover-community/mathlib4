@@ -66,7 +66,7 @@ def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   right_inv := by aesop_cat
 #align category_theory.discrete_equiv CategoryTheory.discreteEquiv
 
-instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
+instance (priority := 10000) {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
 
 /-- The "Discrete" category on a type, whose morphisms are equalities.
@@ -76,7 +76,7 @@ somewhat annoyingly we have to define `X ⟶ Y` as `ULift (PLift (X = Y))`.
 
 See <https://stacks.math.columbia.edu/tag/001A>
 -/
-instance discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
+instance (priority := 10000) discreteCategory (α : Type u₁) : SmallCategory (Discrete α) where
   Hom X Y := ULift (PLift (X.as = Y.as))
   id X := ULift.up (PLift.up rfl)
   comp {X Y Z} g f := by
@@ -91,13 +91,13 @@ namespace Discrete
 
 variable {α : Type u₁}
 
-instance [Inhabited α] : Inhabited (Discrete α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (Discrete α) :=
   ⟨⟨default⟩⟩
 
-instance [Subsingleton α] : Subsingleton (Discrete α) :=
+instance (priority := 10000) [Subsingleton α] : Subsingleton (Discrete α) :=
   ⟨by aesop_cat⟩
 
-instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
+instance (priority := 10000) instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
   show Subsingleton (ULift (PLift _)) from inferInstance
 
 /- Porting note: rewrote `discrete_cases` tactic -/
@@ -125,7 +125,7 @@ def discreteCases : TacticM Unit := do
 -- `attribute [aesop safe tactic (rule_sets [CategoryTheory])] discreteCases`
 -- globally.
 
-instance [Unique α] : Unique (Discrete α) :=
+instance (priority := 10000) [Unique α] : Unique (Discrete α) :=
   Unique.mk' (Discrete α)
 
 /-- Extract the equation from a morphism in a discrete category. -/
@@ -162,7 +162,7 @@ theorem id_def (X : Discrete α) : ULift.up (PLift.up (Eq.refl X.as)) = 𝟙 X :
 
 variable {C : Type u₂} [Category.{v₂} C]
 
-instance {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
+instance (priority := 10000) {I : Type u₁} {i j : Discrete I} (f : i ⟶ j) : IsIso f :=
   ⟨⟨Discrete.eqToHom (eq_of_hom f).symm, by aesop_cat⟩⟩
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])]

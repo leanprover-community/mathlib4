@@ -60,7 +60,7 @@ protected def map (f : V ↪ W) (G : SimpleGraph V) : SimpleGraph W where
     exact h.ne (f.injective h'.symm)
 #align simple_graph.map SimpleGraph.map
 
-instance instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj f f a b)] :
+instance (priority := 10000) instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj f f a b)] :
     Decidable ((G.map f).Adj a b) := ‹Decidable (Relation.Map G.Adj f f a b)›
 #align simple_graph.decidable_map SimpleGraph.instDecidableMapAdj
 
@@ -108,7 +108,7 @@ protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   (G.comap g).comap f = G.comap (g ∘ f) := rfl
 #align simple_graph.comap_comap SimpleGraph.comap_comap
 
-instance instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G.Adj] :
+instance (priority := 10000) instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G.Adj] :
     DecidableRel (G.comap f).Adj := fun _ _ ↦ ‹DecidableRel G.Adj› _ _
 
 lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
@@ -263,19 +263,19 @@ protected abbrev id : G →g G :=
 @[simp, norm_cast] lemma coe_id : ⇑(Hom.id : G →g G) = id := rfl
 #align simple_graph.hom.coe_id SimpleGraph.Hom.coe_id
 
-instance [Subsingleton (V → W)] : Subsingleton (G →g H) := DFunLike.coe_injective.subsingleton
+instance (priority := 10000) [Subsingleton (V → W)] : Subsingleton (G →g H) := DFunLike.coe_injective.subsingleton
 
-instance [IsEmpty V] : Unique (G →g H) where
+instance (priority := 10000) [IsEmpty V] : Unique (G →g H) where
   default := ⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩
   uniq _ := Subsingleton.elim _ _
 
-instance instFintype [DecidableEq V] [Fintype V] [Fintype W] [DecidableRel G.Adj]
+instance (priority := 10000) instFintype [DecidableEq V] [Fintype V] [Fintype W] [DecidableRel G.Adj]
     [DecidableRel H.Adj] : Fintype (G →g H) :=
   Fintype.ofEquiv {f : V → W // ∀ {a b}, G.Adj a b → H.Adj (f a) (f b)}
     { toFun := fun f ↦ ⟨f.1, f.2⟩, invFun := fun f ↦ ⟨f.1, f.2⟩,
       left_inv := fun _ ↦ rfl, right_inv := fun _ ↦ rfl }
 
-instance [Finite V] [Finite W] : Finite (G →g H) := DFunLike.finite _
+instance (priority := 10000) [Finite V] [Finite W] : Finite (G →g H) := DFunLike.finite _
 
 theorem map_adj {v w : V} (h : G.Adj v w) : G'.Adj (f v) (f w) :=
   f.map_rel' h

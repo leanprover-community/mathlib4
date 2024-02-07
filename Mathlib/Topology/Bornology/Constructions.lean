@@ -23,13 +23,13 @@ open Filter
 variable {α β ι : Type*} {π : ι → Type*} [Finite ι] [Bornology α] [Bornology β]
   [∀ i, Bornology (π i)]
 
-instance Prod.instBornology : Bornology (α × β) where
+instance (priority := 10000) Prod.instBornology : Bornology (α × β) where
   cobounded' := (cobounded α).coprod (cobounded β)
   le_cofinite' :=
     @coprod_cofinite α β ▸ coprod_mono ‹Bornology α›.le_cofinite ‹Bornology β›.le_cofinite
 #align prod.bornology Prod.instBornology
 
-instance Pi.instBornology : Bornology (∀ i, π i) where
+instance (priority := 10000) Pi.instBornology : Bornology (∀ i, π i) where
   cobounded' := Filter.coprodᵢ fun i => cobounded (π i)
   le_cofinite' := @coprodᵢ_cofinite ι π _ ▸ Filter.coprodᵢ_mono fun _ => Bornology.le_cofinite _
 #align pi.bornology Pi.instBornology
@@ -42,7 +42,7 @@ def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology
   le_cofinite' := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
 #align bornology.induced Bornology.induced
 
-instance {p : α → Prop} : Bornology (Subtype p) :=
+instance (priority := 10000) {p : α → Prop} : Bornology (Subtype p) :=
   Bornology.induced (Subtype.val : Subtype p → α)
 
 namespace Bornology
@@ -157,10 +157,10 @@ end Bornology
 
 open Bornology
 
-instance [BoundedSpace α] [BoundedSpace β] : BoundedSpace (α × β) := by
+instance (priority := 10000) [BoundedSpace α] [BoundedSpace β] : BoundedSpace (α × β) := by
   simp [← cobounded_eq_bot_iff, cobounded_prod]
 
-instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
+instance (priority := 10000) [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
   simp [← cobounded_eq_bot_iff, cobounded_pi]
 
 theorem boundedSpace_induced_iff {α β : Type*} [Bornology β] {f : α → β} :
@@ -184,7 +184,7 @@ alias ⟨_, Bornology.IsBounded.boundedSpace_subtype⟩ := boundedSpace_subtype_
 alias ⟨_, Bornology.IsBounded.boundedSpace_val⟩ := boundedSpace_val_set_iff
 #align bornology.is_bounded.bounded_space_coe Bornology.IsBounded.boundedSpace_val
 
-instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=
+instance (priority := 10000) [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=
   (IsBounded.all { x | p x }).boundedSpace_subtype
 
 /-!
@@ -194,16 +194,16 @@ The bornology on those type synonyms is inherited without change.
 -/
 
 
-instance : Bornology (Additive α) :=
+instance (priority := 10000) : Bornology (Additive α) :=
   ‹Bornology α›
 
-instance : Bornology (Multiplicative α) :=
+instance (priority := 10000) : Bornology (Multiplicative α) :=
   ‹Bornology α›
 
-instance [BoundedSpace α] : BoundedSpace (Additive α) :=
+instance (priority := 10000) [BoundedSpace α] : BoundedSpace (Additive α) :=
   ‹BoundedSpace α›
 
-instance [BoundedSpace α] : BoundedSpace (Multiplicative α) :=
+instance (priority := 10000) [BoundedSpace α] : BoundedSpace (Multiplicative α) :=
   ‹BoundedSpace α›
 
 /-!
@@ -213,8 +213,8 @@ The bornology on this type synonym is inherited without change.
 -/
 
 
-instance : Bornology αᵒᵈ :=
+instance (priority := 10000) : Bornology αᵒᵈ :=
   ‹Bornology α›
 
-instance [BoundedSpace α] : BoundedSpace αᵒᵈ :=
+instance (priority := 10000) [BoundedSpace α] : BoundedSpace αᵒᵈ :=
   ‹BoundedSpace α›

@@ -43,7 +43,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.normal_epi AddCommGroupCat.normalEpi
 
 /-- The category of abelian groups is abelian. -/
-instance : Abelian AddCommGroupCat.{u} where
+instance (priority := 10000) : Abelian AddCommGroupCat.{u} where
   has_finite_products := ⟨HasFiniteProducts.out⟩
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
@@ -57,7 +57,7 @@ theorem exact_iff : Exact f g ↔ f.range = g.ker := by
           (QuotientAddGroup.ker_le_range_iff _ _).mp h.symm.le⟩⟩
 
 /-- The category of abelian groups satisfies Grothedieck's Axiom AB5. -/
-instance {J : Type u} [SmallCategory J] [IsFiltered J] :
+instance (priority := 10000) {J : Type u} [SmallCategory J] [IsFiltered J] :
     PreservesFiniteLimits <| colim (J := J) (C := AddCommGroupCat.{u}) := by
   refine Functor.preservesFiniteLimitsOfMapExact _
     fun F G H η γ h => (exact_iff _ _).mpr (le_antisymm ?_ ?_)

@@ -23,7 +23,7 @@ namespace FreeMonoid
 
 variable {α : Type*}
 
-instance : StarMul (FreeMonoid α) where
+instance (priority := 10000) : StarMul (FreeMonoid α) where
   star := List.reverse
   star_involutive := List.reverse_reverse
   star_mul := List.reverse_append
@@ -46,7 +46,7 @@ namespace FreeAlgebra
 variable {R : Type*} [CommSemiring R] {X : Type*}
 
 /-- The star ring formed by reversing the elements of products -/
-instance : StarRing (FreeAlgebra R X) where
+instance (priority := 10000) : StarRing (FreeAlgebra R X) where
   star := MulOpposite.unop ∘ lift R (MulOpposite.op ∘ ι R)
   star_involutive x := by
     unfold Star.star

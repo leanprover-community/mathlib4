@@ -180,22 +180,22 @@ section Preorder
 
 variable [Preorder α]
 
-instance PosMulMono.to_covariantClass_pos_mul_le [PosMulMono α] :
+instance (priority := 10000) PosMulMono.to_covariantClass_pos_mul_le [PosMulMono α] :
     CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
   ⟨fun a _ _ bc => @CovariantClass.elim α≥0 α (fun x y => x * y) (· ≤ ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align pos_mul_mono.to_covariant_class_pos_mul_le PosMulMono.to_covariantClass_pos_mul_le
 
-instance MulPosMono.to_covariantClass_pos_mul_le [MulPosMono α] :
+instance (priority := 10000) MulPosMono.to_covariantClass_pos_mul_le [MulPosMono α] :
     CovariantClass α>0 α (fun x y => y * x) (· ≤ ·) :=
   ⟨fun a _ _ bc => @CovariantClass.elim α≥0 α (fun x y => y * x) (· ≤ ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align mul_pos_mono.to_covariant_class_pos_mul_le MulPosMono.to_covariantClass_pos_mul_le
 
-instance PosMulReflectLT.to_contravariantClass_pos_mul_lt [PosMulReflectLT α] :
+instance (priority := 10000) PosMulReflectLT.to_contravariantClass_pos_mul_lt [PosMulReflectLT α] :
     ContravariantClass α>0 α (fun x y => x * y) (· < ·) :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => x * y) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align pos_mul_reflect_lt.to_contravariant_class_pos_mul_lt PosMulReflectLT.to_contravariantClass_pos_mul_lt
 
-instance MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
+instance (priority := 10000) MulPosReflectLT.to_contravariantClass_pos_mul_lt [MulPosReflectLT α] :
     ContravariantClass α>0 α (fun x y => y * x) (· < ·) :=
   ⟨fun a _ _ bc => @ContravariantClass.elim α≥0 α (fun x y => y * x) (· < ·) _ ⟨_, a.2.le⟩ _ _ bc⟩
 #align mul_pos_reflect_lt.to_contravariant_class_pos_mul_lt MulPosReflectLT.to_contravariantClass_pos_mul_lt

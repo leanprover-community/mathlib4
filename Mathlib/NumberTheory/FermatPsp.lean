@@ -61,11 +61,11 @@ def FermatPsp (n b : ℕ) : Prop :=
   ProbablePrime n b ∧ ¬n.Prime ∧ 1 < n
 #align fermat_psp Nat.FermatPsp
 
-instance decidableProbablePrime (n b : ℕ) : Decidable (ProbablePrime n b) :=
+instance (priority := 10000) decidableProbablePrime (n b : ℕ) : Decidable (ProbablePrime n b) :=
   Nat.decidable_dvd _ _
 #align fermat_psp.decidable_probable_prime Nat.decidableProbablePrime
 
-instance decidablePsp (n b : ℕ) : Decidable (FermatPsp n b) :=
+instance (priority := 10000) decidablePsp (n b : ℕ) : Decidable (FermatPsp n b) :=
   And.decidable
 #align fermat_psp.decidable_psp Nat.decidablePsp
 

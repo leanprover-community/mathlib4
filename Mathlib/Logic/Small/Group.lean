@@ -17,10 +17,10 @@ noncomputable section
 -- FIXME: here and below, why doesn't `to_additive` work?
 -- We're waiting on the fix for https://github.com/leanprover/lean4/issues/2077 to arrive.
 
-instance [Zero α] [Small α] : Zero (Shrink α) := (equivShrink _).symm.zero
+instance (priority := 10000) [Zero α] [Small α] : Zero (Shrink α) := (equivShrink _).symm.zero
 
 @[to_additive existing]
-instance [One α] [Small α] : One (Shrink α) := (equivShrink _).symm.one
+instance (priority := 10000) [One α] [Small α] : One (Shrink α) := (equivShrink _).symm.one
 
 @[simp]
 lemma equivShrink_symm_zero [Zero α] [Small α] : (equivShrink α).symm 0 = 0 :=
@@ -30,10 +30,10 @@ lemma equivShrink_symm_zero [Zero α] [Small α] : (equivShrink α).symm 0 = 0 :
 lemma equivShrink_symm_one [One α] [Small α] : (equivShrink α).symm 1 = 1 :=
   (equivShrink α).symm_apply_apply 1
 
-instance [Add α] [Small α] : Add (Shrink α) := (equivShrink _).symm.add
+instance (priority := 10000) [Add α] [Small α] : Add (Shrink α) := (equivShrink _).symm.add
 
 @[to_additive existing]
-instance [Mul α] [Small α] : Mul (Shrink α) := (equivShrink _).symm.mul
+instance (priority := 10000) [Mul α] [Small α] : Mul (Shrink α) := (equivShrink _).symm.mul
 
 @[simp]
 lemma equivShrink_symm_add [Add α] [Small α] (x y : Shrink α) :
@@ -59,10 +59,10 @@ lemma equivShrink_mul [Mul α] [Small α] (x y : α) :
   rw [Equiv.mul_def]
   simp
 
-instance [Sub α] [Small α] : Sub (Shrink α) := (equivShrink _).symm.sub
+instance (priority := 10000) [Sub α] [Small α] : Sub (Shrink α) := (equivShrink _).symm.sub
 
 @[to_additive existing]
-instance [Div α] [Small α] : Div (Shrink α) := (equivShrink _).symm.div
+instance (priority := 10000) [Div α] [Small α] : Div (Shrink α) := (equivShrink _).symm.div
 
 @[simp]
 lemma equivShrink_symm_sub [Sub α] [Small α] (x y : Shrink α) :
@@ -88,10 +88,10 @@ lemma equivShrink_div [Div α] [Small α] (x y : α) :
   rw [Equiv.div_def]
   simp
 
-instance [Neg α] [Small α] : Neg (Shrink α) := (equivShrink _).symm.Neg
+instance (priority := 10000) [Neg α] [Small α] : Neg (Shrink α) := (equivShrink _).symm.Neg
 
 @[to_additive existing]
-instance [Inv α] [Small α] : Inv (Shrink α) := (equivShrink _).symm.Inv
+instance (priority := 10000) [Inv α] [Small α] : Inv (Shrink α) := (equivShrink _).symm.Inv
 
 @[simp]
 lemma equivShrink_symm_neg [Neg α] [Small α] (x : Shrink α) :
@@ -117,58 +117,58 @@ lemma equivShrink_inv [Inv α] [Small α] (x : α) :
   rw [Equiv.inv_def]
   simp
 
-instance [AddSemigroup α] [Small α] : AddSemigroup (Shrink α) := (equivShrink _).symm.addSemigroup
+instance (priority := 10000) [AddSemigroup α] [Small α] : AddSemigroup (Shrink α) := (equivShrink _).symm.addSemigroup
 
 @[to_additive existing]
-instance [Semigroup α] [Small α] : Semigroup (Shrink α) := (equivShrink _).symm.semigroup
+instance (priority := 10000) [Semigroup α] [Small α] : Semigroup (Shrink α) := (equivShrink _).symm.semigroup
 
-instance [SemigroupWithZero α] [Small α] : SemigroupWithZero (Shrink α) :=
+instance (priority := 10000) [SemigroupWithZero α] [Small α] : SemigroupWithZero (Shrink α) :=
   (equivShrink _).symm.semigroupWithZero
 
-instance [AddCommSemigroup α] [Small α] : AddCommSemigroup (Shrink α) :=
+instance (priority := 10000) [AddCommSemigroup α] [Small α] : AddCommSemigroup (Shrink α) :=
   (equivShrink _).symm.addCommSemigroup
 
 @[to_additive existing]
-instance [CommSemigroup α] [Small α] : CommSemigroup (Shrink α) :=
+instance (priority := 10000) [CommSemigroup α] [Small α] : CommSemigroup (Shrink α) :=
   (equivShrink _).symm.commSemigroup
 
-instance [MulZeroClass α] [Small α] : MulZeroClass (Shrink α) :=
+instance (priority := 10000) [MulZeroClass α] [Small α] : MulZeroClass (Shrink α) :=
   (equivShrink _).symm.mulZeroClass
 
-instance [AddZeroClass α] [Small α] : AddZeroClass (Shrink α) :=
+instance (priority := 10000) [AddZeroClass α] [Small α] : AddZeroClass (Shrink α) :=
   (equivShrink _).symm.addZeroClass
 
 @[to_additive existing]
-instance [MulOneClass α] [Small α] : MulOneClass (Shrink α) :=
+instance (priority := 10000) [MulOneClass α] [Small α] : MulOneClass (Shrink α) :=
   (equivShrink _).symm.mulOneClass
 
-instance [MulZeroOneClass α] [Small α] : MulZeroOneClass (Shrink α) :=
+instance (priority := 10000) [MulZeroOneClass α] [Small α] : MulZeroOneClass (Shrink α) :=
   (equivShrink _).symm.mulZeroOneClass
 
-instance [AddMonoid α] [Small α] : AddMonoid (Shrink α) :=
+instance (priority := 10000) [AddMonoid α] [Small α] : AddMonoid (Shrink α) :=
   (equivShrink _).symm.addMonoid
 
 @[to_additive existing]
-instance [Monoid α] [Small α] : Monoid (Shrink α) :=
+instance (priority := 10000) [Monoid α] [Small α] : Monoid (Shrink α) :=
   (equivShrink _).symm.monoid
 
-instance [AddCommMonoid α] [Small α] : AddCommMonoid (Shrink α) :=
+instance (priority := 10000) [AddCommMonoid α] [Small α] : AddCommMonoid (Shrink α) :=
   (equivShrink _).symm.addCommMonoid
 
 @[to_additive existing]
-instance [CommMonoid α] [Small α] : CommMonoid (Shrink α) :=
+instance (priority := 10000) [CommMonoid α] [Small α] : CommMonoid (Shrink α) :=
   (equivShrink _).symm.commMonoid
 
-instance [AddGroup α] [Small α] : AddGroup (Shrink α) :=
+instance (priority := 10000) [AddGroup α] [Small α] : AddGroup (Shrink α) :=
   (equivShrink _).symm.addGroup
 
 @[to_additive existing]
-instance [Group α] [Small α] : Group (Shrink α) :=
+instance (priority := 10000) [Group α] [Small α] : Group (Shrink α) :=
   (equivShrink _).symm.group
 
-instance [AddCommGroup α] [Small α] : AddCommGroup (Shrink α) :=
+instance (priority := 10000) [AddCommGroup α] [Small α] : AddCommGroup (Shrink α) :=
   (equivShrink _).symm.addCommGroup
 
 @[to_additive existing]
-instance [CommGroup α] [Small α] : CommGroup (Shrink α) :=
+instance (priority := 10000) [CommGroup α] [Small α] : CommGroup (Shrink α) :=
   (equivShrink _).symm.commGroup

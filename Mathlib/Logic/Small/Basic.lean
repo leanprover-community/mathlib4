@@ -23,7 +23,7 @@ section
 
 open Classical
 
-instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
+instance (priority := 10000) small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
   small_map (equivShrink α).subtypeEquivOfSubtype'
 #align small_subtype small_subtype
 
@@ -66,30 +66,30 @@ We don't define `small_of_fintype` or `small_of_countable` in this file,
 to keep imports to `Logic` to a minimum.
 -/
 
-instance small_Pi {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
+instance (priority := 10000) small_Pi {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
     Small.{w} (∀ a, β a) :=
   ⟨⟨∀ a' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.piCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
 #align small_Pi small_Pi
 
-instance small_prod {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α × β) :=
+instance (priority := 10000) small_prod {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α × β) :=
   ⟨⟨Shrink α × Shrink β, ⟨Equiv.prodCongr (equivShrink α) (equivShrink β)⟩⟩⟩
 #align small_prod small_prod
 
-instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (Sum α β) :=
+instance (priority := 10000) small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (Sum α β) :=
   ⟨⟨Sum (Shrink α) (Shrink β), ⟨Equiv.sumCongr (equivShrink α) (equivShrink β)⟩⟩⟩
 #align small_sum small_sum
 
-instance small_set {α} [Small.{w} α] : Small.{w} (Set α) :=
+instance (priority := 10000) small_set {α} [Small.{w} α] : Small.{w} (Set α) :=
   ⟨⟨Set (Shrink α), ⟨Equiv.Set.congr (equivShrink α)⟩⟩⟩
 #align small_set small_set
 
-instance small_range {α : Type v} {β : Type w} (f : α → β) [Small.{u} α] :
+instance (priority := 10000) small_range {α : Type v} {β : Type w} (f : α → β) [Small.{u} α] :
     Small.{u} (Set.range f) :=
   small_of_surjective Set.surjective_onto_range
 #align small_range small_range
 
-instance small_image {α : Type v} {β : Type w} (f : α → β) (S : Set α) [Small.{u} S] :
+instance (priority := 10000) small_image {α : Type v} {β : Type w} (f : α → β) (S : Set α) [Small.{u} S] :
     Small.{u} (f '' S) :=
   small_of_surjective Set.surjective_onto_image
 #align small_image small_image

@@ -408,7 +408,7 @@ theorem _root_.Filter.EventuallyEq.trans_isBigO {f₁ f₂ : α → E} {g : α �
   h.congr' hf.symm EventuallyEq.rfl
 #align filter.eventually_eq.trans_is_O Filter.EventuallyEq.trans_isBigO
 
-instance transEventuallyEqIsBigO :
+instance (priority := 10000) transEventuallyEqIsBigO :
     @Trans (α → E) (α → E) (α → F) (· =ᶠ[l] ·) (· =O[l] ·) (· =O[l] ·) where
   trans := Filter.EventuallyEq.trans_isBigO
 
@@ -418,7 +418,7 @@ theorem _root_.Filter.EventuallyEq.trans_isLittleO {f₁ f₂ : α → E} {g : �
   h.congr' hf.symm EventuallyEq.rfl
 #align filter.eventually_eq.trans_is_o Filter.EventuallyEq.trans_isLittleO
 
-instance transEventuallyEqIsLittleO :
+instance (priority := 10000) transEventuallyEqIsLittleO :
     @Trans (α → E) (α → E) (α → F) (· =ᶠ[l] ·) (· =o[l] ·) (· =o[l] ·) where
   trans := Filter.EventuallyEq.trans_isLittleO
 
@@ -428,7 +428,7 @@ theorem IsBigO.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f =
   h.congr' EventuallyEq.rfl hg
 #align asymptotics.is_O.trans_eventually_eq Asymptotics.IsBigO.trans_eventuallyEq
 
-instance transIsBigOEventuallyEq :
+instance (priority := 10000) transIsBigOEventuallyEq :
     @Trans (α → E) (α → F) (α → F) (· =O[l] ·) (· =ᶠ[l] ·) (· =O[l] ·) where
   trans := IsBigO.trans_eventuallyEq
 
@@ -438,7 +438,7 @@ theorem IsLittleO.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : 
   h.congr' EventuallyEq.rfl hg
 #align asymptotics.is_o.trans_eventually_eq Asymptotics.IsLittleO.trans_eventuallyEq
 
-instance transIsLittleOEventuallyEq :
+instance (priority := 10000) transIsLittleOEventuallyEq :
     @Trans (α → E) (α → F) (α → F) (· =o[l] ·) (· =ᶠ[l] ·) (· =o[l] ·) where
   trans := IsLittleO.trans_eventuallyEq
 
@@ -509,7 +509,7 @@ theorem IsBigO.trans {f : α → E} {g : α → F'} {k : α → G} (hfg : f =O[l
   (hc.trans hc' cnonneg).isBigO
 #align asymptotics.is_O.trans Asymptotics.IsBigO.trans
 
-instance transIsBigOIsBigO :
+instance (priority := 10000) transIsBigOIsBigO :
     @Trans (α → E) (α → F') (α → G) (· =O[l] ·) (· =O[l] ·) (· =O[l] ·) where
   trans := IsBigO.trans
 
@@ -528,7 +528,7 @@ theorem IsLittleO.trans_isBigO {f : α → E} {g : α → F} {k : α → G'} (hf
   hfg.trans_isBigOWith hc cpos
 #align asymptotics.is_o.trans_is_O Asymptotics.IsLittleO.trans_isBigO
 
-instance transIsLittleOIsBigO :
+instance (priority := 10000) transIsLittleOIsBigO :
     @Trans (α → E) (α → F) (α → G') (· =o[l] ·) (· =O[l] ·) (· =o[l] ·) where
   trans := IsLittleO.trans_isBigO
 
@@ -547,7 +547,7 @@ theorem IsBigO.trans_isLittleO {f : α → E} {g : α → F'} {k : α → G} (hf
   hc.trans_isLittleO hgk cpos
 #align asymptotics.is_O.trans_is_o Asymptotics.IsBigO.trans_isLittleO
 
-instance transIsBigOIsLittleO :
+instance (priority := 10000) transIsBigOIsLittleO :
     @Trans (α → E) (α → F') (α → G) (· =O[l] ·) (· =o[l] ·) (· =o[l] ·) where
   trans := IsBigO.trans_isLittleO
 
@@ -557,7 +557,7 @@ theorem IsLittleO.trans {f : α → E} {g : α → F} {k : α → G} (hfg : f =o
   hfg.trans_isBigOWith hgk.isBigOWith one_pos
 #align asymptotics.is_o.trans Asymptotics.IsLittleO.trans
 
-instance transIsLittleOIsLittleO :
+instance (priority := 10000) transIsLittleOIsLittleO :
     @Trans (α → E) (α → F) (α → G) (· =o[l] ·) (· =o[l] ·) (· =o[l] ·) where
   trans := IsLittleO.trans
 

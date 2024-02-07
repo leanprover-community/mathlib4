@@ -32,9 +32,9 @@ inductive Entry
   | defn (n : Name)
 deriving Inhabited
 
-instance : Coe Name Entry := ⟨Entry.name⟩
-instance : Coe Level Entry := ⟨Entry.level⟩
-instance : Coe Expr Entry := ⟨Entry.expr⟩
+instance (priority := 10000) : Coe Name Entry := ⟨Entry.name⟩
+instance (priority := 10000) : Coe Level Entry := ⟨Entry.level⟩
+instance (priority := 10000) : Coe Expr Entry := ⟨Entry.expr⟩
 
 structure Alloc (α) [BEq α] [Hashable α] where
   map : HashMap α Nat
@@ -53,15 +53,15 @@ class OfState (α : Type) [BEq α] [Hashable α] where
   get : State → Alloc α
   modify : (Alloc α → Alloc α) → State → State
 
-instance : OfState Name where
+instance (priority := 10000) : OfState Name where
   get s := s.names
   modify f s := { s with names := f s.names }
 
-instance : OfState Level where
+instance (priority := 10000) : OfState Level where
   get s := s.levels
   modify f s := { s with levels := f s.levels }
 
-instance : OfState Expr where
+instance (priority := 10000) : OfState Expr where
   get s := s.exprs
   modify f s := { s with exprs := f s.exprs }
 

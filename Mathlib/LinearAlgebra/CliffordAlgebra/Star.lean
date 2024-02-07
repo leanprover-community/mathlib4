@@ -33,7 +33,7 @@ variable {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra
 
-instance instStarRing : StarRing (CliffordAlgebra Q) where
+instance (priority := 10000) instStarRing : StarRing (CliffordAlgebra Q) where
   star x := reverse (involute x)
   star_involutive x := by
     simp only [reverse_involute_commute.eq, reverse_reverse, involute_involute]

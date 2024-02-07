@@ -215,7 +215,7 @@ theorem suffix_iff_eq_drop : l₁ <:+ l₂ ↔ l₁ = drop (length l₂ - length
     fun e => e.symm ▸ drop_suffix _ _⟩
 #align list.suffix_iff_eq_drop List.suffix_iff_eq_drop
 
-instance decidablePrefix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <+: l₂)
+instance (priority := 10000) decidablePrefix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <+: l₂)
   | [], l₂ => isTrue ⟨l₂, rfl⟩
   | a :: l₁, [] => isFalse fun ⟨t, te⟩ => List.noConfusion te
   | a :: l₁, b :: l₂ =>
@@ -226,7 +226,7 @@ instance decidablePrefix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
 #align list.decidable_prefix List.decidablePrefix
 
 -- Alternatively, use mem_tails
-instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+ l₂)
+instance (priority := 10000) decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+ l₂)
   | [], l₂ => isTrue ⟨l₂, append_nil _⟩
   | a :: l₁, [] => isFalse <| mt (Sublist.length_le ∘ IsSuffix.sublist) (by simp)
   | l₁, b :: l₂ =>
@@ -236,7 +236,7 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
 termination_by l₁ l₂ => (l₁, l₂)
 #align list.decidable_suffix List.decidableSuffix
 
-instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
+instance (priority := 10000) decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
   | [], l₂ => isTrue ⟨[], l₂, rfl⟩
   | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
   | l₁, b :: l₂ =>
@@ -309,17 +309,17 @@ theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂)
 #align list.is_suffix.filter List.IsSuffix.filter
 #align list.is_infix.filter List.IsInfix.filter
 
-instance : IsPartialOrder (List α) (· <+: ·) where
+instance (priority := 10000) : IsPartialOrder (List α) (· <+: ·) where
   refl := prefix_refl
   trans _ _ _ := IsPrefix.trans
   antisymm _ _ h₁ h₂ := eq_of_prefix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
-instance : IsPartialOrder (List α) (· <:+ ·) where
+instance (priority := 10000) : IsPartialOrder (List α) (· <:+ ·) where
   refl := suffix_refl
   trans _ _ _ := IsSuffix.trans
   antisymm _ _ h₁ h₂ := eq_of_suffix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le
 
-instance : IsPartialOrder (List α) (· <:+: ·) where
+instance (priority := 10000) : IsPartialOrder (List α) (· <:+: ·) where
   refl := infix_refl
   trans _ _ _ := IsInfix.trans
   antisymm _ _ h₁ h₂ := eq_of_infix_of_length_eq h₁ <| h₁.length_le.antisymm h₂.length_le

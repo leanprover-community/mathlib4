@@ -62,13 +62,13 @@ theorem nontrivial_iff_exists_ne (x : α) : Nontrivial α ↔ ∃ y, y ≠ x :=
   ⟨fun h ↦ @exists_ne α h x, fun ⟨_, hy⟩ ↦ nontrivial_of_ne _ _ hy⟩
 #align nontrivial_iff_exists_ne nontrivial_iff_exists_ne
 
-instance : Nontrivial Prop :=
+instance (priority := 10000) : Nontrivial Prop :=
   ⟨⟨True, False, true_ne_false⟩⟩
 
 /-- See Note [lower instance priority]
 
 Note that since this and `nonempty_of_inhabited` are the most "obvious" way to find a nonempty
-instance if no direct instance can be found, we give this a higher priority than the usual `100`.
+instance (priority := 10000) if no direct instance can be found, we give this a higher priority than the usual `100`.
 -/
 instance (priority := 500) Nontrivial.to_nonempty [Nontrivial α] : Nonempty α :=
   let ⟨x, _⟩ := _root_.exists_pair_ne α
@@ -119,7 +119,7 @@ protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
 
 namespace Bool
 
-instance : Nontrivial Bool :=
+instance (priority := 10000) : Nontrivial Bool :=
   ⟨⟨true, false, fun .⟩⟩
 
 end Bool

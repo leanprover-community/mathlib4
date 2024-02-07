@@ -107,7 +107,7 @@ theorem starHom_apply {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHom
 #align is_self_adjoint.star_hom_apply IsSelfAdjoint.starHom_apply
 
 /- note: this lemma is *not* marked as `simp` so that Lean doesn't look for a `[TrivialStar R]`
-instance every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
+instance (priority := 10000) every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
 theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type*} [Star R] [Star S] [FunLike F R S]
     [StarHomClass F R S] [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
   (IsSelfAdjoint.all x).starHom_apply f
@@ -333,12 +333,12 @@ theorem star_val_eq {x : selfAdjoint R} : star (x : R) = x :=
   x.prop
 #align self_adjoint.star_coe_eq selfAdjoint.star_val_eq
 
-instance : Inhabited (selfAdjoint R) :=
+instance (priority := 10000) : Inhabited (selfAdjoint R) :=
   ⟨0⟩
 
 end AddGroup
 
-instance isStarNormal [NonUnitalRing R] [StarRing R] (x : selfAdjoint R) :
+instance (priority := 10000) isStarNormal [NonUnitalRing R] [StarRing R] (x : selfAdjoint R) :
     IsStarNormal (x : R) :=
   x.prop.isStarNormal
 
@@ -346,7 +346,7 @@ section Ring
 
 variable [Ring R] [StarRing R]
 
-instance : One (selfAdjoint R) :=
+instance (priority := 10000) : One (selfAdjoint R) :=
   ⟨⟨1, isSelfAdjoint_one R⟩⟩
 
 @[simp, norm_cast]
@@ -354,16 +354,16 @@ theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
   rfl
 #align self_adjoint.coe_one selfAdjoint.val_one
 
-instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
+instance (priority := 10000) [Nontrivial R] : Nontrivial (selfAdjoint R) :=
   ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
 
-instance : NatCast (selfAdjoint R) where
+instance (priority := 10000) : NatCast (selfAdjoint R) where
   natCast n := ⟨n, isSelfAdjoint_natCast _⟩
 
-instance : IntCast (selfAdjoint R) where
+instance (priority := 10000) : IntCast (selfAdjoint R) where
   intCast n := ⟨n, isSelfAdjoint_intCast _⟩
 
-instance : Pow (selfAdjoint R) ℕ where
+instance (priority := 10000) : Pow (selfAdjoint R) ℕ where
   pow x n := ⟨(x : R) ^ n, x.prop.pow n⟩
 
 @[simp, norm_cast]
@@ -377,7 +377,7 @@ section NonUnitalCommRing
 
 variable [NonUnitalCommRing R] [StarRing R]
 
-instance : Mul (selfAdjoint R) where
+instance (priority := 10000) : Mul (selfAdjoint R) where
   mul x y := ⟨(x : R) * y, x.prop.mul y.prop⟩
 
 @[simp, norm_cast]
@@ -391,7 +391,7 @@ section CommRing
 
 variable [CommRing R] [StarRing R]
 
-instance : CommRing (selfAdjoint R) :=
+instance (priority := 10000) : CommRing (selfAdjoint R) :=
   Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
     (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul val_pow
@@ -403,7 +403,7 @@ section Field
 
 variable [Field R] [StarRing R]
 
-instance : Inv (selfAdjoint R) where
+instance (priority := 10000) : Inv (selfAdjoint R) where
   inv x := ⟨x.val⁻¹, x.prop.inv⟩
 
 @[simp, norm_cast]
@@ -411,7 +411,7 @@ theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
   rfl
 #align self_adjoint.coe_inv selfAdjoint.val_inv
 
-instance : Div (selfAdjoint R) where
+instance (priority := 10000) : Div (selfAdjoint R) where
   div x y := ⟨x / y, x.prop.div y.prop⟩
 
 @[simp, norm_cast]
@@ -419,7 +419,7 @@ theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
   rfl
 #align self_adjoint.coe_div selfAdjoint.val_div
 
-instance : Pow (selfAdjoint R) ℤ where
+instance (priority := 10000) : Pow (selfAdjoint R) ℤ where
   pow x z := ⟨(x : R) ^ z, x.prop.zpow z⟩
 
 @[simp, norm_cast]
@@ -427,7 +427,7 @@ theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=
   rfl
 #align self_adjoint.coe_zpow selfAdjoint.val_zpow
 
-instance : RatCast (selfAdjoint R) where
+instance (priority := 10000) : RatCast (selfAdjoint R) where
   ratCast n := ⟨n, isSelfAdjoint_ratCast n⟩
 
 @[simp, norm_cast]
@@ -435,7 +435,7 @@ theorem val_ratCast (x : ℚ) : ↑(x : selfAdjoint R) = (x : R) :=
   rfl
 #align self_adjoint.coe_rat_cast selfAdjoint.val_ratCast
 
-instance instQSMul : SMul ℚ (selfAdjoint R) where
+instance (priority := 10000) instQSMul : SMul ℚ (selfAdjoint R) where
   smul a x :=
     ⟨a • (x : R), by rw [Rat.smul_def]; exact IsSelfAdjoint.mul (isSelfAdjoint_ratCast a) x.prop⟩
 #align self_adjoint.has_qsmul selfAdjoint.instQSMul
@@ -445,7 +445,7 @@ theorem val_rat_smul (x : selfAdjoint R) (a : ℚ) : ↑(a • x) = a • (x : R
   rfl
 #align self_adjoint.coe_rat_smul selfAdjoint.val_rat_smul
 
-instance : Field (selfAdjoint R) :=
+instance (priority := 10000) : Field (selfAdjoint R) :=
   Function.Injective.field _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
     val_inv val_div (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul
@@ -457,7 +457,7 @@ section SMul
 
 variable [Star R] [TrivialStar R] [AddGroup A] [StarAddMonoid A]
 
-instance [SMul R A] [StarModule R A] : SMul R (selfAdjoint A) where
+instance (priority := 10000) [SMul R A] [StarModule R A] : SMul R (selfAdjoint A) where
   smul r x := ⟨r • (x : A), (IsSelfAdjoint.all _).smul x.prop⟩
 
 @[simp, norm_cast]
@@ -465,10 +465,10 @@ theorem val_smul [SMul R A] [StarModule R A] (r : R) (x : selfAdjoint A) : ↑(r
   rfl
 #align self_adjoint.coe_smul selfAdjoint.val_smul
 
-instance [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint A) :=
+instance (priority := 10000) [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint A) :=
   Function.Injective.mulAction (↑) Subtype.coe_injective val_smul
 
-instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) :=
+instance (priority := 10000) [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) :=
   Function.Injective.distribMulAction (selfAdjoint A).subtype Subtype.coe_injective val_smul
 
 end SMul
@@ -477,7 +477,7 @@ section Module
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
-instance [Semiring R] [Module R A] [StarModule R A] : Module R (selfAdjoint A) :=
+instance (priority := 10000) [Semiring R] [Module R A] [StarModule R A] : Module R (selfAdjoint A) :=
   Function.Injective.module R (selfAdjoint A).subtype Subtype.coe_injective val_smul
 
 end Module
@@ -500,7 +500,7 @@ theorem star_val_eq {x : skewAdjoint R} : star (x : R) = -x :=
   x.prop
 #align skew_adjoint.star_coe_eq skewAdjoint.star_val_eq
 
-instance : Inhabited (skewAdjoint R) :=
+instance (priority := 10000) : Inhabited (skewAdjoint R) :=
   ⟨0⟩
 
 set_option linter.deprecated false in
@@ -529,7 +529,7 @@ theorem isStarNormal_of_mem {x : R} (hx : x ∈ skewAdjoint R) : IsStarNormal x 
     simp only [hx, Commute.neg_left, Commute.refl]⟩
 #align skew_adjoint.is_star_normal_of_mem skewAdjoint.isStarNormal_of_mem
 
-instance (x : skewAdjoint R) : IsStarNormal (x : R) :=
+instance (priority := 10000) (x : skewAdjoint R) : IsStarNormal (x : R) :=
   isStarNormal_of_mem (SetLike.coe_mem _)
 
 end Ring
@@ -544,7 +544,7 @@ theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x :
   rw [mem_iff, star_smul, star_trivial, mem_iff.mp h, smul_neg r]
 #align skew_adjoint.smul_mem skewAdjoint.smul_mem
 
-instance [Monoid R] [DistribMulAction R A] [StarModule R A] : SMul R (skewAdjoint A) where
+instance (priority := 10000) [Monoid R] [DistribMulAction R A] [StarModule R A] : SMul R (skewAdjoint A) where
   smul r x := ⟨r • (x : A), smul_mem r x.prop⟩
 
 @[simp, norm_cast]
@@ -553,10 +553,10 @@ theorem val_smul [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) (x :
   rfl
 #align skew_adjoint.coe_smul skewAdjoint.val_smul
 
-instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (skewAdjoint A) :=
+instance (priority := 10000) [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (skewAdjoint A) :=
   Function.Injective.distribMulAction (skewAdjoint A).subtype Subtype.coe_injective val_smul
 
-instance [Semiring R] [Module R A] [StarModule R A] : Module R (skewAdjoint A) :=
+instance (priority := 10000) [Semiring R] [Module R A] [StarModule R A] : Module R (skewAdjoint A) :=
   Function.Injective.module R (skewAdjoint A).subtype Subtype.coe_injective val_smul
 
 end SMul
@@ -579,11 +579,11 @@ theorem isSelfAdjoint_smul_of_mem_skewAdjoint [Ring R] [AddCommGroup A] [Module 
   (star_smul _ _).trans <| (congr_arg₂ _ hr ha).trans <| neg_smul_neg _ _
 #align is_self_adjoint_smul_of_mem_skew_adjoint isSelfAdjoint_smul_of_mem_skewAdjoint
 
-instance isStarNormal_zero [Semiring R] [StarRing R] : IsStarNormal (0 : R) :=
+instance (priority := 10000) isStarNormal_zero [Semiring R] [StarRing R] : IsStarNormal (0 : R) :=
   ⟨by simp only [Commute.refl, star_comm_self, star_zero]⟩
 #align is_star_normal_zero isStarNormal_zero
 
-instance isStarNormal_one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
+instance (priority := 10000) isStarNormal_one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
   ⟨by simp only [Commute.refl, star_comm_self, star_one]⟩
 #align is_star_normal_one isStarNormal_one
 

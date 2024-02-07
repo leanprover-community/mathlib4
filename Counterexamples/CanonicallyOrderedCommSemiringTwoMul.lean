@@ -48,7 +48,7 @@ variable {a b : ℕ × ZMod 2}
 except that we leave incomparable each pair of elements with the same first component.
 For instance, `∀ α, β ∈ ℤ/2ℤ`, the inequality `(1,α) ≤ (2,β)` holds,
 whereas, `∀ n ∈ ℤ`, the elements `(n,0)` and `(n,1)` are incomparable. -/
-instance preN2 : PartialOrder (ℕ × ZMod 2) where
+instance (priority := 10000) preN2 : PartialOrder (ℕ × ZMod 2) where
   le x y := x = y ∨ x.1 < y.1
   le_refl a := Or.inl rfl
   le_trans x y z xy yz := by
@@ -66,10 +66,10 @@ instance preN2 : PartialOrder (ℕ × ZMod 2) where
       · exact (Nat.lt_asymm ab ba).elim
 #align counterexample.Nxzmod_2.preN2 Counterexample.Nxzmod2.preN2
 
-instance csrN2 : CommSemiring (ℕ × ZMod 2) := by infer_instance
+instance (priority := 10000) csrN2 : CommSemiring (ℕ × ZMod 2) := by infer_instance
 #align counterexample.Nxzmod_2.csrN2 Counterexample.Nxzmod2.csrN2
 
-instance csrN21 : AddCancelCommMonoid (ℕ × ZMod 2) :=
+instance (priority := 10000) csrN21 : AddCancelCommMonoid (ℕ × ZMod 2) :=
   { Nxzmod2.csrN2 with add_left_cancel := fun a _ _ h => (add_right_inj a).mp h }
 #align counterexample.Nxzmod_2.csrN2_1 Counterexample.Nxzmod2.csrN21
 
@@ -101,7 +101,7 @@ theorem le_of_add_le_add_left : ∀ a b c : ℕ × ZMod 2, a + b ≤ a + c → b
   · exact Or.inr (by simpa using bc)
 #align counterexample.Nxzmod_2.le_of_add_le_add_left Counterexample.Nxzmod2.le_of_add_le_add_left
 
-instance : ZeroLEOneClass (ℕ × ZMod 2) :=
+instance (priority := 10000) : ZeroLEOneClass (ℕ × ZMod 2) :=
   ⟨by dsimp only [LE.le]; decide⟩
 
 theorem mul_lt_mul_of_pos_left : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c → c * a < c * b :=
@@ -112,7 +112,7 @@ theorem mul_lt_mul_of_pos_right : ∀ a b c : ℕ × ZMod 2, a < b → 0 < c →
   fun _ _ _ ab c0 => lt_def.mpr ((mul_lt_mul_right (lt_def.mp c0)).mpr (lt_def.mp ab))
 #align counterexample.Nxzmod_2.mul_lt_mul_of_pos_right Counterexample.Nxzmod2.mul_lt_mul_of_pos_right
 
-instance socsN2 : StrictOrderedCommSemiring (ℕ × ZMod 2) :=
+instance (priority := 10000) socsN2 : StrictOrderedCommSemiring (ℕ × ZMod 2) :=
   { Nxzmod2.csrN21, (inferInstance : PartialOrder (ℕ × ZMod 2)),
     (inferInstance : CommSemiring (ℕ × ZMod 2)),
     pullback_nonzero Prod.fst Prod.fst_zero
@@ -172,10 +172,10 @@ def lSubsemiring : Subsemiring (ℕ × ZMod 2) where
   mul_mem' := mul_L
 #align counterexample.ex_L.L_subsemiring Counterexample.ExL.lSubsemiring
 
-instance : OrderedCommSemiring L :=
+instance (priority := 10000) : OrderedCommSemiring L :=
   lSubsemiring.toOrderedCommSemiring
 
-instance inhabited : Inhabited L :=
+instance (priority := 10000) inhabited : Inhabited L :=
   ⟨1⟩
 #align counterexample.ex_L.inhabited Counterexample.ExL.inhabited
 
@@ -189,7 +189,7 @@ theorem bot_le : ∀ a : L, 0 ≤ a := by
     exact Nat.succ_pos _
 #align counterexample.ex_L.bot_le Counterexample.ExL.bot_le
 
-instance orderBot : OrderBot L where
+instance (priority := 10000) orderBot : OrderBot L where
   bot := 0
   bot_le := bot_le
 #align counterexample.ex_L.order_bot Counterexample.ExL.orderBot
@@ -227,7 +227,7 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : L, a * b = 0 → a = 0 ∨
     · exact (hb rfl).elim
 #align counterexample.ex_L.eq_zero_or_eq_zero_of_mul_eq_zero Counterexample.ExL.eq_zero_or_eq_zero_of_mul_eq_zero
 
-instance can : CanonicallyOrderedCommSemiring L :=
+instance (priority := 10000) can : CanonicallyOrderedCommSemiring L :=
   { (inferInstance : OrderBot L),
     (inferInstance :
       OrderedCommSemiring L) with

@@ -270,7 +270,7 @@ attribute [local instance] hasLimitsOfShape_op_of_hasColimitsOfShape
 
 /-- If `C` has colimits, we can construct limits for `Cᵒᵖ`.
 -/
-instance hasLimits_op_of_hasColimits [HasColimits C] : HasLimits Cᵒᵖ :=
+instance (priority := 10000) hasLimits_op_of_hasColimits [HasColimits C] : HasLimits Cᵒᵖ :=
   ⟨fun _ => inferInstance⟩
 #align category_theory.limits.has_limits_op_of_has_colimits CategoryTheory.Limits.hasLimits_op_of_hasColimits
 
@@ -278,7 +278,7 @@ theorem hasLimits_of_hasColimits_op [HasColimits Cᵒᵖ] : HasLimits C :=
   { has_limits_of_shape := fun _ _ => hasLimitsOfShape_of_hasColimitsOfShape_op }
 #align category_theory.limits.has_limits_of_has_colimits_op CategoryTheory.Limits.hasLimits_of_hasColimits_op
 
-instance has_cofiltered_limits_op_of_has_filtered_colimits [HasFilteredColimitsOfSize.{v₂, u₂} C] :
+instance (priority := 10000) has_cofiltered_limits_op_of_has_filtered_colimits [HasFilteredColimitsOfSize.{v₂, u₂} C] :
     HasCofilteredLimitsOfSize.{v₂, u₂} Cᵒᵖ where
   HasLimitsOfShape _ _ _ := hasLimitsOfShape_op_of_hasColimitsOfShape
 #align category_theory.limits.has_cofiltered_limits_op_of_has_filtered_colimits CategoryTheory.Limits.has_cofiltered_limits_op_of_has_filtered_colimits
@@ -309,7 +309,7 @@ theorem hasColimit_op_of_hasLimit (F : J ⥤ C) [HasLimit F] : HasColimit F.op :
 
 /-- If `C` has colimits of shape `Jᵒᵖ`, we can construct limits in `Cᵒᵖ` of shape `J`.
 -/
-instance hasColimitsOfShape_op_of_hasLimitsOfShape [HasLimitsOfShape Jᵒᵖ C] :
+instance (priority := 10000) hasColimitsOfShape_op_of_hasLimitsOfShape [HasLimitsOfShape Jᵒᵖ C] :
     HasColimitsOfShape J Cᵒᵖ where has_colimit F := hasColimit_of_hasLimit_leftOp F
 #align category_theory.limits.has_colimits_of_shape_op_of_has_limits_of_shape CategoryTheory.Limits.hasColimitsOfShape_op_of_hasLimitsOfShape
 
@@ -320,7 +320,7 @@ theorem hasColimitsOfShape_of_hasLimitsOfShape_op [HasLimitsOfShape Jᵒᵖ Cᵒ
 
 /-- If `C` has limits, we can construct colimits for `Cᵒᵖ`.
 -/
-instance hasColimits_op_of_hasLimits [HasLimits C] : HasColimits Cᵒᵖ :=
+instance (priority := 10000) hasColimits_op_of_hasLimits [HasLimits C] : HasColimits Cᵒᵖ :=
   ⟨fun _ => inferInstance⟩
 #align category_theory.limits.has_colimits_op_of_has_limits CategoryTheory.Limits.hasColimits_op_of_hasLimits
 
@@ -328,7 +328,7 @@ theorem hasColimits_of_hasLimits_op [HasLimits Cᵒᵖ] : HasColimits C :=
   { has_colimits_of_shape := fun _ _ => hasColimitsOfShape_of_hasLimitsOfShape_op }
 #align category_theory.limits.has_colimits_of_has_limits_op CategoryTheory.Limits.hasColimits_of_hasLimits_op
 
-instance has_filtered_colimits_op_of_has_cofiltered_limits [HasCofilteredLimitsOfSize.{v₂, u₂} C] :
+instance (priority := 10000) has_filtered_colimits_op_of_has_cofiltered_limits [HasCofilteredLimitsOfSize.{v₂, u₂} C] :
     HasFilteredColimitsOfSize.{v₂, u₂} Cᵒᵖ where HasColimitsOfShape _ _ _ := inferInstance
 #align category_theory.limits.has_filtered_colimits_op_of_has_cofiltered_limits CategoryTheory.Limits.has_filtered_colimits_op_of_has_cofiltered_limits
 
@@ -341,7 +341,7 @@ variable (X : Type v₂)
 
 /-- If `C` has products indexed by `X`, then `Cᵒᵖ` has coproducts indexed by `X`.
 -/
-instance hasCoproductsOfShape_opposite [HasProductsOfShape X C] : HasCoproductsOfShape X Cᵒᵖ := by
+instance (priority := 10000) hasCoproductsOfShape_opposite [HasProductsOfShape X C] : HasCoproductsOfShape X Cᵒᵖ := by
   haveI : HasLimitsOfShape (Discrete X)ᵒᵖ C :=
     hasLimitsOfShape_of_equivalence (Discrete.opposite X).symm
   infer_instance
@@ -355,7 +355,7 @@ theorem hasCoproductsOfShape_of_opposite [HasProductsOfShape X Cᵒᵖ] : HasCop
 
 /-- If `C` has coproducts indexed by `X`, then `Cᵒᵖ` has products indexed by `X`.
 -/
-instance hasProductsOfShape_opposite [HasCoproductsOfShape X C] : HasProductsOfShape X Cᵒᵖ := by
+instance (priority := 10000) hasProductsOfShape_opposite [HasCoproductsOfShape X C] : HasProductsOfShape X Cᵒᵖ := by
   haveI : HasColimitsOfShape (Discrete X)ᵒᵖ C :=
     hasColimitsOfShape_of_equivalence (Discrete.opposite X).symm
   infer_instance
@@ -367,7 +367,7 @@ theorem hasProductsOfShape_of_opposite [HasCoproductsOfShape X Cᵒᵖ] : HasPro
   hasLimitsOfShape_of_hasColimitsOfShape_op
 #align category_theory.limits.has_products_of_shape_of_opposite CategoryTheory.Limits.hasProductsOfShape_of_opposite
 
-instance hasProducts_opposite [HasCoproducts.{v₂} C] : HasProducts.{v₂} Cᵒᵖ := fun _ =>
+instance (priority := 10000) hasProducts_opposite [HasCoproducts.{v₂} C] : HasProducts.{v₂} Cᵒᵖ := fun _ =>
   inferInstance
 #align category_theory.limits.has_products_opposite CategoryTheory.Limits.hasProducts_opposite
 
@@ -375,7 +375,7 @@ theorem hasProducts_of_opposite [HasCoproducts.{v₂} Cᵒᵖ] : HasProducts.{v�
   hasProductsOfShape_of_opposite X
 #align category_theory.limits.has_products_of_opposite CategoryTheory.Limits.hasProducts_of_opposite
 
-instance hasCoproducts_opposite [HasProducts.{v₂} C] : HasCoproducts.{v₂} Cᵒᵖ := fun _ =>
+instance (priority := 10000) hasCoproducts_opposite [HasProducts.{v₂} C] : HasCoproducts.{v₂} Cᵒᵖ := fun _ =>
   inferInstance
 #align category_theory.limits.has_coproducts_opposite CategoryTheory.Limits.hasCoproducts_opposite
 
@@ -383,7 +383,7 @@ theorem hasCoproducts_of_opposite [HasProducts.{v₂} Cᵒᵖ] : HasCoproducts.{
   hasCoproductsOfShape_of_opposite X
 #align category_theory.limits.has_coproducts_of_opposite CategoryTheory.Limits.hasCoproducts_of_opposite
 
-instance hasFiniteCoproducts_opposite [HasFiniteProducts C] : HasFiniteCoproducts Cᵒᵖ where
+instance (priority := 10000) hasFiniteCoproducts_opposite [HasFiniteProducts C] : HasFiniteCoproducts Cᵒᵖ where
   out _ := Limits.hasCoproductsOfShape_opposite _
 #align category_theory.limits.has_finite_coproducts_opposite CategoryTheory.Limits.hasFiniteCoproducts_opposite
 
@@ -391,7 +391,7 @@ theorem hasFiniteCoproducts_of_opposite [HasFiniteProducts Cᵒᵖ] : HasFiniteC
   { out := fun _ => hasCoproductsOfShape_of_opposite _ }
 #align category_theory.limits.has_finite_coproducts_of_opposite CategoryTheory.Limits.hasFiniteCoproducts_of_opposite
 
-instance hasFiniteProducts_opposite [HasFiniteCoproducts C] : HasFiniteProducts Cᵒᵖ where
+instance (priority := 10000) hasFiniteProducts_opposite [HasFiniteCoproducts C] : HasFiniteProducts Cᵒᵖ where
   out _ := inferInstance
 #align category_theory.limits.has_finite_products_opposite CategoryTheory.Limits.hasFiniteProducts_opposite
 
@@ -403,12 +403,12 @@ section OppositeCoproducts
 
 variable {α : Type*} {Z : α → C} [HasCoproduct Z]
 
-instance : HasLimit (Discrete.functor Z).op := hasLimit_op_of_hasColimit (Discrete.functor Z)
+instance (priority := 10000) : HasLimit (Discrete.functor Z).op := hasLimit_op_of_hasColimit (Discrete.functor Z)
 
-instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
+instance (priority := 10000) : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
   hasLimitEquivalenceComp (Discrete.opposite α).symm
 
-instance : HasProduct (op <| Z ·) := hasLimitOfIso
+instance (priority := 10000) : HasProduct (op <| Z ·) := hasLimitOfIso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
     (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
     Discrete.functor (op <| Z ·))
@@ -477,12 +477,12 @@ section OppositeProducts
 
 variable {α : Type*} {Z : α → C} [HasProduct Z]
 
-instance : HasColimit (Discrete.functor Z).op := hasColimit_op_of_hasLimit (Discrete.functor Z)
+instance (priority := 10000) : HasColimit (Discrete.functor Z).op := hasColimit_op_of_hasLimit (Discrete.functor Z)
 
-instance : HasColimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
+instance (priority := 10000) : HasColimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
   hasColimit_equivalence_comp (Discrete.opposite α).symm
 
-instance : HasCoproduct (op <| Z ·) := hasColimitOfIso
+instance (priority := 10000) : HasCoproduct (op <| Z ·) := hasColimitOfIso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
     (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
     Discrete.functor (op <| Z ·)).symm
@@ -547,33 +547,33 @@ theorem opProductIsoCoproduct_inv_comp_lift {X : C} (π : (a : α) → X ⟶ Z a
 
 end OppositeProducts
 
-instance hasEqualizers_opposite [HasCoequalizers C] : HasEqualizers Cᵒᵖ := by
+instance (priority := 10000) hasEqualizers_opposite [HasCoequalizers C] : HasEqualizers Cᵒᵖ := by
   haveI : HasColimitsOfShape WalkingParallelPairᵒᵖ C :=
     hasColimitsOfShape_of_equivalence walkingParallelPairOpEquiv
   infer_instance
 #align category_theory.limits.has_equalizers_opposite CategoryTheory.Limits.hasEqualizers_opposite
 
-instance hasCoequalizers_opposite [HasEqualizers C] : HasCoequalizers Cᵒᵖ := by
+instance (priority := 10000) hasCoequalizers_opposite [HasEqualizers C] : HasCoequalizers Cᵒᵖ := by
   haveI : HasLimitsOfShape WalkingParallelPairᵒᵖ C :=
     hasLimitsOfShape_of_equivalence walkingParallelPairOpEquiv
   infer_instance
 #align category_theory.limits.has_coequalizers_opposite CategoryTheory.Limits.hasCoequalizers_opposite
 
-instance hasFiniteColimits_opposite [HasFiniteLimits C] : HasFiniteColimits Cᵒᵖ :=
+instance (priority := 10000) hasFiniteColimits_opposite [HasFiniteLimits C] : HasFiniteColimits Cᵒᵖ :=
   ⟨fun _ _ _ => inferInstance⟩
 #align category_theory.limits.has_finite_colimits_opposite CategoryTheory.Limits.hasFiniteColimits_opposite
 
-instance hasFiniteLimits_opposite [HasFiniteColimits C] : HasFiniteLimits Cᵒᵖ :=
+instance (priority := 10000) hasFiniteLimits_opposite [HasFiniteColimits C] : HasFiniteLimits Cᵒᵖ :=
   ⟨fun _ _ _ => inferInstance⟩
 #align category_theory.limits.has_finite_limits_opposite CategoryTheory.Limits.hasFiniteLimits_opposite
 
-instance hasPullbacks_opposite [HasPushouts C] : HasPullbacks Cᵒᵖ := by
+instance (priority := 10000) hasPullbacks_opposite [HasPushouts C] : HasPullbacks Cᵒᵖ := by
   haveI : HasColimitsOfShape WalkingCospanᵒᵖ C :=
     hasColimitsOfShape_of_equivalence walkingCospanOpEquiv.symm
   apply hasLimitsOfShape_op_of_hasColimitsOfShape
 #align category_theory.limits.has_pullbacks_opposite CategoryTheory.Limits.hasPullbacks_opposite
 
-instance hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
+instance (priority := 10000) hasPushouts_opposite [HasPullbacks C] : HasPushouts Cᵒᵖ := by
   haveI : HasLimitsOfShape WalkingSpanᵒᵖ C :=
     hasLimitsOfShape_of_equivalence walkingSpanOpEquiv.symm
   infer_instance

@@ -44,22 +44,22 @@ def Obj (α : TypeVec.{u} n) : Type u :=
   Σ a : P.A, P.B a ⟹ α
 #align mvpfunctor.obj MvPFunctor.Obj
 
-instance : CoeFun (MvPFunctor.{u} n) (fun _ => TypeVec.{u} n → Type u) where
+instance (priority := 10000) : CoeFun (MvPFunctor.{u} n) (fun _ => TypeVec.{u} n → Type u) where
   coe := Obj
 
 /-- Applying `P` to a morphism of `Type` -/
 def map {α β : TypeVec n} (f : α ⟹ β) : P α → P β := fun ⟨a, g⟩ => ⟨a, TypeVec.comp f g⟩
 #align mvpfunctor.map MvPFunctor.map
 
-instance : Inhabited (MvPFunctor n) :=
+instance (priority := 10000) : Inhabited (MvPFunctor n) :=
   ⟨⟨default, default⟩⟩
 
-instance Obj.inhabited {α : TypeVec n} [Inhabited P.A] [∀ i, Inhabited (α i)] :
+instance (priority := 10000) Obj.inhabited {α : TypeVec n} [Inhabited P.A] [∀ i, Inhabited (α i)] :
     Inhabited (P α) :=
   ⟨⟨default, fun _ _ => default⟩⟩
 #align mvpfunctor.obj.inhabited MvPFunctor.Obj.inhabited
 
-instance : MvFunctor.{u} P.Obj :=
+instance (priority := 10000) : MvFunctor.{u} P.Obj :=
   ⟨@MvPFunctor.map n P⟩
 
 theorem map_eq {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f : P.B a ⟹ α) :
@@ -76,7 +76,7 @@ theorem comp_map {α β γ : TypeVec n} (f : α ⟹ β) (g : β ⟹ γ) :
   | ⟨_, _⟩ => rfl
 #align mvpfunctor.comp_map MvPFunctor.comp_map
 
-instance : LawfulMvFunctor.{u} P.Obj where
+instance (priority := 10000) : LawfulMvFunctor.{u} P.Obj where
   id_map := @id_map _ P
   comp_map := @comp_map _ P
 

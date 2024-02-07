@@ -312,12 +312,12 @@ theorem colimitLimitToLimitColimit_surjective :
         Bifunctor.map_id, types_id_apply]
 #align category_theory.limits.colimit_limit_to_limit_colimit_surjective CategoryTheory.Limits.colimitLimitToLimitColimit_surjective
 
-instance colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F) :=
+instance (priority := 10000) colimitLimitToLimitColimit_isIso : IsIso (colimitLimitToLimitColimit F) :=
   (isIso_iff_bijective _).mpr
     ⟨colimitLimitToLimitColimit_injective F, colimitLimitToLimitColimit_surjective F⟩
 #align category_theory.limits.colimit_limit_to_limit_colimit_is_iso CategoryTheory.Limits.colimitLimitToLimitColimit_isIso
 
-instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
+instance (priority := 10000) colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     IsIso (colimitLimitToLimitColimitCone F) := by
   have : IsIso (colimitLimitToLimitColimitCone F).hom := by
     suffices IsIso (colimitLimitToLimitColimit (uncurry.obj F) ≫
@@ -327,7 +327,7 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
   apply Cones.cone_iso_of_hom_iso
 #align category_theory.limits.colimit_limit_to_limit_colimit_cone_iso CategoryTheory.Limits.colimitLimitToLimitColimitCone_iso
 
-noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
+noncomputable instance (priority := 10000) filteredColimPreservesFiniteLimitsOfTypes :
     PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
   intro J _ _
@@ -348,7 +348,7 @@ variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forge
 
 variable [PreservesLimitsOfShape J (forget C)]
 
-noncomputable instance filteredColimPreservesFiniteLimits :
+noncomputable instance (priority := 10000) filteredColimPreservesFiniteLimits :
     PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _) :=
   haveI : PreservesLimitsOfShape J ((colim : (K ⥤ C) ⥤ _) ⋙ forget C) :=
     preservesLimitsOfShapeOfNatIso (preservesColimitNatIso _).symm
@@ -359,7 +359,7 @@ end
 
 attribute [local instance] reflectsLimitsOfShapeOfReflectsIsomorphisms
 
-noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesFilteredColimits (forget C)]
+noncomputable instance (priority := 10000) [PreservesFiniteLimits (forget C)] [PreservesFilteredColimits (forget C)]
     [HasFiniteLimits C] [HasColimitsOfShape K C] [ReflectsIsomorphisms (forget C)] :
     PreservesFiniteLimits (colim : (K ⥤ C) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}

@@ -84,15 +84,15 @@ namespace VonNeumannAlgebra
 
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
-instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
+instance (priority := 10000) instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier
   coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
 
 -- porting note: `StarMemClass` should be in `Prop`?
-noncomputable instance instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
+noncomputable instance (priority := 10000) instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
   star_mem {s} := s.star_mem'
 
-instance instSubringClass : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
+instance (priority := 10000) instSubringClass : SubringClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
   add_mem {s} := s.add_mem'
   mul_mem {s} := s.mul_mem'
   one_mem {s} := s.one_mem'

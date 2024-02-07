@@ -34,22 +34,22 @@ def WideSubquiver.toType (V) [Quiver V] (_ : WideSubquiver V) : Type u :=
   V
 #align wide_subquiver.to_Type WideSubquiver.toType
 
-instance wideSubquiverHasCoeToSort {V} [Quiver V] :
+instance (priority := 10000) wideSubquiverHasCoeToSort {V} [Quiver V] :
     CoeSort (WideSubquiver V) (Type u) where coe H := WideSubquiver.toType V H
 
 /-- A wide subquiver viewed as a quiver on its own. -/
-instance WideSubquiver.quiver {V} [Quiver V] (H : WideSubquiver V) : Quiver H :=
+instance (priority := 10000) WideSubquiver.quiver {V} [Quiver V] (H : WideSubquiver V) : Quiver H :=
   ⟨fun a b ↦ { f // f ∈ H a b }⟩
 
 namespace Quiver
 
-instance {V} [Quiver V] : Bot (WideSubquiver V) :=
+instance (priority := 10000) {V} [Quiver V] : Bot (WideSubquiver V) :=
   ⟨fun _ _ ↦ ∅⟩
 
-instance {V} [Quiver V] : Top (WideSubquiver V) :=
+instance (priority := 10000) {V} [Quiver V] : Top (WideSubquiver V) :=
   ⟨fun _ _ ↦ Set.univ⟩
 
-noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
+noncomputable instance (priority := 10000) {V} [Quiver V] : Inhabited (WideSubquiver V) :=
   ⟨⊤⟩
 
 -- TODO Unify with `CategoryTheory.Arrow`? (The fields have been named to match.)
@@ -82,7 +82,7 @@ def Labelling (V : Type u) [Quiver V] (L : Sort*) :=
   ∀ ⦃a b : V⦄, (a ⟶ b) → L
 #align quiver.labelling Quiver.Labelling
 
-instance {V : Type u} [Quiver V] (L) [Inhabited L] : Inhabited (Labelling V L) :=
+instance (priority := 10000) {V : Type u} [Quiver V] (L) [Inhabited L] : Inhabited (Labelling V L) :=
   ⟨fun _ _ _ ↦ default⟩
 
 end Quiver

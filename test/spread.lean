@@ -7,10 +7,10 @@ class Foo (α : Type) where
 class Something where
   bar : True
 
-instance : Something where
+instance (priority := 10000) : Something where
   bar := by trivial
 
-instance : Foo α where
+instance (priority := 10000) : Foo α where
   __ := instSomething -- include fields from `instSomething`
 
 example : Foo α := {

@@ -191,7 +191,7 @@ theorem mul_def' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) : a /. b * (c /. 
 
 #align rat.inv Rat.inv
 
-instance : Inv ℚ :=
+instance (priority := 10000) : Inv ℚ :=
   ⟨Rat.inv⟩
 
 -- Porting note: there's already an instance for `Div ℚ` is in Std.
@@ -313,7 +313,7 @@ Instead we'll instantiate `CommRing` and `CommGroupWithZero` at this point.
 The `Rat.field` instance and any field-specific lemmas can be found in `Mathlib.Data.Rat.Basic`.
 -/
 
-instance commRing : CommRing ℚ where
+instance (priority := 10000) commRing : CommRing ℚ where
   zero := 0
   add := (· + ·)
   neg := Neg.neg
@@ -340,7 +340,7 @@ instance commRing : CommRing ℚ where
     simp only [coe_int_eq_divInt, add_def'' one_ne_zero one_ne_zero,
       ← divInt_one_one, Nat.cast_add, Nat.cast_one, mul_one]
 
-instance commGroupWithZero : CommGroupWithZero ℚ :=
+instance (priority := 10000) commGroupWithZero : CommGroupWithZero ℚ :=
   { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
     inv_zero := by
       change Rat.inv 0 = 0
@@ -350,40 +350,40 @@ instance commGroupWithZero : CommGroupWithZero ℚ :=
     mul_zero := mul_zero
     zero_mul := zero_mul }
 
-instance isDomain : IsDomain ℚ :=
+instance (priority := 10000) isDomain : IsDomain ℚ :=
   NoZeroDivisors.to_isDomain _
 
 -- Extra instances to short-circuit type class resolution
 -- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic
-instance nontrivial : Nontrivial ℚ := by infer_instance
+instance (priority := 10000) nontrivial : Nontrivial ℚ := by infer_instance
 
-instance commSemiring : CommSemiring ℚ := by infer_instance
+instance (priority := 10000) commSemiring : CommSemiring ℚ := by infer_instance
 
-instance semiring : Semiring ℚ := by infer_instance
+instance (priority := 10000) semiring : Semiring ℚ := by infer_instance
 
-instance addCommGroup : AddCommGroup ℚ := by infer_instance
+instance (priority := 10000) addCommGroup : AddCommGroup ℚ := by infer_instance
 
-instance addGroup : AddGroup ℚ := by infer_instance
+instance (priority := 10000) addGroup : AddGroup ℚ := by infer_instance
 
-instance addCommMonoid : AddCommMonoid ℚ := by infer_instance
+instance (priority := 10000) addCommMonoid : AddCommMonoid ℚ := by infer_instance
 
-instance addMonoid : AddMonoid ℚ := by infer_instance
+instance (priority := 10000) addMonoid : AddMonoid ℚ := by infer_instance
 
-instance addLeftCancelSemigroup : AddLeftCancelSemigroup ℚ := by infer_instance
+instance (priority := 10000) addLeftCancelSemigroup : AddLeftCancelSemigroup ℚ := by infer_instance
 
-instance addRightCancelSemigroup : AddRightCancelSemigroup ℚ := by infer_instance
+instance (priority := 10000) addRightCancelSemigroup : AddRightCancelSemigroup ℚ := by infer_instance
 
-instance addCommSemigroup : AddCommSemigroup ℚ := by infer_instance
+instance (priority := 10000) addCommSemigroup : AddCommSemigroup ℚ := by infer_instance
 
-instance addSemigroup : AddSemigroup ℚ := by infer_instance
+instance (priority := 10000) addSemigroup : AddSemigroup ℚ := by infer_instance
 
-instance commMonoid : CommMonoid ℚ := by infer_instance
+instance (priority := 10000) commMonoid : CommMonoid ℚ := by infer_instance
 
-instance monoid : Monoid ℚ := by infer_instance
+instance (priority := 10000) monoid : Monoid ℚ := by infer_instance
 
-instance commSemigroup : CommSemigroup ℚ := by infer_instance
+instance (priority := 10000) commSemigroup : CommSemigroup ℚ := by infer_instance
 
-instance semigroup : Semigroup ℚ := by infer_instance
+instance (priority := 10000) semigroup : Semigroup ℚ := by infer_instance
 
 #align rat.denom_ne_zero Rat.den_nz
 
@@ -528,7 +528,7 @@ theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
   ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.coe_int_den r.num⟩
 #align rat.denom_eq_one_iff Rat.den_eq_one_iff
 
-instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
+instance (priority := 10000) canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
   ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
 #align rat.can_lift Rat.canLift
 

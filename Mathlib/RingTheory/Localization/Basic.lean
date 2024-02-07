@@ -446,7 +446,7 @@ theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m := by
   rw [smul_mk', mk'_mul_cancel_left]
 
 @[simps]
-instance invertible_mk'_one (s : M) : Invertible (IsLocalization.mk' S (1 : R) s) where
+instance (priority := 10000) invertible_mk'_one (s : M) : Invertible (IsLocalization.mk' S (1 : R) s) where
   invOf := algebraMap R S s
   invOf_mul_self := by simp
   mul_invOf_self := by simp
@@ -910,7 +910,7 @@ open IsLocalization
 
 section
 
-instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
+instance (priority := 10000) instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
   uniq a := show a = mk 1 1 from
     Localization.induction_on a fun _ => by
       congr <;> apply Subsingleton.elim
@@ -938,7 +938,7 @@ protected irreducible_def add (z w : Localization M) : Localization M :=
           )
 #align localization.add Localization.add
 
-instance : Add (Localization M) :=
+instance (priority := 10000) : Add (Localization M) :=
   ⟨Localization.add⟩
 
 theorem add_mk (a b c d) : (mk a b : Localization M) + mk c d =
@@ -962,7 +962,7 @@ local macro "localization_tac" : tactic =>
      simp only [Submonoid.coe_mul]
      ring })
 
-instance : CommSemiring (Localization M) :=
+instance (priority := 10000) : CommSemiring (Localization M) :=
   { (show CommMonoidWithZero (Localization M) by infer_instance) with
     add := (· + ·)
     nsmul := (· • ·)
@@ -1011,7 +1011,7 @@ theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => 
   (mkAddMonoidHom b).map_multiset_sum l
 #align localization.mk_multiset_sum Localization.mk_multiset_sum
 
-instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
+instance (priority := 10000) {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
     DistribMulAction S (Localization M) where
   smul_zero s := by simp only [← Localization.mk_zero 1, Localization.smul_mk, smul_zero]
   smul_add s x y :=
@@ -1021,12 +1021,12 @@ instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
           simp only [Localization.smul_mk, Localization.add_mk, smul_add, mul_comm _ (s • _),
             mul_comm _ r₁, mul_comm _ r₂, smul_mul_assoc]
 
-instance {S : Type*} [Semiring S] [MulSemiringAction S R] [IsScalarTower S R R] :
+instance (priority := 10000) {S : Type*} [Semiring S] [MulSemiringAction S R] [IsScalarTower S R R] :
     MulSemiringAction S (Localization M) :=
   { inferInstanceAs (MulDistribMulAction S (Localization M)),
     inferInstanceAs (DistribMulAction S (Localization M)) with }
 
-instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S (Localization M) :=
+instance (priority := 10000) {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S (Localization M) :=
   { inferInstanceAs (DistribMulAction S (Localization M)) with
     zero_smul :=
       Localization.ind <|
@@ -1039,7 +1039,7 @@ instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S 
           intros
           simp only [Localization.smul_mk, add_smul, add_mk_self] }
 
-instance algebra {S : Type*} [CommSemiring S] [Algebra S R] : Algebra S (Localization M) where
+instance (priority := 10000) algebra {S : Type*} [CommSemiring S] [Algebra S R] : Algebra S (Localization M) where
   toRingHom :=
     RingHom.comp
       { Localization.monoidOf M with
@@ -1063,7 +1063,7 @@ instance algebra {S : Type*} [CommSemiring S] [Algebra S R] : Algebra S (Localiz
         simp only [← mk_one_eq_monoidOf_mk, mk_mul, Localization.smul_mk, one_mul, mul_one,
           Algebra.commutes]
 
-instance isLocalization : IsLocalization M (Localization M) where
+instance (priority := 10000) isLocalization : IsLocalization M (Localization M) where
   map_units' := (Localization.monoidOf M).map_units
   surj' := (Localization.monoidOf M).surj
   exists_of_eq := (Localization.monoidOf M).eq_iff_exists.mp
@@ -1173,7 +1173,7 @@ protected irreducible_def neg (z : Localization M) : Localization M :=
         ring_nf)
 #align localization.neg Localization.neg
 
-instance : Neg (Localization M) :=
+instance (priority := 10000) : Neg (Localization M) :=
   ⟨Localization.neg⟩
 
 theorem neg_mk (a b) : -(mk a b : Localization M) = mk (-a) b := by
@@ -1182,7 +1182,7 @@ theorem neg_mk (a b) : -(mk a b : Localization M) = mk (-a) b := by
   apply liftOn_mk
 #align localization.neg_mk Localization.neg_mk
 
-instance : CommRing (Localization M) :=
+instance (priority := 10000) : CommRing (Localization M) :=
   { inferInstanceAs (CommSemiring (Localization M)) with
     zsmul := (· • ·)
     zsmul_zero' := fun x =>

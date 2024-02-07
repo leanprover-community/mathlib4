@@ -67,7 +67,7 @@ inductive Pre
 
 namespace Pre
 
-instance : Inhabited (Pre R X) := ⟨ofScalar 0⟩
+instance (priority := 10000) : Inhabited (Pre R X) := ⟨ofScalar 0⟩
 
 -- Note: These instances are only used to simplify the notation.
 /-- Coercion from `X` to `Pre R X`. Note: Used for notation only. -/
@@ -167,17 +167,17 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 
 /-! Define the basic operations-/
 
-instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
+instance (priority := 10000) instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
   smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
 
-instance instZero : Zero (FreeAlgebra R X) where zero := Quot.mk _ 0
+instance (priority := 10000) instZero : Zero (FreeAlgebra R X) where zero := Quot.mk _ 0
 
-instance instOne : One (FreeAlgebra R X) where one := Quot.mk _ 1
+instance (priority := 10000) instOne : One (FreeAlgebra R X) where one := Quot.mk _ 1
 
-instance instAdd : Add (FreeAlgebra R X) where
+instance (priority := 10000) instAdd : Add (FreeAlgebra R X) where
   add := Quot.map₂ HAdd.hAdd (fun _ _ _ ↦ Rel.add_compat_right) fun _ _ _ ↦ Rel.add_compat_left
 
-instance instMul : Mul (FreeAlgebra R X) where
+instance (priority := 10000) instMul : Mul (FreeAlgebra R X) where
   mul := Quot.map₂ HMul.hMul (fun _ _ _ ↦ Rel.mul_compat_right) fun _ _ _ ↦ Rel.mul_compat_left
 
 -- `Quot.mk` is an implementation detail of `FreeAlgebra`, so this lemma is private
@@ -189,7 +189,7 @@ private theorem mk_mul (x y : Pre R X) :
 /-! Build the semiring structure. We do this one piece at a time as this is convenient for proving
 the `nsmul` fields. -/
 
-instance instMonoidWithZero : MonoidWithZero (FreeAlgebra R X) where
+instance (priority := 10000) instMonoidWithZero : MonoidWithZero (FreeAlgebra R X) where
   mul_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.mul_assoc
@@ -207,7 +207,7 @@ instance instMonoidWithZero : MonoidWithZero (FreeAlgebra R X) where
     rintro ⟨⟩
     exact Quot.sound Rel.mul_zero
 
-instance instDistrib : Distrib (FreeAlgebra R X) where
+instance (priority := 10000) instDistrib : Distrib (FreeAlgebra R X) where
   left_distrib := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.left_distrib
@@ -215,7 +215,7 @@ instance instDistrib : Distrib (FreeAlgebra R X) where
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.right_distrib
 
-instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
+instance (priority := 10000) instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   add_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.add_assoc
@@ -242,7 +242,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     congr 1
     exact Quot.sound Rel.add_scalar
 
-instance : Semiring (FreeAlgebra R X) where
+instance (priority := 10000) : Semiring (FreeAlgebra R X) where
   __ := instMonoidWithZero R X
   __ := instAddCommMonoid R X
   __ := instDistrib R X
@@ -250,10 +250,10 @@ instance : Semiring (FreeAlgebra R X) where
   natCast_zero := by simp; rfl
   natCast_succ n := by simp; exact Quot.sound Rel.add_scalar
 
-instance : Inhabited (FreeAlgebra R X) :=
+instance (priority := 10000) : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
-instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
+instance (priority := 10000) instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
   toRingHom := ({
       toFun := fun r => Quot.mk _ r
       map_one' := rfl
@@ -270,7 +270,7 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
 variable (S : Type) [CommSemiring S] in
 example : (algebraNat : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
-instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
+instance (priority := 10000) {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     [SMul R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
     IsScalarTower R S (FreeAlgebra A X) where
   smul_assoc r s x := by
@@ -280,11 +280,11 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     simp only [Algebra.algebraMap_eq_smul_one, smul_eq_mul]
     rw [smul_assoc, ← smul_one_mul]
 
-instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A] [Algebra S A] :
+instance (priority := 10000) {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A] [Algebra S A] :
     SMulCommClass R S (FreeAlgebra A X) where
   smul_comm r s x := smul_comm (algebraMap R A r) (algebraMap S A s) x
 
-instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
+instance (priority := 10000) {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
 -- verify there is no diamond
@@ -472,15 +472,15 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
 #align free_algebra.equiv_monoid_algebra_free_monoid FreeAlgebra.equivMonoidAlgebraFreeMonoid
 
 /-- `FreeAlgebra R X` is nontrivial when `R` is. -/
-instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
+instance (priority := 10000) [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
   equivMonoidAlgebraFreeMonoid.surjective.nontrivial
 
 /-- `FreeAlgebra R X` has no zero-divisors when `R` has no zero-divisors. -/
-instance instNoZeroDivisors [NoZeroDivisors R] : NoZeroDivisors (FreeAlgebra R X) :=
+instance (priority := 10000) instNoZeroDivisors [NoZeroDivisors R] : NoZeroDivisors (FreeAlgebra R X) :=
   equivMonoidAlgebraFreeMonoid.toMulEquiv.noZeroDivisors
 
 /-- `FreeAlgebra R X` is a domain when `R` is an integral domain. -/
-instance instIsDomain {R X} [CommRing R] [IsDomain R] : IsDomain (FreeAlgebra R X) :=
+instance (priority := 10000) instIsDomain {R X} [CommRing R] [IsDomain R] : IsDomain (FreeAlgebra R X) :=
   NoZeroDivisors.to_isDomain _
 
 section

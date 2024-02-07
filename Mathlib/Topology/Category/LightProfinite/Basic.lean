@@ -66,31 +66,31 @@ noncomputable def of (F : ℕᵒᵖ ⥤ FintypeCat) : LightProfinite where
 def toProfinite (S : LightProfinite) : Profinite := S.cone.pt
 
 @[simps!]
-instance : Category LightProfinite := InducedCategory.category toProfinite
+instance (priority := 10000) : Category LightProfinite := InducedCategory.category toProfinite
 
 @[simps!]
-instance concreteCategory : ConcreteCategory LightProfinite := InducedCategory.concreteCategory _
+instance (priority := 10000) concreteCategory : ConcreteCategory LightProfinite := InducedCategory.concreteCategory _
 
 /-- The fully faithful embedding `LightProfinite ⥤ Profinite` -/
 @[simps!]
 def lightToProfinite : LightProfinite ⥤ Profinite := inducedFunctor _
 
-instance : Faithful lightToProfinite := show Faithful <| inducedFunctor _ from inferInstance
+instance (priority := 10000) : Faithful lightToProfinite := show Faithful <| inducedFunctor _ from inferInstance
 
-instance : Full lightToProfinite := show Full <| inducedFunctor _ from inferInstance
+instance (priority := 10000) : Full lightToProfinite := show Full <| inducedFunctor _ from inferInstance
 
-instance : lightToProfinite.ReflectsEpimorphisms := inferInstance
+instance (priority := 10000) : lightToProfinite.ReflectsEpimorphisms := inferInstance
 
-instance {X : LightProfinite} : TopologicalSpace ((forget LightProfinite).obj X) :=
+instance (priority := 10000) {X : LightProfinite} : TopologicalSpace ((forget LightProfinite).obj X) :=
   (inferInstance : TopologicalSpace X.cone.pt)
 
-instance {X : LightProfinite} : TotallyDisconnectedSpace ((forget LightProfinite).obj X) :=
+instance (priority := 10000) {X : LightProfinite} : TotallyDisconnectedSpace ((forget LightProfinite).obj X) :=
   (inferInstance : TotallyDisconnectedSpace X.cone.pt)
 
-instance {X : LightProfinite} : CompactSpace ((forget LightProfinite).obj X) :=
+instance (priority := 10000) {X : LightProfinite} : CompactSpace ((forget LightProfinite).obj X) :=
   (inferInstance : CompactSpace X.cone.pt )
 
-instance {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) :=
+instance (priority := 10000) {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) :=
   (inferInstance : T2Space X.cone.pt )
 
 /-- The explicit functor `FintypeCat ⥤ LightProfinite`.  -/
@@ -111,18 +111,18 @@ structure LightProfinite' : Type u where
 def LightProfinite'.toProfinite (S : LightProfinite') : Profinite :=
   limit (S.diagram  ⋙ FintypeCat.Skeleton.equivalence.functor ⋙ FintypeCat.toProfinite.{u})
 
-instance : Category LightProfinite' := InducedCategory.category LightProfinite'.toProfinite
+instance (priority := 10000) : Category LightProfinite' := InducedCategory.category LightProfinite'.toProfinite
 
 /-- The functor part of the equivalence of categories `LightProfinite' ≌ LightProfinite`. -/
 def LightProfinite'.toLightFunctor : LightProfinite'.{u} ⥤ LightProfinite.{u} where
   obj X := ⟨X.diagram ⋙ Skeleton.equivalence.functor, _, limit.isLimit _⟩
   map f := f
 
-instance : Faithful LightProfinite'.toLightFunctor.{u} := ⟨id⟩
+instance (priority := 10000) : Faithful LightProfinite'.toLightFunctor.{u} := ⟨id⟩
 
-instance : Full LightProfinite'.toLightFunctor.{u} := ⟨id, fun _ ↦ rfl⟩
+instance (priority := 10000) : Full LightProfinite'.toLightFunctor.{u} := ⟨id, fun _ ↦ rfl⟩
 
-instance : EssSurj LightProfinite'.toLightFunctor.{u} where
+instance (priority := 10000) : EssSurj LightProfinite'.toLightFunctor.{u} where
   mem_essImage Y := by
     let i : limit (((Y.diagram ⋙ Skeleton.equivalence.inverse) ⋙ Skeleton.equivalence.functor) ⋙
       toProfinite) ≅ Y.cone.pt := (Limits.lim.mapIso (isoWhiskerRight ((Functor.associator _ _ _) ≪≫
@@ -131,13 +131,13 @@ instance : EssSurj LightProfinite'.toLightFunctor.{u} where
     exact ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩⟩⟩
     -- why can't I just write `i` instead of `⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩`?
 
-instance : IsEquivalence LightProfinite'.toLightFunctor := Equivalence.ofFullyFaithfullyEssSurj _
+instance (priority := 10000) : IsEquivalence LightProfinite'.toLightFunctor := Equivalence.ofFullyFaithfullyEssSurj _
 
 /-- The equivalence beween `LightProfinite` and a small category. -/
 def LightProfinite.equivSmall : LightProfinite.{u} ≌ LightProfinite'.{u} :=
   LightProfinite'.toLightFunctor.asEquivalence.symm
 
-instance : EssentiallySmall LightProfinite.{u} where
+instance (priority := 10000) : EssentiallySmall LightProfinite.{u} where
   equiv_smallCategory := ⟨LightProfinite', inferInstance, ⟨LightProfinite.equivSmall⟩⟩
 
 end EssentiallySmall

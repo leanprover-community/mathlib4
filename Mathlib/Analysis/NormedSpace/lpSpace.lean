@@ -306,9 +306,9 @@ def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
   ∀ i, E i --deriving AddCommGroup
 #align pre_lp PreLp
 
-instance : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
+instance (priority := 10000) : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
 
-instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
+instance (priority := 10000) PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
   Pi.uniqueOfIsEmpty E
 #align pre_lp.unique PreLp.unique
 
@@ -326,10 +326,10 @@ def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : A
 namespace lp
 
 -- Porting note: was `Coe`
-instance : CoeOut (lp E p) (∀ i, E i) :=
+instance (priority := 10000) : CoeOut (lp E p) (∀ i, E i) :=
   ⟨Subtype.val (α := ∀ i, E i)⟩ -- Porting note: Originally `coeSubtype`
 
-instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
+instance (priority := 10000) coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
   ⟨fun f => (f : ∀ i, E i)⟩
 
 @[ext]
@@ -383,7 +383,7 @@ theorem coeFn_sub (f g : lp E p) : ⇑(f - g) = f - g :=
   rfl
 #align lp.coe_fn_sub lp.coeFn_sub
 
-instance : Norm (lp E p) where
+instance (priority := 10000) : Norm (lp E p) where
   norm f :=
     if hp : p = 0 then by
       subst hp
@@ -494,7 +494,7 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
     simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 #align lp.norm_neg lp.norm_neg
 
-instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
+instance (priority := 10000) normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := norm
       map_zero' := norm_zero
@@ -607,16 +607,16 @@ variable [NormedRing 𝕜] [NormedRing 𝕜']
 
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
-instance : Module 𝕜 (PreLp E) :=
+instance (priority := 10000) : Module 𝕜 (PreLp E) :=
   Pi.module α E 𝕜
 
-instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (PreLp E) :=
+instance (priority := 10000) [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (PreLp E) :=
   Pi.smulCommClass
 
-instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (PreLp E) :=
+instance (priority := 10000) [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (PreLp E) :=
   Pi.isScalarTower
 
-instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (PreLp E) :=
+instance (priority := 10000) [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (PreLp E) :=
   Pi.isCentralScalar
 
 variable [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, BoundedSMul 𝕜' (E i)]
@@ -639,7 +639,7 @@ theorem coe_lpSubmodule : (lpSubmodule E p 𝕜).toAddSubgroup = lp E p :=
   rfl
 #align lp.coe_lp_submodule lp.coe_lpSubmodule
 
-instance : Module 𝕜 (lp E p) :=
+instance (priority := 10000) : Module 𝕜 (lp E p) :=
   { (lpSubmodule E p 𝕜).module with }
 
 @[simp]
@@ -647,13 +647,13 @@ theorem coeFn_smul (c : 𝕜) (f : lp E p) : ⇑(c • f) = c • ⇑f :=
   rfl
 #align lp.coe_fn_smul lp.coeFn_smul
 
-instance [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (lp E p) :=
+instance (priority := 10000) [∀ i, SMulCommClass 𝕜' 𝕜 (E i)] : SMulCommClass 𝕜' 𝕜 (lp E p) :=
   ⟨fun _ _ _ => Subtype.ext <| smul_comm _ _ _⟩
 
-instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (lp E p) :=
+instance (priority := 10000) [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTower 𝕜' 𝕜 (lp E p) :=
   ⟨fun _ _ _ => Subtype.ext <| smul_assoc _ _ _⟩
 
-instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (lp E p) :=
+instance (priority := 10000) [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (lp E p) :=
   ⟨fun _ _ => Subtype.ext <| op_smul_eq_smul _ _⟩
 
 theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ := by
@@ -690,7 +690,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     apply nnnorm_smul_le
 #align lp.norm_const_smul_le lp.norm_const_smul_le
 
-instance [Fact (1 ≤ p)] : BoundedSMul 𝕜 (lp E p) :=
+instance (priority := 10000) [Fact (1 ≤ p)] : BoundedSMul 𝕜 (lp E p) :=
   BoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le <| Fact.out).ne'
 
 end BoundedSMul
@@ -715,7 +715,7 @@ section NormedSpace
 
 variable {𝕜 : Type*} [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
-instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
+instance (priority := 10000) instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
   norm_smul_le c f := norm_smul_le c f
 
 end NormedSpace
@@ -739,7 +739,7 @@ theorem _root_.Memℓp.star_iff {f : ∀ i, E i} : Memℓp (star f) p ↔ Memℓ
   ⟨fun h => star_star f ▸ Memℓp.star_mem h, Memℓp.star_mem⟩
 #align mem_ℓp.star_iff Memℓp.star_iff
 
-instance : Star (lp E p) where
+instance (priority := 10000) : Star (lp E p) where
   star f := ⟨(star f : ∀ i, E i), f.property.star_mem⟩
 
 @[simp]
@@ -752,13 +752,13 @@ protected theorem star_apply (f : lp E p) (i : α) : star f i = star (f i) :=
   rfl
 #align lp.star_apply lp.star_apply
 
-instance instInvolutiveStar : InvolutiveStar (lp E p) where
+instance (priority := 10000) instInvolutiveStar : InvolutiveStar (lp E p) where
   star_involutive x := by simp [star]
 
-instance instStarAddMonoid : StarAddMonoid (lp E p) where
+instance (priority := 10000) instStarAddMonoid : StarAddMonoid (lp E p) where
   star_add _f _g := ext <| star_add (R := ∀ i, E i) _ _
 
-instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
+instance (priority := 10000) [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
   norm_star f := by
     rcases p.trichotomy with (rfl | rfl | h)
     · exfalso
@@ -771,7 +771,7 @@ variable {𝕜 : Type*} [Star 𝕜] [NormedRing 𝕜]
 
 variable [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
-instance : StarModule 𝕜 (lp E p) where
+instance (priority := 10000) : StarModule 𝕜 (lp E p) where
   star_smul _r _f := ext <| star_smul (A := ∀ i, E i) _ _
 
 end NormedStarGroup
@@ -793,7 +793,7 @@ theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : M
         ((norm_nonneg _).trans (hCf ⟨i, rfl⟩))
 #align mem_ℓp.infty_mul Memℓp.infty_mul
 
-instance : Mul (lp B ∞) where
+instance (priority := 10000) : Mul (lp B ∞) where
   mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _ , f.property.infty_mul g.property⟩
 
 @[simp]
@@ -801,11 +801,11 @@ theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
   rfl
 #align lp.infty_coe_fn_mul lp.infty_coeFn_mul
 
-instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
+instance (priority := 10000) nonUnitalRing : NonUnitalRing (lp B ∞) :=
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
-instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
+instance (priority := 10000) nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
   { lp.normedAddCommGroup, lp.nonUnitalRing with
     norm_mul := fun f g =>
       lp.norm_le_of_forall_le (mul_nonneg (norm_nonneg f) (norm_nonneg g)) fun i =>
@@ -816,12 +816,12 @@ instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
               (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
 
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for mathlib3 #13719
-instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
+instance (priority := 10000) infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_assoc (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 #align lp.infty_is_scalar_tower lp.infty_isScalarTower
 
-instance infty_smulCommClass {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
+instance (priority := 10000) infty_smulCommClass {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
     [∀ i, SMulCommClass 𝕜 (B i) (B i)] : SMulCommClass 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_comm (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 #align lp.infty_smul_comm_class lp.infty_smulCommClass
@@ -830,12 +830,12 @@ section StarRing
 
 variable [∀ i, StarRing (B i)] [∀ i, NormedStarGroup (B i)]
 
-instance inftyStarRing : StarRing (lp B ∞) :=
+instance (priority := 10000) inftyStarRing : StarRing (lp B ∞) :=
   { lp.instStarAddMonoid with
     star_mul := fun _f _g => ext <| star_mul (R := ∀ i, B i) _ _ }
 #align lp.infty_star_ring lp.inftyStarRing
 
-instance inftyCstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
+instance (priority := 10000) inftyCstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
   norm_star_mul_self := by
     intro f
     apply le_antisymm
@@ -858,7 +858,7 @@ section NormedRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedRing (B i)]
 
-instance _root_.PreLp.ring : Ring (PreLp B) :=
+instance (priority := 10000) _root_.PreLp.ring : Ring (PreLp B) :=
   Pi.ring
 #align pre_lp.ring PreLp.ring
 
@@ -881,7 +881,7 @@ def _root_.lpInftySubring : Subring (PreLp B) :=
 
 variable {B}
 
-instance inftyRing : Ring (lp B ∞) :=
+instance (priority := 10000) inftyRing : Ring (lp B ∞) :=
   (lpInftySubring B).toRing
 #align lp.infty_ring lp.inftyRing
 
@@ -917,10 +917,10 @@ theorem infty_coeFn_int_cast (z : ℤ) : ⇑(z : lp B ∞) = z :=
   rfl
 #align lp.infty_coe_fn_int_cast lp.infty_coeFn_int_cast
 
-instance [Nonempty I] : NormOneClass (lp B ∞) where
+instance (priority := 10000) [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
 
-instance inftyNormedRing : NormedRing (lp B ∞) :=
+instance (priority := 10000) inftyNormedRing : NormedRing (lp B ∞) :=
   { lp.inftyRing, lp.nonUnitalNormedRing with }
 #align lp.infty_normed_ring lp.inftyNormedRing
 
@@ -930,12 +930,12 @@ section NormedCommRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
 
-instance inftyCommRing : CommRing (lp B ∞) :=
+instance (priority := 10000) inftyCommRing : CommRing (lp B ∞) :=
   { lp.inftyRing with
     mul_comm := fun f g => by ext; simp only [lp.infty_coeFn_mul, Pi.mul_apply, mul_comm] }
 #align lp.infty_comm_ring lp.inftyCommRing
 
-instance inftyNormedCommRing : NormedCommRing (lp B ∞) :=
+instance (priority := 10000) inftyNormedCommRing : NormedCommRing (lp B ∞) :=
   { lp.inftyCommRing, lp.inftyNormedRing with }
 #align lp.infty_normed_comm_ring lp.inftyNormedCommRing
 
@@ -948,11 +948,11 @@ variable {I : Type*} {𝕜 : Type*} {B : I → Type*}
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 /-- A variant of `Pi.algebra` that lean can't find otherwise. -/
-instance _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) :=
+instance (priority := 10000) _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) :=
   @Pi.algebra I 𝕜 B _ _ fun _ => NormedAlgebra.toAlgebra
 #align pi.algebra_of_normed_algebra Pi.algebraOfNormedAlgebra
 
-instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
+instance (priority := 10000) _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
   Pi.algebraOfNormedAlgebra
 #align pre_lp.algebra PreLp.algebra
 
@@ -975,7 +975,7 @@ def _root_.lpInftySubalgebra : Subalgebra 𝕜 (PreLp B) :=
 
 variable {𝕜 B}
 
-instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) :=
+instance (priority := 10000) inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) :=
   { (lpInftySubalgebra 𝕜 B).algebra, (lp.instNormedSpace : NormedSpace 𝕜 (lp B ∞)) with }
 #align lp.infty_normed_algebra lp.inftyNormedAlgebra
 
@@ -1203,7 +1203,7 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
 
 variable [∀ a, CompleteSpace (E a)]
 
-instance completeSpace : CompleteSpace (lp E p) :=
+instance (priority := 10000) completeSpace : CompleteSpace (lp E p) :=
   Metric.complete_of_cauchySeq_tendsto (by
     intro F hF
     -- A Cauchy sequence in `lp E p` is pointwise convergent; let `f` be the pointwise limit.

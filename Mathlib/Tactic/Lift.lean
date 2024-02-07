@@ -24,11 +24,11 @@ class CanLift (α β : Sort*) (coe : outParam <| β → α) (cond : outParam <| 
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
 #align can_lift CanLift
 
-instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) (0 ≤ ·) :=
+instance (priority := 10000) : CanLift ℤ ℕ (fun n : ℕ ↦ n) (0 ≤ ·) :=
   ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
 
 /-- Enable automatic handling of pi types in `CanLift`. -/
-instance Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → α i) (P : ∀ i, α i → Prop)
+instance (priority := 10000) Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → α i) (P : ∀ i, α i → Prop)
     [∀ i, CanLift (α i) (β i) (coe i) (P i)] :
     CanLift (∀ i, α i) (∀ i, β i) (fun f i ↦ coe i (f i)) fun f ↦ ∀ i, P i (f i) where
   prf f hf := ⟨fun i => Classical.choose (CanLift.prf (f i) (hf i)),
@@ -43,18 +43,18 @@ theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i
     funext fun i ↦ dif_pos i.2⟩
 #align subtype.exists_pi_extension Subtype.exists_pi_extension
 
-instance PiSubtype.canLift (ι : Sort*) (α : ι → Sort*) [∀ i, Nonempty (α i)] (p : ι → Prop) :
+instance (priority := 10000) PiSubtype.canLift (ι : Sort*) (α : ι → Sort*) [∀ i, Nonempty (α i)] (p : ι → Prop) :
     CanLift (∀ i : Subtype p, α i) (∀ i, α i) (fun f i => f i) fun _ => True where
   prf f _ := Subtype.exists_pi_extension f
 #align pi_subtype.can_lift PiSubtype.canLift
 
 -- TODO: test if we need this instance in Lean 4
-instance PiSubtype.canLift' (ι : Sort*) (α : Sort*) [Nonempty α] (p : ι → Prop) :
+instance (priority := 10000) PiSubtype.canLift' (ι : Sort*) (α : Sort*) [Nonempty α] (p : ι → Prop) :
     CanLift (Subtype p → α) (ι → α) (fun f i => f i) fun _ => True :=
   PiSubtype.canLift ι (fun _ => α) p
 #align pi_subtype.can_lift' PiSubtype.canLift'
 
-instance Subtype.canLift {α : Sort*} (p : α → Prop) :
+instance (priority := 10000) Subtype.canLift {α : Sort*} (p : α → Prop) :
     CanLift α { x // p x } Subtype.val p where prf a ha :=
   ⟨⟨a, ha⟩, rfl⟩
 #align subtype.can_lift Subtype.canLift

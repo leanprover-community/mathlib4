@@ -58,12 +58,12 @@ class InfConvergenceClass (α : Type*) [Preorder α] [TopologicalSpace α] : Pro
     ∀ (a : α) (s : Set α), IsGLB s a → Tendsto (CoeTC.coe : s → α) atBot (𝓝 a)
 #align Inf_convergence_class InfConvergenceClass
 
-instance OrderDual.supConvergenceClass [Preorder α] [TopologicalSpace α] [InfConvergenceClass α] :
+instance (priority := 10000) OrderDual.supConvergenceClass [Preorder α] [TopologicalSpace α] [InfConvergenceClass α] :
     SupConvergenceClass αᵒᵈ :=
   ⟨‹InfConvergenceClass α›.1⟩
 #align order_dual.Sup_convergence_class OrderDual.supConvergenceClass
 
-instance OrderDual.infConvergenceClass [Preorder α] [TopologicalSpace α] [SupConvergenceClass α] :
+instance (priority := 10000) OrderDual.infConvergenceClass [Preorder α] [TopologicalSpace α] [SupConvergenceClass α] :
     InfConvergenceClass αᵒᵈ :=
   ⟨‹SupConvergenceClass α›.1⟩
 #align order_dual.Inf_convergence_class OrderDual.infConvergenceClass
@@ -179,7 +179,7 @@ end iInf
 
 end
 
-instance Prod.supConvergenceClass
+instance (priority := 10000) Prod.supConvergenceClass
     [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β]
     [SupConvergenceClass α] [SupConvergenceClass β] : SupConvergenceClass (α × β) := by
   constructor
@@ -194,28 +194,28 @@ instance Prod.supConvergenceClass
   -- ext1 ⟨⟨x, y⟩, h⟩
   -- rfl
 
-instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β] [InfConvergenceClass α]
+instance (priority := 10000) [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β] [InfConvergenceClass α]
     [InfConvergenceClass β] : InfConvergenceClass (α × β) :=
   show InfConvergenceClass (αᵒᵈ × βᵒᵈ)ᵒᵈ from OrderDual.infConvergenceClass
 
-instance Pi.supConvergenceClass
+instance (priority := 10000) Pi.supConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, SupConvergenceClass (α i)] : SupConvergenceClass (∀ i, α i) := by
   refine' ⟨fun f s h => _⟩
   simp only [isLUB_pi, ← range_restrict] at h
   exact tendsto_pi_nhds.2 fun i => tendsto_atTop_isLUB ((monotone_eval _).restrict _) (h i)
 
-instance Pi.infConvergenceClass
+instance (priority := 10000) Pi.infConvergenceClass
     {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, InfConvergenceClass (α i)] : InfConvergenceClass (∀ i, α i) :=
   show InfConvergenceClass (∀ i, (α i)ᵒᵈ)ᵒᵈ from OrderDual.infConvergenceClass
 
-instance Pi.supConvergenceClass' {ι : Type*} [Preorder α] [TopologicalSpace α]
+instance (priority := 10000) Pi.supConvergenceClass' {ι : Type*} [Preorder α] [TopologicalSpace α]
     [SupConvergenceClass α] : SupConvergenceClass (ι → α) :=
   supConvergenceClass
 #align pi.Sup_convergence_class' Pi.supConvergenceClass'
 
-instance Pi.infConvergenceClass' {ι : Type*} [Preorder α] [TopologicalSpace α]
+instance (priority := 10000) Pi.infConvergenceClass' {ι : Type*} [Preorder α] [TopologicalSpace α]
     [InfConvergenceClass α] : InfConvergenceClass (ι → α) :=
   Pi.infConvergenceClass
 #align pi.Inf_convergence_class' Pi.infConvergenceClass'

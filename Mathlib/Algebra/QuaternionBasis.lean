@@ -74,7 +74,7 @@ protected def self : Basis ℍ[R,c₁,c₂] c₁ c₂ where
 
 variable {R}
 
-instance : Inhabited (Basis ℍ[R,c₁,c₂] c₁ c₂) :=
+instance (priority := 10000) : Inhabited (Basis ℍ[R,c₁,c₂] c₁ c₂) :=
   ⟨Basis.self R⟩
 
 variable (q : Basis A c₁ c₂)

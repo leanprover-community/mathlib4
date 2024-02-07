@@ -502,7 +502,7 @@ theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
     apply π_ιInvApp_π
 #align algebraic_geometry.PresheafedSpace.glue_data.π_ι_inv_app_eq_id AlgebraicGeometry.PresheafedSpace.GlueData.π_ιInvApp_eq_id
 
-instance componentwise_diagram_π_isIso (i : D.J) (U : Opens (D.U i).carrier) :
+instance (priority := 10000) componentwise_diagram_π_isIso (i : D.J) (U : Opens (D.U i).carrier) :
     IsIso (D.diagramOverOpenπ U i) := by
   use D.ιInvAppπEqMap U ≫ D.ιInvApp U
   constructor
@@ -511,7 +511,7 @@ instance componentwise_diagram_π_isIso (i : D.J) (U : Opens (D.U i).carrier) :
     exact Iso.inv_hom_id ((D.U i).presheaf.mapIso (eqToIso _))
 #align algebraic_geometry.PresheafedSpace.glue_data.componentwise_diagram_π_IsIso AlgebraicGeometry.PresheafedSpace.GlueData.componentwise_diagram_π_isIso
 
-instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) where
+instance (priority := 10000) ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) where
   base_open := D.ι_openEmbedding i
   c_iso U := by erw [← colimitPresheafObjIsoComponentwiseLimit_hom_π]; infer_instance
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_IsOpenImmersion AlgebraicGeometry.PresheafedSpace.GlueData.ιIsOpenImmersion
@@ -613,7 +613,7 @@ theorem ι_isoPresheafedSpace_inv (i : D.J) :
   𝖣.ι_gluedIso_inv _ _
 #align algebraic_geometry.SheafedSpace.glue_data.ι_iso_PresheafedSpace_inv AlgebraicGeometry.SheafedSpaceₓ.GlueData.ι_isoPresheafedSpace_inv
 
-instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
+instance (priority := 10000) ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [← D.ι_isoPresheafedSpace_inv]
   -- Porting note : was `inferInstance`
   refine PresheafedSpace.IsOpenImmersion.comp (hf := ?_) (hg := inferInstance)
@@ -690,14 +690,14 @@ theorem ι_isoSheafedSpace_inv (i : D.J) :
   𝖣.ι_gluedIso_inv forgetToSheafedSpace i
 #align algebraic_geometry.LocallyRingedSpace.glue_data.ι_iso_SheafedSpace_inv AlgebraicGeometry.LocallyRingedSpace.GlueData.ι_isoSheafedSpace_inv
 
-instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
+instance (priority := 10000) ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   delta IsOpenImmersion; rw [← D.ι_isoSheafedSpace_inv]
   apply (config := { allowSynthFailures := true }) PresheafedSpace.IsOpenImmersion.comp
   -- Porting note : this was automatic
   exact (D.toSheafedSpaceGlueData).ιIsOpenImmersion i
 #align algebraic_geometry.LocallyRingedSpace.glue_data.ι_IsOpenImmersion AlgebraicGeometry.LocallyRingedSpace.GlueData.ι_isOpenImmersion
 
-instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forgetToSheafedSpace :=
+instance (priority := 10000) (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forgetToSheafedSpace :=
   inferInstance
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).1.base y = x :=

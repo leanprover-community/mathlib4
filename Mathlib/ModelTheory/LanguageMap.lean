@@ -85,7 +85,7 @@ protected def id (L : Language) : L →ᴸ L :=
   ⟨fun _n => id, fun _n => id⟩
 #align first_order.language.Lhom.id FirstOrder.Language.LHom.id
 
-instance : Inhabited (L →ᴸ L) :=
+instance (priority := 10000) : Inhabited (L →ᴸ L) :=
   ⟨LHom.id L⟩
 
 /-- The inclusion of the left factor into the sum of two languages. -/
@@ -119,7 +119,7 @@ protected theorem funext {F G : L →ᴸ L'} (h_fun : F.onFunction = G.onFunctio
   exact And.intro h_fun h_rel
 #align first_order.language.Lhom.funext FirstOrder.Language.LHom.funext
 
-instance [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') :=
+instance (priority := 10000) [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') :=
   ⟨⟨LHom.ofIsEmpty L L'⟩, fun _ => LHom.funext (Subsingleton.elim _ _) (Subsingleton.elim _ _)⟩
 
 theorem mk₂_funext {c f₁ f₂ : Type u} {r₁ r₂ : Type v} {F G : Language.mk₂ c f₁ f₂ r₁ r₂ →ᴸ L'}
@@ -260,34 +260,34 @@ theorem map_onRelation {M : Type*} [L.Structure M] [L'.Structure M] [ϕ.IsExpans
   IsExpansionOn.map_onRelation R x
 #align first_order.language.Lhom.map_on_relation FirstOrder.Language.LHom.map_onRelation
 
-instance id_isExpansionOn (M : Type*) [L.Structure M] : IsExpansionOn (LHom.id L) M :=
+instance (priority := 10000) id_isExpansionOn (M : Type*) [L.Structure M] : IsExpansionOn (LHom.id L) M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 #align first_order.language.Lhom.id_is_expansion_on FirstOrder.Language.LHom.id_isExpansionOn
 
-instance ofIsEmpty_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] [L.IsAlgebraic]
+instance (priority := 10000) ofIsEmpty_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] [L.IsAlgebraic]
     [L.IsRelational] : IsExpansionOn (LHom.ofIsEmpty L L') M :=
   ⟨fun {n} => (IsRelational.empty_functions n).elim,
    fun {n} => (IsAlgebraic.empty_relations n).elim⟩
 #align first_order.language.Lhom.of_is_empty_is_expansion_on FirstOrder.Language.LHom.ofIsEmpty_isExpansionOn
 
-instance sumElim_isExpansionOn {L'' : Language} (ψ : L'' →ᴸ L') (M : Type*) [L.Structure M]
+instance (priority := 10000) sumElim_isExpansionOn {L'' : Language} (ψ : L'' →ᴸ L') (M : Type*) [L.Structure M]
     [L'.Structure M] [L''.Structure M] [ϕ.IsExpansionOn M] [ψ.IsExpansionOn M] :
     (ϕ.sumElim ψ).IsExpansionOn M :=
   ⟨fun f _ => Sum.casesOn f (by simp) (by simp), fun R _ => Sum.casesOn R (by simp) (by simp)⟩
 #align first_order.language.Lhom.sum_elim_is_expansion_on FirstOrder.Language.LHom.sumElim_isExpansionOn
 
-instance sumMap_isExpansionOn {L₁ L₂ : Language} (ψ : L₁ →ᴸ L₂) (M : Type*) [L.Structure M]
+instance (priority := 10000) sumMap_isExpansionOn {L₁ L₂ : Language} (ψ : L₁ →ᴸ L₂) (M : Type*) [L.Structure M]
     [L'.Structure M] [L₁.Structure M] [L₂.Structure M] [ϕ.IsExpansionOn M] [ψ.IsExpansionOn M] :
     (ϕ.sumMap ψ).IsExpansionOn M :=
   ⟨fun f _ => Sum.casesOn f (by simp) (by simp), fun R _ => Sum.casesOn R (by simp) (by simp)⟩
 #align first_order.language.Lhom.sum_map_is_expansion_on FirstOrder.Language.LHom.sumMap_isExpansionOn
 
-instance sumInl_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] :
+instance (priority := 10000) sumInl_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] :
     (LHom.sumInl : L →ᴸ L.sum L').IsExpansionOn M :=
   ⟨fun _f _ => rfl, fun _R _ => rfl⟩
 #align first_order.language.Lhom.sum_inl_is_expansion_on FirstOrder.Language.LHom.sumInl_isExpansionOn
 
-instance sumInr_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] :
+instance (priority := 10000) sumInr_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] :
     (LHom.sumInr : L' →ᴸ L.sum L').IsExpansionOn M :=
   ⟨fun _f _ => rfl, fun _R _ => rfl⟩
 #align first_order.language.Lhom.sum_inr_is_expansion_on FirstOrder.Language.LHom.sumInr_isExpansionOn
@@ -359,7 +359,7 @@ protected def refl : L ≃ᴸ L :=
 
 variable {L}
 
-instance : Inhabited (L ≃ᴸ L) :=
+instance (priority := 10000) : Inhabited (L ≃ᴸ L) :=
   ⟨LEquiv.refl L⟩
 
 variable {L'' : Language} (e' : L' ≃ᴸ L'') (e : L ≃ᴸ L')
@@ -396,15 +396,15 @@ theorem constantsOn_constants : (constantsOn α).Constants = α :=
   rfl
 #align first_order.language.constants_on_constants FirstOrder.Language.constantsOn_constants
 
-instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) :=
+instance (priority := 10000) isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) :=
   Language.isAlgebraic_mk₂
 #align first_order.language.is_algebraic_constants_on FirstOrder.Language.isAlgebraic_constantsOn
 
-instance isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn α) :=
+instance (priority := 10000) isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn α) :=
   Language.isRelational_mk₂
 #align first_order.language.is_relational_constants_on FirstOrder.Language.isRelational_constantsOn
 
-instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α).Functions (n + 1)) :=
+instance (priority := 10000) isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α).Functions (n + 1)) :=
   Nat.casesOn n (inferInstanceAs (IsEmpty PEmpty))
     fun n => Nat.casesOn n (inferInstanceAs (IsEmpty PEmpty))
     fun _ => (inferInstanceAs (IsEmpty PEmpty))
@@ -484,7 +484,7 @@ def LHom.addConstants {L' : Language} (φ : L →ᴸ L') : L[[α]] →ᴸ L'[[α
   φ.sumMap (LHom.id _)
 #align first_order.language.Lhom.add_constants FirstOrder.Language.LHom.addConstants
 
-instance paramsStructure (A : Set α) : (constantsOn A).Structure α :=
+instance (priority := 10000) paramsStructure (A : Set α) : (constantsOn A).Structure α :=
   constantsOn.structure (↑)
 #align first_order.language.params_Structure FirstOrder.Language.paramsStructure
 
@@ -529,39 +529,39 @@ end
 
 open FirstOrder
 
-instance constantsOnSelfStructure : (constantsOn M).Structure M :=
+instance (priority := 10000) constantsOnSelfStructure : (constantsOn M).Structure M :=
   constantsOn.structure id
 #align first_order.language.constants_on_self_Structure FirstOrder.Language.constantsOnSelfStructure
 
-instance withConstantsSelfStructure : L[[M]].Structure M :=
+instance (priority := 10000) withConstantsSelfStructure : L[[M]].Structure M :=
   Language.sumStructure _ _ M
 #align first_order.language.with_constants_self_Structure FirstOrder.Language.withConstantsSelfStructure
 
-instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
+instance (priority := 10000) withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 #align first_order.language.with_constants_self_expansion FirstOrder.Language.withConstants_self_expansion
 
 variable (α : Type*) [(constantsOn α).Structure M]
 
-instance withConstantsStructure : L[[α]].Structure M :=
+instance (priority := 10000) withConstantsStructure : L[[α]].Structure M :=
   Language.sumStructure _ _ _
 #align first_order.language.with_constants_Structure FirstOrder.Language.withConstantsStructure
 
-instance withConstants_expansion : (L.lhomWithConstants α).IsExpansionOn M :=
+instance (priority := 10000) withConstants_expansion : (L.lhomWithConstants α).IsExpansionOn M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 #align first_order.language.with_constants_expansion FirstOrder.Language.withConstants_expansion
 
-instance addEmptyConstants_is_expansion_on' :
+instance (priority := 10000) addEmptyConstants_is_expansion_on' :
     (LEquiv.addEmptyConstants L (∅ : Set M)).toLHom.IsExpansionOn M :=
   L.withConstants_expansion _
 #align first_order.language.add_empty_constants_is_expansion_on' FirstOrder.Language.addEmptyConstants_is_expansion_on'
 
-instance addEmptyConstants_symm_isExpansionOn :
+instance (priority := 10000) addEmptyConstants_symm_isExpansionOn :
     (LEquiv.addEmptyConstants L (∅ : Set M)).symm.toLHom.IsExpansionOn M :=
   LHom.sumElim_isExpansionOn _ _ _
 #align first_order.language.add_empty_constants_symm_is_expansion_on FirstOrder.Language.addEmptyConstants_symm_isExpansionOn
 
-instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] :
+instance (priority := 10000) addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ L') [φ.IsExpansionOn M] :
     (φ.addConstants α).IsExpansionOn M :=
   LHom.sumMap_isExpansionOn _ _ M
 #align first_order.language.add_constants_expansion FirstOrder.Language.addConstants_expansion
@@ -582,12 +582,12 @@ theorem coe_con {a : A} : (L.con a : M) = a :=
 
 variable {A} {B : Set M} (h : A ⊆ B)
 
-instance constantsOnMap_inclusion_isExpansionOn :
+instance (priority := 10000) constantsOnMap_inclusion_isExpansionOn :
     (LHom.constantsOnMap (Set.inclusion h)).IsExpansionOn M :=
   constantsOnMap_isExpansionOn rfl
 #align first_order.language.constants_on_map_inclusion_is_expansion_on FirstOrder.Language.constantsOnMap_inclusion_isExpansionOn
 
-instance map_constants_inclusion_isExpansionOn :
+instance (priority := 10000) map_constants_inclusion_isExpansionOn :
     (L.lhomWithConstantsMap (Set.inclusion h)).IsExpansionOn M :=
   LHom.sumMap_isExpansionOn _ _ _
 #align first_order.language.map_constants_inclusion_is_expansion_on FirstOrder.Language.map_constants_inclusion_isExpansionOn

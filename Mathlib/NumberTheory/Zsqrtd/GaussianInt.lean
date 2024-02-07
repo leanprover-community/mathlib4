@@ -54,10 +54,10 @@ local notation "ℤ[i]" => GaussianInt
 
 namespace GaussianInt
 
-instance : Repr ℤ[i] :=
+instance (priority := 10000) : Repr ℤ[i] :=
   ⟨fun x _ => "⟨" ++ repr x.re ++ ", " ++ repr x.im ++ "⟩"⟩
 
-instance instCommRing : CommRing ℤ[i] :=
+instance (priority := 10000) instCommRing : CommRing ℤ[i] :=
   Zsqrtd.commRing
 #align gaussian_int.comm_ring GaussianInt.instCommRing
 
@@ -72,7 +72,7 @@ def toComplex : ℤ[i] →+* ℂ :=
 
 end
 
-instance : Coe ℤ[i] ℂ :=
+instance (priority := 10000) : Coe ℤ[i] ℂ :=
   ⟨toComplex⟩
 
 theorem toComplex_def (x : ℤ[i]) : (x : ℂ) = x.re + x.im * I :=
@@ -184,7 +184,7 @@ theorem natAbs_norm_eq (x : ℤ[i]) :
   Int.ofNat.inj <| by simp; simp [Zsqrtd.norm]
 #align gaussian_int.nat_abs_norm_eq GaussianInt.natAbs_norm_eq
 
-instance : Div ℤ[i] :=
+instance (priority := 10000) : Div ℤ[i] :=
   ⟨fun x y =>
     let n := (norm y : ℚ)⁻¹
     let c := star y
@@ -230,7 +230,7 @@ theorem normSq_div_sub_div_lt_one (x y : ℤ[i]) :
     _ < 1 := by simp [normSq]; norm_num
 #align gaussian_int.norm_sq_div_sub_div_lt_one GaussianInt.normSq_div_sub_div_lt_one
 
-instance : Mod ℤ[i] :=
+instance (priority := 10000) : Mod ℤ[i] :=
   ⟨fun x y => x - y * (x / y)⟩
 
 theorem mod_def (x y : ℤ[i]) : x % y = x - y * (x / y) :=
@@ -262,11 +262,11 @@ theorem norm_le_norm_mul_left (x : ℤ[i]) {y : ℤ[i]} (hy : y ≠ 0) :
     exact Int.add_one_le_of_lt (norm_pos.2 hy)))
 #align gaussian_int.norm_le_norm_mul_left GaussianInt.norm_le_norm_mul_left
 
-instance instNontrivial : Nontrivial ℤ[i] :=
+instance (priority := 10000) instNontrivial : Nontrivial ℤ[i] :=
   ⟨⟨0, 1, by decide⟩⟩
 #align gaussian_int.nontrivial GaussianInt.instNontrivial
 
-instance : EuclideanDomain ℤ[i] :=
+instance (priority := 10000) : EuclideanDomain ℤ[i] :=
   { GaussianInt.instCommRing,
     GaussianInt.instNontrivial with
     quotient := (· / ·)

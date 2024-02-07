@@ -198,19 +198,19 @@ theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [Co
 #align submodule.adjoint_orthogonal_projection Submodule.adjoint_orthogonalProjection
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
-instance : Star (E →L[𝕜] E) :=
+instance (priority := 10000) : Star (E →L[𝕜] E) :=
   ⟨adjoint⟩
 
-instance : InvolutiveStar (E →L[𝕜] E) :=
+instance (priority := 10000) : InvolutiveStar (E →L[𝕜] E) :=
   ⟨adjoint_adjoint⟩
 
-instance : StarMul (E →L[𝕜] E) :=
+instance (priority := 10000) : StarMul (E →L[𝕜] E) :=
   ⟨adjoint_comp⟩
 
-instance : StarRing (E →L[𝕜] E) :=
+instance (priority := 10000) : StarRing (E →L[𝕜] E) :=
   ⟨LinearIsometryEquiv.map_add adjoint⟩
 
-instance : StarModule 𝕜 (E →L[𝕜] E) :=
+instance (priority := 10000) : StarModule 𝕜 (E →L[𝕜] E) :=
   ⟨LinearIsometryEquiv.map_smulₛₗ adjoint⟩
 
 theorem star_eq_adjoint (A : E →L[𝕜] E) : star A = A† :=
@@ -241,7 +241,7 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
         simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
           Real.sqrt_mul_self (norm_nonneg x)]
 
-instance : CstarRing (E →L[𝕜] E) where
+instance (priority := 10000) : CstarRing (E →L[𝕜] E) where
   norm_star_mul_self := norm_adjoint_comp_self _
 
 theorem isAdjointPair_inner (A : E →L[𝕜] F) :
@@ -447,19 +447,19 @@ theorem eq_adjoint_iff_basis_right {ι : Type*} (b : Basis ι 𝕜 F) (A : E →
 #align linear_map.eq_adjoint_iff_basis_right LinearMap.eq_adjoint_iff_basis_right
 
 /-- `E →ₗ[𝕜] E` is a star algebra with the adjoint as the star operation. -/
-instance : Star (E →ₗ[𝕜] E) :=
+instance (priority := 10000) : Star (E →ₗ[𝕜] E) :=
   ⟨adjoint⟩
 
-instance : InvolutiveStar (E →ₗ[𝕜] E) :=
+instance (priority := 10000) : InvolutiveStar (E →ₗ[𝕜] E) :=
   ⟨adjoint_adjoint⟩
 
-instance : StarMul (E →ₗ[𝕜] E) :=
+instance (priority := 10000) : StarMul (E →ₗ[𝕜] E) :=
   ⟨adjoint_comp⟩
 
-instance : StarRing (E →ₗ[𝕜] E) :=
+instance (priority := 10000) : StarRing (E →ₗ[𝕜] E) :=
   ⟨LinearEquiv.map_add adjoint⟩
 
-instance : StarModule 𝕜 (E →ₗ[𝕜] E) :=
+instance (priority := 10000) : StarModule 𝕜 (E →ₗ[𝕜] E) :=
   ⟨LinearEquiv.map_smulₛₗ adjoint⟩
 
 theorem star_eq_adjoint (A : E →ₗ[𝕜] E) : star A = LinearMap.adjoint A :=

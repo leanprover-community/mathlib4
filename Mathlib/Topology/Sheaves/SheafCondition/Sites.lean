@@ -192,7 +192,7 @@ theorem TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.I
 
 variable (f)
 
-instance : RepresentablyFlat (Opens.map f) := by
+instance (priority := 10000) : RepresentablyFlat (Opens.map f) := by
   constructor
   intro U
   refine @IsCofiltered.mk _ _ ?_ ?_
@@ -215,7 +215,7 @@ theorem coverPreserving_opens_map : CoverPreserving (Opens.grothendieckTopology 
   obtain ⟨V, i, hi, hxV⟩ := hS (f x) hx
   exact ⟨_, (Opens.map f).map i, ⟨_, _, 𝟙 _, hi, Subsingleton.elim _ _⟩, hxV⟩
 
-instance : (Opens.map f).IsContinuous (Opens.grothendieckTopology Y)
+instance (priority := 10000) : (Opens.map f).IsContinuous (Opens.grothendieckTopology Y)
     (Opens.grothendieckTopology X) := by
   apply Functor.isContinuous_of_coverPreserving
   · exact compatiblePreserving_opens_map f

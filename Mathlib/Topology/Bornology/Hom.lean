@@ -70,7 +70,7 @@ def LocallyBoundedMapClass.toLocallyBoundedMap [Bornology α] [Bornology β]
   toFun := f
   comap_cobounded_le' := comap_cobounded_le f
 
-instance [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] :
+instance (priority := 10000) [Bornology α] [Bornology β] [LocallyBoundedMapClass F α β] :
     CoeTC F (LocallyBoundedMap α β) :=
   ⟨fun f => ⟨f, comap_cobounded_le f⟩⟩
 
@@ -78,14 +78,14 @@ namespace LocallyBoundedMap
 
 variable [Bornology α] [Bornology β] [Bornology γ] [Bornology δ]
 
-instance : FunLike (LocallyBoundedMap α β) α β where
+instance (priority := 10000) : FunLike (LocallyBoundedMap α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
     cases g
     congr
 
-instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
+instance (priority := 10000) : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
   comap_cobounded_le f := f.comap_cobounded_le'
 
 -- porting note: syntactic tautology because of the way coercions work
@@ -136,7 +136,7 @@ protected def id : LocallyBoundedMap α α :=
   ⟨id, comap_id.le⟩
 #align locally_bounded_map.id LocallyBoundedMap.id
 
-instance : Inhabited (LocallyBoundedMap α α) :=
+instance (priority := 10000) : Inhabited (LocallyBoundedMap α α) :=
   ⟨LocallyBoundedMap.id α⟩
 
 @[simp]

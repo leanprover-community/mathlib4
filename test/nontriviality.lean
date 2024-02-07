@@ -89,13 +89,13 @@ example (α : ℕ → Type) (a b : α 0) (h : a = b) : a = b := by
   exact h
 
 class Foo (α : Type) : Prop
-instance : Foo α := {}
+instance (priority := 10000) : Foo α := {}
 
 example (α : Type) : Foo α := by nontriviality α; infer_instance
 
 -- simulate the type of MvPolynomial
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
-noncomputable instance : CommRing (R c d) := test_sorry
+noncomputable instance (priority := 10000) : CommRing (R c d) := test_sorry
 
 example (p : R PUnit.{u+1} PUnit.{v+1}) : p = p := by
   nontriviality

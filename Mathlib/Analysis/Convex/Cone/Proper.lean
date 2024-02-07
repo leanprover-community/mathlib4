@@ -55,7 +55,7 @@ abbrev toPointedCone (C : ProperCone 𝕜 E) := C.toSubmodule
 
 attribute [coe] toPointedCone
 
-instance : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) :=
+instance (priority := 10000) : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) :=
   ⟨toPointedCone⟩
 
 -- Porting note: now a syntactic tautology
@@ -69,7 +69,7 @@ theorem toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E 
 #align proper_cone.ext' ProperCone.toPointedCone_injective
 
 -- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
-instance : SetLike (ProperCone 𝕜 E) E where
+instance (priority := 10000) : SetLike (ProperCone 𝕜 E) E where
   coe K := K.carrier
   coe_injective' _ _ h := ProperCone.toPointedCone_injective (SetLike.coe_injective h)
 
@@ -83,7 +83,7 @@ theorem mem_coe {x : E} {K : ProperCone 𝕜 E} : x ∈ (K : PointedCone 𝕜 E)
   Iff.rfl
 #align proper_cone.mem_coe ProperCone.mem_coe
 
-instance instZero (K : ProperCone 𝕜 E) : Zero K := PointedCone.instZero (K.toSubmodule)
+instance (priority := 10000) instZero (K : ProperCone 𝕜 E) : Zero K := PointedCone.instZero (K.toSubmodule)
 
 protected theorem nonempty (K : ProperCone 𝕜 E) : (K : Set E).Nonempty :=
   ⟨0, by { simp_rw [SetLike.mem_coe, ← ProperCone.mem_coe, Submodule.zero_mem] }⟩
@@ -123,11 +123,11 @@ variable {𝕜 : Type*} [OrderedSemiring 𝕜]
 
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
 
-instance : Zero (ProperCone 𝕜 E) :=
+instance (priority := 10000) : Zero (ProperCone 𝕜 E) :=
   ⟨{ toSubmodule := 0
      isClosed' := isClosed_singleton }⟩
 
-instance : Inhabited (ProperCone 𝕜 E) :=
+instance (priority := 10000) : Inhabited (ProperCone 𝕜 E) :=
   ⟨0⟩
 
 @[simp]

@@ -46,10 +46,10 @@ class LiftHom {a b : B} (f : a ⟶ b) where
   lift : of.obj a ⟶ of.obj b
 #align category_theory.bicategory.lift_hom Mathlib.Tactic.BicategoryCoherence.LiftHom
 
-instance liftHomId : LiftHom (𝟙 a) where lift := 𝟙 (of.obj a)
+instance (priority := 10000) liftHomId : LiftHom (𝟙 a) where lift := 𝟙 (of.obj a)
 #align category_theory.bicategory.lift_hom_id Mathlib.Tactic.BicategoryCoherence.liftHomId
 
-instance liftHomComp (f : a ⟶ b) (g : b ⟶ c) [LiftHom f] [LiftHom g] : LiftHom (f ≫ g) where
+instance (priority := 10000) liftHomComp (f : a ⟶ b) (g : b ⟶ c) [LiftHom f] [LiftHom g] : LiftHom (f ≫ g) where
   lift := LiftHom.lift f ≫ LiftHom.lift g
 #align category_theory.bicategory.lift_hom_comp Mathlib.Tactic.BicategoryCoherence.liftHomComp
 
@@ -63,47 +63,47 @@ class LiftHom₂ {f g : a ⟶ b} [LiftHom f] [LiftHom g] (η : f ⟶ g) where
   lift : LiftHom.lift f ⟶ LiftHom.lift g
 #align category_theory.bicategory.lift_hom₂ Mathlib.Tactic.BicategoryCoherence.LiftHom₂
 
-instance liftHom₂Id (f : a ⟶ b) [LiftHom f] : LiftHom₂ (𝟙 f) where
+instance (priority := 10000) liftHom₂Id (f : a ⟶ b) [LiftHom f] : LiftHom₂ (𝟙 f) where
   lift := 𝟙 _
 #align category_theory.bicategory.lift_hom₂_id Mathlib.Tactic.BicategoryCoherence.liftHom₂Id
 
-instance liftHom₂LeftUnitorHom (f : a ⟶ b) [LiftHom f] : LiftHom₂ (λ_ f).hom where
+instance (priority := 10000) liftHom₂LeftUnitorHom (f : a ⟶ b) [LiftHom f] : LiftHom₂ (λ_ f).hom where
   lift := (λ_ (LiftHom.lift f)).hom
 #align category_theory.bicategory.lift_hom₂_left_unitor_hom Mathlib.Tactic.BicategoryCoherence.liftHom₂LeftUnitorHom
 
-instance liftHom₂LeftUnitorInv (f : a ⟶ b) [LiftHom f] : LiftHom₂ (λ_ f).inv where
+instance (priority := 10000) liftHom₂LeftUnitorInv (f : a ⟶ b) [LiftHom f] : LiftHom₂ (λ_ f).inv where
   lift := (λ_ (LiftHom.lift f)).inv
 #align category_theory.bicategory.lift_hom₂_left_unitor_inv Mathlib.Tactic.BicategoryCoherence.liftHom₂LeftUnitorInv
 
-instance liftHom₂RightUnitorHom (f : a ⟶ b) [LiftHom f] : LiftHom₂ (ρ_ f).hom where
+instance (priority := 10000) liftHom₂RightUnitorHom (f : a ⟶ b) [LiftHom f] : LiftHom₂ (ρ_ f).hom where
   lift := (ρ_ (LiftHom.lift f)).hom
 #align category_theory.bicategory.lift_hom₂_right_unitor_hom Mathlib.Tactic.BicategoryCoherence.liftHom₂RightUnitorHom
 
-instance liftHom₂RightUnitorInv (f : a ⟶ b) [LiftHom f] : LiftHom₂ (ρ_ f).inv where
+instance (priority := 10000) liftHom₂RightUnitorInv (f : a ⟶ b) [LiftHom f] : LiftHom₂ (ρ_ f).inv where
   lift := (ρ_ (LiftHom.lift f)).inv
 #align category_theory.bicategory.lift_hom₂_right_unitor_inv Mathlib.Tactic.BicategoryCoherence.liftHom₂RightUnitorInv
 
-instance liftHom₂AssociatorHom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) [LiftHom f] [LiftHom g]
+instance (priority := 10000) liftHom₂AssociatorHom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) [LiftHom f] [LiftHom g]
     [LiftHom h] : LiftHom₂ (α_ f g h).hom where
   lift := (α_ (LiftHom.lift f) (LiftHom.lift g) (LiftHom.lift h)).hom
 #align category_theory.bicategory.lift_hom₂_associator_hom Mathlib.Tactic.BicategoryCoherence.liftHom₂AssociatorHom
 
-instance liftHom₂AssociatorInv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) [LiftHom f] [LiftHom g]
+instance (priority := 10000) liftHom₂AssociatorInv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) [LiftHom f] [LiftHom g]
     [LiftHom h] : LiftHom₂ (α_ f g h).inv where
   lift := (α_ (LiftHom.lift f) (LiftHom.lift g) (LiftHom.lift h)).inv
 #align category_theory.bicategory.lift_hom₂_associator_inv Mathlib.Tactic.BicategoryCoherence.liftHom₂AssociatorInv
 
-instance liftHom₂Comp {f g h : a ⟶ b} [LiftHom f] [LiftHom g] [LiftHom h] (η : f ⟶ g) (θ : g ⟶ h)
+instance (priority := 10000) liftHom₂Comp {f g h : a ⟶ b} [LiftHom f] [LiftHom g] [LiftHom h] (η : f ⟶ g) (θ : g ⟶ h)
     [LiftHom₂ η] [LiftHom₂ θ] : LiftHom₂ (η ≫ θ) where
   lift := LiftHom₂.lift η ≫ LiftHom₂.lift θ
 #align category_theory.bicategory.lift_hom₂_comp Mathlib.Tactic.BicategoryCoherence.liftHom₂Comp
 
-instance liftHom₂WhiskerLeft (f : a ⟶ b) [LiftHom f] {g h : b ⟶ c} (η : g ⟶ h) [LiftHom g]
+instance (priority := 10000) liftHom₂WhiskerLeft (f : a ⟶ b) [LiftHom f] {g h : b ⟶ c} (η : g ⟶ h) [LiftHom g]
     [LiftHom h] [LiftHom₂ η] : LiftHom₂ (f ◁ η) where
   lift := LiftHom.lift f ◁ LiftHom₂.lift η
 #align category_theory.bicategory.lift_hom₂_whisker_left Mathlib.Tactic.BicategoryCoherence.liftHom₂WhiskerLeft
 
-instance liftHom₂WhiskerRight {f g : a ⟶ b} (η : f ⟶ g) [LiftHom f] [LiftHom g] [LiftHom₂ η]
+instance (priority := 10000) liftHom₂WhiskerRight {f g : a ⟶ b} (η : f ⟶ g) [LiftHom f] [LiftHom g] [LiftHom₂ η]
     {h : b ⟶ c} [LiftHom h] : LiftHom₂ (η ▷ h) where
   lift := LiftHom₂.lift η ▷ LiftHom.lift h
 #align category_theory.bicategory.lift_hom₂_whisker_right Mathlib.Tactic.BicategoryCoherence.liftHom₂WhiskerRight
@@ -131,67 +131,67 @@ def hom (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] : f
 attribute [simp] hom hom'
 
 @[simps]
-instance refl (f : a ⟶ b) [LiftHom f] : BicategoricalCoherence f f :=
+instance (priority := 10000) refl (f : a ⟶ b) [LiftHom f] : BicategoricalCoherence f f :=
   ⟨𝟙 _⟩
 #align category_theory.bicategory.bicategorical_coherence.refl Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.refl
 
 @[simps]
-instance whiskerLeft (f : a ⟶ b) (g h : b ⟶ c) [LiftHom f] [LiftHom g] [LiftHom h]
+instance (priority := 10000) whiskerLeft (f : a ⟶ b) (g h : b ⟶ c) [LiftHom f] [LiftHom g] [LiftHom h]
     [BicategoricalCoherence g h] : BicategoricalCoherence (f ≫ g) (f ≫ h) :=
   ⟨f ◁ BicategoricalCoherence.hom g h⟩
 #align category_theory.bicategory.bicategorical_coherence.whisker_left Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.whiskerLeft
 
 @[simps]
-instance whiskerRight (f g : a ⟶ b) (h : b ⟶ c) [LiftHom f] [LiftHom g] [LiftHom h]
+instance (priority := 10000) whiskerRight (f g : a ⟶ b) (h : b ⟶ c) [LiftHom f] [LiftHom g] [LiftHom h]
     [BicategoricalCoherence f g] : BicategoricalCoherence (f ≫ h) (g ≫ h) :=
   ⟨BicategoricalCoherence.hom f g ▷ h⟩
 #align category_theory.bicategory.bicategorical_coherence.whisker_right Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.whiskerRight
 
 @[simps]
-instance tensorRight (f : a ⟶ b) (g : b ⟶ b) [LiftHom f] [LiftHom g]
+instance (priority := 10000) tensorRight (f : a ⟶ b) (g : b ⟶ b) [LiftHom f] [LiftHom g]
     [BicategoricalCoherence (𝟙 b) g] : BicategoricalCoherence f (f ≫ g) :=
   ⟨(ρ_ f).inv ≫ f ◁ BicategoricalCoherence.hom (𝟙 b) g⟩
 #align category_theory.bicategory.bicategorical_coherence.tensor_right Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.tensorRight
 
 @[simps]
-instance tensorRight' (f : a ⟶ b) (g : b ⟶ b) [LiftHom f] [LiftHom g]
+instance (priority := 10000) tensorRight' (f : a ⟶ b) (g : b ⟶ b) [LiftHom f] [LiftHom g]
     [BicategoricalCoherence g (𝟙 b)] : BicategoricalCoherence (f ≫ g) f :=
   ⟨f ◁ BicategoricalCoherence.hom g (𝟙 b) ≫ (ρ_ f).hom⟩
 #align category_theory.bicategory.bicategorical_coherence.tensor_right' Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.tensorRight'
 
 @[simps]
-instance left (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] :
+instance (priority := 10000) left (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] :
     BicategoricalCoherence (𝟙 a ≫ f) g :=
   ⟨(λ_ f).hom ≫ BicategoricalCoherence.hom f g⟩
 #align category_theory.bicategory.bicategorical_coherence.left Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.left
 
 @[simps]
-instance left' (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] :
+instance (priority := 10000) left' (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] :
     BicategoricalCoherence f (𝟙 a ≫ g) :=
   ⟨BicategoricalCoherence.hom f g ≫ (λ_ g).inv⟩
 #align category_theory.bicategory.bicategorical_coherence.left' Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.left'
 
 @[simps]
-instance right (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] :
+instance (priority := 10000) right (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] :
     BicategoricalCoherence (f ≫ 𝟙 b) g :=
   ⟨(ρ_ f).hom ≫ BicategoricalCoherence.hom f g⟩
 #align category_theory.bicategory.bicategorical_coherence.right Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.right
 
 @[simps]
-instance right' (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] :
+instance (priority := 10000) right' (f g : a ⟶ b) [LiftHom f] [LiftHom g] [BicategoricalCoherence f g] :
     BicategoricalCoherence f (g ≫ 𝟙 b) :=
   ⟨BicategoricalCoherence.hom f g ≫ (ρ_ g).inv⟩
 #align category_theory.bicategory.bicategorical_coherence.right' Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.right'
 
 @[simps]
-instance assoc (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d) [LiftHom f] [LiftHom g] [LiftHom h]
+instance (priority := 10000) assoc (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d) [LiftHom f] [LiftHom g] [LiftHom h]
     [LiftHom i] [BicategoricalCoherence (f ≫ g ≫ h) i] :
     BicategoricalCoherence ((f ≫ g) ≫ h) i :=
   ⟨(α_ f g h).hom ≫ BicategoricalCoherence.hom (f ≫ g ≫ h) i⟩
 #align category_theory.bicategory.bicategorical_coherence.assoc Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.assoc
 
 @[simps]
-instance assoc' (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d) [LiftHom f] [LiftHom g] [LiftHom h]
+instance (priority := 10000) assoc' (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : a ⟶ d) [LiftHom f] [LiftHom g] [LiftHom h]
     [LiftHom i] [BicategoricalCoherence i (f ≫ g ≫ h)] :
     BicategoricalCoherence i ((f ≫ g) ≫ h) :=
   ⟨BicategoricalCoherence.hom i (f ≫ g ≫ h) ≫ (α_ f g h).inv⟩

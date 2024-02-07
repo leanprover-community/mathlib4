@@ -58,23 +58,23 @@ namespace NNReal
 
 open NNReal BigOperators Filter
 
-instance : TopologicalSpace ℝ≥0 := inferInstance
+instance (priority := 10000) : TopologicalSpace ℝ≥0 := inferInstance
 
 -- short-circuit type class inference
-instance : TopologicalSemiring ℝ≥0 where
+instance (priority := 10000) : TopologicalSemiring ℝ≥0 where
   toContinuousAdd := continuousAdd_induced toRealHom
   toContinuousMul := continuousMul_induced toRealHom
 
-instance : SecondCountableTopology ℝ≥0 :=
+instance (priority := 10000) : SecondCountableTopology ℝ≥0 :=
   inferInstanceAs (SecondCountableTopology { x : ℝ | 0 ≤ x })
 
-instance : OrderTopology ℝ≥0 :=
+instance (priority := 10000) : OrderTopology ℝ≥0 :=
   orderTopology_of_ordConnected (t := Ici 0)
 
-instance : CompleteSpace ℝ≥0 :=
+instance (priority := 10000) : CompleteSpace ℝ≥0 :=
   isClosed_Ici.completeSpace_coe
 
-instance : ContinuousStar ℝ≥0 where
+instance (priority := 10000) : ContinuousStar ℝ≥0 where
   continuous_star := continuous_id
 section coe
 
@@ -97,7 +97,7 @@ def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
 #align continuous_map.coe_nnreal_real ContinuousMap.coeNNRealReal
 #align continuous_map.coe_nnreal_real_apply ContinuousMap.coeNNRealReal_apply
 
-instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
+instance (priority := 10000) ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
     CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
   prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, DFunLike.ext' rfl⟩
 #align nnreal.continuous_map.can_lift NNReal.ContinuousMap.canLift
@@ -143,12 +143,12 @@ theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < 
   nhds_bot_basis
 #align nnreal.nhds_zero_basis NNReal.nhds_zero_basis
 
-instance : ContinuousSub ℝ≥0 :=
+instance (priority := 10000) : ContinuousSub ℝ≥0 :=
   ⟨((continuous_coe.fst'.sub continuous_coe.snd').max continuous_const).subtype_mk _⟩
 
-instance : HasContinuousInv₀ ℝ≥0 := inferInstance
+instance (priority := 10000) : HasContinuousInv₀ ℝ≥0 := inferInstance
 
-instance [TopologicalSpace α] [MulAction ℝ α] [ContinuousSMul ℝ α] :
+instance (priority := 10000) [TopologicalSpace α] [MulAction ℝ α] [ContinuousSMul ℝ α] :
     ContinuousSMul ℝ≥0 α where
   continuous_smul := continuous_induced_dom.fst'.smul continuous_snd
 

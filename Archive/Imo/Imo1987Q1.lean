@@ -62,7 +62,7 @@ def fiber (k : ℕ) : Set (Perm α) :=
   {σ : Perm α | card (fixedPoints σ) = k}
 #align imo1987_q1.fiber Imo1987Q1.fiber
 
-instance : Fintype (fiber α k) := by unfold fiber; infer_instance
+instance (priority := 10000) : Fintype (fiber α k) := by unfold fiber; infer_instance
 
 @[simp]
 theorem mem_fiber {σ : Perm α} {k : ℕ} : σ ∈ fiber α k ↔ card (fixedPoints σ) = k :=

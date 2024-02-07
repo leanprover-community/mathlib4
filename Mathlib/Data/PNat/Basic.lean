@@ -27,8 +27,8 @@ deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigr
 namespace PNat
 
 -- Porting note: this instance is no longer automatically inferred in Lean 4.
-instance : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
-instance : IsWellOrder ℕ+ (· < ·) where
+instance (priority := 10000) : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
+instance (priority := 10000) : IsWellOrder ℕ+ (· < ·) where
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
@@ -127,16 +127,16 @@ def coeAddHom : AddHom ℕ+ ℕ where
   map_add' := add_coe
 #align pnat.coe_add_hom PNat.coeAddHom
 
-instance covariantClass_add_le : CovariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
+instance (priority := 10000) covariantClass_add_le : CovariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
   Positive.covariantClass_add_le
 
-instance covariantClass_add_lt : CovariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
+instance (priority := 10000) covariantClass_add_lt : CovariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
   Positive.covariantClass_add_lt
 
-instance contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
+instance (priority := 10000) contravariantClass_add_le : ContravariantClass ℕ+ ℕ+ (· + ·) (· ≤ ·) :=
   Positive.contravariantClass_add_le
 
-instance contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
+instance (priority := 10000) contravariantClass_add_lt : ContravariantClass ℕ+ ℕ+ (· + ·) (· < ·) :=
   Positive.contravariantClass_add_lt
 
 /-- An equivalence between `ℕ+` and `ℕ` given by `PNat.natPred` and `Nat.succPNat`. -/
@@ -169,7 +169,7 @@ theorem lt_add_one_iff : ∀ {a b : ℕ+}, a < b + 1 ↔ a ≤ b := Nat.lt_add_o
 theorem add_one_le_iff : ∀ {a b : ℕ+}, a + 1 ≤ b ↔ a < b := Nat.add_one_le_iff
 #align pnat.add_one_le_iff PNat.add_one_le_iff
 
-instance : OrderBot ℕ+ where
+instance (priority := 10000) : OrderBot ℕ+ where
   bot := 1
   bot_le a := a.property
 
@@ -278,7 +278,7 @@ theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
 /-- Subtraction a - b is defined in the obvious way when
   a > b, and by a - b = 1 if a ≤ b.
 -/
-instance : Sub ℕ+ :=
+instance (priority := 10000) : Sub ℕ+ :=
   ⟨fun a b => toPNat' (a - b : ℕ)⟩
 
 theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ) 1 := by

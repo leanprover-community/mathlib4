@@ -152,28 +152,28 @@ theorem mem_Ioi : x ∈ Ioi a ↔ a < x :=
   Iff.rfl
 #align set.mem_Ioi Set.mem_Ioi
 
-instance decidableMemIoo [Decidable (a < x ∧ x < b)] : Decidable (x ∈ Ioo a b) := by assumption
+instance (priority := 10000) decidableMemIoo [Decidable (a < x ∧ x < b)] : Decidable (x ∈ Ioo a b) := by assumption
 #align set.decidable_mem_Ioo Set.decidableMemIoo
 
-instance decidableMemIco [Decidable (a ≤ x ∧ x < b)] : Decidable (x ∈ Ico a b) := by assumption
+instance (priority := 10000) decidableMemIco [Decidable (a ≤ x ∧ x < b)] : Decidable (x ∈ Ico a b) := by assumption
 #align set.decidable_mem_Ico Set.decidableMemIco
 
-instance decidableMemIio [Decidable (x < b)] : Decidable (x ∈ Iio b) := by assumption
+instance (priority := 10000) decidableMemIio [Decidable (x < b)] : Decidable (x ∈ Iio b) := by assumption
 #align set.decidable_mem_Iio Set.decidableMemIio
 
-instance decidableMemIcc [Decidable (a ≤ x ∧ x ≤ b)] : Decidable (x ∈ Icc a b) := by assumption
+instance (priority := 10000) decidableMemIcc [Decidable (a ≤ x ∧ x ≤ b)] : Decidable (x ∈ Icc a b) := by assumption
 #align set.decidable_mem_Icc Set.decidableMemIcc
 
-instance decidableMemIic [Decidable (x ≤ b)] : Decidable (x ∈ Iic b) := by assumption
+instance (priority := 10000) decidableMemIic [Decidable (x ≤ b)] : Decidable (x ∈ Iic b) := by assumption
 #align set.decidable_mem_Iic Set.decidableMemIic
 
-instance decidableMemIoc [Decidable (a < x ∧ x ≤ b)] : Decidable (x ∈ Ioc a b) := by assumption
+instance (priority := 10000) decidableMemIoc [Decidable (a < x ∧ x ≤ b)] : Decidable (x ∈ Ioc a b) := by assumption
 #align set.decidable_mem_Ioc Set.decidableMemIoc
 
-instance decidableMemIci [Decidable (a ≤ x)] : Decidable (x ∈ Ici a) := by assumption
+instance (priority := 10000) decidableMemIci [Decidable (a ≤ x)] : Decidable (x ∈ Ici a) := by assumption
 #align set.decidable_mem_Ici Set.decidableMemIci
 
-instance decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ Ioi a) := by assumption
+instance (priority := 10000) decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ Ioi a) := by assumption
 #align set.decidable_mem_Ioi Set.decidableMemIoi
 
 -- Porting note: `simp` can prove this
@@ -315,12 +315,12 @@ theorem nonempty_Ioc_subtype (h : a < b) : Nonempty (Ioc a b) :=
 #align set.nonempty_Ioc_subtype Set.nonempty_Ioc_subtype
 
 /-- An interval `Ici a` is nonempty. -/
-instance nonempty_Ici_subtype : Nonempty (Ici a) :=
+instance (priority := 10000) nonempty_Ici_subtype : Nonempty (Ici a) :=
   Nonempty.to_subtype nonempty_Ici
 #align set.nonempty_Ici_subtype Set.nonempty_Ici_subtype
 
 /-- An interval `Iic a` is nonempty. -/
-instance nonempty_Iic_subtype : Nonempty (Iic a) :=
+instance (priority := 10000) nonempty_Iic_subtype : Nonempty (Iic a) :=
   Nonempty.to_subtype nonempty_Iic
 #align set.nonempty_Iic_subtype Set.nonempty_Iic_subtype
 
@@ -329,29 +329,29 @@ theorem nonempty_Ioo_subtype [DenselyOrdered α] (h : a < b) : Nonempty (Ioo a b
 #align set.nonempty_Ioo_subtype Set.nonempty_Ioo_subtype
 
 /-- In an order without maximal elements, the intervals `Ioi` are nonempty. -/
-instance nonempty_Ioi_subtype [NoMaxOrder α] : Nonempty (Ioi a) :=
+instance (priority := 10000) nonempty_Ioi_subtype [NoMaxOrder α] : Nonempty (Ioi a) :=
   Nonempty.to_subtype nonempty_Ioi
 #align set.nonempty_Ioi_subtype Set.nonempty_Ioi_subtype
 
 /-- In an order without minimal elements, the intervals `Iio` are nonempty. -/
-instance nonempty_Iio_subtype [NoMinOrder α] : Nonempty (Iio a) :=
+instance (priority := 10000) nonempty_Iio_subtype [NoMinOrder α] : Nonempty (Iio a) :=
   Nonempty.to_subtype nonempty_Iio
 #align set.nonempty_Iio_subtype Set.nonempty_Iio_subtype
 
-instance [NoMinOrder α] : NoMinOrder (Iio a) :=
+instance (priority := 10000) [NoMinOrder α] : NoMinOrder (Iio a) :=
   ⟨fun a =>
     let ⟨b, hb⟩ := exists_lt (a : α)
     ⟨⟨b, lt_trans hb a.2⟩, hb⟩⟩
 
-instance [NoMinOrder α] : NoMinOrder (Iic a) :=
+instance (priority := 10000) [NoMinOrder α] : NoMinOrder (Iic a) :=
   ⟨fun a =>
     let ⟨b, hb⟩ := exists_lt (a : α)
     ⟨⟨b, hb.le.trans a.2⟩, hb⟩⟩
 
-instance [NoMaxOrder α] : NoMaxOrder (Ioi a) :=
+instance (priority := 10000) [NoMaxOrder α] : NoMaxOrder (Ioi a) :=
   OrderDual.noMaxOrder (α := Iio (toDual a))
 
-instance [NoMaxOrder α] : NoMaxOrder (Ici a) :=
+instance (priority := 10000) [NoMaxOrder α] : NoMaxOrder (Ici a) :=
   OrderDual.noMaxOrder (α := Iic (toDual a))
 
 @[simp]
@@ -1937,32 +1937,32 @@ section Dense
 
 variable (α) [Preorder α] [DenselyOrdered α] {x y : α}
 
-instance : NoMinOrder (Set.Ioo x y) :=
+instance (priority := 10000) : NoMinOrder (Set.Ioo x y) :=
   ⟨fun ⟨a, ha₁, ha₂⟩ => by
     rcases exists_between ha₁ with ⟨b, hb₁, hb₂⟩
     exact ⟨⟨b, hb₁, hb₂.trans ha₂⟩, hb₂⟩⟩
 
-instance : NoMinOrder (Set.Ioc x y) :=
+instance (priority := 10000) : NoMinOrder (Set.Ioc x y) :=
   ⟨fun ⟨a, ha₁, ha₂⟩ => by
     rcases exists_between ha₁ with ⟨b, hb₁, hb₂⟩
     exact ⟨⟨b, hb₁, hb₂.le.trans ha₂⟩, hb₂⟩⟩
 
-instance : NoMinOrder (Set.Ioi x) :=
+instance (priority := 10000) : NoMinOrder (Set.Ioi x) :=
   ⟨fun ⟨a, ha⟩ => by
     rcases exists_between ha with ⟨b, hb₁, hb₂⟩
     exact ⟨⟨b, hb₁⟩, hb₂⟩⟩
 
-instance : NoMaxOrder (Set.Ioo x y) :=
+instance (priority := 10000) : NoMaxOrder (Set.Ioo x y) :=
   ⟨fun ⟨a, ha₁, ha₂⟩ => by
     rcases exists_between ha₂ with ⟨b, hb₁, hb₂⟩
     exact ⟨⟨b, ha₁.trans hb₁, hb₂⟩, hb₁⟩⟩
 
-instance : NoMaxOrder (Set.Ico x y) :=
+instance (priority := 10000) : NoMaxOrder (Set.Ico x y) :=
   ⟨fun ⟨a, ha₁, ha₂⟩ => by
     rcases exists_between ha₂ with ⟨b, hb₁, hb₂⟩
     exact ⟨⟨b, ha₁.trans hb₁.le, hb₂⟩, hb₁⟩⟩
 
-instance : NoMaxOrder (Set.Iio x) :=
+instance (priority := 10000) : NoMaxOrder (Set.Iio x) :=
   ⟨fun ⟨a, ha⟩ => by
     rcases exists_between ha with ⟨b, hb₁, hb₂⟩
     exact ⟨⟨b, hb₂⟩, hb₁⟩⟩

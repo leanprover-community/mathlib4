@@ -142,11 +142,11 @@ theorem LieModule.ofAssociativeModule : LieModule R A M where
   lie_smul := smul_algebra_smul_comm
 #align lie_module.of_associative_module LieModule.ofAssociativeModule
 
-instance Module.End.lieRingModule : LieRingModule (Module.End R M) M :=
+instance (priority := 10000) Module.End.lieRingModule : LieRingModule (Module.End R M) M :=
   LieRingModule.ofAssociativeModule
 #align module.End.lie_ring_module Module.End.lieRingModule
 
-instance Module.End.lieModule : LieModule R (Module.End R M) M :=
+instance (priority := 10000) Module.End.lieModule : LieModule R (Module.End R M) M :=
   LieModule.ofAssociativeModule
 #align module.End.lie_module Module.End.lieModule
 
@@ -165,7 +165,7 @@ def toLieHom : A →ₗ⁅R⁆ B :=
     map_lie' := fun {_ _} => by simp [LieRing.of_associative_ring_bracket] }
 #align alg_hom.to_lie_hom AlgHom.toLieHom
 
-instance : Coe (A →ₐ[R] B) (A →ₗ⁅R⁆ B) :=
+instance (priority := 10000) : Coe (A →ₐ[R] B) (A →ₗ⁅R⁆ B) :=
   ⟨toLieHom⟩
 
 /- Porting note: is a syntactic tautology

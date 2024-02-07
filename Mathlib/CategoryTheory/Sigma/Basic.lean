@@ -39,7 +39,7 @@ def id : ∀ X : Σi, C i, SigmaHom X X
 -- Porting note: reordered universes
 #align category_theory.sigma.sigma_hom.id CategoryTheory.Sigma.SigmaHom.idₓ
 
-instance (X : Σi, C i) : Inhabited (SigmaHom X X) :=
+instance (priority := 10000) (X : Σi, C i) : Inhabited (SigmaHom X X) :=
   ⟨id X⟩
 
 /-- Composition of sigma homomorphisms. -/
@@ -48,7 +48,7 @@ def comp : ∀ {X Y Z : Σi, C i}, SigmaHom X Y → SigmaHom Y Z → SigmaHom X 
 -- Porting note: reordered universes
 #align category_theory.sigma.sigma_hom.comp CategoryTheory.Sigma.SigmaHom.compₓ
 
-instance : CategoryStruct (Σi, C i) where
+instance (priority := 10000) : CategoryStruct (Σi, C i) where
   Hom := SigmaHom
   id := id
   comp f g := comp f g
@@ -72,7 +72,7 @@ lemma comp_id : ∀ {X Y : Σi, C i} (f : X ⟶ Y), f ≫ 𝟙 Y = f
 
 end SigmaHom
 
-instance sigma : Category (Σi, C i) where
+instance (priority := 10000) sigma : Category (Σi, C i) where
   id_comp := SigmaHom.id_comp
   comp_id := SigmaHom.comp_id
   assoc := SigmaHom.assoc
@@ -90,11 +90,11 @@ lemma incl_obj {i : I} (X : C i) : (incl i).obj X = ⟨i, X⟩ :=
   rfl
 #align category_theory.sigma.incl_obj CategoryTheory.Sigma.incl_obj
 
-instance (i : I) : Full (incl i : C i ⥤ Σi, C i) where
+instance (priority := 10000) (i : I) : Full (incl i : C i ⥤ Σi, C i) where
   preimage := fun ⟨f⟩ => f
   witness := fun ⟨_⟩ => rfl
 
-instance (i : I) : Faithful (incl i : C i ⥤ Σi, C i) where
+instance (priority := 10000) (i : I) : Faithful (incl i : C i ⥤ Σi, C i) where
   -- Porting note: was `tidy`
   map_injective {_ _ _ _} h := by injection h
 

@@ -47,13 +47,13 @@ open MulAction Subgroup
 
 variable {M G G₀ R K}
 
-instance [Group G] : Group (ConjAct G) := ‹Group G›
+instance (priority := 10000) [Group G] : Group (ConjAct G) := ‹Group G›
 
-instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := ‹DivInvMonoid G›
+instance (priority := 10000) [DivInvMonoid G] : DivInvMonoid (ConjAct G) := ‹DivInvMonoid G›
 
-instance [GroupWithZero G] : GroupWithZero (ConjAct G) := ‹GroupWithZero G›
+instance (priority := 10000) [GroupWithZero G] : GroupWithZero (ConjAct G) := ‹GroupWithZero G›
 
-instance [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
+instance (priority := 10000) [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
 
 @[simp]
 theorem card [Fintype G] : Fintype.card (ConjAct G) = Fintype.card G :=
@@ -64,7 +64,7 @@ section DivInvMonoid
 
 variable [DivInvMonoid G]
 
-instance : Inhabited (ConjAct G) :=
+instance (priority := 10000) : Inhabited (ConjAct G) :=
   ⟨1⟩
 
 /-- Reinterpret `g : ConjAct G` as an element of `G`. -/
@@ -141,7 +141,7 @@ theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y 
   rfl
 #align conj_act.to_conj_act_mul ConjAct.toConjAct_mul
 
-instance : SMul (ConjAct G) G where smul g h := ofConjAct g * h * (ofConjAct g)⁻¹
+instance (priority := 10000) : SMul (ConjAct G) G where smul g h := ofConjAct g * h * (ofConjAct g)⁻¹
 
 theorem smul_def (g : ConjAct G) (h : G) : g • h = ofConjAct g * h * (ofConjAct g)⁻¹ :=
   rfl
@@ -155,7 +155,7 @@ section Monoid
 
 variable [Monoid M]
 
-instance unitsScalar : SMul (ConjAct Mˣ) M where smul g h := ofConjAct g * h * ↑(ofConjAct g)⁻¹
+instance (priority := 10000) unitsScalar : SMul (ConjAct Mˣ) M where smul g h := ofConjAct g * h * ↑(ofConjAct g)⁻¹
 #align conj_act.has_units_scalar ConjAct.unitsScalar
 
 theorem units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * ↑(ofConjAct g)⁻¹ :=
@@ -164,7 +164,7 @@ theorem units_smul_def (g : ConjAct Mˣ) (h : M) : g • h = ofConjAct g * h * �
 
 -- porting note: very slow without `simp only` and need to separate `units_smul_def`
 -- so that things trigger appropriately
-instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
+instance (priority := 10000) unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
   one_smul := by simp only [units_smul_def, ofConjAct_one, Units.val_one, one_mul, inv_one,
     mul_one, forall_const]
   mul_smul := by
@@ -177,12 +177,12 @@ instance unitsMulDistribMulAction : MulDistribMulAction (ConjAct Mˣ) M where
 #align conj_act.units_mul_distrib_mul_action ConjAct.unitsMulDistribMulAction
 
 
-instance unitsSMulCommClass [SMul α M] [SMulCommClass α M M] [IsScalarTower α M M] :
+instance (priority := 10000) unitsSMulCommClass [SMul α M] [SMulCommClass α M M] [IsScalarTower α M M] :
     SMulCommClass α (ConjAct Mˣ) M where
   smul_comm a um m := by rw [units_smul_def, units_smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.units_smul_comm_class ConjAct.unitsSMulCommClass
 
-instance unitsSMulCommClass' [SMul α M] [SMulCommClass M α M] [IsScalarTower α M M] :
+instance (priority := 10000) unitsSMulCommClass' [SMul α M] [SMulCommClass M α M] [IsScalarTower α M M] :
     SMulCommClass (ConjAct Mˣ) α M :=
   haveI : SMulCommClass α M M := SMulCommClass.symm _ _ _
   SMulCommClass.symm _ _ _
@@ -196,7 +196,7 @@ variable [Semiring R]
 
 -- porting note: very slow without `simp only` and need to separate `units_smul_def`
 -- so that things trigger appropriately
-instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
+instance (priority := 10000) unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
   { ConjAct.unitsMulDistribMulAction with
     smul_zero := by
       simp only [units_smul_def, mul_zero, zero_mul, «forall», forall_const]
@@ -225,7 +225,7 @@ theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
 
 -- porting note: very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
-instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
+instance (priority := 10000) mulAction₀ : MulAction (ConjAct G₀) G₀ where
   one_smul := by
     simp only [smul_def]
     simp only [map_one, one_mul, inv_one, mul_one, forall_const]
@@ -234,12 +234,12 @@ instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
     simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
 #align conj_act.mul_action₀ ConjAct.mulAction₀
 
-instance smulCommClass₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
+instance (priority := 10000) smulCommClass₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
     SMulCommClass α (ConjAct G₀) G₀ where
   smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.smul_comm_class₀ ConjAct.smulCommClass₀
 
-instance smulCommClass₀' [SMul α G₀] [SMulCommClass G₀ α G₀] [IsScalarTower α G₀ G₀] :
+instance (priority := 10000) smulCommClass₀' [SMul α G₀] [SMulCommClass G₀ α G₀] [IsScalarTower α G₀ G₀] :
     SMulCommClass (ConjAct G₀) α G₀ :=
   haveI := SMulCommClass.symm G₀ α G₀
   SMulCommClass.symm _ _ _
@@ -253,7 +253,7 @@ variable [DivisionRing K]
 
 -- porting note: very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
-instance distribMulAction₀ : DistribMulAction (ConjAct K) K :=
+instance (priority := 10000) distribMulAction₀ : DistribMulAction (ConjAct K) K :=
   { ConjAct.mulAction₀ with
     smul_zero := by
       simp only [smul_def]
@@ -271,7 +271,7 @@ variable [Group G]
 
 -- porting note: very slow without `simp only` and need to separate `smul_def`
 -- so that things trigger appropriately
-instance : MulDistribMulAction (ConjAct G) G where
+instance (priority := 10000) : MulDistribMulAction (ConjAct G) G where
   smul_mul := by
     simp only [smul_def]
     simp only [mul_assoc, inv_mul_cancel_left, forall_const, «forall»]
@@ -281,12 +281,12 @@ instance : MulDistribMulAction (ConjAct G) G where
     simp only [smul_def]
     simp only [map_mul, mul_assoc, mul_inv_rev, forall_const, «forall»]
 
-instance smulCommClass [SMul α G] [SMulCommClass α G G] [IsScalarTower α G G] :
+instance (priority := 10000) smulCommClass [SMul α G] [SMulCommClass α G G] [IsScalarTower α G G] :
     SMulCommClass α (ConjAct G) G where
   smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
 #align conj_act.smul_comm_class ConjAct.smulCommClass
 
-instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G] :
+instance (priority := 10000) smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G] :
     SMulCommClass (ConjAct G) α G :=
   haveI := SMulCommClass.symm G α G
   SMulCommClass.symm _ _ _
@@ -324,7 +324,7 @@ theorem stabilizer_eq_centralizer (g : G) :
 
 /-- As normal subgroups are closed under conjugation, they inherit the conjugation action
   of the underlying group. -/
-instance Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G) H :=
+instance (priority := 10000) Subgroup.conjAction {H : Subgroup G} [hH : H.Normal] : SMul (ConjAct G) H :=
   ⟨fun g h => ⟨g • (h : G), hH.conj_mem h.1 h.2 (ofConjAct g)⟩⟩
 #align conj_act.subgroup.conj_action ConjAct.Subgroup.conjAction
 
@@ -333,7 +333,7 @@ theorem Subgroup.val_conj_smul {H : Subgroup G} [H.Normal] (g : ConjAct G) (h : 
   rfl
 #align conj_act.subgroup.coe_conj_smul ConjAct.Subgroup.val_conj_smul
 
-instance Subgroup.conjMulDistribMulAction {H : Subgroup G} [H.Normal] :
+instance (priority := 10000) Subgroup.conjMulDistribMulAction {H : Subgroup G} [H.Normal] :
     MulDistribMulAction (ConjAct G) H :=
   Subtype.coe_injective.mulDistribMulAction H.subtype Subgroup.val_conj_smul
 #align conj_act.subgroup.conj_mul_distrib_mul_action ConjAct.Subgroup.conjMulDistribMulAction
@@ -368,7 +368,7 @@ theorem _root_.MulAut.conjNormal_val {H : Subgroup G} [H.Normal] {h : H} :
   MulEquiv.ext fun _ => rfl
 #align mul_aut.conj_normal_coe MulAut.conjNormal_val
 
-instance normal_of_characteristic_of_normal {H : Subgroup G} [hH : H.Normal] {K : Subgroup H}
+instance (priority := 10000) normal_of_characteristic_of_normal {H : Subgroup G} [hH : H.Normal] {K : Subgroup H}
     [h : K.Characteristic] : (K.map H.subtype).Normal :=
   ⟨fun a ha b => by
     obtain ⟨a, ha, rfl⟩ := ha

@@ -57,7 +57,7 @@ def id (M : Mod_ A) : Hom M M where hom := 𝟙 M.X
 set_option linter.uppercaseLean3 false in
 #align Mod_.id Mod_.id
 
-instance homInhabited (M : Mod_ A) : Inhabited (Hom M M) :=
+instance (priority := 10000) homInhabited (M : Mod_ A) : Inhabited (Hom M M) :=
   ⟨id M⟩
 set_option linter.uppercaseLean3 false in
 #align Mod_.hom_inhabited Mod_.homInhabited
@@ -68,7 +68,7 @@ def comp {M N O : Mod_ A} (f : Hom M N) (g : Hom N O) : Hom M O where hom := f.h
 set_option linter.uppercaseLean3 false in
 #align Mod_.comp Mod_.comp
 
-instance : Category (Mod_ A) where
+instance (priority := 10000) : Category (Mod_ A) where
   Hom M N := Hom M N
   id := id
   comp f g := comp f g
@@ -102,7 +102,7 @@ def regular : Mod_ A where
 set_option linter.uppercaseLean3 false in
 #align Mod_.regular Mod_.regular
 
-instance : Inhabited (Mod_ A) :=
+instance (priority := 10000) : Inhabited (Mod_ A) :=
   ⟨regular A⟩
 
 /-- The forgetful functor from module objects to the ambient category. -/

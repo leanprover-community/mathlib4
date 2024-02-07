@@ -35,7 +35,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable {p q r : R[X]}
 
 /-- Note that this instance also provides `Algebra R R[X]`. -/
-instance algebraOfAlgebra : Algebra R A[X]
+instance (priority := 10000) algebraOfAlgebra : Algebra R A[X]
     where
   smul_def' r p :=
     toFinsupp_injective <| by
@@ -105,7 +105,7 @@ def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
 
 variable {R}
 
-instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
+instance (priority := 10000) subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
       rw [Ne.def, SetLike.ext_iff, not_forall]
       refine' ⟨X, _⟩

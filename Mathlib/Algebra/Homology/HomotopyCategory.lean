@@ -38,7 +38,7 @@ variable (c : ComplexShape ι)
 def homotopic : HomRel (HomologicalComplex V c) := fun _ _ f g => Nonempty (Homotopy f g)
 #align homotopic homotopic
 
-instance homotopy_congruence : Congruence (homotopic V c) where
+instance (priority := 10000) homotopy_congruence : Congruence (homotopic V c) where
   equivalence :=
     { refl := fun C => ⟨Homotopy.refl C⟩
       symm := fun ⟨w⟩ => ⟨w.symm⟩
@@ -53,14 +53,14 @@ def HomotopyCategory :=
   CategoryTheory.Quotient (homotopic V c)
 #align homotopy_category HomotopyCategory
 
-instance : Category (HomotopyCategory V v) := by
+instance (priority := 10000) : Category (HomotopyCategory V v) := by
   dsimp only [HomotopyCategory]
   infer_instance
 
 -- TODO the homotopy_category is preadditive
 namespace HomotopyCategory
 
-instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
+instance (priority := 10000) : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
   rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
   exact ⟨Homotopy.add h h'⟩)
 
@@ -69,18 +69,18 @@ def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 #align homotopy_category.quotient HomotopyCategory.quotient
 
-instance : Full (quotient V c) := Quotient.fullFunctor _
+instance (priority := 10000) : Full (quotient V c) := Quotient.fullFunctor _
 
-instance : EssSurj (quotient V c) := Quotient.essSurj_functor _
+instance (priority := 10000) : EssSurj (quotient V c) := Quotient.essSurj_functor _
 
-instance : (quotient V c).Additive where
+instance (priority := 10000) : (quotient V c).Additive where
 
 open ZeroObject
 
-instance [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
+instance (priority := 10000) [HasZeroObject V] : Inhabited (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0⟩
 
-instance [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
+instance (priority := 10000) [HasZeroObject V] : HasZeroObject (HomotopyCategory V c) :=
   ⟨(quotient V c).obj 0, by
     rw [IsZero.iff_id_eq_zero, ← (quotient V c).map_id, id_zero, Functor.map_zero]⟩
 
@@ -221,7 +221,7 @@ noncomputable def homologyFunctorFactors (i : ι) :
 -- this is to prevent any abuse of defeq
 attribute [irreducible] homologyFunctor homologyFunctorFactors
 
-instance (i : ι) : (homologyFunctor V c i).Additive := by
+instance (priority := 10000) (i : ι) : (homologyFunctor V c i).Additive := by
   have := Functor.additive_of_iso (homologyFunctorFactors V c i).symm
   exact Functor.additive_of_full_essSurj_comp (quotient V c) _
 

@@ -61,7 +61,7 @@ abbrev unit (t : LeftExtension f g) : g ⟶ f ≫ t.extension := t.hom
 /-- The left extension along the identity. -/
 def alongId (g : a ⟶ c) : LeftExtension (𝟙 a) g := StructuredArrow.mk (λ_ g).inv
 
-instance : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
+instance (priority := 10000) : Inhabited (LeftExtension (𝟙 a) g) := ⟨alongId g⟩
 
 end LeftExtension
 
@@ -91,7 +91,7 @@ abbrev unit (t : LeftLift f g) : g ⟶ t.lift ≫ f := t.hom
 /-- The left lift along the identity. -/
 def alongId (g : c ⟶ a) : LeftLift (𝟙 a) g := StructuredArrow.mk (ρ_ g).inv
 
-instance : Inhabited (LeftLift (𝟙 a) g) := ⟨alongId g⟩
+instance (priority := 10000) : Inhabited (LeftLift (𝟙 a) g) := ⟨alongId g⟩
 
 end LeftLift
 
@@ -121,7 +121,7 @@ abbrev counit (t : RightExtension f g) : f ≫ t.extension ⟶ g := t.hom
 /-- The right extension along the identity. -/
 def alongId (g : a ⟶ c) : RightExtension (𝟙 a) g := CostructuredArrow.mk (λ_ g).hom
 
-instance : Inhabited (RightExtension (𝟙 a) g) := ⟨alongId g⟩
+instance (priority := 10000) : Inhabited (RightExtension (𝟙 a) g) := ⟨alongId g⟩
 
 end RightExtension
 
@@ -151,7 +151,7 @@ abbrev counit (t : RightLift f g) : t.lift ≫ f ⟶ g := t.hom
 /-- The right lift along the identity. -/
 def alongId (g : c ⟶ a) : RightLift (𝟙 a) g := CostructuredArrow.mk (ρ_ g).hom
 
-instance : Inhabited (RightLift (𝟙 a) g) := ⟨alongId g⟩
+instance (priority := 10000) : Inhabited (RightLift (𝟙 a) g) := ⟨alongId g⟩
 
 end RightLift
 

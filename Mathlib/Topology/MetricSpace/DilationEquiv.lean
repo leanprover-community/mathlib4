@@ -50,17 +50,17 @@ section PseudoEMetricSpace
 
 variable {X Y Z : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
 
-instance : EquivLike (X ≃ᵈ Y) X Y where
+instance (priority := 10000) : EquivLike (X ≃ᵈ Y) X Y where
   coe f := f.1
   inv f := f.1.symm
   left_inv f := f.left_inv'
   right_inv f := f.right_inv'
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h -; congr; exact DFunLike.ext' h
 
-instance : DilationEquivClass (X ≃ᵈ Y) X Y where
+instance (priority := 10000) : DilationEquivClass (X ≃ᵈ Y) X Y where
   edist_eq' f := f.edist_eq'
 
-instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
+instance (priority := 10000) : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
   coe f := f
 
 @[simp] theorem coe_toEquiv (e : X ≃ᵈ Y) : ⇑e.toEquiv = e := rfl
@@ -135,7 +135,7 @@ theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ra
 theorem ratio_symm (e : X ≃ᵈ Y) : ratio e.symm = (ratio e)⁻¹ :=
   eq_inv_of_mul_eq_one_left <| by rw [← ratio_trans, symm_trans_self, ratio_refl]
 
-instance : Group (X ≃ᵈ X) where
+instance (priority := 10000) : Group (X ≃ᵈ X) where
   mul e e' := e'.trans e
   mul_assoc _ _ _ := rfl
   one := refl _

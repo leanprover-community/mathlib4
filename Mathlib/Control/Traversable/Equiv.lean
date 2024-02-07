@@ -107,7 +107,7 @@ theorem traverse_def (f : α → m β) (x : t' α) :
   rfl
 
 /-- The function `Equiv.traverse` transfers a traversable functor
-instance across the equivalences `eqv`. -/
+instance (priority := 10000) across the equivalences `eqv`. -/
 protected def traversable : Traversable t' where
   toFunctor := Equiv.functor eqv
   traverse := Equiv.traverse eqv

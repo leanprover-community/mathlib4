@@ -74,12 +74,12 @@ variable [CommSemiring R] [CommSemiring S]
 
 variable {R S}
 
-instance [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
+instance (priority := 10000) [Nontrivial R] : Nonempty <| PrimeSpectrum R :=
   let ⟨I, hI⟩ := Ideal.exists_maximal R
   ⟨⟨I, hI.isPrime⟩⟩
 
 /-- The prime spectrum of the zero ring is empty. -/
-instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
+instance (priority := 10000) [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
   ⟨fun x ↦ x.IsPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
 #noalign prime_spectrum.punit
 
@@ -401,7 +401,7 @@ theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
 
 /-- The Zariski topology on the prime spectrum of a commutative (semi)ring is defined via the closed
 sets of the topology: they are exactly those sets that are the zero locus of a subset of the ring.-/
-instance zariskiTopology : TopologicalSpace (PrimeSpectrum R) :=
+instance (priority := 10000) zariskiTopology : TopologicalSpace (PrimeSpectrum R) :=
   TopologicalSpace.ofClosed (Set.range PrimeSpectrum.zeroLocus) ⟨Set.univ, by simp⟩
     (by
       intro Zs h
@@ -562,17 +562,17 @@ lemma vanishingIdeal_isClosed_isIrreducible :
   rintro _ ⟨s, hs, rfl⟩
   exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
 
-instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
+instance (priority := 10000) irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
   simpa using Ideal.bot_prime
 
-instance quasiSober : QuasiSober (PrimeSpectrum R) :=
+instance (priority := 10000) quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
     ⟨⟨_, isIrreducible_iff_vanishingIdeal_isPrime.1 h₁⟩, by
       rw [IsGenericPoint, closure_singleton, zeroLocus_vanishingIdeal_eq_closure, h₂.closure_eq]⟩⟩
 
 /-- The prime spectrum of a commutative (semi)ring is a compact topological space. -/
-instance compactSpace : CompactSpace (PrimeSpectrum R) := by
+instance (priority := 10000) compactSpace : CompactSpace (PrimeSpectrum R) := by
   refine compactSpace_of_finite_subfamily_closed fun S S_closed S_empty ↦ ?_
   choose I hI using fun i ↦ (isClosed_iff_zeroLocus_ideal (S i)).mp (S_closed i)
   simp_rw [hI, ← zeroLocus_iSup, zeroLocus_empty_iff_eq_top, ← top_le_iff] at S_empty ⊢
@@ -895,7 +895,7 @@ We endow `PrimeSpectrum R` with a partial order, where `x ≤ y` if and only if 
 -/
 
 
-instance : PartialOrder (PrimeSpectrum R) :=
+instance (priority := 10000) : PartialOrder (PrimeSpectrum R) :=
   PartialOrder.lift asIdeal (PrimeSpectrum.ext)
 
 @[simp]
@@ -924,14 +924,14 @@ def nhdsOrderEmbedding : PrimeSpectrum R ↪o Filter (PrimeSpectrum R) :=
   OrderEmbedding.ofMapLEIff nhds fun a b => (le_iff_specializes a b).symm
 #align prime_spectrum.nhds_order_embedding PrimeSpectrum.nhdsOrderEmbedding
 
-instance : T0Space (PrimeSpectrum R) :=
+instance (priority := 10000) : T0Space (PrimeSpectrum R) :=
   ⟨nhdsOrderEmbedding.inj'⟩
 
-instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
+instance (priority := 10000) [IsDomain R] : OrderBot (PrimeSpectrum R) where
   bot := ⟨⊥, Ideal.bot_prime⟩
   bot_le I := @bot_le _ _ _ I.asIdeal
 
-instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
+instance (priority := 10000) {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥
   uniq x := PrimeSpectrum.ext _ _ ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
 

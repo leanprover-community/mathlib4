@@ -86,31 +86,31 @@ open Finsupp
 
 variable {σ R : Type*}
 
-instance [Inhabited R] : Inhabited (MvPowerSeries σ R) :=
+instance (priority := 10000) [Inhabited R] : Inhabited (MvPowerSeries σ R) :=
   ⟨fun _ => default⟩
 
-instance [Zero R] : Zero (MvPowerSeries σ R) :=
+instance (priority := 10000) [Zero R] : Zero (MvPowerSeries σ R) :=
   Pi.instZero
 
-instance [AddMonoid R] : AddMonoid (MvPowerSeries σ R) :=
+instance (priority := 10000) [AddMonoid R] : AddMonoid (MvPowerSeries σ R) :=
   Pi.addMonoid
 
-instance [AddGroup R] : AddGroup (MvPowerSeries σ R) :=
+instance (priority := 10000) [AddGroup R] : AddGroup (MvPowerSeries σ R) :=
   Pi.addGroup
 
-instance [AddCommMonoid R] : AddCommMonoid (MvPowerSeries σ R) :=
+instance (priority := 10000) [AddCommMonoid R] : AddCommMonoid (MvPowerSeries σ R) :=
   Pi.addCommMonoid
 
-instance [AddCommGroup R] : AddCommGroup (MvPowerSeries σ R) :=
+instance (priority := 10000) [AddCommGroup R] : AddCommGroup (MvPowerSeries σ R) :=
   Pi.addCommGroup
 
-instance [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
+instance (priority := 10000) [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
   Function.nontrivial
 
-instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R (MvPowerSeries σ A) :=
+instance (priority := 10000) {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R (MvPowerSeries σ A) :=
   Pi.module _ _ _
 
-instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
+instance (priority := 10000) {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
     [IsScalarTower R S A] : IsScalarTower R S (MvPowerSeries σ A) :=
   Pi.isScalarTower
 
@@ -190,7 +190,7 @@ theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 
 
 variable (m n : σ →₀ ℕ) (φ ψ : MvPowerSeries σ R)
 
-instance : One (MvPowerSeries σ R) :=
+instance (priority := 10000) : One (MvPowerSeries σ R) :=
   ⟨monomial R (0 : σ →₀ ℕ) 1⟩
 
 theorem coeff_one [DecidableEq σ] : coeff R n (1 : MvPowerSeries σ R) = if n = 0 then 1 else 0 :=
@@ -205,14 +205,14 @@ theorem monomial_zero_one : monomial R (0 : σ →₀ ℕ) 1 = 1 :=
   rfl
 #align mv_power_series.monomial_zero_one MvPowerSeries.monomial_zero_one
 
-instance : AddMonoidWithOne (MvPowerSeries σ R) :=
+instance (priority := 10000) : AddMonoidWithOne (MvPowerSeries σ R) :=
   { show AddMonoid (MvPowerSeries σ R) by infer_instance with
     natCast := fun n => monomial R 0 n
     natCast_zero := by simp [Nat.cast]
     natCast_succ := by simp [Nat.cast, monomial_zero_one]
     one := 1 }
 
-instance : Mul (MvPowerSeries σ R) :=
+instance (priority := 10000) : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
   ⟨fun φ ψ n => ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
 
@@ -302,7 +302,7 @@ protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * �
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;> aesop (add simp [add_assoc, mul_assoc])
 #align mv_power_series.mul_assoc MvPowerSeries.mul_assoc
 
-instance : Semiring (MvPowerSeries σ R) :=
+instance (priority := 10000) : Semiring (MvPowerSeries σ R) :=
   { inferInstanceAs (AddMonoidWithOne (MvPowerSeries σ R)),
     inferInstanceAs (Mul (MvPowerSeries σ R)),
     inferInstanceAs (AddCommMonoid (MvPowerSeries σ R)) with
@@ -316,7 +316,7 @@ instance : Semiring (MvPowerSeries σ R) :=
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
+instance (priority := 10000) [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
   { show Semiring (MvPowerSeries σ R) by infer_instance with
     mul_comm := fun φ ψ =>
       ext fun n => by
@@ -324,11 +324,11 @@ instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
         simpa only [coeff_mul, mul_comm] using
           sum_antidiagonal_swap n fun a b => coeff R a φ * coeff R b ψ }
 
-instance [Ring R] : Ring (MvPowerSeries σ R) :=
+instance (priority := 10000) [Ring R] : Ring (MvPowerSeries σ R) :=
   { inferInstanceAs (Semiring (MvPowerSeries σ R)),
     inferInstanceAs (AddCommGroup (MvPowerSeries σ R)) with }
 
-instance [CommRing R] : CommRing (MvPowerSeries σ R) :=
+instance (priority := 10000) [CommRing R] : CommRing (MvPowerSeries σ R) :=
   { inferInstanceAs (CommSemiring (MvPowerSeries σ R)),
     inferInstanceAs (AddCommGroup (MvPowerSeries σ R)) with }
 
@@ -632,7 +632,7 @@ section Algebra
 
 variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
-instance : Algebra R (MvPowerSeries σ A) :=
+instance (priority := 10000) : Algebra R (MvPowerSeries σ A) :=
   {
     show Module R (MvPowerSeries σ A) by infer_instance with
     commutes' := fun a φ => by
@@ -654,7 +654,7 @@ theorem algebraMap_apply {r : R} :
   simp
 #align mv_power_series.algebra_map_apply MvPowerSeries.algebraMap_apply
 
-instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries σ R)) :=
+instance (priority := 10000) [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries σ R)) :=
   ⟨⟨⊥, ⊤, by
       classical
       rw [Ne.def, SetLike.ext_iff, not_forall]
@@ -908,7 +908,7 @@ section CommRing
 variable [CommRing R]
 
 /-- Multivariate formal power series over a local ring form a local ring. -/
-instance [LocalRing R] : LocalRing (MvPowerSeries σ R) :=
+instance (priority := 10000) [LocalRing R] : LocalRing (MvPowerSeries σ R) :=
   LocalRing.of_isUnit_or_isUnit_one_sub_self <| by
     intro φ
     rcases LocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) with (⟨u, h⟩ | ⟨u, h⟩) <;>
@@ -926,7 +926,7 @@ variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f
 -- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
 /-- The map `A[[X]] → B[[X]]` induced by a local ring hom `A → B` is local -/
-instance map.isLocalRingHom : IsLocalRingHom (map σ f) :=
+instance (priority := 10000) map.isLocalRingHom : IsLocalRingHom (map σ f) :=
   ⟨by
     rintro φ ⟨ψ, h⟩
     replace h := congr_arg (constantCoeff σ S) h
@@ -948,7 +948,7 @@ protected def inv (φ : MvPowerSeries σ k) : MvPowerSeries σ k :=
   inv.aux (constantCoeff σ k φ)⁻¹ φ
 #align mv_power_series.inv MvPowerSeries.inv
 
-instance : Inv (MvPowerSeries σ k) :=
+instance (priority := 10000) : Inv (MvPowerSeries σ k) :=
   ⟨MvPowerSeries.inv⟩
 
 theorem coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ k) :
@@ -1035,7 +1035,7 @@ protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
       MvPowerSeries.inv_mul_cancel _ h.right]
 #align mv_power_series.mul_inv_rev MvPowerSeries.mul_inv_rev
 
-instance : InvOneClass (MvPowerSeries σ k) :=
+instance (priority := 10000) : InvOneClass (MvPowerSeries σ k) :=
   { inferInstanceAs (One (MvPowerSeries σ k)),
     inferInstanceAs (Inv (MvPowerSeries σ k)) with
     inv_one := by
@@ -1079,7 +1079,7 @@ def toMvPowerSeries : MvPolynomial σ R → MvPowerSeries σ R :=
   fun φ n => coeff n φ
 
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series.-/
-instance coeToMvPowerSeries : Coe (MvPolynomial σ R) (MvPowerSeries σ R) :=
+instance (priority := 10000) coeToMvPowerSeries : Coe (MvPolynomial σ R) (MvPowerSeries σ R) :=
   ⟨toMvPowerSeries⟩
 #align mv_polynomial.coe_to_mv_power_series MvPolynomial.coeToMvPowerSeries
 
@@ -1223,11 +1223,11 @@ namespace MvPowerSeries
 
 variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : MvPowerSeries σ R)
 
-instance algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPowerSeries σ A) :=
+instance (priority := 10000) algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPowerSeries σ A) :=
   RingHom.toAlgebra (MvPolynomial.coeToMvPowerSeries.algHom A).toRingHom
 #align mv_power_series.algebra_mv_polynomial MvPowerSeries.algebraMvPolynomial
 
-instance algebraMvPowerSeries : Algebra (MvPowerSeries σ R) (MvPowerSeries σ A) :=
+instance (priority := 10000) algebraMvPowerSeries : Algebra (MvPowerSeries σ R) (MvPowerSeries σ A) :=
   (map σ (algebraMap R A)).toAlgebra
 #align mv_power_series.algebra_mv_power_series MvPowerSeries.algebraMvPowerSeries
 
@@ -1268,59 +1268,59 @@ the semiring of formal power series in one variable over a semiring `R`.
 -/
 scoped notation:9000 R "⟦X⟧" => PowerSeries R
 
-instance [Inhabited R] : Inhabited R⟦X⟧ := by
+instance (priority := 10000) [Inhabited R] : Inhabited R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [Zero R] : Zero R⟦X⟧ := by
+instance (priority := 10000) [Zero R] : Zero R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [AddMonoid R] : AddMonoid R⟦X⟧ := by
+instance (priority := 10000) [AddMonoid R] : AddMonoid R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [AddGroup R] : AddGroup R⟦X⟧ := by
+instance (priority := 10000) [AddGroup R] : AddGroup R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [AddCommMonoid R] : AddCommMonoid R⟦X⟧ := by
+instance (priority := 10000) [AddCommMonoid R] : AddCommMonoid R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [AddCommGroup R] : AddCommGroup R⟦X⟧ := by
+instance (priority := 10000) [AddCommGroup R] : AddCommGroup R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [Semiring R] : Semiring R⟦X⟧ := by
+instance (priority := 10000) [Semiring R] : Semiring R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [CommSemiring R] : CommSemiring R⟦X⟧ := by
+instance (priority := 10000) [CommSemiring R] : CommSemiring R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [Ring R] : Ring R⟦X⟧ := by
+instance (priority := 10000) [Ring R] : Ring R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [CommRing R] : CommRing R⟦X⟧ := by
+instance (priority := 10000) [CommRing R] : CommRing R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance [Nontrivial R] : Nontrivial R⟦X⟧ := by
+instance (priority := 10000) [Nontrivial R] : Nontrivial R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R A⟦X⟧ := by
+instance (priority := 10000) {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R A⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
-instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
+instance (priority := 10000) {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
     [IsScalarTower R S A] : IsScalarTower R S A⟦X⟧ :=
   Pi.isScalarTower
 
-instance {A} [Semiring A] [CommSemiring R] [Algebra R A] : Algebra R A⟦X⟧ := by
+instance (priority := 10000) {A} [Semiring A] [CommSemiring R] [Algebra R A] : Algebra R A⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
@@ -2088,10 +2088,10 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) 
     rw [mem_antidiagonal]
 #align power_series.eq_zero_or_eq_zero_of_mul_eq_zero PowerSeries.eq_zero_or_eq_zero_of_mul_eq_zero
 
-instance [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
+instance (priority := 10000) [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
   eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero _ _
 
-instance [IsDomain R] : IsDomain R⟦X⟧ :=
+instance (priority := 10000) [IsDomain R] : IsDomain R⟦X⟧ :=
   NoZeroDivisors.to_isDomain _
 
 end Domain
@@ -2138,13 +2138,13 @@ section LocalRing
 
 variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
 
-instance map.isLocalRingHom : IsLocalRingHom (map f) :=
+instance (priority := 10000) map.isLocalRingHom : IsLocalRingHom (map f) :=
   MvPowerSeries.map.isLocalRingHom f
 #align power_series.map.is_local_ring_hom PowerSeries.map.isLocalRingHom
 
 variable [LocalRing R] [LocalRing S]
 
-instance : LocalRing R⟦X⟧ :=
+instance (priority := 10000) : LocalRing R⟦X⟧ :=
   { inferInstanceAs <| LocalRing <| MvPowerSeries Unit R with }
 
 
@@ -2163,7 +2163,7 @@ theorem algebraMap_apply {r : R} : algebraMap R A⟦X⟧ r = C A (algebraMap R A
   MvPowerSeries.algebraMap_apply
 #align power_series.algebra_map_apply PowerSeries.algebraMap_apply
 
-instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
+instance (priority := 10000) [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
   { inferInstanceAs <| Nontrivial <| Subalgebra R <| MvPowerSeries Unit R with }
 
 end Algebra
@@ -2177,7 +2177,7 @@ protected def inv : PowerSeries k → PowerSeries k :=
   MvPowerSeries.inv
 #align power_series.inv PowerSeries.inv
 
-instance : Inv (PowerSeries k) :=
+instance (priority := 10000) : Inv (PowerSeries k) :=
   ⟨PowerSeries.inv⟩
 
 theorem inv_eq_inv_aux (φ : PowerSeries k) : φ⁻¹ = inv.aux (constantCoeff k φ)⁻¹ φ :=
@@ -2251,7 +2251,7 @@ protected theorem mul_inv_rev (φ ψ : PowerSeries k) : (φ * ψ)⁻¹ = ψ⁻¹
   MvPowerSeries.mul_inv_rev _ _
 #align power_series.mul_inv_rev PowerSeries.mul_inv_rev
 
-instance : InvOneClass (PowerSeries k) :=
+instance (priority := 10000) : InvOneClass (PowerSeries k) :=
   { inferInstanceAs <| InvOneClass <| MvPowerSeries Unit k with }
 
 @[simp]
@@ -2607,7 +2607,7 @@ def ToPowerSeries : R[X] → (PowerSeries R) := fun φ =>
   PowerSeries.mk fun n => coeff φ n
 
 /-- The natural inclusion from polynomials into formal power series.-/
-instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
+instance (priority := 10000) coeToPowerSeries : Coe R[X] (PowerSeries R) :=
   ⟨ToPowerSeries⟩
 #align polynomial.coe_to_power_series Polynomial.coeToPowerSeries
 
@@ -2758,11 +2758,11 @@ section Algebra
 
 variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (f : R⟦X⟧)
 
-instance algebraPolynomial : Algebra R[X] A⟦X⟧ :=
+instance (priority := 10000) algebraPolynomial : Algebra R[X] A⟦X⟧ :=
   RingHom.toAlgebra (Polynomial.coeToPowerSeries.algHom A).toRingHom
 #align power_series.algebra_polynomial PowerSeries.algebraPolynomial
 
-instance algebraPowerSeries : Algebra R⟦X⟧ A⟦X⟧ :=
+instance (priority := 10000) algebraPowerSeries : Algebra R⟦X⟧ A⟦X⟧ :=
   (map (algebraMap R A)).toAlgebra
 #align power_series.algebra_power_series PowerSeries.algebraPowerSeries
 

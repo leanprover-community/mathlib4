@@ -526,21 +526,21 @@ def CyclotomicField : Type w :=
 namespace CyclotomicField
 
 --Porting note: could not be derived
-instance : Field (CyclotomicField n K) := by
+instance (priority := 10000) : Field (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
 --Porting note: could not be derived
-instance algebra : Algebra K (CyclotomicField n K) := by
+instance (priority := 10000) algebra : Algebra K (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
 --Porting note: could not be derived
-instance : Inhabited (CyclotomicField n K) := by
+instance (priority := 10000) : Inhabited (CyclotomicField n K) := by
   delta CyclotomicField; infer_instance
 
-instance [CharZero K] : CharZero (CyclotomicField n K) :=
+instance (priority := 10000) [CharZero K] : CharZero (CyclotomicField n K) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
 
-instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
+instance (priority := 10000) isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
     IsCyclotomicExtension {n} K (CyclotomicField n K) := by
   haveI : NeZero ((n : ℕ) : CyclotomicField n K) :=
     NeZero.nat_of_injective (algebraMap K _).injective
@@ -570,7 +570,7 @@ section CyclotomicRing
 /-- If `K` is the fraction field of `A`, the `A`-algebra structure on `CyclotomicField n K`.
 -/
 @[nolint unusedArguments]
-instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
+instance (priority := 10000) CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
   SplittingField.algebra' (cyclotomic n K)
 #align cyclotomic_field.algebra_base CyclotomicField.algebraBase
 
@@ -578,15 +578,15 @@ instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
 example : algebraInt (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ :=
   rfl
 
-instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
+instance (priority := 10000) CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
     Algebra R (CyclotomicField n K) :=
   SplittingField.algebra' (cyclotomic n K)
 #align cyclotomic_field.algebra' CyclotomicField.algebra'
 
-instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
+instance (priority := 10000) {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
   SplittingField.isScalarTower _
 
-instance CyclotomicField.noZeroSMulDivisors : NoZeroSMulDivisors A (CyclotomicField n K) := by
+instance (priority := 10000) CyclotomicField.noZeroSMulDivisors : NoZeroSMulDivisors A (CyclotomicField n K) := by
   refine' NoZeroSMulDivisors.of_algebraMap_injective _
   rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
@@ -606,19 +606,19 @@ def CyclotomicRing : Type w :=
 namespace CyclotomicRing
 
 --Porting note: could not be derived
-instance : CommRing (CyclotomicRing n A K) := by
+instance (priority := 10000) : CommRing (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
 --Porting note: could not be derived
-instance : IsDomain (CyclotomicRing n A K) := by
+instance (priority := 10000) : IsDomain (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
 --Porting note: could not be derived
-instance : Inhabited (CyclotomicRing n A K) := by
+instance (priority := 10000) : Inhabited (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
 /-- The `A`-algebra structure on `CyclotomicRing n A K`. -/
-instance algebraBase : Algebra A (CyclotomicRing n A K) :=
+instance (priority := 10000) algebraBase : Algebra A (CyclotomicRing n A K) :=
   (adjoin A _).algebra
 #align cyclotomic_ring.algebra_base CyclotomicRing.algebraBase
 
@@ -626,14 +626,14 @@ instance algebraBase : Algebra A (CyclotomicRing n A K) :=
 example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = algebraInt _ :=
   rfl
 
-instance : NoZeroSMulDivisors A (CyclotomicRing n A K) :=
+instance (priority := 10000) : NoZeroSMulDivisors A (CyclotomicRing n A K) :=
   (adjoin A _).noZeroSMulDivisors_bot
 
 theorem algebraBase_injective : Function.Injective <| algebraMap A (CyclotomicRing n A K) :=
   NoZeroSMulDivisors.algebraMap_injective _ _
 #align cyclotomic_ring.algebra_base_injective CyclotomicRing.algebraBase_injective
 
-instance : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
+instance (priority := 10000) : Algebra (CyclotomicRing n A K) (CyclotomicField n K) :=
   (adjoin A _).toAlgebra
 
 theorem adjoin_algebra_injective :
@@ -641,13 +641,13 @@ theorem adjoin_algebra_injective :
   Subtype.val_injective
 #align cyclotomic_ring.adjoin_algebra_injective CyclotomicRing.adjoin_algebra_injective
 
-instance : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) :=
+instance (priority := 10000) : NoZeroSMulDivisors (CyclotomicRing n A K) (CyclotomicField n K) :=
   NoZeroSMulDivisors.of_algebraMap_injective (adjoin_algebra_injective n A K)
 
-instance : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
+instance (priority := 10000) : IsScalarTower A (CyclotomicRing n A K) (CyclotomicField n K) :=
   IsScalarTower.subalgebra' _ _ _ _
 
-instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
+instance (priority := 10000) isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
     IsCyclotomicExtension {n} A (CyclotomicRing n A K) where
   exists_prim_root := @fun a han => by
     rw [mem_singleton_iff] at han
@@ -671,7 +671,7 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
     · exact Subalgebra.mul_mem _ hy hz
 #align cyclotomic_ring.is_cyclotomic_extension CyclotomicRing.isCyclotomicExtension
 
-instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
+instance (priority := 10000) [IsDomain A] [NeZero ((n : ℕ) : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
   map_units' := fun ⟨x, hx⟩ => by
     rw [isUnit_iff_ne_zero]
@@ -738,7 +738,7 @@ theorem IsAlgClosed.isCyclotomicExtension (h : ∀ a ∈ S, NeZero ((a : ℕ) : 
   rwa [coe_aeval_eq_eval, ← IsRoot.def, isRoot_cyclotomic_iff] at hr
 #align is_alg_closed.is_cyclotomic_extension IsAlgClosed.isCyclotomicExtension
 
-instance IsAlgClosedOfCharZero.isCyclotomicExtension [CharZero K] :
+instance (priority := 10000) IsAlgClosedOfCharZero.isCyclotomicExtension [CharZero K] :
     ∀ S, IsCyclotomicExtension S K K := fun S =>
   IsAlgClosed.isCyclotomicExtension S K fun _ _ => inferInstance
 #align is_alg_closed_of_char_zero.is_cyclotomic_extension IsAlgClosedOfCharZero.isCyclotomicExtension

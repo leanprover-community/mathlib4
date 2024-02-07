@@ -63,7 +63,7 @@ theorem Ideal.IsPrime.isMaximal {R : Type*} [CommRing R] [DimensionLEOne R]
 
 namespace Ring
 
-instance DimensionLEOne.principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
+instance (priority := 10000) DimensionLEOne.principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
     DimensionLEOne A where
   maximalOfPrime := fun nonzero _ =>
     IsPrime.to_maximal_ideal nonzero
@@ -143,7 +143,7 @@ class IsDedekindDomain
 This should be safe since the start and end point is the literal same expression,
 which the tabled typeclass synthesis algorithm can deal with.
 -/
-instance [IsDomain A] [IsDedekindRing A] : IsDedekindDomain A where
+instance (priority := 10000) [IsDomain A] [IsDedekindRing A] : IsDedekindDomain A where
 
 /-- An integral domain is a Dedekind domain iff and only if it is
 Noetherian, has dimension ≤ 1, and is integrally closed in a given fraction field.

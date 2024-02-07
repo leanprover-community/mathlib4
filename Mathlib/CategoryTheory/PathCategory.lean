@@ -32,13 +32,13 @@ section
 def Paths (V : Type u₁) : Type u₁ := V
 #align category_theory.paths CategoryTheory.Paths
 
-instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
+instance (priority := 10000) (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
 
 variable (V : Type u₁) [Quiver.{v₁ + 1} V]
 
 namespace Paths
 
-instance categoryPaths : Category.{max u₁ v₁} (Paths V) where
+instance (priority := 10000) categoryPaths : Category.{max u₁ v₁} (Paths V) where
   Hom := fun X Y : V => Quiver.Path X Y
   id X := Quiver.Path.nil
   comp f g := Quiver.Path.comp f g

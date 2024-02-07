@@ -405,7 +405,7 @@ theorem complete_univ {α : Type u} [UniformSpace α] [CompleteSpace α] :
   exact ⟨x, mem_univ x, hx⟩
 #align complete_univ complete_univ
 
-instance CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace β] :
+instance (priority := 10000) CompleteSpace.prod [UniformSpace β] [CompleteSpace α] [CompleteSpace β] :
     CompleteSpace (α × β) where
   complete hf :=
     let ⟨x1, hx1⟩ := CompleteSpace.complete <| hf.map uniformContinuous_fst
@@ -432,7 +432,7 @@ lemma completeSpace_prod_of_nonempty [UniformSpace β] [Nonempty α] [Nonempty �
   ⟨fun _ ↦ ⟨.fst_of_prod (β := β), .snd_of_prod (α := α)⟩, fun ⟨_, _⟩ ↦ .prod⟩
 
 @[to_additive]
-instance CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
+instance (priority := 10000) CompleteSpace.mulOpposite [CompleteSpace α] : CompleteSpace αᵐᵒᵖ where
   complete hf :=
     MulOpposite.op_surjective.exists.mpr <|
       let ⟨x, hx⟩ := CompleteSpace.complete (hf.map MulOpposite.uniformContinuous_unop)

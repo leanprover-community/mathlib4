@@ -145,7 +145,7 @@ theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshea
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_sheaf_of_is_limit CategoryTheory.Sheaf.isSheaf_of_isLimit
 
-instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
+instance (priority := 10000) (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
   createsLimitOfReflectsIso fun E hE =>
     { liftedCone := ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
         ⟨fun t => ⟨E.π.app _⟩, fun u v e => Sheaf.Hom.ext _ _ <| E.π.naturality _⟩⟩
@@ -162,20 +162,20 @@ instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
             exact hE.uniq ((sheafToPresheaf J D).mapCone S) m.val fun j =>
               congr_arg Hom.val (hm j) } }
 
-instance createsLimitsOfShape : CreatesLimitsOfShape K (sheafToPresheaf J D) where
+instance (priority := 10000) createsLimitsOfShape : CreatesLimitsOfShape K (sheafToPresheaf J D) where
 
-instance : HasLimitsOfShape K (Sheaf J D) :=
+instance (priority := 10000) : HasLimitsOfShape K (Sheaf J D) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (sheafToPresheaf J D)
 
-instance [HasFiniteProducts D] : HasFiniteProducts (Sheaf J D) :=
+instance (priority := 10000) [HasFiniteProducts D] : HasFiniteProducts (Sheaf J D) :=
   ⟨inferInstance⟩
 
 end
 
-instance createsLimits [HasLimits D] : CreatesLimits (sheafToPresheaf J D) :=
+instance (priority := 10000) createsLimits [HasLimits D] : CreatesLimits (sheafToPresheaf J D) :=
   ⟨createsLimitsOfShape⟩
 
-instance [HasLimits D] : HasLimits (Sheaf J D) :=
+instance (priority := 10000) [HasLimits D] : HasLimits (Sheaf J D) :=
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
 
 end
@@ -245,14 +245,14 @@ noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_colimit_sheafify_cocone CategoryTheory.Sheaf.isColimitSheafifyCocone
 
-instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
+instance (priority := 10000) [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
   ⟨fun _ => HasColimit.mk
     ⟨sheafifyCocone (colimit.cocone _), isColimitSheafifyCocone _ (colimit.isColimit _)⟩⟩
 
-instance [HasFiniteCoproducts D] : HasFiniteCoproducts (Sheaf J D) :=
+instance (priority := 10000) [HasFiniteCoproducts D] : HasFiniteCoproducts (Sheaf J D) :=
   ⟨inferInstance⟩
 
-instance [HasColimits D] : HasColimits (Sheaf J D) :=
+instance (priority := 10000) [HasColimits D] : HasColimits (Sheaf J D) :=
   ⟨inferInstance⟩
 
 end Colimits

@@ -25,7 +25,7 @@ open CategoryTheory
 
 namespace MonTypeEquivalenceMon
 
-instance monMonoid (A : Mon_ (Type u)) : Monoid A.X where
+instance (priority := 10000) monMonoid (A : Mon_ (Type u)) : Monoid A.X where
   one := A.one PUnit.unit
   mul x y := A.mul (x, y)
   one_mul x := by convert congr_fun A.one_mul (PUnit.unit, x)
@@ -99,14 +99,14 @@ noncomputable def monTypeEquivalenceMonForget :
 set_option linter.uppercaseLean3 false in
 #align Mon_Type_equivalence_Mon_forget monTypeEquivalenceMonForget
 
-noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) :=
+noncomputable instance (priority := 10000) monTypeInhabited : Inhabited (Mon_ (Type u)) :=
   ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
 set_option linter.uppercaseLean3 false in
 #align Mon_Type_inhabited monTypeInhabited
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : CommMon_ (Type u)) : CommMonoid A.X :=
+instance (priority := 10000) commMonCommMonoid (A : CommMon_ (Type u)) : CommMonoid A.X :=
   { MonTypeEquivalenceMon.monMonoid A.toMon_ with
     mul_comm := fun x y => by convert congr_fun A.mul_comm (y, x) }
 set_option linter.uppercaseLean3 false in
@@ -173,7 +173,7 @@ noncomputable def commMonTypeEquivalenceCommMonForget :
 set_option linter.uppercaseLean3 false in
 #align CommMon_Type_equivalence_CommMon_forget commMonTypeEquivalenceCommMonForget
 
-noncomputable instance commMonTypeInhabited : Inhabited (CommMon_ (Type u)) :=
+noncomputable instance (priority := 10000) commMonTypeInhabited : Inhabited (CommMon_ (Type u)) :=
   ⟨CommMonTypeEquivalenceCommMon.inverse.obj (CommMonCat.of PUnit)⟩
 set_option linter.uppercaseLean3 false in
 #align CommMon_Type_inhabited commMonTypeInhabited

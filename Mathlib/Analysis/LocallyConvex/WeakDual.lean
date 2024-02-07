@@ -150,7 +150,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [M
 
 variable [Nonempty ι] [NormedSpace ℝ 𝕜] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
-instance WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
+instance (priority := 10000) WeakBilin.locallyConvexSpace {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} :
     LocallyConvexSpace ℝ (WeakBilin B) :=
   B.weakBilin_withSeminorms.toLocallyConvexSpace
 

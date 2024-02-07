@@ -197,11 +197,11 @@ theorem cobounded_eq_aux :
 end Aux
 
 /-- The uniformity on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
-instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
+instance (priority := 10000) instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
   instUniformSpaceProd.comap (addEquiv 𝕜 A)
 
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
-instance instBornology : Bornology (Unitization 𝕜 A) :=
+instance (priority := 10000) instBornology : Bornology (Unitization 𝕜 A) :=
   Bornology.induced <| addEquiv 𝕜 A
 
 theorem uniformEmbedding_addEquiv : UniformEmbedding (addEquiv 𝕜 A) where
@@ -209,20 +209,20 @@ theorem uniformEmbedding_addEquiv : UniformEmbedding (addEquiv 𝕜 A) where
   inj := (addEquiv 𝕜 A).injective
 
 /-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also.  -/
-instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
+instance (priority := 10000) instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=
   (completeSpace_congr uniformEmbedding_addEquiv).mpr CompleteSpace.prod
 
 /-- Pull back the metric structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so
 that they coincide with `𝕜 × A`. -/
-noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
+noncomputable instance (priority := 10000) instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
   (normedRingAux.toMetricSpace.replaceUniformity uniformity_eq_aux).replaceBornology
     fun s => Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
 
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
-noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
+noncomputable instance (priority := 10000) instNormedRing : NormedRing (Unitization 𝕜 A)
     where
   dist_eq := normedRingAux.dist_eq
   norm_mul := normedRingAux.norm_mul
@@ -230,13 +230,13 @@ noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
-instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
+instance (priority := 10000) instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
   norm_smul_le k x := by
     rw [norm_def, map_smul]
     -- Note: this used to be `rw [norm_smul, ← norm_def]` before #8386
     exact (norm_smul k (splitMul 𝕜 A x)).le
 
-instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
+instance (priority := 10000) instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,
       add_zero, ge_iff_le, sup_eq_left] using opNorm_le_bound _ zero_le_one fun x => by simp
 

@@ -63,7 +63,7 @@ namespace ElementaryEmbedding
 
 attribute [coe] toFun
 
-instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
+instance (priority := 10000) instFunLike : FunLike (M ↪ₑ[L] N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -73,7 +73,7 @@ instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
     exact Function.funext_iff.1 h x
 #align first_order.language.elementary_embedding.fun_like FirstOrder.Language.ElementaryEmbedding.instFunLike
 
-instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
+instance (priority := 10000) : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
   DFunLike.hasCoeToFun
 
 @[simp]
@@ -126,7 +126,7 @@ theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
   exact h.1
 #align first_order.language.elementary_embedding.injective FirstOrder.Language.ElementaryEmbedding.injective
 
-instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
+instance (priority := 10000) embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
   { show FunLike (M ↪ₑ[L] N) M N from inferInstance with injective' := injective }
 #align first_order.language.elementary_embedding.embedding_like FirstOrder.Language.ElementaryEmbedding.embeddingLike
 
@@ -145,7 +145,7 @@ theorem map_rel (φ : M ↪ₑ[L] N) {n : ℕ} (r : L.Relations n) (x : Fin n �
   h
 #align first_order.language.elementary_embedding.map_rel FirstOrder.Language.ElementaryEmbedding.map_rel
 
-instance strongHomClass : StrongHomClass L (M ↪ₑ[L] N) M N where
+instance (priority := 10000) strongHomClass : StrongHomClass L (M ↪ₑ[L] N) M N where
   map_fun := map_fun
   map_rel := map_rel
 #align first_order.language.elementary_embedding.strong_hom_class FirstOrder.Language.ElementaryEmbedding.strongHomClass
@@ -207,7 +207,7 @@ def refl : M ↪ₑ[L] M where toFun := id
 
 variable {L} {M}
 
-instance : Inhabited (M ↪ₑ[L] M) :=
+instance (priority := 10000) : Inhabited (M ↪ₑ[L] M) :=
   ⟨refl L M⟩
 
 @[simp]

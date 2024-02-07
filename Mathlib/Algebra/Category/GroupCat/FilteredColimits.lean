@@ -94,7 +94,7 @@ theorem colimitInvAux_eq_of_rel (x y : Σ j, F.obj j)
 
 /-- Taking inverses in the colimit. See also `colimitInvAux`. -/
 @[to_additive "Negation in the colimit. See also `colimitNegAux`."]
-instance colimitInv : Inv (G.{v, u} F) where
+instance (priority := 10000) colimitInv : Inv (G.{v, u} F) where
   inv x := by
     refine' Quot.lift (colimitInvAux.{v, u} F) _ x
     intro x y h
@@ -111,7 +111,7 @@ theorem colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F 
 #align AddGroup.filtered_colimits.colimit_neg_mk_eq AddGroupCat.FilteredColimits.colimit_neg_mk_eq
 
 @[to_additive]
-noncomputable instance colimitGroup : Group (G.{v, u} F) :=
+noncomputable instance (priority := 10000) colimitGroup : Group (G.{v, u} F) :=
   { colimitInv.{v, u} F, (G.{v, u} F).str with
     mul_left_inv := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
@@ -158,7 +158,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
 #align AddGroup.filtered_colimits.colimit_cocone_is_colimit AddGroupCat.FilteredColimits.colimitCoconeIsColimit
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]
-noncomputable instance forget₂MonPreservesFilteredColimits :
+noncomputable instance (priority := 10000) forget₂MonPreservesFilteredColimits :
     PreservesFilteredColimits.{u} (forget₂ GroupCat.{u} MonCat.{u}) where
       preserves_filtered_colimits x hx1 _ :=
       letI : Category.{u, u} x := hx1
@@ -168,7 +168,7 @@ noncomputable instance forget₂MonPreservesFilteredColimits :
 #align AddGroup.filtered_colimits.forget₂_AddMon_preserves_filtered_colimits AddGroupCat.FilteredColimits.forget₂AddMonPreservesFilteredColimits
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+noncomputable instance (priority := 10000) forgetPreservesFilteredColimits :
     PreservesFilteredColimits (forget GroupCat.{u}) :=
   Limits.compPreservesFilteredColimits (forget₂ GroupCat MonCat) (forget MonCat.{u})
 #align Group.filtered_colimits.forget_preserves_filtered_colimits GroupCat.FilteredColimits.forgetPreservesFilteredColimits
@@ -198,7 +198,7 @@ noncomputable abbrev G : GroupCat.{max v u} :=
 #align AddCommGroup.filtered_colimits.G AddCommGroupCat.FilteredColimits.G
 
 @[to_additive]
-noncomputable instance colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) :=
+noncomputable instance (priority := 10000) colimitCommGroup : CommGroup.{max v u} (G.{v, u} F) :=
   { (G F).str,
     CommMonCat.FilteredColimits.colimitCommMonoid
       (F ⋙ forget₂ CommGroupCat CommMonCat.{max v u}) with }
@@ -241,7 +241,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
 #align AddCommGroup.filtered_colimits.colimit_cocone_is_colimit AddCommGroupCat.FilteredColimits.colimitCoconeIsColimit
 
 @[to_additive]
-noncomputable instance forget₂GroupPreservesFilteredColimits :
+noncomputable instance (priority := 10000) forget₂GroupPreservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommGroupCat GroupCat.{u}) where
   preserves_filtered_colimits J hJ1 _ :=
     letI : Category J := hJ1
@@ -253,7 +253,7 @@ noncomputable instance forget₂GroupPreservesFilteredColimits :
 #align AddCommGroup.filtered_colimits.forget₂_AddGroup_preserves_filtered_colimits AddCommGroupCat.FilteredColimits.forget₂AddGroupPreservesFilteredColimits
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+noncomputable instance (priority := 10000) forgetPreservesFilteredColimits :
     PreservesFilteredColimits (forget CommGroupCat.{u}) :=
   Limits.compPreservesFilteredColimits (forget₂ CommGroupCat GroupCat) (forget GroupCat.{u})
 #align CommGroup.filtered_colimits.forget_preserves_filtered_colimits CommGroupCat.FilteredColimits.forgetPreservesFilteredColimits

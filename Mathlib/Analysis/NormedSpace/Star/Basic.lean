@@ -75,7 +75,7 @@ instance (priority := 100) NormedStarGroup.to_continuousStar : ContinuousStar E 
 
 end NormedStarGroup
 
-instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
+instance (priority := 10000) RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
     RingHomIsometric (starRingEnd E) :=
   ⟨@norm_star _ _ _ _⟩
 #align ring_hom_isometric.star_ring_end RingHomIsometric.starRingEnd
@@ -86,7 +86,7 @@ class CstarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_star_mul_self : ∀ {x : E}, ‖x⋆ * x‖ = ‖x‖ * ‖x‖
 #align cstar_ring CstarRing
 
-instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id.def, norm_mul]
+instance (priority := 10000) : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id.def, norm_mul]
 
 namespace CstarRing
 
@@ -164,13 +164,13 @@ variable [∀ i, NonUnitalNormedRing (R i)] [∀ i, StarRing (R i)]
 
 /-- This instance exists to short circuit type class resolution because of problems with
 inference involving Π-types. -/
-instance _root_.Pi.starRing' : StarRing (∀ i, R i) :=
+instance (priority := 10000) _root_.Pi.starRing' : StarRing (∀ i, R i) :=
   inferInstance
 #align pi.star_ring' Pi.starRing'
 
 variable [Fintype ι] [∀ i, CstarRing (R i)]
 
-instance _root_.Prod.cstarRing : CstarRing (R₁ × R₂) where
+instance (priority := 10000) _root_.Prod.cstarRing : CstarRing (R₁ × R₂) where
   norm_star_mul_self {x} := by
     dsimp only [norm]
     simp only [Prod.fst_mul, Prod.fst_star, Prod.snd_mul, Prod.snd_star, norm_star_mul_self, ← sq]
@@ -182,7 +182,7 @@ instance _root_.Prod.cstarRing : CstarRing (R₁ × R₂) where
       rcases le_total ‖x.fst‖ ‖x.snd‖ with (h | h) <;> simp [h]
 #align prod.cstar_ring Prod.cstarRing
 
-instance _root_.Pi.cstarRing : CstarRing (∀ i, R i) where
+instance (priority := 10000) _root_.Pi.cstarRing : CstarRing (∀ i, R i) where
   norm_star_mul_self {x} := by
     simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
     norm_cast
@@ -191,7 +191,7 @@ instance _root_.Pi.cstarRing : CstarRing (∀ i, R i) where
           (fun x y h => by simpa only [sq] using mul_le_mul' h h) (by simp)).symm
 #align pi.cstar_ring Pi.cstarRing
 
-instance _root_.Pi.cstarRing' : CstarRing (ι → R₁) :=
+instance (priority := 10000) _root_.Pi.cstarRing' : CstarRing (ι → R₁) :=
   Pi.cstarRing
 #align pi.cstar_ring' Pi.cstarRing'
 
@@ -315,12 +315,12 @@ end starₗᵢ
 
 namespace StarSubalgebra
 
-instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
+instance (priority := 10000) toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.subtype
 #align star_subalgebra.to_normed_algebra StarSubalgebra.toNormedAlgebra
 
-instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CstarRing A]
+instance (priority := 10000) to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CstarRing A]
     [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CstarRing S where
   norm_star_mul_self {x} := @CstarRing.norm_star_mul_self A _ _ _ x
 #align star_subalgebra.to_cstar_ring StarSubalgebra.to_cstarRing

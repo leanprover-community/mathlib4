@@ -87,7 +87,7 @@ instance (priority := 100) LipschitzMul.continuousMul : ContinuousMul β :=
 #align has_lipschitz_add.has_continuous_add LipschitzAdd.continuousAdd
 
 @[to_additive]
-instance Submonoid.lipschitzMul (s : Submonoid β) : LipschitzMul s where
+instance (priority := 10000) Submonoid.lipschitzMul (s : Submonoid β) : LipschitzMul s where
   lipschitz_mul := ⟨LipschitzMul.C β, by
     rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
     convert lipschitzWith_lipschitz_const_mul_edist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
@@ -95,7 +95,7 @@ instance Submonoid.lipschitzMul (s : Submonoid β) : LipschitzMul s where
 #align add_submonoid.has_lipschitz_add AddSubmonoid.lipschitzAdd
 
 @[to_additive]
-instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
+instance (priority := 10000) MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
   lipschitz_mul := ⟨LipschitzMul.C β, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ =>
     (lipschitzWith_lipschitz_const_mul_edist ⟨x₂.unop, x₁.unop⟩ ⟨y₂.unop, y₁.unop⟩).trans_eq
       (congr_arg _ <| max_comm _ _)⟩
@@ -104,7 +104,7 @@ instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
 
 -- this instance could be deduced from `NormedAddCommGroup.lipschitzAdd`, but we prove it
 -- separately here so that it is available earlier in the hierarchy
-instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
+instance (priority := 10000) Real.hasLipschitzAdd : LipschitzAdd ℝ where
   lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul fun p q => by
     simp only [Real.dist_eq, Prod.dist_eq, Prod.fst_sub, Prod.snd_sub, NNReal.coe_ofNat,
       add_sub_add_comm, two_mul]
@@ -114,7 +114,7 @@ instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
 
 -- this instance has the same proof as `AddSubmonoid.lipschitzAdd`, but the former can't
 -- directly be applied here since `ℝ≥0` is a subtype of `ℝ`, not an additive submonoid.
-instance NNReal.hasLipschitzAdd : LipschitzAdd ℝ≥0 where
+instance (priority := 10000) NNReal.hasLipschitzAdd : LipschitzAdd ℝ≥0 where
   lipschitz_add := ⟨LipschitzAdd.C ℝ, by
     rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
     exact lipschitzWith_lipschitz_const_add_edist ⟨(x₁ : ℝ), x₂⟩ ⟨y₁, y₂⟩⟩
@@ -170,18 +170,18 @@ instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β whe
 
 -- this instance could be deduced from `NormedSpace.boundedSMul`, but we prove it separately
 -- here so that it is available earlier in the hierarchy
-instance Real.boundedSMul : BoundedSMul ℝ ℝ where
+instance (priority := 10000) Real.boundedSMul : BoundedSMul ℝ ℝ where
   dist_smul_pair' x y₁ y₂ := by simpa [Real.dist_eq, mul_sub] using (abs_mul x (y₁ - y₂)).le
   dist_pair_smul' x₁ x₂ y := by simpa [Real.dist_eq, sub_mul] using (abs_mul (x₁ - x₂) y).le
 #align real.has_bounded_smul Real.boundedSMul
 
-instance NNReal.boundedSMul : BoundedSMul ℝ≥0 ℝ≥0 where
+instance (priority := 10000) NNReal.boundedSMul : BoundedSMul ℝ≥0 ℝ≥0 where
   dist_smul_pair' x y₁ y₂ := by convert dist_smul_pair (x : ℝ) (y₁ : ℝ) y₂ using 1
   dist_pair_smul' x₁ x₂ y := by convert dist_pair_smul (x₁ : ℝ) x₂ (y : ℝ) using 1
 #align nnreal.has_bounded_smul NNReal.boundedSMul
 
 /-- If a scalar is central, then its right action is bounded when its left action is. -/
-instance BoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : BoundedSMul αᵐᵒᵖ β where
+instance (priority := 10000) BoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : BoundedSMul αᵐᵒᵖ β where
   dist_smul_pair' :=
     MulOpposite.rec' fun x y₁ y₂ => by simpa only [op_smul_eq_smul] using dist_smul_pair x y₁ y₂
   dist_pair_smul' :=
@@ -191,19 +191,19 @@ instance BoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : BoundedS
 
 end BoundedSMul
 
-instance [Monoid α] [LipschitzMul α] : LipschitzAdd (Additive α) :=
+instance (priority := 10000) [Monoid α] [LipschitzMul α] : LipschitzAdd (Additive α) :=
   ⟨@LipschitzMul.lipschitz_mul α _ _ _⟩
 
-instance [AddMonoid α] [LipschitzAdd α] : LipschitzMul (Multiplicative α) :=
+instance (priority := 10000) [AddMonoid α] [LipschitzAdd α] : LipschitzMul (Multiplicative α) :=
   ⟨@LipschitzAdd.lipschitz_add α _ _ _⟩
 
 @[to_additive]
-instance [Monoid α] [LipschitzMul α] : LipschitzMul αᵒᵈ :=
+instance (priority := 10000) [Monoid α] [LipschitzMul α] : LipschitzMul αᵒᵈ :=
   ‹LipschitzMul α›
 
 variable {ι : Type*} [Fintype ι]
 
-instance Pi.instBoundedSMul {α : Type*} {β : ι → Type*} [PseudoMetricSpace α]
+instance (priority := 10000) Pi.instBoundedSMul {α : Type*} {β : ι → Type*} [PseudoMetricSpace α]
     [∀ i, PseudoMetricSpace (β i)] [Zero α] [∀ i, Zero (β i)] [∀ i, SMul α (β i)]
     [∀ i, BoundedSMul α (β i)] : BoundedSMul α (∀ i, β i) where
   dist_smul_pair' x y₁ y₂ :=
@@ -213,7 +213,7 @@ instance Pi.instBoundedSMul {α : Type*} {β : ι → Type*} [PseudoMetricSpace 
     (dist_pi_le_iff <| by positivity).2 fun i ↦
       (dist_pair_smul _ _ _).trans <| mul_le_mul_of_nonneg_left (dist_le_pi_dist _ 0 _) dist_nonneg
 
-instance Pi.instBoundedSMul' {α β : ι → Type*} [∀ i, PseudoMetricSpace (α i)]
+instance (priority := 10000) Pi.instBoundedSMul' {α β : ι → Type*} [∀ i, PseudoMetricSpace (α i)]
     [∀ i, PseudoMetricSpace (β i)] [∀ i, Zero (α i)] [∀ i, Zero (β i)] [∀ i, SMul (α i) (β i)]
     [∀ i, BoundedSMul (α i) (β i)] : BoundedSMul (∀ i, α i) (∀ i, β i) where
   dist_smul_pair' x y₁ y₂ :=
@@ -225,7 +225,7 @@ instance Pi.instBoundedSMul' {α β : ι → Type*} [∀ i, PseudoMetricSpace (�
       (dist_pair_smul _ _ _).trans <|
         mul_le_mul (dist_le_pi_dist _ _ _) (dist_le_pi_dist _ 0 _) dist_nonneg dist_nonneg
 
-instance Prod.instBoundedSMul {α β γ : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
+instance (priority := 10000) Prod.instBoundedSMul {α β γ : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
     [PseudoMetricSpace γ] [Zero α] [Zero β] [Zero γ] [SMul α β] [SMul α γ] [BoundedSMul α β]
     [BoundedSMul α γ] : BoundedSMul α (β × γ) where
   dist_smul_pair' _x _y₁ _y₂ :=

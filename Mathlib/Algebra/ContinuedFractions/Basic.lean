@@ -65,7 +65,7 @@ namespace GeneralizedContinuedFraction.Pair
 variable {α}
 
 /-- Make a `GCF.Pair` printable. -/
-instance [Repr α] : Repr (Pair α) :=
+instance (priority := 10000) [Repr α] : Repr (Pair α) :=
   ⟨fun p _ ↦ "(a : " ++ repr p.a ++ ", b : " ++ repr p.b ++ ")"⟩
 
 /-- Maps a function `f` on both components of a given pair. -/
@@ -84,7 +84,7 @@ variable {β : Type*} [Coe α β]
 def coeFn : Pair α → Pair β := map (↑)
 
 /-- Coerce a pair by elementwise coercion. -/
-instance : Coe (Pair α) (Pair β) :=
+instance (priority := 10000) : Coe (Pair α) (Pair β) :=
   ⟨coeFn⟩
 
 @[simp, norm_cast]
@@ -128,7 +128,7 @@ def ofInteger (a : α) : GeneralizedContinuedFraction α :=
   ⟨a, Stream'.Seq.nil⟩
 #align generalized_continued_fraction.of_integer GeneralizedContinuedFraction.ofInteger
 
-instance [Inhabited α] : Inhabited (GeneralizedContinuedFraction α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (GeneralizedContinuedFraction α) :=
   ⟨ofInteger default⟩
 
 /-- Returns the sequence of partial numerators `aᵢ` of `g`. -/
@@ -147,7 +147,7 @@ def TerminatedAt (g : GeneralizedContinuedFraction α) (n : ℕ) : Prop :=
 #align generalized_continued_fraction.terminated_at GeneralizedContinuedFraction.TerminatedAt
 
 /-- It is decidable whether a gcf terminated at a given position. -/
-instance terminatedAtDecidable (g : GeneralizedContinuedFraction α) (n : ℕ) :
+instance (priority := 10000) terminatedAtDecidable (g : GeneralizedContinuedFraction α) (n : ℕ) :
     Decidable (g.TerminatedAt n) := by
   unfold TerminatedAt
   infer_instance
@@ -173,7 +173,7 @@ def coeFn : GeneralizedContinuedFraction α → GeneralizedContinuedFraction β 
   fun g ↦ ⟨(g.h : β), (g.s.map (↑) : Stream'.Seq <| Pair β)⟩
 
 /-- Coerce a gcf by elementwise coercion. -/
-instance : Coe (GeneralizedContinuedFraction α) (GeneralizedContinuedFraction β) :=
+instance (priority := 10000) : Coe (GeneralizedContinuedFraction α) (GeneralizedContinuedFraction β) :=
   ⟨coeFn⟩
 
 @[simp, norm_cast]
@@ -232,11 +232,11 @@ def ofInteger (a : α) : SimpleContinuedFraction α :=
   ⟨GeneralizedContinuedFraction.ofInteger a, fun n aₙ h ↦ by cases h⟩
 #align simple_continued_fraction.of_integer SimpleContinuedFraction.ofInteger
 
-instance : Inhabited (SimpleContinuedFraction α) :=
+instance (priority := 10000) : Inhabited (SimpleContinuedFraction α) :=
   ⟨ofInteger 1⟩
 
 /-- Lift a scf to a gcf using the inclusion map. -/
-instance : Coe (SimpleContinuedFraction α) (GeneralizedContinuedFraction α) :=
+instance (priority := 10000) : Coe (SimpleContinuedFraction α) (GeneralizedContinuedFraction α) :=
   -- Porting note: originally `by unfold SimpleContinuedFraction; infer_instance`
   ⟨Subtype.val⟩
 
@@ -280,11 +280,11 @@ def ofInteger (a : α) : ContinuedFraction α :=
   ⟨SimpleContinuedFraction.ofInteger a, fun n bₙ h ↦ by cases h⟩
 #align continued_fraction.of_integer ContinuedFraction.ofInteger
 
-instance : Inhabited (ContinuedFraction α) :=
+instance (priority := 10000) : Inhabited (ContinuedFraction α) :=
   ⟨ofInteger 0⟩
 
 /-- Lift a cf to a scf using the inclusion map. -/
-instance : Coe (ContinuedFraction α) (SimpleContinuedFraction α) :=
+instance (priority := 10000) : Coe (ContinuedFraction α) (SimpleContinuedFraction α) :=
   -- Porting note: originally `by unfold ContinuedFraction; infer_instance`
   ⟨Subtype.val⟩
 
@@ -294,7 +294,7 @@ instance : Coe (ContinuedFraction α) (SimpleContinuedFraction α) :=
 #noalign continued_fraction.coe_to_simple_continued_fraction
 
 /-- Lift a cf to a scf using the inclusion map. -/
-instance : Coe (ContinuedFraction α) (GeneralizedContinuedFraction α) :=
+instance (priority := 10000) : Coe (ContinuedFraction α) (GeneralizedContinuedFraction α) :=
   ⟨fun c ↦ c.val⟩
   -- Porting note: was `fun c ↦ ↑(↑c : SimpleContinuedFraction α)`
 

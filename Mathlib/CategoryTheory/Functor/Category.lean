@@ -43,7 +43,7 @@ this is another small category at that level.
 However if `C` and `D` are both large categories at the same universe level,
 this is a small category at the next higher level.
 -/
-instance Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
+instance (priority := 10000) Functor.category : Category.{max u₁ v₂} (C ⥤ D) where
   Hom F G := NatTrans F G
   id F := NatTrans.id F
   comp α β := vcomp α β

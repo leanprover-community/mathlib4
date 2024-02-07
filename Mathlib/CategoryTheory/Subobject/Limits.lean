@@ -191,7 +191,7 @@ theorem kernelSubobject_zero {A B : C} : kernelSubobject (0 : A ⟶ B) = ⊤ :=
   (isIso_iff_mk_eq_top _).mp (by infer_instance)
 #align category_theory.limits.kernel_subobject_zero CategoryTheory.Limits.kernelSubobject_zero
 
-instance isIso_kernelSubobject_zero_arrow : IsIso (kernelSubobject (0 : X ⟶ Y)).arrow :=
+instance (priority := 10000) isIso_kernelSubobject_zero_arrow : IsIso (kernelSubobject (0 : X ⟶ Y)).arrow :=
   (isIso_arrow_iff_eq_top _).mpr kernelSubobject_zero
 #align category_theory.limits.is_iso_kernel_subobject_zero_arrow CategoryTheory.Limits.isIso_kernelSubobject_zero_arrow
 
@@ -234,7 +234,7 @@ theorem kernelSubobject_comp_mono (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶
   le_antisymm (le_kernelSubobject _ _ ((cancel_mono h).mp (by simp))) (kernelSubobject_comp_le f h)
 #align category_theory.limits.kernel_subobject_comp_mono CategoryTheory.Limits.kernelSubobject_comp_mono
 
-instance kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶ Z) [Mono h] :
+instance (priority := 10000) kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h : Y ⟶ Z) [Mono h] :
     IsIso (Subobject.ofLE _ _ (kernelSubobject_comp_le f h)) := by
   rw [ofLE_mk_le_mk_of_comm (kernelCompMono f h).inv]
   · infer_instance
@@ -320,7 +320,7 @@ def factorThruImageSubobject : X ⟶ imageSubobject f :=
   factorThruImage f ≫ (imageSubobjectIso f).inv
 #align category_theory.limits.factor_thru_image_subobject CategoryTheory.Limits.factorThruImageSubobject
 
-instance [HasEqualizers C] : Epi (factorThruImageSubobject f) := by
+instance (priority := 10000) [HasEqualizers C] : Epi (factorThruImageSubobject f) := by
   dsimp [factorThruImageSubobject]
   apply epi_comp
 
@@ -389,7 +389,7 @@ is an epimorphism when `h` is an epimorphism.
 In general this does not imply that `imageSubobject (h ≫ f) = imageSubobject f`,
 although it will when the ambient category is abelian.
  -/
-instance imageSubobject_comp_le_epi_of_epi {X' : C} (h : X' ⟶ X) [Epi h] (f : X ⟶ Y) [HasImage f]
+instance (priority := 10000) imageSubobject_comp_le_epi_of_epi {X' : C} (h : X' ⟶ X) [Epi h] (f : X ⟶ Y) [HasImage f]
     [HasImage (h ≫ f)] : Epi (Subobject.ofLE _ _ (imageSubobject_comp_le h f)) := by
   rw [ofLE_mk_le_mk_of_comm (image.preComp h f)]
   · infer_instance

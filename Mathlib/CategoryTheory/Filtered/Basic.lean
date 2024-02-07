@@ -118,7 +118,7 @@ example (α : Type u) [SemilatticeSup α] [OrderBot α] : IsFiltered α := by in
 
 example (α : Type u) [SemilatticeSup α] [OrderTop α] : IsFiltered α := by infer_instance
 
-instance : IsFiltered (Discrete PUnit) where
+instance (priority := 10000) : IsFiltered (Discrete PUnit) where
   cocone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨Subsingleton.elim _ _⟩⟩, trivial⟩
   cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
     apply ULift.ext
@@ -545,7 +545,7 @@ example (α : Type u) [SemilatticeInf α] [OrderBot α] : IsCofiltered α := by 
 
 example (α : Type u) [SemilatticeInf α] [OrderTop α] : IsCofiltered α := by infer_instance
 
-instance : IsCofiltered (Discrete PUnit) where
+instance (priority := 10000) : IsCofiltered (Discrete PUnit) where
   cone_objs X Y := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, ⟨⟨Subsingleton.elim _ _⟩⟩, trivial⟩
   cone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
     apply ULift.ext
@@ -807,7 +807,7 @@ section Opposite
 
 open Opposite
 
-instance isCofilteredOrEmpty_op_of_isFilteredOrEmpty [IsFilteredOrEmpty C] :
+instance (priority := 10000) isCofilteredOrEmpty_op_of_isFilteredOrEmpty [IsFilteredOrEmpty C] :
     IsCofilteredOrEmpty Cᵒᵖ where
   cone_objs X Y :=
     ⟨op (IsFiltered.max X.unop Y.unop), (IsFiltered.leftToMax _ _).op,
@@ -818,11 +818,11 @@ instance isCofilteredOrEmpty_op_of_isFilteredOrEmpty [IsFilteredOrEmpty C] :
       congr 1
       exact IsFiltered.coeq_condition f.unop g.unop⟩
 
-instance isCofiltered_op_of_isFiltered [IsFiltered C] : IsCofiltered Cᵒᵖ where
+instance (priority := 10000) isCofiltered_op_of_isFiltered [IsFiltered C] : IsCofiltered Cᵒᵖ where
   nonempty := letI : Nonempty C := IsFiltered.nonempty; inferInstance
 #align category_theory.is_cofiltered_op_of_is_filtered CategoryTheory.isCofiltered_op_of_isFiltered
 
-instance isFilteredOrEmpty_op_of_isCofilteredOrEmpty [IsCofilteredOrEmpty C] :
+instance (priority := 10000) isFilteredOrEmpty_op_of_isCofilteredOrEmpty [IsCofilteredOrEmpty C] :
     IsFilteredOrEmpty Cᵒᵖ where
   cocone_objs X Y :=
     ⟨op (IsCofiltered.min X.unop Y.unop), (IsCofiltered.minToLeft X.unop Y.unop).op,
@@ -833,7 +833,7 @@ instance isFilteredOrEmpty_op_of_isCofilteredOrEmpty [IsCofilteredOrEmpty C] :
       congr 1
       exact IsCofiltered.eq_condition f.unop g.unop⟩
 
-instance isFiltered_op_of_isCofiltered [IsCofiltered C] : IsFiltered Cᵒᵖ where
+instance (priority := 10000) isFiltered_op_of_isCofiltered [IsCofiltered C] : IsFiltered Cᵒᵖ where
   nonempty := letI : Nonempty C := IsCofiltered.nonempty; inferInstance
 #align category_theory.is_filtered_op_of_is_cofiltered CategoryTheory.isFiltered_op_of_isCofiltered
 
@@ -857,22 +857,22 @@ end Opposite
 
 section ULift
 
-instance [IsFiltered C] : IsFiltered (ULift.{u₂} C) :=
+instance (priority := 10000) [IsFiltered C] : IsFiltered (ULift.{u₂} C) :=
   IsFiltered.of_equivalence ULift.equivalence
 
-instance [IsCofiltered C] : IsCofiltered (ULift.{u₂} C) :=
+instance (priority := 10000) [IsCofiltered C] : IsCofiltered (ULift.{u₂} C) :=
   IsCofiltered.of_equivalence ULift.equivalence
 
-instance [IsFiltered C] : IsFiltered (ULiftHom C) :=
+instance (priority := 10000) [IsFiltered C] : IsFiltered (ULiftHom C) :=
   IsFiltered.of_equivalence ULiftHom.equiv
 
-instance [IsCofiltered C] : IsCofiltered (ULiftHom C) :=
+instance (priority := 10000) [IsCofiltered C] : IsCofiltered (ULiftHom C) :=
   IsCofiltered.of_equivalence ULiftHom.equiv
 
-instance [IsFiltered C] : IsFiltered (AsSmall C) :=
+instance (priority := 10000) [IsFiltered C] : IsFiltered (AsSmall C) :=
   IsFiltered.of_equivalence AsSmall.equiv
 
-instance [IsCofiltered C] : IsCofiltered (AsSmall C) :=
+instance (priority := 10000) [IsCofiltered C] : IsCofiltered (AsSmall C) :=
   IsCofiltered.of_equivalence AsSmall.equiv
 
 end ULift

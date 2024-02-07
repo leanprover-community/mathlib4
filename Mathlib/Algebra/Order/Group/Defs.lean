@@ -45,7 +45,7 @@ class OrderedCommGroup (α : Type u) extends CommGroup α, PartialOrder α where
 attribute [to_additive] OrderedCommGroup
 
 @[to_additive]
-instance OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
+instance (priority := 10000) OrderedCommGroup.to_covariantClass_left_le (α : Type u) [OrderedCommGroup α] :
     CovariantClass α α (· * ·) (· ≤ ·) where
       elim a b c bc := OrderedCommGroup.mul_le_mul_left b c bc a
 #align ordered_comm_group.to_covariant_class_left_le OrderedCommGroup.to_covariantClass_left_le

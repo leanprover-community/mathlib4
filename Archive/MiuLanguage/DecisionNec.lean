@@ -106,7 +106,7 @@ def Goodm (xs : Miustr) : Prop :=
   List.headI xs = M ∧ ¬M ∈ List.tail xs
 #align miu.goodm Miu.Goodm
 
-instance : DecidablePred Goodm := by unfold Goodm; infer_instance
+instance (priority := 10000) : DecidablePred Goodm := by unfold Goodm; infer_instance
 
 /-- Demonstration that `"MI"` starts with `M` and has no `M` in its tail.
 -/
@@ -211,7 +211,7 @@ def Decstr (en : Miustr) :=
   Goodm en ∧ (count I en % 3 = 1 ∨ count I en % 3 = 2)
 #align miu.decstr Miu.Decstr
 
-instance : DecidablePred Decstr := by unfold Decstr; infer_instance
+instance (priority := 10000) : DecidablePred Decstr := by unfold Decstr; infer_instance
 
 /-- Suppose `en : Miustr`. If `en` is `Derivable`, then the condition `Decstr en` holds.
 -/

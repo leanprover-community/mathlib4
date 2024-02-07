@@ -285,7 +285,7 @@ def id : LaxMonoidalFunctor.{v₁, v₁} C C :=
     μ := fun X Y => 𝟙 _ }
 #align category_theory.lax_monoidal_functor.id CategoryTheory.LaxMonoidalFunctor.id
 
-instance : Inhabited (LaxMonoidalFunctor C C) :=
+instance (priority := 10000) : Inhabited (LaxMonoidalFunctor C C) :=
   ⟨id C⟩
 
 end LaxMonoidalFunctor
@@ -402,7 +402,7 @@ def id : MonoidalFunctor.{v₁, v₁} C C :=
     μ := fun X Y => 𝟙 _ }
 #align category_theory.monoidal_functor.id CategoryTheory.MonoidalFunctor.id
 
-instance : Inhabited (MonoidalFunctor C C) :=
+instance (priority := 10000) : Inhabited (MonoidalFunctor C C) :=
   ⟨id C⟩
 
 end

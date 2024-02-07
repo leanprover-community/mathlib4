@@ -26,7 +26,7 @@ class IsInvariantSubring : Prop where
   smul_mem : ∀ (m : M) {x : R}, x ∈ S → m • x ∈ S
 #align is_invariant_subring IsInvariantSubring
 
-instance IsInvariantSubring.toMulSemiringAction [IsInvariantSubring M S] :
+instance (priority := 10000) IsInvariantSubring.toMulSemiringAction [IsInvariantSubring M S] :
     MulSemiringAction M S where
   smul m x := ⟨m • ↑x, IsInvariantSubring.smul_mem m x.2⟩
   one_smul s := Subtype.eq <| one_smul M (s : R)

@@ -68,10 +68,10 @@ namespace Set
 /-! ### Complete lattice and complete Boolean algebra instances -/
 
 
-instance : InfSet (Set α) :=
+instance (priority := 10000) : InfSet (Set α) :=
   ⟨fun s => { a | ∀ t ∈ s, a ∈ t }⟩
 
-instance : SupSet (Set α) :=
+instance (priority := 10000) : SupSet (Set α) :=
   ⟨fun s => { a | ∃ t ∈ s, a ∈ t }⟩
 
 /-- Intersection of a set of sets. -/
@@ -239,7 +239,7 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
   mem_iInter₂.2 h
 #align set.mem_Inter₂_of_mem Set.mem_iInter₂_of_mem
 
-instance Set.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
+instance (priority := 10000) Set.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
   { instBooleanAlgebraSet with
     le_sSup := fun s t t_in a a_in => ⟨t, t_in, a_in⟩
     sSup_le := fun s t h a ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
@@ -300,7 +300,7 @@ end kernImage
 /-! ### Union and intersection over an indexed family of sets -/
 
 
-instance : OrderTop (Set α) where
+instance (priority := 10000) : OrderTop (Set α) where
   top := univ
   le_top := by simp
 

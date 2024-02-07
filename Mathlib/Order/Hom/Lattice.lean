@@ -327,25 +327,25 @@ end BooleanAlgebra
 
 variable [FunLike F α β]
 
-instance [Sup α] [Sup β] [SupHomClass F α β] : CoeTC F (SupHom α β) :=
+instance (priority := 10000) [Sup α] [Sup β] [SupHomClass F α β] : CoeTC F (SupHom α β) :=
   ⟨fun f => ⟨f, map_sup f⟩⟩
 
-instance [Inf α] [Inf β] [InfHomClass F α β] : CoeTC F (InfHom α β) :=
+instance (priority := 10000) [Inf α] [Inf β] [InfHomClass F α β] : CoeTC F (InfHom α β) :=
   ⟨fun f => ⟨f, map_inf f⟩⟩
 
-instance [Sup α] [Sup β] [Bot α] [Bot β] [SupBotHomClass F α β] : CoeTC F (SupBotHom α β) :=
+instance (priority := 10000) [Sup α] [Sup β] [Bot α] [Bot β] [SupBotHomClass F α β] : CoeTC F (SupBotHom α β) :=
   ⟨fun f => ⟨f, map_bot f⟩⟩
 
-instance [Inf α] [Inf β] [Top α] [Top β] [InfTopHomClass F α β] : CoeTC F (InfTopHom α β) :=
+instance (priority := 10000) [Inf α] [Inf β] [Top α] [Top β] [InfTopHomClass F α β] : CoeTC F (InfTopHom α β) :=
   ⟨fun f => ⟨f, map_top f⟩⟩
 
-instance [Lattice α] [Lattice β] [LatticeHomClass F α β] : CoeTC F (LatticeHom α β) :=
+instance (priority := 10000) [Lattice α] [Lattice β] [LatticeHomClass F α β] : CoeTC F (LatticeHom α β) :=
   ⟨fun f =>
     { toFun := f
       map_sup' := map_sup f
       map_inf' := map_inf f }⟩
 
-instance [Lattice α] [Lattice β] [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] :
+instance (priority := 10000) [Lattice α] [Lattice β] [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] :
     CoeTC F (BoundedLatticeHom α β) :=
   ⟨fun f =>
     { (f : LatticeHom α β) with
@@ -363,11 +363,11 @@ section Sup
 
 variable [Sup β] [Sup γ] [Sup δ]
 
-instance : FunLike (SupHom α β) α β where
+instance (priority := 10000) : FunLike (SupHom α β) α β where
   coe := SupHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-instance : SupHomClass (SupHom α β) α β where
+instance (priority := 10000) : SupHomClass (SupHom α β) α β where
   map_sup := SupHom.map_sup'
 
 @[simp] lemma toFun_eq_coe (f : SupHom α β) : f.toFun = f := rfl
@@ -403,7 +403,7 @@ protected def id : SupHom α α :=
   ⟨id, fun _ _ => rfl⟩
 #align sup_hom.id SupHom.id
 
-instance : Inhabited (SupHom α α) :=
+instance (priority := 10000) : Inhabited (SupHom α α) :=
   ⟨SupHom.id α⟩
 
 @[simp]
@@ -480,28 +480,28 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
 
 variable {α}
 
-instance : Sup (SupHom α β) :=
+instance (priority := 10000) : Sup (SupHom α β) :=
   ⟨fun f g =>
     ⟨f ⊔ g, fun a b => by
       rw [Pi.sup_apply, map_sup, map_sup]
       exact sup_sup_sup_comm _ _ _ _⟩⟩
 
-instance : SemilatticeSup (SupHom α β) :=
+instance (priority := 10000) : SemilatticeSup (SupHom α β) :=
   (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
 
-instance [Bot β] : Bot (SupHom α β) :=
+instance (priority := 10000) [Bot β] : Bot (SupHom α β) :=
   ⟨SupHom.const α ⊥⟩
 
-instance [Top β] : Top (SupHom α β) :=
+instance (priority := 10000) [Top β] : Top (SupHom α β) :=
   ⟨SupHom.const α ⊤⟩
 
-instance [OrderBot β] : OrderBot (SupHom α β) :=
+instance (priority := 10000) [OrderBot β] : OrderBot (SupHom α β) :=
   OrderBot.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
-instance [OrderTop β] : OrderTop (SupHom α β) :=
+instance (priority := 10000) [OrderTop β] : OrderTop (SupHom α β) :=
   OrderTop.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
-instance [BoundedOrder β] : BoundedOrder (SupHom α β) :=
+instance (priority := 10000) [BoundedOrder β] : BoundedOrder (SupHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[simp]
@@ -547,11 +547,11 @@ section Inf
 
 variable [Inf β] [Inf γ] [Inf δ]
 
-instance : FunLike (InfHom α β) α β where
+instance (priority := 10000) : FunLike (InfHom α β) α β where
   coe := InfHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-instance : InfHomClass (InfHom α β) α β where
+instance (priority := 10000) : InfHomClass (InfHom α β) α β where
   map_inf := InfHom.map_inf'
 
 @[simp] lemma toFun_eq_coe (f : InfHom α β) : f.toFun = (f : α → β) := rfl
@@ -588,7 +588,7 @@ protected def id : InfHom α α :=
   ⟨id, fun _ _ => rfl⟩
 #align inf_hom.id InfHom.id
 
-instance : Inhabited (InfHom α α) :=
+instance (priority := 10000) : Inhabited (InfHom α α) :=
   ⟨InfHom.id α⟩
 
 @[simp]
@@ -665,28 +665,28 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
 
 variable {α}
 
-instance : Inf (InfHom α β) :=
+instance (priority := 10000) : Inf (InfHom α β) :=
   ⟨fun f g =>
     ⟨f ⊓ g, fun a b => by
       rw [Pi.inf_apply, map_inf, map_inf]
       exact inf_inf_inf_comm _ _ _ _⟩⟩
 
-instance : SemilatticeInf (InfHom α β) :=
+instance (priority := 10000) : SemilatticeInf (InfHom α β) :=
   (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
 
-instance [Bot β] : Bot (InfHom α β) :=
+instance (priority := 10000) [Bot β] : Bot (InfHom α β) :=
   ⟨InfHom.const α ⊥⟩
 
-instance [Top β] : Top (InfHom α β) :=
+instance (priority := 10000) [Top β] : Top (InfHom α β) :=
   ⟨InfHom.const α ⊤⟩
 
-instance [OrderBot β] : OrderBot (InfHom α β) :=
+instance (priority := 10000) [OrderBot β] : OrderBot (InfHom α β) :=
   OrderBot.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
-instance [OrderTop β] : OrderTop (InfHom α β) :=
+instance (priority := 10000) [OrderTop β] : OrderTop (InfHom α β) :=
   OrderTop.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
-instance [BoundedOrder β] : BoundedOrder (InfHom α β) :=
+instance (priority := 10000) [BoundedOrder β] : BoundedOrder (InfHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[simp]
@@ -736,7 +736,7 @@ def toBotHom (f : SupBotHom α β) : BotHom α β :=
   { f with }
 #align sup_bot_hom.to_bot_hom SupBotHom.toBotHom
 
-instance : FunLike (SupBotHom α β) α β
+instance (priority := 10000) : FunLike (SupBotHom α β) α β
     where
   coe f := f.toFun
   coe_injective' f g h := by
@@ -744,7 +744,7 @@ instance : FunLike (SupBotHom α β) α β
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
-instance : SupBotHomClass (SupBotHom α β) α β
+instance (priority := 10000) : SupBotHomClass (SupBotHom α β) α β
     where
   map_sup f := f.map_sup'
   map_bot f := f.map_bot'
@@ -784,7 +784,7 @@ protected def id : SupBotHom α α :=
   ⟨SupHom.id α, rfl⟩
 #align sup_bot_hom.id SupBotHom.id
 
-instance : Inhabited (SupBotHom α α) :=
+instance (priority := 10000) : Inhabited (SupBotHom α α) :=
   ⟨SupBotHom.id α⟩
 
 @[simp]
@@ -842,13 +842,13 @@ end Sup
 
 variable [SemilatticeSup β] [OrderBot β]
 
-instance : Sup (SupBotHom α β) :=
+instance (priority := 10000) : Sup (SupBotHom α β) :=
   ⟨fun f g => { f.toBotHom ⊔ g.toBotHom with toSupHom := f.toSupHom ⊔ g.toSupHom }⟩
 
-instance : SemilatticeSup (SupBotHom α β) :=
+instance (priority := 10000) : SemilatticeSup (SupBotHom α β) :=
   (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
 
-instance : OrderBot (SupBotHom α β) where
+instance (priority := 10000) : OrderBot (SupBotHom α β) where
   bot := ⟨⊥, rfl⟩
   bot_le _ _ := bot_le
 
@@ -890,14 +890,14 @@ def toTopHom (f : InfTopHom α β) : TopHom α β :=
   { f with }
 #align inf_top_hom.to_top_hom InfTopHom.toTopHom
 
-instance : FunLike (InfTopHom α β) α β where
+instance (priority := 10000) : FunLike (InfTopHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
-instance : InfTopHomClass (InfTopHom α β) α β where
+instance (priority := 10000) : InfTopHomClass (InfTopHom α β) α β where
   map_inf f := f.map_inf'
   map_top f := f.map_top'
 
@@ -936,7 +936,7 @@ protected def id : InfTopHom α α :=
   ⟨InfHom.id α, rfl⟩
 #align inf_top_hom.id InfTopHom.id
 
-instance : Inhabited (InfTopHom α α) :=
+instance (priority := 10000) : Inhabited (InfTopHom α α) :=
   ⟨InfTopHom.id α⟩
 
 @[simp]
@@ -994,13 +994,13 @@ end Inf
 
 variable [SemilatticeInf β] [OrderTop β]
 
-instance : Inf (InfTopHom α β) :=
+instance (priority := 10000) : Inf (InfTopHom α β) :=
   ⟨fun f g => { f.toTopHom ⊓ g.toTopHom with toInfHom := f.toInfHom ⊓ g.toInfHom }⟩
 
-instance : SemilatticeInf (InfTopHom α β) :=
+instance (priority := 10000) : SemilatticeInf (InfTopHom α β) :=
   (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
 
-instance : OrderTop (InfTopHom α β) where
+instance (priority := 10000) : OrderTop (InfTopHom α β) where
   top := ⟨⊤, rfl⟩
   le_top _ _ := le_top
 
@@ -1038,11 +1038,11 @@ def toInfHom (f : LatticeHom α β) : InfHom α β :=
   { f with }
 #align lattice_hom.to_inf_hom LatticeHom.toInfHom
 
-instance : FunLike (LatticeHom α β) α β where
+instance (priority := 10000) : FunLike (LatticeHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
-instance : LatticeHomClass (LatticeHom α β) α β where
+instance (priority := 10000) : LatticeHomClass (LatticeHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
 
@@ -1082,7 +1082,7 @@ protected def id : LatticeHom α α where
   map_inf' _ _ := rfl
 #align lattice_hom.id LatticeHom.id
 
-instance : Inhabited (LatticeHom α α) :=
+instance (priority := 10000) : Inhabited (LatticeHom α α) :=
   ⟨LatticeHom.id α⟩
 
 @[simp]
@@ -1222,11 +1222,11 @@ def toBoundedOrderHom (f : BoundedLatticeHom α β) : BoundedOrderHom α β :=
   { f, (f.toLatticeHom : α →o β) with }
 #align bounded_lattice_hom.to_bounded_order_hom BoundedLatticeHom.toBoundedOrderHom
 
-instance instFunLike : FunLike (BoundedLatticeHom α β) α β where
+instance (priority := 10000) instFunLike : FunLike (BoundedLatticeHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
 
-instance instBoundedLatticeHomClass : BoundedLatticeHomClass (BoundedLatticeHom α β) α β where
+instance (priority := 10000) instBoundedLatticeHomClass : BoundedLatticeHomClass (BoundedLatticeHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_top f := f.map_top'
@@ -1268,7 +1268,7 @@ protected def id : BoundedLatticeHom α α :=
   { LatticeHom.id α, BoundedOrderHom.id α with }
 #align bounded_lattice_hom.id BoundedLatticeHom.id
 
-instance : Inhabited (BoundedLatticeHom α α) :=
+instance (priority := 10000) : Inhabited (BoundedLatticeHom α α) :=
   ⟨BoundedLatticeHom.id α⟩
 
 @[simp]

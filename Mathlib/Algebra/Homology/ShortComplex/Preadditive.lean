@@ -27,25 +27,25 @@ variable {S₁ S₂ S₃ : ShortComplex C}
 
 attribute [local simp] Hom.comm₁₂ Hom.comm₂₃
 
-instance : Add (S₁ ⟶ S₂) where
+instance (priority := 10000) : Add (S₁ ⟶ S₂) where
   add φ φ' :=
     { τ₁ := φ.τ₁ + φ'.τ₁
       τ₂ := φ.τ₂ + φ'.τ₂
       τ₃ := φ.τ₃ + φ'.τ₃ }
 
-instance : Sub (S₁ ⟶ S₂) where
+instance (priority := 10000) : Sub (S₁ ⟶ S₂) where
   sub φ φ' :=
     { τ₁ := φ.τ₁ - φ'.τ₁
       τ₂ := φ.τ₂ - φ'.τ₂
       τ₃ := φ.τ₃ - φ'.τ₃ }
 
-instance : Neg (S₁ ⟶ S₂) where
+instance (priority := 10000) : Neg (S₁ ⟶ S₂) where
   neg φ :=
     { τ₁ := -φ.τ₁
       τ₂ := -φ.τ₂
       τ₃ := -φ.τ₃ }
 
-instance : AddCommGroup (S₁ ⟶ S₂) where
+instance (priority := 10000) : AddCommGroup (S₁ ⟶ S₂) where
   add_assoc := fun a b c => by ext <;> apply add_assoc
   add_zero := fun a => by ext <;> apply add_zero
   zero_add := fun a => by ext <;> apply zero_add
@@ -63,7 +63,7 @@ instance : AddCommGroup (S₁ ⟶ S₂) where
 @[simp] lemma neg_τ₂ (φ : S₁ ⟶ S₂) : (-φ).τ₂ = -φ.τ₂ := rfl
 @[simp] lemma neg_τ₃ (φ : S₁ ⟶ S₂) : (-φ).τ₃ = -φ.τ₃ := rfl
 
-instance : Preadditive (ShortComplex C) where
+instance (priority := 10000) : Preadditive (ShortComplex C) where
 
 section LeftHomology
 
@@ -165,10 +165,10 @@ lemma cyclesMap_sub : cyclesMap (φ - φ') = cyclesMap φ - cyclesMap φ' :=
 
 end
 
-instance leftHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
+instance (priority := 10000) leftHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
   (leftHomologyFunctor C).Additive where
 
-instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] :
+instance (priority := 10000) cyclesFunctor_additive [HasKernels C] [HasCokernels C] :
   (cyclesFunctor C).Additive where
 
 end LeftHomology
@@ -276,10 +276,10 @@ lemma opcyclesMap_sub : opcyclesMap (φ - φ') = opcyclesMap φ - opcyclesMap φ
 
 end
 
-instance rightHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
+instance (priority := 10000) rightHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
   (rightHomologyFunctor C).Additive where
 
-instance opcyclesFunctor_additive [HasKernels C] [HasCokernels C] :
+instance (priority := 10000) opcyclesFunctor_additive [HasKernels C] [HasCokernels C] :
   (opcyclesFunctor C).Additive where
 
 end RightHomology
@@ -345,7 +345,7 @@ lemma homologyMap_sub : homologyMap (φ - φ') = homologyMap φ - homologyMap φ
 
 end
 
-instance homologyFunctor_additive [CategoryWithHomology C] :
+instance (priority := 10000) homologyFunctor_additive [CategoryWithHomology C] :
   (homologyFunctor C).Additive where
 
 end Homology

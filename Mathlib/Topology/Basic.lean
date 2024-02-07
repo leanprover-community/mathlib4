@@ -999,7 +999,7 @@ theorem OrderTop.tendsto_atTop_nhds [PartialOrder α] [OrderTop α] (f : α → 
 #align order_top.tendsto_at_top_nhds OrderTop.tendsto_atTop_nhds
 
 @[simp]
-instance nhds_neBot : NeBot (𝓝 x) :=
+instance (priority := 10000) nhds_neBot : NeBot (𝓝 x) :=
   neBot_of_le (pure_le_nhds x)
 #align nhds_ne_bot nhds_neBot
 
@@ -1477,7 +1477,7 @@ theorem le_nhds_lim {f : Filter X} (h : ∃ x, f ≤ 𝓝 x) : f ≤ 𝓝 (@lim 
 /-- If `g` tends to some `𝓝 x` along `f`, then it tends to `𝓝 (Filter.limUnder f g)`. We formulate
 this lemma with a `[Nonempty X]` argument of `lim` derived from `h` to make it useful for types
 without a `[Nonempty X]` instance. Because of the built-in proof irrelevance, Lean will unify this
-instance with any other instance. -/
+instance (priority := 10000) with any other instance. -/
 theorem tendsto_nhds_limUnder {f : Filter α} {g : α → X} (h : ∃ x, Tendsto g f (𝓝 x)) :
     Tendsto g f (𝓝 (@limUnder _ _ _ (nonempty_of_exists h) f g)) :=
   le_nhds_lim h

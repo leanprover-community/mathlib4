@@ -124,7 +124,7 @@ local infixl:70 "⌊" => contractRight (R := R) (M := M) (Q := Q)
 
 -- Porting note: Lean needs to be reminded of this instance otherwise the statement of the
 -- next result times out
-instance : SMul R (CliffordAlgebra Q) := inferInstance
+instance (priority := 10000) : SMul R (CliffordAlgebra Q) := inferInstance
 
 /-- This is [grinberg_clifford_2016][] Theorem 6  -/
 theorem contractLeft_ι_mul (a : M) (b : CliffordAlgebra Q) :
@@ -400,7 +400,7 @@ def equivExterior [Invertible (2 : R)] : CliffordAlgebra Q ≃ₗ[R] ExteriorAlg
 #align clifford_algebra.equiv_exterior CliffordAlgebra.equivExterior
 
 /-- A `CliffordAlgebra` over a nontrivial ring is nontrivial, in characteristic not two. -/
-instance [Nontrivial R] [Invertible (2 : R)] :
+instance (priority := 10000) [Nontrivial R] [Invertible (2 : R)] :
     Nontrivial (CliffordAlgebra Q) := (equivExterior Q).symm.injective.nontrivial
 
 end CliffordAlgebra

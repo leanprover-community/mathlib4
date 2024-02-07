@@ -49,14 +49,14 @@ protected theorem induction_on {α : Sort u} {r : α → α → Prop} {β : Quot
     (h : ∀ a, β (Quot.mk r a)) : β q :=
   ind h q
 
-instance (r : α → α → Prop) [Inhabited α] : Inhabited (Quot r) :=
+instance (priority := 10000) (r : α → α → Prop) [Inhabited α] : Inhabited (Quot r) :=
   ⟨⟦default⟧⟩
 
 protected instance Subsingleton [Subsingleton α] : Subsingleton (Quot ra) :=
   ⟨fun x ↦ Quot.induction_on x fun _ ↦ Quot.ind fun _ ↦ congr_arg _ (Subsingleton.elim _ _)⟩
 #align quot.subsingleton Quot.Subsingleton
 
-instance [Unique α] : Unique (Quot ra) := Unique.mk' _
+instance (priority := 10000) [Unique α] : Unique (Quot ra) := Unique.mk' _
 
 /-- Recursion on two `Quotient` arguments `a` and `b`, result type depends on `⟦a⟧` and `⟦b⟧`. -/
 protected def hrecOn₂ (qa : Quot ra) (qb : Quot rb) (f : ∀ a b, φ ⟦a⟧ ⟦b⟧)
@@ -188,24 +188,24 @@ protected theorem induction_on₃ {δ : Quot r → Quot s → Quot t → Prop} (
     (fun a₂ ↦ Quot.ind (fun a₃ ↦ h a₁ a₂ a₃) q₃) q₂) q₁
 #align quot.induction_on₃ Quot.induction_on₃
 
-instance lift.decidablePred (r : α → α → Prop) (f : α → Prop) (h : ∀ a b, r a b → f a = f b)
+instance (priority := 10000) lift.decidablePred (r : α → α → Prop) (f : α → Prop) (h : ∀ a b, r a b → f a = f b)
     [hf : DecidablePred f] :
     DecidablePred (Quot.lift f h) :=
   fun q ↦ Quot.recOnSubsingleton (motive := λ _ => Decidable _) q hf
 
 /-- Note that this provides `DecidableRel (Quot.Lift₂ f ha hb)` when `α = β`. -/
-instance lift₂.decidablePred (r : α → α → Prop) (s : β → β → Prop) (f : α → β → Prop)
+instance (priority := 10000) lift₂.decidablePred (r : α → α → Prop) (s : β → β → Prop) (f : α → β → Prop)
     (ha : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂) (hb : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b)
     [hf : ∀ a, DecidablePred (f a)] (q₁ : Quot r) :
     DecidablePred (Quot.lift₂ f ha hb q₁) :=
   fun q₂ ↦ Quot.recOnSubsingleton₂ q₁ q₂ hf
 
-instance (r : α → α → Prop) (q : Quot r) (f : α → Prop) (h : ∀ a b, r a b → f a = f b)
+instance (priority := 10000) (r : α → α → Prop) (q : Quot r) (f : α → Prop) (h : ∀ a b, r a b → f a = f b)
     [DecidablePred f] :
     Decidable (Quot.liftOn q f h) :=
   Quot.lift.decidablePred _ _ _ _
 
-instance (r : α → α → Prop) (s : β → β → Prop) (q₁ : Quot r) (q₂ : Quot s) (f : α → β → Prop)
+instance (priority := 10000) (r : α → α → Prop) (s : β → β → Prop) (q₁ : Quot r) (q₂ : Quot s) (f : α → β → Prop)
     (ha : ∀ a b₁ b₂, s b₁ b₂ → f a b₁ = f a b₂) (hb : ∀ a₁ a₂ b, r a₁ a₂ → f a₁ b = f a₂ b)
     [∀ a, DecidablePred (f a)] :
     Decidable (Quot.liftOn₂ q₁ q₂ f ha hb) :=
@@ -227,15 +227,15 @@ variable {φ : Quotient sa → Quotient sb → Sort*}
 @[inherit_doc Quotient.mk]
 notation3:arg "⟦" a "⟧" => Quotient.mk _ a
 
-instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
+instance (priority := 10000) instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
   ⟨⟦default⟧⟩
 
-instance instSubsingletonQuotient (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
+instance (priority := 10000) instSubsingletonQuotient (s : Setoid α) [Subsingleton α] : Subsingleton (Quotient s) :=
   Quot.Subsingleton
 
-instance instUniqueQuotient (s : Setoid α) [Unique α] : Unique (Quotient s) := Unique.mk' _
+instance (priority := 10000) instUniqueQuotient (s : Setoid α) [Unique α] : Unique (Quotient s) := Unique.mk' _
 
-instance {α : Type*} [Setoid α] : IsEquiv α (· ≈ ·) where
+instance (priority := 10000) {α : Type*} [Setoid α] : IsEquiv α (· ≈ ·) where
   refl := Setoid.refl
   symm _ _ := Setoid.symm
   trans _ _ _ := Setoid.trans
@@ -274,22 +274,22 @@ theorem map₂_mk (f : α → β → γ) (h : ((· ≈ ·) ⇒ (· ≈ ·) ⇒ (
   rfl
 #align quotient.map₂_mk Quotient.map₂_mk
 
-instance lift.decidablePred (f : α → Prop) (h : ∀ a b, a ≈ b → f a = f b) [DecidablePred f] :
+instance (priority := 10000) lift.decidablePred (f : α → Prop) (h : ∀ a b, a ≈ b → f a = f b) [DecidablePred f] :
     DecidablePred (Quotient.lift f h) :=
   Quot.lift.decidablePred _ _ _
 
 /-- Note that this provides `DecidableRel (Quotient.lift₂ f h)` when `α = β`. -/
-instance lift₂.decidablePred (f : α → β → Prop)
+instance (priority := 10000) lift₂.decidablePred (f : α → β → Prop)
     (h : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ = f a₂ b₂)
     [hf : ∀ a, DecidablePred (f a)]
     (q₁ : Quotient sa) : DecidablePred (Quotient.lift₂ f h q₁) :=
   fun q₂ ↦ Quotient.recOnSubsingleton₂ q₁ q₂ hf
 
-instance (q : Quotient sa) (f : α → Prop) (h : ∀ a b, a ≈ b → f a = f b) [DecidablePred f] :
+instance (priority := 10000) (q : Quotient sa) (f : α → Prop) (h : ∀ a b, a ≈ b → f a = f b) [DecidablePred f] :
     Decidable (Quotient.liftOn q f h) :=
   Quotient.lift.decidablePred _ _ _
 
-instance (q₁ : Quotient sa) (q₂ : Quotient sb) (f : α → β → Prop)
+instance (priority := 10000) (q₁ : Quotient sa) (q₂ : Quotient sb) (f : α → β → Prop)
     (h : ∀ a₁ b₁ a₂ b₂, a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ = f a₂ b₂) [∀ a, DecidablePred (f a)] :
     Decidable (Quotient.liftOn₂ q₁ q₂ f h) :=
   Quotient.lift₂.decidablePred _ _ _ _
@@ -417,7 +417,7 @@ theorem Quotient.out_inj {s : Setoid α} {x y : Quotient s} : x.out = y.out ↔ 
 
 section Pi
 
-instance piSetoid {ι : Sort*} {α : ι → Sort*} [∀ i, Setoid (α i)] : Setoid (∀ i, α i) where
+instance (priority := 10000) piSetoid {ι : Sort*} {α : ι → Sort*} [∀ i, Setoid (α i)] : Setoid (∀ i, α i) where
   r a b := ∀ i, a i ≈ b i
   iseqv := ⟨fun _ _ ↦ Setoid.refl _,
             fun h _ ↦ Setoid.symm (h _),
@@ -481,7 +481,7 @@ def mk (a : α) : Trunc α :=
   Quot.mk _ a
 #align trunc.mk Trunc.mk
 
-instance [Inhabited α] : Inhabited (Trunc α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (Trunc α) :=
   ⟨mk default⟩
 
 /-- Any constant function lifts to a function out of the truncation -/
@@ -523,7 +523,7 @@ protected theorem eq (a b : Trunc α) : a = b :=
   Trunc.induction_on₂ a b fun _ _ ↦ Quot.sound trivial
 #align trunc.eq Trunc.eq
 
-instance instSubsingletonTrunc : Subsingleton (Trunc α) :=
+instance (priority := 10000) instSubsingletonTrunc : Subsingleton (Trunc α) :=
   ⟨Trunc.eq⟩
 
 /-- The `bind` operator for the `Trunc` monad. -/
@@ -536,11 +536,11 @@ def map (f : α → β) (q : Trunc α) : Trunc β :=
   bind q (Trunc.mk ∘ f)
 #align trunc.map Trunc.map
 
-instance : Monad Trunc where
+instance (priority := 10000) : Monad Trunc where
   pure := @Trunc.mk
   bind := @Trunc.bind
 
-instance : LawfulMonad Trunc where
+instance (priority := 10000) : LawfulMonad Trunc where
   id_map _ := Trunc.eq _ _
   pure_bind _ _ := rfl
   bind_assoc _ _ _ := Trunc.eq _ _
@@ -610,7 +610,7 @@ several different quotient relations on a type, for example quotient groups, rin
 
 -- porting note: Quotient.mk' is the equivalent of Lean 3's `Quotient.mk`
 /-- A version of `Quotient.mk` taking `{s : Setoid α}` as an implicit argument instead of an
-instance argument. -/
+instance (priority := 10000) argument. -/
 protected def mk'' (a : α) : Quotient s₁ :=
   Quot.mk s₁.1 a
 #align quotient.mk Quotient.mk'
@@ -622,7 +622,7 @@ theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Q
 #align quotient.surjective_quotient_mk' Quotient.surjective_Quotient_mk''
 
 /-- A version of `Quotient.liftOn` taking `{s : Setoid α}` as an implicit argument instead of an
-instance argument. -/
+instance (priority := 10000) argument. -/
 -- porting note: removed `@[elab_as_elim]` because it gave "unexpected eliminator resulting type"
 -- porting note: removed `@[reducible]` because it caused extremely slow `simp`
 protected def liftOn' (q : Quotient s₁) (f : α → φ) (h : ∀ a b, @Setoid.r α s₁ a b → f a = f b) :
@@ -655,7 +655,7 @@ protected theorem liftOn₂'_mk'' (f : α → β → γ) (h) (a : α) (b : β) :
   rfl
 
 /-- A version of `Quotient.ind` taking `{s : Setoid α}` as an implicit argument instead of an
-instance argument. -/
+instance (priority := 10000) argument. -/
 @[elab_as_elim]
 protected theorem ind' {p : Quotient s₁ → Prop} (h : ∀ a, p (Quotient.mk'' a)) (q : Quotient s₁) :
     p q :=
@@ -791,7 +791,7 @@ protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b �
 #align quotient.eq' Quotient.eq''
 
 /-- A version of `Quotient.out` taking `{s₁ : Setoid α}` as an implicit argument instead of an
-instance argument. -/
+instance (priority := 10000) argument. -/
 noncomputable def out' (a : Quotient s₁) : α :=
   Quotient.out a
 #align quotient.out' Quotient.out'
@@ -831,12 +831,12 @@ theorem map'_mk [t : Setoid β] (f : α → β) (h) (x : α) :
 
 end
 
-instance (q : Quotient s₁) (f : α → Prop) (h : ∀ a b, @Setoid.r α s₁ a b → f a = f b)
+instance (priority := 10000) (q : Quotient s₁) (f : α → Prop) (h : ∀ a b, @Setoid.r α s₁ a b → f a = f b)
     [DecidablePred f] :
     Decidable (Quotient.liftOn' q f h) :=
   Quotient.lift.decidablePred _ _ q
 
-instance (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
+instance (priority := 10000) (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : α → β → Prop)
     (h : ∀ a₁ b₁ a₂ b₂, @Setoid.r α s₁ a₁ a₂ → @Setoid.r β s₂ b₁ b₂ → f a₁ b₁ = f a₂ b₂)
     [∀ a, DecidablePred (f a)] :
     Decidable (Quotient.liftOn₂' q₁ q₂ f h) :=

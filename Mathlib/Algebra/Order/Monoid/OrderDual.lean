@@ -20,21 +20,21 @@ open Function
 namespace OrderDual
 
 @[to_additive]
-instance contravariantClass_mul_le [LE α] [Mul α] [c : ContravariantClass α α (· * ·) (· ≤ ·)] :
+instance (priority := 10000) contravariantClass_mul_le [LE α] [Mul α] [c : ContravariantClass α α (· * ·) (· ≤ ·)] :
     ContravariantClass αᵒᵈ αᵒᵈ (· * ·) (· ≤ ·) :=
   ⟨c.1.flip⟩
 #align order_dual.contravariant_class_add_le OrderDual.contravariantClass_add_le
 #align order_dual.contravariant_class_mul_le OrderDual.contravariantClass_mul_le
 
 @[to_additive]
-instance covariantClass_mul_le [LE α] [Mul α] [c : CovariantClass α α (· * ·) (· ≤ ·)] :
+instance (priority := 10000) covariantClass_mul_le [LE α] [Mul α] [c : CovariantClass α α (· * ·) (· ≤ ·)] :
     CovariantClass αᵒᵈ αᵒᵈ (· * ·) (· ≤ ·) :=
   ⟨c.1.flip⟩
 #align order_dual.covariant_class_add_le OrderDual.covariantClass_add_le
 #align order_dual.covariant_class_mul_le OrderDual.covariantClass_mul_le
 
 @[to_additive]
-instance contravariantClass_swap_mul_le [LE α] [Mul α]
+instance (priority := 10000) contravariantClass_swap_mul_le [LE α] [Mul α]
     [c : ContravariantClass α α (swap (· * ·)) (· ≤ ·)] :
     ContravariantClass αᵒᵈ αᵒᵈ (swap (· * ·)) (· ≤ ·) :=
   ⟨c.1.flip⟩
@@ -42,7 +42,7 @@ instance contravariantClass_swap_mul_le [LE α] [Mul α]
 #align order_dual.contravariant_class_swap_mul_le OrderDual.contravariantClass_swap_mul_le
 
 @[to_additive]
-instance covariantClass_swap_mul_le [LE α] [Mul α]
+instance (priority := 10000) covariantClass_swap_mul_le [LE α] [Mul α]
     [c : CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
     CovariantClass αᵒᵈ αᵒᵈ (swap (· * ·)) (· ≤ ·) :=
   ⟨c.1.flip⟩
@@ -50,21 +50,21 @@ instance covariantClass_swap_mul_le [LE α] [Mul α]
 #align order_dual.covariant_class_swap_mul_le OrderDual.covariantClass_swap_mul_le
 
 @[to_additive]
-instance contravariantClass_mul_lt [LT α] [Mul α] [c : ContravariantClass α α (· * ·) (· < ·)] :
+instance (priority := 10000) contravariantClass_mul_lt [LT α] [Mul α] [c : ContravariantClass α α (· * ·) (· < ·)] :
     ContravariantClass αᵒᵈ αᵒᵈ (· * ·) (· < ·) :=
   ⟨c.1.flip⟩
 #align order_dual.contravariant_class_add_lt OrderDual.contravariantClass_add_lt
 #align order_dual.contravariant_class_mul_lt OrderDual.contravariantClass_mul_lt
 
 @[to_additive]
-instance covariantClass_mul_lt [LT α] [Mul α] [c : CovariantClass α α (· * ·) (· < ·)] :
+instance (priority := 10000) covariantClass_mul_lt [LT α] [Mul α] [c : CovariantClass α α (· * ·) (· < ·)] :
     CovariantClass αᵒᵈ αᵒᵈ (· * ·) (· < ·) :=
   ⟨c.1.flip⟩
 #align order_dual.covariant_class_add_lt OrderDual.covariantClass_add_lt
 #align order_dual.covariant_class_mul_lt OrderDual.covariantClass_mul_lt
 
 @[to_additive]
-instance contravariantClass_swap_mul_lt [LT α] [Mul α]
+instance (priority := 10000) contravariantClass_swap_mul_lt [LT α] [Mul α]
     [c : ContravariantClass α α (swap (· * ·)) (· < ·)] :
     ContravariantClass αᵒᵈ αᵒᵈ (swap (· * ·)) (· < ·) :=
   ⟨c.1.flip⟩
@@ -72,7 +72,7 @@ instance contravariantClass_swap_mul_lt [LT α] [Mul α]
 #align order_dual.contravariant_class_swap_mul_lt OrderDual.contravariantClass_swap_mul_lt
 
 @[to_additive]
-instance covariantClass_swap_mul_lt [LT α] [Mul α]
+instance (priority := 10000) covariantClass_swap_mul_lt [LT α] [Mul α]
     [c : CovariantClass α α (swap (· * ·)) (· < ·)] :
     CovariantClass αᵒᵈ αᵒᵈ (swap (· * ·)) (· < ·) :=
   ⟨c.1.flip⟩
@@ -80,13 +80,13 @@ instance covariantClass_swap_mul_lt [LT α] [Mul α]
 #align order_dual.covariant_class_swap_mul_lt OrderDual.covariantClass_swap_mul_lt
 
 @[to_additive]
-instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
+instance (priority := 10000) orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :=
   { mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
 #align order_dual.ordered_comm_monoid OrderDual.orderedCommMonoid
 #align order_dual.ordered_add_comm_monoid OrderDual.orderedAddCommMonoid
 
 @[to_additive OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass]
-instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid α] :
+instance (priority := 10000) OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid α] :
     ContravariantClass αᵒᵈ αᵒᵈ HMul.hMul LE.le where
     -- Porting note: We need to specify the implicit arguments here because of
     -- https://github.com/leanprover/lean4/issues/1892
@@ -97,16 +97,16 @@ instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid 
 #align order_dual.ordered_cancel_comm_monoid.to_contravariant_class OrderDual.OrderedCancelCommMonoid.to_contravariantClass
 
 @[to_additive]
-instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=
+instance (priority := 10000) orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=
   { le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
 
 @[to_additive]
-instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] :
+instance (priority := 10000) linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α] :
     LinearOrderedCancelCommMonoid αᵒᵈ :=
   { OrderDual.instLinearOrder α, OrderDual.orderedCancelCommMonoid with }
 
 @[to_additive]
-instance linearOrderedCommMonoid [LinearOrderedCommMonoid α] : LinearOrderedCommMonoid αᵒᵈ :=
+instance (priority := 10000) linearOrderedCommMonoid [LinearOrderedCommMonoid α] : LinearOrderedCommMonoid αᵒᵈ :=
   { OrderDual.instLinearOrder α, OrderDual.orderedCommMonoid with }
 
 end OrderDual

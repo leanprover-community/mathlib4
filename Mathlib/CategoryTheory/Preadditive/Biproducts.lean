@@ -651,7 +651,7 @@ section
 attribute [local ext] Preadditive
 
 /-- The existence of binary biproducts implies that there is at most one preadditive structure. -/
-instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.{v} C]
+instance (priority := 10000) subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.{v} C]
     [HasZeroMorphisms C] [HasBinaryBiproducts C] : Subsingleton (Preadditive C) where
   allEq := fun a b => by
     apply Preadditive.ext; funext X Y; apply AddCommGroup.ext; funext f g

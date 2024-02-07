@@ -136,7 +136,7 @@ set_option linter.uppercaseLean3 false in
 
 end Ext
 
-instance : Inf (ExtensionOf i f) where
+instance (priority := 10000) : Inf (ExtensionOf i f) where
   inf X1 X2 :=
     { X1.toLinearPMap ⊓
         X2.toLinearPMap with
@@ -148,7 +148,7 @@ instance : Inf (ExtensionOf i f) where
           x ∈ X1.toLinearPMap.eqLocus X2.toLinearPMap)
       is_extension := fun m => X1.is_extension _ }
 
-instance : SemilatticeInf (ExtensionOf i f) :=
+instance (priority := 10000) : SemilatticeInf (ExtensionOf i f) :=
   Function.Injective.semilatticeInf ExtensionOf.toLinearPMap
     (fun X Y h =>
       ExtensionOf.ext (by rw [h]) fun x y h' => by
@@ -205,7 +205,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (i f) [Fact <| Function.Injective i]
 
-instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
+instance (priority := 10000) ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
   default :=
     { domain := LinearMap.range i
       toFun :=

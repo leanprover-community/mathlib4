@@ -60,16 +60,16 @@ namespace UpperHalfPlane
 @[coe] protected def coe (z : ℍ) : ℂ := z.1
 
 -- Porting note: added to replace `deriving`
-instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
+instance (priority := 10000) : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
-instance : Inhabited ℍ :=
+instance (priority := 10000) : Inhabited ℍ :=
   ⟨⟨Complex.I, by simp⟩⟩
 
 @[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
 
 @[simp, norm_cast] theorem ext_iff {a b : ℍ} : (a : ℂ) = b ↔ a = b := Subtype.coe_inj
 
-instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
+instance (priority := 10000) canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
   Subtype.canLift fun (z : ℂ) => 0 < z.im
 #align upper_half_plane.can_lift UpperHalfPlane.canLift
 
@@ -274,7 +274,7 @@ theorem mul_smul' (x y : GL(2, ℝ)⁺) (z : ℍ) : smulAux (x * y) z = smulAux 
 #align upper_half_plane.mul_smul' UpperHalfPlane.mul_smul'
 
 /-- The action of `GLPos 2 ℝ` on the upper half-plane by fractional linear transformations. -/
-instance : MulAction GL(2, ℝ)⁺ ℍ where
+instance (priority := 10000) : MulAction GL(2, ℝ)⁺ ℍ where
   smul := smulAux
   one_smul z := by
     ext1
@@ -286,14 +286,14 @@ section ModularScalarTowers
 
 variable (Γ : Subgroup (SpecialLinearGroup (Fin 2) ℤ))
 
-instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+instance (priority := 10000) SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.toGLPos.comp <| map (algebraMap R ℝ)
 #align upper_half_plane.SL_action UpperHalfPlane.SLAction
 
 @[coe]
 def coe' : SL(2, ℤ) → GL(2, ℝ)⁺ := fun g => ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
 
-instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
+instance (priority := 10000) : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe'⟩
 
 set_option autoImplicit true in
@@ -306,7 +306,7 @@ set_option autoImplicit true in
 theorem det_coe' : det (Units.val <| Subtype.val <| coe' g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe']
 
-instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
+instance (priority := 10000) SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.SL_on_GL_pos UpperHalfPlane.SLOnGLPos
 
@@ -315,14 +315,14 @@ theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
   rfl
 #align upper_half_plane.SL_on_GL_pos_smul_apply UpperHalfPlane.SLOnGLPos_smul_apply
 
-instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
+instance (priority := 10000) SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
   smul_assoc := by
     intro s g z
     simp only [SLOnGLPos_smul_apply]
     apply mul_smul'
 #align upper_half_plane.SL_to_GL_tower UpperHalfPlane.SL_to_GL_tower
 
-instance subgroupGLPos : SMul Γ GL(2, ℝ)⁺ :=
+instance (priority := 10000) subgroupGLPos : SMul Γ GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.subgroup_GL_pos UpperHalfPlane.subgroupGLPos
 
@@ -331,14 +331,14 @@ theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
   rfl
 #align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.subgroup_on_glpos_smul_apply
 
-instance subgroup_on_glpos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
+instance (priority := 10000) subgroup_on_glpos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
   smul_assoc := by
     intro s g z
     simp only [subgroup_on_glpos_smul_apply]
     apply mul_smul'
 #align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.subgroup_on_glpos
 
-instance subgroupSL : SMul Γ SL(2, ℤ) :=
+instance (priority := 10000) subgroupSL : SMul Γ SL(2, ℤ) :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.subgroup_SL UpperHalfPlane.subgroupSL
 
@@ -347,7 +347,7 @@ theorem subgroup_on_SL_apply (s : Γ) (g : SL(2, ℤ)) (z : ℍ) :
   rfl
 #align upper_half_plane.subgroup_on_SL_apply UpperHalfPlane.subgroup_on_SL_apply
 
-instance subgroup_to_SL_tower : IsScalarTower Γ SL(2, ℤ) ℍ where
+instance (priority := 10000) subgroup_to_SL_tower : IsScalarTower Γ SL(2, ℤ) ℍ where
   smul_assoc s g z := by
     rw [subgroup_on_SL_apply]
     apply MulAction.mul_smul
@@ -386,7 +386,7 @@ theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
 #align upper_half_plane.im_smul_eq_div_norm_sq UpperHalfPlane.im_smul_eq_div_normSq
 
 -- Porting note FIXME: this instance isn't being found, but is needed here.
-instance : Fact (Even (Fintype.card (Fin 2))) := ⟨Nat.even_iff.mpr rfl⟩
+instance (priority := 10000) : Fact (Even (Fintype.card (Fin 2))) := ⟨Nat.even_iff.mpr rfl⟩
 
 @[simp]
 theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
@@ -445,7 +445,7 @@ end SLModularAction
 
 section PosRealAction
 
-instance posRealAction : MulAction { x : ℝ // 0 < x } ℍ where
+instance (priority := 10000) posRealAction : MulAction { x : ℝ // 0 < x } ℍ where
   smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.2
   one_smul z := Subtype.ext <| one_smul _ _
   mul_smul x y z := Subtype.ext <| mul_smul (x : ℝ) y (z : ℂ)
@@ -472,7 +472,7 @@ end PosRealAction
 
 section RealAddAction
 
-instance : AddAction ℝ ℍ where
+instance (priority := 10000) : AddAction ℝ ℍ where
   vadd x z := mk (x + z) <| by simpa using z.im_pos
   zero_vadd _ := Subtype.ext <| by simp [HVAdd.hVAdd]
   add_vadd x y z := Subtype.ext <| by simp [HVAdd.hVAdd, add_assoc]

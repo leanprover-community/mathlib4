@@ -195,7 +195,7 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
-instance : MonadLift Option MetaM where
+instance (priority := 10000) : MonadLift Option MetaM where
   monadLift
   | none => failure
   | some e => pure e

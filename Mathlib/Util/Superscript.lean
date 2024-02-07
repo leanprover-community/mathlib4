@@ -30,7 +30,7 @@ namespace Mathlib.Tactic
 open Lean Parser PrettyPrinter
 namespace Superscript
 
-instance : Hashable Char := ⟨fun c => hash c.1⟩
+instance (priority := 10000) : Hashable Char := ⟨fun c => hash c.1⟩
 
 /-- A bidirectional character mapping. -/
 structure Mapping where

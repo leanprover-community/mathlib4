@@ -41,31 +41,31 @@ add_decl_doc AddGroupCat
 namespace GroupCat
 
 @[to_additive]
-instance : BundledHom.ParentProjection
+instance (priority := 10000) : BundledHom.ParentProjection
   (fun {α : Type*} (h : Group α) => h.toDivInvMonoid.toMonoid) := ⟨⟩
 
 deriving instance LargeCategory for GroupCat
 attribute [to_additive] instGroupCatLargeCategory
 
 @[to_additive]
-instance concreteCategory : ConcreteCategory GroupCat := by
+instance (priority := 10000) concreteCategory : ConcreteCategory GroupCat := by
   dsimp only [GroupCat]
   infer_instance
 
 @[to_additive]
-instance : CoeSort GroupCat (Type*) where
+instance (priority := 10000) : CoeSort GroupCat (Type*) where
   coe X := X.α
 
 @[to_additive]
-instance (X : GroupCat) : Group X := X.str
+instance (priority := 10000) (X : GroupCat) : Group X := X.str
 
 -- porting note: this instance was not necessary in mathlib
 @[to_additive]
-instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+instance (priority := 10000) {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (X →* Y) X Y from inferInstance
 
 -- porting note: added
@@ -107,11 +107,11 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.coe_of AddGroupCat.coe_of
 
 @[to_additive]
-instance : Inhabited GroupCat :=
+instance (priority := 10000) : Inhabited GroupCat :=
   ⟨GroupCat.of PUnit⟩
 
 @[to_additive hasForgetToAddMonCat]
-instance hasForgetToMonCat : HasForget₂ GroupCat MonCat :=
+instance (priority := 10000) hasForgetToMonCat : HasForget₂ GroupCat MonCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align Group.has_forget_to_Mon GroupCat.hasForgetToMonCat
@@ -119,11 +119,11 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.has_forget_to_AddMon AddGroupCat.hasForgetToAddMonCat
 
 @[to_additive]
-instance : Coe GroupCat.{u} MonCat.{u} where coe := (forget₂ GroupCat MonCat).obj
+instance (priority := 10000) : Coe GroupCat.{u} MonCat.{u} where coe := (forget₂ GroupCat MonCat).obj
 
 -- porting note: this instance was not necessary in mathlib
 @[to_additive]
-instance (G H : GroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
+instance (priority := 10000) (G H : GroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 
 @[to_additive (attr := simp)]
 theorem one_apply (G H : GroupCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
@@ -155,7 +155,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom_apply AddGroupCat.ofHom_apply
 
 @[to_additive]
-instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (GroupCat.of G) := i
+instance (priority := 10000) ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (GroupCat.of G) := i
 set_option linter.uppercaseLean3 false in
 #align Group.of_unique GroupCat.ofUnique
 set_option linter.uppercaseLean3 false in
@@ -187,22 +187,22 @@ set_option linter.uppercaseLean3 false in
 namespace CommGroupCat
 
 @[to_additive]
-instance : BundledHom.ParentProjection @CommGroup.toGroup := ⟨⟩
+instance (priority := 10000) : BundledHom.ParentProjection @CommGroup.toGroup := ⟨⟩
 
 deriving instance LargeCategory for CommGroupCat
 attribute [to_additive] instCommGroupCatLargeCategory
 
 @[to_additive]
-instance concreteCategory : ConcreteCategory CommGroupCat := by
+instance (priority := 10000) concreteCategory : ConcreteCategory CommGroupCat := by
   dsimp only [CommGroupCat]
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommGroupCat (Type*) where
+instance (priority := 10000) : CoeSort CommGroupCat (Type*) where
   coe X := X.α
 
 @[to_additive]
-instance commGroupInstance (X : CommGroupCat) : CommGroup X := X.str
+instance (priority := 10000) commGroupInstance (X : CommGroupCat) : CommGroup X := X.str
 set_option linter.uppercaseLean3 false in
 #align CommGroup.comm_group_instance CommGroupCat.commGroupInstance
 set_option linter.uppercaseLean3 false in
@@ -210,11 +210,11 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: this instance was not necessary in mathlib
 @[to_additive]
-instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+instance (priority := 10000) {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (X →* Y) X Y from inferInstance
 
 -- porting note: added
@@ -251,7 +251,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddCommGroupCat.of
 
 @[to_additive]
-instance : Inhabited CommGroupCat :=
+instance (priority := 10000) : Inhabited CommGroupCat :=
   ⟨CommGroupCat.of PUnit⟩
 
 -- Porting note: removed `@[simp]` here, as it makes it harder to tell when to apply
@@ -266,7 +266,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.coe_of AddCommGroupCat.coe_of
 
 @[to_additive]
-instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGroupCat.of G) :=
+instance (priority := 10000) ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGroupCat.of G) :=
   i
 set_option linter.uppercaseLean3 false in
 #align CommGroup.of_unique CommGroupCat.ofUnique
@@ -274,7 +274,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.of_unique AddCommGroupCat.ofUnique
 
 @[to_additive]
-instance hasForgetToGroup : HasForget₂ CommGroupCat GroupCat :=
+instance (priority := 10000) hasForgetToGroup : HasForget₂ CommGroupCat GroupCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align CommGroup.has_forget_to_Group CommGroupCat.hasForgetToGroup
@@ -282,10 +282,10 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.has_forget_to_AddGroup AddCommGroupCat.hasForgetToAddGroup
 
 @[to_additive]
-instance : Coe CommGroupCat.{u} GroupCat.{u} where coe := (forget₂ CommGroupCat GroupCat).obj
+instance (priority := 10000) : Coe CommGroupCat.{u} GroupCat.{u} where coe := (forget₂ CommGroupCat GroupCat).obj
 
 @[to_additive hasForgetToAddCommMonCat]
-instance hasForgetToCommMonCat : HasForget₂ CommGroupCat CommMonCat :=
+instance (priority := 10000) hasForgetToCommMonCat : HasForget₂ CommGroupCat CommMonCat :=
   InducedCategory.hasForget₂ fun G : CommGroupCat => CommMonCat.of G
 set_option linter.uppercaseLean3 false in
 #align CommGroup.has_forget_to_CommMon CommGroupCat.hasForgetToCommMonCat
@@ -293,11 +293,11 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.has_forget_to_AddCommMon AddCommGroupCat.hasForgetToAddCommMonCat
 
 @[to_additive]
-instance : Coe CommGroupCat.{u} CommMonCat.{u} where coe := (forget₂ CommGroupCat CommMonCat).obj
+instance (priority := 10000) : Coe CommGroupCat.{u} CommMonCat.{u} where coe := (forget₂ CommGroupCat CommMonCat).obj
 
 -- porting note: this instance was not necessary in mathlib
 @[to_additive]
-instance (G H : CommGroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
+instance (priority := 10000) (G H : CommGroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 
 @[to_additive (attr := simp)]
 theorem one_apply (G H : CommGroupCat) (g : G) : ((1 : G ⟶ H) : G → H) g = 1 :=
@@ -488,7 +488,7 @@ set_option linter.uppercaseLean3 false in
 end CategoryTheory.Aut
 
 @[to_additive]
-instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u}) where
+instance (priority := 10000) GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
@@ -499,7 +499,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.forget_reflects_isos AddGroupCat.forget_reflects_isos
 
 @[to_additive]
-instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u}) where
+instance (priority := 10000) CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}

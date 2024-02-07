@@ -138,7 +138,7 @@ namespace SmoothPartitionOfUnity
 
 variable {s : Set M} (f : SmoothPartitionOfUnity ι I M s) {n : ℕ∞}
 
-instance {s : Set M} : FunLike (SmoothPartitionOfUnity ι I M s) ι C^∞⟮I, M; 𝓘(ℝ), ℝ⟯ where
+instance (priority := 10000) {s : Set M} : FunLike (SmoothPartitionOfUnity ι I M s) ι C^∞⟮I, M; 𝓘(ℝ), ℝ⟯ where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
@@ -321,7 +321,7 @@ namespace SmoothBumpCovering
 
 variable {s : Set M} {U : M → Set M} (fs : SmoothBumpCovering ι I M s)
 
-instance : CoeFun (SmoothBumpCovering ι I M s) fun x => ∀ i : ι, SmoothBumpFunction I (x.c i) :=
+instance (priority := 10000) : CoeFun (SmoothBumpCovering ι I M s) fun x => ∀ i : ι, SmoothBumpFunction I (x.c i) :=
   ⟨toFun⟩
 
 #noalign smooth_bump_covering.coe_mk
@@ -550,7 +550,7 @@ def single (i : ι) (s : Set M) : SmoothPartitionOfUnity ι I M s :=
     · simp only [smooth_zero, BumpCovering.coe_single, Pi.single_eq_of_ne h, ContinuousMap.coe_zero]
 #align smooth_partition_of_unity.single SmoothPartitionOfUnity.single
 
-instance [Inhabited ι] (s : Set M) : Inhabited (SmoothPartitionOfUnity ι I M s) :=
+instance (priority := 10000) [Inhabited ι] (s : Set M) : Inhabited (SmoothPartitionOfUnity ι I M s) :=
   ⟨single I default s⟩
 
 variable [T2Space M] [SigmaCompactSpace M]

@@ -34,7 +34,7 @@ variable {J : Type v} [SmallCategory J]
 
 variable {C : Type u} [Category.{v} C] [HasLimits C]
 
-instance limitFunctorial : Functorial fun F : J ⥤ C => limit F where
+instance (priority := 10000) limitFunctorial : Functorial fun F : J ⥤ C => limit F where
   map' := Limits.lim.map
 #align category_theory.limits.limit_functorial CategoryTheory.Limits.limitFunctorial
 
@@ -47,7 +47,7 @@ theorem limitFunctorial_map {F G : J ⥤ C} (α : F ⟶ G) :
 variable [MonoidalCategory.{v} C]
 
 @[simps]
-instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorHom
+instance (priority := 10000) limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F := .ofTensorHom
   (ε :=
     limit.lift _
       { pt := _

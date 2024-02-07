@@ -66,7 +66,7 @@ structure Partition (n : ℕ) where
 namespace Partition
 
 -- TODO: This should be automatically derived, see lean4#2914
-instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
+instance (priority := 10000) decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
   fun _ _ => decidable_of_iff' _ <| Partition.ext_iff _ _
 
 /-- A composition induces a partition (just convert the list to a multiset). -/
@@ -106,7 +106,7 @@ def ofMultiset (l : Multiset ℕ) : Partition l.sum := ofSums _ l rfl
 def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
 #align nat.partition.indiscrete_partition Nat.Partition.indiscrete
 
-instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
+instance (priority := 10000) {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
 
 @[simp] lemma indiscrete_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
   simp [indiscrete, filter_eq_self, hn]
@@ -114,7 +114,7 @@ instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
 @[simp] lemma partition_zero_parts (p : Partition 0) : p.parts = 0 :=
   eq_zero_of_forall_not_mem fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
 
-instance UniquePartitionZero : Unique (Partition 0) where
+instance (priority := 10000) UniquePartitionZero : Unique (Partition 0) where
   uniq _ := Partition.ext _ _ <| by simp
 
 @[simp] lemma partition_one_parts (p : Partition 1) : p.parts = {1} := by
@@ -123,7 +123,7 @@ instance UniquePartitionZero : Unique (Partition 0) where
   have h' : card p.parts = 1 := by simpa using (congrArg sum h.symm).trans p.parts_sum
   rw [h, h', replicate_one]
 
-instance UniquePartitionOne : Unique (Partition 1) where
+instance (priority := 10000) UniquePartitionOne : Unique (Partition 1) where
   uniq _ := Partition.ext _ _ <| by simp
 
 /-- The number of times a positive integer `i` appears in the partition `ofSums n l hl` is the same
@@ -144,7 +144,7 @@ theorem count_ofSums_zero {n : ℕ} {l : Multiset ℕ} (hl : l.sum = n) :
 /-- Show there are finitely many partitions by considering the surjection from compositions to
 partitions.
 -/
-instance (n : ℕ) : Fintype (Partition n) :=
+instance (priority := 10000) (n : ℕ) : Fintype (Partition n) :=
   Fintype.ofSurjective (ofComposition n) ofComposition_surj
 
 /-- The finset of those partitions in which every part is odd. -/

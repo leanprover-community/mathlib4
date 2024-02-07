@@ -69,7 +69,7 @@ lemma weight.toLinear_apply_lie [LieAlgebra.IsNilpotent R L] [LinearWeights R L 
   LinearWeights.map_lie (χ : L → R) ((Finite.mem_toFinset _).mp χ.property) x y
 
 /-- For an Abelian Lie algebra, the weights of any Lie module are linear. -/
-instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R M] :
+instance (priority := 10000) instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R M] :
     LinearWeights R L M :=
   have aux : ∀ (χ : L → R), weightSpace M χ ≠ ⊥ → ∀ (x y : L), χ (x + y) = χ x + χ y := by
     have h : ∀ x y, Commute (toEndomorphism R L M x) (toEndomorphism R L M y) := fun x y ↦ by
@@ -114,7 +114,7 @@ lemma zero_lt_finrank_weightSpace {χ : L → R} (hχ : weightSpace M χ ≠ ⊥
 
 /-- In characteristic zero, the weights of any finite-dimensional Lie module are linear and vanish
 on the derived ideal. -/
-instance instLinearWeightsOfCharZero [CharZero R] :
+instance (priority := 10000) instLinearWeightsOfCharZero [CharZero R] :
     LinearWeights R L M where
   map_add χ hχ x y := by
     rw [← smul_right_inj (zero_lt_finrank_weightSpace hχ).ne', smul_add, ← Pi.smul_apply,
@@ -140,7 +140,7 @@ namespace shiftedWeightSpace
 private lemma aux [h : Nontrivial (shiftedWeightSpace R L M χ)] : weightSpace M χ ≠ ⊥ :=
   (LieSubmodule.nontrivial_iff_ne_bot _ _ _).mp h
 
-instance : LieRingModule L (shiftedWeightSpace R L M χ) where
+instance (priority := 10000) : LieRingModule L (shiftedWeightSpace R L M χ) where
   bracket x m := ⁅x, m⁆ - χ x • m
   add_lie x y m := by
     nontriviality shiftedWeightSpace R L M χ
@@ -160,7 +160,7 @@ instance : LieRingModule L (shiftedWeightSpace R L M χ) where
     ⁅x, m⁆ = ⁅x, (m : M)⁆ - χ x • m :=
   rfl
 
-instance : LieModule R L (shiftedWeightSpace R L M χ) where
+instance (priority := 10000) : LieModule R L (shiftedWeightSpace R L M χ) where
   smul_lie t x m := by
     nontriviality shiftedWeightSpace R L M χ
     apply Subtype.ext
@@ -183,7 +183,7 @@ lemma toEndomorphism_eq (x : L) :
 
 /-- By Engel's theorem, if `M` is Noetherian, the shifted action `⁅x, m⁆ - χ x • m` makes the
 `χ`-weight space into a nilpotent Lie module. -/
-instance [IsNoetherian R M] : IsNilpotent R L (shiftedWeightSpace R L M χ) :=
+instance (priority := 10000) [IsNoetherian R M] : IsNilpotent R L (shiftedWeightSpace R L M χ) :=
   LieModule.isNilpotent_iff_forall'.mpr fun x ↦ isNilpotent_toEndomorphism_sub_algebraMap M χ x
 
 end shiftedWeightSpace

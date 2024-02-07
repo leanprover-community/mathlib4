@@ -238,7 +238,7 @@ lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → P
 @[simp] lemma map_id_id (r : α → β → Prop) : Relation.Map r id id = r := by ext; simp [Relation.Map]
 #align relation.map_id_id Relation.map_id_id
 
-instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relation.Map r f g c d) :=
+instance (priority := 10000) [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relation.Map r f g c d) :=
   ‹Decidable _›
 
 end Map
@@ -286,7 +286,7 @@ theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b
   | a, b, single h => single (hp a b h)
 #align relation.refl_gen.mono Relation.ReflGen.mono
 
-instance : IsRefl α (ReflGen r) :=
+instance (priority := 10000) : IsRefl α (ReflGen r) :=
   ⟨@refl α r⟩
 
 end ReflGen
@@ -388,7 +388,7 @@ theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen 
   | tail _ hcd hac => exact hac.tail hcd
 #align relation.trans_gen.trans_left Relation.TransGen.trans_left
 
-instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
+instance (priority := 10000) : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
   ⟨trans_left⟩
 
 @[trans]
@@ -396,7 +396,7 @@ theorem trans (hab : TransGen r a b) (hbc : TransGen r b c) : TransGen r a c :=
   trans_left hab hbc.to_reflTransGen
 #align relation.trans_gen.trans Relation.TransGen.trans
 
-instance : Trans (TransGen r) (TransGen r) (TransGen r) :=
+instance (priority := 10000) : Trans (TransGen r) (TransGen r) (TransGen r) :=
   ⟨trans⟩
 
 theorem head' (hab : r a b) (hbc : ReflTransGen r b c) : TransGen r a c :=
@@ -442,7 +442,7 @@ theorem trans_right (hab : ReflTransGen r a b) (hbc : TransGen r b c) : TransGen
   | tail _ hcd hac => exact hac.tail hcd
 #align relation.trans_gen.trans_right Relation.TransGen.trans_right
 
-instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
+instance (priority := 10000) : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
   ⟨trans_right⟩
 
 theorem tail'_iff : TransGen r a c ↔ ∃ b, ReflTransGen r a b ∧ r b c := by
@@ -505,7 +505,7 @@ theorem transGen_eq_self (trans : Transitive r) : TransGen r = r :=
 theorem transitive_transGen : Transitive (TransGen r) := fun _ _ _ ↦ TransGen.trans
 #align relation.transitive_trans_gen Relation.transitive_transGen
 
-instance : IsTrans α (TransGen r) :=
+instance (priority := 10000) : IsTrans α (TransGen r) :=
   ⟨@TransGen.trans α r⟩
 
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
@@ -597,10 +597,10 @@ theorem reflexive_reflTransGen : Reflexive (ReflTransGen r) := fun _ ↦ refl
 theorem transitive_reflTransGen : Transitive (ReflTransGen r) := fun _ _ _ ↦ trans
 #align relation.transitive_refl_trans_gen Relation.transitive_reflTransGen
 
-instance : IsRefl α (ReflTransGen r) :=
+instance (priority := 10000) : IsRefl α (ReflTransGen r) :=
   ⟨@ReflTransGen.refl α r⟩
 
-instance : IsTrans α (ReflTransGen r) :=
+instance (priority := 10000) : IsTrans α (ReflTransGen r) :=
   ⟨@ReflTransGen.trans α r⟩
 
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=

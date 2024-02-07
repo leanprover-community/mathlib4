@@ -73,7 +73,7 @@ theorem factorial_nsmul_multichoose_eq_eval_ascPochhammer (r : R) (n : ℕ) :
 
 end Ring
 
-instance Nat.instBinomialRing : BinomialRing ℕ where
+instance (priority := 10000) Nat.instBinomialRing : BinomialRing ℕ where
   nsmul_right_injective n hn r s hrs := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero hn) hrs
   multichoose := Nat.multichoose
   factorial_nsmul_multichoose r n := by
@@ -86,7 +86,7 @@ def Int.multichoose (n : ℤ) (k : ℕ) : ℤ :=
   | ofNat n => (Nat.choose (n + k - 1) k : ℤ)
   | negSucc n => (-1) ^ k * Nat.choose n.succ k
 
-instance Int.instBinomialRing : BinomialRing ℤ where
+instance (priority := 10000) Int.instBinomialRing : BinomialRing ℤ where
   nsmul_right_injective n hn r s hrs := Int.eq_of_mul_eq_mul_left (Int.ofNat_ne_zero.mpr hn) hrs
   multichoose := Int.multichoose
   factorial_nsmul_multichoose r k := by

@@ -88,7 +88,7 @@ protected theorem IsExtreme.antisymm : AntiSymmetric (IsExtreme 𝕜 : Set E →
   fun _ _ hAB hBA ↦ Subset.antisymm hBA.1 hAB.1
 #align is_extreme.antisymm IsExtreme.antisymm
 
-instance : IsPartialOrder (Set E) (IsExtreme 𝕜) where
+instance (priority := 10000) : IsPartialOrder (Set E) (IsExtreme 𝕜) where
   refl := IsExtreme.refl 𝕜
   trans _ _ _ := IsExtreme.trans
   antisymm := IsExtreme.antisymm

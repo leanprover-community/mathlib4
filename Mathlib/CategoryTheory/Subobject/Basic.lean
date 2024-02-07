@@ -99,7 +99,7 @@ def Subobject (X : C) :=
   ThinSkeleton (MonoOver X)
 #align category_theory.subobject CategoryTheory.Subobject
 
-instance (X : C) : PartialOrder (Subobject X) := by
+instance (priority := 10000) (X : C) : PartialOrder (Subobject X) := by
   dsimp only [Subobject]
   infer_instance
 
@@ -181,7 +181,7 @@ noncomputable def underlying {X : C} : Subobject X ⥤ C :=
   representative ⋙ MonoOver.forget _ ⋙ Over.forget _
 #align category_theory.subobject.underlying CategoryTheory.Subobject.underlying
 
-instance : CoeOut (Subobject X) C where coe Y := underlying.obj Y
+instance (priority := 10000) : CoeOut (Subobject X) C where coe Y := underlying.obj Y
 
 -- porting note: removed as it has become a syntactic tautology
 -- @[simp]
@@ -203,7 +203,7 @@ noncomputable def arrow {X : C} (Y : Subobject X) : (Y : C) ⟶ X :=
   (representative.obj Y).obj.hom
 #align category_theory.subobject.arrow CategoryTheory.Subobject.arrow
 
-instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
+instance (priority := 10000) arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
   (representative.obj Y).property
 #align category_theory.subobject.arrow_mono CategoryTheory.Subobject.arrow_mono
 
@@ -322,7 +322,7 @@ theorem ofLE_arrow {B : C} {X Y : Subobject B} (h : X ≤ Y) : ofLE X Y h ≫ Y.
   underlying_arrow _
 #align category_theory.subobject.of_le_arrow CategoryTheory.Subobject.ofLE_arrow
 
-instance {B : C} (X Y : Subobject B) (h : X ≤ Y) : Mono (ofLE X Y h) := by
+instance (priority := 10000) {B : C} (X Y : Subobject B) (h : X ≤ Y) : Mono (ofLE X Y h) := by
   fconstructor
   intro Z f g w
   replace w := w =≫ Y.arrow
@@ -341,7 +341,7 @@ def ofLEMk {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X ≤ mk f) :
   ofLE X (mk f) h ≫ (underlyingIso f).hom
 #align category_theory.subobject.of_le_mk CategoryTheory.Subobject.ofLEMk
 
-instance {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X ≤ mk f) :
+instance (priority := 10000) {B A : C} (X : Subobject B) (f : A ⟶ B) [Mono f] (h : X ≤ mk f) :
     Mono (ofLEMk X f h) := by
   dsimp only [ofLEMk]
   infer_instance
@@ -356,7 +356,7 @@ def ofMkLE {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f ≤ X) :
   (underlyingIso f).inv ≫ ofLE (mk f) X h
 #align category_theory.subobject.of_mk_le CategoryTheory.Subobject.ofMkLE
 
-instance {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f ≤ X) :
+instance (priority := 10000) {B A : C} (f : A ⟶ B) [Mono f] (X : Subobject B) (h : mk f ≤ X) :
     Mono (ofMkLE f X h) := by
   dsimp only [ofMkLE]
   infer_instance
@@ -372,7 +372,7 @@ def ofMkLEMk {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono 
   (underlyingIso f).inv ≫ ofLE (mk f) (mk g) h ≫ (underlyingIso g).hom
 #align category_theory.subobject.of_mk_le_mk CategoryTheory.Subobject.ofMkLEMk
 
-instance {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (h : mk f ≤ mk g) :
+instance (priority := 10000) {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (h : mk f ≤ mk g) :
     Mono (ofMkLEMk f g h) := by
   dsimp only [ofMkLEMk]
   infer_instance
@@ -565,7 +565,7 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
 #align category_theory.subobject.pullback_comp CategoryTheory.Subobject.pullback_comp
 
-instance (f : X ⟶ Y) : Faithful (pullback f) where
+instance (priority := 10000) (f : X ⟶ Y) : Faithful (pullback f) where
 
 end Pullback
 

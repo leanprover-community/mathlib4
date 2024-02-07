@@ -72,7 +72,7 @@ class CentroidHomClass (F α : Type*) [NonUnitalNonAssocSemiring α] [FunLike F 
 
 export CentroidHomClass (map_mul_left map_mul_right)
 
-instance [NonUnitalNonAssocSemiring α] [FunLike F α α] [CentroidHomClass F α] :
+instance (priority := 10000) [NonUnitalNonAssocSemiring α] [FunLike F α α] [CentroidHomClass F α] :
     CoeTC F (CentroidHom α) :=
   ⟨fun f ↦
     { (f : α →+ α) with
@@ -88,7 +88,7 @@ section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
-instance : FunLike (CentroidHom α) α α where
+instance (priority := 10000) : FunLike (CentroidHom α) α α where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -96,7 +96,7 @@ instance : FunLike (CentroidHom α) α α where
     congr with x
     exact congrFun h x
 
-instance : CentroidHomClass (CentroidHom α) α where
+instance (priority := 10000) : CentroidHomClass (CentroidHom α) α where
   map_zero f := f.map_zero'
   map_add f := f.map_add'
   map_mul_left f := f.map_mul_left'
@@ -107,7 +107,7 @@ instance : CentroidHomClass (CentroidHom α) α where
 directly. -/
 /- Porting note: Lean gave me `unknown constant 'DFunLike.CoeFun'` and says `CoeFun` is a type
 mismatch, so I used `library_search`. -/
-instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
+instance (priority := 10000) : CoeFun (CentroidHom α) fun _ ↦ α → α :=
   inferInstanceAs (CoeFun (CentroidHom α) fun _ ↦ α → α)
 
 -- Porting note: removed @[simp]; not in normal form. (`toAddMonoidHom_eq_coe` below ensures that
@@ -172,7 +172,7 @@ protected def id : CentroidHom α :=
     map_mul_right' := fun _ _ ↦ rfl }
 #align centroid_hom.id CentroidHom.id
 
-instance : Inhabited (CentroidHom α) :=
+instance (priority := 10000) : Inhabited (CentroidHom α) :=
   ⟨CentroidHom.id α⟩
 
 @[simp, norm_cast]
@@ -242,15 +242,15 @@ theorem cancel_left {g f₁ f₂ : CentroidHom α} (hg : Injective g) :
   ⟨fun h ↦ ext fun a ↦ hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align centroid_hom.cancel_left CentroidHom.cancel_left
 
-instance : Zero (CentroidHom α) :=
+instance (priority := 10000) : Zero (CentroidHom α) :=
   ⟨{ (0 : α →+ α) with
       map_mul_left' := fun _a _b ↦ (mul_zero _).symm
       map_mul_right' := fun _a _b ↦ (zero_mul _).symm }⟩
 
-instance : One (CentroidHom α) :=
+instance (priority := 10000) : One (CentroidHom α) :=
   ⟨CentroidHom.id α⟩
 
-instance : Add (CentroidHom α) :=
+instance (priority := 10000) : Add (CentroidHom α) :=
   ⟨fun f g ↦
     { (f + g : α →+ α) with
       map_mul_left' := fun a b ↦ by
@@ -260,7 +260,7 @@ instance : Add (CentroidHom α) :=
         show f (a * b) + g (a * b) = (f a + g a) * b
         simp [map_mul_right, add_mul] }⟩
 
-instance : Mul (CentroidHom α) :=
+instance (priority := 10000) : Mul (CentroidHom α) :=
   ⟨comp⟩
 
 variable [Monoid M] [Monoid N] [Semiring R]
@@ -268,7 +268,7 @@ variable [DistribMulAction M α] [SMulCommClass M α α] [IsScalarTower M α α]
 variable [DistribMulAction N α] [SMulCommClass N α α] [IsScalarTower N α α]
 variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
 
-instance instSMul : SMul M (CentroidHom α) where
+instance (priority := 10000) instSMul : SMul M (CentroidHom α) where
   smul n f :=
     { (n • f : α →+ α) with
       map_mul_left' := fun a b ↦ by
@@ -280,19 +280,19 @@ instance instSMul : SMul M (CentroidHom α) where
 
 #noalign centroid_hom.has_nsmul
 
-instance [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (CentroidHom α) where
+instance (priority := 10000) [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (CentroidHom α) where
   smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
 
-instance [SMulCommClass M N α] : SMulCommClass M N (CentroidHom α) where
+instance (priority := 10000) [SMulCommClass M N α] : SMulCommClass M N (CentroidHom α) where
   smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
 
-instance [DistribMulAction Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (CentroidHom α) where
+instance (priority := 10000) [DistribMulAction Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (CentroidHom α) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
-instance isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) where
+instance (priority := 10000) isScalarTowerRight : IsScalarTower M (CentroidHom α) (CentroidHom α) where
   smul_assoc _ _ _ := rfl
 
-instance hasNPowNat : Pow (CentroidHom α) ℕ :=
+instance (priority := 10000) hasNPowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
     { (f.toEnd ^ n : AddMonoid.End α) with
       map_mul_left' := fun a b ↦ by
@@ -375,10 +375,10 @@ theorem toEnd_smul (m : M) (x : CentroidHom α) : (m • x).toEnd = m • x.toEn
   rfl
 #align centroid_hom.to_End_nsmul CentroidHom.toEnd_smul
 
-instance : AddCommMonoid (CentroidHom α) :=
+instance (priority := 10000) : AddCommMonoid (CentroidHom α) :=
   coe_toAddMonoidHom_injective.addCommMonoid _ toEnd_zero toEnd_add (swap toEnd_smul)
 
-instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
+instance (priority := 10000) : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast, nolint simpNF]
@@ -411,7 +411,7 @@ theorem toEnd_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
 #align centroid_hom.to_End_nat_cast CentroidHom.toEnd_nat_cast
 
 -- cf `add_monoid.End.semiring`
-instance : Semiring (CentroidHom α) :=
+instance (priority := 10000) : Semiring (CentroidHom α) :=
   toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul (swap toEnd_smul) toEnd_pow
     toEnd_nat_cast
 
@@ -430,10 +430,10 @@ theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
 
-instance : DistribMulAction M (CentroidHom α) :=
+instance (priority := 10000) : DistribMulAction M (CentroidHom α) :=
   toEnd_injective.distribMulAction (toEndRingHom α).toAddMonoidHom toEnd_smul
 
-instance : Module R (CentroidHom α) :=
+instance (priority := 10000) : Module R (CentroidHom α) :=
   toEnd_injective.module R (toEndRingHom α).toAddMonoidHom toEnd_smul
 
 /-!
@@ -444,7 +444,7 @@ The following instances show that `α` is a non-unital and non-associative algeb
 /-- The tautological action by `CentroidHom α` on `α`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyModule : Module (CentroidHom α) α where
+instance (priority := 10000) applyModule : Module (CentroidHom α) α where
   smul T a := T a
   add_smul _ _ _ := rfl
   zero_smul _ := rfl
@@ -456,12 +456,12 @@ instance applyModule : Module (CentroidHom α) α where
 @[simp]
 lemma smul_def (T : CentroidHom α) (a : α) : T • a = T a := rfl
 
-instance : SMulCommClass (CentroidHom α) α α where
+instance (priority := 10000) : SMulCommClass (CentroidHom α) α α where
   smul_comm _ _ _ := map_mul_left _ _ _
 
-instance : SMulCommClass α (CentroidHom α) α := SMulCommClass.symm _ _ _
+instance (priority := 10000) : SMulCommClass α (CentroidHom α) α := SMulCommClass.symm _ _ _
 
-instance : IsScalarTower (CentroidHom α) α α where
+instance (priority := 10000) : IsScalarTower (CentroidHom α) α α where
   smul_assoc _ _ _ := (map_mul_right _ _ _).symm
 
 /-!
@@ -572,7 +572,7 @@ section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing α]
 
 /-- Negation of `CentroidHom`s as a `CentroidHom`. -/
-instance : Neg (CentroidHom α) :=
+instance (priority := 10000) : Neg (CentroidHom α) :=
   ⟨fun f ↦
     { (-f : α →+ α) with
       map_mul_left' := fun a b ↦ by
@@ -582,7 +582,7 @@ instance : Neg (CentroidHom α) :=
         change -f (a * b) = (-f a) * b
         simp [map_mul_right] }⟩
 
-instance : Sub (CentroidHom α) :=
+instance (priority := 10000) : Sub (CentroidHom α) :=
   ⟨fun f g ↦
     { (f - g : α →+ α) with
       map_mul_left' := fun a b ↦ by
@@ -594,7 +594,7 @@ instance : Sub (CentroidHom α) :=
 
 #noalign centroid_hom.has_zsmul
 
-instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
+instance (priority := 10000) : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast, nolint simpNF]
@@ -618,7 +618,7 @@ theorem toEnd_sub (x y : CentroidHom α) : (x - y).toEnd = x.toEnd - y.toEnd :=
 
 #align centroid_hom.to_End_zsmul CentroidHom.toEnd_smul
 
-instance : AddCommGroup (CentroidHom α) :=
+instance (priority := 10000) : AddCommGroup (CentroidHom α) :=
   toEnd_injective.addCommGroup _
     toEnd_zero toEnd_add toEnd_neg toEnd_sub (swap toEnd_smul) (swap toEnd_smul)
 
@@ -647,7 +647,7 @@ theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
 #align centroid_hom.to_End_int_cast CentroidHom.toEnd_int_cast
 
-instance instRing : Ring (CentroidHom α) :=
+instance (priority := 10000) instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
     (swap toEnd_smul) (swap toEnd_smul) toEnd_pow toEnd_nat_cast toEnd_int_cast
 

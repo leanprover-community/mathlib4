@@ -134,37 +134,37 @@ def isColimitOfPreserves (F : C ⥤ D) {c : Cocone K} (t : IsColimit c) [Preserv
   PreservesColimit.preserves t
 #align category_theory.limits.is_colimit_of_preserves CategoryTheory.Limits.isColimitOfPreserves
 
-instance preservesLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
+instance (priority := 10000) preservesLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
     Subsingleton (PreservesLimit K F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 #align category_theory.limits.preserves_limit_subsingleton CategoryTheory.Limits.preservesLimit_subsingleton
 
-instance preservesColimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
+instance (priority := 10000) preservesColimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) :
     Subsingleton (PreservesColimit K F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 #align category_theory.limits.preserves_colimit_subsingleton CategoryTheory.Limits.preservesColimit_subsingleton
 
-instance preservesLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
+instance (priority := 10000) preservesLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
     Subsingleton (PreservesLimitsOfShape J F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 #align category_theory.limits.preserves_limits_of_shape_subsingleton CategoryTheory.Limits.preservesLimitsOfShape_subsingleton
 
-instance preservesColimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
+instance (priority := 10000) preservesColimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
     Subsingleton (PreservesColimitsOfShape J F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 #align category_theory.limits.preserves_colimits_of_shape_subsingleton CategoryTheory.Limits.preservesColimitsOfShape_subsingleton
 
-instance preserves_limits_subsingleton (F : C ⥤ D) :
+instance (priority := 10000) preserves_limits_subsingleton (F : C ⥤ D) :
     Subsingleton (PreservesLimitsOfSize.{w', w} F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!
 #align category_theory.limits.preserves_limits_subsingleton CategoryTheory.Limits.preserves_limits_subsingleton
 
-instance preserves_colimits_subsingleton (F : C ⥤ D) :
+instance (priority := 10000) preserves_colimits_subsingleton (F : C ⥤ D) :
     Subsingleton (PreservesColimitsOfSize.{w', w} F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!
 #align category_theory.limits.preserves_colimits_subsingleton CategoryTheory.Limits.preserves_colimits_subsingleton
 
-instance idPreservesLimits : PreservesLimitsOfSize.{w', w} (𝟭 C) where
+instance (priority := 10000) idPreservesLimits : PreservesLimitsOfSize.{w', w} (𝟭 C) where
   preservesLimitsOfShape {J} 𝒥 :=
     {
       preservesLimit := fun {K} =>
@@ -175,7 +175,7 @@ instance idPreservesLimits : PreservesLimitsOfSize.{w', w} (𝟭 C) where
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_preserves_limits CategoryTheory.Limits.idPreservesLimits
 
-instance idPreservesColimits : PreservesColimitsOfSize.{w', w} (𝟭 C) where
+instance (priority := 10000) idPreservesColimits : PreservesColimitsOfSize.{w', w} (𝟭 C) where
   preservesColimitsOfShape {J} 𝒥 :=
     {
       preservesColimit := fun {K} =>
@@ -195,29 +195,29 @@ variable (F : C ⥤ D) (G : D ⥤ E)
 -- Porting note: made this global by removing local
 attribute [elab_without_expected_type] PreservesLimit.preserves PreservesColimit.preserves
 
-instance compPreservesLimit [PreservesLimit K F] [PreservesLimit (K ⋙ F) G] :
+instance (priority := 10000) compPreservesLimit [PreservesLimit K F] [PreservesLimit (K ⋙ F) G] :
     PreservesLimit K (F ⋙ G) :=
   ⟨fun h => PreservesLimit.preserves (PreservesLimit.preserves h)⟩
 #align category_theory.limits.comp_preserves_limit CategoryTheory.Limits.compPreservesLimit
 
-instance compPreservesLimitsOfShape [PreservesLimitsOfShape J F] [PreservesLimitsOfShape J G] :
+instance (priority := 10000) compPreservesLimitsOfShape [PreservesLimitsOfShape J F] [PreservesLimitsOfShape J G] :
     PreservesLimitsOfShape J (F ⋙ G) where
 #align category_theory.limits.comp_preserves_limits_of_shape CategoryTheory.Limits.compPreservesLimitsOfShape
 
-instance compPreservesLimits [PreservesLimitsOfSize.{w', w} F] [PreservesLimitsOfSize.{w', w} G] :
+instance (priority := 10000) compPreservesLimits [PreservesLimitsOfSize.{w', w} F] [PreservesLimitsOfSize.{w', w} G] :
     PreservesLimitsOfSize.{w', w} (F ⋙ G) where
 #align category_theory.limits.comp_preserves_limits CategoryTheory.Limits.compPreservesLimits
 
-instance compPreservesColimit [PreservesColimit K F] [PreservesColimit (K ⋙ F) G] :
+instance (priority := 10000) compPreservesColimit [PreservesColimit K F] [PreservesColimit (K ⋙ F) G] :
     PreservesColimit K (F ⋙ G) :=
   ⟨fun h => PreservesColimit.preserves (PreservesColimit.preserves h)⟩
 #align category_theory.limits.comp_preserves_colimit CategoryTheory.Limits.compPreservesColimit
 
-instance compPreservesColimitsOfShape [PreservesColimitsOfShape J F]
+instance (priority := 10000) compPreservesColimitsOfShape [PreservesColimitsOfShape J F]
     [PreservesColimitsOfShape J G] : PreservesColimitsOfShape J (F ⋙ G) where
 #align category_theory.limits.comp_preserves_colimits_of_shape CategoryTheory.Limits.compPreservesColimitsOfShape
 
-instance compPreservesColimits [PreservesColimitsOfSize.{w', w} F]
+instance (priority := 10000) compPreservesColimits [PreservesColimitsOfSize.{w', w} F]
     [PreservesColimitsOfSize.{w', w} G] : PreservesColimitsOfSize.{w', w} (F ⋙ G) where
 #align category_theory.limits.comp_preserves_colimits CategoryTheory.Limits.compPreservesColimits
 
@@ -455,7 +455,7 @@ def isColimitOfReflects (F : C ⥤ D) {c : Cocone K} (t : IsColimit (F.mapCocone
   ReflectsColimit.reflects t
 #align category_theory.limits.is_colimit_of_reflects CategoryTheory.Limits.isColimitOfReflects
 
-instance reflectsLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (ReflectsLimit K F) := by
+instance (priority := 10000) reflectsLimit_subsingleton (K : J ⥤ C) (F : C ⥤ D) : Subsingleton (ReflectsLimit K F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 #align category_theory.limits.reflects_limit_subsingleton CategoryTheory.Limits.reflectsLimit_subsingleton
 
@@ -464,12 +464,12 @@ instance
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 #align category_theory.limits.reflects_colimit_subsingleton CategoryTheory.Limits.reflectsColimit_subsingleton
 
-instance reflectsLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
+instance (priority := 10000) reflectsLimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
     Subsingleton (ReflectsLimitsOfShape J F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 #align category_theory.limits.reflects_limits_of_shape_subsingleton CategoryTheory.Limits.reflectsLimitsOfShape_subsingleton
 
-instance reflectsColimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
+instance (priority := 10000) reflectsColimitsOfShape_subsingleton (J : Type w) [Category.{w'} J] (F : C ⥤ D) :
     Subsingleton (ReflectsColimitsOfShape J F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr!
 #align category_theory.limits.reflects_colimits_of_shape_subsingleton CategoryTheory.Limits.reflectsColimitsOfShape_subsingleton
@@ -479,7 +479,7 @@ instance
   constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!
 #align category_theory.limits.reflects_limits_subsingleton CategoryTheory.Limits.reflects_limits_subsingleton
 
-instance reflects_colimits_subsingleton (F : C ⥤ D) :
+instance (priority := 10000) reflects_colimits_subsingleton (F : C ⥤ D) :
     Subsingleton (ReflectsColimitsOfSize.{w', w} F) := by
   constructor; rintro ⟨a⟩ ⟨b⟩; congr; funext; congr!
 #align category_theory.limits.reflects_colimits_subsingleton CategoryTheory.Limits.reflects_colimits_subsingleton
@@ -508,7 +508,7 @@ instance (priority := 100) reflectsColimitsOfShapeOfReflectsColimits (J : Type w
   ReflectsColimitsOfSize.reflectsColimitsOfShape
 #align category_theory.limits.reflects_colimits_of_shape_of_reflects_colimits CategoryTheory.Limits.reflectsColimitsOfShapeOfReflectsColimits
 
-instance idReflectsLimits : ReflectsLimitsOfSize.{w, w'} (𝟭 C) where
+instance (priority := 10000) idReflectsLimits : ReflectsLimitsOfSize.{w, w'} (𝟭 C) where
   reflectsLimitsOfShape {J} 𝒥 :=
     {
       reflectsLimit := fun {K} =>
@@ -519,7 +519,7 @@ instance idReflectsLimits : ReflectsLimitsOfSize.{w, w'} (𝟭 C) where
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_reflects_limits CategoryTheory.Limits.idReflectsLimits
 
-instance idReflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
+instance (priority := 10000) idReflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
   reflectsColimitsOfShape {J} 𝒥 :=
     {
       reflectsColimit := fun {K} =>
@@ -536,29 +536,29 @@ variable {E : Type u₃} [ℰ : Category.{v₃} E]
 
 variable (F : C ⥤ D) (G : D ⥤ E)
 
-instance compReflectsLimit [ReflectsLimit K F] [ReflectsLimit (K ⋙ F) G] :
+instance (priority := 10000) compReflectsLimit [ReflectsLimit K F] [ReflectsLimit (K ⋙ F) G] :
     ReflectsLimit K (F ⋙ G) :=
   ⟨fun h => ReflectsLimit.reflects (ReflectsLimit.reflects h)⟩
 #align category_theory.limits.comp_reflects_limit CategoryTheory.Limits.compReflectsLimit
 
-instance compReflectsLimitsOfShape [ReflectsLimitsOfShape J F] [ReflectsLimitsOfShape J G] :
+instance (priority := 10000) compReflectsLimitsOfShape [ReflectsLimitsOfShape J F] [ReflectsLimitsOfShape J G] :
     ReflectsLimitsOfShape J (F ⋙ G) where
 #align category_theory.limits.comp_reflects_limits_of_shape CategoryTheory.Limits.compReflectsLimitsOfShape
 
-instance compReflectsLimits [ReflectsLimitsOfSize.{w', w} F] [ReflectsLimitsOfSize.{w', w} G] :
+instance (priority := 10000) compReflectsLimits [ReflectsLimitsOfSize.{w', w} F] [ReflectsLimitsOfSize.{w', w} G] :
     ReflectsLimitsOfSize.{w', w} (F ⋙ G) where
 #align category_theory.limits.comp_reflects_limits CategoryTheory.Limits.compReflectsLimits
 
-instance compReflectsColimit [ReflectsColimit K F] [ReflectsColimit (K ⋙ F) G] :
+instance (priority := 10000) compReflectsColimit [ReflectsColimit K F] [ReflectsColimit (K ⋙ F) G] :
     ReflectsColimit K (F ⋙ G) :=
   ⟨fun h => ReflectsColimit.reflects (ReflectsColimit.reflects h)⟩
 #align category_theory.limits.comp_reflects_colimit CategoryTheory.Limits.compReflectsColimit
 
-instance compReflectsColimitsOfShape [ReflectsColimitsOfShape J F] [ReflectsColimitsOfShape J G] :
+instance (priority := 10000) compReflectsColimitsOfShape [ReflectsColimitsOfShape J F] [ReflectsColimitsOfShape J G] :
     ReflectsColimitsOfShape J (F ⋙ G) where
 #align category_theory.limits.comp_reflects_colimits_of_shape CategoryTheory.Limits.compReflectsColimitsOfShape
 
-instance compReflectsColimits [ReflectsColimitsOfSize.{w', w} F]
+instance (priority := 10000) compReflectsColimits [ReflectsColimitsOfSize.{w', w} F]
     [ReflectsColimitsOfSize.{w', w} G] : ReflectsColimitsOfSize.{w', w} (F ⋙ G) where
 #align category_theory.limits.comp_reflects_colimits CategoryTheory.Limits.compReflectsColimits
 
@@ -800,7 +800,7 @@ end
 variable (F : C ⥤ D)
 
 /-- A fully faithful functor reflects limits. -/
-instance fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w, w'} F where
+instance (priority := 10000) fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w, w'} F where
   reflectsLimitsOfShape {J} 𝒥₁ :=
     { reflectsLimit := fun {K} =>
         { reflects := fun {c} t =>
@@ -813,7 +813,7 @@ instance fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSiz
 #align category_theory.limits.fully_faithful_reflects_limits CategoryTheory.Limits.fullyFaithfulReflectsLimits
 
 /-- A fully faithful functor reflects colimits. -/
-instance fullyFaithfulReflectsColimits [Full F] [Faithful F] :
+instance (priority := 10000) fullyFaithfulReflectsColimits [Full F] [Faithful F] :
     ReflectsColimitsOfSize.{w, w'} F where
   reflectsColimitsOfShape {J} 𝒥₁ :=
     { reflectsColimit := fun {K} =>

@@ -51,7 +51,7 @@ class SMulInvariantMeasure (M α : Type*) [SMul M α] {_ : MeasurableSpace α} (
 namespace SMulInvariantMeasure
 
 @[to_additive]
-instance zero [MeasurableSpace α] [SMul M α] : SMulInvariantMeasure M α (0 : Measure α) :=
+instance (priority := 10000) zero [MeasurableSpace α] [SMul M α] : SMulInvariantMeasure M α (0 : Measure α) :=
   ⟨fun _ _ _ => rfl⟩
 #align measure_theory.smul_invariant_measure.zero MeasureTheory.SMulInvariantMeasure.zero
 #align measure_theory.vadd_invariant_measure.zero MeasureTheory.VAddInvariantMeasure.zero
@@ -59,7 +59,7 @@ instance zero [MeasurableSpace α] [SMul M α] : SMulInvariantMeasure M α (0 : 
 variable [SMul M α] {m : MeasurableSpace α} {μ ν : Measure α}
 
 @[to_additive]
-instance add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
+instance (priority := 10000) add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
     SMulInvariantMeasure M α (μ + ν) :=
   ⟨fun c _s hs =>
     show _ + _ = _ + _ from
@@ -68,13 +68,13 @@ instance add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
 #align measure_theory.vadd_invariant_measure.add MeasureTheory.VAddInvariantMeasure.add
 
 @[to_additive]
-instance smul [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) :=
+instance (priority := 10000) smul [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) :=
   ⟨fun a _s hs => show c • _ = c • _ from congr_arg (c • ·) (measure_preimage_smul a hs)⟩
 #align measure_theory.smul_invariant_measure.smul MeasureTheory.SMulInvariantMeasure.smul
 #align measure_theory.vadd_invariant_measure.vadd MeasureTheory.VAddInvariantMeasure.vadd
 
 @[to_additive]
-instance smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvariantMeasure M α (c • μ) :=
+instance (priority := 10000) smul_nnreal [SMulInvariantMeasure M α μ] (c : ℝ≥0) : SMulInvariantMeasure M α (c • μ) :=
   SMulInvariantMeasure.smul c
 #align measure_theory.smul_invariant_measure.smul_nnreal MeasureTheory.SMulInvariantMeasure.smul_nnreal
 #align measure_theory.vadd_invariant_measure.vadd_nnreal MeasureTheory.VAddInvariantMeasure.vadd_nnreal
@@ -126,7 +126,7 @@ theorem smulInvariantMeasure_map [SMul M α] [SMul M β]
     _ = map f μ S := (map_apply hf hS).symm
 
 @[to_additive]
-instance smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N M α]
+instance (priority := 10000) smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N M α]
     [MeasurableSMul M α] [MeasurableSMul N α]
     (μ : Measure α) [SMulInvariantMeasure M α μ] (n : N) :
     SMulInvariantMeasure M α (map (n • ·) μ) :=

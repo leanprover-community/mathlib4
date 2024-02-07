@@ -92,7 +92,7 @@ def Cofix (F : TypeVec (n + 1) → Type u) [MvFunctor F] [q : MvQPF F] (α : Typ
   Quot (@Mcongr _ F _ q α)
 #align mvqpf.cofix MvQPF.Cofix
 
-instance {α : TypeVec n} [Inhabited q.P.A] [∀ i : Fin2 n, Inhabited (α i)] :
+instance (priority := 10000) {α : TypeVec n} [Inhabited q.P.A] [∀ i : Fin2 n, Inhabited (α i)] :
     Inhabited (Cofix F α) :=
   ⟨Quot.mk _ default⟩
 
@@ -126,7 +126,7 @@ def Cofix.map {α β : TypeVec n} (g : α ⟹ β) : Cofix F α → Cofix F β :=
       show r' (g <$$> aa₁) (g <$$> aa₂); exact ⟨aa₁, aa₂, ra₁a₂, rfl, rfl⟩)
 #align mvqpf.cofix.map MvQPF.Cofix.map
 
-instance Cofix.mvfunctor : MvFunctor (Cofix F) where map := @Cofix.map _ _ _ _
+instance (priority := 10000) Cofix.mvfunctor : MvFunctor (Cofix F) where map := @Cofix.map _ _ _ _
 #align mvqpf.cofix.mvfunctor MvQPF.Cofix.mvfunctor
 
 /-- Corecursor for `Cofix F` -/
@@ -553,7 +553,7 @@ theorem Cofix.dest_corec₁ {α : TypeVec n} {β : Type u}
   rw [Cofix.corec₁, Cofix.dest_corec', ← h]; rfl
 #align mvqpf.cofix.dest_corec₁ MvQPF.Cofix.dest_corec₁
 
-instance mvqpfCofix : MvQPF (Cofix F) where
+instance (priority := 10000) mvqpfCofix : MvQPF (Cofix F) where
   P         := q.P.mp
   abs       := Quot.mk Mcongr
   repr      := Cofix.repr

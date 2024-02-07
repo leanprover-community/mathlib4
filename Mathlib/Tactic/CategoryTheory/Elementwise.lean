@@ -216,7 +216,7 @@ example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g 
 In this case, `elementwise_of% w` generates the lemma `∀ (x : M), f (g x) = h x`.
 
 Like the `@[elementwise]` attribute, `elementwise_of%` inserts a `ConcreteCategory`
-instance argument if it can't synthesize a relevant `ConcreteCategory` instance.
+instance (priority := 10000) argument if it can't synthesize a relevant `ConcreteCategory` instance.
 (Technical note: The forgetful functor's universe variable is instantiated with a
 fresh level metavariable in this case.)
 

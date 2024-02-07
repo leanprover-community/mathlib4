@@ -116,16 +116,16 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   · exact ((hsc.1 ⟨hy, hay⟩).not_lt hxy.1).elim
 #align conditionally_complete_linear_order.to_compact_Icc_space ConditionallyCompleteLinearOrder.toCompactIccSpace
 
-instance {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
+instance (priority := 10000) {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, CompactIccSpace (α i)] : CompactIccSpace (∀ i, α i) :=
   ⟨fun {a b} => (pi_univ_Icc a b ▸ isCompact_univ_pi) fun _ => isCompact_Icc⟩
 
-instance Pi.compact_Icc_space' {α β : Type*} [Preorder β] [TopologicalSpace β]
+instance (priority := 10000) Pi.compact_Icc_space' {α β : Type*} [Preorder β] [TopologicalSpace β]
     [CompactIccSpace β] : CompactIccSpace (α → β) :=
   inferInstance
 #align pi.compact_Icc_space' Pi.compact_Icc_space'
 
-instance {α β : Type*} [Preorder α] [TopologicalSpace α] [CompactIccSpace α] [Preorder β]
+instance (priority := 10000) {α β : Type*} [Preorder α] [TopologicalSpace α] [CompactIccSpace α] [Preorder β]
     [TopologicalSpace β] [CompactIccSpace β] : CompactIccSpace (α × β) :=
   ⟨fun {a b} => (Icc_prod_eq a b).symm ▸ isCompact_Icc.prod isCompact_Icc⟩
 
@@ -150,7 +150,7 @@ section
 
 variable {α : Type*} [Preorder α] [TopologicalSpace α] [CompactIccSpace α]
 
-instance compactSpace_Icc (a b : α) : CompactSpace (Icc a b) :=
+instance (priority := 10000) compactSpace_Icc (a b : α) : CompactSpace (Icc a b) :=
   isCompact_iff_compactSpace.mp isCompact_Icc
 #align compact_space_Icc compactSpace_Icc
 

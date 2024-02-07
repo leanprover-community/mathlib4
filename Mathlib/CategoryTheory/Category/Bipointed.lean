@@ -36,7 +36,7 @@ structure Bipointed : Type (u + 1) where
 
 namespace Bipointed
 
-instance : CoeSort Bipointed Type* := ⟨Bipointed.X⟩
+instance (priority := 10000) : CoeSort Bipointed Type* := ⟨Bipointed.X⟩
 
 /-- Turns a bipointing into a bipointed type. -/
 def of {X : Type*} (to_prod : X × X) : Bipointed :=
@@ -51,7 +51,7 @@ theorem coe_of {X : Type*} (to_prod : X × X) : ↥(of to_prod) = X :=
 alias _root_.Prod.Bipointed := of
 #align prod.Bipointed Prod.Bipointed
 
-instance : Inhabited Bipointed :=
+instance (priority := 10000) : Inhabited Bipointed :=
   ⟨of ((), ())⟩
 
 /-- Morphisms in `Bipointed`. -/
@@ -71,7 +71,7 @@ nonrec def id (X : Bipointed) : Bipointed.Hom X X :=
   ⟨id, rfl, rfl⟩
 #align Bipointed.hom.id Bipointed.Hom.id
 
-instance (X : Bipointed) : Inhabited (Bipointed.Hom X X) :=
+instance (priority := 10000) (X : Bipointed) : Inhabited (Bipointed.Hom X X) :=
   ⟨id X⟩
 
 /-- Composition of morphisms of `Bipointed`. -/
@@ -84,13 +84,13 @@ def comp {X Y Z : Bipointed.{u}} (f : Bipointed.Hom X Y) (g : Bipointed.Hom Y Z)
 
 end Hom
 
-instance largeCategory : LargeCategory Bipointed where
+instance (priority := 10000) largeCategory : LargeCategory Bipointed where
   Hom := Bipointed.Hom
   id := Hom.id
   comp := @Hom.comp
 #align Bipointed.large_category Bipointed.largeCategory
 
-instance concreteCategory : ConcreteCategory Bipointed where
+instance (priority := 10000) concreteCategory : ConcreteCategory Bipointed where
   forget :=
     { obj := Bipointed.X
       map := @Hom.toFun }

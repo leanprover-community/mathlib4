@@ -389,7 +389,7 @@ example (n : Num) (m : Num) : n ≤ n + m := by transfer
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp))
 
-instance addMonoid : AddMonoid Num where
+instance (priority := 10000) addMonoid : AddMonoid Num where
   add := (· + ·)
   zero := 0
   zero_add := zero_add
@@ -397,7 +397,7 @@ instance addMonoid : AddMonoid Num where
   add_assoc := by transfer
 #align num.add_monoid Num.addMonoid
 
-instance addMonoidWithOne : AddMonoidWithOne Num :=
+instance (priority := 10000) addMonoidWithOne : AddMonoidWithOne Num :=
   { Num.addMonoid with
     natCast := Num.ofNat'
     one := 1
@@ -405,7 +405,7 @@ instance addMonoidWithOne : AddMonoidWithOne Num :=
     natCast_succ := fun _ => ofNat'_succ }
 #align num.add_monoid_with_one Num.addMonoidWithOne
 
-instance commSemiring : CommSemiring Num := by
+instance (priority := 10000) commSemiring : CommSemiring Num := by
   refine'
     { Num.addMonoid,
       Num.addMonoidWithOne with
@@ -416,7 +416,7 @@ instance commSemiring : CommSemiring Num := by
     simp [add_comm, mul_add, add_mul, mul_assoc, mul_comm, mul_left_comm]
 #align num.comm_semiring Num.commSemiring
 
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
+instance (priority := 10000) orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
   le := (· ≤ ·)
   lt := (· < ·)
   lt_iff_le_not_le a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_le]
@@ -427,7 +427,7 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
   le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
 #align num.ordered_cancel_add_comm_monoid Num.orderedCancelAddCommMonoid
 
-instance linearOrderedSemiring : LinearOrderedSemiring Num :=
+instance (priority := 10000) linearOrderedSemiring : LinearOrderedSemiring Num :=
   { Num.commSemiring,
     Num.orderedCancelAddCommMonoid with
     le_total := by
@@ -536,7 +536,7 @@ theorem succ'_pred' (n) : succ' (pred' n) = n :=
     rw [succ'_to_nat, pred'_to_nat, Nat.add_one, Nat.succ_pred_eq_of_pos (to_nat_pos _)]
 #align pos_num.succ'_pred' PosNum.succ'_pred'
 
-instance dvd : Dvd PosNum :=
+instance (priority := 10000) dvd : Dvd PosNum :=
   ⟨fun m n => pos m ∣ pos n⟩
 #align pos_num.has_dvd PosNum.dvd
 
@@ -585,11 +585,11 @@ example (n : PosNum) (m : PosNum) : n ≤ n + m := by transfer
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
-instance addCommSemigroup : AddCommSemigroup PosNum := by
+instance (priority := 10000) addCommSemigroup : AddCommSemigroup PosNum := by
   refine' { add := (· + ·).. } <;> transfer
 #align pos_num.add_comm_semigroup PosNum.addCommSemigroup
 
-instance commMonoid : CommMonoid PosNum := by
+instance (priority := 10000) commMonoid : CommMonoid PosNum := by
   refine'
     { mul := (· * ·)
       one := (1 : PosNum)
@@ -598,7 +598,7 @@ instance commMonoid : CommMonoid PosNum := by
   transfer
 #align pos_num.comm_monoid PosNum.commMonoid
 
-instance distrib : Distrib PosNum := by
+instance (priority := 10000) distrib : Distrib PosNum := by
   refine'
     { add := (· + ·)
       mul := (· * ·).. } <;>
@@ -606,7 +606,7 @@ instance distrib : Distrib PosNum := by
    simp [mul_add, mul_comm])
 #align pos_num.distrib PosNum.distrib
 
-instance linearOrder : LinearOrder PosNum where
+instance (priority := 10000) linearOrder : LinearOrder PosNum where
   lt := (· < ·)
   lt_iff_le_not_le := by
     intro a b
@@ -1400,7 +1400,7 @@ example (n : ZNum) (m : ZNum) : n ≤ n + m * m := by
 scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
-instance linearOrder : LinearOrder ZNum where
+instance (priority := 10000) linearOrder : LinearOrder ZNum where
   lt := (· < ·)
   lt_iff_le_not_le := by
     intro a b
@@ -1427,21 +1427,21 @@ instance linearOrder : LinearOrder ZNum where
   decidableLT := ZNum.decidableLT
 #align znum.linear_order ZNum.linearOrder
 
-instance addMonoid : AddMonoid ZNum where
+instance (priority := 10000) addMonoid : AddMonoid ZNum where
   add := (· + ·)
   add_assoc := by transfer
   zero := 0
   zero_add := zero_add
   add_zero := add_zero
 
-instance addCommGroup : AddCommGroup ZNum :=
+instance (priority := 10000) addCommGroup : AddCommGroup ZNum :=
   { ZNum.addMonoid with
     add_comm := by transfer
     neg := Neg.neg
     add_left_neg := by transfer }
 #align znum.add_comm_group ZNum.addCommGroup
 
-instance addMonoidWithOne : AddMonoidWithOne ZNum :=
+instance (priority := 10000) addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
     one := 1
     natCast := fun n => ZNum.ofInt' n
@@ -1461,7 +1461,7 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
   transfer_rw
   exact fun h => _root_.add_le_add_left h c
 
-instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
+instance (priority := 10000) linearOrderedCommRing : LinearOrderedCommRing ZNum :=
   { ZNum.linearOrder, ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul := (· * ·)
     mul_assoc := by transfer
@@ -1679,13 +1679,13 @@ theorem dvd_iff_mod_eq_zero {m n : Num} : m ∣ n ↔ n % m = 0 := by
   rw [← dvd_to_nat, Nat.dvd_iff_mod_eq_zero, ← to_nat_inj, mod_to_nat]; rfl
 #align num.dvd_iff_mod_eq_zero Num.dvd_iff_mod_eq_zero
 
-instance decidableDvd : DecidableRel ((· ∣ ·) : Num → Num → Prop)
+instance (priority := 10000) decidableDvd : DecidableRel ((· ∣ ·) : Num → Num → Prop)
   | _a, _b => decidable_of_iff' _ dvd_iff_mod_eq_zero
 #align num.decidable_dvd Num.decidableDvd
 
 end Num
 
-instance PosNum.decidableDvd : DecidableRel ((· ∣ ·) : PosNum → PosNum → Prop)
+instance (priority := 10000) PosNum.decidableDvd : DecidableRel ((· ∣ ·) : PosNum → PosNum → Prop)
   | _a, _b => Num.decidableDvd _ _
 #align pos_num.decidable_dvd PosNum.decidableDvd
 
@@ -1742,7 +1742,7 @@ theorem dvd_iff_mod_eq_zero {m n : ZNum} : m ∣ n ↔ n % m = 0 := by
   rw [← dvd_to_int, Int.dvd_iff_emod_eq_zero, ← to_int_inj, mod_to_int]; rfl
 #align znum.dvd_iff_mod_eq_zero ZNum.dvd_iff_mod_eq_zero
 
-instance decidableDvd : DecidableRel ((· ∣ ·) : ZNum → ZNum → Prop)
+instance (priority := 10000) decidableDvd : DecidableRel ((· ∣ ·) : ZNum → ZNum → Prop)
   | _a, _b => decidable_of_iff' _ dvd_iff_mod_eq_zero
 #align znum.has_dvd.dvd.decidable_rel ZNum.decidableDvd
 
@@ -1755,16 +1755,16 @@ def ofSnum : SNum → ℤ :=
   SNum.rec' (fun a => cond a (-1) 0) fun a _p IH => cond a (bit1 IH) (bit0 IH)
 #align int.of_snum Int.ofSnum
 
-instance snumCoe : Coe SNum ℤ :=
+instance (priority := 10000) snumCoe : Coe SNum ℤ :=
   ⟨ofSnum⟩
 #align int.snum_coe Int.snumCoe
 
 end Int
 
-instance SNum.lt : LT SNum :=
+instance (priority := 10000) SNum.lt : LT SNum :=
   ⟨fun a b => (a : ℤ) < b⟩
 #align snum.has_lt SNum.lt
 
-instance SNum.le : LE SNum :=
+instance (priority := 10000) SNum.le : LE SNum :=
   ⟨fun a b => (a : ℤ) ≤ b⟩
 #align snum.has_le SNum.le

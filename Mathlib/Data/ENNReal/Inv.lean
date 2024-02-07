@@ -76,7 +76,7 @@ theorem coe_div (hr : r ≠ 0) : (↑(p / r) : ℝ≥0∞) = p / r := by
 theorem div_zero (h : a ≠ 0) : a / 0 = ∞ := by simp [div_eq_mul_inv, h]
 #align ennreal.div_zero ENNReal.div_zero
 
-instance : DivInvOneMonoid ℝ≥0∞ :=
+instance (priority := 10000) : DivInvOneMonoid ℝ≥0∞ :=
   { inferInstanceAs (DivInvMonoid ℝ≥0∞) with
     inv_one := by simpa only [coe_inv one_ne_zero, coe_one] using coe_inj.2 inv_one }
 
@@ -118,7 +118,7 @@ protected theorem mul_div_right_comm : a * b / c = a / c * b := by
   simp only [div_eq_mul_inv, mul_right_comm]
 #align ennreal.mul_div_right_comm ENNReal.mul_div_right_comm
 
-instance : InvolutiveInv ℝ≥0∞ where
+instance (priority := 10000) : InvolutiveInv ℝ≥0∞ where
   inv_inv a := by
     by_cases a = 0 <;> cases a <;> simp_all [none_eq_top, some_eq_coe, -coe_inv, (coe_inv _).symm]
 
@@ -388,10 +388,10 @@ theorem mul_le_iff_le_inv {a b r : ℝ≥0∞} (hr₀ : r ≠ 0) (hr₁ : r ≠ 
     one_mul]
 #align ennreal.mul_le_iff_le_inv ENNReal.mul_le_iff_le_inv
 
-instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
+instance (priority := 10000) : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
   elim _r hr _a _b hab := ENNReal.mul_lt_mul_left' (coe_pos.2 hr).ne' coe_ne_top hab
 
-instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
+instance (priority := 10000) : SMulPosMono ℝ≥0 ℝ≥0∞ where
   elim _r _ _a _b hab := mul_le_mul_right' (coe_le_coe.2 hab) _
 
 #align ennreal.le_inv_smul_iff_of_pos le_inv_smul_iff_of_pos

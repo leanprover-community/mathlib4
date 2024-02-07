@@ -29,35 +29,35 @@ namespace Action
 
 section Limits
 
-instance [HasFiniteProducts V] : HasFiniteProducts (Action V G) where
+instance (priority := 10000) [HasFiniteProducts V] : HasFiniteProducts (Action V G) where
   out _ :=
     Adjunction.hasLimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-instance [HasFiniteLimits V] : HasFiniteLimits (Action V G) where
+instance (priority := 10000) [HasFiniteLimits V] : HasFiniteLimits (Action V G) where
   out _ _ _ :=
     Adjunction.hasLimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-instance [HasLimits V] : HasLimits (Action V G) :=
+instance (priority := 10000) [HasLimits V] : HasLimits (Action V G) :=
   Adjunction.has_limits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
 /-- If `V` has limits of shape `J`, so does `Action V G`.-/
-instance hasLimitsOfShape {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+instance (priority := 10000) hasLimitsOfShape {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
     HasLimitsOfShape J (Action V G) :=
   Adjunction.hasLimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-instance [HasFiniteCoproducts V] : HasFiniteCoproducts (Action V G) where
+instance (priority := 10000) [HasFiniteCoproducts V] : HasFiniteCoproducts (Action V G) where
   out _ :=
     Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-instance [HasFiniteColimits V] : HasFiniteColimits (Action V G) where
+instance (priority := 10000) [HasFiniteColimits V] : HasFiniteColimits (Action V G) where
   out _ _ _ :=
     Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
-instance [HasColimits V] : HasColimits (Action V G) :=
+instance (priority := 10000) [HasColimits V] : HasColimits (Action V G) :=
   Adjunction.has_colimits_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
 /-- If `V` has colimits of shape `J`, so does `Action V G`.-/
-instance hasColimitsOfShape {J : Type w₁} [Category.{w₂} J]
+instance (priority := 10000) hasColimitsOfShape {J : Type w₁} [Category.{w₂} J]
     [HasColimitsOfShape J V] : HasColimitsOfShape J (Action V G) :=
   Adjunction.hasColimitsOfShape_of_equivalence (Action.functorCategoryEquivalence _ _).functor
 
@@ -149,19 +149,19 @@ end Preservation
 
 section Forget
 
-noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
+noncomputable instance (priority := 10000) {J : Type w₁} [Category.{w₂} J] [HasLimitsOfShape J V] :
     PreservesLimitsOfShape J (Action.forget V G) := by
   show PreservesLimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   infer_instance
 
-noncomputable instance {J : Type w₁} [Category.{w₂} J] [HasColimitsOfShape J V] :
+noncomputable instance (priority := 10000) {J : Type w₁} [Category.{w₂} J] [HasColimitsOfShape J V] :
     PreservesColimitsOfShape J (Action.forget V G) := by
   show PreservesColimitsOfShape J ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   infer_instance
 
-noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forget V G) := by
+noncomputable instance (priority := 10000) [HasFiniteLimits V] : PreservesFiniteLimits (Action.forget V G) := by
   show PreservesFiniteLimits ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   have : PreservesFiniteLimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
@@ -170,7 +170,7 @@ noncomputable instance [HasFiniteLimits V] : PreservesFiniteLimits (Action.forge
     infer_instance
   apply compPreservesFiniteLimits
 
-noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.forget V G) := by
+noncomputable instance (priority := 10000) [HasFiniteColimits V] : PreservesFiniteColimits (Action.forget V G) := by
   show PreservesFiniteColimits ((Action.functorCategoryEquivalence V G).functor ⋙
     (evaluation (SingleObj G) V).obj (SingleObj.star G))
   have : PreservesFiniteColimits ((evaluation (SingleObj G) V).obj (SingleObj.star G)) := by
@@ -179,25 +179,25 @@ noncomputable instance [HasFiniteColimits V] : PreservesFiniteColimits (Action.f
     infer_instance
   apply compPreservesFiniteColimits
 
-instance {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
+instance (priority := 10000) {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
     ReflectsLimit F (Action.forget V G) where
   reflects h := by
     apply isLimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
     exact evaluationJointlyReflectsLimits _ (fun _ => h)
 
-instance {J : Type w₁} [Category.{w₂} J] : ReflectsLimitsOfShape J (Action.forget V G) where
+instance (priority := 10000) {J : Type w₁} [Category.{w₂} J] : ReflectsLimitsOfShape J (Action.forget V G) where
 
-instance : ReflectsLimits (Action.forget V G) where
+instance (priority := 10000) : ReflectsLimits (Action.forget V G) where
 
-instance {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
+instance (priority := 10000) {J : Type w₁} [Category.{w₂} J] (F : J ⥤ Action V G) :
     ReflectsColimit F (Action.forget V G) where
   reflects h := by
     apply isColimitOfReflects ((Action.functorCategoryEquivalence V G).functor)
     exact evaluationJointlyReflectsColimits _ (fun _ => h)
 
-instance {J : Type w₁} [Category.{w₂} J] : ReflectsColimitsOfShape J (Action.forget V G) where
+instance (priority := 10000) {J : Type w₁} [Category.{w₂} J] : ReflectsColimitsOfShape J (Action.forget V G) where
 
-instance : ReflectsColimits (Action.forget V G) where
+instance (priority := 10000) : ReflectsColimits (Action.forget V G) where
 
 end Forget
 
@@ -207,7 +207,7 @@ variable [HasZeroMorphisms V]
 
 -- porting note: in order to ease automation, the `Zero` instance is introduced separately,
 -- and the lemma `zero_hom` was moved just below
-instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
+instance (priority := 10000) {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
 
 @[simp]
 theorem zero_hom {X Y : Action V G} : (0 : X ⟶ Y).hom = 0 :=
@@ -215,18 +215,18 @@ theorem zero_hom {X Y : Action V G} : (0 : X ⟶ Y).hom = 0 :=
 set_option linter.uppercaseLean3 false in
 --#align Action.zero_hom Action.zero_hom
 
-instance : HasZeroMorphisms (Action V G) where
+instance (priority := 10000) : HasZeroMorphisms (Action V G) where
 
-instance forget_preservesZeroMorphisms : Functor.PreservesZeroMorphisms (forget V G) where
+instance (priority := 10000) forget_preservesZeroMorphisms : Functor.PreservesZeroMorphisms (forget V G) where
 set_option linter.uppercaseLean3 false in
 --#align Action.forget_preserves_zero_morphisms Action.forget_preservesZeroMorphisms
 
-instance forget₂_preservesZeroMorphisms [ConcreteCategory V] :
+instance (priority := 10000) forget₂_preservesZeroMorphisms [ConcreteCategory V] :
     Functor.PreservesZeroMorphisms (forget₂ (Action V G) V) where
 set_option linter.uppercaseLean3 false in
 #align Action.forget₂_preserves_zero_morphisms Action.forget₂_preservesZeroMorphisms
 
-instance functorCategoryEquivalence_preservesZeroMorphisms :
+instance (priority := 10000) functorCategoryEquivalence_preservesZeroMorphisms :
     Functor.PreservesZeroMorphisms (functorCategoryEquivalence V G).functor where
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence_preserves_zero_morphisms Action.functorCategoryEquivalence_preservesZeroMorphisms
@@ -237,7 +237,7 @@ section Preadditive
 
 variable [Preadditive V]
 
-instance : Preadditive (Action V G) where
+instance (priority := 10000) : Preadditive (Action V G) where
   homGroup X Y :=
     { add := fun f g => ⟨f.hom + g.hom, by simp [f.comm, g.comm]⟩
       neg := fun f => ⟨-f.hom, by simp [f.comm]⟩
@@ -249,15 +249,15 @@ instance : Preadditive (Action V G) where
   add_comp := by intros; ext; exact Preadditive.add_comp _ _ _ _ _ _
   comp_add := by intros; ext; exact Preadditive.comp_add _ _ _ _ _ _
 
-instance forget_additive : Functor.Additive (forget V G) where
+instance (priority := 10000) forget_additive : Functor.Additive (forget V G) where
 set_option linter.uppercaseLean3 false in
 #align Action.forget_additive Action.forget_additive
 
-instance forget₂_additive [ConcreteCategory V] : Functor.Additive (forget₂ (Action V G) V) where
+instance (priority := 10000) forget₂_additive [ConcreteCategory V] : Functor.Additive (forget₂ (Action V G) V) where
 set_option linter.uppercaseLean3 false in
 #align Action.forget₂_additive Action.forget₂_additive
 
-instance functorCategoryEquivalence_additive :
+instance (priority := 10000) functorCategoryEquivalence_additive :
     Functor.Additive (functorCategoryEquivalence V G).functor where
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence_additive Action.functorCategoryEquivalence_additive
@@ -287,7 +287,7 @@ section Linear
 
 variable [Preadditive V] {R : Type*} [Semiring R] [Linear R V]
 
-instance : Linear R (Action V G) where
+instance (priority := 10000) : Linear R (Action V G) where
   homModule X Y :=
     { smul := fun r f => ⟨r • f.hom, by simp [f.comm]⟩
       one_smul := by intros; ext; exact one_smul _ _
@@ -299,15 +299,15 @@ instance : Linear R (Action V G) where
   smul_comp := by intros; ext; exact Linear.smul_comp _ _ _ _ _ _
   comp_smul := by intros; ext; exact Linear.comp_smul _ _ _ _ _ _
 
-instance forget_linear : Functor.Linear R (forget V G) where
+instance (priority := 10000) forget_linear : Functor.Linear R (forget V G) where
 set_option linter.uppercaseLean3 false in
 #align Action.forget_linear Action.forget_linear
 
-instance forget₂_linear [ConcreteCategory V] : Functor.Linear R (forget₂ (Action V G) V) where
+instance (priority := 10000) forget₂_linear [ConcreteCategory V] : Functor.Linear R (forget₂ (Action V G) V) where
 set_option linter.uppercaseLean3 false in
 #align Action.forget₂_linear Action.forget₂_linear
 
-instance functorCategoryEquivalence_linear :
+instance (priority := 10000) functorCategoryEquivalence_linear :
     Functor.Linear R (functorCategoryEquivalence V G).functor where
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence_linear Action.functorCategoryEquivalence_linear
@@ -320,13 +320,13 @@ set_option linter.uppercaseLean3 false in
 
 variable {H : MonCat.{u}} (f : G ⟶ H)
 
-instance res_additive [Preadditive V] : (res V f).Additive where
+instance (priority := 10000) res_additive [Preadditive V] : (res V f).Additive where
 set_option linter.uppercaseLean3 false in
 #align Action.res_additive Action.res_additive
 
 variable {R : Type*} [Semiring R]
 
-instance res_linear [Preadditive V] [Linear R V] : (res V f).Linear R where
+instance (priority := 10000) res_linear [Preadditive V] [Linear R V] : (res V f).Linear R where
 set_option linter.uppercaseLean3 false in
 #align Action.res_linear Action.res_linear
 
@@ -340,7 +340,7 @@ def abelianAux : Action V G ≌ ULift.{u} (SingleObj G) ⥤ V :=
 set_option linter.uppercaseLean3 false in
 #align Action.abelian_aux Action.abelianAux
 
-noncomputable instance [Abelian V] : Abelian (Action V G) :=
+noncomputable instance (priority := 10000) [Abelian V] : Abelian (Action V G) :=
   abelianOfEquivalence abelianAux.functor
 
 end Abelian
@@ -352,13 +352,13 @@ namespace CategoryTheory.Functor
 variable {W : Type (u + 1)} [LargeCategory W] (F : V ⥤ W) (G : MonCat.{u}) [Preadditive V]
   [Preadditive W]
 
-instance mapAction_preadditive [F.Additive] : (F.mapAction G).Additive where
+instance (priority := 10000) mapAction_preadditive [F.Additive] : (F.mapAction G).Additive where
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Action_preadditive CategoryTheory.Functor.mapAction_preadditive
 
 variable {R : Type*} [Semiring R] [CategoryTheory.Linear R V] [CategoryTheory.Linear R W]
 
-instance mapAction_linear [F.Additive] [F.Linear R] : (F.mapAction G).Linear R where
+instance (priority := 10000) mapAction_linear [F.Additive] [F.Linear R] : (F.mapAction G).Linear R where
 set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Action_linear CategoryTheory.Functor.mapAction_linear
 

@@ -32,7 +32,7 @@ namespace CategoryTheory.Limits
 
 /--
 A category has all countable limits if every functor `J ⥤ C` with a `CountableCategory J`
-instance and `J : Type` has a limit.
+instance (priority := 10000) and `J : Type` has a limit.
 -/
 class HasCountableLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
@@ -48,13 +48,13 @@ instance (priority := 100) hasCountableLimits_of_hasLimits [HasLimits C] :
   out := inferInstance
 
 universe v in
-instance [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimitsOfShape J C :=
+instance (priority := 10000) [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimitsOfShape J C :=
   have : HasLimitsOfShape (HomAsType J) C := HasCountableLimits.out (HomAsType J)
   hasLimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
 /--
 A category has all countable colimits if every functor `J ⥤ C` with a `CountableCategory J`
-instance and `J : Type` has a colimit.
+instance (priority := 10000) and `J : Type` has a colimit.
 -/
 class HasCountableColimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
@@ -70,7 +70,7 @@ instance (priority := 100) hasCountableColimits_of_hasColimits [HasColimits C] :
   out := inferInstance
 
 universe v in
-instance [Category.{v} J] [CountableCategory J] [HasCountableColimits C] : HasColimitsOfShape J C :=
+instance (priority := 10000) [Category.{v} J] [CountableCategory J] [HasCountableColimits C] : HasColimitsOfShape J C :=
   have : HasColimitsOfShape (HomAsType J) C := HasCountableColimits.out (HomAsType J)
   hasColimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
@@ -105,7 +105,7 @@ theorem sequentialFunctor_initial_aux (j : J) : ∃ (n : ℕ), sequentialFunctor
   simpa [h] using leOfHom (IsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose m)
     (sequentialFunctor_obj J m)).choose_spec.choose
 
-instance sequentialFunctor_initial : (sequentialFunctor J).Initial  where
+instance (priority := 10000) sequentialFunctor_initial : (sequentialFunctor J).Initial  where
   out d := by
     obtain ⟨n, (g : (sequentialFunctor J).obj ⟨n⟩ ≤ d)⟩ := sequentialFunctor_initial_aux J d
     have : Nonempty (CostructuredArrow (sequentialFunctor J) d) :=

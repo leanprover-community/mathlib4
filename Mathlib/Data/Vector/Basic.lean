@@ -33,7 +33,7 @@ infixr:67 " ::ᵥ " => Vector.cons
 
 attribute [simp] head_cons tail_cons
 
-instance [Inhabited α] : Inhabited (Vector α n) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (Vector α n) :=
   ⟨ofFn default⟩
 
 theorem toList_injective : Function.Injective (@toList α n) :=
@@ -48,7 +48,7 @@ theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.get v m = Vecto
 #align vector.ext Vector.ext
 
 /-- The empty `Vector` is a `Subsingleton`. -/
-instance zero_subsingleton : Subsingleton (Vector α 0) :=
+instance (priority := 10000) zero_subsingleton : Subsingleton (Vector α 0) :=
   ⟨fun _ _ => Vector.ext fun m => Fin.elim0 m⟩
 #align vector.zero_subsingleton Vector.zero_subsingleton
 
@@ -733,11 +733,11 @@ protected theorem naturality {α β : Type u} (f : α → F β) (x : Vector α n
 
 end Traverse
 
-instance : Traversable.{u} (flip Vector n) where
+instance (priority := 10000) : Traversable.{u} (flip Vector n) where
   traverse := @Vector.traverse n
   map {α β} := @Vector.map.{u, u} α β n
 
-instance : LawfulTraversable.{u} (flip Vector n) where
+instance (priority := 10000) : LawfulTraversable.{u} (flip Vector n) where
   id_traverse := @Vector.id_traverse n
   comp_traverse := Vector.comp_traverse
   traverse_eq_map_id := @Vector.traverse_eq_map_id n

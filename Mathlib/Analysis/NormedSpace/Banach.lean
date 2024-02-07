@@ -37,7 +37,7 @@ structure NonlinearRightInverse where
   right_inv' : ∀ y, f (toFun y) = y
 #align continuous_linear_map.nonlinear_right_inverse ContinuousLinearMap.NonlinearRightInverse
 
-instance : CoeFun (NonlinearRightInverse f) fun _ => F → E :=
+instance (priority := 10000) : CoeFun (NonlinearRightInverse f) fun _ => F → E :=
   ⟨fun fsymm => fsymm.toFun⟩
 
 @[simp]
@@ -63,7 +63,7 @@ noncomputable def ContinuousLinearEquiv.toNonlinearRightInverse (f : E ≃L[𝕜
   right_inv' := f.apply_symm_apply
 #align continuous_linear_equiv.to_nonlinear_right_inverse ContinuousLinearEquiv.toNonlinearRightInverse
 
-noncomputable instance (f : E ≃L[𝕜] F) :
+noncomputable instance (priority := 10000) (f : E ≃L[𝕜] F) :
     Inhabited (ContinuousLinearMap.NonlinearRightInverse (f : E →L[𝕜] F)) :=
   ⟨f.toNonlinearRightInverse⟩
 

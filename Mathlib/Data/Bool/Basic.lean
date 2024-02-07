@@ -108,12 +108,12 @@ theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
 #align bool.exists_bool Bool.exists_bool
 
 /-- If `p b` is decidable for all `b : Bool`, then `∀ b, p b` is decidable -/
-instance decidableForallBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∀ b, p b) :=
+instance (priority := 10000) decidableForallBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∀ b, p b) :=
   decidable_of_decidable_of_iff forall_bool.symm
 #align bool.decidable_forall_bool Bool.decidableForallBool
 
 /-- If `p b` is decidable for all `b : Bool`, then `∃ b, p b` is decidable -/
-instance decidableExistsBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∃ b, p b) :=
+instance (priority := 10000) decidableExistsBool {p : Bool → Prop} [∀ b, Decidable (p b)] : Decidable (∃ b, p b) :=
   decidable_of_decidable_of_iff exists_bool.symm
 #align bool.decidable_exists_bool Bool.decidableExistsBool
 
@@ -255,7 +255,7 @@ attribute [simp] not_or
 
 #align bool.bnot_inj Bool.not_inj
 
-instance linearOrder : LinearOrder Bool where
+instance (priority := 10000) linearOrder : LinearOrder Bool where
   le_refl := by decide
   le_trans := by decide
   le_antisymm := by decide

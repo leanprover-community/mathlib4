@@ -52,7 +52,7 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
 namespace Pi
 
 @[to_additive]
-instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
+instance (priority := 10000) semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
   { mul := (· * ·)
     --pi_instance
     mul_assoc := by intros; ext; exact mul_assoc _ _ _ }
@@ -60,7 +60,7 @@ instance semigroup [∀ i, Semigroup <| f i] : Semigroup (∀ i : I, f i) :=
 #align pi.add_semigroup Pi.addSemigroup
 
 @[to_additive]
-instance commSemigroup [∀ i, CommSemigroup <| f i] : CommSemigroup (∀ i : I, f i) :=
+instance (priority := 10000) commSemigroup [∀ i, CommSemigroup <| f i] : CommSemigroup (∀ i : I, f i) :=
   { semigroup with
     --pi_instance
     mul_comm := by intros; ext; exact mul_comm _ _
@@ -69,7 +69,7 @@ instance commSemigroup [∀ i, CommSemigroup <| f i] : CommSemigroup (∀ i : I,
 #align pi.add_comm_semigroup Pi.addCommSemigroup
 
 @[to_additive]
-instance mulOneClass [∀ i, MulOneClass <| f i] : MulOneClass (∀ i : I, f i) :=
+instance (priority := 10000) mulOneClass [∀ i, MulOneClass <| f i] : MulOneClass (∀ i : I, f i) :=
   { one := (1 : ∀ i, f i)
     mul := (· * ·)
     --pi_instance
@@ -80,13 +80,13 @@ instance mulOneClass [∀ i, MulOneClass <| f i] : MulOneClass (∀ i : I, f i) 
 #align pi.add_zero_class Pi.addZeroClass
 
 @[to_additive]
-instance invOneClass [∀ i, InvOneClass <| f i] : InvOneClass (∀ i : I, f i) :=
+instance (priority := 10000) invOneClass [∀ i, InvOneClass <| f i] : InvOneClass (∀ i : I, f i) :=
   { one := (1 : ∀ i, f i)
     inv := (· ⁻¹)
     inv_one := by intros; ext; exact inv_one }
 
 @[to_additive]
-instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
+instance (priority := 10000) monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
   { semigroup, mulOneClass with
     npow := fun n x i => x i ^ n
     --pi_instance
@@ -96,7 +96,7 @@ instance monoid [∀ i, Monoid <| f i] : Monoid (∀ i : I, f i) :=
 #align pi.monoid Pi.monoid
 #align pi.add_monoid Pi.addMonoid
 
-instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
+instance (priority := 10000) addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (∀ i : I, f i) :=
   { addMonoid with
     natCast := fun n _ => n
     natCast_zero := funext fun _ => AddMonoidWithOne.natCast_zero
@@ -104,13 +104,13 @@ instance addMonoidWithOne [∀ i, AddMonoidWithOne <| f i] : AddMonoidWithOne (�
   }
 
 @[to_additive]
-instance commMonoid [∀ i, CommMonoid <| f i] : CommMonoid (∀ i : I, f i) :=
+instance (priority := 10000) commMonoid [∀ i, CommMonoid <| f i] : CommMonoid (∀ i : I, f i) :=
   { monoid, commSemigroup with }
 #align pi.comm_monoid Pi.commMonoid
 #align pi.add_comm_monoid Pi.addCommMonoid
 
 @[to_additive Pi.subNegMonoid]
-instance divInvMonoid [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f i) :=
+instance (priority := 10000) divInvMonoid [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f i) :=
   { monoid with
     inv := Inv.inv
     div := Div.div
@@ -123,19 +123,19 @@ instance divInvMonoid [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f 
   }
 
 @[to_additive Pi.subNegZeroMonoid]
-instance divInvOneMonoid [∀ i, DivInvOneMonoid <| f i] : DivInvOneMonoid (∀ i : I, f i) :=
+instance (priority := 10000) divInvOneMonoid [∀ i, DivInvOneMonoid <| f i] : DivInvOneMonoid (∀ i : I, f i) :=
   { divInvMonoid with
     inv_one := by ext; exact inv_one }
 
 @[to_additive]
-instance involutiveInv [∀ i, InvolutiveInv <| f i] : InvolutiveInv (∀ i, f i) :=
+instance (priority := 10000) involutiveInv [∀ i, InvolutiveInv <| f i] : InvolutiveInv (∀ i, f i) :=
   { inv := Inv.inv
     --pi_instance
     inv_inv := by intros; ext; exact inv_inv _
   }
 
 @[to_additive Pi.subtractionMonoid]
-instance divisionMonoid [∀ i, DivisionMonoid <| f i] : DivisionMonoid (∀ i, f i) :=
+instance (priority := 10000) divisionMonoid [∀ i, DivisionMonoid <| f i] : DivisionMonoid (∀ i, f i) :=
   { divInvMonoid, involutiveInv with
     --pi_instance
     mul_inv_rev := by intros; ext; exact mul_inv_rev _ _
@@ -144,11 +144,11 @@ instance divisionMonoid [∀ i, DivisionMonoid <| f i] : DivisionMonoid (∀ i, 
   }
 
 @[to_additive Pi.subtractionCommMonoid]
-instance [∀ i, DivisionCommMonoid <| f i] : DivisionCommMonoid (∀ i, f i) :=
+instance (priority := 10000) [∀ i, DivisionCommMonoid <| f i] : DivisionCommMonoid (∀ i, f i) :=
   { divisionMonoid, commSemigroup with }
 
 @[to_additive]
-instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
+instance (priority := 10000) group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
   { divInvMonoid with
     --pi_instance
     mul_left_inv := by intros; ext; exact mul_left_inv _
@@ -156,7 +156,7 @@ instance group [∀ i, Group <| f i] : Group (∀ i : I, f i) :=
 #align pi.group Pi.group
 #align pi.add_group Pi.addGroup
 
-instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
+instance (priority := 10000) addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ i : I, f i) :=
   { addGroup, addMonoidWithOne with
     intCast := fun z _ => z
     intCast_ofNat := fun n => funext fun _ => AddGroupWithOne.intCast_ofNat n
@@ -164,61 +164,61 @@ instance addGroupWithOne [∀ i, AddGroupWithOne <| f i] : AddGroupWithOne (∀ 
   }
 
 @[to_additive]
-instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=
+instance (priority := 10000) commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=
   { group, commMonoid with }
 #align pi.comm_group Pi.commGroup
 #align pi.add_comm_group Pi.addCommGroup
 
 @[to_additive]
-instance [∀ i, Mul <| f i] [∀ i, IsLeftCancelMul <| f i] : IsLeftCancelMul (∀ i : I, f i) where
+instance (priority := 10000) [∀ i, Mul <| f i] [∀ i, IsLeftCancelMul <| f i] : IsLeftCancelMul (∀ i : I, f i) where
   mul_left_cancel  _ _ _ h := funext fun _ => mul_left_cancel (congr_fun h _)
 
 @[to_additive]
-instance [∀ i, Mul <| f i] [∀ i, IsRightCancelMul <| f i] : IsRightCancelMul (∀ i : I, f i) where
+instance (priority := 10000) [∀ i, Mul <| f i] [∀ i, IsRightCancelMul <| f i] : IsRightCancelMul (∀ i : I, f i) where
   mul_right_cancel  _ _ _ h := funext fun _ => mul_right_cancel (congr_fun h _)
 
 @[to_additive]
-instance [∀ i, Mul <| f i] [∀ i, IsCancelMul <| f i] : IsCancelMul (∀ i : I, f i) where
+instance (priority := 10000) [∀ i, Mul <| f i] [∀ i, IsCancelMul <| f i] : IsCancelMul (∀ i : I, f i) where
 
 @[to_additive]
-instance leftCancelSemigroup [∀ i, LeftCancelSemigroup <| f i] :
+instance (priority := 10000) leftCancelSemigroup [∀ i, LeftCancelSemigroup <| f i] :
     LeftCancelSemigroup (∀ i : I, f i) :=
   { semigroup with mul_left_cancel := fun _ _ _ => mul_left_cancel }
 #align pi.left_cancel_semigroup Pi.leftCancelSemigroup
 #align pi.add_left_cancel_semigroup Pi.addLeftCancelSemigroup
 
 @[to_additive]
-instance rightCancelSemigroup [∀ i, RightCancelSemigroup <| f i] :
+instance (priority := 10000) rightCancelSemigroup [∀ i, RightCancelSemigroup <| f i] :
     RightCancelSemigroup (∀ i : I, f i) :=
   { semigroup with mul_right_cancel := fun _ _ _ => mul_right_cancel }
 #align pi.right_cancel_semigroup Pi.rightCancelSemigroup
 #align pi.add_right_cancel_semigroup Pi.addRightCancelSemigroup
 
 @[to_additive]
-instance leftCancelMonoid [∀ i, LeftCancelMonoid <| f i] : LeftCancelMonoid (∀ i : I, f i) :=
+instance (priority := 10000) leftCancelMonoid [∀ i, LeftCancelMonoid <| f i] : LeftCancelMonoid (∀ i : I, f i) :=
   { leftCancelSemigroup, monoid with }
 #align pi.left_cancel_monoid Pi.leftCancelMonoid
 #align pi.add_left_cancel_monoid Pi.addLeftCancelMonoid
 
 @[to_additive]
-instance rightCancelMonoid [∀ i, RightCancelMonoid <| f i] : RightCancelMonoid (∀ i : I, f i) :=
+instance (priority := 10000) rightCancelMonoid [∀ i, RightCancelMonoid <| f i] : RightCancelMonoid (∀ i : I, f i) :=
   { rightCancelSemigroup, monoid with }
 #align pi.right_cancel_monoid Pi.rightCancelMonoid
 #align pi.add_right_cancel_monoid Pi.addRightCancelMonoid
 
 @[to_additive]
-instance cancelMonoid [∀ i, CancelMonoid <| f i] : CancelMonoid (∀ i : I, f i) :=
+instance (priority := 10000) cancelMonoid [∀ i, CancelMonoid <| f i] : CancelMonoid (∀ i : I, f i) :=
   { leftCancelMonoid, rightCancelMonoid with }
 #align pi.cancel_monoid Pi.cancelMonoid
 #align pi.add_cancel_monoid Pi.addCancelMonoid
 
 @[to_additive]
-instance cancelCommMonoid [∀ i, CancelCommMonoid <| f i] : CancelCommMonoid (∀ i : I, f i) :=
+instance (priority := 10000) cancelCommMonoid [∀ i, CancelCommMonoid <| f i] : CancelCommMonoid (∀ i : I, f i) :=
   { leftCancelMonoid, commMonoid with }
 #align pi.cancel_comm_monoid Pi.cancelCommMonoid
 #align pi.add_cancel_comm_monoid Pi.addCancelCommMonoid
 
-instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f i) :=
+instance (priority := 10000) mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f i) :=
   { zero := (0 : ∀ i, f i)
     mul := (· * ·)
     --pi_instance
@@ -227,19 +227,19 @@ instance mulZeroClass [∀ i, MulZeroClass <| f i] : MulZeroClass (∀ i : I, f 
 }
 #align pi.mul_zero_class Pi.mulZeroClass
 
-instance mulZeroOneClass [∀ i, MulZeroOneClass <| f i] : MulZeroOneClass (∀ i : I, f i) :=
+instance (priority := 10000) mulZeroOneClass [∀ i, MulZeroOneClass <| f i] : MulZeroOneClass (∀ i : I, f i) :=
   { mulZeroClass, mulOneClass with }
 #align pi.mul_zero_one_class Pi.mulZeroOneClass
 
-instance monoidWithZero [∀ i, MonoidWithZero <| f i] : MonoidWithZero (∀ i : I, f i) :=
+instance (priority := 10000) monoidWithZero [∀ i, MonoidWithZero <| f i] : MonoidWithZero (∀ i : I, f i) :=
   { monoid, mulZeroClass with }
 #align pi.monoid_with_zero Pi.monoidWithZero
 
-instance commMonoidWithZero [∀ i, CommMonoidWithZero <| f i] : CommMonoidWithZero (∀ i : I, f i) :=
+instance (priority := 10000) commMonoidWithZero [∀ i, CommMonoidWithZero <| f i] : CommMonoidWithZero (∀ i : I, f i) :=
   { monoidWithZero, commMonoid with }
 #align pi.comm_monoid_with_zero Pi.commMonoidWithZero
 
-instance semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) :=
+instance (priority := 10000) semigroupWithZero [∀ i, SemigroupWithZero <| f i] : SemigroupWithZero (∀ i : I, f i) :=
   { semigroup, mulZeroClass with }
 #align pi.semigroup_with_zero Pi.semigroupWithZero
 

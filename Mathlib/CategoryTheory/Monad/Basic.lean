@@ -63,11 +63,11 @@ structure Comonad extends C ⥤ C where
 variable {C}
 variable (T : Monad C) (G : Comonad C)
 
-instance coeMonad : Coe (Monad C) (C ⥤ C) :=
+instance (priority := 10000) coeMonad : Coe (Monad C) (C ⥤ C) :=
   ⟨fun T => T.toFunctor⟩
 #align category_theory.coe_monad CategoryTheory.coeMonad
 
-instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
+instance (priority := 10000) coeComonad : Coe (Comonad C) (C ⥤ C) :=
   ⟨fun G => G.toFunctor⟩
 #align category_theory.coe_comonad CategoryTheory.coeComonad
 
@@ -197,10 +197,10 @@ initialize_simps_projections ComonadHom (+toNatTrans, -app)
 attribute [reassoc (attr := simp)] MonadHom.app_η MonadHom.app_μ
 attribute [reassoc (attr := simp)] ComonadHom.app_ε ComonadHom.app_δ
 
-instance : Quiver (Monad C) where
+instance (priority := 10000) : Quiver (Monad C) where
   Hom := MonadHom
 
-instance : Quiver (Comonad C) where
+instance (priority := 10000) : Quiver (Comonad C) where
   Hom := ComonadHom
 
 -- porting note: added to ease automation
@@ -213,7 +213,7 @@ lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.a
 lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   ComonadHom.ext f g h
 
-instance : Category (Monad C) where
+instance (priority := 10000) : Category (Monad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
   comp f g :=
     { toNatTrans :=
@@ -224,7 +224,7 @@ instance : Category (Monad C) where
   comp_id _ := MonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, comp_id])
   assoc _ _ _ := MonadHom.ext _ _ (by funext; simp only [assoc])
 
-instance : Category (Comonad C) where
+instance (priority := 10000) : Category (Comonad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
   comp f g :=
     { toNatTrans :=
@@ -235,7 +235,7 @@ instance : Category (Comonad C) where
   comp_id _ := ComonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, comp_id])
   assoc _ _ _ := ComonadHom.ext _ _ (by funext; simp only [assoc])
 
-instance {T : Monad C} : Inhabited (MonadHom T T) :=
+instance (priority := 10000) {T : Monad C} : Inhabited (MonadHom T T) :=
   ⟨𝟙 T⟩
 
 @[simp]
@@ -249,7 +249,7 @@ theorem MonadHom.comp_toNatTrans {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) 
   rfl
 #align category_theory.monad_hom.comp_to_nat_trans CategoryTheory.MonadHom.comp_toNatTrans
 
-instance {G : Comonad C} : Inhabited (ComonadHom G G) :=
+instance (priority := 10000) {G : Comonad C} : Inhabited (ComonadHom G G) :=
   ⟨𝟙 G⟩
 
 @[simp]
@@ -315,7 +315,7 @@ def monadToFunctor : Monad C ⥤ C ⥤ C where
   map f := f.toNatTrans
 #align category_theory.monad_to_functor CategoryTheory.monadToFunctor
 
-instance : Faithful (monadToFunctor C) where
+instance (priority := 10000) : Faithful (monadToFunctor C) where
 
 theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N) (f_η f_μ) :
     (monadToFunctor _).mapIso (MonadIso.mk f f_η f_μ) = f := by
@@ -323,7 +323,7 @@ theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) �
   rfl
 #align category_theory.monad_to_functor_map_iso_monad_iso_mk CategoryTheory.monadToFunctor_mapIso_monad_iso_mk
 
-instance : ReflectsIsomorphisms (monadToFunctor C) where
+instance (priority := 10000) : ReflectsIsomorphisms (monadToFunctor C) where
   reflects f _ := IsIso.of_iso (MonadIso.mk (asIso ((monadToFunctor C).map f)) f.app_η f.app_μ)
 
 /-- The forgetful functor from the category of comonads to the category of endofunctors.
@@ -334,7 +334,7 @@ def comonadToFunctor : Comonad C ⥤ C ⥤ C where
   map f := f.toNatTrans
 #align category_theory.comonad_to_functor CategoryTheory.comonadToFunctor
 
-instance : Faithful (comonadToFunctor C) where
+instance (priority := 10000) : Faithful (comonadToFunctor C) where
 
 theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N) (f_ε f_δ) :
     (comonadToFunctor _).mapIso (ComonadIso.mk f f_ε f_δ) = f := by
@@ -342,7 +342,7 @@ theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤
   rfl
 #align category_theory.comonad_to_functor_map_iso_comonad_iso_mk CategoryTheory.comonadToFunctor_mapIso_comonad_iso_mk
 
-instance : ReflectsIsomorphisms (comonadToFunctor C) where
+instance (priority := 10000) : ReflectsIsomorphisms (comonadToFunctor C) where
   reflects f _ := IsIso.of_iso (ComonadIso.mk (asIso ((comonadToFunctor C).map f)) f.app_ε f.app_δ)
 
 variable {C}
@@ -376,7 +376,7 @@ def id : Monad C where
   μ' := 𝟙 (𝟭 C)
 #align category_theory.monad.id CategoryTheory.Monad.id
 
-instance : Inhabited (Monad C) :=
+instance (priority := 10000) : Inhabited (Monad C) :=
   ⟨Monad.id C⟩
 
 end Monad
@@ -391,7 +391,7 @@ def id : Comonad C where
   δ' := 𝟙 (𝟭 C)
 #align category_theory.comonad.id CategoryTheory.Comonad.id
 
-instance : Inhabited (Comonad C) :=
+instance (priority := 10000) : Inhabited (Comonad C) :=
   ⟨Comonad.id C⟩
 
 end Comonad

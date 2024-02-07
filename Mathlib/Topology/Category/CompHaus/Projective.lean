@@ -37,7 +37,7 @@ namespace CompHaus
 
 attribute [local instance] ConcreteCategory.instFunLike
 
-instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X)
+instance (priority := 10000) projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X)
     where
   factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg
@@ -70,6 +70,6 @@ def projectivePresentation (X : CompHaus) : ProjectivePresentation X where
 set_option linter.uppercaseLean3 false in
 #align CompHaus.projective_presentation CompHaus.projectivePresentation
 
-instance : EnoughProjectives CompHaus where presentation X := ⟨projectivePresentation X⟩
+instance (priority := 10000) : EnoughProjectives CompHaus where presentation X := ⟨projectivePresentation X⟩
 
 end CompHaus

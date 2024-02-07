@@ -44,20 +44,20 @@ structure LieSubalgebra extends Submodule R L where
 #align lie_subalgebra LieSubalgebra
 
 /-- The zero algebra is a subalgebra of any Lie algebra. -/
-instance : Zero (LieSubalgebra R L) :=
+instance (priority := 10000) : Zero (LieSubalgebra R L) :=
   ⟨⟨0, @fun x y hx _hy ↦ by
     rw [(Submodule.mem_bot R).1 hx, zero_lie]
     exact Submodule.zero_mem 0⟩⟩
 
-instance : Inhabited (LieSubalgebra R L) :=
+instance (priority := 10000) : Inhabited (LieSubalgebra R L) :=
   ⟨0⟩
 
-instance : Coe (LieSubalgebra R L) (Submodule R L) :=
+instance (priority := 10000) : Coe (LieSubalgebra R L) (Submodule R L) :=
   ⟨LieSubalgebra.toSubmodule⟩
 
 namespace LieSubalgebra
 
-instance : SetLike (LieSubalgebra R L) L
+instance (priority := 10000) : SetLike (LieSubalgebra R L) L
     where
   coe L' := L'.carrier
   coe_injective' L' L'' h := by
@@ -66,14 +66,14 @@ instance : SetLike (LieSubalgebra R L) L
     congr
     exact SetLike.coe_injective' h
 
-instance : AddSubgroupClass (LieSubalgebra R L) L
+instance (priority := 10000) : AddSubgroupClass (LieSubalgebra R L) L
     where
   add_mem := Submodule.add_mem _
   zero_mem L' := L'.zero_mem'
   neg_mem {L'} x hx := show -x ∈ (L' : Submodule R L) from neg_mem hx
 
 /-- A Lie subalgebra forms a new Lie ring. -/
-instance lieRing (L' : LieSubalgebra R L) : LieRing L'
+instance (priority := 10000) lieRing (L' : LieSubalgebra R L) : LieRing L'
     where
   bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
   lie_add := by
@@ -98,25 +98,25 @@ section
 variable {R₁ : Type*} [Semiring R₁]
 
 /-- A Lie subalgebra inherits module structures from `L`. -/
-instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalgebra R L) : Module R₁ L' :=
+instance (priority := 10000) [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalgebra R L) : Module R₁ L' :=
   L'.toSubmodule.module'
 
-instance [SMul R₁ R] [SMul R₁ᵐᵒᵖ R] [Module R₁ L] [Module R₁ᵐᵒᵖ L] [IsScalarTower R₁ R L]
+instance (priority := 10000) [SMul R₁ R] [SMul R₁ᵐᵒᵖ R] [Module R₁ L] [Module R₁ᵐᵒᵖ L] [IsScalarTower R₁ R L]
     [IsScalarTower R₁ᵐᵒᵖ R L] [IsCentralScalar R₁ L] (L' : LieSubalgebra R L) :
     IsCentralScalar R₁ L' :=
   L'.toSubmodule.isCentralScalar
 
-instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalgebra R L) :
+instance (priority := 10000) [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalgebra R L) :
     IsScalarTower R₁ R L' :=
   L'.toSubmodule.isScalarTower
 
-instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
+instance (priority := 10000) (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
   isNoetherian_submodule' _
 
 end
 
 /-- A Lie subalgebra forms a new Lie algebra. -/
-instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L' where
+instance (priority := 10000) lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L' where
   lie_smul := by
     { intros
       apply SetCoe.ext
@@ -233,7 +233,7 @@ variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieM
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
 `M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
-instance lieRingModule : LieRingModule L' M where
+instance (priority := 10000) lieRingModule : LieRingModule L' M where
   bracket x m := ⁅(x : L), m⁆
   add_lie x y m := add_lie (x : L) y m
   lie_add x y m := lie_add (x : L) y m
@@ -248,7 +248,7 @@ variable [Module R M] [LieModule R L M]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
-instance lieModule : LieModule R L' M
+instance (priority := 10000) lieModule : LieModule R L' M
     where
   smul_lie t x m := by simp only [coe_bracket_of_module, smul_lie, Submodule.coe_smul_of_tower]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
@@ -412,7 +412,7 @@ section LatticeStructure
 
 open Set
 
-instance : PartialOrder (LieSubalgebra R L) :=
+instance (priority := 10000) : PartialOrder (LieSubalgebra R L) :=
   { PartialOrder.lift ((↑) : LieSubalgebra R L → Set L) coe_injective with
     le := fun N N' ↦ ∀ ⦃x⦄, x ∈ N → x ∈ N' }
 
@@ -425,7 +425,7 @@ theorem coe_submodule_le_coe_submodule : (K : Submodule R L) ≤ K' ↔ K ≤ K'
   Iff.rfl
 #align lie_subalgebra.coe_submodule_le_coe_submodule LieSubalgebra.coe_submodule_le_coe_submodule
 
-instance : Bot (LieSubalgebra R L) :=
+instance (priority := 10000) : Bot (LieSubalgebra R L) :=
   ⟨0⟩
 
 @[simp]
@@ -443,7 +443,7 @@ theorem mem_bot (x : L) : x ∈ (⊥ : LieSubalgebra R L) ↔ x = 0 :=
   mem_singleton_iff
 #align lie_subalgebra.mem_bot LieSubalgebra.mem_bot
 
-instance : Top (LieSubalgebra R L) :=
+instance (priority := 10000) : Top (LieSubalgebra R L) :=
   ⟨{ (⊤ : Submodule R L) with lie_mem' := @fun x y _ _ ↦ mem_univ ⁅x, y⁆ }⟩
 
 @[simp]
@@ -466,12 +466,12 @@ theorem _root_.LieHom.range_eq_map : f.range = map f ⊤ := by
   simp
 #align lie_hom.range_eq_map LieHom.range_eq_map
 
-instance : Inf (LieSubalgebra R L) :=
+instance (priority := 10000) : Inf (LieSubalgebra R L) :=
   ⟨fun K K' ↦
     { (K ⊓ K' : Submodule R L) with
       lie_mem' := fun hx hy ↦ mem_inter (K.lie_mem hx.1 hy.1) (K'.lie_mem hx.2 hy.2) }⟩
 
-instance : InfSet (LieSubalgebra R L) :=
+instance (priority := 10000) : InfSet (LieSubalgebra R L) :=
   ⟨fun S ↦
     { sInf {(s : Submodule R L) | s ∈ S} with
       lie_mem' := @fun x y hx hy ↦ by
@@ -511,7 +511,7 @@ theorem sInf_glb (S : Set (LieSubalgebra R L)) : IsGLB S (sInf S) := by
 
 We provide explicit values for the fields `bot`, `top`, `inf` to get more convenient definitions
 than we would otherwise obtain from `completeLatticeOfInf`. -/
-instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
+instance (priority := 10000) completeLattice : CompleteLattice (LieSubalgebra R L) :=
   { completeLatticeOfInf _ sInf_glb with
     bot := ⊥
     bot_le := fun N _ h ↦ by
@@ -525,7 +525,7 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
-instance addCommMonoid : AddCommMonoid (LieSubalgebra R L)
+instance (priority := 10000) addCommMonoid : AddCommMonoid (LieSubalgebra R L)
     where
   add := (· ⊔ ·)
   add_assoc _ _ _ := sup_assoc
@@ -534,7 +534,7 @@ instance addCommMonoid : AddCommMonoid (LieSubalgebra R L)
   add_zero _ := sup_bot_eq
   add_comm _ _ := sup_comm
 
-instance : CanonicallyOrderedAddCommMonoid (LieSubalgebra R L) :=
+instance (priority := 10000) : CanonicallyOrderedAddCommMonoid (LieSubalgebra R L) :=
   { LieSubalgebra.addCommMonoid,
     LieSubalgebra.completeLattice with
     add_le_add_left := fun _a _b ↦ sup_le_sup_left
@@ -563,7 +563,7 @@ theorem eq_bot_iff : K = ⊥ ↔ ∀ x : L, x ∈ K → x = 0 := by
   exact Iff.rfl
 #align lie_subalgebra.eq_bot_iff LieSubalgebra.eq_bot_iff
 
-instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebra R L)) := by
+instance (priority := 10000) subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebra R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [LieSubalgebra.mem_bot] at hx; subst hx
   simp only [true_iff_iff, eq_self_iff_true, Submodule.mk_eq_zero, mem_bot, mem_top]

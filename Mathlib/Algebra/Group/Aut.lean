@@ -46,7 +46,7 @@ variable (M) [Mul M]
 /-- The group operation on multiplicative automorphisms is defined by `g h => MulEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance : Group (MulAut M) := by
+instance (priority := 10000) : Group (MulAut M) := by
   refine'
   { mul := fun g h => MulEquiv.trans h g
     one := MulEquiv.refl M
@@ -60,7 +60,7 @@ instance : Group (MulAut M) := by
   try rfl
   apply Equiv.left_inv
 
-instance : Inhabited (MulAut M) :=
+instance (priority := 10000) : Inhabited (MulAut M) :=
   ⟨1⟩
 
 @[simp]
@@ -113,7 +113,7 @@ def toPerm : MulAut M →* Equiv.Perm M := by
 /-- The tautological action by `MulAut M` on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyMulDistribMulAction {M} [Monoid M] : MulDistribMulAction (MulAut M) M where
+instance (priority := 10000) applyMulDistribMulAction {M} [Monoid M] : MulDistribMulAction (MulAut M) M where
   smul := (· <| ·)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
@@ -127,7 +127,7 @@ protected theorem smul_def {M} [Monoid M] (f : MulAut M) (a : M) : f • a = f a
 #align mul_aut.smul_def MulAut.smul_def
 
 /-- `MulAut.applyDistribMulAction` is faithful. -/
-instance apply_faithfulSMul {M} [Monoid M] : FaithfulSMul (MulAut M) M :=
+instance (priority := 10000) apply_faithfulSMul {M} [Monoid M] : FaithfulSMul (MulAut M) M :=
   ⟨ fun h => MulEquiv.ext h ⟩
 #align mul_aut.apply_has_faithful_smul MulAut.apply_faithfulSMul
 
@@ -173,7 +173,7 @@ variable (A) [Add A]
 /-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance group : Group (AddAut A) := by
+instance (priority := 10000) group : Group (AddAut A) := by
   refine'
   { mul := fun g h => AddEquiv.trans h g
     one := AddEquiv.refl A
@@ -188,7 +188,7 @@ instance group : Group (AddAut A) := by
   apply Equiv.left_inv
 #align add_aut.group AddAut.group
 
-instance : Inhabited (AddAut A) :=
+instance (priority := 10000) : Inhabited (AddAut A) :=
   ⟨1⟩
 
 @[simp]
@@ -241,7 +241,7 @@ def toPerm : AddAut A →* Equiv.Perm A := by
 /-- The tautological action by `AddAut A` on `A`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyDistribMulAction {A} [AddMonoid A] : DistribMulAction (AddAut A) A where
+instance (priority := 10000) applyDistribMulAction {A} [AddMonoid A] : DistribMulAction (AddAut A) A where
   smul := (· <| ·)
   smul_zero := AddEquiv.map_zero
   smul_add := AddEquiv.map_add
@@ -255,7 +255,7 @@ protected theorem smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = 
 #align add_aut.smul_def AddAut.smul_def
 
 /-- `AddAut.applyDistribMulAction` is faithful. -/
-instance apply_faithfulSMul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
+instance (priority := 10000) apply_faithfulSMul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
   ⟨fun h => AddEquiv.ext h⟩
 #align add_aut.apply_has_faithful_smul AddAut.apply_faithfulSMul
 

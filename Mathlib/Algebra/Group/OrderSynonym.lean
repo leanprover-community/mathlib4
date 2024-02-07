@@ -23,88 +23,88 @@ variable {α β : Type*}
 
 
 @[to_additive]
-instance [h : One α] : One αᵒᵈ := h
+instance (priority := 10000) [h : One α] : One αᵒᵈ := h
 
 @[to_additive]
-instance [h : Mul α] : Mul αᵒᵈ := h
+instance (priority := 10000) [h : Mul α] : Mul αᵒᵈ := h
 
 @[to_additive]
-instance [h : Inv α] : Inv αᵒᵈ := h
+instance (priority := 10000) [h : Inv α] : Inv αᵒᵈ := h
 
 @[to_additive]
-instance [h : Div α] : Div αᵒᵈ := h
+instance (priority := 10000) [h : Div α] : Div αᵒᵈ := h
 
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul]
-instance OrderDual.instPow [h : Pow α β] : Pow αᵒᵈ β := h
+instance (priority := 10000) OrderDual.instPow [h : Pow α β] : Pow αᵒᵈ β := h
 #align order_dual.has_pow OrderDual.instPow
 #align order_dual.has_smul OrderDual.instSMul
 
 @[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul']
-instance OrderDual.instPow' [h : Pow α β] : Pow α βᵒᵈ := h
+instance (priority := 10000) OrderDual.instPow' [h : Pow α β] : Pow α βᵒᵈ := h
 #align order_dual.has_pow' OrderDual.instPow'
 #align order_dual.has_smul' OrderDual.instSMul'
 
 @[to_additive]
-instance [h : Semigroup α] : Semigroup αᵒᵈ := h
+instance (priority := 10000) [h : Semigroup α] : Semigroup αᵒᵈ := h
 
 @[to_additive]
-instance [h : CommSemigroup α] : CommSemigroup αᵒᵈ := h
+instance (priority := 10000) [h : CommSemigroup α] : CommSemigroup αᵒᵈ := h
 
 @[to_additive]
-instance [Mul α] [h : IsLeftCancelMul α] : IsLeftCancelMul αᵒᵈ := h
+instance (priority := 10000) [Mul α] [h : IsLeftCancelMul α] : IsLeftCancelMul αᵒᵈ := h
 
 @[to_additive]
-instance [Mul α] [h : IsRightCancelMul α] : IsRightCancelMul αᵒᵈ := h
+instance (priority := 10000) [Mul α] [h : IsRightCancelMul α] : IsRightCancelMul αᵒᵈ := h
 
 @[to_additive]
-instance [Mul α] [h : IsCancelMul α] : IsCancelMul αᵒᵈ := h
+instance (priority := 10000) [Mul α] [h : IsCancelMul α] : IsCancelMul αᵒᵈ := h
 
 @[to_additive]
-instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup αᵒᵈ := h
+instance (priority := 10000) [h : LeftCancelSemigroup α] : LeftCancelSemigroup αᵒᵈ := h
 
 @[to_additive]
-instance [h : RightCancelSemigroup α] : RightCancelSemigroup αᵒᵈ := h
+instance (priority := 10000) [h : RightCancelSemigroup α] : RightCancelSemigroup αᵒᵈ := h
 
 @[to_additive]
-instance [h : MulOneClass α] : MulOneClass αᵒᵈ := h
+instance (priority := 10000) [h : MulOneClass α] : MulOneClass αᵒᵈ := h
 
 @[to_additive]
-instance [h : Monoid α] : Monoid αᵒᵈ := h
+instance (priority := 10000) [h : Monoid α] : Monoid αᵒᵈ := h
 
 @[to_additive]
-instance OrderDual.instCommMonoid [h : CommMonoid α] : CommMonoid αᵒᵈ := h
+instance (priority := 10000) OrderDual.instCommMonoid [h : CommMonoid α] : CommMonoid αᵒᵈ := h
 
 @[to_additive]
-instance [h : LeftCancelMonoid α] : LeftCancelMonoid αᵒᵈ := h
+instance (priority := 10000) [h : LeftCancelMonoid α] : LeftCancelMonoid αᵒᵈ := h
 
 @[to_additive]
-instance [h : RightCancelMonoid α] : RightCancelMonoid αᵒᵈ := h
+instance (priority := 10000) [h : RightCancelMonoid α] : RightCancelMonoid αᵒᵈ := h
 
 @[to_additive]
-instance [h : CancelMonoid α] : CancelMonoid αᵒᵈ := h
+instance (priority := 10000) [h : CancelMonoid α] : CancelMonoid αᵒᵈ := h
 
 @[to_additive]
-instance OrderDual.instCancelCommMonoid [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ := h
+instance (priority := 10000) OrderDual.instCancelCommMonoid [h : CancelCommMonoid α] : CancelCommMonoid αᵒᵈ := h
 
 @[to_additive]
-instance [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ := h
+instance (priority := 10000) [h : InvolutiveInv α] : InvolutiveInv αᵒᵈ := h
 
 @[to_additive]
-instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
+instance (priority := 10000) [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
 
 @[to_additive OrderDual.subtractionMonoid]
-instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ := h
+instance (priority := 10000) [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ := h
 
 @[to_additive OrderDual.subtractionCommMonoid]
-instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
+instance (priority := 10000) [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
 
 @[to_additive]
-instance OrderDual.instGroup [h : Group α] : Group αᵒᵈ := h
+instance (priority := 10000) OrderDual.instGroup [h : Group α] : Group αᵒᵈ := h
 #align order_dual.group OrderDual.instGroup
 #align order_dual.add_group OrderDual.instAddGroup
 
 @[to_additive]
-instance [h : CommGroup α] : CommGroup αᵒᵈ := h
+instance (priority := 10000) [h : CommGroup α] : CommGroup αᵒᵈ := h
 
 @[to_additive (attr := simp)]
 theorem toDual_one [One α] : toDual (1 : α) = 1 := rfl
@@ -174,77 +174,77 @@ theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b :=
 
 
 @[to_additive]
-instance [h : One α] : One (Lex α) := h
+instance (priority := 10000) [h : One α] : One (Lex α) := h
 
 @[to_additive]
-instance [h : Mul α] : Mul (Lex α) := h
+instance (priority := 10000) [h : Mul α] : Mul (Lex α) := h
 
 @[to_additive]
-instance [h : Inv α] : Inv (Lex α) := h
+instance (priority := 10000) [h : Inv α] : Inv (Lex α) := h
 
 @[to_additive]
-instance [h : Div α] : Div (Lex α) := h
+instance (priority := 10000) [h : Div α] : Div (Lex α) := h
 
 @[to_additive (attr := to_additive) (reorder := 1 2) Lex.instSMul]
-instance Lex.instPow [h : Pow α β] : Pow (Lex α) β := h
+instance (priority := 10000) Lex.instPow [h : Pow α β] : Pow (Lex α) β := h
 #align lex.has_pow Lex.instPow
 #align lex.has_smul Lex.instSMul
 
 @[to_additive (attr := to_additive) (reorder := 1 2) Lex.instSMul']
-instance Lex.instPow' [h : Pow α β] : Pow α (Lex β) := h
+instance (priority := 10000) Lex.instPow' [h : Pow α β] : Pow α (Lex β) := h
 #align lex.has_pow' Lex.instPow'
 #align lex.has_smul' Lex.instSMul'
 
 @[to_additive]
-instance [h : Semigroup α] : Semigroup (Lex α) := h
+instance (priority := 10000) [h : Semigroup α] : Semigroup (Lex α) := h
 
 @[to_additive]
-instance [h : CommSemigroup α] : CommSemigroup (Lex α) := h
+instance (priority := 10000) [h : CommSemigroup α] : CommSemigroup (Lex α) := h
 
 @[to_additive]
-instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Lex α) := h
+instance (priority := 10000) [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Lex α) := h
 
 @[to_additive]
-instance [h : RightCancelSemigroup α] : RightCancelSemigroup (Lex α) := h
+instance (priority := 10000) [h : RightCancelSemigroup α] : RightCancelSemigroup (Lex α) := h
 
 @[to_additive]
-instance [h : MulOneClass α] : MulOneClass (Lex α) := h
+instance (priority := 10000) [h : MulOneClass α] : MulOneClass (Lex α) := h
 
 @[to_additive]
-instance [h : Monoid α] : Monoid (Lex α) := h
+instance (priority := 10000) [h : Monoid α] : Monoid (Lex α) := h
 
 @[to_additive]
-instance [h : CommMonoid α] : CommMonoid (Lex α) := h
+instance (priority := 10000) [h : CommMonoid α] : CommMonoid (Lex α) := h
 
 @[to_additive]
-instance [h : LeftCancelMonoid α] : LeftCancelMonoid (Lex α) := h
+instance (priority := 10000) [h : LeftCancelMonoid α] : LeftCancelMonoid (Lex α) := h
 
 @[to_additive]
-instance [h : RightCancelMonoid α] : RightCancelMonoid (Lex α) := h
+instance (priority := 10000) [h : RightCancelMonoid α] : RightCancelMonoid (Lex α) := h
 
 @[to_additive]
-instance [h : CancelMonoid α] : CancelMonoid (Lex α) := h
+instance (priority := 10000) [h : CancelMonoid α] : CancelMonoid (Lex α) := h
 
 @[to_additive]
-instance [h : CancelCommMonoid α] : CancelCommMonoid (Lex α) := h
+instance (priority := 10000) [h : CancelCommMonoid α] : CancelCommMonoid (Lex α) := h
 
 @[to_additive]
-instance [h : InvolutiveInv α] : InvolutiveInv (Lex α) := h
+instance (priority := 10000) [h : InvolutiveInv α] : InvolutiveInv (Lex α) := h
 
 @[to_additive]
-instance [h : DivInvMonoid α] : DivInvMonoid (Lex α) := h
+instance (priority := 10000) [h : DivInvMonoid α] : DivInvMonoid (Lex α) := h
 
 @[to_additive existing OrderDual.subtractionMonoid]
-instance [h : DivisionMonoid α] : DivisionMonoid (Lex α) := h
+instance (priority := 10000) [h : DivisionMonoid α] : DivisionMonoid (Lex α) := h
 
 @[to_additive existing OrderDual.subtractionCommMonoid]
-instance [h : DivisionCommMonoid α] : DivisionCommMonoid (Lex α) := h
+instance (priority := 10000) [h : DivisionCommMonoid α] : DivisionCommMonoid (Lex α) := h
 
 @[to_additive]
-instance [h : Group α] : Group (Lex α) := h
+instance (priority := 10000) [h : Group α] : Group (Lex α) := h
 
 @[to_additive]
-instance [h : CommGroup α] : CommGroup (Lex α) := h
+instance (priority := 10000) [h : CommGroup α] : CommGroup (Lex α) := h
 
 @[to_additive (attr := simp)]
 theorem toLex_one [One α] : toLex (1 : α) = 1 := rfl

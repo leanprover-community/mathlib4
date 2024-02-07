@@ -943,11 +943,11 @@ compile_inductive% Cont'
 compile_inductive% K'
 compile_inductive% Λ'
 
-instance Λ'.instInhabited : Inhabited Λ' :=
+instance (priority := 10000) Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
 #align turing.partrec_to_TM2.Λ'.inhabited Turing.PartrecToTM2.Λ'.instInhabited
 
-instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
+instance (priority := 10000) Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
   induction a generalizing b <;> cases b <;> first
     | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
     | exact decidable_of_iff' _ (by simp [Function.funext_iff]; rfl)

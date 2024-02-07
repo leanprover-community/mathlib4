@@ -230,7 +230,7 @@ end
 
 -- Instance of product
 @[to_additive]
-instance SmoothMul.prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+instance (priority := 10000) SmoothMul.prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [Mul G]
     [SmoothMul I G] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
@@ -277,26 +277,26 @@ structure SmoothMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCo
 #align smooth_monoid_morphism SmoothMonoidMorphism
 
 @[to_additive]
-instance : One (SmoothMonoidMorphism I I' G G') :=
+instance (priority := 10000) : One (SmoothMonoidMorphism I I' G G') :=
   ⟨{  smooth_toFun := smooth_const
       toMonoidHom := 1 }⟩
 
 @[to_additive]
-instance : Inhabited (SmoothMonoidMorphism I I' G G') :=
+instance (priority := 10000) : Inhabited (SmoothMonoidMorphism I I' G G') :=
   ⟨1⟩
 
 @[to_additive]
-instance : FunLike (SmoothMonoidMorphism I I' G G') G G' where
+instance (priority := 10000) : FunLike (SmoothMonoidMorphism I I' G G') G G' where
   coe a := a.toFun
   coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
 @[to_additive]
-instance : MonoidHomClass (SmoothMonoidMorphism I I' G G') G G' where
+instance (priority := 10000) : MonoidHomClass (SmoothMonoidMorphism I I' G G') G G' where
   map_one f := f.map_one
   map_mul f := f.map_mul
 
 @[to_additive]
-instance : ContinuousMapClass (SmoothMonoidMorphism I I' G G') G G' where
+instance (priority := 10000) : ContinuousMapClass (SmoothMonoidMorphism I I' G G') G G' where
   map_continuous f := f.smooth_toFun.continuous
 
 end Monoid
@@ -514,7 +514,7 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E]
 
-instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E :=
+instance (priority := 10000) hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E :=
   ⟨by rw [← modelWithCornersSelf_prod]; exact contDiff_add.contMDiff⟩
 #align has_smooth_add_self hasSmoothAddSelf
 

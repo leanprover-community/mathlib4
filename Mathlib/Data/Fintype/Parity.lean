@@ -17,7 +17,7 @@ variable {α : Type*}
 
 namespace Fintype
 
-instance IsSquare.decidablePred [Mul α] [Fintype α] [DecidableEq α] :
+instance (priority := 10000) IsSquare.decidablePred [Mul α] [Fintype α] [DecidableEq α] :
     DecidablePred (IsSquare : α → Prop) := fun _ => Fintype.decidableExistsFintype
 #align fintype.is_square.decidable_pred Fintype.IsSquare.decidablePred
 

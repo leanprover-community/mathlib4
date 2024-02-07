@@ -46,7 +46,7 @@ the morphisms `U ⟶ V` are not just proofs `U ≤ V`, but rather
 -/
 
 
-instance opensHomHasCoeToFun {U V : Opens X} : CoeFun (U ⟶ V) fun _ => U → V :=
+instance (priority := 10000) opensHomHasCoeToFun {U V : Opens X} : CoeFun (U ⟶ V) fun _ => U → V :=
   ⟨fun f x => ⟨x, f.le x.2⟩⟩
 #align topological_space.opens.opens_hom_has_coe_to_fun TopologicalSpace.Opens.opensHomHasCoeToFun
 
@@ -323,7 +323,7 @@ def IsOpenMap.adjunction {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
       counit := { app := fun V => homOfLE fun y ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV } }
 #align is_open_map.adjunction IsOpenMap.adjunction
 
-instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) [H : Mono f] :
+instance (priority := 10000) IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) [H : Mono f] :
     Full hf.functor where
   preimage i :=
     homOfLE fun x hx => by
@@ -331,7 +331,7 @@ instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMa
       exact (TopCat.mono_iff_injective f).mp H eq ▸ hy
 #align is_open_map.functor_full_of_mono IsOpenMap.functorFullOfMono
 
-instance IsOpenMap.functor_faithful {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
+instance (priority := 10000) IsOpenMap.functor_faithful {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
     Faithful hf.functor where
 #align is_open_map.functor_faithful IsOpenMap.functor_faithful
 

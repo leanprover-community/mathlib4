@@ -34,10 +34,10 @@ structure BddLat where
 
 namespace BddLat
 
-instance : CoeSort BddLat (Type*) :=
+instance (priority := 10000) : CoeSort BddLat (Type*) :=
   ⟨fun X => X.toLat⟩
 
-instance (X : BddLat) : Lattice X :=
+instance (priority := 10000) (X : BddLat) : Lattice X :=
   X.toLat.str
 
 attribute [instance] BddLat.isBoundedOrder
@@ -53,10 +53,10 @@ theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 #align BddLat.coe_of BddLat.coe_of
 
-instance : Inhabited BddLat :=
+instance (priority := 10000) : Inhabited BddLat :=
   ⟨of PUnit⟩
 
-instance : LargeCategory.{u} BddLat where
+instance (priority := 10000) : LargeCategory.{u} BddLat where
   Hom X Y := BoundedLatticeHom X Y
   id X := BoundedLatticeHom.id X
   comp f g := g.comp f
@@ -65,35 +65,35 @@ instance : LargeCategory.{u} BddLat where
   assoc _ _ _ := BoundedLatticeHom.comp_assoc _ _ _
 
 -- Porting note: added.
-instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (BoundedLatticeHom X Y) X Y from inferInstance
 
-instance : ConcreteCategory BddLat where
+instance (priority := 10000) : ConcreteCategory BddLat where
   forget :=
   { obj := (↑)
     map := DFunLike.coe }
   forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 
-instance hasForgetToBddOrd : HasForget₂ BddLat BddOrd where
+instance (priority := 10000) hasForgetToBddOrd : HasForget₂ BddLat BddOrd where
   forget₂ :=
     { obj := fun X => BddOrd.of X
       map := fun {X Y} => BoundedLatticeHom.toBoundedOrderHom }
 #align BddLat.has_forget_to_BddOrd BddLat.hasForgetToBddOrd
 
-instance hasForgetToLat : HasForget₂ BddLat Lat where
+instance (priority := 10000) hasForgetToLat : HasForget₂ BddLat Lat where
   forget₂ :=
     -- Porting note: was `⟨X⟩`, see https://github.com/leanprover-community/mathlib4/issues/4998
     { obj := fun X => {α := X}
       map := fun {X Y} => BoundedLatticeHom.toLatticeHom }
 #align BddLat.has_forget_to_Lat BddLat.hasForgetToLat
 
-instance hasForgetToSemilatSup : HasForget₂ BddLat SemilatSupCat where
+instance (priority := 10000) hasForgetToSemilatSup : HasForget₂ BddLat SemilatSupCat where
   forget₂ :=
     { obj := fun X => ⟨X⟩
       map := fun {X Y} => BoundedLatticeHom.toSupBotHom }
 #align BddLat.has_forget_to_SemilatSup BddLat.hasForgetToSemilatSup
 
-instance hasForgetToSemilatInf : HasForget₂ BddLat SemilatInfCat where
+instance (priority := 10000) hasForgetToSemilatInf : HasForget₂ BddLat SemilatInfCat where
   forget₂ :=
     { obj := fun X => ⟨X⟩
       map := fun {X Y} => BoundedLatticeHom.toInfTopHom }

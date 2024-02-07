@@ -56,7 +56,7 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
 def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
 
 -- TODO: upstream into core/std
-instance [Inhabited α] : Inhabited (Thunk α) where
+instance (priority := 10000) [Inhabited α] : Inhabited (Thunk α) where
   default := .pure default
 
 /-- This extension stores the lookup data generated from `#align` commands. -/

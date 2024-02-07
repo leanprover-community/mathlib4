@@ -29,10 +29,10 @@ set_option linter.uppercaseLean3 false -- `Module`
 variable {R : Type u} [Ring R]
 
 -- As `ModuleCat R` is preadditive, and has all limits, it automatically has biproducts.
-instance : HasBinaryBiproducts (ModuleCat.{v} R) :=
+instance (priority := 10000) : HasBinaryBiproducts (ModuleCat.{v} R) :=
   HasBinaryBiproducts.of_hasBinaryProducts
 
-instance : HasFiniteBiproducts (ModuleCat.{v} R) :=
+instance (priority := 10000) : HasFiniteBiproducts (ModuleCat.{v} R) :=
   HasFiniteBiproducts.of_hasFiniteProducts
 
 -- We now construct explicit limit data,

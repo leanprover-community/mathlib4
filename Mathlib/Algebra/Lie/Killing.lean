@@ -449,14 +449,14 @@ lemma restrictBilinear_killingForm (H : LieSubalgebra R L) :
 
 /-- The converse of this is true over a field of characteristic zero. There are counterexamples
 over fields with positive characteristic. -/
-instance isSemisimple [IsDomain R] [IsPrincipalIdealRing R] : IsSemisimple R L := by
+instance (priority := 10000) isSemisimple [IsDomain R] [IsPrincipalIdealRing R] : IsSemisimple R L := by
   refine' (isSemisimple_iff_no_abelian_ideals R L).mpr fun I hI ↦ _
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
 
 -- TODO: formalize a positive-characteristic counterexample to the above instance
 
-instance instIsLieAbelianOfIsCartanSubalgebra
+instance (priority := 10000) instIsLieAbelianOfIsCartanSubalgebra
     [IsDomain R] [IsPrincipalIdealRing R] [IsArtinian R L]
     (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     IsLieAbelian H :=

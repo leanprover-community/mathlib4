@@ -268,7 +268,7 @@ theorem _root_.Polynomial.toLaurent_C_mul_X_pow (n : ℕ) (r : R) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.to_laurent_C_mul_X_pow Polynomial.toLaurent_C_mul_X_pow
 
-instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
+instance (priority := 10000) invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
   invOf := T (-n)
   invOf_mul_self := by rw [← T_add, add_left_neg, T_zero]
   mul_invOf_self := by rw [← T_add, add_right_neg, T_zero]
@@ -574,10 +574,10 @@ end DegreeBounds
 
 end Degrees
 
-instance : Module R[X] R[T;T⁻¹] :=
+instance (priority := 10000) : Module R[X] R[T;T⁻¹] :=
   Module.compHom _ Polynomial.toLaurent
 
-instance (R : Type*) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
+instance (priority := 10000) (R : Type*) [Semiring R] : IsScalarTower R[X] R[X] R[T;T⁻¹] where
   smul_assoc x y z := by dsimp; simp_rw [MulAction.mul_smul]
 
 end Semiring
@@ -586,7 +586,7 @@ section CommSemiring
 
 variable [CommSemiring R]
 
-instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
+instance (priority := 10000) algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] :=
   { Polynomial.toLaurent with
     commutes' := fun f l => by simp [mul_comm]
     smul_def' := fun f l => rfl }

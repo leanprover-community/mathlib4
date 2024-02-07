@@ -143,7 +143,7 @@ namespace PartialEquiv
 
 variable (e : PartialEquiv α β) (e' : PartialEquiv β γ)
 
-instance [Inhabited α] [Inhabited β] : Inhabited (PartialEquiv α β) :=
+instance (priority := 10000) [Inhabited α] [Inhabited β] : Inhabited (PartialEquiv α β) :=
   ⟨⟨const α default, const β default, ∅, ∅, mapsTo_empty _ _, mapsTo_empty _ _, eqOn_empty _ _,
       eqOn_empty _ _⟩⟩
 
@@ -160,7 +160,7 @@ protected def symm : PartialEquiv β α where
   right_inv' := e.left_inv'
 #align local_equiv.symm PartialEquiv.symm
 
-instance : CoeFun (PartialEquiv α β) fun _ => α → β :=
+instance (priority := 10000) : CoeFun (PartialEquiv α β) fun _ => α → β :=
   ⟨PartialEquiv.toFun⟩
 
 /-- See Note [custom simps projection] -/
@@ -279,7 +279,7 @@ def _root_.Equiv.toPartialEquiv (e : α ≃ β) : PartialEquiv α β :=
 #align equiv.to_local_equiv_apply Equiv.toPartialEquiv_apply
 #align equiv.to_local_equiv_source Equiv.toPartialEquiv_source
 
-instance inhabitedOfEmpty [IsEmpty α] [IsEmpty β] : Inhabited (PartialEquiv α β) :=
+instance (priority := 10000) inhabitedOfEmpty [IsEmpty α] [IsEmpty β] : Inhabited (PartialEquiv α β) :=
   ⟨((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).toPartialEquiv⟩
 #align local_equiv.inhabited_of_empty PartialEquiv.inhabitedOfEmpty
 
@@ -796,7 +796,7 @@ def EqOnSource (e e' : PartialEquiv α β) : Prop :=
 
 /-- `EqOnSource` is an equivalence relation. This instance provides the `≈` notation between two
 `PartialEquiv`s. -/
-instance eqOnSourceSetoid : Setoid (PartialEquiv α β) where
+instance (priority := 10000) eqOnSourceSetoid : Setoid (PartialEquiv α β) where
   r := EqOnSource
   iseqv := by constructor <;> simp only [Equivalence, EqOnSource, EqOn] <;> aesop
 #align local_equiv.eq_on_source_setoid PartialEquiv.eqOnSourceSetoid

@@ -705,7 +705,7 @@ class ComplementedLattice (α) [Lattice α] [BoundedOrder α] : Prop where
 
 export ComplementedLattice (exists_isCompl)
 
-instance Subsingleton.instComplementedLattice
+instance (priority := 10000) Subsingleton.instComplementedLattice
     [Lattice α] [BoundedOrder α] [Subsingleton α] : ComplementedLattice α := by
   refine ⟨fun a ↦ ⟨⊥, disjoint_bot_right, ?_⟩⟩
   rw [Subsingleton.elim ⊥ ⊤]
@@ -715,7 +715,7 @@ namespace ComplementedLattice
 
 variable [Lattice α] [BoundedOrder α] [ComplementedLattice α]
 
-instance : ComplementedLattice αᵒᵈ :=
+instance (priority := 10000) : ComplementedLattice αᵒᵈ :=
   ⟨fun a ↦
     let ⟨b, hb⟩ := exists_isCompl (show α from a)
     ⟨b, hb.dual⟩⟩
@@ -734,7 +734,7 @@ section Lattice
 
 variable [Lattice α] [BoundedOrder α] {a b : Complementeds α}
 
-instance hasCoeT : CoeTC (Complementeds α) α := ⟨Subtype.val⟩
+instance (priority := 10000) hasCoeT : CoeTC (Complementeds α) α := ⟨Subtype.val⟩
 #align complementeds.has_coe_t Complementeds.hasCoeT
 
 theorem coe_injective : Injective ((↑) : Complementeds α → α) := Subtype.coe_injective
@@ -754,7 +754,7 @@ theorem coe_le_coe : (a : α) ≤ b ↔ a ≤ b := by simp
 theorem coe_lt_coe : (a : α) < b ↔ a < b := Iff.rfl
 #align complementeds.coe_lt_coe Complementeds.coe_lt_coe
 
-instance : BoundedOrder (Complementeds α) :=
+instance (priority := 10000) : BoundedOrder (Complementeds α) :=
   Subtype.boundedOrder isComplemented_bot isComplemented_top
 
 @[simp, norm_cast]
@@ -773,16 +773,16 @@ theorem mk_bot : (⟨⊥, isComplemented_bot⟩ : Complementeds α) = ⊥ := rfl
 theorem mk_top : (⟨⊤, isComplemented_top⟩ : Complementeds α) = ⊤ := rfl
 #align complementeds.mk_top Complementeds.mk_top
 
-instance : Inhabited (Complementeds α) := ⟨⊥⟩
+instance (priority := 10000) : Inhabited (Complementeds α) := ⟨⊥⟩
 
 end Lattice
 
 variable [DistribLattice α] [BoundedOrder α] {a b : Complementeds α}
 
-instance : Sup (Complementeds α) :=
+instance (priority := 10000) : Sup (Complementeds α) :=
   ⟨fun a b => ⟨a ⊔ b, a.2.sup b.2⟩⟩
 
-instance : Inf (Complementeds α) :=
+instance (priority := 10000) : Inf (Complementeds α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
 @[simp, norm_cast]
@@ -803,7 +803,7 @@ theorem mk_inf_mk {a b : α} (ha : IsComplemented a) (hb : IsComplemented b) :
     (⟨a, ha⟩ ⊓ ⟨b, hb⟩ : Complementeds α) = ⟨a ⊓ b, ha.inf hb⟩ := rfl
 #align complementeds.mk_inf_mk Complementeds.mk_inf_mk
 
-instance : DistribLattice (Complementeds α) :=
+instance (priority := 10000) : DistribLattice (Complementeds α) :=
   Complementeds.coe_injective.distribLattice _ coe_sup coe_inf
 
 @[simp, norm_cast]
@@ -821,7 +821,7 @@ theorem isCompl_coe : IsCompl (a : α) b ↔ IsCompl a b := by
   simp_rw [isCompl_iff, disjoint_coe, codisjoint_coe]
 #align complementeds.is_compl_coe Complementeds.isCompl_coe
 
-instance : ComplementedLattice (Complementeds α) :=
+instance (priority := 10000) : ComplementedLattice (Complementeds α) :=
   ⟨fun ⟨a, b, h⟩ => ⟨⟨b, a, h.symm⟩, isCompl_coe.1 h⟩⟩
 
 end Complementeds

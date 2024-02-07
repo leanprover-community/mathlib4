@@ -101,23 +101,23 @@ abbrev toLocallyRingedSpaceGlueData : LocallyRingedSpace.GlueData :=
     toGlueData := 𝖣.mapGlueData forgetToLocallyRingedSpace }
 #align algebraic_geometry.Scheme.glue_data.to_LocallyRingedSpace_glue_data AlgebraicGeometry.Scheme.GlueData.toLocallyRingedSpaceGlueData
 
-instance (i j : 𝖣.J) :
+instance (priority := 10000) (i j : 𝖣.J) :
     LocallyRingedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData).toGlueData.f i j) := by
   apply GlueData.f_open
 
-instance (i j : 𝖣.J) :
+instance (priority := 10000) (i j : 𝖣.J) :
     SheafedSpace.IsOpenImmersion
       (D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toGlueData.f i j) := by
   apply GlueData.f_open
 
-instance (i j : 𝖣.J) :
+instance (priority := 10000) (i j : 𝖣.J) :
     PresheafedSpace.IsOpenImmersion
       (D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toGlueData.f
         i j) := by
   apply GlueData.f_open
 
 -- Porting note: this was not needed.
-instance (i : 𝖣.J) :
+instance (priority := 10000) (i : 𝖣.J) :
     LocallyRingedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData).toGlueData.ι i) := by
   apply LocallyRingedSpace.GlueData.ι_isOpenImmersion
 
@@ -138,16 +138,16 @@ def gluedScheme : Scheme := by
   · infer_instance
 #align algebraic_geometry.Scheme.glue_data.glued_Scheme AlgebraicGeometry.Scheme.GlueData.gluedScheme
 
-instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
+instance (priority := 10000) : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
   createsColimitOfFullyFaithfulOfIso D.gluedScheme
     (HasColimit.isoOfNatIso (𝖣.diagramIso forgetToLocallyRingedSpace).symm)
 
 -- Porting note: we need to use `CommRingCatMax.{u, u}` instead of just `CommRingCat`.
-instance : PreservesColimit (𝖣.diagram.multispan) forgetToTop :=
+instance (priority := 10000) : PreservesColimit (𝖣.diagram.multispan) forgetToTop :=
   inferInstanceAs (PreservesColimit (𝖣.diagram).multispan (forgetToLocallyRingedSpace ⋙
       LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCatMax.{u, u}))
 
-instance : HasMulticoequalizer 𝖣.diagram :=
+instance (priority := 10000) : HasMulticoequalizer 𝖣.diagram :=
   hasColimit_of_created _ forgetToLocallyRingedSpace
 
 /-- The glued scheme of a glued space. -/
@@ -171,7 +171,7 @@ theorem ι_isoLocallyRingedSpace_inv (i : D.J) :
   𝖣.ι_gluedIso_inv forgetToLocallyRingedSpace i
 #align algebraic_geometry.Scheme.glue_data.ι_iso_LocallyRingedSpace_inv AlgebraicGeometry.Scheme.GlueData.ι_isoLocallyRingedSpace_inv
 
-instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
+instance (priority := 10000) ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
   rw [← D.ι_isoLocallyRingedSpace_inv]; infer_instance
 #align algebraic_geometry.Scheme.glue_data.ι_is_open_immersion AlgebraicGeometry.Scheme.GlueData.ι_isOpenImmersion
 
@@ -389,7 +389,7 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
     rfl
 #align algebraic_geometry.Scheme.open_cover.from_glued_injective AlgebraicGeometry.Scheme.OpenCover.fromGlued_injective
 
-instance fromGlued_stalk_iso (x : 𝒰.gluedCover.glued.carrier) :
+instance (priority := 10000) fromGlued_stalk_iso (x : 𝒰.gluedCover.glued.carrier) :
     IsIso (PresheafedSpace.stalkMap 𝒰.fromGlued.val x) := by
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   have :=
@@ -424,7 +424,7 @@ theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.1.base :=
     (ContinuousMap.continuous_toFun _) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_embedding AlgebraicGeometry.Scheme.OpenCover.fromGlued_openEmbedding
 
-instance : Epi 𝒰.fromGlued.val.base := by
+instance (priority := 10000) : Epi 𝒰.fromGlued.val.base := by
   rw [TopCat.epi_iff_surjective]
   intro x
   obtain ⟨y, h⟩ := 𝒰.Covers x
@@ -433,11 +433,11 @@ instance : Epi 𝒰.fromGlued.val.base := by
   rw [← 𝒰.ι_fromGlued (𝒰.f x)] at h
   exact h
 
-instance fromGlued_open_immersion : IsOpenImmersion 𝒰.fromGlued :=
+instance (priority := 10000) fromGlued_open_immersion : IsOpenImmersion 𝒰.fromGlued :=
   SheafedSpace.IsOpenImmersion.of_stalk_iso _ 𝒰.fromGlued_openEmbedding
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_immersion AlgebraicGeometry.Scheme.OpenCover.fromGlued_open_immersion
 
-instance : IsIso 𝒰.fromGlued :=
+instance (priority := 10000) : IsIso 𝒰.fromGlued :=
   let F := Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToSheafedSpace ⋙
     SheafedSpace.forgetToPresheafedSpace
   have : IsIso (F.map (fromGlued 𝒰)) := by

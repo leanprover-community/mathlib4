@@ -102,10 +102,10 @@ namespace ringOfIntegers
 
 variable [Algebra Fq[X] F]
 
-instance : IsDomain (ringOfIntegers Fq F) :=
+instance (priority := 10000) : IsDomain (ringOfIntegers Fq F) :=
   (ringOfIntegers Fq F).isDomain
 
-instance : IsIntegralClosure (ringOfIntegers Fq F) Fq[X] F :=
+instance (priority := 10000) : IsIntegralClosure (ringOfIntegers Fq F) Fq[X] F :=
   integralClosure.isIntegralClosure _ _
 
 variable [Algebra (RatFunc Fq) F] [IsScalarTower Fq[X] (RatFunc Fq) F]
@@ -129,16 +129,16 @@ theorem not_isField : ¬IsField (ringOfIntegers Fq F) := by
 
 variable [FunctionField Fq F]
 
-instance : IsFractionRing (ringOfIntegers Fq F) F :=
+instance (priority := 10000) : IsFractionRing (ringOfIntegers Fq F) F :=
   integralClosure.isFractionRing_of_finite_extension (RatFunc Fq) F
 
-instance : IsIntegrallyClosed (ringOfIntegers Fq F) :=
+instance (priority := 10000) : IsIntegrallyClosed (ringOfIntegers Fq F) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension (RatFunc Fq)
 
-instance [IsSeparable (RatFunc Fq) F] : IsNoetherian Fq[X] (ringOfIntegers Fq F) :=
+instance (priority := 10000) [IsSeparable (RatFunc Fq) F] : IsNoetherian Fq[X] (ringOfIntegers Fq F) :=
   IsIntegralClosure.isNoetherian _ (RatFunc Fq) F _
 
-instance [IsSeparable (RatFunc Fq) F] : IsDedekindDomain (ringOfIntegers Fq F) :=
+instance (priority := 10000) [IsSeparable (RatFunc Fq) F] : IsDedekindDomain (ringOfIntegers Fq F) :=
   IsIntegralClosure.isDedekindDomain Fq[X] (RatFunc Fq) F _
 
 end ringOfIntegers
@@ -256,15 +256,15 @@ def FqtInfty :=
 set_option linter.uppercaseLean3 false in
 #align function_field.Fqt_infty FunctionField.FqtInfty
 
-instance : Field (FqtInfty Fq) :=
+instance (priority := 10000) : Field (FqtInfty Fq) :=
   letI := inftyValuedFqt Fq
   UniformSpace.Completion.instField
 
-instance : Inhabited (FqtInfty Fq) :=
+instance (priority := 10000) : Inhabited (FqtInfty Fq) :=
   ⟨(0 : FqtInfty Fq)⟩
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
-instance valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ :=
+instance (priority := 10000) valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ :=
   @Valued.valuedCompletion _ _ _ _ (inftyValuedFqt Fq)
 set_option linter.uppercaseLean3 false in
 #align function_field.valued_Fqt_infty FunctionField.valuedFqtInfty

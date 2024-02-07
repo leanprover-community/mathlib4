@@ -130,7 +130,7 @@ structure Cone (F : J ⥤ C) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.limits.cone.X CategoryTheory.Limits.Cone.pt
 
-instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
+instance (priority := 10000) inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
   ⟨{  pt := F.obj ⟨⟨⟩⟩
       π := { app := fun ⟨⟨⟩⟩ => 𝟙 _
              naturality := by
@@ -168,7 +168,7 @@ structure Cocone (F : J ⥤ C) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.limits.cocone.X CategoryTheory.Limits.Cocone.pt
 
-instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
+instance (priority := 10000) inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
   ⟨{  pt := F.obj ⟨⟨⟩⟩
       ι := { app := fun ⟨⟨⟩⟩ => 𝟙 _
              naturality := by
@@ -288,13 +288,13 @@ structure ConeMorphism (A B : Cone F) where
 
 attribute [reassoc (attr := simp)] ConeMorphism.w
 
-instance inhabitedConeMorphism (A : Cone F) : Inhabited (ConeMorphism A A) :=
+instance (priority := 10000) inhabitedConeMorphism (A : Cone F) : Inhabited (ConeMorphism A A) :=
   ⟨{ hom := 𝟙 _ }⟩
 #align category_theory.limits.inhabited_cone_morphism CategoryTheory.Limits.inhabitedConeMorphism
 
 /-- The category of cones on a given diagram. -/
 @[simps]
-instance Cone.category : Category (Cone F) where
+instance (priority := 10000) Cone.category : Category (Cone F) where
   Hom A B := ConeMorphism A B
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
@@ -432,13 +432,13 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
       w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
 #align category_theory.limits.cones.functoriality CategoryTheory.Limits.Cones.functoriality
 
-instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) where
+instance (priority := 10000) functorialityFull [Full G] [Faithful G] : Full (functoriality F G) where
   preimage t :=
     { hom := G.preimage t.hom
       w := fun j => G.map_injective (by simpa using t.w j) }
 #align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functorialityFull
 
-instance functorialityFaithful [Faithful G] : Faithful (Cones.functoriality F G) where
+instance (priority := 10000) functorialityFaithful [Faithful G] : Faithful (Cones.functoriality F G) where
   map_injective {c} {c'} f g e := by
     apply ConeMorphism.ext f g
     let f := ConeMorphism.mk.inj e
@@ -462,7 +462,7 @@ def functorialityEquivalence (e : C ≌ D) : Cone F ≌ Cone (F ⋙ e.functor) :
 /-- If `F` reflects isomorphisms, then `Cones.functoriality F` reflects isomorphisms
 as well.
 -/
-instance reflects_cone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
+instance (priority := 10000) reflects_cone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
     ReflectsIsomorphisms (Cones.functoriality K F) := by
   constructor
   intro A B f _
@@ -486,14 +486,14 @@ structure CoconeMorphism (A B : Cocone F) where
 #align category_theory.limits.cocone_morphism CategoryTheory.Limits.CoconeMorphism
 #align category_theory.limits.cocone_morphism.w' CategoryTheory.Limits.CoconeMorphism.w
 
-instance inhabitedCoconeMorphism (A : Cocone F) : Inhabited (CoconeMorphism A A) :=
+instance (priority := 10000) inhabitedCoconeMorphism (A : Cocone F) : Inhabited (CoconeMorphism A A) :=
   ⟨{ hom := 𝟙 _ }⟩
 #align category_theory.limits.inhabited_cocone_morphism CategoryTheory.Limits.inhabitedCoconeMorphism
 
 attribute [reassoc (attr := simp)] CoconeMorphism.w
 
 @[simps]
-instance Cocone.category : Category (Cocone F) where
+instance (priority := 10000) Cocone.category : Category (Cocone F) where
   Hom A B := CoconeMorphism A B
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
@@ -629,13 +629,13 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
       w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }
 #align category_theory.limits.cocones.functoriality CategoryTheory.Limits.Cocones.functoriality
 
-instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) where
+instance (priority := 10000) functorialityFull [Full G] [Faithful G] : Full (functoriality F G) where
   preimage t :=
     { hom := G.preimage t.hom
       w := fun j => G.map_injective (by simpa using t.w j) }
 #align category_theory.limits.cocones.functoriality_full CategoryTheory.Limits.Cocones.functorialityFull
 
-instance functoriality_faithful [Faithful G] : Faithful (functoriality F G) where
+instance (priority := 10000) functoriality_faithful [Faithful G] : Faithful (functoriality F G) where
   map_injective {X} {Y} f g e := by
     apply CoconeMorphism.ext
     let h := CoconeMorphism.mk.inj e
@@ -663,7 +663,7 @@ def functorialityEquivalence (e : C ≌ D) : Cocone F ≌ Cocone (F ⋙ e.functo
 /-- If `F` reflects isomorphisms, then `Cocones.functoriality F` reflects isomorphisms
 as well.
 -/
-instance reflects_cocone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
+instance (priority := 10000) reflects_cocone_isomorphism (F : C ⥤ D) [ReflectsIsomorphisms F] (K : J ⥤ C) :
     ReflectsIsomorphisms (Cocones.functoriality K F) := by
   constructor
   intro A B f _

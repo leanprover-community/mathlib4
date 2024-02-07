@@ -75,25 +75,25 @@ noncomputable def coneOfHasLimitEval : Cone F where
 noncomputable def isLimitConeOfHasLimitEval : IsLimit (coneOfHasLimitEval F) :=
   isLimitOfEval _ _ (fun _ => limit.isLimit _)
 
-instance : HasLimit F := ⟨⟨⟨_, isLimitConeOfHasLimitEval F⟩⟩⟩
+instance (priority := 10000) : HasLimit F := ⟨⟨⟨_, isLimitConeOfHasLimitEval F⟩⟩⟩
 
-noncomputable instance (n : ι) : PreservesLimit F (eval C c n) :=
+noncomputable instance (priority := 10000) (n : ι) : PreservesLimit F (eval C c n) :=
   preservesLimitOfPreservesLimitCone (isLimitConeOfHasLimitEval F) (limit.isLimit _)
 
 end
 
-instance [HasLimitsOfShape J C] : HasLimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
+instance (priority := 10000) [HasLimitsOfShape J C] : HasLimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
 
-noncomputable instance [HasLimitsOfShape J C] (n : ι) :
+noncomputable instance (priority := 10000) [HasLimitsOfShape J C] (n : ι) :
   PreservesLimitsOfShape J (eval C c n) := ⟨inferInstance⟩
 
-instance [HasFiniteLimits C] : HasFiniteLimits (HomologicalComplex C c) :=
+instance (priority := 10000) [HasFiniteLimits C] : HasFiniteLimits (HomologicalComplex C c) :=
   ⟨fun _ _ => inferInstance⟩
 
-noncomputable instance [HasFiniteLimits C] (n : ι) :
+noncomputable instance (priority := 10000) [HasFiniteLimits C] (n : ι) :
   PreservesFiniteLimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
 
-instance [HasFiniteLimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Mono φ] (n : ι) :
+instance (priority := 10000) [HasFiniteLimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Mono φ] (n : ι) :
     Mono (φ.f n) := by
   change Mono ((HomologicalComplex.eval C c n).map φ)
   infer_instance
@@ -151,26 +151,26 @@ noncomputable def coconeOfHasColimitEval : Cocone F where
 noncomputable def isColimitCoconeOfHasColimitEval : IsColimit (coconeOfHasColimitEval F) :=
   isColimitOfEval _ _ (fun _ => colimit.isColimit _)
 
-instance : HasColimit F := ⟨⟨⟨_, isColimitCoconeOfHasColimitEval F⟩⟩⟩
+instance (priority := 10000) : HasColimit F := ⟨⟨⟨_, isColimitCoconeOfHasColimitEval F⟩⟩⟩
 
-noncomputable instance (n : ι) : PreservesColimit F (eval C c n) :=
+noncomputable instance (priority := 10000) (n : ι) : PreservesColimit F (eval C c n) :=
   preservesColimitOfPreservesColimitCocone (isColimitCoconeOfHasColimitEval F)
     (colimit.isColimit _)
 
 end
 
-instance [HasColimitsOfShape J C] : HasColimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
+instance (priority := 10000) [HasColimitsOfShape J C] : HasColimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
 
-noncomputable instance [HasColimitsOfShape J C] (n : ι) :
+noncomputable instance (priority := 10000) [HasColimitsOfShape J C] (n : ι) :
   PreservesColimitsOfShape J (eval C c n) := ⟨inferInstance⟩
 
-instance [HasFiniteColimits C] : HasFiniteColimits (HomologicalComplex C c) :=
+instance (priority := 10000) [HasFiniteColimits C] : HasFiniteColimits (HomologicalComplex C c) :=
   ⟨fun _ _ => inferInstance⟩
 
-noncomputable instance [HasFiniteColimits C] (n : ι) :
+noncomputable instance (priority := 10000) [HasFiniteColimits C] (n : ι) :
   PreservesFiniteColimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
 
-instance [HasFiniteColimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Epi φ] (n : ι) :
+instance (priority := 10000) [HasFiniteColimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Epi φ] (n : ι) :
     Epi (φ.f n) := by
   change Epi ((HomologicalComplex.eval C c n).map φ)
   infer_instance

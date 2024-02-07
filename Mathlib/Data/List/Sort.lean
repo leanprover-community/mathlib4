@@ -38,7 +38,7 @@ def Sorted :=
   @Pairwise
 #align list.sorted List.Sorted
 
-instance decidableSorted [DecidableRel r] (l : List α) : Decidable (Sorted r l) :=
+instance (priority := 10000) decidableSorted [DecidableRel r] (l : List α) : Decidable (Sorted r l) :=
   List.instDecidablePairwise _
 #align list.decidable_sorted List.decidableSorted
 

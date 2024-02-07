@@ -19,14 +19,14 @@ variable {X : Type*} {Y : Type*} {ι : Type*}
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 
-instance [WeaklyLocallyCompactSpace X] [WeaklyLocallyCompactSpace Y] :
+instance (priority := 10000) [WeaklyLocallyCompactSpace X] [WeaklyLocallyCompactSpace Y] :
     WeaklyLocallyCompactSpace (X × Y) where
   exists_compact_mem_nhds x :=
     let ⟨s₁, hc₁, h₁⟩ := exists_compact_mem_nhds x.1
     let ⟨s₂, hc₂, h₂⟩ := exists_compact_mem_nhds x.2
     ⟨s₁ ×ˢ s₂, hc₁.prod hc₂, prod_mem_nhds h₁ h₂⟩
 
-instance {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSpace (X i)]
+instance (priority := 10000) {ι : Type*} [Finite ι] {X : ι → Type*} [(i : ι) → TopologicalSpace (X i)]
     [(i : ι) → WeaklyLocallyCompactSpace (X i)] :
     WeaklyLocallyCompactSpace ((i : ι) → X i) where
   exists_compact_mem_nhds := fun f ↦ by
@@ -74,7 +74,7 @@ theorem LocallyCompactSpace.of_hasBasis {ι : X → Type*} {p : ∀ x, ι x → 
 @[deprecated] -- since 29 Dec 2023
 alias locallyCompactSpace_of_hasBasis := LocallyCompactSpace.of_hasBasis
 
-instance Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
+instance (priority := 10000) Prod.locallyCompactSpace (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] [LocallyCompactSpace X] [LocallyCompactSpace Y] :
     LocallyCompactSpace (X × Y) :=
   have := fun x : X × Y => (compact_basis_nhds x.1).prod_nhds' (compact_basis_nhds x.2)
@@ -87,7 +87,7 @@ variable {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, LocallyCompa
 
 /-- In general it suffices that all but finitely many of the spaces are compact,
   but that's not straightforward to state and use. -/
-instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀ i, X i) :=
+instance (priority := 10000) Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀ i, X i) :=
   ⟨fun t n hn => by
     rw [nhds_pi, Filter.mem_pi] at hn
     obtain ⟨s, -, n', hn', hsub⟩ := hn
@@ -99,7 +99,7 @@ instance Pi.locallyCompactSpace_of_finite [Finite ι] : LocallyCompactSpace (∀
 #align pi.locally_compact_space_of_finite Pi.locallyCompactSpace_of_finite
 
 /-- For spaces that are not Hausdorff. -/
-instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpace (∀ i, X i) :=
+instance (priority := 10000) Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpace (∀ i, X i) :=
   ⟨fun t n hn => by
     rw [nhds_pi, Filter.mem_pi] at hn
     obtain ⟨s, hs, n', hn', hsub⟩ := hn
@@ -117,12 +117,12 @@ instance Pi.locallyCompactSpace [∀ i, CompactSpace (X i)] : LocallyCompactSpac
         exact CompactSpace.isCompact_univ⟩
 #align pi.locally_compact_space Pi.locallyCompactSpace
 
-instance Function.locallyCompactSpace_of_finite [Finite ι] [LocallyCompactSpace Y] :
+instance (priority := 10000) Function.locallyCompactSpace_of_finite [Finite ι] [LocallyCompactSpace Y] :
     LocallyCompactSpace (ι → Y) :=
   Pi.locallyCompactSpace_of_finite
 #align function.locally_compact_space_of_finite Function.locallyCompactSpace_of_finite
 
-instance Function.locallyCompactSpace [LocallyCompactSpace Y] [CompactSpace Y] :
+instance (priority := 10000) Function.locallyCompactSpace [LocallyCompactSpace Y] [CompactSpace Y] :
     LocallyCompactSpace (ι → Y) :=
   Pi.locallyCompactSpace
 #align function.locally_compact_space Function.locallyCompactSpace

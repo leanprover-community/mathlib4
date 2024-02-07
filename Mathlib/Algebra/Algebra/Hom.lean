@@ -81,7 +81,7 @@ def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →�
       toFun := f
       commutes' := AlgHomClass.commutes f }
 
-instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
+instance (priority := 10000) coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
 #align alg_hom_class.alg_hom.has_coe_t AlgHomClass.coeTC
 
@@ -100,7 +100,7 @@ variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 -- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 #noalign alg_hom.has_coe_to_fun
 
-instance funLike : FunLike (A →ₐ[R] B) A B where
+instance (priority := 10000) funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
@@ -108,7 +108,7 @@ instance funLike : FunLike (A →ₐ[R] B) A B where
     congr
 
 -- Porting note: This instance is moved.
-instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
+instance (priority := 10000) algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
@@ -135,7 +135,7 @@ theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
 
 attribute [coe] AlgHom.toRingHom
 
-instance coeOutRingHom : CoeOut (A →ₐ[R] B) (A →+* B) :=
+instance (priority := 10000) coeOutRingHom : CoeOut (A →ₐ[R] B) (A →+* B) :=
   ⟨AlgHom.toRingHom⟩
 #align alg_hom.coe_ring_hom AlgHom.coeOutRingHom
 
@@ -143,7 +143,7 @@ instance coeOutRingHom : CoeOut (A →ₐ[R] B) (A →+* B) :=
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
-instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
+instance (priority := 10000) coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 #align alg_hom.coe_monoid_hom AlgHom.coeOutMonoidHom
 
@@ -151,7 +151,7 @@ instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 
-instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
+instance (priority := 10000) coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
 #align alg_hom.coe_add_monoid_hom AlgHom.coeOutAddMonoidHom
 
@@ -431,7 +431,7 @@ theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
 #align alg_hom.map_list_prod AlgHom.map_list_prod
 
 @[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
-instance End : Monoid (A →ₐ[R] A) where
+instance (priority := 10000) End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc ϕ ψ χ := rfl
   one := AlgHom.id R A
@@ -570,7 +570,7 @@ theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
 #align algebra.of_id_apply Algebra.ofId_apply
 
 /-- This is a special case of a more general instance that we define in a later file. -/
-instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
+instance (priority := 10000) subsingleton_id : Subsingleton (R →ₐ[R] A) :=
   ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
 
 /-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
@@ -579,7 +579,7 @@ theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
 section MulDistribMulAction
 
-instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
+instance (priority := 10000) : MulDistribMulAction (A →ₐ[R] A) Aˣ where
   smul := fun f => Units.map f
   one_smul := fun x => by ext; rfl
   mul_smul := fun x y z => by ext; rfl

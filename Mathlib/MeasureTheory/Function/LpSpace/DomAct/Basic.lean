@@ -31,7 +31,7 @@ section SMul
 variable [SMul M α] [SMulInvariantMeasure M α μ] [MeasurableSMul M α]
 
 @[to_additive]
-instance : SMul Mᵈᵐᵃ (Lp E p μ) where
+instance (priority := 10000) : SMul Mᵈᵐᵃ (Lp E p μ) where
   smul c f := Lp.compMeasurePreserving (mk.symm c • ·) (measurePreserving_smul _ _) f
 
 @[to_additive (attr := simp)]
@@ -52,14 +52,14 @@ theorem smul_Lp_const [IsFiniteMeasure μ] (c : Mᵈᵐᵃ) (a : E) :
     c • Lp.const p μ a = Lp.const p μ a :=
   rfl
 
-instance [SMul N α] [SMulCommClass M N α] [SMulInvariantMeasure N α μ] [MeasurableSMul N α] :
+instance (priority := 10000) [SMul N α] [SMulCommClass M N α] [SMulInvariantMeasure N α μ] [MeasurableSMul N α] :
     SMulCommClass Mᵈᵐᵃ Nᵈᵐᵃ (Lp E p μ) :=
   Subtype.val_injective.smulCommClass (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass Mᵈᵐᵃ 𝕜 (Lp E p μ) :=
+instance (priority := 10000) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass Mᵈᵐᵃ 𝕜 (Lp E p μ) :=
   Subtype.val_injective.smulCommClass (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
-instance [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass 𝕜 Mᵈᵐᵃ (Lp E p μ) :=
+instance (priority := 10000) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E] : SMulCommClass 𝕜 Mᵈᵐᵃ (Lp E p μ) :=
   .symm _ _ _
 
 -- We don't have a typeclass for additive versions of the next few lemmas
@@ -82,7 +82,7 @@ theorem smul_Lp_neg (c : Mᵈᵐᵃ) (f : Lp E p μ) : c • (-f) = -(c • f) :
 theorem smul_Lp_sub (c : Mᵈᵐᵃ) : ∀ f g : Lp E p μ, c • (f - g) = c • f - c • g := by
   rintro ⟨⟨⟩, _⟩ ⟨⟨⟩, _⟩; rfl
 
-instance : DistribSMul Mᵈᵐᵃ (Lp E p μ) where
+instance (priority := 10000) : DistribSMul Mᵈᵐᵃ (Lp E p μ) where
   smul_zero _ := rfl
   smul_add := by rintro _ ⟨⟨⟩, _⟩ ⟨⟨⟩, _⟩; rfl
 
@@ -105,7 +105,7 @@ theorem edist_smul_Lp (c : Mᵈᵐᵃ) (f g : Lp E p μ) : edist (c • f) (c �
 
 variable [Fact (1 ≤ p)]
 
-instance : IsometricSMul Mᵈᵐᵃ (Lp E p μ) := ⟨edist_smul_Lp⟩
+instance (priority := 10000) : IsometricSMul Mᵈᵐᵃ (Lp E p μ) := ⟨edist_smul_Lp⟩
 
 end SMul
 
@@ -114,9 +114,9 @@ section MulAction
 variable [Monoid M] [MulAction M α] [SMulInvariantMeasure M α μ] [MeasurableSMul M α]
 
 @[to_additive]
-instance : MulAction Mᵈᵐᵃ (Lp E p μ) := Subtype.val_injective.mulAction _ fun _ _ ↦ rfl
+instance (priority := 10000) : MulAction Mᵈᵐᵃ (Lp E p μ) := Subtype.val_injective.mulAction _ fun _ _ ↦ rfl
 
-instance : DistribMulAction Mᵈᵐᵃ (Lp E p μ) :=
+instance (priority := 10000) : DistribMulAction Mᵈᵐᵃ (Lp E p μ) :=
   Subtype.val_injective.distribMulAction ⟨⟨_, rfl⟩, fun _ _ ↦ rfl⟩ fun _ _ ↦ rfl
 
 end MulAction

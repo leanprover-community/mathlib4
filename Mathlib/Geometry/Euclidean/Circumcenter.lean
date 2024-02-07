@@ -525,7 +525,7 @@ inductive PointsWithCircumcenterIndex (n : ℕ)
 
 open PointsWithCircumcenterIndex
 
-instance pointsWithCircumcenterIndexInhabited (n : ℕ) : Inhabited (PointsWithCircumcenterIndex n) :=
+instance (priority := 10000) pointsWithCircumcenterIndexInhabited (n : ℕ) : Inhabited (PointsWithCircumcenterIndex n) :=
   ⟨circumcenterIndex⟩
 #align affine.simplex.points_with_circumcenter_index_inhabited Affine.Simplex.pointsWithCircumcenterIndexInhabited
 

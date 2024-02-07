@@ -185,65 +185,65 @@ section Additive
 
 variable {T : Type*} {S : Type*} {R : Type u} {M : Type v}
 
-instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
+instance (priority := 10000) inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
   instInhabitedProd
 
-instance zero [Zero R] [Zero M] : Zero (tsze R M) :=
+instance (priority := 10000) zero [Zero R] [Zero M] : Zero (tsze R M) :=
   Prod.instZero
 
-instance add [Add R] [Add M] : Add (tsze R M) :=
+instance (priority := 10000) add [Add R] [Add M] : Add (tsze R M) :=
   Prod.instAdd
 
-instance sub [Sub R] [Sub M] : Sub (tsze R M) :=
+instance (priority := 10000) sub [Sub R] [Sub M] : Sub (tsze R M) :=
   Prod.instSub
 
-instance neg [Neg R] [Neg M] : Neg (tsze R M) :=
+instance (priority := 10000) neg [Neg R] [Neg M] : Neg (tsze R M) :=
   Prod.instNeg
 
-instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
+instance (priority := 10000) addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
   Prod.instAddSemigroup
 
-instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
+instance (priority := 10000) addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
   Prod.instAddZeroClass
 
-instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
+instance (priority := 10000) addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
   Prod.instAddMonoid
 
-instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
+instance (priority := 10000) addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
   Prod.instAddGroup
 
-instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
+instance (priority := 10000) addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
   Prod.instAddCommSemigroup
 
-instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
+instance (priority := 10000) addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
   Prod.instAddCommMonoid
 
-instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
+instance (priority := 10000) addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
   Prod.instAddCommGroup
 
-instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
+instance (priority := 10000) smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
   Prod.smul
 
-instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
+instance (priority := 10000) isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=
   Prod.isScalarTower
 
-instance smulCommClass [SMul T R] [SMul T M] [SMul S R] [SMul S M]
+instance (priority := 10000) smulCommClass [SMul T R] [SMul T M] [SMul S R] [SMul S M]
     [SMulCommClass T S R] [SMulCommClass T S M] : SMulCommClass T S (tsze R M) :=
   Prod.smulCommClass
 
-instance isCentralScalar [SMul S R] [SMul S M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsCentralScalar S R]
+instance (priority := 10000) isCentralScalar [SMul S R] [SMul S M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsCentralScalar S R]
     [IsCentralScalar S M] : IsCentralScalar S (tsze R M) :=
   Prod.isCentralScalar
 
-instance mulAction [Monoid S] [MulAction S R] [MulAction S M] : MulAction S (tsze R M) :=
+instance (priority := 10000) mulAction [Monoid S] [MulAction S R] [MulAction S M] : MulAction S (tsze R M) :=
   Prod.mulAction
 
-instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
+instance (priority := 10000) distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
     [DistribMulAction S R] [DistribMulAction S M] : DistribMulAction S (tsze R M) :=
   Prod.distribMulAction
 
-instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
+instance (priority := 10000) module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
     Module S (tsze R M) :=
   Prod.instModule
 
@@ -430,10 +430,10 @@ section Mul
 
 variable {R : Type u} {M : Type v}
 
-instance one [One R] [Zero M] : One (tsze R M) :=
+instance (priority := 10000) one [One R] [Zero M] : One (tsze R M) :=
   ⟨(1, 0)⟩
 
-instance mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
+instance (priority := 10000) mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
   ⟨fun x y => (x.1 * y.1, x.1 • y.2 + op y.1 • x.2)⟩
 
 @[simp]
@@ -515,7 +515,7 @@ theorem mul_inl_eq_op_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module R
     x * inl r = op r • x :=
   ext rfl (by dsimp; rw [smul_zero, zero_add])
 
-instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
+instance (priority := 10000) mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     MulOneClass (tsze R M) :=
   { TrivSqZeroExt.one, TrivSqZeroExt.mul with
     one_mul := fun x =>
@@ -525,7 +525,7 @@ instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMul
       ext (mul_one x.1) <|
         show x.1 • (0 : M) + (1 : Rᵐᵒᵖ) • x.2 = x.2 by rw [smul_zero, zero_add, one_smul] }
 
-instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) :=
+instance (priority := 10000) addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) :=
   { TrivSqZeroExt.addMonoid, TrivSqZeroExt.one with
     natCast := fun n => inl n
     natCast_zero := by simp [Nat.cast]
@@ -546,7 +546,7 @@ theorem inl_nat_cast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsz
   rfl
 #align triv_sq_zero_ext.inl_nat_cast TrivSqZeroExt.inl_nat_cast
 
-instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
+instance (priority := 10000) addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) :=
   { TrivSqZeroExt.addGroup, TrivSqZeroExt.addMonoidWithOne with
     intCast := fun z => inl z
     intCast_ofNat := fun _n => ext (Int.cast_ofNat _) rfl
@@ -567,7 +567,7 @@ theorem inl_int_cast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze 
   rfl
 #align triv_sq_zero_ext.inl_int_cast TrivSqZeroExt.inl_int_cast
 
-instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
+instance (priority := 10000) nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocSemiring (tsze R M) :=
   { TrivSqZeroExt.addMonoidWithOne, TrivSqZeroExt.mulOneClass, TrivSqZeroExt.addCommMonoid with
     zero_mul := fun x =>
@@ -589,7 +589,7 @@ instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module R�
             x₁.1 • x₃.2 + op x₃.1 • x₁.2 + (x₂.1 • x₃.2 + op x₃.1 • x₂.2)
           by simp_rw [add_smul, smul_add, add_add_add_comm] }
 
-instance nonAssocRing [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] :
+instance (priority := 10000) nonAssocRing [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocRing (tsze R M) :=
   { TrivSqZeroExt.addGroupWithOne, TrivSqZeroExt.nonAssocSemiring with }
 
@@ -602,7 +602,7 @@ $$\begin{align}
 
 In the commutative case this becomes the simpler $(r + m)^n = r^n + nr^{n-1}m$.
 -/
-instance [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
+instance (priority := 10000) [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     Pow (tsze R M) ℕ :=
   ⟨fun x n =>
     ⟨x.fst ^ n, ((List.range n).map fun i => x.fst ^ (n.pred - i) • op (x.fst ^ i) • x.snd).sum⟩⟩
@@ -653,7 +653,7 @@ theorem inl_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
   ext rfl <| by simp [snd_pow_eq_sum]
 #align triv_sq_zero_ext.inl_pow TrivSqZeroExt.inl_pow
 
-instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
+instance (priority := 10000) monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] : Monoid (tsze R M) :=
   { TrivSqZeroExt.mulOneClass with
     mul_assoc := fun x y z =>
@@ -684,7 +684,7 @@ theorem fst_list_prod [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMu
   map_list_prod ({ toFun := fst, map_one' := fst_one, map_mul' := fst_mul } : tsze R M →* R) _
 #align triv_sq_zero_ext.fst_list_prod TrivSqZeroExt.fst_list_prod
 
-instance semiring [Semiring R] [AddCommMonoid M]
+instance (priority := 10000) semiring [Semiring R] [AddCommMonoid M]
     [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] : Semiring (tsze R M) :=
   { TrivSqZeroExt.monoid, TrivSqZeroExt.nonAssocSemiring with }
 
@@ -704,11 +704,11 @@ theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐ�
     exact add_comm _ _
 #align triv_sq_zero_ext.snd_list_prod TrivSqZeroExt.snd_list_prod
 
-instance ring [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] :
+instance (priority := 10000) ring [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] :
     Ring (tsze R M) :=
   { TrivSqZeroExt.semiring, TrivSqZeroExt.nonAssocRing with }
 
-instance commMonoid [CommMonoid R] [AddCommMonoid M] [DistribMulAction R M]
+instance (priority := 10000) commMonoid [CommMonoid R] [AddCommMonoid M] [DistribMulAction R M]
     [DistribMulAction Rᵐᵒᵖ M] [IsCentralScalar R M] : CommMonoid (tsze R M) :=
   { TrivSqZeroExt.monoid with
     mul_comm := fun x₁ x₂ =>
@@ -716,11 +716,11 @@ instance commMonoid [CommMonoid R] [AddCommMonoid M] [DistribMulAction R M]
         show x₁.1 • x₂.2 + op x₂.1 • x₁.2 = x₂.1 • x₁.2 + op x₁.1 • x₂.2 by
           rw [op_smul_eq_smul, op_smul_eq_smul, add_comm] }
 
-instance commSemiring [CommSemiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+instance (priority := 10000) commSemiring [CommSemiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
     [IsCentralScalar R M] : CommSemiring (tsze R M) :=
   { TrivSqZeroExt.commMonoid, TrivSqZeroExt.nonAssocSemiring with }
 
-instance commRing [CommRing R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
+instance (priority := 10000) commRing [CommRing R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
     CommRing (tsze R M) :=
   { TrivSqZeroExt.nonAssocRing, TrivSqZeroExt.commSemiring with }
 
@@ -752,7 +752,7 @@ variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 
 variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M] [IsScalarTower S R' M]
 
-instance algebra' : Algebra S (tsze R M) :=
+instance (priority := 10000) algebra' : Algebra S (tsze R M) :=
   { (TrivSqZeroExt.inlHom R M).comp (algebraMap S R) with
     smul := (· • ·)
     commutes' := fun s x =>
@@ -769,7 +769,7 @@ instance algebra' : Algebra S (tsze R M) :=
 #align triv_sq_zero_ext.algebra' TrivSqZeroExt.algebra'
 
 -- shortcut instance for the common case
-instance : Algebra R' (tsze R' M) :=
+instance (priority := 10000) : Algebra R' (tsze R' M) :=
   TrivSqZeroExt.algebra' _ _ _
 
 theorem algebraMap_eq_inl : ⇑(algebraMap R' (tsze R' M)) = inl :=

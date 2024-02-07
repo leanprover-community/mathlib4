@@ -56,7 +56,7 @@ the category theory machinery work. -/
 add_decl_doc AddMonCat.AssocAddMonoidHom
 
 @[to_additive]
-instance bundledHom : BundledHom AssocMonoidHom where
+instance (priority := 10000) bundledHom : BundledHom AssocMonoidHom where
   toFun {X Y} _ _ f := ⇑f
   id _ := MonoidHom.id _
   comp _ _ _ := MonoidHom.comp
@@ -70,27 +70,27 @@ attribute [to_additive instAddMonCatLargeCategory] instMonCatLargeCategory
 
 -- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
-instance concreteCategory : ConcreteCategory MonCat :=
+instance (priority := 10000) concreteCategory : ConcreteCategory MonCat :=
   BundledHom.concreteCategory _
 
 @[to_additive]
-instance : CoeSort MonCat (Type*) where
+instance (priority := 10000) : CoeSort MonCat (Type*) where
   coe X := X.α
 
 @[to_additive]
-instance (X : MonCat) : Monoid X := X.str
+instance (priority := 10000) (X : MonCat) : Monoid X := X.str
 
 -- porting note: this instance was not necessary in mathlib
 @[to_additive]
-instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+instance (priority := 10000) {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance instFunLike (X Y : MonCat) : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) instFunLike (X Y : MonCat) : FunLike (X ⟶ Y) X Y :=
   inferInstanceAs <| FunLike (X →* Y) X Y
 
 @[to_additive]
-instance instMonoidHomClass (X Y : MonCat) : MonoidHomClass (X ⟶ Y) X Y :=
+instance (priority := 10000) instMonoidHomClass (X Y : MonCat) : MonoidHomClass (X ⟶ Y) X Y :=
   inferInstanceAs <| MonoidHomClass (X →* Y) X Y
 
 -- porting note: added
@@ -131,7 +131,7 @@ set_option linter.uppercaseLean3 false in
 #align AddMon.coe_of AddMonCat.coe_of
 
 @[to_additive]
-instance : Inhabited MonCat :=
+instance (priority := 10000) : Inhabited MonCat :=
   -- The default instance for `Monoid PUnit` is derived via `CommRing` which breaks to_additive
   ⟨@of PUnit (@DivInvMonoid.toMonoid _ (@Group.toDivInvMonoid _
     (@CommGroup.toGroup _ PUnit.commGroup)))⟩
@@ -155,7 +155,7 @@ set_option linter.uppercaseLean3 false in
 
 ---- porting note: added to ease the port of `RepresentationTheory.Action.Basic`
 @[to_additive]
-instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
+instance (priority := 10000) (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
 
 @[to_additive (attr := simp)]
 lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
@@ -169,7 +169,7 @@ lemma mul_of {A : Type*} [Monoid A] (a b : A) :
     @HMul.hMul (MonCat.of A) (MonCat.of A) (MonCat.of A) _ a b = a * b := rfl
 
 @[to_additive]
-instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
+instance (priority := 10000) {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
 
 end MonCat
 
@@ -188,31 +188,31 @@ add_decl_doc AddCommMonCat
 namespace CommMonCat
 
 @[to_additive]
-instance : BundledHom.ParentProjection @CommMonoid.toMonoid := ⟨⟩
+instance (priority := 10000) : BundledHom.ParentProjection @CommMonoid.toMonoid := ⟨⟩
 
 deriving instance LargeCategory for CommMonCat
 attribute [to_additive instAddCommMonCatLargeCategory] instCommMonCatLargeCategory
 
 -- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
-instance concreteCategory : ConcreteCategory CommMonCat := by
+instance (priority := 10000) concreteCategory : ConcreteCategory CommMonCat := by
   dsimp only [CommMonCat]
   infer_instance
 
 @[to_additive]
-instance : CoeSort CommMonCat (Type*) where
+instance (priority := 10000) : CoeSort CommMonCat (Type*) where
   coe X := X.α
 
 @[to_additive]
-instance (X : CommMonCat) : CommMonoid X := X.str
+instance (priority := 10000) (X : CommMonCat) : CommMonoid X := X.str
 
 -- porting note: this instance was not necessary in mathlib
 @[to_additive]
-instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+instance (priority := 10000) {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance instFunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) instFunLike (X Y : CommMonCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (X →* Y) X Y by infer_instance
 
 -- porting note: added
@@ -246,7 +246,7 @@ set_option linter.uppercaseLean3 false in
 add_decl_doc AddCommMonCat.of
 
 @[to_additive]
-instance : Inhabited CommMonCat :=
+instance (priority := 10000) : Inhabited CommMonCat :=
   -- The default instance for `CommMonoid PUnit` is derived via `CommRing` which breaks to_additive
   ⟨@of PUnit (@CommGroup.toCommMonoid _ PUnit.commGroup)⟩
 
@@ -262,7 +262,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommMon.coe_of AddCommMonCat.coe_of
 
 @[to_additive hasForgetToAddMonCat]
-instance hasForgetToMonCat : HasForget₂ CommMonCat MonCat :=
+instance (priority := 10000) hasForgetToMonCat : HasForget₂ CommMonCat MonCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align CommMon.has_forget_to_Mon CommMonCat.hasForgetToMonCat
@@ -270,7 +270,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommMon.has_forget_to_AddMon AddCommMonCat.hasForgetToAddMonCat
 
 @[to_additive]
-instance : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj
+instance (priority := 10000) : Coe CommMonCat.{u} MonCat.{u} where coe := (forget₂ CommMonCat MonCat).obj
 
 -- porting note: this was added to make automation work (it already exists for MonCat)
 /-- Typecheck a `MonoidHom` as a morphism in `CommMonCat`. -/
@@ -404,7 +404,7 @@ the same as (isomorphic to) isomorphisms in `AddCommMonCat` -/
 add_decl_doc addEquivIsoAddCommMonCatIso
 
 @[to_additive]
-instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
+instance (priority := 10000) MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
     -- Again a problem that exists already creeps into other things leanprover/lean4#2644
@@ -417,7 +417,7 @@ set_option linter.uppercaseLean3 false in
 #align AddMon.forget_reflects_isos AddMonCat.forget_reflects_isos
 
 @[to_additive]
-instance CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMonCat.{u}) where
+instance (priority := 10000) CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMonCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommMonCat).map f)
     let e : X ≃* Y := MulEquiv.mk i.toEquiv
@@ -433,6 +433,6 @@ set_option linter.uppercaseLean3 false in
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance CommMonCat.forget₂Full : Full (forget₂ CommMonCat MonCat) where preimage f := f
+instance (priority := 10000) CommMonCat.forget₂Full : Full (forget₂ CommMonCat MonCat) where preimage f := f
 
 example : ReflectsIsomorphisms (forget₂ CommMonCat MonCat) := inferInstance

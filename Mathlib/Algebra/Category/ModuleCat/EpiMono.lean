@@ -64,24 +64,24 @@ def uniqueOfEpiZero (X) [h : Epi (0 : X ⟶ of R M)] : Unique M :=
 set_option linter.uppercaseLean3 false in
 #align Module.unique_of_epi_zero ModuleCat.uniqueOfEpiZero
 
-instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.asHomRight U.subtype) :=
+instance (priority := 10000) mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.asHomRight U.subtype) :=
   (mono_iff_ker_eq_bot _).mpr (Submodule.ker_subtype U)
 set_option linter.uppercaseLean3 false in
 #align Module.mono_as_hom'_subtype ModuleCat.mono_as_hom'_subtype
 
-instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (↿U.mkQ) :=
+instance (priority := 10000) epi_as_hom''_mkQ (U : Submodule R X) : Epi (↿U.mkQ) :=
   (epi_iff_range_eq_top _).mpr <| Submodule.range_mkQ _
 set_option linter.uppercaseLean3 false in
 #align Module.epi_as_hom''_mkq ModuleCat.epi_as_hom''_mkQ
 
-instance forget_preservesEpimorphisms : (forget (ModuleCat.{v} R)).PreservesEpimorphisms where
+instance (priority := 10000) forget_preservesEpimorphisms : (forget (ModuleCat.{v} R)).PreservesEpimorphisms where
     preserves f hf := by
       erw [CategoryTheory.epi_iff_surjective, ← epi_iff_surjective]
       exact hf
 set_option linter.uppercaseLean3 false in
 #align Module.forget_preserves_epimorphisms ModuleCat.forget_preservesEpimorphisms
 
-instance forget_preservesMonomorphisms : (forget (ModuleCat.{v} R)).PreservesMonomorphisms where
+instance (priority := 10000) forget_preservesMonomorphisms : (forget (ModuleCat.{v} R)).PreservesMonomorphisms where
     preserves f hf := by
       erw [CategoryTheory.mono_iff_injective, ← mono_iff_injective]
       exact hf

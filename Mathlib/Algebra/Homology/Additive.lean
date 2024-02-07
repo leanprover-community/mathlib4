@@ -33,25 +33,25 @@ variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
 
 namespace HomologicalComplex
 
-instance : Zero (C ⟶ D) :=
+instance (priority := 10000) : Zero (C ⟶ D) :=
   ⟨{ f := fun i => 0 }⟩
 
-instance : Add (C ⟶ D) :=
+instance (priority := 10000) : Add (C ⟶ D) :=
   ⟨fun f g => { f := fun i => f.f i + g.f i }⟩
 
-instance : Neg (C ⟶ D) :=
+instance (priority := 10000) : Neg (C ⟶ D) :=
   ⟨fun f => { f := fun i => -f.f i }⟩
 
-instance : Sub (C ⟶ D) :=
+instance (priority := 10000) : Sub (C ⟶ D) :=
   ⟨fun f g => { f := fun i => f.f i - g.f i }⟩
 
-instance hasNatScalar : SMul ℕ (C ⟶ D) :=
+instance (priority := 10000) hasNatScalar : SMul ℕ (C ⟶ D) :=
   ⟨fun n f =>
     { f := fun i => n • f.f i
       comm' := fun i j _ => by simp [Preadditive.nsmul_comp, Preadditive.comp_nsmul] }⟩
 #align homological_complex.has_nat_scalar HomologicalComplex.hasNatScalar
 
-instance hasIntScalar : SMul ℤ (C ⟶ D) :=
+instance (priority := 10000) hasIntScalar : SMul ℤ (C ⟶ D) :=
   ⟨fun n f =>
     { f := fun i => n • f.f i
       comm' := fun i j _ => by simp [Preadditive.zsmul_comp, Preadditive.comp_zsmul] }⟩
@@ -87,13 +87,13 @@ theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f
   rfl
 #align homological_complex.zsmul_f_apply HomologicalComplex.zsmul_f_apply
 
-instance : AddCommGroup (C ⟶ D) :=
+instance (priority := 10000) : AddCommGroup (C ⟶ D) :=
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
     (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
 -- porting note: proofs had to be provided here, otherwise Lean tries to apply
 -- `Preadditive.add_comp/comp_add` to `HomologicalComplex V c`
-instance : Preadditive (HomologicalComplex V c) where
+instance (priority := 10000) : Preadditive (HomologicalComplex V c) where
   add_comp _ _ _ f f' g := by
     ext
     simp only [comp_f, add_f_apply]
@@ -113,20 +113,20 @@ end HomologicalComplex
 
 namespace HomologicalComplex
 
-instance eval_additive (i : ι) : (eval V c i).Additive where
+instance (priority := 10000) eval_additive (i : ι) : (eval V c i).Additive where
 #align homological_complex.eval_additive HomologicalComplex.eval_additive
 
-instance cycles'_additive [HasEqualizers V] : (cycles'Functor V c i).Additive where
+instance (priority := 10000) cycles'_additive [HasEqualizers V] : (cycles'Functor V c i).Additive where
 #align homological_complex.cycles_additive HomologicalComplex.cycles'_additive
 
 variable [HasImages V] [HasImageMaps V]
 
-instance boundaries_additive : (boundariesFunctor V c i).Additive where
+instance (priority := 10000) boundaries_additive : (boundariesFunctor V c i).Additive where
 #align homological_complex.boundaries_additive HomologicalComplex.boundaries_additive
 
 variable [HasEqualizers V] [HasCokernels V]
 
-instance homology_additive : (homology'Functor V c i).Additive where
+instance (priority := 10000) homology_additive : (homology'Functor V c i).Additive where
   map_add {_ _ f g} := by
     dsimp [homology'Functor]
     ext
@@ -174,11 +174,11 @@ def Functor.mapHomologicalComplexIdIso (c : ComplexShape ι) :
 
 variable {V}
 
-instance Functor.map_homogical_complex_additive (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
+instance (priority := 10000) Functor.map_homogical_complex_additive (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     (F.mapHomologicalComplex c).Additive where
 #align category_theory.functor.map_homogical_complex_additive CategoryTheory.Functor.map_homogical_complex_additive
 
-instance Functor.mapHomologicalComplex_reflects_iso (F : V ⥤ W) [F.Additive]
+instance (priority := 10000) Functor.mapHomologicalComplex_reflects_iso (F : V ⥤ W) [F.Additive]
     [ReflectsIsomorphisms F] (c : ComplexShape ι) :
     ReflectsIsomorphisms (F.mapHomologicalComplex c) :=
   ⟨fun f => by

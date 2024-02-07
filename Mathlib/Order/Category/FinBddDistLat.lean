@@ -30,13 +30,13 @@ structure FinBddDistLat where
 
 namespace FinBddDistLat
 
-instance : CoeSort FinBddDistLat (Type*) :=
+instance (priority := 10000) : CoeSort FinBddDistLat (Type*) :=
   ⟨fun X => X.toBddDistLat⟩
 
-instance (X : FinBddDistLat) : DistribLattice X :=
+instance (priority := 10000) (X : FinBddDistLat) : DistribLattice X :=
   X.toBddDistLat.toDistLat.str
 
-instance (X : FinBddDistLat) : BoundedOrder X :=
+instance (priority := 10000) (X : FinBddDistLat) : BoundedOrder X :=
   X.toBddDistLat.isBoundedOrder
 
 attribute [instance] FinBddDistLat.isFintype
@@ -56,22 +56,22 @@ def of' (α : Type*) [DistribLattice α] [Fintype α] [Nonempty α] : FinBddDist
   ⟨⟨{α := α}⟩⟩
 #align FinBddDistLat.of' FinBddDistLat.of'
 
-instance : Inhabited FinBddDistLat :=
+instance (priority := 10000) : Inhabited FinBddDistLat :=
   ⟨of PUnit⟩
 
-instance largeCategory : LargeCategory FinBddDistLat :=
+instance (priority := 10000) largeCategory : LargeCategory FinBddDistLat :=
   InducedCategory.category toBddDistLat
 #align FinBddDistLat.large_category FinBddDistLat.largeCategory
 
-instance concreteCategory : ConcreteCategory FinBddDistLat :=
+instance (priority := 10000) concreteCategory : ConcreteCategory FinBddDistLat :=
   InducedCategory.concreteCategory toBddDistLat
 #align FinBddDistLat.concrete_category FinBddDistLat.concreteCategory
 
-instance hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat :=
+instance (priority := 10000) hasForgetToBddDistLat : HasForget₂ FinBddDistLat BddDistLat :=
   InducedCategory.hasForget₂ FinBddDistLat.toBddDistLat
 #align FinBddDistLat.has_forget_to_BddDistLat FinBddDistLat.hasForgetToBddDistLat
 
-instance hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
+instance (priority := 10000) hasForgetToFinPartOrd : HasForget₂ FinBddDistLat FinPartOrd where
   forget₂.obj X := FinPartOrd.of X
   forget₂.map {X Y} f := (show BoundedLatticeHom X Y from f : X →o Y)
 #align FinBddDistLat.has_forget_to_FinPartOrd FinBddDistLat.hasForgetToFinPartOrd

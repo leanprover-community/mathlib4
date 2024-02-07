@@ -312,7 +312,7 @@ theorem toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
 @[simp] theorem toEquiv_inj {e₁ e₂ : α ≃ᵢ β} : e₁.toEquiv = e₂.toEquiv ↔ e₁ = e₂ :=
   toEquiv_injective.eq_iff
 
-instance : EquivLike (α ≃ᵢ β) α β where
+instance (priority := 10000) : EquivLike (α ≃ᵢ β) α β where
   coe e := e.toEquiv
   inv e := e.toEquiv.symm
   left_inv e := e.left_inv
@@ -537,7 +537,7 @@ theorem comp_continuous_iff' {γ} [TopologicalSpace γ] (h : α ≃ᵢ β) {f : 
 #align isometry_equiv.comp_continuous_iff' IsometryEquiv.comp_continuous_iff'
 
 /-- The group of isometries. -/
-instance : Group (α ≃ᵢ α) where
+instance (priority := 10000) : Group (α ≃ᵢ α) where
   one := IsometryEquiv.refl _
   mul e₁ e₂ := e₂.trans e₁
   inv := IsometryEquiv.symm

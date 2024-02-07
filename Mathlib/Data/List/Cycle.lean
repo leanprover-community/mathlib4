@@ -457,7 +457,7 @@ variable {α : Type*}
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
 
-instance : Coe (List α) (Cycle α) :=
+instance (priority := 10000) : Coe (List α) (Cycle α) :=
   ⟨ofList⟩
 
 @[simp]
@@ -496,7 +496,7 @@ theorem coe_eq_nil (l : List α) : (l : Cycle α) = nil ↔ l = [] :=
 #align cycle.coe_eq_nil Cycle.coe_eq_nil
 
 /-- For consistency with `EmptyCollection (List α)`. -/
-instance : EmptyCollection (Cycle α) :=
+instance (priority := 10000) : EmptyCollection (Cycle α) :=
   ⟨nil⟩
 
 @[simp]
@@ -504,7 +504,7 @@ theorem empty_eq : ∅ = @nil α :=
   rfl
 #align cycle.empty_eq Cycle.empty_eq
 
-instance : Inhabited (Cycle α) :=
+instance (priority := 10000) : Inhabited (Cycle α) :=
   ⟨nil⟩
 
 /-- An induction principle for `Cycle`. Use as `induction s using Cycle.induction_on`. -/
@@ -521,7 +521,7 @@ def Mem (a : α) (s : Cycle α) : Prop :=
   Quot.liftOn s (fun l => a ∈ l) fun _ _ e => propext <| e.mem_iff
 #align cycle.mem Cycle.Mem
 
-instance : Membership α (Cycle α) :=
+instance (priority := 10000) : Membership α (Cycle α) :=
   ⟨Mem⟩
 
 @[simp]
@@ -534,10 +534,10 @@ theorem not_mem_nil : ∀ a, a ∉ @nil α :=
   List.not_mem_nil
 #align cycle.not_mem_nil Cycle.not_mem_nil
 
-instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
+instance (priority := 10000) [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
 
-instance [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) :=
+instance (priority := 10000) [DecidableEq α] (x : α) (s : Cycle α) : Decidable (x ∈ s) :=
   Quotient.recOnSubsingleton' s fun l => show Decidable (x ∈ l) from inferInstance
 
 /-- Reverse a `s : Cycle α` by reversing the underlying `List`. -/
@@ -771,20 +771,20 @@ def decidableNontrivialCoe : ∀ l : List α, Decidable (Nontrivial (l : Cycle �
     else isTrue ⟨x, y, h, by simp, by simp⟩
 #align cycle.decidable_nontrivial_coe Cycle.decidableNontrivialCoe
 
-instance {s : Cycle α} : Decidable (Nontrivial s) :=
+instance (priority := 10000) {s : Cycle α} : Decidable (Nontrivial s) :=
   Quot.recOnSubsingleton' s decidableNontrivialCoe
 
-instance {s : Cycle α} : Decidable (Nodup s) :=
+instance (priority := 10000) {s : Cycle α} : Decidable (Nodup s) :=
   Quot.recOnSubsingleton' s List.nodupDecidable
 
-instance fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } :=
+instance (priority := 10000) fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } :=
   Fintype.ofSurjective (fun l : { l : List α // l.Nodup } => ⟨l.val, by simpa using l.prop⟩)
     fun ⟨s, hs⟩ => by
     induction' s using Quotient.inductionOn' with s hs
     exact ⟨⟨s, hs⟩, by simp⟩
 #align cycle.fintype_nodup_cycle Cycle.fintypeNodupCycle
 
-instance fintypeNodupNontrivialCycle [Fintype α] :
+instance (priority := 10000) fintypeNodupNontrivialCycle [Fintype α] :
     Fintype { s : Cycle α // s.Nodup ∧ s.Nontrivial } :=
   Fintype.subtype
     (((Finset.univ : Finset { s : Cycle α // s.Nodup }).map (Function.Embedding.subtype _)).filter

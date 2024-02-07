@@ -73,17 +73,17 @@ section
 
 variable {m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
 
-instance NullMeasurableSpace.instInhabited [h : Inhabited α] :
+instance (priority := 10000) NullMeasurableSpace.instInhabited [h : Inhabited α] :
     Inhabited (NullMeasurableSpace α μ) :=
   h
 #align measure_theory.null_measurable_space.inhabited MeasureTheory.NullMeasurableSpace.instInhabited
 
-instance NullMeasurableSpace.instSubsingleton [h : Subsingleton α] :
+instance (priority := 10000) NullMeasurableSpace.instSubsingleton [h : Subsingleton α] :
     Subsingleton (NullMeasurableSpace α μ) :=
   h
 #align measure_theory.null_measurable_space.subsingleton MeasureTheory.NullMeasurableSpace.instSubsingleton
 
-instance NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) where
+instance (priority := 10000) NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) where
   MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᵐ[μ] t
   measurableSet_empty := ⟨∅, MeasurableSet.empty, ae_eq_refl _⟩
   measurableSet_compl := fun s ⟨t, htm, hts⟩ => ⟨tᶜ, htm.compl, hts.compl⟩
@@ -214,7 +214,7 @@ protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
   MeasurableSet.const p
 #align measure_theory.null_measurable_set.const MeasureTheory.NullMeasurableSet.const
 
-instance instMeasurableSingletonClass [MeasurableSingletonClass α] :
+instance (priority := 10000) instMeasurableSingletonClass [MeasurableSingletonClass α] :
     MeasurableSingletonClass (NullMeasurableSpace α μ) :=
   ⟨fun x => MeasurableSet.nullMeasurableSet (@measurableSet_singleton α _ _ x)⟩
 #align measure_theory.null_measurable_set.measure_theory.null_measurable_space.measurable_singleton_class MeasureTheory.NullMeasurableSet.instMeasurableSingletonClass
@@ -494,7 +494,7 @@ def completion {_ : MeasurableSpace α} (μ : Measure α) :
     exact fun t _ht => iInf_mono' fun h => ⟨MeasurableSet.nullMeasurableSet h, le_rfl⟩
 #align measure_theory.measure.completion MeasureTheory.Measure.completion
 
-instance completion.isComplete {_m : MeasurableSpace α} (μ : Measure α) : μ.completion.IsComplete :=
+instance (priority := 10000) completion.isComplete {_m : MeasurableSpace α} (μ : Measure α) : μ.completion.IsComplete :=
   ⟨fun _z hz => NullMeasurableSet.of_null hz⟩
 #align measure_theory.measure.completion.is_complete MeasureTheory.Measure.completion.isComplete
 

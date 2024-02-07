@@ -127,7 +127,7 @@ lemma EffectiveEpi.uniq {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
     m = EffectiveEpi.desc f e h :=
   (EffectiveEpi.getStruct f).uniq e h _ hm
 
-instance epiOfEffectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f := by
+instance (priority := 10000) epiOfEffectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f := by
   constructor
   intro W m₁ m₂ h
   have : m₂ = EffectiveEpi.desc f (f ≫ m₂)
@@ -312,7 +312,7 @@ def effectiveEpiFamilyStructId {α : Unit → C} : EffectiveEpiFamilyStruct α (
   fac := by aesop_cat
   uniq := by aesop_cat
 
-instance {X : C} : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) :=
+instance (priority := 10000) {X : C} : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) :=
   ⟨⟨effectiveEpiFamilyStructId⟩⟩
 
 example {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
@@ -348,7 +348,7 @@ lemma EffectiveEpiFamily.hom_ext {B W : C} {α : Type*} (X : α → C) (π : (a 
   rw [this]
   exact EffectiveEpiFamily.uniq _ _ _ _ _ h
 
-instance epiCoproductDescOfEffectiveEpiFamily {B : C} {α : Type*}
+instance (priority := 10000) epiCoproductDescOfEffectiveEpiFamily {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π] [HasCoproduct X] :
     Epi (Sigma.desc π) := by
   constructor
@@ -481,7 +481,7 @@ def effectiveEpiStructDescOfEffectiveEpiFamily {B : C} {α : Type*} (X : α → 
       simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
       rw [← Category.assoc, hg, Category.assoc]
 
-instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
+instance (priority := 10000) {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
     [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) :=
   ⟨⟨effectiveEpiStructDescOfEffectiveEpiFamily X π⟩⟩
 
@@ -558,7 +558,7 @@ def effectiveEpiFamilyStructSingletonOfEffectiveEpi {B X : C} (f : X ⟶ B) [Eff
   fac e h := fun _ ↦ EffectiveEpi.fac f (e ()) (fun g₁ g₂ hg ↦ h () () g₁ g₂ hg)
   uniq e h m hm := by apply EffectiveEpi.uniq f (e ()) (h () ()); exact hm ()
 
-instance {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
+instance (priority := 10000) {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
   ⟨⟨effectiveEpiFamilyStructSingletonOfEffectiveEpi f⟩⟩
 
 /--
@@ -575,7 +575,7 @@ def effectiveEpiStructOfEffectiveEpiFamilySingleton {B X : C} (f : X ⟶ B)
   uniq e h m hm := EffectiveEpiFamily.uniq
     (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) m (fun _ ↦ hm)
 
-instance {B X : C} (f : X ⟶ B) [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+instance (priority := 10000) {B X : C} (f : X ⟶ B) [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
     EffectiveEpi f :=
   ⟨⟨effectiveEpiStructOfEffectiveEpiFamilySingleton f⟩⟩
 
@@ -606,7 +606,7 @@ def effectiveEpiFamilyStructOfIsIsoDesc {B : C} {α : Type*} (X : α → C)
       colimit.ι_desc]
     exact hm a
 
-instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
+instance (priority := 10000) {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
     [IsIso (Sigma.desc π)] : EffectiveEpiFamily X π :=
   ⟨⟨effectiveEpiFamilyStructOfIsIsoDesc X π⟩⟩
 
@@ -617,7 +617,7 @@ def effectiveEpiStructOfIsIso {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpiSt
   fac _ _ := by simp
   uniq _ _ _ h := by simpa using h
 
-instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨effectiveEpiStructOfIsIso f⟩⟩
+instance (priority := 10000) {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨effectiveEpiStructOfIsIso f⟩⟩
 
 /--
 A split epi followed by an effective epi is an effective epi. This version takes an explicit section
@@ -649,7 +649,7 @@ def effectiveEpiStructCompOfEffectiveEpiSplitEpi {B X Y : C} (f : X ⟶ B) (g : 
     (IsSplitEpi.exists_splitEpi (f := g)).some.section_
     (IsSplitEpi.exists_splitEpi (f := g)).some.id
 
-instance {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g] [EffectiveEpi f] :
+instance (priority := 10000) {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g] [EffectiveEpi f] :
     EffectiveEpi (g ≫ f) := ⟨⟨effectiveEpiStructCompOfEffectiveEpiSplitEpi f g⟩⟩
 
 end instances
@@ -665,7 +665,7 @@ def effectiveEpiStructOfRegularEpi {B X : C} (f : X ⟶ B) [RegularEpi f] :
   uniq _ _ _ hg := Cofork.IsColimit.hom_ext isColimit (hg.trans
     (Cofork.IsColimit.π_desc' _ _ _).symm)
 
-instance {B X : C} (f : X ⟶ B) [RegularEpi f] : EffectiveEpi f :=
+instance (priority := 10000) {B X : C} (f : X ⟶ B) [RegularEpi f] : EffectiveEpi f :=
   ⟨⟨effectiveEpiStructOfRegularEpi f⟩⟩
 
 /-- A morphism which is a coequalizer for its kernel pair is an effective epi. -/
@@ -675,7 +675,7 @@ theorem effectiveEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
   inferInstance
 
 /-- An effective epi which has a kernel pair is a regular epi. -/
-noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+noncomputable instance (priority := 10000) regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : RegularEpi f where
   W := pullback f f
   left := pullback.fst

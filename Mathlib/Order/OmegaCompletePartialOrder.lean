@@ -95,21 +95,21 @@ namespace Chain
 variable {α : Type u} {β : Type v} {γ : Type*}
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-instance : FunLike (Chain α) ℕ α := inferInstanceAs <| FunLike (ℕ →o α) ℕ α
-instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
-instance : CoeFun (Chain α) fun _ => ℕ → α := ⟨DFunLike.coe⟩
+instance (priority := 10000) : FunLike (Chain α) ℕ α := inferInstanceAs <| FunLike (ℕ →o α) ℕ α
+instance (priority := 10000) : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
+instance (priority := 10000) : CoeFun (Chain α) fun _ => ℕ → α := ⟨DFunLike.coe⟩
 
-instance [Inhabited α] : Inhabited (Chain α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
 
-instance : Membership α (Chain α) :=
+instance (priority := 10000) : Membership α (Chain α) :=
   ⟨fun a (c : ℕ →o α) => ∃ i, a = c i⟩
 
 variable (c c' : Chain α)
 variable (f : α →o β)
 variable (g : β →o γ)
 
-instance : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
+instance (priority := 10000) : LE (Chain α) where le x y := ∀ i, ∃ j, x i ≤ y j
 
 lemma isChain_range : IsChain (· ≤ ·) (Set.range c) := Monotone.isChain_range (OrderHomClass.mono c)
 
@@ -393,7 +393,7 @@ theorem mem_chain_of_mem_ωSup {c : Chain (Part α)} {a : α} (h : a ∈ Part.ω
   · rcases h with ⟨⟨⟩⟩
 #align part.mem_chain_of_mem_ωSup Part.mem_chain_of_mem_ωSup
 
-noncomputable instance omegaCompletePartialOrder :
+noncomputable instance (priority := 10000) omegaCompletePartialOrder :
     OmegaCompletePartialOrder (Part α) where
   ωSup := Part.ωSup
   le_ωSup c i := by
@@ -442,7 +442,7 @@ variable {α : Type*} {β : α → Type*} {γ : Type*}
 
 open OmegaCompletePartialOrder OmegaCompletePartialOrder.Chain
 
-instance [∀ a, OmegaCompletePartialOrder (β a)] :
+instance (priority := 10000) [∀ a, OmegaCompletePartialOrder (β a)] :
     OmegaCompletePartialOrder (∀ a, β a) where
   ωSup c a := ωSup (c.map (Pi.evalOrderHom a))
   ωSup_le c f hf a :=
@@ -489,7 +489,7 @@ protected def ωSup (c : Chain (α × β)) : α × β :=
 #align prod.ωSup_fst Prod.ωSup_fst
 
 @[simps! ωSup_fst ωSup_snd]
-instance : OmegaCompletePartialOrder (α × β) where
+instance (priority := 10000) : OmegaCompletePartialOrder (α × β) where
   ωSup := Prod.ωSup
   ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
   le_ωSup c i := ⟨le_ωSup (c.map OrderHom.fst) i, le_ωSup (c.map OrderHom.snd) i⟩
@@ -600,7 +600,7 @@ protected def ωSup (c : Chain (α →o β)) : α →o β where
 #align omega_complete_partial_order.order_hom.ωSup_coe OmegaCompletePartialOrder.OrderHom.ωSup_coe
 
 @[simps! ωSup_coe]
-instance omegaCompletePartialOrder : OmegaCompletePartialOrder (α →o β) :=
+instance (priority := 10000) omegaCompletePartialOrder : OmegaCompletePartialOrder (α →o β) :=
   OmegaCompletePartialOrder.lift OrderHom.coeFnHom OrderHom.ωSup (fun _ _ h => h) fun _ => rfl
 #align omega_complete_partial_order.order_hom.omega_complete_partial_order OmegaCompletePartialOrder.OrderHom.omegaCompletePartialOrder
 #align omega_complete_partial_order.order_hom.omega_complete_partial_order_ωSup_coe OmegaCompletePartialOrder.OrderHom.omegaCompletePartialOrder_ωSup_coe
@@ -623,17 +623,17 @@ attribute [nolint docBlame] ContinuousHom.toOrderHom
 
 @[inherit_doc] infixr:25 " →𝒄 " => ContinuousHom -- Input: \r\MIc
 
-instance : FunLike (α →𝒄 β) α β where
+instance (priority := 10000) : FunLike (α →𝒄 β) α β where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact DFunLike.ext' h
 
-instance : OrderHomClass (α →𝒄 β) α β where
+instance (priority := 10000) : OrderHomClass (α →𝒄 β) α β where
   map_rel f _ _ h := f.mono h
 
 -- Porting note: removed to avoid conflict with the generic instance
 -- instance : Coe (α →𝒄 β) (α →o β) where coe := ContinuousHom.toOrderHom
 
-instance : PartialOrder (α →𝒄 β) :=
+instance (priority := 10000) : PartialOrder (α →𝒄 β) :=
   (PartialOrder.lift fun f => f.toOrderHom.toFun) <| by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ h; congr
 
 end
@@ -786,7 +786,7 @@ def const (x : β) : α →𝒄 β := ⟨.const _ x, continuous_const x⟩
 #align omega_complete_partial_order.continuous_hom.const OmegaCompletePartialOrder.ContinuousHom.const
 #align omega_complete_partial_order.continuous_hom.const_apply OmegaCompletePartialOrder.ContinuousHom.const_apply
 
-instance [Inhabited β] : Inhabited (α →𝒄 β) :=
+instance (priority := 10000) [Inhabited β] : Inhabited (α →𝒄 β) :=
   ⟨const default⟩
 
 /-- The map from continuous functions to monotone functions is itself a monotone function. -/
@@ -835,7 +835,7 @@ protected def ωSup (c : Chain (α →𝒄 β)) : α →𝒄 β :=
 #align omega_complete_partial_order.continuous_hom.ωSup_apply OmegaCompletePartialOrder.ContinuousHom.ωSup_apply
 
 @[simps ωSup]
-instance : OmegaCompletePartialOrder (α →𝒄 β) :=
+instance (priority := 10000) : OmegaCompletePartialOrder (α →𝒄 β) :=
   OmegaCompletePartialOrder.lift ContinuousHom.toMono ContinuousHom.ωSup
     (fun _ _ h => h) (fun _ => rfl)
 

@@ -73,7 +73,7 @@ variable {k}
 class IsTrivial (ρ : Representation k G V) : Prop where
   out : ∀ g x, ρ g x = x := by aesop
 
-instance : IsTrivial (trivial k (G := G) (V := V)) where
+instance (priority := 10000) : IsTrivial (trivial k (G := G) (V := V)) where
 
 @[simp] theorem apply_eq_self
     (ρ : Representation k G V) (g : G) (x : V) [h : IsTrivial ρ] :
@@ -121,20 +121,20 @@ def asModule (_ : Representation k G V) :=
 #align representation.as_module Representation.asModule
 
 -- Porting note: no derive handler
-instance : AddCommMonoid (ρ.asModule) := inferInstanceAs <| AddCommMonoid V
+instance (priority := 10000) : AddCommMonoid (ρ.asModule) := inferInstanceAs <| AddCommMonoid V
 
-instance : Inhabited ρ.asModule where
+instance (priority := 10000) : Inhabited ρ.asModule where
   default := 0
 
 /-- A `k`-linear representation of `G` on `V` can be thought of as
 a module over `MonoidAlgebra k G`.
 -/
-noncomputable instance asModuleModule : Module (MonoidAlgebra k G) ρ.asModule :=
+noncomputable instance (priority := 10000) asModuleModule : Module (MonoidAlgebra k G) ρ.asModule :=
   Module.compHom V (asAlgebraHom ρ).toRingHom
 #align representation.as_module_module Representation.asModuleModule
 
 -- Porting note: ρ.asModule doesn't unfold now
-instance : Module k ρ.asModule := inferInstanceAs <| Module k V
+instance (priority := 10000) : Module k ρ.asModule := inferInstanceAs <| Module k V
 
 /-- The additive equivalence from the `Module (MonoidAlgebra k G)` to the original vector space
 of the representative.
@@ -258,7 +258,7 @@ variable {k G V : Type*} [CommRing k] [Monoid G] [I : AddCommGroup V] [Module k 
 
 variable (ρ : Representation k G V)
 
-instance : AddCommGroup ρ.asModule :=
+instance (priority := 10000) : AddCommGroup ρ.asModule :=
   I
 
 end AddCommGroup
@@ -343,7 +343,7 @@ theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (
 #align representation.of_mul_action_apply Representation.ofMulAction_apply
 
 -- Porting note: did not need this in ML3; noncomputable because IR check complains
-noncomputable instance :
+noncomputable instance (priority := 10000) :
     HMul (MonoidAlgebra k G) ((ofMulAction k G G).asModule) (MonoidAlgebra k G) :=
   inferInstanceAs <| HMul (MonoidAlgebra k G) (MonoidAlgebra k G) (MonoidAlgebra k G)
 

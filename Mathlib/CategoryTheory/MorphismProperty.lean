@@ -42,11 +42,11 @@ def MorphismProperty :=
   ∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop
 #align category_theory.morphism_property CategoryTheory.MorphismProperty
 
-instance : CompleteLattice (MorphismProperty C) := by
+instance (priority := 10000) : CompleteLattice (MorphismProperty C) := by
   dsimp only [MorphismProperty]
   infer_instance
 
-instance : Inhabited (MorphismProperty C) :=
+instance (priority := 10000) : Inhabited (MorphismProperty C) :=
   ⟨⊤⟩
 
 lemma MorphismProperty.top_eq : (⊤ : MorphismProperty C) = fun _ _ _ => True := rfl
@@ -58,21 +58,21 @@ namespace MorphismProperty
 lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
 
-instance : HasSubset (MorphismProperty C) :=
+instance (priority := 10000) : HasSubset (MorphismProperty C) :=
   ⟨fun P₁ P₂ => ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : P₁ f), P₂ f⟩
 
-instance : IsTrans (MorphismProperty C) (· ⊆ ·) :=
+instance (priority := 10000) : IsTrans (MorphismProperty C) (· ⊆ ·) :=
   ⟨fun _ _ _ h₁₂ h₂₃ _ _ _ h => h₂₃ _ (h₁₂ _ h)⟩
 
-instance : Inter (MorphismProperty C) :=
+instance (priority := 10000) : Inter (MorphismProperty C) :=
   ⟨fun P₁ P₂ _ _ f => P₁ f ∧ P₂ f⟩
 
 lemma subset_iff_le (P Q : MorphismProperty C) : P ⊆ Q ↔ P ≤ Q := Iff.rfl
 
-instance : IsAntisymm (MorphismProperty C) (· ⊆ ·) :=
+instance (priority := 10000) : IsAntisymm (MorphismProperty C) (· ⊆ ·) :=
   ⟨fun P Q => by simpa only [subset_iff_le] using le_antisymm⟩
 
-instance : IsRefl (MorphismProperty C) (· ⊆ ·) :=
+instance (priority := 10000) : IsRefl (MorphismProperty C) (· ⊆ ·) :=
   ⟨fun P => by simpa only [subset_iff_le] using le_refl P⟩
 
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
@@ -547,7 +547,7 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
   subst h
   rfl
 
-instance (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsInverting W D) :=
+instance (priority := 10000) (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsInverting W D) :=
   FullSubcategory.category _
 
 -- Porting note: add another `@[ext]` lemma
@@ -876,10 +876,10 @@ lemma id_mem (W : MorphismProperty C) [W.ContainsIdentities] (X : C) :
 
 namespace ContainsIdentities
 
-instance op (W : MorphismProperty C) [W.ContainsIdentities] :
+instance (priority := 10000) op (W : MorphismProperty C) [W.ContainsIdentities] :
     W.op.ContainsIdentities := ⟨fun X => W.id_mem X.unop⟩
 
-instance unop (W : MorphismProperty Cᵒᵖ) [W.ContainsIdentities] :
+instance (priority := 10000) unop (W : MorphismProperty Cᵒᵖ) [W.ContainsIdentities] :
     W.unop.ContainsIdentities := ⟨fun X => W.id_mem (Opposite.op X)⟩
 
 lemma of_op (W : MorphismProperty C) [W.op.ContainsIdentities] :
@@ -902,10 +902,10 @@ lemma comp_mem (W : MorphismProperty C) {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) 
 
 namespace IsMultiplicative
 
-instance op (W : MorphismProperty C) [IsMultiplicative W] : IsMultiplicative W.op where
+instance (priority := 10000) op (W : MorphismProperty C) [IsMultiplicative W] : IsMultiplicative W.op where
   stableUnderComposition := fun _ _ _ f g hf hg => W.comp_mem g.unop f.unop hg hf
 
-instance unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplicative W.unop where
+instance (priority := 10000) unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W] : IsMultiplicative W.unop where
   id_mem' _ := W.id_mem _
   stableUnderComposition := fun _ _ _ f g hf hg => W.comp_mem g.op f.op hg hf
 
@@ -927,7 +927,7 @@ def prod (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) :
     MorphismProperty (C₁ × C₂) :=
   fun _ _ f => W₁ f.1 ∧ W₂ f.2
 
-instance Prod.containsIdentities (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
+instance (priority := 10000) Prod.containsIdentities (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
     [W₁.ContainsIdentities] [W₂.ContainsIdentities] : (prod W₁ W₂).ContainsIdentities :=
   ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
 
@@ -950,7 +950,7 @@ variable {J : Type w} {C : J → Type u} {D : J → Type u'}
 induced morphism property on the category `∀ j, C j`. -/
 def pi : MorphismProperty (∀ j, C j) := fun _ _ f => ∀ j, (W j) (f j)
 
-instance Pi.containsIdentities [∀ j, (W j).ContainsIdentities] :
+instance (priority := 10000) Pi.containsIdentities [∀ j, (W j).ContainsIdentities] :
     (pi W).ContainsIdentities :=
   ⟨fun _ _ => MorphismProperty.id_mem _ _⟩
 

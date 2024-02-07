@@ -303,14 +303,14 @@ def Products (I : Type*) [LinearOrder I] := {l : List I // l.Chain' (·>·)}
 
 namespace Products
 
-instance : LinearOrder (Products I) :=
+instance (priority := 10000) : LinearOrder (Products I) :=
   inferInstanceAs (LinearOrder {l : List I // l.Chain' (·>·)})
 
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.val := by
   cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
 
-instance : IsWellFounded (Products I) (·<·) := by
+instance (priority := 10000) : IsWellFounded (Products I) (·<·) := by
   have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (·<·) l.val m.val) := by
     ext; exact lt_iff_lex_lt _ _
   rw [this]
@@ -504,7 +504,7 @@ theorem eval_eq_πJ (l : Products I) (hl : l.isGood (π C (· ∈ s))) :
 
 /-- `π C (· ∈ s)` is finite for a finite set `s`. -/
 noncomputable
-instance : Fintype (π C (· ∈ s)) := by
+instance (priority := 10000) : Fintype (π C (· ∈ s)) := by
   let f : π C (· ∈ s) → (s → Bool) := fun x j ↦ x.val j.val
   refine Fintype.ofInjective f ?_
   intro ⟨_, x, hx, rfl⟩ ⟨_, y, hy, rfl⟩ h
@@ -781,10 +781,10 @@ section Zero
 In this case, we have `contained C 0` which means that `C` is either empty or a singleton.
 -/
 
-instance : Subsingleton (LocallyConstant (∅ : Set (I → Bool)) ℤ) :=
+instance (priority := 10000) : Subsingleton (LocallyConstant (∅ : Set (I → Bool)) ℤ) :=
   subsingleton_iff.mpr (fun _ _ ↦ LocallyConstant.ext isEmptyElim)
 
-instance : IsEmpty { l // Products.isGood (∅ : Set (I → Bool)) l } :=
+instance (priority := 10000) : IsEmpty { l // Products.isGood (∅ : Set (I → Bool)) l } :=
   isEmpty_iff.mpr fun ⟨l, hl⟩ ↦ hl <| by
     rw [subsingleton_iff.mp inferInstance (Products.eval ∅ l) 0]
     exact Submodule.zero_mem _
@@ -800,7 +800,7 @@ theorem Products.lt_nil_empty : { m : Products I | m < Products.nil } = ∅ := b
   refine ⟨fun h ↦ ?_, by tauto⟩
   simp only [Set.mem_setOf_eq, lt_iff_lex_lt, nil, List.Lex.not_nil_right] at h
 
-instance {α : Type*} [TopologicalSpace α] [Inhabited α] : Nontrivial (LocallyConstant α ℤ) := by
+instance (priority := 10000) {α : Type*} [TopologicalSpace α] [Inhabited α] : Nontrivial (LocallyConstant α ℤ) := by
   refine ⟨0, 1, fun h ↦ ?_⟩
   apply @zero_ne_one ℤ
   exact DFunLike.congr_fun h default
@@ -823,7 +823,7 @@ theorem Products.span_nil_eq_top :
 
 /-- There is a unique `GoodProducts` for the singleton `{fun _ ↦ false}`. -/
 noncomputable
-instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) l } where
+instance (priority := 10000) : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) l } where
   default := ⟨Products.nil, Products.isGood_nil⟩
   uniq := by
     intro ⟨⟨l, hl⟩, hll⟩
@@ -838,7 +838,7 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     rw [Products.span_nil_eq_top]
     exact Submodule.mem_top
 
-instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := by
+instance (priority := 10000) (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyConstant α ℤ) := by
   constructor
   intro c f h
   rw [or_iff_not_imp_left]
@@ -1825,7 +1825,7 @@ end Profinite
 open Profinite NobelingProof
 
 /-- Nöbeling's theorem: the `ℤ`-module `LocallyConstant S ℤ` is free for every `S : Profinite` -/
-instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
+instance (priority := 10000) LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
     Module.Free ℤ (LocallyConstant S ℤ) :=
   @Nobeling_aux {C : Set S // IsClopen C} ⟨⟨∅, isClopen_empty⟩⟩
     (IsWellOrder.linearOrder WellOrderingRel) WellOrderingRel.isWellOrder

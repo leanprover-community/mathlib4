@@ -86,7 +86,7 @@ theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 
 /-- `𝔽₂[α, β, γ] / (α², β², γ²)` -/
 def K : Type _ := _ ⧸ kIdeal
 
-instance : CommRing K := Ideal.Quotient.commRing _
+instance (priority := 10000) : CommRing K := Ideal.Quotient.commRing _
 
 theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) = ⊥ := by
   refine bot_unique ?_
@@ -98,7 +98,7 @@ theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZM
     Set.mem_singleton_iff]
 
 /-- `k` has characteristic 2. -/
-instance K.charP : CharP K 2 := by
+instance (priority := 10000) K.charP : CharP K 2 := by
   dsimp only [K]
   rw [CharP.quotient_iff_le_ker_natCast]
   have : Nat.castRingHom (MvPolynomial (Fin 3) (ZMod 2)) = C.comp (Nat.castRingHom _) := by

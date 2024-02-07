@@ -38,7 +38,7 @@ open Polynomial Finset
 
 open scoped Polynomial
 
-instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
+instance (priority := 10000) FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
   splits' := by
     have h : (X ^ Fintype.card K - X : K[X]).natDegree = Fintype.card K :=
@@ -69,27 +69,27 @@ def GaloisField := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
 -- deriving Field -- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
 #align galois_field GaloisField
 
-instance : Field (GaloisField p n) :=
+instance (priority := 10000) : Field (GaloisField p n) :=
   inferInstanceAs (Field (SplittingField _))
 
-instance : Inhabited (@GaloisField 2 (Fact.mk Nat.prime_two) 1) := ⟨37⟩
+instance (priority := 10000) : Inhabited (@GaloisField 2 (Fact.mk Nat.prime_two) 1) := ⟨37⟩
 
 namespace GaloisField
 
 variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
 
-instance : Algebra (ZMod p) (GaloisField p n) := SplittingField.algebra _
+instance (priority := 10000) : Algebra (ZMod p) (GaloisField p n) := SplittingField.algebra _
 
-instance : IsSplittingField (ZMod p) (GaloisField p n) (X ^ p ^ n - X) :=
+instance (priority := 10000) : IsSplittingField (ZMod p) (GaloisField p n) (X ^ p ^ n - X) :=
   Polynomial.IsSplittingField.splittingField _
 
-instance : CharP (GaloisField p n) p :=
+instance (priority := 10000) : CharP (GaloisField p n) p :=
   (Algebra.charP_iff (ZMod p) (GaloisField p n) p).mp (by infer_instance)
 
-instance : FiniteDimensional (ZMod p) (GaloisField p n) := by
+instance (priority := 10000) : FiniteDimensional (ZMod p) (GaloisField p n) := by
   dsimp only [GaloisField]; infer_instance
 
-instance : Fintype (GaloisField p n) := by
+instance (priority := 10000) : Fintype (GaloisField p n) := by
   dsimp only [GaloisField]
   exact FiniteDimensional.fintypeOfFintype (ZMod p) (GaloisField p n)
 

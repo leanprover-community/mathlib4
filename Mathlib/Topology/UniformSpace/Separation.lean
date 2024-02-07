@@ -213,7 +213,7 @@ instance (priority := 100) separated_t3 [SeparatedSpace α] : T3Space α :=
   ⟨⟩
 #align separated_t3 separated_t3
 
-instance Subtype.separatedSpace [SeparatedSpace α] (s : Set α) : SeparatedSpace s :=
+instance (priority := 10000) Subtype.separatedSpace [SeparatedSpace α] (s : Set α) : SeparatedSpace s :=
   separated_iff_t2.mpr inferInstance
 #align subtype.separated_space Subtype.separatedSpace
 
@@ -254,7 +254,7 @@ def separationSetoid (α : Type u) [UniformSpace α] : Setoid α :=
 
 attribute [local instance] separationSetoid
 
-instance separationSetoid.uniformSpace {α : Type u} [UniformSpace α] :
+instance (priority := 10000) separationSetoid.uniformSpace {α : Type u} [UniformSpace α] :
     UniformSpace (Quotient (separationSetoid α)) where
   toTopologicalSpace := instTopologicalSpaceQuotient
   uniformity := map (fun p : α × α => (⟦p.1⟧, ⟦p.2⟧)) (𝓤 α)
@@ -322,7 +322,7 @@ theorem comap_quotient_eq_uniformity :
   le_antisymm comap_quotient_le_uniformity le_comap_map
 #align uniform_space.comap_quotient_eq_uniformity UniformSpace.comap_quotient_eq_uniformity
 
-instance separated_separation : SeparatedSpace (Quotient (separationSetoid α)) :=
+instance (priority := 10000) separated_separation : SeparatedSpace (Quotient (separationSetoid α)) :=
   ⟨Set.ext fun ⟨a, b⟩ =>
       Quotient.inductionOn₂ a b fun a b =>
         ⟨fun h =>
@@ -352,13 +352,13 @@ def SeparationQuotient (α : Type*) [UniformSpace α] :=
 
 namespace SeparationQuotient
 
-instance : UniformSpace (SeparationQuotient α) :=
+instance (priority := 10000) : UniformSpace (SeparationQuotient α) :=
   separationSetoid.uniformSpace
 
-instance : SeparatedSpace (SeparationQuotient α) :=
+instance (priority := 10000) : SeparatedSpace (SeparationQuotient α) :=
   UniformSpace.separated_separation
 
-instance [Inhabited α] : Inhabited (SeparationQuotient α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (SeparationQuotient α) :=
   inferInstanceAs (Inhabited (Quotient (separationSetoid α)))
 
 lemma mk_eq_mk {x y : α} : (⟦x⟧ : SeparationQuotient α) = ⟦y⟧ ↔ Inseparable x y :=
@@ -432,7 +432,7 @@ theorem separation_prod {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) ≈ (a�
     exact ⟨h_α key_α, h_β key_β⟩
 #align uniform_space.separation_prod UniformSpace.separation_prod
 
-instance Separated.prod [SeparatedSpace α] [SeparatedSpace β] : SeparatedSpace (α × β) :=
+instance (priority := 10000) Separated.prod [SeparatedSpace α] [SeparatedSpace β] : SeparatedSpace (α × β) :=
   separated_def.2 fun _ _ H =>
     Prod.ext (eq_of_separated_of_uniformContinuous uniformContinuous_fst H)
       (eq_of_separated_of_uniformContinuous uniformContinuous_snd H)

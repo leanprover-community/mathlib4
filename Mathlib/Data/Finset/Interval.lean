@@ -33,7 +33,7 @@ section Decidable
 
 variable [DecidableEq α] (s t : Finset α)
 
-instance : LocallyFiniteOrder (Finset α)
+instance (priority := 10000) : LocallyFiniteOrder (Finset α)
     where
   finsetIcc s t := t.powerset.filter (s ⊆ ·)
   finsetIco s t := t.ssubsets.filter (s ⊆ ·)

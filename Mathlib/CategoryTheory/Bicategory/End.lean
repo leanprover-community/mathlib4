@@ -24,10 +24,10 @@ def EndMonoidal (X : C) :=
 
 -- Porting note: Deriving this fails in the definition above.
 -- Adding category instance manually.
-instance (X : C) : Category (EndMonoidal X) :=
+instance (priority := 10000) (X : C) : Category (EndMonoidal X) :=
   show Category (X ⟶ X) from inferInstance
 
-instance (X : C) : Inhabited (EndMonoidal X) :=
+instance (priority := 10000) (X : C) : Inhabited (EndMonoidal X) :=
   ⟨𝟙 X⟩
 
 open Bicategory
@@ -37,7 +37,7 @@ open MonoidalCategory
 open Bicategory
 
 attribute [local simp] EndMonoidal in
-instance (X : C) : MonoidalCategory (EndMonoidal X) where
+instance (priority := 10000) (X : C) : MonoidalCategory (EndMonoidal X) where
   tensorObj f g := f ≫ g
   whiskerLeft {f g h} η := f ◁ η
   whiskerRight {f g} η h := η ▷ h

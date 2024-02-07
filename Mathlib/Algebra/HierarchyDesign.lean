@@ -130,7 +130,7 @@ you should provide instances transferring
 `Z α` to `Z (SubY α)`, like `Submonoid.toCommMonoid`.
 Typically this is done using the `Function.Injective.Z` definition mentioned above.
 ```
-instance SubY.toZ [Z α] : Z (SubY α) :=
+instance (priority := 10000) SubY.toZ [Z α] : Z (SubY α) :=
   coe_injective.Z coe ...
 ```
 

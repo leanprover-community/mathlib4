@@ -160,7 +160,7 @@ def Invertible.mulRight (a : α) {b : α} (_ : Invertible b) : Invertible a ≃ 
 #align invertible.mul_right_apply Invertible.mulRight_apply
 #align invertible.mul_right_symm_apply Invertible.mulRight_symm_apply
 
-instance invertiblePow (m : α) [Invertible m] (n : ℕ) : Invertible (m ^ n) where
+instance (priority := 10000) invertiblePow (m : α) [Invertible m] (n : ℕ) : Invertible (m ^ n) where
   invOf := ⅟ m ^ n
   invOf_mul_self := by rw [← (commute_invOf m).symm.mul_pow, invOf_mul_self, one_pow]
   mul_invOf_self := by rw [← (commute_invOf m).mul_pow, mul_invOf_self, one_pow]

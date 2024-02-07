@@ -54,7 +54,7 @@ section BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
-instance : Std.IdempotentOp (α := α) (· * ·) :=
+instance (priority := 10000) : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
 @[simp]
@@ -113,7 +113,7 @@ instance (priority := 100) BooleanRing.toCommRing : CommRing α :=
 
 end BooleanRing
 
-instance : BooleanRing PUnit :=
+instance (priority := 10000) : BooleanRing PUnit :=
   ⟨fun _ => Subsingleton.elim _ _⟩
 
 /-! ### Turning a Boolean ring into a Boolean algebra -/
@@ -166,7 +166,7 @@ theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b
   Iff.rfl
 #align of_boolalg_inj ofBoolAlg_inj
 
-instance [Inhabited α] : Inhabited (AsBoolAlg α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (AsBoolAlg α) :=
   ‹Inhabited α›
 
 variable [BooleanRing α] [BooleanRing β] [BooleanRing γ]
@@ -268,7 +268,7 @@ scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAl
 
 end BooleanRing
 
-instance : BooleanAlgebra (AsBoolAlg α) :=
+instance (priority := 10000) : BooleanAlgebra (AsBoolAlg α) :=
   @BooleanRing.toBooleanAlgebra α _
 
 @[simp]
@@ -422,7 +422,7 @@ theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a
   Iff.rfl
 #align of_boolring_inj ofBoolRing_inj
 
-instance [Inhabited α] : Inhabited (AsBoolRing α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (AsBoolRing α) :=
   ‹Inhabited α›
 
 -- See note [reducible non-instances]
@@ -454,7 +454,7 @@ def GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α]
   right_distrib := inf_symmDiff_distrib_right
 #align generalized_boolean_algebra.to_non_unital_comm_ring GeneralizedBooleanAlgebra.toNonUnitalCommRing
 
-instance [GeneralizedBooleanAlgebra α] : NonUnitalCommRing (AsBoolRing α) :=
+instance (priority := 10000) [GeneralizedBooleanAlgebra α] : NonUnitalCommRing (AsBoolRing α) :=
   @GeneralizedBooleanAlgebra.toNonUnitalCommRing α _
 
 variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
@@ -480,7 +480,7 @@ def BooleanAlgebra.toBooleanRing : BooleanRing α :=
 scoped[BooleanRingOfBooleanAlgebra]
   attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing BooleanAlgebra.toBooleanRing
 
-instance : BooleanRing (AsBoolRing α) :=
+instance (priority := 10000) : BooleanRing (AsBoolRing α) :=
   @BooleanAlgebra.toBooleanRing α _
 
 @[simp]
@@ -588,7 +588,7 @@ def RingEquiv.asBoolRingAsBoolAlg (α : Type*) [BooleanRing α] : AsBoolRing (As
 
 open Bool
 
-instance : BooleanRing Bool where
+instance (priority := 10000) : BooleanRing Bool where
   add := xor
   add_assoc := xor_assoc
   zero := false

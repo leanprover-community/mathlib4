@@ -184,7 +184,7 @@ variable [Inv α] {f g : Filter α} {s : Set α} {a : α}
 
 /-- The inverse of a filter is the pointwise preimage under `⁻¹` of its sets. -/
 @[to_additive "The negation of a filter is the pointwise preimage under `-` of its sets."]
-instance instInv : Inv (Filter α) :=
+instance (priority := 10000) instInv : Inv (Filter α) :=
   ⟨map Inv.inv⟩
 
 @[to_additive (attr := simp)]
@@ -388,13 +388,13 @@ theorem le_mul_iff : h ≤ f * g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t ∈
 #align filter.le_add_iff Filter.le_add_iff
 
 @[to_additive]
-instance covariant_mul : CovariantClass (Filter α) (Filter α) (· * ·) (· ≤ ·) :=
+instance (priority := 10000) covariant_mul : CovariantClass (Filter α) (Filter α) (· * ·) (· ≤ ·) :=
   ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_mul Filter.covariant_mul
 #align filter.covariant_add Filter.covariant_add
 
 @[to_additive]
-instance covariant_swap_mul : CovariantClass (Filter α) (Filter α) (swap (· * ·)) (· ≤ ·) :=
+instance (priority := 10000) covariant_swap_mul : CovariantClass (Filter α) (Filter α) (swap (· * ·)) (· ≤ ·) :=
   ⟨fun _ _ _ => map₂_mono_right⟩
 #align filter.covariant_swap_mul Filter.covariant_swap_mul
 #align filter.covariant_swap_add Filter.covariant_swap_add
@@ -552,13 +552,13 @@ protected theorem le_div_iff : h ≤ f / g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t
 #align filter.le_sub_iff Filter.le_sub_iff
 
 @[to_additive]
-instance covariant_div : CovariantClass (Filter α) (Filter α) (· / ·) (· ≤ ·) :=
+instance (priority := 10000) covariant_div : CovariantClass (Filter α) (Filter α) (· / ·) (· ≤ ·) :=
   ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_div Filter.covariant_div
 #align filter.covariant_sub Filter.covariant_sub
 
 @[to_additive]
-instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· / ·)) (· ≤ ·) :=
+instance (priority := 10000) covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· / ·)) (· ≤ ·) :=
   ⟨fun _ _ _ => map₂_mono_right⟩
 #align filter.covariant_swap_div Filter.covariant_swap_div
 #align filter.covariant_swap_sub Filter.covariant_swap_sub
@@ -1082,7 +1082,7 @@ theorem le_smul_iff : h ≤ f • g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t 
 #align filter.le_vadd_iff Filter.le_vadd_iff
 
 @[to_additive]
-instance covariant_smul : CovariantClass (Filter α) (Filter β) (· • ·) (· ≤ ·) :=
+instance (priority := 10000) covariant_smul : CovariantClass (Filter α) (Filter β) (· • ·) (· ≤ ·) :=
   ⟨fun _ _ _ => map₂_mono_left⟩
 #align filter.covariant_smul Filter.covariant_smul
 #align filter.covariant_vadd Filter.covariant_vadd
@@ -1262,7 +1262,7 @@ theorem smul_filter_le_smul_filter (hf : f₁ ≤ f₂) : a • f₁ ≤ a • f
 #align filter.vadd_filter_le_vadd_filter Filter.vadd_filter_le_vadd_filter
 
 @[to_additive]
-instance covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· ≤ ·) :=
+instance (priority := 10000) covariant_smul_filter : CovariantClass α (Filter β) (· • ·) (· ≤ ·) :=
   ⟨fun _ => @map_mono β β _⟩
 #align filter.covariant_smul_filter Filter.covariant_smul_filter
 #align filter.covariant_vadd_filter Filter.covariant_vadd_filter
@@ -1272,21 +1272,21 @@ end SMul
 open Pointwise
 
 @[to_additive]
-instance smulCommClass_filter [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass_filter [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α β (Filter γ) :=
   ⟨fun _ _ _ => map_comm (funext <| smul_comm _ _) _⟩
 #align filter.smul_comm_class_filter Filter.smulCommClass_filter
 #align filter.vadd_comm_class_filter Filter.vaddCommClass_filter
 
 @[to_additive]
-instance smulCommClass_filter' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass_filter' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α (Filter β) (Filter γ) :=
   ⟨fun a _ _ => map_map₂_distrib_right <| smul_comm a⟩
 #align filter.smul_comm_class_filter' Filter.smulCommClass_filter'
 #align filter.vadd_comm_class_filter' Filter.vaddCommClass_filter'
 
 @[to_additive]
-instance smulCommClass_filter'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass_filter'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Filter α) β (Filter γ) :=
   haveI := SMulCommClass.symm α β γ
   SMulCommClass.symm _ _ _
@@ -1294,21 +1294,21 @@ instance smulCommClass_filter'' [SMul α γ] [SMul β γ] [SMulCommClass α β �
 #align filter.vadd_comm_class_filter'' Filter.vaddCommClass_filter''
 
 @[to_additive]
-instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Filter α) (Filter β) (Filter γ) :=
   ⟨fun _ _ _ => map₂_left_comm smul_comm⟩
 #align filter.smul_comm_class Filter.smulCommClass
 #align filter.vadd_comm_class Filter.vaddCommClass
 
 @[to_additive vaddAssocClass]
-instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance (priority := 10000) isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Filter γ) :=
   ⟨fun a b f => by simp only [← Filter.map_smul, map_map, smul_assoc]; rfl⟩
 #align filter.is_scalar_tower Filter.isScalarTower
 #align filter.vadd_assoc_class Filter.vaddAssocClass
 
 @[to_additive vaddAssocClass']
-instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance (priority := 10000) isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Filter β) (Filter γ) :=
   ⟨fun a f g => by
     refine' (map_map₂_distrib_left fun _ _ => _).symm
@@ -1317,14 +1317,14 @@ instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α
 #align filter.vadd_assoc_class' Filter.vaddAssocClass'
 
 @[to_additive vaddAssocClass'']
-instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance (priority := 10000) isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Filter α) (Filter β) (Filter γ) :=
   ⟨fun _ _ _ => map₂_assoc smul_assoc⟩
 #align filter.is_scalar_tower'' Filter.isScalarTower''
 #align filter.vadd_assoc_class'' Filter.vaddAssocClass''
 
 @[to_additive]
-instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
+instance (priority := 10000) isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Filter β) :=
   ⟨fun _ f => (congr_arg fun m => map m f) <| funext fun _ => op_smul_eq_smul _ _⟩
 #align filter.is_central_scalar Filter.isCentralScalar

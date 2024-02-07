@@ -24,7 +24,7 @@ The category of condensed abelian groups, defined as sheaves of abelian groups o
 -/
 abbrev CondensedAb := Condensed.{u} AddCommGroupCat.{u+1}
 
-noncomputable instance CondensedAb.abelian :
+noncomputable instance (priority := 10000) CondensedAb.abelian :
     CategoryTheory.Abelian CondensedAb.{u} :=
   letI : PreservesLimits (forget AddCommGroupCat.{u+1}) :=
     AddCommGroupCat.forgetPreservesLimits.{u+1}

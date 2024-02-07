@@ -92,7 +92,7 @@ namespace Hom
 def id (A : Algebra T) : Hom A A where f := 𝟙 A.A
 #align category_theory.monad.algebra.hom.id CategoryTheory.Monad.Algebra.Hom.id
 
-instance (A : Algebra T) : Inhabited (Hom A A) :=
+instance (priority := 10000) (A : Algebra T) : Inhabited (Hom A A) :=
   ⟨{ f := 𝟙 _ }⟩
 
 /-- Composition of Eilenberg–Moore algebra homomorphisms. -/
@@ -101,7 +101,7 @@ def comp {P Q R : Algebra T} (f : Hom P Q) (g : Hom Q R) : Hom P R where f := f.
 
 end Hom
 
-instance : CategoryStruct (Algebra T) where
+instance (priority := 10000) : CategoryStruct (Algebra T) where
   Hom := Hom
   id := Hom.id
   comp := @Hom.comp _ _ _
@@ -133,7 +133,7 @@ theorem comp_f {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g
 
 /-- The category of Eilenberg-Moore algebras for a monad.
     cf Definition 5.2.4 in [Riehl][riehl2017]. -/
-instance eilenbergMoore : Category (Algebra T) where
+instance (priority := 10000) eilenbergMoore : Category (Algebra T) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.monad.algebra.EilenbergMoore CategoryTheory.Monad.Algebra.eilenbergMoore
 
@@ -175,7 +175,7 @@ def free : C ⥤ Algebra T where
       h := T.μ.naturality _ }
 #align category_theory.monad.free CategoryTheory.Monad.free
 
-instance [Inhabited C] : Inhabited (Algebra T) :=
+instance (priority := 10000) [Inhabited C] : Inhabited (Algebra T) :=
   ⟨(free T).obj default⟩
 
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
@@ -219,12 +219,12 @@ theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f
       by aesop_cat⟩⟩
 #align category_theory.monad.algebra_iso_of_iso CategoryTheory.Monad.algebra_iso_of_iso
 
-instance forget_reflects_iso : ReflectsIsomorphisms T.forget where
+instance (priority := 10000) forget_reflects_iso : ReflectsIsomorphisms T.forget where
   -- Porting note: Is this the right approach to introduce instances?
   reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
 #align category_theory.monad.forget_reflects_iso CategoryTheory.Monad.forget_reflects_iso
 
-instance forget_faithful : Faithful T.forget where
+instance (priority := 10000) forget_faithful : Faithful T.forget where
 #align category_theory.monad.forget_faithful CategoryTheory.Monad.forget_faithful
 
 /-- Given an algebra morphism whose carrier part is an epimorphism, we get an algebra epimorphism.
@@ -239,7 +239,7 @@ theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mo
   (forget T).mono_of_mono_map h
 #align category_theory.monad.algebra_mono_of_mono CategoryTheory.Monad.algebra_mono_of_mono
 
-instance : IsRightAdjoint T.forget :=
+instance (priority := 10000) : IsRightAdjoint T.forget :=
   ⟨T.free, T.adj⟩
 
 @[simp]
@@ -390,7 +390,7 @@ def comp {P Q R : Coalgebra G} (f : Hom P Q) (g : Hom Q R) : Hom P R where f := 
 end Hom
 
 /-- The category of Eilenberg-Moore coalgebras for a comonad. -/
-instance : CategoryStruct (Coalgebra G) where
+instance (priority := 10000) : CategoryStruct (Coalgebra G) where
   Hom := Hom
   id := Hom.id
   comp := @Hom.comp _ _ _
@@ -421,7 +421,7 @@ theorem comp_f {A A' A'' : Coalgebra G} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫
 #align category_theory.comonad.coalgebra.comp_f CategoryTheory.Comonad.Coalgebra.comp_f
 
 /-- The category of Eilenberg-Moore coalgebras for a comonad. -/
-instance eilenbergMoore : Category (Coalgebra G) where
+instance (priority := 10000) eilenbergMoore : Category (Coalgebra G) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.comonad.coalgebra.EilenbergMoore CategoryTheory.Comonad.Coalgebra.eilenbergMoore
 
@@ -499,12 +499,12 @@ theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsI
       by aesop_cat⟩⟩
 #align category_theory.comonad.coalgebra_iso_of_iso CategoryTheory.Comonad.coalgebra_iso_of_iso
 
-instance forget_reflects_iso : ReflectsIsomorphisms G.forget where
+instance (priority := 10000) forget_reflects_iso : ReflectsIsomorphisms G.forget where
   -- Porting note: Is this the right approach to introduce instances?
   reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
 #align category_theory.comonad.forget_reflects_iso CategoryTheory.Comonad.forget_reflects_iso
 
-instance forget_faithful : Faithful (forget G) where
+instance (priority := 10000) forget_faithful : Faithful (forget G) where
 #align category_theory.comonad.forget_faithful CategoryTheory.Comonad.forget_faithful
 
 /-- Given a coalgebra morphism whose carrier part is an epimorphism, we get an algebra epimorphism.
@@ -519,7 +519,7 @@ theorem algebra_mono_of_mono {X Y : Coalgebra G} (f : X ⟶ Y) [h : Mono f.f] : 
   (forget G).mono_of_mono_map h
 #align category_theory.comonad.algebra_mono_of_mono CategoryTheory.Comonad.algebra_mono_of_mono
 
-instance : IsLeftAdjoint G.forget :=
+instance (priority := 10000) : IsLeftAdjoint G.forget :=
   ⟨_, G.adj⟩
 
 @[simp]

@@ -169,7 +169,7 @@ theorem Lex.wellFounded' [IsTrichotomous ι r] (hr : WellFounded (Function.swap 
 
 end Zero
 
-instance Lex.wellFoundedLT [LT ι] [IsTrichotomous ι (· < ·)] [hι : WellFoundedGT ι]
+instance (priority := 10000) Lex.wellFoundedLT [LT ι] [IsTrichotomous ι (· < ·)] [hι : WellFoundedGT ι]
     [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
   ⟨Lex.wellFounded' (fun _ a => (zero_le a).not_lt) (fun i => (hα i).wf) hι.wf⟩
@@ -191,12 +191,12 @@ theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, We
   exacts [(hs i).not_lt_min ⊤ _ trivial, Finite.wellFounded_of_trans_of_irrefl (Function.swap r)]
 #align pi.lex.well_founded Pi.Lex.wellFounded
 
-instance Pi.Lex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
+instance (priority := 10000) Pi.Lex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
     [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Lex (∀ i, α i)) :=
   ⟨Pi.Lex.wellFounded (· < ·) fun i => (hwf i).1⟩
 #align pi.lex.well_founded_lt Pi.Lex.wellFoundedLT
 
-instance Function.Lex.wellFoundedLT {α} [LinearOrder ι] [Finite ι] [LT α] [WellFoundedLT α] :
+instance (priority := 10000) Function.Lex.wellFoundedLT {α} [LinearOrder ι] [Finite ι] [LT α] [WellFoundedLT α] :
     WellFoundedLT (Lex (ι → α)) :=
   Pi.Lex.wellFoundedLT
 #align function.lex.well_founded_lt Function.Lex.wellFoundedLT
@@ -207,7 +207,7 @@ theorem DFinsupp.Lex.wellFounded_of_finite [IsStrictTotalOrder ι r] [Finite ι]
   InvImage.wf equivFunOnFintype (Pi.Lex.wellFounded r hs)
 #align dfinsupp.lex.well_founded_of_finite DFinsupp.Lex.wellFounded_of_finite
 
-instance DFinsupp.Lex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ i, Zero (α i)]
+instance (priority := 10000) DFinsupp.Lex.wellFoundedLT_of_finite [LinearOrder ι] [Finite ι] [∀ i, Zero (α i)]
     [∀ i, LT (α i)] [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Lex (Π₀ i, α i)) :=
   ⟨DFinsupp.Lex.wellFounded_of_finite (· < ·) fun i => (hwf i).1⟩
 #align dfinsupp.lex.well_founded_lt_of_finite DFinsupp.Lex.wellFoundedLT_of_finite
@@ -232,12 +232,12 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
     exact ⟨i, fun j hj ↦ Quot.sound (he j hj), hl⟩⟩
 #align dfinsupp.well_founded_lt DFinsupp.wellFoundedLT
 
-instance DFinsupp.wellFoundedLT' [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
+instance (priority := 10000) DFinsupp.wellFoundedLT' [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Π₀ i, α i) :=
   DFinsupp.wellFoundedLT fun _i a => (zero_le a).not_lt
 #align dfinsupp.well_founded_lt' DFinsupp.wellFoundedLT'
 
-instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, WellFoundedLT (α i)] :
+instance (priority := 10000) Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (∀ i, α i) :=
   ⟨by
     obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty (∀ i, α i)
@@ -248,12 +248,12 @@ instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, Well
     exact (hw i).wf.not_lt_min ⊤ _ trivial⟩
 #align pi.well_founded_lt Pi.wellFoundedLT
 
-instance Function.wellFoundedLT {α} [Finite ι] [Preorder α] [WellFoundedLT α] :
+instance (priority := 10000) Function.wellFoundedLT {α} [Finite ι] [Preorder α] [WellFoundedLT α] :
     WellFoundedLT (ι → α) :=
   Pi.wellFoundedLT
 #align function.well_founded_lt Function.wellFoundedLT
 
-instance DFinsupp.wellFoundedLT_of_finite [Finite ι] [∀ i, Zero (α i)] [∀ i, Preorder (α i)]
+instance (priority := 10000) DFinsupp.wellFoundedLT_of_finite [Finite ι] [∀ i, Zero (α i)] [∀ i, Preorder (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Π₀ i, α i) :=
   have := Fintype.ofFinite ι
   ⟨InvImage.wf equivFunOnFintype Pi.wellFoundedLT.wf⟩

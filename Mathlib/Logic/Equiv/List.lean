@@ -45,12 +45,12 @@ def decodeList : ℕ → Option (List α)
 
 /-- If `α` is encodable, then so is `List α`. This uses the `pair` and `unpair` functions from
 `Data.Nat.Pairing`. -/
-instance _root_.List.encodable : Encodable (List α) :=
+instance (priority := 10000) _root_.List.encodable : Encodable (List α) :=
   ⟨encodeList, decodeList, fun l => by
     induction' l with a l IH <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩
 #align list.encodable List.encodable
 
-instance _root_.List.countable {α : Type*} [Countable α] : Countable (List α) := by
+instance (priority := 10000) _root_.List.countable {α : Type*} [Countable α] : Countable (List α) := by
   haveI := Encodable.ofCountable α
   infer_instance
 #align list.countable List.countable
@@ -114,12 +114,12 @@ def decodeMultiset (n : ℕ) : Option (Multiset α) :=
 #align encodable.decode_multiset Encodable.decodeMultiset
 
 /-- If `α` is encodable, then so is `Multiset α`. -/
-instance _root_.Multiset.encodable : Encodable (Multiset α) :=
+instance (priority := 10000) _root_.Multiset.encodable : Encodable (Multiset α) :=
   ⟨encodeMultiset, decodeMultiset, fun s => by simp [encodeMultiset, decodeMultiset, encodek]⟩
 #align multiset.encodable Multiset.encodable
 
 /-- If `α` is countable, then so is `Multiset α`. -/
-instance _root_.Multiset.countable {α : Type*} [Countable α] : Countable (Multiset α) :=
+instance (priority := 10000) _root_.Multiset.countable {α : Type*} [Countable α] : Countable (Multiset α) :=
   Quotient.countable
 #align multiset.countable Multiset.countable
 
@@ -145,33 +145,33 @@ noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodab
 #align fintype.to_encodable Fintype.toEncodable
 
 /-- If `α` is encodable, then so is `Vector α n`. -/
-instance _root_.Vector.encodable [Encodable α] {n} : Encodable (Vector α n) :=
+instance (priority := 10000) _root_.Vector.encodable [Encodable α] {n} : Encodable (Vector α n) :=
   Subtype.encodable
 #align vector.encodable Vector.encodable
 
 /-- If `α` is countable, then so is `Vector α n`. -/
-instance _root_.Vector.countable [Countable α] {n} : Countable (Vector α n) :=
+instance (priority := 10000) _root_.Vector.countable [Countable α] {n} : Countable (Vector α n) :=
   Subtype.countable
 #align vector.countable Vector.countable
 
 /-- If `α` is encodable, then so is `Fin n → α`. -/
-instance finArrow [Encodable α] {n} : Encodable (Fin n → α) :=
+instance (priority := 10000) finArrow [Encodable α] {n} : Encodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 #align encodable.fin_arrow Encodable.finArrow
 
-instance finPi (n) (π : Fin n → Type*) [∀ i, Encodable (π i)] : Encodable (∀ i, π i) :=
+instance (priority := 10000) finPi (n) (π : Fin n → Type*) [∀ i, Encodable (π i)] : Encodable (∀ i, π i) :=
   ofEquiv _ (Equiv.piEquivSubtypeSigma (Fin n) π)
 #align encodable.fin_pi Encodable.finPi
 
 /-- If `α` is encodable, then so is `Finset α`. -/
-instance _root_.Finset.encodable [Encodable α] : Encodable (Finset α) :=
+instance (priority := 10000) _root_.Finset.encodable [Encodable α] : Encodable (Finset α) :=
   haveI := decidableEqOfEncodable α
   ofEquiv { s : Multiset α // s.Nodup }
     ⟨fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 #align finset.encodable Finset.encodable
 
 /-- If `α` is countable, then so is `Finset α`. -/
-instance _root_.Finset.countable [Countable α] : Countable (Finset α) :=
+instance (priority := 10000) _root_.Finset.countable [Countable α] : Countable (Finset α) :=
   Finset.val_injective.countable
 #align finset.countable Finset.countable
 
@@ -230,7 +230,7 @@ def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card 
 #align encodable.fintype_equiv_fin Encodable.fintypeEquivFin
 
 /-- If `α` and `β` are encodable and `α` is a fintype, then `α → β` is encodable as well. -/
-instance fintypeArrowOfEncodable {α β : Type*} [Encodable α] [Fintype α] [Encodable β] :
+instance (priority := 10000) fintypeArrowOfEncodable {α β : Type*} [Encodable α] [Fintype α] [Encodable β] :
     Encodable (α → β) :=
   ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr fintypeEquivFin (Equiv.refl _)
 #align encodable.fintype_arrow_of_encodable Encodable.fintypeArrowOfEncodable
@@ -261,7 +261,7 @@ theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encode
 #align denumerable.denumerable_list_aux Denumerable.denumerable_list_aux
 
 /-- If `α` is denumerable, then so is `List α`. -/
-instance denumerableList : Denumerable (List α) :=
+instance (priority := 10000) denumerableList : Denumerable (List α) :=
   ⟨denumerable_list_aux⟩
 #align denumerable.denumerable_list Denumerable.denumerableList
 
@@ -323,7 +323,7 @@ theorem raise_sorted : ∀ l n, List.Sorted (· ≤ ·) (raise l n)
 
 /-- If `α` is denumerable, then so is `Multiset α`. Warning: this is *not* the same encoding as used
 in `Multiset.encodable`. -/
-instance multiset : Denumerable (Multiset α) :=
+instance (priority := 10000) multiset : Denumerable (Multiset α) :=
   mk'
     ⟨fun s : Multiset α => encode <| lower ((s.map encode).sort (· ≤ ·)) 0,
      fun n =>
@@ -387,7 +387,7 @@ def raise'Finset (l : List ℕ) (n : ℕ) : Finset ℕ :=
 
 /-- If `α` is denumerable, then so is `Finset α`. Warning: this is *not* the same encoding as used
 in `Finset.encodable`. -/
-instance finset : Denumerable (Finset α) :=
+instance (priority := 10000) finset : Denumerable (Finset α) :=
   mk'
     ⟨fun s : Finset α => encode <| lower' ((s.map (eqv α).toEmbedding).sort (· ≤ ·)) 0, fun n =>
       Finset.map (eqv α).symm.toEmbedding (raise'Finset (ofNat (List ℕ) n) 0), fun s =>

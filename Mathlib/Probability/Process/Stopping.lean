@@ -442,7 +442,7 @@ theorem le_measurableSpace_of_const_le (hτ : IsStoppingTime f τ) {i : ι} (hτ
 
 end Preorder
 
-instance sigmaFinite_stopping_time {ι} [SemilatticeSup ι] [OrderBot ι]
+instance (priority := 10000) sigmaFinite_stopping_time {ι} [SemilatticeSup ι] [OrderBot ι]
     [(Filter.atTop : Filter ι).IsCountablyGenerated] {μ : Measure Ω} {f : Filtration ι m}
     {τ : Ω → ι} [SigmaFiniteFiltration μ f] (hτ : IsStoppingTime f τ) :
     SigmaFinite (μ.trim hτ.measurableSpace_le) := by
@@ -452,7 +452,7 @@ instance sigmaFinite_stopping_time {ι} [SemilatticeSup ι] [OrderBot ι]
   · infer_instance
 #align measure_theory.is_stopping_time.sigma_finite_stopping_time MeasureTheory.IsStoppingTime.sigmaFinite_stopping_time
 
-instance sigmaFinite_stopping_time_of_le {ι} [SemilatticeSup ι] [OrderBot ι] {μ : Measure Ω}
+instance (priority := 10000) sigmaFinite_stopping_time_of_le {ι} [SemilatticeSup ι] [OrderBot ι] {μ : Measure Ω}
     {f : Filtration ι m} {τ : Ω → ι} [SigmaFiniteFiltration μ f] (hτ : IsStoppingTime f τ) {n : ι}
     (hτ_le : ∀ ω, τ ω ≤ n) : SigmaFinite (μ.trim (hτ.measurableSpace_le_of_le hτ_le)) := by
   refine @sigmaFiniteTrim_mono _ _ ?_ _ _ _ ?_ ?_

@@ -43,11 +43,11 @@ variable [CommSemiring R]
 
 variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
 
-instance : SetLike (Subalgebra R A) A where
+instance (priority := 10000) : SetLike (Subalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
-instance SubsemiringClass : SubsemiringClass (Subalgebra R A) A where
+instance (priority := 10000) SubsemiringClass : SubsemiringClass (Subalgebra R A) A where
   add_mem {s} := add_mem (s := s.toSubsemiring)
   mul_mem {s} := mul_mem (s := s.toSubsemiring)
   one_mem {s} := one_mem s.toSubsemiring
@@ -101,7 +101,7 @@ theorem copy_eq (S : Subalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s hs =
 
 variable (S : Subalgebra R A)
 
-instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
+instance (priority := 10000) instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
   smul_mem {S} r x hx := (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem' r) hx
 
 @[aesop safe apply (rule_sets [SetLike])]
@@ -185,7 +185,7 @@ protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemir
   prod_mem h
 #align subalgebra.prod_mem Subalgebra.prod_mem
 
-instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
+instance (priority := 10000) {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
   { Subalgebra.SubsemiringClass with
     neg_mem := fun {S x} hx => neg_one_smul R x ▸ S.smul_mem hx _ }
 
@@ -251,7 +251,7 @@ theorem toSubring_inj {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R
   toSubring_injective.eq_iff
 #align subalgebra.to_subring_inj Subalgebra.toSubring_inj
 
-instance : Inhabited S :=
+instance (priority := 10000) : Inhabited S :=
   ⟨(0 : S.toSubsemiring)⟩
 
 section
@@ -259,71 +259,71 @@ section
 /-! `Subalgebra`s inherit structure from their `Subsemiring` / `Semiring` coercions. -/
 
 
-instance toSemiring {R A} [CommSemiring R] [Semiring A] [Algebra R A] (S : Subalgebra R A) :
+instance (priority := 10000) toSemiring {R A} [CommSemiring R] [Semiring A] [Algebra R A] (S : Subalgebra R A) :
     Semiring S :=
   S.toSubsemiring.toSemiring
 #align subalgebra.to_semiring Subalgebra.toSemiring
 
-instance toCommSemiring {R A} [CommSemiring R] [CommSemiring A] [Algebra R A] (S : Subalgebra R A) :
+instance (priority := 10000) toCommSemiring {R A} [CommSemiring R] [CommSemiring A] [Algebra R A] (S : Subalgebra R A) :
     CommSemiring S :=
   S.toSubsemiring.toCommSemiring
 #align subalgebra.to_comm_semiring Subalgebra.toCommSemiring
 
-instance toRing {R A} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) : Ring S :=
+instance (priority := 10000) toRing {R A} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) : Ring S :=
   S.toSubring.toRing
 #align subalgebra.to_ring Subalgebra.toRing
 
-instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebra R A) :
+instance (priority := 10000) toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebra R A) :
     CommRing S :=
   S.toSubring.toCommRing
 #align subalgebra.to_comm_ring Subalgebra.toCommRing
 
-instance toOrderedSemiring {R A} [CommSemiring R] [OrderedSemiring A] [Algebra R A]
+instance (priority := 10000) toOrderedSemiring {R A} [CommSemiring R] [OrderedSemiring A] [Algebra R A]
     (S : Subalgebra R A) : OrderedSemiring S :=
   S.toSubsemiring.toOrderedSemiring
 #align subalgebra.to_ordered_semiring Subalgebra.toOrderedSemiring
 
-instance toStrictOrderedSemiring {R A} [CommSemiring R] [StrictOrderedSemiring A] [Algebra R A]
+instance (priority := 10000) toStrictOrderedSemiring {R A} [CommSemiring R] [StrictOrderedSemiring A] [Algebra R A]
     (S : Subalgebra R A) : StrictOrderedSemiring S :=
   S.toSubsemiring.toStrictOrderedSemiring
 #align subalgebra.to_strict_ordered_semiring Subalgebra.toStrictOrderedSemiring
 
-instance toOrderedCommSemiring {R A} [CommSemiring R] [OrderedCommSemiring A] [Algebra R A]
+instance (priority := 10000) toOrderedCommSemiring {R A} [CommSemiring R] [OrderedCommSemiring A] [Algebra R A]
     (S : Subalgebra R A) : OrderedCommSemiring S :=
   S.toSubsemiring.toOrderedCommSemiring
 #align subalgebra.to_ordered_comm_semiring Subalgebra.toOrderedCommSemiring
 
-instance toStrictOrderedCommSemiring {R A} [CommSemiring R] [StrictOrderedCommSemiring A]
+instance (priority := 10000) toStrictOrderedCommSemiring {R A} [CommSemiring R] [StrictOrderedCommSemiring A]
     [Algebra R A] (S : Subalgebra R A) : StrictOrderedCommSemiring S :=
   S.toSubsemiring.toStrictOrderedCommSemiring
 #align subalgebra.to_strict_ordered_comm_semiring Subalgebra.toStrictOrderedCommSemiring
 
-instance toOrderedRing {R A} [CommRing R] [OrderedRing A] [Algebra R A] (S : Subalgebra R A) :
+instance (priority := 10000) toOrderedRing {R A} [CommRing R] [OrderedRing A] [Algebra R A] (S : Subalgebra R A) :
     OrderedRing S :=
   S.toSubring.toOrderedRing
 #align subalgebra.to_ordered_ring Subalgebra.toOrderedRing
 
-instance toOrderedCommRing {R A} [CommRing R] [OrderedCommRing A] [Algebra R A]
+instance (priority := 10000) toOrderedCommRing {R A} [CommRing R] [OrderedCommRing A] [Algebra R A]
     (S : Subalgebra R A) : OrderedCommRing S :=
   S.toSubring.toOrderedCommRing
 #align subalgebra.to_ordered_comm_ring Subalgebra.toOrderedCommRing
 
-instance toLinearOrderedSemiring {R A} [CommSemiring R] [LinearOrderedSemiring A] [Algebra R A]
+instance (priority := 10000) toLinearOrderedSemiring {R A} [CommSemiring R] [LinearOrderedSemiring A] [Algebra R A]
     (S : Subalgebra R A) : LinearOrderedSemiring S :=
   S.toSubsemiring.toLinearOrderedSemiring
 #align subalgebra.to_linear_ordered_semiring Subalgebra.toLinearOrderedSemiring
 
-instance toLinearOrderedCommSemiring {R A} [CommSemiring R] [LinearOrderedCommSemiring A]
+instance (priority := 10000) toLinearOrderedCommSemiring {R A} [CommSemiring R] [LinearOrderedCommSemiring A]
     [Algebra R A] (S : Subalgebra R A) : LinearOrderedCommSemiring S :=
   S.toSubsemiring.toLinearOrderedCommSemiring
 #align subalgebra.to_linear_ordered_comm_semiring Subalgebra.toLinearOrderedCommSemiring
 
-instance toLinearOrderedRing {R A} [CommRing R] [LinearOrderedRing A] [Algebra R A]
+instance (priority := 10000) toLinearOrderedRing {R A} [CommRing R] [LinearOrderedRing A] [Algebra R A]
     (S : Subalgebra R A) : LinearOrderedRing S :=
   S.toSubring.toLinearOrderedRing
 #align subalgebra.to_linear_ordered_ring Subalgebra.toLinearOrderedRing
 
-instance toLinearOrderedCommRing {R A} [CommRing R] [LinearOrderedCommRing A] [Algebra R A]
+instance (priority := 10000) toLinearOrderedCommRing {R A} [CommRing R] [LinearOrderedCommRing A] [Algebra R A]
     (S : Subalgebra R A) : LinearOrderedCommRing S :=
   S.toSubring.toLinearOrderedCommRing
 #align subalgebra.to_linear_ordered_comm_ring Subalgebra.toLinearOrderedCommRing
@@ -365,10 +365,10 @@ instance (priority := low) module' [Semiring R'] [SMul R' R] [Module R' A] [IsSc
   S.toSubmodule.module'
 #align subalgebra.module' Subalgebra.module'
 
-instance : Module R S :=
+instance (priority := 10000) : Module R S :=
   S.module'
 
-instance [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
+instance (priority := 10000) [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : IsScalarTower R' R S :=
   inferInstanceAs (IsScalarTower R' R (toSubmodule S))
 
 /- More general form of `Subalgebra.algebra`.
@@ -389,12 +389,12 @@ instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
     smul_def' := fun c x => Subtype.eq <| Algebra.smul_def _ _ }
 #align subalgebra.algebra' Subalgebra.algebra'
 
-instance algebra : Algebra R S := S.algebra'
+instance (priority := 10000) algebra : Algebra R S := S.algebra'
 #align subalgebra.algebra Subalgebra.algebra
 
 end
 
-instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
+instance (priority := 10000) noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
   ⟨fun {c} {x : S} h =>
     have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
@@ -545,12 +545,12 @@ theorem coe_comap (S : Subalgebra R B) (f : A →ₐ[R] B) : (S.comap f : Set A)
   rfl
 #align subalgebra.coe_comap Subalgebra.coe_comap
 
-instance noZeroDivisors {R A : Type*} [CommSemiring R] [Semiring A] [NoZeroDivisors A]
+instance (priority := 10000) noZeroDivisors {R A : Type*} [CommSemiring R] [Semiring A] [NoZeroDivisors A]
     [Algebra R A] (S : Subalgebra R A) : NoZeroDivisors S :=
   inferInstanceAs (NoZeroDivisors S.toSubsemiring)
 #align subalgebra.no_zero_divisors Subalgebra.noZeroDivisors
 
-instance isDomain {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
+instance (priority := 10000) isDomain {R A : Type*} [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     (S : Subalgebra R A) : IsDomain S :=
   inferInstanceAs (IsDomain S.toSubring)
 #align subalgebra.is_domain Subalgebra.isDomain
@@ -696,7 +696,7 @@ theorem mem_equalizer (ϕ ψ : A →ₐ[R] B) (x : A) : x ∈ ϕ.equalizer ψ �
 /-- The range of a morphism of algebras is a fintype, if the domain is a fintype.
 
 Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype. -/
-instance fintypeRange [Fintype A] [DecidableEq B] (φ : A →ₐ[R] B) : Fintype φ.range :=
+instance (priority := 10000) fintypeRange [Fintype A] [DecidableEq B] (φ : A →ₐ[R] B) : Fintype φ.range :=
   Set.fintypeRange φ
 #align alg_hom.fintype_range AlgHom.fintypeRange
 
@@ -791,7 +791,7 @@ protected def gi : GaloisInsertion (adjoin R : Set A → Subalgebra R A) (↑) w
   choice_eq _ _ := Subalgebra.copy_eq _ _ _
 #align algebra.gi Algebra.gi
 
-instance : CompleteLattice (Subalgebra R A) where
+instance (priority := 10000) : CompleteLattice (Subalgebra R A) where
   __ := GaloisInsertion.liftCompleteLattice Algebra.gi
   bot := (Algebra.ofId R A).range
   bot_le _S := fun _a ⟨_r, hr⟩ => hr ▸ algebraMap_mem _ _
@@ -906,7 +906,7 @@ theorem iInf_toSubmodule {ι : Sort*} (S : ι → Subalgebra R A) :
   SetLike.coe_injective <| by simp
 #align algebra.infi_to_submodule Algebra.iInf_toSubmodule
 
-instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
+instance (priority := 10000) : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 #align algebra.mem_bot Algebra.mem_bot
@@ -1003,11 +1003,11 @@ def topEquiv : (⊤ : Subalgebra R A) ≃ₐ[R] A :=
   AlgEquiv.ofAlgHom (Subalgebra.val ⊤) toTop rfl <| AlgHom.ext fun _ => Subtype.ext rfl
 #align subalgebra.top_equiv Subalgebra.topEquiv
 
-instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (Subalgebra R A) :=
+instance (priority := 10000) subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (Subalgebra R A) :=
   ⟨fun B C => ext fun x => by simp only [Subsingleton.elim x 0, zero_mem B, zero_mem C]⟩
 #align subalgebra.subsingleton_of_subsingleton Subalgebra.subsingleton_of_subsingleton
 
-instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsingleton (A →ₐ[R] B) :=
+instance (priority := 10000) _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsingleton (A →ₐ[R] B) :=
   ⟨fun f g =>
     AlgHom.ext fun a =>
       have : a ∈ (⊥ : Subalgebra R A) := Subsingleton.elim (⊤ : Subalgebra R A) ⊥ ▸ mem_top
@@ -1015,12 +1015,12 @@ instance _root_.AlgHom.subsingleton [Subsingleton (Subalgebra R A)] : Subsinglet
       hx ▸ (f.commutes _).trans (g.commutes _).symm⟩
 #align alg_hom.subsingleton AlgHom.subsingleton
 
-instance _root_.AlgEquiv.subsingleton_left [Subsingleton (Subalgebra R A)] :
+instance (priority := 10000) _root_.AlgEquiv.subsingleton_left [Subsingleton (Subalgebra R A)] :
     Subsingleton (A ≃ₐ[R] B) :=
   ⟨fun f g => AlgEquiv.ext fun x => AlgHom.ext_iff.mp (Subsingleton.elim f.toAlgHom g.toAlgHom) x⟩
 #align alg_equiv.subsingleton_left AlgEquiv.subsingleton_left
 
-instance _root_.AlgEquiv.subsingleton_right [Subsingleton (Subalgebra R B)] :
+instance (priority := 10000) _root_.AlgEquiv.subsingleton_right [Subsingleton (Subalgebra R B)] :
     Subsingleton (A ≃ₐ[R] B) :=
   ⟨fun f g => by rw [← f.symm_symm, Subsingleton.elim f.symm g.symm, g.symm_symm]⟩
 #align alg_equiv.subsingleton_right AlgEquiv.subsingleton_right
@@ -1029,7 +1029,7 @@ theorem range_val : S.val.range = S :=
   ext <| Set.ext_iff.1 <| S.val.coe_range.trans Subtype.range_val
 #align subalgebra.range_val Subalgebra.range_val
 
-instance : Unique (Subalgebra R R) :=
+instance (priority := 10000) : Unique (Subalgebra R R) :=
   { inferInstanceAs (Inhabited (Subalgebra R R)) with
     uniq := by
       intro S
@@ -1256,60 +1256,60 @@ section Actions
 variable {α β : Type*}
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [SMul A α] (S : Subalgebra R A) : SMul S α :=
+instance (priority := 10000) [SMul A α] (S : Subalgebra R A) : SMul S α :=
   inferInstanceAs (SMul S.toSubsemiring α)
 
 theorem smul_def [SMul A α] {S : Subalgebra R A} (g : S) (m : α) : g • m = (g : A) • m := rfl
 #align subalgebra.smul_def Subalgebra.smul_def
 
-instance smulCommClass_left [SMul A β] [SMul α β] [SMulCommClass A α β] (S : Subalgebra R A) :
+instance (priority := 10000) smulCommClass_left [SMul A β] [SMul α β] [SMulCommClass A α β] (S : Subalgebra R A) :
     SMulCommClass S α β :=
   S.toSubsemiring.smulCommClass_left
 #align subalgebra.smul_comm_class_left Subalgebra.smulCommClass_left
 
-instance smulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S : Subalgebra R A) :
+instance (priority := 10000) smulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S : Subalgebra R A) :
     SMulCommClass α S β :=
   S.toSubsemiring.smulCommClass_right
 #align subalgebra.smul_comm_class_right Subalgebra.smulCommClass_right
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
-instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β]
+instance (priority := 10000) isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β]
     (S : Subalgebra R A) : IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubsemiring α β)
 #align subalgebra.is_scalar_tower_left Subalgebra.isScalarTower_left
 
-instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
+instance (priority := 10000) isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
     [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
     IsScalarTower R S' T :=
   ⟨fun _x y _z => (smul_assoc _ (y : S) _ : _)⟩
 #align subalgebra.is_scalar_tower_mid Subalgebra.isScalarTower_mid
 
-instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
+instance (priority := 10000) [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [MulAction A α] (S : Subalgebra R A) : MulAction S α :=
+instance (priority := 10000) [MulAction A α] (S : Subalgebra R A) : MulAction S α :=
   inferInstanceAs (MulAction S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [AddMonoid α] [DistribMulAction A α] (S : Subalgebra R A) : DistribMulAction S α :=
+instance (priority := 10000) [AddMonoid α] [DistribMulAction A α] (S : Subalgebra R A) : DistribMulAction S α :=
   inferInstanceAs (DistribMulAction S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [Zero α] [SMulWithZero A α] (S : Subalgebra R A) : SMulWithZero S α :=
+instance (priority := 10000) [Zero α] [SMulWithZero A α] (S : Subalgebra R A) : SMulWithZero S α :=
   inferInstanceAs (SMulWithZero S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance [Zero α] [MulActionWithZero A α] (S : Subalgebra R A) : MulActionWithZero S α :=
+instance (priority := 10000) [Zero α] [MulActionWithZero A α] (S : Subalgebra R A) : MulActionWithZero S α :=
   inferInstanceAs (MulActionWithZero S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance moduleLeft [AddCommMonoid α] [Module A α] (S : Subalgebra R A) : Module S α :=
+instance (priority := 10000) moduleLeft [AddCommMonoid α] [Module A α] (S : Subalgebra R A) : Module S α :=
   inferInstanceAs (Module S.toSubsemiring α)
 #align subalgebra.module_left Subalgebra.moduleLeft
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/
-instance toAlgebra {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
+instance (priority := 10000) toAlgebra {R A : Type*} [CommSemiring R] [CommSemiring A] [Semiring α] [Algebra R A]
     [Algebra A α] (S : Subalgebra R A) : Algebra S α :=
   Algebra.ofSubsemiring S.toSubsemiring
 #align subalgebra.to_algebra Subalgebra.toAlgebra
@@ -1333,7 +1333,7 @@ theorem range_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     Subring.range_subtype]
 #align subalgebra.range_algebra_map Subalgebra.range_algebraMap
 
-instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
+instance (priority := 10000) noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
   ⟨fun {c} x h =>
     have : (c : A) = 0 ∨ x = 0 := eq_zero_or_eq_zero_of_mul_eq_zero h
     this.imp_left (@Subtype.ext_iff _ _ c 0).mpr⟩
@@ -1377,10 +1377,10 @@ theorem center_eq_top (A : Type*) [CommSemiring A] [Algebra R A] : center R A = 
 
 variable {R A}
 
-instance : CommSemiring (center R A) :=
+instance (priority := 10000) : CommSemiring (center R A) :=
   inferInstanceAs (CommSemiring (Subsemiring.center A))
 
-instance {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
+instance (priority := 10000) {A : Type*} [Ring A] [Algebra R A] : CommRing (center R A) :=
   inferInstanceAs (CommRing (Subring.center A))
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=

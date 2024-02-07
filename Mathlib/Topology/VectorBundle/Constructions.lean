@@ -39,7 +39,7 @@ namespace Bundle.Trivial
 variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] [TopologicalSpace B]
 
-instance trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where
+instance (priority := 10000) trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where
   linear _ _ := ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 #align bundle.trivial.trivialization.is_linear Bundle.Trivial.trivialization.isLinear
 
@@ -56,7 +56,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (𝕜)
 
-instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
+instance (priority := 10000) vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
   trivialization_linear' e he := by
     rw [eq_trivialization B F e]
     infer_instance
@@ -85,7 +85,7 @@ variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
   [∀ x, AddCommMonoid (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
   (e₂ e₂' : Trivialization F₂ (π F₂ E₂))
 
-instance prod.isLinear [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] : (e₁.prod e₂).IsLinear 𝕜 where
+instance (priority := 10000) prod.isLinear [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] : (e₁.prod e₂).IsLinear 𝕜 where
   linear := fun _ ⟨h₁, h₂⟩ =>
     (((e₁.linear 𝕜 h₁).mk' _).prodMap ((e₂.linear 𝕜 h₂).mk' _)).isLinear
 #align trivialization.prod.is_linear Trivialization.prod.isLinear
@@ -124,7 +124,7 @@ variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [∀ x, A
   [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
 
 /-- The product of two vector bundles is a vector bundle. -/
-instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂] :
+instance (priority := 10000) VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂] :
     VectorBundle 𝕜 (F₁ × F₂) (E₁ ×ᵇ E₂) where
   trivialization_linear' := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩; skip
@@ -167,21 +167,21 @@ section
 
 variable (R 𝕜 : Type*) {B : Type*} (F : Type*) (E : B → Type*) {B' : Type*} (f : B' → B)
 
-instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) := i _
+instance (priority := 10000) [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) := i _
 
-instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x)] (x : B') :
+instance (priority := 10000) [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x)] (x : B') :
     Module R ((f *ᵖ E) x) := i _
 
 variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace B] [∀ x, AddCommMonoid (E x)]
   [∀ x, Module 𝕜 (E x)] {K : Type*} [FunLike K B' B] [ContinuousMapClass K B' B]
 
-instance Trivialization.pullback_linear (e : Trivialization F (π F E)) [e.IsLinear 𝕜] (f : K) :
+instance (priority := 10000) Trivialization.pullback_linear (e : Trivialization F (π F E)) [e.IsLinear 𝕜] (f : K) :
     (Trivialization.pullback (B' := B') e f).IsLinear 𝕜 where
   linear _ h := e.linear 𝕜 h
 #align trivialization.pullback_linear Trivialization.pullback_linear
 
-instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E] [VectorBundle 𝕜 F E]
+instance (priority := 10000) VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E] [VectorBundle 𝕜 F E]
     (f : K) : VectorBundle 𝕜 F ((f : B' → B) *ᵖ E) where
   trivialization_linear' := by
     rintro _ ⟨e, he, rfl⟩

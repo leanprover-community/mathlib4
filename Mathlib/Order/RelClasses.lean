@@ -155,7 +155,7 @@ theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelat
   funext₂ <| by simpa using not_rel_of_subsingleton r
 #align eq_empty_relation eq_empty_relation
 
-instance : IsIrrefl α EmptyRelation :=
+instance (priority := 10000) : IsIrrefl α EmptyRelation :=
   ⟨fun _ => id⟩
 
 theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
@@ -282,7 +282,7 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
 set_option linter.uppercaseLean3 false in
 #align has_well_founded.R WellFoundedRelation.rel
 
-instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
+instance (priority := 10000) WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
     IsWellFounded α WellFoundedRelation.rel :=
   { h with }
 
@@ -341,7 +341,7 @@ instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsy
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrrefl α r :=
   IsAsymm.isIrrefl
 
-instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
+instance (priority := 10000) (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
   ⟨i.wf.transGen⟩
 
 /-- A class for a well founded relation `<`. -/
@@ -485,7 +485,7 @@ theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr 
     wf := ⟨fun a => ⟨_, fun y h => (not_rel_of_subsingleton r y a h).elim⟩⟩ }
 #align subsingleton.is_well_order Subsingleton.isWellOrder
 
-instance [Subsingleton α] : IsWellOrder α EmptyRelation :=
+instance (priority := 10000) [Subsingleton α] : IsWellOrder α EmptyRelation :=
   Subsingleton.isWellOrder _
 
 instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder α r where
@@ -493,10 +493,10 @@ instance (priority := 100) [IsEmpty α] (r : α → α → Prop) : IsWellOrder �
   trans := isEmptyElim
   wf := wellFounded_of_isEmpty r
 
-instance [IsWellFounded α r] [IsWellFounded β s] : IsWellFounded (α × β) (Prod.Lex r s) :=
+instance (priority := 10000) [IsWellFounded α r] [IsWellFounded β s] : IsWellFounded (α × β) (Prod.Lex r s) :=
   ⟨IsWellFounded.wf.prod_lex IsWellFounded.wf⟩
 
-instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Lex r s) where
+instance (priority := 10000) [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Lex r s) where
   trichotomous := fun ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ =>
     match @trichotomous _ r _ a₁ b₁ with
     | Or.inl h₁ => Or.inl <| Prod.Lex.left _ _ h₁
@@ -511,10 +511,10 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
     exacts [.left _ _ (_root_.trans ab bc), .left _ _ ab, .left _ _ bc,
       .right _ (_root_.trans ab bc)]
 
-instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
+instance (priority := 10000) (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
 
-instance (f : α → ℕ) : IsWellFounded _ (InvImage (· < ·) f) :=
+instance (priority := 10000) (f : α → ℕ) : IsWellFounded _ (InvImage (· < ·) f) :=
   ⟨(measure f).wf⟩
 
 theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] {s : α → α → Prop}
@@ -522,7 +522,7 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
   ⟨h.wf IsWellFounded.wf⟩
 #align subrelation.is_well_founded Subrelation.isWellFounded
 
-instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+instance (priority := 10000) Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
     WellFoundedLT (α × β) where
   wf := by
     refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) ?_ IsWellFounded.wf
@@ -536,7 +536,7 @@ instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [
       · assumption
       · exact Ne.lt_of_le ha a_le
 
-instance Prod.wellFoundedGT [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
+instance (priority := 10000) Prod.wellFoundedGT [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
     WellFoundedGT (α × β) :=
   @Prod.wellFoundedLT αᵒᵈ βᵒᵈ _ _ _ _
 
@@ -570,17 +570,17 @@ end Set
 
 namespace Prod
 
-instance isRefl_preimage_fst {r : α → α → Prop} [IsRefl α r] : IsRefl (α × α) (Prod.fst ⁻¹'o r) :=
+instance (priority := 10000) isRefl_preimage_fst {r : α → α → Prop} [IsRefl α r] : IsRefl (α × α) (Prod.fst ⁻¹'o r) :=
   ⟨fun a => refl_of r a.1⟩
 
-instance isRefl_preimage_snd {r : α → α → Prop} [IsRefl α r] : IsRefl (α × α) (Prod.snd ⁻¹'o r) :=
+instance (priority := 10000) isRefl_preimage_snd {r : α → α → Prop} [IsRefl α r] : IsRefl (α × α) (Prod.snd ⁻¹'o r) :=
   ⟨fun a => refl_of r a.2⟩
 
-instance isTrans_preimage_fst {r : α → α → Prop} [IsTrans α r] :
+instance (priority := 10000) isTrans_preimage_fst {r : α → α → Prop} [IsTrans α r] :
     IsTrans (α × α) (Prod.fst ⁻¹'o r) :=
   ⟨fun _ _ _ => trans_of r⟩
 
-instance isTrans_preimage_snd {r : α → α → Prop} [IsTrans α r] :
+instance (priority := 10000) isTrans_preimage_snd {r : α → α → Prop} [IsTrans α r] :
     IsTrans (α × α) (Prod.snd ⁻¹'o r) :=
   ⟨fun _ _ _ => trans_of r⟩
 
@@ -609,7 +609,7 @@ theorem right_iff_left_not_left_of (r s : α → α → Prop) [IsNonstrictStrict
   right_iff_left_not_left
 #align right_iff_left_not_left_of right_iff_left_not_left_of
 
-instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
+instance (priority := 10000) {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : IsIrrefl α s :=
   ⟨fun _ h => ((right_iff_left_not_left_of r s).1 h).2 ((right_iff_left_not_left_of r s).1 h).1⟩
 
 /-! #### `⊆` and `⊂` -/
@@ -834,97 +834,97 @@ end SubsetSsubset
 /-! ### Conversion of bundled order typeclasses to unbundled relation typeclasses -/
 
 
-instance [Preorder α] : IsRefl α (· ≤ ·) :=
+instance (priority := 10000) [Preorder α] : IsRefl α (· ≤ ·) :=
   ⟨le_refl⟩
 
-instance [Preorder α] : IsRefl α (· ≥ ·) :=
+instance (priority := 10000) [Preorder α] : IsRefl α (· ≥ ·) :=
   IsRefl.swap _
 
-instance [Preorder α] : IsTrans α (· ≤ ·) :=
+instance (priority := 10000) [Preorder α] : IsTrans α (· ≤ ·) :=
   ⟨@le_trans _ _⟩
 
-instance [Preorder α] : IsTrans α (· ≥ ·) :=
+instance (priority := 10000) [Preorder α] : IsTrans α (· ≥ ·) :=
   IsTrans.swap _
 
-instance [Preorder α] : IsPreorder α (· ≤ ·) where
+instance (priority := 10000) [Preorder α] : IsPreorder α (· ≤ ·) where
 
-instance [Preorder α] : IsPreorder α (· ≥ ·) where
+instance (priority := 10000) [Preorder α] : IsPreorder α (· ≥ ·) where
 
-instance [Preorder α] : IsIrrefl α (· < ·) :=
+instance (priority := 10000) [Preorder α] : IsIrrefl α (· < ·) :=
   ⟨lt_irrefl⟩
 
-instance [Preorder α] : IsIrrefl α (· > ·) :=
+instance (priority := 10000) [Preorder α] : IsIrrefl α (· > ·) :=
   IsIrrefl.swap _
 
-instance [Preorder α] : IsTrans α (· < ·) :=
+instance (priority := 10000) [Preorder α] : IsTrans α (· < ·) :=
   ⟨@lt_trans _ _⟩
 
-instance [Preorder α] : IsTrans α (· > ·) :=
+instance (priority := 10000) [Preorder α] : IsTrans α (· > ·) :=
   IsTrans.swap _
 
-instance [Preorder α] : IsAsymm α (· < ·) :=
+instance (priority := 10000) [Preorder α] : IsAsymm α (· < ·) :=
   ⟨@lt_asymm _ _⟩
 
-instance [Preorder α] : IsAsymm α (· > ·) :=
+instance (priority := 10000) [Preorder α] : IsAsymm α (· > ·) :=
   IsAsymm.swap _
 
-instance [Preorder α] : IsAntisymm α (· < ·) :=
+instance (priority := 10000) [Preorder α] : IsAntisymm α (· < ·) :=
   IsAsymm.isAntisymm _
 
-instance [Preorder α] : IsAntisymm α (· > ·) :=
+instance (priority := 10000) [Preorder α] : IsAntisymm α (· > ·) :=
   IsAsymm.isAntisymm _
 
-instance [Preorder α] : IsStrictOrder α (· < ·) where
+instance (priority := 10000) [Preorder α] : IsStrictOrder α (· < ·) where
 
-instance [Preorder α] : IsStrictOrder α (· > ·) where
+instance (priority := 10000) [Preorder α] : IsStrictOrder α (· > ·) where
 
-instance [Preorder α] : IsNonstrictStrictOrder α (· ≤ ·) (· < ·) :=
+instance (priority := 10000) [Preorder α] : IsNonstrictStrictOrder α (· ≤ ·) (· < ·) :=
   ⟨@lt_iff_le_not_le _ _⟩
 
-instance [PartialOrder α] : IsAntisymm α (· ≤ ·) :=
+instance (priority := 10000) [PartialOrder α] : IsAntisymm α (· ≤ ·) :=
   ⟨@le_antisymm _ _⟩
 
-instance [PartialOrder α] : IsAntisymm α (· ≥ ·) :=
+instance (priority := 10000) [PartialOrder α] : IsAntisymm α (· ≥ ·) :=
   IsAntisymm.swap _
 
-instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
+instance (priority := 10000) [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
-instance [PartialOrder α] : IsPartialOrder α (· ≥ ·) where
+instance (priority := 10000) [PartialOrder α] : IsPartialOrder α (· ≥ ·) where
 
-instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
+instance (priority := 10000) LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
   ⟨le_total⟩
 
-instance [LinearOrder α] : IsTotal α (· ≥ ·) :=
+instance (priority := 10000) [LinearOrder α] : IsTotal α (· ≥ ·) :=
   IsTotal.swap _
 
 -- Porting note: this was `by infer_instance` before
-instance [LinearOrder α] : IsTotalPreorder α (· ≤ ·) where
+instance (priority := 10000) [LinearOrder α] : IsTotalPreorder α (· ≤ ·) where
 
-instance [LinearOrder α] : IsTotalPreorder α (· ≥ ·) where
+instance (priority := 10000) [LinearOrder α] : IsTotalPreorder α (· ≥ ·) where
 
-instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
+instance (priority := 10000) [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
 
-instance [LinearOrder α] : IsLinearOrder α (· ≥ ·) where
+instance (priority := 10000) [LinearOrder α] : IsLinearOrder α (· ≥ ·) where
 
-instance [LinearOrder α] : IsTrichotomous α (· < ·) :=
+instance (priority := 10000) [LinearOrder α] : IsTrichotomous α (· < ·) :=
   ⟨lt_trichotomy⟩
 
-instance [LinearOrder α] : IsTrichotomous α (· > ·) :=
+instance (priority := 10000) [LinearOrder α] : IsTrichotomous α (· > ·) :=
   IsTrichotomous.swap _
 
-instance [LinearOrder α] : IsTrichotomous α (· ≤ ·) :=
+instance (priority := 10000) [LinearOrder α] : IsTrichotomous α (· ≤ ·) :=
   IsTotal.isTrichotomous _
 
-instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
+instance (priority := 10000) [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
   IsTotal.isTrichotomous _
 
-instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
+instance (priority := 10000) [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
-instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
+instance (priority := 10000) [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
 
-instance [LinearOrder α] : IsIncompTrans α (· < ·) := by infer_instance
+instance (priority := 10000) [LinearOrder α] : IsIncompTrans α (· < ·) := by infer_instance
 
-instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance
+instance (priority := 10000) [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance
 
 theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
   transitive_of_trans _
@@ -942,16 +942,16 @@ theorem transitive_gt [Preorder α] : Transitive (@GT.gt α _) :=
   transitive_of_trans _
 #align transitive_gt transitive_gt
 
-instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
+instance (priority := 10000) OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
   @IsTotal.swap α _ h
 
-instance : WellFoundedLT ℕ :=
+instance (priority := 10000) : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩
 #align nat.lt_wf Nat.lt_wfRel
 
-instance Nat.lt.isWellOrder : IsWellOrder ℕ (· < ·) where
+instance (priority := 10000) Nat.lt.isWellOrder : IsWellOrder ℕ (· < ·) where
 #align nat.lt.is_well_order Nat.lt.isWellOrder
 
-instance [LinearOrder α] [h : IsWellOrder α (· < ·)] : IsWellOrder αᵒᵈ (· > ·) := h
+instance (priority := 10000) [LinearOrder α] [h : IsWellOrder α (· < ·)] : IsWellOrder αᵒᵈ (· > ·) := h
 
-instance [LinearOrder α] [h : IsWellOrder α (· > ·)] : IsWellOrder αᵒᵈ (· < ·) := h
+instance (priority := 10000) [LinearOrder α] [h : IsWellOrder α (· > ·)] : IsWellOrder αᵒᵈ (· < ·) := h

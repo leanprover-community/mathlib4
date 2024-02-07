@@ -402,14 +402,14 @@ lemma shift_distinguished (n : ℤ) :
 
 end Triangle
 
-instance : SplitEpiCategory C where
+instance (priority := 10000) : SplitEpiCategory C where
   isSplitEpi_of_epi f hf := by
     obtain ⟨Z, g, h, hT⟩ := distinguished_cocone_triangle f
     obtain ⟨r, hr⟩ := Triangle.coyoneda_exact₂ _ hT (𝟙 _)
       (by rw [Triangle.mor₂_eq_zero_of_epi₁ _ hT hf, comp_zero])
     exact ⟨r, hr.symm⟩
 
-instance : SplitMonoCategory C where
+instance (priority := 10000) : SplitMonoCategory C where
   isSplitMono_of_mono f hf := by
     obtain ⟨X, g, h, hT⟩ := distinguished_cocone_triangle₁ f
     obtain ⟨r, hr⟩ := Triangle.yoneda_exact₂ _ hT (𝟙 _) (by
@@ -487,7 +487,7 @@ def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mo
         inr_snd := inr_snd }
       isBilimit := isBinaryBilimitOfTotal _ total }
 
-instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
+instance (priority := 10000) : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
   obtain ⟨X₂, inl, snd, mem⟩ := distinguished_cocone_triangle₂ (0 : X₃ ⟶ X₁⟦(1 : ℤ)⟧)
   obtain ⟨inr : X₃ ⟶ X₂, inr_snd : 𝟙 _ = inr ≫ snd⟩ :=
     Triangle.coyoneda_exact₃ _ mem (𝟙 X₃) (by simp)
@@ -499,9 +499,9 @@ instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
   dsimp
   simp only [← hfst, sub_add_cancel]⟩
 
-instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
-instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
-instance : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
+instance (priority := 10000) : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
+instance (priority := 10000) : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
+instance (priority := 10000) : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
 
 lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ distTriang C)
     (zero : T.mor₃ = 0) :

@@ -64,11 +64,11 @@ lemma TopologicalSpace.Clopens.surjective_finset_sup_prod :
     Surjective fun I : Finset (Clopens X × Clopens Y) ↦ I.sup fun i ↦ i.1 ×ˢ i.2 := fun W ↦
   let ⟨I, hI⟩ := W.exists_finset_eq_sup_prod; ⟨I, hI.symm⟩
 
-instance TopologicalSpace.Clopens.countable_prod [Countable (Clopens X)]
+instance (priority := 10000) TopologicalSpace.Clopens.countable_prod [Countable (Clopens X)]
     [Countable (Clopens Y)] : Countable (Clopens (X × Y)) :=
   surjective_finset_sup_prod.countable
 
-instance TopologicalSpace.Clopens.finite_prod [Finite (Clopens X)] [Finite (Clopens Y)] :
+instance (priority := 10000) TopologicalSpace.Clopens.finite_prod [Finite (Clopens X)] [Finite (Clopens Y)] :
     Finite (Clopens (X × Y)) := by
   cases nonempty_fintype (Clopens X)
   cases nonempty_fintype (Clopens Y)

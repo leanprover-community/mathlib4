@@ -526,7 +526,7 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
 
 -- simulate the type of MvPolynomial
 def P : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
-noncomputable instance : LinearOrderedField (P c d) := test_sorry
+noncomputable instance (priority := 10000) : LinearOrderedField (P c d) := test_sorry
 
 example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith

@@ -41,7 +41,7 @@ noncomputable def pseudoMetrizableSpacePseudoMetric (X : Type*) [TopologicalSpac
   h.exists_pseudo_metric.choose.replaceTopology h.exists_pseudo_metric.choose_spec.symm
 #align topological_space.pseudo_metrizable_space_pseudo_metric TopologicalSpace.pseudoMetrizableSpacePseudoMetric
 
-instance pseudoMetrizableSpace_prod [PseudoMetrizableSpace X] [PseudoMetrizableSpace Y] :
+instance (priority := 10000) pseudoMetrizableSpace_prod [PseudoMetrizableSpace X] [PseudoMetrizableSpace Y] :
     PseudoMetrizableSpace (X × Y) :=
   letI : PseudoMetricSpace X := pseudoMetrizableSpacePseudoMetric X
   letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
@@ -65,12 +65,12 @@ instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
     EMetric.instIsCountablyGeneratedUniformity
 #align topological_space.pseudo_metrizable_space.first_countable_topology TopologicalSpace.PseudoMetrizableSpace.firstCountableTopology
 
-instance PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
+instance (priority := 10000) PseudoMetrizableSpace.subtype [PseudoMetrizableSpace X] (s : Set X) :
     PseudoMetrizableSpace s :=
   inducing_subtype_val.pseudoMetrizableSpace
 #align topological_space.pseudo_metrizable_space.subtype TopologicalSpace.PseudoMetrizableSpace.subtype
 
-instance pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (π i)] :
+instance (priority := 10000) pseudoMetrizableSpace_pi [∀ i, PseudoMetrizableSpace (π i)] :
     PseudoMetrizableSpace (∀ i, π i) := by
   cases nonempty_fintype ι
   letI := fun i => pseudoMetrizableSpacePseudoMetric (π i)
@@ -106,7 +106,7 @@ instance (priority := 100) t2Space_of_metrizableSpace [MetrizableSpace X] : T2Sp
   inferInstance
 #align topological_space.t2_space_of_metrizable_space TopologicalSpace.t2Space_of_metrizableSpace
 
-instance metrizableSpace_prod [MetrizableSpace X] [MetrizableSpace Y] : MetrizableSpace (X × Y) :=
+instance (priority := 10000) metrizableSpace_prod [MetrizableSpace X] [MetrizableSpace Y] : MetrizableSpace (X × Y) :=
   letI : MetricSpace X := metrizableSpaceMetric X
   letI : MetricSpace Y := metrizableSpaceMetric Y
   inferInstance
@@ -120,11 +120,11 @@ theorem _root_.Embedding.metrizableSpace [MetrizableSpace Y] {f : X → Y} (hf :
   ⟨⟨hf.comapMetricSpace f, rfl⟩⟩
 #align embedding.metrizable_space Embedding.metrizableSpace
 
-instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
+instance (priority := 10000) MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
   embedding_subtype_val.metrizableSpace
 #align topological_space.metrizable_space.subtype TopologicalSpace.MetrizableSpace.subtype
 
-instance metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (∀ i, π i) := by
+instance (priority := 10000) metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (∀ i, π i) := by
   cases nonempty_fintype ι
   letI := fun i => metrizableSpaceMetric (π i)
   infer_instance

@@ -38,7 +38,7 @@ notation:50 a " ≡ " b " [ZMOD " n "]" => ModEq n a b
 variable {m n a b c d : ℤ}
 
 -- Porting note: This instance should be derivable automatically
-instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
+instance (priority := 10000) : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 
 namespace ModEq
 
@@ -51,7 +51,7 @@ protected theorem rfl : a ≡ a [ZMOD n] :=
   ModEq.refl _
 #align int.modeq.rfl Int.ModEq.rfl
 
-instance : IsRefl _ (ModEq n) :=
+instance (priority := 10000) : IsRefl _ (ModEq n) :=
   ⟨ModEq.refl⟩
 
 @[symm]
@@ -64,7 +64,7 @@ protected theorem trans : a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMO
   Eq.trans
 #align int.modeq.trans Int.ModEq.trans
 
-instance : IsTrans ℤ (ModEq n) where
+instance (priority := 10000) : IsTrans ℤ (ModEq n) where
   trans := @Int.ModEq.trans n
 
 protected theorem eq : a ≡ b [ZMOD n] → a % n = b % n := id

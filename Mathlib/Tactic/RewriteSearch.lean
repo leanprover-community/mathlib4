@@ -182,7 +182,7 @@ def lastIdx (n : SearchNode) : Nat :=
   | some (k, _) => k
   | none => 0
 
-instance : Ord SearchNode where
+instance (priority := 10000) : Ord SearchNode where
   compare := compareOn fun n => toLex (toLex (n.ppGoal.length, n.lastIdx), n.ppGoal)
 
 /--

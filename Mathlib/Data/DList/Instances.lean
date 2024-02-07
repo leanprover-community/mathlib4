@@ -32,13 +32,13 @@ def DList.listEquivDList : List α ≃ DList α := by
     simp [Function.RightInverse, Function.LeftInverse, DList.toList_ofList, DList.ofList_toList]
 #align dlist.list_equiv_dlist Std.DList.listEquivDList
 
-instance : Traversable DList :=
+instance (priority := 10000) : Traversable DList :=
   Equiv.traversable DList.listEquivDList
 
-instance : LawfulTraversable DList :=
+instance (priority := 10000) : LawfulTraversable DList :=
   Equiv.isLawfulTraversable DList.listEquivDList
 
-instance {α} : Inhabited (DList α) :=
+instance (priority := 10000) {α} : Inhabited (DList α) :=
   ⟨DList.empty⟩
 
 end Std

@@ -93,7 +93,7 @@ theorem addEquivBoundedOfCompact_apply [AddMonoid β] [LipschitzAdd β] :
     ⇑(addEquivBoundedOfCompact α β) = mkOfCompact :=
   rfl
 
-instance metricSpace : MetricSpace C(α, β) :=
+instance (priority := 10000) metricSpace : MetricSpace C(α, β) :=
   (uniformEmbedding_equivBoundedOfCompact α β).comapMetricSpace _
 #align continuous_map.metric_space ContinuousMap.metricSpace
 
@@ -156,12 +156,12 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
 
 end
 
-instance [CompleteSpace β] : CompleteSpace C(α, β) :=
+instance (priority := 10000) [CompleteSpace β] : CompleteSpace C(α, β) :=
   (isometryEquivBoundedOfCompact α β).completeSpace
 
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
-instance : Norm C(α, E) where norm x := dist x 0
+instance (priority := 10000) : Norm C(α, E) where norm x := dist x 0
 
 @[simp]
 theorem _root_.BoundedContinuousFunction.norm_mkOfCompact (f : C(α, E)) : ‖mkOfCompact f‖ = ‖f‖ :=
@@ -176,7 +176,7 @@ theorem _root_.BoundedContinuousFunction.norm_toContinuousMap_eq (f : α →ᵇ 
 
 open BoundedContinuousFunction
 
-instance : NormedAddCommGroup C(α, E) :=
+instance (priority := 10000) : NormedAddCommGroup C(α, E) :=
   { ContinuousMap.metricSpace _ _,
     ContinuousMap.instAddCommGroupContinuousMap with
     dist_eq := fun x y => by
@@ -184,7 +184,7 @@ instance : NormedAddCommGroup C(α, E) :=
     dist := dist
     norm := norm }
 
-instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
+instance (priority := 10000) [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
 
 section
@@ -250,7 +250,7 @@ section
 
 variable {R : Type*} [NormedRing R]
 
-instance : NormedRing C(α, R) :=
+instance (priority := 10000) : NormedRing C(α, R) :=
   { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRingContinuousMap with
     norm_mul := fun f g => norm_mul_le (mkOfCompact f) (mkOfCompact g) }
 
@@ -260,7 +260,7 @@ section
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
-instance normedSpace : NormedSpace 𝕜 C(α, E) where
+instance (priority := 10000) normedSpace : NormedSpace 𝕜 C(α, E) where
   norm_smul_le c f := (norm_smul_le c (mkOfCompact f) : _)
 #align continuous_map.normed_space ContinuousMap.normedSpace
 
@@ -330,7 +330,7 @@ section
 
 variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [NormedRing γ] [NormedAlgebra 𝕜 γ]
 
-instance : NormedAlgebra 𝕜 C(α, γ) :=
+instance (priority := 10000) : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }
 
 end
@@ -519,7 +519,7 @@ theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f :
   rfl
 #align bounded_continuous_function.mk_of_compact_star BoundedContinuousFunction.mkOfCompact_star
 
-instance [CompactSpace α] : NormedStarGroup C(α, β) where
+instance (priority := 10000) [CompactSpace α] : NormedStarGroup C(α, β) where
   norm_star f := by
     rw [← BoundedContinuousFunction.norm_mkOfCompact, BoundedContinuousFunction.mkOfCompact_star,
       norm_star, BoundedContinuousFunction.norm_mkOfCompact]
@@ -532,7 +532,7 @@ variable {α : Type*} {β : Type*}
 
 variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 
-instance [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where
+instance (priority := 10000) [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where
   norm_star_mul_self {f} := by
     refine' le_antisymm _ _
     · rw [← sq, ContinuousMap.norm_le _ (sq_nonneg _)]

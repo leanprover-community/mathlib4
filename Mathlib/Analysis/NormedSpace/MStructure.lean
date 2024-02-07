@@ -171,7 +171,7 @@ theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsL
 
 --porting note: Advice is to explicitly name instances
 -- https://github.com/leanprover-community/mathlib4/wiki/Porting-wiki#some-common-fixes
-instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
+instance (priority := 10000) Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
   ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
 
 @[simp]
@@ -179,7 +179,7 @@ theorem coe_compl (P : { P : M // IsLprojection X P }) : ↑Pᶜ = (1 : M) - ↑
   rfl
 #align is_Lprojection.coe_compl IsLprojection.coe_compl
 
-instance Subtype.inf [FaithfulSMul M X] : Inf { P : M // IsLprojection X P } :=
+instance (priority := 10000) Subtype.inf [FaithfulSMul M X] : Inf { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P * Q, P.prop.mul Q.prop⟩⟩
 
 @[simp]
@@ -188,7 +188,7 @@ theorem coe_inf [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   rfl
 #align is_Lprojection.coe_inf IsLprojection.coe_inf
 
-instance Subtype.sup [FaithfulSMul M X] : Sup { P : M // IsLprojection X P } :=
+instance (priority := 10000) Subtype.sup [FaithfulSMul M X] : Sup { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P + Q - P * Q, P.prop.join Q.prop⟩⟩
 
 @[simp]
@@ -197,7 +197,7 @@ theorem coe_sup [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   rfl
 #align is_Lprojection.coe_sup IsLprojection.coe_sup
 
-instance Subtype.sdiff [FaithfulSMul M X] : SDiff { P : M // IsLprojection X P } :=
+instance (priority := 10000) Subtype.sdiff [FaithfulSMul M X] : SDiff { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P * (1 - Q), P.prop.mul Q.prop.Lcomplement⟩⟩
 
 @[simp]
@@ -206,7 +206,7 @@ theorem coe_sdiff [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   rfl
 #align is_Lprojection.coe_sdiff IsLprojection.coe_sdiff
 
-instance Subtype.partialOrder [FaithfulSMul M X] :
+instance (priority := 10000) Subtype.partialOrder [FaithfulSMul M X] :
     PartialOrder { P : M // IsLprojection X P } where
   le P Q := (↑P : M) = ↑(P ⊓ Q)
   le_refl P := by simpa only [coe_inf, ← sq] using P.prop.proj.eq.symm
@@ -220,7 +220,7 @@ theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   Iff.rfl
 #align is_Lprojection.le_def IsLprojection.le_def
 
-instance Subtype.zero : Zero { P : M // IsLprojection X P } :=
+instance (priority := 10000) Subtype.zero : Zero { P : M // IsLprojection X P } :=
   ⟨⟨0, ⟨by rw [IsIdempotentElem, zero_mul], fun x => by
         simp only [zero_smul, norm_zero, sub_zero, one_smul, zero_add]⟩⟩⟩
 
@@ -229,7 +229,7 @@ theorem coe_zero : ↑(0 : { P : M // IsLprojection X P }) = (0 : M) :=
   rfl
 #align is_Lprojection.coe_zero IsLprojection.coe_zero
 
-instance Subtype.one : One { P : M // IsLprojection X P } :=
+instance (priority := 10000) Subtype.one : One { P : M // IsLprojection X P } :=
   ⟨⟨1, sub_zero (1 : M) ▸ (0 : { P : M // IsLprojection X P }).prop.Lcomplement⟩⟩
 
 @[simp]
@@ -237,7 +237,7 @@ theorem coe_one : ↑(1 : { P : M // IsLprojection X P }) = (1 : M) :=
   rfl
 #align is_Lprojection.coe_one IsLprojection.coe_one
 
-instance Subtype.boundedOrder [FaithfulSMul M X] :
+instance (priority := 10000) Subtype.boundedOrder [FaithfulSMul M X] :
     BoundedOrder { P : M // IsLprojection X P } where
   top := 1
   le_top P := (mul_one (P : M)).symm
@@ -281,7 +281,7 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
 --  an instance of a `DistribLattice`. Trying to do that in mathlib4 fails with "error:
 -- (deterministic) timeout at 'whnf', maximum number of heartbeats (800000) has been reached"
 -- My workaround is to show instance Lattice first
-instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
+instance (priority := 10000) [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
   le_sup_left P Q := by
     rw [le_def, coe_inf, coe_sup, ← add_sub, mul_add, mul_sub, ← mul_assoc, P.prop.proj.eq,
       sub_self, add_zero]
@@ -302,7 +302,7 @@ instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
     intro h₁ h₂
     rw [← h₁, ← h₂]
 
-instance Subtype.distribLattice [FaithfulSMul M X] :
+instance (priority := 10000) Subtype.distribLattice [FaithfulSMul M X] :
     DistribLattice { P : M // IsLprojection X P } where
   le_sup_inf P Q R := by
     have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑Pᶜ := by
@@ -317,7 +317,7 @@ instance Subtype.distribLattice [FaithfulSMul M X] :
         distrib_lattice_lemma, (Q.prop.commute R.prop).eq, distrib_lattice_lemma]
     rw [le_def, e₁, coe_inf, e₂]
 
-instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
+instance (priority := 10000) Subtype.BooleanAlgebra [FaithfulSMul M X] :
     BooleanAlgebra { P : M // IsLprojection X P } :=
 --porting note: use explicitly specified instance names
   { IsLprojection.Subtype.hasCompl,

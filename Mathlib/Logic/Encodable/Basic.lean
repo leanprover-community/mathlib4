@@ -117,7 +117,7 @@ theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
   by rw [Option.map_eq_bind]
 #align encodable.decode_of_equiv Encodable.decode_ofEquiv
 
-instance _root_.Nat.encodable : Encodable ℕ :=
+instance (priority := 10000) _root_.Nat.encodable : Encodable ℕ :=
   ⟨id, some, fun _ => rfl⟩
 #align nat.encodable Nat.encodable
 
@@ -135,7 +135,7 @@ instance (priority := 100) _root_.IsEmpty.toEncodable [IsEmpty α] : Encodable �
   ⟨isEmptyElim, fun _ => none, isEmptyElim⟩
 #align is_empty.to_encodable IsEmpty.toEncodable
 
-instance _root_.PUnit.encodable : Encodable PUnit :=
+instance (priority := 10000) _root_.PUnit.encodable : Encodable PUnit :=
   ⟨fun _ => 0, fun n => Nat.casesOn n (some PUnit.unit) fun _ => none, fun _ => by simp⟩
 #align punit.encodable PUnit.encodable
 
@@ -155,7 +155,7 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 #align encodable.decode_unit_succ Encodable.decode_unit_succ
 
 /-- If `α` is encodable, then so is `Option α`. -/
-instance _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Option α) :=
+instance (priority := 10000) _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
     cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
@@ -276,7 +276,7 @@ def decodeSum (n : ℕ) : Option (Sum α β) :=
 #align encodable.decode_sum Encodable.decodeSum
 
 /-- If `α` and `β` are encodable, then so is their sum. -/
-instance _root_.Sum.encodable : Encodable (Sum α β) :=
+instance (priority := 10000) _root_.Sum.encodable : Encodable (Sum α β) :=
   ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
 #align sum.encodable Sum.encodable
 
@@ -299,7 +299,7 @@ theorem decode_sum_val (n : ℕ) : (decode n : Option (Sum α β)) = decodeSum n
 
 end Sum
 
-instance _root_.Bool.encodable : Encodable Bool :=
+instance (priority := 10000) _root_.Bool.encodable : Encodable Bool :=
   ofEquiv (Sum Unit Unit) Equiv.boolEquivPUnitSumPUnit
 #align bool.encodable Bool.encodable
 
@@ -335,7 +335,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
   simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
 #align encodable.decode_ge_two Encodable.decode_ge_two
 
-noncomputable instance _root_.Prop.encodable : Encodable Prop :=
+noncomputable instance (priority := 10000) _root_.Prop.encodable : Encodable Prop :=
   ofEquiv Bool Equiv.propEquivBool
 #align Prop.encodable Prop.encodable
 
@@ -354,7 +354,7 @@ def decodeSigma (n : ℕ) : Option (Sigma γ) :=
   (decode n₁).bind fun a => (decode n₂).map <| Sigma.mk a
 #align encodable.decode_sigma Encodable.decodeSigma
 
-instance _root_.Sigma.encodable : Encodable (Sigma γ) :=
+instance (priority := 10000) _root_.Sigma.encodable : Encodable (Sigma γ) :=
   ⟨encodeSigma, decodeSigma, fun ⟨a, b⟩ => by
     simp [encodeSigma, decodeSigma, unpair_pair, encodek]⟩
 #align sigma.encodable Sigma.encodable
@@ -378,7 +378,7 @@ section Prod
 variable [Encodable α] [Encodable β]
 
 /-- If `α` and `β` are encodable, then so is their product. -/
-instance Prod.encodable : Encodable (α × β) :=
+instance (priority := 10000) Prod.encodable : Encodable (α × β) :=
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
 
 @[simp]
@@ -418,7 +418,7 @@ def decodeSubtype (v : ℕ) : Option { a : α // P a } :=
 #align encodable.decode_subtype Encodable.decodeSubtype
 
 /-- A decidable subtype of an encodable type is encodable. -/
-instance _root_.Subtype.encodable : Encodable { a : α // P a } :=
+instance (priority := 10000) _root_.Subtype.encodable : Encodable { a : α // P a } :=
   ⟨encodeSubtype, decodeSubtype, fun ⟨v, h⟩ => by simp [encodeSubtype, decodeSubtype, encodek, h]⟩
 #align subtype.encodable Subtype.encodable
 
@@ -427,25 +427,25 @@ theorem Subtype.encode_eq (a : Subtype P) : encode a = encode a.val := by cases 
 
 end Subtype
 
-instance _root_.Fin.encodable (n) : Encodable (Fin n) :=
+instance (priority := 10000) _root_.Fin.encodable (n) : Encodable (Fin n) :=
   ofEquiv _ Fin.equivSubtype
 #align fin.encodable Fin.encodable
 
-instance _root_.Int.encodable : Encodable ℤ :=
+instance (priority := 10000) _root_.Int.encodable : Encodable ℤ :=
   ofEquiv _ Equiv.intEquivNat
 #align int.encodable Int.encodable
 
-instance _root_.PNat.encodable : Encodable ℕ+ :=
+instance (priority := 10000) _root_.PNat.encodable : Encodable ℕ+ :=
   ofEquiv _ Equiv.pnatEquivNat
 #align pnat.encodable PNat.encodable
 
 /-- The lift of an encodable type is encodable -/
-instance _root_.ULift.encodable [Encodable α] : Encodable (ULift α) :=
+instance (priority := 10000) _root_.ULift.encodable [Encodable α] : Encodable (ULift α) :=
   ofEquiv _ Equiv.ulift
 #align ulift.encodable ULift.encodable
 
 /-- The lift of an encodable type is encodable. -/
-instance _root_.PLift.encodable [Encodable α] : Encodable (PLift α) :=
+instance (priority := 10000) _root_.PLift.encodable [Encodable α] : Encodable (PLift α) :=
   ofEquiv _ Equiv.plift
 #align plift.encodable PLift.encodable
 
@@ -473,7 +473,7 @@ theorem nonempty_encodable (α : Type*) [Countable α] : Nonempty (Encodable α)
   ⟨Encodable.ofCountable _⟩
 #align nonempty_encodable nonempty_encodable
 
-instance : Countable ℕ+ := by delta PNat; infer_instance
+instance (priority := 10000) : Countable ℕ+ := by delta PNat; infer_instance
 
 -- short-circuit instance search
 section ULower
@@ -485,10 +485,10 @@ def ULower (α : Type*) [Encodable α] : Type :=
   Set.range (Encodable.encode : α → ℕ)
 #align ulower ULower
 
-instance {α : Type*} [Encodable α] : DecidableEq (ULower α) :=
+instance (priority := 10000) {α : Type*} [Encodable α] : DecidableEq (ULower α) :=
   by delta ULower; exact Encodable.decidableEqOfEncodable _
 
-instance {α : Type*} [Encodable α] : Encodable (ULower α) :=
+instance (priority := 10000) {α : Type*} [Encodable α] : Encodable (ULower α) :=
   by delta ULower; infer_instance
 
 end ULower
@@ -509,7 +509,7 @@ def down (a : α) : ULower α :=
   equiv α a
 #align ulower.down ULower.down
 
-instance [Inhabited α] : Inhabited (ULower α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (ULower α) :=
   ⟨down default⟩
 
 /-- Lifts an `a : ULower α` into `α`. -/
@@ -611,13 +611,13 @@ def encode' (α) [Encodable α] : α ↪ ℕ :=
   ⟨Encodable.encode, Encodable.encode_injective⟩
 #align encodable.encode' Encodable.encode'
 
-instance {α} [Encodable α] : IsTrans _ (encode' α ⁻¹'o (· ≤ ·)) :=
+instance (priority := 10000) {α} [Encodable α] : IsTrans _ (encode' α ⁻¹'o (· ≤ ·)) :=
   (RelEmbedding.preimage _ _).isTrans
 
-instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+instance (priority := 10000) {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
   (RelEmbedding.preimage _ _).isAntisymm
 
-instance {α} [Encodable α] : IsTotal _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+instance (priority := 10000) {α} [Encodable α] : IsTotal _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
   (RelEmbedding.preimage _ _).isTotal
 
 end Encodable

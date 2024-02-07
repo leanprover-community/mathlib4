@@ -371,7 +371,7 @@ structure ProjectionData where
   isPrefix : Bool
   deriving Inhabited
 
-instance : ToMessageData ProjectionData where toMessageData
+instance (priority := 10000) : ToMessageData ProjectionData where toMessageData
   | ⟨a, b, c, d, e⟩ => .group <| .nest 1 <|
     "⟨" ++ .joinSep [toMessageData a, toMessageData b, toMessageData c, toMessageData d,
       toMessageData e] ("," ++ Format.line) ++ "⟩"
@@ -413,7 +413,7 @@ structure ParsedProjectionData where
 def ParsedProjectionData.toProjectionData (p : ParsedProjectionData) : ProjectionData :=
   { p with name := p.newName, expr := p.expr?.getD default, projNrs := p.projNrs.toList }
 
-instance : ToMessageData ParsedProjectionData where toMessageData
+instance (priority := 10000) : ToMessageData ParsedProjectionData where toMessageData
   | ⟨x₁, x₂, x₃, x₄, x₅, x₆, x₇, x₈, x₉⟩ => .group <| .nest 1 <|
     "⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂, toMessageData x₃, toMessageData x₄,
       toMessageData x₅, toMessageData x₆, toMessageData x₇, toMessageData x₈, toMessageData x₉]
@@ -434,7 +434,7 @@ inductive ProjectionRule where
   /-- A prefix rule `prefix fieldName` -/
   | prefix : Name → Syntax → ProjectionRule
 
-instance : ToMessageData ProjectionRule where toMessageData
+instance (priority := 10000) : ToMessageData ProjectionRule where toMessageData
   | .rename x₁ x₂ x₃ x₄ => .group <| .nest 1 <|
     "rename ⟨" ++ .joinSep [toMessageData x₁, toMessageData x₂, toMessageData x₃, toMessageData x₄]
       ("," ++ Format.line) ++ "⟩"

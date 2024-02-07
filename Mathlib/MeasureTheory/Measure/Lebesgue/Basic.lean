@@ -130,7 +130,7 @@ theorem volume_emetric_closedBall (a : ℝ) (r : ℝ≥0∞) : volume (EMetric.c
       ENNReal.ofReal_coe_nnreal, ENNReal.coe_add, two_mul]
 #align real.volume_emetric_closed_ball Real.volume_emetric_closedBall
 
-instance noAtoms_volume : NoAtoms (volume : Measure ℝ) :=
+instance (priority := 10000) noAtoms_volume : NoAtoms (volume : Measure ℝ) :=
   ⟨fun _ => volume_singleton⟩
 #align real.has_no_atoms_volume Real.noAtoms_volume
 
@@ -165,26 +165,26 @@ theorem volume_Iio {a : ℝ} : volume (Iio a) = ∞ :=
 theorem volume_Iic {a : ℝ} : volume (Iic a) = ∞ := by rw [← measure_congr Iio_ae_eq_Iic]; simp
 #align real.volume_Iic Real.volume_Iic
 
-instance locallyFinite_volume : IsLocallyFiniteMeasure (volume : Measure ℝ) :=
+instance (priority := 10000) locallyFinite_volume : IsLocallyFiniteMeasure (volume : Measure ℝ) :=
   ⟨fun x =>
     ⟨Ioo (x - 1) (x + 1),
       IsOpen.mem_nhds isOpen_Ioo ⟨sub_lt_self _ zero_lt_one, lt_add_of_pos_right _ zero_lt_one⟩, by
       simp only [Real.volume_Ioo, ENNReal.ofReal_lt_top]⟩⟩
 #align real.locally_finite_volume Real.locallyFinite_volume
 
-instance isFiniteMeasure_restrict_Icc (x y : ℝ) : IsFiniteMeasure (volume.restrict (Icc x y)) :=
+instance (priority := 10000) isFiniteMeasure_restrict_Icc (x y : ℝ) : IsFiniteMeasure (volume.restrict (Icc x y)) :=
   ⟨by simp⟩
 #align real.is_finite_measure_restrict_Icc Real.isFiniteMeasure_restrict_Icc
 
-instance isFiniteMeasure_restrict_Ico (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ico x y)) :=
+instance (priority := 10000) isFiniteMeasure_restrict_Ico (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ico x y)) :=
   ⟨by simp⟩
 #align real.is_finite_measure_restrict_Ico Real.isFiniteMeasure_restrict_Ico
 
-instance isFiniteMeasure_restrict_Ioc (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ioc x y)) :=
+instance (priority := 10000) isFiniteMeasure_restrict_Ioc (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ioc x y)) :=
   ⟨by simp⟩
 #align real.is_finite_measure_restrict_Ioc Real.isFiniteMeasure_restrict_Ioc
 
-instance isFiniteMeasure_restrict_Ioo (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ioo x y)) :=
+instance (priority := 10000) isFiniteMeasure_restrict_Ioo (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ioo x y)) :=
   ⟨by simp⟩
 #align real.is_finite_measure_restrict_Ioo Real.isFiniteMeasure_restrict_Ioo
 

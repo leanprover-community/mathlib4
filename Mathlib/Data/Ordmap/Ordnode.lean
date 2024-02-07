@@ -84,10 +84,10 @@ namespace Ordnode
 
 variable {α : Type*}
 
-instance : EmptyCollection (Ordnode α) :=
+instance (priority := 10000) : EmptyCollection (Ordnode α) :=
   ⟨nil⟩
 
-instance : Inhabited (Ordnode α) :=
+instance (priority := 10000) : Inhabited (Ordnode α) :=
   ⟨nil⟩
 
 /-- **Internal use only**
@@ -126,7 +126,7 @@ protected def singleton (a : α) : Ordnode α :=
 -- mathport name: «exprι »
 local prefix:arg "ι" => Ordnode.singleton
 
-instance : Singleton α (Ordnode α) :=
+instance (priority := 10000) : Singleton α (Ordnode α) :=
   ⟨Ordnode.singleton⟩
 
 /-- O(1). Get the size of the set.
@@ -188,7 +188,7 @@ def repr {α} [Repr α] (o : Ordnode α) (n : ℕ) : Std.Format :=
       Std.Format.paren fmt
 #align ordnode.repr Ordnode.repr
 
-instance {α} [Repr α] : Repr (Ordnode α) :=
+instance (priority := 10000) {α} [Repr α] : Repr (Ordnode α) :=
   ⟨repr⟩
 
 -- Note: The function has been written with tactics to avoid extra junk
@@ -331,7 +331,7 @@ def All (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => All P l ∧ P x ∧ All P r
 #align ordnode.all Ordnode.All
 
-instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (All P t)
+instance (priority := 10000) All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (All P t)
   | nil => decidableTrue
   | node _ l _ r =>
     have : Decidable (All P l) := All.decidable l
@@ -348,7 +348,7 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 #align ordnode.any Ordnode.Any
 
-instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
+instance (priority := 10000) Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
   | nil => decidableFalse
   | node _ l _ r =>
     have : Decidable (Any P l) := Any.decidable l
@@ -366,7 +366,7 @@ def Emem (x : α) : Ordnode α → Prop :=
   Any (Eq x)
 #align ordnode.emem Ordnode.Emem
 
-instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
+instance (priority := 10000) Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
   dsimp [Emem]; infer_instance
 #align ordnode.emem.decidable Ordnode.Emem.decidable
 
@@ -391,7 +391,7 @@ def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
 #align ordnode.amem Ordnode.Amem
 
-instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
+instance (priority := 10000) Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
     ∀ t, Decidable (Amem x t) := by
   dsimp [Amem]; infer_instance
 #align ordnode.amem.decidable Ordnode.Amem.decidable
@@ -663,11 +663,11 @@ def toRevList (t : Ordnode α) : List α :=
   foldl (flip List.cons) [] t
 #align ordnode.to_rev_list Ordnode.toRevList
 
-instance [ToString α] : ToString (Ordnode α) :=
+instance (priority := 10000) [ToString α] : ToString (Ordnode α) :=
   ⟨fun t => "{" ++ String.intercalate ", " (t.toList.map toString) ++ "}"⟩
 
 -- Porting note removed unsafe
-instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
+instance (priority := 10000) [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
   format := fun t => Std.Format.joinSep (t.toList.map Std.ToFormat.format) (Std.Format.text ", ")
 
 /-- O(n). True if the trees have the same elements, ignoring structural differences.
@@ -678,7 +678,7 @@ def Equiv (t₁ t₂ : Ordnode α) : Prop :=
   t₁.size = t₂.size ∧ t₁.toList = t₂.toList
 #align ordnode.equiv Ordnode.Equiv
 
-instance [DecidableEq α] : DecidableRel (@Equiv α) := fun _ _ => And.decidable
+instance (priority := 10000) [DecidableEq α] : DecidableRel (@Equiv α) := fun _ _ => And.decidable
 
 /-- O(2^n). Constructs the powerset of a given set, that is, the set of all subsets.
 
@@ -947,10 +947,10 @@ def find (x : α) : Ordnode α → Option α
     | Ordering.gt => find x r
 #align ordnode.find Ordnode.find
 
-instance : Membership α (Ordnode α) :=
+instance (priority := 10000) : Membership α (Ordnode α) :=
   ⟨fun x t => t.mem x⟩
 
-instance mem.decidable (x : α) (t : Ordnode α) : Decidable (x ∈ t) :=
+instance (priority := 10000) mem.decidable (x : α) (t : Ordnode α) : Decidable (x ∈ t) :=
   Bool.decEq _ _
 #align ordnode.mem.decidable Ordnode.mem.decidable
 
@@ -1052,7 +1052,7 @@ protected def insert (x : α) : Ordnode α → Ordnode α
     | Ordering.gt => balanceR l y (Ordnode.insert x r)
 #align ordnode.insert Ordnode.insert
 
-instance : Insert α (Ordnode α) :=
+instance (priority := 10000) : Insert α (Ordnode α) :=
   ⟨Ordnode.insert⟩
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.

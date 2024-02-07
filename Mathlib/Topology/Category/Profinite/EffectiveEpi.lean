@@ -76,7 +76,7 @@ theorem effectiveEpi_tfae
   · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
   tfae_finish
 
-instance : Preregular Profinite where
+instance (priority := 10000) : Preregular Profinite where
   exists_fac := by
     intro X Y Z f π hπ
     refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩

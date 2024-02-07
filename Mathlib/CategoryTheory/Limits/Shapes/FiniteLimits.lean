@@ -32,7 +32,7 @@ variable (C : Type u) [Category.{v} C]
 -- We can't just made this an `abbreviation`
 -- because of https://github.com/leanprover-community/lean/issues/429
 /-- A category has all finite limits if every functor `J ⥤ C` with a `FinCategory J`
-instance and `J : Type` has a limit.
+instance (priority := 10000) and `J : Type` has a limit.
 
 This is often called 'finitely complete'.
 -/
@@ -82,7 +82,7 @@ theorem hasFiniteLimits_of_hasFiniteLimits_of_size
 #align category_theory.limits.has_finite_limits_of_has_finite_limits_of_size CategoryTheory.Limits.hasFiniteLimits_of_hasFiniteLimits_of_size
 
 /-- A category has all finite colimits if every functor `J ⥤ C` with a `FinCategory J`
-instance and `J : Type` has a colimit.
+instance (priority := 10000) and `J : Type` has a colimit.
 
 This is often called 'finitely cocomplete'.
 -/
@@ -127,14 +127,14 @@ section
 
 open WalkingParallelPair WalkingParallelPairHom
 
-instance fintypeWalkingParallelPair : Fintype WalkingParallelPair where
+instance (priority := 10000) fintypeWalkingParallelPair : Fintype WalkingParallelPair where
   elems := [WalkingParallelPair.zero, WalkingParallelPair.one].toFinset
   complete x := by cases x <;> simp
 #align category_theory.limits.fintype_walking_parallel_pair CategoryTheory.Limits.fintypeWalkingParallelPair
 
 -- attribute [local tidy] tactic.case_bash Porting note: no tidy; no case_bash
 
-instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
+instance (priority := 10000) instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
     Fintype (WalkingParallelPairHom j j') where
   elems :=
     WalkingParallelPair.recOn j
@@ -146,7 +146,7 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
     · cases j <;> simp
 end
 
-instance : FinCategory WalkingParallelPair where
+instance (priority := 10000) : FinCategory WalkingParallelPair where
   fintypeObj := fintypeWalkingParallelPair
   fintypeHom := instFintypeWalkingParallelPairHom -- Porting note: could not be inferred
 
@@ -163,12 +163,12 @@ variable {J : Type v}
 
 namespace WidePullbackShape
 
-instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) := by
+instance (priority := 10000) fintypeObj [Fintype J] : Fintype (WidePullbackShape J) := by
   rw [WidePullbackShape]
   infer_instance
 #align category_theory.limits.wide_pullback_shape.fintype_obj CategoryTheory.Limits.WidePullbackShape.fintypeObj
 
-instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j')
+instance (priority := 10000) fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j')
     where
   elems := by
     cases' j' with j'
@@ -189,11 +189,11 @@ end WidePullbackShape
 
 namespace WidePushoutShape
 
-instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := by
+instance (priority := 10000) fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := by
   rw [WidePushoutShape]; infer_instance
 #align category_theory.limits.wide_pushout_shape.fintype_obj CategoryTheory.Limits.WidePushoutShape.fintypeObj
 
-instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
+instance (priority := 10000) fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by
     cases' j with j
     · cases' j' with j'
@@ -211,11 +211,11 @@ instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
 
 end WidePushoutShape
 
-instance finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J) where
+instance (priority := 10000) finCategoryWidePullback [Fintype J] : FinCategory (WidePullbackShape J) where
   fintypeHom := WidePullbackShape.fintypeHom
 #align category_theory.limits.fin_category_wide_pullback CategoryTheory.Limits.finCategoryWidePullback
 
-instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
+instance (priority := 10000) finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) where
   fintypeHom := WidePushoutShape.fintypeHom
 #align category_theory.limits.fin_category_wide_pushout CategoryTheory.Limits.finCategoryWidePushout
 
@@ -229,7 +229,7 @@ class HasFiniteWidePullbacks : Prop where
   out (J : Type) [Fintype J] : HasLimitsOfShape (WidePullbackShape J) C
 #align category_theory.limits.has_finite_wide_pullbacks CategoryTheory.Limits.HasFiniteWidePullbacks
 
-instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWidePullbacks C] :
+instance (priority := 10000) hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWidePullbacks C] :
     HasLimitsOfShape (WidePullbackShape J) C := by
   cases nonempty_fintype J
   haveI := @HasFiniteWidePullbacks.out C _ _ J
@@ -244,7 +244,7 @@ class HasFiniteWidePushouts : Prop where
   out (J : Type) [Fintype J] : HasColimitsOfShape (WidePushoutShape J) C
 #align category_theory.limits.has_finite_wide_pushouts CategoryTheory.Limits.HasFiniteWidePushouts
 
-instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWidePushouts C] :
+instance (priority := 10000) hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWidePushouts C] :
     HasColimitsOfShape (WidePushoutShape J) C := by
   cases nonempty_fintype J
   haveI := @HasFiniteWidePushouts.out C _ _ J
@@ -266,7 +266,7 @@ theorem hasFiniteWidePushouts_of_has_finite_limits [HasFiniteColimits C] :
   ⟨fun _ _ => HasFiniteColimits.out _⟩
 #align category_theory.limits.has_finite_wide_pushouts_of_has_finite_limits CategoryTheory.Limits.hasFiniteWidePushouts_of_has_finite_limits
 
-instance fintypeWalkingPair : Fintype WalkingPair where
+instance (priority := 10000) fintypeWalkingPair : Fintype WalkingPair where
   elems := {WalkingPair.left, WalkingPair.right}
   complete x := by cases x <;> simp
 #align category_theory.limits.fintype_walking_pair CategoryTheory.Limits.fintypeWalkingPair

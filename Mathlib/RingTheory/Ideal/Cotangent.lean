@@ -39,21 +39,21 @@ variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] 
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
 #align ideal.cotangent Ideal.Cotangent
 
-instance : AddCommGroup I.Cotangent := by delta Cotangent; infer_instance
+instance (priority := 10000) : AddCommGroup I.Cotangent := by delta Cotangent; infer_instance
 
-instance cotangentModule : Module (R ⧸ I) I.Cotangent := by delta Cotangent; infer_instance
+instance (priority := 10000) cotangentModule : Module (R ⧸ I) I.Cotangent := by delta Cotangent; infer_instance
 
-instance : Inhabited I.Cotangent := ⟨0⟩
+instance (priority := 10000) : Inhabited I.Cotangent := ⟨0⟩
 
-instance Cotangent.moduleOfTower : Module S I.Cotangent :=
+instance (priority := 10000) Cotangent.moduleOfTower : Module S I.Cotangent :=
   Submodule.Quotient.module' _
 #align ideal.cotangent.module_of_tower Ideal.Cotangent.moduleOfTower
 
-instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
+instance (priority := 10000) Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
   Submodule.Quotient.isScalarTower _ _
 #align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
-instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
+instance (priority := 10000) [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
   Submodule.Quotient.isNoetherian _
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
@@ -206,12 +206,12 @@ variable (R : Type*) [CommRing R] [LocalRing R]
 def CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 #align local_ring.cotangent_space LocalRing.CotangentSpace
 
-instance : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _
+instance (priority := 10000) : Module (ResidueField R) (CotangentSpace R) := Ideal.cotangentModule _
 
-instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
+instance (priority := 10000) : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
   Module.IsTorsionBySet.isScalarTower _
 
-instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
+instance (priority := 10000) [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _
 
 variable {R}

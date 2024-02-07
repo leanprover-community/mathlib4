@@ -102,14 +102,14 @@ section
 
 variable {f₀ f₁ : C(X, Y)}
 
-instance instFunLike : FunLike (Homotopy f₀ f₁) (I × X) Y where
+instance (priority := 10000) instFunLike : FunLike (Homotopy f₀ f₁) (I × X) Y where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
-instance : HomotopyLike (Homotopy f₀ f₁) f₀ f₁ where
+instance (priority := 10000) : HomotopyLike (Homotopy f₀ f₁) f₀ f₁ where
   map_continuous f := f.continuous_toFun
   map_zero_left f := f.map_zero_left
   map_one_left f := f.map_one_left
@@ -207,7 +207,7 @@ def refl (f : C(X, Y)) : Homotopy f f where
   map_one_left _ := rfl
 #align continuous_map.homotopy.refl ContinuousMap.Homotopy.refl
 
-instance : Inhabited (Homotopy (ContinuousMap.id X) (ContinuousMap.id X)) :=
+instance (priority := 10000) : Inhabited (Homotopy (ContinuousMap.id X) (ContinuousMap.id X)) :=
   ⟨Homotopy.refl _⟩
 
 /-- Given a `Homotopy f₀ f₁`, we can define a `Homotopy f₁ f₀` by reversing the homotopy.
@@ -416,12 +416,12 @@ section
 
 variable {f₀ f₁ : C(X, Y)} {P : C(X, Y) → Prop}
 
-instance instFunLike : FunLike (HomotopyWith f₀ f₁ P) (I × X) Y where
+instance (priority := 10000) instFunLike : FunLike (HomotopyWith f₀ f₁ P) (I × X) Y where
   coe F := ⇑F.toHomotopy
   coe_injective'
   | ⟨⟨⟨_, _⟩, _, _⟩, _⟩, ⟨⟨⟨_, _⟩, _, _⟩, _⟩, rfl => rfl
 
-instance : HomotopyLike (HomotopyWith f₀ f₁ P) f₀ f₁ where
+instance (priority := 10000) : HomotopyLike (HomotopyWith f₀ f₁ P) f₀ f₁ where
   map_continuous F := F.continuous_toFun
   map_zero_left F := F.map_zero_left
   map_one_left F := F.map_one_left
@@ -486,7 +486,7 @@ def refl (f : C(X, Y)) (hf : P f) : HomotopyWith f f P where
   prop' := fun _ => hf
 #align continuous_map.homotopy_with.refl ContinuousMap.HomotopyWith.refl
 
-instance : Inhabited (HomotopyWith (ContinuousMap.id X) (ContinuousMap.id X) fun _ => True) :=
+instance (priority := 10000) : Inhabited (HomotopyWith (ContinuousMap.id X) (ContinuousMap.id X) fun _ => True) :=
   ⟨HomotopyWith.refl _ trivial⟩
 
 /--

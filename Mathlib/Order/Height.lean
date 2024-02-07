@@ -76,7 +76,7 @@ theorem cons_mem_subchain_iff :
 @[simp] -- porting note: new lemma + `simp`
 theorem singleton_mem_subchain_iff : [a] ∈ s.subchain ↔ a ∈ s := by simp [cons_mem_subchain_iff]
 
-instance : Nonempty s.subchain :=
+instance (priority := 10000) : Nonempty s.subchain :=
   ⟨⟨[], s.nil_mem_subchain⟩⟩
 
 variable (s)

@@ -239,7 +239,7 @@ theorem RingHom.ext_rat {R : Type*} [Semiring R] [FunLike F ℚ R] [RingHomClass
       ((f : ℚ →+* R).comp (Int.castRingHom ℚ)).ext_int ((g : ℚ →+* R).comp (Int.castRingHom ℚ))
 #align ring_hom.ext_rat RingHom.ext_rat
 
-instance Rat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ →+* R) :=
+instance (priority := 10000) Rat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩
 #align rat.subsingleton_ring_hom Rat.subsingleton_ringHom
 
@@ -255,7 +255,7 @@ instance (priority := 100) distribSMul : DistribSMul ℚ K where
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
 #align rat.distrib_smul Rat.distribSMul
 
-instance isScalarTower_right : IsScalarTower ℚ K K :=
+instance (priority := 10000) isScalarTower_right : IsScalarTower ℚ K K :=
   ⟨fun a x y => by simp only [smul_def, smul_eq_mul, mul_assoc]⟩
 #align rat.is_scalar_tower_right Rat.isScalarTower_right
 

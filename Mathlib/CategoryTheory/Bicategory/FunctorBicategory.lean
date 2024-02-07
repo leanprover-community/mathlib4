@@ -79,7 +79,7 @@ variable (B C)
 /-- A bicategory structure on the oplax functors between bicategories. -/
 -- Porting note: verified that projections are correct and changed @[simps] to @[simps!]
 @[simps!]
-instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
+instance (priority := 10000) OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
   whiskerLeft {F G H} η _ _ Γ := OplaxNatTrans.whiskerLeft η Γ
   whiskerRight {F G H} _ _ Γ η := OplaxNatTrans.whiskerRight Γ η
   associator {F G H} I := OplaxNatTrans.associator

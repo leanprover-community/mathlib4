@@ -229,7 +229,7 @@ theorem map_symmDiff (a b : α) : f (a ∆ b) = f a ∆ f b := by simp_rw [symmD
 
 end CoheytingAlgebra
 
-instance [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] : CoeTC F (HeytingHom α β) :=
+instance (priority := 10000) [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] : CoeTC F (HeytingHom α β) :=
   ⟨fun f =>
     { toFun := f
       map_sup' := map_sup f
@@ -237,7 +237,7 @@ instance [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] : Coe
       map_bot' := map_bot f
       map_himp' := map_himp f }⟩
 
-instance [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingHomClass F α β] :
+instance (priority := 10000) [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingHomClass F α β] :
     CoeTC F (CoheytingHom α β) :=
   ⟨fun f =>
     { toFun := f
@@ -246,7 +246,7 @@ instance [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingHomClass F α β]
       map_top' := map_top f
       map_sdiff' := map_sdiff f }⟩
 
-instance [BiheytingAlgebra α] [BiheytingAlgebra β] [BiheytingHomClass F α β] :
+instance (priority := 10000) [BiheytingAlgebra α] [BiheytingAlgebra β] [BiheytingHomClass F α β] :
     CoeTC F (BiheytingHom α β) :=
   ⟨fun f =>
     { toFun := f
@@ -259,11 +259,11 @@ namespace HeytingHom
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingAlgebra γ] [HeytingAlgebra δ]
 
-instance instFunLike : FunLike (HeytingHom α β) α β where
+instance (priority := 10000) instFunLike : FunLike (HeytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
 
-instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
+instance (priority := 10000) instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_bot f := f.map_bot'
@@ -330,10 +330,10 @@ theorem id_apply (a : α) : HeytingHom.id α a = a :=
   rfl
 #align heyting_hom.id_apply HeytingHom.id_apply
 
-instance : Inhabited (HeytingHom α α) :=
+instance (priority := 10000) : Inhabited (HeytingHom α α) :=
   ⟨HeytingHom.id _⟩
 
-instance : PartialOrder (HeytingHom α β) :=
+instance (priority := 10000) : PartialOrder (HeytingHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 /-- Composition of `HeytingHom`s as a `HeytingHom`. -/
@@ -388,11 +388,11 @@ namespace CoheytingHom
 
 variable [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingAlgebra γ] [CoheytingAlgebra δ]
 
-instance : FunLike (CoheytingHom α β) α β where
+instance (priority := 10000) : FunLike (CoheytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
 
-instance : CoheytingHomClass (CoheytingHom α β) α β where
+instance (priority := 10000) : CoheytingHomClass (CoheytingHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_top f := f.map_top'
@@ -452,10 +452,10 @@ theorem id_apply (a : α) : CoheytingHom.id α a = a :=
   rfl
 #align coheyting_hom.id_apply CoheytingHom.id_apply
 
-instance : Inhabited (CoheytingHom α α) :=
+instance (priority := 10000) : Inhabited (CoheytingHom α α) :=
   ⟨CoheytingHom.id _⟩
 
-instance : PartialOrder (CoheytingHom α β) :=
+instance (priority := 10000) : PartialOrder (CoheytingHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 /-- Composition of `CoheytingHom`s as a `CoheytingHom`. -/
@@ -510,11 +510,11 @@ namespace BiheytingHom
 
 variable [BiheytingAlgebra α] [BiheytingAlgebra β] [BiheytingAlgebra γ] [BiheytingAlgebra δ]
 
-instance : FunLike (BiheytingHom α β) α β where
+instance (priority := 10000) : FunLike (BiheytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
 
-instance : BiheytingHomClass (BiheytingHom α β) α β where
+instance (priority := 10000) : BiheytingHomClass (BiheytingHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_himp f := f.map_himp'
@@ -572,10 +572,10 @@ theorem id_apply (a : α) : BiheytingHom.id α a = a :=
   rfl
 #align biheyting_hom.id_apply BiheytingHom.id_apply
 
-instance : Inhabited (BiheytingHom α α) :=
+instance (priority := 10000) : Inhabited (BiheytingHom α α) :=
   ⟨BiheytingHom.id _⟩
 
-instance : PartialOrder (BiheytingHom α β) :=
+instance (priority := 10000) : PartialOrder (BiheytingHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 /-- Composition of `BiheytingHom`s as a `BiheytingHom`. -/

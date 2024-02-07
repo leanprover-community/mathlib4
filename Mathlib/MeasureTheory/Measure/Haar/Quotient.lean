@@ -42,7 +42,7 @@ variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [Topolog
 /-- Measurability of the action of the topological group `G` on the left-coset space `G/Γ`. -/
 @[to_additive "Measurability of the action of the additive topological group `G` on the left-coset
   space `G/Γ`."]
-instance QuotientGroup.measurableSMul [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)] :
+instance (priority := 10000) QuotientGroup.measurableSMul [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
   measurable_const_smul g := (continuous_const_smul g).measurable
   measurable_smul_const x := (QuotientGroup.continuous_smul₁ x).measurable

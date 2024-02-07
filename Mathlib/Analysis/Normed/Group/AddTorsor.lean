@@ -57,7 +57,7 @@ instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddT
 
 -- Because of the AddTorsor.nonempty instance.
 /-- A nonempty affine subspace of a `NormedAddTorsor` is itself a `NormedAddTorsor`. -/
-instance AffineSubspace.toNormedAddTorsor {R : Type*} [Ring R] [Module R V]
+instance (priority := 10000) AffineSubspace.toNormedAddTorsor {R : Type*} [Ring R] [Module R V]
     (s : AffineSubspace R P) [Nonempty s] : NormedAddTorsor s.direction s :=
   { AffineSubspace.toAddTorsor s with
     dist_eq_norm' := fun x y => NormedAddTorsor.dist_eq_norm' x.val y.val }

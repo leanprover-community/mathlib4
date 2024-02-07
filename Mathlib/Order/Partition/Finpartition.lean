@@ -131,7 +131,7 @@ protected def empty : Finpartition (⊥ : α)
   not_bot_mem := not_mem_empty ⊥
 #align finpartition.empty Finpartition.empty
 
-instance : Inhabited (Finpartition (⊥ : α)) :=
+instance (priority := 10000) : Inhabited (Finpartition (⊥ : α)) :=
   ⟨Finpartition.empty α⟩
 
 @[simp]
@@ -186,7 +186,7 @@ theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty 
   parts_nonempty_iff.2 ha
 #align finpartition.parts_nonempty Finpartition.parts_nonempty
 
-instance : Unique (Finpartition (⊥ : α)) :=
+instance (priority := 10000) : Unique (Finpartition (⊥ : α)) :=
   { (inferInstance : Inhabited (Finpartition (⊥ : α))) with
     uniq := fun P ↦ by
       ext a
@@ -209,7 +209,7 @@ def _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a)
     exact hc
 #align is_atom.unique_finpartition IsAtom.uniqueFinpartition
 
-instance [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) :=
+instance (priority := 10000) [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) :=
   @Fintype.ofSurjective { p : Finset α // p.SupIndep id ∧ p.sup id = a ∧ ⊥ ∉ p } (Finpartition a) _
     (Subtype.fintype _) (fun i ↦ ⟨i.1, i.2.1, i.2.2.1, i.2.2.2⟩) fun ⟨_, y, z, w⟩ ↦
     ⟨⟨_, y, z, w⟩, rfl⟩
@@ -220,10 +220,10 @@ instance [Fintype α] [DecidableEq α] (a : α) : Fintype (Finpartition a) :=
 section Order
 
 /-- We say that `P ≤ Q` if `P` refines `Q`: each part of `P` is less than some part of `Q`. -/
-instance : LE (Finpartition a) :=
+instance (priority := 10000) : LE (Finpartition a) :=
   ⟨fun P Q ↦ ∀ ⦃b⦄, b ∈ P.parts → ∃ c ∈ Q.parts, b ≤ c⟩
 
-instance : PartialOrder (Finpartition a) :=
+instance (priority := 10000) : PartialOrder (Finpartition a) :=
   { (inferInstance : LE (Finpartition a)) with
     le_refl := fun P b hb ↦ ⟨b, hb, le_rfl⟩
     le_trans := fun P Q R hPQ hQR b hb ↦ by
@@ -242,7 +242,7 @@ instance : PartialOrder (Finpartition a) :=
         rwa [hbc.antisymm]
         rwa [Q.disjoint.eq_of_le hb hd (Q.ne_bot hb) (hbc.trans hcd)] }
 
-instance [Decidable (a = ⊥)] : OrderTop (Finpartition a)
+instance (priority := 10000) [Decidable (a = ⊥)] : OrderTop (Finpartition a)
     where
   top := if ha : a = ⊥ then (Finpartition.empty α).copy ha.symm else indiscrete ha
   le_top P := by
@@ -276,7 +276,7 @@ section Inf
 
 variable [DecidableEq α] {a b c : α}
 
-instance : Inf (Finpartition a) :=
+instance (priority := 10000) : Inf (Finpartition a) :=
   ⟨fun P Q ↦
     ofErase ((P.parts ×ˢ Q.parts).image fun bc ↦ bc.1 ⊓ bc.2)
       (by
@@ -302,7 +302,7 @@ theorem parts_inf (P Q : Finpartition a) :
   rfl
 #align finpartition.parts_inf Finpartition.parts_inf
 
-instance : SemilatticeInf (Finpartition a) :=
+instance (priority := 10000) : SemilatticeInf (Finpartition a) :=
   { (inferInstance : PartialOrder (Finpartition a)),
     (inferInstance : Inf (Finpartition a)) with
     inf_le_left := fun P Q b hb ↦ by
@@ -482,7 +482,7 @@ theorem sum_card_parts : ∑ i in P.parts, i.card = s.card := by
 #align finpartition.sum_card_parts Finpartition.sum_card_parts
 
 /-- `⊥` is the partition in singletons, aka discrete partition. -/
-instance (s : Finset α) : Bot (Finpartition s) :=
+instance (priority := 10000) (s : Finset α) : Bot (Finpartition s) :=
   ⟨{  parts := s.map ⟨singleton, singleton_injective⟩
       supIndep :=
         Set.PairwiseDisjoint.supIndep
@@ -506,7 +506,7 @@ theorem mem_bot_iff : t ∈ (⊥ : Finpartition s).parts ↔ ∃ a ∈ s, {a} = 
   mem_map
 #align finpartition.mem_bot_iff Finpartition.mem_bot_iff
 
-instance (s : Finset α) : OrderBot (Finpartition s) :=
+instance (priority := 10000) (s : Finset α) : OrderBot (Finpartition s) :=
   { (inferInstance : Bot (Finpartition s)) with
     bot_le := fun P t ht ↦ by
       rw [mem_bot_iff] at ht

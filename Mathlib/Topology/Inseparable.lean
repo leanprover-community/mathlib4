@@ -422,7 +422,7 @@ be a T₀ space. -/
 def SeparationQuotient := Quotient (inseparableSetoid X)
 #align separation_quotient SeparationQuotient
 
-instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
+instance (priority := 10000) : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
 
 variable {X}
 variable {t : Set (SeparationQuotient X)}
@@ -455,13 +455,13 @@ theorem range_mk : range (mk : X → SeparationQuotient X) = univ :=
   surjective_mk.range_eq
 #align separation_quotient.range_mk SeparationQuotient.range_mk
 
-instance [Nonempty X] : Nonempty (SeparationQuotient X) :=
+instance (priority := 10000) [Nonempty X] : Nonempty (SeparationQuotient X) :=
   Nonempty.map mk ‹_›
 
-instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
+instance (priority := 10000) [Inhabited X] : Inhabited (SeparationQuotient X) :=
   ⟨mk default⟩
 
-instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
+instance (priority := 10000) [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
 theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by

@@ -512,18 +512,18 @@ variable {Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [SMul M X]
   [IsometricSMul M X]
 
 @[to_additive]
-instance [SMul M Y] [IsometricSMul M Y] : IsometricSMul M (X × Y) :=
+instance (priority := 10000) [SMul M Y] [IsometricSMul M Y] : IsometricSMul M (X × Y) :=
   ⟨fun c => (isometry_smul X c).prod_map (isometry_smul Y c)⟩
 
 @[to_additive]
-instance Prod.isometricSMul' {N} [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] [Mul N]
+instance (priority := 10000) Prod.isometricSMul' {N} [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] [Mul N]
     [PseudoEMetricSpace N] [IsometricSMul N N] : IsometricSMul (M × N) (M × N) :=
   ⟨fun c => (isometry_smul M c.1).prod_map (isometry_smul N c.2)⟩
 #align prod.has_isometric_smul' Prod.isometricSMul'
 #align prod.has_isometric_vadd' Prod.isometricVAdd'
 
 @[to_additive]
-instance Prod.isometricSMul'' {N} [Mul M] [PseudoEMetricSpace M] [IsometricSMul Mᵐᵒᵖ M]
+instance (priority := 10000) Prod.isometricSMul'' {N} [Mul M] [PseudoEMetricSpace M] [IsometricSMul Mᵐᵒᵖ M]
     [Mul N] [PseudoEMetricSpace N] [IsometricSMul Nᵐᵒᵖ N] :
     IsometricSMul (M × N)ᵐᵒᵖ (M × N) :=
   ⟨fun c => (isometry_mul_right c.unop.1).prod_map (isometry_mul_right c.unop.2)⟩
@@ -531,34 +531,34 @@ instance Prod.isometricSMul'' {N} [Mul M] [PseudoEMetricSpace M] [IsometricSMul 
 #align prod.has_isometric_vadd'' Prod.isometricVAdd''
 
 @[to_additive]
-instance Units.isometricSMul [Monoid M] : IsometricSMul Mˣ X :=
+instance (priority := 10000) Units.isometricSMul [Monoid M] : IsometricSMul Mˣ X :=
   ⟨fun c => isometry_smul X (c : M)⟩
 #align units.has_isometric_smul Units.isometricSMul
 #align add_units.has_isometric_vadd AddUnits.isometricVAdd
 
 @[to_additive]
-instance : IsometricSMul M Xᵐᵒᵖ :=
+instance (priority := 10000) : IsometricSMul M Xᵐᵒᵖ :=
   ⟨fun c x y => by simpa only using edist_smul_left c x.unop y.unop⟩
 
 @[to_additive]
-instance ULift.isometricSMul : IsometricSMul (ULift M) X :=
+instance (priority := 10000) ULift.isometricSMul : IsometricSMul (ULift M) X :=
   ⟨fun c => by simpa only using isometry_smul X c.down⟩
 #align ulift.has_isometric_smul ULift.isometricSMul
 #align ulift.has_isometric_vadd ULift.isometricVAdd
 
 @[to_additive]
-instance ULift.isometricSMul' : IsometricSMul M (ULift X) :=
+instance (priority := 10000) ULift.isometricSMul' : IsometricSMul M (ULift X) :=
   ⟨fun c x y => by simpa only using edist_smul_left c x.1 y.1⟩
 #align ulift.has_isometric_smul' ULift.isometricSMul'
 #align ulift.has_isometric_vadd' ULift.isometricVAdd'
 
 @[to_additive]
-instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
+instance (priority := 10000) {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
     [∀ i, IsometricSMul M (X i)] : IsometricSMul M (∀ i, X i) :=
   ⟨fun c => isometry_dcomp (fun _ => (c • ·)) fun i => isometry_smul (X i) c⟩
 
 @[to_additive]
-instance Pi.isometricSMul' {ι} {M X : ι → Type*} [Fintype ι] [∀ i, SMul (M i) (X i)]
+instance (priority := 10000) Pi.isometricSMul' {ι} {M X : ι → Type*} [Fintype ι] [∀ i, SMul (M i) (X i)]
     [∀ i, PseudoEMetricSpace (X i)] [∀ i, IsometricSMul (M i) (X i)] :
     IsometricSMul (∀ i, M i) (∀ i, X i) :=
   ⟨fun c => isometry_dcomp (fun i => (c i • ·)) fun _ => isometry_smul _ _⟩
@@ -566,38 +566,38 @@ instance Pi.isometricSMul' {ι} {M X : ι → Type*} [Fintype ι] [∀ i, SMul (
 #align pi.has_isometric_vadd' Pi.isometricVAdd'
 
 @[to_additive]
-instance Pi.isometricSMul'' {ι} {M : ι → Type*} [Fintype ι] [∀ i, Mul (M i)]
+instance (priority := 10000) Pi.isometricSMul'' {ι} {M : ι → Type*} [Fintype ι] [∀ i, Mul (M i)]
     [∀ i, PseudoEMetricSpace (M i)] [∀ i, IsometricSMul (M i)ᵐᵒᵖ (M i)] :
     IsometricSMul (∀ i, M i)ᵐᵒᵖ (∀ i, M i) :=
   ⟨fun c => isometry_dcomp (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _⟩
 #align pi.has_isometric_smul'' Pi.isometricSMul''
 #align pi.has_isometric_vadd'' Pi.isometricVAdd''
 
-instance Additive.isometricVAdd : IsometricVAdd (Additive M) X :=
+instance (priority := 10000) Additive.isometricVAdd : IsometricVAdd (Additive M) X :=
   ⟨fun c => isometry_smul X (toMul c)⟩
 #align additive.has_isometric_vadd Additive.isometricVAdd
 
-instance Additive.isometricVAdd' [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] :
+instance (priority := 10000) Additive.isometricVAdd' [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] :
     IsometricVAdd (Additive M) (Additive M) :=
   ⟨fun c x y => edist_smul_left (toMul c) (toMul x) (toMul y)⟩
 #align additive.has_isometric_vadd' Additive.isometricVAdd'
 
-instance Additive.isometricVAdd'' [Mul M] [PseudoEMetricSpace M] [IsometricSMul Mᵐᵒᵖ M] :
+instance (priority := 10000) Additive.isometricVAdd'' [Mul M] [PseudoEMetricSpace M] [IsometricSMul Mᵐᵒᵖ M] :
     IsometricVAdd (Additive M)ᵃᵒᵖ (Additive M) :=
   ⟨fun c x y => edist_smul_left (MulOpposite.op (toMul c.unop)) (toMul x) (toMul y)⟩
 #align additive.has_isometric_vadd'' Additive.isometricVAdd''
 
-instance Multiplicative.isometricSMul {M X} [VAdd M X] [PseudoEMetricSpace X]
+instance (priority := 10000) Multiplicative.isometricSMul {M X} [VAdd M X] [PseudoEMetricSpace X]
     [IsometricVAdd M X] : IsometricSMul (Multiplicative M) X :=
   ⟨fun c => isometry_vadd X (toAdd c)⟩
 #align multiplicative.has_isometric_smul Multiplicative.isometricSMul
 
-instance Multiplicative.isometricSMul' [Add M] [PseudoEMetricSpace M] [IsometricVAdd M M] :
+instance (priority := 10000) Multiplicative.isometricSMul' [Add M] [PseudoEMetricSpace M] [IsometricVAdd M M] :
     IsometricSMul (Multiplicative M) (Multiplicative M) :=
   ⟨fun c x y => edist_vadd_left (toAdd c) (toAdd x) (toAdd y)⟩
 #align multiplicative.has_isometric_smul' Multiplicative.isometricSMul'
 
-instance Multiplicative.isometricVAdd'' [Add M] [PseudoEMetricSpace M]
+instance (priority := 10000) Multiplicative.isometricVAdd'' [Add M] [PseudoEMetricSpace M]
     [IsometricVAdd Mᵃᵒᵖ M] : IsometricSMul (Multiplicative M)ᵐᵒᵖ (Multiplicative M) :=
   ⟨fun c x y => edist_vadd_left (AddOpposite.op (toAdd c.unop)) (toAdd x) (toAdd y)⟩
 #align multiplicative.has_isometric_vadd'' Multiplicative.isometricVAdd''

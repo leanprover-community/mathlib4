@@ -92,7 +92,7 @@ theorem HasPDF.aemeasurable (X : Ω → E) (ℙ : Measure Ω)
   hX.pdf'.1
 #align measure_theory.has_pdf.measurable MeasureTheory.HasPDF.aemeasurable
 
-instance HasPDF.haveLebesgueDecomposition {X : Ω → E} {ℙ : Measure Ω}
+instance (priority := 10000) HasPDF.haveLebesgueDecomposition {X : Ω → E} {ℙ : Measure Ω}
     {μ : Measure E} [hX : HasPDF X ℙ μ] : (map X ℙ).HaveLebesgueDecomposition μ :=
   hX.pdf'.2.1
 #align measure_theory.pdf.have_lebesgue_decomposition_of_has_pdf MeasureTheory.HasPDF.haveLebesgueDecomposition

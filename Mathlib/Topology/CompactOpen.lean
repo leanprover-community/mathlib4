@@ -75,7 +75,7 @@ theorem gen_empty_right {s : Set X} (h : s.Nonempty) : CompactOpen.gen s (∅ : 
 #align continuous_map.gen_empty_right ContinuousMap.gen_empty_right
 
 -- The compact-open topology on the space of continuous maps X → Y.
-instance compactOpen : TopologicalSpace C(X, Y) :=
+instance (priority := 10000) compactOpen : TopologicalSpace C(X, Y) :=
   TopologicalSpace.generateFrom
     { m | ∃ (s : Set X) (_ : IsCompact s) (u : Set Y) (_ : IsOpen u), m = CompactOpen.gen s u }
 #align continuous_map.compact_open ContinuousMap.compactOpen
@@ -230,13 +230,13 @@ lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
     IsClopen {f : C(X, Y) | MapsTo f K U} :=
   ⟨isClosed_setOf_mapsTo hU.isClosed K, isOpen_setOf_mapsTo hK hU.isOpen⟩
 
-instance [T0Space Y] : T0Space C(X, Y) :=
+instance (priority := 10000) [T0Space Y] : T0Space C(X, Y) :=
   t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
 
-instance [T1Space Y] : T1Space C(X, Y) :=
+instance (priority := 10000) [T1Space Y] : T1Space C(X, Y) :=
   t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
 
-instance [T2Space Y] : T2Space C(X, Y) :=
+instance (priority := 10000) [T2Space Y] : T2Space C(X, Y) :=
   .of_injective_continuous DFunLike.coe_injective continuous_coe
 
 end Ev

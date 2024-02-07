@@ -36,7 +36,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace FintypeCat
 
-instance : CoeSort FintypeCat (Type*) :=
+instance (priority := 10000) : CoeSort FintypeCat (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
@@ -45,13 +45,13 @@ def of (X : Type*) [Fintype X] : FintypeCat :=
 set_option linter.uppercaseLean3 false in
 #align Fintype.of FintypeCat.of
 
-instance : Inhabited FintypeCat :=
+instance (priority := 10000) : Inhabited FintypeCat :=
   ⟨of PEmpty⟩
 
-instance {X : FintypeCat} : Fintype X :=
+instance (priority := 10000) {X : FintypeCat} : Fintype X :=
   X.2
 
-instance : Category FintypeCat :=
+instance (priority := 10000) : Category FintypeCat :=
   InducedCategory.category Bundled.α
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
@@ -61,10 +61,10 @@ def incl : FintypeCat ⥤ Type* :=
 set_option linter.uppercaseLean3 false in
 #align Fintype.incl FintypeCat.incl
 
-instance : Full incl := InducedCategory.full _
-instance : Faithful incl := InducedCategory.faithful _
+instance (priority := 10000) : Full incl := InducedCategory.full _
+instance (priority := 10000) : Faithful incl := InducedCategory.faithful _
 
-instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
+instance (priority := 10000) concreteCategoryFintype : ConcreteCategory FintypeCat :=
   ⟨incl⟩
 set_option linter.uppercaseLean3 false in
 #align Fintype.concrete_category_Fintype FintypeCat.concreteCategoryFintype
@@ -126,7 +126,7 @@ def mk : ℕ → Skeleton :=
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.mk FintypeCat.Skeleton.mk
 
-instance : Inhabited Skeleton :=
+instance (priority := 10000) : Inhabited Skeleton :=
   ⟨mk 0⟩
 
 /-- Given any object of `Fintype.Skeleton`, this returns the associated natural number. -/
@@ -141,7 +141,7 @@ theorem ext (X Y : Skeleton) : X.len = Y.len → X = Y :=
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.ext FintypeCat.Skeleton.ext
 
-instance : SmallCategory Skeleton.{u} where
+instance (priority := 10000) : SmallCategory Skeleton.{u} where
   Hom X Y := ULift.{u} (Fin X.len) → ULift.{u} (Fin Y.len)
   id _ := id
   comp f g := g ∘ f
@@ -176,11 +176,11 @@ def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align Fintype.skeleton.incl FintypeCat.Skeleton.incl
 
-instance : Full incl where preimage f := f
+instance (priority := 10000) : Full incl where preimage f := f
 
-instance : Faithful incl where
+instance (priority := 10000) : Faithful incl where
 
-instance : EssSurj incl :=
+instance (priority := 10000) : EssSurj incl :=
   EssSurj.mk fun X =>
     let F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
@@ -188,7 +188,7 @@ instance : EssSurj incl :=
         { hom := F.symm ∘ ULift.down
           inv := ULift.up ∘ F }⟩
 
-noncomputable instance : IsEquivalence incl :=
+noncomputable instance (priority := 10000) : IsEquivalence incl :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
 /-- The equivalence between `Fintype.Skeleton` and `Fintype`. -/

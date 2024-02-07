@@ -24,7 +24,7 @@ namespace Lean
 namespace Meta.Simp
 open Elab.Tactic
 
-instance : ToFormat SimpTheorems where
+instance (priority := 10000) : ToFormat SimpTheorems where
   format s :=
 f!"pre:
 {s.pre.values.toList}

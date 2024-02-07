@@ -44,7 +44,7 @@ protected def Nat.unaryCast {R : Type u} [One R] [Zero R] [Add R] : ℕ → R
 class Nat.AtLeastTwo (n : ℕ) : Prop where
   prop : n ≥ 2
 
-instance instNatAtLeastTwo : Nat.AtLeastTwo (n + 2) where
+instance (priority := 10000) instNatAtLeastTwo : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
 
 lemma Nat.AtLeastTwo.ne_zero (n : ℕ) [h : n.AtLeastTwo] : n ≠ 0 := by
@@ -54,7 +54,7 @@ lemma Nat.AtLeastTwo.ne_one (n : ℕ) [h : n.AtLeastTwo] : n ≠ 1 := by
   rintro rfl; exact absurd h.1 (by decide)
 
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
-instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
+instance (priority := 10000) is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
 @[nolint unusedArguments]
@@ -102,8 +102,8 @@ library_note "coercion into rings"
 Coercions such as `Nat.castCoe` that go from a concrete structure such as
 `ℕ` to an arbitrary ring `R` should be set up as follows:
 ```lean
-instance : CoeTail ℕ R where coe := ...
-instance : CoeHTCT ℕ R where coe := ...
+instance (priority := 10000) : CoeTail ℕ R where coe := ...
+instance (priority := 10000) : CoeHTCT ℕ R where coe := ...
 ```
 
 It needs to be `CoeTail` instead of `Coe` because otherwise type-class

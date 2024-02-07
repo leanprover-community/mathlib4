@@ -57,13 +57,13 @@ instance (priority := 100) {G X : Type*} [Group G] [MulAction G X] [TopologicalS
     [ContinuousConstSMul G X] : ProperConstSMul G X :=
   ⟨fun c ↦ (Homeomorph.smul c).isProperMap⟩
 
-instance {M X Y : Type*}
+instance (priority := 10000) {M X Y : Type*}
     [SMul M X] [TopologicalSpace X] [ProperConstSMul M X]
     [SMul M Y] [TopologicalSpace Y] [ProperConstSMul M Y] :
     ProperConstSMul M (X × Y) :=
   ⟨fun c ↦ (isProperMap_smul c X).prod_map (isProperMap_smul c Y)⟩
 
-instance {M ι : Type*} {X : ι → Type*}
+instance (priority := 10000) {M ι : Type*} {X : ι → Type*}
     [∀ i, SMul M (X i)] [∀ i, TopologicalSpace (X i)] [∀ i, ProperConstSMul M (X i)] :
     ProperConstSMul M (∀ i, X i) :=
   ⟨fun c ↦ .pi_map fun i ↦ isProperMap_smul c (X i)⟩

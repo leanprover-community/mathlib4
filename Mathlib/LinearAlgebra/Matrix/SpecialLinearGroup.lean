@@ -77,7 +77,7 @@ namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
-instance hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) :=
+instance (priority := 10000) hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) :=
   ⟨fun A => A.val⟩
 #align matrix.special_linear_group.has_coe_to_matrix Matrix.SpecialLinearGroup.hasCoeToMatrix
 
@@ -94,7 +94,7 @@ section CoeFnInstance
 
 /-- This instance is here for convenience, but is literally the same as the coercion from
 `hasCoeToMatrix`. -/
-instance instCoeFun : CoeFun (SpecialLinearGroup n R) fun _ => n → n → R where coe A := ↑ₘA
+instance (priority := 10000) instCoeFun : CoeFun (SpecialLinearGroup n R) fun _ => n → n → R where coe A := ↑ₘA
 
 end CoeFnInstance
 
@@ -107,22 +107,22 @@ theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, ↑ₘA i j = ↑ₘB i j
   (SpecialLinearGroup.ext_iff A B).mpr
 #align matrix.special_linear_group.ext Matrix.SpecialLinearGroup.ext
 
-instance hasInv : Inv (SpecialLinearGroup n R) :=
+instance (priority := 10000) hasInv : Inv (SpecialLinearGroup n R) :=
   ⟨fun A => ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
 #align matrix.special_linear_group.has_inv Matrix.SpecialLinearGroup.hasInv
 
-instance hasMul : Mul (SpecialLinearGroup n R) :=
+instance (priority := 10000) hasMul : Mul (SpecialLinearGroup n R) :=
   ⟨fun A B => ⟨↑ₘA * ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
 #align matrix.special_linear_group.has_mul Matrix.SpecialLinearGroup.hasMul
 
-instance hasOne : One (SpecialLinearGroup n R) :=
+instance (priority := 10000) hasOne : One (SpecialLinearGroup n R) :=
   ⟨⟨1, det_one⟩⟩
 #align matrix.special_linear_group.has_one Matrix.SpecialLinearGroup.hasOne
 
-instance : Pow (SpecialLinearGroup n R) ℕ where
+instance (priority := 10000) : Pow (SpecialLinearGroup n R) ℕ where
   pow x n := ⟨↑ₘx ^ n, (det_pow _ _).trans <| x.prop.symm ▸ one_pow _⟩
 
-instance : Inhabited (SpecialLinearGroup n R) :=
+instance (priority := 10000) : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
 
 /-- The transpose of a matrix in `SL(n, R)` -/
@@ -181,10 +181,10 @@ theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : ↑ₘ
 
 end CoeLemmas
 
-instance monoid : Monoid (SpecialLinearGroup n R) :=
+instance (priority := 10000) monoid : Monoid (SpecialLinearGroup n R) :=
   Function.Injective.monoid (↑) Subtype.coe_injective coe_one coe_mul coe_pow
 
-instance : Group (SpecialLinearGroup n R) :=
+instance (priority := 10000) : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
     mul_left_inv := fun A => by
       ext1
@@ -254,7 +254,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 section cast
 
 /-- Coercion of SL `n` `ℤ` to SL `n` `R` for a commutative ring `R`. -/
-instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
+instance (priority := 10000) : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
   ⟨fun x => map (Int.castRingHom R) x⟩
 
 @[simp]
@@ -271,7 +271,7 @@ variable [Fact (Even (Fintype.card n))]
 
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
-instance : Neg (SpecialLinearGroup n R) :=
+instance (priority := 10000) : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
     simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
 
@@ -280,7 +280,7 @@ theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=
   rfl
 #align matrix.special_linear_group.coe_neg Matrix.SpecialLinearGroup.coe_neg
 
-instance : HasDistribNeg (SpecialLinearGroup n R) :=
+instance (priority := 10000) : HasDistribNeg (SpecialLinearGroup n R) :=
   Function.Injective.hasDistribNeg _ Subtype.coe_injective coe_neg coe_mul
 
 @[simp]

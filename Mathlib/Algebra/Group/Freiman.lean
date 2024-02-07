@@ -130,7 +130,7 @@ def _root_.FreimanHomClass.toFreimanHom [FreimanHomClass F A β n] (f : F) : A �
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [FreimanHomClass F A β n] : CoeTC F (A →*[n] β) :=
+instance (priority := 10000) [FreimanHomClass F A β n] : CoeTC F (A →*[n] β) :=
   ⟨FreimanHomClass.toFreimanHom⟩
 
 
@@ -154,14 +154,14 @@ theorem map_mul_map_eq_map_mul_map [FreimanHomClass F A β 2] (f : F) (ha : a �
 namespace FreimanHom
 
 @[to_additive]
-instance instFunLike : FunLike (A →*[n] β) α β where
+instance (priority := 10000) instFunLike : FunLike (A →*[n] β) α β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 #align freiman_hom.fun_like FreimanHom.instFunLike
 #align add_freiman_hom.fun_like AddFreimanHom.instFunLike
 
 @[to_additive addFreimanHomClass]
-instance freimanHomClass : FreimanHomClass (A →*[n] β) A β n where
+instance (priority := 10000) freimanHomClass : FreimanHomClass (A →*[n] β) A β n where
   map_prod_eq_map_prod' := map_prod_eq_map_prod'
 #align freiman_hom.freiman_hom_class FreimanHom.freimanHomClass
 #align add_freiman_hom.freiman_hom_class AddFreimanHom.addFreimanHomClass
@@ -307,7 +307,7 @@ theorem const_comp (n : ℕ) (c : γ) (f : A →*[n] β) {hf} : (const B n c).co
 
 /-- `1` is the Freiman homomorphism sending everything to `1`. -/
 @[to_additive "`0` is the Freiman homomorphism sending everything to `0`."]
-instance : One (A →*[n] β) :=
+instance (priority := 10000) : One (A →*[n] β) :=
   ⟨const A n 1⟩
 
 @[to_additive (attr := simp)]
@@ -323,12 +323,12 @@ theorem one_comp (f : A →*[n] β) {hf} : (1 : B →*[n] γ).comp f hf = 1 :=
 #align add_freiman_hom.zero_comp AddFreimanHom.zero_comp
 
 @[to_additive]
-instance : Inhabited (A →*[n] β) :=
+instance (priority := 10000) : Inhabited (A →*[n] β) :=
   ⟨1⟩
 
 /-- `f * g` is the Freiman homomorphism sends `x` to `f x * g x`. -/
 @[to_additive "`f + g` is the Freiman homomorphism sending `x` to `f x + g x`."]
-instance : Mul (A →*[n] β) :=
+instance (priority := 10000) : Mul (A →*[n] β) :=
   ⟨fun f g =>
     { toFun := fun x => f x * g x
       map_prod_eq_map_prod' := fun hsA htA hs ht h => by
@@ -354,7 +354,7 @@ sending `x` to `(f x)⁻¹`. -/
 @[to_additive
       "If `f` is a Freiman homomorphism to an additive commutative group, then `-f` is the
       Freiman homomorphism sending `x` to `-f x`."]
-instance : Inv (A →*[n] G) :=
+instance (priority := 10000) : Inv (A →*[n] G) :=
   ⟨fun f =>
     { toFun := fun x => (f x)⁻¹
       map_prod_eq_map_prod' := fun hsA htA hs ht h => by
@@ -377,7 +377,7 @@ homomorphism sending `x` to `f x / g x`. -/
 @[to_additive
       "If `f` and `g` are additive Freiman homomorphisms to an additive commutative group,
       then `f - g` is the additive Freiman homomorphism sending `x` to `f x - g x`"]
-instance : Div (A →*[n] G) :=
+instance (priority := 10000) : Div (A →*[n] G) :=
   ⟨fun f g =>
     { toFun := fun x => f x / g x
       map_prod_eq_map_prod' := fun hsA htA hs ht h => by
@@ -402,7 +402,7 @@ theorem div_comp (f₁ f₂ : B →*[n] G) (g : A →*[n] β) {hf hf₁ hf₂} :
 
 /-- `A →*[n] β` is a `CommMonoid`. -/
 @[to_additive "`α →+[n] β` is an `AddCommMonoid`."]
-instance commMonoid : CommMonoid (A →*[n] β) where
+instance (priority := 10000) commMonoid : CommMonoid (A →*[n] β) where
   mul_assoc a b c := by
     ext
     apply mul_assoc
@@ -422,7 +422,7 @@ instance commMonoid : CommMonoid (A →*[n] β) where
 @[to_additive
       "If `β` is an additive commutative group, then `A →*[n] β` is an additive commutative
       group too."]
-instance commGroup {β} [CommGroup β] : CommGroup (A →*[n] β) :=
+instance (priority := 10000) commGroup {β} [CommGroup β] : CommGroup (A →*[n] β) :=
   { FreimanHom.commMonoid with
     div_eq_mul_inv := by
       intros
@@ -452,7 +452,7 @@ inferrable. -/
 
       We can't leave the domain `A : Set α` of the `AddFreimanHom` a free variable, since it
       wouldn't be inferrable."]
-instance MonoidHom.freimanHomClass : FreimanHomClass (α →* β) Set.univ β n where
+instance (priority := 10000) MonoidHom.freimanHomClass : FreimanHomClass (α →* β) Set.univ β n where
   map_prod_eq_map_prod' f s t _ _ _ _ h := by
     rw [← f.map_multiset_prod, h, f.map_multiset_prod]
 #align monoid_hom.freiman_hom_class MonoidHom.freimanHomClass

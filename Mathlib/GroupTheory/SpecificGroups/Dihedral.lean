@@ -46,7 +46,7 @@ private def mul : DihedralGroup n → DihedralGroup n → DihedralGroup n
 private def one : DihedralGroup n :=
   r 0
 
-instance : Inhabited (DihedralGroup n) :=
+instance (priority := 10000) : Inhabited (DihedralGroup n) :=
   ⟨one⟩
 
 /-- The inverse of an element of the dihedral group.
@@ -57,7 +57,7 @@ private def inv : DihedralGroup n → DihedralGroup n
 
 /-- The group structure on `DihedralGroup n`.
 -/
-instance : Group (DihedralGroup n) where
+instance (priority := 10000) : Group (DihedralGroup n) where
   mul := mul
   mul_assoc := by rintro (a | a) (b | b) (c | c) <;> simp only [(· * ·), mul] <;> ring_nf
   one := one
@@ -111,13 +111,13 @@ private def fintypeHelper : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
 
 /-- If `0 < n`, then `DihedralGroup n` is a finite group.
 -/
-instance [NeZero n] : Fintype (DihedralGroup n) :=
+instance (priority := 10000) [NeZero n] : Fintype (DihedralGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
-instance : Infinite (DihedralGroup 0) :=
+instance (priority := 10000) : Infinite (DihedralGroup 0) :=
   DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
 
-instance : Nontrivial (DihedralGroup n) :=
+instance (priority := 10000) : Nontrivial (DihedralGroup n) :=
   ⟨⟨r 0, sr 0, by simp_rw [ne_eq, not_false_eq_true]⟩⟩
 
 /-- If `0 < n`, then `DihedralGroup n` has `2n` elements.

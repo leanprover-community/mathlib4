@@ -115,7 +115,7 @@ def equiv₂ (α β) [Denumerable α] [Denumerable β] : α ≃ β :=
   (eqv α).trans (eqv β).symm
 #align denumerable.equiv₂ Denumerable.equiv₂
 
-instance nat : Denumerable ℕ :=
+instance (priority := 10000) nat : Denumerable ℕ :=
   ⟨fun _ => ⟨_, rfl, rfl⟩⟩
 #align denumerable.nat Denumerable.nat
 
@@ -125,7 +125,7 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
 #align denumerable.of_nat_nat Denumerable.ofNat_nat
 
 /-- If `α` is denumerable, then so is `Option α`. -/
-instance option : Denumerable (Option α) :=
+instance (priority := 10000) option : Denumerable (Option α) :=
   ⟨fun n => by
     cases n with
     | zero =>
@@ -139,7 +139,7 @@ instance option : Denumerable (Option α) :=
 
 set_option linter.deprecated false in
 /-- If `α` and `β` are denumerable, then so is their sum. -/
-instance sum : Denumerable (Sum α β) :=
+instance (priority := 10000) sum : Denumerable (Sum α β) :=
   ⟨fun n => by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
     simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
@@ -152,7 +152,7 @@ section Sigma
 variable {γ : α → Type*} [∀ a, Denumerable (γ a)]
 
 /-- A denumerable collection of denumerable types is denumerable. -/
-instance sigma : Denumerable (Sigma γ) :=
+instance (priority := 10000) sigma : Denumerable (Sigma γ) :=
   ⟨fun n => by simp [decodeSigma]⟩
 #align denumerable.sigma Denumerable.sigma
 
@@ -165,7 +165,7 @@ theorem sigma_ofNat_val (n : ℕ) :
 end Sigma
 
 /-- If `α` and `β` are denumerable, then so is their product. -/
-instance prod : Denumerable (α × β) :=
+instance (priority := 10000) prod : Denumerable (α × β) :=
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
 #align denumerable.prod Denumerable.prod
 
@@ -178,21 +178,21 @@ theorem prod_ofNat_val (n : ℕ) : ofNat (α × β) n = (ofNat α (unpair n).1, 
 theorem prod_nat_ofNat : ofNat (ℕ × ℕ) = unpair := by funext; simp
 #align denumerable.prod_nat_of_nat Denumerable.prod_nat_ofNat
 
-instance int : Denumerable ℤ :=
+instance (priority := 10000) int : Denumerable ℤ :=
   Denumerable.mk' Equiv.intEquivNat
 #align denumerable.int Denumerable.int
 
-instance pnat : Denumerable ℕ+ :=
+instance (priority := 10000) pnat : Denumerable ℕ+ :=
   Denumerable.mk' Equiv.pnatEquivNat
 #align denumerable.pnat Denumerable.pnat
 
 /-- The lift of a denumerable type is denumerable. -/
-instance ulift : Denumerable (ULift α) :=
+instance (priority := 10000) ulift : Denumerable (ULift α) :=
   ofEquiv _ Equiv.ulift
 #align denumerable.ulift Denumerable.ulift
 
 /-- The lift of a denumerable type is denumerable. -/
-instance plift : Denumerable (PLift α) :=
+instance (priority := 10000) plift : Denumerable (PLift α) :=
   ofEquiv _ Equiv.plift
 #align denumerable.plift Denumerable.plift
 
@@ -383,7 +383,7 @@ theorem nonempty_denumerable_iff {α : Type*} :
     Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=
   ⟨fun ⟨_⟩ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ nonempty_denumerable _⟩
 
-instance nonempty_equiv_of_countable [Countable α] [Infinite α] [Countable β] [Infinite β] :
+instance (priority := 10000) nonempty_equiv_of_countable [Countable α] [Infinite α] [Countable β] [Infinite β] :
     Nonempty (α ≃ β) := by
   cases nonempty_denumerable α
   cases nonempty_denumerable β

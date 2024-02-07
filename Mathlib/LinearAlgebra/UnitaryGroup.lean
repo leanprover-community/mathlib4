@@ -82,11 +82,11 @@ theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n
 
 namespace UnitaryGroup
 
-instance coeMatrix : Coe (unitaryGroup n α) (Matrix n n α) :=
+instance (priority := 10000) coeMatrix : Coe (unitaryGroup n α) (Matrix n n α) :=
   ⟨Subtype.val⟩
 #align matrix.unitary_group.coe_matrix Matrix.UnitaryGroup.coeMatrix
 
-instance coeFun : CoeFun (unitaryGroup n α) fun _ => n → n → α where coe A := A.val
+instance (priority := 10000) coeFun : CoeFun (unitaryGroup n α) fun _ => n → n → α where coe A := A.val
 #align matrix.unitary_group.coe_fun Matrix.UnitaryGroup.coeFun
 
 /-- `Matrix.UnitaryGroup.toLin' A` is matrix multiplication of vectors by `A`, as a linear map.

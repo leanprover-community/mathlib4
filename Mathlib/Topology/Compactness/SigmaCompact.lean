@@ -218,13 +218,13 @@ theorem exists_mem_compactCovering (x : X) : ∃ n, x ∈ compactCovering X n :=
   iUnion_eq_univ_iff.mp (iUnion_compactCovering X) x
 #align exists_mem_compact_covering exists_mem_compactCovering
 
-instance [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
+instance (priority := 10000) [SigmaCompactSpace Y] : SigmaCompactSpace (X × Y) :=
   ⟨⟨fun n => compactCovering X n ×ˢ compactCovering Y n, fun _ =>
       (isCompact_compactCovering _ _).prod (isCompact_compactCovering _ _), by
       simp only [iUnion_prod_of_monotone (compactCovering_subset X) (compactCovering_subset Y),
         iUnion_compactCovering, univ_prod_univ]⟩⟩
 
-instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SigmaCompactSpace (X i)] :
+instance (priority := 10000) [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, SigmaCompactSpace (X i)] :
     SigmaCompactSpace (∀ i, X i) := by
   refine' ⟨⟨fun n => Set.pi univ fun i => compactCovering (X i) n,
     fun n => isCompact_univ_pi fun i => isCompact_compactCovering (X i) _, _⟩⟩
@@ -232,14 +232,14 @@ instance [Finite ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, 
   · simp only [iUnion_compactCovering, pi_univ]
   · exact fun i => compactCovering_subset (X i)
 
-instance [SigmaCompactSpace Y] : SigmaCompactSpace (Sum X Y) :=
+instance (priority := 10000) [SigmaCompactSpace Y] : SigmaCompactSpace (Sum X Y) :=
   ⟨⟨fun n => Sum.inl '' compactCovering X n ∪ Sum.inr '' compactCovering Y n, fun n =>
       ((isCompact_compactCovering X n).image continuous_inl).union
         ((isCompact_compactCovering Y n).image continuous_inr),
       by simp only [iUnion_union_distrib, ← image_iUnion, iUnion_compactCovering, image_univ,
         range_inl_union_range_inr]⟩⟩
 
-instance [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+instance (priority := 10000) [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, SigmaCompactSpace (X i)] : SigmaCompactSpace (Σi, X i) := by
   cases isEmpty_or_nonempty ι
   · infer_instance
@@ -265,7 +265,7 @@ protected theorem ClosedEmbedding.sigmaCompactSpace {e : Y → X} (he : ClosedEm
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   (closedEmbedding_subtype_val hs).sigmaCompactSpace
 
-instance [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
+instance (priority := 10000) [SigmaCompactSpace Y] : SigmaCompactSpace (ULift.{u} Y) :=
   ULift.closedEmbedding_down.sigmaCompactSpace
 
 /-- If `X` is a `σ`-compact space, then a locally finite family of nonempty sets of `X` can have
@@ -337,11 +337,11 @@ structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
 
 namespace CompactExhaustion
 
-instance : FunLike (CompactExhaustion X) ℕ (Set X) where
+instance (priority := 10000) : FunLike (CompactExhaustion X) ℕ (Set X) where
   coe := toFun
   coe_injective' | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
-instance : RelHomClass (CompactExhaustion X) LE.le HasSubset.Subset where
+instance (priority := 10000) : RelHomClass (CompactExhaustion X) LE.le HasSubset.Subset where
   map_rel f _ _ h := monotone_nat_of_le_succ
     (fun n ↦ (f.subset_interior_succ' n).trans interior_subset) h
 
@@ -426,7 +426,7 @@ noncomputable def choice (X : Type*) [TopologicalSpace X] [WeaklyLocallyCompactS
     exact iUnion_mono' fun n => ⟨n + 1, subset_union_right _ _⟩
 #align compact_exhaustion.choice CompactExhaustion.choice
 
-noncomputable instance [LocallyCompactSpace X] [SigmaCompactSpace X] :
+noncomputable instance (priority := 10000) [LocallyCompactSpace X] [SigmaCompactSpace X] :
     Inhabited (CompactExhaustion X) :=
   ⟨CompactExhaustion.choice X⟩
 

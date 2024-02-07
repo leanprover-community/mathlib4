@@ -108,7 +108,7 @@ instance (priority := 100) t2Space (α : Type*) [TopologicalSpace α] [PolishSpa
 #align polish_space.t2_space PolishSpace.t2Space
 
 /-- A countable product of Polish spaces is Polish. -/
-instance pi_countable {ι : Type*} [Countable ι] {E : ι → Type*} [∀ i, TopologicalSpace (E i)]
+instance (priority := 10000) pi_countable {ι : Type*} [Countable ι] {E : ι → Type*} [∀ i, TopologicalSpace (E i)]
     [∀ i, PolishSpace (E i)] : PolishSpace (∀ i, E i) := by
   cases nonempty_encodable ι
   letI := fun i => upgradePolishSpace (E i)
@@ -117,7 +117,7 @@ instance pi_countable {ι : Type*} [Countable ι] {E : ι → Type*} [∀ i, Top
 #align polish_space.pi_countable PolishSpace.pi_countable
 
 /-- A countable disjoint union of Polish spaces is Polish. -/
-instance sigma {ι : Type*} [Countable ι] {E : ι → Type*} [∀ n, TopologicalSpace (E n)]
+instance (priority := 10000) sigma {ι : Type*} [Countable ι] {E : ι → Type*} [∀ n, TopologicalSpace (E n)]
     [∀ n, PolishSpace (E n)] : PolishSpace (Σn, E n) :=
   letI := fun n => upgradePolishSpace (E n)
   letI : MetricSpace (Σn, E n) := Sigma.metricSpace
@@ -126,14 +126,14 @@ instance sigma {ι : Type*} [Countable ι] {E : ι → Type*} [∀ n, Topologica
 #align polish_space.sigma PolishSpace.sigma
 
 /-- The product of two Polish spaces is Polish. -/
-instance prod [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
+instance (priority := 10000) prod [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
     PolishSpace (α × β) :=
   letI := upgradePolishSpace α
   letI := upgradePolishSpace β
   inferInstance
 
 /-- The disjoint union of two Polish spaces is Polish. -/
-instance sum [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
+instance (priority := 10000) sum [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
     PolishSpace (α ⊕ β) :=
   letI := upgradePolishSpace α
   letI := upgradePolishSpace β
@@ -183,7 +183,7 @@ theorem _root_.IsClosed.polishSpace [TopologicalSpace α] [PolishSpace α] {s : 
   (IsClosed.closedEmbedding_subtype_val hs).polishSpace
 #align is_closed.polish_space IsClosed.polishSpace
 
-instance instPolishSpaceUniv [TopologicalSpace α] [PolishSpace α] :
+instance (priority := 10000) instPolishSpaceUniv [TopologicalSpace α] [PolishSpace α] :
     PolishSpace (univ : Set α) :=
   isClosed_univ.polishSpace
 #align measure_theory.set.univ.polish_space PolishSpace.instPolishSpaceUniv
@@ -278,7 +278,7 @@ namespace CompleteCopy
 by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the second term blows up close to
 the boundary to ensure that Cauchy sequences for `dist'` remain well inside `s`. -/
 -- Porting note: in mathlib3 this was only a local instance.
-instance instDist : Dist (CompleteCopy s) where
+instance (priority := 10000) instDist : Dist (CompleteCopy s) where
   dist x y := dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ)
 #align polish_space.has_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.instDistₓ
 
@@ -291,8 +291,8 @@ theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
   (le_add_iff_nonneg_right _).2 (abs_nonneg _)
 #align polish_space.dist_le_dist_complete_copy TopologicalSpace.Opens.CompleteCopy.dist_val_le_distₓ
 
-instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)
-instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
+instance (priority := 10000) : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)
+instance (priority := 10000) : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
 
 /-- A metric space structure on a subset `s` of a metric space, designed to make it complete
 if `s` is open. It is given by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the
@@ -302,7 +302,7 @@ inside `s`.
 Porting note: the definition changed to ensure that the `TopologicalSpace` structure on
 `TopologicalSpace.Opens.CompleteCopy s` is definitionally equal to the original one. -/
 -- Porting note: in mathlib3 this was only a local instance.
-instance instMetricSpace : MetricSpace (CompleteCopy s) := by
+instance (priority := 10000) instMetricSpace : MetricSpace (CompleteCopy s) := by
   refine @MetricSpace.ofT0PseudoMetricSpace (CompleteCopy s)
     (.ofDistTopology dist (fun _ ↦ ?_) (fun _ _ ↦ ?_) (fun x y z ↦ ?_) fun t ↦ ?_) _
   · simp only [dist_eq, dist_self, one_div, sub_self, abs_zero, add_zero]
@@ -332,7 +332,7 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
 -- Porting note: no longer needed because the topologies are defeq
 #noalign polish_space.complete_copy_id_homeo
 
-instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
+instance (priority := 10000) instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
   refine Metric.complete_of_convergent_controlled_sequences ((1 / 2) ^ ·) (by simp) fun u hu ↦ ?_
   have A : CauchySeq fun n => (u n).1
   · refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_

@@ -44,7 +44,7 @@ theorem quotientRel_r_def {x y : M} : @Setoid.r _ p.quotientRel x y ↔ x - y �
 #align submodule.quotient_rel_r_def Submodule.quotientRel_r_def
 
 /-- The quotient of a module `M` by a submodule `p ⊆ M`. -/
-instance hasQuotient : HasQuotient M (Submodule R M) :=
+instance (priority := 10000) hasQuotient : HasQuotient M (Submodule R M) :=
   ⟨fun p => Quotient (quotientRel p)⟩
 #align submodule.has_quotient Submodule.hasQuotient
 
@@ -83,13 +83,13 @@ protected theorem eq {x y : M} : (mk x : M ⧸ p) = (mk y : M ⧸ p) ↔ x - y �
   (Submodule.Quotient.eq' p).trans (leftRel_apply.symm.trans p.quotientRel_r_def)
 #align submodule.quotient.eq Submodule.Quotient.eq
 
-instance : Zero (M ⧸ p) where
+instance (priority := 10000) : Zero (M ⧸ p) where
   -- Use Quotient.mk'' instead of mk here because mk is not reducible.
   -- This would lead to non-defeq diamonds.
   -- See also the same comment at the One instance for Con.
   zero := Quotient.mk'' 0
 
-instance : Inhabited (M ⧸ p) :=
+instance (priority := 10000) : Inhabited (M ⧸ p) :=
   ⟨0⟩
 
 @[simp]
@@ -101,7 +101,7 @@ theorem mk_zero : mk 0 = (0 : M ⧸ p) :=
 theorem mk_eq_zero : (mk x : M ⧸ p) = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : mk x = 0 ↔ _)
 #align submodule.quotient.mk_eq_zero Submodule.Quotient.mk_eq_zero
 
-instance addCommGroup : AddCommGroup (M ⧸ p) :=
+instance (priority := 10000) addCommGroup : AddCommGroup (M ⧸ p) :=
   QuotientAddGroup.Quotient.addCommGroup p.toAddSubgroup
 #align submodule.quotient.add_comm_group Submodule.Quotient.addCommGroup
 
@@ -124,7 +124,7 @@ section SMul
 
 variable {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (P : Submodule R M)
 
-instance instSMul' : SMul S (M ⧸ P) :=
+instance (priority := 10000) instSMul' : SMul S (M ⧸ P) :=
   ⟨fun a =>
     Quotient.map' (a • ·) fun x y h =>
       leftRel_apply.mpr <| by simpa using Submodule.smul_mem P (a • (1 : R)) (leftRel_apply.mp h)⟩
@@ -132,7 +132,7 @@ instance instSMul' : SMul S (M ⧸ P) :=
 
 -- porting note: should this be marked as a `@[default_instance]`?
 /-- Shortcut to help the elaborator in the common case. -/
-instance instSMul : SMul R (M ⧸ P) :=
+instance (priority := 10000) instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
@@ -141,17 +141,17 @@ theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
 #align submodule.quotient.mk_smul Submodule.Quotient.mk_smul
 
-instance smulCommClass (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M]
+instance (priority := 10000) smulCommClass (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M]
     [SMulCommClass S T M] : SMulCommClass S T (M ⧸ P) where
   smul_comm _x _y := Quotient.ind' fun _z => congr_arg mk (smul_comm _ _ _)
 #align submodule.quotient.smul_comm_class Submodule.Quotient.smulCommClass
 
-instance isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
+instance (priority := 10000) isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [SMul S T]
     [IsScalarTower S T M] : IsScalarTower S T (M ⧸ P) where
   smul_assoc _x _y := Quotient.ind' fun _z => congr_arg mk (smul_assoc _ _ _)
 #align submodule.quotient.is_scalar_tower Submodule.Quotient.isScalarTower
 
-instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
+instance (priority := 10000) isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P) where
   op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
 #align submodule.quotient.is_central_scalar Submodule.Quotient.isCentralScalar
@@ -164,30 +164,30 @@ variable {S : Type*}
 
 -- Performance of `Function.Surjective.mulAction` is worse since it has to unify data to apply
 -- TODO: leanprover-community/mathlib4#7432
-instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
+instance (priority := 10000) mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : MulAction S (M ⧸ P) :=
   { Function.Surjective.mulAction mk (surjective_quot_mk _) <| Submodule.Quotient.mk_smul P with
     toSMul := instSMul' _ }
 #align submodule.quotient.mul_action' Submodule.Quotient.mulAction'
 
 -- porting note: should this be marked as a `@[default_instance]`?
-instance mulAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
+instance (priority := 10000) mulAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
   Quotient.mulAction' P
 #align submodule.quotient.mul_action Submodule.Quotient.mulAction
 
-instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P : Submodule R M) :
+instance (priority := 10000) smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P : Submodule R M) :
     SMulZeroClass S (M ⧸ P) :=
   ZeroHom.smulZeroClass ⟨mk, mk_zero _⟩ <| Submodule.Quotient.mk_smul P
 #align submodule.quotient.smul_zero_class' Submodule.Quotient.smulZeroClass'
 
 -- porting note: should this be marked as a `@[default_instance]`?
-instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
+instance (priority := 10000) smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
   Quotient.smulZeroClass' P
 #align submodule.quotient.smul_zero_class Submodule.Quotient.smulZeroClass
 
 -- Performance of `Function.Surjective.distribSMul` is worse since it has to unify data to apply
 -- TODO: leanprover-community/mathlib4#7432
-instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
+instance (priority := 10000) distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
     DistribSMul S (M ⧸ P) :=
   { Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
     (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
@@ -195,13 +195,13 @@ instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Su
 #align submodule.quotient.distrib_smul' Submodule.Quotient.distribSMul'
 
 -- porting note: should this be marked as a `@[default_instance]`?
-instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
+instance (priority := 10000) distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
   Quotient.distribSMul' P
 #align submodule.quotient.distrib_smul Submodule.Quotient.distribSMul
 
 -- Performance of `Function.Surjective.distribMulAction` is worse since it has to unify data
 -- TODO: leanprover-community/mathlib4#7432
-instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
+instance (priority := 10000) distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) :=
   { Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
     (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
@@ -209,13 +209,13 @@ instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScala
 #align submodule.quotient.distrib_mul_action' Submodule.Quotient.distribMulAction'
 
 -- porting note: should this be marked as a `@[default_instance]`?
-instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
+instance (priority := 10000) distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
   Quotient.distribMulAction' P
 #align submodule.quotient.distrib_mul_action Submodule.Quotient.distribMulAction
 
 -- Performance of `Function.Surjective.module` is worse since it has to unify data to apply
 -- TODO: leanprover-community/mathlib4#7432
-instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
+instance (priority := 10000) module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
     Module S (M ⧸ P) :=
   { Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
     (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
@@ -223,7 +223,7 @@ instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P :
 #align submodule.quotient.module' Submodule.Quotient.module'
 
 -- porting note: should this be marked as a `@[default_instance]`?
-instance module (P : Submodule R M) : Module R (M ⧸ P) :=
+instance (priority := 10000) module (P : Submodule R M) : Module R (M ⧸ P) :=
   Quotient.module' P
 #align submodule.quotient.module Submodule.Quotient.module
 
@@ -268,17 +268,17 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
 
 end Quotient
 
-instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
+instance (priority := 10000) QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
   Infinite.of_injective Submodule.Quotient.mk fun _x _y h =>
     sub_eq_zero.mp <| (Submodule.Quotient.eq ⊥).mp h
 #align submodule.quotient_bot.infinite Submodule.QuotientBot.infinite
 
-instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
+instance (priority := 10000) QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
   default := 0
   uniq x := Quotient.inductionOn' x fun _x => (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
 #align submodule.quotient_top.unique Submodule.QuotientTop.unique
 
-instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
+instance (priority := 10000) QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
   Fintype.ofSubsingleton 0
 #align submodule.quotient_top.fintype Submodule.QuotientTop.fintype
 
@@ -301,7 +301,7 @@ theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
 
 variable (p)
 
-noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintype (M ⧸ S) :=
+noncomputable instance (priority := 10000) Quotient.fintype [Fintype M] (S : Submodule R M) : Fintype (M ⧸ S) :=
   @_root_.Quotient.fintype _ _ _ fun _ _ => Classical.dec _
 #align submodule.quotient.fintype Submodule.Quotient.fintype
 

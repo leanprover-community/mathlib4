@@ -71,7 +71,7 @@ set_option linter.uppercaseLean3 false
 
 -- Porting note: already have Group G but Lean can't use that
 @[to_additive]
-instance (G : GroupCat) : Group G.α :=
+instance (priority := 10000) (G : GroupCat) : Group G.α :=
   G.str
 
 variable {A B : GroupCat.{u}} (f : A ⟶ B)
@@ -116,7 +116,7 @@ local notation "∞" => XWithInfinity.infinity
 
 local notation "SX'" => Equiv.Perm X'
 
-instance : SMul B X' where
+instance (priority := 10000) : SMul B X' where
   smul b x :=
     match x with
     | fromCoset y => fromCoset ⟨b • y, by
@@ -166,7 +166,7 @@ theorem fromCoset_ne_of_nin_range {b : B} (hb : b ∉ f.range) :
   exact hb (inv_inv b ▸ Subgroup.inv_mem _ r)
 #align Group.surjective_of_epi_auxs.from_coset_ne_of_nin_range GroupCat.SurjectiveOfEpiAuxs.fromCoset_ne_of_nin_range
 
-instance : DecidableEq X' :=
+instance (priority := 10000) : DecidableEq X' :=
   Classical.decEq _
 
 /-- Let `τ` be the permutation on `X'` exchanging `f.range` and the point at infinity.
@@ -378,13 +378,13 @@ set_option linter.uppercaseLean3 false
 variable {A B : GroupCat.{u}} (f : A ⟶ B)
 
 @[to_additive AddGroupCat.forget_groupCat_preserves_mono]
-instance forget_groupCat_preserves_mono : (forget GroupCat).PreservesMonomorphisms where
+instance (priority := 10000) forget_groupCat_preserves_mono : (forget GroupCat).PreservesMonomorphisms where
   preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
 #align Group.forget_Group_preserves_mono GroupCat.forget_groupCat_preserves_mono
 #align AddGroup.forget_Group_preserves_mono AddGroupCat.forget_groupCat_preserves_mono
 
 @[to_additive AddGroupCat.forget_groupCat_preserves_epi]
-instance forget_groupCat_preserves_epi : (forget GroupCat).PreservesEpimorphisms where
+instance (priority := 10000) forget_groupCat_preserves_epi : (forget GroupCat).PreservesEpimorphisms where
   preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
 #align Group.forget_Group_preserves_epi GroupCat.forget_groupCat_preserves_epi
 #align AddGroup.forget_Group_preserves_epi AddGroupCat.forget_groupCat_preserves_epi
@@ -430,7 +430,7 @@ theorem range_eq_top_of_epi [Epi f] : f.range = ⊤ :=
 
 -- Porting note: again lack of transparency
 @[to_additive]
-instance (G : CommGroupCat) : CommGroup <| (forget CommGroupCat).obj G :=
+instance (priority := 10000) (G : CommGroupCat) : CommGroup <| (forget CommGroupCat).obj G :=
   G.str
 
 @[to_additive]
@@ -447,13 +447,13 @@ theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
 #align AddCommGroup.epi_iff_surjective AddCommGroupCat.epi_iff_surjective
 
 @[to_additive AddCommGroupCat.forget_commGroupCat_preserves_mono]
-instance forget_commGroupCat_preserves_mono : (forget CommGroupCat).PreservesMonomorphisms where
+instance (priority := 10000) forget_commGroupCat_preserves_mono : (forget CommGroupCat).PreservesMonomorphisms where
   preserves f e := by rwa [mono_iff_injective, ← CategoryTheory.mono_iff_injective] at e
 #align CommGroup.forget_CommGroup_preserves_mono CommGroupCat.forget_commGroupCat_preserves_mono
 #align AddCommGroup.forget_CommGroup_preserves_mono AddCommGroupCat.forget_commGroupCat_preserves_mono
 
 @[to_additive AddCommGroupCat.forget_commGroupCat_preserves_epi]
-instance forget_commGroupCat_preserves_epi : (forget CommGroupCat).PreservesEpimorphisms where
+instance (priority := 10000) forget_commGroupCat_preserves_epi : (forget CommGroupCat).PreservesEpimorphisms where
   preserves f e := by rwa [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective] at e
 #align CommGroup.forget_CommGroup_preserves_epi CommGroupCat.forget_commGroupCat_preserves_epi
 #align AddCommGroup.forget_CommGroup_preserves_epi AddCommGroupCat.forget_commGroupCat_preserves_epi

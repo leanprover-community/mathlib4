@@ -164,13 +164,13 @@ variable [CommSemiring R]
 variable [AddCommMonoidWithOne A] [Module R A]
 variable [AddCommMonoidWithOne B] [Module R B]
 
-instance : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
+instance (priority := 10000) : One (A ⊗[R] B) where one := 1 ⊗ₜ 1
 
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
 #align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
 
-instance instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
+instance (priority := 10000) instAddCommMonoidWithOne : AddCommMonoidWithOne (A ⊗[R] B) where
   natCast n := n ⊗ₜ 1
   natCast_zero := by simp
   natCast_succ n := by simp [add_tmul, one_def]
@@ -232,7 +232,7 @@ theorem mul_apply (a₁ a₂ : A) (b₁ b₂ : B) :
 #align algebra.tensor_product.mul_apply Algebra.TensorProduct.mul_apply
 
 -- providing this instance separately makes some downstream code substantially faster
-instance instMul : Mul (A ⊗[R] B) where
+instance (priority := 10000) instMul : Mul (A ⊗[R] B) where
   mul a b := mul a b
 
 @[simp]
@@ -251,7 +251,7 @@ nonrec theorem _root_.Commute.tmul {a₁ a₂ : A} {b₁ b₂ : B}
     Commute (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂) :=
   ha.tmul hb
 
-instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A ⊗[R] B) where
+instance (priority := 10000) instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
   zero_mul a := by simp [HMul.hMul, Mul.mul]
@@ -305,7 +305,7 @@ protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
 
-instance instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
+instance (priority := 10000) instNonAssocSemiring : NonAssocSemiring (A ⊗[R] B) where
   one_mul := Algebra.TensorProduct.one_mul
   mul_one := Algebra.TensorProduct.mul_one
   toNonUnitalNonAssocSemiring := instNonUnitalNonAssocSemiring
@@ -327,7 +327,7 @@ protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul 
   exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
 
-instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
+instance (priority := 10000) instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
   mul_assoc := Algebra.TensorProduct.mul_assoc
 
 end NonUnitalSemiring
@@ -338,7 +338,7 @@ variable [Semiring A] [Algebra R A]
 variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra R C]
 
-instance instSemiring : Semiring (A ⊗[R] B) where
+instance (priority := 10000) instSemiring : Semiring (A ⊗[R] B) where
   left_distrib a b c := by simp [HMul.hMul, Mul.mul]
   right_distrib a b c := by simp [HMul.hMul, Mul.mul]
   zero_mul a := by simp [HMul.hMul, Mul.mul]
@@ -368,7 +368,7 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
 
 variable [CommSemiring S] [Algebra S A]
 
-instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
+instance (priority := 10000) leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
   { commutes' := fun r x => by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
       rw [algebraMap_eq_smul_one, ← smul_tmul', ← one_def, mul_smul_comm, smul_mul_assoc, mul_one,
@@ -383,7 +383,7 @@ example : (algebraNat : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
-instance instAlgebra : Algebra R (A ⊗[R] B) :=
+instance (priority := 10000) instAlgebra : Algebra R (A ⊗[R] B) :=
   inferInstance
 
 @[simp]
@@ -463,7 +463,7 @@ variable [CommSemiring R]
 variable [AddCommGroupWithOne A] [Module R A]
 variable [AddCommGroupWithOne B] [Module R B]
 
-instance instAddCommGroupWithOne : AddCommGroupWithOne (A ⊗[R] B) where
+instance (priority := 10000) instAddCommGroupWithOne : AddCommGroupWithOne (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
   __ := instAddCommMonoidWithOne
   intCast z := z ⊗ₜ (1 : B)
@@ -479,7 +479,7 @@ variable [CommRing R]
 variable [NonUnitalNonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalNonAssocRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
-instance instNonUnitalNonAssocRing : NonUnitalNonAssocRing (A ⊗[R] B) where
+instance (priority := 10000) instNonUnitalNonAssocRing : NonUnitalNonAssocRing (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
   __ := instNonUnitalNonAssocSemiring
 
@@ -490,7 +490,7 @@ variable [CommRing R]
 variable [NonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonAssocRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
-instance instNonAssocRing : NonAssocRing (A ⊗[R] B) where
+instance (priority := 10000) instNonAssocRing : NonAssocRing (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
   __ := instNonAssocSemiring
   __ := instAddCommGroupWithOne
@@ -502,7 +502,7 @@ variable [CommRing R]
 variable [NonUnitalRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [NonUnitalRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
-instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
+instance (priority := 10000) instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
   __ := instNonUnitalSemiring
 
@@ -513,7 +513,7 @@ variable [CommSemiring R]
 variable [CommSemiring A] [Algebra R A]
 variable [CommSemiring B] [Algebra R B]
 
-instance instCommSemiring : CommSemiring (A ⊗[R] B) where
+instance (priority := 10000) instCommSemiring : CommSemiring (A ⊗[R] B) where
   toSemiring := inferInstance
   mul_comm x y := by
     refine TensorProduct.induction_on x ?_ ?_ ?_
@@ -537,7 +537,7 @@ variable [CommRing R]
 variable [Ring A] [Algebra R A]
 variable [Ring B] [Algebra R B]
 
-instance instRing : Ring (A ⊗[R] B) where
+instance (priority := 10000) instRing : Ring (A ⊗[R] B) where
   toSemiring := instSemiring
   __ := TensorProduct.addCommGroup
   __ := instNonAssocRing
@@ -556,7 +556,7 @@ variable [CommRing R]
 variable [CommRing A] [Algebra R A]
 variable [CommRing B] [Algebra R B]
 
-instance instCommRing : CommRing (A ⊗[R] B) :=
+instance (priority := 10000) instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
     mul_comm := mul_comm }
 
@@ -571,7 +571,7 @@ def rightAlgebra : Algebra B (A ⊗[R] B) :=
 
 attribute [local instance] TensorProduct.rightAlgebra
 
-instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
+instance (priority := 10000) right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 #align algebra.tensor_product.right_is_scalar_tower Algebra.TensorProduct.right_isScalarTower
 

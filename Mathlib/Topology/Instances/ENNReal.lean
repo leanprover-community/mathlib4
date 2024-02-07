@@ -36,19 +36,19 @@ open TopologicalSpace
 
 Note: this is different from the `EMetricSpace` topology. The `EMetricSpace` topology has
 `IsOpen {∞}`, while this topology doesn't have singleton elements. -/
-instance : TopologicalSpace ℝ≥0∞ := Preorder.topology ℝ≥0∞
+instance (priority := 10000) : TopologicalSpace ℝ≥0∞ := Preorder.topology ℝ≥0∞
 
-instance : OrderTopology ℝ≥0∞ := ⟨rfl⟩
+instance (priority := 10000) : OrderTopology ℝ≥0∞ := ⟨rfl⟩
 
 -- short-circuit type class inference
-instance : T2Space ℝ≥0∞ := inferInstance
-instance : T5Space ℝ≥0∞ := inferInstance
-instance : T4Space ℝ≥0∞ := inferInstance
+instance (priority := 10000) : T2Space ℝ≥0∞ := inferInstance
+instance (priority := 10000) : T5Space ℝ≥0∞ := inferInstance
+instance (priority := 10000) : T4Space ℝ≥0∞ := inferInstance
 
-instance : SecondCountableTopology ℝ≥0∞ :=
+instance (priority := 10000) : SecondCountableTopology ℝ≥0∞ :=
   orderIsoUnitIntervalBirational.toHomeomorph.embedding.secondCountableTopology
 
-instance : MetrizableSpace ENNReal :=
+instance (priority := 10000) : MetrizableSpace ENNReal :=
   orderIsoUnitIntervalBirational.toHomeomorph.embedding.metrizableSpace
 
 theorem embedding_coe : Embedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
@@ -293,7 +293,7 @@ protected theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {f : β → �
   .trans (atTop_basis.tendsto_iff (hasBasis_nhds_of_ne_top ha)) (by simp only [true_and]; rfl)
 #align ennreal.tendsto_at_top ENNReal.tendsto_atTop
 
-instance : ContinuousAdd ℝ≥0∞ := by
+instance (priority := 10000) : ContinuousAdd ℝ≥0∞ := by
   refine' ⟨continuous_iff_continuousAt.2 _⟩
   rintro ⟨_ | a, b⟩
   · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
@@ -534,7 +534,7 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
   OrderIso.invENNReal.liminf_apply
 #align ennreal.inv_liminf ENNReal.inv_liminf
 
-instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
+instance (priority := 10000) : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
 
 @[simp] -- porting note: todo: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :

@@ -155,7 +155,7 @@ def Quotient.algebraQuotientOfLEComap (h : p ≤ comap f P) : Algebra (R ⧸ p) 
 #align ideal.quotient.algebra_quotient_of_le_comap Ideal.Quotient.algebraQuotientOfLEComap
 
 /-- `R / p` has a canonical map to `S / pS`. -/
-instance Quotient.algebraQuotientMapQuotient : Algebra (R ⧸ p) (S ⧸ map f p) :=
+instance (priority := 10000) Quotient.algebraQuotientMapQuotient : Algebra (R ⧸ p) (S ⧸ map f p) :=
   Ideal.Quotient.algebraQuotientOfLEComap le_comap_map
 #align ideal.quotient.algebra_quotient_map_quotient Ideal.Quotient.algebraQuotientMapQuotient
 
@@ -172,14 +172,14 @@ theorem Quotient.mk_smul_mk_quotient_map_quotient (x : R) (y : S) :
   rfl
 #align ideal.quotient.mk_smul_mk_quotient_map_quotient Ideal.Quotient.mk_smul_mk_quotient_map_quotient
 
-instance Quotient.tower_quotient_map_quotient [Algebra R S] :
+instance (priority := 10000) Quotient.tower_quotient_map_quotient [Algebra R S] :
     IsScalarTower R (R ⧸ p) (S ⧸ map (algebraMap R S) p) :=
   IsScalarTower.of_algebraMap_eq fun x => by
     rw [Quotient.algebraMap_eq, Quotient.algebraMap_quotient_map_quotient,
       Quotient.mk_algebraMap]
 #align ideal.quotient.tower_quotient_map_quotient Ideal.Quotient.tower_quotient_map_quotient
 
-instance QuotientMapQuotient.isNoetherian [Algebra R S] [IsNoetherian R S] (I : Ideal R) :
+instance (priority := 10000) QuotientMapQuotient.isNoetherian [Algebra R S] [IsNoetherian R S] (I : Ideal R) :
     IsNoetherian (R ⧸ I) (S ⧸ Ideal.map (algebraMap R S) I) :=
   isNoetherian_of_tower R <|
     isNoetherian_of_surjective S (Ideal.Quotient.mkₐ R _).toLinearMap <|

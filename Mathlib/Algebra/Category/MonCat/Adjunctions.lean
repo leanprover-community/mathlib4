@@ -39,7 +39,7 @@ def adjoinOne : SemigroupCat.{u} ⥤ MonCat.{u} where
 #align adjoin_zero adjoinZero
 
 @[to_additive]
-instance hasForgetToSemigroup : HasForget₂ MonCat SemigroupCat where
+instance (priority := 10000) hasForgetToSemigroup : HasForget₂ MonCat SemigroupCat where
   forget₂ :=
     { obj := fun M => SemigroupCat.of M
       map := MonoidHom.toMulHom }
@@ -80,5 +80,5 @@ def adj : free ⊣ forget MonCat.{u} :=
       homEquiv_naturality_left_symm := fun _ _ => FreeMonoid.hom_eq (fun _ => rfl) }
 #align adj adj
 
-instance : IsRightAdjoint (forget MonCat.{u}) :=
+instance (priority := 10000) : IsRightAdjoint (forget MonCat.{u}) :=
   ⟨_, adj⟩

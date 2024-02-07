@@ -27,10 +27,10 @@ def HeytAlg :=
 
 namespace HeytAlg
 
-instance : CoeSort HeytAlg (Type*) :=
+instance (priority := 10000) : CoeSort HeytAlg (Type*) :=
   Bundled.coeSort
 
-instance (X : HeytAlg) : HeytingAlgebra X :=
+instance (priority := 10000) (X : HeytAlg) : HeytingAlgebra X :=
   X.str
 
 /-- Construct a bundled `HeytAlg` from a `HeytingAlgebra`. -/
@@ -43,10 +43,10 @@ theorem coe_of (α : Type*) [HeytingAlgebra α] : ↥(of α) = α :=
   rfl
 #align HeytAlg.coe_of HeytAlg.coe_of
 
-instance : Inhabited HeytAlg :=
+instance (priority := 10000) : Inhabited HeytAlg :=
   ⟨of PUnit⟩
 
-instance bundledHom : BundledHom HeytingHom where
+instance (priority := 10000) bundledHom : BundledHom HeytingHom where
   toFun α β [HeytingAlgebra α] [HeytingAlgebra β] := (DFunLike.coe : HeytingHom α β → α → β)
   id := @HeytingHom.id
   comp := @HeytingHom.comp
@@ -57,20 +57,20 @@ deriving instance LargeCategory for HeytAlg
 
 -- Porting note: deriving failed.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory HeytAlg := by
+instance (priority := 10000) : ConcreteCategory HeytAlg := by
   dsimp [HeytAlg]
   infer_instance
 
 -- Porting note: No idea why it does not find this instance...
-instance {X Y : HeytAlg.{u}} : FunLike (X ⟶ Y) ↑X ↑Y :=
+instance (priority := 10000) {X Y : HeytAlg.{u}} : FunLike (X ⟶ Y) ↑X ↑Y :=
   HeytingHom.instFunLike
 
 -- Porting note: No idea why it does not find this instance...
-instance {X Y : HeytAlg.{u}} : HeytingHomClass (X ⟶ Y) ↑X ↑Y :=
+instance (priority := 10000) {X Y : HeytAlg.{u}} : HeytingHomClass (X ⟶ Y) ↑X ↑Y :=
   HeytingHom.instHeytingHomClass
 
 @[simps]
-instance hasForgetToLat : HasForget₂ HeytAlg BddDistLat where
+instance (priority := 10000) hasForgetToLat : HasForget₂ HeytAlg BddDistLat where
   forget₂ :=
     { obj := fun X => BddDistLat.of X
       map := fun {X Y} f => (f : BoundedLatticeHom X Y) }

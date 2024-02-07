@@ -46,11 +46,11 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace 𝕜 F]
 
-instance instMeasurableSpace : MeasurableSpace (E →L[𝕜] F) :=
+instance (priority := 10000) instMeasurableSpace : MeasurableSpace (E →L[𝕜] F) :=
   borel _
 #align continuous_linear_map.measurable_space ContinuousLinearMap.instMeasurableSpace
 
-instance instBorelSpace : BorelSpace (E →L[𝕜] F) :=
+instance (priority := 10000) instBorelSpace : BorelSpace (E →L[𝕜] F) :=
   ⟨rfl⟩
 #align continuous_linear_map.borel_space ContinuousLinearMap.instBorelSpace
 

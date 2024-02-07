@@ -42,14 +42,14 @@ def WidePullbackShape := Option J
 #align category_theory.limits.wide_pullback_shape CategoryTheory.Limits.WidePullbackShape
 
 -- Porting note: strangely this could be synthesized
-instance : Inhabited (WidePullbackShape J) where
+instance (priority := 10000) : Inhabited (WidePullbackShape J) where
   default := none
 
 /-- A wide pushout shape for any type `J` can be written simply as `Option J`. -/
 def WidePushoutShape := Option J
 #align category_theory.limits.wide_pushout_shape CategoryTheory.Limits.WidePushoutShape
 
-instance : Inhabited (WidePushoutShape J) where
+instance (priority := 10000) : Inhabited (WidePushoutShape J) where
   default := none
 
 namespace WidePullbackShape
@@ -67,7 +67,7 @@ inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
 -- See https://github.com/leanprover/lean4/issues/2343
 attribute [nolint unusedArguments] instDecidableEqHom
 
-instance struct : CategoryStruct (WidePullbackShape J) where
+instance (priority := 10000) struct : CategoryStruct (WidePullbackShape J) where
   Hom := Hom
   id j := Hom.id j
   comp f g := by
@@ -77,7 +77,7 @@ instance struct : CategoryStruct (WidePullbackShape J) where
     apply Hom.term _
 #align category_theory.limits.wide_pullback_shape.struct CategoryTheory.Limits.WidePullbackShape.struct
 
-instance Hom.inhabited : Inhabited (Hom (none : WidePullbackShape J) none) :=
+instance (priority := 10000) Hom.inhabited : Inhabited (Hom (none : WidePullbackShape J) none) :=
   ⟨Hom.id (none : WidePullbackShape J)⟩
 #align category_theory.limits.wide_pullback_shape.hom.inhabited CategoryTheory.Limits.WidePullbackShape.Hom.inhabited
 
@@ -92,14 +92,14 @@ def evalCasesBash : TacticM Unit := do
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash
 
-instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
+instance (priority := 10000) subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
   intro a b
   casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _)
   rfl; rfl; rfl
 #align category_theory.limits.wide_pullback_shape.subsingleton_hom CategoryTheory.Limits.WidePullbackShape.subsingleton_hom
 
-instance category : SmallCategory (WidePullbackShape J) :=
+instance (priority := 10000) category : SmallCategory (WidePullbackShape J) :=
   thin_category
 #align category_theory.limits.wide_pullback_shape.category CategoryTheory.Limits.WidePullbackShape.category
 
@@ -184,7 +184,7 @@ inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
 -- See https://github.com/leanprover/lean4/issues/2343
 attribute [nolint unusedArguments] instDecidableEqHom
 
-instance struct : CategoryStruct (WidePushoutShape J) where
+instance (priority := 10000) struct : CategoryStruct (WidePushoutShape J) where
   Hom := Hom
   id j := Hom.id j
   comp f g := by
@@ -194,7 +194,7 @@ instance struct : CategoryStruct (WidePushoutShape J) where
     apply Hom.init _
 #align category_theory.limits.wide_pushout_shape.struct CategoryTheory.Limits.WidePushoutShape.struct
 
-instance Hom.inhabited : Inhabited (Hom (none : WidePushoutShape J) none) :=
+instance (priority := 10000) Hom.inhabited : Inhabited (Hom (none : WidePushoutShape J) none) :=
   ⟨Hom.id (none : WidePushoutShape J)⟩
 #align category_theory.limits.wide_pushout_shape.hom.inhabited CategoryTheory.Limits.WidePushoutShape.Hom.inhabited
 
@@ -208,14 +208,14 @@ def evalCasesBash' : TacticM Unit := do
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash'
 
-instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
+instance (priority := 10000) subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
   constructor
   intro a b
   casesm* WidePushoutShape _, (_: WidePushoutShape _) ⟶ (_ : WidePushoutShape _)
   repeat rfl
 #align category_theory.limits.wide_pushout_shape.subsingleton_hom CategoryTheory.Limits.WidePushoutShape.subsingleton_hom
 
-instance category : SmallCategory (WidePushoutShape J) :=
+instance (priority := 10000) category : SmallCategory (WidePushoutShape J) :=
   thin_category
 #align category_theory.limits.wide_pushout_shape.category CategoryTheory.Limits.WidePushoutShape.category
 

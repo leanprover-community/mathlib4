@@ -241,7 +241,7 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
   · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 #align homological_complex.hom.comm HomologicalComplex.Hom.comm
 
-instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
+instance (priority := 10000) (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
   ⟨{ f := fun i => 0 }⟩
 
 /-- Identity chain map. -/
@@ -257,7 +257,7 @@ section
 
 attribute [local simp] id comp
 
-instance : Category (HomologicalComplex V c) where
+instance (priority := 10000) : Category (HomologicalComplex V c) where
   Hom := Hom
   id := id
   comp := comp _ _ _
@@ -296,7 +296,7 @@ theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
 #align homological_complex.hom_f_injective HomologicalComplex.hom_f_injective
 
-instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
+instance (priority := 10000) (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
   ⟨{ f := fun i => 0}⟩
 
 @[simp]
@@ -304,7 +304,7 @@ theorem zero_f (C D : HomologicalComplex V c) (i : ι) : (0 : C ⟶ D).f i = 0 :
   rfl
 #align homological_complex.zero_apply HomologicalComplex.zero_f
 
-instance : HasZeroMorphisms (HomologicalComplex V c) where
+instance (priority := 10000) : HasZeroMorphisms (HomologicalComplex V c) where
 
 open ZeroObject
 
@@ -322,10 +322,10 @@ theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) :
     apply Subsingleton.elim
 #align homological_complex.is_zero_zero HomologicalComplex.isZero_zero
 
-instance [HasZeroObject V] : HasZeroObject (HomologicalComplex V c) :=
+instance (priority := 10000) [HasZeroObject V] : HasZeroObject (HomologicalComplex V c) :=
   ⟨⟨zero, isZero_zero⟩⟩
 
-noncomputable instance [HasZeroObject V] : Inhabited (HomologicalComplex V c) :=
+noncomputable instance (priority := 10000) [HasZeroObject V] : Inhabited (HomologicalComplex V c) :=
   ⟨zero⟩
 
 theorem congr_hom {C D : HomologicalComplex V c} {f g : C ⟶ D} (w : f = g) (i : ι) :

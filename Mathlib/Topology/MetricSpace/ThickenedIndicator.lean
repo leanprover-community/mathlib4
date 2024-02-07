@@ -241,7 +241,7 @@ pointwise to the indicator function of the closure of E.
 
 Note: This version is for the bundled bounded continuous functions, but the topology is not
 the topology on `α →ᵇ ℝ≥0`. Coercions to functions `α → ℝ≥0` are done first, so the topology
-instance is the product topology (the topology of pointwise convergence). -/
+instance (priority := 10000) is the product topology (the topology of pointwise convergence). -/
 theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δseq_pos : ∀ n, 0 < δseq n)
     (δseq_lim : Tendsto δseq atTop (𝓝 0)) (E : Set α) :
     Tendsto (fun n : ℕ => ((↑) : (α →ᵇ ℝ≥0) → α → ℝ≥0) (thickenedIndicator (δseq_pos n) E)) atTop

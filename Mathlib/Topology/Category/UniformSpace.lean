@@ -35,18 +35,18 @@ def UniformSpaceCat : Type (u + 1) :=
 namespace UniformSpaceCat
 
 /-- The information required to build morphisms for `UniformSpace`. -/
-instance : UnbundledHom @UniformContinuous :=
+instance (priority := 10000) : UnbundledHom @UniformContinuous :=
   ⟨@uniformContinuous_id, @UniformContinuous.comp⟩
 
 deriving instance LargeCategory for UniformSpaceCat
 
-instance : ConcreteCategory UniformSpaceCat :=
+instance (priority := 10000) : ConcreteCategory UniformSpaceCat :=
   inferInstanceAs <| ConcreteCategory <| Bundled UniformSpace
 
-instance : CoeSort UniformSpaceCat (Type*) :=
+instance (priority := 10000) : CoeSort UniformSpaceCat (Type*) :=
   Bundled.coeSort
 
-instance (x : UniformSpaceCat) : UniformSpace x :=
+instance (priority := 10000) (x : UniformSpaceCat) : UniformSpace x :=
   x.str
 
 /-- Construct a bundled `UniformSpace` from the underlying type and the typeclass. -/
@@ -54,7 +54,7 @@ def of (α : Type u) [UniformSpace α] : UniformSpaceCat :=
   ⟨α, ‹_›⟩
 #align UniformSpace.of UniformSpaceCat.of
 
-instance : Inhabited UniformSpaceCat :=
+instance (priority := 10000) : Inhabited UniformSpaceCat :=
   ⟨UniformSpaceCat.of Empty⟩
 
 @[simp]
@@ -62,7 +62,7 @@ theorem coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
   rfl
 #align UniformSpace.coe_of UniformSpaceCat.coe_of
 
-instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
+instance (priority := 10000) (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ⟨(forget UniformSpaceCat).map⟩
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
@@ -90,7 +90,7 @@ theorem hom_ext {X Y : UniformSpaceCat} {f g : X ⟶ Y} : (f : X → Y) = g → 
 #align UniformSpace.hom_ext UniformSpaceCat.hom_ext
 
 /-- The forgetful functor from uniform spaces to topological spaces. -/
-instance hasForgetToTop : HasForget₂ UniformSpaceCat.{u} TopCat.{u} where
+instance (priority := 10000) hasForgetToTop : HasForget₂ UniformSpaceCat.{u} TopCat.{u} where
   forget₂ :=
     { obj := fun X => TopCat.of X
       map := fun f =>
@@ -111,7 +111,7 @@ structure CpltSepUniformSpace where
 
 namespace CpltSepUniformSpace
 
-instance : CoeSort CpltSepUniformSpace (Type u) :=
+instance (priority := 10000) : CoeSort CpltSepUniformSpace (Type u) :=
   ⟨CpltSepUniformSpace.α⟩
 
 attribute [instance] isUniformSpace isCompleteSpace isSeparated
@@ -121,11 +121,11 @@ def toUniformSpace (X : CpltSepUniformSpace) : UniformSpaceCat :=
   UniformSpaceCat.of X
 #align CpltSepUniformSpace.to_UniformSpace CpltSepUniformSpace.toUniformSpace
 
-instance completeSpace (X : CpltSepUniformSpace) : CompleteSpace (toUniformSpace X).α :=
+instance (priority := 10000) completeSpace (X : CpltSepUniformSpace) : CompleteSpace (toUniformSpace X).α :=
   CpltSepUniformSpace.isCompleteSpace X
 #align CpltSepUniformSpace.complete_space CpltSepUniformSpace.completeSpace
 
-instance separatedSpace (X : CpltSepUniformSpace) : SeparatedSpace (toUniformSpace X).α :=
+instance (priority := 10000) separatedSpace (X : CpltSepUniformSpace) : SeparatedSpace (toUniformSpace X).α :=
   CpltSepUniformSpace.isSeparated X
 #align CpltSepUniformSpace.separated_space CpltSepUniformSpace.separatedSpace
 
@@ -140,21 +140,21 @@ theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [SeparatedSpace X
   rfl
 #align CpltSepUniformSpace.coe_of CpltSepUniformSpace.coe_of
 
-instance : Inhabited CpltSepUniformSpace :=
+instance (priority := 10000) : Inhabited CpltSepUniformSpace :=
   haveI : SeparatedSpace Empty := separated_iff_t2.mpr (by infer_instance)
   ⟨CpltSepUniformSpace.of Empty⟩
 
 /-- The category instance on `CpltSepUniformSpace`. -/
-instance category : LargeCategory CpltSepUniformSpace :=
+instance (priority := 10000) category : LargeCategory CpltSepUniformSpace :=
   InducedCategory.category toUniformSpace
 #align CpltSepUniformSpace.category CpltSepUniformSpace.category
 
 /-- The concrete category instance on `CpltSepUniformSpace`. -/
-instance concreteCategory : ConcreteCategory CpltSepUniformSpace :=
+instance (priority := 10000) concreteCategory : ConcreteCategory CpltSepUniformSpace :=
   InducedCategory.concreteCategory toUniformSpace
 #align CpltSepUniformSpace.concrete_category CpltSepUniformSpace.concreteCategory
 
-instance hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
+instance (priority := 10000) hasForgetToUniformSpace : HasForget₂ CpltSepUniformSpace UniformSpaceCat :=
   InducedCategory.hasForget₂ toUniformSpace
 #align CpltSepUniformSpace.has_forget_to_UniformSpace CpltSepUniformSpace.hasForgetToUniformSpace
 
@@ -195,7 +195,7 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
 #align UniformSpace.extension_hom UniformSpaceCat.extensionHom
 
 -- Porting note : added this instance to make things compile
-instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
+instance (priority := 10000) (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
   show UniformSpace X from inferInstance
 
 @[simp]
@@ -234,10 +234,10 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
         rfl }
 #align UniformSpace.adj UniformSpaceCat.adj
 
-noncomputable instance : IsRightAdjoint (forget₂ CpltSepUniformSpace UniformSpaceCat) :=
+noncomputable instance (priority := 10000) : IsRightAdjoint (forget₂ CpltSepUniformSpace UniformSpaceCat) :=
   ⟨completionFunctor, adj⟩
 
-noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
+noncomputable instance (priority := 10000) : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
   preimage {X Y} f := f
 
 open CategoryTheory.Limits

@@ -86,7 +86,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 
 attribute [coe] VectorMeasure.measureOf'
 
-instance instCoeFun : CoeFun (VectorMeasure α M) fun _ => Set α → M :=
+instance (priority := 10000) instCoeFun : CoeFun (VectorMeasure α M) fun _ => Set α → M :=
   ⟨VectorMeasure.measureOf'⟩
 #align measure_theory.vector_measure.has_coe_to_fun MeasureTheory.VectorMeasure.instCoeFun
 
@@ -261,7 +261,7 @@ def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' _ hf₁ hf₂ := by exact HasSum.const_smul _ (v.m_iUnion hf₁ hf₂)
 #align measure_theory.vector_measure.smul MeasureTheory.VectorMeasure.smul
 
-instance instSMul : SMul R (VectorMeasure α M) :=
+instance (priority := 10000) instSMul : SMul R (VectorMeasure α M) :=
   ⟨smul⟩
 #align measure_theory.vector_measure.has_smul MeasureTheory.VectorMeasure.instSMul
 
@@ -278,11 +278,11 @@ section AddCommMonoid
 
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 
-instance instZero : Zero (VectorMeasure α M) :=
+instance (priority := 10000) instZero : Zero (VectorMeasure α M) :=
   ⟨⟨0, rfl, fun _ _ => rfl, fun _ _ _ => hasSum_zero⟩⟩
 #align measure_theory.vector_measure.has_zero MeasureTheory.VectorMeasure.instZero
 
-instance instInhabited : Inhabited (VectorMeasure α M) :=
+instance (priority := 10000) instInhabited : Inhabited (VectorMeasure α M) :=
   ⟨0⟩
 #align measure_theory.vector_measure.inhabited MeasureTheory.VectorMeasure.instInhabited
 
@@ -303,7 +303,7 @@ def add (v w : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' f hf₁ hf₂ := HasSum.add (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
 #align measure_theory.vector_measure.add MeasureTheory.VectorMeasure.add
 
-instance instAdd : Add (VectorMeasure α M) :=
+instance (priority := 10000) instAdd : Add (VectorMeasure α M) :=
   ⟨add⟩
 #align measure_theory.vector_measure.has_add MeasureTheory.VectorMeasure.instAdd
 
@@ -314,7 +314,7 @@ theorem coe_add (v w : VectorMeasure α M) : ⇑(v + w) = v + w := rfl
 theorem add_apply (v w : VectorMeasure α M) (i : Set α) : (v + w) i = v i + w i := rfl
 #align measure_theory.vector_measure.add_apply MeasureTheory.VectorMeasure.add_apply
 
-instance instAddCommMonoid : AddCommMonoid (VectorMeasure α M) :=
+instance (priority := 10000) instAddCommMonoid : AddCommMonoid (VectorMeasure α M) :=
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 #align measure_theory.vector_measure.add_comm_monoid MeasureTheory.VectorMeasure.instAddCommMonoid
 
@@ -340,7 +340,7 @@ def neg (v : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' f hf₁ hf₂ := HasSum.neg <| v.m_iUnion hf₁ hf₂
 #align measure_theory.vector_measure.neg MeasureTheory.VectorMeasure.neg
 
-instance instNeg : Neg (VectorMeasure α M) :=
+instance (priority := 10000) instNeg : Neg (VectorMeasure α M) :=
   ⟨neg⟩
 #align measure_theory.vector_measure.has_neg MeasureTheory.VectorMeasure.instNeg
 
@@ -359,7 +359,7 @@ def sub (v w : VectorMeasure α M) : VectorMeasure α M where
   m_iUnion' f hf₁ hf₂ := HasSum.sub (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
 #align measure_theory.vector_measure.sub MeasureTheory.VectorMeasure.sub
 
-instance instSub : Sub (VectorMeasure α M) :=
+instance (priority := 10000) instSub : Sub (VectorMeasure α M) :=
   ⟨sub⟩
 #align measure_theory.vector_measure.has_sub MeasureTheory.VectorMeasure.instSub
 
@@ -370,7 +370,7 @@ theorem coe_sub (v w : VectorMeasure α M) : ⇑(v - w) = v - w := rfl
 theorem sub_apply (v w : VectorMeasure α M) (i : Set α) : (v - w) i = v i - w i := rfl
 #align measure_theory.vector_measure.sub_apply MeasureTheory.VectorMeasure.sub_apply
 
-instance instAddCommGroup : AddCommGroup (VectorMeasure α M) :=
+instance (priority := 10000) instAddCommGroup : AddCommGroup (VectorMeasure α M) :=
   Function.Injective.addCommGroup _ coe_injective coe_zero coe_add coe_neg coe_sub
     (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 #align measure_theory.vector_measure.add_comm_group MeasureTheory.VectorMeasure.instAddCommGroup
@@ -383,7 +383,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
-instance instDistribMulAction [ContinuousAdd M] : DistribMulAction R (VectorMeasure α M) :=
+instance (priority := 10000) instDistribMulAction [ContinuousAdd M] : DistribMulAction R (VectorMeasure α M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 #align measure_theory.vector_measure.distrib_mul_action MeasureTheory.VectorMeasure.instDistribMulAction
 
@@ -395,7 +395,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 
 variable {R : Type*} [Semiring R] [Module R M] [ContinuousConstSMul R M]
 
-instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) :=
+instance (priority := 10000) instModule [ContinuousAdd M] : Module R (VectorMeasure α M) :=
   Function.Injective.module R coeFnAddMonoidHom coe_injective coe_smul
 #align measure_theory.vector_measure.module MeasureTheory.VectorMeasure.instModule
 
@@ -819,7 +819,7 @@ variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
 /-- Vector measures over a partially ordered monoid is partially ordered.
 
 This definition is consistent with `Measure.instPartialOrder`. -/
-instance instPartialOrder : PartialOrder (VectorMeasure α M) where
+instance (priority := 10000) instPartialOrder : PartialOrder (VectorMeasure α M) where
   le v w := ∀ i, MeasurableSet i → v i ≤ w i
   le_refl v i _ := le_rfl
   le_trans u v w h₁ h₂ i hi := le_trans (h₁ i hi) (h₂ i hi)
@@ -1037,7 +1037,7 @@ section
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
   [CovariantClass M M (· + ·) (· ≤ ·)] [ContinuousAdd M]
 
-instance covariant_add_le :
+instance (priority := 10000) covariant_add_le :
     CovariantClass (VectorMeasure α M) (VectorMeasure α M) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ h i hi => add_le_add_left (h i hi) _⟩
 #align measure_theory.vector_measure.covariant_add_le MeasureTheory.VectorMeasure.covariant_add_le
@@ -1362,7 +1362,7 @@ theorem toMeasureOfLEZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj�
 #align measure_theory.signed_measure.to_measure_of_le_zero_apply MeasureTheory.SignedMeasure.toMeasureOfLEZero_apply
 
 /-- `SignedMeasure.toMeasureOfZeroLE` is a finite measure. -/
-instance toMeasureOfZeroLE_finite (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) :
+instance (priority := 10000) toMeasureOfZeroLE_finite (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) :
     IsFiniteMeasure (s.toMeasureOfZeroLE i hi₁ hi) where
   measure_univ_lt_top := by
     rw [toMeasureOfZeroLE_apply s hi hi₁ MeasurableSet.univ]
@@ -1370,7 +1370,7 @@ instance toMeasureOfZeroLE_finite (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i) :
 #align measure_theory.signed_measure.to_measure_of_zero_le_finite MeasureTheory.SignedMeasure.toMeasureOfZeroLE_finite
 
 /-- `SignedMeasure.toMeasureOfLEZero` is a finite measure. -/
-instance toMeasureOfLEZero_finite (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) :
+instance (priority := 10000) toMeasureOfLEZero_finite (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) :
     IsFiniteMeasure (s.toMeasureOfLEZero i hi₁ hi) where
   measure_univ_lt_top := by
     rw [toMeasureOfLEZero_apply s hi hi₁ MeasurableSet.univ]

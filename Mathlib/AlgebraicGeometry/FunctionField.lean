@@ -43,11 +43,11 @@ noncomputable abbrev Scheme.germToFunctionField [IrreducibleSpace X.carrier] (U 
       ((genericPoint_spec X.carrier).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩
 #align algebraic_geometry.Scheme.germ_to_function_field AlgebraicGeometry.Scheme.germToFunctionField
 
-noncomputable instance [IrreducibleSpace X.carrier] (U : Opens X.carrier) [Nonempty U] :
+noncomputable instance (priority := 10000) [IrreducibleSpace X.carrier] (U : Opens X.carrier) [Nonempty U] :
     Algebra (X.presheaf.obj (op U)) X.functionField :=
   (X.germToFunctionField U).toAlgebra
 
-noncomputable instance [IsIntegral X] : Field X.functionField := by
+noncomputable instance (priority := 10000) [IsIntegral X] : Field X.functionField := by
   apply fieldOfIsUnitOrEqZero
   intro a
   obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
@@ -93,13 +93,13 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
   exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
 #align algebraic_geometry.generic_point_eq_of_is_open_immersion AlgebraicGeometry.genericPoint_eq_of_isOpenImmersion
 
-noncomputable instance stalkFunctionFieldAlgebra [IrreducibleSpace X.carrier] (x : X.carrier) :
+noncomputable instance (priority := 10000) stalkFunctionFieldAlgebra [IrreducibleSpace X.carrier] (x : X.carrier) :
     Algebra (X.presheaf.stalk x) X.functionField := by
   apply RingHom.toAlgebra
   exact X.presheaf.stalkSpecializes ((genericPoint_spec X.carrier).specializes trivial)
 #align algebraic_geometry.stalk_function_field_algebra AlgebraicGeometry.stalkFunctionFieldAlgebra
 
-instance functionField_isScalarTower [IrreducibleSpace X.carrier] (U : Opens X.carrier) (x : U)
+instance (priority := 10000) functionField_isScalarTower [IrreducibleSpace X.carrier] (U : Opens X.carrier) (x : U)
     [Nonempty U] : IsScalarTower (X.presheaf.obj <| op U) (X.presheaf.stalk x) X.functionField := by
   apply IsScalarTower.of_algebraMap_eq'
   simp_rw [RingHom.algebraMap_toAlgebra]
@@ -107,7 +107,7 @@ instance functionField_isScalarTower [IrreducibleSpace X.carrier] (U : Opens X.c
   rw [X.presheaf.germ_stalkSpecializes]
 #align algebraic_geometry.function_field_is_scalar_tower AlgebraicGeometry.functionField_isScalarTower
 
-noncomputable instance (R : CommRingCat) [IsDomain R] :
+noncomputable instance (priority := 10000) (R : CommRingCat) [IsDomain R] :
     Algebra R (Scheme.Spec.obj <| op R).functionField :=
   RingHom.toAlgebra <| by change CommRingCat.of R ⟶ _; apply StructureSheaf.toStalk
 
@@ -121,7 +121,7 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
   rfl
 #align algebraic_geometry.generic_point_eq_bot_of_affine AlgebraicGeometry.genericPoint_eq_bot_of_affine
 
-instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
+instance (priority := 10000) functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Scheme.Spec.obj <| op R).functionField := by
   convert StructureSheaf.IsLocalization.to_stalk R (genericPoint _)
   delta IsFractionRing IsLocalization.AtPrime
@@ -133,7 +133,7 @@ instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain 
   exact mem_nonZeroDivisors_iff_ne_zero
 #align algebraic_geometry.function_field_is_fraction_ring_of_affine AlgebraicGeometry.functionField_isFractionRing_of_affine
 
-instance {X : Scheme} [IsIntegral X] {U : Opens X.carrier} [hU : Nonempty U] :
+instance (priority := 10000) {X : Scheme} [IsIntegral X] {U : Opens X.carrier} [hU : Nonempty U] :
     IsIntegral (X.restrict U.openEmbedding) :=
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU
   isIntegralOfOpenImmersion (X.ofRestrict U.openEmbedding)
@@ -169,10 +169,10 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
   ext; exact mem_nonZeroDivisors_iff_ne_zero
 #align algebraic_geometry.function_field_is_fraction_ring_of_is_affine_open AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen
 
-instance (x : X.carrier) : IsAffine (X.affineCover.obj x) :=
+instance (priority := 10000) (x : X.carrier) : IsAffine (X.affineCover.obj x) :=
   AlgebraicGeometry.SpecIsAffine _
 
-instance [IsIntegral X] (x : X.carrier) :
+instance (priority := 10000) [IsIntegral X] (x : X.carrier) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,

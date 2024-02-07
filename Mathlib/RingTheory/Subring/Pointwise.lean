@@ -93,7 +93,7 @@ theorem smul_closure (a : M) (s : Set R) : a • closure s = closure (a • s) :
   RingHom.map_closure _ _
 #align subring.smul_closure Subring.smul_closure
 
-instance pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralScalar M R] :
+instance (priority := 10000) pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralScalar M R] :
     IsCentralScalar M (Subring R) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
 #align subring.pointwise_central_scalar Subring.pointwise_central_scalar

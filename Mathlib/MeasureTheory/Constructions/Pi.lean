@@ -239,7 +239,7 @@ theorem tprod_cons (i : δ) (l : List δ) (μ : ∀ i, Measure (π i)) :
   rfl
 #align measure_theory.measure.tprod_cons MeasureTheory.Measure.tprod_cons
 
-instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
+instance (priority := 10000) sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)] :
     SigmaFinite (Measure.tprod l μ) := by
   induction l with
   | nil => rw [tprod_nil]; infer_instance
@@ -302,7 +302,7 @@ protected irreducible_def pi : Measure (∀ i, α i) :=
 
 -- porting note: moved from below so that instances about `Measure.pi` and `MeasureSpace.pi`
 -- go together
-instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, MeasureSpace (α i)] :
+instance (priority := 10000) _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, MeasureSpace (α i)] :
     MeasureSpace (∀ i, α i) :=
   ⟨Measure.pi fun _ => volume⟩
 #align measure_theory.measure_space.pi MeasureTheory.MeasureSpace.pi
@@ -404,11 +404,11 @@ theorem pi_closedBall [∀ i, MetricSpace (α i)] (x : ∀ i, α i) {r : ℝ} (h
   rw [closedBall_pi _ hr, pi_pi]
 #align measure_theory.measure.pi_closed_ball MeasureTheory.Measure.pi_closedBall
 
-instance pi.sigmaFinite : SigmaFinite (Measure.pi μ) :=
+instance (priority := 10000) pi.sigmaFinite : SigmaFinite (Measure.pi μ) :=
   (FiniteSpanningSetsIn.pi fun i => (μ i).toFiniteSpanningSetsIn).sigmaFinite
 #align measure_theory.measure.pi.sigma_finite MeasureTheory.Measure.pi.sigmaFinite
 
-instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
+instance (priority := 10000) {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
     SigmaFinite (volume : Measure (∀ i, α i)) :=
   pi.sigmaFinite _
 
@@ -551,15 +551,15 @@ theorem pi_noAtoms (i : ι) [NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
   ⟨fun x => flip measure_mono_null (pi_hyperplane μ i (x i)) (singleton_subset_iff.2 rfl)⟩
 #align measure_theory.measure.pi_has_no_atoms MeasureTheory.Measure.pi_noAtoms
 
-instance pi_noAtoms' [h : Nonempty ι] [∀ i, NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
+instance (priority := 10000) pi_noAtoms' [h : Nonempty ι] [∀ i, NoAtoms (μ i)] : NoAtoms (Measure.pi μ) :=
   h.elim fun i => pi_noAtoms i
 
-instance {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]
+instance (priority := 10000) {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]
     [∀ i, SigmaFinite (volume : Measure (α i))] [∀ i, NoAtoms (volume : Measure (α i))] :
     NoAtoms (volume : Measure (∀ i, α i)) :=
   pi_noAtoms'
 
-instance pi.isLocallyFiniteMeasure
+instance (priority := 10000) pi.isLocallyFiniteMeasure
     [∀ i, TopologicalSpace (α i)] [∀ i, IsLocallyFiniteMeasure (μ i)] :
     IsLocallyFiniteMeasure (Measure.pi μ) := by
   refine' ⟨fun x => _⟩
@@ -568,7 +568,7 @@ instance pi.isLocallyFiniteMeasure
   rw [pi_pi]
   exact ENNReal.prod_lt_top fun i _ => (hμ i).ne
 
-instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
+instance (priority := 10000) {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
     [∀ i, SigmaFinite (volume : Measure (X i))]
     [∀ i, IsLocallyFiniteMeasure (volume : Measure (X i))] :
     IsLocallyFiniteMeasure (volume : Measure (∀ i, X i)) :=
@@ -577,7 +577,7 @@ instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace
 variable (μ)
 
 @[to_additive]
-instance pi.isMulLeftInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α i)]
+instance (priority := 10000) pi.isMulLeftInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α i)]
     [∀ i, IsMulLeftInvariant (μ i)] : IsMulLeftInvariant (Measure.pi μ) := by
   refine' ⟨fun v => (pi_eq fun s hs => _).symm⟩
   rw [map_apply (measurable_const_mul _) (MeasurableSet.univ_pi hs),
@@ -587,13 +587,13 @@ instance pi.isMulLeftInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α i
 #align measure_theory.measure.pi.is_add_left_invariant MeasureTheory.Measure.pi.isAddLeftInvariant
 
 @[to_additive]
-instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
+instance (priority := 10000) {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
     [∀ i, SigmaFinite (volume : Measure (G i))] [∀ i, IsMulLeftInvariant (volume : Measure (G i))] :
     IsMulLeftInvariant (volume : Measure (∀ i, G i)) :=
   pi.isMulLeftInvariant _
 
 @[to_additive]
-instance pi.isMulRightInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α i)]
+instance (priority := 10000) pi.isMulRightInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α i)]
     [∀ i, IsMulRightInvariant (μ i)] : IsMulRightInvariant (Measure.pi μ) := by
   refine' ⟨fun v => (pi_eq fun s hs => _).symm⟩
   rw [map_apply (measurable_mul_const _) (MeasurableSet.univ_pi hs),
@@ -603,14 +603,14 @@ instance pi.isMulRightInvariant [∀ i, Group (α i)] [∀ i, MeasurableMul (α 
 #align measure_theory.measure.pi.is_add_right_invariant MeasureTheory.Measure.pi.isAddRightInvariant
 
 @[to_additive]
-instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
+instance (priority := 10000) {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
     [∀ i, SigmaFinite (volume : Measure (G i))]
     [∀ i, IsMulRightInvariant (volume : Measure (G i))] :
     IsMulRightInvariant (volume : Measure (∀ i, G i)) :=
   pi.isMulRightInvariant _
 
 @[to_additive]
-instance pi.isInvInvariant [∀ i, Group (α i)] [∀ i, MeasurableInv (α i)]
+instance (priority := 10000) pi.isInvInvariant [∀ i, Group (α i)] [∀ i, MeasurableInv (α i)]
     [∀ i, IsInvInvariant (μ i)] : IsInvInvariant (Measure.pi μ) := by
   refine' ⟨(Measure.pi_eq fun s hs => _).symm⟩
   have A : Inv.inv ⁻¹' pi univ s = Set.pi univ fun i => Inv.inv ⁻¹' s i := by ext; simp
@@ -620,12 +620,12 @@ instance pi.isInvInvariant [∀ i, Group (α i)] [∀ i, MeasurableInv (α i)]
 #align measure_theory.measure.pi.is_neg_invariant MeasureTheory.Measure.pi.isNegInvariant
 
 @[to_additive]
-instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableInv (G i)]
+instance (priority := 10000) {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableInv (G i)]
     [∀ i, SigmaFinite (volume : Measure (G i))] [∀ i, IsInvInvariant (volume : Measure (G i))] :
     IsInvInvariant (volume : Measure (∀ i, G i)) :=
   pi.isInvInvariant _
 
-instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosMeasure (μ i)] :
+instance (priority := 10000) pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosMeasure (μ i)] :
     IsOpenPosMeasure (MeasureTheory.Measure.pi μ) := by
   constructor
   rintro U U_open ⟨a, ha⟩
@@ -637,12 +637,12 @@ instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosM
   apply (hs i).1.measure_pos (μ i) ⟨a i, (hs i).2⟩
 #align measure_theory.measure.pi.is_open_pos_measure MeasureTheory.Measure.pi.isOpenPosMeasure
 
-instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
+instance (priority := 10000) {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
     [∀ i, IsOpenPosMeasure (volume : Measure (X i))] [∀ i, SigmaFinite (volume : Measure (X i))] :
     IsOpenPosMeasure (volume : Measure (∀ i, X i)) :=
   pi.isOpenPosMeasure _
 
-instance pi.isFiniteMeasureOnCompacts [∀ i, TopologicalSpace (α i)]
+instance (priority := 10000) pi.isFiniteMeasureOnCompacts [∀ i, TopologicalSpace (α i)]
     [∀ i, IsFiniteMeasureOnCompacts (μ i)] :
     IsFiniteMeasureOnCompacts (MeasureTheory.Measure.pi μ) := by
   constructor
@@ -654,20 +654,20 @@ instance pi.isFiniteMeasureOnCompacts [∀ i, TopologicalSpace (α i)]
   exact fun i _ => ne_of_lt (IsCompact.measure_lt_top (IsCompact.image hK (continuous_apply i)))
 #align measure_theory.measure.pi.is_finite_measure_on_compacts MeasureTheory.Measure.pi.isFiniteMeasureOnCompacts
 
-instance {X : ι → Type*} [∀ i, MeasureSpace (X i)] [∀ i, TopologicalSpace (X i)]
+instance (priority := 10000) {X : ι → Type*} [∀ i, MeasureSpace (X i)] [∀ i, TopologicalSpace (X i)]
     [∀ i, SigmaFinite (volume : Measure (X i))]
     [∀ i, IsFiniteMeasureOnCompacts (volume : Measure (X i))] :
     IsFiniteMeasureOnCompacts (volume : Measure (∀ i, X i)) :=
   pi.isFiniteMeasureOnCompacts _
 
 @[to_additive]
-instance pi.isHaarMeasure [∀ i, Group (α i)] [∀ i, TopologicalSpace (α i)]
+instance (priority := 10000) pi.isHaarMeasure [∀ i, Group (α i)] [∀ i, TopologicalSpace (α i)]
     [∀ i, IsHaarMeasure (μ i)] [∀ i, MeasurableMul (α i)] : IsHaarMeasure (Measure.pi μ) where
 #align measure_theory.measure.pi.is_haar_measure MeasureTheory.Measure.pi.isHaarMeasure
 #align measure_theory.measure.pi.is_add_haar_measure MeasureTheory.Measure.pi.isAddHaarMeasure
 
 @[to_additive]
-instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
+instance (priority := 10000) {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [∀ i, MeasurableMul (G i)]
     [∀ i, TopologicalSpace (G i)] [∀ i, SigmaFinite (volume : Measure (G i))]
     [∀ i, IsHaarMeasure (volume : Measure (G i))] : IsHaarMeasure (volume : Measure (∀ i, G i)) :=
   pi.isHaarMeasure _
@@ -703,7 +703,7 @@ inference cannot find an instance for `ι → ℝ` when this is stated for depen
 @[to_additive "We intentionally restrict this only to the nondependent function space, since
 type-class inference cannot find an instance for `ι → ℝ` when this is stated for dependent function
 spaces."]
-instance Pi.isMulLeftInvariant_volume {α} [Group α] [MeasureSpace α]
+instance (priority := 10000) Pi.isMulLeftInvariant_volume {α} [Group α] [MeasureSpace α]
     [SigmaFinite (volume : Measure α)] [MeasurableMul α] [IsMulLeftInvariant (volume : Measure α)] :
     IsMulLeftInvariant (volume : Measure (ι → α)) :=
   pi.isMulLeftInvariant _
@@ -715,7 +715,7 @@ inference cannot find an instance for `ι → ℝ` when this is stated for depen
 @[to_additive "We intentionally restrict this only to the nondependent function space, since
 type-class inference cannot find an instance for `ι → ℝ` when this is stated for dependent function
 spaces."]
-instance Pi.isInvInvariant_volume {α} [Group α] [MeasureSpace α] [SigmaFinite (volume : Measure α)]
+instance (priority := 10000) Pi.isInvInvariant_volume {α} [Group α] [MeasureSpace α] [SigmaFinite (volume : Measure α)]
     [MeasurableInv α] [IsInvInvariant (volume : Measure α)] :
     IsInvInvariant (volume : Measure (ι → α)) :=
   pi.isInvInvariant _

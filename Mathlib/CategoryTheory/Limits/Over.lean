@@ -41,17 +41,17 @@ variable {X : C}
 
 namespace CategoryTheory.Over
 
-instance hasColimit_of_hasColimit_comp_forget (F : J ⥤ Over X) [i : HasColimit (F ⋙ forget X)] :
+instance (priority := 10000) hasColimit_of_hasColimit_comp_forget (F : J ⥤ Over X) [i : HasColimit (F ⋙ forget X)] :
     HasColimit F :=
   CostructuredArrow.hasColimit (i₁ := i)
 #align category_theory.over.has_colimit_of_has_colimit_comp_forget CategoryTheory.Over.hasColimit_of_hasColimit_comp_forget
 
-instance [HasColimitsOfShape J C] : HasColimitsOfShape J (Over X) where
+instance (priority := 10000) [HasColimitsOfShape J C] : HasColimitsOfShape J (Over X) where
 
-instance [HasColimits C] : HasColimits (Over X) :=
+instance (priority := 10000) [HasColimits C] : HasColimits (Over X) :=
   ⟨inferInstance⟩
 
-instance createsColimitsOfSize : CreatesColimitsOfSize.{w, w'} (forget X) :=
+instance (priority := 10000) createsColimitsOfSize : CreatesColimitsOfSize.{w, w'} (forget X) :=
   CostructuredArrow.createsColimitsOfSize
 #align category_theory.over.creates_colimits CategoryTheory.Over.createsColimitsOfSize
 
@@ -125,7 +125,7 @@ def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pullback (f ≫ g) �
     (((mapPullbackAdj _).comp (mapPullbackAdj _)).ofNatIsoLeft (Over.mapComp _ _).symm)
 #align category_theory.over.pullback_comp CategoryTheory.Over.pullbackComp
 
-instance pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : IsRightAdjoint (pullback f) :=
+instance (priority := 10000) pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : IsRightAdjoint (pullback f) :=
   ⟨_, mapPullbackAdj f⟩
 #align category_theory.over.pullback_is_right_adjoint CategoryTheory.Over.pullbackIsRightAdjoint
 
@@ -135,14 +135,14 @@ end CategoryTheory.Over
 
 namespace CategoryTheory.Under
 
-instance hasLimit_of_hasLimit_comp_forget (F : J ⥤ Under X) [i : HasLimit (F ⋙ forget X)] :
+instance (priority := 10000) hasLimit_of_hasLimit_comp_forget (F : J ⥤ Under X) [i : HasLimit (F ⋙ forget X)] :
     HasLimit F :=
   StructuredArrow.hasLimit (i₁ := i)
 #align category_theory.under.has_limit_of_has_limit_comp_forget CategoryTheory.Under.hasLimit_of_hasLimit_comp_forget
 
-instance [HasLimitsOfShape J C] : HasLimitsOfShape J (Under X) where
+instance (priority := 10000) [HasLimitsOfShape J C] : HasLimitsOfShape J (Under X) where
 
-instance [HasLimits C] : HasLimits (Under X) :=
+instance (priority := 10000) [HasLimits C] : HasLimits (Under X) :=
   ⟨inferInstance⟩
 
 theorem mono_right_of_mono [HasPullbacks C] {f g : Under X} (h : f ⟶ g) [Mono h] : Mono h.right :=
@@ -153,7 +153,7 @@ theorem mono_iff_mono_right [HasPullbacks C] {f g : Under X} (h : f ⟶ g) : Mon
   StructuredArrow.mono_iff_mono_right _
 #align category_theory.under.mono_iff_mono_right CategoryTheory.Under.mono_iff_mono_right
 
-instance createsLimitsOfSize : CreatesLimitsOfSize.{w, w'} (forget X) :=
+instance (priority := 10000) createsLimitsOfSize : CreatesLimitsOfSize.{w, w'} (forget X) :=
   StructuredArrow.createsLimitsOfSize
 #align category_theory.under.creates_limits CategoryTheory.Under.createsLimitsOfSize
 

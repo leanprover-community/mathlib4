@@ -59,7 +59,7 @@ structure LevenshteinEstimator' : Type where
     | [] => (distances.1[0]'(distances.2), ys.length)
     | _ => (List.minimum_of_length_pos distances.2, suff.length)
 
-instance : EstimatorData (Thunk.mk fun _ => (levenshtein C xs ys, ys.length))
+instance (priority := 10000) : EstimatorData (Thunk.mk fun _ => (levenshtein C xs ys, ys.length))
     (LevenshteinEstimator' C xs ys) where
   bound e := e.bound
   improve e := match e.pre_rev, e.split with
@@ -73,7 +73,7 @@ instance : EstimatorData (Thunk.mk fun _ => (levenshtein C xs ys, ys.length))
         bound := _
         bound_eq := rfl }
 
-instance estimator' :
+instance (priority := 10000) estimator' :
     Estimator (Thunk.mk fun _ => (levenshtein C xs ys, ys.length))
       (LevenshteinEstimator' C xs ys) where
   bound_le e := match e.pre_rev, e.split, e.bound_eq with
@@ -128,12 +128,12 @@ instance estimator' :
 def LevenshteinEstimator : Type _ :=
   Estimator.fst (Thunk.mk fun _ => (levenshtein C xs ys, ys.length)) (LevenshteinEstimator' C xs ys)
 
-instance [∀ a : δ × ℕ, WellFoundedGT { x // x ≤ a }] :
+instance (priority := 10000) [∀ a : δ × ℕ, WellFoundedGT { x // x ≤ a }] :
     Estimator (Thunk.mk fun _ => levenshtein C xs ys) (LevenshteinEstimator C xs ys) :=
   Estimator.fstInst (Thunk.mk fun _ => _) (Thunk.mk fun _ => _) (estimator' C xs ys)
 
 /-- The initial estimator for Levenshtein distances. -/
-instance [CanonicallyLinearOrderedAddCommMonoid δ]
+instance (priority := 10000) [CanonicallyLinearOrderedAddCommMonoid δ]
     (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β) :
     Bot (LevenshteinEstimator C xs ys) where
   bot :=

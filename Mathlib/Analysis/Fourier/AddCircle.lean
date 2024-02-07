@@ -126,10 +126,10 @@ def haarAddCircle : Measure (AddCircle T) :=
 #align add_circle.haar_add_circle AddCircle.haarAddCircle
 
 -- Porting note: was `deriving IsAddHaarMeasure` on `haarAddCircle`
-instance : IsAddHaarMeasure (@haarAddCircle T _) :=
+instance (priority := 10000) : IsAddHaarMeasure (@haarAddCircle T _) :=
   Measure.isAddHaarMeasure_addHaarMeasure ⊤
 
-instance : IsProbabilityMeasure (@haarAddCircle T _) :=
+instance (priority := 10000) : IsProbabilityMeasure (@haarAddCircle T _) :=
   IsProbabilityMeasure.mk addHaarMeasure_self
 
 theorem volume_eq_smul_haarAddCircle :

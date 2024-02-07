@@ -111,7 +111,7 @@ end ForgetCreatesLimits
 
 -- Theorem 5.6.5 from [Riehl][riehl2017]
 /-- The forgetful functor from the Eilenberg-Moore category creates limits. -/
-noncomputable instance forgetCreatesLimits : CreatesLimitsOfSize (forget T) where
+noncomputable instance (priority := 10000) forgetCreatesLimits : CreatesLimitsOfSize (forget T) where
   CreatesLimitsOfShape := {
     CreatesLimit := fun {D} =>
       createsLimitOfReflectsIso fun c t =>
@@ -242,7 +242,7 @@ open ForgetCreatesColimits
 /-- The forgetful functor from the Eilenberg-Moore category for a monad creates any colimit
 which the monad itself preserves.
 -/
-noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
+noncomputable instance (priority := 10000) forgetCreatesColimit (D : J ⥤ Algebra T)
     [PreservesColimit (D ⋙ forget T) (T : C ⥤ C)]
     [PreservesColimit ((D ⋙ forget T) ⋙ ↑T) (T : C ⥤ C)] : CreatesColimit D (forget T) :=
   createsColimitOfReflectsIso fun c t =>
@@ -260,11 +260,11 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
       makesColimit := liftedCoconeIsColimit _ _ }
 #align category_theory.monad.forget_creates_colimit CategoryTheory.Monad.forgetCreatesColimit
 
-noncomputable instance forgetCreatesColimitsOfShape [PreservesColimitsOfShape J (T : C ⥤ C)] :
+noncomputable instance (priority := 10000) forgetCreatesColimitsOfShape [PreservesColimitsOfShape J (T : C ⥤ C)] :
     CreatesColimitsOfShape J (forget T) where CreatesColimit := by infer_instance
 #align category_theory.monad.forget_creates_colimits_of_shape CategoryTheory.Monad.forgetCreatesColimitsOfShape
 
-noncomputable instance forgetCreatesColimits [PreservesColimitsOfSize.{v, u} (T : C ⥤ C)] :
+noncomputable instance (priority := 10000) forgetCreatesColimits [PreservesColimitsOfSize.{v, u} (T : C ⥤ C)] :
     CreatesColimitsOfSize.{v, u} (forget T) where CreatesColimitsOfShape := by infer_instance
 #align category_theory.monad.forget_creates_colimits CategoryTheory.Monad.forgetCreatesColimits
 
@@ -282,14 +282,14 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 variable {J : Type u} [Category.{v} J]
 
-instance comp_comparison_forget_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
+instance (priority := 10000) comp_comparison_forget_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
     [HasLimit (F ⋙ R)] :
     HasLimit ((F ⋙ Monad.comparison (Adjunction.ofRightAdjoint R)) ⋙ Monad.forget _) :=
   @hasLimitOfIso _ _ _ _ (F ⋙ R) _ _
     (isoWhiskerLeft F (Monad.comparisonForget (Adjunction.ofRightAdjoint R)).symm)
 #align category_theory.comp_comparison_forget_has_limit CategoryTheory.comp_comparison_forget_hasLimit
 
-instance comp_comparison_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
+instance (priority := 10000) comp_comparison_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
     [HasLimit (F ⋙ R)] : HasLimit (F ⋙ Monad.comparison (Adjunction.ofRightAdjoint R)) :=
   Monad.hasLimit_of_comp_forget_hasLimit (F ⋙ Monad.comparison (Adjunction.ofRightAdjoint R))
 #align category_theory.comp_comparison_has_limit CategoryTheory.comp_comparison_hasLimit

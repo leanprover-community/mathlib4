@@ -173,16 +173,16 @@ def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
 def Transported (_ : C ≌ D) := D
 #align category_theory.monoidal.transported CategoryTheory.Monoidal.Transported
 
-instance (e : C ≌ D) : Category (Transported e) := (inferInstance : Category D)
+instance (priority := 10000) (e : C ≌ D) : Category (Transported e) := (inferInstance : Category D)
 
-instance Transported.instMonoidalCategoryStruct (e : C ≌ D) :
+instance (priority := 10000) Transported.instMonoidalCategoryStruct (e : C ≌ D) :
     MonoidalCategoryStruct (Transported e) :=
   transportStruct e
 
-instance Transported.instMonoidalCategory (e : C ≌ D) : MonoidalCategory (Transported e) :=
+instance (priority := 10000) Transported.instMonoidalCategory (e : C ≌ D) : MonoidalCategory (Transported e) :=
   transport e
 
-instance (e : C ≌ D) : Inhabited (Transported e) :=
+instance (priority := 10000) (e : C ≌ D) : Inhabited (Transported e) :=
   ⟨𝟙_ _⟩
 
 /-- We can upgrade `e.inverse` to a monoidal functor from `D` with the transported structure to `C`.
@@ -193,7 +193,7 @@ def fromTransported (e : C ≌ D) : MonoidalFunctor (Transported e) C := by
   exact fromInduced (D := Transported e) e.inverse _
 #align category_theory.monoidal.from_transported CategoryTheory.Monoidal.fromTransported
 
-instance instIsEquivalence_fromTransported (e : C ≌ D) :
+instance (priority := 10000) instIsEquivalence_fromTransported (e : C ≌ D) :
     IsEquivalence (fromTransported e).toFunctor := by
   dsimp [fromTransported]
   infer_instance
@@ -207,7 +207,7 @@ def toTransported (e : C ≌ D) : MonoidalFunctor C (Transported e) :=
   monoidalInverse (fromTransported e)
 #align category_theory.monoidal.to_transported CategoryTheory.Monoidal.toTransported
 
-instance (e : C ≌ D) : IsEquivalence (toTransported e).toFunctor :=
+instance (priority := 10000) (e : C ≌ D) : IsEquivalence (toTransported e).toFunctor :=
   inferInstanceAs (IsEquivalence e.functor)
 
 /-- The unit isomorphism upgrades to a monoidal isomorphism. -/

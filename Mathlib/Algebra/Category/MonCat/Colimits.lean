@@ -79,7 +79,7 @@ inductive Prequotient
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.prequotient MonCat.Colimits.Prequotient
 
-instance : Inhabited (Prequotient F) :=
+instance (priority := 10000) : Inhabited (Prequotient F) :=
   ⟨Prequotient.one⟩
 
 open Prequotient
@@ -126,11 +126,11 @@ def ColimitType : Type v :=
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.colimit_type MonCat.Colimits.ColimitType
 
-instance : Inhabited (ColimitType F) := by
+instance (priority := 10000) : Inhabited (ColimitType F) := by
   dsimp [ColimitType]
   infer_instance
 
-instance monoidColimitType : Monoid (ColimitType F) where
+instance (priority := 10000) monoidColimitType : Monoid (ColimitType F) where
   one := Quotient.mk _ one
   mul := Quotient.map₂ mul fun x x' rx y y' ry =>
     Setoid.trans (Relation.mul_1 _ _ y rx) (Relation.mul_2 x' _ _ ry)
@@ -259,7 +259,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.colimit_is_colimit MonCat.Colimits.colimitIsColimit
 
-instance hasColimits_monCat : HasColimits MonCat where
+instance (priority := 10000) hasColimits_monCat : HasColimits MonCat where
   has_colimits_of_shape _ _ :=
     { has_colimit := fun F =>
         HasColimit.mk

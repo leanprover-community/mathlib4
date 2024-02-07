@@ -26,7 +26,7 @@ the shift functor by `a` is `shiftFunctor C (φ a)`. -/
 @[nolint unusedArguments]
 def PullbackShift (_ : A →+ B) [HasShift C B] := C
 
-instance : Category (PullbackShift C φ) := by
+instance (priority := 10000) : Category (PullbackShift C φ) := by
   dsimp only [PullbackShift]
   infer_instance
 
@@ -34,18 +34,18 @@ attribute [local instance] endofunctorMonoidalCategory
 
 /-- The shift on `PullbackShift C φ` is obtained by precomposing the shift on `C` with
 the monoidal functor `Discrete.addMonoidalFunctor φ : Discrete A ⥤ Discrete B`. -/
-noncomputable instance : HasShift (PullbackShift C φ) A where
+noncomputable instance (priority := 10000) : HasShift (PullbackShift C φ) A where
   shift := (Discrete.addMonoidalFunctor φ).comp (@HasShift.shift C B _ _ _)
 
-instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := by
+instance (priority := 10000) [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := by
   dsimp [PullbackShift]
   infer_instance
 
-instance [Preadditive C] : Preadditive (PullbackShift C φ) := by
+instance (priority := 10000) [Preadditive C] : Preadditive (PullbackShift C φ) := by
   dsimp [PullbackShift]
   infer_instance
 
-instance [Preadditive C] (a : A) [(shiftFunctor C (φ a)).Additive] :
+instance (priority := 10000) [Preadditive C] (a : A) [(shiftFunctor C (φ a)).Additive] :
     (shiftFunctor (PullbackShift C φ) a).Additive := by
   change (shiftFunctor C (φ a)).Additive
   infer_instance

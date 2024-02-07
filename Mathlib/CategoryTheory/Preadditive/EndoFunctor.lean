@@ -29,7 +29,7 @@ open CategoryTheory.Limits Preadditive
 /-- The category of algebras over an additive endofunctor on a preadditive category is preadditive.
 -/
 @[simps]
-instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) where
+instance (priority := 10000) Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) where
   homGroup A₁ A₂ :=
     { add := fun α β =>
         { f := α.f + β.f
@@ -105,11 +105,11 @@ instance Endofunctor.algebraPreadditive : Preadditive (Endofunctor.Algebra F) wh
     apply comp_add
 #align category_theory.endofunctor.algebra_preadditive CategoryTheory.Endofunctor.algebraPreadditive
 
-instance Algebra.forget_additive : (Endofunctor.Algebra.forget F).Additive where
+instance (priority := 10000) Algebra.forget_additive : (Endofunctor.Algebra.forget F).Additive where
 #align category_theory.algebra.forget_additive CategoryTheory.Algebra.forget_additive
 
 @[simps]
-instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F) where
+instance (priority := 10000) Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F) where
   homGroup A₁ A₂ :=
     { add := fun α β =>
         { f := α.f + β.f
@@ -185,7 +185,7 @@ instance Endofunctor.coalgebraPreadditive : Preadditive (Endofunctor.Coalgebra F
     apply comp_add
 #align category_theory.endofunctor.coalgebra_preadditive CategoryTheory.Endofunctor.coalgebraPreadditive
 
-instance Coalgebra.forget_additive : (Endofunctor.Coalgebra.forget F).Additive where
+instance (priority := 10000) Coalgebra.forget_additive : (Endofunctor.Coalgebra.forget F).Additive where
 #align category_theory.coalgebra.forget_additive CategoryTheory.Coalgebra.forget_additive
 
 end CategoryTheory

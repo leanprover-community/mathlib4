@@ -147,7 +147,7 @@ def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAss
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via
   `OrderRingHomClass.toOrderRingHom`. -/
-instance [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
+instance (priority := 10000) [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
     [OrderRingHomClass F α β] : CoeTC F (α →+*o β) :=
   ⟨OrderRingHomClass.toOrderRingHom⟩
 
@@ -167,7 +167,7 @@ def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β]
 
 /-- Any type satisfying `OrderRingIsoClass` can be cast into `OrderRingIso` via
   `OrderRingIsoClass.toOrderRingIso`. -/
-instance [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [OrderRingIsoClass F α β] :
+instance (priority := 10000) [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [OrderRingIsoClass F α β] :
     CoeTC F (α ≃+*o β) :=
   ⟨OrderRingIsoClass.toOrderRingIso⟩
 
@@ -194,7 +194,7 @@ def toOrderMonoidWithZeroHom (f : α →+*o β) : α →*₀o β :=
   { f with }
 #align order_ring_hom.to_order_monoid_with_zero_hom OrderRingHom.toOrderMonoidWithZeroHom
 
-instance : FunLike (α →+*o β) α β
+instance (priority := 10000) : FunLike (α →+*o β) α β
     where
   coe f := f.toFun
   coe_injective' f g h := by
@@ -202,7 +202,7 @@ instance : FunLike (α →+*o β) α β
     -- porting note: needed to add the following line
     exact DFunLike.coe_injective' h
 
-instance : OrderRingHomClass (α →+*o β) α β
+instance (priority := 10000) : OrderRingHomClass (α →+*o β) α β
     where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
@@ -286,7 +286,7 @@ protected def id : α →+*o α :=
   { RingHom.id _, OrderHom.id with }
 #align order_ring_hom.id OrderRingHom.id
 
-instance : Inhabited (α →+*o α) :=
+instance (priority := 10000) : Inhabited (α →+*o α) :=
   ⟨OrderRingHom.id α⟩
 
 @[simp]
@@ -363,10 +363,10 @@ end Preorder
 
 variable [NonAssocSemiring β]
 
-instance [Preorder β] : Preorder (OrderRingHom α β) :=
+instance (priority := 10000) [Preorder β] : Preorder (OrderRingHom α β) :=
   Preorder.lift ((⇑) : _ → α → β)
 
-instance [PartialOrder β] : PartialOrder (OrderRingHom α β) :=
+instance (priority := 10000) [PartialOrder β] : PartialOrder (OrderRingHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 end OrderRingHom
@@ -387,7 +387,7 @@ def toOrderIso (f : α ≃+*o β) : α ≃o β :=
   ⟨f.toRingEquiv.toEquiv, f.map_le_map_iff'⟩
 #align order_ring_iso.to_order_iso OrderRingIso.toOrderIso
 
-instance : EquivLike (α ≃+*o β) α β
+instance (priority := 10000) : EquivLike (α ≃+*o β) α β
     where
   coe f := f.toFun
   inv f := f.invFun
@@ -398,7 +398,7 @@ instance : EquivLike (α ≃+*o β) α β
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
-instance : OrderRingIsoClass (α ≃+*o β) α β
+instance (priority := 10000) : OrderRingIsoClass (α ≃+*o β) α β
     where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
@@ -452,7 +452,7 @@ protected def refl : α ≃+*o α :=
   ⟨RingEquiv.refl α, Iff.rfl⟩
 #align order_ring_iso.refl OrderRingIso.refl
 
-instance : Inhabited (α ≃+*o α) :=
+instance (priority := 10000) : Inhabited (α ≃+*o α) :=
   ⟨OrderRingIso.refl α⟩
 
 @[simp]
@@ -572,7 +572,7 @@ conditionally complete.
 
 /-- There is at most one ordered ring homomorphism from a linear ordered field to an archimedean
 linear ordered field. -/
-instance OrderRingHom.subsingleton [LinearOrderedField α] [LinearOrderedField β] [Archimedean β] :
+instance (priority := 10000) OrderRingHom.subsingleton [LinearOrderedField α] [LinearOrderedField β] [Archimedean β] :
     Subsingleton (α →+*o β) :=
   ⟨fun f g => by
     ext x
@@ -591,14 +591,14 @@ instance OrderRingHom.subsingleton [LinearOrderedField α] [LinearOrderedField �
 
 /-- There is at most one ordered ring isomorphism between a linear ordered field and an archimedean
 linear ordered field. -/
-instance OrderRingIso.subsingleton_right [LinearOrderedField α] [LinearOrderedField β]
+instance (priority := 10000) OrderRingIso.subsingleton_right [LinearOrderedField α] [LinearOrderedField β]
     [Archimedean β] : Subsingleton (α ≃+*o β) :=
   OrderRingIso.toOrderRingHom_injective.subsingleton
 #align order_ring_iso.subsingleton_right OrderRingIso.subsingleton_right
 
 /-- There is at most one ordered ring isomorphism between an archimedean linear ordered field and a
 linear ordered field. -/
-instance OrderRingIso.subsingleton_left [LinearOrderedField α] [Archimedean α]
+instance (priority := 10000) OrderRingIso.subsingleton_left [LinearOrderedField α] [Archimedean α]
     [LinearOrderedField β] : Subsingleton (α ≃+*o β) :=
   OrderRingIso.symm_bijective.injective.subsingleton
 #align order_ring_iso.subsingleton_left OrderRingIso.subsingleton_left

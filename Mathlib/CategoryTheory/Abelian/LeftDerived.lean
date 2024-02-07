@@ -263,7 +263,7 @@ lemma fromLeftDerivedZero'_naturality {X Y : C} (f : X ⟶ Y)
     HomologicalComplex.p_opcyclesMap_assoc, Functor.mapHomologicalComplex_map_f,
     pOpcycles_comp_fromLeftDerivedZero', pOpcycles_comp_fromLeftDerivedZero'_assoc]
 
-instance (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
+instance (priority := 10000) (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
     IsIso ((ProjectiveResolution.self X).fromLeftDerivedZero' F) := by
   dsimp [ProjectiveResolution.fromLeftDerivedZero']
   rw [ChainComplex.isIso_descOpcycles_iff]
@@ -308,7 +308,7 @@ lemma ProjectiveResolution.fromLeftDerivedZero_eq
   erw [← NatTrans.naturality_assoc]
   rfl
 
-instance (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
+instance (priority := 10000) (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
     IsIso (F.fromLeftDerivedZero.app X) := by
   rw [(ProjectiveResolution.self X).fromLeftDerivedZero_eq F]
   infer_instance
@@ -317,17 +317,17 @@ section
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteColimits F]
 
-instance {X : C} (P : ProjectiveResolution X) :
+instance (priority := 10000) {X : C} (P : ProjectiveResolution X) :
     IsIso (P.fromLeftDerivedZero' F) := by
   dsimp [ProjectiveResolution.fromLeftDerivedZero']
   rw [ChainComplex.isIso_descOpcycles_iff, ShortComplex.exact_and_epi_g_iff_g_is_cokernel]
   exact ⟨CokernelCofork.mapIsColimit _ (P.isColimitCokernelCofork) F⟩
 
-instance (X : C) : IsIso (F.fromLeftDerivedZero.app X) := by
+instance (priority := 10000) (X : C) : IsIso (F.fromLeftDerivedZero.app X) := by
   dsimp [Functor.fromLeftDerivedZero]
   infer_instance
 
-instance : IsIso F.fromLeftDerivedZero :=
+instance (priority := 10000) : IsIso F.fromLeftDerivedZero :=
   NatIso.isIso_of_isIso_app _
 
 namespace Functor

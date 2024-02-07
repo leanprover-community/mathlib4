@@ -25,11 +25,11 @@ namespace Counterexample
 
 section Computation
 
-instance Nat.fact_prime_five : Fact (Nat.Prime 5) :=
+instance (priority := 10000) Nat.fact_prime_five : Fact (Nat.Prime 5) :=
   ⟨by norm_num⟩
 #align counterexample.nat.fact_prime_five Counterexample.Nat.fact_prime_five
 
-instance Nat.fact_prime_seven : Fact (Nat.Prime 7) :=
+instance (priority := 10000) Nat.fact_prime_seven : Fact (Nat.Prime 7) :=
   ⟨by norm_num⟩
 #align counterexample.nat.fact_prime_seven Counterexample.Nat.fact_prime_seven
 

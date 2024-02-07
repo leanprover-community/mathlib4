@@ -151,7 +151,7 @@ class HasBesicovitchCovering (α : Type*) [MetricSpace α] : Prop where
 #align has_besicovitch_covering.no_satellite_config HasBesicovitchCovering.no_satelliteConfig
 
 /-- There is always a satellite configuration with a single point. -/
-instance Besicovitch.SatelliteConfig.instInhabited {α : Type*} {τ : ℝ}
+instance (priority := 10000) Besicovitch.SatelliteConfig.instInhabited {α : Type*} {τ : ℝ}
     [Inhabited α] [MetricSpace α] : Inhabited (Besicovitch.SatelliteConfig α 0 τ) :=
   ⟨{  c := default
       r := fun _ => 1
@@ -213,7 +213,7 @@ def unitBallPackage (α : Type*) : BallPackage α α where
   r_le _ := le_rfl
 #align besicovitch.unit_ball_package Besicovitch.unitBallPackage
 
-instance BallPackage.instInhabited (α : Type*) : Inhabited (BallPackage α α) :=
+instance (priority := 10000) BallPackage.instInhabited (α : Type*) : Inhabited (BallPackage α α) :=
   ⟨unitBallPackage α⟩
 #align besicovitch.ball_package.inhabited Besicovitch.BallPackage.instInhabited
 
@@ -228,7 +228,7 @@ structure TauPackage (β : Type*) (α : Type*) extends BallPackage β α where
 #align besicovitch.tau_package.τ Besicovitch.TauPackage.τ
 #align besicovitch.tau_package.one_lt_tau Besicovitch.TauPackage.one_lt_tau
 
-instance TauPackage.instInhabited (α : Type*) : Inhabited (TauPackage α α) :=
+instance (priority := 10000) TauPackage.instInhabited (α : Type*) : Inhabited (TauPackage α α) :=
   ⟨{ unitBallPackage α with
       τ := 2
       one_lt_tau := one_lt_two }⟩

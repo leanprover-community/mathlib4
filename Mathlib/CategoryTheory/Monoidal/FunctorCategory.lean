@@ -83,7 +83,7 @@ attribute [local simp] id_tensorHom tensorHom_id in
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,
 where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
 -/
-instance functorCategoryMonoidalStruct : MonoidalCategoryStruct (C ⥤ D) where
+instance (priority := 10000) functorCategoryMonoidalStruct : MonoidalCategoryStruct (C ⥤ D) where
   tensorObj F G := tensorObj F G
   tensorHom α β := tensorHom α β
   whiskerLeft F _ _ α := FunctorCategory.whiskerLeft F α
@@ -171,7 +171,7 @@ attribute [local simp] id_tensorHom tensorHom_id in
 the functor category `C ⥤ D` has a natural pointwise monoidal structure,
 where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
 -/
-instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
+instance (priority := 10000) functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
   pentagon F G H K := by ext X; dsimp; rw [pentagon]
 #align category_theory.monoidal.functor_category_monoidal CategoryTheory.Monoidal.functorCategoryMonoidal
@@ -186,7 +186,7 @@ variable [BraidedCategory.{v₂} D]
 the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also braided.
 -/
-instance functorCategoryBraided : BraidedCategory (C ⥤ D) where
+instance (priority := 10000) functorCategoryBraided : BraidedCategory (C ⥤ D) where
   braiding F G := NatIso.ofComponents fun X => β_ _ _
   hexagon_forward F G H := by ext X; apply hexagon_forward
   hexagon_reverse F G H := by ext X; apply hexagon_reverse
@@ -207,7 +207,7 @@ variable [SymmetricCategory.{v₂} D]
 the natural pointwise monoidal structure on the functor category `C ⥤ D`
 is also symmetric.
 -/
-instance functorCategorySymmetric : SymmetricCategory (C ⥤ D) where
+instance (priority := 10000) functorCategorySymmetric : SymmetricCategory (C ⥤ D) where
   symmetry F G := by ext X; apply symmetry
 #align category_theory.monoidal.functor_category_symmetric CategoryTheory.Monoidal.functorCategorySymmetric
 

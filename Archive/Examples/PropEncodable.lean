@@ -69,7 +69,7 @@ private def arity (α : Type*) : Constructors α → Nat
 
 variable {α : Type*}
 
-instance : ∀ c : Unit ⊕ (Unit ⊕ Unit), NeZero (arity α (.inr c))
+instance (priority := 10000) : ∀ c : Unit ⊕ (Unit ⊕ Unit), NeZero (arity α (.inr c))
   | .inl () => ⟨one_ne_zero⟩
   | .inr (.inl ()) => ⟨two_ne_zero⟩
   | .inr (.inr ()) => ⟨two_ne_zero⟩
@@ -86,7 +86,7 @@ private def finv : (WType fun i => Fin (arity α i)) → PropForm α
   | ⟨cand, fn⟩ => and (finv (fn 0)) (finv (fn 1))
   | ⟨cor, fn⟩ => or (finv (fn 0)) (finv (fn 1))
 
-instance [Encodable α] : Encodable (PropForm α) :=
+instance (priority := 10000) [Encodable α] : Encodable (PropForm α) :=
   haveI : Encodable (Constructors α) := by unfold Constructors; infer_instance
   Encodable.ofLeftInverse f finv (by intro p; induction p <;> simp [f, finv, *])
 

@@ -26,7 +26,7 @@ variable {m n : ℕ∞}
 /-- Coercion from `ℕ∞` to `ℝ≥0∞`. -/
 @[coe] def toENNReal : ℕ∞ → ℝ≥0∞ := WithTop.map Nat.cast
 
-instance hasCoeENNReal : CoeTC ℕ∞ ℝ≥0∞ := ⟨toENNReal⟩
+instance (priority := 10000) hasCoeENNReal : CoeTC ℕ∞ ℝ≥0∞ := ⟨toENNReal⟩
 #align enat.has_coe_ennreal ENat.hasCoeENNReal
 
 @[simp]

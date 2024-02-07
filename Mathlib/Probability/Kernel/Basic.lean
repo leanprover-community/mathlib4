@@ -65,7 +65,7 @@ noncomputable def kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace �
 #align probability_theory.kernel ProbabilityTheory.kernel
 
 -- Porting note: using `FunLike` instead of `CoeFun` to use `DFunLike.coe`
-instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+instance (priority := 10000) {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     FunLike (kernel α β) α (Measure β) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
@@ -144,13 +144,13 @@ theorem kernel.measure_le_bound (κ : kernel α β) [h : IsFiniteKernel κ] (a :
   (measure_mono (Set.subset_univ s)).trans (h.exists_univ_le.choose_spec.2 a)
 #align probability_theory.kernel.measure_le_bound ProbabilityTheory.kernel.measure_le_bound
 
-instance isFiniteKernel_zero (α β : Type*) {mα : MeasurableSpace α} {mβ : MeasurableSpace β} :
+instance (priority := 10000) isFiniteKernel_zero (α β : Type*) {mα : MeasurableSpace α} {mβ : MeasurableSpace β} :
     IsFiniteKernel (0 : kernel α β) :=
   ⟨⟨0, ENNReal.coe_lt_top, fun _ => by
       simp only [kernel.zero_apply, Measure.coe_zero, Pi.zero_apply, le_zero_iff]⟩⟩
 #align probability_theory.is_finite_kernel_zero ProbabilityTheory.isFiniteKernel_zero
 
-instance IsFiniteKernel.add (κ η : kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
+instance (priority := 10000) IsFiniteKernel.add (κ η : kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (κ + η) := by
   refine ⟨⟨IsFiniteKernel.bound κ + IsFiniteKernel.bound η,
     ENNReal.add_lt_top.mpr ⟨IsFiniteKernel.bound_lt_top κ, IsFiniteKernel.bound_lt_top η⟩,
@@ -160,12 +160,12 @@ instance IsFiniteKernel.add (κ η : kernel α β) [IsFiniteKernel κ] [IsFinite
 
 variable {κ : kernel α β}
 
-instance IsMarkovKernel.is_probability_measure' [IsMarkovKernel κ] (a : α) :
+instance (priority := 10000) IsMarkovKernel.is_probability_measure' [IsMarkovKernel κ] (a : α) :
     IsProbabilityMeasure (κ a) :=
   IsMarkovKernel.isProbabilityMeasure a
 #align probability_theory.is_markov_kernel.is_probability_measure' ProbabilityTheory.IsMarkovKernel.is_probability_measure'
 
-instance IsFiniteKernel.isFiniteMeasure [IsFiniteKernel κ] (a : α) : IsFiniteMeasure (κ a) :=
+instance (priority := 10000) IsFiniteKernel.isFiniteMeasure [IsFiniteKernel κ] (a : α) : IsFiniteMeasure (κ a) :=
   ⟨(kernel.measure_le_bound κ a Set.univ).trans_lt (IsFiniteKernel.bound_lt_top κ)⟩
 #align probability_theory.is_finite_kernel.is_finite_measure ProbabilityTheory.IsFiniteKernel.isFiniteMeasure
 
@@ -303,15 +303,15 @@ theorem measure_sum_seq (κ : kernel α β) [h : IsSFiniteKernel κ] (a : α) :
     (Measure.sum fun n => seq κ n a) = κ a := by rw [← kernel.sum_apply, kernel_sum_seq κ]
 #align probability_theory.kernel.measure_sum_seq ProbabilityTheory.kernel.measure_sum_seq
 
-instance isFiniteKernel_seq (κ : kernel α β) [h : IsSFiniteKernel κ] (n : ℕ) :
+instance (priority := 10000) isFiniteKernel_seq (κ : kernel α β) [h : IsSFiniteKernel κ] (n : ℕ) :
     IsFiniteKernel (kernel.seq κ n) :=
   h.tsum_finite.choose_spec.1 n
 #align probability_theory.kernel.is_finite_kernel_seq ProbabilityTheory.kernel.isFiniteKernel_seq
 
-instance IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) : SFinite (κ a) :=
+instance (priority := 10000) IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) : SFinite (κ a) :=
   ⟨⟨fun n ↦ seq κ n a, inferInstance, (measure_sum_seq κ a).symm⟩⟩
 
-instance IsSFiniteKernel.add (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+instance (priority := 10000) IsSFiniteKernel.add (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     IsSFiniteKernel (κ + η) := by
   refine' ⟨⟨fun n => seq κ n + seq η n, fun n => inferInstance, _⟩⟩
   rw [sum_add, kernel_sum_seq κ, kernel_sum_seq η]
@@ -377,7 +377,7 @@ theorem deterministic_apply' {f : α → β} (hf : Measurable f) (a : α) {s : S
   simp_rw [Measure.dirac_apply' _ hs]
 #align probability_theory.kernel.deterministic_apply' ProbabilityTheory.kernel.deterministic_apply'
 
-instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
+instance (priority := 10000) isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=
   ⟨fun a => by rw [deterministic_apply hf]; infer_instance⟩
 #align probability_theory.kernel.is_markov_kernel_deterministic ProbabilityTheory.kernel.isMarkovKernel_deterministic
@@ -460,16 +460,16 @@ lemma sum_const [Countable ι] (μ : ι → Measure β) :
   rw [const_apply, Measure.sum_apply _ hs, kernel.sum_apply' _ _ hs]
   simp only [const_apply]
 
-instance isFiniteKernel_const {μβ : Measure β} [IsFiniteMeasure μβ] :
+instance (priority := 10000) isFiniteKernel_const {μβ : Measure β} [IsFiniteMeasure μβ] :
     IsFiniteKernel (const α μβ) :=
   ⟨⟨μβ Set.univ, measure_lt_top _ _, fun _ => le_rfl⟩⟩
 #align probability_theory.kernel.is_finite_kernel_const ProbabilityTheory.kernel.isFiniteKernel_const
 
-instance isSFiniteKernel_const {μβ : Measure β} [SFinite μβ] :
+instance (priority := 10000) isSFiniteKernel_const {μβ : Measure β} [SFinite μβ] :
     IsSFiniteKernel (const α μβ) :=
   ⟨fun n ↦ const α (sFiniteSeq μβ n), fun n ↦ inferInstance, by rw [sum_const, sum_sFiniteSeq]⟩
 
-instance isMarkovKernel_const {μβ : Measure β} [hμβ : IsProbabilityMeasure μβ] :
+instance (priority := 10000) isMarkovKernel_const {μβ : Measure β} [hμβ : IsProbabilityMeasure μβ] :
     IsMarkovKernel (const α μβ) :=
   ⟨fun _ => hμβ⟩
 #align probability_theory.kernel.is_markov_kernel_const ProbabilityTheory.kernel.isMarkovKernel_const
@@ -553,14 +553,14 @@ theorem set_integral_restrict {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   rw [restrict_apply, Measure.restrict_restrict' hs]
 #align probability_theory.kernel.set_integral_restrict ProbabilityTheory.kernel.set_integral_restrict
 
-instance IsFiniteKernel.restrict (κ : kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
+instance (priority := 10000) IsFiniteKernel.restrict (κ : kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
     IsFiniteKernel (kernel.restrict κ hs) := by
   refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
   rw [restrict_apply' κ hs a MeasurableSet.univ]
   exact measure_le_bound κ a _
 #align probability_theory.kernel.is_finite_kernel.restrict ProbabilityTheory.kernel.IsFiniteKernel.restrict
 
-instance IsSFiniteKernel.restrict (κ : kernel α β) [IsSFiniteKernel κ] (hs : MeasurableSet s) :
+instance (priority := 10000) IsSFiniteKernel.restrict (κ : kernel α β) [IsSFiniteKernel κ] (hs : MeasurableSet s) :
     IsSFiniteKernel (kernel.restrict κ hs) := by
   refine' ⟨⟨fun n => kernel.restrict (seq κ n) hs, inferInstance, _⟩⟩
   ext1 a
@@ -606,7 +606,7 @@ theorem IsMarkovKernel.comapRight (κ : kernel α β) (hf : MeasurableEmbedding 
   exact hκ a
 #align probability_theory.kernel.is_markov_kernel.comap_right ProbabilityTheory.kernel.IsMarkovKernel.comapRight
 
-instance IsFiniteKernel.comapRight (κ : kernel α β) [IsFiniteKernel κ]
+instance (priority := 10000) IsFiniteKernel.comapRight (κ : kernel α β) [IsFiniteKernel κ]
     (hf : MeasurableEmbedding f) : IsFiniteKernel (comapRight κ hf) := by
   refine' ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => _⟩⟩
   rw [comapRight_apply' κ hf a .univ]
@@ -652,13 +652,13 @@ theorem piecewise_apply' (a : α) (t : Set β) :
   rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.piecewise_apply' ProbabilityTheory.kernel.piecewise_apply'
 
-instance IsMarkovKernel.piecewise [IsMarkovKernel κ] [IsMarkovKernel η] :
+instance (priority := 10000) IsMarkovKernel.piecewise [IsMarkovKernel κ] [IsMarkovKernel η] :
     IsMarkovKernel (piecewise hs κ η) := by
   refine' ⟨fun a => ⟨_⟩⟩
   rw [piecewise_apply', measure_univ, measure_univ, ite_self]
 #align probability_theory.kernel.is_markov_kernel.piecewise ProbabilityTheory.kernel.IsMarkovKernel.piecewise
 
-instance IsFiniteKernel.piecewise [IsFiniteKernel κ] [IsFiniteKernel η] :
+instance (priority := 10000) IsFiniteKernel.piecewise [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (piecewise hs κ η) := by
   refine' ⟨⟨max (IsFiniteKernel.bound κ) (IsFiniteKernel.bound η), _, fun a => _⟩⟩
   · exact max_lt (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η)

@@ -355,10 +355,10 @@ theorem gcd_assoc' [GCDMonoid α] (m n k : α) : Associated (gcd (gcd m n) k) (g
       ((gcd_dvd_right m (gcd n k)).trans (gcd_dvd_right n k)))
 #align gcd_assoc' gcd_assoc'
 
-instance [NormalizedGCDMonoid α] : Std.Commutative (α := α) gcd where
+instance (priority := 10000) [NormalizedGCDMonoid α] : Std.Commutative (α := α) gcd where
   comm := gcd_comm
 
-instance [NormalizedGCDMonoid α] : Std.Associative (α := α) gcd where
+instance (priority := 10000) [NormalizedGCDMonoid α] : Std.Associative (α := α) gcd where
   assoc := gcd_assoc
 
 theorem gcd_eq_normalize [NormalizedGCDMonoid α] {a b c : α} (habc : gcd a b ∣ c)
@@ -779,10 +779,10 @@ theorem lcm_assoc' [GCDMonoid α] (m n k : α) : Associated (lcm (lcm m n) k) (l
       (lcm_dvd ((dvd_lcm_right _ _).trans (dvd_lcm_left _ _)) (dvd_lcm_right _ _)))
 #align lcm_assoc' lcm_assoc'
 
-instance [NormalizedGCDMonoid α] : Std.Commutative (α := α) lcm where
+instance (priority := 10000) [NormalizedGCDMonoid α] : Std.Commutative (α := α) lcm where
   comm := lcm_comm
 
-instance [NormalizedGCDMonoid α] : Std.Associative (α := α) lcm where
+instance (priority := 10000) [NormalizedGCDMonoid α] : Std.Associative (α := α) lcm where
   assoc := lcm_assoc
 
 theorem lcm_eq_normalize [NormalizedGCDMonoid α] {a b c : α} (habc : lcm a b ∣ c)
@@ -924,12 +924,12 @@ instance (priority := 100) normalizationMonoidOfUniqueUnits : NormalizationMonoi
   normUnit_coe_units _ := Subsingleton.elim _ _
 #align normalization_monoid_of_unique_units normalizationMonoidOfUniqueUnits
 
-instance uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α) where
+instance (priority := 10000) uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α) where
   default := normalizationMonoidOfUniqueUnits
   uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
 #align unique_normalization_monoid_of_unique_units uniqueNormalizationMonoidOfUniqueUnits
 
-instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
+instance (priority := 10000) subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
   ⟨fun g₁ g₂ => by
     have hgcd : g₁.gcd = g₂.gcd := by
       ext a b
@@ -949,7 +949,7 @@ instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
     simp only [hgcd, hlcm]⟩
 #align subsingleton_gcd_monoid_of_unique_units subsingleton_gcdMonoid_of_unique_units
 
-instance subsingleton_normalizedGCDMonoid_of_unique_units : Subsingleton (NormalizedGCDMonoid α) :=
+instance (priority := 10000) subsingleton_normalizedGCDMonoid_of_unique_units : Subsingleton (NormalizedGCDMonoid α) :=
   ⟨by
     intro a b
     cases' a with a_norm a_gcd

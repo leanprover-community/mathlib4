@@ -64,12 +64,12 @@ theorem coe_one {G : Type*} [One G] [TopologicalSpace G] [ChartedSpace H' G] :
 #align smooth_map.coe_one SmoothMap.coe_one
 #align smooth_map.coe_zero SmoothMap.coe_zero
 
-instance instNSMul {G : Type*} [AddMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
+instance (priority := 10000) instNSMul {G : Type*} [AddMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [SmoothAdd I' G] : SMul ℕ C^∞⟮I, N; I', G⟯ where
   smul n f := ⟨n • (f : N → G), (smooth_nsmul n).comp f.smooth⟩
 
 @[to_additive existing]
-instance instPow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G] [SmoothMul I' G] :
+instance (priority := 10000) instPow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G] [SmoothMul I' G] :
     Pow C^∞⟮I, N; I', G⟯ ℕ where
   pow f n := ⟨(f : N → G) ^ n, (smooth_pow n).comp f.smooth⟩
 
@@ -89,14 +89,14 @@ under pointwise multiplication.
 -/
 
 @[to_additive]
-instance semigroup {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H' G]
+instance (priority := 10000) semigroup {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H' G]
     [SmoothMul I' G] : Semigroup C^∞⟮I, N; I', G⟯ :=
   DFunLike.coe_injective.semigroup _ coe_mul
 #align smooth_map.semigroup SmoothMap.semigroup
 #align smooth_map.add_semigroup SmoothMap.addSemigroup
 
 @[to_additive]
-instance monoid {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
+instance (priority := 10000) monoid {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [SmoothMul I' G] : Monoid C^∞⟮I, N; I', G⟯ :=
   DFunLike.coe_injective.monoid _ coe_one coe_mul coe_pow
 #align smooth_map.monoid SmoothMap.monoid
@@ -148,14 +148,14 @@ def restrictMonoidHom (G : Type*) [Monoid G] [TopologicalSpace G] [ChartedSpace 
 variable {I I'}
 
 @[to_additive]
-instance commMonoid {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
+instance (priority := 10000) commMonoid {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [SmoothMul I' G] : CommMonoid C^∞⟮I, N; I', G⟯ :=
   DFunLike.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 #align smooth_map.comm_monoid SmoothMap.commMonoid
 #align smooth_map.add_comm_monoid SmoothMap.addCommMonoid
 
 @[to_additive]
-instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G] :
+instance (priority := 10000) group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G] :
     Group C^∞⟮I, N; I', G⟯ :=
   { SmoothMap.monoid with
     inv := fun f => ⟨fun x => (f x)⁻¹, f.smooth.inv⟩
@@ -180,7 +180,7 @@ theorem coe_div {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [
 #align smooth_map.coe_sub SmoothMap.coe_sub
 
 @[to_additive]
-instance commGroup {G : Type*} [CommGroup G] [TopologicalSpace G] [ChartedSpace H' G]
+instance (priority := 10000) commGroup {G : Type*} [CommGroup G] [TopologicalSpace G] [ChartedSpace H' G]
     [LieGroup I' G] : CommGroup C^∞⟮I, N; I', G⟯ :=
   { SmoothMap.group, SmoothMap.commMonoid with }
 #align smooth_map.comm_group SmoothMap.commGroup
@@ -198,7 +198,7 @@ under pointwise multiplication.
 -/
 
 
-instance semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H' R]
+instance (priority := 10000) semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H' R]
     [SmoothRing I' R] : Semiring C^∞⟮I, N; I', R⟯ :=
   { SmoothMap.addCommMonoid,
     SmoothMap.monoid with
@@ -208,12 +208,12 @@ instance semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H'
     mul_zero := fun a => by ext; exact mul_zero _ }
 #align smooth_map.semiring SmoothMap.semiring
 
-instance ring {R : Type*} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [SmoothRing I' R] :
+instance (priority := 10000) ring {R : Type*} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [SmoothRing I' R] :
     Ring C^∞⟮I, N; I', R⟯ :=
   { SmoothMap.semiring, SmoothMap.addCommGroup with }
 #align smooth_map.ring SmoothMap.ring
 
-instance commRing {R : Type*} [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
+instance (priority := 10000) commRing {R : Type*} [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
     [SmoothRing I' R] : CommRing C^∞⟮I, N; I', R⟯ :=
   { SmoothMap.semiring, SmoothMap.addCommGroup, SmoothMap.commMonoid with }
 #align smooth_map.comm_ring SmoothMap.commRing
@@ -269,7 +269,7 @@ field `𝕜` inherit a vector space structure.
 -/
 
 
-instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance (priority := 10000) instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^∞⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun r f => ⟨r • ⇑f, smooth_const.smul f.smooth⟩⟩
 #align smooth_map.has_smul SmoothMap.instSMul
@@ -286,7 +286,7 @@ theorem smul_comp {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : �
   rfl
 #align smooth_map.smul_comp SmoothMap.smul_comp
 
-instance module {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance (priority := 10000) module {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     Module 𝕜 C^∞⟮I, N; 𝓘(𝕜, V), V⟯ :=
   Function.Injective.module 𝕜 coeFnAddMonoidHom ContMDiffMap.coe_injective coe_smul
 #align smooth_map.module SmoothMap.module
@@ -324,7 +324,7 @@ def C : 𝕜 →+* C^∞⟮I, N; 𝓘(𝕜, A), A⟯ where
 set_option linter.uppercaseLean3 false in
 #align smooth_map.C SmoothMap.C
 
-instance algebra : Algebra 𝕜 C^∞⟮I, N; 𝓘(𝕜, A), A⟯ :=
+instance (priority := 10000) algebra : Algebra 𝕜 C^∞⟮I, N; 𝓘(𝕜, A), A⟯ :=
   { --SmoothMap.semiring with -- Porting note: Commented this out.
     smul := fun r f => ⟨r • f, smooth_const.smul f.smooth⟩
     toRingHom := SmoothMap.C
@@ -355,7 +355,7 @@ If `V` is a module over `𝕜`, then we show that the space of smooth functions 
 is naturally a vector space over the ring of smooth functions from `N` to `𝕜`. -/
 
 
-instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance (priority := 10000) instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul C^∞⟮I, N; 𝕜⟯ C^∞⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun f g => ⟨fun x => f x • g x, Smooth.smul f.2 g.2⟩⟩
 #align smooth_map.has_smul' SmoothMap.instSMul'
@@ -367,7 +367,7 @@ theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : 
   rfl
 #align smooth_map.smul_comp' SmoothMap.smul_comp'
 
-instance module' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
+instance (priority := 10000) module' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     Module C^∞⟮I, N; 𝓘(𝕜), 𝕜⟯ C^∞⟮I, N; 𝓘(𝕜, V), V⟯ where
   smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)

@@ -57,14 +57,14 @@ theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 #align homeomorph.to_equiv_injective Homeomorph.toEquiv_injective
 
-instance : EquivLike (X ≃ₜ Y) X Y where
+instance (priority := 10000) : EquivLike (X ≃ₜ Y) X Y where
   coe := fun h => h.toEquiv
   inv := fun h => h.toEquiv.symm
   left_inv := fun h => h.left_inv
   right_inv := fun h => h.right_inv
   coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
 
-instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨DFunLike.coe⟩
+instance (priority := 10000) : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨DFunLike.coe⟩
 
 @[simp] theorem homeomorph_mk_coe (a : X ≃ Y) (b c) : (Homeomorph.mk a b c : X → Y) = a :=
   rfl

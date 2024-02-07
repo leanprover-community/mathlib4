@@ -104,7 +104,7 @@ protected def xor : ℤ → ℤ → ℤ
 
 /-- `m <<< n` produces an integer whose binary representation
   is obtained by left-shifting the binary representation of `m` by `n` places -/
-instance : ShiftLeft ℤ where
+instance (priority := 10000) : ShiftLeft ℤ where
   shiftLeft
   | (m : ℕ), (n : ℕ) => Nat.shiftLeft' false m n
   | (m : ℕ), -[n +1] => m >>> (Nat.succ n)
@@ -114,7 +114,7 @@ instance : ShiftLeft ℤ where
 
 /-- `m >>> n` produces an integer whose binary representation
   is obtained by right-shifting the binary representation of `m` by `n` places -/
-instance : ShiftRight ℤ where
+instance (priority := 10000) : ShiftRight ℤ where
   shiftRight m n := m <<< (-n)
 #align int.shiftr ShiftRight.shiftRight
 

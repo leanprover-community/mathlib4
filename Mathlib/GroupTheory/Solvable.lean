@@ -150,7 +150,7 @@ theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G
   solvable_of_ker_le_range (1 : G' →* G) f ((f.ker_eq_bot_iff.mpr hf).symm ▸ bot_le)
 #align solvable_of_solvable_injective solvable_of_solvable_injective
 
-instance subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
+instance (priority := 10000) subgroup_solvable_of_solvable (H : Subgroup G) [IsSolvable G] : IsSolvable H :=
   solvable_of_solvable_injective H.subtype_injective
 #align subgroup_solvable_of_solvable subgroup_solvable_of_solvable
 
@@ -158,12 +158,12 @@ theorem solvable_of_surjective (hf : Function.Surjective f) [IsSolvable G] : IsS
   solvable_of_ker_le_range f (1 : G' →* G) ((f.range_top_of_surjective hf).symm ▸ le_top)
 #align solvable_of_surjective solvable_of_surjective
 
-instance solvable_quotient_of_solvable (H : Subgroup G) [H.Normal] [IsSolvable G] :
+instance (priority := 10000) solvable_quotient_of_solvable (H : Subgroup G) [H.Normal] [IsSolvable G] :
     IsSolvable (G ⧸ H) :=
   solvable_of_surjective (QuotientGroup.mk'_surjective H)
 #align solvable_quotient_of_solvable solvable_quotient_of_solvable
 
-instance solvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
+instance (priority := 10000) solvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
   solvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
     ⟨x.1, Prod.ext rfl hx.symm⟩

@@ -75,7 +75,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
 #align conditionally_complete_linear_ordered_field.to_archimedean ConditionallyCompleteLinearOrderedField.to_archimedean
 
 /-- The reals are a conditionally complete linearly ordered field. -/
-instance : ConditionallyCompleteLinearOrderedField ℝ :=
+instance (priority := 10000) : ConditionallyCompleteLinearOrderedField ℝ :=
   { (inferInstance : LinearOrderedField ℝ),
     (inferInstance : ConditionallyCompleteLinearOrder ℝ) with }
 
@@ -345,12 +345,12 @@ open OrderRingIso
 
 /-- There is a unique ordered ring homomorphism from an archimedean linear ordered field to a
 conditionally complete linear ordered field. -/
-instance uniqueOrderRingHom : Unique (α →+*o β) :=
+instance (priority := 10000) uniqueOrderRingHom : Unique (α →+*o β) :=
   uniqueOfSubsingleton <| inducedOrderRingHom α β
 
 /-- There is a unique ordered ring isomorphism between two conditionally complete linear ordered
 fields. -/
-instance uniqueOrderRingIso : Unique (β ≃+*o γ) :=
+instance (priority := 10000) uniqueOrderRingIso : Unique (β ≃+*o γ) :=
   uniqueOfSubsingleton <| inducedOrderRingIso β γ
 
 end InducedMap
@@ -367,7 +367,7 @@ theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f :
 #align ring_hom_monotone ringHom_monotone
 
 /-- There exists no nontrivial ring homomorphism `ℝ →+* ℝ`. -/
-instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
+instance (priority := 10000) Real.RingHom.unique : Unique (ℝ →+* ℝ) where
   default := RingHom.id ℝ
   uniq f := congr_arg OrderRingHom.toRingHom (@Subsingleton.elim (ℝ →+*o ℝ) _
       ⟨f, ringHom_monotone (fun r hr => ⟨Real.sqrt r, sq_sqrt hr⟩) f⟩ default)

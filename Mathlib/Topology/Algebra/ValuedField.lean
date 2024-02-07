@@ -345,7 +345,7 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     exact ⟨⟨y, ⟨y, hx, rfl⟩⟩, hy₂⟩
 #align valued.closure_coe_completion_v_lt Valued.closure_coe_completion_v_lt
 
-noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
+noncomputable instance (priority := 10000) valuedCompletion : Valued (hat K) Γ₀ where
   v := extensionValuation
   is_topological_valuation s := by
     suffices

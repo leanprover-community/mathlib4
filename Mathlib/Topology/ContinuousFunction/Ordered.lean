@@ -26,7 +26,7 @@ We now set up the partial order and lattice structure (given by pointwise min an
 on continuous functions.
 -/
 
-instance partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
+instance (priority := 10000) partialOrder [PartialOrder β] : PartialOrder C(α, β) :=
   PartialOrder.lift (fun f => f.toFun) (fun f g _ => by cases f; cases g; congr)
   -- porting note: was `by tidy`, and `by aesop` alone didn't work
 #align continuous_map.partial_order ContinuousMap.partialOrder
@@ -42,7 +42,7 @@ theorem lt_def [PartialOrder β] {f g : C(α, β)} : f < g ↔ (∀ a, f a ≤ g
 section SemilatticeSup
 variable [SemilatticeSup β] [ContinuousSup β]
 
-instance sup : Sup C(α, β) where sup f g := { toFun := fun a ↦ f a ⊔ g a }
+instance (priority := 10000) sup : Sup C(α, β) where sup f g := { toFun := fun a ↦ f a ⊔ g a }
 #align continuous_map.has_sup ContinuousMap.sup
 
 @[simp, norm_cast] lemma coe_sup (f g : C(α, β)) : ⇑(f ⊔ g) = ⇑f ⊔ g := rfl
@@ -51,7 +51,7 @@ instance sup : Sup C(α, β) where sup f g := { toFun := fun a ↦ f a ⊔ g a }
 @[simp] lemma sup_apply (f g : C(α, β)) (a : α) : (f ⊔ g) a = f a ⊔ g a := rfl
 #align continuous_map.sup_apply ContinuousMap.sup_apply
 
-instance semilatticeSup : SemilatticeSup C(α, β) :=
+instance (priority := 10000) semilatticeSup : SemilatticeSup C(α, β) :=
   DFunLike.coe_injective.semilatticeSup _ fun _ _ ↦ rfl
 
 lemma sup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) (a : α) :
@@ -69,7 +69,7 @@ end SemilatticeSup
 section SemilatticeInf
 variable [SemilatticeInf β] [ContinuousInf β]
 
-instance inf : Inf C(α, β) where inf f g := { toFun := fun a ↦ f a ⊓ g a }
+instance (priority := 10000) inf : Inf C(α, β) where inf f g := { toFun := fun a ↦ f a ⊓ g a }
 #align continuous_map.has_inf ContinuousMap.inf
 
 @[simp, norm_cast] lemma coe_inf (f g : C(α, β)) : ⇑(f ⊓ g) = ⇑f ⊓ g := rfl
@@ -78,7 +78,7 @@ instance inf : Inf C(α, β) where inf f g := { toFun := fun a ↦ f a ⊓ g a }
 @[simp] lemma inf_apply (f g : C(α, β)) (a : α) : (f ⊓ g) a = f a ⊓ g a := rfl
 #align continuous_map.inf_apply ContinuousMap.inf_apply
 
-instance semilatticeInf : SemilatticeInf C(α, β) :=
+instance (priority := 10000) semilatticeInf : SemilatticeInf C(α, β) :=
   DFunLike.coe_injective.semilatticeInf _ fun _ _ ↦ rfl
 
 lemma inf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, β)) (a : α) :
@@ -93,7 +93,7 @@ lemma coe_inf' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C(α, �
 
 end SemilatticeInf
 
-instance [Lattice β] [TopologicalLattice β] : Lattice C(α, β) :=
+instance (priority := 10000) [Lattice β] [TopologicalLattice β] : Lattice C(α, β) :=
   DFunLike.coe_injective.lattice _ (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 -- TODO transfer this lattice structure to `BoundedContinuousFunction`

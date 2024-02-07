@@ -89,7 +89,7 @@ def Prime (n : PosNum) : Prop :=
   Nat.Prime n
 #align pos_num.prime PosNum.Prime
 
-instance decidablePrime : DecidablePred PosNum.Prime
+instance (priority := 10000) decidablePrime : DecidablePred PosNum.Prime
   | 1 => Decidable.isFalse Nat.not_prime_one
   | bit0 n =>
     decidable_of_iff' (n = 1)
@@ -128,7 +128,7 @@ def Prime (n : Num) : Prop :=
   Nat.Prime n
 #align num.prime Num.Prime
 
-instance decidablePrime : DecidablePred Num.Prime
+instance (priority := 10000) decidablePrime : DecidablePred Num.Prime
   | 0 => Decidable.isFalse Nat.not_prime_zero
   | pos n => PosNum.decidablePrime n
 #align num.decidable_prime Num.decidablePrime

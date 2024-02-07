@@ -21,7 +21,7 @@ open Int
 noncomputable section
 open Classical
 
-instance : ConditionallyCompleteLinearOrder ℤ :=
+instance (priority := 10000) : ConditionallyCompleteLinearOrder ℤ :=
   { Int.linearOrderedCommRing,
     LinearOrder.toLattice with
     sSup := fun s =>

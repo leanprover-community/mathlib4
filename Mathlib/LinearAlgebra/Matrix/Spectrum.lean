@@ -69,10 +69,10 @@ theorem eigenvectorMatrix_mul_inv : hA.eigenvectorMatrix * hA.eigenvectorMatrixI
   apply Basis.toMatrix_mul_toMatrix_flip
 #align matrix.is_hermitian.eigenvector_matrix_mul_inv Matrix.IsHermitian.eigenvectorMatrix_mul_inv
 
-noncomputable instance : Invertible hA.eigenvectorMatrixInv :=
+noncomputable instance (priority := 10000) : Invertible hA.eigenvectorMatrixInv :=
   invertibleOfLeftInverse _ _ hA.eigenvectorMatrix_mul_inv
 
-noncomputable instance : Invertible hA.eigenvectorMatrix :=
+noncomputable instance (priority := 10000) : Invertible hA.eigenvectorMatrix :=
   invertibleOfRightInverse _ _ hA.eigenvectorMatrix_mul_inv
 
 theorem eigenvectorMatrix_apply (i j : n) : hA.eigenvectorMatrix i j = hA.eigenvectorBasis j i := by

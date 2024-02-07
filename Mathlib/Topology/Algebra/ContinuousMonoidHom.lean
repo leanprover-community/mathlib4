@@ -99,7 +99,7 @@ namespace ContinuousMonoidHom
 variable {A B C D E}
 
 @[to_additive]
-instance ContinuousMonoidHom.funLike :
+instance (priority := 10000) ContinuousMonoidHom.funLike :
     FunLike (ContinuousMonoidHom A B) A B where
   coe f := f.toFun
   coe_injective' f g h := by
@@ -108,7 +108,7 @@ instance ContinuousMonoidHom.funLike :
     congr
 
 @[to_additive]
-instance ContinuousMonoidHom.ContinuousMonoidHomClass :
+instance (priority := 10000) ContinuousMonoidHom.ContinuousMonoidHomClass :
     ContinuousMonoidHomClass (ContinuousMonoidHom A B) A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
@@ -174,7 +174,7 @@ def one : ContinuousMonoidHom A B :=
 #align continuous_add_monoid_hom.zero ContinuousAddMonoidHom.zero
 
 @[to_additive]
-instance : Inhabited (ContinuousMonoidHom A B) :=
+instance (priority := 10000) : Inhabited (ContinuousMonoidHom A B) :=
   ⟨one A B⟩
 
 /-- The identity continuous homomorphism. -/
@@ -255,7 +255,7 @@ def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
 #align continuous_add_monoid_hom.coprod ContinuousAddMonoidHom.coprod
 
 @[to_additive]
-instance : CommGroup (ContinuousMonoidHom A E) where
+instance (priority := 10000) : CommGroup (ContinuousMonoidHom A E) where
   mul f g := (mul E).comp (f.prod g)
   mul_comm f g := ext fun x => mul_comm (f x) (g x)
   mul_assoc f g h := ext fun x => mul_assoc (f x) (g x) (h x)
@@ -266,7 +266,7 @@ instance : CommGroup (ContinuousMonoidHom A E) where
   mul_left_inv f := ext fun x => mul_left_inv (f x)
 
 @[to_additive]
-instance : TopologicalSpace (ContinuousMonoidHom A B) :=
+instance (priority := 10000) : TopologicalSpace (ContinuousMonoidHom A B) :=
   TopologicalSpace.induced toContinuousMap ContinuousMap.compactOpen
 
 variable (A B C D E)
@@ -308,11 +308,11 @@ theorem closedEmbedding_toContinuousMap [ContinuousMul B] [T2Space B] :
 variable {A B C D E}
 
 @[to_additive]
-instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
+instance (priority := 10000) [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
   (embedding_toContinuousMap A B).t2Space
 
 @[to_additive]
-instance : TopologicalGroup (ContinuousMonoidHom A E) :=
+instance (priority := 10000) : TopologicalGroup (ContinuousMonoidHom A E) :=
   let hi := inducing_toContinuousMap A E
   let hc := hi.continuous
   { continuous_mul := hi.continuous_iff.mpr (continuous_mul.comp (Continuous.prod_map hc hc))
@@ -389,21 +389,21 @@ def PontryaginDual :=
 #align pontryagin_dual PontryaginDual
 
 -- porting note: `deriving` doesn't derive these instances
-instance : TopologicalSpace (PontryaginDual A) :=
+instance (priority := 10000) : TopologicalSpace (PontryaginDual A) :=
   (inferInstance : TopologicalSpace (ContinuousMonoidHom A circle))
 
-instance : T2Space (PontryaginDual A) :=
+instance (priority := 10000) : T2Space (PontryaginDual A) :=
   (inferInstance : T2Space (ContinuousMonoidHom A circle))
 
 -- porting note: instance is now noncomputable
-noncomputable instance : CommGroup (PontryaginDual A) :=
+noncomputable instance (priority := 10000) : CommGroup (PontryaginDual A) :=
   (inferInstance : CommGroup (ContinuousMonoidHom A circle))
 
-instance : TopologicalGroup (PontryaginDual A) :=
+instance (priority := 10000) : TopologicalGroup (PontryaginDual A) :=
   (inferInstance : TopologicalGroup (ContinuousMonoidHom A circle))
 
 -- porting note: instance is now noncomputable
-noncomputable instance : Inhabited (PontryaginDual A) :=
+noncomputable instance (priority := 10000) : Inhabited (PontryaginDual A) :=
   (inferInstance : Inhabited (ContinuousMonoidHom A circle))
 
 
@@ -413,10 +413,10 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
-instance : FunLike (PontryaginDual A) A circle :=
+instance (priority := 10000) : FunLike (PontryaginDual A) A circle :=
   ContinuousMonoidHom.funLike
 
-noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
+noncomputable instance (priority := 10000) : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
   ContinuousMonoidHom.ContinuousMonoidHomClass
 
 /-- `PontryaginDual` is a functor. -/

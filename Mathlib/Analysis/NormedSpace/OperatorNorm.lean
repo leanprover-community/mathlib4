@@ -124,7 +124,7 @@ def opNorm (f : E →SL[σ₁₂] F) :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ }
 #align continuous_linear_map.op_norm ContinuousLinearMap.opNorm
 
-instance hasOpNorm : Norm (E →SL[σ₁₂] F) :=
+instance (priority := 10000) hasOpNorm : Norm (E →SL[σ₁₂] F) :=
   ⟨opNorm⟩
 #align continuous_linear_map.has_op_norm ContinuousLinearMap.hasOpNorm
 
@@ -415,13 +415,13 @@ private lemma uniformity_eq_seminorm :
     rw [mul_comm] at hδ
     exact le_trans (le_of_opNorm_le_of_le _ hf.le (hε _ hx)) hδ.le
 
-instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
+instance (priority := 10000) toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
   ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
 #align continuous_linear_map.to_pseudo_metric_space ContinuousLinearMap.toPseudoMetricSpace
 
 /-- Continuous linear maps themselves form a seminormed space with respect to
     the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
+instance (priority := 10000) toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
   dist_eq _ _ := rfl
 #align continuous_linear_map.to_seminormed_add_comm_group ContinuousLinearMap.toSeminormedAddCommGroup
 
@@ -503,7 +503,7 @@ theorem isLeast_opNNNorm : IsLeast {C : ℝ≥0 | ∀ x, ‖f x‖₊ ≤ C * �
 alias isLeast_op_nnnorm :=
   isLeast_opNNNorm -- deprecated on 2024-02-02
 
-instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
+instance (priority := 10000) toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
   ⟨opNorm_smul_le⟩
 #align continuous_linear_map.to_normed_space ContinuousLinearMap.toNormedSpace
@@ -529,14 +529,14 @@ alias op_nnnorm_comp_le :=
   opNNNorm_comp_le -- deprecated on 2024-02-02
 
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
-instance toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
+instance (priority := 10000) toSemiNormedRing : SeminormedRing (E →L[𝕜] E) :=
   { ContinuousLinearMap.toSeminormedAddCommGroup, ContinuousLinearMap.ring with
     norm_mul := fun f g => opNorm_comp_le f g }
 #align continuous_linear_map.to_semi_normed_ring ContinuousLinearMap.toSemiNormedRing
 
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/
-instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
+instance (priority := 10000) toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) :=
   { algebra with
     norm_smul_le := by
       intro c f
@@ -1303,7 +1303,7 @@ class _root_.RegularNormedAlgebra : Prop :=
   isometry_mul' : Isometry (mul 𝕜 𝕜')
 
 /-- Every (unital) normed algebra such that `‖1‖ = 1` is a `RegularNormedAlgebra`. -/
-instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
+instance (priority := 10000) _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
     [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] : RegularNormedAlgebra 𝕜 𝕜' where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 𝕜') <|
     fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
@@ -1682,18 +1682,18 @@ theorem norm_id [Nontrivial E] : ‖id 𝕜 E‖ = 1 := by
 @[simp]
 lemma nnnorm_id [Nontrivial E] : ‖id 𝕜 E‖₊ = 1 := NNReal.eq norm_id
 
-instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
+instance (priority := 10000) normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
   ⟨norm_id⟩
 #align continuous_linear_map.norm_one_class ContinuousLinearMap.normOneClass
 
 /-- Continuous linear maps themselves form a normed space with respect to
     the operator norm. -/
-instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
+instance (priority := 10000) toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
   NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
 #align continuous_linear_map.to_normed_add_comm_group ContinuousLinearMap.toNormedAddCommGroup
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
-instance toNormedRing : NormedRing (E →L[𝕜] E) :=
+instance (priority := 10000) toNormedRing : NormedRing (E →L[𝕜] E) :=
   { ContinuousLinearMap.toNormedAddCommGroup, ContinuousLinearMap.toSemiNormedRing with }
 #align continuous_linear_map.to_normed_ring ContinuousLinearMap.toNormedRing
 
@@ -1779,7 +1779,7 @@ theorem tendsto_of_tendsto_pointwise_of_cauchySeq {f : ℕ → E' →SL[σ₁₂
 
 /-- If the target space is complete, the space of continuous linear maps with its norm is also
 complete. This works also if the source space is seminormed. -/
-instance [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
+instance (priority := 10000) [CompleteSpace F] : CompleteSpace (E' →SL[σ₁₂] F) := by
   -- We show that every Cauchy sequence converges.
   refine' Metric.complete_of_cauchySeq_tendsto fun f hf => _
   -- The evaluation at any point `v : E` is Cauchy.

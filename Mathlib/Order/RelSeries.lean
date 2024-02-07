@@ -35,7 +35,7 @@ structure RelSeries where
 
 namespace RelSeries
 
-instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
+instance (priority := 10000) : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
 { coe := RelSeries.toFun }
 
 /--
@@ -46,13 +46,13 @@ For any type `α`, each term of `α` gives a relation series with the right most
   toFun _ := a
   step := Fin.elim0
 
-instance [IsEmpty α] : IsEmpty (RelSeries r) where
+instance (priority := 10000) [IsEmpty α] : IsEmpty (RelSeries r) where
   false x := IsEmpty.false (x 0)
 
-instance [Inhabited α] : Inhabited (RelSeries r) where
+instance (priority := 10000) [Inhabited α] : Inhabited (RelSeries r) where
   default := singleton r default
 
-instance [Nonempty α] : Nonempty (RelSeries r) :=
+instance (priority := 10000) [Nonempty α] : Nonempty (RelSeries r) :=
   Nonempty.map (singleton r) inferInstance
 
 variable {r}
@@ -158,7 +158,7 @@ protected noncomputable def withLength [r.InfiniteDimensional] (n : ℕ) : RelSe
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
-instance membership : Membership α (RelSeries r) :=
+instance (priority := 10000) membership : Membership α (RelSeries r) :=
   ⟨(· ∈ Set.range ·)⟩
 
 theorem mem_def {x : α} {s : RelSeries r} : x ∈ s ↔ x ∈ Set.range s :=

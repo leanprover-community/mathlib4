@@ -1435,7 +1435,7 @@ theorem piecewise_insert_self {j : α} [∀ i, Decidable (i ∈ insert j s)] :
 
 variable [∀ j, Decidable (j ∈ s)]
 
-instance Compl.decidableMem (j : α) : Decidable (j ∈ sᶜ) :=
+instance (priority := 10000) Compl.decidableMem (j : α) : Decidable (j ∈ sᶜ) :=
   instDecidableNot
 #align set.compl.decidable_mem Set.Compl.decidableMem
 

@@ -84,7 +84,7 @@ def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGra
   loopless i := by simp [h]
 #align matrix.is_adj_matrix.to_graph Matrix.IsAdjMatrix.toGraph
 
-instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
+instance (priority := 10000) [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
     DecidableRel h.toGraph.Adj := by
   simp only [toGraph]
   infer_instance

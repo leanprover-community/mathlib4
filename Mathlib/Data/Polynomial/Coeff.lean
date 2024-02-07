@@ -425,7 +425,7 @@ theorem int_cast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X
 
 end cast
 
-instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := nat_cast_inj.mp
+instance (priority := 10000) charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := nat_cast_inj.mp
 #align polynomial.char_zero Polynomial.charZero
 
 end Polynomial

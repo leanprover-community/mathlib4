@@ -33,7 +33,7 @@ namespace SingleObj
 variable {M G : Type v} [Monoid M] [Group G]
 
 /-- The induced `G`-action on the target of `J : SingleObj G ⥤ Type u`. -/
-instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) where
+instance (priority := 10000) (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) where
   smul g x := J.map g x
   one_smul x := by
     show J.map (𝟙 _) x = x

@@ -44,7 +44,7 @@ lemma isAtom_iff : IsAtom s ↔ ∃ a, s = {a} := by simp [← bot_covBy_iff, co
 
 @[simp] lemma isAtom_singleton (a : α) : IsAtom ({a} : Multiset α) := isAtom_iff.2 ⟨_, rfl⟩
 
-instance instGradeMinOrder : GradeMinOrder ℕ (Multiset α) where
+instance (priority := 10000) instGradeMinOrder : GradeMinOrder ℕ (Multiset α) where
   grade := card
   grade_strictMono := card_strictMono
   covBy_grade s t := CovBy.card_multiset
@@ -146,7 +146,7 @@ end Fintype
 
 /-- Finsets are multiset-graded. This is not very meaningful mathematically but rather a handy way
 to record that the inclusion `Finset α ↪ Multiset α` preserves the covering relation. -/
-instance instGradeMinOrder_multiset : GradeMinOrder (Multiset α) (Finset α) where
+instance (priority := 10000) instGradeMinOrder_multiset : GradeMinOrder (Multiset α) (Finset α) where
   grade := val
   grade_strictMono := val_strictMono
   covBy_grade _ _ := CovBy.finset_val
@@ -154,7 +154,7 @@ instance instGradeMinOrder_multiset : GradeMinOrder (Multiset α) (Finset α) wh
 
 @[simp] lemma grade_multiset_eq (s : Finset α) : grade (Multiset α) s = s.1 := rfl
 
-instance instGradeMinOrder_nat : GradeMinOrder ℕ (Finset α) where
+instance (priority := 10000) instGradeMinOrder_nat : GradeMinOrder ℕ (Finset α) where
   grade := card
   grade_strictMono := card_strictMono
   covBy_grade _ _ := CovBy.card_finset

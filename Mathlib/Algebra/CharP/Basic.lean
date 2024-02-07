@@ -174,7 +174,7 @@ theorem CharP.eq [AddMonoidWithOne R] {p q : ℕ} (_c1 : CharP R p) (_c2 : CharP
     ((CharP.cast_eq_zero_iff R q p).1 (CharP.cast_eq_zero _ _))
 #align char_p.eq CharP.eq
 
-instance CharP.ofCharZero [AddMonoidWithOne R] [CharZero R] : CharP R 0 :=
+instance (priority := 10000) CharP.ofCharZero [AddMonoidWithOne R] [CharZero R] : CharP R 0 :=
   ⟨fun x => by rw [zero_dvd_iff, ← Nat.cast_zero, Nat.cast_inj]⟩
 #align char_p.of_char_zero CharP.ofCharZero
 
@@ -233,7 +233,7 @@ theorem eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
   ((Classical.choose_spec (CharP.exists_unique R)).2 p C).symm
 #align ring_char.eq ringChar.eq
 
-instance charP : CharP R (ringChar R) :=
+instance (priority := 10000) charP : CharP R (ringChar R) :=
   ⟨spec R⟩
 #align ring_char.char_p ringChar.charP
 
@@ -566,29 +566,29 @@ variable (S : Type v) [AddMonoidWithOne R] [AddMonoidWithOne S] (p q : ℕ) [Cha
 
 /-- The characteristic of the product of rings is the least common multiple of the
 characteristics of the two rings. -/
-instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
+instance (priority := 10000) Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
   cast_eq_zero_iff' := by
     simp [Prod.ext_iff, CharP.cast_eq_zero_iff R p, CharP.cast_eq_zero_iff S q, Nat.lcm_dvd_iff]
 
 /-- The characteristic of the product of two rings of the same characteristic
   is the same as the characteristic of the rings -/
-instance Prod.charP [CharP S p] : CharP (R × S) p := by
+instance (priority := 10000) Prod.charP [CharP S p] : CharP (R × S) p := by
   convert Nat.lcm.charP R S p p; simp
 #align prod.char_p Prod.charP
 
-instance Prod.charZero_of_left [CharZero R] : CharZero (R × S) where
+instance (priority := 10000) Prod.charZero_of_left [CharZero R] : CharZero (R × S) where
   cast_injective _ _ h := CharZero.cast_injective congr(Prod.fst $h)
 
-instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
+instance (priority := 10000) Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
   cast_injective _ _ h := CharZero.cast_injective congr(Prod.snd $h)
 
 end Prod
 
-instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift.{v} R) p where
+instance (priority := 10000) ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift.{v} R) p where
   cast_eq_zero_iff' n := Iff.trans (ULift.ext_iff _ _) <| CharP.cast_eq_zero_iff R p n
 #align ulift.char_p ULift.charP
 
-instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP Rᵐᵒᵖ p where
+instance (priority := 10000) MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP Rᵐᵒᵖ p where
   cast_eq_zero_iff' n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n
 #align mul_opposite.char_p MulOpposite.charP
 
@@ -639,7 +639,7 @@ end CharZero
 
 namespace Fin
 
-instance charP (n : ℕ) : CharP (Fin (n + 1)) (n + 1) where
+instance (priority := 10000) charP (n : ℕ) : CharP (Fin (n + 1)) (n + 1) where
     cast_eq_zero_iff' := by
       simp [Fin.eq_iff_veq, Nat.dvd_iff_mod_eq_zero]
 

@@ -265,17 +265,17 @@ namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-instance Full.id : Full (𝟭 C) where preimage f := f
+instance (priority := 10000) Full.id : Full (𝟭 C) where preimage f := f
 #align category_theory.full.id CategoryTheory.Full.id
 
-instance Faithful.id : Faithful (𝟭 C) := { }
+instance (priority := 10000) Faithful.id : Faithful (𝟭 C) := { }
 #align category_theory.faithful.id CategoryTheory.Faithful.id
 
 variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
 
 variable (F F' : C ⥤ D) (G : D ⥤ E)
 
-instance Faithful.comp [Faithful F] [Faithful G] :
+instance (priority := 10000) Faithful.comp [Faithful F] [Faithful G] :
     Faithful (F ⋙ G) where map_injective p := F.map_injective (G.map_injective p)
 #align category_theory.faithful.comp CategoryTheory.Faithful.comp
 
@@ -370,7 +370,7 @@ theorem Faithful.div_faithful (F : C ⥤ E) [Faithful F] (G : D ⥤ E) [Faithful
   (Faithful.div_comp F G _ h_obj _ @h_map).faithful_of_comp
 #align category_theory.faithful.div_faithful CategoryTheory.Faithful.div_faithful
 
-instance Full.comp [Full F] [Full G] :
+instance (priority := 10000) Full.comp [Full F] [Full G] :
     Full (F ⋙ G) where preimage f := F.preimage (G.preimage f)
 #align category_theory.full.comp CategoryTheory.Full.comp
 

@@ -337,7 +337,7 @@ theorem IsClosed.completeSpace_coe [CompleteSpace α] {s : Set α} (hs : IsClose
 #align is_closed.complete_space_coe IsClosed.completeSpace_coe
 
 /-- The lift of a complete space to another universe is still complete. -/
-instance ULift.completeSpace [h : CompleteSpace α] : CompleteSpace (ULift α) :=
+instance (priority := 10000) ULift.completeSpace [h : CompleteSpace α] : CompleteSpace (ULift α) :=
   haveI : UniformEmbedding (@Equiv.ulift α) := ⟨⟨rfl⟩, ULift.down_injective⟩
   (completeSpace_congr this).2 h
 #align ulift.complete_space ULift.completeSpace
@@ -402,7 +402,7 @@ theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformEmbedd
   exact ⟨y, zc, ts zt⟩
 #align totally_bounded_preimage totallyBounded_preimage
 
-instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace (Sum α β) := by
+instance (priority := 10000) CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace (Sum α β) := by
   rw [completeSpace_iff_isComplete_univ, ← range_inl_union_range_inr]
   exact uniformEmbedding_inl.toUniformInducing.isComplete_range.union
     uniformEmbedding_inr.toUniformInducing.isComplete_range

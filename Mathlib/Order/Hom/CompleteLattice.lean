@@ -237,16 +237,16 @@ variable [FunLike F α β]
   map_sInf' := sInfHomClass.map_sInf f
   map_sSup' := sSupHomClass.map_sSup f
 
-instance [SupSet α] [SupSet β] [sSupHomClass F α β] : CoeTC F (sSupHom α β) :=
+instance (priority := 10000) [SupSet α] [SupSet β] [sSupHomClass F α β] : CoeTC F (sSupHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
 
-instance [InfSet α] [InfSet β] [sInfHomClass F α β] : CoeTC F (sInfHom α β) :=
+instance (priority := 10000) [InfSet α] [InfSet β] [sInfHomClass F α β] : CoeTC F (sInfHom α β) :=
   ⟨fun f => ⟨f, map_sInf f⟩⟩
 
-instance [CompleteLattice α] [CompleteLattice β] [FrameHomClass F α β] : CoeTC F (FrameHom α β) :=
+instance (priority := 10000) [CompleteLattice α] [CompleteLattice β] [FrameHomClass F α β] : CoeTC F (FrameHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
 
-instance [CompleteLattice α] [CompleteLattice β] [CompleteLatticeHomClass F α β] :
+instance (priority := 10000) [CompleteLattice α] [CompleteLattice β] [CompleteLatticeHomClass F α β] :
     CoeTC F (CompleteLatticeHom α β) :=
   ⟨fun f => ⟨f, map_sSup f⟩⟩
 
@@ -261,11 +261,11 @@ section SupSet
 
 variable [SupSet β] [SupSet γ] [SupSet δ]
 
-instance : FunLike (sSupHom α β) α β where
+instance (priority := 10000) : FunLike (sSupHom α β) α β where
   coe := sSupHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-instance : sSupHomClass (sSupHom α β) α β where
+instance (priority := 10000) : sSupHomClass (sSupHom α β) α β where
   map_sSup := sSupHom.map_sSup'
 
 @[simp] lemma toFun_eq_coe (f : sSupHom α β) : f.toFun = f := rfl
@@ -302,7 +302,7 @@ protected def id : sSupHom α α :=
   ⟨id, fun s => by rw [id, Set.image_id]⟩
 #align Sup_hom.id sSupHom.id
 
-instance : Inhabited (sSupHom α α) :=
+instance (priority := 10000) : Inhabited (sSupHom α α) :=
   ⟨sSupHom.id α⟩
 
 @[simp]
@@ -366,16 +366,16 @@ end SupSet
 
 variable { _ : CompleteLattice β}
 
-instance : PartialOrder (sSupHom α β) :=
+instance (priority := 10000) : PartialOrder (sSupHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
-instance : Bot (sSupHom α β) :=
+instance (priority := 10000) : Bot (sSupHom α β) :=
   ⟨⟨fun _ => ⊥, fun s => by
       obtain rfl | hs := s.eq_empty_or_nonempty
       · rw [Set.image_empty, sSup_empty]
       · rw [hs.image_const, sSup_singleton]⟩⟩
 
-instance : OrderBot (sSupHom α β) where
+instance (priority := 10000) : OrderBot (sSupHom α β) where
   bot := ⊥
   bot_le := fun _ _ ↦ CompleteLattice.bot_le _
 
@@ -402,11 +402,11 @@ section InfSet
 
 variable [InfSet β] [InfSet γ] [InfSet δ]
 
-instance : FunLike (sInfHom α β) α β where
+instance (priority := 10000) : FunLike (sInfHom α β) α β where
   coe := sInfHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-instance : sInfHomClass (sInfHom α β) α β where
+instance (priority := 10000) : sInfHomClass (sInfHom α β) α β where
   map_sInf := sInfHom.map_sInf'
 
 @[simp] lemma toFun_eq_coe (f : sInfHom α β) : f.toFun = f := rfl
@@ -443,7 +443,7 @@ protected def id : sInfHom α α :=
   ⟨id, fun s => by rw [id, Set.image_id]⟩
 #align Inf_hom.id sInfHom.id
 
-instance : Inhabited (sInfHom α α) :=
+instance (priority := 10000) : Inhabited (sInfHom α α) :=
   ⟨sInfHom.id α⟩
 
 @[simp]
@@ -507,16 +507,16 @@ end InfSet
 
 variable [CompleteLattice β]
 
-instance : PartialOrder (sInfHom α β) :=
+instance (priority := 10000) : PartialOrder (sInfHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
-instance : Top (sInfHom α β) :=
+instance (priority := 10000) : Top (sInfHom α β) :=
   ⟨⟨fun _ => ⊤, fun s => by
       obtain rfl | hs := s.eq_empty_or_nonempty
       · rw [Set.image_empty, sInf_empty]
       · rw [hs.image_const, sInf_singleton]⟩⟩
 
-instance : OrderTop (sInfHom α β) where
+instance (priority := 10000) : OrderTop (sInfHom α β) where
   top := ⊤
   le_top := fun _ _ => CompleteLattice.le_top _
 
@@ -539,7 +539,7 @@ namespace FrameHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
-instance : FunLike (FrameHom α β) α β
+instance (priority := 10000) : FunLike (FrameHom α β) α β
     where
   coe f := f.toFun
   coe_injective' f g h := by
@@ -547,7 +547,7 @@ instance : FunLike (FrameHom α β) α β
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
 
-instance : FrameHomClass (FrameHom α β) α β
+instance (priority := 10000) : FrameHomClass (FrameHom α β) α β
     where
   map_sSup f := f.map_sSup'
   map_inf f := f.map_inf'
@@ -592,7 +592,7 @@ protected def id : FrameHom α α :=
   { sSupHom.id α with toInfTopHom := InfTopHom.id α }
 #align frame_hom.id FrameHom.id
 
-instance : Inhabited (FrameHom α α) :=
+instance (priority := 10000) : Inhabited (FrameHom α α) :=
   ⟨FrameHom.id α⟩
 
 @[simp]
@@ -651,7 +651,7 @@ theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Inje
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align frame_hom.cancel_left FrameHom.cancel_left
 
-instance : PartialOrder (FrameHom α β) :=
+instance (priority := 10000) : PartialOrder (FrameHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 end FrameHom
@@ -662,11 +662,11 @@ namespace CompleteLatticeHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
-instance : FunLike (CompleteLatticeHom α β) α β where
+instance (priority := 10000) : FunLike (CompleteLatticeHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
-instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β where
+instance (priority := 10000) : CompleteLatticeHomClass (CompleteLatticeHom α β) α β where
   map_sSup f := f.map_sSup'
   map_sInf f := f.map_sInf'
 
@@ -723,7 +723,7 @@ protected def id : CompleteLatticeHom α α :=
   { sSupHom.id α, sInfHom.id α with toFun := id }
 #align complete_lattice_hom.id CompleteLatticeHom.id
 
-instance : Inhabited (CompleteLatticeHom α α) :=
+instance (priority := 10000) : Inhabited (CompleteLatticeHom α α) :=
   ⟨CompleteLatticeHom.id α⟩
 
 @[simp]

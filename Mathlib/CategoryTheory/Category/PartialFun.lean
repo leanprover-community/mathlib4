@@ -43,7 +43,7 @@ set_option linter.uppercaseLean3 false
 
 namespace PartialFun
 
-instance : CoeSort PartialFun (Type*) :=
+instance (priority := 10000) : CoeSort PartialFun (Type*) :=
   ⟨id⟩
 
 -- porting note: removed `@[nolint has_nonempty_instance]`
@@ -55,10 +55,10 @@ def of : Type* → PartialFun :=
 -- porting note: removed this lemma which is useless because of the expansion of coercions
 #noalign PartialFun.coe_of
 
-instance : Inhabited PartialFun :=
+instance (priority := 10000) : Inhabited PartialFun :=
   ⟨Type*⟩
 
-instance largeCategory : LargeCategory.{u} PartialFun where
+instance (priority := 10000) largeCategory : LargeCategory.{u} PartialFun where
   Hom := PFun
   id := PFun.id
   comp f g := g.comp f
@@ -89,7 +89,7 @@ def typeToPartialFun : Type u ⥤ PartialFun where
   map_comp _ _ := PFun.coe_comp _ _
 #align Type_to_PartialFun typeToPartialFun
 
-instance : Faithful typeToPartialFun where
+instance (priority := 10000) : Faithful typeToPartialFun where
   map_injective {_ _} := PFun.lift_injective
 
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.

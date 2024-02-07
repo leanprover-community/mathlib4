@@ -928,11 +928,11 @@ theorem hausdorffMeasure_smul {α : Type*} [SMul α X] [IsometricSMul α X] {d :
 #align measure_theory.hausdorff_measure_vadd MeasureTheory.hausdorffMeasure_vadd
 
 @[to_additive]
-instance {d : ℝ} [Group X] [IsometricSMul X X] : IsMulLeftInvariant (μH[d] : Measure X) where
+instance (priority := 10000) {d : ℝ} [Group X] [IsometricSMul X X] : IsMulLeftInvariant (μH[d] : Measure X) where
   map_mul_left_eq_self x := (IsometryEquiv.constSMul x).map_hausdorffMeasure _
 
 @[to_additive]
-instance {d : ℝ} [Group X] [IsometricSMul Xᵐᵒᵖ X] : IsMulRightInvariant (μH[d] : Measure X) where
+instance (priority := 10000) {d : ℝ} [Group X] [IsometricSMul Xᵐᵒᵖ X] : IsMulRightInvariant (μH[d] : Measure X) where
   map_mul_right_eq_self x := (IsometryEquiv.constSMul (MulOpposite.op x)).map_hausdorffMeasure _
 
 /-!

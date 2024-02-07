@@ -38,12 +38,12 @@ export MonadWriter (tell listen pass)
 
 variable {M : Type u → Type v} [Monad M]
 
-instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
+instance (priority := 10000) [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
   tell w := (tell w : M _)
   listen x r := listen <| x r
   pass x r := pass <| x r
 
-instance [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
+instance (priority := 10000) [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
   tell w := (tell w : M _)
   listen x s := (fun ((a,w), s) ↦ ((a,s), w)) <$> listen (x s)
   pass x s := pass <| (fun ((a, f), s) ↦ ((a, s), f)) <$> (x s)
@@ -83,33 +83,33 @@ def monad (empty : ω) (append : ω → ω → ω) : Monad (WriterT ω M) where
 protected def liftTell (empty : ω) : MonadLift M (WriterT ω M) where
   monadLift := fun cmd ↦ WriterT.mk <| (fun a ↦ (a, empty)) <$> cmd
 
-instance [EmptyCollection ω] [Append ω] : Monad (WriterT ω M) := monad ∅ (· ++ ·)
-instance [EmptyCollection ω] : MonadLift M (WriterT ω M) := WriterT.liftTell ∅
-instance [Monoid ω] : Monad (WriterT ω M) := monad 1 (· * ·)
-instance [Monoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 1
+instance (priority := 10000) [EmptyCollection ω] [Append ω] : Monad (WriterT ω M) := monad ∅ (· ++ ·)
+instance (priority := 10000) [EmptyCollection ω] : MonadLift M (WriterT ω M) := WriterT.liftTell ∅
+instance (priority := 10000) [Monoid ω] : Monad (WriterT ω M) := monad 1 (· * ·)
+instance (priority := 10000) [Monoid ω] : MonadLift M (WriterT ω M) := WriterT.liftTell 1
 
-instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
+instance (priority := 10000) [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad.mk'
   (bind_pure_comp := by
     intros; simp [Bind.bind, Functor.map, Pure.pure, WriterT.mk, bind_pure_comp])
   (id_map := by intros; simp [Functor.map, WriterT.mk])
   (pure_bind := by intros; simp [Bind.bind, Pure.pure, WriterT.mk])
   (bind_assoc := by intros; simp [Bind.bind, mul_assoc, WriterT.mk, ← bind_pure_comp])
 
-instance : MonadWriter ω (WriterT ω M) where
+instance (priority := 10000) : MonadWriter ω (WriterT ω M) where
   tell := fun w ↦ WriterT.mk <| pure (⟨⟩, w)
   listen := fun cmd ↦ WriterT.mk <| (fun (a,w) ↦ ((a,w), w)) <$> cmd
   pass := fun cmd ↦ WriterT.mk <| (fun ((a,f), w) ↦ (a, f w)) <$> cmd
 
-instance [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
+instance (priority := 10000) [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
   throw := fun e ↦ WriterT.mk <| throw e
   tryCatch := fun cmd c ↦ WriterT.mk <| tryCatch cmd fun e ↦ (c e).run
 
-instance [MonadLiftT M (WriterT ω M)] : MonadControl M (WriterT ω M) where
+instance (priority := 10000) [MonadLiftT M (WriterT ω M)] : MonadControl M (WriterT ω M) where
   stM := fun α ↦ α × ω
   liftWith f := liftM <| f fun x ↦ x.run
   restoreM := WriterT.mk
 
-instance : MonadFunctor M (WriterT ω M) where
+instance (priority := 10000) : MonadFunctor M (WriterT ω M) where
   monadMap := fun k (w : M _) ↦ WriterT.mk <| k w
 
 @[inline] protected def adapt {ω' : Type u} {α : Type u} (f : ω → ω') :
@@ -136,7 +136,7 @@ instance (priority := 100) monadWriterAdapterTrans {n : Type u → Type v}
     [MonadWriterAdapter ω m] [MonadFunctor m n] : MonadWriterAdapter ω n where
   adaptWriter f := monadMap (fun {α} ↦ (adaptWriter f : m α → m α))
 
-instance [Monad m] : MonadWriterAdapter ω (WriterT ω m) where
+instance (priority := 10000) [Monad m] : MonadWriterAdapter ω (WriterT ω m) where
   adaptWriter := WriterT.adapt
 
 /-- reduce the equivalence between two writer monads to the equivalence between

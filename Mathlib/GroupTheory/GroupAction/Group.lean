@@ -24,7 +24,7 @@ section MulAction
 
 /-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
 @[to_additive " `AddMonoid.toAddAction` is faithful on additive cancellative monoids. "]
-instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
+instance (priority := 10000) RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
   ⟨fun h => mul_right_cancel (h 1)⟩
 #align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.faithfulSMul
 #align add_right_cancel_monoid.to_has_faithful_vadd AddRightCancelMonoid.faithfulVAdd
@@ -88,7 +88,7 @@ def AddAction.toPermHom (α : Type*) [AddGroup α] [AddAction α β] :
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
 This generalizes `Function.End.applyMulAction`.-/
-instance Equiv.Perm.applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α where
+instance (priority := 10000) Equiv.Perm.applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α where
   smul f a := f a
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
@@ -100,7 +100,7 @@ protected theorem Equiv.Perm.smul_def {α : Type*} (f : Equiv.Perm α) (a : α) 
 #align equiv.perm.smul_def Equiv.Perm.smul_def
 
 /-- `Equiv.Perm.applyMulAction` is faithful. -/
-instance Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α) α :=
+instance (priority := 10000) Equiv.Perm.applyFaithfulSMul (α : Type*) : FaithfulSMul (Equiv.Perm α) α :=
   ⟨Equiv.ext⟩
 #align equiv.perm.apply_has_faithful_smul Equiv.Perm.applyFaithfulSMul
 
@@ -202,7 +202,7 @@ theorem smul_eq_iff_eq_invOf_smul : c • x = y ↔ x = ⅟c • y :=
 end Monoid
 
 /-- `Monoid.toMulAction` is faithful on nontrivial cancellative monoids with zero. -/
-instance CancelMonoidWithZero.faithfulSMul [CancelMonoidWithZero α] [Nontrivial α] :
+instance (priority := 10000) CancelMonoidWithZero.faithfulSMul [CancelMonoidWithZero α] [Nontrivial α] :
     FaithfulSMul α α :=
   ⟨fun h => mul_left_injective₀ one_ne_zero (h 1)⟩
 #align cancel_monoid_with_zero.to_has_faithful_smul CancelMonoidWithZero.faithfulSMul

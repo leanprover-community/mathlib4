@@ -121,7 +121,7 @@ end ExactPairing
 attribute [reassoc (attr := simp)] ExactPairing.coevaluation_evaluation
 attribute [reassoc (attr := simp)] ExactPairing.evaluation_coevaluation
 
-instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
+instance (priority := 10000) exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
   coevaluation' := (ρ_ _).inv
   evaluation' := (ρ_ _).hom
   coevaluation_evaluation' := by coherence
@@ -150,19 +150,19 @@ open ExactPairing HasRightDual HasLeftDual MonoidalCategory
 @[inherit_doc] prefix:1024 "ᘁ" => leftDual
 @[inherit_doc] postfix:1024 "ᘁ" => rightDual
 
-instance hasRightDualUnit : HasRightDual (𝟙_ C) where
+instance (priority := 10000) hasRightDualUnit : HasRightDual (𝟙_ C) where
   rightDual := 𝟙_ C
 #align category_theory.has_right_dual_unit CategoryTheory.hasRightDualUnit
 
-instance hasLeftDualUnit : HasLeftDual (𝟙_ C) where
+instance (priority := 10000) hasLeftDualUnit : HasLeftDual (𝟙_ C) where
   leftDual := 𝟙_ C
 #align category_theory.has_left_dual_unit CategoryTheory.hasLeftDualUnit
 
-instance hasRightDualLeftDual {X : C} [HasLeftDual X] : HasRightDual ᘁX where
+instance (priority := 10000) hasRightDualLeftDual {X : C} [HasLeftDual X] : HasRightDual ᘁX where
   rightDual := X
 #align category_theory.has_right_dual_left_dual CategoryTheory.hasRightDualLeftDual
 
-instance hasLeftDualRightDual {X : C} [HasRightDual X] : HasLeftDual Xᘁ where
+instance (priority := 10000) hasLeftDualRightDual {X : C} [HasRightDual X] : HasLeftDual Xᘁ where
   leftDual := X
 #align category_theory.has_left_dual_right_dual CategoryTheory.hasLeftDualRightDual
 

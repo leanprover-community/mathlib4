@@ -20,15 +20,15 @@ lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size → ((ofNat a).val : Nat) 
 lemma USize.val_eq_of_lt {a : Nat} : a < USize.size → ((ofNat a).val : Nat) = a :=
   Nat.mod_eq_of_lt
 
-instance UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
+instance (priority := 10000) UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
 
-instance UInt16.neZero : NeZero UInt16.size := ⟨by decide⟩
+instance (priority := 10000) UInt16.neZero : NeZero UInt16.size := ⟨by decide⟩
 
-instance UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
+instance (priority := 10000) UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
 
-instance UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
+instance (priority := 10000) UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
 
-instance USize.neZero : NeZero USize.size := NeZero.of_pos usize_size_gt_zero
+instance (priority := 10000) USize.neZero : NeZero USize.size := NeZero.of_pos usize_size_gt_zero
 
 example : (0 : UInt8) = ⟨0⟩ := rfl
 

@@ -56,7 +56,7 @@ section Field
 
 variable {F : Type*} [Field F] [Algebra F[X] S] [Finite ι]
 
-instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
+instance (priority := 10000) (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
     FiniteDimensional F (F[X] ⧸ span ({I.smithCoeffs b hI i} : Set F[X])) := by
   -- Porting note: we need to do this proof in two stages otherwise it times out
   -- original proof: (AdjoinRoot.powerBasis <| I.smithCoeffs_ne_zero b hI i).FiniteDimensional

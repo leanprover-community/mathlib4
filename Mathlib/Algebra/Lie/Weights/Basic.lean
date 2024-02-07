@@ -244,7 +244,7 @@ theorem isNilpotent_toEndomorphism_weightSpace_zero [IsNoetherian R M] (x : L) :
 #align lie_module.is_nilpotent_to_endomorphism_weight_space_zero LieModule.isNilpotent_toEndomorphism_weightSpace_zero
 
 /-- By Engel's theorem, the zero weight space of a Noetherian Lie module is nilpotent. -/
-instance [IsNoetherian R M] :
+instance (priority := 10000) [IsNoetherian R M] :
     IsNilpotent R L (weightSpace M (0 : L → R)) :=
   isNilpotent_iff_forall'.mpr <| isNilpotent_toEndomorphism_weightSpace_zero M
 
@@ -625,10 +625,10 @@ variable (K)
 variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [LieAlgebra.IsNilpotent K L]
   [FiniteDimensional K M]
 
-instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizable K L M :=
+instance (priority := 10000) instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizable K L M :=
   ⟨fun _ ↦ Module.End.iSup_generalizedEigenspace_eq_top _⟩
 
-instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
+instance (priority := 10000) (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
   refine ⟨fun y ↦ ?_⟩
   rw [← N.toEndomorphism_restrict_eq_toEndomorphism y]
   exact Module.End.iSup_generalizedEigenspace_restrict_eq_top _ (IsTriangularizable.iSup_eq_top y)

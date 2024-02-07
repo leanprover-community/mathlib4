@@ -28,7 +28,7 @@ open scoped NNReal Topology
 
 /-- If `E` is a nontrivial topological module over `ℝ`, then `E` has no isolated points.
 This is a particular case of `Module.punctured_nhds_neBot`. -/
-instance Real.punctured_nhds_module_neBot {E : Type*} [AddCommGroup E] [TopologicalSpace E]
+instance (priority := 10000) Real.punctured_nhds_module_neBot {E : Type*} [AddCommGroup E] [TopologicalSpace E]
     [ContinuousAdd E] [Nontrivial E] [Module ℝ E] [ContinuousSMul ℝ E] (x : E) : NeBot (𝓝[≠] x) :=
   Module.punctured_nhds_neBot ℝ E x
 #align real.punctured_nhds_module_ne_bot Real.punctured_nhds_module_neBot

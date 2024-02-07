@@ -47,41 +47,41 @@ initialize_simps_projections AlgebraCat (-isRing, -isAlgebra)
 
 namespace AlgebraCat
 
-instance : CoeSort (AlgebraCat R) (Type v) :=
+instance (priority := 10000) : CoeSort (AlgebraCat R) (Type v) :=
   ⟨AlgebraCat.carrier⟩
 
 attribute [coe] AlgebraCat.carrier
 
-instance : Category (AlgebraCat.{v} R) where
+instance (priority := 10000) : Category (AlgebraCat.{v} R) where
   Hom A B := A →ₐ[R] B
   id A := AlgHom.id R A
   comp f g := g.comp f
 
-instance {M N : AlgebraCat.{v} R} : FunLike (M ⟶ N) M N :=
+instance (priority := 10000) {M N : AlgebraCat.{v} R} : FunLike (M ⟶ N) M N :=
   AlgHom.funLike
 
-instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N :=
+instance (priority := 10000) {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N :=
   AlgHom.algHomClass
 
-instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
+instance (priority := 10000) : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
     { obj := fun R => R
       map := fun f => f.toFun }
   forget_faithful := ⟨fun h => AlgHom.ext (by intros x; dsimp at h; rw [h])⟩
 
-instance {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
+instance (priority := 10000) {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Ring S.carrier)
 
-instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
+instance (priority := 10000) {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Algebra R S.carrier)
 
-instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
+instance (priority := 10000) hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
   forget₂ :=
     { obj := fun A => RingCat.of A
       map := fun f => RingCat.ofHom f.toRingHom }
 #align Algebra.has_forget_to_Ring AlgebraCat.hasForgetToRing
 
-instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) where
+instance (priority := 10000) hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
       map := fun f => ModuleCat.ofHom f.toLinearMap }
@@ -115,7 +115,7 @@ theorem ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R
   rfl
 #align Algebra.of_hom_apply AlgebraCat.ofHom_apply
 
-instance : Inhabited (AlgebraCat R) :=
+instance (priority := 10000) : Inhabited (AlgebraCat R) :=
   ⟨of R R⟩
 
 @[simp]
@@ -190,7 +190,7 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
         rfl }
 #align Algebra.adj AlgebraCat.adj
 
-instance : IsRightAdjoint (forget (AlgebraCat.{u} R)) :=
+instance (priority := 10000) : IsRightAdjoint (forget (AlgebraCat.{u} R)) :=
   ⟨_, adj R⟩
 
 end AlgebraCat
@@ -245,10 +245,10 @@ def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebr
 #align alg_equiv_iso_Algebra_iso algEquivIsoAlgebraIso
 
 -- Porting note: changed to `CoeOut`
-instance (X : Type u) [Ring X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraCat R) :=
+instance (priority := 10000) (X : Type u) [Ring X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraCat R) :=
   ⟨fun N => AlgebraCat.of R N⟩
 
-instance AlgebraCat.forget_reflects_isos : ReflectsIsomorphisms (forget (AlgebraCat.{u} R)) where
+instance (priority := 10000) AlgebraCat.forget_reflects_isos : ReflectsIsomorphisms (forget (AlgebraCat.{u} R)) where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgebraCat.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f, i.toEquiv with }

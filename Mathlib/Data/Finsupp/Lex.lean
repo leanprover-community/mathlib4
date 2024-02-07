@@ -49,7 +49,7 @@ theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → P
   rfl
 #align finsupp.lex_eq_inv_image_dfinsupp_lex Finsupp.lex_eq_invImage_dfinsupp_lex
 
-instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
+instance (priority := 10000) [LT α] [LT N] : LT (Lex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
 theorem lex_lt_of_lt_of_preorder [Preorder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :
@@ -62,7 +62,7 @@ theorem lex_lt_of_lt [PartialOrder N] (r) [IsStrictOrder α r] {x y : α →₀ 
   DFinsupp.lex_lt_of_lt r (id hlt : x.toDFinsupp < y.toDFinsupp)
 #align finsupp.lex_lt_of_lt Finsupp.lex_lt_of_lt
 
-instance Lex.isStrictOrder [LinearOrder α] [PartialOrder N] :
+instance (priority := 10000) Lex.isStrictOrder [LinearOrder α] [PartialOrder N] :
     IsStrictOrder (Lex (α →₀ N)) (· < ·) :=
   let i : IsStrictOrder (Lex (α → N)) (· < ·) := Pi.Lex.isStrictOrder
   { irrefl := toLex.surjective.forall.2 fun _ ↦ @irrefl _ _ i.toIsIrrefl _
@@ -73,7 +73,7 @@ variable [LinearOrder α]
 
 /-- The partial order on `Finsupp`s obtained by the lexicographic ordering.
 See `Finsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
-instance Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) where
+instance (priority := 10000) Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) where
   lt := (· < ·)
   le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
   __ := PartialOrder.lift (fun x : Lex (α →₀ N) ↦ toLex (⇑(ofLex x)))
@@ -81,7 +81,7 @@ instance Lex.partialOrder [PartialOrder N] : PartialOrder (Lex (α →₀ N)) wh
 #align finsupp.lex.partial_order Finsupp.Lex.partialOrder
 
 /-- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
-instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
+instance (priority := 10000) Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
   lt := (· < ·)
   le := (· ≤ ·)
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
@@ -116,12 +116,12 @@ section Left
 
 variable [CovariantClass N N (· + ·) (· < ·)]
 
-instance Lex.covariantClass_lt_left :
+instance (priority := 10000) Lex.covariantClass_lt_left :
     CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (· + ·) (· < ·) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 #align finsupp.lex.covariant_class_lt_left Finsupp.Lex.covariantClass_lt_left
 
-instance Lex.covariantClass_le_left :
+instance (priority := 10000) Lex.covariantClass_le_left :
     CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (· + ·) (· ≤ ·) :=
   covariantClass_le_of_lt _ _ _
 #align finsupp.lex.covariant_class_le_left Finsupp.Lex.covariantClass_le_left
@@ -132,13 +132,13 @@ section Right
 
 variable [CovariantClass N N (Function.swap (· + ·)) (· < ·)]
 
-instance Lex.covariantClass_lt_right :
+instance (priority := 10000) Lex.covariantClass_lt_right :
     CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (· + ·)) (· < ·) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 #align finsupp.lex.covariant_class_lt_right Finsupp.Lex.covariantClass_lt_right
 
-instance Lex.covariantClass_le_right :
+instance (priority := 10000) Lex.covariantClass_le_right :
     CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (· + ·)) (· ≤ ·) :=
   covariantClass_le_of_lt _ _ _
 #align finsupp.lex.covariant_class_le_right Finsupp.Lex.covariantClass_le_right
@@ -151,25 +151,25 @@ section OrderedAddMonoid
 
 variable [LinearOrder α]
 
-instance Lex.orderBot [CanonicallyOrderedAddCommMonoid N] : OrderBot (Lex (α →₀ N)) where
+instance (priority := 10000) Lex.orderBot [CanonicallyOrderedAddCommMonoid N] : OrderBot (Lex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 
-noncomputable instance Lex.orderedAddCancelCommMonoid [OrderedCancelAddCommMonoid N] :
+noncomputable instance (priority := 10000) Lex.orderedAddCancelCommMonoid [OrderedCancelAddCommMonoid N] :
     OrderedCancelAddCommMonoid (Lex (α →₀ N)) where
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (α → N)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (α → N))
 
-noncomputable instance Lex.orderedAddCommGroup [OrderedAddCommGroup N] :
+noncomputable instance (priority := 10000) Lex.orderedAddCommGroup [OrderedAddCommGroup N] :
     OrderedAddCommGroup (Lex (α →₀ N)) where
   add_le_add_left _ _ := add_le_add_left
 
-noncomputable instance Lex.linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid N] :
+noncomputable instance (priority := 10000) Lex.linearOrderedCancelAddCommMonoid [LinearOrderedCancelAddCommMonoid N] :
     LinearOrderedCancelAddCommMonoid (Lex (α →₀ N)) where
   __ : LinearOrder (Lex (α →₀ N)) := inferInstance
   __ : OrderedCancelAddCommMonoid (Lex (α →₀ N)) := inferInstance
 
-noncomputable instance Lex.linearOrderedAddCommGroup [LinearOrderedAddCommGroup N] :
+noncomputable instance (priority := 10000) Lex.linearOrderedAddCommGroup [LinearOrderedAddCommGroup N] :
     LinearOrderedAddCommGroup (Lex (α →₀ N)) where
   __ : LinearOrder (Lex (α →₀ N)) := inferInstance
   add_le_add_left _ _ := add_le_add_left

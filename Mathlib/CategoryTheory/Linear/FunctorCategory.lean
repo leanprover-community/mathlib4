@@ -27,7 +27,7 @@ variable {R : Type*} [Semiring R]
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive D] [Linear R D]
 
-instance functorCategoryLinear : Linear R (C ⥤ D)
+instance (priority := 10000) functorCategoryLinear : Linear R (C ⥤ D)
     where
   homModule F G :=
     { smul := fun r α =>

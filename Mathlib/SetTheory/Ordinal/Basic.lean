@@ -97,11 +97,11 @@ def WellOrderingRel : σ → σ → Prop :=
   embeddingToCardinal ⁻¹'o (· < ·)
 #align well_ordering_rel WellOrderingRel
 
-instance WellOrderingRel.isWellOrder : IsWellOrder σ WellOrderingRel :=
+instance (priority := 10000) WellOrderingRel.isWellOrder : IsWellOrder σ WellOrderingRel :=
   (RelEmbedding.preimage _ _).isWellOrder
 #align well_ordering_rel.is_well_order WellOrderingRel.isWellOrder
 
-instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder σ r } :=
+instance (priority := 10000) IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder σ r } :=
   ⟨⟨WellOrderingRel, inferInstance⟩⟩
 #align is_well_order.subtype_nonempty IsWellOrder.subtype_nonempty
 
@@ -126,7 +126,7 @@ attribute [instance] WellOrder.wo
 
 namespace WellOrder
 
-instance inhabited : Inhabited WellOrder :=
+instance (priority := 10000) inhabited : Inhabited WellOrder :=
   ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
 
 @[simp]
@@ -140,7 +140,7 @@ end WellOrder
 
 /-- Equivalence relation on well orders on arbitrary types in universe `u`, given by order
 isomorphism. -/
-instance Ordinal.isEquivalent : Setoid WellOrder
+instance (priority := 10000) Ordinal.isEquivalent : Setoid WellOrder
     where
   r := fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≃r s)
   iseqv :=
@@ -153,15 +153,15 @@ def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 #align ordinal Ordinal
 
-instance hasWellFoundedOut (o : Ordinal) : WellFoundedRelation o.out.α :=
+instance (priority := 10000) hasWellFoundedOut (o : Ordinal) : WellFoundedRelation o.out.α :=
   ⟨o.out.r, o.out.wo.wf⟩
 #align has_well_founded_out hasWellFoundedOut
 
-instance linearOrderOut (o : Ordinal) : LinearOrder o.out.α :=
+instance (priority := 10000) linearOrderOut (o : Ordinal) : LinearOrder o.out.α :=
   IsWellOrder.linearOrder o.out.r
 #align linear_order_out linearOrderOut
 
-instance isWellOrder_out_lt (o : Ordinal) : IsWellOrder o.out.α (· < ·) :=
+instance (priority := 10000) isWellOrder_out_lt (o : Ordinal) : IsWellOrder o.out.α (· < ·) :=
   o.out.wo
 #align is_well_order_out_lt isWellOrder_out_lt
 
@@ -174,13 +174,13 @@ def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
   ⟦⟨α, r, wo⟩⟧
 #align ordinal.type Ordinal.type
 
-instance zero : Zero Ordinal :=
+instance (priority := 10000) zero : Zero Ordinal :=
   ⟨type <| @EmptyRelation PEmpty⟩
 
-instance inhabited : Inhabited Ordinal :=
+instance (priority := 10000) inhabited : Inhabited Ordinal :=
   ⟨0⟩
 
-instance one : One Ordinal :=
+instance (priority := 10000) one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
 /-- The order type of an element inside a well order. For the embedding as a principal segment, see
@@ -276,7 +276,7 @@ theorem eq_zero_of_out_empty (o : Ordinal) [h : IsEmpty o.out.α] : o = 0 :=
   out_empty_iff_eq_zero.1 h
 #align ordinal.eq_zero_of_out_empty Ordinal.eq_zero_of_out_empty
 
-instance isEmpty_out_zero : IsEmpty (0 : Ordinal).out.α :=
+instance (priority := 10000) isEmpty_out_zero : IsEmpty (0 : Ordinal).out.α :=
   out_empty_iff_eq_zero.2 rfl
 #align ordinal.is_empty_out_zero Ordinal.isEmpty_out_zero
 
@@ -293,7 +293,7 @@ protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
   type_ne_zero_of_nonempty _
 #align ordinal.one_ne_zero Ordinal.one_ne_zero
 
-instance nontrivial : Nontrivial Ordinal.{u} :=
+instance (priority := 10000) nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
 
 --@[simp] -- Porting note: not in simp nf, added aux lemma below
@@ -316,7 +316,7 @@ theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
 /-! ### The order on ordinals -/
 
 
-instance partialOrder : PartialOrder Ordinal
+instance (priority := 10000) partialOrder : PartialOrder Ordinal
     where
   le a b :=
     Quotient.liftOn₂ a b (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => Nonempty (r ≼i s))
@@ -387,7 +387,7 @@ protected theorem zero_le (o : Ordinal) : 0 ≤ o :=
   inductionOn o fun _ r _ => (InitialSeg.ofIsEmpty _ r).ordinal_type_le
 #align ordinal.zero_le Ordinal.zero_le
 
-instance orderBot : OrderBot Ordinal where
+instance (priority := 10000) orderBot : OrderBot Ordinal where
   bot := 0
   bot_le := Ordinal.zero_le
 
@@ -413,10 +413,10 @@ theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
   eq_bot_or_bot_lt
 #align ordinal.eq_zero_or_pos Ordinal.eq_zero_or_pos
 
-instance zeroLEOneClass : ZeroLEOneClass Ordinal :=
+instance (priority := 10000) zeroLEOneClass : ZeroLEOneClass Ordinal :=
   ⟨Ordinal.zero_le _⟩
 
-instance NeZero.one : NeZero (1 : Ordinal) :=
+instance (priority := 10000) NeZero.one : NeZero (1 : Ordinal) :=
   ⟨Ordinal.one_ne_zero⟩
 #align ordinal.ne_zero.one Ordinal.NeZero.one
 
@@ -580,7 +580,7 @@ theorem lt_wf : @WellFounded Ordinal (· < ·) :=
           exact IH _ ((typein_lt_typein r).1 h)⟩⟩
 #align ordinal.lt_wf Ordinal.lt_wf
 
-instance wellFoundedRelation : WellFoundedRelation Ordinal :=
+instance (priority := 10000) wellFoundedRelation : WellFoundedRelation Ordinal :=
   ⟨(· < ·), lt_wf⟩
 
 /-- Reformulation of well founded induction on ordinals as a lemma that works with the
@@ -873,12 +873,12 @@ the addition, together with properties of the other operations, are proved in
 
 /-- `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
   every element of `o₁` is smaller than every element of `o₂`. -/
-instance add : Add Ordinal.{u} :=
+instance (priority := 10000) add : Add Ordinal.{u} :=
   ⟨fun o₁ o₂ =>
     Quotient.liftOn₂ o₁ o₂ (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => type (Sum.Lex r s))
       fun _ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.sumLexCongr f g⟩⟩
 
-instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
+instance (priority := 10000) addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   add := (· + ·)
   zero := 0
   one := 1
@@ -914,7 +914,7 @@ theorem card_nat (n : ℕ) : card.{u} n = n := by
 #align ordinal.card_nat Ordinal.card_nat
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
-instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
+instance (priority := 10000) add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
   elim := fun c a b h => by
     revert h c
     refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
@@ -938,7 +938,7 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
 #align ordinal.add_covariant_class_le Ordinal.add_covariantClass_le
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
-instance add_swap_covariantClass_le :
+instance (priority := 10000) add_swap_covariantClass_le :
     CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
   elim := fun c a b h => by
     revert h c
@@ -963,7 +963,7 @@ theorem le_add_left (a b : Ordinal) : a ≤ b + a := by
   simpa only [zero_add] using add_le_add_right (Ordinal.zero_le b) a
 #align ordinal.le_add_left Ordinal.le_add_left
 
-instance linearOrder : LinearOrder Ordinal :=
+instance (priority := 10000) linearOrder : LinearOrder Ordinal :=
   {inferInstanceAs (PartialOrder Ordinal) with
     le_total := fun a b =>
       match lt_or_eq_of_le (le_add_left b a), lt_or_eq_of_le (le_add_right a b) with
@@ -981,12 +981,12 @@ instance linearOrder : LinearOrder Ordinal :=
           [exact Or.inl (Or.inl h); (left; right; rw [h]); exact Or.inr (Or.inl h)]
     decidableLE := Classical.decRel _ }
 
-instance wellFoundedLT : WellFoundedLT Ordinal :=
+instance (priority := 10000) wellFoundedLT : WellFoundedLT Ordinal :=
   ⟨lt_wf⟩
 
-instance isWellOrder : IsWellOrder Ordinal (· < ·) where
+instance (priority := 10000) isWellOrder : IsWellOrder Ordinal (· < ·) where
 
-instance : ConditionallyCompleteLinearOrderBot Ordinal :=
+instance (priority := 10000) : ConditionallyCompleteLinearOrderBot Ordinal :=
   IsWellOrder.conditionallyCompleteLinearOrderBot _
 
 @[simp]
@@ -1038,10 +1038,10 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
             cases' (hf b).1 h with w h
             exact ⟨Sum.inl w, h⟩⟩
 
-instance noMaxOrder : NoMaxOrder Ordinal :=
+instance (priority := 10000) noMaxOrder : NoMaxOrder Ordinal :=
   ⟨fun _ => ⟨_, succ_le_iff'.1 le_rfl⟩⟩
 
-instance succOrder : SuccOrder Ordinal.{u} :=
+instance (priority := 10000) succOrder : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) succ_le_iff'
 
 @[simp]
@@ -1097,13 +1097,13 @@ theorem nat_cast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
 #align ordinal.nat_cast_succ Ordinal.nat_cast_succ
 
-instance uniqueIioOne : Unique (Iio (1 : Ordinal))
+instance (priority := 10000) uniqueIioOne : Unique (Iio (1 : Ordinal))
     where
   default := ⟨0, by simp⟩
   uniq a := Subtype.ext <| lt_one_iff_zero.1 a.2
 #align ordinal.unique_Iio_one Ordinal.uniqueIioOne
 
-instance uniqueOutOne : Unique (1 : Ordinal).out.α
+instance (priority := 10000) uniqueOutOne : Unique (1 : Ordinal).out.α
     where
   default := enum (· < ·) 0 (by simp)
   uniq a := by

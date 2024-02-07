@@ -520,6 +520,6 @@ theorem WellFounded.list_chain' (hwf : WellFounded r) :
     WellFounded (List.lex_chains r) :=
   ⟨fun _ ↦ Acc.list_chain' (fun _ _ => hwf.apply _)⟩
 
-instance [hwf : IsWellFounded α r] :
+instance (priority := 10000) [hwf : IsWellFounded α r] :
     IsWellFounded (List.chains r) (List.lex_chains r) :=
   ⟨hwf.wf.list_chain'⟩

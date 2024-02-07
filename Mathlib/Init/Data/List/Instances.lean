@@ -38,20 +38,20 @@ theorem bind_assoc {α β} (l : List α) (f : α → List β) (g : β → List �
     (l.bind f).bind g = l.bind fun x => (f x).bind g := by induction l <;> simp [*]
 #align list.bind_assoc List.bind_assoc
 
-instance instMonad : Monad List.{u} where
+instance (priority := 10000) instMonad : Monad List.{u} where
   pure := @List.ret
   bind := @List.bind
   map := @List.map
 #align list.monad List.instMonad
 
-instance instLawfulMonad : LawfulMonad List.{u} := LawfulMonad.mk'
+instance (priority := 10000) instLawfulMonad : LawfulMonad List.{u} := LawfulMonad.mk'
   (id_map := map_id)
   (pure_bind := fun _ _ => List.append_nil _)
   (bind_assoc := List.bind_assoc)
   (bind_pure_comp := fun _ _ => (map_eq_bind _ _).symm)
 #align list.is_lawful_monad List.instLawfulMonad
 
-instance instAlternative : Alternative List.{u} where
+instance (priority := 10000) instAlternative : Alternative List.{u} where
   failure := @List.nil
   orElse l l' := List.append l (l' ())
 #align list.alternative List.instAlternative
@@ -62,7 +62,7 @@ variable {α : Type u} {p : α → Prop} [DecidablePred p]
 
 -- To work around lean4#2552, we call specific `Decidable` instances and use `match` on them,
 -- as opposed to using `if`.
-instance decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
+instance (priority := 10000) decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
   | []    => isFalse (by simp)
   | x::xs =>
     match ‹DecidablePred p› x with
@@ -78,7 +78,7 @@ instance decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
         · exact absurd ⟨y, h, hp⟩ h₂
 #align list.decidable_bex List.decidableBex
 
-instance decidableBall (l : List α) : Decidable (∀ x ∈ l, p x) :=
+instance (priority := 10000) decidableBall (l : List α) : Decidable (∀ x ∈ l, p x) :=
   match (inferInstance : Decidable <| ∃ x ∈ l, ¬ p x) with
   | isFalse h => isTrue fun x hx => match ‹DecidablePred p› x with
     | isTrue h' => h'

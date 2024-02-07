@@ -218,7 +218,7 @@ theorem ground_finite (M : Matroid α) [M.Finite] : M.E.Finite :=
 theorem set_finite (M : Matroid α) [M.Finite] (X : Set α) (hX : X ⊆ M.E := by aesop) : X.Finite :=
   M.ground_finite.subset hX
 
-instance finite_of_finite [Finite α] {M : Matroid α} : M.Finite :=
+instance (priority := 10000) finite_of_finite [Finite α] {M : Matroid α} : M.Finite :=
   ⟨Set.toFinite _⟩
 
 /-- A `FiniteRk` matroid is one whose bases are finite -/
@@ -226,7 +226,7 @@ class FiniteRk (M : Matroid α) : Prop where
   /-- There is a finite base -/
   exists_finite_base : ∃ B, M.Base B ∧ B.Finite
 
-instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
+instance (priority := 10000) finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
   ⟨M.exists_base.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground _ hB)⟩)⟩
 
 /-- An `InfiniteRk` matroid is one whose bases are infinite. -/
@@ -654,7 +654,7 @@ theorem indep_iff_forall_finite_subset_indep {M : Matroid α} [Finitary M] :
     M.Indep I ↔ ∀ J, J ⊆ I → J.Finite → M.Indep J :=
   ⟨fun h _ hJI _ ↦ h.subset hJI, Finitary.indep_of_forall_finite I⟩
 
-instance finitary_of_finiteRk {M : Matroid α} [FiniteRk M] : Finitary M :=
+instance (priority := 10000) finitary_of_finiteRk {M : Matroid α} [FiniteRk M] : Finitary M :=
 ⟨ by
   refine fun I hI ↦ I.finite_or_infinite.elim (hI _ Subset.rfl) (fun h ↦ False.elim ?_)
   obtain ⟨B, hB⟩ := M.exists_base

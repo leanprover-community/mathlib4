@@ -57,9 +57,9 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition.opens_le_cover TopCat.Presheaf.SheafCondition.OpensLeCover
 
 -- Porting note : failed to derive `category`
-instance : Category (OpensLeCover U) := FullSubcategory.category _
+instance (priority := 10000) : Category (OpensLeCover U) := FullSubcategory.category _
 
-instance [Inhabited ι] : Inhabited (OpensLeCover U) :=
+instance (priority := 10000) [Inhabited ι] : Inhabited (OpensLeCover U) :=
   ⟨⟨⊥, default, bot_le⟩⟩
 
 namespace OpensLeCover

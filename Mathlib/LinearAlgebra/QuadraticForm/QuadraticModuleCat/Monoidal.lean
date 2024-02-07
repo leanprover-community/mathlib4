@@ -58,7 +58,7 @@ end instMonoidalCategory
 open instMonoidalCategory
 
 
-instance : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
+instance (priority := 10000) : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
   tensorObj := instMonoidalCategory.tensorObj
   whiskerLeft X _ _ f := tensorHom (𝟙 X) f
   whiskerRight {X₁ X₂} (f : X₁ ⟶ X₂) Y := tensorHom f (𝟙 Y)
@@ -76,7 +76,7 @@ theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
-noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
+noncomputable instance (priority := 10000) instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
     { μIso := fun X Y => Iso.refl _
@@ -104,7 +104,7 @@ def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (Mod
   unfold instMonoidalCategory
   exact Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) _
 
-instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
+instance (priority := 10000) : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
   forget₂_faithful _ _
 
 end QuadraticModuleCat

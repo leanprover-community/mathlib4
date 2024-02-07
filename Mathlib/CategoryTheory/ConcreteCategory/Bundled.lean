@@ -50,7 +50,7 @@ def of {c : Type u → Type v} (α : Type u) [str : c α] : Bundled c :=
   ⟨α, str⟩
 #align category_theory.bundled.of CategoryTheory.Bundled.of
 
-instance coeSort : CoeSort (Bundled c) (Type u) :=
+instance (priority := 10000) coeSort : CoeSort (Bundled c) (Type u) :=
   ⟨Bundled.α⟩
 
 theorem coe_mk (α) (str) : (@Bundled.mk c α str : Type u) = α :=
@@ -62,7 +62,7 @@ theorem coe_mk (α) (str) : (@Bundled.mk c α str : Type u) = α :=
 
   def Ring : Type (u+1) := induced_category SemiRing (bundled.map @ring.to_semiring)
 
-instance search is able to "see" that a morphism R ⟶ S in Ring is really
+instance (priority := 10000) search is able to "see" that a morphism R ⟶ S in Ring is really
 a (semi)ring homomorphism from R.α to S.α, and not merely from
 `(Bundled.map @Ring.toSemiring R).α` to `(Bundled.map @Ring.toSemiring S).α`.
 

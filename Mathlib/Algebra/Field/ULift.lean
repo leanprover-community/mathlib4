@@ -21,7 +21,7 @@ variable {α : Type u} {x y : ULift.{v} α}
 
 namespace ULift
 
-instance [RatCast α] : RatCast (ULift α) := ⟨λ a ↦ up a⟩
+instance (priority := 10000) [RatCast α] : RatCast (ULift α) := ⟨λ a ↦ up a⟩
 
 @[simp, norm_cast]
 theorem up_ratCast [RatCast α] (q : ℚ) : up (q : α) = q :=
@@ -33,19 +33,19 @@ theorem down_ratCast [RatCast α] (q : ℚ) : down (q : ULift α) = q :=
   rfl
 #align ulift.down_rat_cast ULift.down_ratCast
 
-instance divisionSemiring [DivisionSemiring α] : DivisionSemiring (ULift α) := by
+instance (priority := 10000) divisionSemiring [DivisionSemiring α] : DivisionSemiring (ULift α) := by
   refine' down_injective.divisionSemiring down .. <;> intros <;> rfl
 #align ulift.division_semiring ULift.divisionSemiring
 
-instance semifield [Semifield α] : Semifield (ULift α) :=
+instance (priority := 10000) semifield [Semifield α] : Semifield (ULift α) :=
   { ULift.divisionSemiring, ULift.commGroupWithZero with }
 #align ulift.semifield ULift.semifield
 
-instance divisionRing [DivisionRing α] : DivisionRing (ULift α) := by
+instance (priority := 10000) divisionRing [DivisionRing α] : DivisionRing (ULift α) := by
   refine' down_injective.divisionRing down .. <;> intros <;> rfl
 #align ulift.division_ring ULift.divisionRing
 
-instance field [Field α] : Field (ULift α) :=
+instance (priority := 10000) field [Field α] : Field (ULift α) :=
   { ULift.semifield, ULift.divisionRing with }
 #align ulift.field ULift.field
 

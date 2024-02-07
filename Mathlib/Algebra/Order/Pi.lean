@@ -28,7 +28,7 @@ namespace Pi
 @[to_additive
       "The product of a family of ordered additive commutative monoids is
 an ordered additive commutative monoid."]
-instance orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMonoid (Z i)] :
+instance (priority := 10000) orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMonoid (Z i)] :
     OrderedCommMonoid (∀ i, Z i) :=
   { Pi.partialOrder, Pi.commMonoid with
     mul_le_mul_left := fun _ _ w _ i => mul_le_mul_left' (w i) _ }
@@ -36,7 +36,7 @@ instance orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMo
 #align pi.ordered_add_comm_monoid Pi.orderedAddCommMonoid
 
 @[to_additive]
-instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ i, Mul (α i)]
+instance (priority := 10000) existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ i, Mul (α i)]
     [∀ i, ExistsMulOfLE (α i)] : ExistsMulOfLE (∀ i, α i) :=
   ⟨fun h =>
     ⟨fun i => (exists_mul_of_le <| h i).choose,
@@ -48,13 +48,13 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 @[to_additive
       "The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid."]
-instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
+instance (priority := 10000) {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
     CanonicallyOrderedCommMonoid (∀ i, Z i) :=
   { Pi.orderBot, Pi.orderedCommMonoid, Pi.existsMulOfLe with
     le_self_mul := fun _ _ _ => le_self_mul }
 
 @[to_additive]
-instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
+instance (priority := 10000) orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
     OrderedCancelCommMonoid (∀ i : I, f i) where
   __ := Pi.commMonoid
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
@@ -72,13 +72,13 @@ instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
 #align pi.ordered_cancel_add_comm_monoid Pi.orderedAddCancelCommMonoid
 
 @[to_additive]
-instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) :=
+instance (priority := 10000) orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) :=
   { Pi.commGroup, Pi.orderedCommMonoid with
     npow := Monoid.npow }
 #align pi.ordered_comm_group Pi.orderedCommGroup
 #align pi.ordered_add_comm_group Pi.orderedAddCommGroup
 
-instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) :=
+instance (priority := 10000) orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) :=
   { Pi.semiring,
     Pi.partialOrder with
     add_le_add_left := fun _ _ hab _ _ => add_le_add_left (hab _) _
@@ -87,15 +87,15 @@ instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i
     mul_le_mul_of_nonneg_right := fun _ _ _ hab hc _ => mul_le_mul_of_nonneg_right (hab _) <| hc _ }
 #align pi.ordered_semiring Pi.orderedSemiring
 
-instance orderedCommSemiring [∀ i, OrderedCommSemiring (f i)] : OrderedCommSemiring (∀ i, f i) :=
+instance (priority := 10000) orderedCommSemiring [∀ i, OrderedCommSemiring (f i)] : OrderedCommSemiring (∀ i, f i) :=
   { Pi.commSemiring, Pi.orderedSemiring with }
 #align pi.ordered_comm_semiring Pi.orderedCommSemiring
 
-instance orderedRing [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) :=
+instance (priority := 10000) orderedRing [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) :=
   { Pi.ring, Pi.orderedSemiring with mul_nonneg := fun _ _ ha hb _ => mul_nonneg (ha _) (hb _) }
 #align pi.ordered_ring Pi.orderedRing
 
-instance orderedCommRing [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i, f i) :=
+instance (priority := 10000) orderedCommRing [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i, f i) :=
   { Pi.commRing, Pi.orderedRing with }
 #align pi.ordered_comm_ring Pi.orderedCommRing
 

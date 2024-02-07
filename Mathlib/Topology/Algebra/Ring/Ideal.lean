@@ -51,7 +51,7 @@ variable {R : Type*} [TopologicalSpace R] [CommRing R] (N : Ideal R)
 
 open Ideal.Quotient
 
-instance topologicalRingQuotientTopology : TopologicalSpace (R ⧸ N) :=
+instance (priority := 10000) topologicalRingQuotientTopology : TopologicalSpace (R ⧸ N) :=
   instTopologicalSpaceQuotient
 #align topological_ring_quotient_topology topologicalRingQuotientTopology
 
@@ -71,7 +71,7 @@ theorem QuotientRing.quotientMap_coe_coe : QuotientMap fun p : R × R => (mk N p
     (by rintro ⟨⟨x⟩, ⟨y⟩⟩; exact ⟨(x, y), rfl⟩)
 #align quotient_ring.quotient_map_coe_coe QuotientRing.quotientMap_coe_coe
 
-instance topologicalRing_quotient : TopologicalRing (R ⧸ N) :=
+instance (priority := 10000) topologicalRing_quotient : TopologicalRing (R ⧸ N) :=
   TopologicalSemiring.toTopologicalRing
     { continuous_add :=
         have cont : Continuous (mk N ∘ fun p : R × R => p.fst + p.snd) :=

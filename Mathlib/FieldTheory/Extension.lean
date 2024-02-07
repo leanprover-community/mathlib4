@@ -30,7 +30,7 @@ structure Lifts where
 
 variable {F E K}
 
-instance : PartialOrder (Lifts F E K) where
+instance (priority := 10000) : PartialOrder (Lifts F E K) where
   le L₁ L₂ := ∃ h : L₁.carrier ≤ L₂.carrier, ∀ x, L₂.emb (inclusion h x) = L₁.emb x
   le_refl L := ⟨le_rfl, by simp⟩
   le_trans L₁ L₂ L₃ := by
@@ -43,14 +43,14 @@ instance : PartialOrder (Lifts F E K) where
     congr
     exact AlgHom.ext h₂₁'
 
-noncomputable instance : OrderBot (Lifts F E K) where
+noncomputable instance (priority := 10000) : OrderBot (Lifts F E K) where
   bot := ⟨⊥, (Algebra.ofId F K).comp (botEquiv F E)⟩
   bot_le L := ⟨bot_le, fun x ↦ by
     obtain ⟨x, rfl⟩ := (botEquiv F E).symm.surjective x
     simp_rw [AlgHom.comp_apply, AlgHom.coe_coe, AlgEquiv.apply_symm_apply]
     exact L.emb.commutes x⟩
 
-noncomputable instance : Inhabited (Lifts F E K) :=
+noncomputable instance (priority := 10000) : Inhabited (Lifts F E K) :=
   ⟨⊥⟩
 
 /-- A chain of lifts has an upper bound. -/

@@ -35,11 +35,11 @@ def Pi (v : TypeVec.{u} n) : Type u :=
   ∀ α : A, F α v
 #align mvqpf.pi MvQPF.Pi
 
-instance Sigma.inhabited {α} [Inhabited A] [Inhabited (F default α)] : Inhabited (Sigma F α) :=
+instance (priority := 10000) Sigma.inhabited {α} [Inhabited A] [Inhabited (F default α)] : Inhabited (Sigma F α) :=
   ⟨⟨default, default⟩⟩
 #align mvqpf.sigma.inhabited MvQPF.Sigma.inhabited
 
-instance Pi.inhabited {α} [∀ a, Inhabited (F a α)] : Inhabited (Pi F α) :=
+instance (priority := 10000) Pi.inhabited {α} [∀ a, Inhabited (F a α)] : Inhabited (Pi F α) :=
   ⟨fun _a => default⟩
 #align mvqpf.pi.inhabited MvQPF.Pi.inhabited
 
@@ -47,7 +47,7 @@ variable [∀ α, MvFunctor <| F α]
 
 namespace Sigma
 
-instance : MvFunctor (Sigma F) where map := fun f ⟨a, x⟩ => ⟨a, f <$$> x⟩
+instance (priority := 10000) : MvFunctor (Sigma F) where map := fun f ⟨a, x⟩ => ⟨a, f <$$> x⟩
 
 variable [∀ α, MvQPF <| F α]
 
@@ -69,7 +69,7 @@ protected def repr ⦃α⦄ : Sigma F α → Sigma.P F α
     ⟨⟨a, x.1⟩, x.2⟩
 #align mvqpf.sigma.repr MvQPF.Sigma.repr
 
-instance : MvQPF (Sigma F) where
+instance (priority := 10000) : MvQPF (Sigma F) where
   P := Sigma.P F
   abs {α} := @Sigma.abs _ _ F _ _ α
   repr {α} := @Sigma.repr _ _ F _ _ α
@@ -81,7 +81,7 @@ end Sigma
 
 namespace Pi
 
-instance : MvFunctor (Pi F) where map f x a := f <$$> x a
+instance (priority := 10000) : MvFunctor (Pi F) where map f x a := f <$$> x a
 
 variable [∀ α, MvQPF <| F α]
 
@@ -101,7 +101,7 @@ protected def repr ⦃α⦄ : Pi F α → Pi.P F α
   | f => ⟨fun a => (MvQPF.repr (f a)).1, fun _i a => (MvQPF.repr (f _)).2 _ a.2⟩
 #align mvqpf.pi.repr MvQPF.Pi.repr
 
-instance : MvQPF (Pi F) where
+instance (priority := 10000) : MvQPF (Pi F) where
   P := Pi.P F
   abs := @Pi.abs _ _ F _ _
   repr := @Pi.repr _ _ F _ _

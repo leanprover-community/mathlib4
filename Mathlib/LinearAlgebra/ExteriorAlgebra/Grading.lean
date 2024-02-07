@@ -83,7 +83,7 @@ theorem GradedAlgebra.liftι_eq (i : ℕ)
 #align exterior_algebra.graded_algebra.lift_ι_eq ExteriorAlgebra.GradedAlgebra.liftι_eq
 
 /-- The exterior algebra is graded by the powers of the submodule `(ExteriorAlgebra.ι R).range`. -/
-instance gradedAlgebra :
+instance (priority := 10000) gradedAlgebra :
     GradedAlgebra (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ · : ℕ → Submodule R _) :=
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster

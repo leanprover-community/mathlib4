@@ -269,7 +269,7 @@ def splitEpiBiproductComparison : SplitEpi (biproductComparison F f) where
   id := by aesop
 #align category_theory.functor.split_epi_biproduct_comparison CategoryTheory.Functor.splitEpiBiproductComparison
 
-instance : IsSplitEpi (biproductComparison F f) :=
+instance (priority := 10000) : IsSplitEpi (biproductComparison F f) :=
   IsSplitEpi.mk' (splitEpiBiproductComparison F f)
 
 /-- `biproduct_comparison' F f` is a split monomorphism. -/
@@ -279,14 +279,14 @@ def splitMonoBiproductComparison' : SplitMono (biproductComparison' F f) where
   id := by aesop
 #align category_theory.functor.split_mono_biproduct_comparison' CategoryTheory.Functor.splitMonoBiproductComparison'
 
-instance : IsSplitMono (biproductComparison' F f) :=
+instance (priority := 10000) : IsSplitMono (biproductComparison' F f) :=
   IsSplitMono.mk' (splitMonoBiproductComparison' F f)
 
 end
 
 variable [PreservesZeroMorphisms F] [PreservesBiproduct f F]
 
-instance hasBiproduct_of_preserves : HasBiproduct (F.obj ∘ f) :=
+instance (priority := 10000) hasBiproduct_of_preserves : HasBiproduct (F.obj ∘ f) :=
   HasBiproduct.mk
     { bicone := F.mapBicone (biproduct.bicone f)
       isBilimit := PreservesBiproduct.preserves (biproduct.isBilimit _) }
@@ -366,7 +366,7 @@ def splitEpiBiprodComparison : SplitEpi (biprodComparison F X Y) where
   id := by aesop
 #align category_theory.functor.split_epi_biprod_comparison CategoryTheory.Functor.splitEpiBiprodComparison
 
-instance : IsSplitEpi (biprodComparison F X Y) :=
+instance (priority := 10000) : IsSplitEpi (biprodComparison F X Y) :=
   IsSplitEpi.mk' (splitEpiBiprodComparison F X Y)
 
 /-- `biprodComparison' F X Y` is a split mono. -/
@@ -376,14 +376,14 @@ def splitMonoBiprodComparison' : SplitMono (biprodComparison' F X Y) where
   id := by aesop
 #align category_theory.functor.split_mono_biprod_comparison' CategoryTheory.Functor.splitMonoBiprodComparison'
 
-instance : IsSplitMono (biprodComparison' F X Y) :=
+instance (priority := 10000) : IsSplitMono (biprodComparison' F X Y) :=
   IsSplitMono.mk' (splitMonoBiprodComparison' F X Y)
 
 end
 
 variable [PreservesZeroMorphisms F] [PreservesBinaryBiproduct X Y F]
 
-instance hasBinaryBiproduct_of_preserves : HasBinaryBiproduct (F.obj X) (F.obj Y) :=
+instance (priority := 10000) hasBinaryBiproduct_of_preserves : HasBinaryBiproduct (F.obj X) (F.obj Y) :=
   HasBinaryBiproduct.mk
     { bicone := F.mapBinaryBicone (BinaryBiproduct.bicone X Y)
       isBilimit := PreservesBinaryBiproduct.preserves (BinaryBiproduct.isBilimit _ _) }

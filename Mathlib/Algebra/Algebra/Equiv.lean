@@ -76,7 +76,7 @@ def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Alg
     [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃ B), (f : A ≃+* B) with commutes' := commutes f }
 
-instance (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+instance (priority := 10000) (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [EquivLike F A B] [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
   ⟨toAlgEquiv⟩
 end AlgEquivClass
@@ -98,7 +98,7 @@ variable [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
 
 variable (e : A₁ ≃ₐ[R] A₂)
 
-instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
+instance (priority := 10000) : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   coe f := f.toFun
   inv f := f.invFun
   left_inv f := f.left_inv
@@ -109,11 +109,11 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
     congr
 
 /-- Helper instance since the coercion is not always found. -/
-instance : FunLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
+instance (priority := 10000) : FunLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   coe := DFunLike.coe
   coe_injective' := DFunLike.coe_injective'
 
-instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
+instance (priority := 10000) : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
   commutes f := f.commutes'
@@ -157,7 +157,7 @@ theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → 
 #align alg_equiv.coe_fun_injective AlgEquiv.coe_fun_injective
 
 -- Porting note: Made to CoeOut instance from Coe, not dangerous anymore
-instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
+instance (priority := 10000) hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
   ⟨AlgEquiv.toRingEquiv⟩
 #align alg_equiv.has_coe_to_ring_equiv AlgEquiv.hasCoeToRingEquiv
 
@@ -297,7 +297,7 @@ def refl : A₁ ≃ₐ[R] A₁ :=
   { (1 : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
 #align alg_equiv.refl AlgEquiv.refl
 
-instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
+instance (priority := 10000) : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
 
 @[simp]
@@ -681,7 +681,7 @@ end OfRingEquiv
 
 -- Porting note: projections mul & one not found, removed [simps] and added theorems manually
 -- @[simps (config := .lemmasOnly) one]
-instance aut : Group (A₁ ≃ₐ[R] A₁) where
+instance (priority := 10000) aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
   mul_assoc ϕ ψ χ := rfl
   one := refl
@@ -740,7 +740,7 @@ theorem autCongr_trans (ϕ : A₁ ≃ₐ[R] A₂) (ψ : A₂ ≃ₐ[R] A₃) :
 /-- The tautological action by `A₁ ≃ₐ[R] A₁` on `A₁`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ where
+instance (priority := 10000) applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ where
   smul := (· <| ·)
   smul_zero := AlgEquiv.map_zero
   smul_add := AlgEquiv.map_add
@@ -750,7 +750,7 @@ instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ w
   mul_smul _ _ _ := rfl
 #align alg_equiv.apply_mul_semiring_action AlgEquiv.applyMulSemiringAction
 
-instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
+instance (priority := 10000) : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
   smul := fun f => Units.map f
   one_smul := fun x => by ext; rfl
   mul_smul := fun x y z => by ext; rfl
@@ -762,15 +762,15 @@ protected theorem smul_def (f : A₁ ≃ₐ[R] A₁) (a : A₁) : f • a = f a 
   rfl
 #align alg_equiv.smul_def AlgEquiv.smul_def
 
-instance apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
+instance (priority := 10000) apply_faithfulSMul : FaithfulSMul (A₁ ≃ₐ[R] A₁) A₁ :=
   ⟨AlgEquiv.ext⟩
 #align alg_equiv.apply_has_faithful_smul AlgEquiv.apply_faithfulSMul
 
-instance apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁ where
+instance (priority := 10000) apply_smulCommClass : SMulCommClass R (A₁ ≃ₐ[R] A₁) A₁ where
   smul_comm r e a := (e.map_smul r a).symm
 #align alg_equiv.apply_smul_comm_class AlgEquiv.apply_smulCommClass
 
-instance apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁ where
+instance (priority := 10000) apply_smulCommClass' : SMulCommClass (A₁ ≃ₐ[R] A₁) R A₁ where
   smul_comm e r a := e.map_smul r a
 #align alg_equiv.apply_smul_comm_class' AlgEquiv.apply_smulCommClass'
 

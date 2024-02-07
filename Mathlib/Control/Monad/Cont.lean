@@ -84,11 +84,11 @@ protected theorem ext {x y : ContT r m α} (h : ∀ f, x.run f = y.run f) : x = 
   unfold ContT; ext; apply h
 #align cont_t.ext ContT.ext
 
-instance : Monad (ContT r m) where
+instance (priority := 10000) : Monad (ContT r m) where
   pure x f := f x
   bind x f g := x fun i => f i g
 
-instance : LawfulMonad (ContT r m) := LawfulMonad.mk'
+instance (priority := 10000) : LawfulMonad (ContT r m) := LawfulMonad.mk'
   (id_map := by intros; rfl)
   (pure_bind := by intros; ext; rfl)
   (bind_assoc := by intros; ext; rfl)
@@ -96,7 +96,7 @@ instance : LawfulMonad (ContT r m) := LawfulMonad.mk'
 def monadLift [Monad m] {α} : m α → ContT r m α := fun x f => x >>= f
 #align cont_t.monad_lift ContT.monadLift
 
-instance [Monad m] : MonadLift m (ContT r m) where
+instance (priority := 10000) [Monad m] : MonadLift m (ContT r m) where
   monadLift := ContT.monadLift
 
 theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
@@ -106,15 +106,15 @@ theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → 
     ContT.monadLift]
 #align cont_t.monad_lift_bind ContT.monadLift_bind
 
-instance : MonadCont (ContT r m) where
+instance (priority := 10000) : MonadCont (ContT r m) where
   callCC f g := f ⟨fun x _ => g x⟩ g
 
-instance : LawfulMonadCont (ContT r m) where
+instance (priority := 10000) : LawfulMonadCont (ContT r m) where
   callCC_bind_right := by intros; ext; rfl
   callCC_bind_left := by intros; ext; rfl
   callCC_dummy := by intros; ext; rfl
 
-instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
+instance (priority := 10000) (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
   throw e _ := throw e
   tryCatch act h f := tryCatch (act f) fun e => h e f
 
@@ -136,10 +136,10 @@ nonrec def ExceptT.callCC {ε} [MonadCont m] {α β : Type _}
   ExceptT.mk (callCC fun x : Label _ m β => ExceptT.run <| f (ExceptT.mkLabel x))
 #align except_t.call_cc ExceptTₓ.callCC
 
-instance {ε} [MonadCont m] : MonadCont (ExceptT ε m) where
+instance (priority := 10000) {ε} [MonadCont m] : MonadCont (ExceptT ε m) where
   callCC := ExceptT.callCC
 
-instance {ε} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ExceptT ε m) where
+instance (priority := 10000) {ε} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ExceptT ε m) where
   callCC_bind_right := by
     intros; simp [callCC, ExceptT.callCC, callCC_bind_right]; ext
     dsimp
@@ -165,10 +165,10 @@ nonrec def OptionT.callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT 
   OptionT.mk (callCC fun x : Label _ m β => OptionT.run <| f (OptionT.mkLabel x) : m (Option α))
 #align option_t.call_cc OptionTₓ.callCC
 
-instance [MonadCont m] : MonadCont (OptionT m) where
+instance (priority := 10000) [MonadCont m] : MonadCont (OptionT m) where
   callCC := OptionT.callCC
 
-instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
+instance (priority := 10000) [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
   callCC_bind_right := by
     intros; simp [callCC, OptionT.callCC, callCC_bind_right]; ext
     dsimp
@@ -208,10 +208,10 @@ def WriterT.callCC' [MonadCont m] {α β ω : Type _} [Monoid ω]
     MonadCont.callCC (WriterT.run ∘ f ∘ WriterT.mkLabel' : Label (α × ω) m β → m (α × ω))
 #align writer_t.call_cc WriterTₓ.callCC'
 
-instance (ω) [Monad m] [EmptyCollection ω] [MonadCont m] : MonadCont (WriterT ω m) where
+instance (priority := 10000) (ω) [Monad m] [EmptyCollection ω] [MonadCont m] : MonadCont (WriterT ω m) where
   callCC := WriterT.callCC
 
-instance (ω) [Monad m] [Monoid ω] [MonadCont m] : MonadCont (WriterT ω m) where
+instance (priority := 10000) (ω) [Monad m] [Monoid ω] [MonadCont m] : MonadCont (WriterT ω m) where
   callCC := WriterT.callCC'
 
 def StateT.mkLabel {α β σ : Type u} : Label (α × σ) m (β × σ) → Label α (StateT σ m) β
@@ -227,10 +227,10 @@ nonrec def StateT.callCC {σ} [MonadCont m] {α β : Type _}
   StateT.mk (fun r => callCC fun f' => (f <| StateT.mkLabel f').run r)
 #align state_t.call_cc StateTₓ.callCC
 
-instance {σ} [MonadCont m] : MonadCont (StateT σ m) where
+instance (priority := 10000) {σ} [MonadCont m] : MonadCont (StateT σ m) where
   callCC := StateT.callCC
 
-instance {σ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) where
+instance (priority := 10000) {σ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) where
   callCC_bind_right := by
     intros
     simp [callCC, StateT.callCC, callCC_bind_right]; ext; rfl
@@ -255,10 +255,10 @@ nonrec def ReaderT.callCC {ε} [MonadCont m] {α β : Type _}
   ReaderT.mk (fun r => callCC fun f' => (f <| ReaderT.mkLabel _ f').run r)
 #align reader_t.call_cc ReaderTₓ.callCC
 
-instance {ρ} [MonadCont m] : MonadCont (ReaderT ρ m) where
+instance (priority := 10000) {ρ} [MonadCont m] : MonadCont (ReaderT ρ m) where
   callCC := ReaderT.callCC
 
-instance {ρ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ReaderT ρ m) where
+instance (priority := 10000) {ρ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ReaderT ρ m) where
   callCC_bind_right := by intros; simp [callCC, ReaderT.callCC, callCC_bind_right]; ext; rfl
   callCC_bind_left := by
     intros; simp [callCC, ReaderT.callCC, callCC_bind_left, ReaderT.goto_mkLabel]

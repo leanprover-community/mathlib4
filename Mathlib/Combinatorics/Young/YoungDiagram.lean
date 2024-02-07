@@ -68,7 +68,7 @@ structure YoungDiagram where
 
 namespace YoungDiagram
 
-instance : SetLike YoungDiagram (ℕ × ℕ)
+instance (priority := 10000) : SetLike YoungDiagram (ℕ × ℕ)
     where
   -- porting note: TODO: figure out how to do this correctly
   coe := fun y => y.cells
@@ -85,7 +85,7 @@ theorem mem_mk (c : ℕ × ℕ) (cells) (isLowerSet) :
   Iff.rfl
 #align young_diagram.mem_mk YoungDiagram.mem_mk
 
-instance decidableMem (μ : YoungDiagram) : DecidablePred (· ∈ μ) :=
+instance (priority := 10000) decidableMem (μ : YoungDiagram) : DecidablePred (· ∈ μ) :=
   inferInstanceAs (DecidablePred (· ∈ μ.cells))
 #align young_diagram.decidable_mem YoungDiagram.decidableMem
 
@@ -108,7 +108,7 @@ theorem cells_ssubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ 
   Iff.rfl
 #align young_diagram.cells_ssubset_iff YoungDiagram.cells_ssubset_iff
 
-instance : Sup YoungDiagram where
+instance (priority := 10000) : Sup YoungDiagram where
   sup μ ν :=
     { cells := μ.cells ∪ ν.cells
       isLowerSet := by
@@ -130,7 +130,7 @@ theorem mem_sup {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊔ ν ↔ x 
   Finset.mem_union
 #align young_diagram.mem_sup YoungDiagram.mem_sup
 
-instance : Inf YoungDiagram where
+instance (priority := 10000) : Inf YoungDiagram where
   inf μ ν :=
     { cells := μ.cells ∩ ν.cells
       isLowerSet := by
@@ -153,7 +153,7 @@ theorem mem_inf {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊓ ν ↔ x 
 #align young_diagram.mem_inf YoungDiagram.mem_inf
 
 /-- The empty Young diagram is (⊥ : young_diagram). -/
-instance : OrderBot YoungDiagram where
+instance (priority := 10000) : OrderBot YoungDiagram where
   bot :=
     { cells := ∅
       isLowerSet := by
@@ -185,10 +185,10 @@ theorem not_mem_bot (x : ℕ × ℕ) : x ∉ (⊥ : YoungDiagram) :=
   Finset.not_mem_empty x
 #align young_diagram.not_mem_bot YoungDiagram.not_mem_bot
 
-instance : Inhabited YoungDiagram :=
+instance (priority := 10000) : Inhabited YoungDiagram :=
   ⟨⊥⟩
 
-instance : DistribLattice YoungDiagram :=
+instance (priority := 10000) : DistribLattice YoungDiagram :=
   Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h => by rwa [YoungDiagram.ext_iff])
     (fun _ _ => rfl) fun _ _ => rfl
 

@@ -32,16 +32,16 @@ attribute [nolint simpNF] SignType.pos.sizeOf_spec
 namespace SignType
 
 -- Porting note: Added Fintype SignType manually
-instance : Fintype SignType :=
+instance (priority := 10000) : Fintype SignType :=
    Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp)
 
-instance : Zero SignType :=
+instance (priority := 10000) : Zero SignType :=
   ⟨zero⟩
 
-instance : One SignType :=
+instance (priority := 10000) : One SignType :=
   ⟨pos⟩
 
-instance : Neg SignType :=
+instance (priority := 10000) : Neg SignType :=
   ⟨fun s =>
     match s with
     | neg => pos
@@ -63,7 +63,7 @@ theorem pos_eq_one : pos = 1 :=
   rfl
 #align sign_type.pos_eq_one SignType.pos_eq_one
 
-instance : Mul SignType :=
+instance (priority := 10000) : Mul SignType :=
   ⟨fun x y =>
     match x with
     | neg => -y
@@ -77,13 +77,13 @@ protected inductive LE : SignType → SignType → Prop
   | of_pos (a) : SignType.LE a pos
 #align sign_type.le SignType.LE
 
-instance : LE SignType :=
+instance (priority := 10000) : LE SignType :=
   ⟨SignType.LE⟩
 
-instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
+instance (priority := 10000) LE.decidableRel : DecidableRel SignType.LE := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
-instance decidableEq : DecidableEq SignType := fun a b => by
+instance (priority := 10000) decidableEq : DecidableEq SignType := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor)| exact isFalse (by rintro ⟨_⟩)
 
 private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
@@ -92,7 +92,7 @@ private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := b
 
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
-instance : CommGroupWithZero SignType where
+instance (priority := 10000) : CommGroupWithZero SignType where
   zero := 0
   one := 1
   mul := (· * ·)
@@ -113,7 +113,7 @@ private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_: b ≤ a) : a = b :=
 private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_: b ≤ c) : a ≤ c := by
   cases a <;> cases b <;> cases c <;> tauto
 
-instance : LinearOrder SignType where
+instance (priority := 10000) : LinearOrder SignType where
   le := (· ≤ ·)
   le_refl a := by cases a <;> constructor
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
@@ -122,13 +122,13 @@ instance : LinearOrder SignType where
   decidableLE := LE.decidableRel
   decidableEq := SignType.decidableEq
 
-instance : BoundedOrder SignType where
+instance (priority := 10000) : BoundedOrder SignType where
   top := 1
   le_top := LE.of_pos
   bot := -1
   bot_le := LE.of_neg
 
-instance : HasDistribNeg SignType :=
+instance (priority := 10000) : HasDistribNeg SignType :=
   { neg_neg := fun x => by cases x <;> rfl
     neg_mul := fun x y => by cases x <;> cases y <;> rfl
     mul_neg := fun x y => by cases x <;> cases y <;> rfl }
@@ -245,7 +245,7 @@ def cast : SignType → α
 #align sign_type.cast SignType.cast
 
 -- Porting note: Translated has_coe_t to CoeTC
-instance : CoeTC SignType α :=
+instance (priority := 10000) : CoeTC SignType α :=
   ⟨cast⟩
 
 -- Porting note: `cast_eq_coe` removed, syntactic equality

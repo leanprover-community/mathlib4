@@ -33,14 +33,14 @@ inductive Foo
 
 namespace Foo
 
-instance inhabited : Inhabited Foo :=
+instance (priority := 10000) inhabited : Inhabited Foo :=
   ⟨zero⟩
 #align counterexample.foo.inhabited Counterexample.Foo.inhabited
 
-instance : Zero Foo :=
+instance (priority := 10000) : Zero Foo :=
   ⟨zero⟩
 
-instance : One Foo :=
+instance (priority := 10000) : One Foo :=
   ⟨one⟩
 
 local notation "ε" => eps
@@ -59,7 +59,7 @@ macro (name := boom) "boom" : tactic => `(tactic| (repeat' rintro ⟨⟩) <;> de
 theorem aux1_inj : Function.Injective aux1 := by boom
 #align counterexample.foo.aux1_inj Counterexample.Foo.aux1_inj
 
-instance linearOrder : LinearOrder Foo :=
+instance (priority := 10000) linearOrder : LinearOrder Foo :=
   LinearOrder.lift' aux1 aux1_inj
 
 /-- Multiplication on `Foo`: the only external input is that `ε ^ 2 = 0`. -/
@@ -69,7 +69,7 @@ def mul : Foo → Foo → Foo
   | _, _ => 0
 #align counterexample.foo.mul Counterexample.Foo.mul
 
-instance commMonoid : CommMonoid Foo where
+instance (priority := 10000) commMonoid : CommMonoid Foo where
   mul := mul
   one := 1
   one_mul := by boom
@@ -77,7 +77,7 @@ instance commMonoid : CommMonoid Foo where
   mul_comm := by boom
   mul_assoc := by boom
 
-instance : LinearOrderedCommMonoidWithZero Foo :=
+instance (priority := 10000) : LinearOrderedCommMonoidWithZero Foo :=
   { Foo.linearOrder, Foo.commMonoid with
     zero := 0
     zero_mul := by boom

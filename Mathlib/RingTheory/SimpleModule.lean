@@ -106,7 +106,7 @@ theorem sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = 
   exact sSup_atoms_eq_top
 #align is_semisimple_module.Sup_simples_eq_top IsSemisimpleModule.sSup_simples_eq_top
 
-instance is_semisimple_submodule {m : Submodule R M} : IsSemisimpleModule R m :=
+instance (priority := 10000) is_semisimple_submodule {m : Submodule R M} : IsSemisimpleModule R m :=
   haveI f : Submodule R m ≃o Set.Iic m := Submodule.MapSubtype.relIso m
   f.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
 #align is_semisimple_module.is_semisimple_submodule IsSemisimpleModule.is_semisimple_submodule
@@ -193,7 +193,7 @@ theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
 #align linear_map.is_coatom_ker_of_surjective LinearMap.isCoatom_ker_of_surjective
 
 /-- Schur's Lemma makes the endomorphism ring of a simple module a division ring. -/
-noncomputable instance _root_.Module.End.divisionRing
+noncomputable instance (priority := 10000) _root_.Module.End.divisionRing
     [DecidableEq (Module.End R M)] [IsSimpleModule R M] : DivisionRing (Module.End R M) :=
   {
     (Module.End.ring :
@@ -249,7 +249,7 @@ theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
   dsimp
   exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
-instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
+instance (priority := 10000) instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
   sup_eq_of_isMaximal hxz hyz := WCovBy.sup_eq hxz.wcovBy hyz.wcovBy

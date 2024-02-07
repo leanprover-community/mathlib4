@@ -46,13 +46,13 @@ abbrev Two :=
   WithZero Unit
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.two Counterexample.CounterexampleNotPrimeButHomogeneousPrime.Two
 
-instance Two.instLinearOrder : LinearOrder Two :=
+instance (priority := 10000) Two.instLinearOrder : LinearOrder Two :=
   inferInstance
 
-instance Two.instAddCommMonoid : AddCommMonoid Two :=
+instance (priority := 10000) Two.instAddCommMonoid : AddCommMonoid Two :=
   inferInstance
 
-instance : LinearOrderedAddCommMonoid Two :=
+instance (priority := 10000) : LinearOrderedAddCommMonoid Two :=
   { Two.instLinearOrder, Two.instAddCommMonoid with
     add_le_add_left := by
       delta Two WithZero; decide }
@@ -137,7 +137,7 @@ theorem grading.left_inv : Function.LeftInverse (coeLinearMap (grading R)) gradi
     add_zero, add_sub_cancel'_right]
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.left_inv Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.left_inv
 
-instance : GradedAlgebra (grading R) where
+instance (priority := 10000) : GradedAlgebra (grading R) where
   one_mem := grading.one_mem R
   mul_mem := grading.mul_mem R
   decompose' := grading.decompose

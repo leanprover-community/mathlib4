@@ -39,7 +39,7 @@ See also `Cardinal.ofENatHom` for a bundled homomorphism version. -/
   | (n : ℕ) => n
   | ⊤ => ℵ₀
 
-instance : Coe ENat Cardinal := ⟨Cardinal.ofENat⟩
+instance (priority := 10000) : Coe ENat Cardinal := ⟨Cardinal.ofENat⟩
 
 @[simp, norm_cast] lemma ofENat_top : ofENat ⊤ = ℵ₀ := rfl
 @[simp, norm_cast] lemma ofENat_nat (n : ℕ) : ofENat n = n := rfl
@@ -146,7 +146,7 @@ lemma range_ofENat : range ofENat = Iic ℵ₀ := by
     exact mem_range_self (x : ℕ∞)
   · exact mem_range_self (⊤ : ℕ∞)
 
-instance : CanLift Cardinal ℕ∞ (↑) (· ≤ ℵ₀) where
+instance (priority := 10000) : CanLift Cardinal ℕ∞ (↑) (· ≤ ℵ₀) where
   prf x := (Set.ext_iff.1 range_ofENat x).2
 
 /-- Unbundled version of `Cardinal.toENat`. -/

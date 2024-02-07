@@ -26,7 +26,7 @@ variable {f : I → Type v}
 -- The family of types already equipped with instances
 namespace Pi
 
-instance [∀ i, Star (f i)] : Star (∀ i, f i) where star x i := star (x i)
+instance (priority := 10000) [∀ i, Star (f i)] : Star (∀ i, f i) where star x i := star (x i)
 
 @[simp]
 theorem star_apply [∀ i, Star (f i)] (x : ∀ i, f i) (i : I) : star x i = star (x i) :=
@@ -37,22 +37,22 @@ theorem star_def [∀ i, Star (f i)] (x : ∀ i, f i) : star x = fun i => star (
   rfl
 #align pi.star_def Pi.star_def
 
-instance [∀ i, Star (f i)] [∀ i, TrivialStar (f i)] : TrivialStar (∀ i, f i) where
+instance (priority := 10000) [∀ i, Star (f i)] [∀ i, TrivialStar (f i)] : TrivialStar (∀ i, f i) where
   star_trivial _ := funext fun _ => star_trivial _
 
-instance [∀ i, InvolutiveStar (f i)] : InvolutiveStar (∀ i, f i) where
+instance (priority := 10000) [∀ i, InvolutiveStar (f i)] : InvolutiveStar (∀ i, f i) where
   star_involutive _ := funext fun _ => star_star _
 
-instance [∀ i, Mul (f i)] [∀ i, StarMul (f i)] : StarMul (∀ i, f i) where
+instance (priority := 10000) [∀ i, Mul (f i)] [∀ i, StarMul (f i)] : StarMul (∀ i, f i) where
   star_mul _ _ := funext fun _ => star_mul _ _
 
-instance [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] : StarAddMonoid (∀ i, f i) where
+instance (priority := 10000) [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] : StarAddMonoid (∀ i, f i) where
   star_add _ _ := funext fun _ => star_add _ _
 
-instance [∀ i, NonUnitalSemiring (f i)] [∀ i, StarRing (f i)] : StarRing (∀ i, f i)
+instance (priority := 10000) [∀ i, NonUnitalSemiring (f i)] [∀ i, StarRing (f i)] : StarRing (∀ i, f i)
   where star_add _ _ := funext fun _ => star_add _ _
 
-instance {R : Type w} [∀ i, SMul R (f i)] [Star R] [∀ i, Star (f i)]
+instance (priority := 10000) {R : Type w} [∀ i, SMul R (f i)] [Star R] [∀ i, Star (f i)]
     [∀ i, StarModule R (f i)] : StarModule R (∀ i, f i) where
   star_smul r x := funext fun i => star_smul r (x i)
 

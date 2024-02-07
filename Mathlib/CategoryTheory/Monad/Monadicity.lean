@@ -67,7 +67,7 @@ local notation3 "adj" => Adjunction.ofRightAdjoint G
 reflexive pair, and will be used to construct the left adjoint to the comparison functor and show it
 is an equivalence.
 -/
-instance main_pair_reflexive (A : (adj).toMonad.Algebra) :
+instance (priority := 10000) main_pair_reflexive (A : (adj).toMonad.Algebra) :
     IsReflexivePair ((F).map A.a) ((adj).counit.app ((F).obj A.A)) := by
   apply IsReflexivePair.mk' ((F).map ((adj).unit.app _)) _ _
   · rw [← (F).map_comp, ← (F).map_id]
@@ -80,7 +80,7 @@ instance main_pair_reflexive (A : (adj).toMonad.Algebra) :
 `G`-split pair, and will be used to construct the left adjoint to the comparison functor and show it
 is an equivalence.
 -/
-instance main_pair_G_split (A : (adj).toMonad.Algebra) :
+instance (priority := 10000) main_pair_G_split (A : (adj).toMonad.Algebra) :
     G.IsSplitPair ((F).map A.a)
       ((adj).counit.app ((F).obj A.A)) where
   splittable := ⟨_, _, ⟨beckSplitCoequalizer A⟩⟩
@@ -283,7 +283,7 @@ class HasCoequalizerOfIsSplitPair (G : D ⥤ C) : Prop where
 -- instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [HasCoequalizerOfIsSplitPair G] :
 --     HasCoequalizer f g := HasCoequalizerOfIsSplitPair.out f g
 
-instance [HasCoequalizerOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
+instance (priority := 10000) [HasCoequalizerOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
     HasCoequalizer ((leftAdjoint G).map A.a)
       ((ofRightAdjoint G).counit.app ((leftAdjoint G).obj A.A)) :=
   fun _ => HasCoequalizerOfIsSplitPair.out G _ _
@@ -293,10 +293,10 @@ instance [HasCoequalizerOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdj
 class PreservesColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], PreservesColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [PreservesColimitOfIsSplitPair G] :
+instance (priority := 10000) {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [PreservesColimitOfIsSplitPair G] :
     PreservesColimit (parallelPair f g) G := PreservesColimitOfIsSplitPair.out f g
 
-instance [PreservesColimitOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
+instance (priority := 10000) [PreservesColimitOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
    PreservesColimit (parallelPair ((leftAdjoint G).map A.a)
       (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj A.A))) G :=
   fun _ => PreservesColimitOfIsSplitPair.out _ _
@@ -306,10 +306,10 @@ instance [PreservesColimitOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightA
 class ReflectsColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], ReflectsColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [ReflectsColimitOfIsSplitPair G] :
+instance (priority := 10000) {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [ReflectsColimitOfIsSplitPair G] :
     ReflectsColimit (parallelPair f g) G := ReflectsColimitOfIsSplitPair.out f g
 
-instance [ReflectsColimitOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
+instance (priority := 10000) [ReflectsColimitOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
     ReflectsColimit (parallelPair ((leftAdjoint G).map A.a)
       (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj A.A))) G :=
   fun _ => ReflectsColimitOfIsSplitPair.out _ _
@@ -356,10 +356,10 @@ set_option linter.uppercaseLean3 false in
 class CreatesColimitOfIsSplitPair (G : D ⥤ C) where
   out : ∀ {A B} (f g : A ⟶ B) [G.IsSplitPair f g], CreatesColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [CreatesColimitOfIsSplitPair G] :
+instance (priority := 10000) {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [CreatesColimitOfIsSplitPair G] :
     CreatesColimit (parallelPair f g) G := CreatesColimitOfIsSplitPair.out f g
 
-instance [CreatesColimitOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
+instance (priority := 10000) [CreatesColimitOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
     CreatesColimit (parallelPair ((leftAdjoint G).map A.a)
       (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj A.A))) G :=
   fun _ => CreatesColimitOfIsSplitPair.out _ _
@@ -416,10 +416,10 @@ local notation3 "adj" => Adjunction.ofRightAdjoint G
 class PreservesColimitOfIsReflexivePair (G : C ⥤ D) where
   out : ∀ ⦃A B⦄ (f g : A ⟶ B) [IsReflexivePair f g], PreservesColimit (parallelPair f g) G
 
-instance {A B} (f g : A ⟶ B) [IsReflexivePair f g] [PreservesColimitOfIsReflexivePair G] :
+instance (priority := 10000) {A B} (f g : A ⟶ B) [IsReflexivePair f g] [PreservesColimitOfIsReflexivePair G] :
   PreservesColimit (parallelPair f g) G := PreservesColimitOfIsReflexivePair.out f g
 
-instance [PreservesColimitOfIsReflexivePair G] : ∀ X : Algebra (toMonad (ofRightAdjoint G)),
+instance (priority := 10000) [PreservesColimitOfIsReflexivePair G] : ∀ X : Algebra (toMonad (ofRightAdjoint G)),
     PreservesColimit (parallelPair ((leftAdjoint G).map X.a)
       (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj X.A))) G :=
  fun _ => PreservesColimitOfIsReflexivePair.out _ _

@@ -36,7 +36,7 @@ noncomputable def rpow (x y : ℝ) :=
   ((x : ℂ) ^ (y : ℂ)).re
 #align real.rpow Real.rpow
 
-noncomputable instance : Pow ℝ ℝ := ⟨rpow⟩
+noncomputable instance (priority := 10000) : Pow ℝ ℝ := ⟨rpow⟩
 
 @[simp]
 theorem rpow_eq_pow (x y : ℝ) : rpow x y = x ^ y := rfl

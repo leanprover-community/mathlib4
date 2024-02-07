@@ -38,7 +38,7 @@ section FiniteDimensional
 
 variable {m n : Type*} {R : Type v} [Field R]
 
-instance finiteDimensional [Finite m] [Finite n] : FiniteDimensional R (Matrix m n R) :=
+instance (priority := 10000) finiteDimensional [Finite m] [Finite n] : FiniteDimensional R (Matrix m n R) :=
   Module.Finite.matrix
 
 end FiniteDimensional
@@ -53,7 +53,7 @@ variable {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
 
 variable {W : Type*} [AddCommGroup W] [Module K W] [FiniteDimensional K W]
 
-instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=
+instance (priority := 10000) finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=
   Module.Finite.linearMap _ _ _ _
 #align linear_map.finite_dimensional LinearMap.finiteDimensional
 
@@ -62,7 +62,7 @@ variable {A : Type*} [Ring A] [Algebra K A] [Module A V] [IsScalarTower K A V] [
 
 /-- Linear maps over a `k`-algebra are finite dimensional (over `k`) if both the source and
 target are, as they form a subspace of all `k`-linear maps. -/
-instance finiteDimensional' : FiniteDimensional K (V →ₗ[A] W) :=
+instance (priority := 10000) finiteDimensional' : FiniteDimensional K (V →ₗ[A] W) :=
   FiniteDimensional.of_injective (restrictScalarsLinearMap K A V W) (restrictScalars_injective _)
 #align linear_map.finite_dimensional' LinearMap.finiteDimensional'
 

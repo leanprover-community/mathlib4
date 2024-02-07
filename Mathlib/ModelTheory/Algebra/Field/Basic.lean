@@ -130,7 +130,7 @@ section
 attribute [local instance] fieldOfModelField
 
 /-- The instances given by `fieldOfModelField` are compatible with the `Language.ring.Structure`
-instance on `K`. This instance is to be used on models for the language of fields that do
+instance (priority := 10000) on `K`. This instance is to be used on models for the language of fields that do
 not already have the ring operations on the Type.
 
 Always add `fieldOfModelField` as a local instance first before using this instance.
@@ -142,7 +142,7 @@ noncomputable def compatibleRingOfModelField (K : Type*) [Language.ring.Structur
 
 end
 
-instance [Field K] [CompatibleRing K] : Theory.field.Model K :=
+instance (priority := 10000) [Field K] [CompatibleRing K] : Theory.field.Model K :=
   { realize_of_mem := by
       simp only [Theory.field, Set.mem_range, exists_imp]
       rintro φ a rfl

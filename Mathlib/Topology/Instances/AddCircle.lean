@@ -329,7 +329,7 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply
 
-instance : DivisibleBy (AddCircle p) ℤ where
+instance (priority := 10000) : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by
     simp only [algebraMap.coe_zero, Int.cast_zero, inv_zero, zero_mul, QuotientAddGroup.mk_zero]
@@ -484,18 +484,18 @@ end LinearOrderedField
 
 variable (p : ℝ)
 
-instance pathConnectedSpace : PathConnectedSpace <| AddCircle p :=
+instance (priority := 10000) pathConnectedSpace : PathConnectedSpace <| AddCircle p :=
   (inferInstance : PathConnectedSpace (Quotient _))
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
-instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by
+instance (priority := 10000) compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by
   rw [← isCompact_univ_iff, ← coe_image_Icc_eq p 0]
   exact isCompact_Icc.image (AddCircle.continuous_mk' p)
 #align add_circle.compact_space AddCircle.compactSpace
 
 /-- The action on `ℝ` by right multiplication of its the subgroup `zmultiples p` (the multiples of
 `p:ℝ`) is properly discontinuous. -/
-instance : ProperlyDiscontinuousVAdd (zmultiples p).op ℝ :=
+instance (priority := 10000) : ProperlyDiscontinuousVAdd (zmultiples p).op ℝ :=
   (zmultiples p).properlyDiscontinuousVAdd_opposite_of_tendsto_cofinite
     (AddSubgroup.tendsto_zmultiples_subtype_cofinite p)
 

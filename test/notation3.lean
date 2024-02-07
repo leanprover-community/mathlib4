@@ -58,7 +58,7 @@ notation3 "~{" (x"; "* => foldl (a b => (a, b)) MyUnit) "}~" => x
 #guard_msgs in #check ~{}~
 
 structure MyUnit' where
-instance : OfNat MyUnit' (nat_lit 0) := ⟨{}⟩
+instance (priority := 10000) : OfNat MyUnit' (nat_lit 0) := ⟨{}⟩
 notation3 "MyUnit'0" => (0 : MyUnit')
 /-- info: MyUnit'0 : MyUnit' -/
 #guard_msgs in #check (0 : MyUnit')

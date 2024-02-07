@@ -25,7 +25,7 @@ universe u
 
 variable {ι ι' β : Type*} (α : ι → Type u) [U : ∀ i, UniformSpace (α i)] [UniformSpace β]
 
-instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
+instance (priority := 10000) Pi.uniformSpace : UniformSpace (∀ i, α i) :=
   UniformSpace.ofCoreEq (⨅ i, UniformSpace.comap (fun a : ∀ i, α i => a i) (U i)).toCore
       Pi.topologicalSpace <|
     Eq.symm toTopologicalSpace_iInf
@@ -104,7 +104,7 @@ lemma Cauchy.pi [Nonempty ι] {l : ∀ i, Filter (α i)} (hl : ∀ i, Cauchy (l 
   have := fun i ↦ (hl i).1
   simpa [cauchy_pi_iff]
 
-instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i) where
+instance (priority := 10000) Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i) where
   complete {f} hf := by
     have := hf.1
     simp_rw [cauchy_pi_iff', cauchy_iff_exists_le_nhds] at hf
@@ -113,7 +113,7 @@ instance Pi.complete [∀ i, CompleteSpace (α i)] : CompleteSpace (∀ i, α i)
     rwa [nhds_pi, le_pi]
 #align Pi.complete Pi.complete
 
-instance Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α i) :=
+instance (priority := 10000) Pi.separated [∀ i, SeparatedSpace (α i)] : SeparatedSpace (∀ i, α i) :=
   separated_def.2 fun x y H => by
     ext i
     -- porting note: should be `eq_ofSeparated_ofUniformContinuous`?

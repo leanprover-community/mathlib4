@@ -41,7 +41,7 @@ protected def product (s : Finset α) (t : Finset β) : Finset (α × β) :=
   ⟨_, s.nodup.product t.nodup⟩
 #align finset.product Finset.product
 
-instance instSProd : SProd (Finset α) (Finset β) (Finset (α × β)) where
+instance (priority := 10000) instSProd : SProd (Finset α) (Finset β) (Finset (α × β)) where
   sprod := Finset.product
 
 @[simp]

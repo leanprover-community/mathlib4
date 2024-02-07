@@ -17,13 +17,13 @@ We derive some `EquivFunctor` instances, to enable `equiv_rw` to rewrite under t
 
 open Equiv
 
-instance EquivFunctorUnique : EquivFunctor Unique where
+instance (priority := 10000) EquivFunctorUnique : EquivFunctor Unique where
   map e := Equiv.uniqueCongr e
   map_refl' α := by simp [eq_iff_true_of_subsingleton]
   map_trans' := by simp [eq_iff_true_of_subsingleton]
 #align equiv_functor_unique EquivFunctorUnique
 
-instance EquivFunctorPerm : EquivFunctor Perm where
+instance (priority := 10000) EquivFunctorPerm : EquivFunctor Perm where
   map e p := (e.symm.trans p).trans e
   map_refl' α := by ext; simp
   map_trans' _ _ := by ext; simp
@@ -31,7 +31,7 @@ instance EquivFunctorPerm : EquivFunctor Perm where
 
 -- There is a classical instance of `LawfulFunctor Finset` available,
 -- but we provide this computable alternative separately.
-instance EquivFunctorFinset : EquivFunctor Finset where
+instance (priority := 10000) EquivFunctorFinset : EquivFunctor Finset where
   map e s := s.map e.toEmbedding
   map_refl' α := by ext; simp
   map_trans' k h := by
@@ -42,7 +42,7 @@ instance EquivFunctorFinset : EquivFunctor Finset where
       simp [h']
 #align equiv_functor_finset EquivFunctorFinset
 
-instance EquivFunctorFintype : EquivFunctor Fintype where
+instance (priority := 10000) EquivFunctorFintype : EquivFunctor Fintype where
   map e s := Fintype.ofBijective e e.bijective
   map_refl' α := by ext; simp [eq_iff_true_of_subsingleton]
   map_trans' := by simp [eq_iff_true_of_subsingleton]

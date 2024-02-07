@@ -69,7 +69,7 @@ theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
   Metric.isCompact_iff_isClosed_bounded.2 ⟨isClosed_stdSimplex ι, bounded_stdSimplex ι⟩
 #align is_compact_std_simplex isCompact_stdSimplex
 
-instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :=
+instance (priority := 10000) stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :=
   isCompact_iff_compactSpace.mp <| isCompact_stdSimplex _
 
 end stdSimplex

@@ -198,7 +198,7 @@ theorem separableClosure.eq_bot_iff (halg : Algebra.IsAlgebraic F E) :
   ⟨fun h ↦ isPurelyInseparable_iff.2 fun x ↦ ⟨(halg x).isIntegral, fun hs ↦ by
     simpa only [h] using mem_separableClosure_iff.2 hs⟩, fun _ ↦ eq_bot_of_isPurelyInseparable F E⟩
 
-instance isPurelyInseparable_self : IsPurelyInseparable F F :=
+instance (priority := 10000) isPurelyInseparable_self : IsPurelyInseparable F F :=
   ⟨fun _ ↦ isIntegral_algebraMap, fun x _ ↦ ⟨x, rfl⟩⟩
 
 variable {E}
@@ -277,7 +277,7 @@ theorem isPurelyInseparable_iff_perfectClosure_eq_top :
 variable (F E)
 
 /-- The relative perfect closure of `F` in `E` is purely inseparable over `F`. -/
-instance perfectClosure.isPurelyInseparable : IsPurelyInseparable F (perfectClosure F E) := by
+instance (priority := 10000) perfectClosure.isPurelyInseparable : IsPurelyInseparable F (perfectClosure F E) := by
   rw [isPurelyInseparable_iff_pow_mem F (ringExpChar F)]
   exact fun ⟨_, n, y, h⟩ ↦ ⟨n, y, (algebraMap _ E).injective h⟩
 
@@ -465,17 +465,17 @@ theorem IsPurelyInseparable.injective_comp_algebraMap [IsPurelyInseparable F E]
 
 /-- If `E / F` is purely inseparable, then for any reduced `F`-algebra `L`, there exists at most one
 `F`-algebra homomorphism from `E` to `L`. -/
-instance instSubsingletonAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
+instance (priority := 10000) instSubsingletonAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
     [CommRing L] [IsReduced L] [Algebra F L] : Subsingleton (E →ₐ[F] L) where
   allEq f g := AlgHom.coe_ringHom_injective <|
     IsPurelyInseparable.injective_comp_algebraMap F E L (by simp_rw [AlgHom.comp_algebraMap])
 
-instance instUniqueAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
+instance (priority := 10000) instUniqueAlgHomOfIsPurelyInseparable [IsPurelyInseparable F E] (L : Type w)
     [CommRing L] [IsReduced L] [Algebra F L] [Algebra E L] [IsScalarTower F E L] :
     Unique (E →ₐ[F] L) := uniqueOfSubsingleton (IsScalarTower.toAlgHom F E L)
 
 /-- If `E / F` is purely inseparable, then `Field.Emb F E` has exactly one element. -/
-instance instUniqueEmbOfIsPurelyInseparable [IsPurelyInseparable F E] :
+instance (priority := 10000) instUniqueEmbOfIsPurelyInseparable [IsPurelyInseparable F E] :
     Unique (Emb F E) := instUniqueAlgHomOfIsPurelyInseparable F E _
 
 /-- A purely inseparable extension has finite separable degree one. -/
@@ -505,7 +505,7 @@ theorem isPurelyInseparable_iff_fd_isPurelyInseparable (halg : Algebra.IsAlgebra
   exact ⟨y, congr_arg (algebraMap _ E) h⟩
 
 /-- A purely inseparable extension is normal. -/
-instance IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E := by
+instance (priority := 10000) IsPurelyInseparable.normal [IsPurelyInseparable F E] : Normal F E := by
   refine ⟨isAlgebraic F E, fun x ↦ ?_⟩
   obtain ⟨n, h⟩ := IsPurelyInseparable.minpoly_eq_X_sub_C_pow F (ringExpChar F) x
   rw [← splits_id_iff_splits, h]
@@ -568,7 +568,7 @@ end IsPurelyInseparable
 
 namespace IntermediateField
 
-instance isPurelyInseparable_bot : IsPurelyInseparable F (⊥ : IntermediateField F E) :=
+instance (priority := 10000) isPurelyInseparable_bot : IsPurelyInseparable F (⊥ : IntermediateField F E) :=
   (botEquiv F E).symm.isPurelyInseparable
 
 /-- `F⟮x⟯ / F` is a purely inseparable extension if and only if the mininal polynomial of `x`
@@ -591,14 +591,14 @@ theorem isPurelyInseparable_adjoin_iff_pow_mem (q : ℕ) [hF : ExpChar F q] {S :
   rfl
 
 /-- A compositum of two purely inseparable extensions is purely inseparable. -/
-instance isPurelyInseparable_sup (L1 L2 : IntermediateField F E)
+instance (priority := 10000) isPurelyInseparable_sup (L1 L2 : IntermediateField F E)
     [h1 : IsPurelyInseparable F L1] [h2 : IsPurelyInseparable F L2] :
     IsPurelyInseparable F (L1 ⊔ L2 : IntermediateField F E) := by
   rw [← le_perfectClosure_iff] at h1 h2 ⊢
   exact sup_le h1 h2
 
 /-- A compositum of purely inseparable extensions is purely inseparable. -/
-instance isPurelyInseparable_iSup {ι : Type*} {t : ι → IntermediateField F E}
+instance (priority := 10000) isPurelyInseparable_iSup {ι : Type*} {t : ι → IntermediateField F E}
     [h : ∀ i, IsPurelyInseparable F (t i)] :
     IsPurelyInseparable F (⨆ i, t i : IntermediateField F E) := by
   simp_rw [← le_perfectClosure_iff] at h ⊢

@@ -125,7 +125,7 @@ theorem Continuous.smul (hf : Continuous f) (hg : Continuous g) : Continuous fun
 /-- If a scalar action is central, then its right action is continuous when its left action is. -/
 @[to_additive "If an additive action is central, then its right action is continuous when its left
 action is."]
-instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
+instance (priority := 10000) ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
   ⟨by
     suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
       this.comp (MulOpposite.continuous_unop.prod_map continuous_id)
@@ -134,7 +134,7 @@ instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : Continuou
 #align has_continuous_vadd.op ContinuousVAdd.op
 
 @[to_additive]
-instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
+instance (priority := 10000) MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
   ⟨MulOpposite.continuous_op.comp <|
       continuous_smul.comp <| continuous_id.prod_map MulOpposite.continuous_unop⟩
 #align mul_opposite.has_continuous_smul MulOpposite.continuousSMul
@@ -175,7 +175,7 @@ lemma Inducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N
       using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
 
 @[to_additive]
-instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :
+instance (priority := 10000) SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :
     ContinuousSMul M s :=
   inducing_subtype_val.continuousSMul continuous_id rfl
 
@@ -186,7 +186,7 @@ section Monoid
 variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
-instance Units.continuousSMul : ContinuousSMul Mˣ X :=
+instance (priority := 10000) Units.continuousSMul : ContinuousSMul Mˣ X :=
   inducing_id.continuousSMul Units.continuous_val rfl
 #align units.has_continuous_smul Units.continuousSMul
 #align add_units.has_continuous_vadd AddUnits.continuousVAdd
@@ -202,7 +202,7 @@ theorem MulAction.continuousSMul_compHom
   exact ⟨(hf.comp continuous_fst).smul continuous_snd⟩
 
 @[to_additive]
-instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
+instance (priority := 10000) Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
   inducing_id.continuousSMul continuous_subtype_val rfl
 
 end Monoid
@@ -212,19 +212,19 @@ section Group
 variable [Group M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
-instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
+instance (priority := 10000) Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
   S.toSubmonoid.continuousSMul
 
 end Group
 
 @[to_additive]
-instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
+instance (priority := 10000) Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
     ContinuousSMul M (X × Y) :=
   ⟨(continuous_fst.smul (continuous_fst.comp continuous_snd)).prod_mk
       (continuous_fst.smul (continuous_snd.comp continuous_snd))⟩
 
 @[to_additive]
-instance {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
+instance (priority := 10000) {ι : Type*} {γ : ι → Type*} [∀ i, TopologicalSpace (γ i)] [∀ i, SMul M (γ i)]
     [∀ i, ContinuousSMul M (γ i)] : ContinuousSMul M (∀ i, γ i) :=
   ⟨continuous_pi fun i =>
       (continuous_fst.smul continuous_snd).comp <|

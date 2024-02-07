@@ -76,14 +76,14 @@ def decidableEqNone {o : Option α} : Decidable (o = none) :=
   decidable_of_decidable_of_iff isNone_iff_eq_none
 #align option.decidable_eq_none Option.decidableEqNone
 
-instance decidableForallMem {p : α → Prop} [DecidablePred p] :
+instance (priority := 10000) decidableForallMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∀ a ∈ o, p a)
   | none => isTrue (by simp [false_imp_iff])
   | some a =>
       if h : p a then isTrue fun o e ↦ some_inj.1 e ▸ h
       else isFalse <| mt (fun H ↦ H _ rfl) h
 
-instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
+instance (priority := 10000) decidableExistsMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∃ a ∈ o, p a)
   | none => isFalse fun ⟨a, ⟨h, _⟩⟩ ↦ by cases h
   | some a => if h : p a then isTrue <| ⟨_, rfl, h⟩ else isFalse fun ⟨_, ⟨rfl, hn⟩⟩ ↦ h hn
@@ -104,19 +104,19 @@ theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
 #align option.mem_to_list Option.mem_toList
 
-instance liftOrGet_isCommutative (f : α → α → α) [Std.Commutative f] :
+instance (priority := 10000) liftOrGet_isCommutative (f : α → α → α) [Std.Commutative f] :
     Std.Commutative (liftOrGet f) :=
   ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, Std.Commutative.comm]⟩
 
-instance liftOrGet_isAssociative (f : α → α → α) [Std.Associative f] :
+instance (priority := 10000) liftOrGet_isAssociative (f : α → α → α) [Std.Associative f] :
     Std.Associative (liftOrGet f) :=
   ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, Std.Associative.assoc]⟩
 
-instance liftOrGet_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
+instance (priority := 10000) liftOrGet_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
     Std.IdempotentOp (liftOrGet f) :=
   ⟨fun a ↦ by cases a <;> simp [liftOrGet, Std.IdempotentOp.idempotent]⟩
 
-instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f) none where
+instance (priority := 10000) liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f) none where
   left_id a := by cases a <;> simp [liftOrGet]
   right_id a := by cases a <;> simp [liftOrGet]
 

@@ -104,11 +104,11 @@ noncomputable def isInitialOfPullbackOfCoproduct {X₁ X₂ : C} [HasBinaryCopro
   isInitialOfIsPullbackOfCoproduct (pullbackIsPullback _ _)
 #align category_theory.limits.is_initial_of_pullback_of_coproduct CategoryTheory.Limits.isInitialOfPullbackOfCoproduct
 
-instance {X₁ X₂ : C} [HasBinaryCoproduct X₁ X₂] [CoproductDisjoint X₁ X₂] :
+instance (priority := 10000) {X₁ X₂ : C} [HasBinaryCoproduct X₁ X₂] [CoproductDisjoint X₁ X₂] :
     Mono (coprod.inl : X₁ ⟶ X₁ ⨿ X₂) :=
   CoproductDisjoint.mono_inl _ _ _ (coprodIsCoprod _ _)
 
-instance {X₁ X₂ : C} [HasBinaryCoproduct X₁ X₂] [CoproductDisjoint X₁ X₂] :
+instance (priority := 10000) {X₁ X₂ : C} [HasBinaryCoproduct X₁ X₂] [CoproductDisjoint X₁ X₂] :
     Mono (coprod.inr : X₂ ⟶ X₁ ⨿ X₂) :=
   CoproductDisjoint.mono_inr _ _ _ (coprodIsCoprod _ _)
 

@@ -326,7 +326,7 @@ theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R :
   exact ⟨m', by rw [← hm', mul_comm]⟩
 #align localization_is_reduced localization_isReduced
 
-instance [IsReduced R] : IsReduced (Localization M) :=
+instance (priority := 10000) [IsReduced R] : IsReduced (Localization M) :=
   localization_isReduced M _ inferInstance
 
 theorem isReduced_ofLocalizationMaximal : OfLocalizationMaximal fun R hR => IsReduced R := by

@@ -72,17 +72,17 @@ variable [Preorder α]
 /-- A trivial estimator, containing the actual value. -/
 abbrev Estimator.trivial (a : α) : Type* := { b : α // b = a }
 
-instance : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
+instance (priority := 10000) : Bot (Estimator.trivial a) := ⟨⟨a, rfl⟩⟩
 
-instance : WellFoundedGT Unit where
+instance (priority := 10000) : WellFoundedGT Unit where
   wf := ⟨fun .unit => ⟨.unit, fun.⟩⟩
 
-instance (a : α) : WellFoundedGT (Estimator.trivial a) :=
+instance (priority := 10000) (a : α) : WellFoundedGT (Estimator.trivial a) :=
   let f : Estimator.trivial a ≃o Unit := RelIso.relIsoOfUniqueOfRefl _ _
   let f' : Estimator.trivial a ↪o Unit := f.toOrderEmbedding
   f'.wellFoundedGT
 
-instance {a : α} : Estimator (Thunk.pure a) (Estimator.trivial a) where
+instance (priority := 10000) {a : α} : Estimator (Thunk.pure a) (Estimator.trivial a) where
   bound b := b.val
   improve _ := none
   bound_le b := b.prop.le
@@ -161,7 +161,7 @@ section add
 variable [Preorder α]
 
 @[simps]
-instance [Add α] {a b : Thunk α} (εa εb : Type*) [EstimatorData a εa] [EstimatorData b εb] :
+instance (priority := 10000) [Add α] {a b : Thunk α} (εa εb : Type*) [EstimatorData a εa] [EstimatorData b εb] :
     EstimatorData (a + b) (εa × εb) where
   bound e := bound a e.1 + bound b e.2
   improve e := match improve a e.1 with
@@ -170,7 +170,7 @@ instance [Add α] {a b : Thunk α} (εa εb : Type*) [EstimatorData a εa] [Esti
     | some e' => some { e with snd := e' }
     | none => none
 
-instance (a b : Thunk ℕ) {εa εb : Type*} [Estimator a εa] [Estimator b εb] :
+instance (priority := 10000) (a b : Thunk ℕ) {εa εb : Type*} [Estimator a εa] [Estimator b εb] :
     Estimator (a + b) (εa × εb) where
   bound_le e :=
     Nat.add_le_add (Estimator.bound_le e.1) (Estimator.bound_le e.2)
@@ -204,12 +204,12 @@ structure Estimator.fst
 
 variable [∀ a : α, WellFoundedGT { x // x ≤ a }]
 
-instance [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
+instance (priority := 10000) [Estimator a ε] : WellFoundedGT (range (bound a : ε → α)) :=
   let f : range (bound a : ε → α) ↪o { x // x ≤ a.get } :=
     Subtype.orderEmbedding (by rintro _ ⟨e, rfl⟩; exact Estimator.bound_le e)
   f.wellFoundedGT
 
-instance [DecidableRel ((· : α) < ·)] {a : Thunk α} {b : Thunk β}
+instance (priority := 10000) [DecidableRel ((· : α) < ·)] {a : Thunk α} {b : Thunk β}
     (ε : Type*) [Estimator (a.prod b) ε] [∀ (p : α × β), WellFoundedGT { q // q ≤ p }] :
     EstimatorData a (Estimator.fst (a.prod b) ε) where
   bound e := (bound (a.prod b) e.inner).1

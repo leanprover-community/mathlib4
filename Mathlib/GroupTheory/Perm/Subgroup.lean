@@ -30,7 +30,7 @@ namespace Perm
 
 universe u
 
-instance sumCongrHom.decidableMemRange {α β : Type*} [DecidableEq α] [DecidableEq β] [Fintype α]
+instance (priority := 10000) sumCongrHom.decidableMemRange {α β : Type*} [DecidableEq α] [DecidableEq β] [Fintype α]
     [Fintype β] : DecidablePred (· ∈ (sumCongrHom α β).range) := fun _ => inferInstance
 #align equiv.perm.sum_congr_hom.decidable_mem_range Equiv.Perm.sumCongrHom.decidableMemRange
 
@@ -41,7 +41,7 @@ theorem sumCongrHom.card_range {α β : Type*} [Fintype (sumCongrHom α β).rang
   Fintype.card_eq.mpr ⟨(ofInjective (sumCongrHom α β) sumCongrHom_injective).symm⟩
 #align equiv.perm.sum_congr_hom.card_range Equiv.Perm.sumCongrHom.card_range
 
-instance sigmaCongrRightHom.decidableMemRange {α : Type*} {β : α → Type*} [DecidableEq α]
+instance (priority := 10000) sigmaCongrRightHom.decidableMemRange {α : Type*} {β : α → Type*} [DecidableEq α]
     [∀ a, DecidableEq (β a)] [Fintype α] [∀ a, Fintype (β a)] :
     DecidablePred (· ∈ (sigmaCongrRightHom β).range) := fun _ => inferInstance
 #align equiv.perm.sigma_congr_right_hom.decidable_mem_range Equiv.Perm.sigmaCongrRightHom.decidableMemRange
@@ -53,7 +53,7 @@ theorem sigmaCongrRightHom.card_range {α : Type*} {β : α → Type*}
   Fintype.card_eq.mpr ⟨(ofInjective (sigmaCongrRightHom β) sigmaCongrRightHom_injective).symm⟩
 #align equiv.perm.sigma_congr_right_hom.card_range Equiv.Perm.sigmaCongrRightHom.card_range
 
-instance subtypeCongrHom.decidableMemRange {α : Type*} (p : α → Prop) [DecidablePred p]
+instance (priority := 10000) subtypeCongrHom.decidableMemRange {α : Type*} (p : α → Prop) [DecidablePred p]
     [Fintype (Perm { a // p a } × Perm { a // ¬p a })] [DecidableEq (Perm α)] :
     DecidablePred (· ∈ (subtypeCongrHom p).range) := fun _ => inferInstance
 #align equiv.perm.subtype_congr_hom.decidable_mem_range Equiv.Perm.subtypeCongrHom.decidableMemRange

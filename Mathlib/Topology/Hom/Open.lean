@@ -51,7 +51,7 @@ end
 
 export ContinuousOpenMapClass (map_open)
 
-instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
+instance (priority := 10000) [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
     [ContinuousOpenMapClass F α β] :
     CoeTC F (α →CO β) :=
   ⟨fun f => ⟨f, map_open f⟩⟩
@@ -63,14 +63,14 @@ namespace ContinuousOpenMap
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
-instance instFunLike : FunLike (α →CO β) α β where
+instance (priority := 10000) instFunLike : FunLike (α →CO β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
-instance : ContinuousOpenMapClass (α →CO β) α β where
+instance (priority := 10000) : ContinuousOpenMapClass (α →CO β) α β where
   map_continuous f := f.continuous_toFun
   map_open f := f.map_open'
 
@@ -108,7 +108,7 @@ protected def id : α →CO α :=
   ⟨ContinuousMap.id _, IsOpenMap.id⟩
 #align continuous_open_map.id ContinuousOpenMap.id
 
-instance : Inhabited (α →CO α) :=
+instance (priority := 10000) : Inhabited (α →CO α) :=
   ⟨ContinuousOpenMap.id _⟩
 
 @[simp]

@@ -29,7 +29,7 @@ namespace MulOpposite
 /-- Put the same topological space structure on the opposite monoid as on the original space. -/
 @[to_additive "Put the same topological space structure on the opposite monoid as on the original
 space."]
-instance instTopologicalSpaceMulOpposite [TopologicalSpace M] : TopologicalSpace Mᵐᵒᵖ :=
+instance (priority := 10000) instTopologicalSpaceMulOpposite [TopologicalSpace M] : TopologicalSpace Mᵐᵒᵖ :=
   TopologicalSpace.induced (unop : Mᵐᵒᵖ → M) ‹_›
 
 variable [TopologicalSpace M]
@@ -56,11 +56,11 @@ def opHomeomorph : M ≃ₜ Mᵐᵒᵖ where
 #align add_opposite.op_homeomorph AddOpposite.opHomeomorph
 
 @[to_additive]
-instance instT2Space [T2Space M] : T2Space Mᵐᵒᵖ :=
+instance (priority := 10000) instT2Space [T2Space M] : T2Space Mᵐᵒᵖ :=
   opHomeomorph.symm.embedding.t2Space
 
 @[to_additive]
-instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵐᵒᵖ :=
+instance (priority := 10000) instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵐᵒᵖ :=
   opHomeomorph.symm.embedding.discreteTopology
 
 @[to_additive (attr := simp)]
@@ -98,7 +98,7 @@ variable [TopologicalSpace M] [Monoid M] [TopologicalSpace X]
 /-- The units of a monoid are equipped with a topology, via the embedding into `M × M`. -/
 @[to_additive "The additive units of a monoid are equipped with a topology, via the embedding into
 `M × M`."]
-instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
+instance (priority := 10000) instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
   TopologicalSpace.induced (embedProduct M) inferInstance
 
 @[to_additive]
@@ -114,11 +114,11 @@ theorem embedding_embedProduct : Embedding (embedProduct M) :=
 #align add_units.embedding_embed_product AddUnits.embedding_embedProduct
 
 @[to_additive]
-instance instT2Space [T2Space M] : T2Space Mˣ :=
+instance (priority := 10000) instT2Space [T2Space M] : T2Space Mˣ :=
   embedding_embedProduct.t2Space
 
 @[to_additive]
-instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
+instance (priority := 10000) instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
   embedding_embedProduct.discreteTopology
 
 @[to_additive] lemma topology_eq_inf :

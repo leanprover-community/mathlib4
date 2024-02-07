@@ -151,7 +151,7 @@ structure MySubtype (s : Set α) where
   mem : val ∈ s
   --deriving Fintype -- fails
 
-instance (s : Set α) [Fintype α] [DecidablePred (· ∈ s)] : Fintype (MySubtype s) :=
+instance (priority := 10000) (s : Set α) [Fintype α] [DecidablePred (· ∈ s)] : Fintype (MySubtype s) :=
   derive_fintype% _
 
 /-
@@ -187,7 +187,7 @@ inductive foo3 (α β : Type) (n : ℕ)
   | B : Fin n → foo3 α β n
   --deriving Fintype -- won't work because missing decidable instance
 
-instance (α β : Type) [DecidableEq α] [Fintype α] [Fintype β] (n : ℕ) : Fintype (foo3 α β n) :=
+instance (priority := 10000) (α β : Type) [DecidableEq α] [Fintype α] [Fintype β] (n : ℕ) : Fintype (foo3 α β n) :=
   derive_fintype% _
 
 structure foo4 {m n : Type} (b : m → ℕ) where
@@ -200,7 +200,7 @@ class MyClass (M : Type _) where
   (one : M)
   (eq_one : ∀ x : M, x = one)
 
-instance {M : Type _} [Fintype M] [DecidableEq M] : Fintype (MyClass M) :=
+instance (priority := 10000) {M : Type _} [Fintype M] [DecidableEq M] : Fintype (MyClass M) :=
   derive_fintype% _
 
 end tests

@@ -238,11 +238,11 @@ def pseudoZero {P : C} : P :=
 -- as it would have fired on `coe_sort`.
 -- However now that coercions are treated differently, this is a structural instance triggered by
 -- the appearance of `Pseudoelement`.
-instance hasZero {P : C} : Zero P :=
+instance (priority := 10000) hasZero {P : C} : Zero P :=
   ⟨pseudoZero⟩
 #align category_theory.abelian.pseudoelement.has_zero CategoryTheory.Abelian.Pseudoelement.hasZero
 
-instance {P : C} : Inhabited P :=
+instance (priority := 10000) {P : C} : Inhabited P :=
   ⟨0⟩
 
 theorem pseudoZero_def {P : C} : (0 : Pseudoelement P) = ⟦↑(0 : P ⟶ P)⟧ := rfl

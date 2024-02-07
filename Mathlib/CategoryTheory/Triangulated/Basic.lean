@@ -76,7 +76,7 @@ variable [HasZeroObject C] [HasZeroMorphisms C]
 
 open ZeroObject
 
-instance : Inhabited (Triangle C) :=
+instance (priority := 10000) : Inhabited (Triangle C) :=
   ⟨⟨0, 0, 0, 0, 0, 0⟩⟩
 
 /-- For each object in `C`, there is a triangle of the form `(X,X,0,𝟙 X,0,0)`
@@ -132,7 +132,7 @@ def triangleMorphismId (T : Triangle C) : TriangleMorphism T T
   hom₃ := 𝟙 T.obj₃
 #align category_theory.pretriangulated.triangle_morphism_id CategoryTheory.Pretriangulated.triangleMorphismId
 
-instance (T : Triangle C) : Inhabited (TriangleMorphism T T) :=
+instance (priority := 10000) (T : Triangle C) : Inhabited (TriangleMorphism T T) :=
   ⟨triangleMorphismId T⟩
 
 variable {T₁ T₂ T₃ : Triangle C}
@@ -150,7 +150,7 @@ def TriangleMorphism.comp (f : TriangleMorphism T₁ T₂) (g : TriangleMorphism
 /-- Triangles with triangle morphisms form a category.
 -/
 @[simps]
-instance triangleCategory : Category (Triangle C)
+instance (priority := 10000) triangleCategory : Category (Triangle C)
     where
   Hom A B := TriangleMorphism A B
   id A := triangleMorphismId A

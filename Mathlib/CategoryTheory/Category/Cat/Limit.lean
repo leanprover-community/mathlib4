@@ -36,7 +36,7 @@ namespace Cat
 
 namespace HasLimits
 
-instance categoryObjects {F : J ⥤ Cat.{u, u}} {j} :
+instance (priority := 10000) categoryObjects {F : J ⥤ Cat.{u, u}} {j} :
     SmallCategory ((F ⋙ Cat.objects.{u, u}).obj j) :=
   (F.obj j).str
 set_option linter.uppercaseLean3 false in
@@ -63,7 +63,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Cat.has_limits.hom_diagram CategoryTheory.Cat.HasLimits.homDiagram
 
 @[simps]
-instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects)) where
+instance (priority := 10000) (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects)) where
   Hom X Y := limit (homDiagram X Y)
   id X := Types.Limit.mk.{v, v} (homDiagram X X) (fun j => 𝟙 _) fun j j' f => by simp
   comp {X Y Z} f g :=
@@ -155,11 +155,11 @@ set_option linter.uppercaseLean3 false in
 end HasLimits
 
 /-- The category of small categories has all small limits. -/
-instance : HasLimits Cat.{v, v} where
+instance (priority := 10000) : HasLimits Cat.{v, v} where
   has_limits_of_shape _ :=
     { has_limit := fun F => ⟨⟨⟨HasLimits.limitCone F, HasLimits.limitConeIsLimit F⟩⟩⟩ }
 
-instance : PreservesLimits Cat.objects.{v, v} where
+instance (priority := 10000) : PreservesLimits Cat.objects.{v, v} where
   preservesLimitsOfShape :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (HasLimits.limitConeIsLimit F)

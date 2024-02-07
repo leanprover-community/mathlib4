@@ -103,14 +103,14 @@ end RelHomClass
 
 namespace RelHom
 
-instance : FunLike (r →r s) α β where
+instance (priority := 10000) : FunLike (r →r s) α β where
   coe o := o.toFun
   coe_injective' f g h := by
     cases f
     cases g
     congr
 
-instance : RelHomClass (r →r s) r s where
+instance (priority := 10000) : RelHomClass (r →r s) r s where
   map_rel := map_rel'
 
 initialize_simps_projections RelHom (toFun → apply)
@@ -225,7 +225,7 @@ def toRelHom (f : r ↪r s) : r →r s where
   map_rel' := (map_rel_iff' f).mpr
 #align rel_embedding.to_rel_hom RelEmbedding.toRelHom
 
-instance : Coe (r ↪r s) (r →r s) :=
+instance (priority := 10000) : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
 --Porting note: removed
@@ -234,7 +234,7 @@ instance : Coe (r ↪r s) (r →r s) :=
 --   ⟨fun o => o.toEmbedding⟩
 
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
-instance : FunLike (r ↪r s) α β where
+instance (priority := 10000) : FunLike (r ↪r s) α β where
   coe := fun x => x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
@@ -242,12 +242,12 @@ instance : FunLike (r ↪r s) α β where
     congr
 
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
-instance : RelHomClass (r ↪r s) r s where
+instance (priority := 10000) : RelHomClass (r ↪r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
 initialize_simps_projections RelEmbedding (toFun → apply)
 
-instance : EmbeddingLike (r ↪r s) α β where
+instance (priority := 10000) : EmbeddingLike (r ↪r s) α β where
   injective' f := f.inj'
 
 @[simp]
@@ -301,7 +301,7 @@ protected def trans (f : r ↪r s) (g : s ↪r t) : r ↪r t :=
   ⟨f.1.trans g.1, by simp [f.map_rel_iff, g.map_rel_iff]⟩
 #align rel_embedding.trans RelEmbedding.trans
 
-instance (r : α → α → Prop) : Inhabited (r ↪r r) :=
+instance (priority := 10000) (r : α → α → Prop) : Inhabited (r ↪r r) :=
   ⟨RelEmbedding.refl _⟩
 
 theorem trans_apply (f : r ↪r s) (g : s ↪r t) (a : α) : (f.trans g) a = g (f a) :=
@@ -404,12 +404,12 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
 
 end RelEmbedding
 
-instance Subtype.wellFoundedLT [LT α] [WellFoundedLT α] (p : α → Prop) :
+instance (priority := 10000) Subtype.wellFoundedLT [LT α] [WellFoundedLT α] (p : α → Prop) :
     WellFoundedLT (Subtype p) :=
   (Subtype.relEmbedding (· < ·) p).isWellFounded
 #align subtype.well_founded_lt Subtype.wellFoundedLT
 
-instance Subtype.wellFoundedGT [LT α] [WellFoundedGT α] (p : α → Prop) :
+instance (priority := 10000) Subtype.wellFoundedGT [LT α] [WellFoundedGT α] (p : α → Prop) :
     WellFoundedGT (Subtype p) :=
   (Subtype.relEmbedding (· > ·) p).isWellFounded
 #align subtype.well_founded_gt Subtype.wellFoundedGT
@@ -633,7 +633,7 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
   | ⟨e₁, o₁⟩, ⟨e₂, _⟩, h => by congr
 #align rel_iso.to_equiv_injective RelIso.toEquiv_injective
 
-instance : CoeOut (r ≃r s) (r ↪r s) :=
+instance (priority := 10000) : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
 -- Porting note: moved to after `RelHomClass` instance and redefined as `DFunLike.coe`
@@ -641,15 +641,15 @@ instance : CoeOut (r ≃r s) (r ↪r s) :=
 --   ⟨fun f => f⟩
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
-instance : FunLike (r ≃r s) α β where
+instance (priority := 10000) : FunLike (r ≃r s) α β where
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
-instance : RelHomClass (r ≃r s) r s where
+instance (priority := 10000) : RelHomClass (r ≃r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
-instance : EquivLike (r ≃r s) α β where
+instance (priority := 10000) : EquivLike (r ≃r s) α β where
   coe f := f
   inv f := f.toEquiv.symm
   left_inv f := f.left_inv
@@ -658,7 +658,7 @@ instance : EquivLike (r ≃r s) α β where
 
 --Porting note: helper instance
 -- see Note [function coercion]
-instance : CoeFun (r ≃r s) fun _ => α → β :=
+instance (priority := 10000) : CoeFun (r ≃r s) fun _ => α → β :=
   ⟨DFunLike.coe⟩
 
 @[simp]
@@ -731,7 +731,7 @@ protected def trans (f₁ : r ≃r s) (f₂ : s ≃r t) : r ≃r t :=
 #align rel_iso.trans RelIso.trans
 #align rel_iso.trans_apply RelIso.trans_apply
 
-instance (r : α → α → Prop) : Inhabited (r ≃r r) :=
+instance (priority := 10000) (r : α → α → Prop) : Inhabited (r ≃r r) :=
   ⟨RelIso.refl _⟩
 
 @[simp]
@@ -819,12 +819,12 @@ protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s �
   ⟨f, Iff.rfl⟩
 #align rel_iso.preimage RelIso.preimage
 
-instance IsWellOrder.preimage {α : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
+instance (priority := 10000) IsWellOrder.preimage {α : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     IsWellOrder β (f ⁻¹'o r) :=
   @RelEmbedding.isWellOrder _ _ (f ⁻¹'o r) r (RelIso.preimage f r) _
 #align rel_iso.is_well_order.preimage RelIso.IsWellOrder.preimage
 
-instance IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder α r] :
+instance (priority := 10000) IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder α r] :
     IsWellOrder (ULift α) (ULift.down ⁻¹'o r) :=
   IsWellOrder.preimage r Equiv.ulift
 #align rel_iso.is_well_order.ulift RelIso.IsWellOrder.ulift

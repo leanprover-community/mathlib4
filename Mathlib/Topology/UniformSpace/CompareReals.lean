@@ -90,7 +90,7 @@ def Q :=
 set_option linter.uppercaseLean3 false in
 #align compare_reals.Q CompareReals.Q
 
-instance uniformSpace : UniformSpace Q :=
+instance (priority := 10000) uniformSpace : UniformSpace Q :=
   (@AbsoluteValue.abs ℚ _).uniformSpace
 
 /-- Real numbers constructed as in Bourbaki. -/
@@ -99,7 +99,7 @@ def Bourbakiℝ : Type :=
 set_option linter.uppercaseLean3 false in
 #align compare_reals.Bourbakiℝ CompareReals.Bourbakiℝ
 
-instance Bourbaki.uniformSpace : UniformSpace Bourbakiℝ :=
+instance (priority := 10000) Bourbaki.uniformSpace : UniformSpace Bourbakiℝ :=
   Completion.uniformSpace Q
 #align compare_reals.bourbaki.uniform_space CompareReals.Bourbaki.uniformSpace
 

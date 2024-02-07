@@ -96,26 +96,26 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
     rw [← hm]
     rfl
 
-instance : HasColimit F := ⟨_, isColimitColimitCocone F⟩
+instance (priority := 10000) : HasColimit F := ⟨_, isColimitColimitCocone F⟩
 
-noncomputable instance : PreservesColimit F (forget₂ _ AddCommGroupCat) :=
+noncomputable instance (priority := 10000) : PreservesColimit F (forget₂ _ AddCommGroupCat) :=
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 end HasColimit
 
 variable (J R)
 
-instance hasColimitsOfShape [HasColimitsOfShape J AddCommGroupCat.{w'}] :
+instance (priority := 10000) hasColimitsOfShape [HasColimitsOfShape J AddCommGroupCat.{w'}] :
     HasColimitsOfShape J (ModuleCat.{w'} R) where
 
-instance hasColimitsOfSize [HasColimitsOfSize.{v, u} AddCommGroupCat.{w'}] :
+instance (priority := 10000) hasColimitsOfSize [HasColimitsOfSize.{v, u} AddCommGroupCat.{w'}] :
     HasColimitsOfSize.{v, u} (ModuleCat.{w'} R) where
 
-noncomputable instance forget₂PreservesColimitsOfShape
+noncomputable instance (priority := 10000) forget₂PreservesColimitsOfShape
     [HasColimitsOfShape J AddCommGroupCat.{w'}] :
     PreservesColimitsOfShape J (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) where
 
-noncomputable instance forget₂PreservesColimitsOfSize
+noncomputable instance (priority := 10000) forget₂PreservesColimitsOfSize
     [HasColimitsOfSize.{u, v} AddCommGroupCat.{w'}] :
     PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCat.{w'} R) AddCommGroupCat) where
 
@@ -123,7 +123,7 @@ noncomputable instance
     [HasColimitsOfSize.{u, v} AddCommGroupCatMax.{w, w'}] :
     PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCatMax.{w, w'} R) AddCommGroupCat) where
 
-instance : HasFiniteColimits (ModuleCat.{w'} R) := inferInstance
+instance (priority := 10000) : HasFiniteColimits (ModuleCat.{w'} R) := inferInstance
 
 -- Sanity checks, just to make sure typeclass search can find the instances we want.
 example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{v, u} R) :=
@@ -139,7 +139,7 @@ example (R : Type u) [Ring R] : HasCoequalizers (ModuleCat.{u} R) := by
   infer_instance
 
 -- for some reason, this instance is not found automatically later on
-instance : HasCoequalizers (ModuleCat.{v} R) where
+instance (priority := 10000) : HasCoequalizers (ModuleCat.{v} R) where
 
 noncomputable example (R : Type u) [Ring R] :
   PreservesColimits (forget₂ (ModuleCat.{u} R) AddCommGroupCat) := inferInstance

@@ -48,7 +48,7 @@ class Gmodule [AddMonoid ιA] [VAdd ιA ιB] [∀ i, AddMonoid (A i)] [∀ i, Ad
 #align direct_sum.gmodule DirectSum.Gmodule
 
 /-- A graded version of `Semiring.toModule`. -/
-instance GSemiring.toGmodule [AddMonoid ιA] [∀ i : ιA, AddCommMonoid (A i)]
+instance (priority := 10000) GSemiring.toGmodule [AddMonoid ιA] [∀ i : ιA, AddCommMonoid (A i)]
     [h : GSemiring A] : Gmodule A A :=
   { GMonoid.toGMulAction A with
     smul_add := fun _ _ _ => h.mul_add _ _ _
@@ -85,7 +85,7 @@ section
 
 open GradedMonoid DirectSum Gmodule
 
-instance [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M] :
+instance (priority := 10000) [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M] :
     SMul (⨁ i, A i) (⨁ i, M i) where
   smul x y := smulAddMonoidHom A M x y
 
@@ -145,7 +145,7 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
       (mul_smul (GradedMonoid.mk ai ax) (GradedMonoid.mk bi bx) (GradedMonoid.mk ci cx))
 
 /-- The `Module` derived from `gmodule A M`. -/
-instance module [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M] :
+instance (priority := 10000) module [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M] :
     Module (⨁ i, A i) (⨁ i, M i) where
   smul := (· • ·)
   one_smul := one_smul' _ _
@@ -176,7 +176,7 @@ variable (𝓜 : ιM → σ)
 
 namespace SetLike
 
-instance gmulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M] [SetLike.GradedMonoid 𝓐]
+instance (priority := 10000) gmulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M] [SetLike.GradedMonoid 𝓐]
     [SetLike.GradedSMul 𝓐 𝓜] : GradedMonoid.GMulAction (fun i => 𝓐 i) fun i => 𝓜 i :=
   { SetLike.toGSMul 𝓐 𝓜 with
     one_smul := fun ⟨_i, _m⟩ => Sigma.subtype_ext (zero_vadd _ _) (one_smul _ _)
@@ -184,7 +184,7 @@ instance gmulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M] [SetLike
       Sigma.subtype_ext (add_vadd _ _ _) (mul_smul _ _ _) }
 #align set_like.gmul_action SetLike.gmulAction
 
-instance gdistribMulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M]
+instance (priority := 10000) gdistribMulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M]
     [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜] :
     DirectSum.GdistribMulAction (fun i => 𝓐 i) fun i => 𝓜 i :=
   { SetLike.gmulAction 𝓐 𝓜 with
@@ -197,7 +197,7 @@ variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
 
 /-- `[SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]` is the internal version of graded
   module, the internal version can be translated into the external version `gmodule`. -/
-instance gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i :=
+instance (priority := 10000) gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i :=
   { SetLike.gdistribMulAction 𝓐 𝓜 with
     smul := fun x y => ⟨(x : A) • (y : M), SetLike.GradedSMul.smul_mem x.2 y.2⟩
     add_smul := fun _a _a' _b => Subtype.ext <| add_smul _ _ _

@@ -74,10 +74,10 @@ noncomputable def equiv (α) : Erased α ≃ α :=
   ⟨out, mk, mk_out, out_mk⟩
 #align erased.equiv Erased.equiv
 
-instance (α : Type u) : Repr (Erased α) :=
+instance (priority := 10000) (α : Type u) : Repr (Erased α) :=
   ⟨fun _ _ => "Erased"⟩
 
-instance (α : Type u) : ToString (Erased α) :=
+instance (priority := 10000) (α : Type u) : ToString (Erased α) :=
   ⟨fun _ => "Erased"⟩
 
 -- Porting note: Deleted `has_to_format`
@@ -92,7 +92,7 @@ theorem nonempty_iff {α} : Nonempty (Erased α) ↔ Nonempty α :=
   ⟨fun ⟨a⟩ => ⟨a.out⟩, fun ⟨a⟩ => ⟨mk a⟩⟩
 #align erased.nonempty_iff Erased.nonempty_iff
 
-instance {α} [h : Nonempty α] : Inhabited (Erased α) :=
+instance (priority := 10000) {α} [h : Nonempty α] : Inhabited (Erased α) :=
   ⟨choice h⟩
 
 /-- `(>>=)` operation on `Erased`.

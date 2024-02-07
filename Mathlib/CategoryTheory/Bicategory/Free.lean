@@ -36,7 +36,7 @@ def FreeBicategory (B : Type u) :=
   B
 #align category_theory.free_bicategory CategoryTheory.FreeBicategory
 
-instance (B : Type u) : ∀ [Inhabited B], Inhabited (FreeBicategory B) := by
+instance (priority := 10000) (B : Type u) : ∀ [Inhabited B], Inhabited (FreeBicategory B) := by
   intro h
   exact id h
 
@@ -53,13 +53,13 @@ inductive Hom : B → B → Type max u v
   | comp {a b c : B} (f : Hom a b) (g : Hom b c) : Hom a c
 #align category_theory.free_bicategory.hom CategoryTheory.FreeBicategory.Hom
 
-instance (a b : B) [Inhabited (a ⟶ b)] : Inhabited (Hom a b) :=
+instance (priority := 10000) (a b : B) [Inhabited (a ⟶ b)] : Inhabited (Hom a b) :=
   ⟨Hom.of default⟩
 
-instance quiver : Quiver.{max u v + 1} (FreeBicategory B) where
+instance (priority := 10000) quiver : Quiver.{max u v + 1} (FreeBicategory B) where
   Hom := fun a b : B => Hom a b
 
-instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
+instance (priority := 10000) categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
   id   := fun a : B => Hom.id a
   comp := @fun _ _ _ => Hom.comp
 
@@ -167,7 +167,7 @@ end
 -- porting note: commenting out redundant binder annotation update
 -- variable {B}
 
-instance homCategory (a b : FreeBicategory B) : Category (a ⟶ b) where
+instance (priority := 10000) homCategory (a b : FreeBicategory B) : Category (a ⟶ b) where
   Hom f g := Quot (@Rel _ _ a b f g)
   id f := Quot.mk Rel (Hom₂.id f)
   comp := @fun f g h => Quot.map₂ Hom₂.vcomp Rel.vcomp_right Rel.vcomp_left
@@ -183,7 +183,7 @@ instance homCategory (a b : FreeBicategory B) : Category (a ⟶ b) where
 #align category_theory.free_bicategory.hom_category CategoryTheory.FreeBicategory.homCategory
 
 /-- Bicategory structure on the free bicategory. -/
-instance bicategory : Bicategory (FreeBicategory B) where
+instance (priority := 10000) bicategory : Bicategory (FreeBicategory B) where
   homCategory := @fun (a b : B) => FreeBicategory.homCategory a b
   whiskerLeft := @fun a b c f g h η => Quot.map (Hom₂.whisker_left f) (Rel.whisker_left f g h) η
   whiskerLeft_id := @fun a b c f g => Quot.sound (Rel.whisker_left_id f g)

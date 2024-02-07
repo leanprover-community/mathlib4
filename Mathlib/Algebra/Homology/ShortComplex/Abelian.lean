@@ -48,7 +48,7 @@ lemma abelianImageToKernel_comp_kernel_ι :
     S.abelianImageToKernel ≫ kernel.ι S.g = Abelian.image.ι S.f :=
   kernel.lift_ι _ _ _
 
-instance : Mono S.abelianImageToKernel :=
+instance (priority := 10000) : Mono S.abelianImageToKernel :=
   mono_of_mono_fac S.abelianImageToKernel_comp_kernel_ι
 
 @[reassoc (attr := simp 1100)]
@@ -117,7 +117,7 @@ lemma cokernel_π_comp_cokernelToAbelianCoimage :
     cokernel.π S.f ≫ S.cokernelToAbelianCoimage = Abelian.coimage.π S.g :=
   cokernel.π_desc _ _ _
 
-instance : Epi S.cokernelToAbelianCoimage :=
+instance (priority := 10000) : Epi S.cokernelToAbelianCoimage :=
   epi_of_epi_fac S.cokernel_π_comp_cokernelToAbelianCoimage
 
 lemma kernel_ι_comp_cokernel_π_comp_cokernelToAbelianCoimage :
@@ -178,7 +178,7 @@ noncomputable def HomologyData.ofAbelian : S.HomologyData where
   right := RightHomologyData.ofAbelian S
   iso := Abelian.coimageIsoImage (kernel.ι S.g ≫ cokernel.π S.f)
 
-instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
+instance (priority := 10000) _root_.CategoryTheory.categoryWithHomology_of_abelian :
     CategoryWithHomology C where
   hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
 

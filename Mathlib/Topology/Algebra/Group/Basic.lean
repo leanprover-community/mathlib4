@@ -259,14 +259,14 @@ theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
 #align continuous_within_at.neg ContinuousWithinAt.neg
 
 @[to_additive]
-instance Prod.continuousInv [TopologicalSpace H] [Inv H] [ContinuousInv H] :
+instance (priority := 10000) Prod.continuousInv [TopologicalSpace H] [Inv H] [ContinuousInv H] :
     ContinuousInv (G × H) :=
   ⟨continuous_inv.fst'.prod_mk continuous_inv.snd'⟩
 
 variable {ι : Type*}
 
 @[to_additive]
-instance Pi.continuousInv {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Inv (C i)]
+instance (priority := 10000) Pi.continuousInv {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Inv (C i)]
     [∀ i, ContinuousInv (C i)] : ContinuousInv (∀ i, C i) where
   continuous_inv := continuous_pi fun i => (continuous_apply i).inv
 #align pi.has_continuous_inv Pi.continuousInv
@@ -277,7 +277,7 @@ Lean fails to use `Pi.continuousInv` for non-dependent functions. -/
 @[to_additive
   "A version of `Pi.continuousNeg` for non-dependent functions. It is needed
   because sometimes Lean fails to use `Pi.continuousNeg` for non-dependent functions."]
-instance Pi.has_continuous_inv' : ContinuousInv (ι → G) :=
+instance (priority := 10000) Pi.has_continuous_inv' : ContinuousInv (ι → G) :=
   Pi.continuousInv
 #align pi.has_continuous_inv' Pi.has_continuous_inv'
 #align pi.has_continuous_neg' Pi.has_continuous_neg'
@@ -303,10 +303,10 @@ theorem isClosed_setOf_map_inv [Inv G₁] [Inv G₂] [ContinuousInv G₂] :
 
 end PointwiseLimits
 
-instance [TopologicalSpace H] [Inv H] [ContinuousInv H] : ContinuousNeg (Additive H) where
+instance (priority := 10000) [TopologicalSpace H] [Inv H] [ContinuousInv H] : ContinuousNeg (Additive H) where
   continuous_neg := @continuous_inv H _ _ _
 
-instance [TopologicalSpace H] [Neg H] [ContinuousNeg H] : ContinuousInv (Multiplicative H) where
+instance (priority := 10000) [TopologicalSpace H] [Neg H] [ContinuousNeg H] : ContinuousInv (Multiplicative H) where
   continuous_inv := @continuous_neg H _ _ _
 
 end ContinuousInv
@@ -445,7 +445,7 @@ class TopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] extends Contin
 
 section Conj
 
-instance ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
+instance (priority := 10000) ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
     [ContinuousMul M] : ContinuousConstSMul (ConjAct Mˣ) M :=
   ⟨fun _ => (continuous_const.mul continuous_id).mul continuous_const⟩
 #align conj_act.units_has_continuous_const_smul ConjAct.units_continuousConstSMul
@@ -494,12 +494,12 @@ theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
 #align continuous_zpow continuous_zpow
 #align continuous_zsmul continuous_zsmul
 
-instance AddGroup.continuousConstSMul_int {A} [AddGroup A] [TopologicalSpace A]
+instance (priority := 10000) AddGroup.continuousConstSMul_int {A} [AddGroup A] [TopologicalSpace A]
     [TopologicalAddGroup A] : ContinuousConstSMul ℤ A :=
   ⟨continuous_zsmul⟩
 #align add_group.has_continuous_const_smul_int AddGroup.continuousConstSMul_int
 
-instance AddGroup.continuousSMul_int {A} [AddGroup A] [TopologicalSpace A]
+instance (priority := 10000) AddGroup.continuousSMul_int {A} [AddGroup A] [TopologicalSpace A]
     [TopologicalAddGroup A] : ContinuousSMul ℤ A :=
   ⟨continuous_prod_of_discrete_left.mpr continuous_zsmul⟩
 #align add_group.has_continuous_smul_int AddGroup.continuousSMul_int
@@ -606,11 +606,11 @@ theorem tendsto_inv_nhdsWithin_Iic_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻
 end OrderedCommGroup
 
 @[to_additive]
-instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H) where
+instance (priority := 10000) [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H) where
   continuous_inv := continuous_inv.prod_map continuous_inv
 
 @[to_additive]
-instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
+instance (priority := 10000) Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
     [∀ b, TopologicalGroup (C b)] : TopologicalGroup (∀ b, C b) where
   continuous_inv := continuous_pi fun i => (continuous_apply i).inv
 #align pi.topological_group Pi.topologicalGroup
@@ -619,12 +619,12 @@ instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] 
 open MulOpposite
 
 @[to_additive]
-instance [Inv α] [ContinuousInv α] : ContinuousInv αᵐᵒᵖ :=
+instance (priority := 10000) [Inv α] [ContinuousInv α] : ContinuousInv αᵐᵒᵖ :=
   opHomeomorph.symm.inducing.continuousInv unop_inv
 
 /-- If multiplication is continuous in `α`, then it also is in `αᵐᵒᵖ`. -/
 @[to_additive "If addition is continuous in `α`, then it also is in `αᵃᵒᵖ`."]
-instance [Group α] [TopologicalGroup α] : TopologicalGroup αᵐᵒᵖ where
+instance (priority := 10000) [Group α] [TopologicalGroup α] : TopologicalGroup αᵐᵒᵖ where
 
 variable (G)
 
@@ -692,7 +692,7 @@ theorem topologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHo
 namespace Subgroup
 
 @[to_additive]
-instance (S : Subgroup G) : TopologicalGroup S :=
+instance (priority := 10000) (S : Subgroup G) : TopologicalGroup S :=
   Inducing.topologicalGroup S.subtype inducing_subtype_val
 
 end Subgroup
@@ -970,7 +970,7 @@ section QuotientTopologicalGroup
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] (N : Subgroup G) (n : N.Normal)
 
 @[to_additive]
-instance QuotientGroup.Quotient.topologicalSpace {G : Type*} [Group G] [TopologicalSpace G]
+instance (priority := 10000) QuotientGroup.Quotient.topologicalSpace {G : Type*} [Group G] [TopologicalSpace G]
     (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
   instTopologicalSpaceQuotient
 #align quotient_group.quotient.topological_space QuotientGroup.Quotient.topologicalSpace
@@ -988,7 +988,7 @@ theorem QuotientGroup.isOpenMap_coe : IsOpenMap ((↑) : G → G ⧸ N) := by
 #align quotient_add_group.is_open_map_coe QuotientAddGroup.isOpenMap_coe
 
 @[to_additive]
-instance topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
+instance (priority := 10000) topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) where
   continuous_mul := by
     have cont : Continuous (((↑) : G → G ⧸ N) ∘ fun p : G × G ↦ p.fst * p.snd) :=
       continuous_quot_mk.comp continuous_mul
@@ -1048,7 +1048,7 @@ countable neighborhood basis. -/
 @[to_additive
   "In a first countable topological additive group `G` with normal additive subgroup
   `N`, `0 : G ⧸ N` has a countable neighborhood basis."]
-instance QuotientGroup.nhds_one_isCountablyGenerated : (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
+instance (priority := 10000) QuotientGroup.nhds_one_isCountablyGenerated : (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
   (QuotientGroup.nhds_eq N 1).symm ▸ map.isCountablyGenerated _ _
 #align quotient_group.nhds_one_is_countably_generated QuotientGroup.nhds_one_isCountablyGenerated
 #align quotient_add_group.nhds_zero_is_countably_generated QuotientAddGroup.nhds_zero_isCountablyGenerated
@@ -1596,7 +1596,7 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 
 @[to_additive]
-instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
+instance (priority := 10000) Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
     [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
   rw [← QuotientGroup.ker_mk' S] at hS
   haveI := TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
@@ -1853,7 +1853,7 @@ theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
 
 /-- A quotient of a locally compact group is locally compact. -/
 @[to_additive]
-instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := by
+instance (priority := 10000) [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := by
   refine ⟨fun x n hn ↦ ?_⟩
   let π := ((↑) : G → G ⧸ N)
   have C : Continuous π := continuous_quotient_mk'
@@ -1894,11 +1894,11 @@ end
 
 end FilterMul
 
-instance {G} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
+instance (priority := 10000) {G} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
     TopologicalAddGroup (Additive G) where
   continuous_neg := @continuous_inv G _ _ _
 
-instance {G} [TopologicalSpace G] [AddGroup G] [TopologicalAddGroup G] :
+instance (priority := 10000) {G} [TopologicalSpace G] [AddGroup G] [TopologicalAddGroup G] :
     TopologicalGroup (Multiplicative G) where
   continuous_inv := @continuous_neg G _ _ _
 
@@ -1907,7 +1907,7 @@ section Quotient
 variable [Group G] [TopologicalSpace G] [ContinuousMul G] {Γ : Subgroup G}
 
 @[to_additive]
-instance QuotientGroup.continuousConstSMul : ContinuousConstSMul G (G ⧸ Γ) where
+instance (priority := 10000) QuotientGroup.continuousConstSMul : ContinuousConstSMul G (G ⧸ Γ) where
   continuous_const_smul g := by
      convert ((@continuous_const _ _ _ _ g).mul continuous_id).quotient_map' _
 #align quotient_group.has_continuous_const_smul QuotientGroup.continuousConstSMul
@@ -1924,7 +1924,7 @@ theorem QuotientGroup.continuous_smul₁ (x : G ⧸ Γ) : Continuous fun g : G =
 @[to_additive
   "The quotient of a second countable additive topological group by a subgroup is second
   countable."]
-instance QuotientGroup.secondCountableTopology [SecondCountableTopology G] :
+instance (priority := 10000) QuotientGroup.secondCountableTopology [SecondCountableTopology G] :
     SecondCountableTopology (G ⧸ Γ) :=
   ContinuousConstSMul.secondCountableTopology
 #align quotient_group.second_countable_topology QuotientGroup.secondCountableTopology
@@ -1953,7 +1953,7 @@ open MulOpposite (continuous_op continuous_unop)
 variable [Monoid α] [TopologicalSpace α] [Monoid β] [TopologicalSpace β]
 
 @[to_additive]
-instance [ContinuousMul α] : TopologicalGroup αˣ where
+instance (priority := 10000) [ContinuousMul α] : TopologicalGroup αˣ where
   continuous_inv := Units.continuous_iff.2 <| ⟨continuous_coe_inv, continuous_val⟩
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
@@ -2086,7 +2086,7 @@ in `t` (`t` is finer than `s`). -/
 @[to_additive
   "The ordering on group topologies on the group `γ`. `t ≤ s` if every set open in `s`
   is also open in `t` (`t` is finer than `s`)."]
-instance : PartialOrder (GroupTopology α) :=
+instance (priority := 10000) : PartialOrder (GroupTopology α) :=
   PartialOrder.lift toTopologicalSpace toTopologicalSpace_injective
 
 @[to_additive (attr := simp)]
@@ -2097,7 +2097,7 @@ theorem toTopologicalSpace_le {x y : GroupTopology α} :
 #align add_group_topology.to_topological_space_le AddGroupTopology.toTopologicalSpace_le
 
 @[to_additive]
-instance : Top (GroupTopology α) :=
+instance (priority := 10000) : Top (GroupTopology α) :=
   let _t : TopologicalSpace α := ⊤
   ⟨{  continuous_mul := continuous_top
       continuous_inv := continuous_top }⟩
@@ -2109,7 +2109,7 @@ theorem toTopologicalSpace_top : (⊤ : GroupTopology α).toTopologicalSpace = �
 #align add_group_topology.to_topological_space_top AddGroupTopology.toTopologicalSpace_top
 
 @[to_additive]
-instance : Bot (GroupTopology α) :=
+instance (priority := 10000) : Bot (GroupTopology α) :=
   let _t : TopologicalSpace α := ⊥
   ⟨{  continuous_mul := by
         haveI := discreteTopology_bot α
@@ -2123,14 +2123,14 @@ theorem toTopologicalSpace_bot : (⊥ : GroupTopology α).toTopologicalSpace = �
 #align add_group_topology.to_topological_space_bot AddGroupTopology.toTopologicalSpace_bot
 
 @[to_additive]
-instance : BoundedOrder (GroupTopology α) where
+instance (priority := 10000) : BoundedOrder (GroupTopology α) where
   top := ⊤
   le_top x := show x.toTopologicalSpace ≤ ⊤ from le_top
   bot := ⊥
   bot_le x := show ⊥ ≤ x.toTopologicalSpace from bot_le
 
 @[to_additive]
-instance : Inf (GroupTopology α) where inf x y := ⟨x.1 ⊓ y.1, topologicalGroup_inf x.2 y.2⟩
+instance (priority := 10000) : Inf (GroupTopology α) where inf x y := ⟨x.1 ⊓ y.1, topologicalGroup_inf x.2 y.2⟩
 
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_inf (x y : GroupTopology α) :
@@ -2140,18 +2140,18 @@ theorem toTopologicalSpace_inf (x y : GroupTopology α) :
 #align add_group_topology.to_topological_space_inf AddGroupTopology.toTopologicalSpace_inf
 
 @[to_additive]
-instance : SemilatticeInf (GroupTopology α) :=
+instance (priority := 10000) : SemilatticeInf (GroupTopology α) :=
   toTopologicalSpace_injective.semilatticeInf _ toTopologicalSpace_inf
 
 @[to_additive]
-instance : Inhabited (GroupTopology α) :=
+instance (priority := 10000) : Inhabited (GroupTopology α) :=
   ⟨⊤⟩
 
 local notation "cont" => @Continuous _ _
 
 /-- Infimum of a collection of group topologies. -/
 @[to_additive "Infimum of a collection of additive group topologies"]
-instance : InfSet (GroupTopology α) where
+instance (priority := 10000) : InfSet (GroupTopology α) where
   sInf S :=
     ⟨sInf (toTopologicalSpace '' S), topologicalGroup_sInf <| ball_image_iff.2 fun t _ => t.2⟩
 
@@ -2185,7 +2185,7 @@ topologies contained in the intersection of `s` and `t`. -/
 
   The supremum of two group topologies `s` and `t` is the infimum of the family of all group
   topologies contained in the intersection of `s` and `t`."]
-instance : CompleteSemilatticeInf (GroupTopology α) :=
+instance (priority := 10000) : CompleteSemilatticeInf (GroupTopology α) :=
   { inferInstanceAs (InfSet (GroupTopology α)),
     inferInstanceAs (PartialOrder (GroupTopology α)) with
     sInf_le := fun S a haS => toTopologicalSpace_le.1 <| sInf_le ⟨a, haS, rfl⟩
@@ -2196,7 +2196,7 @@ instance : CompleteSemilatticeInf (GroupTopology α) :=
       exact hab b hbS }
 
 @[to_additive]
-instance : CompleteLattice (GroupTopology α) :=
+instance (priority := 10000) : CompleteLattice (GroupTopology α) :=
   { inferInstanceAs (BoundedOrder (GroupTopology α)),
     inferInstanceAs (SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with

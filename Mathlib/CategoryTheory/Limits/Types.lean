@@ -174,7 +174,7 @@ section UnivLE
 
 open UnivLE
 
-instance hasLimit [Small.{u} J] (F : J ⥤ Type u) : HasLimit F :=
+instance (priority := 10000) hasLimit [Small.{u} J] (F : J ⥤ Type u) : HasLimit F :=
   HasLimit.mk
     { cone := Small.limitCone.{v, u} F
       isLimit := Small.limitConeIsLimit F }
@@ -373,7 +373,7 @@ def colimitCoconeIsColimit (F : J ⥤ TypeMax.{v, u}) : IsColimit (colimitCocone
 
 See <https://stacks.math.columbia.edu/tag/002U>.
 -/
-instance hasColimitsOfSize : HasColimitsOfSize.{w', v} TypeMax.{v, u} where
+instance (priority := 10000) hasColimitsOfSize : HasColimitsOfSize.{w', v} TypeMax.{v, u} where
   has_colimits_of_shape _ :=
     { has_colimit := fun F =>
         HasColimit.mk
@@ -381,15 +381,15 @@ instance hasColimitsOfSize : HasColimitsOfSize.{w', v} TypeMax.{v, u} where
             isColimit := colimitCoconeIsColimit F } }
 #align category_theory.limits.types.has_colimits_of_size CategoryTheory.Limits.Types.hasColimitsOfSize
 
-instance : HasColimitsOfSize.{w', v} (Type v) := hasColimitsOfSize.{v, v}
+instance (priority := 10000) : HasColimitsOfSize.{w', v} (Type v) := hasColimitsOfSize.{v, v}
 
-instance : HasColimits (Type u) :=
+instance (priority := 10000) : HasColimits (Type u) :=
   Types.hasColimitsOfSize.{u, u, u}
 
-instance hasColimit (F : J ⥤ TypeMax.{v, u}) : HasColimit F :=
+instance (priority := 10000) hasColimit (F : J ⥤ TypeMax.{v, u}) : HasColimit F :=
   (Types.hasColimitsOfSize.has_colimits_of_shape J).has_colimit F
 
-instance hasColimit' (F : J ⥤ Type v) : HasColimit F :=
+instance (priority := 10000) hasColimit' (F : J ⥤ Type v) : HasColimit F :=
   hasColimit.{v, v} F
 
 /-- The equivalence between the abstract colimit of `F` in `Type u`
@@ -614,14 +614,14 @@ def Image : Type u :=
   Set.range f
 #align category_theory.limits.types.image CategoryTheory.Limits.Types.Image
 
-instance [Inhabited α] : Inhabited (Image f) where default := ⟨f default, ⟨_, rfl⟩⟩
+instance (priority := 10000) [Inhabited α] : Inhabited (Image f) where default := ⟨f default, ⟨_, rfl⟩⟩
 
 /-- the inclusion of `Image f` into the target -/
 def Image.ι : Image f ⟶ β :=
   Subtype.val
 #align category_theory.limits.types.image.ι CategoryTheory.Limits.Types.Image.ι
 
-instance : Mono (Image.ι f) :=
+instance (priority := 10000) : Mono (Image.ι f) :=
   (mono_iff_injective _).2 Subtype.val_injective
 
 variable {f}
@@ -653,13 +653,13 @@ noncomputable def isImage : IsImage (monoFactorisation f) where
   lift_fac := Image.lift_fac
 #align category_theory.limits.types.is_image CategoryTheory.Limits.Types.isImage
 
-instance : HasImage f :=
+instance (priority := 10000) : HasImage f :=
   HasImage.mk ⟨_, isImage f⟩
 
-instance : HasImages (Type u) where
+instance (priority := 10000) : HasImages (Type u) where
   has_image := by infer_instance
 
-instance : HasImageMaps (Type u) where
+instance (priority := 10000) : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
       (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by

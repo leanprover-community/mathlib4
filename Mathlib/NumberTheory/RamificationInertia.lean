@@ -452,7 +452,7 @@ local notation "e" => ramificationIdx f p P
 
 /-- `R / p` has a canonical map to `S / (P ^ e)`, where `e` is the ramification index
 of `P` over `p`. -/
-noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R ⧸ p) (S ⧸ P ^ e) :=
+noncomputable instance (priority := 10000) Quotient.algebraQuotientPowRamificationIdx : Algebra (R ⧸ p) (S ⧸ P ^ e) :=
   Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp le_pow_ramificationIdx)
 #align ideal.quotient.algebra_quotient_pow_ramification_idx Ideal.Quotient.algebraQuotientPowRamificationIdx
 
@@ -696,7 +696,7 @@ theorem Factors.ne_bot (P : (factors (map (algebraMap R S) p)).toFinset) : (P : 
   (prime_of_factor _ (Multiset.mem_toFinset.mp P.2)).ne_zero
 #align ideal.factors.ne_bot Ideal.Factors.ne_bot
 
-instance Factors.isPrime (P : (factors (map (algebraMap R S) p)).toFinset) :
+instance (priority := 10000) Factors.isPrime (P : (factors (map (algebraMap R S) p)).toFinset) :
     IsPrime (P : Ideal S) :=
   Ideal.isPrime_of_prime (prime_of_factor _ (Multiset.mem_toFinset.mp P.2))
 #align ideal.factors.is_prime Ideal.Factors.isPrime
@@ -707,7 +707,7 @@ theorem Factors.ramificationIdx_ne_zero (P : (factors (map (algebraMap R S) p)).
     (Factors.isPrime p P) (Ideal.le_of_dvd (dvd_of_mem_factors (Multiset.mem_toFinset.mp P.2)))
 #align ideal.factors.ramification_idx_ne_zero Ideal.Factors.ramificationIdx_ne_zero
 
-instance Factors.fact_ramificationIdx_neZero (P : (factors (map (algebraMap R S) p)).toFinset) :
+instance (priority := 10000) Factors.fact_ramificationIdx_neZero (P : (factors (map (algebraMap R S) p)).toFinset) :
     NeZero (ramificationIdx (algebraMap R S) p P) :=
   ⟨Factors.ramificationIdx_ne_zero p P⟩
 #align ideal.factors.fact_ramification_idx_ne_zero Ideal.Factors.fact_ramificationIdx_neZero
@@ -716,7 +716,7 @@ set_option synthInstance.checkSynthOrder false
 -- Porting note: this is okay since, as noted above, in this file the value of `f` can be inferred
 attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero
 
-instance Factors.isScalarTower (P : (factors (map (algebraMap R S) p)).toFinset) :
+instance (priority := 10000) Factors.isScalarTower (P : (factors (map (algebraMap R S) p)).toFinset) :
     IsScalarTower R (R ⧸ p) (S ⧸ (P : Ideal S)) :=
   IsScalarTower.of_algebraMap_eq fun x => by simp
 #align ideal.factors.is_scalar_tower Ideal.Factors.isScalarTower
@@ -731,7 +731,7 @@ theorem Factors.finrank_pow_ramificationIdx [p.IsMaximal]
   exacts [NeZero.ne _, Factors.ne_bot p P]
 #align ideal.factors.finrank_pow_ramification_idx Ideal.Factors.finrank_pow_ramificationIdx
 
-instance Factors.finiteDimensional_quotient [IsNoetherian R S] [p.IsMaximal]
+instance (priority := 10000) Factors.finiteDimensional_quotient [IsNoetherian R S] [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) :
     FiniteDimensional (R ⧸ p) (S ⧸ (P : Ideal S)) :=
   IsNoetherian.iff_fg.mp <|
@@ -745,7 +745,7 @@ theorem Factors.inertiaDeg_ne_zero [IsNoetherian R S] [p.IsMaximal]
   rw [inertiaDeg_algebraMap]; exact (FiniteDimensional.finrank_pos_iff.mpr inferInstance).ne'
 #align ideal.factors.inertia_deg_ne_zero Ideal.Factors.inertiaDeg_ne_zero
 
-instance Factors.finiteDimensional_quotient_pow [IsNoetherian R S] [p.IsMaximal]
+instance (priority := 10000) Factors.finiteDimensional_quotient_pow [IsNoetherian R S] [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) :
     FiniteDimensional (R ⧸ p) (S ⧸ (P : Ideal S) ^ ramificationIdx (algebraMap R S) p P) := by
   refine .of_finrank_pos ?_

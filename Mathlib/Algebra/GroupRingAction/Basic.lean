@@ -69,7 +69,7 @@ theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
 /-- The tautological action by `R →+* R` on `R`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance RingHom.applyMulSemiringAction : MulSemiringAction (R →+* R) R where
+instance (priority := 10000) RingHom.applyMulSemiringAction : MulSemiringAction (R →+* R) R where
   smul := (· <| ·)
   smul_one := map_one
   smul_mul := map_mul
@@ -85,7 +85,7 @@ protected theorem RingHom.smul_def (f : R →+* R) (a : R) : f • a = f a :=
 #align ring_hom.smul_def RingHom.smul_def
 
 /-- `RingHom.applyMulSemiringAction` is faithful. -/
-instance RingHom.applyFaithfulSMul : FaithfulSMul (R →+* R) R :=
+instance (priority := 10000) RingHom.applyFaithfulSMul : FaithfulSMul (R →+* R) R :=
   ⟨fun {_ _} h => RingHom.ext h⟩
 #align ring_hom.apply_has_faithful_smul RingHom.applyFaithfulSMul
 

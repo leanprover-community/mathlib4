@@ -159,7 +159,7 @@ end DivisionRing
 
 section OfScientific
 
-instance RatCast.toOfScientific [RatCast K] : OfScientific K where
+instance (priority := 10000) RatCast.toOfScientific [RatCast K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) := Rat.ofScientific m b d
 
 end OfScientific

@@ -97,7 +97,7 @@ theorem ordConnectedComponent_eq (h : [[x, y]] ⊆ s) :
       mem_ordConnectedComponent_trans h⟩
 #align set.ord_connected_component_eq Set.ordConnectedComponent_eq
 
-instance : OrdConnected (ordConnectedComponent s x) :=
+instance (priority := 10000) : OrdConnected (ordConnectedComponent s x) :=
   ordConnected_of_uIcc_subset_left fun _ hy _ hz => (uIcc_subset_uIcc_left hz).trans hy
 
 /-- Projection from `s : Set α` to `α` sending each order connected component of `s` to a single

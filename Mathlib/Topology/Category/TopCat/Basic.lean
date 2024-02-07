@@ -35,7 +35,7 @@ set_option linter.uppercaseLean3 false in
 namespace TopCat
 
 -- porting note: had to add in the last two proofs
-instance bundledHom : BundledHom @ContinuousMap :=
+instance (priority := 10000) bundledHom : BundledHom @ContinuousMap :=
   ⟨@ContinuousMap.toFun, @ContinuousMap.id, @ContinuousMap.comp, @ContinuousMap.coe_injective,
     fun _ => rfl, fun _ _ _ _ _ => rfl⟩
 set_option linter.uppercaseLean3 false in
@@ -45,22 +45,22 @@ deriving instance LargeCategory for TopCat
 
 -- Porting note: currently no derive handler for ConcreteCategory
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance concreteCategory : ConcreteCategory TopCat := by
+instance (priority := 10000) concreteCategory : ConcreteCategory TopCat := by
   dsimp [TopCat]
   infer_instance
 
 @[to_additive existing TopCat.instCoeSortTopCatType]
-instance instCoeSortTopCatType : CoeSort TopCat (Type*) :=
+instance (priority := 10000) instCoeSortTopCatType : CoeSort TopCat (Type*) :=
   Bundled.coeSort
 
-instance topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x :=
+instance (priority := 10000) topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x :=
   x.str
 set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
 -- Porting note: cannot find a coercion to function otherwise
 attribute [instance] ConcreteCategory.instFunLike in
-instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
+instance (priority := 10000) (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 
 -- Porting note: simp can prove this; removed simp
@@ -81,12 +81,12 @@ def of (X : Type u) [TopologicalSpace X] : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align Top.of TopCat.of
 
-instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
+instance (priority := 10000) topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
   X.str
 
 -- Porting note: cannot see through forget; made reducible to get closer to Lean 3 behavior
 @[reducible]
-instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
+instance (priority := 10000) topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
   X.str
 
 @[simp]
@@ -94,7 +94,7 @@ theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
 set_option linter.uppercaseLean3 false in
 #align Top.coe_of TopCat.coe_of
 
-instance inhabited : Inhabited TopCat :=
+instance (priority := 10000) inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
 
 -- porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
@@ -107,7 +107,7 @@ def discrete : Type u ⥤ TopCat.{u} where
 set_option linter.uppercaseLean3 false in
 #align Top.discrete TopCat.discrete
 
-instance {X : Type u} : DiscreteTopology (discrete.obj X) :=
+instance (priority := 10000) {X : Type u} : DiscreteTopology (discrete.obj X) :=
   ⟨rfl⟩
 
 /-- The trivial topology on any type. -/

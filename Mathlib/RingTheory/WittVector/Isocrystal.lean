@@ -88,11 +88,11 @@ def FractionRing.frobeniusRingHom : K(p, k) →+* K(p, k) :=
 
 scoped[Isocrystal] notation "φ(" p ", " k ")" => WittVector.FractionRing.frobeniusRingHom p k
 
-instance inv_pair₁ : RingHomInvPair φ(p, k) (FractionRing.frobenius p k).symm :=
+instance (priority := 10000) inv_pair₁ : RingHomInvPair φ(p, k) (FractionRing.frobenius p k).symm :=
   RingHomInvPair.of_ringEquiv (FractionRing.frobenius p k)
 #align witt_vector.inv_pair₁ WittVector.inv_pair₁
 
-instance inv_pair₂ : RingHomInvPair ((FractionRing.frobenius p k).symm : K(p, k) →+* K(p, k))
+instance (priority := 10000) inv_pair₂ : RingHomInvPair ((FractionRing.frobenius p k).symm : K(p, k) →+* K(p, k))
     (FractionRing.frobenius p k) :=
   RingHomInvPair.of_ringEquiv (FractionRing.frobenius p k).symm
 #align witt_vector.inv_pair₂ WittVector.inv_pair₂
@@ -178,9 +178,9 @@ def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section Deriving
 
-instance : AddCommGroup (StandardOneDimIsocrystal p k m) :=
+instance (priority := 10000) : AddCommGroup (StandardOneDimIsocrystal p k m) :=
   inferInstanceAs (AddCommGroup K(p, k))
-instance : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
+instance (priority := 10000) : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
   inferInstanceAs (Module K(p, k) K(p, k))
 
 end Deriving
@@ -190,7 +190,7 @@ section PerfectRing
 variable [IsDomain k] [CharP k p] [PerfectRing k p]
 
 /-- The standard one-dimensional isocrystal of slope `m : ℤ` is an isocrystal. -/
-instance (m : ℤ) : Isocrystal p k (StandardOneDimIsocrystal p k m) where
+instance (priority := 10000) (m : ℤ) : Isocrystal p k (StandardOneDimIsocrystal p k m) where
   frob :=
     (FractionRing.frobenius p k).toSemilinearEquiv.trans
       (LinearEquiv.smulOfNeZero _ _ _ (zpow_ne_zero m (WittVector.FractionRing.p_nonzero p k)))

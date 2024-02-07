@@ -93,7 +93,7 @@ variable {α β : Type u}
 /-- The equivalence relation on types given by equivalence (bijective correspondence) of types.
   Quotienting by this equivalence relation gives the cardinal numbers.
 -/
-instance Cardinal.isEquivalent : Setoid (Type u) where
+instance (priority := 10000) Cardinal.isEquivalent : Setoid (Type u) where
   r α β := Nonempty (α ≃ β)
   iseqv := ⟨
     fun α => ⟨Equiv.refl α⟩,
@@ -119,7 +119,7 @@ def mk : Type u → Cardinal :=
 @[inherit_doc]
 scoped prefix:max "#" => Cardinal.mk
 
-instance canLiftCardinalType : CanLift Cardinal.{u} (Type u) mk fun _ => True :=
+instance (priority := 10000) canLiftCardinalType : CanLift Cardinal.{u} (Type u) mk fun _ => True :=
   ⟨fun c _ => Quot.inductionOn c fun α => ⟨α, rfl⟩⟩
 #align cardinal.can_lift_cardinal_Type Cardinal.canLiftCardinalType
 
@@ -239,12 +239,12 @@ theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max
 
 /-- We define the order on cardinal numbers by `#α ≤ #β` if and only if
   there exists an embedding (injective function) from α to β. -/
-instance : LE Cardinal.{u} :=
+instance (priority := 10000) : LE Cardinal.{u} :=
   ⟨fun q₁ q₂ =>
     Quotient.liftOn₂ q₁ q₂ (fun α β => Nonempty <| α ↪ β) fun _ _ _ _ ⟨e₁⟩ ⟨e₂⟩ =>
       propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
 
-instance partialOrder : PartialOrder Cardinal.{u} where
+instance (priority := 10000) partialOrder : PartialOrder Cardinal.{u} where
   le := (· ≤ ·)
   le_refl := by
     rintro ⟨α⟩
@@ -256,7 +256,7 @@ instance partialOrder : PartialOrder Cardinal.{u} where
     rintro ⟨α⟩ ⟨β⟩ ⟨e₁⟩ ⟨e₂⟩
     exact Quotient.sound (e₁.antisymm e₂)
 
-instance linearOrder : LinearOrder Cardinal.{u} :=
+instance (priority := 10000) linearOrder : LinearOrder Cardinal.{u} :=
   { Cardinal.partialOrder with
     le_total := by
       rintro ⟨α⟩ ⟨β⟩
@@ -371,11 +371,11 @@ theorem lift_monotone : Monotone lift :=
   lift_strictMono.monotone
 #align cardinal.lift_monotone Cardinal.lift_monotone
 
-instance : Zero Cardinal.{u} :=
+instance (priority := 10000) : Zero Cardinal.{u} :=
   -- `PEmpty` might be more canonical, but this is convenient for defeq with natCast
   ⟨lift #(Fin 0)⟩
 
-instance : Inhabited Cardinal.{u} :=
+instance (priority := 10000) : Inhabited Cardinal.{u} :=
   ⟨0⟩
 
 @[simp]
@@ -408,11 +408,11 @@ theorem mk_ne_zero (α : Type u) [Nonempty α] : #α ≠ 0 :=
   mk_ne_zero_iff.2 ‹_›
 #align cardinal.mk_ne_zero Cardinal.mk_ne_zero
 
-instance : One Cardinal.{u} :=
+instance (priority := 10000) : One Cardinal.{u} :=
   -- `PUnit` might be more canonical, but this is convenient for defeq with natCast
   ⟨lift #(Fin 1)⟩
 
-instance : Nontrivial Cardinal.{u} :=
+instance (priority := 10000) : Nontrivial Cardinal.{u} :=
   ⟨⟨1, 0, mk_ne_zero _⟩⟩
 
 theorem mk_eq_one (α : Type u) [Unique α] : #α = 1 :=
@@ -432,14 +432,14 @@ theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleto
 alias ⟨_, _root_.Set.Subsingleton.cardinal_mk_le_one⟩ := mk_le_one_iff_set_subsingleton
 #align set.subsingleton.cardinal_mk_le_one Set.Subsingleton.cardinal_mk_le_one
 
-instance : Add Cardinal.{u} :=
+instance (priority := 10000) : Add Cardinal.{u} :=
   ⟨map₂ Sum fun _ _ _ _ => Equiv.sumCongr⟩
 
 theorem add_def (α β : Type u) : #α + #β = #(Sum α β) :=
   rfl
 #align cardinal.add_def Cardinal.add_def
 
-instance : NatCast Cardinal.{u} :=
+instance (priority := 10000) : NatCast Cardinal.{u} :=
   ⟨fun n => lift #(Fin n)⟩
 
 @[simp]
@@ -466,7 +466,7 @@ protected theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 :
   rw [← mk_option, mk_fintype, mk_fintype]
   simp only [Fintype.card_ulift, Fintype.card_fin, Fintype.card_option]
 
-instance : Mul Cardinal.{u} :=
+instance (priority := 10000) : Mul Cardinal.{u} :=
   ⟨map₂ Prod fun _ _ _ _ => Equiv.prodCongr⟩
 
 theorem mul_def (α β : Type u) : #α * #β = #(α × β) :=
@@ -482,7 +482,7 @@ private theorem mul_comm' (a b : Cardinal.{u}) : a * b = b * a :=
   inductionOn₂ a b fun α β => mk_congr <| Equiv.prodComm α β
 
 /-- The cardinal exponential. `#α ^ #β` is the cardinal of `β → α`. -/
-instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
+instance (priority := 10000) instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
   ⟨map₂ (fun α β => β → α) fun _ _ _ _ e₁ e₂ => e₂.arrowCongr e₁⟩
 
 theorem power_def (α β : Type u) : #α ^ #β = #(β → α) :=
@@ -513,7 +513,7 @@ theorem power_add {a b c : Cardinal} : a ^ (b + c) = a ^ b * a ^ c :=
   inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumArrowEquivProdArrow β γ α
 #align cardinal.power_add Cardinal.power_add
 
-instance commSemiring : CommSemiring Cardinal.{u} where
+instance (priority := 10000) commSemiring : CommSemiring Cardinal.{u} where
   zero := 0
   one := 1
   add := (· + ·)
@@ -660,15 +660,15 @@ private theorem add_le_add' : ∀ {a b c d : Cardinal}, a ≤ b → c ≤ d → 
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨δ⟩ ⟨e₁⟩ ⟨e₂⟩; exact ⟨e₁.sumMap e₂⟩
 -- #align cardinal.add_le_add' Cardinal.add_le_add'
 
-instance add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
+instance (priority := 10000) add_covariantClass : CovariantClass Cardinal Cardinal (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ => add_le_add' le_rfl⟩
 #align cardinal.add_covariant_class Cardinal.add_covariantClass
 
-instance add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + ·)) (· ≤ ·) :=
+instance (priority := 10000) add_swap_covariantClass : CovariantClass Cardinal Cardinal (swap (· + ·)) (· ≤ ·) :=
   ⟨fun _ _ _ h => add_le_add' h le_rfl⟩
 #align cardinal.add_swap_covariant_class Cardinal.add_swap_covariantClass
 
-instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
+instance (priority := 10000) canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.partialOrder with
     bot := 0
@@ -685,26 +685,26 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
       inductionOn₂ a b fun α β => by
         simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id }
 
-instance : CanonicallyLinearOrderedAddCommMonoid Cardinal.{u} :=
+instance (priority := 10000) : CanonicallyLinearOrderedAddCommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring, Cardinal.linearOrder with }
 
 -- Computable instance to prevent a non-computable one being found via the one above
-instance : CanonicallyOrderedAddCommMonoid Cardinal.{u} :=
+instance (priority := 10000) : CanonicallyOrderedAddCommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
 
-instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
+instance (priority := 10000) : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
     mul_le_mul_left := @mul_le_mul_left' _ _ _ _
     zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
-instance : CommMonoidWithZero Cardinal.{u} :=
+instance (priority := 10000) : CommMonoidWithZero Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
 
 -- porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
-instance : CommMonoid Cardinal.{u} :=
+instance (priority := 10000) : CommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
@@ -736,10 +736,10 @@ theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
   exact cantor_injective f hf
 #align cardinal.cantor Cardinal.cantor
 
-instance : NoMaxOrder Cardinal.{u} where exists_gt a := ⟨_, cantor a⟩
+instance (priority := 10000) : NoMaxOrder Cardinal.{u} where exists_gt a := ⟨_, cantor a⟩
 
 -- short-circuit type class inference
-instance : DistribLattice Cardinal.{u} := inferInstance
+instance (priority := 10000) : DistribLattice Cardinal.{u} := inferInstance
 
 theorem one_lt_iff_nontrivial {α : Type u} : 1 < #α ↔ Nontrivial α := by
   rw [← not_le, le_one_iff_subsingleton, ← not_nontrivial_iff_subsingleton, Classical.not_not]
@@ -774,17 +774,17 @@ protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
       simpa only [mk_out] using this⟩
 #align cardinal.lt_wf Cardinal.lt_wf
 
-instance : WellFoundedRelation Cardinal.{u} :=
+instance (priority := 10000) : WellFoundedRelation Cardinal.{u} :=
   ⟨(· < ·), Cardinal.lt_wf⟩
 
 -- Porting note: this no longer is automatically inferred.
-instance : WellFoundedLT Cardinal.{u} :=
+instance (priority := 10000) : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
 
-instance wo : @IsWellOrder Cardinal.{u} (· < ·) where
+instance (priority := 10000) wo : @IsWellOrder Cardinal.{u} (· < ·) where
 #align cardinal.wo Cardinal.wo
 
-instance : ConditionallyCompleteLinearOrderBot Cardinal :=
+instance (priority := 10000) : ConditionallyCompleteLinearOrderBot Cardinal :=
   IsWellOrder.conditionallyCompleteLinearOrderBot _
 
 @[simp]
@@ -793,7 +793,7 @@ theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
 #align cardinal.Inf_empty Cardinal.sInf_empty
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
-instance : SuccOrder Cardinal :=
+instance (priority := 10000) : SuccOrder Cardinal :=
   SuccOrder.ofSuccLeIff (fun c => sInf { c' | c < c' })
     -- Porting note: Needed to insert `by apply` in the next line
     ⟨by apply lt_of_lt_of_le <| csInf_mem <| exists_gt _,
@@ -942,13 +942,13 @@ theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove 
     exact le_sum.{v,u} f i⟩
 #align cardinal.bdd_above_range Cardinal.bddAbove_range
 
-instance (a : Cardinal.{u}) : Small.{u} (Set.Iic a) := by
+instance (priority := 10000) (a : Cardinal.{u}) : Small.{u} (Set.Iic a) := by
   rw [← mk_out a]
   apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x => ⟨#x, mk_set_le x⟩
   rintro ⟨x, hx⟩
   simpa using le_mk_iff_exists_set.1 hx
 
-instance (a : Cardinal.{u}) : Small.{u} (Set.Iio a) :=
+instance (priority := 10000) (a : Cardinal.{u}) : Small.{u} (Set.Iio a) :=
   small_subset Iio_subset_Iic_self
 
 /-- A set of cardinals is bounded above iff it's small, i.e. it corresponds to a usual ZFC set. -/
@@ -1379,7 +1379,7 @@ theorem natCast_lt {m n : ℕ} : (m : Cardinal) < n ↔ m < n := by
   exact fun h ↦ le_of_lt h
 #align cardinal.nat_cast_lt Cardinal.natCast_lt
 
-instance : CharZero Cardinal :=
+instance (priority := 10000) : CharZero Cardinal :=
   ⟨StrictMono.injective fun _ _ => natCast_lt.2⟩
 
 theorem natCast_inj {m n : ℕ} : (m : Cardinal) = n ↔ m = n :=
@@ -1539,7 +1539,7 @@ theorem le_aleph0_iff_subtype_countable {p : α → Prop} :
   le_aleph0_iff_set_countable
 #align cardinal.le_aleph_0_iff_subtype_countable Cardinal.le_aleph0_iff_subtype_countable
 
-instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
+instance (priority := 10000) canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
   ⟨fun _ hx =>
     let ⟨n, hn⟩ := lt_aleph0.mp hx
     ⟨n, hn.symm⟩⟩

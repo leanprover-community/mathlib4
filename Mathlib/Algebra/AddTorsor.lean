@@ -63,7 +63,7 @@ attribute [instance 100] AddTorsor.nonempty -- porting note: removers `nolint in
 
 /-- An `AddGroup G` is a torsor for itself. -/
 --@[nolint instance_priority] Porting note: linter does not exist
-instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
+instance (priority := 10000) addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
     where
   vsub := Sub.sub
   vsub_vadd' := sub_add_cancel
@@ -282,7 +282,7 @@ namespace Prod
 
 variable {G : Type*} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
 
-instance instAddTorsor : AddTorsor (G × G') (P × P') where
+instance (priority := 10000) instAddTorsor : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
@@ -342,7 +342,7 @@ variable {I : Type u} {fg : I → Type v} [∀ i, AddGroup (fg i)] {fp : I → T
 open AddAction AddTorsor
 
 /-- A product of `AddTorsor`s is an `AddTorsor`. -/
-instance instAddTorsor [∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
+instance (priority := 10000) instAddTorsor [∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
   vadd g p i := g i +ᵥ p i
   zero_vadd p := funext fun i => zero_vadd (fg i) (p i)
   add_vadd g₁ g₂ p := funext fun i => add_vadd (g₁ i) (g₂ i) (p i)

@@ -46,7 +46,7 @@ def PMF.{u} (α : Type u) : Type u :=
 
 namespace PMF
 
-instance instFunLike : FunLike (PMF α) α ℝ≥0∞ where
+instance (priority := 10000) instFunLike : FunLike (PMF α) α ℝ≥0∞ where
   coe p a := p.1 a
   coe_injective' _ _ h := Subtype.eq h
 #align pmf.fun_like PMF.instFunLike
@@ -380,7 +380,7 @@ namespace PMF
 open MeasureTheory
 
 /-- The measure associated to a `PMF` by `toMeasure` is a probability measure. -/
-instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : PMF α) :
+instance (priority := 10000) toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : PMF α) :
     IsProbabilityMeasure p.toMeasure :=
   ⟨by
     simpa only [MeasurableSet.univ, toMeasure_apply_eq_toOuterMeasure_apply, Set.indicator_univ,

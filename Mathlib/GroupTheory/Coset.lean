@@ -328,7 +328,7 @@ theorem leftRel_r_eq_leftCosetEquivalence :
 #align quotient_group.left_rel_r_eq_left_coset_equivalence QuotientGroup.leftRel_r_eq_leftCosetEquivalence
 
 @[to_additive]
-instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).r := fun x y => by
+instance (priority := 10000) leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).r := fun x y => by
   rw [leftRel_eq]
   exact ‹DecidablePred (· ∈ s)› _
 #align quotient_group.left_rel_decidable QuotientGroup.leftRelDecidable
@@ -338,7 +338,7 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
   If `s` is a normal subgroup, `α ⧸ s` is a group -/
 @[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`.  If `s` is a normal
  subgroup, `α ⧸ s` is a group"]
-instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
+instance (priority := 10000) instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
   ⟨fun s => Quotient (leftRel s)⟩
 
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
@@ -379,7 +379,7 @@ theorem rightRel_r_eq_rightCosetEquivalence :
 #align quotient_group.right_rel_r_eq_right_coset_equivalence QuotientGroup.rightRel_r_eq_rightCosetEquivalence
 
 @[to_additive]
-instance rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s).r := fun x y => by
+instance (priority := 10000) rightRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (rightRel s).r := fun x y => by
   rw [rightRel_eq]
   exact ‹DecidablePred (· ∈ s)› _
 #align quotient_group.right_rel_decidable QuotientGroup.rightRelDecidable
@@ -415,7 +415,7 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
 #align quotient_add_group.quotient_right_rel_equiv_quotient_left_rel QuotientAddGroup.quotientRightRelEquivQuotientLeftRel
 
 @[to_additive]
-instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
+instance (priority := 10000) fintypeQuotientRightRel [Fintype (α ⧸ s)] :
     Fintype (Quotient (QuotientGroup.rightRel s)) :=
   Fintype.ofEquiv (α ⧸ s) (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm
 #align quotient_group.fintype_quotient_right_rel QuotientGroup.fintypeQuotientRightRel
@@ -435,7 +435,7 @@ namespace QuotientGroup
 variable [Group α] {s : Subgroup α}
 
 @[to_additive]
-instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : Fintype (α ⧸ s) :=
+instance (priority := 10000) fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : Fintype (α ⧸ s) :=
   Quotient.fintype (leftRel s)
 #align quotient_group.fintype QuotientGroup.fintype
 #align quotient_add_group.fintype QuotientAddGroup.fintype
@@ -463,7 +463,7 @@ theorem induction_on {C : α ⧸ s → Prop} (x : α ⧸ s) (H : ∀ z, C (Quoti
 #align quotient_add_group.induction_on QuotientAddGroup.induction_on
 
 @[to_additive]
-instance : Coe α (α ⧸ s) :=
+instance (priority := 10000) : Coe α (α ⧸ s) :=
   ⟨mk⟩
 
 @[to_additive (attr := elab_as_elim)]
@@ -491,7 +491,7 @@ theorem exists_mk {C : α ⧸ s → Prop} : (∃ x : α ⧸ s, C x) ↔ ∃ x : 
 #align quotient_add_group.exists_coe QuotientAddGroup.exists_mk
 
 @[to_additive]
-instance (s : Subgroup α) : Inhabited (α ⧸ s) :=
+instance (priority := 10000) (s : Subgroup α) : Inhabited (α ⧸ s) :=
   ⟨((1 : α) : α ⧸ s)⟩
 
 @[to_additive]

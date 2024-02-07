@@ -127,7 +127,7 @@ structure State where mk ::
   rs : Register → Word
 #align arithcc.state Arithcc.State
 
-instance : Inhabited State :=
+instance (priority := 10000) : Inhabited State :=
   ⟨{  ac := 0
       rs := fun _ => 0 }⟩
 
@@ -250,7 +250,7 @@ protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
 #align arithcc.state_eq.trans Arithcc.StateEq.trans
 
 -- Porting note: added
-instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
+instance (priority := 10000) (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
   ⟨@StateEq.trans _⟩
 
 /-- Transitivity of chaining `≃[t]` and `≃[t]/ac`. -/
@@ -262,7 +262,7 @@ protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : Sta
 #align arithcc.state_eq_state_eq_rs.trans Arithcc.StateEqStateEqRs.trans
 
 -- Porting note: added
-instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
+instance (priority := 10000) (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
   ⟨@StateEqStateEqRs.trans _⟩
 
 /-- Writing the same value to register `t` gives `≃[t + 1]` from `≃[t]`. -/

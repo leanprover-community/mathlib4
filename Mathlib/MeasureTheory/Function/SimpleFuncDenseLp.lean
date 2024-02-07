@@ -481,7 +481,7 @@ i.e. has no scalar action). -/
 variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a `SMul`. Not declared as an
-instance as it is (as of writing) used only in the construction of the Bochner integral. -/
+instance (priority := 10000) as it is (as of writing) used only in the construction of the Bochner integral. -/
 protected def smul : SMul 𝕜 (Lp.simpleFunc E p μ) :=
   ⟨fun k f =>
     ⟨k • (f : Lp E p μ), by
@@ -501,7 +501,7 @@ theorem coe_smul (c : 𝕜) (f : Lp.simpleFunc E p μ) :
 #align measure_theory.Lp.simple_func.coe_smul MeasureTheory.Lp.simpleFunc.coe_smul
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a module. Not declared as an
-instance as it is (as of writing) used only in the construction of the Bochner integral. -/
+instance (priority := 10000) as it is (as of writing) used only in the construction of the Bochner integral. -/
 protected def module : Module 𝕜 (Lp.simpleFunc E p μ) where
   one_smul f := by ext1; exact one_smul _ _
   mul_smul x y f := by ext1; exact mul_smul _ _ _
@@ -514,7 +514,7 @@ protected def module : Module 𝕜 (Lp.simpleFunc E p μ) where
 attribute [local instance] simpleFunc.module
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
-instance as it is (as of writing) used only in the construction of the Bochner integral. -/
+instance (priority := 10000) as it is (as of writing) used only in the construction of the Bochner integral. -/
 protected theorem boundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
   BoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) : _)
 #align measure_theory.Lp.simple_func.has_bounded_smul MeasureTheory.Lp.simpleFunc.boundedSMul
@@ -522,7 +522,7 @@ protected theorem boundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp.simpleFunc
 attribute [local instance] simpleFunc.boundedSMul
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
-instance as it is (as of writing) used only in the construction of the Bochner integral. -/
+instance (priority := 10000) as it is (as of writing) used only in the construction of the Bochner integral. -/
 protected def normedSpace {𝕜} [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
     NormedSpace 𝕜 (Lp.simpleFunc E p μ) :=
   ⟨norm_smul_le (α := 𝕜) (β := Lp.simpleFunc E p μ)⟩
@@ -811,7 +811,7 @@ theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ 
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 #align measure_theory.Lp.simple_func.coe_fn_le MeasureTheory.Lp.simpleFunc.coeFn_le
 
-instance instCovariantClassLE :
+instance (priority := 10000) instCovariantClassLE :
     CovariantClass (Lp.simpleFunc G p μ) (Lp.simpleFunc G p μ) (· + ·) (· ≤ ·) := by
   refine' ⟨fun f g₁ g₂ hg₁₂ => _⟩
   rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢

@@ -111,7 +111,7 @@ def isLimitOfHasKernelOfPreservesLimit [PreservesLimit (parallelPair f 0) G] :
   isLimitForkMapOfIsLimit' G (kernel.condition f) (kernelIsKernel f)
 #align category_theory.limits.is_limit_of_has_kernel_of_preserves_limit CategoryTheory.Limits.isLimitOfHasKernelOfPreservesLimit
 
-instance [PreservesLimit (parallelPair f 0) G] : HasKernel (G.map f) where
+instance (priority := 10000) [PreservesLimit (parallelPair f 0) G] : HasKernel (G.map f) where
   exists_limit := ⟨⟨_, isLimitOfHasKernelOfPreservesLimit G f⟩⟩
 
 variable [HasKernel (G.map f)]
@@ -141,7 +141,7 @@ theorem PreservesKernel.iso_hom : (PreservesKernel.iso G f).hom = kernelComparis
   simp [PreservesKernel.iso]
 #align category_theory.limits.preserves_kernel.iso_hom CategoryTheory.Limits.PreservesKernel.iso_hom
 
-instance : IsIso (kernelComparison f G) := by
+instance (priority := 10000) : IsIso (kernelComparison f G) := by
   rw [← PreservesKernel.iso_hom]
   infer_instance
 
@@ -239,7 +239,7 @@ def isColimitOfHasCokernelOfPreservesColimit [PreservesColimit (parallelPair f 0
   isColimitCoforkMapOfIsColimit' G (cokernel.condition f) (cokernelIsCokernel f)
 #align category_theory.limits.is_colimit_of_has_cokernel_of_preserves_colimit CategoryTheory.Limits.isColimitOfHasCokernelOfPreservesColimit
 
-instance [PreservesColimit (parallelPair f 0) G] : HasCokernel (G.map f) where
+instance (priority := 10000) [PreservesColimit (parallelPair f 0) G] : HasCokernel (G.map f) where
   exists_colimit := ⟨⟨_, isColimitOfHasCokernelOfPreservesColimit G f⟩⟩
 
 variable [HasCokernel (G.map f)]
@@ -270,7 +270,7 @@ theorem PreservesCokernel.iso_inv : (PreservesCokernel.iso G f).inv = cokernelCo
   simp [PreservesCokernel.iso]
 #align category_theory.limits.preserves_cokernel.iso_inv CategoryTheory.Limits.PreservesCokernel.iso_inv
 
-instance : IsIso (cokernelComparison f G) := by
+instance (priority := 10000) : IsIso (cokernelComparison f G) := by
   rw [← PreservesCokernel.iso_inv]
   infer_instance
 
@@ -290,7 +290,7 @@ end Cokernels
 
 variable (X Y : C) (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
 
-noncomputable instance preservesKernelZero :
+noncomputable instance (priority := 10000) preservesKernelZero :
     PreservesLimit (parallelPair (0 : X ⟶ Y) 0) G where
   preserves {c} hc := by
     have := KernelFork.IsLimit.isIso_ι c hc rfl
@@ -298,7 +298,7 @@ noncomputable instance preservesKernelZero :
     refine' IsLimit.ofIsoLimit (KernelFork.IsLimit.ofId _ (G.map_zero _ _)) _
     exact (Fork.ext (G.mapIso (asIso (Fork.ι c))).symm (by simp))
 
-noncomputable instance preservesCokernelZero :
+noncomputable instance (priority := 10000) preservesCokernelZero :
     PreservesColimit (parallelPair (0 : X ⟶ Y) 0) G where
   preserves {c} hc := by
     have := CokernelCofork.IsColimit.isIso_π c hc rfl

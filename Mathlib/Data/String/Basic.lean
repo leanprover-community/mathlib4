@@ -27,11 +27,11 @@ def ltb (s₁ s₂ : Iterator) : Bool :=
   else false
 #align string.ltb String.ltb
 
-instance LT' : LT String :=
+instance (priority := 10000) LT' : LT String :=
   ⟨fun s₁ s₂ ↦ ltb s₁.iter s₂.iter⟩
 #align string.has_lt' String.LT'
 
-instance decidableLT : @DecidableRel String (· < ·) := by
+instance (priority := 10000) decidableLT : @DecidableRel String (· < ·) := by
   simp only [LT']
   infer_instance -- short-circuit type class inference
 #align string.decidable_lt String.decidableLT
@@ -98,11 +98,11 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         · assumption
 #align string.lt_iff_to_list_lt String.lt_iff_toList_lt
 
-instance LE : LE String :=
+instance (priority := 10000) LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 #align string.has_le String.LE
 
-instance decidableLE : @DecidableRel String (· ≤ ·) := by
+instance (priority := 10000) decidableLE : @DecidableRel String (· ≤ ·) := by
   simp only [LE]
   infer_instance -- short-circuit type class inference
 #align string.decidable_le String.decidableLE
@@ -147,7 +147,7 @@ theorem head_empty : "".data.head! = default :=
 
 #align string.popn_empty String.drop_empty
 
-instance : LinearOrder String where
+instance (priority := 10000) : LinearOrder String where
   le_refl a := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by
     simp only [le_iff_toList_le]

@@ -652,22 +652,22 @@ theorem coprod.inr_desc {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : 
 #align category_theory.limits.coprod.inr_desc CategoryTheory.Limits.coprod.inr_desc
 #align category_theory.limits.coprod.inr_desc_assoc CategoryTheory.Limits.coprod.inr_desc_assoc
 
-instance prod.mono_lift_of_mono_left {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y)
+instance (priority := 10000) prod.mono_lift_of_mono_left {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y)
     [Mono f] : Mono (prod.lift f g) :=
   mono_of_mono_fac <| prod.lift_fst _ _
 #align category_theory.limits.prod.mono_lift_of_mono_left CategoryTheory.Limits.prod.mono_lift_of_mono_left
 
-instance prod.mono_lift_of_mono_right {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y)
+instance (priority := 10000) prod.mono_lift_of_mono_right {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y)
     [Mono g] : Mono (prod.lift f g) :=
   mono_of_mono_fac <| prod.lift_snd _ _
 #align category_theory.limits.prod.mono_lift_of_mono_right CategoryTheory.Limits.prod.mono_lift_of_mono_right
 
-instance coprod.epi_desc_of_epi_left {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W)
+instance (priority := 10000) coprod.epi_desc_of_epi_left {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W)
     [Epi f] : Epi (coprod.desc f g) :=
   epi_of_epi_fac <| coprod.inl_desc _ _
 #align category_theory.limits.coprod.epi_desc_of_epi_left CategoryTheory.Limits.coprod.epi_desc_of_epi_left
 
-instance coprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W)
+instance (priority := 10000) coprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W)
     [Epi g] : Epi (coprod.desc f g) :=
   epi_of_epi_fac <| coprod.inr_desc _ _
 #align category_theory.limits.coprod.epi_desc_of_epi_right CategoryTheory.Limits.coprod.epi_desc_of_epi_right
@@ -793,12 +793,12 @@ def prod.mapIso {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f :
   inv := prod.map f.inv g.inv
 #align category_theory.limits.prod.map_iso CategoryTheory.Limits.prod.mapIso
 
-instance isIso_prod {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y)
+instance (priority := 10000) isIso_prod {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) [IsIso f] [IsIso g] : IsIso (prod.map f g) :=
   IsIso.of_iso (prod.mapIso (asIso f) (asIso g))
 #align category_theory.limits.is_iso_prod CategoryTheory.Limits.isIso_prod
 
-instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
+instance (priority := 10000) prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryProduct W X] [HasBinaryProduct Y Z] : Mono (prod.map f g) :=
   ⟨fun i₁ i₂ h => by
     ext
@@ -827,7 +827,7 @@ theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {
 #align category_theory.limits.prod.diag_map_fst_snd_comp CategoryTheory.Limits.prod.diag_map_fst_snd_comp
 #align category_theory.limits.prod.diag_map_fst_snd_comp_assoc CategoryTheory.Limits.prod.diag_map_fst_snd_comp_assoc
 
-instance {X : C} [HasBinaryProduct X X] : IsSplitMono (diag X) :=
+instance (priority := 10000) {X : C} [HasBinaryProduct X X] : IsSplitMono (diag X) :=
   IsSplitMono.mk' { retraction := prod.fst }
 
 end ProdLemmas
@@ -933,12 +933,12 @@ def coprod.mapIso {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z
   inv := coprod.map f.inv g.inv
 #align category_theory.limits.coprod.map_iso CategoryTheory.Limits.coprod.mapIso
 
-instance isIso_coprod {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ⟶ Y)
+instance (priority := 10000) isIso_coprod {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ⟶ Y)
     (g : X ⟶ Z) [IsIso f] [IsIso g] : IsIso (coprod.map f g) :=
   IsIso.of_iso (coprod.mapIso (asIso f) (asIso g))
 #align category_theory.limits.is_iso_coprod CategoryTheory.Limits.isIso_coprod
 
-instance coprod.map_epi {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
+instance (priority := 10000) coprod.map_epi {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] : Epi (coprod.map f g) :=
   ⟨fun i₁ i₂ h => by
     ext

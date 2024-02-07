@@ -71,7 +71,7 @@ theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [
     (InvImage.wf (Submodule.map f) (IsArtinian.wellFounded_submodule_lt R P))⟩
 #align is_artinian_of_injective isArtinian_of_injective
 
-instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N :=
+instance (priority := 10000) isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian R N :=
   isArtinian_of_injective N.subtype Subtype.val_injective
 #align is_artinian_submodule' isArtinian_submodule'
 
@@ -105,7 +105,7 @@ theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →�
     (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])⟩
 #align is_artinian_of_range_eq_ker isArtinian_of_range_eq_ker
 
-instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) :=
+instance (priority := 10000) isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) :=
   isArtinian_of_range_eq_ker (LinearMap.inl R M P) (LinearMap.snd R M P) LinearMap.inl_injective
     LinearMap.snd_surjective (LinearMap.range_inl R M P)
 #align is_artinian_prod isArtinian_prod
@@ -117,7 +117,7 @@ instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] Finite.induction_empty_option
 
-instance isArtinian_pi {R ι : Type*} [Finite ι] :
+instance (priority := 10000) isArtinian_pi {R ι : Type*} [Finite ι] :
     ∀ {M : ι → Type*} [Ring R] [∀ i, AddCommGroup (M i)],
       ∀ [∀ i, Module R (M i)], ∀ [∀ i, IsArtinian R (M i)], IsArtinian R (∀ i, M i) := by
   apply Finite.induction_empty_option _ _ _ ι
@@ -134,13 +134,13 @@ instance isArtinian_pi {R ι : Type*} [Finite ι] :
 /-- A version of `isArtinian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isArtinian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
+instance (priority := 10000) isArtinian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
     [IsArtinian R M] : IsArtinian R (ι → M) :=
   isArtinian_pi
 #align is_artinian_pi' isArtinian_pi'
 
 --porting note: new instance
-instance isArtinian_finsupp {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
+instance (priority := 10000) isArtinian_finsupp {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
     [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
   isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
 
@@ -351,7 +351,7 @@ def IsArtinianRing (R) [Ring R] :=
 theorem isArtinianRing_iff {R} [Ring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
 #align is_artinian_ring_iff isArtinianRing_iff
 
-instance DivisionRing.instIsArtinianRing {K : Type*} [DivisionRing K] : IsArtinianRing K :=
+instance (priority := 10000) DivisionRing.instIsArtinianRing {K : Type*} [DivisionRing K] : IsArtinianRing K :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
 theorem Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
@@ -363,7 +363,7 @@ theorem isArtinian_of_submodule_of_artinian (R M) [Ring R] [AddCommGroup M] [Mod
     (N : Submodule R M) (_ : IsArtinian R M) : IsArtinian R N := inferInstance
 #align is_artinian_of_submodule_of_artinian isArtinian_of_submodule_of_artinian
 
-instance isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [Module R M]
+instance (priority := 10000) isArtinian_of_quotient_of_artinian (R) [Ring R] (M) [AddCommGroup M] [Module R M]
     (N : Submodule R M) [IsArtinian R M] : IsArtinian R (M ⧸ N) :=
   isArtinian_of_surjective M (Submodule.mkQ N) (Submodule.Quotient.mk_surjective N)
 #align is_artinian_of_quotient_of_artinian isArtinian_of_quotient_of_artinian
@@ -375,7 +375,7 @@ theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Al
   refine' (Submodule.restrictScalarsEmbedding R S M).wellFounded h
 #align is_artinian_of_tower isArtinian_of_tower
 
-instance (R) [CommRing R] [IsArtinianRing R] (I : Ideal R) : IsArtinianRing (R ⧸ I) :=
+instance (priority := 10000) (R) [CommRing R] [IsArtinianRing R] (I : Ideal R) : IsArtinianRing (R ⧸ I) :=
   isArtinian_of_tower R inferInstance
 
 theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
@@ -396,7 +396,7 @@ theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M
     simp
 #align is_artinian_of_fg_of_artinian isArtinian_of_fg_of_artinian
 
-instance isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R M]
+instance (priority := 10000) isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R M]
     [IsArtinianRing R] [Module.Finite R M] : IsArtinian R M :=
   have : IsArtinian R (⊤ : Submodule R M) := isArtinian_of_fg_of_artinian _ Module.Finite.out
   isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
@@ -416,7 +416,7 @@ theorem Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F}
   exact (Ideal.orderEmbeddingOfSurjective f hf).wellFounded H
 #align function.surjective.is_artinian_ring Function.Surjective.isArtinianRing
 
-instance isArtinianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsArtinianRing R] :
+instance (priority := 10000) isArtinianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsArtinianRing R] :
     IsArtinianRing f.range :=
   f.rangeRestrict_surjective.isArtinianRing
 #align is_artinian_ring_range isArtinianRing_range
@@ -489,12 +489,12 @@ theorem localization_artinian : IsArtinianRing L :=
 
 /-- `IsArtinianRing.localization_artinian` can't be made an instance, as it would make `S` + `R`
 into metavariables. However, this is safe. -/
-instance : IsArtinianRing (Localization S) :=
+instance (priority := 10000) : IsArtinianRing (Localization S) :=
   localization_artinian S _
 
 end Localization
 
-instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
+instance (priority := 10000) isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
   Ideal.Quotient.maximal_of_isField _ <|
     (MulEquiv.ofBijective _ ⟨IsFractionRing.injective (R ⧸ p) (FractionRing (R ⧸ p)),
       localization_surjective (nonZeroDivisors (R ⧸ p)) (FractionRing (R ⧸ p))⟩).isField _

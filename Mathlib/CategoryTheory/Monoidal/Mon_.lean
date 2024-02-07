@@ -65,7 +65,7 @@ def trivial : Mon_ C where
   mul_one := by coherence
 #align Mon_.trivial Mon_.trivial
 
-instance : Inhabited (Mon_ C) :=
+instance (priority := 10000) : Inhabited (Mon_ C) :=
   ⟨trivial C⟩
 
 variable {C}
@@ -101,7 +101,7 @@ def id (M : Mon_ C) : Hom M M where
   hom := 𝟙 M.X
 #align Mon_.id Mon_.id
 
-instance homInhabited (M : Mon_ C) : Inhabited (Hom M M) :=
+instance (priority := 10000) homInhabited (M : Mon_ C) : Inhabited (Hom M M) :=
   ⟨id M⟩
 #align Mon_.hom_inhabited Mon_.homInhabited
 
@@ -111,7 +111,7 @@ def comp {M N O : Mon_ C} (f : Hom M N) (g : Hom N O) : Hom M O where
   hom := f.hom ≫ g.hom
 #align Mon_.comp Mon_.comp
 
-instance : Category (Mon_ C) where
+instance (priority := 10000) : Category (Mon_ C) where
   Hom M N := Hom M N
   id := id
   comp f g := comp f g
@@ -145,14 +145,14 @@ def forget : Mon_ C ⥤ C where
 
 end
 
-instance forget_faithful : Faithful (@forget C _ _) where
+instance (priority := 10000) forget_faithful : Faithful (@forget C _ _) where
 #align Mon_.forget_faithful Mon_.forget_faithful
 
-instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.hom :=
+instance (priority := 10000) {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.hom :=
   e
 
 /-- The forgetful functor from monoid objects to the ambient category reflects isomorphisms. -/
-instance : ReflectsIsomorphisms (forget C) where
+instance (priority := 10000) : ReflectsIsomorphisms (forget C) where
   reflects f e :=
     ⟨⟨{ hom := inv f.hom
         mul_hom := by
@@ -178,7 +178,7 @@ def isoOfIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : M.one ≫ f.hom = N.one)
         simp }
 #align Mon_.iso_of_iso Mon_.isoOfIso
 
-instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
+instance (priority := 10000) uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
     { hom := A.one
       one_hom := by dsimp; simp
@@ -191,7 +191,7 @@ instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
 
 open CategoryTheory.Limits
 
-instance : HasInitial (Mon_ C) :=
+instance (priority := 10000) : HasInitial (Mon_ C) :=
   hasInitial_of_unique (trivial C)
 
 end Mon_
@@ -469,7 +469,7 @@ theorem mul_rightUnitor {M : Mon_ C} :
   simp only [Category.assoc, Category.id_comp]
 #align Mon_.mul_right_unitor Mon_.mul_rightUnitor
 
-instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
+instance (priority := 10000) monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
   let tensorObj (M N : Mon_ C) : Mon_ C :=
     { X := M.X ⊗ N.X
       one := (λ_ (𝟙_ C)).inv ≫ (M.one ⊗ N.one)
@@ -497,7 +497,7 @@ instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) :=
     leftUnitor := fun M ↦ isoOfIso (λ_ M.X) one_leftUnitor mul_leftUnitor
     rightUnitor := fun M ↦ isoOfIso (ρ_ M.X) one_rightUnitor mul_rightUnitor }
 
-instance monMonoidal : MonoidalCategory (Mon_ C) := .ofTensorHom
+instance (priority := 10000) monMonoidal : MonoidalCategory (Mon_ C) := .ofTensorHom
   (tensor_id := by intros; ext; apply tensor_id)
   (tensor_comp := by intros; ext; apply tensor_comp)
   (associator_naturality := by intros; ext; dsimp; apply associator_naturality)

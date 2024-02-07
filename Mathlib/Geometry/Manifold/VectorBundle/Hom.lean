@@ -80,7 +80,7 @@ theorem smoothAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
 
 variable [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB]
 
-instance Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :
+instance (priority := 10000) Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :
     (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).IsSmooth IB where
   exists_smoothCoordChange := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
@@ -89,7 +89,7 @@ instance Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :
       continuousLinearMapCoordChange_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩
 #align bundle.continuous_linear_map.vector_prebundle.is_smooth Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth
 
-instance SmoothVectorBundle.continuousLinearMap :
+instance (priority := 10000) SmoothVectorBundle.continuousLinearMap :
     SmoothVectorBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB :=
   (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).smoothVectorBundle IB
 #align smooth_vector_bundle.continuous_linear_map SmoothVectorBundle.continuousLinearMap

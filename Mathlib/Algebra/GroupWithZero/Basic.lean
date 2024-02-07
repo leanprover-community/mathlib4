@@ -93,7 +93,7 @@ end Mul
 
 namespace NeZero
 
-instance mul [Zero M₀] [Mul M₀] [NoZeroDivisors M₀] {x y : M₀} [NeZero x] [NeZero y] :
+instance (priority := 10000) mul [Zero M₀] [Mul M₀] [NoZeroDivisors M₀] {x y : M₀} [NeZero x] [NeZero y] :
     NeZero (x * y) :=
   ⟨mul_ne_zero out out⟩
 
@@ -199,7 +199,7 @@ lemma pow_ne_zero_iff (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (pow_eq_zero_i
 lemma pow_ne_zero (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 := mt pow_eq_zero h
 #align pow_ne_zero pow_ne_zero
 
-instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out⟩
+instance (priority := 10000) NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out⟩
 #align ne_zero.pow NeZero.pow
 
 lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
@@ -460,45 +460,45 @@ end CommGroupWithZero
 
 open OrderDual
 
-instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ := h
+instance (priority := 10000) [h : MulZeroClass α] : MulZeroClass αᵒᵈ := h
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := h
+instance (priority := 10000) [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := h
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := h
+instance (priority := 10000) [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := h
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
+instance (priority := 10000) [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
 
-instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
+instance (priority := 10000) [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
 
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ := h
+instance (priority := 10000) [h : CancelMonoidWithZero α] : CancelMonoidWithZero αᵒᵈ := h
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
+instance (priority := 10000) [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
 
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ := h
+instance (priority := 10000) [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero αᵒᵈ := h
 
-instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
+instance (priority := 10000) [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := h
+instance (priority := 10000) [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := h
 
 /-! ### Lexicographic order -/
 
 
-instance [h : MulZeroClass α] : MulZeroClass (Lex α) := h
+instance (priority := 10000) [h : MulZeroClass α] : MulZeroClass (Lex α) := h
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass (Lex α) := h
+instance (priority := 10000) [h : MulZeroOneClass α] : MulZeroOneClass (Lex α) := h
 
-instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors (Lex α) := h
+instance (priority := 10000) [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors (Lex α) := h
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) := h
+instance (priority := 10000) [h : SemigroupWithZero α] : SemigroupWithZero (Lex α) := h
 
-instance [h : MonoidWithZero α] : MonoidWithZero (Lex α) := h
+instance (priority := 10000) [h : MonoidWithZero α] : MonoidWithZero (Lex α) := h
 
-instance [h : CancelMonoidWithZero α] : CancelMonoidWithZero (Lex α) := h
+instance (priority := 10000) [h : CancelMonoidWithZero α] : CancelMonoidWithZero (Lex α) := h
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) := h
+instance (priority := 10000) [h : CommMonoidWithZero α] : CommMonoidWithZero (Lex α) := h
 
-instance [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero (Lex α) := h
+instance (priority := 10000) [h : CancelCommMonoidWithZero α] : CancelCommMonoidWithZero (Lex α) := h
 
-instance [h : GroupWithZero α] : GroupWithZero (Lex α) := h
+instance (priority := 10000) [h : GroupWithZero α] : GroupWithZero (Lex α) := h
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero (Lex α) := h
+instance (priority := 10000) [h : CommGroupWithZero α] : CommGroupWithZero (Lex α) := h

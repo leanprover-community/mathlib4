@@ -38,7 +38,7 @@ def pi (f : ∀ i, Filter (α i)) : Filter (∀ i, α i) :=
   ⨅ i, comap (eval i) (f i)
 #align filter.pi Filter.pi
 
-instance pi.isCountablyGenerated [Countable ι] [∀ i, IsCountablyGenerated (f i)] :
+instance (priority := 10000) pi.isCountablyGenerated [Countable ι] [∀ i, IsCountablyGenerated (f i)] :
     IsCountablyGenerated (pi f) :=
   iInf.isCountablyGenerated _
 #align filter.pi.is_countably_generated Filter.pi.isCountablyGenerated
@@ -152,7 +152,7 @@ theorem pi_inf_principal_pi_neBot [∀ i, NeBot (f i)] {I : Set ι} :
     NeBot (pi f ⊓ 𝓟 (I.pi s)) ↔ ∀ i ∈ I, NeBot (f i ⊓ 𝓟 (s i)) := by simp [neBot_iff]
 #align filter.pi_inf_principal_pi_ne_bot Filter.pi_inf_principal_pi_neBot
 
-instance PiInfPrincipalPi.neBot [h : ∀ i, NeBot (f i ⊓ 𝓟 (s i))] {I : Set ι} :
+instance (priority := 10000) PiInfPrincipalPi.neBot [h : ∀ i, NeBot (f i ⊓ 𝓟 (s i))] {I : Set ι} :
     NeBot (pi f ⊓ 𝓟 (I.pi s)) :=
   (pi_inf_principal_univ_pi_neBot.2 ‹_›).mono <|
     inf_le_inf_left _ <| principal_mono.2 fun x hx i _ => hx i trivial
@@ -167,7 +167,7 @@ theorem pi_eq_bot : pi f = ⊥ ↔ ∃ i, f i = ⊥ := by
 theorem pi_neBot : NeBot (pi f) ↔ ∀ i, NeBot (f i) := by simp [neBot_iff]
 #align filter.pi_ne_bot Filter.pi_neBot
 
-instance [∀ i, NeBot (f i)] : NeBot (pi f) :=
+instance (priority := 10000) [∀ i, NeBot (f i)] : NeBot (pi f) :=
   pi_neBot.2 ‹_›
 
 @[simp]

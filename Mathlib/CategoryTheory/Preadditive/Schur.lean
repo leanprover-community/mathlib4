@@ -62,7 +62,7 @@ theorem isIso_iff_nonzero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X 
 /-- In any preadditive category with kernels,
 the endomorphisms of a simple object form a division ring.
 -/
-noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) := by
+noncomputable instance (priority := 10000) [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) := by
   classical exact
     { (inferInstance : Ring (End X)) with
       inv := fun f =>

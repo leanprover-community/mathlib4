@@ -193,7 +193,7 @@ lemma Functor.isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
     Presieve.isSheaf_iso J (isoWhiskerRight (NatIso.op e.symm) _)
       (F₁.op_comp_isSheafOfTypes J K G)
 
-instance Functor.isContinuous_id : Functor.IsContinuous.{w} (𝟭 C) J J where
+instance (priority := 10000) Functor.isContinuous_id : Functor.IsContinuous.{w} (𝟭 C) J J where
   op_comp_isSheafOfTypes G := G.2
 
 lemma Functor.isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ A) (J : GrothendieckTopology C)

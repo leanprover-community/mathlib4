@@ -56,11 +56,11 @@ def _root_.SimpleGraph.structure (G : SimpleGraph V) : Language.graph.Structure 
 
 namespace graph
 
-instance instIsRelational : IsRelational Language.graph :=
+instance (priority := 10000) instIsRelational : IsRelational Language.graph :=
   Language.isRelational_mk₂
 #align first_order.language.graph.first_order.language.is_relational FirstOrder.Language.graph.instIsRelational
 
-instance instSubsingleton : Subsingleton (Language.graph.Relations n) :=
+instance (priority := 10000) instSubsingleton : Subsingleton (Language.graph.Relations n) :=
   Language.subsingleton_mk₂_relations
 #align first_order.language.graph.relations.subsingleton FirstOrder.Language.graph.instSubsingleton
 
@@ -79,7 +79,7 @@ theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
   by simp [Theory.simpleGraph]
 #align first_order.language.Theory.simple_graph_model_iff FirstOrder.Language.Theory.simpleGraph_model_iff
 
-instance simpleGraph_model (G : SimpleGraph V) :
+instance (priority := 10000) simpleGraph_model (G : SimpleGraph V) :
     @Theory.Model _ V G.structure Theory.simpleGraph := by
   simp only [@Theory.simpleGraph_model_iff _ G.structure, relMap_apply₂]
   exact ⟨G.loopless, G.symm⟩

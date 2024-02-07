@@ -475,34 +475,34 @@ section Completion
 
 variable {p : ℕ} [Fact p.Prime]
 
-instance field : Field ℚ_[p] :=
+instance (priority := 10000) field : Field ℚ_[p] :=
   Cauchy.field
 
-instance : Inhabited ℚ_[p] :=
+instance (priority := 10000) : Inhabited ℚ_[p] :=
   ⟨0⟩
 
 -- short circuits
-instance : CommRing ℚ_[p] :=
+instance (priority := 10000) : CommRing ℚ_[p] :=
   Cauchy.commRing
 
-instance : Ring ℚ_[p] :=
+instance (priority := 10000) : Ring ℚ_[p] :=
   Cauchy.ring
 
-instance : Zero ℚ_[p] := by infer_instance
+instance (priority := 10000) : Zero ℚ_[p] := by infer_instance
 
-instance : One ℚ_[p] := by infer_instance
+instance (priority := 10000) : One ℚ_[p] := by infer_instance
 
-instance : Add ℚ_[p] := by infer_instance
+instance (priority := 10000) : Add ℚ_[p] := by infer_instance
 
-instance : Mul ℚ_[p] := by infer_instance
+instance (priority := 10000) : Mul ℚ_[p] := by infer_instance
 
-instance : Sub ℚ_[p] := by infer_instance
+instance (priority := 10000) : Sub ℚ_[p] := by infer_instance
 
-instance : Neg ℚ_[p] := by infer_instance
+instance (priority := 10000) : Neg ℚ_[p] := by infer_instance
 
-instance : Div ℚ_[p] := by infer_instance
+instance (priority := 10000) : Div ℚ_[p] := by infer_instance
 
-instance : AddCommGroup ℚ_[p] := by infer_instance
+instance (priority := 10000) : AddCommGroup ℚ_[p] := by infer_instance
 
 /-- Builds the equivalence class of a Cauchy sequence of rationals. -/
 def mk : PadicSeq p → ℚ_[p] :=
@@ -528,7 +528,7 @@ theorem coe_inj {q r : ℚ} : (↑q : ℚ_[p]) = ↑r ↔ q = r :=
   ⟨(const_equiv p).1 ∘ Quotient.eq'.1, fun h ↦ by rw [h]⟩
 #align padic.coe_inj Padic.coe_inj
 
-instance : CharZero ℚ_[p] :=
+instance (priority := 10000) : CharZero ℚ_[p] :=
   ⟨fun m n ↦ by
     rw [← Rat.cast_coe_nat]
     norm_cast
@@ -759,10 +759,10 @@ section NormedSpace
 
 variable (p : ℕ) [Fact p.Prime]
 
-instance : Dist ℚ_[p] :=
+instance (priority := 10000) : Dist ℚ_[p] :=
   ⟨fun x y ↦ padicNormE (x - y : ℚ_[p])⟩
 
-instance metricSpace : MetricSpace ℚ_[p] where
+instance (priority := 10000) metricSpace : MetricSpace ℚ_[p] where
   dist_self := by simp [dist]
   dist := dist
   dist_comm x y := by simp [dist, ← padicNormE.map_neg (x - y : ℚ_[p])]
@@ -777,17 +777,17 @@ instance metricSpace : MetricSpace ℚ_[p] where
   -- Porting note: added because autoparam was not ported
   edist_dist := by intros; exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
-instance : Norm ℚ_[p] :=
+instance (priority := 10000) : Norm ℚ_[p] :=
   ⟨fun x ↦ padicNormE x⟩
 
-instance normedField : NormedField ℚ_[p] :=
+instance (priority := 10000) normedField : NormedField ℚ_[p] :=
   { Padic.field,
     Padic.metricSpace p with
     dist_eq := fun _ _ ↦ rfl
     norm_mul' := by simp [Norm.norm, map_mul]
     norm := norm }
 
-instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
+instance (priority := 10000) isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_nonneg' := norm_nonneg
   abv_eq_zero' := norm_eq_zero
   abv_add' := norm_add_le
@@ -860,7 +860,7 @@ theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) 
   rw [← norm_p_zpow, zpow_ofNat]
 #align padic_norm_e.norm_p_pow padicNormE.norm_p_pow
 
-instance : NontriviallyNormedField ℚ_[p] :=
+instance (priority := 10000) : NontriviallyNormedField ℚ_[p] :=
   { Padic.normedField p with
     non_trivial :=
       ⟨p⁻¹, by
@@ -965,7 +965,7 @@ variable {p : ℕ} [hp : Fact p.Prime]
 
 -- Porting note : remove `set_option eqn_compiler.zeta true`
 
-instance complete : CauSeq.IsComplete ℚ_[p] norm where
+instance (priority := 10000) complete : CauSeq.IsComplete ℚ_[p] norm where
   isComplete := fun f => by
     have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
       have h := isCauSeq f ε (mod_cast hε)
@@ -1007,7 +1007,7 @@ theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf :
 
 open Filter Set
 
-instance : CompleteSpace ℚ_[p] := by
+instance (priority := 10000) : CompleteSpace ℚ_[p] := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
   let c : CauSeq ℚ_[p] norm := ⟨u, Metric.cauchySeq_iff'.mp hu⟩

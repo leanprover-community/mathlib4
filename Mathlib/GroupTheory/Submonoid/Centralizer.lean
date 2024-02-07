@@ -70,7 +70,7 @@ theorem center_le_centralizer (s) : center M ≤ centralizer s :=
 #align add_submonoid.center_le_centralizer AddSubmonoid.center_le_centralizer
 
 @[to_additive]
-instance decidableMemCentralizer (a) [Decidable <| ∀ b ∈ S, b * a = a * b] :
+instance (priority := 10000) decidableMemCentralizer (a) [Decidable <| ∀ b ∈ S, b * a = a * b] :
     Decidable (a ∈ centralizer S) :=
   decidable_of_iff' _ mem_centralizer_iff
 #align submonoid.decidable_mem_centralizer Submonoid.decidableMemCentralizer

@@ -129,7 +129,7 @@ theorem spectrum.gelfandTransform_eq (a : A) :
   exact Iff.rfl
 #align spectrum.gelfand_transform_eq spectrum.gelfandTransform_eq
 
-instance [Nontrivial A] : Nonempty (characterSpace ℂ A) :=
+instance (priority := 10000) [Nontrivial A] : Nonempty (characterSpace ℂ A) :=
   ⟨Classical.choose <|
       WeakDual.CharacterSpace.exists_apply_eq_zero <| zero_mem_nonunits.2 zero_ne_one⟩
 

@@ -64,7 +64,7 @@ inductive WPath : P.last.W → Fin2 n → Type u
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_path MvPFunctor.WPath
 
-instance WPath.inhabited (x : P.last.W) {i} [I : Inhabited (P.drop.B x.head i)] :
+instance (priority := 10000) WPath.inhabited (x : P.last.W) {i} [I : Inhabited (P.drop.B x.head i)] :
     Inhabited (WPath P x i) :=
   ⟨match x, I with
     | ⟨a, f⟩, I => WPath.root a f i (@default _ I)⟩
@@ -136,7 +136,7 @@ def W (α : TypeVec n) : Type _ :=
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W MvPFunctor.W
 
-instance mvfunctorW : MvFunctor P.W := by delta MvPFunctor.W; infer_instance
+instance (priority := 10000) mvfunctorW : MvFunctor P.W := by delta MvPFunctor.W; infer_instance
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.mvfunctor_W MvPFunctor.mvfunctorW
 

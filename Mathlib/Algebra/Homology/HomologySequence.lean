@@ -105,12 +105,12 @@ noncomputable def composableArrows₃ [K.HasHomology i] [K.HasHomology j] :
     ComposableArrows C 3 :=
   ComposableArrows.mk₃ (K.homologyι i) (K.opcyclesToCycles i j) (K.homologyπ j)
 
-instance [K.HasHomology i] [K.HasHomology j] :
+instance (priority := 10000) [K.HasHomology i] [K.HasHomology j] :
     Mono ((composableArrows₃ K i j).map' 0 1) := by
   dsimp
   infer_instance
 
-instance [K.HasHomology i] [K.HasHomology j] :
+instance (priority := 10000) [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
   dsimp
   infer_instance

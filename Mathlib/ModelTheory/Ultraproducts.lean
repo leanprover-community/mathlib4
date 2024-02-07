@@ -43,7 +43,7 @@ variable {L : Language.{u, v}} [∀ a, L.Structure (M a)]
 
 namespace Ultraproduct
 
-instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :=
+instance (priority := 10000) setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :=
   { (u : Filter α).productSetoid M with
     toStructure :=
       { funMap := fun {n} f x a => funMap f fun i => x i a
@@ -69,7 +69,7 @@ instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :
 
 variable {M} {u}
 
-instance «structure» : L.Structure ((u : Filter α).Product M) :=
+instance (priority := 10000) «structure» : L.Structure ((u : Filter α).Product M) :=
   Language.quotientStructure
 set_option linter.uppercaseLean3 false in
 #align first_order.language.ultraproduct.Structure FirstOrder.Language.Ultraproduct.structure

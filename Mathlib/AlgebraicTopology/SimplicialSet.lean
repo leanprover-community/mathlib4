@@ -52,15 +52,15 @@ set_option linter.uppercaseLean3 false in
 
 namespace SSet
 
-instance largeCategory : LargeCategory SSet := by
+instance (priority := 10000) largeCategory : LargeCategory SSet := by
   dsimp only [SSet]
   infer_instance
 
-instance hasLimits : HasLimits SSet := by
+instance (priority := 10000) hasLimits : HasLimits SSet := by
   dsimp only [SSet]
   infer_instance
 
-instance hasColimits : HasColimits SSet := by
+instance (priority := 10000) hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
@@ -85,7 +85,7 @@ set_option linter.uppercaseLean3 false in
 @[inherit_doc SSet.standardSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
 
-instance : Inhabited SSet :=
+instance (priority := 10000) : Inhabited SSet :=
   ⟨Δ[0]⟩
 
 namespace standardSimplex
@@ -348,15 +348,15 @@ def Truncated (n : ℕ) :=
 set_option linter.uppercaseLean3 false in
 #align sSet.truncated SSet.Truncated
 
-instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
+instance (priority := 10000) Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasLimits : HasLimits (Truncated n) := by
+instance (priority := 10000) Truncated.hasLimits : HasLimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasColimits : HasColimits (Truncated n) := by
+instance (priority := 10000) Truncated.hasColimits : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
@@ -372,7 +372,7 @@ def sk (n : ℕ) : SSet ⥤ SSet.Truncated n :=
 set_option linter.uppercaseLean3 false in
 #align sSet.sk SSet.sk
 
-instance {n} : Inhabited (SSet.Truncated n) :=
+instance (priority := 10000) {n} : Inhabited (SSet.Truncated n) :=
   ⟨(sk n).obj <| Δ[0]⟩
 
 /-- The category of augmented simplicial sets, as a particular case of

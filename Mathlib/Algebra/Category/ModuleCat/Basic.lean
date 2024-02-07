@@ -84,12 +84,12 @@ abbrev ModuleCatMax.{v₁, v₂, u₁} (R : Type u₁) [Ring R] := ModuleCat.{ma
 
 namespace ModuleCat
 
-instance : CoeSort (ModuleCat.{v} R) (Type v) :=
+instance (priority := 10000) : CoeSort (ModuleCat.{v} R) (Type v) :=
   ⟨ModuleCat.carrier⟩
 
 attribute [coe] ModuleCat.carrier
 
-instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
+instance (priority := 10000) moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   Hom M N := M →ₗ[R] N
   id _ := LinearMap.id
   comp f g := g.comp f
@@ -98,13 +98,13 @@ instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   assoc f g h := LinearMap.comp_assoc (f := f) (g := g) (h := h)
 #align Module.Module_category ModuleCat.moduleCategory
 
-instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M N :=
+instance (priority := 10000) {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M N :=
   LinearMap.instFunLike
 
-instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
+instance (priority := 10000) {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
 
-instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
+instance (priority := 10000) moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
   forget :=
     { obj := fun R => R
       map := fun f => f.toFun }
@@ -117,16 +117,16 @@ instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
 -- One might hope these two instances would not be needed,
 -- as we already have `AddCommGroup M` and `Module R M`,
 -- but sometimes we seem to need these when rewriting by lemmas about generic concrete categories.
-instance {M : ModuleCat.{v} R} : AddCommGroup ((forget (ModuleCat R)).obj M) :=
+instance (priority := 10000) {M : ModuleCat.{v} R} : AddCommGroup ((forget (ModuleCat R)).obj M) :=
   (inferInstance : AddCommGroup M)
-instance {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) :=
+instance (priority := 10000) {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) :=
   (inferInstance : Module R M)
 
 @[ext]
 lemma ext {M N : ModuleCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
   DFunLike.ext _ _ h
 
-instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGroupCat where
+instance (priority := 10000) hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGroupCat where
   forget₂ :=
     { obj := fun M => AddCommGroupCat.of M
       map := fun f => AddCommGroupCat.ofHom f.toAddMonoidHom }
@@ -173,10 +173,10 @@ theorem ofHom_apply {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Modul
   rfl
 #align Module.of_hom_apply ModuleCat.ofHom_apply
 
-instance : Inhabited (ModuleCat R) :=
+instance (priority := 10000) : Inhabited (ModuleCat R) :=
   ⟨of R PUnit⟩
 
-instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Unique (of R X) :=
+instance (priority := 10000) ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Unique (of R X) :=
   i
 #align Module.of_unique ModuleCat.ofUnique
 
@@ -207,7 +207,7 @@ theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M whe
     apply Subsingleton.elim⟩⟩
 #align Module.is_zero_of_subsingleton ModuleCat.isZero_of_subsingleton
 
-instance : HasZeroObject (ModuleCat.{v} R) :=
+instance (priority := 10000) : HasZeroObject (ModuleCat.{v} R) :=
   ⟨⟨of R PUnit, isZero_of_subsingleton _⟩⟩
 
 variable {M N U : ModuleCat.{v} R}
@@ -313,16 +313,16 @@ end
 
 namespace ModuleCat
 
-instance {M N : ModuleCat.{v} R} : AddCommGroup (M ⟶ N) := LinearMap.addCommGroup
+instance (priority := 10000) {M N : ModuleCat.{v} R} : AddCommGroup (M ⟶ N) := LinearMap.addCommGroup
 
-instance : Preadditive (ModuleCat.{v} R) where
+instance (priority := 10000) : Preadditive (ModuleCat.{v} R) where
   add_comp P Q R f f' g := by
     ext
     dsimp
     erw [map_add]
     rfl
 
-instance forget₂_addCommGroupCat_additive : (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive
+instance (priority := 10000) forget₂_addCommGroupCat_additive : (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive
     where
 #align Module.forget₂_AddCommGroup_additive ModuleCat.forget₂_addCommGroupCat_additive
 
@@ -330,7 +330,7 @@ section
 
 variable {S : Type u} [CommRing S]
 
-instance : Linear S (ModuleCat.{v} S) where
+instance (priority := 10000) : Linear S (ModuleCat.{v} S) where
   homModule X Y := LinearMap.module
   smul_comp := by
     intros
@@ -398,17 +398,17 @@ section
 
 variable {A : AddCommGroupCat} (φ : R →+* End A)
 
-instance : AddCommGroup (mkOfSMul' φ) := by
+instance (priority := 10000) : AddCommGroup (mkOfSMul' φ) := by
   dsimp only [mkOfSMul']
   infer_instance
 
-instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r) x⟩
+instance (priority := 10000) : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r) x⟩
 
 @[simp]
 lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :
     r • x = (show A ⟶ A from φ r) x := rfl
 
-instance : Module R (mkOfSMul' φ) where
+instance (priority := 10000) : Module R (mkOfSMul' φ) where
   smul_zero _ := map_zero (N := A) _
   smul_add _ _ _ := map_add (N := A) _ _ _
   one_smul := by simp

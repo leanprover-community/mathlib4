@@ -82,7 +82,7 @@ def EssImageSubcategory (F : C ⥤ D) :=
 #align category_theory.functor.ess_image_subcategory CategoryTheory.Functor.EssImageSubcategory
 
 -- Porting note: `deriving Category` is not able to derive this instance
-instance : Category (EssImageSubcategory F) :=
+instance (priority := 10000) : Category (EssImageSubcategory F) :=
   (inferInstance : Category.{v₂} (FullSubcategory _))
 
 /-- The essential image as a subcategory has a fully faithful inclusion into the target category. -/
@@ -94,11 +94,11 @@ def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
 #align category_theory.functor.ess_image_inclusion_map CategoryTheory.Functor.essImageInclusion_map
 
 -- Porting note: `deriving Full` is not able to derive this instance
-instance : Full (essImageInclusion F) :=
+instance (priority := 10000) : Full (essImageInclusion F) :=
   (inferInstance : Full (fullSubcategoryInclusion _))
 
 -- Porting note: `deriving Faithful` is not able to derive this instance
-instance : Faithful (essImageInclusion F) :=
+instance (priority := 10000) : Faithful (essImageInclusion F) :=
   (inferInstance : Faithful (fullSubcategoryInclusion _))
 
 /--
@@ -134,7 +134,7 @@ class EssSurj (F : C ⥤ D) : Prop where
   mem_essImage (Y : D) : Y ∈ F.essImage
 #align category_theory.ess_surj CategoryTheory.EssSurj
 
-instance EssSurj.toEssImage : EssSurj F.toEssImage where
+instance (priority := 10000) EssSurj.toEssImage : EssSurj F.toEssImage where
   mem_essImage := fun ⟨_, hY⟩ =>
     ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
 
@@ -154,17 +154,17 @@ def Functor.objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
 #align category_theory.functor.obj_obj_preimage_iso CategoryTheory.Functor.objObjPreimageIso
 
 /-- The induced functor of a faithful functor is faithful. -/
-instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage :=
+instance (priority := 10000) Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage :=
   Faithful.of_comp_iso F.toEssImageCompEssentialImageInclusion
 #align category_theory.faithful.to_ess_image CategoryTheory.Faithful.toEssImage
 
 /-- The induced functor of a full functor is full. -/
-instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
+instance (priority := 10000) Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
   haveI := Full.ofIso F.toEssImageCompEssentialImageInclusion.symm
   Full.ofCompFaithful F.toEssImage F.essImageInclusion
 #align category_theory.full.to_ess_image CategoryTheory.Full.toEssImage
 
-instance instEssSurjId : EssSurj (𝟭 C) where
+instance (priority := 10000) instEssSurjId : EssSurj (𝟭 C) where
   mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
 
 theorem Iso.map_essSurj {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where

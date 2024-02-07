@@ -393,7 +393,7 @@ protected theorem refl [Monoid α] (x : α) : x ~ᵤ x :=
   ⟨1, by simp⟩
 #align associated.refl Associated.refl
 
-instance [Monoid α] : IsRefl α Associated :=
+instance (priority := 10000) [Monoid α] : IsRefl α Associated :=
   ⟨Associated.refl⟩
 
 @[symm]
@@ -401,7 +401,7 @@ protected theorem symm [Monoid α] : ∀ {x y : α}, x ~ᵤ y → y ~ᵤ x
   | x, _, ⟨u, rfl⟩ => ⟨u⁻¹, by rw [mul_assoc, Units.mul_inv, mul_one]⟩
 #align associated.symm Associated.symm
 
-instance [Monoid α] : IsSymm α Associated :=
+instance (priority := 10000) [Monoid α] : IsSymm α Associated :=
   ⟨fun _ _ => Associated.symm⟩
 
 protected theorem comm [Monoid α] {x y : α} : x ~ᵤ y ↔ y ~ᵤ x :=
@@ -413,7 +413,7 @@ protected theorem trans [Monoid α] : ∀ {x y z : α}, x ~ᵤ y → y ~ᵤ z �
   | x, _, _, ⟨u, rfl⟩, ⟨v, rfl⟩ => ⟨u * v, by rw [Units.val_mul, mul_assoc]⟩
 #align associated.trans Associated.trans
 
-instance [Monoid α] : IsTrans α Associated :=
+instance (priority := 10000) [Monoid α] : IsTrans α Associated :=
   ⟨fun _ _ _ => Associated.trans⟩
 
 /-- The setoid of the relation `x ~ᵤ y` iff there is a unit `u` such that `x * u = y` -/
@@ -570,7 +570,7 @@ theorem dvd_dvd_iff_associated [CancelMonoidWithZero α] {a b : α} : a ∣ b �
   ⟨fun ⟨h1, h2⟩ => associated_of_dvd_dvd h1 h2, Associated.dvd_dvd⟩
 #align dvd_dvd_iff_associated dvd_dvd_iff_associated
 
-instance [CancelMonoidWithZero α] [DecidableRel ((· ∣ ·) : α → α → Prop)] :
+instance (priority := 10000) [CancelMonoidWithZero α] [DecidableRel ((· ∣ ·) : α → α → Prop)] :
     DecidableRel ((· ~ᵤ ·) : α → α → Prop) := fun _ _ => decidable_of_iff _ dvd_dvd_iff_associated
 
 theorem Associated.dvd_iff_dvd_left [Monoid α] {a b c : α} (h : a ~ᵤ b) : a ∣ c ↔ b ∣ c :=
@@ -795,7 +795,7 @@ protected abbrev mk {α : Type*} [Monoid α] (a : α) : Associates α :=
   ⟦a⟧
 #align associates.mk Associates.mk
 
-instance [Monoid α] : Inhabited (Associates α) :=
+instance (priority := 10000) [Monoid α] : Inhabited (Associates α) :=
   ⟨⟦1⟧⟩
 
 theorem mk_eq_mk_iff_associated [Monoid α] {a b : α} : Associates.mk a = Associates.mk b ↔ a ~ᵤ b :=
@@ -824,7 +824,7 @@ theorem mk_surjective [Monoid α] : Function.Surjective (@Associates.mk α _) :=
   forall_associated.2 fun a => ⟨a, rfl⟩
 #align associates.mk_surjective Associates.mk_surjective
 
-instance [Monoid α] : One (Associates α) :=
+instance (priority := 10000) [Monoid α] : One (Associates α) :=
   ⟨⟦1⟧⟩
 
 @[simp]
@@ -836,7 +836,7 @@ theorem one_eq_mk_one [Monoid α] : (1 : Associates α) = Associates.mk 1 :=
   rfl
 #align associates.one_eq_mk_one Associates.one_eq_mk_one
 
-instance [Monoid α] : Bot (Associates α) :=
+instance (priority := 10000) [Monoid α] : Bot (Associates α) :=
   ⟨1⟩
 
 theorem bot_eq_one [Monoid α] : (⊥ : Associates α) = 1 :=
@@ -847,7 +847,7 @@ theorem exists_rep [Monoid α] (a : Associates α) : ∃ a0 : α, Associates.mk 
   Quot.exists_rep a
 #align associates.exists_rep Associates.exists_rep
 
-instance [Monoid α] [Subsingleton α] :
+instance (priority := 10000) [Monoid α] [Subsingleton α] :
     Unique (Associates α) where
   default := 1
   uniq a := by
@@ -864,7 +864,7 @@ section CommMonoid
 
 variable [CommMonoid α]
 
-instance instMul : Mul (Associates α) :=
+instance (priority := 10000) instMul : Mul (Associates α) :=
   ⟨fun a' b' =>
     (Quotient.liftOn₂ a' b' fun a b => ⟦a * b⟧) fun a₁ a₂ b₁ b₂ ⟨c₁, h₁⟩ ⟨c₂, h₂⟩ =>
       Quotient.sound <| ⟨c₁ * c₂, by
@@ -875,7 +875,7 @@ theorem mk_mul_mk {x y : α} : Associates.mk x * Associates.mk y = Associates.mk
   rfl
 #align associates.mk_mul_mk Associates.mk_mul_mk
 
-instance instCommMonoid : CommMonoid (Associates α) where
+instance (priority := 10000) instCommMonoid : CommMonoid (Associates α) where
   one := 1
   mul := (· * ·)
   mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
@@ -886,7 +886,7 @@ instance instCommMonoid : CommMonoid (Associates α) where
   mul_comm a' b' :=
     Quotient.inductionOn₂ a' b' fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
 
-instance instPreorder : Preorder (Associates α) where
+instance (priority := 10000) instPreorder : Preorder (Associates α) where
   le := Dvd.dvd
   le_refl := dvd_refl
   le_trans a b c := dvd_trans
@@ -930,7 +930,7 @@ theorem units_eq_one (u : (Associates α)ˣ) : u = 1 :=
   Units.ext (mul_eq_one_iff.1 u.val_inv).1
 #align associates.units_eq_one Associates.units_eq_one
 
-instance uniqueUnits : Unique (Associates α)ˣ where
+instance (priority := 10000) uniqueUnits : Unique (Associates α)ˣ where
   default := 1
   uniq := Associates.units_eq_one
 #align associates.unique_units Associates.uniqueUnits
@@ -974,7 +974,7 @@ theorem le_mul_right {a b : Associates α} : a ≤ a * b :=
 theorem le_mul_left {a b : Associates α} : a ≤ b * a := by rw [mul_comm]; exact le_mul_right
 #align associates.le_mul_left Associates.le_mul_left
 
-instance instOrderBot : OrderBot (Associates α) where
+instance (priority := 10000) instOrderBot : OrderBot (Associates α) where
   bot := 1
   bot_le _ := one_le
 
@@ -1008,10 +1008,10 @@ theorem mk_dvd_mk {a b : α} : Associates.mk a ∣ Associates.mk b ↔ a ∣ b :
 
 end CommMonoid
 
-instance [Zero α] [Monoid α] : Zero (Associates α) :=
+instance (priority := 10000) [Zero α] [Monoid α] : Zero (Associates α) :=
   ⟨⟦0⟧⟩
 
-instance [Zero α] [Monoid α] : Top (Associates α) :=
+instance (priority := 10000) [Zero α] [Monoid α] : Top (Associates α) :=
   ⟨0⟩
 
 section MonoidWithZero
@@ -1027,7 +1027,7 @@ theorem mk_ne_zero {a : α} : Associates.mk a ≠ 0 ↔ a ≠ 0 :=
   not_congr mk_eq_zero
 #align associates.mk_ne_zero Associates.mk_ne_zero
 
-instance [Nontrivial α] : Nontrivial (Associates α) :=
+instance (priority := 10000) [Nontrivial α] : Nontrivial (Associates α) :=
   ⟨⟨0, 1, fun h =>
       have : (0 : α) ~ᵤ 1 := Quotient.exact h
       have : (0 : α) = 1 := ((associated_zero_iff_eq_zero 1).1 this.symm).symm
@@ -1043,7 +1043,7 @@ section CommMonoidWithZero
 
 variable [CommMonoidWithZero α]
 
-instance instCommMonoidWithZero : CommMonoidWithZero (Associates α) where
+instance (priority := 10000) instCommMonoidWithZero : CommMonoidWithZero (Associates α) where
     zero_mul := by
       rintro ⟨a⟩
       show Associates.mk (0 * a) = Associates.mk 0
@@ -1053,13 +1053,13 @@ instance instCommMonoidWithZero : CommMonoidWithZero (Associates α) where
       show Associates.mk (a * 0) = Associates.mk 0
       rw [mul_zero]
 
-instance instOrderTop : OrderTop (Associates α) where
+instance (priority := 10000) instOrderTop : OrderTop (Associates α) where
   top := 0
   le_top a := ⟨0, (mul_zero a).symm⟩
 
-instance instBoundedOrder : BoundedOrder (Associates α) where
+instance (priority := 10000) instBoundedOrder : BoundedOrder (Associates α) where
 
-instance [DecidableRel ((· ∣ ·) : α → α → Prop)] :
+instance (priority := 10000) [DecidableRel ((· ∣ ·) : α → α → Prop)] :
     DecidableRel ((· ∣ ·) : Associates α → Associates α → Prop) := fun a b =>
   Quotient.recOnSubsingleton₂ a b fun _ _ => decidable_of_iff' _ mk_dvd_mk
 
@@ -1144,15 +1144,15 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero α]
 
-instance instPartialOrder : PartialOrder (Associates α) where
+instance (priority := 10000) instPartialOrder : PartialOrder (Associates α) where
     le_antisymm := fun a' b' =>
       Quotient.inductionOn₂ a' b' fun _ _ hab hba =>
         Quot.sound <| associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
 
-instance instOrderedCommMonoid : OrderedCommMonoid (Associates α) where
+instance (priority := 10000) instOrderedCommMonoid : OrderedCommMonoid (Associates α) where
     mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
 
-instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α) :=
+instance (priority := 10000) instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α) :=
 { (by infer_instance : CommMonoidWithZero (Associates α)) with
   mul_left_cancel_of_ne_zero := by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ha h
@@ -1160,7 +1160,7 @@ instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α)
     have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
     exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩ }
 
-instance : NoZeroDivisors (Associates α) := by infer_instance
+instance (priority := 10000) : NoZeroDivisors (Associates α) := by infer_instance
 
 theorem le_of_mul_le_mul_left (a b c : Associates α) (ha : a ≠ 0) : a * b ≤ a * c → b ≤ c
   | ⟨d, hd⟩ => ⟨d, mul_left_cancel₀ ha <| by rwa [← mul_assoc]⟩
@@ -1191,7 +1191,7 @@ theorem one_or_eq_of_le_of_prime : ∀ p m : Associates α, Prime p → m ≤ p 
         exact Or.inl <| bot_unique <| Associates.le_of_mul_le_mul_left d m 1 ‹d ≠ 0› this
 #align associates.one_or_eq_of_le_of_prime Associates.one_or_eq_of_le_of_prime
 
-instance : CanonicallyOrderedCommMonoid (Associates α) where
+instance (priority := 10000) : CanonicallyOrderedCommMonoid (Associates α) where
   exists_mul_of_le := fun h => h
   le_self_mul := fun _ b => ⟨b, rfl⟩
   bot_le := fun _ => one_le

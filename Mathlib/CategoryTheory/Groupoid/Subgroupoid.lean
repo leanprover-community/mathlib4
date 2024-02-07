@@ -142,7 +142,7 @@ def asWideQuiver : Quiver C :=
 
 /-- The coercion of a subgroupoid as a groupoid -/
 @[simps comp_coe, simps (config := .lemmasOnly) inv_coe]
-instance coe : Groupoid S.objs where
+instance (priority := 10000) coe : Groupoid S.objs where
   Hom a b := S.arrows a.val b.val
   id a := ⟨𝟙 a.val, id_mem_of_nonempty_isotropy S a.val a.prop⟩
   comp p q := ⟨p.val ≫ q.val, S.mul p.prop q.prop⟩
@@ -184,7 +184,7 @@ def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c) where
 @[coe] def toSet (S : Subgroupoid C) : Set (Σ c d : C, c ⟶ d) :=
   {F | F.2.2 ∈ S.arrows F.1 F.2.1}
 
-instance : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
+instance (priority := 10000) : SetLike (Subgroupoid C) (Σ c d : C, c ⟶ d) where
   coe := toSet
   coe_injective' := fun ⟨S, _, _⟩ ⟨T, _, _⟩ h => by ext c d f; apply Set.ext_iff.1 h ⟨c, d, f⟩
 
@@ -196,7 +196,7 @@ theorem le_iff (S T : Subgroupoid C) : S ≤ T ↔ ∀ {c d}, S.arrows c d ⊆ T
   rw [SetLike.le_def, Sigma.forall]; exact forall_congr' fun c => Sigma.forall
 #align category_theory.subgroupoid.le_iff CategoryTheory.Subgroupoid.le_iff
 
-instance : Top (Subgroupoid C) :=
+instance (priority := 10000) : Top (Subgroupoid C) :=
   ⟨{  arrows := fun _ _ => Set.univ
       mul := by intros; trivial
       inv := by intros; trivial }⟩
@@ -210,21 +210,21 @@ theorem mem_top_objs (c : C) : c ∈ (⊤ : Subgroupoid C).objs := by
   simp only [univ_nonempty]
 #align category_theory.subgroupoid.mem_top_objs CategoryTheory.Subgroupoid.mem_top_objs
 
-instance : Bot (Subgroupoid C) :=
+instance (priority := 10000) : Bot (Subgroupoid C) :=
   ⟨{  arrows := fun _ _ => ∅
       mul := False.elim
       inv := False.elim }⟩
 
-instance : Inhabited (Subgroupoid C) :=
+instance (priority := 10000) : Inhabited (Subgroupoid C) :=
   ⟨⊤⟩
 
-instance : Inf (Subgroupoid C) :=
+instance (priority := 10000) : Inf (Subgroupoid C) :=
   ⟨fun S T =>
     { arrows := fun c d => S.arrows c d ∩ T.arrows c d
       inv := fun hp ↦ ⟨S.inv hp.1, T.inv hp.2⟩
       mul := fun hp _ hq ↦ ⟨S.mul hp.1 hq.1, T.mul hp.2 hq.2⟩ }⟩
 
-instance : InfSet (Subgroupoid C) :=
+instance (priority := 10000) : InfSet (Subgroupoid C) :=
   ⟨fun s =>
     { arrows := fun c d => ⋂ S ∈ s, Subgroupoid.arrows S c d
       inv := fun hp ↦ by rw [mem_iInter₂] at hp ⊢; exact fun S hS => S.inv (hp S hS)
@@ -241,7 +241,7 @@ theorem mem_sInf {s : Set (Subgroupoid C)} {p : Σ c d : C, c ⟶ d} :
     p ∈ sInf s ↔ ∀ S ∈ s, p ∈ S :=
   mem_sInf_arrows
 
-instance : CompleteLattice (Subgroupoid C) :=
+instance (priority := 10000) : CompleteLattice (Subgroupoid C) :=
   { completeLatticeOfInf (Subgroupoid C) (by
       refine' fun s => ⟨fun S Ss F => _, fun T Tl F fT => _⟩ <;> simp only [mem_sInf]
       exacts [fun hp => hp S Ss, fun S Ss => Tl Ss fT]) with

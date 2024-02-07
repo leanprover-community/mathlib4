@@ -43,33 +43,33 @@ variable [LieRingModule L M] [LieModule R L M]
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 /-- The quotient of a Lie module by a Lie submodule. It is a Lie module. -/
-instance : HasQuotient M (LieSubmodule R L M) :=
+instance (priority := 10000) : HasQuotient M (LieSubmodule R L M) :=
   ⟨fun N => M ⧸ N.toSubmodule⟩
 
 namespace Quotient
 
 variable {N I}
 
-instance addCommGroup : AddCommGroup (M ⧸ N) :=
+instance (priority := 10000) addCommGroup : AddCommGroup (M ⧸ N) :=
   Submodule.Quotient.addCommGroup _
 #align lie_submodule.quotient.add_comm_group LieSubmodule.Quotient.addCommGroup
 
-instance module' {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
+instance (priority := 10000) module' {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S (M ⧸ N) :=
   Submodule.Quotient.module' _
 #align lie_submodule.quotient.module' LieSubmodule.Quotient.module'
 
-instance module : Module R (M ⧸ N) :=
+instance (priority := 10000) module : Module R (M ⧸ N) :=
   Submodule.Quotient.module _
 #align lie_submodule.quotient.module LieSubmodule.Quotient.module
 
-instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
+instance (priority := 10000) isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     [SMul Sᵐᵒᵖ R] [Module Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] :
     IsCentralScalar S (M ⧸ N) :=
   Submodule.Quotient.isCentralScalar _
 #align lie_submodule.quotient.is_central_scalar LieSubmodule.Quotient.isCentralScalar
 
-instance inhabited : Inhabited (M ⧸ N) :=
+instance (priority := 10000) inhabited : Inhabited (M ⧸ N) :=
   ⟨0⟩
 #align lie_submodule.quotient.inhabited LieSubmodule.Quotient.inhabited
 
@@ -102,20 +102,20 @@ def actionAsEndoMap : L →ₗ⁅R⁆ Module.End R (M ⧸ N) :=
 
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there is
 a natural bracket action of `L` on the quotient `M/N`. -/
-instance actionAsEndoMapBracket : Bracket L (M ⧸ N) :=
+instance (priority := 10000) actionAsEndoMapBracket : Bracket L (M ⧸ N) :=
   ⟨fun x n => actionAsEndoMap N x n⟩
 #align lie_submodule.quotient.action_as_endo_map_bracket LieSubmodule.Quotient.actionAsEndoMapBracket
 
-instance lieQuotientLieRingModule : LieRingModule L (M ⧸ N) :=
+instance (priority := 10000) lieQuotientLieRingModule : LieRingModule L (M ⧸ N) :=
   { LieRingModule.compLieHom _ (actionAsEndoMap N) with bracket := Bracket.bracket }
 #align lie_submodule.quotient.lie_quotient_lie_ring_module LieSubmodule.Quotient.lieQuotientLieRingModule
 
 /-- The quotient of a Lie module by a Lie submodule, is a Lie module. -/
-instance lieQuotientLieModule : LieModule R L (M ⧸ N) :=
+instance (priority := 10000) lieQuotientLieModule : LieModule R L (M ⧸ N) :=
   LieModule.compLieHom _ (actionAsEndoMap N)
 #align lie_submodule.quotient.lie_quotient_lie_module LieSubmodule.Quotient.lieQuotientLieModule
 
-instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
+instance (priority := 10000) lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
   ⟨by
     intro x y
     apply Quotient.liftOn₂' x y fun x' y' => mk ⁅x', y'⁆
@@ -135,7 +135,7 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L �
   rfl
 #align lie_submodule.quotient.mk_bracket LieSubmodule.Quotient.mk_bracket
 
-instance lieQuotientLieRing : LieRing (L ⧸ I) where
+instance (priority := 10000) lieQuotientLieRing : LieRing (L ⧸ I) where
   add_lie := by
     intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
     repeat'
@@ -166,7 +166,7 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
     apply congr_arg; apply leibniz_lie
 #align lie_submodule.quotient.lie_quotient_lie_ring LieSubmodule.Quotient.lieQuotientLieRing
 
-instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
+instance (priority := 10000) lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
   lie_smul := by
     intro t x' y'; refine Quotient.inductionOn₂' x' y' ?_; intro x y
     repeat'
@@ -191,7 +191,7 @@ theorem surjective_mk' : Function.Surjective (mk' N) := surjective_quot_mk _
 @[simp]
 theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by simp [LieModuleHom.range_eq_top]
 
-instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
+instance (priority := 10000) isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
   Submodule.Quotient.isNoetherian (N : Submodule R M)
 
 -- Porting note: LHS simplifies @[simp]

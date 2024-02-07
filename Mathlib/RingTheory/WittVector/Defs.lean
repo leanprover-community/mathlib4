@@ -96,11 +96,11 @@ theorem coeff_mk (x : ℕ → R) : (mk p x).coeff = x :=
 
 /- These instances are not needed for the rest of the development,
 but it is interesting to establish early on that `witt_vector p` is a lawful functor. -/
-instance : Functor (WittVector p) where
+instance (priority := 10000) : Functor (WittVector p) where
   map f v := mk p (f ∘ v.coeff)
   mapConst a _ := mk p fun _ => a
 
-instance : LawfulFunctor (WittVector p) where
+instance (priority := 10000) : LawfulFunctor (WittVector p) where
   map_const := rfl
   -- Porting note: no longer needs to deconstruct `v` to conclude `{coeff := v.coeff} = v`
   id_map _ := rfl
@@ -183,43 +183,43 @@ def eval {k : ℕ} (φ : ℕ → MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k →
 
 variable (R) [Fact p.Prime]
 
-instance : Zero (𝕎 R) :=
+instance (priority := 10000) : Zero (𝕎 R) :=
   ⟨eval (wittZero p) ![]⟩
 
-instance : Inhabited (𝕎 R) :=
+instance (priority := 10000) : Inhabited (𝕎 R) :=
   ⟨0⟩
 
-instance : One (𝕎 R) :=
+instance (priority := 10000) : One (𝕎 R) :=
   ⟨eval (wittOne p) ![]⟩
 
-instance : Add (𝕎 R) :=
+instance (priority := 10000) : Add (𝕎 R) :=
   ⟨fun x y => eval (wittAdd p) ![x, y]⟩
 
-instance : Sub (𝕎 R) :=
+instance (priority := 10000) : Sub (𝕎 R) :=
   ⟨fun x y => eval (wittSub p) ![x, y]⟩
 
-instance hasNatScalar : SMul ℕ (𝕎 R) :=
+instance (priority := 10000) hasNatScalar : SMul ℕ (𝕎 R) :=
   ⟨fun n x => eval (wittNSMul p n) ![x]⟩
 #align witt_vector.has_nat_scalar WittVector.hasNatScalar
 
-instance hasIntScalar : SMul ℤ (𝕎 R) :=
+instance (priority := 10000) hasIntScalar : SMul ℤ (𝕎 R) :=
   ⟨fun n x => eval (wittZSMul p n) ![x]⟩
 #align witt_vector.has_int_scalar WittVector.hasIntScalar
 
-instance : Mul (𝕎 R) :=
+instance (priority := 10000) : Mul (𝕎 R) :=
   ⟨fun x y => eval (wittMul p) ![x, y]⟩
 
-instance : Neg (𝕎 R) :=
+instance (priority := 10000) : Neg (𝕎 R) :=
   ⟨fun x => eval (wittNeg p) ![x]⟩
 
-instance hasNatPow : Pow (𝕎 R) ℕ :=
+instance (priority := 10000) hasNatPow : Pow (𝕎 R) ℕ :=
   ⟨fun x n => eval (wittPow p n) ![x]⟩
 #align witt_vector.has_nat_pow WittVector.hasNatPow
 
-instance : NatCast (𝕎 R) :=
+instance (priority := 10000) : NatCast (𝕎 R) :=
   ⟨Nat.unaryCast⟩
 
-instance : IntCast (𝕎 R) :=
+instance (priority := 10000) : IntCast (𝕎 R) :=
   ⟨Int.castDef⟩
 
 end RingOperations

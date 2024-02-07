@@ -50,7 +50,7 @@ variable {I G}
 
 namespace LeftInvariantDerivation
 
-instance : Coe (LeftInvariantDerivation I G) (Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯) :=
+instance (priority := 10000) : Coe (LeftInvariantDerivation I G) (Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯) :=
   ⟨toDerivation⟩
 
 attribute [coe] toDerivation
@@ -60,11 +60,11 @@ theorem toDerivation_injective :
   fun X Y h => by cases X; cases Y; congr
 #align left_invariant_derivation.coe_derivation_injective LeftInvariantDerivation.toDerivation_injective
 
-instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
+instance (priority := 10000) : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
   coe_injective' _ _ h := toDerivation_injective <| DFunLike.ext' h
 
-instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
+instance (priority := 10000) : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   map_add f := map_add f.1
   map_smulₛₗ f := map_smul f.1.1
 
@@ -127,21 +127,21 @@ theorem leibniz : X (f * f') = f • X f' + f' • X f :=
   X.leibniz' _ _
 #align left_invariant_derivation.leibniz LeftInvariantDerivation.leibniz
 
-instance : Zero (LeftInvariantDerivation I G) :=
+instance (priority := 10000) : Zero (LeftInvariantDerivation I G) :=
   ⟨⟨0, fun g => by simp only [_root_.map_zero]⟩⟩
 
-instance : Inhabited (LeftInvariantDerivation I G) :=
+instance (priority := 10000) : Inhabited (LeftInvariantDerivation I G) :=
   ⟨0⟩
 
-instance : Add (LeftInvariantDerivation I G) where
+instance (priority := 10000) : Add (LeftInvariantDerivation I G) where
   add X Y :=
     ⟨X + Y, fun g => by
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
-instance : Neg (LeftInvariantDerivation I G) where
+instance (priority := 10000) : Neg (LeftInvariantDerivation I G) where
   neg X := ⟨-X, fun g => by simp [left_invariant']⟩
 
-instance : Sub (LeftInvariantDerivation I G) where
+instance (priority := 10000) : Sub (LeftInvariantDerivation I G) where
   sub X Y := ⟨X - Y, fun g => by simp [left_invariant']⟩
 
 @[simp]
@@ -175,18 +175,18 @@ theorem lift_zero :
   rfl
 #align left_invariant_derivation.lift_zero LeftInvariantDerivation.lift_zero
 
-instance hasNatScalar : SMul ℕ (LeftInvariantDerivation I G) where
+instance (priority := 10000) hasNatScalar : SMul ℕ (LeftInvariantDerivation I G) where
   smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
 #align left_invariant_derivation.has_nat_scalar LeftInvariantDerivation.hasNatScalar
 
-instance hasIntScalar : SMul ℤ (LeftInvariantDerivation I G) where
+instance (priority := 10000) hasIntScalar : SMul ℤ (LeftInvariantDerivation I G) where
   smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul_of_tower _ r, left_invariant']⟩
 #align left_invariant_derivation.has_int_scalar LeftInvariantDerivation.hasIntScalar
 
-instance : AddCommGroup (LeftInvariantDerivation I G) :=
+instance (priority := 10000) : AddCommGroup (LeftInvariantDerivation I G) :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
-instance : SMul 𝕜 (LeftInvariantDerivation I G) where
+instance (priority := 10000) : SMul 𝕜 (LeftInvariantDerivation I G) where
   smul r X := ⟨r • X.1, fun g => by simp_rw [LinearMap.map_smul, left_invariant']⟩
 
 variable (r)
@@ -211,7 +211,7 @@ def coeFnAddMonoidHom : LeftInvariantDerivation I G →+ C^∞⟮I, G; 𝕜⟯ �
 
 variable {I G}
 
-instance : Module 𝕜 (LeftInvariantDerivation I G) :=
+instance (priority := 10000) : Module 𝕜 (LeftInvariantDerivation I G) :=
   coe_injective.module _ (coeFnAddMonoidHom I G) coe_smul
 
 /-- Evaluation at a point for left invariant derivation. Same thing as for generic global
@@ -252,7 +252,7 @@ theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
 set_option linter.uppercaseLean3 false in
 #align left_invariant_derivation.comp_L LeftInvariantDerivation.comp_L
 
-instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
+instance (priority := 10000) : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
       ext f
@@ -277,7 +277,7 @@ theorem commutator_apply : ⁅X, Y⁆ f = X (Y f) - Y (X f) :=
   rfl
 #align left_invariant_derivation.commutator_apply LeftInvariantDerivation.commutator_apply
 
-instance : LieRing (LeftInvariantDerivation I G) where
+instance (priority := 10000) : LieRing (LeftInvariantDerivation I G) where
   add_lie X Y Z := by
     ext1
     simp only [commutator_apply, coe_add, Pi.add_apply, map_add]
@@ -292,7 +292,7 @@ instance : LieRing (LeftInvariantDerivation I G) where
     simp only [commutator_apply, coe_add, coe_sub, map_sub, Pi.add_apply]
     ring
 
-instance : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where
+instance (priority := 10000) : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where
   lie_smul r Y Z := by
     ext1
     simp only [commutator_apply, map_smul, smul_sub, coe_smul, Pi.smul_apply]

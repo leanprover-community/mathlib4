@@ -72,12 +72,12 @@ structure Pretopology where
 
 namespace Pretopology
 
-instance : CoeFun (Pretopology C) fun _ => ∀ X : C, Set (Presieve X) :=
+instance (priority := 10000) : CoeFun (Pretopology C) fun _ => ∀ X : C, Set (Presieve X) :=
   ⟨coverings⟩
 
 variable {C}
 
-instance LE : LE (Pretopology C) where
+instance (priority := 10000) LE : LE (Pretopology C) where
   le K₁ K₂ := (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂
 
 theorem le_def {K₁ K₂ : Pretopology C} : K₁ ≤ K₂ ↔ (K₁ : ∀ X : C, Set (Presieve X)) ≤ K₂ :=
@@ -86,13 +86,13 @@ theorem le_def {K₁ K₂ : Pretopology C} : K₁ ≤ K₂ ↔ (K₁ : ∀ X : C
 
 variable (C)
 
-instance : PartialOrder (Pretopology C) :=
+instance (priority := 10000) : PartialOrder (Pretopology C) :=
   { Pretopology.LE with
     le_refl := fun K => le_def.mpr le_rfl
     le_trans := fun K₁ K₂ K₃ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
     le_antisymm := fun K₁ K₂ h₁₂ h₂₁ => Pretopology.ext _ _ (le_antisymm h₁₂ h₂₁) }
 
-instance : OrderTop (Pretopology C) where
+instance (priority := 10000) : OrderTop (Pretopology C) where
   top :=
     { coverings := fun _ => Set.univ
       has_isos := fun _ _ _ _ => Set.mem_univ _
@@ -100,7 +100,7 @@ instance : OrderTop (Pretopology C) where
       Transitive := fun _ _ _ _ _ => Set.mem_univ _ }
   le_top _ _ _ _ := Set.mem_univ _
 
-instance : Inhabited (Pretopology C) :=
+instance (priority := 10000) : Inhabited (Pretopology C) :=
   ⟨⊤⟩
 
 /-- A pretopology `K` can be completed to a Grothendieck topology `J` by declaring a sieve to be
@@ -204,7 +204,7 @@ def trivial : Pretopology C where
       apply singleton.mk
 #align category_theory.pretopology.trivial CategoryTheory.Pretopology.trivial
 
-instance : OrderBot (Pretopology C) where
+instance (priority := 10000) : OrderBot (Pretopology C) where
   bot := trivial C
   bot_le K X R := by
     rintro ⟨Y, f, hf, rfl⟩

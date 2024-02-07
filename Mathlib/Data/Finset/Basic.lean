@@ -142,7 +142,7 @@ structure Finset (α : Type*) where
   nodup : Nodup val
 #align finset Finset
 
-instance Multiset.canLiftFinset {α} : CanLift (Multiset α) (Finset α) Finset.val Multiset.Nodup :=
+instance (priority := 10000) Multiset.canLiftFinset {α} : CanLift (Multiset α) (Finset α) Finset.val Multiset.Nodup :=
   ⟨fun m hm => ⟨⟨m, hm⟩, rfl⟩⟩
 #align multiset.can_lift_finset Multiset.canLiftFinset
 
@@ -165,14 +165,14 @@ theorem dedup_eq_self [DecidableEq α] (s : Finset α) : dedup s.1 = s.1 :=
   s.2.dedup
 #align finset.dedup_eq_self Finset.dedup_eq_self
 
-instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
+instance (priority := 10000) decidableEq [DecidableEq α] : DecidableEq (Finset α)
   | _, _ => decidable_of_iff _ val_inj
 #align finset.has_decidable_eq Finset.decidableEq
 
 /-! ### membership -/
 
 
-instance : Membership α (Finset α) :=
+instance (priority := 10000) : Membership α (Finset α) :=
   ⟨fun a s => a ∈ s.1⟩
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
@@ -189,7 +189,7 @@ theorem mem_mk {a : α} {s nd} : a ∈ @Finset.mk α s nd ↔ a ∈ s :=
   Iff.rfl
 #align finset.mem_mk Finset.mem_mk
 
-instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable (a ∈ s) :=
+instance (priority := 10000) decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable (a ∈ s) :=
   Multiset.decidableMem _ _
 #align finset.decidable_mem Finset.decidableMem
 
@@ -204,7 +204,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
   { a | a ∈ s }
 
 /-- Convert a finset to a set in the natural way. -/
-instance : CoeTC (Finset α) (Set α) :=
+instance (priority := 10000) : CoeTC (Finset α) (Set α) :=
   ⟨toSet⟩
 
 @[simp, norm_cast]
@@ -227,7 +227,7 @@ theorem mk_coe {s : Finset α} (x : (s : Set α)) {h} : (⟨x, h⟩ : (s : Set �
   Subtype.coe_eta _ _
 #align finset.mk_coe Finset.mk_coe
 
-instance decidableMem' [DecidableEq α] (a : α) (s : Finset α) : Decidable (a ∈ (s : Set α)) :=
+instance (priority := 10000) decidableMem' [DecidableEq α] (a : α) (s : Finset α) : Decidable (a ∈ (s : Set α)) :=
   s.decidableMem _
 #align finset.decidable_mem' Finset.decidableMem'
 
@@ -255,7 +255,7 @@ theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun _s 
 
 
 /-- Coercion from a finset to the corresponding subtype. -/
-instance {α : Type u} : CoeSort (Finset α) (Type u) :=
+instance (priority := 10000) {α : Type u} : CoeSort (Finset α) (Type u) :=
   ⟨fun s => { x // x ∈ s }⟩
 
 -- Porting note: @[simp] can prove this
@@ -270,17 +270,17 @@ protected theorem exists_coe {α : Type*} (s : Finset α) (p : s → Prop) :
   Subtype.exists
 #align finset.exists_coe Finset.exists_coe
 
-instance PiFinsetCoe.canLift (ι : Type*) (α : ι → Type*) [_ne : ∀ i, Nonempty (α i)]
+instance (priority := 10000) PiFinsetCoe.canLift (ι : Type*) (α : ι → Type*) [_ne : ∀ i, Nonempty (α i)]
     (s : Finset ι) : CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
   PiSubtype.canLift ι α (· ∈ s)
 #align finset.pi_finset_coe.can_lift Finset.PiFinsetCoe.canLift
 
-instance PiFinsetCoe.canLift' (ι α : Type*) [_ne : Nonempty α] (s : Finset ι) :
+instance (priority := 10000) PiFinsetCoe.canLift' (ι α : Type*) [_ne : Nonempty α] (s : Finset ι) :
     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
   PiFinsetCoe.canLift ι (fun _ => α) s
 #align finset.pi_finset_coe.can_lift' Finset.PiFinsetCoe.canLift'
 
-instance FinsetCoe.canLift (s : Finset α) : CanLift α s (↑) fun a => a ∈ s where
+instance (priority := 10000) FinsetCoe.canLift (s : Finset α) : CanLift α s (↑) fun a => a ∈ s where
   prf a ha := ⟨⟨a, ha⟩, rfl⟩
 #align finset.finset_coe.can_lift Finset.FinsetCoe.canLift
 
@@ -296,38 +296,38 @@ section Subset
 
 variable {s t : Finset α}
 
-instance : HasSubset (Finset α) :=
+instance (priority := 10000) : HasSubset (Finset α) :=
   ⟨fun s t => ∀ ⦃a⦄, a ∈ s → a ∈ t⟩
 
-instance : HasSSubset (Finset α) :=
+instance (priority := 10000) : HasSSubset (Finset α) :=
   ⟨fun s t => s ⊆ t ∧ ¬t ⊆ s⟩
 
-instance partialOrder : PartialOrder (Finset α) where
+instance (priority := 10000) partialOrder : PartialOrder (Finset α) where
   le := (· ⊆ ·)
   lt := (· ⊂ ·)
   le_refl s a := id
   le_trans s t u hst htu a ha := htu <| hst ha
   le_antisymm s t hst hts := ext fun a => ⟨@hst _, @hts _⟩
 
-instance : IsRefl (Finset α) (· ⊆ ·) :=
+instance (priority := 10000) : IsRefl (Finset α) (· ⊆ ·) :=
   show IsRefl (Finset α) (· ≤ ·) by infer_instance
 
-instance : IsTrans (Finset α) (· ⊆ ·) :=
+instance (priority := 10000) : IsTrans (Finset α) (· ⊆ ·) :=
   show IsTrans (Finset α) (· ≤ ·) by infer_instance
 
-instance : IsAntisymm (Finset α) (· ⊆ ·) :=
+instance (priority := 10000) : IsAntisymm (Finset α) (· ⊆ ·) :=
   show IsAntisymm (Finset α) (· ≤ ·) by infer_instance
 
-instance : IsIrrefl (Finset α) (· ⊂ ·) :=
+instance (priority := 10000) : IsIrrefl (Finset α) (· ⊂ ·) :=
   show IsIrrefl (Finset α) (· < ·) by infer_instance
 
-instance : IsTrans (Finset α) (· ⊂ ·) :=
+instance (priority := 10000) : IsTrans (Finset α) (· ⊂ ·) :=
   show IsTrans (Finset α) (· < ·) by infer_instance
 
-instance : IsAsymm (Finset α) (· ⊂ ·) :=
+instance (priority := 10000) : IsAsymm (Finset α) (· ⊂ ·) :=
   show IsAsymm (Finset α) (· < ·) by infer_instance
 
-instance : IsNonstrictStrictOrder (Finset α) (· ⊆ ·) (· ⊂ ·) :=
+instance (priority := 10000) : IsNonstrictStrictOrder (Finset α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
 
 theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
@@ -444,11 +444,11 @@ theorem exists_of_ssubset {s₁ s₂ : Finset α} (h : s₁ ⊂ s₂) : ∃ x �
   Set.exists_of_ssubset h
 #align finset.exists_of_ssubset Finset.exists_of_ssubset
 
-instance isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) :=
+instance (priority := 10000) isWellFounded_ssubset : IsWellFounded (Finset α) (· ⊂ ·) :=
   Subrelation.isWellFounded (InvImage _ _) val_lt_iff.2
 #align finset.is_well_founded_ssubset Finset.isWellFounded_ssubset
 
-instance wellFoundedLT : WellFoundedLT (Finset α) :=
+instance (priority := 10000) wellFoundedLT : WellFoundedLT (Finset α) :=
   Finset.isWellFounded_ssubset
 #align finset.is_well_founded_lt Finset.wellFoundedLT
 
@@ -480,7 +480,7 @@ to the dot notation. -/
 #align finset.nonempty Finset.Nonempty
 
 --Porting note: Much longer than in Lean3
-instance decidableNonempty {s : Finset α} : Decidable s.Nonempty :=
+instance (priority := 10000) decidableNonempty {s : Finset α} : Decidable s.Nonempty :=
   Quotient.recOnSubsingleton (motive := fun s : Multiset α => Decidable (∃ a, a ∈ s)) s.1
     (fun l : List α =>
       match l with
@@ -536,10 +536,10 @@ protected def empty : Finset α :=
   ⟨0, nodup_zero⟩
 #align finset.empty Finset.empty
 
-instance : EmptyCollection (Finset α) :=
+instance (priority := 10000) : EmptyCollection (Finset α) :=
   ⟨Finset.empty⟩
 
-instance inhabitedFinset : Inhabited (Finset α) :=
+instance (priority := 10000) inhabitedFinset : Inhabited (Finset α) :=
   ⟨∅⟩
 #align finset.inhabited_finset Finset.inhabitedFinset
 
@@ -632,7 +632,7 @@ theorem isEmpty_coe_sort {s : Finset α} : IsEmpty (s : Type _) ↔ s = ∅ := b
   simpa using @Set.isEmpty_coe_sort α s
 #align finset.is_empty_coe_sort Finset.isEmpty_coe_sort
 
-instance instIsEmpty : IsEmpty (∅ : Finset α) :=
+instance (priority := 10000) instIsEmpty : IsEmpty (∅ : Finset α) :=
   isEmpty_coe_sort.2 rfl
 
 /-- A `Finset` for an empty type is empty. -/
@@ -640,7 +640,7 @@ theorem eq_empty_of_isEmpty [IsEmpty α] (s : Finset α) : s = ∅ :=
   Finset.eq_empty_of_forall_not_mem isEmptyElim
 #align finset.eq_empty_of_is_empty Finset.eq_empty_of_isEmpty
 
-instance : OrderBot (Finset α) where
+instance (priority := 10000) : OrderBot (Finset α) where
   bot := ∅
   bot_le := empty_subset
 
@@ -670,7 +670,7 @@ variable {s : Finset α} {a b : α}
 
 This differs from `insert a ∅` in that it does not require a `DecidableEq` instance for `α`.
 -/
-instance : Singleton α (Finset α) :=
+instance (priority := 10000) : Singleton α (Finset α) :=
   ⟨fun a => ⟨{a}, nodup_singleton a⟩⟩
 
 @[simp]
@@ -840,15 +840,15 @@ theorem Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = 
   fun ⟨a, ha⟩ => (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 #align finset.nonempty.exists_eq_singleton_or_nontrivial Finset.Nonempty.exists_eq_singleton_or_nontrivial
 
-instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
+instance (priority := 10000) instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
   ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
 #align finset.nontrivial' Finset.instNontrivial
 
-instance [IsEmpty α] : Unique (Finset α) where
+instance (priority := 10000) [IsEmpty α] : Unique (Finset α) where
   default := ∅
   uniq _ := eq_empty_of_forall_not_mem isEmptyElim
 
-instance (i : α) : Unique ({i} : Finset α) where
+instance (priority := 10000) (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
   uniq j := Subtype.ext <| mem_singleton.mp j.2
 
@@ -1087,7 +1087,7 @@ section Insert
 variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 
 /-- `insert a s` is the set `{a} ∪ s` containing `a` and the elements of `s`. -/
-instance : Insert α (Finset α) :=
+instance (priority := 10000) : Insert α (Finset α) :=
   ⟨fun a s => ⟨_, s.2.ndinsert a⟩⟩
 
 theorem insert_def (a : α) (s : Finset α) : insert a s = ⟨_, s.2.ndinsert a⟩ :=
@@ -1145,7 +1145,7 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
   simp
 #align finset.mem_insert_coe Finset.mem_insert_coe
 
-instance : IsLawfulSingleton α (Finset α) :=
+instance (priority := 10000) : IsLawfulSingleton α (Finset α) :=
   ⟨fun a => by ext; simp⟩
 
 @[simp]
@@ -1203,7 +1203,7 @@ theorem insert_ne_empty (a : α) (s : Finset α) : insert a s ≠ ∅ :=
 #align finset.insert_ne_empty Finset.insert_ne_empty
 
 -- Porting note: explicit universe annotation is no longer required.
-instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α) :=
+instance (priority := 10000) (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α) :=
   (Finset.coe_nonempty.mpr (s.insert_nonempty i)).to_subtype
 
 theorem ne_insert_of_not_mem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ insert a t := by
@@ -1347,14 +1347,14 @@ section Lattice
 variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
 
 /-- `s ∪ t` is the set such that `a ∈ s ∪ t` iff `a ∈ s` or `a ∈ t`. -/
-instance : Union (Finset α) :=
+instance (priority := 10000) : Union (Finset α) :=
   ⟨fun s t => ⟨_, t.2.ndunion s.1⟩⟩
 
 /-- `s ∩ t` is the set such that `a ∈ s ∩ t` iff `a ∈ s` and `a ∈ t`. -/
-instance : Inter (Finset α) :=
+instance (priority := 10000) : Inter (Finset α) :=
   ⟨fun s t => ⟨_, s.2.ndinter t.1⟩⟩
 
-instance : Lattice (Finset α) :=
+instance (priority := 10000) : Lattice (Finset α) :=
   { Finset.partialOrder with
     sup := (· ∪ ·)
     sup_le := fun _ _ _ hs ht _ ha => (mem_ndunion.1 ha).elim (fun h => hs h) fun h => ht h
@@ -1379,7 +1379,7 @@ theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
   disjoint_iff
 #align finset.disjoint_iff_inter_eq_empty Finset.disjoint_iff_inter_eq_empty
 
-instance decidableDisjoint (U V : Finset α) : Decidable (Disjoint U V) :=
+instance (priority := 10000) decidableDisjoint (U V : Finset α) : Decidable (Disjoint U V) :=
   decidable_of_iff _ disjoint_left.symm
 #align finset.decidable_disjoint Finset.decidableDisjoint
 
@@ -1452,7 +1452,7 @@ theorem union_comm (s₁ s₂ : Finset α) : s₁ ∪ s₂ = s₂ ∪ s₁ :=
   sup_comm
 #align finset.union_comm Finset.union_comm
 
-instance : Std.Commutative (α := Finset α) (· ∪ ·) :=
+instance (priority := 10000) : Std.Commutative (α := Finset α) (· ∪ ·) :=
   ⟨union_comm⟩
 
 @[simp]
@@ -1460,7 +1460,7 @@ theorem union_assoc (s₁ s₂ s₃ : Finset α) : s₁ ∪ s₂ ∪ s₃ = s₁
   sup_assoc
 #align finset.union_assoc Finset.union_assoc
 
-instance : Std.Associative (α := Finset α) (· ∪ ·) :=
+instance (priority := 10000) : Std.Associative (α := Finset α) (· ∪ ·) :=
   ⟨union_assoc⟩
 
 @[simp]
@@ -1468,7 +1468,7 @@ theorem union_idempotent (s : Finset α) : s ∪ s = s :=
   sup_idem
 #align finset.union_idempotent Finset.union_idempotent
 
-instance : Std.IdempotentOp (α := Finset α) (· ∪ ·) :=
+instance (priority := 10000) : Std.IdempotentOp (α := Finset α) (· ∪ ·) :=
   ⟨union_idempotent⟩
 
 theorem union_subset_left (h : s ∪ t ⊆ u) : s ⊆ u :=
@@ -1768,7 +1768,7 @@ theorem inter_subset_union : s ∩ t ⊆ s ∪ t :=
   le_iff_subset.1 inf_le_sup
 #align finset.inter_subset_union Finset.inter_subset_union
 
-instance : DistribLattice (Finset α) :=
+instance (priority := 10000) : DistribLattice (Finset α) :=
   { le_sup_inf := fun a b c => by
       simp (config := { contextual := true }) only
         [sup_eq_union, inf_eq_inter, le_eq_subset, subset_iff, mem_inter, mem_union, and_imp,
@@ -1889,8 +1889,8 @@ theorem disjoint_or_nonempty_inter (s t : Finset α) : Disjoint s t ∨ (s ∩ t
 
 end Lattice
 
-instance isDirected_le : IsDirected (Finset α) (· ≤ ·) := by classical infer_instance
-instance isDirected_subset : IsDirected (Finset α) (· ⊆ ·) := isDirected_le
+instance (priority := 10000) isDirected_le : IsDirected (Finset α) (· ≤ ·) := by classical infer_instance
+instance (priority := 10000) isDirected_subset : IsDirected (Finset α) (· ⊆ ·) := isDirected_le
 
 /-! ### erase -/
 
@@ -2113,7 +2113,7 @@ section Sdiff
 variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 
 /-- `s \ t` is the set consisting of the elements of `s` that are not in `t`. -/
-instance : SDiff (Finset α) :=
+instance (priority := 10000) : SDiff (Finset α) :=
   ⟨fun s₁ s₂ => ⟨s₁.1 - s₂.1, nodup_of_le tsub_le_self s₁.2⟩⟩
 
 @[simp]
@@ -2132,7 +2132,7 @@ theorem inter_sdiff_self (s₁ s₂ : Finset α) : s₁ ∩ (s₂ \ s₁) = ∅ 
     simp only [mem_inter, mem_sdiff]; rintro x ⟨h, _, hn⟩; exact hn h
 #align finset.inter_sdiff_self Finset.inter_sdiff_self
 
-instance : GeneralizedBooleanAlgebra (Finset α) :=
+instance (priority := 10000) : GeneralizedBooleanAlgebra (Finset α) :=
   { sup_inf_sdiff := fun x y => by
       simp only [ext_iff, mem_union, mem_sdiff, inf_eq_inter, sup_eq_union, mem_inter,
         ← and_or_left, em, and_true, implies_true]
@@ -2715,39 +2715,39 @@ section DecidablePiExists
 
 variable {s : Finset α}
 
-instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
+instance (priority := 10000) decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
     Decidable (∀ (a) (h : a ∈ s), p a h) :=
   Multiset.decidableDforallMultiset
 #align finset.decidable_dforall_finset Finset.decidableDforallFinset
 
 -- porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
 -- needed. In lean4 it seems this is not the case.
-instance instDecidableRelSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊆ ·) :=
+instance (priority := 10000) instDecidableRelSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊆ ·) :=
   λ _ _ ↦ decidableDforallFinset
 
-instance instDecidableRelSSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊂ ·) :=
+instance (priority := 10000) instDecidableRelSSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊂ ·) :=
   λ _ _ ↦ instDecidableAnd
 
-instance instDecidableLE [DecidableEq α] : @DecidableRel (Finset α) (· ≤ ·) :=
+instance (priority := 10000) instDecidableLE [DecidableEq α] : @DecidableRel (Finset α) (· ≤ ·) :=
   instDecidableRelSubset
 
-instance instDecidableLT [DecidableEq α] : @DecidableRel (Finset α) (· < ·) :=
+instance (priority := 10000) instDecidableLT [DecidableEq α] : @DecidableRel (Finset α) (· < ·) :=
   instDecidableRelSSubset
 
-instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
+instance (priority := 10000) decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
     Decidable (∃ (a : _) (h : a ∈ s), p a h) :=
   Multiset.decidableDexistsMultiset
 #align finset.decidable_dexists_finset Finset.decidableDExistsFinset
 
-instance decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p a)] :
+instance (priority := 10000) decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p a)] :
     Decidable (∃ a ∈ s, p a) :=
   decidable_of_iff (∃ (a : _) (_ : a ∈ s), p a) (by simp)
 
-instance decidableExistsAndFinsetCoe {p : α → Prop} [DecidablePred p] :
+instance (priority := 10000) decidableExistsAndFinsetCoe {p : α → Prop} [DecidablePred p] :
     Decidable (∃ a ∈ (s : Set α), p a) := decidableExistsAndFinset
 
 /-- decidable equality for functions whose domain is bounded by finsets -/
-instance decidableEqPiFinset {β : α → Type*} [_h : ∀ a, DecidableEq (β a)] :
+instance (priority := 10000) decidableEqPiFinset {β : α → Type*} [_h : ∀ a, DecidableEq (β a)] :
     DecidableEq (∀ a ∈ s, β a) :=
   Multiset.decidableEqPiMultiset
 #align finset.decidable_eq_pi_finset Finset.decidableEqPiFinset
@@ -3355,7 +3355,7 @@ theorem toFinset_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multi
     (m.dedup.bind f).toFinset = (m.bind f).toFinset := by simp_rw [toFinset, dedup_bind_dedup]
 #align multiset.to_finset_bind_dedup Multiset.toFinset_bind_dedup
 
-instance isWellFounded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) := by
+instance (priority := 10000) isWellFounded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) := by
   classical
   exact Subrelation.isWellFounded (InvImage _ toFinset) toFinset_ssubset.2
 #align multiset.is_well_founded_ssubset Multiset.isWellFounded_ssubset

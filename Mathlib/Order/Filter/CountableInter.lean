@@ -136,7 +136,7 @@ def Filter.ofCountableInter (l : Set (Set α))
     hp _ ((countable_singleton _).insert _) (insert_subset_iff.2 ⟨hs, singleton_subset_iff.2 ht⟩)
 #align filter.of_countable_Inter Filter.ofCountableInter
 
-instance Filter.countableInter_ofCountableInter (l : Set (Set α))
+instance (priority := 10000) Filter.countableInter_ofCountableInter (l : Set (Set α))
     (hp : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) :
     CountableInterFilter (Filter.ofCountableInter l hp h_mono) :=
@@ -166,7 +166,7 @@ def Filter.ofCountableUnion (p : Set α → Prop)
     exact hUnion _ (hSc.image _) (ball_image_iff.2 hSp)
   · exact hmono _ ht _ (compl_subset_compl.2 hsub)
 
-instance Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂) :
+instance (priority := 10000) Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂) :
     CountableInterFilter (Filter.ofCountableUnion p h₁ h₂) :=
   countableInter_ofCountableInter ..
 
@@ -175,21 +175,21 @@ theorem Filter.mem_ofCountableUnion {p : Set α → Prop} {hunion hmono s} :
     s ∈ ofCountableUnion p hunion hmono ↔ p sᶜ :=
   Iff.rfl
 
-instance countableInterFilter_principal (s : Set α) : CountableInterFilter (𝓟 s) :=
+instance (priority := 10000) countableInterFilter_principal (s : Set α) : CountableInterFilter (𝓟 s) :=
   ⟨fun _ _ hS => subset_sInter hS⟩
 #align countable_Inter_filter_principal countableInterFilter_principal
 
-instance countableInterFilter_bot : CountableInterFilter (⊥ : Filter α) := by
+instance (priority := 10000) countableInterFilter_bot : CountableInterFilter (⊥ : Filter α) := by
   rw [← principal_empty]
   apply countableInterFilter_principal
 #align countable_Inter_filter_bot countableInterFilter_bot
 
-instance countableInterFilter_top : CountableInterFilter (⊤ : Filter α) := by
+instance (priority := 10000) countableInterFilter_top : CountableInterFilter (⊤ : Filter α) := by
   rw [← principal_univ]
   apply countableInterFilter_principal
 #align countable_Inter_filter_top countableInterFilter_top
 
-instance (l : Filter β) [CountableInterFilter l] (f : α → β) :
+instance (priority := 10000) (l : Filter β) [CountableInterFilter l] (f : α → β) :
     CountableInterFilter (comap f l) := by
   refine' ⟨fun S hSc hS => _⟩
   choose! t htl ht using hS
@@ -197,14 +197,14 @@ instance (l : Filter β) [CountableInterFilter l] (f : α → β) :
   refine' ⟨_, this, _⟩
   simpa [preimage_iInter] using iInter₂_mono ht
 
-instance (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := by
+instance (priority := 10000) (l : Filter α) [CountableInterFilter l] (f : α → β) : CountableInterFilter (map f l) := by
   refine' ⟨fun S hSc hS => _⟩
   simp only [mem_map, sInter_eq_biInter, preimage_iInter₂] at hS ⊢
   exact (countable_bInter_mem hSc).2 hS
 
 /-- Infimum of two `CountableInterFilter`s is a `CountableInterFilter`. This is useful, e.g.,
 to automatically get an instance for `residual α ⊓ 𝓟 s`. -/
-instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter l₁]
+instance (priority := 10000) countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊓ l₂) := by
   refine' ⟨fun S hSc hS => _⟩
   choose s hs t ht hst using hS
@@ -216,7 +216,7 @@ instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter 
 #align countable_Inter_filter_inf countableInterFilter_inf
 
 /-- Supremum of two `CountableInterFilter`s is a `CountableInterFilter`. -/
-instance countableInterFilter_sup (l₁ l₂ : Filter α) [CountableInterFilter l₁]
+instance (priority := 10000) countableInterFilter_sup (l₁ l₂ : Filter α) [CountableInterFilter l₁]
     [CountableInterFilter l₂] : CountableInterFilter (l₁ ⊔ l₂) := by
   refine' ⟨fun S hSc hS => ⟨_, _⟩⟩ <;> refine' (countable_sInter_mem hSc).2 fun s hs => _
   exacts [(hS s hs).1, (hS s hs).2]
@@ -244,7 +244,7 @@ def countableGenerate : Filter α :=
 #align filter.countable_generate Filter.countableGenerate
 
 --Porting note: could not de derived
-instance : CountableInterFilter (countableGenerate g) := by
+instance (priority := 10000) : CountableInterFilter (countableGenerate g) := by
   delta countableGenerate; infer_instance
 
 variable {g}

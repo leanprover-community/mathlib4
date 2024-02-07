@@ -61,13 +61,13 @@ theorem ExponentialIdeal.mk' (h : ∀ (B : D) (A : C), (A ⟹ i.obj B) ∈ i.ess
 #align category_theory.exponential_ideal.mk' CategoryTheory.ExponentialIdeal.mk'
 
 /-- The entire category viewed as a subcategory is an exponential ideal. -/
-instance : ExponentialIdeal (𝟭 C) :=
+instance (priority := 10000) : ExponentialIdeal (𝟭 C) :=
   ExponentialIdeal.mk' _ fun _ _ => ⟨_, ⟨Iso.refl _⟩⟩
 
 open CartesianClosed
 
 /-- The subcategory of subterminal objects is an exponential ideal. -/
-instance : ExponentialIdeal (subterminalInclusion C) := by
+instance (priority := 10000) : ExponentialIdeal (subterminalInclusion C) := by
   apply ExponentialIdeal.mk'
   intro B A
   refine' ⟨⟨A ⟹ B.1, fun Z g h => _⟩, ⟨Iso.refl _⟩⟩

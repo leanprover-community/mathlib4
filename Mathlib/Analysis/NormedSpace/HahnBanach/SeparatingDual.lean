@@ -29,14 +29,14 @@ class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V
   /-- Any nonzero vector can be mapped by a continuous linear map to a nonzero scalar. -/
   exists_ne_zero' : ∀ (x : V), x ≠ 0 → ∃ f : V →L[R] R, f x ≠ 0
 
-instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
+instance (priority := 10000) {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup E]
     [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] [T1Space E] : SeparatingDual ℝ E :=
   ⟨fun x hx ↦ by
     rcases geometric_hahn_banach_point_point hx.symm with ⟨f, hf⟩
     simp only [map_zero] at hf
     exact ⟨f, hf.ne'⟩⟩
 
-instance {E 𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
+instance (priority := 10000) {E 𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦ by
     rcases exists_dual_vector 𝕜 x hx with ⟨f, -, hf⟩
     refine ⟨f, ?_⟩

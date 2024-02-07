@@ -20,12 +20,12 @@ namespace CategoryTheory
 
 variable (C : Type*) [Category C] [Preadditive C]
 
-instance : Preadditive Cᵒᵖ where
+instance (priority := 10000) : Preadditive Cᵒᵖ where
   homGroup X Y := Equiv.addCommGroup (opEquiv X Y)
   add_comp _ _ _ f f' g := Quiver.Hom.unop_inj (Preadditive.comp_add _ _ _ g.unop f.unop f'.unop)
   comp_add _ _ _ f g g' := Quiver.Hom.unop_inj (Preadditive.add_comp _ _ _ g.unop g'.unop f.unop)
 
-instance moduleEndLeft {X : Cᵒᵖ} {Y : C} : Module (End X) (unop X ⟶ Y) where
+instance (priority := 10000) moduleEndLeft {X : Cᵒᵖ} {Y : C} : Module (End X) (unop X ⟶ Y) where
   smul_add _ _ _ := Preadditive.comp_add _ _ _ _ _ _
   smul_zero _ := Limits.comp_zero
   add_smul _ _ _ := Preadditive.add_comp _ _ _ _ _ _
@@ -90,16 +90,16 @@ theorem op_sum (X Y : C) {ι : Type*} (s : Finset ι) (f : ι → (X ⟶ Y)) :
 
 variable {D : Type*} [Category D] [Preadditive D]
 
-instance Functor.op_additive (F : C ⥤ D) [F.Additive] : F.op.Additive where
+instance (priority := 10000) Functor.op_additive (F : C ⥤ D) [F.Additive] : F.op.Additive where
 #align category_theory.functor.op_additive CategoryTheory.Functor.op_additive
 
-instance Functor.rightOp_additive (F : Cᵒᵖ ⥤ D) [F.Additive] : F.rightOp.Additive where
+instance (priority := 10000) Functor.rightOp_additive (F : Cᵒᵖ ⥤ D) [F.Additive] : F.rightOp.Additive where
 #align category_theory.functor.right_op_additive CategoryTheory.Functor.rightOp_additive
 
-instance Functor.leftOp_additive (F : C ⥤ Dᵒᵖ) [F.Additive] : F.leftOp.Additive where
+instance (priority := 10000) Functor.leftOp_additive (F : C ⥤ Dᵒᵖ) [F.Additive] : F.leftOp.Additive where
 #align category_theory.functor.left_op_additive CategoryTheory.Functor.leftOp_additive
 
-instance Functor.unop_additive (F : Cᵒᵖ ⥤ Dᵒᵖ) [F.Additive] : F.unop.Additive where
+instance (priority := 10000) Functor.unop_additive (F : Cᵒᵖ ⥤ Dᵒᵖ) [F.Additive] : F.unop.Additive where
 #align category_theory.functor.unop_additive CategoryTheory.Functor.unop_additive
 
 end CategoryTheory

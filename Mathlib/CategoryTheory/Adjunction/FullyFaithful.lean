@@ -47,7 +47,7 @@ See
 * https://math.stackexchange.com/a/2727177
 * https://stacks.math.columbia.edu/tag/07RB (we only prove the forward direction!)
 -/
-instance unit_isIso_of_L_fully_faithful [Full L] [Faithful L] : IsIso (Adjunction.unit h) :=
+instance (priority := 10000) unit_isIso_of_L_fully_faithful [Full L] [Faithful L] : IsIso (Adjunction.unit h) :=
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.unit h) fun X =>
     @Yoneda.isIso _ _ _ _ ((Adjunction.unit h).app X)
       ⟨⟨{ app := fun Y f => L.preimage ((h.homEquiv (unop Y) (L.obj X)).symm f) },
@@ -68,7 +68,7 @@ set_option linter.uppercaseLean3 false in
 
 See <https://stacks.math.columbia.edu/tag/07RB> (we only prove the forward direction!)
 -/
-instance counit_isIso_of_R_fully_faithful [Full R] [Faithful R] : IsIso (Adjunction.counit h) :=
+instance (priority := 10000) counit_isIso_of_R_fully_faithful [Full R] [Faithful R] : IsIso (Adjunction.counit h) :=
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.counit h) fun X =>
     @isIso_of_op _ _ _ _ _ <|
       @Coyoneda.isIso _ _ _ _ ((Adjunction.counit h).app X).op
@@ -144,7 +144,7 @@ theorem R_faithful_of_counit_isIso [IsIso h.counit] : Faithful R :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.R_faithful_of_counit_is_iso CategoryTheory.R_faithful_of_counit_isIso
 
-instance whiskerLeft_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
+instance (priority := 10000) whiskerLeft_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
     IsIso (whiskerLeft L h.counit) := by
   have := h.left_triangle
   rw [← IsIso.eq_inv_comp] at this
@@ -153,7 +153,7 @@ instance whiskerLeft_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_counit_iso_of_L_fully_faithful CategoryTheory.whiskerLeft_counit_iso_of_L_fully_faithful
 
-instance whiskerRight_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
+instance (priority := 10000) whiskerRight_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
     IsIso (whiskerRight h.counit R) := by
   have := h.right_triangle
   rw [← IsIso.eq_inv_comp] at this
@@ -162,7 +162,7 @@ instance whiskerRight_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_right_counit_iso_of_L_fully_faithful CategoryTheory.whiskerRight_counit_iso_of_L_fully_faithful
 
-instance whiskerLeft_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
+instance (priority := 10000) whiskerLeft_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
     IsIso (whiskerLeft R h.unit) := by
   have := h.right_triangle
   rw [← IsIso.eq_comp_inv] at this
@@ -171,7 +171,7 @@ instance whiskerLeft_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_unit_iso_of_R_fully_faithful CategoryTheory.whiskerLeft_unit_iso_of_R_fully_faithful
 
-instance whiskerRight_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
+instance (priority := 10000) whiskerRight_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
     IsIso (whiskerRight h.unit L) := by
   have := h.left_triangle
   rw [← IsIso.eq_comp_inv] at this

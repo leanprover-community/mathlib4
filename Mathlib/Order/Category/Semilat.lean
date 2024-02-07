@@ -43,7 +43,7 @@ structure SemilatInfCat : Type (u + 1) where
 
 namespace SemilatSupCat
 
-instance : CoeSort SemilatSupCat (Type*) :=
+instance (priority := 10000) : CoeSort SemilatSupCat (Type*) :=
   ⟨SemilatSupCat.X⟩
 
 attribute [instance] isSemilatticeSup isOrderBot
@@ -58,10 +58,10 @@ theorem coe_of (α : Type*) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α 
   rfl
 #align SemilatSup.coe_of SemilatSupCat.coe_of
 
-instance : Inhabited SemilatSupCat :=
+instance (priority := 10000) : Inhabited SemilatSupCat :=
   ⟨of PUnit⟩
 
-instance : LargeCategory.{u} SemilatSupCat where
+instance (priority := 10000) : LargeCategory.{u} SemilatSupCat where
   Hom X Y := SupBotHom X Y
   id X := SupBotHom.id X
   comp f g := g.comp f
@@ -71,16 +71,16 @@ instance : LargeCategory.{u} SemilatSupCat where
 
 -- Porting note: added
 -- see https://github.com/leanprover-community/mathlib4/issues/5017
-instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (SupBotHom X Y) X Y from inferInstance
 
-instance : ConcreteCategory SemilatSupCat where
+instance (priority := 10000) : ConcreteCategory SemilatSupCat where
   forget :=
     { obj := SemilatSupCat.X
       map := DFunLike.coe }
   forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 
-instance hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrd where
+instance (priority := 10000) hasForgetToPartOrd : HasForget₂ SemilatSupCat PartOrd where
   forget₂ :=
     -- Porting note: was ⟨X⟩, see https://github.com/leanprover-community/mathlib4/issues/4998
     { obj := fun X => {α := X}
@@ -98,7 +98,7 @@ end SemilatSupCat
 
 namespace SemilatInfCat
 
-instance : CoeSort SemilatInfCat (Type*) :=
+instance (priority := 10000) : CoeSort SemilatInfCat (Type*) :=
   ⟨SemilatInfCat.X⟩
 
 attribute [instance] isSemilatticeInf isOrderTop
@@ -113,10 +113,10 @@ theorem coe_of (α : Type*) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α 
   rfl
 #align SemilatInf.coe_of SemilatInfCat.coe_of
 
-instance : Inhabited SemilatInfCat :=
+instance (priority := 10000) : Inhabited SemilatInfCat :=
   ⟨of PUnit⟩
 
-instance : LargeCategory.{u} SemilatInfCat where
+instance (priority := 10000) : LargeCategory.{u} SemilatInfCat where
   Hom X Y := InfTopHom X Y
   id X := InfTopHom.id X
   comp f g := g.comp f
@@ -125,16 +125,16 @@ instance : LargeCategory.{u} SemilatInfCat where
   assoc _ _ _ := InfTopHom.comp_assoc _ _ _
 
 -- Porting note: added
-instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y :=
+instance (priority := 10000) instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (InfTopHom X Y) X Y from inferInstance
 
-instance : ConcreteCategory SemilatInfCat where
+instance (priority := 10000) : ConcreteCategory SemilatInfCat where
   forget :=
     { obj := SemilatInfCat.X
       map := DFunLike.coe }
   forget_faithful := ⟨(DFunLike.coe_injective ·)⟩
 
-instance hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrd where
+instance (priority := 10000) hasForgetToPartOrd : HasForget₂ SemilatInfCat PartOrd where
   forget₂ :=
     { obj := fun X => ⟨X, inferInstance⟩
       -- Porting note: was `map := fun f => f`

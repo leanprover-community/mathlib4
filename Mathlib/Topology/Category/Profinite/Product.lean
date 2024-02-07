@@ -93,7 +93,7 @@ def indexCone : Cone (indexFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π := { app := fun J ↦ π_app C (· ∈ unop J) }
 
-instance isIso_indexCone_lift :
+instance (priority := 10000) isIso_indexCone_lift :
     IsIso ((limitConeIsLimit.{u, u} (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
   isIso_of_bijective _

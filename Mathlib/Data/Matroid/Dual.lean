@@ -132,10 +132,10 @@ theorem dual_dep_iff_forall : (M﹡.Dep I) ↔ (∀ B, M.Base B → (I ∩ B).No
   simp_rw [dep_iff, dual_indep_iff_exists', dual_ground, and_congr_left_iff, not_and,
     not_exists, not_and, not_disjoint_iff_nonempty_inter, imp_iff_right_iff, iff_true_intro Or.inl]
 
-instance dual_finite [M.Finite] : M﹡.Finite :=
+instance (priority := 10000) dual_finite [M.Finite] : M﹡.Finite :=
   ⟨M.ground_finite⟩
 
-instance dual_nonempty [M.Nonempty] : M﹡.Nonempty :=
+instance (priority := 10000) dual_nonempty [M.Nonempty] : M﹡.Nonempty :=
   ⟨M.ground_nonempty⟩
 
 @[simp] theorem dual_base_iff (hB : B ⊆ M.E := by aesop_mat) : M﹡.Base B ↔ M.Base (M.E \ B) := by

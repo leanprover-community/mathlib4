@@ -71,7 +71,7 @@ theorem to_nontrivial : Nontrivial α :=
   ⟨⟨p.fst, p.snd, p.fst_ne_snd⟩⟩
 #align two_pointing.to_nontrivial TwoPointing.to_nontrivial
 
-instance [Nontrivial α] : Nonempty (TwoPointing α) :=
+instance (priority := 10000) [Nontrivial α] : Nonempty (TwoPointing α) :=
   let ⟨a, b, h⟩ := exists_pair_ne α
   ⟨⟨(a, b), h⟩⟩
 
@@ -149,7 +149,7 @@ theorem bool_fst : TwoPointing.bool.fst = false := rfl
 theorem bool_snd : TwoPointing.bool.snd = true := rfl
 #align two_pointing.bool_snd TwoPointing.bool_snd
 
-instance : Inhabited (TwoPointing Bool) :=
+instance (priority := 10000) : Inhabited (TwoPointing Bool) :=
   ⟨TwoPointing.bool⟩
 
 /-- The `False`, `True` two-pointing of `Prop`. -/

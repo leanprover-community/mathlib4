@@ -226,7 +226,7 @@ nonrec theorem IsSFiniteKernel.withDensity (κ : kernel α β) [IsSFiniteKernel 
 #align probability_theory.kernel.is_s_finite_kernel.with_density ProbabilityTheory.kernel.IsSFiniteKernel.withDensity
 
 /-- For an s-finite kernel `κ` and a function `f : α → β → ℝ≥0`, `withDensity κ f` is s-finite. -/
-instance (κ : kernel α β) [IsSFiniteKernel κ] (f : α → β → ℝ≥0) :
+instance (priority := 10000) (κ : kernel α β) [IsSFiniteKernel κ] (f : α → β → ℝ≥0) :
     IsSFiniteKernel (withDensity κ fun a b => f a b) :=
   IsSFiniteKernel.withDensity κ fun _ _ => ENNReal.coe_ne_top
 

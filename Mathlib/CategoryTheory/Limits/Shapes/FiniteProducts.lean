@@ -42,7 +42,7 @@ instance (priority := 10) hasFiniteProducts_of_hasFiniteLimits [HasFiniteLimits 
   ⟨fun _ => inferInstance⟩
 #align category_theory.limits.has_finite_products_of_has_finite_limits CategoryTheory.Limits.hasFiniteProducts_of_hasFiniteLimits
 
-instance hasLimitsOfShape_discrete [HasFiniteProducts C] (ι : Type w) [Finite ι] :
+instance (priority := 10000) hasLimitsOfShape_discrete [HasFiniteProducts C] (ι : Type w) [Finite ι] :
     HasLimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
   haveI : HasLimitsOfShape (Discrete (Fin n)) C := HasFiniteProducts.out n
@@ -72,7 +72,7 @@ class HasFiniteCoproducts : Prop where
 
 -- attribute [class] HasFiniteCoproducts Porting note: this doesn't seem necessary in Lean 4
 
-instance hasColimitsOfShape_discrete [HasFiniteCoproducts C] (ι : Type w) [Finite ι] :
+instance (priority := 10000) hasColimitsOfShape_discrete [HasFiniteCoproducts C] (ι : Type w) [Finite ι] :
     HasColimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
   haveI : HasColimitsOfShape (Discrete (Fin n)) C := HasFiniteCoproducts.out n

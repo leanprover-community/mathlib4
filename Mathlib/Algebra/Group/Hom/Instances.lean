@@ -30,7 +30,7 @@ variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ}
 
 /-- `(M →* N)` is a `CommMonoid` if `N` is commutative. -/
 @[to_additive "`(M →+ N)` is an `AddCommMonoid` if `N` is commutative."]
-instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
+instance (priority := 10000) MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
     CommMonoid (M →* N) where
   mul := (· * ·)
   mul_assoc := by intros; ext; apply mul_assoc
@@ -50,7 +50,7 @@ instance MonoidHom.commMonoid [MulOneClass M] [CommMonoid N] :
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
 @[to_additive "If `G` is an additive commutative group, then `M →+ G` is an additive commutative
       group too."]
-instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
+instance (priority := 10000) MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M →* G) :=
   { MonoidHom.commMonoid with
     inv := Inv.inv,
     div := Div.div,
@@ -73,10 +73,10 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       ext x
       simp [Nat.succ_eq_add_one, zpow_ofNat, -Int.natCast_add] }
 
-instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
+instance (priority := 10000) AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid
 
-instance AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
+instance (priority := 10000) AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
   { AddMonoid.End.monoid M, AddMonoidHom.addCommMonoid with
     zero_mul := fun _ => AddMonoidHom.ext fun _ => rfl,
     mul_zero := fun _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_zero _,
@@ -93,10 +93,10 @@ theorem AddMonoid.End.natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) :
   rfl
 #align add_monoid.End.nat_cast_apply AddMonoid.End.natCast_apply
 
-instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
+instance (priority := 10000) AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
   AddMonoidHom.addCommGroup
 
-instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
+instance (priority := 10000) AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
   { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
     intCast := fun z => z • (1 : AddMonoid.End M),
     intCast_ofNat := ofNat_zsmul _,

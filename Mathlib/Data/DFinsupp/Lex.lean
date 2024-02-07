@@ -44,7 +44,7 @@ theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a 
   Iff.rfl
 #align dfinsupp.lex_def DFinsupp.lex_def
 
-instance [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
+instance (priority := 10000) [LT ι] [∀ i, LT (α i)] : LT (Lex (Π₀ i, α i)) :=
   ⟨fun f g ↦ DFinsupp.Lex (· < ·) (fun _ ↦ (· < ·)) (ofLex f) (ofLex g)⟩
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (α i)] (r) [IsStrictOrder ι r] {x y : Π₀ i, α i}
@@ -65,7 +65,7 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (α i)] (r) [IsStrictOrder ι r] {x y 
 
 variable [LinearOrder ι]
 
-instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
+instance (priority := 10000) Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
     IsStrictOrder (Lex (Π₀ i, α i)) (· < ·) :=
   let i : IsStrictOrder (Lex (∀ i, α i)) (· < ·) := Pi.Lex.isStrictOrder
   { irrefl := toLex.surjective.forall.2 fun _ ↦ @irrefl _ _ i.toIsIrrefl _
@@ -74,7 +74,7 @@ instance Lex.isStrictOrder [∀ i, PartialOrder (α i)] :
 
 /-- The partial order on `DFinsupp`s obtained by the lexicographic ordering.
 See `DFinsupp.Lex.linearOrder` for a proof that this partial order is in fact linear. -/
-instance Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) where
+instance (priority := 10000) Lex.partialOrder [∀ i, PartialOrder (α i)] : PartialOrder (Lex (Π₀ i, α i)) where
   lt := (· < ·)
   le x y := ⇑(ofLex x) = ⇑(ofLex y) ∨ x < y
   __ := PartialOrder.lift (fun x : Lex (Π₀ i, α i) ↦ toLex (⇑(ofLex x)))
@@ -112,12 +112,12 @@ irreducible_def Lex.decidableLT : @DecidableRel (Lex (Π₀ i, α i)) (· < ·) 
 #align dfinsupp.lex.decidable_lt DFinsupp.Lex.decidableLT
 
 -- Porting note: Added `DecidableEq` for `LinearOrder`.
-instance : DecidableEq (Lex (Π₀ i, α i)) :=
+instance (priority := 10000) : DecidableEq (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isFalse fun h' ↦ h'.not_lt h) isTrue
     fun h ↦ isFalse fun h' ↦ h'.symm.not_lt h
 
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
-instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
+instance (priority := 10000) Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where
   __ := Lex.partialOrder
   le_total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
   decidableLT := decidableLT
@@ -159,12 +159,12 @@ section Left
 
 variable [∀ i, CovariantClass (α i) (α i) (· + ·) (· < ·)]
 
-instance Lex.covariantClass_lt_left :
+instance (priority := 10000) Lex.covariantClass_lt_left :
     CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (· + ·) (· < ·) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 #align dfinsupp.lex.covariant_class_lt_left DFinsupp.Lex.covariantClass_lt_left
 
-instance Lex.covariantClass_le_left :
+instance (priority := 10000) Lex.covariantClass_le_left :
     CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (· + ·) (· ≤ ·) :=
   covariantClass_le_of_lt _ _ _
 #align dfinsupp.lex.covariant_class_le_left DFinsupp.Lex.covariantClass_le_left
@@ -175,13 +175,13 @@ section Right
 
 variable [∀ i, CovariantClass (α i) (α i) (Function.swap (· + ·)) (· < ·)]
 
-instance Lex.covariantClass_lt_right :
+instance (priority := 10000) Lex.covariantClass_lt_right :
     CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (· + ·)) (· < ·) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 #align dfinsupp.lex.covariant_class_lt_right DFinsupp.Lex.covariantClass_lt_right
 
-instance Lex.covariantClass_le_right :
+instance (priority := 10000) Lex.covariantClass_le_right :
     CovariantClass (Lex (Π₀ i, α i)) (Lex (Π₀ i, α i)) (Function.swap (· + ·)) (· ≤ ·) :=
   covariantClass_le_of_lt _ _ _
 #align dfinsupp.lex.covariant_class_le_right DFinsupp.Lex.covariantClass_le_right
@@ -194,27 +194,27 @@ section OrderedAddMonoid
 
 variable [LinearOrder ι]
 
-instance Lex.orderBot [∀ i, CanonicallyOrderedAddCommMonoid (α i)] :
+instance (priority := 10000) Lex.orderBot [∀ i, CanonicallyOrderedAddCommMonoid (α i)] :
     OrderBot (Lex (Π₀ i, α i)) where
   bot := 0
   bot_le _ := DFinsupp.toLex_monotone bot_le
 
-instance Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i)] :
+instance (priority := 10000) Lex.orderedAddCancelCommMonoid [∀ i, OrderedCancelAddCommMonoid (α i)] :
     OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
   add_le_add_left _ _ h _ := add_le_add_left (α := Lex (∀ i, α i)) h _
   le_of_add_le_add_left _ _ _ := le_of_add_le_add_left (α := Lex (∀ i, α i))
 
-instance Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
+instance (priority := 10000) Lex.orderedAddCommGroup [∀ i, OrderedAddCommGroup (α i)] :
     OrderedAddCommGroup (Lex (Π₀ i, α i)) where
   add_le_add_left _ _ := add_le_add_left
 
-instance Lex.linearOrderedCancelAddCommMonoid
+instance (priority := 10000) Lex.linearOrderedCancelAddCommMonoid
     [∀ i, LinearOrderedCancelAddCommMonoid (α i)] :
     LinearOrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) where
   __ : LinearOrder (Lex (Π₀ i, α i)) := inferInstance
   __ : OrderedCancelAddCommMonoid (Lex (Π₀ i, α i)) := inferInstance
 
-instance Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
+instance (priority := 10000) Lex.linearOrderedAddCommGroup [∀ i, LinearOrderedAddCommGroup (α i)] :
     LinearOrderedAddCommGroup (Lex (Π₀ i, α i)) where
   __ : LinearOrder (Lex (Π₀ i, α i)) := inferInstance
   add_le_add_left _ _ := add_le_add_left

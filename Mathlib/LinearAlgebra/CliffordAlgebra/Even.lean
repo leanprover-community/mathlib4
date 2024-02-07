@@ -59,7 +59,7 @@ def even : Subalgebra R (CliffordAlgebra Q) :=
 #align clifford_algebra.even CliffordAlgebra.even
 
 -- porting note: added, otherwise Lean can't find this when it needs it
-instance : AddCommMonoid (even Q) := AddSubmonoidClass.toAddCommMonoid _
+instance (priority := 10000) : AddCommMonoid (even Q) := AddSubmonoidClass.toAddCommMonoid _
 @[simp]
 theorem even_toSubmodule : Subalgebra.toSubmodule (even Q) = evenOdd Q 0 :=
   rfl
@@ -106,7 +106,7 @@ nonrec def even.ι : EvenHom Q (even Q) where
         _ = Q m₂ • (ι Q m₁ * ι Q m₃) := by rw [Algebra.smul_def, ι_sq_scalar, Algebra.left_comm]
 #align clifford_algebra.even.ι CliffordAlgebra.even.ι
 
-instance : Inhabited (EvenHom Q (even Q)) :=
+instance (priority := 10000) : Inhabited (EvenHom Q (even Q)) :=
   ⟨even.ι Q⟩
 
 variable (f : EvenHom Q A)

@@ -770,7 +770,7 @@ theorem LieAlgebra.isNilpotent_range_ad_iff : IsNilpotent R (ad R L).range ↔ I
     exact (ad R L).isNilpotent_range
 #align lie_algebra.is_nilpotent_range_ad_iff LieAlgebra.isNilpotent_range_ad_iff
 
-instance [h : LieAlgebra.IsNilpotent R L] : LieAlgebra.IsNilpotent R (⊤ : LieSubalgebra R L) :=
+instance (priority := 10000) [h : LieAlgebra.IsNilpotent R L] : LieAlgebra.IsNilpotent R (⊤ : LieSubalgebra R L) :=
   LieSubalgebra.topEquiv.nilpotent_iff_equiv_nilpotent.mpr h
 
 end NilpotentAlgebras
@@ -872,7 +872,7 @@ lemma LieSubmodule.lowerCentralSeries_tensor_eq_baseChange (k : ℕ) :
   induction' k with k ih; simp
   simp only [lowerCentralSeries_succ, ih, ← baseChange_top, lie_baseChange]
 
-instance LieModule.instIsNilpotentTensor [IsNilpotent R L M] :
+instance (priority := 10000) LieModule.instIsNilpotentTensor [IsNilpotent R L M] :
     IsNilpotent A (A ⊗[R] L) (A ⊗[R] M) := by
   obtain ⟨k, hk⟩ := inferInstanceAs (IsNilpotent R L M)
   exact ⟨k, by simp [hk]⟩

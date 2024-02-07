@@ -51,13 +51,13 @@ section MetricSpace
 
 variable [MetricSpace P]
 
-instance [Nonempty P] : Nonempty (Sphere P) :=
+instance (priority := 10000) [Nonempty P] : Nonempty (Sphere P) :=
   ⟨⟨Classical.arbitrary P, 0⟩⟩
 
-instance : Coe (Sphere P) (Set P) :=
+instance (priority := 10000) : Coe (Sphere P) (Set P) :=
   ⟨fun s => Metric.sphere s.center s.radius⟩
 
-instance : Membership P (Sphere P) :=
+instance (priority := 10000) : Membership P (Sphere P) :=
   ⟨fun p s => p ∈ (s : Set P)⟩
 
 theorem Sphere.mk_center (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).center = c :=

@@ -87,7 +87,7 @@ def uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α whe
   uniq _ := Subsingleton.elim _ _
 #align unique_of_subsingleton uniqueOfSubsingleton
 
-instance PUnit.unique : Unique PUnit.{u} where
+instance (priority := 10000) PUnit.unique : Unique PUnit.{u} where
   default := PUnit.unit
   uniq x := subsingleton x _
 
@@ -106,7 +106,7 @@ def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
   uniq _ := rfl
 #align unique_prop uniqueProp
 
-instance : Unique True :=
+instance (priority := 10000) : Unique True :=
   uniqueProp trivial
 
 namespace Unique
@@ -148,7 +148,7 @@ protected theorem subsingleton_unique' : ∀ h₁ h₂ : Unique α, h₁ = h₂
   | ⟨⟨x⟩, h⟩, ⟨⟨y⟩, _⟩ => by congr; rw [h x, h y]
 #align unique.subsingleton_unique' Unique.subsingleton_unique'
 
-instance subsingleton_unique : Subsingleton (Unique α) :=
+instance (priority := 10000) subsingleton_unique : Subsingleton (Unique α) :=
   ⟨Unique.subsingleton_unique'⟩
 
 /-- Construct `Unique` from `Inhabited` and `Subsingleton`. Making this an instance would create
@@ -177,11 +177,11 @@ theorem Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α)
   rfl
 #align pi.default_apply Pi.default_apply
 
-instance Pi.unique {β : α → Sort v} [∀ a, Unique (β a)] : Unique (∀ a, β a) where
+instance (priority := 10000) Pi.unique {β : α → Sort v} [∀ a, Unique (β a)] : Unique (∀ a, β a) where
   uniq := fun _ ↦ funext fun _ ↦ Unique.eq_default _
 
 /-- There is a unique function on an empty domain. -/
-instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, β a) where
+instance (priority := 10000) Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, β a) where
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
@@ -267,7 +267,7 @@ theorem subsingleton_iff_isEmpty {α : Type u} : Subsingleton (Option α) ↔ Is
      Option.casesOn x (Option.casesOn y rfl fun x ↦ h.elim x) fun x ↦ h.elim x⟩⟩
 #align option.subsingleton_iff_is_empty Option.subsingleton_iff_isEmpty
 
-instance {α} [IsEmpty α] : Unique (Option α) :=
+instance (priority := 10000) {α} [IsEmpty α] : Unique (Option α) :=
   @Unique.mk' _ _ (subsingleton_iff_isEmpty.2 ‹_›)
 
 end Option
@@ -275,11 +275,11 @@ end Option
 section Subtype
 variable {α : Sort u}
 
-instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
+instance (priority := 10000) Unique.subtypeEq (y : α) : Unique { x // x = y } where
   default := ⟨y, rfl⟩
   uniq := fun ⟨x, hx⟩ ↦ by congr
 
-instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
+instance (priority := 10000) Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   default := ⟨y, rfl⟩
   uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
 

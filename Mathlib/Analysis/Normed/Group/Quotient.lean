@@ -101,7 +101,7 @@ open QuotientAddGroup Metric Set Topology NNReal
 variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 
 /-- The definition of the norm on the quotient by an additive subgroup. -/
-noncomputable instance normOnQuotient (S : AddSubgroup M) : Norm (M ⧸ S) where
+noncomputable instance (priority := 10000) normOnQuotient (S : AddSubgroup M) : Norm (M ⧸ S) where
   norm x := sInf (norm '' { m | mk' S m = x })
 #align norm_on_quotient normOnQuotient
 
@@ -238,7 +238,7 @@ theorem quotient_nhd_basis (S : AddSubgroup M) :
 #align quotient_nhd_basis quotient_nhd_basis
 
 /-- The seminormed group structure on the quotient by an additive subgroup. -/
-noncomputable instance AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgroup M) :
+noncomputable instance (priority := 10000) AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgroup M) :
     SeminormedAddCommGroup (M ⧸ S) where
   dist x y := ‖x - y‖
   dist_self x := by simp only [norm_mk_zero, sub_self]
@@ -261,7 +261,7 @@ example (S : AddSubgroup M) :
   rfl
 
 /-- The quotient in the category of normed groups. -/
-noncomputable instance AddSubgroup.normedAddCommGroupQuotient (S : AddSubgroup M)
+noncomputable instance (priority := 10000) AddSubgroup.normedAddCommGroupQuotient (S : AddSubgroup M)
     [IsClosed (S : Set M)] : NormedAddCommGroup (M ⧸ S) :=
   { AddSubgroup.seminormedAddCommGroupQuotient S, MetricSpace.ofT0PseudoMetricSpace _ with }
 #align add_subgroup.normed_add_comm_group_quotient AddSubgroup.normedAddCommGroupQuotient
@@ -438,16 +438,16 @@ section Submodule
 
 variable {R : Type*} [Ring R] [Module R M] (S : Submodule R M)
 
-instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
+instance (priority := 10000) Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
   AddSubgroup.seminormedAddCommGroupQuotient S.toAddSubgroup
 #align submodule.quotient.seminormed_add_comm_group Submodule.Quotient.seminormedAddCommGroup
 
-instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
+instance (priority := 10000) Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
     NormedAddCommGroup (M ⧸ S) :=
   @AddSubgroup.normedAddCommGroupQuotient _ _ S.toAddSubgroup hS
 #align submodule.quotient.normed_add_comm_group Submodule.Quotient.normedAddCommGroup
 
-instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M ⧸ S) :=
+instance (priority := 10000) Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M ⧸ S) :=
   QuotientAddGroup.completeSpace M S.toAddSubgroup
 #align submodule.quotient.complete_space Submodule.Quotient.completeSpace
 
@@ -462,7 +462,7 @@ theorem Submodule.Quotient.norm_mk_le (m : M) : ‖(Submodule.Quotient.mk m : M 
   quotient_norm_mk_le S.toAddSubgroup m
 #align submodule.quotient.norm_mk_le Submodule.Quotient.norm_mk_le
 
-instance Submodule.Quotient.normedSpace (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 M] [SMul 𝕜 R]
+instance (priority := 10000) Submodule.Quotient.normedSpace (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 M] [SMul 𝕜 R]
     [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) :=
   { Submodule.Quotient.module' S with
     norm_smul_le := fun k x =>
@@ -495,7 +495,7 @@ theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r
   quotient_norm_mk_le I.toAddSubgroup r
 #align ideal.quotient.norm_mk_le Ideal.Quotient.norm_mk_le
 
-instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
+instance (priority := 10000) Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
   dist_eq := dist_eq_norm
   mul_comm := _root_.mul_comm
   norm_mul x y := le_of_forall_pos_le_add fun ε hε => by
@@ -513,13 +513,13 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
       _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 #align ideal.quotient.semi_normed_comm_ring Ideal.Quotient.semiNormedCommRing
 
-instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
+instance (priority := 10000) Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
   { Ideal.Quotient.semiNormedCommRing I, Submodule.Quotient.normedAddCommGroup I with }
 #align ideal.quotient.normed_comm_ring Ideal.Quotient.normedCommRing
 
 variable (𝕜 : Type*) [NormedField 𝕜]
 
-instance Ideal.Quotient.normedAlgebra [NormedAlgebra 𝕜 R] : NormedAlgebra 𝕜 (R ⧸ I) :=
+instance (priority := 10000) Ideal.Quotient.normedAlgebra [NormedAlgebra 𝕜 R] : NormedAlgebra 𝕜 (R ⧸ I) :=
   { Submodule.Quotient.normedSpace I 𝕜, Ideal.Quotient.algebra 𝕜 with }
 #align ideal.quotient.normed_algebra Ideal.Quotient.normedAlgebra
 

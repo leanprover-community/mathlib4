@@ -39,7 +39,7 @@ theorem Subsingleton.prod (hs : s.Subsingleton) (ht : t.Subsingleton) :
     (s ×ˢ t).Subsingleton := fun _x hx _y hy ↦
   Prod.ext (hs hx.1 hy.1) (ht hx.2 hy.2)
 
-noncomputable instance decidableMemProd [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
+noncomputable instance (priority := 10000) decidableMemProd [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
     DecidablePred (· ∈ s ×ˢ t) := fun _ => And.decidable
 #align set.decidable_mem_prod Set.decidableMemProd
 
@@ -466,7 +466,7 @@ lemma diagonal_nonempty [Nonempty α] : (diagonal α).Nonempty :=
   Nonempty.elim ‹_› fun x => ⟨_, mem_diagonal x⟩
 #align set.diagonal_nonempty Set.diagonal_nonempty
 
-instance decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
+instance (priority := 10000) decidableMemDiagonal [h : DecidableEq α] (x : α × α) : Decidable (x ∈ diagonal α) :=
   h x.1 x.2
 #align set.decidable_mem_diagonal Set.decidableMemDiagonal
 

@@ -153,7 +153,7 @@ end GrothendieckTopology.Cover
 Composing a sheaf with a functor preserving the limit of `(S.index P).multicospan` yields a functor
 between sheaf categories.
 -/
-instance hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
+instance (priority := 10000) hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
     [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F] :
     J.HasSheafCompose F where
   isSheaf P hP := by
@@ -171,7 +171,7 @@ functor between sheaf categories.
 Note: the size of the limit that `F` is required to preserve in
 `hasSheafCompose_of_preservesMulticospan` is in general larger than this.
 -/
-instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, max u₁ v₁} F] :
+instance (priority := 10000) hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, max u₁ v₁} F] :
     J.HasSheafCompose F where
   isSheaf _ hP := Presheaf.isSheaf_comp_of_isSheaf J _ F hP
 

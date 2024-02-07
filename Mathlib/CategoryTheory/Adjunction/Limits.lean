@@ -348,15 +348,15 @@ namespace Functor
 variable {J C D : Type*} [Category J] [Category C] [Category D]
   (F : C ⥤ D)
 
-instance [IsLeftAdjoint F] : PreservesColimitsOfShape J F :=
+instance (priority := 10000) [IsLeftAdjoint F] : PreservesColimitsOfShape J F :=
   (Adjunction.ofLeftAdjoint F).leftAdjointPreservesColimits.preservesColimitsOfShape
 
-instance [IsLeftAdjoint F] : PreservesColimits F where
+instance (priority := 10000) [IsLeftAdjoint F] : PreservesColimits F where
 
-instance [IsRightAdjoint F] : PreservesLimitsOfShape J F :=
+instance (priority := 10000) [IsRightAdjoint F] : PreservesLimitsOfShape J F :=
   (Adjunction.ofRightAdjoint F).rightAdjointPreservesLimits.preservesLimitsOfShape
 
-instance [IsRightAdjoint F] : PreservesLimits F where
+instance (priority := 10000) [IsRightAdjoint F] : PreservesLimits F where
 
 end Functor
 

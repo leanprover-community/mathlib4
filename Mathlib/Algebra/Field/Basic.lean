@@ -360,19 +360,19 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
 /-! ### Order dual -/
 
 
-instance [h : RatCast α] : RatCast αᵒᵈ :=
+instance (priority := 10000) [h : RatCast α] : RatCast αᵒᵈ :=
   h
 
-instance [h : DivisionSemiring α] : DivisionSemiring αᵒᵈ :=
+instance (priority := 10000) [h : DivisionSemiring α] : DivisionSemiring αᵒᵈ :=
   h
 
-instance [h : DivisionRing α] : DivisionRing αᵒᵈ :=
+instance (priority := 10000) [h : DivisionRing α] : DivisionRing αᵒᵈ :=
   h
 
-instance [h : Semifield α] : Semifield αᵒᵈ :=
+instance (priority := 10000) [h : Semifield α] : Semifield αᵒᵈ :=
   h
 
-instance [h : Field α] : Field αᵒᵈ :=
+instance (priority := 10000) [h : Field α] : Field αᵒᵈ :=
   h
 
 @[simp]
@@ -387,19 +387,19 @@ theorem ofDual_rat_cast [RatCast α] (n : ℚ) : (ofDual n : α) = n :=
 
 /-! ### Lexicographic order -/
 
-instance [h : RatCast α] : RatCast (Lex α) :=
+instance (priority := 10000) [h : RatCast α] : RatCast (Lex α) :=
   h
 
-instance [h : DivisionSemiring α] : DivisionSemiring (Lex α) :=
+instance (priority := 10000) [h : DivisionSemiring α] : DivisionSemiring (Lex α) :=
   h
 
-instance [h : DivisionRing α] : DivisionRing (Lex α) :=
+instance (priority := 10000) [h : DivisionRing α] : DivisionRing (Lex α) :=
   h
 
-instance [h : Semifield α] : Semifield (Lex α) :=
+instance (priority := 10000) [h : Semifield α] : Semifield (Lex α) :=
   h
 
-instance [h : Field α] : Field (Lex α) :=
+instance (priority := 10000) [h : Field α] : Field (Lex α) :=
   h
 
 @[simp]

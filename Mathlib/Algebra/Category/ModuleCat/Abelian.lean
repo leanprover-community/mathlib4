@@ -75,7 +75,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.normal_epi ModuleCat.normalEpi
 
 /-- The category of R-modules is abelian. -/
-instance abelian : Abelian (ModuleCat.{v} R) where
+instance (priority := 10000) abelian : Abelian (ModuleCat.{v} R) where
   has_cokernels := hasCokernels_moduleCat
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
@@ -85,28 +85,28 @@ set_option linter.uppercaseLean3 false in
 section ReflectsLimits
 
 -- porting note: added to make the following definitions work
-instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) := ModuleCat.hasLimitsOfSize
+instance (priority := 10000) : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) := ModuleCat.hasLimitsOfSize
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
-instance forgetReflectsLimitsOfSize :
+instance (priority := 10000) forgetReflectsLimitsOfSize :
     ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{v, w} R)) :=
   reflectsLimitsOfReflectsIsomorphisms
 set_option linter.uppercaseLean3 false in
 #align Module.forget_reflects_limits_of_size ModuleCat.forgetReflectsLimitsOfSize
 
-instance forget₂ReflectsLimitsOfSize :
+instance (priority := 10000) forget₂ReflectsLimitsOfSize :
     ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{v, w} R) AddCommGroupCat.{max v w}) :=
   reflectsLimitsOfReflectsIsomorphisms
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_reflects_limits_of_size ModuleCat.forget₂ReflectsLimitsOfSize
 
-instance forgetReflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
+instance (priority := 10000) forgetReflectsLimits : ReflectsLimits (forget (ModuleCat.{v} R)) :=
   ModuleCat.forgetReflectsLimitsOfSize.{v, v}
 set_option linter.uppercaseLean3 false in
 #align Module.forget_reflects_limits ModuleCat.forgetReflectsLimits
 
-instance forget₂ReflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) :=
+instance (priority := 10000) forget₂ReflectsLimits : ReflectsLimits (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}) :=
   ModuleCat.forget₂ReflectsLimitsOfSize.{v, v}
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_reflects_limits ModuleCat.forget₂ReflectsLimits

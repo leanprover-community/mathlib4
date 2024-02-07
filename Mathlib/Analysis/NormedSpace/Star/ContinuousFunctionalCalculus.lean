@@ -64,7 +64,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A]
 
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
-instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
+instance (priority := 10000) {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
     [ContinuousStar A] [StarModule R A] (a : A) [IsStarNormal a] :
     NormedCommRing (elementalStarAlgebra R a) :=
   { SubringClass.toNormedRing (elementalStarAlgebra R a) with

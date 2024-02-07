@@ -27,7 +27,7 @@ group, topological abelianization
 
 variable (G : Type*) [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
-instance instNormalCommutatorClosure : (commutator G).topologicalClosure.Normal :=
+instance (priority := 10000) instNormalCommutatorClosure : (commutator G).topologicalClosure.Normal :=
   Subgroup.is_normal_topologicalClosure (commutator G)
 
 /-- The topological abelianization of `absoluteGaloisGroup`, that is, the quotient of
@@ -38,7 +38,7 @@ local notation "G_ab" => TopologicalAbelianization
 
 namespace TopologicalAbelianization
 
-instance commGroup : CommGroup (G_ab G) where
+instance (priority := 10000) commGroup : CommGroup (G_ab G) where
   mul_comm := fun x y =>
     Quotient.inductionOn₂' x y fun a b =>
       Quotient.sound' <|

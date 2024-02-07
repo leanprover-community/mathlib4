@@ -64,7 +64,7 @@ theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebr
 
 variable (F K)
 
-instance normal_self : Normal F F :=
+instance (priority := 10000) normal_self : Normal F F :=
   ⟨fun _ => isIntegral_algebraMap.isAlgebraic, fun x =>
     (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _⟩
 #align normal_self normal_self
@@ -148,7 +148,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
     exact ⟨hp, minpoly.ne_zero hx⟩
 #align normal.of_is_splitting_field Normal.of_isSplittingField
 
-instance Polynomial.SplittingField.instNormal [Field F] (p : F[X]) : Normal F p.SplittingField :=
+instance (priority := 10000) Polynomial.SplittingField.instNormal [Field F] (p : F[X]) : Normal F p.SplittingField :=
   Normal.of_isSplittingField p
 #align polynomial.splitting_field.normal Polynomial.SplittingField.instNormal
 
@@ -157,7 +157,7 @@ end NormalTower
 namespace IntermediateField
 
 /-- A compositum of normal extensions is normal -/
-instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
+instance (priority := 10000) normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨆ i, t i : IntermediateField F K) := by
   refine' ⟨isAlgebraic_iSup fun i => (h i).1, fun x => _⟩
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
@@ -192,7 +192,7 @@ theorem splits_of_mem_adjoin {L} [Field L] [Algebra F L] {S : Set K}
   convert splits_comp_of_splits _ E.val.toRingHom (normal.splits <| φ ⟨x, hx⟩)
   rw [minpoly.algHom_eq _ φ.injective, ← minpoly.algHom_eq _ (adjoin F S).val.injective, val_mk]
 
-instance normal_sup
+instance (priority := 10000) normal_sup
     (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
     Normal F (E ⊔ E' : IntermediateField F K) :=
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_|_) <;> infer_instance)

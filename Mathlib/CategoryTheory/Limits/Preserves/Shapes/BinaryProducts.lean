@@ -98,7 +98,7 @@ theorem PreservesLimitPair.iso_hom : (PreservesLimitPair.iso G X Y).hom = prodCo
   rfl
 #align category_theory.limits.preserves_limit_pair.iso_hom CategoryTheory.Limits.PreservesLimitPair.iso_hom
 
-instance : IsIso (prodComparison G X Y) := by
+instance (priority := 10000) : IsIso (prodComparison G X Y) := by
   rw [← PreservesLimitPair.iso_hom]
   infer_instance
 
@@ -173,7 +173,7 @@ theorem PreservesColimitPair.iso_hom :
     (PreservesColimitPair.iso G X Y).hom = coprodComparison G X Y := rfl
 #align category_theory.limits.preserves_colimit_pair.iso_hom CategoryTheory.Limits.PreservesColimitPair.iso_hom
 
-instance : IsIso (coprodComparison G X Y) := by
+instance (priority := 10000) : IsIso (coprodComparison G X Y) := by
   rw [← PreservesColimitPair.iso_hom]
   infer_instance
 

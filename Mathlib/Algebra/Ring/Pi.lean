@@ -30,65 +30,65 @@ variable (x y : ∀ i, f i) (i : I)
 
 -- Porting note: All these instances used `refine_struct` and `pi_instance_derive_field`
 
-instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
+instance (priority := 10000) distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
   { add := (· + ·)
     mul := (· * ·)
     left_distrib := by intros; ext; exact mul_add _ _ _
     right_distrib := by intros; ext; exact add_mul _ _ _}
 #align pi.distrib Pi.distrib
 
-instance hasDistribNeg [∀ i, Mul (f i)] [∀ i, HasDistribNeg (f i)] : HasDistribNeg (∀ i, f i) where
+instance (priority := 10000) hasDistribNeg [∀ i, Mul (f i)] [∀ i, HasDistribNeg (f i)] : HasDistribNeg (∀ i, f i) where
   neg_mul _ _ := funext fun _ ↦ neg_mul _ _
   mul_neg _ _ := funext fun _ ↦ mul_neg _ _
 
-instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
+instance (priority := 10000) nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
     NonUnitalNonAssocSemiring (∀ i : I, f i) :=
   { Pi.distrib, Pi.addCommMonoid, Pi.mulZeroClass with }
 #align pi.non_unital_non_assoc_semiring Pi.nonUnitalNonAssocSemiring
 
-instance nonUnitalSemiring [∀ i, NonUnitalSemiring <| f i] : NonUnitalSemiring (∀ i : I, f i) :=
+instance (priority := 10000) nonUnitalSemiring [∀ i, NonUnitalSemiring <| f i] : NonUnitalSemiring (∀ i : I, f i) :=
   { Pi.nonUnitalNonAssocSemiring, Pi.semigroupWithZero with }
 #align pi.non_unital_semiring Pi.nonUnitalSemiring
 
-instance nonAssocSemiring [∀ i, NonAssocSemiring <| f i] : NonAssocSemiring (∀ i : I, f i) :=
+instance (priority := 10000) nonAssocSemiring [∀ i, NonAssocSemiring <| f i] : NonAssocSemiring (∀ i : I, f i) :=
   { Pi.nonUnitalNonAssocSemiring, Pi.mulZeroOneClass, Pi.addMonoidWithOne with }
 #align pi.non_assoc_semiring Pi.nonAssocSemiring
 
-instance semiring [∀ i, Semiring <| f i] : Semiring (∀ i : I, f i) :=
+instance (priority := 10000) semiring [∀ i, Semiring <| f i] : Semiring (∀ i : I, f i) :=
   { Pi.nonUnitalSemiring, Pi.nonAssocSemiring, Pi.monoidWithZero with }
 #align pi.semiring Pi.semiring
 
-instance nonUnitalCommSemiring [∀ i, NonUnitalCommSemiring <| f i] :
+instance (priority := 10000) nonUnitalCommSemiring [∀ i, NonUnitalCommSemiring <| f i] :
     NonUnitalCommSemiring (∀ i : I, f i) :=
   { Pi.nonUnitalSemiring, Pi.commSemigroup with }
 #align pi.non_unital_comm_semiring Pi.nonUnitalCommSemiring
 
-instance commSemiring [∀ i, CommSemiring <| f i] : CommSemiring (∀ i : I, f i) :=
+instance (priority := 10000) commSemiring [∀ i, CommSemiring <| f i] : CommSemiring (∀ i : I, f i) :=
   { Pi.semiring, Pi.commMonoid with }
 #align pi.comm_semiring Pi.commSemiring
 
-instance nonUnitalNonAssocRing [∀ i, NonUnitalNonAssocRing <| f i] :
+instance (priority := 10000) nonUnitalNonAssocRing [∀ i, NonUnitalNonAssocRing <| f i] :
     NonUnitalNonAssocRing (∀ i : I, f i) :=
   { Pi.addCommGroup, Pi.nonUnitalNonAssocSemiring with }
 #align pi.non_unital_non_assoc_ring Pi.nonUnitalNonAssocRing
 
-instance nonUnitalRing [∀ i, NonUnitalRing <| f i] : NonUnitalRing (∀ i : I, f i) :=
+instance (priority := 10000) nonUnitalRing [∀ i, NonUnitalRing <| f i] : NonUnitalRing (∀ i : I, f i) :=
   { Pi.nonUnitalNonAssocRing, Pi.nonUnitalSemiring with }
 #align pi.non_unital_ring Pi.nonUnitalRing
 
-instance nonAssocRing [∀ i, NonAssocRing <| f i] : NonAssocRing (∀ i : I, f i) :=
+instance (priority := 10000) nonAssocRing [∀ i, NonAssocRing <| f i] : NonAssocRing (∀ i : I, f i) :=
   { Pi.nonUnitalNonAssocRing, Pi.nonAssocSemiring, Pi.addGroupWithOne with }
 #align pi.non_assoc_ring Pi.nonAssocRing
 
-instance ring [∀ i, Ring <| f i] : Ring (∀ i : I, f i) :=
+instance (priority := 10000) ring [∀ i, Ring <| f i] : Ring (∀ i : I, f i) :=
   { Pi.semiring, Pi.addCommGroup, Pi.addGroupWithOne with }
 #align pi.ring Pi.ring
 
-instance nonUnitalCommRing [∀ i, NonUnitalCommRing <| f i] : NonUnitalCommRing (∀ i : I, f i) :=
+instance (priority := 10000) nonUnitalCommRing [∀ i, NonUnitalCommRing <| f i] : NonUnitalCommRing (∀ i : I, f i) :=
   { Pi.nonUnitalRing, Pi.commSemigroup with }
 #align pi.non_unital_comm_ring Pi.nonUnitalCommRing
 
-instance commRing [∀ i, CommRing <| f i] : CommRing (∀ i : I, f i) :=
+instance (priority := 10000) commRing [∀ i, CommRing <| f i] : CommRing (∀ i : I, f i) :=
   { Pi.ring, Pi.commSemiring with }
 #align pi.comm_ring Pi.commRing
 

@@ -64,7 +64,7 @@ theorem IntermediateField.map_id {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 /-- Mapping a finite dimensional intermediate field along an algebra equivalence gives
 a finite-dimensional intermediate field. -/
-instance im_finiteDimensional {K L : Type*} [Field K] [Field L] [Algebra K L]
+instance (priority := 10000) im_finiteDimensional {K L : Type*} [Field K] [Field L] [Algebra K L]
     {E : IntermediateField K L} (σ : L ≃ₐ[K] L) [FiniteDimensional K E] :
     FiniteDimensional K (E.map σ.toAlgHom) :=
   LinearEquiv.finiteDimensional (IntermediateField.intermediateFieldMap σ E).toLinearEquiv
@@ -185,13 +185,13 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
 
 /-- For a field extension `L/K`, `krullTopology K L` is the topological space structure on
 `L ≃ₐ[K] L` induced by the group filter basis `galGroupBasis K L` -/
-instance krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
+instance (priority := 10000) krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
     TopologicalSpace (L ≃ₐ[K] L) :=
   GroupFilterBasis.topology (galGroupBasis K L)
 #align krull_topology krullTopology
 
 /-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a topological group. -/
-instance (K L : Type*) [Field K] [Field L] [Algebra K L] : TopologicalGroup (L ≃ₐ[K] L) :=
+instance (priority := 10000) (K L : Type*) [Field K] [Field L] [Algebra K L] : TopologicalGroup (L ≃ₐ[K] L) :=
   GroupFilterBasis.isTopologicalGroup (galGroupBasis K L)
 
 section KrullT2

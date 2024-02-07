@@ -75,7 +75,7 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
 #align local_cohomology.ring_mod_ideals localCohomology.ringModIdeals
 
 -- Porting note: TODO:  Once this file is ported, move this instance to the right location.
-instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
+instance (priority := 10000) moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
   ModuleCat.moduleCat_enoughProjectives.{u}
 set_option linter.uppercaseLean3 false in
 #align local_cohomology.Module_enough_projectives' localCohomology.moduleCat_enoughProjectives'
@@ -155,10 +155,10 @@ def SelfLERadical (J : Ideal R) : Type u :=
 
 -- Porting note: `deriving Category` is not able to derive this instance
 -- https://github.com/leanprover-community/mathlib4/issues/5020
-instance (J : Ideal R) : Category (SelfLERadical J) :=
+instance (priority := 10000) (J : Ideal R) : Category (SelfLERadical J) :=
   (FullSubcategory.category _)
 
-instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) where
+instance (priority := 10000) SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) where
   default := ⟨J, Ideal.le_radical⟩
 #align local_cohomology.self_le_radical.inhabited localCohomology.SelfLERadical.inhabited
 
@@ -240,7 +240,7 @@ theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.
 
 /-- The diagram of powers of `J` is initial in the diagram of all ideals with
 radical containing `J`. This uses noetherianness. -/
-instance ideal_powers_initial [hR : IsNoetherian R R] :
+instance (priority := 10000) ideal_powers_initial [hR : IsNoetherian R R] :
     Functor.Initial (idealPowersToSelfLERadical J) where
   out J' := by
     apply (config := {allowSynthFailures := true }) zigzag_isConnected
@@ -274,7 +274,7 @@ def SelfLERadical.cast (hJK : J.radical = K.radical) : SelfLERadical J ⥤ SelfL
 #align local_cohomology.self_le_radical.cast localCohomology.SelfLERadical.cast
 
 -- TODO generalize this to the equivalence of full categories for any `iff`.
-instance SelfLERadical.castIsEquivalence (hJK : J.radical = K.radical) :
+instance (priority := 10000) SelfLERadical.castIsEquivalence (hJK : J.radical = K.radical) :
     IsEquivalence (SelfLERadical.cast hJK) where
   inverse := SelfLERadical.cast hJK.symm
   unitIso := Iso.refl _

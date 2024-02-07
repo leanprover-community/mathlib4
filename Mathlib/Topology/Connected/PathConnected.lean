@@ -78,7 +78,7 @@ structure Path (x y : X) extends C(I, X) where
   target' : toFun 1 = y
 #align path Path
 
-instance Path.funLike : FunLike (Path x y) I X where
+instance (priority := 10000) Path.funLike : FunLike (Path x y) I X where
   coe := fun γ ↦ ⇑γ.toContinuousMap
   coe_injective' := fun γ₁ γ₂ h => by
     simp only [DFunLike.coe_fn_eq] at h
@@ -86,12 +86,12 @@ instance Path.funLike : FunLike (Path x y) I X where
 
 -- porting note: added this instance so that we can use `FunLike.coe` for `CoeFun`
 -- this also fixed very strange `simp` timeout issues
-instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
+instance (priority := 10000) Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
   map_continuous := fun γ => show Continuous γ.toContinuousMap by continuity
 
 -- porting note: not necessary in light of the instance above
 /-
-instance : CoeFun (Path x y) fun _ => I → X :=
+instance (priority := 10000) : CoeFun (Path x y) fun _ => I → X :=
   ⟨fun p => p.toFun⟩
 -/
 
@@ -146,7 +146,7 @@ theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
 
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
-instance hasUncurryPath {X α : Type*} [TopologicalSpace X] {x y : α → X} :
+instance (priority := 10000) hasUncurryPath {X α : Type*} [TopologicalSpace X] {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
   ⟨fun φ p => φ p.1 p.2⟩
 #align path.has_uncurry_path Path.hasUncurryPath
@@ -213,7 +213,7 @@ so we avoid adding another.
 /-- The following instance defines the topology on the path space to be induced from the
 compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
 -/
-instance topologicalSpace : TopologicalSpace (Path x y) :=
+instance (priority := 10000) topologicalSpace : TopologicalSpace (Path x y) :=
   TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
 theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
@@ -789,7 +789,7 @@ def ZerothHomotopy :=
   Quotient (pathSetoid X)
 #align zeroth_homotopy ZerothHomotopy
 
-instance ZerothHomotopy.inhabited : Inhabited (ZerothHomotopy ℝ) :=
+instance (priority := 10000) ZerothHomotopy.inhabited : Inhabited (ZerothHomotopy ℝ) :=
   ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩
 
 variable {X}
@@ -1194,13 +1194,13 @@ theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
   rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
   exact isPathConnected_range hf'
 
-instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
+instance (priority := 10000) Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
   (surjective_quotient_mk' X).pathConnectedSpace continuous_coinduced_rng
 
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
-instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
+instance (priority := 10000) Real.instPathConnectedSpace : PathConnectedSpace ℝ where
   joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
   nonempty := inferInstance
 

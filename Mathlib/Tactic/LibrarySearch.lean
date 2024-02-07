@@ -48,7 +48,7 @@ inductive DeclMod
   | none | mp | mpr
 deriving DecidableEq, Ord
 
-instance : ToString DeclMod where
+instance (priority := 10000) : ToString DeclMod where
   toString m := match m with | .none => "" | .mp => "mp" | .mpr => "mpr"
 
 /-- Prepare the discrimination tree entries for a lemma. -/
@@ -163,7 +163,7 @@ def librarySearchSymm (goal : MVarId)
 def subgoalRankType : Type := Bool × Nat × Int
   deriving ToString
 
-instance : Ord subgoalRankType :=
+instance (priority := 10000) : Ord subgoalRankType :=
   have : Ord (Nat × Int) := lexOrd
   lexOrd
 

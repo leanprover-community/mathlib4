@@ -103,16 +103,16 @@ def Poly.format : Poly → Lean.Format
   | .pow p q => s!"({p.format} ^ {q.format})"
   | .neg p => s!"-{p.format}"
 
-instance : Lean.ToFormat Poly := ⟨Poly.format⟩
-instance : ToString Poly := ⟨(toString ·.format)⟩
-instance : Repr Poly := ⟨fun p _ => p.format⟩
-instance : Inhabited Poly := ⟨Poly.const 0⟩
+instance (priority := 10000) : Lean.ToFormat Poly := ⟨Poly.format⟩
+instance (priority := 10000) : ToString Poly := ⟨(toString ·.format)⟩
+instance (priority := 10000) : Repr Poly := ⟨fun p _ => p.format⟩
+instance (priority := 10000) : Inhabited Poly := ⟨Poly.const 0⟩
 
-instance : Quote ℤ where quote
+instance (priority := 10000) : Quote ℤ where quote
   | .ofNat n => quote n
   | .negSucc n => Unhygienic.run `(-$(quote n))
 
-instance : Quote ℚ where
+instance (priority := 10000) : Quote ℚ where
   quote q :=
     if q.den = 1 then quote q.num
     else Unhygienic.run `($(quote q.num) / $(quote q.den))
@@ -247,7 +247,7 @@ def Poly.pow' : ℕ → ℕ → Poly
 def Poly.sumM [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
   a.foldlM (init := .const 0) fun p a => return p.add' (← f a)
 
-instance : FromJson Poly where
+instance (priority := 10000) : FromJson Poly where
   fromJson? j := do
     Poly.sumM (← j.getArr?) fun j => do
       let mut mon := .const (← fromJson? (← j.getArrVal? 1))
@@ -286,7 +286,7 @@ structure SageError where
 /-- The result of a sage call. -/
 def SageResult := Except SageError SageSuccess
 
-instance : FromJson SageResult where fromJson? j := do
+instance (priority := 10000) : FromJson SageResult where fromJson? j := do
   if let .ok true := fromJson? <| j.getObjValD "success" then
     return .ok (← fromJson? j)
   else

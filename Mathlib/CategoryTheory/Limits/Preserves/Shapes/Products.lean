@@ -101,7 +101,7 @@ theorem PreservesProduct.iso_hom : (PreservesProduct.iso G f).hom = piComparison
   rfl
 #align category_theory.limits.preserves_product.iso_hom CategoryTheory.Limits.PreservesProduct.iso_hom
 
-instance : IsIso (piComparison G f) := by
+instance (priority := 10000) : IsIso (piComparison G f) := by
   rw [← PreservesProduct.iso_hom]
   infer_instance
 
@@ -171,7 +171,7 @@ def PreservesCoproduct.iso : G.obj (∐ f) ≅ ∐ fun j => G.obj (f j) :=
 theorem PreservesCoproduct.inv_hom : (PreservesCoproduct.iso G f).inv = sigmaComparison G f := rfl
 #align category_theory.limits.preserves_coproduct.inv_hom CategoryTheory.Limits.PreservesCoproduct.inv_hom
 
-instance : IsIso (sigmaComparison G f) := by
+instance (priority := 10000) : IsIso (sigmaComparison G f) := by
   rw [← PreservesCoproduct.inv_hom]
   infer_instance
 

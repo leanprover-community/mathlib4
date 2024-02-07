@@ -407,13 +407,13 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree' [Module.Finite R M]
   Module.basisOfFiniteTypeTorsionFree Module.Finite.exists_fin.choose_spec.choose_spec
 #align module.basis_of_finite_type_torsion_free' Module.basisOfFiniteTypeTorsionFree'
 
-instance Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMulDivisors R M] :
+instance (priority := 10000) Module.free_of_finite_type_torsion_free' [Module.Finite R M] [NoZeroSMulDivisors R M] :
     Module.Free R M := by
   obtain ⟨n, b⟩ : Σn, Basis (Fin n) R M := Module.basisOfFiniteTypeTorsionFree'
   exact Module.Free.of_basis b
 #align module.free_of_finite_type_torsion_free' Module.free_of_finite_type_torsion_free'
 
-instance {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
+instance (priority := 10000) {S : Type*} [CommRing S] [Algebra R S] {I : Ideal S} [hI₁ : Module.Finite R I]
     [hI₂ : NoZeroSMulDivisors R I] : Module.Free R I := by
   have : Module.Finite R (restrictScalars R I) := hI₁
   have : NoZeroSMulDivisors R (restrictScalars R I) := hI₂

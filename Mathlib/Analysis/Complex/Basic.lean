@@ -45,7 +45,7 @@ variable {z : ℂ}
 
 open ComplexConjugate Topology Filter
 
-instance : Norm ℂ :=
+instance (priority := 10000) : Norm ℂ :=
   ⟨abs⟩
 
 @[simp]
@@ -60,23 +60,23 @@ theorem norm_exp_ofReal_mul_I (t : ℝ) : ‖exp (t * I)‖ = 1 := by
 set_option linter.uppercaseLean3 false in
 #align complex.norm_exp_of_real_mul_I Complex.norm_exp_ofReal_mul_I
 
-instance : NormedAddCommGroup ℂ :=
+instance (priority := 10000) : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
     { abs with
       map_zero' := map_zero abs
       neg' := abs.map_neg
       eq_zero_of_map_eq_zero' := fun _ => abs.eq_zero.1 }
 
-instance : NormedField ℂ where
+instance (priority := 10000) : NormedField ℂ where
   dist_eq _ _ := rfl
   norm_mul' := map_mul abs
 
-instance : DenselyNormedField ℂ where
+instance (priority := 10000) : DenselyNormedField ℂ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_eq_abs, abs_ofReal, abs_of_pos (h₀.trans_lt h.1)]⟩
 
-instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
+instance (priority := 10000) {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
   norm_smul_le r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_eq_abs, abs_ofReal, ← Real.norm_eq_abs,
       norm_algebraMap']
@@ -229,7 +229,7 @@ theorem uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
   antilipschitz_equivRealProd.uniformEmbedding lipschitz_equivRealProd.uniformContinuous
 #align complex.uniform_embedding_equiv_real_prod Complex.uniformEmbedding_equivRealProd
 
-instance : CompleteSpace ℂ :=
+instance (priority := 10000) : CompleteSpace ℂ :=
   (completeSpace_congr uniformEmbedding_equivRealProd).mpr inferInstance
 
 /-- The natural `ContinuousLinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
@@ -242,7 +242,7 @@ def equivRealProdCLM : ℂ ≃L[ℝ] ℝ × ℝ :=
 theorem equivRealProdCLM_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdCLM.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 
-instance : ProperSpace ℂ :=
+instance (priority := 10000) : ProperSpace ℂ :=
   (id lipschitz_equivRealProd : LipschitzWith 1 equivRealProdCLM.toHomeomorph).properSpace
 
 /-- The `abs` function on `ℂ` is proper. -/
@@ -350,7 +350,7 @@ theorem nndist_conj_comm (z w : ℂ) : nndist (conj z) w = nndist z (conj w) :=
   Subtype.ext <| dist_conj_comm _ _
 #align complex.nndist_conj_comm Complex.nndist_conj_comm
 
-instance : ContinuousStar ℂ :=
+instance (priority := 10000) : ContinuousStar ℂ :=
   ⟨conjLIE.continuous⟩
 
 @[continuity]
@@ -415,7 +415,7 @@ theorem ofRealCLM_apply (x : ℝ) : ofRealCLM x = x :=
   rfl
 #align complex.of_real_clm_apply Complex.ofRealCLM_apply
 
-noncomputable instance : IsROrC ℂ where
+noncomputable instance (priority := 10000) : IsROrC ℂ where
   re := ⟨⟨Complex.re, Complex.zero_re⟩, Complex.add_re⟩
   im := ⟨⟨Complex.im, Complex.zero_im⟩, Complex.add_im⟩
   I := Complex.I

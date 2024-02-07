@@ -19,7 +19,7 @@ set_option autoImplicit true
 
 
 /-- Propositions form a distributive lattice. -/
-instance Prop.distribLattice : DistribLattice Prop where
+instance (priority := 10000) Prop.distribLattice : DistribLattice Prop where
   sup := Or
   le_sup_left := @Or.inl
   le_sup_right := @Or.inr
@@ -32,7 +32,7 @@ instance Prop.distribLattice : DistribLattice Prop where
 #align Prop.distrib_lattice Prop.distribLattice
 
 /-- Propositions form a bounded order. -/
-instance Prop.boundedOrder : BoundedOrder Prop where
+instance (priority := 10000) Prop.boundedOrder : BoundedOrder Prop where
   top := True
   le_top _ _ := True.intro
   bot := False
@@ -47,11 +47,11 @@ theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 #align Prop.top_eq_true Prop.top_eq_true
 
-instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
+instance (priority := 10000) Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 #align Prop.le_is_total Prop.le_isTotal
 
-noncomputable instance Prop.linearOrder : LinearOrder Prop := by
+noncomputable instance (priority := 10000) Prop.linearOrder : LinearOrder Prop := by
   classical
   exact Lattice.toLinearOrder Prop
 #align Prop.linear_order Prop.linearOrder
@@ -115,12 +115,12 @@ theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
 section decidable_instances
 variable {α : Type u}
 
-instance Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fun _ => instDecidableFalse
+instance (priority := 10000) Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fun _ => instDecidableFalse
 
-instance Prop.decidablePredTop : DecidablePred (⊤ : α → Prop) := fun _ => instDecidableTrue
+instance (priority := 10000) Prop.decidablePredTop : DecidablePred (⊤ : α → Prop) := fun _ => instDecidableTrue
 
-instance Prop.decidableRelBot : DecidableRel (⊥ : α → α → Prop) := fun _ _ => instDecidableFalse
+instance (priority := 10000) Prop.decidableRelBot : DecidableRel (⊥ : α → α → Prop) := fun _ _ => instDecidableFalse
 
-instance Prop.decidableRelTop : DecidableRel (⊤ : α → α → Prop) := fun _ _ => instDecidableTrue
+instance (priority := 10000) Prop.decidableRelTop : DecidableRel (⊤ : α → α → Prop) := fun _ _ => instDecidableTrue
 
 end decidable_instances

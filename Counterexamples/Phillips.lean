@@ -94,13 +94,13 @@ def DiscreteCopy (α : Type u) : Type u :=
   α
 #align counterexample.discrete_copy Counterexample.DiscreteCopy
 
-instance : TopologicalSpace (DiscreteCopy α) :=
+instance (priority := 10000) : TopologicalSpace (DiscreteCopy α) :=
   ⊥
 
-instance : DiscreteTopology (DiscreteCopy α) :=
+instance (priority := 10000) : DiscreteTopology (DiscreteCopy α) :=
   ⟨rfl⟩
 
-instance [Inhabited α] : Inhabited (DiscreteCopy α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (DiscreteCopy α) :=
   ⟨show α from default⟩
 
 namespace Phillips1940
@@ -181,12 +181,12 @@ structure BoundedAdditiveMeasure (α : Type u) where
 
 attribute [coe] BoundedAdditiveMeasure.toFun
 
-instance : Inhabited (BoundedAdditiveMeasure α) :=
+instance (priority := 10000) : Inhabited (BoundedAdditiveMeasure α) :=
   ⟨{  toFun := fun _ => 0
       additive' := fun s t _ => by simp
       exists_bound := ⟨0, fun _ => by simp⟩ }⟩
 
-instance : CoeFun (BoundedAdditiveMeasure α) fun _ => Set α → ℝ :=
+instance (priority := 10000) : CoeFun (BoundedAdditiveMeasure α) fun _ => Set α → ℝ :=
   ⟨fun f => f.toFun⟩
 
 namespace BoundedAdditiveMeasure
@@ -217,7 +217,7 @@ theorem empty (f : BoundedAdditiveMeasure α) : f ∅ = 0 := by
   rwa [f.additive _ _ (empty_disjoint _), self_eq_add_left] at this
 #align counterexample.phillips_1940.bounded_additive_measure.empty Counterexample.Phillips1940.BoundedAdditiveMeasure.empty
 
-instance : Neg (BoundedAdditiveMeasure α) :=
+instance (priority := 10000) : Neg (BoundedAdditiveMeasure α) :=
   ⟨fun f =>
     { toFun := fun s => -f s
       additive' := fun s t hst => by simp only [f.additive s t hst, add_comm, neg_add_rev]

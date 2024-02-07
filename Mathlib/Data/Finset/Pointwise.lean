@@ -1802,21 +1802,21 @@ section Instances
 variable [DecidableEq γ]
 
 @[to_additive]
-instance smulCommClass_finset [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass_finset [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α β (Finset γ) :=
   ⟨fun _ _ => Commute.finset_image <| smul_comm _ _⟩
 #align finset.smul_comm_class_finset Finset.smulCommClass_finset
 #align finset.vadd_comm_class_finset Finset.vaddCommClass_finset
 
 @[to_additive]
-instance smulCommClass_finset' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass_finset' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α (Finset β) (Finset γ) :=
   ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_comm]⟩
 #align finset.smul_comm_class_finset' Finset.smulCommClass_finset'
 #align finset.vadd_comm_class_finset' Finset.vaddCommClass_finset'
 
 @[to_additive]
-instance smulCommClass_finset'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass_finset'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Finset α) β (Finset γ) :=
   haveI := SMulCommClass.symm α β γ
   SMulCommClass.symm _ _ _
@@ -1824,14 +1824,14 @@ instance smulCommClass_finset'' [SMul α γ] [SMul β γ] [SMulCommClass α β �
 #align finset.vadd_comm_class_finset'' Finset.vaddCommClass_finset''
 
 @[to_additive]
-instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Finset α) (Finset β) (Finset γ) :=
   ⟨fun s t u => coe_injective <| by simp_rw [coe_smul, smul_comm]⟩
 #align finset.smul_comm_class Finset.smulCommClass
 #align finset.vadd_comm_class Finset.vaddCommClass
 
 @[to_additive vaddAssocClass]
-instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance (priority := 10000) isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Finset γ) :=
   ⟨fun a b s => by simp only [← image_smul, image_image, smul_assoc, Function.comp]⟩
 #align finset.is_scalar_tower Finset.isScalarTower
@@ -1840,21 +1840,21 @@ instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α 
 variable [DecidableEq β]
 
 @[to_additive vaddAssocClass']
-instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance (priority := 10000) isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Finset β) (Finset γ) :=
   ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
 #align finset.is_scalar_tower' Finset.isScalarTower'
 #align finset.vadd_assoc_class' Finset.vaddAssocClass'
 
 @[to_additive vaddAssocClass'']
-instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance (priority := 10000) isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Finset α) (Finset β) (Finset γ) :=
   ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
 #align finset.is_scalar_tower'' Finset.isScalarTower''
 #align finset.vadd_assoc_class'' Finset.vaddAssocClass''
 
 @[to_additive]
-instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
+instance (priority := 10000) isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Finset β) :=
   ⟨fun a s => coe_injective <| by simp only [coe_smul_finset, coe_smul, op_smul_eq_smul]⟩
 #align finset.is_central_scalar Finset.isCentralScalar
@@ -1918,15 +1918,15 @@ protected def mulDistribMulActionFinset [Monoid α] [Monoid β] [MulDistribMulAc
 scoped[Pointwise]
   attribute [instance] Finset.distribMulActionFinset Finset.mulDistribMulActionFinset
 
-instance [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
+instance (priority := 10000) [DecidableEq α] [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Finset α) :=
   Function.Injective.noZeroDivisors (↑) coe_injective coe_zero coe_mul
 
-instance noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
+instance (priority := 10000) noZeroSMulDivisors [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Finset α) (Finset β) where
   eq_zero_or_eq_zero_of_smul_eq_zero {s t} := by
     exact_mod_cast eq_zero_or_eq_zero_of_smul_eq_zero (c := s.toSet) (x := t.toSet)
 
-instance noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
+instance (priority := 10000) noZeroSMulDivisors_finset [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Finset β) :=
   Function.Injective.noZeroSMulDivisors (↑) coe_injective coe_zero coe_smul_finset
 #align finset.no_zero_smul_divisors_finset Finset.noZeroSMulDivisors_finset
@@ -2548,7 +2548,7 @@ lemma card_div_le : Nat.card (s / t) ≤ Nat.card s * Nat.card t := by
 end Group
 end Set
 
-instance Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)] (a : ℕ) :
+instance (priority := 10000) Nat.decidablePred_mem_vadd_set {s : Set ℕ} [DecidablePred (· ∈ s)] (a : ℕ) :
     DecidablePred (· ∈ a +ᵥ s) :=
   fun n ↦ decidable_of_iff' (a ≤ n ∧ n - a ∈ s) <| by
     simp only [Set.mem_vadd_set, vadd_eq_add]; aesop

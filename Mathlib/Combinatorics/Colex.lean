@@ -80,7 +80,7 @@ structure Colex (α) :=
 
 open Colex
 
-instance : Inhabited (Colex α) := ⟨⟨∅⟩⟩
+instance (priority := 10000) : Inhabited (Colex α) := ⟨⟨∅⟩⟩
 
 @[simp] lemma toColex_ofColex (s : Colex α) : toColex (ofColex s) = s := rfl
 lemma ofColex_toColex (s : Finset α) : ofColex (toColex s) = s := rfl
@@ -98,7 +98,7 @@ section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜₂ : Finset (Finset α)}
   {s t u : Finset α} {a b : α}
 
-instance instLE : LE (Colex α) where
+instance (priority := 10000) instLE : LE (Colex α) where
   le s t := ∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b
 
 -- TODO: This lemma is weirdly useful given how strange its statement is.
@@ -123,7 +123,7 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
   have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
   exact hb₂ hb₁
 
-instance instPartialOrder : PartialOrder (Colex α) where
+instance (priority := 10000) instPartialOrder : PartialOrder (Colex α) where
   le_refl s a ha ha' := (ha' ha).elim
   le_antisymm s t hst hts := Colex.ext _ _ <| (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
@@ -164,7 +164,7 @@ lemma toColex_le_toColex_of_subset (h : s ⊆ t) : toColex s ≤ toColex t := to
 not form a linear order. -/
 lemma toColex_lt_toColex_of_ssubset (h : s ⊂ t) : toColex s < toColex t := toColex_strictMono h
 
-instance instOrderBot : OrderBot (Colex α) where
+instance (priority := 10000) instOrderBot : OrderBot (Colex α) where
   bot := toColex ∅
   bot_le s a ha := by cases ha
 
@@ -215,14 +215,14 @@ lemma singleton_lt_singleton : (toColex {a} : Colex α) < toColex {b} ↔ a < b 
 
 variable [DecidableEq α]
 
-instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
+instance (priority := 10000) instDecidableEq : DecidableEq (Colex α) := fun s t ↦
   decidable_of_iff' (s.ofColex = t.ofColex) <| Colex.ext_iff _ _
 
-instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· ≤ ·) := fun s t ↦
+instance (priority := 10000) instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· ≤ ·) := fun s t ↦
   decidable_of_iff'
     (∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b) Iff.rfl
 
-instance instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· < ·) :=
+instance (priority := 10000) instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· < ·) :=
   decidableLTOfDecidableLE
 
 lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :
@@ -254,7 +254,7 @@ end PartialOrder
 variable [LinearOrder α] [LinearOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜₂ : Finset (Finset α)}
   {s t u : Finset α} {a b : α} {r : ℕ}
 
-instance instLinearOrder : LinearOrder (Colex α) where
+instance (priority := 10000) instLinearOrder : LinearOrder (Colex α) where
   le_total s t := by
     classical
     obtain rfl | hts := eq_or_ne t s

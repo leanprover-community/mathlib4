@@ -702,11 +702,11 @@ section Decidable
 
 variable [DecidableEq α]
 
-instance isRotatedDecidable (l l' : List α) : Decidable (l ~r l') :=
+instance (priority := 10000) isRotatedDecidable (l l' : List α) : Decidable (l ~r l') :=
   decidable_of_iff' _ isRotated_iff_mem_map_range
 #align list.is_rotated_decidable List.isRotatedDecidable
 
-instance {l l' : List α} : Decidable (@Setoid.r _ (IsRotated.setoid α) l l') :=
+instance (priority := 10000) {l l' : List α} : Decidable (@Setoid.r _ (IsRotated.setoid α) l l') :=
   List.isRotatedDecidable _ _
 
 end Decidable

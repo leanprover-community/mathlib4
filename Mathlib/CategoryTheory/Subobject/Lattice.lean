@@ -32,9 +32,9 @@ namespace MonoOver
 
 section Top
 
-instance {X : C} : Top (MonoOver X) where top := mk' (𝟙 _)
+instance (priority := 10000) {X : C} : Top (MonoOver X) where top := mk' (𝟙 _)
 
-instance {X : C} : Inhabited (MonoOver X) :=
+instance (priority := 10000) {X : C} : Inhabited (MonoOver X) :=
   ⟨⊤⟩
 
 /-- The morphism to the top object in `MonoOver X`. -/
@@ -88,7 +88,7 @@ section Bot
 
 variable [HasInitial C] [InitialMonoClass C]
 
-instance {X : C} : Bot (MonoOver X) where bot := mk' (initial.to X)
+instance (priority := 10000) {X : C} : Bot (MonoOver X) where bot := mk' (initial.to X)
 
 @[simp]
 theorem bot_left (X : C) : ((⊥ : MonoOver X) : C) = ⊥_ C :=
@@ -216,14 +216,14 @@ namespace Subobject
 
 section OrderTop
 
-instance orderTop {X : C} : OrderTop (Subobject X) where
+instance (priority := 10000) orderTop {X : C} : OrderTop (Subobject X) where
   top := Quotient.mk'' ⊤
   le_top := by
     refine' Quotient.ind' fun f => _
     exact ⟨MonoOver.leTop f⟩
 #align category_theory.subobject.order_top CategoryTheory.Subobject.orderTop
 
-instance {X : C} : Inhabited (Subobject X) :=
+instance (priority := 10000) {X : C} : Inhabited (Subobject X) :=
   ⟨⊤⟩
 
 theorem top_eq_id (B : C) : (⊤ : Subobject B) = Subobject.mk (𝟙 B) :=
@@ -235,7 +235,7 @@ theorem underlyingIso_top_hom {B : C} : (underlyingIso (𝟙 B)).hom = (⊤ : Su
   simp only [comp_id]
 #align category_theory.subobject.underlying_iso_top_hom CategoryTheory.Subobject.underlyingIso_top_hom
 
-instance top_arrow_isIso {B : C} : IsIso (⊤ : Subobject B).arrow := by
+instance (priority := 10000) top_arrow_isIso {B : C} : IsIso (⊤ : Subobject B).arrow := by
   rw [← underlyingIso_top_hom]
   infer_instance
 #align category_theory.subobject.top_arrow_is_iso CategoryTheory.Subobject.top_arrow_isIso
@@ -265,7 +265,7 @@ theorem isIso_arrow_iff_eq_top {Y : C} (P : Subobject Y) : IsIso P.arrow ↔ P =
   rw [isIso_iff_mk_eq_top, mk_arrow]
 #align category_theory.subobject.is_iso_arrow_iff_eq_top CategoryTheory.Subobject.isIso_arrow_iff_eq_top
 
-instance isIso_top_arrow {Y : C} : IsIso (⊤ : Subobject Y).arrow := by rw [isIso_arrow_iff_eq_top]
+instance (priority := 10000) isIso_top_arrow {Y : C} : IsIso (⊤ : Subobject Y).arrow := by rw [isIso_arrow_iff_eq_top]
 #align category_theory.subobject.is_iso_top_arrow CategoryTheory.Subobject.isIso_top_arrow
 
 theorem mk_eq_top_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : mk f = ⊤ :=
@@ -296,7 +296,7 @@ section OrderBot
 
 variable [HasInitial C] [InitialMonoClass C]
 
-instance orderBot {X : C} : OrderBot (Subobject X) where
+instance (priority := 10000) orderBot {X : C} : OrderBot (Subobject X) where
   bot := Quotient.mk'' ⊥
   bot_le := by
     refine' Quotient.ind' fun f => _
@@ -397,7 +397,7 @@ theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (in
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
 #align category_theory.subobject.le_inf CategoryTheory.Subobject.le_inf
 
-instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
+instance (priority := 10000) semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
   inf := fun m n => (inf.obj m).obj n
   inf_le_left := inf_le_left
   inf_le_right := inf_le_right
@@ -516,7 +516,7 @@ def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.sup
 #align category_theory.subobject.sup CategoryTheory.Subobject.sup
 
-instance semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
+instance (priority := 10000) semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
   sup := fun m n => (sup.obj m).obj n
   le_sup_left := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
   le_sup_right := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
@@ -553,12 +553,12 @@ end SemilatticeSup
 
 section Lattice
 
-instance boundedOrder [HasInitial C] [InitialMonoClass C] {B : C} : BoundedOrder (Subobject B) :=
+instance (priority := 10000) boundedOrder [HasInitial C] [InitialMonoClass C] {B : C} : BoundedOrder (Subobject B) :=
   { Subobject.orderTop, Subobject.orderBot with }
 
 variable [HasPullbacks C] [HasImages C] [HasBinaryCoproducts C]
 
-instance {B : C} : Lattice (Subobject B) :=
+instance (priority := 10000) {B : C} : Lattice (Subobject B) :=
   { Subobject.semilatticeInf, Subobject.semilatticeSup with }
 
 end Lattice
@@ -618,7 +618,7 @@ def widePullbackι {A : C} (s : Set (Subobject A)) : widePullback s ⟶ A :=
   Limits.limit.π (wideCospan s) none
 #align category_theory.subobject.wide_pullback_ι CategoryTheory.Subobject.widePullbackι
 
-instance widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbackι s) :=
+instance (priority := 10000) widePullbackι_mono {A : C} (s : Set (Subobject A)) : Mono (widePullbackι s) :=
   ⟨fun u v h =>
     limit.hom_ext fun j => by
       cases j
@@ -657,7 +657,7 @@ theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
     rw [assoc, underlyingIso_arrow, widePullbackι, limit.lift_π, leInfCone_π_app_none]
 #align category_theory.subobject.le_Inf CategoryTheory.Subobject.le_inf
 
-instance completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
+instance (priority := 10000) completeSemilatticeInf {B : C} : CompleteSemilatticeInf (Subobject B) where
   sInf := sInf
   sInf_le := sInf_le
   le_sInf := le_sInf
@@ -713,7 +713,7 @@ theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
     rw [assoc, image.lift_fac, underlyingIso_hom_comp_eq_mk]
 #align category_theory.subobject.Sup_le CategoryTheory.Subobject.sSup_le
 
-instance completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
+instance (priority := 10000) completeSemilatticeSup {B : C} : CompleteSemilatticeSup (Subobject B) where
   sSup := sSup
   le_sSup := le_sSup
   sSup_le := sSup_le
@@ -727,7 +727,7 @@ variable [WellPowered C] [HasWidePullbacks.{v₁} C] [HasImages C] [HasCoproduct
 
 attribute [local instance] has_smallest_coproducts_of_hasCoproducts
 
-instance {B : C} : CompleteLattice (Subobject B) :=
+instance (priority := 10000) {B : C} : CompleteLattice (Subobject B) :=
   { Subobject.semilatticeInf, Subobject.semilatticeSup, Subobject.boundedOrder,
     Subobject.completeSemilatticeInf, Subobject.completeSemilatticeSup with }
 

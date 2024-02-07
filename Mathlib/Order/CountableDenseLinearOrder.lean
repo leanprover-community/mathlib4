@@ -80,9 +80,9 @@ def PartialIso : Type _ :=
 
 namespace PartialIso
 
-instance : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.not_mem_empty _ h).elim⟩⟩
+instance (priority := 10000) : Inhabited (PartialIso α β) := ⟨⟨∅, fun _p h _q ↦ (Finset.not_mem_empty _ h).elim⟩⟩
 
-instance : Preorder (PartialIso α β) := Subtype.preorder _
+instance (priority := 10000) : Preorder (PartialIso α β) := Subtype.preorder _
 
 variable {α β}
 

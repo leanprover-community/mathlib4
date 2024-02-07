@@ -58,7 +58,7 @@ theorem app_p_comm : P.p.app X ≫ f.f.app X = f.f.app X ≫ Q.p.app X :=
 
 variable (J C)
 
-instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
+instance (priority := 10000) functor_category_isIdempotentComplete [IsIdempotentComplete C] :
     IsIdempotentComplete (J ⥤ C) := by
   refine' ⟨fun F p hp => _⟩
   have hC := (isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent C).mp inferInstance
@@ -118,7 +118,7 @@ def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C wher
   map := KaroubiFunctorCategoryEmbedding.map
 #align category_theory.idempotents.karoubi_functor_category_embedding CategoryTheory.Idempotents.karoubiFunctorCategoryEmbedding
 
-instance : Full (karoubiFunctorCategoryEmbedding J C) where
+instance (priority := 10000) : Full (karoubiFunctorCategoryEmbedding J C) where
   preimage {P Q} f :=
     { f :=
         { app := fun j => (f.app j).f
@@ -133,7 +133,7 @@ instance : Full (karoubiFunctorCategoryEmbedding J C) where
         exact (f.app j).comm }
   witness f := rfl
 
-instance : Faithful (karoubiFunctorCategoryEmbedding J C) where
+instance (priority := 10000) : Faithful (karoubiFunctorCategoryEmbedding J C) where
   map_injective h := by
     ext j
     exact hom_ext_iff.mp (congr_app h j)

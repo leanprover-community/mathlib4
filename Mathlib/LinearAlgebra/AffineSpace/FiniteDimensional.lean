@@ -45,14 +45,14 @@ theorem finiteDimensional_vectorSpan_of_finite {s : Set P} (h : Set.Finite s) :
 
 /-- The `vectorSpan` of a family indexed by a `Fintype` is
 finite-dimensional. -/
-instance finiteDimensional_vectorSpan_range [Finite ι] (p : ι → P) :
+instance (priority := 10000) finiteDimensional_vectorSpan_range [Finite ι] (p : ι → P) :
     FiniteDimensional k (vectorSpan k (Set.range p)) :=
   finiteDimensional_vectorSpan_of_finite k (Set.finite_range _)
 #align finite_dimensional_vector_span_range finiteDimensional_vectorSpan_range
 
 /-- The `vectorSpan` of a subset of a family indexed by a `Fintype`
 is finite-dimensional. -/
-instance finiteDimensional_vectorSpan_image_of_finite [Finite ι] (p : ι → P) (s : Set ι) :
+instance (priority := 10000) finiteDimensional_vectorSpan_image_of_finite [Finite ι] (p : ι → P) (s : Set ι) :
     FiniteDimensional k (vectorSpan k (p '' s)) :=
   finiteDimensional_vectorSpan_of_finite k (Set.toFinite _)
 #align finite_dimensional_vector_span_image_of_finite finiteDimensional_vectorSpan_image_of_finite
@@ -66,14 +66,14 @@ theorem finiteDimensional_direction_affineSpan_of_finite {s : Set P} (h : Set.Fi
 
 /-- The direction of the affine span of a family indexed by a
 `Fintype` is finite-dimensional. -/
-instance finiteDimensional_direction_affineSpan_range [Finite ι] (p : ι → P) :
+instance (priority := 10000) finiteDimensional_direction_affineSpan_range [Finite ι] (p : ι → P) :
     FiniteDimensional k (affineSpan k (Set.range p)).direction :=
   finiteDimensional_direction_affineSpan_of_finite k (Set.finite_range _)
 #align finite_dimensional_direction_affine_span_range finiteDimensional_direction_affineSpan_range
 
 /-- The direction of the affine span of a subset of a family indexed
 by a `Fintype` is finite-dimensional. -/
-instance finiteDimensional_direction_affineSpan_image_of_finite [Finite ι] (p : ι → P) (s : Set ι) :
+instance (priority := 10000) finiteDimensional_direction_affineSpan_image_of_finite [Finite ι] (p : ι → P) (s : Set ι) :
     FiniteDimensional k (affineSpan k (p '' s)).direction :=
   finiteDimensional_direction_affineSpan_of_finite k (Set.toFinite _)
 #align finite_dimensional_direction_affine_span_image_of_finite finiteDimensional_direction_affineSpan_image_of_finite
@@ -346,7 +346,7 @@ theorem Affine.Simplex.span_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine
 #align affine.simplex.span_eq_top Affine.Simplex.span_eq_top
 
 /-- The `vectorSpan` of adding a point to a finite-dimensional subspace is finite-dimensional. -/
-instance finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
+instance (priority := 10000) finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
     [FiniteDimensional k s.direction] (p : P) :
     FiniteDimensional k (vectorSpan k (insert p (s : Set P))) := by
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
@@ -360,7 +360,7 @@ instance finiteDimensional_vectorSpan_insert (s : AffineSubspace k P)
 
 /-- The direction of the affine span of adding a point to a finite-dimensional subspace is
 finite-dimensional. -/
-instance finiteDimensional_direction_affineSpan_insert (s : AffineSubspace k P)
+instance (priority := 10000) finiteDimensional_direction_affineSpan_insert (s : AffineSubspace k P)
     [FiniteDimensional k s.direction] (p : P) :
     FiniteDimensional k (affineSpan k (insert p (s : Set P))).direction :=
   (direction_affineSpan k (insert p (s : Set P))).symm ▸ finiteDimensional_vectorSpan_insert s p
@@ -370,7 +370,7 @@ variable (k)
 
 /-- The `vectorSpan` of adding a point to a set with a finite-dimensional `vectorSpan` is
 finite-dimensional. -/
-instance finiteDimensional_vectorSpan_insert_set (s : Set P) [FiniteDimensional k (vectorSpan k s)]
+instance (priority := 10000) finiteDimensional_vectorSpan_insert_set (s : Set P) [FiniteDimensional k (vectorSpan k s)]
     (p : P) : FiniteDimensional k (vectorSpan k (insert p s)) := by
   haveI : FiniteDimensional k (affineSpan k s).direction :=
     (direction_affineSpan k s).symm ▸ inferInstance

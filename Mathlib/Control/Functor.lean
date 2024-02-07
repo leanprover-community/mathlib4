@@ -108,11 +108,11 @@ protected def map {γ α β} (_f : α → β) (x : Const γ β) : Const γ α :=
   x
 #align functor.const.map Functor.Const.map
 
-instance functor {γ} : Functor (Const γ) where map := @Const.map γ
+instance (priority := 10000) functor {γ} : Functor (Const γ) where map := @Const.map γ
 
-instance lawfulFunctor {γ} : LawfulFunctor (Const γ) := by constructor <;> intros <;> rfl
+instance (priority := 10000) lawfulFunctor {γ} : LawfulFunctor (Const γ) := by constructor <;> intros <;> rfl
 
-instance {α β} [Inhabited α] : Inhabited (Const α β) :=
+instance (priority := 10000) {α β} [Inhabited α] : Inhabited (Const α β) :=
   ⟨(default : α)⟩
 
 end Const
@@ -137,15 +137,15 @@ def AddConst.run {α β} : AddConst α β → α :=
   id
 #align functor.add_const.run Functor.AddConst.run
 
-instance AddConst.functor {γ} : Functor (AddConst γ) :=
+instance (priority := 10000) AddConst.functor {γ} : Functor (AddConst γ) :=
   @Const.functor γ
 #align functor.add_const.functor Functor.AddConst.functor
 
-instance AddConst.lawfulFunctor {γ} : LawfulFunctor (AddConst γ) :=
+instance (priority := 10000) AddConst.lawfulFunctor {γ} : LawfulFunctor (AddConst γ) :=
   @Const.lawfulFunctor γ
 #align functor.add_const.is_lawful_functor Functor.AddConst.lawfulFunctor
 
-instance {α β} [Inhabited α] : Inhabited (AddConst α β) :=
+instance (priority := 10000) {α β} [Inhabited α] : Inhabited (AddConst α β) :=
   ⟨(default : α)⟩
 
 /-- `Functor.Comp` is a wrapper around `Function.Comp` for types.
@@ -175,7 +175,7 @@ protected theorem ext {α} {x y : Comp F G α} : x.run = y.run → x = y :=
   id
 #align functor.comp.ext Functor.Comp.ext
 
-instance {α} [Inhabited (F (G α))] : Inhabited (Comp F G α) :=
+instance (priority := 10000) {α} [Inhabited (F (G α))] : Inhabited (Comp F G α) :=
   ⟨(default : F (G α))⟩
 
 variable [Functor F] [Functor G]
@@ -185,7 +185,7 @@ protected def map {α β : Type v} (h : α → β) : Comp F G α → Comp F G β
   | Comp.mk x => Comp.mk ((h <$> ·) <$> x)
 #align functor.comp.map Functor.Comp.map
 
-instance functor : Functor (Comp F G) where map := @Comp.map F G _ _
+instance (priority := 10000) functor : Functor (Comp F G) where map := @Comp.map F G _ _
 
 @[functor_norm]
 theorem map_mk {α β} (h : α → β) (x : F (G α)) : h <$> Comp.mk x = Comp.mk ((h <$> ·) <$> x) :=
@@ -213,7 +213,7 @@ protected theorem comp_map (g' : α → β) (h : β → γ) :
   -- porting note: `Comp.mk` wasn't needed in mathlib3
 #align functor.comp.comp_map Functor.Comp.comp_map
 
-instance lawfulFunctor : LawfulFunctor (Comp F G) where
+instance (priority := 10000) lawfulFunctor : LawfulFunctor (Comp F G) where
   map_const := rfl
   id_map := @Comp.id_map F G _ _ _ _
   comp_map := @Comp.comp_map F G _ _ _ _
@@ -248,10 +248,10 @@ protected def seq {α β : Type v} : Comp F G (α → β) → (Unit → Comp F G
 #align functor.comp.seq Functor.Comp.seqₓ
 -- `ₓ` because the type of `Seq.seq` doesn't match `has_seq.seq`
 
-instance : Pure (Comp F G) :=
+instance (priority := 10000) : Pure (Comp F G) :=
   ⟨fun x => Comp.mk <| pure <| pure x⟩
 
-instance : Seq (Comp F G) :=
+instance (priority := 10000) : Seq (Comp F G) :=
   ⟨fun f x => Comp.seq f x⟩
 
 @[simp]
@@ -265,7 +265,7 @@ protected theorem run_seq {α β : Type v} (f : Comp F G (α → β)) (x : Comp 
   rfl
 #align functor.comp.run_seq Functor.Comp.run_seq
 
-instance instApplicativeComp : Applicative (Comp F G) :=
+instance (priority := 10000) instApplicativeComp : Applicative (Comp F G) :=
   { map := @Comp.map F G _ _, seq := @Comp.seq F G _ _ }
 
 end Comp

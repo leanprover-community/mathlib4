@@ -41,7 +41,7 @@ notation:50 a " ≡ " b " [MOD " n "]" => ModEq n a b
 variable {m n a b c d : ℕ}
 
 -- Porting note: This instance should be derivable automatically
-instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
+instance (priority := 10000) : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 
 namespace ModEq
 
@@ -53,7 +53,7 @@ protected theorem rfl : a ≡ a [MOD n] :=
   ModEq.refl _
 #align nat.modeq.rfl Nat.ModEq.rfl
 
-instance : IsRefl _ (ModEq n) :=
+instance (priority := 10000) : IsRefl _ (ModEq n) :=
   ⟨ModEq.refl⟩
 
 @[symm]
@@ -66,7 +66,7 @@ protected theorem trans : a ≡ b [MOD n] → b ≡ c [MOD n] → a ≡ c [MOD n
   Eq.trans
 #align nat.modeq.trans Nat.ModEq.trans
 
-instance : Trans (ModEq n) (ModEq n) (ModEq n) where
+instance (priority := 10000) : Trans (ModEq n) (ModEq n) (ModEq n) where
   trans := Nat.ModEq.trans
 
 protected theorem comm : a ≡ b [MOD n] ↔ b ≡ a [MOD n] :=

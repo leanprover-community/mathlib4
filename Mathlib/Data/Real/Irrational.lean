@@ -135,7 +135,7 @@ theorem irrational_sqrt_rat_iff (q : ℚ) :
         fun h => H2 h.2
 #align irrational_sqrt_rat_iff irrational_sqrt_rat_iff
 
-instance (q : ℚ) : Decidable (Irrational (Real.sqrt q)) :=
+instance (priority := 10000) (q : ℚ) : Decidable (Irrational (Real.sqrt q)) :=
   decidable_of_iff' _ (irrational_sqrt_rat_iff q)
 
 /-!

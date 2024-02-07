@@ -28,7 +28,7 @@ protected def sub : ∀ _ _ : WithTop α, WithTop α
   | (x : α), (y : α) => (x - y : α)
 #align with_top.sub WithTop.sub
 
-instance : Sub (WithTop α) :=
+instance (priority := 10000) : Sub (WithTop α) :=
   ⟨WithTop.sub⟩
 
 @[simp, norm_cast]
@@ -62,7 +62,7 @@ end
 
 variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
 
-instance : OrderedSub (WithTop α) := by
+instance (priority := 10000) : OrderedSub (WithTop α) := by
   constructor
   rintro x y z
   induction y using WithTop.recTopCoe; · simp

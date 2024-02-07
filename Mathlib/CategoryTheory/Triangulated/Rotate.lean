@@ -154,11 +154,11 @@ def triangleRotation : Equivalence (Triangle C) (Triangle C)
 
 variable {C}
 
-instance : IsEquivalence (rotate C) := by
+instance (priority := 10000) : IsEquivalence (rotate C) := by
   change IsEquivalence (triangleRotation C).functor
   infer_instance
 
-instance : IsEquivalence (invRotate C) := by
+instance (priority := 10000) : IsEquivalence (invRotate C) := by
   change IsEquivalence (triangleRotation C).inverse
   infer_instance
 

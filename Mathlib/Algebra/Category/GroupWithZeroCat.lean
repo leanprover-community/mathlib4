@@ -29,10 +29,10 @@ set_option linter.uppercaseLean3 false in
 
 namespace GroupWithZeroCat
 
-instance : CoeSort GroupWithZeroCat (Type*) :=
+instance (priority := 10000) : CoeSort GroupWithZeroCat (Type*) :=
   Bundled.coeSort
 
-instance (X : GroupWithZeroCat) : GroupWithZero X :=
+instance (priority := 10000) (X : GroupWithZeroCat) : GroupWithZero X :=
   X.str
 
 /-- Construct a bundled `GroupWithZeroCat` from a `GroupWithZero`. -/
@@ -41,10 +41,10 @@ def of (α : Type*) [GroupWithZero α] : GroupWithZeroCat :=
 set_option linter.uppercaseLean3 false in
 #align GroupWithZero.of GroupWithZeroCat.of
 
-instance : Inhabited GroupWithZeroCat :=
+instance (priority := 10000) : Inhabited GroupWithZeroCat :=
   ⟨of (WithZero PUnit)⟩
 
-instance : LargeCategory.{u} GroupWithZeroCat where
+instance (priority := 10000) : LargeCategory.{u} GroupWithZeroCat where
   Hom X Y := MonoidWithZeroHom X Y
   id X := MonoidWithZeroHom.id X
   comp f g := g.comp f
@@ -53,7 +53,7 @@ instance : LargeCategory.{u} GroupWithZeroCat where
   assoc _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
 -- porting note: was not necessary in mathlib
-instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
+instance (priority := 10000) {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
   ⟨fun f => f.toFun, fun f g h => by
     cases f
     cases g
@@ -67,7 +67,7 @@ lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
 -- porting note: added
 lemma coe_comp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
+instance (priority := 10000) groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
   forget :=
   { obj := fun G => G
     map := fun f => f.toFun }
@@ -75,14 +75,14 @@ instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
 
 -- porting note: added
 @[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupWithZeroCat).map f = f := rfl
-instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed where
+instance (priority := 10000) hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed where
   forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩
         map := fun f => ⟨f, f.map_zero', f.map_one'⟩ }
 set_option linter.uppercaseLean3 false in
 #align GroupWithZero.has_forget_to_Bipointed GroupWithZeroCat.hasForgetToBipointed
 
-instance hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat where
+instance (priority := 10000) hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat where
   forget₂ :=
       { obj := fun X => ⟨ X , _ ⟩
         map := fun f => f.toMonoidHom }
@@ -90,7 +90,7 @@ set_option linter.uppercaseLean3 false in
 #align GroupWithZero.has_forget_to_Mon GroupWithZeroCat.hasForgetToMon
 
 -- porting note: this instance was not necessary in mathlib
-instance {X Y : GroupWithZeroCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
+instance (priority := 10000) {X Y : GroupWithZeroCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →*₀ Y) := f
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/

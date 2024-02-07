@@ -77,7 +77,7 @@ preserves the joins of ω-chains  -/
 def Scott (α : Type u) := α
 #align Scott Scott
 
-instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
+instance (priority := 10000) Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
     TopologicalSpace (Scott α) where
   IsOpen := Scott.IsOpen α
   isOpen_univ := Scott.isOpen_univ α

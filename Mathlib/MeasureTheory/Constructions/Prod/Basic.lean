@@ -329,7 +329,7 @@ protected irreducible_def prod (μ : Measure α) (ν : Measure β) : Measure (α
   bind μ fun x : α => map (Prod.mk x) ν
 #align measure_theory.measure.prod MeasureTheory.Measure.prod
 
-instance prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β) where
+instance (priority := 10000) prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β) where
   volume := volume.prod volume
 #align measure_theory.measure.prod.measure_space MeasureTheory.Measure.prod.measureSpace
 
@@ -388,7 +388,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
   ext s hs
   simp [Measure.map_apply measurable_snd hs, ← univ_prod]
 
-instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+instance (priority := 10000) prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {m : MeasurableSpace X} {μ : Measure X} [IsOpenPosMeasure μ] {m' : MeasurableSpace Y}
     {ν : Measure Y} [IsOpenPosMeasure ν] [SFinite ν] : IsOpenPosMeasure (μ.prod ν) := by
   constructor
@@ -401,13 +401,13 @@ instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [Topologic
   · exact v_open.measure_pos ν ⟨y, yv⟩
 #align measure_theory.measure.prod.is_open_pos_measure MeasureTheory.Measure.prod.instIsOpenPosMeasure
 
-instance {X Y : Type*}
+instance (priority := 10000) {X Y : Type*}
     [TopologicalSpace X] [MeasureSpace X] [IsOpenPosMeasure (volume : Measure X)]
     [TopologicalSpace Y] [MeasureSpace Y] [IsOpenPosMeasure (volume : Measure Y)]
     [SFinite (volume : Measure Y)] : IsOpenPosMeasure (volume : Measure (X × Y)) :=
   prod.instIsOpenPosMeasure
 
-instance prod.instIsFiniteMeasure {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+instance (priority := 10000) prod.instIsFiniteMeasure {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
     (μ : Measure α) (ν : Measure β) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     IsFiniteMeasure (μ.prod ν) := by
   constructor
@@ -415,22 +415,22 @@ instance prod.instIsFiniteMeasure {α β : Type*} {mα : MeasurableSpace α} {m�
   exact mul_lt_top (measure_lt_top _ _).ne (measure_lt_top _ _).ne
 #align measure_theory.measure.prod.measure_theory.is_finite_measure MeasureTheory.Measure.prod.instIsFiniteMeasure
 
-instance {α β : Type*} [MeasureSpace α] [MeasureSpace β] [IsFiniteMeasure (volume : Measure α)]
+instance (priority := 10000) {α β : Type*} [MeasureSpace α] [MeasureSpace β] [IsFiniteMeasure (volume : Measure α)]
     [IsFiniteMeasure (volume : Measure β)] : IsFiniteMeasure (volume : Measure (α × β)) :=
   prod.instIsFiniteMeasure _ _
 
-instance prod.instIsProbabilityMeasure {α β : Type*} {mα : MeasurableSpace α}
+instance (priority := 10000) prod.instIsProbabilityMeasure {α β : Type*} {mα : MeasurableSpace α}
     {mβ : MeasurableSpace β} (μ : Measure α) (ν : Measure β) [IsProbabilityMeasure μ]
     [IsProbabilityMeasure ν] : IsProbabilityMeasure (μ.prod ν) :=
   ⟨by rw [← univ_prod_univ, prod_prod, measure_univ, measure_univ, mul_one]⟩
 #align measure_theory.measure.prod.measure_theory.is_probability_measure MeasureTheory.Measure.prod.instIsProbabilityMeasure
 
-instance {α β : Type*} [MeasureSpace α] [MeasureSpace β]
+instance (priority := 10000) {α β : Type*} [MeasureSpace α] [MeasureSpace β]
     [IsProbabilityMeasure (volume : Measure α)] [IsProbabilityMeasure (volume : Measure β)] :
     IsProbabilityMeasure (volume : Measure (α × β)) :=
   prod.instIsProbabilityMeasure _ _
 
-instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+instance (priority := 10000) prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     {mα : MeasurableSpace α} {mβ : MeasurableSpace β} (μ : Measure α) (ν : Measure β)
     [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν] [SFinite ν] :
     IsFiniteMeasureOnCompacts (μ.prod ν) := by
@@ -447,18 +447,18 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α
       (IsCompact.measure_lt_top (hK.image continuous_snd)).ne
 #align measure_theory.measure.prod.measure_theory.is_finite_measure_on_compacts MeasureTheory.Measure.prod.instIsFiniteMeasureOnCompacts
 
-instance {X Y : Type*}
+instance (priority := 10000) {X Y : Type*}
     [TopologicalSpace X] [MeasureSpace X] [IsFiniteMeasureOnCompacts (volume : Measure X)]
     [TopologicalSpace Y] [MeasureSpace Y] [IsFiniteMeasureOnCompacts (volume : Measure Y)]
     [SFinite (volume : Measure Y)] : IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
   prod.instIsFiniteMeasureOnCompacts _ _
 
-instance prod.instNoAtoms_fst [NoAtoms μ] :
+instance (priority := 10000) prod.instNoAtoms_fst [NoAtoms μ] :
     NoAtoms (Measure.prod μ ν) := by
   refine NoAtoms.mk (fun x => ?_)
   rw [← Set.singleton_prod_singleton, Measure.prod_prod, measure_singleton, zero_mul]
 
-instance prod.instNoAtoms_snd [NoAtoms ν] :
+instance (priority := 10000) prod.instNoAtoms_snd [NoAtoms ν] :
     NoAtoms (Measure.prod μ ν) := by
   refine NoAtoms.mk (fun x => ?_)
   rw [← Set.singleton_prod_singleton, Measure.prod_prod, measure_singleton (μ := ν), mul_zero]
@@ -604,13 +604,13 @@ lemma prod_sum {ι ι' : Type*} [Countable ι'] (m : ι → Measure α) (m' : ι
       Measure.sum (fun (p : ι × ι') ↦ (m p.1).prod (m' p.2)) := by
   simp_rw [prod_sum_left, prod_sum_right, sum_sum]
 
-instance prod.instSigmaFinite {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
+instance (priority := 10000) prod.instSigmaFinite {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SigmaFinite μ] {_ : MeasurableSpace β} {ν : Measure β} [SigmaFinite ν] :
     SigmaFinite (μ.prod ν) :=
   (μ.toFiniteSpanningSetsIn.prod ν.toFiniteSpanningSetsIn).sigmaFinite
 #align measure_theory.measure.prod.sigma_finite MeasureTheory.Measure.prod.instSigmaFinite
 
-instance prod.instSFinite {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
+instance (priority := 10000) prod.instSFinite {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] {_ : MeasurableSpace β} {ν : Measure β} [SFinite ν] :
     SFinite (μ.prod ν) := by
   have : μ.prod ν =
@@ -620,11 +620,11 @@ instance prod.instSFinite {α β : Type*} {_ : MeasurableSpace α} {μ : Measure
   rw [this]
   infer_instance
 
-instance {α β} [MeasureSpace α] [SigmaFinite (volume : Measure α)]
+instance (priority := 10000) {α β} [MeasureSpace α] [SigmaFinite (volume : Measure α)]
     [MeasureSpace β] [SigmaFinite (volume : Measure β)] : SigmaFinite (volume : Measure (α × β)) :=
   prod.instSigmaFinite
 
-instance {α β} [MeasureSpace α] [SFinite (volume : Measure α)]
+instance (priority := 10000) {α β} [MeasureSpace α] [SFinite (volume : Measure α)]
     [MeasureSpace β] [SFinite (volume : Measure β)] : SFinite (volume : Measure (α × β)) :=
   prod.instSFinite
 
@@ -1038,12 +1038,12 @@ theorem fst_univ : ρ.fst univ = ρ univ := by rw [fst_apply MeasurableSet.univ,
 
 @[simp] theorem fst_zero : fst (0 : Measure (α × β)) = 0 := by simp [fst]
 
-instance fst.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.fst := by
+instance (priority := 10000) fst.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.fst := by
   rw [fst]
   infer_instance
 #align measure_theory.measure.fst.measure_theory.is_finite_measure MeasureTheory.Measure.fst.instIsFiniteMeasure
 
-instance fst.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityMeasure ρ.fst where
+instance (priority := 10000) fst.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityMeasure ρ.fst where
   measure_univ := by
     rw [fst_univ]
     exact measure_univ
@@ -1085,12 +1085,12 @@ theorem snd_univ : ρ.snd univ = ρ univ := by rw [snd_apply MeasurableSet.univ,
 
 @[simp] theorem snd_zero : snd (0 : Measure (α × β)) = 0 := by simp [snd]
 
-instance snd.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.snd := by
+instance (priority := 10000) snd.instIsFiniteMeasure [IsFiniteMeasure ρ] : IsFiniteMeasure ρ.snd := by
   rw [snd]
   infer_instance
 #align measure_theory.measure.snd.measure_theory.is_finite_measure MeasureTheory.Measure.snd.instIsFiniteMeasure
 
-instance snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityMeasure ρ.snd where
+instance (priority := 10000) snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityMeasure ρ.snd where
   measure_univ := by
     rw [snd_univ]
     exact measure_univ

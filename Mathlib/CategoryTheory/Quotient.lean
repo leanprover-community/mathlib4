@@ -26,7 +26,7 @@ def HomRel (C) [Quiver C] :=
 #align hom_rel HomRel
 
 -- Porting Note: `deriving Inhabited` was not able to deduce this typeclass
-instance (C) [Quiver C] : Inhabited (HomRel C) where
+instance (priority := 10000) (C) [Quiver C] : Inhabited (HomRel C) where
   default := fun _ _ _ _ ↦ PUnit
 
 namespace CategoryTheory
@@ -51,7 +51,7 @@ structure Quotient (r : HomRel C) where
   as : C
 #align category_theory.quotient CategoryTheory.Quotient
 
-instance [Inhabited C] : Inhabited (Quotient r) :=
+instance (priority := 10000) [Inhabited C] : Inhabited (Quotient r) :=
   ⟨{ as := default }⟩
 
 namespace Quotient
@@ -81,7 +81,7 @@ def Hom (s t : Quotient r) :=
   Quot <| @CompClosure C _ r s.as t.as
 #align category_theory.quotient.hom CategoryTheory.Quotient.Hom
 
-instance (a : Quotient r) : Inhabited (Hom r a a) :=
+instance (priority := 10000) (a : Quotient r) : Inhabited (Hom r a a) :=
   ⟨Quot.mk _ (𝟙 a.as)⟩
 
 /-- Composition in the quotient category. -/
@@ -100,7 +100,7 @@ theorem comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
 #align category_theory.quotient.comp_mk CategoryTheory.Quotient.comp_mk
 
 -- porting note: Had to manually add the proofs of `comp_id` `id_comp` and `assoc`
-instance category : Category (Quotient r) where
+instance (priority := 10000) category : Category (Quotient r) where
   Hom := Hom r
   id a := Quot.mk _ (𝟙 a.as)
   comp := @comp _ _ r
@@ -115,13 +115,13 @@ def functor : C ⥤ Quotient r where
   map := @fun _ _ f ↦ Quot.mk _ f
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
-noncomputable instance fullFunctor : Full (functor r) where
+noncomputable instance (priority := 10000) fullFunctor : Full (functor r) where
   preimage := @fun X Y f ↦ Quot.out f
   witness f := by
     dsimp [functor]
     simp
 
-instance essSurj_functor : EssSurj (functor r) where
+instance (priority := 10000) essSurj_functor : EssSurj (functor r) where
   mem_essImage Y :=
     ⟨Y.as, ⟨eqToIso (by
             ext
@@ -265,11 +265,11 @@ def natIsoLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ≅ Quoti
 
 variable (D)
 
-instance full_whiskeringLeft_functor :
+instance (priority := 10000) full_whiskeringLeft_functor :
     Full ((whiskeringLeft C _ D).obj (functor r)) where
   preimage := natTransLift r
 
-instance faithful_whiskeringLeft_functor :
+instance (priority := 10000) faithful_whiskeringLeft_functor :
     Faithful ((whiskeringLeft C _ D).obj (functor r)) := ⟨by apply natTrans_ext⟩
 
 end Quotient

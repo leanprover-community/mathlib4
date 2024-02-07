@@ -137,7 +137,7 @@ variable {ι β : Type*} (B : ι → Type*) [∀ i : ι, Pow (B i) β]
 variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 
 @[to_additive]
-instance Pi.rootableBy : RootableBy (∀ i, B i) β where
+instance (priority := 10000) Pi.rootableBy : RootableBy (∀ i, B i) β where
   root x n i := RootableBy.root (x i) n
   root_zero _x := funext fun _i => RootableBy.root_zero _
   root_cancel _x hn := funext fun _i => RootableBy.root_cancel _ hn
@@ -153,7 +153,7 @@ variable {β B B' : Type*} [Pow B β] [Pow B' β]
 variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 
 @[to_additive]
-instance Prod.rootableBy : RootableBy (B × B') β where
+instance (priority := 10000) Prod.rootableBy : RootableBy (B × B') β where
   root p n := (RootableBy.root p.1 n, RootableBy.root p.2 n)
   root_zero _p := Prod.ext (RootableBy.root_zero _) (RootableBy.root_zero _)
   root_cancel _p hn := Prod.ext (RootableBy.root_cancel _ hn) (RootableBy.root_cancel _ hn)
@@ -165,7 +165,7 @@ end Prod
 section ULift
 
 @[to_additive]
-instance ULift.instRootableBy [RootableBy A α] : RootableBy (ULift A) α where
+instance (priority := 10000) ULift.instRootableBy [RootableBy A α] : RootableBy (ULift A) α where
   root x a := ULift.up <| RootableBy.root x.down a
   root_zero x := ULift.ext _ _ <| RootableBy.root_zero x.down
   root_cancel _ h := ULift.ext _ _ <| RootableBy.root_cancel _ h
@@ -287,7 +287,7 @@ variable (α : Type*) {A : Type*} [CommGroup A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
 @[to_additive "Any quotient group of a divisible group is divisible"]
-noncomputable instance QuotientGroup.rootableBy [RootableBy A ℕ] : RootableBy (A ⧸ B) ℕ :=
+noncomputable instance (priority := 10000) QuotientGroup.rootableBy [RootableBy A ℕ] : RootableBy (A ⧸ B) ℕ :=
   QuotientGroup.mk_surjective.rootableBy _ fun _ _ => rfl
 #align quotient_group.rootable_by QuotientGroup.rootableBy
 #align quotient_add_group.divisible_by QuotientAddGroup.divisibleBy

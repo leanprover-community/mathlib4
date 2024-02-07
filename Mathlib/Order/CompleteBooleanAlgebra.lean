@@ -187,7 +187,7 @@ section Frame
 
 variable [Frame α] {s t : Set α} {a b : α}
 
-instance OrderDual.coframe : Coframe αᵒᵈ :=
+instance (priority := 10000) OrderDual.coframe : Coframe αᵒᵈ :=
   { OrderDual.completeLattice α with iInf_sup_le_sup_sInf := @Frame.inf_sSup_le_iSup_inf α _ }
 #align order_dual.coframe OrderDual.coframe
 
@@ -207,7 +207,7 @@ theorem inf_iSup_eq (a : α) (f : ι → α) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓
   simpa only [inf_comm] using iSup_inf_eq f a
 #align inf_supr_eq inf_iSup_eq
 
-instance Prod.frame (α β) [Frame α] [Frame β] : Frame (α × β) where
+instance (priority := 10000) Prod.frame (α β) [Frame α] [Frame β] : Frame (α × β) where
   __ := Prod.completeLattice α β
   inf_sSup_le_iSup_inf a s := by
     simp [Prod.le_def, sSup_eq_iSup, fst_iSup, snd_iSup, fst_iInf, snd_iInf, inf_iSup_eq]
@@ -277,7 +277,7 @@ theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
 #align supr_inf_of_antitone iSup_inf_of_antitone
 
-instance Pi.frame {ι : Type*} {π : ι → Type*} [∀ i, Frame (π i)] : Frame (∀ i, π i) :=
+instance (priority := 10000) Pi.frame {ι : Type*} {π : ι → Type*} [∀ i, Frame (π i)] : Frame (∀ i, π i) :=
   { Pi.completeLattice with
     inf_sSup_le_iSup_inf := fun a s i => by
       simp only [sSup_apply, iSup_apply, inf_apply, inf_iSup_eq, ← iSup_subtype'']; rfl }
@@ -295,7 +295,7 @@ section Coframe
 
 variable [Coframe α] {s t : Set α} {a b : α}
 
-instance OrderDual.frame : Frame αᵒᵈ :=
+instance (priority := 10000) OrderDual.frame : Frame αᵒᵈ :=
   { OrderDual.completeLattice α with inf_sSup_le_iSup_inf := @Coframe.iInf_sup_le_sup_sInf α _ }
 #align order_dual.frame OrderDual.frame
 
@@ -315,7 +315,7 @@ theorem sup_iInf_eq (a : α) (f : ι → α) : (a ⊔ ⨅ i, f i) = ⨅ i, a ⊔
   @inf_iSup_eq αᵒᵈ _ _ _ _
 #align sup_infi_eq sup_iInf_eq
 
-instance Prod.coframe (α β) [Coframe α] [Coframe β] : Coframe (α × β) where
+instance (priority := 10000) Prod.coframe (α β) [Coframe α] [Coframe β] : Coframe (α × β) where
   __ := Prod.completeLattice α β
   iInf_sup_le_sup_sInf a s := by
     simp [Prod.le_def, sInf_eq_iInf, fst_iSup, snd_iSup, fst_iInf, snd_iInf, sup_iInf_eq]
@@ -352,7 +352,7 @@ theorem iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ �
   @iSup_inf_of_monotone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
 #align infi_sup_of_antitone iInf_sup_of_antitone
 
-instance Pi.coframe {ι : Type*} {π : ι → Type*} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) :=
+instance (priority := 10000) Pi.coframe {ι : Type*} {π : ι → Type*} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) :=
   { Pi.completeLattice with
     iInf_sup_le_sup_sInf := fun a s i => by
       simp only [sInf_apply, iInf_apply, sup_apply, sup_iInf_eq, ← iInf_subtype'']; rfl }
@@ -374,18 +374,18 @@ variable [CompleteDistribLattice α] {a b : α} {s t : Set α}
 -- Porting note: this is mysteriously slow. Minimised in
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Performance.20issue.20with.20.60CompleteBooleanAlgebra.60
 -- but not yet resolved.
-instance OrderDual.completeDistribLattice (α) [CompleteDistribLattice α] :
+instance (priority := 10000) OrderDual.completeDistribLattice (α) [CompleteDistribLattice α] :
     CompleteDistribLattice αᵒᵈ :=
   { OrderDual.frame, OrderDual.coframe with }
 
-instance Prod.completeDistribLattice (α β)
+instance (priority := 10000) Prod.completeDistribLattice (α β)
     [CompleteDistribLattice α] [CompleteDistribLattice β] :
     CompleteDistribLattice (α × β) where
   __ := Prod.completeLattice α β
   __ := Prod.frame α β
   __ := Prod.coframe α β
 
-instance Pi.completeDistribLattice {ι : Type*} {π : ι → Type*}
+instance (priority := 10000) Pi.completeDistribLattice {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteDistribLattice (π i)] : CompleteDistribLattice (∀ i, π i) :=
   { Pi.frame, Pi.coframe with }
 #align pi.complete_distrib_lattice Pi.completeDistribLattice
@@ -394,18 +394,18 @@ end CompleteDistribLattice
 
 section CompletelyDistribLattice
 
-instance OrderDual.completelyDistribLattice (α) [CompletelyDistribLattice α] :
+instance (priority := 10000) OrderDual.completelyDistribLattice (α) [CompletelyDistribLattice α] :
     CompletelyDistribLattice αᵒᵈ where
   __ := OrderDual.completeLattice α
   iInf_iSup_eq _ := iSup_iInf_eq (α := α)
 
-instance Prod.completelyDistribLattice (α β)
+instance (priority := 10000) Prod.completelyDistribLattice (α β)
     [CompletelyDistribLattice α] [CompletelyDistribLattice β] :
     CompletelyDistribLattice (α × β) where
   __ := Prod.completeLattice α β
   iInf_iSup_eq f := by ext <;> simp [fst_iSup, fst_iInf, snd_iSup, snd_iInf, iInf_iSup_eq]
 
-instance Pi.completelyDistribLattice {ι : Type*} {π : ι → Type*}
+instance (priority := 10000) Pi.completelyDistribLattice {ι : Type*} {π : ι → Type*}
     [∀ i, CompletelyDistribLattice (π i)] : CompletelyDistribLattice (∀ i, π i) where
   __ := Pi.completeLattice
   iInf_iSup_eq f := by ext i; simp only [iInf_apply, iSup_apply, iInf_iSup_eq]
@@ -420,18 +420,18 @@ It is only completely distributive if it is also atomic.
 class CompleteBooleanAlgebra (α) extends BooleanAlgebra α, CompleteDistribLattice α
 #align complete_boolean_algebra CompleteBooleanAlgebra
 
-instance Prod.completeBooleanAlgebra (α β)
+instance (priority := 10000) Prod.completeBooleanAlgebra (α β)
     [CompleteBooleanAlgebra α] [CompleteBooleanAlgebra β] :
     CompleteBooleanAlgebra (α × β) where
   __ := Prod.booleanAlgebra α β
   __ := Prod.completeDistribLattice α β
 
-instance Pi.completeBooleanAlgebra {ι : Type*} {π : ι → Type*}
+instance (priority := 10000) Pi.completeBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) :=
   { Pi.booleanAlgebra, Pi.completeDistribLattice with }
 #align pi.complete_boolean_algebra Pi.completeBooleanAlgebra
 
-instance OrderDual.completeBooleanAlgebra (α) [CompleteBooleanAlgebra α] :
+instance (priority := 10000) OrderDual.completeBooleanAlgebra (α) [CompleteBooleanAlgebra α] :
     CompleteBooleanAlgebra αᵒᵈ where
   __ := OrderDual.booleanAlgebra α
   __ := OrderDual.completeDistribLattice α
@@ -479,28 +479,28 @@ class CompleteAtomicBooleanAlgebra (α : Type u) extends
   iInf_sup_le_sup_sInf := CompletelyDistribLattice.toCompleteDistribLattice.iInf_sup_le_sup_sInf
   inf_sSup_le_iSup_inf := CompletelyDistribLattice.toCompleteDistribLattice.inf_sSup_le_iSup_inf
 
-instance Prod.completeAtomicBooleanAlgebra (α β)
+instance (priority := 10000) Prod.completeAtomicBooleanAlgebra (α β)
     [CompleteAtomicBooleanAlgebra α] [CompleteAtomicBooleanAlgebra β] :
     CompleteAtomicBooleanAlgebra (α × β) where
   __ := Prod.booleanAlgebra α β
   __ := Prod.completelyDistribLattice α β
 
-instance Pi.completeAtomicBooleanAlgebra {ι : Type*} {π : ι → Type*}
+instance (priority := 10000) Pi.completeAtomicBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteAtomicBooleanAlgebra (π i)] : CompleteAtomicBooleanAlgebra (∀ i, π i) where
   __ := Pi.completeBooleanAlgebra
   iInf_iSup_eq f := by ext; rw [iInf_iSup_eq]
 
-instance OrderDual.completeAtomicBooleanAlgebra (α) [CompleteAtomicBooleanAlgebra α] :
+instance (priority := 10000) OrderDual.completeAtomicBooleanAlgebra (α) [CompleteAtomicBooleanAlgebra α] :
     CompleteAtomicBooleanAlgebra αᵒᵈ where
   __ := OrderDual.completeBooleanAlgebra α
   __ := OrderDual.completelyDistribLattice α
 
-instance Prop.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Prop where
+instance (priority := 10000) Prop.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Prop where
   __ := Prop.completeLattice
   __ := Prop.booleanAlgebra
   iInf_iSup_eq f := by simp [Classical.skolem]
 
-instance Prop.completeBooleanAlgebra : CompleteBooleanAlgebra Prop := inferInstance
+instance (priority := 10000) Prop.completeBooleanAlgebra : CompleteBooleanAlgebra Prop := inferInstance
 #align Prop.complete_boolean_algebra Prop.completeBooleanAlgebra
 
 section lift
@@ -595,7 +595,7 @@ namespace PUnit
 
 variable (s : Set PUnit.{u + 1}) (x y : PUnit.{u + 1})
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
+instance (priority := 10000) completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
   refine'
     { PUnit.booleanAlgebra with
       sSup := fun _ => unit
@@ -603,9 +603,9 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
       .. } <;>
   (intros; trivial)
 
-instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
+instance (priority := 10000) completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
 
-instance completeLinearOrder : CompleteLinearOrder PUnit :=
+instance (priority := 10000) completeLinearOrder : CompleteLinearOrder PUnit :=
   { PUnit.completeBooleanAlgebra, PUnit.linearOrder with }
 
 @[simp]

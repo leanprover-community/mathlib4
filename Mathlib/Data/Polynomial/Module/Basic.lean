@@ -39,7 +39,7 @@ and the action of `f` is `f • (of R M a m) = of R M a ((aeval a f) • m)`.
 def AEval (R M : Type*) {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M] (_ : A) := M
 
-instance AEval.instAddCommGroup {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A]
+instance (priority := 10000) AEval.instAddCommGroup {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A]
     [AddCommGroup M] [Module A M] [Module R M] [IsScalarTower R A M] :
     AddCommGroup <| AEval R M a := inferInstanceAs (AddCommGroup M)
 
@@ -48,13 +48,13 @@ variable {R A M} [CommSemiring R] [Semiring A] (a : A) [Algebra R A] [AddCommMon
 
 namespace AEval
 
-instance instAddCommMonoid : AddCommMonoid <| AEval R M a := inferInstanceAs (AddCommMonoid M)
+instance (priority := 10000) instAddCommMonoid : AddCommMonoid <| AEval R M a := inferInstanceAs (AddCommMonoid M)
 
-instance instModuleOrig : Module R <| AEval R M a := inferInstanceAs (Module R M)
+instance (priority := 10000) instModuleOrig : Module R <| AEval R M a := inferInstanceAs (Module R M)
 
-instance instFiniteOrig [Finite R M] : Finite R <| AEval R M a := inferInstanceAs (Finite R M)
+instance (priority := 10000) instFiniteOrig [Finite R M] : Finite R <| AEval R M a := inferInstanceAs (Finite R M)
 
-instance instModulePolynomial : Module R[X] <| AEval R M a := compHom M (aeval a).toRingHom
+instance (priority := 10000) instModulePolynomial : Module R[X] <| AEval R M a := compHom M (aeval a).toRingHom
 
 variable (R M)
 /--
@@ -80,12 +80,12 @@ lemma of_symm_X_smul (m : AEval R M a) :
     (of R M a).symm ((X : R[X]) • m) = a • (of R M a).symm m := by
   rw [of_symm_smul, aeval_X]
 
-instance instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a where
+instance (priority := 10000) instIsScalarTowerOrigPolynomial : IsScalarTower R R[X] <| AEval R M a where
   smul_assoc r f m := by
     apply (of R M a).symm.injective
     rw [of_symm_smul, map_smul, smul_assoc, map_smul, of_symm_smul]
 
-instance instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
+instance (priority := 10000) instFinitePolynomial [Finite R M] : Finite R[X] <| AEval R M a :=
   Finite.of_restrictScalars_finite R _ _
 
 @[simp]
@@ -180,7 +180,7 @@ lemma AEval'.X_smul_of (m : M) : (X : R[X]) • AEval'.of φ m = AEval'.of φ (�
 lemma AEval'.of_symm_X_smul (m : AEval' φ) :
     (AEval'.of φ).symm ((X : R[X]) • m) = φ ((AEval'.of φ).symm m) := AEval.of_symm_X_smul _ _
 
-instance [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
+instance (priority := 10000) [Finite R M] : Finite R[X] <| AEval' φ := inferInstance
 
 end Module
 
@@ -209,8 +209,8 @@ def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] :=
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
 --porting note: stated instead of deriving
-noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.inhabited
-noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.addCommGroup
+noncomputable instance (priority := 10000) : Inhabited (PolynomialModule R M) := Finsupp.inhabited
+noncomputable instance (priority := 10000) : AddCommGroup (PolynomialModule R M) := Finsupp.addCommGroup
 
 variable {M}
 
@@ -220,13 +220,13 @@ namespace PolynomialModule
 
 /-- This is required to have the `IsScalarTower S R M` instance to avoid diamonds. -/
 @[nolint unusedArguments]
-noncomputable instance : Module S (PolynomialModule R M) :=
+noncomputable instance (priority := 10000) : Module S (PolynomialModule R M) :=
   Finsupp.module ℕ M
 
-instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
+instance (priority := 10000) instFunLike : FunLike (PolynomialModule R M) ℕ M :=
   Finsupp.instFunLike
 
-instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
+instance (priority := 10000) : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
   Finsupp.coeFun
 
 theorem zero_apply (i : ℕ) : (0 : PolynomialModule R M) i = 0 :=
@@ -266,7 +266,7 @@ theorem induction_linear {P : PolynomialModule R M → Prop} (f : PolynomialModu
 #align polynomial_module.induction_linear PolynomialModule.induction_linear
 
 @[semireducible]
-noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
+noncomputable instance (priority := 10000) polynomialModule : Module R[X] (PolynomialModule R M) :=
   inferInstanceAs (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
 #align polynomial_module.polynomial_module PolynomialModule.polynomialModule
 
@@ -274,11 +274,11 @@ lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
     f • m = aeval (Finsupp.lmapDomain M R Nat.succ) f m := by
   rfl
 
-instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
+instance (priority := 10000) (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower S R M] :
     IsScalarTower S R (PolynomialModule R M) :=
   Finsupp.isScalarTower _ _
 
-instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
+instance (priority := 10000) isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
   haveI : IsScalarTower R R[X] (PolynomialModule R M) :=
     inferInstanceAs <| IsScalarTower R R[X] <| Module.AEval' <| Finsupp.lmapDomain M R Nat.succ

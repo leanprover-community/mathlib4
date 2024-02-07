@@ -176,14 +176,14 @@ section CompatibleSMul
 variable (R S M N ι : Type*)
 variable [Semiring S] [AddCommMonoid M] [AddCommMonoid N] [Module S M] [Module S N]
 
-instance _root_.LinearMap.CompatibleSMul.finsupp_dom [SMulZeroClass R M] [DistribSMul R N]
+instance (priority := 10000) _root_.LinearMap.CompatibleSMul.finsupp_dom [SMulZeroClass R M] [DistribSMul R N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul (ι →₀ M) N R S where
   map_smul f r m := by
     conv_rhs => rw [← sum_single m, map_finsupp_sum, smul_sum]
     erw [← sum_single (r • m), sum_mapRange_index single_zero, map_finsupp_sum]
     congr; ext i m; exact (f.comp <| lsingle i).map_smul_of_tower r m
 
-instance _root_.LinearMap.CompatibleSMul.finsupp_cod [SMul R M] [SMulZeroClass R N]
+instance (priority := 10000) _root_.LinearMap.CompatibleSMul.finsupp_cod [SMul R M] [SMulZeroClass R N]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι →₀ N) R S where
   map_smul f r m := by ext i; apply ((lapply i).comp f).map_smul_of_tower
 
@@ -1151,7 +1151,7 @@ end Prod
 
 /-- If `R` is countable, then any `R`-submodule spanned by a countable family of vectors is
 countable. -/
-instance {ι : Type*} [Countable R] [Countable ι] (v : ι → M) :
+instance (priority := 10000) {ι : Type*} [Countable R] [Countable ι] (v : ι → M) :
     Countable (Submodule.span R (Set.range v)) := by
   refine Set.countable_coe_iff.mpr (Set.Countable.mono ?_ (Set.countable_range
       (fun c : (ι →₀ R) => c.sum fun i _ => (c i) • v i)))

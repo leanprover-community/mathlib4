@@ -22,7 +22,7 @@ variable {α β : Type*}
 
 open Finset
 
-instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α β) where
+instance (priority := 10000) (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α β) where
   elems := univ.disjSum univ
   complete := by rintro (_ | _) <;> simp
 

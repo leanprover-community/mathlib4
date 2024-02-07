@@ -58,36 +58,36 @@ variable {R}
 /-- A synonym for `M.obj.carrier`, which we can mark with `@[coe]`. -/
 def FGModuleCat.carrier (M : FGModuleCat R) : Type u := M.obj.carrier
 
-instance : CoeSort (FGModuleCat R) (Type u) :=
+instance (priority := 10000) : CoeSort (FGModuleCat R) (Type u) :=
   ⟨FGModuleCat.carrier⟩
 
 attribute [coe] FGModuleCat.carrier
 
 @[simp] lemma obj_carrier (M : FGModuleCat R) : M.obj.carrier = M.carrier := rfl
 
-instance (M : FGModuleCat R) : AddCommGroup M := by
+instance (priority := 10000) (M : FGModuleCat R) : AddCommGroup M := by
   change AddCommGroup M.obj
   infer_instance
 
-instance (M : FGModuleCat R) : Module R M := by
+instance (priority := 10000) (M : FGModuleCat R) : Module R M := by
   change Module R M.obj
   infer_instance
 
-instance : LargeCategory (FGModuleCat R) := by
+instance (priority := 10000) : LargeCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance {M N : FGModuleCat R} : FunLike (M ⟶ N) M N :=
+instance (priority := 10000) {M N : FGModuleCat R} : FunLike (M ⟶ N) M N :=
   LinearMap.instFunLike
 
-instance {M N : FGModuleCat R} : LinearMapClass (M ⟶ N) R M N :=
+instance (priority := 10000) {M N : FGModuleCat R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
 
-instance : ConcreteCategory (FGModuleCat R) := by
+instance (priority := 10000) : ConcreteCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance : Preadditive (FGModuleCat R) := by
+instance (priority := 10000) : Preadditive (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
@@ -99,11 +99,11 @@ section Ring
 
 variable (R : Type u) [Ring R]
 
-instance finite (V : FGModuleCat R) : Module.Finite R V :=
+instance (priority := 10000) finite (V : FGModuleCat R) : Module.Finite R V :=
   V.property
 #align fgModule.finite FGModuleCat.finite
 
-instance : Inhabited (FGModuleCat R) :=
+instance (priority := 10000) : Inhabited (FGModuleCat R) :=
   ⟨⟨ModuleCat.of R R, Module.Finite.self R⟩⟩
 
 /-- Lift an unbundled finitely generated module to `FGModuleCat R`. -/
@@ -111,14 +111,14 @@ def of (V : Type u) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModule
   ⟨ModuleCat.of R V, by change Module.Finite R V; infer_instance⟩
 #align fgModule.of FGModuleCat.of
 
-instance (V : FGModuleCat R) : Module.Finite R V :=
+instance (priority := 10000) (V : FGModuleCat R) : Module.Finite R V :=
   V.property
 
-instance : HasForget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R) := by
+instance (priority := 10000) : HasForget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance : Full (forget₂ (FGModuleCat R) (ModuleCat.{u} R)) where
+instance (priority := 10000) : Full (forget₂ (FGModuleCat R) (ModuleCat.{u} R)) where
   preimage f := f
 
 variable {R}
@@ -147,17 +147,17 @@ section CommRing
 
 variable (R : Type u) [CommRing R]
 
-instance : Linear R (FGModuleCat R) := by
+instance (priority := 10000) : Linear R (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance monoidalPredicate_module_finite :
+instance (priority := 10000) monoidalPredicate_module_finite :
     MonoidalCategory.MonoidalPredicate fun V : ModuleCat.{u} R => Module.Finite R V where
   prop_id := Module.Finite.self R
   prop_tensor := @fun X Y _ _ => Module.Finite.tensorProduct R X Y
 #align fgModule.monoidal_predicate_module_finite FGModuleCat.monoidalPredicate_module_finite
 
-instance : MonoidalCategory (FGModuleCat R) := by
+instance (priority := 10000) : MonoidalCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
@@ -166,15 +166,15 @@ open MonoidalCategory
 @[simp] lemma tensorUnit_obj : (𝟙_ (FGModuleCat R)).obj = 𝟙_ (ModuleCat R) := rfl
 @[simp] lemma tensorObj_obj (M N : FGModuleCat.{u} R) : (M ⊗ N).obj = (M.obj ⊗ N.obj) := rfl
 
-instance : SymmetricCategory (FGModuleCat R) := by
+instance (priority := 10000) : SymmetricCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance : MonoidalPreadditive (FGModuleCat R) := by
+instance (priority := 10000) : MonoidalPreadditive (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
-instance : MonoidalLinear R (FGModuleCat R) := by
+instance (priority := 10000) : MonoidalLinear R (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
@@ -183,19 +183,19 @@ def forget₂Monoidal : MonoidalFunctor (FGModuleCat R) (ModuleCat.{u} R) :=
   MonoidalCategory.fullMonoidalSubcategoryInclusion _
 #align fgModule.forget₂_monoidal FGModuleCat.forget₂Monoidal
 
-instance forget₂Monoidal_faithful : Faithful (forget₂Monoidal R).toFunctor := by
+instance (priority := 10000) forget₂Monoidal_faithful : Faithful (forget₂Monoidal R).toFunctor := by
   dsimp [forget₂Monoidal]
   -- Porting note: was `infer_instance`
   exact FullSubcategory.faithful _
 #align fgModule.forget₂_monoidal_faithful FGModuleCat.forget₂Monoidal_faithful
 
-instance forget₂Monoidal_additive : (forget₂Monoidal R).toFunctor.Additive := by
+instance (priority := 10000) forget₂Monoidal_additive : (forget₂Monoidal R).toFunctor.Additive := by
   dsimp [forget₂Monoidal]
   -- Porting note: was `infer_instance`
   exact Functor.fullSubcategoryInclusion_additive _
 #align fgModule.forget₂_monoidal_additive FGModuleCat.forget₂Monoidal_additive
 
-instance forget₂Monoidal_linear : (forget₂Monoidal R).toFunctor.Linear R := by
+instance (priority := 10000) forget₂Monoidal_linear : (forget₂Monoidal R).toFunctor.Linear R := by
   dsimp [forget₂Monoidal]
   -- Porting note: was `infer_instance`
   exact Functor.fullSubcategoryInclusionLinear _ _
@@ -212,15 +212,15 @@ section Field
 
 variable (K : Type u) [Field K]
 
-instance (V W : FGModuleCat K) : Module.Finite K (V ⟶ W) :=
+instance (priority := 10000) (V W : FGModuleCat K) : Module.Finite K (V ⟶ W) :=
   (by infer_instance : Module.Finite K (V →ₗ[K] W))
 
-instance closedPredicateModuleFinite :
+instance (priority := 10000) closedPredicateModuleFinite :
     MonoidalCategory.ClosedPredicate fun V : ModuleCat.{u} K ↦ Module.Finite K V where
   prop_ihom {X Y} _ _ := Module.Finite.linearMap K K X Y
 #align fgModule.closed_predicate_module_finite FGModuleCat.closedPredicateModuleFinite
 
-instance : MonoidalClosed (FGModuleCat K) := by
+instance (priority := 10000) : MonoidalClosed (FGModuleCat K) := by
   dsimp [FGModuleCat]
   -- Porting note: was `infer_instance`
   exact MonoidalCategory.fullMonoidalClosedSubcategory
@@ -279,18 +279,18 @@ private theorem evaluation_coevaluation :
       (λ_ V).hom ≫ (ρ_ V).inv := by
   apply contractLeft_assoc_coevaluation' K V
 
-instance exactPairing : ExactPairing V (FGModuleCatDual K V) where
+instance (priority := 10000) exactPairing : ExactPairing V (FGModuleCatDual K V) where
   coevaluation' := FGModuleCatCoevaluation K V
   evaluation' := FGModuleCatEvaluation K V
   coevaluation_evaluation' := coevaluation_evaluation K V
   evaluation_coevaluation' := evaluation_coevaluation K V
 #align fgModule.exact_pairing FGModuleCat.exactPairing
 
-instance rightDual : HasRightDual V :=
+instance (priority := 10000) rightDual : HasRightDual V :=
   ⟨FGModuleCatDual K V⟩
 #align fgModule.right_dual FGModuleCat.rightDual
 
-instance rightRigidCategory : RightRigidCategory (FGModuleCat K) where
+instance (priority := 10000) rightRigidCategory : RightRigidCategory (FGModuleCat K) where
 #align fgModule.right_rigid_category FGModuleCat.rightRigidCategory
 
 end Field

@@ -17,7 +17,7 @@ namespace ZMod
 
 variable (R : Type*) [Ring R]
 
-instance (p : ℕ) : Subsingleton (Algebra (ZMod p) R) :=
+instance (priority := 10000) (p : ℕ) : Subsingleton (Algebra (ZMod p) R) :=
   ⟨fun _ _ => Algebra.algebra_ext _ _ <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 
 section
@@ -41,7 +41,7 @@ def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
 end
 
 /-- The `zmod p`-algebra structure on a ring of characteristic `p`. This is not an
-instance since it creates a diamond with `algebra.id`.
+instance (priority := 10000) since it creates a diamond with `algebra.id`.
 See note [reducible non-instances]. -/
 @[reducible]
 def algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=

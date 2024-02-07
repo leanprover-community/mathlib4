@@ -64,7 +64,7 @@ structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
 #align category_theory.comma CategoryTheory.Comma
 
 -- Satisfying the inhabited linter
-instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) where
+instance (priority := 10000) Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) where
   default :=
     { left := default
       right := default
@@ -84,14 +84,14 @@ structure CommaMorphism (X Y : Comma L R) where
 #align category_theory.comma_morphism CategoryTheory.CommaMorphism
 
 -- Satisfying the inhabited linter
-instance CommaMorphism.inhabited [Inhabited (Comma L R)] :
+instance (priority := 10000) CommaMorphism.inhabited [Inhabited (Comma L R)] :
     Inhabited (CommaMorphism (default : Comma L R) default) :=
     ⟨{ left := 𝟙 _, right := 𝟙 _}⟩
 #align category_theory.comma_morphism.inhabited CategoryTheory.CommaMorphism.inhabited
 
 attribute [reassoc (attr := simp)] CommaMorphism.w
 
-instance commaCategory : Category (Comma L R) where
+instance (priority := 10000) commaCategory : Category (Comma L R) where
   Hom X Y := CommaMorphism X Y
   id X :=
     { left := 𝟙 X.left
@@ -327,14 +327,14 @@ def preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) : Comma (F ⋙ L) R ⥤ Co
       w := by simpa using f.w }
 #align category_theory.comma.pre_left CategoryTheory.Comma.preLeft
 
-instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [Faithful F] : Faithful (preLeft F L R) where
+instance (priority := 10000) (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [Faithful F] : Faithful (preLeft F L R) where
   map_injective {X Y} f g h := hom_ext _ _ (F.map_injective (congrArg CommaMorphism.left h))
     (by apply congrArg CommaMorphism.right h)
 
-instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [Full F] : Full (preLeft F L R) where
+instance (priority := 10000) (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [Full F] : Full (preLeft F L R) where
   preimage {X Y} f := CommaMorphism.mk (F.preimage f.left) f.right (by simpa using f.w)
 
-instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [EssSurj F] : EssSurj (preLeft F L R) where
+instance (priority := 10000) (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [EssSurj F] : EssSurj (preLeft F L R) where
   mem_essImage Y :=
     ⟨Comma.mk (F.objPreimage Y.left) Y.right ((L.mapIso (F.objObjPreimageIso _)).hom ≫ Y.hom),
      ⟨isoMk (F.objObjPreimageIso _) (Iso.refl _) (by simp)⟩⟩
@@ -357,14 +357,14 @@ def preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) : Comma L (F ⋙ R) ⥤ C
       right := F.map f.right }
 #align category_theory.comma.pre_right CategoryTheory.Comma.preRight
 
-instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [Faithful F] : Faithful (preRight L F R) where
+instance (priority := 10000) (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [Faithful F] : Faithful (preRight L F R) where
   map_injective {X Y } f g h := hom_ext _ _ (by apply congrArg CommaMorphism.left h)
     (F.map_injective (congrArg CommaMorphism.right h))
 
-instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [Full F] : Full (preRight L F R) where
+instance (priority := 10000) (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [Full F] : Full (preRight L F R) where
   preimage {X Y} f := CommaMorphism.mk f.left (F.preimage f.right) (by simpa using f.w)
 
-instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [EssSurj F] : EssSurj (preRight L F R) where
+instance (priority := 10000) (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [EssSurj F] : EssSurj (preRight L F R) where
   mem_essImage Y :=
     ⟨Comma.mk Y.left (F.objPreimage Y.right) (Y.hom ≫ (R.mapIso (F.objObjPreimageIso _)).inv),
      ⟨isoMk (Iso.refl _) (F.objObjPreimageIso _) (by simp [← R.map_comp])⟩⟩

@@ -68,20 +68,20 @@ namespace NNReal
 -- mathport name: nnreal
 scoped notation "ℝ≥0" => NNReal
 
-noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
-instance : DenselyOrdered ℝ≥0 := Nonneg.densely_ordered
-instance : OrderBot ℝ≥0 := inferInstance
-instance : Archimedean ℝ≥0 := Nonneg.archimedean
-noncomputable instance : Sub ℝ≥0 := Nonneg.sub
-noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+noncomputable instance (priority := 10000) : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
+instance (priority := 10000) : DenselyOrdered ℝ≥0 := Nonneg.densely_ordered
+instance (priority := 10000) : OrderBot ℝ≥0 := inferInstance
+instance (priority := 10000) : Archimedean ℝ≥0 := Nonneg.archimedean
+noncomputable instance (priority := 10000) : Sub ℝ≥0 := Nonneg.sub
+noncomputable instance (priority := 10000) : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
-noncomputable instance : CanonicallyLinearOrderedSemifield ℝ≥0 :=
+noncomputable instance (priority := 10000) : CanonicallyLinearOrderedSemifield ℝ≥0 :=
   Nonneg.canonicallyLinearOrderedSemifield
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
 
-instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
+instance (priority := 10000) : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.
 @[simp]
@@ -89,7 +89,7 @@ theorem val_eq_coe (n : ℝ≥0) : n.val = n :=
   rfl
 #align nnreal.val_eq_coe NNReal.val_eq_coe
 
-instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
+instance (priority := 10000) canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
   Subtype.canLift _
 #align nnreal.can_lift NNReal.canLift
 
@@ -242,50 +242,50 @@ def toRealHom : ℝ≥0 →+* ℝ where
 section Actions
 
 /-- A `MulAction` over `ℝ` restricts to a `MulAction` over `ℝ≥0`. -/
-instance {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M :=
+instance (priority := 10000) {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M :=
   MulAction.compHom M toRealHom.toMonoidHom
 
 theorem smul_def {M : Type*} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
   rfl
 #align nnreal.smul_def NNReal.smul_def
 
-instance {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
+instance (priority := 10000) {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ) : _)
 
-instance smulCommClass_left {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
+instance (priority := 10000) smulCommClass_left {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
     SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ) : _)
 #align nnreal.smul_comm_class_left NNReal.smulCommClass_left
 
-instance smulCommClass_right {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
+instance (priority := 10000) smulCommClass_right {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
     SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ) : _)
 #align nnreal.smul_comm_class_right NNReal.smulCommClass_right
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
-instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
+instance (priority := 10000) {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
   DistribMulAction.compHom M toRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ` restricts to a `Module` over `ℝ≥0`. -/
-instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
+instance (priority := 10000) {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
   Module.compHom M toRealHom
 
 -- porting note: TODO: after this line, `↑` uses `Algebra.cast` instead of `toReal`
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
-instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
+instance (priority := 10000) {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
   smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ) x, smul_def]
   toRingHom := (algebraMap ℝ A).comp (toRealHom : ℝ≥0 →+* ℝ)
 
-instance : StarRing ℝ≥0 where
+instance (priority := 10000) : StarRing ℝ≥0 where
   star := id
   star_involutive _ := rfl
   star_mul := mul_comm
   star_add _ _ := rfl
 
-instance : TrivialStar ℝ≥0 where
+instance (priority := 10000) : TrivialStar ℝ≥0 where
   star_trivial _ := rfl
 
-instance : StarModule ℝ≥0 ℝ where
+instance (priority := 10000) : StarModule ℝ≥0 ℝ where
   star_smul := by simp only [star_trivial, eq_self_iff_true, forall_const]
 
 -- verify that the above produces instances we might care about
@@ -498,7 +498,7 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
   ⟨0, fun _ ⟨q, _, eq⟩ => eq ▸ q.2⟩
 #align nnreal.bdd_below_coe NNReal.bddBelow_coe
 
-noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
+noncomputable instance (priority := 10000) : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
   Nonneg.conditionallyCompleteLinearOrderBot 0
 
 @[norm_cast]
@@ -553,13 +553,13 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
 example : Archimedean ℝ≥0 := by infer_instance
 
 -- porting note: TODO: remove?
-instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
+instance (priority := 10000) covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
 #align nnreal.covariant_add NNReal.covariant_add
 
-instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := inferInstance
+instance (priority := 10000) contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := inferInstance
 #align nnreal.contravariant_add NNReal.contravariant_add
 
-instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
+instance (priority := 10000) covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
 #align nnreal.covariant_mul NNReal.covariant_mul
 
 -- porting note: TODO: delete?

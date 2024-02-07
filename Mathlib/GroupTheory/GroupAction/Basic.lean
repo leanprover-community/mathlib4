@@ -95,7 +95,7 @@ theorem orbit_smul_subset (m : M) (a : α) : orbit M (m • a) ⊆ orbit M a :=
 #align add_action.orbit_vadd_subset AddAction.orbit_vadd_subset
 
 @[to_additive]
-instance {a : α} : MulAction M (orbit M a) where
+instance (priority := 10000) {a : α} : MulAction M (orbit M a) where
   smul m := (mapsTo_smul_orbit m a).restrict _ _ _
   one_smul m := Subtype.ext (one_smul M (m : α))
   mul_smul m m' a' := Subtype.ext (mul_smul m m' (a' : α))
@@ -199,7 +199,7 @@ def stabilizerSubmonoid (a : α) : Submonoid M where
 variable {M}
 
 @[to_additive]
-instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizerSubmonoid M a) :=
+instance (priority := 10000) [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizerSubmonoid M a) :=
   fun _ => inferInstanceAs <| Decidable (_ = _)
 
 @[to_additive (attr := simp)]
@@ -330,7 +330,7 @@ theorem orbit_smul (g : G) (a : α) : orbit G (g • a) = orbit G a :=
 
 /-- The action of a group on an orbit is transitive. -/
 @[to_additive "The action of an additive group on an orbit is transitive."]
-instance (a : α) : IsPretransitive G (orbit G a) :=
+instance (priority := 10000) (a : α) : IsPretransitive G (orbit G a) :=
   ⟨by
     rintro ⟨_, g, rfl⟩ ⟨_, h, rfl⟩
     use h * g⁻¹
@@ -526,7 +526,7 @@ def stabilizer (a : α) : Subgroup G :=
 variable {G}
 
 @[to_additive]
-instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
+instance (priority := 10000) [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
   fun _ => inferInstanceAs <| Decidable (_ = _)
 
 @[to_additive (attr := simp)]

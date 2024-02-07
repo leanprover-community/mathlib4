@@ -78,7 +78,7 @@ def LinearExtension (α : Type u) : Type u :=
   α
 #align linear_extension LinearExtension
 
-noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExtension α) where
+noncomputable instance (priority := 10000) {α : Type u} [PartialOrder α] : LinearOrder (LinearExtension α) where
   le := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose
   le_refl := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.1.1
   le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.2.1
@@ -92,5 +92,5 @@ def toLinearExtension {α : Type u} [PartialOrder α] : α →o LinearExtension 
   monotone' := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.2
 #align to_linear_extension toLinearExtension
 
-instance {α : Type u} [Inhabited α] : Inhabited (LinearExtension α) :=
+instance (priority := 10000) {α : Type u} [Inhabited α] : Inhabited (LinearExtension α) :=
   ⟨(default : α)⟩

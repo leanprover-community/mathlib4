@@ -541,7 +541,7 @@ def xIso (n : ℕ) : (groupCohomology.resolution k G).X n ≅ Rep.ofMulAction k 
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.X_iso groupCohomology.resolution.xIso
 
-instance x_projective (G : Type u) [Group G] (n : ℕ) :
+instance (priority := 10000) x_projective (G : Type u) [Group G] (n : ℕ) :
     Projective ((groupCohomology.resolution k G).X n) :=
   Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
     @ModuleCat.projective_of_free.{u} _ _
@@ -683,7 +683,7 @@ theorem quasiIso_forget₂_εToSingle₀ :
   exact quasiIso_of_comp_right (hφφ' := h)
 #align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIso_forget₂_εToSingle₀
 
-instance : QuasiIso (εToSingle₀ k G) := by
+instance (priority := 10000) : QuasiIso (εToSingle₀ k G) := by
   rw [← HomologicalComplex.quasiIso_map_iff_of_preservesHomology _ (forget₂ _ (ModuleCat.{u} k))]
   apply quasiIso_forget₂_εToSingle₀
 
@@ -701,7 +701,7 @@ def groupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.ProjectiveResolution groupCohomology.projectiveResolution
 
-instance : EnoughProjectives (Rep k G) :=
+instance (priority := 10000) : EnoughProjectives (Rep k G) :=
   Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2
     ModuleCat.moduleCat_enoughProjectives.{u}
 

@@ -28,7 +28,7 @@ section One
 
 variable [Monoid R] [MulAction R M] [One M]
 
-instance : One (SubMulAction R M) where
+instance (priority := 10000) : One (SubMulAction R M) where
   one :=
     { carrier := Set.range fun r : R => r • (1 : M)
       smul_mem' := fun r _ ⟨r', hr'⟩ => hr' ▸ ⟨r * r', mul_smul _ _ _⟩ }
@@ -52,7 +52,7 @@ section Mul
 
 variable [Monoid R] [MulAction R M] [Mul M] [IsScalarTower R M M]
 
-instance : Mul (SubMulAction R M) where
+instance (priority := 10000) : Mul (SubMulAction R M) where
   mul p q :=
     { carrier := Set.image2 (· * ·) p q
       smul_mem' := fun r _ ⟨m₁, hm₁, m₂, hm₂, h⟩ =>
@@ -74,7 +74,7 @@ section MulOneClass
 variable [Monoid R] [MulAction R M] [MulOneClass M] [IsScalarTower R M M] [SMulCommClass R M M]
 
 -- porting note: giving the instance the name `mulOneClass`
-instance mulOneClass : MulOneClass (SubMulAction R M) where
+instance (priority := 10000) mulOneClass : MulOneClass (SubMulAction R M) where
   mul := (· * ·)
   one := 1
   mul_one a := by
@@ -99,7 +99,7 @@ section Semigroup
 variable [Monoid R] [MulAction R M] [Semigroup M] [IsScalarTower R M M]
 
 -- porting note: giving the instance the name `semiGroup`
-instance semiGroup : Semigroup (SubMulAction R M)
+instance (priority := 10000) semiGroup : Semigroup (SubMulAction R M)
     where
   mul := (· * ·)
   mul_assoc _ _ _ := SetLike.coe_injective (mul_assoc (_ : Set _) _ _)
@@ -110,7 +110,7 @@ section Monoid
 
 variable [Monoid R] [MulAction R M] [Monoid M] [IsScalarTower R M M] [SMulCommClass R M M]
 
-instance : Monoid (SubMulAction R M) :=
+instance (priority := 10000) : Monoid (SubMulAction R M) :=
   { SubMulAction.semiGroup,
     SubMulAction.mulOneClass with }
 

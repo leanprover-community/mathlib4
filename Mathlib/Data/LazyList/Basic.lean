@@ -43,7 +43,7 @@ def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
 #align lazy_list.list_equiv_lazy_list LazyList.listEquivLazyList
 
 -- Porting note: Added a name to make the recursion work.
-instance decidableEq {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
+instance (priority := 10000) decidableEq {α : Type u} [DecidableEq α] : DecidableEq (LazyList α)
   | nil, nil => isTrue rfl
   | cons x xs, cons y ys =>
     if h : x = y then
@@ -62,11 +62,11 @@ protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u} 
   | LazyList.cons x xs => LazyList.cons <$> f x <*> Thunk.pure <$> xs.get.traverse f
 #align lazy_list.traverse LazyList.traverse
 
-instance : Traversable LazyList where
+instance (priority := 10000) : Traversable LazyList where
   map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
 
-instance : LawfulTraversable LazyList := by
+instance (priority := 10000) : LawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
   · induction' xs using LazyList.rec with _ _ _ _ ih
     · rfl
@@ -135,7 +135,7 @@ def reverse {α} (xs : LazyList α) : LazyList α :=
   ofList xs.toList.reverse
 #align lazy_list.reverse LazyList.reverse
 
-instance : Monad LazyList where
+instance (priority := 10000) : Monad LazyList where
   pure := @LazyList.singleton
   bind := @LazyList.bind
 
@@ -167,7 +167,7 @@ theorem append_bind {α β} (xs : LazyList α) (ys : Thunk (LazyList α)) (f : �
     rw [this, append_assoc]
 #align lazy_list.append_bind LazyList.append_bind
 
-instance : LawfulMonad LazyList := LawfulMonad.mk'
+instance (priority := 10000) : LawfulMonad LazyList := LawfulMonad.mk'
   (bind_pure_comp := by
     intro _ _ f xs
     simp only [bind, Functor.map, pure, singleton]
@@ -206,10 +206,10 @@ protected def Mem {α} (x : α) : LazyList α → Prop
   | cons y ys => x = y ∨ ys.get.Mem x
 #align lazy_list.mem LazyList.Mem
 
-instance {α} : Membership α (LazyList α) :=
+instance (priority := 10000) {α} : Membership α (LazyList α) :=
   ⟨LazyList.Mem⟩
 
-instance Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
+instance (priority := 10000) Mem.decidable {α} [DecidableEq α] (x : α) : ∀ xs : LazyList α, Decidable (x ∈ xs)
   | LazyList.nil => by
     apply Decidable.isFalse
     simp [Membership.mem, LazyList.Mem]
@@ -260,7 +260,7 @@ def attach {α} (l : LazyList α) : LazyList { x // x ∈ l } :=
   pmap Subtype.mk l fun _ ↦ id
 #align lazy_list.attach LazyList.attach
 
-instance {α} [Repr α] : Repr (LazyList α) :=
+instance (priority := 10000) {α} [Repr α] : Repr (LazyList α) :=
   ⟨fun xs _ ↦ repr xs.toList⟩
 
 end LazyList

@@ -50,7 +50,7 @@ namespace ContMDiffMap
 
 variable {I} {I'} {M} {M'} {n}
 
-instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
+instance (priority := 10000) instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
 #align cont_mdiff_map.fun_like ContMDiffMap.instFunLike
@@ -85,7 +85,7 @@ theorem coe_injective ⦃f g : C^n⟮I, M; I', M'⟯⦄ (h : (f : M → M') = g)
 theorem ext (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 #align cont_mdiff_map.ext ContMDiffMap.ext
 
-instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M' where
+instance (priority := 10000) : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M' where
   map_continuous f := f.contMDiff.continuous
 
 /-- The identity as a smooth map. -/
@@ -105,7 +105,7 @@ theorem comp_apply (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) (
   rfl
 #align cont_mdiff_map.comp_apply ContMDiffMap.comp_apply
 
-instance [Inhabited M'] : Inhabited C^n⟮I, M; I', M'⟯ :=
+instance (priority := 10000) [Inhabited M'] : Inhabited C^n⟮I, M; I', M'⟯ :=
   ⟨⟨fun _ => default, contMDiff_const⟩⟩
 
 /-- Constant map as a smooth map -/
@@ -130,7 +130,7 @@ def prodMk (f : C^n⟮J, N; I, M⟯) (g : C^n⟮J, N; I', M'⟯) : C^n⟮J, N; I
 
 end ContMDiffMap
 
-instance ContinuousLinearMap.hasCoeToContMDiffMap :
+instance (priority := 10000) ContinuousLinearMap.hasCoeToContMDiffMap :
     Coe (E →L[𝕜] E') C^n⟮𝓘(𝕜, E), E; 𝓘(𝕜, E'), E'⟯ :=
   ⟨fun f => ⟨f, f.contMDiff⟩⟩
 #align continuous_linear_map.has_coe_to_cont_mdiff_map ContinuousLinearMap.hasCoeToContMDiffMap

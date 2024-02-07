@@ -56,7 +56,7 @@ def Hom (X Y : Scheme) : Type* :=
 
 /-- Schemes are a full subcategory of locally ringed spaces.
 -/
-instance : Category Scheme :=
+instance (priority := 10000) : Category Scheme :=
   { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
 
 -- porting note: added to ease automation
@@ -68,7 +68,7 @@ protected abbrev sheaf (X : Scheme) :=
   X.toSheafedSpace.sheaf
 #align algebraic_geometry.Scheme.sheaf AlgebraicGeometry.Scheme.sheaf
 
-instance : CoeSort Scheme (Type*) where
+instance (priority := 10000) : CoeSort Scheme (Type*) where
   coe X := X.carrier
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
@@ -78,10 +78,10 @@ def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
 -- deriving Full, Faithful -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace
 
-instance : Full forgetToLocallyRingedSpace :=
+instance (priority := 10000) : Full forgetToLocallyRingedSpace :=
   InducedCategory.full _
 
-instance : Faithful forgetToLocallyRingedSpace :=
+instance (priority := 10000) : Faithful forgetToLocallyRingedSpace :=
   InducedCategory.faithful _
 
 @[simp]
@@ -97,7 +97,7 @@ def forgetToTop : Scheme ⥤ TopCat :=
 #align algebraic_geometry.Scheme.forget_to_Top AlgebraicGeometry.Scheme.forgetToTop
 
 -- Porting note : Lean seems not able to find this coercion any more
-instance hasCoeToTopCat : CoeOut Scheme TopCat where
+instance (priority := 10000) hasCoeToTopCat : CoeOut Scheme TopCat where
   coe X := X.carrier
 
 -- Porting note : added this unification hint just in case
@@ -167,13 +167,13 @@ lemma presheaf_map_eqToHom_op (X : Scheme) (U V : Opens X) (i : U = V) :
     X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
   rw [eqToHom_op, eqToHom_map]
 
-instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+instance (priority := 10000) is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     @IsIso LocallyRingedSpace _ _ _ f :=
   forgetToLocallyRingedSpace.map_isIso f
 #align algebraic_geometry.Scheme.is_LocallyRingedSpace_iso AlgebraicGeometry.Scheme.is_locallyRingedSpace_iso
 
 -- Porting note: need an extra instance here.
-instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.val.c.app U) :=
+instance (priority := 10000) {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.val.c.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.val
   NatIso.isIso_app_of_isIso _ _
 
@@ -253,10 +253,10 @@ def empty.{u} : Scheme.{u} where
   local_affine x := PEmpty.elim x
 #align algebraic_geometry.Scheme.empty AlgebraicGeometry.Scheme.empty
 
-instance : EmptyCollection Scheme :=
+instance (priority := 10000) : EmptyCollection Scheme :=
   ⟨empty⟩
 
-instance : Inhabited Scheme :=
+instance (priority := 10000) : Inhabited Scheme :=
   ⟨∅⟩
 
 /-- The global sections, notated Gamma.
@@ -360,7 +360,7 @@ theorem basicOpen_of_isUnit {f : X.presheaf.obj (op U)} (hf : IsUnit f) : X.basi
   RingedSpace.basicOpen_of_isUnit _ hf
 #align algebraic_geometry.Scheme.basic_open_of_is_unit AlgebraicGeometry.Scheme.basicOpen_of_isUnit
 
-instance algebra_section_section_basicOpen {X : Scheme} {U : Opens X} (f : X.presheaf.obj (op U)) :
+instance (priority := 10000) algebra_section_section_basicOpen {X : Scheme} {U : Opens X} (f : X.presheaf.obj (op U)) :
     Algebra (X.presheaf.obj (op U)) (X.presheaf.obj (op <| X.basicOpen f)) :=
   (X.presheaf.map (homOfLE <| X.basicOpen_le f : _ ⟶ U).op).toAlgebra
 

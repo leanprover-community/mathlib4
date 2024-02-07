@@ -51,14 +51,14 @@ namespace MvPolynomial
 
 section CharP
 
-instance [CharP R p] : CharP (MvPolynomial σ R) p where
+instance (priority := 10000) [CharP R p] : CharP (MvPolynomial σ R) p where
   cast_eq_zero_iff' n := by rw [← C_eq_coe_nat, ← C_0, C_inj, CharP.cast_eq_zero_iff R p]
 
 end CharP
 
 section CharZero
 
-instance [CharZero R] : CharZero (MvPolynomial σ R) where
+instance (priority := 10000) [CharZero R] : CharZero (MvPolynomial σ R) where
   cast_injective x y hxy := by rwa [← C_eq_coe_nat, ← C_eq_coe_nat, C_inj, Nat.cast_inj] at hxy
 
 end CharZero
@@ -151,11 +151,11 @@ private lemma finite_setOf_bounded (α) [Finite α] (n : ℕ) : Finite {f : α �
   ((Set.Finite.pi' fun _ ↦ Set.finite_le_nat _).preimage <|
     DFunLike.coe_injective.injOn _).to_subtype
 
-instance [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
+instance (priority := 10000) [Finite σ] (N : ℕ) : Module.Finite R (restrictDegree σ R N) :=
   have := finite_setOf_bounded σ N
   Module.Finite.of_basis (basisRestrictSupport R _)
 
-instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
+instance (priority := 10000) [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
   have := finite_setOf_bounded σ N
   have : Finite {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ N} := by
     rw [Set.finite_coe_iff] at this ⊢

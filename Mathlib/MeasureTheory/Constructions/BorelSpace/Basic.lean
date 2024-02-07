@@ -268,18 +268,18 @@ instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalS
   ⟨ge_of_eq <| BorelSpace.measurable_eq⟩
 #align borel_space.opens_measurable BorelSpace.opensMeasurable
 
-instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
+instance (priority := 10000) Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [hα : BorelSpace α] (s : Set α) : BorelSpace s :=
   ⟨by borelize α; symm; apply borel_comap⟩
 #align subtype.borel_space Subtype.borelSpace
 
-instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
+instance (priority := 10000) Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
     [TopologicalSpace α] [DiscreteTopology α] : BorelSpace α := by
   have : ∀ s, @MeasurableSet α inferInstance s := fun s ↦ s.to_countable.measurableSet
   have : ∀ s, @MeasurableSet α (borel α) s := fun s ↦ measurableSet_generateFrom (isOpen_discrete s)
   exact ⟨by aesop⟩
 
-instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
+instance (priority := 10000) Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [h : OpensMeasurableSpace α] (s : Set α) : OpensMeasurableSpace s :=
   ⟨by
     rw [borel_comap]
@@ -404,7 +404,7 @@ theorem measurable_of_isClosed' {f : δ → γ}
   exact hf s hs h1 h2
 #align measurable_of_is_closed' measurable_of_isClosed'
 
-instance nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
+instance (priority := 10000) nhds_isMeasurablyGenerated (a : α) : (𝓝 a).IsMeasurablyGenerated := by
   rw [nhds, iInf_subtype']
   refine' @Filter.iInf_isMeasurablyGenerated α _ _ _ fun i => _
   exact i.2.2.measurableSet.principal_isMeasurablyGenerated
@@ -425,7 +425,7 @@ instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Sp
   ⟨fun _ => isClosed_singleton.measurableSet⟩
 #align opens_measurable_space.to_measurable_singleton_class OpensMeasurableSpace.toMeasurableSingletonClass
 
-instance Pi.opensMeasurableSpace {ι : Type*} {π : ι → Type*} [Countable ι]
+instance (priority := 10000) Pi.opensMeasurableSpace {ι : Type*} {π : ι → Type*} [Countable ι]
     [t' : ∀ i, TopologicalSpace (π i)] [∀ i, MeasurableSpace (π i)]
     [∀ i, SecondCountableTopology (π i)] [∀ i, OpensMeasurableSpace (π i)] :
     OpensMeasurableSpace (∀ i, π i) := by
@@ -463,7 +463,7 @@ instance (priority := 100) secondCountableTopologyEither_of_right (α β : Type*
 
 /-- If either `α` or `β` has second-countable topology, then the open sets in `α × β` belong to the
 product sigma-algebra. -/
-instance Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
+instance (priority := 10000) Prod.opensMeasurableSpace [h : SecondCountableTopologyEither α β] :
     OpensMeasurableSpace (α × β) := by
   apply opensMeasurableSpace_iff_forall_measurableSet.2 (fun s hs ↦ ?_)
   rcases h.out with hα|hβ
@@ -556,25 +556,25 @@ theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
   isClosed_Icc.measurableSet
 #align measurable_set_Icc measurableSet_Icc
 
-instance nhdsWithin_Ici_isMeasurablyGenerated : (𝓝[Ici b] a).IsMeasurablyGenerated :=
+instance (priority := 10000) nhdsWithin_Ici_isMeasurablyGenerated : (𝓝[Ici b] a).IsMeasurablyGenerated :=
   measurableSet_Ici.nhdsWithin_isMeasurablyGenerated _
 #align nhds_within_Ici_is_measurably_generated nhdsWithin_Ici_isMeasurablyGenerated
 
-instance nhdsWithin_Iic_isMeasurablyGenerated : (𝓝[Iic b] a).IsMeasurablyGenerated :=
+instance (priority := 10000) nhdsWithin_Iic_isMeasurablyGenerated : (𝓝[Iic b] a).IsMeasurablyGenerated :=
   measurableSet_Iic.nhdsWithin_isMeasurablyGenerated _
 #align nhds_within_Iic_is_measurably_generated nhdsWithin_Iic_isMeasurablyGenerated
 
-instance nhdsWithin_Icc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[Icc a b] x) := by
+instance (priority := 10000) nhdsWithin_Icc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[Icc a b] x) := by
   rw [← Ici_inter_Iic, nhdsWithin_inter]
   infer_instance
 #align nhds_within_Icc_is_measurably_generated nhdsWithin_Icc_isMeasurablyGenerated
 
-instance atTop_isMeasurablyGenerated : (Filter.atTop : Filter α).IsMeasurablyGenerated :=
+instance (priority := 10000) atTop_isMeasurablyGenerated : (Filter.atTop : Filter α).IsMeasurablyGenerated :=
   @Filter.iInf_isMeasurablyGenerated _ _ _ _ fun a =>
     (measurableSet_Ici : MeasurableSet (Ici a)).principal_isMeasurablyGenerated
 #align at_top_is_measurably_generated atTop_isMeasurablyGenerated
 
-instance atBot_isMeasurablyGenerated : (Filter.atBot : Filter α).IsMeasurablyGenerated :=
+instance (priority := 10000) atBot_isMeasurablyGenerated : (Filter.atBot : Filter α).IsMeasurablyGenerated :=
   @Filter.iInf_isMeasurablyGenerated _ _ _ _ fun a =>
     (measurableSet_Iic : MeasurableSet (Iic a)).principal_isMeasurablyGenerated
 #align at_bot_is_measurably_generated atBot_isMeasurablyGenerated
@@ -630,15 +630,15 @@ theorem measurableSet_Ico : MeasurableSet (Ico a b) :=
   measurableSet_Ici.inter measurableSet_Iio
 #align measurable_set_Ico measurableSet_Ico
 
-instance nhdsWithin_Ioi_isMeasurablyGenerated : (𝓝[Ioi b] a).IsMeasurablyGenerated :=
+instance (priority := 10000) nhdsWithin_Ioi_isMeasurablyGenerated : (𝓝[Ioi b] a).IsMeasurablyGenerated :=
   measurableSet_Ioi.nhdsWithin_isMeasurablyGenerated _
 #align nhds_within_Ioi_is_measurably_generated nhdsWithin_Ioi_isMeasurablyGenerated
 
-instance nhdsWithin_Iio_isMeasurablyGenerated : (𝓝[Iio b] a).IsMeasurablyGenerated :=
+instance (priority := 10000) nhdsWithin_Iio_isMeasurablyGenerated : (𝓝[Iio b] a).IsMeasurablyGenerated :=
   measurableSet_Iio.nhdsWithin_isMeasurablyGenerated _
 #align nhds_within_Iio_is_measurably_generated nhdsWithin_Iio_isMeasurablyGenerated
 
-instance nhdsWithin_uIcc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[[[a, b]]] x) :=
+instance (priority := 10000) nhdsWithin_uIcc_isMeasurablyGenerated : IsMeasurablyGenerated (𝓝[[[a, b]]] x) :=
   nhdsWithin_Icc_isMeasurablyGenerated
 #align nhds_within_uIcc_is_measurably_generated nhdsWithin_uIcc_isMeasurablyGenerated
 
@@ -1118,13 +1118,13 @@ theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   · exact comap_le_iff_le_map.mpr continuous_snd.borel_measurable
 #align prod_le_borel_prod prod_le_borel_prod
 
-instance Pi.borelSpace {ι : Type*} {π : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (π i)]
+instance (priority := 10000) Pi.borelSpace {ι : Type*} {π : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (π i)]
     [∀ i, MeasurableSpace (π i)] [∀ i, SecondCountableTopology (π i)] [∀ i, BorelSpace (π i)] :
     BorelSpace (∀ i, π i) :=
   ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
 #align pi.borel_space Pi.borelSpace
 
-instance Prod.borelSpace [SecondCountableTopologyEither α β] :
+instance (priority := 10000) Prod.borelSpace [SecondCountableTopologyEither α β] :
     BorelSpace (α × β) :=
   ⟨le_antisymm prod_le_borel_prod OpensMeasurableSpace.borel_le⟩
 #align prod.borel_space Prod.borelSpace
@@ -1139,10 +1139,10 @@ lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [Topol
   have : MeasurableSpace.comap e (borel β) = ‹_› := by simpa [hβ.measurable_eq] using h'e.comap_eq
   rw [← this, ← borel_comap, h''e.induced]
 
-instance _root_.ULift.instBorelSpace [BorelSpace α] : BorelSpace (ULift α) :=
+instance (priority := 10000) _root_.ULift.instBorelSpace [BorelSpace α] : BorelSpace (ULift α) :=
   MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.inducing
 
-instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
+instance (priority := 10000) DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, measurableSet_discrete]
 
@@ -1607,61 +1607,61 @@ protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasu
 
 end BorelSpace
 
-instance Empty.borelSpace : BorelSpace Empty :=
+instance (priority := 10000) Empty.borelSpace : BorelSpace Empty :=
   ⟨borel_eq_top_of_discrete.symm⟩
 #align empty.borel_space Empty.borelSpace
 
-instance Unit.borelSpace : BorelSpace Unit :=
+instance (priority := 10000) Unit.borelSpace : BorelSpace Unit :=
   ⟨borel_eq_top_of_discrete.symm⟩
 #align unit.borel_space Unit.borelSpace
 
-instance Bool.borelSpace : BorelSpace Bool :=
+instance (priority := 10000) Bool.borelSpace : BorelSpace Bool :=
   ⟨borel_eq_top_of_discrete.symm⟩
 #align bool.borel_space Bool.borelSpace
 
-instance Nat.borelSpace : BorelSpace ℕ :=
+instance (priority := 10000) Nat.borelSpace : BorelSpace ℕ :=
   ⟨borel_eq_top_of_discrete.symm⟩
 #align nat.borel_space Nat.borelSpace
 
-instance Int.borelSpace : BorelSpace ℤ :=
+instance (priority := 10000) Int.borelSpace : BorelSpace ℤ :=
   ⟨borel_eq_top_of_discrete.symm⟩
 #align int.borel_space Int.borelSpace
 
-instance Rat.borelSpace : BorelSpace ℚ :=
+instance (priority := 10000) Rat.borelSpace : BorelSpace ℚ :=
   ⟨borel_eq_top_of_countable.symm⟩
 #align rat.borel_space Rat.borelSpace
 
 /- Instances on `Real` and `Complex` are special cases of `IsROrC` but without these instances,
 Lean fails to prove `BorelSpace (ι → ℝ)`, so we leave them here. -/
-instance Real.measurableSpace : MeasurableSpace ℝ :=
+instance (priority := 10000) Real.measurableSpace : MeasurableSpace ℝ :=
   borel ℝ
 #align real.measurable_space Real.measurableSpace
 
-instance Real.borelSpace : BorelSpace ℝ :=
+instance (priority := 10000) Real.borelSpace : BorelSpace ℝ :=
   ⟨rfl⟩
 #align real.borel_space Real.borelSpace
 
-instance NNReal.measurableSpace : MeasurableSpace ℝ≥0 :=
+instance (priority := 10000) NNReal.measurableSpace : MeasurableSpace ℝ≥0 :=
   Subtype.instMeasurableSpace
 #align nnreal.measurable_space NNReal.measurableSpace
 
-instance NNReal.borelSpace : BorelSpace ℝ≥0 :=
+instance (priority := 10000) NNReal.borelSpace : BorelSpace ℝ≥0 :=
   Subtype.borelSpace _
 #align nnreal.borel_space NNReal.borelSpace
 
-instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
+instance (priority := 10000) ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
   borel ℝ≥0∞
 #align ennreal.measurable_space ENNReal.measurableSpace
 
-instance ENNReal.borelSpace : BorelSpace ℝ≥0∞ :=
+instance (priority := 10000) ENNReal.borelSpace : BorelSpace ℝ≥0∞ :=
   ⟨rfl⟩
 #align ennreal.borel_space ENNReal.borelSpace
 
-instance EReal.measurableSpace : MeasurableSpace EReal :=
+instance (priority := 10000) EReal.measurableSpace : MeasurableSpace EReal :=
   borel EReal
 #align ereal.measurable_space EReal.measurableSpace
 
-instance EReal.borelSpace : BorelSpace EReal :=
+instance (priority := 10000) EReal.borelSpace : BorelSpace EReal :=
   ⟨rfl⟩
 #align ereal.borel_space EReal.borelSpace
 
@@ -2129,7 +2129,7 @@ theorem measurable_toNNReal : Measurable ENNReal.toNNReal :=
   ENNReal.measurable_of_measurable_nnreal measurable_id
 #align ennreal.measurable_to_nnreal ENNReal.measurable_toNNReal
 
-instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
+instance (priority := 10000) instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
   refine' ⟨measurable_of_measurable_nnreal_nnreal _ _ _⟩
   · simp only [← ENNReal.coe_mul, measurable_mul.coe_nnreal_ennreal]
   · simp only [ENNReal.top_mul', ENNReal.coe_eq_zero]
@@ -2138,17 +2138,17 @@ instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
     exact measurable_const.piecewise (measurableSet_singleton _) measurable_const
 #align ennreal.has_measurable_mul₂ ENNReal.instMeasurableMul₂
 
-instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
+instance (priority := 10000) instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
   ⟨by
     apply measurable_of_measurable_nnreal_nnreal <;>
       simp [← WithTop.coe_sub]; exact continuous_sub.measurable.coe_nnreal_ennreal⟩
 #align ennreal.has_measurable_sub₂ ENNReal.instMeasurableSub₂
 
-instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
+instance (priority := 10000) instMeasurableInv : MeasurableInv ℝ≥0∞ :=
   ⟨continuous_inv.measurable⟩
 #align ennreal.has_measurable_inv ENNReal.instMeasurableInv
 
-instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
+instance (priority := 10000) : MeasurableSMul ℝ≥0 ℝ≥0∞ where
   measurable_const_smul := by
     simp_rw [ENNReal.smul_def]
     exact fun _ ↦ MeasurableSMul.measurable_const_smul _

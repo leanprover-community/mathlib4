@@ -63,7 +63,7 @@ instance (priority := 900) quasiCompactOfIsIso {X Y : Scheme} (f : X ⟶ Y) [IsI
   exacts [IsIso.inv_hom_id_apply f.1.base, IsIso.hom_inv_id_apply f.1.base]
 #align algebraic_geometry.quasi_compact_of_is_iso AlgebraicGeometry.quasiCompactOfIsIso
 
-instance quasiCompactComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCompact f]
+instance (priority := 10000) quasiCompactComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCompact f]
     [QuasiCompact g] : QuasiCompact (f ≫ g) := by
   constructor
   intro U hU hU'
@@ -264,11 +264,11 @@ theorem quasiCompact_stableUnderBaseChange : MorphismProperty.StableUnderBaseCha
 
 variable {Z : Scheme.{u}}
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] :
+instance (priority := 10000) (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] :
     QuasiCompact (pullback.fst : pullback f g ⟶ X) :=
   quasiCompact_stableUnderBaseChange.fst f g inferInstance
 
-instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] :
+instance (priority := 10000) (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] :
     QuasiCompact (pullback.snd : pullback f g ⟶ Y) :=
   quasiCompact_stableUnderBaseChange.snd f g inferInstance
 

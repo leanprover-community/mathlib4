@@ -75,7 +75,7 @@ instance (priority := 100) Module.toMulActionWithZero : MulActionWithZero R M :=
     zero_smul := Module.zero_smul }
 #align module.to_mul_action_with_zero Module.toMulActionWithZero
 
-instance AddCommMonoid.natModule : Module ℕ M where
+instance (priority := 10000) AddCommMonoid.natModule : Module ℕ M where
   one_smul := one_nsmul
   mul_smul m n a := mul_nsmul' a m n
   smul_add n a b := nsmul_add a b n
@@ -211,7 +211,7 @@ section AddCommGroup
 
 variable (R M) [Semiring R] [AddCommGroup M]
 
-instance AddCommGroup.intModule : Module ℤ M where
+instance (priority := 10000) AddCommGroup.intModule : Module ℤ M where
   one_smul := one_zsmul
   mul_smul m n a := mul_zsmul a m n
   smul_add n a b := zsmul_add a b n
@@ -384,7 +384,7 @@ def AddCommMonoid.natModule.unique : Unique (Module ℕ M) where
   uniq P := (Module.ext' P _) fun n => by convert nat_smul_eq_nsmul P n
 #align add_comm_monoid.nat_module.unique AddCommMonoid.natModule.unique
 
-instance AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
+instance (priority := 10000) AddCommMonoid.nat_isScalarTower : IsScalarTower ℕ R M where
   smul_assoc n x y :=
     Nat.recOn n (by simp only [Nat.zero_eq, zero_smul])
     fun n ih => by simp only [Nat.succ_eq_add_one, add_smul, one_smul, ih]
@@ -481,11 +481,11 @@ theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
 
 
 /-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α :=
+instance (priority := 10000) [AddCommMonoid α] [Module ℚ α] : Module NNRat α :=
   Module.compHom α NNRat.coeHom
 
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
-instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) :=
+instance (priority := 10000) subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) :=
   ⟨fun P Q => (Module.ext' P Q) fun r x =>
     map_rat_smul (_instM := P) (_instM₂ := Q) (AddMonoidHom.id E) r x⟩
 #align subsingleton_rat_module subsingleton_rat_module
@@ -528,22 +528,22 @@ theorem rat_cast_smul_eq {E : Type*} (R S : Type*) [AddCommGroup E] [DivisionRin
   map_rat_cast_smul (AddMonoidHom.id E) R S r x
 #align rat_cast_smul_eq rat_cast_smul_eq
 
-instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
+instance (priority := 10000) AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
     [Module R M] : IsScalarTower ℤ R M where
   smul_assoc n x y := ((smulAddHom R M).flip y).map_zsmul x n
 #align add_comm_group.int_is_scalar_tower AddCommGroup.intIsScalarTower
 
-instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+instance (priority := 10000) IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
     [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where
   smul_assoc r x y := map_rat_smul ((smulAddHom R M).flip y) r x
 #align is_scalar_tower.rat IsScalarTower.rat
 
-instance SMulCommClass.rat {R : Type u} {M : Type v} [Semiring R] [AddCommGroup M] [Module R M]
+instance (priority := 10000) SMulCommClass.rat {R : Type u} {M : Type v} [Semiring R] [AddCommGroup M] [Module R M]
     [Module ℚ M] : SMulCommClass ℚ R M where
   smul_comm r x y := (map_rat_smul (smulAddHom R M x) r y).symm
 #align smul_comm_class.rat SMulCommClass.rat
 
-instance SMulCommClass.rat' {R : Type u} {M : Type v} [Semiring R] [AddCommGroup M] [Module R M]
+instance (priority := 10000) SMulCommClass.rat' {R : Type u} {M : Type v} [Semiring R] [AddCommGroup M] [Module R M]
     [Module ℚ M] : SMulCommClass R ℚ M :=
   SMulCommClass.symm _ _ _
 #align smul_comm_class.rat' SMulCommClass.rat'
@@ -720,7 +720,7 @@ theorem smul_left_injective {x : M} (hx : x ≠ 0) : Function.Injective fun c : 
 
 end SMulInjective
 
-instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
+instance (priority := 10000) [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
   ⟨fun {c x} hcx ↦ by rwa [nsmul_eq_smul_cast ℤ c x, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
 
 variable (R M)

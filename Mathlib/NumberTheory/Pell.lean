@@ -100,19 +100,19 @@ variable {d : ℤ}
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): manual deriving
 
-instance instCommGroup : CommGroup (Solution₁ d) :=
+instance (priority := 10000) instCommGroup : CommGroup (Solution₁ d) :=
   inferInstanceAs (CommGroup (unitary (ℤ√d)))
 #align pell.solution₁.comm_group Pell.Solution₁.instCommGroup
 
-instance instHasDistribNeg : HasDistribNeg (Solution₁ d) :=
+instance (priority := 10000) instHasDistribNeg : HasDistribNeg (Solution₁ d) :=
   inferInstanceAs (HasDistribNeg (unitary (ℤ√d)))
 #align pell.solution₁.has_distrib_neg Pell.Solution₁.instHasDistribNeg
 
-instance instInhabited : Inhabited (Solution₁ d) :=
+instance (priority := 10000) instInhabited : Inhabited (Solution₁ d) :=
   inferInstanceAs (Inhabited (unitary (ℤ√d)))
 #align pell.solution₁.inhabited Pell.Solution₁.instInhabited
 
-instance : Coe (Solution₁ d) (ℤ√d) where coe := Subtype.val
+instance (priority := 10000) : Coe (Solution₁ d) (ℤ√d) where coe := Subtype.val
 
 /-- The `x` component of a solution to the Pell equation `x^2 - d*y^2 = 1` -/
 protected def x (a : Solution₁ d) : ℤ :=

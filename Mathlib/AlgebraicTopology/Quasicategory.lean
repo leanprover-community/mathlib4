@@ -52,7 +52,7 @@ lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i 
 /-- Every Kan complex is a quasicategory.
 
 [Kerodon, 003C] -/
-instance (S : SSet) [KanComplex S] : Quasicategory S where
+instance (priority := 10000) (S : SSet) [KanComplex S] : Quasicategory S where
   hornFilling' _ _ σ₀ _ _ := KanComplex.hornFilling σ₀
 
 lemma quasicategory_of_filler (S : SSet)

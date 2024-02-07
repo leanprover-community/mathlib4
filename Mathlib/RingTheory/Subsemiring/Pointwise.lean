@@ -87,7 +87,7 @@ theorem smul_closure (a : M) (s : Set R) : a • closure s = closure (a • s) :
   RingHom.map_closureS _ _
 #align subsemiring.smul_closure Subsemiring.smul_closure
 
-instance pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralScalar M R] :
+instance (priority := 10000) pointwise_central_scalar [MulSemiringAction Mᵐᵒᵖ R] [IsCentralScalar M R] :
     IsCentralScalar M (Subsemiring R) :=
   ⟨fun _a S => (congr_arg fun f => S.map f) <| RingHom.ext <| op_smul_eq_smul _⟩
 #align subsemiring.pointwise_central_scalar Subsemiring.pointwise_central_scalar
@@ -174,4 +174,3 @@ theorem le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subsemiring R} :
 end GroupWithZero
 
 end Subsemiring
-

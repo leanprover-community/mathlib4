@@ -350,7 +350,7 @@ theorem plusMap_plusLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) (
   rw [← Category.assoc, ← J.toPlus_naturality, Category.assoc, J.toPlus_plusLift]
 #align category_theory.grothendieck_topology.plus_map_plus_lift CategoryTheory.GrothendieckTopology.plusMap_plusLift
 
-instance plusFunctor_preservesZeroMorphisms [Preadditive D] :
+instance (priority := 10000) plusFunctor_preservesZeroMorphisms [Preadditive D] :
     (plusFunctor J D).PreservesZeroMorphisms where
   map_zero F G := by
     ext

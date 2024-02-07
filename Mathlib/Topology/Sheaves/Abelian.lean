@@ -49,7 +49,7 @@ variable {J : GrothendieckTopology C}
 --  @Abelian.functorCategoryAbelian Cᵒᵖ _ D _ _
 
 -- This also needs to be specified manually, but I don't know why.
-instance hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
+instance (priority := 10000) hasFiniteProductsSheaf : HasFiniteProducts (Sheaf J D) where
   out j := { has_limit := fun F => by infer_instance }
 
 -- sheafification assumptions
@@ -63,7 +63,7 @@ variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
 variable [ReflectsIsomorphisms (forget D)]
 
-instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
+instance (priority := 10000) sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D
   abelianOfAdjunction _ _ (asIso adj.counit) adj
 set_option linter.uppercaseLean3 false in
@@ -71,7 +71,7 @@ set_option linter.uppercaseLean3 false in
 
 attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryProducts
 
-instance presheafToSheaf_additive : (presheafToSheaf J D).Additive :=
+instance (priority := 10000) presheafToSheaf_additive : (presheafToSheaf J D).Additive :=
   (presheafToSheaf J D).additive_of_preservesBinaryBiproducts
 set_option linter.uppercaseLean3 false in
 #align category_theory.presheaf_to_Sheaf_additive CategoryTheory.presheafToSheaf_additive

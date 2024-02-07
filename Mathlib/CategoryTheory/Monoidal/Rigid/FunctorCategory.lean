@@ -25,7 +25,7 @@ namespace CategoryTheory.Monoidal
 
 variable {C D : Type*} [Groupoid C] [Category D] [MonoidalCategory D]
 
-instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
+instance (priority := 10000) functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
   rightDual :=
     { obj := fun X => (F.obj X)ᘁ
       map := fun f => (F.map (inv f))ᘁ
@@ -47,10 +47,10 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
               IsIso.inv_hom_id, tensor_id, Category.comp_id] } }
 #align category_theory.monoidal.functor_has_right_dual CategoryTheory.Monoidal.functorHasRightDual
 
-instance rightRigidFunctorCategory [RightRigidCategory D] : RightRigidCategory (C ⥤ D) where
+instance (priority := 10000) rightRigidFunctorCategory [RightRigidCategory D] : RightRigidCategory (C ⥤ D) where
 #align category_theory.monoidal.right_rigid_functor_category CategoryTheory.Monoidal.rightRigidFunctorCategory
 
-instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F where
+instance (priority := 10000) functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F where
   leftDual :=
     { obj := fun X => ᘁ(F.obj X)
       map := fun f => ᘁ(F.map (inv f))
@@ -72,10 +72,10 @@ instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F 
               IsIso.inv_hom_id, tensor_id, Category.comp_id] } }
 #align category_theory.monoidal.functor_has_left_dual CategoryTheory.Monoidal.functorHasLeftDual
 
-instance leftRigidFunctorCategory [LeftRigidCategory D] : LeftRigidCategory (C ⥤ D) where
+instance (priority := 10000) leftRigidFunctorCategory [LeftRigidCategory D] : LeftRigidCategory (C ⥤ D) where
 #align category_theory.monoidal.left_rigid_functor_category CategoryTheory.Monoidal.leftRigidFunctorCategory
 
-instance rigidFunctorCategory [RigidCategory D] : RigidCategory (C ⥤ D) where
+instance (priority := 10000) rigidFunctorCategory [RigidCategory D] : RigidCategory (C ⥤ D) where
 #align category_theory.monoidal.rigid_functor_category CategoryTheory.Monoidal.rigidFunctorCategory
 
 end CategoryTheory.Monoidal

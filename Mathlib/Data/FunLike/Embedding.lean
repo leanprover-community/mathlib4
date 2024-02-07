@@ -26,13 +26,13 @@ namespace MyEmbedding
 variables (A B : Type*) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Embedding class" design below:
-instance : EmbeddingLike (MyEmbedding A B) A B :=
+instance (priority := 10000) : EmbeddingLike (MyEmbedding A B) A B :=
   { coe := MyEmbedding.toFun,
     coe_injective' := λ f g h, by cases f; cases g; congr',
     injective' := MyEmbedding.injective' }
 
 /-- Helper instance for when there's too many metavariables to `EmbeddingLike.coe` directly. -/
-instance : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
+instance (priority := 10000) : CoeFun (MyEmbedding A B) (λ _, A → B) := ⟨MyEmbedding.toFun⟩
 
 @[ext] theorem ext {f g : MyEmbedding A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
@@ -72,7 +72,7 @@ end
 MyEmbeddingClass.map_op
 
 -- You can replace `MyEmbedding.EmbeddingLike` with the below instance:
-instance : MyEmbeddingClass (MyEmbedding A B) A B :=
+instance (priority := 10000) : MyEmbeddingClass (MyEmbedding A B) A B :=
   { coe := MyEmbedding.toFun,
     coe_injective' := λ f g h, by cases f; cases g; congr',
     injective' := MyEmbedding.injective',
@@ -104,7 +104,7 @@ end
 MyEmbeddingClass.map_op
 
 -- You can also replace `MyEmbedding.EmbeddingLike` with the below instance:
-instance : CoolerEmbeddingClass (CoolerEmbedding A B) A B :=
+instance (priority := 10000) : CoolerEmbeddingClass (CoolerEmbedding A B) A B :=
   { coe := CoolerEmbedding.toFun,
     coe_injective' := λ f g h, by cases f; cases g; congr',
     injective' := MyEmbedding.injective',

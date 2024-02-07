@@ -26,7 +26,7 @@ variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.
 
 /-- `pi C` gives the cartesian product of an indexed family of categories.
 -/
-instance pi : Category.{max w₀ v₁} (∀ i, C i) where
+instance (priority := 10000) pi : Category.{max w₀ v₁} (∀ i, C i) where
   Hom X Y := ∀ i, X i ⟶ Y i
   id X i := 𝟙 (X i)
   comp f g i := f i ≫ g i
@@ -75,7 +75,7 @@ variable {J : Type w₁}
 /- Porting note: add this because Lean cannot see directly through the `∘` for
 `Function.comp` -/
 
-instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
+instance (priority := 10000) (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
   dsimp
   infer_instance
 
@@ -131,7 +131,7 @@ section
 variable {J : Type w₀} {D : J → Type u₁} [∀ j, Category.{v₁} (D j)]
 
 /- Porting note: maybe mixing up universes -/
-instance sumElimCategory : ∀ s : Sum I J, Category.{v₁} (Sum.elim C D s)
+instance (priority := 10000) sumElimCategory : ∀ s : Sum I J, Category.{v₁} (Sum.elim C D s)
   | Sum.inl i => by
     dsimp
     infer_instance
@@ -391,7 +391,7 @@ def pi (E : ∀ i, C i ≌ D i) : (∀ i, C i) ≌ (∀ i, D i) where
   unitIso := NatIso.pi (fun i => (E i).unitIso)
   counitIso := NatIso.pi (fun i => (E i).counitIso)
 
-instance (F : ∀ i, C i ⥤ D i) [∀ i, IsEquivalence (F i)] :
+instance (priority := 10000) (F : ∀ i, C i ⥤ D i) [∀ i, IsEquivalence (F i)] :
     IsEquivalence (Functor.pi F) :=
   IsEquivalence.ofEquivalence (pi (fun i => (F i).asEquivalence))
 

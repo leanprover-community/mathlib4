@@ -21,71 +21,71 @@ are already defined in `Mathlib.Algebra.Group.OrderSynonym`.
 namespace OrderDual
 variable {α β γ : Type*}
 
-instance instSMulWithZero [Zero α] [Zero β] [SMulWithZero α β] : SMulWithZero αᵒᵈ β where
+instance (priority := 10000) instSMulWithZero [Zero α] [Zero β] [SMulWithZero α β] : SMulWithZero αᵒᵈ β where
   zero_smul := zero_smul α
   smul_zero := smul_zero (M := α)
 
-instance instSMulWithZero' [Zero α] [Zero β] [SMulWithZero α β] : SMulWithZero α βᵒᵈ where
+instance (priority := 10000) instSMulWithZero' [Zero α] [Zero β] [SMulWithZero α β] : SMulWithZero α βᵒᵈ where
   zero_smul := zero_smul _ (M := β)
   smul_zero := smul_zero (A := β)
 
 @[to_additive]
-instance instMulAction [Monoid α] [MulAction α β] : MulAction αᵒᵈ β where
+instance (priority := 10000) instMulAction [Monoid α] [MulAction α β] : MulAction αᵒᵈ β where
   one_smul := one_smul α
   mul_smul := mul_smul (α := α)
 
 @[to_additive]
-instance instMulAction' [Monoid α] [MulAction α β] : MulAction α βᵒᵈ where
+instance (priority := 10000) instMulAction' [Monoid α] [MulAction α β] : MulAction α βᵒᵈ where
   one_smul := one_smul _ (α := β)
   mul_smul := mul_smul (β := β)
 
 @[to_additive]
-instance instSMulCommClass [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass αᵒᵈ β γ :=
+instance (priority := 10000) instSMulCommClass [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass αᵒᵈ β γ :=
    ‹SMulCommClass α β γ›
 
 @[to_additive]
-instance instSMulCommClass' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass α βᵒᵈ γ :=
+instance (priority := 10000) instSMulCommClass' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass α βᵒᵈ γ :=
   ‹SMulCommClass α β γ›
 
 @[to_additive]
-instance instSMulCommClass'' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass α β γᵒᵈ :=
+instance (priority := 10000) instSMulCommClass'' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] : SMulCommClass α β γᵒᵈ :=
   ‹SMulCommClass α β γ›
 
 @[to_additive instVAddAssocClass]
-instance instIsScalarTower [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
+instance (priority := 10000) instIsScalarTower [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
    IsScalarTower αᵒᵈ β γ := ‹IsScalarTower α β γ›
 
 @[to_additive instVAddAssocClass']
-instance instIsScalarTower' [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
+instance (priority := 10000) instIsScalarTower' [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
     IsScalarTower α βᵒᵈ γ := ‹IsScalarTower α β γ›
 
 @[to_additive instVAddAssocClass'']
-instance instIsScalarTower'' [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
+instance (priority := 10000) instIsScalarTower'' [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
     IsScalarTower α β γᵒᵈ := ‹IsScalarTower α β γ›
 
-instance instMulActionWithZero [MonoidWithZero α] [AddMonoid β] [MulActionWithZero α β] :
+instance (priority := 10000) instMulActionWithZero [MonoidWithZero α] [AddMonoid β] [MulActionWithZero α β] :
     MulActionWithZero αᵒᵈ β :=
   { OrderDual.instMulAction, OrderDual.instSMulWithZero with }
 
-instance instMulActionWithZero' [MonoidWithZero α] [AddMonoid β] [MulActionWithZero α β] :
+instance (priority := 10000) instMulActionWithZero' [MonoidWithZero α] [AddMonoid β] [MulActionWithZero α β] :
     MulActionWithZero α βᵒᵈ :=
   { OrderDual.instMulAction', OrderDual.instSMulWithZero' with }
 
-instance instDistribMulAction [MonoidWithZero α] [AddMonoid β] [DistribMulAction α β] :
+instance (priority := 10000) instDistribMulAction [MonoidWithZero α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction αᵒᵈ β where
   smul_add := smul_add (M := α)
   smul_zero := smul_zero (M := α)
 
-instance instDistribMulAction' [MonoidWithZero α] [AddMonoid β] [DistribMulAction α β] :
+instance (priority := 10000) instDistribMulAction' [MonoidWithZero α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α βᵒᵈ where
   smul_add := smul_add (A := β)
   smul_zero := smul_zero (A := β)
 
-instance instModule [Semiring α] [AddCommMonoid β] [Module α β] : Module αᵒᵈ β where
+instance (priority := 10000) instModule [Semiring α] [AddCommMonoid β] [Module α β] : Module αᵒᵈ β where
   add_smul := add_smul (R := α)
   zero_smul := zero_smul _
 
-instance instModule' [Semiring α] [AddCommMonoid β] [Module α β] : Module α βᵒᵈ where
+instance (priority := 10000) instModule' [Semiring α] [AddCommMonoid β] [Module α β] : Module α βᵒᵈ where
   add_smul := add_smul (M := β)
   zero_smul := zero_smul _
 

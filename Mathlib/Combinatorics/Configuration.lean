@@ -48,19 +48,19 @@ def Dual :=
 #align configuration.dual Configuration.Dual
 
 -- porting note: was `this` instead of `h`
-instance [h : Inhabited P] : Inhabited (Dual P) :=
+instance (priority := 10000) [h : Inhabited P] : Inhabited (Dual P) :=
   h
 
-instance [Finite P] : Finite (Dual P) :=
+instance (priority := 10000) [Finite P] : Finite (Dual P) :=
   ‹Finite P›
 
 -- porting note: was `this` instead of `h`
-instance [h : Fintype P] : Fintype (Dual P) :=
+instance (priority := 10000) [h : Fintype P] : Fintype (Dual P) :=
   h
 
 -- porting note: TODO: figure out if this is needed.
 set_option synthInstance.checkSynthOrder false in
-instance : Membership (Dual L) (Dual P) :=
+instance (priority := 10000) : Membership (Dual L) (Dual P) :=
   ⟨Function.swap (Membership.mem : P → L → Prop)⟩
 
 /-- A configuration is nondegenerate if:
@@ -93,17 +93,17 @@ open HasPoints (mkPoint mkPoint_ax)
 
 open HasLines (mkLine mkLine_ax)
 
-instance Dual.Nondegenerate [Nondegenerate P L] : Nondegenerate (Dual L) (Dual P) where
+instance (priority := 10000) Dual.Nondegenerate [Nondegenerate P L] : Nondegenerate (Dual L) (Dual P) where
   exists_point := @exists_line P L _ _
   exists_line := @exists_point P L _ _
   eq_or_eq := @fun l₁ l₂ p₁ p₂ h₁ h₂ h₃ h₄ => (@eq_or_eq P L _ _ p₁ p₂ l₁ l₂ h₁ h₃ h₂ h₄).symm
 
-instance Dual.hasLines [HasPoints P L] : HasLines (Dual L) (Dual P) :=
+instance (priority := 10000) Dual.hasLines [HasPoints P L] : HasLines (Dual L) (Dual P) :=
   { Dual.Nondegenerate _ _ with
     mkLine := @mkPoint P L _ _
     mkLine_ax := @mkPoint_ax P L _ _ }
 
-instance Dual.hasPoints [HasLines P L] : HasPoints (Dual L) (Dual P) :=
+instance (priority := 10000) Dual.hasPoints [HasLines P L] : HasPoints (Dual L) (Dual P) :=
   { Dual.Nondegenerate _ _ with
     mkPoint := @mkLine P L _ _
     mkPoint_ax := @mkLine_ax P L _ _ }
@@ -359,7 +359,7 @@ namespace ProjectivePlane
 
 variable [ProjectivePlane P L]
 
-instance : ProjectivePlane (Dual L) (Dual P) :=
+instance (priority := 10000) : ProjectivePlane (Dual L) (Dual P) :=
   { Dual.hasPoints _ _, Dual.hasLines _ _ with
     exists_config :=
       let ⟨p₁, p₂, p₃, l₁, l₂, l₃, h₁₂, h₁₃, h₂₁, h₂₂, h₂₃, h₃₁, h₃₂, h₃₃⟩ := @exists_config P L _ _

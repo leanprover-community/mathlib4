@@ -74,7 +74,7 @@ theorem isPeriodicPt_zero (f : α → α) (x : α) : IsPeriodicPt f 0 x :=
 
 namespace IsPeriodicPt
 
-instance [DecidableEq α] {f : α → α} {n : ℕ} {x : α} : Decidable (IsPeriodicPt f n x) :=
+instance (priority := 10000) [DecidableEq α] {f : α → α} {n : ℕ} {x : α} : Decidable (IsPeriodicPt f n x) :=
   IsFixedPt.decidable
 
 protected theorem isFixedPt (hf : IsPeriodicPt f n x) : IsFixedPt f^[n] x :=

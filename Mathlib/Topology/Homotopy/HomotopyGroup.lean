@@ -93,7 +93,7 @@ def LoopSpace :=
 -- mathport name: exprΩ
 scoped[Topology.Homotopy] notation "Ω" => LoopSpace
 
-instance LoopSpace.inhabited : Inhabited (Path x x) :=
+instance (priority := 10000) LoopSpace.inhabited : Inhabited (Path x x) :=
   ⟨Path.refl x⟩
 #align loop_space.inhabited LoopSpace.inhabited
 
@@ -112,7 +112,7 @@ variable {N X x}
 
 namespace GenLoop
 
-instance instFunLike : FunLike (Ω^ N X x) (I^N) X where
+instance (priority := 10000) instFunLike : FunLike (Ω^ N X x) (I^N) X where
   coe f := f.1
   coe_injective' := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ => by congr
 #align gen_loop.fun_like GenLoop.instFunLike
@@ -158,7 +158,7 @@ theorem const_apply {t} : (@const N X _ x) t = x :=
   rfl
 #align gen_loop.const_apply GenLoop.const_apply
 
-instance inhabited : Inhabited (Ω^ N X x) :=
+instance (priority := 10000) inhabited : Inhabited (Ω^ N X x) :=
   ⟨const⟩
 
 /-- The "homotopic relative to boundary" relation between `GenLoop`s. -/
@@ -189,7 +189,7 @@ theorem equiv : Equivalence (@Homotopic N X _ x) :=
   ⟨Homotopic.refl, Homotopic.symm, Homotopic.trans⟩
 #align gen_loop.homotopic.equiv GenLoop.Homotopic.equiv
 
-instance setoid (N) (x : X) : Setoid (Ω^ N X x) :=
+instance (priority := 10000) setoid (N) (x : X) : Setoid (Ω^ N X x) :=
   ⟨Homotopic, equiv⟩
 #align gen_loop.homotopic.setoid GenLoop.Homotopic.setoid
 
@@ -393,7 +393,7 @@ def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
 #align homotopy_group HomotopyGroup
 
 -- porting note: in Lean 3 this instance was derived
-instance : Inhabited (HomotopyGroup N X x) :=
+instance (priority := 10000) : Inhabited (HomotopyGroup N X x) :=
   inferInstanceAs <| Inhabited <| Quotient (GenLoop.Homotopic.setoid N x)
 
 variable [DecidableEq N]
@@ -502,7 +502,7 @@ def HomotopyGroup.pi1EquivFundamentalGroup : π_ 1 X x ≃ FundamentalGroup X x 
 namespace HomotopyGroup
 
 /-- Group structure on `HomotopyGroup N X x` for nonempty `N` (in particular `π_(n+1) X x`). -/
-instance group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
+instance (priority := 10000) group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup <| Classical.arbitrary N).group
 #align homotopy_group.group HomotopyGroup.group
 
@@ -564,7 +564,7 @@ theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} : ((⟦p⟧)⁻¹ : HomotopyGr
 
 /-- Multiplication on `HomotopyGroup N X x` is commutative for nontrivial `N`.
   In particular, multiplication on `π_(n+2)` is commutative. -/
-instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
+instance (priority := 10000) commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
   let h := exists_ne (Classical.arbitrary N)
   @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1 (isUnital_auxGroup <| Classical.choose h) _
     (by

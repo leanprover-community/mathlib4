@@ -35,7 +35,7 @@ universe u v w x
 
 variable {α β γ δ ε ζ : Type*}
 
-instance [DecidableEq α] : SDiff (List α) :=
+instance (priority := 10000) [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
 #align list.replicate List.replicate
@@ -297,7 +297,7 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
 /-- Notation for calculating the product of a `List`
 -/
 
-instance instSProd : SProd (List α) (List β) (List (α × β)) where
+instance (priority := 10000) instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
 
 #align list.sigma List.sigma
@@ -314,14 +314,14 @@ instance instSProd : SProd (List α) (List β) (List (α × β)) where
 
 section Chain
 
-instance decidableChain [DecidableRel R] (a : α) (l : List α) :
+instance (priority := 10000) decidableChain [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
   | nil => simp only [List.Chain.nil]; infer_instance
   | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
 #align list.decidable_chain List.decidableChain
 
-instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
+instance (priority := 10000) decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
   cases l <;> dsimp only [List.Chain'] <;> infer_instance
 #align list.decidable_chain' List.decidableChain'
 

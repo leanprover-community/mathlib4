@@ -25,11 +25,11 @@ def RelCat :=
   Type u
 #align category_theory.Rel CategoryTheory.RelCat
 
-instance RelCat.inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
+instance (priority := 10000) RelCat.inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
 #align category_theory.Rel.inhabited CategoryTheory.RelCat.inhabited
 
 /-- The category of types with binary relations as morphisms. -/
-instance rel : LargeCategory RelCat where
+instance (priority := 10000) rel : LargeCategory RelCat where
   Hom X Y := X → Y → Prop
   id X x y := x = y
   comp f g x z := ∃ y, f x y ∧ g y z

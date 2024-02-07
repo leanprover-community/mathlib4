@@ -34,33 +34,33 @@ theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}
   funext fun i => hk i (congr_fun h i : _)
 #align is_smul_regular.pi IsSMulRegular.pi
 
-instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
+instance (priority := 10000) smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
     SMulWithZero α (∀ i, f i) :=
   { Pi.instSMul with
     smul_zero := fun _ => funext fun _ => smul_zero _
     zero_smul := fun _ => funext fun _ => zero_smul _ _ }
 #align pi.smul_with_zero Pi.smulWithZero
 
-instance smulWithZero' {g : I → Type*} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
+instance (priority := 10000) smulWithZero' {g : I → Type*} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
     [∀ i, SMulWithZero (g i) (f i)] : SMulWithZero (∀ i, g i) (∀ i, f i) :=
   { Pi.smul' with
     smul_zero := fun _ => funext fun _ => smul_zero _
     zero_smul := fun _ => funext fun _ => zero_smul _ _ }
 #align pi.smul_with_zero' Pi.smulWithZero'
 
-instance mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
+instance (priority := 10000) mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
     [∀ i, MulActionWithZero α (f i)] : MulActionWithZero α (∀ i, f i) :=
   { Pi.mulAction _, Pi.smulWithZero _ with }
 #align pi.mul_action_with_zero Pi.mulActionWithZero
 
-instance mulActionWithZero' {g : I → Type*} [∀ i, MonoidWithZero (g i)] [∀ i, Zero (f i)]
+instance (priority := 10000) mulActionWithZero' {g : I → Type*} [∀ i, MonoidWithZero (g i)] [∀ i, Zero (f i)]
     [∀ i, MulActionWithZero (g i) (f i)] : MulActionWithZero (∀ i, g i) (∀ i, f i) :=
   { Pi.mulAction', Pi.smulWithZero' with }
 #align pi.mul_action_with_zero' Pi.mulActionWithZero'
 
 variable (I f)
 
-instance module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i, Module α <| f i] :
+instance (priority := 10000) module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i, Module α <| f i] :
     @Module α (∀ i : I, f i) r (@Pi.addCommMonoid I f m) :=
   { Pi.distribMulAction _ with
     add_smul := fun _ _ _ => funext fun _ => add_smul _ _ _
@@ -77,14 +77,14 @@ See: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typecl
 -/
 /-- A special case of `Pi.module` for non-dependent types. Lean struggles to elaborate
 definitions elsewhere in the library without this. -/
-instance Function.module (α β : Type*) [Semiring α] [AddCommMonoid β] [Module α β] :
+instance (priority := 10000) Function.module (α β : Type*) [Semiring α] [AddCommMonoid β] [Module α β] :
     Module α (I → β) :=
   Pi.module _ _ _
 #align function.module Pi.Function.module
 
 variable {I f}
 
-instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCommMonoid (g i)}
+instance (priority := 10000) module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCommMonoid (g i)}
     [∀ i, Module (f i) (g i)] : Module (∀ i, f i) (∀ i, g i)
     where
   add_smul := by
@@ -98,7 +98,7 @@ instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCo
     rw [zero_smul]
 #align pi.module' Pi.module'
 
-instance noZeroSMulDivisors (α) [Semiring α] [∀ i, AddCommMonoid <| f i]
+instance (priority := 10000) noZeroSMulDivisors (α) [Semiring α] [∀ i, AddCommMonoid <| f i]
     [∀ i, Module α <| f i] [∀ i, NoZeroSMulDivisors α <| f i] :
     NoZeroSMulDivisors α (∀ i : I, f i) :=
   ⟨fun {_ _} h =>
@@ -107,7 +107,7 @@ instance noZeroSMulDivisors (α) [Semiring α] [∀ i, AddCommMonoid <| f i]
 
 /-- A special case of `Pi.noZeroSMulDivisors` for non-dependent types. Lean struggles to
 synthesize this instance by itself elsewhere in the library. -/
-instance _root_.Function.noZeroSMulDivisors {ι α β : Type*} [Semiring α] [AddCommMonoid β]
+instance (priority := 10000) _root_.Function.noZeroSMulDivisors {ι α β : Type*} [Semiring α] [AddCommMonoid β]
     [Module α β] [NoZeroSMulDivisors α β] : NoZeroSMulDivisors α (ι → β) :=
   Pi.noZeroSMulDivisors _
 #align function.no_zero_smul_divisors Function.noZeroSMulDivisors

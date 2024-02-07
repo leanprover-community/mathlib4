@@ -77,7 +77,7 @@ variable (R : Type u) [CommRing R]
 
 open LinearMap Submodule
 
-instance self (R : Type u) [CommRing R] : Flat R R :=
+instance (priority := 10000) self (R : Type u) [CommRing R] : Flat R R :=
   ⟨by
     intro I _
     rw [← Equiv.injective_comp (TensorProduct.rid R I).symm.toEquiv]
@@ -182,7 +182,7 @@ open DirectSum LinearMap Submodule
 variable (R : Type u) [CommRing R]
 
 /-- A direct sum of flat `R`-modules is flat. -/
-instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup (M i)]
+instance (priority := 10000) directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup (M i)]
     [(i : ι) → Module R (M i)] [F : (i : ι) → (Flat R (M i))] : Flat R (⨁ i, M i) := by
   classical
   rw [iff_rTensor_injective]
@@ -223,13 +223,13 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   simp [f]
 
 /-- Free `R`-modules over discrete types are flat. -/
-instance finsupp (ι : Type v) : Flat R (ι →₀ R) :=
+instance (priority := 10000) finsupp (ι : Type v) : Flat R (ι →₀ R) :=
   let _ := Classical.decEq ι
   of_linearEquiv R _ _ (finsuppLEquivDirectSum R R ι)
 
 variable (M : Type v) [AddCommGroup M] [Module R M]
 
-instance of_free [Free R M] : Flat R M := of_linearEquiv R _ _ (Free.repr R M)
+instance (priority := 10000) of_free [Free R M] : Flat R M := of_linearEquiv R _ _ (Free.repr R M)
 
 /-- A projective module with a discrete type of generator is flat -/
 lemma of_projective_surjective (ι : Type w) [Projective R M] (p : (ι →₀ R) →ₗ[R] M)
@@ -238,7 +238,7 @@ lemma of_projective_surjective (ι : Type w) [Projective R M] (p : (ι →₀ R)
   cases h with
     | _ e he => exact of_retract R _ _ _ _ he
 
-instance of_projective [h : Projective R M] : Flat R M := by
+instance (priority := 10000) of_projective [h : Projective R M] : Flat R M := by
   rw [Module.projective_def'] at h
   cases h with
     | _ e he => exact of_retract R _ _ _ _ he

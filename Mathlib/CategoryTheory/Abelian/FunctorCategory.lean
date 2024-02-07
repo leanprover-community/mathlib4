@@ -83,7 +83,7 @@ theorem coimageImageComparison_app' :
     Category.comp_id]
 #align category_theory.abelian.functor_category.coimage_image_comparison_app' CategoryTheory.Abelian.FunctorCategory.coimageImageComparison_app'
 
-instance functor_category_isIso_coimageImageComparison :
+instance (priority := 10000) functor_category_isIso_coimageImageComparison :
     IsIso (Abelian.coimageImageComparison α) := by
   have : ∀ X : C, IsIso ((Abelian.coimageImageComparison α).app X) := by
     intros
@@ -94,7 +94,7 @@ instance functor_category_isIso_coimageImageComparison :
 
 end FunctorCategory
 
-noncomputable instance functorCategoryAbelian : Abelian (C ⥤ D) :=
+noncomputable instance (priority := 10000) functorCategoryAbelian : Abelian (C ⥤ D) :=
   let _ : HasKernels (C ⥤ D) := inferInstance
   let _ : HasCokernels (C ⥤ D) := inferInstance
   Abelian.ofCoimageImageComparisonIsIso

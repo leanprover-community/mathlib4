@@ -477,7 +477,7 @@ theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b
 
 end
 
-instance (R : Type*) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
+instance (priority := 10000) (R : Type*) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R

@@ -89,7 +89,7 @@ structure Hom (X Y : Center C) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-instance : Quiver (Center C) where
+instance (priority := 10000) : Quiver (Center C) where
   Hom := Hom
 
 @[ext]
@@ -97,7 +97,7 @@ theorem ext {X Y : Center C} (f g : X ⟶ Y) (w : f.f = g.f) : f = g := by
   cases f; cases g; congr
 #align category_theory.center.ext CategoryTheory.Center.ext
 
-instance : Category (Center C) where
+instance (priority := 10000) : Category (Center C) where
   id X := { f := 𝟙 X.1 }
   comp f g := { f := f.f ≫ g.f }
 
@@ -122,7 +122,7 @@ def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y where
       ← MonoidalCategory.whiskerLeft_comp] ⟩
 #align category_theory.center.iso_mk CategoryTheory.Center.isoMk
 
-instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f := by
+instance (priority := 10000) isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f := by
   change IsIso (isoMk f).hom
   infer_instance
 #align category_theory.center.is_iso_of_f_is_iso CategoryTheory.Center.isIso_of_f_isIso
@@ -250,7 +250,7 @@ attribute [local simp] Center.associator Center.leftUnitor Center.rightUnitor
 
 attribute [local simp] Center.whiskerLeft Center.whiskerRight Center.tensorHom
 
-instance : MonoidalCategory (Center C) where
+instance (priority := 10000) : MonoidalCategory (Center C) where
   tensorObj X Y := tensorObj X Y
   tensorHom f g := tensorHom f g
   tensorHom_def := by intros; ext; simp [tensorHom_def]
@@ -341,7 +341,7 @@ def forget : MonoidalFunctor (Center C) C where
   μ X Y := 𝟙 (X.1 ⊗ Y.1)
 #align category_theory.center.forget CategoryTheory.Center.forget
 
-instance : ReflectsIsomorphisms (forget C).toFunctor where
+instance (priority := 10000) : ReflectsIsomorphisms (forget C).toFunctor where
   reflects f i := by dsimp at i; change IsIso (isoMk f).hom; infer_instance
 
 end
@@ -358,7 +358,7 @@ def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
       simp⟩
 #align category_theory.center.braiding CategoryTheory.Center.braiding
 
-instance braidedCategoryCenter : BraidedCategory (Center C) where
+instance (priority := 10000) braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
 #align category_theory.center.braided_category_center CategoryTheory.Center.braidedCategoryCenter
 

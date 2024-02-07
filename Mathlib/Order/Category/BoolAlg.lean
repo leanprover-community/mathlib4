@@ -28,10 +28,10 @@ def BoolAlg :=
 
 namespace BoolAlg
 
-instance : CoeSort BoolAlg (Type*) :=
+instance (priority := 10000) : CoeSort BoolAlg (Type*) :=
   Bundled.coeSort
 
-instance instBooleanAlgebra (X : BoolAlg) : BooleanAlgebra X :=
+instance (priority := 10000) instBooleanAlgebra (X : BoolAlg) : BooleanAlgebra X :=
   X.str
 
 /-- Construct a bundled `BoolAlg` from a `BooleanAlgebra`. -/
@@ -44,7 +44,7 @@ theorem coe_of (α : Type*) [BooleanAlgebra α] : ↥(of α) = α :=
   rfl
 #align BoolAlg.coe_of BoolAlg.coe_of
 
-instance : Inhabited BoolAlg :=
+instance (priority := 10000) : Inhabited BoolAlg :=
   ⟨of PUnit⟩
 
 /-- Turn a `BoolAlg` into a `BddDistLat` by forgetting its complement operation. -/
@@ -57,13 +57,13 @@ theorem coe_toBddDistLat (X : BoolAlg) : ↥X.toBddDistLat = ↥X :=
   rfl
 #align BoolAlg.coe_to_BddDistLat BoolAlg.coe_toBddDistLat
 
-instance : LargeCategory.{u} BoolAlg :=
+instance (priority := 10000) : LargeCategory.{u} BoolAlg :=
   InducedCategory.category toBddDistLat
 
-instance : ConcreteCategory BoolAlg :=
+instance (priority := 10000) : ConcreteCategory BoolAlg :=
   InducedCategory.concreteCategory toBddDistLat
 
-instance hasForgetToBddDistLat : HasForget₂ BoolAlg BddDistLat :=
+instance (priority := 10000) hasForgetToBddDistLat : HasForget₂ BoolAlg BddDistLat :=
   InducedCategory.hasForget₂ toBddDistLat
 #align BoolAlg.has_forget_to_BddDistLat BoolAlg.hasForgetToBddDistLat
 
@@ -72,7 +72,7 @@ section
 attribute [local instance] BoundedLatticeHomClass.toBiheytingHomClass
 
 @[simps]
-instance hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg where
+instance (priority := 10000) hasForgetToHeytAlg : HasForget₂ BoolAlg HeytAlg where
   forget₂ :=
     { obj := fun X => {α := X}
       -- Porting note: was `fun {X Y} f => show BoundedLatticeHom X Y from f`

@@ -54,7 +54,7 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 class RingHomId {R : Type*} [Semiring R] (σ : R →+* R) : Prop where
   eq_id : σ = RingHom.id R
 
-instance {R : Type*} [Semiring R] : RingHomId (RingHom.id R) where
+instance (priority := 10000) {R : Type*} [Semiring R] : RingHomId (RingHom.id R) where
   eq_id := rfl
 
 /-- Class that expresses the fact that three ring homomorphisms form a composition triple. This is
@@ -109,16 +109,16 @@ theorem comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
   simp
 #align ring_hom_inv_pair.comp_apply_eq₂ RingHomInvPair.comp_apply_eq₂
 
-instance ids : RingHomInvPair (RingHom.id R₁) (RingHom.id R₁) :=
+instance (priority := 10000) ids : RingHomInvPair (RingHom.id R₁) (RingHom.id R₁) :=
   ⟨rfl, rfl⟩
 #align ring_hom_inv_pair.ids RingHomInvPair.ids
 
-instance triples {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
+instance (priority := 10000) triples {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomCompTriple σ₁₂ σ₂₁ (RingHom.id R₁) :=
   ⟨by simp only [comp_eq]⟩
 #align ring_hom_inv_pair.triples RingHomInvPair.triples
 
-instance triples₂ {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
+instance (priority := 10000) triples₂ {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomCompTriple σ₂₁ σ₁₂ (RingHom.id R₂) :=
   ⟨by simp only [comp_eq₂]⟩
 #align ring_hom_inv_pair.triples₂ RingHomInvPair.triples₂
@@ -152,13 +152,13 @@ end RingHomInvPair
 
 namespace RingHomCompTriple
 
-instance ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ :=
+instance (priority := 10000) ids : RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂ :=
   ⟨by
     ext
     simp⟩
 #align ring_hom_comp_triple.ids RingHomCompTriple.ids
 
-instance right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ :=
+instance (priority := 10000) right_ids : RingHomCompTriple σ₁₂ (RingHom.id R₂) σ₁₂ :=
   ⟨by
     ext
     simp⟩
@@ -186,7 +186,7 @@ instance (priority := 100) invPair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+*
   ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩
 #align ring_hom_surjective.inv_pair RingHomSurjective.invPair
 
-instance ids : RingHomSurjective (RingHom.id R₁) :=
+instance (priority := 10000) ids : RingHomSurjective (RingHom.id R₁) :=
   ⟨is_surjective⟩
 #align ring_hom_surjective.ids RingHomSurjective.ids
 

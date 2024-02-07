@@ -25,7 +25,7 @@ namespace Nonneg
 
 variable {α : Type*}
 
-instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :
+instance (priority := 10000) floorSemiring [OrderedSemiring α] [FloorSemiring α] :
     FloorSemiring { r : α // 0 ≤ r } where
   floor a := ⌊(a : α)⌋₊
   ceil a := ⌈(a : α)⌉₊

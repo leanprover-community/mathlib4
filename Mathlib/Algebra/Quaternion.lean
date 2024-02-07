@@ -102,8 +102,8 @@ theorem mk.eta {R : Type*} {c₁ c₂} (a : ℍ[R,c₁,c₂]) : mk a.1 a.2 a.3 a
 
 variable {S T R : Type*} [CommRing R] {c₁ c₂ : R} (r x y z : R) (a b c : ℍ[R,c₁,c₂])
 
-instance [Subsingleton R] : Subsingleton ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).subsingleton
-instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).surjective.nontrivial
+instance (priority := 10000) [Subsingleton R] : Subsingleton ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).subsingleton
+instance (priority := 10000) [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂] := (equivTuple c₁ c₂).surjective.nontrivial
 
 /-- The imaginary part of a quaternion. -/
 def im (x : ℍ[R,c₁,c₂]) : ℍ[R,c₁,c₂] :=
@@ -138,7 +138,7 @@ theorem im_idem : a.im.im = a.im :=
 /-- Coercion `R → ℍ[R,c₁,c₂]`. -/
 @[coe] def coe (x : R) : ℍ[R,c₁,c₂] := ⟨x, 0, 0, 0⟩
 
-instance : CoeTC R ℍ[R,c₁,c₂] := ⟨coe⟩
+instance (priority := 10000) : CoeTC R ℍ[R,c₁,c₂] := ⟨coe⟩
 
 @[simp, norm_cast]
 theorem coe_re : (x : ℍ[R,c₁,c₂]).re = x := rfl
@@ -165,7 +165,7 @@ theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂]) = y ↔ x = y :=
 #align quaternion_algebra.coe_inj QuaternionAlgebra.coe_inj
 
 -- porting note: removed `simps`, added simp lemmas manually
-instance : Zero ℍ[R,c₁,c₂] := ⟨⟨0, 0, 0, 0⟩⟩
+instance (priority := 10000) : Zero ℍ[R,c₁,c₂] := ⟨⟨0, 0, 0, 0⟩⟩
 
 @[simp] theorem zero_re : (0 : ℍ[R,c₁,c₂]).re = 0 := rfl
 #align quaternion_algebra.has_zero_zero_re QuaternionAlgebra.zero_re
@@ -185,10 +185,10 @@ instance : Zero ℍ[R,c₁,c₂] := ⟨⟨0, 0, 0, 0⟩⟩
 theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂]) = 0 := rfl
 #align quaternion_algebra.coe_zero QuaternionAlgebra.coe_zero
 
-instance : Inhabited ℍ[R,c₁,c₂] := ⟨0⟩
+instance (priority := 10000) : Inhabited ℍ[R,c₁,c₂] := ⟨0⟩
 
 -- porting note: removed `simps`, added simp lemmas manually
-instance : One ℍ[R,c₁,c₂] := ⟨⟨1, 0, 0, 0⟩⟩
+instance (priority := 10000) : One ℍ[R,c₁,c₂] := ⟨⟨1, 0, 0, 0⟩⟩
 
 @[simp] theorem one_re : (1 : ℍ[R,c₁,c₂]).re = 1 := rfl
 #align quaternion_algebra.has_one_one_re QuaternionAlgebra.one_re
@@ -209,7 +209,7 @@ theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂]) = 1 := rfl
 #align quaternion_algebra.coe_one QuaternionAlgebra.coe_one
 
 -- porting note: removed `simps`, added simp lemmas manually
-instance : Add ℍ[R,c₁,c₂] :=
+instance (priority := 10000) : Add ℍ[R,c₁,c₂] :=
   ⟨fun a b => ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩⟩
 
 @[simp] theorem add_re : (a + b).re = a.re + b.re := rfl
@@ -238,7 +238,7 @@ theorem coe_add : ((x + y : R) : ℍ[R,c₁,c₂]) = x + y := by ext <;> simp
 #align quaternion_algebra.coe_add QuaternionAlgebra.coe_add
 
 -- porting note: removed `simps`, added simp lemmas manually
-instance : Neg ℍ[R,c₁,c₂] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
+instance (priority := 10000) : Neg ℍ[R,c₁,c₂] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
 
 @[simp] theorem neg_re : (-a).re = -a.re := rfl
 #align quaternion_algebra.has_neg_neg_re QuaternionAlgebra.neg_re
@@ -264,7 +264,7 @@ theorem neg_mk (a₁ a₂ a₃ a₄ : R) : -(mk a₁ a₂ a₃ a₄ : ℍ[R,c₁
 theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂]) = -x := by ext <;> simp
 #align quaternion_algebra.coe_neg QuaternionAlgebra.coe_neg
 
-instance : Sub ℍ[R,c₁,c₂] :=
+instance (priority := 10000) : Sub ℍ[R,c₁,c₂] :=
   ⟨fun a b => ⟨a.1 - b.1, a.2 - b.2, a.3 - b.3, a.4 - b.4⟩⟩
 
 @[simp] theorem sub_re : (a - b).re = a.re - b.re := rfl
@@ -317,7 +317,7 @@ theorem sub_self_re : a - a.re = a.im :=
 * `k * k = -c₁ * c₂`;
 * `i * k = c₁ * j`, `k * i = -c₁ * j`;
 * `j * k = -c₂ * i`, `k * j = c₂ * i`.  -/
-instance : Mul ℍ[R,c₁,c₂] :=
+instance (priority := 10000) : Mul ℍ[R,c₁,c₂] :=
   ⟨fun a b =>
     ⟨a.1 * b.1 + c₁ * a.2 * b.2 + c₂ * a.3 * b.3 - c₁ * c₂ * a.4 * b.4,
       a.1 * b.2 + a.2 * b.1 - c₂ * a.3 * b.4 + c₂ * a.4 * b.3,
@@ -354,12 +354,12 @@ section
 variable [SMul S R] [SMul T R] (s : S)
 
 -- porting note: Lean 4 auto drops the unused `[Ring R]` argument
-instance : SMul S ℍ[R,c₁,c₂] where smul s a := ⟨s • a.1, s • a.2, s • a.3, s • a.4⟩
+instance (priority := 10000) : SMul S ℍ[R,c₁,c₂] where smul s a := ⟨s • a.1, s • a.2, s • a.3, s • a.4⟩
 
-instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂] where
+instance (priority := 10000) [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂] where
   smul_assoc s t x := by ext <;> exact smul_assoc _ _ _
 
-instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂] where
+instance (priority := 10000) [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂] where
   smul_comm s t x := by ext <;> exact smul_comm _ _ _
 
 @[simp] theorem smul_re : (s • a).re = s • a.re := rfl
@@ -391,11 +391,11 @@ theorem coe_smul [SMulZeroClass S R] (s : S) (r : R) :
   QuaternionAlgebra.ext _ _ rfl (smul_zero s).symm (smul_zero s).symm (smul_zero s).symm
 #align quaternion_algebra.coe_smul QuaternionAlgebra.coe_smul
 
-instance : AddCommGroup ℍ[R,c₁,c₂] :=
+instance (priority := 10000) : AddCommGroup ℍ[R,c₁,c₂] :=
   (equivProd c₁ c₂).injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (λ _ _ ↦ rfl) (λ _ _ ↦ rfl)
 
-instance : AddCommGroupWithOne ℍ[R,c₁,c₂] where
+instance (priority := 10000) : AddCommGroupWithOne ℍ[R,c₁,c₂] where
   natCast n := ((n : R) : ℍ[R,c₁,c₂])
   natCast_zero := by simp
   natCast_succ := by simp
@@ -465,7 +465,7 @@ theorem coe_int_cast (z : ℤ) : ↑(z : R) = (z : ℍ[R,c₁,c₂]) :=
   rfl
 #align quaternion_algebra.coe_int_cast QuaternionAlgebra.coe_int_cast
 
-instance instRing : Ring ℍ[R,c₁,c₂] where
+instance (priority := 10000) instRing : Ring ℍ[R,c₁,c₂] where
   __ := inferInstanceAs (AddCommGroupWithOne ℍ[R,c₁,c₂])
   left_distrib _ _ _ := by ext <;> simp <;> ring
   right_distrib _ _ _ := by ext <;> simp <;> ring
@@ -481,7 +481,7 @@ theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
 
 -- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
 -- for `ℍ[R]`)
-instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
+instance (priority := 10000) [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
   smul := (· • ·)
   toFun s := coe (algebraMap S R s)
   map_one' := by simp only [map_one, coe_one]
@@ -498,7 +498,7 @@ theorem algebraMap_eq (r : R) : algebraMap R ℍ[R,c₁,c₂] r = ⟨r, 0, 0, 0�
 theorem algebraMap_injective : (algebraMap R ℍ[R,c₁,c₂] : _ → _).Injective :=
   fun _ _ ↦ by simp [algebraMap_eq]
 
-instance [NoZeroDivisors R] : NoZeroSMulDivisors R ℍ[R,c₁,c₂] := ⟨by
+instance (priority := 10000) [NoZeroDivisors R] : NoZeroSMulDivisors R ℍ[R,c₁,c₂] := ⟨by
   rintro t ⟨a, b, c, d⟩ h
   rw [or_iff_not_imp_left]
   intro ht
@@ -571,9 +571,9 @@ theorem coe_basisOneIJK_repr (q : ℍ[R,c₁,c₂]) :
   rfl
 #align quaternion_algebra.coe_basis_one_i_j_k_repr QuaternionAlgebra.coe_basisOneIJK_repr
 
-instance : Module.Finite R ℍ[R,c₁,c₂] := .of_basis (basisOneIJK c₁ c₂)
+instance (priority := 10000) : Module.Finite R ℍ[R,c₁,c₂] := .of_basis (basisOneIJK c₁ c₂)
 
-instance : Module.Free R ℍ[R,c₁,c₂] := .of_basis (basisOneIJK c₁ c₂)
+instance (priority := 10000) : Module.Free R ℍ[R,c₁,c₂] := .of_basis (basisOneIJK c₁ c₂)
 
 theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂] = 4 := by
   rw [rank_eq_card_basis (basisOneIJK c₁ c₂), Fintype.card_fin]
@@ -635,7 +635,7 @@ theorem smul_coe : x • (y : ℍ[R,c₁,c₂]) = ↑(x * y) := by rw [coe_mul, 
 #align quaternion_algebra.smul_coe QuaternionAlgebra.smul_coe
 
 /-- Quaternion conjugate. -/
-instance instStarQuaternionAlgebra : Star ℍ[R,c₁,c₂] where star a := ⟨a.1, -a.2, -a.3, -a.4⟩
+instance (priority := 10000) instStarQuaternionAlgebra : Star ℍ[R,c₁,c₂] where star a := ⟨a.1, -a.2, -a.3, -a.4⟩
 
 @[simp] theorem re_star : (star a).re = a.re := rfl
 #align quaternion_algebra.re_star QuaternionAlgebra.re_star
@@ -665,7 +665,7 @@ theorem star_mk (a₁ a₂ a₃ a₄ : R) : star (mk a₁ a₂ a₃ a₄ : ℍ[R
   rfl
 #align quaternion_algebra.star_mk QuaternionAlgebra.star_mk
 
-instance instStarRing : StarRing ℍ[R,c₁,c₂] where
+instance (priority := 10000) instStarRing : StarRing ℍ[R,c₁,c₂] where
   star_involutive x := by simp [Star.star]
   star_add a b := by ext <;> simp [add_comm]
   star_mul a b := by ext <;> simp <;> ring
@@ -686,7 +686,7 @@ theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a :=
   eq_sub_iff_add_eq.2 a.star_add_self'
 #align quaternion_algebra.star_eq_two_re_sub QuaternionAlgebra.star_eq_two_re_sub
 
-instance : IsStarNormal a :=
+instance (priority := 10000) : IsStarNormal a :=
   ⟨by
     rw [a.star_eq_two_re_sub]
     exact (coe_commute (2 * a.re) a).sub_left (Commute.refl a)⟩
@@ -781,9 +781,9 @@ theorem Quaternion.equivTuple_apply (R : Type*) [One R] [Neg R] (x : ℍ[R]) :
   rfl
 #align quaternion.equiv_tuple_apply Quaternion.equivTuple_apply
 
-instance {R : Type*} [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] :=
+instance (priority := 10000) {R : Type*} [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] :=
   inferInstanceAs (Subsingleton <| ℍ[R, -1, -1])
-instance {R : Type*} [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
+instance (priority := 10000) {R : Type*} [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
   inferInstanceAs (Nontrivial <| ℍ[R, -1, -1])
 
 namespace Quaternion
@@ -795,27 +795,27 @@ export QuaternionAlgebra (re imI imJ imK)
 /-- Coercion `R → ℍ[R]`. -/
 @[coe] def coe : R → ℍ[R] := QuaternionAlgebra.coe
 
-instance : CoeTC R ℍ[R] := ⟨coe⟩
+instance (priority := 10000) : CoeTC R ℍ[R] := ⟨coe⟩
 
-instance instRing : Ring ℍ[R] := QuaternionAlgebra.instRing
+instance (priority := 10000) instRing : Ring ℍ[R] := QuaternionAlgebra.instRing
 
-instance : Inhabited ℍ[R] := inferInstanceAs <| Inhabited ℍ[R,-1,-1]
+instance (priority := 10000) : Inhabited ℍ[R] := inferInstanceAs <| Inhabited ℍ[R,-1,-1]
 
-instance [SMul S R] : SMul S ℍ[R] := inferInstanceAs <| SMul S ℍ[R,-1,-1]
+instance (priority := 10000) [SMul S R] : SMul S ℍ[R] := inferInstanceAs <| SMul S ℍ[R,-1,-1]
 
-instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower S T ℍ[R] :=
+instance (priority := 10000) [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower S T ℍ[R] :=
   inferInstanceAs <| IsScalarTower S T ℍ[R,-1,-1]
 
-instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
+instance (priority := 10000) [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
   inferInstanceAs <| SMulCommClass S T ℍ[R,-1,-1]
 
 protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,-1]
 
 -- porting note: added shortcut
-instance : Star ℍ[R] := QuaternionAlgebra.instStarQuaternionAlgebra
-instance : StarRing ℍ[R] := QuaternionAlgebra.instStarRing
-instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,-1]) a
+instance (priority := 10000) : Star ℍ[R] := QuaternionAlgebra.instStarQuaternionAlgebra
+instance (priority := 10000) : StarRing ℍ[R] := QuaternionAlgebra.instStarRing
+instance (priority := 10000) : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,-1]) a
 
 @[ext]
 theorem ext : a.re = b.re → a.imI = b.imI → a.imJ = b.imJ → a.imK = b.imK → a = b :=
@@ -1111,8 +1111,8 @@ theorem smul_coe : x • (y : ℍ[R]) = ↑(x * y) :=
   QuaternionAlgebra.smul_coe x y
 #align quaternion.smul_coe Quaternion.smul_coe
 
-instance : Module.Finite R ℍ[R] := inferInstanceAs <| Module.Finite R ℍ[R,-1,-1]
-instance : Module.Free R ℍ[R] := inferInstanceAs <| Module.Free R ℍ[R,-1,-1]
+instance (priority := 10000) : Module.Finite R ℍ[R] := inferInstanceAs <| Module.Finite R ℍ[R,-1,-1]
+instance (priority := 10000) : Module.Free R ℍ[R] := inferInstanceAs <| Module.Free R ℍ[R,-1,-1]
 
 theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R] = 4 :=
   QuaternionAlgebra.rank_eq_four _ _
@@ -1316,15 +1316,15 @@ theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
   normSq_nonneg.le_iff_eq.trans normSq_eq_zero
 #align quaternion.norm_sq_le_zero Quaternion.normSq_le_zero
 
-instance instNontrivial : Nontrivial ℍ[R] where
+instance (priority := 10000) instNontrivial : Nontrivial ℍ[R] where
   exists_pair_ne := ⟨0, 1, mt (congr_arg re) zero_ne_one⟩
 
-instance : NoZeroDivisors ℍ[R] where
+instance (priority := 10000) : NoZeroDivisors ℍ[R] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab :=
     have : normSq a * normSq b = 0 := by rwa [← map_mul, normSq_eq_zero]
     (eq_zero_or_eq_zero_of_mul_eq_zero this).imp normSq_eq_zero.1 normSq_eq_zero.1
 
-instance : IsDomain ℍ[R] := NoZeroDivisors.to_isDomain _
+instance (priority := 10000) : IsDomain ℍ[R] := NoZeroDivisors.to_isDomain _
 
 theorem sq_eq_normSq : a ^ 2 = normSq a ↔ a = a.re := by
   rw [← star_eq_self, ← star_mul_self, sq, mul_eq_mul_right_iff, eq_comm]
@@ -1345,10 +1345,10 @@ section Field
 variable [LinearOrderedField R] (a b : ℍ[R])
 
 @[simps (config := .lemmasOnly)]
-instance instInv : Inv ℍ[R] :=
+instance (priority := 10000) instInv : Inv ℍ[R] :=
   ⟨fun a => (normSq a)⁻¹ • star a⟩
 
-instance instGroupWithZero : GroupWithZero ℍ[R] :=
+instance (priority := 10000) instGroupWithZero : GroupWithZero ℍ[R] :=
   { Quaternion.instNontrivial,
     (by infer_instance : MonoidWithZero ℍ[R]) with
     inv := Inv.inv
@@ -1375,7 +1375,7 @@ theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :
 #align quaternion.coe_zpow Quaternion.coe_zpow
 
 -- porting note: split from `DivisionRing` instance
-instance : RatCast ℍ[R] where
+instance (priority := 10000) : RatCast ℍ[R] where
   ratCast := fun q => ↑(q : R)
 
 @[simp, norm_cast]
@@ -1409,7 +1409,7 @@ theorem coe_rat_cast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) :=
 #align quaternion.coe_rat_cast Quaternion.coe_rat_cast
 
 -- porting note: moved below `coe_rat_cast`, as `coe_rat_cast` is needed in the `rw`s
-instance : DivisionRing ℍ[R] :=
+instance (priority := 10000) : DivisionRing ℍ[R] :=
   { Quaternion.instGroupWithZero,
     Quaternion.instRing with
     ratCast_mk := fun n d hd h => by

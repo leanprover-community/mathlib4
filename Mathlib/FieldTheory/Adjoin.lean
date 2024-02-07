@@ -92,17 +92,17 @@ def gi : GaloisInsertion (adjoin F : Set E → IntermediateField F E)
   choice_eq _ _ := copy_eq _ _ _
 #align intermediate_field.gi IntermediateField.gi
 
-instance : CompleteLattice (IntermediateField F E) where
+instance (priority := 10000) : CompleteLattice (IntermediateField F E) where
   __ := GaloisInsertion.liftCompleteLattice IntermediateField.gi
   bot :=
     { toSubalgebra := ⊥
       inv_mem' := by rintro x ⟨r, rfl⟩; exact ⟨r⁻¹, map_inv₀ _ _⟩ }
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
 
-instance : Inhabited (IntermediateField F E) :=
+instance (priority := 10000) : Inhabited (IntermediateField F E) :=
   ⟨⊤⟩
 
-instance : Unique (IntermediateField F F) :=
+instance (priority := 10000) : Unique (IntermediateField F F) :=
   { inferInstanceAs (Inhabited (IntermediateField F F)) with
     uniq := fun _ ↦ toSubalgebra_injective <| Subsingleton.elim _ _ }
 
@@ -236,7 +236,7 @@ theorem botEquiv_symm (x : F) : (botEquiv F E).symm x = algebraMap F _ x :=
   rfl
 #align intermediate_field.bot_equiv_symm IntermediateField.botEquiv_symm
 
-noncomputable instance algebraOverBot : Algebra (⊥ : IntermediateField F E) F :=
+noncomputable instance (priority := 10000) algebraOverBot : Algebra (⊥ : IntermediateField F E) F :=
   (IntermediateField.botEquiv F E).toAlgHom.toRingHom.toAlgebra
 #align intermediate_field.algebra_over_bot IntermediateField.algebraOverBot
 
@@ -246,7 +246,7 @@ theorem coe_algebraMap_over_bot :
   rfl
 #align intermediate_field.coe_algebra_map_over_bot IntermediateField.coe_algebraMap_over_bot
 
-instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F E :=
+instance (priority := 10000) isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F E :=
   IsScalarTower.of_algebraMap_eq
     (by
       intro x
@@ -353,14 +353,14 @@ theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F
   exact adjoin.algebraMap_mem F S f
 #align intermediate_field.adjoin.range_algebra_map_subset IntermediateField.adjoin.range_algebraMap_subset
 
-instance adjoin.fieldCoe : CoeTC F (adjoin F S) where
+instance (priority := 10000) adjoin.fieldCoe : CoeTC F (adjoin F S) where
   coe x := ⟨algebraMap F E x, adjoin.algebraMap_mem F S x⟩
 #align intermediate_field.adjoin.field_coe IntermediateField.adjoin.fieldCoe
 
 theorem subset_adjoin : S ⊆ adjoin F S := fun _ hx => Subfield.subset_closure (Or.inr hx)
 #align intermediate_field.subset_adjoin IntermediateField.subset_adjoin
 
-instance adjoin.setCoe : CoeTC S (adjoin F S) where coe x := ⟨x, subset_adjoin F S (Subtype.mem x)⟩
+instance (priority := 10000) adjoin.setCoe : CoeTC S (adjoin F S) where coe x := ⟨x, subset_adjoin F S (Subtype.mem x)⟩
 #align intermediate_field.adjoin.set_coe IntermediateField.adjoin.setCoe
 
 @[mono]
@@ -706,7 +706,7 @@ theorem sup_toSubalgebra_of_right [FiniteDimensional K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra :=
   sup_toSubalgebra_of_isAlgebraic_right E1 E2 (Algebra.IsAlgebraic.of_finite K _)
 
-instance finiteDimensional_sup [FiniteDimensional K E1] [FiniteDimensional K E2] :
+instance (priority := 10000) finiteDimensional_sup [FiniteDimensional K E1] [FiniteDimensional K E2] :
     FiniteDimensional K (E1 ⊔ E2 : IntermediateField K L) := by
   let g := Algebra.TensorProduct.productMap E1.val E2.val
   suffices g.range = (E1 ⊔ E2).toSubalgebra by
@@ -734,7 +734,7 @@ theorem toSubalgebra_iSup_of_directed (dir : Directed (· ≤ ·) t) :
   · simp_rw [iSup_of_empty, bot_toSubalgebra]
   · exact SetLike.ext' ((coe_iSup_of_directed dir).trans (Subalgebra.coe_iSup_of_directed dir).symm)
 
-instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensional K (t i)] :
+instance (priority := 10000) finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i, t i : IntermediateField K L) := by
   rw [← iSup_univ]
   let P : Set ι → Prop := fun s => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L)
@@ -749,7 +749,7 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
     exact IntermediateField.finiteDimensional_sup _ _
 #align intermediate_field.finite_dimensional_supr_of_finite IntermediateField.finiteDimensional_iSup_of_finite
 
-instance finiteDimensional_iSup_of_finset
+instance (priority := 10000) finiteDimensional_iSup_of_finset
     /-Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (t i)` because this caused an
       error. See `finiteDimensional_iSup_of_finset'` for a stronger version, that was the one
       used in mathlib3.-/
@@ -873,7 +873,7 @@ theorem adjoin_finite_isCompactElement {S : Set E} (h : S.Finite) : IsCompactEle
 #align intermediate_field.adjoin_finite_is_compact_element IntermediateField.adjoin_finite_isCompactElement
 
 /-- The lattice of intermediate fields is compactly generated. -/
-instance : IsCompactlyGenerated (IntermediateField F E) :=
+instance (priority := 10000) : IsCompactlyGenerated (IntermediateField F E) :=
   ⟨fun s =>
     ⟨(fun x => F⟮x⟯) '' s,
       ⟨by rintro t ⟨x, _, rfl⟩; exact adjoin_simple_isCompactElement x,

@@ -131,7 +131,7 @@ section NoZeroDivisors
 
 variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 
-instance : NoZeroDivisors R[X] where
+instance (priority := 10000) : NoZeroDivisors R[X] where
   eq_zero_or_eq_zero_of_mul_eq_zero h := by
     rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero]
     refine' eq_zero_or_eq_zero_of_mul_eq_zero _
@@ -353,7 +353,7 @@ section Ring
 
 variable [Ring R] [IsDomain R] {p q : R[X]}
 
-instance : IsDomain R[X] :=
+instance (priority := 10000) : IsDomain R[X] :=
   NoZeroDivisors.to_isDomain _
 
 end Ring
@@ -1143,7 +1143,7 @@ theorem rootSet_neg (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] :
     (-p).rootSet S = p.rootSet S := by
   rw [rootSet, aroots_neg, rootSet]
 
-instance rootSetFintype (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
+instance (priority := 10000) rootSetFintype (p : T[X]) (S : Type*) [CommRing S] [IsDomain S] [Algebra T S] :
     Fintype (p.rootSet S) :=
   FinsetCoe.fintype _
 #align polynomial.root_set_fintype Polynomial.rootSetFintype

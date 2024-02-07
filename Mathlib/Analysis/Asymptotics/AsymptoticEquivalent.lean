@@ -355,11 +355,11 @@ theorem Filter.EventuallyEq.trans_isEquivalent {f g₁ g₂ : α → β} (h : f 
 
 namespace Asymptotics
 
-instance transIsEquivalentIsEquivalent :
+instance (priority := 10000) transIsEquivalentIsEquivalent :
     @Trans (α → β) (α → β) (α → β) (IsEquivalent l) (IsEquivalent l) (IsEquivalent l) where
   trans := IsEquivalent.trans
 
-instance transEventuallyEqIsEquivalent :
+instance (priority := 10000) transEventuallyEqIsEquivalent :
     @Trans (α → β) (α → β) (α → β) (EventuallyEq l) (IsEquivalent l) (IsEquivalent l) where
   trans := EventuallyEq.trans_isEquivalent
 
@@ -368,7 +368,7 @@ theorem IsEquivalent.trans_eventuallyEq {f g₁ g₂ : α → β} (h : f ~[l] g�
     (h₂ : g₁ =ᶠ[l] g₂) : f ~[l] g₂ :=
   h.trans h₂.isEquivalent
 
-instance transIsEquivalentEventuallyEq :
+instance (priority := 10000) transIsEquivalentEventuallyEq :
     @Trans (α → β) (α → β) (α → β) (IsEquivalent l) (EventuallyEq l) (IsEquivalent l) where
   trans := IsEquivalent.trans_eventuallyEq
 
@@ -377,7 +377,7 @@ theorem IsEquivalent.trans_isBigO {f g₁ : α → β} {g₂ : α → β₂} (h 
     f =O[l] g₂ :=
   IsBigO.trans h.isBigO h₂
 
-instance transIsEquivalentIsBigO :
+instance (priority := 10000) transIsEquivalentIsBigO :
     @Trans (α → β) (α → β) (α → β₂) (IsEquivalent l) (IsBigO l) (IsBigO l) where
   trans := IsEquivalent.trans_isBigO
 
@@ -386,7 +386,7 @@ theorem IsBigO.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} (h 
     f =O[l] g₂ :=
   IsBigO.trans h h₂.isBigO
 
-instance transIsBigOIsEquivalent :
+instance (priority := 10000) transIsBigOIsEquivalent :
     @Trans (α → β₂) (α → β) (α → β) (IsBigO l) (IsEquivalent l) (IsBigO l) where
   trans := IsBigO.trans_isEquivalent
 
@@ -395,7 +395,7 @@ theorem IsEquivalent.trans_isLittleO {f g₁ : α → β} {g₂ : α → β₂} 
     (h₂ : g₁ =o[l] g₂) : f =o[l] g₂ :=
   IsBigO.trans_isLittleO h.isBigO h₂
 
-instance transIsEquivalentIsLittleO :
+instance (priority := 10000) transIsEquivalentIsLittleO :
     @Trans (α → β) (α → β) (α → β₂) (IsEquivalent l) (IsLittleO l) (IsLittleO l) where
   trans := IsEquivalent.trans_isLittleO
 
@@ -404,7 +404,7 @@ theorem IsLittleO.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} 
     (h₂ : g₁ ~[l] g₂) : f =o[l] g₂ :=
   IsLittleO.trans_isBigO h h₂.isBigO
 
-instance transIsLittleOIsEquivalent :
+instance (priority := 10000) transIsLittleOIsEquivalent :
     @Trans (α → β₂) (α → β) (α → β) (IsLittleO l) (IsEquivalent l) (IsLittleO l) where
   trans := IsLittleO.trans_isEquivalent
 
@@ -413,7 +413,7 @@ theorem IsEquivalent.trans_isTheta {f g₁ : α → β} {g₂ : α → β₂} (h
     (h₂ : g₁ =Θ[l] g₂) : f =Θ[l] g₂ :=
   IsTheta.trans h.isTheta h₂
 
-instance transIsEquivalentIsTheta :
+instance (priority := 10000) transIsEquivalentIsTheta :
     @Trans (α → β) (α → β) (α → β₂) (IsEquivalent l) (IsTheta l) (IsTheta l) where
   trans := IsEquivalent.trans_isTheta
 
@@ -422,7 +422,7 @@ theorem IsTheta.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} (h
     (h₂ : g₁ ~[l] g₂) : f =Θ[l] g₂ :=
   IsTheta.trans h h₂.isTheta
 
-instance transIsThetaIsEquivalent :
+instance (priority := 10000) transIsThetaIsEquivalent :
     @Trans (α → β₂) (α → β) (α → β) (IsTheta l) (IsEquivalent l) (IsTheta l) where
   trans := IsTheta.trans_isEquivalent
 

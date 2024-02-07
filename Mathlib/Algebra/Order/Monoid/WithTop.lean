@@ -29,7 +29,7 @@ section One
 variable [One α] {a : α}
 
 @[to_additive]
-instance one : One (WithTop α) :=
+instance (priority := 10000) one : One (WithTop α) :=
   ⟨(1 : α)⟩
 #align with_top.has_one WithTop.one
 #align with_top.has_zero WithTop.zero
@@ -100,7 +100,7 @@ protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 :
 #align with_top.map_one WithTop.map_one
 #align with_top.map_zero WithTop.map_zero
 
-instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
+instance (priority := 10000) zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨some_le_some.2 zero_le_one⟩
 
 end One
@@ -109,7 +109,7 @@ section Add
 
 variable [Add α] {a b c d : WithTop α} {x y : α}
 
-instance add : Add (WithTop α) :=
+instance (priority := 10000) add : Add (WithTop α) :=
   ⟨Option.map₂ (· + ·)⟩
 #align with_top.has_add WithTop.add
 
@@ -195,7 +195,7 @@ theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊤) : a + b = a + 
 theorem add_left_cancel [IsLeftCancelAdd α] (ha : a ≠ ⊤) (h : a + b = a + c) : b = c :=
   (WithTop.add_left_cancel_iff ha).1 h
 
-instance covariantClass_add_le [LE α] [CovariantClass α α (· + ·) (· ≤ ·)] :
+instance (priority := 10000) covariantClass_add_le [LE α] [CovariantClass α α (· + ·) (· ≤ ·)] :
     CovariantClass (WithTop α) (WithTop α) (· + ·) (· ≤ ·) :=
   ⟨fun a b c h => by
     cases a <;> cases c <;> try exact le_top
@@ -203,7 +203,7 @@ instance covariantClass_add_le [LE α] [CovariantClass α α (· + ·) (· ≤ �
     exact coe_le_coe.2 (add_le_add_left (coe_le_coe.1 h) _)⟩
 #align with_top.covariant_class_add_le WithTop.covariantClass_add_le
 
-instance covariantClass_swap_add_le [LE α] [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
+instance (priority := 10000) covariantClass_swap_add_le [LE α] [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
     CovariantClass (WithTop α) (WithTop α) (swap (· + ·)) (· ≤ ·) :=
   ⟨fun a b c h => by
     cases a <;> cases c <;> try exact le_top
@@ -211,7 +211,7 @@ instance covariantClass_swap_add_le [LE α] [CovariantClass α α (swap (· + ·
     exact coe_le_coe.2 (add_le_add_right (coe_le_coe.1 h) _)⟩
 #align with_top.covariant_class_swap_add_le WithTop.covariantClass_swap_add_le
 
-instance contravariantClass_add_lt [LT α] [ContravariantClass α α (· + ·) (· < ·)] :
+instance (priority := 10000) contravariantClass_add_lt [LT α] [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithTop α) (WithTop α) (· + ·) (· < ·) :=
   ⟨fun a b c h => by
     induction a using WithTop.recTopCoe; · exact (not_none_lt _ h).elim
@@ -221,7 +221,7 @@ instance contravariantClass_add_lt [LT α] [ContravariantClass α α (· + ·) (
     · exact coe_lt_coe.2 (lt_of_add_lt_add_left <| coe_lt_coe.1 h)⟩
 #align with_top.contravariant_class_add_lt WithTop.contravariantClass_add_lt
 
-instance contravariantClass_swap_add_lt [LT α] [ContravariantClass α α (swap (· + ·)) (· < ·)] :
+instance (priority := 10000) contravariantClass_swap_add_lt [LT α] [ContravariantClass α α (swap (· + ·)) (· < ·)] :
     ContravariantClass (WithTop α) (WithTop α) (swap (· + ·)) (· < ·) :=
   ⟨fun a b c h => by
     cases a <;> cases b <;> try exact (not_none_lt _ h).elim
@@ -316,15 +316,15 @@ protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
 
 end Add
 
-instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
+instance (priority := 10000) addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
   { WithTop.add with
     add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc }
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
+instance (priority := 10000) addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
   { WithTop.addSemigroup with
     add_comm := fun _ _ => Option.map₂_comm add_comm }
 
-instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
+instance (priority := 10000) addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
   { WithTop.zero, WithTop.add with
     zero_add := Option.map₂_left_identity zero_add
     add_zero := Option.map₂_right_identity add_zero }
@@ -332,7 +332,7 @@ instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
 section AddMonoid
 variable [AddMonoid α]
 
-instance addMonoid : AddMonoid (WithTop α) where
+instance (priority := 10000) addMonoid : AddMonoid (WithTop α) where
   __ := WithTop.addSemigroup
   __ := WithTop.addZeroClass
   nsmul n a := match a, n with
@@ -357,13 +357,13 @@ def addHom : α →+ WithTop α where
 
 end AddMonoid
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
+instance (priority := 10000) addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithTop α) :=
   { WithTop.addMonoid, WithTop.addCommSemigroup with }
 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
 
-instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
+instance (priority := 10000) addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
   { WithTop.one, WithTop.addMonoid with
     natCast := fun n => ↑(n : α),
     natCast_zero := by
@@ -384,22 +384,22 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 
 end AddMonoidWithOne
 
-instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
+instance (priority := 10000) charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
   { cast_injective := Function.Injective.comp (f := Nat.cast (R := α))
       (fun _ _ => WithTop.coe_eq_coe.1) Nat.cast_injective}
 
-instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
+instance (priority := 10000) addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithTop α) :=
   { WithTop.addMonoidWithOne, WithTop.addCommMonoid with }
 
-instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
+instance (priority := 10000) orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
   add_le_add_left _ _ := add_le_add_left
 
-instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
+instance (priority := 10000) linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoidWithTop (WithTop α) :=
   { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with
     top_add' := WithTop.top_add }
 
-instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithTop α) :=
+instance (priority := 10000) existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithTop α) :=
   ⟨fun {a} {b} =>
     match a, b with
     | ⊤, ⊤ => by simp
@@ -409,7 +409,7 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
       exact ⟨c, rfl⟩
     | ⊤, (b : α) => fun h => (not_top_le_coe _ h).elim⟩
 
-instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
+instance (priority := 10000) canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
     CanonicallyOrderedAddCommMonoid (WithTop α) :=
   { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
     le_self_add := fun a b =>
@@ -419,7 +419,7 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
       | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
       | ⊤, (b : α) => le_rfl }
 
-instance [CanonicallyLinearOrderedAddCommMonoid α] :
+instance (priority := 10000) [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedAddCommMonoid (WithTop α) :=
   { WithTop.canonicallyOrderedAddCommMonoid, WithTop.linearOrder with }
 
@@ -524,27 +524,27 @@ protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 :
 #align with_bot.map_one WithBot.map_one
 #align with_bot.map_zero WithBot.map_zero
 
-instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
+instance (priority := 10000) zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
   ⟨some_le_some.2 zero_le_one⟩
 
 end One
 
-instance add [Add α] : Add (WithBot α) :=
+instance (priority := 10000) add [Add α] : Add (WithBot α) :=
   WithTop.add
 
-instance AddSemigroup [AddSemigroup α] : AddSemigroup (WithBot α) :=
+instance (priority := 10000) AddSemigroup [AddSemigroup α] : AddSemigroup (WithBot α) :=
   WithTop.addSemigroup
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithBot α) :=
+instance (priority := 10000) addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithBot α) :=
   WithTop.addCommSemigroup
 
-instance addZeroClass [AddZeroClass α] : AddZeroClass (WithBot α) :=
+instance (priority := 10000) addZeroClass [AddZeroClass α] : AddZeroClass (WithBot α) :=
   WithTop.addZeroClass
 
 section AddMonoid
 variable [AddMonoid α]
 
-instance addMonoid : AddMonoid (WithBot α) := WithTop.addMonoid
+instance (priority := 10000) addMonoid : AddMonoid (WithBot α) := WithTop.addMonoid
 
 /-- Coercion from `α` to `WithBot α` as an `AddMonoidHom`. -/
 def addHom : α →+ WithBot α where
@@ -561,13 +561,13 @@ lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithBot α) :=
 
 end AddMonoid
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
+instance (priority := 10000) addCommMonoid [AddCommMonoid α] : AddCommMonoid (WithBot α) :=
   WithTop.addCommMonoid
 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α]
 
-instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWithOne
+instance (priority := 10000) addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWithOne
 
 @[norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithBot α) = n := rfl
 #align with_bot.coe_nat WithBot.coe_nat
@@ -580,10 +580,10 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
 
 end AddMonoidWithOne
 
-instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
+instance (priority := 10000) charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithBot α) :=
   WithTop.charZero
 
-instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
+instance (priority := 10000) addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne (WithBot α) :=
   WithTop.addCommMonoidWithOne
 
 section Add
@@ -701,22 +701,22 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [Add
 
 variable [Preorder α]
 
-instance covariantClass_add_le [CovariantClass α α (· + ·) (· ≤ ·)] :
+instance (priority := 10000) covariantClass_add_le [CovariantClass α α (· + ·) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (· + ·) (· ≤ ·) :=
   OrderDual.covariantClass_add_le (α := WithTop αᵒᵈ)
 #align with_bot.covariant_class_add_le WithBot.covariantClass_add_le
 
-instance covariantClass_swap_add_le [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
+instance (priority := 10000) covariantClass_swap_add_le [CovariantClass α α (swap (· + ·)) (· ≤ ·)] :
     CovariantClass (WithBot α) (WithBot α) (swap (· + ·)) (· ≤ ·) :=
   OrderDual.covariantClass_swap_add_le (α := WithTop αᵒᵈ)
 #align with_bot.covariant_class_swap_add_le WithBot.covariantClass_swap_add_le
 
-instance contravariantClass_add_lt [ContravariantClass α α (· + ·) (· < ·)] :
+instance (priority := 10000) contravariantClass_add_lt [ContravariantClass α α (· + ·) (· < ·)] :
     ContravariantClass (WithBot α) (WithBot α) (· + ·) (· < ·) :=
   OrderDual.contravariantClass_add_lt (α := WithTop αᵒᵈ)
 #align with_bot.contravariant_class_add_lt WithBot.contravariantClass_add_lt
 
-instance contravariantClass_swap_add_lt [ContravariantClass α α (swap (· + ·)) (· < ·)] :
+instance (priority := 10000) contravariantClass_swap_add_lt [ContravariantClass α α (swap (· + ·)) (· < ·)] :
     ContravariantClass (WithBot α) (WithBot α) (swap (· + ·)) (· < ·) :=
   OrderDual.contravariantClass_swap_add_lt (α := WithTop αᵒᵈ)
 #align with_bot.contravariant_class_swap_add_lt WithBot.contravariantClass_swap_add_lt
@@ -775,11 +775,11 @@ protected theorem add_lt_add_of_lt_of_le [CovariantClass α α (· + ·) (· ≤
 
 end Add
 
-instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
+instance (priority := 10000) orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithBot α) :=
   { WithBot.partialOrder, WithBot.addCommMonoid with
     add_le_add_left := fun _ _ h c => add_le_add_left h c }
 
-instance linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
+instance (priority := 10000) linearOrderedAddCommMonoid [LinearOrderedAddCommMonoid α] :
     LinearOrderedAddCommMonoid (WithBot α) :=
   { WithBot.linearOrder, WithBot.orderedAddCommMonoid with }
 

@@ -160,7 +160,7 @@ protected theorem equiv_of_isEmpty (x y : PSet) [IsEmpty x.Type] [IsEmpty y.Type
   equiv_iff.2 <| by simp
 #align pSet.equiv_of_is_empty PSet.equiv_of_isEmpty
 
-instance setoid : Setoid PSet :=
+instance (priority := 10000) setoid : Setoid PSet :=
   ⟨PSet.Equiv, Equiv.refl, Equiv.symm, Equiv.trans⟩
 #align pSet.setoid PSet.setoid
 
@@ -170,13 +170,13 @@ protected def Subset (x y : PSet) : Prop :=
   ∀ a, ∃ b, Equiv (x.Func a) (y.Func b)
 #align pSet.subset PSet.Subset
 
-instance : HasSubset PSet :=
+instance (priority := 10000) : HasSubset PSet :=
   ⟨PSet.Subset⟩
 
-instance : IsRefl PSet (· ⊆ ·) :=
+instance (priority := 10000) : IsRefl PSet (· ⊆ ·) :=
   ⟨fun _ a => ⟨a, Equiv.refl _⟩⟩
 
-instance : IsTrans PSet (· ⊆ ·) :=
+instance (priority := 10000) : IsTrans PSet (· ⊆ ·) :=
   ⟨fun x y z hxy hyz a => by
     cases' hxy a with b hb
     cases' hyz b with c hc
@@ -223,7 +223,7 @@ protected def Mem (x y : PSet.{u}) : Prop :=
   ∃ b, Equiv x (y.Func b)
 #align pSet.mem PSet.Mem
 
-instance : Membership PSet PSet :=
+instance (priority := 10000) : Membership PSet PSet :=
   ⟨PSet.Mem⟩
 
 theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
@@ -278,13 +278,13 @@ theorem mem_wf : @WellFounded PSet (· ∈ ·) :=
   ⟨fun x => mem_wf_aux <| Equiv.refl x⟩
 #align pSet.mem_wf PSet.mem_wf
 
-instance : WellFoundedRelation PSet :=
+instance (priority := 10000) : WellFoundedRelation PSet :=
   ⟨_, mem_wf⟩
 
-instance : IsAsymm PSet (· ∈ ·) :=
+instance (priority := 10000) : IsAsymm PSet (· ∈ ·) :=
   mem_wf.isAsymm
 
-instance : IsIrrefl PSet (· ∈ ·) :=
+instance (priority := 10000) : IsIrrefl PSet (· ∈ ·) :=
   mem_wf.isIrrefl
 
 theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
@@ -336,7 +336,7 @@ theorem Equiv.eq {x y : PSet} : Equiv x y ↔ toSet x = toSet y :=
   equiv_iff_mem.trans Set.ext_iff.symm
 #align pSet.equiv.eq PSet.Equiv.eq
 
-instance : Coe PSet (Set PSet) :=
+instance (priority := 10000) : Coe PSet (Set PSet) :=
   ⟨toSet⟩
 
 /-- The empty pre-set -/
@@ -344,13 +344,13 @@ protected def empty : PSet :=
   ⟨_, PEmpty.elim⟩
 #align pSet.empty PSet.empty
 
-instance : EmptyCollection PSet :=
+instance (priority := 10000) : EmptyCollection PSet :=
   ⟨PSet.empty⟩
 
-instance : Inhabited PSet :=
+instance (priority := 10000) : Inhabited PSet :=
   ⟨∅⟩
 
-instance : IsEmpty («Type» ∅) :=
+instance (priority := 10000) : IsEmpty («Type» ∅) :=
   ⟨PEmpty.elim⟩
 
 @[simp]
@@ -379,16 +379,16 @@ protected def insert (x y : PSet) : PSet :=
   ⟨Option y.Type, fun o => Option.casesOn o x y.Func⟩
 #align pSet.insert PSet.insert
 
-instance : Insert PSet PSet :=
+instance (priority := 10000) : Insert PSet PSet :=
   ⟨PSet.insert⟩
 
-instance : Singleton PSet PSet :=
+instance (priority := 10000) : Singleton PSet PSet :=
   ⟨fun s => insert s ∅⟩
 
-instance : IsLawfulSingleton PSet PSet :=
+instance (priority := 10000) : IsLawfulSingleton PSet PSet :=
   ⟨fun _ => rfl⟩
 
-instance (x y : PSet) : Inhabited (insert x y).Type :=
+instance (priority := 10000) (x y : PSet) : Inhabited (insert x y).Type :=
   inferInstanceAs (Inhabited <| Option y.Type)
 
 /-- The n-th von Neumann ordinal -/
@@ -407,7 +407,7 @@ protected def sep (p : PSet → Prop) (x : PSet) : PSet :=
   ⟨{ a // p (x.Func a) }, fun y => x.Func y.1⟩
 #align pSet.sep PSet.sep
 
-instance : Sep PSet PSet :=
+instance (priority := 10000) : Sep PSet PSet :=
   ⟨PSet.sep⟩
 
 /-- The pre-set powerset operator -/
@@ -500,7 +500,7 @@ def Resp (n) :=
   { x : OfArity PSet.{u} PSet.{u} n // Arity.Equiv x x }
 #align pSet.resp PSet.Resp
 
-instance Resp.inhabited {n} : Inhabited (Resp n) :=
+instance (priority := 10000) Resp.inhabited {n} : Inhabited (Resp n) :=
   ⟨⟨OfArity.const _ default _, Arity.equiv_const _⟩⟩
 #align pSet.resp.inhabited PSet.Resp.inhabited
 
@@ -538,7 +538,7 @@ protected theorem Resp.Equiv.trans {n} {x y z : Resp n} (h1 : Resp.Equiv x y)
   h1.euc h2.symm
 #align pSet.resp.equiv.trans PSet.Resp.Equiv.trans
 
-instance Resp.setoid {n} : Setoid (Resp n) :=
+instance (priority := 10000) Resp.setoid {n} : Setoid (Resp n) :=
   ⟨Resp.Equiv, Resp.Equiv.refl, Resp.Equiv.symm, Resp.Equiv.trans⟩
 #align pSet.resp.setoid PSet.Resp.setoid
 
@@ -674,7 +674,7 @@ protected def Mem : ZFSet → ZFSet → Prop :=
     propext ((Mem.congr_left hx).trans (Mem.congr_right hy))
 #align Set.mem ZFSet.Mem
 
-instance : Membership ZFSet ZFSet :=
+instance (priority := 10000) : Membership ZFSet ZFSet :=
   ⟨ZFSet.Mem⟩
 
 @[simp]
@@ -692,7 +692,7 @@ theorem mem_toSet (a u : ZFSet.{u}) : a ∈ u.toSet ↔ a ∈ u :=
   Iff.rfl
 #align Set.mem_to_set ZFSet.mem_toSet
 
-instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
+instance (priority := 10000) small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
   Quotient.inductionOn x fun a => by
     let f : a.Type → (mk a).toSet := fun i => ⟨mk <| a.Func i, func_mem a i⟩
     suffices Function.Surjective f by exact small_of_surjective this
@@ -725,7 +725,7 @@ protected def Subset (x y : ZFSet.{u}) :=
   ∀ ⦃z⦄, z ∈ x → z ∈ y
 #align Set.subset ZFSet.Subset
 
-instance hasSubset : HasSubset ZFSet :=
+instance (priority := 10000) hasSubset : HasSubset ZFSet :=
   ⟨ZFSet.Subset⟩
 #align Set.has_subset ZFSet.hasSubset
 
@@ -733,10 +733,10 @@ theorem subset_def {x y : ZFSet.{u}} : x ⊆ y ↔ ∀ ⦃z⦄, z ∈ x → z �
   Iff.rfl
 #align Set.subset_def ZFSet.subset_def
 
-instance : IsRefl ZFSet (· ⊆ ·) :=
+instance (priority := 10000) : IsRefl ZFSet (· ⊆ ·) :=
   ⟨fun _ _ => id⟩
 
-instance : IsTrans ZFSet (· ⊆ ·) :=
+instance (priority := 10000) : IsTrans ZFSet (· ⊆ ·) :=
   ⟨fun _ _ _ hxy hyz _ ha => hyz (hxy ha)⟩
 
 @[simp]
@@ -770,7 +770,7 @@ theorem toSet_inj {x y : ZFSet} : x.toSet = y.toSet ↔ x = y :=
   toSet_injective.eq_iff
 #align Set.to_set_inj ZFSet.toSet_inj
 
-instance : IsAntisymm ZFSet (· ⊆ ·) :=
+instance (priority := 10000) : IsAntisymm ZFSet (· ⊆ ·) :=
   ⟨fun _ _ hab hba => ext fun c => ⟨@hab c, @hba c⟩⟩
 
 /-- The empty ZFC set -/
@@ -778,10 +778,10 @@ protected def empty : ZFSet :=
   mk ∅
 #align Set.empty ZFSet.empty
 
-instance : EmptyCollection ZFSet :=
+instance (priority := 10000) : EmptyCollection ZFSet :=
   ⟨ZFSet.empty⟩
 
-instance : Inhabited ZFSet :=
+instance (priority := 10000) : Inhabited ZFSet :=
   ⟨∅⟩
 
 @[simp]
@@ -838,13 +838,13 @@ protected def Insert : ZFSet → ZFSet → ZFSet :=
         | none => ⟨none, uv⟩⟩⟩
 #align Set.insert ZFSet.Insert
 
-instance : Insert ZFSet ZFSet :=
+instance (priority := 10000) : Insert ZFSet ZFSet :=
   ⟨ZFSet.Insert⟩
 
-instance : Singleton ZFSet ZFSet :=
+instance (priority := 10000) : Singleton ZFSet ZFSet :=
   ⟨fun x => insert x ∅⟩
 
-instance : IsLawfulSingleton ZFSet ZFSet :=
+instance (priority := 10000) : IsLawfulSingleton ZFSet ZFSet :=
   ⟨fun _ => rfl⟩
 
 @[simp]
@@ -932,7 +932,7 @@ protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
 #align Set.sep ZFSet.sep
 
 -- Porting note: the { x | p x } notation appears to be disabled in Lean 4.
-instance : Sep ZFSet ZFSet :=
+instance (priority := 10000) : Sep ZFSet ZFSet :=
   ⟨ZFSet.sep⟩
 
 @[simp]
@@ -1095,13 +1095,13 @@ protected def diff (x y : ZFSet.{u}) : ZFSet.{u} :=
   ZFSet.sep (fun z => z ∉ y) x -- { z ∈ x | z ∉ y }
 #align Set.diff ZFSet.diff
 
-instance : Union ZFSet :=
+instance (priority := 10000) : Union ZFSet :=
   ⟨ZFSet.union⟩
 
-instance : Inter ZFSet :=
+instance (priority := 10000) : Inter ZFSet :=
   ⟨ZFSet.inter⟩
 
-instance : SDiff ZFSet :=
+instance (priority := 10000) : SDiff ZFSet :=
   ⟨ZFSet.diff⟩
 
 @[simp]
@@ -1156,14 +1156,14 @@ theorem inductionOn {p : ZFSet → Prop} (x) (h : ∀ x, (∀ y ∈ x, p y) → 
   mem_wf.induction x h
 #align Set.induction_on ZFSet.inductionOn
 
-instance : WellFoundedRelation ZFSet :=
+instance (priority := 10000) : WellFoundedRelation ZFSet :=
   ⟨_, mem_wf⟩
 
-instance : IsAsymm ZFSet (· ∈ ·) :=
+instance (priority := 10000) : IsAsymm ZFSet (· ∈ ·) :=
   mem_wf.isAsymm
 
 -- Porting note: this can't be inferred automatically for some reason.
-instance : IsIrrefl ZFSet (· ∈ ·) :=
+instance (priority := 10000) : IsIrrefl ZFSet (· ∈ ·) :=
   mem_wf.isIrrefl
 
 theorem mem_asymm {x y : ZFSet} : x ∈ y → y ∉ x :=
@@ -1329,7 +1329,7 @@ theorem mem_funs {x y f : ZFSet.{u}} : f ∈ funs x y ↔ IsFunc x y f := by sim
 /- Porting note: the `Definable` argument in `mapDefinableAux` is unused, though the TODO remark
    suggests it shouldn't be. -/
 @[nolint unusedArguments]
-noncomputable instance mapDefinableAux (f : ZFSet → ZFSet) [Definable 1 f] :
+noncomputable instance (priority := 10000) mapDefinableAux (f : ZFSet → ZFSet) [Definable 1 f] :
     Definable 1 fun y => pair y (f y) :=
   @Classical.allDefinable 1 _
 #align Set.map_definable_aux ZFSet.mapDefinableAux
@@ -1412,7 +1412,7 @@ def Class :=
   Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, HasCompl, SDiff
 #align Class Class
 
-instance : Insert ZFSet Class :=
+instance (priority := 10000) : Insert ZFSet Class :=
   ⟨Set.insert⟩
 
 namespace Class
@@ -1437,7 +1437,7 @@ def ofSet (x : ZFSet.{u}) : Class.{u} :=
   { y | y ∈ x }
 #align Class.of_Set Class.ofSet
 
-instance : Coe ZFSet Class :=
+instance (priority := 10000) : Coe ZFSet Class :=
   ⟨ofSet⟩
 
 /-- The universal class -/
@@ -1455,7 +1455,7 @@ protected def Mem (A B : Class.{u}) : Prop :=
   ToSet.{u} B A
 #align Class.mem Class.Mem
 
-instance : Membership Class Class :=
+instance (priority := 10000) : Membership Class Class :=
   ⟨Class.Mem⟩
 
 theorem mem_def (A B : Class.{u}) : A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B x :=
@@ -1500,14 +1500,14 @@ theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
       exact H x⟩
 #align Class.mem_wf Class.mem_wf
 
-instance : WellFoundedRelation Class :=
+instance (priority := 10000) : WellFoundedRelation Class :=
   ⟨_, mem_wf⟩
 
-instance : IsAsymm Class (· ∈ ·) :=
+instance (priority := 10000) : IsAsymm Class (· ∈ ·) :=
   mem_wf.isAsymm
 
 -- Porting note: this can't be inferred automatically for some reason.
-instance : IsIrrefl Class (· ∈ ·) :=
+instance (priority := 10000) : IsIrrefl Class (· ∈ ·) :=
   mem_wf.isIrrefl
 
 theorem mem_asymm {x y : Class} : x ∈ y → y ∉ x :=

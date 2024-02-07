@@ -36,11 +36,11 @@ inductive N₃
 
 namespace N₃
 
-instance : Zero N₃ := ⟨zero⟩
-instance : One N₃ := ⟨one⟩
+instance (priority := 10000) : Zero N₃ := ⟨zero⟩
+instance (priority := 10000) : One N₃ := ⟨one⟩
 
 /-- Truncated addition on `N₃`. -/
-instance : Add N₃ where
+instance (priority := 10000) : Add N₃ where
   add
   | 0, x => x
   | x, 0 => x
@@ -48,7 +48,7 @@ instance : Add N₃ where
   | _, _ => more
 
 /-- Truncated multiplication on `N₃`. -/
-instance : Mul N₃ where
+instance (priority := 10000) : Mul N₃ where
   mul
   | 1, x => x
   | x, 1 => x
@@ -56,13 +56,13 @@ instance : Mul N₃ where
   | _, 0 => 0
   | _, _ => more
 
-instance : CommMonoid N₃ where
+instance (priority := 10000) : CommMonoid N₃ where
   mul_assoc := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
   one_mul := by rintro ⟨⟩ <;> rfl
   mul_one := by rintro ⟨⟩ <;> rfl
   mul_comm := by rintro ⟨⟩ ⟨⟩ <;> rfl
 
-instance : CommSemiring N₃ :=
+instance (priority := 10000) : CommSemiring N₃ :=
   { (inferInstance : CommMonoid N₃) with
     add_assoc := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
     zero_add  := by rintro ⟨⟩ <;> rfl

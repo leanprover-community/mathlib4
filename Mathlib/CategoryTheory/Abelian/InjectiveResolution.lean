@@ -332,7 +332,7 @@ lemma ofCocomplex_exactAt_succ (n : ℕ) :
     simp
     apply exact_f_d
 
-instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
+instance (priority := 10000) (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Injective.injective_under
 
 /-- In any abelian category with enough injectives,

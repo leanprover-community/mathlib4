@@ -91,11 +91,11 @@ instance (priority := 100) EsakiaHomClass.toPseudoEpimorphismClass [TopologicalS
     map_rel := ContinuousOrderHomClass.map_monotone }
 #align esakia_hom_class.to_pseudo_epimorphism_class EsakiaHomClass.toPseudoEpimorphismClass
 
-instance [Preorder α] [Preorder β] [PseudoEpimorphismClass F α β] :
+instance (priority := 10000) [Preorder α] [Preorder β] [PseudoEpimorphismClass F α β] :
     CoeTC F (PseudoEpimorphism α β) :=
   ⟨fun f => ⟨f, exists_map_eq_of_map_le f⟩⟩
 
-instance [TopologicalSpace α] [Preorder α] [TopologicalSpace β] [Preorder β]
+instance (priority := 10000) [TopologicalSpace α] [Preorder α] [TopologicalSpace β] [Preorder β]
     [EsakiaHomClass F α β] : CoeTC F (EsakiaHom α β) :=
   ⟨fun f => ⟨f, exists_map_eq_of_map_le f⟩⟩
 
@@ -115,14 +115,14 @@ namespace PseudoEpimorphism
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
-instance instFunLike : FunLike (PseudoEpimorphism α β) α β where
+instance (priority := 10000) instFunLike : FunLike (PseudoEpimorphism α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
-instance : PseudoEpimorphismClass (PseudoEpimorphism α β) α β where
+instance (priority := 10000) : PseudoEpimorphismClass (PseudoEpimorphism α β) α β where
   map_rel f _ _ h := f.monotone' h
   exists_map_eq_of_map_le := PseudoEpimorphism.exists_map_eq_of_map_le'
 
@@ -158,7 +158,7 @@ protected def id : PseudoEpimorphism α α :=
   ⟨OrderHom.id, fun _ b h => ⟨b, h, rfl⟩⟩
 #align pseudo_epimorphism.id PseudoEpimorphism.id
 
-instance : Inhabited (PseudoEpimorphism α α) :=
+instance (priority := 10000) : Inhabited (PseudoEpimorphism α α) :=
   ⟨PseudoEpimorphism.id α⟩
 
 @[simp]
@@ -239,14 +239,14 @@ def toPseudoEpimorphism (f : EsakiaHom α β) : PseudoEpimorphism α β :=
   { f with }
 #align esakia_hom.to_pseudo_epimorphism EsakiaHom.toPseudoEpimorphism
 
-instance instFunLike : FunLike (EsakiaHom α β) α β where
+instance (priority := 10000) instFunLike : FunLike (EsakiaHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
 
-instance : EsakiaHomClass (EsakiaHom α β) α β where
+instance (priority := 10000) : EsakiaHomClass (EsakiaHom α β) α β where
   map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
   exists_map_eq_of_map_le f := f.exists_map_eq_of_map_le'
@@ -287,7 +287,7 @@ protected def id : EsakiaHom α α :=
   ⟨ContinuousOrderHom.id α, fun _ b h => ⟨b, h, rfl⟩⟩
 #align esakia_hom.id EsakiaHom.id
 
-instance : Inhabited (EsakiaHom α α) :=
+instance (priority := 10000) : Inhabited (EsakiaHom α α) :=
   ⟨EsakiaHom.id α⟩
 
 @[simp]

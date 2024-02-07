@@ -56,7 +56,7 @@ noncomputable def fintypeBasisIndex {Î¹ : Type*} [IsNoetherian K V] (b : Basis Î
 
 /-- In a noetherian module over a division ring,
 `Basis.ofVectorSpace` is indexed by a finite type. -/
-noncomputable instance [IsNoetherian K V] : Fintype (Basis.ofVectorSpaceIndex K V) :=
+noncomputable instance (priority := 10000) [IsNoetherian K V] : Fintype (Basis.ofVectorSpaceIndex K V) :=
   fintypeBasisIndex (Basis.ofVectorSpace K V)
 
 /-- In a noetherian module over a division ring,

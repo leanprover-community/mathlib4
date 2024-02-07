@@ -2027,7 +2027,7 @@ theorem ae_eq_zero_compl (hf : AEFinStronglyMeasurable f μ) :
   hf.exists_set_sigmaFinite.choose_spec.2.1
 #align measure_theory.ae_fin_strongly_measurable.ae_eq_zero_compl MeasureTheory.AEFinStronglyMeasurable.ae_eq_zero_compl
 
-instance sigmaFinite_restrict (hf : AEFinStronglyMeasurable f μ) :
+instance (priority := 10000) sigmaFinite_restrict (hf : AEFinStronglyMeasurable f μ) :
     SigmaFinite (μ.restrict hf.sigmaFiniteSet) :=
   hf.exists_set_sigmaFinite.choose_spec.2.2
 #align measure_theory.ae_fin_strongly_measurable.sigma_finite_restrict MeasureTheory.AEFinStronglyMeasurable.sigmaFinite_restrict

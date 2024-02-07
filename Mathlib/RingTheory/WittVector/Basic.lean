@@ -263,7 +263,7 @@ private def comm_ring_aux₂ : CommRing (𝕎 (MvPolynomial R ℤ)) :=
 attribute [reducible] comm_ring_aux₂
 
 /-- The commutative ring structure on `𝕎 R`. -/
-instance : CommRing (𝕎 R) :=
+instance (priority := 10000) : CommRing (𝕎 R) :=
   (mapFun.surjective _ <| counit_surjective _).commRing (mapFun <| MvPolynomial.counit _)
     (mapFun.zero _) (mapFun.one _) (mapFun.add _) (mapFun.mul _) (mapFun.neg _) (mapFun.sub _)
     (mapFun.nsmul _) (mapFun.zsmul _) (mapFun.pow _) (mapFun.nat_cast _) (mapFun.int_cast _)
@@ -349,7 +349,7 @@ noncomputable def constantCoeff : 𝕎 R →+* R where
   map_mul' := mul_coeff_zero
 #align witt_vector.constant_coeff WittVector.constantCoeff
 
-instance [Nontrivial R] : Nontrivial (𝕎 R) :=
+instance (priority := 10000) [Nontrivial R] : Nontrivial (𝕎 R) :=
   constantCoeff.domain_nontrivial
 
 end WittVector

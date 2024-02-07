@@ -109,64 +109,64 @@ scoped[ENNReal] notation "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
 
-instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
-instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
-instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
+instance (priority := 10000) : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
+instance (priority := 10000) : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
+instance (priority := 10000) : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
 
-noncomputable instance : CanonicallyOrderedCommSemiring ℝ≥0∞ :=
+noncomputable instance (priority := 10000) : CanonicallyOrderedCommSemiring ℝ≥0∞ :=
   inferInstanceAs (CanonicallyOrderedCommSemiring (WithTop ℝ≥0))
 
-noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
+noncomputable instance (priority := 10000) : CompleteLinearOrder ℝ≥0∞ :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℝ≥0))
 
-instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
+instance (priority := 10000) : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
 
-noncomputable instance : CanonicallyLinearOrderedAddCommMonoid ℝ≥0∞ :=
+noncomputable instance (priority := 10000) : CanonicallyLinearOrderedAddCommMonoid ℝ≥0∞ :=
   inferInstanceAs (CanonicallyLinearOrderedAddCommMonoid (WithTop ℝ≥0))
 
-noncomputable instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
-noncomputable instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
+noncomputable instance (priority := 10000) instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
+noncomputable instance (priority := 10000) : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
 
-noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
+noncomputable instance (priority := 10000) : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
 
 -- porting note: rfc: redefine using pattern matching?
-noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
+noncomputable instance (priority := 10000) : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
 
-noncomputable instance : DivInvMonoid ℝ≥0∞ where
+noncomputable instance (priority := 10000) : DivInvMonoid ℝ≥0∞ where
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 -- porting note: are these 2 instances still required in Lean 4?
-instance covariantClass_mul_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· * ·) (· ≤ ·) := inferInstance
+instance (priority := 10000) covariantClass_mul_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· * ·) (· ≤ ·) := inferInstance
 #align ennreal.covariant_class_mul_le ENNReal.covariantClass_mul_le
 
-instance covariantClass_add_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· ≤ ·) := inferInstance
+instance (priority := 10000) covariantClass_add_le : CovariantClass ℝ≥0∞ ℝ≥0∞ (· + ·) (· ≤ ·) := inferInstance
 #align ennreal.covariant_class_add_le ENNReal.covariantClass_add_le
 
 -- porting note: todo: add a `WithTop` instance and use it here
-noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
+noncomputable instance (priority := 10000) : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
   { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
       inferInstanceAs (CommSemiring ℝ≥0∞) with
     mul_le_mul_left := fun _ _ => mul_le_mul_left'
     zero_le_one := zero_le 1 }
 
-noncomputable instance : Unique (AddUnits ℝ≥0∞) where
+noncomputable instance (priority := 10000) : Unique (AddUnits ℝ≥0∞) where
   default := 0
   uniq a := AddUnits.ext <| le_zero_iff.1 <| by rw [← a.add_neg]; exact le_self_add
 
-instance : Inhabited ℝ≥0∞ := ⟨0⟩
+instance (priority := 10000) : Inhabited ℝ≥0∞ := ⟨0⟩
 
 /-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
 @[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
 
-instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
+instance (priority := 10000) : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
 def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
   WithTop.recTopCoe top coe x
 
-instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.canLift
+instance (priority := 10000) canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.canLift
 #align ennreal.can_lift ENNReal.canLift
 
 @[simp] theorem none_eq_top : (none : ℝ≥0∞) = ∞ := rfl
@@ -467,17 +467,17 @@ nonrec theorem one_lt_two : (1 : ℝ≥0∞) < 2 :=
 @[simp] theorem two_lt_top : (2 : ℝ≥0∞) < ∞ := coe_lt_top
 
 /-- `(1 : ℝ≥0∞) ≤ 1`, recorded as a `Fact` for use with `Lp` spaces. -/
-instance _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
+instance (priority := 10000) _root_.fact_one_le_one_ennreal : Fact ((1 : ℝ≥0∞) ≤ 1) :=
   ⟨le_rfl⟩
 #align fact_one_le_one_ennreal fact_one_le_one_ennreal
 
 /-- `(1 : ℝ≥0∞) ≤ 2`, recorded as a `Fact` for use with `Lp` spaces. -/
-instance _root_.fact_one_le_two_ennreal : Fact ((1 : ℝ≥0∞) ≤ 2) :=
+instance (priority := 10000) _root_.fact_one_le_two_ennreal : Fact ((1 : ℝ≥0∞) ≤ 2) :=
   ⟨one_le_two⟩
 #align fact_one_le_two_ennreal fact_one_le_two_ennreal
 
 /-- `(1 : ℝ≥0∞) ≤ ∞`, recorded as a `Fact` for use with `Lp` spaces. -/
-instance _root_.fact_one_le_top_ennreal : Fact ((1 : ℝ≥0∞) ≤ ∞) :=
+instance (priority := 10000) _root_.fact_one_le_top_ennreal : Fact ((1 : ℝ≥0∞) ≤ ∞) :=
   ⟨le_top⟩
 #align fact_one_le_top_ennreal fact_one_le_top_ennreal
 

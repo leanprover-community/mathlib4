@@ -50,7 +50,7 @@ failed to synthesize instance
 
 def boolFunHelper (x y : α) (b : Bool) : α := if b then x else y
 
-instance {α : Type u} [ToExpr α] [ToLevel.{u+1}] : ToExpr (Bool → α) where
+instance (priority := 10000) {α : Type u} [ToExpr α] [ToLevel.{u+1}] : ToExpr (Bool → α) where
   toExpr g :=
     mkApp3 (.const ``boolFunHelper [toLevel.{u+1}])
       (toTypeExpr α) (toExpr <| g true) (toExpr <| g false)
@@ -89,7 +89,7 @@ deriving ToExpr
 end
 
 -- An incomplete `ToExpr` instance just to finish deriving `ToExpr` for `Expr`.
-instance : ToExpr MData where
+instance (priority := 10000) : ToExpr MData where
   toExpr _ := mkConst ``MData.empty
   toTypeExpr := mkConst ``MData
 

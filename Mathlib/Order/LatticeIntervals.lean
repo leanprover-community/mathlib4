@@ -34,7 +34,7 @@ namespace Set
 
 namespace Ico
 
-instance semilatticeInf [SemilatticeInf α] {a b : α} : SemilatticeInf (Ico a b) :=
+instance (priority := 10000) semilatticeInf [SemilatticeInf α] {a b : α} : SemilatticeInf (Ico a b) :=
   Subtype.semilatticeInf fun _ _ hx hy => ⟨le_inf hx.1 hy.1, lt_of_le_of_lt inf_le_left hx.2⟩
 
 /-- `Ico a b` has a bottom element whenever `a < b`. -/
@@ -47,14 +47,14 @@ end Ico
 
 namespace Iio
 
-instance semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf (Iio a) :=
+instance (priority := 10000) semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf (Iio a) :=
   Subtype.semilatticeInf fun _ _ hx _ => lt_of_le_of_lt inf_le_left hx
 
 end Iio
 
 namespace Ioc
 
-instance semilatticeSup [SemilatticeSup α] {a b : α} : SemilatticeSup (Ioc a b) :=
+instance (priority := 10000) semilatticeSup [SemilatticeSup α] {a b : α} : SemilatticeSup (Ioc a b) :=
   Subtype.semilatticeSup fun _ _ hx hy => ⟨lt_of_lt_of_le hx.1 le_sup_left, sup_le hx.2 hy.2⟩
 
 /-- `Ioc a b` has a top element whenever `a < b`. -/
@@ -67,23 +67,23 @@ end Ioc
 
 namespace Ioi
 
-instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup (Ioi a) :=
+instance (priority := 10000) semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup (Ioi a) :=
   Subtype.semilatticeSup fun _ _ hx _ => lt_of_lt_of_le hx le_sup_left
 
 end Ioi
 
 namespace Iic
 
-instance semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf (Iic a) :=
+instance (priority := 10000) semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf (Iic a) :=
   Subtype.semilatticeInf fun _ _ hx _ => le_trans inf_le_left hx
 
-instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup (Iic a) :=
+instance (priority := 10000) semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup (Iic a) :=
   Subtype.semilatticeSup fun _ _ hx hy => sup_le hx hy
 
-instance [Lattice α] {a : α} : Lattice (Iic a) :=
+instance (priority := 10000) [Lattice α] {a : α} : Lattice (Iic a) :=
   { Iic.semilatticeInf, Iic.semilatticeSup with }
 
-instance orderTop [Preorder α] {a : α} :
+instance (priority := 10000) orderTop [Preorder α] {a : α} :
     OrderTop (Iic a) where
   top := ⟨a, le_refl a⟩
   le_top x := x.prop
@@ -93,7 +93,7 @@ theorem coe_top [Preorder α] {a : α} : (⊤ : Iic a) = a :=
   rfl
 #align set.Iic.coe_top Set.Iic.coe_top
 
-instance orderBot [Preorder α] [OrderBot α] {a : α} :
+instance (priority := 10000) orderBot [Preorder α] [OrderBot α] {a : α} :
     OrderBot (Iic a) where
   bot := ⟨⊥, bot_le⟩
   bot_le := fun ⟨_, _⟩ => Subtype.mk_le_mk.2 bot_le
@@ -103,26 +103,26 @@ theorem coe_bot [Preorder α] [OrderBot α] {a : α} : (⊥ : Iic a) = (⊥ : α
   rfl
 #align set.Iic.coe_bot Set.Iic.coe_bot
 
-instance [Preorder α] [OrderBot α] {a : α} : BoundedOrder (Iic a) :=
+instance (priority := 10000) [Preorder α] [OrderBot α] {a : α} : BoundedOrder (Iic a) :=
   { Iic.orderTop, Iic.orderBot with }
 
 end Iic
 
 namespace Ici
 
-instance semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf (Ici a) :=
+instance (priority := 10000) semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf (Ici a) :=
   Subtype.semilatticeInf fun _ _ hx hy => le_inf hx hy
 
-instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup (Ici a) :=
+instance (priority := 10000) semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup (Ici a) :=
   Subtype.semilatticeSup fun _ _ hx _ => le_trans hx le_sup_left
 
-instance lattice [Lattice α] {a : α} : Lattice (Ici a) :=
+instance (priority := 10000) lattice [Lattice α] {a : α} : Lattice (Ici a) :=
   { Ici.semilatticeInf, Ici.semilatticeSup with }
 
-instance distribLattice [DistribLattice α] {a : α} : DistribLattice (Ici a) :=
+instance (priority := 10000) distribLattice [DistribLattice α] {a : α} : DistribLattice (Ici a) :=
   { Ici.lattice with le_sup_inf := fun _ _ _ => le_sup_inf }
 
-instance orderBot [Preorder α] {a : α} :
+instance (priority := 10000) orderBot [Preorder α] {a : α} :
     OrderBot (Ici a) where
   bot := ⟨a, le_refl a⟩
   bot_le x := x.prop
@@ -132,7 +132,7 @@ theorem coe_bot [Preorder α] {a : α} : ↑(⊥ : Ici a) = a :=
   rfl
 #align set.Ici.coe_bot Set.Ici.coe_bot
 
-instance orderTop [Preorder α] [OrderTop α] {a : α} :
+instance (priority := 10000) orderTop [Preorder α] [OrderTop α] {a : α} :
     OrderTop (Ici a) where
   top := ⟨⊤, le_top⟩
   le_top := fun ⟨_, _⟩ => Subtype.mk_le_mk.2 le_top
@@ -142,20 +142,20 @@ theorem coe_top [Preorder α] [OrderTop α] {a : α} : ↑(⊤ : Ici a) = (⊤ :
   rfl
 #align set.Ici.coe_top Set.Ici.coe_top
 
-instance boundedOrder [Preorder α] [OrderTop α] {a : α} : BoundedOrder (Ici a) :=
+instance (priority := 10000) boundedOrder [Preorder α] [OrderTop α] {a : α} : BoundedOrder (Ici a) :=
   { Ici.orderTop, Ici.orderBot with }
 
 end Ici
 
 namespace Icc
 
-instance semilatticeInf [SemilatticeInf α] {a b : α} : SemilatticeInf (Icc a b) :=
+instance (priority := 10000) semilatticeInf [SemilatticeInf α] {a b : α} : SemilatticeInf (Icc a b) :=
   Subtype.semilatticeInf fun _ _ hx hy => ⟨le_inf hx.1 hy.1, le_trans inf_le_left hx.2⟩
 
-instance semilatticeSup [SemilatticeSup α] {a b : α} : SemilatticeSup (Icc a b) :=
+instance (priority := 10000) semilatticeSup [SemilatticeSup α] {a b : α} : SemilatticeSup (Icc a b) :=
   Subtype.semilatticeSup fun _ _ hx hy => ⟨le_trans hx.1 le_sup_left, sup_le hx.2 hy.2⟩
 
-instance lattice [Lattice α] {a b : α} : Lattice (Icc a b) :=
+instance (priority := 10000) lattice [Lattice α] {a b : α} : Lattice (Icc a b) :=
   { Icc.semilatticeInf, Icc.semilatticeSup with }
 
 /-- `Icc a b` has a bottom element whenever `a ≤ b`. -/

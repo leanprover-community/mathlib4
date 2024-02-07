@@ -193,81 +193,81 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 @[inherit_doc]
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 
-instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
+instance (priority := 10000) inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
   -- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
   -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
   instInhabitedForAll_1 _
 
 -- porting note: new, Lean3 found this automatically
-instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
+instance (priority := 10000) decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
   Fintype.decidablePiFintype
 
-instance add [Add α] : Add (Matrix m n α) :=
+instance (priority := 10000) add [Add α] : Add (Matrix m n α) :=
   Pi.instAdd
 
-instance addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) :=
+instance (priority := 10000) addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) :=
   Pi.addSemigroup
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (Matrix m n α) :=
+instance (priority := 10000) addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (Matrix m n α) :=
   Pi.addCommSemigroup
 
-instance zero [Zero α] : Zero (Matrix m n α) :=
+instance (priority := 10000) zero [Zero α] : Zero (Matrix m n α) :=
   Pi.instZero
 
-instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
+instance (priority := 10000) addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
   Pi.addZeroClass
 
-instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) :=
+instance (priority := 10000) addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) :=
   Pi.addMonoid
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) :=
+instance (priority := 10000) addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) :=
   Pi.addCommMonoid
 
-instance neg [Neg α] : Neg (Matrix m n α) :=
+instance (priority := 10000) neg [Neg α] : Neg (Matrix m n α) :=
   Pi.instNeg
 
-instance sub [Sub α] : Sub (Matrix m n α) :=
+instance (priority := 10000) sub [Sub α] : Sub (Matrix m n α) :=
   Pi.instSub
 
-instance addGroup [AddGroup α] : AddGroup (Matrix m n α) :=
+instance (priority := 10000) addGroup [AddGroup α] : AddGroup (Matrix m n α) :=
   Pi.addGroup
 
-instance addCommGroup [AddCommGroup α] : AddCommGroup (Matrix m n α) :=
+instance (priority := 10000) addCommGroup [AddCommGroup α] : AddCommGroup (Matrix m n α) :=
   Pi.addCommGroup
 
-instance unique [Unique α] : Unique (Matrix m n α) :=
+instance (priority := 10000) unique [Unique α] : Unique (Matrix m n α) :=
   Pi.unique
 
-instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
+instance (priority := 10000) subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
   instSubsingletonForAll
 --Porting note: this instance was `Pi.subsingleton` in lean3-core
 
-instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
+instance (priority := 10000) nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
 
-instance smul [SMul R α] : SMul R (Matrix m n α) :=
+instance (priority := 10000) smul [SMul R α] : SMul R (Matrix m n α) :=
   Pi.instSMul
 
-instance smulCommClass [SMul R α] [SMul S α] [SMulCommClass R S α] :
+instance (priority := 10000) smulCommClass [SMul R α] [SMul S α] [SMulCommClass R S α] :
     SMulCommClass R S (Matrix m n α) :=
   Pi.smulCommClass
 
-instance isScalarTower [SMul R S] [SMul R α] [SMul S α] [IsScalarTower R S α] :
+instance (priority := 10000) isScalarTower [SMul R S] [SMul R α] [SMul S α] [IsScalarTower R S α] :
     IsScalarTower R S (Matrix m n α) :=
   Pi.isScalarTower
 
-instance isCentralScalar [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
+instance (priority := 10000) isCentralScalar [SMul R α] [SMul Rᵐᵒᵖ α] [IsCentralScalar R α] :
     IsCentralScalar R (Matrix m n α) :=
   Pi.isCentralScalar
 
-instance mulAction [Monoid R] [MulAction R α] : MulAction R (Matrix m n α) :=
+instance (priority := 10000) mulAction [Monoid R] [MulAction R α] : MulAction R (Matrix m n α) :=
   Pi.mulAction _
 
-instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
+instance (priority := 10000) distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
     DistribMulAction R (Matrix m n α) :=
   Pi.distribMulAction _
 
-instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
+instance (priority := 10000) module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   Pi.module _ _ _
 
 -- Porting note: added the following section with simp lemmas because `simp` fails
@@ -370,13 +370,13 @@ theorem _root_.IsLeftRegular.matrix [Mul α] {k : α} (hk : IsLeftRegular k) :
   hk.isSMulRegular.matrix
 #align is_left_regular.matrix IsLeftRegular.matrix
 
-instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (Matrix m n α) :=
+instance (priority := 10000) subsingleton_of_empty_left [IsEmpty m] : Subsingleton (Matrix m n α) :=
   ⟨fun M N => by
     ext i
     exact isEmptyElim i⟩
 #align matrix.subsingleton_of_empty_left Matrix.subsingleton_of_empty_left
 
-instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (Matrix m n α) :=
+instance (priority := 10000) subsingleton_of_empty_right [IsEmpty n] : Subsingleton (Matrix m n α) :=
   ⟨fun M N => by
     ext i j
     exact isEmptyElim j⟩
@@ -480,7 +480,7 @@ theorem diagonal_sub [SubNegZeroMonoid α] (d₁ d₂ : n → α) :
   by_cases h : i = j <;>
   simp [h]
 
-instance [Zero α] [NatCast α] : NatCast (Matrix n n α) where
+instance (priority := 10000) [Zero α] [NatCast α] : NatCast (Matrix n n α) where
   natCast m := diagonal fun _ => m
 
 @[norm_cast]
@@ -497,7 +497,7 @@ theorem diagonal_ofNat [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
 theorem diagonal_ofNat' [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
     diagonal (no_index (OfNat.ofNat m : n → α)) = OfNat.ofNat m := rfl
 
-instance [Zero α] [IntCast α] : IntCast (Matrix n n α) where
+instance (priority := 10000) [Zero α] [IntCast α] : IntCast (Matrix n n α) where
   intCast m := diagonal fun _ => m
 
 @[norm_cast]
@@ -545,7 +545,7 @@ section One
 
 variable [Zero α] [One α]
 
-instance one : One (Matrix n n α) :=
+instance (priority := 10000) one : One (Matrix n n α) :=
   ⟨diagonal fun _ => 1⟩
 
 @[simp]
@@ -586,13 +586,13 @@ theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _
 
 end One
 
-instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n n α) where
+instance (priority := 10000) instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n n α) where
   natCast_zero := show diagonal _ = _ by
     rw [Nat.cast_zero, diagonal_zero]
   natCast_succ n := show diagonal _ = diagonal _ + _ by
     rw [Nat.cast_succ, ← diagonal_add, diagonal_one]
 
-instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n α) where
+instance (priority := 10000) instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n α) where
   intCast_ofNat n := show diagonal _ = diagonal _ by
     rw [Int.cast_ofNat]
   intCast_negSucc n := show diagonal _ = -(diagonal _) by
@@ -600,12 +600,12 @@ instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n 
   __ := addGroup
   __ := instAddMonoidWithOne
 
-instance instAddCommMonoidWithOne [AddCommMonoidWithOne α] :
+instance (priority := 10000) instAddCommMonoidWithOne [AddCommMonoidWithOne α] :
     AddCommMonoidWithOne (Matrix n n α) where
   __ := addCommMonoid
   __ := instAddMonoidWithOne
 
-instance instAddCommGroupWithOne [AddCommGroupWithOne α] :
+instance (priority := 10000) instAddCommGroupWithOne [AddCommGroupWithOne α] :
     AddCommGroupWithOne (Matrix n n α) where
   __ := addCommGroup
   __ := instAddGroupWithOne
@@ -962,7 +962,7 @@ This is currently only defined when `m` is finite. -/
 -- We want to be lower priority than `instHMul`, but without this we can't have operands with
 -- implicit dimensions.
 @[default_instance 100]
-instance [Fintype m] [Mul α] [AddCommMonoid α] :
+instance (priority := 10000) [Fintype m] [Mul α] [AddCommMonoid α] :
     HMul (Matrix l m α) (Matrix m n α) (Matrix l n α) where
   hMul M N := fun i k => (fun j => M i j) ⬝ᵥ fun j => N j k
 #align matrix.mul HMul.hMul
@@ -972,7 +972,7 @@ theorem mul_apply [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {N
   rfl
 #align matrix.mul_apply Matrix.mul_apply
 
-instance [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where mul M N := M * N
+instance (priority := 10000) [Fintype n] [Mul α] [AddCommMonoid α] : Mul (Matrix n n α) where mul M N := M * N
 
 #noalign matrix.mul_eq_mul
 
@@ -1044,7 +1044,7 @@ protected theorem add_mul [Fintype m] (L M : Matrix l m α) (N : Matrix m n α) 
   apply add_dotProduct
 #align matrix.add_mul Matrix.add_mul
 
-instance nonUnitalNonAssocSemiring [Fintype n] : NonUnitalNonAssocSemiring (Matrix n n α) :=
+instance (priority := 10000) nonUnitalNonAssocSemiring [Fintype n] : NonUnitalNonAssocSemiring (Matrix n n α) :=
   { Matrix.addCommMonoid with
     mul_zero := Matrix.mul_zero
     zero_mul := Matrix.zero_mul
@@ -1115,13 +1115,13 @@ protected theorem mul_sum [Fintype m] (s : Finset β) (f : β → Matrix m n α)
 #align matrix.mul_sum Matrix.mul_sum
 
 /-- This instance enables use with `smul_mul_assoc`. -/
-instance Semiring.isScalarTower [Fintype n] [Monoid R] [DistribMulAction R α]
+instance (priority := 10000) Semiring.isScalarTower [Fintype n] [Monoid R] [DistribMulAction R α]
     [IsScalarTower R α α] : IsScalarTower R (Matrix n n α) (Matrix n n α) :=
   ⟨fun r m n => Matrix.smul_mul r m n⟩
 #align matrix.semiring.is_scalar_tower Matrix.Semiring.isScalarTower
 
 /-- This instance enables use with `mul_smul_comm`. -/
-instance Semiring.smulCommClass [Fintype n] [Monoid R] [DistribMulAction R α]
+instance (priority := 10000) Semiring.smulCommClass [Fintype n] [Monoid R] [DistribMulAction R α]
     [SMulCommClass R α α] : SMulCommClass R (Matrix n n α) (Matrix n n α) :=
   ⟨fun r m n => (Matrix.mul_smul m r n).symm⟩
 #align matrix.semiring.smul_comm_class Matrix.Semiring.smulCommClass
@@ -1146,7 +1146,7 @@ protected theorem mul_one [Fintype n] [DecidableEq n] (M : Matrix m n α) :
   rw [← diagonal_one, mul_diagonal, mul_one]
 #align matrix.mul_one Matrix.mul_one
 
-instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix n n α) :=
+instance (priority := 10000) nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix n n α) :=
   { Matrix.nonUnitalNonAssocSemiring, Matrix.instAddCommMonoidWithOne with
     one := 1
     one_mul := Matrix.one_mul
@@ -1190,7 +1190,7 @@ protected theorem mul_assoc (L : Matrix l m α) (M : Matrix m n α) (N : Matrix 
   apply dotProduct_assoc
 #align matrix.mul_assoc Matrix.mul_assoc
 
-instance nonUnitalSemiring : NonUnitalSemiring (Matrix n n α) :=
+instance (priority := 10000) nonUnitalSemiring : NonUnitalSemiring (Matrix n n α) :=
   { Matrix.nonUnitalNonAssocSemiring with mul_assoc := Matrix.mul_assoc }
 
 end NonUnitalSemiring
@@ -1199,7 +1199,7 @@ section Semiring
 
 variable [Semiring α]
 
-instance semiring [Fintype n] [DecidableEq n] : Semiring (Matrix n n α) :=
+instance (priority := 10000) semiring [Fintype n] [DecidableEq n] : Semiring (Matrix n n α) :=
   { Matrix.nonUnitalSemiring, Matrix.nonAssocSemiring with }
 
 end Semiring
@@ -1230,21 +1230,21 @@ protected theorem mul_sub (M : Matrix m n α) (N N' : Matrix n o α) :
   rw [sub_eq_add_neg, Matrix.mul_add, Matrix.mul_neg, sub_eq_add_neg]
 #align matrix.mul_sub Matrix.mul_sub
 
-instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (Matrix n n α) :=
+instance (priority := 10000) nonUnitalNonAssocRing : NonUnitalNonAssocRing (Matrix n n α) :=
   { Matrix.nonUnitalNonAssocSemiring, Matrix.addCommGroup with }
 
 end NonUnitalNonAssocRing
 
-instance instNonUnitalRing [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
+instance (priority := 10000) instNonUnitalRing [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
   { Matrix.nonUnitalSemiring, Matrix.addCommGroup with }
 #align matrix.non_unital_ring Matrix.instNonUnitalRing
 
-instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing α] :
+instance (priority := 10000) instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing α] :
     NonAssocRing (Matrix n n α) :=
   { Matrix.nonAssocSemiring, Matrix.instAddCommGroupWithOne with }
 #align matrix.non_assoc_ring Matrix.instNonAssocRing
 
-instance instRing [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
+instance (priority := 10000) instRing [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
   { Matrix.semiring, Matrix.instAddCommGroupWithOne with }
 #align matrix.ring Matrix.instRing
 
@@ -1322,7 +1322,7 @@ variable [Fintype n] [DecidableEq n]
 
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
-instance instAlgebra : Algebra R (Matrix n n α) where
+instance (priority := 10000) instAlgebra : Algebra R (Matrix n n α) where
   toRingHom := (Matrix.scalar n).comp (algebraMap R α)
   commutes' r x := scalar_commute _ (fun r' => Algebra.commutes _ _) _
   smul_def' r x := by ext; simp [Matrix.scalar, Algebra.smul_def r]
@@ -2401,7 +2401,7 @@ section Star
 
 /-- When `α` has a star operation, square matrices `Matrix n n α` have a star
 operation equal to `Matrix.conjTranspose`. -/
-instance [Star α] : Star (Matrix n n α) where star := conjTranspose
+instance (priority := 10000) [Star α] : Star (Matrix n n α) where star := conjTranspose
 
 theorem star_eq_conjTranspose [Star α] (M : Matrix m m α) : star M = Mᴴ :=
   rfl
@@ -2412,18 +2412,18 @@ theorem star_apply [Star α] (M : Matrix n n α) (i j) : (star M) i j = star (M 
   rfl
 #align matrix.star_apply Matrix.star_apply
 
-instance [InvolutiveStar α] : InvolutiveStar (Matrix n n α) where
+instance (priority := 10000) [InvolutiveStar α] : InvolutiveStar (Matrix n n α) where
   star_involutive := conjTranspose_conjTranspose
 
 /-- When `α` is a `*`-additive monoid, `Matrix.star` is also a `*`-additive monoid. -/
-instance [AddMonoid α] [StarAddMonoid α] : StarAddMonoid (Matrix n n α) where
+instance (priority := 10000) [AddMonoid α] [StarAddMonoid α] : StarAddMonoid (Matrix n n α) where
   star_add := conjTranspose_add
 
-instance [Star α] [Star β] [SMul α β] [StarModule α β] : StarModule α (Matrix n n β) where
+instance (priority := 10000) [Star α] [Star β] [SMul α β] [StarModule α β] : StarModule α (Matrix n n β) where
   star_smul := conjTranspose_smul
 
 /-- When `α` is a `*`-(semi)ring, `Matrix.star` is also a `*`-(semi)ring. -/
-instance [Fintype n] [NonUnitalSemiring α] [StarRing α] : StarRing (Matrix n n α) where
+instance (priority := 10000) [Fintype n] [NonUnitalSemiring α] [StarRing α] : StarRing (Matrix n n α) where
   star_add := conjTranspose_add
   star_mul := conjTranspose_mul
 

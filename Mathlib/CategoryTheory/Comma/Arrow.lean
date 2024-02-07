@@ -38,10 +38,10 @@ def Arrow :=
 #align category_theory.arrow CategoryTheory.Arrow
 
 /- Porting note: could not derive `Category` above so this instance works in its place-/
-instance : Category (Arrow T) := commaCategory
+instance (priority := 10000) : Category (Arrow T) := commaCategory
 
 -- Satisfying the inhabited linter
-instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T) where
+instance (priority := 10000) Arrow.inhabited [Inhabited T] : Inhabited (Arrow T) where
   default := show Comma (𝟭 T) (𝟭 T) from default
 #align category_theory.arrow.inhabited CategoryTheory.Arrow.inhabited
 
@@ -99,7 +99,7 @@ theorem mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
 #align category_theory.arrow.mk_inj CategoryTheory.Arrow.mk_inj
 
 /- Porting note : was marked as dangerous instance so changed from `Coe` to `CoeOut` -/
-instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
+instance (priority := 10000) {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
   coe := mk
 
 /-- A morphism in the arrow category is a commutative square connecting two objects of the arrow
@@ -183,7 +183,7 @@ section
 
 variable {f g : Arrow T} (sq : f ⟶ g)
 
-instance isIso_left [IsIso sq] : IsIso sq.left where
+instance (priority := 10000) isIso_left [IsIso sq] : IsIso sq.left where
   out := by
     apply Exists.intro (inv sq).left
     simp only [← Comma.comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id, Arrow.id_left,
@@ -191,7 +191,7 @@ instance isIso_left [IsIso sq] : IsIso sq.left where
     simp
 #align category_theory.arrow.is_iso_left CategoryTheory.Arrow.isIso_left
 
-instance isIso_right [IsIso sq] : IsIso sq.right where
+instance (priority := 10000) isIso_right [IsIso sq] : IsIso sq.right where
   out := by
     apply Exists.intro (inv sq).right
     simp only [← Comma.comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id, Arrow.id_right,
@@ -219,7 +219,7 @@ theorem inv_left_hom_right [IsIso sq] : inv sq.left ≫ f.hom ≫ sq.right = g.h
   simp only [w, IsIso.inv_comp_eq]
 #align category_theory.arrow.inv_left_hom_right CategoryTheory.Arrow.inv_left_hom_right
 
-instance mono_left [Mono sq] : Mono sq.left where
+instance (priority := 10000) mono_left [Mono sq] : Mono sq.left where
   right_cancellation {Z} φ ψ h := by
     let aux : (Z ⟶ f.left) → (Arrow.mk (𝟙 Z) ⟶ f) := fun φ =>
       { left := φ
@@ -235,7 +235,7 @@ instance mono_left [Mono sq] : Mono sq.left where
       simp only [← Category.assoc, h]
 #align category_theory.arrow.mono_left CategoryTheory.Arrow.mono_left
 
-instance epi_right [Epi sq] : Epi sq.right where
+instance (priority := 10000) epi_right [Epi sq] : Epi sq.right where
   left_cancellation {Z} φ ψ h := by
     let aux : (g.right ⟶ Z) → (g ⟶ Arrow.mk (𝟙 Z)) := fun φ =>
       { right := φ
@@ -360,7 +360,7 @@ def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   unitIso := Functor.mapIso (mapArrowFunctor C C) e.unitIso
   counitIso := Functor.mapIso (mapArrowFunctor D D) e.counitIso
 
-instance isEquivalenceMapArrow (F : C ⥤ D) [IsEquivalence F] :
+instance (priority := 10000) isEquivalenceMapArrow (F : C ⥤ D) [IsEquivalence F] :
     IsEquivalence F.mapArrow :=
   IsEquivalence.ofEquivalence (mapArrowEquivalence (asEquivalence F))
 

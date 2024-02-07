@@ -96,11 +96,11 @@ theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α] [S
     SMulMemClass S M α :=
   { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
-instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
+instance (priority := 10000) instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
     (s : S) : IsScalarTower R s s where
   smul_assoc r x y := Subtype.ext <| smul_assoc r (x : M) (y : M)
 
-instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
+instance (priority := 10000) instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
@@ -146,10 +146,10 @@ namespace SubMulAction
 
 variable [SMul R M]
 
-instance : SetLike (SubMulAction R M) M :=
+instance (priority := 10000) : SetLike (SubMulAction R M) M :=
   ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
-instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
+instance (priority := 10000) : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
 @[simp]
 theorem mem_carrier {p : SubMulAction R M} {x : M} : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
@@ -178,12 +178,12 @@ theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs
   SetLike.coe_injective hs
 #align sub_mul_action.copy_eq SubMulAction.copy_eq
 
-instance : Bot (SubMulAction R M) where
+instance (priority := 10000) : Bot (SubMulAction R M) where
   bot :=
     { carrier := ∅
       smul_mem' := fun _c h => Set.not_mem_empty h }
 
-instance : Inhabited (SubMulAction R M) :=
+instance (priority := 10000) : Inhabited (SubMulAction R M) :=
   ⟨⊥⟩
 
 end SubMulAction
@@ -202,7 +202,7 @@ theorem smul_mem (r : R) (h : x ∈ p) : r • x ∈ p :=
   p.smul_mem' r h
 #align sub_mul_action.smul_mem SubMulAction.smul_mem
 
-instance : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
+instance (priority := 10000) : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
 
 variable {p}
 
@@ -270,14 +270,14 @@ theorem smul_of_tower_mem (s : S) {x : M} (h : x ∈ p) : s • x ∈ p := by
   exact p.smul_mem _ h
 #align sub_mul_action.smul_of_tower_mem SubMulAction.smul_of_tower_mem
 
-instance smul' : SMul S p where smul c x := ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
+instance (priority := 10000) smul' : SMul S p where smul c x := ⟨c • x.1, smul_of_tower_mem _ c x.2⟩
 #align sub_mul_action.has_smul' SubMulAction.smul'
 
-instance isScalarTower : IsScalarTower S R p where
+instance (priority := 10000) isScalarTower : IsScalarTower S R p where
   smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 #align sub_mul_action.is_scalar_tower SubMulAction.isScalarTower
 
-instance isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
+instance (priority := 10000) isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScalarTower S' R M]
     [IsScalarTower S' S M] : IsScalarTower S' S p where
   smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 #align sub_mul_action.is_scalar_tower' SubMulAction.isScalarTower'
@@ -293,7 +293,7 @@ theorem smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G 
   ⟨fun h => inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
 #align sub_mul_action.smul_mem_iff' SubMulAction.smul_mem_iff'
 
-instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
+instance (priority := 10000) isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] :
     IsCentralScalar S p where
   op_smul_eq_smul r x := Subtype.ext <| op_smul_eq_smul r (x : M)
@@ -307,13 +307,13 @@ variable [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
 variable (p : SubMulAction R M)
 
 /-- If the scalar product forms a `MulAction`, then the subset inherits this action -/
-instance mulAction' : MulAction S p where
+instance (priority := 10000) mulAction' : MulAction S p where
   smul := (· • ·)
   one_smul x := Subtype.ext <| one_smul _ (x : M)
   mul_smul c₁ c₂ x := Subtype.ext <| mul_smul c₁ c₂ (x : M)
 #align sub_mul_action.mul_action' SubMulAction.mulAction'
 
-instance mulAction : MulAction R p :=
+instance (priority := 10000) mulAction : MulAction R p :=
   p.mulAction'
 #align sub_mul_action.mul_action SubMulAction.mulAction
 
@@ -366,7 +366,7 @@ theorem zero_mem (h : (p : Set M).Nonempty) : (0 : M) ∈ p :=
 
 /-- If the scalar product forms a `Module`, and the `SubMulAction` is not `⊥`, then the
 subset inherits the zero. -/
-instance [n_empty : Nonempty p] : Zero p where
+instance (priority := 10000) [n_empty : Nonempty p] : Zero p where
   zero := ⟨0, n_empty.elim fun x => p.zero_mem ⟨x, x.prop⟩⟩
 
 end Module
@@ -393,7 +393,7 @@ theorem neg_mem_iff : -x ∈ p ↔ x ∈ p :=
     exact neg_mem _ h, neg_mem _⟩
 #align sub_mul_action.neg_mem_iff SubMulAction.neg_mem_iff
 
-instance : Neg p :=
+instance (priority := 10000) : Neg p :=
   ⟨fun x => ⟨-x.1, neg_mem _ x.2⟩⟩
 
 @[simp, norm_cast]

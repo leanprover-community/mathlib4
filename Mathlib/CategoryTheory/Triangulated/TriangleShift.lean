@@ -145,7 +145,7 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
 
 namespace Triangle
 
-noncomputable instance : HasShift (Triangle C) ℤ :=
+noncomputable instance (priority := 10000) : HasShift (Triangle C) ℤ :=
   hasShiftMk (Triangle C) ℤ
     { F := Triangle.shiftFunctor C
       zero := Triangle.shiftFunctorZero C

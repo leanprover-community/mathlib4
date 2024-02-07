@@ -58,7 +58,7 @@ variable [MeasurableSpace α]
 
 attribute [coe] toFun
 
-instance instCoeFun : CoeFun (α →ₛ β) fun _ => α → β :=
+instance (priority := 10000) instCoeFun : CoeFun (α →ₛ β) fun _ => α → β :=
   ⟨toFun⟩
 #align measure_theory.simple_func.has_coe_to_fun MeasureTheory.SimpleFunc.instCoeFun
 
@@ -144,7 +144,7 @@ def const (α) {β} [MeasurableSpace α] (b : β) : α →ₛ β :=
   ⟨fun _ => b, fun _ => MeasurableSet.const _, finite_range_const⟩
 #align measure_theory.simple_func.const MeasureTheory.SimpleFunc.const
 
-instance instInhabited [Inhabited β] : Inhabited (α →ₛ β) :=
+instance (priority := 10000) instInhabited [Inhabited β] : Inhabited (α →ₛ β) :=
   ⟨const _ default⟩
 #align measure_theory.simple_func.inhabited MeasureTheory.SimpleFunc.instInhabited
 
@@ -422,38 +422,38 @@ theorem bind_const (f : α →ₛ β) : f.bind (const α) = f := by ext; simp
 #align measure_theory.simple_func.bind_const MeasureTheory.SimpleFunc.bind_const
 
 @[to_additive]
-instance instOne [One β] : One (α →ₛ β) :=
+instance (priority := 10000) instOne [One β] : One (α →ₛ β) :=
   ⟨const α 1⟩
 #align measure_theory.simple_func.has_one MeasureTheory.SimpleFunc.instOne
 #align measure_theory.simple_func.has_zero MeasureTheory.SimpleFunc.instZero
 
 @[to_additive]
-instance instMul [Mul β] : Mul (α →ₛ β) :=
+instance (priority := 10000) instMul [Mul β] : Mul (α →ₛ β) :=
   ⟨fun f g => (f.map (· * ·)).seq g⟩
 #align measure_theory.simple_func.has_mul MeasureTheory.SimpleFunc.instMul
 #align measure_theory.simple_func.has_add MeasureTheory.SimpleFunc.instAdd
 
 @[to_additive]
-instance instDiv [Div β] : Div (α →ₛ β) :=
+instance (priority := 10000) instDiv [Div β] : Div (α →ₛ β) :=
   ⟨fun f g => (f.map (· / ·)).seq g⟩
 #align measure_theory.simple_func.has_div MeasureTheory.SimpleFunc.instDiv
 #align measure_theory.simple_func.has_sub MeasureTheory.SimpleFunc.instSub
 
 @[to_additive]
-instance instInv [Inv β] : Inv (α →ₛ β) :=
+instance (priority := 10000) instInv [Inv β] : Inv (α →ₛ β) :=
   ⟨fun f => f.map Inv.inv⟩
 #align measure_theory.simple_func.has_inv MeasureTheory.SimpleFunc.instInv
 #align measure_theory.simple_func.has_neg MeasureTheory.SimpleFunc.instNeg
 
-instance instSup [Sup β] : Sup (α →ₛ β) :=
+instance (priority := 10000) instSup [Sup β] : Sup (α →ₛ β) :=
   ⟨fun f g => (f.map (· ⊔ ·)).seq g⟩
 #align measure_theory.simple_func.has_sup MeasureTheory.SimpleFunc.instSup
 
-instance instInf [Inf β] : Inf (α →ₛ β) :=
+instance (priority := 10000) instInf [Inf β] : Inf (α →ₛ β) :=
   ⟨fun f g => (f.map (· ⊓ ·)).seq g⟩
 #align measure_theory.simple_func.has_inf MeasureTheory.SimpleFunc.instInf
 
-instance instLE [LE β] : LE (α →ₛ β) :=
+instance (priority := 10000) instLE [LE β] : LE (α →ₛ β) :=
   ⟨fun f g => ∀ a, f a ≤ g a⟩
 #align measure_theory.simple_func.has_le MeasureTheory.SimpleFunc.instLE
 
@@ -575,7 +575,7 @@ theorem map_mul [Mul β] [Mul γ] {g : β → γ} (hg : ∀ x y, g (x * y) = g x
 variable {K : Type*}
 
 @[to_additive]
-instance instSMul [SMul K β] : SMul K (α →ₛ β) :=
+instance (priority := 10000) instSMul [SMul K β] : SMul K (α →ₛ β) :=
   ⟨fun k f => f.map (k • ·)⟩
 #align measure_theory.simple_func.has_smul MeasureTheory.SimpleFunc.instSMul
 
@@ -589,10 +589,10 @@ theorem smul_apply [SMul K β] (k : K) (f : α →ₛ β) (a : α) : (k • f) a
   rfl
 #align measure_theory.simple_func.smul_apply MeasureTheory.SimpleFunc.smul_apply
 
-instance hasNatSMul [AddMonoid β] : SMul ℕ (α →ₛ β) := inferInstance
+instance (priority := 10000) hasNatSMul [AddMonoid β] : SMul ℕ (α →ₛ β) := inferInstance
 
 @[to_additive existing hasNatSMul]
-instance hasNatPow [Monoid β] : Pow (α →ₛ β) ℕ :=
+instance (priority := 10000) hasNatPow [Monoid β] : Pow (α →ₛ β) ℕ :=
   ⟨fun f n => f.map (· ^ n)⟩
 #align measure_theory.simple_func.has_nat_pow MeasureTheory.SimpleFunc.hasNatPow
 
@@ -605,7 +605,7 @@ theorem pow_apply [Monoid β] (n : ℕ) (f : α →ₛ β) (a : α) : (f ^ n) a 
   rfl
 #align measure_theory.simple_func.pow_apply MeasureTheory.SimpleFunc.pow_apply
 
-instance hasIntPow [DivInvMonoid β] : Pow (α →ₛ β) ℤ :=
+instance (priority := 10000) hasIntPow [DivInvMonoid β] : Pow (α →ₛ β) ℤ :=
   ⟨fun f n => f.map (· ^ n)⟩
 #align measure_theory.simple_func.has_int_pow MeasureTheory.SimpleFunc.hasIntPow
 
@@ -622,22 +622,22 @@ theorem zpow_apply [DivInvMonoid β] (z : ℤ) (f : α →ₛ β) (a : α) : (f 
 -- argument order swap between `coe_smul` and `coe_pow`.
 section Additive
 
-instance instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) :=
+instance (priority := 10000) instAddMonoid [AddMonoid β] : AddMonoid (α →ₛ β) :=
   Function.Injective.addMonoid (fun f => show α → β from f) coe_injective coe_zero coe_add
     fun _ _ => coe_smul _ _
 #align measure_theory.simple_func.add_monoid MeasureTheory.SimpleFunc.instAddMonoid
 
-instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
+instance (priority := 10000) instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
   Function.Injective.addCommMonoid (fun f => show α → β from f) coe_injective coe_zero coe_add
     fun _ _ => coe_smul _ _
 #align measure_theory.simple_func.add_comm_monoid MeasureTheory.SimpleFunc.instAddCommMonoid
 
-instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) :=
+instance (priority := 10000) instAddGroup [AddGroup β] : AddGroup (α →ₛ β) :=
   Function.Injective.addGroup (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
     coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 #align measure_theory.simple_func.add_group MeasureTheory.SimpleFunc.instAddGroup
 
-instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
+instance (priority := 10000) instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
   Function.Injective.addCommGroup (fun f => show α → β from f) coe_injective coe_zero coe_add
     coe_neg coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 #align measure_theory.simple_func.add_comm_group MeasureTheory.SimpleFunc.instAddCommGroup
@@ -645,28 +645,28 @@ instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
 end Additive
 
 @[to_additive existing]
-instance instMonoid [Monoid β] : Monoid (α →ₛ β) :=
+instance (priority := 10000) instMonoid [Monoid β] : Monoid (α →ₛ β) :=
   Function.Injective.monoid (fun f => show α → β from f) coe_injective coe_one coe_mul coe_pow
 #align measure_theory.simple_func.monoid MeasureTheory.SimpleFunc.instMonoid
 
 @[to_additive existing]
-instance instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) :=
+instance (priority := 10000) instCommMonoid [CommMonoid β] : CommMonoid (α →ₛ β) :=
   Function.Injective.commMonoid (fun f => show α → β from f) coe_injective coe_one coe_mul coe_pow
 #align measure_theory.simple_func.comm_monoid MeasureTheory.SimpleFunc.instCommMonoid
 
 @[to_additive existing]
-instance instGroup [Group β] : Group (α →ₛ β) :=
+instance (priority := 10000) instGroup [Group β] : Group (α →ₛ β) :=
   Function.Injective.group (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
     coe_div coe_pow coe_zpow
 #align measure_theory.simple_func.group MeasureTheory.SimpleFunc.instGroup
 
 @[to_additive existing]
-instance instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
+instance (priority := 10000) instCommGroup [CommGroup β] : CommGroup (α →ₛ β) :=
   Function.Injective.commGroup (fun f => show α → β from f) coe_injective coe_one coe_mul coe_inv
     coe_div coe_pow coe_zpow
 #align measure_theory.simple_func.comm_group MeasureTheory.SimpleFunc.instCommGroup
 
-instance instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
+instance (priority := 10000) instModule [Semiring K] [AddCommMonoid β] [Module K β] : Module K (α →ₛ β) :=
   Function.Injective.module K ⟨⟨fun f => show α → β from f, coe_zero⟩, coe_add⟩
     coe_injective coe_smul
 #align measure_theory.simple_func.module MeasureTheory.SimpleFunc.instModule
@@ -675,28 +675,28 @@ theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k 
   rfl
 #align measure_theory.simple_func.smul_eq_map MeasureTheory.SimpleFunc.smul_eq_map
 
-instance instPreorder [Preorder β] : Preorder (α →ₛ β) :=
+instance (priority := 10000) instPreorder [Preorder β] : Preorder (α →ₛ β) :=
   { SimpleFunc.instLE with
     le_refl := fun f a => le_rfl
     le_trans := fun f g h hfg hgh a => le_trans (hfg _) (hgh a) }
 #align measure_theory.simple_func.preorder MeasureTheory.SimpleFunc.instPreorder
 
-instance instPartialOrder [PartialOrder β] : PartialOrder (α →ₛ β) :=
+instance (priority := 10000) instPartialOrder [PartialOrder β] : PartialOrder (α →ₛ β) :=
   { SimpleFunc.instPreorder with
     le_antisymm := fun _f _g hfg hgf => ext fun a => le_antisymm (hfg a) (hgf a) }
 #align measure_theory.simple_func.partial_order MeasureTheory.SimpleFunc.instPartialOrder
 
-instance instOrderBot [LE β] [OrderBot β] : OrderBot (α →ₛ β) where
+instance (priority := 10000) instOrderBot [LE β] [OrderBot β] : OrderBot (α →ₛ β) where
   bot := const α ⊥
   bot_le _ _ := bot_le
 #align measure_theory.simple_func.order_bot MeasureTheory.SimpleFunc.instOrderBot
 
-instance instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
+instance (priority := 10000) instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
   top := const α ⊤
   le_top _ _ := le_top
 #align measure_theory.simple_func.order_top MeasureTheory.SimpleFunc.instOrderTop
 
-instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (α →ₛ β) :=
+instance (priority := 10000) instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (α →ₛ β) :=
   { SimpleFunc.instPartialOrder with
     inf := (· ⊓ ·)
     inf_le_left := fun _ _ _ => inf_le_left
@@ -704,7 +704,7 @@ instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (α →ₛ β) 
     le_inf := fun _f _g _h hfh hgh a => le_inf (hfh a) (hgh a) }
 #align measure_theory.simple_func.semilattice_inf MeasureTheory.SimpleFunc.instSemilatticeInf
 
-instance instSemilatticeSup [SemilatticeSup β] : SemilatticeSup (α →ₛ β) :=
+instance (priority := 10000) instSemilatticeSup [SemilatticeSup β] : SemilatticeSup (α →ₛ β) :=
   { SimpleFunc.instPartialOrder with
     sup := (· ⊔ ·)
     le_sup_left := fun _ _ _ => le_sup_left
@@ -712,11 +712,11 @@ instance instSemilatticeSup [SemilatticeSup β] : SemilatticeSup (α →ₛ β) 
     sup_le := fun _f _g _h hfh hgh a => sup_le (hfh a) (hgh a) }
 #align measure_theory.simple_func.semilattice_sup MeasureTheory.SimpleFunc.instSemilatticeSup
 
-instance instLattice [Lattice β] : Lattice (α →ₛ β) :=
+instance (priority := 10000) instLattice [Lattice β] : Lattice (α →ₛ β) :=
   { SimpleFunc.instSemilatticeSup, SimpleFunc.instSemilatticeInf with }
 #align measure_theory.simple_func.lattice MeasureTheory.SimpleFunc.instLattice
 
-instance instBoundedOrder [LE β] [BoundedOrder β] : BoundedOrder (α →ₛ β) :=
+instance (priority := 10000) instBoundedOrder [LE β] [BoundedOrder β] : BoundedOrder (α →ₛ β) :=
   { SimpleFunc.instOrderBot, SimpleFunc.instOrderTop with }
 #align measure_theory.simple_func.bounded_order MeasureTheory.SimpleFunc.instBoundedOrder
 

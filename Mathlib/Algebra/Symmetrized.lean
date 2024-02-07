@@ -122,38 +122,38 @@ theorem unsym_inj {a b : αˢʸᵐ} : unsym a = unsym b ↔ a = b :=
   unsym_injective.eq_iff
 #align sym_alg.unsym_inj SymAlg.unsym_inj
 
-instance [Nontrivial α] : Nontrivial αˢʸᵐ :=
+instance (priority := 10000) [Nontrivial α] : Nontrivial αˢʸᵐ :=
   sym_injective.nontrivial
 
-instance [Inhabited α] : Inhabited αˢʸᵐ :=
+instance (priority := 10000) [Inhabited α] : Inhabited αˢʸᵐ :=
   ⟨sym default⟩
 
-instance [Subsingleton α] : Subsingleton αˢʸᵐ :=
+instance (priority := 10000) [Subsingleton α] : Subsingleton αˢʸᵐ :=
   unsym_injective.subsingleton
 
-instance [Unique α] : Unique αˢʸᵐ :=
+instance (priority := 10000) [Unique α] : Unique αˢʸᵐ :=
   Unique.mk' _
 
-instance [IsEmpty α] : IsEmpty αˢʸᵐ :=
+instance (priority := 10000) [IsEmpty α] : IsEmpty αˢʸᵐ :=
   Function.isEmpty unsym
 
 @[to_additive]
-instance [One α] : One αˢʸᵐ where one := sym 1
+instance (priority := 10000) [One α] : One αˢʸᵐ where one := sym 1
 
-instance [Add α] : Add αˢʸᵐ where add a b := sym (unsym a + unsym b)
+instance (priority := 10000) [Add α] : Add αˢʸᵐ where add a b := sym (unsym a + unsym b)
 
-instance [Sub α] : Sub αˢʸᵐ where sub a b := sym (unsym a - unsym b)
+instance (priority := 10000) [Sub α] : Sub αˢʸᵐ where sub a b := sym (unsym a - unsym b)
 
-instance [Neg α] : Neg αˢʸᵐ where neg a := sym (-unsym a)
+instance (priority := 10000) [Neg α] : Neg αˢʸᵐ where neg a := sym (-unsym a)
 
 -- Introduce the symmetrized multiplication
-instance [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] : Mul αˢʸᵐ where
+instance (priority := 10000) [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] : Mul αˢʸᵐ where
   mul a b := sym (⅟ 2 * (unsym a * unsym b + unsym b * unsym a))
 
 @[to_additive existing]
-instance [Inv α] : Inv αˢʸᵐ where inv a := sym <| (unsym a)⁻¹
+instance (priority := 10000) [Inv α] : Inv αˢʸᵐ where inv a := sym <| (unsym a)⁻¹
 
-instance (R : Type*) [SMul R α] : SMul R αˢʸᵐ where smul r a := sym (r • unsym a)
+instance (priority := 10000) (R : Type*) [SMul R α] : SMul R αˢʸᵐ where smul r a := sym (r • unsym a)
 
 @[to_additive (attr := simp)]
 theorem sym_one [One α] : sym (1 : α) = 1 :=
@@ -256,26 +256,26 @@ theorem sym_ne_one_iff [One α] (a : α) : sym a ≠ (1 : αˢʸᵐ) ↔ a ≠ (
 #align sym_alg.sym_ne_one_iff SymAlg.sym_ne_one_iff
 #align sym_alg.sym_ne_zero_iff SymAlg.sym_ne_zero_iff
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αˢʸᵐ :=
+instance (priority := 10000) addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αˢʸᵐ :=
   unsym_injective.addCommSemigroup _ unsym_add
 
-instance addMonoid [AddMonoid α] : AddMonoid αˢʸᵐ :=
+instance (priority := 10000) addMonoid [AddMonoid α] : AddMonoid αˢʸᵐ :=
   unsym_injective.addMonoid _ unsym_zero unsym_add fun _ _ => rfl
 
-instance addGroup [AddGroup α] : AddGroup αˢʸᵐ :=
+instance (priority := 10000) addGroup [AddGroup α] : AddGroup αˢʸᵐ :=
   unsym_injective.addGroup _ unsym_zero unsym_add unsym_neg unsym_sub (fun _ _ => rfl) fun _ _ =>
     rfl
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αˢʸᵐ :=
+instance (priority := 10000) addCommMonoid [AddCommMonoid α] : AddCommMonoid αˢʸᵐ :=
   { SymAlg.addCommSemigroup, SymAlg.addMonoid with }
 
-instance addCommGroup [AddCommGroup α] : AddCommGroup αˢʸᵐ :=
+instance (priority := 10000) addCommGroup [AddCommGroup α] : AddCommGroup αˢʸᵐ :=
   { SymAlg.addCommMonoid, SymAlg.addGroup with }
 
-instance {R : Type*} [Semiring R] [AddCommMonoid α] [Module R α] : Module R αˢʸᵐ :=
+instance (priority := 10000) {R : Type*} [Semiring R] [AddCommMonoid α] [Module R α] : Module R αˢʸᵐ :=
   Function.Injective.module R ⟨⟨unsym, unsym_zero⟩, unsym_add⟩ unsym_injective unsym_smul
 
-instance [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertible a] :
+instance (priority := 10000) [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertible a] :
     Invertible (sym a) where
   invOf := sym (⅟ a)
   invOf_mul_self := by
@@ -289,7 +289,7 @@ theorem invOf_sym [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) 
   rfl
 #align sym_alg.inv_of_sym SymAlg.invOf_sym
 
-instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring αˢʸᵐ :=
+instance (priority := 10000) nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring αˢʸᵐ :=
   { SymAlg.addCommMonoid with
     one := 1
     mul := (· * ·)
@@ -317,7 +317,7 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
       abel }
 
 /-- The symmetrization of a real (unital, associative) algebra is a non-associative ring. -/
-instance [Ring α] [Invertible (2 : α)] : NonAssocRing αˢʸᵐ :=
+instance (priority := 10000) [Ring α] [Invertible (2 : α)] : NonAssocRing αˢʸᵐ :=
   { SymAlg.nonAssocSemiring, SymAlg.addCommGroup with }
 
 /-! The squaring operation coincides for both multiplications -/
@@ -336,10 +336,10 @@ theorem mul_comm [Mul α] [AddCommSemigroup α] [One α] [OfNat α 2] [Invertibl
     a * b = b * a := by rw [mul_def, mul_def, add_comm]
 #align sym_alg.mul_comm SymAlg.mul_comm
 
-instance [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
+instance (priority := 10000) [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
   mul_comm := SymAlg.mul_comm
 
-instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
+instance (priority := 10000) [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   lmul_comm_rmul_rmul a b := by
     have commute_half_left := fun a : α => by
       -- Porting note: mathlib3 used `bit0_left`

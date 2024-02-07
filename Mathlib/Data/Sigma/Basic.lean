@@ -40,10 +40,10 @@ variable {α α₁ α₂ : Type*} {β : α → Type*} {β₁ : α₁ → Type*} 
 
 namespace Sigma
 
-instance instInhabitedSigma [Inhabited α] [Inhabited (β default)] : Inhabited (Sigma β) :=
+instance (priority := 10000) instInhabitedSigma [Inhabited α] [Inhabited (β default)] : Inhabited (Sigma β) :=
   ⟨⟨default, default⟩⟩
 
-instance instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] :
+instance (priority := 10000) instDecidableEqSigma [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] :
     DecidableEq (Sigma β)
   | ⟨a₁, b₁⟩, ⟨a₂, b₂⟩ =>
     match a₁, b₁, a₂, b₂, h₁ a₁ a₂ with
@@ -227,10 +227,10 @@ theorem elim_val {γ} (f : ∀ a, β a → γ) (a b) : PSigma.elim f ⟨a, b⟩ 
   rfl
 #align psigma.elim_val PSigma.elim_val
 
-instance [Inhabited α] [Inhabited (β default)] : Inhabited (PSigma β) :=
+instance (priority := 10000) [Inhabited α] [Inhabited (β default)] : Inhabited (PSigma β) :=
   ⟨⟨default, default⟩⟩
 
-instance decidableEq [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableEq (PSigma β)
+instance (priority := 10000) decidableEq [h₁ : DecidableEq α] [h₂ : ∀ a, DecidableEq (β a)] : DecidableEq (PSigma β)
   | ⟨a₁, b₁⟩, ⟨a₂, b₂⟩ =>
     match a₁, b₁, a₂, b₂, h₁ a₁ a₂ with
     | _, b₁, _, b₂, isTrue (Eq.refl _) =>

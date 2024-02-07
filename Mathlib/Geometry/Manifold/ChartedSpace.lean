@@ -95,7 +95,7 @@ model space is a half space.
 Manifolds are sometimes defined as topological spaces with an atlas of local diffeomorphisms, and
 sometimes as spaces with an atlas from which a topology is deduced. We use the former approach:
 otherwise, there would be an instance from manifolds to topological spaces, which means that any
-instance search for topological spaces would try to find manifold structures involving a yet
+instance (priority := 10000) search for topological spaces would try to find manifold structures involving a yet
 unknown model space, leading to problems. However, we also introduce the latter approach,
 through a structure `ChartedSpaceCore` making it possible to construct a topology out of a set of
 partial equivs with compatibility conditions (but we do not register it as an instance).
@@ -172,15 +172,15 @@ structure StructureGroupoid (H : Type u) [TopologicalSpace H] where
 
 variable [TopologicalSpace H]
 
-instance : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
+instance (priority := 10000) : Membership (PartialHomeomorph H H) (StructureGroupoid H) :=
   ⟨fun (e : PartialHomeomorph H H) (G : StructureGroupoid H) ↦ e ∈ G.members⟩
 
-instance (H : Type u) [TopologicalSpace H] : SetLike (StructureGroupoid H) (PartialHomeomorph H H)
+instance (priority := 10000) (H : Type u) [TopologicalSpace H] : SetLike (StructureGroupoid H) (PartialHomeomorph H H)
     where
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 
-instance : Inf (StructureGroupoid H) :=
+instance (priority := 10000) : Inf (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
     (members := G.members ∩ G'.members)
     (trans' := fun e e' he he' =>
@@ -201,7 +201,7 @@ instance : Inf (StructureGroupoid H) :=
     (mem_of_eqOnSource' := fun e e' he hee' =>
       ⟨G.mem_of_eqOnSource' e e' he.left hee', G'.mem_of_eqOnSource' e e' he.right hee'⟩)⟩
 
-instance : InfSet (StructureGroupoid H) :=
+instance (priority := 10000) : InfSet (StructureGroupoid H) :=
   ⟨fun S => StructureGroupoid.mk
     (members := ⋂ s ∈ S, s.members)
     (trans' := by
@@ -253,7 +253,7 @@ theorem StructureGroupoid.mem_of_eqOnSource (G : StructureGroupoid H) {e e' : Pa
 #align structure_groupoid.eq_on_source StructureGroupoid.mem_of_eqOnSource
 
 /-- Partial order on the set of groupoids, given by inclusion of the members of the groupoid. -/
-instance StructureGroupoid.partialOrder : PartialOrder (StructureGroupoid H) :=
+instance (priority := 10000) StructureGroupoid.partialOrder : PartialOrder (StructureGroupoid H) :=
   PartialOrder.lift StructureGroupoid.members fun a b h ↦ by
     cases a
     cases b
@@ -321,7 +321,7 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
 #align id_groupoid idGroupoid
 
 /-- Every structure groupoid contains the identity groupoid. -/
-instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
+instance (priority := 10000) instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
   bot := idGroupoid H
   bot_le := by
     intro u f hf
@@ -335,7 +335,7 @@ instance instStructureGroupoidOrderBot : OrderBot (StructureGroupoid H) where
       rw [hf, mem_empty_iff_false] at hx
       exact hx.elim
 
-instance : Inhabited (StructureGroupoid H) := ⟨idGroupoid H⟩
+instance (priority := 10000) : Inhabited (StructureGroupoid H) := ⟨idGroupoid H⟩
 
 /-- To construct a groupoid, one may consider classes of partial homeomorphisms such that
 both the function and its inverse have some property. If this property is stable under composition,
@@ -421,7 +421,7 @@ def continuousPregroupoid (H : Type*) [TopologicalSpace H] : Pregroupoid H where
   congr _ _ _ := trivial
 #align continuous_pregroupoid continuousPregroupoid
 
-instance (H : Type*) [TopologicalSpace H] : Inhabited (Pregroupoid H) :=
+instance (priority := 10000) (H : Type*) [TopologicalSpace H] : Inhabited (Pregroupoid H) :=
   ⟨continuousPregroupoid H⟩
 
 /-- The groupoid of all partial homeomorphisms on a topological space `H`. -/
@@ -430,11 +430,11 @@ def continuousGroupoid (H : Type*) [TopologicalSpace H] : StructureGroupoid H :=
 #align continuous_groupoid continuousGroupoid
 
 /-- Every structure groupoid is contained in the groupoid of all partial homeomorphisms. -/
-instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
+instance (priority := 10000) instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
   top := continuousGroupoid H
   le_top _ _ _ := ⟨trivial, trivial⟩
 
-instance : CompleteLattice (StructureGroupoid H) :=
+instance (priority := 10000) : CompleteLattice (StructureGroupoid H) :=
   { SetLike.instPartialOrder,
     completeLatticeOfInf _ (by
       refine' fun s =>
@@ -499,7 +499,7 @@ theorem idRestrGroupoid_mem {s : Set H} (hs : IsOpen s) : ofSet s hs ∈ @idRest
 #align id_restr_groupoid_mem idRestrGroupoid_mem
 
 /-- The trivial restriction-closed groupoid is indeed `ClosedUnderRestriction`. -/
-instance closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRestrGroupoid H _) :=
+instance (priority := 10000) closedUnderRestriction_idRestrGroupoid : ClosedUnderRestriction (@idRestrGroupoid H _) :=
   ⟨by
     rintro e ⟨s', hs', he⟩ s hs
     use s' ∩ s, hs'.inter hs
@@ -536,7 +536,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
 
 /-- The groupoid of all partial homeomorphisms on a topological space `H`
 is closed under restriction. -/
-instance : ClosedUnderRestriction (continuousGroupoid H) :=
+instance (priority := 10000) : ClosedUnderRestriction (continuousGroupoid H) :=
   (closedUnderRestriction_iff_id_le _).mpr le_top
 
 end Groupoid
@@ -586,7 +586,7 @@ lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalS
 section ChartedSpace
 
 /-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
-instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
+instance (priority := 10000) chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
   atlas := {PartialHomeomorph.refl H}
   chartAt _ := PartialHomeomorph.refl H
   mem_chart_source x := mem_univ x
@@ -756,11 +756,11 @@ section
 
 -- attribute [local reducible] ModelProd -- Porting note: not available in Lean4
 
-instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
+instance (priority := 10000) modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
   instInhabitedProd
 #align model_prod_inhabited modelProdInhabited
 
-instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
+instance (priority := 10000) (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
   instTopologicalSpaceProd
 
@@ -780,18 +780,18 @@ section
 variable {ι : Type*} {Hi : ι → Type*}
 
 -- Porting note: Old proof was `Pi.inhabited _`.
-instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
+instance (priority := 10000) modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
   ⟨fun _ ↦ default⟩
 #align model_pi_inhabited modelPiInhabited
 
-instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
+instance (priority := 10000) [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
   Pi.topologicalSpace
 
 end
 
 /-- The product of two charted spaces is naturally a charted space, with the canonical
 construction of the atlas of product maps. -/
-instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
+instance (priority := 10000) prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] (H' : Type*) [TopologicalSpace H'] (M' : Type*) [TopologicalSpace M']
     [ChartedSpace H' M'] : ChartedSpace (ModelProd H H') (M × M') where
   atlas := image2 PartialHomeomorph.prod (atlas H M) (atlas H' M')
@@ -827,7 +827,7 @@ end prodChartedSpace
 
 /-- The product of a finite family of charted spaces is naturally a charted space, with the
 canonical construction of the atlas of finite product maps. -/
-instance piChartedSpace {ι : Type*} [Fintype ι] (H : ι → Type*) [∀ i, TopologicalSpace (H i)]
+instance (priority := 10000) piChartedSpace {ι : Type*} [Fintype ι] (H : ι → Type*) [∀ i, TopologicalSpace (H i)]
     (M : ι → Type*) [∀ i, TopologicalSpace (M i)] [∀ i, ChartedSpace (H i) (M i)] :
     ChartedSpace (ModelPi H) (∀ i, M i) where
   atlas := PartialHomeomorph.pi '' Set.pi univ fun _ ↦ atlas (H _) (M _)
@@ -978,7 +978,7 @@ theorem hasGroupoid_of_pregroupoid (PG : Pregroupoid H) (h : ∀ {e e' : Partial
 #align has_groupoid_of_pregroupoid hasGroupoid_of_pregroupoid
 
 /-- The trivial charted space structure on the model space is compatible with any groupoid. -/
-instance hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : StructureGroupoid H) :
+instance (priority := 10000) hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : StructureGroupoid H) :
     HasGroupoid H G where
   compatible {e e'} he he' := by
     rw [chartedSpaceSelf_atlas] at he he'
@@ -986,7 +986,7 @@ instance hasGroupoid_model_space (H : Type*) [TopologicalSpace H] (G : Structure
 #align has_groupoid_model_space hasGroupoid_model_space
 
 /-- Any charted space structure is compatible with the groupoid of all partial homeomorphisms. -/
-instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) := by
+instance (priority := 10000) hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) := by
   refine' ⟨fun _ _ ↦ _⟩
   rw [continuousGroupoid, mem_groupoid_of_pregroupoid]
   simp only [and_self_iff]

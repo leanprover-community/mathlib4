@@ -65,7 +65,7 @@ lemma zagierSet_subset : zagierSet k ⊆ Ioc 0 (k + 1) ×ˢ Ioc 0 k ×ˢ Ioc 0 k
   have ub := zagierSet_upper_bound k h
   exact ⟨⟨lb.1, ub.1⟩, ⟨lb.2.1, ub.2.1⟩, ⟨lb.2.2, ub.2.2⟩⟩
 
-noncomputable instance : Fintype (zagierSet k) :=
+noncomputable instance (priority := 10000) : Fintype (zagierSet k) :=
   (((finite_Ioc 0 (k + 1)).prod ((finite_Ioc 0 k).prod (finite_Ioc 0 k))).subset
     (zagierSet_subset k)).fintype
 

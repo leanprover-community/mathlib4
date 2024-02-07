@@ -55,7 +55,7 @@ noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
           exact h ⟨_, _, H⟩ }
 #align nontrivial_psum_unique nontrivialPSumUnique
 
-instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
+instance (priority := 10000) Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α
   exact ⟨none, some default, fun .⟩
 
@@ -76,10 +76,10 @@ protected theorem Function.Injective.exists_ne [Nontrivial α] {f : α → β}
   · exact ⟨x₂, h⟩
 #align function.injective.exists_ne Function.Injective.exists_ne
 
-instance nontrivial_prod_right [Nonempty α] [Nontrivial β] : Nontrivial (α × β) :=
+instance (priority := 10000) nontrivial_prod_right [Nonempty α] [Nontrivial β] : Nontrivial (α × β) :=
   Prod.snd_surjective.nontrivial
 
-instance nontrivial_prod_left [Nontrivial α] [Nonempty β] : Nontrivial (α × β) :=
+instance (priority := 10000) nontrivial_prod_left [Nontrivial α] [Nonempty β] : Nontrivial (α × β) :=
   Prod.fst_surjective.nontrivial
 
 namespace Pi
@@ -97,13 +97,13 @@ theorem nontrivial_at (i' : I) [inst : ∀ i, Nonempty (f i)] [Nontrivial (f i')
 
 If a different index has the non-trivial type, then use `haveI := nontrivial_at that_index`.
 -/
-instance nontrivial [Inhabited I] [∀ i, Nonempty (f i)] [Nontrivial (f default)] :
+instance (priority := 10000) nontrivial [Inhabited I] [∀ i, Nonempty (f i)] [Nontrivial (f default)] :
     Nontrivial (∀ i : I, f i) :=
   nontrivial_at default
 
 end Pi
 
-instance Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α → β) :=
+instance (priority := 10000) Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α → β) :=
   h.elim fun a ↦ Pi.nontrivial_at a
 
 @[nontriviality]

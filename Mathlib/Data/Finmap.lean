@@ -170,7 +170,7 @@ theorem ext_iff {s t : Finmap β} : s.entries = t.entries ↔ s = t :=
 /-! ### mem -/
 
 /-- The predicate `a ∈ s` means that `s` has a value associated to the key `a`. -/
-instance : Membership α (Finmap β) :=
+instance (priority := 10000) : Membership α (Finmap β) :=
   ⟨fun a s => a ∈ s.entries.keys⟩
 
 theorem mem_def {a : α} {s : Finmap β} : a ∈ s ↔ a ∈ s.entries.keys :=
@@ -206,10 +206,10 @@ theorem mem_keys {a : α} {s : Finmap β} : a ∈ s.keys ↔ a ∈ s :=
 /-! ### empty -/
 
 /-- The empty map. -/
-instance : EmptyCollection (Finmap β) :=
+instance (priority := 10000) : EmptyCollection (Finmap β) :=
   ⟨⟨0, nodupKeys_nil⟩⟩
 
-instance : Inhabited (Finmap β) :=
+instance (priority := 10000) : Inhabited (Finmap β) :=
   ⟨∅⟩
 
 @[simp]
@@ -252,7 +252,7 @@ section
 
 variable [DecidableEq α]
 
-instance decidableEq [∀ a, DecidableEq (β a)] : DecidableEq (Finmap β)
+instance (priority := 10000) decidableEq [∀ a, DecidableEq (β a)] : DecidableEq (Finmap β)
   | _, _ => decidable_of_iff _ ext_iff
 #align finmap.has_decidable_eq Finmap.decidableEq
 
@@ -305,7 +305,7 @@ theorem lookup_singleton_eq {a : α} {b : β a} : (singleton a b).lookup a = som
   rw [singleton, lookup_toFinmap, AList.singleton, AList.lookup, dlookup_cons_eq]
 #align finmap.lookup_singleton_eq Finmap.lookup_singleton_eq
 
-instance (a : α) (s : Finmap β) : Decidable (a ∈ s) :=
+instance (priority := 10000) (a : α) (s : Finmap β) : Decidable (a ∈ s) :=
   decidable_of_iff _ lookup_isSome
 
 theorem mem_iff {a : α} {s : Finmap β} : a ∈ s ↔ ∃ b, s.lookup a = some b :=
@@ -464,7 +464,7 @@ def sdiff (s s' : Finmap β) : Finmap β :=
   s'.foldl (fun s x _ => s.erase x) (fun _ _ _ _ _ => erase_erase) s
 #align finmap.sdiff Finmap.sdiff
 
-instance : SDiff (Finmap β) :=
+instance (priority := 10000) : SDiff (Finmap β) :=
   ⟨sdiff⟩
 
 /-! ### insert -/
@@ -562,7 +562,7 @@ def union (s₁ s₂ : Finmap β) : Finmap β :=
     toFinmap_eq.mpr <| perm_union p₁₃ p₂₄
 #align finmap.union Finmap.union
 
-instance : Union (Finmap β) :=
+instance (priority := 10000) : Union (Finmap β) :=
   ⟨union⟩
 
 @[simp]
@@ -665,7 +665,7 @@ section
 
 variable [DecidableEq α]
 
-instance : DecidableRel (@Disjoint α β) := fun x y => by dsimp only [Disjoint]; infer_instance
+instance (priority := 10000) : DecidableRel (@Disjoint α β) := fun x y => by dsimp only [Disjoint]; infer_instance
 
 theorem disjoint_union_left (x y z : Finmap β) : Disjoint (x ∪ y) z ↔ Disjoint x z ∧ Disjoint y z :=
   by simp [Disjoint, Finmap.mem_union, or_imp, forall_and]

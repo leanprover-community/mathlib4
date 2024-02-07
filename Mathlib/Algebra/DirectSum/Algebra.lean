@@ -58,19 +58,19 @@ end
 
 variable [Semiring B] [GAlgebra R A] [Algebra R B]
 
-instance _root_.GradedMonoid.smulCommClass_right :
+instance (priority := 10000) _root_.GradedMonoid.smulCommClass_right :
     SMulCommClass R (GradedMonoid A) (GradedMonoid A) where
   smul_comm s x y := by
     dsimp
     rw [GAlgebra.smul_def, GAlgebra.smul_def, ← mul_assoc, GAlgebra.commutes, mul_assoc]
 
-instance _root_.GradedMonoid.isScalarTower_right :
+instance (priority := 10000) _root_.GradedMonoid.isScalarTower_right :
     IsScalarTower R (GradedMonoid A) (GradedMonoid A) where
   smul_assoc s x y := by
     dsimp
     rw [GAlgebra.smul_def, GAlgebra.smul_def, ← mul_assoc, GAlgebra.commutes, mul_assoc]
 
-instance : Algebra R (⨁ i, A i) where
+instance (priority := 10000) : Algebra R (⨁ i, A i) where
   toFun := (DirectSum.of A 0).comp GAlgebra.toFun
   map_zero' := AddMonoidHom.map_zero _
   map_add' := AddMonoidHom.map_add _
@@ -160,7 +160,7 @@ end DirectSum
 
 -/
 @[simps]
-instance Algebra.directSumGAlgebra {R A : Type*} [DecidableEq ι] [AddMonoid ι] [CommSemiring R]
+instance (priority := 10000) Algebra.directSumGAlgebra {R A : Type*} [DecidableEq ι] [AddMonoid ι] [CommSemiring R]
     [Semiring A] [Algebra R A] : DirectSum.GAlgebra R fun _ : ι => A where
   toFun := (algebraMap R A).toAddMonoidHom
   map_one := (algebraMap R A).map_one

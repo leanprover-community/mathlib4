@@ -49,7 +49,7 @@ open MonoidalPredicate
 variable [MonoidalPredicate P]
 
 @[simps]
-instance : MonoidalCategoryStruct (FullSubcategory P) where
+instance (priority := 10000) : MonoidalCategoryStruct (FullSubcategory P) where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   whiskerLeft X _ _ f := X.1 ◁ f
   whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y := (f ▷ Y.1 :)
@@ -65,7 +65,7 @@ instance : MonoidalCategoryStruct (FullSubcategory P) where
 When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
   `C`.
 -/
-instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
+instance (priority := 10000) fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
   Monoidal.induced (fullSubcategoryInclusion P)
     { μIso := fun X Y => eqToIso rfl
       εIso := eqToIso rfl }
@@ -81,11 +81,11 @@ def fullMonoidalSubcategoryInclusion : MonoidalFunctor (FullSubcategory P) C whe
   μ X Y := 𝟙 _
 #align category_theory.monoidal_category.full_monoidal_subcategory_inclusion CategoryTheory.MonoidalCategory.fullMonoidalSubcategoryInclusion
 
-instance fullMonoidalSubcategory.full : Full (fullMonoidalSubcategoryInclusion P).toFunctor :=
+instance (priority := 10000) fullMonoidalSubcategory.full : Full (fullMonoidalSubcategoryInclusion P).toFunctor :=
   FullSubcategory.full P
 #align category_theory.monoidal_category.full_monoidal_subcategory.full CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.full
 
-instance fullMonoidalSubcategory.faithful :
+instance (priority := 10000) fullMonoidalSubcategory.faithful :
     Faithful (fullMonoidalSubcategoryInclusion P).toFunctor :=
   FullSubcategory.faithful P
 #align category_theory.monoidal_category.full_monoidal_subcategory.faithful CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.faithful
@@ -94,22 +94,22 @@ section
 
 variable [Preadditive C]
 
-instance fullMonoidalSubcategoryInclusion_additive :
+instance (priority := 10000) fullMonoidalSubcategoryInclusion_additive :
     (fullMonoidalSubcategoryInclusion P).toFunctor.Additive :=
   Functor.fullSubcategoryInclusion_additive _
 #align category_theory.monoidal_category.full_monoidal_subcategory_inclusion_additive CategoryTheory.MonoidalCategory.fullMonoidalSubcategoryInclusion_additive
 
-instance [MonoidalPreadditive C] : MonoidalPreadditive (FullSubcategory P) :=
+instance (priority := 10000) [MonoidalPreadditive C] : MonoidalPreadditive (FullSubcategory P) :=
   monoidalPreadditive_of_faithful (fullMonoidalSubcategoryInclusion P)
 
 variable (R : Type*) [Ring R] [Linear R C]
 
-instance fullMonoidalSubcategoryInclusion_linear :
+instance (priority := 10000) fullMonoidalSubcategoryInclusion_linear :
     (fullMonoidalSubcategoryInclusion P).toFunctor.Linear R :=
   Functor.fullSubcategoryInclusionLinear R _
 #align category_theory.monoidal_category.full_monoidal_subcategory_inclusion_linear CategoryTheory.MonoidalCategory.fullMonoidalSubcategoryInclusion_linear
 
-instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R (FullSubcategory P) :=
+instance (priority := 10000) [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R (FullSubcategory P) :=
   monoidalLinearOfFaithful R (fullMonoidalSubcategoryInclusion P)
 
 end
@@ -129,12 +129,12 @@ def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
 
 #align category_theory.monoidal_category.full_monoidal_subcategory.map CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.map
 
-instance fullMonoidalSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
+instance (priority := 10000) fullMonoidalSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
     Full (fullMonoidalSubcategory.map h).toFunctor where
   preimage f := f
 #align category_theory.monoidal_category.full_monoidal_subcategory.map_full CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.mapFull
 
-instance fullMonoidalSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :
+instance (priority := 10000) fullMonoidalSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :
     Faithful (fullMonoidalSubcategory.map h).toFunctor where
 #align category_theory.monoidal_category.full_monoidal_subcategory.map_faithful CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.map_faithful
 
@@ -144,7 +144,7 @@ variable (P) [BraidedCategory C]
 
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
-instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
+instance (priority := 10000) fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
   braidedCategoryOfFaithful (fullMonoidalSubcategoryInclusion P)
     (fun X Y =>
       ⟨(β_ X.1 Y.1).hom, (β_ X.1 Y.1).inv, (β_ X.1 Y.1).hom_inv_id, (β_ X.1 Y.1).inv_hom_id⟩)
@@ -160,11 +160,11 @@ def fullBraidedSubcategoryInclusion : BraidedFunctor (FullSubcategory P) C where
   braided X Y := by rw [IsIso.eq_inv_comp]; aesop_cat
 #align category_theory.monoidal_category.full_braided_subcategory_inclusion CategoryTheory.MonoidalCategory.fullBraidedSubcategoryInclusion
 
-instance fullBraidedSubcategory.full : Full (fullBraidedSubcategoryInclusion P).toFunctor :=
+instance (priority := 10000) fullBraidedSubcategory.full : Full (fullBraidedSubcategoryInclusion P).toFunctor :=
   fullMonoidalSubcategory.full P
 #align category_theory.monoidal_category.full_braided_subcategory.full CategoryTheory.MonoidalCategory.fullBraidedSubcategory.full
 
-instance fullBraidedSubcategory.faithful : Faithful (fullBraidedSubcategoryInclusion P).toFunctor :=
+instance (priority := 10000) fullBraidedSubcategory.faithful : Faithful (fullBraidedSubcategoryInclusion P).toFunctor :=
   fullMonoidalSubcategory.faithful P
 #align category_theory.monoidal_category.full_braided_subcategory.faithful CategoryTheory.MonoidalCategory.fullBraidedSubcategory.faithful
 
@@ -179,12 +179,12 @@ def fullBraidedSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
   braided X Y := by rw [IsIso.eq_inv_comp]; aesop_cat
 #align category_theory.monoidal_category.full_braided_subcategory.map CategoryTheory.MonoidalCategory.fullBraidedSubcategory.map
 
-instance fullBraidedSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
+instance (priority := 10000) fullBraidedSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
     Full (fullBraidedSubcategory.map h).toFunctor :=
   fullMonoidalSubcategory.mapFull h
 #align category_theory.monoidal_category.full_braided_subcategory.map_full CategoryTheory.MonoidalCategory.fullBraidedSubcategory.mapFull
 
-instance fullBraidedSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :
+instance (priority := 10000) fullBraidedSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :
     Faithful (fullBraidedSubcategory.map h).toFunctor :=
   fullMonoidalSubcategory.map_faithful h
 #align category_theory.monoidal_category.full_braided_subcategory.map_faithful CategoryTheory.MonoidalCategory.fullBraidedSubcategory.map_faithful
@@ -195,7 +195,7 @@ section Symmetric
 
 variable (P) [SymmetricCategory C]
 
-instance fullSymmetricSubcategory : SymmetricCategory (FullSubcategory P) :=
+instance (priority := 10000) fullSymmetricSubcategory : SymmetricCategory (FullSubcategory P) :=
   symmetricCategoryOfFaithful (fullBraidedSubcategoryInclusion P)
 #align category_theory.monoidal_category.full_symmetric_subcategory CategoryTheory.MonoidalCategory.fullSymmetricSubcategory
 
@@ -215,7 +215,7 @@ open ClosedPredicate
 
 variable [ClosedPredicate P]
 
-instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
+instance (priority := 10000) fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
   { isAdj :=
     { right :=

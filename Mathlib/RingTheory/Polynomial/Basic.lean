@@ -43,11 +43,11 @@ section Semiring
 
 variable [Semiring R]
 
-instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
+instance (priority := 10000) instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
   let ⟨h⟩ := h
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
 
-instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
+instance (priority := 10000) instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
   cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
 
 variable (R)
@@ -1143,7 +1143,7 @@ theorem isNoetherianRing_fin [IsNoetherianRing R] :
 
 /-- The multivariate polynomial ring in finitely many variables over a noetherian ring
 is itself a noetherian ring. -/
-instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
+instance (priority := 10000) isNoetherianRing [Finite σ] [IsNoetherianRing R] :
     IsNoetherianRing (MvPolynomial σ R) := by
   cases nonempty_fintype σ
   exact
@@ -1177,7 +1177,7 @@ theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R] [Fi
   exact (renameEquiv R (Fintype.equivFin σ)).injective.noZeroDivisors _ (map_zero _) (map_mul _)
 #align mv_polynomial.no_zero_divisors_of_finite MvPolynomial.noZeroDivisors_of_finite
 
-instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
+instance (priority := 10000) {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     NoZeroDivisors (MvPolynomial σ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {p q} h := by
     obtain ⟨s, p, q, rfl, rfl⟩ := exists_finset_rename₂ p q
@@ -1189,7 +1189,7 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     apply this.imp <;> rintro rfl <;> simp
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
+instance (priority := 10000) isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
     IsDomain (MvPolynomial σ R) := by
   apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _
   apply AddMonoidAlgebra.nontrivial

@@ -43,7 +43,7 @@ theorem FinallySmall.mk' {J : Type u} [Category.{v} J] {S : Type w} [SmallCatego
 def FinalModel [FinallySmall.{w} J] : Type w :=
   Classical.choose (@FinallySmall.final_smallCategory J _ _)
 
-noncomputable instance smallCategoryFinalModel [FinallySmall.{w} J] :
+noncomputable instance (priority := 10000) smallCategoryFinalModel [FinallySmall.{w} J] :
     SmallCategory (FinalModel J) :=
   Classical.choose (Classical.choose_spec (@FinallySmall.final_smallCategory J _ _))
 
@@ -52,7 +52,7 @@ noncomputable def fromFinalModel [FinallySmall.{w} J] : FinalModel J ⥤ J :=
   Classical.choose (Classical.choose_spec (Classical.choose_spec
     (@FinallySmall.final_smallCategory J _ _)))
 
-instance final_fromFinalModel [FinallySmall.{w} J] : Final (fromFinalModel J) :=
+instance (priority := 10000) final_fromFinalModel [FinallySmall.{w} J] : Final (fromFinalModel J) :=
   Classical.choose_spec (Classical.choose_spec (Classical.choose_spec
     (@FinallySmall.final_smallCategory J _ _)))
 
@@ -79,7 +79,7 @@ theorem InitiallySmall.mk' {J : Type u} [Category.{v} J] {S : Type w} [SmallCate
 def InitialModel [InitiallySmall.{w} J] : Type w :=
   Classical.choose (@InitiallySmall.initial_smallCategory J _ _)
 
-noncomputable instance smallCategoryInitialModel [InitiallySmall.{w} J] :
+noncomputable instance (priority := 10000) smallCategoryInitialModel [InitiallySmall.{w} J] :
     SmallCategory (InitialModel J) :=
   Classical.choose (Classical.choose_spec (@InitiallySmall.initial_smallCategory J _ _))
 
@@ -88,7 +88,7 @@ noncomputable def fromInitialModel [InitiallySmall.{w} J] : InitialModel J ⥤ J
   Classical.choose (Classical.choose_spec (Classical.choose_spec
     (@InitiallySmall.initial_smallCategory J _ _)))
 
-instance initial_fromInitialModel [InitiallySmall.{w} J] : Initial (fromInitialModel J) :=
+instance (priority := 10000) initial_fromInitialModel [InitiallySmall.{w} J] : Initial (fromInitialModel J) :=
   Classical.choose_spec (Classical.choose_spec (Classical.choose_spec
     (@InitiallySmall.initial_smallCategory J _ _)))
 

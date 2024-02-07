@@ -311,7 +311,7 @@ theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeighte
 #align mv_polynomial.is_weighted_homogeneous.weighted_total_degree MvPolynomial.IsWeightedHomogeneous.weighted_total_degree
 
 /-- The weighted homogeneous submodules form a graded monoid. -/
-instance WeightedHomogeneousSubmodule.gcomm_monoid {w : σ → M} :
+instance (priority := 10000) WeightedHomogeneousSubmodule.gcomm_monoid {w : σ → M} :
     SetLike.GradedMonoid (weightedHomogeneousSubmodule R w) where
   one_mem := isWeightedHomogeneous_one R w
   mul_mem _ _ _ _ := IsWeightedHomogeneous.mul

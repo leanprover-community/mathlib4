@@ -32,10 +32,10 @@ def PrimeMultiset :=
   SemilatticeSup, Sub
 #align prime_multiset PrimeMultiset
 
-instance : OrderBot PrimeMultiset where
+instance (priority := 10000) : OrderBot PrimeMultiset where
   bot_le := by simp only [bot_le, forall_const]
 
-instance : OrderedSub PrimeMultiset where
+instance (priority := 10000) : OrderedSub PrimeMultiset where
   tsub_le_iff_right _ _ _ := Multiset.sub_le_iff_le_add
 
 namespace PrimeMultiset
@@ -63,7 +63,7 @@ theorem card_ofPrime (p : Nat.Primes) : Multiset.card (ofPrime p) = 1 :=
 def toNatMultiset : PrimeMultiset → Multiset ℕ := fun v => v.map Coe.coe
 #align prime_multiset.to_nat_multiset PrimeMultiset.toNatMultiset
 
-instance coeNat : Coe PrimeMultiset (Multiset ℕ) :=
+instance (priority := 10000) coeNat : Coe PrimeMultiset (Multiset ℕ) :=
   ⟨toNatMultiset⟩
 #align prime_multiset.coe_nat PrimeMultiset.coeNat
 
@@ -95,7 +95,7 @@ theorem coeNat_prime (v : PrimeMultiset) (p : ℕ) (h : p ∈ (v : Multiset ℕ)
 def toPNatMultiset : PrimeMultiset → Multiset ℕ+ := fun v => v.map Coe.coe
 #align prime_multiset.to_pnat_multiset PrimeMultiset.toPNatMultiset
 
-instance coePNat : Coe PrimeMultiset (Multiset ℕ+) :=
+instance (priority := 10000) coePNat : Coe PrimeMultiset (Multiset ℕ+) :=
   ⟨toPNatMultiset⟩
 #align prime_multiset.coe_pnat PrimeMultiset.coePNat
 
@@ -123,7 +123,7 @@ theorem coePNat_prime (v : PrimeMultiset) (p : ℕ+) (h : p ∈ (v : Multiset �
   exact h_eq ▸ hp'
 #align prime_multiset.coe_pnat_prime PrimeMultiset.coePNat_prime
 
-instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
+instance (priority := 10000) coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
   ⟨fun v => v.map Coe.coe⟩
 #align prime_multiset.coe_multiset_pnat_nat PrimeMultiset.coeMultisetPNatNat
 

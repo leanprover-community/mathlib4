@@ -285,10 +285,10 @@ class Mono (f : X ⟶ Y) : Prop where
   right_cancellation : ∀ {Z : C} (g h : Z ⟶ X), g ≫ f = h ≫ f → g = h
 #align category_theory.mono CategoryTheory.Mono
 
-instance (X : C) : Epi (𝟙 X) :=
+instance (priority := 10000) (X : C) : Epi (𝟙 X) :=
   ⟨fun g h w => by aesop⟩
 
-instance (X : C) : Mono (𝟙 X) :=
+instance (priority := 10000) (X : C) : Mono (𝟙 X) :=
   ⟨fun g h w => by aesop⟩
 
 theorem cancel_epi (f : X ⟶ Y) [Epi f] {g h : Y ⟶ Z} : f ≫ g = f ≫ h ↔ g = h :=
@@ -365,7 +365,7 @@ variable [Category.{v} C]
 
 universe u'
 
-instance uliftCategory : Category.{v} (ULift.{u'} C) where
+instance (priority := 10000) uliftCategory : Category.{v} (ULift.{u'} C) where
   Hom X Y := X.down ⟶ Y.down
   id X := 𝟙 X.down
   comp f g := f ≫ g

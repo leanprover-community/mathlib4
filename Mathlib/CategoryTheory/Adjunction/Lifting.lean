@@ -104,7 +104,7 @@ def otherMap (X) : F'.obj (U.obj (F.obj (U.obj X))) ⟶ F'.obj (U.obj X) :=
 /-- `(F'Uε_X, otherMap X)` is a reflexive pair: in particular if `A` has reflexive coequalizers then
 it has a coequalizer.
 -/
-instance (X : B) :
+instance (priority := 10000) (X : B) :
     IsReflexivePair (F'.map (U.map (adj₁.counit.app X))) (otherMap _ _ adj₁ adj₂ X) :=
   IsReflexivePair.mk' (F'.map (adj₁.unit.app (U.obj X)))
     (by

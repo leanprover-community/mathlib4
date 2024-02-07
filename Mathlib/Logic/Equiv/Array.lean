@@ -56,7 +56,7 @@ end Equiv
 
 1. be implemented directly in terms of `Array` functionality for efficiency, rather than being the
 traversal of some other type transported along an equivalence to `Array α` (as the traversable
-instance for `array` was)
+instance (priority := 10000) for `array` was)
 
 2. belong in `Mathlib.Control.Traversable.Instances` instead of this file. -/
 
@@ -75,11 +75,11 @@ instance for `array` was)
 -- end Array'
 
 /-- If `α` is encodable, then so is `Array α`. -/
-instance Array.encodable {α} [Encodable α] : Encodable (Array α) :=
+instance (priority := 10000) Array.encodable {α} [Encodable α] : Encodable (Array α) :=
   Encodable.ofEquiv _ (Equiv.arrayEquivList _)
 #noalign array.encodable
 
 /-- If `α` is countable, then so is `Array α`. -/
-instance Array.countable {α} [Countable α] : Countable (Array α) :=
+instance (priority := 10000) Array.countable {α} [Countable α] : Countable (Array α) :=
   Countable.of_equiv _ (Equiv.arrayEquivList α).symm
 #noalign array.countable

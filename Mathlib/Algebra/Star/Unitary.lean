@@ -72,7 +72,7 @@ theorem star_mem_iff {U : R} : star U ∈ unitary R ↔ U ∈ unitary R :=
   ⟨fun h => star_star U ▸ star_mem h, star_mem⟩
 #align unitary.star_mem_iff unitary.star_mem_iff
 
-instance : Star (unitary R) :=
+instance (priority := 10000) : Star (unitary R) :=
   ⟨fun U => ⟨star U, star_mem U.prop⟩⟩
 
 @[simp, norm_cast]
@@ -98,24 +98,24 @@ theorem mul_star_self (U : unitary R) : U * star U = 1 :=
   Subtype.ext <| coe_mul_star_self U
 #align unitary.mul_star_self unitary.mul_star_self
 
-instance : Group (unitary R) :=
+instance (priority := 10000) : Group (unitary R) :=
   { Submonoid.toMonoid _ with
     inv := star
     mul_left_inv := star_mul_self }
 
-instance : InvolutiveStar (unitary R) :=
+instance (priority := 10000) : InvolutiveStar (unitary R) :=
   ⟨by
     intro x
     ext
     rw [coe_star, coe_star, star_star]⟩
 
-instance : StarMul (unitary R) :=
+instance (priority := 10000) : StarMul (unitary R) :=
   ⟨by
     intro x y
     ext
     rw [coe_star, Submonoid.coe_mul, Submonoid.coe_mul, coe_star, coe_star, star_mul]⟩
 
-instance : Inhabited (unitary R) :=
+instance (priority := 10000) : Inhabited (unitary R) :=
   ⟨1⟩
 
 theorem star_eq_inv (U : unitary R) : star U = U⁻¹ :=
@@ -145,7 +145,7 @@ section CommMonoid
 
 variable [CommMonoid R] [StarMul R]
 
-instance : CommGroup (unitary R) :=
+instance (priority := 10000) : CommGroup (unitary R) :=
   { inferInstanceAs (Group (unitary R)), Submonoid.toCommMonoid _ with }
 
 theorem mem_iff_star_mul_self {U : R} : U ∈ unitary R ↔ star U * U = 1 :=
@@ -185,7 +185,7 @@ section Ring
 
 variable [Ring R] [StarRing R]
 
-instance : Neg (unitary R) where
+instance (priority := 10000) : Neg (unitary R) where
   neg U :=
     ⟨-U, by simp [mem_iff, star_neg, neg_mul_neg]⟩
 
@@ -194,7 +194,7 @@ theorem coe_neg (U : unitary R) : ↑(-U) = (-U : R) :=
   rfl
 #align unitary.coe_neg unitary.coe_neg
 
-instance : HasDistribNeg (unitary R) :=
+instance (priority := 10000) : HasDistribNeg (unitary R) :=
   Subtype.coe_injective.hasDistribNeg _ coe_neg (unitary R).coe_mul
 
 end Ring

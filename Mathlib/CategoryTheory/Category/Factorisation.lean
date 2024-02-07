@@ -69,7 +69,7 @@ protected def Hom.comp {d₁ d₂ d₃ : Factorisation f}
   ι_h := by rw [← Category.assoc, f.ι_h, g.ι_h]
   h_π := by rw [Category.assoc, g.h_π, f.h_π]
 
-instance : Category.{max u v} (Factorisation f) where
+instance (priority := 10000) : Category.{max u v} (Factorisation f) where
   Hom d e := Factorisation.Hom d e
   id d := Factorisation.Hom.id d
   comp f g := Factorisation.Hom.comp f g
@@ -89,7 +89,7 @@ protected def initialHom (d : Factorisation f) :
     Factorisation.Hom (Factorisation.initial : Factorisation f) d where
   h := d.ι
 
-instance : Unique ((Factorisation.initial : Factorisation f) ⟶ d) where
+instance (priority := 10000) : Unique ((Factorisation.initial : Factorisation f) ⟶ d) where
   default := Factorisation.initialHom d
   uniq f := by apply Factorisation.Hom.ext; simp [← f.ι_h]
 
@@ -106,7 +106,7 @@ protected def terminalHom (d : Factorisation f) :
     Factorisation.Hom d (Factorisation.terminal : Factorisation f) where
   h := d.π
 
-instance : Unique (d ⟶ (Factorisation.terminal : Factorisation f)) where
+instance (priority := 10000) : Unique (d ⟶ (Factorisation.terminal : Factorisation f)) where
   default := Factorisation.terminalHom d
   uniq f := by apply Factorisation.Hom.ext; simp [← f.h_π]
 
@@ -115,13 +115,13 @@ open Limits
 /-- The initial factorisation is an initial object -/
 def IsInitial_initial : IsInitial (Factorisation.initial : Factorisation f) := IsInitial.ofUnique _
 
-instance : HasInitial (Factorisation f) := Limits.hasInitial_of_unique Factorisation.initial
+instance (priority := 10000) : HasInitial (Factorisation f) := Limits.hasInitial_of_unique Factorisation.initial
 
 /-- The terminal factorisation is a terminal object -/
 def IsTerminal_terminal : IsTerminal (Factorisation.terminal : Factorisation f) :=
 IsTerminal.ofUnique _
 
-instance : HasTerminal (Factorisation f) := Limits.hasTerminal_of_unique Factorisation.terminal
+instance (priority := 10000) : HasTerminal (Factorisation f) := Limits.hasTerminal_of_unique Factorisation.terminal
 
 /-- The forgetful functor from `Factorisation f` to the underlying category `C`. -/
 @[simps]

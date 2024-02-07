@@ -70,7 +70,7 @@ theorem ne_zero_of_mem_circle (z : circle) : (z : ℂ) ≠ 0 :=
   ne_zero_of_mem_unit_sphere z
 #align ne_zero_of_mem_circle ne_zero_of_mem_circle
 
-instance commGroup : CommGroup circle :=
+instance (priority := 10000) commGroup : CommGroup circle :=
   Metric.sphere.commGroup
 
 @[simp]
@@ -99,10 +99,10 @@ theorem circle.toUnits_apply (z : circle) :
   rfl
 #align circle.to_units_apply circle.toUnits_apply
 
-instance : CompactSpace circle :=
+instance (priority := 10000) : CompactSpace circle :=
   Metric.sphere.compactSpace _ _
 
-instance : TopologicalGroup circle :=
+instance (priority := 10000) : TopologicalGroup circle :=
   Metric.sphere.topologicalGroup
 
 /-- If `z` is a nonzero complex number, then `conj z / z` belongs to the unit circle. -/

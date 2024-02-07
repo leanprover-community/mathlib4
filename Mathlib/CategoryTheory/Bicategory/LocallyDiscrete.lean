@@ -39,9 +39,9 @@ def LocallyDiscrete (C : Type u) :=
 
 namespace LocallyDiscrete
 
-instance [Inhabited C] : Inhabited (LocallyDiscrete C) := ⟨(default : C)⟩
+instance (priority := 10000) [Inhabited C] : Inhabited (LocallyDiscrete C) := ⟨(default : C)⟩
 
-instance [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C)
+instance (priority := 10000) [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C)
     where
   Hom := fun X Y : C => Discrete (X ⟶ Y)
   id := fun X : C => ⟨𝟙 X⟩
@@ -56,7 +56,7 @@ instance (priority := 900) homSmallCategory (X Y : LocallyDiscrete C) : SmallCat
 #align category_theory.locally_discrete.hom_small_category CategoryTheory.LocallyDiscrete.homSmallCategory
 
 -- Porting note: Manually adding this instance (inferInstance doesn't work)
-instance subsingleton2Hom {X Y : LocallyDiscrete C} (f g : X ⟶ Y) : Subsingleton (f ⟶ g) :=
+instance (priority := 10000) subsingleton2Hom {X Y : LocallyDiscrete C} (f g : X ⟶ Y) : Subsingleton (f ⟶ g) :=
   let X' : C := X
   let Y' : C := Y
   let f' : Discrete (X' ⟶ Y') := f
@@ -76,7 +76,7 @@ variable (C) [Category.{v} C]
 1-morphisms are the same as those in the underlying category, and the 2-morphisms are the
 equalities between 1-morphisms.
 -/
-instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C)
+instance (priority := 10000) locallyDiscreteBicategory : Bicategory (LocallyDiscrete C)
     where
   whiskerLeft f g h η := eqToHom (congr_arg₂ (· ≫ ·) rfl (LocallyDiscrete.eq_of_hom η))
   whiskerRight η h := eqToHom (congr_arg₂ (· ≫ ·) (LocallyDiscrete.eq_of_hom η) rfl)
@@ -98,7 +98,7 @@ instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C)
 #align category_theory.locally_discrete_bicategory CategoryTheory.locallyDiscreteBicategory
 
 /-- A locally discrete bicategory is strict. -/
-instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C)
+instance (priority := 10000) locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C)
     where
   id_comp := by
     intros

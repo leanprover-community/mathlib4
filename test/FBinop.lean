@@ -19,8 +19,8 @@ class SProd' (α : Type u) (β : Type v) (γ : outParam (Type w)) where
 macro_rules | `($x ×ˢ' $y)   => `(fbinop% SProd'.sprod $x $y)
 
 @[default_instance]
-instance : SProd' (Set α) (Set β) (Set (α × β)) := ⟨Set.prod⟩
-instance : SProd' (Finset α) (Finset β) (Finset (α × β)) := ⟨Finset.product⟩
+instance (priority := 10000) : SProd' (Set α) (Set β) (Set (α × β)) := ⟨Set.prod⟩
+instance (priority := 10000) : SProd' (Finset α) (Finset β) (Finset (α × β)) := ⟨Finset.product⟩
 
 -- set_option trace.Elab.fbinop true
 
@@ -66,7 +66,7 @@ example (s : Finset α) (t : Finset β) :
 structure SubObj (X : Type _) where
   carrier : Set X
 
-instance : SetLike (SubObj X) X
+instance (priority := 10000) : SetLike (SubObj X) X
     where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr
@@ -79,7 +79,7 @@ def SubObj.prod (s : SubObj X) (t : SubObj Y) : SubObj (X × Y) where
 structure DecSubObj (X : Type _) [DecidableEq X] where
   carrier : Set X
 
-instance [DecidableEq X] : SetLike (DecSubObj X) X
+instance (priority := 10000) [DecidableEq X] : SetLike (DecSubObj X) X
     where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr

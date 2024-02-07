@@ -75,7 +75,7 @@ set_option linter.uppercaseLean3 false in
 attribute [local ext] TensorProduct.ext
 
 /-- The symmetric monoidal structure on `Module R`. -/
-instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
+instance (priority := 10000) symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   braiding := braiding
   braiding_naturality_left := braiding_naturality_left
   braiding_naturality_right := braiding_naturality_right

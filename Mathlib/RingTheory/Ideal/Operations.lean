@@ -33,7 +33,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 open Pointwise
 
-instance hasSMul' : SMul (Ideal R) (Submodule R M) :=
+instance (priority := 10000) hasSMul' : SMul (Ideal R) (Submodule R M) :=
   ⟨Submodule.map₂ (LinearMap.lsmul R M)⟩
 #align submodule.has_smul' Submodule.hasSMul'
 
@@ -442,7 +442,7 @@ variable {R : Type u} {ι : Type*} [CommSemiring R]
 
 variable {I J K L : Ideal R}
 
-instance : Mul (Ideal R) :=
+instance (priority := 10000) : Mul (Ideal R) :=
   ⟨(· • ·)⟩
 
 @[simp]
@@ -828,10 +828,10 @@ theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal 
     fun h => by cases' h with h h <;> rw [← Ideal.mul_bot, h, Ideal.mul_comm]⟩
 #align ideal.mul_eq_bot Ideal.mul_eq_bot
 
-instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
+instance (priority := 10000) {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
-instance {R : Type*} [CommSemiring R] {S : Type*} [CommRing S] [Algebra R S]
+instance (priority := 10000) {R : Type*} [CommSemiring R] {S : Type*} [CommRing S] [Algebra R S]
     [NoZeroSMulDivisors R S] {I : Ideal S} : NoZeroSMulDivisors R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
@@ -1079,7 +1079,7 @@ theorem radical_bot_of_noZeroDivisors {R : Type u} [CommSemiring R] [NoZeroDivis
   eq_bot_iff.2 isRadical_bot_of_noZeroDivisors
 #align ideal.radical_bot_of_no_zero_divisors Ideal.radical_bot_of_noZeroDivisors
 
-instance : IdemCommSemiring (Ideal R) :=
+instance (priority := 10000) : IdemCommSemiring (Ideal R) :=
   inferInstance
 
 variable (R)
@@ -1324,7 +1324,7 @@ theorem isUnit_iff {I : Ideal R} : IsUnit I ↔ I = ⊤ :=
       ⟨fun h => eq_top_iff.mpr (Ideal.le_of_dvd h), fun h => ⟨⊤, by rw [mul_top, h]⟩⟩)
 #align ideal.is_unit_iff Ideal.isUnit_iff
 
-instance uniqueUnits : Unique (Ideal R)ˣ where
+instance (priority := 10000) uniqueUnits : Unique (Ideal R)ˣ where
   default := 1
   uniq u := Units.ext (show (u : Ideal R) = 1 by rw [isUnit_iff.mp u.isUnit, one_eq_top])
 #align ideal.unique_units Ideal.uniqueUnits
@@ -1428,7 +1428,7 @@ theorem comap_le_map_of_inverse (g : G) (I : Ideal S) (h : Function.LeftInverse 
   comap_le_map_of_inv_on _ _ _ <| h.leftInvOn _
 #align ideal.comap_le_map_of_inverse Ideal.comap_le_map_of_inverse
 
-instance IsPrime.comap [hK : K.IsPrime] : (comap f K).IsPrime :=
+instance (priority := 10000) IsPrime.comap [hK : K.IsPrime] : (comap f K).IsPrime :=
   ⟨comap_ne_top _ hK.1, fun {x y} => by simp only [mem_comap, map_mul]; apply hK.2⟩
 #align ideal.is_prime.comap Ideal.IsPrime.comap
 
@@ -2299,7 +2299,7 @@ variable {R : Type u} {M : Type v}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 -- TODO: show `[Algebra R A] : Algebra (Ideal R) A` too
-instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
+instance (priority := 10000) moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
   add_smul := sup_smul
   mul_smul := Submodule.smul_assoc

@@ -21,7 +21,7 @@ open Topology Filter
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
-instance : TopologicalSpace (List α) :=
+instance (priority := 10000) : TopologicalSpace (List α) :=
   TopologicalSpace.mkOfNhds (traverse nhds)
 
 theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
@@ -185,7 +185,7 @@ namespace Vector
 
 open List
 
-instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
+instance (priority := 10000) (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
 
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
     Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (a ::ᵥ l)) := by

@@ -74,7 +74,7 @@ theorem unmop_mop (X : C) : unmop (mop X) = X :=
   rfl
 #align category_theory.monoidal_opposite.unmop_mop CategoryTheory.MonoidalOpposite.unmop_mop
 
-instance monoidalOppositeCategory [Category.{v₁} C] : Category Cᴹᵒᵖ :=
+instance (priority := 10000) monoidalOppositeCategory [Category.{v₁} C] : Category Cᴹᵒᵖ :=
   InducedCategory.category unmop
 #align category_theory.monoidal_opposite.monoidal_opposite_category CategoryTheory.MonoidalOpposite.monoidalOppositeCategory
 
@@ -172,7 +172,7 @@ open Opposite MonoidalCategory
 
 attribute [local simp] id_tensorHom tensorHom_id
 
-instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
+instance (priority := 10000) monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
   whiskerLeft X _ _ f := (X.unop ◁ f.unop).op
   whiskerRight f X := (f.unop ▷ X.unop).op
@@ -197,7 +197,7 @@ theorem op_tensorUnit : 𝟙_ Cᵒᵖ = op (𝟙_ C) :=
   rfl
 #align category_theory.op_tensor_unit CategoryTheory.op_tensorUnit
 
-instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
+instance (priority := 10000) monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   tensorObj X Y := mop (unmop Y ⊗ unmop X)
   whiskerLeft X _ _ f := (f.unmop ▷ X.unmop).mop
   whiskerRight f X := (X.unmop ◁ f.unmop).mop

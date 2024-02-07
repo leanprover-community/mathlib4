@@ -25,7 +25,7 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-instance : NoncompactSpace ℝ := Int.closedEmbedding_coe_real.noncompactSpace
+instance (priority := 10000) : NoncompactSpace ℝ := Int.closedEmbedding_coe_real.noncompactSpace
 
 theorem Real.uniformContinuous_add : UniformContinuous fun p : ℝ × ℝ => p.1 + p.2 :=
   Metric.uniformContinuous_iff.2 fun _ε ε0 =>
@@ -40,22 +40,22 @@ theorem Real.uniformContinuous_neg : UniformContinuous (@Neg.neg ℝ _) :=
     ⟨_, ε0, fun h => by rw [dist_comm] at h; simpa only [Real.dist_eq, neg_sub_neg] using h⟩
 #align real.uniform_continuous_neg Real.uniformContinuous_neg
 
-instance : ContinuousStar ℝ := ⟨continuous_id⟩
+instance (priority := 10000) : ContinuousStar ℝ := ⟨continuous_id⟩
 
-instance : UniformAddGroup ℝ :=
+instance (priority := 10000) : UniformAddGroup ℝ :=
   UniformAddGroup.mk' Real.uniformContinuous_add Real.uniformContinuous_neg
 
 -- short-circuit type class inference
-instance : TopologicalAddGroup ℝ := by infer_instance
-instance : TopologicalRing ℝ := inferInstance
-instance : TopologicalDivisionRing ℝ := inferInstance
+instance (priority := 10000) : TopologicalAddGroup ℝ := by infer_instance
+instance (priority := 10000) : TopologicalRing ℝ := inferInstance
+instance (priority := 10000) : TopologicalDivisionRing ℝ := inferInstance
 
-instance : ProperSpace ℝ where
+instance (priority := 10000) : ProperSpace ℝ where
   isCompact_closedBall x r := by
     rw [Real.closedBall_eq_Icc]
     apply isCompact_Icc
 
-instance : SecondCountableTopology ℝ := secondCountable_of_proper
+instance (priority := 10000) : SecondCountableTopology ℝ := secondCountable_of_proper
 
 theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
@@ -139,7 +139,7 @@ protected theorem Real.continuous_mul : Continuous fun p : ℝ × ℝ => p.1 * p
 
 -- porting note: moved `TopologicalRing` instance up
 
-instance : CompleteSpace ℝ := by
+instance (priority := 10000) : CompleteSpace ℝ := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
   let c : CauSeq ℝ abs := ⟨u, Metric.cauchySeq_iff'.1 hu⟩
@@ -226,7 +226,7 @@ open Metric
 
 /-- This is a special case of `NormedSpace.discreteTopology_zmultiples`. It exists only to simplify
 dependencies. -/
-instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
+instance (priority := 10000) {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     exact Subsingleton.discreteTopology (α := (⊥ : Submodule ℤ ℝ))

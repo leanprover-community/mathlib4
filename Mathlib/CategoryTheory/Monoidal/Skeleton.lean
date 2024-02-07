@@ -50,19 +50,19 @@ namespace Skeleton
 
 /-- The skeleton of a monoidal category has a monoidal structure itself, induced by the equivalence.
 -/
-noncomputable instance instMonoidalCategory : MonoidalCategory (Skeleton C) :=
+noncomputable instance (priority := 10000) instMonoidalCategory : MonoidalCategory (Skeleton C) :=
   Monoidal.transport (skeletonEquivalence C).symm
 
 /--
 The skeleton of a monoidal category can be viewed as a monoid, where the multiplication is given by
 the tensor product, and satisfies the monoid axioms since it is a skeleton.
 -/
-noncomputable instance instMonoid : Monoid (Skeleton C) :=
+noncomputable instance (priority := 10000) instMonoid : Monoid (Skeleton C) :=
   monoidOfSkeletalMonoidal (skeletonIsSkeleton _).skel
 
 /-- The skeleton of a braided monoidal category has a braided monoidal structure itself, induced by
 the equivalence. -/
-noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory (Skeleton C) :=
+noncomputable instance (priority := 10000) instBraidedCategory [BraidedCategory C] : BraidedCategory (Skeleton C) :=
   letI := Monoidal.instIsEquivalence_fromTransported (skeletonEquivalence C).symm
   braidedCategoryOfFullyFaithful (Monoidal.fromTransported (skeletonEquivalence C).symm)
 
@@ -71,7 +71,7 @@ The skeleton of a braided monoidal category can be viewed as a commutative monoi
 multiplication is given by the tensor product, and satisfies the monoid axioms since it is a
 skeleton.
 -/
-noncomputable instance instCommMonoid [BraidedCategory C] : CommMonoid (Skeleton C) :=
+noncomputable instance (priority := 10000) instCommMonoid [BraidedCategory C] : CommMonoid (Skeleton C) :=
   commMonoidOfSkeletalBraided (skeletonIsSkeleton _).skel
 
 end Skeleton

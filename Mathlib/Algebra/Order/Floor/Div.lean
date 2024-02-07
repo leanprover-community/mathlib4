@@ -174,13 +174,13 @@ end OrderedSemiring
 
 namespace Nat
 
-instance instFloorDiv : FloorDiv ℕ ℕ where
+instance (priority := 10000) instFloorDiv : FloorDiv ℕ ℕ where
   floorDiv := HDiv.hDiv
   floorDiv_gc a ha := by simpa [mul_comm] using Nat.galoisConnection_mul_div ha
   floorDiv_nonpos a ha b := by rw [ha.antisymm $ zero_le _, Nat.div_zero]
   zero_floorDiv := Nat.zero_div
 
-instance instCeilDiv : CeilDiv ℕ ℕ where
+instance (priority := 10000) instCeilDiv : CeilDiv ℕ ℕ where
   ceilDiv a b := (a + b - 1) / b
   ceilDiv_gc a ha b c := by
     simp [div_le_iff_le_mul_add_pred ha, add_assoc, tsub_add_cancel_of_le $ succ_le_iff.2 ha]
@@ -199,7 +199,7 @@ variable {π : ι → Type*} [OrderedAddCommMonoid α] [∀ i, OrderedAddCommMon
 section FloorDiv
 variable [∀ i, FloorDiv α (π i)]
 
-instance instFloorDiv : FloorDiv α (∀ i, π i) where
+instance (priority := 10000) instFloorDiv : FloorDiv α (∀ i, π i) where
   floorDiv f a i := f i ⌊/⌋ a
   floorDiv_gc _a ha _f _g := forall_congr' fun _i ↦ gc_floorDiv_smul ha _ _
   floorDiv_nonpos a ha f := by ext i; exact floorDiv_of_nonpos ha _
@@ -213,7 +213,7 @@ end FloorDiv
 section CeilDiv
 variable [∀ i, CeilDiv α (π i)]
 
-instance instCeilDiv : CeilDiv α (∀ i, π i) where
+instance (priority := 10000) instCeilDiv : CeilDiv α (∀ i, π i) where
   ceilDiv f a i := f i ⌈/⌉ a
   ceilDiv_gc _a ha _f _g := forall_congr' fun _i ↦ gc_smul_ceilDiv ha _ _
   ceilDiv_nonpos a ha f := by ext i; exact ceilDiv_of_nonpos ha _
@@ -231,7 +231,7 @@ variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α �
 section FloorDiv
 variable [FloorDiv α β] {f : ι →₀ β} {a : α}
 
-noncomputable instance instFloorDiv : FloorDiv α (ι →₀ β) where
+noncomputable instance (priority := 10000) instFloorDiv : FloorDiv α (ι →₀ β) where
   floorDiv f a := f.mapRange (· ⌊/⌋ a) <| zero_floorDiv _
   floorDiv_gc _a ha f _g := forall_congr' fun i ↦ by
     simpa only [coe_smul, Pi.smul_apply, mapRange_apply] using gc_floorDiv_smul ha (f i) _
@@ -250,7 +250,7 @@ end FloorDiv
 section CeilDiv
 variable [CeilDiv α β] {f : ι →₀ β} {a : α}
 
-noncomputable instance instCeilDiv : CeilDiv α (ι →₀ β) where
+noncomputable instance (priority := 10000) instCeilDiv : CeilDiv α (ι →₀ β) where
   ceilDiv f a := f.mapRange (· ⌈/⌉ a) <| zero_ceilDiv _
   ceilDiv_gc _a ha f _g := forall_congr' fun i ↦ by
     simpa only [coe_smul, Pi.smul_apply, mapRange_apply] using gc_smul_ceilDiv ha (f i) _

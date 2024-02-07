@@ -95,7 +95,7 @@ theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 #align set.compl_star Set.compl_star
 
 @[simp]
-instance [InvolutiveStar α] : InvolutiveStar (Set α) where
+instance (priority := 10000) [InvolutiveStar α] : InvolutiveStar (Set α) where
   star := Star.star
   star_involutive s := by simp only [← star_preimage, preimage_preimage, star_star, preimage_id']
 
@@ -128,7 +128,7 @@ protected theorem star_add [AddMonoid α] [StarAddMonoid α] (s t : Set α) : (s
 #align set.star_add Set.star_add
 
 @[simp]
-instance [Star α] [TrivialStar α] : TrivialStar (Set α) where
+instance (priority := 10000) [Star α] [TrivialStar α] : TrivialStar (Set α) where
   star_trivial s := by
     rw [← star_preimage]
     ext1

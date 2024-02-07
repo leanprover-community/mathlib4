@@ -41,16 +41,16 @@ open UniformSpace CauchyFilter Filter Set
 
 variable [UniformSpace α]
 
-instance [Zero α] : Zero (Completion α) :=
+instance (priority := 10000) [Zero α] : Zero (Completion α) :=
   ⟨(0 : α)⟩
 
-instance [Neg α] : Neg (Completion α) :=
+instance (priority := 10000) [Neg α] : Neg (Completion α) :=
   ⟨Completion.map (fun a ↦ -a : α → α)⟩
 
-instance [Add α] : Add (Completion α) :=
+instance (priority := 10000) [Add α] : Add (Completion α) :=
   ⟨Completion.map₂ (· + ·)⟩
 
-instance [Sub α] : Sub (Completion α) :=
+instance (priority := 10000) [Sub α] : Sub (Completion α) :=
   ⟨Completion.map₂ Sub.sub⟩
 
 @[norm_cast]
@@ -66,7 +66,7 @@ open UniformSpace
 
 section Zero
 
-instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
+instance (priority := 10000) [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
     [UniformContinuousConstSMul M α] : MulActionWithZero M (Completion α) :=
   { (inferInstance : MulAction M <| Completion α) with
     smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, MulActionWithZero.smul_zero r]
@@ -95,7 +95,7 @@ theorem coe_add (a b : α) : ((a + b : α) : Completion α) = a + b :=
   (map₂_coe_coe a b (· + ·) uniformContinuous_add).symm
 #align uniform_space.completion.coe_add UniformSpace.Completion.coe_add
 
-instance : AddMonoid (Completion α) :=
+instance (priority := 10000) : AddMonoid (Completion α) :=
   { (inferInstance : Zero <| Completion α),
     (inferInstance : Add <| Completion α) with
     zero_add := fun a ↦
@@ -126,7 +126,7 @@ instance : AddMonoid (Completion α) :=
         show (n + 1) • (a : Completion α) = (a : Completion α) + n • (a : Completion α) by
           rw [← coe_smul, succ_nsmul, coe_add, coe_smul] }
 
-instance : SubNegMonoid (Completion α) :=
+instance (priority := 10000) : SubNegMonoid (Completion α) :=
   { (inferInstance : AddMonoid <| Completion α),
     (inferInstance : Neg <| Completion α),
     (inferInstance : Sub <| Completion α) with
@@ -152,7 +152,7 @@ instance : SubNegMonoid (Completion α) :=
             rw [← coe_smul, show (Int.negSucc n) • a = -((n.succ : ℤ) • a) from
               SubNegMonoid.zsmul_neg' n a, coe_neg, coe_smul] }
 
-instance addGroup : AddGroup (Completion α) :=
+instance (priority := 10000) addGroup : AddGroup (Completion α) :=
   { (inferInstance : SubNegMonoid <| Completion α) with
     add_left_neg := fun a ↦
       Completion.induction_on a
@@ -162,10 +162,10 @@ instance addGroup : AddGroup (Completion α) :=
           rw_mod_cast [add_left_neg]
           rfl }
 
-instance uniformAddGroup : UniformAddGroup (Completion α) :=
+instance (priority := 10000) uniformAddGroup : UniformAddGroup (Completion α) :=
   ⟨uniformContinuous_map₂ Sub.sub⟩
 
-instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
+instance (priority := 10000) {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
     DistribMulAction M (Completion α) :=
   { (inferInstance : MulAction M <| Completion α) with
     smul_add := fun r x y ↦
@@ -201,7 +201,7 @@ section UniformAddCommGroup
 
 variable [UniformSpace α] [AddCommGroup α] [UniformAddGroup α]
 
-instance : AddCommGroup (Completion α) :=
+instance (priority := 10000) : AddCommGroup (Completion α) :=
   { (inferInstance : AddGroup <| Completion α) with
     add_comm := fun a b ↦
       Completion.induction_on₂ a b
@@ -211,7 +211,7 @@ instance : AddCommGroup (Completion α) :=
         change (x : Completion α) + ↑y = ↑y + ↑x
         rw [← coe_add, ← coe_add, add_comm] }
 
-instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α] :
+instance (priority := 10000) instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α] :
     Module R (Completion α) :=
   { (inferInstance : DistribMulAction R <| Completion α),
     (inferInstance : MulActionWithZero R <| Completion α) with

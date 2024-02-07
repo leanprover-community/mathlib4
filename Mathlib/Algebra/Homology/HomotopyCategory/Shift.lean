@@ -58,7 +58,7 @@ def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
   map_id := by intros; rfl
   map_comp := by intros; rfl
 
-instance (n : ℤ) : (shiftFunctor C n).Additive where
+instance (priority := 10000) (n : ℤ) : (shiftFunctor C n).Additive where
 
 variable {C}
 
@@ -94,12 +94,12 @@ def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
 
 attribute [local simp] XIsoOfEq
 
-instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
+instance (priority := 10000) : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
   { F := shiftFunctor C
     zero := shiftFunctorZero' C _ rfl
     add := fun n₁ n₂ => shiftFunctorAdd' C n₁ n₂ _ rfl }
 
-instance (n : ℤ) :
+instance (priority := 10000) (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n).Additive :=
   (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
 
@@ -211,7 +211,7 @@ def mapCochainComplexShiftIso (n : ℤ) :
   NatIso.ofComponents (fun K => HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
     (by aesop_cat)) (fun _ => by ext; dsimp; rw [id_comp, comp_id])
 
-instance commShiftMapCochainComplex :
+instance (priority := 10000) commShiftMapCochainComplex :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ where
   iso := F.mapCochainComplexShiftIso
   zero := by
@@ -275,19 +275,19 @@ end Homotopy
 
 namespace HomotopyCategory
 
-instance : (homotopic C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ :=
+instance (priority := 10000) : (homotopic C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ :=
   ⟨fun n _ _ _ _ ⟨h⟩ => ⟨h.shift n⟩⟩
 
-noncomputable instance hasShift :
+noncomputable instance (priority := 10000) hasShift :
     HasShift (HomotopyCategory C (ComplexShape.up ℤ)) ℤ := by
   dsimp only [HomotopyCategory]
   infer_instance
 
-noncomputable instance commShiftQuotient :
+noncomputable instance (priority := 10000) commShiftQuotient :
     (HomotopyCategory.quotient C (ComplexShape.up ℤ)).CommShift ℤ :=
   Quotient.functor_commShift (homotopic C (ComplexShape.up ℤ)) ℤ
 
-instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
+instance (priority := 10000) (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
   apply Functor.additive_of_full_essSurj_comp (quotient _ _ )

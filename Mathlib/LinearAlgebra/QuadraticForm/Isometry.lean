@@ -40,11 +40,11 @@ notation:25 Q₁ " →qᵢ " Q₂:0 => Isometry Q₁ Q₂
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
 variable {Q₃ : QuadraticForm R M₃} {Q₄ : QuadraticForm R M₄}
 
-instance instFunLike : FunLike (Q₁ →qᵢ Q₂) M₁ M₂ where
+instance (priority := 10000) instFunLike : FunLike (Q₁ →qᵢ Q₂) M₁ M₂ where
   coe f := f.toLinearMap
   coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.coe_injective h
 
-instance instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ where
+instance (priority := 10000) instLinearMapClass : LinearMapClass (Q₁ →qᵢ Q₂) R M₁ M₂ where
   map_add f := f.toLinearMap.map_add
   map_smulₛₗ f := f.toLinearMap.map_smul
 
@@ -100,17 +100,17 @@ theorem comp_assoc (h : Q₃ →qᵢ Q₄) (g : Q₂ →qᵢ Q₃) (f : Q₁ →
   ext fun _ => rfl
 
 /-- There is a zero map from any module with the zero form. -/
-instance : Zero ((0 : QuadraticForm R M₁) →qᵢ Q₂) where
+instance (priority := 10000) : Zero ((0 : QuadraticForm R M₁) →qᵢ Q₂) where
   zero := { (0 : M₁ →ₗ[R] M₂) with map_app' := fun _ => map_zero _ }
 
 /-- There is a zero map from the trivial module. -/
-instance hasZeroOfSubsingleton [Subsingleton M₁] : Zero (Q₁ →qᵢ Q₂) where
+instance (priority := 10000) hasZeroOfSubsingleton [Subsingleton M₁] : Zero (Q₁ →qᵢ Q₂) where
   zero :=
   { (0 : M₁ →ₗ[R] M₂) with
     map_app' := fun m => Subsingleton.elim 0 m ▸ (map_zero _).trans (map_zero _).symm }
 
 /-- Maps into the zero module are trivial -/
-instance [Subsingleton M₂] : Subsingleton (Q₁ →qᵢ Q₂) :=
+instance (priority := 10000) [Subsingleton M₂] : Subsingleton (Q₁ →qᵢ Q₂) :=
   ⟨fun _ _ => ext fun _ => Subsingleton.elim _ _⟩
 
 end Isometry

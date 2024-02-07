@@ -281,7 +281,7 @@ def refl : C ≌ C :=
   ⟨𝟭 C, 𝟭 C, Iso.refl _, Iso.refl _, fun _ => Category.id_comp _⟩
 #align category_theory.equivalence.refl CategoryTheory.Equivalence.refl
 
-instance : Inhabited (C ≌ C) :=
+instance (priority := 10000) : Inhabited (C ≌ C) :=
   ⟨refl⟩
 
 /-- Equivalence of categories is symmetric. -/
@@ -447,7 +447,7 @@ def pow (e : C ≌ C) : ℤ → (C ≌ C)
   | Int.negSucc n => e.symm.powNat (n + 1)
 #align category_theory.equivalence.pow CategoryTheory.Equivalence.pow
 
-instance : Pow (C ≌ C) ℤ :=
+instance (priority := 10000) : Pow (C ≌ C) ℤ :=
   ⟨pow⟩
 
 @[simp]
@@ -494,11 +494,11 @@ attribute [reassoc (attr := simp)] IsEquivalence.functor_unitIso_comp
 
 namespace IsEquivalence
 
-instance ofEquivalence (F : C ≌ D) : IsEquivalence F.functor :=
+instance (priority := 10000) ofEquivalence (F : C ≌ D) : IsEquivalence F.functor :=
   { F with }
 #align category_theory.is_equivalence.of_equivalence CategoryTheory.IsEquivalence.ofEquivalence
 
-instance ofEquivalenceInverse (F : C ≌ D) : IsEquivalence F.inverse :=
+instance (priority := 10000) ofEquivalenceInverse (F : C ≌ D) : IsEquivalence F.inverse :=
   IsEquivalence.ofEquivalence F.symm
 #align category_theory.is_equivalence.of_equivalence_inverse CategoryTheory.IsEquivalence.ofEquivalenceInverse
 
@@ -520,7 +520,7 @@ def asEquivalence (F : C ⥤ D) [IsEquivalence F] : C ≌ D :=
     IsEquivalence.functor_unitIso_comp⟩
 #align category_theory.functor.as_equivalence CategoryTheory.Functor.asEquivalence
 
-instance isEquivalenceRefl : IsEquivalence (𝟭 C) :=
+instance (priority := 10000) isEquivalenceRefl : IsEquivalence (𝟭 C) :=
   IsEquivalence.ofEquivalence Equivalence.refl
 #align category_theory.functor.is_equivalence_refl CategoryTheory.Functor.isEquivalenceRefl
 
@@ -529,7 +529,7 @@ def inv (F : C ⥤ D) [IsEquivalence F] : D ⥤ C :=
   IsEquivalence.inverse F
 #align category_theory.functor.inv CategoryTheory.Functor.inv
 
-instance isEquivalenceInv (F : C ⥤ D) [IsEquivalence F] : IsEquivalence F.inv :=
+instance (priority := 10000) isEquivalenceInv (F : C ⥤ D) [IsEquivalence F] : IsEquivalence F.inv :=
   IsEquivalence.ofEquivalence F.asEquivalence.symm
 #align category_theory.functor.is_equivalence_inv CategoryTheory.Functor.isEquivalenceInv
 
@@ -562,7 +562,7 @@ theorem inv_inv (F : C ⥤ D) [IsEquivalence F] : inv (inv F) = F :=
 
 variable {E : Type u₃} [Category.{v₃} E]
 
-instance isEquivalenceTrans (F : C ⥤ D) (G : D ⥤ E) [IsEquivalence F] [IsEquivalence G] :
+instance (priority := 10000) isEquivalenceTrans (F : C ⥤ D) (G : D ⥤ E) [IsEquivalence F] [IsEquivalence G] :
     IsEquivalence (F ⋙ G) :=
   IsEquivalence.ofEquivalence (Equivalence.trans (asEquivalence F) (asEquivalence G))
 #align category_theory.functor.is_equivalence_trans CategoryTheory.Functor.isEquivalenceTrans
@@ -750,16 +750,16 @@ theorem inverse_map_inj_iff (e : C ≌ D) {X Y : D} (f g : X ⟶ Y) :
   functor_map_inj_iff e.symm f g
 #align category_theory.equivalence.inverse_map_inj_iff CategoryTheory.Equivalence.inverse_map_inj_iff
 
-instance essSurjInducedFunctor {C' : Type*} (e : C' ≃ D) : EssSurj (inducedFunctor e) where
+instance (priority := 10000) essSurjInducedFunctor {C' : Type*} (e : C' ≃ D) : EssSurj (inducedFunctor e) where
   mem_essImage Y := ⟨e.symm Y, by simpa using ⟨default⟩⟩
 #align category_theory.equivalence.ess_surj_induced_functor CategoryTheory.Equivalence.essSurjInducedFunctor
 
-noncomputable instance inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
+noncomputable instance (priority := 10000) inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
     IsEquivalence (inducedFunctor e) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 #align category_theory.equivalence.induced_functor_of_equiv CategoryTheory.Equivalence.inducedFunctorOfEquiv
 
-noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [Full F] [Faithful F] :
+noncomputable instance (priority := 10000) fullyFaithfulToEssImage (F : C ⥤ D) [Full F] [Faithful F] :
     IsEquivalence F.toEssImage :=
   ofFullyFaithfullyEssSurj F.toEssImage
 #align category_theory.equivalence.fully_faithful_to_ess_image CategoryTheory.Equivalence.fullyFaithfulToEssImage

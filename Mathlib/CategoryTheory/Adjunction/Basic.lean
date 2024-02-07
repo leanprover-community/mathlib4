@@ -397,7 +397,7 @@ def id : 𝟭 C ⊣ 𝟭 C where
 #align category_theory.adjunction.id CategoryTheory.Adjunction.id
 
 -- Satisfy the inhabited linter.
-instance : Inhabited (Adjunction (𝟭 C) (𝟭 C)) :=
+instance (priority := 10000) : Inhabited (Adjunction (𝟭 C) (𝟭 C)) :=
   ⟨id⟩
 
 /-- If F and G are naturally isomorphic functors, establish an equivalence of hom-sets. -/
@@ -465,7 +465,7 @@ def comp (adj₁ : F ⊣ G) (adj₂ : H ⊣ I) : F ⋙ H ⊣ I ⋙ G
 #align category_theory.adjunction.comp CategoryTheory.Adjunction.comp
 
 /-- If `F` and `G` are left adjoints then `F ⋙ G` is a left adjoint too. -/
-instance leftAdjointOfComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+instance (priority := 10000) leftAdjointOfComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
     [Fl : IsLeftAdjoint F] [Gl : IsLeftAdjoint G] : IsLeftAdjoint (F ⋙ G)
     where
   right := Gl.right ⋙ Fl.right
@@ -473,7 +473,7 @@ instance leftAdjointOfComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G 
 #align category_theory.adjunction.left_adjoint_of_comp CategoryTheory.Adjunction.leftAdjointOfComp
 
 /-- If `F` and `G` are right adjoints then `F ⋙ G` is a right adjoint too. -/
-instance rightAdjointOfComp {E : Type u₃} [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ E}
+instance (priority := 10000) rightAdjointOfComp {E : Type u₃} [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ E}
     [Fr : IsRightAdjoint F] [Gr : IsRightAdjoint G] : IsRightAdjoint (F ⋙ G)
     where
   left := Gr.left ⋙ Fr.left

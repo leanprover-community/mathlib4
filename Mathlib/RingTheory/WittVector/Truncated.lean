@@ -61,7 +61,7 @@ def TruncatedWittVector (_ : ℕ) (n : ℕ) (R : Type*) :=
   Fin n → R
 #align truncated_witt_vector TruncatedWittVector
 
-instance (p n : ℕ) (R : Type*) [Inhabited R] : Inhabited (TruncatedWittVector p n R) :=
+instance (priority := 10000) (p n : ℕ) (R : Type*) [Inhabited R] : Inhabited (TruncatedWittVector p n R) :=
   ⟨fun _ => default⟩
 
 variable {n R}
@@ -171,39 +171,39 @@ open WittVector
 
 variable (p n R)
 
-instance : Zero (TruncatedWittVector p n R) :=
+instance (priority := 10000) : Zero (TruncatedWittVector p n R) :=
   ⟨truncateFun n 0⟩
 
-instance : One (TruncatedWittVector p n R) :=
+instance (priority := 10000) : One (TruncatedWittVector p n R) :=
   ⟨truncateFun n 1⟩
 
-instance : NatCast (TruncatedWittVector p n R) :=
+instance (priority := 10000) : NatCast (TruncatedWittVector p n R) :=
   ⟨fun i => truncateFun n i⟩
 
-instance : IntCast (TruncatedWittVector p n R) :=
+instance (priority := 10000) : IntCast (TruncatedWittVector p n R) :=
   ⟨fun i => truncateFun n i⟩
 
-instance : Add (TruncatedWittVector p n R) :=
+instance (priority := 10000) : Add (TruncatedWittVector p n R) :=
   ⟨fun x y => truncateFun n (x.out + y.out)⟩
 
-instance : Mul (TruncatedWittVector p n R) :=
+instance (priority := 10000) : Mul (TruncatedWittVector p n R) :=
   ⟨fun x y => truncateFun n (x.out * y.out)⟩
 
-instance : Neg (TruncatedWittVector p n R) :=
+instance (priority := 10000) : Neg (TruncatedWittVector p n R) :=
   ⟨fun x => truncateFun n (-x.out)⟩
 
-instance : Sub (TruncatedWittVector p n R) :=
+instance (priority := 10000) : Sub (TruncatedWittVector p n R) :=
   ⟨fun x y => truncateFun n (x.out - y.out)⟩
 
-instance hasNatScalar : SMul ℕ (TruncatedWittVector p n R) :=
+instance (priority := 10000) hasNatScalar : SMul ℕ (TruncatedWittVector p n R) :=
   ⟨fun m x => truncateFun n (m • x.out)⟩
 #align truncated_witt_vector.has_nat_scalar TruncatedWittVector.hasNatScalar
 
-instance hasIntScalar : SMul ℤ (TruncatedWittVector p n R) :=
+instance (priority := 10000) hasIntScalar : SMul ℤ (TruncatedWittVector p n R) :=
   ⟨fun m x => truncateFun n (m • x.out)⟩
 #align truncated_witt_vector.has_int_scalar TruncatedWittVector.hasIntScalar
 
-instance hasNatPow : Pow (TruncatedWittVector p n R) ℕ :=
+instance (priority := 10000) hasNatPow : Pow (TruncatedWittVector p n R) ℕ :=
   ⟨fun x m => truncateFun n (x.out ^ m)⟩
 #align truncated_witt_vector.has_nat_pow TruncatedWittVector.hasNatPow
 
@@ -299,7 +299,7 @@ variable (p n R)
 
 variable [CommRing R]
 
-instance instCommRing : CommRing (TruncatedWittVector p n R) :=
+instance (priority := 10000) instCommRing : CommRing (TruncatedWittVector p n R) :=
   (truncateFun_surjective p n R).commRing _ (truncateFun_zero p n R) (truncateFun_one p n R)
     (truncateFun_add n) (truncateFun_mul n) (truncateFun_neg n) (truncateFun_sub n)
     (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_nat_cast n)
@@ -415,7 +415,7 @@ theorem coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVe
 
 section Fintype
 
-instance {R : Type*} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
+instance (priority := 10000) {R : Type*} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
   Pi.fintype
 
 variable (p n R)

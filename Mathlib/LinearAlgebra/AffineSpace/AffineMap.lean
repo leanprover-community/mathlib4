@@ -59,7 +59,7 @@ structure AffineMap (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Typ
 induces a corresponding linear map from `V1` to `V2`. -/
 notation:25 P1 " →ᵃ[" k:25 "] " P2:0 => AffineMap k P1 P2
 
-instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
+instance (priority := 10000) AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : FunLike (P1 →ᵃ[k] P2) P1 P2
     where
@@ -71,7 +71,7 @@ instance AffineMap.instFunLike (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*
     erw [← f_add, h, ← g_add]
 #align affine_map.fun_like AffineMap.instFunLike
 
-instance AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
+instance (priority := 10000) AffineMap.hasCoeToFun (k : Type*) {V1 : Type*} (P1 : Type*) {V2 : Type*} (P2 : Type*)
     [Ring k] [AddCommGroup V1] [Module k V1] [AffineSpace V1 P1] [AddCommGroup V2] [Module k V2]
     [AffineSpace V2 P2] : CoeFun (P1 →ᵃ[k] P2) fun _ => P1 → P2 :=
   DFunLike.hasCoeToFun
@@ -197,7 +197,7 @@ theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
     exact const_linear k P1 q
 #align affine_map.linear_eq_zero_iff_exists_const AffineMap.linear_eq_zero_iff_exists_const
 
-instance nonempty : Nonempty (P1 →ᵃ[k] P2) :=
+instance (priority := 10000) nonempty : Nonempty (P1 →ᵃ[k] P2) :=
   (AddTorsor.nonempty : Nonempty P2).map <| const k P1
 #align affine_map.nonempty AffineMap.nonempty
 
@@ -225,7 +225,7 @@ section SMul
 
 variable {R : Type*} [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
-instance mulAction : MulAction R (P1 →ᵃ[k] V2) where
+instance (priority := 10000) mulAction : MulAction R (P1 →ᵃ[k] V2) where
   -- porting note: `map_vadd` is `simp`, but we still have to pass it explicitly
   smul c f := ⟨c • ⇑f, c • f.linear, fun p v => by simp [smul_add, map_vadd f]⟩
   one_smul f := ext fun p => one_smul _ _
@@ -241,21 +241,21 @@ theorem smul_linear (t : R) (f : P1 →ᵃ[k] V2) : (t • f).linear = t • f.l
   rfl
 #align affine_map.smul_linear AffineMap.smul_linear
 
-instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] :
+instance (priority := 10000) isCentralScalar [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] :
   IsCentralScalar R (P1 →ᵃ[k] V2) where
     op_smul_eq_smul _r _x := ext fun _ => op_smul_eq_smul _ _
 
 end SMul
 
-instance : Zero (P1 →ᵃ[k] V2) where zero := ⟨0, 0, fun _ _ => (zero_vadd _ _).symm⟩
+instance (priority := 10000) : Zero (P1 →ᵃ[k] V2) where zero := ⟨0, 0, fun _ _ => (zero_vadd _ _).symm⟩
 
-instance : Add (P1 →ᵃ[k] V2) where
+instance (priority := 10000) : Add (P1 →ᵃ[k] V2) where
   add f g := ⟨f + g, f.linear + g.linear, fun p v => by simp [add_add_add_comm]⟩
 
-instance : Sub (P1 →ᵃ[k] V2) where
+instance (priority := 10000) : Sub (P1 →ᵃ[k] V2) where
   sub f g := ⟨f - g, f.linear - g.linear, fun p v => by simp [sub_add_sub_comm]⟩
 
-instance : Neg (P1 →ᵃ[k] V2) where
+instance (priority := 10000) : Neg (P1 →ᵃ[k] V2) where
   neg f := ⟨-f, -f.linear, fun p v => by simp [add_comm, map_vadd f]⟩
 
 @[simp, norm_cast]
@@ -299,13 +299,13 @@ theorem neg_linear (f : P1 →ᵃ[k] V2) : (-f).linear = -f.linear :=
 #align affine_map.neg_linear AffineMap.neg_linear
 
 /-- The set of affine maps to a vector space is an additive commutative group. -/
-instance : AddCommGroup (P1 →ᵃ[k] V2) :=
+instance (priority := 10000) : AddCommGroup (P1 →ᵃ[k] V2) :=
   coeFn_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_smul _ _)
     fun _ _ => coe_smul _ _
 
 /-- The space of affine maps from `P1` to `P2` is an affine space over the space of affine maps
 from `P1` to the vector space `V2` corresponding to `P2`. -/
-instance : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
+instance (priority := 10000) : AffineSpace (P1 →ᵃ[k] V2) (P1 →ᵃ[k] P2) where
   vadd f g :=
     ⟨fun p => f p +ᵥ g p, f.linear + g.linear,
       fun p v => by simp [vadd_vadd, add_right_comm]⟩
@@ -389,7 +389,7 @@ theorem id_apply (p : P1) : id k P1 p = p :=
 
 variable {k}
 
-instance : Inhabited (P1 →ᵃ[k] P1) :=
+instance (priority := 10000) : Inhabited (P1 →ᵃ[k] P1) :=
   ⟨id k P1⟩
 
 /-- Composition of affine maps. -/
@@ -428,7 +428,7 @@ theorem comp_assoc (f₃₄ : P3 →ᵃ[k] P4) (f₂₃ : P2 →ᵃ[k] P3) (f₁
   rfl
 #align affine_map.comp_assoc AffineMap.comp_assoc
 
-instance : Monoid (P1 →ᵃ[k] P1) where
+instance (priority := 10000) : Monoid (P1 →ᵃ[k] P1) where
   one := id k P1
   mul := comp
   one_mul := id_comp
@@ -717,7 +717,7 @@ section DistribMulAction
 variable [Monoid R] [DistribMulAction R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps to a module inherits an `R`-action from the action on its codomain. -/
-instance distribMulAction : DistribMulAction R (P1 →ᵃ[k] V2) where
+instance (priority := 10000) distribMulAction : DistribMulAction R (P1 →ᵃ[k] V2) where
   smul_add _c _f _g := ext fun _p => smul_add _ _ _
   smul_zero _c := ext fun _p => smul_zero _
 
@@ -728,7 +728,7 @@ section Module
 variable [Semiring R] [Module R V2] [SMulCommClass k R V2]
 
 /-- The space of affine maps taking values in an `R`-module is an `R`-module. -/
-instance : Module R (P1 →ᵃ[k] V2) :=
+instance (priority := 10000) : Module R (P1 →ᵃ[k] V2) :=
   { AffineMap.distribMulAction with
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _
     zero_smul := fun _ => ext fun _ => zero_smul _ _ }

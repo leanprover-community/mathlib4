@@ -35,7 +35,7 @@ namespace Profinite
 
 set_option linter.uppercaseLean3 false
 
-instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) where
+instance (priority := 10000) projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) where
   factors {Y Z} f g hg := by
     rw [epi_iff_surjective] at hg
     obtain ⟨g', hg'⟩ := hg.hasRightInverse
@@ -62,6 +62,6 @@ def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
     ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
 #align Profinite.projective_presentation Profinite.projectivePresentation
 
-instance : EnoughProjectives Profinite.{u} where presentation X := ⟨projectivePresentation X⟩
+instance (priority := 10000) : EnoughProjectives Profinite.{u} where presentation X := ⟨projectivePresentation X⟩
 
 end Profinite

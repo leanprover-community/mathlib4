@@ -34,14 +34,14 @@ variable {J : Type v} [SmallCategory J]
 
 variable {R}
 
-instance addCommGroupObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
+instance (priority := 10000) addCommGroupObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
     AddCommGroup ((F ⋙ forget (ModuleCat R)).obj j) := by
   change AddCommGroup (F.obj j)
   infer_instance
 set_option linter.uppercaseLean3 false
 #align Module.add_comm_group_obj ModuleCat.addCommGroupObj
 
-instance moduleObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
+instance (priority := 10000) moduleObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
     Module.{u, max v w} R ((F ⋙ forget (ModuleCat R)).obj j) := by
   change Module R (F.obj j)
   infer_instance
@@ -62,17 +62,17 @@ def sectionsSubmodule (F : J ⥤ ModuleCatMax.{v, w, u} R) : Submodule R (∀ j,
 
 -- Adding the following instance speeds up `limitModule` noticeably,
 -- by preventing a bad unfold of `limitAddCommGroup`.
-instance limitAddCommMonoid (F : J ⥤ ModuleCatMax.{v, w, u} R) :
+instance (priority := 10000) limitAddCommMonoid (F : J ⥤ ModuleCatMax.{v, w, u} R) :
     AddCommMonoid (Types.limitCone.{v, w} (F ⋙ forget (ModuleCatMax.{v, w, u} R))).pt :=
   show AddCommMonoid (sectionsSubmodule F) by infer_instance
 #align Module.limit_add_comm_monoid ModuleCat.limitAddCommMonoid
 
-instance limitAddCommGroup (F : J ⥤ ModuleCatMax.{v, w, u} R) :
+instance (priority := 10000) limitAddCommGroup (F : J ⥤ ModuleCatMax.{v, w, u} R) :
     AddCommGroup (Types.limitCone.{v, w} (F ⋙ forget (ModuleCatMax.{v, w, u} R))).pt :=
   show AddCommGroup (sectionsSubmodule F) by infer_instance
 #align Module.limit_add_comm_group ModuleCat.limitAddCommGroup
 
-instance limitModule (F : J ⥤ ModuleCatMax.{v, w, u} R) :
+instance (priority := 10000) limitModule (F : J ⥤ ModuleCatMax.{v, w, u} R) :
     Module R (Types.limitCone.{v, w} (F ⋙ forget (ModuleCat.{max v w} R))).pt :=
   show Module R (sectionsSubmodule F) by infer_instance
 #align Module.limit_module ModuleCat.limitModule
@@ -131,7 +131,7 @@ lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (ModuleCatMax.{v, w, u} R) where
           isLimit := limitConeIsLimit F } }
 #align Module.has_limits_of_size ModuleCat.hasLimitsOfSize
 
-instance hasLimits : HasLimits (ModuleCat.{w} R) :=
+instance (priority := 10000) hasLimits : HasLimits (ModuleCat.{w} R) :=
   ModuleCat.hasLimitsOfSize.{w, w, u}
 #align Module.has_limits ModuleCat.hasLimits
 
@@ -148,7 +148,7 @@ def forget₂AddCommGroupPreservesLimitsAux (F : J ⥤ ModuleCatMax.{v, w, u} R)
 
 /-- The forgetful functor from R-modules to abelian groups preserves all limits.
 -/
-instance forget₂AddCommGroupPreservesLimitsOfSize :
+instance (priority := 10000) forget₂AddCommGroupPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v}
       (forget₂ (ModuleCatMax.{v, w, u} R) AddCommGroupCat.{max v w}) where
   preservesLimitsOfShape :=
@@ -156,21 +156,21 @@ instance forget₂AddCommGroupPreservesLimitsOfSize :
           (forget₂AddCommGroupPreservesLimitsAux _) }
 #align Module.forget₂_AddCommGroup_preserves_limits_of_size ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize
 
-instance forget₂AddCommGroupPreservesLimits :
+instance (priority := 10000) forget₂AddCommGroupPreservesLimits :
     PreservesLimits (forget₂ (ModuleCat R) AddCommGroupCat.{w}) :=
   ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize.{w, w}
 #align Module.forget₂_AddCommGroup_preserves_limits ModuleCat.forget₂AddCommGroupPreservesLimits
 
 /-- The forgetful functor from R-modules to types preserves all limits.
 -/
-instance forgetPreservesLimitsOfSize :
+instance (priority := 10000) forgetPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget (ModuleCatMax.{v, w, u} R)) where
   preservesLimitsOfShape :=
     { preservesLimit := preservesLimitOfPreservesLimitCone (limitConeIsLimit _)
         (Types.limitConeIsLimit (_ ⋙ forget _)) }
 #align Module.forget_preserves_limits_of_size ModuleCat.forgetPreservesLimitsOfSize
 
-instance forgetPreservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
+instance (priority := 10000) forgetPreservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
   ModuleCat.forgetPreservesLimitsOfSize.{w, w}
 #align Module.forget_preserves_limits ModuleCat.forgetPreservesLimits
 

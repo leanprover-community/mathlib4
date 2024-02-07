@@ -77,7 +77,7 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
+instance (priority := 10000) instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),
     le := (· ≤ ·),
@@ -88,7 +88,7 @@ instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
     top := univ,
     sdiff := (· \ ·) }
 
-instance : HasSSubset (Set α) :=
+instance (priority := 10000) : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
 
 @[simp]
@@ -135,12 +135,12 @@ alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 #align has_ssubset.ssubset.lt HasSSubset.SSubset.lt
 
-instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
+instance (priority := 10000) PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
     CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
   PiSubtype.canLift ι α s
 #align set.pi_set_coe.can_lift Set.PiSetCoe.canLift
 
-instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι) :
+instance (priority := 10000) PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι) :
     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
   PiSetCoe.canLift ι (fun _ => α) s
 #align set.pi_set_coe.can_lift' Set.PiSetCoe.canLift'
@@ -151,7 +151,7 @@ section SetCoe
 
 variable {α : Type u}
 
-instance (s : Set α) : CoeTC s α := ⟨fun x => x.1⟩
+instance (priority := 10000) (s : Set α) : CoeTC s α := ⟨fun x => x.1⟩
 
 theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
   rfl
@@ -213,7 +213,7 @@ namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
 
-instance : Inhabited (Set α) :=
+instance (priority := 10000) : Inhabited (Set α) :=
   ⟨∅⟩
 
 theorem ext_iff {s t : Set α} : s = t ↔ ∀ x, x ∈ s ↔ x ∈ t :=
@@ -283,37 +283,37 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
 /-! ### Subset and strict subset relations -/
 
 
-instance : IsRefl (Set α) (· ⊆ ·) :=
+instance (priority := 10000) : IsRefl (Set α) (· ⊆ ·) :=
   show IsRefl (Set α) (· ≤ ·) by infer_instance
 
-instance : IsTrans (Set α) (· ⊆ ·) :=
+instance (priority := 10000) : IsTrans (Set α) (· ⊆ ·) :=
   show IsTrans (Set α) (· ≤ ·) by infer_instance
 
-instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
+instance (priority := 10000) : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
   show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
 
-instance : IsAntisymm (Set α) (· ⊆ ·) :=
+instance (priority := 10000) : IsAntisymm (Set α) (· ⊆ ·) :=
   show IsAntisymm (Set α) (· ≤ ·) by infer_instance
 
-instance : IsIrrefl (Set α) (· ⊂ ·) :=
+instance (priority := 10000) : IsIrrefl (Set α) (· ⊂ ·) :=
   show IsIrrefl (Set α) (· < ·) by infer_instance
 
-instance : IsTrans (Set α) (· ⊂ ·) :=
+instance (priority := 10000) : IsTrans (Set α) (· ⊂ ·) :=
   show IsTrans (Set α) (· < ·) by infer_instance
 
-instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
+instance (priority := 10000) : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
   show Trans (· < ·) (· < ·) (· < ·) by infer_instance
 
-instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ ·) :=
+instance (priority := 10000) : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ ·) :=
   show Trans (· < ·) (· ≤ ·) (· < ·) by infer_instance
 
-instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
+instance (priority := 10000) : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
   show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
 
-instance : IsAsymm (Set α) (· ⊂ ·) :=
+instance (priority := 10000) : IsAsymm (Set α) (· ⊂ ·) :=
   show IsAsymm (Set α) (· < ·) by infer_instance
 
-instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
+instance (priority := 10000) : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
 
 -- TODO(Jeremy): write a tactic to unfold specific instances of generic notation?
@@ -511,7 +511,7 @@ theorem Nonempty.to_subtype : s.Nonempty → Nonempty (↥s) :=
 theorem Nonempty.to_type : s.Nonempty → Nonempty α := fun ⟨x, _⟩ => ⟨x⟩
 #align set.nonempty.to_type Set.Nonempty.to_type
 
-instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
+instance (priority := 10000) univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
   Set.univ_nonempty.to_subtype
 #align set.univ.nonempty Set.univ.nonempty
 
@@ -564,7 +564,7 @@ theorem eq_empty_of_isEmpty [IsEmpty α] (s : Set α) : s = ∅ :=
 #align set.eq_empty_of_is_empty Set.eq_empty_of_isEmpty
 
 /-- There is exactly one set of a type that is empty. -/
-instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
+instance (priority := 10000) uniqueEmpty [IsEmpty α] : Unique (Set α) where
   default := ∅
   uniq := eq_empty_of_isEmpty
 #align set.unique_empty Set.uniqueEmpty
@@ -612,7 +612,7 @@ theorem ball_empty_iff {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ T
   iff_true_intro fun _ => False.elim
 #align set.ball_empty_iff Set.ball_empty_iff
 
-instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
+instance (priority := 10000) (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩
 
 @[simp]
@@ -698,7 +698,7 @@ theorem ssubset_univ_iff : s ⊂ univ ↔ s ≠ univ :=
   lt_top_iff_ne_top
 #align set.ssubset_univ_iff Set.ssubset_univ_iff
 
-instance nontrivial_of_nonempty [Nonempty α] : Nontrivial (Set α) :=
+instance (priority := 10000) nontrivial_of_nonempty [Nonempty α] : Nontrivial (Set α) :=
   ⟨⟨∅, univ, empty_ne_univ⟩⟩
 #align set.nontrivial_of_nonempty Set.nontrivial_of_nonempty
 
@@ -754,11 +754,11 @@ theorem union_assoc (a b c : Set α) : a ∪ b ∪ c = a ∪ (b ∪ c) :=
   ext fun _ => or_assoc
 #align set.union_assoc Set.union_assoc
 
-instance union_isAssoc : Std.Associative (α := Set α) (· ∪ ·) :=
+instance (priority := 10000) union_isAssoc : Std.Associative (α := Set α) (· ∪ ·) :=
   ⟨union_assoc⟩
 #align set.union_is_assoc Set.union_isAssoc
 
-instance union_isComm : Std.Commutative (α := Set α) (· ∪ ·) :=
+instance (priority := 10000) union_isComm : Std.Commutative (α := Set α) (· ∪ ·) :=
   ⟨union_comm⟩
 #align set.union_is_comm Set.union_isComm
 
@@ -908,11 +908,11 @@ theorem inter_assoc (a b c : Set α) : a ∩ b ∩ c = a ∩ (b ∩ c) :=
   ext fun _ => and_assoc
 #align set.inter_assoc Set.inter_assoc
 
-instance inter_isAssoc : Std.Associative (α := Set α) (· ∩ ·) :=
+instance (priority := 10000) inter_isAssoc : Std.Associative (α := Set α) (· ∩ ·) :=
   ⟨inter_assoc⟩
 #align set.inter_is_assoc Set.inter_isAssoc
 
-instance inter_isComm : Std.Commutative (α := Set α) (· ∩ ·) :=
+instance (priority := 10000) inter_isComm : Std.Commutative (α := Set α) (· ∩ ·) :=
   ⟨inter_comm⟩
 #align set.inter_is_comm Set.inter_isComm
 
@@ -1181,7 +1181,7 @@ theorem insert_nonempty (a : α) (s : Set α) : (insert a s).Nonempty :=
   ⟨a, mem_insert a s⟩
 #align set.insert_nonempty Set.insert_nonempty
 
-instance (a : α) (s : Set α) : Nonempty (insert a s : Set α) :=
+instance (priority := 10000) (a : α) (s : Set α) : Nonempty (insert a s : Set α) :=
   (insert_nonempty a s).to_subtype
 
 theorem insert_inter_distrib (a : α) (s t : Set α) : insert a (s ∩ t) = insert a s ∩ insert a t :=
@@ -1223,7 +1223,7 @@ theorem ball_insert_iff {P : α → Prop} {a : α} {s : Set α} :
 /-! ### Lemmas about singletons -/
 
 /- porting note: instance was in core in Lean3 -/
-instance : IsLawfulSingleton α (Set α) :=
+instance (priority := 10000) : IsLawfulSingleton α (Set α) :=
   ⟨fun x => Set.ext fun a => by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
     exact Iff.rfl⟩
@@ -1335,7 +1335,7 @@ theorem nmem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s.N
   nonempty_iff_ne_empty.symm
 #align set.nmem_singleton_empty Set.nmem_singleton_empty
 
-instance uniqueSingleton (a : α) : Unique (↥({a} : Set α)) :=
+instance (priority := 10000) uniqueSingleton (a : α) : Unique (↥({a} : Set α)) :=
   ⟨⟨⟨a, mem_singleton a⟩⟩, fun ⟨_, h⟩ => Subtype.eq h⟩
 #align set.unique_singleton Set.uniqueSingleton
 
@@ -2415,7 +2415,7 @@ theorem Subsingleton.coe_sort {s : Set α} : s.Subsingleton → Subsingleton s :
 
 /-- The `coe_sort` of a set `s` in a subsingleton type is a subsingleton.
 For the corresponding result for `Subtype`, see `subtype.subsingleton`. -/
-instance subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsingleton s := by
+instance (priority := 10000) subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsingleton s := by
   rw [s.subsingleton_coe]
   exact subsingleton_of_subsingleton
 #align set.subsingleton_coe_of_subsingleton Set.subsingleton_coe_of_subsingleton
@@ -2852,35 +2852,35 @@ namespace Set
 
 variable {α : Type u} (s t : Set α) (a : α)
 
-instance decidableSdiff [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s \ t) :=
+instance (priority := 10000) decidableSdiff [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s \ t) :=
   (by infer_instance : Decidable (a ∈ s ∧ a ∉ t))
 #align set.decidable_sdiff Set.decidableSdiff
 
-instance decidableInter [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s ∩ t) :=
+instance (priority := 10000) decidableInter [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s ∩ t) :=
   (by infer_instance : Decidable (a ∈ s ∧ a ∈ t))
 #align set.decidable_inter Set.decidableInter
 
-instance decidableUnion [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s ∪ t) :=
+instance (priority := 10000) decidableUnion [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s ∪ t) :=
   (by infer_instance : Decidable (a ∈ s ∨ a ∈ t))
 #align set.decidable_union Set.decidableUnion
 
-instance decidableCompl [Decidable (a ∈ s)] : Decidable (a ∈ sᶜ) :=
+instance (priority := 10000) decidableCompl [Decidable (a ∈ s)] : Decidable (a ∈ sᶜ) :=
   (by infer_instance : Decidable (a ∉ s))
 #align set.decidable_compl Set.decidableCompl
 
-instance decidableEmptyset : DecidablePred (· ∈ (∅ : Set α)) := fun _ => Decidable.isFalse (by simp)
+instance (priority := 10000) decidableEmptyset : DecidablePred (· ∈ (∅ : Set α)) := fun _ => Decidable.isFalse (by simp)
 #align set.decidable_emptyset Set.decidableEmptyset
 
-instance decidableUniv : DecidablePred (· ∈ (Set.univ : Set α)) := fun _ =>
+instance (priority := 10000) decidableUniv : DecidablePred (· ∈ (Set.univ : Set α)) := fun _ =>
   Decidable.isTrue (by simp)
 #align set.decidable_univ Set.decidableUniv
 
-instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
+instance (priority := 10000) decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption
 #align set.decidable_set_of Set.decidableSetOf
 
 -- porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
-instance decidableMemSingleton {a b : α} [DecidableEq α] :
+instance (priority := 10000) decidableMemSingleton {a b : α} [DecidableEq α] :
     Decidable (a ∈ ({b} : Set α)) := decidableSetOf _ (· = b)
 
 end Set

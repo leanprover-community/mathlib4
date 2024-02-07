@@ -94,27 +94,27 @@ theorem map_mul_right_eq_self (μ : Measure G) [IsMulRightInvariant μ] (g : G) 
 #align measure_theory.map_add_right_eq_self MeasureTheory.map_add_right_eq_self
 
 @[to_additive MeasureTheory.isAddLeftInvariant_smul]
-instance isMulLeftInvariant_smul [IsMulLeftInvariant μ] (c : ℝ≥0∞) : IsMulLeftInvariant (c • μ) :=
+instance (priority := 10000) isMulLeftInvariant_smul [IsMulLeftInvariant μ] (c : ℝ≥0∞) : IsMulLeftInvariant (c • μ) :=
   ⟨fun g => by rw [Measure.map_smul, map_mul_left_eq_self]⟩
 #align measure_theory.is_mul_left_invariant_smul MeasureTheory.isMulLeftInvariant_smul
 #align measure_theory.is_add_left_invariant_smul MeasureTheory.isAddLeftInvariant_smul
 
 @[to_additive MeasureTheory.isAddRightInvariant_smul]
-instance isMulRightInvariant_smul [IsMulRightInvariant μ] (c : ℝ≥0∞) :
+instance (priority := 10000) isMulRightInvariant_smul [IsMulRightInvariant μ] (c : ℝ≥0∞) :
     IsMulRightInvariant (c • μ) :=
   ⟨fun g => by rw [Measure.map_smul, map_mul_right_eq_self]⟩
 #align measure_theory.is_mul_right_invariant_smul MeasureTheory.isMulRightInvariant_smul
 #align measure_theory.is_add_right_invariant_smul MeasureTheory.isAddRightInvariant_smul
 
 @[to_additive MeasureTheory.isAddLeftInvariant_smul_nnreal]
-instance isMulLeftInvariant_smul_nnreal [IsMulLeftInvariant μ] (c : ℝ≥0) :
+instance (priority := 10000) isMulLeftInvariant_smul_nnreal [IsMulLeftInvariant μ] (c : ℝ≥0) :
     IsMulLeftInvariant (c • μ) :=
   MeasureTheory.isMulLeftInvariant_smul (c : ℝ≥0∞)
 #align measure_theory.is_mul_left_invariant_smul_nnreal MeasureTheory.isMulLeftInvariant_smul_nnreal
 #align measure_theory.is_add_left_invariant_smul_nnreal MeasureTheory.isAddLeftInvariant_smul_nnreal
 
 @[to_additive MeasureTheory.isAddRightInvariant_smul_nnreal]
-instance isMulRightInvariant_smul_nnreal [IsMulRightInvariant μ] (c : ℝ≥0) :
+instance (priority := 10000) isMulRightInvariant_smul_nnreal [IsMulRightInvariant μ] (c : ℝ≥0) :
     IsMulRightInvariant (c • μ) :=
   MeasureTheory.isMulRightInvariant_smul (c : ℝ≥0∞)
 #align measure_theory.is_mul_right_invariant_smul_nnreal MeasureTheory.isMulRightInvariant_smul_nnreal
@@ -155,21 +155,21 @@ theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g
 #align measure_theory.measure_preserving.add_right MeasureTheory.MeasurePreserving.add_right
 
 @[to_additive]
-instance IsMulLeftInvariant.smulInvariantMeasure [IsMulLeftInvariant μ] :
+instance (priority := 10000) IsMulLeftInvariant.smulInvariantMeasure [IsMulLeftInvariant μ] :
     SMulInvariantMeasure G G μ :=
   ⟨fun x _s hs => (measurePreserving_mul_left μ x).measure_preimage hs⟩
 #align measure_theory.is_mul_left_invariant.smul_invariant_measure MeasureTheory.IsMulLeftInvariant.smulInvariantMeasure
 #align measure_theory.is_mul_left_invariant.vadd_invariant_measure MeasureTheory.IsMulLeftInvariant.vaddInvariantMeasure
 
 @[to_additive]
-instance IsMulRightInvariant.toSMulInvariantMeasure_op [μ.IsMulRightInvariant] :
+instance (priority := 10000) IsMulRightInvariant.toSMulInvariantMeasure_op [μ.IsMulRightInvariant] :
     SMulInvariantMeasure Gᵐᵒᵖ G μ :=
   ⟨fun x _s hs => (measurePreserving_mul_right μ (MulOpposite.unop x)).measure_preimage hs⟩
 #align measure_theory.is_mul_right_invariant.to_smul_invariant_measure_op MeasureTheory.IsMulRightInvariant.toSMulInvariantMeasure_op
 #align measure_theory.is_mul_right_invariant.to_vadd_invariant_measure_op MeasureTheory.IsMulRightInvariant.toVAddInvariantMeasure_op
 
 @[to_additive]
-instance Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α] [MeasurableSpace α]
+instance (priority := 10000) Subgroup.smulInvariantMeasure {G α : Type*} [Group G] [MulAction G α] [MeasurableSpace α]
     {μ : Measure α} [SMulInvariantMeasure G α μ] (H : Subgroup G) : SMulInvariantMeasure H α μ :=
   ⟨fun y s hs => by convert SMulInvariantMeasure.measure_preimage_smul (μ := μ) (y : G) hs⟩
 #align measure_theory.subgroup.smul_invariant_measure MeasureTheory.Subgroup.smulInvariantMeasure
@@ -202,7 +202,7 @@ theorem forall_measure_preimage_mul_right_iff (μ : Measure G) :
 #align measure_theory.forall_measure_preimage_add_right_iff MeasureTheory.forall_measure_preimage_add_right_iff
 
 @[to_additive]
-instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ] {H : Type*}
+instance (priority := 10000) Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulLeftInvariant ν]
     [SFinite ν] : IsMulLeftInvariant (μ.prod ν) := by
   constructor
@@ -214,7 +214,7 @@ instance Measure.prod.instIsMulLeftInvariant [IsMulLeftInvariant μ] [SFinite μ
 #align measure_theory.measure.prod.measure.is_add_left_invariant MeasureTheory.Measure.prod.instIsAddLeftInvariant
 
 @[to_additive]
-instance Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SFinite μ] {H : Type*}
+instance (priority := 10000) Measure.prod.instIsMulRightInvariant [IsMulRightInvariant μ] [SFinite μ] {H : Type*}
     [Mul H] {mH : MeasurableSpace H} {ν : Measure H} [MeasurableMul H] [IsMulRightInvariant ν]
     [SFinite ν] : IsMulRightInvariant (μ.prod ν) := by
   constructor
@@ -273,14 +273,14 @@ theorem isMulRightInvariant_map_smul
 /-- The image of a left invariant measure under right multiplication is left invariant. -/
 @[to_additive isMulLeftInvariant_map_add_right
 "The image of a left invariant measure under right addition is left invariant."]
-instance isMulLeftInvariant_map_mul_right [IsMulLeftInvariant μ] (g : G) :
+instance (priority := 10000) isMulLeftInvariant_map_mul_right [IsMulLeftInvariant μ] (g : G) :
     IsMulLeftInvariant (map (· * g) μ) :=
   isMulLeftInvariant_map_smul (MulOpposite.op g)
 
 /-- The image of a right invariant measure under left multiplication is right invariant. -/
 @[to_additive isMulRightInvariant_map_add_left
 "The image of a right invariant measure under left addition is right invariant."]
-instance isMulRightInvariant_map_mul_left [IsMulRightInvariant μ] (g : G) :
+instance (priority := 10000) isMulRightInvariant_map_mul_left [IsMulRightInvariant μ] (g : G) :
     IsMulRightInvariant (map (g * ·) μ) :=
   isMulRightInvariant_map_smul g
 
@@ -432,7 +432,7 @@ theorem measurePreserving_inv (μ : Measure G) [IsInvInvariant μ] : MeasurePres
 #align measure_theory.measure.measure_preserving_neg MeasureTheory.Measure.measurePreserving_neg
 
 @[to_additive]
-instance inv.instSFinite (μ : Measure G) [SFinite μ] : SFinite μ.inv := by
+instance (priority := 10000) inv.instSFinite (μ : Measure G) [SFinite μ] : SFinite μ.inv := by
   rw [Measure.inv]; infer_instance
 
 end Inv
@@ -467,7 +467,7 @@ theorem measure_preimage_inv (μ : Measure G) [IsInvInvariant μ] (A : Set G) :
 #align measure_theory.measure.measure_preimage_neg MeasureTheory.Measure.measure_preimage_neg
 
 @[to_additive]
-instance inv.instSigmaFinite (μ : Measure G) [SigmaFinite μ] : SigmaFinite μ.inv :=
+instance (priority := 10000) inv.instSigmaFinite (μ : Measure G) [SigmaFinite μ] : SigmaFinite μ.inv :=
   (MeasurableEquiv.inv G).sigmaFinite_map ‹_›
 #align measure_theory.measure.inv.measure_theory.sigma_finite MeasureTheory.Measure.inv.instSigmaFinite
 #align measure_theory.measure.neg.measure_theory.sigma_finite MeasureTheory.Measure.neg.instSigmaFinite
@@ -479,7 +479,7 @@ section DivisionMonoid
 variable [DivisionMonoid G] [MeasurableMul G] [MeasurableInv G] {μ : Measure G}
 
 @[to_additive]
-instance inv.instIsMulRightInvariant [IsMulLeftInvariant μ] : IsMulRightInvariant μ.inv := by
+instance (priority := 10000) inv.instIsMulRightInvariant [IsMulLeftInvariant μ] : IsMulRightInvariant μ.inv := by
   constructor
   intro g
   conv_rhs => rw [← map_mul_left_eq_self μ g⁻¹]
@@ -489,7 +489,7 @@ instance inv.instIsMulRightInvariant [IsMulLeftInvariant μ] : IsMulRightInvaria
 #align measure_theory.measure.neg.is_mul_right_invariant MeasureTheory.Measure.neg.instIsAddRightInvariant
 
 @[to_additive]
-instance inv.instIsMulLeftInvariant [IsMulRightInvariant μ] : IsMulLeftInvariant μ.inv := by
+instance (priority := 10000) inv.instIsMulLeftInvariant [IsMulRightInvariant μ] : IsMulLeftInvariant μ.inv := by
   constructor
   intro g
   conv_rhs => rw [← map_mul_right_eq_self μ g⁻¹]
@@ -549,23 +549,23 @@ section TopologicalGroup
 variable [TopologicalSpace G] [BorelSpace G] {μ : Measure G} [Group G]
 
 @[to_additive]
-instance Measure.IsFiniteMeasureOnCompacts.inv [ContinuousInv G] [IsFiniteMeasureOnCompacts μ] :
+instance (priority := 10000) Measure.IsFiniteMeasureOnCompacts.inv [ContinuousInv G] [IsFiniteMeasureOnCompacts μ] :
     IsFiniteMeasureOnCompacts μ.inv :=
   IsFiniteMeasureOnCompacts.map μ (Homeomorph.inv G)
 
 @[to_additive]
-instance Measure.IsOpenPosMeasure.inv [ContinuousInv G] [IsOpenPosMeasure μ] :
+instance (priority := 10000) Measure.IsOpenPosMeasure.inv [ContinuousInv G] [IsOpenPosMeasure μ] :
     IsOpenPosMeasure μ.inv :=
   (Homeomorph.inv G).continuous.isOpenPosMeasure_map (Homeomorph.inv G).surjective
 
 @[to_additive]
-instance Measure.Regular.inv [ContinuousInv G] [Regular μ] : Regular μ.inv :=
+instance (priority := 10000) Measure.Regular.inv [ContinuousInv G] [Regular μ] : Regular μ.inv :=
   Regular.map (Homeomorph.inv G)
 #align measure_theory.measure.regular.inv MeasureTheory.Measure.Regular.inv
 #align measure_theory.measure.regular.neg MeasureTheory.Measure.Regular.neg
 
 @[to_additive]
-instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerRegular μ.inv :=
+instance (priority := 10000) Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerRegular μ.inv :=
   InnerRegular.map (Homeomorph.inv G)
 
 variable [TopologicalGroup G]
@@ -912,7 +912,7 @@ theorem isHaarMeasure_map_of_isFiniteMeasure
 /-- The image of a Haar measure under map of a left action is again a Haar measure. -/
 @[to_additive
    "The image of a Haar measure under map of a left additive action is again a Haar measure"]
-instance isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G]
+instance (priority := 10000) isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G]
     [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
     [ContinuousConstSMul α G] (a : α) : IsHaarMeasure (Measure.map (a • · : G → G) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map_smul _
@@ -927,7 +927,7 @@ instance isHaarMeasure_map_smul {α} [BorelSpace G] [TopologicalGroup G]
 /-- The image of a Haar measure under right multiplication is again a Haar measure. -/
 @[to_additive isHaarMeasure_map_add_right
   "The image of a Haar measure under right addition is again a Haar measure."]
-instance isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] (g : G) :
+instance (priority := 10000) isHaarMeasure_map_mul_right [BorelSpace G] [TopologicalGroup G] (g : G) :
     IsHaarMeasure (Measure.map (· * g) μ) :=
   isHaarMeasure_map_smul μ (MulOpposite.op g)
 
@@ -979,7 +979,7 @@ instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : Sig
 #align measure_theory.measure.is_add_haar_measure.sigma_finite MeasureTheory.Measure.IsAddHaarMeasure.sigmaFinite
 
 @[to_additive]
-instance prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
+instance (priority := 10000) prod.instIsHaarMeasure {G : Type*} [Group G] [TopologicalSpace G] {_ : MeasurableSpace G}
     {H : Type*} [Group H] [TopologicalSpace H] {_ : MeasurableSpace H} (μ : Measure G)
     (ν : Measure H) [IsHaarMeasure μ] [IsHaarMeasure ν] [SFinite μ] [SFinite ν]
     [MeasurableMul G] [MeasurableMul H] : IsHaarMeasure (μ.prod ν) where

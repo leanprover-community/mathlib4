@@ -340,7 +340,7 @@ def whiskerLeftIso (X : C) {Y Z : C} (f : Y ≅ Z) : X ⊗ Y ≅ X ⊗ Z where
   hom := X ◁ f.hom
   inv := X ◁ f.inv
 
-instance whiskerLeft_isIso (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] : IsIso (X ◁ f) :=
+instance (priority := 10000) whiskerLeft_isIso (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] : IsIso (X ◁ f) :=
   IsIso.of_iso (whiskerLeftIso X (asIso f))
 
 @[simp]
@@ -354,7 +354,7 @@ def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
   hom := f.hom ▷ Z
   inv := f.inv ▷ Z
 
-instance whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f ▷ Z) :=
+instance (priority := 10000) whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f ▷ Z) :=
   IsIso.of_iso (whiskerRightIso (asIso f) Z)
 
 @[simp]
@@ -383,7 +383,7 @@ section
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
-instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
+instance (priority := 10000) tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
   IsIso.of_iso (asIso f ⊗ asIso g)
 #align category_theory.monoidal_category.tensor_is_iso CategoryTheory.MonoidalCategory.tensor_isIso
 
@@ -1001,7 +1001,7 @@ def tensoringLeft : C ⥤ C ⥤ C where
   map {X} {Y} f := { app := fun Z => f ⊗ 𝟙 Z }
 #align category_theory.monoidal_category.tensoring_left CategoryTheory.MonoidalCategory.tensoringLeft
 
-instance : Faithful (tensoringLeft C) where
+instance (priority := 10000) : Faithful (tensoringLeft C) where
   map_injective {X} {Y} f g h := by
     injections h
     replace h := congr_fun h (𝟙_ C)
@@ -1017,7 +1017,7 @@ def tensoringRight : C ⥤ C ⥤ C where
   map {X} {Y} f := { app := fun Z => 𝟙 Z ⊗ f }
 #align category_theory.monoidal_category.tensoring_right CategoryTheory.MonoidalCategory.tensoringRight
 
-instance : Faithful (tensoringRight C) where
+instance (priority := 10000) : Faithful (tensoringRight C) where
   map_injective {X} {Y} f g h := by
     injections h
     replace h := congr_fun h (𝟙_ C)
@@ -1059,7 +1059,7 @@ variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂
 attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_naturality pentagon
 
 @[simps! tensorObj tensorHom tensorUnit whiskerLeft whiskerRight associator]
-instance prodMonoidal : MonoidalCategory (C₁ × C₂) where
+instance (priority := 10000) prodMonoidal : MonoidalCategory (C₁ × C₂) where
   tensorObj X Y := (X.1 ⊗ Y.1, X.2 ⊗ Y.2)
   tensorHom f g := (f.1 ⊗ g.1, f.2 ⊗ g.2)
   whiskerLeft X _ _ f := (whiskerLeft X.1 f.1, whiskerLeft X.2 f.2)

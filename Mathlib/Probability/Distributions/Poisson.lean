@@ -77,7 +77,7 @@ end PoissonPMF
 noncomputable
 def poissonMeasure (r : ℝ≥0) : Measure ℕ := (poissonPMF r).toMeasure
 
-instance isProbabilityMeasurePoisson (r : ℝ≥0) :
+instance (priority := 10000) isProbabilityMeasurePoisson (r : ℝ≥0) :
     IsProbabilityMeasure (poissonMeasure r) := PMF.toMeasure.isProbabilityMeasure (poissonPMF r)
 
 end ProbabilityTheory

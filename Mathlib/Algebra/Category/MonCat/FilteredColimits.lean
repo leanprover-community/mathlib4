@@ -79,7 +79,7 @@ variable [IsFiltered J]
 @[to_additive
   "As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to
   define the \"zero\" in the colimit as the equivalence class of `⟨j₀, 0 : F.obj j₀⟩`."]
-noncomputable instance colimitOne :
+noncomputable instance (priority := 10000) colimitOne :
   One (M.{v, u} F) where one := M.mk F ⟨IsFiltered.nonempty.some,1⟩
 #align Mon.filtered_colimits.colimit_has_one MonCat.FilteredColimits.colimitOne
 #align AddMon.filtered_colimits.colimit_has_zero AddMonCat.FilteredColimits.colimitZero
@@ -165,7 +165,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
 
 /-- Multiplication in the colimit. See also `colimitMulAux`. -/
 @[to_additive "Addition in the colimit. See also `colimitAddAux`."]
-noncomputable instance colimitMul : Mul (M.{v, u} F) :=
+noncomputable instance (priority := 10000) colimitMul : Mul (M.{v, u} F) :=
 { mul := fun x y => by
     refine' Quot.lift₂ (colimitMulAux F) _ _ x y
     · intro x y y' h
@@ -204,7 +204,7 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
 #align AddMon.filtered_colimits.colimit_add_mk_eq AddMonCat.FilteredColimits.colimit_add_mk_eq
 
 @[to_additive]
-noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
+noncomputable instance (priority := 10000) colimitMulOneClass : MulOneClass (M.{v, u} F) :=
   { colimitOne F,
     colimitMul F with
     one_mul := fun x => by
@@ -225,7 +225,7 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
       rfl }
 
 @[to_additive]
-noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
+noncomputable instance (priority := 10000) colimitMonoid : Monoid (M.{v, u} F) :=
   { colimitMulOneClass F with
     mul_assoc := fun x y z => by
       refine Quot.induction_on₃ x y z ?_
@@ -335,7 +335,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
 #align AddMon.filtered_colimits.colimit_cocone_is_colimit AddMonCat.FilteredColimits.colimitCoconeIsColimit
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+noncomputable instance (priority := 10000) forgetPreservesFilteredColimits :
     PreservesFilteredColimits (forget MonCat.{u}) :=
   ⟨fun J hJ1 _ => letI hJ1' : Category J := hJ1
     ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
@@ -366,7 +366,7 @@ noncomputable abbrev M : MonCat.{max v u} :=
 #align AddCommMon.filtered_colimits.M AddCommMonCat.FilteredColimits.M
 
 @[to_additive]
-noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
+noncomputable instance (priority := 10000) colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=
   { (M.{v, u} F) with
     mul_comm := fun x y => by
       refine Quot.induction_on₂ x y ?_
@@ -418,7 +418,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
 #align AddCommMon.filtered_colimits.colimit_cocone_is_colimit AddCommMonCat.FilteredColimits.colimitCoconeIsColimit
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]
-noncomputable instance forget₂MonPreservesFilteredColimits :
+noncomputable instance (priority := 10000) forget₂MonPreservesFilteredColimits :
   PreservesFilteredColimits (forget₂ CommMonCat MonCat.{u}) :=
 ⟨fun J hJ1 _ => letI hJ3 : Category J := hJ1
   ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
@@ -427,7 +427,7 @@ noncomputable instance forget₂MonPreservesFilteredColimits :
 #align AddCommMon.filtered_colimits.forget₂_AddMon_preserves_filtered_colimits AddCommMonCat.FilteredColimits.forget₂AddMonPreservesFilteredColimits
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+noncomputable instance (priority := 10000) forgetPreservesFilteredColimits :
     PreservesFilteredColimits (forget CommMonCat.{u}) :=
   Limits.compPreservesFilteredColimits (forget₂ CommMonCat MonCat) (forget MonCat)
 #align CommMon.filtered_colimits.forget_preserves_filtered_colimits CommMonCat.FilteredColimits.forgetPreservesFilteredColimits

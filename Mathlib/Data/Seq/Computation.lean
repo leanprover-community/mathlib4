@@ -47,7 +47,7 @@ def pure (a : α) : Computation α :=
   ⟨Stream'.const (some a), fun _ _ => id⟩
 #align computation.return Computation.pure
 
-instance : CoeTC α (Computation α) :=
+instance (priority := 10000) : CoeTC α (Computation α) :=
   ⟨pure⟩
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -89,7 +89,7 @@ def empty (α) : Computation α :=
   ⟨Stream'.const none, fun _ _ => id⟩
 #align computation.empty Computation.empty
 
-instance : Inhabited (Computation α) :=
+instance (priority := 10000) : Inhabited (Computation α) :=
   ⟨empty _⟩
 
 /-- `runFor c n` evaluates `c` for `n` steps and returns the result, or `none`
@@ -324,7 +324,7 @@ protected def Mem (a : α) (s : Computation α) :=
   some a ∈ s.1
 #align computation.mem Computation.Mem
 
-instance : Membership α (Computation α) :=
+instance (priority := 10000) : Membership α (Computation α) :=
   ⟨Computation.Mem⟩
 
 theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.1 m = some a → s.1 n = some a := by
@@ -374,7 +374,7 @@ theorem eq_of_pure_mem {a a' : α} (h : a' ∈ pure a) : a' = a :=
   mem_unique h (ret_mem _)
 #align computation.eq_of_ret_mem Computation.eq_of_pure_mem
 
-instance ret_terminates (a : α) : Terminates (pure a) :=
+instance (priority := 10000) ret_terminates (a : α) : Terminates (pure a) :=
   terminates_of_mem (ret_mem _)
 #align computation.ret_terminates Computation.ret_terminates
 
@@ -382,7 +382,7 @@ theorem think_mem {s : Computation α} {a} : a ∈ s → a ∈ think s
   | ⟨n, h⟩ => ⟨n + 1, h⟩
 #align computation.think_mem Computation.think_mem
 
-instance think_terminates (s : Computation α) : ∀ [Terminates s], Terminates (think s)
+instance (priority := 10000) think_terminates (s : Computation α) : ∀ [Terminates s], Terminates (think s)
   | ⟨⟨a, n, h⟩⟩ => ⟨⟨a, n + 1, h⟩⟩
 #align computation.think_terminates Computation.think_terminates
 
@@ -415,7 +415,7 @@ theorem thinkN_mem {s : Computation α} {a} : ∀ n, a ∈ thinkN s n ↔ a ∈ 
 set_option linter.uppercaseLean3 false in
 #align computation.thinkN_mem Computation.thinkN_mem
 
-instance thinkN_terminates (s : Computation α) : ∀ [Terminates s] (n), Terminates (thinkN s n)
+instance (priority := 10000) thinkN_terminates (s : Computation α) : ∀ [Terminates s] (n), Terminates (thinkN s n)
   | ⟨⟨a, h⟩⟩, n => ⟨⟨a, (thinkN_mem n).2 h⟩⟩
 set_option linter.uppercaseLean3 false in
 #align computation.thinkN_terminates Computation.thinkN_terminates
@@ -675,7 +675,7 @@ def bind (c : Computation α) (f : α → Computation β) : Computation β :=
   corec (Bind.f f) (Sum.inl c)
 #align computation.bind Computation.bind
 
-instance : Bind Computation :=
+instance (priority := 10000) : Bind Computation :=
   ⟨@bind⟩
 
 theorem has_bind_eq_bind {β} (c : Computation α) (f : α → Computation β) : c >>= f = bind c f :=
@@ -803,7 +803,7 @@ theorem mem_bind {s : Computation α} {f : α → Computation β} {a b} (h1 : a 
   (results_bind h1 h2).mem
 #align computation.mem_bind Computation.mem_bind
 
-instance terminates_bind (s : Computation α) (f : α → Computation β) [Terminates s]
+instance (priority := 10000) terminates_bind (s : Computation α) (f : α → Computation β) [Terminates s]
     [Terminates (f (get s))] : Terminates (bind s f) :=
   terminates_of_mem (mem_bind (get_mem s) (get_mem (f (get s))))
 #align computation.terminates_bind Computation.terminates_bind
@@ -849,12 +849,12 @@ theorem bind_promises {s : Computation α} {f : α → Computation β} {a b} (h1
   rw [← h1 a's] at ba'; exact h2 ba'
 #align computation.bind_promises Computation.bind_promises
 
-instance monad : Monad Computation where
+instance (priority := 10000) monad : Monad Computation where
   map := @map
   pure := @pure
   bind := @bind
 
-instance : LawfulMonad Computation := LawfulMonad.mk'
+instance (priority := 10000) : LawfulMonad Computation := LawfulMonad.mk'
   (id_map := @map_id)
   (bind_pure_comp := @bind_pure)
   (pure_bind := @ret_bind)
@@ -890,7 +890,7 @@ theorem exists_of_mem_map {f : α → β} {b : β} {s : Computation α} (h : b �
   exact ⟨a, as, mem_unique (ret_mem _) fb⟩
 #align computation.exists_of_mem_map Computation.exists_of_mem_map
 
-instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := by
+instance (priority := 10000) terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := by
   rw [← bind_pure]; exact terminates_of_mem (mem_bind (get_mem s) (get_mem (f (get s))))
 #align computation.terminates_map Computation.terminates_map
 
@@ -916,7 +916,7 @@ def orElse (c₁ : Computation α) (c₂ : Unit → Computation α) : Computatio
     (c₁, c₂ ())
 #align computation.orelse Computation.orElse
 
-instance instAlternativeComputation : Alternative Computation :=
+instance (priority := 10000) instAlternativeComputation : Alternative Computation :=
   { Computation.monad with
     orElse := @orElse
     failure := @empty }

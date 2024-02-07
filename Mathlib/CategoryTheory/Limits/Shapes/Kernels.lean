@@ -295,7 +295,7 @@ theorem kernel.lift_zero {W : C} {h} : kernel.lift f (0 : W ⟶ X) h = 0 := by
   ext; simp
 #align category_theory.limits.kernel.lift_zero CategoryTheory.Limits.kernel.lift_zero
 
-instance kernel.lift_mono {W : C} (k : W ⟶ X) (h : k ≫ f = 0) [Mono k] : Mono (kernel.lift f k h) :=
+instance (priority := 10000) kernel.lift_mono {W : C} (k : W ⟶ X) (h : k ≫ f = 0) [Mono k] : Mono (kernel.lift f k h) :=
   ⟨fun {Z} g g' w => by
     replace w := w =≫ kernel.ι f
     simp only [Category.assoc, kernel.lift_ι] at w
@@ -349,7 +349,7 @@ def kernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ≅ X') (q 
 #align category_theory.limits.kernel.map_iso CategoryTheory.Limits.kernel.mapIso
 
 /-- Every kernel of the zero morphism is an isomorphism -/
-instance kernel.ι_zero_isIso : IsIso (kernel.ι (0 : X ⟶ Y)) :=
+instance (priority := 10000) kernel.ι_zero_isIso : IsIso (kernel.ι (0 : X ⟶ Y)) :=
   equalizer.ι_of_self _
 #align category_theory.limits.kernel.ι_zero_is_iso CategoryTheory.Limits.kernel.ι_zero_isIso
 
@@ -429,7 +429,7 @@ theorem kernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (kernel.ι f) → False 
     infer_instance
 #align category_theory.limits.kernel_not_iso_of_nonzero CategoryTheory.Limits.kernel_not_iso_of_nonzero
 
-instance hasKernel_comp_mono {X Y Z : C} (f : X ⟶ Y) [HasKernel f] (g : Y ⟶ Z) [Mono g] :
+instance (priority := 10000) hasKernel_comp_mono {X Y Z : C} (f : X ⟶ Y) [HasKernel f] (g : Y ⟶ Z) [Mono g] :
     HasKernel (f ≫ g) :=
   ⟨⟨{   cone := _
         isLimit := isKernelCompMono (limit.isLimit _) g rfl }⟩⟩
@@ -448,7 +448,7 @@ def kernelCompMono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasKernel f] [Mono g
   inv := kernel.lift _ (kernel.ι _) (by simp)
 #align category_theory.limits.kernel_comp_mono CategoryTheory.Limits.kernelCompMono
 
-instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel g] :
+instance (priority := 10000) hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [HasKernel g] :
     HasKernel (f ≫ g) where
   exists_limit :=
     ⟨{  cone := KernelFork.ofι (kernel.ι g ≫ inv f) (by simp)
@@ -794,7 +794,7 @@ theorem cokernel.desc_zero {W : C} {h} : cokernel.desc f (0 : Y ⟶ W) h = 0 := 
   ext; simp
 #align category_theory.limits.cokernel.desc_zero CategoryTheory.Limits.cokernel.desc_zero
 
-instance cokernel.desc_epi {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) [Epi k] :
+instance (priority := 10000) cokernel.desc_epi {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) [Epi k] :
     Epi (cokernel.desc f k h) :=
   ⟨fun {Z} g g' w => by
     replace w := cokernel.π f ≫= w
@@ -852,7 +852,7 @@ def cokernel.mapIso {X' Y' : C} (f' : X' ⟶ Y') [HasCokernel f'] (p : X ≅ X')
 #align category_theory.limits.cokernel.map_iso CategoryTheory.Limits.cokernel.mapIso
 
 /-- The cokernel of the zero morphism is an isomorphism -/
-instance cokernel.π_zero_isIso : IsIso (cokernel.π (0 : X ⟶ Y)) :=
+instance (priority := 10000) cokernel.π_zero_isIso : IsIso (cokernel.π (0 : X ⟶ Y)) :=
   coequalizer.π_of_self _
 #align category_theory.limits.cokernel.π_zero_is_iso CategoryTheory.Limits.cokernel.π_zero_isIso
 
@@ -933,7 +933,7 @@ theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → Fa
 #align category_theory.limits.cokernel_not_iso_of_nonzero CategoryTheory.Limits.cokernel_not_iso_of_nonzero
 
 -- TODO the remainder of this section has obvious generalizations to `HasCoequalizer f g`.
-instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokernel f] [IsIso g] :
+instance (priority := 10000) hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokernel f] [IsIso g] :
     HasCokernel (f ≫ g) where
   exists_colimit :=
     ⟨{  cocone := CokernelCofork.ofπ (inv g ≫ cokernel.π f) (by simp)
@@ -956,7 +956,7 @@ def cokernelCompIsIso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokernel f] [I
   inv := cokernel.desc _ (g ≫ cokernel.π (f ≫ g)) (by rw [← Category.assoc, cokernel.condition])
 #align category_theory.limits.cokernel_comp_is_iso CategoryTheory.Limits.cokernelCompIsIso
 
-instance hasCokernel_epi_comp {X Y : C} (f : X ⟶ Y) [HasCokernel f] {W} (g : W ⟶ X) [Epi g] :
+instance (priority := 10000) hasCokernel_epi_comp {X Y : C} (f : X ⟶ Y) [HasCokernel f] {W} (g : W ⟶ X) [Epi g] :
     HasCokernel (g ≫ f) :=
   ⟨⟨{   cocone := _
         isColimit := isCokernelEpiComp (colimit.isColimit _) g rfl }⟩⟩
@@ -1077,13 +1077,13 @@ variable [HasZeroObject C]
 open ZeroObject
 
 /-- The kernel of the cokernel of an epimorphism is an isomorphism -/
-instance kernel.of_cokernel_of_epi [HasCokernel f] [HasKernel (cokernel.π f)] [Epi f] :
+instance (priority := 10000) kernel.of_cokernel_of_epi [HasCokernel f] [HasKernel (cokernel.π f)] [Epi f] :
     IsIso (kernel.ι (cokernel.π f)) :=
   equalizer.ι_of_eq <| cokernel.π_of_epi f
 #align category_theory.limits.kernel.of_cokernel_of_epi CategoryTheory.Limits.kernel.of_cokernel_of_epi
 
 /-- The cokernel of the kernel of a monomorphism is an isomorphism -/
-instance cokernel.of_kernel_of_mono [HasKernel f] [HasCokernel (kernel.ι f)] [Mono f] :
+instance (priority := 10000) cokernel.of_kernel_of_mono [HasKernel f] [HasCokernel (kernel.ι f)] [Mono f] :
     IsIso (cokernel.π (kernel.ι f)) :=
   coequalizer.π_of_eq <| kernel.ι_of_mono f
 #align category_theory.limits.cokernel.of_kernel_of_mono CategoryTheory.Limits.cokernel.of_kernel_of_mono

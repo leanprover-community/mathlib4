@@ -99,7 +99,7 @@ universe u'
 
 variable {D : Type u'} (F : D → C)
 
-instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
+instance (priority := 10000) inducedCategory : Preadditive.{v} (InducedCategory C F) where
   homGroup P Q := @Preadditive.homGroup C _ _ (F P) (F Q)
   add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
   comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
@@ -107,13 +107,13 @@ instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) where
+instance (priority := 10000) fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) where
   homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
   add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
   comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
 #align category_theory.preadditive.full_subcategory CategoryTheory.Preadditive.fullSubcategory
 
-instance (X : C) : AddCommGroup (End X) := by
+instance (priority := 10000) (X : C) : AddCommGroup (End X) := by
   dsimp [End]
   infer_instance
 
@@ -191,10 +191,10 @@ theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g
   map_sum (rightComp P g) _ _
 #align category_theory.preadditive.sum_comp CategoryTheory.Preadditive.sum_comp
 
-instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
+instance (priority := 10000) {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
   ⟨fun g g' H => by rwa [neg_comp, neg_comp, ← comp_neg, ← comp_neg, cancel_epi, neg_inj] at H⟩
 
-instance {P Q : C} {f : P ⟶ Q} [Mono f] : Mono (-f) :=
+instance (priority := 10000) {P Q : C} {f : P ⟶ Q} [Mono f] : Mono (-f) :=
   ⟨fun g g' H => by rwa [comp_neg, comp_neg, ← neg_comp, ← neg_comp, cancel_mono, neg_inj] at H⟩
 
 instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C where
@@ -206,7 +206,7 @@ instance (priority := 100) preadditiveHasZeroMorphisms : HasZeroMorphisms C wher
 /--Porting note: adding this before the ring instance allowed moduleEndRight to find
 the correct Monoid structure on End. Moved both down after preadditiveHasZeroMorphisms
 to make use of them -/
-instance {X : C} : Semiring (End X) :=
+instance (priority := 10000) {X : C} : Semiring (End X) :=
   { End.monoid with
     zero_mul := fun f => by dsimp [mul]; exact HasZeroMorphisms.comp_zero f _
     mul_zero := fun f => by dsimp [mul]; exact HasZeroMorphisms.zero_comp _ f
@@ -215,12 +215,12 @@ instance {X : C} : Semiring (End X) :=
 
 /-- Porting note: It looks like Ring's parent classes changed in
 Lean 4 so the previous instance needed modification. Was following my nose here. -/
-instance {X : C} : Ring (End X) :=
+instance (priority := 10000) {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
     (inferInstance : AddCommGroup (End X)) with
     add_left_neg := add_left_neg }
 
-instance moduleEndRight {X Y : C} : Module (End Y) (X ⟶ Y) where
+instance (priority := 10000) moduleEndRight {X Y : C} : Module (End Y) (X ⟶ Y) where
   smul_add _ _ _ := add_comp _ _ _ _ _ _
   smul_zero _ := zero_comp
   add_smul _ _ _ := comp_add _ _ _ _ _ _
@@ -465,7 +465,7 @@ section
 
 variable {C : Type*} [Category C] [Preadditive C] {X Y : C}
 
-instance : SMul (Units ℤ) (X ≅ Y) where
+instance (priority := 10000) : SMul (Units ℤ) (X ≅ Y) where
   smul a e :=
     { hom := (a : ℤ) • e.hom
       inv := ((a⁻¹ : Units ℤ) : ℤ) • e.inv
@@ -480,7 +480,7 @@ lemma smul_iso_hom (a : Units ℤ) (e : X ≅ Y) : (a • e).hom = (a : ℤ) •
 @[simp]
 lemma smul_iso_inv (a : Units ℤ) (e : X ≅ Y) : (a • e).inv = ((a⁻¹ : Units ℤ) : ℤ) • e.inv := rfl
 
-instance : Neg (X ≅ Y) where
+instance (priority := 10000) : Neg (X ≅ Y) where
   neg e :=
     { hom := -e.hom
       inv := -e.inv }

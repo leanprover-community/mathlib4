@@ -45,7 +45,7 @@ variable (R : Type*) [Mul R] [Add R]
 `fun g h => RingEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance : Group (RingAut R) :=
+instance (priority := 10000) : Group (RingAut R) :=
   { mul := fun g h => RingEquiv.trans h g
     one := RingEquiv.refl R
     inv := RingEquiv.symm
@@ -74,7 +74,7 @@ instance : Group (RingAut R) :=
     apply Equiv.left_inv
  -/
 
-instance : Inhabited (RingAut R) :=
+instance (priority := 10000) : Inhabited (RingAut R) :=
   ⟨1⟩
 
 /-- Monoid homomorphism from ring automorphisms to additive automorphisms. -/
@@ -105,7 +105,7 @@ section Semiring
 variable {G R : Type*} [Group G] [Semiring R]
 
 /-- The tautological action by the group of automorphism of a ring `R` on `R`.-/
-instance applyMulSemiringAction :
+instance (priority := 10000) applyMulSemiringAction :
     MulSemiringAction (RingAut R) R where
   smul := (· <| ·)
   smul_zero := RingEquiv.map_zero
@@ -121,7 +121,7 @@ protected theorem smul_def (f : RingAut R) (r : R) : f • r = f r :=
   rfl
 #align ring_aut.smul_def RingAut.smul_def
 
-instance apply_faithfulSMul : FaithfulSMul (RingAut R) R :=
+instance (priority := 10000) apply_faithfulSMul : FaithfulSMul (RingAut R) R :=
   ⟨RingEquiv.ext⟩
 #align ring_aut.apply_has_faithful_smul RingAut.apply_faithfulSMul
 

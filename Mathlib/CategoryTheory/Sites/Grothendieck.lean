@@ -89,7 +89,7 @@ structure GrothendieckTopology where
 
 namespace GrothendieckTopology
 
-instance : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) :=
+instance (priority := 10000) : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) :=
   ⟨sieves⟩
 
 variable {C}
@@ -254,7 +254,7 @@ theorem trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
 #align category_theory.grothendieck_topology.trivial_covering CategoryTheory.GrothendieckTopology.trivial_covering
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
-instance instLEGrothendieckTopology : LE (GrothendieckTopology C) where
+instance (priority := 10000) instLEGrothendieckTopology : LE (GrothendieckTopology C) where
   le J₁ J₂ := (J₁ : ∀ X : C, Set (Sieve X)) ≤ (J₂ : ∀ X : C, Set (Sieve X))
 
 theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : ∀ X : C, Set (Sieve X)) ≤ J₂ :=
@@ -262,14 +262,14 @@ theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : 
 #align category_theory.grothendieck_topology.le_def CategoryTheory.GrothendieckTopology.le_def
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
-instance : PartialOrder (GrothendieckTopology C) :=
+instance (priority := 10000) : PartialOrder (GrothendieckTopology C) :=
   { instLEGrothendieckTopology with
     le_refl := fun J₁ => le_def.mpr le_rfl
     le_trans := fun J₁ J₂ J₃ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
     le_antisymm := fun J₁ J₂ h₁₂ h₂₁ => GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
-instance : InfSet (GrothendieckTopology C) where
+instance (priority := 10000) : InfSet (GrothendieckTopology C) where
   sInf T :=
     { sieves := sInf (sieves '' T)
       top_mem' := by
@@ -294,7 +294,7 @@ theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
 /-- Construct a complete lattice from the `Inf`, but make the trivial and discrete topologies
 definitionally equal to the bottom and top respectively.
 -/
-instance : CompleteLattice (GrothendieckTopology C) :=
+instance (priority := 10000) : CompleteLattice (GrothendieckTopology C) :=
   CompleteLattice.copy (completeLatticeOfInf _ isGLB_sInf) _ rfl (discrete C)
     (by
       apply le_antisymm
@@ -310,7 +310,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
       · exact @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
     _ rfl _ rfl _ rfl sInf rfl
 
-instance : Inhabited (GrothendieckTopology C) :=
+instance (priority := 10000) : Inhabited (GrothendieckTopology C) :=
   ⟨⊤⟩
 
 @[simp]
@@ -407,7 +407,7 @@ def Cover (X : C) : Type max u v :=
 #align category_theory.grothendieck_topology.cover CategoryTheory.GrothendieckTopology.Cover
 
 -- Porting note: `deriving` didn't work above, so we add the preorder instance manually.
-instance (X : C) : Preorder (J.Cover X) :=
+instance (priority := 10000) (X : C) : Preorder (J.Cover X) :=
   show Preorder {S : Sieve X // S ∈ J X} from inferInstance
 
 namespace Cover
@@ -419,7 +419,7 @@ Porting note: Lean complains that this is a dangerous instance.
 I'm commenting this out since the `CoeFun` instance below is what we
 use 99% of the time anyway.
 
-instance : Coe (J.Cover X) (Sieve X) :=
+instance (priority := 10000) : Coe (J.Cover X) (Sieve X) :=
   ⟨fun S => S.1⟩
 -/
 
@@ -435,11 +435,11 @@ Porting note: This somehow yields different behavior than the better instance be
 With this instance, we have to write `S _ f` but with the uncommented one, we can write `S f`
 as expected.
 
-instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
+instance (priority := 10000) : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
   ⟨fun S _ f => (S : Sieve X) f⟩
 -/
 
-instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
+instance (priority := 10000) : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
   ⟨fun S => S.sieve⟩
 
 /-
@@ -460,12 +460,12 @@ theorem ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S =
   Subtype.ext <| Sieve.ext h
 #align category_theory.grothendieck_topology.cover.ext CategoryTheory.GrothendieckTopology.Cover.ext
 
-instance : OrderTop (J.Cover X) :=
+instance (priority := 10000) : OrderTop (J.Cover X) :=
   { (inferInstance : Preorder (J.Cover X)) with
     top := ⟨⊤, J.top_mem _⟩
     le_top := fun S Y f _ => by tauto }
 
-instance : SemilatticeInf (J.Cover X) :=
+instance (priority := 10000) : SemilatticeInf (J.Cover X) :=
   { (inferInstance : Preorder _) with
     inf := fun S T => ⟨S.sieve ⊓ T.sieve,
       J.intersection_covering S.condition T.condition⟩
@@ -474,7 +474,7 @@ instance : SemilatticeInf (J.Cover X) :=
     inf_le_right := fun S T Y f hf => hf.2
     le_inf := fun S T W h1 h2 Y f h => ⟨h1 _ h, h2 _ h⟩ }
 
-instance : Inhabited (J.Cover X) :=
+instance (priority := 10000) : Inhabited (J.Cover X) :=
   ⟨⊤⟩
 
 /-- An auxiliary structure, used to define `S.index`. -/

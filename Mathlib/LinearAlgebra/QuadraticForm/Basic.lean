@@ -153,14 +153,14 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 variable {Q Q' : QuadraticForm R M}
 
-instance instFunLike : FunLike (QuadraticForm R M) M R where
+instance (priority := 10000) instFunLike : FunLike (QuadraticForm R M) M R where
   coe := toFun
   coe_injective' x y h := by cases x; cases y; congr
 #align quadratic_form.fun_like QuadraticForm.instFunLike
 
 /-- Helper instance for when there's too many metavariables to apply
 `DFunLike.hasCoeToFun` directly. -/
-instance : CoeFun (QuadraticForm R M) fun _ => M → R :=
+instance (priority := 10000) : CoeFun (QuadraticForm R M) fun _ => M → R :=
   ⟨DFunLike.coe⟩
 
 variable (Q)
@@ -240,7 +240,7 @@ theorem map_zero : Q 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), map_smul, zero_mul, zero_mul]
 #align quadratic_form.map_zero QuadraticForm.map_zero
 
-instance zeroHomClass : ZeroHomClass (QuadraticForm R M) M R where
+instance (priority := 10000) zeroHomClass : ZeroHomClass (QuadraticForm R M) M R where
   map_zero := map_zero
 #align quadratic_form.zero_hom_class QuadraticForm.zeroHomClass
 
@@ -387,7 +387,7 @@ variable [SMulCommClass R S R] [SMulCommClass S R R] [SMulCommClass T R R] [SMul
 /-- `QuadraticForm R M` inherits the scalar action from any algebra over `R`.
 
 This provides an `R`-action via `Algebra.id`. -/
-instance : SMul S (QuadraticForm R M) :=
+instance (priority := 10000) : SMul S (QuadraticForm R M) :=
   ⟨fun a Q =>
     { toFun := a • ⇑Q
       toFun_smul := fun b x => by rw [Pi.smul_apply, map_smul, Pi.smul_apply, mul_smul_comm]
@@ -405,15 +405,15 @@ theorem smul_apply (a : S) (Q : QuadraticForm R M) (x : M) : (a • Q) x = a •
   rfl
 #align quadratic_form.smul_apply QuadraticForm.smul_apply
 
-instance [SMulCommClass S T R] : SMulCommClass S T (QuadraticForm R M) where
+instance (priority := 10000) [SMulCommClass S T R] : SMulCommClass S T (QuadraticForm R M) where
   smul_comm _s _t _q := ext fun _ => smul_comm _ _ _
 
-instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T (QuadraticForm R M) where
+instance (priority := 10000) [SMul S T] [IsScalarTower S T R] : IsScalarTower S T (QuadraticForm R M) where
   smul_assoc _s _t _q := ext fun _ => smul_assoc _ _ _
 
 end SMul
 
-instance : Zero (QuadraticForm R M) :=
+instance (priority := 10000) : Zero (QuadraticForm R M) :=
   ⟨{  toFun := fun _ => 0
       toFun_smul := fun a _ => by simp only [mul_zero]
       exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, LinearMap.zero_apply]⟩ }⟩
@@ -428,10 +428,10 @@ theorem zero_apply (x : M) : (0 : QuadraticForm R M) x = 0 :=
   rfl
 #align quadratic_form.zero_apply QuadraticForm.zero_apply
 
-instance : Inhabited (QuadraticForm R M) :=
+instance (priority := 10000) : Inhabited (QuadraticForm R M) :=
   ⟨0⟩
 
-instance : Add (QuadraticForm R M) :=
+instance (priority := 10000) : Add (QuadraticForm R M) :=
   ⟨fun Q Q' =>
     { toFun := Q + Q'
       toFun_smul := fun a x => by simp only [Pi.add_apply, map_smul, mul_add]
@@ -451,7 +451,7 @@ theorem add_apply (Q Q' : QuadraticForm R M) (x : M) : (Q + Q') x = Q x + Q' x :
   rfl
 #align quadratic_form.add_apply QuadraticForm.add_apply
 
-instance : AddCommMonoid (QuadraticForm R M) :=
+instance (priority := 10000) : AddCommMonoid (QuadraticForm R M) :=
   DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
 
 /-- `@CoeFn (QuadraticForm R M)` as an `AddMonoidHom`.
@@ -486,7 +486,7 @@ theorem sum_apply {ι : Type*} (Q : ι → QuadraticForm R M) (s : Finset ι) (x
 
 end Sum
 
-instance [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [SMulCommClass R S R] :
+instance (priority := 10000) [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [SMulCommClass R S R] :
     DistribMulAction S (QuadraticForm R M) where
   mul_smul a b Q := ext fun x => by simp only [smul_apply, mul_smul]
   one_smul Q := ext fun x => by simp only [QuadraticForm.smul_apply, one_smul]
@@ -497,7 +497,7 @@ instance [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [SMulCommClass 
     ext
     simp only [zero_apply, smul_apply, smul_zero]
 
-instance [Semiring S] [Module S R] [SMulCommClass S R R] [SMulCommClass R S R] :
+instance (priority := 10000) [Semiring S] [Module S R] [SMulCommClass S R R] [SMulCommClass R S R] :
     Module S (QuadraticForm R M) where
   zero_smul Q := by
     ext
@@ -512,7 +512,7 @@ section RingOperators
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-instance : Neg (QuadraticForm R M) :=
+instance (priority := 10000) : Neg (QuadraticForm R M) :=
   ⟨fun Q =>
     { toFun := -Q
       toFun_smul := fun a x => by simp only [Pi.neg_apply, map_smul, mul_neg]
@@ -530,7 +530,7 @@ theorem neg_apply (Q : QuadraticForm R M) (x : M) : (-Q) x = -Q x :=
   rfl
 #align quadratic_form.neg_apply QuadraticForm.neg_apply
 
-instance : Sub (QuadraticForm R M) :=
+instance (priority := 10000) : Sub (QuadraticForm R M) :=
   ⟨fun Q Q' => (Q + -Q').copy (Q - Q') (sub_eq_add_neg _ _)⟩
 
 @[simp]
@@ -543,7 +543,7 @@ theorem sub_apply (Q Q' : QuadraticForm R M) (x : M) : (Q - Q') x = Q x - Q' x :
   rfl
 #align quadratic_form.sub_apply QuadraticForm.sub_apply
 
-instance : AddCommGroup (QuadraticForm R M) :=
+instance (priority := 10000) : AddCommGroup (QuadraticForm R M) :=
   DFunLike.coe_injective.addCommGroup _ coeFn_zero coeFn_add coeFn_neg coeFn_sub
     (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
 
@@ -894,7 +894,7 @@ abbrev associated' : QuadraticForm R M →ₗ[ℤ] BilinForm R M :=
 #align quadratic_form.associated' QuadraticForm.associated'
 
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
-instance canLift :
+instance (priority := 10000) canLift :
     CanLift (BilinForm R M) (QuadraticForm R M) (associatedHom ℕ) BilinForm.IsSymm where
   prf B hB := ⟨B.toQuadraticForm, associated_left_inverse _ hB⟩
 #align quadratic_form.can_lift QuadraticForm.canLift

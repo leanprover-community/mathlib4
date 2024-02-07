@@ -59,13 +59,13 @@ section OrderedSMul
 variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M]
   {s : Set M} {a b : M} {c : R}
 
-instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
+instance (priority := 10000) OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
   elim _a ha _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb ha
 
-instance OrderedSMul.toPosSMulReflectLT : PosSMulReflectLT R M :=
+instance (priority := 10000) OrderedSMul.toPosSMulReflectLT : PosSMulReflectLT R M :=
   PosSMulReflectLT.of_pos fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
 
-instance OrderDual.instOrderedSMul [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M]
+instance (priority := 10000) OrderDual.instOrderedSMul [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M]
     [OrderedSMul R M] : OrderedSMul R Mᵒᵈ where
   smul_lt_smul_of_pos := OrderedSMul.smul_lt_smul_of_pos (M := M)
   lt_of_smul_lt_smul_of_pos := OrderedSMul.lt_of_smul_lt_smul_of_pos (M := M)
@@ -80,7 +80,7 @@ theorem OrderedSMul.mk'' [OrderedSemiring 𝕜] [LinearOrderedAddCommMonoid M] [
     lt_of_smul_lt_smul_of_pos := fun hab hc => (h hc).lt_iff_lt.1 hab }
 #align ordered_smul.mk'' OrderedSMul.mk''
 
-instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ M :=
+instance (priority := 10000) Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ M :=
   OrderedSMul.mk'' fun n hn a b hab => by
     cases n with
     | zero => cases hn
@@ -90,7 +90,7 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
       | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add hab (ih n.succ_pos)]
 #align nat.ordered_smul Nat.orderedSMul
 
-instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
+instance (priority := 10000) Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
     cases n
     · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn ⊢
@@ -103,7 +103,7 @@ variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero 
   [OrderedSMul R M] {a : R}
 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
-instance LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
+instance (priority := 10000) LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
   OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos
 #align linear_ordered_semiring.to_ordered_smul LinearOrderedSemiring.toOrderedSMul
 
@@ -130,11 +130,11 @@ theorem OrderedSMul.mk' (h : ∀ ⦃a b : M⦄ ⦃c : 𝕜⦄, a < b → 0 < c �
   simp only [c.mul_inv, zero_lt_one]
 #align ordered_smul.mk' OrderedSMul.mk'
 
-instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :=
+instance (priority := 10000) [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :=
   OrderedSMul.mk' fun _ _ _ h hc =>
     ⟨smul_le_smul_of_nonneg_left h.1.1 hc.le, smul_le_smul_of_nonneg_left h.1.2 hc.le⟩
 
-instance Pi.orderedSMul {M : ι → Type*} [∀ i, OrderedAddCommMonoid (M i)]
+instance (priority := 10000) Pi.orderedSMul {M : ι → Type*} [∀ i, OrderedAddCommMonoid (M i)]
     [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg_left (h.le i) hc.le
 #align pi.ordered_smul Pi.orderedSMul

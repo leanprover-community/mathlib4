@@ -247,10 +247,10 @@ structure LocallyConstant (X Y : Type*) [TopologicalSpace X] where
 
 namespace LocallyConstant
 
-instance [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
+instance (priority := 10000) [Inhabited Y] : Inhabited (LocallyConstant X Y) :=
   ⟨⟨_, IsLocallyConstant.const default⟩⟩
 
-instance : FunLike (LocallyConstant X Y) X Y where
+instance (priority := 10000) : FunLike (LocallyConstant X Y) X Y where
   coe := LocallyConstant.toFun
   coe_injective' := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
@@ -308,7 +308,7 @@ protected theorem continuous : Continuous f :=
 #align locally_constant.to_continuous_map LocallyConstant.toContinuousMap
 
 /-- As a shorthand, `LocallyConstant.toContinuousMap` is available as a coercion -/
-instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
+instance (priority := 10000) : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
 
 -- porting note: became a syntactic `rfl`
 #noalign locally_constant.to_continuous_map_eq_coe

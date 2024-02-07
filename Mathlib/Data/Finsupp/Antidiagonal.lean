@@ -36,7 +36,7 @@ def antidiagonal' (f : α →₀ ℕ) : (α →₀ ℕ) × (α →₀ ℕ) →�
 
 /-- The antidiagonal of `s : α →₀ ℕ` is the finset of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)`
 such that `t₁ + t₂ = s`. -/
-instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
+instance (priority := 10000) instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
   antidiagonal f := f.antidiagonal'.support
   mem_antidiagonal {f} {p} := by
     rcases p with ⟨p₁, p₂⟩

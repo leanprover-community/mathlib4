@@ -49,10 +49,10 @@ open DenseInducing UniformSpace Function
 section one_and_mul
 variable (α : Type*) [Ring α] [UniformSpace α]
 
-instance one : One (Completion α) :=
+instance (priority := 10000) one : One (Completion α) :=
   ⟨(1 : α)⟩
 
-instance mul : Mul (Completion α) :=
+instance (priority := 10000) mul : Mul (Completion α) :=
   ⟨curry <| (denseInducing_coe.prod denseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 @[norm_cast]
@@ -87,7 +87,7 @@ theorem Continuous.mul {β : Type*} [TopologicalSpace β] {f g : β → Completi
   Continuous.comp continuous_mul (Continuous.prod_mk hf hg : _)
 #align uniform_space.completion.continuous.mul UniformSpace.Completion.Continuous.mul
 
-instance ring : Ring (Completion α) :=
+instance (priority := 10000) ring : Ring (Completion α) :=
   { AddMonoidWithOne.unary, (inferInstanceAs (AddCommGroup (Completion α))),
       (inferInstanceAs (Mul (Completion α))), (inferInstanceAs (One (Completion α))) with
     zero_mul := fun a =>
@@ -174,7 +174,7 @@ def extensionHom [CompleteSpace β] [SeparatedSpace β] : Completion α →+* β
         simp_rw [← coe_mul, extension_coe hf, f.map_mul] }
 #align uniform_space.completion.extension_hom UniformSpace.Completion.extensionHom
 
-instance topologicalRing : TopologicalRing (Completion α) where
+instance (priority := 10000) topologicalRing : TopologicalRing (Completion α) where
   continuous_add := continuous_add
   continuous_mul := continuous_mul
 #align uniform_space.completion.top_ring_compl UniformSpace.Completion.topologicalRing
@@ -198,7 +198,7 @@ theorem map_smul_eq_mul_coe (r : R) :
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 #align uniform_space.completion.map_smul_eq_mul_coe UniformSpace.Completion.map_smul_eq_mul_coe
 
-instance algebra : Algebra R (Completion A) :=
+instance (priority := 10000) algebra : Algebra R (Completion A) :=
   { (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A) with
     commutes' := fun r x =>
       Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
@@ -217,7 +217,7 @@ section CommRing
 
 variable (R : Type*) [CommRing R] [UniformSpace R] [UniformAddGroup R] [TopologicalRing R]
 
-instance commRing : CommRing (Completion R) :=
+instance (priority := 10000) commRing : CommRing (Completion R) :=
   { Completion.ring with
     mul_comm := fun a b =>
       Completion.induction_on₂ a b
@@ -225,7 +225,7 @@ instance commRing : CommRing (Completion R) :=
         fun a b => by rw [← coe_mul, ← coe_mul, mul_comm] }
 
 /-- A shortcut instance for the common case -/
-instance algebra' : Algebra R (Completion R) := by infer_instance
+instance (priority := 10000) algebra' : Algebra R (Completion R) := by infer_instance
 #align uniform_space.completion.algebra' UniformSpace.Completion.algebra'
 
 end CommRing
@@ -258,12 +258,12 @@ def sepQuotEquivRingQuot (α) [r : CommRing α] [UniformSpace α] [UniformAddGro
 #align uniform_space.sep_quot_equiv_ring_quot UniformSpace.sepQuotEquivRingQuot
 
 -- TODO: use a form of transport a.k.a. lift definition a.k.a. transfer
-instance commRing [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
+instance (priority := 10000) commRing [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
     CommRing (Quotient (separationSetoid α)) := by
   rw [ring_sep_quot α]; infer_instance
 #align uniform_space.comm_ring UniformSpace.commRing
 
-instance topologicalRing [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
+instance (priority := 10000) topologicalRing [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
     TopologicalRing (Quotient (separationSetoid α)) := by
   convert topologicalRing_quotient (⊥ : Ideal α).closure
   <;> (try congr; apply ring_sep_rel)

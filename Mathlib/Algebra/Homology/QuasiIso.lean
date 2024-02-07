@@ -48,7 +48,7 @@ instance (priority := 100) quasiIso'_of_iso (f : C ⟶ D) [IsIso f] : QuasiIso' 
     infer_instance
 #align quasi_iso_of_iso quasiIso'_of_iso
 
-instance quasiIso'_comp (f : C ⟶ D) [QuasiIso' f] (g : D ⟶ E) [QuasiIso' g] :
+instance (priority := 10000) quasiIso'_comp (f : C ⟶ D) [QuasiIso' f] (g : D ⟶ E) [QuasiIso' g] :
     QuasiIso' (f ≫ g) where
   isIso i := by
     rw [Functor.map_comp]
@@ -239,7 +239,7 @@ lemma quasiIsoAt_iff (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i] 
   · intro h
     exact ⟨h⟩
 
-instance quasiIsoAt_of_isIso (f : K ⟶ L) [IsIso f] (i : ι) [K.HasHomology i] [L.HasHomology i] :
+instance (priority := 10000) quasiIsoAt_of_isIso (f : K ⟶ L) [IsIso f] (i : ι) [K.HasHomology i] [L.HasHomology i] :
     QuasiIsoAt f i := by
   rw [quasiIsoAt_iff]
   infer_instance
@@ -280,7 +280,7 @@ lemma quasiIsoAt_iff_exactAt' (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHom
   · intro hK
     exact ⟨⟨0, IsZero.eq_of_src hK _ _, IsZero.eq_of_tgt hL _ _⟩⟩
 
-instance (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i] [hf : QuasiIsoAt f i] :
+instance (priority := 10000) (f : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i] [hf : QuasiIsoAt f i] :
     IsIso (homologyMap f i) := by
   simpa only [quasiIsoAt_iff, ShortComplex.quasiIso_iff] using hf
 
@@ -327,10 +327,10 @@ lemma quasiIso_iff (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology 
 
 attribute [instance] QuasiIso.quasiIsoAt
 
-instance quasiIso_of_isIso (f : K ⟶ L) [IsIso f] [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
+instance (priority := 10000) quasiIso_of_isIso (f : K ⟶ L) [IsIso f] [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] :
     QuasiIso f where
 
-instance quasiIsoAt_comp (φ : K ⟶ L) (φ' : L ⟶ M) (i : ι) [K.HasHomology i]
+instance (priority := 10000) quasiIsoAt_comp (φ : K ⟶ L) (φ' : L ⟶ M) (i : ι) [K.HasHomology i]
     [L.HasHomology i] [M.HasHomology i]
     [hφ : QuasiIsoAt φ i] [hφ' : QuasiIsoAt φ' i] :
     QuasiIsoAt (φ ≫ φ') i := by
@@ -338,7 +338,7 @@ instance quasiIsoAt_comp (φ : K ⟶ L) (φ' : L ⟶ M) (i : ι) [K.HasHomology 
   rw [Functor.map_comp]
   exact ShortComplex.quasiIso_comp _ _
 
-instance quasiIso_comp (φ : K ⟶ L) (φ' : L ⟶ M) [∀ i, K.HasHomology i]
+instance (priority := 10000) quasiIso_comp (φ : K ⟶ L) (φ' : L ⟶ M) [∀ i, K.HasHomology i]
     [∀ i, L.HasHomology i] [∀ i, M.HasHomology i]
     [hφ : QuasiIso φ] [hφ' : QuasiIso φ'] :
     QuasiIso (φ ≫ φ') where
@@ -434,7 +434,7 @@ variable (i : ι) [K.HasHomology i] [L.HasHomology i]
   [((F.mapHomologicalComplex c).obj K).HasHomology i]
   [((F.mapHomologicalComplex c).obj L).HasHomology i]
 
-instance quasiIsoAt_map_of_preservesHomology [hφ : QuasiIsoAt φ i] :
+instance (priority := 10000) quasiIsoAt_map_of_preservesHomology [hφ : QuasiIsoAt φ i] :
     QuasiIsoAt ((F.mapHomologicalComplex c).map φ) i := by
   rw [quasiIsoAt_iff] at hφ ⊢
   exact ShortComplex.quasiIso_map_of_preservesLeftHomology F
@@ -454,7 +454,7 @@ variable [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
   [∀ i, ((F.mapHomologicalComplex c).obj K).HasHomology i]
   [∀ i, ((F.mapHomologicalComplex c).obj L).HasHomology i]
 
-instance quasiIso_map_of_preservesHomology [hφ : QuasiIso φ] :
+instance (priority := 10000) quasiIso_map_of_preservesHomology [hφ : QuasiIso φ] :
     QuasiIso ((F.mapHomologicalComplex c).map φ) where
 
 lemma quasiIso_map_iff_of_preservesHomology [ReflectsIsomorphisms F] :
@@ -489,13 +489,13 @@ section
 
 variable (e : HomotopyEquiv K L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
 
-instance : QuasiIso e.hom where
+instance (priority := 10000) : QuasiIso e.hom where
   quasiIsoAt n := by
     classical
     rw [quasiIsoAt_iff_isIso_homologyMap]
     exact IsIso.of_iso (e.toHomologyIso n)
 
-instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
+instance (priority := 10000) : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
 
 lemma homotopyEquivalences_subset_qis [CategoryWithHomology C] :
     homotopyEquivalences C c ⊆ qis C c := by

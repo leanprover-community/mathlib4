@@ -155,7 +155,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
   tfae_finish
 #align henselian_local_ring.tfae HenselianLocalRing.TFAE
 
-instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] : HenselianRing R (maximalIdeal R)
+instance (priority := 10000) (R : Type*) [CommRing R] [hR : HenselianLocalRing R] : HenselianRing R (maximalIdeal R)
     where
   jac := by
     rw [Ideal.jacobson, le_sInf_iff]

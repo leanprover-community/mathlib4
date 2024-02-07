@@ -1479,7 +1479,7 @@ end
 
 section
 
-instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
+instance (priority := 10000) smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
   smul a v := v.mapRange (a • ·) (smul_zero _)
   smul_zero a := by
     ext
@@ -1506,46 +1506,46 @@ theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}
   fun _ _ h => ext fun i => hk (DFunLike.congr_fun h i)
 #align is_smul_regular.finsupp IsSMulRegular.finsupp
 
-instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R M] :
+instance (priority := 10000) faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R M] :
     FaithfulSMul R (α →₀ M) where
   eq_of_smul_eq_smul h :=
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun m : M => by simpa using DFunLike.congr_fun (h (single a m)) a
 #align finsupp.faithful_smul Finsupp.faithfulSMul
 
-instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
+instance (priority := 10000) instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
   zero_smul f := by ext i; exact zero_smul _ _
 
 variable (α M)
 
-instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where
+instance (priority := 10000) distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where
   smul := (· • ·)
   smul_add _ _ _ := ext fun _ => smul_add _ _ _
   smul_zero _ := ext fun _ => smul_zero _
 #align finsupp.distrib_smul Finsupp.distribSMul
 
-instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
+instance (priority := 10000) distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (α →₀ M) :=
   { Finsupp.distribSMul _ _ with
     one_smul := fun x => ext fun y => one_smul R (x y)
     mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
 #align finsupp.distrib_mul_action Finsupp.distribMulAction
 
-instance isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]
+instance (priority := 10000) isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]
   [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
   smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
 
-instance smulCommClass [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMulCommClass R S M] :
+instance (priority := 10000) smulCommClass [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMulCommClass R S M] :
   SMulCommClass R S (α →₀ M) where
   smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
 #align finsupp.smul_comm_class Finsupp.smulCommClass
 
-instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ M] [IsCentralScalar R M] :
+instance (priority := 10000) isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ M] [IsCentralScalar R M] :
   IsCentralScalar R (α →₀ M) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 #align finsupp.is_central_scalar Finsupp.isCentralScalar
 
-instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
+instance (priority := 10000) module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
   { toDistribMulAction := Finsupp.distribMulAction α M
     zero_smul := fun _ => ext fun _ => zero_smul _ _
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
@@ -1642,7 +1642,7 @@ theorem sum_smul_index_addMonoidHom [AddMonoid M] [AddCommMonoid N] [DistribSMul
   sum_mapRange_index fun i => (h i).map_zero
 #align finsupp.sum_smul_index_add_monoid_hom Finsupp.sum_smul_index_addMonoidHom
 
-instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type*}
+instance (priority := 10000) noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type*}
     [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R (ι →₀ M) :=
   ⟨fun h =>
     or_iff_not_imp_left.mpr fun hc =>
@@ -1688,12 +1688,12 @@ section
 variable [Zero R]
 
 /-- The `Finsupp` version of `Pi.unique`. -/
-instance uniqueOfRight [Subsingleton R] : Unique (α →₀ R) :=
+instance (priority := 10000) uniqueOfRight [Subsingleton R] : Unique (α →₀ R) :=
   DFunLike.coe_injective.unique
 #align finsupp.unique_of_right Finsupp.uniqueOfRight
 
 /-- The `Finsupp` version of `Pi.uniqueOfIsEmpty`. -/
-instance uniqueOfLeft [IsEmpty α] : Unique (α →₀ R) :=
+instance (priority := 10000) uniqueOfLeft [IsEmpty α] : Unique (α →₀ R) :=
   DFunLike.coe_injective.unique
 #align finsupp.unique_of_left Finsupp.uniqueOfLeft
 

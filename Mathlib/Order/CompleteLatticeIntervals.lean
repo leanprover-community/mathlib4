@@ -171,7 +171,7 @@ theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
 
 /-- A nonempty `OrdConnected` set in a conditionally complete linear order is naturally a
 conditionally complete linear order. -/
-noncomputable instance ordConnectedSubsetConditionallyCompleteLinearOrder [Inhabited s]
+noncomputable instance (priority := 10000) ordConnectedSubsetConditionallyCompleteLinearOrder [Inhabited s]
     [OrdConnected s] : ConditionallyCompleteLinearOrder s :=
   subsetConditionallyCompleteLinearOrder s
     (fun h => sSup_within_of_ordConnected h)
@@ -246,7 +246,7 @@ namespace Set.Iic
 
 variable [CompleteLattice α] {a : α}
 
-instance instCompleteLattice : CompleteLattice (Iic a) where
+instance (priority := 10000) instCompleteLattice : CompleteLattice (Iic a) where
   sSup S := ⟨sSup ((↑) '' S), by simpa using fun b hb _ ↦ hb⟩
   sInf S := ⟨a ⊓ sInf ((↑) '' S), by simp⟩
   le_sSup S b hb := le_sSup <| mem_image_of_mem Subtype.val hb

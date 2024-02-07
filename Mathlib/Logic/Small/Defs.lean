@@ -88,12 +88,12 @@ lemma small_max (α : Type v) : Small.{max w v} α :=
   small_lift.{v, w} α
 #align small_max small_max
 
-instance small_zero (α : Type) : Small.{w} α := small_max α
+instance (priority := 10000) small_zero (α : Type) : Small.{w} α := small_max α
 
 instance (priority := 100) small_succ (α : Type v) : Small.{v+1} α :=
   small_lift.{v, v+1} α
 
-instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
+instance (priority := 10000) small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift
 #align small_ulift small_ulift
 
@@ -109,7 +109,7 @@ theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩
 #align small_congr small_congr
 
-instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
+instance (priority := 10000) small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
     Small.{w} (Σa, β a) :=
   ⟨⟨Σa' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.sigmaCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩

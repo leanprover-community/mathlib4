@@ -93,7 +93,7 @@ instance (priority := 100) of_right_iso [IsIso p] : HasLiftingProperty i p :=
         fac_right := by simp only [assoc, IsIso.inv_hom_id, comp_id] }⟩
 #align category_theory.has_lifting_property.of_right_iso CategoryTheory.HasLiftingProperty.of_right_iso
 
-instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
+instance (priority := 10000) of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
     HasLiftingProperty (i ≫ i') p :=
   ⟨fun {f} {g} sq => by
     have fac := sq.w
@@ -105,7 +105,7 @@ instance of_comp_left [HasLiftingProperty i p] [HasLiftingProperty i' p] :
           fac_right := by simp only [CommSq.fac_right] }⟩
 #align category_theory.has_lifting_property.of_comp_left CategoryTheory.HasLiftingProperty.of_comp_left
 
-instance of_comp_right [HasLiftingProperty i p] [HasLiftingProperty i p'] :
+instance (priority := 10000) of_comp_right [HasLiftingProperty i p] [HasLiftingProperty i p'] :
     HasLiftingProperty i (p ≫ p') :=
   ⟨fun {f} {g} sq => by
     have fac := sq.w

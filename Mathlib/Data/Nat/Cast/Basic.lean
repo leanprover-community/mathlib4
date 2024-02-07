@@ -209,7 +209,7 @@ theorem Nat.castRingHom_nat : Nat.castRingHom ℕ = RingHom.id ℕ :=
 
 /-- We don't use `RingHomClass` here, since that might cause type-class slowdown for
 `Subsingleton`-/
-instance Nat.uniqueRingHom {R : Type*} [NonAssocSemiring R] : Unique (ℕ →+* R) where
+instance (priority := 10000) Nat.uniqueRingHom {R : Type*} [NonAssocSemiring R] : Unique (ℕ →+* R) where
   default := Nat.castRingHom R
   uniq := RingHom.eq_natCast'
 
@@ -305,7 +305,7 @@ variable {π : α → Type*} [∀ a, NatCast (π a)]
 
 /- Porting note: manually wrote this instance.
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
-instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
+instance (priority := 10000) natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
 
 theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl

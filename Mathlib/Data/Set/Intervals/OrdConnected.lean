@@ -138,7 +138,7 @@ theorem OrdConnected.inter {s t : Set α} (hs : OrdConnected s) (ht : OrdConnect
   ⟨fun _ hx _ hy => subset_inter (hs.out hx.1 hy.1) (ht.out hx.2 hy.2)⟩
 #align set.ord_connected.inter Set.OrdConnected.inter
 
-instance OrdConnected.inter' {s t : Set α} [OrdConnected s] [OrdConnected t] :
+instance (priority := 10000) OrdConnected.inter' {s t : Set α} [OrdConnected s] [OrdConnected t] :
     OrdConnected (s ∩ t) :=
   OrdConnected.inter ‹_› ‹_›
 #align set.ord_connected.inter' Set.OrdConnected.inter'
@@ -162,7 +162,7 @@ theorem ordConnected_iInter {ι : Sort*} {s : ι → Set α} (hs : ∀ i, OrdCon
   ordConnected_sInter <| forall_range_iff.2 hs
 #align set.ord_connected_Inter Set.ordConnected_iInter
 
-instance ordConnected_iInter' {ι : Sort*} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
+instance (priority := 10000) ordConnected_iInter' {ι : Sort*} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
     OrdConnected (⋂ i, s i) :=
   ordConnected_iInter ‹_›
 #align set.ord_connected_Inter' Set.ordConnected_iInter'
@@ -178,7 +178,7 @@ theorem ordConnected_pi {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)
   ⟨fun _ hx _ hy _ hz i hi => (h i hi).out (hx i hi) (hy i hi) ⟨hz.1 i, hz.2 i⟩⟩
 #align set.ord_connected_pi Set.ordConnected_pi
 
-instance ordConnected_pi' {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {s : Set ι}
+instance (priority := 10000) ordConnected_pi' {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {s : Set ι}
     {t : ∀ i, Set (α i)} [h : ∀ i, OrdConnected (t i)] : OrdConnected (s.pi t) :=
   ordConnected_pi fun i _ => h i
 #align set.ord_connected_pi' Set.ordConnected_pi'
@@ -241,7 +241,7 @@ theorem ordConnected_univ : OrdConnected (univ : Set α) :=
 #align set.ord_connected_univ Set.ordConnected_univ
 
 /-- In a dense order `α`, the subtype from an `OrdConnected` set is also densely ordered. -/
-instance instDenselyOrdered [DenselyOrdered α] {s : Set α} [hs : OrdConnected s] :
+instance (priority := 10000) instDenselyOrdered [DenselyOrdered α] {s : Set α} [hs : OrdConnected s] :
     DenselyOrdered s :=
   ⟨fun a b (h : (a : α) < b) =>
     let ⟨x, H⟩ := exists_between h

@@ -73,12 +73,12 @@ noncomputable def Functor.CommShift.localized :
 attribute [irreducible] HasShift.localized Functor.CommShift.localized
 
 /-- The localized category `W.Localization` is endowed with the induced shift.  -/
-noncomputable instance HasShift.localization :
+noncomputable instance (priority := 10000) HasShift.localization :
     HasShift W.Localization A :=
   HasShift.localized W.Q W A
 
 /-- The localization functor `W.Q : C ⥤ W.Localization` is compatible with the shift. -/
-noncomputable instance MorphismProperty.commShift_Q :
+noncomputable instance (priority := 10000) MorphismProperty.commShift_Q :
     W.Q.CommShift A :=
   Functor.CommShift.localized W.Q W A
 

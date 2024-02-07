@@ -49,10 +49,10 @@ open Polynomial
 
 variable {R S F K : Type*}
 
-instance [Inhabited R] : Inhabited (Cubic R) :=
+instance (priority := 10000) [Inhabited R] : Inhabited (Cubic R) :=
   ⟨⟨default, default, default, default⟩⟩
 
-instance [Zero R] : Zero (Cubic R) :=
+instance (priority := 10000) [Zero R] : Zero (Cubic R) :=
   ⟨⟨0, 0, 0, 0⟩⟩
 
 section Basic

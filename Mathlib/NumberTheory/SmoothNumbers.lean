@@ -57,7 +57,7 @@ lemma mem_smoothNumbers {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ 
   Iff.rfl
 
 /-- Membership in `Nat.smoothNumbers n` is decidable. -/
-instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
+instance (priority := 10000) (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
   inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ factors m, p < n}
 
 /-- A number that divides an `n`-smooth number is itself `n`-smooth. -/

@@ -66,7 +66,7 @@ section ConjTranspose
 variable [StarRing α] (A : Matrix n n α)
 
 /-- The conjugate transpose of an invertible matrix is invertible. -/
-instance invertibleConjTranspose [Invertible A] : Invertible Aᴴ := Invertible.star _
+instance (priority := 10000) invertibleConjTranspose [Invertible A] : Invertible Aᴴ := Invertible.star _
 
 lemma conjTranspose_invOf [Invertible A] [Invertible Aᴴ] : (⅟A)ᴴ = ⅟(Aᴴ) := star_invOf _
 
@@ -87,7 +87,7 @@ section CommSemiring
 variable [CommSemiring α] (A : Matrix n n α)
 
 /-- The transpose of an invertible matrix is invertible. -/
-instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
+instance (priority := 10000) invertibleTranspose [Invertible A] : Invertible Aᵀ where
   invOf := (⅟A)ᵀ
   invOf_mul_self := by rw [← transpose_mul, mul_invOf_self, transpose_one]
   mul_invOf_self := by rw [← transpose_mul, invOf_mul_self, transpose_one]

@@ -64,7 +64,7 @@ def openOfElementHom : FrameHom L (Set (PT L)) where
 namespace PT
 
 /-- The topology on the set of points of the complete lattice `L`. -/
-instance instTopologicalSpace : TopologicalSpace (PT L) where
+instance (priority := 10000) instTopologicalSpace : TopologicalSpace (PT L) where
   IsOpen s := ∃ u, {x | x u} = s
   isOpen_univ := ⟨⊤, by simp⟩
   isOpen_inter := by rintro s t ⟨u, rfl⟩ ⟨v, rfl⟩; use u ⊓ v; simp_rw [map_inf]; rfl

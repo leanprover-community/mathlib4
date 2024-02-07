@@ -24,7 +24,7 @@ noncomputable def cpow (x y : ℂ) : ℂ :=
   if x = 0 then if y = 0 then 1 else 0 else exp (log x * y)
 #align complex.cpow Complex.cpow
 
-noncomputable instance : Pow ℂ ℂ :=
+noncomputable instance (priority := 10000) : Pow ℂ ℂ :=
   ⟨cpow⟩
 
 @[simp]

@@ -354,11 +354,11 @@ def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{v} 
   C
 #align category_theory.monoidal_of_chosen_finite_products.monoidal_of_chosen_finite_products_synonym CategoryTheory.MonoidalOfChosenFiniteProducts.MonoidalOfChosenFiniteProductsSynonym
 
-instance : Category (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ) := by
+instance (priority := 10000) : Category (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ) := by
   dsimp [MonoidalOfChosenFiniteProductsSynonym]
   infer_instance
 
-instance : MonoidalCategory (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ) :=
+instance (priority := 10000) : MonoidalCategory (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ) :=
   monoidalOfChosenFiniteProducts 𝒯 ℬ
 
 end MonoidalOfChosenFiniteProducts

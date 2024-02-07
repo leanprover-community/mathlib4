@@ -36,7 +36,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Pointed
 
-instance : CoeSort Pointed (Type*) :=
+instance (priority := 10000) : CoeSort Pointed (Type*) :=
   ⟨X⟩
 
 -- porting note: protected attribute does not work
@@ -58,7 +58,7 @@ alias _root_.Prod.Pointed := of
 set_option linter.uppercaseLean3 false in
 #align prod.Pointed Prod.Pointed
 
-instance : Inhabited Pointed :=
+instance (priority := 10000) : Inhabited Pointed :=
   ⟨of ((), ())⟩
 
 /-- Morphisms in `Pointed`. -/
@@ -80,7 +80,7 @@ def id (X : Pointed) : Pointed.Hom X X :=
 set_option linter.uppercaseLean3 false in
 #align Pointed.hom.id Pointed.Hom.id
 
-instance (X : Pointed) : Inhabited (Pointed.Hom X X) :=
+instance (priority := 10000) (X : Pointed) : Inhabited (Pointed.Hom X X) :=
   ⟨id X⟩
 
 /-- Composition of morphisms of `Pointed`. -/
@@ -92,7 +92,7 @@ set_option linter.uppercaseLean3 false in
 
 end Hom
 
-instance largeCategory : LargeCategory Pointed
+instance (priority := 10000) largeCategory : LargeCategory Pointed
     where
   Hom := Pointed.Hom
   id := Hom.id
@@ -100,7 +100,7 @@ instance largeCategory : LargeCategory Pointed
 set_option linter.uppercaseLean3 false in
 #align Pointed.large_category Pointed.largeCategory
 
-instance concreteCategory : ConcreteCategory Pointed where
+instance (priority := 10000) concreteCategory : ConcreteCategory Pointed where
   forget :=
     { obj := Pointed.X
       map := @Hom.toFun }

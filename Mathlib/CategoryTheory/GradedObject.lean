@@ -47,7 +47,7 @@ def GradedObject (β : Type w) (C : Type u) : Type max w u :=
 #align category_theory.graded_object CategoryTheory.GradedObject
 
 -- Satisfying the inhabited linter...
-instance inhabitedGradedObject (β : Type w) (C : Type u) [Inhabited C] :
+instance (priority := 10000) inhabitedGradedObject (β : Type w) (C : Type u) [Inhabited C] :
     Inhabited (GradedObject β C) :=
   ⟨fun _ => Inhabited.default⟩
 #align category_theory.inhabited_graded_object CategoryTheory.inhabitedGradedObject
@@ -66,7 +66,7 @@ namespace GradedObject
 variable {C : Type u} [Category.{v} C]
 
 @[simps!]
-instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObject β C) :=
+instance (priority := 10000) categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObject β C) :=
   CategoryTheory.pi fun _ => C
 #align category_theory.graded_object.category_of_graded_objects CategoryTheory.GradedObject.categoryOfGradedObjects
 
@@ -111,7 +111,7 @@ lemma iso_inv_hom_id_apply (e : X ≅ Y) (i : β) :
     e.inv i ≫ e.hom i = 𝟙 _ :=
   congr_fun e.inv_hom_id i
 
-instance isIso_apply_of_isIso (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := by
+instance (priority := 10000) isIso_apply_of_isIso (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := by
   change IsIso ((eval i).map f)
   infer_instance
 
@@ -173,7 +173,7 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
 -- See note [dsimp, simp].
 end
 
-instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
+instance (priority := 10000) hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
       zero := comapEq C (by aesop_cat) ≪≫ Pi.comapId β fun _ => C
@@ -194,7 +194,7 @@ theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
   rfl
 #align category_theory.graded_object.shift_functor_map_apply CategoryTheory.GradedObject.shiftFunctor_map_apply
 
-instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) :
+instance (priority := 10000) [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) :
   Zero (X ⟶ Y) := ⟨fun _ => 0⟩
 
 @[simp]
@@ -203,7 +203,7 @@ theorem zero_apply [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) 
   rfl
 #align category_theory.graded_object.zero_apply CategoryTheory.GradedObject.zero_apply
 
-instance hasZeroMorphisms [HasZeroMorphisms C] (β : Type w) :
+instance (priority := 10000) hasZeroMorphisms [HasZeroMorphisms C] (β : Type w) :
     HasZeroMorphisms.{max w v} (GradedObject β C) where
 #align category_theory.graded_object.has_zero_morphisms CategoryTheory.GradedObject.hasZeroMorphisms
 
@@ -211,7 +211,7 @@ section
 
 open ZeroObject
 
-instance hasZeroObject [HasZeroObject C] [HasZeroMorphisms C] (β : Type w) :
+instance (priority := 10000) hasZeroObject [HasZeroObject C] [HasZeroMorphisms C] (β : Type w) :
     HasZeroObject.{max w v} (GradedObject β C) := by
   refine' ⟨⟨fun _ => 0, fun X => ⟨⟨⟨fun b => 0⟩, fun f => _⟩⟩, fun X =>
     ⟨⟨⟨fun b => 0⟩, fun f => _⟩⟩⟩⟩ <;> aesop_cat
@@ -250,7 +250,7 @@ The `total` functor taking a graded object to the coproduct of its graded compon
 To prove this, we need to know that the coprojections into the coproduct are monomorphisms,
 which follows from the fact we have zero morphisms and decidable equality for the grading.
 -/
-instance : Faithful (total β C) where
+instance (priority := 10000) : Faithful (total β C) where
   map_injective {X Y} f g w := by
     ext i
     replace w := Sigma.ι (fun i : β => X i) i ≫= w
@@ -269,9 +269,9 @@ variable (β : Type)
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasCoproducts.{0} C]
   [HasZeroMorphisms C]
 
-instance : ConcreteCategory (GradedObject β C) where forget := total β C ⋙ forget C
+instance (priority := 10000) : ConcreteCategory (GradedObject β C) where forget := total β C ⋙ forget C
 
-instance : HasForget₂ (GradedObject β C) C where forget₂ := total β C
+instance (priority := 10000) : HasForget₂ (GradedObject β C) C where forget₂ := total β C
 
 end
 

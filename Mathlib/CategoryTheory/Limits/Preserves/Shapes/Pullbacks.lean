@@ -279,7 +279,7 @@ theorem PreservesPullback.iso_hom : (PreservesPullback.iso G f g).hom = pullback
   rfl
 #align category_theory.limits.preserves_pullback.iso_hom CategoryTheory.Limits.PreservesPullback.iso_hom
 
-instance : IsIso (pullbackComparison G f g) := by
+instance (priority := 10000) : IsIso (pullbackComparison G f g) := by
   rw [← PreservesPullback.iso_hom]
   infer_instance
 
@@ -309,7 +309,7 @@ theorem PreservesPushout.iso_hom : (PreservesPushout.iso G f g).hom = pushoutCom
   rfl
 #align category_theory.limits.preserves_pushout.iso_hom CategoryTheory.Limits.PreservesPushout.iso_hom
 
-instance : IsIso (pushoutComparison G f g) := by
+instance (priority := 10000) : IsIso (pushoutComparison G f g) := by
   rw [← PreservesPushout.iso_hom]
   infer_instance
 

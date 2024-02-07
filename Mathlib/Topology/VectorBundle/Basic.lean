@@ -180,7 +180,7 @@ protected theorem linear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E
   Trivialization.IsLinear.linear b hb
 #align trivialization.linear Trivialization.linear
 
-instance toPretrivialization.isLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
+instance (priority := 10000) toPretrivialization.isLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
     [∀ x, Module R (E x)] [e.IsLinear R] : e.toPretrivialization.IsLinear R :=
   { (‹_› : e.IsLinear R) with }
 #align trivialization.to_pretrivialization.is_linear Trivialization.toPretrivialization.isLinear
@@ -572,7 +572,7 @@ def trivialVectorBundleCore (ι : Type*) [Inhabited ι] : VectorBundleCore R B F
   continuousOn_coordChange _ _ := continuousOn_const
 #align trivial_vector_bundle_core trivialVectorBundleCore
 
-instance (ι : Type*) [Inhabited ι] : Inhabited (VectorBundleCore R B F ι) :=
+instance (priority := 10000) (ι : Type*) [Inhabited ι] : Inhabited (VectorBundleCore R B F ι) :=
   ⟨trivialVectorBundleCore R B F ι⟩
 
 namespace VectorBundleCore
@@ -620,16 +620,16 @@ def Fiber : B → Type _ :=
   Z.toFiberBundleCore.Fiber
 #align vector_bundle_core.fiber VectorBundleCore.Fiber
 
-instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
+instance (priority := 10000) topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) :=
   Z.toFiberBundleCore.topologicalSpaceFiber x
 #align vector_bundle_core.topological_space_fiber VectorBundleCore.topologicalSpaceFiber
 
 -- porting note: fixed: used to assume both `[NormedAddCommGroup F]` and `[AddCommGroupCat F]`
-instance addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
+instance (priority := 10000) addCommGroupFiber (x : B) : AddCommGroup (Z.Fiber x) :=
   inferInstanceAs (AddCommGroup F)
 #align vector_bundle_core.add_comm_group_fiber VectorBundleCore.addCommGroupFiber
 
-instance moduleFiber (x : B) : Module R (Z.Fiber x) :=
+instance (priority := 10000) moduleFiber (x : B) : Module R (Z.Fiber x) :=
   inferInstanceAs (Module R F)
 #align vector_bundle_core.module_fiber VectorBundleCore.moduleFiber
 
@@ -659,7 +659,7 @@ theorem mem_trivChange_source (i j : ι) (p : B × F) :
 
 /-- Topological structure on the total space of a vector bundle created from core, designed so
 that all the local trivialization are continuous. -/
-instance toTopologicalSpace : TopologicalSpace Z.TotalSpace :=
+instance (priority := 10000) toTopologicalSpace : TopologicalSpace Z.TotalSpace :=
   Z.toFiberBundleCore.toTopologicalSpace
 #align vector_bundle_core.to_topological_space VectorBundleCore.toTopologicalSpace
 
@@ -684,7 +684,7 @@ theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
 #align vector_bundle_core.local_triv_apply VectorBundleCore.localTriv_apply
 
 /-- The standard local trivializations of a vector bundle constructed from core are linear. -/
-instance localTriv.isLinear (i : ι) : (Z.localTriv i).IsLinear R where
+instance (priority := 10000) localTriv.isLinear (i : ι) : (Z.localTriv i).IsLinear R where
   linear x _ :=
     { map_add := fun _ _ => by simp only [map_add, localTriv_apply, mfld_simps]
       map_smul := fun _ _ => by simp only [map_smul, localTriv_apply, mfld_simps] }
@@ -759,11 +759,11 @@ theorem mem_localTrivAt_baseSet : b ∈ (Z.localTrivAt b).baseSet :=
   Z.toFiberBundleCore.mem_localTrivAt_baseSet b
 #align vector_bundle_core.mem_local_triv_at_base_set VectorBundleCore.mem_localTrivAt_baseSet
 
-instance fiberBundle : FiberBundle F Z.Fiber :=
+instance (priority := 10000) fiberBundle : FiberBundle F Z.Fiber :=
   Z.toFiberBundleCore.fiberBundle
 #align vector_bundle_core.fiber_bundle VectorBundleCore.fiberBundle
 
-instance vectorBundle : VectorBundle R F Z.Fiber where
+instance (priority := 10000) vectorBundle : VectorBundle R F Z.Fiber where
   trivialization_linear' := by
     rintro _ ⟨i, rfl⟩
     apply localTriv.isLinear

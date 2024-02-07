@@ -62,7 +62,7 @@ def Submodule.toLocalized' : M' →ₗ[R] M'.localized' S p f :=
 abbrev Submodule.toLocalized : M' →ₗ[R] M'.localized p :=
   M'.toLocalized' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
-instance Submodule.isLocalizedModule : IsLocalizedModule p (M'.toLocalized' S p f) where
+instance (priority := 10000) Submodule.isLocalizedModule : IsLocalizedModule p (M'.toLocalized' S p f) where
   map_units x := by
     simp_rw [Module.End_isUnit_iff]
     constructor
@@ -91,7 +91,7 @@ lemma Submodule.toLocalizedQuotient'_mk (x : M) :
     M'.toLocalizedQuotient' S p f (Submodule.Quotient.mk x) = Submodule.Quotient.mk (f x) := rfl
 
 open Submodule Submodule.Quotient IsLocalization in
-instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
+instance (priority := 10000) IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
     IsLocalizedModule p (M'.toLocalizedQuotient' S p f) where
   map_units x := by
     refine (Module.End_isUnit_iff _).mpr ⟨fun m n e ↦ ?_, fun m ↦ ⟨(IsLocalization.mk' S 1 x) • m,
@@ -112,5 +112,5 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
     exact ⟨c * s, by simpa only [← Quotient.mk_smul, Submodule.Quotient.eq,
       ← smul_sub, mul_smul, hc] using M'.smul_mem c hx⟩
 
-instance (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) :=
+instance (priority := 10000) (M' : Submodule R M) : IsLocalizedModule p (M'.toLocalizedQuotient p) :=
   IsLocalizedModule.toLocalizedQuotient' _ _ _ _

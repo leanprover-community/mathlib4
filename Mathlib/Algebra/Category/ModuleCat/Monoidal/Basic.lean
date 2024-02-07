@@ -101,7 +101,7 @@ def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
   (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
 #align Module.monoidal_category.right_unitor ModuleCat.MonoidalCategory.rightUnitor
 
-instance : MonoidalCategoryStruct (ModuleCat.{u} R) where
+instance (priority := 10000) : MonoidalCategoryStruct (ModuleCat.{u} R) where
   tensorObj := tensorObj
   whiskerLeft := whiskerLeft
   whiskerRight := whiskerRight
@@ -206,7 +206,7 @@ end MonoidalCategory
 
 open MonoidalCategory
 
-instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
+instance (priority := 10000) monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
   (tensor_id := fun M N ↦ tensor_id M N)
   (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
   (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
@@ -217,7 +217,7 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCatego
 #align Module.monoidal_category ModuleCat.monoidalCategory
 
 /-- Remind ourselves that the monoidal unit, being just `R`, is still a commutative ring. -/
-instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
+instance (priority := 10000) : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
   inferInstanceAs <| CommRing R
 
 namespace MonoidalCategory
@@ -281,7 +281,7 @@ end MonoidalCategory
 open Opposite
 
 -- Porting note: simp wasn't firing but rw was, annoying
-instance : MonoidalPreadditive (ModuleCat.{u} R) := by
+instance (priority := 10000) : MonoidalPreadditive (ModuleCat.{u} R) := by
   refine' ⟨_, _, _, _⟩
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)
@@ -315,7 +315,7 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
     rw [LinearMap.add_apply, TensorProduct.add_tmul]
 
 -- Porting note: simp wasn't firing but rw was, annoying
-instance : MonoidalLinear R (ModuleCat.{u} R) := by
+instance (priority := 10000) : MonoidalLinear R (ModuleCat.{u} R) := by
   refine' ⟨_, _⟩
   · dsimp only [autoParam]; intros
     refine' TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => _)

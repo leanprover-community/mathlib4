@@ -53,29 +53,29 @@ abbrev FinsubgraphHom (G' : G.Finsubgraph) (F : SimpleGraph W) :=
 
 local infixl:50 " →fg " => FinsubgraphHom
 
-instance : OrderBot G.Finsubgraph where
+instance (priority := 10000) : OrderBot G.Finsubgraph where
   bot := ⟨⊥, finite_empty⟩
   bot_le _ := bot_le (α := G.Subgraph)
 
-instance : Sup G.Finsubgraph :=
+instance (priority := 10000) : Sup G.Finsubgraph :=
   ⟨fun G₁ G₂ => ⟨G₁ ⊔ G₂, G₁.2.union G₂.2⟩⟩
 
-instance : Inf G.Finsubgraph :=
+instance (priority := 10000) : Inf G.Finsubgraph :=
   ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset <| inter_subset_left _ _⟩⟩
 
-instance : DistribLattice G.Finsubgraph :=
+instance (priority := 10000) : DistribLattice G.Finsubgraph :=
   Subtype.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
 
-instance [Finite V] : Top G.Finsubgraph :=
+instance (priority := 10000) [Finite V] : Top G.Finsubgraph :=
   ⟨⟨⊤, finite_univ⟩⟩
 
-instance [Finite V] : SupSet G.Finsubgraph :=
+instance (priority := 10000) [Finite V] : SupSet G.Finsubgraph :=
   ⟨fun s => ⟨⨆ G ∈ s, ↑G, Set.toFinite _⟩⟩
 
-instance [Finite V] : InfSet G.Finsubgraph :=
+instance (priority := 10000) [Finite V] : InfSet G.Finsubgraph :=
   ⟨fun s => ⟨⨅ G ∈ s, ↑G, Set.toFinite _⟩⟩
 
-instance [Finite V] : CompletelyDistribLattice G.Finsubgraph :=
+instance (priority := 10000) [Finite V] : CompletelyDistribLattice G.Finsubgraph :=
   Subtype.coe_injective.completelyDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ => rfl) rfl rfl
 

@@ -45,11 +45,11 @@ theorem trivial_lie_zero (L : Type v) (M : Type w) [Bracket L M] [Zero M] [LieMo
   LieModule.IsTrivial.trivial x m
 #align trivial_lie_zero trivial_lie_zero
 
-instance LieModule.instIsTrivialOfSubsingleton {L M : Type*}
+instance (priority := 10000) LieModule.instIsTrivialOfSubsingleton {L M : Type*}
     [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton L] : LieModule.IsTrivial L M :=
   ⟨fun x m ↦ by rw [Subsingleton.eq_zero x, zero_lie]⟩
 
-instance LieModule.instIsTrivialOfSubsingleton' {L M : Type*}
+instance (priority := 10000) LieModule.instIsTrivialOfSubsingleton' {L M : Type*}
     [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton M] : LieModule.IsTrivial L M :=
   ⟨fun x m ↦ by simp_rw [Subsingleton.eq_zero m, lie_zero]⟩
 
@@ -58,7 +58,7 @@ abbrev IsLieAbelian (L : Type v) [Bracket L L] [Zero L] : Prop :=
   LieModule.IsTrivial L L
 #align is_lie_abelian IsLieAbelian
 
-instance LieIdeal.isLieAbelian_of_trivial (R : Type u) (L : Type v) [CommRing R] [LieRing L]
+instance (priority := 10000) LieIdeal.isLieAbelian_of_trivial (R : Type u) (L : Type v) [CommRing R] [LieRing L]
     [LieAlgebra R L] (I : LieIdeal R L) [h : LieModule.IsTrivial L I] : IsLieAbelian I where
   trivial x y := by apply h.trivial
 #align lie_ideal.is_lie_abelian_of_trivial LieIdeal.isLieAbelian_of_trivial
@@ -133,7 +133,7 @@ theorem mem_maxTrivSubmodule (m : M) : m ∈ maxTrivSubmodule R L M ↔ ∀ x : 
   Iff.rfl
 #align lie_module.mem_max_triv_submodule LieModule.mem_maxTrivSubmodule
 
-instance : IsTrivial L (maxTrivSubmodule R L M) where trivial x m := Subtype.ext (m.property x)
+instance (priority := 10000) : IsTrivial L (maxTrivSubmodule R L M) where trivial x m := Subtype.ext (m.property x)
 
 @[simp]
 theorem ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
@@ -260,7 +260,7 @@ abbrev center : LieIdeal R L :=
   LieModule.maxTrivSubmodule R L L
 #align lie_algebra.center LieAlgebra.center
 
-instance : IsLieAbelian (center R L) :=
+instance (priority := 10000) : IsLieAbelian (center R L) :=
   inferInstance
 
 @[simp]

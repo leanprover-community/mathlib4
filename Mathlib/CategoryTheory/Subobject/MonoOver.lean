@@ -55,7 +55,7 @@ def MonoOver (X : C) :=
   FullSubcategory fun f : Over X => Mono f.hom
 #align category_theory.mono_over CategoryTheory.MonoOver
 
-instance (X : C) : Category (MonoOver X) :=
+instance (priority := 10000) (X : C) : Category (MonoOver X) :=
   FullSubcategory.category _
 
 namespace MonoOver
@@ -72,7 +72,7 @@ def forget (X : C) : MonoOver X ⥤ Over X :=
   fullSubcategoryInclusion _
 #align category_theory.mono_over.forget CategoryTheory.MonoOver.forget
 
-instance : CoeOut (MonoOver X) C where coe Y := Y.obj.left
+instance (priority := 10000) : CoeOut (MonoOver X) C where coe Y := Y.obj.left
 
 @[simp]
 theorem forget_obj_left {f} : ((forget X).obj f).left = (f : C) :=
@@ -99,19 +99,19 @@ theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow :=
   rfl
 #align category_theory.mono_over.forget_obj_hom CategoryTheory.MonoOver.forget_obj_hom
 
-instance : Full (forget X) :=
+instance (priority := 10000) : Full (forget X) :=
   FullSubcategory.full _
 
-instance : Faithful (forget X) :=
+instance (priority := 10000) : Faithful (forget X) :=
   FullSubcategory.faithful _
 
-instance mono (f : MonoOver X) : Mono f.arrow :=
+instance (priority := 10000) mono (f : MonoOver X) : Mono f.arrow :=
   f.property
 #align category_theory.mono_over.mono CategoryTheory.MonoOver.mono
 
 /-- The category of monomorphisms over X is a thin category,
 which makes defining its skeleton easy. -/
-instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
+instance (priority := 10000) isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
   ⟨by
     intro h₁ h₂
     apply Over.OverMorphism.ext
@@ -276,14 +276,14 @@ theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).
   rfl
 #align category_theory.mono_over.map_obj_arrow CategoryTheory.MonoOver.map_obj_arrow
 
-instance fullMap (f : X ⟶ Y) [Mono f] : Full (map f) where
+instance (priority := 10000) fullMap (f : X ⟶ Y) [Mono f] : Full (map f) where
   preimage {g h} e := by
     refine' homMk e.left _
     rw [← cancel_mono f, assoc]
     apply w e
 #align category_theory.mono_over.full_map CategoryTheory.MonoOver.fullMap
 
-instance faithful_map (f : X ⟶ Y) [Mono f] : Faithful (map f) where
+instance (priority := 10000) faithful_map (f : X ⟶ Y) [Mono f] : Faithful (map f) where
 #align category_theory.mono_over.faithful_map CategoryTheory.MonoOver.faithful_map
 
 /-- Isomorphic objects have equivalent `MonoOver` categories.
@@ -403,11 +403,11 @@ def imageForgetAdj : image ⊣ forget X :=
             exact (Over.w k).symm } }
 #align category_theory.mono_over.image_forget_adj CategoryTheory.MonoOver.imageForgetAdj
 
-instance : IsRightAdjoint (forget X) where
+instance (priority := 10000) : IsRightAdjoint (forget X) where
   left := image
   adj := imageForgetAdj
 
-instance reflective : Reflective (forget X) where
+instance (priority := 10000) reflective : Reflective (forget X) where
 #align category_theory.mono_over.reflective CategoryTheory.MonoOver.reflective
 
 /-- Forgetting that a monomorphism over `X` is a monomorphism, then taking its image,
@@ -430,7 +430,7 @@ def «exists» (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
   forget _ ⋙ Over.map f ⋙ image
 #align category_theory.mono_over.exists CategoryTheory.MonoOver.exists
 
-instance faithful_exists (f : X ⟶ Y) : Faithful («exists» f) where
+instance (priority := 10000) faithful_exists (f : X ⟶ Y) : Faithful («exists» f) where
 #align category_theory.mono_over.faithful_exists CategoryTheory.MonoOver.faithful_exists
 
 /-- When `f : X ⟶ Y` is a monomorphism, `exists f` agrees with `map f`.

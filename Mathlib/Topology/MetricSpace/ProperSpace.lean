@@ -42,7 +42,7 @@ theorem isCompact_sphere {α : Type*} [PseudoMetricSpace α] [ProperSpace α] (x
 #align is_compact_sphere isCompact_sphere
 
 /-- In a proper pseudometric space, any sphere is a `CompactSpace` when considered as a subtype. -/
-instance Metric.sphere.compactSpace {α : Type*} [PseudoMetricSpace α] [ProperSpace α]
+instance (priority := 10000) Metric.sphere.compactSpace {α : Type*} [PseudoMetricSpace α] [ProperSpace α]
     (x : α) (r : ℝ) : CompactSpace (sphere x r) :=
   isCompact_iff_compactSpace.mp (isCompact_sphere _ _)
 
@@ -110,7 +110,7 @@ instance (priority := 100) complete_of_proper [ProperSpace α] : CompleteSpace �
 #align complete_of_proper complete_of_proper
 
 /-- A binary product of proper spaces is proper. -/
-instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
+instance (priority := 10000) prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
     [ProperSpace α] [ProperSpace β] : ProperSpace (α × β) where
   isCompact_closedBall := by
     rintro ⟨x, y⟩ r
@@ -119,7 +119,7 @@ instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [Pseu
 #align prod_proper_space prod_properSpace
 
 /-- A finite product of proper spaces is proper. -/
-instance pi_properSpace {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (π b)]
+instance (priority := 10000) pi_properSpace {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (π b)]
     [h : ∀ b, ProperSpace (π b)] : ProperSpace (∀ b, π b) := by
   refine .of_isCompact_closedBall_of_le 0 fun x r hr => ?_
   rw [closedBall_pi _ hr]

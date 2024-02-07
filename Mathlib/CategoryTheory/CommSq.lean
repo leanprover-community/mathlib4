@@ -163,7 +163,7 @@ def unopEquiv {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g :
 
 end LiftStruct
 
-instance subsingleton_liftStruct_of_epi (sq : CommSq f i p g) [Epi i] :
+instance (priority := 10000) subsingleton_liftStruct_of_epi (sq : CommSq f i p g) [Epi i] :
     Subsingleton (LiftStruct sq) :=
   ⟨fun l₁ l₂ => by
     ext
@@ -171,7 +171,7 @@ instance subsingleton_liftStruct_of_epi (sq : CommSq f i p g) [Epi i] :
     simp only [LiftStruct.fac_left]⟩
 #align category_theory.comm_sq.subsingleton_lift_struct_of_epi CategoryTheory.CommSq.subsingleton_liftStruct_of_epi
 
-instance subsingleton_liftStruct_of_mono (sq : CommSq f i p g) [Mono p] :
+instance (priority := 10000) subsingleton_liftStruct_of_mono (sq : CommSq f i p g) [Mono p] :
     Subsingleton (LiftStruct sq) :=
   ⟨fun l₁ l₂ => by
     ext

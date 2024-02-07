@@ -61,9 +61,9 @@ theorem LatticeOrderedAddCommGroup.isSolid_ball (r : ℝ) :
   mem_ball_zero_iff.mpr ((HasSolidNorm.solid hxy).trans_lt (mem_ball_zero_iff.mp hx))
 #align lattice_ordered_add_comm_group.is_solid_ball LatticeOrderedAddCommGroup.isSolid_ball
 
-instance : HasSolidNorm ℝ := ⟨fun _ _ => id⟩
+instance (priority := 10000) : HasSolidNorm ℝ := ⟨fun _ _ => id⟩
 
-instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le]⟩
+instance (priority := 10000) : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le]⟩
 
 end SolidNorm
 
@@ -78,7 +78,7 @@ class NormedLatticeAddCommGroup (α : Type*) extends NormedAddCommGroup α, Latt
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align normed_lattice_add_comm_group NormedLatticeAddCommGroup
 
-instance Real.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℝ where
+instance (priority := 10000) Real.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℝ where
   add_le_add_left _ _ h _ := add_le_add le_rfl h
 
 -- see Note [lower instance priority]

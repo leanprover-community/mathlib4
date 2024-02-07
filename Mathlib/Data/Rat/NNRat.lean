@@ -37,8 +37,8 @@ def NNRat := { q : ℚ // 0 ≤ q } deriving
 
 -- Porting note: Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
 -- instead of `deriving` them
-instance : OrderedSub NNRat := Nonneg.orderedSub
-instance : DenselyOrdered NNRat := Nonneg.densely_ordered
+instance (priority := 10000) : OrderedSub NNRat := Nonneg.orderedSub
+instance (priority := 10000) : DenselyOrdered NNRat := Nonneg.densely_ordered
 
 -- mathport name: nnrat
 scoped[NNRat] notation "ℚ≥0" => NNRat
@@ -47,7 +47,7 @@ namespace NNRat
 
 variable {α : Type*} {p q : ℚ≥0}
 
-instance : Coe ℚ≥0 ℚ :=
+instance (priority := 10000) : Coe ℚ≥0 ℚ :=
   ⟨Subtype.val⟩
 
 /-
@@ -59,7 +59,7 @@ theorem val_eq_coe (q : ℚ≥0) : q.val = q :=
 -- Porting note: `val_eq_coe` is no longer needed.
 #noalign nnrat.val_eq_coe
 
-instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
+instance (priority := 10000) canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
 #align nnrat.can_lift NNRat.canLift
 
@@ -215,11 +215,11 @@ theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ
 #align nnrat.mk_coe_nat NNRat.mk_coe_nat
 
 /-- A `MulAction` over `ℚ` restricts to a `MulAction` over `ℚ≥0`. -/
-instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
+instance (priority := 10000) [MulAction ℚ α] : MulAction ℚ≥0 α :=
   MulAction.compHom α coeHom.toMonoidHom
 
 /-- A `DistribMulAction` over `ℚ` restricts to a `DistribMulAction` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0 α :=
+instance (priority := 10000) [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0 α :=
   DistribMulAction.compHom α coeHom.toMonoidHom
 
 @[simp]

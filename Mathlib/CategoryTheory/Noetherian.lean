@@ -98,12 +98,12 @@ noncomputable def simpleSubobjectArrow {X : C} [ArtinianObject X] (h : ¬IsZero 
   (exists_simple_subobject h).choose.arrow
 #align category_theory.simple_subobject_arrow CategoryTheory.simpleSubobjectArrow
 
-instance mono_simpleSubobjectArrow {X : C} [ArtinianObject X] (h : ¬IsZero X) :
+instance (priority := 10000) mono_simpleSubobjectArrow {X : C} [ArtinianObject X] (h : ¬IsZero X) :
     Mono (simpleSubobjectArrow h) := by
   dsimp only [simpleSubobjectArrow]
   infer_instance
 
-instance {X : C} [ArtinianObject X] (h : ¬IsZero X) : Simple (simpleSubobject h) :=
+instance (priority := 10000) {X : C} [ArtinianObject X] (h : ¬IsZero X) : Simple (simpleSubobject h) :=
   (exists_simple_subobject h).choose_spec
 
 end CategoryTheory

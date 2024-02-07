@@ -151,7 +151,7 @@ namespace CommSemiring
 
 /-- Every commutative (semi)ring is a bialgebra over itself -/
 noncomputable
-instance toBialgebra : Bialgebra R R where
+instance (priority := 10000) toBialgebra : Bialgebra R R where
   mul_compr₂_counit := by ext; simp
   counit_one := rfl
   mul_compr₂_comul := by ext; simp

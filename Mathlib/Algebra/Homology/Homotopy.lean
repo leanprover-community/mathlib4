@@ -761,7 +761,7 @@ def refl (C : HomologicalComplex V c) : HomotopyEquiv C C where
   homotopyInvHomId := Homotopy.ofEq (by simp)
 #align homotopy_equiv.refl HomotopyEquiv.refl
 
-instance : Inhabited (HomotopyEquiv C C) :=
+instance (priority := 10000) : Inhabited (HomotopyEquiv C C) :=
   ⟨refl C⟩
 
 /-- Being homotopy equivalent is a symmetric relation. -/

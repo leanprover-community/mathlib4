@@ -151,31 +151,31 @@ def Nat.shrink (n : Nat) : List Nat :=
   else
     []
 
-instance Nat.shrinkable : Shrinkable Nat where
+instance (priority := 10000) Nat.shrinkable : Shrinkable Nat where
   shrink := Nat.shrink
 
-instance Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
+instance (priority := 10000) Fin.shrinkable {n : Nat} : Shrinkable (Fin n.succ) where
   shrink m := Nat.shrink m
 
 /-- `Int.shrinkable` operates like `Nat.shrinkable` but also includes the negative variants. -/
-instance Int.shrinkable : Shrinkable Int where
+instance (priority := 10000) Int.shrinkable : Shrinkable Int where
   shrink n := Nat.shrink n.natAbs |>.map (λ x => ([x, -x] : List ℤ)) |>.join
 
-instance Rat.shrinkable : Shrinkable Rat where
+instance (priority := 10000) Rat.shrinkable : Shrinkable Rat where
   shrink r :=
     (Shrinkable.shrink r.num).bind fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
 
-instance Bool.shrinkable : Shrinkable Bool := {}
-instance Char.shrinkable : Shrinkable Char := {}
+instance (priority := 10000) Bool.shrinkable : Shrinkable Bool := {}
+instance (priority := 10000) Char.shrinkable : Shrinkable Char := {}
 
-instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
+instance (priority := 10000) Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     Shrinkable (Prod α β) where
   shrink := λ (fst,snd) =>
     let shrink1 := shrA.shrink fst |>.map fun x ↦ (x, snd)
     let shrink2 := shrB.shrink snd |>.map fun x ↦ (fst, x)
     shrink1 ++ shrink2
 
-instance Sigma.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
+instance (priority := 10000) Sigma.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     Shrinkable ((_ : α) × β) where
   shrink := λ ⟨fst,snd⟩ =>
     let shrink1 := shrA.shrink fst |>.map fun x ↦ ⟨x, snd⟩
@@ -185,7 +185,7 @@ instance Sigma.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
 open Shrinkable
 
 /-- Shrink a list of a shrinkable type, either by discarding an element or shrinking an element. -/
-instance List.shrinkable [Shrinkable α] : Shrinkable (List α) where
+instance (priority := 10000) List.shrinkable [Shrinkable α] : Shrinkable (List α) where
   shrink := fun L =>
     (L.mapIdx fun i _ => L.removeNth i) ++
     (L.mapIdx fun i a => (shrink a).map fun a' => L.modifyNth (fun _ => a') i).join
@@ -196,27 +196,27 @@ section Samplers
 
 open SampleableExt
 
-instance Nat.sampleableExt : SampleableExt Nat :=
+instance (priority := 10000) Nat.sampleableExt : SampleableExt Nat :=
   mkSelfContained (do choose Nat 0 (← getSize) (Nat.zero_le _))
 
-instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
+instance (priority := 10000) Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
   mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (← getSize)) (by
     simp only [Fin.ofNat, Fin.val_zero]
     exact Nat.zero_le _))
 
-instance Int.sampleableExt : SampleableExt Int :=
+instance (priority := 10000) Int.sampleableExt : SampleableExt Int :=
   mkSelfContained (do
     choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
 
-instance Rat.sampleableExt : SampleableExt Rat :=
+instance (priority := 10000) Rat.sampleableExt : SampleableExt Rat :=
   mkSelfContained (do
     let d ← choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _))
     let n ← choose Nat 0 (← getSize) (Nat.zero_le _)
     return Rat.divInt d n)
 
-instance Bool.sampleableExt : SampleableExt Bool :=
+instance (priority := 10000) Bool.sampleableExt : SampleableExt Bool :=
   mkSelfContained <| chooseAny Bool
 
 /-- This can be specialized into customized `SampleableExt Char` instances.
@@ -232,10 +232,10 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
     else
       elements chars pos
 
-instance Char.sampleableDefault : SampleableExt Char :=
+instance (priority := 10000) Char.sampleableDefault : SampleableExt Char :=
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)
 
-instance Prod.sampleableExt {α : Type u} {β : Type v} [SampleableExt α] [SampleableExt β] :
+instance (priority := 10000) Prod.sampleableExt {α : Type u} {β : Type v} [SampleableExt α] [SampleableExt β] :
     SampleableExt (α × β) where
   proxy := Prod (proxy α) (proxy β)
   proxyRepr := inferInstance
@@ -243,14 +243,14 @@ instance Prod.sampleableExt {α : Type u} {β : Type v} [SampleableExt α] [Samp
   sample := prodOf sample sample
   interp := Prod.map interp interp
 
-instance Prop.sampleableExt : SampleableExt Prop where
+instance (priority := 10000) Prop.sampleableExt : SampleableExt Prop where
   proxy := Bool
   proxyRepr := inferInstance
   sample := interpSample Bool
   shrink := inferInstance
   interp := Coe.coe
 
-instance List.sampleableExt [SampleableExt α] : SampleableExt (List α) where
+instance (priority := 10000) List.sampleableExt [SampleableExt α] : SampleableExt (List α) where
   proxy := List (proxy α)
   sample := Gen.listOf sample
   interp := List.map interp
@@ -265,13 +265,13 @@ namespace NoShrink
 def mk (x : α) : NoShrink α := x
 def get (x : NoShrink α) : α := x
 
-instance inhabited [inst : Inhabited α] : Inhabited (NoShrink α) := inst
-instance repr [inst : Repr α] : Repr (NoShrink α) := inst
+instance (priority := 10000) inhabited [inst : Inhabited α] : Inhabited (NoShrink α) := inst
+instance (priority := 10000) repr [inst : Repr α] : Repr (NoShrink α) := inst
 
-instance shrinkable : Shrinkable (NoShrink α) where
+instance (priority := 10000) shrinkable : Shrinkable (NoShrink α) where
   shrink := λ _ => []
 
-instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) :=
+instance (priority := 10000) sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) :=
   SampleableExt.mkSelfContained <| (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
 
 end NoShrink

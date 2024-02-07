@@ -31,11 +31,11 @@ noncomputable section
 
 namespace CategoryTheory
 
-instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
+instance (priority := 10000) discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
   Fintype.ofEquiv α discreteEquiv.symm
 #align category_theory.discrete_fintype CategoryTheory.discreteFintype
 
-instance discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
+instance (priority := 10000) discreteHomFintype {α : Type*} (X Y : Discrete α) : Fintype (X ⟶ Y) := by
   apply ULift.fintype
 #align category_theory.discrete_hom_fintype CategoryTheory.discreteHomFintype
 
@@ -47,7 +47,7 @@ class FinCategory (J : Type v) [SmallCategory J] where
 
 attribute [instance] FinCategory.fintypeObj FinCategory.fintypeHom
 
-instance finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
+instance (priority := 10000) finCategoryDiscreteOfFintype (J : Type v) [Fintype J] : FinCategory (Discrete J) where
 #align category_theory.fin_category_discrete_of_fintype CategoryTheory.finCategoryDiscreteOfFintype
 
 namespace FinCategory
@@ -60,7 +60,7 @@ abbrev ObjAsType : Type :=
   InducedCategory α (Fintype.equivFin α).symm
 #align category_theory.fin_category.obj_as_type CategoryTheory.FinCategory.ObjAsType
 
-instance {i j : ObjAsType α} : Fintype (i ⟶ j) :=
+instance (priority := 10000) {i j : ObjAsType α} : Fintype (i ⟶ j) :=
   FinCategory.fintypeHom ((Fintype.equivFin α).symm i) _
 
 /-- The constructed category is indeed equivalent to `α`. -/
@@ -75,7 +75,7 @@ abbrev AsType : Type :=
 #align category_theory.fin_category.as_type CategoryTheory.FinCategory.AsType
 
 @[simps (config := .lemmasOnly) id comp]
-noncomputable instance categoryAsType : SmallCategory (AsType α)
+noncomputable instance (priority := 10000) categoryAsType : SmallCategory (AsType α)
     where
   Hom i j := Fin (Fintype.card (@Quiver.Hom (ObjAsType α) _ i j))
   id i := Fintype.equivFin _ (𝟙 _)
@@ -107,7 +107,7 @@ noncomputable def asTypeEquivObjAsType : AsType α ≌ ObjAsType α :=
     (NatIso.ofComponents Iso.refl)
 #align category_theory.fin_category.as_type_equiv_obj_as_type CategoryTheory.FinCategory.asTypeEquivObjAsType
 
-noncomputable instance asTypeFinCategory : FinCategory (AsType α) where
+noncomputable instance (priority := 10000) asTypeFinCategory : FinCategory (AsType α) where
   fintypeHom := fun _ _ => show Fintype (Fin _) from inferInstance
 #align category_theory.fin_category.as_type_fin_category CategoryTheory.FinCategory.asTypeFinCategory
 
@@ -122,14 +122,14 @@ open Opposite
 
 /-- The opposite of a finite category is finite.
 -/
-instance finCategoryOpposite {J : Type v} [SmallCategory J] [FinCategory J] : FinCategory Jᵒᵖ
+instance (priority := 10000) finCategoryOpposite {J : Type v} [SmallCategory J] [FinCategory J] : FinCategory Jᵒᵖ
     where
   fintypeObj := Fintype.ofEquiv _ equivToOpposite
   fintypeHom j j' := Fintype.ofEquiv _ (opEquiv j j').symm
 #align category_theory.fin_category_opposite CategoryTheory.finCategoryOpposite
 
 /-- Applying `ULift` to morphisms and objects of a category preserves finiteness. -/
-instance finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
+instance (priority := 10000) finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
     FinCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J))
     where
   fintypeObj := ULift.fintype J

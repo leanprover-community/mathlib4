@@ -29,7 +29,7 @@ structure ClopenUpperSet (α : Type*) [TopologicalSpace α] [LE α] extends Clop
 
 namespace ClopenUpperSet
 
-instance : SetLike (ClopenUpperSet α) α where
+instance (priority := 10000) : SetLike (ClopenUpperSet α) α where
   coe s := s.carrier
   coe_injective' s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
@@ -65,22 +65,22 @@ theorem coe_mk (s : Clopens α) (h) : (mk s h : Set α) = s :=
   rfl
 #align clopen_upper_set.coe_mk ClopenUpperSet.coe_mk
 
-instance : Sup (ClopenUpperSet α) :=
+instance (priority := 10000) : Sup (ClopenUpperSet α) :=
   ⟨fun s t => ⟨s.toClopens ⊔ t.toClopens, s.upper.union t.upper⟩⟩
 
-instance : Inf (ClopenUpperSet α) :=
+instance (priority := 10000) : Inf (ClopenUpperSet α) :=
   ⟨fun s t => ⟨s.toClopens ⊓ t.toClopens, s.upper.inter t.upper⟩⟩
 
-instance : Top (ClopenUpperSet α) :=
+instance (priority := 10000) : Top (ClopenUpperSet α) :=
   ⟨⟨⊤, isUpperSet_univ⟩⟩
 
-instance : Bot (ClopenUpperSet α) :=
+instance (priority := 10000) : Bot (ClopenUpperSet α) :=
   ⟨⟨⊥, isUpperSet_empty⟩⟩
 
-instance : Lattice (ClopenUpperSet α) :=
+instance (priority := 10000) : Lattice (ClopenUpperSet α) :=
   SetLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
 
-instance : BoundedOrder (ClopenUpperSet α) :=
+instance (priority := 10000) : BoundedOrder (ClopenUpperSet α) :=
   BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
 
 @[simp]
@@ -103,7 +103,7 @@ theorem coe_bot : (↑(⊥ : ClopenUpperSet α) : Set α) = ∅ :=
   rfl
 #align clopen_upper_set.coe_bot ClopenUpperSet.coe_bot
 
-instance : Inhabited (ClopenUpperSet α) :=
+instance (priority := 10000) : Inhabited (ClopenUpperSet α) :=
   ⟨⊥⟩
 
 end ClopenUpperSet

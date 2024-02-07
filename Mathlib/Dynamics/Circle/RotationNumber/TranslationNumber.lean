@@ -133,11 +133,11 @@ structure CircleDeg1Lift extends ℝ →o ℝ : Type where
 
 namespace CircleDeg1Lift
 
-instance : FunLike CircleDeg1Lift ℝ ℝ where
+instance (priority := 10000) : FunLike CircleDeg1Lift ℝ ℝ where
   coe f := f.toFun
   coe_injective' | ⟨⟨_, _⟩, _⟩, ⟨⟨_, _⟩, _⟩, rfl => rfl
 
-instance : OrderHomClass CircleDeg1Lift ℝ ℝ where
+instance (priority := 10000) : OrderHomClass CircleDeg1Lift ℝ ℝ where
   map_rel f _ _ h := f.monotone' h
 
 @[simp] theorem coe_mk (f h) : ⇑(mk f h) = f := rfl
@@ -177,7 +177,7 @@ theorem ext_iff {f g : CircleDeg1Lift} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align circle_deg1_lift.ext_iff CircleDeg1Lift.ext_iff
 
-instance : Monoid CircleDeg1Lift where
+instance (priority := 10000) : Monoid CircleDeg1Lift where
   mul f g :=
     { toOrderHom := f.1.comp g.1
       map_add_one' := fun x => by simp [map_add_one] }
@@ -186,7 +186,7 @@ instance : Monoid CircleDeg1Lift where
   one_mul f := rfl
   mul_assoc f₁ f₂ f₃ := DFunLike.coe_injective rfl
 
-instance : Inhabited CircleDeg1Lift := ⟨1⟩
+instance (priority := 10000) : Inhabited CircleDeg1Lift := ⟨1⟩
 
 @[simp]
 theorem coe_mul : ⇑(f * g) = f ∘ g :=
@@ -202,7 +202,7 @@ theorem coe_one : ⇑(1 : CircleDeg1Lift) = id :=
   rfl
 #align circle_deg1_lift.coe_one CircleDeg1Lift.coe_one
 
-instance unitsHasCoeToFun : CoeFun CircleDeg1Liftˣ fun _ => ℝ → ℝ :=
+instance (priority := 10000) unitsHasCoeToFun : CoeFun CircleDeg1Liftˣ fun _ => ℝ → ℝ :=
   ⟨fun f => ⇑(f : CircleDeg1Lift)⟩
 #align circle_deg1_lift.units_has_coe_to_fun CircleDeg1Lift.unitsHasCoeToFun
 
@@ -401,7 +401,7 @@ theorem map_fract_sub_fract_eq (x : ℝ) : f (fract x) - fract x = f x - x := by
 
 
 /-- Monotone circle maps form a lattice with respect to the pointwise order -/
-noncomputable instance : Lattice CircleDeg1Lift where
+noncomputable instance (priority := 10000) : Lattice CircleDeg1Lift where
   sup f g :=
     { toFun := fun x => max (f x) (g x)
       monotone' := fun x y h => max_le_max (f.mono h) (g.mono h)

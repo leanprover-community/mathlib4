@@ -84,7 +84,7 @@ protected theorem nonneg_total : Rat.Nonneg a ∨ Rat.Nonneg (-a) := by
   cases' a with n; exact Or.imp_right neg_nonneg_of_nonpos (le_total 0 n)
 #align rat.nonneg_total Rat.nonneg_total
 
-instance decidableNonneg : Decidable (Rat.Nonneg a) := by
+instance (priority := 10000) decidableNonneg : Decidable (Rat.Nonneg a) := by
   cases a; unfold Rat.Nonneg; infer_instance
 #align rat.decidable_nonneg Rat.decidableNonneg
 
@@ -190,7 +190,7 @@ protected theorem le_trans {a b c : ℚ} (hab : a ≤ b) (hbc : b ≤ c) : a ≤
 
 protected theorem not_le {a b : ℚ} : ¬a ≤ b ↔ b < a := (Bool.not_eq_false _).to_iff
 
-instance linearOrder : LinearOrder ℚ where
+instance (priority := 10000) linearOrder : LinearOrder ℚ where
   le_refl := Rat.le_refl
   le_trans := @Rat.le_trans
   le_antisymm := @Rat.le_antisymm
@@ -200,23 +200,23 @@ instance linearOrder : LinearOrder ℚ where
     rw [← Rat.not_le, and_iff_right_of_imp (Rat.le_total _ _).resolve_left]
 
 -- Extra instances to short-circuit type class resolution
-instance : LT ℚ := by infer_instance
+instance (priority := 10000) : LT ℚ := by infer_instance
 
-instance : DistribLattice ℚ := by infer_instance
+instance (priority := 10000) : DistribLattice ℚ := by infer_instance
 
-instance : Lattice ℚ := by infer_instance
+instance (priority := 10000) : Lattice ℚ := by infer_instance
 
-instance : SemilatticeInf ℚ := by infer_instance
+instance (priority := 10000) : SemilatticeInf ℚ := by infer_instance
 
-instance : SemilatticeSup ℚ := by infer_instance
+instance (priority := 10000) : SemilatticeSup ℚ := by infer_instance
 
-instance : Inf ℚ := by infer_instance
+instance (priority := 10000) : Inf ℚ := by infer_instance
 
-instance : Sup ℚ := by infer_instance
+instance (priority := 10000) : Sup ℚ := by infer_instance
 
-instance : PartialOrder ℚ := by infer_instance
+instance (priority := 10000) : PartialOrder ℚ := by infer_instance
 
-instance : Preorder ℚ := by infer_instance
+instance (priority := 10000) : Preorder ℚ := by infer_instance
 
 protected theorem le_def' {p q : ℚ} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
   rw [← @num_den q, ← @num_den p]
@@ -252,7 +252,7 @@ protected theorem mul_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a
   rw [← nonneg_iff_zero_le] at ha hb ⊢; exact Rat.nonneg_mul ha hb
 #align rat.mul_nonneg Rat.mul_nonneg
 
-instance : LinearOrderedField ℚ :=
+instance (priority := 10000) : LinearOrderedField ℚ :=
   { Rat.field, Rat.linearOrder, Rat.semiring with
     zero_le_one := by decide
     add_le_add_left := fun a b ab c => Rat.add_le_add_left.2 ab
@@ -261,23 +261,23 @@ instance : LinearOrderedField ℚ :=
         (mul_ne_zero (ne_of_lt ha).symm (ne_of_lt hb).symm).symm }
 
 -- Extra instances to short-circuit type class resolution
-instance : LinearOrderedCommRing ℚ := by infer_instance
+instance (priority := 10000) : LinearOrderedCommRing ℚ := by infer_instance
 
-instance : LinearOrderedRing ℚ := by infer_instance
+instance (priority := 10000) : LinearOrderedRing ℚ := by infer_instance
 
-instance : OrderedRing ℚ := by infer_instance
+instance (priority := 10000) : OrderedRing ℚ := by infer_instance
 
-instance : LinearOrderedSemiring ℚ := by infer_instance
+instance (priority := 10000) : LinearOrderedSemiring ℚ := by infer_instance
 
-instance : OrderedSemiring ℚ := by infer_instance
+instance (priority := 10000) : OrderedSemiring ℚ := by infer_instance
 
-instance : LinearOrderedAddCommGroup ℚ := by infer_instance
+instance (priority := 10000) : LinearOrderedAddCommGroup ℚ := by infer_instance
 
-instance : OrderedAddCommGroup ℚ := by infer_instance
+instance (priority := 10000) : OrderedAddCommGroup ℚ := by infer_instance
 
-instance : OrderedCancelAddCommMonoid ℚ := by infer_instance
+instance (priority := 10000) : OrderedCancelAddCommMonoid ℚ := by infer_instance
 
-instance : OrderedAddCommMonoid ℚ := by infer_instance
+instance (priority := 10000) : OrderedAddCommMonoid ℚ := by infer_instance
 
 theorem num_pos_iff_pos {a : ℚ} : 0 < a.num ↔ 0 < a :=
   lt_iff_lt_of_le_iff_le <| by

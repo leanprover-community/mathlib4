@@ -63,7 +63,7 @@ def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C
 closed in the functor category `F : D ⥤ C` with the pointwise monoidal structure. -/
 -- Porting note: removed `@[simps]`, as some of the generated lemmas were failing the simpNF linter,
 -- and none of the generated lemmmas was actually used in mathlib3.
-instance closed (F : D ⥤ C) : Closed F where
+instance (priority := 10000) closed (F : D ⥤ C) : Closed F where
   isAdj :=
   { right := closedIhom F
     adj := Adjunction.mkOfUnitCounit
@@ -74,7 +74,7 @@ instance closed (F : D ⥤ C) : Closed F where
 /-- If `C` is a monoidal closed category and `D` is groupoid, then the functor category `D ⥤ C`,
 with the pointwise monoidal structure, is monoidal closed. -/
 @[simps!]
-instance monoidalClosed : MonoidalClosed (D ⥤ C) where
+instance (priority := 10000) monoidalClosed : MonoidalClosed (D ⥤ C) where
   closed := by infer_instance
 #align category_theory.functor.monoidal_closed CategoryTheory.Functor.monoidalClosed
 

@@ -14,7 +14,7 @@ import Mathlib.Data.ULift
 # Basic API for ULift
 
 This file contains a very basic API for working with the categorical
-instance on `ULift C` where `C` is a type with a category instance.
+instance (priority := 10000) on `ULift C` where `C` is a type with a category instance.
 
 1. `CategoryTheory.ULift.upFunctor` is the functorial version of the usual `ULift.up`.
 2. `CategoryTheory.ULift.downFunctor` is the functorial version of the usual `ULift.down`.
@@ -103,7 +103,7 @@ def ULiftHom.{w,u} (C : Type u) : Type u :=
   C
 #align category_theory.ulift_hom CategoryTheory.ULiftHom
 
-instance {C} [Inhabited C] : Inhabited (ULiftHom C) :=
+instance (priority := 10000) {C} [Inhabited C] : Inhabited (ULiftHom C) :=
   ⟨(default : C)⟩
 
 /-- The obvious function `ULiftHom C → C`. -/
@@ -126,7 +126,7 @@ theorem objUp_objDown {C} (A : ULiftHom C) : ULiftHom.objUp A.objDown = A :=
   rfl
 #align category_theory.obj_up_obj_down CategoryTheory.objUp_objDown
 
-instance ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
+instance (priority := 10000) ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
   Hom A B := ULift.{v₂} <| A.objDown ⟶ B.objDown
   id A := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
@@ -171,7 +171,7 @@ nolinted. -/
 def AsSmall.{w, v, u} (D : Type u) [Category.{v} D] := ULift.{max w v} D
 #align category_theory.as_small CategoryTheory.AsSmall
 
-instance : SmallCategory (AsSmall.{w₁} C) where
+instance (priority := 10000) : SmallCategory (AsSmall.{w₁} C) where
   Hom X Y := ULift.{max w₁ u₁} <| X.down ⟶ Y.down
   id X := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
@@ -199,7 +199,7 @@ def AsSmall.equiv : C ≌ AsSmall C where
   counitIso := NatIso.ofComponents fun X => eqToIso <| ULift.ext _ _ rfl
 #align category_theory.as_small.equiv CategoryTheory.AsSmall.equiv
 
-instance [Inhabited C] : Inhabited (AsSmall C) :=
+instance (priority := 10000) [Inhabited C] : Inhabited (AsSmall C) :=
   ⟨⟨default⟩⟩
 
 /-- The equivalence between `C` and `ULiftHom (ULift C)`. -/

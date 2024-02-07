@@ -31,7 +31,7 @@ deriving instance ToExpr for List
 
 attribute [-instance] Lean.instToExprArray
 
-instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
+instance (priority := 10000) {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
   let type := toTypeExpr α
   { toExpr     := fun as => mkApp2 (mkConst ``List.toArray [toLevel.{u}]) type (toExpr as.toList)
     toTypeExpr := mkApp (mkConst ``Array [toLevel.{u}]) type }
@@ -53,7 +53,7 @@ deriving instance ToExpr for Int
 deriving instance ToExpr for ULift
 
 /-- Hand-written instance since `PUnit` is a `Sort` rather than a `Type`. -/
-instance [ToLevel.{u}] : ToExpr PUnit.{u+1} where
+instance (priority := 10000) [ToLevel.{u}] : ToExpr PUnit.{u+1} where
   toExpr _ := mkConst ``PUnit.unit [toLevel.{u+1}]
   toTypeExpr := mkConst ``PUnit [toLevel.{u+1}]
 
@@ -80,7 +80,7 @@ private def toExprMData (md : MData) : Expr := Id.run do
           | ofSyntax v => mkApp3 (mkConst ``KVMap.setSyntax) e k (toExpr v)
   return e
 
-instance : ToExpr MData where
+instance (priority := 10000) : ToExpr MData where
   toExpr := toExprMData
   toTypeExpr := mkConst ``MData
 

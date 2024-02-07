@@ -21,7 +21,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-instance discreteCountable {α : Type*} [Countable α] : Countable (Discrete α) :=
+instance (priority := 10000) discreteCountable {α : Type*} [Countable α] : Countable (Discrete α) :=
   Countable.of_equiv α discreteEquiv.symm
 
 /-- A category with countably many objects and morphisms. -/
@@ -31,7 +31,7 @@ class CountableCategory (J : Type*) [Category J] : Prop where
 
 attribute [instance] CountableCategory.countableObj CountableCategory.countableHom
 
-instance countablerCategoryDiscreteOfCountable (J : Type*) [Countable J] :
+instance (priority := 10000) countablerCategoryDiscreteOfCountable (J : Type*) [Countable J] :
     CountableCategory (Discrete J) where
 
 namespace CountableCategory
@@ -42,12 +42,12 @@ variable (α : Type u) [Category.{v} α] [CountableCategory α]
 abbrev ObjAsType : Type :=
   InducedCategory α (equivShrink.{0} α).symm
 
-instance : Countable (ObjAsType α) := Countable.of_equiv α (equivShrink.{0} α)
+instance (priority := 10000) : Countable (ObjAsType α) := Countable.of_equiv α (equivShrink.{0} α)
 
-instance {i j : ObjAsType α} : Countable (i ⟶ j) :=
+instance (priority := 10000) {i j : ObjAsType α} : Countable (i ⟶ j) :=
   CountableCategory.countableHom ((equivShrink.{0} α).symm i) _
 
-instance : CountableCategory (ObjAsType α) where
+instance (priority := 10000) : CountableCategory (ObjAsType α) where
 
 /-- The constructed category is indeed equivalent to `α`. -/
 noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
@@ -56,18 +56,18 @@ noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
 /-- A countable category `α` is equivalent to a *small* category with objects in `Type`. -/
 def HomAsType := ShrinkHoms (ObjAsType α)
 
-instance : LocallySmall.{0} (ObjAsType α) where
+instance (priority := 10000) : LocallySmall.{0} (ObjAsType α) where
   hom_small _ _ := inferInstance
 
-instance : SmallCategory (HomAsType α) := ShrinkHoms.instCategoryShrinkHoms.{0} _
+instance (priority := 10000) : SmallCategory (HomAsType α) := ShrinkHoms.instCategoryShrinkHoms.{0} _
 
-instance : Countable (HomAsType α) := Countable.of_equiv α (equivShrink.{0} α)
+instance (priority := 10000) : Countable (HomAsType α) := Countable.of_equiv α (equivShrink.{0} α)
 
-instance {i j : HomAsType α} : Countable (i ⟶ j) :=
+instance (priority := 10000) {i j : HomAsType α} : Countable (i ⟶ j) :=
   Countable.of_equiv ((ShrinkHoms.equivalence _).inverse.obj i ⟶
     (ShrinkHoms.equivalence _).inverse.obj j) (equivOfFullyFaithful _).symm
 
-instance : CountableCategory (HomAsType α) where
+instance (priority := 10000) : CountableCategory (HomAsType α) where
 
 /-- The constructed category is indeed equivalent to `α`. -/
 noncomputable def homAsTypeEquiv : HomAsType α ≌ α :=
@@ -75,18 +75,18 @@ noncomputable def homAsTypeEquiv : HomAsType α ≌ α :=
 
 end CountableCategory
 
-instance (α : Type*) [Category α] [FinCategory α] : CountableCategory α where
+instance (priority := 10000) (α : Type*) [Category α] [FinCategory α] : CountableCategory α where
 
 open Opposite
 
 /-- The opposite of a countable category is countable. -/
-instance countableCategoryOpposite {J : Type*} [Category J] [CountableCategory J] :
+instance (priority := 10000) countableCategoryOpposite {J : Type*} [Category J] [CountableCategory J] :
     CountableCategory Jᵒᵖ where
   countableObj := Countable.of_equiv _ equivToOpposite
   countableHom j j' := Countable.of_equiv _ (opEquiv j j').symm
 
 /-- Applying `ULift` to morphisms and objects of a category preserves countability. -/
-instance countableCategoryUlift {J : Type v} [Category J] [CountableCategory J] :
+instance (priority := 10000) countableCategoryUlift {J : Type v} [Category J] [CountableCategory J] :
     CountableCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where
   countableObj := instCountableULift
   countableHom := fun i j =>

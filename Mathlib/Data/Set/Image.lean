@@ -481,7 +481,7 @@ theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : S
   ⟨x, mem_preimage.2 <| hx.symm ▸ hy⟩
 #align set.nonempty.preimage Set.Nonempty.preimage
 
-instance (f : α → β) (s : Set α) [Nonempty s] : Nonempty (f '' s) :=
+instance (priority := 10000) (f : α → β) (s : Set α) [Nonempty s] : Nonempty (f '' s) :=
   (Set.Nonempty.image f nonempty_of_nonempty_subtype).to_subtype
 
 /-- image and preimage are a Galois connection -/
@@ -754,7 +754,7 @@ theorem range_eq_empty [IsEmpty ι] (f : ι → α) : range f = ∅ :=
   range_eq_empty_iff.2 ‹_›
 #align set.range_eq_empty Set.range_eq_empty
 
-instance instNonemptyRange [Nonempty ι] (f : ι → α) : Nonempty (range f) :=
+instance (priority := 10000) instNonemptyRange [Nonempty ι] (f : ι → α) : Nonempty (range f) :=
   (range_nonempty f).to_subtype
 
 @[simp]
@@ -975,7 +975,7 @@ theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
   range_quot_lift _
 #align set.range_quotient_lift_on' Set.range_quotient_lift_on'
 
-instance canLift (c) (p) [CanLift α β c p] :
+instance (priority := 10000) canLift (c) (p) [CanLift α β c p] :
     CanLift (Set α) (Set β) (c '' ·) fun s => ∀ x ∈ s, p x where
   prf _ hs := subset_range_iff_exists_image_eq.mp fun x hx => CanLift.prf _ (hs x hx)
 #align set.can_lift Set.canLift

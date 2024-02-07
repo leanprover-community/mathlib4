@@ -79,7 +79,7 @@ def raisedConeIsLimit [IsConnected J] {B : C} {F : J â¥¤ Over B} {c : Cone (F â‹
 end CreatesConnected
 
 /-- The forgetful functor from the over category creates any connected limit. -/
-instance forgetCreatesConnectedLimits [IsConnected J] {B : C} :
+instance (priority := 10000) forgetCreatesConnectedLimits [IsConnected J] {B : C} :
     CreatesLimitsOfShape J (forget B) where
   CreatesLimit :=
     createsLimitOfReflectsIso fun c t =>
@@ -89,7 +89,7 @@ instance forgetCreatesConnectedLimits [IsConnected J] {B : C} :
 #align category_theory.over.forget_creates_connected_limits CategoryTheory.Over.forgetCreatesConnectedLimits
 
 /-- The over category has any connected limit which the original category has. -/
-instance has_connected_limits {B : C} [IsConnected J] [HasLimitsOfShape J C] :
+instance (priority := 10000) has_connected_limits {B : C} [IsConnected J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (Over B) where
   has_limit F := hasLimit_of_created F (forget B)
 #align category_theory.over.has_connected_limits CategoryTheory.Over.has_connected_limits

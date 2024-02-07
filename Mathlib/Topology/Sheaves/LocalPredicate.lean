@@ -83,7 +83,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.continuous_prelocal TopCat.continuousPrelocal
 
 /-- Satisfying the inhabited linter. -/
-instance inhabitedPrelocalPredicate (T : TopCat.{v}) :
+instance (priority := 10000) inhabitedPrelocalPredicate (T : TopCat.{v}) :
     Inhabited (PrelocalPredicate fun _ : X => T) :=
   ⟨continuousPrelocal X T⟩
 set_option linter.uppercaseLean3 false in
@@ -130,7 +130,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.continuous_local TopCat.continuousLocal
 
 /-- Satisfying the inhabited linter. -/
-instance inhabitedLocalPredicate (T : TopCat.{v}) : Inhabited (LocalPredicate fun _ : X => T) :=
+instance (priority := 10000) inhabitedLocalPredicate (T : TopCat.{v}) : Inhabited (LocalPredicate fun _ : X => T) :=
   ⟨continuousLocal X T⟩
 set_option linter.uppercaseLean3 false in
 #align Top.inhabited_local_predicate TopCat.inhabitedLocalPredicate

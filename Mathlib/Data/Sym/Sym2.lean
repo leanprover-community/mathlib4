@@ -314,7 +314,7 @@ theorem mem_iff' {a b c : α} : Sym2.Mem a s(b, c) ↔ a = b ∨ a = c :=
       exact ⟨_, rfl⟩ }
 #align sym2.mem_iff' Sym2.mem_iff'
 
-instance : SetLike (Sym2 α) α where
+instance (priority := 10000) : SetLike (Sym2 α) α where
   coe z := { x | z.Mem x }
   coe_injective' z z' h := by
     simp only [Set.ext_iff, Set.mem_setOf_eq] at h
@@ -398,7 +398,7 @@ theorem eq_of_ne_mem {x y : α} {z z' : Sym2 α} (h : x ≠ y) (h1 : x ∈ z) (h
   ((mem_and_mem_iff h).mp ⟨h1, h2⟩).trans ((mem_and_mem_iff h).mp ⟨h3, h4⟩).symm
 #align sym2.eq_of_ne_mem Sym2.eq_of_ne_mem
 
-instance Mem.decidable [DecidableEq α] (x : α) (z : Sym2 α) : Decidable (x ∈ z) :=
+instance (priority := 10000) Mem.decidable [DecidableEq α] (x : α) (z : Sym2 α) : Decidable (x ∈ z) :=
   z.recOnSubsingleton fun ⟨_, _⟩ => decidable_of_iff' _ mem_iff
 #align sym2.mem.decidable Sym2.Mem.decidable
 
@@ -475,7 +475,7 @@ theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (
   ⟨IsDiag.mem_range_diag, fun ⟨i, hi⟩ => hi ▸ diag_isDiag i⟩
 #align sym2.is_diag_iff_mem_range_diag Sym2.isDiag_iff_mem_range_diag
 
-instance IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
+instance (priority := 10000) IsDiag.decidablePred (α : Type u) [DecidableEq α] : DecidablePred (@IsDiag α) :=
   fun z => z.recOnSubsingleton fun a => decidable_of_iff' _ (isDiag_iff_proj_eq a)
 #align sym2.is_diag.decidable_pred Sym2.IsDiag.decidablePred
 
@@ -536,7 +536,7 @@ theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r)
   other_ne (fromRel_irreflexive.mp irrefl hz) h
 #align sym2.mem_from_rel_irrefl_other_ne Sym2.mem_fromRel_irrefl_other_ne
 
-instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
+instance (priority := 10000) fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
     DecidablePred (· ∈ Sym2.fromRel sym) := fun z => z.recOnSubsingleton fun _ => h _ _
 #align sym2.from_rel.decidable_pred Sym2.fromRel.decidablePred
 
@@ -649,18 +649,18 @@ section Decidable
 
 /-- Given `[DecidableEq α]` and `[Fintype α]`, the following instance gives `Fintype (Sym2 α)`.
 -/
-instance instDecidableRel [DecidableEq α] : DecidableRel (Rel α) :=
+instance (priority := 10000) instDecidableRel [DecidableEq α] : DecidableRel (Rel α) :=
   fun _ _ => decidable_of_iff' _ rel_iff
 
 section
 attribute [local instance] Sym2.Rel.setoid
 
-instance instDecidableRel' [DecidableEq α] : DecidableRel (HasEquiv.Equiv (α := α × α)) :=
+instance (priority := 10000) instDecidableRel' [DecidableEq α] : DecidableRel (HasEquiv.Equiv (α := α × α)) :=
   instDecidableRel
 
 end
 
-instance [DecidableEq α] : DecidableEq (Sym2 α) :=
+instance (priority := 10000) [DecidableEq α] : DecidableEq (Sym2 α) :=
   inferInstanceAs <| DecidableEq (Quotient (Sym2.Rel.setoid α))
 
 /-! ### The other element of an element of the symmetric square -/
@@ -753,16 +753,16 @@ theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
 
 end Decidable
 
-instance [Subsingleton α] : Subsingleton (Sym2 α) :=
+instance (priority := 10000) [Subsingleton α] : Subsingleton (Sym2 α) :=
   (equivSym α).injective.subsingleton
 
-instance [Unique α] : Unique (Sym2 α) :=
+instance (priority := 10000) [Unique α] : Unique (Sym2 α) :=
   Unique.mk' _
 
-instance [IsEmpty α] : IsEmpty (Sym2 α) :=
+instance (priority := 10000) [IsEmpty α] : IsEmpty (Sym2 α) :=
   (equivSym α).isEmpty
 
-instance [Nontrivial α] : Nontrivial (Sym2 α) :=
+instance (priority := 10000) [Nontrivial α] : Nontrivial (Sym2 α) :=
   diag_injective.nontrivial
 
 end Sym2

@@ -72,7 +72,7 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   rfl
 #align affine_isometry.linear_eq_linear_isometry AffineIsometry.linear_eq_linearIsometry
 
-instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ :=
+instance (priority := 10000) : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ :=
   { coe := fun f => f.toFun,
     coe_injective' := fun f g => by cases f; cases g; simp }
 
@@ -224,7 +224,7 @@ theorem id_toAffineMap : (id.toAffineMap : P →ᵃ[𝕜] P) = AffineMap.id 𝕜
   rfl
 #align affine_isometry.id_to_affine_map AffineIsometry.id_toAffineMap
 
-instance : Inhabited (P →ᵃⁱ[𝕜] P) :=
+instance (priority := 10000) : Inhabited (P →ᵃⁱ[𝕜] P) :=
   ⟨id⟩
 
 /-- Composition of affine isometries. -/
@@ -252,7 +252,7 @@ theorem comp_assoc (f : P₃ →ᵃⁱ[𝕜] P₄) (g : P₂ →ᵃⁱ[𝕜] P�
   rfl
 #align affine_isometry.comp_assoc AffineIsometry.comp_assoc
 
-instance : Monoid (P →ᵃⁱ[𝕜] P) where
+instance (priority := 10000) : Monoid (P →ᵃⁱ[𝕜] P) where
   one := id
   mul := comp
   mul_assoc := comp_assoc
@@ -329,7 +329,7 @@ theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEqu
   rfl
 #align affine_isometry_equiv.linear_eq_linear_isometry AffineIsometryEquiv.linear_eq_linear_isometry
 
-instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
+instance (priority := 10000) : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
   { coe := fun f => f.toFun
     inv := fun f => f.invFun
     left_inv := fun f => f.left_inv
@@ -487,7 +487,7 @@ def refl : P ≃ᵃⁱ[𝕜] P :=
 
 variable {𝕜 P}
 
-instance : Inhabited (P ≃ᵃⁱ[𝕜] P) :=
+instance (priority := 10000) : Inhabited (P ≃ᵃⁱ[𝕜] P) :=
   ⟨refl 𝕜 P⟩
 
 @[simp]
@@ -587,7 +587,7 @@ theorem trans_assoc (ePP₂ : P ≃ᵃⁱ[𝕜] P₂) (eP₂G : P₂ ≃ᵃⁱ[�
 #align affine_isometry_equiv.trans_assoc AffineIsometryEquiv.trans_assoc
 
 /-- The group of affine isometries of a `NormedAddTorsor`, `P`. -/
-instance : Group (P ≃ᵃⁱ[𝕜] P) where
+instance (priority := 10000) : Group (P ≃ᵃⁱ[𝕜] P) where
   mul e₁ e₂ := e₂.trans e₁
   one := refl _ _
   inv := symm

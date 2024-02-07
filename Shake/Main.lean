@@ -313,11 +313,11 @@ structure Args where
   /-- `<MODULE>..`: the list of root modules to check -/
   mods : Array Name := #[]
 
-instance {α} [FromJson α] : FromJson (NameMap α) where
+instance (priority := 10000) {α} [FromJson α] : FromJson (NameMap α) where
   fromJson? j := do
     (← j.getObj?).foldM (init := mkNameMap _) fun m a b => do
       m.insert a.toName <$> fromJson? b
-instance {α} [ToJson α] : ToJson (NameMap α) where
+instance (priority := 10000) {α} [ToJson α] : ToJson (NameMap α) where
   toJson m := Json.obj <| m.fold (init := ∅) fun m a b =>
       m.insert compare (toString a) (toJson b)
 

@@ -122,7 +122,7 @@ structure CompositionAsSet (n : ℕ) where
   getLast_mem : Fin.last n ∈ boundaries
 #align composition_as_set CompositionAsSet
 
-instance {n : ℕ} : Inhabited (CompositionAsSet n) :=
+instance (priority := 10000) {n : ℕ} : Inhabited (CompositionAsSet n) :=
   ⟨⟨Finset.univ, Finset.mem_univ _, Finset.mem_univ _⟩⟩
 
 /-!
@@ -137,7 +137,7 @@ namespace Composition
 
 variable (c : Composition n)
 
-instance (n : ℕ) : ToString (Composition n) :=
+instance (priority := 10000) (n : ℕ) : ToString (Composition n) :=
   ⟨fun c => toString c.blocks⟩
 
 /-- The length of a composition, i.e., the number of blocks in the composition. -/
@@ -477,7 +477,7 @@ def ones (n : ℕ) : Composition n :=
   ⟨replicate n (1 : ℕ), fun {i} hi => by simp [List.eq_of_mem_replicate hi], by simp⟩
 #align composition.ones Composition.ones
 
-instance {n : ℕ} : Inhabited (Composition n) :=
+instance (priority := 10000) {n : ℕ} : Inhabited (Composition n) :=
   ⟨Composition.ones n⟩
 
 @[simp]
@@ -845,7 +845,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       use i, h
 #align composition_as_set_equiv compositionAsSetEquiv
 
-instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=
+instance (priority := 10000) compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=
   Fintype.ofEquiv _ (compositionAsSetEquiv n).symm
 #align composition_as_set_fintype compositionAsSetFintype
 
@@ -1057,7 +1057,7 @@ def compositionEquiv (n : ℕ) : Composition n ≃ CompositionAsSet n
     exact c.toComposition_boundaries
 #align composition_equiv compositionEquiv
 
-instance compositionFintype (n : ℕ) : Fintype (Composition n) :=
+instance (priority := 10000) compositionFintype (n : ℕ) : Fintype (Composition n) :=
   Fintype.ofEquiv _ (compositionEquiv n).symm
 #align composition_fintype compositionFintype
 

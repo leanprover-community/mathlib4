@@ -41,7 +41,7 @@ def StructuredArrow (S : D) (T : C ⥤ D) :=
 #align category_theory.structured_arrow CategoryTheory.StructuredArrow
 
 -- Porting note: not found by inferInstance
-instance (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) := commaCategory
+instance (priority := 10000) (S : D) (T : C ⥤ D) : Category (StructuredArrow S T) := commaCategory
 
 namespace StructuredArrow
 
@@ -181,7 +181,7 @@ theorem ext_iff {A B : StructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.right 
   ⟨fun h => h ▸ rfl, ext f g⟩
 #align category_theory.structured_arrow.ext_iff CategoryTheory.StructuredArrow.ext_iff
 
-instance proj_faithful : Faithful (proj S T) where
+instance (priority := 10000) proj_faithful : Faithful (proj S T) where
   map_injective {_ _} := ext
 #align category_theory.structured_arrow.proj_faithful CategoryTheory.StructuredArrow.proj_faithful
 
@@ -194,12 +194,12 @@ theorem epi_of_epi_right {A B : StructuredArrow S T} (f : A ⟶ B) [h : Epi f.ri
   (proj S T).epi_of_epi_map h
 #align category_theory.structured_arrow.epi_of_epi_right CategoryTheory.StructuredArrow.epi_of_epi_right
 
-instance mono_homMk {A B : StructuredArrow S T} (f : A.right ⟶ B.right) (w) [h : Mono f] :
+instance (priority := 10000) mono_homMk {A B : StructuredArrow S T} (f : A.right ⟶ B.right) (w) [h : Mono f] :
     Mono (homMk f w) :=
   (proj S T).mono_of_mono_map h
 #align category_theory.structured_arrow.mono_hom_mk CategoryTheory.StructuredArrow.mono_homMk
 
-instance epi_homMk {A B : StructuredArrow S T} (f : A.right ⟶ B.right) (w) [h : Epi f] :
+instance (priority := 10000) epi_homMk {A B : StructuredArrow S T} (f : A.right ⟶ B.right) (w) [h : Epi f] :
     Epi (homMk f w) :=
   (proj S T).epi_of_epi_map h
 #align category_theory.structured_arrow.epi_hom_mk CategoryTheory.StructuredArrow.epi_homMk
@@ -262,7 +262,7 @@ def mapIso (i : S ≅ S') : StructuredArrow S T ≌ StructuredArrow S' T :=
 def mapNatIso (i : T ≅ T') : StructuredArrow S T ≌ StructuredArrow S T' :=
   Comma.mapRightIso _ i
 
-instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
+instance (priority := 10000) proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=
     ⟨⟨StructuredArrow.homMk
         (inv ((proj S T).map f))
@@ -290,13 +290,13 @@ def pre (S : D) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S (F ⋙ G) ⥤ St
   Comma.preRight _ F G
 #align category_theory.structured_arrow.pre CategoryTheory.StructuredArrow.pre
 
-instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Faithful F] : Faithful (pre S F G) :=
+instance (priority := 10000) (S : D) (F : B ⥤ C) (G : C ⥤ D) [Faithful F] : Faithful (pre S F G) :=
   show Faithful (Comma.preRight _ _ _) from inferInstance
 
-instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [Full F] : Full (pre S F G) :=
+instance (priority := 10000) (S : D) (F : B ⥤ C) (G : C ⥤ D) [Full F] : Full (pre S F G) :=
   show Full (Comma.preRight _ _ _) from inferInstance
 
-instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [EssSurj F] : EssSurj (pre S F G) :=
+instance (priority := 10000) (S : D) (F : B ⥤ C) (G : C ⥤ D) [EssSurj F] : EssSurj (pre S F G) :=
   show EssSurj (Comma.preRight _ _ _) from inferInstance
 
 /-- If `F` is an equivalence, then so is the functor `(S, F ⋙ G) ⥤ (S, G)`. -/
@@ -312,13 +312,13 @@ def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ Structure
   map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
 
-instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : Faithful (post S F G) where
+instance (priority := 10000) (S : C) (F : B ⥤ C) (G : C ⥤ D) : Faithful (post S F G) where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h
 
-instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [Faithful G] : Full (post S F G) where
+instance (priority := 10000) (S : C) (F : B ⥤ C) (G : C ⥤ D) [Faithful G] : Full (post S F G) where
   preimage {_ _} f := homMk f.right (G.map_injective (by simpa using f.w.symm))
 
-instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] : EssSurj (post S F G) where
+instance (priority := 10000) (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G] : EssSurj (post S F G) where
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
 
 /-- If `G` is fully faithful, then `post S F G : (S, F) ⥤ (G(S), F ⋙ G)` is an equivalence. -/
@@ -326,7 +326,7 @@ noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G]
     IsEquivalence (post S F G) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
-instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
+instance (priority := 10000) small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
   suffices (proj S T).obj ⁻¹' 𝒢 = Set.range fun f : ΣG : 𝒢, S ⟶ T.obj G => mk f.2 by
     rw [this]
@@ -384,7 +384,7 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
   Comma S (Functor.fromPUnit.{0} T)
 #align category_theory.costructured_arrow CategoryTheory.CostructuredArrow
 
-instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
+instance (priority := 10000) (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
 
 namespace CostructuredArrow
 
@@ -519,7 +519,7 @@ theorem ext_iff {A B : CostructuredArrow S T} (f g : A ⟶ B) : f = g ↔ f.left
   ⟨fun h => h ▸ rfl, ext f g⟩
 #align category_theory.costructured_arrow.ext_iff CategoryTheory.CostructuredArrow.ext_iff
 
-instance proj_faithful : Faithful (proj S T) where map_injective {_ _} := ext
+instance (priority := 10000) proj_faithful : Faithful (proj S T) where map_injective {_ _} := ext
 #align category_theory.costructured_arrow.proj_faithful CategoryTheory.CostructuredArrow.proj_faithful
 
 theorem mono_of_mono_left {A B : CostructuredArrow S T} (f : A ⟶ B) [h : Mono f.left] : Mono f :=
@@ -531,12 +531,12 @@ theorem epi_of_epi_left {A B : CostructuredArrow S T} (f : A ⟶ B) [h : Epi f.l
   (proj S T).epi_of_epi_map h
 #align category_theory.costructured_arrow.epi_of_epi_left CategoryTheory.CostructuredArrow.epi_of_epi_left
 
-instance mono_homMk {A B : CostructuredArrow S T} (f : A.left ⟶ B.left) (w) [h : Mono f] :
+instance (priority := 10000) mono_homMk {A B : CostructuredArrow S T} (f : A.left ⟶ B.left) (w) [h : Mono f] :
     Mono (homMk f w) :=
   (proj S T).mono_of_mono_map h
 #align category_theory.costructured_arrow.mono_hom_mk CategoryTheory.CostructuredArrow.mono_homMk
 
-instance epi_homMk {A B : CostructuredArrow S T} (f : A.left ⟶ B.left) (w) [h : Epi f] :
+instance (priority := 10000) epi_homMk {A B : CostructuredArrow S T} (f : A.left ⟶ B.left) (w) [h : Epi f] :
     Epi (homMk f w) :=
   (proj S T).epi_of_epi_map h
 #align category_theory.costructured_arrow.epi_hom_mk CategoryTheory.CostructuredArrow.epi_homMk
@@ -600,7 +600,7 @@ def mapIso (i : T ≅ T') : CostructuredArrow S T ≌ CostructuredArrow S T' :=
 def mapNatIso (i : S ≅ S') : CostructuredArrow S T ≌ CostructuredArrow S' T :=
   Comma.mapLeftIso _ i
 
-instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
+instance (priority := 10000) proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
   reflects {Y Z} f t :=
     ⟨⟨CostructuredArrow.homMk
         (inv ((proj S T).map f))
@@ -628,13 +628,13 @@ def pre (F : B ⥤ C) (G : C ⥤ D) (S : D) : CostructuredArrow (F ⋙ G) S ⥤ 
   Comma.preLeft F G _
 #align category_theory.costructured_arrow.pre CategoryTheory.CostructuredArrow.pre
 
-instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Faithful F] : Faithful (pre F G S) :=
+instance (priority := 10000) (F : B ⥤ C) (G : C ⥤ D) (S : D) [Faithful F] : Faithful (pre F G S) :=
   show Faithful (Comma.preLeft _ _ _) from inferInstance
 
-instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [Full F] : Full (pre F G S) :=
+instance (priority := 10000) (F : B ⥤ C) (G : C ⥤ D) (S : D) [Full F] : Full (pre F G S) :=
   show Full (Comma.preLeft _ _ _) from inferInstance
 
-instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [EssSurj F] : EssSurj (pre F G S) :=
+instance (priority := 10000) (F : B ⥤ C) (G : C ⥤ D) (S : D) [EssSurj F] : EssSurj (pre F G S) :=
   show EssSurj (Comma.preLeft _ _ _) from inferInstance
 
 /-- If `F` is an equivalence, then so is the functor `(F ⋙ G, S) ⥤ (G, S)`. -/
@@ -650,13 +650,13 @@ def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
   map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
 #align category_theory.costructured_arrow.post CategoryTheory.CostructuredArrow.post
 
-instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : Faithful (post F G S) where
+instance (priority := 10000) (F : B ⥤ C) (G : C ⥤ D) (S : C) : Faithful (post F G S) where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h
 
-instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [Faithful G] : Full (post F G S) where
+instance (priority := 10000) (F : B ⥤ C) (G : C ⥤ D) (S : C) [Faithful G] : Full (post F G S) where
   preimage {_ _} f := homMk f.left (G.map_injective (by simpa using f.w))
 
-instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [Full G] : EssSurj (post F G S) where
+instance (priority := 10000) (F : B ⥤ C) (G : C ⥤ D) (S : C) [Full G] : EssSurj (post F G S) where
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
 
 /-- If `G` is fully faithful, then `post F G S : (F, S) ⥤ (F ⋙ G, G(S))` is an equivalence. -/
@@ -664,7 +664,7 @@ noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [Full G]
     IsEquivalence (post F G S) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
-instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
+instance (priority := 10000) small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
   suffices (proj S T).obj ⁻¹' 𝒢 = Set.range fun f : ΣG : 𝒢, S.obj G ⟶ T => mk f.2 by
     rw [this]

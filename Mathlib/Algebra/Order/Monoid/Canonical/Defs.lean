@@ -314,7 +314,7 @@ instance (priority := 10) of_gt' [CanonicallyOrderedAddCommMonoid M] [One M] {y 
 #align ne_zero.of_gt' NeZero.of_gt'
 
 set_option linter.deprecated false in
-instance bit0 {M} [CanonicallyOrderedAddCommMonoid M] {x : M} [NeZero x] : NeZero (bit0 x) :=
+instance (priority := 10000) bit0 {M} [CanonicallyOrderedAddCommMonoid M] {x : M} [NeZero x] : NeZero (bit0 x) :=
   of_pos <| bit0_pos <| NeZero.pos x
 #align ne_zero.bit0 NeZero.bit0
 

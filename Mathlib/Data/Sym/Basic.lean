@@ -48,12 +48,12 @@ def Sym (α : Type*) (n : ℕ) :=
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
 
-instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
+instance (priority := 10000) Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
   ⟨Sym.toMultiset⟩
 #align sym.has_coe Sym.hasCoe
 
 -- Porting note: instance needed for Data.Finset.Sym
-instance [DecidableEq α] : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
+instance (priority := 10000) [DecidableEq α] : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
@@ -143,7 +143,7 @@ def ofVector : Vector α n → Sym α n :=
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
 -/
-instance : Coe (Vector α n) (Sym α n) where coe x := ofVector x
+instance (priority := 10000) : Coe (Vector α n) (Sym α n) where coe x := ofVector x
 
 @[simp]
 theorem ofVector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
@@ -158,10 +158,10 @@ theorem ofVector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::�
 
 /-- `α ∈ s` means that `a` appears as one of the factors in `s`.
 -/
-instance : Membership α (Sym α n) :=
+instance (priority := 10000) : Membership α (Sym α n) :=
   ⟨fun a s => a ∈ s.1⟩
 
-instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a ∈ s) :=
+instance (priority := 10000) decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a ∈ s) :=
   s.1.decidableMem _
 #align sym.decidable_mem Sym.decidableMem
 
@@ -262,17 +262,17 @@ theorem cons_equiv_eq_equiv_cons (α : Type*) (n : ℕ) (a : α) (s : Sym α n) 
   rfl
 #align sym.cons_equiv_eq_equiv_cons Sym.cons_equiv_eq_equiv_cons
 
-instance instZeroSym : Zero (Sym α 0) :=
+instance (priority := 10000) instZeroSym : Zero (Sym α 0) :=
   ⟨⟨0, rfl⟩⟩
 
-instance : EmptyCollection (Sym α 0) :=
+instance (priority := 10000) : EmptyCollection (Sym α 0) :=
   ⟨0⟩
 
 theorem eq_nil_of_card_zero (s : Sym α 0) : s = nil :=
   Subtype.ext <| Multiset.card_eq_zero.1 s.2
 #align sym.eq_nil_of_card_zero Sym.eq_nil_of_card_zero
 
-instance uniqueZero : Unique (Sym α 0) :=
+instance (priority := 10000) uniqueZero : Unique (Sym α 0) :=
   ⟨⟨nil⟩, eq_nil_of_card_zero⟩
 #align sym.unique_zero Sym.uniqueZero
 
@@ -327,7 +327,7 @@ theorem eq_replicate_of_subsingleton [Subsingleton α] (a : α) {n : ℕ} (s : S
   eq_replicate.2 fun _ _ => Subsingleton.elim _ _
 #align sym.eq_replicate_of_subsingleton Sym.eq_replicate_of_subsingleton
 
-instance [Subsingleton α] (n : ℕ) : Subsingleton (Sym α n) :=
+instance (priority := 10000) [Subsingleton α] (n : ℕ) : Subsingleton (Sym α n) :=
   ⟨by
     cases n
     · simp [eq_iff_true_of_subsingleton]
@@ -335,20 +335,20 @@ instance [Subsingleton α] (n : ℕ) : Subsingleton (Sym α n) :=
       obtain ⟨b, -⟩ := exists_mem s
       rw [eq_replicate_of_subsingleton b s', eq_replicate_of_subsingleton b s]⟩
 
-instance inhabitedSym [Inhabited α] (n : ℕ) : Inhabited (Sym α n) :=
+instance (priority := 10000) inhabitedSym [Inhabited α] (n : ℕ) : Inhabited (Sym α n) :=
   ⟨replicate n default⟩
 #align sym.inhabited_sym Sym.inhabitedSym
 
-instance inhabitedSym' [Inhabited α] (n : ℕ) : Inhabited (Sym' α n) :=
+instance (priority := 10000) inhabitedSym' [Inhabited α] (n : ℕ) : Inhabited (Sym' α n) :=
   ⟨Quotient.mk' (Vector.replicate n default)⟩
 #align sym.inhabited_sym' Sym.inhabitedSym'
 
-instance (n : ℕ) [IsEmpty α] : IsEmpty (Sym α n.succ) :=
+instance (priority := 10000) (n : ℕ) [IsEmpty α] : IsEmpty (Sym α n.succ) :=
   ⟨fun s => by
     obtain ⟨a, -⟩ := exists_mem s
     exact isEmptyElim a⟩
 
-instance (n : ℕ) [Unique α] : Unique (Sym α n) :=
+instance (priority := 10000) (n : ℕ) [Unique α] : Unique (Sym α n) :=
   Unique.mk' _
 
 theorem replicate_right_inj {a b : α} {n : ℕ} (h : n ≠ 0) : replicate n a = replicate n b ↔ a = b :=
@@ -359,7 +359,7 @@ theorem replicate_right_injective {n : ℕ} (h : n ≠ 0) :
     Function.Injective (replicate n : α → Sym α n) := fun _ _ => (replicate_right_inj h).1
 #align sym.replicate_right_injective Sym.replicate_right_injective
 
-instance (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) :=
+instance (priority := 10000) (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) :=
   (replicate_right_injective n.succ_ne_zero).nontrivial
 
 /-- A function `α → β` induces a function `Sym α n → Sym β n` by applying it to every element of

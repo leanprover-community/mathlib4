@@ -127,7 +127,7 @@ private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) �
       · exact monotone_gen
     _ ≤ (𝓤 α).lift' gen := lift'_mono comp_le_uniformity le_rfl
 
-instance : UniformSpace (CauchyFilter α) :=
+instance (priority := 10000) : UniformSpace (CauchyFilter α) :=
   UniformSpace.ofCore
     { uniformity := (𝓤 α).lift' gen
       refl := principal_le_lift'.2 fun _s hs ⟨a, b⟩ =>
@@ -223,7 +223,7 @@ section
 -- porting note: I commented this
 -- set_option eqn_compiler.zeta true
 
-instance : CompleteSpace (CauchyFilter α) :=
+instance (priority := 10000) : CompleteSpace (CauchyFilter α) :=
   completeSpace_extension uniformInducing_pureCauchy denseRange_pureCauchy fun f hf =>
     let f' : CauchyFilter α := ⟨f, hf⟩
     have : map pureCauchy f ≤ (𝓤 <| CauchyFilter α).lift' (preimage (Prod.mk f')) :=
@@ -237,10 +237,10 @@ instance : CompleteSpace (CauchyFilter α) :=
 
 end
 
-instance [Inhabited α] : Inhabited (CauchyFilter α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (CauchyFilter α) :=
   ⟨pureCauchy default⟩
 
-instance [h : Nonempty α] : Nonempty (CauchyFilter α) :=
+instance (priority := 10000) [h : Nonempty α] : Nonempty (CauchyFilter α) :=
   h.recOn fun a => Nonempty.intro <| CauchyFilter.pureCauchy a
 
 section Extend
@@ -345,7 +345,7 @@ variable {β : Type*} [UniformSpace β]
 
 variable {γ : Type*} [UniformSpace γ]
 
-instance completeSpace_separation [h : CompleteSpace α] :
+instance (priority := 10000) completeSpace_separation [h : CompleteSpace α] :
     CompleteSpace (Quotient (separationSetoid α)) := by
   constructor
   intro f hf
@@ -364,19 +364,19 @@ def Completion :=
 
 namespace Completion
 
-instance inhabited [Inhabited α] : Inhabited (Completion α) :=
+instance (priority := 10000) inhabited [Inhabited α] : Inhabited (Completion α) :=
   inferInstanceAs <| Inhabited (Quotient _)
 
 instance (priority := 50) uniformSpace : UniformSpace (Completion α) :=
   separationSetoid.uniformSpace
 
-instance completeSpace : CompleteSpace (Completion α) :=
+instance (priority := 10000) completeSpace : CompleteSpace (Completion α) :=
   UniformSpace.completeSpace_separation (CauchyFilter α)
 
-instance separatedSpace : SeparatedSpace (Completion α) :=
+instance (priority := 10000) separatedSpace : SeparatedSpace (Completion α) :=
   UniformSpace.separated_separation
 
-instance t3Space : T3Space (Completion α) :=
+instance (priority := 10000) t3Space : T3Space (Completion α) :=
   separated_t3
 
 /-- The map from a uniform space to its completion.
@@ -385,7 +385,7 @@ porting note: this was added to create a target for the `@[coe]` attribute. -/
 @[coe] def coe' : α → Completion α := Quotient.mk' ∘ pureCauchy
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
-instance : Coe α (Completion α) :=
+instance (priority := 10000) : Coe α (Completion α) :=
   ⟨coe' α⟩
 
 -- note [use has_coe_t]
@@ -428,7 +428,7 @@ def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
   dense := Completion.denseRange_coe
 #align uniform_space.completion.cpkg UniformSpace.Completion.cPkg
 
-instance AbstractCompletion.inhabited : Inhabited (AbstractCompletion α) :=
+instance (priority := 10000) AbstractCompletion.inhabited : Inhabited (AbstractCompletion α) :=
   ⟨cPkg⟩
 #align uniform_space.completion.abstract_completion.inhabited UniformSpace.Completion.AbstractCompletion.inhabited
 
@@ -469,7 +469,7 @@ def UniformCompletion.completeEquivSelf [CompleteSpace α] [SeparatedSpace α] :
 
 open TopologicalSpace
 
-instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Completion α) :=
+instance (priority := 10000) separableSpace_completion [SeparableSpace α] : SeparableSpace (Completion α) :=
   Completion.denseInducing_coe.separableSpace
 #align uniform_space.completion.separable_space_completion UniformSpace.Completion.separableSpace_completion
 

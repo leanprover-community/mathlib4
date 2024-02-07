@@ -107,8 +107,8 @@ def pullbackPushforwardAdjunction (f : X ⟶ Y) :
     pullback A f ⊣ pushforward A f :=
   (Opens.map f).sheafAdjunctionContinuous _ _ _
 
-instance : IsLeftAdjoint (pullback A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
-instance : IsRightAdjoint (pushforward A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
+instance (priority := 10000) : IsLeftAdjoint (pullback A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
+instance (priority := 10000) : IsRightAdjoint (pushforward A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
 
 
 end Sheaf

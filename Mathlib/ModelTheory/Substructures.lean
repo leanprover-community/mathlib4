@@ -106,7 +106,7 @@ namespace Substructure
 
 attribute [coe] Substructure.carrier
 
-instance instSetLike : SetLike (L.Substructure M) M :=
+instance (priority := 10000) instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 #align first_order.language.substructure.set_like FirstOrder.Language.Substructure.instSetLike
 
@@ -161,12 +161,12 @@ theorem constants_mem (c : L.Constants) : (c : M) ∈ S :=
 #align first_order.language.substructure.constants_mem FirstOrder.Language.Substructure.constants_mem
 
 /-- The substructure `M` of the structure `M`. -/
-instance instTop : Top (L.Substructure M) :=
+instance (priority := 10000) instTop : Top (L.Substructure M) :=
   ⟨{  carrier := Set.univ
       fun_mem := fun {_} _ _ _ => Set.mem_univ _ }⟩
 #align first_order.language.substructure.has_top FirstOrder.Language.Substructure.instTop
 
-instance instInhabited : Inhabited (L.Substructure M) :=
+instance (priority := 10000) instInhabited : Inhabited (L.Substructure M) :=
   ⟨⊤⟩
 #align first_order.language.substructure.inhabited FirstOrder.Language.Substructure.instInhabited
 
@@ -181,7 +181,7 @@ theorem coe_top : ((⊤ : L.Substructure M) : Set M) = Set.univ :=
 #align first_order.language.substructure.coe_top FirstOrder.Language.Substructure.coe_top
 
 /-- The inf of two substructures is their intersection. -/
-instance instInf : Inf (L.Substructure M) :=
+instance (priority := 10000) instInf : Inf (L.Substructure M) :=
   ⟨fun S₁ S₂ =>
     { carrier := (S₁ : Set M) ∩ (S₂ : Set M)
       fun_mem := fun {_} f => (S₁.fun_mem f).inf (S₂.fun_mem f) }⟩
@@ -198,7 +198,7 @@ theorem mem_inf {p p' : L.Substructure M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p �
   Iff.rfl
 #align first_order.language.substructure.mem_inf FirstOrder.Language.Substructure.mem_inf
 
-instance instInfSet : InfSet (L.Substructure M) :=
+instance (priority := 10000) instInfSet : InfSet (L.Substructure M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, (t : Set M)
       fun_mem := fun {n} f =>
@@ -231,7 +231,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
 #align first_order.language.substructure.coe_infi FirstOrder.Language.Substructure.coe_iInf
 
 /-- Substructures of a structure form a complete lattice. -/
-instance instCompleteLattice : CompleteLattice (L.Substructure M) :=
+instance (priority := 10000) instCompleteLattice : CompleteLattice (L.Substructure M) :=
   { completeLatticeOfInf (L.Substructure M) fun _ =>
       IsGLB.of_image
         (fun {S T : L.Substructure M} => show (S : Set M) ≤ T ↔ S ≤ T from SetLike.coe_subset_coe)
@@ -307,7 +307,7 @@ theorem coe_closure_eq_range_term_realize :
     exact t.realize_mem _ fun i => hS' i.2
 #align first_order.language.substructure.coe_closure_eq_range_term_realize FirstOrder.Language.Substructure.coe_closure_eq_range_term_realize
 
-instance small_closure [Small.{u} s] : Small.{u} (closure L s) := by
+instance (priority := 10000) small_closure [Small.{u} s] : Small.{u} (closure L s) := by
   rw [← SetLike.coe_sort_coe, Substructure.coe_closure_eq_range_term_realize]
   exact small_range _
 #align first_order.language.substructure.small_closure FirstOrder.Language.Substructure.small_closure
@@ -396,7 +396,7 @@ theorem closure_unionᵢ {ι} (s : ι → Set M) : closure L (⋃ i, s i) = ⨆ 
   (Substructure.gi L M).gc.l_iSup
 #align first_order.language.substructure.closure_Union FirstOrder.Language.Substructure.closure_unionᵢ
 
-instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
+instance (priority := 10000) small_bot : Small.{u} (⊥ : L.Substructure M) := by
   rw [← closure_empty]
   haveI : Small.{u} (∅ : Set M) := small_subsingleton _
   exact Substructure.small_closure
@@ -654,7 +654,7 @@ theorem comap_strictMono_of_surjective : StrictMono (comap f) :=
 
 end GaloisInsertion
 
-instance inducedStructure {S : L.Substructure M} : L.Structure S where
+instance (priority := 10000) inducedStructure {S : L.Substructure M} : L.Structure S where
   funMap {_} f x := ⟨funMap f fun i => x i, S.fun_mem f (fun i => x i) fun i => (x i).2⟩
   RelMap {_} r x := RelMap r fun i => (x i : M)
 set_option linter.uppercaseLean3 false in

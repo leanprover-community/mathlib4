@@ -64,7 +64,7 @@ variable [Category.{v₁} C]
 
 See <https://stacks.math.columbia.edu/tag/001M>.
 -/
-instance Category.opposite : Category.{v₁} Cᵒᵖ where
+instance (priority := 10000) Category.opposite : Category.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
 #align category_theory.category.opposite CategoryTheory.Category.opposite
@@ -129,7 +129,7 @@ def opOpEquivalence : Cᵒᵖᵒᵖ ≌ C where
 end
 
 /-- If `f` is an isomorphism, so is `f.op` -/
-instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
+instance (priority := 10000) isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
   ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by aesop_cat), Quiver.Hom.unop_inj (by aesop_cat)⟩⟩⟩
 #align category_theory.is_iso_op CategoryTheory.isIso_op
 
@@ -148,7 +148,7 @@ theorem isIso_unop_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) : IsIso f.unop ↔ IsIso f 
   rw [← isIso_op_iff f.unop, Quiver.Hom.op_unop]
 #align category_theory.is_iso_unop_iff CategoryTheory.isIso_unop_iff
 
-instance isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
+instance (priority := 10000) isIso_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsIso f] : IsIso f.unop :=
   (isIso_unop_iff _).2 inferInstance
 #align category_theory.is_iso_unop CategoryTheory.isIso_unop
 
@@ -244,18 +244,18 @@ protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ where
   map f := (F.map f.op).op
 #align category_theory.functor.right_op CategoryTheory.Functor.rightOp
 
-instance {F : C ⥤ D} [Full F] : Full F.op where preimage := @fun X Y f => (F.preimage f.unop).op
+instance (priority := 10000) {F : C ⥤ D} [Full F] : Full F.op where preimage := @fun X Y f => (F.preimage f.unop).op
 
-instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
+instance (priority := 10000) {F : C ⥤ D} [Faithful F] : Faithful F.op where
   map_injective h := Quiver.Hom.unop_inj <| by simpa using map_injective F (Quiver.Hom.op_inj h)
 
 /-- If F is faithful then the right_op of F is also faithful. -/
-instance rightOp_faithful {F : Cᵒᵖ ⥤ D} [Faithful F] : Faithful F.rightOp where
+instance (priority := 10000) rightOp_faithful {F : Cᵒᵖ ⥤ D} [Faithful F] : Faithful F.rightOp where
   map_injective h := Quiver.Hom.op_inj (map_injective F (Quiver.Hom.op_inj h))
 #align category_theory.functor.right_op_faithful CategoryTheory.Functor.rightOp_faithful
 
 /-- If F is faithful then the left_op of F is also faithful. -/
-instance leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp where
+instance (priority := 10000) leftOp_faithful {F : C ⥤ Dᵒᵖ} [Faithful F] : Faithful F.leftOp where
   map_injective h := Quiver.Hom.unop_inj (map_injective F (Quiver.Hom.unop_inj h))
 #align category_theory.functor.left_op_faithful CategoryTheory.Functor.leftOp_faithful
 
@@ -566,11 +566,11 @@ def opEquiv (A B : Cᵒᵖ) : (A ⟶ B) ≃ (B.unop ⟶ A.unop) where
   right_inv _ := rfl
 #align category_theory.op_equiv CategoryTheory.opEquiv
 
-instance subsingleton_of_unop (A B : Cᵒᵖ) [Subsingleton (unop B ⟶ unop A)] : Subsingleton (A ⟶ B) :=
+instance (priority := 10000) subsingleton_of_unop (A B : Cᵒᵖ) [Subsingleton (unop B ⟶ unop A)] : Subsingleton (A ⟶ B) :=
   (opEquiv A B).subsingleton
 #align category_theory.subsingleton_of_unop CategoryTheory.subsingleton_of_unop
 
-instance decidableEqOfUnop (A B : Cᵒᵖ) [DecidableEq (unop B ⟶ unop A)] : DecidableEq (A ⟶ B) :=
+instance (priority := 10000) decidableEqOfUnop (A B : Cᵒᵖ) [DecidableEq (unop B ⟶ unop A)] : DecidableEq (A ⟶ B) :=
   (opEquiv A B).decidableEq
 #align category_theory.decidable_eq_of_unop CategoryTheory.decidableEqOfUnop
 

@@ -127,10 +127,10 @@ def Subterminals (C : Type u₁) [Category.{v₁} C] :=
   FullSubcategory fun A : C => IsSubterminal A
 #align category_theory.subterminals CategoryTheory.Subterminals
 
-instance (C : Type u₁) [Category.{v₁} C] :
+instance (priority := 10000) (C : Type u₁) [Category.{v₁} C] :
   Category (Subterminals C) := FullSubcategory.category _
 
-instance [HasTerminal C] : Inhabited (Subterminals C) :=
+instance (priority := 10000) [HasTerminal C] : Inhabited (Subterminals C) :=
   ⟨⟨⊤_ C, isSubterminal_of_terminal⟩⟩
 
 /-- The inclusion of the subterminal objects into the original category. -/
@@ -139,13 +139,13 @@ def subterminalInclusion : Subterminals C ⥤ C :=
   fullSubcategoryInclusion _
 #align category_theory.subterminal_inclusion CategoryTheory.subterminalInclusion
 
-instance (C : Type u₁) [Category.{v₁} C] : Full (subterminalInclusion C) :=
+instance (priority := 10000) (C : Type u₁) [Category.{v₁} C] : Full (subterminalInclusion C) :=
   FullSubcategory.full _
 
-instance (C : Type u₁) [Category.{v₁} C] : Faithful (subterminalInclusion C) :=
+instance (priority := 10000) (C : Type u₁) [Category.{v₁} C] : Faithful (subterminalInclusion C) :=
   FullSubcategory.faithful _
 
-instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=
+instance (priority := 10000) subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=
   ⟨fun f g => Y.2 f g⟩
 #align category_theory.subterminals_thin CategoryTheory.subterminals_thin
 

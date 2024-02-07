@@ -70,7 +70,7 @@ def cokernelLift {X Y : SemiNormedGroupCat₁.{u}} (f : X ⟶ Y) (s : CokernelCo
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup₁.cokernel_lift SemiNormedGroupCat₁.cokernelLift
 
-instance : HasCokernels SemiNormedGroupCat₁.{u} where
+instance (priority := 10000) : HasCokernels SemiNormedGroupCat₁.{u} where
   has_colimit f :=
     HasColimit.mk
       { cocone := cokernelCocone f
@@ -100,11 +100,11 @@ namespace SemiNormedGroupCat
 section EqualizersAndKernels
 
 -- porting note: these weren't needed in Lean 3
-instance {V W : SemiNormedGroupCat.{u}} : Sub (V ⟶ W) :=
+instance (priority := 10000) {V W : SemiNormedGroupCat.{u}} : Sub (V ⟶ W) :=
   (inferInstance : Sub (NormedAddGroupHom V W))
-noncomputable instance {V W : SemiNormedGroupCat.{u}} : Norm (V ⟶ W) :=
+noncomputable instance (priority := 10000) {V W : SemiNormedGroupCat.{u}} : Norm (V ⟶ W) :=
   (inferInstance : Norm (NormedAddGroupHom V W))
-noncomputable instance {V W : SemiNormedGroupCat.{u}} : NNNorm (V ⟶ W) :=
+noncomputable instance (priority := 10000) {V W : SemiNormedGroupCat.{u}} : NNNorm (V ⟶ W) :=
   (inferInstance : NNNorm (NormedAddGroupHom V W))
 /-- The equalizer cone for a parallel pair of morphisms of seminormed groups. -/
 def fork {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) : Fork f g :=
@@ -120,7 +120,7 @@ def fork {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) : Fork f g :=
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.fork SemiNormedGroupCat.fork
 
-instance hasLimit_parallelPair {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) :
+instance (priority := 10000) hasLimit_parallelPair {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) :
     HasLimit (parallelPair f g) where
   exists_limit :=
     Nonempty.intro
@@ -137,7 +137,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) :
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.has_limit_parallel_pair SemiNormedGroupCat.hasLimit_parallelPair
 
-instance : Limits.HasEqualizers.{u, u + 1} SemiNormedGroupCat :=
+instance (priority := 10000) : Limits.HasEqualizers.{u, u + 1} SemiNormedGroupCat :=
   @hasEqualizers_of_hasLimit_parallelPair SemiNormedGroupCat _ fun {_ _ f g} =>
     SemiNormedGroupCat.hasLimit_parallelPair f g
 
@@ -199,7 +199,7 @@ def isColimitCokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) :
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.is_colimit_cokernel_cocone SemiNormedGroupCat.isColimitCokernelCocone
 
-instance : HasCokernels SemiNormedGroupCat.{u} where
+instance (priority := 10000) : HasCokernels SemiNormedGroupCat.{u} where
   has_colimit f :=
     HasColimit.mk
       { cocone := cokernelCocone f
@@ -313,7 +313,7 @@ theorem explicitCokernel_hom_ext {X Y Z : SemiNormedGroupCat.{u}} {f : X ⟶ Y}
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.explicit_cokernel_hom_ext SemiNormedGroupCat.explicitCokernel_hom_ext
 
-instance explicitCokernelπ.epi {X Y : SemiNormedGroupCat.{u}} {f : X ⟶ Y} :
+instance (priority := 10000) explicitCokernelπ.epi {X Y : SemiNormedGroupCat.{u}} {f : X ⟶ Y} :
     Epi (explicitCokernelπ f) := by
   constructor
   intro Z g h H

@@ -60,10 +60,10 @@ def linearCoyoneda : Cᵒᵖ ⥤ C ⥤ ModuleCat R where
         (Linear.leftComp _ _ f.unop) }
 #align category_theory.linear_coyoneda CategoryTheory.linearCoyoneda
 
-instance linearYoneda_obj_additive (X : C) : ((linearYoneda R C).obj X).Additive where
+instance (priority := 10000) linearYoneda_obj_additive (X : C) : ((linearYoneda R C).obj X).Additive where
 #align category_theory.linear_yoneda_obj_additive CategoryTheory.linearYoneda_obj_additive
 
-instance linearCoyoneda_obj_additive (Y : Cᵒᵖ) : ((linearCoyoneda R C).obj Y).Additive where
+instance (priority := 10000) linearCoyoneda_obj_additive (Y : Cᵒᵖ) : ((linearCoyoneda R C).obj Y).Additive where
 #align category_theory.linear_coyoneda_obj_additive CategoryTheory.linearCoyoneda_obj_additive
 
 @[simp]
@@ -93,25 +93,25 @@ theorem whiskering_linearCoyoneda₂ :
   rfl
 #align category_theory.whiskering_linear_coyoneda₂ CategoryTheory.whiskering_linearCoyoneda₂
 
-instance full_linearYoneda : Full (linearYoneda R C) :=
+instance (priority := 10000) full_linearYoneda : Full (linearYoneda R C) :=
   let _ :  Full (linearYoneda R C ⋙ (whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R))) :=
     Yoneda.yonedaFull
   Full.ofCompFaithful (linearYoneda R C)
     ((whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)))
 #align category_theory.linear_yoneda_full CategoryTheory.full_linearYoneda
 
-instance full_linearCoyoneda : Full (linearCoyoneda R C) :=
+instance (priority := 10000) full_linearCoyoneda : Full (linearCoyoneda R C) :=
   let _ : Full (linearCoyoneda R C ⋙ (whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R))) :=
     Coyoneda.coyonedaFull
   Full.ofCompFaithful (linearCoyoneda R C)
     ((whiskeringRight _ _ _).obj (forget (ModuleCat.{v} R)))
 #align category_theory.linear_coyoneda_full CategoryTheory.full_linearCoyoneda
 
-instance faithful_linearYoneda : Faithful (linearYoneda R C) :=
+instance (priority := 10000) faithful_linearYoneda : Faithful (linearYoneda R C) :=
   Faithful.of_comp_eq (whiskering_linearYoneda R C)
 #align category_theory.linear_yoneda_faithful CategoryTheory.faithful_linearYoneda
 
-instance faithful_linearCoyoneda : Faithful (linearCoyoneda R C) :=
+instance (priority := 10000) faithful_linearCoyoneda : Faithful (linearCoyoneda R C) :=
   Faithful.of_comp_eq (whiskering_linearCoyoneda R C)
 #align category_theory.linear_coyoneda_faithful CategoryTheory.faithful_linearCoyoneda
 

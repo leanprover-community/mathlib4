@@ -63,17 +63,17 @@ infixl:25 " ≼i " => InitialSeg
 
 namespace InitialSeg
 
-instance : Coe (r ≼i s) (r ↪r s) :=
+instance (priority := 10000) : Coe (r ≼i s) (r ↪r s) :=
   ⟨InitialSeg.toRelEmbedding⟩
 
-instance : FunLike (r ≼i s) α β where
+instance (priority := 10000) : FunLike (r ≼i s) α β where
   coe f := f.toFun
   coe_injective' := by
     rintro ⟨f, hf⟩ ⟨g, hg⟩ h
     congr with x
     exact congr_fun h x
 
-instance : EmbeddingLike (r ≼i s) α β where
+instance (priority := 10000) : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
@@ -111,7 +111,7 @@ protected def refl (r : α → α → Prop) : r ≼i r :=
   ⟨RelEmbedding.refl _, fun _ _ _ => ⟨_, rfl⟩⟩
 #align initial_seg.refl InitialSeg.refl
 
-instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
+instance (priority := 10000) (r : α → α → Prop) : Inhabited (r ≼i r) :=
   ⟨InitialSeg.refl r⟩
 
 /-- Composition of functions shows that `≼i` is transitive -/
@@ -133,7 +133,7 @@ theorem trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (
   rfl
 #align initial_seg.trans_apply InitialSeg.trans_apply
 
-instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s]
+instance (priority := 10000) subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s]
     [IsWellFounded α r] : Subsingleton (r ≼i s) :=
   ⟨fun f g => by
     ext a
@@ -143,7 +143,7 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
     exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl⟩
 #align initial_seg.subsingleton_of_trichotomous_of_irrefl InitialSeg.subsingleton_of_trichotomous_of_irrefl
 
-instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
+instance (priority := 10000) [IsWellOrder β s] : Subsingleton (r ≼i s) :=
   ⟨fun a => by let _ := a.isWellFounded; exact Subsingleton.elim a⟩
 
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
@@ -251,10 +251,10 @@ infixl:25 " ≺i " => PrincipalSeg
 
 namespace PrincipalSeg
 
-instance : CoeOut (r ≺i s) (r ↪r s) :=
+instance (priority := 10000) : CoeOut (r ≺i s) (r ↪r s) :=
   ⟨PrincipalSeg.toRelEmbedding⟩
 
-instance : CoeFun (r ≺i s) fun _ => α → β :=
+instance (priority := 10000) : CoeFun (r ≺i s) fun _ => α → β :=
   ⟨fun f => f⟩
 
 @[simp]
@@ -275,7 +275,7 @@ theorem init [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s b (f a)) : �
 #align principal_seg.init PrincipalSeg.init
 
 /-- A principal segment is in particular an initial segment. -/
-instance hasCoeInitialSeg [IsTrans β s] : Coe (r ≺i s) (r ≼i s) :=
+instance (priority := 10000) hasCoeInitialSeg [IsTrans β s] : Coe (r ≺i s) (r ≼i s) :=
   ⟨fun f => ⟨f.toRelEmbedding, fun _ _ => f.init⟩⟩
 #align principal_seg.has_coe_initial_seg PrincipalSeg.hasCoeInitialSeg
 
@@ -293,7 +293,7 @@ theorem irrefl {r : α → α → Prop} [IsWellOrder α r] (f : r ≺i r) : Fals
   exact _root_.irrefl _ h
 #align principal_seg.irrefl PrincipalSeg.irrefl
 
-instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
+instance (priority := 10000) (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
   ⟨fun f => f.irrefl⟩
 
 /-- Composition of a principal segment with an initial segment, as a principal segment -/
@@ -357,7 +357,7 @@ theorem equivLT_top (f : r ≃r s) (g : s ≺i t) : (equivLT f g).top = g.top :=
 #align principal_seg.equiv_lt_top PrincipalSeg.equivLT_top
 
 /-- Given a well order `s`, there is a most one principal segment embedding of `r` into `s`. -/
-instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
+instance (priority := 10000) [IsWellOrder β s] : Subsingleton (r ≺i s) :=
   ⟨fun f g => by
     have ef : (f : α → β) = g := by
       show ((f : r ≼i s) : α → β) = (g : r ≼i s)

@@ -116,31 +116,31 @@ end Bifunctor
 
 open Functor
 
-instance Prod.bifunctor : Bifunctor Prod where bimap := @Prod.map
+instance (priority := 10000) Prod.bifunctor : Bifunctor Prod where bimap := @Prod.map
 #align prod.bifunctor Prod.bifunctor
 
-instance Prod.lawfulBifunctor : LawfulBifunctor Prod := by
+instance (priority := 10000) Prod.lawfulBifunctor : LawfulBifunctor Prod := by
   refine' { .. } <;> intros <;> rfl
 #align prod.is_lawful_bifunctor Prod.lawfulBifunctor
 
-instance Bifunctor.const : Bifunctor Const where bimap f _ := f
+instance (priority := 10000) Bifunctor.const : Bifunctor Const where bimap f _ := f
 #align bifunctor.const Bifunctor.const
 
-instance LawfulBifunctor.const : LawfulBifunctor Const := by refine' { .. } <;> intros <;> rfl
+instance (priority := 10000) LawfulBifunctor.const : LawfulBifunctor Const := by refine' { .. } <;> intros <;> rfl
 #align is_lawful_bifunctor.const LawfulBifunctor.const
 
-instance Bifunctor.flip : Bifunctor (flip F) where
+instance (priority := 10000) Bifunctor.flip : Bifunctor (flip F) where
   bimap {_α α' _β β'} f f' x := (bimap f' f x : F β' α')
 #align bifunctor.flip Bifunctor.flip
 
-instance LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) := by
+instance (priority := 10000) LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) := by
   refine' { .. } <;> intros <;> simp [bimap, functor_norm]
 #align is_lawful_bifunctor.flip LawfulBifunctor.flip
 
-instance Sum.bifunctor : Bifunctor Sum where bimap := @Sum.map
+instance (priority := 10000) Sum.bifunctor : Bifunctor Sum where bimap := @Sum.map
 #align sum.bifunctor Sum.bifunctor
 
-instance Sum.lawfulBifunctor : LawfulBifunctor Sum := by
+instance (priority := 10000) Sum.lawfulBifunctor : LawfulBifunctor Sum := by
   refine' { .. } <;> aesop
 #align sum.is_lawful_bifunctor Sum.lawfulBifunctor
 
@@ -158,11 +158,11 @@ section Bicompl
 
 variable (G : Type* → Type u₀) (H : Type* → Type u₁) [Functor G] [Functor H]
 
-instance Function.bicompl.bifunctor : Bifunctor (bicompl F G H) where
+instance (priority := 10000) Function.bicompl.bifunctor : Bifunctor (bicompl F G H) where
   bimap {_α α' _β β'} f f' x := (bimap (map f) (map f') x : F (G α') (H β'))
 #align function.bicompl.bifunctor Function.bicompl.bifunctor
 
-instance Function.bicompl.lawfulBifunctor [LawfulFunctor G] [LawfulFunctor H] [LawfulBifunctor F] :
+instance (priority := 10000) Function.bicompl.lawfulBifunctor [LawfulFunctor G] [LawfulFunctor H] [LawfulBifunctor F] :
     LawfulBifunctor (bicompl F G H) := by
   constructor <;> intros <;> simp [bimap, map_id, map_comp_map, functor_norm]
 #align function.bicompl.is_lawful_bifunctor Function.bicompl.lawfulBifunctor
@@ -173,11 +173,11 @@ section Bicompr
 
 variable (G : Type u₂ → Type*) [Functor G]
 
-instance Function.bicompr.bifunctor : Bifunctor (bicompr G F) where
+instance (priority := 10000) Function.bicompr.bifunctor : Bifunctor (bicompr G F) where
   bimap {_α α' _β β'} f f' x := (map (bimap f f') x : G (F α' β'))
 #align function.bicompr.bifunctor Function.bicompr.bifunctor
 
-instance Function.bicompr.lawfulBifunctor [LawfulFunctor G] [LawfulBifunctor F] :
+instance (priority := 10000) Function.bicompr.lawfulBifunctor [LawfulFunctor G] [LawfulBifunctor F] :
     LawfulBifunctor (bicompr G F) := by
   constructor <;> intros <;> simp [bimap, functor_norm]
 #align function.bicompr.is_lawful_bifunctor Function.bicompr.lawfulBifunctor

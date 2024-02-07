@@ -491,7 +491,7 @@ theorem app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshe
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.app_injective_iff_stalk_functor_map_injective TopCat.Presheaf.app_injective_iff_stalkFunctor_map_injective
 
-instance stalkFunctor_preserves_mono (x : X) :
+instance (priority := 10000) stalkFunctor_preserves_mono (x : X) :
     Functor.PreservesMonomorphisms (Sheaf.forget C X ⋙ stalkFunctor C x) :=
   ⟨@fun _𝓐 _𝓑 f _ =>
     ConcreteCategory.mono_of_injective _ <|
@@ -640,7 +640,7 @@ set_option linter.uppercaseLean3 false in
 
 end Concrete
 
-instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
+instance (priority := 10000) algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
     Algebra (F.obj <| op U) (F.stalk x) :=
   (F.germ x).toAlgebra
 

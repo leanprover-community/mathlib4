@@ -281,7 +281,7 @@ def rangeRestrict [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) 
 /-- The range of a linear map is finite if the domain is finite.
 Note: this instance can form a diamond with `Subtype.fintype` in the
   presence of `Fintype M₂`. -/
-instance fintypeRange [Fintype M] [DecidableEq M₂] [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
+instance (priority := 10000) fintypeRange [Fintype M] [DecidableEq M₂] [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
     Fintype (range f) :=
   Set.fintypeRange f
 #align linear_map.fintype_range LinearMap.fintypeRange
@@ -808,7 +808,7 @@ section Module
 variable [Subsingleton M] [Subsingleton M₂]
 
 /-- Between two zero modules, the zero map is an equivalence. -/
-instance : Zero (M ≃ₛₗ[σ₁₂] M₂) :=
+instance (priority := 10000) : Zero (M ≃ₛₗ[σ₁₂] M₂) :=
   ⟨{ (0 : M →ₛₗ[σ₁₂] M₂) with
       toFun := 0
       invFun := 0
@@ -832,14 +832,14 @@ theorem zero_apply (x : M) : (0 : M ≃ₛₗ[σ₁₂] M₂) x = 0 :=
 #align linear_equiv.zero_apply LinearEquiv.zero_apply
 
 /-- Between two zero modules, the zero map is the only equivalence. -/
-instance : Unique (M ≃ₛₗ[σ₁₂] M₂) where
+instance (priority := 10000) : Unique (M ≃ₛₗ[σ₁₂] M₂) where
   uniq _ := toLinearMap_injective (Subsingleton.elim _ _)
   default := 0
 
 
 end Module
 
-instance uniqueOfSubsingleton [Subsingleton R] [Subsingleton R₂] : Unique (M ≃ₛₗ[σ₁₂] M₂) := by
+instance (priority := 10000) uniqueOfSubsingleton [Subsingleton R] [Subsingleton R₂] : Unique (M ≃ₛₗ[σ₁₂] M₂) := by
   haveI := Module.subsingleton R M
   haveI := Module.subsingleton R₂ M₂
   infer_instance

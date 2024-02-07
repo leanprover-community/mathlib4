@@ -66,10 +66,10 @@ namespace Ring
 
 open ringFunc Language
 
-instance (n : ℕ) : DecidableEq (Language.ring.Functions n) := by
+instance (priority := 10000) (n : ℕ) : DecidableEq (Language.ring.Functions n) := by
   dsimp [Language.ring]; infer_instance
 
-instance (n : ℕ) : DecidableEq (Language.ring.Relations n) := by
+instance (priority := 10000) (n : ℕ) : DecidableEq (Language.ring.Relations n) := by
   dsimp [Language.ring]; infer_instance
 
 /-- `RingFunc.add`, but with the defeq type `Language.ring.Functions 2` instead
@@ -92,35 +92,35 @@ abbrev zeroFunc : Language.ring.Functions 0 := zero
 of `RingFunc 0` -/
 abbrev oneFunc : Language.ring.Functions 0 := one
 
-instance (α : Type*) : Zero (Language.ring.Term α) :=
+instance (priority := 10000) (α : Type*) : Zero (Language.ring.Term α) :=
 { zero := Constants.term zeroFunc }
 
 theorem zero_def (α : Type*) : (0 : Language.ring.Term α) = Constants.term zeroFunc := rfl
 
-instance (α : Type*) : One (Language.ring.Term α) :=
+instance (priority := 10000) (α : Type*) : One (Language.ring.Term α) :=
 { one := Constants.term oneFunc }
 
 theorem one_def (α : Type*) : (1 : Language.ring.Term α) = Constants.term oneFunc := rfl
 
-instance (α : Type*) : Add (Language.ring.Term α) :=
+instance (priority := 10000) (α : Type*) : Add (Language.ring.Term α) :=
 { add := addFunc.apply₂ }
 
 theorem add_def (α : Type*) (t₁ t₂ : Language.ring.Term α) :
     t₁ + t₂ = addFunc.apply₂ t₁ t₂ := rfl
 
-instance (α : Type*) : Mul (Language.ring.Term α) :=
+instance (priority := 10000) (α : Type*) : Mul (Language.ring.Term α) :=
 { mul := mulFunc.apply₂ }
 
 theorem mul_def (α : Type*) (t₁ t₂ : Language.ring.Term α) :
     t₁ * t₂ = mulFunc.apply₂ t₁ t₂ := rfl
 
-instance (α : Type*) : Neg (Language.ring.Term α) :=
+instance (priority := 10000) (α : Type*) : Neg (Language.ring.Term α) :=
 { neg := negFunc.apply₁ }
 
 theorem neg_def (α : Type*) (t : Language.ring.Term α) :
     -t = negFunc.apply₁ t := rfl
 
-instance : Fintype Language.ring.Symbols :=
+instance (priority := 10000) : Fintype Language.ring.Symbols :=
   ⟨⟨Multiset.ofList
       [Sum.inl ⟨2, .add⟩,
        Sum.inl ⟨2, .mul⟩,

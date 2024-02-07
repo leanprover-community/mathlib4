@@ -169,7 +169,7 @@ theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
 #align monoid_algebra.submodule.exists_is_compl MonoidAlgebra.Submodule.exists_isCompl
 
 /-- This also implies an instance `IsSemisimpleModule (MonoidAlgebra k G) V`. -/
-instance complementedLattice : ComplementedLattice (Submodule (MonoidAlgebra k G) V) :=
+instance (priority := 10000) complementedLattice : ComplementedLattice (Submodule (MonoidAlgebra k G) V) :=
   ⟨exists_isCompl⟩
 #align monoid_algebra.submodule.complemented_lattice MonoidAlgebra.Submodule.complementedLattice
 

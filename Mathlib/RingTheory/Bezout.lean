@@ -37,7 +37,7 @@ namespace IsBezout
 
 variable {R}
 
-instance span_pair_isPrincipal [IsBezout R] (x y : R) : (Ideal.span {x, y} : Ideal R).IsPrincipal :=
+instance (priority := 10000) span_pair_isPrincipal [IsBezout R] (x y : R) : (Ideal.span {x, y} : Ideal R).IsPrincipal :=
   by classical exact isPrincipal_of_FG (Ideal.span {x, y}) ⟨{x, y}, by simp⟩
 #align is_bezout.span_pair_is_principal IsBezout.span_pair_isPrincipal
 

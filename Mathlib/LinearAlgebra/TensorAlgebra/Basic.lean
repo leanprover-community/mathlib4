@@ -65,12 +65,12 @@ def TensorAlgebra :=
 #align tensor_algebra TensorAlgebra
 
 -- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
-instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabited _
-instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
+instance (priority := 10000) : Inhabited (TensorAlgebra R M) := RingQuot.instInhabited _
+instance (priority := 10000) : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]
-instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
+instance (priority := 10000) instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Module R M] [Module A M]
     [IsScalarTower R A M] :
     Algebra R (TensorAlgebra A M) :=
@@ -79,13 +79,13 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
 -- verify there is no diamond
 example : (algebraNat : Algebra â„• (TensorAlgebra R M)) = instAlgebra := rfl
 
-instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
+instance (priority := 10000) {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (TensorAlgebra A M) :=
   RingQuot.instSMulCommClass _
 
-instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
+instance (priority := 10000) {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] :
     IsScalarTower R S (TensorAlgebra A M) :=
@@ -93,7 +93,7 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemi
 
 namespace TensorAlgebra
 
-instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
+instance (priority := 10000) {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   RingQuot.instRing (Rel S M)
 
 -- verify there is no diamond
@@ -244,7 +244,7 @@ theorem algebraMap_eq_one_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 1 â
 #align tensor_algebra.algebra_map_eq_one_iff TensorAlgebra.algebraMap_eq_one_iff
 
 /-- A `TensorAlgebra` over a nontrivial semiring is nontrivial. -/
-instance [Nontrivial R] : Nontrivial (TensorAlgebra R M) :=
+instance (priority := 10000) [Nontrivial R] : Nontrivial (TensorAlgebra R M) :=
   (algebraMap_leftInverse M).injective.nontrivial
 
 variable {M}

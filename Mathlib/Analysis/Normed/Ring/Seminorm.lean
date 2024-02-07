@@ -78,7 +78,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing R]
 
-instance funLike : FunLike (RingSeminorm R) R ℝ where
+instance (priority := 10000) funLike : FunLike (RingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -87,7 +87,7 @@ instance funLike : FunLike (RingSeminorm R) R ℝ where
     ext x
     exact congr_fun h x
 
-instance ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
+instance (priority := 10000) ringSeminormClass : RingSeminormClass (RingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_mul_le_mul f := f.mul_le'
@@ -104,7 +104,7 @@ theorem ext {p q : RingSeminorm R} : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 #align ring_seminorm.ext RingSeminorm.ext
 
-instance : Zero (RingSeminorm R) :=
+instance (priority := 10000) : Zero (RingSeminorm R) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with mul_le' :=
     fun _ _ => (zero_mul _).ge }⟩
 
@@ -115,12 +115,12 @@ theorem eq_zero_iff {p : RingSeminorm R} : p = 0 ↔ ∀ x, p x = 0 :=
 theorem ne_zero_iff {p : RingSeminorm R} : p ≠ 0 ↔ ∃ x, p x ≠ 0 := by simp [eq_zero_iff]
 #align ring_seminorm.ne_zero_iff RingSeminorm.ne_zero_iff
 
-instance : Inhabited (RingSeminorm R) :=
+instance (priority := 10000) : Inhabited (RingSeminorm R) :=
   ⟨0⟩
 
 /-- The trivial seminorm on a ring `R` is the `RingSeminorm` taking value `0` at `0` and `1` at
 every other element. -/
-instance [DecidableEq R] : One (RingSeminorm R) :=
+instance (priority := 10000) [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       mul_le' := fun x y => by
         by_cases h : x * y = 0
@@ -174,7 +174,7 @@ namespace RingNorm
 
 variable [NonUnitalRing R]
 
-instance funLike : FunLike (RingNorm R) R ℝ where
+instance (priority := 10000) funLike : FunLike (RingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -183,7 +183,7 @@ instance funLike : FunLike (RingNorm R) R ℝ where
     ext x
     exact congr_fun h x
 
-instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
+instance (priority := 10000) ringNormClass : RingNormClass (RingNorm R) R ℝ where
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_mul_le_mul f := f.mul_le'
@@ -204,7 +204,7 @@ variable (R)
 
 /-- The trivial norm on a ring `R` is the `RingNorm` taking value `0` at `0` and `1` at every
   other element. -/
-instance [DecidableEq R] : One (RingNorm R) :=
+instance (priority := 10000) [DecidableEq R] : One (RingNorm R) :=
   ⟨{ (1 : RingSeminorm R), (1 : AddGroupNorm R) with }⟩
 
 @[simp]
@@ -212,7 +212,7 @@ theorem apply_one [DecidableEq R] (x : R) : (1 : RingNorm R) x = if x = 0 then 0
   rfl
 #align ring_norm.apply_one RingNorm.apply_one
 
-instance [DecidableEq R] : Inhabited (RingNorm R) :=
+instance (priority := 10000) [DecidableEq R] : Inhabited (RingNorm R) :=
   ⟨1⟩
 
 end RingNorm
@@ -221,7 +221,7 @@ namespace MulRingSeminorm
 
 variable [NonAssocRing R]
 
-instance funLike : FunLike (MulRingSeminorm R) R ℝ where
+instance (priority := 10000) funLike : FunLike (MulRingSeminorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -230,7 +230,7 @@ instance funLike : FunLike (MulRingSeminorm R) R ℝ where
     ext x
     exact congr_fun h x
 
-instance mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ where
+instance (priority := 10000) mulRingSeminormClass : MulRingSeminormClass (MulRingSeminorm R) R ℝ where
   map_zero f := f.map_zero'
   map_one f := f.map_one'
   map_add_le_add f := f.add_le'
@@ -252,7 +252,7 @@ variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
 
 /-- The trivial seminorm on a ring `R` is the `MulRingSeminorm` taking value `0` at `0` and `1` at
 every other element. -/
-instance : One (MulRingSeminorm R) :=
+instance (priority := 10000) : One (MulRingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       map_one' := if_neg one_ne_zero
       map_mul' := fun x y => by
@@ -267,7 +267,7 @@ theorem apply_one (x : R) : (1 : MulRingSeminorm R) x = if x = 0 then 0 else 1 :
   rfl
 #align mul_ring_seminorm.apply_one MulRingSeminorm.apply_one
 
-instance : Inhabited (MulRingSeminorm R) :=
+instance (priority := 10000) : Inhabited (MulRingSeminorm R) :=
   ⟨1⟩
 
 end MulRingSeminorm
@@ -276,7 +276,7 @@ namespace MulRingNorm
 
 variable [NonAssocRing R]
 
-instance funLike : FunLike (MulRingNorm R) R ℝ where
+instance (priority := 10000) funLike : FunLike (MulRingNorm R) R ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -285,7 +285,7 @@ instance funLike : FunLike (MulRingNorm R) R ℝ where
     ext x
     exact congr_fun h x
 
-instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
+instance (priority := 10000) mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   map_zero f := f.map_zero'
   map_one f := f.map_one'
   map_add_le_add f := f.add_le'
@@ -309,7 +309,7 @@ variable [DecidableEq R] [NoZeroDivisors R] [Nontrivial R]
 
 /-- The trivial norm on a ring `R` is the `MulRingNorm` taking value `0` at `0` and `1` at every
 other element. -/
-instance : One (MulRingNorm R) :=
+instance (priority := 10000) : One (MulRingNorm R) :=
   ⟨{ (1 : MulRingSeminorm R), (1 : AddGroupNorm R) with }⟩
 
 @[simp]
@@ -317,7 +317,7 @@ theorem apply_one (x : R) : (1 : MulRingNorm R) x = if x = 0 then 0 else 1 :=
   rfl
 #align mul_ring_norm.apply_one MulRingNorm.apply_one
 
-instance : Inhabited (MulRingNorm R) :=
+instance (priority := 10000) : Inhabited (MulRingNorm R) :=
   ⟨1⟩
 
 end MulRingNorm

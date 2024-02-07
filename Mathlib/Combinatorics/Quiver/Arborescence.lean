@@ -50,7 +50,7 @@ def root (V : Type u) [Quiver V] [Arborescence V] : V :=
   Arborescence.root
 #align quiver.root Quiver.root
 
-instance {V : Type u} [Quiver V] [Arborescence V] (b : V) : Unique (Path (root V) b) :=
+instance (priority := 10000) {V : Type u} [Quiver V] [Arborescence V] (b : V) : Unique (Path (root V) b) :=
   Arborescence.uniquePath b
 
 /-- To show that `[Quiver V]` is an arborescence with root `r : V`, it suffices to
@@ -116,7 +116,7 @@ def geodesicSubtree : WideSubquiver V := fun a b =>
   { e | ∃ p : Path r a, shortestPath r b = p.cons e }
 #align quiver.geodesic_subtree Quiver.geodesicSubtree
 
-noncomputable instance geodesicArborescence : Arborescence (geodesicSubtree r) :=
+noncomputable instance (priority := 10000) geodesicArborescence : Arborescence (geodesicSubtree r) :=
   arborescenceMk r (fun a => (shortestPath r a).length)
     (by
       rintro a b ⟨e, p, h⟩

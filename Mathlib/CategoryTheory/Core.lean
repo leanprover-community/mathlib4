@@ -38,7 +38,7 @@ def Core (C : Type u₁) := C
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-instance coreCategory : Groupoid.{v₁} (Core C) where
+instance (priority := 10000) coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : C) := X ≅ Y
   id (X : C) := Iso.refl X
   comp f g := Iso.trans f g
@@ -67,7 +67,7 @@ def inclusion : Core C ⥤ C where
 #align category_theory.core.inclusion CategoryTheory.Core.inclusion
 
 -- porting note: This worked without proof before.
-instance : Faithful (inclusion C) where
+instance (priority := 10000) : Faithful (inclusion C) where
   map_injective := by
     intro _ _
     apply Iso.ext

@@ -137,7 +137,7 @@ theorem _root_.Semigroup.mem_center_iff {z : M} :
 variable (M)
 
 -- TODO Add `instance : Decidable (IsMulCentral a)` for `instance decidableMemCenter [Mul M]`
-instance decidableMemCenter [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
+instance (priority := 10000) decidableMemCenter [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
     DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (Semigroup.mem_center_iff)
 #align set.decidable_mem_center Set.decidableMemCenter
 
@@ -332,7 +332,7 @@ variable {M}
 
 /-- The center of a magma is commutative and associative. -/
 @[to_additive "The center of an additive magma is commutative and associative."]
-instance center.commSemigroup : CommSemigroup (center M) where
+instance (priority := 10000) center.commSemigroup : CommSemigroup (center M) where
   mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
   mul_comm a _ := Subtype.ext <| a.2.comm _
 #align subsemigroup.center.comm_semigroup Subsemigroup.center.commSemigroup
@@ -351,7 +351,7 @@ theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
 #align add_subsemigroup.mem_center_iff AddSubsemigroup.mem_center_iff
 
 @[to_additive]
-instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] :
+instance (priority := 10000) decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] :
     Decidable (a ∈ center M) :=
   decidable_of_iff' _ Semigroup.mem_center_iff
 #align subsemigroup.decidable_mem_center Subsemigroup.decidableMemCenter

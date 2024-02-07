@@ -25,12 +25,12 @@ theorem bar0_works : bar0 3 4 = 7 := by decide
 class my_has_pow (α : Type u) (β : Type v) :=
   (pow : α → β → α)
 
-instance : my_has_pow Nat Nat := ⟨fun a b => a ^ b⟩
+instance (priority := 10000) : my_has_pow Nat Nat := ⟨fun a b => a ^ b⟩
 
 class my_has_scalar (M : Type u) (α : Type v) :=
   (smul : M → α → α)
 
-instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
+instance (priority := 10000) : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 attribute [to_additive (reorder := 1 2) my_has_scalar] my_has_pow
 attribute [to_additive (reorder := 1 2, 4 5)] my_has_pow.pow
 
@@ -42,7 +42,7 @@ theorem bar1_works : bar1 3 4 = 3 * 4 := by decide
 
 infix:80 " ^ " => my_has_pow.pow
 
-instance dummy_pow : my_has_pow ℕ <| PLift ℤ := ⟨fun _ _ => 5⟩
+instance (priority := 10000) dummy_pow : my_has_pow ℕ <| PLift ℤ := ⟨fun _ _ => 5⟩
 
 @[to_additive bar2]
 def foo2 {α} [my_has_pow α ℕ] (x : α) (n : ℕ) (m : PLift ℤ) : α := x ^ (n ^ m)
@@ -198,7 +198,7 @@ def some_def {α : Type u} [Mul α] (x : α) : α :=
 
 def myFin (_ : ℕ) := ℕ
 
-instance : One (myFin n) := ⟨(1 : ℕ)⟩
+instance (priority := 10000) : One (myFin n) := ⟨(1 : ℕ)⟩
 
 @[to_additive bar]
 def myFin.foo : myFin (n+1) := 1
@@ -231,7 +231,7 @@ def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f 
 
 
 @[to_additive]
-instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One ((i : I) → f i) :=
+instance (priority := 10000) pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One ((i : I) → f i) :=
   ⟨fun _ => 1⟩
 
 run_cmd do
@@ -271,7 +271,7 @@ class FooClass (α) : Prop where
   refle : ∀ a : α, a = a
 
 @[to_additive]
-instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl⟩
+instance (priority := 10000) FooClass_one [One α] : FooClass α := ⟨λ _ => rfl⟩
 
 lemma one_fooClass [One α] : FooClass α := by infer_instance
 

@@ -75,14 +75,14 @@ instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α]
 theorem isCyclic_multiplicative_iff [AddGroup α] : IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
   ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
 
-instance isCyclic_multiplicative [AddGroup α] [IsAddCyclic α] : IsCyclic (Multiplicative α) :=
+instance (priority := 10000) isCyclic_multiplicative [AddGroup α] [IsAddCyclic α] : IsCyclic (Multiplicative α) :=
   isCyclic_multiplicative_iff.mpr inferInstance
 
 @[simp]
 theorem isAddCyclic_additive_iff [Group α] : IsAddCyclic (Additive α) ↔ IsCyclic α :=
   ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
 
-instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
+instance (priority := 10000) isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
   isAddCyclic_additive_iff.mpr inferInstance
 
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
@@ -216,13 +216,13 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
 #align infinite.add_order_of_eq_zero_of_forall_mem_zmultiples Infinite.addOrderOf_eq_zero_of_forall_mem_zmultiples
 
 @[to_additive]
-instance Bot.isCyclic {α : Type u} [Group α] : IsCyclic (⊥ : Subgroup α) :=
+instance (priority := 10000) Bot.isCyclic {α : Type u} [Group α] : IsCyclic (⊥ : Subgroup α) :=
   ⟨⟨1, fun x => ⟨0, Subtype.eq <| (zpow_zero (1 : α)).trans <| Eq.symm (Subgroup.mem_bot.1 x.2)⟩⟩⟩
 #align bot.is_cyclic Bot.isCyclic
 #align bot.is_add_cyclic Bot.isAddCyclic
 
 @[to_additive]
-instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
+instance (priority := 10000) Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
   haveI := Classical.propDecidable
   let ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   if hx : ∃ x : α, x ∈ H ∧ x ≠ (1 : α) then
@@ -596,12 +596,12 @@ theorem CommGroup.is_simple_iff_isCyclic_and_prime_card [Fintype α] [CommGroup 
 
 section SpecificInstances
 
-instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
+instance (priority := 10000) : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
 
-instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
+instance (priority := 10000) ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
   isAddCyclic_of_surjective (Int.castRingHom _) ZMod.int_cast_surjective
 
-instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
+instance (priority := 10000) ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
   AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
     ⟨inferInstance, by simpa using (Fact.out : p.Prime)⟩
 

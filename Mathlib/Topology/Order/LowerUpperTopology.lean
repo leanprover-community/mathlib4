@@ -108,13 +108,13 @@ protected def rec {β : WithLower α → Sort*} (h : ∀ a, β (toLower a)) : �
   h (ofLower a)
 #align with_lower_topology.rec Topology.WithLower.rec
 
-instance [Nonempty α] : Nonempty (WithLower α) := ‹Nonempty α›
-instance [Inhabited α] : Inhabited (WithLower α) := ‹Inhabited α›
+instance (priority := 10000) [Nonempty α] : Nonempty (WithLower α) := ‹Nonempty α›
+instance (priority := 10000) [Inhabited α] : Inhabited (WithLower α) := ‹Inhabited α›
 
 variable [Preorder α] {s : Set α}
 
-instance : Preorder (WithLower α) := ‹Preorder α›
-instance : TopologicalSpace (WithLower α) := lower α
+instance (priority := 10000) : Preorder (WithLower α) := ‹Preorder α›
+instance (priority := 10000) : TopologicalSpace (WithLower α) := lower α
 
 lemma isOpen_preimage_ofLower : IsOpen (ofLower ⁻¹' s) ↔ (lower α).IsOpen s := Iff.rfl
 #align with_lower_topology.is_open_preimage_of_lower Topology.WithLower.isOpen_preimage_ofLower
@@ -146,13 +146,13 @@ lemma ofUpper_inj {a b : WithUpper α} : ofUpper a = ofUpper b ↔ a = b := Iff.
 protected def rec {β : WithUpper α → Sort*} (h : ∀ a, β (toUpper a)) : ∀ a, β a := fun a =>
   h (ofUpper a)
 
-instance [Nonempty α] : Nonempty (WithUpper α) := ‹Nonempty α›
-instance [Inhabited α] : Inhabited (WithUpper α) := ‹Inhabited α›
+instance (priority := 10000) [Nonempty α] : Nonempty (WithUpper α) := ‹Nonempty α›
+instance (priority := 10000) [Inhabited α] : Inhabited (WithUpper α) := ‹Inhabited α›
 
 variable [Preorder α] {s : Set α}
 
-instance : Preorder (WithUpper α) := ‹Preorder α›
-instance : TopologicalSpace (WithUpper α) := upper α
+instance (priority := 10000) : Preorder (WithUpper α) := ‹Preorder α›
+instance (priority := 10000) : TopologicalSpace (WithUpper α) := upper α
 
 lemma isOpen_preimage_ofUpper : IsOpen (ofUpper ⁻¹' s) ↔ (upper α).IsOpen s := Iff.rfl
 
@@ -178,8 +178,8 @@ class IsUpper (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_upperTopology : t = upper α
 attribute [nolint docBlame] IsUpper.topology_eq_upperTopology
 
-instance [Preorder α] : IsLower (WithLower α) := ⟨rfl⟩
-instance [Preorder α] : IsUpper (WithUpper α) := ⟨rfl⟩
+instance (priority := 10000) [Preorder α] : IsLower (WithLower α) := ⟨rfl⟩
+instance (priority := 10000) [Preorder α] : IsUpper (WithUpper α) := ⟨rfl⟩
 
 /--
 The lower topology is homeomorphic to the upper topology on the dual order
@@ -219,12 +219,12 @@ theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (
   rw [topology_eq α]; rfl
 #align lower_topology.is_open_iff_generate_Ici_compl Topology.IsLower.isOpen_iff_generate_Ici_compl
 
-instance _root_.OrderDual.instIsUpper [Preorder α] [TopologicalSpace α] [IsLower α] :
+instance (priority := 10000) _root_.OrderDual.instIsUpper [Preorder α] [TopologicalSpace α] [IsLower α] :
     IsUpper αᵒᵈ where
   topology_eq_upperTopology := topology_eq_lowerTopology (α := α)
 
 /-- Left-closed right-infinite intervals [a, ∞) are closed in the lower topology. -/
-instance : ClosedIciTopology α :=
+instance (priority := 10000) : ClosedIciTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
 -- Porting note: The old `IsLower.isClosed_Ici` was removed, since one can now use
@@ -330,12 +330,12 @@ def WithUpperHomeomorph : WithUpper α ≃ₜ α :=
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
 
-instance _root_.OrderDual.instIsLower [Preorder α] [TopologicalSpace α] [IsUpper α] :
+instance (priority := 10000) _root_.OrderDual.instIsLower [Preorder α] [TopologicalSpace α] [IsUpper α] :
     IsLower αᵒᵈ where
   topology_eq_lowerTopology := topology_eq_upperTopology (α := α)
 
 /-- Left-infinite right-closed intervals (-∞,a] are closed in the upper topology. -/
-instance : ClosedIicTopology α :=
+instance (priority := 10000) : ClosedIicTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Iic_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
 /-- The lower closure of a finite set is closed in the upper topology. -/
@@ -389,7 +389,7 @@ end PartialOrder
 
 end IsUpper
 
-instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
+instance (priority := 10000) instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     [OrderBot α] [Preorder β] [TopologicalSpace β] [IsLower β] [OrderBot β] :
     IsLower (α × β) where
   topology_eq_lowerTopology := by
@@ -408,7 +408,7 @@ instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
     · exact GenerateOpen.basic _ ⟨(a, ⊥), by simp [Ici_prod_eq, prod_univ]⟩
     · exact GenerateOpen.basic _ ⟨(⊥, b), by simp [Ici_prod_eq, univ_prod]⟩
 
-instance instIsUpperProd [Preorder α] [TopologicalSpace α] [IsUpper α]
+instance (priority := 10000) instIsUpperProd [Preorder α] [TopologicalSpace α] [IsUpper α]
     [OrderTop α] [Preorder β] [TopologicalSpace β] [IsUpper β] [OrderTop β] :
     IsUpper (α × β) where
   topology_eq_upperTopology := by

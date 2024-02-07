@@ -109,7 +109,7 @@ def TransportEnrichment (_ : LaxMonoidalFunctor V W) (C : Type u₁) :=
   C
 #align category_theory.transport_enrichment CategoryTheory.TransportEnrichment
 
-instance (F : LaxMonoidalFunctor V W) : EnrichedCategory W (TransportEnrichment F C) where
+instance (priority := 10000) (F : LaxMonoidalFunctor V W) : EnrichedCategory W (TransportEnrichment F C) where
   Hom := fun X Y : C => F.obj (X ⟶[V] Y)
   id := fun X : C => F.ε ≫ F.map (eId V X)
   comp := fun X Y Z : C => F.μ _ _ ≫ F.map (eComp V X Y Z)
@@ -214,7 +214,7 @@ theorem ForgetEnrichment.of_to (X : ForgetEnrichment W C) :
   rfl
 #align category_theory.forget_enrichment.of_to CategoryTheory.ForgetEnrichment.of_to
 
-instance categoryForgetEnrichment : Category (ForgetEnrichment W C) := by
+instance (priority := 10000) categoryForgetEnrichment : Category (ForgetEnrichment W C) := by
   let I : EnrichedCategory (Type v) (TransportEnrichment (coyonedaTensorUnit W) C) :=
     inferInstance
   exact enrichedCategoryTypeEquivCategory C I
@@ -300,7 +300,7 @@ def EnrichedFunctor.id (C : Type u₁) [EnrichedCategory V C] : EnrichedFunctor 
   map X Y := 𝟙 _
 #align category_theory.enriched_functor.id CategoryTheory.EnrichedFunctor.id
 
-instance : Inhabited (EnrichedFunctor V C C) :=
+instance (priority := 10000) : Inhabited (EnrichedFunctor V C C) :=
   ⟨EnrichedFunctor.id V C⟩
 
 /-- Composition of enriched functors. -/

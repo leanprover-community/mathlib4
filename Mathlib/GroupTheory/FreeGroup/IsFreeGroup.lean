@@ -68,7 +68,7 @@ variable {ι ι' G H : Type*} [Group G] [Group H]
 
 /-- A free group basis for `G` over `ι` is associated to a map `ι → G` recording the images of
 the generators. -/
-instance instFunLike : FunLike (FreeGroupBasis ι G) ι G where
+instance (priority := 10000) instFunLike : FunLike (FreeGroupBasis ι G) ι G where
   coe b := fun i ↦ b.repr.symm (FreeGroup.of i)
   coe_injective' := by
     rintro ⟨b⟩  ⟨b'⟩ hbb'
@@ -109,7 +109,7 @@ protected lemma injective (b : FreeGroupBasis ι G) : Injective b :=
 lemma isFreeGroup (b : FreeGroupBasis ι G) : IsFreeGroup G :=
   ⟨range b, ⟨b.reindex (Equiv.ofInjective (↑b) b.injective)⟩⟩
 
-instance (X : Type*) : IsFreeGroup (FreeGroup X) :=
+instance (priority := 10000) (X : Type*) : IsFreeGroup (FreeGroup X) :=
   (ofFreeGroup X).isFreeGroup
 
 /-- Given a free group basis of `G` over `ι`, there is a canonical bijection between maps from `ι`

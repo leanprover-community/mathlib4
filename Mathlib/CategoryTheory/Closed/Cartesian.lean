@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 # Cartesian closed categories
 
 Given a category with finite products, the cartesian monoidal structure is provided by the local
-instance `monoidalOfHasFiniteProducts`.
+instance (priority := 10000) `monoidalOfHasFiniteProducts`.
 
 We define exponentiable objects to be closed objects with respect to this monoidal structure,
 i.e. `(X × -)` is a left adjoint.
@@ -147,7 +147,7 @@ theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (
 
 end exp
 
-instance : PreservesColimits (prod.functor.obj A) :=
+instance (priority := 10000) : PreservesColimits (prod.functor.obj A) :=
   (ihom.adjunction A).leftAdjointPreservesColimits
 
 variable {A}
@@ -380,7 +380,7 @@ theorem strict_initial {I : C} (t : IsInitial I) (f : A ⟶ I) : IsIso f := by
   apply isIso_of_mono_of_isSplitEpi
 #align category_theory.strict_initial CategoryTheory.strict_initial
 
-instance to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f :=
+instance (priority := 10000) to_initial_isIso [HasInitial C] (f : A ⟶ ⊥_ C) : IsIso f :=
   strict_initial initialIsInitial _
 #align category_theory.to_initial_is_iso CategoryTheory.to_initial_isIso
 
@@ -392,7 +392,7 @@ theorem initial_mono {I : C} (B : C) (t : IsInitial I) [CartesianClosed C] : Mon
     exact eq_of_inv_eq_inv (t.hom_ext _ _)⟩
 #align category_theory.initial_mono CategoryTheory.initial_mono
 
-instance Initial.mono_to [HasInitial C] (B : C) [CartesianClosed C] : Mono (initial.to B) :=
+instance (priority := 10000) Initial.mono_to [HasInitial C] (B : C) [CartesianClosed C] : Mono (initial.to B) :=
   initial_mono B initialIsInitial
 #align category_theory.initial.mono_to CategoryTheory.Initial.mono_to
 

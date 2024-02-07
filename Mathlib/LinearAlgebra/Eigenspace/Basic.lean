@@ -87,10 +87,10 @@ def Eigenvalues (f : End R M) : Type _ :=
 @[coe]
 def Eigenvalues.val (f : Module.End R M) : Eigenvalues f → R := Subtype.val
 
-instance Eigenvalues.instCoeOut {f : Module.End R M} : CoeOut (Eigenvalues f) R where
+instance (priority := 10000) Eigenvalues.instCoeOut {f : Module.End R M} : CoeOut (Eigenvalues f) R where
   coe := Eigenvalues.val f
 
-instance Eigenvalues.instDecidableEq [DecidableEq R] (f : Module.End R M) :
+instance (priority := 10000) Eigenvalues.instDecidableEq [DecidableEq R] (f : Module.End R M) :
     DecidableEq (Eigenvalues f) :=
   inferInstanceAs (DecidableEq (Subtype (fun x : R => HasEigenvalue f x)))
 

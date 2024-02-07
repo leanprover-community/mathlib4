@@ -189,7 +189,7 @@ theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
 #align category_theory.is_connected.of_induct CategoryTheory.IsConnected.of_induct
 
 /-- Lifting the universe level of morphisms and objects preserves connectedness. -/
-instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
+instance (priority := 10000) [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
   have : Nonempty (ULiftHom.{v₂} (ULift.{u₂} J)) := by simp [ULiftHom, hc.is_nonempty]
   apply IsConnected.of_induct
   rintro p hj₀ h ⟨j⟩
@@ -240,7 +240,7 @@ theorem isConnected_of_equivalent {K : Type u₂} [Category.{v₂} K] (e : J ≌
 #align category_theory.is_connected_of_equivalent CategoryTheory.isConnected_of_equivalent
 
 /-- If `J` is preconnected, then `Jᵒᵖ` is preconnected as well. -/
-instance isPreconnected_op [IsPreconnected J] : IsPreconnected Jᵒᵖ where
+instance (priority := 10000) isPreconnected_op [IsPreconnected J] : IsPreconnected Jᵒᵖ where
   iso_constant := fun {α} F X =>
     ⟨NatIso.ofComponents fun Y =>
       eqToIso (Discrete.ext _ _ (Discrete.eq_of_hom ((Nonempty.some
@@ -249,7 +249,7 @@ instance isPreconnected_op [IsPreconnected J] : IsPreconnected Jᵒᵖ where
 #align category_theory.is_preconnected_op CategoryTheory.isPreconnected_op
 
 /-- If `J` is connected, then `Jᵒᵖ` is connected as well. -/
-instance isConnected_op [IsConnected J] : IsConnected Jᵒᵖ where
+instance (priority := 10000) isConnected_op [IsConnected J] : IsConnected Jᵒᵖ where
   is_nonempty := Nonempty.intro (op (Classical.arbitrary J))
 #align category_theory.is_connected_op CategoryTheory.isConnected_op
 
@@ -384,13 +384,13 @@ theorem nat_trans_from_is_connected [IsPreconnected J] {X Y : C}
     exact this.symm
 #align category_theory.nat_trans_from_is_connected CategoryTheory.nat_trans_from_is_connected
 
-instance [IsConnected J] : Full (Functor.const J : C ⥤ J ⥤ C) where
+instance (priority := 10000) [IsConnected J] : Full (Functor.const J : C ⥤ J ⥤ C) where
   preimage f := f.app (Classical.arbitrary J)
   witness f := by
     ext j
     apply nat_trans_from_is_connected f (Classical.arbitrary J) j
 
-instance nonempty_hom_of_connected_groupoid {G} [Groupoid G] [IsConnected G] :
+instance (priority := 10000) nonempty_hom_of_connected_groupoid {G} [Groupoid G] [IsConnected G] :
     ∀ x y : G, Nonempty (x ⟶ y) := by
   refine' equiv_relation _ _ @fun j₁ j₂ => Nonempty.intro
   exact

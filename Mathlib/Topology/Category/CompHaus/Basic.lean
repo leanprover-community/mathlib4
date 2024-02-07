@@ -17,7 +17,7 @@ import Mathlib.Data.Set.Basic
 
 We construct the category of compact Hausdorff spaces.
 The type of compact Hausdorff spaces is denoted `CompHaus`, and it is endowed with a category
-instance making it a full subcategory of `TopCat`.
+instance (priority := 10000) making it a full subcategory of `TopCat`.
 The fully faithful functor `CompHaus ⥤ TopCat` is denoted `compHausToTop`.
 
 **Note:** The file `Topology/Category/Compactum.lean` provides the equivalence between `Compactum`,
@@ -48,24 +48,24 @@ set_option linter.uppercaseLean3 false in
 
 namespace CompHaus
 
-instance : Inhabited CompHaus :=
+instance (priority := 10000) : Inhabited CompHaus :=
   ⟨{ toTop := { α := PEmpty } }⟩
 
-instance : CoeSort CompHaus (Type*) :=
+instance (priority := 10000) : CoeSort CompHaus (Type*) :=
   ⟨fun X => X.toTop⟩
 
-instance {X : CompHaus} : CompactSpace X :=
+instance (priority := 10000) {X : CompHaus} : CompactSpace X :=
   X.is_compact
 
-instance {X : CompHaus} : T2Space X :=
+instance (priority := 10000) {X : CompHaus} : T2Space X :=
   X.is_hausdorff
 
-instance category : Category CompHaus :=
+instance (priority := 10000) category : Category CompHaus :=
   InducedCategory.category toTop
 set_option linter.uppercaseLean3 false in
 #align CompHaus.category CompHaus.category
 
-instance concreteCategory : ConcreteCategory CompHaus :=
+instance (priority := 10000) concreteCategory : ConcreteCategory CompHaus :=
   InducedCategory.concreteCategory _
 set_option linter.uppercaseLean3 false in
 #align CompHaus.concrete_category CompHaus.concreteCategory
@@ -98,15 +98,15 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
 
 -- Porting note: Adding instance
-instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
+instance (priority := 10000) (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
   show TopologicalSpace X.toTop from inferInstance
 
 -- Porting note: Adding instance
-instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
+instance (priority := 10000) (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
   show CompactSpace X.toTop from inferInstance
 
 -- Porting note: Adding instance
-instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
+instance (priority := 10000) (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
   show T2Space X.toTop from inferInstance
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
@@ -185,21 +185,21 @@ def compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top compHausToTop
 
-instance : Full compHausToTop :=
+instance (priority := 10000) : Full compHausToTop :=
   show Full <| inducedFunctor _ from inferInstance
 
-instance : Faithful compHausToTop :=
+instance (priority := 10000) : Faithful compHausToTop :=
   show Faithful <| inducedFunctor _ from inferInstance
 
 -- Porting note: Adding instance
-instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
+instance (priority := 10000) (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
   show CompactSpace X.toTop from inferInstance
 
 -- Porting note: Adding instance
-instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
+instance (priority := 10000) (X : CompHaus) : T2Space (compHausToTop.obj X) :=
   show T2Space X.toTop from inferInstance
 
-instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
+instance (priority := 10000) CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
   ⟨by intro A B f hf; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
 set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
@@ -257,22 +257,22 @@ set_option linter.uppercaseLean3 false in
 
 /-- The category of compact Hausdorff spaces is reflective in the category of topological spaces.
 -/
-noncomputable instance compHausToTop.reflective : Reflective compHausToTop where
+noncomputable instance (priority := 10000) compHausToTop.reflective : Reflective compHausToTop where
   toIsRightAdjoint := ⟨topToCompHaus, Adjunction.adjunctionOfEquivLeft _ _⟩
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.reflective compHausToTop.reflective
 
-noncomputable instance compHausToTop.createsLimits : CreatesLimits compHausToTop :=
+noncomputable instance (priority := 10000) compHausToTop.createsLimits : CreatesLimits compHausToTop :=
   monadicCreatesLimits _
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.creates_limits compHausToTop.createsLimits
 
-instance CompHaus.hasLimits : Limits.HasLimits CompHaus :=
+instance (priority := 10000) CompHaus.hasLimits : Limits.HasLimits CompHaus :=
   hasLimits_of_hasLimits_createsLimits compHausToTop
 set_option linter.uppercaseLean3 false in
 #align CompHaus.has_limits CompHaus.hasLimits
 
-instance CompHaus.hasColimits : Limits.HasColimits CompHaus :=
+instance (priority := 10000) CompHaus.hasColimits : Limits.HasColimits CompHaus :=
   hasColimits_of_reflective compHausToTop
 set_option linter.uppercaseLean3 false in
 #align CompHaus.has_colimits CompHaus.hasColimits

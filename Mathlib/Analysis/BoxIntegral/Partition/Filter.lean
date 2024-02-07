@@ -212,7 +212,7 @@ def equivProd : IntegrationParams ≃ Bool × Boolᵒᵈ × Boolᵒᵈ where
   right_inv _ := rfl
 #align box_integral.integration_params.equiv_prod BoxIntegral.IntegrationParams.equivProd
 
-instance : PartialOrder IntegrationParams :=
+instance (priority := 10000) : PartialOrder IntegrationParams :=
   PartialOrder.lift equivProd equivProd.injective
 
 /-- Auxiliary `OrderIso` with a product type used to lift a `BoundedOrder` structure. -/
@@ -220,20 +220,20 @@ def isoProd : IntegrationParams ≃o Bool × Boolᵒᵈ × Boolᵒᵈ :=
   ⟨equivProd, Iff.rfl⟩
 #align box_integral.integration_params.iso_prod BoxIntegral.IntegrationParams.isoProd
 
-instance : BoundedOrder IntegrationParams :=
+instance (priority := 10000) : BoundedOrder IntegrationParams :=
   isoProd.symm.toGaloisInsertion.liftBoundedOrder
 
 /-- The value `BoxIntegral.IntegrationParams.GP = ⊥`
 (`bRiemann = false`, `bHenstock = true`, `bDistortion = true`)
 corresponds to a generalization of the Henstock integral such that the Divergence theorem holds true
 without additional integrability assumptions, see the module docstring for details. -/
-instance : Inhabited IntegrationParams :=
+instance (priority := 10000) : Inhabited IntegrationParams :=
   ⟨⊥⟩
 
-instance : DecidableRel ((· ≤ ·) : IntegrationParams → IntegrationParams → Prop) :=
+instance (priority := 10000) : DecidableRel ((· ≤ ·) : IntegrationParams → IntegrationParams → Prop) :=
   fun _ _ => And.decidable
 
-instance : DecidableEq IntegrationParams :=
+instance (priority := 10000) : DecidableEq IntegrationParams :=
   fun x y => decidable_of_iff _ (IntegrationParams.ext_iff x y).symm
 
 /-- The `BoxIntegral.IntegrationParams` corresponding to the Riemann integral. In the
@@ -539,21 +539,21 @@ theorem toFilterDistortioniUnion_neBot (l : IntegrationParams) (I : Box ι) (π�
     fun {r} _ => (l.exists_memBaseSet_le_iUnion_eq π₀ hc₁ hc₂ r).imp fun _ hπ => ⟨hπ.1, hπ.2.2⟩
 #align box_integral.integration_params.to_filter_distortion_Union_ne_bot BoxIntegral.IntegrationParams.toFilterDistortioniUnion_neBot
 
-instance toFilterDistortioniUnion_neBot' (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :
+instance (priority := 10000) toFilterDistortioniUnion_neBot' (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :
     (l.toFilterDistortioniUnion I (max π₀.distortion π₀.compl.distortion) π₀).NeBot :=
   l.toFilterDistortioniUnion_neBot I π₀ (le_max_left _ _) (le_max_right _ _)
 #align box_integral.integration_params.to_filter_distortion_Union_ne_bot' BoxIntegral.IntegrationParams.toFilterDistortioniUnion_neBot'
 
-instance toFilterDistortion_neBot (l : IntegrationParams) (I : Box ι) :
+instance (priority := 10000) toFilterDistortion_neBot (l : IntegrationParams) (I : Box ι) :
     (l.toFilterDistortion I I.distortion).NeBot := by
   simpa using (l.toFilterDistortioniUnion_neBot' I ⊤).mono inf_le_left
 #align box_integral.integration_params.to_filter_distortion_ne_bot BoxIntegral.IntegrationParams.toFilterDistortion_neBot
 
-instance toFilter_neBot (l : IntegrationParams) (I : Box ι) : (l.toFilter I).NeBot :=
+instance (priority := 10000) toFilter_neBot (l : IntegrationParams) (I : Box ι) : (l.toFilter I).NeBot :=
   (l.toFilterDistortion_neBot I).mono <| le_iSup _ _
 #align box_integral.integration_params.to_filter_ne_bot BoxIntegral.IntegrationParams.toFilter_neBot
 
-instance toFilteriUnion_neBot (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :
+instance (priority := 10000) toFilteriUnion_neBot (l : IntegrationParams) (I : Box ι) (π₀ : Prepartition I) :
     (l.toFilteriUnion I π₀).NeBot :=
   (l.toFilterDistortioniUnion_neBot' I π₀).mono <|
     le_iSup (fun c => l.toFilterDistortioniUnion I c π₀) _

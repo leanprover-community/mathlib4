@@ -57,18 +57,18 @@ namespace Irrational
 
 variable {x : ℝ}
 
-instance : OrderTopology { x // Irrational x } :=
+instance (priority := 10000) : OrderTopology { x // Irrational x } :=
   induced_orderTopology _ Iff.rfl <| @fun _ _ hlt =>
     let ⟨z, hz, hxz, hzy⟩ := exists_irrational_btwn hlt
     ⟨⟨z, hz⟩, hxz, hzy⟩
 
-instance : NoMaxOrder { x // Irrational x } :=
+instance (priority := 10000) : NoMaxOrder { x // Irrational x } :=
   ⟨fun ⟨x, hx⟩ => ⟨⟨x + (1 : ℕ), hx.add_nat 1⟩, by simp⟩⟩
 
-instance : NoMinOrder { x // Irrational x } :=
+instance (priority := 10000) : NoMinOrder { x // Irrational x } :=
   ⟨fun ⟨x, hx⟩ => ⟨⟨x - (1 : ℕ), hx.sub_nat 1⟩, by simp⟩⟩
 
-instance : DenselyOrdered { x // Irrational x } :=
+instance (priority := 10000) : DenselyOrdered { x // Irrational x } :=
   ⟨fun _ _ hlt =>
     let ⟨z, hz, hxz, hzy⟩ := exists_irrational_btwn hlt
     ⟨⟨z, hz⟩, hxz, hzy⟩⟩

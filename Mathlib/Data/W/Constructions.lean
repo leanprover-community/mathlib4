@@ -37,7 +37,7 @@ inductive Natα : Type
   | succ : Natα
 #align W_type.nat_α WType.Natα
 
-instance : Inhabited Natα :=
+instance (priority := 10000) : Inhabited Natα :=
   ⟨Natα.zero⟩
 
 /-- The arity of the constructors for the naturals, `zero` takes no arguments, `succ` takes one -/
@@ -46,7 +46,7 @@ def Natβ : Natα → Type
   | Natα.succ => Unit
 #align W_type.nat_β WType.Natβ
 
-instance : Inhabited (Natβ Natα.succ) :=
+instance (priority := 10000) : Inhabited (Natβ Natα.succ) :=
   ⟨()⟩
 
 /-- The isomorphism from the naturals to its corresponding `WType` -/
@@ -134,7 +134,7 @@ inductive Listα : Type u
   | cons : γ → Listα
 #align W_type.list_α WType.Listα
 
-instance : Inhabited (Listα γ) :=
+instance (priority := 10000) : Inhabited (Listα γ) :=
   ⟨Listα.nil⟩
 
 /-- The arities of each constructor for lists, `nil` takes no arguments, `cons hd` takes one -/
@@ -143,7 +143,7 @@ def Listβ : Listα γ → Type u
   | Listα.cons _ => PUnit
 #align W_type.list_β WType.Listβ
 
-instance (hd : γ) : Inhabited (Listβ γ (Listα.cons hd)) :=
+instance (priority := 10000) (hd : γ) : Inhabited (Listβ γ (Listα.cons hd)) :=
   ⟨PUnit.unit⟩
 
 /-- The isomorphism from lists to the `WType` construction of lists -/

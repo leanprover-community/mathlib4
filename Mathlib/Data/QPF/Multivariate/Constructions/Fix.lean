@@ -195,7 +195,7 @@ def Fix.map {α β : TypeVec n} (g : α ⟹ β) : Fix F α → Fix F β :=
   Quotient.lift (fun x : q.P.W α => ⟦q.P.wMap g x⟧) fun _a _b h => Quot.sound (wEquiv_map _ _ _ h)
 #align mvqpf.fix.map MvQPF.Fix.map
 
-instance Fix.mvfunctor : MvFunctor (Fix F) where map := @Fix.map _ _ _ _
+instance (priority := 10000) Fix.mvfunctor : MvFunctor (Fix F) where map := @Fix.map _ _ _ _
 #align mvqpf.fix.mvfunctor MvQPF.Fix.mvfunctor
 
 variable {α : TypeVec.{u} n}
@@ -322,7 +322,7 @@ theorem Fix.ind {α : TypeVec n} (p : Fix F α → Prop)
   · trivial
 #align mvqpf.fix.ind MvQPF.Fix.ind
 
-instance mvqpfFix : MvQPF (Fix F) where
+instance (priority := 10000) mvqpfFix : MvQPF (Fix F) where
   P := q.P.wp
   abs α := Quot.mk WEquiv α
   repr α := fixToW α

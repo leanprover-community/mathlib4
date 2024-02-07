@@ -95,7 +95,7 @@ theorem Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv 
   rfl
 #align category_theory.groupoid.reverse_eq_inv CategoryTheory.Groupoid.reverse_eq_inv
 
-instance functorMapReverse {D : Type*} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse where
+instance (priority := 10000) functorMapReverse {D : Type*} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse where
   map_reverse' f := by
     simp only [Quiver.reverse, Quiver.HasReverse.reverse', Groupoid.inv_eq_inv,
       Functor.map_inv]
@@ -140,7 +140,7 @@ def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupo
 
 end
 
-instance InducedCategory.groupoid {C : Type u} (D : Type u₂) [Groupoid.{v} D] (F : C → D) :
+instance (priority := 10000) InducedCategory.groupoid {C : Type u} (D : Type u₂) [Groupoid.{v} D] (F : C → D) :
     Groupoid.{v} (InducedCategory D F) :=
   { InducedCategory.category F with
     inv := fun f => Groupoid.inv f
@@ -150,14 +150,14 @@ instance InducedCategory.groupoid {C : Type u} (D : Type u₂) [Groupoid.{v} D] 
 
 section
 
-instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i)] :
+instance (priority := 10000) groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i)] :
     Groupoid.{max u v} (∀ i : I, J i) where
   inv f := fun i : I => Groupoid.inv (f i)
   comp_inv := fun f => by funext i; apply Groupoid.comp_inv
   inv_comp := fun f => by funext i; apply Groupoid.inv_comp
 #align category_theory.groupoid_pi CategoryTheory.groupoidPi
 
-instance groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid.{v₂} β] :
+instance (priority := 10000) groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid.{v₂} β] :
     Groupoid.{max u₂ v₂} (α × β) where
   inv f := (Groupoid.inv f.1, Groupoid.inv f.2)
 #align category_theory.groupoid_prod CategoryTheory.groupoidProd

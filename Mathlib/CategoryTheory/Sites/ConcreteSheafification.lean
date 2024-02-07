@@ -52,7 +52,7 @@ variable [ConcreteCategory.{max v u} D]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
-instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
+instance (priority := 10000) {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
     CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, P.obj (op I.Y) :=
   ⟨fun x => x.1⟩
 
@@ -619,7 +619,7 @@ noncomputable def plusPlusSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
 set_option linter.uppercaseLean3 false in
 #align category_theory.presheaf_to_Sheaf CategoryTheory.plusPlusSheaf
 
-instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
+instance (priority := 10000) plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
   map_zero F G := by
     ext : 3
@@ -645,12 +645,12 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
         rw [Category.assoc] }
 #align category_theory.sheafification_adjunction CategoryTheory.plusPlusAdjunction
 
-noncomputable instance sheafToPresheafIsRightAdjoint : IsRightAdjoint (sheafToPresheaf J D) :=
+noncomputable instance (priority := 10000) sheafToPresheafIsRightAdjoint : IsRightAdjoint (sheafToPresheaf J D) :=
   ⟨_, plusPlusAdjunction J D⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_to_presheaf_is_right_adjoint CategoryTheory.sheafToPresheafIsRightAdjoint
 
-instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=
+instance (priority := 10000) presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=
   (sheafToPresheaf J D).map_mono _
 #align category_theory.presheaf_mono_of_mono CategoryTheory.presheaf_mono_of_mono
 

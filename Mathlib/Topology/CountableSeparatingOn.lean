@@ -20,7 +20,7 @@ open Set TopologicalSpace
 /-- If `X` is a topological space, `s` is a set in `X` such that the induced topology is T₀ and is
 second countable, then there exists a countable family of open sets in `X` that separates points
 of `s`. -/
-instance [TopologicalSpace X] {s : Set X} [T0Space s] [SecondCountableTopology s] :
+instance (priority := 10000) [TopologicalSpace X] {s : Set X} [T0Space s] [SecondCountableTopology s] :
     HasCountableSeparatingOn X IsOpen s := by
   suffices HasCountableSeparatingOn s IsOpen univ from .of_subtype fun _ ↦ isOpen_induced_iff.1
   refine ⟨⟨countableBasis s, countable_countableBasis _, fun _ ↦ isOpen_of_mem_countableBasis,
@@ -29,7 +29,7 @@ instance [TopologicalSpace X] {s : Set X} [T0Space s] [SecondCountableTopology s
 
 /-- If there exists a countable family of open sets separating points of `s`, then there exists
 a countable family of closed sets separating points of `s`. -/
-instance [TopologicalSpace X] {s : Set X} [h : HasCountableSeparatingOn X IsOpen s] :
+instance (priority := 10000) [TopologicalSpace X] {s : Set X} [h : HasCountableSeparatingOn X IsOpen s] :
     HasCountableSeparatingOn X IsClosed s :=
   let ⟨S, hSc, hSo, hS⟩ := h.1
   ⟨compl '' S, hSc.image _, ball_image_iff.2 fun U hU ↦ (hSo U hU).isClosed_compl,

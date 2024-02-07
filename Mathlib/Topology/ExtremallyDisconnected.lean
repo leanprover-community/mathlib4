@@ -50,7 +50,7 @@ class ExtremallyDisconnected : Prop where
 section TotallySeparated
 
 /-- Extremally disconnected spaces are totally separated. -/
-instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
+instance (priority := 10000) [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
 { isTotallySeparated_univ := by
     intro x _ y _ hxy
     obtain ⟨U, V, hUV⟩ := T2Space.t2 hxy
@@ -284,7 +284,7 @@ end
 
 -- Note: It might be possible to use Gleason for this instead
 /-- The sigma-type of extremally disconnected spaces is extremally disconnected. -/
-instance instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+instance (priority := 10000) instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
     [h₀ : ∀ i, ExtremallyDisconnected (π i)] : ExtremallyDisconnected (Σ i, π i) := by
   constructor
   intro s hs

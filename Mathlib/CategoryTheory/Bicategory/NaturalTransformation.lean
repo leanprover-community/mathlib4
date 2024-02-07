@@ -99,7 +99,7 @@ def id : OplaxNatTrans F F where
   naturality {a b} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
 #align category_theory.oplax_nat_trans.id CategoryTheory.OplaxNatTrans.id
 
-instance : Inhabited (OplaxNatTrans F F) :=
+instance (priority := 10000) : Inhabited (OplaxNatTrans F F) :=
   ⟨id F⟩
 
 variable {F} {G H : OplaxFunctor B C} (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H)
@@ -194,7 +194,7 @@ def vcomp (η : OplaxNatTrans F G) (θ : OplaxNatTrans G H) : OplaxNatTrans F H 
 variable (B C)
 
 @[simps id comp]
-instance : CategoryStruct (OplaxFunctor B C) where
+instance (priority := 10000) : CategoryStruct (OplaxFunctor B C) where
   Hom := OplaxNatTrans
   id := OplaxNatTrans.id
   comp := OplaxNatTrans.vcomp
@@ -243,7 +243,7 @@ variable (η)
 def id : Modification η η where app a := 𝟙 (η.app a)
 #align category_theory.oplax_nat_trans.modification.id CategoryTheory.OplaxNatTrans.Modification.id
 
-instance : Inhabited (Modification η η) :=
+instance (priority := 10000) : Inhabited (Modification η η) :=
   ⟨Modification.id η⟩
 
 variable {η}
@@ -277,7 +277,7 @@ end Modification
 
 /-- Category structure on the oplax natural transformations between OplaxFunctors. -/
 @[simps]
-instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
+instance (priority := 10000) category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   Hom := Modification
   id := Modification.id
   comp := Modification.vcomp

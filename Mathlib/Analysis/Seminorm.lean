@@ -115,14 +115,14 @@ section SMul
 
 variable [SMul 𝕜 E]
 
-instance instFunLike : FunLike (Seminorm 𝕜 E) E ℝ where
+instance (priority := 10000) instFunLike : FunLike (Seminorm 𝕜 E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨_⟩⟩
     rcases g with ⟨⟨_⟩⟩
     congr
 
-instance instSeminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
+instance (priority := 10000) instSeminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_neg_eq_map f := f.neg'
@@ -134,7 +134,7 @@ theorem ext {p q : Seminorm 𝕜 E} (h : ∀ x, (p : E → ℝ) x = q x) : p = q
   DFunLike.ext p q h
 #align seminorm.ext Seminorm.ext
 
-instance instZero : Zero (Seminorm 𝕜 E) :=
+instance (priority := 10000) instZero : Zero (Seminorm 𝕜 E) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with
     smul' := fun _ _ => (mul_zero _).symm }⟩
 
@@ -148,13 +148,13 @@ theorem zero_apply (x : E) : (0 : Seminorm 𝕜 E) x = 0 :=
   rfl
 #align seminorm.zero_apply Seminorm.zero_apply
 
-instance : Inhabited (Seminorm 𝕜 E) :=
+instance (priority := 10000) : Inhabited (Seminorm 𝕜 E) :=
   ⟨0⟩
 
 variable (p : Seminorm 𝕜 E) (c : 𝕜) (x y : E) (r : ℝ)
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to a seminorm. -/
-instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E) where
+instance (priority := 10000) instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E) where
   smul r p :=
     { r • p.toAddGroupSeminorm with
       toFun := fun x => r • p x
@@ -162,7 +162,7 @@ instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : 
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
         rw [map_smul_eq_mul, mul_left_comm] }
 
-instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' ℝ] [SMul R' ℝ≥0]
+instance (priority := 10000) [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' ℝ] [SMul R' ℝ≥0]
     [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
     IsScalarTower R R' (Seminorm 𝕜 E) where
   smul_assoc r a p := ext fun x => smul_assoc r a (p x)
@@ -178,7 +178,7 @@ theorem smul_apply [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (
   rfl
 #align seminorm.smul_apply Seminorm.smul_apply
 
-instance instAdd : Add (Seminorm 𝕜 E) where
+instance (priority := 10000) instAdd : Add (Seminorm 𝕜 E) where
   add p q :=
     { p.toAddGroupSeminorm + q.toAddGroupSeminorm with
       toFun := fun x => p x + q x
@@ -193,13 +193,13 @@ theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
   rfl
 #align seminorm.add_apply Seminorm.add_apply
 
-instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
+instance (priority := 10000) instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
   DFunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
 
-instance instOrderedCancelAddCommMonoid : OrderedCancelAddCommMonoid (Seminorm 𝕜 E) :=
+instance (priority := 10000) instOrderedCancelAddCommMonoid : OrderedCancelAddCommMonoid (Seminorm 𝕜 E) :=
   DFunLike.coe_injective.orderedCancelAddCommMonoid _ rfl coe_add fun _ _ => rfl
 
-instance instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
+instance (priority := 10000) instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
     MulAction R (Seminorm 𝕜 E) :=
   DFunLike.coe_injective.mulAction _ (by intros; rfl)
 
@@ -219,15 +219,15 @@ theorem coeFnAddMonoidHom_injective : Function.Injective (coeFnAddMonoidHom 𝕜
 
 variable {𝕜 E}
 
-instance instDistribMulAction [Monoid R] [DistribMulAction R ℝ] [SMul R ℝ≥0]
+instance (priority := 10000) instDistribMulAction [Monoid R] [DistribMulAction R ℝ] [SMul R ℝ≥0]
     [IsScalarTower R ℝ≥0 ℝ] : DistribMulAction R (Seminorm 𝕜 E) :=
   (coeFnAddMonoidHom_injective 𝕜 E).distribMulAction _ (by intros; rfl)
 
-instance instModule [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
+instance (priority := 10000) instModule [Semiring R] [Module R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
     Module R (Seminorm 𝕜 E) :=
   (coeFnAddMonoidHom_injective 𝕜 E).module R _ (by intros; rfl)
 
-instance instSup : Sup (Seminorm 𝕜 E) where
+instance (priority := 10000) instSup : Sup (Seminorm 𝕜 E) where
   sup p q :=
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
@@ -252,7 +252,7 @@ theorem smul_sup [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r 
   ext fun x => real.smul_max _ _
 #align seminorm.smul_sup Seminorm.smul_sup
 
-instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
+instance (priority := 10000) instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 @[simp, norm_cast]
@@ -273,7 +273,7 @@ theorem lt_def {p q : Seminorm 𝕜 E} : p < q ↔ p ≤ q ∧ ∃ x, p x < q x 
   @Pi.lt_def _ _ _ p q
 #align seminorm.lt_def Seminorm.lt_def
 
-instance instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
+instance (priority := 10000) instSemilatticeSup : SemilatticeSup (Seminorm 𝕜 E) :=
   Function.Injective.semilatticeSup _ DFunLike.coe_injective coe_sup
 
 end SMul
@@ -298,7 +298,7 @@ variable [Module 𝕜 E] [Module 𝕜₂ E₂] [Module 𝕜₃ E₃] [Module �
 
 -- Porting note: even though this instance is found immediately by typeclass search,
 -- it seems to be needed below!?
-noncomputable instance smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
+noncomputable instance (priority := 10000) smul_nnreal_real : SMul ℝ≥0 ℝ := inferInstance
 
 variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
@@ -367,7 +367,7 @@ def pullback (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜₂ E₂ →+ Semin
   map_add' := fun p q => add_comp p q f
 #align seminorm.pullback Seminorm.pullback
 
-instance instOrderBot : OrderBot (Seminorm 𝕜 E) where
+instance (priority := 10000) instOrderBot : OrderBot (Seminorm 𝕜 E) where
   bot := 0
   bot_le := map_nonneg
 
@@ -483,7 +483,7 @@ theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
     dsimp; positivity⟩
 #align seminorm.bdd_below_range_add Seminorm.bddBelow_range_add
 
-noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
+noncomputable instance (priority := 10000) instInf : Inf (Seminorm 𝕜 E) where
   inf p q :=
     { p.toAddGroupSeminorm ⊓ q.toAddGroupSeminorm with
       toFun := fun x => ⨅ u : E, p u + q (x - u)
@@ -508,7 +508,7 @@ theorem inf_apply (p q : Seminorm 𝕜 E) (x : E) : (p ⊓ q) x = ⨅ u : E, p u
   rfl
 #align seminorm.inf_apply Seminorm.inf_apply
 
-noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) :=
+noncomputable instance (priority := 10000) instLattice : Lattice (Seminorm 𝕜 E) :=
   { Seminorm.instSemilatticeSup with
     inf := (· ⊓ ·)
     inf_le_left := fun p q x =>
@@ -547,7 +547,7 @@ not bounded above, one could hope that just using the pointwise `Sup` would work
 need for an additional case disjunction. As discussed on Zulip, this doesn't work because this can
 give a function which does *not* satisfy the seminorm axioms (typically sub-additivity).
 -/
-noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
+noncomputable instance (priority := 10000) instSupSet : SupSet (Seminorm 𝕜 E) where
   sSup s :=
     if h : BddAbove ((↑) '' s : Set (E → ℝ)) then
       { toFun := ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ)
@@ -643,7 +643,7 @@ the instances given here for `Inf`, `Sup` and `SupSet` respectively), `sInf s` i
 defined as the supremum of the lower bounds of `s`, which is not really useful in practice. If you
 need to use `sInf` on seminorms, then you should probably provide a more workable definition first,
 but this is unlikely to happen so we keep the "bad" definition for now. -/
-noncomputable instance instConditionallyCompleteLattice :
+noncomputable instance (priority := 10000) instConditionallyCompleteLattice :
     ConditionallyCompleteLattice (Seminorm 𝕜 E) :=
   conditionallyCompleteLatticeOfLatticeOfsSup (Seminorm 𝕜 E) Seminorm.isLUB_sSup
 

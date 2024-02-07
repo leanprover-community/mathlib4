@@ -147,7 +147,7 @@ def comp {a b c : SimplexCategory} (f : SimplexCategory.Hom b c) (g : SimplexCat
 end Hom
 
 @[simps]
-instance smallCategory : SmallCategory.{0} SimplexCategory where
+instance (priority := 10000) smallCategory : SmallCategory.{0} SimplexCategory where
   Hom n m := SimplexCategory.Hom n m
   id m := SimplexCategory.Hom.id _
   comp f g := SimplexCategory.Hom.comp g f
@@ -448,15 +448,15 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 
 namespace SkeletalFunctor
 
-instance : Full skeletalFunctor where
+instance (priority := 10000) : Full skeletalFunctor where
   preimage f := SimplexCategory.Hom.mk f
 
-instance : Faithful skeletalFunctor where
+instance (priority := 10000) : Faithful skeletalFunctor where
   map_injective {_ _ f g} h := by
     ext1
     exact h
 
-instance : EssSurj skeletalFunctor where
+instance (priority := 10000) : EssSurj skeletalFunctor where
   mem_essImage X :=
     ⟨mk (Fintype.card X - 1 : ℕ),
       ⟨by
@@ -475,7 +475,7 @@ instance : EssSurj skeletalFunctor where
         show f (f.symm i) ≤ f (f.symm j)
         simpa only [OrderIso.apply_symm_apply]⟩⟩
 
-noncomputable instance isEquivalence : IsEquivalence skeletalFunctor :=
+noncomputable instance (priority := 10000) isEquivalence : IsEquivalence skeletalFunctor :=
   Equivalence.ofFullyFaithfullyEssSurj skeletalFunctor
 #align simplex_category.skeletal_functor.is_equivalence SimplexCategory.SkeletalFunctor.isEquivalence
 
@@ -502,12 +502,12 @@ def Truncated (n : ℕ) :=
   FullSubcategory fun a : SimplexCategory => a.len ≤ n
 #align simplex_category.truncated SimplexCategory.Truncated
 
-instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
+instance (priority := 10000) (n : ℕ) : SmallCategory.{0} (Truncated n) :=
   FullSubcategory.category _
 
 namespace Truncated
 
-instance {n} : Inhabited (Truncated n) :=
+instance (priority := 10000) {n} : Inhabited (Truncated n) :=
   ⟨⟨[0], by simp⟩⟩
 
 /-- The fully faithful inclusion of the truncated simplex category into the usual
@@ -517,14 +517,14 @@ def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   fullSubcategoryInclusion _
 #align simplex_category.truncated.inclusion SimplexCategory.Truncated.inclusion
 
-instance (n : ℕ) : Full (inclusion : Truncated n ⥤ _) := FullSubcategory.full _
-instance (n : ℕ) : Faithful (inclusion : Truncated n ⥤ _) := FullSubcategory.faithful _
+instance (priority := 10000) (n : ℕ) : Full (inclusion : Truncated n ⥤ _) := FullSubcategory.full _
+instance (priority := 10000) (n : ℕ) : Faithful (inclusion : Truncated n ⥤ _) := FullSubcategory.faithful _
 
 end Truncated
 
 section Concrete
 
-instance : ConcreteCategory.{0} SimplexCategory where
+instance (priority := 10000) : ConcreteCategory.{0} SimplexCategory where
   forget :=
     { obj := fun i => Fin (i.len + 1)
       map := fun f => f.toOrderHom }
@@ -576,11 +576,11 @@ theorem le_of_epi {n m : ℕ} {f : ([n] : SimplexCategory) ⟶ [m]} : Epi f → 
   len_le_of_epi
 #align simplex_category.le_of_epi SimplexCategory.le_of_epi
 
-instance {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
+instance (priority := 10000) {n : ℕ} {i : Fin (n + 2)} : Mono (δ i) := by
   rw [mono_iff_injective]
   exact Fin.succAbove_right_injective
 
-instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
+instance (priority := 10000) {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   rw [epi_iff_surjective]
   intro b
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
@@ -599,7 +599,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
     rw [Fin.lt_iff_val_lt_val] at h ⊢
     simpa only [Fin.val_succ, Fin.coe_castSucc] using Nat.lt.step h
 
-instance : ReflectsIsomorphisms (forget SimplexCategory) :=
+instance (priority := 10000) : ReflectsIsomorphisms (forget SimplexCategory) :=
   ⟨fun f hf =>
     IsIso.of_iso
       { hom := f
@@ -831,17 +831,17 @@ theorem len_lt_of_mono {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [hi : Mono i]
     exact hi' (by ext; exact h.symm)
 #align simplex_category.len_lt_of_mono SimplexCategory.len_lt_of_mono
 
-noncomputable instance : SplitEpiCategory SimplexCategory :=
+noncomputable instance (priority := 10000) : SplitEpiCategory SimplexCategory :=
   skeletalEquivalence.inverse.splitEpiCategoryImpOfIsEquivalence
 
-instance : HasStrongEpiMonoFactorisations SimplexCategory :=
+instance (priority := 10000) : HasStrongEpiMonoFactorisations SimplexCategory :=
   Functor.hasStrongEpiMonoFactorisations_imp_of_isEquivalence
     SimplexCategory.skeletalEquivalence.inverse
 
-instance : HasStrongEpiImages SimplexCategory :=
+instance (priority := 10000) : HasStrongEpiImages SimplexCategory :=
   Limits.hasStrongEpiImages_of_hasStrongEpiMonoFactorisations
 
-instance (Δ Δ' : SimplexCategory) (θ : Δ ⟶ Δ') : Epi (factorThruImage θ) :=
+instance (priority := 10000) (Δ Δ' : SimplexCategory) (θ : Δ ⟶ Δ') : Epi (factorThruImage θ) :=
   StrongEpi.epi
 
 theorem image_eq {Δ Δ' Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : Δ ⟶ Δ'} [Epi e] {i : Δ' ⟶ Δ''}

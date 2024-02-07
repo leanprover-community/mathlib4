@@ -102,7 +102,7 @@ variable [Mul α] [HasDistribNeg α]
 
 open MulOpposite
 
-instance hasDistribNeg : HasDistribNeg αᵐᵒᵖ :=
+instance (priority := 10000) hasDistribNeg : HasDistribNeg αᵐᵒᵖ :=
   { MulOpposite.involutiveNeg _ with
     neg_mul := fun _ _ => unop_injective <| mul_neg _ _,
     mul_neg := fun _ _ => unop_injective <| neg_mul _ _ }
@@ -203,11 +203,11 @@ instance (priority := 100) IsDomain.to_noZeroDivisors [Ring α] [IsDomain α] :
   IsRightCancelMulZero.to_noZeroDivisors α
 #align is_domain.to_no_zero_divisors IsDomain.to_noZeroDivisors
 
-instance Subsingleton.to_isCancelMulZero [Mul α] [Zero α] [Subsingleton α] : IsCancelMulZero α where
+instance (priority := 10000) Subsingleton.to_isCancelMulZero [Mul α] [Zero α] [Subsingleton α] : IsCancelMulZero α where
   mul_right_cancel_of_ne_zero hb := (hb <| Subsingleton.eq_zero _).elim
   mul_left_cancel_of_ne_zero hb := (hb <| Subsingleton.eq_zero _).elim
 
-instance Subsingleton.to_noZeroDivisors [Mul α] [Zero α] [Subsingleton α] : NoZeroDivisors α where
+instance (priority := 10000) Subsingleton.to_noZeroDivisors [Mul α] [Zero α] [Subsingleton α] : NoZeroDivisors α where
   eq_zero_or_eq_zero_of_mul_eq_zero _ := .inl (Subsingleton.eq_zero _)
 
 lemma isDomain_iff_cancelMulZero_and_nontrivial [Semiring α] :

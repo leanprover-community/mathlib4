@@ -94,16 +94,16 @@ def DirectLimit : Type max v w :=
 
 namespace DirectLimit
 
-instance addCommGroup : AddCommGroup (DirectLimit G f) :=
+instance (priority := 10000) addCommGroup : AddCommGroup (DirectLimit G f) :=
   Quotient.addCommGroup _
 
-instance module : Module R (DirectLimit G f) :=
+instance (priority := 10000) module : Module R (DirectLimit G f) :=
   Quotient.module _
 
-instance inhabited : Inhabited (DirectLimit G f) :=
+instance (priority := 10000) inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
-instance unique [IsEmpty ι] : Unique (DirectLimit G f) :=
+instance (priority := 10000) unique [IsEmpty ι] : Unique (DirectLimit G f) :=
   inferInstanceAs <| Unique (Quotient _)
 
 variable (R ι)
@@ -381,13 +381,13 @@ protected theorem directedSystem [h : DirectedSystem G fun i j h => f i j h] :
 
 attribute [local instance] DirectLimit.directedSystem
 
-instance : AddCommGroup (DirectLimit G f) :=
+instance (priority := 10000) : AddCommGroup (DirectLimit G f) :=
   Module.DirectLimit.addCommGroup G fun i j hij => (f i j hij).toIntLinearMap
 
-instance : Inhabited (DirectLimit G f) :=
+instance (priority := 10000) : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
-instance [IsEmpty ι] : Unique (DirectLimit G f) := Module.DirectLimit.unique _ _
+instance (priority := 10000) [IsEmpty ι] : Unique (DirectLimit G f) := Module.DirectLimit.unique _ _
 
 /-- The canonical map from a component to the direct limit. -/
 def of (i) : G i →+ DirectLimit G f :=
@@ -568,18 +568,18 @@ def DirectLimit : Type max v w :=
 
 namespace DirectLimit
 
-instance commRing : CommRing (DirectLimit G f) :=
+instance (priority := 10000) commRing : CommRing (DirectLimit G f) :=
   Ideal.Quotient.commRing _
 
-instance ring : Ring (DirectLimit G f) :=
+instance (priority := 10000) ring : Ring (DirectLimit G f) :=
   CommRing.toRing
 
 -- Porting note: Added a `Zero` instance to get rid of `0` errors.
-instance zero : Zero (DirectLimit G f) := by
+instance (priority := 10000) zero : Zero (DirectLimit G f) := by
   unfold DirectLimit
   exact ⟨0⟩
 
-instance : Inhabited (DirectLimit G f) :=
+instance (priority := 10000) : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
 /-- The canonical map from a component to the direct limit. -/
@@ -980,7 +980,7 @@ variable (f' : ∀ i j, i ≤ j → G i →+* G j)
 
 namespace DirectLimit
 
-instance nontrivial [DirectedSystem G fun i j h => f' i j h] :
+instance (priority := 10000) nontrivial [DirectedSystem G fun i j h => f' i j h] :
     Nontrivial (Ring.DirectLimit G fun i j h => f' i j h) :=
   ⟨⟨0, 1,
       Nonempty.elim (by infer_instance) fun i : ι => by

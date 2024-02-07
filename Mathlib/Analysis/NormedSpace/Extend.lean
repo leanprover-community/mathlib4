@@ -142,7 +142,7 @@ theorem norm_extendTo𝕜' (fr : F →L[ℝ] ℝ) : ‖(fr.extendTo𝕜' : F →
 end ContinuousLinearMap
 
 -- Porting note: Added a new instance. This instance is needed for the rest of the file.
-instance : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) := by
+instance (priority := 10000) : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) := by
   unfold RestrictScalars
   infer_instance
 

@@ -68,23 +68,23 @@ def Action.imageComplementIncl {X Y : Action FintypeCat (MonCat.of G)} (f : X �
   hom := FintypeCat.imageComplementIncl f.hom
   comm _ := rfl
 
-instance {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
+instance (priority := 10000) {X Y : Action FintypeCat (MonCat.of G)} (f : X ⟶ Y) :
     Mono (Action.imageComplementIncl G f) := by
   apply Functor.mono_of_mono_map (forget _)
   apply ConcreteCategory.mono_of_injective
   exact Subtype.val_injective
 
 /-- The category of finite sets has quotients by finite groups in arbitrary universes. -/
-instance [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
+instance (priority := 10000) [Finite G] : HasColimitsOfShape (SingleObj G) FintypeCat.{w} := by
   obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_zero_nonempty_mulEquiv G
   exact Limits.hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm
 
-noncomputable instance : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := by
+noncomputable instance (priority := 10000) : PreservesFiniteLimits (forget (Action FintypeCat (MonCat.of G))) := by
   show PreservesFiniteLimits (Action.forget FintypeCat _ ⋙ FintypeCat.incl)
   apply compPreservesFiniteLimits
 
 /-- The category of finite `G`-sets is a `PreGaloisCategory`. -/
-instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
+instance (priority := 10000) : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
   hasQuotientsByFiniteGroups G _ _ := inferInstance
   monoInducesIsoOnDirectSummand {X Y} i h :=
     ⟨Action.imageComplement G i, Action.imageComplementIncl G i,
@@ -93,7 +93,7 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
       (Types.isCoprodOfMono ((forget _).map i))⟩⟩
 
 /-- The forgetful functor from finite `G`-sets to sets is a `FibreFunctor`. -/
-noncomputable instance : FibreFunctor (Action.forget FintypeCat (MonCat.of G)) where
+noncomputable instance (priority := 10000) : FibreFunctor (Action.forget FintypeCat (MonCat.of G)) where
   preservesFiniteCoproducts := ⟨fun _ _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩

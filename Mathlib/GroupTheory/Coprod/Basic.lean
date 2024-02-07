@@ -580,7 +580,7 @@ theorem con_mul_left_inv (x : FreeMonoid (G ⊕ H)) :
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 
 @[to_additive]
-instance : Inv (G ∗ H) where
+instance (priority := 10000) : Inv (G ∗ H) where
   inv := Quotient.map' (fun w => ofList (w.toList.map (Sum.map Inv.inv Inv.inv)).reverse) fun _ _ ↦
     (coprodCon G H).map_of_mul_left_rel_one _ con_mul_left_inv
 
@@ -590,7 +590,7 @@ theorem inv_def (w : FreeMonoid (G ⊕ H)) :
   rfl
 
 @[to_additive]
-instance : Group (G ∗ H) where
+instance (priority := 10000) : Group (G ∗ H) where
   mul_left_inv := mk_surjective.forall.2 fun x => mk_eq_mk.2 (con_mul_left_inv x)
 
 @[to_additive (attr := simp)]

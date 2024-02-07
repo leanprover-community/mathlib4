@@ -89,7 +89,7 @@ def toNonUnitalStarAlgHom [NonUnitalStarAlgHomClass F R A B] (f : F) : A →⋆�
   { (f : A →ₙₐ[R] B) with
     map_star' := map_star f }
 
-instance [NonUnitalStarAlgHomClass F R A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
+instance (priority := 10000) [NonUnitalStarAlgHomClass F R A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
   ⟨toNonUnitalStarAlgHom⟩
 
 end NonUnitalStarAlgHomClass
@@ -108,19 +108,19 @@ variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C] [Star C]
 
 variable [NonUnitalNonAssocSemiring D] [DistribMulAction R D] [Star D]
 
-instance : FunLike (A →⋆ₙₐ[R] B) A B
+instance (priority := 10000) : FunLike (A →⋆ₙₐ[R] B) A B
     where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩ h; congr
 
-instance : NonUnitalAlgHomClass (A →⋆ₙₐ[R] B) R A B
+instance (priority := 10000) : NonUnitalAlgHomClass (A →⋆ₙₐ[R] B) R A B
     where
   map_smul f := f.map_smul'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
 
-instance : NonUnitalStarAlgHomClass (A →⋆ₙₐ[R] B) R A B
+instance (priority := 10000) : NonUnitalStarAlgHomClass (A →⋆ₙₐ[R] B) R A B
     where
   map_star f := f.map_star'
 
@@ -240,7 +240,7 @@ theorem comp_id (f : A →⋆ₙₐ[R] B) : f.comp (NonUnitalStarAlgHom.id _ _) 
   ext fun _ => rfl
 #align non_unital_star_alg_hom.comp_id NonUnitalStarAlgHom.comp_id
 
-instance : Monoid (A →⋆ₙₐ[R] A) where
+instance (priority := 10000) : Monoid (A →⋆ₙₐ[R] A) where
   mul := comp
   mul_assoc := comp_assoc
   one := NonUnitalStarAlgHom.id R A
@@ -267,13 +267,13 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [StarAddMonoid A]
 
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [StarAddMonoid B]
 
-instance : Zero (A →⋆ₙₐ[R] B) :=
+instance (priority := 10000) : Zero (A →⋆ₙₐ[R] B) :=
   ⟨{ (0 : NonUnitalAlgHom R A B) with map_star' := by simp }⟩
 
-instance : Inhabited (A →⋆ₙₐ[R] B) :=
+instance (priority := 10000) : Inhabited (A →⋆ₙₐ[R] B) :=
   ⟨0⟩
 
-instance : MonoidWithZero (A →⋆ₙₐ[R] A) :=
+instance (priority := 10000) : MonoidWithZero (A →⋆ₙₐ[R] A) :=
   { inferInstanceAs (Monoid (A →⋆ₙₐ[R] A)),
     inferInstanceAs (Zero (A →⋆ₙₐ[R] A)) with
     zero_mul := fun _ => ext fun _ => rfl
@@ -350,7 +350,7 @@ def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
   { (f : A →ₐ[R] B) with
     map_star' := map_star f }
 
-instance : CoeTC F (A →⋆ₐ[R] B) :=
+instance (priority := 10000) : CoeTC F (A →⋆ₐ[R] B) :=
   ⟨toStarAlgHom⟩
 
 end StarAlgHomClass
@@ -360,12 +360,12 @@ namespace StarAlgHom
 variable {F R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B]
   [Algebra R B] [Star B] [Semiring C] [Algebra R C] [Star C] [Semiring D] [Algebra R D] [Star D]
 
-instance : FunLike (A →⋆ₐ[R] B) A B
+instance (priority := 10000) : FunLike (A →⋆ₐ[R] B) A B
     where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
 
-instance : AlgHomClass (A →⋆ₐ[R] B) R A B
+instance (priority := 10000) : AlgHomClass (A →⋆ₐ[R] B) R A B
     where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
@@ -373,7 +373,7 @@ instance : AlgHomClass (A →⋆ₐ[R] B) R A B
   map_zero f := f.map_zero'
   commutes f := f.commutes'
 
-instance : StarAlgHomClass (A →⋆ₐ[R] B) R A B
+instance (priority := 10000) : StarAlgHomClass (A →⋆ₐ[R] B) R A B
     where
   map_star f := f.map_star'
 
@@ -467,7 +467,7 @@ def ofId (R A : Type*) [CommSemiring R] [StarRing R] [Semiring A] [StarMul A]
 
 end
 
-instance : Inhabited (A →⋆ₐ[R] A) :=
+instance (priority := 10000) : Inhabited (A →⋆ₐ[R] A) :=
   ⟨StarAlgHom.id R A⟩
 
 /-- The composition of ⋆-algebra homomorphisms, as a ⋆-algebra homomorphism. -/
@@ -504,7 +504,7 @@ theorem comp_id (f : A →⋆ₐ[R] B) : f.comp (StarAlgHom.id _ _) = f :=
   ext fun _ => rfl
 #align star_alg_hom.comp_id StarAlgHom.comp_id
 
-instance : Monoid (A →⋆ₐ[R] A) where
+instance (priority := 10000) : Monoid (A →⋆ₐ[R] A) where
   mul := comp
   mul_assoc := comp_assoc
   one := StarAlgHom.id R A
@@ -784,7 +784,7 @@ section Basic
 variable {F R A B C : Type*} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B] [Star A]
   [Star B] [Add C] [Mul C] [SMul R C] [Star C]
 
-instance : EquivLike (A ≃⋆ₐ[R] B) A B
+instance (priority := 10000) : EquivLike (A ≃⋆ₐ[R] B) A B
     where
   coe f := f.toFun
   inv f := f.invFun
@@ -795,18 +795,18 @@ instance : EquivLike (A ≃⋆ₐ[R] B) A B
     rcases g with ⟨⟨⟨_, _, _⟩, _⟩, _⟩
     congr
 
-instance : NonUnitalAlgEquivClass (A ≃⋆ₐ[R] B) R A B
+instance (priority := 10000) : NonUnitalAlgEquivClass (A ≃⋆ₐ[R] B) R A B
     where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
   map_smul := map_smul'
 
-instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B
+instance (priority := 10000) : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B
     where
   map_star := map_star'
 
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
-instance : FunLike (A ≃⋆ₐ[R] B) A B
+instance (priority := 10000) : FunLike (A ≃⋆ₐ[R] B) A B
     where
   coe f := f.toFun
   coe_injective' := DFunLike.coe_injective
@@ -832,7 +832,7 @@ def refl : A ≃⋆ₐ[R] A :=
     map_star' := fun _ => rfl }
 #align star_alg_equiv.refl StarAlgEquiv.refl
 
-instance : Inhabited (A ≃⋆ₐ[R] A) :=
+instance (priority := 10000) : Inhabited (A ≃⋆ₐ[R] A) :=
   ⟨refl⟩
 
 @[simp]

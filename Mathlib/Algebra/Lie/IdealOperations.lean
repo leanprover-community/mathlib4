@@ -52,7 +52,7 @@ section LieIdealOperations
 
 /-- Given a Lie module `M` over a Lie algebra `L`, the set of Lie ideals of `L` acts on the set
 of submodules of `M`. -/
-instance hasBracket : Bracket (LieIdeal R L) (LieSubmodule R L M) :=
+instance (priority := 10000) hasBracket : Bracket (LieIdeal R L) (LieSubmodule R L M) :=
   ⟨fun I N => lieSpan R L { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m }⟩
 #align lie_submodule.has_bracket LieSubmodule.hasBracket
 

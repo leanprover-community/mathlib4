@@ -86,15 +86,15 @@ section Setup
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
-instance funLike : FunLike (α →ᵈ β) α β where
+instance (priority := 10000) funLike : FunLike (α →ᵈ β) α β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-instance toDilationClass : DilationClass (α →ᵈ β) α β where
+instance (priority := 10000) toDilationClass : DilationClass (α →ᵈ β) α β where
   edist_eq' f := edist_eq' f
 #align dilation.to_dilation_class Dilation.toDilationClass
 
-instance : CoeFun (α →ᵈ β) fun _ => α → β :=
+instance (priority := 10000) : CoeFun (α →ᵈ β) fun _ => α → β :=
   DFunLike.hasCoeToFun
 
 @[simp]
@@ -306,7 +306,7 @@ protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
   edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id.def, ENNReal.coe_one, one_mul]⟩
 #align dilation.id Dilation.id
 
-instance : Inhabited (α →ᵈ α) :=
+instance (priority := 10000) : Inhabited (α →ᵈ α) :=
   ⟨Dilation.id α⟩
 
 @[simp] -- Porting note: Removed `@[protected]`
@@ -369,7 +369,7 @@ theorem id_comp (f : α →ᵈ β) : (Dilation.id β).comp f = f :=
   ext fun _ => rfl
 #align dilation.id_comp Dilation.id_comp
 
-instance : Monoid (α →ᵈ α) where
+instance (priority := 10000) : Monoid (α →ᵈ α) where
   one := Dilation.id α
   mul := comp
   mul_one := comp_id

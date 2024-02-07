@@ -146,7 +146,7 @@ separate from `WithLp.instProdPseudoEMetric` since the latter requires the type 
 Registering this separately allows for a future emetric-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance instProdEDist : EDist (WithLp p (α × β)) where
+instance (priority := 10000) instProdEDist : EDist (WithLp p (α × β)) where
   edist f g :=
     if _hp : p = 0 then
       (if edist f.fst g.fst = 0 then 0 else 1) + (if edist f.snd g.snd = 0 then 0 else 1)
@@ -218,7 +218,7 @@ separate from `WithLp.instProdPseudoMetricSpace` since the latter requires the t
 Registering this separately allows for a future metric-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. The terminology for this varies throughout the
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
-instance instProdDist : Dist (WithLp p (α × β)) where
+instance (priority := 10000) instProdDist : Dist (WithLp p (α × β)) where
   dist f g :=
     if _hp : p = 0 then
       (if dist f.fst g.fst = 0 then 0 else 1) + (if dist f.snd g.snd = 0 then 0 else 1)
@@ -256,7 +256,7 @@ hypothesis `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future norm-like structure on `WithLp p (α × β)` for
 `p < 1` satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
-instance instProdNorm : Norm (WithLp p (α × β)) where
+instance (priority := 10000) instProdNorm : Norm (WithLp p (α × β)) where
   norm f :=
     if _hp : p = 0 then
       (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1)
@@ -456,7 +456,7 @@ section TopologicalSpace
 
 variable [TopologicalSpace α] [TopologicalSpace β]
 
-instance instProdTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
+instance (priority := 10000) instProdTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
   instTopologicalSpaceProd
 
 @[continuity]
@@ -469,7 +469,7 @@ theorem prod_continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm
 
 variable [T0Space α] [T0Space β]
 
-instance instProdT0Space : T0Space (WithLp p (α × β)) :=
+instance (priority := 10000) instProdT0Space : T0Space (WithLp p (α × β)) :=
   Prod.instT0Space
 
 end TopologicalSpace
@@ -478,7 +478,7 @@ section UniformSpace
 
 variable [UniformSpace α] [UniformSpace β]
 
-instance instProdUniformSpace : UniformSpace (WithLp p (α × β)) :=
+instance (priority := 10000) instProdUniformSpace : UniformSpace (WithLp p (α × β)) :=
   instUniformSpaceProd
 
 theorem prod_uniformContinuous_equiv : UniformContinuous (WithLp.equiv p (α × β)) :=
@@ -489,12 +489,12 @@ theorem prod_uniformContinuous_equiv_symm : UniformContinuous (WithLp.equiv p (�
 
 variable [CompleteSpace α] [CompleteSpace β]
 
-instance instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
+instance (priority := 10000) instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
   CompleteSpace.prod
 
 end UniformSpace
 
-instance instProdBornology [Bornology α] [Bornology β] : Bornology (WithLp p (α × β)) :=
+instance (priority := 10000) instProdBornology [Bornology α] [Bornology β] : Bornology (WithLp p (α × β)) :=
   Prod.instBornology
 
 section ContinuousLinearEquiv
@@ -517,18 +517,18 @@ variable [hp : Fact (1 ≤ p)]
 
 /-- `PseudoEMetricSpace` instance on the product of two pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
-instance instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+instance (priority := 10000) instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     PseudoEMetricSpace (WithLp p (α × β)) :=
   (prodPseudoEMetricAux p α β).replaceUniformity (prod_aux_uniformity_eq p α β).symm
 
 /-- `EMetricSpace` instance on the product of two emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/
-instance instProdEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (WithLp p (α × β)) :=
+instance (priority := 10000) instProdEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (WithLp p (α × β)) :=
   EMetricSpace.ofT0PseudoEMetricSpace (WithLp p (α × β))
 
 /-- `PseudoMetricSpace` instance on the product of two pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
-instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β] :
+instance (priority := 10000) instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β] :
     PseudoMetricSpace (WithLp p (α × β)) :=
   ((prodPseudoMetricAux p α β).replaceUniformity
     (prod_aux_uniformity_eq p α β).symm).replaceBornology
@@ -536,7 +536,7 @@ instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β]
 
 /-- `MetricSpace` instance on the product of two metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/
-instance instProdMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (WithLp p (α × β)) :=
+instance (priority := 10000) instProdMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (WithLp p (α × β)) :=
   MetricSpace.ofT0PseudoMetricSpace _
 
 variable {p α β}
@@ -574,7 +574,7 @@ theorem prod_infty_equiv_isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β
 
 /-- Seminormed group instance on the product of two normed groups, using the `L^p`
 norm. -/
-instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
+instance (priority := 10000) instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup (WithLp p (α × β)) where
   dist_eq x y := by
     rcases p.dichotomy with (rfl | h)
@@ -585,7 +585,7 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
       rfl
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
-instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
+instance (priority := 10000) instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
     NormedAddCommGroup (WithLp p (α × β)) :=
   { instProdSeminormedAddCommGroup p α β with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
@@ -744,7 +744,7 @@ end Single
 section BoundedSMul
 variable [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [BoundedSMul 𝕜 α] [BoundedSMul 𝕜 β]
 
-instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
+instance (priority := 10000) instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
   .of_nnnorm_smul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
     · simp only [← prod_nnnorm_equiv, WithLp.equiv_smul]
@@ -773,7 +773,7 @@ end BoundedSMul
 section NormedSpace
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
-instance instProdNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β] :
+instance (priority := 10000) instProdNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β] :
     NormedSpace 𝕜 (WithLp p (α × β)) where
   norm_smul_le := norm_smul_le
 

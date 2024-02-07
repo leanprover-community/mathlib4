@@ -54,7 +54,7 @@ def PreservesHomology.preservesCokernel [F.PreservesHomology] {X Y : C} (f : X �
     PreservesColimit (parallelPair f 0) F :=
   PreservesHomology.preservesCokernels _
 
-noncomputable instance preservesHomologyOfExact
+noncomputable instance (priority := 10000) preservesHomologyOfExact
     [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
   F.PreservesHomology where
 
@@ -78,7 +78,7 @@ class IsPreservedBy [F.PreservesZeroMorphisms] where
 
 variable [F.PreservesZeroMorphisms]
 
-noncomputable instance isPreservedByOfPreservesHomology [F.PreservesHomology] :
+noncomputable instance (priority := 10000) isPreservedByOfPreservesHomology [F.PreservesHomology] :
     h.IsPreservedBy F where
   g := Functor.PreservesHomology.preservesKernel _ _
   f' := Functor.PreservesHomology.preservesCokernel _ _
@@ -157,7 +157,7 @@ class IsPreservedBy [F.PreservesZeroMorphisms] where
 
 variable [F.PreservesZeroMorphisms]
 
-noncomputable instance isPreservedByOfPreservesHomology [F.PreservesHomology] :
+noncomputable instance (priority := 10000) isPreservedByOfPreservesHomology [F.PreservesHomology] :
     h.IsPreservedBy F where
   f := Functor.PreservesHomology.preservesCokernel F _
   g' := Functor.PreservesHomology.preservesKernel F _
@@ -266,10 +266,10 @@ class PreservesRightHomologyOf where
   /-- the functor preserves all the right homology data of the short complex -/
   isPreservedBy : ∀ (h : S.RightHomologyData), h.IsPreservedBy F
 
-noncomputable instance PreservesHomology.preservesLeftHomologyOf [F.PreservesHomology] :
+noncomputable instance (priority := 10000) PreservesHomology.preservesLeftHomologyOf [F.PreservesHomology] :
     F.PreservesLeftHomologyOf S := ⟨inferInstance⟩
 
-noncomputable instance PreservesHomology.preservesRightHomologyOf [F.PreservesHomology] :
+noncomputable instance (priority := 10000) PreservesHomology.preservesRightHomologyOf [F.PreservesHomology] :
     F.PreservesRightHomologyOf S := ⟨inferInstance⟩
 
 variable {S}
@@ -307,38 +307,38 @@ namespace ShortComplex
 variable {S : ShortComplex C} (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData)
   (F : C ⥤ D) [F.PreservesZeroMorphisms]
 
-instance LeftHomologyData.isPreservedByOfPreserves [F.PreservesLeftHomologyOf S] :
+instance (priority := 10000) LeftHomologyData.isPreservedByOfPreserves [F.PreservesLeftHomologyOf S] :
     h₁.IsPreservedBy F :=
   Functor.PreservesLeftHomologyOf.isPreservedBy _
 
-instance RightHomologyData.isPreservedByOfPreserves [F.PreservesRightHomologyOf S] :
+instance (priority := 10000) RightHomologyData.isPreservedByOfPreserves [F.PreservesRightHomologyOf S] :
     h₂.IsPreservedBy F :=
   Functor.PreservesRightHomologyOf.isPreservedBy _
 
 variable (S)
 
-instance hasLeftHomology_of_preserves [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
+instance (priority := 10000) hasLeftHomology_of_preserves [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
     (S.map F).HasLeftHomology :=
   HasLeftHomology.mk' (S.leftHomologyData.map F)
 
-instance hasLeftHomology_of_preserves' [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
+instance (priority := 10000) hasLeftHomology_of_preserves' [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
     (F.mapShortComplex.obj S).HasLeftHomology :=
   by dsimp; infer_instance
 
-instance hasRightHomology_of_preserves [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
+instance (priority := 10000) hasRightHomology_of_preserves [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
     (S.map F).HasRightHomology :=
   HasRightHomology.mk' (S.rightHomologyData.map F)
 
-instance hasRightHomology_of_preserves' [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
+instance (priority := 10000) hasRightHomology_of_preserves' [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
     (F.mapShortComplex.obj S).HasRightHomology :=
   by dsimp; infer_instance
 
-instance hasHomology_of_preserves [S.HasHomology] [F.PreservesLeftHomologyOf S]
+instance (priority := 10000) hasHomology_of_preserves [S.HasHomology] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] :
     (S.map F).HasHomology :=
   HasHomology.mk' (S.homologyData.map F)
 
-instance hasHomology_of_preserves' [S.HasHomology] [F.PreservesLeftHomologyOf S]
+instance (priority := 10000) hasHomology_of_preserves' [S.HasHomology] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] :
     (F.mapShortComplex.obj S).HasHomology :=
   by dsimp; infer_instance
@@ -751,7 +751,7 @@ lemma RightHomologyMapData.quasiIso_map_iff
 variable (φ) [S₁.HasHomology] [S₂.HasHomology]
     [(F.mapShortComplex.obj S₁).HasHomology] [(F.mapShortComplex.obj S₂).HasHomology]
 
-instance quasiIso_map_of_preservesLeftHomology
+instance (priority := 10000) quasiIso_map_of_preservesLeftHomology
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
     [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
   have γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
@@ -773,7 +773,7 @@ lemma quasiIso_map_iff_of_preservesLeftHomology
   · intro
     infer_instance
 
-instance quasiIso_map_of_preservesRightHomology
+instance (priority := 10000) quasiIso_map_of_preservesRightHomology
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
     [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
   have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default

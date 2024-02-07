@@ -182,7 +182,7 @@ theorem minimalPeriod_eq_card [Fintype (orbit (zpowers a) b)] :
 #align add_action.minimal_period_eq_card AddAction.minimalPeriod_eq_card
 
 @[to_additive]
-instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
+instance (priority := 10000) minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
     NeZero <| minimalPeriod (a • ·) b :=
   ⟨by
     cases nonempty_fintype (orbit (zpowers a) b)

@@ -84,7 +84,7 @@ run_cmd liftCoreM <| successIfFail <| getRawProjections .missing `DoesntExist
 class Something (α : Type _) where
   op : α → α → α → α
 
-instance {α : Type _} [Something α] : Add α :=
+instance (priority := 10000) {α : Type _} [Something α] : Add α :=
   ⟨λ x y => Something.op x y y⟩
 
 
@@ -454,7 +454,7 @@ structure FooStr :=
  (c : Type)
  (x : c)
 
-instance : CoeSort FooStr Type := ⟨FooStr.c⟩
+instance (priority := 10000) : CoeSort FooStr Type := ⟨FooStr.c⟩
 
 @[simps] def foo : FooStr := ⟨ℕ, 3⟩
 @[simps] def foo2 : FooStr := ⟨ℕ, 34⟩
@@ -466,7 +466,7 @@ structure VooStr (n : ℕ) :=
  (c : Type)
  (x : c)
 
-instance (n : ℕ) : CoeSort (VooStr n) Type := ⟨VooStr.c⟩
+instance (priority := 10000) (n : ℕ) : CoeSort (VooStr n) Type := ⟨VooStr.c⟩
 
 @[simps] def voo : VooStr 7 := ⟨ℕ, 3⟩
 @[simps] def voo2 : VooStr 4 := ⟨ℕ, 34⟩
@@ -480,7 +480,7 @@ structure Equiv2 (α : Sort _) (β : Sort _) :=
   (left_inv  : invFun.LeftInverse toFun)
   (right_inv : invFun.RightInverse toFun)
 
-instance {α β} : CoeFun (Equiv2 α β) (λ _ => α → β) := ⟨Equiv2.toFun⟩
+instance (priority := 10000) {α β} : CoeFun (Equiv2 α β) (λ _ => α → β) := ⟨Equiv2.toFun⟩
 
 @[simps] protected def rfl2 {α} : Equiv2 α α :=
   ⟨λ x => x, λ x => x, λ _ => rfl, λ _ => rfl⟩
@@ -523,10 +523,10 @@ structure BSemigroup :=
 
 namespace BSemigroup
 
-instance : CoeSort BSemigroup (Type _) := ⟨BSemigroup.G⟩
+instance (priority := 10000) : CoeSort BSemigroup (Type _) := ⟨BSemigroup.G⟩
 -- We could try to generate lemmas with this `HMul` instance, but it is unused in mathlib3/mathlib4.
 -- Therefore, this is ignored.
-instance (G : BSemigroup) : Mul G := ⟨G.op⟩
+instance (priority := 10000) (G : BSemigroup) : Mul G := ⟨G.op⟩
 
 protected def prod (G H : BSemigroup) : BSemigroup :=
   { G := G × H
@@ -578,7 +578,7 @@ local infix:25 (priority := high) " ≃ " => ManualCoercion.Equiv
 
 variable {α β γ : Sort _}
 
-instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
+instance (priority := 10000) : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
@@ -628,7 +628,7 @@ structure Equiv (α : Sort _) (β : Sort _) :=
 
 local infix:25 (priority := high) " ≃ " => ManualInitialize.Equiv
 
-instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
+instance (priority := 10000) : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
@@ -660,7 +660,7 @@ structure Equiv (α : Sort u) (β : Sort v) :=
 
 local infix:25 (priority := high) " ≃ " => FaultyUniverses.Equiv
 
-instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
+instance (priority := 10000) : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
@@ -689,7 +689,7 @@ structure Equiv (α : Sort u) (β : Sort v) :=
 
 local infix:25 (priority := high) " ≃ " => ManualUniverses.Equiv
 
-instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
+instance (priority := 10000) : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
@@ -712,7 +712,7 @@ local infix:25 (priority := high) " ≃ " => ManualProjectionNames.Equiv
 
 variable {α β γ : Sort _}
 
-instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
+instance (priority := 10000) : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
@@ -752,7 +752,7 @@ local infix:25 (priority := high) " ≃ " => PrefixProjectionNames.Equiv
 
 variable {α β γ : Sort _}
 
-instance : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
+instance (priority := 10000) : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv.toFun⟩
 
 def Equiv.symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun⟩
 
@@ -856,7 +856,7 @@ end NestedNonFullyApplied
 class PropClass (n : ℕ) : Prop :=
   (has_true : True)
 
-instance has_PropClass (n : ℕ) : PropClass n := ⟨trivial⟩
+instance (priority := 10000) has_PropClass (n : ℕ) : PropClass n := ⟨trivial⟩
 
 structure NeedsPropClass (n : ℕ) [PropClass n] :=
   (t : True)
@@ -868,7 +868,7 @@ structure NeedsPropClass (n : ℕ) [PropClass n] :=
 structure AlgHom (R A B : Type _) :=
   (toFun : A → B)
 
-instance (R A B : Type _) : CoeFun (AlgHom R A B) (λ _ => A → B) := ⟨λ f => f.toFun⟩
+instance (priority := 10000) (R A B : Type _) : CoeFun (AlgHom R A B) (λ _ => A → B) := ⟨λ f => f.toFun⟩
 
 @[simps] def myAlgHom : AlgHom Unit Bool Bool :=
   { toFun := id }
@@ -880,7 +880,7 @@ example (x : Bool) {z} (h : id x = z) : myAlgHom x = z := by
 structure RingHom (A B : Type _) where
   toFun : A → B
 
-instance (A B : Type _) : CoeFun (RingHom A B) (λ _ => A → B) := ⟨λ f => f.toFun⟩
+instance (priority := 10000) (A B : Type _) : CoeFun (RingHom A B) (λ _ => A → B) := ⟨λ f => f.toFun⟩
 
 @[simps] def myRingHom : RingHom Bool Bool :=
 { toFun := id }
@@ -894,7 +894,7 @@ example (x : Bool) {z} (h : id x = z) : myRingHom x = z := by
 -- set_option trace.simps.debug true
 
 @[to_additive (attr := simps) instAddProd]
-instance {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨λ p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
+instance (priority := 10000) {M N} [Mul M] [Mul N] : Mul (M × N) := ⟨λ p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
@@ -911,7 +911,7 @@ example {M N} [Add M] [Add N] (p q : M × N) : p + q = ⟨p.1 + q.1, p.2 + q.2�
 /- The names of the generated simp lemmas for the additive version are not great if the definition
   had a custom additive name -/
 @[to_additive (attr := simps) my_add_instance]
-instance my_instance {M N} [One M] [One N] : One (M × N) := ⟨(1, 1)⟩
+instance (priority := 10000) my_instance {M N} [One M] [One N] : One (M × N) := ⟨(1, 1)⟩
 
 run_cmd liftTermElabM <| do
   let env ← getEnv
@@ -966,7 +966,7 @@ end
 
 section comp_projs
 
-instance {α β} : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv'.toFun⟩
+instance (priority := 10000) {α β} : CoeFun (α ≃ β) (λ _ => α → β) := ⟨Equiv'.toFun⟩
 
 @[simps] protected def Equiv'.symm {α β} (f : α ≃ β) : β ≃ α :=
   ⟨f.invFun, f, f.right_inv, f.left_inv⟩
@@ -975,7 +975,7 @@ structure DecoratedEquiv (α : Sort _) (β : Sort _) extends Equiv' α β :=
   (P_toFun  : Function.Injective toFun )
   (P_invFun : Function.Injective invFun)
 
-instance {α β} : CoeFun (DecoratedEquiv α β) (λ _ => α → β) := ⟨λ f => f.toEquiv'⟩
+instance (priority := 10000) {α β} : CoeFun (DecoratedEquiv α β) (λ _ => α → β) := ⟨λ f => f.toEquiv'⟩
 
 def DecoratedEquiv.symm {α β : Sort _} (e : DecoratedEquiv α β) : DecoratedEquiv β α :=
   { toEquiv' := e.toEquiv'.symm
@@ -1025,7 +1025,7 @@ structure FurtherDecoratedEquiv (α : Sort _) (β : Sort _) extends DecoratedEqu
   (Q_toFun  : Function.Surjective toFun )
   (Q_invFun : Function.Surjective invFun )
 
-instance {α β} : CoeFun (FurtherDecoratedEquiv α β) (λ _ => α → β) :=
+instance (priority := 10000) {α β} : CoeFun (FurtherDecoratedEquiv α β) (λ _ => α → β) :=
   ⟨λ f => f.toDecoratedEquiv⟩
 
 def FurtherDecoratedEquiv.symm {α β : Sort _} (e : FurtherDecoratedEquiv α β) :
@@ -1065,7 +1065,7 @@ def ffoo4 (α : Type) : FurtherDecoratedEquiv α α :=
 
 structure OneMore (α : Sort _) (β : Sort _) extends FurtherDecoratedEquiv α β
 
-instance {α β} : CoeFun (OneMore α β) (λ _ => α → β) :=
+instance (priority := 10000) {α β} : CoeFun (OneMore α β) (λ _ => α → β) :=
   ⟨λ f => f.toFurtherDecoratedEquiv⟩
 
 def OneMore.symm {α β : Sort _} (e : OneMore α β) :
@@ -1109,7 +1109,7 @@ structure AddMonoidHom (M N : Type _) [AddMonoid M] [AddMonoid N]
 
 infixr:25 " →+ " => AddMonoidHom
 
-instance (M N : Type _) [AddMonoid M] [AddMonoid N] : CoeFun (M →+ N) (λ _ => M → N) := ⟨(·.toFun)⟩
+instance (priority := 10000) (M N : Type _) [AddMonoid M] [AddMonoid N] : CoeFun (M →+ N) (λ _ => M → N) := ⟨(·.toFun)⟩
 
 class AddHomPlus [Add ι] [∀ i, AddCommMonoid (A i)] :=
   (myMul {i} : A i →+ A i)

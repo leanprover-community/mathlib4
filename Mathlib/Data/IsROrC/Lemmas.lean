@@ -36,7 +36,7 @@ This instance generates a type-class problem with a metavariable `?m` that shoul
 
 /-- An `IsROrC` field is finite-dimensional over `ℝ`, since it is spanned by `{1, I}`. -/
 -- Porting note: was @[nolint dangerous_instance]
-instance isROrC_to_real : FiniteDimensional ℝ K :=
+instance (priority := 10000) isROrC_to_real : FiniteDimensional ℝ K :=
   ⟨{1, I}, by
     suffices ∀ x : K, ∃ a b : ℝ, a • 1 + b • I = x by
       simpa [Submodule.eq_top_iff', Submodule.mem_span_pair]
@@ -58,7 +58,7 @@ theorem proper_isROrC [FiniteDimensional K E] : ProperSpace E := by
 
 variable {E}
 
-instance IsROrC.properSpace_submodule (S : Submodule K E) [FiniteDimensional K S] :
+instance (priority := 10000) IsROrC.properSpace_submodule (S : Submodule K E) [FiniteDimensional K S] :
     ProperSpace S :=
   proper_isROrC K S
 #align finite_dimensional.is_R_or_C.proper_space_submodule FiniteDimensional.IsROrC.properSpace_submodule

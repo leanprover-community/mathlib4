@@ -39,12 +39,12 @@ namespace Kleisli
 
 variable (T : Monad C)
 
-instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) :=
+instance (priority := 10000) [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) :=
   ⟨(default : C)⟩
 
 /-- The Kleisli category on a monad `T`.
     cf Definition 5.2.9 in [Riehl][riehl2017]. -/
-instance Kleisli.category : Category (Kleisli T) where
+instance (priority := 10000) Kleisli.category : Category (Kleisli T) where
   Hom := fun X Y : C => X ⟶ (T : C ⥤ C).obj Y
   id X := T.η.app X
   comp {X} {Y} {Z} f g := f ≫ (T : C ⥤ C).map g ≫ T.μ.app Z
@@ -118,11 +118,11 @@ namespace Cokleisli
 
 variable (U : Comonad C)
 
-instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) :=
+instance (priority := 10000) [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) :=
   ⟨(default : C)⟩
 
 /-- The co-Kleisli category on a comonad `U`.-/
-instance Cokleisli.category : Category (Cokleisli U) where
+instance (priority := 10000) Cokleisli.category : Category (Cokleisli U) where
   Hom := fun X Y : C => (U : C ⥤ C).obj X ⟶ Y
   id X := U.ε.app X
   comp {X} {Y} {Z} f g := U.δ.app X ≫ (U : C ⥤ C).map f ≫ g

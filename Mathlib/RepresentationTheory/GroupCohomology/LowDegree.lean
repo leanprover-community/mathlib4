@@ -421,7 +421,7 @@ lemma dZero_comp_H0_subtype : dZero A ∘ₗ (H0 A).subtype = 0 := by
 def shortComplexH0 : ShortComplex (ModuleCat k) :=
   ShortComplex.moduleCatMk _ _ (dZero_comp_H0_subtype A)
 
-instance : Mono (shortComplexH0 A).f := by
+instance (priority := 10000) : Mono (shortComplexH0 A).f := by
   rw [ModuleCat.mono_iff_injective]
   apply Submodule.injective_subtype
 

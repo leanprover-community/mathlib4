@@ -538,11 +538,11 @@ def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i 
 #align fin.cast_le_order_iso_symm_apply Fin.castLEOrderIso_symm_apply
 
 /-- `Fin 0` is a subsingleton. -/
-instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
+instance (priority := 10000) subsingleton_fin_zero : Subsingleton (Fin 0) :=
   finZeroEquiv.subsingleton
 #align subsingleton_fin_zero subsingleton_fin_zero
 
 /-- `Fin 1` is a subsingleton. -/
-instance subsingleton_fin_one : Subsingleton (Fin 1) :=
+instance (priority := 10000) subsingleton_fin_one : Subsingleton (Fin 1) :=
   finOneEquiv.subsingleton
 #align subsingleton_fin_one subsingleton_fin_one

@@ -73,7 +73,7 @@ variable (R : Type*) [Nontrivial R]
 /-- A nontrivial `ℚ`-algebra has `CharP` equal to zero.
 
 This cannot be a (local) instance because it would immediately form a loop with the
-instance `algebraRat`. It's probably easier to go the other way: prove `CharZero R` and
+instance (priority := 10000) `algebraRat`. It's probably easier to go the other way: prove `CharZero R` and
 automatically receive an `Algebra ℚ R` instance.
 -/
 theorem algebraRat.charP_zero [Semiring R] [Algebra ℚ R] : CharP R 0 :=
@@ -83,7 +83,7 @@ theorem algebraRat.charP_zero [Semiring R] [Algebra ℚ R] : CharP R 0 :=
 /-- A nontrivial `ℚ`-algebra has characteristic zero.
 
 This cannot be a (local) instance because it would immediately form a loop with the
-instance `algebraRat`. It's probably easier to go the other way: prove `CharZero R` and
+instance (priority := 10000) `algebraRat`. It's probably easier to go the other way: prove `CharZero R` and
 automatically receive an `Algebra ℚ R` instance.
 -/
 theorem algebraRat.charZero [Ring R] [Algebra ℚ R] : CharZero R :=
@@ -117,12 +117,12 @@ namespace FreeAlgebra
 variable {R X : Type*} [CommSemiring R] (p : ℕ)
 
 /-- If `R` has characteristic `p`, then so does `FreeAlgebra R X`. -/
-instance charP [CharP R p] : CharP (FreeAlgebra R X) p :=
+instance (priority := 10000) charP [CharP R p] : CharP (FreeAlgebra R X) p :=
   charP_of_injective_algebraMap FreeAlgebra.algebraMap_leftInverse.injective p
 #align free_algebra.char_p FreeAlgebra.charP
 
 /-- If `R` has characteristic `0`, then so does `FreeAlgebra R X`. -/
-instance charZero [CharZero R] : CharZero (FreeAlgebra R X) :=
+instance (priority := 10000) charZero [CharZero R] : CharZero (FreeAlgebra R X) :=
   charZero_of_injective_algebraMap FreeAlgebra.algebraMap_leftInverse.injective
 #align free_algebra.char_zero FreeAlgebra.charZero
 
@@ -147,12 +147,12 @@ theorem charZero_of_isFractionRing [CharZero R] : CharZero K :=
 variable [IsDomain R]
 
 /-- If `R` has characteristic `p`, then so does `FractionRing R`. -/
-instance charP [CharP R p] : CharP (FractionRing R) p :=
+instance (priority := 10000) charP [CharP R p] : CharP (FractionRing R) p :=
   charP_of_isFractionRing R p
 #align is_fraction_ring.char_p IsFractionRing.charP
 
 /-- If `R` has characteristic `0`, then so does `FractionRing R`. -/
-instance charZero [CharZero R] : CharZero (FractionRing R) :=
+instance (priority := 10000) charZero [CharZero R] : CharZero (FractionRing R) :=
   charZero_of_isFractionRing R
 #align is_fraction_ring.char_zero IsFractionRing.charZero
 

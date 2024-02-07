@@ -32,7 +32,7 @@ namespace LazyList
 
 variable {α : Type u} {β : Type v} {δ : Type w}
 
-instance : Inhabited (LazyList α) :=
+instance (priority := 10000) : Inhabited (LazyList α) :=
   ⟨nil⟩
 
 /-- The singleton lazy list.  -/

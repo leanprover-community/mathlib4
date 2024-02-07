@@ -457,21 +457,21 @@ theorem smul_set_range [SMul α β] {ι : Sort*} {f : ι → β} :
 #align set.vadd_set_range Set.vadd_set_range
 
 @[to_additive]
-instance smulCommClass_set [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass_set [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α β (Set γ) :=
   ⟨fun _ _ ↦ Commute.set_image <| smul_comm _ _⟩
 #align set.smul_comm_class_set Set.smulCommClass_set
 #align set.vadd_comm_class_set Set.vaddCommClass_set
 
 @[to_additive]
-instance smulCommClass_set' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass_set' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass α (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image_image2_distrib_right <| smul_comm _⟩
 #align set.smul_comm_class_set' Set.smulCommClass_set'
 #align set.vadd_comm_class_set' Set.vaddCommClass_set'
 
 @[to_additive]
-instance smulCommClass_set'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass_set'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Set α) β (Set γ) :=
   haveI := SMulCommClass.symm α β γ
   SMulCommClass.symm _ _ _
@@ -479,35 +479,35 @@ instance smulCommClass_set'' [SMul α γ] [SMul β γ] [SMulCommClass α β γ] 
 #align set.vadd_comm_class_set'' Set.vaddCommClass_set''
 
 @[to_additive]
-instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Set α) (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_left_comm smul_comm⟩
 #align set.smul_comm_class Set.smulCommClass
 #align set.vadd_comm_class Set.vaddCommClass
 
 @[to_additive vaddAssocClass]
-instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance (priority := 10000) isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Set γ) where
   smul_assoc a b T := by simp only [← image_smul, image_image, smul_assoc]
 #align set.is_scalar_tower Set.isScalarTower
 #align set.vadd_assoc_class Set.vaddAssocClass
 
 @[to_additive vaddAssocClass']
-instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance (priority := 10000) isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Set β) (Set γ) :=
   ⟨fun _ _ _ ↦ image2_image_left_comm <| smul_assoc _⟩
 #align set.is_scalar_tower' Set.isScalarTower'
 #align set.vadd_assoc_class' Set.vaddAssocClass'
 
 @[to_additive vaddAssocClass'']
-instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
+instance (priority := 10000) isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Set α) (Set β) (Set γ) where
   smul_assoc _ _ _ := image2_assoc smul_assoc
 #align set.is_scalar_tower'' Set.isScalarTower''
 #align set.vadd_assoc_class'' Set.vaddAssocClass''
 
 @[to_additive]
-instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
+instance (priority := 10000) isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α β] :
     IsCentralScalar α (Set β) :=
   ⟨fun _ S ↦ (congr_arg fun f ↦ f '' S) <| funext fun _ ↦ op_smul_eq_smul _ _⟩
 #align set.is_central_scalar Set.isCentralScalar
@@ -568,7 +568,7 @@ protected def mulDistribMulActionSet [Monoid α] [Monoid β] [MulDistribMulActio
 
 scoped[Pointwise] attribute [instance] Set.distribMulActionSet Set.mulDistribMulActionSet
 
-instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
+instance (priority := 10000) [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Set α) (Set β) :=
   ⟨fun {s t} h ↦ by
     by_contra! H
@@ -579,7 +579,7 @@ instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     obtain ⟨⟨a, hs, ha⟩, b, ht, hb⟩ := H
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul hs ht).elim ha hb⟩
 
-instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
+instance (priority := 10000) noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Set β) :=
   ⟨fun {a s} h ↦ by
     by_contra! H
@@ -589,7 +589,7 @@ instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivi
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul_set ht).elim ha hb⟩
 #align set.no_zero_smul_divisors_set Set.noZeroSMulDivisors_set
 
-instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
+instance (priority := 10000) [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
   ⟨fun h ↦ eq_zero_or_eq_zero_of_smul_eq_zero h⟩
 
 end SMul
@@ -599,7 +599,7 @@ section VSub
 variable {ι : Sort*} {κ : ι → Sort*} [VSub α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
   {b c : β}
 
-instance vsub : VSub (Set α) (Set β) :=
+instance (priority := 10000) vsub : VSub (Set α) (Set β) :=
   ⟨image2 (· -ᵥ ·)⟩
 #align set.has_vsub Set.vsub
 

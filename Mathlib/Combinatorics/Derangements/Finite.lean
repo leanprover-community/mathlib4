@@ -34,10 +34,10 @@ open BigOperators
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
-instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
+instance (priority := 10000) : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
 
 -- porting note: used to use the tactic delta_instance
-instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
+instance (priority := 10000) : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => ∀ (x_1 : α), ¬_ = x_1)
 
 theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=

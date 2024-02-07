@@ -81,14 +81,14 @@ lemma comm (h : HomologyMapData φ h₁ h₂) :
     LeftHomologyMapData.commπ_assoc, HomologyData.comm, LeftHomologyMapData.commi_assoc,
     RightHomologyMapData.commι, HomologyData.comm_assoc, RightHomologyMapData.commp]
 
-instance : Subsingleton (HomologyMapData φ h₁ h₂) := ⟨by
+instance (priority := 10000) : Subsingleton (HomologyMapData φ h₁ h₂) := ⟨by
   rintro ⟨left₁, right₁⟩ ⟨left₂, right₂⟩
   simp only [mk.injEq, eq_iff_true_of_subsingleton, and_self]⟩
 
-instance : Inhabited (HomologyMapData φ h₁ h₂) :=
+instance (priority := 10000) : Inhabited (HomologyMapData φ h₁ h₂) :=
   ⟨⟨default, default⟩⟩
 
-instance : Unique (HomologyMapData φ h₁ h₂) := Unique.mk' _
+instance (priority := 10000) : Unique (HomologyMapData φ h₁ h₂) := Unique.mk' _
 
 variable (φ h₁ h₂)
 
@@ -211,27 +211,27 @@ variable {S}
 lemma HasHomology.mk' (h : S.HomologyData) : HasHomology S :=
   ⟨Nonempty.intro h⟩
 
-instance [HasHomology S] : HasHomology S.op :=
+instance (priority := 10000) [HasHomology S] : HasHomology S.op :=
   HasHomology.mk' S.homologyData.op
 
-instance (S : ShortComplex Cᵒᵖ) [HasHomology S] : HasHomology S.unop :=
+instance (priority := 10000) (S : ShortComplex Cᵒᵖ) [HasHomology S] : HasHomology S.unop :=
   HasHomology.mk' S.homologyData.unop
 
-instance hasLeftHomology_of_hasHomology [S.HasHomology] : S.HasLeftHomology :=
+instance (priority := 10000) hasLeftHomology_of_hasHomology [S.HasHomology] : S.HasLeftHomology :=
   HasLeftHomology.mk' S.homologyData.left
 
-instance hasRightHomology_of_hasHomology [S.HasHomology] : S.HasRightHomology :=
+instance (priority := 10000) hasRightHomology_of_hasHomology [S.HasHomology] : S.HasRightHomology :=
   HasRightHomology.mk' S.homologyData.right
 
-instance hasHomology_of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
+instance (priority := 10000) hasHomology_of_hasCokernel {X Y : C} (f : X ⟶ Y) (Z : C) [HasCokernel f] :
     (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).HasHomology :=
   HasHomology.mk' (HomologyData.ofHasCokernel _ rfl)
 
-instance hasHomology_of_hasKernel {Y Z : C} (g : Y ⟶ Z) (X : C) [HasKernel g] :
+instance (priority := 10000) hasHomology_of_hasKernel {Y Z : C} (g : Y ⟶ Z) (X : C) [HasKernel g] :
     (ShortComplex.mk (0 : X ⟶ Y) g zero_comp).HasHomology :=
   HasHomology.mk' (HomologyData.ofHasKernel _ rfl)
 
-instance hasHomology_of_zeros (X Y Z : C) :
+instance (priority := 10000) hasHomology_of_zeros (X Y Z : C) :
     (ShortComplex.mk (0 : X ⟶ Y) (0 : Y ⟶ Z) zero_comp).HasHomology :=
   HasHomology.mk' (HomologyData.ofZeros _ rfl rfl)
 
@@ -522,7 +522,7 @@ def homologyMapIso' (e : S₁ ≅ S₂) (h₁ : S₁.HomologyData)
   hom_inv_id := by rw [← homologyMap'_comp, e.hom_inv_id, homologyMap'_id]
   inv_hom_id := by rw [← homologyMap'_comp, e.inv_hom_id, homologyMap'_id]
 
-instance isIso_homologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
+instance (priority := 10000) isIso_homologyMap'_of_isIso (φ : S₁ ⟶ S₂) [IsIso φ]
     (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData) :
     IsIso (homologyMap' φ h₁ h₂) :=
   (inferInstance : IsIso (homologyMapIso' (asIso φ) h₁ h₂).hom)
@@ -537,7 +537,7 @@ noncomputable def homologyMapIso (e : S₁ ≅ S₂) [S₁.HasHomology]
   hom_inv_id := by rw [← homologyMap_comp, e.hom_inv_id, homologyMap_id]
   inv_hom_id := by rw [← homologyMap_comp, e.inv_hom_id, homologyMap_id]
 
-instance isIso_homologyMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasHomology]
+instance (priority := 10000) isIso_homologyMap_of_iso (φ : S₁ ⟶ S₂) [IsIso φ] [S₁.HasHomology]
     [S₂.HasHomology] :
     IsIso (homologyMap φ) :=
   (inferInstance : IsIso (homologyMapIso (asIso φ)).hom)
@@ -622,19 +622,19 @@ lemma HomologyData.leftRightHomologyComparison'_eq (h : S.HomologyData) :
   simp only [← cancel_epi h.left.π, ← cancel_mono h.right.ι,
     π_leftRightHomologyComparison'_ι, HomologyData.comm]
 
-instance isIso_leftRightHomologyComparison'_of_homologyData (h : S.HomologyData) :
+instance (priority := 10000) isIso_leftRightHomologyComparison'_of_homologyData (h : S.HomologyData) :
   IsIso (leftRightHomologyComparison' h.left h.right) := by
     rw [h.leftRightHomologyComparison'_eq]
     infer_instance
 
-instance isIso_leftRightHomologyComparison' [S.HasHomology]
+instance (priority := 10000) isIso_leftRightHomologyComparison' [S.HasHomology]
     (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData) :
     IsIso (leftRightHomologyComparison' h₁ h₂) := by
   rw [leftRightHomologyComparison'_compatibility h₁ S.homologyData.left h₂
     S.homologyData.right]
   infer_instance
 
-instance isIso_leftRightHomologyComparison [S.HasHomology] :
+instance (priority := 10000) isIso_leftRightHomologyComparison [S.HasHomology] :
     IsIso S.leftRightHomologyComparison := by
   dsimp only [leftRightHomologyComparison]
   infer_instance
@@ -786,7 +786,7 @@ class _root_.CategoryTheory.CategoryWithHomology : Prop where
 
 attribute [instance] CategoryWithHomology.hasHomology
 
-instance [CategoryWithHomology C] : CategoryWithHomology Cᵒᵖ :=
+instance (priority := 10000) [CategoryWithHomology C] : CategoryWithHomology Cᵒᵖ :=
   ⟨fun S => HasHomology.mk' S.unop.homologyData.op⟩
 
 /-- The homology functor `ShortComplex C ⥤ C` for a category `C` with homology. -/
@@ -798,7 +798,7 @@ noncomputable def homologyFunctor [CategoryWithHomology C] :
 
 variable {C}
 
-instance isIso_homologyMap'_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂)
+instance (priority := 10000) isIso_homologyMap'_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂)
     (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData) [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (homologyMap' φ h₁ h₂) := by
   dsimp only [homologyMap']
@@ -810,17 +810,17 @@ lemma isIso_homologyMap_of_epi_of_isIso_of_mono' (φ : S₁ ⟶ S₂) [S₁.HasH
   dsimp only [homologyMap]
   infer_instance
 
-instance isIso_homologyMap_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology]
+instance (priority := 10000) isIso_homologyMap_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (homologyMap φ) :=
   isIso_homologyMap_of_epi_of_isIso_of_mono' φ inferInstance inferInstance inferInstance
 
-instance isIso_homologyFunctor_map_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [CategoryWithHomology C]
+instance (priority := 10000) isIso_homologyFunctor_map_of_epi_of_isIso_of_mono (φ : S₁ ⟶ S₂) [CategoryWithHomology C]
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso ((homologyFunctor C).map φ) :=
   (inferInstance : IsIso (homologyMap φ))
 
-instance isIso_homologyMap_of_isIso (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] [IsIso φ] :
+instance (priority := 10000) isIso_homologyMap_of_isIso (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHomology] [IsIso φ] :
     IsIso (homologyMap φ) := by
   dsimp only [homologyMap, homologyMap']
   infer_instance
@@ -876,10 +876,10 @@ noncomputable def homologyIsKernel :
   IsLimit.ofIsoLimit S.rightHomologyIsKernel
     (Fork.ext S.rightHomologyIso (by simp))
 
-instance : Epi S.homologyπ :=
+instance (priority := 10000) : Epi S.homologyπ :=
   Limits.epi_of_isColimit_cofork (S.homologyIsCokernel)
 
-instance : Mono S.homologyι :=
+instance (priority := 10000) : Mono S.homologyι :=
   Limits.mono_of_isLimit_fork (S.homologyIsKernel)
 
 /-- Given a morphism `k : S.cycles ⟶ A` such that `S.toCycles ≫ k = 0`, this is the
@@ -1151,7 +1151,7 @@ lemma mono_homologyMap_of_mono_opcyclesMap'
     apply mono_comp
   exact mono_of_mono (homologyMap φ) S₂.homologyι
 
-instance mono_homologyMap_of_mono_opcyclesMap
+instance (priority := 10000) mono_homologyMap_of_mono_opcyclesMap
     [S₁.HasHomology] [S₂.HasHomology] [Mono (opcyclesMap φ)] :
     Mono (homologyMap φ) :=
   mono_homologyMap_of_mono_opcyclesMap' φ inferInstance
@@ -1164,7 +1164,7 @@ lemma epi_homologyMap_of_epi_cyclesMap'
     apply epi_comp
   exact epi_of_epi S₁.homologyπ (homologyMap φ)
 
-instance epi_homologyMap_of_epi_cyclesMap
+instance (priority := 10000) epi_homologyMap_of_epi_cyclesMap
     [S₁.HasHomology] [S₂.HasHomology] [Epi (cyclesMap φ)] :
     Epi (homologyMap φ) :=
   epi_homologyMap_of_epi_cyclesMap' φ inferInstance

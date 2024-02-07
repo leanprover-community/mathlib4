@@ -126,38 +126,38 @@ lemma UniformOnFun.toFun_div [Div β] (f g : α →ᵤ[𝔖] β) :
 lemma UniformOnFun.ofFun_div [Div β] (f g : α → β) : ofFun 𝔖 (f / g) = ofFun 𝔖 f / ofFun 𝔖 g := rfl
 
 @[to_additive]
-instance [Monoid β] : Monoid (α →ᵤ β) :=
+instance (priority := 10000) [Monoid β] : Monoid (α →ᵤ β) :=
   Pi.monoid
 
 @[to_additive]
-instance [Monoid β] : Monoid (α →ᵤ[𝔖] β) :=
+instance (priority := 10000) [Monoid β] : Monoid (α →ᵤ[𝔖] β) :=
   Pi.monoid
 
 @[to_additive]
-instance [CommMonoid β] : CommMonoid (α →ᵤ β) :=
+instance (priority := 10000) [CommMonoid β] : CommMonoid (α →ᵤ β) :=
   Pi.commMonoid
 
 @[to_additive]
-instance [CommMonoid β] : CommMonoid (α →ᵤ[𝔖] β) :=
+instance (priority := 10000) [CommMonoid β] : CommMonoid (α →ᵤ[𝔖] β) :=
   Pi.commMonoid
 
 @[to_additive]
-instance [Group β] : Group (α →ᵤ β) :=
+instance (priority := 10000) [Group β] : Group (α →ᵤ β) :=
   Pi.group
 
 @[to_additive]
-instance [Group β] : Group (α →ᵤ[𝔖] β) :=
+instance (priority := 10000) [Group β] : Group (α →ᵤ[𝔖] β) :=
   Pi.group
 
 @[to_additive]
-instance [CommGroup β] : CommGroup (α →ᵤ β) :=
+instance (priority := 10000) [CommGroup β] : CommGroup (α →ᵤ β) :=
   Pi.commGroup
 
 @[to_additive]
-instance [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) :=
+instance (priority := 10000) [CommGroup β] : CommGroup (α →ᵤ[𝔖] β) :=
   Pi.commGroup
 
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := Pi.instSMul
+instance (priority := 10000) {M : Type*} [SMul M β] : SMul M (α →ᵤ β) := Pi.instSMul
 
 @[simp]
 lemma UniformFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ β) :
@@ -169,7 +169,7 @@ lemma UniformFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
     ofFun (c • f) = c • ofFun f :=
   rfl
 
-instance {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := Pi.instSMul
+instance (priority := 10000) {M : Type*} [SMul M β] : SMul M (α →ᵤ[𝔖] β) := Pi.instSMul
 
 @[simp]
 lemma UniformOnFun.toFun_smul {M : Type*} [SMul M β] (c : M) (f : α →ᵤ[𝔖] β) :
@@ -181,38 +181,38 @@ lemma UniformOnFun.ofFun_smul {M : Type*} [SMul M β] (c : M) (f : α → β) :
     ofFun 𝔖 (c • f) = c • ofFun 𝔖 f :=
   rfl
 
-instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
+instance (priority := 10000) {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
     IsScalarTower M N (α →ᵤ β) :=
   Pi.isScalarTower
 
-instance {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
+instance (priority := 10000) {M N : Type*} [SMul M N] [SMul M β] [SMul N β] [IsScalarTower M N β] :
     IsScalarTower M N (α →ᵤ[𝔖] β) :=
   Pi.isScalarTower
 
-instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
+instance (priority := 10000) {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
     SMulCommClass M N (α →ᵤ β) :=
   Pi.smulCommClass
 
-instance {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
+instance (priority := 10000) {M N : Type*} [SMul M β] [SMul N β] [SMulCommClass M N β] :
     SMulCommClass M N (α →ᵤ[𝔖] β) :=
   Pi.smulCommClass
 
-instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) := Pi.mulAction _
+instance (priority := 10000) {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ β) := Pi.mulAction _
 
-instance {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ[𝔖] β) := Pi.mulAction _
+instance (priority := 10000) {M : Type*} [Monoid M] [MulAction M β] : MulAction M (α →ᵤ[𝔖] β) := Pi.mulAction _
 
-instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
+instance (priority := 10000) {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
     DistribMulAction M (α →ᵤ β) :=
   Pi.distribMulAction _
 
-instance {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
+instance (priority := 10000) {M : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] :
     DistribMulAction M (α →ᵤ[𝔖] β) :=
   Pi.distribMulAction _
 
-instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
+instance (priority := 10000) [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ β) :=
   Pi.module _ _ _
 
-instance [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
+instance (priority := 10000) [Semiring R] [AddCommMonoid β] [Module R β] : Module R (α →ᵤ[𝔖] β) :=
   Pi.module _ _ _
 
 end AlgebraicInstances
@@ -224,7 +224,7 @@ variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [Un
 /-- If `G` is a uniform group, then `α →ᵤ G` is a uniform group as well. -/
 @[to_additive "If `G` is a uniform additive group,
 then `α →ᵤ G` is a uniform additive group as well."]
-instance : UniformGroup (α →ᵤ G) :=
+instance (priority := 10000) : UniformGroup (α →ᵤ G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformFun.postcomp_uniformContinuous` tells us that
     -- `((/) ∘ —) : (α →ᵤ G × G) → (α →ᵤ G)` is uniformly continuous too. By precomposing with
@@ -257,7 +257,7 @@ protected theorem UniformFun.hasBasis_nhds_one :
 well. -/
 @[to_additive "Let `𝔖 : Set (Set α)`. If `G` is a uniform additive group,
 then `α →ᵤ[𝔖] G` is a uniform additive group as well."]
-instance : UniformGroup (α →ᵤ[𝔖] G) :=
+instance (priority := 10000) : UniformGroup (α →ᵤ[𝔖] G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformOnFun.postcomp_uniformContinuous` tells us that
     -- `((/) ∘ —) : (α →ᵤ[𝔖] G × G) → (α →ᵤ[𝔖] G)` is uniformly continuous too. By precomposing with
@@ -296,12 +296,12 @@ section ConstSMul
 
 variable (M α X : Type*) [SMul M X] [UniformSpace X] [UniformContinuousConstSMul M X]
 
-instance UniformFun.uniformContinuousConstSMul :
+instance (priority := 10000) UniformFun.uniformContinuousConstSMul :
     UniformContinuousConstSMul M (α →ᵤ X) where
   uniformContinuous_const_smul c := UniformFun.postcomp_uniformContinuous <|
     uniformContinuous_const_smul c
 
-instance UniformFunOn.uniformContinuousConstSMul {𝔖 : Set (Set α)} :
+instance (priority := 10000) UniformFunOn.uniformContinuousConstSMul {𝔖 : Set (Set α)} :
     UniformContinuousConstSMul M (α →ᵤ[𝔖] X) where
   uniformContinuous_const_smul c := UniformOnFun.postcomp_uniformContinuous <|
     uniformContinuous_const_smul c

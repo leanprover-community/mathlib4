@@ -40,7 +40,7 @@ variable {J : Type} [SmallCategory J] [FinCategory J]
 
 variable {k : Type v} [Field k]
 
-instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensional k (Z j)] :
+instance (priority := 10000) {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensional k (Z j)] :
     FiniteDimensional k (∏ fun j => Z j : ModuleCat.{v} k) :=
   haveI : FiniteDimensional k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
   FiniteDimensional.of_injective (ModuleCat.piIsoPi _).hom
@@ -48,7 +48,7 @@ instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensi
 
 /-- Finite limits of finite dimensional vectors spaces are finite dimensional,
 because we can realise them as subobjects of a finite product. -/
-instance (F : J ⥤ FGModuleCat k) :
+instance (priority := 10000) (F : J ⥤ FGModuleCat k) :
     FiniteDimensional k (limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k) :=
   haveI : ∀ j, FiniteDimensional k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) := by
     intro j; change FiniteDimensional k (F.obj j); infer_instance
@@ -65,18 +65,18 @@ def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
 set_option linter.uppercaseLean3 false in
 #align fgModule.forget₂_creates_limit FGModuleCat.forget₂CreatesLimit
 
-instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
+instance (priority := 10000) : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   CreatesLimit {F} := forget₂CreatesLimit F
 
-instance (J : Type) [Category J] [FinCategory J] :
+instance (priority := 10000) (J : Type) [Category J] [FinCategory J] :
     HasLimitsOfShape J (FGModuleCat.{v} k) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape
     (forget₂ (FGModuleCat k) (ModuleCat.{v} k))
 
-instance : HasFiniteLimits (FGModuleCat k) where
+instance (priority := 10000) : HasFiniteLimits (FGModuleCat k) where
   out _ _ _ := inferInstance
 
-instance : PreservesFiniteLimits (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
+instance (priority := 10000) : PreservesFiniteLimits (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   preservesFiniteLimits _ _ _ := inferInstance
 
 end FGModuleCat

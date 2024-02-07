@@ -43,7 +43,7 @@ variable {α β γ : Type*}
 
 namespace OrderDual
 
-instance [h : Nontrivial α] : Nontrivial αᵒᵈ :=
+instance (priority := 10000) [h : Nontrivial α] : Nontrivial αᵒᵈ :=
   h
 
 /-- `toDual` is the identity function to the `OrderDual` of a linear order.  -/

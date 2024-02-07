@@ -268,7 +268,7 @@ open OrderHom
 
 variable [CompleteLattice α] (f : α →o α)
 
-instance : SemilatticeSup (fixedPoints f) :=
+instance (priority := 10000) : SemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with
     sup := fun x y => f.nextFixed (x ⊔ y) (f.le_map_sup_fixedPoints x y)
     le_sup_left := fun _ _ => Subtype.coe_le_coe.1 <| le_sup_left.trans (f.le_nextFixed _)
@@ -278,12 +278,12 @@ instance : SemilatticeSup (fixedPoints f) :=
 
 /- porting note: removed `Subtype.partialOrder _` from mathlib3port version,
   threw `typeclass instance` error and was seemingly unnecessary?-/
-instance : SemilatticeInf (fixedPoints f) :=
+instance (priority := 10000) : SemilatticeInf (fixedPoints f) :=
   { OrderDual.semilatticeInf (fixedPoints (OrderHom.dual f)) with
     inf := fun x y => f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y) }
 
 -- porting note: `coe` replaced with `Subtype.val`
-instance : CompleteSemilatticeSup (fixedPoints f) :=
+instance (priority := 10000) : CompleteSemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with
     sSup := fun s =>
       f.nextFixed (sSup (Subtype.val '' s))
@@ -293,7 +293,7 @@ instance : CompleteSemilatticeSup (fixedPoints f) :=
       Subtype.coe_le_coe.1 <| le_trans (le_sSup <| Set.mem_image_of_mem _ hx) (f.le_nextFixed _)
     sSup_le := fun _ _ hx => f.nextFixed_le _ <| sSup_le <| Set.ball_image_iff.2 hx }
 
-instance : CompleteSemilatticeInf (fixedPoints f) :=
+instance (priority := 10000) : CompleteSemilatticeInf (fixedPoints f) :=
   { Subtype.partialOrder _ with
     sInf := fun s =>
       f.prevFixed (sInf (Subtype.val '' s))
@@ -305,7 +305,7 @@ instance : CompleteSemilatticeInf (fixedPoints f) :=
 /- porting note: mathlib3port version contained the instances as a list,
    giving various "expected structure" errors -/
 /-- **Knaster-Tarski Theorem**: The fixed points of `f` form a complete lattice. -/
-instance completeLattice : CompleteLattice (fixedPoints f) where
+instance (priority := 10000) completeLattice : CompleteLattice (fixedPoints f) where
   __ := inferInstanceAs (SemilatticeInf (fixedPoints f))
   __ := inferInstanceAs (SemilatticeSup (fixedPoints f))
   __ := inferInstanceAs (CompleteSemilatticeInf (fixedPoints f))

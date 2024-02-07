@@ -34,10 +34,10 @@ def Language (α) :=
   Set (List α)
 #align language Language
 
-instance : Membership (List α) (Language α) := ⟨Set.Mem⟩
-instance : Singleton (List α) (Language α) := ⟨Set.singleton⟩
-instance : Insert (List α) (Language α) := ⟨Set.insert⟩
-instance : CompleteAtomicBooleanAlgebra (Language α) := Set.completeAtomicBooleanAlgebra
+instance (priority := 10000) : Membership (List α) (Language α) := ⟨Set.Mem⟩
+instance (priority := 10000) : Singleton (List α) (Language α) := ⟨Set.singleton⟩
+instance (priority := 10000) : Insert (List α) (Language α) := ⟨Set.insert⟩
+instance (priority := 10000) : CompleteAtomicBooleanAlgebra (Language α) := Set.completeAtomicBooleanAlgebra
 
 namespace Language
 
@@ -47,22 +47,22 @@ variable {l m : Language α} {a b x : List α}
 -- attribute [local reducible] Language
 
 /-- Zero language has no elements. -/
-instance : Zero (Language α) :=
+instance (priority := 10000) : Zero (Language α) :=
   ⟨(∅ : Set _)⟩
 
 /-- `1 : Language α` contains only one element `[]`. -/
-instance : One (Language α) :=
+instance (priority := 10000) : One (Language α) :=
   ⟨{[]}⟩
 
-instance : Inhabited (Language α) := ⟨(∅ : Set _)⟩
+instance (priority := 10000) : Inhabited (Language α) := ⟨(∅ : Set _)⟩
 
 /-- The sum of two languages is their union. -/
-instance : Add (Language α) :=
+instance (priority := 10000) : Add (Language α) :=
   ⟨((· ∪ ·) : Set (List α) → Set (List α) → Set (List α))⟩
 
 /-- The product of two languages `l` and `m` is the language made of the strings `x ++ y` where
 `x ∈ l` and `y ∈ m`. -/
-instance : Mul (Language α) :=
+instance (priority := 10000) : Mul (Language α) :=
   ⟨image2 (· ++ ·)⟩
 
 theorem zero_def : (0 : Language α) = (∅ : Set _) :=
@@ -83,7 +83,7 @@ theorem mul_def (l m : Language α) : l * m = image2 (· ++ ·) l m :=
 
 /-- The Kleene star of a language `L` is the set of all strings which can be written by
 concatenating strings from `L`. -/
-instance : KStar (Language α) := ⟨fun l ↦ {x | ∃ L : List (List α), x = L.join ∧ ∀ y ∈ L, y ∈ l}⟩
+instance (priority := 10000) : KStar (Language α) := ⟨fun l ↦ {x | ∃ L : List (List α), x = L.join ∧ ∀ y ∈ L, y ∈ l}⟩
 
 lemma kstar_def (l : Language α) : l∗ = {x | ∃ L : List (List α), x = L.join ∧ ∀ y ∈ L, y ∈ l} :=
   rfl
@@ -132,7 +132,7 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
 #align language.nil_mem_kstar Language.nil_mem_kstar
 
-instance instSemiring : Semiring (Language α) where
+instance (priority := 10000) instSemiring : Semiring (Language α) where
   add := (· + ·)
   add_assoc := union_assoc
   zero := 0
@@ -281,7 +281,7 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
 #align language.one_add_kstar_mul_self_eq_kstar Language.one_add_kstar_mul_self_eq_kstar
 
-instance : KleeneAlgebra (Language α) :=
+instance (priority := 10000) : KleeneAlgebra (Language α) :=
   { Language.instSemiring, Set.completeAtomicBooleanAlgebra with
     kstar := fun L ↦ L∗,
     one_le_kstar := fun a l hl ↦ ⟨[], hl, by simp⟩,

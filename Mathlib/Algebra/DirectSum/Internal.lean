@@ -45,11 +45,11 @@ open DirectSum BigOperators
 
 variable {ι : Type*} {σ S R : Type*}
 
-instance AddCommMonoid.ofSubmonoidOnSemiring [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R]
+instance (priority := 10000) AddCommMonoid.ofSubmonoidOnSemiring [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R]
     (A : ι → σ) : ∀ i, AddCommMonoid (A i) := fun i => by infer_instance
 #align add_comm_monoid.of_submonoid_on_semiring AddCommMonoid.ofSubmonoidOnSemiring
 
-instance AddCommGroup.ofSubgroupOnRing [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ) :
+instance (priority := 10000) AddCommGroup.ofSubgroupOnRing [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ) :
     ∀ i, AddCommGroup (A i) := fun i => by infer_instance
 #align add_comm_group.of_subgroup_on_ring AddCommGroup.ofSubgroupOnRing
 
@@ -88,7 +88,7 @@ namespace SetLike
 
 /-- Build a `DirectSum.GNonUnitalNonAssocSemiring` instance for a collection of additive
 submonoids. -/
-instance gnonUnitalNonAssocSemiring [Add ι] [NonUnitalNonAssocSemiring R] [SetLike σ R]
+instance (priority := 10000) gnonUnitalNonAssocSemiring [Add ι] [NonUnitalNonAssocSemiring R] [SetLike σ R]
     [AddSubmonoidClass σ R] (A : ι → σ) [SetLike.GradedMul A] :
     DirectSum.GNonUnitalNonAssocSemiring fun i => A i :=
   { SetLike.gMul A with
@@ -99,7 +99,7 @@ instance gnonUnitalNonAssocSemiring [Add ι] [NonUnitalNonAssocSemiring R] [SetL
 #align set_like.gnon_unital_non_assoc_semiring SetLike.gnonUnitalNonAssocSemiring
 
 /-- Build a `DirectSum.GSemiring` instance for a collection of additive submonoids. -/
-instance gsemiring [AddMonoid ι] [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
+instance (priority := 10000) gsemiring [AddMonoid ι] [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GSemiring fun i => A i :=
   { SetLike.gMonoid A with
     mul_zero := fun _ => Subtype.ext (mul_zero _)
@@ -112,13 +112,13 @@ instance gsemiring [AddMonoid ι] [Semiring R] [SetLike σ R] [AddSubmonoidClass
 #align set_like.gsemiring SetLike.gsemiring
 
 /-- Build a `DirectSum.GCommSemiring` instance for a collection of additive submonoids. -/
-instance gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSubmonoidClass σ R]
+instance (priority := 10000) gcommSemiring [AddCommMonoid ι] [CommSemiring R] [SetLike σ R] [AddSubmonoidClass σ R]
     (A : ι → σ) [SetLike.GradedMonoid A] : DirectSum.GCommSemiring fun i => A i :=
   { SetLike.gCommMonoid A, SetLike.gsemiring A with }
 #align set_like.gcomm_semiring SetLike.gcommSemiring
 
 /-- Build a `DirectSum.GRing` instance for a collection of additive subgroups. -/
-instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
+instance (priority := 10000) gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GRing fun i => A i :=
   { SetLike.gsemiring A with
     intCast := fun z => ⟨z, SetLike.int_cast_mem_graded _ _⟩
@@ -127,7 +127,7 @@ instance gring [AddMonoid ι] [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A
 #align set_like.gring SetLike.gring
 
 /-- Build a `DirectSum.GCommRing` instance for a collection of additive submonoids. -/
-instance gcommRing [AddCommMonoid ι] [CommRing R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
+instance (priority := 10000) gcommRing [AddCommMonoid ι] [CommRing R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ)
     [SetLike.GradedMonoid A] : DirectSum.GCommRing fun i => A i :=
   { SetLike.gCommMonoid A, SetLike.gring A with }
 #align set_like.gcomm_ring SetLike.gcommRing
@@ -284,7 +284,7 @@ end DirectSum
 namespace Submodule
 
 /-- Build a `DirectSum.GAlgebra` instance for a collection of `Submodule`s. -/
-instance galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A : ι → Submodule S R)
+instance (priority := 10000) galgebra [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S R] (A : ι → Submodule S R)
     [SetLike.GradedMonoid A] : DirectSum.GAlgebra S fun i => A i where
   toFun :=
     ((Algebra.linearMap S R).codRestrict (A 0) <| SetLike.algebraMap_mem_graded A).toAddMonoidHom
@@ -303,7 +303,7 @@ theorem setLike.coe_galgebra_toFun [AddMonoid ι] [CommSemiring S] [Semiring R] 
 #align submodule.set_like.coe_galgebra_to_fun Submodule.setLike.coe_galgebra_toFun
 
 /-- A direct sum of powers of a submodule of an algebra has a multiplicative structure. -/
-instance nat_power_gradedMonoid [CommSemiring S] [Semiring R] [Algebra S R] (p : Submodule S R) :
+instance (priority := 10000) nat_power_gradedMonoid [CommSemiring S] [Semiring R] [Algebra S R] (p : Submodule S R) :
     SetLike.GradedMonoid fun i : ℕ => p ^ i where
   one_mem := by
     rw [← one_le, pow_zero]

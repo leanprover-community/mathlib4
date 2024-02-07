@@ -69,7 +69,7 @@ theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
   nontriviality E
   rw [toSphere_apply_univ', measure_diff_null (measure_singleton _)]
 
-instance : IsFiniteMeasure μ.toSphere where
+instance (priority := 10000) : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
     exact ENNReal.mul_lt_top (ENNReal.nat_ne_top _) <|
@@ -99,7 +99,7 @@ def finiteSpanningSetsIn_volumeIoiPow_range_Iio (n : ℕ) :
   finite k := by simp [volumeIoiPow_apply_Iio]
   spanning := iUnion_eq_univ_iff.2 fun x ↦ ⟨⌊x.1⌋₊, Nat.lt_floor_add_one x.1⟩
 
-instance (n : ℕ) : SigmaFinite (volumeIoiPow n) :=
+instance (priority := 10000) (n : ℕ) : SigmaFinite (volumeIoiPow n) :=
   (finiteSpanningSetsIn_volumeIoiPow_range_Iio n).sigmaFinite
 
 /-- The homeomorphism `homeomorphUnitSphereProd E` sends an additive Haar measure `μ`

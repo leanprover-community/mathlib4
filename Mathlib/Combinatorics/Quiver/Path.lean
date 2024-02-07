@@ -65,7 +65,7 @@ def length {a : V} : ∀ {b : V}, Path a b → ℕ
   | _, cons p _ => p.length + 1
 #align quiver.path.length Quiver.Path.length
 
-instance {a : V} : Inhabited (Path a a) :=
+instance (priority := 10000) {a : V} : Inhabited (Path a a) :=
   ⟨nil⟩
 
 @[simp]

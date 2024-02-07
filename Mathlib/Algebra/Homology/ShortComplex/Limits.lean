@@ -91,15 +91,15 @@ noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
   isLimitOfIsLimitπ _ (isLimitπ₁MapConeLimitCone F)
     (isLimitπ₂MapConeLimitCone F) (isLimitπ₃MapConeLimitCone F)
 
-instance hasLimit_of_hasLimitπ : HasLimit F := ⟨⟨⟨_, isLimitLimitCone _⟩⟩⟩
+instance (priority := 10000) hasLimit_of_hasLimitπ : HasLimit F := ⟨⟨⟨_, isLimitLimitCone _⟩⟩⟩
 
-noncomputable instance : PreservesLimit F π₁ :=
+noncomputable instance (priority := 10000) : PreservesLimit F π₁ :=
   preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₁MapConeLimitCone F)
 
-noncomputable instance : PreservesLimit F π₂ :=
+noncomputable instance (priority := 10000) : PreservesLimit F π₂ :=
   preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₂MapConeLimitCone F)
 
-noncomputable instance : PreservesLimit F π₃ :=
+noncomputable instance (priority := 10000) : PreservesLimit F π₃ :=
   preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (isLimitπ₃MapConeLimitCone F)
 
 end
@@ -108,14 +108,14 @@ section
 
 variable [HasLimitsOfShape J C]
 
-instance hasLimitsOfShape :
+instance (priority := 10000) hasLimitsOfShape :
     HasLimitsOfShape J (ShortComplex C) where
 
-noncomputable instance : PreservesLimitsOfShape J (π₁ : _ ⥤ C) where
+noncomputable instance (priority := 10000) : PreservesLimitsOfShape J (π₁ : _ ⥤ C) where
 
-noncomputable instance : PreservesLimitsOfShape J (π₂ : _ ⥤ C) where
+noncomputable instance (priority := 10000) : PreservesLimitsOfShape J (π₂ : _ ⥤ C) where
 
-noncomputable instance : PreservesLimitsOfShape J (π₃ : _ ⥤ C) where
+noncomputable instance (priority := 10000) : PreservesLimitsOfShape J (π₃ : _ ⥤ C) where
 
 end
 
@@ -123,16 +123,16 @@ section
 
 variable [HasFiniteLimits C]
 
-instance hasFiniteLimits : HasFiniteLimits (ShortComplex C) :=
+instance (priority := 10000) hasFiniteLimits : HasFiniteLimits (ShortComplex C) :=
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteLimits (π₁ : _ ⥤ C) :=
+noncomputable instance (priority := 10000) : PreservesFiniteLimits (π₁ : _ ⥤ C) :=
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteLimits (π₂ : _ ⥤ C) :=
+noncomputable instance (priority := 10000) : PreservesFiniteLimits (π₂ : _ ⥤ C) :=
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteLimits (π₃ : _ ⥤ C) :=
+noncomputable instance (priority := 10000) : PreservesFiniteLimits (π₃ : _ ⥤ C) :=
   ⟨fun _ _ _ => inferInstance⟩
 
 end
@@ -141,15 +141,15 @@ section
 
 variable [HasLimitsOfShape WalkingCospan C]
 
-instance preservesMonomorphisms_π₁ :
+instance (priority := 10000) preservesMonomorphisms_π₁ :
     Functor.PreservesMonomorphisms (π₁ : _ ⥤ C) :=
   CategoryTheory.preservesMonomorphisms_of_preservesLimitsOfShape _
 
-instance preservesMonomorphisms_π₂ :
+instance (priority := 10000) preservesMonomorphisms_π₂ :
     Functor.PreservesMonomorphisms (π₂ : _ ⥤ C) :=
   CategoryTheory.preservesMonomorphisms_of_preservesLimitsOfShape _
 
-instance preservesMonomorphisms_π₃ :
+instance (priority := 10000) preservesMonomorphisms_π₃ :
     Functor.PreservesMonomorphisms (π₃ : _ ⥤ C) :=
   CategoryTheory.preservesMonomorphisms_of_preservesLimitsOfShape _
 
@@ -226,17 +226,17 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=
   isColimitOfIsColimitπ _ (isColimitπ₁MapCoconeColimitCocone F)
     (isColimitπ₂MapCoconeColimitCocone F) (isColimitπ₃MapCoconeColimitCocone F)
 
-instance hasColimit_of_hasColimitπ : HasColimit F := ⟨⟨⟨_, isColimitColimitCocone _⟩⟩⟩
+instance (priority := 10000) hasColimit_of_hasColimitπ : HasColimit F := ⟨⟨⟨_, isColimitColimitCocone _⟩⟩⟩
 
-noncomputable instance : PreservesColimit F π₁ :=
+noncomputable instance (priority := 10000) : PreservesColimit F π₁ :=
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
     (isColimitπ₁MapCoconeColimitCocone F)
 
-noncomputable instance : PreservesColimit F π₂ :=
+noncomputable instance (priority := 10000) : PreservesColimit F π₂ :=
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
     (isColimitπ₂MapCoconeColimitCocone F)
 
-noncomputable instance : PreservesColimit F π₃ :=
+noncomputable instance (priority := 10000) : PreservesColimit F π₃ :=
   preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
     (isColimitπ₃MapCoconeColimitCocone F)
 
@@ -246,14 +246,14 @@ section
 
 variable [HasColimitsOfShape J C]
 
-instance hasColimitsOfShape :
+instance (priority := 10000) hasColimitsOfShape :
     HasColimitsOfShape J (ShortComplex C) where
 
-noncomputable instance : PreservesColimitsOfShape J (π₁ : _ ⥤ C) where
+noncomputable instance (priority := 10000) : PreservesColimitsOfShape J (π₁ : _ ⥤ C) where
 
-noncomputable instance : PreservesColimitsOfShape J (π₂ : _ ⥤ C) where
+noncomputable instance (priority := 10000) : PreservesColimitsOfShape J (π₂ : _ ⥤ C) where
 
-noncomputable instance : PreservesColimitsOfShape J (π₃ : _ ⥤ C) where
+noncomputable instance (priority := 10000) : PreservesColimitsOfShape J (π₃ : _ ⥤ C) where
 
 end
 
@@ -261,16 +261,16 @@ section
 
 variable [HasFiniteColimits C]
 
-instance hasFiniteColimits : HasFiniteColimits (ShortComplex C) :=
+instance (priority := 10000) hasFiniteColimits : HasFiniteColimits (ShortComplex C) :=
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteColimits (π₁ : _ ⥤ C) :=
+noncomputable instance (priority := 10000) : PreservesFiniteColimits (π₁ : _ ⥤ C) :=
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteColimits (π₂ : _ ⥤ C) :=
+noncomputable instance (priority := 10000) : PreservesFiniteColimits (π₂ : _ ⥤ C) :=
   ⟨fun _ _ _ => inferInstance⟩
 
-noncomputable instance : PreservesFiniteColimits (π₃ : _ ⥤ C) :=
+noncomputable instance (priority := 10000) : PreservesFiniteColimits (π₃ : _ ⥤ C) :=
   ⟨fun _ _ _ => inferInstance⟩
 
 end
@@ -279,15 +279,15 @@ section
 
 variable [HasColimitsOfShape WalkingSpan C]
 
-instance preservesEpimorphisms_π₁ :
+instance (priority := 10000) preservesEpimorphisms_π₁ :
     Functor.PreservesEpimorphisms (π₁ : _ ⥤ C) :=
   CategoryTheory.preservesEpimorphisms_of_preservesColimitsOfShape _
 
-instance preservesEpimorphisms_π₂ :
+instance (priority := 10000) preservesEpimorphisms_π₂ :
     Functor.PreservesEpimorphisms (π₂ : _ ⥤ C) :=
   CategoryTheory.preservesEpimorphisms_of_preservesColimitsOfShape _
 
-instance preservesEpimorphisms_π₃ :
+instance (priority := 10000) preservesEpimorphisms_π₃ :
     Functor.PreservesEpimorphisms (π₃ : _ ⥤ C) :=
   CategoryTheory.preservesEpimorphisms_of_preservesColimitsOfShape _
 

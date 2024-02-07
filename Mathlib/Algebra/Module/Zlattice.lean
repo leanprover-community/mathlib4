@@ -302,7 +302,7 @@ theorem discreteTopology_pi_basisFun [Fintype ι] :
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
 
-instance [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)) := by
+instance (priority := 10000) [Fintype ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
     intro _ hx
     rwa [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢

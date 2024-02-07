@@ -150,7 +150,7 @@ instance (priority := 100) OrderMonoidHomClass.toOrderHomClass [OrderMonoidHomCl
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
 @[to_additive "Any type satisfying `OrderAddMonoidHomClass` can be cast into `OrderAddMonoidHom` via
   `OrderAddMonoidHomClass.toOrderAddMonoidHom`"]
-instance [OrderMonoidHomClass F α β] : CoeTC F (α →*o β) :=
+instance (priority := 10000) [OrderMonoidHomClass F α β] : CoeTC F (α →*o β) :=
   ⟨OrderMonoidHomClass.toOrderMonoidHom⟩
 
 end Monoid
@@ -210,7 +210,7 @@ instance (priority := 100) OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
   { ‹OrderMonoidWithZeroHomClass F α β› with }
 #align order_monoid_with_zero_hom_class.to_order_monoid_hom_class OrderMonoidWithZeroHomClass.toOrderMonoidHomClass
 
-instance [OrderMonoidWithZeroHomClass F α β] : CoeTC F (α →*₀o β) :=
+instance (priority := 10000) [OrderMonoidWithZeroHomClass F α β] : CoeTC F (α →*₀o β) :=
   ⟨OrderMonoidWithZeroHomClass.toOrderMonoidWithZeroHom⟩
 
 end MonoidWithZero
@@ -290,7 +290,7 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α
   [MulOneClass γ] [MulOneClass δ] {f g : α →*o β}
 
 @[to_additive]
-instance : FunLike (α →*o β) α β where
+instance (priority := 10000) : FunLike (α →*o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
@@ -298,7 +298,7 @@ instance : FunLike (α →*o β) α β where
     congr
 
 @[to_additive]
-instance : OrderMonoidHomClass (α →*o β) α β where
+instance (priority := 10000) : OrderMonoidHomClass (α →*o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   monotone f := f.monotone'
@@ -397,7 +397,7 @@ theorem coe_id : ⇑(OrderMonoidHom.id α) = id :=
 #align order_add_monoid_hom.coe_id OrderAddMonoidHom.coe_id
 
 @[to_additive]
-instance : Inhabited (α →*o α) :=
+instance (priority := 10000) : Inhabited (α →*o α) :=
   ⟨OrderMonoidHom.id α⟩
 
 variable {α}
@@ -470,7 +470,7 @@ theorem cancel_left {g : β →*o γ} {f₁ f₂ : α →*o β} (hg : Function.I
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
 @[to_additive "`0` is the homomorphism sending all elements to `0`."]
-instance : One (α →*o β) :=
+instance (priority := 10000) : One (α →*o β) :=
   ⟨{ (1 : α →* β) with monotone' := monotone_const }⟩
 
 @[to_additive (attr := simp)]
@@ -507,7 +507,7 @@ variable [OrderedCommMonoid α] [OrderedCommMonoid β] [OrderedCommMonoid γ]
 sending `a` to `f a * g a`. -/
 @[to_additive "For two ordered additive monoid morphisms `f` and `g`, their product is the ordered
 additive monoid morphism sending `a` to `f a + g a`."]
-instance : Mul (α →*o β) :=
+instance (priority := 10000) : Mul (α →*o β) :=
   ⟨fun f g => { (f * g : α →* β) with monotone' := f.monotone'.mul' g.monotone' }⟩
 
 @[to_additive (attr := simp)]
@@ -578,14 +578,14 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulZeroOneClass α] [MulZeroOneClass β]
   [MulZeroOneClass γ] [MulZeroOneClass δ] {f g : α →*₀o β}
 
-instance : FunLike (α →*₀o β) α β where
+instance (priority := 10000) : FunLike (α →*₀o β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩⟩, _⟩ := g
     congr
 
-instance : OrderMonoidWithZeroHomClass (α →*₀o β) α β where
+instance (priority := 10000) : OrderMonoidWithZeroHomClass (α →*₀o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_zero f := f.map_zero'
@@ -660,7 +660,7 @@ theorem coe_id : ⇑(OrderMonoidWithZeroHom.id α) = id :=
   rfl
 #align order_monoid_with_zero_hom.coe_id OrderMonoidWithZeroHom.coe_id
 
-instance : Inhabited (α →*₀o α) :=
+instance (priority := 10000) : Inhabited (α →*₀o α) :=
   ⟨OrderMonoidWithZeroHom.id α⟩
 
 variable {α}
@@ -725,7 +725,7 @@ variable [LinearOrderedCommMonoidWithZero α] [LinearOrderedCommMonoidWithZero �
 
 /-- For two ordered monoid morphisms `f` and `g`, their product is the ordered monoid morphism
 sending `a` to `f a * g a`. -/
-instance : Mul (α →*₀o β) :=
+instance (priority := 10000) : Mul (α →*₀o β) :=
   ⟨fun f g => { (f * g : α →*₀ β) with monotone' := f.monotone'.mul' g.monotone' }⟩
 
 @[simp]

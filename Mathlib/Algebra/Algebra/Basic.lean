@@ -374,7 +374,7 @@ theorem right_comm (x : A) (r : R) (y : A) :
   rw [mul_assoc, commutes, ← mul_assoc]
 #align algebra.right_comm Algebra.right_comm
 
-instance _root_.IsScalarTower.right : IsScalarTower R A A :=
+instance (priority := 10000) _root_.IsScalarTower.right : IsScalarTower R A A :=
   ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
 #align is_scalar_tower.right IsScalarTower.right
 
@@ -437,7 +437,7 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
 #align algebra.coe_linear_map Algebra.coe_linearMap
 
 /- The identity map inducing an `Algebra` structure. -/
-instance id : Algebra R R where
+instance (priority := 10000) id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
@@ -468,7 +468,7 @@ end id
 
 section PUnit
 
-instance _root_.PUnit.algebra : Algebra R PUnit.{v + 1} where
+instance (priority := 10000) _root_.PUnit.algebra : Algebra R PUnit.{v + 1} where
   toFun _ := PUnit.unit
   map_one' := rfl
   map_mul' _ _ := rfl
@@ -487,7 +487,7 @@ end PUnit
 
 section ULift
 
-instance _root_.ULift.algebra : Algebra R (ULift A) :=
+instance (priority := 10000) _root_.ULift.algebra : Algebra R (ULift A) :=
   { ULift.module',
     (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
     toFun := fun r => ULift.up (algebraMap R A r)
@@ -508,7 +508,7 @@ theorem _root_.ULift.down_algebraMap (r : R) : (algebraMap R (ULift A) r).down =
 end ULift
 
 /-- Algebra over a subsemiring. This builds upon `Subsemiring.module`. -/
-instance ofSubsemiring (S : Subsemiring R) : Algebra S A where
+instance (priority := 10000) ofSubsemiring (S : Subsemiring R) : Algebra S A where
   toRingHom := (algebraMap R A).comp S.subtype
   smul := (· • ·)
   commutes' r x := Algebra.commutes (r : R) x
@@ -529,7 +529,7 @@ theorem algebraMap_ofSubsemiring_apply (S : Subsemiring R) (x : S) : algebraMap 
 #align algebra.algebra_map_of_subsemiring_apply Algebra.algebraMap_ofSubsemiring_apply
 
 /-- Algebra over a subring. This builds upon `Subring.module`. -/
-instance ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
+instance (priority := 10000) ofSubring {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (S : Subring R) :
     Algebra S A where -- porting note: don't use `toSubsemiring` because of a timeout
   toRingHom := (algebraMap R A).comp S.subtype
   smul := (· • ·)
@@ -610,7 +610,7 @@ variable (R : Type u) (S : Type v) (M : Type w)
 variable [CommSemiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
 variable [SMulCommClass S R M] [SMul R S] [IsScalarTower R S M]
 
-instance End.instAlgebra : Algebra R (Module.End S M) :=
+instance (priority := 10000) End.instAlgebra : Algebra R (Module.End S M) :=
   Algebra.ofModule smul_mul_assoc fun r f g => (smul_comm r f g).symm
 
 -- to prove this is a special case of the above
@@ -693,7 +693,7 @@ instance (priority := 99) algebraNat : Algebra ℕ R where
   toRingHom := Nat.castRingHom R
 #align algebra_nat algebraNat
 
-instance nat_algebra_subsingleton : Subsingleton (Algebra ℕ R) :=
+instance (priority := 10000) nat_algebra_subsingleton : Subsingleton (Algebra ℕ R) :=
   ⟨fun P Q => by ext; simp⟩
 #align nat_algebra_subsingleton nat_algebra_subsingleton
 
@@ -715,7 +715,7 @@ end RingHom
 
 section Rat
 
-instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
+instance (priority := 10000) algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   smul := (· • ·)
   smul_def' := DivisionRing.qsmul_eq_mul'
   toRingHom := Rat.castHom α
@@ -723,7 +723,7 @@ instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
 #align algebra_rat algebraRat
 
 /-- The rational numbers are an algebra over the non-negative rationals. -/
-instance : Algebra NNRat ℚ :=
+instance (priority := 10000) : Algebra NNRat ℚ :=
   NNRat.coeHom.toAlgebra
 
 /-- The two `Algebra ℚ ℚ` instances should coincide. -/
@@ -733,7 +733,7 @@ example : algebraRat = Algebra.id ℚ :=
 @[simp] theorem algebraMap_rat_rat : algebraMap ℚ ℚ = RingHom.id ℚ := rfl
 #align algebra_map_rat_rat algebraMap_rat_rat
 
-instance algebra_rat_subsingleton {α} [Semiring α] : Subsingleton (Algebra ℚ α) :=
+instance (priority := 10000) algebra_rat_subsingleton {α} [Semiring α] : Subsingleton (Algebra ℚ α) :=
   ⟨fun x y => Algebra.algebra_ext x y <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 #align algebra_rat_subsingleton algebra_rat_subsingleton
 
@@ -761,7 +761,7 @@ theorem algebraMap_int_eq : algebraMap ℤ R = Int.castRingHom R :=
 
 variable {R}
 
-instance int_algebra_subsingleton : Subsingleton (Algebra ℤ R) :=
+instance (priority := 10000) int_algebra_subsingleton : Subsingleton (Algebra ℤ R) :=
   ⟨fun P Q => Algebra.algebra_ext P Q <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 #align int_algebra_subsingleton int_algebra_subsingleton
 

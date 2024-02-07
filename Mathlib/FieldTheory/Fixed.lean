@@ -65,7 +65,7 @@ class IsInvariantSubfield (S : Subfield F) : Prop where
 
 variable (S : Subfield F)
 
-instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] :
+instance (priority := 10000) IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] :
     MulSemiringAction M S where
   smul m x := ⟨m • x.1, IsInvariantSubfield.smul_mem m x.2⟩
   one_smul s := Subtype.eq <| one_smul M s.1
@@ -76,7 +76,7 @@ instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] :
   smul_mul m s₁ s₂ := Subtype.eq <| smul_mul' m s₁.1 s₂.1
 #align is_invariant_subfield.to_mul_semiring_action IsInvariantSubfield.toMulSemiringAction
 
-instance [IsInvariantSubfield M S] : IsInvariantSubring M S.toSubring where
+instance (priority := 10000) [IsInvariantSubfield M S] : IsInvariantSubring M S.toSubring where
   smul_mem := IsInvariantSubfield.smul_mem
 
 end InvariantSubfields
@@ -92,13 +92,13 @@ def subfield : Subfield F :=
     (by ext z; simp [fixedPoints, FixedBy.subfield, iInf, Subfield.mem_sInf]; rfl)
 #align fixed_points.subfield FixedPoints.subfield
 
-instance : IsInvariantSubfield M (FixedPoints.subfield M F) where
+instance (priority := 10000) : IsInvariantSubfield M (FixedPoints.subfield M F) where
   smul_mem g x hx g' := by rw [hx, hx]
 
-instance : SMulCommClass M (FixedPoints.subfield M F) F where
+instance (priority := 10000) : SMulCommClass M (FixedPoints.subfield M F) F where
   smul_comm m f f' := show m • (↑f * f') = f * m • f' by rw [smul_mul', f.prop m]
 
-instance smulCommClass' : SMulCommClass (FixedPoints.subfield M F) M F :=
+instance (priority := 10000) smulCommClass' : SMulCommClass (FixedPoints.subfield M F) M F :=
   SMulCommClass.symm _ _ _
 #align fixed_points.smul_comm_class' FixedPoints.smulCommClass'
 
@@ -115,7 +115,7 @@ theorem smul_polynomial (m : M) (p : Polynomial (FixedPoints.subfield M F)) : m 
     rw [smul_mul', Polynomial.smul_C, smul, smul_pow', Polynomial.smul_X]
 #align fixed_points.smul_polynomial FixedPoints.smul_polynomial
 
-instance : Algebra (FixedPoints.subfield M F) F := by infer_instance
+instance (priority := 10000) : Algebra (FixedPoints.subfield M F) F := by infer_instance
 
 theorem coe_algebraMap :
     algebraMap (FixedPoints.subfield M F) F = Subfield.subtype (FixedPoints.subfield M F) :=
@@ -277,7 +277,7 @@ section Finite
 
 variable [Finite G]
 
-instance normal : Normal (FixedPoints.subfield G F) F :=
+instance (priority := 10000) normal : Normal (FixedPoints.subfield G F) F :=
   ⟨fun x => (isIntegral G F x).isAlgebraic, fun x =>
     (Polynomial.splits_id_iff_splits _).1 <| by
       cases nonempty_fintype G
@@ -286,7 +286,7 @@ instance normal : Normal (FixedPoints.subfield G F) F :=
       exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _⟩
 #align fixed_points.normal FixedPoints.normal
 
-instance separable : IsSeparable (FixedPoints.subfield G F) F :=
+instance (priority := 10000) separable : IsSeparable (FixedPoints.subfield G F) F :=
   ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
@@ -295,7 +295,7 @@ instance separable : IsSeparable (FixedPoints.subfield G F) F :=
     exact Polynomial.separable_prod_X_sub_C_iff.2 (injective_ofQuotientStabilizer G x)⟩
 #align fixed_points.separable FixedPoints.separable
 
-instance : FiniteDimensional (subfield G F) F := by
+instance (priority := 10000) : FiniteDimensional (subfield G F) F := by
   cases nonempty_fintype G
   exact IsNoetherian.iff_fg.1
       (IsNoetherian.iff_rank_lt_aleph0.2 <| (rank_le_card G F).trans_lt <| Cardinal.nat_lt_aleph0 _)
@@ -325,7 +325,7 @@ theorem cardinal_mk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Fie
   (linearIndependent_toLinearMap K V W).cardinal_mk_le_finrank
 #align cardinal_mk_alg_hom cardinal_mk_algHom
 
-noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
+noncomputable instance (priority := 10000) AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype (V ≃ₐ[K] V) :=
   Fintype.ofEquiv (V →ₐ[K] V) (algEquivEquivAlgHom K V).symm
 #align alg_equiv.fintype AlgEquiv.fintype

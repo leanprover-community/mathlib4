@@ -30,12 +30,12 @@ protected theorem isUnit_iff {n : ℕ} : IsUnit n ↔ n = 1 :=
     fun h => h.symm ▸ ⟨1, rfl⟩
 #align nat.is_unit_iff Nat.isUnit_iff
 
-instance unique_units : Unique ℕˣ where
+instance (priority := 10000) unique_units : Unique ℕˣ where
   default := 1
   uniq := Nat.units_eq_one
 #align nat.unique_units Nat.unique_units
 
-instance unique_addUnits : Unique (AddUnits ℕ) where
+instance (priority := 10000) unique_addUnits : Unique (AddUnits ℕ) where
   default := 0
   uniq := Nat.addUnits_eq_zero
 #align nat.unique_add_units Nat.unique_addUnits

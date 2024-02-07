@@ -29,10 +29,10 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 open scoped Manifold
 
 -- the following two instances prevent poorly understood type class inference timeout problems
-instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer_instance
+instance (priority := 10000) smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer_instance
 #align smooth_functions_algebra smoothFunctionsAlgebra
 
-instance smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := by infer_instance
+instance (priority := 10000) smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := by infer_instance
 #align smooth_functions_tower smooth_functions_tower
 
 /-- Type synonym, introduced to put a different `SMul` action on `C^n⟮I, M; 𝕜⟯`
@@ -51,29 +51,29 @@ namespace PointedSmoothMap
 
 open scoped Derivation
 
-instance instFunLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M 𝕜 :=
+instance (priority := 10000) instFunLike {x : M} : FunLike C^∞⟮I, M; 𝕜⟯⟨x⟩ M 𝕜 :=
   ContMDiffMap.instFunLike
 #align pointed_smooth_map.fun_like PointedSmoothMap.instFunLike
 
-instance {x : M} : CommRing C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
+instance (priority := 10000) {x : M} : CommRing C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
   SmoothMap.commRing
 
-instance {x : M} : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
+instance (priority := 10000) {x : M} : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
   SmoothMap.algebra
 
-instance {x : M} : Inhabited C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
+instance (priority := 10000) {x : M} : Inhabited C^∞⟮I, M; 𝕜⟯⟨x⟩ :=
   ⟨0⟩
 
-instance {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M; 𝕜⟯ :=
+instance (priority := 10000) {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M; 𝕜⟯ :=
   Algebra.id C^∞⟮I, M; 𝕜⟯
 
-instance {x : M} : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M; 𝕜⟯ :=
+instance (priority := 10000) {x : M} : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ C^∞⟮I, M; 𝕜⟯ :=
   IsScalarTower.right
 
 variable {I}
 
 /-- `SmoothMap.evalRingHom` gives rise to an algebra structure of `C^∞⟮I, M; 𝕜⟯` on `𝕜`. -/
-instance evalAlgebra {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 :=
+instance (priority := 10000) evalAlgebra {x : M} : Algebra C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 :=
   (SmoothMap.evalRingHom x : C^∞⟮I, M; 𝕜⟯⟨x⟩ →+* 𝕜).toAlgebra
 #align pointed_smooth_map.eval_algebra PointedSmoothMap.evalAlgebra
 
@@ -86,7 +86,7 @@ theorem smul_def (x : M) (f : C^∞⟮I, M; 𝕜⟯⟨x⟩) (k : 𝕜) : f • k
   rfl
 #align pointed_smooth_map.smul_def PointedSmoothMap.smul_def
 
-instance (x : M) : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 where
+instance (priority := 10000) (x : M) : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 where
   smul_assoc k f h := by
     rw [smul_def, smul_def, SmoothMap.coe_smul, Pi.smul_apply, smul_eq_mul, smul_eq_mul, mul_assoc]
 

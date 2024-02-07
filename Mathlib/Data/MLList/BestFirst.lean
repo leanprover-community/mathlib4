@@ -97,7 +97,7 @@ variable {α : Type} {prio : α → Thunk ω} {ε : α → Type} [LinearOrder ω
 /-- Calculate the current best lower bound for the the priority of a node. -/
 def BestFirstNode.estimate (n : BestFirstNode prio ε) : ω := bound (prio n.key) n.estimator
 
-instance [Ord ω] [Ord α] : Ord (BestFirstNode prio ε) where
+instance (priority := 10000) [Ord ω] [Ord α] : Ord (BestFirstNode prio ε) where
   compare :=
     compareLex
       (compareOn BestFirstNode.estimate)

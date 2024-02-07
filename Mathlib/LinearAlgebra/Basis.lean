@@ -99,13 +99,13 @@ structure Basis where
 
 end
 
-instance uniqueBasis [Subsingleton R] : Unique (Basis ι R M) :=
+instance (priority := 10000) uniqueBasis [Subsingleton R] : Unique (Basis ι R M) :=
   ⟨⟨⟨default⟩⟩, fun ⟨b⟩ => by rw [Subsingleton.elim b]⟩
 #align unique_basis uniqueBasis
 
 namespace Basis
 
-instance : Inhabited (Basis ι R (ι →₀ R)) :=
+instance (priority := 10000) : Inhabited (Basis ι R (ι →₀ R)) :=
   ⟨.ofRepr (LinearEquiv.refl _ _)⟩
 
 variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
@@ -117,7 +117,7 @@ theorem repr_injective : Injective (repr : Basis ι R M → M ≃ₗ[R] ι →�
 #align basis.repr_injective Basis.repr_injective
 
 /-- `b i` is the `i`th basis vector. -/
-instance instFunLike : FunLike (Basis ι R M) ι M where
+instance (priority := 10000) instFunLike : FunLike (Basis ι R M) ι M where
   coe b i := b.repr.symm (Finsupp.single i 1)
   coe_injective' f g h := repr_injective <| LinearEquiv.symm_bijective.injective <|
     LinearEquiv.toLinearMap_injective <| by ext; exact congr_fun h _
@@ -867,7 +867,7 @@ protected def empty [Subsingleton M] [IsEmpty ι] : Basis ι R M :=
   ofRepr 0
 #align basis.empty Basis.empty
 
-instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
+instance (priority := 10000) emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
   default := Basis.empty M
   uniq := fun _ => congr_arg ofRepr <| Subsingleton.elim _ _
 #align basis.empty_unique Basis.emptyUnique

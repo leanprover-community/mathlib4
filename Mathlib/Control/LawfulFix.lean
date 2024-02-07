@@ -204,7 +204,7 @@ theorem to_unit_cont (f : Part α →o Part α) (hc : Continuous f) : Continuous
     erw [hc, Chain.map_comp]; rfl
 #align part.to_unit_cont Part.to_unit_cont
 
-instance lawfulFix : LawfulFix (Part α) :=
+instance (priority := 10000) lawfulFix : LawfulFix (Part α) :=
   ⟨fun {f : Part α →o Part α} hc ↦ show Part.fix (toUnitMono f) () = _ by
     rw [Part.fix_eq (to_unit_cont f hc)]; rfl⟩
 #align part.lawful_fix Part.lawfulFix
@@ -215,7 +215,7 @@ open Sigma
 
 namespace Pi
 
-instance lawfulFix {β} : LawfulFix (α → Part β) :=
+instance (priority := 10000) lawfulFix {β} : LawfulFix (α → Part β) :=
   ⟨fun {_f} ↦ Part.fix_eq⟩
 #align pi.lawful_fix Pi.lawfulFix
 
@@ -263,7 +263,7 @@ end Monotone
 
 open Fix
 
-instance hasFix [Fix <| (x : Sigma β) → γ x.1 x.2] : Fix ((x : _) → (y : β x) → γ x y) :=
+instance (priority := 10000) hasFix [Fix <| (x : Sigma β) → γ x.1 x.2] : Fix ((x : _) → (y : β x) → γ x y) :=
   ⟨fun f ↦ curry (fix <| uncurry ∘ f ∘ curry)⟩
 #align pi.has_fix Pi.hasFix
 
@@ -282,7 +282,7 @@ theorem uncurry_curry_continuous :
 
 end Curry
 
-instance Pi.lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
+instance (priority := 10000) Pi.lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
     LawfulFix ((x y : _) → γ x y) where
   fix_eq {_f} hc := by
     dsimp [fix]

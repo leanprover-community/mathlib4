@@ -52,7 +52,7 @@ theorem Lex.wellFounded' [IsTrichotomous α r] (hr : WellFounded (Function.swap 
     InvImage.wf _ (DFinsupp.Lex.wellFounded' (fun _ => hbot) (fun _ => hs) hr)
 #align finsupp.lex.well_founded' Finsupp.Lex.wellFounded'
 
-instance Lex.wellFoundedLT {α N} [LT α] [IsTrichotomous α (· < ·)] [hα : WellFoundedGT α]
+instance (priority := 10000) Lex.wellFoundedLT {α N} [LT α] [IsTrichotomous α (· < ·)] [hα : WellFoundedGT α]
     [CanonicallyOrderedAddCommMonoid N] [hN : WellFoundedLT N] : WellFoundedLT (Lex (α →₀ N)) :=
   ⟨Lex.wellFounded' (fun n => (zero_le n).not_lt) hN.wf hα.wf⟩
 #align finsupp.lex.well_founded_lt Finsupp.Lex.wellFoundedLT
@@ -74,12 +74,12 @@ protected theorem wellFoundedLT [Zero N] [Preorder N] [WellFoundedLT N] (hbot : 
   ⟨InvImage.wf toDFinsupp (DFinsupp.wellFoundedLT fun _ a => hbot a).wf⟩
 #align finsupp.well_founded_lt Finsupp.wellFoundedLT
 
-instance wellFoundedLT' {N} [CanonicallyOrderedAddCommMonoid N] [WellFoundedLT N] :
+instance (priority := 10000) wellFoundedLT' {N} [CanonicallyOrderedAddCommMonoid N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
   Finsupp.wellFoundedLT fun a => (zero_le a).not_lt
 #align finsupp.well_founded_lt' Finsupp.wellFoundedLT'
 
-instance wellFoundedLT_of_finite [Finite α] [Zero N] [Preorder N] [WellFoundedLT N] :
+instance (priority := 10000) wellFoundedLT_of_finite [Finite α] [Zero N] [Preorder N] [WellFoundedLT N] :
     WellFoundedLT (α →₀ N) :=
   ⟨InvImage.wf equivFunOnFinite Function.wellFoundedLT.wf⟩
 #align finsupp.well_founded_lt_of_finite Finsupp.wellFoundedLT_of_finite

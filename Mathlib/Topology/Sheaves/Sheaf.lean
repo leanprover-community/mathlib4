@@ -118,7 +118,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.sheaf TopCat.Sheaf
 
 -- Porting Note : `deriving Cat` failed
-instance SheafCat : Category (Sheaf C X) :=
+instance (priority := 10000) SheafCat : Category (Sheaf C X) :=
   show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
 
 variable {C X}
@@ -132,7 +132,7 @@ set_option linter.uppercaseLean3 false in
 variable (C X)
 
 -- Let's construct a trivial example, to keep the inhabited linter happy.
-instance sheafInhabited : Inhabited (Sheaf (CategoryTheory.Discrete PUnit) X) :=
+instance (priority := 10000) sheafInhabited : Inhabited (Sheaf (CategoryTheory.Discrete PUnit) X) :=
   ⟨⟨Functor.star _, Presheaf.isSheaf_unit _⟩⟩
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf_inhabited TopCat.sheafInhabited
@@ -147,11 +147,11 @@ set_option linter.uppercaseLean3 false in
 #align Top.sheaf.forget TopCat.Sheaf.forget
 
 -- Porting note : `deriving Full` failed
-instance forgetFull : Full (forget C X) where
+instance (priority := 10000) forgetFull : Full (forget C X) where
   preimage := Sheaf.Hom.mk
 
 -- Porting note : `deriving Faithful` failed
-instance forgetFaithful : Faithful (forget C X) where
+instance (priority := 10000) forgetFaithful : Faithful (forget C X) where
   map_injective := Sheaf.Hom.ext _ _
 
 -- Note: These can be proved by simp.

@@ -201,27 +201,27 @@ variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField �
 
 /-- The topology of bounded convergence on `E →L[𝕜] F`. This coincides with the topology induced by
 the operator norm when `E` and `F` are normed spaces. -/
-instance topologicalSpace [TopologicalSpace F] [TopologicalAddGroup F] :
+instance (priority := 10000) topologicalSpace [TopologicalSpace F] [TopologicalAddGroup F] :
     TopologicalSpace (E →SL[σ] F) :=
   strongTopology σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
 
-instance topologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F] :
+instance (priority := 10000) topologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F] :
     TopologicalAddGroup (E →SL[σ] F) :=
   strongTopology.topologicalAddGroup σ F _
 
-instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [TopologicalSpace F]
+instance (priority := 10000) continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [TopologicalSpace F]
     [TopologicalAddGroup F] [ContinuousSMul 𝕜₂ F] : ContinuousSMul 𝕜₂ (E →SL[σ] F) :=
   strongTopology.continuousSMul σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
     ⟨∅, Bornology.isVonNBounded_empty 𝕜₁ E⟩
     (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union) fun _ hs => hs
 
-instance uniformSpace [UniformSpace F] [UniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
+instance (priority := 10000) uniformSpace [UniformSpace F] [UniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
   strongUniformity σ F { S | Bornology.IsVonNBounded 𝕜₁ S }
 
-instance uniformAddGroup [UniformSpace F] [UniformAddGroup F] : UniformAddGroup (E →SL[σ] F) :=
+instance (priority := 10000) uniformAddGroup [UniformSpace F] [UniformAddGroup F] : UniformAddGroup (E →SL[σ] F) :=
   strongUniformity.uniformAddGroup σ F _
 
-instance [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₁ E] [T2Space F] :
+instance (priority := 10000) [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₁ E] [T2Space F] :
     T2Space (E →SL[σ] F) :=
   strongTopology.t2Space σ F _
     (Set.eq_univ_of_forall fun x =>
@@ -243,13 +243,13 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F
   ContinuousLinearMap.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 #align continuous_linear_map.has_basis_nhds_zero ContinuousLinearMap.hasBasis_nhds_zero
 
-instance uniformContinuousConstSMul
+instance (priority := 10000) uniformContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] :
     UniformContinuousConstSMul M (E →SL[σ] F) :=
   strongTopology.uniformContinuousConstSMul σ F _ _
 
-instance continuousConstSMul {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+instance (priority := 10000) continuousConstSMul {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (E →SL[σ] F) :=
   strongTopology.continuousConstSMul σ F _ _

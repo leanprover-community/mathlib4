@@ -75,11 +75,11 @@ theorem zero_comp [HasZeroMorphisms C] {X : C} {Y Z : C} {f : Y ⟶ Z} :
   HasZeroMorphisms.zero_comp X f
 #align category_theory.limits.zero_comp CategoryTheory.Limits.zero_comp
 
-instance hasZeroMorphismsPEmpty : HasZeroMorphisms (Discrete PEmpty) where
+instance (priority := 10000) hasZeroMorphismsPEmpty : HasZeroMorphisms (Discrete PEmpty) where
   zero := by aesop_cat
 #align category_theory.limits.has_zero_morphisms_pempty CategoryTheory.Limits.hasZeroMorphismsPEmpty
 
-instance hasZeroMorphismsPUnit : HasZeroMorphisms (Discrete PUnit) where
+instance (priority := 10000) hasZeroMorphismsPUnit : HasZeroMorphisms (Discrete PUnit) where
   zero X Y := by repeat (constructor)
 #align category_theory.limits.has_zero_morphisms_punit CategoryTheory.Limits.hasZeroMorphismsPUnit
 
@@ -114,14 +114,14 @@ theorem ext (I J : HasZeroMorphisms C) : I = J := by
   rw[← this, ← that]
 #align category_theory.limits.has_zero_morphisms.ext CategoryTheory.Limits.HasZeroMorphisms.ext
 
-instance : Subsingleton (HasZeroMorphisms C) :=
+instance (priority := 10000) : Subsingleton (HasZeroMorphisms C) :=
   ⟨ext⟩
 
 end HasZeroMorphisms
 
 open Opposite HasZeroMorphisms
 
-instance hasZeroMorphismsOpposite [HasZeroMorphisms C] : HasZeroMorphisms Cᵒᵖ where
+instance (priority := 10000) hasZeroMorphismsOpposite [HasZeroMorphisms C] : HasZeroMorphisms Cᵒᵖ where
   zero X Y := ⟨(0 : unop Y ⟶ unop X).op⟩
   comp_zero f Z := congr_arg Quiver.Hom.op (HasZeroMorphisms.zero_comp (unop Z) f.unop)
   zero_comp X {Y Z} (f : Y ⟶ Z) :=
@@ -162,7 +162,7 @@ section
 
 variable [HasZeroMorphisms D]
 
-instance : HasZeroMorphisms (C ⥤ D) where
+instance (priority := 10000) : HasZeroMorphisms (C ⥤ D) where
   zero F G := ⟨{ app := fun X => 0 }⟩
   comp_zero := fun η H => by
     ext X; dsimp; apply comp_zero
@@ -337,7 +337,7 @@ end HasZeroMorphisms
 
 open ZeroObject
 
-instance {B : Type*} [Category B] : HasZeroObject (B ⥤ C) :=
+instance (priority := 10000) {B : Type*} [Category B] : HasZeroObject (B ⥤ C) :=
   (((CategoryTheory.Functor.const B).obj (0 : C)).isZero fun _ => isZero_zero _).hasZeroObject
 
 end HasZeroObject
@@ -597,7 +597,7 @@ def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
   isImage := { lift := fun F' => 0 }
 #align category_theory.limits.image_factorisation_zero CategoryTheory.Limits.imageFactorisationZero
 
-instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
+instance (priority := 10000) hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
   HasImage.mk <| imageFactorisationZero _ _
 #align category_theory.limits.has_image_zero CategoryTheory.Limits.hasImage_zero
 
@@ -631,37 +631,37 @@ theorem image.ι_zero' [HasEqualizers C] {X Y : C} {f : X ⟶ Y} (h : f = 0) [Ha
 end Image
 
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
-instance isSplitMono_sigma_ι {β : Type u'} [HasZeroMorphisms C] (f : β → C)
+instance (priority := 10000) isSplitMono_sigma_ι {β : Type u'} [HasZeroMorphisms C] (f : β → C)
     [HasColimit (Discrete.functor f)] (b : β) : IsSplitMono (Sigma.ι f b) :=
   IsSplitMono.mk' { retraction := Sigma.desc <| Pi.single b (𝟙 _) }
 #align category_theory.limits.is_split_mono_sigma_ι CategoryTheory.Limits.isSplitMono_sigma_ι
 
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
-instance isSplitEpi_pi_π {β : Type u'} [HasZeroMorphisms C] (f : β → C)
+instance (priority := 10000) isSplitEpi_pi_π {β : Type u'} [HasZeroMorphisms C] (f : β → C)
     [HasLimit (Discrete.functor f)] (b : β) : IsSplitEpi (Pi.π f b) :=
   IsSplitEpi.mk' { section_ := Pi.lift <| Pi.single b (𝟙 _) }
 #align category_theory.limits.is_split_epi_pi_π CategoryTheory.Limits.isSplitEpi_pi_π
 
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
-instance isSplitMono_coprod_inl [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
+instance (priority := 10000) isSplitMono_coprod_inl [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
     IsSplitMono (coprod.inl : X ⟶ X ⨿ Y) :=
   IsSplitMono.mk' { retraction := coprod.desc (𝟙 X) 0 }
 #align category_theory.limits.is_split_mono_coprod_inl CategoryTheory.Limits.isSplitMono_coprod_inl
 
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
-instance isSplitMono_coprod_inr [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
+instance (priority := 10000) isSplitMono_coprod_inr [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
     IsSplitMono (coprod.inr : Y ⟶ X ⨿ Y) :=
   IsSplitMono.mk' { retraction := coprod.desc 0 (𝟙 Y) }
 #align category_theory.limits.is_split_mono_coprod_inr CategoryTheory.Limits.isSplitMono_coprod_inr
 
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
-instance isSplitEpi_prod_fst [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
+instance (priority := 10000) isSplitEpi_prod_fst [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
     IsSplitEpi (prod.fst : X ⨯ Y ⟶ X) :=
   IsSplitEpi.mk' { section_ := prod.lift (𝟙 X) 0 }
 #align category_theory.limits.is_split_epi_prod_fst CategoryTheory.Limits.isSplitEpi_prod_fst
 
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
-instance isSplitEpi_prod_snd [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
+instance (priority := 10000) isSplitEpi_prod_snd [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
     IsSplitEpi (prod.snd : X ⨯ Y ⟶ Y) :=
   IsSplitEpi.mk' { section_ := prod.lift 0 (𝟙 Y) }
 #align category_theory.limits.is_split_epi_prod_snd CategoryTheory.Limits.isSplitEpi_prod_snd

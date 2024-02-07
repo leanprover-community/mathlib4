@@ -75,7 +75,7 @@ section SMul
 
 variable [SMul 𝕜 E] (S T : ConvexCone 𝕜 E)
 
-instance : SetLike (ConvexCone 𝕜 E) E where
+instance (priority := 10000) : SetLike (ConvexCone 𝕜 E) E where
   coe := carrier
   coe_injective' S T h := by cases S; cases T; congr
 
@@ -104,9 +104,9 @@ theorem add_mem ⦃x⦄ (hx : x ∈ S) ⦃y⦄ (hy : y ∈ S) : x + y ∈ S :=
   S.add_mem' hx hy
 #align convex_cone.add_mem ConvexCone.add_mem
 
-instance : AddMemClass (ConvexCone 𝕜 E) E where add_mem ha hb := add_mem _ ha hb
+instance (priority := 10000) : AddMemClass (ConvexCone 𝕜 E) E where add_mem ha hb := add_mem _ ha hb
 
-instance : Inf (ConvexCone 𝕜 E) :=
+instance (priority := 10000) : Inf (ConvexCone 𝕜 E) :=
   ⟨fun S T =>
     ⟨S ∩ T, fun _ hc _ hx => ⟨S.smul_mem hc hx.1, T.smul_mem hc hx.2⟩, fun _ hx _ hy =>
       ⟨S.add_mem hx.1 hy.1, T.add_mem hx.2 hy.2⟩⟩⟩
@@ -120,7 +120,7 @@ theorem mem_inf {x} : x ∈ S ⊓ T ↔ x ∈ S ∧ x ∈ T :=
   Iff.rfl
 #align convex_cone.mem_inf ConvexCone.mem_inf
 
-instance : InfSet (ConvexCone 𝕜 E) :=
+instance (priority := 10000) : InfSet (ConvexCone 𝕜 E) :=
   ⟨fun S =>
     ⟨⋂ s ∈ S, ↑s, fun _ hc _ hx => mem_biInter fun s hs => s.smul_mem hc <| mem_iInter₂.1 hx s hs,
       fun _ hx _ hy =>
@@ -146,7 +146,7 @@ theorem mem_iInf {ι : Sort*} {x : E} {f : ι → ConvexCone 𝕜 E} : x ∈ iIn
 
 variable (𝕜)
 
-instance : Bot (ConvexCone 𝕜 E) :=
+instance (priority := 10000) : Bot (ConvexCone 𝕜 E) :=
   ⟨⟨∅, fun _ _ _ => False.elim, fun _ => False.elim⟩⟩
 
 theorem mem_bot (x : E) : (x ∈ (⊥ : ConvexCone 𝕜 E)) = False :=
@@ -158,7 +158,7 @@ theorem coe_bot : ↑(⊥ : ConvexCone 𝕜 E) = (∅ : Set E) :=
   rfl
 #align convex_cone.coe_bot ConvexCone.coe_bot
 
-instance : Top (ConvexCone 𝕜 E) :=
+instance (priority := 10000) : Top (ConvexCone 𝕜 E) :=
   ⟨⟨univ, fun _ _ _ _ => mem_univ _, fun _ _ _ _ => mem_univ _⟩⟩
 
 theorem mem_top (x : E) : x ∈ (⊤ : ConvexCone 𝕜 E) :=
@@ -170,7 +170,7 @@ theorem coe_top : ↑(⊤ : ConvexCone 𝕜 E) = (univ : Set E) :=
   rfl
 #align convex_cone.coe_top ConvexCone.coe_top
 
-instance : CompleteLattice (ConvexCone 𝕜 E) :=
+instance (priority := 10000) : CompleteLattice (ConvexCone 𝕜 E) :=
   { SetLike.instPartialOrder with
     le := (· ≤ ·)
     lt := (· < ·)
@@ -193,7 +193,7 @@ instance : CompleteLattice (ConvexCone 𝕜 E) :=
     le_sInf := fun _ _ ha _ hx => mem_sInf.2 fun t ht => ha t ht hx
     sInf_le := fun _ _ ha _ hx => mem_sInf.1 hx _ ha }
 
-instance : Inhabited (ConvexCone 𝕜 E) :=
+instance (priority := 10000) : Inhabited (ConvexCone 𝕜 E) :=
   ⟨⊥⟩
 
 end SMul
@@ -425,7 +425,7 @@ section Module
 
 variable [AddCommMonoid E] [Module 𝕜 E]
 
-instance : Zero (ConvexCone 𝕜 E) :=
+instance (priority := 10000) : Zero (ConvexCone 𝕜 E) :=
   ⟨⟨0, fun _ _ => by simp, fun _ => by simp⟩⟩
 
 @[simp]
@@ -441,7 +441,7 @@ theorem coe_zero : ((0 : ConvexCone 𝕜 E) : Set E) = 0 :=
 theorem pointed_zero : (0 : ConvexCone 𝕜 E).Pointed := by rw [Pointed, mem_zero]
 #align convex_cone.pointed_zero ConvexCone.pointed_zero
 
-instance instAdd : Add (ConvexCone 𝕜 E) :=
+instance (priority := 10000) instAdd : Add (ConvexCone 𝕜 E) :=
   ⟨fun K₁ K₂ =>
     { carrier := { z | ∃ x ∈ K₁, ∃ y ∈ K₂, x + y = z }
       smul_mem' := by
@@ -459,11 +459,11 @@ theorem mem_add {K₁ K₂ : ConvexCone 𝕜 E} {a : E} :
   Iff.rfl
 #align convex_cone.mem_add ConvexCone.mem_add
 
-instance instAddZeroClass : AddZeroClass (ConvexCone 𝕜 E) where
+instance (priority := 10000) instAddZeroClass : AddZeroClass (ConvexCone 𝕜 E) where
   zero_add _ := by ext; simp
   add_zero _ := by ext; simp
 
-instance instAddCommSemigroup : AddCommSemigroup (ConvexCone 𝕜 E) where
+instance (priority := 10000) instAddCommSemigroup : AddCommSemigroup (ConvexCone 𝕜 E) where
   add := Add.add
   add_assoc _ _ _ := SetLike.coe_injective <| add_assoc _ _ _
   add_comm _ _ := SetLike.coe_injective <| add_comm _ _

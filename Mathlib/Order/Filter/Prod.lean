@@ -54,7 +54,7 @@ protected def prod (f : Filter α) (g : Filter β) : Filter (α × β) :=
   f.comap Prod.fst ⊓ g.comap Prod.snd
 #align filter.prod Filter.prod
 
-instance instSProd : SProd (Filter α) (Filter β) (Filter (α × β)) where
+instance (priority := 10000) instSProd : SProd (Filter α) (Filter β) (Filter (α × β)) where
   sprod := Filter.prod
 
 theorem prod_mem_prod (hs : s ∈ f) (ht : t ∈ g) : s ×ˢ t ∈ f ×ˢ g :=
@@ -436,7 +436,7 @@ theorem prod_neBot : NeBot (f ×ˢ g) ↔ NeBot f ∧ NeBot g := by
 protected theorem NeBot.prod (hf : NeBot f) (hg : NeBot g) : NeBot (f ×ˢ g) := prod_neBot.2 ⟨hf, hg⟩
 #align filter.ne_bot.prod Filter.NeBot.prod
 
-instance prod.instNeBot [hf : NeBot f] [hg : NeBot g] : NeBot (f ×ˢ g) := hf.prod hg
+instance (priority := 10000) prod.instNeBot [hf : NeBot f] [hg : NeBot g] : NeBot (f ×ˢ g) := hf.prod hg
 #align filter.prod_ne_bot' Filter.prod.instNeBot
 
 @[simp]

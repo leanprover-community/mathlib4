@@ -77,7 +77,7 @@ private theorem equivalence_isometryRel : Equivalence IsometryRel :=
   ⟨fun _ => Nonempty.intro (IsometryEquiv.refl _), fun ⟨e⟩ => ⟨e.symm⟩, fun ⟨e⟩ ⟨f⟩ => ⟨e.trans f⟩⟩
 
 /-- setoid instance identifying two isometric nonempty compact subspaces of ℓ^∞(ℝ) -/
-instance IsometryRel.setoid : Setoid (NonemptyCompacts ℓ_infty_ℝ) :=
+instance (priority := 10000) IsometryRel.setoid : Setoid (NonemptyCompacts ℓ_infty_ℝ) :=
   Setoid.mk IsometryRel equivalence_isometryRel
 #align Gromov_Hausdorff.isometry_rel.setoid GromovHausdorff.IsometryRel.setoid
 
@@ -91,7 +91,7 @@ def toGHSpace (X : Type u) [MetricSpace X] [CompactSpace X] [Nonempty X] : GHSpa
   ⟦NonemptyCompacts.kuratowskiEmbedding X⟧
 #align Gromov_Hausdorff.to_GH_space GromovHausdorff.toGHSpace
 
-instance : Inhabited GHSpace :=
+instance (priority := 10000) : Inhabited GHSpace :=
   ⟨Quot.mk _ ⟨⟨{0}, isCompact_singleton⟩, singleton_nonempty _⟩⟩
 
 /-- A metric space representative of any abstract point in `GHSpace` -/
@@ -125,15 +125,15 @@ theorem eq_toGHSpace {p : NonemptyCompacts ℓ_infty_ℝ} : ⟦p⟧ = toGHSpace 
 
 section
 
-instance repGHSpaceMetricSpace {p : GHSpace} : MetricSpace p.Rep :=
+instance (priority := 10000) repGHSpaceMetricSpace {p : GHSpace} : MetricSpace p.Rep :=
   inferInstanceAs <| MetricSpace p.out
 #align Gromov_Hausdorff.rep_GH_space_metric_space GromovHausdorff.repGHSpaceMetricSpace
 
-instance rep_gHSpace_compactSpace {p : GHSpace} : CompactSpace p.Rep :=
+instance (priority := 10000) rep_gHSpace_compactSpace {p : GHSpace} : CompactSpace p.Rep :=
   inferInstanceAs <| CompactSpace p.out
 #align Gromov_Hausdorff.rep_GH_space_compact_space GromovHausdorff.rep_gHSpace_compactSpace
 
-instance rep_gHSpace_nonempty {p : GHSpace} : Nonempty p.Rep :=
+instance (priority := 10000) rep_gHSpace_nonempty {p : GHSpace} : Nonempty p.Rep :=
   inferInstanceAs <| Nonempty p.out
 #align Gromov_Hausdorff.rep_GH_space_nonempty GromovHausdorff.rep_gHSpace_nonempty
 
@@ -176,7 +176,7 @@ theorem toGHSpace_eq_toGHSpace_iff_isometryEquiv {X : Type u} [MetricSpace X] [C
 /-- Distance on `GHSpace`: the distance between two nonempty compact spaces is the infimum
 Hausdorff distance between isometric copies of the two spaces in a metric space. For the definition,
 we only consider embeddings in `ℓ^∞(ℝ)`, but we will prove below that it works for all spaces. -/
-instance : Dist GHSpace where
+instance (priority := 10000) : Dist GHSpace where
   dist x y := sInf <| (fun p : NonemptyCompacts ℓ_infty_ℝ × NonemptyCompacts ℓ_infty_ℝ =>
     hausdorffDist (p.1 : Set ℓ_infty_ℝ) p.2) '' { a | ⟦a⟧ = x } ×ˢ { b | ⟦b⟧ = y }
 
@@ -413,7 +413,7 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
 #align Gromov_Hausdorff.GH_dist_eq_Hausdorff_dist GromovHausdorff.ghDist_eq_hausdorffDist
 
 /-- The Gromov-Hausdorff distance defines a genuine distance on the Gromov-Hausdorff space. -/
-instance : MetricSpace GHSpace where
+instance (priority := 10000) : MetricSpace GHSpace where
   dist := dist
   -- porting note: why does Lean 4 want this?
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
@@ -654,7 +654,7 @@ end
 
 --section
 /-- The Gromov-Hausdorff space is second countable. -/
-instance : SecondCountableTopology GHSpace := by
+instance (priority := 10000) : SecondCountableTopology GHSpace := by
   refine' secondCountable_of_countable_discretization fun δ δpos => _
   let ε := 2 / 5 * δ
   have εpos : 0 < ε := mul_pos (by norm_num) δpos
@@ -986,7 +986,7 @@ structure AuxGluingStruct (A : Type) [MetricSpace A] : Type 1 where
 
 attribute [local instance] AuxGluingStruct.metric
 
-instance (A : Type) [MetricSpace A] : Inhabited (AuxGluingStruct A) :=
+instance (priority := 10000) (A : Type) [MetricSpace A] : Inhabited (AuxGluingStruct A) :=
   ⟨{  Space := A
       metric := by infer_instance
       embed := id
@@ -1006,7 +1006,7 @@ def auxGluing (n : ℕ) : AuxGluingStruct (X n) :=
 #align Gromov_Hausdorff.aux_gluing GromovHausdorff.auxGluing
 
 /-- The Gromov-Hausdorff space is complete. -/
-instance : CompleteSpace GHSpace := by
+instance (priority := 10000) : CompleteSpace GHSpace := by
   set d := fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n
   have : ∀ n : ℕ, 0 < d n := fun _ ↦ by positivity
   -- start from a sequence of nonempty compact metric spaces within distance `1/2^n` of each other

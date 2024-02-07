@@ -23,7 +23,7 @@ set_option autoImplicit true
 namespace PUnit
 
 @[to_additive]
-instance commGroup : CommGroup PUnit where
+instance (priority := 10000) commGroup : CommGroup PUnit where
   mul _ _ := unit
   one := unit
   inv _ := unit
@@ -69,7 +69,7 @@ theorem inv_eq : x⁻¹ = unit :=
 #align punit.inv_eq PUnit.inv_eq
 #align punit.neg_eq PUnit.neg_eq
 
-instance commRing : CommRing PUnit where
+instance (priority := 10000) commRing : CommRing PUnit where
   __ := PUnit.commGroup
   __ := PUnit.addCommGroup
   left_distrib := by intros; rfl
@@ -78,10 +78,10 @@ instance commRing : CommRing PUnit where
   mul_zero := by intros; rfl
   natCast _ := unit
 
-instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit := by
+instance (priority := 10000) cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit := by
   refine' { PUnit.commRing with .. }; intros; exact Subsingleton.elim _ _
 
-instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
+instance (priority := 10000) normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   gcd _ _ := unit
   lcm _ _ := unit
   normUnit _ := 1
@@ -112,25 +112,25 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 
-instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit := by
+instance (priority := 10000) canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit := by
   refine'
     { PUnit.commRing, PUnit.completeBooleanAlgebra with
       exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
     intros <;>
     trivial
 
-instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUnit where
+instance (priority := 10000) linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid PUnit where
   __ := PUnit.canonicallyOrderedAddCommMonoid
   __ := PUnit.linearOrder
   le_of_add_le_add_left _ _ _ _ := trivial
   add_le_add_left := by intros; rfl
 
-instance : LinearOrderedAddCommMonoidWithTop PUnit :=
+instance (priority := 10000) : LinearOrderedAddCommMonoidWithTop PUnit :=
   { PUnit.completeBooleanAlgebra, PUnit.linearOrderedCancelAddCommMonoid with
     top_add' := fun _ => rfl }
 
 @[to_additive]
-instance smul : SMul R PUnit :=
+instance (priority := 10000) smul : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
 @[to_additive (attr := simp)]
@@ -140,36 +140,36 @@ theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
 #align punit.vadd_eq PUnit.vadd_eq
 
 @[to_additive]
-instance : IsCentralScalar R PUnit :=
+instance (priority := 10000) : IsCentralScalar R PUnit :=
   ⟨fun _ _ => rfl⟩
 
 @[to_additive]
-instance : SMulCommClass R S PUnit :=
+instance (priority := 10000) : SMulCommClass R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 @[to_additive]
-instance [SMul R S] : IsScalarTower R S PUnit :=
+instance (priority := 10000) [SMul R S] : IsScalarTower R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
-instance smulWithZero [Zero R] : SMulWithZero R PUnit := by
+instance (priority := 10000) smulWithZero [Zero R] : SMulWithZero R PUnit := by
   refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance mulAction [Monoid R] : MulAction R PUnit := by
+instance (priority := 10000) mulAction [Monoid R] : MulAction R PUnit := by
   refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance distribMulAction [Monoid R] : DistribMulAction R PUnit := by
+instance (priority := 10000) distribMulAction [Monoid R] : DistribMulAction R PUnit := by
   refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit := by
+instance (priority := 10000) mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit := by
   refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
 
-instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
+instance (priority := 10000) mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
 
-instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
+instance (priority := 10000) mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
   { PUnit.mulAction, PUnit.smulWithZero with }
 
-instance module [Semiring R] : Module R PUnit := by
+instance (priority := 10000) module [Semiring R] : Module R PUnit := by
   refine' { PUnit.distribMulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
 
 end PUnit

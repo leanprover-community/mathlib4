@@ -76,7 +76,7 @@ inductive M.Path : P.last.M → Fin2 n → Type u
           (c : M.Path (f j) i) : M.Path x i
 #align mvpfunctor.M.path MvPFunctor.M.Path
 
-instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
+instance (priority := 10000) M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
     Inhabited (M.Path P x i) :=
   let a := PFunctor.M.head x
   let f := PFunctor.M.children x
@@ -102,10 +102,10 @@ def M (α : TypeVec n) : Type _ :=
   P.mp α
 #align mvpfunctor.M MvPFunctor.M
 
-instance mvfunctorM : MvFunctor P.M := by delta M; infer_instance
+instance (priority := 10000) mvfunctorM : MvFunctor P.M := by delta M; infer_instance
 #align mvpfunctor.mvfunctor_M MvPFunctor.mvfunctorM
 
-instance inhabitedM {α : TypeVec _} [I : Inhabited P.A] [∀ i : Fin2 n, Inhabited (α i)] :
+instance (priority := 10000) inhabitedM {α : TypeVec _} [I : Inhabited P.A] [∀ i : Fin2 n, Inhabited (α i)] :
     Inhabited (P.M α) :=
   @Obj.inhabited _ (mp P) _ (@PFunctor.M.inhabited P.last I) _
 #align mvpfunctor.inhabited_M MvPFunctor.inhabitedM

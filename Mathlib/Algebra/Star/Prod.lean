@@ -22,7 +22,7 @@ variable {R : Type u} {S : Type v}
 
 namespace Prod
 
-instance [Star R] [Star S] : Star (R × S) where star x := (star x.1, star x.2)
+instance (priority := 10000) [Star R] [Star S] : Star (R × S) where star x := (star x.1, star x.2)
 
 @[simp]
 theorem fst_star [Star R] [Star S] (x : R × S) : (star x).1 = star x.1 :=
@@ -38,25 +38,25 @@ theorem star_def [Star R] [Star S] (x : R × S) : star x = (star x.1, star x.2) 
   rfl
 #align prod.star_def Prod.star_def
 
-instance [Star R] [Star S] [TrivialStar R] [TrivialStar S] : TrivialStar (R × S) where
+instance (priority := 10000) [Star R] [Star S] [TrivialStar R] [TrivialStar S] : TrivialStar (R × S) where
   star_trivial _ := Prod.ext (star_trivial _) (star_trivial _)
 
-instance [InvolutiveStar R] [InvolutiveStar S] : InvolutiveStar (R × S) where
+instance (priority := 10000) [InvolutiveStar R] [InvolutiveStar S] : InvolutiveStar (R × S) where
   star_involutive _ := Prod.ext (star_star _) (star_star _)
 
-instance [Mul R] [Mul S] [StarMul R] [StarMul S] : StarMul (R × S) where
+instance (priority := 10000) [Mul R] [Mul S] [StarMul R] [StarMul S] : StarMul (R × S) where
   star_mul _ _ := Prod.ext (star_mul _ _) (star_mul _ _)
 
-instance [AddMonoid R] [AddMonoid S] [StarAddMonoid R] [StarAddMonoid S] :
+instance (priority := 10000) [AddMonoid R] [AddMonoid S] [StarAddMonoid R] [StarAddMonoid S] :
     StarAddMonoid (R × S) where
   star_add _ _ := Prod.ext (star_add _ _) (star_add _ _)
 
-instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [StarRing R] [StarRing S] :
+instance (priority := 10000) [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [StarRing R] [StarRing S] :
     StarRing (R × S) :=
   { inferInstanceAs (StarAddMonoid (R × S)),
     inferInstanceAs (StarMul (R × S)) with }
 
-instance {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
+instance (priority := 10000) {α : Type w} [SMul α R] [SMul α S] [Star α] [Star R] [Star S]
     [StarModule α R] [StarModule α S] : StarModule α (R × S) where
   star_smul _ _ := Prod.ext (star_smul _ _) (star_smul _ _)
 

@@ -71,7 +71,7 @@ variable (G : MonCat.{u})
 
 section
 
-instance inhabited' : Inhabited (Action (Type u) G) :=
+instance (priority := 10000) inhabited' : Inhabited (Action (Type u) G) :=
   ⟨⟨PUnit, 1⟩⟩
 set_option linter.uppercaseLean3 false in
 #align Action.inhabited' Action.inhabited'
@@ -83,7 +83,7 @@ def trivial : Action AddCommGroupCat G where
 set_option linter.uppercaseLean3 false in
 #align Action.trivial Action.trivial
 
-instance : Inhabited (Action AddCommGroupCat G) :=
+instance (priority := 10000) : Inhabited (Action AddCommGroupCat G) :=
   ⟨trivial G⟩
 
 end
@@ -111,7 +111,7 @@ def id (M : Action V G) : Action.Hom M M where hom := 𝟙 M.V
 set_option linter.uppercaseLean3 false in
 #align Action.hom.id Action.Hom.id
 
-instance (M : Action V G) : Inhabited (Action.Hom M M) :=
+instance (priority := 10000) (M : Action V G) : Inhabited (Action.Hom M M) :=
   ⟨id M⟩
 
 /-- The composition of two `Action V G` homomorphisms is the composition of the underlying maps.
@@ -124,7 +124,7 @@ set_option linter.uppercaseLean3 false in
 
 end Hom
 
-instance : Category (Action V G) where
+instance (priority := 10000) : Category (Action V G) where
   Hom M N := Hom M N
   id M := Hom.id M
   comp f g := Hom.comp f g
@@ -167,7 +167,7 @@ instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [
 set_option linter.uppercaseLean3 false in
 #align Action.is_iso_of_hom_is_iso Action.isIso_of_hom_isIso
 
-instance isIso_hom_mk {M N : Action V G} (f : M.V ⟶ N.V) [IsIso f] (w) :
+instance (priority := 10000) isIso_hom_mk {M N : Action V G} (f : M.V ⟶ N.V) [IsIso f] (w) :
     @IsIso _ _ M N (Hom.mk f w) :=
   IsIso.of_iso (mkIso (asIso f) w)
 set_option linter.uppercaseLean3 false in
@@ -273,12 +273,12 @@ def forget : Action V G ⥤ V where
 set_option linter.uppercaseLean3 false in
 #align Action.forget Action.forget
 
-instance : Faithful (forget V G) where map_injective w := Hom.ext _ _ w
+instance (priority := 10000) : Faithful (forget V G) where map_injective w := Hom.ext _ _ w
 
-instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
+instance (priority := 10000) [ConcreteCategory V] : ConcreteCategory (Action V G) where
   forget := forget V G ⋙ ConcreteCategory.forget
 
-instance hasForgetToV [ConcreteCategory V] : HasForget₂ (Action V G) V where forget₂ := forget V G
+instance (priority := 10000) hasForgetToV [ConcreteCategory V] : HasForget₂ (Action V G) V where forget₂ := forget V G
 set_option linter.uppercaseLean3 false in
 #align Action.has_forget_to_V Action.hasForgetToV
 
@@ -290,11 +290,11 @@ def functorCategoryEquivalenceCompEvaluation :
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence_comp_evaluation Action.functorCategoryEquivalenceCompEvaluation
 
-noncomputable instance instPreservesLimitsForget [HasLimits V] :
+noncomputable instance (priority := 10000) instPreservesLimitsForget [HasLimits V] :
     Limits.PreservesLimits (forget V G) :=
   Limits.preservesLimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
-noncomputable instance instPreservesColimitsForget [HasColimits V] :
+noncomputable instance (priority := 10000) instPreservesColimitsForget [HasColimits V] :
     PreservesColimits (forget V G) :=
   preservesColimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 

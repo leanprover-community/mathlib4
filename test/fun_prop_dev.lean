@@ -15,7 +15,7 @@ open Function
 
 variable {α β γ δ ι : Type _} {E : α → Type _}
 
-instance [Add α] : Add (ι → α) := ⟨fun f g i => f i + g i⟩
+instance (priority := 10000) [Add α] : Add (ι → α) := ⟨fun f g i => f i + g i⟩
 
 axiom silentSorry {α} : α
 set_option linter.unusedVariables false
@@ -25,8 +25,8 @@ set_option linter.unusedVariables false
 
 class Obj (α : Type _) : Type where
 
-instance [Obj α] [Obj β] : Obj (α × β) := ⟨⟩
-instance [∀ x, Obj (E x)] : Obj ((x' : α) → E x') := ⟨⟩
+instance (priority := 10000) [Obj α] [Obj β] : Obj (α × β) := ⟨⟩
+instance (priority := 10000) [∀ x, Obj (E x)] : Obj ((x' : α) → E x') := ⟨⟩
 
 
 @[fun_prop] opaque Con {α β} [Obj α] [Obj β] (f : α → β) : Prop
@@ -101,28 +101,28 @@ structure LinHom (α β) [Obj α] [Obj β] where
 
 infixr:25 " -o " => LinHom
 
-instance : FunLike (α ->> β) α β where
+instance (priority := 10000) : FunLike (α ->> β) α β where
   coe := fun f => f.toFun
   coe_injective' := silentSorry
 
-instance : FunLike (α -o β) α β where
+instance (priority := 10000) : FunLike (α -o β) α β where
   coe := fun f => f.toFun
   coe_injective' := silentSorry
 
 
-instance : HasUncurry (α ->> β) α β :=
+instance (priority := 10000) : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
-instance [Obj β] [HasUncurry β γ δ] : HasUncurry (α ->> β) (α × γ) δ :=
+instance (priority := 10000) [Obj β] [HasUncurry β γ δ] : HasUncurry (α ->> β) (α × γ) δ :=
   ⟨fun f p ↦ (↿(f p.1)) p.2⟩
 
-instance : HasUncurry (α -o β) α β :=
+instance (priority := 10000) : HasUncurry (α -o β) α β :=
   ⟨fun f x => f x⟩
-instance [Obj β] [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
+instance (priority := 10000) [Obj β] [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
   ⟨fun f p ↦ (↿(f p.1)) p.2⟩
 
 
-instance : Obj (α ->> β) := ⟨⟩
-instance : Obj (α -o β) := ⟨⟩
+instance (priority := 10000) : Obj (α ->> β) := ⟨⟩
+instance (priority := 10000) : Obj (α -o β) := ⟨⟩
 
 
 -- morphism theorems i.e. theorems about `FunLike.coe` --
@@ -271,4 +271,3 @@ example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (h
 
 
 -- is working up to here
-

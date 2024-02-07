@@ -80,7 +80,7 @@ class FloorSemiring (α) [OrderedSemiring α] where
   gc_ceil : GaloisConnection ceil (↑)
 #align floor_semiring FloorSemiring
 
-instance : FloorSemiring ℕ where
+instance (priority := 10000) : FloorSemiring ℕ where
   floor := id
   ceil := id
   floor_of_neg ha := (Nat.not_lt_zero _ ha).elim
@@ -595,7 +595,7 @@ class FloorRing (α) [LinearOrderedRing α] where
   gc_ceil_coe : GaloisConnection ceil (↑)
 #align floor_ring FloorRing
 
-instance : FloorRing ℤ where
+instance (priority := 10000) : FloorRing ℤ where
   floor := id
   ceil := id
   gc_coe_floor a b := by

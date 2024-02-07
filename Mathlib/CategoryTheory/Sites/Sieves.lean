@@ -42,13 +42,13 @@ def Presieve (X : C) :=
   ∀ ⦃Y⦄, Set (Y ⟶ X)-- deriving CompleteLattice
 #align category_theory.presieve CategoryTheory.Presieve
 
-instance : CompleteLattice (Presieve X) := by
+instance (priority := 10000) : CompleteLattice (Presieve X) := by
   dsimp [Presieve]
   infer_instance
 
 namespace Presieve
 
-noncomputable instance : Inhabited (Presieve X) :=
+noncomputable instance (priority := 10000) : Inhabited (Presieve X) :=
   ⟨⊤⟩
 
 /-- Given a sieve `S` on `X : C`, its associated diagram `S.diagram` is defined to be
@@ -195,9 +195,9 @@ class hasPullbacks (R : Presieve X) : Prop where
   /-- For all arrows `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
   has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
 
-instance (R : Presieve X) [HasPullbacks C] : R.hasPullbacks := ⟨fun _ _ ↦ inferInstance⟩
+instance (priority := 10000) (R : Presieve X) [HasPullbacks C] : R.hasPullbacks := ⟨fun _ _ ↦ inferInstance⟩
 
-instance {α : Type v₂} {X : α → C} {B : C} (π : (a : α) → X a ⟶ B)
+instance (priority := 10000) {α : Type v₂} {X : α → C} {B : C} (π : (a : α) → X a ⟶ B)
     [(Presieve.ofArrows X π).hasPullbacks] (a b : α) : HasPullback (π a) (π b) :=
   Presieve.hasPullbacks.has_pullbacks (Presieve.ofArrows.mk _) (Presieve.ofArrows.mk _)
 
@@ -270,7 +270,7 @@ attribute [pp_dot] Sieve.arrows
 
 namespace Sieve
 
-instance : CoeFun (Sieve X) fun _ => Presieve X :=
+instance (priority := 10000) : CoeFun (Sieve X) fun _ => Presieve X :=
   ⟨Sieve.arrows⟩
 
 initialize_simps_projections Sieve (arrows → apply)
@@ -330,7 +330,7 @@ protected def inter (S R : Sieve X) : Sieve X
 /-- Sieves on an object `X` form a complete lattice.
 We generate this directly rather than using the galois insertion for nicer definitional properties.
 -/
-instance : CompleteLattice (Sieve X)
+instance (priority := 10000) : CompleteLattice (Sieve X)
     where
   le S R := ∀ ⦃Y⦄ (f : Y ⟶ X), S f → R f
   le_refl S f q := id
@@ -363,7 +363,7 @@ instance : CompleteLattice (Sieve X)
   bot_le _ _ _ := False.elim
 
 /-- The maximal sieve always exists. -/
-instance sieveInhabited : Inhabited (Sieve X) :=
+instance (priority := 10000) sieveInhabited : Inhabited (Sieve X) :=
   ⟨⊤⟩
 #align category_theory.sieve.sieve_inhabited CategoryTheory.Sieve.sieveInhabited
 
@@ -844,7 +844,7 @@ theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
 #align category_theory.sieve.nat_trans_of_le_comm CategoryTheory.Sieve.natTransOfLe_comm
 
 /-- The presheaf induced by a sieve is a subobject of the yoneda embedding. -/
-instance functorInclusion_is_mono : Mono S.functorInclusion :=
+instance (priority := 10000) functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
     ext Y y
     simpa [Subtype.ext_iff_val] using congr_fun (NatTrans.congr_app h Y) y⟩
@@ -875,7 +875,7 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
     exact ⟨⟨_, hf⟩, rfl⟩
 #align category_theory.sieve.sieve_of_subfunctor_functor_inclusion CategoryTheory.Sieve.sieveOfSubfunctor_functorInclusion
 
-instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
+instance (priority := 10000) functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
   ⟨⟨{ app := fun Y a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 #align category_theory.sieve.functor_inclusion_top_is_iso CategoryTheory.Sieve.functorInclusion_top_isIso
 

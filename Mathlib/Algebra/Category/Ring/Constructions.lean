@@ -153,7 +153,7 @@ def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
 set_option linter.uppercaseLean3 false in
 #align CommRing.punit_is_terminal CommRingCat.punitIsTerminal
 
-instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
+instance (priority := 10000) commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
   apply hasStrictTerminalObjects_of_terminal_is_strict (CommRingCat.of PUnit)
   intro X f
   refine ⟨⟨⟨1, rfl, fun _ _ => rfl⟩, by ext; rfl, ?_⟩⟩
@@ -243,7 +243,7 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
 set_option linter.uppercaseLean3 false in
 #align CommRing.equalizer_fork_is_limit CommRingCat.equalizerForkIsLimit
 
-instance : IsLocalRingHom (equalizerFork f g).ι := by
+instance (priority := 10000) : IsLocalRingHom (equalizerFork f g).ι := by
   constructor
   rintro ⟨a, h₁ : _ = _⟩ (⟨⟨x, y, h₃, h₄⟩, rfl : x = _⟩ : IsUnit a)
   have : y ∈ RingHom.eqLocus f g := by
@@ -253,7 +253,7 @@ instance : IsLocalRingHom (equalizerFork f g).ι := by
   rw [isUnit_iff_exists_inv]
   exact ⟨⟨y, this⟩, Subtype.eq h₃⟩
 
-instance equalizer_ι_isLocalRingHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
+instance (priority := 10000) equalizer_ι_isLocalRingHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
     IsLocalRingHom (limit.π F WalkingParallelPair.zero) := by
   have := limMap_π (diagramIsoParallelPair F).hom WalkingParallelPair.zero
   rw [← IsIso.comp_inv_eq] at this
@@ -272,7 +272,7 @@ open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
-instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
+instance (priority := 10000) equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalRingHom (limit.π F (Opposite.op WalkingParallelPair.one)) := by
   have : _ = limit.π F (walkingParallelPairOpEquiv.functor.obj _) :=
     (limit.isoLimitCone_inv_π

@@ -46,12 +46,12 @@ property as is will give us an error because we do not have an instance
 of `Shrinkable MyType` and `SampleableExt MyType`. We can define one as follows:
 
 ```lean
-instance : Shrinkable MyType where
+instance (priority := 10000) : Shrinkable MyType where
   shrink := λ ⟨x,y,h⟩ =>
     let proxy := Shrinkable.shrink (x, y - x)
     proxy.map (λ ⟨⟨fst, snd⟩, ha⟩ => ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
 
-instance : SampleableExt MyType :=
+instance (priority := 10000) : SampleableExt MyType :=
   SampleableExt.mkSelfContained do
     let x ← SampleableExt.interpSample Nat
     let xyDiff ← SampleableExt.interpSample Nat
@@ -122,7 +122,7 @@ structure Configuration where
   deriving Inhabited
 
 open Lean in
-instance : ToExpr Configuration where
+instance (priority := 10000) : ToExpr Configuration where
   toTypeExpr := mkConst `Configuration
   toExpr cfg := mkApp9 (mkConst ``Configuration.mk)
     (toExpr cfg.numInst) (toExpr cfg.maxSize) (toExpr cfg.numRetries) (toExpr cfg.traceDiscarded)
@@ -162,7 +162,7 @@ def toString : TestResult p → String
   | gaveUp n => s!"gave {n} times"
   | failure _ counters _ => s!"failed {counters}"
 
-instance : ToString (TestResult p) := ⟨toString⟩
+instance (priority := 10000) : ToString (TestResult p) := ⟨toString⟩
 
 /-- Applicative combinator proof carrying test results. -/
 def combine {p q : Prop} : PSum Unit (p → q) → PSum Unit p → PSum Unit q
@@ -246,13 +246,13 @@ def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen (TestResult
 /-- A `dbgTrace` with special formatting -/
 def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (λ _ => pure ())
 
-instance andTestable [Testable p] [Testable q] : Testable (p ∧ q) where
+instance (priority := 10000) andTestable [Testable p] [Testable q] : Testable (p ∧ q) where
   run := λ cfg min => do
     let xp ← runProp p cfg min
     let xq ← runProp q cfg min
     pure <| and xp xq
 
-instance orTestable [Testable p] [Testable q] : Testable (p ∨ q) where
+instance (priority := 10000) orTestable [Testable p] [Testable q] : Testable (p ∨ q) where
   run := λ cfg min => do
     let xp ← runProp p cfg min
     -- As a little performance optimization we can just not run the second
@@ -264,14 +264,14 @@ instance orTestable [Testable p] [Testable q] : Testable (p ∨ q) where
       let xq ← runProp q cfg min
       pure <| or xp xq
 
-instance iffTestable [Testable ((p ∧ q) ∨ (¬ p ∧ ¬ q))] : Testable (p ↔ q) where
+instance (priority := 10000) iffTestable [Testable ((p ∧ q) ∨ (¬ p ∧ ¬ q))] : Testable (p ↔ q) where
   run := λ cfg min => do
     let h ← runProp ((p ∧ q) ∨ (¬ p ∧ ¬ q)) cfg min
     pure <| iff iff_iff_and_or_not_and_not h
 
 variable {var : String}
 
-instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀ h, Testable (β h)] :
+instance (priority := 10000) decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀ h, Testable (β h)] :
     Testable (NamedBinder var <| ∀ h, β h) where
   run := λ cfg min => do
     if h : p then
@@ -285,7 +285,7 @@ instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀
     else
       pure <| gaveUp 1
 
-instance forallTypesTestable {f : Type → Prop} [Testable (f Int)] :
+instance (priority := 10000) forallTypesTestable {f : Type → Prop} [Testable (f Int)] :
     Testable (NamedBinder var <| ∀ x, f x) where
   run := λ cfg min => do
     let r ← runProp (f Int) cfg min
@@ -312,7 +312,7 @@ def addShrinks (n : Nat) : TestResult p → TestResult p
   | TestResult.failure p xs m => TestResult.failure p xs (m + n)
   | p => p
 
-instance [Pure m] : Inhabited (OptionT m α) := ⟨(pure none : m (Option α))⟩
+instance (priority := 10000) [Pure m] : Inhabited (OptionT m α) := ⟨(pure none : m (Option α))⟩
 
 /-- Shrink a counter-example `x` by using `Shrinkable.shrink x`, picking the first
 candidate that falsifies a property and recursively shrinking that one.
@@ -352,7 +352,7 @@ def minimize [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg
 
 /-- Test a universal property by creating a sample of the right type and instantiating the
 bound variable with it. -/
-instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] :
+instance (priority := 10000) varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] :
     Testable (NamedBinder var <| ∀ x : α, β x) where
   run := λ cfg min => do
     let x ← SampleableExt.sample
@@ -372,7 +372,7 @@ instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β 
     pure <| addVarInfo var finalX (· <| SampleableExt.interp finalX) finalR
 
 /-- Test a universal property about propositions -/
-instance propVarTestable {β : Prop → Prop} [∀ b : Bool, Testable (β b)] :
+instance (priority := 10000) propVarTestable {β : Prop → Prop} [∀ b : Bool, Testable (β b)] :
   Testable (NamedBinder var <| ∀ p : Prop, β p)
 where
   run := λ cfg min =>
@@ -415,40 +415,40 @@ end Testable
 
 section PrintableProp
 
-instance Eq.printableProp [Repr α] {x y : α} : PrintableProp (x = y) where
+instance (priority := 10000) Eq.printableProp [Repr α] {x y : α} : PrintableProp (x = y) where
   printProp := s!"{repr x} = {repr y}"
 
-instance Ne.printableProp [Repr α] {x y : α} : PrintableProp (x ≠ y) where
+instance (priority := 10000) Ne.printableProp [Repr α] {x y : α} : PrintableProp (x ≠ y) where
   printProp := s!"{repr x} ≠ {repr y}"
 
-instance LE.printableProp [Repr α] [LE α] {x y : α} : PrintableProp (x ≤ y) where
+instance (priority := 10000) LE.printableProp [Repr α] [LE α] {x y : α} : PrintableProp (x ≤ y) where
   printProp := s!"{repr x} ≤ {repr y}"
 
-instance LT.printableProp [Repr α] [LT α] {x y : α} : PrintableProp (x < y) where
+instance (priority := 10000) LT.printableProp [Repr α] [LT α] {x y : α} : PrintableProp (x < y) where
   printProp := s!"{repr x} < {repr y}"
 
-instance And.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∧ y) where
+instance (priority := 10000) And.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∧ y) where
   printProp := s!"{printProp x} ∧ {printProp y}"
 
-instance Or.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∨ y) where
+instance (priority := 10000) Or.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∨ y) where
   printProp := s!"{printProp x} ∨ {printProp y}"
 
-instance Iff.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ↔ y) where
+instance (priority := 10000) Iff.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ↔ y) where
   printProp := s!"{printProp x} ↔ {printProp y}"
 
-instance Imp.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x → y) where
+instance (priority := 10000) Imp.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x → y) where
   printProp := s!"{printProp x} → {printProp y}"
 
-instance Not.printableProp [PrintableProp x] : PrintableProp (¬x) where
+instance (priority := 10000) Not.printableProp [PrintableProp x] : PrintableProp (¬x) where
   printProp := s!"¬{printProp x}"
 
-instance True.printableProp : PrintableProp True where
+instance (priority := 10000) True.printableProp : PrintableProp True where
   printProp := "True"
 
-instance False.printableProp : PrintableProp False where
+instance (priority := 10000) False.printableProp : PrintableProp False where
   printProp := "False"
 
-instance Bool.printableProp {b : Bool} : PrintableProp b where
+instance (priority := 10000) Bool.printableProp {b : Bool} : PrintableProp b where
   printProp := if b then "true" else "false"
 
 end PrintableProp

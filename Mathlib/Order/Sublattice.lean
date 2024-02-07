@@ -38,7 +38,7 @@ variable {L M : Sublattice α} {f : LatticeHom α β} {s t : Set α} {a : α}
 
 initialize_simps_projections Sublattice (carrier → coe)
 
-instance instSetLike : SetLike (Sublattice α) α where
+instance (priority := 10000) instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; congr
 
@@ -75,11 +75,11 @@ lemma copy_eq (L : Sublattice α) (s : Set α) (hs) : L.copy s hs = L := SetLike
 lemma ext : (∀ a, a ∈ L ↔ a ∈ M) → L = M := SetLike.ext
 
 /-- A sublattice of a lattice inherits a supremum. -/
-instance instSupCoe : Sup L where
+instance (priority := 10000) instSupCoe : Sup L where
   sup a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
 
 /-- A sublattice of a lattice inherits an infimum. -/
-instance instInfCoe : Inf L where
+instance (priority := 10000) instInfCoe : Inf L where
   inf a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
 
 @[simp, norm_cast] lemma coe_sup (a b : L) : a ⊔ b = (a : α) ⊔ b := rfl
@@ -90,11 +90,11 @@ instance instInfCoe : Inf L where
   rfl
 
 /-- A sublattice of a lattice inherits a lattice structure. -/
-instance instLatticeCoe (L : Sublattice α) : Lattice L :=
+instance (priority := 10000) instLatticeCoe (L : Sublattice α) : Lattice L :=
   Subtype.coe_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- A sublattice of a distributive lattice inherits a distributive lattice structure. -/
-instance instDistribLatticeCoe {α : Type*} [DistribLattice α] (L : Sublattice α) :
+instance (priority := 10000) instDistribLatticeCoe {α : Type*} [DistribLattice α] (L : Sublattice α) :
     DistribLattice L :=
   Subtype.coe_injective.distribLattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
@@ -124,32 +124,32 @@ lemma inclusion_injective (h : L ≤ M) : Injective <| inclusion h := Set.inclus
 @[simp] lemma subtype_comp_inclusion (h : L ≤ M) : M.subtype.comp (inclusion h) = L.subtype := rfl
 
 /-- The maximum sublattice of a lattice. -/
-instance instTop : Top (Sublattice α) where
+instance (priority := 10000) instTop : Top (Sublattice α) where
   top.carrier := univ
   top.supClosed' := supClosed_univ
   top.infClosed' := infClosed_univ
 
 /-- The empty sublattice of a lattice. -/
-instance instBot : Bot (Sublattice α) where
+instance (priority := 10000) instBot : Bot (Sublattice α) where
   bot.carrier := ∅
   bot.supClosed' := supClosed_empty
   bot.infClosed' := infClosed_empty
 
 /-- The inf of two sublattices is their intersection. -/
-instance instInf : Inf (Sublattice α) where
+instance (priority := 10000) instInf : Inf (Sublattice α) where
   inf L M := { carrier := L ∩ M
                supClosed' := L.supClosed.inter M.supClosed
                infClosed' := L.infClosed.inter M.infClosed }
 
 /-- The inf of sublattices is their intersection. -/
-instance instInfSet : InfSet (Sublattice α) where
+instance (priority := 10000) instInfSet : InfSet (Sublattice α) where
   sInf S := { carrier := ⨅ L ∈ S, L
               supClosed' := supClosed_sInter <| forall_range_iff.2 fun L ↦ supClosed_sInter <|
                 forall_range_iff.2 fun _ ↦ L.supClosed
               infClosed' := infClosed_sInter <| forall_range_iff.2 fun L ↦ infClosed_sInter <|
                 forall_range_iff.2 fun _ ↦ L.infClosed }
 
-instance instInhabited : Inhabited (Sublattice α) := ⟨⊥⟩
+instance (priority := 10000) instInhabited : Inhabited (Sublattice α) := ⟨⊥⟩
 
 /-- The top sublattice is isomorphic to the lattice.
 
@@ -177,7 +177,7 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
   rw [← SetLike.mem_coe]; simp
 
 /-- Sublattices of a lattice form a complete lattice. -/
-instance instCompleteLattice : CompleteLattice (Sublattice α) where
+instance (priority := 10000) instCompleteLattice : CompleteLattice (Sublattice α) where
   bot := ⊥
   bot_le := fun _S _a ↦ False.elim
   top := ⊤
@@ -193,7 +193,7 @@ lemma subsingleton_iff : Subsingleton (Sublattice α) ↔ IsEmpty α :=
   ⟨fun _ ↦ univ_eq_empty_iff.1 <| coe_inj.2 <| Subsingleton.elim ⊤ ⊥,
     fun _ ↦ SetLike.coe_injective.subsingleton⟩
 
-instance [IsEmpty α] : Unique (Sublattice α) where
+instance (priority := 10000) [IsEmpty α] : Unique (Sublattice α) where
   uniq _ := @Subsingleton.elim _ (subsingleton_iff.2 ‹_›) _ _
 
 /-- The preimage of a sublattice along a lattice homomorphism. -/

@@ -32,11 +32,11 @@ structure Embedding (α : Sort*) (β : Sort*) where
 /-- An embedding, a.k.a. a bundled injective function. -/
 infixr:25 " ↪ " => Embedding
 
-instance {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
+instance (priority := 10000) {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
   coe := Embedding.toFun
   coe_injective' f g h := by { cases f; cases g; congr }
 
-instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
+instance (priority := 10000) {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
   injective' := Embedding.inj'
 
 initialize_simps_projections Embedding (toFun → apply)
@@ -49,7 +49,7 @@ theorem exists_surjective_iff :
   ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
     (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
 
-instance : CanLift (α → β) (α ↪ β) (↑) Injective where
+instance (priority := 10000) : CanLift (α → β) (α ↪ β) (↑) Injective where
   prf _ h := ⟨⟨_, h⟩, rfl⟩
 
 end Function
@@ -87,12 +87,12 @@ theorem Equiv.toEmbedding_apply (a : α) : f.toEmbedding a = f a :=
 theorem Equiv.toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ β) → (α ↪ β)) :=
   fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
 
-instance Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
+instance (priority := 10000) Equiv.coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
   ⟨Equiv.toEmbedding⟩
 #align equiv.coe_embedding Equiv.coeEmbedding
 
 @[reducible]
-instance Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
+instance (priority := 10000) Equiv.Perm.coeEmbedding : Coe (Equiv.Perm α) (α ↪ α) :=
   Equiv.coeEmbedding
 #align equiv.perm.coe_embedding Equiv.Perm.coeEmbedding
 
@@ -156,7 +156,7 @@ protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
 #align function.embedding.trans Function.Embedding.trans
 #align function.embedding.trans_apply Function.Embedding.trans_apply
 
-instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
+instance (priority := 10000) : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
 @[simp]
 theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort*} (e : α ≃ β) :

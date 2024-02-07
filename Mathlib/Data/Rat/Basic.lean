@@ -35,7 +35,7 @@ rat, rationals, field, ℚ, numerator, denominator, num, denom
 
 namespace Rat
 
-instance field : Field ℚ :=
+instance (priority := 10000) field : Field ℚ :=
   { mul_inv_cancel := Rat.commGroupWithZero.mul_inv_cancel
     inv_zero := Rat.commGroupWithZero.inv_zero
     ratCast := Rat.cast
@@ -43,6 +43,6 @@ instance field : Field ℚ :=
     qsmul := (· * ·) }
 
 -- Extra instances to short-circuit type class resolution
-instance divisionRing : DivisionRing ℚ := by infer_instance
+instance (priority := 10000) divisionRing : DivisionRing ℚ := by infer_instance
 
 end Rat

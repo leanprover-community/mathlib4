@@ -20,7 +20,7 @@ namespace Nat
 
 namespace WithBot
 
-instance : WellFoundedRelation (WithBot ℕ) where
+instance (priority := 10000) : WellFoundedRelation (WithBot ℕ) where
   rel := (· < ·)
   wf := IsWellFounded.wf
 

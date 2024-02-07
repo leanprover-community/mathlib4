@@ -90,7 +90,7 @@ structure Line (α ι : Type*) where
 namespace Line
 
 -- This lets us treat a line `l : Line α ι` as a function `α → ι → α`.
-instance (α ι) : CoeFun (Line α ι) fun _ => α → ι → α :=
+instance (priority := 10000) (α ι) : CoeFun (Line α ι) fun _ => α → ι → α :=
   ⟨fun l x i => (l.idxFun i).getD x⟩
 
 /-- A line is monochromatic if all its points are the same color. -/
@@ -104,7 +104,7 @@ def diagonal (α ι) [Nonempty ι] : Line α ι where
   proper := ⟨Classical.arbitrary ι, rfl⟩
 #align combinatorics.line.diagonal Combinatorics.Line.diagonal
 
-instance (α ι) [Nonempty ι] : Inhabited (Line α ι) :=
+instance (priority := 10000) (α ι) [Nonempty ι] : Inhabited (Line α ι) :=
   ⟨diagonal α ι⟩
 
 /-- The type of lines that are only one color except possibly at their endpoints. -/
@@ -119,7 +119,7 @@ structure AlmostMono {α ι κ : Type*} (C : (ι → Option α) → κ) where
   has_color : ∀ x : α, C (line (some x)) = color
 #align combinatorics.line.almost_mono Combinatorics.Line.AlmostMono
 
-instance {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
+instance (priority := 10000) {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
     Inhabited (AlmostMono fun _ : ι → Option α => (default : κ)) :=
   ⟨{  line := default
       color := default
@@ -141,7 +141,7 @@ structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
   distinct_colors : (lines.map AlmostMono.color).Nodup
 #align combinatorics.line.color_focused Combinatorics.Line.ColorFocused
 
-instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
+instance (priority := 10000) {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
   refine' ⟨⟨0, fun _ => none, fun h => _, Multiset.nodup_zero⟩⟩
   simp only [Multiset.not_mem_zero, IsEmpty.forall_iff]
 

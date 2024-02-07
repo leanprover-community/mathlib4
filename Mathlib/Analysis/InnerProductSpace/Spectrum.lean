@@ -142,7 +142,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :
 an internal direct sum decomposition of `E`.
 
 Note this takes `hT` as a `Fact` to allow it to be an instance. -/
-noncomputable instance directSumDecomposition [hT : Fact T.IsSymmetric] :
+noncomputable instance (priority := 10000) directSumDecomposition [hT : Fact T.IsSymmetric] :
     DirectSum.Decomposition fun μ : Eigenvalues T => eigenspace T μ :=
   haveI h : ∀ μ : Eigenvalues T, CompleteSpace (eigenspace T μ) := fun μ => by infer_instance
   hT.out.orthogonalFamily_eigenspaces'.decomposition

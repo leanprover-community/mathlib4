@@ -84,22 +84,22 @@ def restrictScalars {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →
   map_comp _ _ := LinearMap.ext fun _ => rfl
 #align category_theory.Module.restrict_scalars ModuleCat.restrictScalars
 
-instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
+instance (priority := 10000) {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     CategoryTheory.Faithful (restrictScalars.{v} f) where
   map_injective h :=
     LinearMap.ext fun x => by simpa only using DFunLike.congr_fun h x
 
-instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
+instance (priority := 10000) {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).PreservesMonomorphisms where
   preserves _ h := by rwa [mono_iff_injective] at h ⊢
 
 -- Porting note: this should be automatic
-instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+instance (priority := 10000) {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
     {M : ModuleCat.{v} S} : Module R <| (restrictScalars f).obj M :=
   inferInstanceAs <| Module R <| RestrictScalars.obj' f M
 
 -- Porting note: this should be automatic
-instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
+instance (priority := 10000) {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
     {M : ModuleCat.{v} S} : Module S <| (restrictScalars f).obj M :=
   inferInstanceAs <| Module S M
 
@@ -203,7 +203,7 @@ abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
 
 end
 
-instance restrictScalarsIsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
+instance (priority := 10000) restrictScalarsIsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
     IsEquivalence (ModuleCat.restrictScalars e.toRingHom) where
   inverse := ModuleCat.restrictScalars e.symm
   unitIso := NatIso.ofComponents fun M ↦ LinearEquiv.toModuleIso'
@@ -320,7 +320,7 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 /-- Given an `R`-module M, consider Hom(S, M) -- the `R`-linear maps between S (as an `R`-module by
  means of restriction of scalars) and M. `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`
  -/
-instance hasSMul : SMul S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M where
+instance (priority := 10000) hasSMul : SMul S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M where
   smul s g :=
     { toFun := fun s' : S => g (s' * s : S)
       map_add' := fun x y : S => by dsimp; rw [add_mul, map_add]
@@ -337,13 +337,13 @@ theorem smul_apply' (s : S) (g : (restrictScalars f).obj ⟨S⟩ →ₗ[R] M) (s
   rfl
 #align category_theory.Module.coextend_scalars.smul_apply' ModuleCat.CoextendScalars.smul_apply'
 
-instance mulAction : MulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
+instance (priority := 10000) mulAction : MulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
   { CoextendScalars.hasSMul f _ with
     one_smul := fun g => LinearMap.ext fun s : S => by simp
     mul_smul := fun (s t : S) g => LinearMap.ext fun x : S => by simp [mul_assoc] }
 #align category_theory.Module.coextend_scalars.mul_action ModuleCat.CoextendScalars.mulAction
 
-instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
+instance (priority := 10000) distribMulAction : DistribMulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
   { CoextendScalars.mulAction f _ with
     smul_add := fun s g h => LinearMap.ext fun _ : S => by simp
     smul_zero := fun s => LinearMap.ext fun _ : S => by simp }
@@ -352,7 +352,7 @@ instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj ⟨S�
 /-- `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`, this action defines an `S`-module structure on
 Hom(S, M).
  -/
-instance isModule : Module S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
+instance (priority := 10000) isModule : Module S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
   { CoextendScalars.distribMulAction f _ with
     add_smul := fun s1 s2 g => LinearMap.ext fun x : S => by simp [mul_add, LinearMap.map_add]
     zero_smul := fun g => LinearMap.ext fun x : S => by simp [LinearMap.map_zero] }
@@ -368,7 +368,7 @@ def obj' : ModuleCat S :=
   ⟨(restrictScalars f).obj ⟨S⟩ →ₗ[R] M⟩
 #align category_theory.Module.coextend_scalars.obj' ModuleCat.CoextendScalars.obj'
 
-instance : CoeFun (obj' f M) fun _ => S → M where coe g := g.toFun
+instance (priority := 10000) : CoeFun (obj' f M) fun _ => S → M where coe g := g.toFun
 
 /-- If `M, M'` are `R`-modules, then any `R`-linear map `g : M ⟶ M'` induces an `S`-linear map
 `(S →ₗ[R] M) ⟶ (S →ₗ[R] M')` defined by `h ↦ g ∘ h`-/
@@ -400,7 +400,7 @@ namespace CoextendScalars
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
 -- Porting note: this coercion doesn't line up well with task below
-instance (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ => S → M :=
+instance (priority := 10000) (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ => S → M :=
   inferInstanceAs <| CoeFun (CoextendScalars.obj' f M) _
 
 theorem smul_apply (M : ModuleCat R) (g : (coextendScalars f).obj M) (s s' : S) :
@@ -566,11 +566,11 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
     rw [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, restrictScalars.map_apply]
 #align category_theory.Module.restrict_coextend_scalars_adj ModuleCat.restrictCoextendScalarsAdj
 
-instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
+instance (priority := 10000) {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     CategoryTheory.IsLeftAdjoint (restrictScalars f) :=
   ⟨_, restrictCoextendScalarsAdj f⟩
 
-instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
+instance (priority := 10000) {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     CategoryTheory.IsRightAdjoint (coextendScalars f) :=
   ⟨_, restrictCoextendScalarsAdj f⟩
 
@@ -802,11 +802,11 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
         congr 1
 #align category_theory.Module.extend_restrict_scalars_adj ModuleCat.extendRestrictScalarsAdj
 
-instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+instance (priority := 10000) {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
     CategoryTheory.IsLeftAdjoint (extendScalars f) :=
   ⟨_, extendRestrictScalarsAdj f⟩
 
-instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
+instance (priority := 10000) {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
     CategoryTheory.IsRightAdjoint (restrictScalars f) :=
   ⟨_, extendRestrictScalarsAdj f⟩
 

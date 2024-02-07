@@ -432,7 +432,7 @@ theorem refl_le_uniformity : 𝓟 idRel ≤ 𝓤 α :=
   (@UniformSpace.toCore α _).refl
 #align refl_le_uniformity refl_le_uniformity
 
-instance uniformity.neBot [Nonempty α] : NeBot (𝓤 α) :=
+instance (priority := 10000) uniformity.neBot [Nonempty α] : NeBot (𝓤 α) :=
   diagonal_nonempty.principal_neBot.mono refl_le_uniformity
 #align uniformity.ne_bot uniformity.neBot
 
@@ -1173,10 +1173,10 @@ open uniformity
 
 section Constructions
 
-instance : PartialOrder (UniformSpace α) :=
+instance (priority := 10000) : PartialOrder (UniformSpace α) :=
   PartialOrder.lift (fun u => 𝓤[u]) fun _ _ => UniformSpace.ext
 
-instance : InfSet (UniformSpace α) :=
+instance (priority := 10000) : InfSet (UniformSpace α) :=
   ⟨fun s =>
     UniformSpace.ofCore
       { uniformity := ⨅ u ∈ s, 𝓤[u]
@@ -1194,10 +1194,10 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
-instance : Top (UniformSpace α) :=
+instance (priority := 10000) : Top (UniformSpace α) :=
   ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
 
-instance : Bot (UniformSpace α) :=
+instance (priority := 10000) : Bot (UniformSpace α) :=
   ⟨{  toTopologicalSpace := ⊥
       uniformity := 𝓟 idRel
       refl := le_rfl
@@ -1207,7 +1207,7 @@ instance : Bot (UniformSpace α) :=
         let _ : TopologicalSpace α := ⊥; have := discreteTopology_bot α
         simp [subset_def, idRel] }⟩
 
-instance : Inf (UniformSpace α) :=
+instance (priority := 10000) : Inf (UniformSpace α) :=
   ⟨fun u₁ u₂ => .ofNhdsEqComap
     { uniformity := u₁.uniformity ⊓ u₂.uniformity
       refl := le_inf u₁.refl u₂.refl
@@ -1217,7 +1217,7 @@ instance : Inf (UniformSpace α) :=
       rw [@nhds_inf _ u₁.toTopologicalSpace u₂.toTopologicalSpace, @nhds_eq_comap_uniformity _ u₁,
         @nhds_eq_comap_uniformity _ u₂, comap_inf]; rfl⟩
 
-instance : CompleteLattice (UniformSpace α) :=
+instance (priority := 10000) : CompleteLattice (UniformSpace α) :=
   { inferInstanceAs (PartialOrder (UniformSpace α)) with
     sup := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
     le_sup_left := fun _ _ => UniformSpace.le_sInf fun _ ⟨h, _⟩ => h
@@ -1249,11 +1249,11 @@ lemma bot_uniformity : 𝓤[(⊥ : UniformSpace α)] = 𝓟 idRel := rfl
 
 lemma top_uniformity : 𝓤[(⊤ : UniformSpace α)] = ⊤ := rfl
 
-instance inhabitedUniformSpace : Inhabited (UniformSpace α) :=
+instance (priority := 10000) inhabitedUniformSpace : Inhabited (UniformSpace α) :=
   ⟨⊥⟩
 #align inhabited_uniform_space inhabitedUniformSpace
 
-instance inhabitedUniformSpaceCore : Inhabited (UniformSpace.Core α) :=
+instance (priority := 10000) inhabitedUniformSpaceCore : Inhabited (UniformSpace.Core α) :=
   ⟨@UniformSpace.toCore _ default⟩
 #align inhabited_uniform_space_core inhabitedUniformSpaceCore
 
@@ -1382,7 +1382,7 @@ theorem UniformContinuous.continuous [UniformSpace α] [UniformSpace β] {f : α
 #align uniform_continuous.continuous UniformContinuous.continuous
 
 /-- Uniform space structure on `ULift α`. -/
-instance ULift.uniformSpace [UniformSpace α] : UniformSpace (ULift α) :=
+instance (priority := 10000) ULift.uniformSpace [UniformSpace α] : UniformSpace (ULift α) :=
   UniformSpace.comap ULift.down ‹_›
 #align ulift.uniform_space ULift.uniformSpace
 
@@ -1442,11 +1442,11 @@ theorem discreteTopology_of_discrete_uniformity [hα : UniformSpace α] (h : uni
   ⟨(UniformSpace.ext h.symm : ⊥ = hα) ▸ rfl⟩
 #align discrete_topology_of_discrete_uniformity discreteTopology_of_discrete_uniformity
 
-instance : UniformSpace Empty := ⊥
-instance : UniformSpace PUnit := ⊥
-instance : UniformSpace Bool := ⊥
-instance : UniformSpace ℕ := ⊥
-instance : UniformSpace ℤ := ⊥
+instance (priority := 10000) : UniformSpace Empty := ⊥
+instance (priority := 10000) : UniformSpace PUnit := ⊥
+instance (priority := 10000) : UniformSpace Bool := ⊥
+instance (priority := 10000) : UniformSpace ℕ := ⊥
+instance (priority := 10000) : UniformSpace ℤ := ⊥
 
 section
 
@@ -1454,8 +1454,8 @@ variable [UniformSpace α]
 
 open Additive Multiplicative
 
-instance : UniformSpace (Additive α) := ‹UniformSpace α›
-instance : UniformSpace (Multiplicative α) := ‹UniformSpace α›
+instance (priority := 10000) : UniformSpace (Additive α) := ‹UniformSpace α›
+instance (priority := 10000) : UniformSpace (Multiplicative α) := ‹UniformSpace α›
 
 theorem uniformContinuous_ofMul : UniformContinuous (ofMul : α → Additive α) :=
   uniformContinuous_id
@@ -1481,7 +1481,7 @@ theorem uniformity_multiplicative : 𝓤 (Multiplicative α) = (𝓤 α).map (Pr
 
 end
 
-instance instUniformSpaceSubtype {p : α → Prop} [t : UniformSpace α] : UniformSpace (Subtype p) :=
+instance (priority := 10000) instUniformSpaceSubtype {p : α → Prop} [t : UniformSpace α] : UniformSpace (Subtype p) :=
   UniformSpace.comap Subtype.val t
 
 theorem uniformity_subtype {p : α → Prop} [UniformSpace α] :
@@ -1532,7 +1532,7 @@ theorem UniformContinuousOn.continuousOn [UniformSpace α] [UniformSpace β] {f 
 #align uniform_continuous_on.continuous_on UniformContinuousOn.continuousOn
 
 @[to_additive]
-instance [UniformSpace α] : UniformSpace αᵐᵒᵖ :=
+instance (priority := 10000) [UniformSpace α] : UniformSpace αᵐᵒᵖ :=
   UniformSpace.comap MulOpposite.unop ‹_›
 
 @[to_additive]
@@ -1569,7 +1569,7 @@ section Prod
 
 /- a similar product space is possible on the function space (uniformity of pointwise convergence),
   but we want to have the uniformity of uniform convergence on function spaces -/
-instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
+instance (priority := 10000) instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
   u₁.comap Prod.fst ⊓ u₂.comap Prod.snd
 
 -- check the above produces no diamond for `simp` and typeclass search
@@ -1823,7 +1823,7 @@ theorem isOpen_of_uniformity_sum_aux {s : Set (Sum α β)}
 #align open_of_uniformity_sum_aux isOpen_of_uniformity_sum_aux
 
 -- We can now define the uniform structure on the disjoint union
-instance Sum.uniformSpace : UniformSpace (Sum α β) where
+instance (priority := 10000) Sum.uniformSpace : UniformSpace (Sum α β) where
   toCore := UniformSpace.Core.sum
   isOpen_uniformity _ := ⟨uniformity_sum_of_isOpen_aux, isOpen_of_uniformity_sum_aux⟩
 #align sum.uniform_space Sum.uniformSpace

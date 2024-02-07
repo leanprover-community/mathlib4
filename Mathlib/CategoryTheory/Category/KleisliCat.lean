@@ -40,14 +40,14 @@ def KleisliCat.mk (m) (α : Type u) : KleisliCat m :=
   α
 #align category_theory.Kleisli.mk CategoryTheory.KleisliCat.mk
 
-instance KleisliCat.categoryStruct {m} [Monad.{u, v} m] :
+instance (priority := 10000) KleisliCat.categoryStruct {m} [Monad.{u, v} m] :
     CategoryStruct (KleisliCat m) where
   Hom α β := α → m β
   id _ x := pure x
   comp f g := f >=> g
 #align category_theory.Kleisli.category_struct CategoryTheory.KleisliCat.categoryStruct
 
-instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := by
+instance (priority := 10000) KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := by
   -- Porting note: was
   -- refine' { id_comp' := _, comp_id' := _, assoc' := _ } <;> intros <;> ext <;> unfold_projs <;>
   --  simp only [(· >=> ·), functor_norm]
@@ -65,10 +65,10 @@ theorem KleisliCat.comp_def {m} [Monad m] (α β γ : KleisliCat m) (xs : α ⟶
   rfl
 #align category_theory.Kleisli.comp_def CategoryTheory.KleisliCat.comp_def
 
-instance : Inhabited (KleisliCat id) :=
+instance (priority := 10000) : Inhabited (KleisliCat id) :=
   ⟨PUnit⟩
 
-instance {α : Type u} [Inhabited α] : Inhabited (KleisliCat.mk id α) :=
+instance (priority := 10000) {α : Type u} [Inhabited α] : Inhabited (KleisliCat.mk id α) :=
   ⟨show α from default⟩
 
 end CategoryTheory

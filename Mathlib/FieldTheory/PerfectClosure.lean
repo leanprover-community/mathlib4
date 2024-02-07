@@ -137,7 +137,7 @@ private theorem mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
       rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← frobenius_mul]
       apply R.intro
 
-instance instMul : Mul (PerfectClosure K p) :=
+instance (priority := 10000) instMul : Mul (PerfectClosure K p) :=
   ⟨Quot.lift
       (fun x : ℕ × K =>
         Quot.lift
@@ -154,7 +154,7 @@ theorem mk_mul_mk (x y : ℕ × K) :
   rfl
 #align perfect_closure.mk_mul_mk PerfectClosure.mk_mul_mk
 
-instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
+instance (priority := 10000) instCommMonoid : CommMonoid (PerfectClosure K p) :=
   { (inferInstance : Mul (PerfectClosure K p)) with
     mul_assoc := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
@@ -182,7 +182,7 @@ theorem one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
   rfl
 #align perfect_closure.one_def PerfectClosure.one_def
 
-instance instInhabited : Inhabited (PerfectClosure K p) :=
+instance (priority := 10000) instInhabited : Inhabited (PerfectClosure K p) :=
   ⟨1⟩
 
 private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
@@ -204,7 +204,7 @@ private theorem add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
       rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← frobenius_add]
       apply R.intro
 
-instance instAdd : Add (PerfectClosure K p) :=
+instance (priority := 10000) instAdd : Add (PerfectClosure K p) :=
   ⟨Quot.lift
       (fun x : ℕ × K =>
         Quot.lift
@@ -221,7 +221,7 @@ theorem mk_add_mk (x y : ℕ × K) :
   rfl
 #align perfect_closure.mk_add_mk PerfectClosure.mk_add_mk
 
-instance instNeg : Neg (PerfectClosure K p) :=
+instance (priority := 10000) instNeg : Neg (PerfectClosure K p) :=
   ⟨Quot.lift (fun x : ℕ × K => mk K p (x.1, -x.2)) fun x y (H : R K p x y) =>
       match x, y, H with
       | _, _, R.intro n x => Quot.sound <| by rw [← frobenius_neg]; apply R.intro⟩
@@ -231,7 +231,7 @@ theorem neg_mk (x : ℕ × K) : -mk K p x = mk K p (x.1, -x.2) :=
   rfl
 #align perfect_closure.neg_mk PerfectClosure.neg_mk
 
-instance instZero : Zero (PerfectClosure K p) :=
+instance (priority := 10000) instZero : Zero (PerfectClosure K p) :=
   ⟨mk K p (0, 0)⟩
 
 theorem zero_def : (0 : PerfectClosure K p) = mk K p (0, 0) :=
@@ -265,7 +265,7 @@ theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
   apply R.intro
 #align perfect_closure.r.sound PerfectClosure.R.sound
 
-instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
+instance (priority := 10000) instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
   { (inferInstance : Add (PerfectClosure K p)),
     (inferInstance : Neg (PerfectClosure K p)) with
     add_assoc := fun e f g =>
@@ -292,7 +292,7 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm] }
 
-instance instCommRing : CommRing (PerfectClosure K p) :=
+instance (priority := 10000) instCommRing : CommRing (PerfectClosure K p) :=
   { instAddCommGroup K p, AddMonoidWithOne.unary,
     (inferInstance : CommMonoid (PerfectClosure K p)) with
     -- Porting note: added `zero_mul`, `mul_zero`
@@ -385,7 +385,7 @@ theorem nat_cast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) =
   rw [nat_cast K p 0, nat_cast K p 0, H]
 #align perfect_closure.nat_cast_eq_iff PerfectClosure.nat_cast_eq_iff
 
-instance instCharP : CharP (PerfectClosure K p) p := by
+instance (priority := 10000) instCharP : CharP (PerfectClosure K p) p := by
   constructor; intro x; rw [← CharP.cast_eq_zero_iff K]
   rw [← Nat.cast_zero, nat_cast_eq_iff, Nat.cast_zero]
 
@@ -419,7 +419,7 @@ theorem of_apply (x : K) : of K p x = mk _ _ (0, x) :=
   rfl
 #align perfect_closure.of_apply PerfectClosure.of_apply
 
-instance instReduced : IsReduced (PerfectClosure K p) where
+instance (priority := 10000) instReduced : IsReduced (PerfectClosure K p) where
   eq_zero x := induction_on x fun x ⟨n, h⟩ ↦ by
     replace h : mk K p x ^ p ^ n = 0 := by
       rw [← Nat.sub_add_cancel ((Nat.lt_pow_self (Fact.out : p.Prime).one_lt n).le),
@@ -428,7 +428,7 @@ instance instReduced : IsReduced (PerfectClosure K p) where
     obtain ⟨m, h⟩ := h
     exact ⟨n + m, by simpa only [iterateFrobenius_def, pow_add, pow_mul] using h⟩
 
-instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
+instance (priority := 10000) instPerfectRing : PerfectRing (PerfectClosure K p) p where
   bijective_frobenius := by
     let f : PerfectClosure K p → PerfectClosure K p := fun e ↦
       liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
@@ -490,7 +490,7 @@ section Field
 
 variable [Field K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
-instance instInv : Inv (PerfectClosure K p) :=
+instance (priority := 10000) instInv : Inv (PerfectClosure K p) :=
   ⟨Quot.lift (fun x : ℕ × K => Quot.mk (R K p) (x.1, x.2⁻¹)) fun x y (H : R K p x y) =>
       match x, y, H with
       | _, _, R.intro n x =>
@@ -505,7 +505,7 @@ theorem mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
   rfl
 
 -- Porting note: added to avoid "unknown free variable" error
-instance instDivisionRing : DivisionRing (PerfectClosure K p) :=
+instance (priority := 10000) instDivisionRing : DivisionRing (PerfectClosure K p) :=
   { (inferInstance : Inv (PerfectClosure K p)) with
     exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
     mul_inv_cancel := fun e =>
@@ -519,11 +519,11 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) :=
         rw [mul_inv_cancel this, (frobenius _ _).iterate_map_one]
     inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero]) }
 
-instance instField : Field (PerfectClosure K p) :=
+instance (priority := 10000) instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),
     (inferInstance : CommRing (PerfectClosure K p)) with }
 
-instance instPerfectField : PerfectField (PerfectClosure K p) := PerfectRing.toPerfectField _ p
+instance (priority := 10000) instPerfectField : PerfectField (PerfectClosure K p) := PerfectRing.toPerfectField _ p
 
 end Field
 

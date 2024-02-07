@@ -83,7 +83,7 @@ instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (s : SignedM
   negPart := inferInstance
 #align measure_theory.signed_measure.have_lebesgue_decomposition_of_sigma_finite MeasureTheory.SignedMeasure.haveLebesgueDecomposition_of_sigmaFinite
 
-instance haveLebesgueDecomposition_neg (s : SignedMeasure α) (μ : Measure α)
+instance (priority := 10000) haveLebesgueDecomposition_neg (s : SignedMeasure α) (μ : Measure α)
     [s.HaveLebesgueDecomposition μ] : (-s).HaveLebesgueDecomposition μ where
   posPart := by
     rw [toJordanDecomposition_neg, JordanDecomposition.neg_posPart]
@@ -93,7 +93,7 @@ instance haveLebesgueDecomposition_neg (s : SignedMeasure α) (μ : Measure α)
     infer_instance
 #align measure_theory.signed_measure.have_lebesgue_decomposition_neg MeasureTheory.SignedMeasure.haveLebesgueDecomposition_neg
 
-instance haveLebesgueDecomposition_smul (s : SignedMeasure α) (μ : Measure α)
+instance (priority := 10000) haveLebesgueDecomposition_smul (s : SignedMeasure α) (μ : Measure α)
     [s.HaveLebesgueDecomposition μ] (r : ℝ≥0) : (r • s).HaveLebesgueDecomposition μ where
   posPart := by
     rw [toJordanDecomposition_smul, JordanDecomposition.smul_posPart]
@@ -103,7 +103,7 @@ instance haveLebesgueDecomposition_smul (s : SignedMeasure α) (μ : Measure α)
     infer_instance
 #align measure_theory.signed_measure.have_lebesgue_decomposition_smul MeasureTheory.SignedMeasure.haveLebesgueDecomposition_smul
 
-instance haveLebesgueDecomposition_smul_real (s : SignedMeasure α) (μ : Measure α)
+instance (priority := 10000) haveLebesgueDecomposition_smul_real (s : SignedMeasure α) (μ : Measure α)
     [s.HaveLebesgueDecomposition μ] (r : ℝ) : (r • s).HaveLebesgueDecomposition μ := by
   by_cases hr : 0 ≤ r
   · lift r to ℝ≥0 using hr

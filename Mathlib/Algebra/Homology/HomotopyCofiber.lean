@@ -47,7 +47,7 @@ indices `i` and `j` such that `c.Rel i j`, the binary biproduct `F.X j ⊞ G.X i
 class HasHomotopyCofiber (φ : F ⟶ G) : Prop where
   hasBinaryBiproduct (i j : ι) (hij : c.Rel i j) : HasBinaryBiproduct (F.X j) (G.X i)
 
-instance [HasBinaryBiproducts C] : HasHomotopyCofiber φ where
+instance (priority := 10000) [HasBinaryBiproducts C] : HasHomotopyCofiber φ where
   hasBinaryBiproduct _ _ _ := inferInstance
 
 variable [HasHomotopyCofiber φ] [DecidableRel c.Rel]

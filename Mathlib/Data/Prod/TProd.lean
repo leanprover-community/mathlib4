@@ -60,7 +60,7 @@ protected def mk : ∀ (l : List ι) (_f : ∀ i, α i), TProd α l
   | i :: is => fun f => (f i, TProd.mk is f)
 #align list.tprod.mk List.TProd.mk
 
-instance [∀ i, Inhabited (α i)] : Inhabited (TProd α l) :=
+instance (priority := 10000) [∀ i, Inhabited (α i)] : Inhabited (TProd α l) :=
   ⟨TProd.mk l default⟩
 
 @[simp]

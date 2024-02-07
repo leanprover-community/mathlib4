@@ -516,7 +516,7 @@ theorem quot_map_mk (β : Type v) (f : List (α × Bool) → List (β × Bool))
 #align free_add_group.quot_map_mk FreeAddGroup.quot_map_mk
 
 @[to_additive]
-instance : One (FreeGroup α) :=
+instance (priority := 10000) : One (FreeGroup α) :=
   ⟨mk []⟩
 
 @[to_additive]
@@ -526,14 +526,14 @@ theorem one_eq_mk : (1 : FreeGroup α) = mk [] :=
 #align free_add_group.zero_eq_mk FreeAddGroup.zero_eq_mk
 
 @[to_additive]
-instance : Inhabited (FreeGroup α) :=
+instance (priority := 10000) : Inhabited (FreeGroup α) :=
   ⟨1⟩
 
 @[to_additive]
-instance [IsEmpty α] : Unique (FreeGroup α) := by unfold FreeGroup; infer_instance
+instance (priority := 10000) [IsEmpty α] : Unique (FreeGroup α) := by unfold FreeGroup; infer_instance
 
 @[to_additive]
-instance : Mul (FreeGroup α) :=
+instance (priority := 10000) : Mul (FreeGroup α) :=
   ⟨fun x y =>
     Quot.liftOn x
       (fun L₁ =>
@@ -596,7 +596,7 @@ theorem invRev_bijective : Function.Bijective (@invRev α) :=
 #align free_add_group.neg_rev_bijective FreeAddGroup.negRev_bijective
 
 @[to_additive]
-instance : Inv (FreeGroup α) :=
+instance (priority := 10000) : Inv (FreeGroup α) :=
   ⟨Quot.map invRev
       (by
         intro a b h
@@ -637,7 +637,7 @@ theorem red_invRev_iff : Red (invRev L₁) (invRev L₂) ↔ Red L₁ L₂ :=
 #align free_add_group.red_neg_rev_iff FreeAddGroup.red_negRev_iff
 
 @[to_additive]
-instance : Group (FreeGroup α) where
+instance (priority := 10000) : Group (FreeGroup α) where
   mul := (· * ·)
   one := 1
   inv := Inv.inv
@@ -1012,7 +1012,7 @@ section Category
 variable {β : Type u}
 
 @[to_additive]
-instance : Monad FreeGroup.{u} where
+instance (priority := 10000) : Monad FreeGroup.{u} where
   pure {_α} := of
   map {_α} {_β} {f} := map f
   bind {_α} {_β} {x} {f} := lift f x
@@ -1077,7 +1077,7 @@ theorem inv_bind (f : α → FreeGroup β) (x : FreeGroup α) : x⁻¹ >>= f = (
 #align free_add_group.neg_bind FreeAddGroup.neg_bind
 
 @[to_additive]
-instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
+instance (priority := 10000) : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
   (id_map := fun x =>
     FreeGroup.induction_on x (map_one id) (fun x => map_pure id x) (fun x ih => by rw [map_inv, ih])
       fun x y ihx ihy => by rw [map_mul, ihx, ihy])
@@ -1348,11 +1348,11 @@ def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // 
 #align free_add_group.reduce.church_rosser FreeAddGroup.reduce.churchRosser
 
 @[to_additive]
-instance : DecidableEq (FreeGroup α) :=
+instance (priority := 10000) : DecidableEq (FreeGroup α) :=
   toWord_injective.decidableEq
 
 -- TODO @[to_additive] doesn't succeed, possibly due to a bug
-instance Red.decidableRel : DecidableRel (@Red α)
+instance (priority := 10000) Red.decidableRel : DecidableRel (@Red α)
   | [], [] => isTrue Red.refl
   | [], _hd2 :: _tl2 => isFalse fun H => List.noConfusion (Red.nil_iff.1 H)
   | (x, b) :: tl, [] =>
@@ -1383,7 +1383,7 @@ theorem Red.enum.complete (H : Red L₁ L₂) : L₂ ∈ Red.enum L₁ :=
   List.mem_filter_of_mem (List.mem_sublists.2 <| Red.sublist H) (decide_eq_true H)
 #align free_group.red.enum.complete FreeGroup.Red.enum.complete
 
-instance : Fintype { L₂ // Red L₁ L₂ } :=
+instance (priority := 10000) : Fintype { L₂ // Red L₁ L₂ } :=
   Fintype.subtype (List.toFinset <| Red.enum L₁) fun _L₂ =>
     ⟨fun H => Red.enum.sound <| List.mem_toFinset.1 H, fun H =>
       List.mem_toFinset.2 <| Red.enum.complete H⟩

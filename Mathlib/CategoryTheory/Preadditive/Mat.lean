@@ -103,7 +103,7 @@ section
 
 attribute [local simp] Hom.id Hom.comp
 
-instance : Category.{v₁} (Mat_ C) where
+instance (priority := 10000) : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
   comp f g := f.comp g
@@ -157,14 +157,14 @@ theorem comp_apply {M N K : Mat_ C} (f : M ⟶ N) (g : N ⟶ K) (i k) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.comp_apply CategoryTheory.Mat_.comp_apply
 
-instance (M N : Mat_ C) : Inhabited (M ⟶ N) :=
+instance (priority := 10000) (M N : Mat_ C) : Inhabited (M ⟶ N) :=
   ⟨fun i j => (0 : M.X i ⟶ N.X j)⟩
 
 end
 
 -- porting note: to ease the construction of the preadditive structure, the `AddCommGroup`
 -- was introduced separately and the lemma `add_apply` was moved upwards
-instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
+instance (priority := 10000) (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
   change AddCommGroup (DMatrix M.ι N.ι _)
   infer_instance
 
@@ -174,7 +174,7 @@ theorem add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.add_apply CategoryTheory.Mat_.add_apply
 
-instance : Preadditive (Mat_ C) where
+instance (priority := 10000) : Preadditive (Mat_ C) where
   add_comp M N K f f' g := by ext; simp [Finset.sum_add_distrib]
   comp_add M N K f g g' := by ext; simp [Finset.sum_add_distrib]
 
@@ -187,7 +187,7 @@ and so the internal indexing of a biproduct may have nothing to do with the exte
 even though the construction we give uses a sigma type.
 See however `isoBiproductEmbedding`.
 -/
-instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
+instance (priority := 10000) hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
   out n :=
     { has_biproduct := fun f =>
         hasBiproduct_of_total
@@ -313,16 +313,16 @@ set_option linter.uppercaseLean3 false in
 
 namespace Embedding
 
-instance : Faithful (embedding C) where
+instance (priority := 10000) : Faithful (embedding C) where
   map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
-instance : Full (embedding C) where preimage f := f PUnit.unit PUnit.unit
+instance (priority := 10000) : Full (embedding C) where preimage f := f PUnit.unit PUnit.unit
 
-instance : Functor.Additive (embedding C) where
+instance (priority := 10000) : Functor.Additive (embedding C) where
 
 end Embedding
 
-instance [Inhabited C] : Inhabited (Mat_ C) :=
+instance (priority := 10000) [Inhabited C] : Inhabited (Mat_ C) :=
   ⟨(embedding C).obj default⟩
 
 open CategoryTheory.Limits
@@ -367,7 +367,7 @@ set_option linter.uppercaseLean3 false in
 variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
 
 -- porting note: added because it was not found automatically
-instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
+instance (priority := 10000) (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     HasBiproduct (fun i => F.obj ((embedding C).obj (M.X i))) :=
   F.hasBiproduct_of_preserves _
 
@@ -445,7 +445,7 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.lift CategoryTheory.Mat_.lift
 
-instance lift_additive (F : C ⥤ D) [Functor.Additive F] : Functor.Additive (lift F) where
+instance (priority := 10000) lift_additive (F : C ⥤ D) [Functor.Additive F] : Functor.Additive (lift F) where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.lift_additive CategoryTheory.Mat_.lift_additive
 
@@ -548,16 +548,16 @@ def Mat (_ : Type u) :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat CategoryTheory.Mat
 
-instance (R : Type u) : Inhabited (Mat R) := by
+instance (priority := 10000) (R : Type u) : Inhabited (Mat R) := by
   dsimp [Mat]
   infer_instance
 
-instance (R : Type u) : CoeSort (Mat R) (Type u) :=
+instance (priority := 10000) (R : Type u) : CoeSort (Mat R) (Type u) :=
   Bundled.coeSort
 
 open Matrix
 
-instance (R : Type u) [Semiring R] : Category (Mat R) where
+instance (priority := 10000) (R : Type u) [Semiring R] : Category (Mat R) where
   Hom X Y := Matrix X Y R
   id X := (1 : Matrix X X R)
   comp {X Y Z} f g := (show Matrix X Y R from f) * (show Matrix Y Z R from g)
@@ -611,7 +611,7 @@ theorem comp_apply {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) (i k) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.comp_apply CategoryTheory.Mat.comp_apply
 
-instance (M N : Mat R) : Inhabited (M ⟶ N) :=
+instance (priority := 10000) (M N : Mat R) : Inhabited (M ⟶ N) :=
   ⟨fun (_ : M) (_ : N) => (0 : R)⟩
 
 end
@@ -637,16 +637,16 @@ def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj_inverse CategoryTheory.Mat.equivalenceSingleObjInverse
 
-instance : Faithful (equivalenceSingleObjInverse R) where
+instance (priority := 10000) : Faithful (equivalenceSingleObjInverse R) where
   map_injective w := by
     ext
     apply_fun MulOpposite.unop using MulOpposite.unop_injective
     exact congr_fun (congr_fun w _) _
 
-instance : Full (equivalenceSingleObjInverse R) where
+instance (priority := 10000) : Full (equivalenceSingleObjInverse R) where
   preimage f i j := MulOpposite.op (f i j)
 
-instance : EssSurj (equivalenceSingleObjInverse R) where
+instance (priority := 10000) : EssSurj (equivalenceSingleObjInverse R) where
   mem_essImage X :=
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
@@ -660,7 +660,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj CategoryTheory.Mat.equivalenceSingleObj
 
 -- porting note: added as this was not found automatically
-instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
+instance (priority := 10000) (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
   change AddCommGroup (Matrix X Y R)
   infer_instance
 
@@ -673,7 +673,7 @@ theorem add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g 
 
 attribute [local simp] add_mul mul_add Finset.sum_add_distrib
 
-instance : Preadditive (Mat R) where
+instance (priority := 10000) : Preadditive (Mat R) where
 
 -- TODO show `Mat R` has biproducts, and that `biprod.map` "is" forming a block diagonal matrix.
 end Mat

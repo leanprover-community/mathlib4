@@ -106,7 +106,7 @@ def toNonUnitalAlgHom {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
   { (f : A →ₙ+* B) with
     map_smul' := map_smul f }
 
-instance {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+instance (priority := 10000) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
     [FunLike F A B] [NonUnitalAlgHomClass F R A B] :
     CoeTC F (A →ₙₐ[R] B) :=
@@ -129,7 +129,7 @@ variable [NonUnitalNonAssocSemiring C] [DistribMulAction R C]
 -- instance : CoeFun (A →ₙₐ[R] B) fun _ => A → B :=
 --   ⟨toFun⟩
 
-instance : FunLike (A →ₙₐ[R] B) A B where
+instance (priority := 10000) : FunLike (A →ₙₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
@@ -154,12 +154,12 @@ theorem coe_injective : @Function.Injective (A →ₙₐ[R] B) (A → B) (↑) :
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 #align non_unital_alg_hom.coe_injective NonUnitalAlgHom.coe_injective
 
-instance : FunLike (A →ₙₐ[R] B) A B
+instance (priority := 10000) : FunLike (A →ₙₐ[R] B) A B
     where
   coe f := f.toFun
   coe_injective' := coe_injective
 
-instance : NonUnitalAlgHomClass (A →ₙₐ[R] B) R A B
+instance (priority := 10000) : NonUnitalAlgHomClass (A →ₙₐ[R] B) R A B
     where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
@@ -191,10 +191,10 @@ theorem mk_coe (f : A →ₙₐ[R] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁�
   rfl
 #align non_unital_alg_hom.mk_coe NonUnitalAlgHom.mk_coe
 
-instance : CoeOut (A →ₙₐ[R] B) (A →+[R] B) :=
+instance (priority := 10000) : CoeOut (A →ₙₐ[R] B) (A →+[R] B) :=
   ⟨toDistribMulActionHom⟩
 
-instance : CoeOut (A →ₙₐ[R] B) (A →ₙ* B) :=
+instance (priority := 10000) : CoeOut (A →ₙₐ[R] B) (A →ₙ* B) :=
   ⟨toMulHom⟩
 
 @[simp]
@@ -271,10 +271,10 @@ protected def id (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
 theorem coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
   rfl
 
-instance : Zero (A →ₙₐ[R] B) :=
+instance (priority := 10000) : Zero (A →ₙₐ[R] B) :=
   ⟨{ (0 : A →+[R] B) with map_mul' := by simp }⟩
 
-instance : One (A →ₙₐ[R] A) :=
+instance (priority := 10000) : One (A →ₙₐ[R] A) :=
   ⟨NonUnitalAlgHom.id R A⟩
 
 @[simp]
@@ -295,7 +295,7 @@ theorem one_apply (a : A) : (1 : A →ₙₐ[R] A) a = a :=
   rfl
 #align non_unital_alg_hom.one_apply NonUnitalAlgHom.one_apply
 
-instance : Inhabited (A →ₙₐ[R] B) :=
+instance (priority := 10000) : Inhabited (A →ₙₐ[R] B) :=
   ⟨0⟩
 
 /-- The composition of morphisms is a morphism. -/
@@ -452,7 +452,7 @@ def toNonUnitalAlgHom (f : A →ₐ[R] B) : A →ₙₐ[R] B :=
   { f with map_smul' := map_smul f }
 #align alg_hom.to_non_unital_alg_hom AlgHom.toNonUnitalAlgHom
 
-instance NonUnitalAlgHom.hasCoe : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) :=
+instance (priority := 10000) NonUnitalAlgHom.hasCoe : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) :=
   ⟨toNonUnitalAlgHom⟩
 #align alg_hom.non_unital_alg_hom.has_coe AlgHom.NonUnitalAlgHom.hasCoe
 

@@ -46,7 +46,7 @@ structure Stonean where
 namespace CompHaus
 
 /-- `Projective` implies `ExtremallyDisconnected`. -/
-instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
+instance (priority := 10000) (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
   apply CompactT2.Projective.extremallyDisconnected
   intro A B _ _ _ _ _ _ f g hf hg hsurj
   have : CompactSpace (TopCat.of A) := by assumption
@@ -77,7 +77,7 @@ end CompHaus
 namespace Stonean
 
 /-- Stonean spaces form a large category. -/
-instance : LargeCategory Stonean.{u} :=
+instance (priority := 10000) : LargeCategory Stonean.{u} :=
   show Category (InducedCategory CompHaus (·.compHaus)) from inferInstance
 
 /-- The (forgetful) functor from Stonean spaces to compact Hausdorff spaces. -/
@@ -93,32 +93,32 @@ def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
-instance : Full toCompHaus where
+instance (priority := 10000) : Full toCompHaus where
   preimage := fun f => f
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
-instance : Faithful toCompHaus := {}
+instance (priority := 10000) : Faithful toCompHaus := {}
 
 /-- Stonean spaces are a concrete category. -/
-instance : ConcreteCategory Stonean where
+instance (priority := 10000) : ConcreteCategory Stonean where
   forget := toCompHaus ⋙ forget _
 
-instance : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort _
-instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X Y := ConcreteCategory.instFunLike
+instance (priority := 10000) : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort _
+instance (priority := 10000) {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X Y := ConcreteCategory.instFunLike
 
 /-- Stonean spaces are topological spaces. -/
-instance instTopologicalSpace (X : Stonean.{u}) : TopologicalSpace X :=
+instance (priority := 10000) instTopologicalSpace (X : Stonean.{u}) : TopologicalSpace X :=
   show TopologicalSpace X.compHaus from inferInstance
 
 /-- Stonean spaces are compact. -/
-instance (X : Stonean.{u}) : CompactSpace X :=
+instance (priority := 10000) (X : Stonean.{u}) : CompactSpace X :=
   show CompactSpace X.compHaus from inferInstance
 
 /-- Stonean spaces are Hausdorff. -/
-instance (X : Stonean.{u}) : T2Space X :=
+instance (priority := 10000) (X : Stonean.{u}) : T2Space X :=
   show T2Space X.compHaus from inferInstance
 
-instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
+instance (priority := 10000) (X : Stonean.{u}) : ExtremallyDisconnected X :=
   X.2
 
 /-- The functor from Stonean spaces to profinite spaces. -/
@@ -130,11 +130,11 @@ def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
   map f := f
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
-instance : Full toProfinite where
+instance (priority := 10000) : Full toProfinite where
   preimage f := f
 
 /-- The functor from Stonean spaces to profinite spaces is faithful. -/
-instance : Faithful toProfinite := {}
+instance (priority := 10000) : Faithful toProfinite := {}
 
 /-- The functor from Stonean spaces to compact Hausdorff spaces
     factors through profinite spaces. -/
@@ -209,16 +209,16 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   rw [if_pos hyV] at H
   exact one_ne_zero H
 
-instance {X Y : Stonean} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
+instance (priority := 10000) {X Y : Stonean} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
   rw [CompHaus.epi_iff_surjective]
   rwa [Stonean.epi_iff_surjective] at *
 
-instance {X Y : Stonean} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
+instance (priority := 10000) {X Y : Stonean} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
   rw [Stonean.epi_iff_surjective]
   rwa [CompHaus.epi_iff_surjective] at *
 
 /-- Every Stonean space is projective in `CompHaus` -/
-instance (X : Stonean) : Projective X.compHaus where
+instance (priority := 10000) (X : Stonean) : Projective X.compHaus where
   factors := by
     intro B C φ f _
     haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
@@ -229,7 +229,7 @@ instance (X : Stonean) : Projective X.compHaus where
     exact congr_fun h.right _
 
 /-- Every Stonean space is projective in `Profinite` -/
-instance (X : Stonean) : Projective (toProfinite.obj X) where
+instance (priority := 10000) (X : Stonean) : Projective (toProfinite.obj X) where
   factors := by
     intro B C φ f _
     haveI : ExtremallyDisconnected (toProfinite.obj X) := X.extrDisc
@@ -240,7 +240,7 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
     exact congr_fun h.right _
 
 /-- Every Stonean space is projective in `Stonean`. -/
-instance (X : Stonean) : Projective X where
+instance (priority := 10000) (X : Stonean) : Projective X where
   factors := by
     intro B C φ f _
     haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
@@ -278,7 +278,7 @@ def presentation.π (X : CompHaus) : X.presentation.compHaus ⟶ X :=
 
 /-- The morphism from `presentation X` to `X` is an epimorphism. -/
 noncomputable
-instance presentation.epi_π (X : CompHaus) : Epi (π X) :=
+instance (priority := 10000) presentation.epi_π (X : CompHaus) : Epi (π X) :=
   (projectivePresentation X).epi
 
 /--
@@ -332,7 +332,7 @@ def presentation.π (X : Profinite) : Stonean.toProfinite.obj X.presentation ⟶
 
 /-- The morphism from `presentation X` to `X` is an epimorphism. -/
 noncomputable
-instance presentation.epi_π (X : Profinite) : Epi (π X) := by
+instance (priority := 10000) presentation.epi_π (X : Profinite) : Epi (π X) := by
   have := X.toCompHaus.projectivePresentation.epi
   rw [CompHaus.epi_iff_surjective] at this
   rw [epi_iff_surjective]

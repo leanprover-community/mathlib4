@@ -44,7 +44,7 @@ def SimplicialObject :=
 #align category_theory.simplicial_object CategoryTheory.SimplicialObject
 
 @[simps!]
-instance : Category (SimplicialObject C) := by
+instance (priority := 10000) : Category (SimplicialObject C) := by
   dsimp only [SimplicialObject]
   infer_instance
 
@@ -58,20 +58,20 @@ scoped[Simplicial]
 
 open Simplicial
 
-instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
+instance (priority := 10000) {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (SimplicialObject C) := by
   dsimp [SimplicialObject]
   infer_instance
 
-instance [HasLimits C] : HasLimits (SimplicialObject C) :=
+instance (priority := 10000) [HasLimits C] : HasLimits (SimplicialObject C) :=
   ⟨inferInstance⟩
 
-instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
+instance (priority := 10000) {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
     HasColimitsOfShape J (SimplicialObject C) := by
   dsimp [SimplicialObject]
   infer_instance
 
-instance [HasColimits C] : HasColimits (SimplicialObject C) :=
+instance (priority := 10000) [HasColimits C] : HasColimits (SimplicialObject C) :=
   ⟨inferInstance⟩
 
 variable {C}
@@ -233,7 +233,7 @@ def Truncated (n : ℕ) :=
   (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
 #align category_theory.simplicial_object.truncated CategoryTheory.SimplicialObject.Truncated
 
-instance : Category (Truncated C n) := by
+instance (priority := 10000) : Category (Truncated C n) := by
   dsimp [Truncated]
   infer_instance
 
@@ -241,20 +241,20 @@ variable {C}
 
 namespace Truncated
 
-instance {n} {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
+instance (priority := 10000) {n} {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (SimplicialObject.Truncated C n) := by
   dsimp [Truncated]
   infer_instance
 
-instance {n} [HasLimits C] : HasLimits (SimplicialObject.Truncated C n) :=
+instance (priority := 10000) {n} [HasLimits C] : HasLimits (SimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
-instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
+instance (priority := 10000) {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
     HasColimitsOfShape J (SimplicialObject.Truncated C n) := by
   dsimp [Truncated]
   infer_instance
 
-instance {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) :=
+instance (priority := 10000) {n} [HasColimits C] : HasColimits (SimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
 variable (C)
@@ -292,7 +292,7 @@ def Augmented :=
 #align category_theory.simplicial_object.augmented CategoryTheory.SimplicialObject.Augmented
 
 @[simps!]
-instance : Category (Augmented C) := by
+instance (priority := 10000) : Category (Augmented C) := by
   dsimp only [Augmented]
   infer_instance
 
@@ -415,7 +415,7 @@ def CosimplicialObject :=
 #align category_theory.cosimplicial_object CategoryTheory.CosimplicialObject
 
 @[simps!]
-instance : Category (CosimplicialObject C) := by
+instance (priority := 10000) : Category (CosimplicialObject C) := by
   dsimp only [CosimplicialObject]
   infer_instance
 
@@ -428,20 +428,20 @@ scoped[Simplicial]
   notation:1000 X " _[" n "]" =>
     (X : CategoryTheory.CosimplicialObject _).obj (SimplexCategory.mk n)
 
-instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
+instance (priority := 10000) {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (CosimplicialObject C) := by
   dsimp [CosimplicialObject]
   infer_instance
 
-instance [HasLimits C] : HasLimits (CosimplicialObject C) :=
+instance (priority := 10000) [HasLimits C] : HasLimits (CosimplicialObject C) :=
   ⟨inferInstance⟩
 
-instance {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
+instance (priority := 10000) {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
     HasColimitsOfShape J (CosimplicialObject C) := by
   dsimp [CosimplicialObject]
   infer_instance
 
-instance [HasColimits C] : HasColimits (CosimplicialObject C) :=
+instance (priority := 10000) [HasColimits C] : HasColimits (CosimplicialObject C) :=
   ⟨inferInstance⟩
 
 variable {C}
@@ -605,7 +605,7 @@ def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
 #align category_theory.cosimplicial_object.truncated CategoryTheory.CosimplicialObject.Truncated
 
-instance : Category (Truncated C n) := by
+instance (priority := 10000) : Category (Truncated C n) := by
   dsimp [Truncated]
   infer_instance
 
@@ -613,20 +613,20 @@ variable {C}
 
 namespace Truncated
 
-instance {n} {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
+instance (priority := 10000) {n} {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (CosimplicialObject.Truncated C n) := by
   dsimp [Truncated]
   infer_instance
 
-instance {n} [HasLimits C] : HasLimits (CosimplicialObject.Truncated C n) :=
+instance (priority := 10000) {n} [HasLimits C] : HasLimits (CosimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
-instance {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
+instance (priority := 10000) {n} {J : Type v} [SmallCategory J] [HasColimitsOfShape J C] :
     HasColimitsOfShape J (CosimplicialObject.Truncated C n) := by
   dsimp [Truncated]
   infer_instance
 
-instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
+instance (priority := 10000) {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
   ⟨inferInstance⟩
 
 variable (C)
@@ -664,7 +664,7 @@ def Augmented :=
 #align category_theory.cosimplicial_object.augmented CategoryTheory.CosimplicialObject.Augmented
 
 @[simps!]
-instance : Category (Augmented C) := by
+instance (priority := 10000) : Category (Augmented C) := by
   dsimp only [Augmented]
   infer_instance
 

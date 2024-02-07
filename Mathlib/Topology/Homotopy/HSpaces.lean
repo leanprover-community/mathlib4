@@ -76,7 +76,7 @@ scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 -- porting note: opening `HSpaces` so that the above notation works
 open HSpaces
 
-instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
+instance (priority := 10000) HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
   hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by
     -- porting note: was `continuity`
@@ -277,7 +277,7 @@ theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
 (resp. `hmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`
 (resp. `Path.Homotopy.transRefl`).
 -/
-instance (x : X) : HSpace (Path x x) where
+instance (priority := 10000) (x : X) : HSpace (Path x x) where
   hmul := ⟨fun ρ => ρ.1.trans ρ.2, continuous_trans⟩
   e := refl x
   hmul_e_e := refl_trans_refl

@@ -330,7 +330,7 @@ theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
 alias Basis.exists_op_norm_le :=
   Basis.exists_opNorm_le -- deprecated on 2024-02-02
 
-instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
+instance (priority := 10000) [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
   set d := FiniteDimensional.finrank 𝕜 E
   suffices
@@ -623,7 +623,7 @@ instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAdd
 
 /-- A submodule of a locally compact space over a complete field is also locally compact (and even
 proper). -/
-instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+instance (priority := 10000) {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] (S : Submodule 𝕜 E) :
     ProperSpace S := by
   nontriviality E

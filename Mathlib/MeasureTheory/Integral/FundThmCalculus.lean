@@ -204,12 +204,12 @@ namespace FTCFilter
 
 set_option linter.uppercaseLean3 false -- `FTC` in every name
 
-instance pure (a : ℝ) : FTCFilter a (pure a) ⊥ where
+instance (priority := 10000) pure (a : ℝ) : FTCFilter a (pure a) ⊥ where
   pure_le := le_rfl
   le_nhds := bot_le
 #align interval_integral.FTC_filter.pure intervalIntegral.FTCFilter.pure
 
-instance nhdsWithinSingleton (a : ℝ) : FTCFilter a (𝓝[{a}] a) ⊥ := by
+instance (priority := 10000) nhdsWithinSingleton (a : ℝ) : FTCFilter a (𝓝[{a}] a) ⊥ := by
   rw [nhdsWithin, principal_singleton, inf_eq_right.2 (pure_le_nhds a)]; infer_instance
 #align interval_integral.FTC_filter.nhds_within_singleton intervalIntegral.FTCFilter.nhdsWithinSingleton
 
@@ -218,31 +218,31 @@ theorem finiteAt_inner {a : ℝ} (l : Filter ℝ) {l'} [h : FTCFilter a l l'] {�
   (μ.finiteAt_nhds a).filter_mono h.le_nhds
 #align interval_integral.FTC_filter.finite_at_inner intervalIntegral.FTCFilter.finiteAt_inner
 
-instance nhds (a : ℝ) : FTCFilter a (𝓝 a) (𝓝 a) where
+instance (priority := 10000) nhds (a : ℝ) : FTCFilter a (𝓝 a) (𝓝 a) where
   pure_le := pure_le_nhds a
   le_nhds := le_rfl
 #align interval_integral.FTC_filter.nhds intervalIntegral.FTCFilter.nhds
 
-instance nhdsUniv (a : ℝ) : FTCFilter a (𝓝[univ] a) (𝓝 a) := by rw [nhdsWithin_univ]; infer_instance
+instance (priority := 10000) nhdsUniv (a : ℝ) : FTCFilter a (𝓝[univ] a) (𝓝 a) := by rw [nhdsWithin_univ]; infer_instance
 #align interval_integral.FTC_filter.nhds_univ intervalIntegral.FTCFilter.nhdsUniv
 
-instance nhdsLeft (a : ℝ) : FTCFilter a (𝓝[≤] a) (𝓝[≤] a) where
+instance (priority := 10000) nhdsLeft (a : ℝ) : FTCFilter a (𝓝[≤] a) (𝓝[≤] a) where
   pure_le := pure_le_nhdsWithin right_mem_Iic
   le_nhds := inf_le_left
 #align interval_integral.FTC_filter.nhds_left intervalIntegral.FTCFilter.nhdsLeft
 
-instance nhdsRight (a : ℝ) : FTCFilter a (𝓝[≥] a) (𝓝[>] a) where
+instance (priority := 10000) nhdsRight (a : ℝ) : FTCFilter a (𝓝[≥] a) (𝓝[>] a) where
   pure_le := pure_le_nhdsWithin left_mem_Ici
   le_nhds := inf_le_left
 #align interval_integral.FTC_filter.nhds_right intervalIntegral.FTCFilter.nhdsRight
 
-instance nhdsIcc {x a b : ℝ} [h : Fact (x ∈ Icc a b)] :
+instance (priority := 10000) nhdsIcc {x a b : ℝ} [h : Fact (x ∈ Icc a b)] :
     FTCFilter x (𝓝[Icc a b] x) (𝓝[Icc a b] x) where
   pure_le := pure_le_nhdsWithin h.out
   le_nhds := inf_le_left
 #align interval_integral.FTC_filter.nhds_Icc intervalIntegral.FTCFilter.nhdsIcc
 
-instance nhdsUIcc {x a b : ℝ} [h : Fact (x ∈ [[a, b]])] :
+instance (priority := 10000) nhdsUIcc {x a b : ℝ} [h : Fact (x ∈ [[a, b]])] :
     FTCFilter x (𝓝[[[a, b]]] x) (𝓝[[[a, b]]] x) :=
   .nhdsIcc (h := h)
 #align interval_integral.FTC_filter.nhds_uIcc intervalIntegral.FTCFilter.nhdsUIcc

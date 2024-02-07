@@ -26,7 +26,7 @@ variable {α : Type u} {β : Type v}
 
 namespace Perm
 
-instance permGroup : Group (Perm α) where
+instance (priority := 10000) permGroup : Group (Perm α) where
   mul f g := Equiv.trans g f
   one := Equiv.refl α
   inv := Equiv.symm

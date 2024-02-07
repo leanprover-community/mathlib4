@@ -20,7 +20,7 @@ open Finset
 
 variable {α ι ι' : Type*}
 
-instance [DecidableEq α] {r : α → α → Prop} [DecidableRel r] {s : Finset α} :
+instance (priority := 10000) [DecidableEq α] {r : α → α → Prop} [DecidableRel r] {s : Finset α} :
     Decidable ((s : Set α).Pairwise r) :=
   decidable_of_iff' (∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) Iff.rfl
 

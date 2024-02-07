@@ -24,7 +24,7 @@ theorem ext {α : Type u} {a b : Thunk α} (eq : a.get = b.get) : a = b := by
   congr
   exact funext fun _ ↦ eq
 
-instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
+instance (priority := 10000) {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
   intro a b
   have : a = b ↔ a.get = b.get := ⟨by intro x; rw [x], by intro; ext; assumption⟩
   rw [this]
@@ -39,7 +39,7 @@ def prod (a : Thunk α) (b : Thunk β) : Thunk (α × β) := Thunk.mk fun _ => (
 /-- The sum of two thunks. -/
 def add [Add α] (a b : Thunk α) : Thunk α := Thunk.mk fun _ => a.get + b.get
 
-instance [Add α] : Add (Thunk α) := ⟨add⟩
+instance (priority := 10000) [Add α] : Add (Thunk α) := ⟨add⟩
 
 @[simp] theorem add_get [Add α] {a b : Thunk α} : (a + b).get = a.get + b.get := rfl
 

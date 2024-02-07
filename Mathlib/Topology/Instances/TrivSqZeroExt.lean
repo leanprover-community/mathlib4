@@ -38,10 +38,10 @@ section Topology
 
 variable [TopologicalSpace R] [TopologicalSpace M]
 
-instance instTopologicalSpace : TopologicalSpace (tsze R M) :=
+instance (priority := 10000) instTopologicalSpace : TopologicalSpace (tsze R M) :=
   TopologicalSpace.induced fst ‹_› ⊓ TopologicalSpace.induced snd ‹_›
 
-instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
+instance (priority := 10000) [T2Space R] [T2Space M] : T2Space (tsze R M) :=
   Prod.t2Space
 
 theorem nhds_def (x : tsze R M) : nhds x = (nhds x.fst).prod (nhds x.snd) := by
@@ -111,17 +111,17 @@ def inrCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : M →L[R] tsze R M 
 
 variable {R M}
 
-instance [Add R] [Add M] [ContinuousAdd R] [ContinuousAdd M] : ContinuousAdd (tsze R M) :=
+instance (priority := 10000) [Add R] [Add M] [ContinuousAdd R] [ContinuousAdd M] : ContinuousAdd (tsze R M) :=
   Prod.continuousAdd
 
-instance [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousMul R] [ContinuousSMul R M]
+instance (priority := 10000) [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] [ContinuousMul R] [ContinuousSMul R M]
     [ContinuousSMul Rᵐᵒᵖ M] [ContinuousAdd M] : ContinuousMul (tsze R M) :=
   ⟨((continuous_fst.comp continuous_fst).mul (continuous_fst.comp continuous_snd)).prod_mk <|
       ((continuous_fst.comp continuous_fst).smul (continuous_snd.comp continuous_snd)).add
         ((MulOpposite.continuous_op.comp <| continuous_fst.comp <| continuous_snd).smul
           (continuous_snd.comp continuous_fst))⟩
 
-instance [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (tsze R M) :=
+instance (priority := 10000) [Neg R] [Neg M] [ContinuousNeg R] [ContinuousNeg M] : ContinuousNeg (tsze R M) :=
   Prod.continuousNeg
 
 /-- This is not an instance due to complaints by the `fails_quickly` linter. At any rate, we only
@@ -131,15 +131,15 @@ theorem topologicalSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module 
     TopologicalSemiring (tsze R M) := { }
 #align triv_sq_zero_ext.topological_semiring TrivSqZeroExt.topologicalSemiring
 
-instance [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [TopologicalRing R]
+instance (priority := 10000) [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [TopologicalRing R]
     [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M] :
     TopologicalRing (tsze R M) where
 
-instance [SMul S R] [SMul S M] [ContinuousConstSMul S R] [ContinuousConstSMul S M] :
+instance (priority := 10000) [SMul S R] [SMul S M] [ContinuousConstSMul S R] [ContinuousConstSMul S M] :
     ContinuousConstSMul S (tsze R M) :=
   Prod.continuousConstSMul
 
-instance [TopologicalSpace S] [SMul S R] [SMul S M] [ContinuousSMul S R] [ContinuousSMul S M] :
+instance (priority := 10000) [TopologicalSpace S] [SMul S R] [SMul S M] [ContinuousSMul S R] [ContinuousSMul S M] :
     ContinuousSMul S (tsze R M) :=
   Prod.continuousSMul
 
@@ -170,14 +170,14 @@ end Topology
 section Uniformity
 variable [UniformSpace R] [UniformSpace M]
 
-instance instUniformSpace : UniformSpace (tsze R M) where
+instance (priority := 10000) instUniformSpace : UniformSpace (tsze R M) where
   toTopologicalSpace := instTopologicalSpace
   __ := instUniformSpaceProd
 
-instance [CompleteSpace R] [CompleteSpace M] : CompleteSpace (tsze R M) :=
+instance (priority := 10000) [CompleteSpace R] [CompleteSpace M] : CompleteSpace (tsze R M) :=
   inferInstanceAs <| CompleteSpace (R × M)
 
-instance [AddGroup R] [AddGroup M] [UniformAddGroup R] [UniformAddGroup M] :
+instance (priority := 10000) [AddGroup R] [AddGroup M] [UniformAddGroup R] [UniformAddGroup M] :
     UniformAddGroup (tsze R M) :=
   inferInstanceAs <| UniformAddGroup (R × M)
 

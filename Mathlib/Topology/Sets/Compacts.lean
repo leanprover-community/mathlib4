@@ -40,7 +40,7 @@ structure Compacts (α : Type*) [TopologicalSpace α] where
 
 namespace Compacts
 
-instance : SetLike (Compacts α) α where
+instance (priority := 10000) : SetLike (Compacts α) α where
   coe := Compacts.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
@@ -53,10 +53,10 @@ protected theorem isCompact (s : Compacts α) : IsCompact (s : Set α) :=
   s.isCompact'
 #align topological_space.compacts.is_compact TopologicalSpace.Compacts.isCompact
 
-instance (K : Compacts α) : CompactSpace K :=
+instance (priority := 10000) (K : Compacts α) : CompactSpace K :=
   isCompact_iff_compactSpace.1 K.isCompact
 
-instance : CanLift (Set α) (Compacts α) (↑) IsCompact where prf K hK := ⟨⟨K, hK⟩, rfl⟩
+instance (priority := 10000) : CanLift (Set α) (Compacts α) (↑) IsCompact where prf K hK := ⟨⟨K, hK⟩, rfl⟩
 
 @[ext]
 protected theorem ext {s t : Compacts α} (h : (s : Set α) = t) : s = t :=
@@ -73,32 +73,32 @@ theorem carrier_eq_coe (s : Compacts α) : s.carrier = s :=
   rfl
 #align topological_space.compacts.carrier_eq_coe TopologicalSpace.Compacts.carrier_eq_coe
 
-instance : Sup (Compacts α) :=
+instance (priority := 10000) : Sup (Compacts α) :=
   ⟨fun s t => ⟨s ∪ t, s.isCompact.union t.isCompact⟩⟩
 
-instance [T2Space α] : Inf (Compacts α) :=
+instance (priority := 10000) [T2Space α] : Inf (Compacts α) :=
   ⟨fun s t => ⟨s ∩ t, s.isCompact.inter t.isCompact⟩⟩
 
-instance [CompactSpace α] : Top (Compacts α) :=
+instance (priority := 10000) [CompactSpace α] : Top (Compacts α) :=
   ⟨⟨univ, isCompact_univ⟩⟩
 
-instance : Bot (Compacts α) :=
+instance (priority := 10000) : Bot (Compacts α) :=
   ⟨⟨∅, isCompact_empty⟩⟩
 
-instance : SemilatticeSup (Compacts α) :=
+instance (priority := 10000) : SemilatticeSup (Compacts α) :=
   SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
 
-instance [T2Space α] : DistribLattice (Compacts α) :=
+instance (priority := 10000) [T2Space α] : DistribLattice (Compacts α) :=
   SetLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
 
-instance : OrderBot (Compacts α) :=
+instance (priority := 10000) : OrderBot (Compacts α) :=
   OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
 
-instance [CompactSpace α] : BoundedOrder (Compacts α) :=
+instance (priority := 10000) [CompactSpace α] : BoundedOrder (Compacts α) :=
   BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
 
 /-- The type of compact sets is inhabited, with default element the empty set. -/
-instance : Inhabited (Compacts α) := ⟨⊥⟩
+instance (priority := 10000) : Inhabited (Compacts α) := ⟨⊥⟩
 
 @[simp]
 theorem coe_sup (s t : Compacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
@@ -210,7 +210,7 @@ structure NonemptyCompacts (α : Type*) [TopologicalSpace α] extends Compacts �
 
 namespace NonemptyCompacts
 
-instance : SetLike (NonemptyCompacts α) α where
+instance (priority := 10000) : SetLike (NonemptyCompacts α) α where
   coe s := s.carrier
   coe_injective' s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
@@ -253,16 +253,16 @@ theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
 @[simp] -- porting note: new lemma
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
-instance : Sup (NonemptyCompacts α) :=
+instance (priority := 10000) : Sup (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono <| subset_union_left _ _⟩⟩
 
-instance [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
+instance (priority := 10000) [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
   ⟨⟨⊤, univ_nonempty⟩⟩
 
-instance : SemilatticeSup (NonemptyCompacts α) :=
+instance (priority := 10000) : SemilatticeSup (NonemptyCompacts α) :=
   SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
 
-instance [CompactSpace α] [Nonempty α] : OrderTop (NonemptyCompacts α) :=
+instance (priority := 10000) [CompactSpace α] [Nonempty α] : OrderTop (NonemptyCompacts α) :=
   OrderTop.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
 
 @[simp]
@@ -277,16 +277,16 @@ theorem coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : NonemptyCompacts α
 
 /-- In an inhabited space, the type of nonempty compact subsets is also inhabited, with
 default element the singleton set containing the default element. -/
-instance [Inhabited α] : Inhabited (NonemptyCompacts α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (NonemptyCompacts α) :=
   ⟨{  carrier := {default}
       isCompact' := isCompact_singleton
       nonempty' := singleton_nonempty _ }⟩
 
-instance toCompactSpace {s : NonemptyCompacts α} : CompactSpace s :=
+instance (priority := 10000) toCompactSpace {s : NonemptyCompacts α} : CompactSpace s :=
   isCompact_iff_compactSpace.1 s.isCompact
 #align topological_space.nonempty_compacts.to_compact_space TopologicalSpace.NonemptyCompacts.toCompactSpace
 
-instance toNonempty {s : NonemptyCompacts α} : Nonempty s :=
+instance (priority := 10000) toNonempty {s : NonemptyCompacts α} : Nonempty s :=
   s.nonempty.to_subtype
 #align topological_space.nonempty_compacts.to_nonempty TopologicalSpace.NonemptyCompacts.toNonempty
 
@@ -314,7 +314,7 @@ structure PositiveCompacts (α : Type*) [TopologicalSpace α] extends Compacts �
 
 namespace PositiveCompacts
 
-instance : SetLike (PositiveCompacts α) α where
+instance (priority := 10000) : SetLike (PositiveCompacts α) α where
   coe s := s.carrier
   coe_injective' s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
@@ -362,18 +362,18 @@ theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
 theorem coe_toCompacts (s : PositiveCompacts α) : (s.toCompacts : Set α) = s :=
   rfl
 
-instance : Sup (PositiveCompacts α) :=
+instance (priority := 10000) : Sup (PositiveCompacts α) :=
   ⟨fun s t =>
     ⟨s.toCompacts ⊔ t.toCompacts,
       s.interior_nonempty.mono <| interior_mono <| subset_union_left _ _⟩⟩
 
-instance [CompactSpace α] [Nonempty α] : Top (PositiveCompacts α) :=
+instance (priority := 10000) [CompactSpace α] [Nonempty α] : Top (PositiveCompacts α) :=
   ⟨⟨⊤, interior_univ.symm.subst univ_nonempty⟩⟩
 
-instance : SemilatticeSup (PositiveCompacts α) :=
+instance (priority := 10000) : SemilatticeSup (PositiveCompacts α) :=
   SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
 
-instance [CompactSpace α] [Nonempty α] : OrderTop (PositiveCompacts α) :=
+instance (priority := 10000) [CompactSpace α] [Nonempty α] : OrderTop (PositiveCompacts α) :=
   OrderTop.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
 
 @[simp]
@@ -423,11 +423,11 @@ theorem _root_.IsOpen.exists_positiveCompacts_closure_subset [R1Space α] [Local
   let ⟨K, hKU⟩ := exists_positiveCompacts_subset ho hn
   ⟨K, K.isCompact.closure_subset_of_isOpen ho hKU⟩
 
-instance [CompactSpace α] [Nonempty α] : Inhabited (PositiveCompacts α) :=
+instance (priority := 10000) [CompactSpace α] [Nonempty α] : Inhabited (PositiveCompacts α) :=
   ⟨⊤⟩
 
 /-- In a nonempty locally compact space, there exists a compact set with nonempty interior. -/
-instance nonempty' [WeaklyLocallyCompactSpace α] [Nonempty α] : Nonempty (PositiveCompacts α) := by
+instance (priority := 10000) nonempty' [WeaklyLocallyCompactSpace α] [Nonempty α] : Nonempty (PositiveCompacts α) := by
   inhabit α
   rcases exists_compact_mem_nhds (default : α) with ⟨K, hKc, hK⟩
   exact ⟨⟨K, hKc⟩, _, mem_interior_iff_mem_nhds.2 hK⟩
@@ -461,7 +461,7 @@ structure CompactOpens (α : Type*) [TopologicalSpace α] extends Compacts α wh
 
 namespace CompactOpens
 
-instance : SetLike (CompactOpens α) α where
+instance (priority := 10000) : SetLike (CompactOpens α) α where
   coe s := s.carrier
   coe_injective' s t h := by
     obtain ⟨⟨_, _⟩, _⟩ := s
@@ -502,44 +502,44 @@ theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.compact_opens.coe_mk TopologicalSpace.CompactOpens.coe_mk
 
-instance : Sup (CompactOpens α) :=
+instance (priority := 10000) : Sup (CompactOpens α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.isOpen.union t.isOpen⟩⟩
 
-instance [QuasiSeparatedSpace α] : Inf (CompactOpens α) :=
+instance (priority := 10000) [QuasiSeparatedSpace α] : Inf (CompactOpens α) :=
   ⟨fun U V =>
     ⟨⟨(U : Set α) ∩ (V : Set α),
         QuasiSeparatedSpace.inter_isCompact U.1.1 V.1.1 U.2 U.1.2 V.2 V.1.2⟩,
       U.2.inter V.2⟩⟩
 
-instance [QuasiSeparatedSpace α] : SemilatticeInf (CompactOpens α) :=
+instance (priority := 10000) [QuasiSeparatedSpace α] : SemilatticeInf (CompactOpens α) :=
   SetLike.coe_injective.semilatticeInf _ fun _ _ => rfl
 
-instance [CompactSpace α] : Top (CompactOpens α) :=
+instance (priority := 10000) [CompactSpace α] : Top (CompactOpens α) :=
   ⟨⟨⊤, isOpen_univ⟩⟩
 
-instance : Bot (CompactOpens α) :=
+instance (priority := 10000) : Bot (CompactOpens α) :=
   ⟨⟨⊥, isOpen_empty⟩⟩
 
-instance [T2Space α] : SDiff (CompactOpens α) :=
+instance (priority := 10000) [T2Space α] : SDiff (CompactOpens α) :=
   ⟨fun s t => ⟨⟨s \ t, s.isCompact.diff t.isOpen⟩, s.isOpen.sdiff t.isCompact.isClosed⟩⟩
 
-instance [T2Space α] [CompactSpace α] : HasCompl (CompactOpens α) :=
+instance (priority := 10000) [T2Space α] [CompactSpace α] : HasCompl (CompactOpens α) :=
   ⟨fun s => ⟨⟨sᶜ, s.isOpen.isClosed_compl.isCompact⟩, s.isCompact.isClosed.isOpen_compl⟩⟩
 
-instance : SemilatticeSup (CompactOpens α) :=
+instance (priority := 10000) : SemilatticeSup (CompactOpens α) :=
   SetLike.coe_injective.semilatticeSup _ fun _ _ => rfl
 
-instance : OrderBot (CompactOpens α) :=
+instance (priority := 10000) : OrderBot (CompactOpens α) :=
   OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) rfl
 
-instance [T2Space α] : GeneralizedBooleanAlgebra (CompactOpens α) :=
+instance (priority := 10000) [T2Space α] : GeneralizedBooleanAlgebra (CompactOpens α) :=
   SetLike.coe_injective.generalizedBooleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl fun _ _ =>
     rfl
 
-instance [CompactSpace α] : BoundedOrder (CompactOpens α) :=
+instance (priority := 10000) [CompactSpace α] : BoundedOrder (CompactOpens α) :=
   BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
 
-instance [T2Space α] [CompactSpace α] : BooleanAlgebra (CompactOpens α) :=
+instance (priority := 10000) [T2Space α] [CompactSpace α] : BooleanAlgebra (CompactOpens α) :=
   SetLike.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
     fun _ _ => rfl
 
@@ -573,7 +573,7 @@ theorem coe_compl [T2Space α] [CompactSpace α] (s : CompactOpens α) : (↑s�
   rfl
 #align topological_space.compact_opens.coe_compl TopologicalSpace.CompactOpens.coe_compl
 
-instance : Inhabited (CompactOpens α) :=
+instance (priority := 10000) : Inhabited (CompactOpens α) :=
   ⟨⊥⟩
 
 /-- The image of a compact open under a continuous open map. -/

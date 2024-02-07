@@ -51,19 +51,19 @@ tell Lean that there is a `MeasurableSpace` structure on the space. Note that th
 is only for `Fin m` - Lean automatically figures out that the function space `Fin n → Fin m`
 is _also_ measurable, by using `MeasurableSpace.pi`, and furthermore that all sets are measurable,
 from `MeasurableSingletonClass.pi`. -/
-instance : MeasurableSpace (Fin m) :=
+instance (priority := 10000) : MeasurableSpace (Fin m) :=
   ⊤
 
-instance : MeasurableSingletonClass (Fin m) :=
+instance (priority := 10000) : MeasurableSingletonClass (Fin m) :=
   ⟨fun _ => trivial⟩
 
 /- We then endow the space with a canonical measure, which is called ℙ.
 We define this to be the conditional counting measure. -/
-noncomputable instance : MeasureSpace (Fin n → Fin m) :=
+noncomputable instance (priority := 10000) : MeasureSpace (Fin n → Fin m) :=
   ⟨condCount Set.univ⟩
 
 -- The canonical measure on `Fin n → Fin m` is a probability measure (except on an empty space).
-instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
+instance (priority := 10000) : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
   condCount_isProbabilityMeasure Set.finite_univ Set.univ_nonempty
 
 theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :

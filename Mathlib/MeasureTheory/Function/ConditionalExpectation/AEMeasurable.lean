@@ -490,7 +490,7 @@ noncomputable def lpMeasToLpTrimLie [Fact (1 ≤ p)] (hm : m ≤ m0) :
 
 variable {F 𝕜 p μ}
 
-instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
+instance (priority := 10000) [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
     CompleteSpace (lpMeasSubgroup F m p μ) := by
   rw [(lpMeasSubgroupToLpTrimIso F p μ hm.elim).completeSpace_iff]; infer_instance
 
@@ -498,7 +498,7 @@ instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
 -- One possible change might be to generalize `𝕜` from `IsROrC` to `NormedField`, as this
 -- result may well hold there.
 -- Porting note: removed @[nolint fails_quickly]
-instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
+instance (priority := 10000) [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
     CompleteSpace (lpMeas F 𝕜 m p μ) := by
   rw [(lpMeasSubgroupToLpMeasIso F 𝕜 p μ).symm.completeSpace_iff]; infer_instance
 

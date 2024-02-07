@@ -146,7 +146,7 @@ example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 
 -- simulate the type of MvPolynomial
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
-noncomputable instance : CommRing (R a b) := test_sorry
+noncomputable instance (priority := 10000) : CommRing (R a b) := test_sorry
 
 example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
   ring

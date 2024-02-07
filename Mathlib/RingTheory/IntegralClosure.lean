@@ -708,7 +708,7 @@ class IsIntegralClosure (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing 
   isIntegral_iff : ∀ {x : B}, IsIntegral R x ↔ ∃ y, algebraMap A B y = x
 #align is_integral_closure IsIntegralClosure
 
-instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :
+instance (priority := 10000) integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :
     IsIntegralClosure (integralClosure R A) R A where
   algebraMap_injective' := Subtype.coe_injective
   isIntegral_iff {x} := ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
@@ -1002,7 +1002,7 @@ section IsDomain
 
 variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
 
-instance : IsDomain (integralClosure R S) :=
+instance (priority := 10000) : IsDomain (integralClosure R S) :=
   inferInstance
 
 theorem roots_mem_integralClosure {f : R[X]} (hf : f.Monic) {a : S}

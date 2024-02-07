@@ -57,7 +57,7 @@ def adj : free R ⊣ forget (ModuleCat.{u} R) :=
             (Finsupp.sum_mapDomain_index_addMonoidHom fun y => (smulAddHom R M).flip (g y)).symm }
 #align Module.adj ModuleCat.adj
 
-instance : IsRightAdjoint (forget (ModuleCat.{u} R)) :=
+instance (priority := 10000) : IsRightAdjoint (forget (ModuleCat.{u} R)) :=
   ⟨_, adj R⟩
 
 end
@@ -186,7 +186,7 @@ theorem associativity (X Y Z : Type u) :
 -- In fact, it's strong monoidal, but we don't yet have a typeclass for that.
 /-- The free R-module functor is lax monoidal. -/
 @[simps]
-instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
+instance (priority := 10000) : LaxMonoidal.{u} (free R).obj := .ofTensorHom
   -- Send `R` to `PUnit →₀ R`
   (ε := ε R)
   -- Send `(α →₀ R) ⊗ (β →₀ R)` to `α × β →₀ R`
@@ -196,7 +196,7 @@ instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
   (right_unitality := right_unitality R)
   (associativity := associativity R)
 
-instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
+instance (priority := 10000) : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
   · -- Porting note: broken ext
     apply LinearMap.ext_ring
@@ -264,7 +264,7 @@ open Finsupp
 -- Conceptually, it would be nice to construct this via "transport of enrichment",
 -- using the fact that `ModuleCat.Free R : Type ⥤ ModuleCat R` and `ModuleCat.forget` are both lax
 -- monoidal. This still seems difficult, so we just do it by hand.
-instance categoryFree : Category (Free R C) where
+instance (priority := 10000) categoryFree : Category (Free R C) where
   Hom := fun X Y : C => (X ⟶ Y) →₀ R
   id := fun X : C => Finsupp.single (𝟙 X) 1
   comp {X Y Z : C} f g :=
@@ -284,7 +284,7 @@ section
 -- Porting note: removed local reducible attribute for categoryFree, adjusted dsimp invocations
 -- accordingly
 
-instance : Preadditive (Free R C) where
+instance (priority := 10000) : Preadditive (Free R C) where
   homGroup X Y := Finsupp.addCommGroup
   add_comp X Y Z f f' g := by
     dsimp [CategoryTheory.categoryFree]
@@ -295,7 +295,7 @@ instance : Preadditive (Free R C) where
     congr; ext r h
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
 
-instance : Linear R (Free R C) where
+instance (priority := 10000) : Linear R (Free R C) where
   homModule X Y := Finsupp.module _ R
   smul_comp X Y Z r f g := by
     dsimp [CategoryTheory.categoryFree]
@@ -376,13 +376,13 @@ theorem lift_map_single (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (r : R) :
     (lift R F).map (single f r) = r • F.map f := by simp
 #align category_theory.Free.lift_map_single CategoryTheory.Free.lift_map_single
 
-instance lift_additive (F : C ⥤ D) : (lift R F).Additive where
+instance (priority := 10000) lift_additive (F : C ⥤ D) : (lift R F).Additive where
   map_add {X Y} f g := by
     dsimp
     rw [Finsupp.sum_add_index'] <;> simp [add_smul]
 #align category_theory.Free.lift_additive CategoryTheory.Free.lift_additive
 
-instance lift_linear (F : C ⥤ D) : (lift R F).Linear R where
+instance (priority := 10000) lift_linear (F : C ⥤ D) : (lift R F).Linear R where
   map_smul {X Y} f r := by
     dsimp
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_smul]

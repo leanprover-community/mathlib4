@@ -63,12 +63,12 @@ namespace XgcdType
 
 variable (u : XgcdType)
 
-instance : SizeOf XgcdType :=
+instance (priority := 10000) : SizeOf XgcdType :=
   ⟨fun u => u.bp⟩
 
 /-- The `Repr` instance converts terms to strings in a way that
  reflects the matrix/vector interpretation as above. -/
-instance : Repr XgcdType where
+instance (priority := 10000) : Repr XgcdType where
   reprPrec
   | g, _ => s!"[[[{repr (g.wp + 1)}, {repr g.x}], \
                  [{repr g.y}, {repr (g.zp + 1)}]], \

@@ -53,9 +53,9 @@ theorem map_smul {X Y : C} (r : R) (f : X ⟶ Y) : F.map (r • f) = r • F.map
 theorem map_units_smul {X Y : C} (r : Rˣ) (f : X ⟶ Y) : F.map (r • f) = r • F.map f := by
   apply map_smul
 
-instance : Linear R (𝟭 C) where
+instance (priority := 10000) : Linear R (𝟭 C) where
 
-instance {E : Type*} [Category E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
+instance (priority := 10000) {E : Type*} [Category E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
     [Additive G] [Linear R G] : Linear R (F ⋙ G) where
 
 variable (R)
@@ -76,12 +76,12 @@ section InducedCategory
 variable {C : Type*} {D : Type*} [Category D] [Preadditive D] [CategoryTheory.Linear R D]
   (F : C → D)
 
-instance inducedFunctorLinear : Functor.Linear R (inducedFunctor F) where
+instance (priority := 10000) inducedFunctorLinear : Functor.Linear R (inducedFunctor F) where
 #align category_theory.functor.induced_functor_linear CategoryTheory.Functor.inducedFunctorLinear
 
 end InducedCategory
 
-instance fullSubcategoryInclusionLinear {C : Type*} [Category C] [Preadditive C]
+instance (priority := 10000) fullSubcategoryInclusionLinear {C : Type*} [Category C] [Preadditive C]
     [CategoryTheory.Linear R C] (Z : C → Prop) : (fullSubcategoryInclusion Z).Linear R where
 #align category_theory.functor.full_subcategory_inclusion_linear CategoryTheory.Functor.fullSubcategoryInclusionLinear
 
@@ -90,17 +90,17 @@ section
 variable {R} {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
   [Additive F]
 
-instance natLinear : F.Linear ℕ where
+instance (priority := 10000) natLinear : F.Linear ℕ where
   map_smul := F.mapAddHom.map_nsmul
 #align category_theory.functor.nat_linear CategoryTheory.Functor.natLinear
 
-instance intLinear : F.Linear ℤ where
+instance (priority := 10000) intLinear : F.Linear ℤ where
   map_smul f r := F.mapAddHom.map_zsmul f r
 #align category_theory.functor.int_linear CategoryTheory.Functor.intLinear
 
 variable [CategoryTheory.Linear ℚ C] [CategoryTheory.Linear ℚ D]
 
-instance ratLinear : F.Linear ℚ where
+instance (priority := 10000) ratLinear : F.Linear ℚ where
   map_smul f r := F.mapAddHom.toRatLinearMap.map_smul r f
 #align category_theory.functor.rat_linear CategoryTheory.Functor.ratLinear
 
@@ -113,7 +113,7 @@ namespace Equivalence
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Linear R C] [Preadditive D]
   [Linear R D]
 
-instance inverseLinear (e : C ≌ D) [e.functor.Additive] [e.functor.Linear R] :
+instance (priority := 10000) inverseLinear (e : C ≌ D) [e.functor.Additive] [e.functor.Linear R] :
   e.inverse.Linear R where
     map_smul r f := by
       apply e.functor.map_injective

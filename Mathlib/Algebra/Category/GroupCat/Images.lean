@@ -45,7 +45,7 @@ def image.ι : image f ⟶ H :=
   f.range.subtype
 #align AddCommGroup.image.ι AddCommGroupCat.image.ι
 
-instance : Mono (image.ι f) :=
+instance (priority := 10000) : Mono (image.ι f) :=
   ConcreteCategory.mono_of_injective (image.ι f) Subtype.val_injective
 
 /-- the corestriction map to the image -/

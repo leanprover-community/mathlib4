@@ -87,11 +87,11 @@ theorem mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩, fun h => @mem_essImage_of_unit_isIso _ _ _ _ _ _ X h.1⟩
 #align algebraic_geometry.mem_Spec_ess_image AlgebraicGeometry.mem_Spec_essImage
 
-instance isAffineAffineScheme (X : AffineScheme.{u}) : IsAffine X.obj :=
+instance (priority := 10000) isAffineAffineScheme (X : AffineScheme.{u}) : IsAffine X.obj :=
   ⟨Functor.essImage.unit_isIso X.property⟩
 #align algebraic_geometry.is_affine_AffineScheme AlgebraicGeometry.isAffineAffineScheme
 
-instance SpecIsAffine (R : CommRingCatᵒᵖ) : IsAffine (Scheme.Spec.obj R) :=
+instance (priority := 10000) SpecIsAffine (R : CommRingCatᵒᵖ) : IsAffine (Scheme.Spec.obj R) :=
   AlgebraicGeometry.isAffineAffineScheme ⟨_, Scheme.Spec.obj_mem_essImage R⟩
 #align algebraic_geometry.Spec_is_affine AlgebraicGeometry.SpecIsAffine
 
@@ -107,13 +107,13 @@ def Spec : CommRingCatᵒᵖ ⥤ AffineScheme :=
 #align algebraic_geometry.AffineScheme.Spec AlgebraicGeometry.AffineScheme.Spec
 
 -- Porting note : cannot automatically derive
-instance Spec_full : Full Spec := Full.toEssImage _
+instance (priority := 10000) Spec_full : Full Spec := Full.toEssImage _
 
 -- Porting note : cannot automatically derive
-instance Spec_faithful : Faithful Spec := Faithful.toEssImage _
+instance (priority := 10000) Spec_faithful : Faithful Spec := Faithful.toEssImage _
 
 -- Porting note : cannot automatically derive
-instance Spec_essSurj : EssSurj Spec := EssSurj.toEssImage (F := _)
+instance (priority := 10000) Spec_essSurj : EssSurj Spec := EssSurj.toEssImage (F := _)
 
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
 @[simps!]
@@ -122,11 +122,11 @@ def forgetToScheme : AffineScheme ⥤ Scheme :=
 #align algebraic_geometry.AffineScheme.forget_to_Scheme AlgebraicGeometry.AffineScheme.forgetToScheme
 
 -- Porting note : cannot automatically derive
-instance forgetToScheme_full : Full forgetToScheme :=
+instance (priority := 10000) forgetToScheme_full : Full forgetToScheme :=
 show Full (Scheme.Spec.essImageInclusion) from inferInstance
 
 -- Porting note : cannot automatically derive
-instance forgetToScheme_faithful : Faithful forgetToScheme :=
+instance (priority := 10000) forgetToScheme_faithful : Faithful forgetToScheme :=
 show Faithful (Scheme.Spec.essImageInclusion) from inferInstance
 
 /-- The global section functor of an affine scheme. -/
@@ -139,25 +139,25 @@ def equivCommRingCat : AffineScheme ≌ CommRingCatᵒᵖ :=
   equivEssImageOfReflective.symm
 #align algebraic_geometry.AffineScheme.equiv_CommRing AlgebraicGeometry.AffineScheme.equivCommRingCat
 
-instance ΓIsEquiv : IsEquivalence Γ.{u} :=
+instance (priority := 10000) ΓIsEquiv : IsEquivalence Γ.{u} :=
   haveI : IsEquivalence Γ.{u}.rightOp.op := IsEquivalence.ofEquivalence equivCommRingCat.op
   Functor.isEquivalenceTrans Γ.{u}.rightOp.op (opOpEquivalence _).functor
 #align algebraic_geometry.AffineScheme.Γ_is_equiv AlgebraicGeometry.AffineScheme.ΓIsEquiv
 
-instance hasColimits : HasColimits AffineScheme.{u} :=
+instance (priority := 10000) hasColimits : HasColimits AffineScheme.{u} :=
   haveI := Adjunction.has_limits_of_equivalence.{u} Γ.{u}
   Adjunction.has_colimits_of_equivalence.{u} (opOpEquivalence AffineScheme.{u}).inverse
 
-instance hasLimits : HasLimits AffineScheme.{u} := by
+instance (priority := 10000) hasLimits : HasLimits AffineScheme.{u} := by
   haveI := Adjunction.has_colimits_of_equivalence Γ.{u}
   haveI : HasLimits AffineScheme.{u}ᵒᵖᵒᵖ := Limits.hasLimits_op_of_hasColimits
   exact Adjunction.has_limits_of_equivalence (opOpEquivalence AffineScheme.{u}).inverse
 
-noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp :=
+noncomputable instance (priority := 10000) Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp :=
   @Adjunction.isEquivalencePreservesLimits _ _ _ _ Γ.rightOp
     (IsEquivalence.ofEquivalence equivCommRingCat)
 
-noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
+noncomputable instance (priority := 10000) forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
   apply (config := { allowSynthFailures := true })
     @preservesLimitsOfNatIso _ _ _ _ _ _
       (isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
@@ -188,12 +188,12 @@ theorem topIsAffineOpen (X : Scheme) [IsAffine X] : IsAffineOpen (⊤ : Opens X)
   exact Set.range_id.symm
 #align algebraic_geometry.top_is_affine_open AlgebraicGeometry.topIsAffineOpen
 
-instance Scheme.affineCoverIsAffine (X : Scheme) (i : X.affineCover.J) :
+instance (priority := 10000) Scheme.affineCoverIsAffine (X : Scheme) (i : X.affineCover.J) :
     IsAffine (X.affineCover.obj i) :=
   AlgebraicGeometry.SpecIsAffine _
 #align algebraic_geometry.Scheme.affine_cover_is_affine AlgebraicGeometry.Scheme.affineCoverIsAffine
 
-instance Scheme.affineBasisCoverIsAffine (X : Scheme) (i : X.affineBasisCover.J) :
+instance (priority := 10000) Scheme.affineBasisCoverIsAffine (X : Scheme) (i : X.affineBasisCover.J) :
     IsAffine (X.affineBasisCover.obj i) :=
   AlgebraicGeometry.SpecIsAffine _
 #align algebraic_geometry.Scheme.affine_basis_cover_is_affine AlgebraicGeometry.Scheme.affineBasisCoverIsAffine
@@ -256,7 +256,7 @@ def fromSpec :
     (X ∣_ᵤ U).isoSpec.inv ≫ Scheme.ιOpens U
 #align algebraic_geometry.is_affine_open.from_Spec AlgebraicGeometry.IsAffineOpen.fromSpec
 
-instance isOpenImmersion_fromSpec :
+instance (priority := 10000) isOpenImmersion_fromSpec :
     IsOpenImmersion hU.fromSpec := by
   delta fromSpec
   infer_instance
@@ -305,7 +305,7 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
   · infer_instance
 #align algebraic_geometry.is_affine_open_iff_of_is_open_immersion AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
 
-instance _root_.AlgebraicGeometry.Scheme.quasi_compact_of_affine (X : Scheme) [IsAffine X] :
+instance (priority := 10000) _root_.AlgebraicGeometry.Scheme.quasi_compact_of_affine (X : Scheme) [IsAffine X] :
     CompactSpace X :=
   ⟨(topIsAffineOpen X).isCompact⟩
 #align algebraic_geometry.Scheme.quasi_compact_of_affine AlgebraicGeometry.Scheme.quasi_compact_of_affine
@@ -419,7 +419,7 @@ def basicOpenSectionsToAffine :
     (𝖲𝗉𝖾𝖼 𝓞ₓ(U)).presheaf.map (eqToHom <| (hU.fromSpec_map_basicOpen f).symm).op
 #align algebraic_geometry.basic_open_sections_to_affine AlgebraicGeometry.IsAffineOpen.basicOpenSectionsToAffine
 
-instance basicOpenSectionsToAffine_isIso :
+instance (priority := 10000) basicOpenSectionsToAffine_isIso :
     IsIso (basicOpenSectionsToAffine hU f) := by
   delta basicOpenSectionsToAffine
   apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
@@ -446,7 +446,7 @@ theorem isLocalization_basicOpen :
   exact homOfLE le_top
 #align algebraic_geometry.is_localization_basic_open AlgebraicGeometry.IsAffineOpen.isLocalization_basicOpen
 
-instance _root_.AlgebraicGeometry.isLocalization_away_of_isAffine
+instance (priority := 10000) _root_.AlgebraicGeometry.isLocalization_away_of_isAffine
     [IsAffine X] (r : X.presheaf.obj (op ⊤)) :
     IsLocalization.Away r (X.presheaf.obj (op <| X.basicOpen r)) :=
   isLocalization_basicOpen (topIsAffineOpen X) r
@@ -456,7 +456,7 @@ theorem isLocalization_of_eq_basicOpen {V : Opens X} (i : V ⟶ U) (e : V = X.ba
   subst e; convert isLocalization_basicOpen hU f using 3
 #align algebraic_geometry.is_localization_of_eq_basic_open AlgebraicGeometry.IsAffineOpen.isLocalization_of_eq_basicOpen
 
-instance _root_.AlgebraicGeometry.Γ_restrict_isLocalization
+instance (priority := 10000) _root_.AlgebraicGeometry.Γ_restrict_isLocalization
     (X : Scheme.{u}) [IsAffine X] (r : Scheme.Γ.obj (op X)) :
     IsLocalization.Away r (Scheme.Γ.obj (op (X ∣_ᵤ X.basicOpen r))) :=
   (topIsAffineOpen X).isLocalization_of_eq_basicOpen r _ (Opens.openEmbedding_obj_top _)

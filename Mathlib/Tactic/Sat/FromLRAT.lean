@@ -63,7 +63,7 @@ def Literal.negate : Literal → Literal
   | pos i => neg i
   | neg i => pos i
 
-instance : ToExpr Literal where
+instance (priority := 10000) : ToExpr Literal where
   toTypeExpr := mkConst ``Literal
   toExpr
   | Literal.pos i => mkApp (mkConst ``Literal.pos) (mkRawNatLit i)

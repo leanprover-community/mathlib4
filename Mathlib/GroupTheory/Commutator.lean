@@ -72,7 +72,7 @@ theorem conjugate_commutatorElement : g₃ * ⁅g₁, g₂⁆ * g₃⁻¹ = ⁅g
 namespace Subgroup
 
 /-- The commutator of two subgroups `H₁` and `H₂`. -/
-instance commutator : Bracket (Subgroup G) (Subgroup G) :=
+instance (priority := 10000) commutator : Bracket (Subgroup G) (Subgroup G) :=
   ⟨fun H₁ H₂ => closure { g | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = g }⟩
 #align subgroup.commutator Subgroup.commutator
 
@@ -128,7 +128,7 @@ theorem commutator_comm : ⁅H₁, H₂⁆ = ⁅H₂, H₁⁆ :=
 
 section Normal
 
-instance commutator_normal [h₁ : H₁.Normal] [h₂ : H₂.Normal] : Normal ⁅H₁, H₂⁆ := by
+instance (priority := 10000) commutator_normal [h₁ : H₁.Normal] [h₂ : H₂.Normal] : Normal ⁅H₁, H₂⁆ := by
   let base : Set G := { x | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = x }
   change (closure base).Normal
   suffices h_base : base = Group.conjugatesOfSet base
@@ -188,7 +188,7 @@ theorem commutator_le_map_commutator {f : G →* G'} {K₁ K₂ : Subgroup G'} (
 
 variable (H₁ H₂)
 
-instance commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characteristic H₂] :
+instance (priority := 10000) commutator_characteristic [h₁ : Characteristic H₁] [h₂ : Characteristic H₂] :
     Characteristic ⁅H₁, H₂⁆ :=
   characteristic_iff_le_map.mpr fun ϕ =>
     commutator_le_map_commutator (characteristic_iff_le_map.mp h₁ ϕ)
@@ -256,7 +256,7 @@ theorem one_mem_commutatorSet : (1 : G) ∈ commutatorSet G :=
   ⟨1, 1, commutatorElement_self 1⟩
 #align one_mem_commutator_set one_mem_commutatorSet
 
-instance : Nonempty (commutatorSet G) :=
+instance (priority := 10000) : Nonempty (commutatorSet G) :=
   ⟨⟨1, one_mem_commutatorSet G⟩⟩
 
 variable {G g}

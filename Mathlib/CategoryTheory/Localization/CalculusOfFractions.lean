@@ -425,7 +425,7 @@ def Localization (_ : MorphismProperty C) := C
 
 namespace Localization
 
-noncomputable instance : Category (Localization W) where
+noncomputable instance (priority := 10000) : Category (Localization W) where
   Hom X Y := Localization.Hom W X Y
   id X := Localization.Hom.mk (ofHom W (𝟙 _))
   comp f g := f.comp g

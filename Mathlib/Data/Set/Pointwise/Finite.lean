@@ -65,13 +65,13 @@ section Monoid
 variable [Monoid α] {s t : Set α}
 
 @[to_additive]
-instance decidableMemMul [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)]
+instance (priority := 10000) decidableMemMul [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)]
     [DecidablePred (· ∈ t)] : DecidablePred (· ∈ s * t) := fun _ ↦ decidable_of_iff _ mem_mul.symm
 #align set.decidable_mem_mul Set.decidableMemMul
 #align set.decidable_mem_add Set.decidableMemAdd
 
 @[to_additive]
-instance decidableMemPow [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)] (n : ℕ) :
+instance (priority := 10000) decidableMemPow [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)] (n : ℕ) :
     DecidablePred (· ∈ s ^ n) := by
   induction' n with n ih
   · simp only [Nat.zero_eq, pow_zero, mem_one]

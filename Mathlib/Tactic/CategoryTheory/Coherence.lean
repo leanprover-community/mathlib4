@@ -50,9 +50,9 @@ It must be the case that `projectObj id (LiftObj.lift x) = x` by defeq. -/
 class LiftObj (X : C) where
   protected lift : FreeMonoidalCategory C
 
-instance LiftObj_unit : LiftObj (𝟙_ C) := ⟨unit⟩
+instance (priority := 10000) LiftObj_unit : LiftObj (𝟙_ C) := ⟨unit⟩
 
-instance LiftObj_tensor (X Y : C) [LiftObj X] [LiftObj Y] : LiftObj (X ⊗ Y) where
+instance (priority := 10000) LiftObj_tensor (X Y : C) [LiftObj X] [LiftObj Y] : LiftObj (X ⊗ Y) where
   lift := LiftObj.lift X ⊗ LiftObj.lift Y
 
 instance (priority := 100) LiftObj_of (X : C) : LiftObj X := ⟨of X⟩
@@ -62,41 +62,41 @@ It must be the case that `projectMap id _ _ (LiftHom.lift f) = f` by defeq. -/
 class LiftHom {X Y : C} [LiftObj X] [LiftObj Y] (f : X ⟶ Y) where
   protected lift : LiftObj.lift X ⟶ LiftObj.lift Y
 
-instance LiftHom_id (X : C) [LiftObj X] : LiftHom (𝟙 X) := ⟨𝟙 _⟩
+instance (priority := 10000) LiftHom_id (X : C) [LiftObj X] : LiftHom (𝟙 X) := ⟨𝟙 _⟩
 
-instance LiftHom_left_unitor_hom (X : C) [LiftObj X] : LiftHom (λ_ X).hom where
+instance (priority := 10000) LiftHom_left_unitor_hom (X : C) [LiftObj X] : LiftHom (λ_ X).hom where
   lift := (λ_ (LiftObj.lift X)).hom
 
-instance LiftHom_left_unitor_inv (X : C) [LiftObj X] : LiftHom (λ_ X).inv where
+instance (priority := 10000) LiftHom_left_unitor_inv (X : C) [LiftObj X] : LiftHom (λ_ X).inv where
   lift := (λ_ (LiftObj.lift X)).inv
 
-instance LiftHom_right_unitor_hom (X : C) [LiftObj X] : LiftHom (ρ_ X).hom where
+instance (priority := 10000) LiftHom_right_unitor_hom (X : C) [LiftObj X] : LiftHom (ρ_ X).hom where
   lift := (ρ_ (LiftObj.lift X)).hom
 
-instance LiftHom_right_unitor_inv (X : C) [LiftObj X] : LiftHom (ρ_ X).inv where
+instance (priority := 10000) LiftHom_right_unitor_inv (X : C) [LiftObj X] : LiftHom (ρ_ X).inv where
   lift := (ρ_ (LiftObj.lift X)).inv
 
-instance LiftHom_associator_hom (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] :
+instance (priority := 10000) LiftHom_associator_hom (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] :
     LiftHom (α_ X Y Z).hom where
   lift := (α_ (LiftObj.lift X) (LiftObj.lift Y) (LiftObj.lift Z)).hom
 
-instance LiftHom_associator_inv (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] :
+instance (priority := 10000) LiftHom_associator_inv (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] :
     LiftHom (α_ X Y Z).inv where
   lift := (α_ (LiftObj.lift X) (LiftObj.lift Y) (LiftObj.lift Z)).inv
 
-instance LiftHom_comp {X Y Z : C} [LiftObj X] [LiftObj Y] [LiftObj Z] (f : X ⟶ Y) (g : Y ⟶ Z)
+instance (priority := 10000) LiftHom_comp {X Y Z : C} [LiftObj X] [LiftObj Y] [LiftObj Z] (f : X ⟶ Y) (g : Y ⟶ Z)
     [LiftHom f] [LiftHom g] : LiftHom (f ≫ g) where
   lift := LiftHom.lift f ≫ LiftHom.lift g
 
-instance liftHom_WhiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj Z]
+instance (priority := 10000) liftHom_WhiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj Z]
     (f : Y ⟶ Z) [LiftHom f] : LiftHom (X ◁ f) where
   lift := 𝟙 (LiftObj.lift X) ⊗ LiftHom.lift f
 
-instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [LiftHom f]
+instance (priority := 10000) liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [LiftHom f]
     {Z : C} [LiftObj Z] : LiftHom (f ▷ Z) where
   lift := LiftHom.lift f ⊗ 𝟙 (LiftObj.lift Z)
 
-instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
+instance (priority := 10000) LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
     (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
   lift := LiftHom.lift f ⊗ LiftHom.lift g
 
@@ -114,55 +114,55 @@ attribute [instance] MonoidalCoherence.isIso
 namespace MonoidalCoherence
 
 @[simps]
-instance refl (X : C) [LiftObj X] : MonoidalCoherence X X := ⟨𝟙 _⟩
+instance (priority := 10000) refl (X : C) [LiftObj X] : MonoidalCoherence X X := ⟨𝟙 _⟩
 
 @[simps]
-instance whiskerLeft (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence Y Z] :
+instance (priority := 10000) whiskerLeft (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence Y Z] :
     MonoidalCoherence (X ⊗ Y) (X ⊗ Z) :=
   ⟨𝟙 X ⊗ MonoidalCoherence.hom⟩
 
 @[simps]
-instance whiskerRight (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence X Y] :
+instance (priority := 10000) whiskerRight (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence X Y] :
     MonoidalCoherence (X ⊗ Z) (Y ⊗ Z) :=
   ⟨MonoidalCoherence.hom ⊗ 𝟙 Z⟩
 
 @[simps]
-instance tensor_right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence (𝟙_ C) Y] :
+instance (priority := 10000) tensor_right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence (𝟙_ C) Y] :
     MonoidalCoherence X (X ⊗ Y) :=
   ⟨(ρ_ X).inv ≫ (𝟙 X ⊗  MonoidalCoherence.hom)⟩
 
 @[simps]
-instance tensor_right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence Y (𝟙_ C)] :
+instance (priority := 10000) tensor_right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence Y (𝟙_ C)] :
     MonoidalCoherence (X ⊗ Y) X :=
   ⟨(𝟙 X ⊗ MonoidalCoherence.hom) ≫ (ρ_ X).hom⟩
 
 @[simps]
-instance left (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
+instance (priority := 10000) left (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
     MonoidalCoherence (𝟙_ C ⊗ X) Y :=
   ⟨(λ_ X).hom ≫ MonoidalCoherence.hom⟩
 
 @[simps]
-instance left' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
+instance (priority := 10000) left' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
     MonoidalCoherence X (𝟙_ C ⊗ Y) :=
   ⟨MonoidalCoherence.hom ≫ (λ_ Y).inv⟩
 
 @[simps]
-instance right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
+instance (priority := 10000) right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
     MonoidalCoherence (X ⊗ 𝟙_ C) Y :=
   ⟨(ρ_ X).hom ≫ MonoidalCoherence.hom⟩
 
 @[simps]
-instance right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
+instance (priority := 10000) right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
     MonoidalCoherence X (Y ⊗ 𝟙_ C) :=
   ⟨MonoidalCoherence.hom ≫ (ρ_ Y).inv⟩
 
 @[simps]
-instance assoc (X Y Z W : C) [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
+instance (priority := 10000) assoc (X Y Z W : C) [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
     [MonoidalCoherence (X ⊗ (Y ⊗ Z)) W] : MonoidalCoherence ((X ⊗ Y) ⊗ Z) W :=
   ⟨(α_ X Y Z).hom ≫ MonoidalCoherence.hom⟩
 
 @[simps]
-instance assoc' (W X Y Z : C) [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
+instance (priority := 10000) assoc' (W X Y Z : C) [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
     [MonoidalCoherence W (X ⊗ (Y ⊗ Z))] : MonoidalCoherence W ((X ⊗ Y) ⊗ Z) :=
   ⟨MonoidalCoherence.hom ≫ (α_ X Y Z).inv⟩
 

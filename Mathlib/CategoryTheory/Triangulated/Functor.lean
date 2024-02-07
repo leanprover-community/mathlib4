@@ -44,14 +44,14 @@ def mapTriangle : Triangle C ⥤ Triangle D where
         simp only [Category.assoc, ← NatTrans.naturality,
           ← F.map_comp_assoc, f.comm₃] }
 
-instance [Faithful F] : Faithful F.mapTriangle where
+instance (priority := 10000) [Faithful F] : Faithful F.mapTriangle where
   map_injective {X Y} f g h := by
     ext <;> apply F.map_injective
     · exact congr_arg TriangleMorphism.hom₁ h
     · exact congr_arg TriangleMorphism.hom₂ h
     · exact congr_arg TriangleMorphism.hom₃ h
 
-instance [Full F] [Faithful F] : Full F.mapTriangle where
+instance (priority := 10000) [Full F] [Faithful F] : Full F.mapTriangle where
   preimage {X Y} f :=
     { hom₁ := F.preimage f.hom₁
       hom₂ := F.preimage f.hom₂
@@ -87,7 +87,7 @@ attribute [local simp] commShiftIso_zero commShiftIso_add
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
 set_option maxHeartbeats 400000 in
-noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
+noncomputable instance (priority := 10000) [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   iso := F.mapTriangleCommShiftIso
 

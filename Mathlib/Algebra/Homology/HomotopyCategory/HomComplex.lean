@@ -64,11 +64,11 @@ of a family of morphisms `F.X p ⟶ G.X q` whenever `p + n = q`, i.e. for all
 triplets in `HomComplex.Triplet n`. -/
 def Cochain := ∀ (T : Triplet n), F.X T.p ⟶ G.X T.q
 
-instance : AddCommGroup (Cochain F G n) := by
+instance (priority := 10000) : AddCommGroup (Cochain F G n) := by
   dsimp only [Cochain]
   infer_instance
 
-instance : Module R (Cochain F G n) := by
+instance (priority := 10000) : Module R (Cochain F G n) := by
   dsimp only [Cochain]
   infer_instance
 
@@ -581,7 +581,7 @@ def cocycle : AddSubgroup (Cochain F G n) :=
 /-- The type of `n`-cocycles, as a subtype of `Cochain F G n`. -/
 def Cocycle : Type v := cocycle F G n
 
-instance : AddCommGroup (Cocycle F G n) := by
+instance (priority := 10000) : AddCommGroup (Cocycle F G n) := by
   dsimp only [Cocycle]
   infer_instance
 
@@ -594,7 +594,7 @@ lemma mem_iff (hnm : n + 1 = m) (z : Cochain F G n) :
 
 variable {n}
 
-instance : Coe (Cocycle F G n) (Cochain F G n) where
+instance (priority := 10000) : Coe (Cocycle F G n) (Cochain F G n) where
   coe x := x.1
 
 @[ext]
@@ -604,7 +604,7 @@ lemma ext (z₁ z₂ : Cocycle F G n) (h : (z₁ : Cochain F G n) = z₂) : z₁
 lemma ext_iff (z₁ z₂ : Cocycle F G n) : z₁ = z₂ ↔ (z₁ : Cochain F G n) = z₂ :=
   Subtype.ext_iff
 
-instance : SMul R (Cocycle F G n) where
+instance (priority := 10000) : SMul R (Cocycle F G n) where
   smul r z := ⟨r • z.1, by
     have hz := z.2
     rw [mem_iff n (n + 1) rfl] at hz ⊢
@@ -637,7 +637,7 @@ lemma coe_units_smul (z : Cocycle F G n) (x : Rˣ) :
 lemma coe_sub (z₁ z₂ : Cocycle F G n) :
     (↑(z₁ - z₂) : Cochain F G n) = (z₁ : Cochain F G n) - (z₂ : Cochain F G n) := rfl
 
-instance : Module R (Cocycle F G n) where
+instance (priority := 10000) : Module R (Cocycle F G n) where
   one_smul _ := by aesop
   mul_smul _ _ _ := by ext; dsimp; rw [smul_smul]
   smul_zero _ := by aesop

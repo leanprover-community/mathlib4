@@ -52,12 +52,12 @@ def SorgenfreyLine : Type := ℝ
 scoped[SorgenfreyLine] notation "ℝₗ" => Counterexample.SorgenfreyLine
 open scoped SorgenfreyLine
 
-instance : ConditionallyCompleteLinearOrder ℝₗ :=
+instance (priority := 10000) : ConditionallyCompleteLinearOrder ℝₗ :=
   inferInstanceAs (ConditionallyCompleteLinearOrder ℝ)
 
-instance : LinearOrderedField ℝₗ := inferInstanceAs (LinearOrderedField ℝ)
+instance (priority := 10000) : LinearOrderedField ℝₗ := inferInstanceAs (LinearOrderedField ℝ)
 
-instance : Archimedean ℝₗ := inferInstanceAs (Archimedean ℝ)
+instance (priority := 10000) : Archimedean ℝₗ := inferInstanceAs (Archimedean ℝ)
 
 namespace SorgenfreyLine
 
@@ -66,7 +66,7 @@ def toReal : ℝₗ ≃+* ℝ :=
   RingEquiv.refl ℝ
 #align counterexample.sorgenfrey_line.to_real Counterexample.SorgenfreyLine.toReal
 
-instance : TopologicalSpace ℝₗ :=
+instance (priority := 10000) : TopologicalSpace ℝₗ :=
   TopologicalSpace.generateFrom {s : Set ℝₗ | ∃ a b : ℝₗ, Ico a b = s}
 
 theorem isOpen_Ico (a b : ℝₗ) : IsOpen (Ico a b) :=
@@ -156,10 +156,10 @@ theorem continuous_toReal : Continuous toReal :=
     exact inf_le_left
 #align counterexample.sorgenfrey_line.continuous_to_real Counterexample.SorgenfreyLine.continuous_toReal
 
-instance : OrderClosedTopology ℝₗ :=
+instance (priority := 10000) : OrderClosedTopology ℝₗ :=
   ⟨isClosed_le_prod.preimage (continuous_toReal.prod_map continuous_toReal)⟩
 
-instance : ContinuousAdd ℝₗ := by
+instance (priority := 10000) : ContinuousAdd ℝₗ := by
   refine' ⟨continuous_iff_continuousAt.2 _⟩
   rintro ⟨x, y⟩
   rw [ContinuousAt, nhds_prod_eq, nhds_eq_comap (x + y), tendsto_comap_iff,
@@ -178,16 +178,16 @@ theorem isClopen_Ico (a b : ℝₗ) : IsClopen (Ico a b) :=
   (isClopen_Ici a).inter (isClopen_Iio b)
 #align counterexample.sorgenfrey_line.is_clopen_Ico Counterexample.SorgenfreyLine.isClopen_Ico
 
-instance : TotallyDisconnectedSpace ℝₗ :=
+instance (priority := 10000) : TotallyDisconnectedSpace ℝₗ :=
   ⟨fun _ _ hs x hx y hy =>
     le_antisymm (hs.subset_isClopen (isClopen_Ici x) ⟨x, hx, left_mem_Ici⟩ hy)
       (hs.subset_isClopen (isClopen_Ici y) ⟨y, hy, left_mem_Ici⟩ hx)⟩
 
-instance : FirstCountableTopology ℝₗ :=
+instance (priority := 10000) : FirstCountableTopology ℝₗ :=
   ⟨fun x => (nhds_basis_Ico_rat x).isCountablyGenerated⟩
 
 /-- Sorgenfrey line is a completely normal Hausdorff topological space. -/
-instance : T5Space ℝₗ := by
+instance (priority := 10000) : T5Space ℝₗ := by
   /-
   Let `s` and `t` be disjoint closed sets.
   For each `x ∈ s` we choose `X x` such that `Set.Ico x (X x)` is disjoint with `t`.
@@ -223,7 +223,7 @@ theorem denseRange_coe_rat : DenseRange ((↑) : ℚ → ℝₗ) := by
   exact ⟨z, hU ⟨hxz.le, hzy⟩, mem_range_self _⟩
 #align counterexample.sorgenfrey_line.dense_range_coe_rat Counterexample.SorgenfreyLine.denseRange_coe_rat
 
-instance : SeparableSpace ℝₗ :=
+instance (priority := 10000) : SeparableSpace ℝₗ :=
   ⟨⟨_, countable_range _, denseRange_coe_rat⟩⟩
 
 theorem isClosed_antidiagonal (c : ℝₗ) : IsClosed {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
@@ -258,7 +258,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
 #align counterexample.sorgenfrey_line.is_closed_of_subset_antidiagonal Counterexample.SorgenfreyLine.isClosed_of_subset_antidiagonal
 
 open Subtype in
-instance (c : ℝₗ) : DiscreteTopology {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
+instance (priority := 10000) (c : ℝₗ) : DiscreteTopology {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
   forall_open_iff_discrete.1 fun U ↦ isClosed_compl_iff.1 <| isClosed_induced_iff.2
     ⟨val '' Uᶜ, isClosed_of_subset_antidiagonal <| coe_image_subset _ Uᶜ,
       preimage_image_eq _ val_injective⟩

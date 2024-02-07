@@ -66,7 +66,7 @@ def MulSalemSpencer : Prop :=
 
 /-- Whether a given finset is Salem-Spencer is decidable. -/
 @[to_additive "Whether a given finset is Salem-Spencer is decidable."]
-instance {α : Type*} [DecidableEq α] [Monoid α] {s : Finset α} :
+instance (priority := 10000) {α : Type*} [DecidableEq α] [Monoid α] {s : Finset α} :
     Decidable (MulSalemSpencer (s : Set α)) :=
   decidable_of_iff (∀ a ∈ s, ∀ b ∈ s, ∀ c ∈ s, a * b = c * c → a = b)
     ⟨fun h a b c ha hb hc => h a ha b hb c hc, fun h _ ha _ hb _ hc => h ha hb hc⟩

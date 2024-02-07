@@ -174,13 +174,13 @@ def R [CommRing K] : Type u :=
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.R MvPolynomial.R
 
-noncomputable instance [CommRing K] : AddCommGroup (R σ K) :=
+noncomputable instance (priority := 10000) [CommRing K] : AddCommGroup (R σ K) :=
   inferInstanceAs (AddCommGroup (restrictDegree σ K (Fintype.card K - 1)))
 
-noncomputable instance [CommRing K] : Module K (R σ K) :=
+noncomputable instance (priority := 10000) [CommRing K] : Module K (R σ K) :=
   inferInstanceAs (Module K (restrictDegree σ K (Fintype.card K - 1)))
 
-noncomputable instance [CommRing K] : Inhabited (R σ K) :=
+noncomputable instance (priority := 10000) [CommRing K] : Inhabited (R σ K) :=
   inferInstanceAs (Inhabited (restrictDegree σ K (Fintype.card K - 1)))
 
 /-- Evaluation in the `mv_polynomial.R` subtype. -/
@@ -192,7 +192,7 @@ section CommRing
 
 variable [CommRing K]
 
-noncomputable instance decidableRestrictDegree (m : ℕ) :
+noncomputable instance (priority := 10000) decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
   simp only [Set.mem_setOf_eq]; infer_instance
 #align mv_polynomial.decidable_restrict_degree MvPolynomial.decidableRestrictDegree
@@ -221,7 +221,7 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.rank_R MvPolynomial.rank_R
 
-instance [Finite σ] : FiniteDimensional K (R σ K) := by
+instance (priority := 10000) [Finite σ] : FiniteDimensional K (R σ K) := by
   cases nonempty_fintype σ
   exact
     IsNoetherian.iff_fg.1

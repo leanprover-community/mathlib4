@@ -363,7 +363,7 @@ def wideCospan (X : C) : WidePullbackShape ι ⥤ C :=
   WidePullbackShape.wideCospan (terminal C) (fun _ : ι => X) fun _ => terminal.from X
 #align category_theory.cech_nerve_terminal_from.wide_cospan CategoryTheory.CechNerveTerminalFrom.wideCospan
 
-instance uniqueToWideCospanNone (X Y : C) : Unique (Y ⟶ (wideCospan ι X).obj none) := by
+instance (priority := 10000) uniqueToWideCospanNone (X Y : C) : Unique (Y ⟶ (wideCospan ι X).obj none) := by
   dsimp [wideCospan]
   infer_instance
 #align category_theory.cech_nerve_terminal_from.unique_to_wide_cospan_none CategoryTheory.CechNerveTerminalFrom.uniqueToWideCospanNone
@@ -395,7 +395,7 @@ def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
         rw [← h (some j)] }
 #align category_theory.cech_nerve_terminal_from.wide_cospan.limit_cone CategoryTheory.CechNerveTerminalFrom.wideCospan.limitCone
 
-instance hasWidePullback [Finite ι] (X : C) :
+instance (priority := 10000) hasWidePullback [Finite ι] (X : C) :
     HasWidePullback (Arrow.mk (terminal.from X)).right
       (fun _ : ι => (Arrow.mk (terminal.from X)).left)
       (fun _ => (Arrow.mk (terminal.from X)).hom) := by
@@ -404,14 +404,14 @@ instance hasWidePullback [Finite ι] (X : C) :
 #align category_theory.cech_nerve_terminal_from.has_wide_pullback CategoryTheory.CechNerveTerminalFrom.hasWidePullback
 
 -- porting note: added to make the following definitions work
-instance hasWidePullback' [Finite ι] (X : C) :
+instance (priority := 10000) hasWidePullback' [Finite ι] (X : C) :
     HasWidePullback (⊤_ C)
       (fun _ : ι => X)
       (fun _ => terminal.from X) :=
   hasWidePullback _ _
 
 -- porting note: added to make the following definitions work
-instance hasLimit_wideCospan [Finite ι] (X : C) : HasLimit (wideCospan ι X) := hasWidePullback _ _
+instance (priority := 10000) hasLimit_wideCospan [Finite ι] (X : C) : HasLimit (wideCospan ι X) := hasWidePullback _ _
 
 -- porting note: added to ease the definition of `iso`
 /-- the isomorphism to the product induced by the limit cone `wideCospan ι X` -/

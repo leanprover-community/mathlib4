@@ -41,7 +41,7 @@ structure Algebra (F : C ⥤ C) where
   str : F.obj a ⟶ a
 #align category_theory.endofunctor.algebra CategoryTheory.Endofunctor.Algebra
 
-instance [Inhabited C] : Inhabited (Algebra (𝟭 C)) :=
+instance (priority := 10000) [Inhabited C] : Inhabited (Algebra (𝟭 C)) :=
   ⟨⟨default, 𝟙 _⟩⟩
 
 namespace Algebra
@@ -80,7 +80,7 @@ namespace Hom
 def id : Hom A A where f := 𝟙 _
 #align category_theory.endofunctor.algebra.hom.id CategoryTheory.Endofunctor.Algebra.Hom.id
 
-instance : Inhabited (Hom A A) :=
+instance (priority := 10000) : Inhabited (Hom A A) :=
   ⟨{ f := 𝟙 _ }⟩
 
 /-- The composition of morphisms between algebras of endofunctor `F` -/
@@ -89,7 +89,7 @@ def comp (f : Hom A₀ A₁) (g : Hom A₁ A₂) : Hom A₀ A₂ where f := f.1 
 
 end Hom
 
-instance (F : C ⥤ C) : CategoryStruct (Algebra F) where
+instance (priority := 10000) (F : C ⥤ C) : CategoryStruct (Algebra F) where
   Hom := Hom
   id := Hom.id
   comp := @Hom.comp _ _ _
@@ -121,7 +121,7 @@ theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
 #align category_theory.endofunctor.algebra.comp_f CategoryTheory.Endofunctor.Algebra.comp_f
 
 /-- Algebras of an endofunctor `F` form a category -/
-instance (F : C ⥤ C) : Category (Algebra F) := { }
+instance (priority := 10000) (F : C ⥤ C) : Category (Algebra F) := { }
 
 /-- To construct an isomorphism of algebras, it suffices to give an isomorphism of the As which
 commutes with the structure morphisms.
@@ -152,10 +152,10 @@ theorem iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.1] : IsIso f :=
         simp }, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.endofunctor.algebra.iso_of_iso CategoryTheory.Endofunctor.Algebra.iso_of_iso
 
-instance forget_reflects_iso : ReflectsIsomorphisms (forget F) where reflects := iso_of_iso
+instance (priority := 10000) forget_reflects_iso : ReflectsIsomorphisms (forget F) where reflects := iso_of_iso
 #align category_theory.endofunctor.algebra.forget_reflects_iso CategoryTheory.Endofunctor.Algebra.forget_reflects_iso
 
-instance forget_faithful : Faithful (forget F) := { }
+instance (priority := 10000) forget_faithful : Faithful (forget F) := { }
 #align category_theory.endofunctor.algebra.forget_faithful CategoryTheory.Endofunctor.Algebra.forget_faithful
 
 /-- An algebra morphism with an underlying epimorphism hom in `C` is an algebra epimorphism. -/
@@ -264,7 +264,7 @@ structure Coalgebra (F : C ⥤ C) where
   str : V ⟶ F.obj V
 #align category_theory.endofunctor.coalgebra CategoryTheory.Endofunctor.Coalgebra
 
-instance [Inhabited C] : Inhabited (Coalgebra (𝟭 C)) :=
+instance (priority := 10000) [Inhabited C] : Inhabited (Coalgebra (𝟭 C)) :=
   ⟨⟨default, 𝟙 _⟩⟩
 
 namespace Coalgebra
@@ -303,7 +303,7 @@ namespace Hom
 def id : Hom V V where f := 𝟙 _
 #align category_theory.endofunctor.coalgebra.hom.id CategoryTheory.Endofunctor.Coalgebra.Hom.id
 
-instance : Inhabited (Hom V V) :=
+instance (priority := 10000) : Inhabited (Hom V V) :=
   ⟨{ f := 𝟙 _ }⟩
 
 /-- The composition of morphisms between algebras of endofunctor `F` -/
@@ -312,7 +312,7 @@ def comp (f : Hom V₀ V₁) (g : Hom V₁ V₂) : Hom V₀ V₂ where f := f.1 
 
 end Hom
 
-instance (F : C ⥤ C) : CategoryStruct (Coalgebra F) where
+instance (priority := 10000) (F : C ⥤ C) : CategoryStruct (Coalgebra F) where
   Hom := Hom
   id := Hom.id
   comp := @Hom.comp _ _ _
@@ -344,7 +344,7 @@ theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
 #align category_theory.endofunctor.coalgebra.comp_f CategoryTheory.Endofunctor.Coalgebra.comp_f
 
 /-- Coalgebras of an endofunctor `F` form a category -/
-instance (F : C ⥤ C) : Category (Coalgebra F) := { }
+instance (priority := 10000) (F : C ⥤ C) : Category (Coalgebra F) := { }
 
 /-- To construct an isomorphism of coalgebras, it suffices to give an isomorphism of the Vs which
 commutes with the structure morphisms.
@@ -375,10 +375,10 @@ theorem iso_of_iso (f : V₀ ⟶ V₁) [IsIso f.1] : IsIso f :=
         simp }, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.endofunctor.coalgebra.iso_of_iso CategoryTheory.Endofunctor.Coalgebra.iso_of_iso
 
-instance forget_reflects_iso : ReflectsIsomorphisms (forget F) where reflects := iso_of_iso
+instance (priority := 10000) forget_reflects_iso : ReflectsIsomorphisms (forget F) where reflects := iso_of_iso
 #align category_theory.endofunctor.coalgebra.forget_reflects_iso CategoryTheory.Endofunctor.Coalgebra.forget_reflects_iso
 
-instance forget_faithful : Faithful (forget F) := { }
+instance (priority := 10000) forget_faithful : Faithful (forget F) := { }
 #align category_theory.endofunctor.coalgebra.forget_faithful CategoryTheory.Endofunctor.Coalgebra.forget_faithful
 
 /-- An algebra morphism with an underlying epimorphism hom in `C` is an algebra epimorphism. -/

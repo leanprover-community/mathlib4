@@ -55,20 +55,20 @@ under binary `Sup` since this follows from the stronger `sSup` condition. Likewi
 
 variable {L : CompleteSublattice α}
 
-instance instSetLike : SetLike (CompleteSublattice α) α where
+instance (priority := 10000) instSetLike : SetLike (CompleteSublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; cases M; congr; exact SetLike.coe_injective' h
 
-instance instBot : Bot L where
+instance (priority := 10000) instBot : Bot L where
   bot := ⟨⊥, by simpa using L.sSupClosed' <| empty_subset _⟩
 
-instance instTop : Top L where
+instance (priority := 10000) instTop : Top L where
   top := ⟨⊤, by simpa using L.sInfClosed' <| empty_subset _⟩
 
-instance instSupSet : SupSet L where
+instance (priority := 10000) instSupSet : SupSet L where
   sSup s := ⟨sSup s, L.sSupClosed' image_val_subset⟩
 
-instance instInfSet : InfSet L where
+instance (priority := 10000) instInfSet : InfSet L where
   sInf s := ⟨sInf s, L.sInfClosed' image_val_subset⟩
 
 theorem sSupClosed {s : Set α} (h : s ⊆ L) : sSup s ∈ L := L.sSupClosed' h
@@ -89,7 +89,7 @@ theorem coe_sSup' (S : Set L) : (↑(sSup S) : α) = ⨆ N ∈ S, (N : α) := by
 theorem coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
   rw [coe_sInf, ← Set.image, sInf_image]
 
-instance instCompleteLattice : CompleteLattice L :=
+instance (priority := 10000) instCompleteLattice : CompleteLattice L :=
   Subtype.coe_injective.completeLattice _
     Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
 
@@ -143,7 +143,7 @@ lemma isComplemented_iff : ComplementedLattice L ↔ ∀ a ∈ L, ∃ b ∈ L, I
   · obtain ⟨b, hb, hb'⟩ := h a ha
     exact ⟨⟨b, hb⟩, CompleteSublattice.isCompl_iff.mpr hb'⟩
 
-instance : Top (CompleteSublattice α) := ⟨mk' univ (fun _ _ ↦ mem_univ _) (fun _ _ ↦ mem_univ _)⟩
+instance (priority := 10000) : Top (CompleteSublattice α) := ⟨mk' univ (fun _ _ ↦ mem_univ _) (fun _ _ ↦ mem_univ _)⟩
 
 variable (L)
 

@@ -63,7 +63,7 @@ namespace SemidirectProduct
 variable {N G}
 variable {φ : G →* MulAut N}
 
-instance : Mul (SemidirectProduct N G φ) where
+instance (priority := 10000) : Mul (SemidirectProduct N G φ) where
   mul a b := ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩
 
 lemma mul_def (a b : SemidirectProduct N G φ) : a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
@@ -76,7 +76,7 @@ theorem mul_left (a b : N ⋊[φ] G) : (a * b).left = a.left * φ a.right b.left
 theorem mul_right (a b : N ⋊[φ] G) : (a * b).right = a.right * b.right := rfl
 #align semidirect_product.mul_right SemidirectProduct.mul_right
 
-instance : One (SemidirectProduct N G φ) where one := ⟨1, 1⟩
+instance (priority := 10000) : One (SemidirectProduct N G φ) where one := ⟨1, 1⟩
 
 @[simp]
 theorem one_left : (1 : N ⋊[φ] G).left = 1 := rfl
@@ -86,7 +86,7 @@ theorem one_left : (1 : N ⋊[φ] G).left = 1 := rfl
 theorem one_right : (1 : N ⋊[φ] G).right = 1 := rfl
 #align semidirect_product.one_right SemidirectProduct.one_right
 
-instance : Inv (SemidirectProduct N G φ) where
+instance (priority := 10000) : Inv (SemidirectProduct N G φ) where
   inv x := ⟨φ x.2⁻¹ x.1⁻¹, x.2⁻¹⟩
 
 @[simp]
@@ -97,13 +97,13 @@ theorem inv_left (a : N ⋊[φ] G) : a⁻¹.left = φ a.right⁻¹ a.left⁻¹ :
 theorem inv_right (a : N ⋊[φ] G) : a⁻¹.right = a.right⁻¹ := rfl
 #align semidirect_product.inv_right SemidirectProduct.inv_right
 
-instance : Group (N ⋊[φ] G) where
+instance (priority := 10000) : Group (N ⋊[φ] G) where
   mul_assoc a b c := SemidirectProduct.ext _ _ (by simp [mul_assoc]) (by simp [mul_assoc])
   one_mul a := SemidirectProduct.ext _ _ (by simp) (one_mul a.2)
   mul_one a := SemidirectProduct.ext _ _ (by simp) (mul_one _)
   mul_left_inv a := SemidirectProduct.ext _ _ (by simp) (by simp)
 
-instance : Inhabited (N ⋊[φ] G) := ⟨1⟩
+instance (priority := 10000) : Inhabited (N ⋊[φ] G) := ⟨1⟩
 
 /-- The canonical map `N →* N ⋊[φ] G` sending `n` to `⟨n, 1⟩` -/
 def inl : N →* N ⋊[φ] G where

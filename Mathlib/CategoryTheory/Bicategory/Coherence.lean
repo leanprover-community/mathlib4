@@ -230,7 +230,7 @@ def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
 #align category_theory.free_bicategory.normalize_equiv CategoryTheory.FreeBicategory.normalizeEquiv
 
 /-- The coherence theorem for bicategories. -/
-instance locally_thin {a b : FreeBicategory B} : Quiver.IsThin (a ⟶ b) := fun _ _ =>
+instance (priority := 10000) locally_thin {a b : FreeBicategory B} : Quiver.IsThin (a ⟶ b) := fun _ _ =>
   ⟨fun _ _ =>
     (@normalizeEquiv B _ a b).functor.map_injective (Subsingleton.elim _ _)⟩
 #align category_theory.free_bicategory.locally_thin CategoryTheory.FreeBicategory.locally_thin

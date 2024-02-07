@@ -88,7 +88,7 @@ noncomputable def unitsOfForallIsUnit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) : 
   continuous_toFun := continuous_isUnit_unit h
 #align continuous_map.units_of_forall_is_unit ContinuousMap.unitsOfForallIsUnit
 
-instance canLift :
+instance (priority := 10000) canLift :
     CanLift C(X, R) C(X, Rˣ) (fun f => ⟨fun x => f x, Units.continuous_val.comp f.continuous⟩)
       fun f => ∀ x, IsUnit (f x) where
   prf f h := ⟨unitsOfForallIsUnit h, by ext; rfl⟩

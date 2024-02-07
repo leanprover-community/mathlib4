@@ -118,53 +118,53 @@ def FreeLieAlgebra :=
   Quot (FreeLieAlgebra.Rel R X)
 #align free_lie_algebra FreeLieAlgebra
 
-instance : Inhabited (FreeLieAlgebra R X) := by rw [FreeLieAlgebra]; infer_instance
+instance (priority := 10000) : Inhabited (FreeLieAlgebra R X) := by rw [FreeLieAlgebra]; infer_instance
 
 namespace FreeLieAlgebra
 
-instance {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
+instance (priority := 10000) {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] :
     SMul S (FreeLieAlgebra R X) where smul t := Quot.map (t • ·) (Rel.smulOfTower t)
 
-instance {S : Type*} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
+instance (priority := 10000) {S : Type*} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
     [IsScalarTower S R R] [IsCentralScalar S R] : IsCentralScalar S (FreeLieAlgebra R X) where
   op_smul_eq_smul t := Quot.ind fun a => congr_arg (Quot.mk _) (op_smul_eq_smul t a)
 
-instance : Zero (FreeLieAlgebra R X) where zero := Quot.mk _ 0
+instance (priority := 10000) : Zero (FreeLieAlgebra R X) where zero := Quot.mk _ 0
 
-instance : Add (FreeLieAlgebra R X) where
+instance (priority := 10000) : Add (FreeLieAlgebra R X) where
   add := Quot.map₂ (· + ·) (fun _ _ _ => Rel.addLeft _) fun _ _ _ => Rel.add_right _
 
-instance : Neg (FreeLieAlgebra R X) where neg := Quot.map Neg.neg fun _ _ => Rel.neg
+instance (priority := 10000) : Neg (FreeLieAlgebra R X) where neg := Quot.map Neg.neg fun _ _ => Rel.neg
 
-instance : Sub (FreeLieAlgebra R X) where
+instance (priority := 10000) : Sub (FreeLieAlgebra R X) where
   sub := Quot.map₂ Sub.sub (fun _ _ _ => Rel.subLeft _) fun _ _ _ => Rel.subRight _
 
-instance : AddGroup (FreeLieAlgebra R X) :=
+instance (priority := 10000) : AddGroup (FreeLieAlgebra R X) :=
   Function.Surjective.addGroup (Quot.mk _) (surjective_quot_mk _) rfl (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance : AddCommSemigroup (FreeLieAlgebra R X) :=
+instance (priority := 10000) : AddCommSemigroup (FreeLieAlgebra R X) :=
   Function.Surjective.addCommSemigroup (Quot.mk _) (surjective_quot_mk _) fun _ _ => rfl
 
-instance : AddCommGroup (FreeLieAlgebra R X) :=
+instance (priority := 10000) : AddCommGroup (FreeLieAlgebra R X) :=
   { (inferInstance : AddGroup (FreeLieAlgebra R X)),
     (inferInstance :  AddCommSemigroup (FreeLieAlgebra R X)) with }
 
-instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] :
+instance (priority := 10000) {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] :
     Module S (FreeLieAlgebra R X) :=
   Function.Surjective.module S ⟨⟨Quot.mk (Rel R X), rfl⟩, fun _ _ => rfl⟩
     (surjective_quot_mk _) (fun _ _ => rfl)
 
 /-- Note that here we turn the `Mul` coming from the `NonUnitalNonAssocSemiring` structure
 on `lib R X` into a `Bracket` on `FreeLieAlgebra`. -/
-instance : LieRing (FreeLieAlgebra R X) where
+instance (priority := 10000) : LieRing (FreeLieAlgebra R X) where
   bracket := Quot.map₂ (· * ·) (fun _ _ _ => Rel.mul_left _) fun _ _ _ => Rel.mul_right _
   add_lie := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; change Quot.mk _ _ = Quot.mk _ _; simp_rw [add_mul]
   lie_add := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; change Quot.mk _ _ = Quot.mk _ _; simp_rw [mul_add]
   lie_self := by rintro ⟨a⟩; exact Quot.sound (Rel.lie_self a)
   leibniz_lie := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; exact Quot.sound (Rel.leibniz_lie a b c)
 
-instance : LieAlgebra R (FreeLieAlgebra R X) where
+instance (priority := 10000) : LieAlgebra R (FreeLieAlgebra R X) where
   lie_smul := by
     rintro t ⟨a⟩ ⟨c⟩
     change Quot.mk _ (a • t • c) = Quot.mk _ (t • a • c)

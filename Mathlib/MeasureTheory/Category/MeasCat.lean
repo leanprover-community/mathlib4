@@ -46,10 +46,10 @@ def MeasCat : Type (u + 1) :=
 
 namespace MeasCat
 
-instance : CoeSort MeasCat (Type*) :=
+instance (priority := 10000) : CoeSort MeasCat (Type*) :=
   Bundled.coeSort
 
-instance (X : MeasCat) : MeasurableSpace X :=
+instance (priority := 10000) (X : MeasCat) : MeasurableSpace X :=
   X.str
 
 /-- Construct a bundled `MeasCat` from the underlying type and the typeclass. -/
@@ -62,7 +62,7 @@ theorem coe_of (X : Type u) [MeasurableSpace X] : (of X : Type u) = X :=
   rfl
 #align Meas.coe_of MeasCat.coe_of
 
-instance unbundledHom : UnbundledHom @Measurable :=
+instance (priority := 10000) unbundledHom : UnbundledHom @Measurable :=
   ⟨@measurable_id, @Measurable.comp⟩
 #align Meas.unbundled_hom MeasCat.unbundledHom
 
@@ -70,11 +70,11 @@ deriving instance LargeCategory for MeasCat
 
 -- Porting note: `deriving instance ConcreteCategory for MeasCat` didn't work. Define it manually.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory MeasCat := by
+instance (priority := 10000) : ConcreteCategory MeasCat := by
   unfold MeasCat
   infer_instance
 
-instance : Inhabited MeasCat :=
+instance (priority := 10000) : Inhabited MeasCat :=
   ⟨MeasCat.of Empty⟩
 
 /-- `Measure X` is the measurable space of measures over the measurable space `X`. It is the
@@ -121,7 +121,7 @@ def Integral : Giry.Algebra where
 
 end MeasCat
 
-instance TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} :=
+instance (priority := 10000) TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} :=
   BundledHom.mkHasForget₂ borel (fun f => ⟨f.1, f.2.borel_measurable⟩) (fun _ => rfl)
 #align Top.has_forget_to_Meas TopCat.hasForgetToMeasCat
 

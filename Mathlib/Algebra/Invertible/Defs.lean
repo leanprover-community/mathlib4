@@ -156,7 +156,7 @@ theorem invertible_unique {α : Type u} [Monoid α] (a b : α) [Invertible a] [I
   rw [h, mul_invOf_self]
 #align invertible_unique invertible_unique
 
-instance Invertible.subsingleton [Monoid α] (a : α) : Subsingleton (Invertible a) :=
+instance (priority := 10000) Invertible.subsingleton [Monoid α] (a : α) : Subsingleton (Invertible a) :=
   ⟨fun ⟨b, hba, hab⟩ ⟨c, _, hac⟩ => by
     congr
     exact left_inv_eq_right_inv hba hac⟩
@@ -206,7 +206,7 @@ theorem invOf_one [Monoid α] [Invertible (1 : α)] : ⅟ (1 : α) = 1 :=
 #align inv_of_one invOf_one
 
 /-- `a` is the inverse of `⅟a`. -/
-instance invertibleInvOf [One α] [Mul α] {a : α} [Invertible a] : Invertible (⅟ a) :=
+instance (priority := 10000) invertibleInvOf [One α] [Mul α] {a : α} [Invertible a] : Invertible (⅟ a) :=
   ⟨a, mul_invOf_self a, invOf_mul_self a⟩
 #align invertible_inv_of invertibleInvOf
 

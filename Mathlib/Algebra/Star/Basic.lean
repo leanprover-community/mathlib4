@@ -71,7 +71,7 @@ namespace StarMemClass
 
 variable {S : Type w} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 
-instance instStar : Star s where
+instance (priority := 10000) instStar : Star s where
   star r := ⟨star (r : R), star_mem r.prop⟩
 
 @[simp] lemma coe_star (x : s) : star x = star (x : R) := rfl
@@ -399,7 +399,7 @@ If that's not the case try reordering lemmas or adding @[priority].
 theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 #align star_ring_end_self_apply starRingEnd_self_apply
 
-instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveStar (S →+* R) where
+instance (priority := 10000) RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveStar (S →+* R) where
   toStar := { star := fun f => RingHom.comp (starRingEnd R) f }
   star_involutive := by
     intro
@@ -472,10 +472,10 @@ def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
 
-instance Nat.instStarRing : StarRing ℕ := starRingOfComm
-instance Rat.instStarRing : StarRing ℚ := starRingOfComm
-instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
-instance Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
+instance (priority := 10000) Nat.instStarRing : StarRing ℕ := starRingOfComm
+instance (priority := 10000) Rat.instStarRing : StarRing ℚ := starRingOfComm
+instance (priority := 10000) Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
+instance (priority := 10000) Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
 
 /-- A star module `A` over a star ring `R` is a module which is a star add monoid,
 and the two star structures are compatible in the sense
@@ -499,18 +499,18 @@ export StarModule (star_smul)
 attribute [simp] star_smul
 
 /-- A commutative star monoid is a star module over itself via `Monoid.toMulAction`. -/
-instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
+instance (priority := 10000) StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
   ⟨star_mul'⟩
 #align star_semigroup.to_star_module StarMul.toStarModule
 
-instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] : StarModule ℕ α :=
+instance (priority := 10000) StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] : StarModule ℕ α :=
   ⟨fun n a ↦ by rw [star_nsmul, star_trivial n]⟩
 
 namespace RingHomInvPair
 
 /-- Instance needed to define star-linear maps over a commutative star ring
 (ex: conjugate-linear maps when R = ℂ).  -/
-instance [CommSemiring R] [StarRing R] : RingHomInvPair (starRingEnd R) (starRingEnd R) :=
+instance (priority := 10000) [CommSemiring R] [StarRing R] : RingHomInvPair (starRingEnd R) (starRingEnd R) :=
   ⟨RingHom.ext star_star, RingHom.ext star_star⟩
 
 end RingHomInvPair
@@ -535,7 +535,7 @@ namespace Units
 
 variable [Monoid R] [StarMul R]
 
-instance : StarMul Rˣ where
+instance (priority := 10000) : StarMul Rˣ where
   star u :=
     { val := star u
       inv := star ↑u⁻¹
@@ -554,7 +554,7 @@ theorem coe_star_inv (u : Rˣ) : ↑(star u)⁻¹ = (star ↑u⁻¹ : R) :=
   rfl
 #align units.coe_star_inv Units.coe_star_inv
 
-instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
+instance (priority := 10000) {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
   ⟨fun u a => star_smul (u : R) a⟩
 
 end Units
@@ -576,7 +576,7 @@ theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
   rw [Ring.inverse_non_unit _ ha, Ring.inverse_non_unit _ (mt isUnit_star.mp ha), star_zero]
 #align ring.inverse_star Ring.inverse_star
 
-instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : R) [Invertible r] :
+instance (priority := 10000) Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : R) [Invertible r] :
     Invertible (star r) where
   invOf := Star.star (⅟ r)
   invOf_mul_self := by rw [← star_mul, mul_invOf_self, star_one]
@@ -595,7 +595,7 @@ theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
 namespace MulOpposite
 
 /-- The opposite type carries the same star operation. -/
-instance [Star R] : Star Rᵐᵒᵖ where star r := op (star r.unop)
+instance (priority := 10000) [Star R] : Star Rᵐᵒᵖ where star r := op (star r.unop)
 
 @[simp]
 theorem unop_star [Star R] (r : Rᵐᵒᵖ) : unop (star r) = star (unop r) :=
@@ -607,23 +607,23 @@ theorem op_star [Star R] (r : R) : op (star r) = star (op r) :=
   rfl
 #align mul_opposite.op_star MulOpposite.op_star
 
-instance [InvolutiveStar R] : InvolutiveStar Rᵐᵒᵖ where
+instance (priority := 10000) [InvolutiveStar R] : InvolutiveStar Rᵐᵒᵖ where
   star_involutive r := unop_injective (star_star r.unop)
 
-instance [Mul R] [StarMul R] : StarMul Rᵐᵒᵖ where
+instance (priority := 10000) [Mul R] [StarMul R] : StarMul Rᵐᵒᵖ where
   star_mul x y := unop_injective (star_mul y.unop x.unop)
 
-instance [AddMonoid R] [StarAddMonoid R] : StarAddMonoid Rᵐᵒᵖ where
+instance (priority := 10000) [AddMonoid R] [StarAddMonoid R] : StarAddMonoid Rᵐᵒᵖ where
   star_add x y := unop_injective (star_add x.unop y.unop)
 
-instance [Semiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
+instance (priority := 10000) [Semiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
   star_add x y := unop_injective (star_add x.unop y.unop)
 
 end MulOpposite
 
 /-- A commutative star monoid is a star module over its opposite via
 `Monoid.toOppositeMulAction`. -/
-instance StarSemigroup.toOpposite_starModule [CommMonoid R] [StarMul R] :
+instance (priority := 10000) StarSemigroup.toOpposite_starModule [CommMonoid R] [StarMul R] :
     StarModule Rᵐᵒᵖ R :=
   ⟨fun r s => star_mul' s r.unop⟩
 #align star_semigroup.to_opposite_star_module StarSemigroup.toOpposite_starModule

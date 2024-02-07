@@ -53,7 +53,7 @@ lemma PerfectRing.ofSurjective (R : Type*) (p : ℕ) [CommRing R] [ExpChar R p]
   ⟨frobenius_inj R p, h⟩
 #align perfect_ring.of_surjective PerfectRing.ofSurjective
 
-instance PerfectRing.ofFiniteOfIsReduced (R : Type*) [CommRing R] [ExpChar R p]
+instance (priority := 10000) PerfectRing.ofFiniteOfIsReduced (R : Type*) [CommRing R] [ExpChar R p]
     [Finite R] [IsReduced R] : PerfectRing R p :=
   ofSurjective _ _ <| Finite.surjective_of_injective (frobenius_inj R p)
 
@@ -127,7 +127,7 @@ theorem not_irreducible_expand (R p) [CommSemiring R] [Fact p.Prime] [CharP R p]
   rw [polynomial_expand_eq]
   exact not_irreducible_pow (Fact.out : p.Prime).ne_one
 
-instance instPerfectRingProd (S : Type*) [CommSemiring S] [ExpChar S p] [PerfectRing S p] :
+instance (priority := 10000) instPerfectRingProd (S : Type*) [CommSemiring S] [ExpChar S p] [PerfectRing S p] :
     PerfectRing (R × S) p where
   bijective_frobenius := (bijective_frobenius R p).Prod_map (bijective_frobenius S p)
 
@@ -190,9 +190,9 @@ namespace PerfectField
 
 variable {K : Type*} [Field K]
 
-instance ofCharZero [CharZero K] : PerfectField K := ⟨Irreducible.separable⟩
+instance (priority := 10000) ofCharZero [CharZero K] : PerfectField K := ⟨Irreducible.separable⟩
 
-instance ofFinite [Finite K] : PerfectField K := by
+instance (priority := 10000) ofFinite [Finite K] : PerfectField K := by
   obtain ⟨p, _instP⟩ := CharP.exists K
   have : Fact p.Prime := ⟨CharP.char_is_prime K p⟩
   exact PerfectRing.toPerfectField K p
@@ -200,7 +200,7 @@ instance ofFinite [Finite K] : PerfectField K := by
 variable [PerfectField K]
 
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
-instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
+instance (priority := 10000) toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
   refine' PerfectRing.ofSurjective _ _ fun y ↦ _
   let f : K[X] := X ^ p - C y
   let L := f.SplittingField

@@ -514,7 +514,7 @@ lemma nonLindelof_univ (X : Type*) [TopologicalSpace X] [NonLindelofSpace X] :
 theorem IsLindelof.ne_univ [NonLindelofSpace X] (hs : IsLindelof s) : s ≠ univ := fun h ↦
   nonLindelof_univ X (h ▸ hs)
 
-instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
+instance (priority := 10000) [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
   refine' hasBasis_coLindelof.neBot_iff.2 fun {s} hs => _
   contrapose hs
   rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
@@ -525,7 +525,7 @@ instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
 theorem Filter.coLindelof_eq_bot [LindelofSpace X] : Filter.coLindelof X = ⊥ :=
   hasBasis_coLindelof.eq_bot_iff.mpr ⟨Set.univ, isLindelof_univ, Set.compl_univ⟩
 
-instance [NonLindelofSpace X] : NeBot (Filter.coclosedLindelof X) :=
+instance (priority := 10000) [NonLindelofSpace X] : NeBot (Filter.coclosedLindelof X) :=
   neBot_of_le coLindelof_le_coclosedLindelof
 
 theorem nonLindelofSpace_of_neBot (_ : NeBot (Filter.coLindelof X)) : NonLindelofSpace X :=
@@ -635,23 +635,23 @@ instance (priority := 100) Countable.LindelofSpace [Countable X] : LindelofSpace
   isLindelof_univ := countable_univ.isLindelof
 
 /-- The disjoint union of two Lindelöf spaces is Lindelöf. -/
-instance [LindelofSpace X] [LindelofSpace Y] : LindelofSpace (X ⊕ Y) where
+instance (priority := 10000) [LindelofSpace X] [LindelofSpace Y] : LindelofSpace (X ⊕ Y) where
   isLindelof_univ := by
     rw [← range_inl_union_range_inr]
     exact (isLindelof_range continuous_inl).union (isLindelof_range continuous_inr)
 
-instance {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)] [∀ i, LindelofSpace (X i)] :
+instance (priority := 10000) {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)] [∀ i, LindelofSpace (X i)] :
     LindelofSpace (Σi, X i) where
   isLindelof_univ := by
     rw [Sigma.univ]
     exact isLindelof_iUnion fun i => isLindelof_range continuous_sigmaMk
 
-instance Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofSpace (Quot r) where
+instance (priority := 10000) Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofSpace (Quot r) where
   isLindelof_univ := by
     rw [← range_quot_mk]
     exact isLindelof_range continuous_quot_mk
 
-instance Quotient.LindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
+instance (priority := 10000) Quotient.LindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
   Quot.LindelofSpace
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
@@ -703,7 +703,7 @@ lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : �
   use t, htc
   apply eq_of_subset_of_subset (iUnion₂_subset_iUnion (fun i ↦ i ∈ t) fun i ↦ U i) htu
 
-instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X] (p : X → Prop) :
+instance (priority := 10000) HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X] (p : X → Prop) :
     LindelofSpace {x // p x} := by
   apply isLindelof_iff_LindelofSpace.mp
   exact HereditarilyLindelof_LindelofSets fun x ↦ p x

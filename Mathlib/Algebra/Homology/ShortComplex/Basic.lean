@@ -85,7 +85,7 @@ def Hom.comp (φ₁₂ : Hom S₁ S₂) (φ₂₃ : Hom S₂ S₃) : Hom S₁ S�
   τ₂ := φ₁₂.τ₂ ≫ φ₂₃.τ₂
   τ₃ := φ₁₂.τ₃ ≫ φ₂₃.τ₃
 
-instance : Category (ShortComplex C) where
+instance (priority := 10000) : Category (ShortComplex C) where
   Hom := Hom
   id := Hom.id
   comp := Hom.comp
@@ -113,7 +113,7 @@ def homMk {S₁ S₂ : ShortComplex C} (τ₁ : S₁.X₁ ⟶ S₂.X₁) (τ₂ 
 
 attribute [simp] comp_τ₁ comp_τ₂ comp_τ₃
 
-instance : Zero (S₁ ⟶ S₂) := ⟨{ τ₁ := 0, τ₂ := 0, τ₃ := 0 }⟩
+instance (priority := 10000) : Zero (S₁ ⟶ S₂) := ⟨{ τ₁ := 0, τ₂ := 0, τ₃ := 0 }⟩
 
 variable (S₁ S₂)
 
@@ -123,7 +123,7 @@ variable (S₁ S₂)
 
 variable {S₁ S₂}
 
-instance : HasZeroMorphisms (ShortComplex C) where
+instance (priority := 10000) : HasZeroMorphisms (ShortComplex C) where
 
 /-- The first projection functor `ShortComplex C ⥤ C`. -/
 @[simps]
@@ -143,13 +143,13 @@ def π₃ : ShortComplex C ⥤ C where
   obj S := S.X₃
   map f := f.τ₃
 
-instance preservesZeroMorphisms_π₁ : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
-instance preservesZeroMorphisms_π₂ : Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) where
-instance preservesZeroMorphisms_π₃ : Functor.PreservesZeroMorphisms (π₃ : _ ⥤ C) where
+instance (priority := 10000) preservesZeroMorphisms_π₁ : Functor.PreservesZeroMorphisms (π₁ : _ ⥤ C) where
+instance (priority := 10000) preservesZeroMorphisms_π₂ : Functor.PreservesZeroMorphisms (π₂ : _ ⥤ C) where
+instance (priority := 10000) preservesZeroMorphisms_π₃ : Functor.PreservesZeroMorphisms (π₃ : _ ⥤ C) where
 
-instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ := (inferInstance : IsIso (π₁.mapIso (asIso f)).hom)
-instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ := (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
-instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := (inferInstance : IsIso (π₃.mapIso (asIso f)).hom)
+instance (priority := 10000) (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ := (inferInstance : IsIso (π₁.mapIso (asIso f)).hom)
+instance (priority := 10000) (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ := (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
+instance (priority := 10000) (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := (inferInstance : IsIso (π₃.mapIso (asIso f)).hom)
 
 /-- The natural transformation `π₁ ⟶ π₂` induced by `S.f` for all `S : ShortComplex C`. -/
 @[simps] def π₁Toπ₂ : (π₁ : _ ⥤ C) ⟶ π₂ where

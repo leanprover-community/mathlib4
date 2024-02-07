@@ -222,16 +222,16 @@ def RayVector (R M : Type*) [Zero M] :=
 #align ray_vector RayVector
 
 -- Porting note: Made Coe into CoeOut so it's not dangerous anymore
-instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
+instance (priority := 10000) RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
 #align ray_vector.has_coe RayVector.coe
-instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
+instance (priority := 10000) {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
   let ⟨x, hx⟩ := exists_ne (0 : M)
   ⟨⟨x, hx⟩⟩
 variable (R M)
 
 /-- The setoid of the `SameRay` relation for the subtype of nonzero vectors. -/
-instance RayVector.Setoid : Setoid (RayVector R M)
+instance (priority := 10000) RayVector.Setoid : Setoid (RayVector R M)
     where
   r x y := SameRay R (x : M) y
   iseqv :=
@@ -268,7 +268,7 @@ theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0)
 
 variable {R}
 
-instance [Nontrivial M] : Nonempty (Module.Ray R M) :=
+instance (priority := 10000) [Nontrivial M] : Nonempty (Module.Ray R M) :=
   Nonempty.map Quotient.mk' inferInstance
 
 /-- The rays given by two nonzero vectors are equal if and only if those vectors
@@ -317,7 +317,7 @@ variable {G : Type*} [Group G] [DistribMulAction G M]
 
 /-- Any invertible action preserves the non-zeroness of ray vectors. This is primarily of interest
 when `G = Rˣ` -/
-instance {R : Type*} : MulAction G (RayVector R M)
+instance (priority := 10000) {R : Type*} : MulAction G (RayVector R M)
     where
   smul r := Subtype.map (r • ·) fun _ => (smul_ne_zero_iff_ne _).2
   mul_smul a b _ := Subtype.ext <| mul_smul a b _
@@ -327,7 +327,7 @@ variable [SMulCommClass R G M]
 
 /-- Any invertible action preserves the non-zeroness of rays. This is primarily of interest when
 `G = Rˣ` -/
-instance : MulAction G (Module.Ray R M)
+instance (priority := 10000) : MulAction G (Module.Ray R M)
     where
   smul r := Quotient.map (r • ·) fun _ _ h => h.smul _
   mul_smul a b := Quotient.ind fun _ => congr_arg Quotient.mk' <| mul_smul a b _
@@ -429,7 +429,7 @@ theorem eq_zero_of_sameRay_self_neg [NoZeroSMulDivisors R M] (h : SameRay R x (-
 namespace RayVector
 
 /-- Negating a nonzero vector. -/
-instance {R : Type*} : Neg (RayVector R M) :=
+instance (priority := 10000) {R : Type*} : Neg (RayVector R M) :=
   ⟨fun v => ⟨-v, neg_ne_zero.2 v.prop⟩⟩
 
 /-- Negating a nonzero vector commutes with coercion to the underlying module. -/
@@ -439,7 +439,7 @@ theorem coe_neg {R : Type*} (v : RayVector R M) : ↑(-v) = -(v : M) :=
 #align ray_vector.coe_neg RayVector.coe_neg
 
 /-- Negating a nonzero vector twice produces the original vector. -/
-instance {R : Type*} : InvolutiveNeg (RayVector R M)
+instance (priority := 10000) {R : Type*} : InvolutiveNeg (RayVector R M)
     where
   neg := Neg.neg
   neg_neg v := by rw [Subtype.ext_iff, coe_neg, coe_neg, neg_neg]
@@ -455,7 +455,7 @@ end RayVector
 variable (R)
 
 /-- Negating a ray. -/
-instance : Neg (Module.Ray R M) :=
+instance (priority := 10000) : Neg (Module.Ray R M) :=
   ⟨Quotient.map (fun v => -v) fun _ _ => RayVector.equiv_neg_iff.2⟩
 
 /-- The ray given by the negation of a nonzero vector. -/
@@ -470,7 +470,7 @@ namespace Module.Ray
 variable {R}
 
 /-- Negating a ray twice produces the original ray. -/
-instance : InvolutiveNeg (Module.Ray R M)
+instance (priority := 10000) : InvolutiveNeg (Module.Ray R M)
     where
   neg := Neg.neg
   neg_neg x := by apply ind R (by simp) x

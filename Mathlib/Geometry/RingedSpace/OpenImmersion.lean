@@ -146,12 +146,12 @@ theorem isoRestrict_inv_ofRestrict : H.isoRestrict.inv ≫ f = Y.ofRestrict _ :=
   rw [Iso.inv_comp_eq, isoRestrict_hom_ofRestrict]
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.iso_restrict_inv_of_restrict AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict_inv_ofRestrict
 
-instance mono [H : IsOpenImmersion f] : Mono f := by
+instance (priority := 10000) mono [H : IsOpenImmersion f] : Mono f := by
   rw [← H.isoRestrict_hom_ofRestrict]; apply mono_comp
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.mono AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.mono
 
 /-- The composition of two open immersions is an open immersion. -/
-instance comp {Z : PresheafedSpace C} (f : X ⟶ Y) [hf : IsOpenImmersion f] (g : Y ⟶ Z)
+instance (priority := 10000) comp {Z : PresheafedSpace C} (f : X ⟶ Y) [hf : IsOpenImmersion f] (g : Y ⟶ Z)
     [hg : IsOpenImmersion g] : IsOpenImmersion (f ≫ g) where
   base_open := hg.base_open.comp hf.base_open
   c_iso U := by
@@ -210,7 +210,7 @@ theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
   congr 1
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.inv_naturality AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.inv_naturality
 
-instance (U : Opens X) : IsIso (H.invApp U) := by delta invApp; infer_instance
+instance (priority := 10000) (U : Opens X) : IsIso (H.invApp U) := by delta invApp; infer_instance
 
 theorem inv_invApp (U : Opens X) :
     inv (H.invApp U) =
@@ -267,7 +267,7 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.app_inv_app' AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.app_inv_app'
 
 /-- An isomorphism is an open immersion. -/
-instance ofIso {X Y : PresheafedSpace C} (H : X ≅ Y) : IsOpenImmersion H.hom where
+instance (priority := 10000) ofIso {X Y : PresheafedSpace C} (H : X ≅ Y) : IsOpenImmersion H.hom where
   base_open := (TopCat.homeoOfIso ((forget C).mapIso H)).openEmbedding
   -- Porting note : `inferInstance` will fail if Lean is not told that `H.hom.c` is iso
   c_iso _ := letI : IsIso H.hom.c := c_isIso_of_iso H.hom; inferInstance
@@ -278,7 +278,7 @@ instance (priority := 100) ofIsIso {X Y : PresheafedSpace C} (f : X ⟶ Y) [IsIs
   AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.ofIso (asIso f)
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.of_is_iso AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.ofIsIso
 
-instance ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
+instance (priority := 10000) ofRestrict {X : TopCat} (Y : PresheafedSpace C) {f : X ⟶ Y.carrier}
     (hf : OpenEmbedding f) : IsOpenImmersion (Y.ofRestrict hf) where
   base_open := hf
   c_iso U := by
@@ -335,7 +335,7 @@ theorem to_iso (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.base] : IsIso f
   apply isIso_of_components
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.to_iso AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.to_iso
 
-instance stalk_iso [HasColimits C] [H : IsOpenImmersion f] (x : X) : IsIso (stalkMap f x) := by
+instance (priority := 10000) stalk_iso [HasColimits C] [H : IsOpenImmersion f] (x : X) : IsIso (stalkMap f x) := by
   rw [← H.isoRestrict_hom_ofRestrict]
   rw [PresheafedSpace.stalkMap.comp]
   infer_instance
@@ -478,7 +478,7 @@ theorem pullbackConeOfLeftLift_snd :
     · rw [s.pt.presheaf.map_id]; erw [Category.comp_id]
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_lift_snd AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftLift_snd
 
-instance pullbackConeSndIsOpenImmersion : IsOpenImmersion (pullbackConeOfLeft f g).snd := by
+instance (priority := 10000) pullbackConeSndIsOpenImmersion : IsOpenImmersion (pullbackConeOfLeft f g).snd := by
   erw [CategoryTheory.Limits.PullbackCone.mk_snd]
   infer_instance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_snd_is_open_immersion AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackConeSndIsOpenImmersion
@@ -495,34 +495,34 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) := by
   exact h₂.trans (pullbackConeOfLeftLift_snd f g s).symm
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_is_limit AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftIsLimit
 
-instance hasPullback_of_left : HasPullback f g :=
+instance (priority := 10000) hasPullback_of_left : HasPullback f g :=
   ⟨⟨⟨_, pullbackConeOfLeftIsLimit f g⟩⟩⟩
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.has_pullback_of_left AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.hasPullback_of_left
 
-instance hasPullback_of_right : HasPullback g f :=
+instance (priority := 10000) hasPullback_of_right : HasPullback g f :=
   hasPullback_symmetry f g
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.has_pullback_of_right AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.hasPullback_of_right
 
 /-- Open immersions are stable under base-change. -/
-instance pullbackSndOfLeft : IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
+instance (priority := 10000) pullbackSndOfLeft : IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
   delta pullback.snd
   rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
   infer_instance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_snd_of_left AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft
 
 /-- Open immersions are stable under base-change. -/
-instance pullbackFstOfRight : IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
+instance (priority := 10000) pullbackFstOfRight : IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   infer_instance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_fst_of_right AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackFstOfRight
 
-instance pullbackToBaseIsOpenImmersion [IsOpenImmersion g] :
+instance (priority := 10000) pullbackToBaseIsOpenImmersion [IsOpenImmersion g] :
     IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl, cospan_map_inl]
   infer_instance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_to_base_is_open_immersion AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackToBaseIsOpenImmersion
 
-instance forgetPreservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :=
+instance (priority := 10000) forgetPreservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :=
   preservesLimitOfPreservesLimitCone (pullbackConeOfLeftIsLimit f g)
     (by
       apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).toFun
@@ -538,7 +538,7 @@ instance forgetPreservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :=
       · exact Category.comp_id _)
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.forget_preserves_limits_of_left AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.forgetPreservesLimitsOfLeft
 
-instance forgetPreservesLimitsOfRight : PreservesLimit (cospan g f) (forget C) :=
+instance (priority := 10000) forgetPreservesLimitsOfRight : PreservesLimit (cospan g f) (forget C) :=
   preservesPullbackSymmetry (forget C) f g
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.forget_preserves_limits_of_right AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.forgetPreservesLimitsOfRight
 
@@ -624,7 +624,7 @@ theorem toSheafedSpaceHom_c : (toSheafedSpaceHom Y f).c = f.c :=
   rfl
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.to_SheafedSpace_hom_c AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toSheafedSpaceHom_c
 
-instance toSheafedSpace_isOpenImmersion : SheafedSpace.IsOpenImmersion (toSheafedSpaceHom Y f) :=
+instance (priority := 10000) toSheafedSpace_isOpenImmersion : SheafedSpace.IsOpenImmersion (toSheafedSpaceHom Y f) :=
   H
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.to_SheafedSpace_is_open_immersion AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toSheafedSpace_isOpenImmersion
 
@@ -667,7 +667,7 @@ theorem toLocallyRingedSpaceHom_val : (toLocallyRingedSpaceHom Y f).val = f :=
   rfl
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.to_LocallyRingedSpace_hom_val AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toLocallyRingedSpaceHom_val
 
-instance toLocallyRingedSpace_isOpenImmersion :
+instance (priority := 10000) toLocallyRingedSpace_isOpenImmersion :
     LocallyRingedSpace.IsOpenImmersion (toLocallyRingedSpaceHom Y f) :=
   H
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.to_LocallyRingedSpace_is_open_immersion AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.toLocallyRingedSpace_isOpenImmersion
@@ -699,7 +699,7 @@ instance (priority := 100) of_isIso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso 
     (SheafedSpace.forgetToPresheafedSpace.map_isIso _)
 #align algebraic_geometry.SheafedSpace.is_open_immersion.of_is_iso AlgebraicGeometry.SheafedSpace.IsOpenImmersion.of_isIso
 
-instance comp {X Y Z : SheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) [SheafedSpace.IsOpenImmersion f]
+instance (priority := 10000) comp {X Y Z : SheafedSpace C} (f : X ⟶ Y) (g : Y ⟶ Z) [SheafedSpace.IsOpenImmersion f]
     [SheafedSpace.IsOpenImmersion g] : SheafedSpace.IsOpenImmersion (f ≫ g) :=
   PresheafedSpace.IsOpenImmersion.comp f g
 #align algebraic_geometry.SheafedSpace.is_open_immersion.comp AlgebraicGeometry.SheafedSpace.IsOpenImmersion.comp
@@ -716,38 +716,38 @@ local notation "forget" => SheafedSpace.forgetToPresheafedSpace
 
 open CategoryTheory.Limits.WalkingCospan
 
-instance : Mono f :=
+instance (priority := 10000) : Mono f :=
   (forget).mono_of_mono_map (show @Mono (PresheafedSpace C) _ _ _ f by infer_instance)
 
-instance forgetMapIsOpenImmersion : PresheafedSpace.IsOpenImmersion ((forget).map f) :=
+instance (priority := 10000) forgetMapIsOpenImmersion : PresheafedSpace.IsOpenImmersion ((forget).map f) :=
   ⟨H.base_open, H.c_iso⟩
 #align algebraic_geometry.SheafedSpace.is_open_immersion.forget_map_is_open_immersion AlgebraicGeometry.SheafedSpace.IsOpenImmersion.forgetMapIsOpenImmersion
 
-instance hasLimit_cospan_forget_of_left : HasLimit (cospan f g ⋙ forget) := by
+instance (priority := 10000) hasLimit_cospan_forget_of_left : HasLimit (cospan f g ⋙ forget) := by
   have : HasLimit (cospan ((cospan f g ⋙ forget).map Hom.inl) ((cospan f g ⋙ forget).map Hom.inr))
   · change HasLimit (cospan ((forget).map f) ((forget).map g))
     infer_instance
   apply hasLimitOfIso (diagramIsoCospan _).symm
 #align algebraic_geometry.SheafedSpace.is_open_immersion.has_limit_cospan_forget_of_left AlgebraicGeometry.SheafedSpace.IsOpenImmersion.hasLimit_cospan_forget_of_left
 
-instance hasLimit_cospan_forget_of_left' :
+instance (priority := 10000) hasLimit_cospan_forget_of_left' :
     HasLimit (cospan ((cospan f g ⋙ forget).map Hom.inl) ((cospan f g ⋙ forget).map Hom.inr)) :=
   show HasLimit (cospan ((forget).map f) ((forget).map g)) from inferInstance
 #align algebraic_geometry.SheafedSpace.is_open_immersion.has_limit_cospan_forget_of_left' AlgebraicGeometry.SheafedSpace.IsOpenImmersion.hasLimit_cospan_forget_of_left'
 
-instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := by
+instance (priority := 10000) hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := by
   have : HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr))
   · change HasLimit (cospan ((forget).map g) ((forget).map f))
     infer_instance
   apply hasLimitOfIso (diagramIsoCospan _).symm
 #align algebraic_geometry.SheafedSpace.is_open_immersion.has_limit_cospan_forget_of_right AlgebraicGeometry.SheafedSpace.IsOpenImmersion.hasLimit_cospan_forget_of_right
 
-instance hasLimit_cospan_forget_of_right' :
+instance (priority := 10000) hasLimit_cospan_forget_of_right' :
     HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr)) :=
   show HasLimit (cospan ((forget).map g) ((forget).map f)) from inferInstance
 #align algebraic_geometry.SheafedSpace.is_open_immersion.has_limit_cospan_forget_of_right' AlgebraicGeometry.SheafedSpace.IsOpenImmersion.hasLimit_cospan_forget_of_right'
 
-instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
+instance (priority := 10000) forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toSheafedSpace Y
       (@pullback.snd (PresheafedSpace C) _ _ _ _ f g _))
@@ -755,7 +755,7 @@ instance forgetCreatesPullbackOfLeft : CreatesLimit (cospan f g) forget :=
       HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 #align algebraic_geometry.SheafedSpace.is_open_immersion.forget_creates_pullback_of_left AlgebraicGeometry.SheafedSpace.IsOpenImmersion.forgetCreatesPullbackOfLeft
 
-instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
+instance (priority := 10000) forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
   createsLimitOfFullyFaithfulOfIso
     (PresheafedSpace.IsOpenImmersion.toSheafedSpace Y
       (@pullback.fst (PresheafedSpace C) _ _ _ _ g f _))
@@ -763,7 +763,7 @@ instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
       HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 #align algebraic_geometry.SheafedSpace.is_open_immersion.forget_creates_pullback_of_right AlgebraicGeometry.SheafedSpace.IsOpenImmersion.forgetCreatesPullbackOfRight
 
-instance sheafedSpaceForgetPreservesOfLeft : PreservesLimit (cospan f g) (SheafedSpace.forget C) :=
+instance (priority := 10000) sheafedSpaceForgetPreservesOfLeft : PreservesLimit (cospan f g) (SheafedSpace.forget C) :=
   @Limits.compPreservesLimit _ _ _ _ _ _ (cospan f g) _ _ forget (PresheafedSpace.forget C)
     inferInstance <| by
       have : PreservesLimit
@@ -774,20 +774,20 @@ instance sheafedSpaceForgetPreservesOfLeft : PreservesLimit (cospan f g) (Sheafe
       apply preservesLimitOfIsoDiagram _ (diagramIsoCospan _).symm
 #align algebraic_geometry.SheafedSpace.is_open_immersion.SheafedSpace_forget_preserves_of_left AlgebraicGeometry.SheafedSpace.IsOpenImmersion.sheafedSpaceForgetPreservesOfLeft
 
-instance sheafedSpaceForgetPreservesOfRight : PreservesLimit (cospan g f) (SheafedSpace.forget C) :=
+instance (priority := 10000) sheafedSpaceForgetPreservesOfRight : PreservesLimit (cospan g f) (SheafedSpace.forget C) :=
   preservesPullbackSymmetry _ _ _
 #align algebraic_geometry.SheafedSpace.is_open_immersion.SheafedSpace_forget_preserves_of_right AlgebraicGeometry.SheafedSpace.IsOpenImmersion.sheafedSpaceForgetPreservesOfRight
 
-instance sheafedSpace_hasPullback_of_left : HasPullback f g :=
+instance (priority := 10000) sheafedSpace_hasPullback_of_left : HasPullback f g :=
   hasLimit_of_created (cospan f g) forget
 #align algebraic_geometry.SheafedSpace.is_open_immersion.SheafedSpace_has_pullback_of_left AlgebraicGeometry.SheafedSpace.IsOpenImmersion.sheafedSpace_hasPullback_of_left
 
-instance sheafedSpace_hasPullback_of_right : HasPullback g f :=
+instance (priority := 10000) sheafedSpace_hasPullback_of_right : HasPullback g f :=
   hasLimit_of_created (cospan g f) forget
 #align algebraic_geometry.SheafedSpace.is_open_immersion.SheafedSpace_has_pullback_of_right AlgebraicGeometry.SheafedSpace.IsOpenImmersion.sheafedSpace_hasPullback_of_right
 
 /-- Open immersions are stable under base-change. -/
-instance sheafedSpace_pullback_snd_of_left :
+instance (priority := 10000) sheafedSpace_pullback_snd_of_left :
     SheafedSpace.IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
   delta pullback.snd
   have : _ = limit.π (cospan f g) right := preservesLimitsIso_hom_π forget (cospan f g) right
@@ -799,7 +799,7 @@ instance sheafedSpace_pullback_snd_of_left :
   infer_instance
 #align algebraic_geometry.SheafedSpace.is_open_immersion.SheafedSpace_pullback_snd_of_left AlgebraicGeometry.SheafedSpace.IsOpenImmersion.sheafedSpace_pullback_snd_of_left
 
-instance sheafedSpace_pullback_fst_of_right :
+instance (priority := 10000) sheafedSpace_pullback_fst_of_right :
     SheafedSpace.IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
   delta pullback.fst
   have : _ = limit.π (cospan g f) left := preservesLimitsIso_hom_π forget (cospan g f) left
@@ -811,7 +811,7 @@ instance sheafedSpace_pullback_fst_of_right :
   infer_instance
 #align algebraic_geometry.SheafedSpace.is_open_immersion.SheafedSpace_pullback_fst_of_right AlgebraicGeometry.SheafedSpace.IsOpenImmersion.sheafedSpace_pullback_fst_of_right
 
-instance sheafedSpace_pullback_to_base_isOpenImmersion [SheafedSpace.IsOpenImmersion g] :
+instance (priority := 10000) sheafedSpace_pullback_to_base_isOpenImmersion [SheafedSpace.IsOpenImmersion g] :
     SheafedSpace.IsOpenImmersion (limit.π (cospan f g) one : pullback f g ⟶ Z) := by
   rw [← limit.w (cospan f g) Hom.inl, cospan_map_inl]
   infer_instance
@@ -903,7 +903,7 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
   exact h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
 #align algebraic_geometry.SheafedSpace.is_open_immersion.image_preimage_is_empty AlgebraicGeometry.SheafedSpace.IsOpenImmersion.image_preimage_is_empty
 
-instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
+instance (priority := 10000) sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
     SheafedSpace.IsOpenImmersion (colimit.ι F i) where
   base_open := sigma_ι_openEmbedding F i
   c_iso U := by
@@ -960,16 +960,16 @@ instance (priority := 100) of_isIso [IsIso g] : LocallyRingedSpace.IsOpenImmersi
         erw [← LocallyRingedSpace.comp_val]; rw [IsIso.inv_hom_id]; constructor <;> rfl⟩⟩
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.of_is_iso AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.of_isIso
 
-instance comp (g : Z ⟶ Y) [LocallyRingedSpace.IsOpenImmersion g] :
+instance (priority := 10000) comp (g : Z ⟶ Y) [LocallyRingedSpace.IsOpenImmersion g] :
     LocallyRingedSpace.IsOpenImmersion (f ≫ g) :=
   PresheafedSpace.IsOpenImmersion.comp f.1 g.1
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.comp AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.comp
 
-instance mono : Mono f :=
+instance (priority := 10000) mono : Mono f :=
   LocallyRingedSpace.forgetToSheafedSpace.mono_of_mono_map (show Mono f.1 by infer_instance)
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.mono AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.mono
 
-instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace.map f) :=
+instance (priority := 10000) : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace.map f) :=
   H
 
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
@@ -988,7 +988,7 @@ def pullbackConeOfLeft : PullbackCone f g := by
         (PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition _ _)
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.pullback_cone_of_left AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.pullbackConeOfLeft
 
-instance : LocallyRingedSpace.IsOpenImmersion (pullbackConeOfLeft f g).snd :=
+instance (priority := 10000) : LocallyRingedSpace.IsOpenImmersion (pullbackConeOfLeft f g).snd :=
   show PresheafedSpace.IsOpenImmersion (Y.toPresheafedSpace.ofRestrict _) by infer_instance
 
 /-- The constructed `pullbackConeOfLeft` is indeed limiting. -/
@@ -1017,16 +1017,16 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
           PullbackCone.mk s.fst.1 s.snd.1 <| congr_arg LocallyRingedSpace.Hom.val s.condition).symm
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.pullback_cone_of_left_is_limit AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.pullbackConeOfLeftIsLimit
 
-instance hasPullback_of_left : HasPullback f g :=
+instance (priority := 10000) hasPullback_of_left : HasPullback f g :=
   ⟨⟨⟨_, pullbackConeOfLeftIsLimit f g⟩⟩⟩
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.has_pullback_of_left AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.hasPullback_of_left
 
-instance hasPullback_of_right : HasPullback g f :=
+instance (priority := 10000) hasPullback_of_right : HasPullback g f :=
   hasPullback_symmetry f g
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.has_pullback_of_right AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.hasPullback_of_right
 
 /-- Open immersions are stable under base-change. -/
-instance pullback_snd_of_left :
+instance (priority := 10000) pullback_snd_of_left :
     LocallyRingedSpace.IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
   delta pullback.snd
   rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
@@ -1034,19 +1034,19 @@ instance pullback_snd_of_left :
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.pullback_snd_of_left AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.pullback_snd_of_left
 
 /-- Open immersions are stable under base-change. -/
-instance pullback_fst_of_right :
+instance (priority := 10000) pullback_fst_of_right :
     LocallyRingedSpace.IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   infer_instance
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.pullback_fst_of_right AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.pullback_fst_of_right
 
-instance pullback_to_base_isOpenImmersion [LocallyRingedSpace.IsOpenImmersion g] :
+instance (priority := 10000) pullback_to_base_isOpenImmersion [LocallyRingedSpace.IsOpenImmersion g] :
     LocallyRingedSpace.IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl, cospan_map_inl]
   infer_instance
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.pullback_to_base_is_open_immersion AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.pullback_to_base_isOpenImmersion
 
-instance forgetPreservesPullbackOfLeft :
+instance (priority := 10000) forgetPreservesPullbackOfLeft :
     PreservesLimit (cospan f g) LocallyRingedSpace.forgetToSheafedSpace :=
   preservesLimitOfPreservesLimitCone (pullbackConeOfLeftIsLimit f g) <| by
     apply (isLimitMapConePullbackConeEquiv _ _).symm.toFun
@@ -1054,7 +1054,7 @@ instance forgetPreservesPullbackOfLeft :
     exact PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftIsLimit f.1 g.1
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forget_preserves_pullback_of_left AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetPreservesPullbackOfLeft
 
-instance forgetToPresheafedSpacePreservesPullbackOfLeft :
+instance (priority := 10000) forgetToPresheafedSpacePreservesPullbackOfLeft :
     PreservesLimit (cospan f g)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) :=
   preservesLimitOfPreservesLimitCone (pullbackConeOfLeftIsLimit f g) <| by
@@ -1062,13 +1062,13 @@ instance forgetToPresheafedSpacePreservesPullbackOfLeft :
     exact PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftIsLimit f.1 g.1
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forgetToPresheafedSpace_preserves_pullback_of_left AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetToPresheafedSpacePreservesPullbackOfLeft
 
-instance forgetToPresheafedSpacePreservesOpenImmersion :
+instance (priority := 10000) forgetToPresheafedSpacePreservesOpenImmersion :
     PresheafedSpace.IsOpenImmersion
       ((LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map f) :=
   H
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forgetToPresheafedSpace_preserves_open_immersion AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetToPresheafedSpacePreservesOpenImmersion
 
-instance forgetToTopPreservesPullbackOfLeft :
+instance (priority := 10000) forgetToTopPreservesPullbackOfLeft :
     PreservesLimit (cospan f g)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) := by
   change PreservesLimit _ <|
@@ -1088,34 +1088,34 @@ instance forgetToTopPreservesPullbackOfLeft :
   apply Limits.compPreservesLimit
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forget_to_Top_preserves_pullback_of_left AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetToTopPreservesPullbackOfLeft
 
-instance forgetReflectsPullbackOfLeft :
+instance (priority := 10000) forgetReflectsPullbackOfLeft :
     ReflectsLimit (cospan f g) LocallyRingedSpace.forgetToSheafedSpace :=
   reflectsLimitOfReflectsIsomorphisms _ _
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forget_reflects_pullback_of_left AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetReflectsPullbackOfLeft
 
-instance forgetPreservesPullbackOfRight :
+instance (priority := 10000) forgetPreservesPullbackOfRight :
     PreservesLimit (cospan g f) LocallyRingedSpace.forgetToSheafedSpace :=
   preservesPullbackSymmetry _ _ _
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forget_preserves_pullback_of_right AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetPreservesPullbackOfRight
 
-instance forgetToPresheafedSpacePreservesPullbackOfRight :
+instance (priority := 10000) forgetToPresheafedSpacePreservesPullbackOfRight :
     PreservesLimit (cospan g f)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) :=
   preservesPullbackSymmetry _ _ _
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forgetToPresheafedSpace_preserves_pullback_of_right AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetToPresheafedSpacePreservesPullbackOfRight
 
-instance forgetReflectsPullbackOfRight :
+instance (priority := 10000) forgetReflectsPullbackOfRight :
     ReflectsLimit (cospan g f) LocallyRingedSpace.forgetToSheafedSpace :=
   reflectsLimitOfReflectsIsomorphisms _ _
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forget_reflects_pullback_of_right AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetReflectsPullbackOfRight
 
-instance forgetToPresheafedSpaceReflectsPullbackOfLeft :
+instance (priority := 10000) forgetToPresheafedSpaceReflectsPullbackOfLeft :
     ReflectsLimit (cospan f g)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) :=
   reflectsLimitOfReflectsIsomorphisms _ _
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forgetToPresheafedSpace_reflects_pullback_of_left AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetToPresheafedSpaceReflectsPullbackOfLeft
 
-instance forgetToPresheafedSpaceReflectsPullbackOfRight :
+instance (priority := 10000) forgetToPresheafedSpaceReflectsPullbackOfRight :
     ReflectsLimit (cospan g f)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) :=
   reflectsLimitOfReflectsIsomorphisms _ _

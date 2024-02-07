@@ -105,7 +105,7 @@ add_decl_doc a₄
 /-- The `a₆` coefficient of a Weierstrass curve. -/
 add_decl_doc a₆
 
-instance instInhabitedWeierstrassCurve {R : Type u} [Inhabited R] :
+instance (priority := 10000) instInhabitedWeierstrassCurve {R : Type u} [Inhabited R] :
     Inhabited <| WeierstrassCurve R :=
   ⟨⟨default, default, default, default, default⟩⟩
 #align weierstrass_curve.inhabited WeierstrassCurve.instInhabitedWeierstrassCurve
@@ -244,7 +244,7 @@ lemma comp_left_inv (C : VariableChange R) : comp (inv C) C = id := by
 lemma comp_assoc (C C' C'' : VariableChange R) : comp (comp C C') C'' = comp C (comp C' C'') := by
   ext <;> simp only [comp, Units.val_mul] <;> ring1
 
-instance instGroupVariableChange : Group (VariableChange R) where
+instance (priority := 10000) instGroupVariableChange : Group (VariableChange R) where
   one := id
   inv := inv
   mul := comp
@@ -302,7 +302,7 @@ lemma variableChange_comp (C C' : VariableChange R) (W : WeierstrassCurve R) :
         - C.r * C.t * C.u⁻¹ ^ 6 * C'.u⁻¹ * (C'.s * 2 + W.a₁) * pow_mul_pow_eq_one 5 C'.u.inv_mul
         + C.u⁻¹ ^ 6 * (C.r ^ 3 - C.t ^ 2) * pow_mul_pow_eq_one 6 C'.u.inv_mul
 
-instance instMulActionVariableChange : MulAction (VariableChange R) (WeierstrassCurve R) where
+instance (priority := 10000) instMulActionVariableChange : MulAction (VariableChange R) (WeierstrassCurve R) where
   smul := fun C W => W.variableChange C
   one_smul := variableChange_id
   mul_smul := variableChange_comp
@@ -604,7 +604,7 @@ lemma variableChange_comp (C C' : WeierstrassCurve.VariableChange R) (E : Ellipt
   simp only [variableChange, WeierstrassCurve.variableChange_comp]
   simp only [WeierstrassCurve.VariableChange.comp, mul_inv, mul_pow, ← mul_assoc]
 
-instance instMulActionVariableChange :
+instance (priority := 10000) instMulActionVariableChange :
     MulAction (WeierstrassCurve.VariableChange R) (EllipticCurve R) where
   smul := fun C E => E.variableChange C
   one_smul := variableChange_id
@@ -780,7 +780,7 @@ lemma ofJ_j : (ofJ j).j = j := by
     · rw [ofJ_ne_0_ne_1728 j h0 h1728,
         @ofJ'_j _ _ _ (invertibleOfNonzero h0) (invertibleOfNonzero <| sub_ne_zero_of_ne h1728)]
 
-instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve F :=
+instance (priority := 10000) instInhabitedEllipticCurve : Inhabited <| EllipticCurve F :=
   ⟨ofJ 37⟩
 #align elliptic_curve.inhabited EllipticCurve.instInhabitedEllipticCurve
 

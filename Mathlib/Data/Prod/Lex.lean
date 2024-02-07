@@ -39,19 +39,19 @@ namespace Prod.Lex
 -- This will be fixed in nightly-2022-11-30
 @[inherit_doc] notation:35 α " ×ₗ " β:34 => _root_.Lex (Prod α β)
 
-instance decidableEq (α β : Type*) [DecidableEq α] [DecidableEq β] : DecidableEq (α ×ₗ β) :=
+instance (priority := 10000) decidableEq (α β : Type*) [DecidableEq α] [DecidableEq β] : DecidableEq (α ×ₗ β) :=
   instDecidableEqProd
 #align prod.lex.decidable_eq Prod.Lex.decidableEq
 
-instance inhabited (α β : Type*) [Inhabited α] [Inhabited β] : Inhabited (α ×ₗ β) :=
+instance (priority := 10000) inhabited (α β : Type*) [Inhabited α] [Inhabited β] : Inhabited (α ×ₗ β) :=
   instInhabitedProd
 #align prod.lex.inhabited Prod.Lex.inhabited
 
 /-- Dictionary / lexicographic ordering on pairs.  -/
-instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := Prod.Lex (· < ·) (· ≤ ·)
+instance (priority := 10000) instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := Prod.Lex (· < ·) (· ≤ ·)
 #align prod.lex.has_le Prod.Lex.instLE
 
-instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
+instance (priority := 10000) instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
 #align prod.lex.has_lt Prod.Lex.instLT
 
 theorem le_iff [LT α] [LE β] (a b : α × β) :
@@ -67,7 +67,7 @@ theorem lt_iff [LT α] [LT β] (a b : α × β) :
 example (x : α) (y : β) : toLex (x, y) = toLex (x, y) := rfl
 
 /-- Dictionary / lexicographic preorder for pairs. -/
-instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) :=
+instance (priority := 10000) preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) :=
   { Prod.Lex.instLE α β, Prod.Lex.instLT α β with
     le_refl := refl_of <| Prod.Lex _ _,
     le_trans := fun _ _ _ => trans_of <| Prod.Lex _ _,
@@ -125,7 +125,7 @@ theorem toLex_strictMono : StrictMono (toLex : α × β → α ×ₗ β) := by
 end Preorder
 
 /-- Dictionary / lexicographic partial order for pairs. -/
-instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : PartialOrder (α ×ₗ β) :=
+instance (priority := 10000) partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : PartialOrder (α ×ₗ β) :=
   { Prod.Lex.preorder α β with
     le_antisymm := by
       haveI : IsStrictOrder α (· < ·) := { irrefl := lt_irrefl, trans := fun _ _ _ => lt_trans }
@@ -134,7 +134,7 @@ instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : Part
 #align prod.lex.partial_order Prod.Lex.partialOrder
 
 /-- Dictionary / lexicographic linear order for pairs. -/
-instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
+instance (priority := 10000) linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
   { Prod.Lex.partialOrder α β with
     le_total := total_of (Prod.Lex _ _),
     decidableLE := Prod.Lex.decidable _ _,
@@ -142,25 +142,25 @@ instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearO
     decidableEq := Lex.decidableEq _ _, }
 #align prod.lex.linear_order Prod.Lex.linearOrder
 
-instance [Ord α] [Ord β] : Ord (α ×ₗ β) where
+instance (priority := 10000) [Ord α] [Ord β] : Ord (α ×ₗ β) where
   compare := compareLex (compareOn (·.1)) (compareOn (·.2))
 
-instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
+instance (priority := 10000) orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
   bot := toLex ⊥
   bot_le _ := toLex_mono bot_le
 #align prod.lex.order_bot Prod.Lex.orderBot
 
-instance orderTop [PartialOrder α] [Preorder β] [OrderTop α] [OrderTop β] : OrderTop (α ×ₗ β) where
+instance (priority := 10000) orderTop [PartialOrder α] [Preorder β] [OrderTop α] [OrderTop β] : OrderTop (α ×ₗ β) where
   top := toLex ⊤
   le_top _ := toLex_mono le_top
 #align prod.lex.order_top Prod.Lex.orderTop
 
-instance boundedOrder [PartialOrder α] [Preorder β] [BoundedOrder α] [BoundedOrder β] :
+instance (priority := 10000) boundedOrder [PartialOrder α] [Preorder β] [BoundedOrder α] [BoundedOrder β] :
     BoundedOrder (α ×ₗ β) :=
   { Lex.orderBot, Lex.orderTop with }
 #align prod.lex.bounded_order Prod.Lex.boundedOrder
 
-instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] :
+instance (priority := 10000) [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] :
     DenselyOrdered (α ×ₗ β) where
   dense := by
     rintro _ _ (@⟨a₁, b₁, a₂, b₂, h⟩ | @⟨a, b₁, b₂, h⟩)
@@ -169,28 +169,28 @@ instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] :
     · obtain ⟨c, h₁, h₂⟩ := exists_between h
       exact ⟨(a, c), right _ h₁, right _ h₂⟩
 
-instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α ×ₗ β) where
+instance (priority := 10000) noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α ×ₗ β) where
   exists_gt := by
     rintro ⟨a, b⟩
     obtain ⟨c, h⟩ := exists_gt a
     exact ⟨⟨c, b⟩, left _ _ h⟩
 #align prod.lex.no_max_order_of_left Prod.Lex.noMaxOrder_of_left
 
-instance noMinOrder_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α ×ₗ β) where
+instance (priority := 10000) noMinOrder_of_left [Preorder α] [Preorder β] [NoMinOrder α] : NoMinOrder (α ×ₗ β) where
   exists_lt := by
     rintro ⟨a, b⟩
     obtain ⟨c, h⟩ := exists_lt a
     exact ⟨⟨c, b⟩, left _ _ h⟩
 #align prod.lex.no_min_order_of_left Prod.Lex.noMinOrder_of_left
 
-instance noMaxOrder_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α ×ₗ β) where
+instance (priority := 10000) noMaxOrder_of_right [Preorder α] [Preorder β] [NoMaxOrder β] : NoMaxOrder (α ×ₗ β) where
   exists_gt := by
     rintro ⟨a, b⟩
     obtain ⟨c, h⟩ := exists_gt b
     exact ⟨⟨a, c⟩, right _ h⟩
 #align prod.lex.no_max_order_of_right Prod.Lex.noMaxOrder_of_right
 
-instance noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α ×ₗ β) where
+instance (priority := 10000) noMinOrder_of_right [Preorder α] [Preorder β] [NoMinOrder β] : NoMinOrder (α ×ₗ β) where
   exists_lt := by
     rintro ⟨a, b⟩
     obtain ⟨c, h⟩ := exists_lt b

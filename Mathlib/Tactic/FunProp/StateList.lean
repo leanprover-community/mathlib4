@@ -56,7 +56,7 @@ private def append : (xs ys : StateList σ α) → StateList σ α
   | .nil,         bs => bs
   | .cons a s l, bs => .cons a s (l.append bs)
 
-instance : Append (StateList σ α) := ⟨StateList.append⟩
+instance (priority := 10000) : Append (StateList σ α) := ⟨StateList.append⟩
 
 @[specialize]
 private def foldrM {m : Type u → Type v} [Monad m] :
@@ -104,7 +104,7 @@ private def map (f : α → β) (x : StateListT σ m α) : StateListT σ m β :=
   fun s => StateList.map f <$> x s
 
 @[always_inline]
-instance : Monad (StateListT σ m) where
+instance (priority := 10000) : Monad (StateListT σ m) where
   pure := StateListT.pure
   bind := StateListT.bind
   map  := StateListT.map
@@ -117,7 +117,7 @@ private def orElse (x : StateListT σ m α) (y : Unit → StateListT σ m α) : 
 private def failure : StateListT σ m α :=
   fun _ => return .nil
 
-instance : Alternative (StateListT σ m) where
+instance (priority := 10000) : Alternative (StateListT σ m) where
   failure := StateListT.failure
   orElse  := StateListT.orElse
 
@@ -141,13 +141,13 @@ protected def modifyGet (f : σ → α × σ) : StateListT σ m α :=
 protected def lift (t : m α) : StateListT σ m α :=
   fun s => do let a ← t; return StateList.nil.cons a s
 
-instance : MonadLift m (StateListT σ m) := ⟨StateListT.lift⟩
+instance (priority := 10000) : MonadLift m (StateListT σ m) := ⟨StateListT.lift⟩
 
 @[always_inline]
-instance : MonadFunctor m (StateListT σ m) := ⟨fun f x s => f (x s)⟩
+instance (priority := 10000) : MonadFunctor m (StateListT σ m) := ⟨fun f x s => f (x s)⟩
 
 @[always_inline]
-instance {ε : Type w} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
+instance (priority := 10000) {ε : Type w} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
   throw    := StateListT.lift ∘ throwThe ε
   tryCatch := fun x c s => tryCatchThe ε (x s) (fun e => c e s)
 }
@@ -156,14 +156,14 @@ end
 end StateListT
 
 
-instance : MonadStateOf σ (StateListT σ m) where
+instance (priority := 10000) : MonadStateOf σ (StateListT σ m) where
   get       := StateListT.get
   set       := StateListT.set
   modifyGet := StateListT.modifyGet
 
 
 @[always_inline]
-instance StateListT.monadControl : MonadControl m (StateListT σ m) where
+instance (priority := 10000) StateListT.monadControl : MonadControl m (StateListT σ m) where
   stM      := StateList σ
   liftWith := fun f => do let s ← get; liftM (f (fun x => x s))
   restoreM := fun x _ => x

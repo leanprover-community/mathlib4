@@ -25,7 +25,7 @@ def emb : Point → Nat ×ₗ (Int ×ₗ Int)
 lemma emb_injective : Injective emb :=
   fun ⟨x, y⟩ ⟨w, z⟩ h => by injection h
 
-instance : LinearOrder Point := LinearOrder.lift' _ emb_injective
+instance (priority := 10000) : LinearOrder Point := LinearOrder.lift' _ emb_injective
 
 run_cmd Elab.Command.liftTermElabM do
   let r :=

@@ -67,16 +67,16 @@ without the following reducibility attribute (which is only set in this section)
 
 variable {n : ℕ}
 
-instance [Zero (Fin n)] : TopologicalSpace (EuclideanHalfSpace n) :=
+instance (priority := 10000) [Zero (Fin n)] : TopologicalSpace (EuclideanHalfSpace n) :=
   instTopologicalSpaceSubtype
 
-instance : TopologicalSpace (EuclideanQuadrant n) :=
+instance (priority := 10000) : TopologicalSpace (EuclideanQuadrant n) :=
   instTopologicalSpaceSubtype
 
-instance [Zero (Fin n)] : Inhabited (EuclideanHalfSpace n) :=
+instance (priority := 10000) [Zero (Fin n)] : Inhabited (EuclideanHalfSpace n) :=
   ⟨⟨0, le_rfl⟩⟩
 
-instance : Inhabited (EuclideanQuadrant n) :=
+instance (priority := 10000) : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
 @[ext] -- porting note: new theorem
@@ -262,7 +262,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
 -/
-instance IccManifold (x y : ℝ) [h : Fact (x < y)] :
+instance (priority := 10000) IccManifold (x y : ℝ) [h : Fact (x < y)] :
     ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
   atlas := {IccLeftChart x y, IccRightChart x y}
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
@@ -278,7 +278,7 @@ instance IccManifold (x y : ℝ) [h : Fact (x < y)] :
 
 /-- The manifold structure on `[x, y]` is smooth.
 -/
-instance Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
+instance (priority := 10000) Icc_smooth_manifold (x y : ℝ) [Fact (x < y)] :
     SmoothManifoldWithCorners (𝓡∂ 1) (Icc x y) := by
   have M : ContDiff ℝ ∞ (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
       from fun z i => -z i + (y - x)) :=
@@ -324,8 +324,8 @@ section
 
 attribute [local instance] Real.fact_zero_lt_one
 
-instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance (priority := 10000) : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
-instance : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance (priority := 10000) : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 end

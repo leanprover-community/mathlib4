@@ -91,13 +91,13 @@ open SchwartzSpace
 -- porting note: removed
 -- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
-instance instFunLike : FunLike 𝓢(E, F) E F where
+instance (priority := 10000) instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
 #align schwartz_map.fun_like SchwartzMap.instFunLike
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-instance instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=
+instance (priority := 10000) instCoeFun : CoeFun 𝓢(E, F) fun _ => E → F :=
   DFunLike.hasCoeToFun
 #align schwartz_map.has_coe_to_fun SchwartzMap.instCoeFun
 
@@ -246,7 +246,7 @@ section SMul
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [NormedField 𝕜'] [NormedSpace 𝕜' F]
   [SMulCommClass ℝ 𝕜' F]
 
-instance instSMul : SMul 𝕜 𝓢(E, F) :=
+instance (priority := 10000) instSMul : SMul 𝕜 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
@@ -266,11 +266,11 @@ theorem smul_apply {f : 𝓢(E, F)} {c : 𝕜} {x : E} : (c • f) x = c • f x
   rfl
 #align schwartz_map.smul_apply SchwartzMap.smul_apply
 
-instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' F] : IsScalarTower 𝕜 𝕜' 𝓢(E, F) :=
+instance (priority := 10000) instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' F] : IsScalarTower 𝕜 𝕜' 𝓢(E, F) :=
   ⟨fun a b f => ext fun x => smul_assoc a b (f x)⟩
 #align schwartz_map.is_scalar_tower SchwartzMap.instIsScalarTower
 
-instance instSMulCommClass [SMulCommClass 𝕜 𝕜' F] : SMulCommClass 𝕜 𝕜' 𝓢(E, F) :=
+instance (priority := 10000) instSMulCommClass [SMulCommClass 𝕜 𝕜' F] : SMulCommClass 𝕜 𝕜' 𝓢(E, F) :=
   ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩
 #align schwartz_map.smul_comm_class SchwartzMap.instSMulCommClass
 
@@ -283,7 +283,7 @@ theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
   exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
 #align schwartz_map.seminorm_aux_smul_le SchwartzMap.seminormAux_smul_le
 
-instance instNSMul : SMul ℕ 𝓢(E, F) :=
+instance (priority := 10000) instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
@@ -296,7 +296,7 @@ instance instNSMul : SMul ℕ 𝓢(E, F) :=
         exact ((c : ℝ) • f).decay' }⟩
 #align schwartz_map.has_nsmul SchwartzMap.instNSMul
 
-instance instZSMul : SMul ℤ 𝓢(E, F) :=
+instance (priority := 10000) instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
@@ -313,13 +313,13 @@ end SMul
 
 section Zero
 
-instance instZero : Zero 𝓢(E, F) :=
+instance (priority := 10000) instZero : Zero 𝓢(E, F) :=
   ⟨{  toFun := fun _ => 0
       smooth' := contDiff_const
       decay' := fun _ _ => ⟨1, fun _ => by simp⟩ }⟩
 #align schwartz_map.has_zero SchwartzMap.instZero
 
-instance instInhabited : Inhabited 𝓢(E, F) :=
+instance (priority := 10000) instInhabited : Inhabited 𝓢(E, F) :=
   ⟨0⟩
 #align schwartz_map.inhabited SchwartzMap.instInhabited
 
@@ -346,7 +346,7 @@ end Zero
 
 section Neg
 
-instance instNeg : Neg 𝓢(E, F) :=
+instance (priority := 10000) instNeg : Neg 𝓢(E, F) :=
   ⟨fun f =>
     ⟨-f, (f.smooth _).neg, fun k n =>
       ⟨f.seminormAux k n, fun x => (decay_neg_aux k n f x).le.trans (f.le_seminormAux k n x)⟩⟩⟩
@@ -356,7 +356,7 @@ end Neg
 
 section Add
 
-instance instAdd : Add 𝓢(E, F) :=
+instance (priority := 10000) instAdd : Add 𝓢(E, F) :=
   ⟨fun f g =>
     ⟨f + g, (f.smooth _).add (g.smooth _), fun k n =>
       ⟨f.seminormAux k n + g.seminormAux k n, fun x =>
@@ -381,7 +381,7 @@ end Add
 
 section Sub
 
-instance instSub : Sub 𝓢(E, F) :=
+instance (priority := 10000) instSub : Sub 𝓢(E, F) :=
   ⟨fun f g =>
     ⟨f - g, (f.smooth _).sub (g.smooth _), by
       intro k n
@@ -402,7 +402,7 @@ end Sub
 
 section AddCommGroup
 
-instance instAddCommGroup : AddCommGroup 𝓢(E, F) :=
+instance (priority := 10000) instAddCommGroup : AddCommGroup 𝓢(E, F) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align schwartz_map.add_comm_group SchwartzMap.instAddCommGroup
@@ -433,7 +433,7 @@ section Module
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
-instance instModule : Module 𝕜 𝓢(E, F) :=
+instance (priority := 10000) instModule : Module 𝕜 𝓢(E, F) :=
   coeHom_injective.module 𝕜 (coeHom E F) fun _ _ => rfl
 #align schwartz_map.module SchwartzMap.instModule
 
@@ -563,7 +563,7 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 variable (𝕜 E F)
 
-instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
+instance (priority := 10000) instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).moduleFilterBasis.topology'
 #align schwartz_map.topological_space SchwartzMap.instTopologicalSpace
 
@@ -576,28 +576,28 @@ theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily �
 
 variable {𝕜 E F}
 
-instance instContinuousSMul : ContinuousSMul 𝕜 𝓢(E, F) := by
+instance (priority := 10000) instContinuousSMul : ContinuousSMul 𝕜 𝓢(E, F) := by
   rw [(schwartz_withSeminorms 𝕜 E F).withSeminorms_eq]
   exact (schwartzSeminormFamily 𝕜 E F).moduleFilterBasis.continuousSMul
 #align schwartz_map.has_continuous_smul SchwartzMap.instContinuousSMul
 
-instance instTopologicalAddGroup : TopologicalAddGroup 𝓢(E, F) :=
+instance (priority := 10000) instTopologicalAddGroup : TopologicalAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isTopologicalAddGroup
 #align schwartz_map.topological_add_group SchwartzMap.instTopologicalAddGroup
 
-instance instUniformSpace : UniformSpace 𝓢(E, F) :=
+instance (priority := 10000) instUniformSpace : UniformSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
 #align schwartz_map.uniform_space SchwartzMap.instUniformSpace
 
-instance instUniformAddGroup : UniformAddGroup 𝓢(E, F) :=
+instance (priority := 10000) instUniformAddGroup : UniformAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformAddGroup
 #align schwartz_map.uniform_add_group SchwartzMap.instUniformAddGroup
 
-instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
+instance (priority := 10000) instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
 #align schwartz_map.locally_convex_space SchwartzMap.instLocallyConvexSpace
 
-instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
+instance (priority := 10000) instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).first_countable
 #align schwartz_map.topological_space.first_countable_topology SchwartzMap.instFirstCountableTopology
 

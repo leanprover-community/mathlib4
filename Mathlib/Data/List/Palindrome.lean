@@ -74,7 +74,7 @@ protected theorem map (f : α → β) (p : Palindrome l) : Palindrome (map f l) 
   of_reverse_eq <| by rw [← map_reverse, p.reverse_eq]
 #align list.palindrome.map List.Palindrome.map
 
-instance [DecidableEq α] (l : List α) : Decidable (Palindrome l) :=
+instance (priority := 10000) [DecidableEq α] (l : List α) : Decidable (Palindrome l) :=
   decidable_of_iff' _ iff_reverse_eq
 
 end Palindrome

@@ -922,7 +922,7 @@ namespace QuotientAddGroup
 
 variable [hp' : Fact (0 < p)]
 
-instance : Btw (α ⧸ AddSubgroup.zmultiples p) where
+instance (priority := 10000) : Btw (α ⧸ AddSubgroup.zmultiples p) where
   btw x₁ x₂ x₃ := (equivIcoMod hp'.out 0 (x₂ - x₁) : α) ≤ equivIocMod hp'.out 0 (x₃ - x₁)
 
 theorem btw_coe_iff' {x₁ x₂ x₃ : α} :
@@ -938,7 +938,7 @@ theorem btw_coe_iff {x₁ x₂ x₃ : α} :
   by rw [btw_coe_iff', toIocMod_sub_eq_sub, toIcoMod_sub_eq_sub, zero_add, sub_le_sub_iff_right]
 #align quotient_add_group.btw_coe_iff QuotientAddGroup.btw_coe_iff
 
-instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) where
+instance (priority := 10000) circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) where
   btw_refl x := show _ ≤ _ by simp [sub_self, hp'.out.le]
   btw_cyclic_left {x₁ x₂ x₃} h := by
     induction x₁ using QuotientAddGroup.induction_on'
@@ -958,7 +958,7 @@ instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) w
       apply toIxxMod_trans _ h₁₂₃ h₂₃₄
 #align quotient_add_group.circular_preorder QuotientAddGroup.circularPreorder
 
-instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
+instance (priority := 10000) circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
   { QuotientAddGroup.circularPreorder with
     btw_antisymm := fun {x₁ x₂ x₃} h₁₂₃ h₃₂₁ => by
       induction x₁ using QuotientAddGroup.induction_on'

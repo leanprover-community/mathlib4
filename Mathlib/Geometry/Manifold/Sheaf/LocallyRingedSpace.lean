@@ -107,7 +107,7 @@ theorem smoothSheafCommRing.nonunits_stalk (x : M) :
   apply smoothSheafCommRing.isUnit_stalk_iff
 
 /-- The stalks of the structure sheaf of a smooth manifold-with-corners are local rings. -/
-instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
+instance (priority := 10000) smoothSheafCommRing.instLocalRing_stalk (x : M) :
     LocalRing ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x) := by
   apply LocalRing.of_nonunits_add
   rw [smoothSheafCommRing.nonunits_stalk]

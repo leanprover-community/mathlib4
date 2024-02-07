@@ -20,14 +20,14 @@ namespace Multiset
 
 open List
 
-instance functor : Functor Multiset where map := @map
+instance (priority := 10000) functor : Functor Multiset where map := @map
 
 @[simp]
 theorem fmap_def {α' β'} {s : Multiset α'} (f : α' → β') : f <$> s = s.map f :=
   rfl
 #align multiset.fmap_def Multiset.fmap_def
 
-instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> (try simp); rfl
+instance (priority := 10000) : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> (try simp); rfl
 
 open LawfulTraversable CommApplicative
 
@@ -60,7 +60,7 @@ def traverse : Multiset α' → F (Multiset β') := by
   | trans => simp [*]
 #align multiset.traverse Multiset.traverse
 
-instance : Monad Multiset :=
+instance (priority := 10000) : Monad Multiset :=
   { Multiset.functor with
     pure := fun x ↦ {x}
     bind := @bind }
@@ -75,7 +75,7 @@ theorem bind_def {α β} : (· >>= ·) = @bind α β :=
   rfl
 #align multiset.bind_def Multiset.bind_def
 
-instance : LawfulMonad Multiset := LawfulMonad.mk'
+instance (priority := 10000) : LawfulMonad Multiset := LawfulMonad.mk'
   (bind_pure_comp := fun _ _ ↦ by simp only [pure_def, bind_def, bind_singleton, fmap_def])
   (id_map := fun _ ↦ by simp only [fmap_def, id_eq, map_id'])
   (pure_bind := fun _ _ ↦ by simp only [pure_def, bind_def, singleton_bind])

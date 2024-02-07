@@ -98,7 +98,7 @@ namespace Poly
 
 section
 
-instance instFunLike : FunLike (Poly α) (α → ℕ) ℤ :=
+instance (priority := 10000) instFunLike : FunLike (Poly α) (α → ℕ) ℤ :=
   ⟨Subtype.val, Subtype.val_injective⟩
 #align poly.fun_like Poly.instFunLike
 
@@ -132,17 +132,17 @@ def const (n : ℤ) : Poly α := ⟨_, IsPoly.const n⟩
 theorem const_apply (n) (x : α → ℕ) : const n x = n := rfl
 #align poly.const_apply Poly.const_apply
 
-instance : Zero (Poly α) := ⟨const 0⟩
+instance (priority := 10000) : Zero (Poly α) := ⟨const 0⟩
 
-instance : One (Poly α) := ⟨const 1⟩
+instance (priority := 10000) : One (Poly α) := ⟨const 1⟩
 
-instance : Neg (Poly α) := ⟨fun f => ⟨-f, f.2.neg⟩⟩
+instance (priority := 10000) : Neg (Poly α) := ⟨fun f => ⟨-f, f.2.neg⟩⟩
 
-instance : Add (Poly α) := ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
+instance (priority := 10000) : Add (Poly α) := ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
-instance : Sub (Poly α) := ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
+instance (priority := 10000) : Sub (Poly α) := ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
-instance : Mul (Poly α) := ⟨fun f g => ⟨f * g, f.2.mul g.2⟩⟩
+instance (priority := 10000) : Mul (Poly α) := ⟨fun f g => ⟨f * g, f.2.mul g.2⟩⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : Poly α) = const 0 := rfl
@@ -192,9 +192,9 @@ theorem sub_apply (f g : Poly α) (x : α → ℕ) : (f - g) x = f x - g x := rf
 theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rfl
 #align poly.mul_apply Poly.mul_apply
 
-instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
+instance (priority := 10000) (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
-instance : AddCommGroup (Poly α) := by
+instance (priority := 10000) : AddCommGroup (Poly α) := by
   refine' { add := ((· + ·) : Poly α → Poly α → Poly α)
             neg := (Neg.neg : Poly α → Poly α)
             sub := Sub.sub
@@ -214,13 +214,13 @@ instance : AddCommGroup (Poly α) := by
           | rw [neg_apply, add_left_neg, zero_apply]
           | rw [add_comm]
 
-instance : AddGroupWithOne (Poly α) :=
+instance (priority := 10000) : AddGroupWithOne (Poly α) :=
   { (inferInstance : AddCommGroup (Poly α)) with
       one := 1
       natCast := fun n => Poly.const n
       intCast := Poly.const }
 
-instance : CommRing (Poly α) := by
+instance (priority := 10000) : CommRing (Poly α) := by
   refine' { (inferInstance : AddCommGroup (Poly α)),
             (inferInstance : AddGroupWithOne (Poly α)) with
               mul := (· * ·)

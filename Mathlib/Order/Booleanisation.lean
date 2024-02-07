@@ -39,7 +39,7 @@ def Booleanisation (α : Type*) := α ⊕ α
 
 namespace Booleanisation
 
-instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) := Sum.instDecidableEqSum
+instance (priority := 10000) instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) := Sum.instDecidableEqSum
 
 variable [GeneralizedBooleanAlgebra α] {x y : Booleanisation α} {a b : α}
 
@@ -71,11 +71,11 @@ protected inductive LT : Booleanisation α → Booleanisation α → Prop
   | protected sep {a b} : Disjoint a b → Booleanisation.LT (lift a) (comp b)
 
 @[inherit_doc Booleanisation.LE]
-instance instLE : LE (Booleanisation α) where
+instance (priority := 10000) instLE : LE (Booleanisation α) where
   le := Booleanisation.LE
 
 @[inherit_doc Booleanisation.LT]
-instance instLT : LT (Booleanisation α) where
+instance (priority := 10000) instLT : LT (Booleanisation α) where
   lt := Booleanisation.LT
 
 /-- The supremum on `Booleanisation α` is as follows: For `a b : α`,
@@ -83,7 +83,7 @@ instance instLT : LT (Booleanisation α) where
 * `a ⊔ bᶜ` is `(b \ a)ᶜ`
 * `aᶜ ⊔ b` is `(a \ b)ᶜ`
 * `aᶜ ⊔ bᶜ` is `(a ⊓ b)ᶜ` -/
-instance instSup : Sup (Booleanisation α) where
+instance (priority := 10000) instSup : Sup (Booleanisation α) where
   sup x y := match x, y with
     | lift a, lift b => lift (a ⊔ b)
     | lift a, comp b => comp (b \ a)
@@ -95,7 +95,7 @@ instance instSup : Sup (Booleanisation α) where
 * `a ⊓ bᶜ` is `a \ b`
 * `aᶜ ⊓ b` is `b \ a`
 * `aᶜ ⊓ bᶜ` is `(a ⊔ b)ᶜ` -/
-instance instInf : Inf (Booleanisation α) where
+instance (priority := 10000) instInf : Inf (Booleanisation α) where
   inf x y := match x, y with
     | lift a, lift b => lift (a ⊓ b)
     | lift a, comp b => lift (a \ b)
@@ -103,15 +103,15 @@ instance instInf : Inf (Booleanisation α) where
     | comp a, comp b => comp (a ⊔ b)
 
 /-- The bottom element of `Booleanisation α` is the bottom element of `α`. -/
-instance instBot : Bot (Booleanisation α) where
+instance (priority := 10000) instBot : Bot (Booleanisation α) where
   bot := lift ⊥
 
 /-- The top element of `Booleanisation α` is the complement of the bottom element of `α`. -/
-instance instTop : Top (Booleanisation α) where
+instance (priority := 10000) instTop : Top (Booleanisation α) where
   top := comp ⊥
 
 /-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
-instance instCompl : HasCompl (Booleanisation α) where
+instance (priority := 10000) instCompl : HasCompl (Booleanisation α) where
   compl x := match x with
     | lift a => comp a
     | comp a => lift a
@@ -121,7 +121,7 @@ instance instCompl : HasCompl (Booleanisation α) where
 * `a \ bᶜ` is `a ⊓ b`
 * `aᶜ \ b` is `(a ⊔ b)ᶜ`
 * `aᶜ \ bᶜ` is `b \ a` -/
-instance instSDiff : SDiff (Booleanisation α) where
+instance (priority := 10000) instSDiff : SDiff (Booleanisation α) where
   sdiff x y := match x, y with
     | lift a, lift b => lift (a \ b)
     | lift a, comp b => lift (a ⊓ b)
@@ -159,7 +159,7 @@ instance instSDiff : SDiff (Booleanisation α) where
 @[simp] lemma comp_sdiff_lift (a b : α) : comp a \ lift b = comp (a ⊔ b) := rfl
 @[simp] lemma comp_sdiff_comp (a b : α) : comp a \ comp b = lift (b \ a) := rfl
 
-instance instPreorder : Preorder (Booleanisation α) where
+instance (priority := 10000) instPreorder : Preorder (Booleanisation α) where
   lt := (· < ·)
   lt_iff_le_not_le x y := match x, y with
     | lift a, lift b => by simp [lt_iff_le_not_le]
@@ -175,14 +175,14 @@ instance instPreorder : Preorder (Booleanisation α) where
     | lift a, comp b, comp c, LE.sep hab, LE.comp hcb => LE.sep <| hab.mono_right hcb
     | comp a, comp b, comp c, LE.comp hba, LE.comp hcb => LE.comp <| hcb.trans hba
 
-instance instPartialOrder : PartialOrder (Booleanisation α) where
+instance (priority := 10000) instPartialOrder : PartialOrder (Booleanisation α) where
   le_antisymm x y hxy hyx := match x, y, hxy, hyx with
     | lift a, lift b, LE.lift hab, LE.lift hba => by rw [hab.antisymm hba]
     | comp a, comp b, LE.comp hab, LE.comp hba => by rw [hab.antisymm hba]
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
-instance instSemilatticeSup : SemilatticeSup (Booleanisation α) where
+instance (priority := 10000) instSemilatticeSup : SemilatticeSup (Booleanisation α) where
   le_sup_left x y := match x, y with
     | lift a, lift b => LE.lift le_sup_left
     | lift a, comp b => LE.sep disjoint_sdiff_self_right
@@ -202,7 +202,7 @@ instance instSemilatticeSup : SemilatticeSup (Booleanisation α) where
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
-instance instSemilatticeInf : SemilatticeInf (Booleanisation α) where
+instance (priority := 10000) instSemilatticeInf : SemilatticeInf (Booleanisation α) where
   inf_le_left x y := match x, y with
     | lift a, lift b => LE.lift inf_le_left
     | lift a, comp b => LE.lift sdiff_le
@@ -220,7 +220,7 @@ instance instSemilatticeInf : SemilatticeInf (Booleanisation α) where
     | lift a, comp b, comp c, LE.sep hab, LE.sep hac => LE.sep <| hab.sup_right hac
     | comp a, comp b, comp c, LE.comp hba, LE.comp hca => LE.comp <| sup_le hba hca
 
-instance instDistribLattice : DistribLattice (Booleanisation α) where
+instance (priority := 10000) instDistribLattice : DistribLattice (Booleanisation α) where
   inf_le_left _ _ := inf_le_left
   inf_le_right _ _ := inf_le_right
   le_inf _ _ _ := le_inf
@@ -236,7 +236,7 @@ instance instDistribLattice : DistribLattice (Booleanisation α) where
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
-instance instBoundedOrder : BoundedOrder (Booleanisation α) where
+instance (priority := 10000) instBoundedOrder : BoundedOrder (Booleanisation α) where
   le_top x := match x with
     | lift a => LE.sep disjoint_bot_right
     | comp a => LE.comp bot_le
@@ -244,7 +244,7 @@ instance instBoundedOrder : BoundedOrder (Booleanisation α) where
     | lift a => LE.lift bot_le
     | comp a => LE.sep disjoint_bot_left
 
-instance instBooleanAlgebra : BooleanAlgebra (Booleanisation α) where
+instance (priority := 10000) instBooleanAlgebra : BooleanAlgebra (Booleanisation α) where
   le_top _ := le_top
   bot_le _ := bot_le
   inf_compl_le_bot x := match x with

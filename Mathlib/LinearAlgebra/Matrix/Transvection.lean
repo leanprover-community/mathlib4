@@ -157,7 +157,7 @@ structure TransvectionStruct where
   c : R
 #align matrix.transvection_struct Matrix.TransvectionStruct
 
-instance [Nontrivial n] : Nonempty (TransvectionStruct n R) := by
+instance (priority := 10000) [Nontrivial n] : Nonempty (TransvectionStruct n R) := by
   choose x y hxy using exists_pair_ne n
   exact ⟨⟨x, y, hxy, 0⟩⟩
 

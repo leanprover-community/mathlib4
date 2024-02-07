@@ -185,13 +185,13 @@ theorem locallyConvexSpace_induced {t : TopologicalSpace F} [LocallyConvexSpace 
   exact (LocallyConvexSpace.convex_basis <| f x).comap f
 #align locally_convex_space_induced locallyConvexSpace_induced
 
-instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMonoid (X i)]
+instance (priority := 10000) Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMonoid (X i)]
     [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :
     LocallyConvexSpace 𝕜 (∀ i, X i) :=
   locallyConvexSpace_iInf fun i => locallyConvexSpace_induced (LinearMap.proj i)
 #align pi.locally_convex_space Pi.locallyConvexSpace
 
-instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
+instance (priority := 10000) Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
     [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=
 -- Porting note : had to specify `t₁` and `t₂`
   locallyConvexSpace_inf (t₁ := induced Prod.fst _) (t₂ := induced Prod.snd _)

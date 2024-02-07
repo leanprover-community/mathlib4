@@ -59,9 +59,9 @@ variable (K : Type v) [Field K] [Algebra A K]
 def ValueGroup : Type v := Quotient (MulAction.orbitRel Aˣ K)
 #align valuation_ring.value_group ValuationRing.ValueGroup
 
-instance : Inhabited (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
+instance (priority := 10000) : Inhabited (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
-instance : LE (ValueGroup A K) :=
+instance (priority := 10000) : LE (ValueGroup A K) :=
   LE.mk fun x y =>
     Quotient.liftOn₂' x y (fun a b => ∃ c : A, c • b = a)
       (by
@@ -77,11 +77,11 @@ instance : LE (ValueGroup A K) :=
           rw [mul_comm]
           simp only [← mul_assoc, ← Units.val_mul, mul_inv_self, one_mul])
 
-instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
+instance (priority := 10000) : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
-instance : One (ValueGroup A K) := ⟨Quotient.mk'' 1⟩
+instance (priority := 10000) : One (ValueGroup A K) := ⟨Quotient.mk'' 1⟩
 
-instance : Mul (ValueGroup A K) :=
+instance (priority := 10000) : Mul (ValueGroup A K) :=
   Mul.mk fun x y =>
     Quotient.liftOn₂' x y (fun a b => Quotient.mk'' <| a * b)
       (by
@@ -92,7 +92,7 @@ instance : Mul (ValueGroup A K) :=
         simp only [mul_smul, Algebra.smul_def, Units.smul_def, RingHom.map_mul, Units.val_mul]
         ring)
 
-instance : Inv (ValueGroup A K) :=
+instance (priority := 10000) : Inv (ValueGroup A K) :=
   Inv.mk fun x =>
     Quotient.liftOn' x (fun a => Quotient.mk'' a⁻¹)
       (by
@@ -126,7 +126,7 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
 
 -- Porting note: it is much faster to split the instance `LinearOrderedCommGroupWithZero`
 -- into two parts
-noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
+noncomputable instance (priority := 10000) linearOrder : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
   le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
   le_antisymm := by
@@ -145,7 +145,7 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_total := ValuationRing.le_total _ _
   decidableLE := by classical infer_instance
 
-noncomputable instance linearOrderedCommGroupWithZero :
+noncomputable instance (priority := 10000) linearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero (ValueGroup A K) :=
   { linearOrder .. with
     mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]; apply Setoid.refl'
@@ -258,7 +258,7 @@ instance (priority := 100) localRing : LocalRing A :=
         apply isUnit_of_mul_eq_one _ (c + 1)
         simp [mul_add, h])
 
-instance [DecidableRel ((· ≤ ·) : Ideal A → Ideal A → Prop)] : LinearOrder (Ideal A) :=
+instance (priority := 10000) [DecidableRel ((· ≤ ·) : Ideal A → Ideal A → Prop)] : LinearOrder (Ideal A) :=
   { (inferInstance : CompleteLattice (Ideal A)) with
     le_total := by
       intro α β

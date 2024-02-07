@@ -64,7 +64,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     isSheaf_iff_isSheaf_of_type, isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
 
 noncomputable
-instance {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [PreservesFiniteProducts F] :
+instance (priority := 10000) {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [PreservesFiniteProducts F] :
     PreservesFiniteProducts (F ⋙ coyoneda.obj (op E)) :=
   ⟨fun J _ ↦ @compPreservesLimitsOfShape _ _ _ _ _ _ _ _ F (coyoneda.obj (op E))
     (PreservesFiniteProducts.preserves J) ((preservesLimitsOfSizeShrink _).preservesLimitsOfShape)⟩
@@ -175,7 +175,7 @@ theorem equalizerCondition (X : CondensedSet) : EqualizerCondition X.val :=
   CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp X.cond |>.2
 
 /-- A condensed set preserves finite products. -/
-noncomputable instance (X : CondensedSet) : PreservesFiniteProducts X.val :=
+noncomputable instance (priority := 10000) (X : CondensedSet) : PreservesFiniteProducts X.val :=
   CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp
     X.cond |>.1.some
 

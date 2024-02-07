@@ -156,11 +156,11 @@ guard_decl Finsupp.Lex.covariantClass_le_right Mathlib.Data.Finsupp.Lex
 
 namespace F
 
-instance : Zero F :=
+instance (priority := 10000) : Zero F :=
   ⟨F.zero⟩
 
 /-- `1` is not really needed, but it is nice to use the notation. -/
-instance : One F :=
+instance (priority := 10000) : One F :=
   ⟨F.one⟩
 
 /-- A tactic to prove trivial goals by enumeration. -/
@@ -173,7 +173,7 @@ def val : F → ℕ
   | 1 => 1
 #align counterexample.F.val Counterexample.F.val
 
-instance : LinearOrder F :=
+instance (priority := 10000) : LinearOrder F :=
   LinearOrder.lift' val (by boom)
 
 @[simp]
@@ -181,7 +181,7 @@ theorem z01 : (0 : F) < 1 := by decide
 #align counterexample.F.z01 Counterexample.F.z01
 
 /-- `F` would be a `CommSemiring`, using `min` as multiplication.  Again, we do not need this. -/
-instance : AddCommMonoid F where
+instance (priority := 10000) : AddCommMonoid F where
   add := max
   add_assoc := by boom
   zero := 0
@@ -190,7 +190,7 @@ instance : AddCommMonoid F where
   add_comm := by boom
 
 /-- The `CovariantClass`es asserting monotonicity of addition hold for `F`. -/
-instance covariantClass_add_le : CovariantClass F F (· + ·) (· ≤ ·) :=
+instance (priority := 10000) covariantClass_add_le : CovariantClass F F (· + ·) (· ≤ ·) :=
   ⟨by boom⟩
 #align counterexample.F.covariant_class_add_le Counterexample.F.covariantClass_add_le
 

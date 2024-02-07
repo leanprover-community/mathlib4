@@ -273,16 +273,16 @@ def Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β
   .replaceTopology (.induced f h.inj m) h.induced
 #align embedding.comap_metric_space Embedding.comapMetricSpace
 
-instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
+instance (priority := 10000) Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
     MetricSpace (Subtype p) :=
   .induced Subtype.val Subtype.coe_injective ‹_›
 #align subtype.metric_space Subtype.metricSpace
 
 @[to_additive]
-instance {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
+instance (priority := 10000) {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
   MetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 
-instance : MetricSpace Empty where
+instance (priority := 10000) : MetricSpace Empty where
   dist _ _ := 0
   dist_self _ := rfl
   dist_comm _ _ := rfl
@@ -293,7 +293,7 @@ instance : MetricSpace Empty where
   toUniformSpace := inferInstance
   uniformity_dist := Subsingleton.elim _ _
 
-instance : MetricSpace PUnit.{u + 1} where
+instance (priority := 10000) : MetricSpace PUnit.{u + 1} where
   dist _ _ := 0
   dist_self _ := rfl
   dist_comm _ _ := rfl
@@ -308,24 +308,24 @@ instance : MetricSpace PUnit.{u + 1} where
 section Real
 
 /-- Instantiate the reals as a metric space. -/
-instance Real.metricSpace : MetricSpace ℝ := .ofT0PseudoMetricSpace ℝ
+instance (priority := 10000) Real.metricSpace : MetricSpace ℝ := .ofT0PseudoMetricSpace ℝ
 #align real.metric_space Real.metricSpace
 
 end Real
 
 section NNReal
 
-instance : MetricSpace ℝ≥0 :=
+instance (priority := 10000) : MetricSpace ℝ≥0 :=
   Subtype.metricSpace
 
 end NNReal
 
-instance [MetricSpace β] : MetricSpace (ULift β) :=
+instance (priority := 10000) [MetricSpace β] : MetricSpace (ULift β) :=
   MetricSpace.induced ULift.down ULift.down_injective ‹_›
 
 section Prod
 
-instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) := .ofT0PseudoMetricSpace _
+instance (priority := 10000) Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) := .ofT0PseudoMetricSpace _
 #align prod.metric_space_max Prod.metricSpaceMax
 
 end Prod
@@ -337,7 +337,7 @@ open Finset
 variable {π : β → Type*} [Fintype β] [∀ b, MetricSpace (π b)]
 
 /-- A finite product of metric spaces is a metric space, with the sup distance. -/
-instance metricSpacePi : MetricSpace (∀ b, π b) := .ofT0PseudoMetricSpace _
+instance (priority := 10000) metricSpacePi : MetricSpace (∀ b, π b) := .ofT0PseudoMetricSpace _
 #align metric_space_pi metricSpacePi
 
 end Pi
@@ -370,7 +370,7 @@ end Metric
 
 section EqRel
 
-instance {α : Type u} [PseudoMetricSpace α] : Dist (UniformSpace.SeparationQuotient α) where
+instance (priority := 10000) {α : Type u} [PseudoMetricSpace α] : Dist (UniformSpace.SeparationQuotient α) where
   dist p q := Quotient.liftOn₂' p q dist fun x y x' y' hx hy => by
     rw [dist_edist, dist_edist, ← UniformSpace.SeparationQuotient.edist_mk x,
       ← UniformSpace.SeparationQuotient.edist_mk x', Quot.sound hx, Quot.sound hy]
@@ -380,7 +380,7 @@ theorem UniformSpace.SeparationQuotient.dist_mk {α : Type u} [PseudoMetricSpace
   rfl
 #align uniform_space.separation_quotient.dist_mk UniformSpace.SeparationQuotient.dist_mk
 
-instance {α : Type u} [PseudoMetricSpace α] : MetricSpace (UniformSpace.SeparationQuotient α) :=
+instance (priority := 10000) {α : Type u} [PseudoMetricSpace α] : MetricSpace (UniformSpace.SeparationQuotient α) :=
   EMetricSpace.toMetricSpaceOfDist dist (fun x y => Quotient.inductionOn₂' x y edist_ne_top)
     fun x y => Quotient.inductionOn₂' x y dist_edist
 
@@ -399,8 +399,8 @@ section
 
 variable [Dist X]
 
-instance : Dist (Additive X) := ‹Dist X›
-instance : Dist (Multiplicative X) := ‹Dist X›
+instance (priority := 10000) : Dist (Additive X) := ‹Dist X›
+instance (priority := 10000) : Dist (Multiplicative X) := ‹Dist X›
 
 @[simp] theorem dist_ofMul (a b : X) : dist (ofMul a) (ofMul b) = dist a b := rfl
 #align dist_of_mul dist_ofMul
@@ -420,8 +420,8 @@ section
 
 variable [PseudoMetricSpace X]
 
-instance : PseudoMetricSpace (Additive X) := ‹PseudoMetricSpace X›
-instance : PseudoMetricSpace (Multiplicative X) := ‹PseudoMetricSpace X›
+instance (priority := 10000) : PseudoMetricSpace (Additive X) := ‹PseudoMetricSpace X›
+instance (priority := 10000) : PseudoMetricSpace (Multiplicative X) := ‹PseudoMetricSpace X›
 
 @[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
 #align nndist_of_mul nndist_ofMul
@@ -438,11 +438,11 @@ theorem nndist_toAdd (a b : Multiplicative X) : nndist (toAdd a) (toAdd b) = nnd
 
 end
 
-instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
-instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
+instance (priority := 10000) [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
+instance (priority := 10000) [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
 
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
+instance (priority := 10000) [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
+instance (priority := 10000) [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
 
 /-!
 ### Order dual
@@ -456,7 +456,7 @@ section
 
 variable [Dist X]
 
-instance : Dist Xᵒᵈ := ‹Dist X›
+instance (priority := 10000) : Dist Xᵒᵈ := ‹Dist X›
 
 @[simp] theorem dist_toDual (a b : X) : dist (toDual a) (toDual b) = dist a b := rfl
 #align dist_to_dual dist_toDual
@@ -470,7 +470,7 @@ section
 
 variable [PseudoMetricSpace X]
 
-instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
+instance (priority := 10000) : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
 
 @[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
 #align nndist_to_dual nndist_toDual
@@ -480,6 +480,6 @@ instance : PseudoMetricSpace Xᵒᵈ := ‹PseudoMetricSpace X›
 
 end
 
-instance [MetricSpace X] : MetricSpace Xᵒᵈ := ‹MetricSpace X›
+instance (priority := 10000) [MetricSpace X] : MetricSpace Xᵒᵈ := ‹MetricSpace X›
 
-instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace Xᵒᵈ := ‹ProperSpace X›
+instance (priority := 10000) [PseudoMetricSpace X] [ProperSpace X] : ProperSpace Xᵒᵈ := ‹ProperSpace X›

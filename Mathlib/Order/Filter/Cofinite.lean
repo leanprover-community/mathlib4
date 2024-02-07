@@ -49,7 +49,7 @@ theorem hasBasis_cofinite : HasBasis cofinite (fun s : Set α => s.Finite) compl
       htf.subset <| compl_subset_comm.2 hts⟩⟩
 #align filter.has_basis_cofinite Filter.hasBasis_cofinite
 
-instance cofinite_neBot [Infinite α] : NeBot (@cofinite α) :=
+instance (priority := 10000) cofinite_neBot [Infinite α] : NeBot (@cofinite α) :=
   hasBasis_cofinite.neBot_iff.2 fun hs => hs.infinite_compl.nonempty
 #align filter.cofinite_ne_bot Filter.cofinite_neBot
 

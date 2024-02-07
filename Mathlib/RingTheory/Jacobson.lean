@@ -466,7 +466,7 @@ theorem isJacobson_polynomial_iff_isJacobson : IsJacobson R[X] ↔ IsJacobson R 
     ⟨C x, by simp only [coe_eval₂RingHom, RingHom.id_apply, eval₂_C]⟩⟩
 #align ideal.polynomial.is_jacobson_polynomial_iff_is_jacobson Ideal.Polynomial.isJacobson_polynomial_iff_isJacobson
 
-instance [IsJacobson R] : IsJacobson R[X] :=
+instance (priority := 10000) [IsJacobson R] : IsJacobson R[X] :=
   isJacobson_polynomial_iff_isJacobson.mpr ‹IsJacobson R›
 
 end CommRing
@@ -630,7 +630,7 @@ theorem isJacobson_MvPolynomial_fin {R : Type u} [CommRing R] [H : IsJacobson R]
   `Inf {P maximal | P ≥ I} = Inf {P prime | P ≥ I} = I.radical`. Fields are always Jacobson,
   and in that special case this is (most of) the classical Nullstellensatz,
   since `I(V(I))` is the intersection of maximal ideals containing `I`, which is then `I.radical` -/
-instance isJacobson {R : Type*} [CommRing R] {ι : Type*} [Finite ι] [IsJacobson R] :
+instance (priority := 10000) isJacobson {R : Type*} [CommRing R] {ι : Type*} [Finite ι] [IsJacobson R] :
     IsJacobson (MvPolynomial ι R) := by
   cases nonempty_fintype ι
   haveI := Classical.decEq ι

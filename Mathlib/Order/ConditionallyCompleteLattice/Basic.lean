@@ -45,19 +45,19 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 
 open Classical
 
-noncomputable instance WithTop.instSupSet {α : Type*} [Preorder α] [SupSet α] :
+noncomputable instance (priority := 10000) WithTop.instSupSet {α : Type*} [Preorder α] [SupSet α] :
     SupSet (WithTop α) :=
   ⟨fun S =>
     if ⊤ ∈ S then ⊤ else if BddAbove ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α) then
       ↑(sSup ((fun (a : α) ↦ (a : WithTop α)) ⁻¹' S : Set α)) else ⊤⟩
 
-noncomputable instance WithTop.instInfSet {α : Type*} [InfSet α] : InfSet (WithTop α) :=
+noncomputable instance (priority := 10000) WithTop.instInfSet {α : Type*} [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
-noncomputable instance WithBot.instSupSet {α : Type*} [SupSet α] : SupSet (WithBot α) :=
+noncomputable instance (priority := 10000) WithBot.instSupSet {α : Type*} [SupSet α] : SupSet (WithBot α) :=
   ⟨(WithTop.instInfSet (α := αᵒᵈ)).sInf⟩
 
-noncomputable instance WithBot.instInfSet {α : Type*} [Preorder α] [InfSet α] :
+noncomputable instance (priority := 10000) WithBot.instInfSet {α : Type*} [Preorder α] [InfSet α] :
     InfSet (WithBot α) :=
   ⟨(WithTop.instSupSet (α := αᵒᵈ)).sSup⟩
 
@@ -208,7 +208,7 @@ class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyComplet
   csInf_of_not_bddBelow : ∀ s, ¬BddBelow s → sInf s = sInf (∅ : Set α)
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
-instance (α : Type*) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
+instance (priority := 10000) (α : Type*) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
   { ‹ConditionallyCompleteLinearOrder α› with
     max := Sup.sup, min := Inf.inf,
     min_def := fun a b ↦ by
@@ -306,7 +306,7 @@ end
 
 section OrderDual
 
-instance instConditionallyCompleteLatticeOrderDual (α : Type*) [ConditionallyCompleteLattice α] :
+instance (priority := 10000) instConditionallyCompleteLatticeOrderDual (α : Type*) [ConditionallyCompleteLattice α] :
     ConditionallyCompleteLattice αᵒᵈ :=
   { instInfOrderDual α, instSupOrderDual α, OrderDual.lattice α with
     le_csSup := ConditionallyCompleteLattice.csInf_le (α := α)
@@ -314,7 +314,7 @@ instance instConditionallyCompleteLatticeOrderDual (α : Type*) [ConditionallyCo
     le_csInf := ConditionallyCompleteLattice.csSup_le (α := α)
     csInf_le := ConditionallyCompleteLattice.le_csSup (α := α) }
 
-instance (α : Type*) [ConditionallyCompleteLinearOrder α] : ConditionallyCompleteLinearOrder αᵒᵈ :=
+instance (priority := 10000) (α : Type*) [ConditionallyCompleteLinearOrder α] : ConditionallyCompleteLinearOrder αᵒᵈ :=
   { instConditionallyCompleteLatticeOrderDual α, OrderDual.instLinearOrder α with
     csSup_of_not_bddAbove := ConditionallyCompleteLinearOrder.csInf_of_not_bddBelow (α := α)
     csInf_of_not_bddBelow := ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove (α := α) }
@@ -327,7 +327,7 @@ constructor provides poor definitional equalities.  If other fields are known ex
 should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
-instance : ConditionallyCompleteLattice my_T :=
+instance (priority := 10000) : ConditionallyCompleteLattice my_T :=
   { inf := better_inf,
     le_inf := ...,
     inf_le_right := ...,
@@ -379,7 +379,7 @@ constructor provides poor definitional equalities.  If other fields are known ex
 should be provided; for example, if `inf` is known explicitly, construct the
 `ConditionallyCompleteLattice` instance as
 ```
-instance : ConditionallyCompleteLattice my_T :=
+instance (priority := 10000) : ConditionallyCompleteLattice my_T :=
   { inf := better_inf,
     le_inf := ...,
     inf_le_right := ...,
@@ -976,7 +976,7 @@ lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
 
 end ConditionallyCompleteLattice
 
-instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
+instance (priority := 10000) Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
     [∀ i, ConditionallyCompleteLattice (α i)] : ConditionallyCompleteLattice (∀ i, α i) :=
   { Pi.lattice, Pi.supSet, Pi.infSet with
     le_csSup := fun s f ⟨g, hg⟩ hf i =>
@@ -1380,7 +1380,7 @@ theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
     exact bot_le
 #align with_top.is_glb_Inf WithTop.isGLB_sInf
 
-noncomputable instance : CompleteLinearOrder (WithTop α) :=
+noncomputable instance (priority := 10000) : CompleteLinearOrder (WithTop α) :=
   { WithTop.linearOrder, WithTop.lattice, WithTop.orderTop, WithTop.orderBot with
     sup := Sup.sup
     le_sSup := fun s => (isLUB_sSup s).1
@@ -1623,7 +1623,7 @@ open Classical
 
 /-- Adding a top element to a conditionally complete lattice
 gives a conditionally complete lattice -/
-noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
+noncomputable instance (priority := 10000) WithTop.conditionallyCompleteLattice {α : Type*}
     [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice (WithTop α) :=
   { lattice, instSupSet, instInfSet with
     le_csSup := fun _ a _ haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
@@ -1634,7 +1634,7 @@ noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
 
 /-- Adding a bottom element to a conditionally complete lattice
 gives a conditionally complete lattice -/
-noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
+noncomputable instance (priority := 10000) WithBot.conditionallyCompleteLattice {α : Type*}
     [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice (WithBot α) :=
   { WithBot.lattice with
     le_csSup := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).csInf_le
@@ -1644,7 +1644,7 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
 #align with_bot.conditionally_complete_lattice WithBot.conditionallyCompleteLattice
 
 -- Porting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
-noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
+noncomputable instance (priority := 10000) WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   { instInfSet, instSupSet, boundedOrder, lattice with
     le_sSup := fun S a haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
@@ -1681,12 +1681,12 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     le_sInf := fun S a haS => (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS }
 #align with_top.with_bot.complete_lattice WithTop.WithBot.completeLattice
 
-noncomputable instance WithTop.WithBot.completeLinearOrder {α : Type*}
+noncomputable instance (priority := 10000) WithTop.WithBot.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) :=
   { WithTop.WithBot.completeLattice, WithTop.linearOrder with }
 #align with_top.with_bot.complete_linear_order WithTop.WithBot.completeLinearOrder
 
-noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
+noncomputable instance (priority := 10000) WithBot.WithTop.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithBot (WithTop α)) :=
   { instInfSet, instSupSet, instBoundedOrder, lattice with
     le_sSup := (WithTop.WithBot.completeLattice (α := αᵒᵈ)).sInf_le
@@ -1695,7 +1695,7 @@ noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
     le_sInf := (WithTop.WithBot.completeLattice (α := αᵒᵈ)).sSup_le }
 #align with_bot.with_top.complete_lattice WithBot.WithTop.completeLattice
 
-noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
+noncomputable instance (priority := 10000) WithBot.WithTop.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) :=
   { WithBot.WithTop.completeLattice, WithBot.linearOrder with }
 #align with_bot.with_top.complete_linear_order WithBot.WithTop.completeLinearOrder

@@ -48,7 +48,7 @@ end Unique
 
 axiom α : Type
 axiom a : α
-instance : Nonempty α := Nonempty.intro a
+instance (priority := 10000) : Nonempty α := Nonempty.intro a
 
 -- Confirms that inhabit can find Nonempty instances that aren't in the local context
 noncomputable example : Inhabited α := by

@@ -45,7 +45,7 @@ class Prestructure (s : Setoid M) where
 variable {L} {s : Setoid M}
 variable [ps : L.Prestructure s]
 
-instance quotientStructure : L.Structure (Quotient s) where
+instance (priority := 10000) quotientStructure : L.Structure (Quotient s) where
   funMap {n} f x :=
     Quotient.map (@funMap L M ps.toStructure n f) Prestructure.fun_equiv (Quotient.finChoice x)
   RelMap {n} r x :=

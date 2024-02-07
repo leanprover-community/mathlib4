@@ -85,13 +85,13 @@ def WithZero (α) := Option α
 @[coe]
 def WithZero.of (a : α) : WithZero α := some a
 
-instance : CoeTail α (WithZero α) := ⟨WithZero.of⟩
+instance (priority := 10000) : CoeTail α (WithZero α) := ⟨WithZero.of⟩
 
-instance : Zero (WithZero α) := ⟨none⟩
+instance (priority := 10000) : Zero (WithZero α) := ⟨none⟩
 
-instance [One α] : One (WithZero α) := ⟨some 1⟩
+instance (priority := 10000) [One α] : One (WithZero α) := ⟨some 1⟩
 
-instance [Mul α] : MulZeroClass (WithZero α) where
+instance (priority := 10000) [Mul α] : MulZeroClass (WithZero α) where
   mul o₁ o₂ := o₁.bind fun a => o₂.map fun b => a * b
   zero_mul a := rfl
   mul_zero a := by cases a <;> rfl

@@ -496,14 +496,14 @@ theorem sup_lt_of_lt_sdiff_right (h : x < z \ y) (hyz : y ≤ z) : x ⊔ y < z :
   exact (sdiff_le_sdiff_of_sup_le_sup_right h').trans sdiff_le
 #align sup_lt_of_lt_sdiff_right sup_lt_of_lt_sdiff_right
 
-instance Prod.instGeneralizedBooleanAlgebra [GeneralizedBooleanAlgebra β] :
+instance (priority := 10000) Prod.instGeneralizedBooleanAlgebra [GeneralizedBooleanAlgebra β] :
     GeneralizedBooleanAlgebra (α × β) where
   sup_inf_sdiff _ _ := Prod.ext (sup_inf_sdiff _ _) (sup_inf_sdiff _ _)
   inf_inf_sdiff _ _ := Prod.ext (inf_inf_sdiff _ _) (inf_inf_sdiff _ _)
 
 -- Porting note:
 -- Once `pi_instance` has been ported, this is just `by pi_instance`.
-instance Pi.instGeneralizedBooleanAlgebra {ι : Type*} {α : ι → Type*}
+instance (priority := 10000) Pi.instGeneralizedBooleanAlgebra {ι : Type*} {α : ι → Type*}
     [∀ i, GeneralizedBooleanAlgebra (α i)] : GeneralizedBooleanAlgebra (∀ i, α i) where
   sup_inf_sdiff := fun f g => funext fun a => sup_inf_sdiff (f a) (g a)
   inf_inf_sdiff := fun f g => funext fun a => inf_inf_sdiff (f a) (g a)
@@ -724,7 +724,7 @@ theorem compl_le_iff_compl_le : xᶜ ≤ y ↔ yᶜ ≤ x :=
 theorem sdiff_compl : x \ yᶜ = x ⊓ y := by rw [sdiff_eq, compl_compl]
 #align sdiff_compl sdiff_compl
 
-instance OrderDual.booleanAlgebra (α) [BooleanAlgebra α] : BooleanAlgebra αᵒᵈ :=
+instance (priority := 10000) OrderDual.booleanAlgebra (α) [BooleanAlgebra α] : BooleanAlgebra αᵒᵈ :=
   { OrderDual.distribLattice α, OrderDual.boundedOrder α with
     compl := fun a => toDual (ofDual aᶜ),
     sdiff :=
@@ -786,7 +786,7 @@ lemma himp_ne_right : x ⇨ y ≠ x ↔ x ≠ ⊤ ∨ y ≠ ⊤ := himp_eq_left.
 
 end BooleanAlgebra
 
-instance Prop.booleanAlgebra : BooleanAlgebra Prop :=
+instance (priority := 10000) Prop.booleanAlgebra : BooleanAlgebra Prop :=
   { Prop.heytingAlgebra, GeneralizedHeytingAlgebra.toDistribLattice with
     compl := Not,
     himp_eq := fun p q => propext imp_iff_or_not,
@@ -794,7 +794,7 @@ instance Prop.booleanAlgebra : BooleanAlgebra Prop :=
     top_le_sup_compl := fun p _ => Classical.em p }
 #align Prop.boolean_algebra Prop.booleanAlgebra
 
-instance Prod.booleanAlgebra (α β) [BooleanAlgebra α] [BooleanAlgebra β] :
+instance (priority := 10000) Prod.booleanAlgebra (α β) [BooleanAlgebra α] [BooleanAlgebra β] :
     BooleanAlgebra (α × β) where
   __ := Prod.heytingAlgebra
   __ := Prod.distribLattice α β
@@ -803,7 +803,7 @@ instance Prod.booleanAlgebra (α β) [BooleanAlgebra α] [BooleanAlgebra β] :
   inf_compl_le_bot x := by constructor <;> simp
   top_le_sup_compl x := by constructor <;> simp
 
-instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlgebra (α i)] :
+instance (priority := 10000) Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlgebra (α i)] :
     BooleanAlgebra (∀ i, α i) :=
   { Pi.sdiff, Pi.heytingAlgebra, @Pi.distribLattice ι α _ with
     sdiff_eq := fun _ _ => funext fun _ => sdiff_eq,
@@ -812,7 +812,7 @@ instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlg
     top_le_sup_compl := fun _ _ => BooleanAlgebra.top_le_sup_compl _ }
 #align pi.boolean_algebra Pi.booleanAlgebra
 
-instance Bool.instBooleanAlgebra : BooleanAlgebra Bool where
+instance (priority := 10000) Bool.instBooleanAlgebra : BooleanAlgebra Bool where
   __ := Bool.linearOrder
   __ := Bool.boundedOrder
   __ := Bool.instDistribLattice
@@ -875,7 +875,7 @@ protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot 
 
 end lift
 
-instance PUnit.booleanAlgebra : BooleanAlgebra PUnit := by
+instance (priority := 10000) PUnit.booleanAlgebra : BooleanAlgebra PUnit := by
   refine'
   { PUnit.biheytingAlgebra with
     .. } <;> (intros; trivial)

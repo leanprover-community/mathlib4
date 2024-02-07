@@ -65,7 +65,7 @@ protected def Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
 #align bundle.continuous_linear_map Bundle.ContinuousLinearMap
 
 -- Porting note: possibly remove after the port
-instance Bundle.ContinuousLinearMap.module [∀ x, TopologicalSpace (E₁ x)]
+instance (priority := 10000) Bundle.ContinuousLinearMap.module [∀ x, TopologicalSpace (E₁ x)]
     [∀ x, TopologicalSpace (E₂ x)] [∀ x, TopologicalAddGroup (E₂ x)]
     [∀ x, ContinuousConstSMul 𝕜₂ (E₂ x)] : ∀ x, Module 𝕜₂ (Bundle.ContinuousLinearMap σ E₁ E₂ x) :=
   fun _ => inferInstance
@@ -155,7 +155,7 @@ def continuousLinearMap :
 #align pretrivialization.continuous_linear_map Pretrivialization.continuousLinearMap
 
 -- porting note: todo: see if Lean 4 can generate this instance without a hint
-instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)] :
+instance (priority := 10000) continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)] :
     (Pretrivialization.continuousLinearMap σ e₁ e₂).IsLinear 𝕜₂ where
   linear x _ :=
     { map_add := fun L L' =>
@@ -257,19 +257,19 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
 
 /-- Topology on the total space of the continuous `σ`-semilinear maps between two "normable" vector
 bundles over the same base. -/
-instance Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace :
+instance (priority := 10000) Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace :
     TopologicalSpace (TotalSpace (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂)) :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).totalSpaceTopology
 #align bundle.continuous_linear_map.topological_space_total_space Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace
 
 /-- The continuous `σ`-semilinear maps between two vector bundles form a fiber bundle. -/
-instance Bundle.ContinuousLinearMap.fiberBundle :
+instance (priority := 10000) Bundle.ContinuousLinearMap.fiberBundle :
     FiberBundle (F₁ →SL[σ] F₂) fun x => E₁ x →SL[σ] E₂ x :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).toFiberBundle
 #align bundle.continuous_linear_map.fiber_bundle Bundle.ContinuousLinearMap.fiberBundle
 
 /-- The continuous `σ`-semilinear maps between two vector bundles form a vector bundle. -/
-instance Bundle.ContinuousLinearMap.vectorBundle :
+instance (priority := 10000) Bundle.ContinuousLinearMap.vectorBundle :
     VectorBundle 𝕜₂ (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂) :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).toVectorBundle
 #align bundle.continuous_linear_map.vector_bundle Bundle.ContinuousLinearMap.vectorBundle
@@ -284,7 +284,7 @@ def Trivialization.continuousLinearMap :
   VectorPrebundle.trivializationOfMemPretrivializationAtlas _ ⟨e₁, e₂, he₁, he₂, rfl⟩
 #align trivialization.continuous_linear_map Trivialization.continuousLinearMap
 
-instance Bundle.ContinuousLinearMap.memTrivializationAtlas :
+instance (priority := 10000) Bundle.ContinuousLinearMap.memTrivializationAtlas :
     MemTrivializationAtlas
       (e₁.continuousLinearMap σ e₂ :
         Trivialization (F₁ →SL[σ] F₂) (π (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂))) where

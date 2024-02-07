@@ -36,7 +36,7 @@ namespace Multiset
 
 variable [DecidableEq α] (s t : Multiset α)
 
-instance : LocallyFiniteOrder (Multiset α) :=
+instance (priority := 10000) : LocallyFiniteOrder (Multiset α) :=
   LocallyFiniteOrder.ofIcc (Multiset α)
     (fun s t => (Finset.Icc (toDFinsupp s) (toDFinsupp t)).map
       Multiset.equivDFinsupp.toEquiv.symm.toEmbedding)

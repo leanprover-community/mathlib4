@@ -124,7 +124,7 @@ theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
 theorem subset_univ (s : Finset α) : s ⊆ univ := fun a _ => mem_univ a
 #align finset.subset_univ Finset.subset_univ
 
-instance boundedOrder : BoundedOrder (Finset α) :=
+instance (priority := 10000) boundedOrder : BoundedOrder (Finset α) :=
   { inferInstanceAs (OrderBot (Finset α)) with
     top := univ
     le_top := subset_univ }
@@ -151,7 +151,7 @@ section BooleanAlgebra
 
 variable [DecidableEq α] {a : α}
 
-instance booleanAlgebra : BooleanAlgebra (Finset α) :=
+instance (priority := 10000) booleanAlgebra : BooleanAlgebra (Finset α) :=
   GeneralizedBooleanAlgebra.toBooleanAlgebra
 #align finset.boolean_algebra Finset.booleanAlgebra
 
@@ -350,90 +350,90 @@ open Finset Function
 
 namespace Fintype
 
-instance decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
+instance (priority := 10000) decidablePiFintype {α} {β : α → Type*} [∀ a, DecidableEq (β a)] [Fintype α] :
     DecidableEq (∀ a, β a) := fun f g =>
   decidable_of_iff (∀ a ∈ @Fintype.elems α _, f a = g a)
     (by simp [Function.funext_iff, Fintype.complete])
 #align fintype.decidable_pi_fintype Fintype.decidablePiFintype
 
-instance decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
+instance (priority := 10000) decidableForallFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∀ a, p a) :=
   decidable_of_iff (∀ a ∈ @univ α _, p a) (by simp)
 #align fintype.decidable_forall_fintype Fintype.decidableForallFintype
 
-instance decidableExistsFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
+instance (priority := 10000) decidableExistsFintype {p : α → Prop} [DecidablePred p] [Fintype α] :
     Decidable (∃ a, p a) :=
   decidable_of_iff (∃ a ∈ @univ α _, p a) (by simp)
 #align fintype.decidable_exists_fintype Fintype.decidableExistsFintype
 
-instance decidableMemRangeFintype [Fintype α] [DecidableEq β] (f : α → β) :
+instance (priority := 10000) decidableMemRangeFintype [Fintype α] [DecidableEq β] (f : α → β) :
     DecidablePred (· ∈ Set.range f) := fun _ => Fintype.decidableExistsFintype
 #align fintype.decidable_mem_range_fintype Fintype.decidableMemRangeFintype
 
-instance decidableSubsingleton [Fintype α] [DecidableEq α] {s : Set α} [DecidablePred (· ∈ s)] :
+instance (priority := 10000) decidableSubsingleton [Fintype α] [DecidableEq α] {s : Set α} [DecidablePred (· ∈ s)] :
     Decidable s.Subsingleton := decidable_of_iff (∀ a ∈ s, ∀ b ∈ s, a = b) Iff.rfl
 
 section BundledHoms
 
-instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α ≃ β) := fun a b =>
+instance (priority := 10000) decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α ≃ β) := fun a b =>
   decidable_of_iff (a.1 = b.1) Equiv.coe_fn_injective.eq_iff
 #align fintype.decidable_eq_equiv_fintype Fintype.decidableEqEquivFintype
 
-instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
+instance (priority := 10000) decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) Function.Embedding.coe_injective.eq_iff
 #align fintype.decidable_eq_embedding_fintype Fintype.decidableEqEmbeddingFintype
 
 @[to_additive]
-instance decidableEqOneHomFintype [DecidableEq β] [Fintype α] [One α] [One β] :
+instance (priority := 10000) decidableEqOneHomFintype [DecidableEq β] [Fintype α] [One α] [One β] :
     DecidableEq (OneHom α β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 #align fintype.decidable_eq_one_hom_fintype Fintype.decidableEqOneHomFintype
 #align fintype.decidable_eq_zero_hom_fintype Fintype.decidableEqZeroHomFintype
 
 @[to_additive]
-instance decidableEqMulHomFintype [DecidableEq β] [Fintype α] [Mul α] [Mul β] :
+instance (priority := 10000) decidableEqMulHomFintype [DecidableEq β] [Fintype α] [Mul α] [Mul β] :
     DecidableEq (α →ₙ* β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 #align fintype.decidable_eq_mul_hom_fintype Fintype.decidableEqMulHomFintype
 #align fintype.decidable_eq_add_hom_fintype Fintype.decidableEqAddHomFintype
 
 @[to_additive]
-instance decidableEqMonoidHomFintype [DecidableEq β] [Fintype α] [MulOneClass α] [MulOneClass β] :
+instance (priority := 10000) decidableEqMonoidHomFintype [DecidableEq β] [Fintype α] [MulOneClass α] [MulOneClass β] :
     DecidableEq (α →* β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 #align fintype.decidable_eq_monoid_hom_fintype Fintype.decidableEqMonoidHomFintype
 #align fintype.decidable_eq_add_monoid_hom_fintype Fintype.decidableEqAddMonoidHomFintype
 
-instance decidableEqMonoidWithZeroHomFintype [DecidableEq β] [Fintype α] [MulZeroOneClass α]
+instance (priority := 10000) decidableEqMonoidWithZeroHomFintype [DecidableEq β] [Fintype α] [MulZeroOneClass α]
     [MulZeroOneClass β] : DecidableEq (α →*₀ β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 #align fintype.decidable_eq_monoid_with_zero_hom_fintype Fintype.decidableEqMonoidWithZeroHomFintype
 
-instance decidableEqRingHomFintype [DecidableEq β] [Fintype α] [Semiring α] [Semiring β] :
+instance (priority := 10000) decidableEqRingHomFintype [DecidableEq β] [Fintype α] [Semiring α] [Semiring β] :
     DecidableEq (α →+* β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) (Injective.eq_iff RingHom.coe_inj)
 #align fintype.decidable_eq_ring_hom_fintype Fintype.decidableEqRingHomFintype
 
 end BundledHoms
 
-instance decidableInjectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] :
+instance (priority := 10000) decidableInjectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] :
     DecidablePred (Injective : (α → β) → Prop) := fun x => by unfold Injective; infer_instance
 #align fintype.decidable_injective_fintype Fintype.decidableInjectiveFintype
 
-instance decidableSurjectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
+instance (priority := 10000) decidableSurjectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
     DecidablePred (Surjective : (α → β) → Prop) := fun x => by unfold Surjective; infer_instance
 #align fintype.decidable_surjective_fintype Fintype.decidableSurjectiveFintype
 
-instance decidableBijectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] :
+instance (priority := 10000) decidableBijectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] :
     DecidablePred (Bijective : (α → β) → Prop) := fun x => by unfold Bijective; infer_instance
 #align fintype.decidable_bijective_fintype Fintype.decidableBijectiveFintype
 
-instance decidableRightInverseFintype [DecidableEq α] [Fintype α] (f : α → β) (g : β → α) :
+instance (priority := 10000) decidableRightInverseFintype [DecidableEq α] [Fintype α] (f : α → β) (g : β → α) :
     Decidable (Function.RightInverse f g) :=
   show Decidable (∀ x, g (f x) = x) by infer_instance
 #align fintype.decidable_right_inverse_fintype Fintype.decidableRightInverseFintype
 
-instance decidableLeftInverseFintype [DecidableEq β] [Fintype β] (f : α → β) (g : β → α) :
+instance (priority := 10000) decidableLeftInverseFintype [DecidableEq β] [Fintype β] (f : α → β) (g : β → α) :
     Decidable (Function.LeftInverse f g) :=
   show Decidable (∀ x, f (g x) = x) by infer_instance
 #align fintype.decidable_left_inverse_fintype Fintype.decidableLeftInverseFintype
@@ -448,7 +448,7 @@ def ofList [DecidableEq α] (l : List α) (H : ∀ x : α, x ∈ l) : Fintype α
   ⟨l.toFinset, by simpa using H⟩
 #align fintype.of_list Fintype.ofList
 
-instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
+instance (priority := 10000) subsingleton (α : Type*) : Subsingleton (Fintype α) :=
   ⟨fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ => by congr; simp [Finset.ext_iff, h₁, h₂]⟩
 #align fintype.subsingleton Fintype.subsingleton
 
@@ -488,11 +488,11 @@ variable [Fintype α] [DecidableEq α] {s t : Finset α}
 @[simp]
 lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp [filter_mem_eq_inter]
 
-instance decidableCodisjoint : Decidable (Codisjoint s t) :=
+instance (priority := 10000) decidableCodisjoint : Decidable (Codisjoint s t) :=
   decidable_of_iff _ codisjoint_left.symm
 #align finset.decidable_codisjoint Finset.decidableCodisjoint
 
-instance decidableIsCompl : Decidable (IsCompl s t) :=
+instance (priority := 10000) decidableIsCompl : Decidable (IsCompl s t) :=
   decidable_of_iff' _ isCompl_iff
 #align finset.decidable_is_compl Finset.decidableIsCompl
 
@@ -625,8 +625,8 @@ theorem univ_of_isEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
 #align fintype.univ_of_is_empty Fintype.univ_of_isEmpty
 
-instance : Fintype Empty := Fintype.ofIsEmpty
-instance : Fintype PEmpty := Fintype.ofIsEmpty
+instance (priority := 10000) : Fintype Empty := Fintype.ofIsEmpty
+instance (priority := 10000) : Fintype PEmpty := Fintype.ofIsEmpty
 
 end Fintype
 
@@ -838,7 +838,7 @@ theorem Finset.toFinset_coe (s : Finset α) [Fintype (s : Set α)] : (s : Set α
   ext fun _ => Set.mem_toFinset
 #align finset.to_finset_coe Finset.toFinset_coe
 
-instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
+instance (priority := 10000) Fin.fintype (n : ℕ) : Fintype (Fin n) :=
   ⟨⟨List.finRange n, List.nodup_finRange n⟩, List.mem_finRange⟩
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
@@ -896,13 +896,13 @@ def Unique.fintype {α : Type*} [Unique α] : Fintype α :=
 
 /-- Short-circuit instance to decrease search for `Unique.fintype`,
 since that relies on a subsingleton elimination for `Unique`. -/
-instance Fintype.subtypeEq (y : α) : Fintype { x // x = y } :=
+instance (priority := 10000) Fintype.subtypeEq (y : α) : Fintype { x // x = y } :=
   Fintype.subtype {y} (by simp)
 #align fintype.subtype_eq Fintype.subtypeEq
 
 /-- Short-circuit instance to decrease search for `Unique.fintype`,
 since that relies on a subsingleton elimination for `Unique`. -/
-instance Fintype.subtypeEq' (y : α) : Fintype { x // y = x } :=
+instance (priority := 10000) Fintype.subtypeEq' (y : α) : Fintype { x // y = x } :=
   Fintype.subtype {y} (by simp [eq_comm])
 #align fintype.subtype_eq' Fintype.subtypeEq'
 
@@ -916,7 +916,7 @@ theorem Fintype.univ_pempty : @univ PEmpty _ = ∅ :=
   rfl
 #align fintype.univ_pempty Fintype.univ_pempty
 
-instance Unit.fintype : Fintype Unit :=
+instance (priority := 10000) Unit.fintype : Fintype Unit :=
   Fintype.ofSubsingleton ()
 #align unit.fintype Unit.fintype
 
@@ -924,7 +924,7 @@ theorem Fintype.univ_unit : @univ Unit _ = {()} :=
   rfl
 #align fintype.univ_unit Fintype.univ_unit
 
-instance PUnit.fintype : Fintype PUnit :=
+instance (priority := 10000) PUnit.fintype : Fintype PUnit :=
   Fintype.ofSubsingleton PUnit.unit
 #align punit.fintype PUnit.fintype
 
@@ -933,7 +933,7 @@ theorem Fintype.univ_punit : @univ PUnit _ = {PUnit.unit} :=
   rfl
 #align fintype.univ_punit Fintype.univ_punit
 
-instance Bool.fintype : Fintype Bool :=
+instance (priority := 10000) Bool.fintype : Fintype Bool :=
   ⟨⟨{true, false}, by simp⟩, fun x => by cases x <;> simp⟩
 #align bool.fintype Bool.fintype
 
@@ -942,11 +942,11 @@ theorem Fintype.univ_bool : @univ Bool _ = {true, false} :=
   rfl
 #align fintype.univ_bool Fintype.univ_bool
 
-instance Additive.fintype : ∀ [Fintype α], Fintype (Additive α) :=
+instance (priority := 10000) Additive.fintype : ∀ [Fintype α], Fintype (Additive α) :=
   Fintype.ofEquiv α Additive.ofMul
 #align additive.fintype Additive.fintype
 
-instance Multiplicative.fintype : ∀ [Fintype α], Fintype (Multiplicative α) :=
+instance (priority := 10000) Multiplicative.fintype : ∀ [Fintype α], Fintype (Multiplicative α) :=
   Fintype.ofEquiv α Multiplicative.ofAdd
 #align multiplicative.fintype Multiplicative.fintype
 
@@ -960,23 +960,23 @@ def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α
   ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
 #align fintype.prod_right Fintype.prodRight
 
-instance ULift.fintype (α : Type*) [Fintype α] : Fintype (ULift α) :=
+instance (priority := 10000) ULift.fintype (α : Type*) [Fintype α] : Fintype (ULift α) :=
   Fintype.ofEquiv _ Equiv.ulift.symm
 #align ulift.fintype ULift.fintype
 
-instance PLift.fintype (α : Type*) [Fintype α] : Fintype (PLift α) :=
+instance (priority := 10000) PLift.fintype (α : Type*) [Fintype α] : Fintype (PLift α) :=
   Fintype.ofEquiv _ Equiv.plift.symm
 #align plift.fintype PLift.fintype
 
-instance OrderDual.fintype (α : Type*) [Fintype α] : Fintype αᵒᵈ :=
+instance (priority := 10000) OrderDual.fintype (α : Type*) [Fintype α] : Fintype αᵒᵈ :=
   ‹Fintype α›
 #align order_dual.fintype OrderDual.fintype
 
-instance OrderDual.finite (α : Type*) [Finite α] : Finite αᵒᵈ :=
+instance (priority := 10000) OrderDual.finite (α : Type*) [Finite α] : Finite αᵒᵈ :=
   ‹Finite α›
 #align order_dual.finite OrderDual.finite
 
-instance Lex.fintype (α : Type*) [Fintype α] : Fintype (Lex α) :=
+instance (priority := 10000) Lex.fintype (α : Type*) [Fintype α] : Fintype (Lex α) :=
   ‹Fintype α›
 #align lex.fintype Lex.fintype
 
@@ -985,7 +985,7 @@ section Finset
 /-! ### `Fintype (s : Finset α)` -/
 
 
-instance Finset.fintypeCoeSort {α : Type u} (s : Finset α) : Fintype s :=
+instance (priority := 10000) Finset.fintypeCoeSort {α : Type u} (s : Finset α) : Fintype s :=
   ⟨s.attach, s.mem_attach⟩
 #align finset.fintype_coe_sort Finset.fintypeCoeSort
 
@@ -1002,19 +1002,19 @@ theorem Fintype.coe_image_univ [Fintype α] [DecidableEq β] {f : α → β} :
   simp
 #align fintype.coe_image_univ Fintype.coe_image_univ
 
-instance List.Subtype.fintype [DecidableEq α] (l : List α) : Fintype { x // x ∈ l } :=
+instance (priority := 10000) List.Subtype.fintype [DecidableEq α] (l : List α) : Fintype { x // x ∈ l } :=
   Fintype.ofList l.attach l.mem_attach
 #align list.subtype.fintype List.Subtype.fintype
 
-instance Multiset.Subtype.fintype [DecidableEq α] (s : Multiset α) : Fintype { x // x ∈ s } :=
+instance (priority := 10000) Multiset.Subtype.fintype [DecidableEq α] (s : Multiset α) : Fintype { x // x ∈ s } :=
   Fintype.ofMultiset s.attach s.mem_attach
 #align multiset.subtype.fintype Multiset.Subtype.fintype
 
-instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
+instance (priority := 10000) Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
   ⟨s.attach, s.mem_attach⟩
 #align finset.subtype.fintype Finset.Subtype.fintype
 
-instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
+instance (priority := 10000) FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
   Finset.Subtype.fintype s
 #align finset_coe.fintype FinsetCoe.fintype
 
@@ -1022,11 +1022,11 @@ theorem Finset.attach_eq_univ {s : Finset α} : s.attach = Finset.univ :=
   rfl
 #align finset.attach_eq_univ Finset.attach_eq_univ
 
-instance PLift.fintypeProp (p : Prop) [Decidable p] : Fintype (PLift p) :=
+instance (priority := 10000) PLift.fintypeProp (p : Prop) [Decidable p] : Fintype (PLift p) :=
   ⟨if h : p then {⟨h⟩} else ∅, fun ⟨h⟩ => by simp [h]⟩
 #align plift.fintype_Prop PLift.fintypeProp
 
-instance Prop.fintype : Fintype Prop :=
+instance (priority := 10000) Prop.fintype : Fintype Prop :=
   ⟨⟨{True, False}, by simp [true_ne_false]⟩, Classical.cases (by simp) (by simp)⟩
 #align Prop.fintype Prop.fintype
 
@@ -1035,7 +1035,7 @@ theorem Fintype.univ_Prop : (Finset.univ : Finset Prop) = {True, False} :=
   Finset.eq_of_veq <| by simp; rfl
 #align fintype.univ_Prop Fintype.univ_Prop
 
-instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fintype { x // p x } :=
+instance (priority := 10000) Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fintype { x // p x } :=
   Fintype.subtype (univ.filter p) (by simp)
 #align subtype.fintype Subtype.fintype
 
@@ -1108,30 +1108,30 @@ lemma coe_finsetOrderIsoSet : ⇑finsetOrderIsoSet = ((↑) : Finset α → Set 
 
 end Fintype
 
-instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
+instance (priority := 10000) Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     Fintype (Quotient s) :=
   Fintype.ofSurjective Quotient.mk'' fun x => Quotient.inductionOn x fun x => ⟨x, rfl⟩
 #align quotient.fintype Quotient.fintype
 
-instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
+instance (priority := 10000) PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
     Fintype (Σ'a, β a) :=
   if h : α then Fintype.ofEquiv (β h) ⟨fun x => ⟨h, x⟩, PSigma.snd, fun _ => rfl, fun ⟨_, _⟩ => rfl⟩
   else ⟨∅, fun x => (h x.1).elim⟩
 #align psigma.fintype_prop_left PSigma.fintypePropLeft
 
-instance PSigma.fintypePropRight {α : Type*} {β : α → Prop} [∀ a, Decidable (β a)] [Fintype α] :
+instance (priority := 10000) PSigma.fintypePropRight {α : Type*} {β : α → Prop} [∀ a, Decidable (β a)] [Fintype α] :
     Fintype (Σ'a, β a) :=
   Fintype.ofEquiv { a // β a }
     ⟨fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 #align psigma.fintype_prop_right PSigma.fintypePropRight
 
-instance PSigma.fintypePropProp {α : Prop} {β : α → Prop} [Decidable α] [∀ a, Decidable (β a)] :
+instance (priority := 10000) PSigma.fintypePropProp {α : Prop} {β : α → Prop} [Decidable α] [∀ a, Decidable (β a)] :
     Fintype (Σ'a, β a) :=
   if h : ∃ a, β a then ⟨{⟨h.fst, h.snd⟩}, fun ⟨_, _⟩ => by simp⟩ else ⟨∅, fun ⟨x, y⟩ =>
     (h ⟨x, y⟩).elim⟩
 #align psigma.fintype_prop_prop PSigma.fintypePropProp
 
-instance pfunFintype (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, Fintype (α hp)] :
+instance (priority := 10000) pfunFintype (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, Fintype (α hp)] :
     Fintype (∀ hp : p, α hp) :=
   if hp : p then Fintype.ofEquiv (α hp) ⟨fun a _ => a, fun f => f hp, fun _ => rfl, fun _ => rfl⟩
   else ⟨singleton fun h => (hp h).elim, fun h => mem_singleton.2

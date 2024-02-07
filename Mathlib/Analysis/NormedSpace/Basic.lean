@@ -55,11 +55,11 @@ instance (priority := 100) NormedSpace.boundedSMul [NormedSpace α β] : Bounded
   BoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
 #align normed_space.has_bounded_smul NormedSpace.boundedSMul
 
-instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b := norm_mul_le a b
+instance (priority := 10000) NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b := norm_mul_le a b
 #align normed_field.to_normed_space NormedField.toNormedSpace
 
 -- shortcut instance
-instance NormedField.to_boundedSMul : BoundedSMul α α :=
+instance (priority := 10000) NormedField.to_boundedSMul : BoundedSMul α α :=
   NormedSpace.boundedSMul
 #align normed_field.to_has_bounded_smul NormedField.to_boundedSMul
 
@@ -91,7 +91,7 @@ theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : ι → α} {g : ι → E} {
     (norm_smul_le y x).trans_eq (mul_comm _ _)
 #align filter.is_bounded_under.smul_tendsto_zero Filter.IsBoundedUnder.smul_tendsto_zero
 
-instance NormedSpace.discreteTopology_zmultiples
+instance (priority := 10000) NormedSpace.discreteTopology_zmultiples
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
   rcases eq_or_ne e 0 with (rfl | he)
@@ -108,12 +108,12 @@ instance NormedSpace.discreteTopology_zmultiples
 
 open NormedField
 
-instance ULift.normedSpace : NormedSpace α (ULift E) :=
+instance (priority := 10000) ULift.normedSpace : NormedSpace α (ULift E) :=
   { ULift.seminormedAddCommGroup (E := E), ULift.module' with
     norm_smul_le := fun s x => (norm_smul_le s x.down : _) }
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/
-instance Prod.normedSpace : NormedSpace α (E × F) :=
+instance (priority := 10000) Prod.normedSpace : NormedSpace α (E × F) :=
   { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
     norm_smul_le := fun s x => by
       simp only [norm_smul, Prod.norm_def, Prod.smul_snd, Prod.smul_fst,
@@ -121,7 +121,7 @@ instance Prod.normedSpace : NormedSpace α (E × F) :=
 #align prod.normed_space Prod.normedSpace
 
 /-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
-instance Pi.normedSpace {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
+instance (priority := 10000) Pi.normedSpace {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
     [∀ i, NormedSpace α (E i)] : NormedSpace α (∀ i, E i) where
   norm_smul_le a f := by
     simp_rw [← coe_nnnorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnnorm_def,
@@ -129,13 +129,13 @@ instance Pi.normedSpace {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCom
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 #align pi.normed_space Pi.normedSpace
 
-instance MulOpposite.normedSpace : NormedSpace α Eᵐᵒᵖ :=
+instance (priority := 10000) MulOpposite.normedSpace : NormedSpace α Eᵐᵒᵖ :=
   { MulOpposite.seminormedAddCommGroup (E := Eᵐᵒᵖ), MulOpposite.module _ with
     norm_smul_le := fun s x => norm_smul_le s x.unop }
 #align mul_opposite.normed_space MulOpposite.normedSpace
 
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
-instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
+instance (priority := 10000) Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
     (s : Submodule R E) : NormedSpace 𝕜 s where norm_smul_le c x := norm_smul_le c (x : E)
 #align submodule.normed_space Submodule.normedSpace
@@ -343,7 +343,7 @@ theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 �
   rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebraMap']
 #align algebra_map_isometry algebraMap_isometry
 
-instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
+instance (priority := 10000) NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
   { NormedField.toNormedSpace, Algebra.id 𝕜 with }
 #align normed_algebra.id NormedAlgebra.id
 
@@ -353,35 +353,35 @@ normed algebra over the rationals.
 
 Phrased another way, if `𝕜` is a normed algebra over the reals, then `AlgebraRat` respects that
 norm. -/
-instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [NormedAlgebra ℝ 𝕜] :
+instance (priority := 10000) normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [NormedAlgebra ℝ 𝕜] :
     NormedAlgebra ℚ 𝕜 where
   norm_smul_le q x := by
     rw [← smul_one_smul ℝ q x, Rat.smul_one_eq_coe, norm_smul, Rat.norm_cast_real]
 #align normed_algebra_rat normedAlgebraRat
 
-instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
+instance (priority := 10000) PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
   norm_smul_le q _ := by simp only [norm_eq_zero, mul_zero, le_refl]
 #align punit.normed_algebra PUnit.normedAlgebra
 
-instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
+instance (priority := 10000) : NormedAlgebra 𝕜 (ULift 𝕜') :=
   { ULift.normedSpace, ULift.algebra with }
 
 /-- The product of two normed algebras is a normed algebra, with the sup norm. -/
-instance Prod.normedAlgebra {E F : Type*} [SeminormedRing E] [SeminormedRing F] [NormedAlgebra 𝕜 E]
+instance (priority := 10000) Prod.normedAlgebra {E F : Type*} [SeminormedRing E] [SeminormedRing F] [NormedAlgebra 𝕜 E]
     [NormedAlgebra 𝕜 F] : NormedAlgebra 𝕜 (E × F) :=
   { Prod.normedSpace, Prod.algebra 𝕜 E F with }
 #align prod.normed_algebra Prod.normedAlgebra
 
 -- Porting note: Lean 3 could synth the algebra instances for Pi Pr
 /-- The product of finitely many normed algebras is a normed algebra, with the sup norm. -/
-instance Pi.normedAlgebra {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
+instance (priority := 10000) Pi.normedAlgebra {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
     [∀ i, NormedAlgebra 𝕜 (E i)] : NormedAlgebra 𝕜 (∀ i, E i) :=
   { Pi.normedSpace, Pi.algebra _ E with }
 #align pi.normed_algebra Pi.normedAlgebra
 
 variable {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
-instance MulOpposite.normedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
+instance (priority := 10000) MulOpposite.normedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
     NormedAlgebra 𝕜 Eᵐᵒᵖ :=
   { MulOpposite.normedSpace, MulOpposite.instAlgebra with }
 
@@ -407,7 +407,7 @@ def NormedAlgebra.induced {F : Type*} (α β γ : Type*) [NormedField α] [Ring 
 #align normed_algebra.induced NormedAlgebra.induced
 
 -- Porting note: failed to synth NonunitalAlgHomClass
-instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
+instance (priority := 10000) Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.val
 #align subalgebra.to_normed_algebra Subalgebra.toNormedAlgebra
@@ -417,17 +417,17 @@ section RestrictScalars
 variable (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : SeminormedAddCommGroup E] :
+instance (priority := 10000) {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : SeminormedAddCommGroup E] :
     SeminormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NormedAddCommGroup E] :
+instance (priority := 10000) {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NormedAddCommGroup E] :
     NormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
   I
 
 /-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedSpace`. -/
-instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+instance (priority := 10000) RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
   { RestrictScalars.module 𝕜 𝕜' E with
     norm_smul_le := fun c x =>
       (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }

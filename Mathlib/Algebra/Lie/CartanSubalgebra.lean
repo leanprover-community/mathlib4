@@ -52,7 +52,7 @@ class IsCartanSubalgebra : Prop where
   self_normalizing : H.normalizer = H
 #align lie_subalgebra.is_cartan_subalgebra LieSubalgebra.IsCartanSubalgebra
 
-instance [H.IsCartanSubalgebra] : LieAlgebra.IsNilpotent R H :=
+instance (priority := 10000) [H.IsCartanSubalgebra] : LieAlgebra.IsNilpotent R H :=
   IsCartanSubalgebra.nilpotent
 
 @[simp]
@@ -108,7 +108,7 @@ theorem LieIdeal.normalizer_eq_top {R : Type u} {L : Type v} [CommRing R] [LieRi
 open LieIdeal
 
 /-- A nilpotent Lie algebra is its own Cartan subalgebra. -/
-instance LieAlgebra.top_isCartanSubalgebra_of_nilpotent [LieAlgebra.IsNilpotent R L] :
+instance (priority := 10000) LieAlgebra.top_isCartanSubalgebra_of_nilpotent [LieAlgebra.IsNilpotent R L] :
     LieSubalgebra.IsCartanSubalgebra (⊤ : LieSubalgebra R L) where
   nilpotent := inferInstance
   self_normalizing := by rw [← top_coe_lieSubalgebra, normalizer_eq_top, top_coe_lieSubalgebra]

@@ -107,12 +107,12 @@ theorem unop_eq_iff_eq_op {x} {y : α} : unop x = y ↔ x = op y :=
   equivToOpposite.symm.apply_eq_iff_eq_symm_apply
 #align opposite.unop_eq_iff_eq_op Opposite.unop_eq_iff_eq_op
 
-instance [Inhabited α] : Inhabited αᵒᵖ :=
+instance (priority := 10000) [Inhabited α] : Inhabited αᵒᵖ :=
   ⟨op default⟩
 
-instance [Nonempty α] : Nonempty αᵒᵖ := Nonempty.map op ‹_›
+instance (priority := 10000) [Nonempty α] : Nonempty αᵒᵖ := Nonempty.map op ‹_›
 
-instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleton
+instance (priority := 10000) [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleton
 
 /-- A recursor for `Opposite`.
 The `@[eliminator]` attribute makes it the default induction principle for `Opposite`

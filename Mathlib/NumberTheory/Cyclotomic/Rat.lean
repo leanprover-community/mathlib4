@@ -167,7 +167,7 @@ noncomputable def _root_.IsPrimitiveRoot.adjoinEquivRingOfIntegers
 #align is_primitive_root.adjoin_equiv_ring_of_integers IsPrimitiveRoot.adjoinEquivRingOfIntegers
 
 /-- The ring of integers of a `p ^ k`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/
-instance IsCyclotomicExtension.ringOfIntegers [IsCyclotomicExtension {p ^ k} ℚ K] :
+instance (priority := 10000) IsCyclotomicExtension.ringOfIntegers [IsCyclotomicExtension {p ^ k} ℚ K] :
     IsCyclotomicExtension {p ^ k} ℤ (𝓞 K) :=
   let _ := (zeta_spec (p ^ k) ℚ K).adjoin_isCyclotomicExtension ℤ
   IsCyclotomicExtension.equiv _ ℤ _ (zeta_spec (p ^ k) ℚ K).adjoinEquivRingOfIntegers
@@ -210,7 +210,7 @@ noncomputable def _root_.IsPrimitiveRoot.adjoinEquivRingOfIntegers'
 #align is_primitive_root.adjoin_equiv_ring_of_integers' IsPrimitiveRoot.adjoinEquivRingOfIntegers'
 
 /-- The ring of integers of a `p`-th cyclotomic extension of `ℚ` is a cyclotomic extension. -/
-instance _root_.IsCyclotomicExtension.ring_of_integers' [IsCyclotomicExtension {p} ℚ K] :
+instance (priority := 10000) _root_.IsCyclotomicExtension.ring_of_integers' [IsCyclotomicExtension {p} ℚ K] :
     IsCyclotomicExtension {p} ℤ (𝓞 K) :=
   let _ := (zeta_spec p ℚ K).adjoin_isCyclotomicExtension ℤ
   IsCyclotomicExtension.equiv _ ℤ _ (zeta_spec p ℚ K).adjoinEquivRingOfIntegers'

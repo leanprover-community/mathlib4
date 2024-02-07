@@ -79,7 +79,7 @@ simpNF still complains of striking this from the simp list -/
 attribute [-simp, nolint simpNF] WalkingParallelPairHom.id.sizeOf_spec
 
 /-- Satisfying the inhabited linter -/
-instance : Inhabited (WalkingParallelPairHom zero one) where default := WalkingParallelPairHom.left
+instance (priority := 10000) : Inhabited (WalkingParallelPairHom zero one) where default := WalkingParallelPairHom.left
 
 open WalkingParallelPairHom
 
@@ -107,7 +107,7 @@ theorem WalkingParallelPairHom.assoc {X Y Z W : WalkingParallelPair}
     (h : WalkingParallelPairHom Z W) : comp (comp f g) h = comp f (comp g h) := by
   cases f <;> cases g <;> cases h <;> rfl
 
-instance walkingParallelPairHomCategory : SmallCategory WalkingParallelPair where
+instance (priority := 10000) walkingParallelPairHomCategory : SmallCategory WalkingParallelPair where
   Hom := WalkingParallelPairHom
   id := id
   comp := comp
@@ -821,7 +821,7 @@ theorem equalizer.existsUnique {W : C} (k : W ⟶ X) (h : k ≫ f = k ≫ g) :
 #align category_theory.limits.equalizer.exists_unique CategoryTheory.Limits.equalizer.existsUnique
 
 /-- An equalizer morphism is a monomorphism -/
-instance equalizer.ι_mono : Mono (equalizer.ι f g) where
+instance (priority := 10000) equalizer.ι_mono : Mono (equalizer.ι f g) where
   right_cancellation _ _ w := equalizer.hom_ext w
 #align category_theory.limits.equalizer.ι_mono CategoryTheory.Limits.equalizer.ι_mono
 
@@ -887,14 +887,14 @@ theorem eq_of_epi_equalizer [HasEqualizer f g] [Epi (equalizer.ι f g)] : f = g 
 
 end
 
-instance hasEqualizer_of_self : HasEqualizer f f :=
+instance (priority := 10000) hasEqualizer_of_self : HasEqualizer f f :=
   HasLimit.mk
     { cone := idFork rfl
       isLimit := isLimitIdFork rfl }
 #align category_theory.limits.has_equalizer_of_self CategoryTheory.Limits.hasEqualizer_of_self
 
 /-- The equalizer inclusion for `(f, f)` is an isomorphism. -/
-instance equalizer.ι_of_self : IsIso (equalizer.ι f f) :=
+instance (priority := 10000) equalizer.ι_of_self : IsIso (equalizer.ι f f) :=
   equalizer.ι_of_eq rfl
 #align category_theory.limits.equalizer.ι_of_self CategoryTheory.Limits.equalizer.ι_of_self
 
@@ -1010,7 +1010,7 @@ theorem coequalizer.existsUnique {W : C} (k : Y ⟶ W) (h : f ≫ k = g ≫ k) :
 #align category_theory.limits.coequalizer.exists_unique CategoryTheory.Limits.coequalizer.existsUnique
 
 /-- A coequalizer morphism is an epimorphism -/
-instance coequalizer.π_epi : Epi (coequalizer.π f g) where
+instance (priority := 10000) coequalizer.π_epi : Epi (coequalizer.π f g) where
   left_cancellation _ _ w := coequalizer.hom_ext w
 #align category_theory.limits.coequalizer.π_epi CategoryTheory.Limits.coequalizer.π_epi
 
@@ -1077,14 +1077,14 @@ theorem eq_of_mono_coequalizer [HasCoequalizer f g] [Mono (coequalizer.π f g)] 
 
 end
 
-instance hasCoequalizer_of_self : HasCoequalizer f f :=
+instance (priority := 10000) hasCoequalizer_of_self : HasCoequalizer f f :=
   HasColimit.mk
     { cocone := idCofork rfl
       isColimit := isColimitIdCofork rfl }
 #align category_theory.limits.has_coequalizer_of_self CategoryTheory.Limits.hasCoequalizer_of_self
 
 /-- The coequalizer projection for `(f, f)` is an isomorphism. -/
-instance coequalizer.π_of_self : IsIso (coequalizer.π f f) :=
+instance (priority := 10000) coequalizer.π_of_self : IsIso (coequalizer.π f f) :=
   coequalizer.π_of_eq rfl
 #align category_theory.limits.coequalizer.π_of_self CategoryTheory.Limits.coequalizer.π_of_self
 

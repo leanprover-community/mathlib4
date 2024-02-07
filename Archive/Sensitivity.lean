@@ -65,9 +65,9 @@ def Q (n : ℕ) :=
   Fin n → Bool
 #align sensitivity.Q Sensitivity.Q
 
-instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
+instance (priority := 10000) (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
 
-instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
+instance (priority := 10000) (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
 (ie. the image of zero). -/
@@ -84,7 +84,7 @@ theorem ext {n} {f g : Q n} (h : ∀ x, f x = g x) : f = g := funext h
 variable (n : ℕ)
 
 /-- `Q 0` has a unique element. -/
-instance : Unique (Q 0) :=
+instance (priority := 10000) : Unique (Q 0) :=
   ⟨⟨fun _ => true⟩, by intro; ext x; fin_cases x⟩
 
 /-- `Q n` has 2^n elements. -/
@@ -183,11 +183,11 @@ variable (n : ℕ)
 /-! `V n` is a real vector space whose equality relation is computable. -/
 
 
-instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance (priority := 10000) : DecidableEq (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
 
-instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance (priority := 10000) : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
 
-instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance (priority := 10000) : Module ℝ (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
 
 end V
 
@@ -261,7 +261,7 @@ theorem dim_V : Module.rank ℝ (V n) = 2 ^ n := by
   assumption_mod_cast
 #align sensitivity.dim_V Sensitivity.dim_V
 
-instance : FiniteDimensional ℝ (V n) :=
+instance (priority := 10000) : FiniteDimensional ℝ (V n) :=
   FiniteDimensional.of_fintype_basis (dualBases_e_ε _).basis
 
 theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by

@@ -82,13 +82,13 @@ def WeakBilin [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMono
 namespace WeakBilin
 
 -- Porting note: the next two instances should be derived from the definition
-instance instAddCommMonoid [CommSemiring 𝕜] [a : AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F]
+instance (priority := 10000) instAddCommMonoid [CommSemiring 𝕜] [a : AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommMonoid (WeakBilin B) := a
 
-instance instModule [CommSemiring 𝕜] [AddCommMonoid E] [m : Module 𝕜 E] [AddCommMonoid F]
+instance (priority := 10000) instModule [CommSemiring 𝕜] [AddCommMonoid E] [m : Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : Module 𝕜 (WeakBilin B) := m
 
-instance instAddCommGroup [CommSemiring 𝕜] [a : AddCommGroup E] [Module 𝕜 E] [AddCommMonoid F]
+instance (priority := 10000) instAddCommGroup [CommSemiring 𝕜] [a : AddCommGroup E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommGroup (WeakBilin B) := a
 
 instance (priority := 100) instModule' [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommGroup E]
@@ -96,7 +96,7 @@ instance (priority := 100) instModule' [CommSemiring 𝕜] [CommSemiring 𝕝] [
     Module 𝕝 (WeakBilin B) := m
 #align weak_bilin.module' WeakBilin.instModule'
 
-instance instIsScalarTower [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommGroup E] [Module 𝕜 E]
+instance (priority := 10000) instIsScalarTower [CommSemiring 𝕜] [CommSemiring 𝕝] [AddCommGroup E] [Module 𝕜 E]
     [AddCommGroup F] [Module 𝕜 F] [SMul 𝕝 𝕜] [Module 𝕝 E] [s : IsScalarTower 𝕝 𝕜 E]
     (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : IsScalarTower 𝕝 𝕜 (WeakBilin B) := s
 
@@ -110,7 +110,7 @@ variable [AddCommMonoid F] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
+instance (priority := 10000) instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
   TopologicalSpace.induced (fun x y => B x y) Pi.topologicalSpace
 
 /-- The coercion `(fun x y => B x y) : E → (F → 𝕜)` is continuous. -/
@@ -141,7 +141,7 @@ theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B}
 #align weak_bilin.tendsto_iff_forall_eval_tendsto WeakBilin.tendsto_iff_forall_eval_tendsto
 
 /-- Addition in `WeakBilin B` is continuous. -/
-instance instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) := by
+instance (priority := 10000) instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) := by
   refine' ⟨continuous_induced_rng.2 _⟩
   refine'
     cast (congr_arg _ _)
@@ -150,7 +150,7 @@ instance instContinuousAdd [ContinuousAdd 𝕜] : ContinuousAdd (WeakBilin B) :=
   simp only [Function.comp_apply, Pi.add_apply, map_add, LinearMap.add_apply]
 
 /-- Scalar multiplication by `𝕜` on `WeakBilin B` is continuous. -/
-instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) := by
+instance (priority := 10000) instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakBilin B) := by
   refine' ⟨continuous_induced_rng.2 _⟩
   refine' cast (congr_arg _ _) (continuous_fst.smul ((coeFn_continuous B).comp continuous_snd))
   ext
@@ -172,7 +172,7 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 /-- `WeakBilin B` is a `TopologicalAddGroup`, meaning that addition and negation are
 continuous. -/
-instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (WeakBilin B) where
+instance (priority := 10000) instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (WeakBilin B) where
   toContinuousAdd := by infer_instance
   continuous_neg := by
     refine' continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => _)
@@ -214,60 +214,60 @@ def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Conti
 namespace WeakDual
 
 -- Porting note: the next four instances should be derived from the definition
-instance instAddCommMonoid : AddCommMonoid (WeakDual 𝕜 E) :=
+instance (priority := 10000) instAddCommMonoid : AddCommMonoid (WeakDual 𝕜 E) :=
   WeakBilin.instAddCommMonoid (topDualPairing 𝕜 E)
 
-instance instModule : Module 𝕜 (WeakDual 𝕜 E) :=
+instance (priority := 10000) instModule : Module 𝕜 (WeakDual 𝕜 E) :=
   WeakBilin.instModule (topDualPairing 𝕜 E)
 
-instance instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E) :=
+instance (priority := 10000) instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E) :=
   WeakBilin.instTopologicalSpace (topDualPairing 𝕜 E)
 
-instance instContinuousAdd : ContinuousAdd (WeakDual 𝕜 E) :=
+instance (priority := 10000) instContinuousAdd : ContinuousAdd (WeakDual 𝕜 E) :=
   WeakBilin.instContinuousAdd (topDualPairing 𝕜 E)
 
-instance instInhabited : Inhabited (WeakDual 𝕜 E) :=
+instance (priority := 10000) instInhabited : Inhabited (WeakDual 𝕜 E) :=
   ContinuousLinearMap.inhabited
 
-instance instFunLike : FunLike (WeakDual 𝕜 E) E 𝕜 :=
+instance (priority := 10000) instFunLike : FunLike (WeakDual 𝕜 E) E 𝕜 :=
   ContinuousLinearMap.funLike
 
-instance instContinuousLinearMapClass : ContinuousLinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
+instance (priority := 10000) instContinuousLinearMapClass : ContinuousLinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
   ContinuousLinearMap.continuousSemilinearMapClass
 #align weak_dual.weak_dual.continuous_linear_map_class WeakDual.instContinuousLinearMapClass
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
-instance : CoeFun (WeakDual 𝕜 E) fun _ => E → 𝕜 :=
+instance (priority := 10000) : CoeFun (WeakDual 𝕜 E) fun _ => E → 𝕜 :=
   DFunLike.hasCoeToFun
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
-instance instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+instance (priority := 10000) instMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [ContinuousConstSMul M 𝕜] : MulAction M (WeakDual 𝕜 E) :=
   ContinuousLinearMap.mulAction
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts distributively on `WeakDual 𝕜 E`. -/
-instance instDistribMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+instance (priority := 10000) instDistribMulAction (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [ContinuousConstSMul M 𝕜] : DistribMulAction M (WeakDual 𝕜 E) :=
   ContinuousLinearMap.distribMulAction
 
 /-- If `𝕜` is a topological module over a semiring `R` and scalar multiplication commutes with the
 multiplication on `𝕜`, then `WeakDual 𝕜 E` is a module over `R`. -/
-instance instModule' (R) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
+instance (priority := 10000) instModule' (R) [Semiring R] [Module R 𝕜] [SMulCommClass 𝕜 R 𝕜] [ContinuousConstSMul R 𝕜] :
     Module R (WeakDual 𝕜 E) :=
   ContinuousLinearMap.module
 #align weak_dual.module' WeakDual.instModule'
 
-instance instContinuousConstSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+instance (priority := 10000) instContinuousConstSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [ContinuousConstSMul M 𝕜] : ContinuousConstSMul M (WeakDual 𝕜 E) :=
   ⟨fun m =>
     continuous_induced_rng.2 <| (WeakBilin.coeFn_continuous (topDualPairing 𝕜 E)).const_smul m⟩
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it continuously acts on `WeakDual 𝕜 E`. -/
-instance instContinuousSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
+instance (priority := 10000) instContinuousSMul (M) [Monoid M] [DistribMulAction M 𝕜] [SMulCommClass 𝕜 M 𝕜]
     [TopologicalSpace M] [ContinuousSMul M 𝕜] : ContinuousSMul M (WeakDual 𝕜 E) :=
   ⟨continuous_induced_rng.2 <|
       continuous_fst.smul ((WeakBilin.coeFn_continuous (topDualPairing 𝕜 E)).comp continuous_snd)⟩
@@ -285,7 +285,7 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 #align weak_dual.continuous_of_continuous_eval WeakDual.continuous_of_continuous_eval
 
-instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
+instance (priority := 10000) instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
   Embedding.t2Space <|
     WeakBilin.embedding <|
       show Function.Injective (topDualPairing 𝕜 E) from ContinuousLinearMap.coe_injective
@@ -302,16 +302,16 @@ def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAd
 namespace WeakSpace
 
 -- Porting note: the next four instances should be derived from the definition
-instance instAddCommMonoid : AddCommMonoid (WeakSpace 𝕜 E) :=
+instance (priority := 10000) instAddCommMonoid : AddCommMonoid (WeakSpace 𝕜 E) :=
   WeakBilin.instAddCommMonoid (topDualPairing 𝕜 E).flip
 
-instance instModule : Module 𝕜 (WeakSpace 𝕜 E) :=
+instance (priority := 10000) instModule : Module 𝕜 (WeakSpace 𝕜 E) :=
   WeakBilin.instModule (topDualPairing 𝕜 E).flip
 
-instance instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E) :=
+instance (priority := 10000) instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E) :=
   WeakBilin.instTopologicalSpace (topDualPairing 𝕜 E).flip
 
-instance instContinuousAdd : ContinuousAdd (WeakSpace 𝕜 E) :=
+instance (priority := 10000) instContinuousAdd : ContinuousAdd (WeakSpace 𝕜 E) :=
   WeakBilin.instContinuousAdd (topDualPairing 𝕜 E).flip
 
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]

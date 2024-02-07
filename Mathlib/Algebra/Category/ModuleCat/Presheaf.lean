@@ -63,10 +63,10 @@ theorem map_apply (P : PresheafOfModules R) {X Y : Cᵒᵖ} (f : X ⟶ Y) (x) :
     P.map f x = (P.presheaf.map f) x :=
   rfl
 
-instance (X : Cᵒᵖ) : RingHomId (R.map (𝟙 X)) where
+instance (priority := 10000) (X : Cᵒᵖ) : RingHomId (R.map (𝟙 X)) where
   eq_id := R.map_id X
 
-instance {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+instance (priority := 10000) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     RingHomCompTriple (R.map f) (R.map g) (R.map (f ≫ g)) where
   comp_eq := (R.map_comp f g).symm
 
@@ -101,7 +101,7 @@ def comp {P Q R : PresheafOfModules R} (f : Hom P Q) (g : Hom Q R) : Hom P R whe
 
 end Hom
 
-instance : Category (PresheafOfModules R) where
+instance (priority := 10000) : Category (PresheafOfModules R) where
   Hom := Hom
   id := Hom.id
   comp f g := Hom.comp f g
@@ -128,7 +128,7 @@ theorem ext {f g : P ⟶ Q} (w : ∀ X, f.app X = g.app X) : f = g := by
   ext X x
   exact LinearMap.congr_fun (w X) x
 
-instance : Zero (P ⟶ Q) := ⟨mk 0 (by
+instance (priority := 10000) : Zero (P ⟶ Q) := ⟨mk 0 (by
   intros
   simp only [Limits.zero_app, AddMonoidHom.zero_apply, smul_zero])⟩
 
@@ -139,14 +139,14 @@ lemma zero_app (X : Cᵒᵖ) : (0 : P ⟶ Q).app X = 0 := rfl
 
 variable {P Q}
 
-instance : Add (P ⟶ Q) := ⟨fun f g => mk (f.hom + g.hom) (by
+instance (priority := 10000) : Add (P ⟶ Q) := ⟨fun f g => mk (f.hom + g.hom) (by
   intros
   simp only [NatTrans.app_add, AddCommGroupCat.hom_add_apply, map_smul, smul_add])⟩
 
 @[simp]
 lemma add_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f + g).app X = f.app X + g.app X := rfl
 
-instance : Sub (P ⟶ Q) := ⟨fun f g => mk (f.hom - g.hom) (by
+instance (priority := 10000) : Sub (P ⟶ Q) := ⟨fun f g => mk (f.hom - g.hom) (by
   intros
   rw [NatTrans.app_sub, AddMonoidHom.sub_apply, AddMonoidHom.sub_apply,
     smul_sub, map_smul, map_smul])⟩
@@ -154,7 +154,7 @@ instance : Sub (P ⟶ Q) := ⟨fun f g => mk (f.hom - g.hom) (by
 @[simp]
 lemma sub_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f - g).app X = f.app X - g.app X := rfl
 
-instance : Neg (P ⟶ Q) := ⟨fun f => mk (-f.hom) (by
+instance (priority := 10000) : Neg (P ⟶ Q) := ⟨fun f => mk (-f.hom) (by
   intros
   rw [NatTrans.app_neg, AddMonoidHom.neg_apply, AddMonoidHom.neg_apply,
     map_smul, smul_neg])⟩
@@ -162,7 +162,7 @@ instance : Neg (P ⟶ Q) := ⟨fun f => mk (-f.hom) (by
 @[simp]
 lemma neg_app (f : P ⟶ Q) (X : Cᵒᵖ): (-f).app X = -f.app X := rfl
 
-instance : AddCommGroup (P ⟶ Q) where
+instance (priority := 10000) : AddCommGroup (P ⟶ Q) where
   add_assoc := by intros; ext1; simp only [add_app, add_assoc]
   zero_add := by intros; ext1; simp only [add_app, zero_app, zero_add]
   add_left_neg := by intros; ext1; simp only [add_app, neg_app, add_left_neg, zero_app]
@@ -170,7 +170,7 @@ instance : AddCommGroup (P ⟶ Q) where
   add_comm := by intros; ext1; simp only [add_app]; apply add_comm
   sub_eq_add_neg := by intros; ext1; simp only [add_app, sub_app, neg_app, sub_eq_add_neg]
 
-instance : Preadditive (PresheafOfModules R) where
+instance (priority := 10000) : Preadditive (PresheafOfModules R) where
   add_comp := by intros; ext1; simp only [comp_app, add_app, comp_add]
   comp_add := by intros; ext1; simp only [comp_app, add_app, add_comp]
 
@@ -193,9 +193,9 @@ lemma toPresheaf_map_app {P Q : PresheafOfModules R}
     (f : P ⟶ Q) (X : Cᵒᵖ) :
     ((toPresheaf R).map f).app X = (f.app X).toAddMonoidHom := rfl
 
-instance : (toPresheaf R).Additive where
+instance (priority := 10000) : (toPresheaf R).Additive where
 
-instance : Faithful (toPresheaf R) where
+instance (priority := 10000) : Faithful (toPresheaf R) where
   map_injective {P Q} f g h := by
     ext X x
     have eq := congr_app h X

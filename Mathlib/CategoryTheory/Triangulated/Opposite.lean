@@ -65,7 +65,7 @@ corresponds to the shift by `-n` on `C`. -/
 noncomputable scoped instance : HasShift Cᵒᵖ ℤ :=
   (inferInstance : HasShift (OppositeShiftAux C) ℤ)
 
-instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) :
+instance (priority := 10000) [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) :
     (shiftFunctor Cᵒᵖ n).Additive :=
   (inferInstance : (shiftFunctor (OppositeShiftAux C) n).Additive)
 

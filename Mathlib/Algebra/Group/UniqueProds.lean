@@ -284,20 +284,20 @@ lemma uniqueMul_of_twoUniqueMul {G} [Mul G] {A B : Finset G} (h : 1 < A.card * B
 
 namespace Multiplicative
 
-instance {M} [Add M] [UniqueSums M] : UniqueProds (Multiplicative M) where
+instance (priority := 10000) {M} [Add M] [UniqueSums M] : UniqueProds (Multiplicative M) where
   uniqueMul_of_nonempty := UniqueSums.uniqueAdd_of_nonempty (G := M)
 
-instance {M} [Add M] [TwoUniqueSums M] : TwoUniqueProds (Multiplicative M) where
+instance (priority := 10000) {M} [Add M] [TwoUniqueSums M] : TwoUniqueProds (Multiplicative M) where
   uniqueMul_of_one_lt_card := TwoUniqueSums.uniqueAdd_of_one_lt_card (G := M)
 
 end Multiplicative
 
 namespace Additive
 
-instance {M} [Mul M] [UniqueProds M] : UniqueSums (Additive M) where
+instance (priority := 10000) {M} [Mul M] [UniqueProds M] : UniqueSums (Additive M) where
   uniqueAdd_of_nonempty := UniqueProds.uniqueMul_of_nonempty (G := M)
 
-instance {M} [Mul M] [TwoUniqueProds M] : TwoUniqueSums (Additive M) where
+instance (priority := 10000) {M} [Mul M] [TwoUniqueProds M] : TwoUniqueSums (Additive M) where
   uniqueAdd_of_one_lt_card := TwoUniqueProds.uniqueMul_of_one_lt_card (G := M)
 
 end Additive
@@ -475,12 +475,12 @@ open ULift in
 
 end UniqueProds
 
-instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, UniqueSums (G i)] :
+instance (priority := 10000) {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, UniqueSums (G i)] :
     UniqueSums (Π₀ i, G i) :=
   UniqueSums.of_injective_addHom
     DFinsupp.coeFnAddMonoidHom.toAddHom DFunLike.coe_injective inferInstance
 
-instance {ι G} [AddZeroClass G] [UniqueSums G] : UniqueSums (ι →₀ G) :=
+instance (priority := 10000) {ι G} [AddZeroClass G] [UniqueSums G] : UniqueSums (ι →₀ G) :=
   UniqueSums.of_injective_addHom
     Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
 
@@ -634,26 +634,26 @@ end TwoUniqueProds
 @[deprecated] alias TwoUniqueProds.mulHom_image_iff := MulEquiv.twoUniqueProds_iff
 @[deprecated] alias TwoUniqueSums.addHom_image_iff := AddEquiv.twoUniqueSums_iff
 
-instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
+instance (priority := 10000) {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
     TwoUniqueSums (Π₀ i, G i) :=
   TwoUniqueSums.of_injective_addHom
     DFinsupp.coeFnAddMonoidHom.toAddHom DFunLike.coe_injective inferInstance
 
-instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
+instance (priority := 10000) {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
   TwoUniqueSums.of_injective_addHom
     Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
 
 /-- Any `ℚ`-vector space has `TwoUniqueSums`, because it is isomorphic to some
   `(Basis.ofVectorSpaceIndex ℚ G) →₀ ℚ` by choosing a basis, and `ℚ` already has
   `TwoUniqueSums` because it's ordered. -/
-instance [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
+instance (priority := 10000) [AddCommGroup G] [Module ℚ G] : TwoUniqueSums G :=
   TwoUniqueSums.of_injective_addHom _ (Basis.ofVectorSpace ℚ G).repr.injective inferInstance
 
 /-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
-instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
+instance (priority := 10000) FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
   .of_mulHom ⟨Multiplicative.ofAdd ∘ List.length, fun _ _ ↦ congr_arg _ (List.length_append _ _)⟩
     (fun _ _ _ _ h h' ↦ List.append_inj h <| Equiv.injective Multiplicative.ofAdd h'.1)
 
 /-- Any `FreeAddMonoid` has the `TwoUniqueSums` property. -/
-instance FreeAddMonoid.instTwoUniqueSums {κ : Type*} : TwoUniqueSums (FreeAddMonoid κ) :=
+instance (priority := 10000) FreeAddMonoid.instTwoUniqueSums {κ : Type*} : TwoUniqueSums (FreeAddMonoid κ) :=
   .of_addHom ⟨_, List.length_append⟩ (fun _ _ _ _ h h' ↦ List.append_inj h h'.1)

@@ -162,7 +162,7 @@ theorem surjective_smul (x : α) : Surjective fun c : M => c • x :=
 
 /-- The regular action of a group on itself is transitive. -/
 @[to_additive "The regular action of a group on itself is transitive."]
-instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
+instance (priority := 10000) Regular.isPretransitive [Group G] : IsPretransitive G G :=
   ⟨fun x y => ⟨y * x⁻¹, inv_mul_cancel_right _ _⟩⟩
 #align mul_action.regular.is_pretransitive MulAction.Regular.isPretransitive
 #align add_action.regular.is_pretransitive AddAction.Regular.isPretransitive
@@ -239,7 +239,7 @@ theorem Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [S
   smul_comm c₁ c₂ := hf.forall.2 fun x ↦ by simp only [← h₁, ← h₂, smul_comm c₁ c₂ x]
 
 @[to_additive]
-instance smulCommClass_self (M α : Type*) [CommMonoid M] [MulAction M α] : SMulCommClass M M α :=
+instance (priority := 10000) smulCommClass_self (M α : Type*) [CommMonoid M] [MulAction M α] : SMulCommClass M M α :=
   ⟨fun a a' b => by rw [← mul_smul, mul_comm, mul_smul]⟩
 #align smul_comm_class_self smulCommClass_self
 #align vadd_comm_class_self vaddCommClass_self
@@ -268,7 +268,7 @@ theorem smul_assoc {M N} [SMul M N] [SMul N α] [SMul M α] [IsScalarTower M N �
 #align vadd_assoc vadd_assoc
 
 @[to_additive]
-instance Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α :=
+instance (priority := 10000) Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α :=
   ⟨mul_assoc⟩
 #align semigroup.is_scalar_tower Semigroup.isScalarTower
 #align add_semigroup.vadd_assoc_class AddSemigroup.isScalarTower
@@ -566,7 +566,7 @@ This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/
 add_decl_doc AddMonoid.toAddAction
 
 @[to_additive]
-instance IsScalarTower.left : IsScalarTower M M α :=
+instance (priority := 10000) IsScalarTower.left : IsScalarTower M M α :=
   ⟨fun x y z => mul_smul x y z⟩
 #align is_scalar_tower.left IsScalarTower.left
 #align vadd_assoc_class.left VAddAssocClass.left
@@ -843,7 +843,7 @@ theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a 
   DistribSMul.smul_add _ _ _
 #align smul_add smul_add
 
-instance AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A) where
+instance (priority := 10000) AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A) where
   smul r f :=
     { toFun := (fun a => r • (f a))
       map_zero' := by simp only [map_zero, smul_zero]
@@ -990,13 +990,13 @@ def DistribMulAction.toAddMonoidEnd :
 #align distrib_mul_action.to_add_monoid_End DistribMulAction.toAddMonoidEnd
 #align distrib_mul_action.to_add_monoid_End_apply DistribMulAction.toAddMonoidEnd_apply
 
-instance AddMonoid.nat_smulCommClass :
+instance (priority := 10000) AddMonoid.nat_smulCommClass :
     SMulCommClass ℕ M
       A where smul_comm n x y := ((DistribMulAction.toAddMonoidHom A x).map_nsmul y n).symm
 #align add_monoid.nat_smul_comm_class AddMonoid.nat_smulCommClass
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddMonoid.nat_smulCommClass' : SMulCommClass M ℕ A :=
+instance (priority := 10000) AddMonoid.nat_smulCommClass' : SMulCommClass M ℕ A :=
   SMulCommClass.symm _ _ _
 #align add_monoid.nat_smul_comm_class' AddMonoid.nat_smulCommClass'
 
@@ -1006,12 +1006,12 @@ section
 
 variable [Monoid M] [AddGroup A] [DistribMulAction M A]
 
-instance AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
+instance (priority := 10000) AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
   smul_comm n x y := ((DistribMulAction.toAddMonoidHom A x).map_zsmul y n).symm
 #align add_group.int_smul_comm_class AddGroup.int_smulCommClass
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=
+instance (priority := 10000) AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=
   SMulCommClass.symm _ _ _
 #align add_group.int_smul_comm_class' AddGroup.int_smulCommClass'
 
@@ -1143,14 +1143,14 @@ protected def Function.End :=
   α → α
 #align function.End Function.End
 
-instance : Monoid (Function.End α) where
+instance (priority := 10000) : Monoid (Function.End α) where
   one := id
   mul := (· ∘ ·)
   mul_assoc f g h := rfl
   mul_one f := rfl
   one_mul f := rfl
 
-instance : Inhabited (Function.End α) :=
+instance (priority := 10000) : Inhabited (Function.End α) :=
   ⟨1⟩
 
 variable {α}
@@ -1169,7 +1169,7 @@ This is generalized to bundled endomorphisms by:
 * `RingAut.applyMulSemiringAction`
 * `AlgEquiv.applyMulSemiringAction`
 -/
-instance Function.End.applyMulAction :
+instance (priority := 10000) Function.End.applyMulAction :
     MulAction (Function.End α) α where
   smul := (· <| ·)
   one_smul _ := rfl
@@ -1190,14 +1190,14 @@ theorem Function.End.one_def : (1 : Function.End α) = id :=
   rfl
 
 /-- `Function.End.applyMulAction` is faithful. -/
-instance Function.End.apply_FaithfulSMul : FaithfulSMul (Function.End α) α :=
+instance (priority := 10000) Function.End.apply_FaithfulSMul : FaithfulSMul (Function.End α) α :=
   ⟨fun {_ _} => funext⟩
 #align function.End.apply_has_faithful_smul Function.End.apply_FaithfulSMul
 
 /-- The tautological action by `AddMonoid.End α` on `α`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance AddMonoid.End.applyDistribMulAction [AddMonoid α] :
+instance (priority := 10000) AddMonoid.End.applyDistribMulAction [AddMonoid α] :
     DistribMulAction (AddMonoid.End α) α where
   smul := (· <| ·)
   smul_zero := AddMonoidHom.map_zero
@@ -1212,7 +1212,7 @@ theorem AddMonoid.End.smul_def [AddMonoid α] (f : AddMonoid.End α) (a : α) : 
 #align add_monoid.End.smul_def AddMonoid.End.smul_def
 
 /-- `AddMonoid.End.applyDistribMulAction` is faithful. -/
-instance AddMonoid.End.applyFaithfulSMul [AddMonoid α] :
+instance (priority := 10000) AddMonoid.End.applyFaithfulSMul [AddMonoid α] :
     FaithfulSMul (AddMonoid.End α) α :=
   ⟨fun {_ _ h} => AddMonoidHom.ext h⟩
 #align add_monoid.End.apply_has_faithful_smul AddMonoid.End.applyFaithfulSMul
@@ -1240,11 +1240,11 @@ section
 
 open Additive Multiplicative
 
-instance Additive.vadd [SMul α β] : VAdd (Additive α) β :=
+instance (priority := 10000) Additive.vadd [SMul α β] : VAdd (Additive α) β :=
   ⟨fun a => (toMul a • ·)⟩
 #align additive.has_vadd Additive.vadd
 
-instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β :=
+instance (priority := 10000) Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β :=
   ⟨fun a => (toAdd a +ᵥ ·)⟩
 #align multiplicative.has_smul Multiplicative.smul
 
@@ -1269,35 +1269,35 @@ theorem ofAdd_smul [VAdd α β] (a : α) (b : β) : ofAdd a • b = a +ᵥ b :=
 #align of_add_smul ofAdd_smul
 
 -- Porting note: I don't know why `one_smul` can do without an explicit α and `mul_smul` can't.
-instance Additive.addAction [Monoid α] [MulAction α β] :
+instance (priority := 10000) Additive.addAction [Monoid α] [MulAction α β] :
     AddAction (Additive α) β where
   zero_vadd := MulAction.one_smul
   add_vadd := @MulAction.mul_smul α _ _ _
 #align additive.add_action Additive.addAction
 
-instance Multiplicative.mulAction [AddMonoid α] [AddAction α β] :
+instance (priority := 10000) Multiplicative.mulAction [AddMonoid α] [AddAction α β] :
     MulAction (Multiplicative α)
       β where
   one_smul := AddAction.zero_vadd
   mul_smul := @AddAction.add_vadd α _ _ _
 #align multiplicative.mul_action Multiplicative.mulAction
 
-instance Additive.addAction_isPretransitive [Monoid α] [MulAction α β]
+instance (priority := 10000) Additive.addAction_isPretransitive [Monoid α] [MulAction α β]
     [MulAction.IsPretransitive α β] : AddAction.IsPretransitive (Additive α) β :=
   ⟨@MulAction.exists_smul_eq α _ _ _⟩
 #align additive.add_action_is_pretransitive Additive.addAction_isPretransitive
 
-instance Multiplicative.mulAction_isPretransitive [AddMonoid α] [AddAction α β]
+instance (priority := 10000) Multiplicative.mulAction_isPretransitive [AddMonoid α] [AddAction α β]
     [AddAction.IsPretransitive α β] : MulAction.IsPretransitive (Multiplicative α) β :=
   ⟨@AddAction.exists_vadd_eq α _ _ _⟩
 #align multiplicative.add_action_is_pretransitive Multiplicative.mulAction_isPretransitive
 
-instance Additive.vaddCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
+instance (priority := 10000) Additive.vaddCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     VAddCommClass (Additive α) (Additive β) γ :=
   ⟨@smul_comm α β _ _ _ _⟩
 #align additive.vadd_comm_class Additive.vaddCommClass
 
-instance Multiplicative.smulCommClass [VAdd α γ] [VAdd β γ] [VAddCommClass α β γ] :
+instance (priority := 10000) Multiplicative.smulCommClass [VAdd α γ] [VAdd β γ] [VAddCommClass α β γ] :
     SMulCommClass (Multiplicative α) (Multiplicative β) γ :=
   ⟨@vadd_comm α β _ _ _ _⟩
 #align multiplicative.smul_comm_class Multiplicative.smulCommClass
@@ -1305,7 +1305,7 @@ instance Multiplicative.smulCommClass [VAdd α γ] [VAdd β γ] [VAddCommClass �
 end
 
 /-- The tautological additive action by `Additive (Function.End α)` on `α`. -/
-instance AddAction.functionEnd : AddAction (Additive (Function.End α)) α :=
+instance (priority := 10000) AddAction.functionEnd : AddAction (Additive (Function.End α)) α :=
   inferInstance
 #align add_action.function_End AddAction.functionEnd
 

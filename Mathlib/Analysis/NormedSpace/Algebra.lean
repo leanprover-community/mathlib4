@@ -42,7 +42,7 @@ theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toNormedDual (φ : We
     mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ a)
 #align weak_dual.character_space.norm_le_norm_one WeakDual.CharacterSpace.norm_le_norm_one
 
-instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
+instance (priority := 10000) [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
   rw [← isCompact_iff_compactSpace]
   have h : characterSpace 𝕜 A ⊆ toNormedDual ⁻¹' Metric.closedBall 0 ‖(1 : A)‖ := by
     intro φ hφ

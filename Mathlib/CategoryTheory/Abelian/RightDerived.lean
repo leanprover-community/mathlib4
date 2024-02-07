@@ -269,7 +269,7 @@ lemma toRightDerivedZero'_naturality {X Y : C} (f : X ⟶ Y)
     Functor.mapHomologicalComplex_map_f, toRightDerivedZero'_comp_iCycles_assoc,
     ← F.map_comp, comm]
 
-instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
+instance (priority := 10000) (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
     IsIso ((InjectiveResolution.self X).toRightDerivedZero' F) := by
   dsimp [InjectiveResolution.toRightDerivedZero']
   rw [CochainComplex.isIso_liftCycles_iff]
@@ -315,7 +315,7 @@ lemma InjectiveResolution.toRightDerivedZero_eq
   erw [← NatTrans.naturality]
   rfl
 
-instance (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
+instance (priority := 10000) (F : C ⥤ D) [F.Additive] (X : C) [Injective X] :
     IsIso (F.toRightDerivedZero.app X) := by
   rw [(InjectiveResolution.self X).toRightDerivedZero_eq F]
   infer_instance
@@ -324,17 +324,17 @@ section
 
 variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F]
 
-instance {X : C} (P : InjectiveResolution X) :
+instance (priority := 10000) {X : C} (P : InjectiveResolution X) :
     IsIso (P.toRightDerivedZero' F) := by
   dsimp [InjectiveResolution.toRightDerivedZero']
   rw [CochainComplex.isIso_liftCycles_iff, ShortComplex.exact_and_mono_f_iff_f_is_kernel]
   exact ⟨KernelFork.mapIsLimit _ (P.isLimitKernelFork) F⟩
 
-instance (X : C) : IsIso (F.toRightDerivedZero.app X) := by
+instance (priority := 10000) (X : C) : IsIso (F.toRightDerivedZero.app X) := by
   dsimp [Functor.toRightDerivedZero]
   infer_instance
 
-instance : IsIso F.toRightDerivedZero :=
+instance (priority := 10000) : IsIso F.toRightDerivedZero :=
   NatIso.isIso_of_isIso_app _
 
 namespace Functor

@@ -78,12 +78,12 @@ protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
 #align add_commute.symm_iff AddCommute.symm_iff
 
 @[to_additive]
-instance : IsRefl S Commute :=
+instance (priority := 10000) : IsRefl S Commute :=
   ⟨Commute.refl⟩
 
 -- This instance is useful for `Finset.noncommProd`
 @[to_additive]
-instance on_isRefl {f : G → S} : IsRefl G fun a b => Commute (f a) (f b) :=
+instance (priority := 10000) on_isRefl {f : G → S} : IsRefl G fun a b => Commute (f a) (f b) :=
   ⟨fun _ => Commute.refl _⟩
 #align commute.on_is_refl Commute.on_isRefl
 #align add_commute.on_is_refl AddCommute.on_isRefl

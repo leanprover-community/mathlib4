@@ -43,13 +43,13 @@ open BigOperators
 
 variable (n : ℕ)
 
-instance : LocallyFiniteOrder (Fin n) :=
+instance (priority := 10000) : LocallyFiniteOrder (Fin n) :=
   OrderIso.locallyFiniteOrder Fin.orderIsoSubtype
 
-instance : LocallyFiniteOrderBot (Fin n) :=
+instance (priority := 10000) : LocallyFiniteOrderBot (Fin n) :=
   OrderIso.locallyFiniteOrderBot Fin.orderIsoSubtype
 
-instance : ∀ n, LocallyFiniteOrderTop (Fin n)
+instance (priority := 10000) : ∀ n, LocallyFiniteOrderTop (Fin n)
   | 0 => IsEmpty.toLocallyFiniteOrderTop
   | _ + 1 => inferInstance
 

@@ -242,7 +242,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.extra_degeneracy SSet.Augmented.StandardSimplex.extraDegeneracy
 
-instance nonempty_extraDegeneracy_standardSimplex (Δ : SimplexCategory) :
+instance (priority := 10000) nonempty_extraDegeneracy_standardSimplex (Δ : SimplexCategory) :
     Nonempty (SimplicialObject.Augmented.ExtraDegeneracy (standardSimplex.obj Δ)) :=
   ⟨StandardSimplex.extraDegeneracy Δ⟩
 set_option linter.uppercaseLean3 false in

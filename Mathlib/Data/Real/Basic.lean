@@ -90,25 +90,25 @@ private irreducible_def mul : ℝ → ℝ → ℝ
 private noncomputable irreducible_def inv' : ℝ → ℝ
   | ⟨a⟩ => ⟨a⁻¹⟩
 
-instance : Zero ℝ :=
+instance (priority := 10000) : Zero ℝ :=
   ⟨zero⟩
 
-instance : One ℝ :=
+instance (priority := 10000) : One ℝ :=
   ⟨one⟩
 
-instance : Add ℝ :=
+instance (priority := 10000) : Add ℝ :=
   ⟨add⟩
 
-instance : Neg ℝ :=
+instance (priority := 10000) : Neg ℝ :=
   ⟨neg⟩
 
-instance : Mul ℝ :=
+instance (priority := 10000) : Mul ℝ :=
   ⟨mul⟩
 
-instance : Sub ℝ :=
+instance (priority := 10000) : Sub ℝ :=
   ⟨fun a b => a + -b⟩
 
-noncomputable instance : Inv ℝ :=
+noncomputable instance (priority := 10000) : Inv ℝ :=
   ⟨inv'⟩
 
 theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
@@ -170,11 +170,11 @@ theorem cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
   | ⟨f⟩ => show (inv' _).cauchy = _ by rw [inv']
 #align real.cauchy_inv Real.cauchy_inv
 
-instance natCast : NatCast ℝ where natCast n := ⟨n⟩
+instance (priority := 10000) natCast : NatCast ℝ where natCast n := ⟨n⟩
 
-instance intCast : IntCast ℝ where intCast z := ⟨z⟩
+instance (priority := 10000) intCast : IntCast ℝ where intCast z := ⟨z⟩
 
-instance ratCast : RatCast ℝ where ratCast q := ⟨q⟩
+instance (priority := 10000) ratCast : RatCast ℝ where ratCast q := ⟨q⟩
 
 theorem ofCauchy_natCast (n : ℕ) : (⟨n⟩ : ℝ) = n :=
   rfl
@@ -202,7 +202,7 @@ theorem cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q :=
 
 -- TODO: variables `x y` should be not included in this definition;
 -- not sure how to exclude them
-instance commRing : CommRing ℝ := by
+instance (priority := 10000) commRing : CommRing ℝ := by
   refine' { natCast := fun n => ⟨n⟩
             intCast := fun z => ⟨z⟩
             zero := (0 : ℝ)
@@ -252,48 +252,48 @@ set_option linter.uppercaseLean3 false in
  `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
  version of them. -/
 
-instance : Ring ℝ := by infer_instance
+instance (priority := 10000) : Ring ℝ := by infer_instance
 
-instance : CommSemiring ℝ := by infer_instance
+instance (priority := 10000) : CommSemiring ℝ := by infer_instance
 
-instance semiring : Semiring ℝ := by infer_instance
+instance (priority := 10000) semiring : Semiring ℝ := by infer_instance
 
-instance : CommMonoidWithZero ℝ := by infer_instance
+instance (priority := 10000) : CommMonoidWithZero ℝ := by infer_instance
 
-instance : MonoidWithZero ℝ := by infer_instance
+instance (priority := 10000) : MonoidWithZero ℝ := by infer_instance
 
-instance : AddCommGroup ℝ := by infer_instance
+instance (priority := 10000) : AddCommGroup ℝ := by infer_instance
 
-instance : AddGroup ℝ := by infer_instance
+instance (priority := 10000) : AddGroup ℝ := by infer_instance
 
-instance : AddCommMonoid ℝ := by infer_instance
+instance (priority := 10000) : AddCommMonoid ℝ := by infer_instance
 
-instance : AddMonoid ℝ := by infer_instance
+instance (priority := 10000) : AddMonoid ℝ := by infer_instance
 
-instance : AddLeftCancelSemigroup ℝ := by infer_instance
+instance (priority := 10000) : AddLeftCancelSemigroup ℝ := by infer_instance
 
-instance : AddRightCancelSemigroup ℝ := by infer_instance
+instance (priority := 10000) : AddRightCancelSemigroup ℝ := by infer_instance
 
-instance : AddCommSemigroup ℝ := by infer_instance
+instance (priority := 10000) : AddCommSemigroup ℝ := by infer_instance
 
-instance : AddSemigroup ℝ := by infer_instance
+instance (priority := 10000) : AddSemigroup ℝ := by infer_instance
 
-instance : CommMonoid ℝ := by infer_instance
+instance (priority := 10000) : CommMonoid ℝ := by infer_instance
 
-instance : Monoid ℝ := by infer_instance
+instance (priority := 10000) : Monoid ℝ := by infer_instance
 
-instance : CommSemigroup ℝ := by infer_instance
+instance (priority := 10000) : CommSemigroup ℝ := by infer_instance
 
-instance : Semigroup ℝ := by infer_instance
+instance (priority := 10000) : Semigroup ℝ := by infer_instance
 
-instance : Inhabited ℝ :=
+instance (priority := 10000) : Inhabited ℝ :=
   ⟨0⟩
 
 /-- The real numbers are a `*`-ring, with the trivial `*`-structure. -/
-instance : StarRing ℝ :=
+instance (priority := 10000) : StarRing ℝ :=
   starRingOfComm
 
-instance : TrivialStar ℝ :=
+instance (priority := 10000) : TrivialStar ℝ :=
   ⟨fun _ => rfl⟩
 
 /-- Make a real number from a Cauchy sequence of rationals (by taking the equivalence class). -/
@@ -312,7 +312,7 @@ private irreducible_def lt : ℝ → ℝ → Prop
         ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
           lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
 
-instance : LT ℝ :=
+instance (priority := 10000) : LT ℝ :=
   ⟨lt⟩
 
 theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
@@ -348,7 +348,7 @@ theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
 private irreducible_def le (x y : ℝ) : Prop :=
   x < y ∨ x = y
 
-instance : LE ℝ :=
+instance (priority := 10000) : LE ℝ :=
   ⟨le⟩
 
 private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
@@ -373,7 +373,7 @@ theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := b
   show Pos _ ↔ Pos _; rw [add_sub_add_left_eq_sub]
 #align real.add_lt_add_iff_left Real.add_lt_add_iff_left
 
-instance partialOrder : PartialOrder ℝ where
+instance (priority := 10000) partialOrder : PartialOrder ℝ where
   le := (· ≤ ·)
   lt := (· < ·)
   lt_iff_le_not_le a b := by
@@ -393,7 +393,7 @@ instance partialOrder : PartialOrder ℝ where
     induction' b using Real.ind_mk with b
     simpa [mk_eq] using @CauSeq.le_antisymm _ _ a b
 
-instance : Preorder ℝ := by infer_instance
+instance (priority := 10000) : Preorder ℝ := by infer_instance
 
 theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
   erw [mk_lt]
@@ -414,7 +414,7 @@ protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
   simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 #align real.mul_pos Real.mul_pos
 
-instance : StrictOrderedCommRing ℝ :=
+instance (priority := 10000) : StrictOrderedCommRing ℝ :=
   { Real.commRing, Real.partialOrder,
     Real.semiring with
     exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
@@ -426,37 +426,37 @@ instance : StrictOrderedCommRing ℝ :=
     zero_le_one := le_of_lt Real.zero_lt_one
     mul_pos := @Real.mul_pos }
 
-instance strictOrderedRing : StrictOrderedRing ℝ :=
+instance (priority := 10000) strictOrderedRing : StrictOrderedRing ℝ :=
   inferInstance
 
-instance strictOrderedCommSemiring : StrictOrderedCommSemiring ℝ :=
+instance (priority := 10000) strictOrderedCommSemiring : StrictOrderedCommSemiring ℝ :=
   inferInstance
 
-instance strictOrderedSemiring : StrictOrderedSemiring ℝ :=
+instance (priority := 10000) strictOrderedSemiring : StrictOrderedSemiring ℝ :=
   inferInstance
 
-instance orderedRing : OrderedRing ℝ :=
+instance (priority := 10000) orderedRing : OrderedRing ℝ :=
   inferInstance
 
-instance orderedSemiring : OrderedSemiring ℝ :=
+instance (priority := 10000) orderedSemiring : OrderedSemiring ℝ :=
   inferInstance
 
-instance orderedAddCommGroup : OrderedAddCommGroup ℝ :=
+instance (priority := 10000) orderedAddCommGroup : OrderedAddCommGroup ℝ :=
   inferInstance
 
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid ℝ :=
+instance (priority := 10000) orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid ℝ :=
   inferInstance
 
-instance orderedAddCommMonoid : OrderedAddCommMonoid ℝ :=
+instance (priority := 10000) orderedAddCommMonoid : OrderedAddCommMonoid ℝ :=
   inferInstance
 
-instance nontrivial : Nontrivial ℝ :=
+instance (priority := 10000) nontrivial : Nontrivial ℝ :=
   inferInstance
 
 private irreducible_def sup : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
 
-instance : Sup ℝ :=
+instance (priority := 10000) : Sup ℝ :=
   ⟨sup⟩
 
 theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
@@ -473,7 +473,7 @@ theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
 private irreducible_def inf : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
 
-instance : Inf ℝ :=
+instance (priority := 10000) : Inf ℝ :=
   ⟨inf⟩
 
 theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
@@ -487,7 +487,7 @@ theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
   ofCauchy_inf _ _
 #align real.mk_inf Real.mk_inf
 
-instance : DistribLattice ℝ :=
+instance (priority := 10000) : DistribLattice ℝ :=
   { Real.partialOrder with
     sup := (· ⊔ ·)
     le := (· ≤ ·)
@@ -540,39 +540,39 @@ instance : DistribLattice ℝ :=
       exact congr_arg mk (CauSeq.sup_inf_distrib_left _ _ _).symm }
 
 -- Extra instances to short-circuit type class resolution
-instance lattice : Lattice ℝ :=
+instance (priority := 10000) lattice : Lattice ℝ :=
   inferInstance
 
-instance : SemilatticeInf ℝ :=
+instance (priority := 10000) : SemilatticeInf ℝ :=
   inferInstance
 
-instance : SemilatticeSup ℝ :=
+instance (priority := 10000) : SemilatticeSup ℝ :=
   inferInstance
 
 open Classical
 
-instance : IsTotal ℝ (· ≤ ·) :=
+instance (priority := 10000) : IsTotal ℝ (· ≤ ·) :=
   ⟨by
     intros a b
     induction' a using Real.ind_mk with a
     induction' b using Real.ind_mk with b
     simpa using le_total a b⟩
 
-noncomputable instance linearOrder : LinearOrder ℝ :=
+noncomputable instance (priority := 10000) linearOrder : LinearOrder ℝ :=
   Lattice.toLinearOrder _
 
-noncomputable instance linearOrderedCommRing : LinearOrderedCommRing ℝ :=
+noncomputable instance (priority := 10000) linearOrderedCommRing : LinearOrderedCommRing ℝ :=
   { Real.nontrivial, Real.strictOrderedRing, Real.commRing, Real.linearOrder with }
 
 -- Extra instances to short-circuit type class resolution
-noncomputable instance : LinearOrderedRing ℝ := by infer_instance
+noncomputable instance (priority := 10000) : LinearOrderedRing ℝ := by infer_instance
 
-noncomputable instance : LinearOrderedSemiring ℝ := by infer_instance
+noncomputable instance (priority := 10000) : LinearOrderedSemiring ℝ := by infer_instance
 
-instance : IsDomain ℝ :=
+instance (priority := 10000) : IsDomain ℝ :=
   { Real.nontrivial, Real.commRing, LinearOrderedRing.isDomain with }
 
-noncomputable instance : LinearOrderedField ℝ :=
+noncomputable instance (priority := 10000) : LinearOrderedField ℝ :=
   { Real.linearOrderedCommRing with
     inv := Inv.inv
     mul_inv_cancel := by
@@ -588,20 +588,20 @@ noncomputable instance : LinearOrderedField ℝ :=
         ofCauchy_intCast] }
 
 -- Extra instances to short-circuit type class resolution
-noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance
+noncomputable instance (priority := 10000) : LinearOrderedAddCommGroup ℝ := by infer_instance
 
-noncomputable instance field : Field ℝ := by infer_instance
+noncomputable instance (priority := 10000) field : Field ℝ := by infer_instance
 #align real.field Real.field
 
-noncomputable instance : DivisionRing ℝ := by infer_instance
+noncomputable instance (priority := 10000) : DivisionRing ℝ := by infer_instance
 
-noncomputable instance decidableLT (a b : ℝ) : Decidable (a < b) := by infer_instance
+noncomputable instance (priority := 10000) decidableLT (a b : ℝ) : Decidable (a < b) := by infer_instance
 #align real.decidable_lt Real.decidableLT
 
-noncomputable instance decidableLE (a b : ℝ) : Decidable (a ≤ b) := by infer_instance
+noncomputable instance (priority := 10000) decidableLE (a b : ℝ) : Decidable (a ≤ b) := by infer_instance
 #align real.decidable_le Real.decidableLE
 
-noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_instance
+noncomputable instance (priority := 10000) decidableEq (a b : ℝ) : Decidable (a = b) := by infer_instance
 #align real.decidable_eq Real.decidableEq
 
 /-- Show an underlying cauchy sequence for real numbers.

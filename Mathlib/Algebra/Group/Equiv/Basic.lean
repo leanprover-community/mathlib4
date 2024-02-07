@@ -197,7 +197,7 @@ def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) :
 `MulEquivClass.toMulEquiv`. -/
 @[to_additive "Any type satisfying `AddEquivClass` can be cast into `AddEquiv` via
 `AddEquivClass.toAddEquiv`. "]
-instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
+instance (priority := 10000) [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
   ⟨MulEquivClass.toMulEquiv⟩
 
 @[to_additive]
@@ -208,7 +208,7 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
 namespace MulEquiv
 
 @[to_additive]
-instance [Mul M] [Mul N] : EquivLike (M ≃* N) M N where
+instance (priority := 10000) [Mul M] [Mul N] : EquivLike (M ≃* N) M N where
   coe f := f.toFun
   inv f := f.invFun
   left_inv f := f.left_inv
@@ -220,11 +220,11 @@ instance [Mul M] [Mul N] : EquivLike (M ≃* N) M N where
     apply Equiv.coe_fn_injective h₁
 
 @[to_additive]
-instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
+instance (priority := 10000) [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
   map_mul f := f.map_mul'
 
 @[to_additive] -- shortcut instance that doesn't generate any subgoals
-instance [Mul M] [Mul N] : CoeFun (M ≃* N) fun _ => M → N where
+instance (priority := 10000) [Mul M] [Mul N] : CoeFun (M ≃* N) fun _ => M → N where
   coe f := f
 
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
@@ -295,7 +295,7 @@ def refl (M : Type*) [Mul M] : M ≃* M :=
 #align add_equiv.refl AddEquiv.refl
 
 @[to_additive]
-instance : Inhabited (M ≃* M) := ⟨refl M⟩
+instance (priority := 10000) : Inhabited (M ≃* M) := ⟨refl M⟩
 
 /-- An alias for `h.symm.map_mul`. Introduced to fix the issue in
 https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234183.20.60simps.60.20maximum.20recursion.20depth
@@ -566,7 +566,7 @@ def mulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive "There is a unique additive monoid homomorphism between two additive monoids with
   a unique element."]
-instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
+instance (priority := 10000) {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := mulEquivOfUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 

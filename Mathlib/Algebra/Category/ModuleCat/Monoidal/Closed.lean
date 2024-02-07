@@ -44,7 +44,7 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
 set_option linter.uppercaseLean3 false in
 #align Module.monoidal_closed_hom_equiv ModuleCat.monoidalClosedHomEquiv
 
-instance : MonoidalClosed (ModuleCat.{u} R) where
+instance (priority := 10000) : MonoidalClosed (ModuleCat.{u} R) where
   closed M :=
     { isAdj :=
         { right := (linearCoyoneda R (ModuleCat.{u} R)).obj (op M)

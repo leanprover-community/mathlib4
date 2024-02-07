@@ -293,13 +293,13 @@ def mk (x : PGame) (h : x.Numeric) : Surreal :=
   ⟦⟨x, h⟩⟧
 #align surreal.mk Surreal.mk
 
-instance : Zero Surreal :=
+instance (priority := 10000) : Zero Surreal :=
   ⟨mk 0 numeric_zero⟩
 
-instance : One Surreal :=
+instance (priority := 10000) : One Surreal :=
   ⟨mk 1 numeric_one⟩
 
-instance : Inhabited Surreal :=
+instance (priority := 10000) : Inhabited Surreal :=
   ⟨0⟩
 
 /-- Lift an equivalence-respecting function on pre-games to surreals. -/
@@ -318,26 +318,26 @@ def lift₂ {α} (f : ∀ x y, Numeric x → Numeric y → α)
     fun _ _ h => funext <| Quotient.ind fun _ => H _ _ _ _ h equiv_rfl
 #align surreal.lift₂ Surreal.lift₂
 
-instance instLE : LE Surreal :=
+instance (priority := 10000) instLE : LE Surreal :=
   ⟨lift₂ (fun x y _ _ => x ≤ y) fun _ _ _ _ hx hy => propext (le_congr hx hy)⟩
 #align surreal.has_le Surreal.instLE
 
-instance instLT : LT Surreal :=
+instance (priority := 10000) instLT : LT Surreal :=
   ⟨lift₂ (fun x y _ _ => x < y) fun _ _ _ _ hx hy => propext (lt_congr hx hy)⟩
 #align surreal.has_lt Surreal.instLT
 
 /-- Addition on surreals is inherited from pre-game addition:
 the sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
-instance : Add Surreal :=
+instance (priority := 10000) : Add Surreal :=
   ⟨Surreal.lift₂ (fun (x y : PGame) ox oy => ⟦⟨x + y, ox.add oy⟩⟧) fun _ _ _ _ hx hy =>
       Quotient.sound (add_congr hx hy)⟩
 
 /-- Negation for surreal numbers is inherited from pre-game negation:
 the negation of `{L | R}` is `{-R | -L}`. -/
-instance : Neg Surreal :=
+instance (priority := 10000) : Neg Surreal :=
   ⟨Surreal.lift (fun x ox => ⟦⟨-x, ox.neg⟩⟧) fun _ _ a => Quotient.sound (neg_equiv_neg_iff.2 a)⟩
 
-instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
+instance (priority := 10000) orderedAddCommGroup : OrderedAddCommGroup Surreal where
   add := (· + ·)
   add_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact Quotient.sound add_assoc_equiv
   zero := 0
@@ -354,14 +354,14 @@ instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
   le_antisymm := by rintro ⟨_⟩ ⟨_⟩ h₁ h₂; exact Quotient.sound ⟨h₁, h₂⟩
   add_le_add_left := by rintro ⟨_⟩ ⟨_⟩ hx ⟨_⟩; exact @add_le_add_left PGame _ _ _ _ _ hx _
 
-noncomputable instance : LinearOrderedAddCommGroup Surreal :=
+noncomputable instance (priority := 10000) : LinearOrderedAddCommGroup Surreal :=
   { Surreal.orderedAddCommGroup with
     le_total := by
       rintro ⟨⟨x, ox⟩⟩ ⟨⟨y, oy⟩⟩
       exact or_iff_not_imp_left.2 fun h => (PGame.not_le.1 h).le oy ox
     decidableLE := Classical.decRel _ }
 
-instance : AddMonoidWithOne Surreal :=
+instance (priority := 10000) : AddMonoidWithOne Surreal :=
   AddMonoidWithOne.unary
 
 /-- Casts a `Surreal` number into a `Game`. -/

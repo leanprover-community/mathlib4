@@ -92,7 +92,7 @@ class PredOrder (α : Type*) [Preorder α] where
 #align pred_order.ext PredOrder.ext
 #align pred_order.ext_iff PredOrder.ext_iff
 
-instance [Preorder α] [SuccOrder α] :
+instance (priority := 10000) [Preorder α] [SuccOrder α] :
     PredOrder αᵒᵈ where
   pred := toDual ∘ SuccOrder.succ ∘ ofDual
   pred_le := by
@@ -102,7 +102,7 @@ instance [Preorder α] [SuccOrder α] :
   le_pred_of_lt := by intro a b h; exact SuccOrder.succ_le_of_lt h
   le_of_pred_lt := SuccOrder.le_of_lt_succ
 
-instance [Preorder α] [PredOrder α] :
+instance (priority := 10000) [Preorder α] [PredOrder α] :
     SuccOrder αᵒᵈ where
   succ := toDual ∘ PredOrder.pred ∘ ofDual
   le_succ := by
@@ -564,7 +564,7 @@ end OrderBot
 end PartialOrder
 
 /-- There is at most one way to define the successors in a `PartialOrder`. -/
-instance [PartialOrder α] : Subsingleton (SuccOrder α) :=
+instance (priority := 10000) [PartialOrder α] : Subsingleton (SuccOrder α) :=
   ⟨by
     intro h₀ h₁
     ext a
@@ -915,7 +915,7 @@ end OrderTop
 end PartialOrder
 
 /-- There is at most one way to define the predecessors in a `PartialOrder`. -/
-instance [PartialOrder α] : Subsingleton (PredOrder α) :=
+instance (priority := 10000) [PartialOrder α] : Subsingleton (PredOrder α) :=
   ⟨by
     intro h₀ h₁
     ext a
@@ -1016,7 +1016,7 @@ section Succ
 
 variable [DecidableEq α] [PartialOrder α] [OrderTop α] [SuccOrder α]
 
-instance : SuccOrder (WithTop α) where
+instance (priority := 10000) : SuccOrder (WithTop α) where
   succ a :=
     match a with
     | ⊤ => ⊤
@@ -1074,7 +1074,7 @@ section Pred
 
 variable [Preorder α] [OrderTop α] [PredOrder α]
 
-instance : PredOrder (WithTop α) where
+instance (priority := 10000) : PredOrder (WithTop α) where
   pred a :=
     match a with
     | ⊤ => some ⊤
@@ -1126,7 +1126,7 @@ section Succ
 
 variable [Preorder α] [NoMaxOrder α] [SuccOrder α]
 
-instance succOrderOfNoMaxOrder : SuccOrder (WithTop α) where
+instance (priority := 10000) succOrderOfNoMaxOrder : SuccOrder (WithTop α) where
   succ a :=
     match a with
     | ⊤ => ⊤
@@ -1164,7 +1164,7 @@ section Pred
 
 variable [Preorder α] [NoMaxOrder α]
 
-instance [hα : Nonempty α] : IsEmpty (PredOrder (WithTop α)) :=
+instance (priority := 10000) [hα : Nonempty α] : IsEmpty (PredOrder (WithTop α)) :=
   ⟨by
     intro
     cases' h : pred (⊤ : WithTop α) with a ha
@@ -1185,7 +1185,7 @@ section Succ
 
 variable [Preorder α] [OrderBot α] [SuccOrder α]
 
-instance : SuccOrder (WithBot α) where
+instance (priority := 10000) : SuccOrder (WithBot α) where
   succ a :=
     match a with
     | ⊥ => some ⊥
@@ -1235,7 +1235,7 @@ section Pred
 
 variable [DecidableEq α] [PartialOrder α] [OrderBot α] [PredOrder α]
 
-instance : PredOrder (WithBot α) where
+instance (priority := 10000) : PredOrder (WithBot α) where
   pred a :=
     match a with
     | ⊥ => ⊥
@@ -1295,7 +1295,7 @@ section Succ
 
 variable [Preorder α] [NoMinOrder α]
 
-instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
+instance (priority := 10000) [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
   ⟨by
     intro
     cases' h : succ (⊥ : WithBot α) with a ha
@@ -1310,7 +1310,7 @@ section Pred
 
 variable [Preorder α] [NoMinOrder α] [PredOrder α]
 
-instance predOrderOfNoMinOrder : PredOrder (WithBot α) where
+instance (priority := 10000) predOrderOfNoMinOrder : PredOrder (WithBot α) where
   pred a :=
     match a with
     | ⊥ => ⊥
@@ -1374,7 +1374,7 @@ section SuccOrder
 
 variable [SuccOrder α] [IsSuccArchimedean α] {a b : α}
 
-instance : IsPredArchimedean αᵒᵈ :=
+instance (priority := 10000) : IsPredArchimedean αᵒᵈ :=
   ⟨fun {a b} h => by convert exists_succ_iterate_of_le h.ofDual⟩
 
 theorem LE.le.exists_succ_iterate (h : a ≤ b) : ∃ n, succ^[n] a = b :=
@@ -1410,7 +1410,7 @@ section PredOrder
 
 variable [PredOrder α] [IsPredArchimedean α] {a b : α}
 
-instance : IsSuccArchimedean αᵒᵈ :=
+instance (priority := 10000) : IsSuccArchimedean αᵒᵈ :=
   ⟨fun {a b} h => by convert exists_pred_iterate_of_le h.ofDual⟩
 
 theorem LE.le.exists_pred_iterate (h : a ≤ b) : ∃ n, pred^[n] b = a :=

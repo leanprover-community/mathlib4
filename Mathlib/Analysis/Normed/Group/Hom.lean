@@ -85,12 +85,12 @@ variable {f g : NormedAddGroupHom V₁ V₂}
 def ofLipschitz (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) : NormedAddGroupHom V₁ V₂ :=
   f.mkNormedAddGroupHom K fun x ↦ by simpa only [map_zero, dist_zero_right] using h.dist_le_mul x 0
 
-instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
+instance (priority := 10000) funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective' := fun f g h => by cases f; cases g; congr
 
 -- porting note: moved this declaration up so we could get a `FunLike` instance sooner.
-instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
+instance (priority := 10000) toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
 
@@ -208,7 +208,7 @@ def opNorm (f : NormedAddGroupHom V₁ V₂) :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖f x‖ ≤ c * ‖x‖ }
 #align normed_add_group_hom.op_norm NormedAddGroupHom.opNorm
 
-instance hasOpNorm : Norm (NormedAddGroupHom V₁ V₂) :=
+instance (priority := 10000) hasOpNorm : Norm (NormedAddGroupHom V₁ V₂) :=
   ⟨opNorm⟩
 #align normed_add_group_hom.has_op_norm NormedAddGroupHom.hasOpNorm
 
@@ -323,7 +323,7 @@ alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le' := mkNormedAddGroupHom_no
 
 
 /-- Addition of normed group homs. -/
-instance add : Add (NormedAddGroupHom V₁ V₂) :=
+instance (priority := 10000) add : Add (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
     (f.toAddMonoidHom + g.toAddMonoidHom).mkNormedAddGroupHom (‖f‖ + ‖g‖) fun v =>
       calc
@@ -361,10 +361,10 @@ theorem add_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
 /-! ### The zero normed group hom -/
 
 
-instance zero : Zero (NormedAddGroupHom V₁ V₂) :=
+instance (priority := 10000) zero : Zero (NormedAddGroupHom V₁ V₂) :=
   ⟨(0 : V₁ →+ V₂).mkNormedAddGroupHom 0 (by simp)⟩
 
-instance inhabited : Inhabited (NormedAddGroupHom V₁ V₂) :=
+instance (priority := 10000) inhabited : Inhabited (NormedAddGroupHom V₁ V₂) :=
   ⟨0⟩
 
 /-- The norm of the `0` operator is `0`. -/
@@ -447,7 +447,7 @@ theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
 
 
 /-- Opposite of a normed group hom. -/
-instance neg : Neg (NormedAddGroupHom V₁ V₂) :=
+instance (priority := 10000) neg : Neg (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f => (-f.toAddMonoidHom).mkNormedAddGroupHom ‖f‖ fun v => by simp [le_opNorm f v]⟩
 
 @[simp]
@@ -469,7 +469,7 @@ theorem opNorm_neg (f : NormedAddGroupHom V₁ V₂) : ‖-f‖ = ‖f‖ := by
 
 
 /-- Subtraction of normed group homs. -/
-instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
+instance (priority := 10000) sub : Sub (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
     { f.toAddMonoidHom - g.toAddMonoidHom with
       bound' := by
@@ -496,7 +496,7 @@ variable {R R' : Type*} [MonoidWithZero R] [DistribMulAction R V₂] [PseudoMetr
   [BoundedSMul R V₂] [MonoidWithZero R'] [DistribMulAction R' V₂] [PseudoMetricSpace R']
   [BoundedSMul R' V₂]
 
-instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
+instance (priority := 10000) smul : SMul R (NormedAddGroupHom V₁ V₂) where
   smul r f :=
     { toFun := r • ⇑f
       map_add' := (r • f.toAddMonoidHom).map_add'
@@ -520,21 +520,21 @@ theorem smul_apply (r : R) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r •
   rfl
 #align normed_add_group_hom.smul_apply NormedAddGroupHom.smul_apply
 
-instance smulCommClass [SMulCommClass R R' V₂] :
+instance (priority := 10000) smulCommClass [SMulCommClass R R' V₂] :
     SMulCommClass R R' (NormedAddGroupHom V₁ V₂) where
   smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
 
-instance isScalarTower [SMul R R'] [IsScalarTower R R' V₂] :
+instance (priority := 10000) isScalarTower [SMul R R'] [IsScalarTower R R' V₂] :
     IsScalarTower R R' (NormedAddGroupHom V₁ V₂) where
   smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
 
-instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V₂] [IsCentralScalar R V₂] :
+instance (priority := 10000) isCentralScalar [DistribMulAction Rᵐᵒᵖ V₂] [IsCentralScalar R V₂] :
     IsCentralScalar R (NormedAddGroupHom V₁ V₂) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
 end SMul
 
-instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
+instance (priority := 10000) nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
   smul n f :=
     { toFun := n • ⇑f
       map_add' := (n • f.toAddMonoidHom).map_add'
@@ -555,7 +555,7 @@ theorem nsmul_apply (r : ℕ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r 
   rfl
 #align normed_add_group_hom.nsmul_apply NormedAddGroupHom.nsmul_apply
 
-instance zsmul : SMul ℤ (NormedAddGroupHom V₁ V₂) where
+instance (priority := 10000) zsmul : SMul ℤ (NormedAddGroupHom V₁ V₂) where
   smul z f :=
     { toFun := z • ⇑f
       map_add' := (z • f.toAddMonoidHom).map_add'
@@ -580,13 +580,13 @@ theorem zsmul_apply (r : ℤ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r 
 
 
 /-- Homs between two given normed groups form a commutative additive group. -/
-instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
+instance (priority := 10000) toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     fun _ _ => rfl
 
 /-- Normed group homomorphisms themselves form a seminormed group with respect to
     the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
+instance (priority := 10000) toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupSeminorm.toSeminormedAddCommGroup
     { toFun := opNorm
       map_zero' := opNorm_zero
@@ -596,7 +596,7 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V�
 
 /-- Normed group homomorphisms themselves form a normed group with respect to
     the operator norm. -/
-instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
+instance (priority := 10000) toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
     NormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
   AddGroupNorm.toNormedAddCommGroup
     { toFun := opNorm
@@ -627,11 +627,11 @@ theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V�
 /-! ### Module structure on normed group homs -/
 
 
-instance distribMulAction {R : Type*} [MonoidWithZero R] [DistribMulAction R V₂]
+instance (priority := 10000) distribMulAction {R : Type*} [MonoidWithZero R] [DistribMulAction R V₂]
     [PseudoMetricSpace R] [BoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.distribMulAction coeAddHom coe_injective coe_smul
 
-instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [BoundedSMul R V₂] :
+instance (priority := 10000) module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [BoundedSMul R V₂] :
     Module R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.module _ coeAddHom coe_injective coe_smul
 

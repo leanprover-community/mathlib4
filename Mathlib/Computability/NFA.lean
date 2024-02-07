@@ -45,7 +45,7 @@ variable {α : Type u} {σ σ' : Type v} (M : NFA α σ)
 
 namespace NFA
 
-instance : Inhabited (NFA α σ) :=
+instance (priority := 10000) : Inhabited (NFA α σ) :=
   ⟨NFA.mk (fun _ _ => ∅) ∅ ∅⟩
 
 /-- `M.stepSet S a` is the union of `M.step s a` for all `s ∈ S`. -/

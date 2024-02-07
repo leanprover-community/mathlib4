@@ -94,10 +94,10 @@ def forget : Compactum ⥤ Type* :=
   -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
 #align Compactum.forget Compactum.forget
 
-instance : Faithful forget :=
+instance (priority := 10000) : Faithful forget :=
   show Faithful <| Monad.forget _ from inferInstance
 
-noncomputable instance : CreatesLimits forget :=
+noncomputable instance (priority := 10000) : CreatesLimits forget :=
   show CreatesLimits <| Monad.forget _ from inferInstance
 
 /-- The "free" Compactum functor. -/
@@ -111,16 +111,16 @@ def adj : free ⊣ forget :=
 #align Compactum.adj Compactum.adj
 
 -- Basic instances
-instance : ConcreteCategory Compactum where forget := forget
+instance (priority := 10000) : ConcreteCategory Compactum where forget := forget
 
 -- Porting note: changed from forget to X.A
-instance : CoeSort Compactum (Type*) :=
+instance (priority := 10000) : CoeSort Compactum (Type*) :=
   ⟨fun X => X.A⟩
 
-instance {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=
+instance (priority := 10000) {X Y : Compactum} : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ⟨fun f => f.f⟩
 
-instance : HasLimits Compactum :=
+instance (priority := 10000) : HasLimits Compactum :=
   hasLimits_of_hasLimits_createsLimits forget
 
 /-- The structure map for a compactum, essentially sending an ultrafilter to its limit. -/
@@ -162,7 +162,7 @@ theorem join_distrib (X : Compactum) (uux : Ultrafilter (Ultrafilter X)) :
 #align Compactum.join_distrib Compactum.join_distrib
 
 -- Porting note: changes to X.A from X since Lean can't see through X to X.A below
-instance {X : Compactum} : TopologicalSpace X.A where
+instance (priority := 10000) {X : Compactum} : TopologicalSpace X.A where
   IsOpen U := ∀ F : Ultrafilter X, X.str F ∈ U → U ∈ F
   isOpen_univ _ _ := Filter.univ_sets _
   isOpen_inter _ _ h3 h4 _ h6 := Filter.inter_sets _ (h3 _ h6.1) (h4 _ h6.2)
@@ -184,7 +184,7 @@ theorem isClosed_iff {X : Compactum} (S : Set X) :
     exacts [absurd (h1 h) h2, h]
 #align Compactum.is_closed_iff Compactum.isClosed_iff
 
-instance {X : Compactum} : CompactSpace X := by
+instance (priority := 10000) {X : Compactum} : CompactSpace X := by
   constructor
   rw [isCompact_iff_ultrafilter_le_nhds]
   intro F _
@@ -354,7 +354,7 @@ theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F 
 #align Compactum.le_nhds_of_str_eq Compactum.le_nhds_of_str_eq
 
 -- All the hard work above boils down to this `T2Space` instance.
-instance {X : Compactum} : T2Space X := by
+instance (priority := 10000) {X : Compactum} : T2Space X := by
   rw [t2_iff_ultrafilter]
   intro _ _ F hx hy
   rw [← str_eq_of_le_nhds _ _ hx, ← str_eq_of_le_nhds _ _ hy]
@@ -477,7 +477,7 @@ theorem essSurj : EssSurj compactumToCompHaus :=
 #align Compactum_to_CompHaus.ess_surj compactumToCompHaus.essSurj
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/
-noncomputable instance isEquivalence : IsEquivalence compactumToCompHaus := by
+noncomputable instance (priority := 10000) isEquivalence : IsEquivalence compactumToCompHaus := by
   have := compactumToCompHaus.full
   have := compactumToCompHaus.faithful
   have := compactumToCompHaus.essSurj
@@ -500,7 +500,7 @@ Once we have the API to transfer monadicity of functors along such isomorphisms,
 the instance `CreatesLimits (forget CompHaus)` can be deduced from this
 monadicity.
 -/
-noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget CompHaus) := by
+noncomputable instance (priority := 10000) CompHaus.forgetCreatesLimits : CreatesLimits (forget CompHaus) := by
   let e : forget CompHaus ≅ compactumToCompHaus.inv ⋙ Compactum.forget :=
     (((forget CompHaus).leftUnitor.symm ≪≫
     isoWhiskerRight compactumToCompHaus.asEquivalence.symm.unitIso (forget CompHaus)) ≪≫
@@ -510,7 +510,7 @@ noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget Comp
 
 #align CompHaus.forget_creates_limits CompHaus.forgetCreatesLimits
 
-noncomputable instance Profinite.forgetCreatesLimits : CreatesLimits (forget Profinite) := by
+noncomputable instance (priority := 10000) Profinite.forgetCreatesLimits : CreatesLimits (forget Profinite) := by
   change CreatesLimits (profiniteToCompHaus ⋙ forget _)
   infer_instance
 #align Profinite.forget_creates_limits Profinite.forgetCreatesLimits

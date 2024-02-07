@@ -53,7 +53,7 @@ def imageToKernel (w : f ≫ g = 0) : (imageSubobject f : V) ⟶ (kernelSubobjec
   Subobject.ofLE _ _ (image_le_kernel _ _ w)
 #align image_to_kernel imageToKernel
 
-instance (w : f ≫ g = 0) : Mono (imageToKernel f g w) := by
+instance (priority := 10000) (w : f ≫ g = 0) : Mono (imageToKernel f g w) := by
   dsimp only [imageToKernel]
   infer_instance
 
@@ -161,7 +161,7 @@ open ZeroObject
 /-- `imageToKernel` for `A --0--> B --g--> C`, where `g` is a mono is itself an epi
 (i.e. the sequence is exact at `B`).
 -/
-instance imageToKernel_epi_of_zero_of_mono [HasKernels V] [HasZeroObject V] [Mono g] :
+instance (priority := 10000) imageToKernel_epi_of_zero_of_mono [HasKernels V] [HasZeroObject V] [Mono g] :
     Epi (imageToKernel (0 : A ⟶ B) g (by simp)) :=
   epi_of_target_iso_zero _ (kernelSubobjectIso g ≪≫ kernel.ofMono g)
 #align image_to_kernel_epi_of_zero_of_mono imageToKernel_epi_of_zero_of_mono
@@ -169,7 +169,7 @@ instance imageToKernel_epi_of_zero_of_mono [HasKernels V] [HasZeroObject V] [Mon
 /-- `imageToKernel` for `A --f--> B --0--> C`, where `g` is an epi is itself an epi
 (i.e. the sequence is exact at `B`).
 -/
-instance imageToKernel_epi_of_epi_of_zero [HasImages V] [Epi f] :
+instance (priority := 10000) imageToKernel_epi_of_epi_of_zero [HasImages V] [Epi f] :
     Epi (imageToKernel f (0 : B ⟶ C) (by simp)) := by
   simp only [imageToKernel_zero_right]
   haveI := epi_image_of_epi f

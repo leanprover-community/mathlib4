@@ -54,7 +54,7 @@ def SmallModel (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] : Type w :
   Classical.choose (@EssentiallySmall.equiv_smallCategory C _ _)
 #align category_theory.small_model CategoryTheory.SmallModel
 
-noncomputable instance smallCategorySmallModel (C : Type u) [Category.{v} C]
+noncomputable instance (priority := 10000) smallCategorySmallModel (C : Type u) [Category.{v} C]
     [EssentiallySmall.{w} C] : SmallCategory (SmallModel C) :=
   Classical.choose (Classical.choose_spec (@EssentiallySmall.equiv_smallCategory C _ _))
 #align category_theory.small_category_small_model CategoryTheory.smallCategorySmallModel
@@ -98,7 +98,7 @@ class LocallySmall (C : Type u) [Category.{v} C] : Prop where
   hom_small : ∀ X Y : C, Small.{w} (X ⟶ Y) := by infer_instance
 #align category_theory.locally_small CategoryTheory.LocallySmall
 
-instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small (X ⟶ Y) :=
+instance (priority := 10000) (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small (X ⟶ Y) :=
   LocallySmall.hom_small X Y
 
 theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
@@ -175,7 +175,7 @@ end
 variable [LocallySmall.{w} C]
 
 @[simps]
-noncomputable instance : Category.{w} (ShrinkHoms C)
+noncomputable instance (priority := 10000) : Category.{w} (ShrinkHoms C)
     where
   Hom X Y := Shrink (fromShrinkHoms X ⟶ fromShrinkHoms Y)
   id X := equivShrink _ (𝟙 (fromShrinkHoms X))
@@ -210,7 +210,7 @@ end ShrinkHoms
 
 namespace Shrink
 
-noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
+noncomputable instance (priority := 10000) [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
   InducedCategory.category (equivShrink C).symm
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
@@ -263,6 +263,6 @@ theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThi
   simp [essentiallySmall_iff, CategoryTheory.locallySmall_of_thin]
 #align category_theory.essentially_small_iff_of_thin CategoryTheory.essentiallySmall_iff_of_thin
 
-instance [Small.{w} C] : Small.{w} (Discrete C) := small_map discreteEquiv
+instance (priority := 10000) [Small.{w} C] : Small.{w} (Discrete C) := small_map discreteEquiv
 
 end CategoryTheory

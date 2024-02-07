@@ -189,7 +189,7 @@ namespace InvMemClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
-instance inv {G : Type u_1} {S : Type u_2} [Inv G] [SetLike S G]
+instance (priority := 10000) inv {G : Type u_1} {S : Type u_2} [Inv G] [SetLike S G]
   [InvMemClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
 #align subgroup_class.has_inv InvMemClass.inv
@@ -222,21 +222,21 @@ theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits a subtraction."]
-instance div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
+instance (priority := 10000) div {G : Type u_1} {S : Type u_2} [DivInvMonoid G] [SetLike S G]
   [SubgroupClass S G] {H : S} : Div H :=
   ⟨fun a b => ⟨a / b, div_mem a.2 b.2⟩⟩
 #align subgroup_class.has_div SubgroupClass.div
 #align add_subgroup_class.has_sub AddSubgroupClass.sub
 
 /-- An additive subgroup of an `AddGroup` inherits an integer scaling. -/
-instance _root_.AddSubgroupClass.zsmul {M S} [SubNegMonoid M] [SetLike S M]
+instance (priority := 10000) _root_.AddSubgroupClass.zsmul {M S} [SubNegMonoid M] [SetLike S M]
     [AddSubgroupClass S M] {H : S} : SMul ℤ H :=
   ⟨fun n a => ⟨n • a.1, zsmul_mem a.2 n⟩⟩
 #align add_subgroup_class.has_zsmul AddSubgroupClass.zsmul
 
 /-- A subgroup of a group inherits an integer power. -/
 @[to_additive existing]
-instance zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
+instance (priority := 10000) zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
   ⟨fun a n => ⟨a.1 ^ n, zpow_mem a.2 n⟩⟩
 #align subgroup_class.has_zpow SubgroupClass.zpow
 -- Porting note: additive align statement is given above
@@ -401,7 +401,7 @@ add_decl_doc AddSubgroup.toAddSubmonoid
 namespace Subgroup
 
 @[to_additive]
-instance : SetLike (Subgroup G) G where
+instance (priority := 10000) : SetLike (Subgroup G) G where
   coe s := s.carrier
   coe_injective' p q h := by
     obtain ⟨⟨⟨hp,_⟩,_⟩,_⟩ := p
@@ -410,7 +410,7 @@ instance : SetLike (Subgroup G) G where
 
 -- Porting note: Below can probably be written more uniformly
 @[to_additive]
-instance : SubgroupClass (Subgroup G) G where
+instance (priority := 10000) : SubgroupClass (Subgroup G) G where
   inv_mem := Subgroup.inv_mem' _
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
@@ -665,34 +665,34 @@ def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ᵉ (x ∈ s) (y ∈ s), x * y
 
 /-- A subgroup of a group inherits a multiplication. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an addition."]
-instance mul : Mul H :=
+instance (priority := 10000) mul : Mul H :=
   H.toSubmonoid.mul
 #align subgroup.has_mul Subgroup.mul
 #align add_subgroup.has_add AddSubgroup.add
 
 /-- A subgroup of a group inherits a 1. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits a zero."]
-instance one : One H :=
+instance (priority := 10000) one : One H :=
   H.toSubmonoid.one
 #align subgroup.has_one Subgroup.one
 #align add_subgroup.has_zero AddSubgroup.zero
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an inverse."]
-instance inv : Inv H :=
+instance (priority := 10000) inv : Inv H :=
   ⟨fun a => ⟨a⁻¹, H.inv_mem a.2⟩⟩
 #align subgroup.has_inv Subgroup.inv
 #align add_subgroup.has_neg AddSubgroup.neg
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits a subtraction."]
-instance div : Div H :=
+instance (priority := 10000) div : Div H :=
   ⟨fun a b => ⟨a / b, H.div_mem a.2 b.2⟩⟩
 #align subgroup.has_div Subgroup.div
 #align add_subgroup.has_sub AddSubgroup.sub
 
 /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/
-instance _root_.AddSubgroup.nsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
+instance (priority := 10000) _root_.AddSubgroup.nsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
   ⟨fun n a => ⟨n • a, H.nsmul_mem a.2 n⟩⟩
 #align add_subgroup.has_nsmul AddSubgroup.nsmul
 
@@ -703,13 +703,13 @@ protected instance npow : Pow H ℕ :=
 #align subgroup.has_npow Subgroup.npow
 
 /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/
-instance _root_.AddSubgroup.zsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℤ H :=
+instance (priority := 10000) _root_.AddSubgroup.zsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℤ H :=
   ⟨fun n a => ⟨n • a, H.zsmul_mem a.2 n⟩⟩
 #align add_subgroup.has_zsmul AddSubgroup.zsmul
 
 /-- A subgroup of a group inherits an integer power -/
 @[to_additive existing]
-instance zpow : Pow H ℤ :=
+instance (priority := 10000) zpow : Pow H ℤ :=
   ⟨fun a n => ⟨a ^ n, H.zpow_mem a.2 n⟩⟩
 #align subgroup.has_zpow Subgroup.zpow
 
@@ -764,7 +764,7 @@ theorem mk_eq_one_iff {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 :=
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
-instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
+instance (priority := 10000) toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
   Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_group Subgroup.toGroup
@@ -772,7 +772,7 @@ instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive "An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`."]
-instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
+instance (priority := 10000) toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 #align subgroup.to_comm_group Subgroup.toCommGroup
@@ -780,7 +780,7 @@ instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
 
 /-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
 @[to_additive "An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance toOrderedCommGroup {G : Type*} [OrderedCommGroup G] (H : Subgroup G) :
+instance (priority := 10000) toOrderedCommGroup {G : Type*} [OrderedCommGroup G] (H : Subgroup G) :
     OrderedCommGroup H :=
   Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
@@ -791,7 +791,7 @@ instance toOrderedCommGroup {G : Type*} [OrderedCommGroup G] (H : Subgroup G) :
 @[to_additive
       "An `AddSubgroup` of a `LinearOrderedAddCommGroup` is a
         `LinearOrderedAddCommGroup`."]
-instance toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G] (H : Subgroup G) :
+instance (priority := 10000) toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G] (H : Subgroup G) :
     LinearOrderedCommGroup H :=
   Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
@@ -846,7 +846,7 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
 
 /-- The subgroup `G` of the group `G`. -/
 @[to_additive "The `AddSubgroup G` of the `AddGroup G`."]
-instance : Top (Subgroup G) :=
+instance (priority := 10000) : Top (Subgroup G) :=
   ⟨{ (⊤ : Submonoid G) with inv_mem' := fun _ => Set.mem_univ _ }⟩
 
 /-- The top subgroup is isomorphic to the group.
@@ -866,11 +866,11 @@ def topEquiv : (⊤ : Subgroup G) ≃* G :=
 
 /-- The trivial subgroup `{1}` of a group `G`. -/
 @[to_additive "The trivial `AddSubgroup` `{0}` of an `AddGroup` `G`."]
-instance : Bot (Subgroup G) :=
+instance (priority := 10000) : Bot (Subgroup G) :=
   ⟨{ (⊥ : Submonoid G) with inv_mem' := by simp}⟩
 
 @[to_additive]
-instance : Inhabited (Subgroup G) :=
+instance (priority := 10000) : Inhabited (Subgroup G) :=
   ⟨⊥⟩
 
 @[to_additive (attr := simp)]
@@ -898,7 +898,7 @@ theorem coe_bot : ((⊥ : Subgroup G) : Set G) = {1} :=
 #align add_subgroup.coe_bot AddSubgroup.coe_bot
 
 @[to_additive]
-instance : Unique (⊥ : Subgroup G) :=
+instance (priority := 10000) : Unique (⊥ : Subgroup G) :=
   ⟨⟨1⟩, fun g => Subtype.ext g.2⟩
 
 @[to_additive (attr := simp)]
@@ -984,7 +984,7 @@ lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a 
 
 /-- The inf of two subgroups is their intersection. -/
 @[to_additive "The inf of two `AddSubgroup`s is their intersection."]
-instance : Inf (Subgroup G) :=
+instance (priority := 10000) : Inf (Subgroup G) :=
   ⟨fun H₁ H₂ =>
     { H₁.toSubmonoid ⊓ H₂.toSubmonoid with
       inv_mem' := fun ⟨hx, hx'⟩ => ⟨H₁.inv_mem hx, H₂.inv_mem hx'⟩ }⟩
@@ -1002,7 +1002,7 @@ theorem mem_inf {p p' : Subgroup G} {x : G} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x �
 #align add_subgroup.mem_inf AddSubgroup.mem_inf
 
 @[to_additive]
-instance : InfSet (Subgroup G) :=
+instance (priority := 10000) : InfSet (Subgroup G) :=
   ⟨fun s =>
     { (⨅ S ∈ s, Subgroup.toSubmonoid S).copy (⋂ S ∈ s, ↑S) (by simp) with
       inv_mem' := fun {x} hx =>
@@ -1034,7 +1034,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subgroup G} : (↑(⨅ i, S i) : Set G
 
 /-- Subgroups of a group form a complete lattice. -/
 @[to_additive "The `AddSubgroup`s of an `AddGroup` form a complete lattice."]
-instance : CompleteLattice (Subgroup G) :=
+instance (priority := 10000) : CompleteLattice (Subgroup G) :=
   { completeLatticeOfInf (Subgroup G) fun _s =>
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
@@ -1098,11 +1098,11 @@ theorem nontrivial_iff : Nontrivial (Subgroup G) ↔ Nontrivial G :=
 #align add_subgroup.nontrivial_iff AddSubgroup.nontrivial_iff
 
 @[to_additive]
-instance [Subsingleton G] : Unique (Subgroup G) :=
+instance (priority := 10000) [Subsingleton G] : Unique (Subgroup G) :=
   ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ (subsingleton_iff.mpr ‹_›) a _⟩
 
 @[to_additive]
-instance [Nontrivial G] : Nontrivial (Subgroup G) :=
+instance (priority := 10000) [Nontrivial G] : Nontrivial (Subgroup G) :=
   nontrivial_iff.mpr ‹_›
 
 @[to_additive]
@@ -2089,13 +2089,13 @@ theorem characteristic_iff_le_map : H.Characteristic ↔ ∀ ϕ : G ≃* G, H �
 #align add_subgroup.characteristic_iff_le_map AddSubgroup.characteristic_iff_le_map
 
 @[to_additive]
-instance botCharacteristic : Characteristic (⊥ : Subgroup G) :=
+instance (priority := 10000) botCharacteristic : Characteristic (⊥ : Subgroup G) :=
   characteristic_iff_le_map.mpr fun _ϕ => bot_le
 #align subgroup.bot_characteristic Subgroup.botCharacteristic
 #align add_subgroup.bot_characteristic AddSubgroup.botCharacteristic
 
 @[to_additive]
-instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
+instance (priority := 10000) topCharacteristic : Characteristic (⊤ : Subgroup G) :=
   characteristic_iff_map_le.mpr fun _ϕ => le_top
 #align subgroup.top_characteristic Subgroup.topCharacteristic
 #align add_subgroup.top_characteristic AddSubgroup.topCharacteristic
@@ -2151,12 +2151,12 @@ theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g := by
 #align subgroup.mem_center_iff Subgroup.mem_center_iff
 #align add_subgroup.mem_center_iff AddSubgroup.mem_center_iff
 
-instance decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidable (z ∈ center G) :=
+instance (priority := 10000) decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidable (z ∈ center G) :=
   decidable_of_iff' _ mem_center_iff
 #align subgroup.decidable_mem_center Subgroup.decidableMemCenter
 
 @[to_additive]
-instance centerCharacteristic : (center G).Characteristic := by
+instance (priority := 10000) centerCharacteristic : (center G).Characteristic := by
   refine' characteristic_iff_comap_le.mpr fun ϕ g hg => _
   rw [mem_center_iff]
   intro h
@@ -2392,7 +2392,7 @@ theorem centralizer_eq_top_iff_subset {s : Set G} : centralizer s = ⊤ ↔ s �
 #align add_subgroup.centralizer_eq_top_iff_subset AddSubgroup.centralizer_eq_top_iff_subset
 
 @[to_additive]
-instance Centralizer.characteristic [hH : H.Characteristic] :
+instance (priority := 10000) Centralizer.characteristic [hH : H.Characteristic] :
     (centralizer (H : Set G)).Characteristic := by
   refine' Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective _
   rw [map_mul, map_mul]
@@ -2422,17 +2422,17 @@ attribute [class] AddSubgroup.IsCommutative
 
 /-- A commutative subgroup is commutative. -/
 @[to_additive "A commutative subgroup is commutative."]
-instance IsCommutative.commGroup [h : H.IsCommutative] : CommGroup H :=
+instance (priority := 10000) IsCommutative.commGroup [h : H.IsCommutative] : CommGroup H :=
   { H.toGroup with mul_comm := h.is_comm.comm }
 #align subgroup.is_commutative.comm_group Subgroup.IsCommutative.commGroup
 #align add_subgroup.is_commutative.add_comm_group AddSubgroup.IsCommutative.addCommGroup
 
-instance center.isCommutative : (center G).IsCommutative :=
+instance (priority := 10000) center.isCommutative : (center G).IsCommutative :=
   ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
 #align subgroup.center.is_commutative Subgroup.center.isCommutative
 
 @[to_additive]
-instance map_isCommutative (f : G →* G') [H.IsCommutative] : (H.map f).IsCommutative :=
+instance (priority := 10000) map_isCommutative (f : G →* G') [H.IsCommutative] : (H.map f).IsCommutative :=
   ⟨⟨by
       rintro ⟨-, a, ha, rfl⟩ ⟨-, b, hb, rfl⟩
       rw [Subtype.ext_iff, coe_mul, coe_mul, Subtype.coe_mk, Subtype.coe_mk, ← map_mul, ← map_mul]
@@ -2453,7 +2453,7 @@ theorem comap_injective_isCommutative {f : G' →* G} (hf : Injective f) [H.IsCo
 #align add_subgroup.comap_injective_is_commutative AddSubgroup.comap_injective_isCommutative
 
 @[to_additive]
-instance subgroupOf_isCommutative [H.IsCommutative] : (H.subgroupOf K).IsCommutative :=
+instance (priority := 10000) subgroupOf_isCommutative [H.IsCommutative] : (H.subgroupOf K).IsCommutative :=
   H.comap_injective_isCommutative Subtype.coe_injective
 #align subgroup.subgroup_of_is_commutative Subgroup.subgroupOf_isCommutative
 #align add_subgroup.add_subgroup_of_is_commutative AddSubgroup.addSubgroupOf_isCommutative
@@ -2541,7 +2541,7 @@ theorem le_normalClosure {H : Subgroup G} : H ≤ normalClosure ↑H := fun _ h 
 #align subgroup.le_normal_closure Subgroup.le_normalClosure
 
 /-- The normal closure of `s` is a normal subgroup. -/
-instance normalClosure_normal : (normalClosure s).Normal :=
+instance (priority := 10000) normalClosure_normal : (normalClosure s).Normal :=
   ⟨fun n h g => by
     refine' Subgroup.closure_induction h (fun x hx => _) _ (fun x y ihx ihy => _) fun x ihx => _
     · exact conjugatesOfSet_subset_normalClosure (conj_mem_conjugatesOfSet hx)
@@ -2611,7 +2611,7 @@ theorem normalCore_le (H : Subgroup G) : H.normalCore ≤ H := fun a h => by
   exact h 1
 #align subgroup.normal_core_le Subgroup.normalCore_le
 
-instance normalCore_normal (H : Subgroup G) : H.normalCore.Normal :=
+instance (priority := 10000) normalCore_normal (H : Subgroup G) : H.normalCore.Normal :=
   ⟨fun a h b c => by
     rw [mul_assoc, mul_assoc, ← mul_inv_rev, ← mul_assoc, ← mul_assoc]; exact h (c * b)⟩
 #align subgroup.normal_core_normal Subgroup.normalCore_normal
@@ -2879,7 +2879,7 @@ theorem eq_iff (f : G →* M) {x y : G} : f x = f y ↔ y⁻¹ * x ∈ f.ker := 
 #align add_monoid_hom.eq_iff AddMonoidHom.eq_iff
 
 @[to_additive]
-instance decidableMemKer [DecidableEq M] (f : G →* M) : DecidablePred (· ∈ f.ker) := fun x =>
+instance (priority := 10000) decidableMemKer [DecidableEq M] (f : G →* M) : DecidablePred (· ∈ f.ker) := fun x =>
   decidable_of_iff (f x = 1) f.mem_ker
 #align monoid_hom.decidable_mem_ker MonoidHom.decidableMemKer
 #align add_monoid_hom.decidable_mem_ker AddMonoidHom.decidableMemKer
@@ -3656,7 +3656,7 @@ theorem mem_closure_pair {x y z : C} :
 #align add_subgroup.mem_closure_pair AddSubgroup.mem_closure_pair
 
 @[to_additive]
-instance : IsModularLattice (Subgroup C) :=
+instance (priority := 10000) : IsModularLattice (Subgroup C) :=
   ⟨fun {x} y z xz a ha => by
     rw [mem_inf, mem_sup] at ha
     rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
@@ -3678,7 +3678,7 @@ theorem normal_subgroupOf_iff {H K : Subgroup G} (hHK : H ≤ K) :
 #align add_subgroup.normal_add_subgroup_of_iff AddSubgroup.normal_addSubgroupOf_iff
 
 @[to_additive]
-instance prod_subgroupOf_prod_normal {H₁ K₁ : Subgroup G} {H₂ K₂ : Subgroup N}
+instance (priority := 10000) prod_subgroupOf_prod_normal {H₁ K₁ : Subgroup G} {H₂ K₂ : Subgroup N}
     [h₁ : (H₁.subgroupOf K₁).Normal] [h₂ : (H₂.subgroupOf K₂).Normal] :
     ((H₁.prod H₂).subgroupOf (K₁.prod K₂)).Normal where
   conj_mem n hgHK g :=
@@ -3690,7 +3690,7 @@ instance prod_subgroupOf_prod_normal {H₁ K₁ : Subgroup G} {H₂ K₂ : Subgr
 #align add_subgroup.sum_add_subgroup_of_sum_normal AddSubgroup.sum_addSubgroupOf_sum_normal
 
 @[to_additive]
-instance prod_normal (H : Subgroup G) (K : Subgroup N) [hH : H.Normal] [hK : K.Normal] :
+instance (priority := 10000) prod_normal (H : Subgroup G) (K : Subgroup N) [hH : H.Normal] [hK : K.Normal] :
     (H.prod K).Normal where
   conj_mem n hg g :=
     ⟨hH.conj_mem n.fst (Subgroup.mem_prod.mp hg).1 g.fst,
@@ -3719,7 +3719,7 @@ theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G) (
 #align add_subgroup.inf_add_subgroup_of_inf_normal_of_left AddSubgroup.inf_addSubgroupOf_inf_normal_of_left
 
 @[to_additive]
-instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊓ K).Normal :=
+instance (priority := 10000) normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊓ K).Normal :=
   ⟨fun n hmem g => ⟨hH.conj_mem n hmem.1 g, hK.conj_mem n hmem.2 g⟩⟩
 #align subgroup.normal_inf_normal Subgroup.normal_inf_normal
 #align add_subgroup.normal_inf_normal AddSubgroup.normal_inf_normal

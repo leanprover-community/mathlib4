@@ -74,7 +74,7 @@ theorem ofList_comp_toList : @ofList α ∘ toList = id := rfl
 #align free_add_monoid.of_list_comp_to_list FreeAddMonoid.ofList_comp_toList
 
 @[to_additive]
-instance : CancelMonoid (FreeMonoid α)
+instance (priority := 10000) : CancelMonoid (FreeMonoid α)
     where
   one := ofList []
   mul x y := ofList (toList x ++ toList y)
@@ -85,7 +85,7 @@ instance : CancelMonoid (FreeMonoid α)
   mul_right_cancel _ _ _ := List.append_cancel_right
 
 @[to_additive]
-instance : Inhabited (FreeMonoid α) := ⟨1⟩
+instance (priority := 10000) : Inhabited (FreeMonoid α) := ⟨1⟩
 
 @[to_additive (attr := simp)]
 theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
@@ -349,7 +349,7 @@ theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦
 
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
 @[to_additive]
-instance uniqueUnits : Unique (FreeMonoid α)ˣ where
+instance (priority := 10000) uniqueUnits : Unique (FreeMonoid α)ˣ where
   uniq u := Units.ext <| toList.injective <|
     have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
     (List.append_eq_nil.mp this).1

@@ -64,10 +64,10 @@ section Ring
 variable [Ring k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : ι} (e : ι ≃ ι')
 
 /-- The unique point in a single-point space is the simplest example of an affine basis. -/
-instance : Inhabited (AffineBasis PUnit k PUnit) :=
+instance (priority := 10000) : Inhabited (AffineBasis PUnit k PUnit) :=
   ⟨⟨id, affineIndependent_of_subsingleton k id, by simp⟩⟩
 
-instance instFunLike : FunLike (AffineBasis ι k P) ι P where
+instance (priority := 10000) instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
   coe_injective' f g h := by cases f; cases g; congr
 #align affine_basis.fun_like AffineBasis.instFunLike

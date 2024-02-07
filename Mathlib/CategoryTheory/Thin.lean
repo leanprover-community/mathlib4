@@ -47,7 +47,7 @@ variable [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 variable [Quiver.IsThin C]
 
 /-- If `C` is a thin category, then `D ⥤ C` is a thin category. -/
-instance functor_thin : Quiver.IsThin (D ⥤ C) := fun _ _ =>
+instance (priority := 10000) functor_thin : Quiver.IsThin (D ⥤ C) := fun _ _ =>
   ⟨fun α β => NatTrans.ext α β (funext fun _ => Subsingleton.elim _ _)⟩
 #align category_theory.functor_thin CategoryTheory.functor_thin
 
@@ -58,7 +58,7 @@ def iso_of_both_ways {X Y : C} (f : X ⟶ Y) (g : Y ⟶ X) :
   inv := g
 #align category_theory.iso_of_both_ways CategoryTheory.iso_of_both_ways
 
-instance subsingleton_iso {X Y : C} : Subsingleton (X ≅ Y) :=
+instance (priority := 10000) subsingleton_iso {X Y : C} : Subsingleton (X ≅ Y) :=
   ⟨by
     intro i₁ i₂
     ext1

@@ -21,7 +21,7 @@ variable {E : Type*} [i : SeminormedAddCommGroup E] {r : ℝ}
 
 /-- We equip the sphere, in a seminormed group, with a formal operation of negation, namely the
 antipodal map. -/
-instance : InvolutiveNeg (sphere (0 : E) r) where
+instance (priority := 10000) : InvolutiveNeg (sphere (0 : E) r) where
   neg := Subtype.map Neg.neg fun w => by simp
   neg_neg x := Subtype.ext <| neg_neg x.1
 
@@ -31,13 +31,13 @@ theorem coe_neg_sphere {r : ℝ} (v : sphere (0 : E) r) : ↑(-v) = (-v : E) :=
 #align coe_neg_sphere coe_neg_sphere
 
 -- porting note: todo: need to specify instance to avoid timeout
-instance : ContinuousNeg (sphere (0 : E) r) :=
+instance (priority := 10000) : ContinuousNeg (sphere (0 : E) r) :=
   @Inducing.continuousNeg (sphere (0 : E) r) E _ _ _ _ TopologicalAddGroup.toContinuousNeg
     Subtype.val inducing_subtype_val fun _ => rfl
 
 /-- We equip the ball, in a seminormed group, with a formal operation of negation, namely the
 antipodal map. -/
-instance {r : ℝ} : InvolutiveNeg (ball (0 : E) r) where
+instance (priority := 10000) {r : ℝ} : InvolutiveNeg (ball (0 : E) r) where
   neg := Subtype.map Neg.neg fun w => by simp
   neg_neg x := Subtype.ext <| neg_neg x.1
 
@@ -45,13 +45,13 @@ instance {r : ℝ} : InvolutiveNeg (ball (0 : E) r) where
 #align coe_neg_ball coe_neg_ball
 
 -- porting note: todo: need to specify instance to avoid timeout
-instance : ContinuousNeg (ball (0 : E) r) :=
+instance (priority := 10000) : ContinuousNeg (ball (0 : E) r) :=
   @Inducing.continuousNeg (ball (0 : E) r) E _ _ _ _ TopologicalAddGroup.toContinuousNeg
     Subtype.val inducing_subtype_val fun _ => rfl
 
 /-- We equip the closed ball, in a seminormed group, with a formal operation of negation, namely the
 antipodal map. -/
-instance {r : ℝ} : InvolutiveNeg (closedBall (0 : E) r) where
+instance (priority := 10000) {r : ℝ} : InvolutiveNeg (closedBall (0 : E) r) where
   neg := Subtype.map Neg.neg fun w => by simp
   neg_neg x := Subtype.ext <| neg_neg x.1
 
@@ -59,6 +59,6 @@ instance {r : ℝ} : InvolutiveNeg (closedBall (0 : E) r) where
 #align coe_neg_closed_ball coe_neg_closedBall
 
 -- porting note: todo: need to specify instance to avoid timeout
-instance : ContinuousNeg (closedBall (0 : E) r) :=
+instance (priority := 10000) : ContinuousNeg (closedBall (0 : E) r) :=
   @Inducing.continuousNeg (closedBall (0 : E) r) E _ _ _ _ TopologicalAddGroup.toContinuousNeg
     Subtype.val inducing_subtype_val fun _ => rfl

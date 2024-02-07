@@ -323,7 +323,7 @@ theorem mem_compl_zeroLocus_iff_not_mem {f : A} {I : ProjectiveSpectrum 𝒜} :
 
 /-- The Zariski topology on the prime spectrum of a commutative ring is defined via the closed sets
 of the topology: they are exactly those sets that are the zero locus of a subset of the ring. -/
-instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
+instance (priority := 10000) zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
   TopologicalSpace.ofClosed (Set.range (ProjectiveSpectrum.zeroLocus 𝒜)) ⟨Set.univ, by simp⟩
     (by
       intro Zs h
@@ -477,7 +477,7 @@ where `x ≤ y` if and only if `y ∈ closure {x}`.
 -/
 
 
-instance : PartialOrder (ProjectiveSpectrum 𝒜) :=
+instance (priority := 10000) : PartialOrder (ProjectiveSpectrum 𝒜) :=
   PartialOrder.lift asHomogeneousIdeal fun ⟨_, _, _⟩ ⟨_, _, _⟩ => by simp only [mk.injEq, imp_self]
 
 @[simp]

@@ -40,7 +40,7 @@ theorem coe_zpowers (g : G) : ↑(zpowers g) = Set.range (g ^ · : ℤ → G) :=
   rfl
 #align subgroup.coe_zpowers Subgroup.coe_zpowers
 
-noncomputable instance decidableMemZPowers {a : G} : DecidablePred (· ∈ Subgroup.zpowers a) :=
+noncomputable instance (priority := 10000) decidableMemZPowers {a : G} : DecidablePred (· ∈ Subgroup.zpowers a) :=
   Classical.decPred _
 #align decidable_zpowers Subgroup.decidableMemZPowers
 
@@ -81,7 +81,7 @@ theorem exists_mem_zpowers {x : G} {p : G → Prop} : (∃ g ∈ zpowers x, p g)
   Set.exists_range_iff
 #align subgroup.exists_mem_zpowers Subgroup.exists_mem_zpowers
 
-instance (a : G) : Countable (zpowers a) :=
+instance (priority := 10000) (a : G) : Countable (zpowers a) :=
   ((zpowersHom G a).rangeRestrict_surjective.comp Multiplicative.ofAdd.surjective).countable
 
 end Subgroup
@@ -137,7 +137,7 @@ attribute [to_additive (attr := simp 1100) AddSubgroup.exists_zmultiples] Subgro
 attribute [to_additive AddSubgroup.exists_mem_zmultiples] Subgroup.exists_mem_zpowers
 #align add_subgroup.exists_mem_zmultiples AddSubgroup.exists_mem_zmultiples
 
-instance (a : A) : Countable (zmultiples a) :=
+instance (priority := 10000) (a : A) : Countable (zmultiples a) :=
   (zmultiplesHom A a).rangeRestrict_surjective.countable
 
 section Ring
@@ -205,7 +205,7 @@ namespace Subgroup
 variable {s : Set G} {g : G}
 
 @[to_additive zmultiples_isCommutative]
-instance zpowers_isCommutative (g : G) : (zpowers g).IsCommutative :=
+instance (priority := 10000) zpowers_isCommutative (g : G) : (zpowers g).IsCommutative :=
   ⟨⟨fun ⟨_, _, h₁⟩ ⟨_, _, h₂⟩ => by
       rw [Subtype.ext_iff, coe_mul, coe_mul, Subtype.coe_mk, Subtype.coe_mk, ← h₁, ← h₂,
         zpow_mul_comm]⟩⟩

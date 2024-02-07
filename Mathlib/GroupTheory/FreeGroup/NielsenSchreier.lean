@@ -107,7 +107,7 @@ purposes.
 
 Analogous to the fact that a covering space of a graph is a graph. (A free groupoid is like a graph,
 and a groupoid of elements is like a covering space.) -/
-instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulAction G A] :
+instance (priority := 10000) actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulAction G A] :
     IsFreeGroupoid (ActionCategory G A) where
   quiverGenerators :=
     ⟨fun a b => { e : IsFreeGroup.Generators G // IsFreeGroup.of e • a.back = b.back }⟩
@@ -289,14 +289,14 @@ theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G
 #align is_free_groupoid.path_nonempty_of_hom IsFreeGroupoid.path_nonempty_of_hom
 
 /-- Given a connected free groupoid, its generating quiver is rooted-connected. -/
-instance generators_connected (G) [Groupoid.{u, u} G] [IsConnected G] [IsFreeGroupoid G] (r : G) :
+instance (priority := 10000) generators_connected (G) [Groupoid.{u, u} G] [IsConnected G] [IsFreeGroupoid G] (r : G) :
     RootedConnected (symgen r) :=
   ⟨fun b => path_nonempty_of_hom (CategoryTheory.nonempty_hom_of_connected_groupoid r b)⟩
 #align is_free_groupoid.generators_connected IsFreeGroupoid.generators_connected
 
 /-- A vertex group in a free connected groupoid is free. With some work one could drop the
 connectedness assumption, by looking at connected components. -/
-instance endIsFreeOfConnectedFree {G} [Groupoid G] [IsConnected G] [IsFreeGroupoid G] (r : G) :
+instance (priority := 10000) endIsFreeOfConnectedFree {G} [Groupoid G] [IsConnected G] [IsFreeGroupoid G] (r : G) :
     IsFreeGroup (End r) :=
   SpanningTree.endIsFree <| geodesicSubtree (symgen r)
 #align is_free_groupoid.End_is_free_of_connected_free IsFreeGroupoid.endIsFreeOfConnectedFree
@@ -304,7 +304,7 @@ instance endIsFreeOfConnectedFree {G} [Groupoid G] [IsConnected G] [IsFreeGroupo
 end IsFreeGroupoid
 
 /-- The Nielsen-Schreier theorem: a subgroup of a free group is free. -/
-instance subgroupIsFreeOfIsFree {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
+instance (priority := 10000) subgroupIsFreeOfIsFree {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
     IsFreeGroup H :=
   IsFreeGroup.ofMulEquiv (endMulEquivSubgroup H)
 #align subgroup_is_free_of_is_free subgroupIsFreeOfIsFree

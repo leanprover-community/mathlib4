@@ -55,7 +55,7 @@ theorem lex_iff : Lex r s a b ↔ r a.1 b.1 ∨ ∃ h : a.1 = b.1, s b.1 (h.rec 
     · exact Lex.right _ _ h
 #align sigma.lex_iff Sigma.lex_iff
 
-instance Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) [DecidableEq ι]
+instance (priority := 10000) Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) [DecidableEq ι]
     [DecidableRel r] [∀ i, DecidableRel (s i)] : DecidableRel (Lex r s) := fun _ _ =>
   decidable_of_decidable_of_iff lex_iff.symm
 #align sigma.lex.decidable Sigma.Lex.decidable
@@ -83,17 +83,17 @@ theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap
       exacts [Lex.left _ _ h, Lex.right _ _ h]
 #align sigma.lex_swap Sigma.lex_swap
 
-instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
+instance (priority := 10000) [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
   ⟨fun ⟨_, _⟩ => Lex.right _ _ <| refl _⟩
 
-instance [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) :=
+instance (priority := 10000) [IsIrrefl ι r] [∀ i, IsIrrefl (α i) (s i)] : IsIrrefl _ (Lex r s) :=
   ⟨by
     rintro _ (⟨a, b, hi⟩ | ⟨a, b, ha⟩)
     · exact irrefl _ hi
     · exact irrefl _ ha
       ⟩
 
-instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
+instance (priority := 10000) [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
   ⟨by
     rintro _ _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, c, hk⟩ | ⟨_, c, hc⟩)
     · exact Lex.left _ _ (_root_.trans hij hk)
@@ -101,7 +101,7 @@ instance [IsTrans ι r] [∀ i, IsTrans (α i) (s i)] : IsTrans _ (Lex r s) :=
     · exact Lex.left _ _ hk
     · exact Lex.right _ _ (_root_.trans hab hc)⟩
 
-instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
+instance (priority := 10000) [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩)
     · exact Lex.left _ _ (symm hij)
@@ -110,7 +110,7 @@ instance [IsSymm ι r] [∀ i, IsSymm (α i) (s i)] : IsSymm _ (Lex r s) :=
 
 attribute [local instance] IsAsymm.isIrrefl
 
-instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s) :=
+instance (priority := 10000) [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s) :=
   ⟨by
     rintro _ _ (⟨a, b, hij⟩ | ⟨a, b, hab⟩) (⟨_, _, hji⟩ | ⟨_, _, hba⟩)
     · exact (asymm hij hji).elim
@@ -118,7 +118,7 @@ instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s
     · exact (irrefl _ hji).elim
     · exact ext rfl (heq_of_eq <| antisymm hab hba)⟩
 
-instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) :=
+instance (priority := 10000) [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
@@ -128,7 +128,7 @@ instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r 
       · exact Or.inr (Lex.right _ _ hba)
     · exact Or.inr (Lex.left _ _ hji)⟩
 
-instance [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichotomous _ (Lex r s) :=
+instance (priority := 10000) [IsTrichotomous ι r] [∀ i, IsTrichotomous (α i) (s i)] : IsTrichotomous _ (Lex r s) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
@@ -162,7 +162,7 @@ theorem lex_iff {a b : Σ' i, α i} :
     · exact Lex.right _ h
 #align psigma.lex_iff PSigma.lex_iff
 
-instance Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) [DecidableEq ι]
+instance (priority := 10000) Lex.decidable (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) [DecidableEq ι]
     [DecidableRel r] [∀ i, DecidableRel (s i)] : DecidableRel (Lex r s) := fun _ _ =>
   decidable_of_decidable_of_iff lex_iff.symm
 #align psigma.lex.decidable PSigma.Lex.decidable

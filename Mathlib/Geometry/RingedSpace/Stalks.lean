@@ -122,7 +122,7 @@ theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_,
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.restrict_stalk_iso_inv_eq_of_restrict AlgebraicGeometry.PresheafedSpace.restrictStalkIso_inv_eq_ofRestrict
 
-instance ofRestrict_stalkMap_isIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
+instance (priority := 10000) ofRestrict_stalkMap_isIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (x : U) :
     IsIso (stalkMap (X.ofRestrict h) x) := by
   rw [← restrictStalkIso_inv_eq_ofRestrict]; infer_instance
@@ -193,7 +193,7 @@ theorem congr_point {X Y : PresheafedSpace.{_, _, v} C}
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr_point AlgebraicGeometry.PresheafedSpace.stalkMap.congr_point
 
-instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x : X) :
+instance (priority := 10000) isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x : X) :
     IsIso (stalkMap α x) where
   out := by
     let β : Y ⟶ X := CategoryTheory.inv α

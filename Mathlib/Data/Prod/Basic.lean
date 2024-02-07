@@ -230,7 +230,7 @@ variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
 #align prod.lex_iff Prod.lex_iff
 
-instance Lex.decidable [DecidableEq α]
+instance (priority := 10000) Lex.decidable [DecidableEq α]
     (r : α → α → Prop) (s : β → β → Prop) [DecidableRel r] [DecidableRel s] :
     DecidableRel (Prod.Lex r s) :=
   fun _ _ ↦ decidable_of_decidable_of_iff (lex_def r s).symm
@@ -240,7 +240,7 @@ theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl 
   | (_, _) => Lex.left _ _ (refl _)
 #align prod.lex.refl_left Prod.Lex.refl_left
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRefl (α × β) (Prod.Lex r s) :=
+instance (priority := 10000) {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRefl (α × β) (Prod.Lex r s) :=
   ⟨Lex.refl_left _ _⟩
 
 @[refl]
@@ -248,10 +248,10 @@ theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl
   | (_, _) => Lex.right _ (refl _)
 #align prod.lex.refl_right Prod.Lex.refl_right
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Prod.Lex r s) :=
+instance (priority := 10000) {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Prod.Lex r s) :=
   ⟨Lex.refl_right _ _⟩
 
-instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
+instance (priority := 10000) isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
   ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
@@ -263,11 +263,11 @@ theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α 
   | (_, _), (_, _), (_, _), right _ hxy₂,   right _ hyz₂   => right _ (_root_.trans hxy₂ hyz₂)
 #align prod.lex.trans Prod.Lex.trans
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
+instance (priority := 10000) {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
   IsTrans (α × β) (Prod.Lex r s) :=
   ⟨fun _ _ _ ↦ Lex.trans⟩
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
+instance (priority := 10000) {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
     IsAntisymm (α × β) (Prod.Lex r s) :=
   ⟨fun x₁ x₂ h₁₂ h₂₁ ↦
     match x₁, x₂, h₁₂, h₂₁ with
@@ -276,12 +276,12 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] 
     | (_, _), (_, _), .right _ _,     .left  _ _ hr₂ => (irrefl _ hr₂).elim
     | (_, _), (_, _), .right _ hs₁,   .right _ hs₂   => antisymm hs₁ hs₂ ▸ rfl⟩
 
-instance isTotal_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] :
+instance (priority := 10000) isTotal_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] :
     IsTotal (α × β) (Prod.Lex r s) :=
   ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ ↦ (IsTotal.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
 #align prod.is_total_left Prod.isTotal_left
 
-instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [IsTotal β s] :
+instance (priority := 10000) isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [IsTotal β s] :
     IsTotal (α × β) (Prod.Lex r s) :=
   ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
     obtain hij | rfl | hji := trichotomous_of r i j
@@ -290,7 +290,7 @@ instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTric
     · exact Or.inr (.left _ _ hji) ⟩
 #align prod.is_total_right Prod.isTotal_right
 
-instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
+instance (priority := 10000) IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
   IsTrichotomous (α × β) (Prod.Lex r s) :=
 ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
   obtain hij | rfl | hji := trichotomous_of r i j

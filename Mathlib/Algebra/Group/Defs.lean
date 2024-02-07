@@ -148,7 +148,7 @@ attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
 attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 @[to_additive (attr := default_instance)]
-instance instHSMul {α β} [SMul α β] : HSMul α β β where
+instance (priority := 10000) instHSMul {α β} [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
 @[to_additive]
@@ -531,7 +531,7 @@ The second approach solves this issue. Now, a metric space contains both a dista
 a proof that the topology coincides with the one coming from the distance. When one defines the
 product of two metric spaces, one uses the sup distance and the product topology, and one has to
 give the proof that the sup distance induces the product topology. Following both sides of the
-instance diamond then gives rise (definitionally) to the product topology on the product space.
+instance (priority := 10000) diamond then gives rise (definitionally) to the product topology on the product space.
 
 Another approach would be to have the rich type class take the poor type class as an instance
 parameter. It would solve the diamond problem, but it would lead to a blow up of the number
@@ -628,7 +628,7 @@ attribute [to_additive existing] Monoid.toMulOneClass
   ⟨fun x n ↦ Monoid.npow n x⟩
 #align monoid.has_pow Monoid.toNatPow
 
-instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
+instance (priority := 10000) AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
 #align add_monoid.has_smul_nat AddMonoid.toNatSMul
 
@@ -929,11 +929,11 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
-instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
+instance (priority := 10000) DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
   ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
 #align div_inv_monoid.has_pow DivInvMonoid.Pow
 
-instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
+instance (priority := 10000) SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
   ⟨SubNegMonoid.zsmul⟩
 #align sub_neg_monoid.has_smul_int SubNegMonoid.SMulInt
 

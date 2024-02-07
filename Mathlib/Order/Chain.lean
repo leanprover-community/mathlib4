@@ -306,7 +306,7 @@ section LE
 
 variable [LE α] {s t : Flag α} {a : α}
 
-instance : SetLike (Flag α) α where
+instance (priority := 10000) : SetLike (Flag α) α where
   coe := carrier
   coe_injective' s t h := by
     cases s
@@ -360,13 +360,13 @@ protected theorem le_or_le (s : Flag α) (ha : a ∈ s) (hb : b ∈ s) : a ≤ b
   s.chain_le.total ha hb
 #align flag.le_or_le Flag.le_or_le
 
-instance [OrderTop α] (s : Flag α) : OrderTop s :=
+instance (priority := 10000) [OrderTop α] (s : Flag α) : OrderTop s :=
   Subtype.orderTop s.top_mem
 
-instance [OrderBot α] (s : Flag α) : OrderBot s :=
+instance (priority := 10000) [OrderBot α] (s : Flag α) : OrderBot s :=
   Subtype.orderBot s.bot_mem
 
-instance [BoundedOrder α] (s : Flag α) : BoundedOrder s :=
+instance (priority := 10000) [BoundedOrder α] (s : Flag α) : BoundedOrder s :=
   Subtype.boundedOrder s.bot_mem s.top_mem
 
 end Preorder
@@ -378,7 +378,7 @@ variable [PartialOrder α]
 theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt_of_le
 #align flag.chain_lt Flag.chain_lt
 
-instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag α) :
+instance (priority := 10000) [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag α) :
     LinearOrder s :=
   { Subtype.partialOrder _ with
     le_total := fun a b => s.le_or_le a.2 b.2
@@ -387,7 +387,7 @@ instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag �
 
 end PartialOrder
 
-instance [LinearOrder α] : Unique (Flag α) where
+instance (priority := 10000) [LinearOrder α] : Unique (Flag α) where
   default := ⟨univ, isChain_of_trichotomous _, fun s _ => s.subset_univ.antisymm'⟩
   uniq s := SetLike.coe_injective <| s.3 (isChain_of_trichotomous _) <| subset_univ _
 

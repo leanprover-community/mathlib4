@@ -130,7 +130,7 @@ noncomputable def IsNormalClosure.equiv {L'} [Field L'] [Algebra F L']
 
 variable (F K L)
 
-instance isNormalClosure_normalClosure [ne : Nonempty (K →ₐ[F] L)] [h : Normal F L] :
+instance (priority := 10000) isNormalClosure_normalClosure [ne : Nonempty (K →ₐ[F] L)] [h : Normal F L] :
     IsNormalClosure F K (normalClosure F K L) := by
   have ⟨φ⟩ := ne
   apply (h.isAlgebraic'.of_injective φ φ.injective).isNormalClosure_normalClosure
@@ -159,13 +159,13 @@ noncomputable def algHomEquiv : (K →ₐ[F] normalClosure F K L) ≃ (K →ₐ[
   left_inv _ := rfl
   right_inv _ := rfl
 
-instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
+instance (priority := 10000) normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   obtain _ | φ := isEmpty_or_nonempty (K →ₐ[F] L)
   · rw [normalClosure, iSup_of_empty]; exact Normal.of_algEquiv (botEquiv F L).symm
   · exact (isNormalClosure_normalClosure F K L).normal
 #align normal_closure.normal normalClosure.normal
 
-instance is_finiteDimensional [FiniteDimensional F K] :
+instance (priority := 10000) is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by
   haveI : ∀ f : K →ₐ[F] L, FiniteDimensional F f.fieldRange := fun f ↦
     f.toLinearMap.finiteDimensional_range
@@ -173,18 +173,18 @@ instance is_finiteDimensional [FiniteDimensional F K] :
 
 variable [Algebra K L] [IsScalarTower F K L]
 
-noncomputable instance algebra :
+noncomputable instance (priority := 10000) algebra :
     Algebra K (normalClosure F K L) :=
   IntermediateField.algebra
     { ⨆ f : K →ₐ[F] L, f.fieldRange with
       algebraMap_mem' := fun r ↦ (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 
-instance : IsScalarTower F K (normalClosure F K L) := by
+instance (priority := 10000) : IsScalarTower F K (normalClosure F K L) := by
   apply of_algebraMap_eq'
   ext x
   exact algebraMap_apply F K L x
 
-instance : IsScalarTower K (normalClosure F K L) L :=
+instance (priority := 10000) : IsScalarTower K (normalClosure F K L) L :=
   of_algebraMap_eq' rfl
 
 lemma restrictScalars_eq :

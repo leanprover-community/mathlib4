@@ -307,7 +307,7 @@ variable {G H : Type*} [Add G] [Add H] {a : G} {b : H}
 ### Coercion to function
 -/
 
-instance : AddConstMapClass (G →+c[a, b] H) G H a b where
+instance (priority := 10000) : AddConstMapClass (G →+c[a, b] H) G H a b where
   coe := AddConstMap.toFun
   coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
   map_add_const f := f.map_add_const'
@@ -328,7 +328,7 @@ initialize_simps_projections AddConstMap (toFun → coe, as_prefix coe)
 @[simps (config := .asFn)]
 protected def id : G →+c[a, a] G := ⟨id, fun _ ↦ rfl⟩
 
-instance : Inhabited (G →+c[a, a] G) := ⟨.id⟩
+instance (priority := 10000) : Inhabited (G →+c[a, a] G) := ⟨.id⟩
 
 /-- Composition of two `AddConstMap`s. -/
 @[simps (config := .asFn)]
@@ -351,7 +351,7 @@ def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
 -/
 
 /-- If `f` is an `AddConstMap`, then so is `(c +ᵥ f ·)`. -/
-instance {K : Type*} [VAdd K H] [VAddAssocClass K H H] : VAdd K (G →+c[a, b] H) :=
+instance (priority := 10000) {K : Type*} [VAdd K H] [VAddAssocClass K H H] : VAdd K (G →+c[a, b] H) :=
   ⟨fun c f ↦ ⟨c +ᵥ ⇑f, fun x ↦ by simp [vadd_add_assoc]⟩⟩
 
 @[simp]
@@ -359,7 +359,7 @@ theorem coe_vadd {K : Type*} [VAdd K H] [VAddAssocClass K H H] (c : K) (f : G �
     ⇑(c +ᵥ f) = c +ᵥ ⇑f :=
   rfl
 
-instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
+instance (priority := 10000) {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
     AddAction K (G →+c[a, b] H) :=
   DFunLike.coe_injective.addAction _ coe_vadd
 
@@ -367,7 +367,7 @@ instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
 ### Monoid structure on endomorphisms `G →+c[a, a] G`
 -/
 
-instance : Monoid (G →+c[a, a] G) where
+instance (priority := 10000) : Monoid (G →+c[a, a] G) where
   mul := comp
   one := .id
   mul_assoc _ _ _ := rfl

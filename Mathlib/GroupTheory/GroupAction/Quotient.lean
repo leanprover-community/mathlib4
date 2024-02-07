@@ -59,13 +59,13 @@ class _root_.AddAction.QuotientAction {α : Type u} (β : Type v) [AddGroup α] 
 attribute [to_additive] MulAction.QuotientAction
 
 @[to_additive]
-instance left_quotientAction : QuotientAction α H :=
+instance (priority := 10000) left_quotientAction : QuotientAction α H :=
   ⟨fun _ _ _ _ => by rwa [smul_eq_mul, smul_eq_mul, mul_inv_rev, mul_assoc, inv_mul_cancel_left]⟩
 #align mul_action.left_quotient_action MulAction.left_quotientAction
 #align add_action.left_quotient_action AddAction.left_quotientAction
 
 @[to_additive]
-instance right_quotientAction : QuotientAction (normalizer H).op H :=
+instance (priority := 10000) right_quotientAction : QuotientAction (normalizer H).op H :=
   ⟨fun b c _ _ => by
     rwa [smul_def, smul_def, smul_eq_mul_unop, smul_eq_mul_unop, mul_inv_rev, ← mul_assoc,
       mem_normalizer_iff'.mp b.prop, mul_assoc, mul_inv_cancel_left]⟩
@@ -73,7 +73,7 @@ instance right_quotientAction : QuotientAction (normalizer H).op H :=
 #align add_action.right_quotient_action AddAction.right_quotientAction
 
 @[to_additive]
-instance right_quotientAction' [hH : H.Normal] : QuotientAction αᵐᵒᵖ H :=
+instance (priority := 10000) right_quotientAction' [hH : H.Normal] : QuotientAction αᵐᵒᵖ H :=
   ⟨fun _ _ _ _ => by
     rwa [smul_eq_mul_unop, smul_eq_mul_unop, mul_inv_rev, mul_assoc, hH.mem_comm_iff, mul_assoc,
       mul_inv_cancel_right]⟩
@@ -81,7 +81,7 @@ instance right_quotientAction' [hH : H.Normal] : QuotientAction αᵐᵒᵖ H :=
 #align add_action.right_quotient_action' AddAction.right_quotientAction'
 
 @[to_additive]
-instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
+instance (priority := 10000) quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   smul b :=
     Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
@@ -141,7 +141,7 @@ theorem _root_.MulActionHom.toQuotient_apply (H : Subgroup α) (g : α) :
 #align mul_action_hom.to_quotient_apply MulActionHom.toQuotient_apply
 
 @[to_additive]
-instance mulLeftCosetsCompSubtypeVal (H I : Subgroup α) : MulAction I (α ⧸ H) :=
+instance (priority := 10000) mulLeftCosetsCompSubtypeVal (H I : Subgroup α) : MulAction I (α ⧸ H) :=
   MulAction.compHom (α ⧸ H) (Subgroup.subtype I)
 #align mul_action.mul_left_cosets_comp_subtype_val MulAction.mulLeftCosetsCompSubtypeVal
 #align add_action.add_left_cosets_comp_subtype_val AddAction.addLeftCosetsCompSubtypeVal
@@ -341,7 +341,7 @@ theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α,
 #align add_action.sum_card_fixed_by_eq_card_orbits_add_card_add_group AddAction.sum_card_fixedBy_eq_card_orbits_add_card_addGroup
 
 @[to_additive]
-instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransitive G (G ⧸ H) where
+instance (priority := 10000) isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransitive G (G ⧸ H) where
   exists_smul_eq := by
     { rintro ⟨x⟩ ⟨y⟩
       refine' ⟨y * x⁻¹, QuotientGroup.eq.mpr _⟩

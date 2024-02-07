@@ -89,7 +89,7 @@ theorem toAffineMap_inj {e e' : P₁ ≃ᵃ[k] P₂} : e.toAffineMap = e'.toAffi
   toAffineMap_injective.eq_iff
 #align affine_equiv.to_affine_map_inj AffineEquiv.toAffineMap_inj
 
-instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
+instance (priority := 10000) equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   coe f := f.toFun
   inv f := f.invFun
   left_inv f := f.left_inv
@@ -97,10 +97,10 @@ instance equivLike : EquivLike (P₁ ≃ᵃ[k] P₂) P₁ P₂ where
   coe_injective' _ _ h _ := toAffineMap_injective (DFunLike.coe_injective h)
 #align affine_equiv.equiv_like AffineEquiv.equivLike
 
-instance : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
+instance (priority := 10000) : CoeFun (P₁ ≃ᵃ[k] P₂) fun _ => P₁ → P₂ :=
   DFunLike.hasCoeToFun
 
-instance : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
+instance (priority := 10000) : CoeOut (P₁ ≃ᵃ[k] P₂) (P₁ ≃ P₂) :=
   ⟨AffineEquiv.toEquiv⟩
 
 @[simp]
@@ -113,7 +113,7 @@ theorem coe_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv = e :=
   rfl
 #align affine_equiv.coe_to_equiv AffineEquiv.coe_toEquiv
 
-instance : Coe (P₁ ≃ᵃ[k] P₂) (P₁ →ᵃ[k] P₂) :=
+instance (priority := 10000) : Coe (P₁ ≃ᵃ[k] P₂) (P₁ →ᵃ[k] P₂) :=
   ⟨toAffineMap⟩
 
 @[simp]
@@ -375,7 +375,7 @@ theorem apply_lineMap (e : P₁ ≃ᵃ[k] P₂) (a b : P₁) (c : k) :
   e.toAffineMap.apply_lineMap a b c
 #align affine_equiv.apply_line_map AffineEquiv.apply_lineMap
 
-instance group : Group (P₁ ≃ᵃ[k] P₁) where
+instance (priority := 10000) group : Group (P₁ ≃ᵃ[k] P₁) where
   one := refl k P₁
   mul e e' := e'.trans e
   inv := symm

@@ -184,9 +184,9 @@ partial def ExSum.cmp : ExSum sα a → ExSum sα b → Ordering
   | .add .., .zero => .gt
 end
 
-instance : Inhabited (Σ e, (ExBase sα) e) := ⟨default, .atom 0⟩
-instance : Inhabited (Σ e, (ExSum sα) e) := ⟨_, .zero⟩
-instance : Inhabited (Σ e, (ExProd sα) e) := ⟨default, .const 0 none⟩
+instance (priority := 10000) : Inhabited (Σ e, (ExBase sα) e) := ⟨default, .atom 0⟩
+instance (priority := 10000) : Inhabited (Σ e, (ExSum sα) e) := ⟨_, .zero⟩
+instance (priority := 10000) : Inhabited (Σ e, (ExProd sα) e) := ⟨default, .const 0 none⟩
 
 mutual
 
@@ -220,7 +220,7 @@ structure Result {α : Q(Type u)} (E : Q($α) → Type) (e : Q($α)) where
   /-- A proof that the original expression is equal to the normalized result. -/
   proof : Q($e = $expr)
 
-instance [Inhabited (Σ e, E e)] : Inhabited (Result E e) :=
+instance (priority := 10000) [Inhabited (Σ e, E e)] : Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
 variable {α : Q(Type u)} (sα : Q(CommSemiring $α)) [CommSemiring R]

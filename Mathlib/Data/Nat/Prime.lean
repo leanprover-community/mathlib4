@@ -79,7 +79,7 @@ theorem Prime.one_lt {p : ℕ} : Prime p → 1 < p :=
 
 lemma Prime.one_le {p : ℕ} (hp : p.Prime) : 1 ≤ p := hp.one_lt.le
 
-instance Prime.one_lt' (p : ℕ) [hp : Fact p.Prime] : Fact (1 < p) :=
+instance (priority := 10000) Prime.one_lt' (p : ℕ) [hp : Fact p.Prime] : Fact (1 < p) :=
   ⟨hp.1.one_lt⟩
 #align nat.prime.one_lt' Nat.Prime.one_lt'
 
@@ -376,7 +376,7 @@ If you need to prove that a particular number is prime, in any case
 you should not use `by decide`, but rather `by norm_num`, which is
 much faster.
 -/
-instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
+instance (priority := 10000) decidablePrime (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_minFac
 #align nat.decidable_prime Nat.decidablePrime
 
@@ -754,14 +754,14 @@ def Primes :=
 
 namespace Primes
 
-instance : Repr Nat.Primes :=
+instance (priority := 10000) : Repr Nat.Primes :=
   ⟨fun p _ => repr p.val⟩
 
-instance inhabitedPrimes : Inhabited Primes :=
+instance (priority := 10000) inhabitedPrimes : Inhabited Primes :=
   ⟨⟨2, prime_two⟩⟩
 #align nat.primes.inhabited_primes Nat.Primes.inhabitedPrimes
 
-instance coeNat : Coe Nat.Primes ℕ :=
+instance (priority := 10000) coeNat : Coe Nat.Primes ℕ :=
   ⟨Subtype.val⟩
 #align nat.primes.coe_nat Nat.Primes.coeNat
 
@@ -776,7 +776,7 @@ theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=
 
 end Primes
 
-instance monoid.primePow {α : Type*} [Monoid α] : Pow α Primes :=
+instance (priority := 10000) monoid.primePow {α : Type*} [Monoid α] : Pow α Primes :=
   ⟨fun x p => x ^ (p : ℕ)⟩
 #align nat.monoid.prime_pow Nat.monoid.primePow
 
@@ -784,11 +784,11 @@ end Nat
 
 namespace Nat
 
-instance fact_prime_two : Fact (Prime 2) :=
+instance (priority := 10000) fact_prime_two : Fact (Prime 2) :=
   ⟨prime_two⟩
 #align nat.fact_prime_two Nat.fact_prime_two
 
-instance fact_prime_three : Fact (Prime 3) :=
+instance (priority := 10000) fact_prime_three : Fact (Prime 3) :=
   ⟨prime_three⟩
 #align nat.fact_prime_three Nat.fact_prime_three
 

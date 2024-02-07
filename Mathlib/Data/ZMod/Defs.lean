@@ -43,7 +43,7 @@ to register the ring structure on `ZMod n` as type class instance.
 open Nat.ModEq Int
 
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
-instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
+instance (priority := 10000) instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
       Fin.eq_of_veq <|
@@ -63,7 +63,7 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
 /-- Commutative ring structure on `Fin n`. -/
-instance instDistrib (n : ℕ) : Distrib (Fin n) :=
+instance (priority := 10000) instDistrib (n : ℕ) : Distrib (Fin n) :=
   { Fin.addCommSemigroup n, Fin.instCommSemigroup n with
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
@@ -71,7 +71,7 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
 #align fin.distrib Fin.instDistrib
 
 /-- Commutative ring structure on `Fin n`. -/
-instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
+instance (priority := 10000) instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
   { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
     one_mul := Fin.one_mul'
     mul_one := Fin.mul_one',
@@ -82,7 +82,7 @@ instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
 #align fin.comm_ring Fin.instCommRing
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
-instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
+instance (priority := 10000) instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
   { toInvolutiveNeg := Fin.instInvolutiveNeg n
     mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
     neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
@@ -96,26 +96,26 @@ def ZMod : ℕ → Type
   | n + 1 => Fin (n + 1)
 #align zmod ZMod
 
-instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
+instance (priority := 10000) ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
   | 0 => inferInstanceAs (DecidableEq ℤ)
   | n + 1 => inferInstanceAs (DecidableEq (Fin (n + 1)))
 #align zmod.decidable_eq ZMod.decidableEq
 
-instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
+instance (priority := 10000) ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
   | 0 => by dsimp [ZMod]; infer_instance
   | n + 1 => by dsimp [ZMod]; infer_instance
 #align zmod.has_repr ZMod.repr
 
 namespace ZMod
 
-instance instUnique : Unique (ZMod 1) := Fin.uniqueFinOne
+instance (priority := 10000) instUnique : Unique (ZMod 1) := Fin.uniqueFinOne
 
-instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
+instance (priority := 10000) fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
   | 0, h => (h.ne rfl).elim
   | n + 1, _ => Fin.fintype (n + 1)
 #align zmod.fintype ZMod.fintype
 
-instance infinite : Infinite (ZMod 0) :=
+instance (priority := 10000) infinite : Infinite (ZMod 0) :=
   Int.infinite
 #align zmod.infinite ZMod.infinite
 
@@ -129,7 +129,7 @@ theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
 field. -/
-instance commRing (n : ℕ) : CommRing (ZMod n) where
+instance (priority := 10000) commRing (n : ℕ) : CommRing (ZMod n) where
   add := Nat.casesOn n (@Add.add Int _) fun n => @Add.add (Fin n.succ) _
   add_assoc := Nat.casesOn n (@add_assoc Int _) fun n => @add_assoc (Fin n.succ) _
   zero := Nat.casesOn n (0 : Int) fun n => (0 : Fin n.succ)
@@ -191,7 +191,7 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
 #align zmod.comm_ring ZMod.commRing
 
-instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
+instance (priority := 10000) inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
 #align zmod.inhabited ZMod.inhabited
 

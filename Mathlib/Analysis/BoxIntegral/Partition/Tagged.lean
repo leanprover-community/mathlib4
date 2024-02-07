@@ -47,7 +47,7 @@ namespace TaggedPrepartition
 
 variable {I J J₁ J₂ : Box ι} (π : TaggedPrepartition I) {x : ι → ℝ}
 
-instance : Membership (Box ι) (TaggedPrepartition I) :=
+instance (priority := 10000) : Membership (Box ι) (TaggedPrepartition I) :=
   ⟨fun J π => J ∈ π.boxes⟩
 
 @[simp]
@@ -299,7 +299,7 @@ theorem mem_single {J'} (hJ : J ≤ I) (h : x ∈ Box.Icc I) : J' ∈ single I J
   Finset.mem_singleton
 #align box_integral.tagged_prepartition.mem_single BoxIntegral.TaggedPrepartition.mem_single
 
-instance (I : Box ι) : Inhabited (TaggedPrepartition I) :=
+instance (priority := 10000) (I : Box ι) : Inhabited (TaggedPrepartition I) :=
   ⟨single I I le_rfl I.upper I.upper_mem_Icc⟩
 
 theorem isPartition_single_iff (hJ : J ≤ I) (h : x ∈ Box.Icc I) :

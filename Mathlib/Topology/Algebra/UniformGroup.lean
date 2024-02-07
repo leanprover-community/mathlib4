@@ -156,14 +156,14 @@ instance (priority := 10) UniformGroup.to_topologicalGroup : TopologicalGroup α
 #align uniform_add_group.to_topological_add_group UniformAddGroup.to_topologicalAddGroup
 
 @[to_additive]
-instance [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β) :=
+instance (priority := 10000) [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β) :=
   ⟨((uniformContinuous_fst.comp uniformContinuous_fst).div
           (uniformContinuous_fst.comp uniformContinuous_snd)).prod_mk
       ((uniformContinuous_snd.comp uniformContinuous_fst).div
         (uniformContinuous_snd.comp uniformContinuous_snd))⟩
 
 @[to_additive]
-instance Pi.instUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
+instance (priority := 10000) Pi.instUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
     [∀ i, Group (G i)] [∀ i, UniformGroup (G i)] : UniformGroup (∀ i, G i) where
   uniformContinuous_div := uniformContinuous_pi.mpr fun i ↦
     (uniformContinuous_proj G i).comp uniformContinuous_fst |>.div <|
@@ -196,7 +196,7 @@ theorem uniformEmbedding_translate_mul (a : α) : UniformEmbedding fun x : α =>
 namespace MulOpposite
 
 @[to_additive]
-instance : UniformGroup αᵐᵒᵖ :=
+instance (priority := 10000) : UniformGroup αᵐᵒᵖ :=
   ⟨uniformContinuous_op.comp
       ((uniformContinuous_unop.comp uniformContinuous_snd).inv.mul <|
         uniformContinuous_unop.comp uniformContinuous_fst)⟩
@@ -255,7 +255,7 @@ end LatticeOps
 namespace Subgroup
 
 @[to_additive]
-instance uniformGroup (S : Subgroup α) : UniformGroup S := .comap S.subtype
+instance (priority := 10000) uniformGroup (S : Subgroup α) : UniformGroup S := .comap S.subtype
 #align subgroup.uniform_group Subgroup.uniformGroup
 #align add_subgroup.uniform_add_group AddSubgroup.uniformAddGroup
 
@@ -600,7 +600,7 @@ theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : UniformGr
 variable {G}
 
 @[to_additive]
-instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
+instance (priority := 10000) Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
     IsClosed (H : Set G) := by
   obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1}
   exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
@@ -907,7 +907,7 @@ Because an additive topological group is not equipped with a `UniformSpace` inst
 we must explicitly provide it in order to consider completeness. See
 `QuotientAddGroup.completeSpace` for a version in which `G` is already equipped with a uniform
 structure."]
-instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G]
+instance (priority := 10000) QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [FirstCountableTopology G] (N : Subgroup G) [N.Normal]
     [@CompleteSpace G (TopologicalGroup.toUniformSpace G)] :
     @CompleteSpace (G ⧸ N) (TopologicalGroup.toUniformSpace (G ⧸ N)) := by
@@ -1008,7 +1008,7 @@ uniform structure, so it is still provided manually via `TopologicalAddGroup.toU
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
 (definitionally) with the uniform structure provided here."]
-instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G] [UniformGroup G]
+instance (priority := 10000) QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G] [UniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (TopologicalGroup.toUniformSpace (G ⧸ N)) := by
   rw [← @UniformGroup.toUniformSpace_eq _ us _ _] at hG

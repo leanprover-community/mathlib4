@@ -55,10 +55,10 @@ theorem impartial_def {G : PGame} :
 
 namespace Impartial
 
-instance impartial_zero : Impartial 0 := by rw [impartial_def]; dsimp; simp
+instance (priority := 10000) impartial_zero : Impartial 0 := by rw [impartial_def]; dsimp; simp
 #align pgame.impartial.impartial_zero SetTheory.PGame.Impartial.impartial_zero
 
-instance impartial_star : Impartial star := by
+instance (priority := 10000) impartial_star : Impartial star := by
   rw [impartial_def]; simpa using Impartial.impartial_zero
 #align pgame.impartial.impartial_star SetTheory.PGame.Impartial.impartial_star
 
@@ -72,12 +72,12 @@ theorem mk'_neg_equiv_self (G : PGame) [G.Impartial] : -(⟦G⟧ : Quotient seto
   Quot.sound (Equiv.symm (neg_equiv_self G))
 #align pgame.impartial.mk_neg_equiv_self SetTheory.PGame.Impartial.mk'_neg_equiv_self
 
-instance moveLeft_impartial {G : PGame} [h : G.Impartial] (i : G.LeftMoves) :
+instance (priority := 10000) moveLeft_impartial {G : PGame} [h : G.Impartial] (i : G.LeftMoves) :
     (G.moveLeft i).Impartial :=
   (impartial_def.1 h).2.1 i
 #align pgame.impartial.move_left_impartial SetTheory.PGame.Impartial.moveLeft_impartial
 
-instance moveRight_impartial {G : PGame} [h : G.Impartial] (j : G.RightMoves) :
+instance (priority := 10000) moveRight_impartial {G : PGame} [h : G.Impartial] (j : G.RightMoves) :
     (G.moveRight j).Impartial :=
   (impartial_def.1 h).2.2 j
 #align pgame.impartial.move_right_impartial SetTheory.PGame.Impartial.moveRight_impartial
@@ -92,7 +92,7 @@ termination_by G H => (G, H)
 decreasing_by all_goals pgame_wf_tac
 #align pgame.impartial.impartial_congr SetTheory.PGame.Impartial.impartial_congr
 
-instance impartial_add : ∀ (G H : PGame) [G.Impartial] [H.Impartial], (G + H).Impartial
+instance (priority := 10000) impartial_add : ∀ (G H : PGame) [G.Impartial] [H.Impartial], (G + H).Impartial
   | G, H, _, _ => by
     rw [impartial_def]
     refine' ⟨Equiv.trans (add_congr (neg_equiv_self G) (neg_equiv_self _))
@@ -109,7 +109,7 @@ termination_by G H => (G, H)
 decreasing_by all_goals pgame_wf_tac
 #align pgame.impartial.impartial_add SetTheory.PGame.Impartial.impartial_add
 
-instance impartial_neg : ∀ (G : PGame) [G.Impartial], (-G).Impartial
+instance (priority := 10000) impartial_neg : ∀ (G : PGame) [G.Impartial], (-G).Impartial
   | G, _ => by
     rw [impartial_def]
     refine' ⟨_, fun i => _, fun i => _⟩

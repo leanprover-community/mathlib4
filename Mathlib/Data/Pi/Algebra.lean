@@ -37,7 +37,7 @@ namespace Pi
 /-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
 
 @[to_additive]
-instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
+instance (priority := 10000) instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
   ⟨fun _ => 1⟩
 #align pi.has_one Pi.instOne
 #align pi.has_zero Pi.instZero
@@ -73,7 +73,7 @@ theorem comp_one [One β] (x : β → γ) : x ∘ (1 : α → β) = const α (x 
 #align pi.comp_zero Pi.comp_zero
 
 @[to_additive]
-instance instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
+instance (priority := 10000) instMul [∀ i, Mul <| f i] : Mul (∀ i : I, f i) :=
   ⟨fun f g i => f i * g i⟩
 #align pi.has_mul Pi.instMul
 #align pi.has_add Pi.instAdd
@@ -103,13 +103,13 @@ theorem mul_comp [Mul γ] (x y : β → γ) (z : α → β) : (x * y) ∘ z = x 
 #align pi.add_comp Pi.add_comp
 
 @[to_additive]
-instance instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
+instance (priority := 10000) instSMul [∀ i, SMul α <| f i] : SMul α (∀ i : I, f i) :=
   ⟨fun s x => fun i => s • x i⟩
 #align pi.has_smul Pi.instSMul
 #align pi.has_vadd Pi.instVAdd
 
 @[to_additive existing instSMul]
-instance instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
+instance (priority := 10000) instPow [∀ i, Pow (f i) β] : Pow (∀ i, f i) β :=
   ⟨fun x b i => x i ^ b⟩
 
 @[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]
@@ -161,7 +161,7 @@ theorem bit1_apply [∀ i, Add <| f i] [∀ i, One <| f i] : (bit1 x) i = bit1 (
 end deprecated
 
 @[to_additive]
-instance instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
+instance (priority := 10000) instInv [∀ i, Inv <| f i] : Inv (∀ i : I, f i) :=
   ⟨fun f i => (f i)⁻¹⟩
 #align pi.has_inv Pi.instInv
 #align pi.has_neg Pi.instNeg
@@ -191,7 +191,7 @@ theorem inv_comp [Inv γ] (x : β → γ) (y : α → β) : x⁻¹ ∘ y = (x �
 #align pi.neg_comp Pi.neg_comp
 
 @[to_additive]
-instance instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
+instance (priority := 10000) instDiv [∀ i, Div <| f i] : Div (∀ i : I, f i) :=
   ⟨fun f g i => f i / g i⟩
 #align pi.has_div Pi.instDiv
 #align pi.has_sub Pi.instSub

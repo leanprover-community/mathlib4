@@ -31,34 +31,34 @@ variable {R S : Type*}
 
 open Tropical
 
-instance instSupTropical [Sup R] : Sup (Tropical R) where
+instance (priority := 10000) instSupTropical [Sup R] : Sup (Tropical R) where
   sup x y := trop (untrop x ⊔ untrop y)
 
-instance instInfTropical [Inf R] : Inf (Tropical R) where
+instance (priority := 10000) instInfTropical [Inf R] : Inf (Tropical R) where
   inf x y := trop (untrop x ⊓ untrop y)
 
-instance instSemilatticeInfTropical [SemilatticeInf R] : SemilatticeInf (Tropical R) :=
+instance (priority := 10000) instSemilatticeInfTropical [SemilatticeInf R] : SemilatticeInf (Tropical R) :=
   { instInfTropical,
     Tropical.instPartialOrderTropical with
     le_inf := fun _ _ _ ↦ @SemilatticeInf.le_inf R _ _ _ _
     inf_le_left := fun _ _ ↦ inf_le_left
     inf_le_right := fun _ _ ↦ inf_le_right }
 
-instance instSemilatticeSupTropical [SemilatticeSup R] : SemilatticeSup (Tropical R) :=
+instance (priority := 10000) instSemilatticeSupTropical [SemilatticeSup R] : SemilatticeSup (Tropical R) :=
   { instSupTropical,
     Tropical.instPartialOrderTropical with
     sup_le := fun _ _ _ ↦ @SemilatticeSup.sup_le R _ _ _ _
     le_sup_left := fun _ _ ↦ le_sup_left
     le_sup_right := fun _ _ ↦ le_sup_right }
 
-instance instLatticeTropical [Lattice R] : Lattice (Tropical R) :=
+instance (priority := 10000) instLatticeTropical [Lattice R] : Lattice (Tropical R) :=
   { instSemilatticeInfTropical, instSemilatticeSupTropical with }
 
-instance [SupSet R] : SupSet (Tropical R) where sSup s := trop (sSup (untrop '' s))
+instance (priority := 10000) [SupSet R] : SupSet (Tropical R) where sSup s := trop (sSup (untrop '' s))
 
-instance [InfSet R] : InfSet (Tropical R) where sInf s := trop (sInf (untrop '' s))
+instance (priority := 10000) [InfSet R] : InfSet (Tropical R) where sInf s := trop (sInf (untrop '' s))
 
-instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice R] :
+instance (priority := 10000) instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice R] :
     ConditionallyCompleteLattice (Tropical R) :=
   { @instInfTropical R _, @instSupTropical R _,
     instLatticeTropical with
@@ -71,7 +71,7 @@ instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice 
     csInf_le := fun _s _x hs hx ↦
       csInf_le (untrop_monotone.map_bddBelow hs) (Set.mem_image_of_mem untrop hx) }
 
-instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=
+instance (priority := 10000) [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=
   { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with
     csSup_of_not_bddAbove := by
       intro s hs

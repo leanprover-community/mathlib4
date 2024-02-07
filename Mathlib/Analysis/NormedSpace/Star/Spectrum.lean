@@ -189,7 +189,7 @@ lemma _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
 
 namespace CharacterSpace
 
-noncomputable instance instStarAlgHomClass : StarAlgHomClass (characterSpace ℂ A) ℂ A ℂ :=
+noncomputable instance (priority := 10000) instStarAlgHomClass : StarAlgHomClass (characterSpace ℂ A) ℂ A ℂ :=
   { AlgHomClass.instStarAlgHomClass with }
 
 end CharacterSpace

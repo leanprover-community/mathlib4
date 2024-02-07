@@ -124,13 +124,13 @@ namespace PiTensorProduct
 
 section Module
 
-instance : AddCommMonoid (⨂[R] i, s i) :=
+instance (priority := 10000) : AddCommMonoid (⨂[R] i, s i) :=
   { (addConGen (PiTensorProduct.Eqv R s)).addMonoid with
     add_comm := fun x y ↦
       AddCon.induction_on₂ x y fun _ _ ↦
         Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
 
-instance : Inhabited (⨂[R] i, s i) := ⟨0⟩
+instance (priority := 10000) : Inhabited (⨂[R] i, s i) := ⟨0⟩
 
 variable (R) {s}
 
@@ -225,7 +225,7 @@ variable [Monoid R₂] [DistribMulAction R₂ R] [SMulCommClass R₂ R R]
 
 -- Most of the time we want the instance below this one, which is easier for typeclass resolution
 -- to find.
-instance hasSMul' : SMul R₁ (⨂[R] i, s i) :=
+instance (priority := 10000) hasSMul' : SMul R₁ (⨂[R] i, s i) :=
   ⟨fun r ↦
     liftAddHom (fun f : R × Π i, s i ↦ tprodCoeff R (r • f.1) f.2)
       (fun r' f i hf ↦ by simp_rw [zero_tprodCoeff' _ f i hf])
@@ -234,7 +234,7 @@ instance hasSMul' : SMul R₁ (⨂[R] i, s i) :=
       simp [smul_tprodCoeff, mul_smul_comm]⟩
 #align pi_tensor_product.has_smul' PiTensorProduct.hasSMul'
 
-instance : SMul R (⨂[R] i, s i) :=
+instance (priority := 10000) : SMul R (⨂[R] i, s i) :=
   PiTensorProduct.hasSMul'
 
 theorem smul_tprodCoeff' (r : R₁) (z : R) (f : Π i, s i) :
@@ -245,7 +245,7 @@ protected theorem smul_add (r : R₁) (x y : ⨂[R] i, s i) : r • (x + y) = r 
   AddMonoidHom.map_add _ _ _
 #align pi_tensor_product.smul_add PiTensorProduct.smul_add
 
-instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
+instance (priority := 10000) distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
   smul := (· • ·)
   smul_add r x y := AddMonoidHom.map_add _ _ _
   mul_smul r r' x :=
@@ -257,13 +257,13 @@ instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
   smul_zero r := AddMonoidHom.map_zero _
 #align pi_tensor_product.distrib_mul_action' PiTensorProduct.distribMulAction'
 
-instance smulCommClass' [SMulCommClass R₁ R₂ R] : SMulCommClass R₁ R₂ (⨂[R] i, s i) :=
+instance (priority := 10000) smulCommClass' [SMulCommClass R₁ R₂ R] : SMulCommClass R₁ R₂ (⨂[R] i, s i) :=
   ⟨fun {r' r''} x ↦
     PiTensorProduct.induction_on' x (fun {xr xf} ↦ by simp only [smul_tprodCoeff', smul_comm])
       fun {z y} ihz ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihz, ihy]⟩
 #align pi_tensor_product.smul_comm_class' PiTensorProduct.smulCommClass'
 
-instance isScalarTower' [SMul R₁ R₂] [IsScalarTower R₁ R₂ R] :
+instance (priority := 10000) isScalarTower' [SMul R₁ R₂] [IsScalarTower R₁ R₂ R] :
     IsScalarTower R₁ R₂ (⨂[R] i, s i) :=
   ⟨fun {r' r''} x ↦
     PiTensorProduct.induction_on' x (fun {xr xf} ↦ by simp only [smul_tprodCoeff', smul_assoc])
@@ -274,7 +274,7 @@ end DistribMulAction
 
 -- Most of the time we want the instance below this one, which is easier for typeclass resolution
 -- to find.
-instance module' [Semiring R₁] [Module R₁ R] [SMulCommClass R₁ R R] : Module R₁ (⨂[R] i, s i) :=
+instance (priority := 10000) module' [Semiring R₁] [Module R₁ R] [SMulCommClass R₁ R R] : Module R₁ (⨂[R] i, s i) :=
   { PiTensorProduct.distribMulAction' with
     add_smul := fun r r' x ↦
       PiTensorProduct.induction_on' x
@@ -287,13 +287,13 @@ instance module' [Semiring R₁] [Module R₁ R] [SMulCommClass R₁ R R] : Modu
 #align pi_tensor_product.module' PiTensorProduct.module'
 
 -- shortcut instances
-instance : Module R (⨂[R] i, s i) :=
+instance (priority := 10000) : Module R (⨂[R] i, s i) :=
   PiTensorProduct.module'
 
-instance : SMulCommClass R R (⨂[R] i, s i) :=
+instance (priority := 10000) : SMulCommClass R R (⨂[R] i, s i) :=
   PiTensorProduct.smulCommClass'
 
-instance : IsScalarTower R R (⨂[R] i, s i) :=
+instance (priority := 10000) : IsScalarTower R R (⨂[R] i, s i) :=
   PiTensorProduct.isScalarTower'
 
 variable (R)
@@ -679,7 +679,7 @@ variable {s : ι → Type*} [∀ i, AddCommGroup (s i)] [∀ i, Module R (s i)]
 
 /- Unlike for the binary tensor product, we require `R` to be a `CommRing` here, otherwise
 this is false in the case where `ι` is empty. -/
-instance : AddCommGroup (⨂[R] i, s i) :=
+instance (priority := 10000) : AddCommGroup (⨂[R] i, s i) :=
   Module.addCommMonoidToAddCommGroup R
 
 end PiTensorProduct

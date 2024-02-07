@@ -59,7 +59,7 @@ def ValidFinite (e : ℤ) (m : ℕ) : Prop :=
   emin ≤ e + prec - 1 ∧ e + prec - 1 ≤ emax ∧ e = max (e + m.size - prec) emin
 #align fp.valid_finite FP.ValidFinite
 
-instance decValidFinite (e m) : Decidable (ValidFinite e m) := by
+instance (priority := 10000) decValidFinite (e m) : Decidable (ValidFinite e m) := by
   (unfold ValidFinite; infer_instance)
 #align fp.dec_valid_finite FP.decValidFinite
 
@@ -107,7 +107,7 @@ def Float.zero (s : Bool) : Float :=
   Float.finite s emin 0 Float.Zero.valid
 #align fp.float.zero FP.Float.zero
 
-instance : Inhabited Float :=
+instance (priority := 10000) : Inhabited Float :=
   ⟨Float.zero true⟩
 
 @[nolint docBlame]
@@ -233,7 +233,7 @@ unsafe def ofRat : RMode → ℚ → Float
 
 namespace Float
 
-instance : Neg Float :=
+instance (priority := 10000) : Neg Float :=
   ⟨Float.neg⟩
 
 @[nolint docBlame]

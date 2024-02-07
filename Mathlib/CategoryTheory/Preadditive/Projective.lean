@@ -93,7 +93,7 @@ section
 
 open ZeroObject
 
-instance zero_projective [HasZeroObject C] : Projective (0 : C) :=
+instance (priority := 10000) zero_projective [HasZeroObject C] : Projective (0 : C) :=
   (isZero_zero C).projective
 #align category_theory.projective.zero_projective CategoryTheory.Projective.zero_projective
 
@@ -110,28 +110,28 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
 #align category_theory.projective.iso_iff CategoryTheory.Projective.iso_iff
 
 /-- The axiom of choice says that every type is a projective object in `Type`. -/
-instance (X : Type u) : Projective X where
+instance (priority := 10000) (X : Type u) : Projective X where
   factors f e _ :=
     have he : Function.Surjective e := surjective_of_epi e
     ⟨fun x => (he (f x)).choose, funext fun x ↦ (he (f x)).choose_spec⟩
 
-instance Type.enoughProjectives : EnoughProjectives (Type u) where
+instance (priority := 10000) Type.enoughProjectives : EnoughProjectives (Type u) where
   presentation X := ⟨⟨X, 𝟙 X⟩⟩
 #align category_theory.projective.Type.enough_projectives CategoryTheory.Projective.Type.enoughProjectives
 
-instance {P Q : C} [HasBinaryCoproduct P Q] [Projective P] [Projective Q] : Projective (P ⨿ Q) where
+instance (priority := 10000) {P Q : C} [HasBinaryCoproduct P Q] [Projective P] [Projective Q] : Projective (P ⨿ Q) where
   factors f e epi := ⟨coprod.desc (factorThru (coprod.inl ≫ f) e) (factorThru (coprod.inr ≫ f) e),
     by aesop_cat⟩
 
-instance {β : Type v} (g : β → C) [HasCoproduct g] [∀ b, Projective (g b)] : Projective (∐ g) where
+instance (priority := 10000) {β : Type v} (g : β → C) [HasCoproduct g] [∀ b, Projective (g b)] : Projective (∐ g) where
   factors f e epi := ⟨Sigma.desc fun b => factorThru (Sigma.ι g b ≫ f) e, by aesop_cat⟩
 
-instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Projective P] [Projective Q] :
+instance (priority := 10000) {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Projective P] [Projective Q] :
     Projective (P ⊞ Q) where
   factors f e epi := ⟨biprod.desc (factorThru (biprod.inl ≫ f) e) (factorThru (biprod.inr ≫ f) e),
     by aesop_cat⟩
 
-instance {β : Type v} (g : β → C) [HasZeroMorphisms C] [HasBiproduct g] [∀ b, Projective (g b)] :
+instance (priority := 10000) {β : Type v} (g : β → C) [HasZeroMorphisms C] [HasBiproduct g] [∀ b, Projective (g b)] :
     Projective (⨁ g) where
   factors f e epi := ⟨biproduct.desc fun b => factorThru (biproduct.ι g b ≫ f) e, by aesop_cat⟩
 
@@ -158,7 +158,7 @@ def over (X : C) : C :=
   (EnoughProjectives.presentation X).some.p
 #align category_theory.projective.over CategoryTheory.Projective.over
 
-instance projective_over (X : C) : Projective (over X) :=
+instance (priority := 10000) projective_over (X : C) : Projective (over X) :=
   (EnoughProjectives.presentation X).some.projective
 #align category_theory.projective.projective_over CategoryTheory.Projective.projective_over
 
@@ -169,7 +169,7 @@ def π (X : C) : over X ⟶ X :=
   (EnoughProjectives.presentation X).some.f
 #align category_theory.projective.π CategoryTheory.Projective.π
 
-instance π_epi (X : C) : Epi (π X) :=
+instance (priority := 10000) π_epi (X : C) : Epi (π X) :=
   (EnoughProjectives.presentation X).some.epi
 #align category_theory.projective.π_epi CategoryTheory.Projective.π_epi
 
@@ -183,7 +183,7 @@ an arbitrarily chosen projective object over `kernel f`.
 def syzygies : C := over (kernel f)
 #align category_theory.projective.syzygies CategoryTheory.Projective.syzygies
 
-instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
+instance (priority := 10000) : Projective (syzygies f) := inferInstanceAs (Projective (over _))
 
 /-- When `C` has enough projectives,
 `Projective.d f : Projective.syzygies f ⟶ X` is the composition

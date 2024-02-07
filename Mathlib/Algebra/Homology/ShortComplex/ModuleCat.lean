@@ -25,7 +25,7 @@ open Limits
 
 namespace ShortComplex
 
-noncomputable instance : (forget₂ (ModuleCat.{v} R) Ab).PreservesHomology where
+noncomputable instance (priority := 10000) : (forget₂ (ModuleCat.{v} R) Ab).PreservesHomology where
 
 /-- Constructor for short complexes in `ModuleCat.{v} R` taking as inputs
 linear maps `f` and `g` and the vanishing of their composition. -/
@@ -139,7 +139,7 @@ def moduleCatLeftHomologyData : S.LeftHomologyData where
 lemma moduleCatLeftHomologyData_f' :
     S.moduleCatLeftHomologyData.f' = S.moduleCatToCycles := rfl
 
-instance : Epi S.moduleCatHomologyπ :=
+instance (priority := 10000) : Epi S.moduleCatHomologyπ :=
   (inferInstance : Epi S.moduleCatLeftHomologyData.π)
 
 /-- Given a short complex `S` of modules, this is the isomorphism between

@@ -51,7 +51,7 @@ instance (priority := 100) PreservesColimits.preservesFilteredColimits (F : C �
   preserves_filtered_colimits _ := inferInstance
 #align category_theory.limits.preserves_colimits.preserves_filtered_colimits CategoryTheory.Limits.PreservesColimits.preservesFilteredColimits
 
-instance compPreservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFilteredColimits F]
+instance (priority := 10000) compPreservesFilteredColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFilteredColimits F]
     [PreservesFilteredColimits G] : PreservesFilteredColimits (F ⋙ G) where
   preserves_filtered_colimits _ := inferInstance
 #align category_theory.limits.comp_preserves_filtered_colimits CategoryTheory.Limits.compPreservesFilteredColimits
@@ -71,7 +71,7 @@ instance (priority := 100) PreservesLimits.preservesCofilteredLimits (F : C ⥤ 
   preserves_cofiltered_limits _ := inferInstance
 #align category_theory.limits.preserves_limits.preserves_cofiltered_limits CategoryTheory.Limits.PreservesLimits.preservesCofilteredLimits
 
-instance compPreservesCofilteredLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesCofilteredLimits F]
+instance (priority := 10000) compPreservesCofilteredLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesCofilteredLimits F]
     [PreservesCofilteredLimits G] : PreservesCofilteredLimits (F ⋙ G) where
   preserves_cofiltered_limits _ := inferInstance
 #align category_theory.limits.comp_preserves_cofiltered_limits CategoryTheory.Limits.compPreservesCofilteredLimits

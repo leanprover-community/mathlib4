@@ -310,36 +310,36 @@ namespace DefinableSet
 
 variable {L A α} {s t : L.DefinableSet A α} {x : α → M}
 
-instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
+instance (priority := 10000) instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 #align first_order.language.definable_set.pi.set_like FirstOrder.Language.DefinableSet.instSetLike
 
-instance instTop : Top (L.DefinableSet A α) :=
+instance (priority := 10000) instTop : Top (L.DefinableSet A α) :=
   ⟨⟨⊤, definable_univ⟩⟩
 #align first_order.language.definable_set.has_top FirstOrder.Language.DefinableSet.instTop
 
-instance instBot : Bot (L.DefinableSet A α) :=
+instance (priority := 10000) instBot : Bot (L.DefinableSet A α) :=
   ⟨⟨⊥, definable_empty⟩⟩
 #align first_order.language.definable_set.has_bot FirstOrder.Language.DefinableSet.instBot
 
-instance instSup : Sup (L.DefinableSet A α) :=
+instance (priority := 10000) instSup : Sup (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∪ t, s.2.union t.2⟩⟩
 #align first_order.language.definable_set.has_sup FirstOrder.Language.DefinableSet.instSup
 
-instance instInf : Inf (L.DefinableSet A α) :=
+instance (priority := 10000) instInf : Inf (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
 #align first_order.language.definable_set.has_inf FirstOrder.Language.DefinableSet.instInf
 
-instance instHasCompl : HasCompl (L.DefinableSet A α) :=
+instance (priority := 10000) instHasCompl : HasCompl (L.DefinableSet A α) :=
   ⟨fun s => ⟨sᶜ, s.2.compl⟩⟩
 #align first_order.language.definable_set.has_compl FirstOrder.Language.DefinableSet.instHasCompl
 
-instance instSDiff : SDiff (L.DefinableSet A α) :=
+instance (priority := 10000) instSDiff : SDiff (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s \ t, s.2.sdiff t.2⟩⟩
 #align first_order.language.definable_set.has_sdiff FirstOrder.Language.DefinableSet.instSDiff
 
-instance instInhabited : Inhabited (L.DefinableSet A α) :=
+instance (priority := 10000) instInhabited : Inhabited (L.DefinableSet A α) :=
   ⟨⊥⟩
 #align first_order.language.definable_set.inhabited FirstOrder.Language.DefinableSet.instInhabited
 
@@ -411,7 +411,7 @@ theorem coe_sdiff (s t : L.DefinableSet A α) :
   rfl
 #align first_order.language.definable_set.coe_sdiff FirstOrder.Language.DefinableSet.coe_sdiff
 
-instance instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
+instance (priority := 10000) instBooleanAlgebra : BooleanAlgebra (L.DefinableSet A α) :=
   Function.Injective.booleanAlgebra (α := L.DefinableSet A α) _ Subtype.coe_injective
     coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
 #align first_order.language.definable_set.boolean_algebra FirstOrder.Language.DefinableSet.instBooleanAlgebra

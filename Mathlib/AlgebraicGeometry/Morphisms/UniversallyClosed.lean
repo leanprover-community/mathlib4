@@ -60,17 +60,17 @@ theorem universallyClosed_stableUnderComposition : StableUnderComposition @Unive
     IsClosedMap.comp (f := f.1.base) (g := g.1.base) hg hf)
 #align algebraic_geometry.universally_closed_stable_under_composition AlgebraicGeometry.universallyClosed_stableUnderComposition
 
-instance universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+instance (priority := 10000) universallyClosedTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : UniversallyClosed f] [hg : UniversallyClosed g] : UniversallyClosed (f ≫ g) :=
   universallyClosed_stableUnderComposition f g hf hg
 #align algebraic_geometry.universally_closed_type_comp AlgebraicGeometry.universallyClosedTypeComp
 
-instance universallyClosedFst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
+instance (priority := 10000) universallyClosedFst {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hg : UniversallyClosed g] :
     UniversallyClosed (pullback.fst : pullback f g ⟶ _) :=
   universallyClosed_stableUnderBaseChange.fst f g hg
 #align algebraic_geometry.universally_closed_fst AlgebraicGeometry.universallyClosedFst
 
-instance universallyClosedSnd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
+instance (priority := 10000) universallyClosedSnd {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [hf : UniversallyClosed f] :
     UniversallyClosed (pullback.snd : pullback f g ⟶ _) :=
   universallyClosed_stableUnderBaseChange.snd f g hf
 #align algebraic_geometry.universally_closed_snd AlgebraicGeometry.universallyClosedSnd

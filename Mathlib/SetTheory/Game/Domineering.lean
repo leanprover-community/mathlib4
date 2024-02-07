@@ -133,7 +133,7 @@ theorem moveRight_smaller {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) :
 #align pgame.domineering.move_right_smaller SetTheory.PGame.Domineering.moveRight_smaller
 
 /-- The instance describing allowed moves on a Domineering board. -/
-instance state : State Board where
+instance (priority := 10000) state : State Board where
   turnBound s := s.card / 2
   l s := (left s).image (moveLeft s)
   r s := (right s).image (moveRight s)
@@ -155,7 +155,7 @@ def domineering (b : Domineering.Board) : PGame :=
 #align pgame.domineering SetTheory.PGame.domineering
 
 /-- All games of Domineering are short, because each move removes two squares. -/
-instance shortDomineering (b : Domineering.Board) : Short (domineering b) := by
+instance (priority := 10000) shortDomineering (b : Domineering.Board) : Short (domineering b) := by
   dsimp [domineering]
   infer_instance
 #align pgame.short_domineering SetTheory.PGame.shortDomineering
@@ -171,10 +171,10 @@ def domineering.L :=
 set_option linter.uppercaseLean3 false in
 #align pgame.domineering.L SetTheory.PGame.domineering.L
 
-instance shortOne : Short domineering.one := by dsimp [domineering.one]; infer_instance
+instance (priority := 10000) shortOne : Short domineering.one := by dsimp [domineering.one]; infer_instance
 #align pgame.short_one SetTheory.PGame.shortOne
 
-instance shortL : Short domineering.L := by dsimp [domineering.L]; infer_instance
+instance (priority := 10000) shortL : Short domineering.L := by dsimp [domineering.L]; infer_instance
 set_option linter.uppercaseLean3 false in
 #align pgame.short_L SetTheory.PGame.shortL
 

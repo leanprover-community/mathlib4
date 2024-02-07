@@ -142,7 +142,7 @@ variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
-instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
+instance (priority := 10000) : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toLinearMap⟩
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
@@ -170,7 +170,7 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛ
   toLinearMap_injective.eq_iff
 #align linear_equiv.to_linear_map_inj LinearEquiv.toLinearMap_inj
 
-instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
+instance (priority := 10000) : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   inv := LinearEquiv.invFun
   coe_injective' _ _ h _ := toLinearMap_injective (DFunLike.coe_injective h)
   left_inv := LinearEquiv.left_inv
@@ -181,11 +181,11 @@ instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
 
 TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
 -/
-instance : FunLike (M ≃ₛₗ[σ] M₂) M M₂ where
+instance (priority := 10000) : FunLike (M ≃ₛₗ[σ] M₂) M M₂ where
   coe := DFunLike.coe
   coe_injective' := DFunLike.coe_injective
 
-instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
+instance (priority := 10000) : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
@@ -659,7 +659,7 @@ section Automorphisms
 
 variable [Module R M]
 
-instance automorphismGroup : Group (M ≃ₗ[R] M) where
+instance (priority := 10000) automorphismGroup : Group (M ≃ₗ[R] M) where
   mul f g := g.trans f
   one := LinearEquiv.refl R M
   inv f := f.symm
@@ -697,7 +697,7 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M 
 /-- The tautological action by `M ≃ₗ[R] M` on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
+instance (priority := 10000) applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
   smul := (· <| ·)
   smul_zero := LinearEquiv.map_zero
   smul_add := LinearEquiv.map_add
@@ -711,15 +711,15 @@ protected theorem smul_def (f : M ≃ₗ[R] M) (a : M) : f • a = f a :=
 #align linear_equiv.smul_def LinearEquiv.smul_def
 
 /-- `LinearEquiv.applyDistribMulAction` is faithful. -/
-instance apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
+instance (priority := 10000) apply_faithfulSMul : FaithfulSMul (M ≃ₗ[R] M) M :=
   ⟨@fun _ _ => LinearEquiv.ext⟩
 #align linear_equiv.apply_has_faithful_smul LinearEquiv.apply_faithfulSMul
 
-instance apply_smulCommClass : SMulCommClass R (M ≃ₗ[R] M) M where
+instance (priority := 10000) apply_smulCommClass : SMulCommClass R (M ≃ₗ[R] M) M where
   smul_comm r e m := (e.map_smul r m).symm
 #align linear_equiv.apply_smul_comm_class LinearEquiv.apply_smulCommClass
 
-instance apply_smulCommClass' : SMulCommClass (M ≃ₗ[R] M) R M where
+instance (priority := 10000) apply_smulCommClass' : SMulCommClass (M ≃ₗ[R] M) R M where
   smul_comm := LinearEquiv.map_smul
 #align linear_equiv.apply_smul_comm_class' LinearEquiv.apply_smulCommClass'
 

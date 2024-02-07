@@ -80,7 +80,7 @@ def comp {X Y Z : DifferentialObject S C} (f : Hom X Y) (g : Hom Y Z) : Hom X Z 
 
 end Hom
 
-instance categoryOfDifferentialObjects : Category (DifferentialObject S C) where
+instance (priority := 10000) categoryOfDifferentialObjects : Category (DifferentialObject S C) where
   Hom := Hom
   id := Hom.id
   comp f g := Hom.comp f g
@@ -117,12 +117,12 @@ def forget : DifferentialObject S C ⥤ C where
   map f := f.f
 #align category_theory.differential_object.forget CategoryTheory.DifferentialObject.forget
 
-instance forget_faithful : Faithful (forget S C) where
+instance (priority := 10000) forget_faithful : Faithful (forget S C) where
 #align category_theory.differential_object.forget_faithful CategoryTheory.DifferentialObject.forget_faithful
 
 variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
 
-instance {X Y : DifferentialObject S C} : Zero (X ⟶ Y) := ⟨{f := 0}⟩
+instance (priority := 10000) {X Y : DifferentialObject S C} : Zero (X ⟶ Y) := ⟨{f := 0}⟩
 
 variable {S C}
 
@@ -130,7 +130,7 @@ variable {S C}
 theorem zero_f (P Q : DifferentialObject S C) : (0 : P ⟶ Q).f = 0 := rfl
 #align category_theory.differential_object.zero_f CategoryTheory.DifferentialObject.zero_f
 
-instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject S C) where
+instance (priority := 10000) hasZeroMorphisms : HasZeroMorphisms (DifferentialObject S C) where
 #align category_theory.differential_object.has_zero_morphisms CategoryTheory.DifferentialObject.hasZeroMorphisms
 
 /-- An isomorphism of differential objects gives an isomorphism of the underlying objects. -/
@@ -220,7 +220,7 @@ variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
 
 open scoped ZeroObject
 
-instance hasZeroObject : HasZeroObject (DifferentialObject S C) where
+instance (priority := 10000) hasZeroObject : HasZeroObject (DifferentialObject S C) where
   zero := ⟨{ obj := 0, d := 0 },
     { unique_to := fun X => ⟨⟨⟨{ f := 0 }⟩, fun f => by ext⟩⟩,
       unique_from := fun X => ⟨⟨⟨{ f := 0 }⟩, fun f => by ext⟩⟩ }⟩
@@ -234,11 +234,11 @@ variable (S : Type*) [AddMonoidWithOne S]
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasZeroMorphisms C]
 variable [HasShift C S]
 
-instance concreteCategoryOfDifferentialObjects : ConcreteCategory (DifferentialObject S C) where
+instance (priority := 10000) concreteCategoryOfDifferentialObjects : ConcreteCategory (DifferentialObject S C) where
   forget := forget S C ⋙ CategoryTheory.forget C
 #align category_theory.differential_object.concrete_category_of_differential_objects CategoryTheory.DifferentialObject.concreteCategoryOfDifferentialObjects
 
-instance : HasForget₂ (DifferentialObject S C) C where
+instance (priority := 10000) : HasForget₂ (DifferentialObject S C) C where
   forget₂ := forget S C
 
 end DifferentialObject
@@ -304,7 +304,7 @@ def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by
 
 end
 
-instance : HasShift (DifferentialObject S C) S :=
+instance (priority := 10000) : HasShift (DifferentialObject S C) S :=
   hasShiftMk _ _
     { F := shiftFunctor C
       zero := shiftZero C

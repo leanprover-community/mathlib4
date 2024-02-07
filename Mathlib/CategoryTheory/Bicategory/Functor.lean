@@ -95,7 +95,7 @@ namespace PrelaxFunctor
 
 attribute [coe] CategoryTheory.PrelaxFunctor.toPrefunctor
 
-instance hasCoeToPrefunctor : Coe (PrelaxFunctor B C) (Prefunctor B C) :=
+instance (priority := 10000) hasCoeToPrefunctor : Coe (PrelaxFunctor B C) (Prefunctor B C) :=
   ⟨toPrefunctor⟩
 #align category_theory.prelax_functor.has_coe_to_prefunctor CategoryTheory.PrelaxFunctor.hasCoeToPrefunctor
 
@@ -114,7 +114,7 @@ def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a 
   { Prefunctor.id B with map₂ := fun η => η }
 #align category_theory.prelax_functor.id CategoryTheory.PrelaxFunctor.id
 
-instance : Inhabited (PrelaxFunctor B B) :=
+instance (priority := 10000) : Inhabited (PrelaxFunctor B B) :=
   ⟨PrelaxFunctor.id B⟩
 
 -- porting note: `by exact` was not necessary in mathlib3
@@ -239,7 +239,7 @@ attribute [nolint docBlame] CategoryTheory.OplaxFunctor.mapId
   CategoryTheory.OplaxFunctor.map₂_leftUnitor
   CategoryTheory.OplaxFunctor.map₂_rightUnitor
 
-instance hasCoeToPrelax : Coe (OplaxFunctor B C) (PrelaxFunctor B C) :=
+instance (priority := 10000) hasCoeToPrelax : Coe (OplaxFunctor B C) (PrelaxFunctor B C) :=
   ⟨toPrelaxFunctor⟩
 #align category_theory.oplax_functor.has_coe_to_prelax CategoryTheory.OplaxFunctor.hasCoeToPrelax
 
@@ -275,7 +275,7 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B :=
   }
 #align category_theory.oplax_functor.id CategoryTheory.OplaxFunctor.id
 
-instance : Inhabited (OplaxFunctor B B) :=
+instance (priority := 10000) : Inhabited (OplaxFunctor B B) :=
   ⟨id B⟩
 
 /-- Composition of oplax functors. -/
@@ -425,7 +425,7 @@ attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
   CategoryTheory.Pseudofunctor.map₂_left_unitor
   CategoryTheory.Pseudofunctor.map₂_right_unitor
 
-instance hasCoeToPrelaxFunctor : Coe (Pseudofunctor B C) (PrelaxFunctor B C) :=
+instance (priority := 10000) hasCoeToPrelaxFunctor : Coe (Pseudofunctor B C) (PrelaxFunctor B C) :=
   ⟨toPrelaxFunctor⟩
 #align category_theory.pseudofunctor.has_coe_to_prelax_functor CategoryTheory.Pseudofunctor.hasCoeToPrelaxFunctor
 
@@ -451,7 +451,7 @@ def toOplax : OplaxFunctor B C :=
     mapComp := fun f g => (F.mapComp f g).hom }
 #align category_theory.pseudofunctor.to_oplax CategoryTheory.Pseudofunctor.toOplax
 
-instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
+instance (priority := 10000) hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
   ⟨toOplax⟩
 #align category_theory.pseudofunctor.has_coe_to_oplax CategoryTheory.Pseudofunctor.hasCoeToOplax
 
@@ -498,7 +498,7 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=
     mapComp := fun f g => Iso.refl (f ≫ g) }
 #align category_theory.pseudofunctor.id CategoryTheory.Pseudofunctor.id
 
-instance : Inhabited (Pseudofunctor B B) :=
+instance (priority := 10000) : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
 
 /-- Composition of pseudofunctors. -/

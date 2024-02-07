@@ -59,7 +59,7 @@ noncomputable def wellOrderExtension : LinearOrder α :=
     fun _ _ h => embeddingToCardinal.injective <| congr_arg Prod.snd h
 #align well_founded.well_order_extension WellFounded.wellOrderExtension
 
-instance wellOrderExtension.isWellFounded_lt : IsWellFounded α hwf.wellOrderExtension.lt :=
+instance (priority := 10000) wellOrderExtension.isWellFounded_lt : IsWellFounded α hwf.wellOrderExtension.lt :=
   ⟨InvImage.wf (fun a : α => (hwf.rank a, embeddingToCardinal a)) <|
     Ordinal.lt_wf.prod_lex Cardinal.lt_wf⟩
 #align well_founded.well_order_extension.is_well_founded_lt WellFounded.wellOrderExtension.isWellFounded_lt
@@ -75,17 +75,17 @@ end WellFounded
 def WellOrderExtension (α : Type*) : Type _ := α
 #align well_order_extension WellOrderExtension
 
-instance [Inhabited α] : Inhabited (WellOrderExtension α) := ‹_›
+instance (priority := 10000) [Inhabited α] : Inhabited (WellOrderExtension α) := ‹_›
 
 /-- "Identity" equivalence between a well-founded order and its well-order extension. -/
 def toWellOrderExtension : α ≃ WellOrderExtension α :=
   Equiv.refl _
 #align to_well_order_extension toWellOrderExtension
 
-noncomputable instance [LT α] [WellFoundedLT α] : LinearOrder (WellOrderExtension α) :=
+noncomputable instance (priority := 10000) [LT α] [WellFoundedLT α] : LinearOrder (WellOrderExtension α) :=
   (IsWellFounded.wf : @WellFounded α (· < ·)).wellOrderExtension
 
-instance WellOrderExtension.wellFoundedLT [LT α] [WellFoundedLT α] :
+instance (priority := 10000) WellOrderExtension.wellFoundedLT [LT α] [WellFoundedLT α] :
     WellFoundedLT (WellOrderExtension α) :=
   WellFounded.wellOrderExtension.isWellFounded_lt _
 #align well_order_extension.well_founded_lt WellOrderExtension.wellFoundedLT

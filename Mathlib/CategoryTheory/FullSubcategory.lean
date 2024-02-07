@@ -57,12 +57,12 @@ def InducedCategory (_F : C → D) : Type u₁ :=
 
 variable {D}
 
-instance InducedCategory.hasCoeToSort {α : Sort*} [CoeSort D α] :
+instance (priority := 10000) InducedCategory.hasCoeToSort {α : Sort*} [CoeSort D α] :
     CoeSort (InducedCategory D F) α :=
   ⟨fun c => F c⟩
 #align category_theory.induced_category.has_coe_to_sort CategoryTheory.InducedCategory.hasCoeToSort
 
-instance InducedCategory.category : Category.{v} (InducedCategory D F) where
+instance (priority := 10000) InducedCategory.category : Category.{v} (InducedCategory D F) where
   Hom X Y := F X ⟶ F Y
   id X := 𝟙 (F X)
   comp f g := f ≫ g
@@ -79,10 +79,10 @@ def inducedFunctor : InducedCategory D F ⥤ D where
 #align category_theory.induced_functor_map CategoryTheory.inducedFunctor_map
 #align category_theory.induced_functor_obj CategoryTheory.inducedFunctor_obj
 
-instance InducedCategory.full : Full (inducedFunctor F) where preimage f := f
+instance (priority := 10000) InducedCategory.full : Full (inducedFunctor F) where preimage f := f
 #align category_theory.induced_category.full CategoryTheory.InducedCategory.full
 
-instance InducedCategory.faithful : Faithful (inducedFunctor F) where
+instance (priority := 10000) InducedCategory.faithful : Faithful (inducedFunctor F) where
 #align category_theory.induced_category.faithful CategoryTheory.InducedCategory.faithful
 
 end Induced
@@ -109,7 +109,7 @@ structure FullSubcategory where
 #align category_theory.full_subcategory.ext CategoryTheory.FullSubcategory.ext
 #align category_theory.full_subcategory.ext_iff CategoryTheory.FullSubcategory.ext_iff
 
-instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
+instance (priority := 10000) FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
   InducedCategory.category FullSubcategory.obj
 #align category_theory.full_subcategory.category CategoryTheory.FullSubcategory.category
 
@@ -137,11 +137,11 @@ theorem fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} : (fullSubcategoryInclu
   rfl
 #align category_theory.full_subcategory_inclusion.map CategoryTheory.fullSubcategoryInclusion.map
 
-instance FullSubcategory.full : Full (fullSubcategoryInclusion Z) :=
+instance (priority := 10000) FullSubcategory.full : Full (fullSubcategoryInclusion Z) :=
   InducedCategory.full _
 #align category_theory.full_subcategory.full CategoryTheory.FullSubcategory.full
 
-instance FullSubcategory.faithful : Faithful (fullSubcategoryInclusion Z) :=
+instance (priority := 10000) FullSubcategory.faithful : Faithful (fullSubcategoryInclusion Z) :=
   InducedCategory.faithful _
 #align category_theory.full_subcategory.faithful CategoryTheory.FullSubcategory.faithful
 
@@ -156,10 +156,10 @@ def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) : FullSubcategory Z ⥤ 
 #align category_theory.full_subcategory.map_obj_obj CategoryTheory.FullSubcategory.map_obj_obj
 #align category_theory.full_subcategory.map_map CategoryTheory.FullSubcategory.map_map
 
-instance FullSubcategory.full_map (h : ∀ ⦃X⦄, Z X → Z' X) :
+instance (priority := 10000) FullSubcategory.full_map (h : ∀ ⦃X⦄, Z X → Z' X) :
   Full (FullSubcategory.map h) where preimage f := f
 
-instance FullSubcategory.faithful_map (h : ∀ ⦃X⦄, Z X → Z' X) :
+instance (priority := 10000) FullSubcategory.faithful_map (h : ∀ ⦃X⦄, Z X → Z' X) :
   Faithful (FullSubcategory.map h) where
 
 @[simp]
@@ -207,11 +207,11 @@ theorem fullSubcategoryInclusion_map_lift_map (F : C ⥤ D) (hF : ∀ X, P (F.ob
   rfl
 #align category_theory.full_subcategory.inclusion_map_lift_map CategoryTheory.fullSubcategoryInclusion_map_lift_map
 
-instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Faithful F] :
+instance (priority := 10000) (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Faithful F] :
     Faithful (FullSubcategory.lift P F hF) :=
   Faithful.of_comp_iso (FullSubcategory.lift_comp_inclusion P F hF)
 
-instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Full F] : Full (FullSubcategory.lift P F hF) :=
+instance (priority := 10000) (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Full F] : Full (FullSubcategory.lift P F hF) :=
   Full.ofCompFaithfulIso (FullSubcategory.lift_comp_inclusion P F hF)
 
 @[simp]

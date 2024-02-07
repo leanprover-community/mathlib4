@@ -104,14 +104,14 @@ theorem mem_support (x : HahnSeries Γ R) (a : Γ) : a ∈ x.support ↔ x.coeff
   Iff.refl _
 #align hahn_series.mem_support HahnSeries.mem_support
 
-instance : Zero (HahnSeries Γ R) :=
+instance (priority := 10000) : Zero (HahnSeries Γ R) :=
   ⟨{  coeff := 0
       isPWO_support' := by simp }⟩
 
-instance : Inhabited (HahnSeries Γ R) :=
+instance (priority := 10000) : Inhabited (HahnSeries Γ R) :=
   ⟨0⟩
 
-instance [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
+instance (priority := 10000) [Subsingleton R] : Subsingleton (HahnSeries Γ R) :=
   ⟨fun a b => a.ext b (Subsingleton.elim _ _)⟩
 
 @[simp]
@@ -198,7 +198,7 @@ theorem single_eq_zero_iff {a : Γ} {r : R} : single a r = 0 ↔ r = 0 :=
   map_eq_zero_iff _ <| single_injective a
 #align hahn_series.single_eq_zero_iff HahnSeries.single_eq_zero_iff
 
-instance [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
+instance (priority := 10000) [Nonempty Γ] [Nontrivial R] : Nontrivial (HahnSeries Γ R) :=
   ⟨by
     obtain ⟨r, s, rs⟩ := exists_pair_ne R
     inhabit Γ
@@ -344,12 +344,12 @@ section AddMonoid
 
 variable [AddMonoid R]
 
-instance : Add (HahnSeries Γ R) where
+instance (priority := 10000) : Add (HahnSeries Γ R) where
   add x y :=
     { coeff := x.coeff + y.coeff
       isPWO_support' := (x.isPWO_support.union y.isPWO_support).mono (Function.support_add _ _) }
 
-instance : AddMonoid (HahnSeries Γ R) where
+instance (priority := 10000) : AddMonoid (HahnSeries Γ R) where
   zero := 0
   add := (· + ·)
   add_assoc x y z := by
@@ -422,7 +422,7 @@ end Domain
 
 end AddMonoid
 
-instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
+instance (priority := 10000) [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     add_comm := fun x y => by
       ext
@@ -432,7 +432,7 @@ section AddGroup
 
 variable [AddGroup R]
 
-instance : AddGroup (HahnSeries Γ R) :=
+instance (priority := 10000) : AddGroup (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     neg := fun x =>
       { coeff := fun a => -x.coeff a
@@ -477,7 +477,7 @@ theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
 
 end AddGroup
 
-instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
+instance (priority := 10000) [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
   { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
     inferInstanceAs (AddGroup (HahnSeries Γ R)) with }
 
@@ -487,7 +487,7 @@ section DistribMulAction
 
 variable [PartialOrder Γ] {V : Type*} [Monoid R] [AddMonoid V] [DistribMulAction R V]
 
-instance : SMul R (HahnSeries Γ V) :=
+instance (priority := 10000) : SMul R (HahnSeries Γ V) :=
   ⟨fun r x =>
     { coeff := r • x.coeff
       isPWO_support' := x.isPWO_support.mono (Function.support_const_smul_subset r x.coeff) }⟩
@@ -497,7 +497,7 @@ theorem smul_coeff {r : R} {x : HahnSeries Γ V} {a : Γ} : (r • x).coeff a = 
   rfl
 #align hahn_series.smul_coeff HahnSeries.smul_coeff
 
-instance : DistribMulAction R (HahnSeries Γ V) where
+instance (priority := 10000) : DistribMulAction R (HahnSeries Γ V) where
   smul := (· • ·)
   one_smul _ := by
     ext
@@ -523,12 +523,12 @@ theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ
 
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
 
-instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
+instance (priority := 10000) [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
   ⟨fun r s a => by
     ext
     simp⟩
 
-instance [SMulCommClass R S V] : SMulCommClass R S (HahnSeries Γ V) :=
+instance (priority := 10000) [SMulCommClass R S V] : SMulCommClass R S (HahnSeries Γ V) :=
   ⟨fun r s a => by
     ext
     simp [smul_comm]⟩
@@ -539,7 +539,7 @@ section Module
 
 variable [PartialOrder Γ] [Semiring R] {V : Type*} [AddCommMonoid V] [Module R V]
 
-instance : Module R (HahnSeries Γ V) :=
+instance (priority := 10000) : Module R (HahnSeries Γ V) :=
   { inferInstanceAs (DistribMulAction R (HahnSeries Γ V)) with
     zero_smul := fun _ => by
       ext
@@ -592,7 +592,7 @@ section Multiplication
 
 variable [OrderedCancelAddCommMonoid Γ]
 
-instance [Zero R] [One R] : One (HahnSeries Γ R) :=
+instance (priority := 10000) [Zero R] [One R] : One (HahnSeries Γ R) :=
   ⟨single 0 1⟩
 
 @[simp]
@@ -618,7 +618,7 @@ theorem order_one [MulZeroOneClass R] : order (1 : HahnSeries Γ R) = 0 := by
   · exact order_single one_ne_zero
 #align hahn_series.order_one HahnSeries.order_one
 
-instance [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R) where
+instance (priority := 10000) [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R) where
   mul x y :=
     { coeff := fun a =>
         ∑ ij in addAntidiagonal x.isPWO_support y.isPWO_support a, x.coeff ij.fst * y.coeff ij.snd
@@ -664,7 +664,7 @@ theorem mul_coeff_left' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a
   rw [hb.2 ⟨hb.1.2.1, hb.1.2.2⟩, zero_mul]
 #align hahn_series.mul_coeff_left' HahnSeries.mul_coeff_left'
 
-instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
+instance (priority := 10000) [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
   { inferInstanceAs (Mul (HahnSeries Γ R)),
     inferInstanceAs (Add (HahnSeries Γ R)) with
     left_distrib := fun x y z => by
@@ -793,7 +793,7 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
 
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
+instance (priority := 10000) [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
     inferInstanceAs (Distrib (HahnSeries Γ R)) with
     zero_mul := fun _ => by
@@ -803,11 +803,11 @@ instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries �
       ext
       simp [mul_coeff] }
 
-instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
+instance (priority := 10000) [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
     mul_assoc := mul_assoc' }
 
-instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
+instance (priority := 10000) [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
   { AddMonoidWithOne.unary,
     inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
     one_mul := fun x => by
@@ -817,46 +817,46 @@ instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
       ext
       exact mul_single_zero_coeff.trans (mul_one _) }
 
-instance [Semiring R] : Semiring (HahnSeries Γ R) :=
+instance (priority := 10000) [Semiring R] : Semiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
 
-instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) where
+instance (priority := 10000) [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) where
   __ : NonUnitalSemiring (HahnSeries Γ R) := inferInstance
   mul_comm x y := by
     ext
     simp_rw [mul_coeff, mul_comm]
     exact Finset.sum_equiv (Equiv.prodComm _ _) (fun _ ↦ swap_mem_addAntidiagonal.symm) <| by simp
 
-instance [CommSemiring R] : CommSemiring (HahnSeries Γ R) :=
+instance (priority := 10000) [CommSemiring R] : CommSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalCommSemiring (HahnSeries Γ R)),
     inferInstanceAs (Semiring (HahnSeries Γ R)) with }
 
-instance [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing (HahnSeries Γ R) :=
+instance (priority := 10000) [NonUnitalNonAssocRing R] : NonUnitalNonAssocRing (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)),
     inferInstanceAs (AddGroup (HahnSeries Γ R)) with }
 
-instance [NonUnitalRing R] : NonUnitalRing (HahnSeries Γ R) :=
+instance (priority := 10000) [NonUnitalRing R] : NonUnitalRing (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocRing (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
 
-instance [NonAssocRing R] : NonAssocRing (HahnSeries Γ R) :=
+instance (priority := 10000) [NonAssocRing R] : NonAssocRing (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocRing (HahnSeries Γ R)),
     inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)) with }
 
-instance [Ring R] : Ring (HahnSeries Γ R) :=
+instance (priority := 10000) [Ring R] : Ring (HahnSeries Γ R) :=
   { inferInstanceAs (Semiring (HahnSeries Γ R)),
     inferInstanceAs (AddCommGroup (HahnSeries Γ R)) with }
 
-instance [NonUnitalCommRing R] : NonUnitalCommRing (HahnSeries Γ R) :=
+instance (priority := 10000) [NonUnitalCommRing R] : NonUnitalCommRing (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalCommSemiring (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalRing (HahnSeries Γ R)) with }
 
-instance [CommRing R] : CommRing (HahnSeries Γ R) :=
+instance (priority := 10000) [CommRing R] : CommRing (HahnSeries Γ R) :=
   { inferInstanceAs (CommSemiring (HahnSeries Γ R)),
     inferInstanceAs (Ring (HahnSeries Γ R)) with }
 
-instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
+instance (priority := 10000) {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
     NoZeroDivisors (HahnSeries Γ R) where
     eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
       contrapose! xy
@@ -865,7 +865,7 @@ instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R
       rw [mul_coeff_order_add_order x y, zero_coeff, mul_eq_zero]
       simp [coeff_order_ne_zero, xy]
 
-instance {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :
+instance (priority := 10000) {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R] :
     IsDomain (HahnSeries Γ R) :=
   NoZeroDivisors.to_isDomain _
 
@@ -1035,7 +1035,7 @@ section Algebra
 
 variable [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 
-instance : Algebra R (HahnSeries Γ A) where
+instance (priority := 10000) : Algebra R (HahnSeries Γ A) where
   toRingHom := C.comp (algebraMap R A)
   smul_def' r x := by
     ext
@@ -1054,7 +1054,7 @@ theorem algebraMap_apply {r : R} : algebraMap R (HahnSeries Γ A) r = C (algebra
   rfl
 #align hahn_series.algebra_map_apply HahnSeries.algebraMap_apply
 
-instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries Γ R)) :=
+instance (priority := 10000) [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries Γ R)) :=
   ⟨⟨⊥, ⊤, by
       rw [Ne.def, SetLike.ext_iff, not_forall]
       obtain ⟨a, ha⟩ := exists_ne (0 : Γ)
@@ -1267,7 +1267,7 @@ def ofPowerSeriesAlg : PowerSeries A →ₐ[R] HahnSeries Γ A :=
     (AlgEquiv.toAlgHom (toPowerSeriesAlg R).symm)
 #align hahn_series.of_power_series_alg HahnSeries.ofPowerSeriesAlg
 
-instance powerSeriesAlgebra {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)] :
+instance (priority := 10000) powerSeriesAlgebra {S : Type*} [CommSemiring S] [Algebra S (PowerSeries R)] :
     Algebra S (HahnSeries Γ R) :=
   RingHom.toAlgebra <| (ofPowerSeries Γ R).comp (algebraMap S (PowerSeries R))
 #align hahn_series.power_series_algebra HahnSeries.powerSeriesAlgebra
@@ -1376,7 +1376,7 @@ section AddCommMonoid
 
 variable [PartialOrder Γ] [AddCommMonoid R] {α : Type*}
 
-instance : FunLike (SummableFamily Γ R α) α (HahnSeries Γ R) where
+instance (priority := 10000) : FunLike (SummableFamily Γ R α) α (HahnSeries Γ R) where
   coe := toFun
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
@@ -1398,7 +1398,7 @@ theorem ext {s t : SummableFamily Γ R α} (h : ∀ a : α, s a = t a) : s = t :
   DFunLike.ext s t h
 #align hahn_series.summable_family.ext HahnSeries.SummableFamily.ext
 
-instance : Add (SummableFamily Γ R α) :=
+instance (priority := 10000) : Add (SummableFamily Γ R α) :=
   ⟨fun x y =>
     { toFun := x + y
       isPWO_iUnion_support' :=
@@ -1415,10 +1415,10 @@ instance : Add (SummableFamily Γ R α) :=
             contrapose! ha
             rw [ha.1, ha.2, add_zero]) }⟩
 
-instance : Zero (SummableFamily Γ R α) :=
+instance (priority := 10000) : Zero (SummableFamily Γ R α) :=
   ⟨⟨0, by simp, by simp⟩⟩
 
-instance : Inhabited (SummableFamily Γ R α) :=
+instance (priority := 10000) : Inhabited (SummableFamily Γ R α) :=
   ⟨0⟩
 
 @[simp]
@@ -1439,7 +1439,7 @@ theorem zero_apply {a : α} : (0 : SummableFamily Γ R α) a = 0 :=
   rfl
 #align hahn_series.summable_family.zero_apply HahnSeries.SummableFamily.zero_apply
 
-instance : AddCommMonoid (SummableFamily Γ R α) where
+instance (priority := 10000) : AddCommMonoid (SummableFamily Γ R α) where
   add := (· + ·)
   zero := 0
   zero_add s := by
@@ -1493,7 +1493,7 @@ section AddCommGroup
 
 variable [PartialOrder Γ] [AddCommGroup R] {α : Type*} {s t : SummableFamily Γ R α} {a : α}
 
-instance : AddCommGroup (SummableFamily Γ R α) :=
+instance (priority := 10000) : AddCommGroup (SummableFamily Γ R α) :=
   { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
     neg := fun s =>
       { toFun := fun a => -s a
@@ -1531,7 +1531,7 @@ section Semiring
 
 variable [OrderedCancelAddCommMonoid Γ] [Semiring R] {α : Type*}
 
-instance : SMul (HahnSeries Γ R) (SummableFamily Γ R α) where
+instance (priority := 10000) : SMul (HahnSeries Γ R) (SummableFamily Γ R α) where
   smul x s :=
     { toFun := fun a => x * s a
       isPWO_iUnion_support' := by
@@ -1557,7 +1557,7 @@ theorem smul_apply {x : HahnSeries Γ R} {s : SummableFamily Γ R α} {a : α} :
   rfl
 #align hahn_series.summable_family.smul_apply HahnSeries.SummableFamily.smul_apply
 
-instance : Module (HahnSeries Γ R) (SummableFamily Γ R α) where
+instance (priority := 10000) : Module (HahnSeries Γ R) (SummableFamily Γ R α) where
   smul := (· • ·)
   smul_zero _ := ext fun _ => mul_zero _
   zero_smul _ := ext fun _ => zero_mul _
@@ -1822,7 +1822,7 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.coeff x.order)
 
 end IsDomain
 
-instance [Field R] : Field (HahnSeries Γ R) :=
+instance (priority := 10000) [Field R] : Field (HahnSeries Γ R) :=
   { inferInstanceAs (IsDomain (HahnSeries Γ R)),
     inferInstanceAs (CommRing (HahnSeries Γ R)) with
     inv := fun x =>

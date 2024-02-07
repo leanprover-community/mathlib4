@@ -43,13 +43,13 @@ def OpenNhds (x : X) :=
 
 namespace OpenNhds
 
-instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
+instance (priority := 10000) partialOrder (x : X) : PartialOrder (OpenNhds x) where
   le U V := U.1 ≤ V.1
   le_refl _ := by dsimp [LE.le]; exact le_rfl
   le_trans _ _ _ := by dsimp [LE.le]; exact le_trans
   le_antisymm _ _ i j := FullSubcategory.ext _ _ <| le_antisymm i j
 
-instance (x : X) : Lattice (OpenNhds x) :=
+instance (priority := 10000) (x : X) : Lattice (OpenNhds x) :=
   { OpenNhds.partialOrder x with
     inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
     le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
@@ -60,17 +60,17 @@ instance (x : X) : Lattice (OpenNhds x) :=
     le_sup_left := fun U V => @le_sup_left _ _ U.1.1 V.1.1
     le_sup_right := fun U V => @le_sup_right _ _ U.1.1 V.1.1 }
 
-instance (x : X) : OrderTop (OpenNhds x) where
+instance (priority := 10000) (x : X) : OrderTop (OpenNhds x) where
   top := ⟨⊤, trivial⟩
   le_top _ := by dsimp [LE.le]; exact le_top
 
-instance (x : X) : Inhabited (OpenNhds x) :=
+instance (priority := 10000) (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩
 
-instance openNhdsCategory (x : X) : Category.{u} (OpenNhds x) := inferInstance
+instance (priority := 10000) openNhdsCategory (x : X) : Category.{u} (OpenNhds x) := inferInstance
 #align topological_space.open_nhds.open_nhds_category TopologicalSpace.OpenNhds.openNhdsCategory
 
-instance opensNhdsHomHasCoeToFun {x : X} {U V : OpenNhds x} : CoeFun (U ⟶ V) fun _ => U.1 → V.1 :=
+instance (priority := 10000) opensNhdsHomHasCoeToFun {x : X} {U V : OpenNhds x} : CoeFun (U ⟶ V) fun _ => U.1 → V.1 :=
   ⟨fun f x => ⟨x, f.le x.2⟩⟩
 #align topological_space.open_nhds.opens_nhds_hom_has_coe_to_fun TopologicalSpace.OpenNhds.opensNhdsHomHasCoeToFun
 

@@ -122,7 +122,7 @@ variable (W₁ W₂)
 for `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂` respectively,
 and if both `W₁` and `W₂` contain identites, then the product
 functor `L₁.prod L₂ : C₁ × C₂ ⥤ D₁ × D₂` is a localization functor for `W₁.prod W₂`. -/
-instance prod [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] :
+instance (priority := 10000) prod [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] :
     (L₁.prod L₂).IsLocalization (W₁.prod W₂) := by
   haveI := Construction.prodIsLocalization W₁ W₂
   exact of_equivalence_target (W₁.Q.prod W₂.Q) (W₁.prod W₂) (L₁.prod L₂)

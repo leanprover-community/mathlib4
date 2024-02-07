@@ -33,7 +33,7 @@ variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : Lis
 -- attribute [inline] List.head!
 
 /-- There is only one list of an empty type -/
-instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
+instance (priority := 10000) uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
   { instInhabitedList with
     uniq := fun l =>
       match l with
@@ -41,11 +41,11 @@ instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
       | a :: _ => isEmptyElim a }
 #align list.unique_of_is_empty List.uniqueOfIsEmpty
 
-instance : Std.LawfulIdentity (α := List α) Append.append [] where
+instance (priority := 10000) : Std.LawfulIdentity (α := List α) Append.append [] where
   left_id := nil_append
   right_id := append_nil
 
-instance : Std.Associative (α := List α) Append.append where
+instance (priority := 10000) : Std.Associative (α := List α) Append.append where
   assoc := append_assoc
 
 #align list.cons_ne_nil List.cons_ne_nil
@@ -229,14 +229,14 @@ theorem length_eq_three {l : List α} : l.length = 3 ↔ ∃ a b c, l = [a, b, c
 /-! ### set-theoretic notation of lists -/
 
 -- ADHOC Porting note: instance from Lean3 core
-instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
+instance (priority := 10000) instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
 #align list.has_singleton List.instSingletonList
 
 -- ADHOC Porting note: instance from Lean3 core
-instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
+instance (priority := 10000) [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 -- ADHOC Porting note: instance from Lean3 core
-instance [DecidableEq α] : IsLawfulSingleton α (List α) :=
+instance (priority := 10000) [DecidableEq α] : IsLawfulSingleton α (List α) :=
   { insert_emptyc_eq := fun x =>
       show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg (not_mem_nil _) }
 
@@ -305,7 +305,7 @@ theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
 
 /-! ### list subset -/
 
-instance : IsTrans (List α) Subset where
+instance (priority := 10000) : IsTrans (List α) Subset where
   trans := fun _ _ _ => List.Subset.trans
 
 #align list.subset_def List.subset_def
@@ -1041,7 +1041,7 @@ theorem Sublist.antisymm (s₁ : l₁ <+ l₂) (s₂ : l₂ <+ l₁) : l₁ = l�
   s₁.eq_of_length_le s₂.length_le
 #align list.sublist.antisymm List.Sublist.antisymm
 
-instance decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <+ l₂)
+instance (priority := 10000) decidableSublist [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <+ l₂)
   | [], _ => isTrue <| nil_sublist _
   | _ :: _, [] => isFalse fun h => List.noConfusion <| eq_nil_of_sublist_nil h
   | a :: l₁, b :: l₂ =>
@@ -4206,7 +4206,7 @@ theorem forall_map_iff {p : β → Prop} (f : α → β) : Forall p (l.map f) �
   induction l <;> simp [*]
 #align list.all₂_map_iff List.forall_map_iff
 
-instance (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _ =>
+instance (priority := 10000) (p : α → Prop) [DecidablePred p] : DecidablePred (Forall p) := fun _ =>
   decidable_of_iff' _ forall_iff_forall_mem
 
 end Forall

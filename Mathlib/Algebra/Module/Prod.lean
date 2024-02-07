@@ -19,28 +19,28 @@ variable {R : Type*} {S : Type*} {M : Type*} {N : Type*}
 
 namespace Prod
 
-instance smulWithZero [Zero R] [Zero M] [Zero N] [SMulWithZero R M] [SMulWithZero R N] :
+instance (priority := 10000) smulWithZero [Zero R] [Zero M] [Zero N] [SMulWithZero R M] [SMulWithZero R N] :
     SMulWithZero R (M × N) :=
   { Prod.smul with
     smul_zero := fun _ => Prod.ext (smul_zero _) (smul_zero _)
     zero_smul := fun _ => Prod.ext (zero_smul _ _) (zero_smul _ _) }
 #align prod.smul_with_zero Prod.smulWithZero
 
-instance mulActionWithZero [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
+instance (priority := 10000) mulActionWithZero [MonoidWithZero R] [Zero M] [Zero N] [MulActionWithZero R M]
     [MulActionWithZero R N] : MulActionWithZero R (M × N) :=
   { Prod.mulAction with
     smul_zero := fun _ => Prod.ext (smul_zero _) (smul_zero _)
     zero_smul := fun _ => Prod.ext (zero_smul _ _) (zero_smul _ _) }
 #align prod.mul_action_with_zero Prod.mulActionWithZero
 
-instance instModule [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] :
+instance (priority := 10000) instModule [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] :
     Module R (M × N) :=
   { Prod.distribMulAction with
     add_smul := fun _ _ _ => mk.inj_iff.mpr ⟨add_smul _ _ _, add_smul _ _ _⟩
     zero_smul := fun _ => mk.inj_iff.mpr ⟨zero_smul _ _, zero_smul _ _⟩ }
 #align prod.module Prod.instModule
 
-instance noZeroSMulDivisors {r : Semiring R} [AddCommMonoid M] [AddCommMonoid N]
+instance (priority := 10000) noZeroSMulDivisors {r : Semiring R} [AddCommMonoid M] [AddCommMonoid N]
     [Module R M] [Module R N] [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N] :
     NoZeroSMulDivisors R (M × N) :=
   { eq_zero_or_eq_zero_of_smul_eq_zero := by -- Porting note: in mathlib3 there is no need for `by`/

@@ -60,7 +60,7 @@ attribute [scoped instance] ModuleCat.isScalarTower_of_algebra_moduleCat
 example (M N : ModuleCat.{v} A) : Module k (M ⟶ N) := LinearMap.module
 -- Porting note: used to be `by infer_instance` instead of `LinearMap.module`
 
-instance linearOverField : Linear k (ModuleCat.{v} A) where
+instance (priority := 10000) linearOverField : Linear k (ModuleCat.{v} A) where
   --Porting note: used to be `by infer_instance` instead of `LinearMap.module`
   homModule M N := LinearMap.module
   smul_comp := by

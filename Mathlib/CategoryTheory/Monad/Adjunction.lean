@@ -124,13 +124,13 @@ theorem Monad.left_comparison (h : L ⊣ R) : L ⋙ Monad.comparison h = h.toMon
   rfl
 #align category_theory.monad.left_comparison CategoryTheory.Monad.left_comparison
 
-instance [Faithful R] (h : L ⊣ R) : Faithful (Monad.comparison h) where
+instance (priority := 10000) [Faithful R] (h : L ⊣ R) : Faithful (Monad.comparison h) where
   map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w : _)
 
-instance (T : Monad C) : Full (Monad.comparison T.adj) where
+instance (priority := 10000) (T : Monad C) : Full (Monad.comparison T.adj) where
   preimage {_ _} f := ⟨f.f, by simpa using f.h⟩
 
-instance (T : Monad C) : EssSurj (Monad.comparison T.adj) where
+instance (priority := 10000) (T : Monad C) : EssSurj (Monad.comparison T.adj) where
   mem_essImage X :=
     ⟨{  A := X.A
         a := X.a
@@ -172,15 +172,15 @@ theorem Comonad.left_comparison (h : L ⊣ R) : R ⋙ Comonad.comparison h = h.t
   rfl
 #align category_theory.comonad.left_comparison CategoryTheory.Comonad.left_comparison
 
-instance Comonad.comparison_faithful_of_faithful [Faithful L] (h : L ⊣ R) :
+instance (priority := 10000) Comonad.comparison_faithful_of_faithful [Faithful L] (h : L ⊣ R) :
     Faithful (Comonad.comparison h) where
   map_injective {_ _} _ _ w := L.map_injective (congr_arg Comonad.Coalgebra.Hom.f w : _)
 #align category_theory.comonad.comparison_faithful_of_faithful CategoryTheory.Comonad.comparison_faithful_of_faithful
 
-instance (G : Comonad C) : Full (Comonad.comparison G.adj) where
+instance (priority := 10000) (G : Comonad C) : Full (Comonad.comparison G.adj) where
   preimage f := ⟨f.f, by simpa using f.h⟩
 
-instance (G : Comonad C) : EssSurj (Comonad.comparison G.adj) where
+instance (priority := 10000) (G : Comonad C) : EssSurj (Comonad.comparison G.adj) where
   mem_essImage X :=
     ⟨{  A := X.A
         a := X.a
@@ -203,14 +203,14 @@ class ComonadicLeftAdjoint (L : C ⥤ D) extends IsLeftAdjoint L where
   eqv : IsEquivalence (Comonad.comparison (Adjunction.ofLeftAdjoint L))
 #align category_theory.comonadic_left_adjoint CategoryTheory.ComonadicLeftAdjoint
 
-noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget :=
+noncomputable instance (priority := 10000) (T : Monad C) : MonadicRightAdjoint T.forget :=
   ⟨(Equivalence.ofFullyFaithfullyEssSurj _ : IsEquivalence (Monad.comparison T.adj))⟩
 
-noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget :=
+noncomputable instance (priority := 10000) (G : Comonad C) : ComonadicLeftAdjoint G.forget :=
   ⟨(Equivalence.ofFullyFaithfullyEssSurj _ : IsEquivalence (Comonad.comparison G.adj))⟩
 
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
-instance μ_iso_of_reflective [Reflective R] : IsIso (Adjunction.ofRightAdjoint R).toMonad.μ := by
+instance (priority := 10000) μ_iso_of_reflective [Reflective R] : IsIso (Adjunction.ofRightAdjoint R).toMonad.μ := by
   dsimp
   infer_instance
 #align category_theory.μ_iso_of_reflective CategoryTheory.μ_iso_of_reflective
@@ -220,7 +220,7 @@ attribute [instance] ComonadicLeftAdjoint.eqv
 
 namespace Reflective
 
-instance [Reflective R] (X : (Adjunction.ofRightAdjoint R).toMonad.Algebra) :
+instance (priority := 10000) [Reflective R] (X : (Adjunction.ofRightAdjoint R).toMonad.Algebra) :
     IsIso ((Adjunction.ofRightAdjoint R).unit.app X.A) :=
   ⟨⟨X.a,
       ⟨X.unit, by
@@ -231,7 +231,7 @@ instance [Reflective R] (X : (Adjunction.ofRightAdjoint R).toMonad.Algebra) :
         erw [X.unit]
         simp⟩⟩⟩
 
-instance comparison_essSurj [Reflective R] :
+instance (priority := 10000) comparison_essSurj [Reflective R] :
     EssSurj (Monad.comparison (Adjunction.ofRightAdjoint R)) := by
   refine' ⟨fun X => ⟨(leftAdjoint R).obj X.A, ⟨_⟩⟩⟩
   symm
@@ -246,7 +246,7 @@ instance comparison_essSurj [Reflective R] :
   apply (X.unit_assoc _).symm
 #align category_theory.reflective.comparison_ess_surj CategoryTheory.Reflective.comparison_essSurj
 
-instance comparisonFull [Full R] [IsRightAdjoint R] :
+instance (priority := 10000) comparisonFull [Full R] [IsRightAdjoint R] :
     Full (Monad.comparison (Adjunction.ofRightAdjoint R)) where
   preimage f := R.preimage f.f
 #align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparisonFull

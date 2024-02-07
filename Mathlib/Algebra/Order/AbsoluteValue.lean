@@ -50,23 +50,23 @@ section Semiring
 
 variable {R S : Type*} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
-instance funLike : FunLike (AbsoluteValue R S) R S where
+instance (priority := 10000) funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
-instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
+instance (priority := 10000) zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   map_zero f := (f.eq_zero' _).2 rfl
 #align absolute_value.zero_hom_class AbsoluteValue.zeroHomClass
 
-instance mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
+instance (priority := 10000) mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_mul := fun f => f.map_mul' }
 #align absolute_value.mul_hom_class AbsoluteValue.mulHomClass
 
-instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=
+instance (priority := 10000) nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_nonneg := fun f => f.nonneg' }
 #align absolute_value.nonneg_hom_class AbsoluteValue.nonnegHomClass
 
-instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
+instance (priority := 10000) subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_add_le_add := fun f => f.add_le' }
 #align absolute_value.subadditive_hom_class AbsoluteValue.subadditiveHomClass
 
@@ -89,7 +89,7 @@ initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
 
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
 directly. -/
-instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
+instance (priority := 10000) : CoeFun (AbsoluteValue R S) fun _ => R → S :=
   DFunLike.hasCoeToFun
 
 @[simp]
@@ -177,7 +177,7 @@ protected theorem map_one : abv 1 = 1 :=
   abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
 #align absolute_value.map_one AbsoluteValue.map_one
 
-instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
+instance (priority := 10000) monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.mulHomClass with
     map_zero := fun f => f.map_zero
     map_one := fun f => f.map_one }
@@ -242,7 +242,7 @@ protected theorem map_sub (a b : R) : abv (a - b) = abv (b - a) := by rw [← ne
 
 end OrderedCommRing
 
-instance {R S : Type*} [Ring R] [OrderedCommRing S] [Nontrivial R] [IsDomain S] :
+instance (priority := 10000) {R S : Type*} [Ring R] [OrderedCommRing S] [Nontrivial R] [IsDomain S] :
     MulRingNormClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.subadditiveHomClass,
     AbsoluteValue.monoidWithZeroHomClass with
@@ -265,7 +265,7 @@ protected def abs : AbsoluteValue S S where
 #align absolute_value.abs_apply AbsoluteValue.abs_apply
 #align absolute_value.abs_to_mul_hom_apply AbsoluteValue.abs_apply
 
-instance : Inhabited (AbsoluteValue S S) :=
+instance (priority := 10000) : Inhabited (AbsoluteValue S S) :=
   ⟨AbsoluteValue.abs⟩
 
 end LinearOrderedRing
@@ -330,7 +330,7 @@ lemma abv_mul (x y) : abv (x * y) = abv x * abv y := abv_mul' x y
 #align is_absolute_value.abv_mul IsAbsoluteValue.abv_mul
 
 /-- A bundled absolute value is an absolute value. -/
-instance _root_.AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) : IsAbsoluteValue abv where
+instance (priority := 10000) _root_.AbsoluteValue.isAbsoluteValue (abv : AbsoluteValue R S) : IsAbsoluteValue abv where
   abv_nonneg' := abv.nonneg
   abv_eq_zero' := abv.eq_zero
   abv_add' := abv.add_le
@@ -363,7 +363,7 @@ section LinearOrderedRing
 
 variable {S : Type*} [LinearOrderedRing S]
 
-instance abs_isAbsoluteValue : IsAbsoluteValue (abs : S → S) :=
+instance (priority := 10000) abs_isAbsoluteValue : IsAbsoluteValue (abs : S → S) :=
   AbsoluteValue.abs.isAbsoluteValue
 #align is_absolute_value.abs_is_absolute_value IsAbsoluteValue.abs_isAbsoluteValue
 

@@ -494,13 +494,13 @@ lemma compatiblePreserving [Faithful G] : CompatiblePreserving K G := by
 lemma isContinuous [Faithful G] (Hp : CoverPreserving J K G) : G.IsContinuous J K :=
   isContinuous_of_coverPreserving (compatiblePreserving K G) Hp
 
-noncomputable instance fullSheafPushforwardContinuous [G.IsContinuous J K] :
+noncomputable instance (priority := 10000) fullSheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
   preimage α := ⟨sheafHom α.val⟩
   witness α := Sheaf.Hom.ext _ _ <| sheafHom_restrict_eq α.val
 #align category_theory.cover_dense.sites.pullback.full CategoryTheory.Functor.IsCoverDense.fullSheafPushforwardContinuous
 
-instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
+instance (priority := 10000) faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
   map_injective := by
     intro ℱ ℱ' α β e
@@ -528,7 +528,7 @@ variable {A : Type w} [Category.{max u v} A] [Limits.HasLimits A]
 
 variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
 
-instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
+instance (priority := 10000) (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
     let α := G.sheafAdjunctionCocontinuous A J K
     haveI : IsIso ((sheafToPresheaf J A).map (α.counit.app Y)) :=
       IsIso.of_iso ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val)

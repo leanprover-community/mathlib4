@@ -55,7 +55,7 @@ theorem Option.naturality {α β} (f : α → F β) (x : Option α) :
 
 end Option
 
-instance : LawfulTraversable Option :=
+instance (priority := 10000) : LawfulTraversable Option :=
   { show LawfulMonad Option from inferInstance with
     id_traverse := Option.id_traverse
     comp_traverse := Option.comp_traverse
@@ -97,7 +97,7 @@ protected theorem naturality {α β} (f : α → F β) (x : List α) :
     ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
 #align list.naturality List.naturality
 
-instance : LawfulTraversable.{u} List :=
+instance (priority := 10000) : LawfulTraversable.{u} List :=
   { show LawfulMonad List from inferInstance with
     id_traverse := List.id_traverse
     comp_traverse := List.comp_traverse
@@ -192,7 +192,7 @@ protected theorem naturality {α β} (f : α → F β) (x : σ ⊕ α) :
 
 end Traverse
 
-instance {σ : Type u} : LawfulTraversable.{u} (Sum σ) :=
+instance (priority := 10000) {σ : Type u} : LawfulTraversable.{u} (Sum σ) :=
   { show LawfulMonad (Sum σ) from inferInstance with
     id_traverse := Sum.id_traverse
     comp_traverse := Sum.comp_traverse

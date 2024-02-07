@@ -71,7 +71,7 @@ protected instance mul : Mul (PushoutI φ) := by
 protected instance one : One (PushoutI φ) := by
   delta PushoutI; infer_instance
 
-instance monoid : Monoid (PushoutI φ) :=
+instance (priority := 10000) monoid : Monoid (PushoutI φ) :=
   { Con.monoid _ with
     toMul := PushoutI.mul
     toOne := PushoutI.one }
@@ -187,7 +187,7 @@ end Monoid
 
 variable [∀ i, Group (G i)] [Group H] {φ : ∀ i, H →* G i}
 
-instance : Group (PushoutI φ) :=
+instance (priority := 10000) : Group (PushoutI φ) :=
   { Con.group (PushoutI.con φ) with
     toMonoid := PushoutI.monoid }
 
@@ -264,9 +264,9 @@ variable {d : Transversal φ}
 @[simps!]
 def empty : NormalWord d := ⟨CoprodI.Word.empty, 1, fun i g => by simp [CoprodI.Word.empty]⟩
 
-instance : Inhabited (NormalWord d) := ⟨NormalWord.empty⟩
+instance (priority := 10000) : Inhabited (NormalWord d) := ⟨NormalWord.empty⟩
 
-instance (i : ι) : Inhabited (Pair d i) :=
+instance (priority := 10000) (i : ι) : Inhabited (Pair d i) :=
   ⟨{ (empty : NormalWord d) with
       head := 1,
       fstIdx_ne := fun h => by cases h }⟩
@@ -410,7 +410,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
     left_inv := leftInv
     right_inv := fun _ => rcons_injective (leftInv _) }
 
-noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :=
+noncomputable instance (priority := 10000) summandAction (i : ι) : MulAction (G i) (NormalWord d) :=
   { smul := fun g w => (equivPair i).symm
       { equivPair i w with
         head := g * (equivPair i w).head }
@@ -422,7 +422,7 @@ noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :
       dsimp [instHSMul]
       simp [mul_assoc, Equiv.apply_symm_apply, Function.End.mul_def] }
 
-instance baseAction : MulAction H (NormalWord d) :=
+instance (priority := 10000) baseAction : MulAction H (NormalWord d) :=
   { smul := fun h w => { w with head := h * w.head },
     one_smul := by simp [instHSMul]
     mul_smul := by simp [instHSMul, mul_assoc] }
@@ -435,7 +435,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
       { equivPair i w with
         head := g * (equivPair i w).head } := rfl
 
-noncomputable instance mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
+noncomputable instance (priority := 10000) mulAction [DecidableEq ι] [∀ i, DecidableEq (G i)] :
     MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
@@ -574,13 +574,13 @@ theorem prod_injective : Function.Injective (prod : NormalWord d → PushoutI φ
   letI := fun i => Classical.decEq (G i)
   classical exact equiv.symm.injective
 
-instance : FaithfulSMul (PushoutI φ) (NormalWord d) :=
+instance (priority := 10000) : FaithfulSMul (PushoutI φ) (NormalWord d) :=
   ⟨fun h => by simpa using congr_arg prod (h empty)⟩
 
-instance (i : ι) : FaithfulSMul (G i) (NormalWord d) :=
+instance (priority := 10000) (i : ι) : FaithfulSMul (G i) (NormalWord d) :=
   ⟨by simp [summand_smul_def']⟩
 
-instance : FaithfulSMul H (NormalWord d) :=
+instance (priority := 10000) : FaithfulSMul H (NormalWord d) :=
   ⟨by simp [base_smul_def']⟩
 
 end NormalWord

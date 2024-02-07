@@ -52,7 +52,7 @@ def nil : Seq α :=
   ⟨Stream'.const none, fun {_} _ => rfl⟩
 #align stream.seq.nil Stream'.Seq.nil
 
-instance : Inhabited (Seq α) :=
+instance (priority := 10000) : Inhabited (Seq α) :=
   ⟨nil⟩
 
 /-- Prepend an element to a sequence -/
@@ -117,7 +117,7 @@ def TerminatedAt (s : Seq α) (n : ℕ) : Prop :=
 #align stream.seq.terminated_at Stream'.Seq.TerminatedAt
 
 /-- It is decidable whether a sequence terminates at a given position. -/
-instance terminatedAtDecidable (s : Seq α) (n : ℕ) : Decidable (s.TerminatedAt n) :=
+instance (priority := 10000) terminatedAtDecidable (s : Seq α) (n : ℕ) : Decidable (s.TerminatedAt n) :=
   decidable_of_iff' (s.get? n).isNone <| by unfold TerminatedAt; cases s.get? n <;> simp
 #align stream.seq.terminated_at_decidable Stream'.Seq.terminatedAtDecidable
 
@@ -154,7 +154,7 @@ protected def Mem (a : α) (s : Seq α) :=
   some a ∈ s.1
 #align stream.seq.mem Stream'.Seq.Mem
 
-instance : Membership α (Seq α) :=
+instance (priority := 10000) : Membership α (Seq α) :=
   ⟨Seq.Mem⟩
 
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
@@ -434,7 +434,7 @@ def ofList (l : List α) : Seq α :=
     exact h.trans (Nat.le_succ n)⟩
 #align stream.seq.of_list Stream'.Seq.ofList
 
-instance coeList : Coe (List α) (Seq α) :=
+instance (priority := 10000) coeList : Coe (List α) (Seq α) :=
   ⟨ofList⟩
 #align stream.seq.coe_list Stream'.Seq.coeList
 
@@ -459,7 +459,7 @@ def ofStream (s : Stream' α) : Seq α :=
   ⟨s.map some, fun {n} h => by contradiction⟩
 #align stream.seq.of_stream Stream'.Seq.ofStream
 
-instance coeStream : Coe (Stream' α) (Seq α) :=
+instance (priority := 10000) coeStream : Coe (Stream' α) (Seq α) :=
   ⟨ofStream⟩
 #align stream.seq.coe_stream Stream'.Seq.coeStream
 
@@ -473,7 +473,7 @@ def ofLazyList : LazyList α → Seq α :=
     | LazyList.cons a l' => some (a, l'.get)
 #align stream.seq.of_lazy_list Stream'.Seq.ofLazyList
 
-instance coeLazyList : Coe (LazyList α) (Seq α) :=
+instance (priority := 10000) coeLazyList : Coe (LazyList α) (Seq α) :=
   ⟨ofLazyList⟩
 #align stream.seq.coe_lazy_list Stream'.Seq.coeLazyList
 
@@ -734,9 +734,9 @@ theorem map_get? (f : α → β) : ∀ s n, get? (map f s) n = (get? s n).map f
   | ⟨_, _⟩, _ => rfl
 #align stream.seq.map_nth Stream'.Seq.map_get?
 
-instance : Functor Seq where map := @map
+instance (priority := 10000) : Functor Seq where map := @map
 
-instance : LawfulFunctor Seq where
+instance (priority := 10000) : LawfulFunctor Seq where
   id_map := @map_id
   comp_map := @map_comp
   map_const := rfl
@@ -905,7 +905,7 @@ def toSeq : Seq1 α → Seq α
   | (a, s) => Seq.cons a s
 #align stream.seq1.to_seq Stream'.Seq1.toSeq
 
-instance coeSeq : Coe (Seq1 α) (Seq α) :=
+instance (priority := 10000) coeSeq : Coe (Seq1 α) (Seq α) :=
   ⟨toSeq⟩
 #align stream.seq1.coe_seq Stream'.Seq1.coeSeq
 
@@ -946,7 +946,7 @@ def ret (a : α) : Seq1 α :=
   (a, nil)
 #align stream.seq1.ret Stream'.Seq1.ret
 
-instance [Inhabited α] : Inhabited (Seq1 α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (Seq1 α) :=
   ⟨ret default⟩
 
 /-- The `bind` operator for the `Seq1` monad,
@@ -1046,13 +1046,13 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
   · cases' x_1 with y t; simp
 #align stream.seq1.bind_assoc Stream'.Seq1.bind_assoc
 
-instance monad : Monad Seq1 where
+instance (priority := 10000) monad : Monad Seq1 where
   map := @map
   pure := @ret
   bind := @bind
 #align stream.seq1.monad Stream'.Seq1.monad
 
-instance lawfulMonad : LawfulMonad Seq1 := LawfulMonad.mk'
+instance (priority := 10000) lawfulMonad : LawfulMonad Seq1 := LawfulMonad.mk'
   (id_map := @map_id)
   (bind_pure_comp := @bind_ret)
   (pure_bind := @ret_bind)

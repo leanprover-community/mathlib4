@@ -43,7 +43,7 @@ structure Ctop (α σ : Type*) where
 
 variable {α : Type*} {β : Type*} {σ : Type*} {τ : Type*}
 
-instance : Inhabited (Ctop α (Set α)) :=
+instance (priority := 10000) : Inhabited (Ctop α (Set α)) :=
   ⟨{  f := id
       top := singleton
       top_mem := mem_singleton
@@ -57,7 +57,7 @@ section
 
 variable (F : Ctop α σ)
 
-instance : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
+instance (priority := 10000) : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
   ⟨Ctop.f⟩
 
 -- @[simp] -- Porting note: dsimp can prove this
@@ -119,7 +119,7 @@ protected def Ctop.toRealizer (F : Ctop α σ) : @Ctop.Realizer _ F.toTopsp :=
   @Ctop.Realizer.mk _ F.toTopsp σ F rfl
 #align ctop.to_realizer Ctop.toRealizer
 
-instance (F : Ctop α σ) : Inhabited (@Ctop.Realizer _ F.toTopsp) :=
+instance (priority := 10000) (F : Ctop α σ) : Inhabited (@Ctop.Realizer _ F.toTopsp) :=
   ⟨F.toRealizer⟩
 
 namespace Ctop.Realizer
@@ -266,7 +266,7 @@ theorem locallyFinite_iff_exists_realizer [TopologicalSpace α] (F : Ctop.Realiz
     fun ⟨R⟩ ↦ R.to_locallyFinite⟩
 #align locally_finite_iff_exists_realizer locallyFinite_iff_exists_realizer
 
-instance [TopologicalSpace α] [Finite β] (F : Ctop.Realizer α) (f : β → Set α) :
+instance (priority := 10000) [TopologicalSpace α] [Finite β] (F : Ctop.Realizer α) (f : β → Set α) :
     Nonempty (LocallyFinite.Realizer F f) :=
   (locallyFinite_iff_exists_realizer _).1 <| locallyFinite_of_finite _
 
@@ -276,7 +276,7 @@ def Compact.Realizer [TopologicalSpace α] (s : Set α) :=
   ∀ {f : Filter α} (F : f.Realizer) (x : F.σ), f ≠ ⊥ → F.F x ⊆ s → { a // a ∈ s ∧ 𝓝 a ⊓ f ≠ ⊥ }
 #align compact.realizer Compact.Realizer
 
-instance [TopologicalSpace α] : Inhabited (Compact.Realizer (∅ : Set α)) :=
+instance (priority := 10000) [TopologicalSpace α] : Inhabited (Compact.Realizer (∅ : Set α)) :=
   ⟨fun {f} F x h hF ↦ by
     suffices : f = ⊥; exact absurd this h
     rw [← F.eq, eq_bot_iff]

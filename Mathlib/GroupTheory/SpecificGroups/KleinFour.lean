@@ -105,20 +105,20 @@ class IsKleinFour (G : Type*) [Group G] : Prop where
 attribute [simp] IsKleinFour.card_four IsKleinFour.exponent_two
   IsAddKleinFour.card_four IsAddKleinFour.exponent_two
 
-instance : IsAddKleinFour (ZMod 2 × ZMod 2) where
+instance (priority := 10000) : IsAddKleinFour (ZMod 2 × ZMod 2) where
   card_four := by simp
   exponent_two := by simp [AddMonoid.exponent_prod]
 
-instance : IsKleinFour (DihedralGroup 2) where
+instance (priority := 10000) : IsKleinFour (DihedralGroup 2) where
   card_four := by simp only [Nat.card_eq_fintype_card]; rfl
   exponent_two := by simp [DihedralGroup.exponent]
 
-instance {G : Type*} [Group G] [IsKleinFour G] :
+instance (priority := 10000) {G : Type*} [Group G] [IsKleinFour G] :
     IsAddKleinFour (Additive G) where
   card_four := by rw [← IsKleinFour.card_four (G := G)]; congr!
   exponent_two := by simp
 
-instance {G : Type*} [AddGroup G] [IsAddKleinFour G] :
+instance (priority := 10000) {G : Type*} [AddGroup G] [IsAddKleinFour G] :
     IsKleinFour (Multiplicative G) where
   card_four := by rw [← IsAddKleinFour.card_four (G := G)]; congr!
   exponent_two := by simp
@@ -126,7 +126,7 @@ instance {G : Type*} [AddGroup G] [IsAddKleinFour G] :
 namespace IsKleinFour
 
 @[to_additive]
-instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
+instance (priority := 10000) instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
   Nat.finite_of_card_ne_zero <| by norm_num [IsKleinFour.card_four]
 
 @[to_additive (attr := simp)]

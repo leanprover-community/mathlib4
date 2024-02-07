@@ -33,12 +33,12 @@ theorem mem_range_iff {m n r : ℤ} : r ∈ range m n ↔ m ≤ r ∧ r < n := b
     fun h => ⟨toNat (r - m), by simp [toNat_of_nonneg (sub_nonneg.2 h.1), h.2] ⟩⟩
 #align int.mem_range_iff Int.mem_range_iff
 
-instance decidableLELT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
+instance (priority := 10000) decidableLELT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     Decidable (∀ r, m ≤ r → r < n → P r) :=
   decidable_of_iff (∀ r ∈ range m n, P r) <| by simp only [mem_range_iff, and_imp]
 #align int.decidable_le_lt Int.decidableLELT
 
-instance decidableLELE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
+instance (priority := 10000) decidableLELE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     Decidable (∀ r, m ≤ r → r ≤ n → P r) := by
   -- Porting note: The previous code was:
   -- decidable_of_iff (∀ r ∈ range m (n + 1), P r) <| by
@@ -53,12 +53,12 @@ instance decidableLELE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     · simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
 #align int.decidable_le_le Int.decidableLELE
 
-instance decidableLTLT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
+instance (priority := 10000) decidableLTLT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     Decidable (∀ r, m < r → r < n → P r) :=
   Int.decidableLELT P _ _
 #align int.decidable_lt_lt Int.decidableLTLT
 
-instance decidableLTLE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
+instance (priority := 10000) decidableLTLE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     Decidable (∀ r, m < r → r ≤ n → P r) :=
   Int.decidableLELE P _ _
 #align int.decidable_lt_le Int.decidableLTLE

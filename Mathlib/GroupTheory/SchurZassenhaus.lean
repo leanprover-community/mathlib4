@@ -43,7 +43,7 @@ def QuotientDiff :=
         fun h h' => by rw [← diff_mul_diff, h, h', one_mul]⟩)
 #align subgroup.quotient_diff Subgroup.QuotientDiff
 
-instance : Inhabited H.QuotientDiff := by
+instance (priority := 10000) : Inhabited H.QuotientDiff := by
   dsimp [QuotientDiff] -- porting note: Added `dsimp`
   infer_instance
 
@@ -66,7 +66,7 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
 
 variable {H} [Normal H]
 
-noncomputable instance : MulAction G H.QuotientDiff where
+noncomputable instance (priority := 10000) : MulAction G H.QuotientDiff where
   smul g :=
     Quotient.map' (fun α => op g⁻¹ • α) fun α β h =>
       Subtype.ext

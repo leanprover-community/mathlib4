@@ -38,7 +38,7 @@ open BigOperators
 variable {α : Type*} [DecidableEq α] {m : Multiset α}
 
 /-- Auxiliary definition for the `hasCoeToSort` instance. This prevents the `hasCoe m α`
-instance from inadvertently applying to other sigma types. One should not use this definition
+instance (priority := 10000) from inadvertently applying to other sigma types. One should not use this definition
 directly. -/
 -- Porting note: @[nolint has_nonempty_instance]
 def Multiset.ToType (m : Multiset α) : Type _ :=
@@ -48,7 +48,7 @@ def Multiset.ToType (m : Multiset α) : Type _ :=
 /-- Create a type that has the same number of elements as the multiset.
 Terms of this type are triples `⟨x, ⟨i, h⟩⟩` where `x : α`, `i : ℕ`, and `h : i < m.count x`.
 This way repeated elements of a multiset appear multiple times with different values of `i`. -/
-instance : CoeSort (Multiset α) (Type _) :=
+instance (priority := 10000) : CoeSort (Multiset α) (Type _) :=
   ⟨Multiset.ToType⟩
 
 -- Porting note: syntactic equality
@@ -64,7 +64,7 @@ def Multiset.mkToType (m : Multiset α) (x : α) (i : Fin (m.count x)) : m :=
 /-- As a convenience, there is a coercion from `m : Type*` to `α` by projecting onto the first
 component. -/
 -- Porting note: was `Coe m α`
-instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
+instance (priority := 10000) instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
   ⟨fun x ↦ x.1⟩
 #align multiset.has_coe_to_sort.has_coe instCoeSortMultisetType.instCoeOutToTypeₓ
 
@@ -100,7 +100,7 @@ protected theorem Multiset.exists_coe (p : m → Prop) :
   Sigma.exists
 #align multiset.exists_coe Multiset.exists_coe
 
-instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
+instance (priority := 10000) : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
   Fintype.ofFinset
     (m.toFinset.biUnion fun x ↦ (Finset.range (m.count x)).map ⟨Prod.mk x, Prod.mk.inj_left x⟩)
     (by
@@ -189,7 +189,7 @@ theorem Multiset.toEmbedding_coeEquiv_trans (m : Multiset α) :
 #align multiset.to_embedding_coe_equiv_trans Multiset.toEmbedding_coeEquiv_trans
 
 @[irreducible]
-instance Multiset.fintypeCoe : Fintype m :=
+instance (priority := 10000) Multiset.fintypeCoe : Fintype m :=
   Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
 #align multiset.fintype_coe Multiset.fintypeCoe
 

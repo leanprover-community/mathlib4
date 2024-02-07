@@ -45,7 +45,7 @@ theorem mem_centralizer_iff [Mul M] {c : M} : c ∈ centralizer S ↔ ∀ m ∈ 
 #align set.mem_add_centralizer Set.mem_addCentralizer
 
 @[to_additive decidableMemAddCentralizer]
-instance decidableMemCentralizer [Mul M] [∀ a : M, Decidable <| ∀ b ∈ S, b * a = a * b] :
+instance (priority := 10000) decidableMemCentralizer [Mul M] [∀ a : M, Decidable <| ∀ b ∈ S, b * a = a * b] :
     DecidablePred (· ∈ centralizer S) := fun _ => decidable_of_iff' _ mem_centralizer_iff
 #align set.decidable_mem_centralizer Set.decidableMemCentralizer
 #align set.decidable_mem_add_centralizer Set.decidableMemAddCentralizer
@@ -182,7 +182,7 @@ theorem mem_centralizer_iff {z : M} : z ∈ centralizer S ↔ ∀ g ∈ S, g * z
 #align add_subsemigroup.mem_centralizer_iff AddSubsemigroup.mem_centralizer_iff
 
 @[to_additive]
-instance decidableMemCentralizer (a) [Decidable <| ∀ b ∈ S, b * a = a * b] :
+instance (priority := 10000) decidableMemCentralizer (a) [Decidable <| ∀ b ∈ S, b * a = a * b] :
     Decidable (a ∈ centralizer S) :=
   decidable_of_iff' _ mem_centralizer_iff
 #align subsemigroup.decidable_mem_centralizer Subsemigroup.decidableMemCentralizer

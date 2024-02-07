@@ -12,5 +12,5 @@ import Lean.Message
 set_option autoImplicit true
 
 open Lean Std Format MessageData
-instance [ToMessageData α] [ToMessageData β] : ToMessageData (α × β) :=
+instance (priority := 10000) [ToMessageData α] [ToMessageData β] : ToMessageData (α × β) :=
   ⟨fun x => paren <| toMessageData x.1 ++ ofFormat "," ++ Format.line ++ toMessageData x.2⟩

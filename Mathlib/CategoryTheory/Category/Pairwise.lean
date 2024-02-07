@@ -47,7 +47,7 @@ variable {ι : Type v}
 
 namespace Pairwise
 
-instance pairwiseInhabited [Inhabited ι] : Inhabited (Pairwise ι) :=
+instance (priority := 10000) pairwiseInhabited [Inhabited ι] : Inhabited (Pairwise ι) :=
   ⟨single default⟩
 #align category_theory.pairwise.pairwise_inhabited CategoryTheory.Pairwise.pairwiseInhabited
 
@@ -63,7 +63,7 @@ inductive Hom : Pairwise ι → Pairwise ι → Type v
 
 open Hom
 
-instance homInhabited [Inhabited ι] : Inhabited (Hom (single (default : ι)) (single default)) :=
+instance (priority := 10000) homInhabited [Inhabited ι] : Inhabited (Hom (single (default : ι)) (single default)) :=
   ⟨id_single default⟩
 #align category_theory.pairwise.hom_inhabited CategoryTheory.Pairwise.homInhabited
 
@@ -90,7 +90,7 @@ def pairwiseCases : TacticM Unit := do
   evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])] pairwiseCases in
-instance : Category (Pairwise ι) where
+instance (priority := 10000) : Category (Pairwise ι) where
   Hom := Hom
   id := id
   comp f g := comp f g

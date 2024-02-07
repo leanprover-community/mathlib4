@@ -144,10 +144,10 @@ lemma over_forget_compatiblePreserving (X : C) :
     let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using h.symm =≫ Z.hom)
     exact hx g₁' g₂' hg₁ hg₂ (by ext; exact h)
 
-instance (X : C) : (Over.forget X).IsCocontinuous (J.over X) J where
+instance (priority := 10000) (X : C) : (Over.forget X).IsCocontinuous (J.over X) J where
   cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
 
-instance (X : C) : (Over.forget X).IsContinuous (J.over X) J :=
+instance (priority := 10000) (X : C) : (Over.forget X).IsContinuous (J.over X) J :=
   Functor.isContinuous_of_coverPreserving
     (over_forget_compatiblePreserving J X)
     (over_forget_coverPreserving J X)
@@ -186,7 +186,7 @@ lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
       ext
       simp
 
-instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsContinuous (J.over X) (J.over Y) :=
+instance (priority := 10000) {X Y : C} (f : X ⟶ Y) : (Over.map f).IsContinuous (J.over X) (J.over Y) :=
   Functor.isContinuous_of_coverPreserving
     (over_map_compatiblePreserving J f)
     (over_map_coverPreserving J f)

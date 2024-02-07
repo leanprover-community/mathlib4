@@ -44,7 +44,7 @@ theorem not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ Set.univ = ∞ := 
   exact h ⟨lt_top_iff_ne_top.mpr h'⟩
 #align measure_theory.not_is_finite_measure_iff MeasureTheory.not_isFiniteMeasure_iff
 
-instance Restrict.isFiniteMeasure (μ : Measure α) [hs : Fact (μ s < ∞)] :
+instance (priority := 10000) Restrict.isFiniteMeasure (μ : Measure α) [hs : Fact (μ s < ∞)] :
     IsFiniteMeasure (μ.restrict s) :=
   ⟨by simpa using hs.elim⟩
 #align measure_theory.restrict.is_finite_measure MeasureTheory.Restrict.isFiniteMeasure
@@ -53,7 +53,7 @@ theorem measure_lt_top (μ : Measure α) [IsFiniteMeasure μ] (s : Set α) : μ 
   (measure_mono (subset_univ s)).trans_lt IsFiniteMeasure.measure_univ_lt_top
 #align measure_theory.measure_lt_top MeasureTheory.measure_lt_top
 
-instance isFiniteMeasureRestrict (μ : Measure α) (s : Set α) [h : IsFiniteMeasure μ] :
+instance (priority := 10000) isFiniteMeasureRestrict (μ : Measure α) (s : Set α) [h : IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.restrict s) :=
   ⟨by simpa using measure_lt_top μ s⟩
 #align measure_theory.is_finite_measure_restrict MeasureTheory.isFiniteMeasureRestrict
@@ -90,7 +90,7 @@ theorem coe_measureUnivNNReal (μ : Measure α) [IsFiniteMeasure μ] :
   ENNReal.coe_toNNReal (measure_ne_top μ univ)
 #align measure_theory.coe_measure_univ_nnreal MeasureTheory.coe_measureUnivNNReal
 
-instance isFiniteMeasureZero : IsFiniteMeasure (0 : Measure α) :=
+instance (priority := 10000) isFiniteMeasureZero : IsFiniteMeasure (0 : Measure α) :=
   ⟨by simp⟩
 #align measure_theory.is_finite_measure_zero MeasureTheory.isFiniteMeasureZero
 
@@ -104,22 +104,22 @@ theorem measureUnivNNReal_zero : measureUnivNNReal (0 : Measure α) = 0 :=
   rfl
 #align measure_theory.measure_univ_nnreal_zero MeasureTheory.measureUnivNNReal_zero
 
-instance isFiniteMeasureAdd [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteMeasure (μ + ν) where
+instance (priority := 10000) isFiniteMeasureAdd [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteMeasure (μ + ν) where
   measure_univ_lt_top := by
     rw [Measure.coe_add, Pi.add_apply, ENNReal.add_lt_top]
     exact ⟨measure_lt_top _ _, measure_lt_top _ _⟩
 #align measure_theory.is_finite_measure_add MeasureTheory.isFiniteMeasureAdd
 
-instance isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFiniteMeasure (r • μ) where
+instance (priority := 10000) isFiniteMeasureSMulNNReal [IsFiniteMeasure μ] {r : ℝ≥0} : IsFiniteMeasure (r • μ) where
   measure_univ_lt_top := ENNReal.mul_lt_top ENNReal.coe_ne_top (measure_ne_top _ _)
 #align measure_theory.is_finite_measure_smul_nnreal MeasureTheory.isFiniteMeasureSMulNNReal
 
-instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
+instance (priority := 10000) IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
   measure_univ_lt_top := by
     rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
-instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
+instance (priority := 10000) isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
     [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [IsFiniteMeasure μ] {r : R} : IsFiniteMeasure (r • μ) := by
   rw [← smul_one_smul ℝ≥0 r μ]
   infer_instance
@@ -248,7 +248,7 @@ theorem prob_le_one [IsProbabilityMeasure μ] : μ s ≤ 1 :=
 #align measure_theory.prob_le_one MeasureTheory.prob_le_one
 
 -- porting note: made an `instance`, using `NeZero`
-instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
+instance (priority := 10000) isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
     IsProbabilityMeasure ((μ univ)⁻¹ • μ) :=
   ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
 #align measure_theory.is_probability_measure_smul MeasureTheory.isProbabilityMeasureSMulₓ
@@ -313,10 +313,10 @@ protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : Meas
     (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
   isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
 
-instance isProbabilityMeasure_map_up [IsProbabilityMeasure μ] :
+instance (priority := 10000) isProbabilityMeasure_map_up [IsProbabilityMeasure μ] :
     IsProbabilityMeasure (μ.map ULift.up) := isProbabilityMeasure_map measurable_up.aemeasurable
 
-instance isProbabilityMeasure_comap_down [IsProbabilityMeasure μ] :
+instance (priority := 10000) isProbabilityMeasure_comap_down [IsProbabilityMeasure μ] :
     IsProbabilityMeasure (μ.comap ULift.down) :=
   MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
     simp [Function.Surjective.range_eq <| EquivLike.surjective _]
@@ -350,7 +350,7 @@ theorem Measure.restrict_singleton' {a : α} : μ.restrict {a} = 0 := by
   simp only [measure_singleton, Measure.restrict_eq_zero]
 #align measure_theory.measure.restrict_singleton' MeasureTheory.Measure.restrict_singleton'
 
-instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := by
+instance (priority := 10000) Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := by
   refine' ⟨fun x => _⟩
   obtain ⟨t, hxt, ht1, ht2⟩ := exists_measurable_superset_of_null (measure_singleton x : μ {x} = 0)
   apply measure_mono_null hxt
@@ -533,7 +533,7 @@ class SFinite (μ : Measure α) : Prop where
 noncomputable
 def sFiniteSeq (μ : Measure α) [h : SFinite μ] : ℕ → Measure α := h.1.choose
 
-instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
+instance (priority := 10000) isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
   h.1.choose_spec.1 n
 
 lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=
@@ -552,7 +552,7 @@ lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
   · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply]
     infer_instance
 
-instance {ι : Type*} [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] :
+instance (priority := 10000) {ι : Type*} [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] :
     SFinite (Measure.sum m) := by
   change SFinite (Measure.sum (fun i ↦ m i))
   simp_rw [← sum_sFiniteSeq (m _), Measure.sum_sum]
@@ -1043,14 +1043,14 @@ theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFinite
   exact measure_spanningSets_lt_top μ i
 #align measure_theory.sigma_finite_bot_iff MeasureTheory.sigmaFinite_bot_iff
 
-instance Restrict.sigmaFinite (μ : Measure α) [SigmaFinite μ] (s : Set α) :
+instance (priority := 10000) Restrict.sigmaFinite (μ : Measure α) [SigmaFinite μ] (s : Set α) :
     SigmaFinite (μ.restrict s) := by
   refine' ⟨⟨⟨spanningSets μ, fun _ => trivial, fun i => _, iUnion_spanningSets μ⟩⟩⟩
   rw [Measure.restrict_apply (measurable_spanningSets μ i)]
   exact (measure_mono <| inter_subset_left _ _).trans_lt (measure_spanningSets_lt_top μ i)
 #align measure_theory.restrict.sigma_finite MeasureTheory.Restrict.sigmaFinite
 
-instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, SigmaFinite (μ i)] :
+instance (priority := 10000) sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, SigmaFinite (μ i)] :
     SigmaFinite (sum μ) := by
   cases nonempty_fintype ι
   have : ∀ n, MeasurableSet (⋂ i : ι, spanningSets (μ i) n) := fun n =>
@@ -1064,13 +1064,13 @@ instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, Sigma
     exact fun i => monotone_spanningSets (μ i)
 #align measure_theory.sum.sigma_finite MeasureTheory.sum.sigmaFinite
 
-instance Add.sigmaFinite (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
+instance (priority := 10000) Add.sigmaFinite (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
     SigmaFinite (μ + ν) := by
   rw [← sum_cond]
   refine' @sum.sigmaFinite _ _ _ _ _ (Bool.rec _ _) <;> simpa
 #align measure_theory.add.sigma_finite MeasureTheory.Add.sigmaFinite
 
-instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
+instance (priority := 10000) SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
     MeasureTheory.SigmaFinite (c • μ) where
   out' :=
   ⟨{  set := spanningSets μ
@@ -1146,7 +1146,7 @@ theorem Measure.exists_isOpen_measure_lt_top [TopologicalSpace α] (μ : Measure
   simpa only [and_assoc] using (μ.finiteAt_nhds x).exists_mem_basis (nhds_basis_opens x)
 #align measure_theory.measure.exists_is_open_measure_lt_top MeasureTheory.Measure.exists_isOpen_measure_lt_top
 
-instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α)
+instance (priority := 10000) isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α)
     [IsLocallyFiniteMeasure μ] (c : ℝ≥0) : IsLocallyFiniteMeasure (c • μ) := by
   refine' ⟨fun x => _⟩
   rcases μ.exists_isOpen_measure_lt_top x with ⟨o, xo, o_open, μo⟩
@@ -1202,11 +1202,11 @@ protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Mea
   ⟨fun _K hK => ENNReal.mul_lt_top hc hK.measure_lt_top.ne⟩
 #align measure_theory.is_finite_measure_on_compacts.smul MeasureTheory.IsFiniteMeasureOnCompacts.smul
 
-instance IsFiniteMeasureOnCompacts.smul_nnreal [TopologicalSpace α] (μ : Measure α)
+instance (priority := 10000) IsFiniteMeasureOnCompacts.smul_nnreal [TopologicalSpace α] (μ : Measure α)
     [IsFiniteMeasureOnCompacts μ] (c : ℝ≥0) : IsFiniteMeasureOnCompacts (c • μ) :=
   IsFiniteMeasureOnCompacts.smul μ coe_ne_top
 
-instance instIsFiniteMeasureOnCompactsRestrict [TopologicalSpace α] {μ : Measure α}
+instance (priority := 10000) instIsFiniteMeasureOnCompactsRestrict [TopologicalSpace α] {μ : Measure α}
     [IsFiniteMeasureOnCompacts μ] {s : Set α} : IsFiniteMeasureOnCompacts (μ.restrict s) :=
   ⟨fun _k hk ↦ (restrict_apply_le _ _).trans_lt hk.measure_lt_top⟩
 

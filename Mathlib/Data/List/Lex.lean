@@ -71,7 +71,7 @@ theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [
 theorem singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
   ⟨fun | rel h => h, List.Lex.rel⟩
 
-instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
+instance (priority := 10000) isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
     IsOrderConnected (List α) (Lex r) where
   conn := aux where
     aux
@@ -90,7 +90,7 @@ instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTr
 -- This can be removed after https://github.com/leanprover/lean4/pull/1866
 attribute [nolint defLemma] isOrderConnected.aux
 
-instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
+instance (priority := 10000) isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
     IsTrichotomous (List α) (Lex r) where
   trichotomous := aux where
     aux
@@ -107,7 +107,7 @@ instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
 -- This can be removed after https://github.com/leanprover/lean4/pull/1866
 attribute [nolint defLemma] isTrichotomous.aux
 
-instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Lex r) where
+instance (priority := 10000) isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Lex r) where
   asymm := aux where
     aux
     | _, _, Lex.rel h₁, Lex.rel h₂ => asymm h₁ h₂
@@ -119,12 +119,12 @@ instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Le
 -- This can be removed after https://github.com/leanprover/lean4/pull/1866
 attribute [nolint defLemma] isAsymm.aux
 
-instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
+instance (priority := 10000) isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
     IsStrictTotalOrder (List α) (Lex r) :=
   { isStrictWeakOrder_of_isOrderConnected with }
 #align list.lex.is_strict_total_order List.Lex.isStrictTotalOrder
 
-instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)
+instance (priority := 10000) decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)
   | l₁, [] => isFalse fun h => by cases h
   | [], b :: l₂ => isTrue Lex.nil
   | a :: l₁, b :: l₂ => by
@@ -182,7 +182,7 @@ theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (·
 end Lex
 
 --Note: this overrides an instance in core lean
-instance LT' [LT α] : LT (List α) :=
+instance (priority := 10000) LT' [LT α] : LT (List α) :=
   ⟨Lex (· < ·)⟩
 #align list.has_lt' List.LT'
 
@@ -190,11 +190,11 @@ theorem nil_lt_cons [LT α] (a : α) (l : List α) : [] < a :: l :=
   Lex.nil
 #align list.nil_lt_cons List.nil_lt_cons
 
-instance [LinearOrder α] : LinearOrder (List α) :=
+instance (priority := 10000) [LinearOrder α] : LinearOrder (List α) :=
   linearOrderOfSTO (Lex (· < ·))
 
 --Note: this overrides an instance in core lean
-instance LE' [LinearOrder α] : LE (List α) :=
+instance (priority := 10000) LE' [LinearOrder α] : LE (List α) :=
   Preorder.toLE
 #align list.has_le' List.LE'
 

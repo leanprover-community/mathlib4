@@ -139,7 +139,7 @@ theorem norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_conjTranspose A
 #align matrix.norm_conj_transpose Matrix.norm_conjTranspose
 
-instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m α) :=
+instance (priority := 10000) [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m α) :=
   ⟨norm_conjTranspose⟩
 
 @[simp]
@@ -182,7 +182,7 @@ theorem norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖v�
 
 /-- Note this is safe as an instance as it carries no data. -/
 -- Porting note: not yet implemented: `@[nolint fails_quickly]`
-instance [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass (Matrix n n α) :=
+instance (priority := 10000) [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass (Matrix n n α) :=
   ⟨(norm_diagonal _).trans <| norm_one⟩
 
 end SeminormedAddCommGroup
@@ -411,7 +411,7 @@ protected def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
 
 /-- The `L₁-L∞` norm preserves one on non-empty matrices. Note this is safe as an instance, as it
 carries no data. -/
-instance linfty_opNormOneClass [SeminormedRing α] [NormOneClass α] [DecidableEq n] [Nonempty n] :
+instance (priority := 10000) linfty_opNormOneClass [SeminormedRing α] [NormOneClass α] [DecidableEq n] [Nonempty n] :
     NormOneClass (Matrix n n α) where norm_one := (linfty_opNorm_diagonal _).trans norm_one
 #align matrix.linfty_op_norm_one_class Matrix.linfty_opNormOneClass
 
@@ -630,7 +630,7 @@ theorem frobenius_norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A 
   congr_arg ((↑) : ℝ≥0 → ℝ) <| frobenius_nnnorm_conjTranspose A
 #align matrix.frobenius_norm_conj_transpose Matrix.frobenius_norm_conjTranspose
 
-instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
+instance (priority := 10000) frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
     NormedStarGroup (Matrix m m α) :=
   ⟨frobenius_norm_conjTranspose⟩
 #align matrix.frobenius_normed_star_group Matrix.frobenius_normedStarGroup

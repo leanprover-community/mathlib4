@@ -61,7 +61,7 @@ variable (T : ℝ) [hT : Fact (0 < T)]
 
 /-- Equip the "additive circle" `ℝ ⧸ (ℤ ∙ T)` with, as a standard measure, the Haar measure of total
 mass `T` -/
-noncomputable instance measureSpace : MeasureSpace (AddCircle T) :=
+noncomputable instance (priority := 10000) measureSpace : MeasureSpace (AddCircle T) :=
   { QuotientAddGroup.measurableSpace _ with volume := ENNReal.ofReal T • addHaarMeasure ⊤ }
 #align add_circle.measure_space AddCircle.measureSpace
 
@@ -72,10 +72,10 @@ protected theorem measure_univ : volume (Set.univ : Set (AddCircle T)) = ENNReal
   simp [addHaarMeasure_self (G := AddCircle T), -PositiveCompacts.coe_top]
 #align add_circle.measure_univ AddCircle.measure_univ
 
-instance : IsAddHaarMeasure (volume : Measure (AddCircle T)) :=
+instance (priority := 10000) : IsAddHaarMeasure (volume : Measure (AddCircle T)) :=
   IsAddHaarMeasure.smul _ (by simp [hT.out]) ENNReal.ofReal_ne_top
 
-instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) where
+instance (priority := 10000) isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) where
   measure_univ_lt_top := by simp
 #align add_circle.is_finite_measure AddCircle.isFiniteMeasure
 
@@ -114,7 +114,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
   · simp [hε, min_eq_left (by linarith : T ≤ 2 * ε)]
 #align add_circle.volume_closed_ball AddCircle.volume_closedBall
 
-instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
+instance (priority := 10000) : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
   refine' ⟨⟨Real.toNNReal 2, Filter.eventually_of_forall fun ε x => _⟩⟩
   simp only [volume_closedBall]
   erw [← ENNReal.ofReal_mul zero_le_two]

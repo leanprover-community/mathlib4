@@ -41,7 +41,7 @@ theorem GradedAlgebra.ι_apply (m : M) :
 variable {R M}
 
 /-- The tensor algebra is graded by the powers of the submodule `(TensorAlgebra.ι R).range`. -/
-instance gradedAlgebra :
+instance (priority := 10000) gradedAlgebra :
     GradedAlgebra ((LinearMap.range (ι R : M →ₗ[R] TensorAlgebra R M) ^ ·) : ℕ → Submodule R _) :=
   GradedAlgebra.ofAlgHom _ (lift R <| GradedAlgebra.ι R M)
     (by

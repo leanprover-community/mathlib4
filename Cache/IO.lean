@@ -199,8 +199,8 @@ def validateCurl : IO Bool := do
 def Version := Nat × Nat × Nat
   deriving Inhabited, DecidableEq
 
-instance : Ord Version := let _ := @lexOrd; lexOrd
-instance : LE Version := leOfOrd
+instance (priority := 10000) : Ord Version := let _ := @lexOrd; lexOrd
+instance (priority := 10000) : LE Version := leOfOrd
 
 def parseVersion (s : String) : Option Version := do
   let [maj, min, patch] := s.splitOn "." | none
@@ -355,7 +355,7 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     IO.println s!"unpacked in {(← IO.monoMsNow) - now} ms"
   else IO.println "No cache files to decompress"
 
-instance : Ord FilePath where
+instance (priority := 10000) : Ord FilePath where
   compare x y := compare x.toString y.toString
 
 /-- Removes all cache files except for what's in the `keep` set -/

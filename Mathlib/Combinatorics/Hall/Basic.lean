@@ -94,7 +94,7 @@ def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) : (F
   map {ι' ι''} g f := hallMatchingsOn.restrict t (CategoryTheory.leOfHom g.unop) f
 #align hall_matchings_functor hallMatchingsFunctor
 
-instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Finset ι) :
+instance (priority := 10000) hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Finset ι) :
     Finite (hallMatchingsOn t ι') := by
   classical
     rw [hallMatchingsOn]
@@ -165,7 +165,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
 
 /-- Given a relation such that the image of every singleton set is finite, then the image of every
 finite set is finite. -/
-instance {α : Type u} {β : Type v} [DecidableEq β] (r : α → β → Prop)
+instance (priority := 10000) {α : Type u} {β : Type v} [DecidableEq β] (r : α → β → Prop)
     [∀ a : α, Fintype (Rel.image r {a})] (A : Finset α) : Fintype (Rel.image r A) := by
   have h : Rel.image r A = (A.biUnion fun a => (Rel.image r {a}).toFinset : Set β) := by
     ext

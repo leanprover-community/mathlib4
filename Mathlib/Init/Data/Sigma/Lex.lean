@@ -65,7 +65,7 @@ theorem skipLeft_wf (α : Type u) {β : Type v} {s : β → β → Prop} (hb : W
 
 end
 
-instance hasWellFounded {α : Type u} {β : α → Type v} [s₁ : WellFoundedRelation α]
+instance (priority := 10000) hasWellFounded {α : Type u} {β : α → Type v} [s₁ : WellFoundedRelation α]
     [s₂ : ∀ a, WellFoundedRelation (β a)] : WellFoundedRelation (PSigma β) where
   rel := Lex s₁.rel fun a => (s₂ a).rel
   wf := lex_wf s₁.wf fun a => (s₂ a).wf

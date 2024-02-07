@@ -270,7 +270,7 @@ the integral closure of `A` in `L` is a Dedekind domain.
 See also the lemma `integralClosure.isDedekindDomain` where you can choose
 the field of fractions yourself.
 -/
-instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
+instance (priority := 10000) integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
 #align integral_closure.is_dedekind_domain_fraction_ring integralClosure.isDedekindDomain_fractionRing

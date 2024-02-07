@@ -49,7 +49,7 @@ variable {J : Type v} [SmallCategory J] (F : J ⥤ SemiRingCatMax.{v, u})
 
 -- This instance is needed below in `colimit_semiring`, during the verification of the
 -- semiring axioms.
-instance semiringObj (j : J) :
+instance (priority := 10000) semiringObj (j : J) :
     Semiring (((F ⋙ forget₂ SemiRingCatMax.{v, u} MonCat) ⋙ forget MonCat).obj j) :=
   show Semiring (F.obj j) by infer_instance
 set_option linter.uppercaseLean3 false in
@@ -65,7 +65,7 @@ abbrev R : MonCat :=
 set_option linter.uppercaseLean3 false in
 #align SemiRing.filtered_colimits.R SemiRingCat.FilteredColimits.R
 
-instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
+instance (priority := 10000) colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
   { (R.{v, u} F).str,
     AddCommMonCat.FilteredColimits.colimitAddCommMonoid
       (F ⋙ forget₂ SemiRingCat AddCommMonCat.{max v u}) with
@@ -154,7 +154,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
 set_option linter.uppercaseLean3 false in
 #align SemiRing.filtered_colimits.colimit_cocone_is_colimit SemiRingCat.FilteredColimits.colimitCoconeIsColimit
 
-instance forget₂MonPreservesFilteredColimits :
+instance (priority := 10000) forget₂MonPreservesFilteredColimits :
     PreservesFilteredColimits (forget₂ SemiRingCat MonCat.{u}) where
   preserves_filtered_colimits {J hJ1 _} :=
     letI : Category J := hJ1
@@ -164,7 +164,7 @@ instance forget₂MonPreservesFilteredColimits :
 set_option linter.uppercaseLean3 false in
 #align SemiRing.filtered_colimits.forget₂_Mon_preserves_filtered_colimits SemiRingCat.FilteredColimits.forget₂MonPreservesFilteredColimits
 
-instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget SemiRingCat.{u}) :=
+instance (priority := 10000) forgetPreservesFilteredColimits : PreservesFilteredColimits (forget SemiRingCat.{u}) :=
   Limits.compPreservesFilteredColimits (forget₂ SemiRingCat MonCat) (forget MonCat.{u})
 set_option linter.uppercaseLean3 false in
 #align SemiRing.filtered_colimits.forget_preserves_filtered_colimits SemiRingCat.FilteredColimits.forgetPreservesFilteredColimits
@@ -189,7 +189,7 @@ abbrev R : SemiRingCatMax.{v, u} :=
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.filtered_colimits.R CommSemiRingCat.FilteredColimits.R
 
-instance colimitCommSemiring : CommSemiring.{max v u} <| R.{v, u} F :=
+instance (priority := 10000) colimitCommSemiring : CommSemiring.{max v u} <| R.{v, u} F :=
   { (R F).str,
     CommMonCat.FilteredColimits.colimitCommMonoid
       (F ⋙ forget₂ CommSemiRingCat CommMonCat.{max v u}) with }
@@ -228,7 +228,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.filtered_colimits.colimit_cocone_is_colimit CommSemiRingCat.FilteredColimits.colimitCoconeIsColimit
 
-instance forget₂SemiRingPreservesFilteredColimits :
+instance (priority := 10000) forget₂SemiRingPreservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommSemiRingCat SemiRingCat.{u}) where
   preserves_filtered_colimits {J hJ1 _} :=
     letI : Category J := hJ1
@@ -239,7 +239,7 @@ instance forget₂SemiRingPreservesFilteredColimits :
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.filtered_colimits.forget₂_SemiRing_preserves_filtered_colimits CommSemiRingCat.FilteredColimits.forget₂SemiRingPreservesFilteredColimits
 
-instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget CommSemiRingCat.{u}) :=
+instance (priority := 10000) forgetPreservesFilteredColimits : PreservesFilteredColimits (forget CommSemiRingCat.{u}) :=
   Limits.compPreservesFilteredColimits (forget₂ CommSemiRingCat SemiRingCat)
     (forget SemiRingCat.{u})
 set_option linter.uppercaseLean3 false in
@@ -265,7 +265,7 @@ abbrev R : SemiRingCat.{max v u} :=
 set_option linter.uppercaseLean3 false in
 #align Ring.filtered_colimits.R RingCat.FilteredColimits.R
 
-instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
+instance (priority := 10000) colimitRing : Ring.{max v u} <| R.{v, u} F :=
   { (R F).str,
     AddCommGroupCat.FilteredColimits.colimitAddCommGroup.{v, u}
       (F ⋙ forget₂ RingCat AddCommGroupCat.{max v u}) with }
@@ -304,7 +304,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
 set_option linter.uppercaseLean3 false in
 #align Ring.filtered_colimits.colimit_cocone_is_colimit RingCat.FilteredColimits.colimitCoconeIsColimit
 
-instance forget₂SemiRingPreservesFilteredColimits :
+instance (priority := 10000) forget₂SemiRingPreservesFilteredColimits :
     PreservesFilteredColimits (forget₂ RingCat SemiRingCat.{u}) where
   preserves_filtered_colimits {J hJ1 _} :=
     letI : Category J := hJ1
@@ -315,7 +315,7 @@ instance forget₂SemiRingPreservesFilteredColimits :
 set_option linter.uppercaseLean3 false in
 #align Ring.filtered_colimits.forget₂_SemiRing_preserves_filtered_colimits RingCat.FilteredColimits.forget₂SemiRingPreservesFilteredColimits
 
-instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget RingCat.{u}) :=
+instance (priority := 10000) forgetPreservesFilteredColimits : PreservesFilteredColimits (forget RingCat.{u}) :=
   Limits.compPreservesFilteredColimits (forget₂ RingCat SemiRingCat) (forget SemiRingCat.{u})
 set_option linter.uppercaseLean3 false in
 #align Ring.filtered_colimits.forget_preserves_filtered_colimits RingCat.FilteredColimits.forgetPreservesFilteredColimits
@@ -340,7 +340,7 @@ abbrev R : RingCat.{max v u} :=
 set_option linter.uppercaseLean3 false in
 #align CommRing.filtered_colimits.R CommRingCat.FilteredColimits.R
 
-instance colimitCommRing : CommRing.{max v u} <| R.{v, u} F :=
+instance (priority := 10000) colimitCommRing : CommRing.{max v u} <| R.{v, u} F :=
   { (R.{v, u} F).str,
     CommSemiRingCat.FilteredColimits.colimitCommSemiring
       (F ⋙ forget₂ CommRingCat CommSemiRingCat.{max v u}) with }
@@ -378,7 +378,7 @@ def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F where
 set_option linter.uppercaseLean3 false in
 #align CommRing.filtered_colimits.colimit_cocone_is_colimit CommRingCat.FilteredColimits.colimitCoconeIsColimit
 
-instance forget₂RingPreservesFilteredColimits :
+instance (priority := 10000) forget₂RingPreservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommRingCat RingCat.{u}) where
   preserves_filtered_colimits {J hJ1 _} :=
     letI : Category J := hJ1
@@ -388,7 +388,7 @@ instance forget₂RingPreservesFilteredColimits :
 set_option linter.uppercaseLean3 false in
 #align CommRing.filtered_colimits.forget₂_Ring_preserves_filtered_colimits CommRingCat.FilteredColimits.forget₂RingPreservesFilteredColimits
 
-instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget CommRingCat.{u}) :=
+instance (priority := 10000) forgetPreservesFilteredColimits : PreservesFilteredColimits (forget CommRingCat.{u}) :=
   Limits.compPreservesFilteredColimits (forget₂ CommRingCat RingCat) (forget RingCat.{u})
 set_option linter.uppercaseLean3 false in
 #align CommRing.filtered_colimits.forget_preserves_filtered_colimits CommRingCat.FilteredColimits.forgetPreservesFilteredColimits

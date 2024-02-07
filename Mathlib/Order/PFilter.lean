@@ -69,10 +69,10 @@ section Preorder
 
 variable [Preorder P] {x y : P} (F s t : PFilter P)
 
-instance [Inhabited P] : Inhabited (PFilter P) := ⟨⟨default⟩⟩
+instance (priority := 10000) [Inhabited P] : Inhabited (PFilter P) := ⟨⟨default⟩⟩
 
 /-- A filter on `P` is a subset of `P`. -/
-instance : SetLike (PFilter P) P where
+instance (priority := 10000) : SetLike (PFilter P) P where
   coe F := toDual ⁻¹' F.dual.carrier
   coe_injective' := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
 #align order.pfilter.mem_coe SetLike.mem_coeₓ
@@ -136,14 +136,14 @@ variable [Preorder P] [OrderTop P] {F : PFilter P}
 #align order.pfilter.top_mem Order.PFilter.top_mem
 
 /-- There is a bottom filter when `P` has a top element. -/
-instance : OrderBot (PFilter P) where
+instance (priority := 10000) : OrderBot (PFilter P) where
   bot := ⟨⊥⟩
   bot_le F := (bot_le : ⊥ ≤ F.dual)
 
 end OrderTop
 
 /-- There is a top filter when `P` has a bottom element. -/
-instance {P} [Preorder P] [OrderBot P] : OrderTop (PFilter P) where
+instance (priority := 10000) {P} [Preorder P] [OrderBot P] : OrderTop (PFilter P) where
   top := ⟨⊤⟩
   le_top F := (le_top : F.dual ≤ ⊤)
 

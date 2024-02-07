@@ -33,7 +33,7 @@ theorem monomial_one_eq_iff [Nontrivial R] {i j : ℕ} :
   exact AddMonoidAlgebra.of_injective.eq_iff
 #align polynomial.monomial_one_eq_iff Polynomial.monomial_one_eq_iff
 
-instance infinite [Nontrivial R] : Infinite R[X] :=
+instance (priority := 10000) infinite [Nontrivial R] : Infinite R[X] :=
   Infinite.of_injective (fun i => monomial i 1) fun m n h => by simpa [monomial_one_eq_iff] using h
 #align polynomial.infinite Polynomial.infinite
 

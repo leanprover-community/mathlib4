@@ -262,7 +262,7 @@ def specializationOrder (X) [TopologicalSpace X] [T0Space X] : PartialOrder X :=
   { specializationPreorder X, PartialOrder.lift (OrderDual.toDual ∘ 𝓝) nhds_injective with }
 #align specialization_order specializationOrder
 
-instance : T0Space (SeparationQuotient X) :=
+instance (priority := 10000) : T0Space (SeparationQuotient X) :=
   ⟨fun x y => Quotient.inductionOn₂' x y fun _ _ h =>
     SeparationQuotient.mk_eq_mk.2 <| SeparationQuotient.inducing_mk.inseparable_iff.1 h⟩
 
@@ -345,7 +345,7 @@ protected theorem Embedding.t0Space [TopologicalSpace Y] [T0Space Y] {f : X → 
   t0Space_of_injective_of_continuous hf.inj hf.continuous
 #align embedding.t0_space Embedding.t0Space
 
-instance Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
+instance (priority := 10000) Subtype.t0Space [T0Space X] {p : X → Prop} : T0Space (Subtype p) :=
   embedding_subtype_val.t0Space
 #align subtype.t0_space Subtype.t0Space
 
@@ -354,16 +354,16 @@ theorem t0Space_iff_or_not_mem_closure (X : Type u) [TopologicalSpace X] :
   simp only [t0Space_iff_not_inseparable, inseparable_iff_mem_closure, not_and_or]
 #align t0_space_iff_or_not_mem_closure t0Space_iff_or_not_mem_closure
 
-instance Prod.instT0Space [TopologicalSpace Y] [T0Space X] [T0Space Y] : T0Space (X × Y) :=
+instance (priority := 10000) Prod.instT0Space [TopologicalSpace Y] [T0Space X] [T0Space Y] : T0Space (X × Y) :=
   ⟨fun _ _ h => Prod.ext (h.map continuous_fst).eq (h.map continuous_snd).eq⟩
 
-instance Pi.instT0Space {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+instance (priority := 10000) Pi.instT0Space {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, T0Space (X i)] :
     T0Space (∀ i, X i) :=
   ⟨fun _ _ h => funext fun i => (h.map (continuous_apply i)).eq⟩
 #align pi.t0_space Pi.instT0Space
 
-instance ULift.instT0Space [T0Space X] : T0Space (ULift X) :=
+instance (priority := 10000) ULift.instT0Space [T0Space X] : T0Space (ULift X) :=
   embedding_uLift_down.t0Space
 
 theorem T0Space.of_cover (h : ∀ x y, Inseparable x y → ∃ s : Set X, x ∈ s ∧ y ∈ s ∧ T0Space s) :
@@ -572,7 +572,7 @@ theorem nhds_le_nhds_iff [T1Space X] {a b : X} : 𝓝 a ≤ 𝓝 b ↔ a = b :=
   specializes_iff_eq
 #align nhds_le_nhds_iff nhds_le_nhds_iff
 
-instance : T1Space (CofiniteTopology X) :=
+instance (priority := 10000) : T1Space (CofiniteTopology X) :=
   t1Space_iff_continuous_cofinite_of.mpr continuous_id
 
 theorem t1Space_antitone : Antitone (@T1Space X) := fun a _ h _ =>
@@ -619,19 +619,19 @@ protected theorem Embedding.t1Space [TopologicalSpace Y] [T1Space Y] {f : X → 
   t1Space_of_injective_of_continuous hf.inj hf.continuous
 #align embedding.t1_space Embedding.t1Space
 
-instance Subtype.t1Space {X : Type u} [TopologicalSpace X] [T1Space X] {p : X → Prop} :
+instance (priority := 10000) Subtype.t1Space {X : Type u} [TopologicalSpace X] [T1Space X] {p : X → Prop} :
     T1Space (Subtype p) :=
   embedding_subtype_val.t1Space
 #align subtype.t1_space Subtype.t1Space
 
-instance [TopologicalSpace Y] [T1Space X] [T1Space Y] : T1Space (X × Y) :=
+instance (priority := 10000) [TopologicalSpace Y] [T1Space X] [T1Space Y] : T1Space (X × Y) :=
   ⟨fun ⟨a, b⟩ => @singleton_prod_singleton _ _ a b ▸ isClosed_singleton.prod isClosed_singleton⟩
 
-instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, T1Space (X i)] :
+instance (priority := 10000) {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, T1Space (X i)] :
     T1Space (∀ i, X i) :=
   ⟨fun f => univ_pi_singleton f ▸ isClosed_set_pi fun _ _ => isClosed_singleton⟩
 
-instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
+instance (priority := 10000) ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
   embedding_uLift_down.t1Space
 
 -- see Note [lower instance priority]
@@ -1087,7 +1087,7 @@ theorem Inducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : Inducing f) : 
 protected theorem R1Space.induced (f : Y → X) : @R1Space Y (.induced f ‹_›) :=
   @Inducing.r1Space _ _ _ _ (.induced f _) f (inducing_induced f)
 
-instance (p : X → Prop) : R1Space (Subtype p) := .induced _
+instance (priority := 10000) (p : X → Prop) : R1Space (Subtype p) := .induced _
 
 protected theorem R1Space.sInf {X : Type*} {T : Set (TopologicalSpace X)}
     (hT : ∀ t ∈ T, @R1Space X t) : @R1Space X (sInf T) := by
@@ -1109,10 +1109,10 @@ protected theorem R1Space.inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
   apply R1Space.iInf
   simp [*]
 
-instance [TopologicalSpace Y] [R1Space Y] : R1Space (X × Y) :=
+instance (priority := 10000) [TopologicalSpace Y] [R1Space Y] : R1Space (X × Y) :=
   .inf (.induced _) (.induced _)
 
-instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, R1Space (X i)] :
+instance (priority := 10000) {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, R1Space (X i)] :
     R1Space (∀ i, X i) :=
   .iInf fun _ ↦ .induced _
 
@@ -1255,7 +1255,7 @@ theorem SeparationQuotient.t2Space_iff : T2Space (SeparationQuotient X) ↔ R1Sp
     r1Space_iff_inseparable_or_disjoint_nhds, ← disjoint_comap_iff surjective_mk, comap_mk_nhds_mk,
     ← or_iff_not_imp_left]
 
-instance SeparationQuotient.t2Space [R1Space X] : T2Space (SeparationQuotient X) :=
+instance (priority := 10000) SeparationQuotient.t2Space [R1Space X] : T2Space (SeparationQuotient X) :=
   t2Space_iff.2 ‹_›
 
 instance (priority := 80) [R1Space X] [T0Space X] : T2Space X :=
@@ -1511,9 +1511,9 @@ theorem separated_by_openEmbedding [TopologicalSpace Y] [T2Space X]
     mem_image_of_mem _ yv, disjoint_image_of_injective hf.inj uv⟩
 #align separated_by_open_embedding separated_by_openEmbedding
 
-instance {p : X → Prop} [T2Space X] : T2Space (Subtype p) := inferInstance
+instance (priority := 10000) {p : X → Prop} [T2Space X] : T2Space (Subtype p) := inferInstance
 
-instance Prod.t2Space [T2Space X] [TopologicalSpace Y] [T2Space Y] : T2Space (X × Y) :=
+instance (priority := 10000) Prod.t2Space [T2Space X] [TopologicalSpace Y] [T2Space Y] : T2Space (X × Y) :=
   inferInstance
 
 /-- If the codomain of an injective continuous function is a Hausdorff space, then so is its
@@ -1529,10 +1529,10 @@ theorem Embedding.t2Space [TopologicalSpace Y] [T2Space Y] {f : X → Y} (hf : E
   .of_injective_continuous hf.inj hf.continuous
 #align embedding.t2_space Embedding.t2Space
 
-instance ULift.instT2Space [T2Space X] : T2Space (ULift X) :=
+instance (priority := 10000) ULift.instT2Space [T2Space X] : T2Space (ULift X) :=
   embedding_uLift_down.t2Space
 
-instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
+instance (priority := 10000) [T2Space X] [TopologicalSpace Y] [T2Space Y] :
     T2Space (X ⊕ Y) := by
   constructor
   rintro (x | x) (y | y) h
@@ -1541,12 +1541,12 @@ instance [T2Space X] [TopologicalSpace Y] [T2Space Y] :
   · exact separated_by_continuous continuous_isLeft <| by simp
   · exact separated_by_openEmbedding openEmbedding_inr <| ne_of_apply_ne _ h
 
-instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
+instance (priority := 10000) Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
     [∀ a, T2Space (Y a)] : T2Space (∀ a, Y a) :=
   inferInstance
 #align Pi.t2_space Pi.t2Space
 
-instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
+instance (priority := 10000) Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
     T2Space (Σi, X i) := by
   constructor
   rintro ⟨i, x⟩ ⟨j, y⟩ neq
@@ -1913,13 +1913,13 @@ theorem RegularSpace.inf {X} {t₁ t₂ : TopologicalSpace X} (h₁ : @RegularSp
   exact regularSpace_iInf (Bool.forall_bool.2 ⟨h₂, h₁⟩)
 #align regular_space.inf RegularSpace.inf
 
-instance {p : X → Prop} : RegularSpace (Subtype p) :=
+instance (priority := 10000) {p : X → Prop} : RegularSpace (Subtype p) :=
   embedding_subtype_val.toInducing.regularSpace
 
-instance [TopologicalSpace Y] [RegularSpace Y] : RegularSpace (X × Y) :=
+instance (priority := 10000) [TopologicalSpace Y] [RegularSpace Y] : RegularSpace (X × Y) :=
   (regularSpace_induced (@Prod.fst X Y)).inf (regularSpace_induced (@Prod.snd X Y))
 
-instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, RegularSpace (X i)] :
+instance (priority := 10000) {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, RegularSpace (X i)] :
     RegularSpace (∀ i, X i) :=
   regularSpace_iInf fun _ => regularSpace_induced _
 
@@ -1994,16 +1994,16 @@ protected theorem Embedding.t3Space [TopologicalSpace Y] [T3Space Y] {f : X → 
     toRegularSpace := hf.toInducing.regularSpace }
 #align embedding.t3_space Embedding.t3Space
 
-instance Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
+instance (priority := 10000) Subtype.t3Space [T3Space X] {p : X → Prop} : T3Space (Subtype p) :=
   embedding_subtype_val.t3Space
 #align subtype.t3_space Subtype.t3Space
 
-instance ULift.instT3Space [T3Space X] : T3Space (ULift X) :=
+instance (priority := 10000) ULift.instT3Space [T3Space X] : T3Space (ULift X) :=
   embedding_uLift_down.t3Space
 
-instance [TopologicalSpace Y] [T3Space X] [T3Space Y] : T3Space (X × Y) := ⟨⟩
+instance (priority := 10000) [TopologicalSpace Y] [T3Space X] [T3Space Y] : T3Space (X × Y) := ⟨⟩
 
-instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, T3Space (X i)] :
+instance (priority := 10000) {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, T3Space (X i)] :
     T3Space (∀ i, X i) := ⟨⟩
 
 /-- Given two points `x ≠ y`, we can find neighbourhoods `x ∈ V₁ ⊆ U₁` and `y ∈ V₂ ⊆ U₂`,
@@ -2021,7 +2021,7 @@ theorem disjoint_nested_nhds [T3Space X] {x y : X} (h : x ≠ y) :
 open SeparationQuotient
 
 /-- The `SeparationQuotient` of a regular space is a T₃ space. -/
-instance [RegularSpace X] : T3Space (SeparationQuotient X) where
+instance (priority := 10000) [RegularSpace X] : T3Space (SeparationQuotient X) where
   regular {s a} hs ha := by
     rcases surjective_mk a with ⟨a, rfl⟩
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhds_mk, comap_mk_nhdsSet]
@@ -2144,13 +2144,13 @@ protected theorem ClosedEmbedding.t4Space [TopologicalSpace Y] [T4Space Y] {f : 
   toNormalSpace := hf.normalSpace
 #align closed_embedding.normal_space ClosedEmbedding.t4Space
 
-instance ULift.instT4Space [T4Space X] : T4Space (ULift X) :=
+instance (priority := 10000) ULift.instT4Space [T4Space X] : T4Space (ULift X) :=
   ULift.closedEmbedding_down.t4Space
 
 namespace SeparationQuotient
 
 /-- The `SeparationQuotient` of a normal space is a normal space. -/
-instance [NormalSpace X] : NormalSpace (SeparationQuotient X) where
+instance (priority := 10000) [NormalSpace X] : NormalSpace (SeparationQuotient X) where
   normal s t hs ht hd := separatedNhds_iff_disjoint.2 <| by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
     exact disjoint_nhdsSet_nhdsSet (hs.preimage continuous_mk) (ht.preimage continuous_mk)
@@ -2190,10 +2190,10 @@ theorem Embedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y} (he : E
 #align embedding.t5_space Embedding.t5Space
 
 /-- A subspace of a `T₅` space is a `T₅` space. -/
-instance [T5Space X] {p : X → Prop} : T5Space { x // p x } :=
+instance (priority := 10000) [T5Space X] {p : X → Prop} : T5Space { x // p x } :=
   embedding_subtype_val.t5Space
 
-instance ULift.instT5Space [T5Space X] : T5Space (ULift X) :=
+instance (priority := 10000) ULift.instT5Space [T5Space X] : T5Space (ULift X) :=
   embedding_uLift_down.t5Space
 
 -- see Note [lower instance priority]
@@ -2212,7 +2212,7 @@ so we use `T5Space` for assumption and for conclusion.
 One can prove this using a homeomorphism between `X` and `SeparationQuotient X`.
 We give an alternative proof of the `completely_normal` axiom
 that works without assuming that `X` is a T₁ space. -/
-instance [T5Space X] : T5Space (SeparationQuotient X) where
+instance (priority := 10000) [T5Space X] : T5Space (SeparationQuotient X) where
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
     apply T5Space.completely_normal <;> rw [← preimage_mk_closure]
@@ -2402,7 +2402,7 @@ theorem loc_compact_t2_tot_disc_iff_tot_sep :
 end LocallyCompact
 
 /-- `ConnectedComponents X` is Hausdorff when `X` is Hausdorff and compact -/
-instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (ConnectedComponents X) := by
+instance (priority := 10000) ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (ConnectedComponents X) := by
   -- Proof follows that of: https://stacks.math.columbia.edu/tag/0900
   -- Fix 2 distinct connected components, with points a and b
   refine ⟨ConnectedComponents.surjective_coe.forall₂.2 fun a b ne => ?_⟩

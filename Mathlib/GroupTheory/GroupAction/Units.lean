@@ -31,7 +31,7 @@ namespace Units
 
 
 @[to_additive]
-instance [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
+instance (priority := 10000) [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
 
 @[to_additive]
 theorem smul_def [Monoid M] [SMul M α] (m : Mˣ) (a : α) : m • a = (m : M) • a :=
@@ -50,41 +50,41 @@ theorem _root_.IsUnit.inv_smul [Monoid α] {a : α} (h : IsUnit a) : h.unit⁻¹
 #align is_unit.inv_smul IsUnit.inv_smul
 
 @[to_additive]
-instance [Monoid M] [SMul M α] [FaithfulSMul M α] : FaithfulSMul Mˣ α where
+instance (priority := 10000) [Monoid M] [SMul M α] [FaithfulSMul M α] : FaithfulSMul Mˣ α where
   eq_of_smul_eq_smul h := Units.ext <| eq_of_smul_eq_smul h
 
 @[to_additive]
-instance instMulAction [Monoid M] [MulAction M α] : MulAction Mˣ α where
+instance (priority := 10000) instMulAction [Monoid M] [MulAction M α] : MulAction Mˣ α where
   one_smul := (one_smul M : _)
   mul_smul m n := mul_smul (m : M) n
 
-instance instSMulZeroClass [Monoid M] [Zero α] [SMulZeroClass M α] : SMulZeroClass Mˣ α where
+instance (priority := 10000) instSMulZeroClass [Monoid M] [Zero α] [SMulZeroClass M α] : SMulZeroClass Mˣ α where
   smul := (· • ·)
   smul_zero m := smul_zero (m : M)
 
-instance instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
+instance (priority := 10000) instDistribSMulUnits [Monoid M] [AddZeroClass α] [DistribSMul M α] :
     DistribSMul Mˣ α where smul_add m := smul_add (m : M)
 
-instance instDistribMulAction [Monoid M] [AddMonoid α] [DistribMulAction M α] :
+instance (priority := 10000) instDistribMulAction [Monoid M] [AddMonoid α] [DistribMulAction M α] :
     DistribMulAction Mˣ α where
   __ := instDistribSMulUnits
   one_smul := fun b => one_smul M b
   mul_smul := fun x y b => mul_smul (x : M) y b
 
-instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M α] :
+instance (priority := 10000) instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M α] :
     MulDistribMulAction Mˣ α where
   smul_mul m := smul_mul' (m : M)
   smul_one m := smul_one (m : M)
 
-instance smulCommClass_left [Monoid M] [SMul M α] [SMul N α] [SMulCommClass M N α] :
+instance (priority := 10000) smulCommClass_left [Monoid M] [SMul M α] [SMul N α] [SMulCommClass M N α] :
     SMulCommClass Mˣ N α where smul_comm m n := (smul_comm (m : M) n : _)
 #align units.smul_comm_class_left Units.smulCommClass_left
 
-instance smulCommClass_right [Monoid N] [SMul M α] [SMul N α] [SMulCommClass M N α] :
+instance (priority := 10000) smulCommClass_right [Monoid N] [SMul M α] [SMul N α] [SMulCommClass M N α] :
     SMulCommClass M Nˣ α where smul_comm m n := (smul_comm m (n : N) : _)
 #align units.smul_comm_class_right Units.smulCommClass_right
 
-instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
+instance (priority := 10000) [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower Mˣ N α where smul_assoc m n := (smul_assoc (m : M) n : _)
 
 /-! ### Action of a group `G` on units of `M` -/
@@ -94,7 +94,7 @@ instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
 action on `Mˣ`. Notably, this provides `MulAction Mˣ Nˣ` under suitable
 conditions.
 -/
-instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
+instance (priority := 10000) mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
     [IsScalarTower G M M] :
     MulAction G Mˣ where
   smul g m :=
@@ -119,21 +119,21 @@ theorem smul_inv [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsS
 #align units.smul_inv Units.smul_inv
 
 /-- Transfer `SMulCommClass G H M` to `SMulCommClass G H Mˣ` -/
-instance smulCommClass' [Group G] [Group H] [Monoid M] [MulAction G M] [SMulCommClass G M M]
+instance (priority := 10000) smulCommClass' [Group G] [Group H] [Monoid M] [MulAction G M] [SMulCommClass G M M]
     [MulAction H M] [SMulCommClass H M M] [IsScalarTower G M M] [IsScalarTower H M M]
     [SMulCommClass G H M] :
     SMulCommClass G H Mˣ where smul_comm g h m := Units.ext <| smul_comm g h (m : M)
 #align units.smul_comm_class' Units.smulCommClass'
 
 /-- Transfer `IsScalarTower G H M` to `IsScalarTower G H Mˣ` -/
-instance isScalarTower' [SMul G H] [Group G] [Group H] [Monoid M] [MulAction G M]
+instance (priority := 10000) isScalarTower' [SMul G H] [Group G] [Group H] [Monoid M] [MulAction G M]
     [SMulCommClass G M M] [MulAction H M] [SMulCommClass H M M] [IsScalarTower G M M]
     [IsScalarTower H M M] [IsScalarTower G H M] :
     IsScalarTower G H Mˣ where smul_assoc g h m := Units.ext <| smul_assoc g h (m : M)
 #align units.is_scalar_tower' Units.isScalarTower'
 
 /-- Transfer `IsScalarTower G M α` to `IsScalarTower G Mˣ α` -/
-instance isScalarTower'_left [Group G] [Monoid M] [MulAction G M] [SMul M α] [SMul G α]
+instance (priority := 10000) isScalarTower'_left [Group G] [Monoid M] [MulAction G M] [SMul M α] [SMul G α]
     [SMulCommClass G M M] [IsScalarTower G M M] [IsScalarTower G M α] :
     IsScalarTower G Mˣ α where smul_assoc g m := (smul_assoc g (m : M) : _)
 #align units.is_scalar_tower'_left Units.isScalarTower'_left
@@ -144,7 +144,7 @@ example [Monoid M] [Monoid N] [MulAction M N] [SMulCommClass M N N] [IsScalarTow
   Units.mulAction'
 
 /-- A stronger form of `Units.mul_action'`. -/
-instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
+instance (priority := 10000) mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SMulCommClass G M M]
     [IsScalarTower G M M] : MulDistribMulAction G Mˣ :=
   { Units.mulAction' with
     smul := (· • ·),

@@ -32,10 +32,10 @@ structure BddDistLat where
 
 namespace BddDistLat
 
-instance : CoeSort BddDistLat (Type*) :=
+instance (priority := 10000) : CoeSort BddDistLat (Type*) :=
   ⟨fun X => X.toDistLat⟩
 
-instance (X : BddDistLat) : DistribLattice X :=
+instance (priority := 10000) (X : BddDistLat) : DistribLattice X :=
   X.toDistLat.str
 
 attribute [instance] BddDistLat.isBoundedOrder
@@ -52,7 +52,7 @@ theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) =
   rfl
 #align BddDistLat.coe_of BddDistLat.coe_of
 
-instance : Inhabited BddDistLat :=
+instance (priority := 10000) : Inhabited BddDistLat :=
   ⟨of PUnit⟩
 
 /-- Turn a `BddDistLat` into a `BddLat` by forgetting it is distributive. -/
@@ -65,13 +65,13 @@ theorem coe_toBddLat (X : BddDistLat) : ↥X.toBddLat = ↥X :=
   rfl
 #align BddDistLat.coe_to_BddLat BddDistLat.coe_toBddLat
 
-instance : LargeCategory.{u} BddDistLat :=
+instance (priority := 10000) : LargeCategory.{u} BddDistLat :=
   InducedCategory.category toBddLat
 
-instance : ConcreteCategory BddDistLat :=
+instance (priority := 10000) : ConcreteCategory BddDistLat :=
   InducedCategory.concreteCategory toBddLat
 
-instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
+instance (priority := 10000) hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
   forget₂ :=
     -- Porting note: was `⟨X⟩`
     -- see https://github.com/leanprover-community/mathlib4/issues/4998
@@ -79,7 +79,7 @@ instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
       map := fun {X Y} => BoundedLatticeHom.toLatticeHom }
 #align BddDistLat.has_forget_to_DistLat BddDistLat.hasForgetToDistLat
 
-instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat :=
+instance (priority := 10000) hasForgetToBddLat : HasForget₂ BddDistLat BddLat :=
   InducedCategory.hasForget₂ toBddLat
 #align BddDistLat.has_forget_to_BddLat BddDistLat.hasForgetToBddLat
 

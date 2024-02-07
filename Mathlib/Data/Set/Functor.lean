@@ -69,17 +69,17 @@ theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : 
   simp
 #align set.image2_def Set.image2_def
 
-instance : LawfulMonad Set := LawfulMonad.mk'
+instance (priority := 10000) : LawfulMonad Set := LawfulMonad.mk'
   (id_map := image_id)
   (pure_bind := biUnion_singleton)
   (bind_assoc := fun _ _ _ => by simp only [bind_def, biUnion_iUnion])
   (bind_pure_comp := fun _ _ => (image_eq_iUnion _ _).symm)
   (bind_map := fun _ _ => seq_def.symm)
 
-instance : CommApplicative (Set : Type u → Type u) :=
+instance (priority := 10000) : CommApplicative (Set : Type u → Type u) :=
   ⟨fun s t => prod_image_seq_comm s t⟩
 
-instance : Alternative Set :=
+instance (priority := 10000) : Alternative Set :=
   { Set.monad with
     orElse := fun s t => s ∪ (t ())
     failure := ∅ }
@@ -113,7 +113,7 @@ In practice this is only used for applying the `Set` functor to `Subtype.val`.
 We define this coercion here.  -/
 
 /-- Coercion using `(Subtype.val '' ·)` -/
-instance : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
+instance (priority := 10000) : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
 
 /-- The coercion from `Set.monad` as an instance is equal to the coercion defined above. -/
 theorem coe_eq_image_val (t : Set s) :
@@ -146,7 +146,7 @@ end Set
 /-- This is `Set` but with a `Monad` instance. -/
 def SetM (α : Type u) := Set α
 
-instance : Monad SetM := Set.monad
+instance (priority := 10000) : Monad SetM := Set.monad
 
 /-- Evaluates the `SetM` monad, yielding a `Set`.
 Implementation note: this is the identity function. -/

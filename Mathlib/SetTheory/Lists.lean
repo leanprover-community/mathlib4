@@ -66,7 +66,7 @@ def Lists (α : Type*) :=
 
 namespace Lists'
 
-instance [Inhabited α] : ∀ b, Inhabited (Lists' α b)
+instance (priority := 10000) [Inhabited α] : ∀ b, Inhabited (Lists' α b)
   | true => ⟨nil⟩
   | false => ⟨atom default⟩
 
@@ -146,12 +146,12 @@ add_decl_doc Lists'.Subset
 
 namespace Lists'
 
-instance : HasSubset (Lists' α true) :=
+instance (priority := 10000) : HasSubset (Lists' α true) :=
   ⟨Lists'.Subset⟩
 
 /-- ZFA prelist membership. A ZFA list is in a ZFA prelist if some element of this ZFA prelist is
 equivalent as a ZFA list to this ZFA list. -/
-instance {b} : Membership (Lists α) (Lists' α b) :=
+instance (priority := 10000) {b} : Membership (Lists α) (Lists' α b) :=
   ⟨fun a l => ∃ a' ∈ l.toList, a ~ a'⟩
 
 theorem mem_def {b a} {l : Lists' α b} : a ∈ l ↔ ∃ a' ∈ l.toList, a ~ a' :=
@@ -253,12 +253,12 @@ theorem of_toList : ∀ {l : Lists α}, IsList l → ofList (toList l) = l
   | ⟨true, l⟩, _ => by simp_all [ofList, of']
 #align lists.of_to_list Lists.of_toList
 
-instance : Inhabited (Lists α) :=
+instance (priority := 10000) : Inhabited (Lists α) :=
   ⟨of' Lists'.nil⟩
 
-instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_instance
+instance (priority := 10000) [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_instance
 
-instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
+instance (priority := 10000) [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
 
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
 def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
@@ -287,7 +287,7 @@ def mem (a : Lists α) : Lists α → Prop
   | ⟨_, l⟩ => a ∈ l
 #align lists.mem Lists.mem
 
-instance : Membership (Lists α) (Lists α) :=
+instance (priority := 10000) : Membership (Lists α) (Lists α) :=
   ⟨mem⟩
 
 theorem isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
@@ -352,7 +352,7 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
       exact IH _ h₁ h₂ h₃
 #align lists.equiv.trans Lists.Equiv.trans
 
-instance instSetoidLists : Setoid (Lists α) :=
+instance (priority := 10000) instSetoidLists : Setoid (Lists α) :=
   ⟨(· ~ ·), Equiv.refl, @Equiv.symm _, @Equiv.trans _⟩
 
 section Decidable
@@ -468,13 +468,13 @@ def Finsets (α : Type*) :=
 
 namespace Finsets
 
-instance : EmptyCollection (Finsets α) :=
+instance (priority := 10000) : EmptyCollection (Finsets α) :=
   ⟨⟦Lists.of' Lists'.nil⟧⟩
 
-instance : Inhabited (Finsets α) :=
+instance (priority := 10000) : Inhabited (Finsets α) :=
   ⟨∅⟩
 
-instance [DecidableEq α] : DecidableEq (Finsets α) := by
+instance (priority := 10000) [DecidableEq α] : DecidableEq (Finsets α) := by
   unfold Finsets
   -- porting notes: infer_instance does not work for some reason
   exact (Quotient.decidableEq (d := fun _ _ => Lists.Equiv.decidable _ _))

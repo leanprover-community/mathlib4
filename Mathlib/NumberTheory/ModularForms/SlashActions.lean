@@ -138,7 +138,7 @@ private theorem smul_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f : ℍ → ℂ) (c : 
 private theorem zero_slash (k : ℤ) (A : GL(2, ℝ)⁺) : (0 : ℍ → ℂ) ∣[k]A = 0 :=
   funext fun _ => by simp only [slash, Pi.zero_apply, zero_mul]
 
-instance : SlashAction ℤ GL(2, ℝ)⁺ (ℍ → ℂ) ℂ where
+instance (priority := 10000) : SlashAction ℤ GL(2, ℝ)⁺ (ℍ → ℂ) ℂ where
   map := slash
   zero_slash := zero_slash
   slash_one := slash_one
@@ -152,7 +152,7 @@ theorem slash_def (A : GL(2, ℝ)⁺) : f ∣[k] A = slash k A f :=
   rfl
 #align modular_form.slash_def ModularForm.slash_def
 
-instance subgroupAction (Γ : Subgroup SL(2, ℤ)) : SlashAction ℤ Γ (ℍ → ℂ) ℂ :=
+instance (priority := 10000) subgroupAction (Γ : Subgroup SL(2, ℤ)) : SlashAction ℤ Γ (ℍ → ℂ) ℂ :=
   monoidHomSlashAction
     (MonoidHom.comp Matrix.SpecialLinearGroup.toGLPos
       (MonoidHom.comp (Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ)) (Subgroup.subtype Γ)))
@@ -163,7 +163,7 @@ theorem subgroup_slash (Γ : Subgroup SL(2, ℤ)) (γ : Γ) : f ∣[k] γ = f �
   rfl
 #align modular_form.subgroup_slash ModularForm.subgroup_slash
 
-instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) ℂ :=
+instance (priority := 10000) SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) ℂ :=
   monoidHomSlashAction
     (MonoidHom.comp Matrix.SpecialLinearGroup.toGLPos
       (Matrix.SpecialLinearGroup.map (Int.castRingHom ℝ)))

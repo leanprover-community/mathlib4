@@ -13,4 +13,4 @@ set_option autoImplicit true
 
 open Lean
 
-instance [Inhabited σ] : Inhabited (ScopedEnvExtension.State σ) := ⟨{state := default}⟩
+instance (priority := 10000) [Inhabited σ] : Inhabited (ScopedEnvExtension.State σ) := ⟨{state := default}⟩

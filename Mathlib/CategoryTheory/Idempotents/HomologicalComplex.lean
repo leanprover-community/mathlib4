@@ -213,7 +213,7 @@ def karoubiCochainComplexEquivalence :
   karoubiHomologicalComplexEquivalence C (ComplexShape.up α)
 #align category_theory.idempotents.karoubi_cochain_complex_equivalence CategoryTheory.Idempotents.karoubiCochainComplexEquivalence
 
-instance [IsIdempotentComplete C] : IsIdempotentComplete (HomologicalComplex C c) := by
+instance (priority := 10000) [IsIdempotentComplete C] : IsIdempotentComplete (HomologicalComplex C c) := by
   rw [isIdempotentComplete_iff_of_equivalence
       ((toKaroubiEquivalence C).mapHomologicalComplex c),
     ← isIdempotentComplete_iff_of_equivalence (karoubiHomologicalComplexEquivalence C c)]

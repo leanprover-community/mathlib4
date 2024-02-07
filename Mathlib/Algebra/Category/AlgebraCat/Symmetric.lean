@@ -24,7 +24,7 @@ variable {R : Type u} [CommRing R]
 
 namespace AlgebraCat
 
-instance : BraidedCategory (AlgebraCat.{u} R) :=
+instance (priority := 10000) : BraidedCategory (AlgebraCat.{u} R) :=
   braidedCategoryOfFaithful (toModuleCatMonoidalFunctor R)
     (fun X Y => (Algebra.TensorProduct.comm R X Y).toAlgebraIso)
     (by aesop_cat)
@@ -35,10 +35,10 @@ variable (R) in
 def toModuleCatBraidedFunctor : BraidedFunctor (AlgebraCat.{u} R) (ModuleCat.{u} R) where
   toMonoidalFunctor := toModuleCatMonoidalFunctor R
 
-instance : Faithful (toModuleCatBraidedFunctor R).toFunctor :=
+instance (priority := 10000) : Faithful (toModuleCatBraidedFunctor R).toFunctor :=
   forget₂_faithful _ _
 
-instance instSymmetricCategory : SymmetricCategory (AlgebraCat.{u} R) :=
+instance (priority := 10000) instSymmetricCategory : SymmetricCategory (AlgebraCat.{u} R) :=
   symmetricCategoryOfFaithful (toModuleCatBraidedFunctor R)
 
 end AlgebraCat

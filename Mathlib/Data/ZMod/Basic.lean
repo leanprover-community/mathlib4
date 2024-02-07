@@ -36,7 +36,7 @@ open Function
 
 namespace ZMod
 
-instance charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
+instance (priority := 10000) charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
 
 /-- `val a` is a natural number defined as:
   - for `a : ZMod 0` it is the absolute value of `a`
@@ -98,7 +98,7 @@ lemma eq_one_of_isUnit_natCast {n : ℕ} (h : IsUnit (n : ZMod 0)) : n = 1 := by
 theorem val_nat_cast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
   rwa [val_nat_cast, Nat.mod_eq_of_lt]
 
-instance charP (n : ℕ) : CharP (ZMod n) n where
+instance (priority := 10000) charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff' := by
     intro k
     cases' n with n
@@ -658,7 +658,7 @@ theorem val_mul_of_lt {n : ℕ} {a b : ZMod n} (h : a.val * b.val < n) :
   rw [val_mul]
   apply Nat.mod_eq_of_lt h
 
-instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
+instance (priority := 10000) nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
   ⟨⟨0, 1, fun h =>
       zero_ne_one <|
         calc
@@ -668,7 +668,7 @@ instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
           ⟩⟩
 #align zmod.nontrivial ZMod.nontrivial
 
-instance nontrivial' : Nontrivial (ZMod 0) :=
+instance (priority := 10000) nontrivial' : Nontrivial (ZMod 0) :=
   by delta ZMod; infer_instance
 #align zmod.nontrivial' ZMod.nontrivial'
 
@@ -680,7 +680,7 @@ def inv : ∀ n : ℕ, ZMod n → ZMod n
   | n + 1, i => Nat.gcdA i.val (n + 1)
 #align zmod.inv ZMod.inv
 
-instance (n : ℕ) : Inv (ZMod n) :=
+instance (priority := 10000) (n : ℕ) : Inv (ZMod n) :=
   ⟨inv n⟩
 
 @[nolint unusedHavesSuffices]
@@ -855,7 +855,7 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
 #align zmod.chinese_remainder ZMod.chineseRemainder
 
 -- todo: this can be made a `Unique` instance.
-instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
+instance (priority := 10000) subsingleton_units : Subsingleton (ZMod 2)ˣ :=
   ⟨by decide⟩
 #align zmod.subsingleton_units ZMod.subsingleton_units
 
@@ -1200,14 +1200,14 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
   rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
 
 /-- Field structure on `ZMod p` if `p` is prime. -/
-instance : Field (ZMod p) :=
+instance (priority := 10000) : Field (ZMod p) :=
   { inferInstanceAs (CommRing (ZMod p)), inferInstanceAs (Inv (ZMod p)),
     ZMod.nontrivial p with
     mul_inv_cancel := mul_inv_cancel_aux p
     inv_zero := inv_zero p }
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
-instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
+instance (priority := 10000) (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
   -- We need `cases p` here in order to resolve which `CommRing` instance is being used.
   cases p
   · exact (Nat.not_prime_zero hp.out).elim
@@ -1228,11 +1228,11 @@ namespace ZMod
 
 variable {n : ℕ} {R : Type*}
 
-instance subsingleton_ringHom [Semiring R] : Subsingleton (ZMod n →+* R) :=
+instance (priority := 10000) subsingleton_ringHom [Semiring R] : Subsingleton (ZMod n →+* R) :=
   ⟨RingHom.ext_zmod⟩
 #align zmod.subsingleton_ring_hom ZMod.subsingleton_ringHom
 
-instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
+instance (priority := 10000) subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
   ⟨fun f g => by
     rw [RingEquiv.coe_ringHom_inj_iff]
     apply RingHom.ext_zmod _ _⟩

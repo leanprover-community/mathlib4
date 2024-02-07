@@ -46,7 +46,7 @@ compile_inductive% ONote
 namespace ONote
 
 /-- Notation for 0 -/
-instance : Zero ONote :=
+instance (priority := 10000) : Zero ONote :=
   ⟨zero⟩
 
 @[simp]
@@ -54,11 +54,11 @@ theorem zero_def : zero = 0 :=
   rfl
 #align onote.zero_def ONote.zero_def
 
-instance : Inhabited ONote :=
+instance (priority := 10000) : Inhabited ONote :=
   ⟨0⟩
 
 /-- Notation for 1 -/
-instance : One ONote :=
+instance (priority := 10000) : One ONote :=
   ⟨oadd 0 1 0⟩
 
 /-- Notation for ω -/
@@ -96,13 +96,13 @@ def repr' (prec : ℕ) : ONote → Format
       prec
 #align onote.repr' ONote.repr
 
-instance : ToString ONote :=
+instance (priority := 10000) : ToString ONote :=
   ⟨toString⟩
 
-instance : Repr ONote where
+instance (priority := 10000) : Repr ONote where
   reprPrec o prec := repr' prec o
 
-instance : Preorder ONote where
+instance (priority := 10000) : Preorder ONote where
   le x y := repr x ≤ repr y
   lt x y := repr x < repr y
   le_refl _ := @le_refl Ordinal _ _
@@ -117,7 +117,7 @@ theorem le_def {x y : ONote} : x ≤ y ↔ repr x ≤ repr y :=
   Iff.rfl
 #align onote.le_def ONote.le_def
 
-instance : WellFoundedRelation ONote :=
+instance (priority := 10000) : WellFoundedRelation ONote :=
   ⟨(· < ·), InvImage.wf repr Ordinal.lt_wf⟩
 
 /-- Convert a `Nat` into an ordinal -/
@@ -139,7 +139,7 @@ attribute [eqns ofNat_zero ofNat_succ] ofNat
 
 attribute [simp] ofNat
 
-instance nat (n : ℕ) : OfNat ONote n where
+instance (priority := 10000) nat (n : ℕ) : OfNat ONote n where
   ofNat := ofNat n
 
 @[simp 1200]
@@ -214,7 +214,7 @@ class NF (o : ONote) : Prop where
   out : Exists (NFBelow o)
 #align onote.NF ONote.NF
 
-instance NF.zero : NF 0 :=
+instance (priority := 10000) NF.zero : NF 0 :=
   ⟨⟨0, NFBelow.zero⟩⟩
 #align onote.NF.zero ONote.NF.zero
 
@@ -246,7 +246,7 @@ theorem NF.oadd {e a} (h₁ : NF e) (n) (h₂ : NFBelow a (repr e)) : NF (oadd e
   ⟨⟨_, NFBelow.oadd h₁ h₂ (lt_succ _)⟩⟩
 #align onote.NF.oadd ONote.NF.oadd
 
-instance NF.oadd_zero (e n) [h : NF e] : NF (ONote.oadd e n 0) :=
+instance (priority := 10000) NF.oadd_zero (e n) [h : NF e] : NF (ONote.oadd e n 0) :=
   h.oadd _ NFBelow.zero
 #align onote.NF.oadd_zero ONote.NF.oadd_zero
 
@@ -297,11 +297,11 @@ theorem nfBelow_ofNat : ∀ n, NFBelow (ofNat n) 1
   | Nat.succ _ => NFBelow.oadd NF.zero NFBelow.zero zero_lt_one
 #align onote.NF_below_of_nat ONote.nfBelow_ofNat
 
-instance nf_ofNat (n) : NF (ofNat n) :=
+instance (priority := 10000) nf_ofNat (n) : NF (ofNat n) :=
   ⟨⟨_, nfBelow_ofNat n⟩⟩
 #align onote.NF_of_nat ONote.nf_ofNat
 
-instance nf_one : NF 1 := by (rw [← ofNat_one]; infer_instance)
+instance (priority := 10000) nf_one : NF 1 := by (rw [← ofNat_one]; infer_instance)
 #align onote.NF_one ONote.nf_one
 
 theorem oadd_lt_oadd_1 {e₁ n₁ o₁ e₂ n₂ o₂} (h₁ : NF (oadd e₁ n₁ o₁)) (h : e₁ < e₂) :
@@ -392,7 +392,7 @@ def TopBelow (b : ONote) : ONote → Prop
   | oadd e _ _ => cmp e b = Ordering.lt
 #align onote.top_below ONote.TopBelow
 
-instance decidableTopBelow : DecidableRel TopBelow := by
+instance (priority := 10000) decidableTopBelow : DecidableRel TopBelow := by
   intro b o
   cases o <;> delta TopBelow <;> infer_instance
 #align onote.decidable_top_below ONote.decidableTopBelow
@@ -404,7 +404,7 @@ theorem nfBelow_iff_topBelow {b} [NF b] : ∀ {o}, NFBelow o (repr b) ↔ NF o �
       h₁.below_of_lt <| (@cmp_compares _ b h₁.fst _).eq_lt.1 h₂⟩
 #align onote.NF_below_iff_top_below ONote.nfBelow_iff_topBelow
 
-instance decidableNF : DecidablePred NF
+instance (priority := 10000) decidableNF : DecidablePred NF
   | 0 => isTrue NF.zero
   | oadd e n a => by
     have := decidableNF e
@@ -430,7 +430,7 @@ def add : ONote → ONote → ONote
   | oadd e n a, o => addAux e n (add a o)
 #align onote.add ONote.add
 
-instance : Add ONote :=
+instance (priority := 10000) : Add ONote :=
   ⟨add⟩
 
 @[simp]
@@ -456,7 +456,7 @@ def sub : ONote → ONote → ONote
       | Nat.succ k => oadd e₁ k.succPNat a₁
 #align onote.sub ONote.sub
 
-instance : Sub ONote :=
+instance (priority := 10000) : Sub ONote :=
   ⟨sub⟩
 
 theorem add_nfBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b → NFBelow (o₁ + o₂) b
@@ -475,7 +475,7 @@ theorem add_nfBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b →
       exact NFBelow.oadd h₁.fst (NF.below_of_lt this ⟨⟨_, h'⟩⟩) h₁.lt
 #align onote.add_NF_below ONote.add_nfBelow
 
-instance add_nf (o₁ o₂) : ∀ [NF o₁] [NF o₂], NF (o₁ + o₂)
+instance (priority := 10000) add_nf (o₁ o₂) : ∀ [NF o₁] [NF o₂], NF (o₁ + o₂)
   | ⟨⟨b₁, h₁⟩⟩, ⟨⟨b₂, h₂⟩⟩ =>
     ⟨(le_total b₁ b₂).elim (fun h => ⟨b₂, add_nfBelow (h₁.mono h) h₂⟩) fun h =>
         ⟨b₁, add_nfBelow h₁ (h₂.mono h)⟩⟩
@@ -523,7 +523,7 @@ theorem sub_nfBelow : ∀ {o₁ o₂ b}, NFBelow o₁ b → NF o₂ → NFBelow 
     · exact h₁
 #align onote.sub_NF_below ONote.sub_nfBelow
 
-instance sub_nf (o₁ o₂) : ∀ [NF o₁] [NF o₂], NF (o₁ - o₂)
+instance (priority := 10000) sub_nf (o₁ o₂) : ∀ [NF o₁] [NF o₂], NF (o₁ - o₂)
   | ⟨⟨b₁, h₁⟩⟩, h₂ => ⟨⟨b₁, sub_nfBelow h₁ h₂⟩⟩
 #align onote.sub_NF ONote.sub_nf
 
@@ -572,10 +572,10 @@ def mul : ONote → ONote → ONote
     if e₂ = 0 then oadd e₁ (n₁ * n₂) a₁ else oadd (e₁ + e₂) n₂ (mul o₁ a₂)
 #align onote.mul ONote.mul
 
-instance : Mul ONote :=
+instance (priority := 10000) : Mul ONote :=
   ⟨mul⟩
 
-instance : MulZeroClass ONote where
+instance (priority := 10000) : MulZeroClass ONote where
   mul := (· * ·)
   zero := 0
   zero_mul o := by cases o <;> rfl
@@ -604,7 +604,7 @@ theorem oadd_mul_nfBelow {e₁ n₁ a₁ b₁} (h₁ : NFBelow (oadd e₁ n₁ a
         exact h₂.lt
 #align onote.oadd_mul_NF_below ONote.oadd_mul_nfBelow
 
-instance mul_nf : ∀ (o₁ o₂) [NF o₁] [NF o₂], NF (o₁ * o₂)
+instance (priority := 10000) mul_nf : ∀ (o₁ o₂) [NF o₁] [NF o₂], NF (o₁ * o₂)
   | 0, o, _, h₂ => by cases o <;> exact NF.zero
   | oadd e n a, o, ⟨⟨b₁, hb₁⟩⟩, ⟨⟨b₂, hb₂⟩⟩ => ⟨⟨_, oadd_mul_nfBelow hb₁ hb₂⟩⟩
 #align onote.mul_NF ONote.mul_nf
@@ -700,7 +700,7 @@ def opowAux2 (o₂ : ONote) (o₁ : ONote × ℕ) : ONote :=
 def opow (o₁ o₂ : ONote) : ONote := opowAux2 o₂ (split o₁)
 #align onote.opow ONote.opow
 
-instance : Pow ONote ONote :=
+instance (priority := 10000) : Pow ONote ONote :=
   ⟨opow⟩
 
 theorem opow_def (o₁ o₂ : ONote) : o₁ ^ o₂ = opowAux2 o₂ (split o₁) :=
@@ -771,7 +771,7 @@ theorem scale_eq_mul (x) [NF x] : ∀ (o) [NF o], scale x o = oadd x 1 0 * o
     · simp [e0, Mul.mul, mul, scale_eq_mul, (· * ·)]
 #align onote.scale_eq_mul ONote.scale_eq_mul
 
-instance nf_scale (x) [NF x] (o) [NF o] : NF (scale x o) := by
+instance (priority := 10000) nf_scale (x) [NF x] (o) [NF o] : NF (scale x o) := by
   rw [scale_eq_mul]
   infer_instance
 #align onote.NF_scale ONote.nf_scale
@@ -810,10 +810,10 @@ theorem split_add_lt {o e n a m} [NF o] (h : split o = (oadd e n a, m)) :
 theorem mulNat_eq_mul (n o) : mulNat o n = o * ofNat n := by cases o <;> cases n <;> rfl
 #align onote.mul_nat_eq_mul ONote.mulNat_eq_mul
 
-instance nf_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simp; exact ONote.mul_nf o (ofNat n)
+instance (priority := 10000) nf_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simp; exact ONote.mul_nf o (ofNat n)
 #align onote.NF_mul_nat ONote.nf_mulNat
 
-instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a k m) := by
+instance (priority := 10000) nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a k m) := by
   intro k m
   unfold opowAux
   cases' m with m m
@@ -824,7 +824,7 @@ instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a
     simp only [Nat.succ_ne_zero m]; infer_instance
 #align onote.NF_opow_aux ONote.nf_opowAux
 
-instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
+instance (priority := 10000) nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
   cases' e₁ : split o₁ with a m
   have na := (nf_repr_split e₁).1
   cases' e₂ : split' o₂ with b' k
@@ -1250,13 +1250,13 @@ def NONote :=
   { o : ONote // o.NF }
 #align nonote NONote
 
-instance : DecidableEq NONote := by unfold NONote; infer_instance
+instance (priority := 10000) : DecidableEq NONote := by unfold NONote; infer_instance
 
 namespace NONote
 
 open ONote
 
-instance NF (o : NONote) : NF o.1 :=
+instance (priority := 10000) NF (o : NONote) : NF o.1 :=
   o.2
 #align nonote.NF NONote.NF
 
@@ -1276,33 +1276,33 @@ noncomputable def repr (o : NONote) : Ordinal :=
   o.1.repr
 #align nonote.repr NONote.repr
 
-instance : ToString NONote :=
+instance (priority := 10000) : ToString NONote :=
   ⟨fun x => x.1.toString⟩
 
-instance : Repr NONote :=
+instance (priority := 10000) : Repr NONote :=
   ⟨fun x prec => x.1.repr' prec⟩
 
-instance : Preorder NONote where
+instance (priority := 10000) : Preorder NONote where
   le x y := repr x ≤ repr y
   lt x y := repr x < repr y
   le_refl _ := @le_refl Ordinal _ _
   le_trans _ _ _ := @le_trans Ordinal _ _ _ _
   lt_iff_le_not_le _ _ := @lt_iff_le_not_le Ordinal _ _ _
 
-instance : Zero NONote :=
+instance (priority := 10000) : Zero NONote :=
   ⟨⟨0, NF.zero⟩⟩
 
-instance : Inhabited NONote :=
+instance (priority := 10000) : Inhabited NONote :=
   ⟨0⟩
 
 theorem lt_wf : @WellFounded NONote (· < ·) :=
   InvImage.wf repr Ordinal.lt_wf
 #align nonote.lt_wf NONote.lt_wf
 
-instance : WellFoundedLT NONote :=
+instance (priority := 10000) : WellFoundedLT NONote :=
   ⟨lt_wf⟩
 
-instance : WellFoundedRelation NONote :=
+instance (priority := 10000) : WellFoundedRelation NONote :=
   ⟨(· < ·), lt_wf⟩
 
 /-- Convert a natural number to an ordinal notation -/
@@ -1323,10 +1323,10 @@ theorem cmp_compares : ∀ a b : NONote, (cmp a b).Compares a b
     exact Subtype.mk_eq_mk.2 this
 #align nonote.cmp_compares NONote.cmp_compares
 
-instance : LinearOrder NONote :=
+instance (priority := 10000) : LinearOrder NONote :=
   linearOrderOfCompares cmp cmp_compares
 
-instance : IsWellOrder NONote (· < ·) where
+instance (priority := 10000) : IsWellOrder NONote (· < ·) where
 
 /-- Asserts that `repr a < ω ^ repr b`. Used in `NONote.recOn` -/
 def below (a b : NONote) : Prop :=
@@ -1350,7 +1350,7 @@ def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
 #align nonote.rec_on NONote.recOn
 
 /-- Addition of ordinal notations -/
-instance : Add NONote :=
+instance (priority := 10000) : Add NONote :=
   ⟨fun x y => mk (x.1 + y.1)⟩
 
 theorem repr_add (a b) : repr (a + b) = repr a + repr b :=
@@ -1358,7 +1358,7 @@ theorem repr_add (a b) : repr (a + b) = repr a + repr b :=
 #align nonote.repr_add NONote.repr_add
 
 /-- Subtraction of ordinal notations -/
-instance : Sub NONote :=
+instance (priority := 10000) : Sub NONote :=
   ⟨fun x y => mk (x.1 - y.1)⟩
 
 theorem repr_sub (a b) : repr (a - b) = repr a - repr b :=
@@ -1366,7 +1366,7 @@ theorem repr_sub (a b) : repr (a - b) = repr a - repr b :=
 #align nonote.repr_sub NONote.repr_sub
 
 /-- Multiplication of ordinal notations -/
-instance : Mul NONote :=
+instance (priority := 10000) : Mul NONote :=
   ⟨fun x y => mk (x.1 * y.1)⟩
 
 theorem repr_mul (a b) : repr (a * b) = repr a * repr b :=

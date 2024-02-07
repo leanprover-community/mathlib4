@@ -91,11 +91,11 @@ attribute [simp] map_smul
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
 
-instance : FunLike (X →[M'] Y) X Y where
+instance (priority := 10000) : FunLike (X →[M'] Y) X Y where
   coe := MulActionHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-instance : SMulHomClass (X →[M'] Y) M' X Y where
+instance (priority := 10000) : SMulHomClass (X →[M'] Y) M' X Y where
   map_smul := MulActionHom.map_smul'
 
 initialize_simps_projections MulActionHom (toFun → apply)
@@ -117,7 +117,7 @@ def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [FunLike F X Y]
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [SMul M X] [SMul M Y] [FunLike F X Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
+instance (priority := 10000) [SMul M X] [SMul M Y] [FunLike F X Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
   ⟨SMulHomClass.toMulActionHom⟩
 
 variable (M' X Y F) in
@@ -249,13 +249,13 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign distrib_mul_action_hom.has_coe'
 #noalign distrib_mul_action_hom.has_coe_to_fun
 
-instance : FunLike (A →+[M] B) A B where
+instance (priority := 10000) : FunLike (A →+[M] B) A B where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
     cases tF; cases tG; congr
 
-instance : DistribMulActionHomClass (A →+[M] B) M A B where
+instance (priority := 10000) : DistribMulActionHomClass (A →+[M] B) M A B where
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
   map_smul m := m.map_smul'
@@ -275,7 +275,7 @@ def _root_.DistribMulActionHomClass.toDistribMulActionHom [FunLike F A B]
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [FunLike F A B] [DistribMulActionHomClass F M A B] :
+instance (priority := 10000) [FunLike F A B] [DistribMulActionHomClass F M A B] :
     CoeTC F (A →+[M] B) :=
   ⟨DistribMulActionHomClass.toDistribMulActionHom⟩
 
@@ -351,10 +351,10 @@ theorem id_apply (x : A) : DistribMulActionHom.id M x = x := by
 variable {M C}
 
 -- porting note:  `simp` used to prove this, but now `change` is needed to push past the coercions
-instance : Zero (A →+[M] B) :=
+instance (priority := 10000) : Zero (A →+[M] B) :=
   ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by change (0 : B) = m • (0 : B); rw [smul_zero]}⟩
 
-instance : One (A →+[M] A) :=
+instance (priority := 10000) : One (A →+[M] A) :=
   ⟨DistribMulActionHom.id M⟩
 
 @[simp]
@@ -375,7 +375,7 @@ theorem one_apply (a : A) : (1 : A →+[M] A) a = a :=
   rfl
 #align distrib_mul_action_hom.one_apply DistribMulActionHom.one_apply
 
-instance : Inhabited (A →+[M] B) :=
+instance (priority := 10000) : Inhabited (A →+[M] B) :=
   ⟨0⟩
 
 /-- Composition of two equivariant additive monoid homomorphisms. -/
@@ -485,13 +485,13 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign mul_semiring_action_hom.has_coe'
 #noalign mul_semiring_action_hom.has_coe_to_fun
 
-instance : FunLike (R →+*[M] S) R S where
+instance (priority := 10000) : FunLike (R →+*[M] S) R S where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
     cases tF; cases tG; congr
 
-instance : MulSemiringActionHomClass (R →+*[M] S) M R S where
+instance (priority := 10000) : MulSemiringActionHomClass (R →+*[M] S) M R S where
   map_zero m := m.map_zero'
   map_add m := m.map_add'
   map_one := MulSemiringActionHom.map_one'
@@ -515,7 +515,7 @@ def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [FunLike F R S]
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
-instance [FunLike F R S] [MulSemiringActionHomClass F M R S] :
+instance (priority := 10000) [FunLike F R S] [MulSemiringActionHomClass F M R S] :
     CoeTC F (R →+*[M] S) :=
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
 

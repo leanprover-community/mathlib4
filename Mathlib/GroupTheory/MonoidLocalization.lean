@@ -219,7 +219,7 @@ def Localization := (Localization.r S).Quotient
 namespace Localization
 
 @[to_additive]
-instance inhabited : Inhabited (Localization S) := Con.Quotient.inhabited
+instance (priority := 10000) inhabited : Inhabited (Localization S) := Con.Quotient.inhabited
 #align localization.inhabited Localization.inhabited
 #align add_localization.inhabited AddLocalization.inhabited
 
@@ -233,7 +233,7 @@ protected irreducible_def mul : Localization S → Localization S → Localizati
 #align add_localization.add AddLocalization.add
 
 @[to_additive]
-instance : Mul (Localization S) := ⟨Localization.mul S⟩
+instance (priority := 10000) : Mul (Localization S) := ⟨Localization.mul S⟩
 
 /-- The identity element of a `Localization` is defined as `⟨1, 1⟩`. -/
 @[to_additive "The identity element of an `AddLocalization` is defined as `⟨0, 0⟩`.
@@ -245,7 +245,7 @@ protected irreducible_def one : Localization S := (r S).commMonoid.one
 #align add_localization.zero AddLocalization.zero
 
 @[to_additive]
-instance : One (Localization S) := ⟨Localization.one S⟩
+instance (priority := 10000) : One (Localization S) := ⟨Localization.one S⟩
 
 /-- Exponentiation in a `Localization` is defined as `⟨a, b⟩ ^ n = ⟨a ^ n, b ^ n⟩`.
 
@@ -262,7 +262,7 @@ protected irreducible_def npow : ℕ → Localization S → Localization S := (r
 #align add_localization.nsmul AddLocalization.nsmul
 
 @[to_additive]
-instance commMonoid : CommMonoid (Localization S) where
+instance (priority := 10000) commMonoid : CommMonoid (Localization S) where
   mul := (· * ·)
   one := 1
   mul_assoc x y z := show (x.mul S y).mul S z = x.mul S (y.mul S z) by
@@ -457,7 +457,7 @@ protected irreducible_def smul [SMul R M] [IsScalarTower R M M] (c : R) (z : Loc
         simp only [mul_smul_comm, ht]))
 #align localization.smul Localization.smul
 
-instance instSMulLocalization [SMul R M] [IsScalarTower R M M] : SMul R (Localization S) where
+instance (priority := 10000) instSMulLocalization [SMul R M] [IsScalarTower R M M] : SMul R (Localization S) where
   smul := Localization.smul
 
 theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
@@ -467,15 +467,15 @@ theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
  exact liftOn_mk (fun a b => mk (c • a) b) _ a b
 #align localization.smul_mk Localization.smul_mk
 
-instance [SMul R₁ M] [SMul R₂ M] [IsScalarTower R₁ M M] [IsScalarTower R₂ M M]
+instance (priority := 10000) [SMul R₁ M] [SMul R₂ M] [IsScalarTower R₁ M M] [IsScalarTower R₂ M M]
   [SMulCommClass R₁ R₂ M] : SMulCommClass R₁ R₂ (Localization S) where
   smul_comm s t := Localization.ind <| Prod.rec fun r x ↦ by simp only [smul_mk, smul_comm s t r]
 
-instance [SMul R₁ M] [SMul R₂ M] [IsScalarTower R₁ M M] [IsScalarTower R₂ M M] [SMul R₁ R₂]
+instance (priority := 10000) [SMul R₁ M] [SMul R₂ M] [IsScalarTower R₁ M M] [IsScalarTower R₂ M M] [SMul R₁ R₂]
   [IsScalarTower R₁ R₂ M] : IsScalarTower R₁ R₂ (Localization S) where
   smul_assoc s t := Localization.ind <| Prod.rec fun r x ↦ by simp only [smul_mk, smul_assoc s t r]
 
-instance smulCommClass_right {R : Type*} [SMul R M] [IsScalarTower R M M] :
+instance (priority := 10000) smulCommClass_right {R : Type*} [SMul R M] [IsScalarTower R M M] :
   SMulCommClass R (Localization S) (Localization S) where
   smul_comm s :=
       Localization.ind <|
@@ -485,7 +485,7 @@ instance smulCommClass_right {R : Type*} [SMul R M] [IsScalarTower R M M] :
               simp only [smul_mk, smul_eq_mul, mk_mul, mul_comm r₁, smul_mul_assoc]
 #align localization.smul_comm_class_right Localization.smulCommClass_right
 
-instance isScalarTower_right {R : Type*} [SMul R M] [IsScalarTower R M M] :
+instance (priority := 10000) isScalarTower_right {R : Type*} [SMul R M] [IsScalarTower R M M] :
   IsScalarTower R (Localization S) (Localization S) where
   smul_assoc s :=
     Localization.ind <|
@@ -494,12 +494,12 @@ instance isScalarTower_right {R : Type*} [SMul R M] [IsScalarTower R M M] :
           Prod.rec fun r₂ x₂ ↦ by simp only [smul_mk, smul_eq_mul, mk_mul, smul_mul_assoc]
 #align localization.is_scalar_tower_right Localization.isScalarTower_right
 
-instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsScalarTower R M M] [IsScalarTower Rᵐᵒᵖ M M]
+instance (priority := 10000) [SMul R M] [SMul Rᵐᵒᵖ M] [IsScalarTower R M M] [IsScalarTower Rᵐᵒᵖ M M]
   [IsCentralScalar R M] : IsCentralScalar R (Localization S) where
   op_smul_eq_smul s :=
     Localization.ind <| Prod.rec fun r x ↦ by simp only [smul_mk, op_smul_eq_smul]
 
-instance [Monoid R] [MulAction R M] [IsScalarTower R M M] : MulAction R (Localization S) where
+instance (priority := 10000) [Monoid R] [MulAction R M] [IsScalarTower R M M] : MulAction R (Localization S) where
   one_smul :=
     Localization.ind <|
       Prod.rec <| by
@@ -511,7 +511,7 @@ instance [Monoid R] [MulAction R M] [IsScalarTower R M M] : MulAction R (Localiz
         intros
         simp only [Localization.smul_mk, mul_smul]
 
-instance [Monoid R] [MulDistribMulAction R M] [IsScalarTower R M M] :
+instance (priority := 10000) [Monoid R] [MulDistribMulAction R M] [IsScalarTower R M M] :
     MulDistribMulAction R (Localization S) where
   smul_one s := by simp only [← Localization.mk_one, Localization.smul_mk, smul_one]
   smul_mul s x y :=
@@ -1894,7 +1894,7 @@ protected irreducible_def zero : Localization S :=
   mk 0 1
 #align localization.zero Localization.zero
 
-instance : Zero (Localization S) := ⟨Localization.zero S⟩
+instance (priority := 10000) : Zero (Localization S) := ⟨Localization.zero S⟩
 
 variable {S}
 
@@ -1903,7 +1903,7 @@ theorem mk_zero (x : S) : mk 0 (x : S) = 0 :=
     mk 0 x = mk 0 1 := mk_eq_mk_iff.mpr (r_of_eq (by simp))
     _ = Localization.zero S := (Localization.zero_def S).symm
 
-instance : CommMonoidWithZero (Localization S) where
+instance (priority := 10000) : CommMonoidWithZero (Localization S) where
   zero_mul := fun x ↦ Localization.induction_on x fun y => by
     simp only [← Localization.mk_zero y.2, mk_mul, mk_eq_mk_iff, mul_zero, zero_mul, r_of_eq]
   mul_zero := fun x ↦ Localization.induction_on x fun y => by
@@ -2018,7 +2018,7 @@ theorem mk_eq_mk_iff' : mk a₁ a₂ = mk b₁ b₂ ↔ ↑b₂ * a₁ = a₂ * 
 #align add_localization.mk_eq_mk_iff' AddLocalization.mk_eq_mk_iff'
 
 @[to_additive]
-instance decidableEq [DecidableEq α] : DecidableEq (Localization s) := fun a b =>
+instance (priority := 10000) decidableEq [DecidableEq α] : DecidableEq (Localization s) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_eq_mk_iff'
 #align localization.decidable_eq Localization.decidableEq
 #align add_localization.decidable_eq AddLocalization.decidableEq
@@ -2036,7 +2036,7 @@ section OrderedCancelCommMonoid
 variable [OrderedCancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
 
 @[to_additive]
-instance le : LE (Localization s) :=
+instance (priority := 10000) le : LE (Localization s) :=
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ ≤ a₂ * b₁)
       @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext <| by
@@ -2049,7 +2049,7 @@ instance le : LE (Localization s) :=
           mul_left_comm (b₂ : α), mul_le_mul_iff_left]⟩
 
 @[to_additive]
-instance lt : LT (Localization s) :=
+instance (priority := 10000) lt : LT (Localization s) :=
   ⟨fun a b =>
     Localization.liftOn₂ a b (fun a₁ a₂ b₁ b₂ => ↑b₂ * a₁ < a₂ * b₁)
       @fun a₁ b₁ a₂ b₂ c₁ d₁ c₂ d₂ hab hcd => propext <| by
@@ -2075,7 +2075,7 @@ theorem mk_lt_mk : mk a₁ a₂ < mk b₁ b₂ ↔ ↑b₂ * a₁ < a₂ * b₁ 
 
 -- declaring this separately to the instance below makes things faster
 @[to_additive]
-instance partialOrder : PartialOrder (Localization s) where
+instance (priority := 10000) partialOrder : PartialOrder (Localization s) where
   le := (· ≤ ·)
   lt := (· < ·)
   le_refl a := Localization.induction_on a fun a => le_rfl
@@ -2096,7 +2096,7 @@ instance partialOrder : PartialOrder (Localization s) where
   lt_iff_le_not_le a b := Localization.induction_on₂ a b fun a b => lt_iff_le_not_le
 
 @[to_additive]
-instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) :=
+instance (priority := 10000) orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) :=
   { Localization.commMonoid s,
     Localization.partialOrder with
     mul_le_mul_left := fun a b =>
@@ -2110,14 +2110,14 @@ instance orderedCancelCommMonoid : OrderedCancelCommMonoid (Localization s) :=
         exact le_of_mul_le_mul_left' hab }
 
 @[to_additive]
-instance decidableLE [DecidableRel ((· ≤ ·) : α → α → Prop)] :
+instance (priority := 10000) decidableLE [DecidableRel ((· ≤ ·) : α → α → Prop)] :
     DecidableRel ((· ≤ ·) : Localization s → Localization s → Prop) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_le_mk
 #align localization.decidable_le Localization.decidableLE
 #align add_localization.decidable_le AddLocalization.decidableLE
 
 @[to_additive]
-instance decidableLT [DecidableRel ((· < ·) : α → α → Prop)] :
+instance (priority := 10000) decidableLT [DecidableRel ((· < ·) : α → α → Prop)] :
     DecidableRel ((· < ·) : Localization s → Localization s → Prop) := fun a b =>
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_lt_mk
 #align localization.decidable_lt Localization.decidableLT
@@ -2136,7 +2136,7 @@ def mkOrderEmbedding (b : s) : α ↪o Localization s where
 end OrderedCancelCommMonoid
 
 @[to_additive]
-instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
+instance (priority := 10000) [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
     LinearOrderedCancelCommMonoid (Localization s) :=
   { Localization.orderedCancelCommMonoid with
     le_total := fun a b =>

@@ -51,7 +51,7 @@ private def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] M →ₗ[A] A ⊗[R] M :=
 private theorem bracket'_tmul (s t : A) (x : L) (m : M) :
     bracket' R A L M (s ⊗ₜ[R] x) (t ⊗ₜ[R] m) = (s * t) ⊗ₜ ⁅x, m⁆ := rfl
 
-instance : Bracket (A ⊗[R] L) (A ⊗[R] M) where bracket x m := bracket' R A L M x m
+instance (priority := 10000) : Bracket (A ⊗[R] L) (A ⊗[R] M) where bracket x m := bracket' R A L M x m
 
 private theorem bracket_def (x : A ⊗[R] L) (m : A ⊗[R] M) : ⁅x, m⁆ = bracket' R A L M x m :=
   rfl
@@ -106,21 +106,21 @@ private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     rw [map_add, LinearMap.add_apply, LinearMap.add_apply, map_add, map_add, LinearMap.add_apply,
       map_add, LinearMap.add_apply, h₁, h₂, add_add_add_comm]
 
-instance instLieRing : LieRing (A ⊗[R] L) where
+instance (priority := 10000) instLieRing : LieRing (A ⊗[R] L) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, LinearMap.map_add]
   lie_add x y z := by simp only [bracket_def, LinearMap.map_add]
   lie_self := bracket_lie_self R A L
   leibniz_lie := bracket_leibniz_lie R A L L
 
-instance instLieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
+instance (priority := 10000) instLieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
 #align lie_algebra.extend_scalars.lie_algebra LieAlgebra.ExtendScalars.instLieAlgebra
 
-instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
+instance (priority := 10000) instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, LinearMap.map_add]
   lie_add x y z := by simp only [bracket_def, LinearMap.map_add]
   leibniz_lie := bracket_leibniz_lie R A L M
 
-instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
+instance (priority := 10000) instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
   smul_lie t x m := by simp only [bracket_def, map_smul, LinearMap.smul_apply]
   lie_smul t x m := map_smul _ _ _
 
@@ -132,12 +132,12 @@ open RestrictScalars
 
 variable [h : LieRing L]
 
-instance : LieRing (RestrictScalars R A L) :=
+instance (priority := 10000) : LieRing (RestrictScalars R A L) :=
   h
 
 variable [CommRing A] [LieAlgebra A L]
 
-instance lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
+instance (priority := 10000) lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
   lie_smul t x y := (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
     (RestrictScalars.addEquiv R A L y) : _)
 #align lie_algebra.restrict_scalars.lie_algebra LieAlgebra.RestrictScalars.lieAlgebra

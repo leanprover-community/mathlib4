@@ -59,7 +59,7 @@ namespace ContMDiffSection
 
 variable {I} {I'} {n} {F} {V}
 
-instance : DFunLike Cₛ^n⟮I; F, V⟯ M V where
+instance (priority := 10000) : DFunLike Cₛ^n⟮I; F, V⟯ M V where
   coe := ContMDiffSection.toFun
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr
 
@@ -109,7 +109,7 @@ theorem coe_injective : Injective ((↑) : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :
 theorem ext (h : ∀ x, s x = t x) : s = t := DFunLike.ext _ _ h
 #align cont_mdiff_section.ext ContMDiffSection.ext
 
-instance instAdd : Add Cₛ^n⟮I; F, V⟯ := by
+instance (priority := 10000) instAdd : Add Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s t => ⟨s + t, _⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
@@ -127,7 +127,7 @@ theorem coe_add (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s + t) = ⇑s + t :=
   rfl
 #align cont_mdiff_section.coe_add ContMDiffSection.coe_add
 
-instance instSub : Sub Cₛ^n⟮I; F, V⟯ := by
+instance (priority := 10000) instSub : Sub Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s t => ⟨s - t, _⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
@@ -145,11 +145,11 @@ theorem coe_sub (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s - t) = s - t :=
   rfl
 #align cont_mdiff_section.coe_sub ContMDiffSection.coe_sub
 
-instance instZero : Zero Cₛ^n⟮I; F, V⟯ :=
+instance (priority := 10000) instZero : Zero Cₛ^n⟮I; F, V⟯ :=
   ⟨⟨fun _ => 0, (smooth_zeroSection 𝕜 V).of_le le_top⟩⟩
 #align cont_mdiff_section.has_zero ContMDiffSection.instZero
 
-instance inhabited : Inhabited Cₛ^n⟮I; F, V⟯ :=
+instance (priority := 10000) inhabited : Inhabited Cₛ^n⟮I; F, V⟯ :=
   ⟨0⟩
 #align cont_mdiff_section.inhabited ContMDiffSection.inhabited
 
@@ -158,7 +158,7 @@ theorem coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
   rfl
 #align cont_mdiff_section.coe_zero ContMDiffSection.coe_zero
 
-instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
+instance (priority := 10000) instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun c s => ⟨c • ⇑s, _⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
@@ -176,7 +176,7 @@ theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I
   rfl
 #align cont_mdiff_section.coe_smul ContMDiffSection.coe_smul
 
-instance instNeg : Neg Cₛ^n⟮I; F, V⟯ := by
+instance (priority := 10000) instNeg : Neg Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s => ⟨-s, _⟩⟩
   intro x₀
   have hs := s.contMDiff x₀
@@ -193,7 +193,7 @@ theorem coe_neg (s : Cₛ^n⟮I; F, V⟯) : ⇑(-s : Cₛ^n⟮I; F, V⟯) = -s :
   rfl
 #align cont_mdiff_section.coe_neg ContMDiffSection.coe_neg
 
-instance instNSMul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
+instance (priority := 10000) instNSMul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
   ⟨nsmulRec⟩
 #align cont_mdiff_section.has_nsmul ContMDiffSection.instNSMul
 
@@ -204,7 +204,7 @@ theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I
   simp_rw [succ_nsmul, ← ih]; rfl
 #align cont_mdiff_section.coe_nsmul ContMDiffSection.coe_nsmul
 
-instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
+instance (priority := 10000) instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
   ⟨zsmulRec⟩
 #align cont_mdiff_section.has_zsmul ContMDiffSection.instZSMul
 
@@ -217,7 +217,7 @@ theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I
   simp only [negSucc_zsmul, neg_inj]
 #align cont_mdiff_section.coe_zsmul ContMDiffSection.coe_zsmul
 
-instance instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=
+instance (priority := 10000) instAddCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 #align cont_mdiff_section.add_comm_group ContMDiffSection.instAddCommGroup
 
@@ -232,7 +232,7 @@ def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
 
 variable {I F V n}
 
-instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
+instance (priority := 10000) instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
   coe_injective.module 𝕜 (coeAddHom I F n V) coe_smul
 #align cont_mdiff_section.module ContMDiffSection.instModule
 

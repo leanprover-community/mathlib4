@@ -46,12 +46,12 @@ export UniformContinuousConstVAdd (uniformContinuous_const_vadd)
 
 export UniformContinuousConstSMul (uniformContinuous_const_smul)
 
-instance AddMonoid.uniformContinuousConstSMul_nat [AddGroup X] [UniformAddGroup X] :
+instance (priority := 10000) AddMonoid.uniformContinuousConstSMul_nat [AddGroup X] [UniformAddGroup X] :
     UniformContinuousConstSMul ℕ X :=
   ⟨uniformContinuous_const_nsmul⟩
 #align add_monoid.has_uniform_continuous_const_smul_nat AddMonoid.uniformContinuousConstSMul_nat
 
-instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [UniformAddGroup X] :
+instance (priority := 10000) AddGroup.uniformContinuousConstSMul_int [AddGroup X] [UniformAddGroup X] :
     UniformContinuousConstSMul ℤ X :=
   ⟨uniformContinuous_const_zsmul⟩
 #align add_group.has_uniform_continuous_const_smul_int AddGroup.uniformContinuousConstSMul_int
@@ -68,13 +68,13 @@ theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGro
 #align has_uniform_continuous_const_smul_of_continuous_const_smul uniformContinuousConstSMul_of_continuousConstSMul
 
 /-- The action of `Semiring.toModule` is uniformly continuous. -/
-instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGroup R]
+instance (priority := 10000) Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul R R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
 #align ring.has_uniform_continuous_const_smul Ring.uniformContinuousConstSMul
 
 /-- The action of `Semiring.toOppositeModule` is uniformly continuous. -/
-instance Ring.uniformContinuousConstSMul_op [Ring R] [UniformSpace R] [UniformAddGroup R]
+instance (priority := 10000) Ring.uniformContinuousConstSMul_op [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul Rᵐᵒᵖ R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
 #align ring.has_uniform_continuous_const_op_smul Ring.uniformContinuousConstSMul_op
@@ -118,7 +118,7 @@ instance (priority := 100) UniformContinuousConstSMul.op [SMul Mᵐᵒᵖ X] [Is
 #align has_uniform_continuous_const_vadd.op UniformContinuousConstVAdd.op
 
 @[to_additive]
-instance MulOpposite.uniformContinuousConstSMul [UniformContinuousConstSMul M X] :
+instance (priority := 10000) MulOpposite.uniformContinuousConstSMul [UniformContinuousConstSMul M X] :
     UniformContinuousConstSMul M Xᵐᵒᵖ :=
   ⟨fun c =>
     MulOpposite.uniformContinuous_op.comp <| MulOpposite.uniformContinuous_unop.const_smul c⟩
@@ -128,7 +128,7 @@ instance MulOpposite.uniformContinuousConstSMul [UniformContinuousConstSMul M X]
 end SMul
 
 @[to_additive]
-instance UniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
+instance (priority := 10000) UniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
     [UniformGroup G] : UniformContinuousConstSMul G G :=
   ⟨fun _ => uniformContinuous_const.mul uniformContinuous_id⟩
 #align uniform_group.to_has_uniform_continuous_const_smul UniformGroup.to_uniformContinuousConstSMul
@@ -143,7 +143,7 @@ section SMul
 variable [SMul M X]
 
 @[to_additive]
-noncomputable instance : SMul M (Completion X) :=
+noncomputable instance (priority := 10000) : SMul M (Completion X) :=
   ⟨fun c => Completion.map (c • ·)⟩
 
 @[to_additive]
@@ -153,11 +153,11 @@ theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·
 #align uniform_space.completion.vadd_def UniformSpace.Completion.vadd_def
 
 @[to_additive]
-instance : UniformContinuousConstSMul M (Completion X) :=
+instance (priority := 10000) : UniformContinuousConstSMul M (Completion X) :=
   ⟨fun _ => uniformContinuous_map⟩
 
 @[to_additive instVAddAssocClass]
-instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
+instance (priority := 10000) instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] [IsScalarTower M N X] : IsScalarTower M N (Completion X) :=
   ⟨fun m n x => by
     have : _ = (_ : Completion X → Completion X) :=
@@ -168,7 +168,7 @@ instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X
 #align uniform_space.completion.vadd_assoc_class UniformSpace.Completion.instVAddAssocClass
 
 @[to_additive]
-instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
+instance (priority := 10000) [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] : SMulCommClass M N (Completion X) :=
   ⟨fun m n x => by
     have hmn : m • n • x = (Completion.map (SMul.smul m) ∘ Completion.map (SMul.smul n)) x := rfl
@@ -178,7 +178,7 @@ instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
     repeat' exact uniformContinuous_const_smul _⟩
 
 @[to_additive]
-instance [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : IsCentralScalar M (Completion X) :=
+instance (priority := 10000) [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : IsCentralScalar M (Completion X) :=
   ⟨fun c a => (congr_arg fun f => Completion.map f a) <| funext (op_smul_eq_smul c)⟩
 
 variable {M X}
@@ -193,7 +193,7 @@ theorem coe_smul (c : M) (x : X) : (↑(c • x) : Completion X) = c • (x : Co
 end SMul
 
 @[to_additive]
-noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
+noncomputable instance (priority := 10000) [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
     MulAction M (Completion X) where
   smul := (· • ·)
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]

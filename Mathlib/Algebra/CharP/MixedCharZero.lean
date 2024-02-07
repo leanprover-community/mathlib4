@@ -194,7 +194,7 @@ noncomputable def pnatCast [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
   fun n => (PNat.isUnit_natCast n).unit
 
 /-- Internal: Not intended to be used outside this local construction. -/
-noncomputable instance coePNatUnits
+noncomputable instance (priority := 10000) coePNatUnits
     [Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))] : Coe ℕ+ Rˣ :=
   ⟨EqualCharZero.pnatCast⟩
 #align equal_char_zero.pnat_has_coe_units EqualCharZero.coePNatUnits

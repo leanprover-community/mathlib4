@@ -49,7 +49,7 @@ section Quotient
 variable [Group G] [TopologicalSpace G] [TopologicalGroup G] {Γ : Subgroup G}
 
 @[to_additive]
-instance QuotientGroup.continuousSMul [LocallyCompactSpace G] : ContinuousSMul G (G ⧸ Γ) where
+instance (priority := 10000) QuotientGroup.continuousSMul [LocallyCompactSpace G] : ContinuousSMul G (G ⧸ Γ) where
   continuous_smul := by
     let F : G × G ⧸ Γ → G ⧸ Γ := fun p => p.1 • p.2
     change Continuous F

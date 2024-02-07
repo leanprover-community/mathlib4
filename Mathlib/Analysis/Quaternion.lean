@@ -40,7 +40,7 @@ open scoped RealInnerProductSpace
 
 namespace Quaternion
 
-instance : Inner ℝ ℍ :=
+instance (priority := 10000) : Inner ℝ ℍ :=
   ⟨fun a b => (a * star b).re⟩
 
 theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
@@ -51,7 +51,7 @@ theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
   rfl
 #align quaternion.inner_def Quaternion.inner_def
 
-noncomputable instance : NormedAddCommGroup ℍ :=
+noncomputable instance (priority := 10000) : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
       conj_symm := fun x y => by simp [inner_def, mul_comm]
@@ -60,14 +60,14 @@ noncomputable instance : NormedAddCommGroup ℍ :=
       add_left := fun x y z => by simp only [inner_def, add_mul, add_re]
       smul_left := fun x y r => by simp [inner_def] }
 
-noncomputable instance : InnerProductSpace ℝ ℍ :=
+noncomputable instance (priority := 10000) : InnerProductSpace ℝ ℍ :=
   InnerProductSpace.ofCore _
 
 theorem normSq_eq_norm_mul_self (a : ℍ) : normSq a = ‖a‖ * ‖a‖ := by
   rw [← inner_self, real_inner_self_eq_norm_mul_norm]
 #align quaternion.norm_sq_eq_norm_sq Quaternion.normSq_eq_norm_mul_self
 
-instance : NormOneClass ℍ :=
+instance (priority := 10000) : NormOneClass ℍ :=
   ⟨by rw [norm_eq_sqrt_real_inner, inner_self, normSq.map_one, Real.sqrt_one]⟩
 
 @[simp, norm_cast]
@@ -90,24 +90,24 @@ theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 #align quaternion.nnnorm_star Quaternion.nnnorm_star
 
-noncomputable instance : NormedDivisionRing ℍ where
+noncomputable instance (priority := 10000) : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
   norm_mul' a b := by
     simp only [norm_eq_sqrt_real_inner, inner_self, normSq.map_mul]
     exact Real.sqrt_mul normSq_nonneg _
 
 -- porting note: added `noncomputable`
-noncomputable instance : NormedAlgebra ℝ ℍ where
+noncomputable instance (priority := 10000) : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra
 
-instance : CstarRing ℍ where
+instance (priority := 10000) : CstarRing ℍ where
   norm_star_mul_self {x} := (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
 
 /-- Coercion from `ℂ` to `ℍ`. -/
 @[coe] def coeComplex (z : ℂ) : ℍ := ⟨z.re, z.im, 0, 0⟩
 
-instance : Coe ℂ ℍ := ⟨coeComplex⟩
+instance (priority := 10000) : Coe ℂ ℍ := ⟨coeComplex⟩
 
 @[simp, norm_cast]
 theorem coeComplex_re (z : ℂ) : (z : ℍ).re = z.re :=
@@ -226,7 +226,7 @@ theorem continuous_im : Continuous fun q : ℍ => q.im := by
   simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
 #align quaternion.continuous_im Quaternion.continuous_im
 
-instance : CompleteSpace ℍ :=
+instance (priority := 10000) : CompleteSpace ℍ :=
   haveI : UniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
     linearIsometryEquivTuple.toContinuousLinearEquiv.symm.uniformEmbedding
   (completeSpace_congr this).1 (by infer_instance)

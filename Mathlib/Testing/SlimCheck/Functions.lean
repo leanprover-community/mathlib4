@@ -72,7 +72,7 @@ inductive TotalFunction (α : Type u) (β : Type v) : Type max u v
 #align slim_check.total_function SlimCheck.TotalFunction
 #align slim_check.total_function.with_default SlimCheck.TotalFunction.withDefault
 
-instance TotalFunction.inhabited [Inhabited β] : Inhabited (TotalFunction α β) :=
+instance (priority := 10000) TotalFunction.inhabited [Inhabited β] : Inhabited (TotalFunction α β) :=
   ⟨TotalFunction.withDefault ∅ default⟩
 #align slim_check.total_function.inhabited SlimCheck.TotalFunction.inhabited
 
@@ -108,7 +108,7 @@ protected def repr [Repr α] [Repr β] : TotalFunction α β → String
   | TotalFunction.withDefault m y => s!"[{(reprAux m)}_ ↦ {repr y}]"
 #align slim_check.total_function.repr SlimCheck.TotalFunction.repr
 
-instance (α : Type u) (β : Type v) [Repr α] [Repr β] : Repr (TotalFunction α β) where
+instance (priority := 10000) (α : Type u) (β : Type v) [Repr α] [Repr β] : Repr (TotalFunction α β) where
   reprPrec f _ := TotalFunction.repr f
 
 /-- Create a `finmap` from a list of pairs. -/
@@ -142,7 +142,7 @@ def shrink {α β} [DecidableEq α] [Shrinkable α] [Shrinkable β] :
 
 variable [Repr α]
 
-instance Pi.sampleableExt : SampleableExt (α → β) where
+instance (priority := 10000) Pi.sampleableExt : SampleableExt (α → β) where
   proxy := TotalFunction α (SampleableExt.proxy β)
   interp f := SampleableExt.interp ∘ f.apply
   sample := do
@@ -203,7 +203,7 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
 
 variable [SampleableExt α] [SampleableExt β] [Repr α]
 
-instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
+instance (priority := 10000) Finsupp.sampleableExt : SampleableExt (α →₀ β) where
   proxy := TotalFunction α (SampleableExt.proxy β)
   interp := fun f => (f.comp SampleableExt.interp).applyFinsupp
   sample := SampleableExt.sample (α := α → β)
@@ -212,7 +212,7 @@ instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
 #align slim_check.total_function.finsupp.sampleable_ext SlimCheck.TotalFunction.Finsupp.sampleableExt
 
 -- TODO: support a non-constant codomain type
-instance DFinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
+instance (priority := 10000) DFinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
   proxy := TotalFunction α (SampleableExt.proxy β)
   interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDFinsupp
   sample := SampleableExt.sample (α := α → β)
@@ -271,7 +271,7 @@ inductive InjectiveFunction (α : Type u) : Type u
 #align slim_check.injective_function SlimCheck.InjectiveFunction
 #align slim_check.injective_function.map_to_self SlimCheck.InjectiveFunction.mapToSelf
 
-instance : Inhabited (InjectiveFunction α) :=
+instance (priority := 10000) : Inhabited (InjectiveFunction α) :=
   ⟨⟨[], List.Perm.nil, List.nodup_nil⟩⟩
 
 namespace InjectiveFunction
@@ -290,7 +290,7 @@ protected def repr [Repr α] : InjectiveFunction α → String
   | InjectiveFunction.mapToSelf m _ _ => s! "[{TotalFunction.reprAux m}x ↦ x]"
 #align slim_check.injective_function.repr SlimCheck.InjectiveFunction.repr
 
-instance (α : Type u) [Repr α] : Repr (InjectiveFunction α) where
+instance (priority := 10000) (α : Type u) [Repr α] : Repr (InjectiveFunction α) where
   reprPrec f _p := InjectiveFunction.repr f
 
 /-- Interpret a list of pairs as a total function, defaulting to
@@ -501,7 +501,7 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
   · rwa [← hxs, h₀, h₁] at hperm
 #align slim_check.injective_function.injective SlimCheck.InjectiveFunction.injective
 
-instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
+instance (priority := 10000) PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
   proxy := InjectiveFunction ℤ
   interp f := ⟨apply f, f.injective⟩
   sample := do
@@ -520,21 +520,21 @@ end InjectiveFunction
 
 open Function
 
-instance Injective.testable (f : α → β)
+instance (priority := 10000) Injective.testable (f : α → β)
     [I : Testable (NamedBinder "x" <|
       ∀ x : α, NamedBinder "y" <| ∀ y : α, NamedBinder "H" <| f x = f y → x = y)] :
     Testable (Injective f) :=
   I
 #align slim_check.injective.testable SlimCheck.Injective.testable
 
-instance Monotone.testable [Preorder α] [Preorder β] (f : α → β)
+instance (priority := 10000) Monotone.testable [Preorder α] [Preorder β] (f : α → β)
     [I : Testable (NamedBinder "x" <|
       ∀ x : α, NamedBinder "y" <| ∀ y : α, NamedBinder "H" <| x ≤ y → f x ≤ f y)] :
     Testable (Monotone f) :=
   I
 #align slim_check.monotone.testable SlimCheck.Monotone.testable
 
-instance Antitone.testable [Preorder α] [Preorder β] (f : α → β)
+instance (priority := 10000) Antitone.testable [Preorder α] [Preorder β] (f : α → β)
     [I : Testable (NamedBinder "x" <|
       ∀ x : α, NamedBinder "y" <| ∀ y : α, NamedBinder "H" <| x ≤ y → f y ≤ f x)] :
     Testable (Antitone f) :=

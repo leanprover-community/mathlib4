@@ -204,7 +204,7 @@ variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
 variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 
-instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
+instance (priority := 10000) instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| SeminormedAddCommGroup (WithLp 1 <| R × M)
 
 example :
@@ -225,7 +225,7 @@ theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊
 @[simp] theorem nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
 @[simp] theorem nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
 
-instance instL1SeminormedRing : SeminormedRing (tsze R M) where
+instance (priority := 10000) instL1SeminormedRing : SeminormedRing (tsze R M) where
   norm_mul
   | ⟨r₁, m₁⟩, ⟨r₂, m₂⟩ => by
     dsimp
@@ -243,10 +243,10 @@ instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   __ : SeminormedAddCommGroup (tsze R M) := inferInstance
   __ : Ring (tsze R M) := inferInstance
 
-instance instL1BoundedSMul : BoundedSMul S (tsze R M) :=
+instance (priority := 10000) instL1BoundedSMul : BoundedSMul S (tsze R M) :=
   inferInstanceAs <| BoundedSMul S (WithLp 1 <| R × M)
 
-instance [NormOneClass R] : NormOneClass (tsze R M) where
+instance (priority := 10000) [NormOneClass R] : NormOneClass (tsze R M) where
   norm_one := by rw [norm_def, fst_one, snd_one, norm_zero, norm_one, add_zero]
 
 
@@ -258,7 +258,7 @@ variable [SeminormedCommRing R] [SeminormedAddCommGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [BoundedSMul R M]
 
-instance instL1SeminormedCommRing : SeminormedCommRing (tsze R M) where
+instance (priority := 10000) instL1SeminormedCommRing : SeminormedCommRing (tsze R M) where
   __ : CommRing (tsze R M) := inferInstance
   __ : SeminormedRing (tsze R M) := inferInstance
 
@@ -275,10 +275,10 @@ variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
 variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 
-instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
+instance (priority := 10000) instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)
 
-instance instL1NormedRing : NormedRing (tsze R M) where
+instance (priority := 10000) instL1NormedRing : NormedRing (tsze R M) where
   __ : NormedAddCommGroup (tsze R M) := inferInstance
   __ : SeminormedRing (tsze R M) := inferInstance
 
@@ -290,7 +290,7 @@ variable [NormedCommRing R] [NormedAddCommGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [BoundedSMul R M]
 
-instance instL1NormedCommRing : NormedCommRing (tsze R M) where
+instance (priority := 10000) instL1NormedCommRing : NormedCommRing (tsze R M) where
   __ : CommRing (tsze R M) := inferInstance
   __ : NormedRing (tsze R M) := inferInstance
 
@@ -303,10 +303,10 @@ variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐ�
 variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 
-instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
+instance (priority := 10000) instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
   inferInstanceAs <| NormedSpace 𝕜 (WithLp 1 <| R × M)
 
-instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
+instance (priority := 10000) instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
   norm_smul_le := _root_.norm_smul_le
 
 end Algebra

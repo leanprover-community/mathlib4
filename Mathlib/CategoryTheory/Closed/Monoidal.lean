@@ -147,7 +147,7 @@ end ihom
 
 open CategoryTheory.Limits
 
-instance : PreservesColimits (tensorLeft A) :=
+instance (priority := 10000) : PreservesColimits (tensorLeft A) :=
   (ihom.adjunction A).leftAdjointPreservesColimits
 
 variable {A}

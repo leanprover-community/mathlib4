@@ -32,8 +32,8 @@ def Localization.ringTopology : RingTopology (Localization M) :=
   RingTopology.coinduced (Localization.monoidOf M).toFun
 #align localization.ring_topology Localization.ringTopology
 
-instance : TopologicalSpace (Localization M) :=
+instance (priority := 10000) : TopologicalSpace (Localization M) :=
   Localization.ringTopology.toTopologicalSpace
 
-instance : TopologicalRing (Localization M) :=
+instance (priority := 10000) : TopologicalRing (Localization M) :=
   Localization.ringTopology.toTopologicalRing

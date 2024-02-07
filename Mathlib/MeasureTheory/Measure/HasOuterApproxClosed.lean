@@ -184,7 +184,7 @@ lemma tendsto_lintegral_apprSeq [MeasurableSpace X] [OpensMeasurableSpace X]
 
 end HasOuterApproxClosed --namespace
 
-noncomputable instance (X : Type*) [TopologicalSpace X]
+noncomputable instance (priority := 10000) (X : Type*) [TopologicalSpace X]
     [TopologicalSpace.PseudoMetrizableSpace X] : HasOuterApproxClosed X := by
   letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   refine ⟨fun F hF ↦ ?_⟩

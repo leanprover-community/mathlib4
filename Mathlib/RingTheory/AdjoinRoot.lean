@@ -71,14 +71,14 @@ section CommRing
 
 variable [CommRing R] (f : R[X])
 
-instance instCommRing : CommRing (AdjoinRoot f) :=
+instance (priority := 10000) instCommRing : CommRing (AdjoinRoot f) :=
   Ideal.Quotient.commRing _
 #align adjoin_root.comm_ring AdjoinRoot.instCommRing
 
-instance : Inhabited (AdjoinRoot f) :=
+instance (priority := 10000) : Inhabited (AdjoinRoot f) :=
   ⟨0⟩
 
-instance : DecidableEq (AdjoinRoot f) :=
+instance (priority := 10000) : DecidableEq (AdjoinRoot f) :=
   Classical.decEq _
 
 protected theorem nontrivial [IsDomain R] (h : degree f ≠ 0) : Nontrivial (AdjoinRoot f) :=
@@ -105,10 +105,10 @@ def of : R →+* AdjoinRoot f :=
   (mk f).comp C
 #align adjoin_root.of AdjoinRoot.of
 
-instance instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
+instance (priority := 10000) instSMulAdjoinRoot [DistribSMul S R] [IsScalarTower S R R] : SMul S (AdjoinRoot f) :=
   Submodule.Quotient.instSMul' _
 
-instance [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
+instance (priority := 10000) [DistribSMul S R] [IsScalarTower S R R] : DistribSMul S (AdjoinRoot f) :=
   Submodule.Quotient.distribSMul' _
 
 @[simp]
@@ -121,26 +121,26 @@ theorem smul_of [DistribSMul S R] [IsScalarTower S R R] (a : S) (x : R) :
     a • of f x = of f (a • x) := by rw [of, RingHom.comp_apply, RingHom.comp_apply, smul_mk, smul_C]
 #align adjoin_root.smul_of AdjoinRoot.smul_of
 
-instance (R₁ R₂ : Type*) [SMul R₁ R₂] [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
+instance (priority := 10000) (R₁ R₂ : Type*) [SMul R₁ R₂] [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
     [IsScalarTower R₂ R R] [IsScalarTower R₁ R₂ R] (f : R[X]) :
     IsScalarTower R₁ R₂ (AdjoinRoot f) :=
   Submodule.Quotient.isScalarTower _ _
 
-instance (R₁ R₂ : Type*) [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
+instance (priority := 10000) (R₁ R₂ : Type*) [DistribSMul R₁ R] [DistribSMul R₂ R] [IsScalarTower R₁ R R]
     [IsScalarTower R₂ R R] [SMulCommClass R₁ R₂ R] (f : R[X]) :
     SMulCommClass R₁ R₂ (AdjoinRoot f) :=
   Submodule.Quotient.smulCommClass _ _
 
-instance isScalarTower_right [DistribSMul S R] [IsScalarTower S R R] :
+instance (priority := 10000) isScalarTower_right [DistribSMul S R] [IsScalarTower S R R] :
     IsScalarTower S (AdjoinRoot f) (AdjoinRoot f) :=
   Ideal.Quotient.isScalarTower_right
 #align adjoin_root.is_scalar_tower_right AdjoinRoot.isScalarTower_right
 
-instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
+instance (priority := 10000) [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
     DistribMulAction S (AdjoinRoot f) :=
   Submodule.Quotient.distribMulAction' _
 
-instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
+instance (priority := 10000) [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
   Ideal.Quotient.algebra S
 
 @[simp]
@@ -172,7 +172,7 @@ def root : AdjoinRoot f :=
 
 variable {f}
 
-instance hasCoeT : CoeTC R (AdjoinRoot f) :=
+instance (priority := 10000) hasCoeT : CoeTC R (AdjoinRoot f) :=
   ⟨of f⟩
 #align adjoin_root.has_coe_t AdjoinRoot.hasCoeT
 
@@ -386,11 +386,11 @@ section Irreducible
 
 variable [Field K] {f : K[X]}
 
-instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaximal :=
+instance (priority := 10000) span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaximal :=
   PrincipalIdealRing.isMaximal_of_irreducible <| Fact.out
 #align adjoin_root.span_maximal_of_irreducible AdjoinRoot.span_maximal_of_irreducible
 
-noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
+noncomputable instance (priority := 10000) field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
   { Quotient.groupWithZero (span {f} : Ideal K[X]) with
     toCommRing := AdjoinRoot.instCommRing f
     ratCast := fun a => of f (a : K)
@@ -429,7 +429,7 @@ end Irreducible
 
 section IsNoetherianRing
 
-instance [CommRing R] [IsNoetherianRing R] {f : R[X]} : IsNoetherianRing (AdjoinRoot f) :=
+instance (priority := 10000) [CommRing R] [IsNoetherianRing R] {f : R[X]} : IsNoetherianRing (AdjoinRoot f) :=
   Ideal.Quotient.isNoetherianRing _
 
 end IsNoetherianRing

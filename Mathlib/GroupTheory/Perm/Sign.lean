@@ -52,7 +52,7 @@ def modSwap [DecidableEq α] (i j : α) : Setoid (Perm α) :=
     · simp [hστ, hτυ]⟩
 #align equiv.perm.mod_swap Equiv.Perm.modSwap
 
-noncomputable instance {α : Type*} [Fintype α] [DecidableEq α] (i j : α) :
+noncomputable instance (priority := 10000) {α : Type*} [Fintype α] [DecidableEq α] (i j : α) :
     DecidableRel (modSwap i j).r :=
   fun _ _ => Or.decidable
 

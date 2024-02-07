@@ -19,7 +19,7 @@ universe u
 namespace AddCommGroupCat
 
 -- porting note: this instance was not necessary in mathlib
-instance (P Q : AddCommGroupCat) : AddCommGroup (P ⟶ Q) :=
+instance (priority := 10000) (P Q : AddCommGroupCat) : AddCommGroup (P ⟶ Q) :=
   (inferInstance : AddCommGroup (AddMonoidHom P Q))
 
 -- porting note: this lemma was not necessary in mathlib
@@ -34,7 +34,7 @@ section
 -- next instance declaration
 attribute [-simp] Preadditive.add_comp Preadditive.comp_add
 
-instance : Preadditive AddCommGroupCat where
+instance (priority := 10000) : Preadditive AddCommGroupCat where
 
 end
 

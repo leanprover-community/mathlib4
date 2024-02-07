@@ -162,14 +162,14 @@ def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.
 
 noncomputable section
 
-instance functorCategoryHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (K ⥤ C) where
+instance (priority := 10000) functorCategoryHasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (K ⥤ C) where
   has_limit F :=
     HasLimit.mk
       { cone := combineCones F fun _ => getLimitCone _
         isLimit := combinedIsLimit _ _ }
 #align category_theory.limits.functor_category_has_limits_of_shape CategoryTheory.Limits.functorCategoryHasLimitsOfShape
 
-instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] : HasColimitsOfShape J (K ⥤ C)
+instance (priority := 10000) functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] : HasColimitsOfShape J (K ⥤ C)
     where
   has_colimit _ :=
     HasColimit.mk
@@ -178,18 +178,18 @@ instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] : HasColimit
 #align category_theory.limits.functor_category_has_colimits_of_shape CategoryTheory.Limits.functorCategoryHasColimitsOfShape
 
 -- Porting note: previously Lean could see through the binders and infer_instance sufficed
-instance functorCategoryHasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} C] :
+instance (priority := 10000) functorCategoryHasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} C] :
     HasLimitsOfSize.{v₁, u₁} (K ⥤ C) where
   has_limits_of_shape := fun _ _ => inferInstance
 #align category_theory.limits.functor_category_has_limits_of_size CategoryTheory.Limits.functorCategoryHasLimitsOfSize
 
 -- Porting note: previously Lean could see through the binders and infer_instance sufficed
-instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
+instance (priority := 10000) functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
   has_colimits_of_shape := fun _ _ => inferInstance
 #align category_theory.limits.functor_category_has_colimits_of_size CategoryTheory.Limits.functorCategoryHasColimitsOfSize
 
-instance evaluationPreservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
+instance (priority := 10000) evaluationPreservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
     PreservesLimitsOfShape J ((evaluation K C).obj k) where
   preservesLimit {F} := by
     -- Porting note: added a let because X was not inferred
@@ -252,7 +252,7 @@ theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
   simpa using w j
 #align category_theory.limits.limit_obj_ext CategoryTheory.Limits.limit_obj_ext
 
-instance evaluationPreservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
+instance (priority := 10000) evaluationPreservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
     PreservesColimitsOfShape J ((evaluation K C).obj k) where
   preservesColimit {F} := by
     -- Porting note: added a let because X was not inferred
@@ -319,7 +319,7 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
   simpa using w j
 #align category_theory.limits.colimit_obj_ext CategoryTheory.Limits.colimit_obj_ext
 
-instance evaluationPreservesLimits [HasLimits C] (k : K) :
+instance (priority := 10000) evaluationPreservesLimits [HasLimits C] (k : K) :
     PreservesLimits ((evaluation K C).obj k) where
   preservesLimitsOfShape {J} 𝒥 := by skip; infer_instance
 #align category_theory.limits.evaluation_preserves_limits CategoryTheory.Limits.evaluationPreservesLimits
@@ -351,12 +351,12 @@ def preservesLimitsOfEvaluation (F : D ⥤ K ⥤ C)
 #align category_theory.limits.preserves_limits_of_evaluation CategoryTheory.Limits.preservesLimitsOfEvaluation
 
 /-- The constant functor `C ⥤ (D ⥤ C)` preserves limits. -/
-instance preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _) :=
+instance (priority := 10000) preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _) :=
   preservesLimitsOfEvaluation _ fun _ =>
     preservesLimitsOfNatIso <| Iso.symm <| constCompEvaluationObj _ _
 #align category_theory.limits.preserves_limits_const CategoryTheory.Limits.preservesLimitsConst
 
-instance evaluationPreservesColimits [HasColimits C] (k : K) :
+instance (priority := 10000) evaluationPreservesColimits [HasColimits C] (k : K) :
     PreservesColimits ((evaluation K C).obj k) where
   preservesColimitsOfShape := by skip; infer_instance
 #align category_theory.limits.evaluation_preserves_colimits CategoryTheory.Limits.evaluationPreservesColimits
@@ -389,7 +389,7 @@ def preservesColimitsOfEvaluation (F : D ⥤ K ⥤ C)
 #align category_theory.limits.preserves_colimits_of_evaluation CategoryTheory.Limits.preservesColimitsOfEvaluation
 
 /-- The constant functor `C ⥤ (D ⥤ C)` preserves colimits. -/
-instance preservesColimitsConst : PreservesColimitsOfSize.{w', w} (const D : C ⥤ _) :=
+instance (priority := 10000) preservesColimitsConst : PreservesColimitsOfSize.{w', w} (const D : C ⥤ _) :=
   preservesColimitsOfEvaluation _ fun _ =>
     preservesColimitsOfNatIso <| Iso.symm <| constCompEvaluationObj _ _
 #align category_theory.limits.preserves_colimits_const CategoryTheory.Limits.preservesColimitsConst

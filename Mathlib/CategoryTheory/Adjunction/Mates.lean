@@ -234,7 +234,7 @@ theorem transferNatTransSelf_symm_comm {f g} (gf : g ≫ f = 𝟙 _) :
 /-- If `f` is an isomorphism, then the transferred natural transformation is an isomorphism.
 The converse is given in `transferNatTransSelf_of_iso`.
 -/
-instance transferNatTransSelf_iso (f : L₂ ⟶ L₁) [IsIso f] :
+instance (priority := 10000) transferNatTransSelf_iso (f : L₂ ⟶ L₁) [IsIso f] :
     IsIso (transferNatTransSelf adj₁ adj₂ f) :=
   ⟨⟨transferNatTransSelf adj₂ adj₁ (inv f),
       ⟨transferNatTransSelf_comm _ _ (by simp), transferNatTransSelf_comm _ _ (by simp)⟩⟩⟩
@@ -243,7 +243,7 @@ instance transferNatTransSelf_iso (f : L₂ ⟶ L₁) [IsIso f] :
 /-- If `f` is an isomorphism, then the un-transferred natural transformation is an isomorphism.
 The converse is given in `transferNatTransSelf_symm_of_iso`.
 -/
-instance transferNatTransSelf_symm_iso (f : R₁ ⟶ R₂) [IsIso f] :
+instance (priority := 10000) transferNatTransSelf_symm_iso (f : R₁ ⟶ R₂) [IsIso f] :
     IsIso ((transferNatTransSelf adj₁ adj₂).symm f) :=
   ⟨⟨(transferNatTransSelf adj₂ adj₁).symm (inv f),
       ⟨transferNatTransSelf_symm_comm _ _ (by simp), transferNatTransSelf_symm_comm _ _ (by simp)⟩⟩⟩

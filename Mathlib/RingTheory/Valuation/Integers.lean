@@ -55,7 +55,7 @@ structure Integers : Prop where
 #align valuation.integers Valuation.Integers
 
 -- typeclass shortcut
-instance : Algebra v.integer R :=
+instance (priority := 10000) : Algebra v.integer R :=
   Algebra.ofSubring v.integer
 
 theorem integer.integers : v.Integers v.integer :=

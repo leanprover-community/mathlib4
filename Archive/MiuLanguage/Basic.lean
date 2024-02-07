@@ -92,7 +92,7 @@ open MiuAtom
 We show that the type `MiuAtom` is inhabited, giving `M` (for no particular reason) as the default
 element.
 -/
-instance miuAtomInhabited : Inhabited MiuAtom :=
+instance (priority := 10000) miuAtomInhabited : Inhabited MiuAtom :=
   Inhabited.mk M
 #align miu.miu_atom_inhabited Miu.miuAtomInhabited
 
@@ -106,7 +106,7 @@ def MiuAtom.repr : MiuAtom → String
 
 /-- Using `MiuAtom.repr`, we prove that `MiuAtom` is an instance of `Repr`.
 -/
-instance : Repr MiuAtom :=
+instance (priority := 10000) : Repr MiuAtom :=
   ⟨fun u _ => u.repr⟩
 
 /-- For simplicity, an `Miustr` is just a list of elements of type `MiuAtom`.
@@ -116,7 +116,7 @@ def Miustr :=
 deriving Append
 #align miu.miustr Miu.Miustr
 
-instance : Membership MiuAtom Miustr := by unfold Miustr; infer_instance
+instance (priority := 10000) : Membership MiuAtom Miustr := by unfold Miustr; infer_instance
 
 /-- For display purposes, an `Miustr` can be represented as a `String`.
 -/
@@ -125,7 +125,7 @@ def Miustr.mrepr : Miustr → String
   | c :: cs => c.repr ++ Miustr.mrepr cs
 #align miu.miustr.mrepr Miu.Miustr.mrepr
 
-instance miurepr : Repr Miustr :=
+instance (priority := 10000) miurepr : Repr Miustr :=
   ⟨fun u _ => u.mrepr⟩
 #align miu.miurepr Miu.miurepr
 
@@ -142,7 +142,7 @@ def lcharToMiustr : List Char → Miustr
     | _ => []
 #align miu.lchar_to_miustr Miu.lcharToMiustr
 
-instance stringCoeMiustr : Coe String Miustr :=
+instance (priority := 10000) stringCoeMiustr : Coe String Miustr :=
   ⟨fun st => lcharToMiustr st.data⟩
 #align miu.string_coe_miustr Miu.stringCoeMiustr
 

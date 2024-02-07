@@ -76,10 +76,10 @@ section DerivedInstances
 
 variable (R : Type u) [AddMonoid R] (R' : Type v) [CommMonoid R']
 
-instance : CommMonoid (AddChar R R') :=
+instance (priority := 10000) : CommMonoid (AddChar R R') :=
   inferInstanceAs (CommMonoid (Multiplicative R →* R'))
 
-instance : Inhabited (AddChar R R') :=
+instance (priority := 10000) : Inhabited (AddChar R R') :=
   inferInstanceAs (Inhabited (Multiplicative R →* R'))
 
 end DerivedInstances
@@ -98,7 +98,7 @@ open Multiplicative
 /-- Define coercion to a function so that it includes the move from `R` to `Multiplicative R`.
 After we have proved the API lemmas below, we don't need to worry about writing `ofAdd a`
 when we want to apply an additive character. -/
-instance instFunLike : FunLike (AddChar R R') R R' :=
+instance (priority := 10000) instFunLike : FunLike (AddChar R R') R R' :=
   inferInstanceAs (FunLike (Multiplicative R →* R') R R')
 #noalign add_char.has_coe_to_fun
 
@@ -151,7 +151,7 @@ variable {R : Type u} [AddCommGroup R] {R' : Type v} [CommMonoid R']
 
 Note that this is a different inverse to the one provided by `MonoidHom.inv`,
 as it acts on the domain instead of the codomain. -/
-instance hasInv : Inv (AddChar R R') :=
+instance (priority := 10000) hasInv : Inv (AddChar R R') :=
   ⟨fun ψ => ψ.comp invMonoidHom⟩
 #align add_char.has_inv AddChar.hasInv
 
@@ -166,7 +166,7 @@ theorem map_zsmul_zpow {R' : Type v} [CommGroup R'] (ψ : AddChar R R') (n : ℤ
 #align add_char.map_zsmul_zpow AddChar.map_zsmul_zpow
 
 /-- The additive characters on a commutative additive group form a commutative group. -/
-instance commGroup : CommGroup (AddChar R R') :=
+instance (priority := 10000) commGroup : CommGroup (AddChar R R') :=
   { MonoidHom.commMonoid with
     inv := Inv.inv
     mul_left_inv := fun ψ => by

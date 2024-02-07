@@ -69,7 +69,7 @@ attribute [instance] RepresentablyFlat.cofiltered
 
 attribute [local instance] IsCofiltered.nonempty
 
-instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
+instance (priority := 10000) RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
   constructor
   intro X
   haveI : Nonempty (StructuredArrow X (𝟭 C)) := ⟨StructuredArrow.mk (𝟙 _)⟩
@@ -87,7 +87,7 @@ instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
     trans Z.hom <;> simp
 #align category_theory.representably_flat.id CategoryTheory.RepresentablyFlat.id
 
-instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F]
+instance (priority := 10000) RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   constructor
   intro X
@@ -322,7 +322,7 @@ variable [PreservesLimits (forget E)]
 /-- If `F : C ⥤ D` is a representably flat functor between small categories, then the functor
 `Lan F.op` that takes presheaves over `C` to presheaves over `D` preserves finite limits.
 -/
-noncomputable instance lanPreservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F] :
+noncomputable instance (priority := 10000) lanPreservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F] :
     PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
   intro J _ _; skip
@@ -334,7 +334,7 @@ noncomputable instance lanPreservesFiniteLimitsOfFlat (F : C ⥤ D) [Representab
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_preserves_finite_limits_of_flat CategoryTheory.lanPreservesFiniteLimitsOfFlat
 
-instance lan_flat_of_flat (F : C ⥤ D) [RepresentablyFlat F] :
+instance (priority := 10000) lan_flat_of_flat (F : C ⥤ D) [RepresentablyFlat F] :
     RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) :=
   flat_of_preservesFiniteLimits _
 set_option linter.uppercaseLean3 false in
@@ -342,7 +342,7 @@ set_option linter.uppercaseLean3 false in
 
 variable [HasFiniteLimits C]
 
-noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C ⥤ D)
+noncomputable instance (priority := 10000) lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C ⥤ D)
     [PreservesFiniteLimits F] : PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
   haveI := flat_of_preservesFiniteLimits F
   infer_instance

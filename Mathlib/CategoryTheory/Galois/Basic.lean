@@ -108,11 +108,11 @@ variable {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory C]
 
 attribute [instance] hasTerminal hasPullbacks hasFiniteCoproducts hasQuotientsByFiniteGroups
 
-instance : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
+instance (priority := 10000) : HasFiniteLimits C := hasFiniteLimits_of_hasTerminal_and_pullbacks
 
-instance : HasBinaryProducts C := hasBinaryProducts_of_hasTerminal_and_pullbacks C
+instance (priority := 10000) : HasBinaryProducts C := hasBinaryProducts_of_hasTerminal_and_pullbacks C
 
-instance : HasEqualizers C := hasEqualizers_of_hasPullbacks_and_binary_products
+instance (priority := 10000) : HasEqualizers C := hasEqualizers_of_hasPullbacks_and_binary_products
 
 namespace FibreFunctor
 
@@ -122,14 +122,14 @@ variable {C : Type u₁} [Category.{u₂, u₁} C] {F : C ⥤ FintypeCat.{w}} [P
 attribute [instance] preservesTerminalObjects preservesPullbacks preservesEpis
   preservesFiniteCoproducts reflectsIsos preservesQuotientsByFiniteGroups
 
-noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
+noncomputable instance (priority := 10000) : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
   reflectsColimitsOfShapeOfReflectsIsomorphisms
 
-noncomputable instance : PreservesFiniteLimits F :=
+noncomputable instance (priority := 10000) : PreservesFiniteLimits F :=
   preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
 
 /-- Fibre functors reflect monomorphisms. -/
-instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
+instance (priority := 10000) : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   intro X Y f _
   haveI : IsIso (pullback.fst : pullback (F.map f) (F.map f) ⟶ F.obj X) :=
     fst_iso_of_mono_eq (F.map f)
@@ -140,7 +140,7 @@ instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   exact (pullback.diagonal_isKernelPair f).mono_of_isIso_fst
 
 /-- Fibre functors are faithful. -/
-instance : Faithful F where
+instance (priority := 10000) : Faithful F where
   map_injective {X Y} f g h := by
     haveI : IsIso (equalizer.ι (F.map f) (F.map g)) := equalizer.ι_of_eq h
     haveI : IsIso (F.map (equalizer.ι f g)) := by

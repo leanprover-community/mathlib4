@@ -26,7 +26,7 @@ variable (M : Type u) [Monoid M]
 namespace CategoryTheory
 
 @[to_additive (attr := simps tensorObj_as leftUnitor rightUnitor associator) Discrete.addMonoidal]
-instance Discrete.monoidal : MonoidalCategory (Discrete M)
+instance (priority := 10000) Discrete.monoidal : MonoidalCategory (Discrete M)
     where
   tensorUnit := Discrete.mk 1
   tensorObj X Y := Discrete.mk (X.as * Y.as)

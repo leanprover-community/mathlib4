@@ -387,14 +387,14 @@ instance (priority := 100) HasOrthogonalProjection.ofCompleteSpace [CompleteSpac
     refine ⟨w, hwK, (K.mem_orthogonal' _).2 ?_⟩
     rwa [← norm_eq_iInf_iff_inner_eq_zero K hwK]
 
-instance [HasOrthogonalProjection K] : HasOrthogonalProjection Kᗮ where
+instance (priority := 10000) [HasOrthogonalProjection K] : HasOrthogonalProjection Kᗮ where
   exists_orthogonal v := by
     rcases HasOrthogonalProjection.exists_orthogonal (K := K) v with ⟨w, hwK, hw⟩
     refine ⟨_, hw, ?_⟩
     rw [sub_sub_cancel]
     exact K.le_orthogonal_orthogonal hwK
 
-instance HasOrthogonalProjection.map_linearIsometryEquiv [HasOrthogonalProjection K]
+instance (priority := 10000) HasOrthogonalProjection.map_linearIsometryEquiv [HasOrthogonalProjection K]
     {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
     HasOrthogonalProjection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) where
   exists_orthogonal v := by
@@ -402,12 +402,12 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv [HasOrthogonalProjectio
     refine ⟨f w, Submodule.mem_map_of_mem hwK, Set.ball_image_iff.2 fun u hu ↦ ?_⟩
     erw [← f.symm.inner_map_map, f.symm_apply_apply, map_sub, f.symm_apply_apply, hw u hu]
 
-instance HasOrthogonalProjection.map_linearIsometryEquiv' [HasOrthogonalProjection K]
+instance (priority := 10000) HasOrthogonalProjection.map_linearIsometryEquiv' [HasOrthogonalProjection K]
     {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
     HasOrthogonalProjection (K.map f.toLinearIsometry) :=
   HasOrthogonalProjection.map_linearIsometryEquiv K f
 
-instance : HasOrthogonalProjection (⊤ : Submodule 𝕜 E) := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
+instance (priority := 10000) : HasOrthogonalProjection (⊤ : Submodule 𝕜 E) := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
 
 section orthogonalProjection
 

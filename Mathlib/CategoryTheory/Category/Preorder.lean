@@ -51,7 +51,7 @@ instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCate
 #align preorder.small_category Preorder.smallCategory
 
 -- porting note: added to ease the port of `CategoryTheory.Subobject.Basic`
-instance Preorder.subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
+instance (priority := 10000) Preorder.subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
   Subsingleton (U ⟶ V) := ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
 end Preorder
@@ -113,12 +113,12 @@ theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
 #align category_theory.le_of_op_hom CategoryTheory.le_of_op_hom
 
-instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
+instance (priority := 10000) uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
   default := homOfLE le_top
   uniq := fun a => by rfl
 #align category_theory.unique_to_top CategoryTheory.uniqueToTop
 
-instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
+instance (priority := 10000) uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
   default := homOfLE bot_le
   uniq := fun a => by rfl
 #align category_theory.unique_from_bot CategoryTheory.uniqueFromBot

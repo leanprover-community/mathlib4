@@ -380,7 +380,7 @@ lemma PosSMulReflectLE.toPosSMulStrictMono [PosSMulReflectLE α β] : PosSMulStr
 lemma posSMulStrictMono_iff_PosSMulReflectLE : PosSMulStrictMono α β ↔ PosSMulReflectLE α β :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ PosSMulReflectLE.toPosSMulStrictMono⟩
 
-instance PosSMulMono.toPosSMulReflectLT [PosSMulMono α β] : PosSMulReflectLT α β where
+instance (priority := 10000) PosSMulMono.toPosSMulReflectLT [PosSMulMono α β] : PosSMulReflectLT α β where
   elim _a ha _b₁ _b₂ := (monotone_smul_left_of_nonneg ha).reflect_lt
 
 lemma PosSMulReflectLT.toPosSMulMono [PosSMulReflectLT α β] : PosSMulMono α β where
@@ -693,7 +693,7 @@ lemma PosSMulMono.toPosSMulStrictMono [PosSMulMono α β] : PosSMulStrictMono α
   ⟨fun _a ha _b₁ _b₂ hb ↦ (smul_le_smul_of_nonneg_left hb.le ha.le).lt_of_ne <|
     (smul_right_injective _ ha.ne').ne hb.ne⟩
 
-instance PosSMulReflectLT.toPosSMulReflectLE [PosSMulReflectLT α β] : PosSMulReflectLE α β :=
+instance (priority := 10000) PosSMulReflectLT.toPosSMulReflectLE [PosSMulReflectLT α β] : PosSMulReflectLE α β :=
   ⟨fun _a ha _b₁ _b₂ h ↦ h.eq_or_lt.elim (fun h ↦ (smul_right_injective _ ha.ne' h).le) fun h' ↦
     (lt_of_smul_lt_smul_left h' ha.le).le⟩
 
@@ -769,13 +769,13 @@ namespace OrderDual
 section Left
 variable [Preorder α] [Preorder β] [SMul α β] [Zero α]
 
-instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α βᵒᵈ where
+instance (priority := 10000) instPosSMulMono [PosSMulMono α β] : PosSMulMono α βᵒᵈ where
   elim _a ha _b₁ _b₂ hb := smul_le_smul_of_nonneg_left (β := β) hb ha
-instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α βᵒᵈ where
+instance (priority := 10000) instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α βᵒᵈ where
   elim _a ha _b₁ _b₂ hb := smul_lt_smul_of_pos_left (β := β) hb ha
-instance instPosSMulReflectLT [PosSMulReflectLT α β] : PosSMulReflectLT α βᵒᵈ where
+instance (priority := 10000) instPosSMulReflectLT [PosSMulReflectLT α β] : PosSMulReflectLT α βᵒᵈ where
   elim _a ha _b₁ _b₂ h := lt_of_smul_lt_smul_of_nonneg_left (β := β) h ha
-instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α βᵒᵈ where
+instance (priority := 10000) instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α βᵒᵈ where
   elim _a ha _b₁ _b₂ h := le_of_smul_le_smul_of_pos_left (β := β) h ha
 
 end Left
@@ -783,22 +783,22 @@ end Left
 section Right
 variable [Preorder α] [Ring α] [OrderedAddCommGroup β] [Module α β]
 
-instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α βᵒᵈ where
+instance (priority := 10000) instSMulPosMono [SMulPosMono α β] : SMulPosMono α βᵒᵈ where
   elim _b hb a₁ a₂ ha := by
     rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg]
     exact smul_le_smul_of_nonneg_right (β := β) ha <| neg_nonneg.2 hb
 
-instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α βᵒᵈ where
+instance (priority := 10000) instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α βᵒᵈ where
   elim _b hb a₁ a₂ ha := by
     rw [← neg_lt_neg_iff, ← smul_neg, ← smul_neg]
     exact smul_lt_smul_of_pos_right (β := β) ha <| neg_pos.2 hb
 
-instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α βᵒᵈ where
+instance (priority := 10000) instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α βᵒᵈ where
   elim _b hb a₁ a₂ h := by
     rw [← neg_lt_neg_iff, ← smul_neg, ← smul_neg] at h
     exact lt_of_smul_lt_smul_right (β := β) h <| neg_nonneg.2 hb
 
-instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α βᵒᵈ where
+instance (priority := 10000) instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α βᵒᵈ where
   elim _b hb a₁ a₂ h := by
     rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg] at h
     exact le_of_smul_le_smul_right (β := β) h <| neg_pos.2 hb
@@ -826,7 +826,7 @@ lemma antitone_smul_left (ha : a ≤ 0) : Antitone ((a • ·) : β → β) :=
   fun _ _ h ↦ smul_le_smul_of_nonpos_left h ha
 #align antitone_smul_left antitone_smul_left
 
-instance PosSMulMono.toSMulPosMono : SMulPosMono α β where
+instance (priority := 10000) PosSMulMono.toSMulPosMono : SMulPosMono α β where
   elim _b hb a₁ a₂ ha := by rw [← sub_nonneg, ← sub_smul]; exact smul_nonneg (sub_nonneg.2 ha) hb
 
 end PosSMulMono
@@ -843,7 +843,7 @@ lemma strictAnti_smul_left (ha : a < 0) : StrictAnti ((a • ·) : β → β) :=
   fun _ _ h ↦ smul_lt_smul_of_neg_left h ha
 #align strict_anti_smul_left strictAnti_smul_left
 
-instance PosSMulStrictMono.toSMulPosStrictMono : SMulPosStrictMono α β where
+instance (priority := 10000) PosSMulStrictMono.toSMulPosStrictMono : SMulPosStrictMono α β where
   elim _b hb a₁ a₂ ha := by rw [← sub_pos, ← sub_smul]; exact smul_pos (sub_pos.2 ha) hb
 
 end PosSMulStrictMono
@@ -1039,16 +1039,16 @@ variable {ι : Type*} {β : ι → Type*} [Zero α] [∀ i, Zero (β i)]
 section SMulZeroClass
 variable [Preorder α] [∀ i, Preorder (β i)] [∀ i, SMulZeroClass α (β i)]
 
-instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (∀ i, β i) where
+instance (priority := 10000) instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (∀ i, β i) where
   elim _a ha _b₁ _b₂ hb i := smul_le_smul_of_nonneg_left (hb i) ha
 
-instance instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (∀ i, β i) where
+instance (priority := 10000) instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (∀ i, β i) where
   elim _b hb _a₁ _a₂ ha i := smul_le_smul_of_nonneg_right ha (hb i)
 
-instance instPosSMulReflectLE [∀ i, PosSMulReflectLE α (β i)] : PosSMulReflectLE α (∀ i, β i) where
+instance (priority := 10000) instPosSMulReflectLE [∀ i, PosSMulReflectLE α (β i)] : PosSMulReflectLE α (∀ i, β i) where
   elim _a ha _b₁ _b₂ h i := le_of_smul_le_smul_left (h i) ha
 
-instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosReflectLE α (∀ i, β i) where
+instance (priority := 10000) instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosReflectLE α (∀ i, β i) where
   elim _b hb _a₁ _a₂ h := by
     obtain ⟨-, i, hi⟩ := lt_def.1 hb; exact le_of_smul_le_smul_right (h _) hi
 
@@ -1057,14 +1057,14 @@ end SMulZeroClass
 section SMulWithZero
 variable [PartialOrder α] [∀ i, PartialOrder (β i)] [∀ i, SMulWithZero α (β i)]
 
-instance instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] :
+instance (priority := 10000) instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] :
     PosSMulStrictMono α (∀ i, β i) where
   elim := by
     simp_rw [lt_def]
     rintro _a ha _b₁ _b₂ ⟨hb, i, hi⟩
     exact ⟨smul_le_smul_of_nonneg_left hb ha.le, i, smul_lt_smul_of_pos_left hi ha⟩
 
-instance instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] :
+instance (priority := 10000) instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] :
     SMulPosStrictMono α (∀ i, β i) where
   elim := by
     simp_rw [lt_def]
@@ -1074,7 +1074,7 @@ instance instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] :
 -- Note: There is no interesting instance for `PosSMulReflectLT α (∀ i, β i)` that's not already
 -- implied by the other instances
 
-instance instSMulPosReflectLT [∀ i, SMulPosReflectLT α (β i)] : SMulPosReflectLT α (∀ i, β i) where
+instance (priority := 10000) instSMulPosReflectLT [∀ i, SMulPosReflectLT α (β i)] : SMulPosReflectLT α (∀ i, β i) where
   elim := by
     simp_rw [lt_def]
     rintro b hb _a₁ _a₂ ⟨-, i, hi⟩
@@ -1125,17 +1125,17 @@ end Lift
 
 section Nat
 
-instance OrderedSemiring.toPosSMulMonoNat [OrderedSemiring α] : PosSMulMono ℕ α where
+instance (priority := 10000) OrderedSemiring.toPosSMulMonoNat [OrderedSemiring α] : PosSMulMono ℕ α where
   elim _n _ _a _b hab := nsmul_le_nsmul_right hab _
 
-instance OrderedSemiring.toSMulPosMonoNat [OrderedSemiring α] : SMulPosMono ℕ α where
+instance (priority := 10000) OrderedSemiring.toSMulPosMonoNat [OrderedSemiring α] : SMulPosMono ℕ α where
   elim _a ha _m _n hmn := nsmul_le_nsmul_left ha hmn
 
-instance StrictOrderedSemiring.toPosSMulStrictMonoNat [StrictOrderedSemiring α] :
+instance (priority := 10000) StrictOrderedSemiring.toPosSMulStrictMonoNat [StrictOrderedSemiring α] :
     PosSMulStrictMono ℕ α where
   elim _n hn _a _b hab := nsmul_right_strictMono hn.ne' hab
 
-instance StrictOrderedSemiring.toSMulPosStrictMonoNat [StrictOrderedSemiring α] :
+instance (priority := 10000) StrictOrderedSemiring.toSMulPosStrictMonoNat [StrictOrderedSemiring α] :
     SMulPosStrictMono ℕ α where
   elim _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
 

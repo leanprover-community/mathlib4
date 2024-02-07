@@ -139,10 +139,10 @@ def toLEList (x : BitVec w) : List Bool :=
 def toBEList (x : BitVec w) : List Bool :=
   List.ofFn x.getMsb'
 
-instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-instance : Pow (BitVec w) ℕ  := ⟨fun x n => ofFin <| x.toFin ^ n⟩
-instance : NatCast (BitVec w) := ⟨BitVec.ofNat w⟩
-instance : IntCast (BitVec w) := ⟨BitVec.ofInt w⟩
+instance (priority := 10000) : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
+instance (priority := 10000) : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
+instance (priority := 10000) : Pow (BitVec w) ℕ  := ⟨fun x n => ofFin <| x.toFin ^ n⟩
+instance (priority := 10000) : NatCast (BitVec w) := ⟨BitVec.ofNat w⟩
+instance (priority := 10000) : IntCast (BitVec w) := ⟨BitVec.ofInt w⟩
 
 end Std.BitVec

@@ -256,7 +256,7 @@ set_option linter.unusedVariables false
 /-- The result of `norm_num` running on an expression `x` of type `α`. -/
 @[nolint unusedArguments] def Result {α : Q(Type u)} (x : Q($α)) := Result'
 
-instance : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
+instance (priority := 10000) : Inhabited (Result x) := inferInstanceAs (Inhabited Result')
 
 /-- The result is `proof : x`, where `x` is a (true) proposition. -/
 @[match_pattern, inline] def Result.isTrue {x : Q(Prop)} :
@@ -308,7 +308,7 @@ def Result.isRat' {α : Q(Type u)} {x : Q($α)} (inst : Q(DivisionRing $α) := b
   else
     .isRat inst q n d proof
 
-instance : ToMessageData (Result x) where
+instance (priority := 10000) : ToMessageData (Result x) where
   toMessageData
   | .isBool true proof => m!"isTrue ({proof})"
   | .isBool false proof => m!"isFalse ({proof})"

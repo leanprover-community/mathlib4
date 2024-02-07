@@ -55,7 +55,7 @@ end Nat
 section AddMonoidWithOne
 variable {α M : Type*} [AddMonoidWithOne M] [CharZero M] {n : ℕ}
 
-instance CharZero.NeZero.two : NeZero (2 : M) :=
+instance (priority := 10000) CharZero.NeZero.two : NeZero (2 : M) :=
   ⟨by
     have : ((2 : ℕ) : M) ≠ 0 := Nat.cast_ne_zero.2 (by decide)
     rwa [Nat.cast_two] at this⟩
@@ -186,7 +186,7 @@ end
 
 namespace WithTop
 
-instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
+instance (priority := 10000) {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithTop R) where
   cast_injective m n h := by
     rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
@@ -195,7 +195,7 @@ end WithTop
 
 namespace WithBot
 
-instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
+instance (priority := 10000) {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithBot R) where
   cast_injective m n h := by
     rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h

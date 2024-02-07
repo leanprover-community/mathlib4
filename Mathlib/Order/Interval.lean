@@ -75,13 +75,13 @@ theorem toDualProd_injective : Injective (toDualProd : NonemptyInterval α → �
   toProd_injective
 #align nonempty_interval.to_dual_prod_injective NonemptyInterval.toDualProd_injective
 
-instance [IsEmpty α] : IsEmpty (NonemptyInterval α) :=
+instance (priority := 10000) [IsEmpty α] : IsEmpty (NonemptyInterval α) :=
   ⟨fun s => isEmptyElim s.fst⟩
 
-instance [Subsingleton α] : Subsingleton (NonemptyInterval α) :=
+instance (priority := 10000) [Subsingleton α] : Subsingleton (NonemptyInterval α) :=
   toDualProd_injective.subsingleton
 
-instance le : LE (NonemptyInterval α) :=
+instance (priority := 10000) le : LE (NonemptyInterval α) :=
   ⟨fun s t => t.fst ≤ s.fst ∧ s.snd ≤ t.snd⟩
 
 theorem le_def : s ≤ t ↔ t.fst ≤ s.fst ∧ s.snd ≤ t.snd :=
@@ -121,10 +121,10 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {s : NonemptyInterval α} {x : α × α}
   {a : α}
 
-instance : Preorder (NonemptyInterval α) :=
+instance (priority := 10000) : Preorder (NonemptyInterval α) :=
   Preorder.lift toDualProd
 
-instance : Coe (NonemptyInterval α) (Set α) :=
+instance (priority := 10000) : Coe (NonemptyInterval α) (Set α) :=
   ⟨fun s => Icc s.fst s.snd⟩
 
 instance (priority := 100) : Membership α (NonemptyInterval α) :=
@@ -163,13 +163,13 @@ theorem dual_pure (a : α) : dual (pure a) = pure (toDual a) :=
   rfl
 #align nonempty_interval.dual_pure NonemptyInterval.dual_pure
 
-instance [Inhabited α] : Inhabited (NonemptyInterval α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (NonemptyInterval α) :=
   ⟨pure default⟩
 
-instance [Nonempty α] : Nonempty (NonemptyInterval α) :=
+instance (priority := 10000) [Nonempty α] : Nonempty (NonemptyInterval α) :=
   Nonempty.map pure (by infer_instance)
 
-instance [Nontrivial α] : Nontrivial (NonemptyInterval α) :=
+instance (priority := 10000) [Nontrivial α] : Nontrivial (NonemptyInterval α) :=
   pure_injective.nontrivial
 
 /-- Pushforward of nonempty intervals. -/
@@ -218,7 +218,7 @@ theorem dual_map₂ (f : α → β → γ) (h₀ h₁ s t) :
 
 variable [BoundedOrder α]
 
-instance : OrderTop (NonemptyInterval α) where
+instance (priority := 10000) : OrderTop (NonemptyInterval α) where
   top := ⟨⟨⊥, ⊤⟩, bot_le⟩
   le_top _ := ⟨bot_le, le_top⟩
 
@@ -233,7 +233,7 @@ section PartialOrder
 
 variable [PartialOrder α] [PartialOrder β] {s t : NonemptyInterval α} {x : α × α} {a b : α}
 
-instance : PartialOrder (NonemptyInterval α) :=
+instance (priority := 10000) : PartialOrder (NonemptyInterval α) :=
   PartialOrder.lift _ toDualProd_injective
 
 /-- Consider a nonempty interval `[a, b]` as the set `[a, b]`. -/
@@ -241,7 +241,7 @@ def coeHom : NonemptyInterval α ↪o Set α :=
   OrderEmbedding.ofMapLEIff (fun s => Icc s.fst s.snd) fun s _ => Icc_subset_Icc_iff s.fst_le_snd
 #align nonempty_interval.coe_hom NonemptyInterval.coeHom
 
-instance setLike : SetLike (NonemptyInterval α) α where
+instance (priority := 10000) setLike : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
   coe_injective' := coeHom.injective
 
@@ -290,10 +290,10 @@ section Lattice
 
 variable [Lattice α]
 
-instance : Sup (NonemptyInterval α) :=
+instance (priority := 10000) : Sup (NonemptyInterval α) :=
   ⟨fun s t => ⟨⟨s.fst ⊓ t.fst, s.snd ⊔ t.snd⟩, inf_le_left.trans <| s.fst_le_snd.trans le_sup_left⟩⟩
 
-instance : SemilatticeSup (NonemptyInterval α) :=
+instance (priority := 10000) : SemilatticeSup (NonemptyInterval α) :=
   toDualProd_injective.semilatticeSup _ fun _ _ => rfl
 
 @[simp]
@@ -327,14 +327,14 @@ section LE
 variable [LE α] {s t : Interval α}
 
 -- porting note: previously found using `deriving`
-instance : Inhabited (Interval α) := WithBot.inhabited
-instance : LE (Interval α) := WithBot.le
-instance : OrderBot (Interval α) := WithBot.orderBot
+instance (priority := 10000) : Inhabited (Interval α) := WithBot.inhabited
+instance (priority := 10000) : LE (Interval α) := WithBot.le
+instance (priority := 10000) : OrderBot (Interval α) := WithBot.orderBot
 
-instance : Coe (NonemptyInterval α) (Interval α) :=
+instance (priority := 10000) : Coe (NonemptyInterval α) (Interval α) :=
   WithBot.coe
 
-instance canLift : CanLift (Interval α) (NonemptyInterval α) (↑) fun r => r ≠ ⊥ :=
+instance (priority := 10000) canLift : CanLift (Interval α) (NonemptyInterval α) (↑) fun r => r ≠ ⊥ :=
   WithBot.canLift
 #align interval.can_lift Interval.canLift
 
@@ -357,7 +357,7 @@ theorem «exists» {p : Interval α → Prop} : (∃ s, p s) ↔ p ⊥ ∨ ∃ s
   Option.exists
 #align interval.exists Interval.exists
 
-instance [IsEmpty α] : Unique (Interval α) :=
+instance (priority := 10000) [IsEmpty α] : Unique (Interval α) :=
   inferInstanceAs <| Unique (Option _)
 
 /-- Turn an interval into an interval in the dual order. -/
@@ -371,7 +371,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] [Preorder γ]
 
-instance : Preorder (Interval α) :=
+instance (priority := 10000) : Preorder (Interval α) :=
   WithBot.preorder
 
 /-- `{a}` as an interval. -/
@@ -403,7 +403,7 @@ theorem bot_ne_pure {a : α} : ⊥ ≠ pure a :=
   WithBot.bot_ne_coe
 #align interval.bot_ne_pure Interval.bot_ne_pure
 
-instance [Nonempty α] : Nontrivial (Interval α) :=
+instance (priority := 10000) [Nonempty α] : Nontrivial (Interval α) :=
   Option.nontrivial
 
 /-- Pushforward of intervals. -/
@@ -430,7 +430,7 @@ theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.ma
 
 variable [BoundedOrder α]
 
-instance boundedOrder : BoundedOrder (Interval α) :=
+instance (priority := 10000) boundedOrder : BoundedOrder (Interval α) :=
   WithBot.instBoundedOrder
 
 @[simp]
@@ -444,7 +444,7 @@ section PartialOrder
 
 variable [PartialOrder α] [PartialOrder β] {s t : Interval α} {a b : α}
 
-instance partialOrder : PartialOrder (Interval α) :=
+instance (priority := 10000) partialOrder : PartialOrder (Interval α) :=
   WithBot.partialOrder
 
 /-- Consider an interval `[a, b]` as the set `[a, b]`. -/
@@ -462,7 +462,7 @@ def coeHom : Interval α ↪o Set α :=
     | some _, some _ => (@NonemptyInterval.coeHom α _).le_iff_le.trans WithBot.some_le_some.symm
 #align interval.coe_hom Interval.coeHom
 
-instance setLike : SetLike (Interval α) α where
+instance (priority := 10000) setLike : SetLike (Interval α) α where
   coe := coeHom
   coe_injective' := coeHom.injective
 
@@ -522,14 +522,14 @@ section Lattice
 
 variable [Lattice α]
 
-instance semilatticeSup : SemilatticeSup (Interval α) :=
+instance (priority := 10000) semilatticeSup : SemilatticeSup (Interval α) :=
   WithBot.semilatticeSup
 
 section Decidable
 
 variable [@DecidableRel α (· ≤ ·)]
 
-instance lattice : Lattice (Interval α) :=
+instance (priority := 10000) lattice : Lattice (Interval α) :=
   { Interval.semilatticeSup with
     inf := fun s t =>
       match s, t with
@@ -664,7 +664,7 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
+noncomputable instance (priority := 10000) completeLattice [@DecidableRel α (· ≤ ·)] :
     CompleteLattice (Interval α) := by
   classical
   exact

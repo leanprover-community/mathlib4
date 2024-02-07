@@ -79,7 +79,7 @@ structure IsSplitCoequalizer {Z : C} (π : Y ⟶ Z) where
 #align category_theory.is_split_coequalizer.left_section_bottom CategoryTheory.IsSplitCoequalizer.leftSection_bottom
 #align category_theory.is_split_coequalizer.left_section_top CategoryTheory.IsSplitCoequalizer.leftSection_top
 
-instance {X : C} : Inhabited (IsSplitCoequalizer (𝟙 X) (𝟙 X) (𝟙 X)) where
+instance (priority := 10000) {X : C} : Inhabited (IsSplitCoequalizer (𝟙 X) (𝟙 X) (𝟙 X)) where
   default := ⟨𝟙 X, 𝟙 X, rfl, Category.id_comp _, Category.id_comp _, rfl⟩
 
 open IsSplitCoequalizer
@@ -170,7 +170,7 @@ noncomputable def HasSplitCoequalizer.isSplitCoequalizer [HasSplitCoequalizer f 
 #align category_theory.has_split_coequalizer.is_split_coequalizer CategoryTheory.HasSplitCoequalizer.isSplitCoequalizer
 
 /-- If `f, g` is split, then `G f, G g` is split. -/
-instance map_is_split_pair [HasSplitCoequalizer f g] : HasSplitCoequalizer (G.map f) (G.map g) where
+instance (priority := 10000) map_is_split_pair [HasSplitCoequalizer f g] : HasSplitCoequalizer (G.map f) (G.map g) where
   splittable :=
     ⟨_, _, ⟨IsSplitCoequalizer.map (HasSplitCoequalizer.isSplitCoequalizer f g) _⟩⟩
 #align category_theory.map_is_split_pair CategoryTheory.map_is_split_pair

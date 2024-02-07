@@ -37,7 +37,7 @@ of `TopologicalSpace` by the `scott` topology.
 
 We define a mixin class `IsScott` for the class of types which are both a preorder and a
 topology and where the topology is the `scott` topology. It is shown that `WithScott α` is an
-instance of `IsScott`.
+instance (priority := 10000) of `IsScott`.
 
 A class `Scott` is defined in `Topology/OmegaCompletePartialOrder` and made an instance of a
 topological space by defining the open sets to be those which have characteristic functions which
@@ -151,7 +151,7 @@ A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound
 class IsScottHausdorff : Prop where
   topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff
 
-instance : @IsScottHausdorff α _ scottHausdorff := @IsScottHausdorff.mk _ _ scottHausdorff rfl
+instance (priority := 10000) : @IsScottHausdorff α _ scottHausdorff := @IsScottHausdorff.mk _ _ scottHausdorff rfl
 
 namespace IsScottHausdorff
 variable [IsScottHausdorff α] {s : Set α}
@@ -319,14 +319,14 @@ lemma ofScott_inj {a b : WithScott α} : ofScott a = ofScott b ↔ a = b := Iff.
 protected def rec {β : WithScott α → Sort _}
     (h : ∀ a, β (toScott a)) : ∀ a, β a := fun a ↦ h (ofScott a)
 
-instance [Nonempty α] : Nonempty (WithScott α) := ‹Nonempty α›
-instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
+instance (priority := 10000) [Nonempty α] : Nonempty (WithScott α) := ‹Nonempty α›
+instance (priority := 10000) [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
 
 variable [Preorder α]
 
-instance : Preorder (WithScott α) := ‹Preorder α›
-instance : TopologicalSpace (WithScott α) := scott
-instance : IsScott (WithScott α) := ⟨rfl⟩
+instance (priority := 10000) : Preorder (WithScott α) := ‹Preorder α›
+instance (priority := 10000) : TopologicalSpace (WithScott α) := scott
+instance (priority := 10000) : IsScott (WithScott α) := ⟨rfl⟩
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
     IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ scottHausdorff.IsOpen u := Iff.rfl

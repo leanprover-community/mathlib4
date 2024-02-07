@@ -98,11 +98,11 @@ class Initial (F : C ⥤ D) : Prop where
 
 attribute [instance] Initial.out
 
-instance final_op_of_initial (F : C ⥤ D) [Initial F] : Final F.op where
+instance (priority := 10000) final_op_of_initial (F : C ⥤ D) [Initial F] : Final F.op where
   out d := isConnected_of_equivalent (costructuredArrowOpEquivalence F (unop d))
 #align category_theory.functor.final_op_of_initial CategoryTheory.Functor.final_op_of_initial
 
-instance initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op where
+instance (priority := 10000) initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op where
   out d := isConnected_of_equivalent (structuredArrowOpEquivalence F (unop d))
 #align category_theory.functor.initial_op_of_final CategoryTheory.Functor.initial_op_of_final
 
@@ -174,7 +174,7 @@ namespace Final
 
 variable (F : C ⥤ D) [Final F]
 
-instance (d : D) : Nonempty (StructuredArrow d F) :=
+instance (priority := 10000) (d : D) : Nonempty (StructuredArrow d F) :=
   IsConnected.is_nonempty
 
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
@@ -322,7 +322,7 @@ theorem colimit_pre_is_iso_aux {t : Cocone G} (P : IsColimit t) :
   simp
 #align category_theory.functor.final.colimit_pre_is_iso_aux CategoryTheory.Functor.Final.colimit_pre_is_iso_aux
 
-instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
+instance (priority := 10000) colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
   rw [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G)]
   erw [colimit_pre_is_iso_aux]
   dsimp
@@ -471,7 +471,7 @@ namespace Initial
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D) [Initial F]
 
-instance (d : D) : Nonempty (CostructuredArrow F d) :=
+instance (priority := 10000) (d : D) : Nonempty (CostructuredArrow F d) :=
   IsConnected.is_nonempty
 
 variable {E : Type u₃} [Category.{v₃} E] (G : D ⥤ E)
@@ -621,7 +621,7 @@ theorem limit_pre_is_iso_aux {t : Cone G} (P : IsLimit t) :
   simp
 #align category_theory.functor.initial.limit_pre_is_iso_aux CategoryTheory.Functor.Initial.limit_pre_is_iso_aux
 
-instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
+instance (priority := 10000) limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
   rw [limit.pre_eq (limitConeComp F (getLimitCone G)) (getLimitCone G)]
   erw [limit_pre_is_iso_aux]
   dsimp

@@ -73,7 +73,7 @@ open Matrix
 
 universe u v w
 
-instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (R) [Fintype R] :
+instance (priority := 10000) {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (R) [Fintype R] :
     Fintype (Matrix m n R) := by unfold Matrix; infer_instance
 
 section ToMatrixRight

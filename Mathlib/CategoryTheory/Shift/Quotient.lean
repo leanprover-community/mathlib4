@@ -41,7 +41,7 @@ namespace CategoryTheory
 
 /-- The shift by a monoid `A` induced on a quotient category `Quotient r` when the
 relation `r` is compatible with the shift. -/
-noncomputable instance HasShift.quotient [r.IsCompatibleWithShift A] :
+noncomputable instance (priority := 10000) HasShift.quotient [r.IsCompatibleWithShift A] :
     HasShift (Quotient r) A :=
   HasShift.induced (Quotient.functor r) A
     (fun a => Quotient.lift r (shiftFunctor C a ⋙ Quotient.functor r)
@@ -49,7 +49,7 @@ noncomputable instance HasShift.quotient [r.IsCompatibleWithShift A] :
     (fun _ => Quotient.lift.isLift _ _ _) ⟨⟨inferInstance⟩, inferInstance⟩
 
 /-- The functor `Quotient.functor r : C ⥤ Quotient r` commutes with the shift. -/
-noncomputable instance Quotient.functor_commShift [r.IsCompatibleWithShift A] :
+noncomputable instance (priority := 10000) Quotient.functor_commShift [r.IsCompatibleWithShift A] :
     (Quotient.functor r).CommShift A :=
   Functor.CommShift.ofInduced _ _ _ _ _
 

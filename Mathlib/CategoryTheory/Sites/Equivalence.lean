@@ -80,7 +80,7 @@ theorem coverPreserving :
       exact ⟨_, e.unitInv.app Z ≫ f ≫ e.unitInv.app U, S.downward_closed hf _,
         e.unit.app Z ≫ e.unit.app _, (by simp)⟩
 
-instance : IsCoverDense e.functor (e.locallyCoverDense J).inducedTopology where
+instance (priority := 10000) : IsCoverDense e.functor (e.locallyCoverDense J).inducedTopology where
   is_cover U := by
     change _ ∈ J.sieves _
     convert J.top_mem (e.inverse.obj U)
@@ -90,10 +90,10 @@ instance : IsCoverDense e.functor (e.locallyCoverDense J).inducedTopology where
     exact ⟨e.functor.obj Y, (Adjunction.homEquiv e.toAdjunction _ _).symm f,
       Presieve.in_coverByImage _ _, e.unit.app _, (by simp)⟩
 
-instance : IsContinuous e.functor J (e.locallyCoverDense J).inducedTopology :=
+instance (priority := 10000) : IsContinuous e.functor J (e.locallyCoverDense J).inducedTopology :=
   IsCoverDense.isContinuous _ _ _ (e.coverPreserving J)
 
-instance : IsCoverDense e.inverse J where
+instance (priority := 10000) : IsCoverDense e.inverse J where
   is_cover U := by
     convert J.top_mem U
     ext Y f
@@ -104,7 +104,7 @@ instance : IsCoverDense e.inverse J where
     replace := Sieve.downward_closed _ this (e.unit.app Y)
     simpa using this
 
-instance : IsContinuous e.inverse (e.locallyCoverDense J).inducedTopology J :=
+instance (priority := 10000) : IsContinuous e.inverse (e.locallyCoverDense J).inducedTopology J :=
   IsCoverDense.isContinuous _ _ _ (e.locallyCoverDense J).inducedTopology_coverPreserving
 
 /-- The functor in the equivalence of sheaf categories. -/
@@ -171,7 +171,7 @@ def transportSheafificationAdjunction : transportAndSheafify J e A ⊣ sheafToPr
   ((e.op.congrLeft.toAdjunction.comp (sheafificationAdjunction _ _)).comp
     (e.sheafCongr (A := A) J).symm.toAdjunction).ofNatIsoRight (transportIsoSheafToPresheaf _ _ _)
 
-noncomputable instance : PreservesFiniteLimits <| transportAndSheafify J e A where
+noncomputable instance (priority := 10000) : PreservesFiniteLimits <| transportAndSheafify J e A where
   preservesFiniteLimits _ := compPreservesLimitsOfShape _ _
 
 /-- Transport `HasSheafify` along an equivalence of sites. -/
@@ -212,18 +212,18 @@ noncomputable
 def smallSheafificationAdjunction : smallSheafify J A ⊣ sheafToPresheaf J A :=
   (equivSmallModel C).transportSheafificationAdjunction J A
 
-noncomputable instance hasSheafifyEssentiallySmallSite : HasSheafify J A :=
+noncomputable instance (priority := 10000) hasSheafifyEssentiallySmallSite : HasSheafify J A :=
   (equivSmallModel C).hasSheafify J A
 
-instance hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
+instance (priority := 10000) hasSheafComposeEssentiallySmallSite : HasSheafCompose J F :=
   (equivSmallModel C).hasSheafCompose J F
 
-instance hasLimitsEssentiallySmallSite
+instance (priority := 10000) hasLimitsEssentiallySmallSite
     [HasLimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
     HasLimitsOfSize <| Sheaf J A :=
   Adjunction.has_limits_of_equivalence ((equivSmallModel C).sheafCongr J A).functor
 
-instance hasColimitsEssentiallySmallSite
+instance (priority := 10000) hasColimitsEssentiallySmallSite
     [HasColimits <| Sheaf ((equivSmallModel C).locallyCoverDense J).inducedTopology A] :
     HasColimitsOfSize <| Sheaf J A :=
   Adjunction.has_colimits_of_equivalence ((equivSmallModel C).sheafCongr J A).functor

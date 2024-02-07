@@ -178,7 +178,7 @@ namespace AffineSubspace
 variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
-instance : SetLike (AffineSubspace k P) P where
+instance (priority := 10000) : SetLike (AffineSubspace k P) P where
   coe := carrier
   coe_injective' p q _ := by cases p; cases q; congr
 
@@ -585,7 +585,7 @@ namespace AffineSubspace
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [S : AffineSpace V P]
 
-instance : CompleteLattice (AffineSubspace k P) :=
+instance (priority := 10000) : CompleteLattice (AffineSubspace k P) :=
   {
     PartialOrder.lift ((↑) : AffineSubspace k P → Set P)
       coe_injective with
@@ -624,7 +624,7 @@ instance : CompleteLattice (AffineSubspace k P) :=
     sInf_le := fun _ _ => Set.biInter_subset_of_mem
     le_inf := fun _ _ _ => Set.subset_inter }
 
-instance : Inhabited (AffineSubspace k P) :=
+instance (priority := 10000) : Inhabited (AffineSubspace k P) :=
   ⟨⊤⟩
 
 /-- The `≤` order on subspaces is the same as that on the corresponding sets. -/
@@ -782,7 +782,7 @@ theorem bot_ne_top : (⊥ : AffineSubspace k P) ≠ ⊤ := by
   exact Set.empty_ne_univ contra
 #align affine_subspace.bot_ne_top AffineSubspace.bot_ne_top
 
-instance : Nontrivial (AffineSubspace k P) :=
+instance (priority := 10000) : Nontrivial (AffineSubspace k P) :=
   ⟨⟨⊥, ⊤, bot_ne_top k V P⟩⟩
 
 theorem nonempty_of_affineSpan_eq_top {s : Set P} (h : affineSpan k s = ⊤) : s.Nonempty := by
@@ -1175,7 +1175,7 @@ alias ⟨_, _root_.Set.Nonempty.affineSpan⟩ := affineSpan_nonempty
 #align set.nonempty.affine_span Set.Nonempty.affineSpan
 
 /-- The affine span of a nonempty set is nonempty. -/
-instance [Nonempty s] : Nonempty (affineSpan k s) :=
+instance (priority := 10000) [Nonempty s] : Nonempty (affineSpan k s) :=
   ((nonempty_coe_sort.1 ‹_›).affineSpan _).to_subtype
 
 /-- The affine span of a set is `⊥` if and only if that set is empty. -/

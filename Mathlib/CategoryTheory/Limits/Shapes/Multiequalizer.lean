@@ -53,7 +53,7 @@ namespace WalkingMulticospan
 
 variable {L R : Type w} {fst snd : R → L}
 
-instance [Inhabited L] : Inhabited (WalkingMulticospan fst snd) :=
+instance (priority := 10000) [Inhabited L] : Inhabited (WalkingMulticospan fst snd) :=
   ⟨left default⟩
 
 /-- Morphisms for `WalkingMulticospan`. -/
@@ -67,7 +67,7 @@ inductive Hom : ∀ _ _ : WalkingMulticospan fst snd, Type w
 (which it does, using Hom.id_eq_id) -/
 attribute [-simp, nolint simpNF] WalkingMulticospan.Hom.id.sizeOf_spec
 
-instance {a : WalkingMulticospan fst snd} : Inhabited (Hom a a) :=
+instance (priority := 10000) {a : WalkingMulticospan fst snd} : Inhabited (Hom a a) :=
   ⟨Hom.id _⟩
 
 /-- Composition of morphisms for `WalkingMulticospan`. -/
@@ -77,7 +77,7 @@ def Hom.comp : ∀ {A B C : WalkingMulticospan fst snd} (_ : Hom A B) (_ : Hom B
   | _, _, _, Hom.snd b, Hom.id _ => Hom.snd b
 #align category_theory.limits.walking_multicospan.hom.comp CategoryTheory.Limits.WalkingMulticospan.Hom.comp
 
-instance : SmallCategory (WalkingMulticospan fst snd) where
+instance (priority := 10000) : SmallCategory (WalkingMulticospan fst snd) where
   Hom := Hom
   id := Hom.id
   comp := Hom.comp
@@ -102,7 +102,7 @@ namespace WalkingMultispan
 
 variable {L R : Type v} {fst snd : L → R}
 
-instance [Inhabited L] : Inhabited (WalkingMultispan fst snd) :=
+instance (priority := 10000) [Inhabited L] : Inhabited (WalkingMultispan fst snd) :=
   ⟨left default⟩
 
 /-- Morphisms for `WalkingMultispan`. -/
@@ -116,7 +116,7 @@ inductive Hom : ∀ _ _ : WalkingMultispan fst snd, Type v
 (which it does, using Hom.id_eq_id) -/
 attribute [-simp, nolint simpNF] WalkingMultispan.Hom.id.sizeOf_spec
 
-instance {a : WalkingMultispan fst snd} : Inhabited (Hom a a) :=
+instance (priority := 10000) {a : WalkingMultispan fst snd} : Inhabited (Hom a a) :=
   ⟨Hom.id _⟩
 
 /-- Composition of morphisms for `WalkingMultispan`. -/
@@ -126,7 +126,7 @@ def Hom.comp : ∀ {A B C : WalkingMultispan fst snd} (_ : Hom A B) (_ : Hom B C
   | _, _, _, Hom.snd a, Hom.id _ => Hom.snd a
 #align category_theory.limits.walking_multispan.hom.comp CategoryTheory.Limits.WalkingMultispan.Hom.comp
 
-instance : SmallCategory (WalkingMultispan fst snd) where
+instance (priority := 10000) : SmallCategory (WalkingMultispan fst snd) where
   Hom := Hom
   id := Hom.id
   comp := Hom.comp
@@ -806,7 +806,7 @@ theorem hom_ext {W : C} (i j : W ⟶ multiequalizer I)
 
 variable [HasProduct I.left] [HasProduct I.right]
 
-instance : HasEqualizer I.fstPiMap I.sndPiMap :=
+instance (priority := 10000) : HasEqualizer I.fstPiMap I.sndPiMap :=
   ⟨⟨⟨_, IsLimit.ofPreservesConeTerminal I.multiforkEquivPiFork.functor (limit.isLimit _)⟩⟩⟩
 
 /-- The multiequalizer is isomorphic to the equalizer of `∏ I.left ⇉ ∏ I.right`. -/
@@ -826,7 +826,7 @@ theorem ιPi_π (a) : ιPi I ≫ Pi.π I.left a = ι I a := by
   simp
 #align category_theory.limits.multiequalizer.ι_pi_π CategoryTheory.Limits.Multiequalizer.ιPi_π
 
-instance : Mono (ιPi I) := mono_comp _ _
+instance (priority := 10000) : Mono (ιPi I) := mono_comp _ _
 
 end Multiequalizer
 
@@ -891,7 +891,7 @@ theorem hom_ext {W : C} (i j : multicoequalizer I ⟶ W)
 
 variable [HasCoproduct I.left] [HasCoproduct I.right]
 
-instance : HasCoequalizer I.fstSigmaMap I.sndSigmaMap :=
+instance (priority := 10000) : HasCoequalizer I.fstSigmaMap I.sndSigmaMap :=
   ⟨⟨⟨_,
       IsColimit.ofPreservesCoconeInitial
         I.multicoforkEquivSigmaCofork.functor (colimit.isColimit _)⟩⟩⟩
@@ -918,7 +918,7 @@ theorem ι_sigmaπ (b) : Sigma.ι I.right b ≫ sigmaπ I = π I b := by
   rfl
 #align category_theory.limits.multicoequalizer.ι_sigma_π CategoryTheory.Limits.Multicoequalizer.ι_sigmaπ
 
-instance : Epi (sigmaπ I) := epi_comp _ _
+instance (priority := 10000) : Epi (sigmaπ I) := epi_comp _ _
 
 end Multicoequalizer
 

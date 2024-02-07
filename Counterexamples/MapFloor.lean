@@ -55,17 +55,17 @@ local notation "ε" => (X : ℤ[ε])
 
 namespace IntWithEpsilon
 
-instance nontrivial : Nontrivial IntWithEpsilon := inferInstance
+instance (priority := 10000) nontrivial : Nontrivial IntWithEpsilon := inferInstance
 
 -- Porting note: `inhabited` and `commRing` were `deriving` instances in mathlib3
-instance commRing : CommRing IntWithEpsilon := Polynomial.commRing
+instance (priority := 10000) commRing : CommRing IntWithEpsilon := Polynomial.commRing
 
-instance inhabited : Inhabited IntWithEpsilon := ⟨69⟩
+instance (priority := 10000) inhabited : Inhabited IntWithEpsilon := ⟨69⟩
 
-instance linearOrder : LinearOrder ℤ[ε] :=
+instance (priority := 10000) linearOrder : LinearOrder ℤ[ε] :=
   LinearOrder.lift' (toLex ∘ coeff) coeff_injective
 
-instance orderedAddCommGroup : OrderedAddCommGroup ℤ[ε] := by
+instance (priority := 10000) orderedAddCommGroup : OrderedAddCommGroup ℤ[ε] := by
   refine' (toLex.injective.comp coeff_injective).orderedAddCommGroup _ _ _ _ _ _ _ <;>
   (first | rfl | intros) <;> funext <;>
   (simp only [comp_apply, Pi.toLex_apply, coeff_add, coeff_neg, coeff_sub,
@@ -82,13 +82,13 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
     (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm => (hn.1 _ hm).symm)
 #align counterexample.int_with_epsilon.pos_iff Counterexample.IntWithEpsilon.pos_iff
 
-instance : LinearOrderedCommRing ℤ[ε] :=
+instance (priority := 10000) : LinearOrderedCommRing ℤ[ε] :=
   { IntWithEpsilon.linearOrder, IntWithEpsilon.commRing, IntWithEpsilon.orderedAddCommGroup,
     IntWithEpsilon.nontrivial with
     zero_le_one := Or.inr ⟨0, by simp⟩
     mul_pos := fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos}
 
-instance : FloorRing ℤ[ε] :=
+instance (priority := 10000) : FloorRing ℤ[ε] :=
   FloorRing.ofFloor _ (fun p => if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
     fun p q => by
     simp_rw [← not_lt, not_iff_not]

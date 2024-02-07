@@ -101,7 +101,7 @@ theorem isNoetherian_submodule_right {N : Submodule R M} :
   isNoetherian_submodule.trans ⟨fun H _ => H _ inf_le_right, fun H _ hs => inf_of_le_left hs ▸ H _⟩
 #align is_noetherian_submodule_right isNoetherian_submodule_right
 
-instance isNoetherian_submodule' [IsNoetherian R M] (N : Submodule R M) : IsNoetherian R N :=
+instance (priority := 10000) isNoetherian_submodule' [IsNoetherian R M] (N : Submodule R M) : IsNoetherian R N :=
   isNoetherian_submodule.2 fun _ _ => IsNoetherian.noetherian _
 #align is_noetherian_submodule' isNoetherian_submodule'
 
@@ -157,7 +157,7 @@ instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Finite R M :
   ⟨IsNoetherian.noetherian ⊤⟩
 #align module.is_noetherian.finite Module.IsNoetherian.finite
 
-instance {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S]
+instance (priority := 10000) {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S]
     [IsNoetherian R₁ S] (I : Ideal S) : Finite R₁ I :=
   IsNoetherian.finite R₁ ((I : Submodule S S).restrictScalars R₁)
 
@@ -191,7 +191,7 @@ theorem fg_of_ker_bot [IsNoetherian R P] {N : Submodule R M} (f : M →ₗ[R] P)
   IsNoetherian.noetherian N
 #align fg_of_ker_bot fg_of_ker_bot
 
-instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian R (M × P) :=
+instance (priority := 10000) isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian R (M × P) :=
   ⟨fun s =>
     Submodule.fg_of_fg_map_of_fg_inf_ker (LinearMap.snd R M P) (noetherian _) <|
       have : s ⊓ LinearMap.ker (LinearMap.snd R M P) ≤ LinearMap.range (LinearMap.inl R M P) :=
@@ -199,7 +199,7 @@ instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian 
       Submodule.map_comap_eq_self this ▸ (noetherian _).map _⟩
 #align is_noetherian_prod isNoetherian_prod
 
-instance isNoetherian_pi {R ι : Type*} {M : ι → Type*}
+instance (priority := 10000) isNoetherian_pi {R ι : Type*} {M : ι → Type*}
     [Ring R] [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [Finite ι]
     [∀ i, IsNoetherian R (M i)] : IsNoetherian R (∀ i, M i) := by
   cases nonempty_fintype ι
@@ -275,7 +275,7 @@ instance isNoetherian_pi {R ι : Type*} {M : ι → Type*}
 /-- A version of `isNoetherian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isNoetherian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
+instance (priority := 10000) isNoetherian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
     [IsNoetherian R M] : IsNoetherian R (ι → M) :=
   isNoetherian_pi
 #align is_noetherian_pi' isNoetherian_pi'
@@ -287,10 +287,10 @@ section CommRing
 variable (R M N : Type*) [CommRing R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
   [IsNoetherian R M] [Module.Finite R N]
 
-instance isNoetherian_linearMap_pi {ι : Type*} [Finite ι] : IsNoetherian R ((ι → R) →ₗ[R] M) :=
+instance (priority := 10000) isNoetherian_linearMap_pi {ι : Type*} [Finite ι] : IsNoetherian R ((ι → R) →ₗ[R] M) :=
   let _i : Fintype ι := Fintype.ofFinite ι; isNoetherian_of_linearEquiv (Module.piEquiv ι R M)
 
-instance isNoetherian_linearMap : IsNoetherian R (N →ₗ[R] M) := by
+instance (priority := 10000) isNoetherian_linearMap : IsNoetherian R (N →ₗ[R] M) := by
   obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R N
   let g : (N →ₗ[R] M) →ₗ[R] (Fin n → R) →ₗ[R] M := (LinearMap.llcomp R (Fin n → R) N M).flip f
   exact isNoetherian_of_injective g hf.injective_linearMapComp_right
@@ -540,7 +540,7 @@ theorem isNoetherian_of_submodule_of_noetherian (R M) [Semiring R] [AddCommMonoi
   exact OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h
 #align is_noetherian_of_submodule_of_noetherian isNoetherian_of_submodule_of_noetherian
 
-instance Submodule.Quotient.isNoetherian {R} [Ring R] {M} [AddCommGroup M] [Module R M]
+instance (priority := 10000) Submodule.Quotient.isNoetherian {R} [Ring R] {M} [AddCommGroup M] [Module R M]
     (N : Submodule R M) [h : IsNoetherian R M] : IsNoetherian R (M ⧸ N) := by
   rw [isNoetherian_iff_wellFounded] at h ⊢
   exact OrderEmbedding.wellFounded (Submodule.comapMkQOrderEmbedding N).dual h
@@ -589,7 +589,7 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
     rw [Finsupp.not_mem_support_iff.1 hx, zero_smul]
 #align is_noetherian_of_fg_of_noetherian isNoetherian_of_fg_of_noetherian
 
-instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
+instance (priority := 10000) isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
     [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
     IsNoetherian R M :=
   have : IsNoetherian R (⊤ : Submodule R M) :=
@@ -610,7 +610,7 @@ theorem isNoetherianRing_of_surjective (R) [Ring R] (S) [Ring S] (f : R →+* S)
   exact OrderEmbedding.wellFounded (Ideal.orderEmbeddingOfSurjective f hf).dual H
 #align is_noetherian_ring_of_surjective isNoetherianRing_of_surjective
 
-instance isNoetherianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsNoetherianRing R] :
+instance (priority := 10000) isNoetherianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsNoetherianRing R] :
     IsNoetherianRing f.range :=
   isNoetherianRing_of_surjective R f.range f.rangeRestrict f.rangeRestrict_surjective
 #align is_noetherian_ring_range isNoetherianRing_range

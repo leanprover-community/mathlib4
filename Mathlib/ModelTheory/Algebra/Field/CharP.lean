@@ -47,7 +47,7 @@ def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theo
   else if p.Prime then {eqZero p}
   else {⊥}
 
-instance model_hasChar_of_charP [Field K] [CompatibleRing K] [CharP K p] :
+instance (priority := 10000) model_hasChar_of_charP [Field K] [CompatibleRing K] [CharP K p] :
     (Theory.fieldOfChar p).Model K := by
   refine Language.Theory.model_union_iff.2 ⟨inferInstance, ?_⟩
   cases CharP.char_is_prime_or_zero K p with
@@ -77,7 +77,7 @@ theorem charP_iff_model_fieldOfChar [Field K] [CompatibleRing K] :
     intro H
     cases (CharP.char_is_prime_or_zero K p) <;> simp_all
 
-instance model_fieldOfChar_of_charP [Field K] [CompatibleRing K]
+instance (priority := 10000) model_fieldOfChar_of_charP [Field K] [CompatibleRing K]
     [CharP K p] : (Theory.fieldOfChar p).Model K :=
   charP_iff_model_fieldOfChar.2 inferInstance
 

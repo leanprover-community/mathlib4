@@ -98,10 +98,10 @@ def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
 #align free_product Monoid.CoprodI
 
 --Porting note: could not de derived
-instance : Monoid (Monoid.CoprodI M) :=
+instance (priority := 10000) : Monoid (Monoid.CoprodI M) :=
   by delta Monoid.CoprodI; infer_instance
 
-instance : Inhabited (Monoid.CoprodI M) :=
+instance (priority := 10000) : Inhabited (Monoid.CoprodI M) :=
   ⟨1⟩
 
 namespace Monoid.CoprodI
@@ -224,7 +224,7 @@ section Group
 
 variable (G : ι → Type*) [∀ i, Group (G i)]
 
-instance : Inv (CoprodI G) where
+instance (priority := 10000) : Inv (CoprodI G) where
   inv :=
     MulOpposite.unop ∘ lift fun i => (of : G i →* _).op.comp (MulEquiv.inv' (G i)).toMonoidHom
 
@@ -235,7 +235,7 @@ theorem inv_def (x : CoprodI G) :
   rfl
 #align free_product.inv_def Monoid.CoprodI.inv_def
 
-instance : Group (CoprodI G) :=
+instance (priority := 10000) : Group (CoprodI G) :=
   { mul_left_inv := by
       intro m
       rw [inv_def]
@@ -278,7 +278,7 @@ def empty : Word M where
   chain_ne := List.chain'_nil
 #align free_product.word.empty Monoid.CoprodI.Word.empty
 
-instance : Inhabited (Word M) :=
+instance (priority := 10000) : Inhabited (Word M) :=
   ⟨empty⟩
 
 /-- A reduced word determines an element of the free product, given by multiplication. -/
@@ -318,7 +318,7 @@ structure Pair (i : ι) where
   fstIdx_ne : fstIdx tail ≠ some i
 #align free_product.word.pair Monoid.CoprodI.Word.Pair
 
-instance (i : ι) : Inhabited (Pair M i) :=
+instance (priority := 10000) (i : ι) : Inhabited (Pair M i) :=
   ⟨⟨1, empty, by tauto⟩⟩
 
 variable {M}
@@ -495,7 +495,7 @@ theorem equivPair_head {i : ι} {w : Word M} :
     · subst hi; simp
     · simp [hi, Ne.symm hi]
 
-instance summandAction (i) : MulAction (M i) (Word M) where
+instance (priority := 10000) summandAction (i) : MulAction (M i) (Word M) where
   smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
   one_smul w := by
     apply (equivPair i).symm_apply_eq.mpr
@@ -505,7 +505,7 @@ instance summandAction (i) : MulAction (M i) (Word M) where
     simp [mul_assoc, ← equivPair_symm, Equiv.apply_symm_apply]
 #align free_product.word.summand_action Monoid.CoprodI.Word.summandAction
 
-instance : MulAction (CoprodI M) (Word M) :=
+instance (priority := 10000) : MulAction (CoprodI M) (Word M) :=
   MulAction.ofEndHom (lift fun _ => MulAction.toEndHom)
 
 theorem smul_def {i} (m : M i) (w : Word M) :
@@ -629,10 +629,10 @@ def equiv : CoprodI M ≃ Word M where
       rw [prod_smul, mul_smul, ih]
 #align free_product.word.equiv Monoid.CoprodI.Word.equiv
 
-instance : DecidableEq (Word M) :=
+instance (priority := 10000) : DecidableEq (Word M) :=
   Function.Injective.decidableEq Word.ext
 
-instance : DecidableEq (CoprodI M) :=
+instance (priority := 10000) : DecidableEq (CoprodI M) :=
   Equiv.decidableEq Word.equiv
 
 end Word
@@ -1005,7 +1005,7 @@ def FreeGroupBasis.coprodI {ι : Type*} {X : ι → Type*} {G : ι → Type*} [�
     (by ext1 i; apply (B i).ext_hom; simp)⟩
 
 /-- The free product of free groups is itself a free group. -/
-instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGroup (G i)] :
+instance (priority := 10000) {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGroup (G i)] :
     IsFreeGroup (CoprodI G) :=
   (FreeGroupBasis.coprodI (fun i ↦ IsFreeGroup.basis (G i))).isFreeGroup
 

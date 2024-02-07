@@ -40,18 +40,18 @@ instance (priority := 100) NonemptyFiniteLinearOrder.toBoundedOrder (α : Type*)
   Fintype.toBoundedOrder α
 #align nonempty_fin_lin_ord.to_bounded_order NonemptyFiniteLinearOrder.toBoundedOrder
 
-instance PUnit.nonemptyFiniteLinearOrder : NonemptyFiniteLinearOrder PUnit where
+instance (priority := 10000) PUnit.nonemptyFiniteLinearOrder : NonemptyFiniteLinearOrder PUnit where
 #align punit.nonempty_fin_lin_ord PUnit.nonemptyFiniteLinearOrder
 
-instance Fin.nonemptyFiniteLinearOrder (n : ℕ) : NonemptyFiniteLinearOrder (Fin (n + 1)) where
+instance (priority := 10000) Fin.nonemptyFiniteLinearOrder (n : ℕ) : NonemptyFiniteLinearOrder (Fin (n + 1)) where
 #align fin.nonempty_fin_lin_ord Fin.nonemptyFiniteLinearOrder
 
-instance ULift.nonemptyFiniteLinearOrder (α : Type u) [NonemptyFiniteLinearOrder α] :
+instance (priority := 10000) ULift.nonemptyFiniteLinearOrder (α : Type u) [NonemptyFiniteLinearOrder α] :
     NonemptyFiniteLinearOrder (ULift.{v} α) :=
   { LinearOrder.lift' Equiv.ulift (Equiv.injective _) with }
 #align ulift.nonempty_fin_lin_ord ULift.nonemptyFiniteLinearOrder
 
-instance (α : Type*) [NonemptyFiniteLinearOrder α] : NonemptyFiniteLinearOrder αᵒᵈ :=
+instance (priority := 10000) (α : Type*) [NonemptyFiniteLinearOrder α] : NonemptyFiniteLinearOrder αᵒᵈ :=
   { OrderDual.fintype α with }
 
 /-- The category of nonempty finite linear orders. -/
@@ -62,16 +62,16 @@ set_option linter.uppercaseLean3 false in
 
 namespace NonemptyFinLinOrd
 
-instance : BundledHom.ParentProjection @NonemptyFiniteLinearOrder.toLinearOrder :=
+instance (priority := 10000) : BundledHom.ParentProjection @NonemptyFiniteLinearOrder.toLinearOrder :=
   ⟨⟩
 
 deriving instance LargeCategory for NonemptyFinLinOrd
 
 -- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory NonemptyFinLinOrd :=
+instance (priority := 10000) : ConcreteCategory NonemptyFinLinOrd :=
   BundledHom.concreteCategory _
 
-instance : CoeSort NonemptyFinLinOrd Type* :=
+instance (priority := 10000) : CoeSort NonemptyFinLinOrd Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled `NonemptyFinLinOrd` from the underlying type and typeclass. -/
@@ -86,18 +86,18 @@ theorem coe_of (α : Type*) [NonemptyFiniteLinearOrder α] : ↥(of α) = α :=
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.coe_of NonemptyFinLinOrd.coe_of
 
-instance : Inhabited NonemptyFinLinOrd :=
+instance (priority := 10000) : Inhabited NonemptyFinLinOrd :=
   ⟨of PUnit⟩
 
-instance (α : NonemptyFinLinOrd) : NonemptyFiniteLinearOrder α :=
+instance (priority := 10000) (α : NonemptyFinLinOrd) : NonemptyFiniteLinearOrder α :=
   α.str
 
-instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
+instance (priority := 10000) hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.has_forget_to_LinOrd NonemptyFinLinOrd.hasForgetToLinOrd
 
-instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd where
+instance (priority := 10000) hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd where
   forget₂ :=
     { obj := fun X => FinPartOrd.of X
       map := @fun X Y => id }
@@ -137,14 +137,14 @@ def dualEquiv : NonemptyFinLinOrd ≌ NonemptyFinLinOrd where
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.dual_equiv NonemptyFinLinOrd.dualEquiv
 
-instance {A B : NonemptyFinLinOrd.{u}} : FunLike (A ⟶ B) A B where
+instance (priority := 10000) {A B : NonemptyFinLinOrd.{u}} : FunLike (A ⟶ B) A B where
   coe f := ⇑(show OrderHom A B from f)
   coe_injective' _ _ h := by
     ext x
     exact congr_fun h x
 
 -- porting note: this instance was not necessary in mathlib
-instance {A B : NonemptyFinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
+instance (priority := 10000) {A B : NonemptyFinLinOrd.{u}} : OrderHomClass (A ⟶ B) A B where
   map_rel f _ _ h := f.monotone h
 
 theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
@@ -210,7 +210,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.epi_iff_surjective NonemptyFinLinOrd.epi_iff_surjective
 
-instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
+instance (priority := 10000) : SplitEpiCategory NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f hf => by
     have H : ∀ y : Y, Nonempty (f ⁻¹' {y}) := by
       rw [epi_iff_surjective] at hf
@@ -234,7 +234,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       have H : f (φ b) ≤ f (φ a) := f.monotone (le_of_lt h)
       simpa only [hφ] using H⟩
 
-instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
+instance (priority := 10000) : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f => by
     letI : NonemptyFiniteLinearOrder (Set.image f ⊤) := ⟨by infer_instance⟩
     let I := NonemptyFinLinOrd.of (Set.image f ⊤)

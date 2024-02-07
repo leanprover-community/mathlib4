@@ -66,7 +66,7 @@ def frobeniusMorphism (h : L ⊣ F) (A : C) :
 /-- If `F` is full and faithful and has a left adjoint `L` which preserves binary products, then the
 Frobenius morphism is an isomorphism.
 -/
-instance frobeniusMorphism_iso_of_preserves_binary_products (h : L ⊣ F) (A : C)
+instance (priority := 10000) frobeniusMorphism_iso_of_preserves_binary_products (h : L ⊣ F) (A : C)
     [PreservesLimitsOfShape (Discrete WalkingPair) L] [Full F] [Faithful F] :
     IsIso (frobeniusMorphism F h A) :=
   suffices ∀ (X : D), IsIso ((frobeniusMorphism F h A).app X) from NatIso.isIso_of_isIso_app _

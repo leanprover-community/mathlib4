@@ -78,7 +78,7 @@ structure Hom (P Q : Karoubi C) where
   comm : f = P.p ≫ f ≫ Q.p := by aesop_cat
 #align category_theory.idempotents.karoubi.hom CategoryTheory.Idempotents.Karoubi.Hom
 
-instance [Preadditive C] (P Q : Karoubi C) : Inhabited (Hom P Q) :=
+instance (priority := 10000) [Preadditive C] (P Q : Karoubi C) : Inhabited (Hom P Q) :=
   ⟨⟨0, by rw [zero_comp, comp_zero]⟩⟩
 
 @[reassoc (attr := simp)]
@@ -99,7 +99,7 @@ theorem comp_proof {P Q R : Karoubi C} (g : Hom Q R) (f : Hom P Q) :
 #align category_theory.idempotents.karoubi.comp_proof CategoryTheory.Idempotents.Karoubi.comp_proof
 
 /-- The category structure on the karoubi envelope of a category. -/
-instance : Category (Karoubi C) where
+instance (priority := 10000) : Category (Karoubi C) where
   Hom := Karoubi.Hom
   id P := ⟨P.p, by repeat' rw [P.idem]⟩
   comp f g := ⟨f.f ≫ g.f, Karoubi.comp_proof g f⟩
@@ -127,7 +127,7 @@ theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := rf
 
 /-- It is possible to coerce an object of `C` into an object of `Karoubi C`.
 See also the functor `toKaroubi`. -/
-instance coe : CoeTC C (Karoubi C) :=
+instance (priority := 10000) coe : CoeTC C (Karoubi C) :=
   ⟨fun X => ⟨X, 𝟙 X, by rw [comp_id]⟩⟩
 #align category_theory.idempotents.karoubi.coe CategoryTheory.Idempotents.Karoubi.coe
 
@@ -157,15 +157,15 @@ def toKaroubi : C ⥤ Karoubi C where
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
 #align category_theory.idempotents.to_karoubi CategoryTheory.Idempotents.toKaroubi
 
-instance : Full (toKaroubi C) where preimage f := f.f
+instance (priority := 10000) : Full (toKaroubi C) where preimage f := f.f
 
-instance : Faithful (toKaroubi C) where
+instance (priority := 10000) : Faithful (toKaroubi C) where
   map_injective := fun h => congr_arg Karoubi.Hom.f h
 
 variable {C}
 
 @[simps add zero neg]
-instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
+instance (priority := 10000) instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   add f g :=
     ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
@@ -209,16 +209,16 @@ theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type*} (s : Finset α) (
 end Karoubi
 
 /-- The category `Karoubi C` is preadditive if `C` is. -/
-instance [Preadditive C] : Preadditive (Karoubi C) where
+instance (priority := 10000) [Preadditive C] : Preadditive (Karoubi C) where
   homGroup P Q := by infer_instance
 
-instance [Preadditive C] : Functor.Additive (toKaroubi C) where
+instance (priority := 10000) [Preadditive C] : Functor.Additive (toKaroubi C) where
 
 open Karoubi
 
 variable (C)
 
-instance : IsIdempotentComplete (Karoubi C) := by
+instance (priority := 10000) : IsIdempotentComplete (Karoubi C) := by
   refine' ⟨_⟩
   intro P p hp
   simp only [hom_ext_iff, comp_f] at hp
@@ -227,7 +227,7 @@ instance : IsIdempotentComplete (Karoubi C) := by
   use ⟨p.f, by rw [hp, p_comp p]⟩
   simp [hp]
 
-instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
+instance (priority := 10000) [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
   ⟨fun P => by
     rcases IsIdempotentComplete.idempotents_split P.X P.p P.idem with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
     use Y
@@ -247,7 +247,7 @@ def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
   Functor.asEquivalence (toKaroubi C)
 #align category_theory.idempotents.to_karoubi_equivalence CategoryTheory.Idempotents.toKaroubiEquivalence
 
-instance toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
+instance (priority := 10000) toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
     (toKaroubiEquivalence C).functor.Additive :=
   (inferInstance : (toKaroubi C).Additive)
 #align category_theory.idempotents.to_karoubi_equivalence_functor_additive CategoryTheory.Idempotents.toKaroubiEquivalence_functor_additive

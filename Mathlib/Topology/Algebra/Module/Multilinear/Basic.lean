@@ -76,16 +76,16 @@ theorem toMultilinearMap_injective :
   | ⟨f, hf⟩, ⟨g, hg⟩, h => by subst h; rfl
 #align continuous_multilinear_map.to_multilinear_map_injective ContinuousMultilinearMap.toMultilinearMap_injective
 
-instance funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
+instance (priority := 10000) funLike : FunLike (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   coe f := f.toFun
   coe_injective' _ _ h := toMultilinearMap_injective <| MultilinearMap.coe_injective h
 
-instance continuousMapClass : ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂
+instance (priority := 10000) continuousMapClass : ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂
     where
   map_continuous := ContinuousMultilinearMap.cont
 #align continuous_multilinear_map.continuous_map_class ContinuousMultilinearMap.continuousMapClass
 
-instance : CoeFun (ContinuousMultilinearMap R M₁ M₂) fun _ => (∀ i, M₁ i) → M₂ :=
+instance (priority := 10000) : CoeFun (ContinuousMultilinearMap R M₁ M₂) fun _ => (∀ i, M₁ i) → M₂ :=
   ⟨fun f => f⟩
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
@@ -137,10 +137,10 @@ theorem map_zero [Nonempty ι] : f 0 = 0 :=
   f.toMultilinearMap.map_zero
 #align continuous_multilinear_map.map_zero ContinuousMultilinearMap.map_zero
 
-instance : Zero (ContinuousMultilinearMap R M₁ M₂) :=
+instance (priority := 10000) : Zero (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨{ (0 : MultilinearMap R M₁ M₂) with cont := continuous_const }⟩
 
-instance : Inhabited (ContinuousMultilinearMap R M₁ M₂) :=
+instance (priority := 10000) : Inhabited (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨0⟩
 
 @[simp]
@@ -159,7 +159,7 @@ variable {R' R'' A : Type*} [Monoid R'] [Monoid R''] [Semiring A] [∀ i, Module
   [Module A M₂] [DistribMulAction R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
   [DistribMulAction R'' M₂] [ContinuousConstSMul R'' M₂] [SMulCommClass A R'' M₂]
 
-instance : SMul R' (ContinuousMultilinearMap A M₁ M₂) :=
+instance (priority := 10000) : SMul R' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun c f => { c • f.toMultilinearMap with cont := f.cont.const_smul c }⟩
 
 @[simp]
@@ -174,18 +174,18 @@ theorem toMultilinearMap_smul (c : R') (f : ContinuousMultilinearMap A M₁ M₂
   rfl
 #align continuous_multilinear_map.to_multilinear_map_smul ContinuousMultilinearMap.toMultilinearMap_smul
 
-instance [SMulCommClass R' R'' M₂] : SMulCommClass R' R'' (ContinuousMultilinearMap A M₁ M₂) :=
+instance (priority := 10000) [SMulCommClass R' R'' M₂] : SMulCommClass R' R'' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
 
-instance [SMul R' R''] [IsScalarTower R' R'' M₂] :
+instance (priority := 10000) [SMul R' R''] [IsScalarTower R' R'' M₂] :
     IsScalarTower R' R'' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
 
-instance [DistribMulAction R'ᵐᵒᵖ M₂] [IsCentralScalar R' M₂] :
+instance (priority := 10000) [DistribMulAction R'ᵐᵒᵖ M₂] [IsCentralScalar R' M₂] :
     IsCentralScalar R' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 
-instance : MulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
+instance (priority := 10000) : MulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
   Function.Injective.mulAction toMultilinearMap toMultilinearMap_injective fun _ _ => rfl
 
 end SMul
@@ -194,7 +194,7 @@ section ContinuousAdd
 
 variable [ContinuousAdd M₂]
 
-instance : Add (ContinuousMultilinearMap R M₁ M₂) :=
+instance (priority := 10000) : Add (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f f' => ⟨f.toMultilinearMap + f'.toMultilinearMap, f.cont.add f'.cont⟩⟩
 
 @[simp]
@@ -208,7 +208,7 @@ theorem toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
   rfl
 #align continuous_multilinear_map.to_multilinear_map_add ContinuousMultilinearMap.toMultilinearMap_add
 
-instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) :=
+instance (priority := 10000) addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) :=
   toMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align continuous_multilinear_map.add_comm_monoid ContinuousMultilinearMap.addCommMonoid
 
@@ -488,7 +488,7 @@ section TopologicalAddGroup
 
 variable [TopologicalAddGroup M₂]
 
-instance : Neg (ContinuousMultilinearMap R M₁ M₂) :=
+instance (priority := 10000) : Neg (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f => { -f.toMultilinearMap with cont := f.cont.neg }⟩
 
 @[simp]
@@ -496,7 +496,7 @@ theorem neg_apply (m : ∀ i, M₁ i) : (-f) m = -f m :=
   rfl
 #align continuous_multilinear_map.neg_apply ContinuousMultilinearMap.neg_apply
 
-instance : Sub (ContinuousMultilinearMap R M₁ M₂) :=
+instance (priority := 10000) : Sub (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f g => { f.toMultilinearMap - g.toMultilinearMap with cont := f.cont.sub g.cont }⟩
 
 @[simp]
@@ -504,7 +504,7 @@ theorem sub_apply (m : ∀ i, M₁ i) : (f - f') m = f m - f' m :=
   rfl
 #align continuous_multilinear_map.sub_apply ContinuousMultilinearMap.sub_apply
 
-instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) :=
+instance (priority := 10000) : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) :=
   toMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -539,7 +539,7 @@ variable {R' R'' A : Type*} [Monoid R'] [Monoid R''] [Semiring A] [∀ i, AddCom
   [Module A M₂] [DistribMulAction R' M₂] [ContinuousConstSMul R' M₂] [SMulCommClass A R' M₂]
   [DistribMulAction R'' M₂] [ContinuousConstSMul R'' M₂] [SMulCommClass A R'' M₂]
 
-instance [ContinuousAdd M₂] : DistribMulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
+instance (priority := 10000) [ContinuousAdd M₂] : DistribMulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
   Function.Injective.distribMulAction
     { toFun := toMultilinearMap,
       map_zero' := toMultilinearMap_zero,
@@ -557,7 +557,7 @@ variable {R' A : Type*} [Semiring R'] [Semiring A] [∀ i, AddCommMonoid (M₁ i
 
 /-- The space of continuous multilinear maps over an algebra over `R` is a module over `R`, for the
 pointwise addition and scalar multiplication. -/
-instance : Module R' (ContinuousMultilinearMap A M₁ M₂) :=
+instance (priority := 10000) : Module R' (ContinuousMultilinearMap A M₁ M₂) :=
   Function.Injective.module _
     { toFun := toMultilinearMap,
       map_zero' := toMultilinearMap_zero,

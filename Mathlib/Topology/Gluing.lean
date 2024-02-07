@@ -240,7 +240,7 @@ theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_injective TopCat.GlueData.ι_injective
 
-instance ι_mono (i : D.J) : Mono (𝖣.ι i) :=
+instance (priority := 10000) ι_mono (i : D.J) : Mono (𝖣.ι i) :=
   (TopCat.mono_iff_injective _).mpr (D.ι_injective _)
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.ι_mono TopCat.GlueData.ι_mono
@@ -362,7 +362,7 @@ theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i)
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 
-instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
+instance (priority := 10000) (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
   use h.t j i; constructor <;> ext1; exacts [h.t_inv _ _ _, h.t_inv _ _ _]
 
 /-- (Implementation) the restricted transition map to be fed into `TopCat.GlueData`. -/

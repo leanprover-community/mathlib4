@@ -51,14 +51,14 @@ class SMulWithZero [Zero R] [Zero M] extends SMulZeroClass R M where
   zero_smul : ∀ m : M, (0 : R) • m = 0
 #align smul_with_zero SMulWithZero
 
-instance MulZeroClass.toSMulWithZero [MulZeroClass R] : SMulWithZero R R where
+instance (priority := 10000) MulZeroClass.toSMulWithZero [MulZeroClass R] : SMulWithZero R R where
   smul := (· * ·)
   smul_zero := mul_zero
   zero_smul := zero_mul
 #align mul_zero_class.to_smul_with_zero MulZeroClass.toSMulWithZero
 
 /-- Like `MulZeroClass.toSMulWithZero`, but multiplies on the right. -/
-instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass R] : SMulWithZero Rᵐᵒᵖ R where
+instance (priority := 10000) MulZeroClass.toOppositeSMulWithZero [MulZeroClass R] : SMulWithZero Rᵐᵒᵖ R where
   smul := (· • ·)
   smul_zero _ := zero_mul _
   zero_smul := mul_zero
@@ -115,12 +115,12 @@ def SMulWithZero.compHom (f : ZeroHom R' R) : SMulWithZero R' M where
 
 end Zero
 
-instance AddMonoid.natSMulWithZero [AddMonoid M] : SMulWithZero ℕ M where
+instance (priority := 10000) AddMonoid.natSMulWithZero [AddMonoid M] : SMulWithZero ℕ M where
   smul_zero := _root_.nsmul_zero
   zero_smul := zero_nsmul
 #align add_monoid.nat_smul_with_zero AddMonoid.natSMulWithZero
 
-instance AddGroup.intSMulWithZero [AddGroup M] : SMulWithZero ℤ M where
+instance (priority := 10000) AddGroup.intSMulWithZero [AddGroup M] : SMulWithZero ℤ M where
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
 #align add_group.int_smul_with_zero AddGroup.intSMulWithZero
@@ -149,13 +149,13 @@ instance (priority := 100) MulActionWithZero.toSMulWithZero [m : MulActionWithZe
 #align mul_action_with_zero.to_smul_with_zero MulActionWithZero.toSMulWithZero
 
 /-- See also `Semiring.toModule` -/
-instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
+instance (priority := 10000) MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
   { MulZeroClass.toSMulWithZero R, Monoid.toMulAction R with }
 #align monoid_with_zero.to_mul_action_with_zero MonoidWithZero.toMulActionWithZero
 
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
 `Semiring.toOppositeModule` -/
-instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R :=
+instance (priority := 10000) MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R :=
   { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction R with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
 

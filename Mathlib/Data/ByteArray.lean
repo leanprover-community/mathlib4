@@ -60,7 +60,7 @@ def forIn.loop [Monad m] (f : UInt8 → β → m (ForInStep β))
   else pure b
 termination_by _end - i
 
-instance : ForIn m ByteSlice UInt8 :=
+instance (priority := 10000) : ForIn m ByteSlice UInt8 :=
   ⟨fun ⟨arr, off, len⟩ b f ↦ forIn.loop f arr off (off + len) off b⟩
 
 end ByteSlice
@@ -92,7 +92,7 @@ def ByteSlice.toString (bs : ByteSlice) : String := Id.run do
   for c in bs do s := s.push c.toChar
   s
 
-instance : ToString ByteSlice where
+instance (priority := 10000) : ToString ByteSlice where
   toString bs := Id.run do
     let mut s := ""
     for c in bs do s := s.push c.toChar

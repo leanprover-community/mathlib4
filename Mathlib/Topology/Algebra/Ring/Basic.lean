@@ -93,7 +93,7 @@ variable [TopologicalSpace α] [Semiring α] [TopologicalSemiring α]
 namespace Subsemiring
 
 -- Porting note: named instance because generated name was huge
-instance topologicalSemiring (S : Subsemiring α) : TopologicalSemiring S :=
+instance (priority := 10000) topologicalSemiring (S : Subsemiring α) : TopologicalSemiring S :=
   { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
 
 end Subsemiring
@@ -139,22 +139,22 @@ variable {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 /-- The product topology on the cartesian product of two topological semirings
   makes the product into a topological semiring. -/
-instance [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [TopologicalSemiring α]
+instance (priority := 10000) [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [TopologicalSemiring α]
     [TopologicalSemiring β] : TopologicalSemiring (α × β) where
 
 /-- The product topology on the cartesian product of two topological rings
   makes the product into a topological ring. -/
-instance [NonUnitalNonAssocRing α] [NonUnitalNonAssocRing β] [TopologicalRing α]
+instance (priority := 10000) [NonUnitalNonAssocRing α] [NonUnitalNonAssocRing β] [TopologicalRing α]
     [TopologicalRing β] : TopologicalRing (α × β) where
 
 end
 
-instance Pi.instTopologicalSemiring {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
+instance (priority := 10000) Pi.instTopologicalSemiring {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocSemiring (C b)] [∀ b, TopologicalSemiring (C b)] :
     TopologicalSemiring (∀ b, C b) where
 #align pi.topological_semiring Pi.instTopologicalSemiring
 
-instance Pi.instTopologicalRing {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
+instance (priority := 10000) Pi.instTopologicalRing {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocRing (C b)] [∀ b, TopologicalRing (C b)] :
     TopologicalRing (∀ b, C b) := ⟨⟩
 #align pi.topological_ring Pi.instTopologicalRing
@@ -163,17 +163,17 @@ section MulOpposite
 
 open MulOpposite
 
-instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [ContinuousAdd α] :
+instance (priority := 10000) [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [ContinuousAdd α] :
     ContinuousAdd αᵐᵒᵖ :=
   continuousAdd_induced opAddEquiv.symm
 
-instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] :
+instance (priority := 10000) [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] :
     TopologicalSemiring αᵐᵒᵖ := ⟨⟩
 
-instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [ContinuousNeg α] : ContinuousNeg αᵐᵒᵖ :=
+instance (priority := 10000) [NonUnitalNonAssocRing α] [TopologicalSpace α] [ContinuousNeg α] : ContinuousNeg αᵐᵒᵖ :=
   opHomeomorph.symm.inducing.continuousNeg fun _ => rfl
 
-instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
+instance (priority := 10000) [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
     TopologicalRing αᵐᵒᵖ := ⟨⟩
 
 end MulOpposite
@@ -182,14 +182,14 @@ section AddOpposite
 
 open AddOpposite
 
-instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [ContinuousMul α] :
+instance (priority := 10000) [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [ContinuousMul α] :
     ContinuousMul αᵃᵒᵖ :=
   continuousMul_induced opMulEquiv.symm
 
-instance [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] :
+instance (priority := 10000) [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] :
     TopologicalSemiring αᵃᵒᵖ := ⟨⟩
 
-instance [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
+instance (priority := 10000) [NonUnitalNonAssocRing α] [TopologicalSpace α] [TopologicalRing α] :
     TopologicalRing αᵃᵒᵖ := ⟨⟩
 
 end AddOpposite
@@ -240,7 +240,7 @@ end
 
 variable [Ring α] [TopologicalRing α]
 
-instance Subring.instTopologicalRing (S : Subring α) : TopologicalRing S :=
+instance (priority := 10000) Subring.instTopologicalRing (S : Subring α) : TopologicalRing S :=
   { S.toSubmonoid.continuousMul, inferInstanceAs (TopologicalAddGroup S.toAddSubgroup) with }
 
 /-- The (topological-space) closure of a subring of a topological ring is
@@ -293,7 +293,7 @@ namespace RingTopology
 
 variable {α : Type*} [Ring α]
 
-instance inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) :=
+instance (priority := 10000) inhabited {α : Type u} [Ring α] : Inhabited (RingTopology α) :=
   ⟨let _ : TopologicalSpace α := ⊤;
     { continuous_add := continuous_top
       continuous_mul := continuous_top
@@ -311,7 +311,7 @@ theorem ext {f g : RingTopology α} (h : f.IsOpen = g.IsOpen) : f = g :=
 
 /-- The ordering on ring topologies on the ring `α`.
   `t ≤ s` if every set open in `s` is also open in `t` (`t` is finer than `s`). -/
-instance : PartialOrder (RingTopology α) :=
+instance (priority := 10000) : PartialOrder (RingTopology α) :=
   PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
 private def def_sInf (S : Set (RingTopology α)) : RingTopology α :=
@@ -331,12 +331,12 @@ The infimum of a collection of ring topologies is the topology generated by all 
 
 The supremum of two ring topologies `s` and `t` is the infimum of the family of all ring topologies
 contained in the intersection of `s` and `t`. -/
-instance : CompleteSemilatticeInf (RingTopology α) where
+instance (priority := 10000) : CompleteSemilatticeInf (RingTopology α) where
   sInf := def_sInf
   sInf_le := fun _ a haS => sInf_le (α := TopologicalSpace α) ⟨a, ⟨haS, rfl⟩⟩
   le_sInf := fun _ _ h => le_sInf (α := TopologicalSpace α) <| ball_image_iff.2 h
 
-instance : CompleteLattice (RingTopology α) :=
+instance (priority := 10000) : CompleteLattice (RingTopology α) :=
   completeLatticeOfCompleteSemilatticeInf _
 
 /-- Given `f : α → β` and a topology on `α`, the coinduced ring topology on `β` is the finest

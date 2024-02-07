@@ -842,7 +842,7 @@ end IsROrC
 
 section Instances
 
-noncomputable instance Real.isROrC : IsROrC ℝ where
+noncomputable instance (priority := 10000) Real.isROrC : IsROrC ℝ where
   re := AddMonoidHom.id ℝ
   im := 0
   I := 0

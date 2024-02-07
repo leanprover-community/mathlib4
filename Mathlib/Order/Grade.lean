@@ -220,7 +220,7 @@ end PartialOrder
 
 variable [Preorder 𝕆] [Preorder ℙ] [Preorder α] [Preorder β]
 
-instance Preorder.toGradeBoundedOrder : GradeBoundedOrder α α where
+instance (priority := 10000) Preorder.toGradeBoundedOrder : GradeBoundedOrder α α where
   grade := id
   isMin_grade _ := id
   isMax_grade _ := id
@@ -235,18 +235,18 @@ theorem grade_self (a : α) : grade α a = a :=
 
 /-! #### Dual -/
 
-instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒᵈ where
+instance (priority := 10000) OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒᵈ where
   grade := toDual ∘ grade 𝕆 ∘ ofDual
   grade_strictMono := grade_strictMono.dual
   covBy_grade _ _ h := (h.ofDual.grade _).toDual
 
-instance OrderDual.gradeMinOrder [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ :=
+instance (priority := 10000) OrderDual.gradeMinOrder [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ :=
   { OrderDual.gradeOrder with isMin_grade := fun _ => IsMax.grade (α := α) 𝕆 }
 
-instance OrderDual.gradeMaxOrder [GradeMinOrder 𝕆 α] : GradeMaxOrder 𝕆ᵒᵈ αᵒᵈ :=
+instance (priority := 10000) OrderDual.gradeMaxOrder [GradeMinOrder 𝕆 α] : GradeMaxOrder 𝕆ᵒᵈ αᵒᵈ :=
   { OrderDual.gradeOrder with isMax_grade := fun _ => IsMin.grade (α := α) 𝕆 }
 
-instance [GradeBoundedOrder 𝕆 α] : GradeBoundedOrder 𝕆ᵒᵈ αᵒᵈ :=
+instance (priority := 10000) [GradeBoundedOrder 𝕆 α] : GradeBoundedOrder 𝕆ᵒᵈ αᵒᵈ :=
   { OrderDual.gradeMinOrder, OrderDual.gradeMaxOrder with }
 
 @[simp]
@@ -356,6 +356,6 @@ def GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrder 
     exact isMin_bot
 #align grade_min_order.fin_to_nat GradeMinOrder.finToNat
 
-instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=
+instance (priority := 10000) GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=
   (GradeOrder.liftLeft _ Int.coe_nat_strictMono) fun _ _ => CovBy.cast_int
 #align grade_order.nat_to_int GradeOrder.natToInt

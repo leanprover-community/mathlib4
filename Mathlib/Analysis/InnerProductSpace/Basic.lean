@@ -128,7 +128,7 @@ below for `InnerProductSpace`. Instead, we implement the bare minimum to go as d
 possible to the construction of the norm and the proof of the triangular inequality.
 
 Warning: Do not use this `Core` structure if the space you are interested in already has a norm
-instance defined on it, otherwise this will create a second non-defeq norm instance!
+instance (priority := 10000) defined on it, otherwise this will create a second non-defeq norm instance!
 -/
 
 
@@ -1842,7 +1842,7 @@ product satisfies `IsBoundedBilinearMap`.
 
 In order to state these results, we need a `NormedSpace ℝ E` instance. We will later establish
 such an instance by restriction-of-scalars, `InnerProductSpace.isROrCToReal 𝕜 E`, but this
-instance may be not definitionally equal to some other “natural” instance. So, we assume
+instance (priority := 10000) may be not definitionally equal to some other “natural” instance. So, we assume
 `[NormedSpace ℝ E]`.
 -/
 theorem _root_.isBoundedBilinearMap_inner [NormedSpace ℝ E] :
@@ -1910,7 +1910,7 @@ theorem Orthonormal.inner_products_summable (hv : Orthonormal 𝕜 v) :
 end BesselsInequality
 
 /-- A field `𝕜` satisfying `IsROrC` is itself a `𝕜`-inner product space. -/
-instance IsROrC.innerProductSpace : InnerProductSpace 𝕜 𝕜 where
+instance (priority := 10000) IsROrC.innerProductSpace : InnerProductSpace 𝕜 𝕜 where
   inner x y := conj x * y
   norm_sq_eq_inner x := by simp only [inner, conj_mul, ← ofReal_pow, ofReal_re]
   conj_symm x y := by simp only [mul_comm, map_mul, starRingEnd_self_apply]
@@ -1927,7 +1927,7 @@ theorem IsROrC.inner_apply (x y : 𝕜) : ⟪x, y⟫ = conj x * y :=
 
 
 /-- Induced inner product on a submodule. -/
-instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
+instance (priority := 10000) Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
   { Submodule.normedSpace W with
     inner := fun x y => ⟪(x : E), (y : E)⟫
     conj_symm := fun _ _ => inner_conj_symm _ _
@@ -2211,7 +2211,7 @@ set_option linter.uppercaseLean3 false in
 #align real_inner_I_smul_self real_inner_I_smul_self
 
 /-- A complex inner product implies a real inner product -/
-instance InnerProductSpace.complexToReal [NormedAddCommGroup G] [InnerProductSpace ℂ G] :
+instance (priority := 10000) InnerProductSpace.complexToReal [NormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.isROrCToReal ℂ G
 #align inner_product_space.complex_to_real InnerProductSpace.complexToReal
@@ -2301,7 +2301,7 @@ namespace UniformSpace.Completion
 
 open UniformSpace Function
 
-instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
+instance (priority := 10000) toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
     Inner 𝕜' (Completion E') where
   inner := curry <| (denseInducing_coe.prod denseInducing_coe).extend (uncurry inner)
 
@@ -2331,7 +2331,7 @@ protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α 
   UniformSpace.Completion.continuous_inner.comp (hf.prod_mk hg : _)
 #align uniform_space.completion.continuous.inner UniformSpace.Completion.Continuous.inner
 
-instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
+instance (priority := 10000) innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
   norm_sq_eq_inner x :=
     Completion.induction_on x
       (isClosed_eq (continuous_norm.pow 2)

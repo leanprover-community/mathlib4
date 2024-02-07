@@ -43,13 +43,13 @@ def MonoidalSingleObj (C : Type*) [Category C] [MonoidalCategory C] :=
 #align category_theory.monoidal_single_obj CategoryTheory.MonoidalSingleObj
 
 -- Porting note: `deriving` didn't work. Create this instance manually.
-instance : Inhabited (MonoidalSingleObj C) := by
+instance (priority := 10000) : Inhabited (MonoidalSingleObj C) := by
   unfold MonoidalSingleObj
   infer_instance
 
 open MonoidalCategory
 
-instance : Bicategory (MonoidalSingleObj C) where
+instance (priority := 10000) : Bicategory (MonoidalSingleObj C) where
   Hom _ _ := C
   id _ := 𝟙_ C
   comp X Y := tensorObj X Y

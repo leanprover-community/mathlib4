@@ -24,7 +24,7 @@ namespace WithLp
 
 variable (E F)
 
-noncomputable instance instProdInnerProductSpace :
+noncomputable instance (priority := 10000) instProdInnerProductSpace :
     InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
   inner x y := inner x.fst y.fst + inner x.snd y.snd
   norm_sq_eq_inner x := by

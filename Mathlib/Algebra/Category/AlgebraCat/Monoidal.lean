@@ -45,7 +45,7 @@ end instMonoidalCategory
 
 open instMonoidalCategory
 
-instance : MonoidalCategoryStruct (AlgebraCat.{u} R) where
+instance (priority := 10000) : MonoidalCategoryStruct (AlgebraCat.{u} R) where
   tensorObj := instMonoidalCategory.tensorObj
   whiskerLeft X _ _ f := tensorHom (𝟙 X) f
   whiskerRight {X₁ X₂} (f : X₁ ⟶ X₂) Y := tensorHom f (𝟙 Y)
@@ -72,7 +72,7 @@ theorem forget₂_map_associator_inv (X Y Z : AlgebraCat.{u} R) :
   rfl
 
 set_option maxHeartbeats 800000 in
-noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R) :=
+noncomputable instance (priority := 10000) instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R) :=
   Monoidal.induced
     (forget₂ (AlgebraCat R) (ModuleCat R))
     { μIso := fun X Y => Iso.refl _
@@ -99,7 +99,7 @@ def toModuleCatMonoidalFunctor : MonoidalFunctor (AlgebraCat.{u} R) (ModuleCat.{
   unfold instMonoidalCategory
   exact Monoidal.fromInduced (forget₂ (AlgebraCat R) (ModuleCat R)) _
 
-instance : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
+instance (priority := 10000) : Faithful (toModuleCatMonoidalFunctor R).toFunctor :=
   forget₂_faithful _ _
 
 end

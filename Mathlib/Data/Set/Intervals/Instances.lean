@@ -49,10 +49,10 @@ variable [OrderedSemiring α]
 
 namespace Set.Icc
 
-instance zero : Zero (Icc (0 : α) 1) where zero := ⟨0, left_mem_Icc.2 zero_le_one⟩
+instance (priority := 10000) zero : Zero (Icc (0 : α) 1) where zero := ⟨0, left_mem_Icc.2 zero_le_one⟩
 #align set.Icc.has_zero Set.Icc.zero
 
-instance one : One (Icc (0 : α) 1) where one := ⟨1, right_mem_Icc.2 zero_le_one⟩
+instance (priority := 10000) one : One (Icc (0 : α) 1) where one := ⟨1, right_mem_Icc.2 zero_le_one⟩
 #align set.Icc.has_one Set.Icc.one
 
 @[simp, norm_cast]
@@ -113,11 +113,11 @@ theorem le_one {t : Icc (0 : α) 1} : t ≤ 1 :=
   t.2.2
 #align set.Icc.le_one Set.Icc.le_one
 
-instance mul : Mul (Icc (0 : α) 1) where
+instance (priority := 10000) mul : Mul (Icc (0 : α) 1) where
   mul p q := ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, mul_le_one p.2.2 q.2.1 q.2.2⟩⟩
 #align set.Icc.has_mul Set.Icc.mul
 
-instance pow : Pow (Icc (0 : α) 1) ℕ where
+instance (priority := 10000) pow : Pow (Icc (0 : α) 1) ℕ where
   pow p n := ⟨p.1 ^ n, ⟨pow_nonneg p.2.1 n, pow_le_one n p.2.1 p.2.2⟩⟩
 #align set.Icc.has_pow Set.Icc.pow
 
@@ -139,22 +139,22 @@ theorem mul_le_right {x y : Icc (0 : α) 1} : x * y ≤ y :=
   (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq (one_mul _)
 #align set.Icc.mul_le_right Set.Icc.mul_le_right
 
-instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) :=
+instance (priority := 10000) monoidWithZero : MonoidWithZero (Icc (0 : α) 1) :=
   Subtype.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 #align set.Icc.monoid_with_zero Set.Icc.monoidWithZero
 
-instance commMonoidWithZero {α : Type*} [OrderedCommSemiring α] :
+instance (priority := 10000) commMonoidWithZero {α : Type*} [OrderedCommSemiring α] :
     CommMonoidWithZero (Icc (0 : α) 1) :=
   Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 #align set.Icc.comm_monoid_with_zero Set.Icc.commMonoidWithZero
 
-instance cancelMonoidWithZero {α : Type*} [OrderedRing α] [NoZeroDivisors α] :
+instance (priority := 10000) cancelMonoidWithZero {α : Type*} [OrderedRing α] [NoZeroDivisors α] :
     CancelMonoidWithZero (Icc (0 : α) 1) :=
   @Function.Injective.cancelMonoidWithZero α _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _
     (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 #align set.Icc.cancel_monoid_with_zero Set.Icc.cancelMonoidWithZero
 
-instance cancelCommMonoidWithZero {α : Type*} [OrderedCommRing α] [NoZeroDivisors α] :
+instance (priority := 10000) cancelCommMonoidWithZero {α : Type*} [OrderedCommRing α] [NoZeroDivisors α] :
     CancelCommMonoidWithZero (Icc (0 : α) 1) :=
   @Function.Injective.cancelCommMonoidWithZero α _ NoZeroDivisors.toCancelCommMonoidWithZero _ _ _ _
     (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
@@ -184,7 +184,7 @@ end Set.Icc
 
 namespace Set.Ico
 
-instance zero [Nontrivial α] : Zero (Ico (0 : α) 1) where zero := ⟨0, left_mem_Ico.2 zero_lt_one⟩
+instance (priority := 10000) zero [Nontrivial α] : Zero (Ico (0 : α) 1) where zero := ⟨0, left_mem_Ico.2 zero_lt_one⟩
 #align set.Ico.has_zero Set.Ico.zero
 
 @[simp, norm_cast]
@@ -220,7 +220,7 @@ theorem nonneg [Nontrivial α] {t : Ico (0 : α) 1} : 0 ≤ t :=
   t.2.1
 #align set.Ico.nonneg Set.Ico.nonneg
 
-instance mul : Mul (Ico (0 : α) 1) where
+instance (priority := 10000) mul : Mul (Ico (0 : α) 1) where
   mul p q :=
     ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, mul_lt_one_of_nonneg_of_lt_one_right p.2.2.le q.2.1 q.2.2⟩⟩
 #align set.Ico.has_mul Set.Ico.mul
@@ -230,11 +230,11 @@ theorem coe_mul (x y : Ico (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 #align set.Ico.coe_mul Set.Ico.coe_mul
 
-instance semigroup : Semigroup (Ico (0 : α) 1) :=
+instance (priority := 10000) semigroup : Semigroup (Ico (0 : α) 1) :=
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ico.semigroup Set.Ico.semigroup
 
-instance commSemigroup {α : Type*} [OrderedCommSemiring α] : CommSemigroup (Ico (0 : α) 1) :=
+instance (priority := 10000) commSemigroup {α : Type*} [OrderedCommSemiring α] : CommSemigroup (Ico (0 : α) 1) :=
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ico.comm_semigroup Set.Ico.commSemigroup
 
@@ -249,7 +249,7 @@ variable [StrictOrderedSemiring α]
 
 namespace Set.Ioc
 
-instance one [Nontrivial α] : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
+instance (priority := 10000) one [Nontrivial α] : One (Ioc (0 : α) 1) where one := ⟨1, ⟨zero_lt_one, le_refl 1⟩⟩
 #align set.Ioc.has_one Set.Ioc.one
 
 @[simp, norm_cast]
@@ -285,11 +285,11 @@ theorem le_one [Nontrivial α] {t : Ioc (0 : α) 1} : t ≤ 1 :=
   t.2.2
 #align set.Ioc.le_one Set.Ioc.le_one
 
-instance mul : Mul (Ioc (0 : α) 1) where
+instance (priority := 10000) mul : Mul (Ioc (0 : α) 1) where
   mul p q := ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_le_one p.2.2 (le_of_lt q.2.1) q.2.2⟩⟩
 #align set.Ioc.has_mul Set.Ioc.mul
 
-instance pow : Pow (Ioc (0 : α) 1) ℕ where
+instance (priority := 10000) pow : Pow (Ioc (0 : α) 1) ℕ where
   pow p n := ⟨p.1 ^ n, ⟨pow_pos p.2.1 n, pow_le_one n (le_of_lt p.2.1) p.2.2⟩⟩
 #align set.Ioc.has_pow Set.Ioc.pow
 
@@ -303,24 +303,24 @@ theorem coe_pow (x : Ioc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
   rfl
 #align set.Ioc.coe_pow Set.Ioc.coe_pow
 
-instance semigroup : Semigroup (Ioc (0 : α) 1) :=
+instance (priority := 10000) semigroup : Semigroup (Ioc (0 : α) 1) :=
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ioc.semigroup Set.Ioc.semigroup
 
-instance monoid [Nontrivial α] : Monoid (Ioc (0 : α) 1) :=
+instance (priority := 10000) monoid [Nontrivial α] : Monoid (Ioc (0 : α) 1) :=
   Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
 #align set.Ioc.monoid Set.Ioc.monoid
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioc (0 : α) 1) :=
+instance (priority := 10000) commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioc (0 : α) 1) :=
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioc.comm_semigroup Set.Ioc.commSemigroup
 
-instance commMonoid {α : Type*} [StrictOrderedCommSemiring α] [Nontrivial α] :
+instance (priority := 10000) commMonoid {α : Type*} [StrictOrderedCommSemiring α] [Nontrivial α] :
     CommMonoid (Ioc (0 : α) 1) :=
   Subtype.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 #align set.Ioc.comm_monoid Set.Ioc.commMonoid
 
-instance cancelMonoid {α : Type*} [StrictOrderedRing α] [IsDomain α] :
+instance (priority := 10000) cancelMonoid {α : Type*} [StrictOrderedRing α] [IsDomain α] :
     CancelMonoid (Ioc (0 : α) 1) :=
   { Set.Ioc.monoid with
     mul_left_cancel := fun a _ _ h =>
@@ -329,7 +329,7 @@ instance cancelMonoid {α : Type*} [StrictOrderedRing α] [IsDomain α] :
       Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h : _) }
 #align set.Ioc.cancel_monoid Set.Ioc.cancelMonoid
 
-instance cancelCommMonoid {α : Type*} [StrictOrderedCommRing α] [IsDomain α] :
+instance (priority := 10000) cancelCommMonoid {α : Type*} [StrictOrderedCommRing α] [IsDomain α] :
     CancelCommMonoid (Ioc (0 : α) 1) :=
   { Set.Ioc.cancelMonoid, Set.Ioc.commMonoid with }
 #align set.Ioc.cancel_comm_monoid Set.Ioc.cancelCommMonoid
@@ -349,7 +349,7 @@ theorem lt_one (x : Ioo (0 : α) 1) : (x : α) < 1 :=
   x.2.2
 #align set.Ioo.lt_one Set.Ioo.lt_one
 
-instance mul : Mul (Ioo (0 : α) 1) where
+instance (priority := 10000) mul : Mul (Ioo (0 : α) 1) where
   mul p q :=
     ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_lt_one_of_nonneg_of_lt_one_right p.2.2.le q.2.1.le q.2.2⟩⟩
 #align set.Ioo.has_mul Set.Ioo.mul
@@ -359,11 +359,11 @@ theorem coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 #align set.Ioo.coe_mul Set.Ioo.coe_mul
 
-instance semigroup : Semigroup (Ioo (0 : α) 1) :=
+instance (priority := 10000) semigroup : Semigroup (Ioo (0 : α) 1) :=
   Subtype.coe_injective.semigroup _ coe_mul
 #align set.Ioo.semigroup Set.Ioo.semigroup
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioo (0 : α) 1) :=
+instance (priority := 10000) commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioo (0 : α) 1) :=
   Subtype.coe_injective.commSemigroup _ coe_mul
 #align set.Ioo.comm_semigroup Set.Ioo.commSemigroup
 

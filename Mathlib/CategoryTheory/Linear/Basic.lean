@@ -64,13 +64,13 @@ namespace CategoryTheory.Linear
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
-instance preadditiveNatLinear : Linear ℕ C
+instance (priority := 10000) preadditiveNatLinear : Linear ℕ C
     where
   smul_comp X Y Z r f g := by exact (Preadditive.rightComp X g).map_nsmul f r
   comp_smul X Y Z f r g := by exact (Preadditive.leftComp Z f).map_nsmul g r
 #align category_theory.linear.preadditive_nat_linear CategoryTheory.Linear.preadditiveNatLinear
 
-instance preadditiveIntLinear : Linear ℤ C
+instance (priority := 10000) preadditiveIntLinear : Linear ℤ C
     where
   smul_comp X Y Z r f g := by exact (Preadditive.rightComp X g).map_zsmul f r
   comp_smul X Y Z f r g := by exact (Preadditive.leftComp Z f).map_zsmul g r
@@ -80,11 +80,11 @@ section End
 
 variable {R : Type w}
 
-instance [Semiring R] [Linear R C] (X : C) : Module R (End X) := by
+instance (priority := 10000) [Semiring R] [Linear R C] (X : C) : Module R (End X) := by
   dsimp [End]
   infer_instance
 
-instance [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) :=
+instance (priority := 10000) [CommSemiring R] [Linear R C] (X : C) : Algebra R (End X) :=
   Algebra.ofModule (fun _ _ _ => comp_smul _ _ _ _ _ _) fun _ _ _ => smul_comp _ _ _ _ _ _
 
 end End
@@ -99,7 +99,7 @@ universe u'
 
 variable {D : Type u'} (F : D → C)
 
-instance inducedCategory : Linear.{w, v} R (InducedCategory C F)
+instance (priority := 10000) inducedCategory : Linear.{w, v} R (InducedCategory C F)
     where
   homModule X Y := @Linear.homModule R _ C _ _ _ (F X) (F Y)
   smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
@@ -108,7 +108,7 @@ instance inducedCategory : Linear.{w, v} R (InducedCategory C F)
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z)
+instance (priority := 10000) fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z)
     where
   homModule X Y := @Linear.homModule R _ C _ _ _ X.obj Y.obj
   smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
@@ -135,12 +135,12 @@ def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z
   map_smul' := by simp
 #align category_theory.linear.right_comp CategoryTheory.Linear.rightComp
 
-instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
+instance (priority := 10000) {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
   ⟨fun g g' H => by
     rw [smul_comp, smul_comp, ← comp_smul, ← comp_smul, cancel_epi] at H
     simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩
 
-instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) :=
+instance (priority := 10000) {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) :=
   ⟨fun g g' H => by
     rw [comp_smul, comp_smul, ← smul_comp, ← smul_comp, cancel_mono] at H
     simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩

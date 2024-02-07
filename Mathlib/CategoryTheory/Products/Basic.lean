@@ -43,7 +43,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 See <https://stacks.math.columbia.edu/tag/001K>.
 -/
 @[simps (config := { notRecursive := [] }) Hom id_fst id_snd comp_fst comp_snd]
-instance prod : Category.{max v₁ v₂} (C × D)
+instance (priority := 10000) prod : Category.{max v₁ v₂} (C × D)
     where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
@@ -107,7 +107,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 /-- `Category.uniformProd C D` is an additional instance specialised so both factors have the same
 universe levels. This helps typeclass resolution.
 -/
-instance uniformProd : Category (C × D) :=
+instance (priority := 10000) uniformProd : Category (C × D) :=
   CategoryTheory.prod C D
 #align category_theory.uniform_prod CategoryTheory.uniformProd
 
@@ -175,7 +175,7 @@ def braiding : C × D ≌ D × C :=
     (NatIso.ofComponents fun X => eqToIso (by simp))
 #align category_theory.prod.braiding CategoryTheory.Prod.braiding
 
-instance swapIsEquivalence : IsEquivalence (swap C D) :=
+instance (priority := 10000) swapIsEquivalence : IsEquivalence (swap C D) :=
   (by infer_instance : IsEquivalence (braiding C D).functor)
 #align category_theory.prod.swap_is_equivalence CategoryTheory.Prod.swapIsEquivalence
 

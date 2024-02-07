@@ -133,7 +133,7 @@ section
 
 open FreeMonoidalCategory.HomEquiv
 
-instance categoryFreeMonoidalCategory : Category.{u} (F C) where
+instance (priority := 10000) categoryFreeMonoidalCategory : Category.{u} (F C) where
   Hom X Y := Quotient (FreeMonoidalCategory.setoidHom X Y)
   id X := ⟦FreeMonoidalCategory.Hom.id _⟧
   comp := @fun X Y Z f g =>
@@ -153,7 +153,7 @@ instance categoryFreeMonoidalCategory : Category.{u} (F C) where
     exact Quotient.sound (assoc f g h)
 #align category_theory.free_monoidal_category.category_free_monoidal_category CategoryTheory.FreeMonoidalCategory.categoryFreeMonoidalCategory
 
-instance : MonoidalCategory (F C) where
+instance (priority := 10000) : MonoidalCategory (F C) where
   tensorObj X Y := FreeMonoidalCategory.tensor X Y
   tensorHom := @fun X₁ Y₁ X₂ Y₂ =>
     Quotient.map₂ Hom.tensor <| by

@@ -204,7 +204,7 @@ theorem isIdempotentComplete_iff_opposite : IsIdempotentComplete Cᵒᵖ ↔ IsI
     exact h
 #align category_theory.idempotents.is_idempotent_complete_iff_opposite CategoryTheory.Idempotents.isIdempotentComplete_iff_opposite
 
-instance [IsIdempotentComplete C] : IsIdempotentComplete Cᵒᵖ := by
+instance (priority := 10000) [IsIdempotentComplete C] : IsIdempotentComplete Cᵒᵖ := by
   rwa [isIdempotentComplete_iff_opposite]
 
 end Idempotents

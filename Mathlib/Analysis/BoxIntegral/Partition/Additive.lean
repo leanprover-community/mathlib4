@@ -62,7 +62,7 @@ open Box Prepartition Finset
 variable {N : Type*} [AddCommMonoid M] [AddCommMonoid N] {I₀ : WithTop (Box ι)} {I J : Box ι}
   {i : ι}
 
-instance : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) M where
+instance (priority := 10000) : FunLike (ι →ᵇᵃ[I₀] M) (Box ι) M where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
@@ -88,23 +88,23 @@ theorem sum_partition_boxes (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) {π 
 #align box_integral.box_additive_map.sum_partition_boxes BoxIntegral.BoxAdditiveMap.sum_partition_boxes
 
 @[simps (config := .asFn)]
-instance : Zero (ι →ᵇᵃ[I₀] M) :=
+instance (priority := 10000) : Zero (ι →ᵇᵃ[I₀] M) :=
   ⟨⟨0, fun _ _ _ _ => sum_const_zero⟩⟩
 
-instance : Inhabited (ι →ᵇᵃ[I₀] M) :=
+instance (priority := 10000) : Inhabited (ι →ᵇᵃ[I₀] M) :=
   ⟨0⟩
 
-instance : Add (ι →ᵇᵃ[I₀] M) :=
+instance (priority := 10000) : Add (ι →ᵇᵃ[I₀] M) :=
   ⟨fun f g =>
     ⟨f + g, fun I hI π hπ => by
       simp only [Pi.add_apply, sum_add_distrib, sum_partition_boxes _ hI hπ]⟩⟩
 
-instance {R} [Monoid R] [DistribMulAction R M] : SMul R (ι →ᵇᵃ[I₀] M) :=
+instance (priority := 10000) {R} [Monoid R] [DistribMulAction R M] : SMul R (ι →ᵇᵃ[I₀] M) :=
   ⟨fun r f =>
     ⟨r • (f : Box ι → M), fun I hI π hπ => by
       simp only [Pi.smul_apply, ← smul_sum, sum_partition_boxes _ hI hπ]⟩⟩
 
-instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
+instance (priority := 10000) : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
   Function.Injective.addCommMonoid _ coe_injective rfl (fun _ _ => rfl) fun _ _ => rfl
 
 @[simp]

@@ -100,7 +100,7 @@ def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule 
 
 namespace IsHausdorff
 
-instance bot : IsHausdorff (⊥ : Ideal R) M :=
+instance (priority := 10000) bot : IsHausdorff (⊥ : Ideal R) M :=
   ⟨fun x hx => by simpa only [pow_one ⊥, bot_smul, SModEq.bot] using hx 1⟩
 #align is_Hausdorff.bot IsHausdorff.bot
 
@@ -144,7 +144,7 @@ theorem induction_on {C : Hausdorffification I M → Prop} (x : Hausdorffificati
 
 variable (I M)
 
-instance : IsHausdorff I (Hausdorffification I M) :=
+instance (priority := 10000) : IsHausdorff I (Hausdorffification I M) :=
   ⟨fun x => Quotient.inductionOn' x fun x hx =>
     (Quotient.mk_eq_zero _).2 <| (mem_iInf _).2 fun n => by
       have := comap_map_mkQ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M) (I ^ n • ⊤)
@@ -181,7 +181,7 @@ end Hausdorffification
 
 namespace IsPrecomplete
 
-instance bot : IsPrecomplete (⊥ : Ideal R) M := by
+instance (priority := 10000) bot : IsPrecomplete (⊥ : Ideal R) M := by
   refine' ⟨fun f hf => ⟨f 1, fun n => _⟩⟩
   cases' n with n
   · rw [pow_zero, Ideal.one_eq_top, top_smul]
@@ -190,7 +190,7 @@ instance bot : IsPrecomplete (⊥ : Ideal R) M := by
   rw [pow_one, bot_smul, SModEq.bot] at hf; rw [hf]
 #align is_precomplete.bot IsPrecomplete.bot
 
-instance top : IsPrecomplete (⊤ : Ideal R) M :=
+instance (priority := 10000) top : IsPrecomplete (⊤ : Ideal R) M :=
   ⟨fun f _ =>
     ⟨0, fun n => by
       rw [Ideal.top_pow, top_smul]
@@ -257,7 +257,7 @@ theorem ext {x y : adicCompletion I M} (h : ∀ n, eval I M n x = eval I M n y) 
 
 variable (I M)
 
-instance : IsHausdorff I (adicCompletion I M) :=
+instance (priority := 10000) : IsHausdorff I (adicCompletion I M) :=
   ⟨fun x hx => ext fun n => smul_induction_on (SModEq.zero.1 <| hx n) (fun r hr x _ =>
     ((eval I M n).map_smul r x).symm ▸
       Quotient.inductionOn' (eval I M n x) fun x => SModEq.zero.2 <| smul_mem_smul hr mem_top)
@@ -267,7 +267,7 @@ end adicCompletion
 
 namespace IsAdicComplete
 
-instance bot : IsAdicComplete (⊥ : Ideal R) M where
+instance (priority := 10000) bot : IsAdicComplete (⊥ : Ideal R) M where
 #align is_adic_complete.bot IsAdicComplete.bot
 
 protected theorem subsingleton (h : IsAdicComplete (⊤ : Ideal R) M) : Subsingleton M :=

@@ -313,7 +313,7 @@ set_option linter.uppercaseLean3 false in
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_apply_coe
 
-instance isIso_toSpecΓ (R : CommRingCat) : IsIso (toSpecΓ R) := by
+instance (priority := 10000) isIso_toSpecΓ (R : CommRingCat) : IsIso (toSpecΓ R) := by
   cases R; apply StructureSheaf.isIso_to_global
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.is_iso_to_Spec_Γ AlgebraicGeometry.isIso_toSpecΓ
@@ -383,7 +383,7 @@ theorem toPushforwardStalk_comp :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_sheaf.to_pushforward_stalk_comp AlgebraicGeometry.StructureSheaf.toPushforwardStalk_comp
 
-instance : Algebra R ((Spec.topMap f _* (structureSheaf S).1).stalk p) :=
+instance (priority := 10000) : Algebra R ((Spec.topMap f _* (structureSheaf S).1).stalk p) :=
   (f ≫ StructureSheaf.toPushforwardStalk f p).toAlgebra
 
 theorem algebraMap_pushforward_stalk :
@@ -442,7 +442,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_sheaf.is_localized_module_to_pushforward_stalk_alg_hom_aux AlgebraicGeometry.StructureSheaf.isLocalizedModule_toPushforwardStalkAlgHom_aux
 
-instance isLocalizedModule_toPushforwardStalkAlgHom :
+instance (priority := 10000) isLocalizedModule_toPushforwardStalkAlgHom :
     IsLocalizedModule p.asIdeal.primeCompl (toPushforwardStalkAlgHom R S p).toLinearMap := by
   apply IsLocalizedModule.mkOfAlgebra
   · intro x hx; rw [algebraMap_pushforward_stalk, toPushforwardStalk_comp]

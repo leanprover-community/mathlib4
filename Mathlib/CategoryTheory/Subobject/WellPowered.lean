@@ -43,7 +43,7 @@ class WellPowered : Prop where
   subobject_small : ∀ X : C, Small.{v} (Subobject X) := by infer_instance
 #align category_theory.well_powered CategoryTheory.WellPowered
 
-instance small_subobject [WellPowered C] (X : C) : Small.{v} (Subobject X) :=
+instance (priority := 10000) small_subobject [WellPowered C] (X : C) : Small.{v} (Subobject X) :=
   WellPowered.subobject_small X
 #align category_theory.small_subobject CategoryTheory.small_subobject
 
@@ -67,7 +67,7 @@ section
 
 variable [WellPowered C]
 
-instance essentiallySmall_monoOver (X : C) : EssentiallySmall.{v} (MonoOver X) :=
+instance (priority := 10000) essentiallySmall_monoOver (X : C) : EssentiallySmall.{v} (MonoOver X) :=
   (essentiallySmall_monoOver_iff_small_subobject X).mpr (WellPowered.subobject_small X)
 #align category_theory.essentially_small_mono_over CategoryTheory.essentiallySmall_monoOver
 

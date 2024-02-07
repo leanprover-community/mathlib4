@@ -23,7 +23,7 @@ variable [SemilatticeSup α] [SemilatticeSup β]
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
-instance instSemilatticeSup : SemilatticeSup (α ⊕ₗ β) where
+instance (priority := 10000) instSemilatticeSup : SemilatticeSup (α ⊕ₗ β) where
   sup x y := match x, y with
     | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊔ a₂)
     | inlₗ a₁, inrₗ b₂ => inr b₂
@@ -56,7 +56,7 @@ variable [SemilatticeInf α] [SemilatticeInf β]
 
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
-instance instSemilatticeInf : SemilatticeInf (α ⊕ₗ β) where
+instance (priority := 10000) instSemilatticeInf : SemilatticeInf (α ⊕ₗ β) where
   inf x y := match x, y with
     | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊓ a₂)
     | inlₗ a₁, inrₗ b₂ => inl a₁
@@ -87,7 +87,7 @@ end SemilatticeInf
 section Lattice
 variable [Lattice α] [Lattice β]
 
-instance instLattice : Lattice (α ⊕ₗ β) := { instSemilatticeSup, instSemilatticeInf with }
+instance (priority := 10000) instLattice : Lattice (α ⊕ₗ β) := { instSemilatticeSup, instSemilatticeInf with }
 
 /-- `Sum.Lex.inlₗ` as a lattice homomorphism. -/
 def inlLatticeHom : LatticeHom α (α ⊕ₗ β) where
@@ -103,7 +103,7 @@ def inrLatticeHom : LatticeHom β (α ⊕ₗ β) where
 
 end Lattice
 
-instance instDistribLattice [DistribLattice α] [DistribLattice β] : DistribLattice (α ⊕ₗ β) where
+instance (priority := 10000) instDistribLattice [DistribLattice α] [DistribLattice β] : DistribLattice (α ⊕ₗ β) where
   le_sup_inf := by
     simp only [Lex.forall, Sum.forall, ge_iff_le, inl_le_inl_iff, inr_le_inr_iff, sup_le_iff,
       le_sup_left, true_and, inl_le_inr, not_inr_le_inl, le_inf_iff, sup_of_le_right, and_self,

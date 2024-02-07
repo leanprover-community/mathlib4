@@ -83,7 +83,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 @[simp, mfld_simps] theorem mem_univ (x : α) : x ∈ @univ α := trivial
 #align set.mem_univ Set.mem_univ
 
-instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
+instance (priority := 10000) : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
 @[simp] theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
 #align set.mem_compl_iff Set.mem_compl_iff
@@ -107,7 +107,7 @@ theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : 
 @[coe, reducible] def Elem (s : Set α) : Type u := {x // x ∈ s}
 
 /-- Coercion from a set to the corresponding subtype. -/
-instance : CoeSort (Set α) (Type u) := ⟨Elem⟩
+instance (priority := 10000) : CoeSort (Set α) (Type u) := ⟨Elem⟩
 
 /-- The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,
   is the set of `x : α` such that `f x ∈ s`. -/
@@ -193,7 +193,7 @@ def prod (s : Set α) (t : Set β) : Set (α × β) := {p | p.1 ∈ s ∧ p.2 �
 #align set.prod Set.prod
 
 @[default_instance]
-instance instSProd : SProd (Set α) (Set β) (Set (α × β)) where
+instance (priority := 10000) instSProd : SProd (Set α) (Set β) (Set (α × β)) where
   sprod := Set.prod
 
 theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Prod.snd ⁻¹' t := rfl

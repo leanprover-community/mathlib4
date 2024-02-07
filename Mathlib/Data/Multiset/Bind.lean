@@ -240,7 +240,7 @@ def product (s : Multiset α) (t : Multiset β) : Multiset (α × β) :=
   s.bind fun a => t.map <| Prod.mk a
 #align multiset.product Multiset.product
 
-instance instSProd : SProd (Multiset α) (Multiset β) (Multiset (α × β)) where
+instance (priority := 10000) instSProd : SProd (Multiset α) (Multiset β) (Multiset (α × β)) where
   sprod := Multiset.product
 
 @[simp]

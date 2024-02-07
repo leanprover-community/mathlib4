@@ -171,10 +171,10 @@ def iInf_delab : Delab := whenPPOption Lean.getPPNotation do
   return stx
 end delaborators
 
-instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
+instance (priority := 10000) OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩
 
-instance OrderDual.infSet (α) [SupSet α] : InfSet αᵒᵈ :=
+instance (priority := 10000) OrderDual.infSet (α) [SupSet α] : InfSet αᵒᵈ :=
   ⟨(sSup : Set α → α)⟩
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
@@ -335,9 +335,9 @@ instance (priority := 100) CompleteLattice.toBoundedOrder [h : CompleteLattice �
 that returns the greatest lower bound of a set. Usually this constructor provides
 poor definitional equalities.  If other fields are known explicitly, they should be
 provided; for example, if `inf` is known explicitly, construct the `CompleteLattice`
-instance as
+instance (priority := 10000) as
 ```
-instance : CompleteLattice my_T :=
+instance (priority := 10000) : CompleteLattice my_T :=
   { inf := better_inf,
     le_inf := ...,
     inf_le_right := ...,
@@ -384,9 +384,9 @@ def completeLatticeOfCompleteSemilatticeInf (α : Type*) [CompleteSemilatticeInf
 that returns the least upper bound of a set. Usually this constructor provides
 poor definitional equalities.  If other fields are known explicitly, they should be
 provided; for example, if `inf` is known explicitly, construct the `CompleteLattice`
-instance as
+instance (priority := 10000) as
 ```
-instance : CompleteLattice my_T :=
+instance (priority := 10000) : CompleteLattice my_T :=
   { inf := better_inf,
     le_inf := ...,
     inf_le_right := ...,
@@ -444,7 +444,7 @@ class CompleteLinearOrder (α : Type*) extends CompleteLattice α where
     @decidableLTOfDecidableLE _ _ decidableLE
 #align complete_linear_order CompleteLinearOrder
 
-instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
+instance (priority := 10000) CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
   { i with
     min := Inf.inf
     max := Sup.sup
@@ -461,14 +461,14 @@ namespace OrderDual
 
 variable (α)
 
-instance completeLattice [CompleteLattice α] : CompleteLattice αᵒᵈ :=
+instance (priority := 10000) completeLattice [CompleteLattice α] : CompleteLattice αᵒᵈ :=
   { OrderDual.lattice α, OrderDual.supSet α, OrderDual.infSet α, OrderDual.boundedOrder α with
     le_sSup := @CompleteLattice.sInf_le α _
     sSup_le := @CompleteLattice.le_sInf α _
     sInf_le := @CompleteLattice.le_sSup α _
     le_sInf := @CompleteLattice.sSup_le α _ }
 
-instance [CompleteLinearOrder α] : CompleteLinearOrder αᵒᵈ :=
+instance (priority := 10000) [CompleteLinearOrder α] : CompleteLinearOrder αᵒᵈ :=
   { OrderDual.completeLattice α, OrderDual.instLinearOrder α with }
 
 end OrderDual
@@ -1812,7 +1812,7 @@ end CompleteLinearOrder
 -/
 
 
-instance Prop.completeLattice : CompleteLattice Prop :=
+instance (priority := 10000) Prop.completeLattice : CompleteLattice Prop :=
   { Prop.boundedOrder, Prop.distribLattice with
     sSup := fun s => ∃ a ∈ s, a
     le_sSup := fun _ a h p => ⟨a, h, p⟩
@@ -1822,7 +1822,7 @@ instance Prop.completeLattice : CompleteLattice Prop :=
     le_sInf := fun _ _ h p b hb => h b hb p }
 #align Prop.complete_lattice Prop.completeLattice
 
-noncomputable instance Prop.completeLinearOrder : CompleteLinearOrder Prop :=
+noncomputable instance (priority := 10000) Prop.completeLinearOrder : CompleteLinearOrder Prop :=
   { Prop.completeLattice, Prop.linearOrder with }
 #align Prop.complete_linear_order Prop.completeLinearOrder
 
@@ -1847,15 +1847,15 @@ theorem iInf_Prop_eq {p : ι → Prop} : ⨅ i, p i = ∀ i, p i :=
   le_antisymm (fun h i => h _ ⟨i, rfl⟩) fun h _ ⟨i, Eq⟩ => Eq ▸ h i
 #align infi_Prop_eq iInf_Prop_eq
 
-instance Pi.supSet {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)] : SupSet (∀ i, β i) :=
+instance (priority := 10000) Pi.supSet {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)] : SupSet (∀ i, β i) :=
   ⟨fun s i => ⨆ f : s, (f : ∀ i, β i) i⟩
 #align pi.has_Sup Pi.supSet
 
-instance Pi.infSet {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)] : InfSet (∀ i, β i) :=
+instance (priority := 10000) Pi.infSet {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)] : InfSet (∀ i, β i) :=
   ⟨fun s i => ⨅ f : s, (f : ∀ i, β i) i⟩
 #align pi.has_Inf Pi.infSet
 
-instance Pi.completeLattice {α : Type*} {β : α → Type*} [∀ i, CompleteLattice (β i)] :
+instance (priority := 10000) Pi.completeLattice {α : Type*} {β : α → Type*} [∀ i, CompleteLattice (β i)] :
     CompleteLattice (∀ i, β i) :=
   { Pi.boundedOrder, Pi.lattice with
     le_sSup := fun s f hf i => le_iSup (fun f : s => (f : ∀ i, β i) i) ⟨f, hf⟩
@@ -1929,10 +1929,10 @@ namespace Prod
 
 variable (α β)
 
-instance supSet [SupSet α] [SupSet β] : SupSet (α × β) :=
+instance (priority := 10000) supSet [SupSet α] [SupSet β] : SupSet (α × β) :=
   ⟨fun s => (sSup (Prod.fst '' s), sSup (Prod.snd '' s))⟩
 
-instance infSet [InfSet α] [InfSet β] : InfSet (α × β) :=
+instance (priority := 10000) infSet [InfSet α] [InfSet β] : InfSet (α × β) :=
   ⟨fun s => (sInf (Prod.fst '' s), sInf (Prod.snd '' s))⟩
 
 variable {α β}
@@ -1999,7 +1999,7 @@ theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
 
 variable (α β)
 
-instance completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLattice (α × β) :=
+instance (priority := 10000) completeLattice [CompleteLattice α] [CompleteLattice β] : CompleteLattice (α × β) :=
   { Prod.lattice α β, Prod.boundedOrder α β, Prod.supSet α β, Prod.infSet α β with
     le_sSup := fun _ _ hab => ⟨le_sSup <| mem_image_of_mem _ hab, le_sSup <| mem_image_of_mem _ hab⟩
     sSup_le := fun _ _ h =>
@@ -2088,12 +2088,12 @@ protected def Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [
 
 namespace ULift
 
-instance supSet [SupSet α] : SupSet (ULift.{v} α) where sSup s := ULift.up (sSup <| ULift.up ⁻¹' s)
+instance (priority := 10000) supSet [SupSet α] : SupSet (ULift.{v} α) where sSup s := ULift.up (sSup <| ULift.up ⁻¹' s)
 
 theorem down_sSup [SupSet α] (s : Set (ULift.{v} α)) : (sSup s).down = sSup (ULift.up ⁻¹' s) := rfl
 theorem up_sSup [SupSet α] (s : Set α) : up (sSup s) = sSup (ULift.down ⁻¹' s) := rfl
 
-instance infSet [InfSet α] : InfSet (ULift.{v} α) where sInf s := ULift.up (sInf <| ULift.up ⁻¹' s)
+instance (priority := 10000) infSet [InfSet α] : InfSet (ULift.{v} α) where sInf s := ULift.up (sInf <| ULift.up ⁻¹' s)
 
 theorem down_sInf [InfSet α] (s : Set (ULift.{v} α)) : (sInf s).down = sInf (ULift.up ⁻¹' s) := rfl
 theorem up_sInf [InfSet α] (s : Set α) : up (sInf s) = sInf (ULift.down ⁻¹' s) := rfl
@@ -2110,7 +2110,7 @@ theorem down_iInf [InfSet α] (f : ι → ULift.{v} α) : (⨅ i, f i).down = �
 theorem up_iInf [InfSet α] (f : ι → α) : up (⨅ i, f i) = ⨅ i, up (f i) :=
   congr_arg ULift.up <| (down_iInf _).symm
 
-instance completeLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
+instance (priority := 10000) completeLattice [CompleteLattice α] : CompleteLattice (ULift.{v} α) :=
   ULift.down_injective.completeLattice _ down_sup down_inf
     (fun s => by rw [sSup_eq_iSup', down_iSup, iSup_subtype''])
     (fun s => by rw [sInf_eq_iInf', down_iInf, iInf_subtype'']) down_top down_bot

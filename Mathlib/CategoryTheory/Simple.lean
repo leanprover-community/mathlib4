@@ -112,7 +112,7 @@ theorem id_nonzero (X : C) [Simple.{v} X] : 𝟙 X ≠ 0 :=
   (Simple.mono_isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
 #align category_theory.id_nonzero CategoryTheory.id_nonzero
 
-instance (X : C) [Simple.{v} X] : Nontrivial (End X) :=
+instance (priority := 10000) (X : C) [Simple.{v} X] : Nontrivial (End X) :=
   nontrivial_of_ne 1 _ (id_nonzero X)
 
 section
@@ -223,10 +223,10 @@ open ZeroObject
 
 open Subobject
 
-instance {X : C} [Simple X] : Nontrivial (Subobject X) :=
+instance (priority := 10000) {X : C} [Simple X] : Nontrivial (Subobject X) :=
   nontrivial_of_not_isZero (Simple.not_isZero X)
 
-instance {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
+instance (priority := 10000) {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
   eq_bot_or_eq_top := by
     rintro ⟨⟨⟨Y : C, ⟨⟨⟩⟩, f : Y ⟶ X⟩, m : Mono f⟩⟩
     change mk f = ⊥ ∨ mk f = ⊤

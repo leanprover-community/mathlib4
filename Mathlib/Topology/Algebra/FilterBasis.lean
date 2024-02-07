@@ -89,7 +89,7 @@ namespace GroupFilterBasis
 variable {G : Type u} [Group G] {B : GroupFilterBasis G}
 
 @[to_additive]
-instance : Membership (Set G) (GroupFilterBasis G) :=
+instance (priority := 10000) : Membership (Set G) (GroupFilterBasis G) :=
   ⟨fun s f ↦ s ∈ f.sets⟩
 
 @[to_additive]
@@ -120,7 +120,7 @@ theorem conj : ∀ x₀, ∀ {U}, U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x₀
 is discrete. -/
 @[to_additive "The trivial additive group filter basis consists of `{0}` only. The associated
 topology is discrete."]
-instance : Inhabited (GroupFilterBasis G) := ⟨by
+instance (priority := 10000) : Inhabited (GroupFilterBasis G) := ⟨by
   refine'
     { sets := {{1}}
       nonempty := singleton_nonempty _.. }
@@ -281,7 +281,7 @@ namespace RingFilterBasis
 
 variable {R : Type u} [Ring R] (B : RingFilterBasis R)
 
-instance : Membership (Set R) (RingFilterBasis R) :=
+instance (priority := 10000) : Membership (Set R) (RingFilterBasis R) :=
   ⟨fun s B ↦ s ∈ B.sets⟩
 
 theorem mul {U : Set R} (hU : U ∈ B) : ∃ V ∈ B, V * V ⊆ U :=
@@ -347,7 +347,7 @@ namespace ModuleFilterBasis
 variable {R M : Type*} [CommRing R] [TopologicalSpace R] [AddCommGroup M] [Module R M]
   (B : ModuleFilterBasis R M)
 
-instance GroupFilterBasis.hasMem : Membership (Set M) (ModuleFilterBasis R M) :=
+instance (priority := 10000) GroupFilterBasis.hasMem : Membership (Set M) (ModuleFilterBasis R M) :=
   ⟨fun s B ↦ s ∈ B.sets⟩
 #align module_filter_basis.group_filter_basis.has_mem ModuleFilterBasis.GroupFilterBasis.hasMem
 
@@ -365,7 +365,7 @@ theorem smul_right (m₀ : M) {U : Set M} (hU : U ∈ B) : ∀ᶠ x in 𝓝 (0 :
 
 /-- If `R` is discrete then the trivial additive group filter basis on any `R`-module is a
 module filter basis. -/
-instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
+instance (priority := 10000) [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
   ⟨{
       show AddGroupFilterBasis M from
         default with

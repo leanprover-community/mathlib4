@@ -61,7 +61,7 @@ namespace Prepartition
 
 variable {I J J₁ J₂ : Box ι} (π : Prepartition I) {π₁ π₂ : Prepartition I} {x : ι → ℝ}
 
-instance : Membership (Box ι) (Prepartition I) :=
+instance (priority := 10000) : Membership (Box ι) (Prepartition I) :=
   ⟨fun J π => J ∈ π.boxes⟩
 
 @[simp]
@@ -123,10 +123,10 @@ theorem mem_single {J'} (h : J ≤ I) : J' ∈ single I J h ↔ J' = J :=
 #align box_integral.prepartition.mem_single BoxIntegral.Prepartition.mem_single
 
 /-- We say that `π ≤ π'` if each box of `π` is a subbox of some box of `π'`. -/
-instance : LE (Prepartition I) :=
+instance (priority := 10000) : LE (Prepartition I) :=
   ⟨fun π π' => ∀ ⦃I⦄, I ∈ π → ∃ I' ∈ π', I ≤ I'⟩
 
-instance partialOrder : PartialOrder (Prepartition I) where
+instance (priority := 10000) partialOrder : PartialOrder (Prepartition I) where
   le := (· ≤ ·)
   le_refl π I hI := ⟨I, hI, le_rfl⟩
   le_trans π₁ π₂ π₃ h₁₂ h₂₃ I₁ hI₁ :=
@@ -142,17 +142,17 @@ instance partialOrder : PartialOrder (Prepartition I) where
     obtain rfl : J' = J; exact le_antisymm ‹_› ‹_›
     assumption
 
-instance : OrderTop (Prepartition I) where
+instance (priority := 10000) : OrderTop (Prepartition I) where
   top := single I I le_rfl
   le_top π J hJ := ⟨I, by simp, π.le_of_mem hJ⟩
 
-instance : OrderBot (Prepartition I) where
+instance (priority := 10000) : OrderBot (Prepartition I) where
   bot := ⟨∅,
     fun _ hJ => (Finset.not_mem_empty _ hJ).elim,
     fun _ hJ => (Set.not_mem_empty _ <| Finset.coe_empty ▸ hJ).elim⟩
   bot_le _ _ hJ := (Finset.not_mem_empty _ hJ).elim
 
-instance : Inhabited (Prepartition I) := ⟨⊤⟩
+instance (priority := 10000) : Inhabited (Prepartition I) := ⟨⊤⟩
 
 theorem le_def : π₁ ≤ π₂ ↔ ∀ J ∈ π₁, ∃ J' ∈ π₂, J ≤ J' := Iff.rfl
 #align box_integral.prepartition.le_def BoxIntegral.Prepartition.le_def
@@ -563,7 +563,7 @@ theorem le_biUnion_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
     exact ⟨Ji, π.mem_biUnion.2 ⟨J, hJ, hJi⟩, hlei⟩
 #align box_integral.prepartition.le_bUnion_iff BoxIntegral.Prepartition.le_biUnion_iff
 
-instance inf : Inf (Prepartition I) :=
+instance (priority := 10000) inf : Inf (Prepartition I) :=
   ⟨fun π₁ π₂ => π₁.biUnion fun J => π₂.restrict J⟩
 
 theorem inf_def (π₁ π₂ : Prepartition I) : π₁ ⊓ π₂ = π₁.biUnion fun J => π₂.restrict J := rfl
@@ -580,7 +580,7 @@ theorem iUnion_inf (π₁ π₂ : Prepartition I) : (π₁ ⊓ π₂).iUnion = �
   simp only [inf_def, iUnion_biUnion, iUnion_restrict, ← iUnion_inter, ← iUnion_def]
 #align box_integral.prepartition.Union_inf BoxIntegral.Prepartition.iUnion_inf
 
-instance : SemilatticeInf (Prepartition I) :=
+instance (priority := 10000) : SemilatticeInf (Prepartition I) :=
   { Prepartition.inf,
     Prepartition.partialOrder with
     inf_le_left := fun π₁ _ => π₁.biUnion_le _

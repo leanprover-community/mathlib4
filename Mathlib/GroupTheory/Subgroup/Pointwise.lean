@@ -230,7 +230,7 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
 #align add_subgroup.inf_add_assoc AddSubgroup.inf_add_assoc
 
 @[to_additive]
-instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ K).Normal where
+instance (priority := 10000) sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ K).Normal where
   conj_mem n hmem g := by
     rw [← SetLike.mem_coe, normal_mul] at hmem ⊢
     rcases hmem with ⟨h, hh, k, hk, rfl⟩
@@ -312,7 +312,7 @@ theorem smul_closure (a : α) (s : Set G) : a • closure s = closure (a • s) 
   MonoidHom.map_closure _ _
 #align subgroup.smul_closure Subgroup.smul_closure
 
-instance pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentralScalar α G] :
+instance (priority := 10000) pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentralScalar α G] :
     IsCentralScalar α (Subgroup G) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
 #align subgroup.pointwise_central_scalar Subgroup.pointwise_isCentralScalar
@@ -479,7 +479,7 @@ theorem mem_smul_pointwise_iff_exists (m : A) (a : α) (S : AddSubgroup A) :
   (Set.mem_smul_set : m ∈ a • (S : Set A) ↔ _)
 #align add_subgroup.mem_smul_pointwise_iff_exists AddSubgroup.mem_smul_pointwise_iff_exists
 
-instance pointwise_isCentralScalar [DistribMulAction αᵐᵒᵖ A] [IsCentralScalar α A] :
+instance (priority := 10000) pointwise_isCentralScalar [DistribMulAction αᵐᵒᵖ A] [IsCentralScalar α A] :
     IsCentralScalar α (AddSubgroup A) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| AddMonoidHom.ext <| op_smul_eq_smul _⟩
 #align add_subgroup.pointwise_central_scalar AddSubgroup.pointwise_isCentralScalar

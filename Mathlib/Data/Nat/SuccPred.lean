@@ -22,12 +22,12 @@ variable {m n : ℕ}
 
 -- so that Lean reads `Nat.succ` through `succ_order.succ`
 @[reducible]
-instance : SuccOrder ℕ :=
+instance (priority := 10000) : SuccOrder ℕ :=
   SuccOrder.ofSuccLeIff succ Nat.succ_le
 
 -- so that Lean reads `Nat.pred` through `pred_order.pred`
 @[reducible]
-instance : PredOrder ℕ where
+instance (priority := 10000) : PredOrder ℕ where
   pred := pred
   pred_le := pred_le
   min_of_le_pred {a} ha := by
@@ -69,10 +69,10 @@ theorem pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
 
 lemma le_succ_iff_eq_or_le : m ≤ n.succ ↔ m = n.succ ∨ m ≤ n := Order.le_succ_iff_eq_or_le
 
-instance : IsSuccArchimedean ℕ :=
+instance (priority := 10000) : IsSuccArchimedean ℕ :=
   ⟨fun {a} {b} h => ⟨b - a, by rw [succ_eq_succ, succ_iterate, add_tsub_cancel_of_le h]⟩⟩
 
-instance : IsPredArchimedean ℕ :=
+instance (priority := 10000) : IsPredArchimedean ℕ :=
   ⟨fun {a} {b} h => ⟨b - a, by rw [pred_eq_pred, pred_iterate, tsub_tsub_cancel_of_le h]⟩⟩
 
 lemma forall_ne_zero_iff (P : ℕ → Prop) :

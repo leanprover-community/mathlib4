@@ -241,7 +241,7 @@ namespace LinearPMap
 
 variable [CompleteSpace E]
 
-instance instStar : Star (E →ₗ.[𝕜] E) where
+instance (priority := 10000) instStar : Star (E →ₗ.[𝕜] E) where
   star := fun A ↦ A.adjoint
 
 variable {A : E →ₗ.[𝕜] E}

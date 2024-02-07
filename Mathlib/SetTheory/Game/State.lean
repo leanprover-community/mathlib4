@@ -197,17 +197,17 @@ def relabellingMoveRight (s : S) (t : RightMoves (ofState s)) :
   apply ofStateAuxRelabelling
 #align pgame.relabelling_move_right SetTheory.PGame.relabellingMoveRight
 
-instance fintypeLeftMovesOfStateAux (n : ℕ) (s : S) (h : turnBound s ≤ n) :
+instance (priority := 10000) fintypeLeftMovesOfStateAux (n : ℕ) (s : S) (h : turnBound s ≤ n) :
     Fintype (LeftMoves (ofStateAux n s h)) := by
   apply Fintype.ofEquiv _ (leftMovesOfStateAux _ _).symm
 #align pgame.fintype_left_moves_of_state_aux SetTheory.PGame.fintypeLeftMovesOfStateAux
 
-instance fintypeRightMovesOfStateAux (n : ℕ) (s : S) (h : turnBound s ≤ n) :
+instance (priority := 10000) fintypeRightMovesOfStateAux (n : ℕ) (s : S) (h : turnBound s ≤ n) :
     Fintype (RightMoves (ofStateAux n s h)) := by
   apply Fintype.ofEquiv _ (rightMovesOfStateAux _ _).symm
 #align pgame.fintype_right_moves_of_state_aux SetTheory.PGame.fintypeRightMovesOfStateAux
 
-instance shortOfStateAux : ∀ (n : ℕ) {s : S} (h : turnBound s ≤ n), Short (ofStateAux n s h)
+instance (priority := 10000) shortOfStateAux : ∀ (n : ℕ) {s : S} (h : turnBound s ≤ n), Short (ofStateAux n s h)
   | 0, s, h =>
     Short.mk'
       (fun i => by
@@ -226,7 +226,7 @@ instance shortOfStateAux : ∀ (n : ℕ) {s : S} (h : turnBound s ≤ n), Short 
       shortOfRelabelling (relabellingMoveRightAux (n + 1) h j).symm (shortOfStateAux n _)
 #align pgame.short_of_state_aux SetTheory.PGame.shortOfStateAux
 
-instance shortOfState (s : S) : Short (ofState s) := by
+instance (priority := 10000) shortOfState (s : S) : Short (ofState s) := by
   dsimp [PGame.ofState]
   infer_instance
 #align pgame.short_of_state SetTheory.PGame.shortOfState

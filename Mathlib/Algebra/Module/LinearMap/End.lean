@@ -43,9 +43,9 @@ section Endomorphisms
 
 variable [Semiring R] [AddCommMonoid M] [AddCommGroup N₁] [Module R M] [Module R N₁]
 
-instance : One (Module.End R M) := ⟨LinearMap.id⟩
+instance (priority := 10000) : One (Module.End R M) := ⟨LinearMap.id⟩
 
-instance : Mul (Module.End R M) := ⟨LinearMap.comp⟩
+instance (priority := 10000) : Mul (Module.End R M) := ⟨LinearMap.comp⟩
 
 theorem one_eq_id : (1 : Module.End R M) = id := rfl
 #align linear_map.one_eq_id LinearMap.one_eq_id
@@ -67,7 +67,7 @@ theorem coe_one : ⇑(1 : Module.End R M) = _root_.id := rfl
 theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 #align linear_map.coe_mul LinearMap.coe_mul
 
-instance _root_.Module.End.monoid : Monoid (Module.End R M) where
+instance (priority := 10000) _root_.Module.End.monoid : Monoid (Module.End R M) where
   mul := (· * ·)
   one := (1 : M →ₗ[R] M)
   mul_assoc f g h := LinearMap.ext fun x ↦ rfl
@@ -75,7 +75,7 @@ instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   one_mul := id_comp
 #align module.End.monoid Module.End.monoid
 
-instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
+instance (priority := 10000) _root_.Module.End.semiring : Semiring (Module.End R M) :=
   { AddMonoidWithOne.unary, Module.End.monoid, LinearMap.addCommMonoid with
     mul_zero := comp_zero
     zero_mul := zero_comp
@@ -95,7 +95,7 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
     (no_index (OfNat.ofNat n) : Module.End R M) m = OfNat.ofNat n • m := rfl
 
-instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
+instance (priority := 10000) _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
     intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
     intCast_ofNat := ofNat_zsmul _
@@ -112,17 +112,17 @@ section
 
 variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M]
 
-instance _root_.Module.End.isScalarTower :
+instance (priority := 10000) _root_.Module.End.isScalarTower :
     IsScalarTower S (Module.End R M) (Module.End R M) :=
   ⟨smul_comp⟩
 #align module.End.is_scalar_tower Module.End.isScalarTower
 
-instance _root_.Module.End.smulCommClass [SMul S R] [IsScalarTower S R M] :
+instance (priority := 10000) _root_.Module.End.smulCommClass [SMul S R] [IsScalarTower S R M] :
     SMulCommClass S (Module.End R M) (Module.End R M) :=
   ⟨fun s _ _ ↦ (comp_smul _ s _).symm⟩
 #align module.End.smul_comm_class Module.End.smulCommClass
 
-instance _root_.Module.End.smulCommClass' [SMul S R] [IsScalarTower S R M] :
+instance (priority := 10000) _root_.Module.End.smulCommClass' [SMul S R] [IsScalarTower S R M] :
     SMulCommClass (Module.End R M) S (Module.End R M) :=
   SMulCommClass.symm _ _ _
 #align module.End.smul_comm_class' Module.End.smulCommClass'
@@ -211,7 +211,7 @@ end
 /-- The tautological action by `Module.End R M` (aka `M →ₗ[R] M`) on `M`.
 
 This generalizes `Function.End.applyMulAction`. -/
-instance applyModule : Module (Module.End R M) M where
+instance (priority := 10000) applyModule : Module (Module.End R M) M where
   smul := (· <| ·)
   smul_zero := LinearMap.map_zero
   smul_add := LinearMap.map_add
@@ -227,19 +227,19 @@ protected theorem smul_def (f : Module.End R M) (a : M) : f • a = f a :=
 #align linear_map.smul_def LinearMap.smul_def
 
 /-- `LinearMap.applyModule` is faithful. -/
-instance apply_faithfulSMul : FaithfulSMul (Module.End R M) M :=
+instance (priority := 10000) apply_faithfulSMul : FaithfulSMul (Module.End R M) M :=
   ⟨LinearMap.ext⟩
 #align linear_map.apply_has_faithful_smul LinearMap.apply_faithfulSMul
 
-instance apply_smulCommClass : SMulCommClass R (Module.End R M) M where
+instance (priority := 10000) apply_smulCommClass : SMulCommClass R (Module.End R M) M where
   smul_comm r e m := (e.map_smul r m).symm
 #align linear_map.apply_smul_comm_class LinearMap.apply_smulCommClass
 
-instance apply_smulCommClass' : SMulCommClass (Module.End R M) R M where
+instance (priority := 10000) apply_smulCommClass' : SMulCommClass (Module.End R M) R M where
   smul_comm := LinearMap.map_smul
 #align linear_map.apply_smul_comm_class' LinearMap.apply_smulCommClass'
 
-instance apply_isScalarTower {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] :
+instance (priority := 10000) apply_isScalarTower {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] :
     IsScalarTower R (Module.End R M) M :=
   ⟨fun _ _ _ ↦ rfl⟩
 #align linear_map.apply_is_scalar_tower LinearMap.apply_isScalarTower

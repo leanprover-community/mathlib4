@@ -36,7 +36,7 @@ namespace Semiquot
 
 variable {α : Type*} {β : Type*}
 
-instance : Membership α (Semiquot α) :=
+instance (priority := 10000) : Membership α (Semiquot α) :=
   ⟨fun a q => a ∈ q.s⟩
 
 /-- Construct a `Semiquot α` from `h : a ∈ s` where `s : Set α`. -/
@@ -141,7 +141,7 @@ theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) : b ∈ bin
   by simp_rw [← exists_prop]; exact Set.mem_iUnion₂
 #align semiquot.mem_bind Semiquot.mem_bind
 
-instance : Monad Semiquot where
+instance (priority := 10000) : Monad Semiquot where
   pure := @Semiquot.pure
   map := @Semiquot.map
   bind := @Semiquot.bind
@@ -170,7 +170,7 @@ theorem pure_inj {a b : α} : (pure a : Semiquot α) = pure b ↔ a = b :=
   ext_s.trans Set.singleton_eq_singleton_iff
 #align semiquot.pure_inj Semiquot.pure_inj
 
-instance : LawfulMonad Semiquot := LawfulMonad.mk'
+instance (priority := 10000) : LawfulMonad Semiquot := LawfulMonad.mk'
   (pure_bind := fun {α β} x f => ext.2 <| by simp)
   (bind_assoc := fun {α β} γ s f g =>
     ext.2 <| by
@@ -180,16 +180,16 @@ instance : LawfulMonad Semiquot := LawfulMonad.mk'
   (id_map := fun {α} q => ext.2 <| by simp)
   (bind_pure_comp := fun {α β} f s => ext.2 <| by simp [eq_comm])
 
-instance : LE (Semiquot α) :=
+instance (priority := 10000) : LE (Semiquot α) :=
   ⟨fun s t => s.s ⊆ t.s⟩
 
-instance partialOrder : PartialOrder (Semiquot α) where
+instance (priority := 10000) partialOrder : PartialOrder (Semiquot α) where
   le s t := ∀ ⦃x⦄, x ∈ s → x ∈ t
   le_refl s := Set.Subset.refl _
   le_trans s t u := Set.Subset.trans
   le_antisymm s t h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
 
-instance : SemilatticeSup (Semiquot α) :=
+instance (priority := 10000) : SemilatticeSup (Semiquot α) :=
   { Semiquot.partialOrder with
     sup := fun s => blur s.s
     le_sup_left := fun _ _ => Set.subset_union_left _ _
@@ -253,7 +253,7 @@ def univ [Inhabited α] : Semiquot α :=
   mk <| Set.mem_univ default
 #align semiquot.univ Semiquot.univ
 
-instance [Inhabited α] : Inhabited (Semiquot α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (Semiquot α) :=
   ⟨univ⟩
 
 @[simp]
@@ -271,7 +271,7 @@ theorem isPure_univ [Inhabited α] : @IsPure α univ ↔ Subsingleton α :=
   ⟨fun h => ⟨fun a b => h a trivial b trivial⟩, fun ⟨h⟩ a _ b _ => h a b⟩
 #align semiquot.is_pure_univ Semiquot.isPure_univ
 
-instance [Inhabited α] : OrderTop (Semiquot α) where
+instance (priority := 10000) [Inhabited α] : OrderTop (Semiquot α) where
   top := univ
   le_top _ := Set.subset_univ _
 

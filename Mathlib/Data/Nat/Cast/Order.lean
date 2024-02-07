@@ -135,7 +135,7 @@ theorem abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
 
 end Nat
 
-instance [AddMonoidWithOne α] [CharZero α] : Nontrivial α where exists_pair_ne :=
+instance (priority := 10000) [AddMonoidWithOne α] [CharZero α] : Nontrivial α where exists_pair_ne :=
   ⟨1, 0, (Nat.cast_one (R := α) ▸ Nat.cast_ne_zero.2 (by decide))⟩
 
 section RingHomClass

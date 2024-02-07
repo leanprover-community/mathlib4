@@ -32,7 +32,7 @@ class PreservesMonomorphisms (F : C ⥤ D) : Prop where
   preserves : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], Mono (F.map f)
 #align category_theory.functor.preserves_monomorphisms CategoryTheory.Functor.PreservesMonomorphisms
 
-instance map_mono (F : C ⥤ D) [PreservesMonomorphisms F] {X Y : C} (f : X ⟶ Y) [Mono f] :
+instance (priority := 10000) map_mono (F : C ⥤ D) [PreservesMonomorphisms F] {X Y : C} (f : X ⟶ Y) [Mono f] :
     Mono (F.map f) :=
   PreservesMonomorphisms.preserves f
 #align category_theory.functor.map_mono CategoryTheory.Functor.map_mono
@@ -43,7 +43,7 @@ class PreservesEpimorphisms (F : C ⥤ D) : Prop where
   preserves : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Epi (F.map f)
 #align category_theory.functor.preserves_epimorphisms CategoryTheory.Functor.PreservesEpimorphisms
 
-instance map_epi (F : C ⥤ D) [PreservesEpimorphisms F] {X Y : C} (f : X ⟶ Y) [Epi f] :
+instance (priority := 10000) map_epi (F : C ⥤ D) [PreservesEpimorphisms F] {X Y : C} (f : X ⟶ Y) [Epi f] :
     Epi (F.map f) :=
   PreservesEpimorphisms.preserves f
 #align category_theory.functor.map_epi CategoryTheory.Functor.map_epi
@@ -74,26 +74,26 @@ theorem epi_of_epi_map (F : C ⥤ D) [ReflectsEpimorphisms F] {X Y : C} {f : X �
   ReflectsEpimorphisms.reflects f h
 #align category_theory.functor.epi_of_epi_map CategoryTheory.Functor.epi_of_epi_map
 
-instance preservesMonomorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesMonomorphisms F]
+instance (priority := 10000) preservesMonomorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesMonomorphisms F]
     [PreservesMonomorphisms G] : PreservesMonomorphisms (F ⋙ G) where
   preserves f h := by
     rw [comp_map]
     exact inferInstance
 #align category_theory.functor.preserves_monomorphisms_comp CategoryTheory.Functor.preservesMonomorphisms_comp
 
-instance preservesEpimorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesEpimorphisms F]
+instance (priority := 10000) preservesEpimorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesEpimorphisms F]
     [PreservesEpimorphisms G] : PreservesEpimorphisms (F ⋙ G) where
   preserves f h := by
     rw [comp_map]
     exact inferInstance
 #align category_theory.functor.preserves_epimorphisms_comp CategoryTheory.Functor.preservesEpimorphisms_comp
 
-instance reflectsMonomorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [ReflectsMonomorphisms F]
+instance (priority := 10000) reflectsMonomorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [ReflectsMonomorphisms F]
     [ReflectsMonomorphisms G] : ReflectsMonomorphisms (F ⋙ G) where
   reflects _ h := F.mono_of_mono_map (G.mono_of_mono_map h)
 #align category_theory.functor.reflects_monomorphisms_comp CategoryTheory.Functor.reflectsMonomorphisms_comp
 
-instance reflectsEpimorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [ReflectsEpimorphisms F]
+instance (priority := 10000) reflectsEpimorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [ReflectsEpimorphisms F]
     [ReflectsEpimorphisms G] : ReflectsEpimorphisms (F ⋙ G) where
   reflects _ h := F.epi_of_epi_map (G.epi_of_epi_map h)
 #align category_theory.functor.reflects_epimorphisms_comp CategoryTheory.Functor.reflectsEpimorphisms_comp
@@ -316,12 +316,12 @@ theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [h₁ : F'.Pre
     infer_instance⟩
 #align category_theory.adjunction.strong_epi_map_of_strong_epi CategoryTheory.Adjunction.strongEpi_map_of_strongEpi
 
-instance strongEpi_map_of_isEquivalence [IsEquivalence F] (f : A ⟶ B) [_h : StrongEpi f] :
+instance (priority := 10000) strongEpi_map_of_isEquivalence [IsEquivalence F] (f : A ⟶ B) [_h : StrongEpi f] :
     StrongEpi (F.map f) :=
   F.asEquivalence.toAdjunction.strongEpi_map_of_strongEpi f
 #align category_theory.adjunction.strong_epi_map_of_is_equivalence CategoryTheory.Adjunction.strongEpi_map_of_isEquivalence
 
-instance (adj : F ⊣ F') {X : C} {Y : D} (f : F.obj X ⟶ Y) [hf : Mono f] [F.ReflectsMonomorphisms] :
+instance (priority := 10000) (adj : F ⊣ F') {X : C} {Y : D} (f : F.obj X ⟶ Y) [hf : Mono f] [F.ReflectsMonomorphisms] :
     Mono (adj.homEquiv _ _ f) :=
   F.mono_of_mono_map <| by
     rw [← (homEquiv adj X Y).symm_apply_apply f] at hf

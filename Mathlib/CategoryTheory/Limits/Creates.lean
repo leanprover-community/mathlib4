@@ -593,7 +593,7 @@ def idLiftsCone (c : Cone (K ⋙ 𝟭 C)) : LiftableCone K (𝟭 C) c
 #align category_theory.id_lifts_cone CategoryTheory.idLiftsCone
 
 /-- The identity functor creates all limits. -/
-instance idCreatesLimits : CreatesLimitsOfSize.{w, w'} (𝟭 C) where
+instance (priority := 10000) idCreatesLimits : CreatesLimitsOfSize.{w, w'} (𝟭 C) where
   CreatesLimitsOfShape :=
     { CreatesLimit := { lifts := fun c _ => idLiftsCone c } }
 #align category_theory.id_creates_limits CategoryTheory.idCreatesLimits
@@ -608,27 +608,27 @@ def idLiftsCocone (c : Cocone (K ⋙ 𝟭 C)) : LiftableCocone K (𝟭 C) c
 #align category_theory.id_lifts_cocone CategoryTheory.idLiftsCocone
 
 /-- The identity functor creates all colimits. -/
-instance idCreatesColimits : CreatesColimitsOfSize.{w, w'} (𝟭 C) where
+instance (priority := 10000) idCreatesColimits : CreatesColimitsOfSize.{w, w'} (𝟭 C) where
   CreatesColimitsOfShape :=
     { CreatesColimit := { lifts := fun c _ => idLiftsCocone c } }
 #align category_theory.id_creates_colimits CategoryTheory.idCreatesColimits
 
 /-- Satisfy the inhabited linter -/
-instance inhabitedLiftableCone (c : Cone (K ⋙ 𝟭 C)) : Inhabited (LiftableCone K (𝟭 C) c) :=
+instance (priority := 10000) inhabitedLiftableCone (c : Cone (K ⋙ 𝟭 C)) : Inhabited (LiftableCone K (𝟭 C) c) :=
   ⟨idLiftsCone c⟩
 #align category_theory.inhabited_liftable_cone CategoryTheory.inhabitedLiftableCone
 
-instance inhabitedLiftableCocone (c : Cocone (K ⋙ 𝟭 C)) : Inhabited (LiftableCocone K (𝟭 C) c) :=
+instance (priority := 10000) inhabitedLiftableCocone (c : Cocone (K ⋙ 𝟭 C)) : Inhabited (LiftableCocone K (𝟭 C) c) :=
   ⟨idLiftsCocone c⟩
 #align category_theory.inhabited_liftable_cocone CategoryTheory.inhabitedLiftableCocone
 
 /-- Satisfy the inhabited linter -/
-instance inhabitedLiftsToLimit (K : J ⥤ C) (F : C ⥤ D) [CreatesLimit K F] (c : Cone (K ⋙ F))
+instance (priority := 10000) inhabitedLiftsToLimit (K : J ⥤ C) (F : C ⥤ D) [CreatesLimit K F] (c : Cone (K ⋙ F))
     (t : IsLimit c) : Inhabited (LiftsToLimit _ _ _ t) :=
   ⟨liftsToLimitOfCreates K F c t⟩
 #align category_theory.inhabited_lifts_to_limit CategoryTheory.inhabitedLiftsToLimit
 
-instance inhabitedLiftsToColimit (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K F] (c : Cocone (K ⋙ F))
+instance (priority := 10000) inhabitedLiftsToColimit (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K F] (c : Cocone (K ⋙ F))
     (t : IsColimit c) : Inhabited (LiftsToColimit _ _ _ t) :=
   ⟨liftsToColimitOfCreates K F c t⟩
 #align category_theory.inhabited_lifts_to_colimit CategoryTheory.inhabitedLiftsToColimit
@@ -639,7 +639,7 @@ variable {E : Type u₃} [ℰ : Category.{v₃} E]
 
 variable (F : C ⥤ D) (G : D ⥤ E)
 
-instance compCreatesLimit [CreatesLimit K F] [CreatesLimit (K ⋙ F) G] :
+instance (priority := 10000) compCreatesLimit [CreatesLimit K F] [CreatesLimit (K ⋙ F) G] :
     CreatesLimit K (F ⋙ G) where
   lifts c t := by
     let c' : Cone ((K ⋙ F) ⋙ G) := c
@@ -651,15 +651,15 @@ instance compCreatesLimit [CreatesLimit K F] [CreatesLimit (K ⋙ F) G] :
           liftedLimitMapsToOriginal t' }
 #align category_theory.comp_creates_limit CategoryTheory.compCreatesLimit
 
-instance compCreatesLimitsOfShape [CreatesLimitsOfShape J F] [CreatesLimitsOfShape J G] :
+instance (priority := 10000) compCreatesLimitsOfShape [CreatesLimitsOfShape J F] [CreatesLimitsOfShape J G] :
     CreatesLimitsOfShape J (F ⋙ G) where CreatesLimit := inferInstance
 #align category_theory.comp_creates_limits_of_shape CategoryTheory.compCreatesLimitsOfShape
 
-instance compCreatesLimits [CreatesLimitsOfSize.{w, w'} F] [CreatesLimitsOfSize.{w, w'} G] :
+instance (priority := 10000) compCreatesLimits [CreatesLimitsOfSize.{w, w'} F] [CreatesLimitsOfSize.{w, w'} G] :
     CreatesLimitsOfSize.{w, w'} (F ⋙ G) where CreatesLimitsOfShape := inferInstance
 #align category_theory.comp_creates_limits CategoryTheory.compCreatesLimits
 
-instance compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
+instance (priority := 10000) compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
     CreatesColimit K (F ⋙ G) where
   lifts c t :=
     let c' : Cocone ((K ⋙ F) ⋙ G) := c
@@ -671,11 +671,11 @@ instance compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
           liftedColimitMapsToOriginal t' }
 #align category_theory.comp_creates_colimit CategoryTheory.compCreatesColimit
 
-instance compCreatesColimitsOfShape [CreatesColimitsOfShape J F] [CreatesColimitsOfShape J G] :
+instance (priority := 10000) compCreatesColimitsOfShape [CreatesColimitsOfShape J F] [CreatesColimitsOfShape J G] :
     CreatesColimitsOfShape J (F ⋙ G) where CreatesColimit := inferInstance
 #align category_theory.comp_creates_colimits_of_shape CategoryTheory.compCreatesColimitsOfShape
 
-instance compCreatesColimits [CreatesColimitsOfSize.{w, w'} F] [CreatesColimitsOfSize.{w, w'} G] :
+instance (priority := 10000) compCreatesColimits [CreatesColimitsOfSize.{w, w'} F] [CreatesColimitsOfSize.{w, w'} G] :
     CreatesColimitsOfSize.{w, w'} (F ⋙ G) where CreatesColimitsOfShape := inferInstance
 #align category_theory.comp_creates_colimits CategoryTheory.compCreatesColimits
 

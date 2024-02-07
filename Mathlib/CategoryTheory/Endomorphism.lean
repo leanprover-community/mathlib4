@@ -69,7 +69,7 @@ theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
 end Struct
 
 /-- Endomorphisms of an object form a monoid -/
-instance monoid {C : Type u} [Category.{v} C] {X : C} : Monoid (End X) where
+instance (priority := 10000) monoid {C : Type u} [Category.{v} C] {X : C} : Monoid (End X) where
   mul_one := Category.id_comp
   one_mul := Category.comp_id
   mul_assoc := fun x y z => (Category.assoc z y x).symm
@@ -81,13 +81,13 @@ variable {C : Type u} [Category.{v} C]
 
 open Opposite
 
-instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
+instance (priority := 10000) mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
   smul r f := f ≫ r
   one_smul := Category.comp_id
   mul_smul _ _ _ := Eq.symm <| Category.assoc _ _ _
 #align category_theory.End.mul_action_right CategoryTheory.End.mulActionRight
 
-instance mulActionLeft {X : Cᵒᵖ} {Y : C} : MulAction (End X) (unop X ⟶ Y) where
+instance (priority := 10000) mulActionLeft {X : Cᵒᵖ} {Y : C} : MulAction (End X) (unop X ⟶ Y) where
   smul r f := r.unop ≫ f
   one_smul := Category.id_comp
   mul_smul _ _ _ := Category.assoc _ _ _
@@ -104,7 +104,7 @@ theorem smul_left {X : Cᵒᵖ} {Y : C} {r : End X} {f : unop X ⟶ Y} : r • f
 end MulAction
 
 /-- In a groupoid, endomorphisms form a group -/
-instance group {C : Type u} [Groupoid.{v} C] (X : C) : Group (End X) where
+instance (priority := 10000) group {C : Type u} [Groupoid.{v} C] (X : C) : Group (End X) where
   mul_left_inv := Groupoid.comp_inv
   inv := Groupoid.inv
 #align category_theory.End.group CategoryTheory.End.group
@@ -139,7 +139,7 @@ protected instance inhabited : Inhabited (Aut X) := ⟨Iso.refl X⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.inhabited CategoryTheory.Aut.inhabited
 
-instance : Group (Aut X) where
+instance (priority := 10000) : Group (Aut X) where
   one := Iso.refl X
   inv := Iso.symm
   mul x y := Iso.trans y x

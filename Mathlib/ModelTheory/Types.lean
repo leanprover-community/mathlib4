@@ -68,7 +68,7 @@ namespace CompleteType
 
 attribute [coe] CompleteType.toTheory
 
-instance Sentence.instSetLike : SetLike (T.CompleteType α) (L[[α]].Sentence) :=
+instance (priority := 10000) Sentence.instSetLike : SetLike (T.CompleteType α) (L[[α]].Sentence) :=
   ⟨fun p => p.toTheory, fun p q h => by
     cases p
     cases q
@@ -150,7 +150,7 @@ theorem nonempty_iff : Nonempty (T.CompleteType α) ↔ T.IsSatisfiable := by
   simp
 #align first_order.language.Theory.complete_type.nonempty_iff FirstOrder.Language.Theory.CompleteType.nonempty_iff
 
-instance instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
+instance (priority := 10000) instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
   nonempty_iff.2 (isSatisfiable_empty L)
 #align first_order.language.Theory.complete_type.nonempty FirstOrder.Language.Theory.CompleteType.instNonempty
 

@@ -135,7 +135,7 @@ namespace PartitionOfUnity
 variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set X} (f : PartitionOfUnity ι X s)
 
-instance : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
+instance (priority := 10000) : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; congr
 
@@ -282,7 +282,7 @@ namespace BumpCovering
 
 variable {s : Set X} (f : BumpCovering ι X s)
 
-instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
+instance (priority := 10000) : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; congr
 
@@ -325,7 +325,7 @@ protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
 theorem coe_single (i : ι) (s : Set X) : ⇑(BumpCovering.single i s) = Pi.single i 1 := rfl
 #align bump_covering.coe_single BumpCovering.coe_single
 
-instance [Inhabited ι] : Inhabited (BumpCovering ι X s) :=
+instance (priority := 10000) [Inhabited ι] : Inhabited (BumpCovering ι X s) :=
   ⟨BumpCovering.single default s⟩
 
 /-- A collection of bump functions `f i` is subordinate to a family of sets `U i` indexed by the
@@ -549,7 +549,7 @@ namespace PartitionOfUnity
 
 variable {s : Set X}
 
-instance [Inhabited ι] : Inhabited (PartitionOfUnity ι X s) :=
+instance (priority := 10000) [Inhabited ι] : Inhabited (PartitionOfUnity ι X s) :=
   ⟨BumpCovering.toPartitionOfUnity default⟩
 
 /-- If `X` is a normal topological space and `U` is a locally finite open covering of a closed set

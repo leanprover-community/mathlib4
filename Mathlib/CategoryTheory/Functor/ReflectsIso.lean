@@ -56,7 +56,7 @@ instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
     ⟨⟨F.preimage (inv (F.map f)), ⟨F.map_injective (by simp), F.map_injective (by simp)⟩⟩⟩
 #align category_theory.of_full_and_faithful CategoryTheory.reflectsIsomorphisms_of_full_and_faithful
 
-instance reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
+instance (priority := 10000) reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
     [ReflectsIsomorphisms F] [ReflectsIsomorphisms G] :
     ReflectsIsomorphisms (F ⋙ G) :=
   ⟨fun f (hf : IsIso (G.map _)) => by

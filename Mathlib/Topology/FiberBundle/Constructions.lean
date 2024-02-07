@@ -43,7 +43,7 @@ variable (B : Type*) (F : Type*)
 
 -- Porting note: Added name for this instance.
 -- TODO: use `TotalSpace.toProd`
-instance topologicalSpace [t₁ : TopologicalSpace B]
+instance (priority := 10000) topologicalSpace [t₁ : TopologicalSpace B]
     [t₂ : TopologicalSpace F] : TopologicalSpace (TotalSpace F (Trivial B F)) :=
   induced TotalSpace.proj t₁ ⊓ induced (TotalSpace.trivialSnd B F) t₂
 #align bundle.trivial.bundle.total_space.topological_space Bundle.Trivial.topologicalSpace
@@ -77,7 +77,7 @@ theorem trivialization_target : (trivialization B F).target = univ := rfl
 #align bundle.trivial.trivialization_target Bundle.Trivial.trivialization_target
 
 /-- Fiber bundle instance on the trivial bundle. -/
-instance fiberBundle : FiberBundle F (Bundle.Trivial B F) where
+instance (priority := 10000) fiberBundle : FiberBundle F (Bundle.Trivial B F) where
   trivializationAtlas' := {trivialization B F}
   trivializationAt' _ := trivialization B F
   mem_baseSet_trivializationAt' := mem_univ
@@ -109,7 +109,7 @@ variable [TopologicalSpace (TotalSpace F₁ E₁)] [TopologicalSpace (TotalSpace
 
 /-- Equip the total space of the fiberwise product of two fiber bundles `E₁`, `E₂` with
 the induced topology from the diagonal embedding into `TotalSpace F₁ E₁ × TotalSpace F₂ E₂`. -/
-instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :=
+instance (priority := 10000) FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :=
   TopologicalSpace.induced
     (fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂)))
     inferInstance
@@ -247,7 +247,7 @@ variable [∀ x, Zero (E₁ x)] [∀ x, Zero (E₂ x)] [∀ x : B, TopologicalSp
   [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
 
 /-- The product of two fiber bundles is a fiber bundle. -/
-noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
+noncomputable instance (priority := 10000) FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ E₂) where
   totalSpaceMk_inducing' b := by
     rw [(Prod.inducing_diag F₁ E₁ F₂ E₂).inducing_iff]
     exact (totalSpaceMk_inducing F₁ E₁ b).prod_map (totalSpaceMk_inducing F₂ E₂ b)
@@ -262,7 +262,7 @@ noncomputable instance FiberBundle.prod : FiberBundle (F₁ × F₂) (E₁ ×ᵇ
     ⟨trivializationAt F₁ E₁ b, trivializationAt F₂ E₂ b, inferInstance, inferInstance, rfl⟩
 #align fiber_bundle.prod FiberBundle.prod
 
-instance {e₁ : Trivialization F₁ (π F₁ E₁)} {e₂ : Trivialization F₂ (π F₂ E₂)}
+instance (priority := 10000) {e₁ : Trivialization F₁ (π F₁ E₁)} {e₂ : Trivialization F₂ (π F₂ E₂)}
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₂] :
     MemTrivializationAtlas (e₁.prod e₂ : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ ×ᵇ E₂))) where
   out := ⟨e₁, e₂, inferInstance, inferInstance, rfl⟩
@@ -277,7 +277,7 @@ universe u v w₁ w₂ U
 
 variable {B : Type u} (F : Type v) (E : B → Type w₁) {B' : Type w₂} (f : B' → B)
 
-instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := by
+instance (priority := 10000) [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f *ᵖ E) x) := by
   -- Porting note: Original proof was `delta_instance bundle.pullback`
   intro x
   rw [Bundle.Pullback]
@@ -293,7 +293,7 @@ irreducible_def pullbackTopology : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
 
 /-- The topology on the total space of a pullback bundle is the coarsest topology for which both
 the projections to the base and the map to the original bundle are continuous. -/
-instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
+instance (priority := 10000) Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
   pullbackTopology F E f
 #align pullback.total_space.topological_space Pullback.TotalSpace.topologicalSpace
 
@@ -374,7 +374,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
   proj_toFun y _ := rfl
 #align trivialization.pullback Trivialization.pullback
 
-noncomputable instance FiberBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
+noncomputable instance (priority := 10000) FiberBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     (f : K) : FiberBundle F ((f : B' → B) *ᵖ E) where
   totalSpaceMk_inducing' x :=
     inducing_of_inducing_compose (Pullback.continuous_totalSpaceMk F E)

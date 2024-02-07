@@ -186,7 +186,7 @@ theorem Surjective.of_comp_iff' (hf : Bijective f) (g : γ → α) :
   ⟨fun S ↦ S.of_comp_left hf.1, hf.surjective.comp⟩
 #align function.surjective.of_comp_iff' Function.Surjective.of_comp_iff'
 
-instance decidableEqPFun (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, DecidableEq (α hp)] :
+instance (priority := 10000) decidableEqPFun (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, DecidableEq (α hp)] :
     DecidableEq (∀ hp, α hp)
   | f, g => decidable_of_iff (∀ hp, f hp = g hp) funext_iff.symm
 
@@ -856,10 +856,10 @@ class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) wh
 
 @[inherit_doc] notation:arg "↿" x:arg => HasUncurry.uncurry x
 
-instance hasUncurryBase : HasUncurry (α → β) α β :=
+instance (priority := 10000) hasUncurryBase : HasUncurry (α → β) α β :=
   ⟨id⟩
 
-instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
+instance (priority := 10000) hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
   ⟨fun f p ↦ (↿(f p.1)) p.2⟩
 
 end Uncurry
@@ -1096,10 +1096,10 @@ theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop
   ⟨fun _ ↦ h.1 _, fun w ↦ h.symm w, fun h₁ h₂ ↦ InvImage.trans r f (fun _ _ _ ↦ h.trans) h₁ h₂⟩
 #align inv_image.equivalence InvImage.equivalence
 
-instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
+instance (priority := 10000) {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
   Decidable (uncurry r x) :=
 ‹Decidable _›
 
-instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
+instance (priority := 10000) {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
   Decidable (curry r a b) :=
 ‹Decidable _›

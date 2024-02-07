@@ -88,7 +88,7 @@ variable [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) (forget C)]
 noncomputable def terminalEquiv : (forget C).obj (⊤_ C) ≃ PUnit :=
   (PreservesTerminal.iso (forget C) ≪≫ Types.terminalIso).toEquiv
 
-noncomputable instance : Unique ((forget C).obj (⊤_ C)) where
+noncomputable instance (priority := 10000) : Unique ((forget C).obj (⊤_ C)) where
   default := (terminalEquiv C).symm PUnit.unit
   uniq _ := (terminalEquiv C).injective (Subsingleton.elim _ _)
 

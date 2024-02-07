@@ -222,11 +222,11 @@ irreducible_def Basis.addHaar (b : Basis ι ℝ E) : Measure E :=
   Measure.addHaarMeasure b.parallelepiped
 #align basis.add_haar Basis.addHaar
 
-instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
+instance (priority := 10000) IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 #align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
-instance [SecondCountableTopology E] (b : Basis ι ℝ E) :
+instance (priority := 10000) [SecondCountableTopology E] (b : Basis ι ℝ E) :
     SigmaFinite b.addHaar := by
   rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
 
@@ -258,13 +258,13 @@ instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar
 #align measure_space_of_inner_product_space measureSpaceOfInnerProductSpace
 
-instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+instance (priority := 10000) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] : IsAddHaarMeasure (volume : Measure E) :=
   IsAddHaarMeasure_basis_addHaar _
 
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/
-instance Real.measureSpace : MeasureSpace ℝ := by infer_instance
+instance (priority := 10000) Real.measureSpace : MeasureSpace ℝ := by infer_instance
 #align real.measure_space Real.measureSpace
 
 /-! # Miscellaneous instances for `EuclideanSpace`
@@ -278,9 +278,9 @@ namespace EuclideanSpace
 variable (ι)
 
 -- TODO: do we want these instances for `PiLp` too?
-instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
+instance (priority := 10000) : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
 
-instance : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
+instance (priority := 10000) : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
 
 /-- `WithLp.equiv` as a `MeasurableEquiv`. -/
 @[simps toEquiv]

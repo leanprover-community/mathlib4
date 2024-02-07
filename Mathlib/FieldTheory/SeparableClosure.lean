@@ -143,7 +143,7 @@ theorem separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure F
   fun x ↦ isAlgebraic_iff.2 x.2.isIntegral.isAlgebraic
 
 /-- The (relative) separable closure of `E / F` is separable over `F`. -/
-instance separableClosure.isSeparable : IsSeparable F (separableClosure F E) :=
+instance (priority := 10000) separableClosure.isSeparable : IsSeparable F (separableClosure F E) :=
   ⟨fun x ↦ by simpa only [minpoly_eq] using x.2⟩
 
 /-- An intermediate field of `E / F` is contained in the (relative) separable closure of `E / F`
@@ -177,7 +177,7 @@ theorem separableClosure.normalClosure_eq_self :
 
 /-- If `E` is normal over `F`, then the (relative) separable closure of `E / F` is Galois (i.e.
 normal and separable) over `F`. -/
-instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
+instance (priority := 10000) separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
   to_isSeparable := separableClosure.isSeparable F E
   to_normal := by
     rw [← separableClosure.normalClosure_eq_self]
@@ -195,7 +195,7 @@ theorem IsSepClosed.separableClosure_eq_bot_iff [IsSepClosed E] :
 
 /-- If `E` is separably closed, then the (relative) separable closure of `E / F` is a
 separable closure of `F`. -/
-instance separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) :=
+instance (priority := 10000) separableClosure.isSepClosure [IsSepClosed E] : IsSepClosure F (separableClosure F E) :=
   ⟨(IsSepClosed.separableClosure_eq_bot_iff _ E).mp (separableClosure.separableClosure_eq_bot F E),
     isSeparable F E⟩
 
@@ -235,14 +235,14 @@ theorem separableClosure.adjoin_le [Algebra E K] [IsScalarTower F E K] :
   adjoin_le_iff.2 <| le_restrictScalars F E K
 
 /-- A compositum of two separable extensions is separable. -/
-instance IntermediateField.isSeparable_sup (L1 L2 : IntermediateField F E)
+instance (priority := 10000) IntermediateField.isSeparable_sup (L1 L2 : IntermediateField F E)
     [h1 : IsSeparable F L1] [h2 : IsSeparable F L2] :
     IsSeparable F (L1 ⊔ L2 : IntermediateField F E) := by
   rw [← le_separableClosure_iff] at h1 h2 ⊢
   exact sup_le h1 h2
 
 /-- A compositum of separable extensions is separable. -/
-instance IntermediateField.isSeparable_iSup {ι : Type*} {t : ι → IntermediateField F E}
+instance (priority := 10000) IntermediateField.isSeparable_iSup {ι : Type*} {t : ι → IntermediateField F E}
     [h : ∀ i, IsSeparable F (t i)] : IsSeparable F (⨆ i, t i : IntermediateField F E) := by
   simp_rw [← le_separableClosure_iff] at h ⊢
   exact iSup_le h
@@ -266,11 +266,11 @@ def finInsepDegree : ℕ := finrank (separableClosure F E) E
 
 theorem finInsepDegree_def' : finInsepDegree F E = Cardinal.toNat (insepDegree F E) := rfl
 
-instance instNeZeroSepDegree : NeZero (sepDegree F E) := ⟨rank_pos.ne'⟩
+instance (priority := 10000) instNeZeroSepDegree : NeZero (sepDegree F E) := ⟨rank_pos.ne'⟩
 
-instance instNeZeroInsepDegree : NeZero (insepDegree F E) := ⟨rank_pos.ne'⟩
+instance (priority := 10000) instNeZeroInsepDegree : NeZero (insepDegree F E) := ⟨rank_pos.ne'⟩
 
-instance instNeZeroFinInsepDegree [FiniteDimensional F E] :
+instance (priority := 10000) instNeZeroFinInsepDegree [FiniteDimensional F E] :
     NeZero (finInsepDegree F E) := ⟨finrank_pos.ne'⟩
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same (infinite)

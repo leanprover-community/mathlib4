@@ -236,7 +236,7 @@ noncomputable def isExtensionAlongYoneda :
 #align category_theory.colimit_adj.is_extension_along_yoneda CategoryTheory.ColimitAdj.isExtensionAlongYoneda
 
 /-- See Property 2 of https://ncatlab.org/nlab/show/Yoneda+extension#properties. -/
-noncomputable instance : PreservesColimits (extendAlongYoneda A) :=
+noncomputable instance (priority := 10000) : PreservesColimits (extendAlongYoneda A) :=
   (yonedaAdjunction A).leftAdjointPreservesColimits
 
 /-- Show that the images of `X` after `extendAlongYoneda` and `Lan yoneda` are indeed isomorphic.

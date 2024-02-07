@@ -70,16 +70,16 @@ theorem add_tensor {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z) : (f + g) ⊗ h =
 
 end MonoidalPreadditive
 
-instance tensorLeft_additive (X : C) : (tensorLeft X).Additive where
+instance (priority := 10000) tensorLeft_additive (X : C) : (tensorLeft X).Additive where
 #align category_theory.tensor_left_additive CategoryTheory.tensorLeft_additive
 
-instance tensorRight_additive (X : C) : (tensorRight X).Additive where
+instance (priority := 10000) tensorRight_additive (X : C) : (tensorRight X).Additive where
 #align category_theory.tensor_right_additive CategoryTheory.tensorRight_additive
 
-instance tensoringLeft_additive (X : C) : ((tensoringLeft C).obj X).Additive where
+instance (priority := 10000) tensoringLeft_additive (X : C) : ((tensoringLeft C).obj X).Additive where
 #align category_theory.tensoring_left_additive CategoryTheory.tensoringLeft_additive
 
-instance tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive where
+instance (priority := 10000) tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive where
 #align category_theory.tensoring_right_additive CategoryTheory.tensoringRight_additive
 
 /-- A faithful additive monoidal functor to a monoidal preadditive category
@@ -132,7 +132,7 @@ theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
 -- In a closed monoidal category, this would hold because
 -- `tensorLeft X` is a left adjoint and hence preserves all colimits.
 -- In any case it is true in any preadditive category.
-instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
+instance (priority := 10000) (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
   preserves {J} :=
     { preserves := fun {f} =>
         { preserves := fun {b} i => isBilimitOfTotal _ (by
@@ -140,7 +140,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
             simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← tensor_id,
               IsBilimit.total i]) } }
 
-instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
+instance (priority := 10000) (X : C) : PreservesFiniteBiproducts (tensorRight X) where
   preserves {J} :=
     { preserves := fun {f} =>
         { preserves := fun {b} i => isBilimitOfTotal _ (by

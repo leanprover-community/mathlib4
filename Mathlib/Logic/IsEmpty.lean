@@ -27,48 +27,48 @@ class IsEmpty (α : Sort*) : Prop where
   protected false : α → False
 #align is_empty IsEmpty
 
-instance instIsEmptyEmpty : IsEmpty Empty :=
+instance (priority := 10000) instIsEmptyEmpty : IsEmpty Empty :=
   ⟨Empty.elim⟩
 
-instance instIsEmptyPEmpty : IsEmpty PEmpty :=
+instance (priority := 10000) instIsEmptyPEmpty : IsEmpty PEmpty :=
   ⟨PEmpty.elim⟩
 
-instance : IsEmpty False :=
+instance (priority := 10000) : IsEmpty False :=
   ⟨id⟩
 
-instance Fin.isEmpty : IsEmpty (Fin 0) :=
+instance (priority := 10000) Fin.isEmpty : IsEmpty (Fin 0) :=
   ⟨fun n ↦ Nat.not_lt_zero n.1 n.2⟩
 
-instance Fin.isEmpty' : IsEmpty (Fin Nat.zero) :=
+instance (priority := 10000) Fin.isEmpty' : IsEmpty (Fin Nat.zero) :=
   Fin.isEmpty
 
 protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
   ⟨fun x ↦ IsEmpty.false (f x)⟩
 #align function.is_empty Function.isEmpty
 
-instance {p : α → Sort*} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
+instance (priority := 10000) {p : α → Sort*} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
   h.elim fun x ↦ Function.isEmpty <| Function.eval x
 
-instance PProd.isEmpty_left [IsEmpty α] : IsEmpty (PProd α β) :=
+instance (priority := 10000) PProd.isEmpty_left [IsEmpty α] : IsEmpty (PProd α β) :=
   Function.isEmpty PProd.fst
 
-instance PProd.isEmpty_right [IsEmpty β] : IsEmpty (PProd α β) :=
+instance (priority := 10000) PProd.isEmpty_right [IsEmpty β] : IsEmpty (PProd α β) :=
   Function.isEmpty PProd.snd
 
-instance Prod.isEmpty_left {α β} [IsEmpty α] : IsEmpty (α × β) :=
+instance (priority := 10000) Prod.isEmpty_left {α β} [IsEmpty α] : IsEmpty (α × β) :=
   Function.isEmpty Prod.fst
 
-instance Prod.isEmpty_right {α β} [IsEmpty β] : IsEmpty (α × β) :=
+instance (priority := 10000) Prod.isEmpty_right {α β} [IsEmpty β] : IsEmpty (α × β) :=
   Function.isEmpty Prod.snd
 
-instance [IsEmpty α] [IsEmpty β] : IsEmpty (PSum α β) :=
+instance (priority := 10000) [IsEmpty α] [IsEmpty β] : IsEmpty (PSum α β) :=
   ⟨fun x ↦ PSum.rec IsEmpty.false IsEmpty.false x⟩
 
-instance instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (Sum α β) :=
+instance (priority := 10000) instIsEmptySum {α β} [IsEmpty α] [IsEmpty β] : IsEmpty (Sum α β) :=
   ⟨fun x ↦ Sum.rec IsEmpty.false IsEmpty.false x⟩
 
 /-- subtypes of an empty type are empty -/
-instance [IsEmpty α] (p : α → Prop) : IsEmpty (Subtype p) :=
+instance (priority := 10000) [IsEmpty α] (p : α → Prop) : IsEmpty (Subtype p) :=
   ⟨fun x ↦ IsEmpty.false x.1⟩
 
 /-- subtypes by an all-false predicate are false. -/
@@ -77,10 +77,10 @@ theorem Subtype.isEmpty_of_false {p : α → Prop} (hp : ∀ a, ¬p a) : IsEmpty
 #align subtype.is_empty_of_false Subtype.isEmpty_of_false
 
 /-- subtypes by false are false. -/
-instance Subtype.isEmpty_false : IsEmpty { _a : α // False } :=
+instance (priority := 10000) Subtype.isEmpty_false : IsEmpty { _a : α // False } :=
   Subtype.isEmpty_of_false fun _ ↦ id
 
-instance Sigma.isEmpty_left {α} [IsEmpty α] {E : α → Type*} : IsEmpty (Sigma E) :=
+instance (priority := 10000) Sigma.isEmpty_left {α} [IsEmpty α] {E : α → Type*} : IsEmpty (Sigma E) :=
   Function.isEmpty Sigma.fst
 
 example [h : Nonempty α] [IsEmpty β] : IsEmpty (α → β) := by infer_instance

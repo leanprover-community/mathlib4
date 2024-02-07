@@ -82,7 +82,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_smul_aux_eq_of_rel ModuleCat.FilteredColimits.colimitSMulAux_eq_of_rel
 
 /-- Scalar multiplication in the colimit. See also `colimitSMulAux`. -/
-instance colimitHasSMul : SMul R (M F) where
+instance (priority := 10000) colimitHasSMul : SMul R (M F) where
   smul r x := by
     refine' Quot.lift (colimitSMulAux F r) _ x
     intro x y h
@@ -105,7 +105,7 @@ private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
   rfl
 
 -- Porting note: writing directly the `Module` instance makes things very slow.
-instance colimitMulAction : MulAction R (M F) where
+instance (priority := 10000) colimitMulAction : MulAction R (M F) where
   one_smul x := by
     refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x
     erw [colimit_smul_mk_eq F 1 ⟨j, x⟩, one_smul]
@@ -115,7 +115,7 @@ instance colimitMulAction : MulAction R (M F) where
     erw [colimit_smul_mk_eq F (r * s) ⟨j, x⟩, colimit_smul_mk_eq F s ⟨j, x⟩,
       colimit_smul_mk_eq F r ⟨j, _⟩, mul_smul]
 
-instance colimitSMulWithZero : SMulWithZero R (M F) :=
+instance (priority := 10000) colimitSMulWithZero : SMulWithZero R (M F) :=
 { colimitMulAction F with
   smul_zero := fun r => by
     erw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
@@ -132,7 +132,7 @@ private theorem colimitModule.add_smul (r s : R) (x : (M F)) : (r + s) • x = r
       id_apply]
   rfl
 
-instance colimitModule : Module R (M F) :=
+instance (priority := 10000) colimitModule : Module R (M F) :=
 { colimitMulAction F,
   colimitSMulWithZero F with
   smul_add := fun r x y => by
@@ -200,7 +200,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_cocone_is_colimit ModuleCat.FilteredColimits.colimitCoconeIsColimit
 
-instance forget₂AddCommGroupPreservesFilteredColimits :
+instance (priority := 10000) forget₂AddCommGroupPreservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGroupCat.{u}) where
   preserves_filtered_colimits J _ _ :=
   { -- Porting note: without the curly braces for `F`
@@ -212,7 +212,7 @@ instance forget₂AddCommGroupPreservesFilteredColimits :
 set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.forget₂_AddCommGroup_preserves_filtered_colimits ModuleCat.FilteredColimits.forget₂AddCommGroupPreservesFilteredColimits
 
-instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
+instance (priority := 10000) forgetPreservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
   Limits.compPreservesFilteredColimits (forget₂ (ModuleCat R) AddCommGroupCat)
     (forget AddCommGroupCat)
 set_option linter.uppercaseLean3 false in

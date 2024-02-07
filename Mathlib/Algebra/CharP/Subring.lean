@@ -17,7 +17,7 @@ universe u v
 
 namespace CharP
 
-instance subsemiring (R : Type u) [Semiring R] (p : ℕ) [CharP R p] (S : Subsemiring R) :
+instance (priority := 10000) subsemiring (R : Type u) [Semiring R] (p : ℕ) [CharP R p] (S : Subsemiring R) :
     CharP S p :=
   ⟨fun x =>
     Iff.symm <|
@@ -26,7 +26,7 @@ instance subsemiring (R : Type u) [Semiring R] (p : ℕ) [CharP R p] (S : Subsem
           map_natCast S.subtype x ▸ by rw [h, RingHom.map_zero]⟩⟩
 #align char_p.subsemiring CharP.subsemiring
 
-instance subring (R : Type u) [Ring R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
+instance (priority := 10000) subring (R : Type u) [Ring R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
   ⟨fun x =>
     Iff.symm <|
       (CharP.cast_eq_zero_iff R p x).symm.trans
@@ -34,7 +34,7 @@ instance subring (R : Type u) [Ring R] (p : ℕ) [CharP R p] (S : Subring R) : C
           map_natCast S.subtype x ▸ by rw [h, RingHom.map_zero]⟩⟩
 #align char_p.subring CharP.subring
 
-instance subring' (R : Type u) [CommRing R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
+instance (priority := 10000) subring' (R : Type u) [CommRing R] (p : ℕ) [CharP R p] (S : Subring R) : CharP S p :=
   CharP.subring R p S
 #align char_p.subring' CharP.subring'
 

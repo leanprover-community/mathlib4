@@ -65,7 +65,7 @@ variable (F E)
 
 namespace IsGalois
 
-instance self : IsGalois F F :=
+instance (priority := 10000) self : IsGalois F F :=
   ⟨⟩
 #align is_galois.self IsGalois.self
 
@@ -85,7 +85,7 @@ theorem splits [IsGalois F E] (x : E) : (minpoly F x).Splits (algebraMap F E) :=
 
 variable (E)
 
-instance of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E] :
+instance (priority := 10000) of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E] :
     IsGalois (FixedPoints.subfield G E) E :=
   ⟨⟩
 #align is_galois.of_fixed_field IsGalois.of_fixed_field
@@ -168,7 +168,7 @@ theorem isGalois_iff_isGalois_top : IsGalois F (⊤ : IntermediateField F E) ↔
   (IntermediateField.topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E).transfer_galois
 #align is_galois_iff_is_galois_top isGalois_iff_isGalois_top
 
-instance isGalois_bot : IsGalois F (⊥ : IntermediateField F E) :=
+instance (priority := 10000) isGalois_bot : IsGalois F (⊥ : IntermediateField F E) :=
   (IntermediateField.botEquiv F E).transfer_galois.mpr (IsGalois.self F)
 #align is_galois_bot isGalois_bot
 
@@ -233,11 +233,11 @@ theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixe
 #align intermediate_field.fixing_subgroup_fixed_field IntermediateField.fixingSubgroup_fixedField
 
 -- Porting note: added `fixedField.smul` for `fixedField.isScalarTower`
-instance fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
+instance (priority := 10000) fixedField.smul : SMul K (fixedField (fixingSubgroup K)) where
   smul x y := ⟨x * y, fun ϕ => by
     rw [smul_mul', show ϕ • (x : E) = ↑x from ϕ.2 x, show ϕ • (y : E) = ↑y from y.2 ϕ]⟩
 
-instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
+instance (priority := 10000) fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
   toFun x := ⟨x, fun ϕ => Subtype.mem ϕ x⟩
   map_zero' := rfl
   map_add' _ _ := rfl
@@ -247,7 +247,7 @@ instance fixedField.algebra : Algebra K (fixedField (fixingSubgroup K)) where
   smul_def' _ _ := rfl
 #align intermediate_field.fixed_field.algebra IntermediateField.fixedField.algebra
 
-instance fixedField.isScalarTower : IsScalarTower K (fixedField (fixingSubgroup K)) E :=
+instance (priority := 10000) fixedField.isScalarTower : IsScalarTower K (fixedField (fixingSubgroup K)) E :=
   ⟨fun _ _ _ => mul_assoc _ _ _⟩
 #align intermediate_field.fixed_field.is_scalar_tower IntermediateField.fixedField.isScalarTower
 
@@ -456,7 +456,7 @@ section normalClosure
 variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k F] [Algebra K F]
   [IsScalarTower k K F] [IsGalois k F]
 
-instance IsGalois.normalClosure : IsGalois k (normalClosure k K F) where
+instance (priority := 10000) IsGalois.normalClosure : IsGalois k (normalClosure k K F) where
   to_isSeparable := isSeparable_tower_bot_of_isSeparable k _ F
 #align is_galois.normal_closure IsGalois.normalClosure
 

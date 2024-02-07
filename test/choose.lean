@@ -72,10 +72,10 @@ example (h : ∀ i : Nat, ∃ j, i < j ∧ j < i+i) : True := by
   guard_hyp h' : ∀ (i : Nat), f i < i + i
   trivial
 
-instance : ∀ [Nonempty α], Nonempty (α × α) := @fun ⟨a⟩ => ⟨(a, a)⟩
+instance (priority := 10000) : ∀ [Nonempty α], Nonempty (α × α) := @fun ⟨a⟩ => ⟨(a, a)⟩
 
 -- test choose with nonempty instances
-instance : ∀ [Nonempty α] [Nonempty β], Nonempty (α × β)
+instance (priority := 10000) : ∀ [Nonempty α] [Nonempty β], Nonempty (α × β)
   | ⟨a⟩, ⟨b⟩ => ⟨(a, b)⟩
 
 example {α : Type u} (p : α → Prop) (h : ∀ i : α, p i → ∃ j : α × α, p j.1) : True := by

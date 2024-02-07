@@ -189,7 +189,7 @@ variable {R : Type u} {A : Type v} {B : Type w}
 variable [CommSemiring R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 /-- The image of a Noetherian R-algebra under an R-algebra map is a Noetherian ring. -/
-instance AlgHom.isNoetherianRing_range (f : A →ₐ[R] B) [IsNoetherianRing A] :
+instance (priority := 10000) AlgHom.isNoetherianRing_range (f : A →ₐ[R] B) [IsNoetherianRing A] :
     IsNoetherianRing f.range :=
   _root_.isNoetherianRing_range f.toRingHom
 #align alg_hom.is_noetherian_ring_range AlgHom.isNoetherianRing_range

@@ -58,11 +58,11 @@ theorem Submodule.IsPrincipal.principal (S : Submodule R M) [Submodule.IsPrincip
   Submodule.IsPrincipal.principal'
 #align submodule.is_principal.principal Submodule.IsPrincipal.principal
 
-instance bot_isPrincipal : (⊥ : Submodule R M).IsPrincipal :=
+instance (priority := 10000) bot_isPrincipal : (⊥ : Submodule R M).IsPrincipal :=
   ⟨⟨0, by simp⟩⟩
 #align bot_is_principal bot_isPrincipal
 
-instance top_isPrincipal : (⊤ : Submodule R R).IsPrincipal :=
+instance (priority := 10000) top_isPrincipal : (⊤ : Submodule R R).IsPrincipal :=
   ⟨⟨1, Ideal.span_singleton_one.symm⟩⟩
 #align top_is_principal top_isPrincipal
 

@@ -32,7 +32,7 @@ variable (R A B)
 
 open Algebra
 
-instance algebra : Algebra R (A × B) :=
+instance (priority := 10000) algebra : Algebra R (A × B) :=
   { Prod.instModule,
     RingHom.prod (algebraMap R A) (algebraMap R B) with
     commutes' := by

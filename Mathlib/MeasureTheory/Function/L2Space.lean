@@ -145,7 +145,7 @@ section InnerProductSpace
 
 open scoped ComplexConjugate
 
-instance : Inner 𝕜 (α →₂[μ] E) :=
+instance (priority := 10000) : Inner 𝕜 (α →₂[μ] E) :=
   ⟨fun f g => ∫ a, ⟪f a, g a⟫ ∂μ⟩
 
 theorem inner_def (f g : α →₂[μ] E) : ⟪f, g⟫ = ∫ a : α, ⟪f a, g a⟫ ∂μ :=
@@ -214,7 +214,7 @@ private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫
   -- congr
   -- rwa [Pi.smul_apply] at hx
 
-instance innerProductSpace : InnerProductSpace 𝕜 (α →₂[μ] E) where
+instance (priority := 10000) innerProductSpace : InnerProductSpace 𝕜 (α →₂[μ] E) where
   norm_sq_eq_inner := norm_sq_eq_inner'
   conj_symm _ _ := by simp_rw [inner_def, ← integral_conj, inner_conj_symm]
   add_left := add_left'

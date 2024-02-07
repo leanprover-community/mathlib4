@@ -125,7 +125,7 @@ end RingEquivClass
 
 /-- Any type satisfying `RingEquivClass` can be cast into `RingEquiv` via
 `RingEquivClass.toRingEquiv`. -/
-instance [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEquivClass F α β] :
+instance (priority := 10000) [Mul α] [Add α] [Mul β] [Add β] [EquivLike F α β] [RingEquivClass F α β] :
     CoeTC F (α ≃+* β) :=
   ⟨RingEquivClass.toRingEquiv⟩
 
@@ -135,7 +135,7 @@ section Basic
 
 variable [Mul R] [Mul S] [Add R] [Add S] [Mul S'] [Add S']
 
-instance : EquivLike (R ≃+* S) R S where
+instance (priority := 10000) : EquivLike (R ≃+* S) R S where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' e f h₁ h₂ := by
@@ -146,7 +146,7 @@ instance : EquivLike (R ≃+* S) R S where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
-instance : RingEquivClass (R ≃+* S) R S where
+instance (priority := 10000) : RingEquivClass (R ≃+* S) R S where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
 
@@ -230,7 +230,7 @@ def ringEquivOfUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N
   { AddEquiv.addEquivOfUnique, MulEquiv.mulEquivOfUnique with }
 #align ring_equiv.ring_equiv_of_unique RingEquiv.ringEquivOfUnique
 
-instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
+instance (priority := 10000) {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
     Unique (M ≃+* N) where
   default := ringEquivOfUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
@@ -258,7 +258,7 @@ theorem coe_mulEquiv_refl : (RingEquiv.refl R : R ≃* R) = MulEquiv.refl R :=
   rfl
 #align ring_equiv.coe_mul_equiv_refl RingEquiv.coe_mulEquiv_refl
 
-instance : Inhabited (R ≃+* R) :=
+instance (priority := 10000) : Inhabited (R ≃+* R) :=
   ⟨RingEquiv.refl R⟩
 
 variable {R}

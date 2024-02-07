@@ -58,9 +58,9 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 #align nat_ordinal NatOrdinal
 
-instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
+instance (priority := 10000) NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
 
-instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance (priority := 10000) NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -93,10 +93,10 @@ theorem lt_wf : @WellFounded NatOrdinal (· < ·) :=
   Ordinal.lt_wf
 #align nat_ordinal.lt_wf NatOrdinal.lt_wf
 
-instance : WellFoundedLT NatOrdinal :=
+instance (priority := 10000) : WellFoundedLT NatOrdinal :=
   Ordinal.wellFoundedLT
 
-instance : IsWellOrder NatOrdinal (· < ·) :=
+instance (priority := 10000) : IsWellOrder NatOrdinal (· < ·) :=
   Ordinal.isWellOrder
 
 @[simp]
@@ -359,25 +359,25 @@ namespace NatOrdinal
 
 open Ordinal NaturalOps
 
-instance : Add NatOrdinal :=
+instance (priority := 10000) : Add NatOrdinal :=
   ⟨nadd⟩
 
-instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) :=
+instance (priority := 10000) add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
 #align nat_ordinal.add_covariant_class_lt NatOrdinal.add_covariantClass_lt
 
-instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
+instance (priority := 10000) add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
   ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 #align nat_ordinal.add_covariant_class_le NatOrdinal.add_covariantClass_le
 
-instance add_contravariantClass_le :
+instance (priority := 10000) add_contravariantClass_le :
     ContravariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
   ⟨fun a b c h => by
     by_contra! h'
     exact h.not_lt (add_lt_add_left h' a)⟩
 #align nat_ordinal.add_contravariant_class_le NatOrdinal.add_contravariantClass_le
 
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
+instance (priority := 10000) orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
   { NatOrdinal.linearOrder with
     add := (· + ·)
     add_assoc := nadd_assoc
@@ -388,7 +388,7 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
     add_zero := nadd_zero
     add_comm := nadd_comm }
 
-instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
+instance (priority := 10000) addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
 @[simp]
@@ -764,12 +764,12 @@ end Ordinal
 
 open Ordinal
 
-instance : Mul NatOrdinal :=
+instance (priority := 10000) : Mul NatOrdinal :=
   ⟨nmul⟩
 
 -- Porting note: had to add universe annotations to ensure that the
 -- two sources lived in the same universe.
-instance : OrderedCommSemiring NatOrdinal.{u} :=
+instance (priority := 10000) : OrderedCommSemiring NatOrdinal.{u} :=
   { NatOrdinal.orderedCancelAddCommMonoid.{u},
     NatOrdinal.linearOrder.{u} with
     mul := (· * ·)

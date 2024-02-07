@@ -254,46 +254,46 @@ variable {α ι : Type*} {β : ι → Type*}
 
 /-! Instances inherited from normal Pi types. -/
 
-instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) :=
+instance (priority := 10000) [∀ i, Inhabited (β i)] : Inhabited (Hamming β) :=
   ⟨fun _ => default⟩
 
-instance [DecidableEq ι] [Fintype ι] [∀ i, Fintype (β i)] : Fintype (Hamming β) :=
+instance (priority := 10000) [DecidableEq ι] [Fintype ι] [∀ i, Fintype (β i)] : Fintype (Hamming β) :=
   Pi.fintype
 
-instance [Inhabited ι] [∀ i, Nonempty (β i)] [Nontrivial (β default)] : Nontrivial (Hamming β) :=
+instance (priority := 10000) [Inhabited ι] [∀ i, Nonempty (β i)] [Nontrivial (β default)] : Nontrivial (Hamming β) :=
   Pi.nontrivial
 
-instance [Fintype ι] [∀ i, DecidableEq (β i)] : DecidableEq (Hamming β) :=
+instance (priority := 10000) [Fintype ι] [∀ i, DecidableEq (β i)] : DecidableEq (Hamming β) :=
   Fintype.decidablePiFintype
 
-instance [∀ i, Zero (β i)] : Zero (Hamming β) :=
+instance (priority := 10000) [∀ i, Zero (β i)] : Zero (Hamming β) :=
   Pi.instZero
 
-instance [∀ i, Neg (β i)] : Neg (Hamming β) :=
+instance (priority := 10000) [∀ i, Neg (β i)] : Neg (Hamming β) :=
   Pi.instNeg
 
-instance [∀ i, Add (β i)] : Add (Hamming β) :=
+instance (priority := 10000) [∀ i, Add (β i)] : Add (Hamming β) :=
   Pi.instAdd
 
-instance [∀ i, Sub (β i)] : Sub (Hamming β) :=
+instance (priority := 10000) [∀ i, Sub (β i)] : Sub (Hamming β) :=
   Pi.instSub
 
-instance [∀ i, SMul α (β i)] : SMul α (Hamming β) :=
+instance (priority := 10000) [∀ i, SMul α (β i)] : SMul α (Hamming β) :=
   Pi.instSMul
 
-instance [Zero α] [∀ i, Zero (β i)] [∀ i, SMulWithZero α (β i)] : SMulWithZero α (Hamming β) :=
+instance (priority := 10000) [Zero α] [∀ i, Zero (β i)] [∀ i, SMulWithZero α (β i)] : SMulWithZero α (Hamming β) :=
   Pi.smulWithZero _
 
-instance [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) :=
+instance (priority := 10000) [∀ i, AddMonoid (β i)] : AddMonoid (Hamming β) :=
   Pi.addMonoid
 
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) :=
+instance (priority := 10000) [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Hamming β) :=
   Pi.addCommMonoid
 
-instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) :=
+instance (priority := 10000) [∀ i, AddCommGroup (β i)] : AddCommGroup (Hamming β) :=
   Pi.addCommGroup
 
-instance (α) [Semiring α] (β : ι → Type*) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
+instance (priority := 10000) (α) [Semiring α] (β : ι → Type*) [∀ i, AddCommMonoid (β i)] [∀ i, Module α (β i)] :
     Module α (Hamming β) :=
   Pi.module _ _ _
 
@@ -404,7 +404,7 @@ section
 
 variable [Fintype ι] [∀ i, DecidableEq (β i)]
 
-instance : Dist (Hamming β) :=
+instance (priority := 10000) : Dist (Hamming β) :=
   ⟨fun x y => hammingDist (ofHamming x) (ofHamming y)⟩
 
 @[simp, push_cast]
@@ -413,7 +413,7 @@ theorem dist_eq_hammingDist (x y : Hamming β) :
   rfl
 #align hamming.dist_eq_hamming_dist Hamming.dist_eq_hammingDist
 
-instance : PseudoMetricSpace (Hamming β) where
+instance (priority := 10000) : PseudoMetricSpace (Hamming β) where
   dist_self := by
     push_cast
     exact mod_cast hammingDist_self
@@ -451,11 +451,11 @@ theorem nndist_eq_hammingDist (x y : Hamming β) :
 #align hamming.nndist_eq_hamming_dist Hamming.nndist_eq_hammingDist
 
 -- porting note: new
-instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
+instance (priority := 10000) : DiscreteTopology (Hamming β) := ⟨rfl⟩
 
-instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
+instance (priority := 10000) : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
 
-instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
+instance (priority := 10000) [∀ i, Zero (β i)] : Norm (Hamming β) :=
   ⟨fun x => hammingNorm (ofHamming x)⟩
 
 @[simp, push_cast]
@@ -465,7 +465,7 @@ theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = ha
 
 -- porting note: merged `SeminormedAddCommGroup` and `NormedAddCommGroup` instances
 
-instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
+instance (priority := 10000) [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
 
 @[simp, push_cast]

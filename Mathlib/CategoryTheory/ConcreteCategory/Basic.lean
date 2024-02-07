@@ -71,7 +71,7 @@ def forget (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] : C ⥤ Type w
 
 -- this is reducible because we want `forget (Type u)` to unfold to `𝟭 _`
 @[reducible]
-instance ConcreteCategory.types : ConcreteCategory.{u, u, u+1} (Type u) where
+instance (priority := 10000) ConcreteCategory.types : ConcreteCategory.{u, u, u+1} (Type u) where
   forget := 𝟭 _
 #align category_theory.concrete_category.types CategoryTheory.ConcreteCategory.types
 
@@ -80,7 +80,7 @@ as it could potentially apply to every type, and so is too expensive in typeclas
 
 You can use it on particular examples as:
 ```
-instance : HasCoeToSort X := ConcreteCategory.hasCoeToSort X
+instance (priority := 10000) : HasCoeToSort X := ConcreteCategory.hasCoeToSort X
 ```
 -/
 def ConcreteCategory.hasCoeToSort (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :
@@ -221,12 +221,12 @@ lemma forget₂_comp_apply {C : Type u} {D : Type u'} [Category.{v} C] [Concrete
       (forget₂ C D).map g ((forget₂ C D).map f x) := by
   rw [Functor.map_comp, comp_apply]
 
-instance forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
+instance (priority := 10000) forget₂_faithful (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
     [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : Faithful (forget₂ C D) :=
   HasForget₂.forget_comp.faithful_of_comp
 #align category_theory.forget₂_faithful CategoryTheory.forget₂_faithful
 
-instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
+instance (priority := 10000) forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
     [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
     [HasForget₂ C D] [(forget C).PreservesMonomorphisms] :
     (forget₂ C D).PreservesMonomorphisms :=
@@ -236,7 +236,7 @@ instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
   Functor.preservesMonomorphisms_of_preserves_of_reflects _ (forget D)
 #align category_theory.forget₂_preserves_monomorphisms CategoryTheory.forget₂_preservesMonomorphisms
 
-instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
+instance (priority := 10000) forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
     [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
     [HasForget₂ C D] [(forget C).PreservesEpimorphisms] :
     (forget₂ C D).PreservesEpimorphisms :=
@@ -246,24 +246,24 @@ instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
   Functor.preservesEpimorphisms_of_preserves_of_reflects _ (forget D)
 #align category_theory.forget₂_preserves_epimorphisms CategoryTheory.forget₂_preservesEpimorphisms
 
-instance InducedCategory.concreteCategory {C : Type u} {D : Type u'}
+instance (priority := 10000) InducedCategory.concreteCategory {C : Type u} {D : Type u'}
     [Category.{v'} D] [ConcreteCategory.{w} D] (f : C → D) :
       ConcreteCategory (InducedCategory D f) where
   forget := inducedFunctor f ⋙ forget D
 #align category_theory.induced_category.concrete_category CategoryTheory.InducedCategory.concreteCategory
 
-instance InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D]
+instance (priority := 10000) InducedCategory.hasForget₂ {C : Type u} {D : Type u'} [Category.{v} D]
     [ConcreteCategory.{w} D] (f : C → D) : HasForget₂ (InducedCategory D f) D where
   forget₂ := inducedFunctor f
   forget_comp := rfl
 #align category_theory.induced_category.has_forget₂ CategoryTheory.InducedCategory.hasForget₂
 
-instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
+instance (priority := 10000) FullSubcategory.concreteCategory {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
     (Z : C → Prop) : ConcreteCategory (FullSubcategory Z) where
   forget := fullSubcategoryInclusion Z ⋙ forget C
 #align category_theory.full_subcategory.concrete_category CategoryTheory.FullSubcategoryₓ.concreteCategory
 
-instance FullSubcategory.hasForget₂ {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
+instance (priority := 10000) FullSubcategory.hasForget₂ {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
     (Z : C → Prop) : HasForget₂ (FullSubcategory Z) C where
   forget₂ := fullSubcategoryInclusion Z
   forget_comp := rfl

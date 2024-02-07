@@ -42,7 +42,7 @@ protected def CofixA.default [Inhabited F.A] : ∀ n, CofixA F n
   | succ n => CofixA.intro default fun _ => CofixA.default n
 #align pfunctor.approx.cofix_a.default PFunctor.Approx.CofixA.default
 
-instance [Inhabited F.A] {n} : Inhabited (CofixA F n) :=
+instance (priority := 10000) [Inhabited F.A] {n} : Inhabited (CofixA F n) :=
   ⟨CofixA.default F n⟩
 
 theorem cofixA_eq_zero : ∀ x y : CofixA F 0, x = y
@@ -141,13 +141,13 @@ def Path (F : PFunctor.{u}) :=
   List F.Idx
 #align pfunctor.approx.path PFunctor.Approx.Path
 
-instance Path.inhabited : Inhabited (Path F) :=
+instance (priority := 10000) Path.inhabited : Inhabited (Path F) :=
   ⟨[]⟩
 #align pfunctor.approx.path.inhabited PFunctor.Approx.Path.inhabited
 
 open List Nat
 
-instance CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
+instance (priority := 10000) CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
 
 theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x) :
@@ -202,13 +202,13 @@ theorem M.default_consistent [Inhabited F.A] : ∀ n, Agree (default : CofixA F 
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.default_consistent PFunctor.M.default_consistent
 
-instance M.inhabited [Inhabited F.A] : Inhabited (M F) :=
+instance (priority := 10000) M.inhabited [Inhabited F.A] : Inhabited (M F) :=
   ⟨{  approx := default
       consistent := M.default_consistent _ }⟩
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.inhabited PFunctor.M.inhabited
 
-instance MIntl.inhabited [Inhabited F.A] : Inhabited (MIntl F) :=
+instance (priority := 10000) MIntl.inhabited [Inhabited F.A] : Inhabited (MIntl F) :=
   show Inhabited (M F) by infer_instance
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M_intl.inhabited PFunctor.MIntl.inhabited

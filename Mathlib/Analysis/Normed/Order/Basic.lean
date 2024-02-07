@@ -88,33 +88,33 @@ instance (priority := 100) NormedLinearOrderedField.toNormedField (α : Type*)
   norm_mul' := NormedLinearOrderedField.norm_mul'
 #align normed_linear_ordered_field.to_normed_field NormedLinearOrderedField.toNormedField
 
-instance Rat.normedLinearOrderedField : NormedLinearOrderedField ℚ :=
+instance (priority := 10000) Rat.normedLinearOrderedField : NormedLinearOrderedField ℚ :=
   ⟨dist_eq_norm, norm_mul⟩
 
-noncomputable instance Real.normedLinearOrderedField : NormedLinearOrderedField ℝ :=
+noncomputable instance (priority := 10000) Real.normedLinearOrderedField : NormedLinearOrderedField ℝ :=
   ⟨dist_eq_norm, norm_mul⟩
 
 @[to_additive]
-instance OrderDual.normedOrderedGroup [NormedOrderedGroup α] : NormedOrderedGroup αᵒᵈ :=
+instance (priority := 10000) OrderDual.normedOrderedGroup [NormedOrderedGroup α] : NormedOrderedGroup αᵒᵈ :=
   { @NormedOrderedGroup.toNormedCommGroup α _, OrderDual.orderedCommGroup with }
 
 @[to_additive]
-instance OrderDual.normedLinearOrderedGroup [NormedLinearOrderedGroup α] :
+instance (priority := 10000) OrderDual.normedLinearOrderedGroup [NormedLinearOrderedGroup α] :
     NormedLinearOrderedGroup αᵒᵈ :=
   { OrderDual.normedOrderedGroup, OrderDual.instLinearOrder _ with }
 
-instance Additive.normedOrderedAddGroup [NormedOrderedGroup α] :
+instance (priority := 10000) Additive.normedOrderedAddGroup [NormedOrderedGroup α] :
     NormedOrderedAddGroup (Additive α) :=
   { Additive.normedAddCommGroup, Additive.orderedAddCommGroup with }
 
-instance Multiplicative.normedOrderedGroup [NormedOrderedAddGroup α] :
+instance (priority := 10000) Multiplicative.normedOrderedGroup [NormedOrderedAddGroup α] :
     NormedOrderedGroup (Multiplicative α) :=
   { Multiplicative.normedCommGroup, Multiplicative.orderedCommGroup with }
 
-instance Additive.normedLinearOrderedAddGroup [NormedLinearOrderedGroup α] :
+instance (priority := 10000) Additive.normedLinearOrderedAddGroup [NormedLinearOrderedGroup α] :
     NormedLinearOrderedAddGroup (Additive α) :=
   { Additive.normedAddCommGroup, Additive.linearOrderedAddCommGroup with }
 
-instance Multiplicative.normedlinearOrderedGroup [NormedLinearOrderedAddGroup α] :
+instance (priority := 10000) Multiplicative.normedlinearOrderedGroup [NormedLinearOrderedAddGroup α] :
     NormedLinearOrderedGroup (Multiplicative α) :=
   { Multiplicative.normedCommGroup, Multiplicative.linearOrderedCommGroup with }

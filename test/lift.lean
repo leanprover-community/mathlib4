@@ -99,7 +99,7 @@ example (h : False) : let n : ℤ := 3; n = 3 := by
   fail_if_success lift n to ℕ
   exfalso; exact h
 
-instance canLift_unit : CanLift Unit Unit id (fun _ ↦ true) := ⟨fun x _ ↦ ⟨x, rfl⟩⟩
+instance (priority := 10000) canLift_unit : CanLift Unit Unit id (fun _ ↦ true) := ⟨fun x _ ↦ ⟨x, rfl⟩⟩
 
 example (n : ℤ) (hn : 0 < n) : True := by
   fail_if_success lift n to ℕ using hn
@@ -110,7 +110,7 @@ example (n : ℤ) (hn : 0 < n) : True := by
   fail_if_success lift n to ℕ
   exact 0
 
-instance canLift_subtype (R : Type _) (s : Set R) : CanLift R {x // x ∈ s} ((↑) : {x // x ∈ s} → R) (fun x => x ∈ s) :=
+instance (priority := 10000) canLift_subtype (R : Type _) (s : Set R) : CanLift R {x // x ∈ s} ((↑) : {x // x ∈ s} → R) (fun x => x ∈ s) :=
   { prf := fun x hx => ⟨⟨x, hx⟩, rfl⟩ }
 
 example {R : Type _} {P : R → Prop} (x : R) (hx : P x) : P x := by

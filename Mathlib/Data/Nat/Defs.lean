@@ -35,7 +35,7 @@ open Function
 namespace Nat
 variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
-instance nontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
+instance (priority := 10000) nontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
@@ -772,7 +772,7 @@ end FindGreatest
 /-! ### Decidability of predicates -/
 
 -- To work around lean4#2552, we use `match` instead of `if/casesOn` with decidable instances.
-instance decidableBallLT :
+instance (priority := 10000) decidableBallLT :
   ∀ (n : Nat) (P : ∀ k, k < n → Prop) [∀ n h, Decidable (P n h)], Decidable (∀ n h, P n h)
 | 0, _, _ => isTrue fun _ ↦ (by cases ·)
 | n + 1, P, H =>
@@ -789,24 +789,24 @@ instance decidableBallLT :
 -- For reference, the instance using `casesOn` took 44544 for 4; this one takes 1299 for 4.
 example : ∀ m, m < 25 → ∀ n, n < 25 → ∀ c, c < 25 → m ^ 2 + n ^ 2 + c ^ 2 ≠ 7 := by decide
 
-instance decidableForallFin (P : Fin n → Prop) [DecidablePred P] : Decidable (∀ i, P i) :=
+instance (priority := 10000) decidableForallFin (P : Fin n → Prop) [DecidablePred P] : Decidable (∀ i, P i) :=
   decidable_of_iff (∀ k h, P ⟨k, h⟩) ⟨fun m ⟨k, h⟩ ↦ m k h, fun m k h ↦ m ⟨k, h⟩⟩
 #align nat.decidable_forall_fin Nat.decidableForallFin
 
-instance decidableBallLe (n : ℕ) (P : ∀ k ≤ n, Prop) [∀ n h, Decidable (P n h)] :
+instance (priority := 10000) decidableBallLe (n : ℕ) (P : ∀ k ≤ n, Prop) [∀ n h, Decidable (P n h)] :
     Decidable (∀ n h, P n h) :=
   decidable_of_iff (∀ (k) (h : k < succ n), P k (le_of_lt_succ h))
     ⟨fun m k h ↦ m k (lt_succ_of_le h), fun m k _ ↦ m k _⟩
 #align nat.decidable_ball_le Nat.decidableBallLe
 
-instance decidableExistsLT [h : DecidablePred p] : DecidablePred fun n ↦ ∃ m : ℕ, m < n ∧ p m
+instance (priority := 10000) decidableExistsLT [h : DecidablePred p] : DecidablePred fun n ↦ ∃ m : ℕ, m < n ∧ p m
   | 0 => isFalse (by simp)
   | n + 1 =>
     @decidable_of_decidable_of_iff _ _ (@instDecidableOr _ _ (decidableExistsLT n) (h n))
       (by simp only [lt_succ_iff_lt_or_eq, or_and_right, exists_or, exists_eq_left])
 #align nat.decidable_exists_lt Nat.decidableExistsLT
 
-instance decidableExistsLe [DecidablePred p] : DecidablePred fun n ↦ ∃ m : ℕ, m ≤ n ∧ p m :=
+instance (priority := 10000) decidableExistsLe [DecidablePred p] : DecidablePred fun n ↦ ∃ m : ℕ, m ≤ n ∧ p m :=
   fun n ↦ decidable_of_iff (∃ m, m < n + 1 ∧ p m)
     (exists_congr fun _ ↦ and_congr_left' lt_succ_iff)
 #align nat.decidable_exists_le Nat.decidableExistsLe

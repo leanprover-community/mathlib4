@@ -142,11 +142,11 @@ namespace CompositionSeries
 
 variable {X : Type u} [Lattice X] [JordanHolderLattice X]
 
-instance coeFun : CoeFun (CompositionSeries X) fun x => Fin (x.length + 1) → X where
+instance (priority := 10000) coeFun : CoeFun (CompositionSeries X) fun x => Fin (x.length + 1) → X where
   coe := CompositionSeries.series
 #align composition_series.has_coe_to_fun CompositionSeries.coeFun
 
-instance inhabited [Inhabited X] : Inhabited (CompositionSeries X) :=
+instance (priority := 10000) inhabited [Inhabited X] : Inhabited (CompositionSeries X) :=
   ⟨{  length := 0
       series := default
       step' := fun x => x.elim0 }⟩
@@ -181,7 +181,7 @@ protected theorem inj (s : CompositionSeries X) {i j : Fin s.length.succ} : s i 
   s.injective.eq_iff
 #align composition_series.inj CompositionSeries.inj
 
-instance membership : Membership X (CompositionSeries X) :=
+instance (priority := 10000) membership : Membership X (CompositionSeries X) :=
   ⟨fun x s => x ∈ Set.range s⟩
 #align composition_series.has_mem CompositionSeries.membership
 

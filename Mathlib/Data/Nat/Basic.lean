@@ -24,7 +24,7 @@ namespace Nat
 
 /-! ### Instances -/
 
-instance commSemiring : CommSemiring ℕ where
+instance (priority := 10000) commSemiring : CommSemiring ℕ where
   add := Nat.add
   add_assoc := Nat.add_assoc
   zero := Nat.zero
@@ -53,37 +53,37 @@ instance commSemiring : CommSemiring ℕ where
 
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
-instance addCommMonoid : AddCommMonoid ℕ :=
+instance (priority := 10000) addCommMonoid : AddCommMonoid ℕ :=
   inferInstance
 
-instance addMonoid : AddMonoid ℕ :=
+instance (priority := 10000) addMonoid : AddMonoid ℕ :=
   inferInstance
 
-instance monoid : Monoid ℕ :=
+instance (priority := 10000) monoid : Monoid ℕ :=
   inferInstance
 
-instance commMonoid : CommMonoid ℕ :=
+instance (priority := 10000) commMonoid : CommMonoid ℕ :=
   inferInstance
 
-instance commSemigroup : CommSemigroup ℕ :=
+instance (priority := 10000) commSemigroup : CommSemigroup ℕ :=
   inferInstance
 
-instance semigroup : Semigroup ℕ :=
+instance (priority := 10000) semigroup : Semigroup ℕ :=
   inferInstance
 
-instance addCommSemigroup : AddCommSemigroup ℕ :=
+instance (priority := 10000) addCommSemigroup : AddCommSemigroup ℕ :=
   inferInstance
 
-instance addSemigroup : AddSemigroup ℕ :=
+instance (priority := 10000) addSemigroup : AddSemigroup ℕ :=
   inferInstance
 
-instance distrib : Distrib ℕ :=
+instance (priority := 10000) distrib : Distrib ℕ :=
   inferInstance
 
-instance semiring : Semiring ℕ :=
+instance (priority := 10000) semiring : Semiring ℕ :=
   inferInstance
 
-instance cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
+instance (priority := 10000) cancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ :=
   { (inferInstance : CommMonoidWithZero ℕ) with
     mul_left_cancel_of_ne_zero :=
       fun h1 h2 => Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h1) h2 }

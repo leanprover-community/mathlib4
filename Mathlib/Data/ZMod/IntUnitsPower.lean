@@ -23,7 +23,7 @@ by using `Module R (Additive M)` in its place, especially since this already has
 `R = ℕ` and `R = ℤ`.
 -/
 
-instance : SMul (ZMod 2) (Additive ℤˣ) where
+instance (priority := 10000) : SMul (ZMod 2) (Additive ℤˣ) where
   smul z au := .ofMul <| Additive.toMul au ^ z.val
 
 lemma ZMod.smul_units_def (z : ZMod 2) (au : Additive ℤˣ) :
@@ -33,7 +33,7 @@ lemma ZMod.natCast_smul_units (n : ℕ) (au : Additive ℤˣ) : (n : ZMod 2) •
   (Int.units_pow_eq_pow_mod_two au n).symm
 
 /-- This is an indirect way of saying that `ℤˣ` has a power operation by `ZMod 2`. -/
-instance : Module (ZMod 2) (Additive ℤˣ) where
+instance (priority := 10000) : Module (ZMod 2) (Additive ℤˣ) where
   smul z au := .ofMul <| Additive.toMul au ^ z.val
   one_smul au := Additive.toMul.injective <| pow_one _
   mul_smul z₁ z₂ au := Additive.toMul.injective <| by
@@ -54,7 +54,7 @@ variable {R : Type*} [CommSemiring R] [Module R (Additive ℤˣ)]
 In lemma names, this operations is called `uzpow` to match `zpow`.
 
 Notably this is satisfied by `R ∈ {ℕ, ℤ, ZMod 2}`. -/
-instance Int.instUnitsPow : Pow ℤˣ R where
+instance (priority := 10000) Int.instUnitsPow : Pow ℤˣ R where
   pow u r := Additive.toMul (r • Additive.ofMul u)
 
 -- The above instance forms no typeclass diamonds with the standard power operators

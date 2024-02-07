@@ -138,11 +138,11 @@ lemma toCycles_i [K.HasHomology j] :
     K.toCycles i j ≫ K.iCycles j = K.d i j :=
   liftCycles_i _ _ _ _ _
 
-instance : Mono (K.iCycles i) := by
+instance (priority := 10000) : Mono (K.iCycles i) := by
   dsimp only [iCycles]
   infer_instance
 
-instance : Epi (K.homologyπ i) := by
+instance (priority := 10000) : Epi (K.homologyπ i) := by
   dsimp only [homologyπ]
   infer_instance
 
@@ -240,11 +240,11 @@ lemma p_fromOpcycles :
     K.pOpcycles i ≫ K.fromOpcycles i j = K.d i j :=
   p_descOpcycles _ _ _ _ _
 
-instance : Epi (K.pOpcycles i) := by
+instance (priority := 10000) : Epi (K.pOpcycles i) := by
   dsimp only [pOpcycles]
   infer_instance
 
-instance : Mono (K.homologyι i) := by
+instance (priority := 10000) : Mono (K.homologyι i) := by
   dsimp only [homologyι]
   infer_instance
 
@@ -311,11 +311,11 @@ lemma cyclesMap_i : cyclesMap φ i ≫ L.iCycles i = K.iCycles i ≫ φ.f i :=
 lemma p_opcyclesMap : K.pOpcycles i ≫ opcyclesMap φ i = φ.f i ≫ L.pOpcycles i :=
   ShortComplex.p_opcyclesMap _
 
-instance [Mono (φ.f i)] : Mono (cyclesMap φ i) := mono_of_mono_fac (cyclesMap_i φ i)
+instance (priority := 10000) [Mono (φ.f i)] : Mono (cyclesMap φ i) := mono_of_mono_fac (cyclesMap_i φ i)
 
 attribute [local instance] epi_comp
 
-instance [Epi (φ.f i)] : Epi (opcyclesMap φ i) := epi_of_epi_fac (p_opcyclesMap φ i)
+instance (priority := 10000) [Epi (φ.f i)] : Epi (opcyclesMap φ i) := epi_of_epi_fac (p_opcyclesMap φ i)
 
 variable (K)
 
@@ -456,9 +456,9 @@ noncomputable def homologyFunctorIso' [CategoryWithHomology C]
       shortComplexFunctor' C c i j k ⋙ ShortComplex.homologyFunctor C :=
   homologyFunctorIso C c j ≪≫ isoWhiskerRight (natIsoSc' C c i j k hi hk) _
 
-instance [CategoryWithHomology C] : (homologyFunctor C c i).PreservesZeroMorphisms where
-instance [CategoryWithHomology C] : (opcyclesFunctor C c i).PreservesZeroMorphisms where
-instance [CategoryWithHomology C] : (cyclesFunctor C c i).PreservesZeroMorphisms where
+instance (priority := 10000) [CategoryWithHomology C] : (homologyFunctor C c i).PreservesZeroMorphisms where
+instance (priority := 10000) [CategoryWithHomology C] : (opcyclesFunctor C c i).PreservesZeroMorphisms where
+instance (priority := 10000) [CategoryWithHomology C] : (cyclesFunctor C c i).PreservesZeroMorphisms where
 
 end
 
@@ -580,7 +580,7 @@ namespace ChainComplex
 variable {C : Type*} [Category C] [HasZeroMorphisms C]
   (K L : ChainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
 
-instance isIso_homologyι₀ :
+instance (priority := 10000) isIso_homologyι₀ :
     IsIso (K.homologyι 0) :=
   K.isIso_homologyι 0 _ rfl (by simp)
 
@@ -606,7 +606,7 @@ namespace CochainComplex
 variable {C : Type*} [Category C] [HasZeroMorphisms C]
   (K L : CochainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
 
-instance isIso_homologyπ₀ :
+instance (priority := 10000) isIso_homologyπ₀ :
     IsIso (K.homologyπ 0) :=
   K.isIso_homologyπ _ 0 rfl (by simp)
 
@@ -652,7 +652,7 @@ lemma homologyMap_sub : homologyMap (φ - ψ) i = homologyMap φ i - homologyMap
   rw [← ShortComplex.homologyMap_sub]
   rfl
 
-instance [CategoryWithHomology C] : (homologyFunctor C c i).Additive where
+instance (priority := 10000) [CategoryWithHomology C] : (homologyFunctor C c i).Additive where
 
 end HomologicalComplex
 

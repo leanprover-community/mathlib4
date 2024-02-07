@@ -57,12 +57,12 @@ structure AddContent (C : Set (Set α)) where
       (_h_dis : PairwiseDisjoint (I : Set (Set α)) id) (_h_mem : ⋃₀ ↑I ∈ C) :
     toFun (⋃₀ I) = ∑ u in I, toFun u
 
-instance : Inhabited (AddContent C) :=
+instance (priority := 10000) : Inhabited (AddContent C) :=
   ⟨{toFun := fun _ => 0
     empty' := by simp
     sUnion' := by simp }⟩
 
-instance : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
+instance (priority := 10000) : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
   coe := fun m s ↦ m.toFun s
   coe_injective' := by
     intro m m' h

@@ -23,7 +23,7 @@ universe v u
 
 namespace CategoryTheory
 
-noncomputable instance typesMonoidal : MonoidalCategory.{u} (Type u) :=
+noncomputable instance (priority := 10000) typesMonoidal : MonoidalCategory.{u} (Type u) :=
   monoidalOfChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
 #align category_theory.types_monoidal CategoryTheory.typesMonoidal
 

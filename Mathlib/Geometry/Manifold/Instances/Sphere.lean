@@ -382,7 +382,7 @@ theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphe
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a charted space
 modelled on the Euclidean space of dimension `n`. -/
-instance EuclideanSpace.instChartedSpaceSphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+instance (priority := 10000) EuclideanSpace.instChartedSpaceSphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ChartedSpace (EuclideanSpace ℝ (Fin n)) (sphere (0 : E) 1) where
   atlas := {f | ∃ v : sphere (0 : E) 1, f = stereographic' n v}
   chartAt v := stereographic' n (-v)
@@ -411,7 +411,7 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a smooth manifold,
 modelled on the Euclidean space of dimension `n`. -/
-instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+instance (priority := 10000) EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     SmoothManifoldWithCorners (𝓡 n) (sphere (0 : E) 1) :=
   smoothManifoldWithCorners_of_contDiffOn (𝓡 n) (sphere (0 : E) 1)
     (by
@@ -588,14 +588,14 @@ attribute [local instance] finrank_real_complex_fact'
 
 /-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
-instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
+instance (priority := 10000) : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
   EuclideanSpace.instChartedSpaceSphere
 
-instance : SmoothManifoldWithCorners (𝓡 1) circle :=
+instance (priority := 10000) : SmoothManifoldWithCorners (𝓡 1) circle :=
   EuclideanSpace.instSmoothManifoldWithCornersSphere (E := ℂ)
 
 /-- The unit circle in `ℂ` is a Lie group. -/
-instance : LieGroup (𝓡 1) circle where
+instance (priority := 10000) : LieGroup (𝓡 1) circle where
   smooth_mul := by
     apply ContMDiff.codRestrict_sphere
     let c : circle → ℂ := (↑)

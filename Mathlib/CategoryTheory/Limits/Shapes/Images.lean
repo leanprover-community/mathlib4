@@ -98,7 +98,7 @@ def self [Mono f] : MonoFactorisation f where
 
 -- I'm not sure we really need this, but the linter says that an inhabited instance
 -- ought to exist...
-instance [Mono f] : Inhabited (MonoFactorisation f) := ⟨self f⟩
+instance (priority := 10000) [Mono f] : Inhabited (MonoFactorisation f) := ⟨self f⟩
 
 variable {f}
 
@@ -197,7 +197,7 @@ variable (f)
 def self [Mono f] : IsImage (MonoFactorisation.self f) where lift F' := F'.e
 #align category_theory.limits.is_image.self CategoryTheory.Limits.IsImage.self
 
-instance [Mono f] : Inhabited (IsImage (MonoFactorisation.self f)) :=
+instance (priority := 10000) [Mono f] : Inhabited (IsImage (MonoFactorisation.self f)) :=
   ⟨self f⟩
 
 variable {f}
@@ -254,7 +254,7 @@ attribute [inherit_doc ImageFactorisation] ImageFactorisation.F ImageFactorisati
 
 namespace ImageFactorisation
 
-instance [Mono f] : Inhabited (ImageFactorisation f) :=
+instance (priority := 10000) [Mono f] : Inhabited (ImageFactorisation f) :=
   ⟨⟨_, IsImage.self f⟩⟩
 
 /-- If `f` and `g` are isomorphic arrows, then an image factorisation of `f`
@@ -317,7 +317,7 @@ def image.ι : image f ⟶ Y :=
 theorem image.as_ι : (Image.monoFactorisation f).m = image.ι f := rfl
 #align category_theory.limits.image.as_ι CategoryTheory.Limits.image.as_ι
 
-instance : Mono (image.ι f) :=
+instance (priority := 10000) : Mono (image.ι f) :=
   (Image.monoFactorisation f).m_mono
 
 /-- The map from the source to the image of a morphism. -/
@@ -370,7 +370,7 @@ theorem IsImage.lift_ι {F : MonoFactorisation f} (hF : IsImage F) :
 -- (they then automatically commute with the `e`s)
 -- and show that an `imageOf f` gives an initial object there
 -- (uniqueness of the lift comes for free).
-instance image.lift_mono (F' : MonoFactorisation f) : Mono (image.lift F') := by
+instance (priority := 10000) image.lift_mono (F' : MonoFactorisation f) : Mono (image.lift F') := by
   refine @mono_of_mono _ _ _ _ _ _ F'.m ?_
   simpa using MonoFactorisation.m_mono _
 #align category_theory.limits.image.lift_mono CategoryTheory.Limits.image.lift_mono
@@ -381,7 +381,7 @@ theorem HasImage.uniq (F' : MonoFactorisation f) (l : image f ⟶ F'.I) (w : l �
 #align category_theory.limits.has_image.uniq CategoryTheory.Limits.HasImage.uniq
 
 /-- If `has_image g`, then `has_image (f ≫ g)` when `f` is an isomorphism. -/
-instance {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) [HasImage g] : HasImage (f ≫ g) where
+instance (priority := 10000) {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) [HasImage g] : HasImage (f ≫ g) where
   exists_image :=
     ⟨{  F :=
           { I := image g
@@ -459,7 +459,7 @@ theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallel
     _ = h := by rw [Category.id_comp]
 #align category_theory.limits.image.ext CategoryTheory.Limits.image.ext
 
-instance [HasImage f] [∀ {Z : C} (g h : image f ⟶ Z), HasLimit (parallelPair g h)] :
+instance (priority := 10000) [HasImage f] [∀ {Z : C} (g h : image f ⟶ Z), HasLimit (parallelPair g h)] :
     Epi (factorThruImage f) :=
   ⟨fun _ _ w => image.ext f w⟩
 
@@ -492,7 +492,7 @@ def image.eqToHom (h : f = f') : image f ⟶ image f' :=
       fac := by rw [h]; simp only [image.fac]}
 #align category_theory.limits.image.eq_to_hom CategoryTheory.Limits.image.eqToHom
 
-instance (h : f = f') : IsIso (image.eqToHom h) :=
+instance (priority := 10000) (h : f = f') : IsIso (image.eqToHom h) :=
   ⟨⟨image.eqToHom h.symm,
       ⟨(cancel_mono (image.ι f)).1 (by
           -- Porting note: added let's for used to be a simp[image.eqToHom]
@@ -556,7 +556,7 @@ theorem image.factorThruImage_preComp [HasImage g] [HasImage (f ≫ g)] :
 
 /-- `image.preComp f g` is a monomorphism.
 -/
-instance image.preComp_mono [HasImage g] [HasImage (f ≫ g)] : Mono (image.preComp f g) := by
+instance (priority := 10000) image.preComp_mono [HasImage g] [HasImage (f ≫ g)] : Mono (image.preComp f g) := by
   refine @mono_of_mono _ _ _ _ _ _ (image.ι g) ?_
   simp only [image.preComp_ι]
   infer_instance
@@ -582,13 +582,13 @@ variable [HasEqualizers C]
 /-- `image.preComp f g` is an epimorphism when `f` is an epimorphism
 (we need `C` to have equalizers to prove this).
 -/
-instance image.preComp_epi_of_epi [HasImage g] [HasImage (f ≫ g)] [Epi f] :
+instance (priority := 10000) image.preComp_epi_of_epi [HasImage g] [HasImage (f ≫ g)] [Epi f] :
     Epi (image.preComp f g) := by
   apply @epi_of_epi_fac _ _ _ _ _ _ _ _ ?_ (image.factorThruImage_preComp _ _)
   exact epi_comp _ _
 #align category_theory.limits.image.pre_comp_epi_of_epi CategoryTheory.Limits.image.preComp_epi_of_epi
 
-instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
+instance (priority := 10000) hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
   HasImage.mk
     { F := (Image.monoFactorisation g).isoComp f
       isImage := { lift := fun F' => image.lift (F'.ofIsoComp f)
@@ -601,7 +601,7 @@ instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
 /-- `image.preComp f g` is an isomorphism when `f` is an isomorphism
 (we need `C` to have equalizers to prove this).
 -/
-instance image.isIso_precomp_iso (f : X ⟶ Y) [IsIso f] [HasImage g] : IsIso (image.preComp f g) :=
+instance (priority := 10000) image.isIso_precomp_iso (f : X ⟶ Y) [IsIso f] [HasImage g] : IsIso (image.preComp f g) :=
   ⟨⟨image.lift
         { I := image (f ≫ g)
           m := image.ι (f ≫ g)
@@ -615,7 +615,7 @@ instance image.isIso_precomp_iso (f : X ⟶ Y) [IsIso f] [HasImage g] : IsIso (i
 
 -- Note that in general we don't have the other comparison map you might expect
 -- `image f ⟶ image (f ≫ g)`.
-instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
+instance (priority := 10000) hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
   HasImage.mk
     { F := (Image.monoFactorisation f).compMono g
       isImage :=
@@ -663,7 +663,7 @@ variable {C : Type u} [Category.{v} C]
 
 section
 
-instance {X Y : C} (f : X ⟶ Y) [HasImage f] : HasImage (Arrow.mk f).hom :=
+instance (priority := 10000) {X Y : C} (f : X ⟶ Y) [HasImage f] : HasImage (Arrow.mk f).hom :=
   show HasImage f by infer_instance
 
 end
@@ -683,7 +683,7 @@ attribute [inherit_doc ImageMap] ImageMap.map ImageMap.map_ι
 -- Porting note: LHS of this simplifies, simpNF still complains after blacklisting
 attribute [-simp, nolint simpNF] ImageMap.mk.injEq
 
-instance inhabitedImageMap {f : Arrow C} [HasImage f.hom] : Inhabited (ImageMap (𝟙 f)) :=
+instance (priority := 10000) inhabitedImageMap {f : Arrow C} [HasImage f.hom] : Inhabited (ImageMap (𝟙 f)) :=
   ⟨⟨𝟙 _, by aesop⟩⟩
 #align category_theory.limits.inhabited_image_map CategoryTheory.Limits.inhabitedImageMap
 
@@ -741,7 +741,7 @@ instance (priority := 100) hasImageMapOfIsIso {f g : Arrow C} [HasImage f.hom] [
           Category.comp_id] }
 #align category_theory.limits.has_image_map_of_is_iso CategoryTheory.Limits.hasImageMapOfIsIso
 
-instance HasImageMap.comp {f g h : Arrow C} [HasImage f.hom] [HasImage g.hom] [HasImage h.hom]
+instance (priority := 10000) HasImageMap.comp {f g h : Arrow C} [HasImage f.hom] [HasImage g.hom] [HasImage h.hom]
     (sq1 : f ⟶ g) (sq2 : g ⟶ h) [HasImageMap sq1] [HasImageMap sq2] : HasImageMap (sq1 ≫ sq2) :=
   HasImageMap.mk
     { map := (HasImageMap.imageMap sq1).map ≫ (HasImageMap.imageMap sq2).map
@@ -779,7 +779,7 @@ theorem ImageMap.mk.injEq' {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] {sq
   simp only [Functor.id_obj, eq_iff_iff, iff_true]
   apply ImageMap.map_uniq_aux _ map_ι _ map_ι'
 
-instance : Subsingleton (ImageMap sq) :=
+instance (priority := 10000) : Subsingleton (ImageMap sq) :=
   Subsingleton.intro fun a b =>
     ImageMap.ext a b <| ImageMap.map_uniq a b
 
@@ -883,7 +883,7 @@ attribute [inherit_doc StrongEpiMonoFactorisation] StrongEpiMonoFactorisation.e_
 attribute [instance] StrongEpiMonoFactorisation.e_strong_epi
 
 /-- Satisfying the inhabited linter -/
-instance strongEpiMonoFactorisationInhabited {X Y : C} (f : X ⟶ Y) [StrongEpi f] :
+instance (priority := 10000) strongEpiMonoFactorisationInhabited {X Y : C} (f : X ⟶ Y) [StrongEpi f] :
     Inhabited (StrongEpiMonoFactorisation f) :=
   ⟨⟨⟨Y, 𝟙 Y, f, by simp⟩⟩⟩
 #align category_theory.limits.strong_epi_mono_factorisation_inhabited CategoryTheory.Limits.strongEpiMonoFactorisationInhabited

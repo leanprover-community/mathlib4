@@ -53,7 +53,7 @@ theorem IsPreconnected.subsingleton [TotallyDisconnectedSpace α] {s : Set α}
   TotallyDisconnectedSpace.isTotallyDisconnected_univ s (subset_univ s) h
 #align is_preconnected.subsingleton IsPreconnected.subsingleton
 
-instance Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
+instance (priority := 10000) Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
     [∀ a, TopologicalSpace (β a)] [∀ a, TotallyDisconnectedSpace (β a)] :
     TotallyDisconnectedSpace (∀ a : α, β a) :=
   ⟨fun t _ h2 =>
@@ -62,7 +62,7 @@ instance Pi.totallyDisconnectedSpace {α : Type*} {β : α → Type*}
     fun x x_in y y_in => funext fun a => (this a).subsingleton ⟨x, x_in, rfl⟩ ⟨y, y_in, rfl⟩⟩
 #align pi.totally_disconnected_space Pi.totallyDisconnectedSpace
 
-instance Prod.totallyDisconnectedSpace [TopologicalSpace β] [TotallyDisconnectedSpace α]
+instance (priority := 10000) Prod.totallyDisconnectedSpace [TopologicalSpace β] [TotallyDisconnectedSpace α]
     [TotallyDisconnectedSpace β] : TotallyDisconnectedSpace (α × β) :=
   ⟨fun t _ h2 =>
     have H1 : IsPreconnected (Prod.fst '' t) := h2.image Prod.fst continuous_fst.continuousOn
@@ -72,14 +72,14 @@ instance Prod.totallyDisconnectedSpace [TopologicalSpace β] [TotallyDisconnecte
       (H2.subsingleton ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩)⟩
 #align prod.totally_disconnected_space Prod.totallyDisconnectedSpace
 
-instance [TopologicalSpace β] [TotallyDisconnectedSpace α] [TotallyDisconnectedSpace β] :
+instance (priority := 10000) [TopologicalSpace β] [TotallyDisconnectedSpace α] [TotallyDisconnectedSpace β] :
     TotallyDisconnectedSpace (Sum α β) := by
   refine' ⟨fun s _ hs => _⟩
   obtain ⟨t, ht, rfl⟩ | ⟨t, ht, rfl⟩ := Sum.isPreconnected_iff.1 hs
   · exact ht.subsingleton.image _
   · exact ht.subsingleton.image _
 
-instance [∀ i, TopologicalSpace (π i)] [∀ i, TotallyDisconnectedSpace (π i)] :
+instance (priority := 10000) [∀ i, TopologicalSpace (π i)] [∀ i, TotallyDisconnectedSpace (π i)] :
     TotallyDisconnectedSpace (Σi, π i) := by
   refine' ⟨fun s _ hs => _⟩
   obtain rfl | h := s.eq_empty_or_nonempty
@@ -176,7 +176,7 @@ lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
     TotallyDisconnectedSpace s ↔ IsTotallyDisconnected s := by
   rw [← embedding_subtype_val.isTotallyDisconnected_range, Subtype.range_val]
 
-instance Subtype.totallyDisconnectedSpace {α : Type*} {p : α → Prop} [TopologicalSpace α]
+instance (priority := 10000) Subtype.totallyDisconnectedSpace {α : Type*} {p : α → Prop} [TopologicalSpace α]
     [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Subtype p) :=
   totallyDisconnectedSpace_subtype_iff.2 (isTotallyDisconnected_of_totallyDisconnectedSpace _)
 #align subtype.totally_disconnected_space Subtype.totallyDisconnectedSpace
@@ -294,7 +294,7 @@ theorem Continuous.connectedComponentsLift_unique (h : Continuous f) (g : Connec
 #align continuous.connected_components_lift_unique Continuous.connectedComponentsLift_unique
 
 
-instance ConnectedComponents.totallyDisconnectedSpace :
+instance (priority := 10000) ConnectedComponents.totallyDisconnectedSpace :
     TotallyDisconnectedSpace (ConnectedComponents α) := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
   refine' ConnectedComponents.surjective_coe.forall.2 fun x => _

@@ -88,7 +88,7 @@ section
 
 open ZeroObject
 
-instance zero_injective [HasZeroObject C] : Injective (0 : C) :=
+instance (priority := 10000) zero_injective [HasZeroObject C] : Injective (0 : C) :=
   (isZero_zero C).injective
 #align category_theory.injective.zero_injective CategoryTheory.Injective.zero_injective
 
@@ -107,7 +107,7 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Injective P ↔ Injective Q :=
 #align category_theory.injective.iso_iff CategoryTheory.Injective.iso_iff
 
 /-- The axiom of choice says that every nonempty type is an injective object in `Type`. -/
-instance (X : Type u₁) [Nonempty X] : Injective X where
+instance (priority := 10000) (X : Type u₁) [Nonempty X] : Injective X where
   factors g f mono :=
     ⟨fun z => by
       classical
@@ -121,7 +121,7 @@ instance (X : Type u₁) [Nonempty X] : Injective X where
         erw [mono (Classical.choose_spec h)]
       · exact False.elim (h ⟨y, rfl⟩)⟩
 
-instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
+instance (priority := 10000) Type.enoughInjectives : EnoughInjectives (Type u₁) where
   presentation X :=
     Nonempty.intro
       { J := WithBot X
@@ -132,7 +132,7 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
           exact Option.some_injective X }
 #align category_theory.injective.Type.enough_injectives CategoryTheory.Injective.Type.enoughInjectives
 
-instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injective (P ⨯ Q) where
+instance (priority := 10000) {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injective (P ⨯ Q) where
   factors g f mono := by
     skip
     use Limits.prod.lift (factorThru (g ≫ Limits.prod.fst) f) (factorThru (g ≫ Limits.prod.snd) f)
@@ -141,14 +141,14 @@ instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injectiv
     · simp only [prod.lift_fst]
     · simp only [prod.lift_snd]
 
-instance {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ c) where
+instance (priority := 10000) {β : Type v} (c : β → C) [HasProduct c] [∀ b, Injective (c b)] : Injective (∏ c) where
   factors g f mono := by
     skip
     refine' ⟨Pi.lift fun b => factorThru (g ≫ Pi.π c _) f, _⟩
     ext b
     simp only [Category.assoc, limit.lift_π, Fan.mk_π_app, comp_factorThru]
 
-instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [Injective Q] :
+instance (priority := 10000) {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [Injective Q] :
     Injective (P ⊞ Q) where
   factors g f mono := by
     skip
@@ -157,7 +157,7 @@ instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Injective P] [
     · simp only [Category.assoc, biprod.lift_fst, comp_factorThru]
     · simp only [Category.assoc, biprod.lift_snd, comp_factorThru]
 
-instance {β : Type v} (c : β → C) [HasZeroMorphisms C] [HasBiproduct c] [∀ b, Injective (c b)] :
+instance (priority := 10000) {β : Type v} (c : β → C) [HasZeroMorphisms C] [HasBiproduct c] [∀ b, Injective (c b)] :
     Injective (⨁ c) where
   factors g f mono := by
     skip
@@ -165,19 +165,19 @@ instance {β : Type v} (c : β → C) [HasZeroMorphisms C] [HasBiproduct c] [∀
     ext
     simp only [Category.assoc, biproduct.lift_π, comp_factorThru]
 
-instance {P : Cᵒᵖ} [Projective P] : Injective (unop P) where
+instance (priority := 10000) {P : Cᵒᵖ} [Projective P] : Injective (unop P) where
   factors g f mono :=
     ⟨(@Projective.factorThru Cᵒᵖ _ P _ _ _ g.op f.op _).unop, Quiver.Hom.op_inj (by simp)⟩
 
-instance {J : Cᵒᵖ} [Injective J] : Projective (unop J) where
+instance (priority := 10000) {J : Cᵒᵖ} [Injective J] : Projective (unop J) where
   factors f e he :=
     ⟨(@factorThru Cᵒᵖ _ J _ _ _ f.op e.op _).unop, Quiver.Hom.op_inj (by simp)⟩
 
-instance {J : C} [Injective J] : Projective (op J) where
+instance (priority := 10000) {J : C} [Injective J] : Projective (op J) where
   factors f e epi :=
     ⟨(@factorThru C _ J _ _ _ f.unop e.unop _).op, Quiver.Hom.unop_inj (by simp)⟩
 
-instance {P : C} [Projective P] : Injective (op P) where
+instance (priority := 10000) {P : C} [Projective P] : Injective (op P) where
   factors g f mono :=
     ⟨(@Projective.factorThru C _ P _ _ _ g.unop f.unop _).op, Quiver.Hom.unop_inj (by simp)⟩
 
@@ -222,7 +222,7 @@ def under (X : C) : C :=
   (EnoughInjectives.presentation X).some.J
 #align category_theory.injective.under CategoryTheory.Injective.under
 
-instance injective_under (X : C) : Injective (under X) :=
+instance (priority := 10000) injective_under (X : C) : Injective (under X) :=
   (EnoughInjectives.presentation X).some.injective
 #align category_theory.injective.injective_under CategoryTheory.Injective.injective_under
 
@@ -233,7 +233,7 @@ def ι (X : C) : X ⟶ under X :=
   (EnoughInjectives.presentation X).some.f
 #align category_theory.injective.ι CategoryTheory.Injective.ι
 
-instance ι_mono (X : C) : Mono (ι X) :=
+instance (priority := 10000) ι_mono (X : C) : Mono (ι X) :=
   (EnoughInjectives.presentation X).some.mono
 #align category_theory.injective.ι_mono CategoryTheory.Injective.ι_mono
 
@@ -248,7 +248,7 @@ def syzygies : C :=
   under (cokernel f) -- Porting note: no deriving Injective
 #align category_theory.injective.syzygies CategoryTheory.Injective.syzygies
 
-instance : Injective <| syzygies f := injective_under (cokernel f)
+instance (priority := 10000) : Injective <| syzygies f := injective_under (cokernel f)
 
 /-- When `C` has enough injective,
 `Injective.d f : Y ⟶ syzygies f` is the composition
@@ -264,10 +264,10 @@ end
 
 end EnoughInjectives
 
-instance [EnoughInjectives C] : EnoughProjectives Cᵒᵖ :=
+instance (priority := 10000) [EnoughInjectives C] : EnoughProjectives Cᵒᵖ :=
   ⟨fun X => ⟨{ p := _, f := (Injective.ι (unop X)).op}⟩⟩
 
-instance [EnoughProjectives C] : EnoughInjectives Cᵒᵖ :=
+instance (priority := 10000) [EnoughProjectives C] : EnoughInjectives Cᵒᵖ :=
   ⟨fun X => ⟨⟨_, inferInstance, (Projective.π (unop X)).op, inferInstance⟩⟩⟩
 
 theorem enoughProjectives_of_enoughInjectives_op [EnoughInjectives Cᵒᵖ] : EnoughProjectives C :=

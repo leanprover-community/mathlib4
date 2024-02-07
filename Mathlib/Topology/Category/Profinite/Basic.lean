@@ -17,7 +17,7 @@ often called profinite sets -- perhaps they could be called
 profinite types in Lean.
 
 The type of profinite topological spaces is called `Profinite`. It has a category
-instance and is a fully faithful subcategory of `TopCat`. The fully faithful functor
+instance (priority := 10000) and is a fully faithful subcategory of `TopCat`. The fully faithful functor
 is called `Profinite.toTop`.
 
 ## Implementation notes
@@ -61,22 +61,22 @@ def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 #align Profinite.of Profinite.of
 
-instance : Inhabited Profinite :=
+instance (priority := 10000) : Inhabited Profinite :=
   ⟨Profinite.of PEmpty⟩
 
-instance category : Category Profinite :=
+instance (priority := 10000) category : Category Profinite :=
   InducedCategory.category toCompHaus
 #align Profinite.category Profinite.category
 
-instance concreteCategory : ConcreteCategory Profinite :=
+instance (priority := 10000) concreteCategory : ConcreteCategory Profinite :=
   InducedCategory.concreteCategory _
 #align Profinite.concrete_category Profinite.concreteCategory
 
-instance hasForget₂ : HasForget₂ Profinite TopCat :=
+instance (priority := 10000) hasForget₂ : HasForget₂ Profinite TopCat :=
   InducedCategory.hasForget₂ _
 #align Profinite.has_forget₂ Profinite.hasForget₂
 
-instance : CoeSort Profinite (Type*) :=
+instance (priority := 10000) : CoeSort Profinite (Type*) :=
   ⟨fun X => X.toCompHaus⟩
 
 -- Porting note: This lemma was not needed in mathlib3
@@ -85,7 +85,7 @@ lemma forget_ContinuousMap_mk {X Y : Profinite} (f : X → Y) (hf : Continuous f
     (forget Profinite).map (ContinuousMap.mk f hf) = f :=
   rfl
 
-instance {X : Profinite} : TotallyDisconnectedSpace X :=
+instance (priority := 10000) {X : Profinite} : TotallyDisconnectedSpace X :=
   X.isTotallyDisconnected
 
 -- We check that we automatically infer that Profinite sets are compact and Hausdorff.
@@ -96,19 +96,19 @@ example {X : Profinite} : T2Space X :=
   inferInstance
 
 -- Porting note: the next four instances were not needed previously.
-instance {X : Profinite} : TopologicalSpace ((forget Profinite).obj X) := by
+instance (priority := 10000) {X : Profinite} : TopologicalSpace ((forget Profinite).obj X) := by
   change TopologicalSpace X
   exact inferInstance
 
-instance {X : Profinite} : TotallyDisconnectedSpace ((forget Profinite).obj X) := by
+instance (priority := 10000) {X : Profinite} : TotallyDisconnectedSpace ((forget Profinite).obj X) := by
   change TotallyDisconnectedSpace X
   exact inferInstance
 
-instance {X : Profinite} : CompactSpace ((forget Profinite).obj X) := by
+instance (priority := 10000) {X : Profinite} : CompactSpace ((forget Profinite).obj X) := by
   change CompactSpace X
   exact inferInstance
 
-instance {X : Profinite} : T2Space ((forget Profinite).obj X) := by
+instance (priority := 10000) {X : Profinite} : T2Space ((forget Profinite).obj X) := by
   change T2Space X
   exact inferInstance
 
@@ -141,14 +141,14 @@ def profiniteToCompHaus : Profinite ⥤ CompHaus :=
 -- deriving Full, Faithful
 #align Profinite_to_CompHaus profiniteToCompHaus
 
-instance : Full profiniteToCompHaus :=
+instance (priority := 10000) : Full profiniteToCompHaus :=
 show Full <| inducedFunctor _ from inferInstance
 
-instance : Faithful profiniteToCompHaus :=
+instance (priority := 10000) : Faithful profiniteToCompHaus :=
 show Faithful <| inducedFunctor _ from inferInstance
 
 -- Porting note: added, as it is not found otherwise.
-instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
+instance (priority := 10000) {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
   X.isTotallyDisconnected
 
 /-- The fully faithful embedding of `Profinite` in `TopCat`.
@@ -160,10 +160,10 @@ def Profinite.toTopCat : Profinite ⥤ TopCat :=
 -- deriving Full, Faithful
 #align Profinite.to_Top Profinite.toTopCat
 
-instance : Full Profinite.toTopCat :=
+instance (priority := 10000) : Full Profinite.toTopCat :=
 show Full <| inducedFunctor _ from inferInstance
 
-instance : Faithful Profinite.toTopCat :=
+instance (priority := 10000) : Faithful Profinite.toTopCat :=
 show Faithful <| inducedFunctor _ from inferInstance
 
 @[simp]
@@ -287,31 +287,31 @@ def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
 #align Profinite.to_Profinite_adj_to_CompHaus Profinite.toProfiniteAdjToCompHaus
 
 /-- The category of profinite sets is reflective in the category of compact Hausdorff spaces -/
-instance toCompHaus.reflective : Reflective profiniteToCompHaus where
+instance (priority := 10000) toCompHaus.reflective : Reflective profiniteToCompHaus where
   toIsRightAdjoint := ⟨CompHaus.toProfinite, Profinite.toProfiniteAdjToCompHaus⟩
 #align Profinite.to_CompHaus.reflective Profinite.toCompHaus.reflective
 
-noncomputable instance toCompHaus.createsLimits : CreatesLimits profiniteToCompHaus :=
+noncomputable instance (priority := 10000) toCompHaus.createsLimits : CreatesLimits profiniteToCompHaus :=
   monadicCreatesLimits _
 #align Profinite.to_CompHaus.creates_limits Profinite.toCompHaus.createsLimits
 
-noncomputable instance toTopCat.reflective : Reflective Profinite.toTopCat :=
+noncomputable instance (priority := 10000) toTopCat.reflective : Reflective Profinite.toTopCat :=
   Reflective.comp profiniteToCompHaus compHausToTop
 #align Profinite.to_Top.reflective Profinite.toTopCat.reflective
 
-noncomputable instance toTopCat.createsLimits : CreatesLimits Profinite.toTopCat :=
+noncomputable instance (priority := 10000) toTopCat.createsLimits : CreatesLimits Profinite.toTopCat :=
   monadicCreatesLimits _
 #align Profinite.to_Top.creates_limits Profinite.toTopCat.createsLimits
 
-instance hasLimits : Limits.HasLimits Profinite :=
+instance (priority := 10000) hasLimits : Limits.HasLimits Profinite :=
   hasLimits_of_hasLimits_createsLimits Profinite.toTopCat
 #align Profinite.has_limits Profinite.hasLimits
 
-instance hasColimits : Limits.HasColimits Profinite :=
+instance (priority := 10000) hasColimits : Limits.HasColimits Profinite :=
   hasColimits_of_reflective profiniteToCompHaus
 #align Profinite.has_colimits Profinite.hasColimits
 
-noncomputable instance forgetPreservesLimits : Limits.PreservesLimits (forget Profinite) := by
+noncomputable instance (priority := 10000) forgetPreservesLimits : Limits.PreservesLimits (forget Profinite) := by
   apply Limits.compPreservesLimits Profinite.toTopCat (forget TopCat)
 #align Profinite.forget_preserves_limits Profinite.forgetPreservesLimits
 
@@ -334,7 +334,7 @@ noncomputable def isoOfBijective (bij : Function.Bijective f) : X ≅ Y :=
   asIso f
 #align Profinite.iso_of_bijective Profinite.isoOfBijective
 
-instance forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget Profinite) := by
+instance (priority := 10000) forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget Profinite) := by
   constructor
   intro A B f hf
   exact Profinite.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)
@@ -403,11 +403,11 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     apply (forget Profinite).epi_of_epi_map
 #align Profinite.epi_iff_surjective Profinite.epi_iff_surjective
 
-instance {X Y : Profinite} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
+instance (priority := 10000) {X Y : Profinite} (f : X ⟶ Y) [Epi f] : @Epi CompHaus _ _ _ f := by
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [CompHaus.epi_iff_surjective, ← epi_iff_surjective]; assumption
 
-instance {X Y : Profinite} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
+instance (priority := 10000) {X Y : Profinite} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [epi_iff_surjective, ← CompHaus.epi_iff_surjective]; assumption
 

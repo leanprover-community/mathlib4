@@ -78,7 +78,7 @@ def toContinuousOrderHom (f : F) : α →Co β :=
       monotone' := ContinuousOrderHomClass.map_monotone f
       continuous_toFun := map_continuous f }
 
-instance : CoeTC F (α →Co β) :=
+instance (priority := 10000) : CoeTC F (α →Co β) :=
   ⟨toContinuousOrderHom⟩
 
 end ContinuousOrderHomClass
@@ -98,14 +98,14 @@ def toContinuousMap (f : α →Co β) : C(α, β) :=
   { f with }
 #align continuous_order_hom.to_continuous_map ContinuousOrderHom.toContinuousMap
 
-instance instFunLike : FunLike (α →Co β) α β where
+instance (priority := 10000) instFunLike : FunLike (α →Co β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
-instance : ContinuousOrderHomClass (α →Co β) α β where
+instance (priority := 10000) : ContinuousOrderHomClass (α →Co β) α β where
   map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
 
@@ -142,7 +142,7 @@ protected def id : α →Co α :=
   ⟨OrderHom.id, continuous_id⟩
 #align continuous_order_hom.id ContinuousOrderHom.id
 
-instance : Inhabited (α →Co α) :=
+instance (priority := 10000) : Inhabited (α →Co α) :=
   ⟨ContinuousOrderHom.id _⟩
 
 @[simp]
@@ -200,12 +200,12 @@ theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective 
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align continuous_order_hom.cancel_left ContinuousOrderHom.cancel_left
 
-instance : Preorder (α →Co β) :=
+instance (priority := 10000) : Preorder (α →Co β) :=
   Preorder.lift ((↑) : (α →Co β) → α → β)
 
 end Preorder
 
-instance [PartialOrder β] : PartialOrder (α →Co β) :=
+instance (priority := 10000) [PartialOrder β] : PartialOrder (α →Co β) :=
   PartialOrder.lift ((↑) : (α →Co β) → α → β) DFunLike.coe_injective
 
 end ContinuousOrderHom

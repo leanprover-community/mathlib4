@@ -37,7 +37,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 
 /-- `sum C D` gives the direct sum of two categories.
 -/
-instance sum : Category.{v₁} (Sum C D) where
+instance (priority := 10000) sum : Category.{v₁} (Sum C D) where
   Hom X Y :=
     match X, Y with
     | inl X, inl Y => X ⟶ Y
@@ -151,7 +151,7 @@ def equivalence : Sum C D ≌ Sum D C :=
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
-instance isEquivalence : IsEquivalence (swap C D) :=
+instance (priority := 10000) isEquivalence : IsEquivalence (swap C D) :=
   (by infer_instance : IsEquivalence (equivalence C D).functor)
 #align category_theory.sum.swap.is_equivalence CategoryTheory.Sum.Swap.isEquivalence
 

@@ -121,7 +121,7 @@ theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
 #align measure_theory.add_haar_measure_eq_volume_pi MeasureTheory.addHaarMeasure_eq_volume_pi
 
 -- porting note: TODO: remove this instance?
-instance isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
+instance (priority := 10000) isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
     IsAddHaarMeasure (volume : Measure (ι → ℝ)) :=
   inferInstance
 #align measure_theory.is_add_haar_measure_volume_pi MeasureTheory.isAddHaarMeasure_volume_pi
@@ -589,10 +589,10 @@ theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [Λ^Fin n]→ₗ[�
     Real.ennnorm_eq_ofReal_abs]
 #align alternating_map.measure_parallelepiped AlternatingMap.measure_parallelepiped
 
-instance (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
+instance (priority := 10000) (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
 
-instance (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
+instance (priority := 10000) (ω : G [Λ^Fin n]→ₗ[ℝ] ℝ) : IsLocallyFiniteMeasure ω.measure := by
   rw [AlternatingMap.measure]; infer_instance
 
 end

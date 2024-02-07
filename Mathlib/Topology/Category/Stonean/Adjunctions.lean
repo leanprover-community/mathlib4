@@ -52,7 +52,7 @@ noncomputable def stoneCechAdjunction : typeToStonean ⊣ (forget Stonean) :=
   adjunctionOfEquivLeft stoneCechEquivalence fun _ _ _ _ _ => rfl
 
 /-- The forgetful functor from Stonean spaces, being a right adjoint, preserves limits. -/
-noncomputable instance forget.preservesLimits : Limits.PreservesLimits (forget Stonean) :=
+noncomputable instance (priority := 10000) forget.preservesLimits : Limits.PreservesLimits (forget Stonean) :=
   rightAdjointPreservesLimits stoneCechAdjunction
 
 theorem mono_iff_injective {X Y : Stonean} (f : X ⟶ Y) : Mono f ↔ Function.Injective f :=

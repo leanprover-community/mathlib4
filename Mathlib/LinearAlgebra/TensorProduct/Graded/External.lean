@@ -60,7 +60,7 @@ variable [DirectSum.GRing 𝒜] [DirectSum.GRing ℬ]
 variable [DirectSum.GAlgebra R 𝒜] [DirectSum.GAlgebra R ℬ]
 
 -- this helps with performance
-instance (i : ι × ι) : Module R (𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i)) :=
+instance (priority := 10000) (i : ι × ι) : Module R (𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i)) :=
   TensorProduct.leftModule
 
 open DirectSum (lof)

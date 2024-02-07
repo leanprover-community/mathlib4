@@ -54,7 +54,7 @@ namespace SingleObj
 variable (M G : Type u)
 
 /-- One and `flip (*)` become `id` and `comp` for morphisms of the single object category. -/
-instance categoryStruct [One M] [Mul M] : CategoryStruct (SingleObj M)
+instance (priority := 10000) categoryStruct [One M] [Mul M] : CategoryStruct (SingleObj M)
     where
   Hom _ _ := M
   comp x y := y * x
@@ -64,7 +64,7 @@ instance categoryStruct [One M] [Mul M] : CategoryStruct (SingleObj M)
 variable [Monoid M] [Group G]
 
 /-- Monoid laws become category laws for the single object category. -/
-instance category : Category (SingleObj M)
+instance (priority := 10000) category : Category (SingleObj M)
     where
   comp_id := one_mul
   id_comp := mul_one
@@ -80,14 +80,14 @@ theorem comp_as_mul {x y z : SingleObj M} (f : x ⟶ y) (g : y ⟶ z) : f ≫ g 
 #align category_theory.single_obj.comp_as_mul CategoryTheory.SingleObj.comp_as_mul
 
 /-- If `M` is finite and in universe zero, then `SingleObj M` is a `FinCategory`. -/
-instance finCategoryOfFintype (M : Type) [Fintype M] [Monoid M] : FinCategory (SingleObj M)
+instance (priority := 10000) finCategoryOfFintype (M : Type) [Fintype M] [Monoid M] : FinCategory (SingleObj M)
   where
 
 /-- Groupoid structure on `SingleObj M`.
 
 See <https://stacks.math.columbia.edu/tag/0019>.
 -/
-instance groupoid : Groupoid (SingleObj G)
+instance (priority := 10000) groupoid : Groupoid (SingleObj G)
     where
   inv x := x⁻¹
   inv_comp := mul_right_inv
@@ -276,13 +276,13 @@ def toCat : MonCat ⥤ Cat where
 set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat MonCat.toCat
 
-instance toCatFull : Full toCat where
+instance (priority := 10000) toCatFull : Full toCat where
   preimage := (SingleObj.mapHom _ _).invFun
   witness _ := rfl
 set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat_full MonCat.toCatFull
 
-instance toCat_faithful : Faithful toCat where
+instance (priority := 10000) toCat_faithful : Faithful toCat where
   map_injective h := by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h
 set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat_faithful MonCat.toCat_faithful

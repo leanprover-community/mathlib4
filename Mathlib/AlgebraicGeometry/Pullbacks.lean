@@ -549,7 +549,7 @@ theorem hasPullback_of_cover : HasPullback f g :=
   ⟨⟨⟨_, gluedIsLimit 𝒰 f g⟩⟩⟩
 #align algebraic_geometry.Scheme.pullback.has_pullback_of_cover AlgebraicGeometry.Scheme.Pullback.hasPullback_of_cover
 
-instance affine_hasPullback {A B C : CommRingCat}
+instance (priority := 10000) affine_hasPullback {A B C : CommRingCat}
     (f : Spec.obj (Opposite.op A) ⟶ Spec.obj (Opposite.op C))
     (g : Spec.obj (Opposite.op B) ⟶ Spec.obj (Opposite.op C)) : HasPullback f g := by
   rw [← Spec.image_preimage f, ← Spec.image_preimage g]
@@ -563,14 +563,14 @@ theorem affine_affine_hasPullback {B C : CommRingCat} {X : Scheme}
   hasPullback_of_cover X.affineCover f g
 #align algebraic_geometry.Scheme.pullback.affine_affine_has_pullback AlgebraicGeometry.Scheme.Pullback.affine_affine_hasPullback
 
-instance base_affine_hasPullback {C : CommRingCat} {X Y : Scheme} (f : X ⟶ Spec.obj (Opposite.op C))
+instance (priority := 10000) base_affine_hasPullback {C : CommRingCat} {X Y : Scheme} (f : X ⟶ Spec.obj (Opposite.op C))
     (g : Y ⟶ Spec.obj (Opposite.op C)) : HasPullback f g :=
   @hasPullback_symmetry _ _ _ _ _ _ _
     (@hasPullback_of_cover _ _ _ Y.affineCover g f fun _ =>
       @hasPullback_symmetry _ _ _ _ _ _ _ <| affine_affine_hasPullback _ _)
 #align algebraic_geometry.Scheme.pullback.base_affine_has_pullback AlgebraicGeometry.Scheme.Pullback.base_affine_hasPullback
 
-instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
+instance (priority := 10000) left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
     (i : Z.affineCover.J) : HasPullback ((Z.affineCover.pullbackCover f).map i ≫ f) g := by
   let Xᵢ := pullback f (Z.affineCover.map i)
   let Yᵢ := pullback g (Z.affineCover.map i)
@@ -585,13 +585,13 @@ instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g
   exact this
 #align algebraic_geometry.Scheme.pullback.left_affine_comp_pullback_HasPullback AlgebraicGeometry.Scheme.Pullback.left_affine_comp_pullback_hasPullback
 
-instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) : HasPullback f g :=
+instance (priority := 10000) {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) : HasPullback f g :=
   hasPullback_of_cover (Z.affineCover.pullbackCover f) f g
 
-instance : HasPullbacks Scheme :=
+instance (priority := 10000) : HasPullbacks Scheme :=
   hasPullbacks_of_hasLimit_cospan _
 
-instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
+instance (priority := 10000) isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
     (f : X ⟶ Z) (g : Y ⟶ Z) [IsAffine X] [IsAffine Y] [IsAffine Z] :
     IsAffine (pullback f g) :=
   isAffineOfIso
@@ -705,7 +705,7 @@ end AlgebraicGeometry.Scheme
 
 namespace AlgebraicGeometry
 
-instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
+instance (priority := 10000) Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
     (f : X ⟶ S) (g : Y ⟶ S) (f' : X' ⟶ S') (g' : Y' ⟶ S')
     (i₁ : X ⟶ X') (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f') (e₂ : g ≫ i₃ = i₂ ≫ g')
     [IsOpenImmersion i₁] [IsOpenImmersion i₂] [Mono i₃] :

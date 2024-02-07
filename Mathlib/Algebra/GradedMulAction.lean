@@ -66,10 +66,10 @@ class GSMul [VAdd ιA ιM] where
 #align graded_monoid.ghas_smul GradedMonoid.GSMul
 
 /-- A graded version of `Mul.toSMul` -/
-instance GMul.toGSMul [Add ιA] [GMul A] : GSMul A A where smul := GMul.mul
+instance (priority := 10000) GMul.toGSMul [Add ιA] [GMul A] : GSMul A A where smul := GMul.mul
 #align graded_monoid.ghas_mul.to_ghas_smul GradedMonoid.GMul.toGSMul
 
-instance GSMul.toSMul [VAdd ιA ιM] [GSMul A M] : SMul (GradedMonoid A) (GradedMonoid M) :=
+instance (priority := 10000) GSMul.toSMul [VAdd ιA ιM] [GSMul A M] : SMul (GradedMonoid A) (GradedMonoid M) :=
   ⟨fun x y ↦ ⟨_, GSMul.smul x.snd y.snd⟩⟩
 #align graded_monoid.ghas_smul.to_has_smul GradedMonoid.GSMul.toSMul
 
@@ -87,13 +87,13 @@ class GMulAction [AddMonoid ιA] [VAdd ιA ιM] [GMonoid A] extends GSMul A M wh
 #align graded_monoid.gmul_action GradedMonoid.GMulAction
 
 /-- The graded version of `Monoid.toMulAction`. -/
-instance GMonoid.toGMulAction [AddMonoid ιA] [GMonoid A] : GMulAction A A :=
+instance (priority := 10000) GMonoid.toGMulAction [AddMonoid ιA] [GMonoid A] : GMulAction A A :=
   { GMul.toGSMul _ with
     one_smul := GMonoid.one_mul
     mul_smul := GMonoid.mul_assoc }
 #align graded_monoid.gmonoid.to_gmul_action GradedMonoid.GMonoid.toGMulAction
 
-instance GMulAction.toMulAction [AddMonoid ιA] [GMonoid A] [VAdd ιA ιM] [GMulAction A M] :
+instance (priority := 10000) GMulAction.toMulAction [AddMonoid ιA] [GMonoid A] [VAdd ιA ιM] [GMulAction A M] :
     MulAction (GradedMonoid A) (GradedMonoid M)
     where
   one_smul := GMulAction.one_smul
@@ -118,7 +118,7 @@ class SetLike.GradedSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M
   smul_mem : ∀ ⦃i : ιA⦄ ⦃j : ιB⦄ {ai bj}, ai ∈ A i → bj ∈ B j → ai • bj ∈ B (i +ᵥ j)
 #align set_like.has_graded_smul SetLike.GradedSMul
 
-instance SetLike.toGSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [VAdd ιA ιB]
+instance (priority := 10000) SetLike.toGSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [VAdd ιA ιB]
     (A : ιA → S) (B : ιB → N) [SetLike.GradedSMul A B] :
     GradedMonoid.GSMul (fun i ↦ A i) fun i ↦ B i where
   smul a b := ⟨a.1 • b.1, SetLike.GradedSMul.smul_mem a.2 b.2⟩
@@ -140,7 +140,7 @@ theorem SetLike.coe_GSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R 
 #align set_like.coe_ghas_smul SetLike.coe_GSMul
 
 /-- Internally graded version of `Mul.toSMul`. -/
-instance SetLike.GradedMul.toGradedSMul [AddMonoid ιA] [Monoid R] {S : Type*} [SetLike S R]
+instance (priority := 10000) SetLike.GradedMul.toGradedSMul [AddMonoid ιA] [Monoid R] {S : Type*} [SetLike S R]
     (A : ιA → S) [SetLike.GradedMonoid A] : SetLike.GradedSMul A A where
   smul_mem _ _ _ _ hi hj := SetLike.GradedMonoid.toGradedMul.mul_mem hi hj
 #align set_like.has_graded_mul.to_has_graded_smul SetLike.GradedMul.toGradedSMul

@@ -24,7 +24,7 @@ variable {α : Type u}
 
 namespace WithZero
 
-instance contravariantClass_mul_lt [Mul α] [PartialOrder α]
+instance (priority := 10000) contravariantClass_mul_lt [Mul α] [PartialOrder α]
     [ContravariantClass α α (· * ·) (· < ·)] :
     ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
   refine ⟨fun a b c h => ?_⟩

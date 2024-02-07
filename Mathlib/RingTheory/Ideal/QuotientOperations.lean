@@ -290,7 +290,7 @@ variable [CommSemiring R₁] [CommSemiring R₂] [CommRing A]
 variable [Algebra R₁ A] [Algebra R₂ A]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
-instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
+instance (priority := 10000) Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
   { toRingHom := (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
     smul_def' := fun _ x =>
       Quotient.inductionOn' x fun _ =>
@@ -301,7 +301,7 @@ instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
 -- Lean can struggle to find this instance later if we don't provide this shortcut
 -- Porting note: this can probably now be deleted
 -- update: maybe not - removal causes timeouts
-instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
+instance (priority := 10000) Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
     IsScalarTower R₁ R₂ (A ⧸ I) := by infer_instance
 #align ideal.quotient.is_scalar_tower Ideal.Quotient.isScalarTower
 

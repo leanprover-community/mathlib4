@@ -42,7 +42,7 @@ variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 -- porting note: there was an explicit call to
 -- CategoryTheory.Sheaf.CategoryTheory.SheafToPresheaf.CategoryTheory.createsLimits.{u₁, v₁, v₁}
 -- but it is not necessary (it was not either in mathlib)
-instance [HasLimits A] : CreatesLimits (sheafToPresheaf J A) := inferInstance
+instance (priority := 10000) [HasLimits A] : CreatesLimits (sheafToPresheaf J A) := inferInstance
 
 -- The assumptions so that we have sheafification
 variable [ConcreteCategory.{v₁} A] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
@@ -51,7 +51,7 @@ variable [PreservesFilteredColimits (forget A)] [ReflectsIsomorphisms (forget A)
 
 attribute [local instance] reflectsLimitsOfReflectsIsomorphisms
 
-instance {X : C} : IsCofiltered (J.Cover X) :=
+instance (priority := 10000) {X : C} : IsCofiltered (J.Cover X) :=
   inferInstance
 
 /-- The pullback functor `Sheaf J A ⥤ Sheaf K A` associated to a functor `G : C ⥤ D` in the
@@ -61,7 +61,7 @@ def Functor.sheafPullback : Sheaf J A ⥤ Sheaf K A :=
   sheafToPresheaf J A ⋙ lan G.op ⋙ presheafToSheaf K A
 #align category_theory.sites.pushforward CategoryTheory.Functor.sheafPullback
 
-instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by
+instance (priority := 10000) [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by
   have : PreservesFiniteLimits (lan (Functor.op G) ⋙ presheafToSheaf K A) :=
     compPreservesFiniteLimits _ _
   apply compPreservesFiniteLimits

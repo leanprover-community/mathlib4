@@ -50,7 +50,7 @@ attribute [coe] Filtration.seq
 
 variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
-instance [Preorder ι] : CoeFun (Filtration ι m) fun _ => ι → MeasurableSpace Ω :=
+instance (priority := 10000) [Preorder ι] : CoeFun (Filtration ι m) fun _ => ι → MeasurableSpace Ω :=
   ⟨fun f => f.seq⟩
 
 namespace Filtration
@@ -84,19 +84,19 @@ theorem const_apply {m' : MeasurableSpace Ω} {hm' : m' ≤ m} (i : ι) : const 
   rfl
 #align measure_theory.filtration.const_apply MeasureTheory.Filtration.const_apply
 
-instance : Inhabited (Filtration ι m) :=
+instance (priority := 10000) : Inhabited (Filtration ι m) :=
   ⟨const ι m le_rfl⟩
 
-instance : LE (Filtration ι m) :=
+instance (priority := 10000) : LE (Filtration ι m) :=
   ⟨fun f g => ∀ i, f i ≤ g i⟩
 
-instance : Bot (Filtration ι m) :=
+instance (priority := 10000) : Bot (Filtration ι m) :=
   ⟨const ι ⊥ bot_le⟩
 
-instance : Top (Filtration ι m) :=
+instance (priority := 10000) : Top (Filtration ι m) :=
   ⟨const ι m le_rfl⟩
 
-instance : Sup (Filtration ι m) :=
+instance (priority := 10000) : Sup (Filtration ι m) :=
   ⟨fun f g =>
     { seq := fun i => f i ⊔ g i
       mono' := fun _ _ hij =>
@@ -108,7 +108,7 @@ theorem coeFn_sup {f g : Filtration ι m} : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 #align measure_theory.filtration.coe_fn_sup MeasureTheory.Filtration.coeFn_sup
 
-instance : Inf (Filtration ι m) :=
+instance (priority := 10000) : Inf (Filtration ι m) :=
   ⟨fun f g =>
     { seq := fun i => f i ⊓ g i
       mono' := fun _ _ hij =>
@@ -120,7 +120,7 @@ theorem coeFn_inf {f g : Filtration ι m} : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
   rfl
 #align measure_theory.filtration.coe_fn_inf MeasureTheory.Filtration.coeFn_inf
 
-instance : SupSet (Filtration ι m) :=
+instance (priority := 10000) : SupSet (Filtration ι m) :=
   ⟨fun s =>
     { seq := fun i => sSup ((fun f : Filtration ι m => f i) '' s)
       mono' := fun i j hij => by
@@ -143,7 +143,7 @@ theorem sSup_def (s : Set (Filtration ι m)) (i : ι) :
   rfl
 #align measure_theory.filtration.Sup_def MeasureTheory.Filtration.sSup_def
 
-noncomputable instance : InfSet (Filtration ι m) :=
+noncomputable instance (priority := 10000) : InfSet (Filtration ι m) :=
   ⟨fun s =>
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
@@ -166,7 +166,7 @@ theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
   rfl
 #align measure_theory.filtration.Inf_def MeasureTheory.Filtration.sInf_def
 
-noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
+noncomputable instance (priority := 10000) instCompleteLattice : CompleteLattice (Filtration ι m) where
   le := (· ≤ ·)
   le_refl f i := le_rfl
   le_trans f g h h_fg h_gh i := (h_fg i).trans (h_gh i)
@@ -215,7 +215,7 @@ class SigmaFiniteFiltration [Preorder ι] (μ : Measure Ω) (f : Filtration ι m
   SigmaFinite : ∀ i : ι, SigmaFinite (μ.trim (f.le i))
 #align measure_theory.sigma_finite_filtration MeasureTheory.SigmaFiniteFiltration
 
-instance sigmaFinite_of_sigmaFiniteFiltration [Preorder ι] (μ : Measure Ω) (f : Filtration ι m)
+instance (priority := 10000) sigmaFinite_of_sigmaFiniteFiltration [Preorder ι] (μ : Measure Ω) (f : Filtration ι m)
     [hf : SigmaFiniteFiltration μ f] (i : ι) : SigmaFinite (μ.trim (f.le i)) :=
   hf.SigmaFinite _
 #align measure_theory.sigma_finite_of_sigma_finite_filtration MeasureTheory.sigmaFinite_of_sigmaFiniteFiltration

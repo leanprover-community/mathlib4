@@ -86,7 +86,7 @@ def smoothSheaf : TopCat.Sheaf (Type u) (TopCat.of M) :=
 
 variable {M}
 
-instance smoothSheaf.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
+instance (priority := 10000) smoothSheaf.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
     CoeFun ((smoothSheaf IM I M N).presheaf.obj U) (fun _ ↦ ↑(unop U) → N) :=
   (contDiffWithinAt_localInvariantProp IM I ⊤).sheafHasCoeToFun _ _ _
 
@@ -127,7 +127,7 @@ lemma smoothSheaf.eval_surjective (x : M) : Function.Surjective (smoothSheaf.eva
   intro n
   exact ⟨⊤, fun _ ↦ n, smooth_const, rfl⟩
 
-instance [Nontrivial N] (x : M) : Nontrivial ((smoothSheaf IM I M N).presheaf.stalk x) :=
+instance (priority := 10000) [Nontrivial N] (x : M) : Nontrivial ((smoothSheaf IM I M N).presheaf.stalk x) :=
   (smoothSheaf.eval_surjective IM I N x).nontrivial
 
 variable {IM I N}
@@ -149,7 +149,7 @@ variable [Group G] [LieGroup I G]
 
 open Manifold in
 @[to_additive]
-noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) :
+noncomputable instance (priority := 10000) (U : (Opens (TopCat.of M))ᵒᵖ) :
     Group ((smoothSheaf IM I M G).presheaf.obj U) :=
   (SmoothMap.group : Group C^∞⟮IM, (unop U : Opens M); I, G⟯)
 
@@ -224,7 +224,7 @@ section SmoothRing
 variable [Ring R] [SmoothRing I R]
 
 open Manifold in
-instance (U : (Opens (TopCat.of M))ᵒᵖ) : Ring ((smoothSheaf IM I M R).presheaf.obj U) :=
+instance (priority := 10000) (U : (Opens (TopCat.of M))ᵒᵖ) : Ring ((smoothSheaf IM I M R).presheaf.obj U) :=
   (SmoothMap.ring : Ring C^∞⟮IM, (unop U : Opens M); I, R⟯)
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth ring, as a presheaf
@@ -250,7 +250,7 @@ section SmoothCommRing
 variable [CommRing R] [SmoothRing I R]
 
 open Manifold in
-instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).presheaf.obj U) :=
+instance (priority := 10000) (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).presheaf.obj U) :=
   (SmoothMap.commRing : CommRing C^∞⟮IM, (unop U : Opens M); I, R⟯)
 
 /-- The presheaf of smooth functions from `M` to `R`, for `R` a smooth commutative ring, as a
@@ -276,7 +276,7 @@ def smoothSheafCommRing : TopCat.Sheaf CommRingCat.{u} (TopCat.of M) :=
 example : (CategoryTheory.sheafCompose _ (CategoryTheory.forget CommRingCat.{u})).obj
     (smoothSheafCommRing IM I M R) = (smoothSheaf IM I M R) := rfl
 
-instance smoothSheafCommRing.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
+instance (priority := 10000) smoothSheafCommRing.coeFun (U : (Opens (TopCat.of M))ᵒᵖ) :
     CoeFun ((smoothSheafCommRing IM I M R).presheaf.obj U) (fun _ ↦ ↑(unop U) → R) :=
   (contDiffWithinAt_localInvariantProp IM I ⊤).sheafHasCoeToFun _ _ _
 
@@ -367,7 +367,7 @@ lemma smoothSheafCommRing.eval_surjective (x) :
   use (smoothSheafCommRing.forgetStalk IM I M R x).inv y
   apply smoothSheafCommRing.forgetStalk_inv_comp_eval_apply
 
-instance [Nontrivial R] (x : M) : Nontrivial ((smoothSheafCommRing IM I M R).presheaf.stalk x) :=
+instance (priority := 10000) [Nontrivial R] (x : M) : Nontrivial ((smoothSheafCommRing IM I M R).presheaf.stalk x) :=
   (smoothSheafCommRing.eval_surjective IM I M R x).nontrivial
 
 variable {IM I M R}

@@ -54,18 +54,18 @@ theorem bind_up (a : α) (f : α → PLift β) : (PLift.up a).bind f = f a :=
   rfl
 #align plift.bind_up PLift.bind_up
 
-instance : Monad PLift where
+instance (priority := 10000) : Monad PLift where
   map := @PLift.map
   pure := @PLift.pure
   seq := @PLift.seq
   bind := @PLift.bind
 
-instance : LawfulFunctor PLift where
+instance (priority := 10000) : LawfulFunctor PLift where
   id_map := @fun _ ⟨_⟩ => rfl
   comp_map := @fun _ _ _ _ _ ⟨_⟩ => rfl
   map_const := @fun _ _ => rfl
 
-instance : LawfulApplicative PLift where
+instance (priority := 10000) : LawfulApplicative PLift where
   seqLeft_eq := @fun _ _ _ _ => rfl
   seqRight_eq := @fun _ _ _ _ => rfl
   pure_seq := @fun _ _ _ ⟨_⟩ => rfl
@@ -73,7 +73,7 @@ instance : LawfulApplicative PLift where
   seq_pure := @fun _ _ ⟨_⟩ _ => rfl
   seq_assoc := @fun _ _ _ ⟨_⟩ ⟨_⟩ ⟨_⟩ => rfl
 
-instance : LawfulMonad PLift where
+instance (priority := 10000) : LawfulMonad PLift where
   bind_pure_comp := @fun _ _ _ ⟨_⟩ => rfl
   bind_map := @fun _ _ ⟨_⟩ ⟨_⟩ => rfl
   pure_bind := @fun _ _ _ _ => rfl
@@ -124,18 +124,18 @@ theorem bind_up (a : α) (f : α → ULift β) : (ULift.up a).bind f = f a :=
   rfl
 #align ulift.bind_up ULift.bind_up
 
-instance : Monad ULift where
+instance (priority := 10000) : Monad ULift where
   map := @ULift.map
   pure := @ULift.pure
   seq := @ULift.seq
   bind := @ULift.bind
 
-instance : LawfulFunctor ULift where
+instance (priority := 10000) : LawfulFunctor ULift where
   id_map := @fun _ ⟨_⟩ => rfl
   comp_map := @fun _ _ _ _ _ ⟨_⟩ => rfl
   map_const := @fun _ _ => rfl
 
-instance : LawfulApplicative ULift where
+instance (priority := 10000) : LawfulApplicative ULift where
   seqLeft_eq := @fun _ _ _ _ => rfl
   seqRight_eq := @fun _ _ _ _ => rfl
   pure_seq := @fun _ _ _ ⟨_⟩ => rfl
@@ -143,7 +143,7 @@ instance : LawfulApplicative ULift where
   seq_pure := @fun _ _ ⟨_⟩ _ => rfl
   seq_assoc := @fun _ _ _ ⟨_⟩ ⟨_⟩ ⟨_⟩ => rfl
 
-instance : LawfulMonad ULift where
+instance (priority := 10000) : LawfulMonad ULift where
   bind_pure_comp := @fun _ _ _ ⟨_⟩ => rfl
   bind_map := @fun _ _ ⟨_⟩ ⟨_⟩ => rfl
   pure_bind := @fun _ _ _ _ => rfl

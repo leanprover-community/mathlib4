@@ -71,23 +71,23 @@ namespace Perfection
 
 variable (R : Type u₁) [CommSemiring R] (p : ℕ) [hp : Fact p.Prime] [CharP R p]
 
-instance commSemiring : CommSemiring (Ring.Perfection R p) :=
+instance (priority := 10000) commSemiring : CommSemiring (Ring.Perfection R p) :=
   (Ring.perfectionSubsemiring R p).toCommSemiring
 #align perfection.ring.perfection.comm_semiring Perfection.commSemiring
 
-instance charP : CharP (Ring.Perfection R p) p :=
+instance (priority := 10000) charP : CharP (Ring.Perfection R p) p :=
   CharP.subsemiring (ℕ → R) p (Ring.perfectionSubsemiring R p)
 #align perfection.char_p Perfection.charP
 
-instance ring (R : Type u₁) [CommRing R] [CharP R p] : Ring (Ring.Perfection R p) :=
+instance (priority := 10000) ring (R : Type u₁) [CommRing R] [CharP R p] : Ring (Ring.Perfection R p) :=
   (Ring.perfectionSubring R p).toRing
 #align perfection.ring Perfection.ring
 
-instance commRing (R : Type u₁) [CommRing R] [CharP R p] : CommRing (Ring.Perfection R p) :=
+instance (priority := 10000) commRing (R : Type u₁) [CommRing R] [CharP R p] : CommRing (Ring.Perfection R p) :=
   (Ring.perfectionSubring R p).toCommRing
 #align perfection.comm_ring Perfection.commRing
 
-instance : Inhabited (Ring.Perfection R p) := ⟨0⟩
+instance (priority := 10000) : Inhabited (Ring.Perfection R p) := ⟨0⟩
 
 /-- The `n`-th coefficient of an element of the perfection. -/
 def coeff (n : ℕ) : Ring.Perfection R p →+* R where
@@ -175,7 +175,7 @@ theorem coeff_ne_zero_of_le {f : Ring.Perfection R p} {m n : ℕ} (hfm : coeff R
 
 variable (R p)
 
-instance perfectRing : PerfectRing (Ring.Perfection R p) p where
+instance (priority := 10000) perfectRing : PerfectRing (Ring.Perfection R p) p where
   bijective_frobenius := Function.bijective_iff_has_inverse.mpr
     ⟨pthRoot R p,
      DFunLike.congr_fun <| @frobenius_pthRoot R _ p _ _,
@@ -388,13 +388,13 @@ variable [hp : Fact p.Prime] [hvp : Fact (v p ≠ 1)]
 
 namespace ModP
 
-instance commRing : CommRing (ModP K v O hv p) :=
+instance (priority := 10000) commRing : CommRing (ModP K v O hv p) :=
   Ideal.Quotient.commRing (Ideal.span {(p : O)} : Ideal O)
 
-instance charP : CharP (ModP K v O hv p) p :=
+instance (priority := 10000) charP : CharP (ModP K v O hv p) p :=
   CharP.quotient O p <| mt hv.one_of_isUnit <| (map_natCast (algebraMap O K) p).symm ▸ hvp.1
 
-instance : Nontrivial (ModP K v O hv p) :=
+instance (priority := 10000) : Nontrivial (ModP K v O hv p) :=
   CharP.nontrivial_of_char_ne_one hp.1.ne_one
 
 section Classical
@@ -506,10 +506,10 @@ def PreTilt :=
 
 namespace PreTilt
 
-instance : CommRing (PreTilt K v O hv p) :=
+instance (priority := 10000) : CommRing (PreTilt K v O hv p) :=
   Perfection.commRing p _
 
-instance : CharP (PreTilt K v O hv p) p :=
+instance (priority := 10000) : CharP (PreTilt K v O hv p) p :=
   Perfection.charP (ModP K v O hv p) p
 
 section Classical
@@ -630,7 +630,7 @@ theorem map_eq_zero {f : PreTilt K v O hv p} : val K v O hv p f = 0 ↔ f = 0 :=
 
 end Classical
 
-instance : IsDomain (PreTilt K v O hv p) := by
+instance (priority := 10000) : IsDomain (PreTilt K v O hv p) := by
   haveI : Nontrivial (PreTilt K v O hv p) := ⟨(CharP.nontrivial_of_char_ne_one hp.1.ne_one).1⟩
   haveI : NoZeroDivisors (PreTilt K v O hv p) :=
     ⟨fun hfg => by
@@ -650,7 +650,7 @@ def Tilt :=
 
 namespace Tilt
 
-noncomputable instance : Field (Tilt K v O hv p) :=
+noncomputable instance (priority := 10000) : Field (Tilt K v O hv p) :=
   FractionRing.field _
 
 end Tilt

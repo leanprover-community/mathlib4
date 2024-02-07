@@ -38,7 +38,7 @@ namespace MySubobject
 
 variables {X : Type*} [ObjectTypeclass X] {x : X}
 
-instance : SetLike (MySubobject X) X :=
+instance (priority := 10000) : SetLike (MySubobject X) X :=
   ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
 
 @[simp] lemma mem_carrier {p : MySubobject X} : x ∈ p.carrier ↔ x ∈ (p : Set X) := Iff.rfl
@@ -106,7 +106,7 @@ namespace SetLike
 
 variable {A : Type*} {B : Type*} [i : SetLike A B]
 
-instance : CoeTC A (Set B) where coe := SetLike.coe
+instance (priority := 10000) : CoeTC A (Set B) where coe := SetLike.coe
 
 instance (priority := 100) instMembership : Membership B A :=
   ⟨fun x p => x ∈ (p : Set B)⟩

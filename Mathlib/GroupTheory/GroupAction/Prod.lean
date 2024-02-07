@@ -41,7 +41,7 @@ section
 variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (x : α × β)
 
 @[to_additive]
-instance smul : SMul M (α × β) :=
+instance (priority := 10000) smul : SMul M (α × β) :=
   ⟨fun a p => (a • p.1, a • p.2)⟩
 
 @[to_additive (attr := simp)]
@@ -85,7 +85,7 @@ theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M 
 variable [Pow α E] [Pow β E]
 
 @[to_additive existing smul]
-instance pow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
+instance (priority := 10000) pow : Pow (α × β) E where pow p c := (p.1 ^ c, p.2 ^ c)
 #align prod.has_pow Prod.pow
 #align prod.has_smul Prod.smul
 
@@ -118,24 +118,24 @@ theorem pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c :=
 #align prod.pow_swap Prod.pow_swap
 
 @[to_additive vaddAssocClass]
-instance isScalarTower [SMul M N] [IsScalarTower M N α] [IsScalarTower M N β] :
+instance (priority := 10000) isScalarTower [SMul M N] [IsScalarTower M N α] [IsScalarTower M N β] :
     IsScalarTower M N (α × β) :=
   ⟨fun _ _ _ => mk.inj_iff.mpr ⟨smul_assoc _ _ _, smul_assoc _ _ _⟩⟩
 
 @[to_additive]
-instance smulCommClass [SMulCommClass M N α] [SMulCommClass M N β] :
+instance (priority := 10000) smulCommClass [SMulCommClass M N α] [SMulCommClass M N β] :
     SMulCommClass M N (α × β) where
   smul_comm _ _ _ := mk.inj_iff.mpr ⟨smul_comm _ _ _, smul_comm _ _ _⟩
 
 @[to_additive]
-instance isCentralScalar [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCentralScalar M β] :
+instance (priority := 10000) isCentralScalar [SMul Mᵐᵒᵖ α] [SMul Mᵐᵒᵖ β] [IsCentralScalar M α] [IsCentralScalar M β] :
     IsCentralScalar M (α × β) :=
   ⟨fun _ _ => Prod.ext (op_smul_eq_smul _ _) (op_smul_eq_smul _ _)⟩
 #align prod.is_central_scalar Prod.isCentralScalar
 #align prod.is_central_vadd Prod.isCentralVAdd
 
 @[to_additive]
-instance faithfulSMulLeft [FaithfulSMul M α] [Nonempty β] : FaithfulSMul M (α × β) :=
+instance (priority := 10000) faithfulSMulLeft [FaithfulSMul M α] [Nonempty β] : FaithfulSMul M (α × β) :=
   ⟨fun h =>
     let ⟨b⟩ := ‹Nonempty β›
     eq_of_smul_eq_smul fun a : α => by injection h (a, b)⟩
@@ -143,7 +143,7 @@ instance faithfulSMulLeft [FaithfulSMul M α] [Nonempty β] : FaithfulSMul M (α
 #align prod.has_faithful_vadd_left Prod.faithfulVAddLeft
 
 @[to_additive]
-instance faithfulSMulRight [Nonempty α] [FaithfulSMul M β] : FaithfulSMul M (α × β) :=
+instance (priority := 10000) faithfulSMulRight [Nonempty α] [FaithfulSMul M β] : FaithfulSMul M (α × β) :=
   ⟨fun h =>
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun b : β => by injection h (a, b)⟩
@@ -153,34 +153,34 @@ instance faithfulSMulRight [Nonempty α] [FaithfulSMul M β] : FaithfulSMul M (�
 end
 
 @[to_additive]
-instance smulCommClassBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [SMulCommClass M N N]
+instance (priority := 10000) smulCommClassBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [SMulCommClass M N N]
     [SMulCommClass M P P] : SMulCommClass M (N × P) (N × P) :=
   ⟨fun c x y => by simp [smul_def, mul_def, mul_smul_comm]⟩
 #align prod.smul_comm_class_both Prod.smulCommClassBoth
 #align prod.vadd_comm_class_both Prod.vaddCommClassBoth
 
-instance isScalarTowerBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [IsScalarTower M N N]
+instance (priority := 10000) isScalarTowerBoth [Mul N] [Mul P] [SMul M N] [SMul M P] [IsScalarTower M N N]
     [IsScalarTower M P P] : IsScalarTower M (N × P) (N × P) :=
   ⟨fun c x y => by simp [smul_def, mul_def, smul_mul_assoc]⟩
 #align prod.is_scalar_tower_both Prod.isScalarTowerBoth
 
 @[to_additive]
-instance mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (α × β) where
+instance (priority := 10000) mulAction [Monoid M] [MulAction M α] [MulAction M β] : MulAction M (α × β) where
   mul_smul _ _ _ := mk.inj_iff.mpr ⟨mul_smul _ _ _, mul_smul _ _ _⟩
   one_smul := fun ⟨_, _⟩ => mk.inj_iff.mpr ⟨one_smul _ _, one_smul _ _⟩
 
-instance smulZeroClass {R M N : Type*} [Zero M] [Zero N] [SMulZeroClass R M] [SMulZeroClass R N] :
+instance (priority := 10000) smulZeroClass {R M N : Type*} [Zero M] [Zero N] [SMulZeroClass R M] [SMulZeroClass R N] :
     SMulZeroClass R (M × N) where smul_zero _ := mk.inj_iff.mpr ⟨smul_zero _, smul_zero _⟩
 
-instance distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribSMul R M]
+instance (priority := 10000) distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribSMul R M]
     [DistribSMul R N] : DistribSMul R (M × N) where
   smul_add _ _ _ := mk.inj_iff.mpr ⟨smul_add _ _ _, smul_add _ _ _⟩
 
-instance distribMulAction [Monoid R] [AddMonoid M] [AddMonoid N]
+instance (priority := 10000) distribMulAction [Monoid R] [AddMonoid M] [AddMonoid N]
     [DistribMulAction R M] [DistribMulAction R N] : DistribMulAction R (M × N) :=
   { Prod.mulAction, Prod.distribSMul with }
 
-instance mulDistribMulAction [Monoid R] [Monoid M] [Monoid N]
+instance (priority := 10000) mulDistribMulAction [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
   smul_mul _ _ _ := mk.inj_iff.mpr ⟨smul_mul' _ _ _, smul_mul' _ _ _⟩
   smul_one _ := mk.inj_iff.mpr ⟨smul_one _, smul_one _⟩

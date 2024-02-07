@@ -67,7 +67,7 @@ end Set
 
 /-- If each element of a list can be lifted to some type, then the whole list can be
 lifted to this type. -/
-instance List.canLift (c) (p) [CanLift α β c p] :
+instance (priority := 10000) List.canLift (c) (p) [CanLift α β c p] :
     CanLift (List α) (List β) (List.map c) fun l => ∀ x ∈ l, p x where
   prf l H := by
     rw [← Set.mem_range, Set.range_list_map]

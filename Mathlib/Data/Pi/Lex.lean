@@ -88,10 +88,10 @@ theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r)
           Or.inr <| Or.inr <| ⟨i, fun j hj => (hri j hj).symm, hi.resolve_left hne⟩] }
 #align pi.is_trichotomous_lex Pi.isTrichotomous_lex
 
-instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
+instance (priority := 10000) [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
   ⟨Pi.Lex (· < ·) @fun _ => (· < ·)⟩
 
-instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
+instance (priority := 10000) Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
     IsStrictOrder (Lex (∀ i, β i)) (· < ·) where
   irrefl := fun a ⟨k, _, hk₂⟩ => lt_irrefl (a k) hk₂
   trans := by
@@ -102,11 +102,11 @@ instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
       ⟨N₂, fun j hj => (lt_N₁ _ (hj.trans H)).trans (lt_N₂ _ hj), (lt_N₁ _ H).symm ▸ b_lt_c⟩]
 #align pi.lex.is_strict_order Pi.Lex.isStrictOrder
 
-instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Lex (∀ i, β i)) :=
+instance (priority := 10000) [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Lex (∀ i, β i)) :=
   partialOrderOfSO (· < ·)
 
 /-- `Πₗ i, α i` is a linear order if the original order is well-founded. -/
-noncomputable instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, LinearOrder (β a)] :
+noncomputable instance (priority := 10000) [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, LinearOrder (β a)] :
     LinearOrder (Lex (∀ i, β i)) :=
   @linearOrderOfSTO (Πₗ i, β i) (· < ·)
     { trichotomous := (isTrichotomous_lex _ _ IsWellFounded.wf).1 } (Classical.decRel _)
@@ -171,21 +171,21 @@ theorem toLex_update_le_self_iff : toLex (update x i a) ≤ toLex x ↔ a ≤ x 
 
 end PartialOrder
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)] [∀ a, OrderBot (β a)] :
+instance (priority := 10000) [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)] [∀ a, OrderBot (β a)] :
     OrderBot (Lex (∀ a, β a)) where
   bot := toLex ⊥
   bot_le _ := toLex_monotone bot_le
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)] [∀ a, OrderTop (β a)] :
+instance (priority := 10000) [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)] [∀ a, OrderTop (β a)] :
     OrderTop (Lex (∀ a, β a)) where
   top := toLex ⊤
   le_top _ := toLex_monotone le_top
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)]
+instance (priority := 10000) [LinearOrder ι] [IsWellOrder ι (· < ·)] [∀ a, PartialOrder (β a)]
     [∀ a, BoundedOrder (β a)] : BoundedOrder (Lex (∀ a, β a)) :=
   { }
 
-instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
+instance (priority := 10000) [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
     DenselyOrdered (Lex (∀ i, β i)) :=
   ⟨by
     rintro _ a₂ ⟨i, h, hi⟩
@@ -208,13 +208,13 @@ theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (�
       (Function.update_noteq hj.ne b a).symm, by rwa [Function.update_same i b]⟩⟩
 #align pi.lex.no_max_order' Pi.Lex.noMaxOrder'
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
+instance (priority := 10000) [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMaxOrder (β i)] : NoMaxOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
     let ⟨_, hb⟩ := exists_gt (ofLex a)
     ⟨_, toLex_strictMono hb⟩⟩
 
-instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
+instance (priority := 10000) [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMinOrder (β i)] : NoMinOrder (Lex (∀ i, β i)) :=
   ⟨fun a =>
     let ⟨_, hb⟩ := exists_lt (ofLex a)
@@ -225,7 +225,7 @@ section OrderedMonoid
 variable [LinearOrder ι]
 
 @[to_additive]
-instance Lex.orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid (β i)] :
+instance (priority := 10000) Lex.orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid (β i)] :
     OrderedCancelCommMonoid (Lex (∀ i, β i)) where
   mul_le_mul_left _ _ hxy z :=
     hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
@@ -235,21 +235,21 @@ instance Lex.orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid (β i)] :
       Or.inr ⟨i, fun j hj => (mul_left_cancel <| hi.1 j hj), lt_of_mul_lt_mul_left' hi.2⟩
 
 @[to_additive]
-instance Lex.orderedCommGroup [∀ i, OrderedCommGroup (β i)] :
+instance (priority := 10000) Lex.orderedCommGroup [∀ i, OrderedCommGroup (β i)] :
     OrderedCommGroup (Lex (∀ i, β i)) where
   mul_le_mul_left _ _ := mul_le_mul_left'
 #align pi.lex.ordered_comm_group Pi.Lex.orderedCommGroup
 #align pi.lex.ordered_add_comm_group Pi.Lex.orderedAddCommGroup
 
 @[to_additive]
-noncomputable instance Lex.linearOrderedCancelCommMonoid [IsWellOrder ι (· < ·)]
+noncomputable instance (priority := 10000) Lex.linearOrderedCancelCommMonoid [IsWellOrder ι (· < ·)]
     [∀ i, LinearOrderedCancelCommMonoid (β i)] :
     LinearOrderedCancelCommMonoid (Lex (∀ i, β i)) where
   __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
   __ : OrderedCancelCommMonoid (Lex (∀ i, β i)) := inferInstance
 
 @[to_additive]
-noncomputable instance Lex.linearOrderedCommGroup [IsWellOrder ι (· < ·)]
+noncomputable instance (priority := 10000) Lex.linearOrderedCommGroup [IsWellOrder ι (· < ·)]
     [∀ i, LinearOrderedCommGroup (β i)] :
     LinearOrderedCommGroup (Lex (∀ i, β i)) where
   __ : LinearOrder (Lex (∀ i, β i)) := inferInstance

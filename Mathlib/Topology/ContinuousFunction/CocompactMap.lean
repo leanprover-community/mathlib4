@@ -61,7 +61,7 @@ def toCocompactMap (f : F) : CocompactMap α β :=
   { (f : C(α, β)) with
     cocompact_tendsto' := cocompact_tendsto f }
 
-instance : CoeTC F (CocompactMap α β) :=
+instance (priority := 10000) : CoeTC F (CocompactMap α β) :=
   ⟨toCocompactMap⟩
 
 end CocompactMapClass
@@ -75,14 +75,14 @@ section Basics
 variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance : FunLike (CocompactMap α β) α β where
+instance (priority := 10000) : FunLike (CocompactMap α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
-instance : CocompactMapClass (CocompactMap α β) α β where
+instance (priority := 10000) : CocompactMapClass (CocompactMap α β) α β where
   map_continuous f := f.continuous_toFun
   cocompact_tendsto f := f.cocompact_tendsto'
 
@@ -139,7 +139,7 @@ theorem coe_id : ⇑(CocompactMap.id α) = id :=
 
 end
 
-instance : Inhabited (CocompactMap α α) :=
+instance (priority := 10000) : Inhabited (CocompactMap α α) :=
   ⟨CocompactMap.id α⟩
 
 /-- The composition of cocompact continuous maps, as a cocompact continuous map. -/

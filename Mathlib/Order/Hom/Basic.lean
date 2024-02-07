@@ -135,7 +135,7 @@ def OrderIsoClass.toOrderIso [LE α] [LE β] [EquivLike F α β] [OrderIsoClass 
 
 /-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via
 `OrderIsoClass.toOrderIso`. -/
-instance [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
+instance (priority := 10000) [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
   ⟨OrderIsoClass.toOrderIso⟩
 
 -- See note [lower instance priority]
@@ -164,7 +164,7 @@ def toOrderHom (f : F) : α →o β where
 
 /-- Any type satisfying `OrderHomClass` can be cast into `OrderHom` via
 `OrderHomClass.toOrderHom`. -/
-instance : CoeTC F (α →o β) :=
+instance (priority := 10000) : CoeTC F (α →o β) :=
   ⟨toOrderHom⟩
 
 end OrderHomClass
@@ -215,11 +215,11 @@ namespace OrderHom
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
-instance : FunLike (α →o β) α β where
+instance (priority := 10000) : FunLike (α →o β) α β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-instance : OrderHomClass (α →o β) α β where
+instance (priority := 10000) : OrderHomClass (α →o β) α β where
   map_rel f _ _ h := f.monotone' h
 
 @[simp] theorem coe_mk (f : α → β) (hf : Monotone f) : ⇑(mk f hf) = f := rfl
@@ -283,14 +283,14 @@ def id : α →o α :=
 #align order_hom.id OrderHom.id
 #align order_hom.id_coe OrderHom.id_coe
 
-instance : Inhabited (α →o α) :=
+instance (priority := 10000) : Inhabited (α →o α) :=
   ⟨id⟩
 
 /-- The preorder structure of `α →o β` is pointwise inequality: `f ≤ g ↔ ∀ a, f a ≤ g a`. -/
-instance : Preorder (α →o β) :=
+instance (priority := 10000) : Preorder (α →o β) :=
   @Preorder.lift (α →o β) (α → β) _ toFun
 
-instance {β : Type*} [PartialOrder β] : PartialOrder (α →o β) :=
+instance (priority := 10000) {β : Type*} [PartialOrder β] : PartialOrder (α →o β) :=
   @PartialOrder.lift (α →o β) (α → β) _ toFun ext
 
 theorem le_def {f g : α →o β} : f ≤ g ↔ ∀ x, f x ≤ g x :=
@@ -534,7 +534,7 @@ def _root_.Subtype.orderEmbedding {p q : α → Prop} (h : ∀ a, p a → q a) :
     map_rel_iff' := by aesop }
 
 /-- There is a unique monotone map from a subsingleton to itself. -/
-instance unique [Subsingleton α] : Unique (α →o α) where
+instance (priority := 10000) unique [Subsingleton α] : Unique (α →o α) where
   default := OrderHom.id
   uniq _ := ext _ _ (Subsingleton.elim _ _)
 #align order_hom.unique OrderHom.unique
@@ -780,7 +780,7 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
-instance : EquivLike (α ≃o β) α β where
+instance (priority := 10000) : EquivLike (α ≃o β) α β where
   coe f := f.toFun
   inv f := f.invFun
   left_inv f := f.left_inv
@@ -790,7 +790,7 @@ instance : EquivLike (α ≃o β) α β where
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
 
-instance : OrderIsoClass (α ≃o β) α β where
+instance (priority := 10000) : OrderIsoClass (α ≃o β) α β where
   map_le_map_iff f _ _ := f.map_rel_iff'
 
 @[simp]

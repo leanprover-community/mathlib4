@@ -44,15 +44,15 @@ class HasSheafify : Prop where
   isLeftExact : letI := isRightAdjoint.some
     Nonempty (PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A)))
 
-instance [HasSheafify J A] : HasWeakSheafify J A := HasSheafify.isRightAdjoint
+instance (priority := 10000) [HasSheafify J A] : HasWeakSheafify J A := HasSheafify.isRightAdjoint
 
-instance [IsRightAdjoint <| sheafToPresheaf J A] : HasWeakSheafify J A := ⟨inferInstance⟩
+instance (priority := 10000) [IsRightAdjoint <| sheafToPresheaf J A] : HasWeakSheafify J A := ⟨inferInstance⟩
 
 noncomputable section
 
-instance [h : HasWeakSheafify J A] : IsRightAdjoint (sheafToPresheaf J A) := h.some
+instance (priority := 10000) [h : HasWeakSheafify J A] : IsRightAdjoint (sheafToPresheaf J A) := h.some
 
-instance [HasSheafify J A] : PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A)) :=
+instance (priority := 10000) [HasSheafify J A] : PreservesFiniteLimits (leftAdjoint (sheafToPresheaf J A)) :=
   HasSheafify.isLeftExact.some
 
 theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafToPresheaf J A)
@@ -68,14 +68,14 @@ theorem HasSheafify.mk' {F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : F ⊣ sheafTo
 def presheafToSheaf [HasWeakSheafify J A] : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   leftAdjoint (sheafToPresheaf J A)
 
-instance [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
+instance (priority := 10000) [HasSheafify J A] : PreservesFiniteLimits (presheafToSheaf J A) :=
   HasSheafify.isLeftExact.some
 
 /-- The sheafification-inclusion adjunction. -/
 def sheafificationAdjunction [HasWeakSheafify J A] :
     presheafToSheaf J A ⊣ sheafToPresheaf J A := IsRightAdjoint.adj
 
-instance [HasWeakSheafify J A] : IsLeftAdjoint <| presheafToSheaf J A where
+instance (priority := 10000) [HasWeakSheafify J A] : IsLeftAdjoint <| presheafToSheaf J A where
   adj := sheafificationAdjunction J A
 
 end
@@ -219,12 +219,12 @@ noncomputable def sheafificationIso (P : Sheaf J D) : P ≅ (presheafToSheaf J D
     apply (isoSheafify J P.2).inv_hom_id
 #align category_theory.sheafification_iso CategoryTheory.sheafificationIso
 
-instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
+instance (priority := 10000) isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
     IsIso ((sheafificationAdjunction J D).counit.app P) :=
   isIso_of_fully_faithful (sheafToPresheaf J D) _
 #align category_theory.is_iso_sheafification_adjunction_counit CategoryTheory.isIso_sheafificationAdjunction_counit
 
-instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
+instance (priority := 10000) sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _
 #align category_theory.sheafification_reflective CategoryTheory.sheafification_reflective
 

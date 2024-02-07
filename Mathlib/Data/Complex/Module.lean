@@ -55,37 +55,37 @@ attribute [local ext] Complex.ext
 -- Test that the `SMul ℚ ℂ` instance is correct.
 example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
-instance [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
+instance (priority := 10000) [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
   smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
 
-instance [SMul R S] [SMul R ℝ] [SMul S ℝ] [IsScalarTower R S ℝ] : IsScalarTower R S ℂ where
+instance (priority := 10000) [SMul R S] [SMul R ℝ] [SMul S ℝ] [IsScalarTower R S ℝ] : IsScalarTower R S ℂ where
   smul_assoc r s x := by ext <;> simp [smul_re, smul_im, smul_assoc]
 
-instance [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R ℝ] : IsCentralScalar R ℂ where
+instance (priority := 10000) [SMul R ℝ] [SMul Rᵐᵒᵖ ℝ] [IsCentralScalar R ℝ] : IsCentralScalar R ℂ where
   op_smul_eq_smul r x := by ext <;> simp [smul_re, smul_im, op_smul_eq_smul]
 
-instance mulAction [Monoid R] [MulAction R ℝ] : MulAction R ℂ where
+instance (priority := 10000) mulAction [Monoid R] [MulAction R ℝ] : MulAction R ℂ where
   one_smul x := by ext <;> simp [smul_re, smul_im, one_smul]
   mul_smul r s x := by ext <;> simp [smul_re, smul_im, mul_smul]
 
-instance distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
+instance (priority := 10000) distribSMul [DistribSMul R ℝ] : DistribSMul R ℂ where
   smul_add r x y := by ext <;> simp [smul_re, smul_im, smul_add]
   smul_zero r := by ext <;> simp [smul_re, smul_im, smul_zero]
 
-instance [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
+instance (priority := 10000) [Semiring R] [DistribMulAction R ℝ] : DistribMulAction R ℂ :=
   { Complex.distribSMul, Complex.mulAction with }
 
-instance instModule [Semiring R] [Module R ℝ] : Module R ℂ where
+instance (priority := 10000) instModule [Semiring R] [Module R ℝ] : Module R ℂ where
   add_smul r s x := by ext <;> simp [smul_re, smul_im, add_smul]
   zero_smul r := by ext <;> simp [smul_re, smul_im, zero_smul]
 
-instance [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
+instance (priority := 10000) [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ :=
   { Complex.ofReal.comp (algebraMap R ℝ) with
     smul := (· • ·)
     smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
     commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [smul_re, smul_im, Algebra.commutes] }
 
-instance : StarModule ℝ ℂ :=
+instance (priority := 10000) : StarModule ℝ ℂ :=
   ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
 
 @[simp]
@@ -148,7 +148,7 @@ theorem coe_basisOneI : ⇑basisOneI = ![1, I] :=
 set_option linter.uppercaseLean3 false in
 #align complex.coe_basis_one_I Complex.coe_basisOneI
 
-instance : FiniteDimensional ℝ ℂ :=
+instance (priority := 10000) : FiniteDimensional ℝ ℂ :=
   of_fintype_basis basisOneI
 
 @[simp]
@@ -209,7 +209,7 @@ instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGro
 
 /-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` associates with
 another scalar action of `M` on `E` whenever the action of `ℂ` associates with the action of `M`. -/
-instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
+instance (priority := 10000) IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
     [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E where
   smul_assoc r _ _ := (smul_assoc (r : ℂ) _ _ : _)
 #align module.real_complex_tower IsScalarTower.complexToReal

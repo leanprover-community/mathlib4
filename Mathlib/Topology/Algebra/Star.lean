@@ -84,18 +84,18 @@ section Instances
 
 variable {R S ι : Type*}
 
-instance [Star R] [Star S] [TopologicalSpace R] [TopologicalSpace S] [ContinuousStar R]
+instance (priority := 10000) [Star R] [Star S] [TopologicalSpace R] [TopologicalSpace S] [ContinuousStar R]
     [ContinuousStar S] : ContinuousStar (R × S) :=
   ⟨(continuous_star.comp continuous_fst).prod_mk (continuous_star.comp continuous_snd)⟩
 
-instance {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
+instance (priority := 10000) {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Star (C i)]
     [∀ i, ContinuousStar (C i)] : ContinuousStar (∀ i, C i) where
   continuous_star := continuous_pi fun i => Continuous.star (continuous_apply i)
 
-instance [Star R] [TopologicalSpace R] [ContinuousStar R] : ContinuousStar Rᵐᵒᵖ :=
+instance (priority := 10000) [Star R] [TopologicalSpace R] [ContinuousStar R] : ContinuousStar Rᵐᵒᵖ :=
   ⟨MulOpposite.continuous_op.comp <| MulOpposite.continuous_unop.star⟩
 
-instance [Monoid R] [StarMul R] [TopologicalSpace R] [ContinuousStar R] :
+instance (priority := 10000) [Monoid R] [StarMul R] [TopologicalSpace R] [ContinuousStar R] :
     ContinuousStar Rˣ :=
   ⟨continuous_induced_rng.2 Units.continuous_embedProduct.star⟩
 

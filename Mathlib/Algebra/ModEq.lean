@@ -73,7 +73,7 @@ theorem ModEq.trans : a ≡ b [PMOD p] → b ≡ c [PMOD p] → a ≡ c [PMOD p]
   ⟨m + n, by simp [add_smul, ← hm, ← hn]⟩
 #align add_comm_group.modeq.trans AddCommGroup.ModEq.trans
 
-instance : IsRefl _ (ModEq p) :=
+instance (priority := 10000) : IsRefl _ (ModEq p) :=
   ⟨modEq_refl⟩
 
 @[simp]

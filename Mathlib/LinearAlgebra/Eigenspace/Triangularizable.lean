@@ -54,7 +54,7 @@ theorem exists_eigenvalue [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V]
   exact spectrum.nonempty_of_isAlgClosed_of_finiteDimensional K f
 #align module.End.exists_eigenvalue Module.End.exists_eigenvalue
 
-noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
+noncomputable instance (priority := 10000) [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
     Inhabited f.Eigenvalues :=
   ⟨⟨f.exists_eigenvalue.choose, f.exists_eigenvalue.choose_spec⟩⟩
 

@@ -67,7 +67,7 @@ namespace PFun
 
 variable {α β γ δ ε ι : Type*}
 
-instance inhabited : Inhabited (α →. β) :=
+instance (priority := 10000) inhabited : Inhabited (α →. β) :=
   ⟨fun _ => Part.none⟩
 #align pfun.inhabited PFun.inhabited
 
@@ -136,7 +136,7 @@ theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x)
 protected def lift (f : α → β) : α →. β := fun a => Part.some (f a)
 #align pfun.lift PFun.lift
 
-instance coe : Coe (α → β) (α →. β) :=
+instance (priority := 10000) coe : Coe (α → β) (α →. β) :=
   ⟨PFun.lift⟩
 #align pfun.has_coe PFun.coe
 
@@ -219,13 +219,13 @@ theorem bind_apply (f : α →. β) (g : β → α →. γ) (a : α) : f.bind g 
 def map (f : β → γ) (g : α →. β) : α →. γ := fun a => (g a).map f
 #align pfun.map PFun.map
 
-instance monad : Monad (PFun α) where
+instance (priority := 10000) monad : Monad (PFun α) where
   pure := PFun.pure
   bind := PFun.bind
   map := PFun.map
 #align pfun.monad PFun.monad
 
-instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
+instance (priority := 10000) lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
   (bind_pure_comp := fun f x => funext fun a => Part.bind_some_eq_map _ _)
   (id_map := fun f => by funext a; dsimp [Functor.map, PFun.map]; cases f a; rfl)
   (pure_bind := fun x f => funext fun a => Part.bind_some _ (f x))

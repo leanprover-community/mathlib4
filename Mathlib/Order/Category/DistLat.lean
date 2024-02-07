@@ -31,10 +31,10 @@ def DistLat :=
 
 namespace DistLat
 
-instance : CoeSort DistLat (Type*) :=
+instance (priority := 10000) : CoeSort DistLat (Type*) :=
   Bundled.coeSort
 
-instance (X : DistLat) : DistribLattice X :=
+instance (priority := 10000) (X : DistLat) : DistribLattice X :=
   X.str
 
 /-- Construct a bundled `DistLat` from a `DistribLattice` underlying type and typeclass. -/
@@ -47,18 +47,18 @@ theorem coe_of (α : Type*) [DistribLattice α] : ↥(of α) = α :=
   rfl
 #align DistLat.coe_of DistLat.coe_of
 
-instance : Inhabited DistLat :=
+instance (priority := 10000) : Inhabited DistLat :=
   ⟨of PUnit⟩
 
-instance : BundledHom.ParentProjection @DistribLattice.toLattice :=
+instance (priority := 10000) : BundledHom.ParentProjection @DistribLattice.toLattice :=
   ⟨⟩
 
 deriving instance LargeCategory for DistLat
 
-instance : ConcreteCategory DistLat :=
+instance (priority := 10000) : ConcreteCategory DistLat :=
   BundledHom.concreteCategory _
 
-instance hasForgetToLat : HasForget₂ DistLat Lat :=
+instance (priority := 10000) hasForgetToLat : HasForget₂ DistLat Lat :=
   BundledHom.forget₂ _ _
 #align DistLat.has_forget_to_Lat DistLat.hasForgetToLat
 

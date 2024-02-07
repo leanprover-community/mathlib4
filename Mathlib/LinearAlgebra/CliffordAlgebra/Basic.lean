@@ -76,9 +76,9 @@ def CliffordAlgebra :=
 namespace CliffordAlgebra
 
 -- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
-instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited _
+instance (priority := 10000) instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited _
 #align clifford_algebra.inhabited CliffordAlgebra.instInhabited
-instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
+instance (priority := 10000) instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
 #align clifford_algebra.ring CliffordAlgebra.instRing
 
 instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
@@ -92,16 +92,16 @@ example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 
 -- shortcut instance, as the other instance is slow
-instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
+instance (priority := 10000) instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
 #align clifford_algebra.algebra CliffordAlgebra.instAlgebra
 
-instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
+instance (priority := 10000) {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (CliffordAlgebra Q) :=
   RingQuot.instSMulCommClass _
 
-instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
+instance (priority := 10000) {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [SMul R S] [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
     [IsScalarTower R A M] [IsScalarTower S A M] [IsScalarTower R S A] (Q : QuadraticForm A M) :
     IsScalarTower R S (CliffordAlgebra Q) :=

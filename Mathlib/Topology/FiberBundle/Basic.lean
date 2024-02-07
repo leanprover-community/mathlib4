@@ -221,7 +221,7 @@ class MemTrivializationAtlas [FiberBundle F E] (e : Trivialization F (π F E)) :
   out : e ∈ trivializationAtlas F E
 #align mem_trivialization_atlas MemTrivializationAtlas
 
-instance [FiberBundle F E] (b : B) : MemTrivializationAtlas (trivializationAt F E b) where
+instance (priority := 10000) [FiberBundle F E] (b : B) : MemTrivializationAtlas (trivializationAt F E b) where
   out := trivialization_mem_atlas F E b
 
 namespace FiberBundle
@@ -427,7 +427,7 @@ typeclass inference -/
 def Fiber (_ : FiberBundleCore ι B F) (_x : B) := F
 #align fiber_bundle_core.fiber FiberBundleCore.Fiber
 
-instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
+instance (priority := 10000) topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
 #align fiber_bundle_core.topological_space_fiber FiberBundleCore.topologicalSpaceFiber
 
 /-- The total space of the fiber bundle, as a convenience function for dot notation.
@@ -542,7 +542,7 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
 
 /-- Topological structure on the total space of a fiber bundle created from core, designed so
 that all the local trivialization are continuous. -/
-instance toTopologicalSpace : TopologicalSpace (Bundle.TotalSpace F Z.Fiber) :=
+instance (priority := 10000) toTopologicalSpace : TopologicalSpace (Bundle.TotalSpace F Z.Fiber) :=
   TopologicalSpace.generateFrom <| ⋃ (i : ι) (s : Set (B × F)) (_ : IsOpen s),
     {(Z.localTrivAsPartialEquiv i).source ∩ Z.localTrivAsPartialEquiv i ⁻¹' s}
 #align fiber_bundle_core.to_topological_space FiberBundleCore.toTopologicalSpace
@@ -717,7 +717,7 @@ theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTriv
 #align fiber_bundle_core.mem_source_at FiberBundleCore.mem_localTrivAt_source
 
 /-- A fiber bundle constructed from core is indeed a fiber bundle. -/
-instance fiberBundle : FiberBundle F Z.Fiber where
+instance (priority := 10000) fiberBundle : FiberBundle F Z.Fiber where
   totalSpaceMk_inducing' b := inducing_iff_nhds.2 fun x ↦ by
     rw [(Z.localTrivAt b).nhds_eq_comap_inf_principal (mk_mem_localTrivAt_source _ _ _), comap_inf,
       comap_principal, comap_comap]
@@ -888,7 +888,7 @@ theorem continuous_proj : @Continuous _ _ a.totalSpaceTopology _ (π F E) := by
   exact FiberBundle.continuous_proj F E
 #align fiber_prebundle.continuous_proj FiberPrebundle.continuous_proj
 
-instance {e₀} (he₀ : e₀ ∈ a.pretrivializationAtlas) :
+instance (priority := 10000) {e₀} (he₀ : e₀ ∈ a.pretrivializationAtlas) :
     (letI := a.totalSpaceTopology; letI := a.toFiberBundle;
       MemTrivializationAtlas (a.trivializationOfMemPretrivializationAtlas he₀)) :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; ⟨e₀, he₀, rfl⟩

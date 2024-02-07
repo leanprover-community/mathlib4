@@ -51,22 +51,22 @@ with the naive shift: `shiftFunctor (OppositeShift C A) n` is `(shiftFunctor C n
 @[nolint unusedArguments]
 def OppositeShift (A : Type*) [AddMonoid A] [HasShift C A] := Cᵒᵖ
 
-instance : Category (OppositeShift C A) := by
+instance (priority := 10000) : Category (OppositeShift C A) := by
   dsimp only [OppositeShift]
   infer_instance
 
-noncomputable instance : HasShift (OppositeShift C A) A :=
+noncomputable instance (priority := 10000) : HasShift (OppositeShift C A) A :=
   hasShiftMk Cᵒᵖ A (HasShift.mkShiftCoreOp C A)
 
-instance [HasZeroObject C] : HasZeroObject (OppositeShift C A) := by
+instance (priority := 10000) [HasZeroObject C] : HasZeroObject (OppositeShift C A) := by
   dsimp only [OppositeShift]
   infer_instance
 
-instance [Preadditive C] : Preadditive (OppositeShift C A) := by
+instance (priority := 10000) [Preadditive C] : Preadditive (OppositeShift C A) := by
   dsimp only [OppositeShift]
   infer_instance
 
-instance [Preadditive C] (n : A) [(shiftFunctor C n).Additive] :
+instance (priority := 10000) [Preadditive C] (n : A) [(shiftFunctor C n).Additive] :
     (shiftFunctor (OppositeShift C A) n).Additive := by
   change (shiftFunctor C n).op.Additive
   infer_instance

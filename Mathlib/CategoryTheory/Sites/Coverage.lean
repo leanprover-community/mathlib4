@@ -152,7 +152,7 @@ structure Coverage where
 
 namespace Coverage
 
-instance : CoeFun (Coverage C) (fun _ => (X : C) → Set (Presieve X)) where
+instance (priority := 10000) : CoeFun (Coverage C) (fun _ => (X : C) → Set (Presieve X)) where
   coe := covering
 
 variable (C) in
@@ -238,7 +238,7 @@ def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
       exact hS hg
   transitive' X S hS R hR := .transitive _ _ _ hS hR
 
-instance : PartialOrder (Coverage C) where
+instance (priority := 10000) : PartialOrder (Coverage C) where
   le A B := A.covering ≤ B.covering
   le_refl A X := le_refl _
   le_trans A B C h1 h2 X := le_trans (h1 X) (h2 X)
@@ -285,7 +285,7 @@ theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     intro X S hS
     apply saturate.of _ _ hS
 
-instance : SemilatticeSup (Coverage C) where
+instance (priority := 10000) : SemilatticeSup (Coverage C) where
   sup x y :=
   { covering := fun B ↦ x.covering B ∪ y.covering B
     pullback := by

@@ -89,7 +89,7 @@ def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
   | star, star, star => fun _ _ => PUnit.unit
 #align category_theory.with_terminal.comp CategoryTheory.WithTerminal.comp
 
-instance : Category.{v} (WithTerminal C) where
+instance (priority := 10000) : Category.{v} (WithTerminal C) where
   Hom X Y := Hom X Y
   id X := id _
   comp := comp
@@ -120,10 +120,10 @@ def incl : C ⥤ WithTerminal C where
   map f := f
 #align category_theory.with_terminal.incl CategoryTheory.WithTerminal.incl
 
-instance : Full (incl : C ⥤ _) where
+instance (priority := 10000) : Full (incl : C ⥤ _) where
   preimage f := f
 
-instance : Faithful (incl : C ⥤ _) where
+instance (priority := 10000) : Faithful (incl : C ⥤ _) where
 
 /-- Map `WithTerminal` with respect to a functor `F : C ⥤ D`. -/
 def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal D where
@@ -138,7 +138,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal
     | star, star, _ => PUnit.unit
 #align category_theory.with_terminal.map CategoryTheory.WithTerminal.map
 
-instance {X : WithTerminal C} : Unique (X ⟶ star) where
+instance (priority := 10000) {X : WithTerminal C} : Unique (X ⟶ star) where
   default :=
     match X with
     | of _ => PUnit.unit
@@ -240,7 +240,7 @@ def homFrom (X : C) : incl.obj X ⟶ star :=
   starTerminal.from _
 #align category_theory.with_terminal.hom_from CategoryTheory.WithTerminal.homFrom
 
-instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f :=
+instance (priority := 10000) isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f :=
   match X with
   | of _X => f.elim
   | star => ⟨f, rfl, rfl⟩
@@ -278,7 +278,7 @@ def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
   | star, star, star => fun _ _ => PUnit.unit
 #align category_theory.with_initial.comp CategoryTheory.WithInitial.comp
 
-instance : Category.{v} (WithInitial C) where
+instance (priority := 10000) : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
   id X := id X
   comp f g := comp f g
@@ -307,10 +307,10 @@ def incl : C ⥤ WithInitial C where
   map f := f
 #align category_theory.with_initial.incl CategoryTheory.WithInitial.incl
 
-instance : Full (incl : C ⥤ _) where
+instance (priority := 10000) : Full (incl : C ⥤ _) where
   preimage f := f
 
-instance : Faithful (incl : C ⥤ _) where
+instance (priority := 10000) : Faithful (incl : C ⥤ _) where
 
 /-- Map `WithInitial` with respect to a functor `F : C ⥤ D`. -/
 def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D where
@@ -326,7 +326,7 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D
 
 #align category_theory.with_initial.map CategoryTheory.WithInitial.map
 
-instance {X : WithInitial C} : Unique (star ⟶ X) where
+instance (priority := 10000) {X : WithInitial C} : Unique (star ⟶ X) where
   default :=
     match X with
     | of _x => PUnit.unit
@@ -431,7 +431,7 @@ def homTo (X : C) : star ⟶ incl.obj X :=
 #align category_theory.with_initial.hom_to CategoryTheory.WithInitial.homTo
 
 -- Porting note : need to do cases analysis
-instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f :=
+instance (priority := 10000) isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f :=
   match X with
   | of _X => f.elim
   | star => ⟨f, rfl, rfl⟩

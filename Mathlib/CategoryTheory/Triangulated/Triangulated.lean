@@ -52,7 +52,7 @@ structure Octahedron
 gen_injective_theorems% Octahedron
 #align category_theory.triangulated.octahedron CategoryTheory.Triangulated.Octahedron
 
-instance (X : C) :
+instance (priority := 10000) (X : C) :
     Nonempty (Octahedron (comp_id (𝟙 X)) (contractible_distinguished X)
       (contractible_distinguished X) (contractible_distinguished X)) := by
   refine' ⟨⟨0, 0, _, _, _, _, isomorphic_distinguished _ (contractible_distinguished (0 : C)) _

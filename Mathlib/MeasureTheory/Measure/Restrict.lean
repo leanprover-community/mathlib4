@@ -227,7 +227,7 @@ theorem restrict_eq_zero : μ.restrict s = 0 ↔ μ s = 0 := by
 #align measure_theory.measure.restrict_eq_zero MeasureTheory.Measure.restrict_eq_zero
 
 /-- If `μ s ≠ 0`, then `μ.restrict s ≠ 0`, in terms of `NeZero` instances. -/
-instance restrict.neZero [NeZero (μ s)] : NeZero (μ.restrict s) :=
+instance (priority := 10000) restrict.neZero [NeZero (μ s)] : NeZero (μ.restrict s) :=
   ⟨mt restrict_eq_zero.mp <| NeZero.ne _⟩
 
 theorem restrict_zero_set {s : Set α} (h : μ s = 0) : μ.restrict s = 0 :=

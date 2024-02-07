@@ -22,19 +22,19 @@ namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-instance unop_mono_of_epi {A B : Cᵒᵖ} (f : A ⟶ B) [Epi f] : Mono f.unop :=
+instance (priority := 10000) unop_mono_of_epi {A B : Cᵒᵖ} (f : A ⟶ B) [Epi f] : Mono f.unop :=
   ⟨fun _ _ eq => Quiver.Hom.op_inj ((cancel_epi f).1 (Quiver.Hom.unop_inj eq))⟩
 #align category_theory.unop_mono_of_epi CategoryTheory.unop_mono_of_epi
 
-instance unop_epi_of_mono {A B : Cᵒᵖ} (f : A ⟶ B) [Mono f] : Epi f.unop :=
+instance (priority := 10000) unop_epi_of_mono {A B : Cᵒᵖ} (f : A ⟶ B) [Mono f] : Epi f.unop :=
   ⟨fun _ _ eq => Quiver.Hom.op_inj ((cancel_mono f).1 (Quiver.Hom.unop_inj eq))⟩
 #align category_theory.unop_epi_of_mono CategoryTheory.unop_epi_of_mono
 
-instance op_mono_of_epi {A B : C} (f : A ⟶ B) [Epi f] : Mono f.op :=
+instance (priority := 10000) op_mono_of_epi {A B : C} (f : A ⟶ B) [Epi f] : Mono f.op :=
   ⟨fun _ _ eq => Quiver.Hom.unop_inj ((cancel_epi f).1 (Quiver.Hom.op_inj eq))⟩
 #align category_theory.op_mono_of_epi CategoryTheory.op_mono_of_epi
 
-instance op_epi_of_mono {A B : C} (f : A ⟶ B) [Mono f] : Epi f.op :=
+instance (priority := 10000) op_epi_of_mono {A B : C} (f : A ⟶ B) [Mono f] : Epi f.op :=
   ⟨fun _ _ eq => Quiver.Hom.unop_inj ((cancel_mono f).1 (Quiver.Hom.op_inj eq))⟩
 #align category_theory.op_epi_of_mono CategoryTheory.op_epi_of_mono
 
@@ -113,7 +113,7 @@ def SplitMono.splitEpi {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : SplitEpi sm.
 #align category_theory.split_mono.split_epi CategoryTheory.SplitMono.splitEpi
 
 /-- The retraction of a split monomorphism is itself a split epimorphism. -/
-instance retraction_isSplitEpi {X Y : C} (f : X ⟶ Y) [IsSplitMono f] :
+instance (priority := 10000) retraction_isSplitEpi {X Y : C} (f : X ⟶ Y) [IsSplitMono f] :
     IsSplitEpi (retraction f) :=
   IsSplitEpi.mk' (SplitMono.splitEpi _)
 #align category_theory.retraction_is_split_epi CategoryTheory.retraction_isSplitEpi
@@ -141,7 +141,7 @@ def SplitEpi.splitMono {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : SplitMono se.
 #align category_theory.split_epi.split_mono CategoryTheory.SplitEpi.splitMono
 
 /-- The section of a split epimorphism is itself a split monomorphism. -/
-instance section_isSplitMono {X Y : C} (f : X ⟶ Y) [IsSplitEpi f] : IsSplitMono (section_ f) :=
+instance (priority := 10000) section_isSplitMono {X Y : C} (f : X ⟶ Y) [IsSplitEpi f] : IsSplitMono (section_ f) :=
   IsSplitMono.mk' (SplitEpi.splitMono _)
 #align category_theory.section_is_split_mono CategoryTheory.section_isSplitMono
 
@@ -265,10 +265,10 @@ def SplitEpi.map {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) (F : C ⥤ D) : Split
   id := by rw [← Functor.map_comp, SplitEpi.id, Functor.map_id]
 #align category_theory.split_epi.map CategoryTheory.SplitEpi.map
 
-instance {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] (F : C ⥤ D) : IsSplitMono (F.map f) :=
+instance (priority := 10000) {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] (F : C ⥤ D) : IsSplitMono (F.map f) :=
   IsSplitMono.mk' (hf.exists_splitMono.some.map F)
 
-instance {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] (F : C ⥤ D) : IsSplitEpi (F.map f) :=
+instance (priority := 10000) {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] (F : C ⥤ D) : IsSplitEpi (F.map f) :=
   IsSplitEpi.mk' (hf.exists_splitEpi.some.map F)
 
 end

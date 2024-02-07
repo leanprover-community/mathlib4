@@ -32,7 +32,7 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup N']
 variable [Module R M] [Module R N] [Module R N']
 
 -- This instance can't be found where it's needed if we don't remind lean that it exists.
-instance AlternatingMap.instModuleAddCommGroup {ι : Type*} :
+instance (priority := 10000) AlternatingMap.instModuleAddCommGroup {ι : Type*} :
     Module R (M [Λ^ι]→ₗ[R] N) := by
   infer_instance
 #align alternating_map.module_add_comm_group AlternatingMap.instModuleAddCommGroup

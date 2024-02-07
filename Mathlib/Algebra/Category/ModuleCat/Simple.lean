@@ -31,12 +31,12 @@ theorem simple_iff_isSimpleModule' (M : ModuleCat R) : Simple M ↔ IsSimpleModu
 #align simple_iff_is_simple_module' simple_iff_isSimpleModule'
 
 /-- A simple module is a simple object in the category of modules. -/
-instance simple_of_isSimpleModule [IsSimpleModule R M] : Simple (of R M) :=
+instance (priority := 10000) simple_of_isSimpleModule [IsSimpleModule R M] : Simple (of R M) :=
   simple_iff_isSimpleModule.mpr ‹_›
 #align simple_of_is_simple_module simple_of_isSimpleModule
 
 /-- A simple object in the category of modules is a simple module. -/
-instance isSimpleModule_of_simple (M : ModuleCat R) [Simple M] : IsSimpleModule R M :=
+instance (priority := 10000) isSimpleModule_of_simple (M : ModuleCat R) [Simple M] : IsSimpleModule R M :=
   simple_iff_isSimpleModule.mp (Simple.of_iso (ofSelfIso M))
 #align is_simple_module_of_simple isSimpleModule_of_simple
 

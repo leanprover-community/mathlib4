@@ -26,7 +26,7 @@ variable {n : ℕ} (i : Fin2 n)
 def Prj (v : TypeVec.{u} n) : Type u := v i
 #align mvqpf.prj MvQPF.Prj
 
-instance Prj.inhabited {v : TypeVec.{u} n} [Inhabited (v i)] : Inhabited (Prj i v) :=
+instance (priority := 10000) Prj.inhabited {v : TypeVec.{u} n} [Inhabited (v i)] : Inhabited (Prj i v) :=
   ⟨(default : v i)⟩
 #align mvqpf.prj.inhabited MvQPF.Prj.inhabited
 
@@ -34,7 +34,7 @@ instance Prj.inhabited {v : TypeVec.{u} n} [Inhabited (v i)] : Inhabited (Prj i 
 def Prj.map ⦃α β : TypeVec n⦄ (f : α ⟹ β) : Prj i α → Prj i β := f _
 #align mvqpf.prj.map MvQPF.Prj.map
 
-instance Prj.mvfunctor : MvFunctor (Prj i) where map := @Prj.map _ i
+instance (priority := 10000) Prj.mvfunctor : MvFunctor (Prj i) where map := @Prj.map _ i
 #align mvqpf.prj.mvfunctor MvQPF.Prj.mvfunctor
 
 /-- Polynomial representation of the projection functor -/
@@ -54,7 +54,7 @@ def Prj.repr ⦃α : TypeVec n⦄ : Prj i α → Prj.P i α := fun x : α i =>
   ⟨⟨⟩, fun j ⟨⟨h⟩⟩ => (h.rec x : α j)⟩
 #align mvqpf.prj.repr MvQPF.Prj.repr
 
-instance Prj.mvqpf : MvQPF (Prj i) where
+instance (priority := 10000) Prj.mvqpf : MvQPF (Prj i) where
   P := Prj.P i
   abs := @Prj.abs _ i
   repr := @Prj.repr _ i

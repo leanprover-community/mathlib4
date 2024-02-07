@@ -115,7 +115,7 @@ section Basic
 
 variable [Zero M]
 
-instance instFunLike : FunLike (α →₀ M) α M :=
+instance (priority := 10000) instFunLike : FunLike (α →₀ M) α M :=
   ⟨toFun, by
     rintro ⟨s, f, hf⟩ ⟨t, g, hg⟩ (rfl : f = g)
     congr
@@ -125,7 +125,7 @@ instance instFunLike : FunLike (α →₀ M) α M :=
 
 /-- Helper instance for when there are too many metavariables to apply the `DFunLike` instance
 directly. -/
-instance coeFun : CoeFun (α →₀ M) fun _ => α → M :=
+instance (priority := 10000) coeFun : CoeFun (α →₀ M) fun _ => α → M :=
   inferInstance
 #align finsupp.has_coe_to_fun Finsupp.coeFun
 
@@ -161,7 +161,7 @@ theorem coe_mk (f : α → M) (s : Finset α) (h : ∀ a, a ∈ s ↔ f a ≠ 0)
   rfl
 #align finsupp.coe_mk Finsupp.coe_mk
 
-instance zero : Zero (α →₀ M) :=
+instance (priority := 10000) zero : Zero (α →₀ M) :=
   ⟨⟨∅, 0, fun _ => ⟨fun h ↦ (not_mem_empty _ h).elim, fun H => (H rfl).elim⟩⟩⟩
 #align finsupp.has_zero Finsupp.zero
 
@@ -177,7 +177,7 @@ theorem support_zero : (0 : α →₀ M).support = ∅ :=
   rfl
 #align finsupp.support_zero Finsupp.support_zero
 
-instance inhabited : Inhabited (α →₀ M) :=
+instance (priority := 10000) inhabited : Inhabited (α →₀ M) :=
   ⟨0⟩
 #align finsupp.inhabited Finsupp.inhabited
 
@@ -223,7 +223,7 @@ theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 
 theorem card_support_eq_zero {f : α →₀ M} : card f.support = 0 ↔ f = 0 := by simp
 #align finsupp.card_support_eq_zero Finsupp.card_support_eq_zero
 
-instance decidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
+instance (priority := 10000) decidableEq [DecidableEq α] [DecidableEq M] : DecidableEq (α →₀ M) := fun f g =>
   decidable_of_iff (f.support = g.support ∧ ∀ a ∈ f.support, f a = g a) ext_iff'.symm
 #align finsupp.decidable_eq Finsupp.decidableEq
 
@@ -440,7 +440,7 @@ theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ 
   classical simp only [single_apply, eq_comm]
 #align finsupp.single_swap Finsupp.single_swap
 
-instance nontrivial [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) := by
+instance (priority := 10000) nontrivial [Nonempty α] [Nontrivial M] : Nontrivial (α →₀ M) := by
   inhabit α
   rcases exists_ne (0 : M) with ⟨x, hx⟩
   exact nontrivial_of_ne (single default x) 0 (mt single_eq_zero.1 hx)
@@ -771,7 +771,7 @@ theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
   rfl
 #align finsupp.of_support_finite_coe Finsupp.ofSupportFinite_coe
 
-instance canLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
+instance (priority := 10000) canLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
   prf f hf := ⟨ofSupportFinite f hf, rfl⟩
 #align finsupp.can_lift Finsupp.canLift
 
@@ -1009,7 +1009,7 @@ section AddZeroClass
 
 variable [AddZeroClass M]
 
-instance add : Add (α →₀ M) :=
+instance (priority := 10000) add : Add (α →₀ M) :=
   ⟨zipWith (· + ·) (add_zero 0)⟩
 #align finsupp.has_add Finsupp.add
 
@@ -1042,11 +1042,11 @@ theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a 
   (zipWith_single_single _ _ _ _ _).symm
 #align finsupp.single_add Finsupp.single_add
 
-instance addZeroClass : AddZeroClass (α →₀ M) :=
+instance (priority := 10000) addZeroClass : AddZeroClass (α →₀ M) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 #align finsupp.add_zero_class Finsupp.addZeroClass
 
-instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
+instance (priority := 10000) instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
   add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| DFunLike.congr_fun h x
 
 /-- When ι is finite and M is an AddMonoid,
@@ -1062,10 +1062,10 @@ noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
   __ := Equiv.finsuppUnique
   map_add' _ _ := rfl
 
-instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
+instance (priority := 10000) instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
 
-instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
+instance (priority := 10000) instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
@@ -1265,23 +1265,23 @@ variable [AddMonoid M]
 
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
-instance hasNatScalar : SMul ℕ (α →₀ M) :=
+instance (priority := 10000) hasNatScalar : SMul ℕ (α →₀ M) :=
   ⟨fun n v => v.mapRange (n • ·) (nsmul_zero _)⟩
 #align finsupp.has_nat_scalar Finsupp.hasNatScalar
 
-instance addMonoid : AddMonoid (α →₀ M) :=
+instance (priority := 10000) addMonoid : AddMonoid (α →₀ M) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 #align finsupp.add_monoid Finsupp.addMonoid
 
 end AddMonoid
 
-instance addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
+instance (priority := 10000) addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
   --TODO: add reference to library note in PR #7432
   { DFunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
     toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_comm_monoid Finsupp.addCommMonoid
 
-instance neg [NegZeroClass G] : Neg (α →₀ G) :=
+instance (priority := 10000) neg [NegZeroClass G] : Neg (α →₀ G) :=
   ⟨mapRange Neg.neg neg_zero⟩
 #align finsupp.has_neg Finsupp.neg
 
@@ -1303,7 +1303,7 @@ theorem mapRange_neg' [AddGroup G] [SubtractionMonoid H] [FunLike β G H] [AddMo
   mapRange_neg (map_neg f) v
 #align finsupp.map_range_neg' Finsupp.mapRange_neg'
 
-instance sub [SubNegZeroMonoid G] : Sub (α →₀ G) :=
+instance (priority := 10000) sub [SubNegZeroMonoid G] : Sub (α →₀ G) :=
   ⟨zipWith Sub.sub (sub_zero _)⟩
 #align finsupp.has_sub Finsupp.sub
 
@@ -1328,18 +1328,18 @@ theorem mapRange_sub' [AddGroup G] [SubtractionMonoid H] [FunLike β G H] [AddMo
 
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℤ` is not distributive
 unless `β i`'s addition is commutative. -/
-instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
+instance (priority := 10000) hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
   ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
-instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=
+instance (priority := 10000) addGroup [AddGroup G] : AddGroup (α →₀ G) :=
   --TODO: add reference to library note in PR #7432
   { DFunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
       fun _ _ => rfl with
     toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_group Finsupp.addGroup
 
-instance addCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
+instance (priority := 10000) addCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
   --TODO: add reference to library note in PR #7432
   { DFunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
       fun _ _ => rfl with

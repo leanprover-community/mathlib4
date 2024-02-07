@@ -51,7 +51,7 @@ example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
 
 -- This shortcut instance is required in `Mathlib.CategoryTheory.Closed.Types`,
 -- although I don't understand why, and wish it wasn't.
-instance : HasProducts.{v} (Type v) := inferInstance
+instance (priority := 10000) : HasProducts.{v} (Type v) := inferInstance
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
@@ -110,14 +110,14 @@ noncomputable def isTerminalPunit : IsTerminal (PUnit : Type u) :=
 
 -- porting note: the following three instances have been added to ease
 -- the automation in a definition in `AlgebraicTopology.SimplicialSet`
-noncomputable instance : Inhabited (⊤_ (Type u)) :=
+noncomputable instance (priority := 10000) : Inhabited (⊤_ (Type u)) :=
   ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
 
-instance : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
+instance (priority := 10000) : Subsingleton (⊤_ (Type u)) := ⟨fun a b =>
   congr_fun (@Subsingleton.elim (_ ⟶ ⊤_ (Type u)) _
     (fun _ => a) (fun _ => b)) (ULift.up (0 : Fin 1))⟩
 
-noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
+noncomputable instance (priority := 10000) : Unique (⊤_ (Type u)) := Unique.mk' _
 
 /-- A type is terminal if and only if it contains exactly one element. -/
 noncomputable def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
@@ -629,7 +629,7 @@ end Cofork
 section Pullback
 
 -- #synth HasPullbacks.{u} (Type u)
-instance : HasPullbacks.{u} (Type u) :=
+instance (priority := 10000) : HasPullbacks.{u} (Type u) :=
   -- FIXME does not work via `inferInstance` despite `#synth HasPullbacks.{u} (Type u)` succeeding.
   -- https://github.com/leanprover-community/mathlib4/issues/5752
   -- inferInstance
@@ -721,7 +721,7 @@ end Pullback
 section Pushout
 
 -- #synth HasPushouts.{u} (Type u)
-instance : HasPushouts.{u} (Type u) :=
+instance (priority := 10000) : HasPushouts.{u} (Type u) :=
   -- FIXME does not work via `inferInstance` despite `#synth HasPushouts.{u} (Type u)` succeeding.
   -- https://github.com/leanprover-community/mathlib4/issues/5752
   -- inferInstance

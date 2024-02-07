@@ -146,14 +146,14 @@ theorem isLocalization_isLocalization_atPrime_isLocalization (p : Ideal S) [Hp :
   exact (Hp.1 : Â¬_) (p.eq_top_of_isUnit_mem hx' hx)
 #align is_localization.is_localization_is_localization_at_prime_is_localization IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
 
-instance (p : Ideal (Localization M)) [p.IsPrime] : Algebra R (Localization.AtPrime p) :=
+instance (priority := 10000) (p : Ideal (Localization M)) [p.IsPrime] : Algebra R (Localization.AtPrime p) :=
   inferInstance
 
-instance (p : Ideal (Localization M)) [p.IsPrime] :
+instance (priority := 10000) (p : Ideal (Localization M)) [p.IsPrime] :
     IsScalarTower R (Localization M) (Localization.AtPrime p) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
-instance localization_localization_atPrime_is_localization (p : Ideal (Localization M))
+instance (priority := 10000) localization_localization_atPrime_is_localization (p : Ideal (Localization M))
     [p.IsPrime] : IsLocalization.AtPrime (Localization.AtPrime p) (p.comap (algebraMap R _)) :=
   isLocalization_isLocalization_atPrime_isLocalization M _ _
 #align is_localization.localization_localization_at_prime_is_localization IsLocalization.localization_localization_atPrime_is_localization
@@ -188,7 +188,7 @@ theorem localization_isScalarTower_of_submonoid_le (M N : Submonoid R) (h : M â‰
   IsScalarTower.of_algebraMap_eq' (IsLocalization.lift_comp _).symm
 #align is_localization.localization_is_scalar_tower_of_submonoid_le IsLocalization.localization_isScalarTower_of_submonoid_le
 
-noncomputable instance (x : Ideal R) [H : x.IsPrime] [IsDomain R] :
+noncomputable instance (priority := 10000) (x : Ideal R) [H : x.IsPrime] [IsDomain R] :
     Algebra (Localization.AtPrime x) (Localization (nonZeroDivisors R)) :=
   localizationAlgebraOfSubmonoidLe _ _ x.primeCompl (nonZeroDivisors R)
     (by

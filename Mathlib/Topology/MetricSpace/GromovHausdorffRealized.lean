@@ -458,7 +458,7 @@ def OptimalGHCoupling : Type _ :=
   @UniformSpace.SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace
 #align Gromov_Hausdorff.optimal_GH_coupling GromovHausdorff.OptimalGHCoupling
 
-instance : MetricSpace (OptimalGHCoupling X Y) := by
+instance (priority := 10000) : MetricSpace (OptimalGHCoupling X Y) := by
   unfold OptimalGHCoupling
   infer_instance
 
@@ -483,7 +483,7 @@ theorem isometry_optimalGHInjr : Isometry (optimalGHInjr X Y) :=
 #align Gromov_Hausdorff.isometry_optimal_GH_injr GromovHausdorff.isometry_optimalGHInjr
 
 /-- The optimal coupling between two compact spaces `X` and `Y` is still a compact space -/
-instance compactSpace_optimalGHCoupling : CompactSpace (OptimalGHCoupling X Y) := ⟨by
+instance (priority := 10000) compactSpace_optimalGHCoupling : CompactSpace (OptimalGHCoupling X Y) := ⟨by
   rw [← range_quotient_mk']
   exact isCompact_range (continuous_sum_dom.2
     ⟨(isometry_optimalGHInjl X Y).continuous, (isometry_optimalGHInjr X Y).continuous⟩)⟩

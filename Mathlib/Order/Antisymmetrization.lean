@@ -62,7 +62,7 @@ theorem AntisymmRel.trans [IsTrans α r] {a b c : α} (hab : AntisymmRel r a b)
   ⟨_root_.trans hab.1 hbc.1, _root_.trans hbc.2 hab.2⟩
 #align antisymm_rel.trans AntisymmRel.trans
 
-instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) := fun _ _ =>
+instance (priority := 10000) AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) := fun _ _ =>
   instDecidableAnd
 #align antisymm_rel.decidable_rel AntisymmRel.decidableRel
 
@@ -105,7 +105,7 @@ noncomputable def ofAntisymmetrization : Antisymmetrization α r → α :=
   Quotient.out'
 #align of_antisymmetrization ofAntisymmetrization
 
-instance [Inhabited α] : Inhabited (Antisymmetrization α r) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (Antisymmetrization α r) :=
   by unfold Antisymmetrization; infer_instance
 
 @[elab_as_elim]
@@ -137,7 +137,7 @@ theorem AntisymmRel.image {a b : α} (h : AntisymmRel (· ≤ ·) a b) {f : α �
   ⟨hf h.1, hf h.2⟩
 #align antisymm_rel.image AntisymmRel.image
 
-instance instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization α (· ≤ ·)) where
+instance (priority := 10000) instPartialOrderAntisymmetrization : PartialOrder (Antisymmetrization α (· ≤ ·)) where
   le a b :=
     (Quotient.liftOn₂' a b (· ≤ ·)) fun (_ _ _ _ : α) h₁ h₂ =>
       propext ⟨fun h => h₁.2.trans <| h.trans h₂.1, fun h => h₁.1.trans <| h.trans h₂.2⟩
@@ -166,10 +166,10 @@ theorem wellFounded_antisymmetrization_iff :
   wellFounded_liftOn₂'_iff
 #align well_founded_antisymmetrization_iff wellFounded_antisymmetrization_iff
 
-instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
+instance (priority := 10000) [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) :=
   ⟨wellFounded_antisymmetrization_iff.2 IsWellFounded.wf⟩
 
-instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α (· ≤ ·)] :
+instance (priority := 10000) [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),

@@ -92,7 +92,7 @@ def AbsConvexOpenSets :=
   { s : Set E // (0 : E) ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s }
 #align abs_convex_open_sets AbsConvexOpenSets
 
-noncomputable instance AbsConvexOpenSets.instCoeTC : CoeTC (AbsConvexOpenSets 𝕜 E) (Set E) :=
+noncomputable instance (priority := 10000) AbsConvexOpenSets.instCoeTC : CoeTC (AbsConvexOpenSets 𝕜 E) (Set E) :=
   ⟨Subtype.val⟩
 #align abs_convex_open_sets.has_coe AbsConvexOpenSets.instCoeTC
 
@@ -122,7 +122,7 @@ theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex ℝ (s : Set E) :=
 
 end AbsConvexOpenSets
 
-instance AbsConvexOpenSets.instNonempty : Nonempty (AbsConvexOpenSets 𝕜 E) := by
+instance (priority := 10000) AbsConvexOpenSets.instNonempty : Nonempty (AbsConvexOpenSets 𝕜 E) := by
   rw [← exists_true_iff_nonempty]
   dsimp only [AbsConvexOpenSets]
   rw [Subtype.exists]

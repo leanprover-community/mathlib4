@@ -43,16 +43,16 @@ attribute [simp] MonoidalLinear.whiskerLeft_smul MonoidalLinear.smul_whiskerRigh
 variable {C}
 variable [MonoidalPreadditive C] [MonoidalLinear R C]
 
-instance tensorLeft_linear (X : C) : (tensorLeft X).Linear R where
+instance (priority := 10000) tensorLeft_linear (X : C) : (tensorLeft X).Linear R where
 #align category_theory.tensor_left_linear CategoryTheory.tensorLeft_linear
 
-instance tensorRight_linear (X : C) : (tensorRight X).Linear R where
+instance (priority := 10000) tensorRight_linear (X : C) : (tensorRight X).Linear R where
 #align category_theory.tensor_right_linear CategoryTheory.tensorRight_linear
 
-instance tensoringLeft_linear (X : C) : ((tensoringLeft C).obj X).Linear R where
+instance (priority := 10000) tensoringLeft_linear (X : C) : ((tensoringLeft C).obj X).Linear R where
 #align category_theory.tensoring_left_linear CategoryTheory.tensoringLeft_linear
 
-instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R where
+instance (priority := 10000) tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R where
 #align category_theory.tensoring_right_linear CategoryTheory.tensoringRight_linear
 
 /-- A faithful linear monoidal functor to a linear monoidal category

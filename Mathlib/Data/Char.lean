@@ -27,7 +27,7 @@ theorem Char.utf8Size_pos (c : Char) : 0 < c.utf8Size := by
 /--
 Provides a `LinearOrder` instance on `Char`. `Char` is the type of Unicode scalar values.
 -/
-instance : LinearOrder Char where
+instance (priority := 10000) : LinearOrder Char where
   le_refl := fun _ => @le_refl ℕ _ _
   le_trans := fun _ _ _ => @le_trans ℕ _ _ _ _
   le_antisymm := fun _ _ h₁ h₂ => Char.eq_of_val_eq <| UInt32.eq_of_val_eq <| Fin.ext <|

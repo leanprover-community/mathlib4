@@ -314,7 +314,7 @@ theorem mem_compactConvergenceUniformity (X : Set (C(α, β) × C(α, β))) :
 #align continuous_map.mem_compact_convergence_uniformity ContinuousMap.mem_compactConvergenceUniformity
 
 /-- Note that we ensure the induced topology is definitionally the compact-open topology. -/
-instance compactConvergenceUniformSpace : UniformSpace C(α, β) where
+instance (priority := 10000) compactConvergenceUniformSpace : UniformSpace C(α, β) where
   uniformity := compactConvergenceUniformity
   refl := by
     simp only [compactConvergenceUniformity, and_imp, Filter.le_principal_iff, Prod.forall,

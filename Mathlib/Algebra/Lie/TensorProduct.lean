@@ -53,7 +53,7 @@ def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
 #align tensor_product.lie_module.has_bracket_aux TensorProduct.LieModule.hasBracketAux
 
 /-- The tensor product of two Lie modules is a Lie ring module. -/
-instance lieRingModule : LieRingModule L (M ⊗[R] N) where
+instance (priority := 10000) lieRingModule : LieRingModule L (M ⊗[R] N) where
   bracket x := hasBracketAux x
   add_lie x y t := by
     simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, LieHom.map_add,
@@ -73,7 +73,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
 #align tensor_product.lie_module.lie_ring_module TensorProduct.LieModule.lieRingModule
 
 /-- The tensor product of two Lie modules is a Lie module. -/
-instance lieModule : LieModule R L (M ⊗[R] N) where
+instance (priority := 10000) lieModule : LieModule R L (M ⊗[R] N) where
   smul_lie c x t := by
     change hasBracketAux (c • x) _ = c • hasBracketAux _ _
     simp only [hasBracketAux, smul_add, LinearMap.rTensor_smul, LinearMap.smul_apply,

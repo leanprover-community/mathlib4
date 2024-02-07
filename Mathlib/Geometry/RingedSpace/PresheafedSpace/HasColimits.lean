@@ -347,10 +347,10 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_cocone_is_colimit AlgebraicGeometry.PresheafedSpace.colimitCoconeIsColimit
 
-instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
+instance (priority := 10000) : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
   has_colimit F := ⟨colimitCocone F, colimitCoconeIsColimit F⟩
 
-instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
+instance (priority := 10000) : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
   ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F) <| by
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
     fapply Cocones.ext
@@ -360,13 +360,13 @@ instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
 
 /-- When `C` has limits, the category of presheaved spaces with values in `C` itself has colimits.
 -/
-instance instHasColimits [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} C) :=
+instance (priority := 10000) instHasColimits [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} C) :=
   ⟨fun {_ _} => ⟨fun {F} => ⟨colimitCocone F, colimitCoconeIsColimit F⟩⟩⟩
 
 /-- The underlying topological space of a colimit of presheaved spaces is
 the colimit of the underlying topological spaces.
 -/
-instance forgetPreservesColimits [HasLimits C] : PreservesColimits (PresheafedSpace.forget C) where
+instance (priority := 10000) forgetPreservesColimits [HasLimits C] : PreservesColimits (PresheafedSpace.forget C) where
   preservesColimitsOfShape {J 𝒥} :=
     { preservesColimit := fun {F} =>
         preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)

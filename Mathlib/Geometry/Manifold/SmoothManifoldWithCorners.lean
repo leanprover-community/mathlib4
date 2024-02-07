@@ -79,7 +79,7 @@ the right properties, like
   {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [SmoothManifoldWithCorners I M]`
 
 Here, `I.Boundaryless` is a typeclass property ensuring that there is no boundary (this is for
-instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider
+instance (priority := 10000) the case for `modelWithCornersSelf`, or products of these). Note that one could consider
 as a natural assumption to only use the trivial model with corners `modelWithCornersSelf ℝ E`,
 but again in product manifolds the natural model with corners will not be this one but the product
 one (and they are not defeq as `(λp : E × F, (p.1, p.2))` is not defeq to the identity). So, it is
@@ -176,7 +176,7 @@ namespace ModelWithCorners
 switch to this behavior later, doing it mid-port will break a lot of proofs. -/
 @[coe] def toFun' (e : ModelWithCorners 𝕜 E H) : H → E := e.toFun
 
-instance : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E := ⟨toFun'⟩
+instance (priority := 10000) : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E := ⟨toFun'⟩
 
 /-- The inverse to a model with corners, only registered as a `PartialEquiv`. -/
 protected def symm : PartialEquiv E H :=
@@ -502,13 +502,13 @@ def ModelWithCorners.toHomeomorph {𝕜 : Type*} [NontriviallyNormedField 𝕜] 
   right_inv _ := I.right_inv <| I.range_eq_univ.symm ▸ mem_univ _
 
 /-- The trivial model with corners has no boundary -/
-instance modelWithCornersSelf_boundaryless (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+instance (priority := 10000) modelWithCornersSelf_boundaryless (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : (modelWithCornersSelf 𝕜 E).Boundaryless :=
   ⟨by simp⟩
 #align model_with_corners_self_boundaryless modelWithCornersSelf_boundaryless
 
 /-- If two model with corners are boundaryless, their product also is -/
-instance ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
+instance (priority := 10000) ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] {E' : Type v'} [NormedAddCommGroup E']
     [NormedSpace 𝕜 E'] {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
@@ -647,7 +647,7 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
 #align cont_diff_groupoid_prod contDiffGroupoid_prod
 
 /-- The `C^n` groupoid is closed under restriction. -/
-instance : ClosedUnderRestriction (contDiffGroupoid n I) :=
+instance (priority := 10000) : ClosedUnderRestriction (contDiffGroupoid n I) :=
   (closedUnderRestriction_iff_id_le _).mpr
     (by
       apply StructureGroupoid.le_iff.mpr
@@ -785,7 +785,7 @@ theorem symm_trans_mem_analyticGroupoid (e : PartialHomeomorph M H) :
   StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_analyticGroupoid I e.open_target) this
 
 /-- The analytic groupoid is closed under restriction. -/
-instance : ClosedUnderRestriction (analyticGroupoid I) :=
+instance (priority := 10000) : ClosedUnderRestriction (analyticGroupoid I) :=
   (closedUnderRestriction_iff_id_le _).mpr
     (by
       apply StructureGroupoid.le_iff.mpr
@@ -845,7 +845,7 @@ theorem smoothManifoldWithCorners_of_contDiffOn {𝕜 : Type*} [NontriviallyNorm
 #align smooth_manifold_with_corners_of_cont_diff_on smoothManifoldWithCorners_of_contDiffOn
 
 /-- For any model with corners, the model space is a smooth manifold -/
-instance model_space_smooth {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+instance (priority := 10000) model_space_smooth {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     {I : ModelWithCorners 𝕜 E H} : SmoothManifoldWithCorners I H :=
   { hasGroupoid_model_space _ _ with }
@@ -887,7 +887,7 @@ theorem compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H} (he : e �
 #align smooth_manifold_with_corners.compatible_of_mem_maximal_atlas SmoothManifoldWithCorners.compatible_of_mem_maximalAtlas
 
 /-- The product of two smooth manifolds with corners is naturally a smooth manifold with corners. -/
-instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+instance (priority := 10000) prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
     [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
     {I' : ModelWithCorners 𝕜 E' H'} (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
@@ -928,7 +928,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] (s : Opens M)
 
-instance : SmoothManifoldWithCorners I s :=
+instance (priority := 10000) : SmoothManifoldWithCorners I s :=
   { s.instHasGroupoid (contDiffGroupoid ∞ I) with }
 
 end TopologicalSpace.Opens

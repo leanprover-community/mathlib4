@@ -83,13 +83,13 @@ theorem npow_mul' (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ n) ^ m := by
 
 end MulOneClass
 
-instance Pi.instNatPowAssoc {ι : Type*} {α : ι → Type*} [∀ i, MulOneClass <| α i] [∀ i, Pow (α i) ℕ]
+instance (priority := 10000) Pi.instNatPowAssoc {ι : Type*} {α : ι → Type*} [∀ i, MulOneClass <| α i] [∀ i, Pow (α i) ℕ]
     [∀ i, NatPowAssoc <| α i] : NatPowAssoc (∀ i, α i) where
     npow_add _ _ _ := by ext; simp [npow_add]
     npow_zero _ := by ext; simp
     npow_one _ := by ext; simp
 
-instance Prod.instNatPowAssoc {N : Type*} [MulOneClass M] [Pow M ℕ] [NatPowAssoc M] [MulOneClass N]
+instance (priority := 10000) Prod.instNatPowAssoc {N : Type*} [MulOneClass M] [Pow M ℕ] [NatPowAssoc M] [MulOneClass N]
     [Pow N ℕ] [NatPowAssoc N] : NatPowAssoc (M × N) where
   npow_add _ _ _ := by ext <;> simp [npow_add]
   npow_zero _ := by ext <;> simp
@@ -99,7 +99,7 @@ section Monoid
 
 variable [Monoid M]
 
-instance Monoid.PowAssoc [Monoid M] : NatPowAssoc M where
+instance (priority := 10000) Monoid.PowAssoc [Monoid M] : NatPowAssoc M where
   npow_add _ _ _ := pow_add _ _ _
   npow_zero _ := pow_zero _
   npow_one _ := pow_one _

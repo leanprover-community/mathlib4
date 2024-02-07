@@ -412,7 +412,7 @@ example : J(58378362899022564339483801989973056405585914719065 |
 example : J(3 + 4 | 3 * 5) = -1 := by norm_num1
 example : J(J(-1 | 7) | 11) = -1 := by norm_num1
 
-instance prime_1000003 : Fact (Nat.Prime 1000003) := ⟨by norm_num1⟩
+instance (priority := 10000) prime_1000003 : Fact (Nat.Prime 1000003) := ⟨by norm_num1⟩
 example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi

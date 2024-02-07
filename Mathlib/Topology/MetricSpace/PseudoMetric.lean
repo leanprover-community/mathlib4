@@ -498,7 +498,7 @@ theorem sphere_eq_empty_of_subsingleton [Subsingleton α] (hε : ε ≠ 0) : sph
   Set.eq_empty_iff_forall_not_mem.mpr fun _ h => ne_of_mem_sphere h hε (Subsingleton.elim _ _)
 #align metric.sphere_eq_empty_of_subsingleton Metric.sphere_eq_empty_of_subsingleton
 
-instance sphere_isEmpty_of_subsingleton [Subsingleton α] [NeZero ε] : IsEmpty (sphere x ε) := by
+instance (priority := 10000) sphere_isEmpty_of_subsingleton [Subsingleton α] [NeZero ε] : IsEmpty (sphere x ε) := by
   rw [sphere_eq_empty_of_subsingleton (NeZero.ne ε)]; infer_instance
 #align metric.sphere_is_empty_of_subsingleton Metric.sphere_isEmpty_of_subsingleton
 
@@ -1332,7 +1332,7 @@ example {α} [B : Bornology α] (m : PseudoMetricSpace α)
 section Real
 
 /-- Instantiate the reals as a pseudometric space. -/
-instance Real.pseudoMetricSpace : PseudoMetricSpace ℝ where
+instance (priority := 10000) Real.pseudoMetricSpace : PseudoMetricSpace ℝ where
   dist x y := |x - y|
   dist_self := by simp [abs_zero]
   dist_comm x y := abs_sub_comm _ _
@@ -1376,7 +1376,7 @@ theorem Real.dist_le_of_mem_Icc_01 {x y : ℝ} (hx : x ∈ Icc (0 : ℝ) 1) (hy 
     dist x y ≤ 1 := by simpa only [sub_zero] using Real.dist_le_of_mem_Icc hx hy
 #align real.dist_le_of_mem_Icc_01 Real.dist_le_of_mem_Icc_01
 
-instance : OrderTopology ℝ :=
+instance (priority := 10000) : OrderTopology ℝ :=
   orderTopology_of_nhds_abs fun x => by
     simp only [nhds_basis_ball.eq_biInf, ball, Real.dist_eq, abs_sub_comm]
 
@@ -1515,7 +1515,7 @@ def UniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : Pseudo
   .replaceUniformity (.induced f m) h.comap_uniformity.symm
 #align uniform_inducing.comap_pseudo_metric_space UniformInducing.comapPseudoMetricSpace
 
-instance Subtype.pseudoMetricSpace {p : α → Prop} : PseudoMetricSpace (Subtype p) :=
+instance (priority := 10000) Subtype.pseudoMetricSpace {p : α → Prop} : PseudoMetricSpace (Subtype p) :=
   PseudoMetricSpace.induced Subtype.val ‹_›
 #align subtype.pseudo_metric_space Subtype.pseudoMetricSpace
 
@@ -1530,7 +1530,7 @@ theorem Subtype.nndist_eq {p : α → Prop} (x y : Subtype p) : nndist x y = nnd
 namespace MulOpposite
 
 @[to_additive]
-instance instPseudoMetricSpace : PseudoMetricSpace αᵐᵒᵖ :=
+instance (priority := 10000) instPseudoMetricSpace : PseudoMetricSpace αᵐᵒᵖ :=
   PseudoMetricSpace.induced MulOpposite.unop ‹_›
 
 @[to_additive (attr := simp)]
@@ -1557,7 +1557,7 @@ end MulOpposite
 
 section NNReal
 
-instance : PseudoMetricSpace ℝ≥0 := Subtype.pseudoMetricSpace
+instance (priority := 10000) : PseudoMetricSpace ℝ≥0 := Subtype.pseudoMetricSpace
 
 theorem NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 #align nnreal.dist_eq NNReal.dist_eq
@@ -1593,7 +1593,7 @@ section ULift
 
 variable [PseudoMetricSpace β]
 
-instance : PseudoMetricSpace (ULift β) :=
+instance (priority := 10000) : PseudoMetricSpace (ULift β) :=
   PseudoMetricSpace.induced ULift.down ‹_›
 
 theorem ULift.dist_eq (x y : ULift β) : dist x y = dist x.down y.down := rfl
@@ -1617,7 +1617,7 @@ section Prod
 variable [PseudoMetricSpace β]
 
 -- porting note: added `let`, otherwise `simp` failed
-instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
+instance (priority := 10000) Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
     (fun x y => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
@@ -1877,7 +1877,7 @@ open Finset
 variable {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (π b)]
 
 /-- A finite product of pseudometric spaces is a pseudometric space, with the sup distance. -/
-instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
+instance (priority := 10000) pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
   /- we construct the instance from the pseudoemetric space instance to avoid checking again that
     the uniformity is the same as the product uniformity, but we register nevertheless a nice
     formula for the distance -/

@@ -237,7 +237,7 @@ theorem run_monadMap {n} [MonadFunctorT n m] (f : ∀ {α}, n α → n α) :
 
 end OptionT
 
-instance (m : Type u → Type v) [Monad m] [LawfulMonad m] : LawfulMonad (OptionT m) :=
+instance (priority := 10000) (m : Type u → Type v) [Monad m] [LawfulMonad m] : LawfulMonad (OptionT m) :=
   LawfulMonad.mk'
     (id_map := by
       intros; apply OptionT.ext; simp only [OptionT.run_map]
@@ -259,9 +259,9 @@ which would remove the need for these proofs anyway.
 These are not in Std because Std does not want to deal with the churn from such a core refactor.
 -/
 
-instance : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)
-instance : LawfulMonad BaseIO := inferInstanceAs <| LawfulMonad (EIO _)
-instance : LawfulMonad IO := inferInstance
+instance (priority := 10000) : LawfulMonad (EIO ε) := inferInstanceAs <| LawfulMonad (EStateM _ _)
+instance (priority := 10000) : LawfulMonad BaseIO := inferInstanceAs <| LawfulMonad (EIO _)
+instance (priority := 10000) : LawfulMonad IO := inferInstance
 
-instance : LawfulMonad (EST ε σ) := inferInstanceAs <| LawfulMonad (EStateM _ _)
-instance : LawfulMonad (ST ε) := inferInstance
+instance (priority := 10000) : LawfulMonad (EST ε σ) := inferInstanceAs <| LawfulMonad (EStateM _ _)
+instance (priority := 10000) : LawfulMonad (ST ε) := inferInstance

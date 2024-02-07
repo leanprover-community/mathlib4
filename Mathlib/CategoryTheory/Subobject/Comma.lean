@@ -120,7 +120,7 @@ attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_app
 
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/
-instance wellPowered_structuredArrow [WellPowered C] [HasLimits C] [PreservesLimits T] :
+instance (priority := 10000) wellPowered_structuredArrow [WellPowered C] [HasLimits C] [PreservesLimits T] :
     WellPowered (StructuredArrow S T) where
   subobject_small X := small_map (subobjectEquiv X).toEquiv
 #align category_theory.structured_arrow.well_powered_structured_arrow CategoryTheory.StructuredArrow.wellPowered_structuredArrow
@@ -238,7 +238,7 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
 
 /-- If `C` is well-copowered and cocomplete and `S` preserves colimits, then
     `CostructuredArrow S T` is well-copowered. -/
-instance well_copowered_costructuredArrow [WellPowered Cᵒᵖ] [HasColimits C] [PreservesColimits S] :
+instance (priority := 10000) well_copowered_costructuredArrow [WellPowered Cᵒᵖ] [HasColimits C] [PreservesColimits S] :
     WellPowered (CostructuredArrow S T)ᵒᵖ where
   subobject_small X := small_map (quotientEquiv (unop X)).toEquiv
 #align category_theory.costructured_arrow.well_copowered_costructured_arrow CategoryTheory.CostructuredArrow.well_copowered_costructuredArrow

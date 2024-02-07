@@ -24,7 +24,7 @@ namespace HomologicalComplex
 
 variable (A : C)
 
-instance (i : ι) : ((single C c j).obj A).HasHomology i := by
+instance (priority := 10000) (i : ι) : ((single C c j).obj A).HasHomology i := by
   apply ShortComplex.hasHomology_of_zeros
 
 lemma exactAt_single_obj (A : C) (i : ι) (hi : i ≠ j) :

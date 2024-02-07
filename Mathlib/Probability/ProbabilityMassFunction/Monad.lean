@@ -62,7 +62,7 @@ theorem pure_apply_of_ne (h : a' ≠ a) : pure a a' = 0 :=
   if_neg h
 #align pmf.pure_apply_of_ne PMF.pure_apply_of_ne
 
-instance [Inhabited α] : Inhabited (PMF α) :=
+instance (priority := 10000) [Inhabited α] : Inhabited (PMF α) :=
   ⟨pure default⟩
 
 section Measure
@@ -196,7 +196,7 @@ end Measure
 
 end Bind
 
-instance : Monad PMF where
+instance (priority := 10000) : Monad PMF where
   pure a := pure a
   bind pa pb := pa.bind pb
 

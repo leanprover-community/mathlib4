@@ -108,15 +108,15 @@ section
 
 variable [MeasurableSpace α]
 
-instance standardBorel_of_polish [τ : TopologicalSpace α]
+instance (priority := 10000) standardBorel_of_polish [τ : TopologicalSpace α]
     [BorelSpace α] [PolishSpace α] : StandardBorelSpace α := by exists τ
 
-instance countablyGenerated_of_standardBorel [StandardBorelSpace α] :
+instance (priority := 10000) countablyGenerated_of_standardBorel [StandardBorelSpace α] :
     MeasurableSpace.CountablyGenerated α :=
   letI := upgradeStandardBorel α
   inferInstance
 
-instance measurableSingleton_of_standardBorel [StandardBorelSpace α] : MeasurableSingletonClass α :=
+instance (priority := 10000) measurableSingleton_of_standardBorel [StandardBorelSpace α] : MeasurableSingletonClass α :=
   letI := upgradeStandardBorel α
   inferInstance
 
@@ -127,13 +127,13 @@ variable {β : Type*} [MeasurableSpace β]
 section instances
 
 /-- A product of two standard Borel spaces is standard Borel. -/
-instance prod [StandardBorelSpace α] [StandardBorelSpace β] : StandardBorelSpace (α × β) :=
+instance (priority := 10000) prod [StandardBorelSpace α] [StandardBorelSpace β] : StandardBorelSpace (α × β) :=
   letI := upgradeStandardBorel α
   letI := upgradeStandardBorel β
   inferInstance
 
 /-- A product of countably many standard Borel spaces is standard Borel. -/
-instance pi_countable {ι : Type*} [Countable ι] {α : ι → Type*} [∀ n, MeasurableSpace (α n)]
+instance (priority := 10000) pi_countable {ι : Type*} [Countable ι] {α : ι → Type*} [∀ n, MeasurableSpace (α n)]
     [∀ n, StandardBorelSpace (α n)] : StandardBorelSpace (∀ n, α n) :=
   letI := fun n => upgradeStandardBorel (α n)
   inferInstance
@@ -628,14 +628,14 @@ theorem Continuous.map_borel_eq {X Y : Type*} [TopologicalSpace X] [PolishSpace 
   exact hf.map_eq_borel hsurj
 #align continuous.map_borel_eq Continuous.map_borel_eq
 
-instance Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X]
+instance (priority := 10000) Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X]
     [BorelSpace X] {s : Setoid X} [T2Space (Quotient s)] [SecondCountableTopology (Quotient s)] :
     BorelSpace (Quotient s) :=
   ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk' _)⟩
 #align quotient.borel_space Quotient.borelSpace
 
 @[to_additive]
-instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
+instance (priority := 10000) QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
     [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
   -- porting note: 1st and 3rd `haveI`s were not needed in Lean 3

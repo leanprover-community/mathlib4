@@ -418,12 +418,12 @@ variable {R S R'}
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
-instance TensorProduct.isPushout {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+instance (priority := 10000) TensorProduct.isPushout {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] : Algebra.IsPushout R S T (TensorProduct R S T) :=
   ⟨TensorProduct.isBaseChange R T S⟩
 #align tensor_product.is_pushout TensorProduct.isPushout
 
-instance TensorProduct.isPushout' {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+instance (priority := 10000) TensorProduct.isPushout' {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] : Algebra.IsPushout R T S (TensorProduct R S T) :=
   Algebra.IsPushout.symm inferInstance
 #align tensor_product.is_pushout' TensorProduct.isPushout'

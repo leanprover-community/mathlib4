@@ -73,13 +73,13 @@ localized categories. --/
 noncomputable def localizedFunctor : D₁ ⥤ D₂ :=
   lift (Φ.functor ⋙ L₂) (Φ.inverts _) L₁
 
-noncomputable instance : Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) := by
+noncomputable instance (priority := 10000) : Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) := by
   dsimp [localizedFunctor]
   infer_instance
 
 /-- The 2-commutative square expressing that `Φ.localizedFunctor L₁ L₂` lifts the
 functor `Φ.functor`  -/
-noncomputable instance catCommSq : CatCommSq Φ.functor L₁ L₂ (Φ.localizedFunctor L₁ L₂) :=
+noncomputable instance (priority := 10000) catCommSq : CatCommSq Φ.functor L₁ L₂ (Φ.localizedFunctor L₁ L₂) :=
   CatCommSq.mk (Lifting.iso _ W₁ _ _).symm
 
 variable (G : D₁ ⥤ D₂)
@@ -141,7 +141,7 @@ noncomputable def isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.fu
 
 /-- If a `LocalizerMorphism` is a localized equivalence, then the induced functor on
 the localized categories is an equivalence -/
-noncomputable instance localizedFunctor_isEquivalence [Φ.IsLocalizedEquivalence] :
+noncomputable instance (priority := 10000) localizedFunctor_isEquivalence [Φ.IsLocalizedEquivalence] :
     IsEquivalence (Φ.localizedFunctor L₁ L₂) :=
   Φ.isEquivalence L₁ L₂ _
 

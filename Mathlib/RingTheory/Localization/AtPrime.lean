@@ -110,7 +110,7 @@ end IsLocalization
 namespace Localization
 
 /-- The localization of `R` at the complement of a prime ideal is a local ring. -/
-instance AtPrime.localRing : LocalRing (Localization P.primeCompl) :=
+instance (priority := 10000) AtPrime.localRing : LocalRing (Localization P.primeCompl) :=
   IsLocalization.AtPrime.localRing (Localization P.primeCompl) P
 #align localization.at_prime.local_ring Localization.AtPrime.localRing
 
@@ -124,7 +124,7 @@ variable {A : Type*} [CommRing A] [IsDomain A]
 
 /-- The localization of an integral domain at the complement of a prime ideal is an integral domain.
 -/
-instance isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
+instance (priority := 10000) isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
     IsDomain (Localization.AtPrime P) :=
   isDomain_localization P.primeCompl_le_nonZeroDivisors
 #align is_localization.is_domain_of_local_at_prime IsLocalization.isDomain_of_local_atPrime
@@ -235,7 +235,7 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
   map_mk' _ _ _
 #align localization.local_ring_hom_mk' Localization.localRingHom_mk'
 
-instance isLocalRingHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
+instance (priority := 10000) isLocalRingHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
     (hIJ : I = J.comap f) : IsLocalRingHom (localRingHom I J f hIJ) :=
   IsLocalRingHom.mk fun x hx => by
     rcases IsLocalization.mk'_surjective I.primeCompl x with ⟨r, s, rfl⟩

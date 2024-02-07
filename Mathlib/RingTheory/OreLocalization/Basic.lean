@@ -246,7 +246,7 @@ protected def mul : R[S⁻¹] → R[S⁻¹] → R[S⁻¹] :=
     apply OreLocalization.expand
 #align ore_localization.mul OreLocalization.mul
 
-instance instMulOreLocalization : Mul R[S⁻¹] :=
+instance (priority := 10000) instMulOreLocalization : Mul R[S⁻¹] :=
   ⟨OreLocalization.mul⟩
 
 theorem oreDiv_mul_oreDiv {r₁ r₂ : R} {s₁ s₂ : S} :
@@ -268,14 +268,14 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
   ⟨oreNum r₂ s₁, oreDenom r₂ s₁, ore_eq r₂ s₁, oreDiv_mul_oreDiv⟩
 #align ore_localization.ore_div_mul_char' OreLocalization.oreDivMulChar'
 
-instance instOneOreLocalization : One R[S⁻¹] :=
+instance (priority := 10000) instOneOreLocalization : One R[S⁻¹] :=
   ⟨1 /ₒ 1⟩
 
 protected theorem one_def : (1 : R[S⁻¹]) = 1 /ₒ 1 :=
   rfl
 #align ore_localization.one_def OreLocalization.one_def
 
-instance : Inhabited R[S⁻¹] :=
+instance (priority := 10000) : Inhabited R[S⁻¹] :=
   ⟨1⟩
 
 @[simp]
@@ -316,7 +316,7 @@ protected theorem mul_assoc (x y z : R[S⁻¹]) : x * y * z = x * (y * z) := by
   rw [mul_assoc, hc, ← mul_assoc (b := ra), ← ha, mul_assoc]
 #align ore_localization.mul_assoc OreLocalization.mul_assoc
 
-instance instMonoidOreLocalization : Monoid R[S⁻¹] :=
+instance (priority := 10000) instMonoidOreLocalization : Monoid R[S⁻¹] :=
   { OreLocalization.instMulOreLocalization,
     OreLocalization.instOneOreLocalization with
     one_mul := OreLocalization.one_mul
@@ -443,7 +443,7 @@ theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :
   rw [oreDiv_mul_char r₁ r₂ s₁ s₂ r₂ s₁ (by simp [mul_comm]), mul_comm s₂]
 #align ore_localization.ore_div_mul_ore_div_comm OreLocalization.oreDiv_mul_oreDiv_comm
 
-instance : CommMonoid R[S⁻¹] :=
+instance (priority := 10000) : CommMonoid R[S⁻¹] :=
   { OreLocalization.instMonoidOreLocalization with
     mul_comm := fun x y => by
       induction' x using OreLocalization.ind with r₁ s₁
@@ -590,7 +590,7 @@ private def add : R[S⁻¹] → R[S⁻¹] → R[S⁻¹] := fun x =>
       -- Porting note: `Quotient.mk'` required
       simp [(· /ₒ ·), Quotient.mk', Quotient.sound hyz])
 
-instance instAddOreLocalization : Add R[S⁻¹] :=
+instance (priority := 10000) instAddOreLocalization : Add R[S⁻¹] :=
   ⟨add⟩
 
 theorem oreDiv_add_oreDiv {r r' : R} {s s' : S} :
@@ -650,7 +650,7 @@ protected theorem add_assoc (x y z : R[S⁻¹]) : x + y + z = x + (y + z) := by
 private def zero : R[S⁻¹] :=
   0 /ₒ 1
 
-instance : Zero R[S⁻¹] :=
+instance (priority := 10000) : Zero R[S⁻¹] :=
   ⟨zero⟩
 
 protected theorem zero_def : (0 : R[S⁻¹]) = 0 /ₒ 1 :=
@@ -674,7 +674,7 @@ protected theorem add_comm (x y : R[S⁻¹]) : x + y = y + x := by
   change add' _ _ (_ /ₒ _) = _; apply add'_comm
 #align ore_localization.add_comm OreLocalization.add_comm
 
-instance instAddCommMonoidOreLocalization : AddCommMonoid R[S⁻¹] :=
+instance (priority := 10000) instAddCommMonoidOreLocalization : AddCommMonoid R[S⁻¹] :=
   { OreLocalization.instAddOreLocalization with
     add_comm := OreLocalization.add_comm
     add_assoc := OreLocalization.add_assoc
@@ -735,7 +735,7 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z := by
   simp only [add_mul, add_oreDiv]
 #align ore_localization.right_distrib OreLocalization.right_distrib
 
-instance instSemiringOreLocalization : Semiring R[S⁻¹] :=
+instance (priority := 10000) instSemiringOreLocalization : Semiring R[S⁻¹] :=
   { OreLocalization.instAddCommMonoidOreLocalization,
     OreLocalization.instMonoidOreLocalization with
     zero_mul := OreLocalization.zero_mul
@@ -833,7 +833,7 @@ protected def neg : R[S⁻¹] → R[S⁻¹] :=
     rw [neg_mul_eq_neg_mul, ← OreLocalization.expand]
 #align ore_localization.neg OreLocalization.neg
 
-instance instNegOreLocalization : Neg R[S⁻¹] :=
+instance (priority := 10000) instNegOreLocalization : Neg R[S⁻¹] :=
   ⟨OreLocalization.neg⟩
 
 @[simp]
@@ -845,7 +845,7 @@ protected theorem add_left_neg (x : R[S⁻¹]) : -x + x = 0 := by
   induction' x using OreLocalization.ind with r s; simp
 #align ore_localization.add_left_neg OreLocalization.add_left_neg
 
-instance ring : Ring R[S⁻¹] :=
+instance (priority := 10000) ring : Ring R[S⁻¹] :=
   { OreLocalization.instSemiringOreLocalization,
     OreLocalization.instNegOreLocalization with
     add_left_neg := OreLocalization.add_left_neg }
@@ -876,7 +876,7 @@ open Classical
 
 variable {R : Type*} [Ring R] [Nontrivial R] [OreSet R⁰]
 
-instance nontrivial : Nontrivial R[R⁰⁻¹] :=
+instance (priority := 10000) nontrivial : Nontrivial R[R⁰⁻¹] :=
   nontrivial_of_nonZeroDivisors (refl R⁰)
 
 variable [NoZeroDivisors R]
@@ -900,7 +900,7 @@ protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=
           apply OreLocalization.expand)
 #align ore_localization.inv OreLocalization.inv
 
-instance inv' : Inv R[R⁰⁻¹] :=
+instance (priority := 10000) inv' : Inv R[R⁰⁻¹] :=
   ⟨OreLocalization.inv⟩
 
 protected theorem inv_def {r : R} {s : R⁰} :
@@ -926,7 +926,7 @@ protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
   simp
 #align ore_localization.inv_zero OreLocalization.inv_zero
 
-instance divisionRing : DivisionRing R[R⁰⁻¹] :=
+instance (priority := 10000) divisionRing : DivisionRing R[R⁰⁻¹] :=
   { OreLocalization.nontrivial,
     OreLocalization.inv',
     OreLocalization.ring with

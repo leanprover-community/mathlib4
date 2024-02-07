@@ -99,10 +99,10 @@ theorem haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDec
   exact Classical.choose_spec h.lebesgue_decomposition
 #align measure_theory.measure.have_lebesgue_decomposition_spec MeasureTheory.Measure.haveLebesgueDecomposition_spec
 
-instance instHaveLebesgueDecomposition_zero_left : HaveLebesgueDecomposition 0 ν where
+instance (priority := 10000) instHaveLebesgueDecomposition_zero_left : HaveLebesgueDecomposition 0 ν where
   lebesgue_decomposition := ⟨⟨0, 0⟩, measurable_zero, MutuallySingular.zero_left, by simp⟩
 
-instance instHaveLebesgueDecomposition_zero_right : HaveLebesgueDecomposition μ 0 where
+instance (priority := 10000) instHaveLebesgueDecomposition_zero_right : HaveLebesgueDecomposition μ 0 where
   lebesgue_decomposition := ⟨⟨μ, 0⟩, measurable_zero, MutuallySingular.zero_right, by simp⟩
 
 theorem haveLebesgueDecomposition_add (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] :
@@ -110,7 +110,7 @@ theorem haveLebesgueDecomposition_add (μ ν : Measure α) [HaveLebesgueDecompos
   (haveLebesgueDecomposition_spec μ ν).2.2
 #align measure_theory.measure.have_lebesgue_decomposition_add MeasureTheory.Measure.haveLebesgueDecomposition_add
 
-instance haveLebesgueDecomposition_smul (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+instance (priority := 10000) haveLebesgueDecomposition_smul (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0) : (r • μ).HaveLebesgueDecomposition ν where
   lebesgue_decomposition := by
     obtain ⟨hmeas, hsing, hadd⟩ := haveLebesgueDecomposition_spec μ ν
@@ -122,7 +122,7 @@ instance haveLebesgueDecomposition_smul (μ ν : Measure α) [HaveLebesgueDecomp
       rfl
 #align measure_theory.measure.have_lebesgue_decomposition_smul MeasureTheory.Measure.haveLebesgueDecomposition_smul
 
-instance haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+instance (priority := 10000) haveLebesgueDecomposition_smul_right (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0) :
     μ.HaveLebesgueDecomposition (r • ν) where
   lebesgue_decomposition := by
@@ -158,7 +158,7 @@ theorem mutuallySingular_singularPart (μ ν : Measure α) : μ.singularPart ν 
     exact MutuallySingular.zero_left
 #align measure_theory.measure.mutually_singular_singular_part MeasureTheory.Measure.mutuallySingular_singularPart
 
-instance instHaveLebesgueDecomposition_singularPart :
+instance (priority := 10000) instHaveLebesgueDecomposition_singularPart :
     HaveLebesgueDecomposition (μ.singularPart ν) ν :=
   ⟨⟨μ.singularPart ν, 0⟩, measurable_zero, mutuallySingular_singularPart μ ν, by simp⟩
 
@@ -247,31 +247,31 @@ lemma rnDeriv_singularPart (μ ν : Measure α) :
   rw [rnDeriv_eq_zero]
   exact mutuallySingular_singularPart μ ν
 
-instance singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
+instance (priority := 10000) singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.singularPart ν) :=
   isFiniteMeasure_of_le μ <| singularPart_le μ ν
 #align measure_theory.measure.singular_part.measure_theory.is_finite_measure MeasureTheory.Measure.singularPart.instIsFiniteMeasure
 
-instance singularPart.instSigmaFinite [SigmaFinite μ] : SigmaFinite (μ.singularPart ν) :=
+instance (priority := 10000) singularPart.instSigmaFinite [SigmaFinite μ] : SigmaFinite (μ.singularPart ν) :=
   sigmaFinite_of_le μ <| singularPart_le μ ν
 #align measure_theory.measure.singular_part.measure_theory.sigma_finite MeasureTheory.Measure.singularPart.instSigmaFinite
 
-instance singularPart.instIsLocallyFiniteMeasure [TopologicalSpace α] [IsLocallyFiniteMeasure μ] :
+instance (priority := 10000) singularPart.instIsLocallyFiniteMeasure [TopologicalSpace α] [IsLocallyFiniteMeasure μ] :
     IsLocallyFiniteMeasure (μ.singularPart ν) :=
   isLocallyFiniteMeasure_of_le <| singularPart_le μ ν
 #align measure_theory.measure.singular_part.measure_theory.is_locally_finite_measure MeasureTheory.Measure.singularPart.instIsLocallyFiniteMeasure
 
-instance withDensity.instIsFiniteMeasure [IsFiniteMeasure μ] :
+instance (priority := 10000) withDensity.instIsFiniteMeasure [IsFiniteMeasure μ] :
     IsFiniteMeasure (ν.withDensity <| μ.rnDeriv ν) :=
   isFiniteMeasure_of_le μ <| withDensity_rnDeriv_le μ ν
 #align measure_theory.measure.with_density.measure_theory.is_finite_measure MeasureTheory.Measure.withDensity.instIsFiniteMeasure
 
-instance withDensity.instSigmaFinite [SigmaFinite μ] :
+instance (priority := 10000) withDensity.instSigmaFinite [SigmaFinite μ] :
     SigmaFinite (ν.withDensity <| μ.rnDeriv ν) :=
   sigmaFinite_of_le μ <| withDensity_rnDeriv_le μ ν
 #align measure_theory.measure.with_density.measure_theory.sigma_finite MeasureTheory.Measure.withDensity.instSigmaFinite
 
-instance withDensity.instIsLocallyFiniteMeasure [TopologicalSpace α] [IsLocallyFiniteMeasure μ] :
+instance (priority := 10000) withDensity.instIsLocallyFiniteMeasure [TopologicalSpace α] [IsLocallyFiniteMeasure μ] :
     IsLocallyFiniteMeasure (ν.withDensity <| μ.rnDeriv ν) :=
   isLocallyFiniteMeasure_of_le <| withDensity_rnDeriv_le μ ν
 #align measure_theory.measure.with_density.measure_theory.is_locally_finite_measure MeasureTheory.Measure.withDensity.instIsLocallyFiniteMeasure
@@ -875,7 +875,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
 
 attribute [local instance] haveLebesgueDecomposition_of_finiteMeasure
 
-instance restrict.instIsFiniteMeasure {S : μ.FiniteSpanningSetsIn {s : Set α | MeasurableSet s}}
+instance (priority := 10000) restrict.instIsFiniteMeasure {S : μ.FiniteSpanningSetsIn {s : Set α | MeasurableSet s}}
     (n : ℕ) : IsFiniteMeasure (μ.restrict <| S.set n) :=
   ⟨by rw [restrict_apply MeasurableSet.univ, univ_inter]; exact S.finite _⟩
 #align measure_theory.measure.restrict.measure_theory.is_finite_measure MeasureTheory.Measure.restrict.instIsFiniteMeasure

@@ -53,7 +53,7 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X)
     simp
 #align category_theory.coyoneda.colimit_cocone_is_colimit CategoryTheory.Coyoneda.colimitCoconeIsColimit
 
-instance (X : Cᵒᵖ) : HasColimit (coyoneda.obj X) :=
+instance (priority := 10000) (X : Cᵒᵖ) : HasColimit (coyoneda.obj X) :=
   HasColimit.mk
     { cocone := _
       isColimit := colimitCoconeIsColimit X }
@@ -73,7 +73,7 @@ variable {C : Type u} [Category.{v} C]
 open Limits
 
 /-- The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
-instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X) where
+instance (priority := 10000) yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X) where
   preservesLimitsOfShape {J} 𝒥 :=
     { preservesLimit := fun {K} =>
         { preserves := fun {c} t =>
@@ -88,7 +88,7 @@ instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X) where
 #align category_theory.yoneda_preserves_limits CategoryTheory.yonedaPreservesLimits
 
 /-- The coyoneda embedding `coyoneda.obj X : C ⥤ Type v` for `X : Cᵒᵖ` preserves limits. -/
-instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X) where
+instance (priority := 10000) coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X) where
   preservesLimitsOfShape {J} 𝒥 :=
     { preservesLimit := fun {K} =>
         { preserves := fun {c} t =>
@@ -140,24 +140,24 @@ def coyonedaJointlyReflectsLimits (J : Type w) [SmallCategory J] (K : J ⥤ C) (
 
 variable {D : Type u} [SmallCategory D]
 
-instance yonedaFunctorPreservesLimits : PreservesLimits (@yoneda D _) := by
+instance (priority := 10000) yonedaFunctorPreservesLimits : PreservesLimits (@yoneda D _) := by
   apply preservesLimitsOfEvaluation
   intro K
   change PreservesLimits (coyoneda.obj K)
   infer_instance
 #align category_theory.yoneda_functor_preserves_limits CategoryTheory.yonedaFunctorPreservesLimits
 
-instance coyonedaFunctorPreservesLimits : PreservesLimits (@coyoneda D _) := by
+instance (priority := 10000) coyonedaFunctorPreservesLimits : PreservesLimits (@coyoneda D _) := by
   apply preservesLimitsOfEvaluation
   intro K
   change PreservesLimits (yoneda.obj K)
   infer_instance
 #align category_theory.coyoneda_functor_preserves_limits CategoryTheory.coyonedaFunctorPreservesLimits
 
-instance yonedaFunctorReflectsLimits : ReflectsLimits (@yoneda D _) := inferInstance
+instance (priority := 10000) yonedaFunctorReflectsLimits : ReflectsLimits (@yoneda D _) := inferInstance
 #align category_theory.yoneda_functor_reflects_limits CategoryTheory.yonedaFunctorReflectsLimits
 
-instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) := inferInstance
+instance (priority := 10000) coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) := inferInstance
 #align category_theory.coyoneda_functor_reflects_limits CategoryTheory.coyonedaFunctorReflectsLimits
 
 end CategoryTheory

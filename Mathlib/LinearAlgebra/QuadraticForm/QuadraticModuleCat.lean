@@ -27,7 +27,7 @@ namespace QuadraticModuleCat
 
 open QuadraticForm
 
-instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
+instance (priority := 10000) : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
 /-- The object in the category of quadratic R-modules associated to a quadratic R-module. -/
@@ -47,7 +47,7 @@ lemma Hom.toIsometry_injective (V W : QuadraticModuleCat.{v} R) :
     Function.Injective (Hom.toIsometry : Hom V W → _) :=
   fun ⟨f⟩ ⟨g⟩ _ => by congr
 
-instance category : Category (QuadraticModuleCat.{v} R) where
+instance (priority := 10000) category : Category (QuadraticModuleCat.{v} R) where
   Hom M N := Hom M N
   id M := ⟨Isometry.id M.form⟩
   comp f g := ⟨Isometry.comp g.toIsometry f.toIsometry⟩
@@ -75,14 +75,14 @@ abbrev ofHom {X : Type v} [AddCommGroup X] [Module R X]
     Hom.toIsometry (𝟙 M) = Isometry.id _ :=
   rfl
 
-instance concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) where
+instance (priority := 10000) concreteCategory : ConcreteCategory.{v} (QuadraticModuleCat.{v} R) where
   forget :=
     { obj := fun M => M
       map := @fun M N f => f.toIsometry }
   forget_faithful :=
     { map_injective := @fun M N => DFunLike.coe_injective.comp <| Hom.toIsometry_injective _ _ }
 
-instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
+instance (priority := 10000) hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
       map := fun f => f.toIsometry.toLinearMap }

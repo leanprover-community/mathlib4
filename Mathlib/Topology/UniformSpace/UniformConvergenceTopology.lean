@@ -167,9 +167,9 @@ open UniformConvergence
 
 variable {α β : Type*} {𝔖 : Set (Set α)}
 
-instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.instNonempty
+instance (priority := 10000) [Nonempty β] : Nonempty (α →ᵤ β) := Pi.instNonempty
 
-instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.instNonempty
+instance (priority := 10000) [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.instNonempty
 
 /-- Reinterpret `f : α → β` as an element of `α →ᵤ β`. -/
 def UniformFun.ofFun : (α → β) ≃ (α →ᵤ β) :=
@@ -297,11 +297,11 @@ protected def uniformCore : UniformSpace.Core (α →ᵤ β) :=
 
 /-- Uniform structure of uniform convergence, declared as an instance on `α →ᵤ β`.
 We will denote it `𝒰(α, β, uβ)` in the rest of this file. -/
-instance uniformSpace : UniformSpace (α →ᵤ β) :=
+instance (priority := 10000) uniformSpace : UniformSpace (α →ᵤ β) :=
   UniformSpace.ofCore (UniformFun.uniformCore α β)
 
 /-- Topology of uniform convergence, declared as an instance on `α →ᵤ β`. -/
-instance topologicalSpace : TopologicalSpace (α →ᵤ β) :=
+instance (priority := 10000) topologicalSpace : TopologicalSpace (α →ᵤ β) :=
   inferInstance
 
 -- mathport name: «expr𝒰( , , )»
@@ -468,7 +468,7 @@ protected theorem uniformContinuous_toFun : UniformContinuous (toFun : (α →�
 #align uniform_fun.uniform_continuous_to_fun UniformFun.uniformContinuous_toFun
 
 /-- The topology of uniform convergence is T₂. -/
-instance [T2Space β] : T2Space (α →ᵤ β) :=
+instance (priority := 10000) [T2Space β] : T2Space (α →ᵤ β) :=
   .of_injective_continuous toFun.injective UniformFun.uniformContinuous_toFun.continuous
 
 /-- The topology of uniform convergence indeed gives the same notion of convergence as
@@ -589,14 +589,14 @@ variable (α β) [UniformSpace β] (𝔖 : Set (Set α))
 declared as an instance on `α →ᵤ[𝔖] β`. It is defined as the infimum, for `S ∈ 𝔖`, of the pullback
 by `S.restrict`, the map of restriction to `S`, of the uniform structure `𝒰(s, β, uβ)` on
 `↥S →ᵤ β`. We will denote it `𝒱(α, β, 𝔖, uβ)`, where `uβ` is the uniform structure on `β`. -/
-instance uniformSpace : UniformSpace (α →ᵤ[𝔖] β) :=
+instance (priority := 10000) uniformSpace : UniformSpace (α →ᵤ[𝔖] β) :=
   ⨅ (s : Set α) (_ : s ∈ 𝔖), UniformSpace.comap s.restrict 𝒰(s, β, _)
 
 local notation "𝒱(" α ", " β ", " 𝔖 ", " u ")" => @UniformOnFun.uniformSpace α β u 𝔖
 
 /-- Topology of `𝔖`-convergence, i.e uniform convergence on the elements of `𝔖`, declared as an
-instance on `α →ᵤ[𝔖] β`. -/
-instance topologicalSpace : TopologicalSpace (α →ᵤ[𝔖] β) :=
+instance (priority := 10000) on `α →ᵤ[𝔖] β`. -/
+instance (priority := 10000) topologicalSpace : TopologicalSpace (α →ᵤ[𝔖] β) :=
   𝒱(α, β, 𝔖, _).toTopologicalSpace
 
 /-- The topology of `𝔖`-convergence is the infimum, for `S ∈ 𝔖`, of topology induced by the map

@@ -29,7 +29,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace Preord
 
-instance : BundledHom @OrderHom where
+instance (priority := 10000) : BundledHom @OrderHom where
   toFun := @OrderHom.toFun
   id := @OrderHom.id
   comp := @OrderHom.comp
@@ -38,10 +38,10 @@ instance : BundledHom @OrderHom where
 deriving instance LargeCategory for Preord
 
 -- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory Preord :=
+instance (priority := 10000) : ConcreteCategory Preord :=
   BundledHom.concreteCategory _
 
-instance : CoeSort Preord Type* :=
+instance (priority := 10000) : CoeSort Preord Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled Preord from the underlying type and typeclass. -/
@@ -56,10 +56,10 @@ theorem coe_of (α : Type*) [Preorder α] : ↥(of α) = α :=
 set_option linter.uppercaseLean3 false in
 #align Preord.coe_of Preord.coe_of
 
-instance : Inhabited Preord :=
+instance (priority := 10000) : Inhabited Preord :=
   ⟨of PUnit⟩
 
-instance (α : Preord) : Preorder α :=
+instance (priority := 10000) (α : Preord) : Preorder α :=
   α.str
 
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
@@ -105,8 +105,8 @@ def preordToCat : Preord.{u} ⥤ Cat where
 set_option linter.uppercaseLean3 false in
 #align Preord_to_Cat preordToCat
 
-instance : Faithful preordToCat.{u} where
+instance (priority := 10000) : Faithful preordToCat.{u} where
   map_injective h := by ext x; exact Functor.congr_obj h x
 
-instance : Full preordToCat.{u} where
+instance (priority := 10000) : Full preordToCat.{u} where
   preimage {X Y} f := ⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩

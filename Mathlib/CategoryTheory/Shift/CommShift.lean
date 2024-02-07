@@ -149,7 +149,7 @@ namespace CommShift
 
 variable (C)
 
-instance id : CommShift (𝟭 C) A where
+instance (priority := 10000) id : CommShift (𝟭 C) A where
   iso := fun a => rightUnitor _ ≪≫ (leftUnitor _).symm
 
 end CommShift

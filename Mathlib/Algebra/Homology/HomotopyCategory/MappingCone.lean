@@ -31,7 +31,7 @@ section
 variable {ι : Type*} [AddRightCancelSemigroup ι] [One ι]
     {F G : CochainComplex C ι} (φ : F ⟶ G)
 
-instance [∀ p, HasBinaryBiproduct (F.X (p + 1)) (G.X p)] :
+instance (priority := 10000) [∀ p, HasBinaryBiproduct (F.X (p + 1)) (G.X p)] :
     HasHomotopyCofiber φ where
   hasBinaryBiproduct := by
     rintro i _ rfl

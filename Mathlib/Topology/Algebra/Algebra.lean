@@ -102,7 +102,7 @@ theorem Subalgebra.topologicalClosure_coe (s : Subalgebra R A) :
   rfl
 #align subalgebra.topological_closure_coe Subalgebra.topologicalClosure_coe
 
-instance Subalgebra.topologicalSemiring (s : Subalgebra R A) : TopologicalSemiring s :=
+instance (priority := 10000) Subalgebra.topologicalSemiring (s : Subalgebra R A) : TopologicalSemiring s :=
   s.toSubsemiring.topologicalSemiring
 #align subalgebra.topological_semiring Subalgebra.topologicalSemiring
 
@@ -175,7 +175,7 @@ theorem Algebra.self_mem_elementalAlgebra (x : A) : x ∈ Algebra.elementalAlgeb
 
 variable {R}
 
-instance [T2Space A] {x : A} : CommRing (Algebra.elementalAlgebra R x) :=
+instance (priority := 10000) [T2Space A] {x : A} : CommRing (Algebra.elementalAlgebra R x) :=
   Subalgebra.commRingTopologicalClosure _
     letI : CommRing (Algebra.adjoin R ({x} : Set A)) :=
       Algebra.adjoinCommRingOfComm R fun y hy z hz => by
@@ -188,7 +188,7 @@ end Ring
 section DivisionRing
 
 /-- The action induced by `algebraRat` is continuous. -/
-instance DivisionRing.continuousConstSMul_rat {A} [DivisionRing A] [TopologicalSpace A]
+instance (priority := 10000) DivisionRing.continuousConstSMul_rat {A} [DivisionRing A] [TopologicalSpace A]
     [ContinuousMul A] [CharZero A] : ContinuousConstSMul ℚ A :=
   ⟨fun r => by simpa only [Algebra.smul_def] using continuous_const.mul continuous_id⟩
 #align division_ring.has_continuous_const_smul_rat DivisionRing.continuousConstSMul_rat

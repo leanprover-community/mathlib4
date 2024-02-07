@@ -71,7 +71,7 @@ namespace PartialRefinement
 
 variable {u : ι → Set X} {s : Set X}
 
-instance : CoeFun (PartialRefinement u s) fun _ => ι → Set X := ⟨toFun⟩
+instance (priority := 10000) : CoeFun (PartialRefinement u s) fun _ => ι → Set X := ⟨toFun⟩
 
 #align shrinking_lemma.partial_refinement.subset_Union ShrinkingLemma.PartialRefinement.subset_iUnion
 #align shrinking_lemma.partial_refinement.closure_subset ShrinkingLemma.PartialRefinement.closure_subset
@@ -82,7 +82,7 @@ protected theorem subset (v : PartialRefinement u s) (i : ι) : v i ⊆ u i :=
   if h : i ∈ v.carrier then subset_closure.trans (v.closure_subset h) else (v.apply_eq h).le
 #align shrinking_lemma.partial_refinement.subset ShrinkingLemma.PartialRefinement.subset
 
-instance : PartialOrder (PartialRefinement u s) where
+instance (priority := 10000) : PartialOrder (PartialRefinement u s) where
   le v₁ v₂ := v₁.carrier ⊆ v₂.carrier ∧ ∀ i ∈ v₁.carrier, v₁ i = v₂ i
   le_refl v := ⟨Subset.refl _, fun _ _ => rfl⟩
   le_trans v₁ v₂ v₃ h₁₂ h₂₃ :=

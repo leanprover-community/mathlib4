@@ -41,7 +41,7 @@ namespace ωCPO
 
 open OmegaCompletePartialOrder
 
-instance : BundledHom @ContinuousHom where
+instance (priority := 10000) : BundledHom @ContinuousHom where
   toFun := @ContinuousHom.Simps.apply
   id := @ContinuousHom.id
   comp := @ContinuousHom.comp
@@ -49,9 +49,9 @@ instance : BundledHom @ContinuousHom where
 
 -- Porting note: `deriving instance ConcreteCategory` didn't work.
 deriving instance LargeCategory for ωCPO
-instance : ConcreteCategory ωCPO := by unfold ωCPO; infer_instance
+instance (priority := 10000) : ConcreteCategory ωCPO := by unfold ωCPO; infer_instance
 
-instance : CoeSort ωCPO (Type*) :=
+instance (priority := 10000) : CoeSort ωCPO (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled ωCPO from the underlying type and typeclass. -/
@@ -64,10 +64,10 @@ theorem coe_of (α : Type*) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
   rfl
 #align ωCPO.coe_of ωCPO.coe_of
 
-instance : Inhabited ωCPO :=
+instance (priority := 10000) : Inhabited ωCPO :=
   ⟨of PUnit⟩
 
-instance (α : ωCPO) : OmegaCompletePartialOrder α :=
+instance (priority := 10000) (α : ωCPO) : OmegaCompletePartialOrder α :=
   α.str
 
 section
@@ -95,12 +95,12 @@ def isProduct (J : Type v) (f : J → ωCPO) : IsLimit (product f) where
   fac s j := rfl
 #align ωCPO.has_products.is_product ωCPO.HasProducts.isProduct
 
-instance (J : Type v) (f : J → ωCPO.{v}) : HasProduct f :=
+instance (priority := 10000) (J : Type v) (f : J → ωCPO.{v}) : HasProduct f :=
   HasLimit.mk ⟨_, isProduct _ f⟩
 
 end HasProducts
 
-instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartialOrder α]
+instance (priority := 10000) omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f g : α →𝒄 β) :
     OmegaCompletePartialOrder { a : α // f a = g a } :=
   OmegaCompletePartialOrder.subtype _ fun c hc => by
@@ -138,16 +138,16 @@ def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
 
 end HasEqualizers
 
-instance : HasProducts.{v} ωCPO.{v} :=
+instance (priority := 10000) : HasProducts.{v} ωCPO.{v} :=
   fun _ => { has_limit := fun _ => hasLimitOfIso Discrete.natIsoFunctor.symm }
 
-instance {X Y : ωCPO.{v}} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
+instance (priority := 10000) {X Y : ωCPO.{v}} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   HasLimit.mk ⟨_, HasEqualizers.isEqualizer f g⟩
 
-instance : HasEqualizers ωCPO.{v} :=
+instance (priority := 10000) : HasEqualizers ωCPO.{v} :=
   hasEqualizers_of_hasLimit_parallelPair _
 
-instance : HasLimits ωCPO.{v} :=
+instance (priority := 10000) : HasLimits ωCPO.{v} :=
   has_limits_of_hasEqualizers_and_products
 
 end

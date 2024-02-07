@@ -92,7 +92,7 @@ variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
 /-- Given a finite extension of fields `L/K`, the first group cohomology `H¹(Aut_K(L), Lˣ)` is
 trivial. -/
-noncomputable instance hilbert90 : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
+noncomputable instance (priority := 10000) hilbert90 : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
   default := 0
   uniq := fun a => Quotient.inductionOn' a fun x => (Submodule.Quotient.mk_eq_zero _).2 <| by
     rcases _root_.hilbert90 (Additive.toMul ∘ x.1) (fun g h => Units.ext_iff.1

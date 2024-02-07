@@ -385,7 +385,7 @@ theorem mem_image_const_self : b ∈ s.image (const α b) ↔ s.Nonempty :=
   mem_image_const.trans <| and_iff_left rfl
 #align finset.mem_image_const_self Finset.mem_image_const_self
 
-instance canLift (c) (p) [CanLift β α c p] :
+instance (priority := 10000) canLift (c) (p) [CanLift β α c p] :
     CanLift (Finset β) (Finset α) (image c) fun s => ∀ x ∈ s, p x where
   prf := by
     rintro ⟨⟨l⟩, hd : l.Nodup⟩ hl

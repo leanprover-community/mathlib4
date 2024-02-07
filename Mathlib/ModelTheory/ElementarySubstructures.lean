@@ -54,16 +54,16 @@ namespace ElementarySubstructure
 
 attribute [coe] toSubstructure
 
-instance instCoe : Coe (L.ElementarySubstructure M) (L.Substructure M) :=
+instance (priority := 10000) instCoe : Coe (L.ElementarySubstructure M) (L.Substructure M) :=
   ⟨ElementarySubstructure.toSubstructure⟩
 #align first_order.language.elementary_substructure.first_order.language.substructure.has_coe FirstOrder.Language.ElementarySubstructure.instCoe
 
-instance instSetLike : SetLike (L.ElementarySubstructure M) M :=
+instance (priority := 10000) instSetLike : SetLike (L.ElementarySubstructure M) M :=
   ⟨fun x => x.toSubstructure.carrier, fun ⟨⟨s, hs1⟩, hs2⟩ ⟨⟨t, ht1⟩, _⟩ _ => by
     congr⟩
 #align first_order.language.elementary_substructure.set_like FirstOrder.Language.ElementarySubstructure.instSetLike
 
-instance inducedStructure (S : L.ElementarySubstructure M) : L.Structure S :=
+instance (priority := 10000) inducedStructure (S : L.ElementarySubstructure M) : L.Structure S :=
   Substructure.inducedStructure
 set_option linter.uppercaseLean3 false in
 #align first_order.language.elementary_substructure.induced_Structure FirstOrder.Language.ElementarySubstructure.inducedStructure
@@ -85,11 +85,11 @@ theorem coeSubtype {S : L.ElementarySubstructure M} : ⇑S.subtype = ((↑) : S 
 #align first_order.language.elementary_substructure.coe_subtype FirstOrder.Language.ElementarySubstructure.coeSubtype
 
 /-- The substructure `M` of the structure `M` is elementary. -/
-instance instTop : Top (L.ElementarySubstructure M) :=
+instance (priority := 10000) instTop : Top (L.ElementarySubstructure M) :=
   ⟨⟨⊤, fun _ _ _ => Substructure.realize_formula_top.symm⟩⟩
 #align first_order.language.elementary_substructure.has_top FirstOrder.Language.ElementarySubstructure.instTop
 
-instance instInhabited : Inhabited (L.ElementarySubstructure M) :=
+instance (priority := 10000) instInhabited : Inhabited (L.ElementarySubstructure M) :=
   ⟨⊤⟩
 #align first_order.language.elementary_substructure.inhabited FirstOrder.Language.ElementarySubstructure.instInhabited
 
@@ -114,12 +114,12 @@ theorem theory_model_iff (S : L.ElementarySubstructure M) (T : L.Theory) : S ⊨
 set_option linter.uppercaseLean3 false in
 #align first_order.language.elementary_substructure.Theory_model_iff FirstOrder.Language.ElementarySubstructure.theory_model_iff
 
-instance theory_model {T : L.Theory} [h : M ⊨ T] {S : L.ElementarySubstructure M} : S ⊨ T :=
+instance (priority := 10000) theory_model {T : L.Theory} [h : M ⊨ T] {S : L.ElementarySubstructure M} : S ⊨ T :=
   (theory_model_iff S T).2 h
 set_option linter.uppercaseLean3 false in
 #align first_order.language.elementary_substructure.Theory_model FirstOrder.Language.ElementarySubstructure.theory_model
 
-instance instNonempty [Nonempty M] {S : L.ElementarySubstructure M} : Nonempty S :=
+instance (priority := 10000) instNonempty [Nonempty M] {S : L.ElementarySubstructure M} : Nonempty S :=
   (model_nonemptyTheory_iff L).1 inferInstance
 #align first_order.language.elementary_substructure.nonempty FirstOrder.Language.ElementarySubstructure.instNonempty
 

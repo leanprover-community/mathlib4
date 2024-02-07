@@ -200,7 +200,7 @@ variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
-instance instFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
+instance (priority := 10000) instFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -209,7 +209,7 @@ instance instFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
     apply DFunLike.coe_injective'
     exact h
 
-instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
+instance (priority := 10000) semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
 #align linear_map.semilinear_map_class LinearMap.semilinearMapClass
@@ -389,7 +389,7 @@ instance (priority := 100) IsScalarTower.compatibleSMul [SMul R S]
   ⟨fun fₗ c x ↦ by rw [← smul_one_smul S c x, ← smul_one_smul S c (fₗ x), map_smul]⟩
 #align linear_map.is_scalar_tower.compatible_smul LinearMap.IsScalarTower.compatibleSMul
 
-instance IsScalarTower.compatibleSMul' [SMul R S] [IsScalarTower R S M] :
+instance (priority := 10000) IsScalarTower.compatibleSMul' [SMul R S] [IsScalarTower R S M] :
     CompatibleSMul S M R S where
   __ := IsScalarTower.smulHomClass R S M (S →ₗ[S] M)
 
@@ -441,7 +441,7 @@ See also `LinearMap.map_smul_of_tower`. -/
 #align linear_map.restrict_scalars LinearMap.restrictScalars
 
 -- porting note: generalized from `Algebra` to `CompatibleSMul`
-instance coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
+instance (priority := 10000) coeIsScalarTower : CoeHTCT (M →ₗ[S] M₂) (M →ₗ[R] M₂) :=
   ⟨restrictScalars R⟩
 #align linear_map.coe_is_scalar_tower LinearMap.coeIsScalarTower
 
@@ -611,7 +611,7 @@ protected theorem map_sub (x y : M) : f (x - y) = f x - f y :=
   map_sub f x y
 #align linear_map.map_sub LinearMap.map_sub
 
-instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module S M₂] :
+instance (priority := 10000) CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module S M₂] :
     CompatibleSMul M M₂ ℤ S :=
   ⟨fun fₗ c x ↦ by
     induction c using Int.induction_on with
@@ -620,7 +620,7 @@ instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module 
     | hn n ih => simp [sub_smul, ih]⟩
 #align linear_map.compatible_smul.int_module LinearMap.CompatibleSMul.intModule
 
-instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
+instance (priority := 10000) CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
     [Semiring S] [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S] : CompatibleSMul M M₂ Rˣ S :=
   ⟨fun fₗ c x ↦ (CompatibleSMul.map_smul fₗ (c : R) x : _)⟩
 #align linear_map.compatible_smul.units LinearMap.CompatibleSMul.units
@@ -654,7 +654,7 @@ def toLinearMap (fₗ : M →+[R] M₂) : M →ₗ[R] M₂ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
 
-instance : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) :=
+instance (priority := 10000) : CoeTC (M →+[R] M₂) (M →ₗ[R] M₂) :=
   ⟨toLinearMap⟩
 
 -- Porting note: because coercions get unfolded, there is no need for this rewrite
@@ -804,7 +804,7 @@ variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
 variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
 variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
 
-instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
+instance (priority := 10000) : SMul S (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun a f ↦
     { toFun := a • (f : M → M₂)
       map_add' := fun x y ↦ by simp only [Pi.smul_apply, f.map_add, smul_add]
@@ -819,15 +819,15 @@ theorem coe_smul (a : S) (f : M →ₛₗ[σ₁₂] M₂) : (a • f : M →ₛ�
   rfl
 #align linear_map.coe_smul LinearMap.coe_smul
 
-instance [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M₂) :=
+instance (priority := 10000) [SMulCommClass S T M₂] : SMulCommClass S T (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun _ _ _ ↦ ext fun _ ↦ smul_comm _ _ _⟩
 
 -- example application of this instance: if S -> T -> R are homomorphisms of commutative rings and
 -- M and M₂ are R-modules then the S-module and T-module structures on Hom_R(M,M₂) are compatible.
-instance [SMul S T] [IsScalarTower S T M₂] : IsScalarTower S T (M →ₛₗ[σ₁₂] M₂) where
+instance (priority := 10000) [SMul S T] [IsScalarTower S T M₂] : IsScalarTower S T (M →ₛₗ[σ₁₂] M₂) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc _ _ _
 
-instance [DistribMulAction Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
+instance (priority := 10000) [DistribMulAction Sᵐᵒᵖ M₂] [SMulCommClass R₂ Sᵐᵒᵖ M₂] [IsCentralScalar S M₂] :
     IsCentralScalar S (M →ₛₗ[σ₁₂] M₂) where
   op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
@@ -845,7 +845,7 @@ variable [Module R₁ N₁] [Module R₂ N₂] [Module R₃ N₃]
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 /-- The constant 0 map is linear. -/
-instance : Zero (M →ₛₗ[σ₁₂] M₂) :=
+instance (priority := 10000) : Zero (M →ₛₗ[σ₁₂] M₂) :=
   ⟨{  toFun := 0
       map_add' := by simp
       map_smul' := by simp }⟩
@@ -865,7 +865,7 @@ theorem zero_comp (f : M →ₛₗ[σ₁₂] M₂) : ((0 : M₂ →ₛₗ[σ₂�
   rfl
 #align linear_map.zero_comp LinearMap.zero_comp
 
-instance : Inhabited (M →ₛₗ[σ₁₂] M₂) :=
+instance (priority := 10000) : Inhabited (M →ₛₗ[σ₁₂] M₂) :=
   ⟨0⟩
 
 @[simp]
@@ -874,7 +874,7 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
 #align linear_map.default_def LinearMap.default_def
 
 /-- The sum of two linear maps is linear. -/
-instance : Add (M →ₛₗ[σ₁₂] M₂) :=
+instance (priority := 10000) : Add (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun f g ↦
     { toFun := f + g
       map_add' := by simp [add_comm, add_left_comm]
@@ -896,11 +896,11 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
 #align linear_map.comp_add LinearMap.comp_add
 
 /-- The type of linear maps is an additive monoid. -/
-instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
+instance (priority := 10000) addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
   DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The negation of a linear map is linear. -/
-instance : Neg (M →ₛₗ[σ₁₂] N₂) :=
+instance (priority := 10000) : Neg (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f ↦
     { toFun := -f
       map_add' := by simp [add_comm]
@@ -922,7 +922,7 @@ theorem comp_neg (f : M →ₛₗ[σ₁₂] N₂) (g : N₂ →ₛₗ[σ₂₃] 
 #align linear_map.comp_neg LinearMap.comp_neg
 
 /-- The subtraction of two linear maps is linear. -/
-instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
+instance (priority := 10000) : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
       map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
@@ -944,7 +944,7 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
 #align linear_map.comp_sub LinearMap.comp_sub
 
 /-- The type of linear maps is an additive group. -/
-instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
+instance (priority := 10000) addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
@@ -963,7 +963,7 @@ variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
 variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
 variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
 
-instance : DistribMulAction S (M →ₛₗ[σ₁₂] M₂)
+instance (priority := 10000) : DistribMulAction S (M →ₛₗ[σ₁₂] M₂)
     where
   one_smul _ := ext fun _ ↦ one_smul _ _
   mul_smul _ _ _ := ext fun _ ↦ mul_smul _ _ _
@@ -988,11 +988,11 @@ section Module
 
 variable [Semiring S] [Module S M₂] [SMulCommClass R₂ S M₂]
 
-instance module : Module S (M →ₛₗ[σ₁₂] M₂) where
+instance (priority := 10000) module : Module S (M →ₛₗ[σ₁₂] M₂) where
   add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
   zero_smul _ := ext fun _ ↦ zero_smul _ _
 
-instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
+instance (priority := 10000) [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
 end Module

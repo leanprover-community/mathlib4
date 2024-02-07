@@ -38,7 +38,7 @@ def sectionsEquiv {J : Type*} [Category J] (K : J ⥤ Type u) :
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits of arbitrary size.
 -/
 noncomputable
-instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
+instance (priority := 10000) : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
   preservesLimitsOfShape {J} := {
     preservesLimit := fun {K} => {
       preserves := fun {c} hc => by
@@ -52,7 +52,7 @@ instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small limits.
 -/
-noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
+noncomputable instance (priority := 10000) : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
 
 variable {J : Type*} [Category J] {K : J ⥤ Type u} {c : Cocone K} (hc : IsColimit c)
@@ -135,7 +135,7 @@ lemma descFun_spec (f : c.pt → lc.pt) :
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves colimits of arbitrary size.
 -/
-noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} where
+noncomputable instance (priority := 10000) : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} where
   preservesColimitsOfShape {J _} :=
   { preservesColimit := fun {F} ↦
     { preserves := fun {c} hc ↦
@@ -147,7 +147,7 @@ noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} whe
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small colimits.
 -/
-noncomputable instance : CreatesColimitsOfSize.{w, u} uliftFunctor.{v, u} where
+noncomputable instance (priority := 10000) : CreatesColimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesColimitsOfShape := { CreatesColimit := fun {_} ↦ createsColimitOfFullyFaithfulOfPreserves }
 
 end CategoryTheory.Limits.Types

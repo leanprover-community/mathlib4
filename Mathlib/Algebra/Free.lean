@@ -52,10 +52,10 @@ namespace FreeMagma
 variable {α : Type u}
 
 @[to_additive]
-instance [Inhabited α] : Inhabited (FreeMagma α) := ⟨of default⟩
+instance (priority := 10000) [Inhabited α] : Inhabited (FreeMagma α) := ⟨of default⟩
 
 @[to_additive]
-instance : Mul (FreeMagma α) := ⟨FreeMagma.mul⟩
+instance (priority := 10000) : Mul (FreeMagma α) := ⟨FreeMagma.mul⟩
 
 -- Porting note: invalid attribute 'match_pattern', declaration is in an imported module
 -- attribute [match_pattern] Mul.mul
@@ -155,7 +155,7 @@ section Category
 variable {α β : Type u}
 
 @[to_additive]
-instance : Monad FreeMagma where
+instance (priority := 10000) : Monad FreeMagma where
   pure := of
   bind x f := lift f x
 
@@ -195,7 +195,7 @@ theorem mul_seq {α β : Type u} {f g : FreeMagma (α → β)} {x : FreeMagma α
 #align free_magma.mul_seq FreeMagma.mul_seq
 
 @[to_additive]
-instance instLawfulMonad : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
+instance (priority := 10000) instLawfulMonad : LawfulMonad FreeMagma.{u} := LawfulMonad.mk'
   (pure_bind := fun f x ↦ rfl)
   (bind_assoc := fun x f g ↦ FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
     rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
@@ -231,7 +231,7 @@ section Category
 variable {β : Type u}
 
 @[to_additive]
-instance : Traversable FreeMagma := ⟨@FreeMagma.traverse⟩
+instance (priority := 10000) : Traversable FreeMagma := ⟨@FreeMagma.traverse⟩
 
 variable {m : Type u → Type u} [Applicative m] (F : α → m β)
 
@@ -265,7 +265,7 @@ theorem mul_map_seq (x y : FreeMagma α) :
 #align free_magma.mul_map_seq FreeMagma.mul_map_seq
 
 @[to_additive]
-instance : LawfulTraversable FreeMagma.{u} :=
+instance (priority := 10000) : LawfulTraversable FreeMagma.{u} :=
   { instLawfulMonad with
     id_traverse := fun x ↦
       FreeMagma.recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
@@ -305,7 +305,7 @@ protected def FreeAddMagma.repr {α : Type u} [Repr α] : FreeAddMagma α → Le
 attribute [to_additive existing] FreeMagma.repr
 
 @[to_additive]
-instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
+instance (priority := 10000) {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
 
 /-- Length of an element of a free magma. -/
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
@@ -358,7 +358,7 @@ theorem quot_mk_assoc_left (x y z w : α) :
 #align magma.assoc_quotient.quot_mk_assoc_left Magma.AssocQuotient.quot_mk_assoc_left
 
 @[to_additive]
-instance : Semigroup (AssocQuotient α) where
+instance (priority := 10000) : Semigroup (AssocQuotient α) where
   mul x y := by
     refine' Quot.liftOn₂ x y (fun x y ↦ Quot.mk _ (x * y)) _ _
     · rintro a b₁ b₂ (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only
@@ -377,7 +377,7 @@ def of : α →ₙ* AssocQuotient α where toFun := Quot.mk _; map_mul' _x _y :=
 #align magma.assoc_quotient.of Magma.AssocQuotient.of
 
 @[to_additive]
-instance [Inhabited α] : Inhabited (AssocQuotient α) := ⟨of default⟩
+instance (priority := 10000) [Inhabited α] : Inhabited (AssocQuotient α) := ⟨of default⟩
 
 @[to_additive (attr := elab_as_elim)]
 protected theorem induction_on {C : AssocQuotient α → Prop} (x : AssocQuotient α)
@@ -462,7 +462,7 @@ namespace FreeSemigroup
 variable {α : Type u}
 
 @[to_additive]
-instance : Semigroup (FreeSemigroup α) where
+instance (priority := 10000) : Semigroup (FreeSemigroup α) where
   mul L1 L2 := ⟨L1.1, L1.2 ++ L2.1 :: L2.2⟩
   -- Porting note: replaced ext by FreeSemigroup.ext
   mul_assoc _L1 _L2 _L3 := FreeSemigroup.ext _ _ rfl <| List.append_assoc _ _ _
@@ -499,7 +499,7 @@ theorem length_of (x : α) : (of x).length = 1 := rfl
 #align free_semigroup.length_of FreeSemigroup.length_of
 
 @[to_additive]
-instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
+instance (priority := 10000) [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
 
 /-- Recursor for free semigroup using `of` and `*`. -/
 @[to_additive (attr := elab_as_elim) "Recursor for free additive semigroup using `of` and `+`."]
@@ -578,7 +578,7 @@ section Category
 variable {β : Type u}
 
 @[to_additive]
-instance : Monad FreeSemigroup where
+instance (priority := 10000) : Monad FreeSemigroup where
   pure := of
   bind x f := lift f x
 
@@ -619,7 +619,7 @@ theorem mul_seq {f g : FreeSemigroup (α → β)} {x : FreeSemigroup α} :
 #align free_semigroup.mul_seq FreeSemigroup.mul_seq
 
 @[to_additive]
-instance instLawfulMonad : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
+instance (priority := 10000) instLawfulMonad : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
   (pure_bind := fun _ _ ↦ rfl)
   (bind_assoc := fun x g f ↦
     recOnPure x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by rw [mul_bind, mul_bind, mul_bind, ih1, ih2])
@@ -633,7 +633,7 @@ protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
 #align free_semigroup.traverse FreeSemigroup.traverse
 
 @[to_additive]
-instance : Traversable FreeSemigroup := ⟨@FreeSemigroup.traverse⟩
+instance (priority := 10000) : Traversable FreeSemigroup := ⟨@FreeSemigroup.traverse⟩
 
 variable {m : Type u → Type u} [Applicative m] (F : α → m β)
 
@@ -682,7 +682,7 @@ theorem mul_map_seq (x y : FreeSemigroup α) :
 #align free_semigroup.mul_map_seq FreeSemigroup.mul_map_seq
 
 @[to_additive]
-instance : LawfulTraversable FreeSemigroup.{u} :=
+instance (priority := 10000) : LawfulTraversable FreeSemigroup.{u} :=
   { instLawfulMonad with
     id_traverse := fun x ↦
       FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
@@ -701,7 +701,7 @@ instance : LawfulTraversable FreeSemigroup.{u} :=
 end Category
 
 @[to_additive]
-instance [DecidableEq α] : DecidableEq (FreeSemigroup α) :=
+instance (priority := 10000) [DecidableEq α] : DecidableEq (FreeSemigroup α) :=
   fun _ _ ↦ decidable_of_iff' _ (FreeSemigroup.ext_iff _ _)
 
 end FreeSemigroup

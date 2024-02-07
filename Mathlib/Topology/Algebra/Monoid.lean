@@ -60,7 +60,7 @@ section ContinuousMul
 variable [TopologicalSpace M] [Mul M] [ContinuousMul M]
 
 @[to_additive]
-instance : ContinuousMul Mᵒᵈ :=
+instance (priority := 10000) : ContinuousMul Mᵒᵈ :=
   ‹ContinuousMul M›
 
 @[to_additive (attr := continuity)]
@@ -70,13 +70,13 @@ theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
 #align continuous_add continuous_add
 
 @[to_additive]
-instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
+instance (priority := 10000) ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
   ⟨continuous_mul⟩
 #align has_continuous_mul.to_has_continuous_smul ContinuousMul.to_continuousSMul
 #align has_continuous_add.to_has_continuous_vadd ContinuousAdd.to_continuousVAdd
 
 @[to_additive]
-instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
+instance (priority := 10000) ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
   ⟨show Continuous ((fun p : M × M => p.1 * p.2) ∘ Prod.swap ∘ Prod.map MulOpposite.unop id) from
       continuous_mul.comp <|
         continuous_swap.comp <| Continuous.prod_map MulOpposite.continuous_unop continuous_id⟩
@@ -227,13 +227,13 @@ theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : Continu
 #align continuous_within_at.add ContinuousWithinAt.add
 
 @[to_additive]
-instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
+instance (priority := 10000) Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
     ContinuousMul (M × N) :=
   ⟨(continuous_fst.fst'.mul continuous_fst.snd').prod_mk
       (continuous_snd.fst'.mul continuous_snd.snd')⟩
 
 @[to_additive]
-instance Pi.continuousMul {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Mul (C i)]
+instance (priority := 10000) Pi.continuousMul {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Mul (C i)]
     [∀ i, ContinuousMul (C i)] : ContinuousMul (∀ i, C i) where
   continuous_mul :=
     continuous_pi fun i => (continuous_apply i).fst'.mul (continuous_apply i).snd'
@@ -244,7 +244,7 @@ instance Pi.continuousMul {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [�
 Lean 3 fails to use `Pi.continuousMul` for non-dependent functions. -/
 @[to_additive "A version of `Pi.continuousAdd` for non-dependent functions. It is needed
 because sometimes Lean fails to use `Pi.continuousAdd` for non-dependent functions."]
-instance Pi.continuousMul' : ContinuousMul (ι → M) :=
+instance (priority := 10000) Pi.continuousMul' : ContinuousMul (ι → M) :=
   Pi.continuousMul
 #align pi.has_continuous_mul' Pi.continuousMul'
 #align pi.has_continuous_add' Pi.continuousAdd'
@@ -389,14 +389,14 @@ theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [M
 #align has_continuous_add_induced continuousAdd_induced
 
 @[to_additive]
-instance Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
+instance (priority := 10000) Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
     (S : Subsemigroup M) : ContinuousMul S :=
   Inducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
 #align subsemigroup.has_continuous_mul Subsemigroup.continuousMul
 #align add_subsemigroup.has_continuous_add AddSubsemigroup.continuousAdd
 
 @[to_additive]
-instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul M]
+instance (priority := 10000) Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul M]
     (S : Submonoid M) : ContinuousMul S :=
   S.toSubsemigroup.continuousMul
 #align submonoid.has_continuous_mul Submonoid.continuousMul
@@ -563,12 +563,12 @@ theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n
 #align continuous_pow continuous_pow
 #align continuous_nsmul continuous_nsmul
 
-instance AddMonoid.continuousConstSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
+instance (priority := 10000) AddMonoid.continuousConstSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousConstSMul ℕ A :=
   ⟨continuous_nsmul⟩
 #align add_monoid.has_continuous_const_smul_nat AddMonoid.continuousConstSMul_nat
 
-instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
+instance (priority := 10000) AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousSMul ℕ A :=
   ⟨continuous_prod_of_discrete_left.mpr continuous_nsmul⟩
 #align add_monoid.has_continuous_smul_nat AddMonoid.continuousSMul_nat
@@ -687,7 +687,7 @@ namespace MulOpposite
 
 /-- If multiplication is continuous in `α`, then it also is in `αᵐᵒᵖ`. -/
 @[to_additive "If addition is continuous in `α`, then it also is in `αᵃᵒᵖ`."]
-instance [TopologicalSpace α] [Mul α] [ContinuousMul α] : ContinuousMul αᵐᵒᵖ :=
+instance (priority := 10000) [TopologicalSpace α] [Mul α] [ContinuousMul α] : ContinuousMul αᵐᵒᵖ :=
   ⟨continuous_op.comp (continuous_unop.snd'.mul continuous_unop.fst')⟩
 
 end MulOpposite
@@ -708,7 +708,7 @@ of the monoid, with respect to the induced topology, is continuous.
 
 Negation is also continuous, but we register this in a later file, `Topology.Algebra.Group`, because
 the predicate `ContinuousNeg` has not yet been defined."]
-instance : ContinuousMul αˣ :=
+instance (priority := 10000) : ContinuousMul αˣ :=
   inducing_embedProduct.continuousMul (embedProduct α)
 
 end Units
@@ -833,10 +833,10 @@ theorem continuous_finprod_cond {f : ι → X → M} {p : ι → Prop} (hc : ∀
 
 end
 
-instance [TopologicalSpace M] [Mul M] [ContinuousMul M] : ContinuousAdd (Additive M) where
+instance (priority := 10000) [TopologicalSpace M] [Mul M] [ContinuousMul M] : ContinuousAdd (Additive M) where
   continuous_add := @continuous_mul M _ _ _
 
-instance [TopologicalSpace M] [Add M] [ContinuousAdd M] : ContinuousMul (Multiplicative M) where
+instance (priority := 10000) [TopologicalSpace M] [Add M] [ContinuousAdd M] : ContinuousMul (Multiplicative M) where
   continuous_mul := @continuous_add M _ _ _
 
 section LatticeOps

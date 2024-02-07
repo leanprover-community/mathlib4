@@ -97,7 +97,7 @@ theorem toEquiv_injective : Injective (Diffeomorph.toEquiv : (M ≃ₘ^n⟮I, I'
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 #align diffeomorph.to_equiv_injective Diffeomorph.toEquiv_injective
 
-instance : EquivLike (M ≃ₘ^n⟮I, I'⟯ M') M M' where
+instance (priority := 10000) : EquivLike (M ≃ₘ^n⟮I, I'⟯ M') M M' where
   coe Φ := Φ.toEquiv
   inv Φ := Φ.toEquiv.symm
   left_inv Φ := Φ.left_inv
@@ -109,7 +109,7 @@ instance : EquivLike (M ≃ₘ^n⟮I, I'⟯ M') M M' where
 def toContMDiffMap (Φ : M ≃ₘ^n⟮I, I'⟯ M') : C^n⟮I, M; I', M'⟯ :=
   ⟨Φ, Φ.contMDiff_toFun⟩
 
-instance : Coe (M ≃ₘ^n⟮I, I'⟯ M') C^n⟮I, M; I', M'⟯ :=
+instance (priority := 10000) : Coe (M ≃ₘ^n⟮I, I'⟯ M') C^n⟮I, M; I', M'⟯ :=
   ⟨toContMDiffMap⟩
 
 @[continuity]
@@ -171,7 +171,7 @@ theorem ext {h h' : M ≃ₘ^n⟮I, I'⟯ M'} (Heq : ∀ x, h x = h' x) : h = h'
   coeFn_injective <| funext Heq
 #align diffeomorph.ext Diffeomorph.ext
 
-instance : ContinuousMapClass (M ≃ₘ⟮I, J⟯ N) M N where
+instance (priority := 10000) : ContinuousMapClass (M ≃ₘ⟮I, J⟯ N) M N where
   map_continuous f := f.continuous
 
 section
@@ -555,7 +555,7 @@ namespace Diffeomorph
 
 variable (e : E ≃ₘ[𝕜] F)
 
-instance smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I M] :
+instance (priority := 10000) smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I M] :
     SmoothManifoldWithCorners (I.transDiffeomorph e) M := by
   refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => ?_
   refine' e.contDiff.comp_contDiffOn

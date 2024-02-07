@@ -37,11 +37,11 @@ structure Closeds (α : Type*) [TopologicalSpace α] where
 
 namespace Closeds
 
-instance : SetLike (Closeds α) α where
+instance (priority := 10000) : SetLike (Closeds α) α where
   coe := Closeds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
+instance (priority := 10000) : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
 
 theorem closed (s : Closeds α) : IsClosed (s : Set α) :=
@@ -81,7 +81,7 @@ def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice_eq _s hs := SetLike.coe_injective <| subset_closure.antisymm hs
 #align topological_space.closeds.gi TopologicalSpace.Closeds.gi
 
-instance completeLattice : CompleteLattice (Closeds α) :=
+instance (priority := 10000) completeLattice : CompleteLattice (Closeds α) :=
   CompleteLattice.copy
     (GaloisInsertion.liftCompleteLattice gi)
     -- le
@@ -102,7 +102,7 @@ instance completeLattice : CompleteLattice (Closeds α) :=
     (funext fun _ => SetLike.coe_injective sInf_image.symm)
 
 /-- The type of closed sets is inhabited, with default element the empty set. -/
-instance : Inhabited (Closeds α) :=
+instance (priority := 10000) : Inhabited (Closeds α) :=
   ⟨⊥⟩
 
 @[simp, norm_cast]
@@ -182,7 +182,7 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
   iInf_def _
 #align topological_space.closeds.infi_mk TopologicalSpace.Closeds.iInf_mk
 
-instance : Coframe (Closeds α) :=
+instance (priority := 10000) : Coframe (Closeds α) :=
   { inferInstanceAs (CompleteLattice (Closeds α)) with
     sInf := sInf
     iInf_sup_le_sup_sInf := fun a s =>
@@ -291,7 +291,7 @@ structure Clopens (α : Type*) [TopologicalSpace α] where
 
 namespace Clopens
 
-instance : SetLike (Clopens α) α where
+instance (priority := 10000) : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
@@ -322,14 +322,14 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 
 @[simp] lemma mem_mk {s : Set α} {x h} : x ∈ mk s h ↔ x ∈ s := .rfl
 
-instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
-instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
-instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
-instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
-instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
-instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
+instance (priority := 10000) : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
+instance (priority := 10000) : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
+instance (priority := 10000) : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
+instance (priority := 10000) : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
+instance (priority := 10000) : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
+instance (priority := 10000) : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 
-instance : BooleanAlgebra (Clopens α) :=
+instance (priority := 10000) : BooleanAlgebra (Clopens α) :=
   SetLike.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)
     fun _ _ => rfl
 
@@ -351,11 +351,11 @@ instance : BooleanAlgebra (Clopens α) :=
 @[simp] theorem coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 #align topological_space.clopens.coe_compl TopologicalSpace.Clopens.coe_compl
 
-instance : Inhabited (Clopens α) := ⟨⊥⟩
+instance (priority := 10000) : Inhabited (Clopens α) := ⟨⊥⟩
 
 variable [TopologicalSpace β]
 
-instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
+instance (priority := 10000) : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
   sprod s t := ⟨s ×ˢ t, s.2.prod t.2⟩
 
 @[simp]

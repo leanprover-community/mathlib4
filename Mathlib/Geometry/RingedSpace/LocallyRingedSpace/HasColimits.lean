@@ -45,7 +45,7 @@ theorem colimit_exists_rep (x : colimit (C := SheafedSpace C) F) :
     (isColimitOfPreserves (SheafedSpace.forget _) (colimit.isColimit F)) x
 #align algebraic_geometry.SheafedSpace.colimit_exists_rep AlgebraicGeometry.SheafedSpaceₓ.colimit_exists_rep
 
-instance {X Y : SheafedSpace C} (f g : X ⟶ Y) : Epi (coequalizer.π f g).base := by
+instance (priority := 10000) {X Y : SheafedSpace C} (f g : X ⟶ Y) : Epi (coequalizer.π f g).base := by
   erw [←
     show _ = (coequalizer.π f g).base from
       ι_comp_coequalizerComparison f g (SheafedSpace.forget C)]
@@ -124,10 +124,10 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
         congr_arg LocallyRingedSpace.Hom.val (h j))
 #align algebraic_geometry.LocallyRingedSpace.coproduct_cofan_is_colimit AlgebraicGeometry.LocallyRingedSpace.coproductCofanIsColimit
 
-instance : HasCoproducts.{u} LocallyRingedSpace.{u} := fun _ =>
+instance (priority := 10000) : HasCoproducts.{u} LocallyRingedSpace.{u} := fun _ =>
   ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
 
-noncomputable instance (J : Type _) :
+noncomputable instance (priority := 10000) (J : Type _) :
     PreservesColimitsOfShape (Discrete.{u} J) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>
     preservesColimitOfPreservesColimitCocone (coproductCofanIsColimit G)
@@ -142,7 +142,7 @@ variable {X Y : LocallyRingedSpace.{v}} (f g : X ⟶ Y)
 
 namespace HasCoequalizer
 
-instance coequalizer_π_app_isLocalRingHom
+instance (priority := 10000) coequalizer_π_app_isLocalRingHom
     (U : TopologicalSpace.Opens (coequalizer f.val g.val).carrier) :
     IsLocalRingHom ((coequalizer.π f.val g.val : _).c.app (op U)) := by
   have := ι_comp_coequalizerComparison f.1 g.1 SheafedSpace.forgetToPresheafedSpace
@@ -225,7 +225,7 @@ theorem imageBasicOpen_image_open :
   exact (imageBasicOpen f g U s).2
 #align algebraic_geometry.LocallyRingedSpace.has_coequalizer.image_basic_open_image_open AlgebraicGeometry.LocallyRingedSpace.HasCoequalizer.imageBasicOpen_image_open
 
-instance coequalizer_π_stalk_isLocalRingHom (x : Y) :
+instance (priority := 10000) coequalizer_π_stalk_isLocalRingHom (x : Y) :
     IsLocalRingHom (PresheafedSpace.stalkMap (coequalizer.π f.val g.val : _) x) := by
   constructor
   rintro a ha
@@ -315,13 +315,13 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
   · exact h
 #align algebraic_geometry.LocallyRingedSpace.coequalizer_cofork_is_colimit AlgebraicGeometry.LocallyRingedSpace.coequalizerCoforkIsColimit
 
-instance : HasCoequalizer f g :=
+instance (priority := 10000) : HasCoequalizer f g :=
   ⟨⟨⟨_, coequalizerCoforkIsColimit f g⟩⟩⟩
 
-instance : HasCoequalizers LocallyRingedSpace :=
+instance (priority := 10000) : HasCoequalizers LocallyRingedSpace :=
   hasCoequalizers_of_hasColimit_parallelPair _
 
-noncomputable instance preservesCoequalizer :
+noncomputable instance (priority := 10000) preservesCoequalizer :
     PreservesColimitsOfShape WalkingParallelPair forgetToSheafedSpace.{v} :=
   ⟨fun {F} => by
     -- Porting note : was `apply preservesColimitOfIsoDiagram ...` and the proof that preservation
@@ -337,10 +337,10 @@ noncomputable instance preservesCoequalizer :
 
 end HasCoequalizer
 
-instance : HasColimits LocallyRingedSpace :=
+instance (priority := 10000) : HasColimits LocallyRingedSpace :=
   has_colimits_of_hasCoequalizers_and_coproducts
 
-noncomputable instance preservesColimits_forgetToSheafedSpace :
+noncomputable instance (priority := 10000) preservesColimits_forgetToSheafedSpace :
     PreservesColimits LocallyRingedSpace.forgetToSheafedSpace.{u} :=
   preservesColimitsOfPreservesCoequalizersAndCoproducts _
 

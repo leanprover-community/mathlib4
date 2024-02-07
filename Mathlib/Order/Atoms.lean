@@ -298,11 +298,11 @@ namespace IsAtomic
 
 variable [OrderBot α] [IsAtomic α]
 
-instance isCoatomic_dual : IsCoatomic αᵒᵈ :=
+instance (priority := 10000) isCoatomic_dual : IsCoatomic αᵒᵈ :=
   isCoatomic_dual_iff_isAtomic.2 ‹IsAtomic α›
 #align is_atomic.is_coatomic_dual IsAtomic.isCoatomic_dual
 
-instance Set.Iic.isAtomic {x : α} : IsAtomic (Set.Iic x) :=
+instance (priority := 10000) Set.Iic.isAtomic {x : α} : IsAtomic (Set.Iic x) :=
   ⟨fun ⟨y, hy⟩ =>
     (eq_bot_or_exists_atom_le y).imp Subtype.mk_eq_mk.2 fun ⟨a, ha, hay⟩ =>
       ⟨⟨a, hay.trans hy⟩, ha.Iic (hay.trans hy), hay⟩⟩
@@ -314,11 +314,11 @@ namespace IsCoatomic
 
 variable [OrderTop α] [IsCoatomic α]
 
-instance isCoatomic : IsAtomic αᵒᵈ :=
+instance (priority := 10000) isCoatomic : IsAtomic αᵒᵈ :=
   isAtomic_dual_iff_isCoatomic.2 ‹IsCoatomic α›
 #align is_coatomic.is_coatomic IsCoatomic.isCoatomic
 
-instance Set.Ici.isCoatomic {x : α} : IsCoatomic (Set.Ici x) :=
+instance (priority := 10000) Set.Ici.isCoatomic {x : α} : IsCoatomic (Set.Ici x) :=
   ⟨fun ⟨y, hy⟩ =>
     (eq_top_or_exists_le_coatom y).imp Subtype.mk_eq_mk.2 fun ⟨a, ha, hay⟩ =>
       ⟨⟨a, le_trans hy hay⟩, ha.Ici (le_trans hy hay), hay⟩⟩
@@ -429,7 +429,7 @@ theorem isAtomistic_dual_iff_isCoatomistic : IsAtomistic αᵒᵈ ↔ IsCoatomis
 
 namespace IsAtomistic
 
-instance isCoatomistic_dual [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
+instance (priority := 10000) isCoatomistic_dual [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
   isCoatomistic_dual_iff_isAtomistic.2 h
 #align is_atomistic.is_coatomistic_dual IsAtomistic.isCoatomistic_dual
 
@@ -475,7 +475,7 @@ end IsAtomistic
 
 namespace IsCoatomistic
 
-instance isAtomistic_dual [h : IsCoatomistic α] : IsAtomistic αᵒᵈ :=
+instance (priority := 10000) isAtomistic_dual [h : IsCoatomistic α] : IsAtomistic αᵒᵈ :=
   isAtomistic_dual_iff_isCoatomistic.2 h
 #align is_coatomistic.is_atomistic_dual IsCoatomistic.isAtomistic_dual
 
@@ -492,7 +492,7 @@ end IsCoatomistic
 
 namespace CompleteAtomicBooleanAlgebra
 
-instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
+instance (priority := 10000) {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
   eq_sSup_atoms b := by
     inhabit α
     refine ⟨{ a | IsAtom a ∧ a ≤ b }, ?_, fun a ha => ha.1⟩
@@ -507,7 +507,7 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
     nontriviality α
     cases g c <;> simp
 
-instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
+instance (priority := 10000) {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 inferInstance
 
 end CompleteAtomicBooleanAlgebra
@@ -543,7 +543,7 @@ section IsSimpleOrder
 
 variable [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α]
 
-instance {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : IsSimpleOrder αᵒᵈ :=
+instance (priority := 10000) {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] : IsSimpleOrder αᵒᵈ :=
   isSimpleOrder_iff_isSimpleOrder_orderDual.1 (by infer_instance)
 
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
@@ -747,7 +747,7 @@ instance (priority := 100) : IsAtomistic α :=
       ⟨{⊤}, h.trans sSup_singleton.symm, fun _ ha =>
         (Set.mem_singleton_iff.1 ha).symm ▸ isAtom_top⟩⟩
 
-instance : IsCoatomistic α :=
+instance (priority := 10000) : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 (by infer_instance)
 
 end IsSimpleOrder
@@ -982,7 +982,7 @@ namespace «Prop»
 @[simp] theorem isCoatom_iff {p : Prop} : IsCoatom p ↔ ¬ p := by
   simp [IsCoatom, show ⊤ = True from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]; tauto
 
-instance : IsSimpleOrder Prop where
+instance (priority := 10000) : IsSimpleOrder Prop where
   eq_bot_or_eq_top p := by by_cases h : p <;> simp [h] <;> tauto
 
 end «Prop»
@@ -1040,7 +1040,7 @@ theorem isAtom_iff_eq_single [DecidableEq ι] [∀ i, PartialOrder (π i)]
     rintro ⟨i, a, h, rfl⟩
     exact isAtom_single h
 
-instance isAtomic [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] [∀ i, IsAtomic (π i)] :
+instance (priority := 10000) isAtomic [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] [∀ i, IsAtomic (π i)] :
     IsAtomic (∀ i, π i) where
   eq_bot_or_exists_atom_le b := or_iff_not_imp_left.2 fun h =>
     have ⟨i, hi⟩ : ∃ i, b i ≠ ⊥ := not_forall.1 (h.imp Pi.eq_bot_iff.2)
@@ -1048,12 +1048,12 @@ instance isAtomic [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] [∀ i, 
     have : DecidableEq ι := open Classical in inferInstance
     ⟨Function.update ⊥ i a, isAtom_single ha, update_le_iff.2 ⟨hab, by simp⟩⟩
 
-instance isCoatomic [∀ i, PartialOrder (π i)] [∀ i, OrderTop (π i)] [∀ i, IsCoatomic (π i)] :
+instance (priority := 10000) isCoatomic [∀ i, PartialOrder (π i)] [∀ i, OrderTop (π i)] [∀ i, IsCoatomic (π i)] :
     IsCoatomic (∀ i, π i) :=
   isAtomic_dual_iff_isCoatomic.1 <|
     show IsAtomic (∀ i, (π i)ᵒᵈ) from inferInstance
 
-instance isAtomistic [∀ i, CompleteLattice (π i)] [∀ i, IsAtomistic (π i)] :
+instance (priority := 10000) isAtomistic [∀ i, CompleteLattice (π i)] [∀ i, IsAtomistic (π i)] :
     IsAtomistic (∀ i, π i) where
   eq_sSup_atoms s := by
     classical
@@ -1073,7 +1073,7 @@ instance isAtomistic [∀ i, CompleteLattice (π i)] [∀ i, IsAtomistic (π i)]
       subst hij; simp only [Function.update_same]
       exact le_sSup ⟨ha, by simpa using hle i⟩
 
-instance isCoatomistic [∀ i, CompleteLattice (π i)] [∀ i, IsCoatomistic (π i)] :
+instance (priority := 10000) isCoatomistic [∀ i, CompleteLattice (π i)] [∀ i, IsCoatomistic (π i)] :
     IsCoatomistic (∀ i, π i) :=
   isAtomistic_dual_iff_isCoatomistic.1 <|
     show IsAtomistic (∀ i, (π i)ᵒᵈ) from inferInstance
@@ -1118,13 +1118,13 @@ theorem isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
   (isCoatom_iff {x}ᶜ).mpr ⟨x, rfl⟩
 #align set.is_coatom_singleton_compl Set.isCoatom_singleton_compl
 
-instance : IsAtomistic (Set α) where
+instance (priority := 10000) : IsAtomistic (Set α) where
   eq_sSup_atoms s :=
     ⟨(fun x => {x}) '' s, by rw [sSup_eq_sUnion, sUnion_image, biUnion_of_singleton],
       by { rintro _ ⟨x, _, rfl⟩
            exact isAtom_singleton x }⟩
 
-instance : IsCoatomistic (Set α) where
+instance (priority := 10000) : IsCoatomistic (Set α) where
   eq_sInf_coatoms s :=
     ⟨(fun x => {x}ᶜ) '' sᶜ,
       by { rw [sInf_eq_sInter, sInter_image, ← compl_iUnion₂, biUnion_of_singleton, compl_compl] },

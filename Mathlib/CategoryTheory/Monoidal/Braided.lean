@@ -317,7 +317,7 @@ def id : LaxBraidedFunctor C C :=
   { MonoidalFunctor.id C with }
 #align category_theory.lax_braided_functor.id CategoryTheory.LaxBraidedFunctor.id
 
-instance : Inhabited (LaxBraidedFunctor C C) :=
+instance (priority := 10000) : Inhabited (LaxBraidedFunctor C C) :=
   ⟨id C⟩
 
 variable {C D E}
@@ -334,7 +334,7 @@ def comp (F : LaxBraidedFunctor C D) (G : LaxBraidedFunctor D E) : LaxBraidedFun
       simp only [Category.assoc] }
 #align category_theory.lax_braided_functor.comp CategoryTheory.LaxBraidedFunctor.comp
 
-instance categoryLaxBraidedFunctor : Category (LaxBraidedFunctor C D) :=
+instance (priority := 10000) categoryLaxBraidedFunctor : Category (LaxBraidedFunctor C D) :=
   InducedCategory.category LaxBraidedFunctor.toLaxMonoidalFunctor
 #align category_theory.lax_braided_functor.category_lax_braided_functor CategoryTheory.LaxBraidedFunctor.categoryLaxBraidedFunctor
 
@@ -397,7 +397,7 @@ def id : BraidedFunctor C C :=
   { MonoidalFunctor.id C with }
 #align category_theory.braided_functor.id CategoryTheory.BraidedFunctor.id
 
-instance : Inhabited (BraidedFunctor C C) :=
+instance (priority := 10000) : Inhabited (BraidedFunctor C C) :=
   ⟨id C⟩
 
 variable {C D E}
@@ -408,7 +408,7 @@ def comp (F : BraidedFunctor C D) (G : BraidedFunctor D E) : BraidedFunctor C E 
   { MonoidalFunctor.comp F.toMonoidalFunctor G.toMonoidalFunctor with }
 #align category_theory.braided_functor.comp CategoryTheory.BraidedFunctor.comp
 
-instance categoryBraidedFunctor : Category (BraidedFunctor C D) :=
+instance (priority := 10000) categoryBraidedFunctor : Category (BraidedFunctor C D) :=
   InducedCategory.category BraidedFunctor.toMonoidalFunctor
 #align category_theory.braided_functor.category_braided_functor CategoryTheory.BraidedFunctor.categoryBraidedFunctor
 
@@ -437,7 +437,7 @@ section CommMonoid
 
 variable (M : Type u) [CommMonoid M]
 
-instance : BraidedCategory (Discrete M) where
+instance (priority := 10000) : BraidedCategory (Discrete M) where
   braiding X Y := Discrete.eqToIso (mul_comm X.as Y.as)
 
 variable {M} {N : Type u} [CommMonoid N]

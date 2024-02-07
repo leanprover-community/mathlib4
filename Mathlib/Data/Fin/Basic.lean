@@ -88,7 +88,7 @@ def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
 
 namespace Fin
 
-instance : CanLift ℕ (Fin n) Fin.val (· < n) where
+instance (priority := 10000) : CanLift ℕ (Fin n) Fin.val (· < n) where
   prf k hk := ⟨⟨k, hk⟩, rfl⟩
 
 /-- A non-dependent variant of `elim0`. -/
@@ -230,7 +230,7 @@ theorem val_fin_le {n : ℕ} {a b : Fin n} : (a : ℕ) ≤ (b : ℕ) ↔ a ≤ b
   Iff.rfl
 #align fin.coe_fin_le Fin.val_fin_le
 
-instance {n : ℕ} : LinearOrder (Fin n) :=
+instance (priority := 10000) {n : ℕ} : LinearOrder (Fin n) :=
   @LinearOrder.liftWithOrd (Fin n) _ _ ⟨fun x y => ⟨max x y, max_rec' (· < n) x.2 y.2⟩⟩
     ⟨fun x y => ⟨min x y, min_rec' (· < n) x.2 y.2⟩⟩ _ Fin.val Fin.val_injective (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl)
@@ -246,7 +246,7 @@ theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 #align fin.max_coe Fin.max_val
 
-instance {n : ℕ} : PartialOrder (Fin n) := by infer_instance
+instance (priority := 10000) {n : ℕ} : PartialOrder (Fin n) := by infer_instance
 
 theorem val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ => id
 #align fin.coe_strict_mono Fin.val_strictMono
@@ -278,7 +278,7 @@ def valOrderEmbedding (n) : Fin n ↪o ℕ :=
 #align fin.coe_order_embedding Fin.valOrderEmbedding
 
 /-- The ordering on `Fin n` is a well order. -/
-instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) :=
+instance (priority := 10000) Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) :=
   (valOrderEmbedding n).isWellOrder
 #align fin.fin.lt.is_well_order Fin.Lt.isWellOrder
 
@@ -292,7 +292,7 @@ def factorial {n : ℕ} : Fin n → ℕ
   | ⟨i + 1, hi⟩ := (i + 1) * factorial ⟨i, i.lt_succ_self.trans hi⟩
 ```
 -/
-instance {n : ℕ} : WellFoundedRelation (Fin n) :=
+instance (priority := 10000) {n : ℕ} : WellFoundedRelation (Fin n) :=
   measure (val : Fin n → ℕ)
 
 /-- Given a positive `n`, `Fin.ofNat' i` is `i % n` as an element of `Fin n`. -/
@@ -302,8 +302,8 @@ def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
 -- porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
 -- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
 
-instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
-instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
+instance (priority := 10000) {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
+instance (priority := 10000) {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
 #align fin.coe_zero Fin.val_zero
 
@@ -427,13 +427,13 @@ theorem le_rev_iff {i j : Fin n} : i ≤ rev j ↔ j ≤ rev i := by
 #align fin.last_val Fin.val_last
 #align fin.le_last Fin.le_last
 
-instance : BoundedOrder (Fin (n + 1)) where
+instance (priority := 10000) : BoundedOrder (Fin (n + 1)) where
   top := last n
   le_top := le_last
   bot := 0
   bot_le := zero_le
 
-instance : Lattice (Fin (n + 1)) :=
+instance (priority := 10000) : Lattice (Fin (n + 1)) :=
   LinearOrder.toLattice
 
 #align fin.last_pos Fin.last_pos
@@ -474,18 +474,18 @@ theorem coe_orderIso_apply (e : Fin n ≃o Fin m) (i : Fin n) : (e i : ℕ) = i 
   · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
 #align fin.coe_order_iso_apply Fin.coe_orderIso_apply
 
-instance orderIso_subsingleton : Subsingleton (Fin n ≃o α) :=
+instance (priority := 10000) orderIso_subsingleton : Subsingleton (Fin n ≃o α) :=
   ⟨fun e e' => by
     ext i
     rw [← e.symm.apply_eq_iff_eq, e.symm_apply_apply, ← e'.trans_apply, ext_iff,
       coe_orderIso_apply]⟩
 #align fin.order_iso_subsingleton Fin.orderIso_subsingleton
 
-instance orderIso_subsingleton' : Subsingleton (α ≃o Fin n) :=
+instance (priority := 10000) orderIso_subsingleton' : Subsingleton (α ≃o Fin n) :=
   OrderIso.symm_injective.subsingleton
 #align fin.order_iso_subsingleton' Fin.orderIso_subsingleton'
 
-instance orderIsoUnique : Unique (Fin n ≃o Fin n) :=
+instance (priority := 10000) orderIsoUnique : Unique (Fin n ≃o Fin n) :=
   Unique.mk' _
 #align fin.order_iso_unique Fin.orderIsoUnique
 
@@ -527,7 +527,7 @@ theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
 
 #align fin.mk_one Fin.mk_one
 
-instance nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
+instance (priority := 10000) nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
   exists_pair_ne := ⟨0, 1, (ne_iff_vne 0 1).mpr (by simp [val_one, val_zero])⟩
 
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
@@ -540,7 +540,7 @@ theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
 
 section Monoid
 
-instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
+instance (priority := 10000) addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
   add := (· + ·)
   add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
   add_comm := by simp [eq_iff_veq, add_def, add_comm]
@@ -556,13 +556,13 @@ protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
   simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
 
-instance [NeZero n] : OfNat (Fin n) a where
+instance (priority := 10000) [NeZero n] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a (NeZero.pos n)
 
-instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
+instance (priority := 10000) inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
   ⟨0⟩
 
-instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
+instance (priority := 10000) inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
   haveI : NeZero (1 + n) := by rw [Nat.add_comm]; infer_instance
   inferInstance
 
@@ -578,17 +578,17 @@ section from_ad_hoc
 
 end from_ad_hoc
 
-instance (n) : AddCommSemigroup (Fin n) where
+instance (priority := 10000) (n) : AddCommSemigroup (Fin n) where
   add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
   add_comm := by simp [eq_iff_veq, add_def, add_comm]
 
-instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
+instance (priority := 10000) addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero_add := Fin.zero_add
   add_zero := Fin.add_zero
   __ := Fin.addCommSemigroup n
 #align fin.add_comm_monoid Fin.addCommMonoid
 
-instance instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
+instance (priority := 10000) instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
   natCast n := Fin.ofNat'' n
   natCast_zero := rfl
@@ -1470,11 +1470,11 @@ section AddGroup
 open Nat Int
 
 /-- Negation on `Fin n` -/
-instance neg (n : ℕ) : Neg (Fin n) :=
+instance (priority := 10000) neg (n : ℕ) : Neg (Fin n) :=
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
 
 /-- Abelian group structure on `Fin n`. -/
-instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
+instance (priority := 10000) addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
   { Fin.addCommMonoid n, Fin.neg n with
     add_left_neg := fun ⟨a, ha⟩ =>
       Fin.ext <|
@@ -1486,24 +1486,24 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
     sub := Fin.sub }
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instInvolutiveNeg (n : ℕ) : InvolutiveNeg (Fin n) where
+instance (priority := 10000) instInvolutiveNeg (n : ℕ) : InvolutiveNeg (Fin n) where
   neg := Neg.neg
   neg_neg := Nat.casesOn n finZeroElim fun _i => neg_neg
 #align fin.involutive_neg Fin.instInvolutiveNeg
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instIsCancelAdd (n : ℕ) : IsCancelAdd (Fin n) where
+instance (priority := 10000) instIsCancelAdd (n : ℕ) : IsCancelAdd (Fin n) where
   add_left_cancel := Nat.casesOn n finZeroElim fun _i _ _ _ => add_left_cancel
   add_right_cancel := Nat.casesOn n finZeroElim fun _i _ _ _ => add_right_cancel
 #align fin.is_cancel_add Fin.instIsCancelAdd
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instAddLeftCancelSemigroup (n : ℕ) : AddLeftCancelSemigroup (Fin n) :=
+instance (priority := 10000) instAddLeftCancelSemigroup (n : ℕ) : AddLeftCancelSemigroup (Fin n) :=
   { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
 #align fin.add_left_cancel_semigroup Fin.instAddLeftCancelSemigroup
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n) :=
+instance (priority := 10000) instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n) :=
   { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
 #align fin.add_right_cancel_semigroup Fin.instAddRightCancelSemigroup
 
@@ -1518,7 +1518,7 @@ protected theorem coe_sub (a b : Fin n) : ((a - b : Fin n) : ℕ) = (a + (n - b)
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 #align fin.eq_zero Fin.eq_zero
 
-instance uniqueFinOne : Unique (Fin 1) where
+instance (priority := 10000) uniqueFinOne : Unique (Fin 1) where
   uniq _ := Subsingleton.elim _ _
 
 @[simp]
@@ -2213,7 +2213,7 @@ protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
 end Mul
 
 open Qq in
-instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
+instance (priority := 10000) toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
   toTypeExpr := q(Fin $n)
   toExpr := match n with
     | 0 => finZeroElim

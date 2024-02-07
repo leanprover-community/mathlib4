@@ -18,7 +18,7 @@ namespace Lean
 
 deriving instance FromJson, ToJson for PUnit
 
-instance {n : Nat} : FromJson (Fin n) where
+instance (priority := 10000) {n : Nat} : FromJson (Fin n) where
   fromJson? j := do
     let i : Nat ← fromJson? j
     if h : i < n then
@@ -26,10 +26,10 @@ instance {n : Nat} : FromJson (Fin n) where
     else
       throw s!"must be less than {n}"
 
-instance {n : Nat} : ToJson (Fin n) where
+instance (priority := 10000) {n : Nat} : ToJson (Fin n) where
   toJson i := toJson i.val
 
-instance {α : Type u} [FromJson α] (p : α → Prop) [DecidablePred p] : FromJson (Subtype p) where
+instance (priority := 10000) {α : Type u} [FromJson α] (p : α → Prop) [DecidablePred p] : FromJson (Subtype p) where
   fromJson? j := do
     let i : α ← fromJson? j
     if h : p i then
@@ -37,5 +37,5 @@ instance {α : Type u} [FromJson α] (p : α → Prop) [DecidablePred p] : FromJ
     else
       throw "condition does not hold"
 
-instance {α : Type u} [ToJson α] (p : α → Prop) : ToJson (Subtype p) where
+instance (priority := 10000) {α : Type u} [ToJson α] (p : α → Prop) : ToJson (Subtype p) where
   toJson x := toJson x.val

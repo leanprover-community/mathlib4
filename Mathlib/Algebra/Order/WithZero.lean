@@ -40,7 +40,7 @@ variable {α : Type*}
 
 variable {a b c d x y z : α}
 
-instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
+instance (priority := 10000) instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
@@ -52,20 +52,20 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     zero_le_one := (le_top : (0 : α) ≤ ⊤) }
 #align multiplicative.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
 
-instance [LinearOrderedAddCommGroupWithTop α] :
+instance (priority := 10000) [LinearOrderedAddCommGroupWithTop α] :
     LinearOrderedCommGroupWithZero (Multiplicative αᵒᵈ) :=
   { Multiplicative.divInvMonoid, instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual,
     Multiplicative.instNontrivial with
     inv_zero := @LinearOrderedAddCommGroupWithTop.neg_top _ (_)
     mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel _ (_) }
 
-instance instLinearOrderedCommMonoidWithZeroWithZero [LinearOrderedCommMonoid α] :
+instance (priority := 10000) instLinearOrderedCommMonoidWithZeroWithZero [LinearOrderedCommMonoid α] :
     LinearOrderedCommMonoidWithZero (WithZero α) :=
   { WithZero.linearOrder, WithZero.commMonoidWithZero with
     mul_le_mul_left := fun _ _ ↦ mul_le_mul_left', zero_le_one := WithZero.zero_le _ }
 #align with_zero.linear_ordered_comm_monoid_with_zero instLinearOrderedCommMonoidWithZeroWithZero
 
-instance [LinearOrderedCommGroup α] : LinearOrderedCommGroupWithZero (WithZero α) :=
+instance (priority := 10000) [LinearOrderedCommGroup α] : LinearOrderedCommGroupWithZero (WithZero α) :=
   { instLinearOrderedCommMonoidWithZeroWithZero, WithZero.commGroupWithZero with }
 
 section LinearOrderedCommMonoid
@@ -110,7 +110,7 @@ theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
 theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b < 0 from h1 ▸ h
 #align ne_zero_of_lt ne_zero_of_lt
 
-instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
+instance (priority := 10000) instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
   { Additive.orderedAddCommMonoid, Additive.linearOrder with
     top := (0 : α)
@@ -281,7 +281,7 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   rfl
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
-instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
+instance (priority := 10000) : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
     neg_top := @inv_zero _ (_)

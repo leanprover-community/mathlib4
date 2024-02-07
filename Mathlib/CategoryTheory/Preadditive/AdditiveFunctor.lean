@@ -71,9 +71,9 @@ instance (priority := 100) preservesZeroMorphisms_of_additive : PreservesZeroMor
   map_zero _ _ := F.mapAddHom.map_zero
 #align category_theory.functor.preserves_zero_morphisms_of_additive CategoryTheory.Functor.preservesZeroMorphisms_of_additive
 
-instance : Additive (𝟭 C) where
+instance (priority := 10000) : Additive (𝟭 C) where
 
-instance {E : Type*} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additive G] :
+instance (priority := 10000) {E : Type*} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additive G] :
     Additive (F ⋙ G) where
 
 @[simp]
@@ -139,12 +139,12 @@ section InducedCategory
 
 variable {C : Type*} {D : Type*} [Category D] [Preadditive D] (F : C → D)
 
-instance inducedFunctor_additive : Functor.Additive (inducedFunctor F) where
+instance (priority := 10000) inducedFunctor_additive : Functor.Additive (inducedFunctor F) where
 #align category_theory.functor.induced_functor_additive CategoryTheory.Functor.inducedFunctor_additive
 
 end InducedCategory
 
-instance fullSubcategoryInclusion_additive {C : Type*} [Category C] [Preadditive C]
+instance (priority := 10000) fullSubcategoryInclusion_additive {C : Type*} [Category C] [Preadditive C]
     (Z : C → Prop) : (fullSubcategoryInclusion Z).Additive where
 #align category_theory.functor.full_subcategory_inclusion_additive CategoryTheory.Functor.fullSubcategoryInclusion_additive
 
@@ -188,7 +188,7 @@ namespace Equivalence
 
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
 
-instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
+instance (priority := 10000) inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
 #align category_theory.equivalence.inverse_additive CategoryTheory.Equivalence.inverse_additive
 
@@ -205,13 +205,13 @@ def AdditiveFunctor :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor CategoryTheory.AdditiveFunctor
 
-instance : Category (AdditiveFunctor C D) :=
+instance (priority := 10000) : Category (AdditiveFunctor C D) :=
   FullSubcategory.category _
 
 /-- the category of additive functors is denoted `C ⥤+ D` -/
 infixr:26 " ⥤+ " => AdditiveFunctor
 
-instance : Preadditive (C ⥤+ D) :=
+instance (priority := 10000) : Preadditive (C ⥤+ D) :=
   Preadditive.inducedCategory _
 
 /-- An additive functor is in particular a functor. -/
@@ -220,7 +220,7 @@ def AdditiveFunctor.forget : (C ⥤+ D) ⥤ C ⥤ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.forget CategoryTheory.AdditiveFunctor.forget
 
-instance : Full (AdditiveFunctor.forget C D) :=
+instance (priority := 10000) : Full (AdditiveFunctor.forget C D) :=
   FullSubcategory.full _
 
 variable {C D}
@@ -256,9 +256,9 @@ theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.forget_map CategoryTheory.AdditiveFunctor.forget_map
 
-instance : Functor.Additive (AdditiveFunctor.forget C D) where map_add := rfl
+instance (priority := 10000) : Functor.Additive (AdditiveFunctor.forget C D) where map_add := rfl
 
-instance (F : C ⥤+ D) : Functor.Additive F.1 :=
+instance (priority := 10000) (F : C ⥤+ D) : Functor.Additive F.1 :=
   F.2
 
 end
@@ -284,8 +284,8 @@ def AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_left_exact CategoryTheory.AdditiveFunctor.ofLeftExact
 
-instance : Full (AdditiveFunctor.ofLeftExact C D) := FullSubcategory.full_map _
-instance : Faithful (AdditiveFunctor.ofLeftExact C D) := FullSubcategory.faithful_map _
+instance (priority := 10000) : Full (AdditiveFunctor.ofLeftExact C D) := FullSubcategory.full_map _
+instance (priority := 10000) : Faithful (AdditiveFunctor.ofLeftExact C D) := FullSubcategory.faithful_map _
 
 /-- Turn a right exact functor into an additive functor. -/
 def AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
@@ -294,8 +294,8 @@ def AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_right_exact CategoryTheory.AdditiveFunctor.ofRightExact
 
-instance : Full (AdditiveFunctor.ofRightExact C D) := FullSubcategory.full_map _
-instance : Faithful (AdditiveFunctor.ofRightExact C D) := FullSubcategory.faithful_map _
+instance (priority := 10000) : Full (AdditiveFunctor.ofRightExact C D) := FullSubcategory.full_map _
+instance (priority := 10000) : Faithful (AdditiveFunctor.ofRightExact C D) := FullSubcategory.faithful_map _
 
 /-- Turn an exact functor into an additive functor. -/
 def AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
@@ -304,8 +304,8 @@ def AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.AdditiveFunctor.of_exact CategoryTheory.AdditiveFunctor.ofExact
 
-instance : Full (AdditiveFunctor.ofExact C D) := FullSubcategory.full_map _
-instance : Faithful (AdditiveFunctor.ofExact C D) := FullSubcategory.faithful_map _
+instance (priority := 10000) : Full (AdditiveFunctor.ofExact C D) := FullSubcategory.full_map _
+instance (priority := 10000) : Faithful (AdditiveFunctor.ofExact C D) := FullSubcategory.faithful_map _
 
 end
 

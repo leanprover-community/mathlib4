@@ -55,7 +55,7 @@ theorem ComponentCompl.supp_inj {C D : G.ComponentCompl K} : C.supp = D.supp ↔
   ComponentCompl.supp_injective.eq_iff
 #align simple_graph.component_compl.supp_inj SimpleGraph.ComponentCompl.supp_inj
 
-instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
+instance (priority := 10000) ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
   coe_injective' _ _ := ComponentCompl.supp_inj.mp
 #align simple_graph.component_compl.set_like SimpleGraph.ComponentCompl.setLike
@@ -78,7 +78,7 @@ theorem componentComplMk_eq_of_adj (G : SimpleGraph V) {v w : V} (vK : v ∉ K) 
 #align simple_graph.component_compl_mk_eq_of_adj SimpleGraph.componentComplMk_eq_of_adj
 
 /-- In an infinite graph, the set of components out of a finite set is nonempty. -/
-instance componentCompl_nonempty_of_infinite (G : SimpleGraph V) [Infinite V] (K : Finset V) :
+instance (priority := 10000) componentCompl_nonempty_of_infinite (G : SimpleGraph V) [Infinite V] (K : Finset V) :
     Nonempty (G.ComponentCompl K) :=
   let ⟨_, kK⟩ := K.finite_toSet.infinite_compl.nonempty
   ⟨componentComplMk _ kK⟩
@@ -250,7 +250,7 @@ end ComponentCompl
 
 /- For a locally finite preconnected graph, the number of components outside of any finite set
 is finite. -/
-instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K : Finset V) :
+instance (priority := 10000) componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K : Finset V) :
     Finite (G.ComponentCompl K) := by
   classical
   rcases K.eq_empty_or_nonempty with rfl | h

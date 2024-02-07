@@ -193,7 +193,7 @@ class IsTrans (α : Sort u) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
 #align is_trans IsTrans
 
-instance {α : Sort u} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
+instance (priority := 10000) {α : Sort u} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
   ⟨IsTrans.trans _ _ _⟩
 
 instance (priority := 100) {α : Sort u} {r : α → α → Prop} [Trans r r r] : IsTrans α r :=
@@ -271,7 +271,7 @@ class IsStrictTotalOrder (α : Sort u) (lt : α → α → Prop) extends IsTrich
 #align is_strict_total_order IsStrictTotalOrder
 
 /-- Equality is an equivalence relation. -/
-instance eq_isEquiv (α : Sort u) : IsEquiv α (· = ·) where
+instance (priority := 10000) eq_isEquiv (α : Sort u) : IsEquiv α (· = ·) where
   symm := @Eq.symm _
   trans := @Eq.trans _
   refl := Eq.refl
@@ -403,7 +403,7 @@ theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
 theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
 #align strict_weak_order.not_lt_of_equiv' StrictWeakOrder.not_lt_of_equiv'
 
-instance isEquiv : IsEquiv α (@Equiv _ r) where
+instance (priority := 10000) isEquiv : IsEquiv α (@Equiv _ r) where
   refl := erefl
   trans _ _ _ := etrans
   symm _ _ := esymm

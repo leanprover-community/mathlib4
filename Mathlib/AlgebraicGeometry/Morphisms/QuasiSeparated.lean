@@ -157,7 +157,7 @@ theorem quasiSeparated_stableUnderBaseChange :
     quasiCompact_stableUnderBaseChange.diagonal quasiCompact_respectsIso
 #align algebraic_geometry.quasi_separated_stable_under_base_change AlgebraicGeometry.quasiSeparated_stableUnderBaseChange
 
-instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]
+instance (priority := 10000) quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]
     [QuasiSeparated g] : QuasiSeparated (f ≫ g) :=
   quasiSeparated_stableUnderComposition f g inferInstance inferInstance
 #align algebraic_geometry.quasi_separated_comp AlgebraicGeometry.quasiSeparatedComp
@@ -232,15 +232,15 @@ theorem QuasiSeparated.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover
   QuasiSeparated.is_local_at_target.openCover_iff f 𝒰
 #align algebraic_geometry.quasi_separated.open_cover_iff AlgebraicGeometry.QuasiSeparated.openCover_iff
 
-instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated g] :
+instance (priority := 10000) {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated g] :
     QuasiSeparated (pullback.fst : pullback f g ⟶ X) :=
   quasiSeparated_stableUnderBaseChange.fst f g inferInstance
 
-instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated f] :
+instance (priority := 10000) {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated f] :
     QuasiSeparated (pullback.snd : pullback f g ⟶ Y) :=
   quasiSeparated_stableUnderBaseChange.snd f g inferInstance
 
-instance {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f] [QuasiSeparated g] :
+instance (priority := 10000) {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f] [QuasiSeparated g] :
     QuasiSeparated (f ≫ g) :=
   quasiSeparated_stableUnderComposition f g inferInstance inferInstance
 
@@ -252,7 +252,7 @@ theorem quasiSeparatedSpace_of_quasiSeparated {X Y : Scheme} (f : X ⟶ Y)
   infer_instance
 #align algebraic_geometry.quasi_separated_space_of_quasi_separated AlgebraicGeometry.quasiSeparatedSpace_of_quasiSeparated
 
-instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
+instance (priority := 10000) quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
     QuasiSeparatedSpace X.carrier := by
   constructor
   intro U V hU hU' hV hV'

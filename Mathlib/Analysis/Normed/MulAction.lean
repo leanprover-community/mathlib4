@@ -54,13 +54,13 @@ theorem edist_smul_le (s : α) (x y : β) : edist (s • x) (s • y) ≤ ‖s�
 end SeminormedAddGroup
 
 /-- Left multiplication is bounded. -/
-instance NonUnitalSeminormedRing.to_boundedSMul [NonUnitalSeminormedRing α] : BoundedSMul α α where
+instance (priority := 10000) NonUnitalSeminormedRing.to_boundedSMul [NonUnitalSeminormedRing α] : BoundedSMul α α where
   dist_smul_pair' x y₁ y₂ := by simpa [mul_sub, dist_eq_norm] using norm_mul_le x (y₁ - y₂)
   dist_pair_smul' x₁ x₂ y := by simpa [sub_mul, dist_eq_norm] using norm_mul_le (x₁ - x₂) y
 #align non_unital_semi_normed_ring.to_has_bounded_smul NonUnitalSeminormedRing.to_boundedSMul
 
 /-- Right multiplication is bounded. -/
-instance NonUnitalSeminormedRing.to_has_bounded_op_smul [NonUnitalSeminormedRing α] :
+instance (priority := 10000) NonUnitalSeminormedRing.to_has_bounded_op_smul [NonUnitalSeminormedRing α] :
     BoundedSMul αᵐᵒᵖ α where
   dist_smul_pair' x y₁ y₂ := by
     simpa [sub_mul, dist_eq_norm, mul_comm] using norm_mul_le (y₁ - y₂) x.unop

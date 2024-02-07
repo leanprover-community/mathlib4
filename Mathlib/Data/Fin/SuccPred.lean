@@ -20,7 +20,7 @@ to a specific `Fin` instance.
 
 namespace Fin
 
-instance : ∀ {n : ℕ}, SuccOrder (Fin n)
+instance (priority := 10000) : ∀ {n : ℕ}, SuccOrder (Fin n)
   | 0 => by constructor <;> first | assumption | intro a; exact elim0 a
   | n + 1 =>
     SuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
@@ -46,7 +46,7 @@ theorem succ_apply {n : ℕ} (a) : SuccOrder.succ a = if a < Fin.last n then a +
   rfl
 #align fin.succ_apply Fin.succ_apply
 
-instance : ∀ {n : ℕ}, PredOrder (Fin n)
+instance (priority := 10000) : ∀ {n : ℕ}, PredOrder (Fin n)
   | 0 => by constructor <;> first | assumption | intro a; exact elim0 a
   | n + 1 =>
     PredOrder.ofCore (fun x => if x = 0 then 0 else x - 1)

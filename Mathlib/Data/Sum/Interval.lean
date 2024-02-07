@@ -232,7 +232,7 @@ section Disjoint
 
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 
-instance : LocallyFiniteOrder (Sum α β)
+instance (priority := 10000) : LocallyFiniteOrder (Sum α β)
     where
   finsetIcc := sumLift₂ Icc Icc
   finsetIco := sumLift₂ Ico Ico
@@ -340,7 +340,7 @@ local elab "simp_lex" : tactic => do
         inl.injEq, inr.injEq]
   )
 
-instance locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
+instance (priority := 10000) locallyFiniteOrder : LocallyFiniteOrder (α ⊕ₗ β) where
   finsetIcc a b :=
     (sumLexLift Icc Icc (fun a _ => Ici a) (fun _ => Iic) (ofLex a) (ofLex b)).map toLex.toEmbedding
   finsetIco a b :=

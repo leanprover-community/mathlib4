@@ -54,7 +54,7 @@ theorem injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
 #noalign AddCommGroup.injective_of_injective_as_module
 #noalign AddCommGroup.injective_as_module_of_injective_as_Ab
 
-instance injective_of_divisible [DivisibleBy A ℤ] :
+instance (priority := 10000) injective_of_divisible [DivisibleBy A ℤ] :
     Injective (⟨A,inferInstance⟩ : AddCommGroupCat) :=
   (injective_as_module_iff A).mp <|
     @Module.injective_object_of_injective_module ℤ _ A _ _ <|
@@ -72,7 +72,7 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
           SetLike.mk_smul_mk]
 #align AddCommGroup.injective_of_divisible AddCommGroupCat.injective_of_divisible
 
-instance injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
+instance (priority := 10000) injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   injective_of_divisible _
 
@@ -84,7 +84,7 @@ variable (A_ : AddCommGroupCat.{u})
 def next : AddCommGroupCat.{u} := of <|
   (A_ ⟶ of <| ULift.{u} <| AddCircle (1 : ℚ)) → ULift.{u} (AddCircle (1 : ℚ))
 
-instance : Injective <| next A_ :=
+instance (priority := 10000) : Injective <| next A_ :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   injective_of_divisible _
 
@@ -171,14 +171,14 @@ lemma toNext_inj : Function.Injective <| toNext A_ :=
 
 end enough_injectives_aux_proofs
 
-instance enoughInjectives : EnoughInjectives AddCommGroupCat.{u} where
+instance (priority := 10000) enoughInjectives : EnoughInjectives AddCommGroupCat.{u} where
   presentation A_ := ⟨enough_injectives_aux_proofs.presentation A_⟩
 
 end AddCommGroupCat
 
 namespace CommGroupCat
 
-instance enoughInjectives : EnoughInjectives CommGroupCat.{u} :=
+instance (priority := 10000) enoughInjectives : EnoughInjectives CommGroupCat.{u} :=
   EnoughInjectives.of_equivalence commGroupAddCommGroupEquivalence.functor
 
 end CommGroupCat

@@ -60,7 +60,7 @@ theorem mem_range_mapToFractionRing_iff (B : Type*) [CommRing B] [Algebra A B] [
     apply IsLocalization.lift_mk'⟩
 #align localization.mem_range_map_to_fraction_ring_iff Localization.mem_range_mapToFractionRing_iff
 
-instance isLocalization_range_mapToFractionRing (B : Type*) [CommRing B] [Algebra A B]
+instance (priority := 10000) isLocalization_range_mapToFractionRing (B : Type*) [CommRing B] [Algebra A B]
     [IsLocalization S B] (hS : S ≤ A⁰) : IsLocalization S (mapToFractionRing K S B hS).range :=
   IsLocalization.isLocalization_of_algEquiv S <|
     show B ≃ₐ[A] _ from AlgEquiv.ofBijective (mapToFractionRing K S B hS).rangeRestrict (by
@@ -70,7 +70,7 @@ instance isLocalization_range_mapToFractionRing (B : Type*) [CommRing B] [Algebr
         fun h => congr_arg _ (IsFractionRing.injective A K h)⟩)
 #align localization.is_localization_range_map_to_fraction_ring Localization.isLocalization_range_mapToFractionRing
 
-instance isFractionRing_range_mapToFractionRing (B : Type*) [CommRing B] [Algebra A B]
+instance (priority := 10000) isFractionRing_range_mapToFractionRing (B : Type*) [CommRing B] [Algebra A B]
     [IsLocalization S B] (hS : S ≤ A⁰) : IsFractionRing (mapToFractionRing K S B hS).range K :=
   IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
 #align localization.is_fraction_ring_range_map_to_fraction_ring Localization.isFractionRing_range_mapToFractionRing
@@ -92,13 +92,13 @@ noncomputable def subalgebra (hS : S ≤ A⁰) : Subalgebra A K :=
 
 namespace subalgebra
 
-instance isLocalization_subalgebra : IsLocalization S (subalgebra K S hS) := by
+instance (priority := 10000) isLocalization_subalgebra : IsLocalization S (subalgebra K S hS) := by
   dsimp only [Localization.subalgebra]
   rw [Subalgebra.copy_eq]
   infer_instance
 #align localization.subalgebra.is_localization_subalgebra Localization.subalgebra.isLocalization_subalgebra
 
-instance isFractionRing : IsFractionRing (subalgebra K S hS) K :=
+instance (priority := 10000) isFractionRing : IsFractionRing (subalgebra K S hS) K :=
   IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
 #align localization.subalgebra.is_fraction_ring Localization.subalgebra.isFractionRing
 
@@ -138,13 +138,13 @@ noncomputable def ofField : Subalgebra A K :=
     apply mem_range_mapToFractionRing_iff_ofField
 #align localization.subalgebra.of_field Localization.subalgebra.ofField
 
-instance isLocalization_ofField : IsLocalization S (subalgebra.ofField K S hS) := by
+instance (priority := 10000) isLocalization_ofField : IsLocalization S (subalgebra.ofField K S hS) := by
   dsimp only [Localization.subalgebra.ofField]
   rw [Subalgebra.copy_eq]
   infer_instance
 #align localization.subalgebra.is_localization_of_field Localization.subalgebra.isLocalization_ofField
 
-instance isFractionRing_ofField : IsFractionRing (subalgebra.ofField K S hS) K :=
+instance (priority := 10000) isFractionRing_ofField : IsFractionRing (subalgebra.ofField K S hS) K :=
   IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
 #align localization.subalgebra.is_fraction_ring_of_field Localization.subalgebra.isFractionRing_ofField
 

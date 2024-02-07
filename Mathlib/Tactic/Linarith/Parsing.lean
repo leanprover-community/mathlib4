@@ -75,7 +75,7 @@ def Monom.lt : Monom → Monom → Bool :=
     ((a.keys : List ℕ) < b.keys) ||
       (((a.keys : List ℕ) = b.keys) && ((a.values : List ℕ) < b.values))
 
-instance : Ord Monom where
+instance (priority := 10000) : Ord Monom where
   compare x y := if x.lt y then .lt else if x == y then .eq else .gt
 
 /-- Linear combinations of monomials are represented by mapping monomials to coefficients. -/

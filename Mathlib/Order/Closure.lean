@@ -71,11 +71,11 @@ structure ClosureOperator [Preorder α] extends α →o α where
 
 namespace ClosureOperator
 
-instance [Preorder α] : FunLike (ClosureOperator α) α α where
+instance (priority := 10000) [Preorder α] : FunLike (ClosureOperator α) α α where
   coe c := c.1
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; obtain rfl := DFunLike.ext' h; congr with x; simp [*]
 
-instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
+instance (priority := 10000) [Preorder α] : OrderHomClass (ClosureOperator α) α α where
   map_rel f _ _ h := f.mono h
 
 initialize_simps_projections ClosureOperator (toFun → apply, IsClosed → isClosed)
@@ -96,7 +96,7 @@ def id : ClosureOperator α where
 #align closure_operator.closed ClosureOperator.IsClosed
 #align closure_operator.mem_closed_iff ClosureOperator.isClosed_iff
 
-instance : Inhabited (ClosureOperator α) :=
+instance (priority := 10000) : Inhabited (ClosureOperator α) :=
   ⟨id α⟩
 
 variable {α} [PartialOrder α] (c : ClosureOperator α)
@@ -308,14 +308,14 @@ protected def id [Preorder α] : LowerAdjoint (id : α → α) where
 
 variable {α}
 
-instance [Preorder α] : Inhabited (LowerAdjoint (id : α → α)) :=
+instance (priority := 10000) [Preorder α] : Inhabited (LowerAdjoint (id : α → α)) :=
   ⟨LowerAdjoint.id α⟩
 
 section Preorder
 
 variable [Preorder α] [Preorder β] {u : β → α} (l : LowerAdjoint u)
 
-instance : CoeFun (LowerAdjoint u) fun _ => α → β where coe := toFun
+instance (priority := 10000) : CoeFun (LowerAdjoint u) fun _ => α → β where coe := toFun
 
 theorem gc : GaloisConnection l u :=
   l.gc'

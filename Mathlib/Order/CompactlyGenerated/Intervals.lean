@@ -23,7 +23,7 @@ theorem isCompactElement {a : α} {b : Iic a} (h : CompleteLattice.IsCompactElem
   obtain ⟨t, ht⟩ := h ι ((↑) ∘ s) hb
   exact ⟨t, (by simpa using ht : (b : α) ≤ _)⟩
 
-instance instIsCompactlyGenerated [IsCompactlyGenerated α] {a : α} :
+instance (priority := 10000) instIsCompactlyGenerated [IsCompactlyGenerated α] {a : α} :
     IsCompactlyGenerated (Iic a) := by
   refine ⟨fun ⟨x, (hx : x ≤ a)⟩ ↦ ?_⟩
   obtain ⟨s, hs, rfl⟩ := IsCompactlyGenerated.exists_sSup_eq x

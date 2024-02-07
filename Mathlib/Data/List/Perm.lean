@@ -30,7 +30,7 @@ variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
 
 #align list.perm List.Perm
 
-instance {α : Type*} : Trans (@List.Perm α) (@List.Perm α) List.Perm where
+instance (priority := 10000) {α : Type*} : Trans (@List.Perm α) (@List.Perm α) List.Perm where
   trans := @List.Perm.trans α
 
 open Perm (swap)

@@ -19,15 +19,15 @@ Here we put the trivial `star` operation on `ℚ` for convenience and show that 
 
 namespace Rat
 
-instance : StarRing ℚ where
+instance (priority := 10000) : StarRing ℚ where
   star := id
   star_involutive _ := rfl
   star_mul _ _ := mul_comm _ _
   star_add _ _ := rfl
 
-instance : TrivialStar ℚ where star_trivial _ := rfl
+instance (priority := 10000) : TrivialStar ℚ where star_trivial _ := rfl
 
-instance : StarOrderedRing ℚ :=
+instance (priority := 10000) : StarOrderedRing ℚ :=
   StarOrderedRing.ofNonnegIff (fun {_ _} => add_le_add_left) fun x => by
     refine'
       ⟨fun hx => _, fun hx =>

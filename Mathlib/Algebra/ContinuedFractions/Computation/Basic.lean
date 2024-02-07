@@ -83,10 +83,10 @@ variable {K}
 namespace IntFractPair
 
 /-- Make an `IntFractPair` printable. -/
-instance [Repr K] : Repr (IntFractPair K) :=
+instance (priority := 10000) [Repr K] : Repr (IntFractPair K) :=
   ⟨fun p _ => "(b : " ++ repr p.b ++ ", fract : " ++ repr p.fr ++ ")"⟩
 
-instance inhabited [Inhabited K] : Inhabited (IntFractPair K) :=
+instance (priority := 10000) inhabited [Inhabited K] : Inhabited (IntFractPair K) :=
   ⟨⟨0, default⟩⟩
 #align generalized_continued_fraction.int_fract_pair.inhabited GeneralizedContinuedFraction.IntFractPair.inhabited
 
@@ -111,7 +111,7 @@ variable {β : Type*} [Coe K β]
 def coeFn : IntFractPair K → IntFractPair β := mapFr (↑)
 
 /-- Coerce a pair by coercing the fractional component. -/
-instance coe : Coe (IntFractPair K) (IntFractPair β) where
+instance (priority := 10000) coe : Coe (IntFractPair K) (IntFractPair β) where
   coe := coeFn
 #align generalized_continued_fraction.int_fract_pair.has_coe_to_int_fract_pair GeneralizedContinuedFraction.IntFractPair.coe
 

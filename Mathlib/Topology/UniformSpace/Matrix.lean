@@ -20,10 +20,10 @@ variable (m n 𝕜 : Type*) [UniformSpace 𝕜]
 
 namespace Matrix
 
-instance : UniformSpace (Matrix m n 𝕜) :=
+instance (priority := 10000) : UniformSpace (Matrix m n 𝕜) :=
   (by infer_instance : UniformSpace (m → n → 𝕜))
 
-instance instUniformAddGroup [AddGroup 𝕜] [UniformAddGroup 𝕜] :
+instance (priority := 10000) instUniformAddGroup [AddGroup 𝕜] [UniformAddGroup 𝕜] :
     UniformAddGroup (Matrix m n 𝕜) :=
   inferInstanceAs <| UniformAddGroup (m → n → 𝕜)
 
@@ -40,10 +40,10 @@ theorem uniformContinuous {β : Type*} [UniformSpace β] {f : β → Matrix m n 
   apply Iff.intro <;> intro a <;> apply a
 #align matrix.uniform_continuous Matrix.uniformContinuous
 
-instance [CompleteSpace 𝕜] : CompleteSpace (Matrix m n 𝕜) :=
+instance (priority := 10000) [CompleteSpace 𝕜] : CompleteSpace (Matrix m n 𝕜) :=
   (by infer_instance : CompleteSpace (m → n → 𝕜))
 
-instance [SeparatedSpace 𝕜] : SeparatedSpace (Matrix m n 𝕜) :=
+instance (priority := 10000) [SeparatedSpace 𝕜] : SeparatedSpace (Matrix m n 𝕜) :=
   (by infer_instance : SeparatedSpace (m → n → 𝕜))
 
 end Matrix

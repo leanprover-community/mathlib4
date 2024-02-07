@@ -71,7 +71,7 @@ namespace MulHom
 sending `x` to `f x * g x`. -/
 @[to_additive "Given two additive morphisms `f`, `g` to an additive commutative semigroup,
 `f + g` is the additive morphism sending `x` to `f x + g x`."]
-instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
+instance (priority := 10000) [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_mul' := fun x y => by
@@ -108,7 +108,7 @@ variable [Group G] [CommGroup H]
 /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
 sending `x` to `f x * g x`. -/
 @[to_additive]
-instance mul {M N} [MulOneClass M] [CommMonoid N] : Mul (M →* N) :=
+instance (priority := 10000) mul {M N} [MulOneClass M] [CommMonoid N] : Mul (M →* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_one' := show f 1 * g 1 = 1 by simp,
@@ -215,7 +215,7 @@ theorem coe_of_map_div {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x /
 `x` to `(f x)⁻¹`. -/
 @[to_additive "If `f` is an additive monoid homomorphism to an additive commutative group,
 then `-f` is the homomorphism sending `x` to `-(f x)`."]
-instance {M G} [MulOneClass M] [CommGroup G] : Inv (M →* G) :=
+instance (priority := 10000) {M G} [MulOneClass M] [CommGroup G] : Inv (M →* G) :=
   ⟨fun f => (mk' fun g => (f g)⁻¹) fun a b => by rw [← mul_inv, f.map_mul]⟩
 
 @[to_additive (attr := simp)]
@@ -244,7 +244,7 @@ theorem comp_inv {M A B} [MulOneClass M] [CommGroup A] [CommGroup B]
 sending `x` to `(f x) / (g x)`. -/
 @[to_additive "If `f` and `g` are monoid homomorphisms to an additive commutative group,
 then `f - g` is the homomorphism sending `x` to `(f x) - (g x)`."]
-instance {M G} [MulOneClass M] [CommGroup G] : Div (M →* G) :=
+instance (priority := 10000) {M G} [MulOneClass M] [CommGroup G] : Div (M →* G) :=
   ⟨fun f g => (mk' fun x => f x / g x) fun a b => by
     simp [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm]⟩
 
@@ -258,7 +258,7 @@ end MonoidHom
 
 /-- Given two monoid with zero morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid
 with zero morphism sending `x` to `f x * g x`. -/
-instance [MulZeroOneClass M] [CommMonoidWithZero N] : Mul (M →*₀ N) :=
+instance (priority := 10000) [MulZeroOneClass M] [CommMonoidWithZero N] : Mul (M →*₀ N) :=
   ⟨fun f g => { (f * g : M →* N) with
     toFun := fun a => f a * g a,
     map_zero' := by dsimp only []; rw [map_zero, zero_mul] }⟩

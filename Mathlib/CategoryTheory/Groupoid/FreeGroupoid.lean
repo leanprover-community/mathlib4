@@ -75,7 +75,7 @@ def _root_.CategoryTheory.FreeGroupoid (V) [Q : Quiver V] :=
   Quotient (@redStep V Q)
 #align category_theory.free_groupoid CategoryTheory.FreeGroupoid
 
-instance {V} [Quiver V] [Nonempty V] : Nonempty (FreeGroupoid V) := by
+instance (priority := 10000) {V} [Quiver V] [Nonempty V] : Nonempty (FreeGroupoid V) := by
   inhabit V; exact ⟨⟨@default V _⟩⟩
 
 theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
@@ -124,7 +124,7 @@ theorem congr_reverse_comp {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
   apply congr_comp_reverse
 #align category_theory.groupoid.free.congr_reverse_comp CategoryTheory.Groupoid.Free.congr_reverse_comp
 
-instance : Category (FreeGroupoid V) :=
+instance (priority := 10000) : Category (FreeGroupoid V) :=
   Quotient.category redStep
 
 /-- The inverse of an arrow in the free groupoid -/
@@ -133,7 +133,7 @@ def quotInv {X Y : FreeGroupoid V} (f : X ⟶ Y) : Y ⟶ X :=
     Quot.sound <| congr_reverse pp qq con
 #align category_theory.groupoid.free.quot_inv CategoryTheory.Groupoid.Free.quotInv
 
-instance _root_.CategoryTheory.FreeGroupoid.instGroupoid : Groupoid (FreeGroupoid V) where
+instance (priority := 10000) _root_.CategoryTheory.FreeGroupoid.instGroupoid : Groupoid (FreeGroupoid V) where
   inv := quotInv
   inv_comp p := Quot.inductionOn p fun pp => congr_reverse_comp pp
   comp_inv p := Quot.inductionOn p fun pp => congr_comp_reverse pp

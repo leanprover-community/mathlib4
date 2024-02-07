@@ -22,7 +22,7 @@ open Nat
 
 namespace Int
 
-instance instCommRingInt : CommRing ℤ where
+instance (priority := 10000) instCommRingInt : CommRing ℤ where
   zero_mul := Int.zero_mul
   mul_zero := Int.mul_zero
   mul_comm := Int.mul_comm
@@ -82,20 +82,20 @@ lemma cast_Nat_cast [AddGroupWithOne R] : (Int.cast (Nat.cast n) : R) = Nat.cast
 These also prevent non-computable instances like `Int.normedCommRing` being used to construct
 these instances non-computably.
 -/
-instance : AddCommMonoid ℤ    := by infer_instance
-instance : AddMonoid ℤ        := by infer_instance
-instance : Monoid ℤ           := by infer_instance
-instance : CommMonoid ℤ       := by infer_instance
-instance : CommSemigroup ℤ    := by infer_instance
-instance : Semigroup ℤ        := by infer_instance
-instance : AddCommGroup ℤ     := by infer_instance
-instance : AddGroup ℤ         := by infer_instance
-instance : AddCommSemigroup ℤ := by infer_instance
-instance : AddSemigroup ℤ     := by infer_instance
-instance : CommSemiring ℤ     := by infer_instance
-instance : Semiring ℤ         := by infer_instance
-instance instRingInt : Ring ℤ             := by infer_instance
-instance : Distrib ℤ          := by infer_instance
+instance (priority := 10000) : AddCommMonoid ℤ    := by infer_instance
+instance (priority := 10000) : AddMonoid ℤ        := by infer_instance
+instance (priority := 10000) : Monoid ℤ           := by infer_instance
+instance (priority := 10000) : CommMonoid ℤ       := by infer_instance
+instance (priority := 10000) : CommSemigroup ℤ    := by infer_instance
+instance (priority := 10000) : Semigroup ℤ        := by infer_instance
+instance (priority := 10000) : AddCommGroup ℤ     := by infer_instance
+instance (priority := 10000) : AddGroup ℤ         := by infer_instance
+instance (priority := 10000) : AddCommSemigroup ℤ := by infer_instance
+instance (priority := 10000) : AddSemigroup ℤ     := by infer_instance
+instance (priority := 10000) : CommSemiring ℤ     := by infer_instance
+instance (priority := 10000) : Semiring ℤ         := by infer_instance
+instance (priority := 10000) instRingInt : Ring ℤ             := by infer_instance
+instance (priority := 10000) : Distrib ℤ          := by infer_instance
 
 lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
   induction' k with k ih

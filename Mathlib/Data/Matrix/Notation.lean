@@ -124,7 +124,7 @@ variable (a b : ℕ)
 #eval !![1, 2; 3, 4] + !![3, 4; 5, 6]  -- !![4, 6; 8, 10]
 ```
 -/
-instance repr [Repr α] : Repr (Matrix (Fin m) (Fin n) α) where
+instance (priority := 10000) repr [Repr α] : Repr (Matrix (Fin m) (Fin n) α) where
   reprPrec f _p :=
     (Std.Format.bracket "!![" · "]") <|
       (Std.Format.joinSep · (";" ++ Std.Format.line)) <|

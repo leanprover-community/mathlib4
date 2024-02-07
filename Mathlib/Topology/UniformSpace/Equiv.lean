@@ -52,7 +52,7 @@ theorem toEquiv_injective : Function.Injective (toEquiv : α ≃ᵤ β → α �
   | ⟨e, h₁, h₂⟩, ⟨e', h₁', h₂'⟩, h => by simpa only [mk.injEq]
 #align uniform_equiv.to_equiv_injective UniformEquiv.toEquiv_injective
 
-instance : EquivLike (α ≃ᵤ β) α β where
+instance (priority := 10000) : EquivLike (α ≃ᵤ β) α β where
   coe := fun h => h.toEquiv
   inv := fun h => h.toEquiv.symm
   left_inv := fun h => h.left_inv

@@ -145,12 +145,12 @@ namespace NonUnitalSubring
 def toSubsemigroup (s : NonUnitalSubring R) : Subsemigroup R :=
   { s.toNonUnitalSubsemiring.toSubsemigroup with carrier := s.carrier }
 
-instance : SetLike (NonUnitalSubring R) R
+instance (priority := 10000) : SetLike (NonUnitalSubring R) R
     where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : NonUnitalSubringClass (NonUnitalSubring R) R
+instance (priority := 10000) : NonUnitalSubringClass (NonUnitalSubring R) R
     where
   zero_mem s := s.zero_mem'
   add_mem {s} := s.add_mem'
@@ -301,7 +301,7 @@ protected theorem sum_mem {R : Type*} [NonUnitalNonAssocRing R] (s : NonUnitalSu
   sum_mem h
 
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
-instance toNonUnitalRing {R : Type*} [NonUnitalRing R] (s : NonUnitalSubring R) :
+instance (priority := 10000) toNonUnitalRing {R : Type*} [NonUnitalRing R] (s : NonUnitalSubring R) :
     NonUnitalRing s :=
   Subtype.coe_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
@@ -329,7 +329,7 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
   simp
 
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
-instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
+instance (priority := 10000) toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
     NonUnitalCommRing s :=
   Subtype.coe_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
@@ -367,7 +367,7 @@ theorem coe_toNonUnitalSubsemiring (s : NonUnitalSubring R) :
 
 
 /-- The non-unital subring `R` of the ring `R`. -/
-instance : Top (NonUnitalSubring R) :=
+instance (priority := 10000) : Top (NonUnitalSubring R) :=
   ⟨{ (⊤ : Subsemigroup R), (⊤ : AddSubgroup R) with }⟩
 
 @[simp]
@@ -497,7 +497,7 @@ theorem map_range : f.range.map g = (g.comp f).range := by
 /-- The range of a ring homomorphism is a fintype, if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
   presence of `Fintype S`. -/
-instance fintypeRange [Fintype R] [DecidableEq S] (f : R →ₙ+* S) : Fintype (range f) :=
+instance (priority := 10000) fintypeRange [Fintype R] [DecidableEq S] (f : R →ₙ+* S) : Fintype (range f) :=
   Set.fintypeRange f
 
 end NonUnitalRingHom
@@ -514,10 +514,10 @@ variable {F : Type w} {R : Type u} {S : Type v} {T : Type*}
 /-! ## bot -/
 
 
-instance : Bot (NonUnitalSubring R) :=
+instance (priority := 10000) : Bot (NonUnitalSubring R) :=
   ⟨(0 : R →ₙ+* R).range⟩
 
-instance : Inhabited (NonUnitalSubring R) :=
+instance (priority := 10000) : Inhabited (NonUnitalSubring R) :=
   ⟨⊥⟩
 
 theorem coe_bot : ((⊥ : NonUnitalSubring R) : Set R) = {0} :=
@@ -529,7 +529,7 @@ theorem mem_bot {x : R} : x ∈ (⊥ : NonUnitalSubring R) ↔ x = 0 :=
 /-! ## inf -/
 
 /-- The inf of two `NonUnitalSubring`s is their intersection. -/
-instance : Inf (NonUnitalSubring R) :=
+instance (priority := 10000) : Inf (NonUnitalSubring R) :=
   ⟨fun s t =>
     { s.toSubsemigroup ⊓ t.toSubsemigroup, s.toAddSubgroup ⊓ t.toAddSubgroup with
       carrier := s ∩ t }⟩
@@ -543,7 +543,7 @@ theorem coe_inf (p p' : NonUnitalSubring R) :
 theorem mem_inf {p p' : NonUnitalSubring R} {x : R} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 
-instance : InfSet (NonUnitalSubring R) :=
+instance (priority := 10000) : InfSet (NonUnitalSubring R) :=
   ⟨fun s =>
     NonUnitalSubring.mk' (⋂ t ∈ s, ↑t) (⨅ t ∈ s, NonUnitalSubring.toSubsemigroup t)
       (⨅ t ∈ s, NonUnitalSubring.toAddSubgroup t) (by simp) (by simp)⟩
@@ -574,7 +574,7 @@ theorem sInf_toAddSubgroup (s : Set (NonUnitalSubring R)) :
   mk'_toAddSubgroup _ _
 
 /-- `NonUnitalSubring`s of a ring form a complete lattice. -/
-instance : CompleteLattice (NonUnitalSubring R) :=
+instance (priority := 10000) : CompleteLattice (NonUnitalSubring R) :=
   { completeLatticeOfInf (NonUnitalSubring R) fun _s =>
       IsGLB.of_image (@fun _ _ : NonUnitalSubring R => SetLike.coe_subset_coe)
         isGLB_biInf with
@@ -614,7 +614,7 @@ theorem center_toNonUnitalSubsemiring :
   rfl
 
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
+instance (priority := 10000) center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
   { NonUnitalSubsemiring.center.instNonUnitalCommSemiring R,
     inferInstanceAs <| NonUnitalNonAssocRing (center R) with }
 
@@ -631,7 +631,7 @@ example :
 
 theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := Subsemigroup.mem_center_iff
 
-instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
+instance (priority := 10000) decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
   decidable_of_iff' _ mem_center_iff
 
 @[simp]

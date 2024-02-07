@@ -60,7 +60,7 @@ def SupIndep (s : Finset ι) (f : ι → α) : Prop :=
 
 variable {s t : Finset ι} {f : ι → α} {i : ι}
 
-instance [DecidableEq ι] [DecidableEq α] : Decidable (SupIndep s f) := by
+instance (priority := 10000) [DecidableEq ι] [DecidableEq α] : Decidable (SupIndep s f) := by
   refine @Finset.decidableForallOfDecidableSubsets _ _ _ (?_)
   rintro t -
   refine @Finset.decidableDforallFinset _ _ _ (?_)

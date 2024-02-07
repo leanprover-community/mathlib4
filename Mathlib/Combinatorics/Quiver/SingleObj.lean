@@ -36,7 +36,7 @@ def SingleObj (_ : Type*) : Type :=
 #align quiver.single_obj Quiver.SingleObj
 
 -- Porting note: `deriving` from above has been moved to below.
-instance : Unique (SingleObj α) where
+instance (priority := 10000) : Unique (SingleObj α) where
   default := ⟨⟩
   uniq := fun _ => rfl
 
@@ -44,7 +44,7 @@ namespace SingleObj
 
 variable (α β γ : Type*)
 
-instance : Quiver (SingleObj α) :=
+instance (priority := 10000) : Quiver (SingleObj α) :=
   ⟨fun _ _ => α⟩
 
 /-- The single object in `SingleObj α`. -/
@@ -52,7 +52,7 @@ def star : SingleObj α :=
   Unit.unit
 #align quiver.single_obj.star Quiver.SingleObj.star
 
-instance : Inhabited (SingleObj α) :=
+instance (priority := 10000) : Inhabited (SingleObj α) :=
   ⟨star α⟩
 
 variable {α β γ}

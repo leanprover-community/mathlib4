@@ -61,7 +61,7 @@ protected theorem image.fac : Abelian.factorThruImage f ≫ image.ι f = f :=
   kernel.lift_ι _ _ _
 #align category_theory.abelian.image.fac CategoryTheory.Abelian.image.fac
 
-instance mono_factorThruImage [Mono f] : Mono (Abelian.factorThruImage f) :=
+instance (priority := 10000) mono_factorThruImage [Mono f] : Mono (Abelian.factorThruImage f) :=
   mono_of_mono_fac <| image.fac f
 #align category_theory.abelian.mono_factor_thru_image CategoryTheory.Abelian.mono_factorThruImage
 
@@ -89,7 +89,7 @@ protected theorem coimage.fac : coimage.π f ≫ Abelian.factorThruCoimage f = f
   cokernel.π_desc _ _ _
 #align category_theory.abelian.coimage.fac CategoryTheory.Abelian.coimage.fac
 
-instance epi_factorThruCoimage [Epi f] : Epi (Abelian.factorThruCoimage f) :=
+instance (priority := 10000) epi_factorThruCoimage [Epi f] : Epi (Abelian.factorThruCoimage f) :=
   epi_of_epi_fac <| coimage.fac f
 #align category_theory.abelian.epi_factor_thru_coimage CategoryTheory.Abelian.epi_factorThruCoimage
 

@@ -101,20 +101,20 @@ structure FilterBasis (α : Type*) where
   inter_sets {x y} : x ∈ sets → y ∈ sets → ∃ z ∈ sets, z ⊆ x ∩ y
 #align filter_basis FilterBasis
 
-instance FilterBasis.nonempty_sets (B : FilterBasis α) : Nonempty B.sets :=
+instance (priority := 10000) FilterBasis.nonempty_sets (B : FilterBasis α) : Nonempty B.sets :=
   B.nonempty.to_subtype
 #align filter_basis.nonempty_sets FilterBasis.nonempty_sets
 
 -- porting note: this instance was reducible but it doesn't work the same way in Lean 4
 /-- If `B` is a filter basis on `α`, and `U` a subset of `α` then we can write `U ∈ B` as
 on paper. -/
-instance {α : Type*} : Membership (Set α) (FilterBasis α) :=
+instance (priority := 10000) {α : Type*} : Membership (Set α) (FilterBasis α) :=
   ⟨fun U B => U ∈ B.sets⟩
 
 @[simp] theorem FilterBasis.mem_sets {s : Set α} {B : FilterBasis α} : s ∈ B.sets ↔ s ∈ B := Iff.rfl
 
 -- For illustration purposes, the filter basis defining `(atTop : Filter ℕ)`
-instance : Inhabited (FilterBasis ℕ) :=
+instance (priority := 10000) : Inhabited (FilterBasis ℕ) :=
   ⟨{  sets := range Ici
       nonempty := ⟨Ici 0, mem_range_self 0⟩
       inter_sets := by
@@ -1016,7 +1016,7 @@ structure CountableFilterBasis (α : Type*) extends FilterBasis α where
 #align filter.countable_filter_basis Filter.CountableFilterBasis
 
 -- For illustration purposes, the countable filter basis defining `(atTop : Filter ℕ)`
-instance Nat.inhabitedCountableFilterBasis : Inhabited (CountableFilterBasis ℕ) :=
+instance (priority := 10000) Nat.inhabitedCountableFilterBasis : Inhabited (CountableFilterBasis ℕ) :=
   ⟨⟨default, countable_range fun n => Ici n⟩⟩
 #align filter.nat.inhabited_countable_filter_basis Filter.Nat.inhabitedCountableFilterBasis
 
@@ -1117,26 +1117,26 @@ theorem exists_antitone_seq (f : Filter α) [f.IsCountablyGenerated] :
   ⟨x, hx.antitone, by simp [hx.1.mem_iff]⟩
 #align filter.exists_antitone_seq Filter.exists_antitone_seq
 
-instance Inf.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
+instance (priority := 10000) Inf.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
     [IsCountablyGenerated g] : IsCountablyGenerated (f ⊓ g) := by
   rcases f.exists_antitone_basis with ⟨s, hs⟩
   rcases g.exists_antitone_basis with ⟨t, ht⟩
   exact HasCountableBasis.isCountablyGenerated ⟨hs.1.inf ht.1, Set.to_countable _⟩
 #align filter.inf.is_countably_generated Filter.Inf.isCountablyGenerated
 
-instance map.isCountablyGenerated (l : Filter α) [l.IsCountablyGenerated] (f : α → β) :
+instance (priority := 10000) map.isCountablyGenerated (l : Filter α) [l.IsCountablyGenerated] (f : α → β) :
     (map f l).IsCountablyGenerated :=
   let ⟨_x, hxl⟩ := l.exists_antitone_basis
   HasCountableBasis.isCountablyGenerated ⟨hxl.map.1, to_countable _⟩
 #align filter.map.is_countably_generated Filter.map.isCountablyGenerated
 
-instance comap.isCountablyGenerated (l : Filter β) [l.IsCountablyGenerated] (f : α → β) :
+instance (priority := 10000) comap.isCountablyGenerated (l : Filter β) [l.IsCountablyGenerated] (f : α → β) :
     (comap f l).IsCountablyGenerated :=
   let ⟨_x, hxl⟩ := l.exists_antitone_basis
   HasCountableBasis.isCountablyGenerated ⟨hxl.1.comap _, to_countable _⟩
 #align filter.comap.is_countably_generated Filter.comap.isCountablyGenerated
 
-instance Sup.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
+instance (priority := 10000) Sup.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
     [IsCountablyGenerated g] : IsCountablyGenerated (f ⊔ g) := by
   rcases f.exists_antitone_basis with ⟨s, hs⟩
   rcases g.exists_antitone_basis with ⟨t, ht⟩
@@ -1144,12 +1144,12 @@ instance Sup.isCountablyGenerated (f g : Filter α) [IsCountablyGenerated f]
     HasCountableBasis.isCountablyGenerated ⟨hs.1.sup ht.1, Set.to_countable _⟩
 #align filter.sup.is_countably_generated Filter.Sup.isCountablyGenerated
 
-instance prod.isCountablyGenerated (la : Filter α) (lb : Filter β) [IsCountablyGenerated la]
+instance (priority := 10000) prod.isCountablyGenerated (la : Filter α) (lb : Filter β) [IsCountablyGenerated la]
     [IsCountablyGenerated lb] : IsCountablyGenerated (la ×ˢ lb) :=
   Filter.Inf.isCountablyGenerated _ _
 #align filter.prod.is_countably_generated Filter.prod.isCountablyGenerated
 
-instance coprod.isCountablyGenerated (la : Filter α) (lb : Filter β) [IsCountablyGenerated la]
+instance (priority := 10000) coprod.isCountablyGenerated (la : Filter α) (lb : Filter β) [IsCountablyGenerated la]
     [IsCountablyGenerated lb] : IsCountablyGenerated (la.coprod lb) :=
   Filter.Sup.isCountablyGenerated _ _
 #align filter.coprod.is_countably_generated Filter.coprod.isCountablyGenerated
@@ -1207,7 +1207,7 @@ theorem isCountablyGenerated_top : IsCountablyGenerated (⊤ : Filter α) :=
 -- porting note: without explicit `Sort u` and `Type v`, Lean 4 uses `ι : Prop`
 universe u v
 
-instance iInf.isCountablyGenerated {ι : Sort u} {α : Type v} [Countable ι] (f : ι → Filter α)
+instance (priority := 10000) iInf.isCountablyGenerated {ι : Sort u} {α : Type v} [Countable ι] (f : ι → Filter α)
     [∀ i, IsCountablyGenerated (f i)] : IsCountablyGenerated (⨅ i, f i) := by
   choose s hs using fun i => exists_antitone_basis (f i)
   rw [← PLift.down_surjective.iInf_comp]

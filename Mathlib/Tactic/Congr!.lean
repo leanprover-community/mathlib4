@@ -423,7 +423,7 @@ def Lean.MVarId.congrImplies?' (mvarId : MVarId) : MetaM (Option (List MVarId)) 
 
 /--
 Try to apply `Subsingleton.helim` if the goal is a `HEq`. Tries synthesizing a `Subsingleton`
-instance for both the LHS and the RHS.
+instance (priority := 10000) for both the LHS and the RHS.
 
 If successful, this reduces proving `@HEq α x β y` to proving `α = β`.
 -/

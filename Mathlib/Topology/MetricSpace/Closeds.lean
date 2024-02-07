@@ -41,7 +41,7 @@ variable {α : Type u} [EMetricSpace α] {s : Set α}
 
 /-- In emetric spaces, the Hausdorff edistance defines an emetric space structure
 on the type of closed subsets -/
-instance Closeds.emetricSpace : EMetricSpace (Closeds α) where
+instance (priority := 10000) Closeds.emetricSpace : EMetricSpace (Closeds α) where
   edist s t := hausdorffEdist (s : Set α) t
   edist_self s := hausdorffEdist_self
   edist_comm s t := hausdorffEdist_comm
@@ -92,7 +92,7 @@ theorem Closeds.edist_eq {s t : Closeds α} : edist s t = hausdorffEdist (s : Se
 
 /-- In a complete space, the type of closed subsets is complete for the
 Hausdorff edistance. -/
-instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
+instance (priority := 10000) Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
   /- We will show that, if a sequence of sets `s n` satisfies
     `edist (s n) (s (n+1)) < 2^{-n}`, then it converges. This is enough to guarantee
     completeness, by a standard completeness criterion.
@@ -192,7 +192,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
 #align emetric.closeds.complete_space EMetric.Closeds.completeSpace
 
 /-- In a compact space, the type of closed subsets is compact. -/
-instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
+instance (priority := 10000) Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
   ⟨by
     /- by completeness, it suffices to show that it is totally bounded,
         i.e., for all ε>0, there is a finite set which is ε-dense.
@@ -242,7 +242,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
 
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
-instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) where
+instance (priority := 10000) NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) where
   edist s t := hausdorffEdist (s : Set α) t
   edist_self s := hausdorffEdist_self
   edist_comm s t := hausdorffEdist_comm
@@ -299,7 +299,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
 
 /-- In a complete space, the type of nonempty compact subsets is complete. This follows
 from the same statement for closed subsets -/
-instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
+instance (priority := 10000) NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
   (completeSpace_iff_isComplete_range
         NonemptyCompacts.ToCloseds.uniformEmbedding.toUniformInducing).2 <|
     NonemptyCompacts.isClosed_in_closeds.isComplete
@@ -307,7 +307,7 @@ instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (None
 
 /-- In a compact space, the type of nonempty compact subsets is compact. This follows from
 the same statement for closed subsets -/
-instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
+instance (priority := 10000) NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
     rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff]
     rw [image_univ]
@@ -315,7 +315,7 @@ instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (Nonempt
 #align emetric.nonempty_compacts.compact_space EMetric.NonemptyCompacts.compactSpace
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/
-instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
+instance (priority := 10000) NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
     SecondCountableTopology (NonemptyCompacts α) :=
   haveI : SeparableSpace (NonemptyCompacts α) := by
     /- To obtain a countable dense subset of `NonemptyCompacts α`, start from
@@ -405,7 +405,7 @@ variable {α : Type u} [MetricSpace α]
 
 /-- `NonemptyCompacts α` inherits a metric space structure, as the Hausdorff
 edistance between two such sets is finite. -/
-instance NonemptyCompacts.metricSpace : MetricSpace (NonemptyCompacts α) :=
+instance (priority := 10000) NonemptyCompacts.metricSpace : MetricSpace (NonemptyCompacts α) :=
   EMetricSpace.toMetricSpace fun x y =>
     hausdorffEdist_ne_top_of_nonempty_of_bounded x.nonempty y.nonempty x.isCompact.isBounded
       y.isCompact.isBounded

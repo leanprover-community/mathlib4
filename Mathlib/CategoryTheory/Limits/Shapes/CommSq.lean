@@ -623,7 +623,7 @@ theorem of_hasBinaryBiproduct (X Y : C) [HasBinaryBiproduct X Y] :
   of_is_bilimit' (BinaryBiproduct.isBilimit X Y)
 #align category_theory.is_pullback.of_has_binary_biproduct CategoryTheory.IsPullback.of_hasBinaryBiproduct
 
-instance hasPullback_biprod_fst_biprod_snd [HasBinaryBiproduct X Y] :
+instance (priority := 10000) hasPullback_biprod_fst_biprod_snd [HasBinaryBiproduct X Y] :
     HasPullback (biprod.inl : X ⟶ _) (biprod.inr : Y ⟶ _) :=
   HasLimit.mk ⟨_, (of_hasBinaryBiproduct X Y).isLimit⟩
 #align category_theory.is_pullback.has_pullback_biprod_fst_biprod_snd CategoryTheory.IsPullback.hasPullback_biprod_fst_biprod_snd
@@ -833,7 +833,7 @@ theorem of_hasBinaryBiproduct (X Y : C) [HasBinaryBiproduct X Y] :
   of_is_bilimit' (BinaryBiproduct.isBilimit X Y)
 #align category_theory.is_pushout.of_has_binary_biproduct CategoryTheory.IsPushout.of_hasBinaryBiproduct
 
-instance hasPushout_biprod_fst_biprod_snd [HasBinaryBiproduct X Y] :
+instance (priority := 10000) hasPushout_biprod_fst_biprod_snd [HasBinaryBiproduct X Y] :
     HasPushout (biprod.fst : _ ⟶ X) (biprod.snd : _ ⟶ Y) :=
   HasColimit.mk ⟨_, (of_hasBinaryBiproduct X Y).isColimit⟩
 #align category_theory.is_pushout.has_pushout_biprod_fst_biprod_snd CategoryTheory.IsPushout.hasPushout_biprod_fst_biprod_snd

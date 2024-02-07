@@ -235,17 +235,17 @@ namespace OrderDual
 
 variable (α)
 
-instance top [Bot α] : Top αᵒᵈ :=
+instance (priority := 10000) top [Bot α] : Top αᵒᵈ :=
   ⟨(⊥ : α)⟩
 
-instance bot [Top α] : Bot αᵒᵈ :=
+instance (priority := 10000) bot [Top α] : Bot αᵒᵈ :=
   ⟨(⊤ : α)⟩
 
-instance orderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
+instance (priority := 10000) orderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
   __ := inferInstanceAs (Top αᵒᵈ)
   le_top := @bot_le α _ _
 
-instance orderBot [LE α] [OrderTop α] : OrderBot αᵒᵈ where
+instance (priority := 10000) orderBot [LE α] [OrderTop α] : OrderBot αᵒᵈ where
   __ := inferInstanceAs (Bot αᵒᵈ)
   bot_le := @le_top α _ _
 
@@ -479,20 +479,20 @@ end SemilatticeInfBot
 class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
 #align bounded_order BoundedOrder
 
-instance OrderDual.boundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
+instance (priority := 10000) OrderDual.boundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
   __ := inferInstanceAs (OrderTop αᵒᵈ)
   __ := inferInstanceAs (OrderBot αᵒᵈ)
 
 section PartialOrder
 variable [PartialOrder α]
 
-instance OrderBot.instSubsingleton : Subsingleton (OrderBot α) where
+instance (priority := 10000) OrderBot.instSubsingleton : Subsingleton (OrderBot α) where
   allEq := by rintro @⟨⟨a⟩, ha⟩ @⟨⟨b⟩, hb⟩; congr; exact le_antisymm (ha _) (hb _)
 
-instance OrderTop.instSubsingleton : Subsingleton (OrderTop α) where
+instance (priority := 10000) OrderTop.instSubsingleton : Subsingleton (OrderTop α) where
   allEq := by rintro @⟨⟨a⟩, ha⟩ @⟨⟨b⟩, hb⟩; congr; exact le_antisymm (hb _) (ha _)
 
-instance BoundedOrder.instSubsingleton : Subsingleton (BoundedOrder α) where
+instance (priority := 10000) BoundedOrder.instSubsingleton : Subsingleton (BoundedOrder α) where
   allEq := by rintro ⟨⟩ ⟨⟩; congr <;> exact Subsingleton.elim _ _
 
 end PartialOrder
@@ -598,7 +598,7 @@ namespace Pi
 
 variable {ι : Type*} {α' : ι → Type*}
 
-instance [∀ i, Bot (α' i)] : Bot (∀ i, α' i) :=
+instance (priority := 10000) [∀ i, Bot (α' i)] : Bot (∀ i, α' i) :=
   ⟨fun _ => ⊥⟩
 
 @[simp]
@@ -610,7 +610,7 @@ theorem bot_def [∀ i, Bot (α' i)] : (⊥ : ∀ i, α' i) = fun _ => ⊥ :=
   rfl
 #align pi.bot_def Pi.bot_def
 
-instance [∀ i, Top (α' i)] : Top (∀ i, α' i) :=
+instance (priority := 10000) [∀ i, Top (α' i)] : Top (∀ i, α' i) :=
   ⟨fun _ => ⊤⟩
 
 @[simp]
@@ -622,13 +622,13 @@ theorem top_def [∀ i, Top (α' i)] : (⊤ : ∀ i, α' i) = fun _ => ⊤ :=
   rfl
 #align pi.top_def Pi.top_def
 
-instance orderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
+instance (priority := 10000) orderTop [∀ i, LE (α' i)] [∀ i, OrderTop (α' i)] : OrderTop (∀ i, α' i) :=
   { inferInstanceAs (Top (∀ i, α' i)) with le_top := fun _ _ => le_top }
 
-instance orderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
+instance (priority := 10000) orderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (∀ i, α' i) :=
   { inferInstanceAs (Bot (∀ i, α' i)) with bot_le := fun _ _ => bot_le }
 
-instance boundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
+instance (priority := 10000) boundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] : BoundedOrder (∀ i, α' i) where
   __ := inferInstanceAs (OrderTop (∀ i, α' i))
   __ := inferInstanceAs (OrderBot (∀ i, α' i))
 
@@ -778,10 +778,10 @@ namespace Prod
 
 variable (α β)
 
-instance top [Top α] [Top β] : Top (α × β) :=
+instance (priority := 10000) top [Top α] [Top β] : Top (α × β) :=
   ⟨⟨⊤, ⊤⟩⟩
 
-instance bot [Bot α] [Bot β] : Bot (α × β) :=
+instance (priority := 10000) bot [Bot α] [Bot β] : Bot (α × β) :=
   ⟨⟨⊥, ⊥⟩⟩
 
 theorem fst_top [Top α] [Top β] : (⊤ : α × β).fst = ⊤ := rfl
@@ -789,15 +789,15 @@ theorem snd_top [Top α] [Top β] : (⊤ : α × β).snd = ⊤ := rfl
 theorem fst_bot [Bot α] [Bot β] : (⊥ : α × β).fst = ⊥ := rfl
 theorem snd_bot [Bot α] [Bot β] : (⊥ : α × β).snd = ⊥ := rfl
 
-instance orderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
+instance (priority := 10000) orderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
   __ := inferInstanceAs (Top (α × β))
   le_top _ := ⟨le_top, le_top⟩
 
-instance orderBot [LE α] [LE β] [OrderBot α] [OrderBot β] : OrderBot (α × β) where
+instance (priority := 10000) orderBot [LE α] [LE β] [OrderBot α] [OrderBot β] : OrderBot (α × β) where
   __ := inferInstanceAs (Bot (α × β))
   bot_le _ := ⟨bot_le, bot_le⟩
 
-instance boundedOrder [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] : BoundedOrder (α × β) where
+instance (priority := 10000) boundedOrder [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] : BoundedOrder (α × β) where
   __ := inferInstanceAs (OrderTop (α × β))
   __ := inferInstanceAs (OrderBot (α × β))
 
@@ -805,23 +805,23 @@ end Prod
 
 namespace ULift
 
-instance [Top α] : Top (ULift.{v} α) where top := up ⊤
+instance (priority := 10000) [Top α] : Top (ULift.{v} α) where top := up ⊤
 
 @[simp] theorem up_top [Top α] : up (⊤ : α) = ⊤ := rfl
 @[simp] theorem down_top [Top α] : down (⊤ : ULift α) = ⊤ := rfl
 
-instance [Bot α] : Bot (ULift.{v} α) where bot := up ⊥
+instance (priority := 10000) [Bot α] : Bot (ULift.{v} α) where bot := up ⊥
 
 @[simp] theorem up_bot [Bot α] : up (⊥ : α) = ⊥ := rfl
 @[simp] theorem down_bot [Bot α] : down (⊥ : ULift α) = ⊥ := rfl
 
-instance [LE α] [OrderBot α] : OrderBot (ULift.{v} α) :=
+instance (priority := 10000) [LE α] [OrderBot α] : OrderBot (ULift.{v} α) :=
   OrderBot.lift ULift.down (fun _ _ => down_le.mp) down_bot
 
-instance [LE α] [OrderTop α] : OrderTop (ULift.{v} α) :=
+instance (priority := 10000) [LE α] [OrderTop α] : OrderTop (ULift.{v} α) :=
   OrderTop.lift ULift.down (fun _ _ => down_le.mp) down_top
 
-instance [LE α] [BoundedOrder α] : BoundedOrder (ULift.{v} α) where
+instance (priority := 10000) [LE α] [BoundedOrder α] : BoundedOrder (ULift.{v} α) where
 
 end ULift
 
@@ -908,7 +908,7 @@ section Bool
 
 open Bool
 
-instance Bool.boundedOrder : BoundedOrder Bool where
+instance (priority := 10000) Bool.boundedOrder : BoundedOrder Bool where
   top := true
   le_top := Bool.le_true
   bot := false

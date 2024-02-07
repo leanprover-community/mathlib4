@@ -57,24 +57,24 @@ namespace LieSubmodule
 variable {R L M}
 variable (N N' : LieSubmodule R L M)
 
-instance : SetLike (LieSubmodule R L M) M where
+instance (priority := 10000) : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
   coe_injective' N O h := by cases N; cases O; congr; exact SetLike.coe_injective' h
 
-instance : AddSubgroupClass (LieSubmodule R L M) M where
+instance (priority := 10000) : AddSubgroupClass (LieSubmodule R L M) M where
   add_mem {N} _ _ := N.add_mem'
   zero_mem N := N.zero_mem'
   neg_mem {N} x hx := show -x ∈ N.toSubmodule from neg_mem hx
 
 /-- The zero module is a Lie submodule of any Lie module. -/
-instance : Zero (LieSubmodule R L M) :=
+instance (priority := 10000) : Zero (LieSubmodule R L M) :=
   ⟨{ (0 : Submodule R M) with
       lie_mem := fun {x m} h ↦ by rw [(Submodule.mem_bot R).1 h]; apply lie_zero }⟩
 
-instance : Inhabited (LieSubmodule R L M) :=
+instance (priority := 10000) : Inhabited (LieSubmodule R L M) :=
   ⟨0⟩
 
-instance coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
+instance (priority := 10000) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 #align lie_submodule.coe_submodule LieSubmodule.coeSubmodule
 
@@ -167,25 +167,25 @@ theorem copy_eq (S : LieSubmodule R L M) (s : Set M) (hs : s = ↑S) : S.copy s 
   SetLike.coe_injective hs
 #align lie_submodule.copy_eq LieSubmodule.copy_eq
 
-instance : LieRingModule L N where
+instance (priority := 10000) : LieRingModule L N where
   bracket (x : L) (m : N) := ⟨⁅x, m.val⁆, N.lie_mem m.property⟩
   add_lie := by intro x y m; apply SetCoe.ext; apply add_lie
   lie_add := by intro x m n; apply SetCoe.ext; apply lie_add
   leibniz_lie := by intro x y m; apply SetCoe.ext; apply leibniz_lie
 
-instance module' {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
+instance (priority := 10000) module' {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S N :=
   N.toSubmodule.module'
 #align lie_submodule.module' LieSubmodule.module'
 
-instance : Module R N :=
+instance (priority := 10000) : Module R N :=
   N.toSubmodule.module
 
-instance {S : Type*} [Semiring S] [SMul S R] [SMul Sᵐᵒᵖ R] [Module S M] [Module Sᵐᵒᵖ M]
+instance (priority := 10000) {S : Type*} [Semiring S] [SMul S R] [SMul Sᵐᵒᵖ R] [Module S M] [Module Sᵐᵒᵖ M]
     [IsScalarTower S R M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S N :=
   N.toSubmodule.isCentralScalar
 
-instance instLieModule : LieModule R L N where
+instance (priority := 10000) instLieModule : LieModule R L N where
   lie_smul := by intro t x y; apply SetCoe.ext; apply lie_smul
   smul_lie := by intro t x y; apply SetCoe.ext; apply smul_lie
 
@@ -241,7 +241,7 @@ def lieIdealSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
 #align lie_ideal_subalgebra lieIdealSubalgebra
 
-instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
+instance (priority := 10000) : Coe (LieIdeal R L) (LieSubalgebra R L) :=
   ⟨lieIdealSubalgebra R L⟩
 
 @[simp]
@@ -256,17 +256,17 @@ theorem LieIdeal.coe_to_lieSubalgebra_to_submodule (I : LieIdeal R L) :
 #align lie_ideal.coe_to_lie_subalgebra_to_submodule LieIdeal.coe_to_lieSubalgebra_to_submodule
 
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
-instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
+instance (priority := 10000) LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
   LieSubalgebra.lieRing R L ↑I
 #align lie_ideal.lie_ring LieIdeal.lieRing
 
 /-- Transfer the `LieAlgebra` instance from the coercion `LieIdeal → LieSubalgebra`. -/
-instance LieIdeal.lieAlgebra (I : LieIdeal R L) : LieAlgebra R I :=
+instance (priority := 10000) LieIdeal.lieAlgebra (I : LieIdeal R L) : LieAlgebra R I :=
   LieSubalgebra.lieAlgebra R L ↑I
 #align lie_ideal.lie_algebra LieIdeal.lieAlgebra
 
 /-- Transfer the `LieRingModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
-instance LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+instance (priority := 10000) LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) [LieRingModule L M] : LieRingModule I M :=
   LieSubalgebra.lieRingModule (I : LieSubalgebra R L)
 #align lie_ideal.lie_ring_module LieIdeal.lieRingModule
@@ -278,7 +278,7 @@ theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [L
 #align lie_ideal.coe_bracket_of_module LieIdeal.coe_bracket_of_module
 
 /-- Transfer the `LieModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
-instance LieIdeal.lieModule (I : LieIdeal R L) : LieModule R I M :=
+instance (priority := 10000) LieIdeal.lieModule (I : LieIdeal R L) : LieModule R I M :=
   LieSubalgebra.lieModule (I : LieSubalgebra R L)
 #align lie_ideal.lie_module LieIdeal.lieModule
 
@@ -357,7 +357,7 @@ theorem coeSubmodule_le_coeSubmodule : (N : Submodule R M) ≤ N' ↔ N ≤ N' :
   Iff.rfl
 #align lie_submodule.coe_submodule_le_coe_submodule LieSubmodule.coeSubmodule_le_coeSubmodule
 
-instance : Bot (LieSubmodule R L M) :=
+instance (priority := 10000) : Bot (LieSubmodule R L M) :=
   ⟨0⟩
 
 @[simp]
@@ -379,7 +379,7 @@ theorem mem_bot (x : M) : x ∈ (⊥ : LieSubmodule R L M) ↔ x = 0 :=
   mem_singleton_iff
 #align lie_submodule.mem_bot LieSubmodule.mem_bot
 
-instance : Top (LieSubmodule R L M) :=
+instance (priority := 10000) : Top (LieSubmodule R L M) :=
   ⟨{ (⊤ : Submodule R M) with lie_mem := fun {x m} _ ↦ mem_univ ⁅x, m⁆ }⟩
 
 @[simp]
@@ -401,12 +401,12 @@ theorem mem_top (x : M) : x ∈ (⊤ : LieSubmodule R L M) :=
   mem_univ x
 #align lie_submodule.mem_top LieSubmodule.mem_top
 
-instance : Inf (LieSubmodule R L M) :=
+instance (priority := 10000) : Inf (LieSubmodule R L M) :=
   ⟨fun N N' ↦
     { (N ⊓ N' : Submodule R M) with
       lie_mem := fun h ↦ mem_inter (N.lie_mem h.1) (N'.lie_mem h.2) }⟩
 
-instance : InfSet (LieSubmodule R L M) :=
+instance (priority := 10000) : InfSet (LieSubmodule R L M) :=
   ⟨fun S ↦
     { toSubmodule := sInf {(s : Submodule R M) | s ∈ S}
       lie_mem := fun {x m} h ↦ by
@@ -456,7 +456,7 @@ theorem iInf_coe {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M
 theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
   rw [← SetLike.mem_coe, iInf_coe, Set.mem_iInter]; rfl
 
-instance : Sup (LieSubmodule R L M) where
+instance (priority := 10000) : Sup (LieSubmodule R L M) where
   sup N N' :=
     { toSubmodule := (N : Submodule R M) ⊔ (N' : Submodule R M)
       lie_mem := by
@@ -466,7 +466,7 @@ instance : Sup (LieSubmodule R L M) where
         obtain ⟨y, hy, z, hz, rfl⟩ := hm
         exact ⟨⁅x, y⁆, N.lie_mem hy, ⁅x, z⁆, N'.lie_mem hz, (lie_add _ _ _).symm⟩ }
 
-instance : SupSet (LieSubmodule R L M) where
+instance (priority := 10000) : SupSet (LieSubmodule R L M) where
   sSup S :=
     { toSubmodule := sSup {(p : Submodule R M) | p ∈ S}
       lie_mem := by
@@ -507,7 +507,7 @@ theorem iSup_coe_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
   rw [iSup, sSup_coe_toSubmodule]; ext; simp [Submodule.mem_sSup, Submodule.mem_iSup]
 
 /-- The set of Lie submodules of a Lie module form a complete lattice. -/
-instance : CompleteLattice (LieSubmodule R L M) :=
+instance (priority := 10000) : CompleteLattice (LieSubmodule R L M) :=
   { coeSubmodule_injective.completeLattice toSubmodule sup_coe_toSubmodule inf_coe_toSubmodule
       sSup_coe_toSubmodule' sInf_coe_toSubmodule' rfl rfl with
     toPartialOrder := SetLike.instPartialOrder }
@@ -553,7 +553,7 @@ theorem iSup_eq_top_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R 
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
   rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
 
-instance : AddCommMonoid (LieSubmodule R L M) where
+instance (priority := 10000) : AddCommMonoid (LieSubmodule R L M) where
   add := (· ⊔ ·)
   add_assoc _ _ _ := sup_assoc
   zero := ⊥
@@ -579,13 +579,13 @@ theorem mem_sup (x : M) : x ∈ N ⊔ N' ↔ ∃ y ∈ N, ∃ z ∈ N', y + z = 
 nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [eq_bot_iff]; exact Iff.rfl
 #align lie_submodule.eq_bot_iff LieSubmodule.eq_bot_iff
 
-instance subsingleton_of_bot : Subsingleton (LieSubmodule R L ↑(⊥ : LieSubmodule R L M)) := by
+instance (priority := 10000) subsingleton_of_bot : Subsingleton (LieSubmodule R L ↑(⊥ : LieSubmodule R L M)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [Submodule.mem_bot] at hx; subst hx
   simp only [true_iff_iff, eq_self_iff_true, Submodule.mk_eq_zero, LieSubmodule.mem_bot, mem_top]
 #align lie_submodule.subsingleton_of_bot LieSubmodule.subsingleton_of_bot
 
-instance : IsModularLattice (LieSubmodule R L M) where
+instance (priority := 10000) : IsModularLattice (LieSubmodule R L M) where
   sup_inf_le_assoc_of_le _ _ := by
     simp only [← coeSubmodule_le_coeSubmodule, sup_coe_toSubmodule, inf_coe_toSubmodule]
     exact IsModularLattice.sup_inf_le_assoc_of_le _
@@ -624,7 +624,7 @@ theorem nontrivial_iff : Nontrivial (LieSubmodule R L M) ↔ Nontrivial M :=
       not_nontrivial_iff_subsingleton.symm)
 #align lie_submodule.nontrivial_iff LieSubmodule.nontrivial_iff
 
-instance [Nontrivial M] : Nontrivial (LieSubmodule R L M) :=
+instance (priority := 10000) [Nontrivial M] : Nontrivial (LieSubmodule R L M) :=
   (nontrivial_iff R L M).mpr ‹_›
 
 theorem nontrivial_iff_ne_bot {N : LieSubmodule R L M} : Nontrivial N ↔ N ≠ ⊥ := by
@@ -791,7 +791,7 @@ lemma sSup_image_lieSpan_singleton : sSup ((fun x ↦ lieSpan R L {x}) '' N) = N
   replace hN' : ∀ m ∈ N, lieSpan R L {m} ≤ N' := by simpa using hN'
   exact hN' _ hm (subset_lieSpan rfl)
 
-instance instIsCompactlyGenerated : IsCompactlyGenerated (LieSubmodule R L M) :=
+instance (priority := 10000) instIsCompactlyGenerated : IsCompactlyGenerated (LieSubmodule R L M) :=
   ⟨fun N ↦ ⟨(fun x ↦ lieSpan R L {x}) '' N, fun _ ⟨m, _, hm⟩ ↦
     hm ▸ isCompactElement_lieSpan_singleton R L m, N.sSup_image_lieSpan_singleton⟩⟩
 
@@ -1071,7 +1071,7 @@ different (though the latter does naturally inject into the former).
 
 In other words, in general, ideals of `I`, regarded as a Lie algebra in its own right, are not the
 same as ideals of `L` contained in `I`. -/
-instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
+instance (priority := 10000) subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩
   rw [LieSubmodule.bot_coeSubmodule, Submodule.mem_bot] at hx

@@ -238,7 +238,7 @@ protected def Function.Surjective.hasDistribNeg [Neg β] [Mul β] (f : α → β
 
 namespace AddOpposite
 
-instance : HasDistribNeg αᵃᵒᵖ :=
+instance (priority := 10000) : HasDistribNeg αᵃᵒᵖ :=
   unop_injective.hasDistribNeg _ unop_neg unop_mul
 
 end AddOpposite

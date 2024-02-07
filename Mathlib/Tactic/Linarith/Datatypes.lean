@@ -152,9 +152,9 @@ def toConstMulName : Ineq → Name
   | le => ``mul_nonpos
   | eq => ``mul_eq
 
-instance : ToString Ineq := ⟨toString⟩
+instance (priority := 10000) : ToString Ineq := ⟨toString⟩
 
-instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
+instance (priority := 10000) : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
 
 end Ineq
 
@@ -208,7 +208,7 @@ that is, it represents the fact `0 < 0`.
  -/
 def Comp.isContr (c : Comp) : Bool := c.coeffs.isEmpty && c.str = Ineq.lt
 
-instance Comp.ToFormat : ToFormat Comp :=
+instance (priority := 10000) Comp.ToFormat : ToFormat Comp :=
   ⟨fun p => format p.coeffs ++ toString p.str ++ "0"⟩
 
 /-! ### Parsing into linear form -/
@@ -290,11 +290,11 @@ def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
       linarithTraceProofs m!"Preprocessing: {pp.name}" hyps
   return branches
 
-instance PreprocessorToGlobalBranchingPreprocessor :
+instance (priority := 10000) PreprocessorToGlobalBranchingPreprocessor :
     Coe Preprocessor GlobalBranchingPreprocessor :=
   ⟨GlobalPreprocessor.branching ∘ Preprocessor.globalize⟩
 
-instance GlobalPreprocessorToGlobalBranchingPreprocessor :
+instance (priority := 10000) GlobalPreprocessorToGlobalBranchingPreprocessor :
     Coe GlobalPreprocessor GlobalBranchingPreprocessor :=
   ⟨GlobalPreprocessor.branching⟩
 

@@ -60,7 +60,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G]
 variable {U V : OpenSubgroup G} {g : G}
 
 @[to_additive]
-instance hasCoeSubgroup : CoeTC (OpenSubgroup G) (Subgroup G) :=
+instance (priority := 10000) hasCoeSubgroup : CoeTC (OpenSubgroup G) (Subgroup G) :=
   ⟨toSubgroup⟩
 #align open_subgroup.has_coe_subgroup OpenSubgroup.hasCoeSubgroup
 #align open_add_subgroup.has_coe_add_subgroup OpenAddSubgroup.hasCoeAddSubgroup
@@ -72,12 +72,12 @@ theorem toSubgroup_injective : Injective ((↑) : OpenSubgroup G → Subgroup G)
 #align open_add_subgroup.coe_add_subgroup_injective OpenAddSubgroup.toAddSubgroup_injective
 
 @[to_additive]
-instance : SetLike (OpenSubgroup G) G where
+instance (priority := 10000) : SetLike (OpenSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive]
-instance : SubgroupClass (OpenSubgroup G) G where
+instance (priority := 10000) : SubgroupClass (OpenSubgroup G) G where
   mul_mem := Subsemigroup.mul_mem' _
   one_mem U := U.one_mem'
   inv_mem := Subgroup.inv_mem' _
@@ -87,7 +87,7 @@ instance : SubgroupClass (OpenSubgroup G) G where
 def toOpens (U : OpenSubgroup G) : Opens G := ⟨U, U.isOpen'⟩
 
 @[to_additive]
-instance hasCoeOpens : CoeTC (OpenSubgroup G) (Opens G) := ⟨toOpens⟩
+instance (priority := 10000) hasCoeOpens : CoeTC (OpenSubgroup G) (Opens G) := ⟨toOpens⟩
 #align open_subgroup.has_coe_opens OpenSubgroup.hasCoeOpens
 #align open_add_subgroup.has_coe_opens OpenAddSubgroup.hasCoeOpens
 
@@ -161,7 +161,7 @@ theorem toOpens_top : ((⊤ : OpenSubgroup G) : Opens G) = ⊤ :=
 #align open_add_subgroup.coe_opens_top OpenAddSubgroup.toOpens_top
 
 @[to_additive]
-instance : Inhabited (OpenSubgroup G) :=
+instance (priority := 10000) : Inhabited (OpenSubgroup G) :=
   ⟨⊤⟩
 
 @[to_additive]
@@ -211,7 +211,7 @@ theorem toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
 end
 
 @[to_additive]
-instance instInfOpenSubgroup : Inf (OpenSubgroup G) :=
+instance (priority := 10000) instInfOpenSubgroup : Inf (OpenSubgroup G) :=
   ⟨fun U V => ⟨U ⊓ V, U.isOpen.inter V.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -239,17 +239,17 @@ theorem mem_inf {x} : x ∈ U ⊓ V ↔ x ∈ U ∧ x ∈ V :=
 #align open_add_subgroup.mem_inf OpenAddSubgroup.mem_inf
 
 @[to_additive]
-instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferInstance
+instance (priority := 10000) instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferInstance
 
 -- porting note: we override `toPartialorder` to get better `le`
 @[to_additive]
-instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
+instance (priority := 10000) instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
   { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ => rfl with
     toInf := instInfOpenSubgroup
     toPartialOrder := instPartialOrderOpenSubgroup }
 
 @[to_additive]
-instance : OrderTop (OpenSubgroup G) where
+instance (priority := 10000) : OrderTop (OpenSubgroup G) where
   top := ⊤
   le_top _ := Set.subset_univ _
 
@@ -345,7 +345,7 @@ namespace OpenSubgroup
 variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G]
 
 @[to_additive]
-instance : Sup (OpenSubgroup G) :=
+instance (priority := 10000) : Sup (OpenSubgroup G) :=
   ⟨fun U V => ⟨U ⊔ V, Subgroup.isOpen_mono (le_sup_left : U.1 ≤ U.1 ⊔ V.1) U.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -355,7 +355,7 @@ theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = �
 
 -- porting note: we override `toPartialorder` to get better `le`
 @[to_additive]
-instance : Lattice (OpenSubgroup G) :=
+instance (priority := 10000) : Lattice (OpenSubgroup G) :=
   { instSemilatticeInfOpenSubgroup,
     toSubgroup_injective.semilatticeSup ((↑) : OpenSubgroup G → Subgroup G) fun _ _ => rfl with
     toPartialOrder := instPartialOrderOpenSubgroup }

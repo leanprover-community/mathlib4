@@ -100,7 +100,7 @@ private nonrec def Key.hash : Key → UInt64
   | .«forall»   => 9752
   | .proj s i a => mixHash (hash a) $ mixHash (hash s) (hash i)
 
-instance : Hashable Key := ⟨Key.hash⟩
+instance (priority := 10000) : Hashable Key := ⟨Key.hash⟩
 
 /-- Constructor index as a help for ordering `Key`.
 Note that the index of the star pattern is 0, so that when looking up in a `Trie`,
@@ -128,8 +128,8 @@ private def Key.lt : Key → Key → Bool
     (s₁ == s₂ && (i₁ < i₂ || (i₁ == i₂ && a₁ < a₂)))
   | k₁,             k₂             => k₁.ctorIdx < k₂.ctorIdx
 
-instance : LT Key := ⟨fun a b => Key.lt a b⟩
-instance (a b : Key) : Decidable (a < b) := inferInstanceAs (Decidable (Key.lt a b))
+instance (priority := 10000) : LT Key := ⟨fun a b => Key.lt a b⟩
+instance (priority := 10000) (a b : Key) : Decidable (a < b) := inferInstanceAs (Decidable (Key.lt a b))
 
 private def Key.format : Key → Format
   | .star i                 => "*" ++ Std.format i
@@ -144,7 +144,7 @@ private def Key.format : Key → Format
   | .forall                 => "→"
   | .proj s i a             => "⟨" ++ Std.format s ++"."++ Std.format i ++", "++ Std.format a ++ "⟩"
 
-instance : ToFormat Key := ⟨Key.format⟩
+instance (priority := 10000) : ToFormat Key := ⟨Key.format⟩
 
 /-- Return the number of arguments that the `Key` takes. -/
 def Key.arity : Key → Nat
@@ -166,7 +166,7 @@ inductive Trie (α : Type) where
   | path (keys : Array Key) (child : Trie α)
   /-- Leaf of the Trie. `values` is an `Array` of size at least 1. -/
   | values (vs : Array α)
-instance : Inhabited (Trie α) := ⟨.node #[]⟩
+instance (priority := 10000) : Inhabited (Trie α) := ⟨.node #[]⟩
 
 /-- `Trie.path` constructor that only inserts the path if it is non-empty. -/
 def Trie.mkPath (keys : Array Key) (child : Trie α) :=
@@ -202,7 +202,7 @@ private partial def Trie.format [ToFormat α] : Trie α → Format
   | .values vs => "values" ++ if vs.isEmpty then Format.nil else " " ++ Std.format vs
   | .path ks c => "path" ++ Std.format ks ++ Format.line ++ format c
 
-instance [ToFormat α] : ToFormat (Trie α) := ⟨Trie.format⟩
+instance (priority := 10000) [ToFormat α] : ToFormat (Trie α) := ⟨Trie.format⟩
 
 
 /-- Discrimination tree. It is an index from expressions to values of type `α`. -/
@@ -220,7 +220,7 @@ private partial def RefinedDiscrTree.format [ToFormat α] (d : RefinedDiscrTree 
     (true, Format.nil)
   Format.group r
 
-instance [ToFormat α] : ToFormat (RefinedDiscrTree α) := ⟨RefinedDiscrTree.format⟩
+instance (priority := 10000) [ToFormat α] : ToFormat (RefinedDiscrTree α) := ⟨RefinedDiscrTree.format⟩
 
 
 /-- `DTExpr` is a simplified form of `Expr`.
@@ -266,7 +266,7 @@ where
       then .nil
       else " " ++ Format.paren (@Format.joinSep _ ⟨DTExpr.format⟩ as.toList ", ")
 
-instance : ToFormat DTExpr := ⟨DTExpr.format⟩
+instance (priority := 10000) : ToFormat DTExpr := ⟨DTExpr.format⟩
 
 /-- Return the size of the `DTExpr`. This is used for calculating the matching score when two
 expressions are equal.
@@ -439,7 +439,7 @@ Caching values is a bit dangerous, because when two expressions are equal and th
 a different number of binders, then the resulting De Bruijn indices are offset.
 In practice, getting a `.bvar` in a `DTExpr` is very rare, so we exclude such values from the cache.
 -/
-instance : MonadCache Expr DTExpr M where
+instance (priority := 10000) : MonadCache Expr DTExpr M where
   findCached? e := do
     let c ← get
     return c.find? e

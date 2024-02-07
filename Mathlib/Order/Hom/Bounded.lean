@@ -171,7 +171,7 @@ variable [FunLike F α β]
 def TopHomClass.toTopHom [Top α] [Top β] [TopHomClass F α β] (f : F) : TopHom α β :=
   ⟨f, map_top f⟩
 
-instance [Top α] [Top β] [TopHomClass F α β] : CoeTC F (TopHom α β) :=
+instance (priority := 10000) [Top α] [Top β] [TopHomClass F α β] : CoeTC F (TopHom α β) :=
   ⟨TopHomClass.toTopHom⟩
 
 /-- Turn an element of a type `F` satisfying `BotHomClass F α β` into an actual
@@ -180,7 +180,7 @@ instance [Top α] [Top β] [TopHomClass F α β] : CoeTC F (TopHom α β) :=
 def BotHomClass.toBotHom [Bot α] [Bot β] [BotHomClass F α β] (f : F) : BotHom α β :=
   ⟨f, map_bot f⟩
 
-instance [Bot α] [Bot β] [BotHomClass F α β] : CoeTC F (BotHom α β) :=
+instance (priority := 10000) [Bot α] [Bot β] [BotHomClass F α β] : CoeTC F (BotHom α β) :=
   ⟨BotHomClass.toBotHom⟩
 
 variable [FunLike F α β]
@@ -192,7 +192,7 @@ def BoundedOrderHomClass.toBoundedOrderHom [Preorder α] [Preorder β] [BoundedO
     [BoundedOrder β] [BoundedOrderHomClass F α β] (f : F) : BoundedOrderHom α β :=
   { (f : α →o β) with toFun := f, map_top' := map_top f, map_bot' := map_bot f }
 
-instance [Preorder α] [Preorder β] [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] :
+instance (priority := 10000) [Preorder α] [Preorder β] [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] :
     CoeTC F (BoundedOrderHom α β) :=
   ⟨BoundedOrderHomClass.toBoundedOrderHom⟩
 
@@ -207,11 +207,11 @@ section Top
 
 variable [Top β] [Top γ] [Top δ]
 
-instance : FunLike (TopHom α β) α β where
+instance (priority := 10000) : FunLike (TopHom α β) α β where
   coe := TopHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-instance : TopHomClass (TopHom α β) α β where
+instance (priority := 10000) : TopHomClass (TopHom α β) α β where
   map_top := TopHom.map_top'
 
 #noalign top_hom.to_fun_eq_coe
@@ -241,7 +241,7 @@ theorem copy_eq (f : TopHom α β) (f' : α → β) (h : f' = f) : f.copy f' h =
   DFunLike.ext' h
 #align top_hom.copy_eq TopHom.copy_eq
 
-instance : Inhabited (TopHom α β) :=
+instance (priority := 10000) : Inhabited (TopHom α β) :=
   ⟨⟨fun _ => ⊤, rfl⟩⟩
 
 variable (α)
@@ -311,17 +311,17 @@ theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injectiv
 
 end Top
 
-instance [Preorder β] [Top β] : Preorder (TopHom α β) :=
+instance (priority := 10000) [Preorder β] [Top β] : Preorder (TopHom α β) :=
   Preorder.lift (DFunLike.coe : TopHom α β → α → β)
 
-instance [PartialOrder β] [Top β] : PartialOrder (TopHom α β) :=
+instance (priority := 10000) [PartialOrder β] [Top β] : PartialOrder (TopHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 section OrderTop
 
 variable [Preorder β] [OrderTop β]
 
-instance : OrderTop (TopHom α β) where
+instance (priority := 10000) : OrderTop (TopHom α β) where
   top := ⟨⊤, rfl⟩
   le_top := fun _ => @le_top (α → β) _ _ _
 
@@ -341,10 +341,10 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderTop β] (f g : TopHom α β)
 
-instance : Inf (TopHom α β) :=
+instance (priority := 10000) : Inf (TopHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
-instance : SemilatticeInf (TopHom α β) :=
+instance (priority := 10000) : SemilatticeInf (TopHom α β) :=
   (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
 
 @[simp]
@@ -363,10 +363,10 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderTop β] (f g : TopHom α β)
 
-instance : Sup (TopHom α β) :=
+instance (priority := 10000) : Sup (TopHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
-instance : SemilatticeSup (TopHom α β) :=
+instance (priority := 10000) : SemilatticeSup (TopHom α β) :=
   (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
 
 @[simp]
@@ -381,10 +381,10 @@ theorem sup_apply (a : α) : (f ⊔ g) a = f a ⊔ g a :=
 
 end SemilatticeSup
 
-instance [Lattice β] [OrderTop β] : Lattice (TopHom α β) :=
+instance (priority := 10000) [Lattice β] [OrderTop β] : Lattice (TopHom α β) :=
   DFunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
 
-instance [DistribLattice β] [OrderTop β] : DistribLattice (TopHom α β) :=
+instance (priority := 10000) [DistribLattice β] [OrderTop β] : DistribLattice (TopHom α β) :=
   DFunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
 
 end TopHom
@@ -400,11 +400,11 @@ section Bot
 
 variable [Bot β] [Bot γ] [Bot δ]
 
-instance : FunLike (BotHom α β) α β where
+instance (priority := 10000) : FunLike (BotHom α β) α β where
   coe := BotHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-instance : BotHomClass (BotHom α β) α β where
+instance (priority := 10000) : BotHomClass (BotHom α β) α β where
   map_bot := BotHom.map_bot'
 
 #noalign bot_hom.to_fun_eq_coe
@@ -434,7 +434,7 @@ theorem copy_eq (f : BotHom α β) (f' : α → β) (h : f' = f) : f.copy f' h =
   DFunLike.ext' h
 #align bot_hom.copy_eq BotHom.copy_eq
 
-instance : Inhabited (BotHom α β) :=
+instance (priority := 10000) : Inhabited (BotHom α β) :=
   ⟨⟨fun _ => ⊥, rfl⟩⟩
 
 variable (α)
@@ -504,17 +504,17 @@ theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injectiv
 
 end Bot
 
-instance [Preorder β] [Bot β] : Preorder (BotHom α β) :=
+instance (priority := 10000) [Preorder β] [Bot β] : Preorder (BotHom α β) :=
   Preorder.lift (DFunLike.coe : BotHom α β → α → β)
 
-instance [PartialOrder β] [Bot β] : PartialOrder (BotHom α β) :=
+instance (priority := 10000) [PartialOrder β] [Bot β] : PartialOrder (BotHom α β) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 section OrderBot
 
 variable [Preorder β] [OrderBot β]
 
-instance : OrderBot (BotHom α β) where
+instance (priority := 10000) : OrderBot (BotHom α β) where
   bot := ⟨⊥, rfl⟩
   bot_le := fun _ => @bot_le (α → β) _ _ _
 
@@ -534,10 +534,10 @@ section SemilatticeInf
 
 variable [SemilatticeInf β] [OrderBot β] (f g : BotHom α β)
 
-instance : Inf (BotHom α β) :=
+instance (priority := 10000) : Inf (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
-instance : SemilatticeInf (BotHom α β) :=
+instance (priority := 10000) : SemilatticeInf (BotHom α β) :=
   (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
 
 @[simp]
@@ -556,10 +556,10 @@ section SemilatticeSup
 
 variable [SemilatticeSup β] [OrderBot β] (f g : BotHom α β)
 
-instance : Sup (BotHom α β) :=
+instance (priority := 10000) : Sup (BotHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
-instance : SemilatticeSup (BotHom α β) :=
+instance (priority := 10000) : SemilatticeSup (BotHom α β) :=
   (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
 
 @[simp]
@@ -574,10 +574,10 @@ theorem sup_apply (a : α) : (f ⊔ g) a = f a ⊔ g a :=
 
 end SemilatticeSup
 
-instance [Lattice β] [OrderBot β] : Lattice (BotHom α β) :=
+instance (priority := 10000) [Lattice β] [OrderBot β] : Lattice (BotHom α β) :=
   DFunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
 
-instance [DistribLattice β] [OrderBot β] : DistribLattice (BotHom α β) :=
+instance (priority := 10000) [DistribLattice β] [OrderBot β] : DistribLattice (BotHom α β) :=
   DFunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
 
 end BotHom
@@ -603,11 +603,11 @@ def toBotHom (f : BoundedOrderHom α β) : BotHom α β :=
   { f with }
 #align bounded_order_hom.to_bot_hom BoundedOrderHom.toBotHom
 
-instance : FunLike (BoundedOrderHom α β) α β where
+instance (priority := 10000) : FunLike (BoundedOrderHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
 
-instance : BoundedOrderHomClass (BoundedOrderHom α β) α β where
+instance (priority := 10000) : BoundedOrderHomClass (BoundedOrderHom α β) α β where
   map_rel f := @(f.monotone')
   map_top f := f.map_top'
   map_bot f := f.map_bot'
@@ -641,7 +641,7 @@ protected def id : BoundedOrderHom α α :=
   { OrderHom.id, TopHom.id α, BotHom.id α with }
 #align bounded_order_hom.id BoundedOrderHom.id
 
-instance : Inhabited (BoundedOrderHom α α) :=
+instance (priority := 10000) : Inhabited (BoundedOrderHom α α) :=
   ⟨BoundedOrderHom.id α⟩
 
 @[simp]

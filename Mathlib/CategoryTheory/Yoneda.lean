@@ -75,7 +75,7 @@ theorem naturality {X Y : C} (α : yoneda.obj X ⟶ yoneda.obj Y) {Z Z' : C} (f 
 
 See <https://stacks.math.columbia.edu/tag/001P>.
 -/
-instance yonedaFull : Full (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
+instance (priority := 10000) yonedaFull : Full (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
   preimage {X} {Y} f := f.app (op X) (𝟙 X)
 #align category_theory.yoneda.yoneda_full CategoryTheory.Yoneda.yonedaFull
 
@@ -83,7 +83,7 @@ instance yonedaFull : Full (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
 
 See <https://stacks.math.columbia.edu/tag/001P>.
 -/
-instance yoneda_faithful : Faithful (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
+instance (priority := 10000) yoneda_faithful : Faithful (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁) where
   map_injective {X} {Y} f g p := by
     convert congr_fun (congr_app p (op X)) (𝟙 X) using 1 <;> dsimp <;> simp
 #align category_theory.yoneda.yoneda_faithful CategoryTheory.Yoneda.yoneda_faithful
@@ -121,12 +121,12 @@ theorem naturality {X Y : Cᵒᵖ} (α : coyoneda.obj X ⟶ coyoneda.obj Y) {Z Z
   (FunctorToTypes.naturality _ _ α f h).symm
 #align category_theory.coyoneda.naturality CategoryTheory.Coyoneda.naturality
 
-instance coyonedaFull : Full (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁) where
+instance (priority := 10000) coyonedaFull : Full (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁) where
   preimage {X} _ f := (f.app _ (𝟙 X.unop)).op
   witness {X} {Y} f := by simp only [coyoneda]; aesop_cat
 #align category_theory.coyoneda.coyoneda_full CategoryTheory.Coyoneda.coyonedaFull
 
-instance coyoneda_faithful : Faithful (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁) where
+instance (priority := 10000) coyoneda_faithful : Faithful (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁) where
   map_injective {X} _ _ _ p := by
     have t := congr_fun (congr_app p X.unop) (𝟙 _)
     simpa using congr_arg Quiver.Hom.op t
@@ -164,7 +164,7 @@ class Representable (F : Cᵒᵖ ⥤ Type v₁) : Prop where
   has_representation : ∃ (X : _) (f : yoneda.obj X ⟶ F), IsIso f
 #align category_theory.functor.representable CategoryTheory.Functor.Representable
 
-instance {X : C} : Representable (yoneda.obj X) where has_representation := ⟨X, 𝟙 _, inferInstance⟩
+instance (priority := 10000) {X : C} : Representable (yoneda.obj X) where has_representation := ⟨X, 𝟙 _, inferInstance⟩
 
 /-- A functor `F : C ⥤ Type v₁` is corepresentable if there is object `X` so `F ≅ coyoneda.obj X`.
 
@@ -175,7 +175,7 @@ class Corepresentable (F : C ⥤ Type v₁) : Prop where
   has_corepresentation : ∃ (X : _) (f : coyoneda.obj X ⟶ F), IsIso f
 #align category_theory.functor.corepresentable CategoryTheory.Functor.Corepresentable
 
-instance {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X) where
+instance (priority := 10000) {X : Cᵒᵖ} : Corepresentable (coyoneda.obj X) where
   has_corepresentation := ⟨X, 𝟙 _, inferInstance⟩
 
 -- instance : corepresentable (𝟭 (Type v₁)) :=
@@ -204,7 +204,7 @@ noncomputable def reprx : F.obj (op F.reprX) :=
   F.reprF.app (op F.reprX) (𝟙 F.reprX)
 #align category_theory.functor.repr_x CategoryTheory.Functor.reprx
 
-instance : IsIso F.reprF :=
+instance (priority := 10000) : IsIso F.reprF :=
   Representable.has_representation.choose_spec.choose_spec
 
 /-- An isomorphism between `F` and a functor of the form `C(-, F.repr_X)`.  Note the components
@@ -253,7 +253,7 @@ noncomputable def coreprx : F.obj F.coreprX :=
   F.coreprF.app F.coreprX (𝟙 F.coreprX)
 #align category_theory.functor.corepr_x CategoryTheory.Functor.coreprx
 
-instance : IsIso F.coreprF :=
+instance (priority := 10000) : IsIso F.coreprF :=
   Corepresentable.has_corepresentation.choose_spec.choose_spec
 
 /-- An isomorphism between `F` and a functor of the form `C(F.corepr X, -)`. Note the components
@@ -285,7 +285,7 @@ theorem corepresentable_of_nat_iso (F : C ⥤ Type v₁) {G} (i : F ≅ G) [F.Co
   { has_corepresentation := ⟨op F.coreprX, F.coreprF ≫ i.hom, inferInstance⟩ }
 #align category_theory.corepresentable_of_nat_iso CategoryTheory.corepresentable_of_nat_iso
 
-instance : Functor.Corepresentable (𝟭 (Type v₁)) :=
+instance (priority := 10000) : Functor.Corepresentable (𝟭 (Type v₁)) :=
   corepresentable_of_nat_iso (coyoneda.obj (op PUnit)) Coyoneda.punitIso
 
 open Opposite
@@ -293,11 +293,11 @@ open Opposite
 variable (C)
 
 -- We need to help typeclass inference with some awkward universe levels here.
-instance prodCategoryInstance1 : Category ((Cᵒᵖ ⥤ Type v₁) × Cᵒᵖ) :=
+instance (priority := 10000) prodCategoryInstance1 : Category ((Cᵒᵖ ⥤ Type v₁) × Cᵒᵖ) :=
   CategoryTheory.prod.{max u₁ v₁, v₁} (Cᵒᵖ ⥤ Type v₁) Cᵒᵖ
 #align category_theory.prod_category_instance_1 CategoryTheory.prodCategoryInstance1
 
-instance prodCategoryInstance2 : Category (Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) :=
+instance (priority := 10000) prodCategoryInstance2 : Category (Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) :=
   CategoryTheory.prod.{v₁, max u₁ v₁} Cᵒᵖ (Cᵒᵖ ⥤ Type v₁)
 #align category_theory.prod_category_instance_2 CategoryTheory.prodCategoryInstance2
 

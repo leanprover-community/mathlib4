@@ -164,7 +164,7 @@ end Neg
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M)
+instance (priority := 10000) pointwiseAddCommMonoid : AddCommMonoid (Submodule R M)
     where
   add := (· ⊔ ·)
   add_assoc _ _ _ := sup_assoc
@@ -184,7 +184,7 @@ theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 #align submodule.zero_eq_bot Submodule.zero_eq_bot
 
-instance : CanonicallyOrderedAddCommMonoid (Submodule R M) :=
+instance (priority := 10000) : CanonicallyOrderedAddCommMonoid (Submodule R M) :=
   { Submodule.pointwiseAddCommMonoid,
     Submodule.completeLattice with
     add_le_add_left := fun _a _b => sup_le_sup_left
@@ -255,7 +255,7 @@ theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
   Eq.symm (span_image _).symm
 #align submodule.span_smul Submodule.span_smul
 
-instance pointwiseCentralScalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass αᵐᵒᵖ R M]
+instance (priority := 10000) pointwiseCentralScalar [DistribMulAction αᵐᵒᵖ M] [SMulCommClass αᵐᵒᵖ R M]
     [IsCentralScalar α M] : IsCentralScalar α (Submodule R M) :=
   ⟨fun _a S => (congr_arg fun f : Module.End R M => S.map f) <| LinearMap.ext <| op_smul_eq_smul _⟩
 #align submodule.pointwise_central_scalar Submodule.pointwiseCentralScalar

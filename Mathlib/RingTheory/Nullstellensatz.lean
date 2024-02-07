@@ -113,7 +113,7 @@ theorem mem_vanishingIdeal_singleton_iff (x : σ → k) (p : MvPolynomial σ k) 
   ⟨fun h => h x rfl, fun hpx _ hy => hy.symm ▸ hpx⟩
 #align mv_polynomial.mem_vanishing_ideal_singleton_iff MvPolynomial.mem_vanishingIdeal_singleton_iff
 
-instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
+instance (priority := 10000) vanishingIdeal_singleton_isMaximal {x : σ → k} :
     (vanishingIdeal {x} : Ideal (MvPolynomial σ k)).IsMaximal := by
   have : MvPolynomial σ k ⧸ vanishingIdeal {x} ≃+* k :=
     RingEquiv.ofBijective

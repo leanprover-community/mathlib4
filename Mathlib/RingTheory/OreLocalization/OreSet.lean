@@ -71,7 +71,7 @@ def oreCondition (r : R) (s : S) : Σ'r' : R, Σ's' : S, r * s' = s * r' :=
 #align ore_localization.ore_condition OreLocalization.oreCondition
 
 /-- The trivial submonoid is an Ore set. -/
-instance oreSetBot : OreSet (⊥ : Submonoid R)
+instance (priority := 10000) oreSetBot : OreSet (⊥ : Submonoid R)
     where
   ore_left_cancel _ _ s h :=
     ⟨s, by

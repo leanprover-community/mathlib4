@@ -63,7 +63,7 @@ structure Ssyt (μ : YoungDiagram) where
 
 namespace Ssyt
 
-instance instFunLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ (ℕ → ℕ) where
+instance (priority := 10000) instFunLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ (ℕ → ℕ) where
   coe := Ssyt.entry
   coe_injective' T T' h := by
     cases T
@@ -72,7 +72,7 @@ instance instFunLike {μ : YoungDiagram} : FunLike (Ssyt μ) ℕ (ℕ → ℕ) w
 #align ssyt.fun_like Ssyt.instFunLike
 
 /-- Helper instance for when there's too many metavariables to apply `CoeFun.coe` directly. -/
-instance {μ : YoungDiagram} : CoeFun (Ssyt μ) fun _ ↦ ℕ → ℕ → ℕ :=
+instance (priority := 10000) {μ : YoungDiagram} : CoeFun (Ssyt μ) fun _ ↦ ℕ → ℕ → ℕ :=
   inferInstance
 
 @[simp]
@@ -154,7 +154,7 @@ theorem highestWeight_apply {μ : YoungDiagram} {i j : ℕ} :
   rfl
 #align ssyt.highest_weight_apply Ssyt.highestWeight_apply
 
-instance {μ : YoungDiagram} : Inhabited (Ssyt μ) :=
+instance (priority := 10000) {μ : YoungDiagram} : Inhabited (Ssyt μ) :=
   ⟨Ssyt.highestWeight μ⟩
 
 end Ssyt

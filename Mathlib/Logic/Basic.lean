@@ -50,7 +50,7 @@ instance (priority := 10) decidableEq_of_subsingleton [Subsingleton α] : Decida
   fun a b ↦ isTrue (Subsingleton.elim a b)
 #align decidable_eq_of_subsingleton decidableEq_of_subsingleton
 
-instance (α : Sort*) [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
+instance (priority := 10000) (α : Sort*) [Subsingleton α] (p : α → Prop) : Subsingleton (Subtype p) :=
   ⟨fun ⟨x, _⟩ ⟨y, _⟩ ↦ by cases Subsingleton.elim x y; rfl⟩
 
 #align pempty PEmpty
@@ -156,9 +156,9 @@ section Propositional
 
 /-! ### Declarations about `implies` -/
 
-instance : IsRefl Prop Iff := ⟨Iff.refl⟩
+instance (priority := 10000) : IsRefl Prop Iff := ⟨Iff.refl⟩
 
-instance : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
+instance (priority := 10000) : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
 
 alias Iff.imp := imp_congr
 #align iff.imp Iff.imp
@@ -302,7 +302,7 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 theorem xor_comm (a b) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm]
 #align xor_comm xor_comm
 
-instance : Std.Commutative Xor' := ⟨xor_comm⟩
+instance (priority := 10000) : Std.Commutative Xor' := ⟨xor_comm⟩
 
 @[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
 #align xor_self xor_self

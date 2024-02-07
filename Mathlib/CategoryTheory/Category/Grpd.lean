@@ -41,16 +41,16 @@ set_option linter.uppercaseLean3 false in
 
 namespace Grpd
 
-instance : Inhabited Grpd :=
+instance (priority := 10000) : Inhabited Grpd :=
   ⟨Bundled.of (SingleObj PUnit)⟩
 
 
-instance str' (C : Grpd.{v, u}) : Groupoid.{v, u} C.α :=
+instance (priority := 10000) str' (C : Grpd.{v, u}) : Groupoid.{v, u} C.α :=
   C.str
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.str CategoryTheory.Grpd.str'
 
-instance : CoeSort Grpd (Type*) :=
+instance (priority := 10000) : CoeSort Grpd (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled `Grpd` from the underlying type and the typeclass `Groupoid`. -/
@@ -66,7 +66,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.coe_of CategoryTheory.Grpd.coe_of
 
 /-- Category structure on `Grpd` -/
-instance category : LargeCategory.{max v u} Grpd.{v, u} where
+instance (priority := 10000) category : LargeCategory.{max v u} Grpd.{v, u} where
   Hom C D := C ⥤ D
   id C := 𝟭 C
   comp F G := F ⋙ G
@@ -91,11 +91,11 @@ def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat CategoryTheory.Grpd.forgetToCat
 
-instance forgetToCatFull : Full forgetToCat where preimage := id
+instance (priority := 10000) forgetToCatFull : Full forgetToCat where preimage := id
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat_full CategoryTheory.Grpd.forgetToCatFull
 
-instance forgetToCat_faithful : Faithful forgetToCat where
+instance (priority := 10000) forgetToCat_faithful : Faithful forgetToCat where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat_faithful CategoryTheory.Grpd.forgetToCat_faithful
 
@@ -135,7 +135,7 @@ def piLimitFanIsLimit ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.IsLimit 
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.pi_limit_fan_is_limit CategoryTheory.Grpd.piLimitFanIsLimit
 
-instance has_pi : Limits.HasProducts Grpd.{u, u} :=
+instance (priority := 10000) has_pi : Limits.HasProducts Grpd.{u, u} :=
   Limits.hasProducts_of_limit_fans (by apply piLimitFan) (by apply piLimitFanIsLimit)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.has_pi CategoryTheory.Grpd.has_pi

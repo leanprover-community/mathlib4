@@ -71,7 +71,7 @@ def CompSource.toString : CompSource → String
   | (CompSource.add c1 c2) => CompSource.toString c1 ++ " + " ++ CompSource.toString c2
   | (CompSource.scale n c) => ToString.toString n ++ " * " ++ CompSource.toString c
 
-instance : ToFormat CompSource :=
+instance (priority := 10000) : ToFormat CompSource :=
   ⟨fun a => CompSource.toString a⟩
 
 /--
@@ -192,10 +192,10 @@ def PComp.assump (c : Comp) (n : ℕ) : PComp where
   implicit := .empty
   vars := .ofList c.vars _
 
-instance : ToFormat PComp :=
+instance (priority := 10000) : ToFormat PComp :=
   ⟨fun p => format p.c.coeffs ++ toString p.c.str ++ "0"⟩
 
-instance : ToString PComp :=
+instance (priority := 10000) : ToString PComp :=
   ⟨fun p => toString p.c.coeffs ++ toString p.c.str ++ "0"⟩
 
 /-- A collection of comparisons. -/

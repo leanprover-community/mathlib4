@@ -30,14 +30,14 @@ namespace AlgebraicGeometry
 
 variable (X : Scheme)
 
-instance : T0Space X.carrier := by
+instance (priority := 10000) : T0Space X.carrier := by
   refine' T0Space.of_open_cover fun x => _
   obtain ⟨U, R, ⟨e⟩⟩ := X.local_affine x
   let e' : U.1 ≃ₜ PrimeSpectrum R :=
     homeoOfIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).mapIso e)
   exact ⟨U.1.1, U.2, U.1.2, e'.embedding.t0Space⟩
 
-instance : QuasiSober X.carrier := by
+instance (priority := 10000) : QuasiSober X.carrier := by
   apply (config := { allowSynthFailures := true })
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).1.base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.IsOpen i).base_open.open_range
@@ -64,7 +64,7 @@ theorem isReducedOfStalkIsReduced [∀ x : X.carrier, _root_.IsReduced (X.preshe
   exact (hs.map _).eq_zero
 #align algebraic_geometry.is_reduced_of_stalk_is_reduced AlgebraicGeometry.isReducedOfStalkIsReduced
 
-instance stalk_isReduced_of_reduced [IsReduced X] (x : X.carrier) :
+instance (priority := 10000) stalk_isReduced_of_reduced [IsReduced X] (x : X.carrier) :
     _root_.IsReduced (X.presheaf.stalk x) := by
   constructor
   rintro g ⟨n, e⟩
@@ -89,7 +89,7 @@ theorem isReducedOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersi
       Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.is_reduced_of_open_immersion AlgebraicGeometry.isReducedOfOpenImmersion
 
-instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
+instance (priority := 10000) {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
   apply (config := { allowSynthFailures := true }) isReducedOfStalkIsReduced
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
@@ -208,7 +208,7 @@ class IsIntegral : Prop where
 
 attribute [instance] IsIntegral.component_integral IsIntegral.nonempty
 
-instance [h : IsIntegral X] : IsDomain (X.presheaf.obj (op ⊤)) :=
+instance (priority := 10000) [h : IsIntegral X] : IsDomain (X.presheaf.obj (op ⊤)) :=
   @IsIntegral.component_integral _ _ _ (by
     simp only [Set.univ_nonempty, Opens.nonempty_coeSort, Opens.coe_top])
 
@@ -224,7 +224,7 @@ instance (priority := 900) isReducedOfIsIntegral [IsIntegral X] : IsReduced X :=
     infer_instance
 #align algebraic_geometry.is_reduced_of_is_integral AlgebraicGeometry.isReducedOfIsIntegral
 
-instance is_irreducible_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carrier := by
+instance (priority := 10000) is_irreducible_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carrier := by
   by_contra H
   replace H : ¬IsPreirreducible (⊤ : Set X.carrier) := fun h =>
     H { toPreirreducibleSpace := ⟨h⟩
@@ -295,11 +295,11 @@ theorem isIntegralOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmers
     Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
 #align algebraic_geometry.is_integral_of_open_immersion AlgebraicGeometry.isIntegralOfOpenImmersion
 
-instance {R : CommRingCat} [H : IsDomain R] :
+instance (priority := 10000) {R : CommRingCat} [H : IsDomain R] :
     IrreducibleSpace (Scheme.Spec.obj <| op R).carrier := by
   convert PrimeSpectrum.irreducibleSpace (R := R)
 
-instance {R : CommRingCat} [IsDomain R] : IsIntegral (Scheme.Spec.obj <| op R) :=
+instance (priority := 10000) {R : CommRingCat} [IsDomain R] : IsIntegral (Scheme.Spec.obj <| op R) :=
   isIntegralOfIsIrreducibleIsReduced _
 
 theorem affine_isIntegral_iff (R : CommRingCat) :

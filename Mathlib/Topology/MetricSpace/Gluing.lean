@@ -494,7 +494,7 @@ def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
 #align metric.glue_space Metric.GlueSpace
 
 -- porting note: TODO: w/o `@`, tries to generate some `[MetricSpace _]` before finding `X` `Y`
-instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (@GlueSpace X Y Z _ _ _ _ _ _ hΦ hΨ) :=
+instance (priority := 10000) (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (@GlueSpace X Y Z _ _ _ _ _ _ hΦ hΨ) :=
   inferInstanceAs <| MetricSpace <|
     @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 
@@ -508,12 +508,12 @@ def toGlueR (hΦ : Isometry Φ) (hΨ : Isometry Ψ) (y : Y) : GlueSpace hΦ hΨ 
   Quotient.mk'' (.inr y)
 #align metric.to_glue_r Metric.toGlueR
 
-instance inhabitedLeft (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited X] :
+instance (priority := 10000) inhabitedLeft (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited X] :
     Inhabited (GlueSpace hΦ hΨ) :=
   ⟨toGlueL _ _ default⟩
 #align metric.inhabited_left Metric.inhabitedLeft
 
-instance inhabitedRight (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited Y] :
+instance (priority := 10000) inhabitedRight (hΦ : Isometry Φ) (hΨ : Isometry Ψ) [Inhabited Y] :
     Inhabited (GlueSpace hΦ hΨ) :=
   ⟨toGlueR _ _ default⟩
 #align metric.inhabited_right Metric.inhabitedRight
@@ -626,7 +626,7 @@ def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
 #align metric.inductive_limit Metric.InductiveLimit
 
 set_option autoImplicit true in
-instance : MetricSpace (InductiveLimit (f := f) I) :=
+instance (priority := 10000) : MetricSpace (InductiveLimit (f := f) I) :=
   inferInstanceAs <| MetricSpace <|
     @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
 
@@ -635,7 +635,7 @@ def toInductiveLimit (I : ∀ n, Isometry (f n)) (n : ℕ) (x : X n) : Metric.In
   Quotient.mk'' (Sigma.mk n x)
 #align metric.to_inductive_limit Metric.toInductiveLimit
 
-instance (I : ∀ n, Isometry (f n)) [Inhabited (X 0)] : Inhabited (InductiveLimit I) :=
+instance (priority := 10000) (I : ∀ n, Isometry (f n)) [Inhabited (X 0)] : Inhabited (InductiveLimit I) :=
   ⟨toInductiveLimit _ 0 default⟩
 
 /-- The map `toInductiveLimit n` mapping `X n` to the inductive limit is an isometry. -/

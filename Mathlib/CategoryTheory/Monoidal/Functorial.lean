@@ -129,12 +129,12 @@ def of (F : C → D) [I₁ : Functorial.{v₁, v₂} F] [I₂ : LaxMonoidal.{v�
 
 end LaxMonoidalFunctor
 
-instance (F : LaxMonoidalFunctor.{v₁, v₂} C D) : LaxMonoidal.{v₁, v₂} F.obj :=
+instance (priority := 10000) (F : LaxMonoidalFunctor.{v₁, v₂} C D) : LaxMonoidal.{v₁, v₂} F.obj :=
   { F with }
 
 section
 
-instance laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C)
+instance (priority := 10000) laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C)
     where
   ε := 𝟙 _
   μ X Y := 𝟙 _

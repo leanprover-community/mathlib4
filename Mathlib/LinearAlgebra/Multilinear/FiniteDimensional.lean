@@ -64,11 +64,11 @@ private theorem free_and_finite :
   have e := domDomCongrLinearEquiv' R R M₁ M₂ (Fintype.equivFin ι)
   exact ⟨Module.Free.of_equiv e.symm, Module.Finite.equiv e.symm⟩
 
-instance _root_.Module.Finite.multilinearMap : Module.Finite R (MultilinearMap R M₁ M₂) :=
+instance (priority := 10000) _root_.Module.Finite.multilinearMap : Module.Finite R (MultilinearMap R M₁ M₂) :=
   free_and_finite.2
 #align module.finite.multilinear_map Module.Finite.multilinearMap
 
-instance _root_.Module.Free.multilinearMap : Module.Free R (MultilinearMap R M₁ M₂) :=
+instance (priority := 10000) _root_.Module.Free.multilinearMap : Module.Free R (MultilinearMap R M₁ M₂) :=
   free_and_finite.1
 #align module.free.multilinear_map Module.Free.multilinearMap
 

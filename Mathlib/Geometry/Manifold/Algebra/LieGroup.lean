@@ -231,7 +231,7 @@ section Product
 
 -- Instance of product group
 @[to_additive]
-instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
+instance (priority := 10000) {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
     [TopologicalSpace G] [ChartedSpace H G] [Group G] [LieGroup I G] {E' : Type*}
     [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
@@ -243,7 +243,7 @@ end Product
 
 /-! ### Normed spaces are Lie groups -/
 
-instance normedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+instance (priority := 10000) normedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : LieAddGroup 𝓘(𝕜, E) E where
   smooth_neg := contDiff_neg.contMDiff
 #align normed_space_lie_add_group normedSpaceLieAddGroup
@@ -264,7 +264,7 @@ class SmoothInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
   /-- Inversion is smooth away from `0`. -/
   smoothAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → SmoothAt I I (fun y ↦ y⁻¹) x
 
-instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] : SmoothInv₀ 𝓘(𝕜) 𝕜 :=
+instance (priority := 10000) {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] : SmoothInv₀ 𝓘(𝕜) 𝕜 :=
   { smoothAt_inv₀ := by
       intro x hx
       change ContMDiffAt 𝓘(𝕜) 𝓘(𝕜) ⊤ Inv.inv x

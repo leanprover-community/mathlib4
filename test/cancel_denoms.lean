@@ -118,8 +118,8 @@ end
 section
 -- simulate the type of complex numbers
 def C : Type := test_sorry
-noncomputable instance : Field C := test_sorry
-instance : CharZero C := test_sorry
+noncomputable instance (priority := 10000) : Field C := test_sorry
+instance (priority := 10000) : CharZero C := test_sorry
 variable (a b c d : C)
 example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms

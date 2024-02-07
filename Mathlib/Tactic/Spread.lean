@@ -15,7 +15,7 @@ open Lean Parser.Term Macro
 This adds support for structure instance spread syntax.
 
 ```lean
-instance : Foo α where
+instance (priority := 10000) : Foo α where
   __ := instSomething -- include fields from `instSomething`
 
 example : Foo α := {

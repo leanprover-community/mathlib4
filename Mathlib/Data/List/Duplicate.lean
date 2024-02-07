@@ -143,7 +143,7 @@ theorem duplicate_iff_two_le_count [DecidableEq α] : x ∈+ l ↔ 2 ≤ count x
   simp [duplicate_iff_sublist, le_count_iff_replicate_sublist]
 #align list.duplicate_iff_two_le_count List.duplicate_iff_two_le_count
 
-instance decidableDuplicate [DecidableEq α] (x : α) : ∀ l : List α, Decidable (x ∈+ l)
+instance (priority := 10000) decidableDuplicate [DecidableEq α] (x : α) : ∀ l : List α, Decidable (x ∈+ l)
   | [] => isFalse (not_duplicate_nil x)
   | y :: l =>
     match decidableDuplicate x l with

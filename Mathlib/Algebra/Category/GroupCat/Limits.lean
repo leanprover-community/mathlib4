@@ -31,7 +31,7 @@ variable {J : Type v} [SmallCategory J]
 namespace GroupCat
 
 @[to_additive]
-instance groupObj (F : J ⥤ GroupCatMax.{v, u}) (j) : Group ((F ⋙ forget GroupCat).obj j) := by
+instance (priority := 10000) groupObj (F : J ⥤ GroupCatMax.{v, u}) (j) : Group ((F ⋙ forget GroupCat).obj j) := by
   change Group (F.obj j)
   infer_instance
 set_option linter.uppercaseLean3 false in
@@ -56,7 +56,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.sections_add_subgroup AddGroupCat.sectionsAddSubgroup
 
 @[to_additive]
-noncomputable instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
+noncomputable instance (priority := 10000) limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
     Group (Types.limitCone.{v, u} (F ⋙ forget GroupCat)).pt := by
   change Group (sectionsSubgroup.{v, u} F)
   infer_instance
@@ -73,7 +73,7 @@ the existing limit. -/
 
 All we need to do is notice that the limit point has an `AddGroup` instance available, and then
 reuse the existing limit."]
-noncomputable instance Forget₂.createsLimit (F : J ⥤ GroupCatMax.{v, u}) :
+noncomputable instance (priority := 10000) Forget₂.createsLimit (F : J ⥤ GroupCatMax.{v, u}) :
     CreatesLimit F (forget₂ GroupCatMax.{v, u} MonCatMax.{v, u}) :=
   -- Porting note: need to add `forget₂ GrpCat MonCat` reflects isomorphism
   letI : ReflectsIsomorphisms (forget₂ GroupCatMax.{v, u} MonCatMax.{v, u}) :=
@@ -126,7 +126,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The category of groups has all limits. -/
 @[to_additive "The category of additive groups has all limits."]
-instance hasLimitsOfSize : HasLimitsOfSize.{v, v} GroupCatMax.{v, u} where
+instance (priority := 10000) hasLimitsOfSize : HasLimitsOfSize.{v, v} GroupCatMax.{v, u} where
   has_limits_of_shape J _ :=
     { has_limit :=
         -- Porting note: add this instance to help Lean unify universe levels
@@ -139,7 +139,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.has_limits_of_size AddGroupCat.hasLimitsOfSize
 
 @[to_additive]
-instance hasLimits : HasLimits GroupCat.{u} :=
+instance (priority := 10000) hasLimits : HasLimits GroupCat.{u} :=
   GroupCat.hasLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align Group.has_limits GroupCat.hasLimits
@@ -155,7 +155,7 @@ This means the underlying monoid of a limit can be computed as a limit in the ca
 
   This means the underlying additive monoid of a limit can be computed as a limit in the category of
   additive monoids."]
-noncomputable instance forget₂MonPreservesLimitsOfSize :
+noncomputable instance (priority := 10000) forget₂MonPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget₂ GroupCatMax.{v, u} MonCat.{max v u}) where
   preservesLimitsOfShape {J _} := { preservesLimit := fun {F} =>
       -- Porting note: add this instance to help Lean unify universe levels
@@ -168,7 +168,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.forget₂_AddMon_preserves_limits AddGroupCat.forget₂AddMonPreservesLimits
 
 @[to_additive]
-noncomputable instance forget₂MonPreservesLimits :
+noncomputable instance (priority := 10000) forget₂MonPreservesLimits :
   PreservesLimits (forget₂ GroupCat.{u} MonCat.{u}) :=
   GroupCat.forget₂MonPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
@@ -183,7 +183,7 @@ This means the underlying type of a limit can be computed as a limit in the cate
   "The forgetful functor from additive groups to types preserves all limits.
 
   This means the underlying type of a limit can be computed as a limit in the category of types."]
-noncomputable instance forgetPreservesLimitsOfSize :
+noncomputable instance (priority := 10000) forgetPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget GroupCatMax.{v, u})
   where preservesLimitsOfShape {J _} :=
   { preservesLimit := fun {F} =>
@@ -201,7 +201,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.forget_preserves_limits_of_size AddGroupCat.forgetPreservesLimitsOfSize
 
 @[to_additive]
-noncomputable instance forgetPreservesLimits : PreservesLimits (forget GroupCat.{u}) :=
+noncomputable instance (priority := 10000) forgetPreservesLimits : PreservesLimits (forget GroupCat.{u}) :=
   GroupCat.forgetPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align Group.forget_preserves_limits GroupCat.forgetPreservesLimits
@@ -213,7 +213,7 @@ end GroupCat
 namespace CommGroupCat
 
 @[to_additive]
-instance commGroupObj (F : J ⥤ CommGroupCatMax.{v, u}) (j) :
+instance (priority := 10000) commGroupObj (F : J ⥤ CommGroupCatMax.{v, u}) (j) :
     CommGroup ((F ⋙ forget CommGroupCatMax).obj j) := by
   change CommGroup (F.obj j)
   infer_instance
@@ -223,7 +223,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.add_comm_group_obj AddCommGroupCat.addCommGroupObj
 
 @[to_additive]
-noncomputable instance limitCommGroup (F : J ⥤ CommGroupCat.{max v u}) :
+noncomputable instance (priority := 10000) limitCommGroup (F : J ⥤ CommGroupCat.{max v u}) :
     CommGroup (Types.limitCone.{v, u} (F ⋙ forget CommGroupCatMax.{v, u})).pt :=
   @Subgroup.toCommGroup (∀ j, F.obj j) _
     (GroupCat.sectionsSubgroup.{v, max v u}
@@ -242,7 +242,7 @@ and then reuse the existing limit.
 
   All we need to do is notice that the limit point has an `AddCommGroup` instance available,
   and then reuse the existing limit."]
-noncomputable instance Forget₂.createsLimit (F : J ⥤ CommGroupCatMax.{v, u}) :
+noncomputable instance (priority := 10000) Forget₂.createsLimit (F : J ⥤ CommGroupCatMax.{v, u}) :
     CreatesLimit F (forget₂ CommGroupCat GroupCatMax.{v, u}) :=
   letI : ReflectsIsomorphisms (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
@@ -291,7 +291,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The category of commutative groups has all limits. -/
 @[to_additive "The category of additive commutative groups has all limits."]
-instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommGroupCat.{max v u}
+instance (priority := 10000) hasLimitsOfSize : HasLimitsOfSize.{v, v} CommGroupCat.{max v u}
   where has_limits_of_shape _ _ :=
   { has_limit := fun F => hasLimit_of_created F
       (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}) }
@@ -301,7 +301,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.has_limits_of_size AddCommGroupCat.hasLimitsOfSize
 
 @[to_additive]
-instance hasLimits : HasLimits CommGroupCat.{u} :=
+instance (priority := 10000) hasLimits : HasLimits CommGroupCat.{u} :=
   CommGroupCat.hasLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
 #align CommGroup.has_limits CommGroupCat.hasLimits
@@ -316,7 +316,7 @@ of groups.)
   "The forgetful functor from additive commutative groups to groups preserves all limits.
   (That is, the underlying group could have been computed instead as limits in the category
     of additive groups.)"]
-noncomputable instance forget₂GroupPreservesLimitsOfSize :
+noncomputable instance (priority := 10000) forget₂GroupPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}) where
   preservesLimitsOfShape {J 𝒥} := { preservesLimit := fun {F} => by infer_instance }
 set_option linter.uppercaseLean3 false in
@@ -325,7 +325,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.forget₂_AddGroup_preserves_limits AddCommGroupCat.forget₂AddGroupPreservesLimitsOfSize
 
 @[to_additive]
-noncomputable instance forget₂GroupPreservesLimits :
+noncomputable instance (priority := 10000) forget₂GroupPreservesLimits :
     PreservesLimits (forget₂ CommGroupCat GroupCat.{u}) :=
   CommGroupCat.forget₂GroupPreservesLimitsOfSize.{u, u}
 set_option linter.uppercaseLean3 false in
@@ -353,7 +353,7 @@ in the category of commutative monoids.)
   "The forgetful functor from additive commutative groups to additive commutative monoids
   preserves all limits. (That is, the underlying additive commutative monoids could have been
   computed instead as limits in the category of additive commutative monoids.)"]
-noncomputable instance forget₂CommMonPreservesLimitsOfSize :
+noncomputable instance (priority := 10000) forget₂CommMonPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCat CommMonCat.{max v u}) where
   preservesLimitsOfShape :=
     { preservesLimit := fun {F} =>
@@ -371,7 +371,7 @@ underlying types could have been computed instead as limits in the category of t
   "The forgetful functor from additive commutative groups to types preserves all limits.
   (That is, the underlying types could have been computed instead as limits in the category of
   types.)"]
-noncomputable instance forgetPreservesLimitsOfSize :
+noncomputable instance (priority := 10000) forgetPreservesLimitsOfSize :
     PreservesLimitsOfSize.{v, v} (forget CommGroupCatMax.{v, u}) where
   preservesLimitsOfShape {J _} :=
   { preservesLimit := fun {F} =>
@@ -387,7 +387,7 @@ set_option linter.uppercaseLean3 false in
 #align AddCommGroup.forget_preserves_limits AddCommGroupCat.forgetPreservesLimitsOfSize
 
 @[to_additive]
-noncomputable instance forgetPreservesLimits : PreservesLimits (forget CommGroupCat.{u}) :=
+noncomputable instance (priority := 10000) forgetPreservesLimits : PreservesLimits (forget CommGroupCat.{u}) :=
   CommGroupCat.forgetPreservesLimitsOfSize.{u, u}
 
 -- Verify we can form limits indexed over smaller categories.

@@ -148,11 +148,11 @@ theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = 
   toLinearMap_injective.eq_iff
 #align linear_isometry.to_linear_map_inj LinearIsometry.toLinearMap_inj
 
-instance : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
+instance (priority := 10000) : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe f := f.toFun
   coe_injective' _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
 
-instance : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
+instance (priority := 10000) : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := map_smulₛₗ f.toLinearMap
   norm_map f := f.norm_map'
@@ -264,12 +264,12 @@ theorem isComplete_map_iff' [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 
   isComplete_image_iff f
 #align linear_isometry.is_complete_map_iff' LinearIsometry.isComplete_map_iff'
 
-instance completeSpace_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) [RingHomSurjective σ₁₂]
+instance (priority := 10000) completeSpace_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) [RingHomSurjective σ₁₂]
     (p : Submodule R E) [CompleteSpace p] : CompleteSpace (p.map f) :=
   ((isComplete_map_iff' f).2 <| completeSpace_coe_iff_isComplete.1 ‹_›).completeSpace_coe
 #align linear_isometry.complete_space_map LinearIsometry.completeSpace_map
 
-instance completeSpace_map' [RingHomSurjective σ₁₂] (p : Submodule R E) [CompleteSpace p] :
+instance (priority := 10000) completeSpace_map' [RingHomSurjective σ₁₂] (p : Submodule R E) [CompleteSpace p] :
     CompleteSpace (p.map f.toLinearMap) :=
   (f.isComplete_map_iff.2 <| completeSpace_coe_iff_isComplete.1 ‹_›).completeSpace_coe
 #align linear_isometry.complete_space_map' LinearIsometry.completeSpace_map'
@@ -394,7 +394,7 @@ theorem id_toContinuousLinearMap : id.toContinuousLinearMap = ContinuousLinearMa
   rfl
 #align linear_isometry.id_to_continuous_linear_map LinearIsometry.id_toContinuousLinearMap
 
-instance : Inhabited (E →ₗᵢ[R] E) :=
+instance (priority := 10000) : Inhabited (E →ₗᵢ[R] E) :=
   ⟨id⟩
 
 /-- Composition of linear isometries. -/
@@ -422,7 +422,7 @@ theorem comp_assoc (f : E₃ →ₛₗᵢ[σ₃₄] E₄) (g : E₂ →ₛₗᵢ
   rfl
 #align linear_isometry.comp_assoc LinearIsometry.comp_assoc
 
-instance : Monoid (E →ₗᵢ[R] E) where
+instance (priority := 10000) : Monoid (E →ₗᵢ[R] E) where
   one := id
   mul := comp
   mul_assoc := comp_assoc
@@ -553,7 +553,7 @@ theorem toLinearEquiv_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} : f.toLinearEqui
   toLinearEquiv_injective.eq_iff
 #align linear_isometry_equiv.to_linear_equiv_inj LinearIsometryEquiv.toLinearEquiv_inj
 
-instance : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
+instance (priority := 10000) : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe e := e.toFun
   inv e := e.invFun
   coe_injective' f g h₁ h₂ := by
@@ -566,7 +566,7 @@ instance : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   left_inv e := e.left_inv
   right_inv e := e.right_inv
 
-instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
+instance (priority := 10000) : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearEquiv
   map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
   norm_map e := e.norm_map'
@@ -574,7 +574,7 @@ instance : SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂
 /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly.
 -/
-instance : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
+instance (priority := 10000) : CoeFun (E ≃ₛₗᵢ[σ₁₂] E₂) fun _ => E → E₂ :=
   ⟨DFunLike.coe⟩
 
 theorem coe_injective : @Function.Injective (E ≃ₛₗᵢ[σ₁₂] E₂) (E → E₂) (↑) :=
@@ -736,7 +736,7 @@ def ulift : ULift E ≃ₗᵢ[R] E :=
 
 variable {R E}
 
-instance : Inhabited (E ≃ₗᵢ[R] E) :=
+instance (priority := 10000) : Inhabited (E ≃ₗᵢ[R] E) :=
   ⟨refl R E⟩
 
 @[simp]
@@ -871,7 +871,7 @@ theorem trans_assoc (eEE₂ : E ≃ₛₗᵢ[σ₁₂] E₂) (eE₂E₃ : E₂ �
   rfl
 #align linear_isometry_equiv.trans_assoc LinearIsometryEquiv.trans_assoc
 
-instance : Group (E ≃ₗᵢ[R] E) where
+instance (priority := 10000) : Group (E ≃ₗᵢ[R] E) where
   mul e₁ e₂ := e₂.trans e₁
   one := refl _ _
   inv := symm
@@ -937,10 +937,10 @@ theorem mul_refl (e : E ≃ₗᵢ[R] E) : e * refl _ _ = e :=
 #align linear_isometry_equiv.mul_refl LinearIsometryEquiv.mul_refl
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `ContinuousLinearEquiv`. -/
-instance : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E ≃SL[σ₁₂] E₂) :=
+instance (priority := 10000) : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E ≃SL[σ₁₂] E₂) :=
   ⟨fun e => ⟨e.toLinearEquiv, e.continuous, e.toIsometryEquiv.symm.continuous⟩⟩
 
-instance : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
+instance (priority := 10000) : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E →SL[σ₁₂] E₂) :=
   ⟨fun e => ↑(e : E ≃SL[σ₁₂] E₂)⟩
 
 @[simp]
@@ -1084,7 +1084,7 @@ theorem comp_continuous_iff {f : α → E} : Continuous (e ∘ f) ↔ Continuous
   e.isometry.comp_continuous_iff
 #align linear_isometry_equiv.comp_continuous_iff LinearIsometryEquiv.comp_continuous_iff
 
-instance completeSpace_map (p : Submodule R E) [CompleteSpace p] :
+instance (priority := 10000) completeSpace_map (p : Submodule R E) [CompleteSpace p] :
     CompleteSpace (p.map (e.toLinearEquiv : E →ₛₗ[σ₁₂] E₂)) :=
   e.toLinearIsometry.completeSpace_map' p
 #align linear_isometry_equiv.complete_space_map LinearIsometryEquiv.completeSpace_map

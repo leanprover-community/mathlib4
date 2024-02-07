@@ -33,10 +33,10 @@ inductive PosNum : Type
   deriving DecidableEq
 #align pos_num PosNum
 
-instance : One PosNum :=
+instance (priority := 10000) : One PosNum :=
   ⟨PosNum.one⟩
 
-instance : Inhabited PosNum :=
+instance (priority := 10000) : Inhabited PosNum :=
   ⟨1⟩
 
 /-- The type of nonnegative binary numbers, using `PosNum`.
@@ -49,13 +49,13 @@ inductive Num : Type
 #align num Num
 #align num.pos Num.pos
 
-instance : Zero Num :=
+instance (priority := 10000) : Zero Num :=
   ⟨Num.zero⟩
 
-instance : One Num :=
+instance (priority := 10000) : One Num :=
   ⟨Num.pos 1⟩
 
-instance : Inhabited Num :=
+instance (priority := 10000) : Inhabited Num :=
   ⟨0⟩
 
 /-- Representation of integers using trichotomy around zero.
@@ -70,13 +70,13 @@ inductive ZNum : Type
 #align znum ZNum
 #align znum.pos ZNum.pos
 
-instance : Zero ZNum :=
+instance (priority := 10000) : Zero ZNum :=
   ⟨ZNum.zero⟩
 
-instance : One ZNum :=
+instance (priority := 10000) : One ZNum :=
   ⟨ZNum.pos 1⟩
 
-instance : Inhabited ZNum :=
+instance (priority := 10000) : Inhabited ZNum :=
   ⟨0⟩
 
 namespace PosNum
@@ -109,7 +109,7 @@ protected def add : PosNum → PosNum → PosNum
   | bit1 a, bit0 b => bit1 (PosNum.add a b)
 #align pos_num.add PosNum.add
 
-instance : Add PosNum :=
+instance (priority := 10000) : Add PosNum :=
   ⟨PosNum.add⟩
 
 /-- The predecessor of a `PosNum` as a `Num`. -/
@@ -145,7 +145,7 @@ protected def mul (a : PosNum) : PosNum → PosNum
   | bit1 b => bit0 (PosNum.mul a b) + a
 #align pos_num.mul PosNum.mul
 
-instance : Mul PosNum :=
+instance (priority := 10000) : Mul PosNum :=
   ⟨PosNum.mul⟩
 
 /-- `ofNatSucc n` is the `PosNum` corresponding to `n + 1`. -/
@@ -159,7 +159,7 @@ def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 #align pos_num.of_nat PosNum.ofNat
 
-instance : OfNat PosNum (n + 1) where
+instance (priority := 10000) : OfNat PosNum (n + 1) where
   ofNat := ofNat (n + 1)
 
 open Ordering
@@ -175,17 +175,17 @@ def cmp : PosNum → PosNum → Ordering
   | bit1 a, bit1 b => cmp a b
 #align pos_num.cmp PosNum.cmp
 
-instance : LT PosNum :=
+instance (priority := 10000) : LT PosNum :=
   ⟨fun a b => cmp a b = Ordering.lt⟩
 
-instance : LE PosNum :=
+instance (priority := 10000) : LE PosNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel PosNum (· < ·)
+instance (priority := 10000) decidableLT : @DecidableRel PosNum (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
 #align pos_num.decidable_lt PosNum.decidableLT
 
-instance decidableLE : @DecidableRel PosNum (· ≤ ·)
+instance (priority := 10000) decidableLE : @DecidableRel PosNum (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
 #align pos_num.decidable_le PosNum.decidableLE
 
@@ -223,10 +223,10 @@ set_option linter.deprecated false
 
 end deprecated
 
-instance : Repr PosNum :=
+instance (priority := 10000) : Repr PosNum :=
   ⟨fun n _ => repr (n : ℕ)⟩
 
-instance : Repr Num :=
+instance (priority := 10000) : Repr Num :=
   ⟨fun n _ => repr (n : ℕ)⟩
 
 end
@@ -253,7 +253,7 @@ protected def add : Num → Num → Num
   | pos a, pos b => pos (a + b)
 #align num.add Num.add
 
-instance : Add Num :=
+instance (priority := 10000) : Add Num :=
   ⟨Num.add⟩
 
 /-- `bit0 n` appends a `0` to the end of `n`, where `bit0 n = n0`. -/
@@ -292,7 +292,7 @@ protected def mul : Num → Num → Num
   | pos a, pos b => pos (a * b)
 #align num.mul Num.mul
 
-instance : Mul Num :=
+instance (priority := 10000) : Mul Num :=
   ⟨Num.mul⟩
 
 open Ordering
@@ -305,17 +305,17 @@ def cmp : Num → Num → Ordering
   | pos a, pos b => PosNum.cmp a b
 #align num.cmp Num.cmp
 
-instance : LT Num :=
+instance (priority := 10000) : LT Num :=
   ⟨fun a b => cmp a b = Ordering.lt⟩
 
-instance : LE Num :=
+instance (priority := 10000) : LE Num :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel Num (· < ·)
+instance (priority := 10000) decidableLT : @DecidableRel Num (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
 #align num.decidable_lt Num.decidableLT
 
-instance decidableLE : @DecidableRel Num (· ≤ ·)
+instance (priority := 10000) decidableLE : @DecidableRel Num (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
 #align num.decidable_le Num.decidableLE
 
@@ -349,7 +349,7 @@ def zNeg : ZNum → ZNum
   | neg a => pos a
 #align znum.zneg ZNum.zNeg
 
-instance : Neg ZNum :=
+instance (priority := 10000) : Neg ZNum :=
   ⟨zNeg⟩
 
 /-- The absolute value of a `ZNum` as a `Num`. -/
@@ -436,7 +436,7 @@ protected def sub (a b : PosNum) : PosNum :=
   | _ => 1
 #align pos_num.sub PosNum.sub
 
-instance : Sub PosNum :=
+instance (priority := 10000) : Sub PosNum :=
   ⟨PosNum.sub⟩
 
 end PosNum
@@ -494,7 +494,7 @@ protected def sub (a b : Num) : Num :=
   ofZNum (sub' a b)
 #align num.sub Num.sub
 
-instance : Sub Num :=
+instance (priority := 10000) : Sub Num :=
   ⟨Num.sub⟩
 
 end Num
@@ -513,7 +513,7 @@ protected def add : ZNum → ZNum → ZNum
   | neg a, neg b => neg (a + b)
 #align znum.add ZNum.add
 
-instance : Add ZNum :=
+instance (priority := 10000) : Add ZNum :=
   ⟨ZNum.add⟩
 
 /-- Multiplication of `ZNum`s. -/
@@ -526,7 +526,7 @@ protected def mul : ZNum → ZNum → ZNum
   | neg a, neg b => pos (a * b)
 #align znum.mul ZNum.mul
 
-instance : Mul ZNum :=
+instance (priority := 10000) : Mul ZNum :=
   ⟨ZNum.mul⟩
 
 open Ordering
@@ -542,17 +542,17 @@ def cmp : ZNum → ZNum → Ordering
   | _, neg _ => gt
 #align znum.cmp ZNum.cmp
 
-instance : LT ZNum :=
+instance (priority := 10000) : LT ZNum :=
   ⟨fun a b => cmp a b = Ordering.lt⟩
 
-instance : LE ZNum :=
+instance (priority := 10000) : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel ZNum (· < ·)
+instance (priority := 10000) decidableLT : @DecidableRel ZNum (· < ·)
   | a, b => by dsimp [LT.lt]; infer_instance
 #align znum.decidable_lt ZNum.decidableLT
 
-instance decidableLE : @DecidableRel ZNum (· ≤ ·)
+instance (priority := 10000) decidableLE : @DecidableRel ZNum (· ≤ ·)
   | a, b => by dsimp [LE.le]; infer_instance
 #align znum.decidable_le ZNum.decidableLE
 
@@ -618,10 +618,10 @@ def mod : Num → Num → Num
   | pos n, pos d => PosNum.mod' n d
 #align num.mod Num.mod
 
-instance : Div Num :=
+instance (priority := 10000) : Div Num :=
   ⟨Num.div⟩
 
-instance : Mod Num :=
+instance (priority := 10000) : Mod Num :=
   ⟨Num.mod⟩
 
 /-- Auxiliary definition for `Num.gcd`. -/
@@ -657,10 +657,10 @@ def mod : ZNum → ZNum → ZNum
   | neg n, d => d.abs.sub' (PosNum.pred' n % d.abs).succ
 #align znum.mod ZNum.mod
 
-instance : Div ZNum :=
+instance (priority := 10000) : Div ZNum :=
   ⟨ZNum.div⟩
 
-instance : Mod ZNum :=
+instance (priority := 10000) : Mod ZNum :=
   ⟨ZNum.mod⟩
 
 /-- Greatest Common Divisor (GCD) of two `ZNum`s. -/
@@ -687,7 +687,7 @@ variable {α : Type*} [Zero α] [One α] [Add α] [Neg α]
   ⟨castZNum⟩
 #align znum_coe znumCoe
 
-instance : Repr ZNum :=
+instance (priority := 10000) : Repr ZNum :=
   ⟨fun n _ => repr (n : ℤ)⟩
 
 end

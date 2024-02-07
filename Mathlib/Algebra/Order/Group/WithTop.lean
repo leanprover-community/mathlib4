@@ -20,7 +20,7 @@ section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] {a b c d : α}
 
-instance linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (WithTop α) where
+instance (priority := 10000) linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (WithTop α) where
   __ := WithTop.linearOrderedAddCommMonoidWithTop
   __ := Option.nontrivial
   neg := Option.map fun a : α => -a

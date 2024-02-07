@@ -59,7 +59,7 @@ class Decomposition where
 #align direct_sum.decomposition DirectSum.Decomposition
 
 /-- `DirectSum.Decomposition` instances, while carrying data, are always equal. -/
-instance : Subsingleton (Decomposition ℳ) :=
+instance (priority := 10000) : Subsingleton (Decomposition ℳ) :=
   ⟨fun x y ↦ by
     cases' x with x xl xr
     cases' y with y yl yr
@@ -212,7 +212,7 @@ the statement of `decompose_neg` with `@Eq (⨁ i, ℳ i) (decompose ℳ (-x)) (
 instead of `decompose ℳ (-x) = -decompose ℳ x`, which forces the typeclasses needed by `⨁ i, ℳ i`
 to be found by unification rather than synthesis, then everything works fine without this
 instance. -/
-instance addCommGroupSetLike [AddCommGroup M] [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ) :
+instance (priority := 10000) addCommGroupSetLike [AddCommGroup M] [SetLike σ M] [AddSubgroupClass σ M] (ℳ : ι → σ) :
     AddCommGroup (⨁ i, ℳ i) := by infer_instance
 #align direct_sum.add_comm_group_set_like DirectSum.addCommGroupSetLike
 

@@ -40,7 +40,7 @@ namespace ValuationSubring
 variable {K}
 variable (A : ValuationSubring K)
 
-instance : SetLike (ValuationSubring K) K where
+instance (priority := 10000) : SetLike (ValuationSubring K) K where
   coe A := A.toSubring
   coe_injective' := by
     intro ⟨_, _⟩ ⟨_, _⟩ h
@@ -77,7 +77,7 @@ theorem neg_mem (x : K) : x ∈ A → -x ∈ A := A.toSubring.neg_mem
 theorem mem_or_inv_mem (x : K) : x ∈ A ∨ x⁻¹ ∈ A := A.mem_or_inv_mem' _
 #align valuation_subring.mem_or_inv_mem ValuationSubring.mem_or_inv_mem
 
-instance : SubringClass (ValuationSubring K) K where
+instance (priority := 10000) : SubringClass (ValuationSubring K) K where
   zero_mem := zero_mem
   add_mem {_} a b := add_mem _ a b
   one_mem := one_mem
@@ -88,13 +88,13 @@ theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K
   fun x y h => by cases x; cases y; congr
 #align valuation_subring.to_subring_injective ValuationSubring.toSubring_injective
 
-instance : CommRing A :=
+instance (priority := 10000) : CommRing A :=
   show CommRing A.toSubring by infer_instance
 
-instance : IsDomain A :=
+instance (priority := 10000) : IsDomain A :=
   show IsDomain A.toSubring by infer_instance
 
-instance : Top (ValuationSubring K) :=
+instance (priority := 10000) : Top (ValuationSubring K) :=
   Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
 
 theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
@@ -104,14 +104,14 @@ theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
 theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 #align valuation_subring.le_top ValuationSubring.le_top
 
-instance : OrderTop (ValuationSubring K) where
+instance (priority := 10000) : OrderTop (ValuationSubring K) where
   top := ⊤
   le_top := le_top
 
-instance : Inhabited (ValuationSubring K) :=
+instance (priority := 10000) : Inhabited (ValuationSubring K) :=
   ⟨⊤⟩
 
-instance : ValuationRing A where
+instance (priority := 10000) : ValuationRing A where
   cond' a b := by
     by_cases h : (b : K) = 0
     · use 0
@@ -135,17 +135,17 @@ instance : ValuationRing A where
       field_simp
       ring
 
-instance : Algebra A K :=
+instance (priority := 10000) : Algebra A K :=
   show Algebra A.toSubring K by infer_instance
 
 -- Porting note: Somehow it cannot find this instance and I'm too lazy to debug. wrong prio?
-instance localRing : LocalRing A := ValuationRing.localRing A
+instance (priority := 10000) localRing : LocalRing A := ValuationRing.localRing A
 
 @[simp]
 theorem algebraMap_apply (a : A) : algebraMap A K a = a := rfl
 #align valuation_subring.algebra_map_apply ValuationSubring.algebraMap_apply
 
-instance : IsFractionRing A K where
+instance (priority := 10000) : IsFractionRing A K where
   map_units' := fun ⟨y, hy⟩ =>
     (Units.mk0 (y : K) fun c => nonZeroDivisors.ne_zero hy <| Subtype.ext c).isUnit
   surj' z := by
@@ -163,7 +163,7 @@ def ValueGroup :=
 #align valuation_subring.value_group ValuationSubring.ValueGroup
 
 -- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
+instance (priority := 10000) : LinearOrderedCommGroupWithZero (ValueGroup A) := by
   unfold ValueGroup
   infer_instance
 
@@ -172,7 +172,7 @@ def valuation : Valuation K A.ValueGroup :=
   ValuationRing.valuation A K
 #align valuation_subring.valuation ValuationSubring.valuation
 
-instance inhabitedValueGroup : Inhabited A.ValueGroup := ⟨A.valuation 0⟩
+instance (priority := 10000) inhabitedValueGroup : Inhabited A.ValueGroup := ⟨A.valuation 0⟩
 #align valuation_subring.inhabited_value_group ValuationSubring.inhabitedValueGroup
 
 theorem valuation_le_one (a : A) : A.valuation a ≤ 1 :=
@@ -242,7 +242,7 @@ def ofLE (R : ValuationSubring K) (S : Subring K) (h : R.toSubring ≤ S) : Valu
 
 section Order
 
-instance : SemilatticeSup (ValuationSubring K) :=
+instance (priority := 10000) : SemilatticeSup (ValuationSubring K) :=
   { (inferInstance : PartialOrder (ValuationSubring K)) with
     sup := fun R S => ofLE R (R.toSubring ⊔ S.toSubring) <| le_sup_left
     le_sup_left := fun R S _ hx => (le_sup_left : R.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
@@ -287,7 +287,7 @@ def idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : Ideal R :=
   (LocalRing.maximalIdeal S).comap (R.inclusion S h)
 #align valuation_subring.ideal_of_le ValuationSubring.idealOfLE
 
-instance prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R S h).IsPrime :=
+instance (priority := 10000) prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R S h).IsPrime :=
   (LocalRing.maximalIdeal S).comap_isPrime _
 #align valuation_subring.prime_ideal_of_le ValuationSubring.prime_idealOfLE
 
@@ -300,13 +300,13 @@ def ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : ValuationSubrin
         (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors) (⟨a, ha⟩ : A)
 #align valuation_subring.of_prime ValuationSubring.ofPrime
 
-instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
+instance (priority := 10000) ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     Algebra A (A.ofPrime P) :=
   -- Porting note: filled in the argument
   Subalgebra.algebra (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 #align valuation_subring.of_prime_algebra ValuationSubring.ofPrimeAlgebra
 
-instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
+instance (priority := 10000) ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     -- Porting note: added instance
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
     IsScalarTower A (A.ofPrime P) K :=
@@ -315,7 +315,7 @@ instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime]
     (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 #align valuation_subring.of_prime_scalar_tower ValuationSubring.ofPrime_scalar_tower
 
-instance ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
+instance (priority := 10000) ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     IsLocalization.AtPrime (A.ofPrime P) P := by
   apply
     Localization.subalgebra.isLocalization_ofField K P.primeCompl
@@ -398,7 +398,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 #align valuation_subring.prime_spectrum_order_equiv ValuationSubring.primeSpectrumOrderEquiv
 
-instance linearOrderOverring : LinearOrder {S // A ≤ S} :=
+instance (priority := 10000) linearOrderOverring : LinearOrder {S // A ≤ S} :=
   { (inferInstance : PartialOrder _) with
     le_total :=
       let i : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
@@ -846,7 +846,7 @@ theorem mem_smul_pointwise_iff_exists (g : G) (x : K) (S : ValuationSubring K) :
   (Set.mem_smul_set : x ∈ g • (S : Set K) ↔ _)
 #align valuation_subring.mem_smul_pointwise_iff_exists ValuationSubring.mem_smul_pointwise_iff_exists
 
-instance pointwise_central_scalar [MulSemiringAction Gᵐᵒᵖ K] [IsCentralScalar G K] :
+instance (priority := 10000) pointwise_central_scalar [MulSemiringAction Gᵐᵒᵖ K] [IsCentralScalar G K] :
     IsCentralScalar G (ValuationSubring K) :=
   ⟨fun g S => toSubring_injective <| op_smul_eq_smul g S.toSubring⟩
 #align valuation_subring.pointwise_central_scalar ValuationSubring.pointwise_central_scalar

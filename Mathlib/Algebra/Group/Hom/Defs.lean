@@ -189,12 +189,12 @@ class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [FunLike F 
 #align one_hom_class OneHomClass
 
 @[to_additive]
-instance OneHom.funLike : FunLike (OneHom M N) M N where
+instance (priority := 10000) OneHom.funLike : FunLike (OneHom M N) M N where
   coe := OneHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
 @[to_additive]
-instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
+instance (priority := 10000) OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
   map_one := OneHom.map_one'
 #align one_hom.one_hom_class OneHom.oneHomClass
 #align zero_hom.zero_hom_class ZeroHom.zeroHomClass
@@ -246,7 +246,7 @@ def OneHomClass.toOneHom [OneHomClass F M N] (f : F) : OneHom M N where
 /-- Any type satisfying `OneHomClass` can be cast into `OneHom` via `OneHomClass.toOneHom`. -/
 @[to_additive "Any type satisfying `ZeroHomClass` can be cast into `ZeroHom` via
 `ZeroHomClass.toZeroHom`. "]
-instance [OneHomClass F M N] : CoeTC F (OneHom M N) :=
+instance (priority := 10000) [OneHomClass F M N] : CoeTC F (OneHom M N) :=
   ⟨OneHomClass.toOneHom⟩
 
 @[to_additive (attr := simp)]
@@ -291,13 +291,13 @@ class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [FunLike F 
 #align mul_hom_class MulHomClass
 
 @[to_additive]
-instance MulHom.funLike : FunLike (M →ₙ* N) M N where
+instance (priority := 10000) MulHom.funLike : FunLike (M →ₙ* N) M N where
   coe := MulHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
 /-- `MulHom` is a type of multiplication-preserving homomorphisms -/
 @[to_additive "`AddHom` is a type of addition-preserving homomorphisms"]
-instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
+instance (priority := 10000) MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
   map_mul := MulHom.map_mul'
 #align mul_hom.mul_hom_class MulHom.mulHomClass
 #align add_hom.add_hom_class AddHom.addHomClass
@@ -322,7 +322,7 @@ def MulHomClass.toMulHom [MulHomClass F M N] (f : F) : M →ₙ* N where
 /-- Any type satisfying `MulHomClass` can be cast into `MulHom` via `MulHomClass.toMulHom`. -/
 @[to_additive "Any type satisfying `AddHomClass` can be cast into `AddHom` via
 `AddHomClass.toAddHom`."]
-instance [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
+instance (priority := 10000) [MulHomClass F M N] : CoeTC F (M →ₙ* N) :=
   ⟨MulHomClass.toMulHom⟩
 
 @[to_additive (attr := simp)]
@@ -367,7 +367,7 @@ class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneC
 #align monoid_hom_class MonoidHomClass
 
 @[to_additive]
-instance MonoidHom.instFunLike : FunLike (M →* N) M N where
+instance (priority := 10000) MonoidHom.instFunLike : FunLike (M →* N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -377,7 +377,7 @@ instance MonoidHom.instFunLike : FunLike (M →* N) M N where
     exact h
 
 @[to_additive]
-instance MonoidHom.instMonoidHomClass : MonoidHomClass (M →* N) M N where
+instance (priority := 10000) MonoidHom.instMonoidHomClass : MonoidHomClass (M →* N) M N where
   map_mul := MonoidHom.map_mul'
   map_one f := f.toOneHom.map_one'
 #align monoid_hom.monoid_hom_class MonoidHom.instMonoidHomClass
@@ -399,7 +399,7 @@ def MonoidHomClass.toMonoidHom [MonoidHomClass F M N] (f : F) : M →* N :=
 `MonoidHomClass.toMonoidHom`. -/
 @[to_additive "Any type satisfying `AddMonoidHomClass` can be cast into `AddMonoidHom` via
 `AddMonoidHomClass.toAddMonoidHom`."]
-instance [MonoidHomClass F M N] : CoeTC F (M →* N) :=
+instance (priority := 10000) [MonoidHomClass F M N] : CoeTC F (M →* N) :=
   ⟨MonoidHomClass.toMonoidHom⟩
 
 @[to_additive (attr := simp)]
@@ -504,7 +504,7 @@ class MonoidWithZeroHomClass (F : Type*) (M N : outParam Type*)
   extends MonoidHomClass F M N, ZeroHomClass F M N : Prop
 #align monoid_with_zero_hom_class MonoidWithZeroHomClass
 
-instance MonoidWithZeroHom.funLike : FunLike (M →*₀ N) M N where
+instance (priority := 10000) MonoidWithZeroHom.funLike : FunLike (M →*₀ N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -513,13 +513,13 @@ instance MonoidWithZeroHom.funLike : FunLike (M →*₀ N) M N where
     apply DFunLike.coe_injective'
     exact h
 
-instance MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
+instance (priority := 10000) MonoidWithZeroHom.monoidWithZeroHomClass : MonoidWithZeroHomClass (M →*₀ N) M N where
   map_mul := MonoidWithZeroHom.map_mul'
   map_one := MonoidWithZeroHom.map_one'
   map_zero f := f.map_zero'
 #align monoid_with_zero_hom.monoid_with_zero_hom_class MonoidWithZeroHom.monoidWithZeroHomClass
 
-instance [Subsingleton M] : Subsingleton (M →*₀ N) := .of_oneHomClass
+instance (priority := 10000) [Subsingleton M] : Subsingleton (M →*₀ N) := .of_oneHomClass
 
 variable [FunLike F M N]
 
@@ -531,7 +531,7 @@ def MonoidWithZeroHomClass.toMonoidWithZeroHom [MonoidWithZeroHomClass F M N] (f
 
 /-- Any type satisfying `MonoidWithZeroHomClass` can be cast into `MonoidWithZeroHom` via
 `MonoidWithZeroHomClass.toMonoidWithZeroHom`. -/
-instance [MonoidWithZeroHomClass F M N] : CoeTC F (M →*₀ N) :=
+instance (priority := 10000) [MonoidWithZeroHomClass F M N] : CoeTC F (M →*₀ N) :=
   ⟨MonoidWithZeroHomClass.toMonoidWithZeroHom⟩
 
 @[simp]
@@ -551,7 +551,7 @@ attribute [coe] AddMonoidHom.toZeroHom
 
 /-- `MonoidHom` down-cast to a `OneHom`, forgetting the multiplicative property. -/
 @[to_additive "`AddMonoidHom` down-cast to a `ZeroHom`, forgetting the additive property"]
-instance MonoidHom.coeToOneHom [MulOneClass M] [MulOneClass N] :
+instance (priority := 10000) MonoidHom.coeToOneHom [MulOneClass M] [MulOneClass N] :
   Coe (M →* N) (OneHom M N) := ⟨MonoidHom.toOneHom⟩
 #align monoid_hom.has_coe_to_one_hom MonoidHom.coeToOneHom
 #align add_monoid_hom.has_coe_to_zero_hom AddMonoidHom.coeToZeroHom
@@ -561,7 +561,7 @@ attribute [coe] AddMonoidHom.toAddHom
 
 /-- `MonoidHom` down-cast to a `MulHom`, forgetting the 1-preserving property. -/
 @[to_additive "`AddMonoidHom` down-cast to an `AddHom`, forgetting the 0-preserving property."]
-instance MonoidHom.coeToMulHom [MulOneClass M] [MulOneClass N] :
+instance (priority := 10000) MonoidHom.coeToMulHom [MulOneClass M] [MulOneClass N] :
   Coe (M →* N) (M →ₙ* N) := ⟨MonoidHom.toMulHom⟩
 #align monoid_hom.has_coe_to_mul_hom MonoidHom.coeToMulHom
 #align add_monoid_hom.has_coe_to_add_hom AddMonoidHom.coeToAddHom
@@ -569,14 +569,14 @@ instance MonoidHom.coeToMulHom [MulOneClass M] [MulOneClass N] :
 attribute [coe] MonoidWithZeroHom.toMonoidHom
 
 /-- `MonoidWithZeroHom` down-cast to a `MonoidHom`, forgetting the 0-preserving property. -/
-instance MonoidWithZeroHom.coeToMonoidHom [MulZeroOneClass M] [MulZeroOneClass N] :
+instance (priority := 10000) MonoidWithZeroHom.coeToMonoidHom [MulZeroOneClass M] [MulZeroOneClass N] :
   Coe (M →*₀ N) (M →* N) := ⟨MonoidWithZeroHom.toMonoidHom⟩
 #align monoid_with_zero_hom.has_coe_to_monoid_hom MonoidWithZeroHom.coeToMonoidHom
 
 attribute [coe] MonoidWithZeroHom.toZeroHom
 
 /-- `MonoidWithZeroHom` down-cast to a `ZeroHom`, forgetting the monoidal property. -/
-instance MonoidWithZeroHom.coeToZeroHom [MulZeroOneClass M] [MulZeroOneClass N] :
+instance (priority := 10000) MonoidWithZeroHom.coeToZeroHom [MulZeroOneClass M] [MulZeroOneClass N] :
   Coe (M →*₀ N) (ZeroHom M N) := ⟨MonoidWithZeroHom.toZeroHom⟩
 #align monoid_with_zero_hom.has_coe_to_zero_hom MonoidWithZeroHom.coeToZeroHom
 
@@ -1319,18 +1319,18 @@ protected def End := M →* M
 
 namespace End
 
-instance : Monoid (Monoid.End M) where
+instance (priority := 10000) : Monoid (Monoid.End M) where
   mul := MonoidHom.comp
   one := MonoidHom.id M
   mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
 
-instance : Inhabited (Monoid.End M) := ⟨1⟩
+instance (priority := 10000) : Inhabited (Monoid.End M) := ⟨1⟩
 
-instance : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
+instance (priority := 10000) : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
 
-instance : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
+instance (priority := 10000) : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
 
 end End
 
@@ -1354,18 +1354,18 @@ protected def End := A →+ A
 
 namespace End
 
-instance monoid : Monoid (AddMonoid.End A) where
+instance (priority := 10000) monoid : Monoid (AddMonoid.End A) where
   mul := AddMonoidHom.comp
   one := AddMonoidHom.id A
   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
   mul_one := AddMonoidHom.comp_id
   one_mul := AddMonoidHom.id_comp
 
-instance : Inhabited (AddMonoid.End A) := ⟨1⟩
+instance (priority := 10000) : Inhabited (AddMonoid.End A) := ⟨1⟩
 
-instance : FunLike (AddMonoid.End A) A A := AddMonoidHom.instFunLike
+instance (priority := 10000) : FunLike (AddMonoid.End A) A A := AddMonoidHom.instFunLike
 
-instance : AddMonoidHomClass (AddMonoid.End A) A A := AddMonoidHom.instAddMonoidHomClass
+instance (priority := 10000) : AddMonoidHomClass (AddMonoid.End A) A A := AddMonoidHom.instAddMonoidHomClass
 
 end End
 
@@ -1383,16 +1383,16 @@ end End
 
 /-- `1` is the homomorphism sending all elements to `1`. -/
 @[to_additive "`0` is the homomorphism sending all elements to `0`."]
-instance [One M] [One N] : One (OneHom M N) := ⟨⟨fun _ => 1, rfl⟩⟩
+instance (priority := 10000) [One M] [One N] : One (OneHom M N) := ⟨⟨fun _ => 1, rfl⟩⟩
 
 /-- `1` is the multiplicative homomorphism sending all elements to `1`. -/
 @[to_additive "`0` is the additive homomorphism sending all elements to `0`"]
-instance [Mul M] [MulOneClass N] : One (M →ₙ* N) :=
+instance (priority := 10000) [Mul M] [MulOneClass N] : One (M →ₙ* N) :=
   ⟨⟨fun _ => 1, fun _ _ => (one_mul 1).symm⟩⟩
 
 /-- `1` is the monoid homomorphism sending all elements to `1`. -/
 @[to_additive "`0` is the additive monoid homomorphism sending all elements to `0`."]
-instance [MulOneClass M] [MulOneClass N] : One (M →* N) :=
+instance (priority := 10000) [MulOneClass M] [MulOneClass N] : One (M →* N) :=
   ⟨⟨⟨fun _ => 1, rfl⟩, fun _ _ => (one_mul 1).symm⟩⟩
 
 @[to_additive (attr := simp)]
@@ -1419,16 +1419,16 @@ theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : O
 #align zero_hom.comp_zero ZeroHom.comp_zero
 
 @[to_additive]
-instance [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩
+instance (priority := 10000) [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩
 
 @[to_additive]
-instance [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) := ⟨1⟩
+instance (priority := 10000) [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) := ⟨1⟩
 
 @[to_additive]
-instance [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) := ⟨1⟩
+instance (priority := 10000) [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) := ⟨1⟩
 
 -- unlike the other homs, `MonoidWithZeroHom` does not have a `1` or `0`
-instance [MulZeroOneClass M] : Inhabited (M →*₀ M) := ⟨MonoidWithZeroHom.id M⟩
+instance (priority := 10000) [MulZeroOneClass M] : Inhabited (M →*₀ M) := ⟨MonoidWithZeroHom.id M⟩
 
 namespace MonoidHom
 

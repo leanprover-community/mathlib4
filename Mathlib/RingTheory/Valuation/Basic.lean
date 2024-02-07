@@ -92,7 +92,7 @@ class ValuationClass (F) (R Γ₀ : outParam (Type*)) [LinearOrderedCommMonoidWi
 
 export ValuationClass (map_add_le_max)
 
-instance [FunLike F R Γ₀] [ValuationClass F R Γ₀] : CoeTC F (Valuation R Γ₀) :=
+instance (priority := 10000) [FunLike F R Γ₀] [ValuationClass F R Γ₀] : CoeTC F (Valuation R Γ₀) :=
   ⟨fun f =>
     { toFun := f
       map_one' := map_one f
@@ -118,13 +118,13 @@ section Monoid
 
 variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
 
-instance : FunLike (Valuation R Γ₀) R Γ₀ where
+instance (priority := 10000) : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_,_⟩, _⟩, _⟩ := f
     congr
 
-instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
+instance (priority := 10000) : ValuationClass (Valuation R Γ₀) R Γ₀ where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_zero f := f.map_zero'
@@ -557,7 +557,7 @@ theorem mem_supp_iff (x : R) : x ∈ supp v ↔ v x = 0 :=
 #align valuation.mem_supp_iff Valuation.mem_supp_iff
 
 /-- The support of a valuation is a prime ideal. -/
-instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
+instance (priority := 10000) [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
   ⟨fun h =>
     one_ne_zero (α := Γ₀) <|
       calc
@@ -610,7 +610,7 @@ section Basic
 section Monoid
 
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
-instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
+instance (priority := 10000) (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where
   coe v := v.toMonoidWithZeroHom.toFun
   coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})

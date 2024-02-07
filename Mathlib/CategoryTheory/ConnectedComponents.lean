@@ -44,7 +44,7 @@ def ConnectedComponents (J : Type u₁) [Category.{v₁} J] : Type u₁ :=
   Quotient (Zigzag.setoid J)
 #align category_theory.connected_components CategoryTheory.ConnectedComponents
 
-instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
+instance (priority := 10000) [Inhabited J] : Inhabited (ConnectedComponents J) :=
   ⟨Quotient.mk'' default⟩
 
 /-- Given an index for a connected component, produce the actual component as a full subcategory. -/
@@ -52,7 +52,7 @@ def Component (j : ConnectedComponents J) : Type u₁ :=
   FullSubcategory fun k => Quotient.mk'' k = j
 #align category_theory.component CategoryTheory.Component
 
-instance : Category (Component (j : ConnectedComponents J)) :=
+instance (priority := 10000) : Category (Component (j : ConnectedComponents J)) :=
   FullSubcategory.category _
 
 --porting note : it was originally @[simps (config := { rhsMd := semireducible })]
@@ -62,22 +62,22 @@ def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
   fullSubcategoryInclusion _
 #align category_theory.component.ι CategoryTheory.Component.ι
 
-instance : Full (Component.ι (j : ConnectedComponents J)) :=
+instance (priority := 10000) : Full (Component.ι (j : ConnectedComponents J)) :=
   FullSubcategory.full _
 
-instance : Faithful (Component.ι (j : ConnectedComponents J)) :=
+instance (priority := 10000) : Faithful (Component.ι (j : ConnectedComponents J)) :=
   FullSubcategory.faithful _
 
 /-- Each connected component of the category is nonempty. -/
-instance (j : ConnectedComponents J) : Nonempty (Component j) := by
+instance (priority := 10000) (j : ConnectedComponents J) : Nonempty (Component j) := by
   induction j using Quotient.inductionOn'
   exact ⟨⟨_, rfl⟩⟩
 
-instance (j : ConnectedComponents J) : Inhabited (Component j) :=
+instance (priority := 10000) (j : ConnectedComponents J) : Inhabited (Component j) :=
   Classical.inhabited_of_nonempty'
 
 /-- Each connected component of the category is connected. -/
-instance (j : ConnectedComponents J) : IsConnected (Component j) := by
+instance (priority := 10000) (j : ConnectedComponents J) : IsConnected (Component j) := by
   -- Show it's connected by constructing a zigzag (in `Component j`) between any two objects
   apply isConnected_of_zigzag
   rintro ⟨j₁, hj₁⟩ ⟨j₂, rfl⟩
@@ -131,7 +131,7 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
   rfl
 #align category_theory.inclusion_comp_decomposed_to CategoryTheory.inclusion_comp_decomposedTo
 
-instance : Full (decomposedTo J)
+instance (priority := 10000) : Full (decomposedTo J)
     where
   preimage := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
@@ -149,14 +149,14 @@ instance : Full (decomposedTo J)
     subst this
     rfl
 
-instance : Faithful (decomposedTo J) where
+instance (priority := 10000) : Faithful (decomposedTo J) where
   map_injective := by
     rintro ⟨_, j, rfl⟩ ⟨_, k, hY⟩ ⟨f⟩ ⟨_⟩ rfl
     rfl
 
-instance : EssSurj (decomposedTo J) where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
+instance (priority := 10000) : EssSurj (decomposedTo J) where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
 
-instance : IsEquivalence (decomposedTo J) :=
+instance (priority := 10000) : IsEquivalence (decomposedTo J) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
 -- porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]

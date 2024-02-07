@@ -61,7 +61,7 @@ instance (priority := 100) RegularMono.mono (f : X ⟶ Y) [RegularMono f] : Mono
   mono_of_isLimit_fork RegularMono.isLimit
 #align category_theory.regular_mono.mono CategoryTheory.RegularMono.mono
 
-instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
+instance (priority := 10000) equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
     RegularMono (equalizer.ι g h) where
   Z := Y
   left := g
@@ -200,7 +200,7 @@ instance (priority := 100) RegularEpi.epi (f : X ⟶ Y) [RegularEpi f] : Epi f :
   epi_of_isColimit_cofork RegularEpi.isColimit
 #align category_theory.regular_epi.epi CategoryTheory.RegularEpi.epi
 
-instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
+instance (priority := 10000) coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
     RegularEpi (coequalizer.π g h) where
   W := X
   left := g

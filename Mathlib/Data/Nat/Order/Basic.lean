@@ -28,12 +28,12 @@ namespace Nat
 
 /-! ### instances -/
 
-instance orderBot : OrderBot ℕ where
+instance (priority := 10000) orderBot : OrderBot ℕ where
   bot := 0
   bot_le := Nat.zero_le
 #align nat.order_bot Nat.orderBot
 
-instance linearOrderedCommSemiring : LinearOrderedCommSemiring ℕ :=
+instance (priority := 10000) linearOrderedCommSemiring : LinearOrderedCommSemiring ℕ :=
   { Nat.commSemiring, Nat.linearOrder with
     lt := Nat.lt, add_le_add_left := @Nat.add_le_add_left,
     le_of_add_le_add_left := @Nat.le_of_add_le_add_left,
@@ -42,7 +42,7 @@ instance linearOrderedCommSemiring : LinearOrderedCommSemiring ℕ :=
     mul_lt_mul_of_pos_right := @Nat.mul_lt_mul_of_pos_right,
     exists_pair_ne := ⟨0, 1, ne_of_lt Nat.zero_lt_one⟩ }
 
-instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :=
+instance (priority := 10000) linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :=
   { Nat.linearOrderedCommSemiring, (inferInstance : CommMonoidWithZero ℕ) with
     mul_le_mul_left := fun _ _ h c => Nat.mul_le_mul_left c h }
 
@@ -50,32 +50,32 @@ instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :
 
 
 -- Not using `inferInstance` avoids `Classical.choice` in the following two
-instance linearOrderedSemiring : LinearOrderedSemiring ℕ :=
+instance (priority := 10000) linearOrderedSemiring : LinearOrderedSemiring ℕ :=
   inferInstance
 
-instance strictOrderedSemiring : StrictOrderedSemiring ℕ :=
+instance (priority := 10000) strictOrderedSemiring : StrictOrderedSemiring ℕ :=
   inferInstance
 
-instance strictOrderedCommSemiring : StrictOrderedCommSemiring ℕ :=
+instance (priority := 10000) strictOrderedCommSemiring : StrictOrderedCommSemiring ℕ :=
   inferInstance
 
-instance orderedSemiring : OrderedSemiring ℕ :=
+instance (priority := 10000) orderedSemiring : OrderedSemiring ℕ :=
   StrictOrderedSemiring.toOrderedSemiring'
 
-instance orderedCommSemiring : OrderedCommSemiring ℕ :=
+instance (priority := 10000) orderedCommSemiring : OrderedCommSemiring ℕ :=
   StrictOrderedCommSemiring.toOrderedCommSemiring'
 
-instance linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid ℕ :=
+instance (priority := 10000) linearOrderedCancelAddCommMonoid : LinearOrderedCancelAddCommMonoid ℕ :=
   inferInstance
 
-instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
+instance (priority := 10000) canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ :=
   { Nat.nontrivial, Nat.orderBot, (inferInstance : OrderedAddCommMonoid ℕ),
     (inferInstance : LinearOrderedSemiring ℕ), (inferInstance : CommSemiring ℕ) with
     exists_add_of_le := fun {_ _} h => (Nat.le.dest h).imp fun _ => Eq.symm,
     le_self_add := Nat.le_add_right,
     eq_zero_or_eq_zero_of_mul_eq_zero := Nat.eq_zero_of_mul_eq_zero }
 
-instance canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ :=
+instance (priority := 10000) canonicallyLinearOrderedAddCommMonoid : CanonicallyLinearOrderedAddCommMonoid ℕ :=
   { (inferInstance : CanonicallyOrderedAddCommMonoid ℕ), Nat.linearOrder with }
 
 variable {m n k l : ℕ}
@@ -211,7 +211,7 @@ theorem pred_le_iff : pred m ≤ n ↔ m ≤ succ n :=
 Most lemmas come from the `OrderedSub` instance on `ℕ`. -/
 
 
-instance : OrderedSub ℕ := by
+instance (priority := 10000) : OrderedSub ℕ := by
   constructor
   intro m n k
   induction' n with n ih generalizing k
@@ -731,7 +731,7 @@ end Bit
 /-! ### decidability of predicates -/
 
 
-instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [H : DecidablePred P] :
+instance (priority := 10000) decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [H : DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x < hi → P x) :=
   decidable_of_iff (∀ x < hi - lo, P (lo + x))
     ⟨fun al x hl hh => by
@@ -740,7 +740,7 @@ instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [H : DecidablePred P] :
       al _ (Nat.le_add_right _ _) (lt_tsub_iff_left.mp h)⟩
 #align nat.decidable_lo_hi Nat.decidableLoHi
 
-instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
+instance (priority := 10000) decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     ball_congr fun _ _ => imp_congr lt_succ_iff Iff.rfl

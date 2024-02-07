@@ -42,12 +42,12 @@ variable {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
   (M : Type u) [TopologicalSpace M] [ChartedSpace H M] (M' : Type u) [TopologicalSpace M']
   [ChartedSpace H' M']
 
-instance TopCat.of.chartedSpace : ChartedSpace H (TopCat.of M) :=
+instance (priority := 10000) TopCat.of.chartedSpace : ChartedSpace H (TopCat.of M) :=
   (inferInstance : ChartedSpace H M)
 set_option linter.uppercaseLean3 false in
 #align Top.of.charted_space TopCat.of.chartedSpace
 
-instance TopCat.of.hasGroupoid [HasGroupoid M G] : HasGroupoid (TopCat.of M) G :=
+instance (priority := 10000) TopCat.of.hasGroupoid [HasGroupoid M G] : HasGroupoid (TopCat.of M) G :=
   (inferInstance : HasGroupoid M G)
 set_option linter.uppercaseLean3 false in
 #align Top.of.has_groupoid TopCat.of.hasGroupoid
@@ -84,7 +84,7 @@ def StructureGroupoid.LocalInvariantProp.sheaf (hG : LocalInvariantProp G G' P) 
   TopCat.subsheafToTypes (hG.localPredicate M M')
 #align structure_groupoid.local_invariant_prop.sheaf StructureGroupoid.LocalInvariantProp.sheaf
 
-instance StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun (hG : LocalInvariantProp G G' P)
+instance (priority := 10000) StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun (hG : LocalInvariantProp G G' P)
     (U : (Opens (TopCat.of M))ᵒᵖ) : CoeFun ((hG.sheaf M M').val.obj U) fun _ => ↑(unop U) → M' where
   coe a := a.1
 #align structure_groupoid.local_invariant_prop.sheaf_has_coe_to_fun StructureGroupoid.LocalInvariantProp.sheafHasCoeToFun

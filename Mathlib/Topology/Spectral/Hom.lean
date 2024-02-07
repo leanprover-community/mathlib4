@@ -93,7 +93,7 @@ instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpa
   { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
 #align spectral_map_class.to_continuous_map_class SpectralMapClass.toContinuousMapClass
 
-instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] :
+instance (priority := 10000) [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] :
     CoeTC F (SpectralMap α β) :=
   ⟨fun f => ⟨_, map_spectral f⟩⟩
 
@@ -109,11 +109,11 @@ def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
   ⟨_, f.spectral'.continuous⟩
 #align spectral_map.to_continuous_map SpectralMap.toContinuousMap
 
-instance instFunLike : FunLike (SpectralMap α β) α β where
+instance (priority := 10000) instFunLike : FunLike (SpectralMap α β) α β where
   coe := SpectralMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
-instance : SpectralMapClass (SpectralMap α β) α β where
+instance (priority := 10000) : SpectralMapClass (SpectralMap α β) α β where
   map_spectral f := f.spectral'
 
 @[simp]
@@ -148,7 +148,7 @@ protected def id : SpectralMap α α :=
   ⟨id, isSpectralMap_id⟩
 #align spectral_map.id SpectralMap.id
 
-instance : Inhabited (SpectralMap α α) :=
+instance (priority := 10000) : Inhabited (SpectralMap α α) :=
   ⟨SpectralMap.id α⟩
 
 @[simp]

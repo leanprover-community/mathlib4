@@ -28,7 +28,7 @@ variable {α : Type u} {β : Type v} {φ : Type w}
 
 variable {n : ℕ}
 
-instance [DecidableEq α] : DecidableEq (Vector α n) :=
+instance (priority := 10000) [DecidableEq α] : DecidableEq (Vector α n) :=
   inferInstanceAs (DecidableEq {l : List α // l.length = n})
 
 /-- The empty vector with elements of type `α` -/
@@ -287,7 +287,7 @@ theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.tak
   rfl
 #align vector.to_list_take Vector.toList_take
 
-instance : GetElem (Vector α n) Nat α fun _ i => i < n where
+instance (priority := 10000) : GetElem (Vector α n) Nat α fun _ i => i < n where
   getElem := fun x i h => get x ⟨i, h⟩
 
 end Vector

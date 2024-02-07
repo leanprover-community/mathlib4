@@ -417,13 +417,13 @@ theorem adjunction_unit_app {X : Scheme} :
 -- Porting Note: Commented
 -- attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
 
-instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit := by
+instance (priority := 10000) isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit := by
   dsimp only [locallyRingedSpaceAdjunction, Adjunction.mkOfUnitCounit_counit]
   -- Porting Note: `dsimp` was unnecessary and had to make this explicit
   convert IsIso.of_iso_inv (NatIso.op SpecΓIdentity) using 1
 #align algebraic_geometry.Γ_Spec.is_iso_LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_locallyRingedSpaceAdjunction_counit
 
-instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
+instance (priority := 10000) isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   apply (config := { allowSynthFailures := true }) NatIso.isIso_of_isIso_app
   intro R
   rw [adjunction_counit_app]
@@ -474,39 +474,39 @@ theorem SpecΓIdentity_hom_app_presheaf_obj {X : Scheme} (U : Opens X) :
 
 
 /-- Spec preserves limits. -/
-instance : Limits.PreservesLimits Spec.toLocallyRingedSpace :=
+instance (priority := 10000) : Limits.PreservesLimits Spec.toLocallyRingedSpace :=
   ΓSpec.locallyRingedSpaceAdjunction.rightAdjointPreservesLimits
 
-instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
+instance (priority := 10000) Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
   ΓSpec.adjunction.rightAdjointPreservesLimits
 #align algebraic_geometry.Spec.preserves_limits AlgebraicGeometry.Spec.preservesLimits
 
 /-- Spec is a full functor. -/
-instance : Full Spec.toLocallyRingedSpace :=
+instance (priority := 10000) : Full Spec.toLocallyRingedSpace :=
   rFullOfCounitIsIso ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.full : Full Scheme.Spec :=
+instance (priority := 10000) Spec.full : Full Scheme.Spec :=
   rFullOfCounitIsIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
-instance : Faithful Spec.toLocallyRingedSpace :=
+instance (priority := 10000) : Faithful Spec.toLocallyRingedSpace :=
   R_faithful_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.faithful : Faithful Scheme.Spec :=
+instance (priority := 10000) Spec.faithful : Faithful Scheme.Spec :=
   R_faithful_of_counit_isIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 
-instance : IsRightAdjoint Spec.toLocallyRingedSpace :=
+instance (priority := 10000) : IsRightAdjoint Spec.toLocallyRingedSpace :=
   ⟨_, ΓSpec.locallyRingedSpaceAdjunction⟩
 
-instance : IsRightAdjoint Scheme.Spec :=
+instance (priority := 10000) : IsRightAdjoint Scheme.Spec :=
   ⟨_, ΓSpec.adjunction⟩
 
-instance : Reflective Spec.toLocallyRingedSpace :=
+instance (priority := 10000) : Reflective Spec.toLocallyRingedSpace :=
   ⟨⟩
 
-instance Spec.reflective : Reflective Scheme.Spec :=
+instance (priority := 10000) Spec.reflective : Reflective Scheme.Spec :=
   ⟨⟩
 #align algebraic_geometry.Spec.reflective AlgebraicGeometry.Spec.reflective
 

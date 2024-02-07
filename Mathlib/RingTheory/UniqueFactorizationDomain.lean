@@ -62,7 +62,7 @@ theorem of_wfDvdMonoid_associates (_ : WfDvdMonoid (Associates α)) : WfDvdMonoi
 
 variable [WfDvdMonoid α]
 
-instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
+instance (priority := 10000) wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
   ⟨(mk_surjective.wellFounded_iff mk_dvdNotUnit_mk_iff.symm).1 wellFounded_dvdNotUnit⟩
 #align wf_dvd_monoid.wf_dvd_monoid_associates WfDvdMonoid.wfDvdMonoid_associates
 
@@ -177,7 +177,7 @@ theorem ufm_of_gcd_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α]
   { ‹WfDvdMonoid α› with irreducible_iff_prime := GCDMonoid.irreducible_iff_prime }
 #align ufm_of_gcd_of_wf_dvd_monoid ufm_of_gcd_of_wfDvdMonoid
 
-instance Associates.ufm [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
+instance (priority := 10000) Associates.ufm [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
     UniqueFactorizationMonoid (Associates α) :=
   { (WfDvdMonoid.wfDvdMonoid_associates : WfDvdMonoid (Associates α)) with
     irreducible_iff_prime := by
@@ -878,7 +878,7 @@ protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
       apply normalizedFactors_prod hx)
 #align unique_factorization_monoid.normalization_monoid UniqueFactorizationMonoid.normalizationMonoid
 
-noncomputable instance : Inhabited (NormalizationMonoid α) :=
+noncomputable instance (priority := 10000) : Inhabited (NormalizationMonoid α) :=
   ⟨UniqueFactorizationMonoid.normalizationMonoid⟩
 
 end UniqueFactorizationMonoid
@@ -1392,7 +1392,7 @@ def FactorSetMem (p : Associates α) (s : FactorSet α) : Prop :=
   if hp : Irreducible p then BfactorSetMem ⟨p, hp⟩ s else False
 #align associates.factor_set_mem Associates.FactorSetMem
 
-instance : Membership (Associates α) (FactorSet α) :=
+instance (priority := 10000) : Membership (Associates α) (FactorSet α) :=
   ⟨FactorSetMem⟩
 
 @[simp]
@@ -1622,13 +1622,13 @@ theorem prod_le [Nontrivial α] {a b : FactorSet α} : a.prod ≤ b.prod ↔ a �
         prod_mono
 #align associates.prod_le Associates.prod_le
 
-noncomputable instance : Sup (Associates α) :=
+noncomputable instance (priority := 10000) : Sup (Associates α) :=
   ⟨fun a b => (a.factors ⊔ b.factors).prod⟩
 
-noncomputable instance : Inf (Associates α) :=
+noncomputable instance (priority := 10000) : Inf (Associates α) :=
   ⟨fun a b => (a.factors ⊓ b.factors).prod⟩
 
-noncomputable instance : Lattice (Associates α) :=
+noncomputable instance (priority := 10000) : Lattice (Associates α) :=
   { Associates.instPartialOrder with
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)

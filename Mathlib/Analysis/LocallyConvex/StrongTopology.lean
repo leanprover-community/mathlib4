@@ -69,7 +69,7 @@ variable [NormedField 𝕜₁] [NormedField 𝕜₂] [Module 𝕜₁ E] [Module 
 
 variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
 
-instance : LocallyConvexSpace R (E →SL[σ] F) :=
+instance (priority := 10000) : LocallyConvexSpace R (E →SL[σ] F) :=
   strongTopology.locallyConvexSpace R _ ⟨∅, Bornology.isVonNBounded_empty 𝕜₁ E⟩
     (directedOn_of_sup_mem fun _ _ => Bornology.IsVonNBounded.union)
 

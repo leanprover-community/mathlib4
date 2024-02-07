@@ -118,31 +118,31 @@ private irreducible_def neg {R : Type u} [Ring R] : R[X] → R[X]
 private irreducible_def mul : R[X] → R[X] → R[X]
   | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
-instance zero : Zero R[X] :=
+instance (priority := 10000) zero : Zero R[X] :=
   ⟨⟨0⟩⟩
 #align polynomial.has_zero Polynomial.zero
 
-instance one : One R[X] :=
+instance (priority := 10000) one : One R[X] :=
   ⟨⟨1⟩⟩
 #align polynomial.one Polynomial.one
 
-instance add' : Add R[X] :=
+instance (priority := 10000) add' : Add R[X] :=
   ⟨add⟩
 #align polynomial.has_add Polynomial.add'
 
-instance neg' {R : Type u} [Ring R] : Neg R[X] :=
+instance (priority := 10000) neg' {R : Type u} [Ring R] : Neg R[X] :=
   ⟨neg⟩
 #align polynomial.has_neg Polynomial.neg'
 
-instance sub {R : Type u} [Ring R] : Sub R[X] :=
+instance (priority := 10000) sub {R : Type u} [Ring R] : Sub R[X] :=
   ⟨fun a b => a + -b⟩
 #align polynomial.has_sub Polynomial.sub
 
-instance mul' : Mul R[X] :=
+instance (priority := 10000) mul' : Mul R[X] :=
   ⟨mul⟩
 #align polynomial.has_mul Polynomial.mul'
 
-instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
+instance (priority := 10000) smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
 #align polynomial.smul_zero_class Polynomial.smulZeroClass
@@ -283,15 +283,15 @@ theorem ofFinsupp_eq_zero {a} : (⟨a⟩ : R[X]) = 0 ↔ a = 0 := by
 theorem ofFinsupp_eq_one {a} : (⟨a⟩ : R[X]) = 1 ↔ a = 1 := by rw [← ofFinsupp_one, ofFinsupp_inj]
 #align polynomial.of_finsupp_eq_one Polynomial.ofFinsupp_eq_one
 
-instance inhabited : Inhabited R[X] :=
+instance (priority := 10000) inhabited : Inhabited R[X] :=
   ⟨0⟩
 #align polynomial.inhabited Polynomial.inhabited
 
-instance natCast : NatCast R[X] :=
+instance (priority := 10000) natCast : NatCast R[X] :=
   ⟨fun n => Polynomial.ofFinsupp n⟩
 #align polynomial.has_nat_cast Polynomial.natCast
 
-instance semiring : Semiring R[X] :=
+instance (priority := 10000) semiring : Semiring R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
       toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl with
@@ -304,61 +304,61 @@ instance semiring : Semiring R[X] :=
     npow := fun n x => (x ^ n) }
 #align polynomial.semiring Polynomial.semiring
 
-instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
+instance (priority := 10000) distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
       toFinsupp_smul with
     toSMulZeroClass := Polynomial.smulZeroClass }
 #align polynomial.distrib_smul Polynomial.distribSMul
 
-instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
+instance (priority := 10000) distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩
       toFinsupp_injective toFinsupp_smul with
     toSMul := Polynomial.smulZeroClass.toSMul }
 #align polynomial.distrib_mul_action Polynomial.distribMulAction
 
-instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul S R[X] where
+instance (priority := 10000) faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul S R[X] where
   eq_of_smul_eq_smul {_s₁ _s₂} h :=
     eq_of_smul_eq_smul fun a : ℕ →₀ R => congr_arg toFinsupp (h ⟨a⟩)
 #align polynomial.has_faithful_smul Polynomial.faithfulSMul
 
-instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
+instance (priority := 10000) module {S} [Semiring S] [Module S R] : Module S R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
       toFinsupp_smul with
     toDistribMulAction := Polynomial.distribMulAction }
 #align polynomial.module Polynomial.module
 
-instance smulCommClass {S₁ S₂} [SMulZeroClass S₁ R] [SMulZeroClass S₂ R] [SMulCommClass S₁ S₂ R] :
+instance (priority := 10000) smulCommClass {S₁ S₂} [SMulZeroClass S₁ R] [SMulZeroClass S₂ R] [SMulCommClass S₁ S₂ R] :
   SMulCommClass S₁ S₂ R[X] :=
   ⟨by
     rintro m n ⟨f⟩
     simp_rw [← ofFinsupp_smul, smul_comm m n f]⟩
 #align polynomial.smul_comm_class Polynomial.smulCommClass
 
-instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
+instance (priority := 10000) isScalarTower {S₁ S₂} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
   [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
   ⟨by
     rintro _ _ ⟨⟩
     simp_rw [← ofFinsupp_smul, smul_assoc]⟩
 #align polynomial.is_scalar_tower Polynomial.isScalarTower
 
-instance isScalarTower_right {α K : Type*} [Semiring K] [DistribSMul α K] [IsScalarTower α K K] :
+instance (priority := 10000) isScalarTower_right {α K : Type*} [Semiring K] [DistribSMul α K] [IsScalarTower α K K] :
     IsScalarTower α K[X] K[X] :=
   ⟨by
     rintro _ ⟨⟩ ⟨⟩;
       simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
 #align polynomial.is_scalar_tower_right Polynomial.isScalarTower_right
 
-instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [IsCentralScalar S R] :
+instance (priority := 10000) isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [IsCentralScalar S R] :
   IsCentralScalar S R[X] :=
   ⟨by
     rintro _ ⟨⟩
     simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
 #align polynomial.is_central_scalar Polynomial.isCentralScalar
 
-instance unique [Subsingleton R] : Unique R[X] :=
+instance (priority := 10000) unique [Subsingleton R] : Unique R[X] :=
   { Polynomial.inhabited with
     uniq := by
       rintro ⟨x⟩
@@ -382,7 +382,7 @@ def toFinsuppIso : R[X] ≃+* R[ℕ] where
 #align polynomial.to_finsupp_iso_apply Polynomial.toFinsuppIso_apply
 #align polynomial.to_finsupp_iso_symm_apply Polynomial.toFinsuppIso_symm_apply
 
-instance [DecidableEq R] : DecidableEq R[X] :=
+instance (priority := 10000) [DecidableEq R] : DecidableEq R[X] :=
   @Equiv.decidableEq R[X] _ (toFinsuppIso R).toEquiv (Finsupp.decidableEq)
 
 end AddMonoidAlgebra
@@ -1165,7 +1165,7 @@ section CommSemiring
 
 variable [CommSemiring R]
 
-instance commSemiring : CommSemiring R[X] :=
+instance (priority := 10000) commSemiring : CommSemiring R[X] :=
   { Function.Injective.commSemigroup toFinsupp toFinsupp_injective toFinsupp_mul with
     toSemiring := Polynomial.semiring }
 #align polynomial.comm_semiring Polynomial.commSemiring
@@ -1176,11 +1176,11 @@ section Ring
 
 variable [Ring R]
 
-instance intCast : IntCast R[X] :=
+instance (priority := 10000) intCast : IntCast R[X] :=
   ⟨fun n => ofFinsupp n⟩
 #align polynomial.has_int_cast Polynomial.intCast
 
-instance ring : Ring R[X] :=
+instance (priority := 10000) ring : Ring R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
       toFinsupp_one toFinsupp_add
@@ -1237,7 +1237,7 @@ theorem C_sub : C (a - b) = C a - C b :=
 
 end Ring
 
-instance commRing [CommRing R] : CommRing R[X] :=
+instance (priority := 10000) commRing [CommRing R] : CommRing R[X] :=
   --TODO: add reference to library note in PR #7432
   { toRing := Polynomial.ring
     mul_comm := mul_comm }
@@ -1247,7 +1247,7 @@ section NonzeroSemiring
 
 variable [Semiring R] [Nontrivial R]
 
-instance nontrivial : Nontrivial R[X] := by
+instance (priority := 10000) nontrivial : Nontrivial R[X] := by
   have h : Nontrivial R[ℕ] := by infer_instance
   rcases h.exists_pair_ne with ⟨x, y, hxy⟩
   refine' ⟨⟨⟨x⟩, ⟨y⟩, _⟩⟩

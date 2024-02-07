@@ -18,11 +18,11 @@ and is used by category theory files which do not need everything imported by `D
 
 universe u v
 
-instance smallVector {α : Type v} {n : ℕ} [Small.{u} α] : Small.{u} (Vector α n) :=
+instance (priority := 10000) smallVector {α : Type v} {n : ℕ} [Small.{u} α] : Small.{u} (Vector α n) :=
   small_of_injective (Equiv.vectorEquivFin α n).injective
 #align small_vector smallVector
 
-instance smallList {α : Type v} [Small.{u} α] : Small.{u} (List α) := by
+instance (priority := 10000) smallList {α : Type v} [Small.{u} α] : Small.{u} (List α) := by
   let e : (Σn, Vector α n) ≃ List α := Equiv.sigmaFiberEquiv List.length
   exact small_of_surjective e.surjective
 #align small_list smallList

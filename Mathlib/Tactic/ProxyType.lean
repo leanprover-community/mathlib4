@@ -36,7 +36,7 @@ An alternative design could be to generate a `C : Fin n → Type*` function for 
 for each constructor and then use `(i : Fin n) × ULift (C i)` for the total proxy type. However,
 typeclass inference is not good at finding instances for such a type even if there are instances
 for each `C i`. One seems to need to add, for example, an explicit `[∀ i, Fintype (C i)]`
-instance given `∀ i, Fintype (C i)`.
+instance (priority := 10000) given `∀ i, Fintype (C i)`.
 
 -/
 
