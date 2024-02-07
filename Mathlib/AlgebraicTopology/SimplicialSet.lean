@@ -304,6 +304,7 @@ def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] :=
     simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, SimplexCategory.δ, not_or,
       standardSimplex.objEquiv, asOrderHom, Equiv.ulift]⟩
 
+
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
 protected
 lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : Λ[n+1, i] ⟶ S)
@@ -362,8 +363,8 @@ lemma notInImage_isSome  : (Fin.find (notInImage α)).isSome  := by
 
 
 /--Returns the smallest `m ∈ Fin (n+2)` such that `notInImage α m = true`.``.-/
-noncomputable def minNotInImage : Fin (n+2) := Option.get (Fin.find (notInImage α))
-  (notInImage_isSome α)
+noncomputable def minNotInImage : Fin (n+2) :=
+  Option.get (Fin.find (notInImage α)) (notInImage_isSome α)
 
 
 lemma minNotInImage_mem : minNotInImage α ∈ Fin.find (notInImage α) :=
@@ -385,7 +386,6 @@ lemma minNotInImage_face (j : Fin (n+3)) (h: j ≠ i) : minNotInImage (face.{u} 
   rw [notInImage_face] at h1
   rw [h1]
 
-
 end SimplexImage
 
 /-- We say a map `f : Fin (n+2) →  S _[n+1]` is a face map for `i: Fin (n+3)`
@@ -400,8 +400,7 @@ def IsFaceMap {S : SSet}  {n:ℕ} (i: Fin (n+3))  (f : Fin (n+2) →  S _[n+1]):
 
 /--Given a horn `Λ[n+2,i]⟶ S` we can construct a map `Fin (n+2) →  S _[n+1]` which is a face map.-/
 def hornToFaceMap {S :SSet} {n: ℕ } {i : Fin (n+3)} (f : Λ[n+2,i]⟶ S)  (k : Fin (n+2)): S _[n+1]:=
-  f.app (op [n+1]) (face i  ((δ i).toOrderHom k) (Fin.exists_succAbove_eq_iff.mp
-    (Exists.intro k rfl)))
+  f.app (op [n+1]) (face i  (i.succAbove k) (Fin.exists_succAbove_eq_iff.mp (Exists.intro k rfl)))
 
 lemma hornToFaceMap_is_face_map {S :SSet} {n: ℕ } {i : Fin (n+3)} (f : Λ[n+2,i]⟶ S):
     IsFaceMap i (hornToFaceMap f) :=by
@@ -413,32 +412,96 @@ lemma hornToFaceMap_is_face_map {S :SSet} {n: ℕ } {i : Fin (n+3)} (f : Λ[n+2,
   apply congrArg
   apply Subtype.ext
   apply congrArg (⇑(standardSimplex.objEquiv [n + 2] (op [n])).symm)
-  let i2o:=Fin.succAbove i i2
-  let i1o:=Fin.succAbove i i1
-  change δ (i2o.pred _) ≫ δ i1o=δ (i1o.castPred _)≫ δ i2o
-  have hi2o : i1o<i2o:= Fin.strictMono_succAbove i i1_lt_i2
-  have hi2: i2o≠ 0 := by
-      contrapose! hi2o
-      simp_all only [Fin.le_zero_iff, Fin.zero_le]
-  have hi1: i1o≠ Fin.last (n+1+1) := by
-        simp_all only [ne_eq]
-        apply Not.intro
-        intro a
-        rw [a] at hi2o
-        exact (Fin.not_le.mpr hi2o) (Fin.le_last i2o)
-  rw [congrArg δ ((Fin.pred_eq_iff_eq_succ i2o hi2 (Fin.pred i2o hi2)).mp rfl),
-  congrArg δ (by rfl : i1o=(Fin.castPred i1o hi1).castSucc),δ_comp_δ]
-  exact (Fin.le_pred_iff hi2).mpr hi2o
+  let i2o:=i.succAbove i2
+  let i1o:=i.succAbove i1
+  change δ ((i.succAbove i2).pred _) ≫ δ i1o=δ (i1o.castPred _)≫ δ (i.succAbove i2)
+  rw [congrArg δ ((Fin.pred_eq_iff_eq_succ i2o _ (i2o.pred _)).mp rfl),
+  congrArg δ (by rfl : i1o=(i1o.castPred _).castSucc),δ_comp_δ]
+  exact (Fin.le_pred_iff _).mpr (Fin.strictMono_succAbove i i1_lt_i2)
+
+lemma face_to_faceMap {S :SSet} {n: ℕ } (i  j: Fin (n+3)) (hij: j ≠ i) (f : Λ[n+2,i]⟶ S):
+    f.app (op [n+1]) (face i j hij) = hornToFaceMap f ((Fin.predAbove 0 i).predAbove j) := by
+  unfold hornToFaceMap
+  apply congrArg
+  congr
+  rw [Fin.succAbove_predAbove_predAbove _ _ hij]
+
+/--For the horn `Λ[2,0]` the condition `IsFaceMap` is equivelent to `S.δ 1 (f 0) = S.δ 1 (f 1)`-/
+theorem IsFaceMap₂₀ {S : SSet} (f : Fin 2 →  S _[1]) :
+    IsFaceMap 0 f ↔ S.δ 1 (f 0) = S.δ 1 (f 1) := by
+  rw [IsFaceMap,Fin.forall_fin_two,Fin.forall_fin_two,Fin.forall_fin_two]
+  simp only [lt_self_iff_false, Fin.zero_succAbove, Fin.succ_zero_eq_one, Fin.pred_one,
+    Fin.castPred_one, IsEmpty.forall_iff, Fin.reduceLT, Fin.succ_one_eq_two, forall_true_left,
+    true_and, Fin.not_lt_zero, and_self, and_true]
+  rfl
+
+/--For the horn `Λ[2,1]` the condition `IsFaceMap` is equivelent to `S.δ 1 (f 0) = S.δ 0 (f 1)`-/
+theorem IsFaceMap₂₁ {S : SSet} (f : Fin 2 →  S _[1]) :
+    IsFaceMap 1 f ↔ S.δ 1 (f 0) = S.δ 0 (f 1) := by
+  rw [IsFaceMap,Fin.forall_fin_two,Fin.forall_fin_two,Fin.forall_fin_two]
+  simp only [lt_self_iff_false, ne_eq, Fin.one_eq_zero_iff, zero_add, OfNat.ofNat_ne_one,
+    not_false_eq_true, Fin.succAbove_ne_zero_zero, IsEmpty.forall_iff, Fin.reduceLT,
+    Fin.one_succAbove_one, forall_true_left, true_and, Fin.not_lt_zero, and_self, and_true]
+  rfl
+
+/--For the horn `Λ[2,2]` the condition `IsFaceMap` is equivelent to `S.δ 0 (f 0) = S.δ 0 (f 1)`-/
+theorem IsFaceMap₂₂ {S : SSet} (f : Fin 2 →  S _[1]) :
+    IsFaceMap 2 f ↔ S.δ 0 (f 0) = S.δ 0 (f 1) := by
+  rw [IsFaceMap,Fin.forall_fin_two,Fin.forall_fin_two,Fin.forall_fin_two]
+  simp only [lt_self_iff_false, IsEmpty.forall_iff, Fin.reduceLT, forall_true_left, true_and,
+    Fin.not_lt_zero, and_self, and_true]
+  rfl
+
+/--For the horn `Λ[3,0]` the condition `IsFaceMap` is equivelent to
+ `S.δ 1 (f 0) = S.δ 1 (f 1) ∧ S.δ 2 (f 0) = S.δ 1 (f 2) ∧ S.δ 2 (f 1) = S.δ 2 (f 2)`
+-/
+theorem IsFaceMap₃₀ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 0 f ↔
+    S.δ 1 (f 0) = S.δ 1 (f 1) ∧ S.δ 2 (f 0) = S.δ 1 (f 2) ∧ S.δ 2 (f 1) = S.δ 2 (f 2)  := by
+  rw [IsFaceMap,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three]
+  simp only [lt_self_iff_false, Fin.zero_succAbove, Fin.succ_zero_eq_one, Fin.pred_one,
+    Fin.castPred_one, IsEmpty.forall_iff, Fin.reduceLT, Fin.succ_one_eq_two, forall_true_left,
+    Fin.pred_succ, true_and, Fin.not_lt_zero, and_self, and_true]
+  exact and_assoc
+
+ /--For the horn `Λ[3,1]` the condition `IsFaceMap` is equivelent to
+ `S.δ 1 (f 0) = S.δ 0 (f 1) ∧ S.δ 2 (f 0) = S.δ 0 (f 2) ∧ S.δ 2 (f 1) = S.δ 2 (f 2)`
+-/
+theorem IsFaceMap₃₁ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 1 f ↔
+    S.δ 1 (f 0) = S.δ 0 (f 1) ∧ S.δ 2 (f 0) = S.δ 0 (f 2) ∧ S.δ 2 (f 1) = S.δ 2 (f 2)  := by
+  rw [IsFaceMap,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three]
+  simp only [lt_self_iff_false, ne_eq, Fin.one_eq_zero_iff, Nat.reduceAdd, OfNat.ofNat_ne_one,
+    not_false_eq_true, Fin.succAbove_ne_zero_zero, IsEmpty.forall_iff, Fin.reduceLT,
+    Fin.one_succAbove_one, forall_true_left, true_and, Fin.not_lt_zero, and_self, and_true]
+  exact and_assoc
+
+ /--For the horn `Λ[3,2]` the condition `IsFaceMap` is equivelent to
+ `S.δ 1 (f 0) = S.δ 0 (f 1) ∧ S.δ 2 (f 0) = S.δ 0 (f 2) ∧ S.δ 2 (f 1) = S.δ 2 (f 1)`
+-/
+theorem IsFaceMap₃₂ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 2 f ↔
+    S.δ 0 (f 0) = S.δ 0 (f 1) ∧ S.δ 2 (f 0) = S.δ 0 (f 2) ∧ S.δ 2 (f 1) = S.δ 1 (f 2)  := by
+  rw [IsFaceMap,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three]
+  simp only [lt_self_iff_false, IsEmpty.forall_iff, Fin.reduceLT, forall_true_left, true_and,
+    Fin.not_lt_zero, and_self, and_true]
+  exact and_assoc
+
+ /--For the horn `Λ[3,3]` the condition `IsFaceMap` is equivelent to
+ `S.δ 0 (f 0) = S.δ 0 (f 1) ∧ S.δ 1 (f 0) = S.δ 0 (f 2) ∧ S.δ 1 (f 1) = S.δ 1 (f 2)`
+-/
+theorem IsFaceMap₃₃ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 3 f ↔
+    S.δ 0 (f 0) = S.δ 0 (f 1) ∧ S.δ 1 (f 0) = S.δ 0 (f 2) ∧ S.δ 1 (f 1) = S.δ 1 (f 2)  := by
+  rw [IsFaceMap,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three]
+  simp only [lt_self_iff_false, IsEmpty.forall_iff, Fin.reduceLT, forall_true_left, true_and,
+    Fin.not_lt_zero, and_self, and_true]
+  exact and_assoc
 
 open SimplexImage in
 /-- From a map `Fin (n+2)→ S _[n+1]` which is a face map, we can construct a morphism
- `Λ[n+2,i]⟶ S`.-/
+ `Λ[n+2,i] ⟶ S`.-/
 noncomputable def homMk {S : SSet}  {n:ℕ} (i: Fin (n+3))  (face_map : Fin (n+2) →  S _[n+1])
-    (hface : IsFaceMap i face_map):  Λ[n+2,i]⟶ S where
+    (hface : IsFaceMap i face_map):  Λ[n+2,i] ⟶ S where
   app X α := by
     let α' :([(unop X).len]: SimplexCategory)⟶  [n+2]:= α.1.down
-    let id:= minNotInImage α
-    exact S.map (factor_δ α' ((δ i).toOrderHom  (id))).op (face_map (id))
+    exact S.map (factor_δ α' (i.succAbove (minNotInImage α))).op (face_map (minNotInImage α))
   naturality X Y φ' := by
     funext α
     let φ: ([len Y.unop]: SimplexCategory)⟶ [len X.unop] := φ'.unop
@@ -473,66 +536,42 @@ noncomputable def homMk {S : SSet}  {n:ℕ} (i: Fin (n+3))  (face_map : Fin (n+2
     | inr h => rw [← h,← types_comp_apply (S.map _) (S.map _),← S.map_comp, ← op_comp]
                rfl
 
-section homMk
-variable {S : SSet}  {n:ℕ} (i: Fin (n+3)) (face_map : Fin (n+2) →  S _[n+1])
-variable  (hface : IsFaceMap i face_map)
-open SimplexImage in
-lemma homMk_face (j: Fin (n+3)) (hij : j≠ i):
-    (homMk i face_map hface).app (op [n+1]) (face.{u} i j hij) =
-    face_map ((Fin.predAbove (Fin.predAbove 0 i)) j):=by
-  change S.map (factor_δ (face.{u} i j hij).1.down
-  (i.succAbove  (minNotInImage (face.{u} i j hij)) )).op
-    (face_map (minNotInImage (face.{u} i j hij)) )=_
-  have hfac : factor_δ ((face.{u} i j hij)).1.down j = 𝟙 ([n+1]:SimplexCategory):= by
-    change (δ j≫ σ (Fin.predAbove 0 j)) =_
-    by_cases hj: j=0
-    · rw [hj]
-      exact δ_comp_σ_self' rfl
-    · rw [Fin.predAbove_zero_of_ne_zero hj]
-      exact δ_comp_σ_succ' j (Fin.pred j hj)
-        ((Fin.pred_eq_iff_eq_succ j hj (Fin.pred j hj)).mp rfl)
-  rw [minNotInImage_face.{u},Fin.succAbove_predAbove_predAbove _ _ hij,hfac,op_id,
-  S.map_id]
-  rfl
+lemma faceMap_of_homMk {S : SSet} {n:ℕ} (i: Fin (n+3)) (f : Fin (n+2) → S _[n+1])
+    (hf : IsFaceMap i f) : hornToFaceMap (homMk i f hf) = f := by
+  funext j
+  unfold hornToFaceMap homMk
+  simp only [unop_op, len_mk, yoneda_obj_obj, ne_eq, face_coe]
+  rw [SimplexImage.minNotInImage_face,Fin.succAbove_predAbove_predAbove _ _ (Fin.succAbove_ne i j),
+   Fin.predAbove_predAbove_succAbove i 0 j]
+  nth_rewrite 2 [show f j= S.map (𝟙 ([n+1]:SimplexCategory)).op (f j) by
+   rw [op_id,S.map_id]; rfl ]
+  apply  congrFun ∘ (congrArg S.map) ∘ congrArg op
+  rw [factor_δ, Fin.predAbove_zero]
+  split_ifs with h
+  · exact δ_comp_σ_self' h
+  · exact δ_comp_σ_succ' (i.succAbove j) ((i.succAbove j).pred h)
+     ((Fin.pred_eq_iff_eq_succ (i.succAbove j) h ((i.succAbove j).pred h)).mp rfl)
 
-
-lemma homMk_surjective {S :SSet} {n: ℕ } (i : Fin (n+3)) (f : Λ[n+2,i]⟶ S) :
-    ∃ (fm: Fin (n+2) →  S _[n+1] ) (hf: IsFaceMap i fm ),
-    (homMk i fm hf) = f := by
-  use hornToFaceMap f
-  use hornToFaceMap_is_face_map f
+lemma homMk_of_faceMap {S :SSet} {n: ℕ } (i : Fin (n+3)) (f : Λ[n+2,i]⟶ S):
+    homMk i (hornToFaceMap f) (hornToFaceMap_is_face_map f) = f := by
   apply horn.hom_ext
   unfold hornToFaceMap
   intro j hij
-  rw [homMk_face]
-  dsimp
-  apply congrArg
-  congr 1
-  exact Fin.succAbove_predAbove_predAbove _ _ hij
+  rw [face_to_faceMap,face_to_faceMap,faceMap_of_homMk]
+  rfl
 
+lemma eq_iff_faceMap_eq {S :SSet} {n: ℕ } (i : Fin (n+3)) (f g : Λ[n+2,i]⟶ S):
+    f=g ↔ hornToFaceMap f = hornToFaceMap g := by
+  apply Iff.intro
+  · intro h
+    rw [← homMk_of_faceMap i f,← homMk_of_faceMap i g] at h
+    apply congrArg hornToFaceMap at h
+    rw [faceMap_of_homMk,faceMap_of_homMk] at h
+    exact h
+  · intro h
+    rw [← homMk_of_faceMap i f,← homMk_of_faceMap i g ]
+    simp only [h]
 
-lemma homMk_lift_face (j : Fin (n+2)) (lift : Δ[n+2]⟶ S)
-    (hlift: (homMk i face_map hface)  = hornInclusion (n+2) i ≫ lift):
-    S.map (δ ((δ i).toOrderHom j)).op (lift.app (op [n+2])
-    ((standardSimplex.objEquiv ([n+2]) (op [n+2])).invFun  (𝟙 ([n+2]:SimplexCategory))))
-    =face_map j:= by
-  rw [← (types_comp_apply (lift.app _) (S.map _) ),← lift.naturality,types_comp_apply]
-  have hij: ((δ i).toOrderHom j) ≠ i := by
-    by_contra hkc
-    exact Fin.exists_succAbove_eq_iff.mp (Exists.intro j hkc) rfl
-  rw [(Fin.succAbove_right_inj i).mp ((Fin.succAbove_predAbove_predAbove _ _ hij).symm),
-  ← (homMk_face i face_map hface ((δ i).toOrderHom j)
-  hij ),hlift,NatTrans.comp_app,types_comp_apply]
-  apply congrArg
-  rw [face,standardSimplex.map_apply]
-  congr
-  change _≫ 𝟙 ([n + 2]: SimplexCategory)=_
-  rw [Category.comp_id]
-  change  (δ (i.succAbove ((Fin.predAbove 0 i).predAbove (i.succAbove j))))=_
-  congr
-  exact id ((Fin.succAbove_right_inj i).mp ((Fin.succAbove_predAbove_predAbove _ _ hij).symm)).symm
-
-end homMk
 
 end horn
 
