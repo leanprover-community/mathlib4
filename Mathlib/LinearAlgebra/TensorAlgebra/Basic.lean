@@ -243,6 +243,10 @@ theorem algebraMap_eq_one_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 1 â
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align tensor_algebra.algebra_map_eq_one_iff TensorAlgebra.algebraMap_eq_one_iff
 
+/-- A `TensorAlgebra` over a nontrivial semiring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (TensorAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
+
 variable {M}
 
 /-- The canonical map from `TensorAlgebra R M` into `TrivSqZeroExt R M` that sends
