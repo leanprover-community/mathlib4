@@ -216,11 +216,28 @@ theorem isRelPrime_mul_unit_right : IsRelPrime (y * x) (z * x) ↔ IsRelPrime y 
 
 end IsUnit
 
+theorem IsRelPrime.dvd_of_dvd_mul_right_of_isPrimal (H1 : IsRelPrime x z) (H2 : x ∣ y * z)
+    (h : IsPrimal x) : x ∣ y := by
+  obtain ⟨a, b, ha, hb, rfl⟩ := h H2
+  exact (H1.of_mul_left_right.isUnit_of_dvd hb).mul_right_dvd.mpr ha
+
+theorem IsRelPrime.dvd_of_dvd_mul_left_of_isPrimal (H1 : IsRelPrime x y) (H2 : x ∣ y * z)
+    (h : IsPrimal x) : x ∣ z :=
+  H1.dvd_of_dvd_mul_right_of_isPrimal (mul_comm y z ▸ H2) h
+
+theorem IsRelPrime.mul_dvd_of_right_isPrimal (H : IsRelPrime x y) (H1 : x ∣ z) (H2 : y ∣ z)
+    (hy : IsPrimal y) : x * y ∣ z := by
+  obtain ⟨w, rfl⟩ := H1
+  exact mul_dvd_mul_left x (H.symm.dvd_of_dvd_mul_left_of_isPrimal H2 hy)
+
+theorem IsRelPrime.mul_dvd_of_left_isPrimal (H : IsRelPrime x y) (H1 : x ∣ z) (H2 : y ∣ z)
+    (hx : IsPrimal x) : x * y ∣ z := by
+  rw [mul_comm]; exact H.symm.mul_dvd_of_right_isPrimal H2 H1 hx
+
 variable [DecompositionMonoid α]
 
-theorem IsRelPrime.dvd_of_dvd_mul_right (H1 : IsRelPrime x z) (H2 : x ∣ y * z) : x ∣ y := by
-  obtain ⟨a, b, ha, hb, rfl⟩ := exists_dvd_and_dvd_of_dvd_mul H2
-  exact (H1.of_mul_left_right.isUnit_of_dvd hb).mul_right_dvd.mpr ha
+theorem IsRelPrime.dvd_of_dvd_mul_right (H1 : IsRelPrime x z) (H2 : x ∣ y * z) : x ∣ y :=
+  H1.dvd_of_dvd_mul_right_of_isPrimal H2 (DecompositionMonoid.primal x)
 
 theorem IsRelPrime.dvd_of_dvd_mul_left (H1 : IsRelPrime x y) (H2 : x ∣ y * z) : x ∣ z :=
   H1.dvd_of_dvd_mul_right (mul_comm y z ▸ H2)
@@ -236,11 +253,10 @@ theorem IsRelPrime.mul_right (H1 : IsRelPrime x y) (H2 : IsRelPrime x z) : IsRel
 theorem IsRelPrime.mul_left_iff : IsRelPrime (x * y) z ↔ IsRelPrime x z ∧ IsRelPrime y z :=
   ⟨fun H ↦ ⟨H.of_mul_left_left, H.of_mul_left_right⟩, fun ⟨H1, H2⟩ ↦ H1.mul_left H2⟩
 
-theorem IsRelPrime.mul_right_iff : IsRelPrime x (y * z) ↔ IsRelPrime x y ∧ IsRelPrime x z := by
-  rw [isRelPrime_comm, IsRelPrime.mul_left_iff, isRelPrime_comm, isRelPrime_comm (x := z)]
+theorem IsRelPrime.mul_right_iff : IsRelPrime x (y * z) ↔ IsRelPrime x y ∧ IsRelPrime x z :=
+  ⟨fun H ↦ ⟨H.of_mul_right_left, H.of_mul_right_right⟩, fun ⟨H1, H2⟩ ↦ H1.mul_right H2⟩
 
-theorem IsRelPrime.mul_dvd (H : IsRelPrime x y) (H1 : x ∣ z) (H2 : y ∣ z) : x * y ∣ z := by
-  obtain ⟨w, rfl⟩ := H1
-  exact mul_dvd_mul_left x (H.symm.dvd_of_dvd_mul_left H2)
+theorem IsRelPrime.mul_dvd (H : IsRelPrime x y) (H1 : x ∣ z) (H2 : y ∣ z) : x * y ∣ z :=
+  H.mul_dvd_of_left_isPrimal H1 H2 (DecompositionMonoid.primal x)
 
 end RelPrime
