@@ -998,6 +998,13 @@ theorem mk_dvd_mk {a b : α} : Associates.mk a ∣ Associates.mk b ↔ a ∣ b :
   Iff.intro dvd_of_mk_le_mk mk_le_mk_of_dvd
 #align associates.mk_dvd_mk Associates.mk_dvd_mk
 
+
+instance instDecompositionMonoid [DecompositionMonoid α] : DecompositionMonoid (Associates α) where
+  primal := by
+    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
+    obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := exists_dvd_and_dvd_of_dvd_mul (mk_dvd_mk.mp h)
+    exact ⟨_, _, mk_dvd_mk.mpr h₁, mk_dvd_mk.mpr h₂, rfl⟩
+
 end CommMonoid
 
 instance [Zero α] [Monoid α] : Zero (Associates α) :=
@@ -1151,6 +1158,9 @@ instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α)
     rcases Quotient.exact' h with ⟨u, hu⟩
     have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
     exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩ }
+
+theorem _root_.associates_irreducible_iff_prime [DecompositionMonoid α] {p : Associates α} :
+    Irreducible p ↔ Prime p := irreducible_iff_prime
 
 instance : NoZeroDivisors (Associates α) := by infer_instance
 

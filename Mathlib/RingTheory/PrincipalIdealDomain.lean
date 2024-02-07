@@ -337,16 +337,12 @@ theorem isMaximal_of_irreducible [CommRing R] [IsPrincipalIdealRing R] {p : R}
       erw [Ideal.span_singleton_le_span_singleton, IsUnit.mul_right_dvd hb]⟩⟩
 #align principal_ideal_ring.is_maximal_of_irreducible PrincipalIdealRing.isMaximal_of_irreducible
 
+@[deprecated] protected alias irreducible_iff_prime := irreducible_iff_prime
+#align principal_ideal_ring.irreducible_iff_prime irreducible_iff_prime
+@[deprecated] protected alias associates_irreducible_iff_prime := associates_irreducible_iff_prime
+#align principal_ideal_ring.associates_irreducible_iff_prime associates_irreducible_iff_prime
+
 variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
-
-theorem irreducible_iff_prime {p : R} : Irreducible p ↔ Prime p :=
-  ⟨fun hp => (Ideal.span_singleton_prime hp.ne_zero).1 <| (isMaximal_of_irreducible hp).isPrime,
-    Prime.irreducible⟩
-#align principal_ideal_ring.irreducible_iff_prime PrincipalIdealRing.irreducible_iff_prime
-
-theorem associates_irreducible_iff_prime : ∀ {p : Associates R}, Irreducible p ↔ Prime p :=
-  fun {p} => (Associates.irreducible_iff_prime_iff.1 fun _ => irreducible_iff_prime) p
-#align principal_ideal_ring.associates_irreducible_iff_prime PrincipalIdealRing.associates_irreducible_iff_prime
 
 section
 
@@ -387,7 +383,7 @@ theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type*} [C
 /-- A principal ideal domain has unique factorization -/
 instance (priority := 100) to_uniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
   { (IsNoetherianRing.wfDvdMonoid : WfDvdMonoid R) with
-    irreducible_iff_prime := PrincipalIdealRing.irreducible_iff_prime }
+    irreducible_iff_prime := irreducible_iff_prime }
 #align principal_ideal_ring.to_unique_factorization_monoid PrincipalIdealRing.to_uniqueFactorizationMonoid
 
 end

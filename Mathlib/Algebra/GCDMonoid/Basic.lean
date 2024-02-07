@@ -899,16 +899,10 @@ theorem lcm_eq_of_associated_right [NormalizedGCDMonoid α] {m n : α} (h : Asso
 
 end LCM
 
-namespace GCDMonoid
-
-theorem prime_of_irreducible [GCDMonoid α] {x : α} (hi : Irreducible x) : Prime x := hi.prime
-#align gcd_monoid.prime_of_irreducible GCDMonoid.prime_of_irreducible
-
-theorem irreducible_iff_prime [GCDMonoid α] {p : α} : Irreducible p ↔ Prime p :=
-  ⟨prime_of_irreducible, Prime.irreducible⟩
-#align gcd_monoid.irreducible_iff_prime GCDMonoid.irreducible_iff_prime
-
-end GCDMonoid
+@[deprecated] alias GCDMonoid.prime_of_irreducible := Irreducible.prime
+#align gcd_monoid.prime_of_irreducible Irreducible.prime
+@[deprecated] alias GCDMonoid.irreducible_iff_prime := irreducible_iff_prime
+#align gcd_monoid.irreducible_iff_prime irreducible_iff_prime
 
 end GCDMonoid
 
