@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
+import Mathlib.Data.Fin.OrderHom
 
 #align_import data.fintype.basic from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
 

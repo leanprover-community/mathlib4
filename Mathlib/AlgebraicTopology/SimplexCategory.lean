@@ -329,7 +329,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
       exact hjk.trans_lt H
     · rw [Fin.predAbove_of_castSucc_lt _ _ (Fin.castSucc_lt_castSucc_iff.mpr hjk),
       Fin.predAbove_of_castSucc_lt _ _ hjk, Fin.succAbove_of_castSucc_lt,
-      Fin.castSucc_pred_eq_pred_castSucc]
+      Fin.castSucc_pred]
       rwa [Fin.castSucc_lt_iff_succ_le, Fin.succ_pred]
   · rw [Fin.succAbove_of_le_castSucc _ _ (Fin.succ_le_castSucc_iff.mpr hik)]
     have hjk := H.trans hik
