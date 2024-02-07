@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Data.Nat.Interval
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Nat.Factors
+import Mathlib.Data.Nat.Interval
 
 #align_import number_theory.divisors from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 

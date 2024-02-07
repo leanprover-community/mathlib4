@@ -302,7 +302,7 @@ theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any integer `k` and positive `b`. -/
 theorem isLittleO_zpow_exp_pos_mul_atTop (k : ℤ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ k) =o[atTop] fun x => exp (b * x) := by
-  simpa only [rpow_int_cast] using isLittleO_rpow_exp_pos_mul_atTop k hb
+  simpa only [Real.rpow_int_cast] using isLittleO_rpow_exp_pos_mul_atTop k hb
 #align is_o_zpow_exp_pos_mul_at_top isLittleO_zpow_exp_pos_mul_atTop
 
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any natural `k` and positive `b`. -/
