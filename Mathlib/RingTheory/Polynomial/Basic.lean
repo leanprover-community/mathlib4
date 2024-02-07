@@ -1279,7 +1279,7 @@ instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid
   letI := Classical.decEq D
   haveI : NormalizationMonoid D := Inhabited.default
   haveI := toNormalizedGCDMonoid D
-  exact ufm_of_gcd_of_wfDvdMonoid
+  exact ufm_of_decomposition_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid
 
 /-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
