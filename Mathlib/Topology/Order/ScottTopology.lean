@@ -190,9 +190,9 @@ variable [Preorder α]
 /-- The Scott topology.
 
 It is defined as the join of the topology of upper sets and the Scott-Hausdorff topology. -/
-def scott : TopologicalSpace α := upperSet α ⊔ scottHausdorff α
+def scott (α : Type*) [Preorder α] : TopologicalSpace α := upperSet α ⊔ scottHausdorff α
 
-lemma upperSet_le_scott : upperSet α ≤ scott := le_sup_left
+lemma upperSet_le_scott : upperSet α ≤ scott α := le_sup_left
 
 lemma scottHausdorff_le_scott : @scottHausdorff α ≤ @scott α := le_sup_right
 
@@ -203,7 +203,7 @@ variable (α) [TopologicalSpace α]
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology. -/
 class IsScott : Prop where
-  topology_eq_scott : ‹TopologicalSpace α› = scott
+  topology_eq_scott : ‹TopologicalSpace α› = scott α
 
 end Preorder
 
@@ -211,7 +211,7 @@ namespace IsScott
 section Preorder
 variable (α) [Preorder α] [TopologicalSpace α] [IsScott α]
 
-lemma topology_eq : ‹_› = scott := topology_eq_scott
+lemma topology_eq : ‹_› = scott α := topology_eq_scott
 
 variable {α} {s : Set α} {a : α}
 
@@ -327,7 +327,7 @@ instance [Inhabited α] : Inhabited (WithScott α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance : Preorder (WithScott α) := ‹Preorder α›
-instance : TopologicalSpace (WithScott α) := scott
+instance : TopologicalSpace (WithScott α) := scott α
 instance : IsScott (WithScott α) := ⟨rfl⟩
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
