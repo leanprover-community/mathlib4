@@ -922,10 +922,11 @@ theorem succAbove_comp_predAbove_predAbove_left_cancel {α : Type*} (f : α → 
   ∀ p, (succAbove j) ∘ (predAbove (predAbove p j)) ∘ f = f :=
   fun _ => funext (fun a => succAbove_predAbove_predAbove _ _ (h a))
 
+/-
 theorem castSucc_or_succ_succAbove_of_rightInverse_predAbove (p : Fin n)
     (f : Fin n → Fin (n + 1)) (hf : RightInverse f p.predAbove) :
     f = p.castSucc.succAbove ∨ f = p.succ.succAbove := sorry
-
+-/
 -- Some equivalent with Left Inverses.
 
 end SuccAbovePredAbove
