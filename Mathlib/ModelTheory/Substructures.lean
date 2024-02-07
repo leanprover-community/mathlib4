@@ -107,7 +107,7 @@ namespace Substructure
 attribute [coe] Substructure.carrier
 
 instance instSetLike : SetLike (L.Substructure M) M :=
-  ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr ⟩
+  ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 #align first_order.language.substructure.set_like FirstOrder.Language.Substructure.instSetLike
 
 /-- See Note [custom simps projection] -/

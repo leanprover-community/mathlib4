@@ -459,6 +459,10 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup �
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.smul c⟩
 
+protected theorem IntegrableAtFilter.norm (hf : IntegrableAtFilter f l μ) :
+    IntegrableAtFilter (fun x => ‖f x‖) l μ :=
+  Exists.casesOn hf fun s hs ↦ ⟨s, hs.1, hs.2.norm⟩
+
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=
   let ⟨s, hs, hsf⟩ := hl'
@@ -489,6 +493,12 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
 
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 #align measure_theory.integrable_at_filter.of_inf_ae MeasureTheory.IntegrableAtFilter.of_inf_ae
+
+@[simp]
+theorem integrableAtFilter_top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.integrableAtFilter ⊤⟩
+  obtain ⟨s, hsf, hs⟩ := h
+  exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
 above at `l`, then `f` is integrable at `l`. -/
@@ -583,13 +593,9 @@ theorem ContinuousOn.aestronglyMeasurable [TopologicalSpace α] [TopologicalSpac
       ⟨hf.aemeasurable hs, f '' s, _,
         mem_of_superset (self_mem_ae_restrict hs) (subset_preimage_image _ _)⟩
   cases h.out
-  · let f' : s → β := s.restrict f
-    have A : Continuous f' := continuousOn_iff_continuous_restrict.1 hf
-    have B : IsSeparable (univ : Set s) := isSeparable_of_separableSpace _
-    convert IsSeparable.image B A using 1
-    ext x
-    simp
-  · exact isSeparable_of_separableSpace _
+  · rw [image_eq_range]
+    exact isSeparable_range <| continuousOn_iff_continuous_restrict.1 hf
+  · exact .of_separableSpace _
 #align continuous_on.ae_strongly_measurable ContinuousOn.aestronglyMeasurable
 
 /-- A function which is continuous on a compact set `s` is almost everywhere strongly measurable

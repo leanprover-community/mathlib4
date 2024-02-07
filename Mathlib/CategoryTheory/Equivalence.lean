@@ -582,6 +582,14 @@ theorem inverse_inv (E : C ≌ D) : E.inverse.inv = E.functor :=
 #align category_theory.equivalence.inverse_inv CategoryTheory.Equivalence.inverse_inv
 
 @[simp]
+theorem isEquivalence_unitIso (E : C ≌ D) : IsEquivalence.unitIso = E.unitIso :=
+  rfl
+
+@[simp]
+theorem isEquivalence_counitIso (E : C ≌ D) : IsEquivalence.counitIso = E.counitIso :=
+  rfl
+
+@[simp]
 theorem functor_asEquivalence (E : C ≌ D) : E.functor.asEquivalence = E := by
   cases E
   congr
@@ -817,5 +825,11 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
   i.isoInvComp
 
 end Iso
+
+-- deprecated on 2024-02-07
+@[deprecated] alias compInvIso := Iso.compInvIso
+@[deprecated] alias isoCompInv := Iso.isoCompInv
+@[deprecated] alias invCompIso := Iso.invCompIso
+@[deprecated] alias isoInvComp := Iso.isoInvComp
 
 end CategoryTheory
