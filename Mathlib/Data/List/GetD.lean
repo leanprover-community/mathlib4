@@ -5,7 +5,9 @@ Authors: Bolton Bailey, Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Flor
 Mario Carneiro
 -/
 
-import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Data.List.Defs
 
 /-! # getD and getI
 
