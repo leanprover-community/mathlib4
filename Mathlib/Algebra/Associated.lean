@@ -317,15 +317,14 @@ end CommMonoid
 
 section CommMonoidWithZero
 
-variable [CommMonoidWithZero α] {a : α} (irr : Irreducible a)
+variable [CommMonoidWithZero α] [DecompositionMonoid α] {a : α} (irr : Irreducible a)
 
 theorem Irreducible.prime_of_isPrimal (primal : IsPrimal a) : Prime a :=
   ⟨irr.ne_zero, irr.not_unit, fun a b dvd ↦ by
     obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := primal dvd
     exact (of_irreducible_mul irr).symm.imp (·.mul_right_dvd.mpr h₁) (·.mul_left_dvd.mpr h₂)⟩
 
-theorem Irreducible.prime [DecompositionMonoid α] : Prime a :=
-  irr.prime_of_isPrimal (DecompositionMonoid.primal a)
+theorem Irreducible.prime : Prime a := irr.prime_of_isPrimal (DecompositionMonoid.primal a)
 
 end CommMonoidWithZero
 
@@ -342,6 +341,9 @@ protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
       (isUnit_of_dvd_one <| (mul_dvd_mul_iff_left <| left_ne_zero_of_mul hp.ne_zero).mp <|
         dvd_mul_of_dvd_left · _)⟩
 #align prime.irreducible Prime.irreducible
+
+theorem irreducible_iff_prime [DecompositionMonoid α] {a : α} : Irreducible a ↔ Prime a :=
+  ⟨Irreducible.prime, Prime.irreducible⟩
 
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : α} {k l : ℕ} :
     p ^ k ∣ a → p ^ l ∣ b → p ^ (k + l + 1) ∣ a * b → p ^ (k + 1) ∣ a ∨ p ^ (l + 1) ∣ b :=
@@ -514,18 +516,17 @@ theorem associated_unit_mul_right_iff {β : Type*} [CommMonoid β] {a b : β} {u
   associated_isUnit_mul_right_iff u.isUnit
 #align associated_unit_mul_right_iff associated_unit_mul_right_iff
 
-theorem Associated.mul_mul [CommMonoid α] {a₁ a₂ b₁ b₂ : α} :
-    a₁ ~ᵤ b₁ → a₂ ~ᵤ b₂ → a₁ * a₂ ~ᵤ b₁ * b₂
-  | ⟨c₁, h₁⟩, ⟨c₂, h₂⟩ => ⟨c₁ * c₂, by simp [h₁.symm, h₂.symm, mul_assoc, mul_comm, mul_left_comm]⟩
-#align associated.mul_mul Associated.mul_mul
-
-theorem Associated.mul_left [CommMonoid α] (a : α) {b c : α} (h : b ~ᵤ c) : a * b ~ᵤ a * c :=
-  (Associated.refl a).mul_mul h
+theorem Associated.mul_left [Monoid α] (a : α) {b c : α} (h : b ~ᵤ c) : a * b ~ᵤ a * c := by
+  obtain ⟨d, rfl⟩ := h; exact ⟨d, mul_assoc _ _ _⟩
 #align associated.mul_left Associated.mul_left
 
-theorem Associated.mul_right [CommMonoid α] {a b : α} (h : a ~ᵤ b) (c : α) : a * c ~ᵤ b * c :=
-  h.mul_mul (Associated.refl c)
+theorem Associated.mul_right [CommMonoid α] {a b : α} (h : a ~ᵤ b) (c : α) : a * c ~ᵤ b * c := by
+  obtain ⟨d, rfl⟩ := h; exact ⟨d, mul_right_comm _ _ _⟩
 #align associated.mul_right Associated.mul_right
+
+theorem Associated.mul_mul [CommMonoid α] {a₁ a₂ b₁ b₂ : α}
+    (h₁ : a₁ ~ᵤ b₁) (h₂ : a₂ ~ᵤ b₂) : a₁ * a₂ ~ᵤ b₁ * b₂ := (h₁.mul_right _).trans (h₂.mul_left _)
+#align associated.mul_mul Associated.mul_mul
 
 theorem Associated.pow_pow [CommMonoid α] {a b : α} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
   induction' n with n ih
@@ -721,9 +722,9 @@ theorem Associated.of_pow_associated_of_prime' [CancelCommMonoidWithZero α] {p�
   (h.symm.of_pow_associated_of_prime hp₂ hp₁ hk₂).symm
 #align associated.of_pow_associated_of_prime' Associated.of_pow_associated_of_prime'
 
-lemma Irreducible.coprime_iff_not_dvd [Monoid α] {p n : α} (hp : Irreducible p) :
-    (∀ d, d ∣ p → d ∣ n → IsUnit d) ↔ ¬ p ∣ n := by
-  refine ⟨fun h contra ↦ hp.not_unit (h p (refl _) contra), fun hpn d hdp hdn ↦ ?_⟩
+lemma Irreducible.isRelPrime_iff_not_dvd [Monoid α] {p n : α} (hp : Irreducible p) :
+    IsRelPrime p n ↔ ¬ p ∣ n := by
+  refine ⟨fun h contra ↦ hp.not_unit (h dvd_rfl contra), fun hpn d hdp hdn ↦ ?_⟩
   contrapose! hpn
   suffices Associated p d from this.dvd.trans hdn
   exact (hp.dvd_iff.mp hdp).resolve_left hpn
@@ -883,11 +884,10 @@ instance instPreorder : Preorder (Associates α) where
   le_trans a b c := dvd_trans
 
 /-- `Associates.mk` as a `MonoidHom`. -/
-protected def mkMonoidHom : α →* Associates α :=
-  {
-    toFun := Associates.mk
-    map_one' := mk_one
-    map_mul' := fun _ _ => mk_mul_mk}
+protected def mkMonoidHom : α →* Associates α where
+  toFun := Associates.mk
+  map_one' := mk_one
+  map_mul' _ _ := mk_mul_mk
 #align associates.mk_monoid_hom Associates.mkMonoidHom
 
 @[simp]
@@ -1269,7 +1269,6 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
     rcases h with ⟨i, hi, hq⟩
     refine' ⟨i + 1, Nat.succ_le_succ hi, (hq.mul_left p).trans _⟩
     rw [pow_succ]
-    rfl
   · obtain ⟨i, hi, hq⟩ := ih.mp hno
     exact ⟨i, hi.trans n.le_succ, hq⟩
 #align dvd_prime_pow dvd_prime_pow

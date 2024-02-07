@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain
+--import Mathlib.RingTheory.UniqueFactorizationDomain
 
 /-!
 # Square-free elements in decomposition monoids
@@ -86,7 +86,7 @@ end Squarefree
 -- then `exists_squarefree_dvd_pow_of_ne_zero` below
 -- automatically generalizes to DecompositionMonoid + WfDvdMonoid, but that's equivalent to UFM
 theorem squarefree_mul_iff :
-    Squarefree (x * y) ↔ (∀ d, d ∣ x → d ∣ y → IsUnit d) ∧ Squarefree x ∧ Squarefree y := by
+    Squarefree (x * y) ↔ IsRelPrime x y ∧ Squarefree x ∧ Squarefree y := by
   nontriviality R
   refine ⟨fun h ↦ ⟨fun d hx hy ↦ h d (mul_dvd_mul hx hy),
     h.of_mul_left, h.of_mul_right⟩, fun ⟨hxy, hx, hy⟩ ↦ ?_⟩

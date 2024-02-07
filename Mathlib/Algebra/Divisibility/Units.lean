@@ -152,10 +152,10 @@ end CommMonoid
 
 section RelPrime
 
-variable [CommMonoid α] {x y z : α}
-
 /-- `x` and `y` are relatively prime if every common divisor is a unit. -/
-def IsRelPrime (x y : α) : Prop := ∀ ⦃d⦄, d ∣ x → d ∣ y → IsUnit d
+def IsRelPrime [Monoid α] (x y : α) : Prop := ∀ ⦃d⦄, d ∣ x → d ∣ y → IsUnit d
+
+variable [CommMonoid α] {x y z : α}
 
 @[symm] theorem IsRelPrime.symm (H : IsRelPrime x y) : IsRelPrime y x := fun _ hx hy ↦ H hy hx
 
