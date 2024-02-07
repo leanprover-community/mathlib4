@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
@@ -1043,7 +1042,7 @@ theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
 theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_of_empty f
 
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
-  rw [iInf_of_empty', sInf_empty]
+  rw [_root_.iInf_of_isEmpty, sInf_empty]
 #align nnreal.infi_empty NNReal.iInf_empty
 
 @[simp]

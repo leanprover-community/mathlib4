@@ -255,7 +255,7 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
     simp only [one_pow, one_mul, xInTermsOfW_zero, sub_self, bind₁_X_right]
   · intro i hin hi0
     rw [Finset.mem_range] at hin
-    rw [IH _ hin (Nat.pos_of_ne_zero hi0), zero_pow (pow_pos hp.1.pos _), mul_zero]
+    rw [IH _ hin (Nat.pos_of_ne_zero hi0), zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero]
   · rw [Finset.mem_range]; intro; contradiction
 #align witt_vector.witt_one_pos_eq_zero WittVector.wittOne_pos_eq_zero
 

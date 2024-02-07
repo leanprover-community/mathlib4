@@ -52,7 +52,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
       refine (isBigO_of_le _ fun n ↦ ?_).trans this.isBigO
       rw [norm_mul, norm_norm, norm_mul, norm_norm]
       refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-      rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
+      rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
       try apply le_max_left
       try apply le_max_right }
   · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
@@ -62,7 +62,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
     refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ λ n ↦ ?_).trans this)
     rw [norm_mul, norm_norm, ← add_mul, norm_mul]
     refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-    rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
+    rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
     refine (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)).trans ?_
     apply Real.le_norm_self
 
@@ -243,7 +243,7 @@ lemma hasFPowerSeriesOnBall_inv_one_sub
         ContinuousMultilinearMap.mkPiAlgebraFin_apply,
         List.prod_ofFn, Finset.prod_const,
         Finset.card_univ, Fintype.card_fin]
-    apply hasSum_geometric_of_norm_lt_1
+    apply hasSum_geometric_of_norm_lt_one
     simpa only [← ofReal_one, Metric.emetric_ball, Metric.ball,
       dist_eq_norm, sub_zero] using hy
 
