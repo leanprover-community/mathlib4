@@ -478,6 +478,7 @@ import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Ring.Semiconj
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Ring.Units
+import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Squarefree.Basic
@@ -1398,6 +1399,7 @@ import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Combinatorics.SimpleGraph.Ends.Defs
@@ -2095,6 +2097,7 @@ import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Dynamics.FixedPoints.Topology
 import Mathlib.Dynamics.Flow
 import Mathlib.Dynamics.Minimal
+import Mathlib.Dynamics.Newton
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.FieldTheory.AbelRuffini
@@ -2131,6 +2134,7 @@ import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.FieldTheory.PrimitiveElement
+import Mathlib.FieldTheory.PurelyInseparable
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableClosure
@@ -2687,6 +2691,7 @@ import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Group.Prod
+import Mathlib.MeasureTheory.Integral.Asymptotics
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
@@ -3113,6 +3118,7 @@ import Mathlib.RingTheory.Algebraic
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Bezout
+import Mathlib.RingTheory.Bialgebra
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.ClassGroup
@@ -3777,6 +3783,7 @@ import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.PseudoMetric
 import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
+import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Metrizable.Urysohn
