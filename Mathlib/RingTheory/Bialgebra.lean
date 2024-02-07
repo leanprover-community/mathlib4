@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ali Ramsey
+Authors: Ali Ramsey, Kevin Buzzard
 -/
 import Mathlib.RingTheory.Coalgebra
 import Mathlib.RingTheory.TensorProduct
@@ -9,24 +9,34 @@ import Mathlib.RingTheory.TensorProduct
 /-!
 # Bialgebras
 
-In this file we define `Bialgebra`, and provide instances for:
+In this file we define `Bialgebra`s.
 
-* Commutative semirings: `CommSemiring.toBialgebra`
+## Main definitions
+
+* `Bialgebra R A`: the structure of a bialgebra on the `R`-algebra `A`;
+* `CommSemiring.toBialgebra`: a commutative semiring is a bialgebra over itself.
+
+## Implementation notes
+
+Rather than the "obvious" axiom `∀ a b, counit (a * b) = counit a * counit b`, the far
+more convoluted `mul_compr₂_counit` is used as a structure field; this says that
+the corresponding two maps `A →ₗ[R] A →ₗ[R] R` are equal; a similar trick is
+used for comultiplication as well. An alternative constructor `Bialgebra.mk'` is provided
+with the more easily-readable axioms. The argument for using the more convoluted axioms
+is that in practice there is evidence that they will be easier to prove (especially
+when dealing with things like tensor products of bialgebras). This does make the definition
+more surprising to mathematicians, however mathlib is no stranger to definitions which
+are surprising to mathematicians -- see for example its definition of a group.
+Note that this design decision is also compatible with that of `Coalgebra`. The lengthy
+docstring for these convoluted fields attempts to explain what is going on.
 
 ## References
 
 * <https://en.wikipedia.org/wiki/Bialgebra>
 
-## TODO
+## Tags
 
-* Uniqueness of Hopf algebra structure on a bialgebra (i.e. if the algebra and coalgebra structures agree then the antipodes must also agree).
-
-* S(1)=1 and S(ab)=S(b)S(a), so in particular if A is commutative then S is an algebra homomorphism.
-
-* If H is commutative then S is necessarily a bijection (and I think its square must be the identity?)
-
-References for these facts: Christian Kassel "Quantum Groups" (Springer GTM), around Prop III.3.1, Theorem III.3.4 etc.
-
+bialgebra
 -/
 
 suppress_compilation
@@ -43,26 +53,26 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   /-- The counit on a bialgebra preserves 1. -/
   counit_one : counit 1 = 1
   /-- The counit on a bialgebra preserves multiplication. Note that this is written
-  in a rather obscure way: it says that two curried maps `A →ₗ[R] A →ₗ[R]` are equal.
-  The two corresponding uncurried maps `A ⊗[R] A →ₗ[R]` (also equal)
-  are the following: the first factors through `A` and is is multiplication on `A` followed
-  by `counit`. The second factors through `R ⊗[R] R` is `counit ⊗ counit` followed by
+  in a rather obscure way: it says that two bilinear maps `A →ₗ[R] A →ₗ[R]` are equal.
+  The two corresponding equal linear maps `A ⊗[R] A →ₗ[R]`
+  are the following: the first factors through `A` and is multiplication on `A` followed
+  by `counit`. The second factors through `R ⊗[R] R`, and is `counit ⊗ counit` followed by
   multiplication on `R`.
 
   See `Bialgebra.mk'` for a constructor for bialgebras which uses
-  the more familiar `counit (a * b) = counit a * counit b`. -/
+  the more familiar but mathematically equivalent `counit (a * b) = counit a * counit b`. -/
   mul_compr₂_counit : (LinearMap.mul R A).compr₂ counit = (LinearMap.mul R R).compl₁₂ counit counit
   -- The comultiplication is an algebra morphism
   /-- The comultiplication on a bialgebra preserves `1`. -/
   comul_one : comul 1 = 1
   /-- The comultiplication on a bialgebra preserves multiplication. This is written in
-  a rather obscure way: it says that two curried maps `A →ₗ[R] A →ₗ[R] (A ⊗[R] A)`
-  are equal. The corresponding equal uncurried maps `A ⊗[R] A →ₗ[R] A ⊗[R] A`
+  a rather obscure way: it says that two bilinear maps `A →ₗ[R] A →ₗ[R] (A ⊗[R] A)`
+  are equal. The corresponding equal linear maps `A ⊗[R] A →ₗ[R] A ⊗[R] A`
   are firstly multiplcation followed by `comul`, and secondly `comul ⊗ comul` followed
   by multiplication on `A ⊗[R] A`.
 
-  See `Bialgebra.mk'` for a constructor for bialgebras which uses
-  the more familiar `comul (a * b) = comul a * comul b`. -/
+  See `Bialgebra.mk'` for a constructor for bialgebras which uses the more familiar
+  but mathematically equivalent `comul (a * b) = comul a * comul b`. -/
   mul_compr₂_comul :
     (LinearMap.mul R A).compr₂ comul = (LinearMap.mul R (A ⊗[R] A)).compl₁₂ comul comul
 
@@ -79,7 +89,6 @@ lemma counit_mul (a b : A) : counit (R := R) (a * b) = counit a * counit b :=
 lemma comul_mul (a b : A) : comul (R := R) (a * b) = comul a * comul b :=
   DFunLike.congr_fun (DFunLike.congr_fun mul_compr₂_comul a) b
 
--- should `mul_compr₂_counit` and `mul_compr₂_comul` be simp?
 attribute [simp] counit_one comul_one counit_mul comul_mul
 
 /-- If `R` is a field (or even a commutative semiring) and `A`
@@ -93,10 +102,10 @@ def mk' (R : Type u) (A : Type v) [CommSemiring R] [Semiring A]
     (comul_one : C.comul 1 = 1)
     (comul_mul : ∀ {a b}, C.comul (a * b) = C.comul a * C.comul b) :
     Bialgebra R A where
-      counit_one := counit_one
-      mul_compr₂_counit := by ext; exact counit_mul
-      comul_one := comul_one
-      mul_compr₂_comul := by ext; exact comul_mul
+  counit_one := counit_one
+  mul_compr₂_counit := by ext; exact counit_mul
+  comul_one := comul_one
+  mul_compr₂_comul := by ext; exact comul_mul
 
 variable (R A)
 

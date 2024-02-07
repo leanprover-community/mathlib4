@@ -164,7 +164,8 @@ theorem isCyclic_of_prime_card {α : Type u} [Group α] [Fintype α] {p : ℕ} [
 
 @[to_additive]
 theorem isCyclic_of_surjective {H G F : Type*} [Group H] [Group G] [hH : IsCyclic H]
-    [MonoidHomClass F H G] (f : F) (hf : Function.Surjective f) : IsCyclic G := by
+    [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : Function.Surjective f) :
+    IsCyclic G := by
   obtain ⟨x, hx⟩ := hH
   refine ⟨f x, fun a ↦ ?_⟩
   obtain ⟨a, rfl⟩ := hf a
@@ -670,8 +671,8 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   orders of `g` are `1`, `p`, or `p ^ 2`. It can't be the former because `g ≠ 1`, and it can't
   the latter because the group isn't cyclic. -/
   have := (Nat.mem_divisors (m := p ^ 2)).mpr ⟨hα' ▸ orderOf_dvd_card (x := g), by aesop⟩
-  simp? [Nat.divisors_prime_pow hp 2] at this says
-    simp only [Nat.divisors_prime_pow hp 2, Finset.mem_map, Finset.mem_range,
+  simp? [Nat.divisors_prime_pow hp 2]  at this says
+    simp only [Nat.divisors_prime_pow hp 2, Nat.reduceAdd, Finset.mem_map, Finset.mem_range,
       Function.Embedding.coeFn_mk] at this
   obtain ⟨a, ha, ha'⟩ := this
   interval_cases a

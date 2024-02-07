@@ -5,9 +5,10 @@ Authors: Oliver Nash
 -/
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
 #align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
@@ -97,32 +98,56 @@ lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero 
   rw [smul_pow, ha, smul_zero]
 
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
-    [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) : IsNilpotent (f r) := by
+    [FunLike F R S] [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) :
+    IsNilpotent (f r) := by
   use hr.choose
   rw [← map_pow, hr.choose_spec, map_zero]
 #align is_nilpotent.map IsNilpotent.map
 
 lemma IsNilpotent.map_iff [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
-    [MonoidWithZeroHomClass F R S] {f : F} (hf : Function.Injective f) :
+    [FunLike F R S] [MonoidWithZeroHomClass F R S] {f : F} (hf : Function.Injective f) :
     IsNilpotent (f r) ↔ IsNilpotent r :=
   ⟨fun ⟨k, hk⟩ ↦ ⟨k, (map_eq_zero_iff f hf).mp <| by rwa [map_pow]⟩, fun h ↦ h.map f⟩
 
-theorem IsNilpotent.sub_one_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
-  obtain ⟨n, hn⟩ := hnil
-  refine' ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, _, _⟩, rfl⟩
-  · rw [mul_neg, mul_geom_sum, hn]
-    simp
-  · rw [neg_mul, geom_sum_mul, hn]
-    simp
+theorem IsUnit.isNilpotent_mul_unit_of_commute_iff [MonoidWithZero R] {r u : R}
+    (hu : IsUnit u) (h_comm : Commute r u) :
+    IsNilpotent (r * u) ↔ IsNilpotent r :=
+  exists_congr fun n ↦ by rw [h_comm.mul_pow, (hu.pow n).mul_left_eq_zero]
 
-theorem Commute.IsNilpotent.add_isUnit [Ring R] {r : R} {u : Rˣ} (hnil : IsNilpotent r)
-    (hru : Commute r (↑u⁻¹ : R)) : IsUnit (u + r) := by
-  rw [← Units.isUnit_mul_units _ u⁻¹, add_mul, Units.mul_inv, ← IsUnit.neg_iff, add_comm, neg_add,
-    ← sub_eq_add_neg]
+theorem IsUnit.isNilpotent_unit_mul_of_commute_iff [MonoidWithZero R] {r u : R}
+    (hu : IsUnit u) (h_comm : Commute r u) :
+    IsNilpotent (u * r) ↔ IsNilpotent r :=
+  h_comm ▸ hu.isNilpotent_mul_unit_of_commute_iff h_comm
+
+theorem IsNilpotent.isUnit_sub_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
   obtain ⟨n, hn⟩ := hnil
-  refine' IsNilpotent.sub_one_isUnit ⟨n, _⟩
-  rw [neg_pow, hru.mul_pow, hn]
-  simp
+  refine ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, ?_, ?_⟩, rfl⟩
+  · simp [mul_geom_sum, hn]
+  · simp [geom_sum_mul, hn]
+
+theorem IsNilpotent.isUnit_one_sub [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (1 - r) := by
+  rw [← IsUnit.neg_iff, neg_sub]
+  exact isUnit_sub_one hnil
+
+theorem IsNilpotent.isUnit_add_one [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r + 1) := by
+  rw [← IsUnit.neg_iff, neg_add']
+  exact isUnit_sub_one hnil.neg
+
+theorem IsNilpotent.isUnit_one_add [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (1 + r) :=
+  add_comm r 1 ▸ isUnit_add_one hnil
+
+theorem IsNilpotent.isUnit_add_left_of_commute [Ring R] {r u : R}
+    (hnil : IsNilpotent r) (hu : IsUnit u) (h_comm : Commute r u) :
+    IsUnit (u + r) := by
+  rw [← Units.isUnit_mul_units _ hu.unit⁻¹, add_mul, IsUnit.mul_val_inv]
+  replace h_comm : Commute r (↑hu.unit⁻¹) := Commute.units_inv_right h_comm
+  refine IsNilpotent.isUnit_one_add ?_
+  exact (hu.unit⁻¹.isUnit.isNilpotent_mul_unit_of_commute_iff h_comm).mpr hnil
+
+theorem IsNilpotent.isUnit_add_right_of_commute [Ring R] {r u : R}
+    (hnil : IsNilpotent r) (hu : IsUnit u) (h_comm : Commute r u) :
+    IsUnit (r + u) :=
+  add_comm r u ▸ hnil.isUnit_add_left_of_commute hu h_comm
 
 section NilpotencyClass
 
@@ -219,7 +244,8 @@ theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x
 #align is_nilpotent_iff_eq_zero isNilpotent_iff_eq_zero
 
 theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
-    [MonoidWithZeroHomClass F R S] (f : F) (hf : Function.Injective f) [IsReduced S] :
+    [FunLike F R S] [MonoidWithZeroHomClass F R S]
+    (f : F) (hf : Function.Injective f) [IsReduced S] :
     IsReduced R := by
   constructor
   intro x hx
@@ -229,7 +255,7 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
 #align is_reduced_of_injective isReduced_of_injective
 
 theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [CommRing S]
-    [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
+    [FunLike F R S] [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
     (RingHom.ker f).IsRadical ↔ IsReduced S := by
   simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker]
   rfl

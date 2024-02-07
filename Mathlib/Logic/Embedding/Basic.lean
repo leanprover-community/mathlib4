@@ -32,10 +32,12 @@ structure Embedding (α : Sort*) (β : Sort*) where
 /-- An embedding, a.k.a. a bundled injective function. -/
 infixr:25 " ↪ " => Embedding
 
-instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
+instance {α : Sort u} {β : Sort v} : FunLike (α ↪ β) α β where
   coe := Embedding.toFun
-  injective' := Embedding.inj'
   coe_injective' f g h := by { cases f; cases g; congr }
+
+instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
+  injective' := Embedding.inj'
 
 initialize_simps_projections Embedding (toFun → apply)
 
@@ -46,6 +48,9 @@ theorem exists_surjective_iff :
     (∃ f : α → β, Surjective f) ↔ Nonempty (α → β) ∧ Nonempty (β ↪ α) :=
   ⟨fun ⟨f, h⟩ ↦ ⟨⟨f⟩, ⟨⟨_, injective_surjInv h⟩⟩⟩, fun ⟨h, ⟨e⟩⟩ ↦ (nonempty_fun.mp h).elim
     (fun _ ↦ ⟨isEmptyElim, (isEmptyElim <| e ·)⟩) fun _ ↦ ⟨_, invFun_surjective e.inj'⟩⟩
+
+instance : CanLift (α → β) (α ↪ β) (↑) Injective where
+  prf _ h := ⟨⟨_, h⟩, rfl⟩
 
 end Function
 
@@ -210,10 +215,16 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     · exact h ⟩
 #align function.embedding.set_value Function.Embedding.setValue
 
+@[simp]
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : setValue f a b a = b := by
   simp [setValue]
 #align function.embedding.set_value_eq Function.Embedding.setValue_eq
+
+@[simp]
+theorem setValue_eq_iff {α β} (f : α ↪ β) {a a' : α} {b : β} [∀ a', Decidable (a' = a)]
+    [∀ a', Decidable (f a' = b)] : setValue f a b a' = b ↔ a' = a :=
+  (setValue f a b).injective.eq_iff' <| setValue_eq ..
 
 /-- Embedding into `Option α` using `some`. -/
 @[simps (config := .asFn)]

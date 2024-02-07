@@ -227,6 +227,14 @@ theorem tan_arg (x : ℂ) : Real.tan (arg x) = x.im / x.re := by
 theorem arg_ofReal_of_nonneg {x : ℝ} (hx : 0 ≤ x) : arg x = 0 := by simp [arg, hx]
 #align complex.arg_of_real_of_nonneg Complex.arg_ofReal_of_nonneg
 
+@[simp, norm_cast]
+lemma natCast_arg {n : ℕ} : arg n = 0 :=
+  ofReal_nat_cast n ▸ arg_ofReal_of_nonneg n.cast_nonneg
+
+@[simp]
+lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg (no_index (OfNat.ofNat n)) = 0 :=
+  natCast_arg
+
 theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
   refine' ⟨fun h => _, _⟩
   · rw [← abs_mul_cos_add_sin_mul_I z, h]

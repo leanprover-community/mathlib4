@@ -6,7 +6,7 @@ Authors: Kevin Buzzard, Richard Hill
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.RingTheory.Derivation.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Module
+import Mathlib.Data.Polynomial.Module.Basic
 /-!
 # Derivations of univariate polynomials
 
