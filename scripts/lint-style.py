@@ -211,7 +211,10 @@ def nonterminal_simp_check(lines, path):
                                                               annotated_lines[1:]):
         # Check if the current line matches whitespace followed by "simp"
         new_line = line
-        if (not is_comment) and re.search(r"^\s*simp( \[.*\])?( at .*)?$", line):
+        # TODO it would be better to use a regex like r"^\s*simp( \[.*\])?( at .*)?$" and thereby
+        # catch all possible simp invocations. Adding this will require more initial cleanup or
+        # nolint.
+        if (not is_comment) and re.search(r"^\s*simp$", line):
             # Calculate the number of spaces before the first non-space character in the line
             num_spaces = len(line) - len(line.lstrip())
             # Calculate the number of spaces before the first non-space character in the next line
