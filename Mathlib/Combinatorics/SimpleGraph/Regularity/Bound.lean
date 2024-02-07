@@ -267,7 +267,7 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
 
 end SzemerediRegularity
 
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 
 open Lean.Meta Qq
 
@@ -287,4 +287,4 @@ def evalBound : PositivityExt where eval {_ _} _ _ e := do
 
 example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.bound ε l := by positivity
 
-end Tactic
+end Mathlib.Meta.Positivity
