@@ -62,7 +62,7 @@ instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice 
     ConditionallyCompleteLattice (Tropical R) :=
   { @instInfTropical R _, @instSupTropical R _,
     instLatticeTropical with
-    le_csSup  := fun _s _x hs hx ↦
+    le_csSup := fun _s _x hs hx ↦
       le_csSup (untrop_monotone.map_bddAbove hs) (Set.mem_image_of_mem untrop hx)
     csSup_le := fun _s _x hs hx ↦
       csSup_le (hs.image untrop) (untrop_monotone.mem_upperBounds_image hx)
@@ -76,7 +76,7 @@ instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder
     csSup_of_not_bddAbove := by
       intro s hs
       have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
-      simp [sSup, this]
+      simp only [sSup, Set.image_empty, trop_inj_iff]
       apply csSup_of_not_bddAbove
       contrapose! hs
       change BddAbove (tropOrderIso.symm '' s) at hs
@@ -84,7 +84,7 @@ instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder
     csInf_of_not_bddBelow := by
       intro s hs
       have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
-      simp [sInf, this]
+      simp only [sInf, Set.image_empty, trop_inj_iff]
       apply csInf_of_not_bddBelow
       contrapose! hs
       change BddBelow (tropOrderIso.symm '' s) at hs

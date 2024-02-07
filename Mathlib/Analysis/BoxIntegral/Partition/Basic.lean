@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Analysis.BoxIntegral.Box.Basic
+import Mathlib.Data.Set.Pairwise.Lattice
 
 #align_import analysis.box_integral.partition.basic from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
@@ -184,7 +185,7 @@ theorem injOn_setOf_mem_Icc_setOf_lower_eq (x : ι → ℝ) :
     exact π.eq_of_mem_of_mem h₁ h₂ hy₁ hy₂
   intro i
   simp only [Set.ext_iff, mem_setOf] at H
-  cases' (hx₁.1 i).eq_or_lt with hi₁ hi₁
+  rcases (hx₁.1 i).eq_or_lt with hi₁ | hi₁
   · have hi₂ : J₂.lower i = x i := (H _).1 hi₁
     have H₁ : x i < J₁.upper i := by simpa only [hi₁] using J₁.lower_lt_upper i
     have H₂ : x i < J₂.upper i := by simpa only [hi₂] using J₂.lower_lt_upper i
@@ -622,7 +623,7 @@ theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
   · simp (config := { contextual := true })
   · rw [Set.PairwiseDisjoint]
     convert π.pairwiseDisjoint
-    rw [Set.union_eq_left_iff_subset, filter_boxes, coe_filter]
+    rw [Set.union_eq_left, filter_boxes, coe_filter]
     exact fun _ ⟨h, _⟩ => h
 #align box_integral.prepartition.Union_filter_not BoxIntegral.Prepartition.iUnion_filter_not
 

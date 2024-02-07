@@ -10,16 +10,16 @@ import Mathlib.Data.Rat.Floor
 #align_import algebra.continued_fractions.computation.terminates_iff_rat from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
-# Termination of Continued Fraction Computations (`gcf.of`)
+# Termination of Continued Fraction Computations (`GeneralizedContinuedFraction.of`)
 
 ## Summary
 We show that the continued fraction for a value `v`, as defined in
-`algebra.continued_fractions.computation.basic`, terminates if and only if `v` corresponds to a
+`Mathlib.Algebra.ContinuedFractions.Basic`, terminates if and only if `v` corresponds to a
 rational number, that is `↑v = q` for some `q : ℚ`.
 
 ## Main Theorems
 
-- `generalized_continued_fraction.coe_of_rat` shows that
+- `GeneralizedContinuedFraction.coe_of_rat_eq` shows that
   `GeneralizedContinuedFraction.of v = GeneralizedContinuedFraction.of q` for `v : α` given that
   `↑v = q` and `q : ℚ`.
 - `GeneralizedContinuedFraction.terminates_iff_rat` shows that
@@ -152,7 +152,7 @@ In particular, we show that
       GeneralizedContinuedFraction K)
   = GeneralizedContinuedFraction.of v`
 ```
-in `generalized_continued_fraction.coe_of_rat`.
+in `GeneralizedContinuedFraction.coe_of_rat_eq`.
 
 To do this, we proceed bottom-up, showing the correspondence between the basic functions involved in
 the Computation first and then lift the results step-by-step.
@@ -175,16 +175,16 @@ theorem coe_of_rat_eq : ((IntFractPair.of q).mapFr (↑) : IntFractPair K) = Int
 theorem coe_stream_nth_rat_eq :
     ((IntFractPair.stream q n).map (mapFr (↑)) : Option <| IntFractPair K) =
       IntFractPair.stream v n := by
-  induction' n with n IH
-  case zero =>
+  induction n with
+  | zero =>
     -- Porting note: was
     -- simp [IntFractPair.stream, coe_of_rat_eq v_eq_q]
     simp only [IntFractPair.stream, Option.map_some', coe_of_rat_eq v_eq_q]
-  case succ =>
+  | succ n IH =>
     rw [v_eq_q] at IH
-    cases' stream_q_nth_eq : IntFractPair.stream q n with ifp_n
-    case none => simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq]
-    case some =>
+    cases stream_q_nth_eq : IntFractPair.stream q n with
+    | none => simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq]
+    | some ifp_n =>
       cases' ifp_n with b fr
       cases' Decidable.em (fr = 0) with fr_zero fr_ne_zero
       · simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_zero]
@@ -218,14 +218,14 @@ theorem coe_of_s_get?_rat_eq :
   simp only [Stream'.Seq.get?]
   rw [← IntFractPair.coe_stream'_rat_eq v_eq_q]
   rcases succ_nth_stream_eq : IntFractPair.stream q (n + 1) with (_ | ⟨_, _⟩) <;>
-    simp [Stream'.map, Stream'.nth, succ_nth_stream_eq]
+    simp [Stream'.map, Stream'.get, succ_nth_stream_eq]
 #align generalized_continued_fraction.coe_of_s_nth_rat_eq GeneralizedContinuedFraction.coe_of_s_get?_rat_eq
 
 theorem coe_of_s_rat_eq : ((of q).s.map (Pair.map ((↑))) : Stream'.Seq <| Pair K) = (of v).s := by
   ext n; rw [← coe_of_s_get?_rat_eq v_eq_q]; rfl
 #align generalized_continued_fraction.coe_of_s_rat_eq GeneralizedContinuedFraction.coe_of_s_rat_eq
 
-/-- Given `(v : K), (q : ℚ), and v = q`, we have that `gcf.of q = gcf.of v` -/
+/-- Given `(v : K), (q : ℚ), and v = q`, we have that `of q = of v` -/
 theorem coe_of_rat_eq :
     (⟨(of q).h, (of q).s.map (Pair.map (↑))⟩ : GeneralizedContinuedFraction K) = of v := by
   cases' gcf_v_eq : of v with h s; subst v
@@ -268,7 +268,7 @@ namespace IntFractPair
 variable {q : ℚ} {n : ℕ}
 
 /-- Shows that for any `q : ℚ` with `0 < q < 1`, the numerator of the fractional part of
-`int_fract_pair.of q⁻¹` is smaller than the numerator of `q`.
+`IntFractPair.of q⁻¹` is smaller than the numerator of `q`.
 -/
 theorem of_inv_fr_num_lt_num_of_pos (q_pos : 0 < q) : (IntFractPair.of q⁻¹).fr.num < q.num :=
   Rat.fract_inv_num_lt_num_of_pos q_pos
@@ -296,12 +296,12 @@ theorem stream_succ_nth_fr_num_lt_nth_fr_num_rat {ifp_n ifp_succ_n : IntFractPai
 theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
     ∀ {ifp_n : IntFractPair ℚ},
       IntFractPair.stream q n = some ifp_n → ifp_n.fr.num ≤ (IntFractPair.of q).fr.num - n := by
-  induction' n with n IH
-  case zero =>
+  induction n with
+  | zero =>
     intro ifp_zero stream_zero_eq
     have : IntFractPair.of q = ifp_zero := by injection stream_zero_eq
     simp [le_refl, this.symm]
-  case succ =>
+  | succ n IH =>
     intro ifp_succ_n stream_succ_nth_eq
     suffices ifp_succ_n.fr.num + 1 ≤ (IntFractPair.of q).fr.num - n by
       rw [Int.ofNat_succ, sub_add_eq_sub_sub]

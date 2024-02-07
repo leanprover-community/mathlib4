@@ -434,13 +434,13 @@ theorem map_residue (f : R →+* S) [IsLocalRingHom f] (r : R) :
 #align local_ring.residue_field.map_residue LocalRing.ResidueField.map_residue
 
 theorem map_id_apply (x : ResidueField R) : map (RingHom.id R) x = x :=
-  FunLike.congr_fun map_id x
+  DFunLike.congr_fun map_id x
 #align local_ring.residue_field.map_id_apply LocalRing.ResidueField.map_id_apply
 
 @[simp]
 theorem map_map (f : R →+* S) (g : S →+* T) (x : ResidueField R) [IsLocalRingHom f]
     [IsLocalRingHom g] : map g (map f x) = map (g.comp f) x :=
-  FunLike.congr_fun (map_comp f g).symm x
+  DFunLike.congr_fun (map_comp f g).symm x
 #align local_ring.residue_field.map_map LocalRing.ResidueField.map_map
 
 /-- A ring isomorphism defines an isomorphism of residue fields. -/

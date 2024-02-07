@@ -20,7 +20,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Classical Polynomial
+open BigOperators Polynomial
 
 namespace Polynomial
 
@@ -45,7 +45,7 @@ theorem monic_zero_iff_subsingleton' :
   Polynomial.monic_zero_iff_subsingleton.trans
     ⟨by
       intro
-      simp, fun h => subsingleton_iff.mpr h.2⟩
+      simp [eq_iff_true_of_subsingleton], fun h => subsingleton_iff.mpr h.2⟩
 #align polynomial.monic_zero_iff_subsingleton' Polynomial.monic_zero_iff_subsingleton'
 
 theorem Monic.as_sum (hp : p.Monic) :
@@ -110,6 +110,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_add_C Polynomial.monic_X_add_C
 
 theorem Monic.mul (hp : Monic p) (hq : Monic q) : Monic (p * q) :=
+  letI := Classical.decEq R
   if h0 : (0 : R) = 1 then
     haveI := subsingleton_of_zero_eq_one h0
     Subsingleton.elim _ _
@@ -210,7 +211,7 @@ theorem nextCoeff_mul (hp : Monic p) (hq : Monic q) :
   nontriviality
   simp only [← coeff_one_reverse]
   rw [reverse_mul] <;>
-    simp [coeff_mul, Nat.antidiagonal, hp.leadingCoeff, hq.leadingCoeff, add_comm,
+    simp [coeff_mul, antidiagonal, hp.leadingCoeff, hq.leadingCoeff, add_comm,
       show Nat.succ 0 = 1 from rfl]
 #align polynomial.monic.next_coeff_mul Polynomial.Monic.nextCoeff_mul
 
@@ -252,6 +253,11 @@ theorem Monic.eq_one_of_isUnit (hm : Monic p) (hpu : IsUnit p) : p = 1 := by
 theorem Monic.isUnit_iff (hm : p.Monic) : IsUnit p ↔ p = 1 :=
   ⟨hm.eq_one_of_isUnit, fun h => h.symm ▸ isUnit_one⟩
 #align polynomial.monic.is_unit_iff Polynomial.Monic.isUnit_iff
+
+theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associated p q) : p = q := by
+  obtain ⟨u, rfl⟩ := hpq
+  rw [(hp.of_mul_monic_left hq).eq_one_of_isUnit u.isUnit, mul_one]
+#align polynomial.eq_of_monic_of_associated Polynomial.eq_of_monic_of_associated
 
 end Semiring
 
@@ -325,6 +331,7 @@ open Function
 variable [Semiring S] {f : R →+* S} (hf : Injective f)
 
 theorem degree_map_eq_of_injective (p : R[X]) : degree (p.map f) = degree p :=
+  letI := Classical.decEq R
   if h : p = 0 then by simp [h]
   else
     degree_map_eq_of_leadingCoeff_ne_zero _

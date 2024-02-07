@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Interval
-import Mathlib.Tactic.Positivity
 
 #align_import algebra.order.interval from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -41,10 +40,6 @@ variable [Preorder α] [One α]
 @[to_additive]
 instance : One (NonemptyInterval α) :=
   ⟨NonemptyInterval.pure 1⟩
-
-@[to_additive]
-instance : One (Interval α) :=
-  ⟨Interval.pure 1⟩
 
 namespace NonemptyInterval
 
@@ -89,15 +84,11 @@ theorem pure_one : pure (1 : α) = 1 :=
 #align interval.pure_one Interval.pure_one
 #align interval.pure_zero Interval.pure_zero
 
-@[to_additive (attr := simp)]
-theorem one_ne_bot : (1 : Interval α) ≠ ⊥ :=
-  pure_ne_bot
+@[to_additive] lemma one_ne_bot : (1 : Interval α) ≠ ⊥ := pure_ne_bot
 #align interval.one_ne_bot Interval.one_ne_bot
 #align interval.zero_ne_bot Interval.zero_ne_bot
 
-@[to_additive (attr := simp)]
-theorem bot_ne_one : (⊥ : Interval α) ≠ 1 :=
-  bot_ne_pure
+@[to_additive] lemma bot_ne_one : (⊥ : Interval α) ≠ 1 := bot_ne_pure
 #align interval.bot_ne_one Interval.bot_ne_one
 #align interval.bot_ne_zero Interval.bot_ne_zero
 
@@ -228,19 +219,19 @@ end Mul
 
 
 -- TODO: if `to_additive` gets improved sufficiently, derive this from `hasPow`
-instance NonemptyInterval.hasNsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+instance NonemptyInterval.hasNSMul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] : SMul ℕ (NonemptyInterval α) :=
-  ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_of_le_right s.fst_le_snd _⟩⟩
-#align nonempty_interval.has_nsmul NonemptyInterval.hasNsmul
+  ⟨fun n s => ⟨(n • s.fst, n • s.snd), nsmul_le_nsmul_right s.fst_le_snd _⟩⟩
+#align nonempty_interval.has_nsmul NonemptyInterval.hasNSMul
 
 section Pow
 
 variable [Monoid α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
   [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
-@[to_additive existing NonemptyInterval.hasNsmul]
+@[to_additive existing]
 instance NonemptyInterval.hasPow : Pow (NonemptyInterval α) ℕ :=
-  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_of_le_left' s.fst_le_snd _⟩⟩
+  ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 #align nonempty_interval.has_pow NonemptyInterval.hasPow
 
 namespace NonemptyInterval
@@ -288,11 +279,9 @@ instance Interval.mulOneClass [OrderedCommMonoid α] : MulOneClass (Interval α)
   mul := (· * ·)
   one := 1
   one_mul s :=
-    (Option.map₂_coe_left _ _ _).trans <| by
-      simp_rw [NonemptyInterval.pure_one, one_mul, ← id_def, Option.map_id, id]
+    (Option.map₂_coe_left _ _ _).trans <| by simp_rw [one_mul, ← id_def, Option.map_id, id]
   mul_one s :=
-    (Option.map₂_coe_right _ _ _).trans <| by
-      simp_rw [NonemptyInterval.pure_one, mul_one, ← id_def, Option.map_id, id]
+    (Option.map₂_coe_right _ _ _).trans <| by simp_rw [mul_one, ← id_def, Option.map_id, id]
 
 @[to_additive]
 instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) :=
@@ -304,7 +293,7 @@ namespace NonemptyInterval
 
 @[to_additive]
 theorem coe_pow_interval [OrderedCommMonoid α] (s : NonemptyInterval α) (n : ℕ) :
-    (s ^ n : Interval α) = (s : Interval α) ^ n :=
+    ↑(s ^ n) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
 #align nonempty_interval.coe_pow_interval NonemptyInterval.coe_pow_interval
 #align nonempty_interval.coe_nsmul_interval NonemptyInterval.coe_nsmul_interval
@@ -319,7 +308,7 @@ namespace Interval
 variable [OrderedCommMonoid α] (s : Interval α) {n : ℕ}
 
 @[to_additive]
-theorem bot_pow : ∀ {n : ℕ} (_ : n ≠ 0), (⊥ : Interval α) ^ n = ⊥
+theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
   | 0, h => (h rfl).elim
   | Nat.succ n, _ => bot_mul (⊥ ^ n)
 #align interval.bot_pow Interval.bot_pow

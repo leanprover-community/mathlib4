@@ -62,27 +62,26 @@ variable (x)
 theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter F}
     (hg : HasFDerivAtFilter g g' (f x) L') (hf : HasFDerivAtFilter f f' x L) (hL : Tendsto f L L') :
     HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
-  let eq₁ := (g'.isBigO_comp _ _).trans_isLittleO hf
-  let eq₂ := (hg.comp_tendsto hL).trans_isBigO hf.isBigO_sub
-  refine' eq₂.triangle (eq₁.congr_left fun x' => _)
+  let eq₁ := (g'.isBigO_comp _ _).trans_isLittleO hf.isLittleO
+  let eq₂ := (hg.isLittleO.comp_tendsto hL).trans_isBigO hf.isBigO_sub
+  refine .of_isLittleO <| eq₂.triangle <| eq₁.congr_left fun x' => ?_
   simp
 #align has_fderiv_at_filter.comp HasFDerivAtFilter.comp
 
 /- A readable version of the previous theorem, a general form of the chain rule. -/
 example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (L.map f))
     (hf : HasFDerivAtFilter f f' x L) : HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
-  unfold HasFDerivAtFilter at hg
   have :=
     calc
       (fun x' => g (f x') - g (f x) - g' (f x' - f x)) =o[L] fun x' => f x' - f x :=
-        hg.comp_tendsto le_rfl
+        hg.isLittleO.comp_tendsto le_rfl
       _ =O[L] fun x' => x' - x := hf.isBigO_sub
-  refine' this.triangle _
+  refine' .of_isLittleO <| this.triangle _
   calc
     (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x))
     _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := eventually_of_forall fun x' => by simp
     _ =O[L] fun x' => f x' - f x - f' (x' - x) := (g'.isBigO_comp _ _)
-    _ =o[L] fun x' => x' - x := hf
+    _ =o[L] fun x' => x' - x := hf.isLittleO
 
 theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :

@@ -49,7 +49,7 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 -/
 
 
-variable {𝕜 : Type*} [IsROrC 𝕜] [dec_𝕜 : DecidableEq 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -129,7 +129,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot : (⨆ μ, eigenspace T μ)
   -- a self-adjoint operator on a nontrivial inner product space has an eigenvalue
   haveI :=
     hT'.subsingleton_of_no_eigenvalue_finiteDimensional hT.orthogonalComplement_iSup_eigenspaces
-  exact Submodule.eq_bot_of_subsingleton _
+  exact Submodule.eq_bot_of_subsingleton
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_eq_bot LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_eq_bot
 
 theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :
@@ -262,8 +262,7 @@ theorem eigenvectorBasis_apply_self_apply (v : E) (i : Fin n) :
       congr_arg (fun v => (hT.eigenvectorBasis hn).repr v i)
         (this ((hT.eigenvectorBasis hn).repr v))
   intro w
-  simp_rw [← OrthonormalBasis.sum_repr_symm, LinearMap.map_sum, LinearMap.map_smul,
-    apply_eigenvectorBasis]
+  simp_rw [← OrthonormalBasis.sum_repr_symm, map_sum, map_smul, apply_eigenvectorBasis]
   apply Fintype.sum_congr
   intro a
   rw [smul_smul, mul_comm]
@@ -276,8 +275,6 @@ end IsSymmetric
 end LinearMap
 
 section Nonneg
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 @[simp]
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
@@ -292,9 +289,9 @@ theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : Has
   have : IsROrC.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
     have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
     -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [←IsROrC.ofReal_pow, ←IsROrC.ofReal_mul] at this
-    exact_mod_cast this
-  exact (zero_le_mul_right hpos).mp (this ▸ hnn v)
+    rw [← IsROrC.ofReal_pow, ← IsROrC.ofReal_mul] at this
+    exact mod_cast this
+  exact (mul_nonneg_iff_of_pos_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_nonneg_of_nonneg eigenvalue_nonneg_of_nonneg
 
 theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenvalue T μ)
@@ -304,9 +301,9 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
   have : IsROrC.re ⟪v, T v⟫ = μ * ‖v‖ ^ 2 := by
     have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
     -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
-    rw [←IsROrC.ofReal_pow, ←IsROrC.ofReal_mul] at this
-    exact_mod_cast this
-  exact (zero_lt_mul_right hpos).mp (this ▸ hnn v)
+    rw [← IsROrC.ofReal_pow, ← IsROrC.ofReal_mul] at this
+    exact mod_cast this
+  exact (mul_pos_iff_of_pos_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_pos_of_pos eigenvalue_pos_of_pos
 
 end Nonneg

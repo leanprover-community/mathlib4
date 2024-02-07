@@ -3,13 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
-import Mathlib.Data.Complex.Module
 
 #align_import data.matrix.rank from "leanprover-community/mathlib"@"17219820a8aa8abe85adf5dfde19af1dd1bd8ae7"
 
@@ -163,7 +159,7 @@ theorem rank_eq_finrank_range_toLin [DecidableEq n] {M₁ M₂ : Type*} [AddComm
   rw [toLin_eq_toLin', toLin'_apply'] at aux₁
   rw [Pi.basisFun_apply, LinearMap.coe_stdBasis] at aux₁ aux₂
   simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply, aux₁, aux₂,
-    LinearMap.coe_single, toLin_self, LinearEquiv.map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
+    LinearMap.coe_single, toLin_self, map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
 #align matrix.rank_eq_finrank_range_to_lin Matrix.rank_eq_finrank_range_toLin
 
 theorem rank_le_card_height [StrongRankCondition R] (A : Matrix m n R) :

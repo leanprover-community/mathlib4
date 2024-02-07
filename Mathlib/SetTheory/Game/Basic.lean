@@ -3,6 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade
 -/
+import Mathlib.Data.Int.Basic
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
 
@@ -98,11 +99,11 @@ instance instPartialOrderGame : PartialOrder Game where
 /-- The less or fuzzy relation on games.
 
 If `0 ⧏ x` (less or fuzzy with), then Left can win `x` as the first player. -/
-def Lf : Game → Game → Prop :=
-  Quotient.lift₂ PGame.Lf fun _ _ _ _ hx hy => propext (lf_congr hx hy)
-#align game.lf SetTheory.Game.Lf
+def LF : Game → Game → Prop :=
+  Quotient.lift₂ PGame.LF fun _ _ _ _ hx hy => propext (lf_congr hx hy)
+#align game.lf SetTheory.Game.LF
 
-local infixl:50 " ⧏ " => Lf
+local infixl:50 " ⧏ " => LF
 
 /-- On `Game`, simp-normal inequalities should use as few negations as possible. -/
 @[simp]
@@ -118,8 +119,8 @@ theorem not_lf : ∀ {x y : Game}, ¬x ⧏ y ↔ y ≤ x := by
   exact PGame.not_lf
 #align game.not_lf SetTheory.Game.not_lf
 
--- porting note: had to replace ⧏ with Lf, otherwise cannot differentiate with the operator on PGame
-instance : IsTrichotomous Game Lf :=
+-- porting note: had to replace ⧏ with LF, otherwise cannot differentiate with the operator on PGame
+instance : IsTrichotomous Game LF :=
   ⟨by
     rintro ⟨x⟩ ⟨y⟩
     change _ ∨ ⟦x⟧ = ⟦y⟧ ∨ _
@@ -136,7 +137,7 @@ theorem PGame.le_iff_game_le {x y : PGame} : x ≤ y ↔ (⟦x⟧ : Game) ≤ �
   Iff.rfl
 #align game.pgame.le_iff_game_le SetTheory.Game.PGame.le_iff_game_le
 
-theorem PGame.lf_iff_game_lf {x y : PGame} : PGame.Lf x y ↔ ⟦x⟧ ⧏ ⟦y⟧ :=
+theorem PGame.lf_iff_game_lf {x y : PGame} : PGame.LF x y ↔ ⟦x⟧ ⧏ ⟦y⟧ :=
   Iff.rfl
 #align game.pgame.lf_iff_game_lf SetTheory.Game.PGame.lf_iff_game_lf
 
@@ -396,8 +397,8 @@ def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
       exact ((addCommRelabelling _ _).trans <|
         (mulCommRelabelling _ _).addCongr (mulCommRelabelling _ _)).subCongr
         (mulCommRelabelling _ _) }
-  termination_by _ => (x, y)
-  decreasing_by pgame_wf_tac
+  termination_by (x, y)
+  decreasing_by all_goals pgame_wf_tac
 #align pgame.mul_comm_relabelling SetTheory.PGame.mulCommRelabelling
 
 theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
@@ -476,8 +477,8 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
         -- but if we just `change` it to look like the mathlib3 goal then we're fine!?
         change -(mk xl xr xL xR * _) ≡r _
         exact (negMulRelabelling _ _).symm
-  termination_by _ => (x, y)
-  decreasing_by pgame_wf_tac
+  termination_by (x, y)
+  decreasing_by all_goals pgame_wf_tac
 #align pgame.neg_mul_relabelling SetTheory.PGame.negMulRelabelling
 
 @[simp]
@@ -590,8 +591,8 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
         rw [quot_left_distrib (mk xl xr xL xR) (mk yl yr yL yR) (zL k)]
         rw [quot_left_distrib (xR i) (mk yl yr yL yR) (zL k)]
         abel
-  termination_by _ => (x, y, z)
-  decreasing_by pgame_wf_tac
+  termination_by (x, y, z)
+  decreasing_by all_goals pgame_wf_tac
 #align pgame.quot_left_distrib SetTheory.PGame.quot_left_distrib
 
 /-- `x * (y + z)` is equivalent to `x * y + x * z.`-/
@@ -815,8 +816,8 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
         rw [quot_mul_assoc (mk xl xr xL xR) (yL j) (zL k)]
         rw [quot_mul_assoc (xR i) (yL j) (zL k)]
         abel
-  termination_by _ => (x, y, z)
-  decreasing_by pgame_wf_tac
+  termination_by (x, y, z)
+  decreasing_by all_goals pgame_wf_tac
 #align pgame.quot_mul_assoc SetTheory.PGame.quot_mul_assoc
 
 /-- `x * y * z` is equivalent to `x * (y * z).`-/

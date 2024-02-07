@@ -41,7 +41,7 @@ Hausdorff space as continuous maps such that preimages of compact sets are compa
 
 In algebraic geometry, it is common to also ask that proper maps are *separated*, in the sense of
 [Stacks: definition OCY1](https://stacks.math.columbia.edu/tag/0CY1). We don't follow this
-convention because it is unclear wether it would give the right notion in all cases, and in
+convention because it is unclear whether it would give the right notion in all cases, and in
 particular for the theory of proper group actions. That means that our terminology does **NOT**
 align with that of [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M),
 instead our definition of `IsProperMap` coincides with what they call "Bourbaki-proper".
@@ -67,15 +67,13 @@ so don't hesitate to have a look!
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
 
-set_option autoImplicit true
-
 open Filter Topology Function Set
 open Prod (fst snd)
 
+variable {X Y Z W ι : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+  [TopologicalSpace W] {f : X → Y}
 
-
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
-  {f : X → Y}
+universe u v
 
 /-- A map `f : X → Y` between two topological spaces is said to be **proper** if it is continuous
 and, for all `ℱ : Filter X`, any cluster point of `map f ℱ` is the image by `f` of a cluster point
@@ -174,8 +172,8 @@ lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
   -- along `𝒰`.
   · intro 𝒰 y hy
   -- That means that each `f i` tends to `y i` along `map (eval i) 𝒰`.
-    have : ∀ i, Tendsto (f i) (Ultrafilter.map (eval i) 𝒰) (𝓝 (y i)) :=
-      by simpa [tendsto_pi_nhds] using hy
+    have : ∀ i, Tendsto (f i) (Ultrafilter.map (eval i) 𝒰) (𝓝 (y i)) := by
+      simpa [tendsto_pi_nhds] using hy
   -- Thus, by properness of all the `f i`s, we can choose some `x : Π i, X i` such that, for all
   -- `i`, `f i (x i) = y i` and `map (eval i) 𝒰` tends to  `x i`.
     choose x hxy hx using fun i ↦ (h i).2 (this i)
@@ -237,7 +235,7 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
   refine and_congr_right fun f_cont ↦ and_congr_right fun _ ↦
     ⟨fun H y ↦ (H y).compl_mem_cocompact, fun H y ↦ ?_⟩
   rcases mem_cocompact.mp (H y) with ⟨K, hK, hKy⟩
-  exact isCompact_of_isClosed_subset hK (isClosed_singleton.preimage f_cont)
+  exact hK.of_isClosed_subset (isClosed_singleton.preimage f_cont)
     (compl_le_compl_iff_le.mp hKy)
 
 /-- A continuous map from a compact space to a T₂ space is a proper map. -/
@@ -272,7 +270,7 @@ lemma isProperMap_iff_tendsto_cocompact [T2Space Y] [WeaklyLocallyCompactSpace Y
   refine and_congr_right fun f_cont ↦
     ⟨fun H K hK ↦ (H hK).compl_mem_cocompact, fun H K hK ↦ ?_⟩
   rcases mem_cocompact.mp (H K hK) with ⟨K', hK', hK'y⟩
-  exact isCompact_of_isClosed_subset hK' (hK.isClosed.preimage f_cont)
+  exact hK'.of_isClosed_subset (hK.isClosed.preimage f_cont)
     (compl_le_compl_iff_le.mp hK'y)
 
 /-- A proper map `f : X → Y` is **universally closed**: for any topological space `Z`, the map

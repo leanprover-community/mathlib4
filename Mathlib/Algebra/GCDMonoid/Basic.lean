@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Tactic.Common
 
@@ -248,8 +247,7 @@ theorem out_top : (⊤ : Associates α).out = 0 :=
 
 -- Porting note: lower priority to avoid linter complaints about simp-normal form
 @[simp 1100]
-theorem normalize_out (a : Associates α) :
-  normalize a.out = a.out :=
+theorem normalize_out (a : Associates α) : normalize a.out = a.out :=
   Quotient.inductionOn a normalize_idem
 #align associates.normalize_out Associates.normalize_out
 
@@ -313,8 +311,7 @@ variable [CancelCommMonoidWithZero α]
 
 -- Porting note: lower priority to avoid linter complaints about simp-normal form
 @[simp 1100]
-theorem normalize_gcd [NormalizedGCDMonoid α] :
-  ∀ a b : α, normalize (gcd a b) = gcd a b :=
+theorem normalize_gcd [NormalizedGCDMonoid α] : ∀ a b : α, normalize (gcd a b) = gcd a b :=
   NormalizedGCDMonoid.normalize_gcd
 #align normalize_gcd normalize_gcd
 
@@ -358,11 +355,11 @@ theorem gcd_assoc' [GCDMonoid α] (m n k : α) : Associated (gcd (gcd m n) k) (g
       ((gcd_dvd_right m (gcd n k)).trans (gcd_dvd_right n k)))
 #align gcd_assoc' gcd_assoc'
 
-instance [NormalizedGCDMonoid α] : IsCommutative α gcd :=
-  ⟨gcd_comm⟩
+instance [NormalizedGCDMonoid α] : Std.Commutative (α := α) gcd where
+  comm := gcd_comm
 
-instance [NormalizedGCDMonoid α] : IsAssociative α gcd :=
-  ⟨gcd_assoc⟩
+instance [NormalizedGCDMonoid α] : Std.Associative (α := α) gcd where
+  assoc := gcd_assoc
 
 theorem gcd_eq_normalize [NormalizedGCDMonoid α] {a b c : α} (habc : gcd a b ∣ c)
     (hcab : c ∣ gcd a b) : gcd a b = normalize c :=
@@ -510,10 +507,16 @@ theorem dvd_gcd_mul_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k
   (dvd_gcd (dvd_mul_right _ n) H).trans (gcd_mul_right' n k m).dvd
 #align dvd_gcd_mul_of_dvd_mul dvd_gcd_mul_of_dvd_mul
 
+theorem dvd_gcd_mul_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ gcd k m * n ↔ k ∣ m * n :=
+  ⟨fun h => h.trans (mul_dvd_mul (gcd_dvd_right k m) dvd_rfl), dvd_gcd_mul_of_dvd_mul⟩
+
 theorem dvd_mul_gcd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k ∣ m * gcd k n := by
   rw [mul_comm] at H ⊢
   exact dvd_gcd_mul_of_dvd_mul H
 #align dvd_mul_gcd_of_dvd_mul dvd_mul_gcd_of_dvd_mul
+
+theorem dvd_mul_gcd_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ m * gcd k n ↔ k ∣ m * n :=
+  ⟨fun h => h.trans (mul_dvd_mul dvd_rfl (gcd_dvd_right k n)), dvd_mul_gcd_of_dvd_mul⟩
 
 /-- Represent a divisor of `m * n` as a product of a divisor of `m` and a divisor of `n`.
 
@@ -616,13 +619,9 @@ theorem exists_associated_pow_of_mul_eq_pow [GCDMonoid α] {a b c : α} (hab : I
     rw [Subsingleton.elim a (0 ^ k)]
   by_cases ha : a = 0
   · use 0
-    rw [ha]
-    obtain rfl | hk := k.eq_zero_or_pos
-    · exfalso
-      revert h
-      rw [ha, zero_mul, pow_zero]
-      apply zero_ne_one
-    · rw [zero_pow hk]
+    obtain rfl | hk := eq_or_ne k 0
+    · simp [ha] at h
+    · rw [ha, zero_pow hk]
   by_cases hb : b = 0
   · use 1
     rw [one_pow]
@@ -694,6 +693,22 @@ theorem extract_gcd {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α] (x
   exact ⟨x', y', ex, ey, isUnit_gcd_of_eq_mul_gcd ex ey h⟩
 #align extract_gcd extract_gcd
 
+theorem associated_gcd_left_iff [GCDMonoid α] {x y : α} : Associated x (gcd x y) ↔ x ∣ y :=
+  ⟨fun hx => hx.dvd.trans (gcd_dvd_right x y),
+    fun hxy => associated_of_dvd_dvd (dvd_gcd dvd_rfl hxy) (gcd_dvd_left x y)⟩
+
+theorem associated_gcd_right_iff [GCDMonoid α] {x y : α} : Associated y (gcd x y) ↔ y ∣ x :=
+  ⟨fun hx => hx.dvd.trans (gcd_dvd_left x y),
+    fun hxy => associated_of_dvd_dvd (dvd_gcd hxy dvd_rfl) (gcd_dvd_right x y)⟩
+
+theorem Irreducible.isUnit_gcd_iff [GCDMonoid α] {x y : α} (hx : Irreducible x) :
+    IsUnit (gcd x y) ↔ ¬(x ∣ y) := by
+  rw [hx.isUnit_iff_not_associated_of_dvd (gcd_dvd_left x y), not_iff_not, associated_gcd_left_iff]
+
+theorem Irreducible.gcd_eq_one_iff [NormalizedGCDMonoid α] {x y : α} (hx : Irreducible x) :
+    gcd x y = 1 ↔ ¬(x ∣ y) := by
+  rw [← hx.isUnit_gcd_iff, ← normalize_eq_one, NormalizedGCDMonoid.normalize_gcd]
+
 end GCD
 
 section LCM
@@ -733,8 +748,7 @@ theorem lcm_eq_zero_iff [GCDMonoid α] (a b : α) : lcm a b = 0 ↔ a = 0 ∨ b 
 
 -- Porting note: lower priority to avoid linter complaints about simp-normal form
 @[simp 1100]
-theorem normalize_lcm [NormalizedGCDMonoid α] (a b : α) :
-  normalize (lcm a b) = lcm a b :=
+theorem normalize_lcm [NormalizedGCDMonoid α] (a b : α) : normalize (lcm a b) = lcm a b :=
   NormalizedGCDMonoid.normalize_lcm a b
 #align normalize_lcm normalize_lcm
 
@@ -765,11 +779,11 @@ theorem lcm_assoc' [GCDMonoid α] (m n k : α) : Associated (lcm (lcm m n) k) (l
       (lcm_dvd ((dvd_lcm_right _ _).trans (dvd_lcm_left _ _)) (dvd_lcm_right _ _)))
 #align lcm_assoc' lcm_assoc'
 
-instance [NormalizedGCDMonoid α] : IsCommutative α lcm :=
-  ⟨lcm_comm⟩
+instance [NormalizedGCDMonoid α] : Std.Commutative (α := α) lcm where
+  comm := lcm_comm
 
-instance [NormalizedGCDMonoid α] : IsAssociative α lcm :=
-  ⟨lcm_assoc⟩
+instance [NormalizedGCDMonoid α] : Std.Associative (α := α) lcm where
+  assoc := lcm_assoc
 
 theorem lcm_eq_normalize [NormalizedGCDMonoid α] {a b c : α} (habc : lcm a b ∣ c)
     (hcab : c ∣ lcm a b) : lcm a b = normalize c :=
@@ -912,7 +926,7 @@ instance (priority := 100) normalizationMonoidOfUniqueUnits : NormalizationMonoi
 
 instance uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α) where
   default := normalizationMonoidOfUniqueUnits
-  uniq := fun ⟨u, _, _, _⟩ => by congr; simp
+  uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
 #align unique_normalization_monoid_of_unique_units uniqueNormalizationMonoidOfUniqueUnits
 
 instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=

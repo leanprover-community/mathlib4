@@ -67,6 +67,8 @@ theorem iff_card [Fact p.Prime] [Fintype G] : IsPGroup p G ↔ ∃ n : ℕ, card
   exact (hq1.pow_eq_iff.mp (hg.symm.trans hk).symm).1.symm
 #align is_p_group.iff_card IsPGroup.iff_card
 
+alias ⟨exists_card_eq, _⟩ := iff_card
+
 section GIsPGroup
 
 variable (hG : IsPGroup p G)
@@ -95,15 +97,15 @@ theorem of_equiv {H : Type*} [Group H] (ϕ : G ≃* H) : IsPGroup p H :=
   hG.of_surjective ϕ.toMonoidHom ϕ.surjective
 #align is_p_group.of_equiv IsPGroup.of_equiv
 
-theorem orderOf_coprime {n : ℕ} (hn : p.coprime n) (g : G) : (orderOf g).coprime n :=
+theorem orderOf_coprime {n : ℕ} (hn : p.Coprime n) (g : G) : (orderOf g).Coprime n :=
   let ⟨k, hk⟩ := hG g
   (hn.pow_left k).coprime_dvd_left (orderOf_dvd_of_pow_eq_one hk)
 #align is_p_group.order_of_coprime IsPGroup.orderOf_coprime
 
 /-- If `gcd(p,n) = 1`, then the `n`th power map is a bijection. -/
-noncomputable def powEquiv {n : ℕ} (hn : p.coprime n) : G ≃ G :=
-  let h : ∀ g : G, (Nat.card (Subgroup.zpowers g)).coprime n := fun g =>
-    order_eq_card_zpowers' g ▸ hG.orderOf_coprime hn g
+noncomputable def powEquiv {n : ℕ} (hn : p.Coprime n) : G ≃ G :=
+  let h : ∀ g : G, (Nat.card (Subgroup.zpowers g)).Coprime n := fun g =>
+    (Nat.card_zpowers g).symm ▸ hG.orderOf_coprime hn g
   { toFun := (· ^ n)
     invFun := fun g => (powCoprime (h g)).symm ⟨g, Subgroup.mem_zpowers g⟩
     left_inv := fun g =>
@@ -115,13 +117,13 @@ noncomputable def powEquiv {n : ℕ} (hn : p.coprime n) : G ≃ G :=
 #align is_p_group.pow_equiv IsPGroup.powEquiv
 
 @[simp]
-theorem powEquiv_apply {n : ℕ} (hn : p.coprime n) (g : G) : hG.powEquiv hn g = g ^ n :=
+theorem powEquiv_apply {n : ℕ} (hn : p.Coprime n) (g : G) : hG.powEquiv hn g = g ^ n :=
   rfl
 #align is_p_group.pow_equiv_apply IsPGroup.powEquiv_apply
 
 @[simp]
-theorem powEquiv_symm_apply {n : ℕ} (hn : p.coprime n) (g : G) :
-    (hG.powEquiv hn).symm g = g ^ (orderOf g).gcdB n := by rw [order_eq_card_zpowers']; rfl
+theorem powEquiv_symm_apply {n : ℕ} (hn : p.Coprime n) (g : G) :
+    (hG.powEquiv hn).symm g = g ^ (orderOf g).gcdB n := by rw [← Nat.card_zpowers]; rfl
 #align is_p_group.pow_equiv_symm_apply IsPGroup.powEquiv_symm_apply
 
 variable [hp : Fact p.Prime]
@@ -197,8 +199,8 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
     refine'
       Eq.symm
         (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
-          (fun a₁ a₂ _ _ _ _ h =>
-            Subtype.eq ((mem_fixedPoints' α).mp a₂.2 a₁.1 (Quotient.exact' h)))
+          (fun a₁ _ _ a₂ _ _ h =>
+            Subtype.eq (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
           (fun b => Quotient.inductionOn' b fun b _ hb => _) fun a ha _ => by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
@@ -341,7 +343,7 @@ theorem to_sup_of_normal_left' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPG
 theorem coprime_card_of_ne {G₂ : Type*} [Group G₂] (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime]
     [hp₂ : Fact p₂.Prime] (hne : p₁ ≠ p₂) (H₁ : Subgroup G) (H₂ : Subgroup G₂) [Fintype H₁]
     [Fintype H₂] (hH₁ : IsPGroup p₁ H₁) (hH₂ : IsPGroup p₂ H₂) :
-    Nat.coprime (Fintype.card H₁) (Fintype.card H₂) := by
+    Nat.Coprime (Fintype.card H₁) (Fintype.card H₂) := by
   obtain ⟨n₁, heq₁⟩ := iff_card.mp hH₁; rw [heq₁]; clear heq₁
   obtain ⟨n₂, heq₂⟩ := iff_card.mp hH₂; rw [heq₂]; clear heq₂
   exact Nat.coprime_pow_primes _ _ hp₁.elim hp₂.elim hne
@@ -354,7 +356,7 @@ theorem disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact
   intro x hx₁ hx₂
   obtain ⟨n₁, hn₁⟩ := iff_orderOf.mp hH₁ ⟨x, hx₁⟩
   obtain ⟨n₂, hn₂⟩ := iff_orderOf.mp hH₂ ⟨x, hx₂⟩
-  rw [← orderOf_subgroup, Subgroup.coe_mk] at hn₁ hn₂
+  rw [Subgroup.orderOf_mk] at hn₁ hn₂
   have : p₁ ^ n₁ = p₂ ^ n₂ := by rw [← hn₁, ← hn₂]
   rcases n₁.eq_zero_or_pos with (rfl | hn₁)
   · simpa using hn₁
@@ -409,4 +411,3 @@ theorem commutative_of_card_eq_prime_sq (hG : card G = p ^ 2) : ∀ a b : G, a *
 end P2comm
 
 end IsPGroup
-

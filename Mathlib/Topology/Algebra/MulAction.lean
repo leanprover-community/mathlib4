@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Topology.Algebra.Constructions
-import Mathlib.GroupTheory.GroupAction.Prod
+import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Topology.Algebra.ConstMulAction
 
 #align_import topology.algebra.mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
@@ -140,6 +140,45 @@ instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
 #align mul_opposite.has_continuous_smul MulOpposite.continuousSMul
 #align add_opposite.has_continuous_vadd AddOpposite.continuousVAdd
 
+@[to_additive]
+lemma IsCompact.smul_set {k : Set M} {u : Set X} (hk : IsCompact k) (hu : IsCompact u) :
+    IsCompact (k • u) := by
+  rw [← Set.image_smul_prod]
+  exact IsCompact.image (hk.prod hu) continuous_smul
+
+@[to_additive]
+lemma smul_set_closure_subset (K : Set M) (L : Set X) :
+    closure K • closure L ⊆ closure (K • L) :=
+  Set.smul_subset_iff.2 fun _x hx _y hy ↦ map_mem_closure₂ continuous_smul hx hy fun _a ha _b hb ↦
+    Set.smul_mem_smul ha hb
+
+/-- Suppose that `N` acts on `X` and `M` continuously acts on `Y`.
+Suppose that `g : Y → X` is an action homomorphism in the following sense:
+there exists a continuous function `f : N → M` such that `g (c • x) = f c • g x`.
+Then the action of `N` on `X` is continuous as well.
+
+In many cases, `f = id` so that `g` is an action homomorphism in the sense of `MulActionHom`.
+However, this version also works for semilinear maps and `f = Units.val`. -/
+@[to_additive
+  "Suppose that `N` additively acts on `X` and `M` continuously additively acts on `Y`.
+Suppose that `g : Y → X` is an additive action homomorphism in the following sense:
+there exists a continuous function `f : N → M` such that `g (c +ᵥ x) = f c +ᵥ g x`.
+Then the action of `N` on `X` is continuous as well.
+
+In many cases, `f = id` so that `g` is an action homomorphism in the sense of `AddActionHom`.
+However, this version also works for `f = AddUnits.val`."]
+lemma Inducing.continuousSMul {N : Type*} [SMul N Y] [TopologicalSpace N] {f : N → M}
+    (hg : Inducing g) (hf : Continuous f) (hsmul : ∀ {c x}, g (c • x) = f c • g x) :
+    ContinuousSMul N Y where
+  continuous_smul := by
+    simpa only [hg.continuous_iff, Function.comp_def, hsmul]
+      using (hf.comp continuous_fst).smul <| hg.continuous.comp continuous_snd
+
+@[to_additive]
+instance SMulMemClass.continuousSMul {S : Type*} [SetLike S X] [SMulMemClass S M X] (s : S) :
+    ContinuousSMul M s :=
+  inducing_subtype_val.continuousSMul continuous_id rfl
+
 end SMul
 
 section Monoid
@@ -147,12 +186,24 @@ section Monoid
 variable [Monoid M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
-instance Units.continuousSMul : ContinuousSMul Mˣ X where
-  continuous_smul :=
-    show Continuous ((fun p : M × X => p.fst • p.snd) ∘ fun p : Mˣ × X => (p.1, p.2)) from
-      continuous_smul.comp ((Units.continuous_val.comp continuous_fst).prod_mk continuous_snd)
+instance Units.continuousSMul : ContinuousSMul Mˣ X :=
+  inducing_id.continuousSMul Units.continuous_val rfl
 #align units.has_continuous_smul Units.continuousSMul
 #align add_units.has_continuous_vadd AddUnits.continuousVAdd
+
+/-- If an action is continuous, then composing this action with a continuous homomorphism gives
+again a continuous action. -/
+@[to_additive]
+theorem MulAction.continuousSMul_compHom
+    {N : Type*} [TopologicalSpace N] [Monoid N] {f : N →* M} (hf : Continuous f) :
+    letI : MulAction N X := MulAction.compHom _ f
+    ContinuousSMul N X := by
+  let _ : MulAction N X := MulAction.compHom _ f
+  exact ⟨(hf.comp continuous_fst).smul continuous_snd⟩
+
+@[to_additive]
+instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X :=
+  inducing_id.continuousSMul continuous_subtype_val rfl
 
 end Monoid
 
@@ -161,12 +212,8 @@ section Group
 variable [Group M] [MulAction M X] [ContinuousSMul M X]
 
 @[to_additive]
-instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X where
-  continuous_smul := (continuous_subtype_val.comp continuous_fst).smul continuous_snd
-
-@[to_additive]
-instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X where
-  continuous_smul := (continuous_subtype_val.comp continuous_fst).smul continuous_snd
+instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
+  S.toSubmonoid.continuousSMul
 
 end Group
 

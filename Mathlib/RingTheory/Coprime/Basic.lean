@@ -3,11 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.GroupTheory.GroupAction.Units
-import Mathlib.Algebra.Ring.Divisibility
-import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.Ring
 
 #align_import ring_theory.coprime.basic from "leanprover-community/mathlib"@"a95b16cbade0f938fc24abd05412bde1e84bab9b"
 
@@ -71,6 +72,13 @@ theorem not_isCoprime_zero_zero [Nontrivial R] : ¬IsCoprime (0 : R) 0 :=
   mt isCoprime_zero_right.mp not_isUnit_zero
 #align not_coprime_zero_zero not_isCoprime_zero_zero
 
+lemma IsCoprime.intCast {R : Type*} [CommRing R] {a b : ℤ} (h : IsCoprime a b) :
+    IsCoprime (a : R) (b : R) := by
+  rcases h with ⟨u, v, H⟩
+  use u, v
+  rw_mod_cast [H]
+  exact Int.cast_one
+
 /-- If a 2-vector `p` satisfies `IsCoprime (p 0) (p 1)`, then `p ≠ 0`. -/
 theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) (p 1)) : p ≠ 0 := by
   rintro rfl
@@ -90,12 +98,14 @@ theorem isCoprime_one_right : IsCoprime x 1 :=
   ⟨0, 1, by rw [one_mul, zero_mul, zero_add]⟩
 #align is_coprime_one_right isCoprime_one_right
 
+/-- See also `UniqueFactorizationMonoid.dvd_of_coprime_of_dvd_mul_right`. -/
 theorem IsCoprime.dvd_of_dvd_mul_right (H1 : IsCoprime x z) (H2 : x ∣ y * z) : x ∣ y := by
   let ⟨a, b, H⟩ := H1
   rw [← mul_one y, ← H, mul_add, ← mul_assoc, mul_left_comm]
   exact dvd_add (dvd_mul_left _ _) (H2.mul_left _)
 #align is_coprime.dvd_of_dvd_mul_right IsCoprime.dvd_of_dvd_mul_right
 
+/-- See also `UniqueFactorizationMonoid.dvd_of_coprime_of_dvd_mul_left`. -/
 theorem IsCoprime.dvd_of_dvd_mul_left (H1 : IsCoprime x y) (H2 : x ∣ y * z) : x ∣ z := by
   let ⟨a, b, H⟩ := H1
   rw [← one_mul z, ← H, add_mul, mul_right_comm, mul_assoc b]
@@ -119,6 +129,7 @@ theorem IsCoprime.mul_right (H1 : IsCoprime x y) (H2 : IsCoprime x z) : IsCoprim
   exact H1.mul_left H2
 #align is_coprime.mul_right IsCoprime.mul_right
 
+/-- See also `UniqueFactorizationMonoid.mul_dvd`. -/
 theorem IsCoprime.mul_dvd (H : IsCoprime x y) (H1 : x ∣ z) (H2 : y ∣ z) : x * y ∣ z := by
   obtain ⟨a, b, h⟩ := H
   rw [← mul_one z, ← h, mul_add]

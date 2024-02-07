@@ -29,7 +29,7 @@ Lemmas like `exp_add_of_commute` require a canonical norm on the type; while the
 sensible choices for the norm of a `Matrix` (`Matrix.normedAddCommGroup`,
 `Matrix.frobeniusNormedAddCommGroup`, `Matrix.linftyOpNormedAddCommGroup`), none of them
 are canonical. In an application where a particular norm is chosen using
-`local attribute [instance]`, then the usual lemmas about `exp` are fine. When choosing a norm is
+`attribute [local instance]`, then the usual lemmas about `exp` are fine. When choosing a norm is
 undesirable, the results in this file can be used.
 
 In this file, we copy across the lemmas about `exp`, but hide the requirement for a norm inside the
@@ -61,6 +61,8 @@ results for general rings are instead stated about `Ring.inverse`:
 
 
 open scoped Matrix BigOperators
+
+open NormedSpace -- For `exp`.
 
 variable (𝕂 : Type*) {m n p : Type*} {n' : m → Type*} {𝔸 : Type*}
 

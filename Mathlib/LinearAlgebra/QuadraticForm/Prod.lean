@@ -36,17 +36,15 @@ universe u v w
 
 variable {ι : Type*} {R : Type*} {M₁ M₂ N₁ N₂ : Type*} {Mᵢ Nᵢ : ι → Type*}
 
-variable [Semiring R]
-
-variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N₁] [AddCommMonoid N₂]
-
-variable [Module R M₁] [Module R M₂] [Module R N₁] [Module R N₂]
-
-variable [∀ i, AddCommMonoid (Mᵢ i)] [∀ i, AddCommMonoid (Nᵢ i)]
-
-variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)]
 
 namespace QuadraticForm
+
+section Prod
+
+section Semiring
+variable [CommSemiring R]
+variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N₁] [AddCommMonoid N₂]
+variable [Module R M₁] [Module R M₂] [Module R N₁] [Module R N₂]
 
 /-- Construct a quadratic form on a product of two modules from the quadratic form on each module.
 -/
@@ -66,6 +64,18 @@ def IsometryEquiv.prod
   map_app' x := congr_arg₂ (· + ·) (e₁.map_app x.1) (e₂.map_app x.2)
   toLinearEquiv := LinearEquiv.prod e₁.toLinearEquiv e₂.toLinearEquiv
 #align quadratic_form.isometry.prod QuadraticForm.IsometryEquiv.prod
+
+/-- `LinearMap.inl` as an isometry. -/
+@[simps!]
+def Isometry.inl (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) : Q₁ →qᵢ (Q₁.prod Q₂) where
+  toLinearMap := LinearMap.inl R _ _
+  map_app' m₁ := by simp
+
+/-- `LinearMap.inr` as an isometry. -/
+@[simps!]
+def Isometry.inr (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) : Q₂ →qᵢ (Q₁.prod Q₂) where
+  toLinearMap := LinearMap.inr R _ _
+  map_app' m₁ := by simp
 
 theorem Equivalent.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₁' : QuadraticForm R N₁} {Q₂' : QuadraticForm R N₂} (e₁ : Q₁.Equivalent Q₁')
@@ -90,7 +100,7 @@ def IsometryEquiv.prodProdProdComm
   map_app' _ := add_add_add_comm _ _ _ _
 
 /-- If a product is anisotropic then its components must be. The converse is not true. -/
-theorem anisotropic_of_prod {R} [OrderedRing R] [Module R M₁] [Module R M₂]
+theorem anisotropic_of_prod {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
     {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (h : (Q₁.prod Q₂).Anisotropic) :
     Q₁.Anisotropic ∧ Q₂.Anisotropic := by
   simp_rw [Anisotropic, prod_apply, Prod.forall, Prod.mk_eq_zero] at h
@@ -103,8 +113,9 @@ theorem anisotropic_of_prod {R} [OrderedRing R] [Module R M₁] [Module R M₂]
     rw [hx, add_zero, map_zero]
 #align quadratic_form.anisotropic_of_prod QuadraticForm.anisotropic_of_prod
 
-theorem nonneg_prod_iff {R} [OrderedRing R] [Module R M₁] [Module R M₂] {Q₁ : QuadraticForm R M₁}
-    {Q₂ : QuadraticForm R M₂} : (∀ x, 0 ≤ (Q₁.prod Q₂) x) ↔ (∀ x, 0 ≤ Q₁ x) ∧ ∀ x, 0 ≤ Q₂ x := by
+theorem nonneg_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
+    {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} :
+    (∀ x, 0 ≤ (Q₁.prod Q₂) x) ↔ (∀ x, 0 ≤ Q₁ x) ∧ ∀ x, 0 ≤ Q₂ x := by
   simp_rw [Prod.forall, prod_apply]
   constructor
   · intro h
@@ -115,8 +126,9 @@ theorem nonneg_prod_iff {R} [OrderedRing R] [Module R M₁] [Module R M₂] {Q�
     exact add_nonneg (h₁ x₁) (h₂ x₂)
 #align quadratic_form.nonneg_prod_iff QuadraticForm.nonneg_prod_iff
 
-theorem posDef_prod_iff {R} [OrderedRing R] [Module R M₁] [Module R M₂] {Q₁ : QuadraticForm R M₁}
-    {Q₂ : QuadraticForm R M₂} : (Q₁.prod Q₂).PosDef ↔ Q₁.PosDef ∧ Q₂.PosDef := by
+theorem posDef_prod_iff {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
+    {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} :
+    (Q₁.prod Q₂).PosDef ↔ Q₁.PosDef ∧ Q₂.PosDef := by
   simp_rw [posDef_iff_nonneg, nonneg_prod_iff]
   constructor
   · rintro ⟨⟨hle₁, hle₂⟩, ha⟩
@@ -129,12 +141,75 @@ theorem posDef_prod_iff {R} [OrderedRing R] [Module R M₁] [Module R M₂] {Q�
     rwa [Prod.mk_eq_zero]
 #align quadratic_form.pos_def_prod_iff QuadraticForm.posDef_prod_iff
 
-theorem PosDef.prod {R} [OrderedRing R] [Module R M₁] [Module R M₂] {Q₁ : QuadraticForm R M₁}
-    {Q₂ : QuadraticForm R M₂} (h₁ : Q₁.PosDef) (h₂ : Q₂.PosDef) : (Q₁.prod Q₂).PosDef :=
+theorem PosDef.prod {R} [OrderedCommRing R] [Module R M₁] [Module R M₂]
+    {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (h₁ : Q₁.PosDef) (h₂ : Q₂.PosDef) :
+    (Q₁.prod Q₂).PosDef :=
   posDef_prod_iff.mpr ⟨h₁, h₂⟩
 #align quadratic_form.pos_def.prod QuadraticForm.PosDef.prod
 
+theorem IsOrtho.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    {v w : M₁ × M₂} (h₁ : Q₁.IsOrtho v.1 w.1) (h₂ : Q₂.IsOrtho v.2 w.2) :
+    (Q₁.prod Q₂).IsOrtho v w :=
+  (congr_arg₂ HAdd.hAdd h₁ h₂).trans <| add_add_add_comm _ _ _ _
+
+@[simp] theorem IsOrtho.inl_inr {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (m₁ : M₁) (m₂ : M₂) :
+    (Q₁.prod Q₂).IsOrtho (m₁, 0) (0, m₂) := .prod (.zero_right _) (.zero_left _)
+
+@[simp] theorem IsOrtho.inr_inl {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (m₁ : M₁) (m₂ : M₂) :
+    (Q₁.prod Q₂).IsOrtho (0, m₂) (m₁, 0) := (IsOrtho.inl_inr _ _).symm
+
+@[simp] theorem isOrtho_inl_inl_iff {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (m₁ m₁' : M₁) :
+    (Q₁.prod Q₂).IsOrtho (m₁, 0) (m₁', 0) ↔ Q₁.IsOrtho m₁ m₁' := by
+  simp [isOrtho_def]
+
+@[simp] theorem isOrtho_inr_inr_iff {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
+    (m₂ m₂' : M₂) :
+    (Q₁.prod Q₂).IsOrtho (0, m₂) (0, m₂') ↔ Q₂.IsOrtho m₂ m₂' := by
+  simp [isOrtho_def]
+
+end Semiring
+
+section Ring
+
+variable [CommRing R]
+variable [AddCommGroup M₁] [AddCommGroup M₂]
+variable [Module R M₁] [Module R M₂]
+
+@[simp] theorem polar_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (x y : M₁ × M₂) :
+    polar (Q₁.prod Q₂) x y = polar Q₁ x.1 y.1 + polar Q₂ x.2 y.2 := by
+  dsimp [polar]
+  abel
+
+@[simp] theorem polarBilin_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+    (Q₁.prod Q₂).polarBilin =
+      Q₁.polarBilin.comp (.fst _ _ _) (.fst _ _ _) +
+      Q₂.polarBilin.comp (.snd _ _ _) (.snd _ _ _) :=
+  BilinForm.ext <| polar_prod _ _
+
+@[simp] theorem associated_prod [Invertible (2 : R)]
+    (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+    associated (Q₁.prod Q₂) =
+      Q₁.associated.comp (.fst _ _ _) (.fst _ _ _) +
+      Q₂.associated.comp (.snd _ _ _) (.snd _ _ _) := by
+  dsimp [associated, associatedHom]
+  rw [polarBilin_prod, smul_add]
+  rfl
+
+end Ring
+
+end Prod
+
+section Pi
+
 open scoped BigOperators
+
+section Semiring
+variable [CommSemiring R]
+variable [∀ i, AddCommMonoid (Mᵢ i)] [∀ i, AddCommMonoid (Nᵢ i)]
+variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)]
 
 /-- Construct a quadratic form on a family of modules from the quadratic form on each module. -/
 def pi [Fintype ι] (Q : ∀ i, QuadraticForm R (Mᵢ i)) : QuadraticForm R (∀ i, Mᵢ i) :=
@@ -146,6 +221,12 @@ theorem pi_apply [Fintype ι] (Q : ∀ i, QuadraticForm R (Mᵢ i)) (x : ∀ i, 
     pi Q x = ∑ i, Q i (x i) :=
   sum_apply _ _ _
 #align quadratic_form.pi_apply QuadraticForm.pi_apply
+
+theorem pi_apply_single [Fintype ι] [DecidableEq ι]
+    (Q : ∀ i, QuadraticForm R (Mᵢ i)) (i : ι) (m : Mᵢ i) :
+    pi Q (Pi.single i m) = Q i m := by
+  rw [pi_apply, Fintype.sum_eq_single i fun j hj => ?_, Pi.single_eq_same]
+  rw [Pi.single_eq_of_ne hj, map_zero]
 
 /-- An isometry between quadratic forms generated by `QuadraticForm.pi` can be constructed
 from a pair of isometries between the left and right parts. -/
@@ -159,6 +240,13 @@ def IsometryEquiv.pi [Fintype ι]
   toLinearEquiv := LinearEquiv.piCongrRight fun i => (e i : Mᵢ i ≃ₗ[R] Nᵢ i)
 #align quadratic_form.isometry.pi QuadraticForm.IsometryEquiv.pi
 
+/-- `LinearMap.single` as an isometry. -/
+@[simps!]
+def Isometry.single [Fintype ι] [DecidableEq ι] (Q : ∀ i, QuadraticForm R (Mᵢ i)) (i : ι) :
+    Q i →qᵢ pi Q where
+  toLinearMap := LinearMap.single i
+  map_app' := pi_apply_single _ _
+
 theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
     {Q' : ∀ i, QuadraticForm R (Nᵢ i)} (e : ∀ i, (Q i).Equivalent (Q' i)) :
     (pi Q).Equivalent (pi Q') :=
@@ -166,7 +254,7 @@ theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
 #align quadratic_form.equivalent.pi QuadraticForm.Equivalent.pi
 
 /-- If a family is anisotropic then its components must be. The converse is not true. -/
-theorem anisotropic_of_pi [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (Mᵢ i)]
+theorem anisotropic_of_pi [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} (h : (pi Q).Anisotropic) : ∀ i, (Q i).Anisotropic := by
   simp_rw [Anisotropic, pi_apply, Function.funext_iff, Pi.zero_apply] at h
   intro i x hx
@@ -181,7 +269,7 @@ theorem anisotropic_of_pi [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (M�
   · rw [Pi.single_eq_of_ne hji, map_zero]
 #align quadratic_form.anisotropic_of_pi QuadraticForm.anisotropic_of_pi
 
-theorem nonneg_pi_iff [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (Mᵢ i)]
+theorem nonneg_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} : (∀ x, 0 ≤ pi Q x) ↔ ∀ i x, 0 ≤ Q i x := by
   simp_rw [pi, sum_apply, comp_apply, LinearMap.proj_apply]
   constructor
@@ -195,7 +283,7 @@ theorem nonneg_pi_iff [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (Mᵢ i)
     exact Finset.sum_nonneg fun i _ => h i (x i)
 #align quadratic_form.nonneg_pi_iff QuadraticForm.nonneg_pi_iff
 
-theorem posDef_pi_iff [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (Mᵢ i)]
+theorem posDef_pi_iff [Fintype ι] {R} [OrderedCommRing R] [∀ i, Module R (Mᵢ i)]
     {Q : ∀ i, QuadraticForm R (Mᵢ i)} : (pi Q).PosDef ↔ ∀ i, (Q i).PosDef := by
   simp_rw [posDef_iff_nonneg, nonneg_pi_iff]
   constructor
@@ -208,5 +296,33 @@ theorem posDef_pi_iff [Fintype ι] {R} [OrderedRing R] [∀ i, Module R (Mᵢ i)
     · exact hx _ (Finset.mem_univ _)
     exact (h j).1 _
 #align quadratic_form.pos_def_pi_iff QuadraticForm.posDef_pi_iff
+
+end Semiring
+
+namespace Ring
+
+variable [CommRing R]
+variable [∀ i, AddCommGroup (Mᵢ i)] [∀ i, AddCommGroup (Nᵢ i)]
+variable [∀ i, Module R (Mᵢ i)] [∀ i, Module R (Nᵢ i)]
+variable [Fintype ι]
+
+@[simp] theorem polar_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) (x y : ∀ i, Mᵢ i) :
+    polar (pi Q) x y = ∑ i, polar (Q i) (x i) (y i) := by
+  dsimp [polar]
+  simp_rw [Finset.sum_sub_distrib, pi_apply, Pi.add_apply]
+
+@[simp] theorem polarBilin_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
+    (pi Q).polarBilin = ∑ i, (Q i).polarBilin.comp (.proj i) (.proj i) :=
+  BilinForm.ext fun x y => (polar_pi _ _ _).trans <| by simp
+
+@[simp] theorem associated_pi [Invertible (2 : R)] (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
+    associated (pi Q) = ∑ i, (Q i).associated.comp (.proj i) (.proj i) := by
+  dsimp [associated, associatedHom]
+  rw [polarBilin_pi, Finset.smul_sum]
+  rfl
+
+end Ring
+
+end Pi
 
 end QuadraticForm

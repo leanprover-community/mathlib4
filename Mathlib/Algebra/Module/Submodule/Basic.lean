@@ -3,8 +3,6 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.LinearMap
-import Mathlib.Algebra.Module.Equiv
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Submonoid.Membership
 
@@ -196,18 +194,6 @@ def toModule' (S R' R A : Type*) [Semiring R] [NonUnitalNonAssocSemiring A]
   haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R A
   SMulMemClass.toModule s
 
-/-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/
-protected def subtype : S' →ₗ[R] M where
-  toFun := Subtype.val
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-#align submodule_class.subtype SMulMemClass.subtype
-
-@[simp]
-protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
-  rfl
-#align submodule_class.coe_subtype SMulMemClass.coeSubtype
-
 end SMulMemClass
 
 namespace Submodule
@@ -344,14 +330,11 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 variable (p)
 
 instance addCommMonoid : AddCommMonoid p :=
-  { p.toAddSubmonoid.toAddCommMonoid with
-    add := (· + ·)
-    zero := 0 }
+  { p.toAddSubmonoid.toAddCommMonoid with }
 #align submodule.add_comm_monoid Submodule.addCommMonoid
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
   { (show MulAction S p from p.toSubMulAction.mulAction') with
-    smul := (· • ·)
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
     add_smul := fun a b x => by ext; simp [add_smul]
@@ -368,36 +351,13 @@ instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
 #align submodule.no_zero_smul_divisors Submodule.noZeroSMulDivisors
 
-/-- Embedding of a submodule `p` to the ambient space `M`. -/
-protected def subtype : p →ₗ[R] M := by refine' { toFun := Subtype.val.. } <;> simp [coe_smul]
-#align submodule.subtype Submodule.subtype
-
-theorem subtype_apply (x : p) : p.subtype x = x :=
-  rfl
-#align submodule.subtype_apply Submodule.subtype_apply
-
-@[simp]
-theorem coeSubtype : (Submodule.subtype p : p → M) = Subtype.val :=
-  rfl
-#align submodule.coe_subtype Submodule.coeSubtype
-
-theorem injective_subtype : Injective p.subtype :=
-  Subtype.coe_injective
-#align submodule.injective_subtype Submodule.injective_subtype
-
-/-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
--- porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
-theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
-  map_sum p.subtype _ _
-#align submodule.coe_sum Submodule.coe_sum
-
 section AddAction
 
 /-! ### Additive actions by `Submodule`s
 These instances transfer the action by an element `m : M` of an `R`-module `M` written as `m +ᵥ a`
 onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.
-These instances work particularly well in conjunction with `add_group.to_add_action`, enabling
+These instances work particularly well in conjunction with `AddGroup.toAddAction`, enabling
 `s +ᵥ m` as an alias for `↑s + m`.
 -/
 
@@ -414,10 +374,6 @@ instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCo
 instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α :=
   ⟨fun h => Subtype.ext <| eq_of_vadd_eq_vadd h⟩
 
-/-- The action by a submodule is the action by the underlying module. -/
-instance [AddAction M α] : AddAction p α :=
-  AddAction.compHom _ p.subtype.toAddMonoidHom
-
 variable {p}
 
 theorem vadd_def [VAdd M α] (g : p) (m : α) : g +ᵥ m = (g : M) +ᵥ m :=
@@ -425,81 +381,6 @@ theorem vadd_def [VAdd M α] (g : p) (m : α) : g +ᵥ m = (g : M) +ᵥ m :=
 #align submodule.vadd_def Submodule.vadd_def
 
 end AddAction
-
-section RestrictScalars
-
-variable (S) [Semiring S] [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
-
-/-- `V.restrict_scalars S` is the `S`-submodule of the `S`-module given by restriction of scalars,
-corresponding to `V`, an `R`-submodule of the original `R`-module.
--/
-def restrictScalars (V : Submodule R M) : Submodule S M where
-  carrier := V
-  zero_mem' := V.zero_mem
-  smul_mem' c _ h := V.smul_of_tower_mem c h
-  add_mem' hx hy := V.add_mem hx hy
-#align submodule.restrict_scalars Submodule.restrictScalars
-
-@[simp]
-theorem coe_restrictScalars (V : Submodule R M) : (V.restrictScalars S : Set M) = V :=
-  rfl
-#align submodule.coe_restrict_scalars Submodule.coe_restrictScalars
-
-@[simp]
-theorem restrictScalars_mem (V : Submodule R M) (m : M) : m ∈ V.restrictScalars S ↔ m ∈ V :=
-  Iff.refl _
-#align submodule.restrict_scalars_mem Submodule.restrictScalars_mem
-
-@[simp]
-theorem restrictScalars_self (V : Submodule R M) : V.restrictScalars R = V :=
-  SetLike.coe_injective rfl
-#align submodule.restrict_scalars_self Submodule.restrictScalars_self
-
-variable (R M)
-
-theorem restrictScalars_injective :
-    Function.Injective (restrictScalars S : Submodule R M → Submodule S M) := fun _ _ h =>
-  ext <| Set.ext_iff.1 (SetLike.ext'_iff.1 h : _)
-#align submodule.restrict_scalars_injective Submodule.restrictScalars_injective
-
-@[simp]
-theorem restrictScalars_inj {V₁ V₂ : Submodule R M} :
-    restrictScalars S V₁ = restrictScalars S V₂ ↔ V₁ = V₂ :=
-  (restrictScalars_injective S _ _).eq_iff
-#align submodule.restrict_scalars_inj Submodule.restrictScalars_inj
-
-/-- Even though `p.restrictScalars S` has type `Submodule S M`, it is still an `R`-module. -/
-instance restrictScalars.origModule (p : Submodule R M) : Module R (p.restrictScalars S) :=
-  (by infer_instance : Module R p)
-#align submodule.restrict_scalars.orig_module Submodule.restrictScalars.origModule
-
-instance restrictScalars.isScalarTower (p : Submodule R M) :
-    IsScalarTower S R (p.restrictScalars S) where
-  smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
-#align submodule.restrict_scalars.is_scalar_tower Submodule.restrictScalars.isScalarTower
-
-/-- `restrictScalars S` is an embedding of the lattice of `R`-submodules into
-the lattice of `S`-submodules. -/
-@[simps]
-def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
-  toFun := restrictScalars S
-  inj' := restrictScalars_injective S R M
-  map_rel_iff' := by simp [SetLike.le_def]
-#align submodule.restrict_scalars_embedding Submodule.restrictScalarsEmbedding
-#align submodule.restrict_scalars_embedding_apply Submodule.restrictScalarsEmbedding_apply
-
-/-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
-as turning it into a type and adding a module structure. -/
-@[simps (config := { simpRhs := true })]
-def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :=
-  { AddEquiv.refl p with
-    toFun := id
-    invFun := id
-    map_smul' := fun _ _ => rfl }
-#align submodule.restrict_scalars_equiv Submodule.restrictScalarsEquiv
-#align submodule.restrict_scalars_equiv_symm_apply Submodule.restrictScalarsEquiv_symm_apply
-
-end RestrictScalars
 
 end AddCommMonoid
 
@@ -576,7 +457,7 @@ protected theorem add_mem_iff_right : x ∈ p → (x + y ∈ p ↔ y ∈ p) :=
 #align submodule.add_mem_iff_right Submodule.add_mem_iff_right
 
 protected theorem coe_neg (x : p) : ((-x : p) : M) = -x :=
-  AddSubgroupClass.coe_neg _
+  NegMemClass.coe_neg _
 #align submodule.coe_neg Submodule.coe_neg
 
 protected theorem coe_sub (x y : p) : (↑(x - y) : M) = ↑x - ↑y :=
@@ -592,11 +473,13 @@ theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
 #align submodule.sub_mem_iff_right Submodule.sub_mem_iff_right
 
 instance addCommGroup : AddCommGroup p :=
-  { p.toAddSubgroup.toAddCommGroup with
-    add := (· + ·)
-    zero := 0
-    neg := Neg.neg }
+  { p.toAddSubgroup.toAddCommGroup with }
 #align submodule.add_comm_group Submodule.addCommGroup
+
+-- See `neg_coe_set`
+theorem neg_coe : -(p : Set M) = p :=
+  Set.ext fun _ => p.neg_mem_iff
+#align submodule.neg_coe Submodule.neg_coe
 
 end AddCommGroup
 

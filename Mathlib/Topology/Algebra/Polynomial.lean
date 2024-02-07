@@ -173,12 +173,12 @@ theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 
   rw [coeff_eq_esymm_roots_of_splits ((splits_id_iff_splits f).2 h2) hi, (h1.map _).leadingCoeff,
     one_mul, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul]
   apply ((norm_multiset_sum_le _).trans <| sum_le_card_nsmul _ _ fun r hr => _).trans
-  · rw [Multiset.map_map, card_map, card_powersetLen, ← natDegree_eq_card_roots' h2,
+  · rw [Multiset.map_map, card_map, card_powersetCard, ← natDegree_eq_card_roots' h2,
       Nat.choose_symm hi, mul_comm, nsmul_eq_mul]
   intro r hr
   simp_rw [Multiset.mem_map] at hr
   obtain ⟨_, ⟨s, hs, rfl⟩, rfl⟩ := hr
-  rw [mem_powersetLen] at hs
+  rw [mem_powersetCard] at hs
   lift B to ℝ≥0 using hB
   rw [← coe_nnnorm, ← NNReal.coe_pow, NNReal.coe_le_coe, ← nnnormHom_apply, ← MonoidHom.coe_coe,
     MonoidHom.map_multiset_prod]
@@ -204,7 +204,7 @@ theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1
     refine' _root_.trans _
       (one_le_mul_of_one_le_of_one_le (one_le_pow_of_one_le (le_max_right B 1) d) _)
     · split_ifs <;> norm_num
-    · exact_mod_cast Nat.succ_le_iff.mpr (Nat.choose_pos (d.div_le_self 2))
+    · exact mod_cast Nat.succ_le_iff.mpr (Nat.choose_pos (d.div_le_self 2))
 #align polynomial.coeff_bdd_of_roots_le Polynomial.coeff_bdd_of_roots_le
 
 end Roots

@@ -3,12 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Group.MinMax
-import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Init.Align
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Ring
@@ -170,7 +169,7 @@ variable [IsAbsoluteValue abv]
 -- see Note [nolint_ge]
 -- @[nolint ge_or_gt] -- Porting note: restore attribute
 theorem cauchy₂ (f : CauSeq β abv) {ε} :
-    0 < ε → ∃ i, ∀ (j) (_ : j ≥ i) (k) (_ : k ≥ i), abv (f j - f k) < ε :=
+    0 < ε → ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε :=
   f.2.cauchy₂
 #align cau_seq.cauchy₂ CauSeq.cauchy₂
 
@@ -407,7 +406,7 @@ instance ring : Ring (CauSeq β abv) :=
 
 instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with
-    mul_comm := fun a b => ext $ fun n => by simp [mul_left_comm, mul_comm] }
+    mul_comm := fun a b => ext fun n => by simp [mul_left_comm, mul_comm] }
 
 /-- `LimZero f` holds when `f` approaches 0. -/
 def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=
@@ -499,7 +498,8 @@ theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
   haveI := Classical.propDecidable
   by_contra nk
   refine' hf fun ε ε0 => _
-  simp [not_forall] at nk
+  simp? [not_forall] at nk says
+    simp only [gt_iff_lt, ge_iff_le, not_exists, not_and, not_forall, not_le, exists_prop] at nk
   cases' f.cauchy₃ (half_pos ε0) with i hi
   rcases nk _ (half_pos ε0) i with ⟨j, ij, hj⟩
   refine' ⟨j, fun k jk => _⟩
@@ -1001,3 +1001,5 @@ protected theorem sup_inf_distrib_right (a b c : CauSeq α abs) : a ⊓ b ⊔ c 
 end Abs
 
 end CauSeq
+
+assert_not_exists Module

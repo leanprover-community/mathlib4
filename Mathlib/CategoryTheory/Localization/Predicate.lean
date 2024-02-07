@@ -249,7 +249,7 @@ def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
 def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type*) [Category E] :
-  (D ⥤ E) ⥤ C ⥤ E :=
+    (D ⥤ E) ⥤ C ⥤ E :=
   (whiskeringLeft C D E).obj L
 #align category_theory.localization.whiskering_left_functor' CategoryTheory.Localization.whiskeringLeftFunctor'
 
@@ -433,6 +433,12 @@ theorem of_equivalence_target {E : Type*} [Category E] (L' : C ⥤ E) (eq : D �
     { inverts := h
       nonempty_isEquivalence := Nonempty.intro (IsEquivalence.ofIso e' inferInstance) }
 #align category_theory.functor.is_localization.of_equivalence_target CategoryTheory.Functor.IsLocalization.of_equivalence_target
+
+lemma of_isEquivalence (L : C ⥤ D) (W : MorphismProperty C)
+    (hW : W ⊆ MorphismProperty.isomorphisms C) [IsEquivalence L] :
+    L.IsLocalization W := by
+  haveI : (𝟭 C).IsLocalization W := for_id W hW
+  exact of_equivalence_target (𝟭 C) W L L.asEquivalence L.leftUnitor
 
 end IsLocalization
 

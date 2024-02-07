@@ -524,7 +524,7 @@ def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
       homEquiv_naturality_left_symm := fun {X'} {X} {Y} f g => by
         have := @he' C _ D _ G F_obj e he
         erw [← this, ← Equiv.apply_eq_iff_eq (e X' Y)]
-        simp [(he X' (F_obj X) Y (e X Y |>.symm g) (leftAdjointOfEquiv e he |>.map f)).symm]
+        simp only [leftAdjointOfEquiv_obj, Equiv.apply_symm_apply, assoc]
         congr
         rw [← he]
         simp
@@ -610,6 +610,7 @@ namespace Equivalence
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`. -/
+@[pp_dot, simps! unit counit]
 def toAdjunction (e : C ≌ D) : e.functor ⊣ e.inverse :=
   mkOfUnitCounit
     ⟨e.unit, e.counit, by
@@ -623,17 +624,8 @@ def toAdjunction (e : C ≌ D) : e.functor ⊣ e.inverse :=
       exact e.unit_inverse_comp _⟩
 #align category_theory.equivalence.to_adjunction CategoryTheory.Equivalence.toAdjunction
 
-@[simp]
-theorem asEquivalence_toAdjunction_unit {e : C ≌ D} :
-    e.functor.asEquivalence.toAdjunction.unit = e.unit :=
-  rfl
-#align category_theory.equivalence.as_equivalence_to_adjunction_unit CategoryTheory.Equivalence.asEquivalence_toAdjunction_unit
-
-@[simp]
-theorem asEquivalence_toAdjunction_counit {e : C ≌ D} :
-    e.functor.asEquivalence.toAdjunction.counit = e.counit :=
-  rfl
-#align category_theory.equivalence.as_equivalence_to_adjunction_counit CategoryTheory.Equivalence.asEquivalence_toAdjunction_counit
+#align category_theory.equivalence.as_equivalence_to_adjunction_unit CategoryTheory.Equivalence.toAdjunction_unitₓ
+#align category_theory.equivalence.as_equivalence_to_adjunction_counit CategoryTheory.Equivalence.toAdjunction_counitₓ
 
 end Equivalence
 

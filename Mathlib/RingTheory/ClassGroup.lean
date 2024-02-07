@@ -115,8 +115,10 @@ noncomputable def ClassGroup.mk : (FractionalIdeal R⁰ K)ˣ →* ClassGroup R :
 -- Can't be `@[simp]` because it can't figure out the quotient relation.
 theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     Quot.mk _ I = ClassGroup.mk I := by
-  rw [ClassGroup.mk, canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id,
-      MonoidHom.comp_apply, MonoidHom.id_apply, QuotientGroup.mk'_apply]
+  rw [ClassGroup.mk, canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [MonoidHom.comp_apply]
+  rw [MonoidHom.id_apply, QuotientGroup.mk'_apply]
   rfl
 
 theorem ClassGroup.mk_eq_mk {I J : (FractionalIdeal R⁰ <| FractionRing R)ˣ} :
@@ -150,7 +152,7 @@ theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| Fractio
 theorem ClassGroup.mk_eq_one_of_coe_ideal {I : (FractionalIdeal R⁰ <| FractionRing R)ˣ}
     {I' : Ideal R} (hI : (I : FractionalIdeal R⁰ <| FractionRing R) = I') :
     ClassGroup.mk I = 1 ↔ ∃ x : R, x ≠ 0 ∧ I' = Ideal.span {x} := by
-  rw [← map_one (ClassGroup.mk (R := R) (K := FractionRing R)),
+  rw [← _root_.map_one (ClassGroup.mk (R := R) (K := FractionRing R)),
     ClassGroup.mk_eq_mk_of_coe_ideal hI (?_ : _ = ↑(⊤ : Ideal R))]
   any_goals rfl
   constructor
@@ -213,7 +215,8 @@ theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRi
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.equiv K' (ClassGroup.mk I) =
       QuotientGroup.mk' _ (Units.mapEquiv (↑(FractionalIdeal.canonicalEquiv R⁰ K K')) I) := by
-  rw [ClassGroup.equiv, ClassGroup.mk, MonoidHom.comp_apply, QuotientGroup.congr_mk']
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [ClassGroup.equiv, ClassGroup.mk, MonoidHom.comp_apply, QuotientGroup.congr_mk']
   congr
   rw [← Units.eq_iff, Units.coe_mapEquiv, Units.coe_mapEquiv, Units.coe_map]
   exact FractionalIdeal.canonicalEquiv_canonicalEquiv _ _ _ _ _
@@ -224,8 +227,10 @@ theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsF
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.mk (Units.map (↑(canonicalEquiv R⁰ K K')) I : (FractionalIdeal R⁰ K')ˣ) =
       ClassGroup.mk I := by
-  rw [ClassGroup.mk, MonoidHom.comp_apply, ← MonoidHom.comp_apply (Units.map _), ← Units.map_comp, ←
-      RingEquiv.coe_monoidHom_trans, FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [ClassGroup.mk, MonoidHom.comp_apply, ← MonoidHom.comp_apply (Units.map _),
+      ← Units.map_comp, ← RingEquiv.coe_monoidHom_trans,
+      FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
   rfl
 #align class_group.mk_canonical_equiv ClassGroup.mk_canonicalEquiv
 
@@ -384,7 +389,7 @@ theorem ClassGroup.mk0_integralRep [IsDedekindDomain R]
 theorem ClassGroup.mk0_surjective [IsDedekindDomain R] :
     Function.Surjective (ClassGroup.mk0 : (Ideal R)⁰ → ClassGroup R) := by
   rintro ⟨I⟩
-  refine ⟨⟨ ClassGroup.integralRep I.1, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩, ?_⟩
+  refine ⟨⟨ClassGroup.integralRep I.1, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩, ?_⟩
   rw [ClassGroup.mk0_integralRep, ClassGroup.Quot_mk_eq_mk]
 #align class_group.mk0_surjective ClassGroup.mk0_surjective
 

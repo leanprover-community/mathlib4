@@ -66,7 +66,6 @@ semigroup, if it admits an injective map that preserves `+` to an additive left 
 protected def leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : LeftCancelSemigroup M₁ :=
   { hf.semigroup f mul with
-    mul := (· * ·),
     mul_left_cancel := fun x y z H => hf <| (mul_right_inj (f x)).1 <| by erw [← mul, ← mul, H] }
 #align function.injective.left_cancel_semigroup Function.Injective.leftCancelSemigroup
 #align function.injective.add_left_cancel_semigroup Function.Injective.addLeftCancelSemigroup
@@ -79,7 +78,6 @@ semigroup."]
 protected def rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : RightCancelSemigroup M₁ :=
   { hf.semigroup f mul with
-    mul := (· * ·),
     mul_right_cancel := fun x y z H => hf <| (mul_left_inj (f y)).1 <| by erw [← mul, ← mul, H] }
 #align function.injective.right_cancel_semigroup Function.Injective.rightCancelSemigroup
 #align function.injective.add_right_cancel_semigroup Function.Injective.addRightCancelSemigroup
@@ -322,7 +320,7 @@ protected def addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ
   { hf.addGroup f zero add neg sub nsmul zsmul,
     hf.addMonoidWithOne f zero one add nsmul nat_cast with
     intCast := Int.cast,
-    intCast_ofNat := fun n => hf (by rw [nat_cast, ←Int.cast, int_cast, Int.cast_ofNat]),
+    intCast_ofNat := fun n => hf (by rw [nat_cast, ← Int.cast, int_cast, Int.cast_ofNat]),
     intCast_negSucc := fun n => hf (by erw [int_cast, neg, nat_cast, Int.cast_negSucc] ) }
 #align function.injective.add_group_with_one Function.Injective.addGroupWithOne
 
@@ -414,8 +412,10 @@ protected def monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one 
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
   { hf.semigroup f mul, hf.mulOneClass f one mul with
     npow := fun n x => x ^ n,
-    npow_zero := hf.forall.2 fun x => by dsimp only; erw [←npow, pow_zero, ←one],
-    npow_succ := fun n => hf.forall.2 fun x => by dsimp only; erw [←npow, pow_succ, ←npow, ←mul] }
+    npow_zero := hf.forall.2 fun x => by dsimp only; erw [← npow, pow_zero, ← one],
+    npow_succ := fun n => hf.forall.2 fun x => by
+      dsimp only
+      erw [← npow, pow_succ, ← npow, ← mul] }
 #align function.surjective.monoid Function.Surjective.monoid
 #align function.surjective.add_monoid Function.Surjective.addMonoid
 
