@@ -460,7 +460,7 @@ private lemma forall_fin_three {p : Fin 3 → Prop} : (∀ i, p i) ↔ p 0 ∧ p
 -/
 theorem IsFaceMap₃₀ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 0 f ↔
     S.δ 1 (f 0) = S.δ 1 (f 1) ∧ S.δ 2 (f 0) = S.δ 1 (f 2) ∧ S.δ 2 (f 1) = S.δ 2 (f 2)  := by
-  rw [IsFaceMap,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three]
+  rw [IsFaceMap,forall_fin_three,forall_fin_three,forall_fin_three,forall_fin_three]
   simp only [lt_self_iff_false, Fin.zero_succAbove, Fin.succ_zero_eq_one, Fin.pred_one,
     Fin.castPred_one, IsEmpty.forall_iff, Fin.reduceLT, Fin.succ_one_eq_two, forall_true_left,
     Fin.pred_succ, true_and, Fin.not_lt_zero, and_self, and_true]
@@ -471,7 +471,7 @@ theorem IsFaceMap₃₀ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 0 f ↔
 -/
 theorem IsFaceMap₃₁ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 1 f ↔
     S.δ 1 (f 0) = S.δ 0 (f 1) ∧ S.δ 2 (f 0) = S.δ 0 (f 2) ∧ S.δ 2 (f 1) = S.δ 2 (f 2)  := by
-  rw [IsFaceMap,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three]
+  rw [IsFaceMap,forall_fin_three,forall_fin_three,forall_fin_three,forall_fin_three]
   simp only [lt_self_iff_false, ne_eq, Fin.one_eq_zero_iff, Nat.reduceAdd, OfNat.ofNat_ne_one,
     not_false_eq_true, Fin.succAbove_ne_zero_zero, IsEmpty.forall_iff, Fin.reduceLT,
     Fin.one_succAbove_one, forall_true_left, true_and, Fin.not_lt_zero, and_self, and_true]
@@ -482,7 +482,7 @@ theorem IsFaceMap₃₁ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 1 f ↔
 -/
 theorem IsFaceMap₃₂ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 2 f ↔
     S.δ 0 (f 0) = S.δ 0 (f 1) ∧ S.δ 2 (f 0) = S.δ 0 (f 2) ∧ S.δ 2 (f 1) = S.δ 1 (f 2)  := by
-  rw [IsFaceMap,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three]
+  rw [IsFaceMap,forall_fin_three,forall_fin_three,forall_fin_three,forall_fin_three]
   simp only [lt_self_iff_false, IsEmpty.forall_iff, Fin.reduceLT, forall_true_left, true_and,
     Fin.not_lt_zero, and_self, and_true]
   exact and_assoc
@@ -492,7 +492,7 @@ theorem IsFaceMap₃₂ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 2 f ↔
 -/
 theorem IsFaceMap₃₃ {S : SSet} (f : Fin 3 →  S _[2]) : IsFaceMap 3 f ↔
     S.δ 0 (f 0) = S.δ 0 (f 1) ∧ S.δ 1 (f 0) = S.δ 0 (f 2) ∧ S.δ 1 (f 1) = S.δ 1 (f 2)  := by
-  rw [IsFaceMap,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three,Fin.forall_fin_three]
+  rw [IsFaceMap,forall_fin_three,forall_fin_three,forall_fin_three,forall_fin_three]
   simp only [lt_self_iff_false, IsEmpty.forall_iff, Fin.reduceLT, forall_true_left, true_and,
     Fin.not_lt_zero, and_self, and_true]
   exact and_assoc
