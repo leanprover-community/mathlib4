@@ -708,7 +708,7 @@ variable {ι} [DecidableEq ι]
 theorem single_mem_stdSimplex (i : ι) : Pi.single i 1 ∈ stdSimplex 𝕜 ι :=
   ⟨le_update_iff.2 ⟨zero_le_one, fun _ _ ↦ le_rfl⟩, by simp⟩
 
-theorem ite_eq_mem_stdSimplex (i : ι) : (fun j => ite (i = j) (1 : 𝕜) 0) ∈ stdSimplex 𝕜 ι := by
+theorem ite_eq_mem_stdSimplex (i : ι) : (fun j => if i = j then (1 : 𝕜) else 0) ∈ stdSimplex 𝕜 ι := by
   simpa only [@eq_comm _ i, ← Pi.single_apply] using single_mem_stdSimplex 𝕜 i
 #align ite_eq_mem_std_simplex ite_eq_mem_stdSimplex
 
