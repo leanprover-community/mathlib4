@@ -100,17 +100,12 @@ instance gradeBy.gradedMonoid [AddMonoid M] [AddMonoid ι] [CommSemiring R] (f :
     SetLike.GradedMonoid (gradeBy R f : ι → Submodule R R[M]) where
   one_mem m h := by
     rw [one_def] at h
-    by_cases H : (1 : R) = (0 : R)
-    · rw [H, single, Finsupp.single_zero] at h
-      cases h
-    · rw [Finsupp.support_single_ne_zero _ H, Finset.mem_singleton] at h
-      rw [h, AddMonoidHom.map_zero]
+    obtain rfl : m = 0 := Finset.mem_singleton.1 <| Finsupp.support_single_subset h
+    apply map_zero
   mul_mem i j a b ha hb c hc := by
-    set h := support_mul a b hc
-    simp only [Finset.mem_biUnion] at h
-    rcases h with ⟨ma, ⟨hma, ⟨mb, ⟨hmb, hmc⟩⟩⟩⟩
-    rw [← ha ma hma, ← hb mb hmb, Finset.mem_singleton.mp hmc]
-    apply AddMonoidHom.map_add
+    obtain ⟨ma, hma, mb, hmb, rfl⟩ : ∃ y ∈ a.support, ∃ z ∈ b.support, y + z = c :=
+      Finset.mem_add.1 <| support_mul a b hc
+    rw [map_add, ha ma hma, hb mb hmb]
 #align add_monoid_algebra.grade_by.graded_monoid AddMonoidAlgebra.gradeBy.gradedMonoid
 
 instance grade.gradedMonoid [AddMonoid M] [CommSemiring R] :

@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.10"
+  "0.1.11"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -129,7 +129,8 @@ def getPackageDirs : IO PackageDirs := do
     ("Std", LAKEPACKAGESDIR / "std"),
     ("Cli", LAKEPACKAGESDIR / "Cli"),
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-    ("Qq", LAKEPACKAGESDIR / "Qq")
+    ("Qq", LAKEPACKAGESDIR / "Qq"),
+    ("ImportGraph", LAKEPACKAGESDIR / "importGraph")
   ]
 
 initialize pkgDirs : PackageDirs ← getPackageDirs
@@ -338,7 +339,7 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
-    let args := (if force then #["-f"] else #[]) ++ #["-x", "-j", "-"]
+    let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
     let mathlibDepPath := (← mathlibDepPath).toString

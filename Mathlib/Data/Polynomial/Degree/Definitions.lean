@@ -9,6 +9,7 @@ import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Polynomial.Monomial
 import Mathlib.Data.Polynomial.Coeff
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Data.Nat.SuccPred
 
 #align_import data.polynomial.degree.definitions from "leanprover-community/mathlib"@"808ea4ebfabeb599f21ec4ae87d6dc969597887f"
 
@@ -1043,7 +1044,7 @@ theorem degree_pow' : ∀ {n : ℕ}, leadingCoeff p ^ n ≠ 0 → degree (p ^ n)
 theorem natDegree_pow' {n : ℕ} (h : leadingCoeff p ^ n ≠ 0) : natDegree (p ^ n) = n * natDegree p :=
   letI := Classical.decEq R
   if hp0 : p = 0 then
-    if hn0 : n = 0 then by simp [*] else by rw [hp0, zero_pow (Nat.pos_of_ne_zero hn0)]; simp
+    if hn0 : n = 0 then by simp [*] else by rw [hp0, zero_pow hn0]; simp
   else
     have hpn : p ^ n ≠ 0 := fun hpn0 => by
       have h1 := h

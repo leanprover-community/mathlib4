@@ -277,7 +277,7 @@ theorem factorial_mul_ascFactorial' (n k : ℕ) (h : 0 < n) :
   rw [Nat.sub_one, factorial_mul_ascFactorial]
 
 /-- Avoid in favor of `Nat.factorial_mul_ascFactorial` if you can. ℕ-division isn't worth it. -/
-theorem ascFactorial_eq_div (n k : ℕ) :  (n + 1).ascFactorial k = (n + k)! / n ! := by
+theorem ascFactorial_eq_div (n k : ℕ) : (n + 1).ascFactorial k = (n + k)! / n ! := by
   apply mul_left_cancel₀ n.factorial_ne_zero
   rw [factorial_mul_ascFactorial]
   exact (Nat.mul_div_cancel_left' <| factorial_dvd_factorial <| le_add_right n k).symm
@@ -438,8 +438,8 @@ theorem pow_sub_le_descFactorial (n : ℕ) : ∀ k : ℕ, (n + 1 - k) ^ k ≤ n.
   | k + 1 => by
     rw [descFactorial_succ, pow_succ, succ_sub_succ, mul_comm]
     apply Nat.mul_le_mul_left
-    exact   (le_trans (Nat.pow_le_pow_left (tsub_le_tsub_right (le_succ _) _) k)
-          (pow_sub_le_descFactorial n k))
+    exact (le_trans (Nat.pow_le_pow_left (tsub_le_tsub_right (le_succ _) _) k)
+      (pow_sub_le_descFactorial n k))
 #align nat.pow_sub_le_desc_factorial Nat.pow_sub_le_descFactorial
 
 theorem pow_sub_lt_descFactorial' {n : ℕ} :

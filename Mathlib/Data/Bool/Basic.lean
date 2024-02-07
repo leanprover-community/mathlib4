@@ -3,7 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 
@@ -105,7 +104,7 @@ theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
   ⟨fun ⟨b, h⟩ ↦ by cases b; exact Or.inl h; exact Or.inr h,
   fun h ↦ match h with
   | .inl h => ⟨_, h⟩
-  | .inr h => ⟨_, h⟩ ⟩
+  | .inr h => ⟨_, h⟩⟩
 #align bool.exists_bool Bool.exists_bool
 
 /-- If `p b` is decidable for all `b : Bool`, then `∀ b, p b` is decidable -/

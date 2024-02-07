@@ -14,11 +14,11 @@ import Mathlib.Probability.ProbabilityMassFunction.Basic
 Define the Poisson measure over the natural numbers
 
 ## Main definitions
-* `poissonPmfReal`: the function `λ n ↦ exp (- λ) * λ ^ n / n!`
+* `poissonPMFReal`: the function `λ n ↦ exp (- λ) * λ ^ n / n!`
   for `n ∈ ℕ`, which is the probability density function of a Poisson distribution with
   rate `λ > 0`.
-* `poissonPmf`: `ℝ≥0∞`-valued pdf,
-  `poissonPmf λ = ENNReal.ofReal (poissonPmfReal λ)`.
+* `poissonPMF`: `ℝ≥0∞`-valued pdf,
+  `poissonPMF λ = ENNReal.ofReal (poissonPMFReal λ)`.
 * `poissonMeasure`: a Poisson measure on `ℕ`, parametrized by its rate `λ`.
 -/
 
@@ -28,15 +28,15 @@ open MeasureTheory Real Set Filter Topology
 
 namespace ProbabilityTheory
 
-section PoissonPmf
+section PoissonPMF
 
 /-- The pmf of the Poisson distribution depending on its rate, as a function to ℝ -/
 noncomputable
-def poissonPmfReal (r : ℝ≥0) (n : ℕ) : ℝ := (exp (- r) * r ^ n / n !)
+def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := (exp (- r) * r ^ n / n !)
 
-lemma poissonPmfRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPmfReal r n) 1 := by
+lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 := by
   let r := r.toReal
-  unfold poissonPmfReal
+  unfold poissonPMFReal
   apply (hasSum_mul_left_iff (exp_ne_zero r)).mp
   simp only [mul_one]
   have : (fun i ↦ rexp r * (rexp (-r) * r ^ i / ↑(Nat.factorial i))) =
@@ -47,37 +47,37 @@ lemma poissonPmfRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPmfReal r n) 1 
   exact NormedSpace.expSeries_div_hasSum_exp ℝ r
 
 /-- The Poisson pmf is positive for all natural numbers -/
-lemma poissonPmfReal_pos {r : ℝ≥0} {n : ℕ} (hr : 0 < r) : 0 < poissonPmfReal r n := by
-  rw [poissonPmfReal]
+lemma poissonPMFReal_pos {r : ℝ≥0} {n : ℕ} (hr : 0 < r) : 0 < poissonPMFReal r n := by
+  rw [poissonPMFReal]
   positivity
 
-lemma poissonPmfReal_nonneg {r : ℝ≥0} {n : ℕ} : 0 ≤ poissonPmfReal r n := by
-  unfold poissonPmfReal
+lemma poissonPMFReal_nonneg {r : ℝ≥0} {n : ℕ} : 0 ≤ poissonPMFReal r n := by
+  unfold poissonPMFReal
   positivity
 
 /-- The pmf of the Poisson distribution depending on its rate, as a PMF. -/
 noncomputable
-def poissonPmf (r : ℝ≥0) : PMF ℕ := by
-  refine ⟨fun n ↦ ENNReal.ofReal (poissonPmfReal r n), ?_⟩
+def poissonPMF (r : ℝ≥0) : PMF ℕ := by
+  refine ⟨fun n ↦ ENNReal.ofReal (poissonPMFReal r n), ?_⟩
   apply ENNReal.hasSum_coe.mpr
   rw [← toNNReal_one]
-  exact (poissonPmfRealSum r).toNNReal (fun n ↦ poissonPmfReal_nonneg)
+  exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
 
 /-- The Poisson pmf is measurable. -/
 @[measurability]
-lemma measurable_poissonPmfReal (r : ℝ≥0) : Measurable (poissonPmfReal r) := by measurability
+lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by measurability
 
 @[measurability]
-lemma stronglyMeasurable_poissonPmfReal (r : ℝ≥0) : StronglyMeasurable (poissonPmfReal r) :=
-  stronglyMeasurable_iff_measurable.mpr (measurable_poissonPmfReal r)
+lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (poissonPMFReal r) :=
+  stronglyMeasurable_iff_measurable.mpr (measurable_poissonPMFReal r)
 
-end PoissonPmf
+end PoissonPMF
 
 /-- Measure defined by the Poisson distribution -/
 noncomputable
-def poissonMeasure (r : ℝ≥0) : Measure ℕ := (poissonPmf r).toMeasure
+def poissonMeasure (r : ℝ≥0) : Measure ℕ := (poissonPMF r).toMeasure
 
 instance isProbabilityMeasurePoisson (r : ℝ≥0) :
-    IsProbabilityMeasure (poissonMeasure r) := PMF.toMeasure.isProbabilityMeasure (poissonPmf r)
+    IsProbabilityMeasure (poissonMeasure r) := PMF.toMeasure.isProbabilityMeasure (poissonPMF r)
 
 end ProbabilityTheory
