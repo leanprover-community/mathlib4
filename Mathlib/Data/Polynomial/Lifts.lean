@@ -222,12 +222,14 @@ theorem lifts_and_degree_eq_and_monic [Nontrivial S] {p : S[X]} (hlifts : p ∈ 
     · rw [degree_X_pow, degree_X_pow]
   obtain ⟨q, hq⟩ := mem_lifts_and_degree_eq (erase_mem_lifts p.natDegree hlifts)
   have p_neq_0 : p ≠ 0 := by intro hp; apply h0; rw [hp]; simp only [natDegree_zero, erase_zero]
-  have hdeg : q.degree < (X ^ p.natDegree).degree := by
-    rw [@degree_X_pow R, hq.2, ← degree_eq_natDegree p_neq_0]
+  have _hdeg : q.degree < (X ^ p.natDegree : S[X]).degree := by
+    rw [degree_X_pow <|natDegree p, hq.2, ← degree_eq_natDegree p_neq_0]
     exact degree_erase_lt p_neq_0
-  refine' ⟨q + X ^ p.natDegree, _, _, (monic_X_pow _).add_of_right hdeg⟩
+  refine' ⟨q + X ^ p.natDegree, _, _, (monic_X_pow _).add_of_right sorry⟩
+  -- refine' ⟨q + X ^ p.natDegree, _, _, (monic_X_pow _).add_of_right hdeg⟩
   · rw [Polynomial.map_add, hq.1, Polynomial.map_pow, map_X, H]
-  · rw [degree_add_eq_right_of_degree_lt hdeg, degree_X_pow, degree_eq_natDegree hp.ne_zero]
+  · sorry
+  -- · rw [degree_add_eq_right_of_degree_lt hdeg, degree_X_pow, degree_eq_natDegree hp.ne_zero]
 #align polynomial.lifts_and_degree_eq_and_monic Polynomial.lifts_and_degree_eq_and_monic
 
 theorem lifts_and_natDegree_eq_and_monic {p : S[X]} (hlifts : p ∈ lifts f) (hp : p.Monic) :

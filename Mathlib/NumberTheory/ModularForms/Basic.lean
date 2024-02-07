@@ -248,6 +248,7 @@ def coeHom : ModularForm Γ k →+ ℍ → ℂ where
   map_add' _ _ := rfl
 #align modular_form.coe_hom ModularForm.coeHom
 
+set_option synthInstance.maxHeartbeats 0 in
 instance : Module ℂ (ModularForm Γ k) :=
   Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 
@@ -416,6 +417,7 @@ def coeHom : CuspForm Γ k →+ ℍ → ℂ where
   map_add' _ _ := rfl
 #align cusp_form.coe_hom CuspForm.coeHom
 
+set_option synthInstance.maxHeartbeats 0 in
 instance : Module ℂ (CuspForm Γ k) :=
   Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 

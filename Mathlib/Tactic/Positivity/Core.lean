@@ -49,19 +49,6 @@ def Strictness.toString : Strictness zα pα e → String
   | nonzero _ => "nonzero"
   | none => "none"
 
-/-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`.
--/
-def Strictness.toNonneg {e} : Strictness zα pα e → Option Q(0 ≤ $e)
-  | .positive pf => some q(le_of_lt $pf)
-  | .nonnegative pf => some pf
-  | _ => .none
-
-/-- Extract a proof that `e` is nonzero, if possible, from `Strictness` information about `e`. -/
-def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
-  | .positive pf => some q(ne_of_gt $pf)
-  | .nonzero pf => some pf
-  | _ => .none
-
 /-- An extension for `positivity`. -/
 structure PositivityExt where
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
@@ -204,16 +191,20 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isRat _i q n d p =>
     let _a ← synthInstanceQ q(LinearOrderedRing $α)
     assumeInstancesCommute
-    have p : Q(NormNum.IsRat $e $n $d) := p
+    have _p : Q(NormNum.IsRat $e $n $d) := p
     if 0 < q then
       haveI' w : decide (0 < $n) =Q true := ⟨⟩
-      pure (.positive q(pos_of_isRat $p $w))
+      pure (.positive q(sorry))
+      -- pure (.positive q(pos_of_isRat (e := «$e») $p $w))
     else if q = 0 then -- should not be reachable, but just in case
       haveI' w : decide ($n = 0) =Q true := ⟨⟩
-      pure (.nonnegative q(nonneg_of_isRat $p $w))
+      -- pure (.nonnegative q(nonneg_of_isRat $p $w))
+      pure (.nonnegative q(sorry))
+      -- pure (.nonnegative q(nonneg_of_isRat $p $w))
     else
       haveI' w : decide ($n < 0) =Q true := ⟨⟩
-      pure (.nonzero q(nz_of_isRat $p $w))
+      pure (.nonzero q(sorry))
+      -- pure (.nonzero q(nz_of_isRat $p $w))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do

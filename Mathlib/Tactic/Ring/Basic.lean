@@ -574,6 +574,7 @@ def evalNeg (rα : Q(Ring $α)) (va : ExSum sα a) : Result (ExSum sα) q(-$a) :
 theorem sub_pf {R} [Ring R] {a b c d : R}
     (_ : -b = c) (_ : a + c = d) : a - b = d := by subst_vars; simp [sub_eq_add_neg]
 
+attribute [-instance] CommSemiring.toSemiring in
 /-- Subtracts two polynomials `va, vb` to get a normalized result polynomial.
 
 * `a - b = a + -b`

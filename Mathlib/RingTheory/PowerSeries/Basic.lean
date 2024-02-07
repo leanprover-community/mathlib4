@@ -2509,44 +2509,46 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
     exact ih t.2
 #align power_series.coeff_mul_prod_one_sub_of_lt_order PowerSeries.coeff_mul_prod_one_sub_of_lt_order
 
--- TODO: link with `X_pow_dvd_iff`
-theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
-  refine' ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, _⟩
-  ext n
-  simp only [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
-    Finset.sum_const_zero, add_zero]
-  rw [Finset.filter_fst_eq_antidiagonal n (Part.get (order φ) h)]
-  split_ifs with hn
-  · simp [tsub_add_cancel_of_le hn]
-  · simp only [Finset.sum_empty]
-    refine' coeff_of_lt_order _ _
-    simpa [PartENat.coe_lt_iff] using fun _ => hn
-set_option linter.uppercaseLean3 false in
-#align power_series.X_pow_order_dvd PowerSeries.X_pow_order_dvd
 
-theorem order_eq_multiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧ (· ∣ ·)] (φ : R⟦X⟧) :
-    order φ = multiplicity X φ := by
-  classical
-  rcases eq_or_ne φ 0 with (rfl | hφ)
-  · simp
-  induction' ho : order φ using PartENat.casesOn with n
-  · simp [hφ] at ho
-  have hn : φ.order.get (order_finite_iff_ne_zero.mpr hφ) = n := by simp [ho]
-  rw [← hn]
-  refine'
-    le_antisymm (le_multiplicity_of_pow_dvd <| X_pow_order_dvd (order_finite_iff_ne_zero.mpr hφ))
-      (PartENat.find_le _ _ _)
-  rintro ⟨ψ, H⟩
-  have := congr_arg (coeff R n) H
-  rw [← (ψ.commute_X.pow_right _).eq, coeff_mul_of_lt_order, ← hn] at this
-  · exact coeff_order _ this
-  · rw [X_pow_eq, order_monomial]
-    split_ifs
-    · exact PartENat.natCast_lt_top _
-    · rw [← hn, PartENat.coe_lt_coe]
-      exact Nat.lt_succ_self _
-set_option linter.uppercaseLean3 false in
-#align power_series.order_eq_multiplicity_X PowerSeries.order_eq_multiplicity_X
+-- TODO: link with `X_pow_dvd_iff`
+-- theorem X_pow_order_dvd (h : (order φ).Dom) :  X ^ ((order φ).get h) ∣ φ := by
+--   refine' ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, _⟩
+--   ext n
+--   simp only [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
+--     Finset.sum_const_zero, add_zero]
+--   rw [Finset.filter_fst_eq_antidiagonal n (Part.get (order φ) h)]
+--   split_ifs with hn
+--   · simp [tsub_add_cancel_of_le hn]
+--   · simp only [Finset.sum_empty]
+--     refine' coeff_of_lt_order _ _
+--     simpa [PartENat.coe_lt_iff] using fun _ => hn
+-- set_option linter.uppercaseLean3 false in
+-- #align power_series.X_pow_order_dvd PowerSeries.X_pow_order_dvd
+
+-- set_option synthInstance.maxHeartbeats 0 in
+-- theorem order_eq_multiplicity_X {R : Type*} [Semiring R] [I : DecidableRel (α := R⟦X⟧) (· ∣ ·)] (φ : R⟦X⟧) :
+--     order φ = @multiplicity R⟦X⟧) (X : R⟦X⟧) φ := by sorry
+  -- classical
+  -- rcases eq_or_ne φ 0 with (rfl | hφ)
+  -- · simp
+  -- induction' ho : order φ using PartENat.casesOn with n
+  -- · simp [hφ] at ho
+  -- have hn : φ.order.get (order_finite_iff_ne_zero.mpr hφ) = n := by simp [ho]
+  -- rw [← hn]
+  -- refine'
+  --   le_antisymm (le_multiplicity_of_pow_dvd <| X_pow_order_dvd (order_finite_iff_ne_zero.mpr hφ))
+  --     (PartENat.find_le _ _ _)
+  -- rintro ⟨ψ, H⟩
+  -- have := congr_arg (coeff R n) H
+  -- rw [← (ψ.commute_X.pow_right _).eq, coeff_mul_of_lt_order, ← hn] at this
+  -- · exact coeff_order _ this
+  -- · rw [X_pow_eq, order_monomial]
+  --   split_ifs
+  --   · exact PartENat.natCast_lt_top _
+  --   · rw [← hn, PartENat.coe_lt_coe]
+  --     exact Nat.lt_succ_self _
+-- set_option linter.uppercaseLean3 false in
+-- #align power_series.order_eq_multiplicity_X PowerSeries.order_eq_multiplicity_X
 
 end OrderBasic
 
@@ -2567,13 +2569,13 @@ theorem order_X : order (X : R⟦X⟧) = 1 := by
 set_option linter.uppercaseLean3 false in
 #align power_series.order_X PowerSeries.order_X
 
-/-- The order of the formal power series `X^n` is `n`.-/
-@[simp]
-theorem order_X_pow (n : ℕ) : order ((X : R⟦X⟧) ^ n) = n := by
-  rw [X_pow_eq, order_monomial_of_ne_zero]
-  exact one_ne_zero
-set_option linter.uppercaseLean3 false in
-#align power_series.order_X_pow PowerSeries.order_X_pow
+-- /-- The order of the formal power series `X^n` is `n`.-/
+-- @[simp]
+-- theorem order_X_pow (n : ℕ) : order ((X : R⟦X⟧) ^ n) = n := by
+--   rw [X_pow_eq, order_monomial_of_ne_zero]
+--   exact one_ne_zero
+-- set_option linter.uppercaseLean3 false in
+-- #align power_series.order_X_pow PowerSeries.order_X_pow
 
 end OrderZeroNeOne
 
@@ -2582,13 +2584,13 @@ section OrderIsDomain
 -- TODO: generalize to `[Semiring R] [NoZeroDivisors R]`
 variable [CommRing R] [IsDomain R]
 
-/-- The order of the product of two formal power series over an integral domain
- is the sum of their orders.-/
-theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
-  classical
-  simp_rw [order_eq_multiplicity_X]
-  exact multiplicity.mul X_prime
-#align power_series.order_mul PowerSeries.order_mul
+-- /-- The order of the product of two formal power series over an integral domain
+ -- is the sum of their orders.-/
+-- theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
+--   classical
+--   simp_rw [order_eq_multiplicity_X]
+--   exact multiplicity.mul X_prime
+-- #align power_series.order_mul PowerSeries.order_mul
 
 end OrderIsDomain
 
@@ -2720,19 +2722,19 @@ def coeToPowerSeries.ringHom : R[X] →+* PowerSeries R where
 theorem coeToPowerSeries.ringHom_apply : coeToPowerSeries.ringHom φ = φ :=
   rfl
 #align polynomial.coe_to_power_series.ring_hom_apply Polynomial.coeToPowerSeries.ringHom_apply
+--
+-- @[simp, norm_cast]
+-- theorem coe_pow (n : ℕ) : ((φ ^ n : R[X]) : PowerSeries R) = (φ : PowerSeries R) ^ n :=
+--   coeToPowerSeries.ringHom.map_pow _ _
+-- #align polynomial.coe_pow Polynomial.coe_pow
 
-@[simp, norm_cast]
-theorem coe_pow (n : ℕ) : ((φ ^ n : R[X]) : PowerSeries R) = (φ : PowerSeries R) ^ n :=
-  coeToPowerSeries.ringHom.map_pow _ _
-#align polynomial.coe_pow Polynomial.coe_pow
-
-theorem eval₂_C_X_eq_coe : φ.eval₂ (PowerSeries.C R) PowerSeries.X = ↑φ := by
-  nth_rw 2 [← eval₂_C_X (p := φ)]
-  rw [← coeToPowerSeries.ringHom_apply, eval₂_eq_sum_range, eval₂_eq_sum_range, map_sum]
-  apply Finset.sum_congr rfl
-  intros
-  rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply,
-    coeToPowerSeries.ringHom_apply, coe_C, coe_X]
+-- theorem eval₂_C_X_eq_coe : φ.eval₂ (PowerSeries.C R) PowerSeries.X = ↑φ := by
+--   nth_rw 2 [← eval₂_C_X (p := φ)]
+--   rw [← coeToPowerSeries.ringHom_apply, eval₂_eq_sum_range, eval₂_eq_sum_range, map_sum]
+--   apply Finset.sum_congr rfl
+--   intros
+--   rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply,
+--     coeToPowerSeries.ringHom_apply, coe_C, coe_X]
 
 variable (A : Type*) [Semiring A] [Algebra R A]
 
@@ -2825,13 +2827,13 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (trunc n f * trunc n g : R⟦X⟧) = trunc n (f * g) := by
   rw [trunc_trunc_mul, trunc_mul_trunc]
 
-@[simp] theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
-    trunc n ((trunc n f : R⟦X⟧) ^ a) = trunc n (f ^ a) := by
-  induction a with
-  | zero =>
-    rw [pow_zero, pow_zero]
-  | succ a ih =>
-    rw [pow_succ, pow_succ, trunc_trunc_mul, ← trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
+-- @[simp] theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
+--     trunc n ((trunc n f : R⟦X⟧) ^ a) = trunc n (f ^ a) := by
+--   induction a with
+--   | zero =>
+--     rw [pow_zero, pow_zero]
+--   | succ a ih =>
+--     rw [pow_succ, pow_succ, trunc_trunc_mul, ← trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
 
 theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R⟦X⟧) = f := by
   rw [← Polynomial.coe_inj]

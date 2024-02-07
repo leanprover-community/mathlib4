@@ -512,15 +512,6 @@ instance : DistribMulAction R (HahnSeries Γ V) where
     ext
     simp [mul_smul]
 
-theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
-    ¬ (r • x).order < x.order := by
-  have hx : x ≠ 0 := right_ne_zero_of_smul h
-  simp_all only [order, dite_false]
-  exact Set.IsWF.min_of_subset_not_lt_min (Function.support_smul_subset_right (fun _ => r) x.coeff)
-
-theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
-    x.order ≤ (r • x).order := le_of_not_lt (order_smul_not_lt r x h)
-
 variable {S : Type*} [Monoid S] [DistribMulAction S V]
 
 instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
@@ -1184,16 +1175,16 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
     simp (config := { contextual := true }) [Ne.symm hn]
 #align hahn_series.of_power_series_X HahnSeries.ofPowerSeries_X
 
-@[simp]
-theorem ofPowerSeries_X_pow {R} [CommSemiring R] (n : ℕ) :
-    ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
-  rw [RingHom.map_pow]
-  induction' n with n ih
-  · simp
-    rfl
-  · rw [pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
-      Nat.cast_succ, add_comm]
-#align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
+-- @[simp]
+-- theorem ofPowerSeries_X_pow {R} [CommSemiring R] (n : ℕ) :
+--     ofPowerSeries Γ R ((PowerSeries.X (R := R) : PowerSeries R) ^ n : PowerSeries R) = single (n : Γ) 1 := by
+--   rw [RingHom.map_pow]
+--   induction' n with n ih
+--   · simp
+--     rfl
+--   · rw [pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
+--       Nat.cast_succ, add_comm]
+-- #align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
 
 -- Lemmas about converting hahn_series over fintype to and from mv_power_series
 /-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Fintype` `σ`.

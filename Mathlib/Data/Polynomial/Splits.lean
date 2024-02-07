@@ -157,7 +157,7 @@ theorem splits_pow {f : K[X]} (hf : f.Splits i) (n : ℕ) : (f ^ n).Splits i := 
   exact splits_prod i fun j _ => hf
 #align polynomial.splits_pow Polynomial.splits_pow
 
-theorem splits_X_pow (n : ℕ) : (X ^ n).Splits i :=
+theorem splits_X_pow (n : ℕ) : (X ^ n : K[X]).Splits i :=
   splits_pow i (splits_X i) n
 set_option linter.uppercaseLean3 false in
 #align polynomial.splits_X_pow Polynomial.splits_X_pow

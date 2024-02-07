@@ -340,11 +340,11 @@ theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
 #align polynomial.coeff_X_add_C_pow Polynomial.coeff_X_add_C_pow
 
 theorem coeff_X_add_one_pow (R : Type*) [Semiring R] (n k : ℕ) :
-    ((X + 1) ^ n).coeff k = (n.choose k : R) := by rw [← C_1, coeff_X_add_C_pow, one_pow, one_mul]
+    ((X + 1) ^ n : R[X]).coeff k = (n.choose k : R) := by rw [← C_1, coeff_X_add_C_pow, one_pow, one_mul]
 #align polynomial.coeff_X_add_one_pow Polynomial.coeff_X_add_one_pow
 
 theorem coeff_one_add_X_pow (R : Type*) [Semiring R] (n k : ℕ) :
-    ((1 + X) ^ n).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
+    ((1 + X) ^ n : R[X]).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
 #align polynomial.coeff_one_add_X_pow Polynomial.coeff_one_add_X_pow
 
 theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ.coeff i := by

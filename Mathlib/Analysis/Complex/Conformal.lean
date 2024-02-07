@@ -46,6 +46,8 @@ section ConformalIntoComplexNormed
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ E] {z : ℂ}
   {g : ℂ →L[ℝ] E} {f : ℂ → E}
 
+
+attribute [-instance] instModule Module.complexToReal in
 theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap (map.restrictScalars ℝ) := by
   have minor₁ : ‖map 1‖ ≠ 0 := by simpa only [ext_ring_iff, Ne.def, norm_eq_zero] using nonzero
@@ -64,6 +66,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
       coe_coe, smul_inv_smul₀ minor₁]
 #align is_conformal_map_complex_linear isConformalMap_complex_linear
 
+attribute [-instance] instModule Module.complexToReal in
 theorem isConformalMap_complex_linear_conj {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
     IsConformalMap ((map.restrictScalars ℝ).comp (conjCLE : ℂ →L[ℝ] ℂ)) :=
   (isConformalMap_complex_linear nonzero).comp isConformalMap_conj

@@ -80,7 +80,7 @@ theorem eval₂_monomial {n : ℕ} {r : R} : (monomial n r).eval₂ f x = f r * 
 #align polynomial.eval₂_monomial Polynomial.eval₂_monomial
 
 @[simp]
-theorem eval₂_X_pow {n : ℕ} : (X ^ n).eval₂ f x = x ^ n := by
+theorem eval₂_X_pow {n : ℕ} : (X ^ n : R[X]).eval₂ f x = x ^ n := by
   rw [X_pow_eq_monomial]
   convert eval₂_monomial f x (n := n) (r := 1)
   simp
@@ -612,7 +612,7 @@ theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
 #align polynomial.mul_X_comp Polynomial.mul_X_comp
 
 @[simp]
-theorem X_pow_comp {k : ℕ} : (X ^ k).comp p = p ^ k := by
+theorem X_pow_comp {k : ℕ} : (X ^ k : R[X]).comp p = p ^ k := by
   induction' k with k ih
   · simp
   · simp [pow_succ', mul_X_comp, ih]

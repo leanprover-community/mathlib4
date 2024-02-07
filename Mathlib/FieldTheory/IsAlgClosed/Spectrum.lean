@@ -129,22 +129,32 @@ theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X]
 
 /-- A specialization of `spectrum.subset_polynomial_aeval` to monic monomials for convenience. -/
 theorem pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a ^ n) := by
-  simpa only [eval_pow, eval_X, aeval_X_pow] using subset_polynomial_aeval a (X ^ n : 𝕜[X])
+  have := subset_polynomial_aeval a (X ^ n : 𝕜[X])
+  simp [eval_pow, eval_X, aeval_X_pow] at this
+  simp [eval_pow, eval_X, aeval_X_pow]
+  assumption
+  -- simpa only [eval_pow, eval_X, aeval_X_pow] using subset_polynomial_aeval a (X ^ n : 𝕜[X])
 #align spectrum.pow_image_subset spectrum.pow_image_subset
 
 /-- A specialization of `spectrum.map_polynomial_aeval_of_nonempty` to monic monomials for
 convenience. -/
 theorem map_pow_of_pos [IsAlgClosed 𝕜] (a : A) {n : ℕ} (hn : 0 < n) :
     σ (a ^ n) = (· ^ n) '' σ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X]
-    using map_polynomial_aeval_of_degree_pos a (X ^ n : 𝕜[X]) (by rwa [degree_X_pow, Nat.cast_pos])
+  have := map_polynomial_aeval_of_degree_pos a (X ^ n : 𝕜[X]) (by rwa [degree_X_pow, Nat.cast_pos])
+  simp only [eval_pow, eval_X, aeval_X_pow] at this
+  assumption
+  -- simpa only [aeval_X_pow, eval_pow, eval_X]
+  --   using map_polynomial_aeval_of_degree_pos a (X ^ n : 𝕜[X]) (by rwa [degree_X_pow, Nat.cast_pos])
 #align spectrum.map_pow_of_pos spectrum.map_pow_of_pos
 
 /-- A specialization of `spectrum.map_polynomial_aeval_of_nonempty` to monic monomials for
 convenience. -/
 theorem map_pow_of_nonempty [IsAlgClosed 𝕜] {a : A} (ha : (σ a).Nonempty) (n : ℕ) :
     σ (a ^ n) = (· ^ n) '' σ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval_of_nonempty a (X ^ n) ha
+  have := map_polynomial_aeval_of_nonempty a (X ^ n : 𝕜[X]) ha
+  simp only [eval_pow, eval_X, aeval_X_pow] at this
+  assumption
+  -- simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval_of_nonempty a (X ^ n) ha
 #align spectrum.map_pow_of_nonempty spectrum.map_pow_of_nonempty
 
 variable (𝕜)

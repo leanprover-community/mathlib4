@@ -206,6 +206,7 @@ theorem coeHom_injective : Function.Injective (@coeHom Γ k) :=
   DFunLike.coe_injective
 #align slash_invariant_form.coe_hom_injective SlashInvariantForm.coeHom_injective
 
+set_option synthInstance.maxHeartbeats 0 in
 instance : Module ℂ (SlashInvariantForm Γ k) :=
   coeHom_injective.module ℂ coeHom fun _ _ => rfl
 

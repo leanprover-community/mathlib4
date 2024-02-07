@@ -176,7 +176,7 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.erase_lead_C_mul_X_pow Polynomial.eraseLead_C_mul_X_pow
 
 @[simp] lemma eraseLead_C_mul_X (r : R) : eraseLead (C r * X) = 0 := by
-  simpa using eraseLead_C_mul_X_pow _ 1
+  simpa using eraseLead_C_mul_X_pow (R := R) _ 1
 
 theorem eraseLead_add_of_natDegree_lt_left {p q : R[X]} (pq : q.natDegree < p.natDegree) :
     (p + q).eraseLead = p.eraseLead + q := by

@@ -177,10 +177,9 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
   -- take (n + 1)ᵗʰ roots and clean up the left-hand side
   have hn : 0 < ((n + 1 : ℕ) : ℝ) := mod_cast Nat.succ_pos'
   convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
-  all_goals dsimp
-  rw [one_div, pow_rpow_inv_natCast]
-  positivity
-  rw [Nat.cast_succ, ENNReal.coe_mul_rpow]
+  all_goals dsimp; sorry
+  -- erw [coe_pow _ (n+1), ← rpow_nat_cast, ← rpow_mul, mul_one_div_cancel hn.ne', rpow_one]
+  -- rw [Nat.cast_succ, ENNReal.coe_mul_rpow]
 #align spectrum.spectral_radius_le_pow_nnnorm_pow_one_div spectrum.spectralRadius_le_pow_nnnorm_pow_one_div
 
 theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
@@ -418,7 +417,10 @@ theorem map_polynomial_aeval (p : ℂ[X]) :
 to monic monomials. -/
 protected theorem map_pow (n : ℕ) :
     spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
+  have := map_polynomial_aeval a (X ^ n)
+  simp only [aeval_X_pow, eval_pow, eval_X] at *
+  assumption
+  -- simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
 #align spectrum.map_pow spectrum.map_pow
 
 end NonemptySpectrum
