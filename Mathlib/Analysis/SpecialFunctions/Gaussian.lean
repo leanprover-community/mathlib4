@@ -212,7 +212,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
         (tendsto_pow_atTop two_ne_zero))
   convert integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
     (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
-  simp only [mul_zero, ofReal_zero, zero_pow', Ne.def, bit0_eq_zero, Nat.one_ne_zero,
+  simp only [mul_zero, ofReal_zero, zero_pow, Ne.def, bit0_eq_zero, Nat.one_ne_zero,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add]
 #align integral_mul_cexp_neg_mul_sq integral_mul_cexp_neg_mul_sq
 
@@ -665,8 +665,8 @@ theorem isLittleO_exp_neg_mul_sq_cocompact {a : ℂ} (ha : 0 < a.re) (s : ℝ) :
 /-- Jacobi's theta-function transformation formula for the sum of `exp -Q(x)`, where `Q` is a
 negative definite quadratic form. -/
 theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
-    (∑' n : ℤ, cexp (-π * a * n ^ 2 + 2 * π * b * n)) = 1 / a ^ (1 / 2 : ℂ) *
-    ∑' n : ℤ, cexp (-π / a * (n + I * b) ^ 2) := by
+    (∑' n : ℤ, cexp (-π * a * n ^ 2 + 2 * π * b * n)) =
+      1 / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n + I * b) ^ 2) := by
   let f : ℝ → ℂ := fun x ↦ cexp (-π * a * x ^ 2 + 2 * π * b * x)
   have hCf : Continuous f
   · refine Complex.continuous_exp.comp (Continuous.add ?_ ?_)
@@ -691,8 +691,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
       -↑π / a * x ^ 2 + (-2 * π * I * b) / a * x + π * b ^ 2 / a
     · intro x; ring_nf; rw [I_sq]; ring
     simp_rw [this]
-    conv => enter [2, x]; rw [Complex.exp_add, ← mul_assoc _ _ (Complex.exp _),
-      mul_comm]
+    conv => enter [2, x]; rw [Complex.exp_add, ← mul_assoc _ _ (Complex.exp _), mul_comm]
     refine ((cexp_neg_quadratic_isLittleO_abs_rpow_cocompact
       (?_) (-2 * ↑π * I * b / a) (-2)).isBigO.const_mul_left _).const_mul_left _
     rwa [neg_div, neg_re, neg_lt_zero]
@@ -704,8 +703,7 @@ theorem Complex.tsum_exp_neg_quadratic {a : ℂ} (ha : 0 < a.re) (b : ℂ) :
 theorem Complex.tsum_exp_neg_mul_int_sq {a : ℂ} (ha : 0 < a.re) :
     (∑' n : ℤ, cexp (-π * a * (n : ℂ) ^ 2)) =
       1 / a ^ (1 / 2 : ℂ) * ∑' n : ℤ, cexp (-π / a * (n : ℂ) ^ 2) := by
-  simpa only [mul_zero, zero_mul, add_zero] using
-    Complex.tsum_exp_neg_quadratic ha 0
+  simpa only [mul_zero, zero_mul, add_zero] using Complex.tsum_exp_neg_quadratic ha 0
 #align complex.tsum_exp_neg_mul_int_sq Complex.tsum_exp_neg_mul_int_sq
 
 theorem Real.tsum_exp_neg_mul_int_sq {a : ℝ} (ha : 0 < a) :

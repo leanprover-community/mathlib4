@@ -114,7 +114,7 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
   exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
 
 /-- Shortcut instance because Lean tends to time out before finding the general instance. -/
-instance : Nonempty (torsion K) := One.nonempty
+instance : Nonempty (torsion K) := One.instNonempty
 
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by

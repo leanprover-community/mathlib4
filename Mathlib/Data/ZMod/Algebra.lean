@@ -29,9 +29,9 @@ See note [reducible non-instances]. -/
 @[reducible]
 def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
   { ZMod.castHom h R with
-    smul := fun a r => a * r
+    smul := fun a r => cast a * r
     commutes' := fun a r =>
-      show (a * r : R) = r * a by
+      show (cast a * r : R) = r * cast a by
         rcases ZMod.int_cast_surjective a with ⟨k, rfl⟩
         show ZMod.castHom h R k * r = r * ZMod.castHom h R k
         rw [map_intCast, Int.cast_comm]

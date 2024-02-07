@@ -154,9 +154,9 @@ def UniformOnFun (α β : Type*) (_ : Set (Set α)) :=
   α → β
 #align uniform_on_fun UniformOnFun
 
-scoped[UniformConvergence] notation:25 α " →ᵤ " β:0 => UniformFun α β
+@[inherit_doc] scoped[UniformConvergence] notation:25 α " →ᵤ " β:0 => UniformFun α β
 
-scoped[UniformConvergence] notation:25 α " →ᵤ[" 𝔖 "] " β:0 => UniformOnFun α β 𝔖
+@[inherit_doc] scoped[UniformConvergence] notation:25 α " →ᵤ[" 𝔖 "] " β:0 => UniformOnFun α β 𝔖
 
 -- Porting note: these are not used anymore
 -- scoped[UniformConvergence] notation3 "λᵘ "(...)", "r:(scoped p => UniformFun.ofFun p) => r
@@ -167,9 +167,9 @@ open UniformConvergence
 
 variable {α β : Type*} {𝔖 : Set (Set α)}
 
-instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.Nonempty
+instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.instNonempty
 
-instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.Nonempty
+instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.instNonempty
 
 /-- Reinterpret `f : α → β` as an element of `α →ᵤ β`. -/
 def UniformFun.ofFun : (α → β) ≃ (α →ᵤ β) :=

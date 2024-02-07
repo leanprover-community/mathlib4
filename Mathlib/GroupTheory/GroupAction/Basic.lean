@@ -212,6 +212,88 @@ end Stabilizers
 
 end MulAction
 
+section FixedPoints
+
+variable (M : Type u) (α : Type v) [Monoid M]
+
+section Monoid
+
+variable [Monoid α] [MulDistribMulAction M α]
+
+/-- The submonoid of elements fixed under the whole action. -/
+def FixedPoints.submonoid : Submonoid α where
+  carrier := MulAction.fixedPoints M α
+  one_mem' := smul_one
+  mul_mem' ha hb _ := by rw [smul_mul', ha, hb]
+
+@[simp]
+lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+end Monoid
+
+section Group
+
+variable [Group α] [MulDistribMulAction M α]
+
+/-- The subgroup of elements fixed under the whole action. -/
+def FixedPoints.subgroup : Subgroup α where
+  __ := submonoid M α
+  inv_mem' ha _ := by rw [smul_inv', ha]
+
+/-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
+notation α "^*" M:51 => FixedPoints.subgroup M α
+
+@[simp]
+lemma FixedPoints.mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+@[simp]
+lemma FixedPoints.subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
+  rfl
+
+end Group
+
+section AddMonoid
+
+variable [AddMonoid α] [DistribMulAction M α]
+
+/-- The additive submonoid of elements fixed under the whole action. -/
+def FixedPoints.addSubmonoid : AddSubmonoid α where
+  carrier := MulAction.fixedPoints M α
+  zero_mem' := smul_zero
+  add_mem' ha hb _ := by rw [smul_add, ha, hb]
+
+@[simp]
+lemma FixedPoints.mem_addSubmonoid (a : α) : a ∈ addSubmonoid M α ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+end AddMonoid
+
+section AddGroup
+
+variable [AddGroup α] [DistribMulAction M α]
+
+/-- The additive subgroup of elements fixed under the whole action. -/
+def FixedPoints.addSubgroup : AddSubgroup α where
+  __ := addSubmonoid M α
+  neg_mem' ha _ := by rw [smul_neg, ha]
+
+/-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
+notation α "^+" M:51 => FixedPoints.addSubgroup M α
+
+@[simp]
+lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+@[simp]
+lemma FixedPoints.addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
+  rfl
+
+end AddGroup
+
+end FixedPoints
+
 /-- `smul` by a `k : M` over a ring is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
 The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
@@ -531,3 +613,9 @@ end AddAction
 
 attribute [to_additive existing] MulAction.stabilizer_smul_eq_stabilizer_map_conj
 attribute [to_additive existing] MulAction.stabilizerEquivStabilizerOfOrbitRel
+
+theorem Equiv.swap_mem_stabilizer {α : Type*} [DecidableEq α] {S : Set α} {a b : α} :
+    Equiv.swap a b ∈ MulAction.stabilizer (Equiv.Perm α) S ↔ (a ∈ S ↔ b ∈ S) := by
+  rw [MulAction.mem_stabilizer_iff, Set.ext_iff, ← swap_inv]
+  simp_rw [Set.mem_inv_smul_set_iff, Perm.smul_def, swap_apply_def]
+  exact ⟨fun h ↦ by simpa [Iff.comm] using h a, by intros; split_ifs <;> simp [*]⟩
