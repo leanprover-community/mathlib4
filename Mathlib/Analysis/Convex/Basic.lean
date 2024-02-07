@@ -712,7 +712,8 @@ theorem ite_eq_mem_stdSimplex (i : ι) : (fun j => if i = j then (1 : 𝕜) else
   simpa only [@eq_comm _ i, ← Pi.single_apply] using single_mem_stdSimplex 𝕜 i
 #align ite_eq_mem_std_simplex ite_eq_mem_stdSimplex
 
-lemma edge_subset_stdSimplex (i j : ι) : [Pi.single i 1 -[𝕜] Pi.single j 1] ⊆ stdSimplex 𝕜 ι :=
+/-- the edges are contained in the simplex -/
+lemma segment_single_subset_stdSimplex (i j : ι) : [Pi.single i 1 -[𝕜] Pi.single j 1] ⊆ stdSimplex 𝕜 ι :=
   (convex_stdSimplex 𝕜 ι).segment_subset (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
 
 lemma stdSimplex_fin_two : stdSimplex 𝕜 (Fin 2) = [Pi.single 0 1 -[𝕜] Pi.single 1 1] := by
