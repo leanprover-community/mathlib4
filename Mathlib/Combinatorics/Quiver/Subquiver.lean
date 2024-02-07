@@ -26,20 +26,38 @@ def WideSubquiver (V) [Quiver.{v + 1} V] :=
   ∀ a b : V, Set (a ⟶ b)
 #align wide_subquiver WideSubquiver
 
+namespace WideSubquiver
+
 /-- A type synonym for `V`, when thought of as a quiver having only the arrows from
 some `WideSubquiver`. -/
 -- Porting note: no hasNonemptyInstance linter yet
 @[nolint unusedArguments]
-def WideSubquiver.toType (V) [Quiver V] (_ : WideSubquiver V) : Type u :=
-  V
+def toType (V) [Quiver V] (_ : WideSubquiver V) : Type u := V
 #align wide_subquiver.to_Type WideSubquiver.toType
 
-instance wideSubquiverHasCoeToSort {V} [Quiver V] :
-    CoeSort (WideSubquiver V) (Type u) where coe H := WideSubquiver.toType V H
+variable {V : Type u} [Quiver.{v + 1} V]
+
+instance wideSubquiverHasCoeToSort : CoeSort (WideSubquiver V) (Type u) where
+  coe H := WideSubquiver.toType V H
+
+-- Boilerplate for wrapping/unwrapping the type synonym
+/-- Wrap a vertex of `V` into a vertex of the wide subquiver `W`. -/
+protected def mk (W : WideSubquiver V) (x : V) : W := x
+/-- Unwrap of the wide subquiver `W` to a vertex of `V`. -/
+@[inline, always_inline] def run {W : WideSubquiver V} (x : W) : V := x
+@[simp] lemma run_mk (W : WideSubquiver V) (x : V) : run (W.mk x) = x := rfl
+@[simp] lemma mk_run {W : WideSubquiver V} (x : W) : W.mk (run x) = x := rfl
 
 /-- A wide subquiver viewed as a quiver on its own. -/
-instance WideSubquiver.quiver {V} [Quiver V] (H : WideSubquiver V) : Quiver H :=
-  ⟨fun a b ↦ { f // f ∈ H a b }⟩
+instance quiver (H : WideSubquiver V) : Quiver H where
+  Hom a b := { f // f ∈ H a b }
+
+/-- The canonical inclusion of a wide subquiver into the original quiver. -/
+def inclusion (W : WideSubquiver V) : W ⥤q V where
+  obj X := run X
+  map f := f.val
+
+end WideSubquiver
 
 namespace Quiver
 
@@ -68,6 +86,7 @@ structure Total (V : Type u) [Quiver.{v} V] : Sort max (u + 1) v where
 #align quiver.total.ext_iff Quiver.Total.ext_iff
 
 /-- A wide subquiver of `G` can equivalently be viewed as a total set of arrows. -/
+@[simps (config := .asFn) apply symm_apply]
 def wideSubquiverEquivSetTotal {V} [Quiver V] :
     WideSubquiver V ≃
       Set (Total V) where

@@ -7,7 +7,9 @@ import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.Combinatorics.Quiver.Subquiver
 import Mathlib.Order.Closure
+import Mathlib.Data.Setoid.Basic
 
 #align_import category_theory.morphism_property from "leanprover-community/mathlib"@"7f963633766aaa3ebc8253100a5229dd463040c7"
 
@@ -42,6 +44,12 @@ variable (C : Type u) [Category.{v} C] {D : Type*} [Category D] {E : Type*} [Cat
 def MorphismProperty := ∀ ⦃X Y : C⦄, (X ⟶ Y) → Prop
 #align category_theory.morphism_property CategoryTheory.MorphismProperty
 
+/-- A type synonym for `C` representing the type of objects of the wide
+subcategory with morphisms `W` (which is only an actual category
+assuming `[IsMultiplicative W]`). -/
+abbrev WideSubcategory {C : Type u} [Category.{v} C] (W : MorphismProperty C) :=
+  WideSubquiver.toType C W
+
 instance : CompleteLattice (MorphismProperty C) :=
   inferInstanceAs (CompleteLattice (∀ ⦃X Y : C⦄, (X ⟶ Y) → Prop))
 
@@ -52,7 +60,35 @@ lemma MorphismProperty.top_eq : (⊤ : MorphismProperty C) = fun _ _ _ => True :
 
 namespace MorphismProperty
 
+/-- The types `MorphismProperty C` and `WideSubquiver C` are definitionally
+equal, but that's a little abstruse so we explicitly define an equivalence. -/
+@[reducible] def equivWideSubquiver : MorphismProperty C ≃ WideSubquiver C :=
+  Equiv.refl _
+
+/-- A property on morphisms is the same as a set of morphisms. -/
+@[simps (config := .asFn) apply symm_apply]
+def equivSetArrow : OrderIso (MorphismProperty C) (Set (Arrow C)) where
+  toFun  P     := { f : Arrow C | P f.hom }
+  invFun S     := fun ⦃X Y⦄ f => ⟨X, Y, f⟩ ∈ S
+  left_inv     := fun P => by rfl
+  right_inv    := fun S => by rfl
+  map_rel_iff' := ⟨fun (h : ∀ _, _) X Y f => h ⟨X, Y, f⟩,
+                   fun (h : ∀ _, _) f => h _ _ f.hom⟩
+
+instance : SetLike (MorphismProperty C) (Arrow C) where
+  coe            := equivSetArrow C
+  coe_injective' := (equivSetArrow C).injective
+
 variable {C}
+
+lemma coe_set_def (P : MorphismProperty C) : ↑P = equivSetArrow C P := rfl
+
+lemma equivSetArrow_eq_wideSubquiverEquivSetTotal :
+    Equiv.trans (equivSetArrow C) (Equiv.Set.congr (Arrow.equivTotal C))
+    = Equiv.trans (equivWideSubquiver C) Quiver.wideSubquiverEquivSetTotal := by
+  ext P f
+  refine Iff.trans (.symm ?_) (@exists_eq_right _ (P $ Quiver.Total.hom .) f)
+  exact (Arrow.equivTotal C).symm.exists_congr_left
 
 lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
@@ -62,10 +98,18 @@ instance : HasSubset (MorphismProperty C) :=
 
 lemma subset_iff_le (P Q : MorphismProperty C) : P ⊆ Q ↔ P ≤ Q := Iff.rfl
 
+lemma subset_iff_coe_set_subset (P₁ P₂ : MorphismProperty C) :
+    P₁ ⊆ P₂ ↔ SetLike.coe P₁ ⊆ SetLike.coe P₂ :=
+  (equivSetArrow C).map_rel_iff.symm
+
 instance : IsTrans (MorphismProperty C) (· ⊆ ·) :=
   inferInstanceAs (IsTrans (MorphismProperty C) (· ≤ ·))
 
 instance : Inter (MorphismProperty C) := ⟨Inf.inf⟩
+
+@[simp]
+lemma coe_set_inter_eq_inter_coe_set (P₁ P₂ : MorphismProperty C) :
+    SetLike.coe (P₁ ∩ P₂) = SetLike.coe P₁ ∩ SetLike.coe P₂ := rfl
 
 instance : IsAntisymm (MorphismProperty C) (· ⊆ ·) :=
   inferInstanceAs (IsAntisymm (MorphismProperty C) (· ≤ ·))
@@ -138,6 +182,15 @@ theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
     simp only [Category.id_comp]
 #align category_theory.morphism_property.respects_iso.of_respects_arrow_iso CategoryTheory.MorphismProperty.RespectsIso.of_respects_arrow_iso
 
+lemma RespectsIso_iff_isSaturated_coe_set (P : MorphismProperty C) :
+    RespectsIso P ↔ (isIsomorphicSetoid (Arrow C)).isSaturated P :=
+  Iff.trans ⟨RespectsIso.arrow_iso_iff,
+            .of_respects_arrow_iso P ∘ forall₃_imp (fun _ _ _ => Iff.mp)⟩
+  $ Iff.trans (forall₂_congr $ fun _ _ => Nonempty.imp.symm)
+  $ Iff.trans (by rfl) (Setoid.isSaturated_iff_equiv_imp_mem_iff_mem _ _).symm
+-- why does (by rfl) work but Iff.rfl doesn't!
+-- something weird with the ∀ {} vs ∀ () binders
+
 /-- The closure by isomorphisms of a `MorphismProperty`. -/
 @[simps! apply]
 def isoClosure : ClosureOperator (MorphismProperty C) :=
@@ -168,6 +221,13 @@ lemma isoClosure_isoClosure (P : MorphismProperty C) :
 lemma isoClosure_subset_iff (P Q : MorphismProperty C) (hQ : RespectsIso Q) :
     isoClosure P ⊆ Q ↔ P ⊆ Q :=
   ClosureOperator.IsClosed.closure_le_iff (show isoClosure.IsClosed Q from hQ)
+
+@[simp]
+lemma coe_set_isoClosure_eq_saturate_coe_set (P : MorphismProperty C) :
+    SetLike.coe (isoClosure P) = ((isIsomorphicSetoid _).saturate) P :=
+  (OrderIso.apply_eq_iff_eq_symm_apply _ _ _).mpr $ congrArg (. P)
+  $ isoClosure.ext_IsClosed ((Setoid.saturate _).conjBy (equivSetArrow C).symm)
+                            RespectsIso_iff_isSaturated_coe_set
 
 /-- The inverse image of a `MorphismProperty D` by a functor `C ⥤ D` -/
 def inverseImage (F : C ⥤ D) (P : MorphismProperty D) : MorphismProperty C :=
@@ -206,7 +266,23 @@ lemma map_inverseImage_subset (F : C ⥤ D) (P : MorphismProperty D) :
 lemma subset_inverseImage_map (P : MorphismProperty C) (F : C ⥤ D) :
     P ⊆ inverseImage F (map F P) := (map_gc F).le_u_l P
 
-lemma RespectsIso.inverseImage {P : MorphismProperty D} (F : C ⥤ D)
+@[simp]
+lemma coe_set_inverseImage_eq_preimage_coe_set (F : C ⥤ D)
+    (P : MorphismProperty D) : ↑(inverseImage F P) = F.mapArrow.obj ⁻¹' ↑P := rfl
+
+@[simp]
+lemma coe_set_map_eq_image_coe_set (F : C ⥤ D) (P : MorphismProperty C) :
+    ↑(map F P) = F.mapArrow.obj '' ↑P :=
+  have H Q :=
+    ((equivSetArrow C).apply_eq_iff_eq_symm_apply _ _).mp
+    $ Eq.trans (coe_set_inverseImage_eq_preimage_coe_set _ _)
+    $ congrArg _ $ (equivSetArrow D).apply_symm_apply Q
+  Set.eq_of_forall_subset_iff $ by
+    simp_rw [Set.image_subset_iff, SetLike.coe, ← Set.le_eq_subset,
+           ← OrderIso.le_symm_apply, (map_gc _).le_iff_le]
+    exact fun _ => iff_of_eq (congrArg _ (H _))
+
+lemma RespectsIso.inverseImage (F : C ⥤ D) {P : MorphismProperty D}
     (h : RespectsIso P) : RespectsIso (inverseImage F P) :=
   RespectsIso.of_respects_arrow_iso _ $ fun _ _ =>
     Iff.mp ∘ h.arrow_iso_iff ∘ F.mapArrow.mapIso
@@ -224,11 +300,10 @@ lemma map_id (P : MorphismProperty C) : map (𝟭 _) P = P :=
 
 @[simp]
 lemma map_map (G : D ⥤ E) (F : C ⥤ D) (P : MorphismProperty C) :
-    map G (map F P) = map (F ⋙ G) P :=
-  subset_antisymm ((map_subset_iff _ _ _).mpr $ (map_subset_iff _ _ _).mpr
-                  $ fun _ _ _ h => map_mem_map _ h)
-                  ((map_subset_iff _ _ _).mpr $ fun _ _ _ h =>
-                    map_mem_map _ (map_mem_map _ h))
+    map G (map F P) = map (F ⋙ G) P := by
+  refine SetLike.coe_injective ?_
+  simp only [coe_set_map_eq_image_coe_set]
+  exact (Set.image_comp _ _ _).symm
 
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def essMap (F : C ⥤ D) (P : MorphismProperty C) : MorphismProperty D := fun _ _ f =>
@@ -879,7 +954,18 @@ lemma of_op (W : MorphismProperty C) [IsMultiplicative W.op] : IsMultiplicative 
 lemma of_unop (W : MorphismProperty Cᵒᵖ) [IsMultiplicative W.unop] : IsMultiplicative W :=
   (inferInstance : IsMultiplicative W.unop.op)
 
+instance (W : MorphismProperty C) [IsMultiplicative W] :
+    Category (WideSubcategory W) where
+  id X := ⟨𝟙 (WideSubquiver.run X), id_mem W (WideSubquiver.run X)⟩
+  comp f g := ⟨f.val ≫ g.val, comp_mem W f.val g.val f.property g.property⟩
+  id_comp f := Subtype.eq (Category.id_comp f.val)
+  comp_id f := Subtype.eq (Category.comp_id f.val)
+
 end IsMultiplicative
+
+/-- The canonical inclusion of a wide subcategory into the original subcategory. -/
+def WideSubcategory.inclusion (W : MorphismProperty C) [IsMultiplicative W] :
+    WideSubcategory W ⥤ C := Functor.mk (WideSubquiver.inclusion W)
 
 section
 

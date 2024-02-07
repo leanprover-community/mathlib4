@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Comma.Basic
+import Mathlib.Combinatorics.Quiver.Subquiver
 
 #align_import category_theory.arrow from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
@@ -48,6 +49,18 @@ instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T) where
 end
 
 namespace Arrow
+
+-- TODO: Refactor things so that the commma category is a special case of the
+-- comma quiver and Quiver.Total is defeq to Arrow
+/-- The type of objects of `Arrow T` is equivalent to
+the type of all edges of the underlying quiver of `T`.
+This should go from an equivalence to definitional equality in the near future. -/
+@[simps (config := .asFn) apply symm_apply]
+def equivTotal (T : Type u) [Category.{v} T] : Arrow T ≃ Quiver.Total T where
+  toFun     f := ⟨f.left, f.right, f.hom⟩
+  invFun    f := ⟨f.left, f.right, f.hom⟩
+  left_inv  _ := rfl
+  right_inv _ := rfl
 
 @[ext]
 lemma hom_ext {X Y : Arrow T} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
