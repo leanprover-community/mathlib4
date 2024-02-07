@@ -12,6 +12,10 @@ import Mathlib.CategoryTheory.Bicategory.Adjunction
 We show that adjunctions are realized as Kan extensions or Kan lifts. We also show that a left
 adjoint commutes with a left Kan extension.
 
+## References
+
+* [Riehl, *Category theory in context*, Proposition 6.5.2][riehl2017]
+
 ## TODO
 
 At the moment, the results are stated for left Kan extensions and left Kan lifts. We can prove the
