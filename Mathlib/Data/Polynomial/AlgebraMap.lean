@@ -304,6 +304,11 @@ theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
   rw [map_add, hp, hq, ← map_add, ← map_add]
 #align polynomial.aeval_alg_hom_apply Polynomial.aeval_algHom_apply
 
+@[simp]
+lemma coe_aeval_mk_apply {S : Subalgebra R A} (h : x ∈ S) :
+    (aeval (⟨x, h⟩ : S) p : A) = aeval x p :=
+  (aeval_algHom_apply S.val (⟨x, h⟩ : S) p).symm
+
 theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = (f : A →ₐ[R] B).comp (aeval x) :=
   aeval_algHom (f : A →ₐ[R] B) x
 #align polynomial.aeval_alg_equiv Polynomial.aeval_algEquiv
@@ -364,6 +369,23 @@ theorem _root_.Algebra.adjoin_singleton_eq_range_aeval (x : A) :
     Algebra.adjoin R {x} = (Polynomial.aeval x).range := by
   rw [← Algebra.map_top, ← adjoin_X, AlgHom.map_adjoin, Set.image_singleton, aeval_X]
 #align algebra.adjoin_singleton_eq_range_aeval Algebra.adjoin_singleton_eq_range_aeval
+
+@[simp]
+theorem aeval_mem_adjoin_singleton :
+    aeval x p ∈ Algebra.adjoin R {x} := by
+  simpa only [Algebra.adjoin_singleton_eq_range_aeval] using Set.mem_range_self p
+
+instance instCommSemiringAdjoinSingleton :
+    CommSemiring <| Algebra.adjoin R {x} :=
+  { mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
+      obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
+      obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Submonoid.mk_mul_mk, ← AlgHom.map_mul,
+        mul_comm p' q'] }
+
+instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
+    CommRing <| Algebra.adjoin R {x} :=
+  { mul_comm := mul_comm }
 
 variable {R}
 
