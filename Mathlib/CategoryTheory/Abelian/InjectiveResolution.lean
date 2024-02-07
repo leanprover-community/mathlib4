@@ -329,7 +329,7 @@ lemma ofCocomplex_exactAt_succ (n : ℕ) :
   all_goals
     dsimp [ofCocomplex, HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor',
       CochainComplex.mk', CochainComplex.mk]
-    simp
+    simp only [CochainComplex.of_d]
     apply exact_f_d
 
 instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by

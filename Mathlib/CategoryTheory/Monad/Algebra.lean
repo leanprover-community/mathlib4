@@ -204,7 +204,7 @@ def adj : T.free ⊣ T.forget :=
       homEquiv_naturality_right := by
         intros
         -- This doesn't look good:
-        simp
+        simp? says simp only [forget_obj, free_obj_A, forget_map]
         dsimp
         simp }
 #align category_theory.monad.adj CategoryTheory.Monad.adj
