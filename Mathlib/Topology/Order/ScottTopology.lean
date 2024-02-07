@@ -275,6 +275,13 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
     simp [upperBounds] at hb
     exact hfcb $ hb _ hcd
 
+variable (α)
+
+def scottBasis := { s : Set α | IsOpen s}
+
+protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (scottBasis α) :=
+  TopologicalSpace.isTopologicalBasis_opens
+
 end Preorder
 
 section PartialOrder
