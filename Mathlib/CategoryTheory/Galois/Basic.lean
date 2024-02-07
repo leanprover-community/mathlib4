@@ -213,17 +213,17 @@ class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C]
 
 namespace PreGaloisCategory
 
-variable {C : Type u₁} [Category.{u₂, u₁} C]
+variable {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C]
 
 /-- In a `GaloisCategory` the set of morphisms out of a connected object is finite. -/
-instance (A X : C) [ConnectedObject A] [GaloisCategory C] : Finite (A ⟶ X) := by
+instance (A X : C) [ConnectedObject A] : Finite (A ⟶ X) := by
   obtain ⟨F, ⟨hF⟩⟩ := @GaloisCategory.hasFibreFunctor C _ _
   obtain ⟨a⟩ := nonempty_fibre_of_connected F A
   apply Finite.of_injective (fun f ↦ F.map f a)
   exact evaluationInjective_of_connected F A X a
 
 /-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
-instance [GaloisCategory C] (A : C) [ConnectedObject A] : Finite (Aut A) := by
+instance (A : C) [ConnectedObject A] : Finite (Aut A) := by
   obtain ⟨F, ⟨hF⟩⟩ := @GaloisCategory.hasFibreFunctor C _ _
   obtain ⟨a⟩ := nonempty_fibre_of_connected F A
   apply Finite.of_injective (fun f ↦ F.map f.hom a)
