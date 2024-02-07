@@ -200,7 +200,7 @@ def createSageArgs (trace : Bool) (α : Expr) (atoms : Nat)
   #[toString trace, toString α, toString atoms, hyps, toString tgt]
 
 /-- A JSON parser for `ℚ` specific to the return value of `polyrith_sage.py`. -/
-local instance : FromJson ℚ where fromJson?
+local instance (priority := 10000) : FromJson ℚ where fromJson?
   | .arr #[a, b] => return (← fromJson? a : ℤ) / (← fromJson? b : ℕ)
   | _ => .error "expected array with two elements"
 

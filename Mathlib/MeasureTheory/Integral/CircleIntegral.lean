@@ -141,10 +141,10 @@ theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |
   calc
     range (circleMap c R) = c +ᵥ R • range fun θ : ℝ => exp (θ * I) := by
       simp (config := { unfoldPartialApp := true }) only [← image_vadd, ← image_smul, ← range_comp,
-        vadd_eq_add, circleMap, Function.comp_def, real_smul]
+        vadd_eq_add _, circleMap, Function.comp_def, real_smul]
     _ = sphere c |R| := by
       rw [Complex.range_exp_mul_I, smul_sphere R 0 zero_le_one]
-      simp
+      simp only [smul_zero, Real.norm_eq_abs, mul_one, vadd_sphere, add_zero, vadd_eq_add _]
 #align range_circle_map range_circleMap
 
 /-- The image of `(0, 2π]` under `circleMap c R` is the circle with center `c` and radius `|R|`. -/

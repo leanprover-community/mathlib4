@@ -209,6 +209,7 @@ theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv
   continuous_induced_rng.2 (contDiff_stereoInvFunAux.continuous.comp continuous_subtype_val)
 #align continuous_stereo_inv_fun continuous_stereoInvFun
 
+-- set_option maxHeartbeats 0 in
 theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) ≠ v) :
     stereoInvFun hv (stereoToFun v x) = x := by
   ext
@@ -251,18 +252,12 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     field_simp
     rw [duh]
     ring
-  convert
-    congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
-  · simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
-      mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
-    -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
-    · rw [split, add_comm]
-      ac_rfl
-  -- Porting note: this branch did not exit in ml3
+  convert congr_arg₂ (fun a b ↦ a + b) (congr_arg (fun t => t • (y : E)) h₁)
+      (congr_arg (fun t => t • v) h₂) using 1
+  · simp (config := { zeta := false }) only [norm_smul, norm_div, IsROrC.norm_ofNat, mul_assoc,
+      Real.norm_eq_abs, Submodule.coe_norm, mul_pow, div_pow, sq_abs, SetLike.val_smul, smul_smul]
   · rw [split, add_comm]
-    congr!
-    dsimp
-    rw [one_smul]
+    simp (config := { zeta := false }) only [one_smul]
 #align stereo_left_inv stereo_left_inv
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by

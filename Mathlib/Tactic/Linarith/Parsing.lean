@@ -53,7 +53,7 @@ We introduce a local instance allowing addition of `RBMap`s,
 removing any keys with value zero.
 We don't need to prove anything about this addition, as it is only used in meta code.
 -/
-local instance [Add β] [Zero β] [DecidableEq β] : Add (RBMap α β c) where
+local instance (priority := 10000) [Add β] [Zero β] [DecidableEq β] : Add (RBMap α β c) where
   add := fun f g => (f.mergeWith (fun _ b b' => b + b') g).filter (fun _ b => b ≠ 0)
 
 namespace Linarith

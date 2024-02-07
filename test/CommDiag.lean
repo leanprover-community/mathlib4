@@ -9,7 +9,7 @@ namespace CategoryTheory
 open ProofWidgets
 
 /-- Local instance to make examples work. -/
-local instance : Category (Type u) where
+local instance (priority := 10000) : Category (Type u) where
   Hom α β := α → β
   id _ := id
   comp f g := g ∘ f

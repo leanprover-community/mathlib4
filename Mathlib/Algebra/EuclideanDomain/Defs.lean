@@ -109,7 +109,7 @@ variable {R : Type u} [EuclideanDomain R]
 /-- Abbreviated notation for the well-founded relation `r` in a Euclidean domain. -/
 local infixl:50 " ≺ " => EuclideanDomain.r
 
-local instance wellFoundedRelation : WellFoundedRelation R where
+local instance (priority := 10000) wellFoundedRelation : WellFoundedRelation R where
   wf := r_wellFounded
 
 -- see Note [lower instance priority]

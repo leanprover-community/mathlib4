@@ -155,7 +155,7 @@ instance (priority := 10000) of_powerSeries_localization [CommRing R] :
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
 -- Porting note: this instance is needed
-local instance {K : Type u} [Field K] : MonoidWithZero (HahnSeries ℤ K) := inferInstance in
+local instance (priority := 10000) {K : Type u} [Field K] : MonoidWithZero (HahnSeries ℤ K) := inferInstance in
 instance (priority := 10000) {K : Type u} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
   IsLocalization.of_le (Submonoid.powers (PowerSeries.X : PowerSeries K)) _
     (powers_le_nonZeroDivisors_of_noZeroDivisors PowerSeries.X_ne_zero) fun _ hf =>

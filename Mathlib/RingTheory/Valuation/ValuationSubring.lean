@@ -763,7 +763,7 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
 #align valuation_subring.units_mod_principal_units_equiv_residue_field_units ValuationSubring.unitsModPrincipalUnitsEquivResidueFieldUnits
 
 /-- Porting note: Lean needs to be reminded of this instance -/
-local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
+local instance (priority := 10000) : MulOneClass ({ x // x ∈ unitGroup A } ⧸
   Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
 -- @[simp] -- Porting note: not in simpNF

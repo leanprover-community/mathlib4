@@ -311,7 +311,7 @@ namespace AlgebraicClosureAux
 open AlgebraicClosure
 
 /-- `AlgebraicClosureAux k` is a `Field` -/
-local instance field : Field (AlgebraicClosureAux k) :=
+local instance (priority := 10000) field : Field (AlgebraicClosureAux k) :=
   Field.DirectLimit.field _ _
 
 instance (priority := 10000) : Inhabited (AlgebraicClosureAux k) :=
@@ -362,7 +362,7 @@ theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
   IsAlgClosed.of_exists_root _ fun _ => exists_root k
 
 /-- `AlgebraicClosureAux k` is a `k`-`Algebra` -/
-local instance instAlgebra : Algebra k (AlgebraicClosureAux k) :=
+local instance (priority := 10000) instAlgebra : Algebra k (AlgebraicClosureAux k) :=
   (ofStep k 0).toAlgebra
 
 #noalign algebraic_closure.algebra_map_def

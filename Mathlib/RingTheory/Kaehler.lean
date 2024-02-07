@@ -392,37 +392,37 @@ theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDi
   Without them the endEquivDerivation' and endEquivAuxEquiv both have significant timeouts.
   In Mathlib 3, it was slow but not this slow. -/
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
+local instance (priority := 10000) smul_SSmod_SSmod : SMul (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Mul.toSMul _
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 @[nolint defLemma]
-local instance isScalarTower_S_right :
+local instance (priority := 10000) isScalarTower_S_right :
     IsScalarTower S (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
       (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Ideal.Quotient.isScalarTower_right
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 @[nolint defLemma]
-local instance isScalarTower_R_right :
+local instance (priority := 10000) isScalarTower_R_right :
     IsScalarTower R (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2)
       (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) := Ideal.Quotient.isScalarTower_right
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
 @[nolint defLemma]
-local instance isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
+local instance (priority := 10000) isScalarTower_SS_right : IsScalarTower (S ⊗[R] S)
     (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) (S ⊗[R] S ⧸ KaehlerDifferential.ideal R S ^ 2) :=
   Ideal.Quotient.isScalarTower_right
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
+local instance (priority := 10000) instS : Module S (KaehlerDifferential.ideal R S).cotangentIdeal :=
   Submodule.module' _
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
+local instance (priority := 10000) instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :=
   Submodule.module' _
 
 /-- A shortcut instance to prevent timing out. Hopefully to be removed in the future. -/
-local instance instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
+local instance (priority := 10000) instSS : Module (S ⊗[R] S) (KaehlerDifferential.ideal R S).cotangentIdeal :=
   Submodule.module' _
 
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations

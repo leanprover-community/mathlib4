@@ -307,7 +307,7 @@ variable [Monad m] [Alternative m] [LinearOrder α]
 
 /-- A local instance that enables using "the actual value" as a priority estimator,
 for simple use cases. -/
-local instance instOrderBotEq : OrderBot { x : α // x = a } where
+local instance (priority := 10000) instOrderBotEq : OrderBot { x : α // x = a } where
   bot := ⟨a, rfl⟩
   bot_le := by aesop
 
