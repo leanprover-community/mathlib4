@@ -3,9 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Data.Int.Lemmas
+import Mathlib.Data.Rat.Order
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -27,8 +28,6 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 
 
 open Function
-
-open BigOperators
 
 /-- Nonnegative rational numbers. -/
 def NNRat := { q : ℚ // 0 ≤ q } deriving
@@ -215,10 +214,6 @@ theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ
   ext (coe_natCast n).symm
 #align nnrat.mk_coe_nat NNRat.mk_coe_nat
 
-/-- The rational numbers are an algebra over the non-negative rationals. -/
-instance : Algebra ℚ≥0 ℚ :=
-  coeHom.toAlgebra
-
 /-- A `MulAction` over `ℚ` restricts to a `MulAction` over `ℚ≥0`. -/
 instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
   MulAction.compHom α coeHom.toMonoidHom
@@ -226,10 +221,6 @@ instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
 /-- A `DistribMulAction` over `ℚ` restricts to a `DistribMulAction` over `ℚ≥0`. -/
 instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0 α :=
   DistribMulAction.compHom α coeHom.toMonoidHom
-
-/-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [Module ℚ α] : Module ℚ≥0 α :=
-  Module.compHom α coeHom
 
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
@@ -403,24 +394,29 @@ namespace NNRat
 variable {p q : ℚ≥0}
 
 /-- The numerator of a nonnegative rational. -/
-def num (q : ℚ≥0) : ℕ :=
-  (q : ℚ).num.natAbs
+@[pp_dot] def num (q : ℚ≥0) : ℕ := (q : ℚ).num.natAbs
 #align nnrat.num NNRat.num
 
 /-- The denominator of a nonnegative rational. -/
-def den (q : ℚ≥0) : ℕ :=
-  (q : ℚ).den
+@[pp_dot] def den (q : ℚ≥0) : ℕ := (q : ℚ).den
 #align nnrat.denom NNRat.den
 
-@[simp]
-theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num :=
-  rfl
+@[norm_cast] lemma num_coe (q : ℚ≥0) : (q : ℚ).num = q.num := by
+  simp [num, abs_of_nonneg, Rat.num_nonneg_iff_zero_le.2 q.2]
+
+theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 #align nnrat.nat_abs_num_coe NNRat.natAbs_num_coe
 
-@[simp]
-theorem den_coe : (q : ℚ).den = q.den :=
-  rfl
+@[simp, norm_cast] lemma den_coe : (q : ℚ).den = q.den := rfl
 #align nnrat.denom_coe NNRat.den_coe
+
+@[simp] lemma num_ne_zero : q.num ≠ 0 ↔ q ≠ 0 := by simp [num]
+@[simp] lemma num_pos : 0 < q.num ↔ 0 < q := by simp [pos_iff_ne_zero]
+@[simp] lemma den_pos (q : ℚ≥0) : 0 < q.den := Rat.den_pos _
+
+-- TODO: Rename `Rat.coe_nat_num`, `Rat.intCast_den`, `Rat.ofNat_num`, `Rat.ofNat_den`
+@[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
+@[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
   ext

@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
@@ -165,21 +166,31 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
   Option.map_comm h _
 #align with_bot.map_comm WithBot.map_comm
 
+/-- The image of a binary function `f : α → β → γ` as a function
+`WithBot α → WithBot β → WithBot γ`.
+
+Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
+def map₂ : (α → β → γ) → WithBot α → WithBot β → WithBot γ := Option.map₂
+
+lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
+@[simp] lemma map₂_bot_left (f : α → β → γ) (b) : map₂ f ⊥ b = ⊥ := rfl
+@[simp] lemma map₂_bot_right (f : α → β → γ) (a) : map₂ f a ⊥ = ⊥ := by cases a <;> rfl
+@[simp] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := rfl
+@[simp] lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
+  cases a <;> rfl
+
+@[simp] lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :
+    map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := Option.map₂_eq_none_iff
+
 theorem ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
 #align with_bot.ne_bot_iff_exists WithBot.ne_bot_iff_exists
 
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
-def unbot : ∀ x : WithBot α, x ≠ ⊥ → α
-  | ⊥, h => absurd rfl h
-  | Option.some x, _ => x
+def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
 #align with_bot.unbot WithBot.unbot
 
-@[simp]
-theorem coe_unbot (x : WithBot α) (h : x ≠ ⊥) : (x.unbot h : WithBot α) = x := by
-  cases x
-  exact (h rfl).elim
-  rfl
+@[simp] lemma coe_unbot : ∀ (x : WithBot α) hx, x.unbot hx = x | (x : α), _ => rfl
 #align with_bot.coe_unbot WithBot.coe_unbot
 
 @[simp]
@@ -781,6 +792,22 @@ theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ 
   Option.map_comm h _
 #align with_top.map_comm WithTop.map_comm
 
+/-- The image of a binary function `f : α → β → γ` as a function
+`WithTop α → WithTop β → WithTop γ`.
+
+Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
+def map₂ : (α → β → γ) → WithTop α → WithTop β → WithTop γ := Option.map₂
+
+lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
+@[simp] lemma map₂_top_left (f : α → β → γ) (b) : map₂ f ⊤ b = ⊤ := rfl
+@[simp] lemma map₂_top_right (f : α → β → γ) (a) : map₂ f a ⊤ = ⊤ := by cases a <;> rfl
+@[simp] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := rfl
+@[simp] lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
+  cases a <;> rfl
+
+@[simp] lemma map₂_eq_top_iff {f : α → β → γ} {a : WithTop α} {b : WithTop β} :
+    map₂ f a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := Option.map₂_eq_none_iff
+
 theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
     map f (WithBot.toDual a) = a.map (toDual ∘ f) :=
   rfl
@@ -805,13 +832,10 @@ theorem ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x 
 #align with_top.ne_top_iff_exists WithTop.ne_top_iff_exists
 
 /-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
-def untop : ∀ x : WithTop α, x ≠ ⊤ → α :=
-  WithBot.unbot
+def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
 #align with_top.untop WithTop.untop
 
-@[simp]
-theorem coe_untop (x : WithTop α) (h : x ≠ ⊤) : (x.untop h : WithTop α) = x :=
-  WithBot.coe_unbot x h
+@[simp] lemma coe_untop : ∀ (x : WithTop α) hx, x.untop hx = x | (x : α), _ => rfl
 #align with_top.coe_untop WithTop.coe_untop
 
 @[simp]

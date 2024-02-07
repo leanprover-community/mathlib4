@@ -5,8 +5,9 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.PUnit
 
 #align_import category_theory.limits.final from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
@@ -433,6 +434,16 @@ theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
     clear e y₁ y₂
     exact Final.zigzag_of_eqvGen_quot_rel t⟩
 #align category_theory.functor.final.cofinal_of_colimit_comp_coyoneda_iso_punit CategoryTheory.Functor.cofinal_of_colimit_comp_coyoneda_iso_pUnit
+
+/-- A variant of `cofinal_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
+    about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
+    the presheaf `colimit (F ⋙ yoneda)`. -/
+theorem cofinal_of_isTerminal_colimit_comp_yoneda
+    (h : IsTerminal (colimit (F ⋙ yoneda))) : Final F := by
+  refine cofinal_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
+  refine Types.isTerminalEquivIsoPUnit _ ?_
+  let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ h
+  exact b.ofIso <| preservesColimitIso ((evaluation _ _).obj (Opposite.op d)) (F ⋙ yoneda)
 
 end LocallySmall
 
