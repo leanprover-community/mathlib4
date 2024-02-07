@@ -214,6 +214,36 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 #align basis.parallelepiped_map Basis.parallelepiped_map
 
+theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
+    (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
+  ext x
+  simp only [Basis.coe_parallelepiped, TopologicalSpace.PositiveCompacts.coe_prod, Set.mem_prod,
+    mem_parallelepiped_iff]
+  constructor
+  · intro h
+    rcases h with ⟨t, ht1, ht2⟩
+    constructor
+    · use t ∘ Sum.inl
+      constructor
+      · exact ⟨(ht1.1 <| Sum.inl ·), (ht1.2 <| Sum.inl ·)⟩
+      simp [ht2, Prod.fst_sum, Prod.snd_sum]
+    · use t ∘ Sum.inr
+      constructor
+      · exact ⟨(ht1.1 <| Sum.inr ·), (ht1.2 <| Sum.inr ·)⟩
+      simp [ht2, Prod.fst_sum, Prod.snd_sum]
+  intro h
+  rcases h with ⟨⟨t, ht1, ht2⟩, ⟨s, hs1, hs2⟩⟩
+  use Sum.elim t s
+  constructor
+  · constructor
+    · change ∀ x : ι ⊕ ι', 0 ≤ Sum.elim t s x
+      aesop
+    · change ∀ x : ι ⊕ ι', Sum.elim t s x ≤ 1
+      aesop
+  ext
+  · simp [ht2, Prod.fst_sum]
+  · simp [hs2, Prod.snd_sum]
+
 variable [MeasurableSpace E] [BorelSpace E]
 
 /-- The Lebesgue measure associated to a basis, giving measure `1` to the parallelepiped spanned
@@ -226,8 +256,8 @@ instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure 
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 #align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
-instance [SecondCountableTopology E] (b : Basis ι ℝ E) :
-    SigmaFinite b.addHaar := by
+instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar := by
+  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
   rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
 
 /-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
@@ -246,6 +276,14 @@ theorem Basis.addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
 theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
+
+variable [MeasurableSpace F] [BorelSpace F] [SecondCountableTopologyEither E F]
+
+theorem Basis.prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
+    (v.prod w).addHaar = v.addHaar.prod w.addHaar := by
+  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis v
+  have : FiniteDimensional ℝ F := FiniteDimensional.of_fintype_basis w
+  simp [(v.prod w).addHaar_eq_iff, Basis.prod_parallelepiped, Basis.addHaar_self]
 
 end NormedSpace
 
