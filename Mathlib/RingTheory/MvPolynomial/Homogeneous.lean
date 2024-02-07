@@ -293,6 +293,7 @@ section IsDomain
 variable {R σ : Type*} [CommRing R] [IsDomain R] {F G : MvPolynomial σ R} {n : ℕ}
 
 open Cardinal Polynomial
+
 private
 lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial (Fin N) R} {n : ℕ}
     (hF : F.IsHomogeneous n) (hF₀ : F ≠ 0) (hnR : n ≤ #R) :
@@ -334,7 +335,6 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     use Fin.cons r₀ r
     rwa [eval_eq_eval_mv_eval']
 
-open Cardinal in
 /-- See `MvPolynomial.IsHomogeneous.eq_zero_of_forall_eval_eq_zero`
 for a version that assumes `Infinite R`. -/
 lemma eq_zero_of_forall_eval_eq_zero_of_le_card
@@ -350,7 +350,6 @@ lemma eq_zero_of_forall_eval_eq_zero_of_le_card
   use r
   rwa [eval_rename]
 
-open Cardinal in
 /-- See `MvPolynomial.IsHomogeneous.funext`
 for a version that assumes `Infinite R`. -/
 lemma funext_of_le_card (hF : F.IsHomogeneous n) (hG : G.IsHomogeneous n)
