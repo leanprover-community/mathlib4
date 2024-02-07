@@ -708,16 +708,16 @@ variable {ι} [DecidableEq ι]
 theorem single_mem_stdSimplex (i : ι) : Pi.single i 1 ∈ stdSimplex 𝕜 ι :=
   ⟨le_update_iff.2 ⟨zero_le_one, fun _ _ ↦ le_rfl⟩, by simp⟩
 
-theorem ite_eq_mem_stdSimplex (i : ι) : (fun j => if i = j then (1 : 𝕜) else 0) ∈ stdSimplex 𝕜 ι := by
+theorem ite_eq_mem_stdSimplex (i : ι) : (if i = · then (1 : 𝕜) else 0) ∈ stdSimplex 𝕜 ι := by
   simpa only [@eq_comm _ i, ← Pi.single_apply] using single_mem_stdSimplex 𝕜 i
 #align ite_eq_mem_std_simplex ite_eq_mem_stdSimplex
 
-/-- the edges are contained in the simplex -/
+/-- The edges are contained in the simplex. -/
 lemma segment_single_subset_stdSimplex (i j : ι) : [Pi.single i 1 -[𝕜] Pi.single j 1] ⊆ stdSimplex 𝕜 ι :=
   (convex_stdSimplex 𝕜 ι).segment_subset (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
 
 lemma stdSimplex_fin_two : stdSimplex 𝕜 (Fin 2) = [Pi.single 0 1 -[𝕜] Pi.single 1 1] := by
-  refine Subset.antisymm ?_ (edge_subset_stdSimplex 𝕜 (0 : Fin 2) 1)
+  refine Subset.antisymm ?_ (segment_single_subset_stdSimplex 𝕜 (0 : Fin 2) 1)
   rintro f ⟨hf₀, hf₁⟩
   rw [Fin.sum_univ_two] at hf₁
   refine ⟨f 0, f 1, hf₀ 0, hf₀ 1, hf₁, funext <| Fin.forall_fin_two.2 ?_⟩
@@ -730,6 +730,7 @@ section OrderedRing
 variable (𝕜) [OrderedRing 𝕜]
 
 /-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval. -/
+@[simps (config := .asFn)]
 def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   toFun f := ⟨f.1 0, f.2.1 _, f.2.2 ▸
     Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
