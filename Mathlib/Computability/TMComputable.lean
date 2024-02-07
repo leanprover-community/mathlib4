@@ -99,20 +99,20 @@ tapes associated with the first machine, then copying the output tape of the fir
 input tape of the second machine, then running the second machine.
 -/
 def comp (m1 m2 : FinTM2) : FinTM2 where
-    K := m1.K ⊕ m2.K
-    kDecidableEq := sorry
-    kFin := sorry
-    k₀ := Sum.inl m1.k₀
-    k₁ := Sum.inr m2.k₁
-    Γ := Sum.elim m1.Γ m2.Γ
-    Λ := Unit ⊕ m1.Λ ⊕ m2.Λ
-    main := Sum.inl ()
-    ΛFin := sorry
-    σ := m1.σ ⊕ m2.σ
-    initialState := Sum.inl m1.initialState
-    σFin := sorry
-    Γk₀Fin := sorry
-    m := sorry
+  K := m1.K ⊕ m2.K
+  kDecidableEq := sorry
+  kFin := sorry
+  k₀ := Sum.inl m1.k₀
+  k₁ := Sum.inr m2.k₁
+  Γ := Sum.elim m1.Γ m2.Γ
+  Λ := Unit ⊕ m1.Λ ⊕ m2.Λ
+  main := Sum.inl ()
+  ΛFin := sorry
+  σ := m1.σ ⊕ m2.σ
+  initialState := Sum.inl m1.initialState
+  σFin := sorry
+  Γk₀Fin := sorry
+  m := sorry
 
 end
 
