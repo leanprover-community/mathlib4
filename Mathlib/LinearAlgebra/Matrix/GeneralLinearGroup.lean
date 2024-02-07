@@ -45,7 +45,7 @@ abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] 
   (Matrix n n R)ˣ
 #align matrix.general_linear_group Matrix.GeneralLinearGroup
 
-notation "GL" => GeneralLinearGroup
+@[inherit_doc] notation "GL" => GeneralLinearGroup
 
 namespace GeneralLinearGroup
 

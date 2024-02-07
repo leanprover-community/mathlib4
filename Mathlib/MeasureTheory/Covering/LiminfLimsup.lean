@@ -209,7 +209,7 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
   let r' : ℕ → ℝ := fun i => if 0 < r i then r i else 1 / ((i : ℝ) + 1)
   have hr' : Tendsto r' atTop (𝓝[>] 0) := by
     refine' tendsto_nhdsWithin_iff.mpr
-      ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_0_nat, eventually_of_forall fun i => _⟩
+      ⟨Tendsto.if' hr tendsto_one_div_add_atTop_nhds_zero_nat, eventually_of_forall fun i => _⟩
     by_cases hi : 0 < r i
     · simp [hi]
     · simp only [hi, one_div, mem_Ioi, if_false, inv_pos]; positivity

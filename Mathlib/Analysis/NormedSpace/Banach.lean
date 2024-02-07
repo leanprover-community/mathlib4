@@ -59,7 +59,7 @@ noncomputable def ContinuousLinearEquiv.toNonlinearRightInverse (f : E ≃L[𝕜
     ContinuousLinearMap.NonlinearRightInverse (f : E →L[𝕜] F) where
   toFun := f.invFun
   nnnorm := ‖(f.symm : F →L[𝕜] E)‖₊
-  bound' _ := ContinuousLinearMap.le_op_norm (f.symm : F →L[𝕜] E) _
+  bound' _ := ContinuousLinearMap.le_opNorm (f.symm : F →L[𝕜] E) _
   right_inv' := f.apply_symm_apply
 #align continuous_linear_equiv.to_nonlinear_right_inverse ContinuousLinearEquiv.toNonlinearRightInverse
 
@@ -185,7 +185,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
     refine' .of_nonneg_of_le (fun n => norm_nonneg _) ule _
-    exact Summable.mul_right _ (summable_geometric_of_lt_1 (by norm_num) (by norm_num))
+    exact Summable.mul_right _ (summable_geometric_of_lt_one (by norm_num) (by norm_num))
   have su : Summable u := sNu.of_norm
   let x := tsum u
   have x_ineq : ‖x‖ ≤ (2 * C + 1) * ‖y‖ :=
@@ -212,7 +212,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     simp only [sub_zero]
     refine' squeeze_zero (fun _ => norm_nonneg _) hnle _
     rw [← zero_mul ‖y‖]
-    refine' (_root_.tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num
+    refine' (_root_.tendsto_pow_atTop_nhds_zero_of_lt_one _ _).mul tendsto_const_nhds <;> norm_num
   have feq : f x = y - 0 := tendsto_nhds_unique L₁ L₂
   rw [sub_zero] at feq
   exact ⟨x, feq, x_ineq⟩
