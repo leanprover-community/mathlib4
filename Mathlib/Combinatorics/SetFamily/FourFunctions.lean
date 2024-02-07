@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finset.Sups
+import Mathlib.Data.Set.Basic
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice

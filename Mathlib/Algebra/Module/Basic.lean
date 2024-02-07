@@ -5,6 +5,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.SMulWithZero
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Rat.NNRat
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Logic.Basic
@@ -423,18 +425,19 @@ def AddCommGroup.intModule.unique : Unique (Module ℤ M) where
 
 end AddCommGroup
 
-theorem map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [AddMonoidHomClass F M M₂]
-    (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂] (x : ℤ) (a : M) :
+theorem map_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
+    [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Ring R] [Ring S] [Module R M] [Module S M₂]
+    (x : ℤ) (a : M) :
     f ((x : R) • a) = (x : S) • f a := by simp only [← zsmul_eq_smul_cast, map_zsmul]
 #align map_int_cast_smul map_int_cast_smul
 
-theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
+theorem map_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [Semiring R] [Semiring S] [Module R M]
     [Module S M₂] (x : ℕ) (a : M) : f ((x : R) • a) = (x : S) • f a := by
   simp only [← nsmul_eq_smul_cast, AddMonoidHom.map_nsmul, map_nsmul]
 #align map_nat_cast_smul map_nat_cast_smul
 
-theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
+theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*)
     [DivisionSemiring R] [DivisionSemiring S] [Module R M]
     [Module S M₂] (n : ℕ) (x : M) : f ((n⁻¹ : R) • x) = (n⁻¹ : S) • f x := by
@@ -452,7 +455,7 @@ theorem map_inv_nat_cast_smul [AddCommMonoid M] [AddCommMonoid M₂] {F : Type*}
   · rw [← inv_smul_smul₀ hS (f _), ← map_nat_cast_smul f R S, smul_inv_smul₀ hR]
 #align map_inv_nat_cast_smul map_inv_nat_cast_smul
 
-theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*}
+theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
     [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
     [Module S M₂] (z : ℤ) (x : M) : f ((z⁻¹ : R) • x) = (z⁻¹ : S) • f x := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
@@ -461,21 +464,30 @@ theorem map_inv_int_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*}
       map_inv_nat_cast_smul _ R S]
 #align map_inv_int_cast_smul map_inv_int_cast_smul
 
-theorem map_rat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [AddMonoidHomClass F M M₂]
-    (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M] [Module S M₂] (c : ℚ)
-    (x : M) : f ((c : R) • x) = (c : S) • f x := by
+theorem map_rat_cast_smul [AddCommGroup M] [AddCommGroup M₂] {F : Type*} [FunLike F M M₂]
+    [AddMonoidHomClass F M M₂] (f : F) (R S : Type*) [DivisionRing R] [DivisionRing S] [Module R M]
+    [Module S M₂] (c : ℚ) (x : M) :
+    f ((c : R) • x) = (c : S) • f x := by
   rw [Rat.cast_def, Rat.cast_def, div_eq_mul_inv, div_eq_mul_inv, mul_smul, mul_smul,
     map_int_cast_smul f R S, map_inv_nat_cast_smul f R S]
 #align map_rat_cast_smul map_rat_cast_smul
 
-theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂] [Module ℚ M] [Module ℚ M₂] {F : Type*}
-    [AddMonoidHomClass F M M₂] (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=
+theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
+    [_instM : Module ℚ M] [_instM₂ : Module ℚ M₂]
+    {F : Type*} [FunLike F M M₂] [AddMonoidHomClass F M M₂]
+    (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=
   map_rat_cast_smul f ℚ ℚ c x
 #align map_rat_smul map_rat_smul
 
+
+/-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
+instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α :=
+  Module.compHom α NNRat.coeHom
+
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
 instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) :=
-  ⟨fun P Q => (Module.ext' P Q) fun r x => @map_rat_smul _ _ _ _ P Q _ _ (AddMonoidHom.id E) r x⟩
+  ⟨fun P Q => (Module.ext' P Q) fun r x =>
+    map_rat_smul (_instM := P) (_instM₂ := Q) (AddMonoidHom.id E) r x⟩
 #align subsingleton_rat_module subsingleton_rat_module
 
 /-- If `E` is a vector space over two division semirings `R` and `S`, then scalar multiplications
