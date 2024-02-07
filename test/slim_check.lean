@@ -159,7 +159,7 @@ f := [-1 ↦ -1, 0 ↦ 0, 1 ↦ 7, 2 ↦ 2, 3 ↦ 1, 4 ↦ 3, 5 ↦ 5, 6 ↦ 6, 
 guard: ⋯ (by construction)
 x := 1
 y := 3
-guard: ⋯
+guard: 1 ≤ 3
 issue: 7 ≤ 1 does not hold
 (4 shrinks)
 -------------------
@@ -195,7 +195,7 @@ Found problems!
 f := [-3 ↦ 0, -4 ↦ -1, 4 ↦ 3, _ ↦ -2]
 x := -4
 y := 1
-guard: ⋯
+guard: -4 ≤ 1
 issue: -1 ≤ -2 does not hold
 (2 shrinks)
 -------------------
@@ -297,7 +297,7 @@ example (x y : Prop) : true := by
 Found problems!
 x := true
 y := false
-guard: ¬true ↔ false
+guard: true ≠ true ↔ false
 issue: false does not hold
 (0 shrinks)
 -------------------
