@@ -240,7 +240,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E} {c : E}
       using isOpen_setOf_mem_nhds_and_isMaxOn_norm hd
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, hm⟩
   set W := U ∩ {z | ‖f z‖ ≠ ‖f c‖}
-  have hWo : IsOpen W := hd.continuousOn.norm.preimage_open_of_open ho isOpen_ne
+  have hWo : IsOpen W := hd.continuousOn.norm.isOpen_inter_preimage ho isOpen_ne
   have hdVW : Disjoint V W := disjoint_left.mpr fun x hxV hxW => hxW.2 (hV x hxV)
   have hUVW : U ⊆ V ∪ W := fun x hx =>
     (eq_or_ne ‖f x‖ ‖f c‖).imp (fun h => ⟨hx, fun y hy => (hm hy).out.trans_eq h.symm⟩)
@@ -424,4 +424,3 @@ theorem eqOn_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U) (hf
 #align complex.eq_on_of_eq_on_frontier Complex.eqOn_of_eqOn_frontier
 
 end Complex
-

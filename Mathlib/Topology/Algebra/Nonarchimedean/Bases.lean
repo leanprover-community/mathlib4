@@ -59,11 +59,7 @@ theorem of_comm {A ι : Type*} [CommRing A] (B : ι → AddSubgroup A)
   { inter
     mul
     leftMul
-    rightMul := by
-      intro x i
-      cases' leftMul x i with j hj
-      use j
-      simpa [mul_comm] using hj }
+    rightMul := fun x i ↦ (leftMul x i).imp fun j hj ↦ by simpa only [mul_comm] using hj }
 #align ring_subgroups_basis.of_comm RingSubgroupsBasis.of_comm
 
 /-- Every subgroups basis on a ring leads to a ring filter basis. -/
@@ -88,7 +84,7 @@ def toRingFilterBasis [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgrou
     use B i
     constructor
     · use i
-    · rintro x ⟨y, z, y_in, z_in, rfl⟩
+    · rintro x ⟨y, y_in, z, z_in, rfl⟩
       exact (B i).add_mem y_in z_in
   neg' := by
     rintro _ ⟨i, rfl⟩
@@ -280,7 +276,7 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
     use B i
     constructor
     · use i
-    · rintro x ⟨y, z, y_in, z_in, rfl⟩
+    · rintro x ⟨y, y_in, z, z_in, rfl⟩
       exact (B i).add_mem y_in z_in
   neg' := by
     rintro _ ⟨i, rfl⟩
@@ -303,7 +299,7 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
     · use B i
       constructor
       · use i
-      · rintro _ ⟨a, m, -, hm, rfl⟩
+      · rintro _ ⟨a, -, m, hm, rfl⟩
         exact (B i).smul_mem _ hm
   smul_left' := by
     rintro x₀ _ ⟨i, rfl⟩

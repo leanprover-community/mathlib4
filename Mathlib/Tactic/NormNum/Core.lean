@@ -51,15 +51,18 @@ def mkNormNumExt (n : Name) : ImportM NormNumExt := do
 
 /-- Each `norm_num` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
-abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
+abbrev Entry := Array (Array DiscrTree.Key) × Name
 
 /-- The state of the `norm_num` extension environment -/
 structure NormNums where
   /-- The tree of `norm_num` extensions. -/
-  tree   : DiscrTree NormNumExt true := {}
+  tree   : DiscrTree NormNumExt := {}
   /-- Erased `norm_num`s. -/
   erased  : PHashSet Name := {}
   deriving Inhabited
+
+/-- Configuration for `DiscrTree`. -/
+def discrTreeConfig : WhnfCoreConfig := {}
 
 /-- Environment extensions for `norm_num` declarations -/
 initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums ←
@@ -84,7 +87,7 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
   profileitM Exception "norm_num" (← getOptions) do
     let s ← saveState
     let normNums := normNumExt.getState (← getEnv)
-    let arr ← normNums.tree.getMatch e
+    let arr ← normNums.tree.getMatch e discrTreeConfig
     for ext in arr do
       if (bif post then ext.post else ext.pre) && ! normNums.erased.contains ext.name then
         try
@@ -177,7 +180,7 @@ initialize registerBuiltinAttribute {
             let e ← elabTerm stx none
             let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
             return e
-        DiscrTree.mkPath e
+        DiscrTree.mkPath e discrTreeConfig
       normNumExt.add ((keys, declName), ext) kind
     | _ => throwUnsupportedSyntax
   erase := fun declName => do
@@ -187,9 +190,11 @@ initialize registerBuiltinAttribute {
 }
 
 /-- A simp plugin which calls `NormNum.eval`. -/
-def tryNormNum? (post := false) (e : Expr) : SimpM (Option Simp.Step) := do
-  try return some (.done (← eval e post))
-  catch _ => return none
+def tryNormNum (post := false) (e : Expr) : SimpM Simp.Step := do
+  try
+    return .done (← eval e post)
+  catch _ =>
+    return .continue
 
 variable (ctx : Simp.Context) (useSimp := true) in
 mutual
@@ -199,14 +204,12 @@ mutual
   /-- A `Methods` implementation which calls `norm_num`. -/
   partial def methods : Simp.Methods :=
     if useSimp then {
-      pre := fun e ↦ do
-        Simp.andThen (← Simp.preDefault e discharge) tryNormNum?
-      post := fun e ↦ do
-        Simp.andThen (← Simp.postDefault e discharge) (tryNormNum? (post := true))
+      pre := Simp.preDefault #[] >> tryNormNum
+      post := Simp.postDefault #[] >> tryNormNum (post := true)
       discharge? := discharge
     } else {
-      pre := fun e ↦ Simp.andThen (.visit { expr := e }) tryNormNum?
-      post := fun e ↦ Simp.andThen (.visit { expr := e }) (tryNormNum? (post := true))
+      pre := tryNormNum
+      post := tryNormNum (post := true)
       discharge? := discharge
     }
 
@@ -270,7 +273,8 @@ def getSimpContext (args : Syntax) (simpOnly := false) :
     TacticM Simp.Context := do
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, starArg } ← elabSimpArgs args[0] (eraseLocal := false) (kind := .simp)
+  let mut { ctx, simprocs := _, starArg } ←
+    elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
     { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
   unless starArg do return ctx
   let mut simpTheorems := ctx.simpTheorems

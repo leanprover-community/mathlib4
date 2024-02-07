@@ -81,7 +81,7 @@ example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
-    [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
+    [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (TensorAlgebra A M) :=
   RingQuot.instSMulCommClass _
 
@@ -107,10 +107,10 @@ variable {M}
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
   { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
     map_add' := fun x y => by
-      rw [← AlgHom.map_add]
+      rw [← (RingQuot.mkAlgHom R (Rel R M)).map_add]
       exact RingQuot.mkAlgHom_rel R Rel.add
     map_smul' := fun r x => by
-      rw [← AlgHom.map_smul]
+      rw [← (RingQuot.mkAlgHom R (Rel R M)).map_smul]
       exact RingQuot.mkAlgHom_rel R Rel.smul }
 #align tensor_algebra.ι TensorAlgebra.ι
 
@@ -242,6 +242,10 @@ theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 0 
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (TensorAlgebra R M) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align tensor_algebra.algebra_map_eq_one_iff TensorAlgebra.algebraMap_eq_one_iff
+
+/-- A `TensorAlgebra` over a nontrivial semiring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (TensorAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
 
 variable {M}
 

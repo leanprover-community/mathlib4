@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Topology.Defs.Induced
 import Mathlib.Topology.Basic
 
 #align_import topology.order from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
@@ -45,9 +46,6 @@ of sets in `α` (with the reversed inclusion ordering).
 finer, coarser, induced topology, coinduced topology
 -/
 
-set_option autoImplicit true
-
-
 open Function Set Filter Topology
 
 universe u v w
@@ -81,8 +79,8 @@ theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
     @nhds α (generateFrom g) a = ⨅ s ∈ { s | a ∈ s ∧ s ∈ g }, 𝓟 s := by
   letI := generateFrom g
   rw [nhds_def]
-  refine le_antisymm (biInf_mono fun s ⟨as, sg⟩ => ⟨as, .basic _ sg⟩) ?_
-  refine le_iInf₂ fun s ⟨ha, hs⟩ => ?_; clear ‹s ∈ { s | a ∈ s ∧ IsOpen s }›
+  refine le_antisymm (biInf_mono fun s ⟨as, sg⟩ => ⟨as, .basic _ sg⟩) <| le_iInf₂ ?_
+  rintro s ⟨ha, hs⟩
   induction hs with
   | basic _ hs => exact iInf₂_le _ ⟨ha, hs⟩
   | univ => exact le_top.trans_eq principal_univ.symm
@@ -92,10 +90,12 @@ theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
     exact (hS t htS hat).trans (principal_mono.2 <| subset_sUnion_of_mem htS)
 #align topological_space.nhds_generate_from TopologicalSpace.nhds_generateFrom
 
-theorem tendsto_nhds_generateFrom {β : Type*} {m : α → β} {f : Filter α} {g : Set (Set β)} {b : β}
-    (h : ∀ s ∈ g, b ∈ s → m ⁻¹' s ∈ f) : Tendsto m f (@nhds β (generateFrom g) b) := by
-  rw [nhds_generateFrom]
-  exact tendsto_iInf.2 fun s => tendsto_iInf.2 fun ⟨hbs, hsg⟩ => tendsto_principal.2 <| h s hsg hbs
+lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α} {g : Set (Set β)}
+    {b : β} : Tendsto m f (@nhds β (generateFrom g) b) ↔ ∀ s ∈ g, b ∈ s → m ⁻¹' s ∈ f := by
+  simp only [nhds_generateFrom, @forall_swap (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
+    tendsto_principal]; rfl
+
+@[deprecated] alias ⟨_, tendsto_nhds_generateFrom⟩ := tendsto_nhds_generateFrom_iff
 #align topological_space.tendsto_nhds_generate_from TopologicalSpace.tendsto_nhds_generateFrom
 
 /-- Construct a topology on α given the filter of neighborhoods of each point of α. -/
@@ -238,17 +238,17 @@ end TopologicalSpace
 
 section Lattice
 
-variable {t t₁ t₂ : TopologicalSpace α} {s : Set α}
+variable {α : Type*} {t t₁ t₂ : TopologicalSpace α} {s : Set α}
 
 theorem IsOpen.mono (hs : IsOpen[t₂] s) (h : t₁ ≤ t₂) : IsOpen[t₁] s := h s hs
 #align is_open.mono IsOpen.mono
 
 theorem IsClosed.mono (hs : IsClosed[t₂] s) (h : t₁ ≤ t₂) : IsClosed[t₁] s :=
-  (@isOpen_compl_iff α t₁ s).mp <| hs.isOpen_compl.mono h
+  (@isOpen_compl_iff α s t₁).mp <| hs.isOpen_compl.mono h
 #align is_closed.mono IsClosed.mono
 
 theorem closure.mono (h : t₁ ≤ t₂) : closure[t₁] s ⊆ closure[t₂] s :=
-  @closure_minimal _ t₁ s (@closure _ t₂ s) subset_closure (IsClosed.mono isClosed_closure h)
+  @closure_minimal _ s (@closure _ t₂ s) t₁ subset_closure (IsClosed.mono isClosed_closure h)
 
 theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) ↔ t₂ ≤ t₁ :=
   Iff.rfl
@@ -280,7 +280,7 @@ theorem discreteTopology_bot (α : Type*) : @DiscreteTopology α ⊥ :=
 
 section DiscreteTopology
 
-variable [TopologicalSpace α] [DiscreteTopology α]
+variable [TopologicalSpace α] [DiscreteTopology α] {β : Type*}
 
 @[simp]
 theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α _).symm ▸ trivial
@@ -294,7 +294,7 @@ theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α 
 @[simp] theorem dense_discrete {s : Set α} : Dense s ↔ s = univ := by simp [dense_iff_closure_eq]
 
 @[simp]
-theorem denseRange_discrete {f : ι → α} : DenseRange f ↔ Surjective f := by
+theorem denseRange_discrete {ι : Type*} {f : ι → α} : DenseRange f ↔ Surjective f := by
   rw [DenseRange, dense_discrete, range_iff_surjective]
 
 @[nontriviality, continuity]
@@ -314,7 +314,7 @@ theorem mem_nhds_discrete {x : α} {s : Set α} :
 end DiscreteTopology
 
 theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t₁ ≤ t₂ := fun s => by
-  rw [@isOpen_iff_mem_nhds _ t₁, @isOpen_iff_mem_nhds α t₂]
+  rw [@isOpen_iff_mem_nhds _ _ t₁, @isOpen_iff_mem_nhds α _ t₂]
   exact fun hs a ha => h _ (hs _ ha)
 #align le_of_nhds_le_nhds le_of_nhds_le_nhds
 
@@ -374,23 +374,6 @@ section GaloisConnection
 
 variable {α β γ : Type*}
 
-/-- Given `f : α → β` and a topology on `β`, the induced topology on `α` is the collection of
-  sets that are preimages of some open set in `β`. This is the coarsest topology that
-  makes `f` continuous. -/
-def TopologicalSpace.induced {α : Type u} {β : Type v} (f : α → β) (t : TopologicalSpace β) :
-    TopologicalSpace α where
-  IsOpen s := ∃ s', IsOpen s' ∧ f ⁻¹' s' = s
-  isOpen_univ := ⟨univ, isOpen_univ, preimage_univ⟩
-  isOpen_inter := by
-    rintro s₁ s₂ ⟨s'₁, hs₁, rfl⟩ ⟨s'₂, hs₂, rfl⟩
-    exact ⟨s'₁ ∩ s'₂, hs₁.inter hs₂, preimage_inter⟩
-  isOpen_sUnion S h := by
-    choose! g hgo hfg using h
-    refine ⟨⋃ s ∈ S, g s, isOpen_biUnion fun s hs => hgo s hs, ?_⟩
-    rw [preimage_iUnion₂, sUnion_eq_biUnion]
-    exact iUnion₂_congr hfg
-#align topological_space.induced TopologicalSpace.induced
-
 theorem isOpen_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → β} :
     IsOpen[t.induced f] s ↔ ∃ t, IsOpen t ∧ f ⁻¹' t = s :=
   Iff.rfl
@@ -402,17 +385,6 @@ theorem isClosed_induced_iff [t : TopologicalSpace β] {s : Set α} {f : α → 
   simp only [← isOpen_compl_iff, isOpen_induced_iff]
   exact compl_surjective.exists.trans (by simp only [preimage_compl, compl_inj_iff])
 #align is_closed_induced_iff isClosed_induced_iff
-
-/-- Given `f : α → β` and a topology on `α`, the coinduced topology on `β` is defined
-  such that `s : Set β` is open if the preimage of `s` is open. This is the finest topology that
-  makes `f` continuous. -/
-def TopologicalSpace.coinduced {α : Type u} {β : Type v} (f : α → β) (t : TopologicalSpace α) :
-    TopologicalSpace β where
-  IsOpen s := IsOpen[t] (f ⁻¹' s)
-  isOpen_univ := t.isOpen_univ
-  isOpen_inter s₁ s₂ h₁ h₂ := h₁.inter h₂
-  isOpen_sUnion s h := by simpa only [preimage_sUnion] using isOpen_biUnion h
-#align topological_space.coinduced TopologicalSpace.coinduced
 
 theorem isOpen_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β} :
     IsOpen[t.coinduced f] s ↔ IsOpen (f ⁻¹' s) :=
@@ -720,10 +692,11 @@ theorem continuous_iff_le_induced {t₁ : TopologicalSpace α} {t₂ : Topologic
   Iff.trans continuous_iff_coinduced_le (gc_coinduced_induced f _ _)
 #align continuous_iff_le_induced continuous_iff_le_induced
 
-theorem continuous_generateFrom {t : TopologicalSpace α} {b : Set (Set β)}
-    (h : ∀ s ∈ b, IsOpen (f ⁻¹' s)) :
-    Continuous[t, generateFrom b] f :=
-  continuous_iff_coinduced_le.2 <| le_generateFrom h
+lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
+    Continuous[t, generateFrom b] f ↔ ∀ s ∈ b, IsOpen (f ⁻¹' s) := by
+  rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]; rfl
+
+@[deprecated] alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
 #align continuous_generated_from continuous_generateFrom
 
 @[continuity]
@@ -1024,7 +997,7 @@ theorem isOpen_iSup_iff {s : Set α} : IsOpen[⨆ i, t i] s ↔ ∀ i, IsOpen[t 
 #align is_open_supr_iff isOpen_iSup_iff
 
 theorem isClosed_iSup_iff {s : Set α} : IsClosed[⨆ i, t i] s ↔ ∀ i, IsClosed[t i] s := by
-  simp [← @isOpen_compl_iff _ (⨆ i, t i), ← @isOpen_compl_iff _ (t _), isOpen_iSup_iff]
+  simp [← @isOpen_compl_iff _ _ (⨆ i, t i), ← @isOpen_compl_iff _ _ (t _), isOpen_iSup_iff]
 #align is_closed_supr_iff isClosed_iSup_iff
 
 end iInf

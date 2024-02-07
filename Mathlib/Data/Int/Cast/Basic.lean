@@ -49,7 +49,7 @@ namespace Int
 
 variable {R : Type u} [AddGroupWithOne R]
 
-@[simp, norm_cast]
+@[simp, norm_cast squash]
 theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
 #align int.cast_neg_succ_of_nat Int.cast_negSuccₓ
@@ -68,6 +68,7 @@ theorem cast_ofNat (n : ℕ) : ((n : ℤ) : R) = n :=
 -- expected `n` to be implicit, and `HasLiftT`
 #align int.cast_of_nat Int.cast_ofNatₓ
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem int_cast_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℤ) : R) = OfNat.ofNat n := by
@@ -126,16 +127,6 @@ theorem cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by
 
 section deprecated
 set_option linter.deprecated false
-
-@[norm_cast, deprecated]
-theorem ofNat_bit0 (n : ℕ) : (↑(bit0 n) : ℤ) = bit0 ↑n :=
-  rfl
-#align int.coe_nat_bit0 Int.ofNat_bit0
-
-@[norm_cast, deprecated]
-theorem ofNat_bit1 (n : ℕ) : (↑(bit1 n) : ℤ) = bit1 ↑n :=
-  rfl
-#align int.coe_nat_bit1 Int.ofNat_bit1
 
 @[norm_cast, deprecated]
 theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=

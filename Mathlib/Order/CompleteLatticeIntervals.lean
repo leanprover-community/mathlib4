@@ -27,7 +27,7 @@ open Classical
 
 open Set
 
-variable {α : Type*} (s : Set α)
+variable {ι : Sort*} {α : Type*} (s : Set α)
 
 section SupSet
 
@@ -187,7 +187,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     {a b : α} (h : a ≤ b) : CompleteLattice (Set.Icc a b) where
   __ := Set.Icc.boundedOrder h
   sSup S := if hS : S = ∅ then ⟨a, le_rfl, h⟩ else ⟨sSup ((↑) '' S), by
-    rw [←Set.not_nonempty_iff_eq_empty, not_not] at hS
+    rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
     refine' ⟨_, csSup_le (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.2)⟩
     obtain ⟨c, hc⟩ := hS
     exact c.2.1.trans (le_csSup ⟨b, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.2⟩ ⟨c, hc, rfl⟩)⟩
@@ -201,7 +201,7 @@ noncomputable def Set.Icc.completeLattice [ConditionallyCompleteLattice α]
     · exact csSup_le ((Set.nonempty_iff_ne_empty.mpr hS).image (↑))
         (fun _ ⟨d, h, hd⟩ ↦ hd ▸ hc d h)
   sInf S := if hS : S = ∅ then ⟨b, h, le_rfl⟩ else ⟨sInf ((↑) '' S), by
-    rw [←Set.not_nonempty_iff_eq_empty, not_not] at hS
+    rw [← Set.not_nonempty_iff_eq_empty, not_not] at hS
     refine' ⟨le_csInf (hS.image (↑)) (fun _ ⟨c, _, hc⟩ ↦ hc ▸ c.2.1), _⟩
     obtain ⟨c, hc⟩ := hS
     exact le_trans (csInf_le ⟨a, fun _ ⟨d, _, hd⟩ ↦ hd ▸ d.2.1⟩ ⟨c, hc, rfl⟩) c.2.2⟩
@@ -231,13 +231,51 @@ lemma Set.Icc.coe_sInf [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b
   congrArg Subtype.val (dif_neg hS.ne_empty)
 
 lemma Set.Icc.coe_iSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
-    {ι : Sort*} [Nonempty ι] {S : ι → Set.Icc a b} : letI := Set.Icc.completeLattice h
+    [Nonempty ι] {S : ι → Set.Icc a b} : letI := Set.Icc.completeLattice h
     ↑(iSup S) = (⨆ i, S i : α) :=
   (Set.Icc.coe_sSup h (range_nonempty S)).trans (congrArg sSup (range_comp Subtype.val S).symm)
 
 lemma Set.Icc.coe_iInf [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
-    {ι : Sort*} [Nonempty ι] {S : ι → Set.Icc a b} : letI := Set.Icc.completeLattice h
+    [Nonempty ι] {S : ι → Set.Icc a b} : letI := Set.Icc.completeLattice h
     ↑(iInf S) = (⨅ i, S i : α) :=
   (Set.Icc.coe_sInf h (range_nonempty S)).trans (congrArg sInf (range_comp Subtype.val S).symm)
 
 end Icc
+
+namespace Set.Iic
+
+variable [CompleteLattice α] {a : α}
+
+instance instCompleteLattice : CompleteLattice (Iic a) where
+  sSup S := ⟨sSup ((↑) '' S), by simpa using fun b hb _ ↦ hb⟩
+  sInf S := ⟨a ⊓ sInf ((↑) '' S), by simp⟩
+  le_sSup S b hb := le_sSup <| mem_image_of_mem Subtype.val hb
+  sSup_le S b hb := sSup_le <| fun c' ⟨c, hc, hc'⟩ ↦ hc' ▸ hb c hc
+  sInf_le S b hb := inf_le_of_right_le <| sInf_le <| mem_image_of_mem Subtype.val hb
+  le_sInf S b hb := le_inf_iff.mpr ⟨b.property, le_sInf fun d' ⟨d, hd, hd'⟩  ↦ hd' ▸ hb d hd⟩
+  le_top := by simp
+  bot_le := by simp
+
+variable (S : Set <| Iic a) (f : ι → Iic a) (p : ι → Prop)
+
+@[simp] theorem coe_sSup : (↑(sSup S) : α) = sSup ((↑) '' S) := rfl
+
+@[simp] theorem coe_iSup : (↑(⨆ i, f i) : α) = ⨆ i, (f i : α) := by
+  rw [iSup, coe_sSup]; congr; ext; simp
+
+theorem coe_biSup : (↑(⨆ i, ⨆ (_ : p i), f i) : α) = ⨆ i, ⨆ (_ : p i), (f i : α) := by simp
+
+@[simp] theorem coe_sInf : (↑(sInf S) : α) = a ⊓ sInf ((↑) '' S) := rfl
+
+@[simp] theorem coe_iInf : (↑(⨅ i, f i) : α) = a ⊓ ⨅ i, (f i : α) := by
+  rw [iInf, coe_sInf]; congr; ext; simp
+
+theorem coe_biInf : (↑(⨅ i, ⨅ (_ : p i), f i) : α) = a ⊓ ⨅ i, ⨅ (_ : p i), (f i : α) := by
+  cases isEmpty_or_nonempty ι
+  · simp
+  · simp_rw [coe_iInf, ← inf_iInf, ← inf_assoc, inf_idem]
+
+
+end Set.Iic
+
+assert_not_exists Multiset

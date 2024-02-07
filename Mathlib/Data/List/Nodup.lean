@@ -3,10 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Init.Data.Fin.Basic
 
 #align_import data.list.nodup from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
@@ -143,7 +142,7 @@ theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     · rw [← Ne.def, hl] at hx
       rcases hx with (rfl | ⟨y, hy, hx⟩)
       · simp
-      · suffices ∃ (y : α) (_ : y ∈ hd :: tl), y ≠ x by simpa [ne_nil_of_mem hy]
+      · suffices ∃ y ∈ hd :: tl, y ≠ x by simpa [ne_nil_of_mem hy]
         exact ⟨y, mem_cons_of_mem _ hy, hx⟩
 #align list.nodup.ne_singleton_iff List.Nodup.ne_singleton_iff
 
@@ -181,6 +180,11 @@ theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ 
       have : replicate 2 a <+ l ↔ 1 < count a l := (le_count_iff_replicate_sublist ..).symm
       (not_congr this).trans not_lt
 #align list.nodup_iff_count_le_one List.nodup_iff_count_le_one
+
+theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
+  nodup_iff_count_le_one.trans <| forall_congr' fun _ =>
+    ⟨fun H h => H.antisymm (count_pos_iff_mem.mpr h),
+     fun H => if h : _ then (H h).le else (count_eq_zero.mpr h).trans_le (Nat.zero_le 1)⟩
 
 theorem nodup_replicate (a : α) : ∀ {n : ℕ}, Nodup (replicate n a) ↔ n ≤ 1
   | 0 => by simp [Nat.zero_le]

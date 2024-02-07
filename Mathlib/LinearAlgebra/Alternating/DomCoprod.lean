@@ -32,12 +32,7 @@ abbrev ModSumCongr (α β : Type*) :=
   _ ⧸ (Equiv.Perm.sumCongrHom α β).range
 #align equiv.perm.mod_sum_congr Equiv.Perm.ModSumCongr
 
-theorem ModSumCongr.swap_smul_involutive {α β : Type*} [DecidableEq (Sum α β)] (i j : Sum α β) :
-    Function.Involutive (SMul.smul (Equiv.swap i j) : ModSumCongr α β → ModSumCongr α β) :=
-  fun σ => by
-    refine Quotient.inductionOn' σ fun σ => ?_
-    exact _root_.congr_arg Quotient.mk'' (Equiv.swap_mul_involutive i j σ)
-#align equiv.perm.mod_sum_congr.swap_smul_involutive Equiv.Perm.ModSumCongr.swap_smul_involutive
+#align equiv.perm.mod_sum_congr.swap_smul_involutive Equiv.swap_smul_involutive
 
 end Equiv.Perm
 
@@ -48,7 +43,7 @@ open Equiv
 variable [DecidableEq ιa] [DecidableEq ιb]
 
 /-- summand used in `AlternatingMap.domCoprod` -/
-def domCoprod.summand (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb)
+def domCoprod.summand (a : Mᵢ [Λ^ιa]→ₗ[R'] N₁) (b : Mᵢ [Λ^ιb]→ₗ[R'] N₂)
     (σ : Perm.ModSumCongr ιa ιb) : MultilinearMap R' (fun _ : Sum ιa ιb => Mᵢ) (N₁ ⊗[R'] N₂) :=
   Quotient.liftOn' σ
     (fun σ =>
@@ -71,7 +66,7 @@ def domCoprod.summand (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap 
     erw [← a.map_congr_perm fun i => v (σ₁ _), ← b.map_congr_perm fun i => v (σ₁ _)]
 #align alternating_map.dom_coprod.summand AlternatingMap.domCoprod.summand
 
-theorem domCoprod.summand_mk'' (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb)
+theorem domCoprod.summand_mk'' (a : Mᵢ [Λ^ιa]→ₗ[R'] N₁) (b : Mᵢ [Λ^ιb]→ₗ[R'] N₂)
     (σ : Equiv.Perm (Sum ιa ιb)) :
     domCoprod.summand a b (Quotient.mk'' σ) =
       Equiv.Perm.sign σ •
@@ -81,8 +76,8 @@ theorem domCoprod.summand_mk'' (a : AlternatingMap R' Mᵢ N₁ ιa) (b : Altern
 #align alternating_map.dom_coprod.summand_mk' AlternatingMap.domCoprod.summand_mk''
 
 /-- Swapping elements in `σ` with equal values in `v` results in an addition that cancels -/
-theorem domCoprod.summand_add_swap_smul_eq_zero (a : AlternatingMap R' Mᵢ N₁ ιa)
-    (b : AlternatingMap R' Mᵢ N₂ ιb) (σ : Perm.ModSumCongr ιa ιb) {v : Sum ιa ιb → Mᵢ}
+theorem domCoprod.summand_add_swap_smul_eq_zero (a : Mᵢ [Λ^ιa]→ₗ[R'] N₁)
+    (b : Mᵢ [Λ^ιb]→ₗ[R'] N₂) (σ : Perm.ModSumCongr ιa ιb) {v : Sum ιa ιb → Mᵢ}
     {i j : Sum ιa ιb} (hv : v i = v j) (hij : i ≠ j) :
     domCoprod.summand a b σ v + domCoprod.summand a b (swap i j • σ) v = 0 := by
   refine Quotient.inductionOn' σ fun σ => ?_
@@ -99,8 +94,8 @@ theorem domCoprod.summand_add_swap_smul_eq_zero (a : AlternatingMap R' Mᵢ N₁
 
 /-- Swapping elements in `σ` with equal values in `v` result in zero if the swap has no effect
 on the quotient. -/
-theorem domCoprod.summand_eq_zero_of_smul_invariant (a : AlternatingMap R' Mᵢ N₁ ιa)
-    (b : AlternatingMap R' Mᵢ N₂ ιb) (σ : Perm.ModSumCongr ιa ιb) {v : Sum ιa ιb → Mᵢ}
+theorem domCoprod.summand_eq_zero_of_smul_invariant (a : Mᵢ [Λ^ιa]→ₗ[R'] N₁)
+    (b : Mᵢ [Λ^ιb]→ₗ[R'] N₂) (σ : Perm.ModSumCongr ιa ιb) {v : Sum ιa ιb → Mᵢ}
     {i j : Sum ιa ιb} (hv : v i = v j) (hij : i ≠ j) :
     swap i j • σ = σ → domCoprod.summand a b σ v = 0 := by
   refine Quotient.inductionOn' σ fun σ => ?_
@@ -159,8 +154,8 @@ The specialized version can be obtained by combining this definition with `finSu
 `LinearMap.mul'`.
 -/
 @[simps]
-def domCoprod (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb) :
-    AlternatingMap R' Mᵢ (N₁ ⊗[R'] N₂) (Sum ιa ιb) :=
+def domCoprod (a : Mᵢ [Λ^ιa]→ₗ[R'] N₁) (b : Mᵢ [Λ^ιb]→ₗ[R'] N₂) :
+    Mᵢ [Λ^ιa ⊕ ιb]→ₗ[R'] (N₁ ⊗[R'] N₂) :=
   { ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ with
     toFun := fun v => (⇑(∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ)) v
     map_eq_zero_of_eq' := fun v i j hv hij => by
@@ -171,11 +166,11 @@ def domCoprod (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ 
           (fun σ _ => domCoprod.summand_add_swap_smul_eq_zero a b σ hv hij)
           (fun σ _ => mt <| domCoprod.summand_eq_zero_of_smul_invariant a b σ hv hij)
           (fun σ _ => Finset.mem_univ _) fun σ _ =>
-          Equiv.Perm.ModSumCongr.swap_smul_involutive i j σ }
+          Equiv.swap_smul_involutive i j σ }
 #align alternating_map.dom_coprod AlternatingMap.domCoprod
 #align alternating_map.dom_coprod_apply AlternatingMap.domCoprod_apply
 
-theorem domCoprod_coe (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb) :
+theorem domCoprod_coe (a : Mᵢ [Λ^ιa]→ₗ[R'] N₁) (b : Mᵢ [Λ^ιb]→ₗ[R'] N₂) :
     (↑(a.domCoprod b) : MultilinearMap R' (fun _ => Mᵢ) _) =
       ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ :=
   MultilinearMap.ext fun _ => rfl
@@ -184,8 +179,8 @@ theorem domCoprod_coe (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap 
 /-- A more bundled version of `AlternatingMap.domCoprod` that maps
 `((ι₁ → N) → N₁) ⊗ ((ι₂ → N) → N₂)` to `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂`. -/
 def domCoprod' :
-    AlternatingMap R' Mᵢ N₁ ιa ⊗[R'] AlternatingMap R' Mᵢ N₂ ιb →ₗ[R']
-      AlternatingMap R' Mᵢ (N₁ ⊗[R'] N₂) (Sum ιa ιb) :=
+    (Mᵢ [Λ^ιa]→ₗ[R'] N₁) ⊗[R'] (Mᵢ [Λ^ιb]→ₗ[R'] N₂) →ₗ[R']
+      (Mᵢ [Λ^ιa ⊕ ιb]→ₗ[R'] (N₁ ⊗[R'] N₂)) :=
   TensorProduct.lift <| by
     refine'
       LinearMap.mk₂ R' domCoprod (fun m₁ m₂ n => _) (fun c m n => _) (fun m n₁ n₂ => _)
@@ -205,7 +200,7 @@ def domCoprod' :
 #align alternating_map.dom_coprod' AlternatingMap.domCoprod'
 
 @[simp]
-theorem domCoprod'_apply (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb) :
+theorem domCoprod'_apply (a : Mᵢ [Λ^ιa]→ₗ[R'] N₁) (b : Mᵢ [Λ^ιb]→ₗ[R'] N₂) :
     domCoprod' (a ⊗ₜ[R'] b) = domCoprod a b :=
   rfl
 #align alternating_map.dom_coprod'_apply AlternatingMap.domCoprod'_apply
@@ -276,7 +271,7 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
 `AlternatingMap`s gives a scaled version of the `AlternatingMap.coprod` of those maps.
 -/
 theorem MultilinearMap.domCoprod_alternization_eq [DecidableEq ιa] [DecidableEq ιb]
-    (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb) :
+    (a : Mᵢ [Λ^ιa]→ₗ[R'] N₁) (b : Mᵢ [Λ^ιb]→ₗ[R'] N₂) :
     MultilinearMap.alternatization
       (MultilinearMap.domCoprod a b : MultilinearMap R' (fun _ : Sum ιa ιb => Mᵢ) (N₁ ⊗ N₂)) =
       ((Fintype.card ιa).factorial * (Fintype.card ιb).factorial) • a.domCoprod b := by

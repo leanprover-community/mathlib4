@@ -140,6 +140,7 @@ theorem eval₂_nat_cast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
   · rw [n.cast_succ, eval₂_add, ih, eval₂_one, n.cast_succ]
 #align polynomial.eval₂_nat_cast Polynomial.eval₂_nat_cast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →+* S) (a : S) :
     (no_index (OfNat.ofNat n : R[X])).eval₂ f a = OfNat.ofNat n := by
@@ -155,7 +156,7 @@ theorem eval₂_sum (p : T[X]) (g : ℕ → T → R[X]) (x : S) :
       map_add' := fun p q => eval₂_add _ _ }
   have A : ∀ y, eval₂ f x y = T y := fun y => rfl
   simp only [A]
-  rw [sum, T.map_sum, sum]
+  rw [sum, map_sum, sum]
 #align polynomial.eval₂_sum Polynomial.eval₂_sum
 
 theorem eval₂_list_sum (l : List R[X]) (x : S) : eval₂ f x l.sum = (l.map (eval₂ f x)).sum :=
@@ -216,6 +217,7 @@ theorem eval₂_list_prod_noncomm (ps : List R[X])
 #align polynomial.eval₂_list_prod_noncomm Polynomial.eval₂_list_prod_noncomm
 
 /-- `eval₂` as a `RingHom` for noncommutative rings -/
+@[simps]
 def eval₂RingHom' (f : R →+* S) (x : S) (hf : ∀ a, Commute (f a) x) : R[X] →+* S where
   toFun := eval₂ f x
   map_add' _ _ := eval₂_add _ _
@@ -350,6 +352,7 @@ theorem eval₂_at_nat_cast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
   simp
 #align polynomial.eval₂_at_nat_cast Polynomial.eval₂_at_nat_cast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem eval₂_at_ofNat {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) [n.AtLeastTwo] :
     p.eval₂ f (no_index (OfNat.ofNat n)) = f (p.eval (OfNat.ofNat n)) := by
@@ -364,6 +367,7 @@ theorem eval_C : (C a).eval x = a :=
 theorem eval_nat_cast {n : ℕ} : (n : R[X]).eval x = n := by simp only [← C_eq_nat_cast, eval_C]
 #align polynomial.eval_nat_cast Polynomial.eval_nat_cast
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 lemma eval_ofNat (n : ℕ) [n.AtLeastTwo] (a : R) :
     (no_index (OfNat.ofNat n : R[X])).eval a = OfNat.ofNat n := by
@@ -512,8 +516,7 @@ theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
     _ = p.eval 0 := by
       symm
       rw [eval_eq_sum]
-      exact
-        Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow (Nat.pos_of_ne_zero hb)]) (by simp)
+      exact Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow hb]) (by simp)
 #align polynomial.coeff_zero_eq_eval_zero Polynomial.coeff_zero_eq_eval_zero
 
 theorem zero_isRoot_of_coeff_zero_eq_zero {p : R[X]} (hp : p.coeff 0 = 0) : IsRoot p 0 := by
@@ -783,6 +786,7 @@ protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
 #align polynomial.map_nat_cast Polynomial.map_nat_cast
 
 --Porting note: new theorem
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : R[X]).map f = OfNat.ofNat n :=
@@ -811,7 +815,8 @@ theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
   conv_rhs => rw [← sum_C_mul_X_pow_eq p, coeff_sum, sum, map_sum]
   refine' Finset.sum_congr rfl fun x _hx => _
   -- Porting note: Was `simp [Function.comp, coeff_C_mul_X_pow, f.map_mul]`.
-  simp [Function.comp, coeff_C_mul_X_pow, - map_mul, - coeff_C_mul]
+  simp? [Function.comp, coeff_C_mul_X_pow, - map_mul, - coeff_C_mul] says
+    simp only [RingHom.coe_comp, Function.comp_apply, coeff_C_mul_X_pow]
   split_ifs <;> simp [f.map_zero]
 #align polynomial.coeff_map Polynomial.coeff_map
 
@@ -1086,7 +1091,7 @@ theorem coe_evalRingHom (r : R) : (evalRingHom r : R[X] → R) = eval r :=
 #align polynomial.coe_eval_ring_hom Polynomial.coe_evalRingHom
 
 theorem evalRingHom_zero : evalRingHom 0 = constantCoeff :=
-  FunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
+  DFunLike.ext _ _ fun p => p.coeff_zero_eq_eval_zero.symm
 #align polynomial.eval_ring_hom_zero Polynomial.evalRingHom_zero
 
 @[simp]

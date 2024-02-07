@@ -138,7 +138,7 @@ theorem induction {C : ExteriorAlgebra R M → Prop}
 
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : ExteriorAlgebra R M →ₐ[R] R :=
-  ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun m => by simp⟩
+  ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun _ => by simp⟩
 #align exterior_algebra.algebra_map_inv ExteriorAlgebra.algebraMapInv
 
 variable (M)
@@ -252,9 +252,7 @@ theorem ι_range_disjoint_one :
 
 @[simp]
 theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
-  calc
-    _ = ι R (y + x) * ι R (y + x) := by simp [mul_add, add_mul]
-    _ = _ := ι_sq_zero _
+  CliffordAlgebra.ι_mul_ι_add_swap_of_isOrtho <| .all _ _
 #align exterior_algebra.ι_add_mul_swap ExteriorAlgebra.ι_add_mul_swap
 
 theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
@@ -265,8 +263,7 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     by_cases h : i = 0
     · rw [h, ι_sq_zero, zero_mul]
     · replace hn :=
-        congr_arg
-          ((· * ·) <| ι R <| f 0) (hn (fun i => f <| Fin.succ i) (i.pred h))
+        congr_arg (ι R (f 0) * ·) <| hn (fun i => f <| Fin.succ i) (i.pred h)
       simp only at hn
       rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
       refine' (eq_zero_iff_eq_zero_of_add_eq_zero _).mp hn
@@ -279,7 +276,7 @@ variable (R)
 
 This is a special case of `MultilinearMap.mkPiAlgebraFin`, and the exterior algebra version of
 `TensorAlgebra.tprod`. -/
-def ιMulti (n : ℕ) : AlternatingMap R M (ExteriorAlgebra R M) (Fin n) :=
+def ιMulti (n : ℕ) : M [Λ^Fin n]→ₗ[R] ExteriorAlgebra R M :=
   let F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
   { F with
     map_eq_zero_of_eq' := fun f x y hfxy hxy => by
@@ -332,6 +329,10 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
       simp_rw [Matrix.tail_cons]
       rfl
 #align exterior_algebra.ι_multi_succ_curry_left ExteriorAlgebra.ιMulti_succ_curryLeft
+
+/-- An `ExteriorAlgebra` over a nontrivial ring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (ExteriorAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
 
 end ExteriorAlgebra
 

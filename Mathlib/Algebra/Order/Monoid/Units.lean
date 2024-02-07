@@ -44,7 +44,7 @@ instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
   LinearOrder.lift' val Units.ext
 
 /-- `val : αˣ → α` as an order embedding. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }))
+@[to_additive (attr := simps (config := .asFn))
   "`val : add_units α → α` as an order embedding."]
 def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
   ⟨⟨val, ext⟩, Iff.rfl⟩
