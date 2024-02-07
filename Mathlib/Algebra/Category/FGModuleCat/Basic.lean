@@ -111,6 +111,13 @@ def of (V : Type u) [AddCommGroup V] [Module R V] [Module.Finite R V] : FGModule
   ⟨ModuleCat.of R V, by change Module.Finite R V; infer_instance⟩
 #align fgModule.of FGModuleCat.of
 
+variable {R} in
+def asHom
+    {M N : Type u} [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] [Module.Finite R M] [Module.Finite R N]
+    (l : M →ₗ[R] N) :
+  FGModuleCat.of R M ⟶ FGModuleCat.of R N := l
+
 instance (V : FGModuleCat R) : Module.Finite R V :=
   V.property
 
