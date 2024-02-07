@@ -11,7 +11,7 @@ import Mathlib.Analysis.Complex.Convex
 
 In this file, we give conditions under which holomorphic functions have primitives. The main goal
 is to prove that holomorphic functions on simply connected domains have primitives. As a first step,
-we prove that holomorphic functions on discs have primitives. The approach is based on Moreira's
+we prove that holomorphic functions on discs have primitives. The approach is based on Morera's
 theorem, that a continuous function (on a disc) whose `RectangleIntegral` vanishes on all
 rectangles contained in the disc has a primitive. (Coupled with the fact that holomorphic functions
 satisfy this property.) To prove Morera's theorem, we first define the `WedgeInt`, which is the
