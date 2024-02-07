@@ -40,75 +40,47 @@ Lawson topology, preorder
 
 open Set
 
-
-universe u v
-
-variable {α : Type u} [t₁ : TopologicalSpace α] {T₁ : Set (Set α)}
-    [t₂ : TopologicalSpace α] {T₂ : Set (Set α)}
-    {cond₁ : TopologicalSpace.IsTopologicalBasis T₁} {cond₂ : TopologicalSpace.IsTopologicalBasis T₂}
-
---variable {α}
-
-
 open TopologicalSpace
 
-def X : Fin 2 → Type u
-  | 1 => α
-  | 2 => α
+section inf
 
-def T : (i : Fin 2) → Set (Set (X (α:=α) i))
-  | 1 => T₁
-  | 2 => T₂
+variable {X Y Z} [tY : TopologicalSpace Y] [tZ : TopologicalSpace Z] (fY : X → Y) (fZ : X → Z)
 
-#check (@X α 1)
+theorem induced_to_prod (f : X → Y × Z) :
+    induced f inferInstance = induced (fun x ↦ (f x).1) tY ⊓ induced (fun x ↦ (f x).2) tZ := by
+  erw [induced_inf]
+  simp_rw [induced_compose]
+  rfl
 
-#check T (α:=α) 1
+theorem inducing_inf_to_prod :
+    @Inducing X (Y × Z) (induced fY tY ⊓ induced fZ tZ) _ fun x ↦ (fY x, fZ x) :=
+  letI := induced fY tY ⊓ induced fZ tZ; ⟨(induced_to_prod fun x ↦ (fY x, fZ x)).symm⟩
 
-def t : ((i : Fin 2) →  TopologicalSpace (X (α:=α) i))
-  | 1 => t₁
-  | 2 => t₂
+theorem TopologicalSpace.IsTopologicalBasis.inf
+    {BY : Set (Set Y)} {BZ : Set (Set Z)} (bY : IsTopologicalBasis BY) (bZ : IsTopologicalBasis BZ) :
+    @IsTopologicalBasis X (induced fY tY ⊓ induced fZ tZ) (BY.image2 (fY ⁻¹' · ∩ fZ ⁻¹' ·) BZ) := by
+  letI := induced fY tY ⊓ induced fZ tZ
+  convert (bY.prod bZ).inducing (inducing_inf_to_prod fY fZ)
+  rw [Set.image_image2]; rfl
 
-#check t 1
+example {t₁ t₂ B₁ B₂} (h₁ : @IsTopologicalBasis X t₁ B₁) (h₂ : @IsTopologicalBasis X t₂ B₂) :
+    @IsTopologicalBasis X (t₁ ⊓ t₂) (Set.image2 (· ∩ ·) B₁ B₂) := by
+  convert @IsTopologicalBasis.inf X X X t₁ t₂ id id B₁ B₂ h₁ h₂ <;> rw [@induced_id _ (_)]
+-- need to specify all implicit arguments because multiple instances on the same type
+-- would be easier if `TopologicalSpace` arguments in `TopologicalSpace.IsTopologicalBasis.inf`
+-- are regular implicit rather than instance implicit
 
-def condx : ((i : Fin 2) →  @IsTopologicalBasis _ (t (α:=α) i) (T (T₁ := T₁) (T₂ := T₂) i))
-  | 1 => cond₁
-  | 2 => cond₂
-
-variable {β : Type*} {g : β → α}
-
-#check (g : (β → (@X α 1)))
-
-def f : ((i : Fin 2) →  β → (X (α:=α) i))
-  | 1 => g
-  | 2 => g
-
-#check cond
-
-#check f
-
-#check @isTopologicalBasis_iInf β (Fin 2) X t T condx f
-
-#check isTopologicalBasis_iInf f
+end inf
 
 
-theorem isTopologicalBasis_iInf' {β : Type*} {X : Fin 2 → Type u}
-    [t : ∀ i, TopologicalSpace (X i)] {T : ∀ i, Set (Set (X i))}
-    (f : ∀ i, β → X i) :
-    @IsTopologicalBasis β (⨅ i, induced (f i) (t i))
-      { S | ∃ (U : ∀ i, Set (X i)) (F : Set (Fin 2)),
-        (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ (i) (_ : i ∈ F), f i ⁻¹' U i } := by
-  apply isTopologicalBasis_iInf (T:=T) --(f (α := α))
-  --apply (isTopologicalBasis_iInf (@X:=X))
-  apply (@isTopologicalBasis_iInf β (Fin 2) X t T _ f)
 
-  --intro i
 
 
 variable {α β : Type*}
 
 variable [TopologicalSpace α]
 
-instance : TopologicalSpace (α×α) := by exact instTopologicalSpaceProd
+--instance : TopologicalSpace (α×α) := by exact instTopologicalSpaceProd
 
 
 namespace Topology
@@ -138,7 +110,7 @@ end Preorder
 
 namespace IsLawson
 section Preorder
-variable (α) [Preorder α] [TopologicalSpace α] -- [IsLawson α]
+variable (α) [Preorder α] [TopologicalSpace α] [IsLawson α]
 
 
 
@@ -150,103 +122,56 @@ def lawsonBasis (α : Type*) [Preorder α] :=
   { s : Set α | ∃ u : Set α, IsOpen[scott] u ∧ ∃ t : Set α, t.Finite ∧
     u ∩ (upperClosure t : Set α)ᶜ = s }
 
-#check iInf
-#check instTopologicalSpaceProd
-#check isTopologicalBasis_iInf
-#check TopologicalSpace.IsTopologicalBasis.prod
-
-#check isTopologicalBasis_pi
-
-
 open TopologicalSpace
 
+#check IsLower.lowerBasis
+#check IsScott.scottBasis
+
+#check IsLower.isTopologicalBasis
+#check IsScott.isTopologicalBasis α
+
+#check image2
+
+#check WithScott.toScott
+
+#check TopologicalSpace.isTopologicalBasis_opens (α := WithScott α)
+
+def lawson_basis := (image2 (fun x x_1 ↦ ⇑WithLower.toLower ⁻¹' x ∩ ⇑WithScott.toScott ⁻¹' x_1) (IsLower.lowerBasis (WithLower α)) {U | @IsOpen (WithScott α) _ U})
+
+#check lawson_basis
+
+#check IsTopologicalBasis.inf WithLower.toLower WithScott.toScott IsLower.isTopologicalBasis (TopologicalSpace.isTopologicalBasis_opens (α := WithScott α))
+
+#check IsTopologicalBasis.inf id id (IsScott.isTopologicalBasis α) IsLower.isTopologicalBasis
+
+
+protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawson_basis α) := by
+  rw [lawson_basis]
+  --apply IsTopologicalBasis.inf
+
+  convert IsTopologicalBasis.inf WithLower.toLower WithScott.toScott IsLower.isTopologicalBasis (TopologicalSpace.isTopologicalBasis_opens (α := WithScott α))
+  erw [topology_eq α]
+  rw [lawson]
+  --rw [TopologicalSpace.induced]
+  apply (congrArg₂ Inf.inf _) _
+  rw [WithLower.toLower, Equiv.refl]
+  simp_rw [isOpen_induced_iff]
+  ext
+
+
+  --apply congrFun (congrArg Inf.inf _) _
+  --rw [induced]
+  --rw [induced]
+  --ext
+
+
+  --refine TopologicalSpace.ext ?h.e'_2.a
 
 
 
-
-variable {X : Type u}
-    [t₁ : TopologicalSpace X] {T₁ : Set (Set X)}
-    [t₂ : TopologicalSpace X] {T₂ : Set (Set X)}
-    (cond₁ : TopologicalSpace.IsTopologicalBasis T₁) (cond₂ : TopologicalSpace.IsTopologicalBasis T₂)
-
-#check Inducing
-
-#check (TopologicalSpace.IsTopologicalBasis.prod cond₁ cond₂).inducing induced_inf
--- (fun p : Set X × Set X => p.1 ∩ p.2)
-
-theorem isTopologicalBasis_inf {β : Type*} {ι : Type*} {X : Type*}
-    [t₁ : TopologicalSpace X] {T₁ : Set (Set X)}
-    [t₂ : TopologicalSpace X] {T₂ : Set (Set X)}
-    (cond₁ : TopologicalSpace.IsTopologicalBasis T₁) (cond₂ : TopologicalSpace.IsTopologicalBasis T₂) :
-    @TopologicalSpace.IsTopologicalBasis X (t₁ ⊓ t₂)
-      { S | ∃ U₁ ∈ T₁, ∃ U₂ ∈ T₂, S = U₁ ∩ U₂ } := by
-  letI := t₁ ⊓ t₂
-  convert (TopologicalSpace.IsTopologicalBasis.prod cond₁ cond₂).inducing
-  sorry
-
-#check inducing_inf_to_pi
-
-#check induced_inf
-
-#check inducing_iInf_to_pi
-
-#check Singleton
-
-#check ℤ₂
-
-def f : Fin 2 → Prop
-  | 1 => TopologicalSpace.IsTopologicalBasis T₁
-  | 2 => TopologicalSpace.IsTopologicalBasis T₂
-
-variable (X)
-
-def g : Fin 2 → Set (Set X)
-  | 1 => T₁
-  | 2 => T₂
-
-
-#check (g X (1 : Fin 2))
-
-variable (i : Fin 2)
-
-#check g X i
-
-#check ∀ (i : Fin 2), TopologicalSpace.IsTopologicalBasis (g X i)
-
-
-
-
-
-lemma test : ∀ (i : Fin 2), TopologicalSpace.IsTopologicalBasis (g X i) := by sorry
-
-#check isTopologicalBasis_iInf (f)
-
-/-
-theorem isTopologicalBasis_iInf {β : Type*} {ι : Type*} {X : ι → Type*}
-    [t : ∀ i, TopologicalSpace (X i)] {T : ∀ i, Set (Set (X i))}
-    (cond : ∀ i, IsTopologicalBasis (T i)) (f : ∀ i, β → X i) :
-    @IsTopologicalBasis β (⨅ i, induced (f i) (t i))
-      { S | ∃ (U : ∀ i, Set (X i)) (F : Finset ι),
-        (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ (i) (_ : i ∈ F), f i ⁻¹' U i } := by
-  letI := ⨅ i, induced (f i) (t i)
-  convert (isTopologicalBasis_pi cond).inducing (inducing_iInf_to_pi f)
-  ext V
-  constructor
-  · rintro ⟨U, F, h1, rfl⟩
-    refine' ⟨(F : Set ι).pi U, ⟨U, F, h1, rfl⟩, _⟩
-    simp_rw [pi_def, Set.preimage_iInter]
-    rfl
-  · rintro ⟨U, ⟨U, F, h1, rfl⟩, rfl⟩
-    refine' ⟨U, F, h1, _⟩
-    simp_rw [pi_def, Set.preimage_iInter]
-    rfl
--/
-
-
-protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (lawsonBasis α) := by
-  rw [lawsonBasis]
-  apply isTopologicalBasis_iInf
-  sorry
+  --rw [topology_eq_lawson]
+  --rw [lawsonBasis]
+  --sorry
 
 variable (s : Set α) (h: IsUpperSet s) (hs: IsOpen[Topology.scottHausdorff] s)
 
@@ -268,11 +193,13 @@ lemma isOpen_implies_scottHausdorff_open {s : Set α} : IsOpen s → IsOpen[scot
   intro hs
   sorry
 
-#check ⟨h, hs⟩
+--#check ⟨h, hs⟩
 
-#check IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr ⟨h, hs⟩
+--#check IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr ⟨h, hs⟩
 
 #check scott
+
+--variable [IsScott α]
 
 -- Get the statement deliberately wrong for now
 lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
@@ -280,7 +207,7 @@ lemma LawsonOpen_iff_ScottOpen (s : Set α) (h : IsUpperSet s) :
   constructor
   · intro hs
     rw [IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr ⟨h, hs⟩]
-    convert IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr _
+    --convert IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open.mpr _
     --rw [IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open]
     rw [@IsScott.isOpen_iff_isUpperSet_and_scottHausdorff_open _ _ _ _ s]
     constructor

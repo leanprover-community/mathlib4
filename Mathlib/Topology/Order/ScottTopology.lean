@@ -129,7 +129,7 @@ variable [Preorder α] {s : Set α}
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
-def scottHausdorff : TopologicalSpace α where
+def scottHausdorff (α : Type*) [Preorder α] : TopologicalSpace α where
   IsOpen u := ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
   isOpen_univ := fun d ⟨b, hb⟩ _ _ _ _ ↦ ⟨b, hb, (Ici b ∩ d).subset_univ⟩
@@ -149,7 +149,7 @@ variable (α) [TopologicalSpace α]
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
 `d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
 class IsScottHausdorff : Prop where
-  topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff
+  topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff α
 
 instance : @IsScottHausdorff α _ scottHausdorff := @IsScottHausdorff.mk _ _ scottHausdorff rfl
 
