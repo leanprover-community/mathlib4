@@ -155,39 +155,6 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
     exact Subsingleton.elim _ _
   rwa [hp, one_pow, pow_one] at h
 
-namespace PerfectClosure
-
-variable (K : Type*) [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p] (x : ℕ × K) (n : ℕ)
-
--- TODO: remove once XX is merged
-theorem mk_pow : mk K p x ^ n = mk K p (x.1, x.2 ^ n) := by
-  induction n with
-  | zero =>
-    rw [pow_zero, pow_zero, one_def, eq_iff']
-    exact ⟨0, by simp_rw [← coe_iterateFrobenius, map_one]⟩
-  | succ n ih =>
-    rw [pow_succ, pow_succ, ih, mk_mul_mk, eq_iff']
-    exact ⟨0, by simp_rw [← coe_iterateFrobenius, add_zero, iterateFrobenius_add_apply, map_mul]⟩
-
--- TODO: remove once XX is merged
-instance instReduced : IsReduced (PerfectClosure K p) where
-  eq_zero x := induction_on x fun x ⟨n, h⟩ ↦ by
-    replace h : mk K p x ^ p ^ n = 0 := by
-      rw [← Nat.sub_add_cancel ((Nat.lt_pow_self (Fact.out : p.Prime).one_lt n).le),
-        pow_add, h, mul_zero]
-    simp only [zero_def, mk_pow, eq_iff', zero_add, ← coe_iterateFrobenius, map_zero] at h ⊢
-    obtain ⟨m, h⟩ := h
-    exact ⟨n + m, by simpa only [iterateFrobenius_def, pow_add, pow_mul] using h⟩
-
--- TODO: remove once XX is merged
-instance instPerfectRing :
-    PerfectRing (PerfectClosure K p) p := .ofSurjective _ p fun x ↦ induction_on x fun x ↦ by
-  use mk K p (x.1 + 1, x.2)
-  rw [frobenius_def, mk_pow, eq_iff']
-  exact ⟨0, by simp_rw [iterate_frobenius, add_zero, pow_succ, pow_mul]⟩
-
-end PerfectClosure
-
 section IsPerfectClosure
 
 variable {K L M : Type*}
@@ -484,15 +451,14 @@ end CommRing
 
 namespace PerfectClosure
 
--- TODO: relax `Field` assumption (need to change `PerfectClosure` file)
 variable (K) in
 /-- The absolute perfect closure `PerfectClosure` is a perfect closure. -/
-instance isPerfectClosure [Field K] (p : ℕ) [Fact p.Prime] [CharP K p] :
+instance isPerfectClosure [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p] :
     IsPerfectClosure (PerfectClosure.of K p) p where
   isPRadical'.pow_mem' x := PerfectClosure.induction_on x fun x ↦ ⟨x.1, x.2, by
     rw [← iterate_frobenius, iterate_frobenius_mk K p x.1 x.2]⟩
   isPRadical'.ker_le' x h := by
-    rw [RingHom.mem_ker, of_apply, zero_def, eq_iff'] at h
+    rw [RingHom.mem_ker, of_apply, zero_def, mk_eq_iff] at h
     obtain ⟨n, h⟩ := h
     simp_rw [zero_add, ← coe_iterateFrobenius, map_zero] at h
     exact mem_pNilradical.2 ⟨n, h⟩
