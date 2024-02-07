@@ -4,28 +4,27 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
 import Mathlib.Topology.Basic
+import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Algebra.ConstMulAction
+import Mathlib.Order.Heyting.Regular
 
 /-!
 # Boolean algebra of regular open sets
 
 This module defines *regular open* sets in a topological space, which are the sets `s` for which
 `interior (closure s) = s`.
-The type `RegularOpens` is a bundled set that is regular open.
 
-A boolean algebra can be constructed for the regular open sets, with `↑(a ⊓ b) = ↑a ∩ ↑b` and
-`↑(aᶜ) = (closure ↑a)ᶜ`.
+The type `RegularOpens X` is the type of bundled regular open sets in `X`,
+which is constructed from the regular subalgebra of the Heyting algebra on `Opens X`.
 
 ## Main results
 
-* `IsRegularOpen`: the proposition that a set `s` is regular open
-* `TopologicalSpace.RegularOpens`: bundled regular open sets
-* `TopologicalSpace.RegularOpens.booleanAlgebra`: the boolean algebra of regular open sets
-
-## TODO
-
-It should be possible to show that the above choice for `⊓` and `ᶜ` leads to a Heyting algebra on
-`Opens`, and `RegularOpens` can then be constructed using `HeytingAlgebra.Regular`.
+* `IsRegularOpen`: the proposition that a set `s` is regular open.
+* `TopologicalSpace.RegularOpens`: bundled regular open sets.
+* `TopologicalSpace.RegularOpens.intCl`: the regular open set obtained by taking the interior
+  of the closure of a set `s`.
+* `TopologicalSpace.RegularOpens.pointwiseMulAction`: the pointwise group action of `G` on
+  regular open sets, only available when the `Pointwise` scope is opened.
 
 ## References
 
@@ -37,6 +36,8 @@ It should be possible to show that the above choice for `⊓` and `ᶜ` leads to
 
 variable {X : Type*} [TopologicalSpace X]
 variable {s t : Set X}
+
+open TopologicalSpace (Opens)
 
 /--
 A set `s` is regular open if `interior (closure s) = s`
@@ -196,221 +197,123 @@ theorem IsRegularOpen.disjoint_open_subset_of_not_subset {s t : Set X} (s_open :
 /-! ### Bundled regular open sets
 -/
 
-variable (X) in
-/--
-Bundled regular open sets in the ambient topological space of `X`.
+-- TODO: use Yaël's instance for `HeytingAlgebra` from `Frame`
+instance : HeytingAlgebra (Opens X) := {
+  toLattice := inferInstance,
+  himp := fun s t => Opens.interior (sᶜ ∪ t : Set X),
+  compl := fun s => Opens.interior (sᶜ : Set X),
+  le_himp_iff := sorry
+  himp_bot := sorry
+}
+theorem Opens.coe_compl {s : Opens X} : ↑(sᶜ) = interior (s : Set X)ᶜ := rfl
 
-These sets form a boolean algebra, with as complement operator
-`s ↦ (closure s)ᶜ` and as infimum `s ∩ t`.
--/
-structure TopologicalSpace.RegularOpens :=
-  /-- The underlying set that is regular open -/
-  carrier : Set X
-  /-- The statement that `carrier` is regular open -/
-  regularOpen' : IsRegularOpen carrier
+theorem IsRegularOpen.heytingRegular_iff {s : Opens X} :
+    Heyting.IsRegular s ↔ IsRegularOpen (s : Set X) := by
+  simp_rw [IsRegularOpen, closure_eq_compl_interior_compl, ← Opens.coe_compl, SetLike.coe_set_eq,
+    Heyting.IsRegular]
+
+variable (X) in
+abbrev TopologicalSpace.RegularOpens := Heyting.Regular (Opens X)
 
 namespace TopologicalSpace.RegularOpens
 
-@[simp]
-theorem carrier_eq_iff {r s : RegularOpens X} : r.carrier = s.carrier ↔ r = s := by
-  rw [mk.injEq]
+theorem regularOpen (r : TopologicalSpace.RegularOpens X) :
+    IsRegularOpen (r : Set X) := IsRegularOpen.heytingRegular_iff.mp r.prop
 
-instance : SetLike (RegularOpens X) X where
-  coe := carrier
-  coe_injective' := fun _ _ => carrier_eq_iff.mp
 
-@[simp]
-theorem coe_mk {s_regular : IsRegularOpen s} :
-    (↑(⟨s, s_regular⟩ : RegularOpens X) : Set X) = s := rfl
+instance instMembership : Membership X (RegularOpens X) where
+  mem := fun x r => x ∈ (r : Set X)
 
-theorem regularOpen (r : RegularOpens X) : IsRegularOpen (r : Set X) := r.regularOpen'
+theorem mem_iff {x : X} {r : RegularOpens X} : x ∈ (r : Set X) ↔ x ∈ r := Iff.rfl
 
-instance : CanLift (Set X) (RegularOpens X) RegularOpens.carrier IsRegularOpen := ⟨
-  fun s s_reg => ⟨⟨s, s_reg⟩, rfl⟩⟩
-
-/-! ### Construction of the boolean algebra for regular open sets
--/
-
-instance : HasCompl (RegularOpens X) where
-  compl := fun s => ⟨
-    (closure (s : Set X))ᶜ,
-    IsRegularOpen.of_compl_closure s.regularOpen.isOpen
-  ⟩
-
-theorem coe_compl {s : RegularOpens X} : (↑(sᶜ) : Set X) = (closure ↑s)ᶜ := rfl
-
-theorem compl_antitone : Antitone (fun s: RegularOpens X => sᶜ) := by
-  intro s t s_le_t
-  apply Set.compl_subset_compl.mpr
-  exact closure_mono s_le_t
-
-theorem compl_compl (s : RegularOpens X) : sᶜᶜ = s := by
-  rw [← SetLike.coe_set_eq]
-  show (closure (closure (s : Set X))ᶜ)ᶜ = s
-  rw [closure_compl, _root_.compl_compl, s.regularOpen]
-
-theorem compl_le_compl_iff {s t : RegularOpens X} : sᶜ ≤ tᶜ ↔ t ≤ s := by
-  refine ⟨fun h => ?t_le_s, fun h => compl_antitone h⟩
-  rw [← compl_compl s, ← compl_compl t]
-  exact compl_antitone h
-
-theorem compl_inj {s t : RegularOpens X} : sᶜ = tᶜ ↔ s = t := by
-  refine ⟨fun h => le_antisymm ?sc_le_tc ?tc_le_sc, fun h => h ▸ rfl⟩
-  all_goals rw [← compl_le_compl_iff]
-  all_goals apply le_of_eq
-  · exact h.symm
-  · exact h
-
-instance : Inf (RegularOpens X) where
-  inf := fun r s => ⟨
-    (r : Set X) ∩ s,
-    IsRegularOpen.inter r.regularOpen s.regularOpen⟩
-
-instance : Sup (RegularOpens X) where
-  sup := fun r s => (rᶜ ⊓ sᶜ)ᶜ
-
-theorem sup_def (r s : RegularOpens X) : r ⊔ s = (rᶜ ⊓ sᶜ)ᶜ := rfl
-
-theorem coe_sup (r s : RegularOpens X) :
-    (↑(r ⊔ s) : Set X) = interior (closure (↑r ∪ ↑s)) := by
-  show (closure ((closure _)ᶜ ∩ (closure _)ᶜ))ᶜ = _
-  repeat rw [← interior_compl]
-  rw [← interior_inter, ← Set.compl_union, interior_compl, interior_compl, closure_compl,
-    _root_.compl_compl]
-
-theorem coe_inf (r s : RegularOpens X) : (↑(r ⊓ s) : Set X) = ↑r ∩ ↑s := rfl
-
-theorem sup_inf_distrib_right (r s t : RegularOpens X) :
-    r ⊔ (s ⊓ t) = (r ⊔ s) ⊓ (r ⊔ t) := by
-  rw [← SetLike.coe_set_eq]
-  simp only [coe_sup, coe_inf]
-  rw [Set.union_inter_distrib_left, IsOpen.interior_closure_inter]
-  apply IsOpen.union r.regularOpen.isOpen s.regularOpen.isOpen
-
-theorem inf_compl_eq_bot (r : RegularOpens X) : (↑(r ⊓ rᶜ) : Set X) = ∅ := by
-  rw [RegularOpens.coe_inf, RegularOpens.coe_compl,
-    ← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_right_iff_subset]
-  exact subset_closure
-
-instance booleanAlgebra : BooleanAlgebra (RegularOpens X) where
-  inf_le_left := fun r s => Set.inter_subset_left r.carrier s.carrier
-  inf_le_right := fun r s => Set.inter_subset_right r.carrier s.carrier
-  le_inf := fun _ _ _ h₁ h₂ => Set.subset_inter h₁ h₂
-
-  le_sup_left := fun r s => by
-    show r ≤ (rᶜ ⊓ sᶜ)ᶜ
-    nth_rw 1 [← compl_compl r]
-    apply compl_antitone
-    exact Set.inter_subset_left _ _
-  le_sup_right := fun r s => by
-    show s ≤ (rᶜ ⊓ sᶜ)ᶜ
-    nth_rw 1 [← compl_compl s]
-    apply compl_antitone
-    exact Set.inter_subset_right _ _
-  sup_le := fun r s t h₁ h₂ => by
-    show (rᶜ ⊓ sᶜ)ᶜ ≤ t
-    rw [← compl_compl t]
-    apply compl_antitone
-    apply Set.subset_inter <;> apply compl_antitone
-    all_goals assumption
-
-  top := ⟨Set.univ, IsRegularOpen.univ X⟩
-  le_top := fun r => Set.subset_univ r.carrier
-
-  bot := ⟨∅, IsRegularOpen.empty X⟩
-  bot_le := fun r => Set.empty_subset r.carrier
-
-  le_sup_inf := by
-    intro r s t
-    rw [sup_inf_distrib_right]
-
-  inf_compl_le_bot := by
-    intro r
-    rw [← SetLike.coe_subset_coe, inf_compl_eq_bot]
-    exact subset_refl _
-  top_le_sup_compl := by
-    intro r
-    rw [← SetLike.coe_subset_coe, sup_def, compl_compl]
-    show Set.univ ⊆ (closure _)ᶜ
-    rw [← Set.compl_empty, Set.compl_subset_comm, _root_.compl_compl, Set.subset_empty_iff,
-      closure_empty_iff]
-    nth_rw 2 [← compl_compl r]
-    exact inf_compl_eq_bot rᶜ
+def of (s : Set X) (s_reg : IsRegularOpen s) : RegularOpens X :=
+  ⟨⟨s, s_reg.isOpen⟩, IsRegularOpen.heytingRegular_iff.mpr s_reg⟩
 
 @[simp]
-theorem coe_top : ((⊤ : RegularOpens X) : Set X) = Set.univ := rfl
+theorem coe_of {s : Set X} (s_reg : IsRegularOpen s) : (of s s_reg : Set X) = s := rfl
+
+instance canLift : CanLift (Set X) (RegularOpens X) (↑) IsRegularOpen := ⟨
+  fun s s_reg => ⟨of s s_reg, rfl⟩⟩
 
 @[simp]
-theorem coe_bot : ((⊥ : RegularOpens X) : Set X) = ∅ := rfl
+theorem coe_sup {r s : RegularOpens X} : (↑(r ⊔ s) : Set X) = interior (closure (↑r ∪ ↑s)) := by
+  simp_rw [Heyting.Regular.coe_sup, Opens.coe_compl, ← closure_eq_compl_interior_compl,
+    Opens.coe_sup]
+
+theorem sup_def {r s : RegularOpens X} : r ⊔ s = (rᶜ ⊓ sᶜ)ᶜ := by simp_rw [compl_inf, compl_compl]
 
 /--
 The canonical way to turn a `Set α` into a regular open set is to take the interior of its
-closure. This operation yields the smallest regular open superset of `s` and is monotone.
+closure. This operation yields the smallest regular open superset of `s` (if `s` is open)
+and is monotone.
 -/
-def fromSet (s : Set X) : RegularOpens X := ⟨
-  interior (closure s),
-  IsRegularOpen.of_interior_closure s⟩
+def intCl (s : Set X) : RegularOpens X := of (interior (closure s)) <|
+  IsRegularOpen.of_interior_closure s
 
 @[simp]
-theorem coe_fromSet (s : Set X) : (fromSet s : Set X) = interior (closure s) := rfl
+theorem coe_intCl (s : Set X) : (intCl s : Set X) = interior (closure s) := rfl
 
 @[simp]
-theorem fromSet_coe (r : RegularOpens X) : fromSet (↑r : Set X) = r := by
-  rw [← SetLike.coe_set_eq, coe_fromSet, r.regularOpen]
+theorem intCl_coe (r : RegularOpens X) : intCl (↑r : Set X) = r := by
+  rw [← Heyting.Regular.coe_inj, ← SetLike.coe_set_eq, coe_intCl, r.regularOpen]
 
-theorem fromSet_mono {s t : Set X} (s_ss_t : s ⊆ t) : fromSet s ≤ fromSet t := by
-  rw [← SetLike.coe_subset_coe, coe_fromSet, coe_fromSet]
+theorem intCl_mono {s t : Set X} (s_ss_t : s ⊆ t) : intCl s ≤ intCl t := by
+  rw [← Heyting.Regular.coe_le_coe, ← SetLike.coe_subset_coe, coe_intCl, coe_intCl]
   exact interior_mono (closure_mono s_ss_t)
 
 variable (X) in
-theorem fromSet_monotone : Monotone (fromSet (X := X)) := fun _ _ h => fromSet_mono h
+theorem intCl_monotone : Monotone (intCl (X := X)) := fun _ _ h => intCl_mono h
 
 variable (X) in
-theorem fromSet_surjective : Function.Surjective (fromSet (X := X)) :=
-  fun r => ⟨r.carrier, fromSet_coe r⟩
-
-variable (X) in
-@[simp]
-theorem fromSet_univ : fromSet (Set.univ : Set X) = ⊤ := by
-  rw [← SetLike.coe_set_eq, coe_fromSet, closure_univ, interior_univ, coe_top]
+theorem intCl_surjective : Function.Surjective (intCl (X := X)) := fun r => ⟨r, intCl_coe r⟩
 
 variable (X) in
 @[simp]
-theorem fromSet_empty : fromSet (∅ : Set X) = ⊥ := by
-  rw [← SetLike.coe_set_eq, coe_fromSet, closure_empty, interior_empty, coe_bot]
+theorem intCl_univ : intCl (Set.univ : Set X) = ⊤ := by
+  rw [← Heyting.Regular.coe_inj, ← SetLike.coe_set_eq, coe_intCl, closure_univ, interior_univ,
+    Heyting.Regular.coe_top, Opens.coe_top]
 
-theorem disjoint_fromSet {s t : Set X} (s_open : IsOpen s) (t_open : IsOpen t) :
-    Disjoint (fromSet s) (fromSet t) ↔ Disjoint s t := by
-  rw [disjoint_iff (a := fromSet s), ← SetLike.coe_set_eq, coe_bot, coe_inf, coe_fromSet,
-    coe_fromSet, ← Set.disjoint_iff_inter_eq_empty,
-    IsOpen.interior_closure_disjoint_iff s_open t_open]
+variable (X) in
+@[simp]
+theorem intCl_empty : intCl (∅ : Set X) = ⊥ := by
+  rw [← Heyting.Regular.coe_inj, ← SetLike.coe_set_eq, coe_intCl, closure_empty, interior_empty,
+    Heyting.Regular.coe_bot, Opens.coe_bot]
 
-theorem subset_fromSet_of_isOpen (s_open : IsOpen s) : s ⊆ fromSet s :=
+theorem intCl_inf {s t : Set X} (s_open : IsOpen s) : intCl s ⊓ intCl t = intCl (s ∩ t) := by
+  simp_rw [← Heyting.Regular.coe_inj, ← SetLike.coe_set_eq, Heyting.Regular.coe_inf,
+    Opens.coe_inf, coe_intCl, s_open.interior_closure_inter]
+
+theorem disjoint_intCl {s t : Set X} (s_open : IsOpen s) (t_open : IsOpen t) :
+    Disjoint (intCl s) (intCl t) ↔ Disjoint s t := by
+  rw [disjoint_iff (a := intCl s), ← Heyting.Regular.coe_inj, ← SetLike.coe_set_eq,
+    ← IsOpen.interior_closure_disjoint_iff s_open t_open, Set.disjoint_iff_inter_eq_empty]
+  simp
+
+theorem subset_intCl_of_isOpen (s_open : IsOpen s) : s ⊆ intCl s :=
   s_open.subset_interior_closure
 
 theorem subset_closure_iff_le {r s : RegularOpens X} :
     (↑r : Set X) ⊆ closure (↑s) ↔ r ≤ s := by
   refine ⟨fun ss_cl => ?ss, fun ss => _root_.subset_trans ss subset_closure⟩
-  rw [← SetLike.coe_subset_coe, ← IsOpen.interior_eq r.regularOpen.isOpen, ← s.regularOpen]
+  rw [← Heyting.Regular.coe_le_coe, ← SetLike.coe_subset_coe,
+    ← IsOpen.interior_eq r.regularOpen.isOpen, ← s.regularOpen]
   exact interior_mono ss_cl
 
 theorem closure_subset_closure_iff_le {r s : RegularOpens X} :
     closure (↑r : Set X) ⊆ closure (↑s) ↔ r ≤ s := by
   refine ⟨fun cl_ss => ?ss, fun ss => closure_mono ss⟩
-  rw [← SetLike.coe_subset_coe, ← r.regularOpen, ← s.regularOpen]
+  rw [← Heyting.Regular.coe_le_coe, ← SetLike.coe_subset_coe, ← r.regularOpen, ← s.regularOpen]
   exact interior_mono cl_ss
 
 /--
 Constructs the `RegularOpens` set made up of finite intersections of `s`.
 -/
-def finiteInter (s : Set (RegularOpens X)) (s_finite : s.Finite) : RegularOpens X where
-  carrier := ⋂ t ∈ s, (t : Set X)
-  regularOpen' := IsRegularOpen.biInter_of_finite s_finite fun i _ => i.regularOpen
+def finiteInter (s : Set (RegularOpens X)) (s_finite : s.Finite) : RegularOpens X :=
+  of (⋂ t ∈ s, (t : Set X)) <| IsRegularOpen.biInter_of_finite s_finite fun i _ => i.regularOpen
 
 @[simp]
 theorem coe_finiteInter {s : Set (RegularOpens X)} (s_finite : s.Finite) :
     (finiteInter s s_finite : Set X) = ⋂ t ∈ s, (t : Set X) := rfl
-
 
 end TopologicalSpace.RegularOpens
 
@@ -436,15 +339,15 @@ namespace TopologicalSpace.RegularOpens
 A continuous action of `G` on `X` induces a pointwise action of `G` on regular open sets of `X`.
 -/
 protected def pointwiseMulAction : MulAction G (RegularOpens X) where
-  smul := fun g r => ⟨g • r.carrier, smul_isRegularOpen g r.regularOpen'⟩
+  smul := fun g r => of (g • (r : Set X)) <| smul_isRegularOpen g r.regularOpen
   one_smul := by
     intro r
-    rw [← SetLike.coe_set_eq]
+    rw [← Heyting.Regular.coe_inj, ← SetLike.coe_set_eq]
     show (1 : G) • (r : Set X) = r
     rw [one_smul]
   mul_smul := by
     intro g h r
-    rw [← SetLike.coe_set_eq]
+    rw [← Heyting.Regular.coe_inj, ← SetLike.coe_set_eq]
     show (g * h) • (r : Set X) = g • h • (r : Set X)
     rw [mul_smul]
 
@@ -453,29 +356,32 @@ scoped[Pointwise] attribute [instance] TopologicalSpace.RegularOpens.pointwiseMu
 @[simp]
 theorem coe_smul (g : G) (r : RegularOpens X) : (↑(g • r) : Set X) = g • ↑r := rfl
 
-theorem smul_fromSet (g : G) (s : Set X) : g • fromSet s = fromSet (g • s) := by
-  rw [← SetLike.coe_set_eq, coe_smul, coe_fromSet, coe_fromSet, closure_smul, interior_smul]
+theorem smul_intCl (g : G) (s : Set X) : g • intCl s = intCl (g • s) := by
+  rw [← Heyting.Regular.coe_inj, ← SetLike.coe_set_eq, coe_smul, coe_intCl, coe_intCl, closure_smul,
+    interior_smul]
 
-theorem inf_smul (g : G) (r s : RegularOpens X) : (g • r) ⊓ (g • s) = g • (r ⊓ s) := by
-  rw [← SetLike.coe_set_eq]
-  simp only [coe_smul, coe_inf, Set.smul_set_inter]
+theorem smul_inf (g : G) (r s : RegularOpens X) : (g • r) ⊓ (g • s) = g • (r ⊓ s) := by
+  rw [← Heyting.Regular.coe_inj, ← SetLike.coe_set_eq]
+  simp only [coe_smul, Heyting.Regular.coe_inf, Opens.coe_inf, Set.smul_set_inter]
 
-theorem compl_smul (g : G) (r : RegularOpens X) : (g • r)ᶜ = g • rᶜ := by
-  rw [← SetLike.coe_set_eq, coe_smul, coe_compl, coe_smul, closure_smul, ← Set.smul_set_compl]
+theorem smul_compl (g : G) (r : RegularOpens X) : (g • r)ᶜ = g • rᶜ := by
+  rw [← Heyting.Regular.coe_inj, ← SetLike.coe_set_eq, coe_smul, Heyting.Regular.coe_compl,
+    Opens.coe_compl, coe_smul, ← Set.smul_set_compl, interior_smul]
   rfl
 
-theorem sup_smul (g : G) (r s : RegularOpens X) : (g • r) ⊔ (g • s) = g • (r ⊔ s) := by
-  simp_rw [sup_def, compl_smul, inf_smul, compl_smul]
+theorem smul_sup (g : G) (r s : RegularOpens X) : (g • r) ⊔ (g • s) = g • (r ⊔ s) := by
+  simp only [sup_def, smul_compl, smul_inf]
 
 theorem mem_smul_iff_inv_mem {g : G} {r : RegularOpens X} {x : X} :
     x ∈ g • r ↔ g⁻¹ • x ∈ r := by
-  rw [← SetLike.mem_coe, coe_smul, Set.mem_smul_set_iff_inv_smul_mem, SetLike.mem_coe]
+  rw [← mem_iff, coe_smul, Set.mem_smul_set_iff_inv_smul_mem, mem_iff]
 
 @[simp]
 theorem disjoint_coe {r s : RegularOpens X} :
     Disjoint (r : Set X) (s : Set X) ↔ Disjoint r s := by
-  rw [Set.disjoint_iff_inter_eq_empty, disjoint_iff, ← SetLike.coe_set_eq (q := ⊥),
-    coe_inf, coe_bot]
+  rw [Set.disjoint_iff_inter_eq_empty, disjoint_iff, ← Heyting.Regular.coe_inj,
+    ← SetLike.coe_set_eq (q := ((⊥ : RegularOpens X) : Opens X)),
+    Heyting.Regular.coe_inf, Opens.coe_inf, Heyting.Regular.coe_bot, Opens.coe_bot]
 
 theorem disjoint_smul {r s : RegularOpens X} (disj : Disjoint r s) (g : G) :
     Disjoint (g • r) (g • s) := by
