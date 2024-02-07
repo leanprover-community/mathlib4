@@ -57,6 +57,16 @@ structure HasFiniteFPowerSeriesOnBall (f : E → F) (p : FormalMultilinearSeries
     (n : ℕ) (r : ℝ≥0∞) extends HasFPowerSeriesOnBall f p x r : Prop where
   finite : ∀ (m : ℕ), n ≤ m → p m = 0
 
+theorem HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
+    {n : ℕ} {r : ℝ≥0∞} (finite : ∀ (m : ℕ), n ≤ m → p m = 0) (pos : 0 < r)
+    (sum_eq : ∀ y ∈ EMetric.ball 0 r, (∑ i in Finset.range n, p i fun _ ↦ y) = f (x + y)) :
+    HasFiniteFPowerSeriesOnBall f p x n r where
+  r_le := p.radius_eq_top_of_eventually_eq_zero (Filter.eventually_atTop.mpr ⟨n, finite⟩) ▸ le_top
+  r_pos := pos
+  hasSum hy := sum_eq _ hy ▸ hasSum_sum_of_ne_finset_zero fun m hm ↦ by
+    rw [Finset.mem_range, not_lt] at hm; rw [finite m hm]; rfl
+  finite := finite
+
 /-- Given a function `f : E → F`, a formal multilinear series `p` and `n : ℕ`, we say that
 `f` has `p` as a finite power series around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `y` in a
 neighborhood of `0`and `pₙ = 0` for `n ≤ m`.-/
@@ -342,13 +352,11 @@ protected theorem FormalMultilinearSeries.hasSum_of_finite (p : FormalMultilinea
 /-- The sum of a finite power series `p` admits `p` as a power series.-/
 protected theorem FormalMultilinearSeries.hasFiniteFPowerSeriesOnBall_of_finite
     (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0) :
-    HasFiniteFPowerSeriesOnBall p.sum p 0 n ⊤ :=
-  { r_le := by rw [FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero p n
-                   (fun _ => hn _ (Nat.le_add_left _ _))]
-    r_pos := zero_lt_top
-    finite := hn
-    hasSum := by intro y _
-                 rw [zero_add]; exact p.hasSum_of_finite hn y}
+    HasFiniteFPowerSeriesOnBall p.sum p 0 n ⊤ where
+  r_le := by rw [radius_eq_top_of_forall_image_add_eq_zero p n fun _ => hn _ (Nat.le_add_left _ _)]
+  r_pos := zero_lt_top
+  finite := hn
+  hasSum {y} _ := by rw [zero_add]; exact p.hasSum_of_finite hn y
 
 theorem HasFiniteFPowerSeriesOnBall.sum (h : HasFiniteFPowerSeriesOnBall f p x n r) {y : E}
     (hy : y ∈ EMetric.ball (0 : E) r) : f (x + y) = p.sum y :=
@@ -378,9 +386,7 @@ lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : �
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k l : ℕ) {s : Finset (Fin (k + l))}
     (hs : s.card = l) (hkl : n ≤ k + l) :
     p.changeOriginSeriesTerm k l s hs = 0 := by
-  rw [changeOriginSeriesTerm]
-  simp only [AddEquivClass.map_eq_zero_iff]
-  exact hn _ hkl
+  rw [changeOriginSeriesTerm, hn _ hkl, map_zero]
 
 /-- If `p` is a finite formal multilinear series, then so is `p.changeOriginSeries k` for every
 `k` in `ℕ`. More precisely, if `p m = 0` for `n ≤ m`, then `p.changeOriginSeries k m = 0` for
@@ -395,15 +401,13 @@ lemma changeOriginSeries_finite_of_finite (p : FormalMultilinearSeries 𝕜 E F)
 lemma changeOriginSeries_sum_eq_partialSum_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) :
     (p.changeOriginSeries k).sum = (p.changeOriginSeries k).partialSum (n - k) := by
-  apply funext; intro x
-  rw [FormalMultilinearSeries.sum]
-  rw [tsum_eq_sum (f := fun m => p.changeOriginSeries k m (fun _ => x))
-    (s := Finset.range (n - k))
-    (fun m hm => by simp only; simp only [Finset.mem_range, not_lt] at hm
-                    rw [p.changeOriginSeries_finite_of_finite hn k
-                      (by rw [add_comm]; exact Nat.le_add_of_sub_le hm),
-                      ContinuousMultilinearMap.zero_apply])]
-  rfl
+  ext x
+  rw [partialSum, FormalMultilinearSeries.sum,
+    tsum_eq_sum (f := fun m => p.changeOriginSeries k m (fun _ => x)) (s := Finset.range (n - k))]
+  intro m hm
+  rw [Finset.mem_range, not_lt] at hm
+  rw [p.changeOriginSeries_finite_of_finite hn k (by rw [add_comm]; exact Nat.le_add_of_sub_le hm),
+    ContinuousMultilinearMap.zero_apply]
 
 /-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
 `p.changeOrigin x k = 0` for `n ≤ k`.  -/
@@ -435,26 +439,29 @@ theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : 
       simp_rw [← {m | m < n}.iUnion_of_singleton_coe, preimage_iUnion, ← range_sigmaMk]
       exact finite_iUnion fun _ ↦ finite_range _
     · refine fun s ↦ Not.imp_symm fun hs ↦ ?_
-      dsimp only [f]; rw [changeOriginSeriesTerm_bound p hn]; rfl
-      exact le_of_not_lt hs
+      simp only [preimage_setOf_eq, changeOriginIndexEquiv_apply_fst, mem_setOf, not_lt] at hs
+      dsimp only [f]
+      rw [changeOriginSeriesTerm_bound p hn _ _ _ hs, ContinuousMultilinearMap.zero_apply,
+        ContinuousMultilinearMap.zero_apply]
   have hfkl k l : HasSum (f ⟨k, l, ·⟩) (changeOriginSeries p k l (fun _ ↦ x) fun _ ↦ y)
   · simp_rw [changeOriginSeries, ContinuousMultilinearMap.sum_apply]; apply hasSum_fintype
   have hfk k : HasSum (f ⟨k, ·⟩) (changeOrigin p x k fun _ ↦ y)
   · have (m) (hm : m ∉ Finset.range n) : changeOriginSeries p k m (fun _ ↦ x) = 0
     · rw [Finset.mem_range, not_lt] at hm
-      rw [changeOriginSeries_finite_of_finite _ hn _ (le_add_of_le_right hm)]; rfl
+      rw [changeOriginSeries_finite_of_finite _ hn _ (le_add_of_le_right hm),
+        ContinuousMultilinearMap.zero_apply]
     rw [changeOrigin, FormalMultilinearSeries.sum,
       ContinuousMultilinearMap.tsum_eval (summable_of_ne_finset_zero this)]
     refine (summable_of_ne_finset_zero (s := Finset.range n) fun m hm ↦ ?_).hasSum.sigma_of_hasSum
       (hfkl k) (summable_of_finite_support <| finsupp.preimage <| sigma_mk_injective.injOn _)
-    rw [this m hm]; rfl
+    rw [this m hm, ContinuousMultilinearMap.zero_apply]
   have hf : HasSum f ((p.changeOrigin x).sum y) :=
     ((p.changeOrigin x).hasSum_of_finite (fun _ ↦ changeOrigin_finite_of_finite p hn) _)
       |>.sigma_of_hasSum hfk (summable_of_finite_support finsupp)
   refine hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 ?_)
   refine (p.hasSum_of_finite hn (x + y)).sigma_of_hasSum (fun n ↦ ?_)
     (changeOriginIndexEquiv.symm.summable_iff.2 hf.summable)
-  erw [(p n).map_add_univ (fun _ ↦ x) fun _ ↦ y]
+  rw [← Pi.add_def, (p n).map_add_univ (fun _ ↦ x) fun _ ↦ y]
   simp_rw [← changeOriginSeriesTerm_changeOriginIndexEquiv_symm]
   exact hasSum_fintype fun c ↦ f (changeOriginIndexEquiv.symm ⟨n, c⟩)
 

@@ -32,7 +32,7 @@ We provide various results concerning the minimal primes above an ideal
 
 section
 
-variable {R S : Type*} [CommRing R] [CommRing S] (I J : Ideal R)
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (I J : Ideal R)
 
 /-- `I.minimalPrimes` is the set of ideals that are minimal primes over `I`. -/
 protected def Ideal.minimalPrimes : Set (Ideal R) :=
@@ -41,11 +41,11 @@ protected def Ideal.minimalPrimes : Set (Ideal R) :=
 
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
 This is defined as `Ideal.minimalPrimes ⊥`. -/
-def minimalPrimes (R : Type*) [CommRing R] : Set (Ideal R) :=
+def minimalPrimes (R : Type*) [CommSemiring R] : Set (Ideal R) :=
   Ideal.minimalPrimes ⊥
 #align minimal_primes minimalPrimes
 
-lemma minimalPrimes_eq_minimals {R} [CommRing R] :
+lemma minimalPrimes_eq_minimals {R} [CommSemiring R] :
     minimalPrimes R = minimals (· ≤ ·) (setOf Ideal.IsPrime) :=
   congr_arg (minimals (· ≤ ·)) (by simp)
 
@@ -123,6 +123,12 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
   apply IsUnit.map
   apply IsLocalization.map_units _ (show p.primeCompl from ⟨x, h⟩)
 #align ideal.exists_comap_eq_of_mem_minimal_primes_of_injective Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective
+
+end
+
+section
+
+variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
 
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
     (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p := by

@@ -483,10 +483,10 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     rw [degree_mul, degree_pow, ← one_mul <| X ^ 3, ← C_1, degree_cubic <| one_ne_zero' R]
   rw [norm_smul_basis]
   by_cases hp : p = 0
-  · simpa only [hp, hdq, neg_zero, zero_sub, zero_mul, zero_pow zero_lt_two, degree_neg] using
+  · simpa only [hp, hdq, neg_zero, zero_sub, zero_mul, zero_pow two_ne_zero, degree_neg] using
       (max_bot_left _).symm
   · by_cases hq : q = 0
-    · simpa only [hq, hdp, sub_zero, zero_mul, mul_zero, zero_pow zero_lt_two] using
+    · simpa only [hq, hdp, sub_zero, zero_mul, mul_zero, zero_pow two_ne_zero] using
         (max_bot_right _).symm
     · rw [← not_congr degree_eq_bot] at hp hq
       -- porting note: BUG `cases` tactic does not modify assumptions in `hp'` and `hq'`
@@ -500,12 +500,12 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
           · convert (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>
-                exact WithBot.coe_lt_coe.mpr <| by linarith only [hpq]
+                exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
           · rw [sub_sub]
             convert (degree_sub_eq_left_of_degree_lt <| (degree_add_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdpq.trans_lt _, hdq.trans_lt _⟩).trans
               (max_eq_left_of_lt _).symm <;> rw [hdp] <;>
-                exact WithBot.coe_lt_coe.mpr <| by linarith only [hpq]
+                exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
 #align weierstrass_curve.coordinate_ring.degree_norm_smul_basis WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis
 
 variable {W}

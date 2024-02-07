@@ -8,6 +8,7 @@ import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.IteSimp
 
 /-!
 
@@ -802,7 +803,7 @@ theorem Products.lt_nil_empty : { m : Products I | m < Products.nil } = ∅ := b
 instance {α : Type*} [TopologicalSpace α] [Inhabited α] : Nontrivial (LocallyConstant α ℤ) := by
   refine ⟨0, 1, fun h ↦ ?_⟩
   apply @zero_ne_one ℤ
-  exact FunLike.congr_fun h default
+  exact DFunLike.congr_fun h default
 
 theorem Products.isGood_nil : Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
@@ -1198,12 +1199,12 @@ def C1 := C ∩ {f | f (term I ho) = true}
 theorem isClosed_C0 : IsClosed (C0 C ho) := by
   refine hC.inter ?_
   have h : Continuous (fun (f : I → Bool) ↦ f (term I ho)) := continuous_apply (term I ho)
-  exact IsClosed.preimage h (s := {false}) (isClosed_discrete _)
+  exact IsClosed.preimage h (t := {false}) (isClosed_discrete _)
 
 theorem isClosed_C1 : IsClosed (C1 C ho) := by
   refine hC.inter ?_
   have h : Continuous (fun (f : I → Bool) ↦ f (term I ho)) := continuous_apply (term I ho)
-  exact IsClosed.preimage h (s := {true}) (isClosed_discrete _)
+  exact IsClosed.preimage h (t := {true}) (isClosed_discrete _)
 
 theorem contained_C1 : contained (π (C1 C ho) (ord I · < o)) o :=
   contained_proj _ _

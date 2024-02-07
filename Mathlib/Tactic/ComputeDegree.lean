@@ -105,7 +105,7 @@ theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g :
     · exact natDegree_mul_le_of_le ‹_› ‹_›
     · exact ne_comm.mp h
 
-theorem coeff_pow_of_natDegree_le_of_eq_ite' [Semiring R] {m n o : ℕ} {a : R} {p : R[X]}
+theorem coeff_pow_of_natDegree_le_of_eq_ite' {m n o : ℕ} {a : R} {p : R[X]}
     (h_pow : natDegree p ≤ n) (h_exp : m * n ≤ o) (h_pow_bas : coeff p n = a) :
     coeff (p ^ m) o = if o = m * n then a ^ m else 0 := by
   split_ifs with h
@@ -221,7 +221,7 @@ def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.r
     | some 1 => .inl `one
     | some _ => .inl `many
     | none => match pol.getAppFnArgs with
-      | (``FunLike.coe, #[_, _, _, _, polFun, _]) =>
+      | (``DFunLike.coe, #[_, _, _, _, polFun, _]) =>
         let na := polFun.getAppFn.constName
         if na ∈ [``Polynomial.monomial, ``Polynomial.C] then
           .inr na

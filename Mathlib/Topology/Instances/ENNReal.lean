@@ -8,7 +8,7 @@ import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.Order.T5
-import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
 
 #align_import topology.instances.ennreal from "leanprover-community/mathlib"@"ec4b2eeb50364487f80421c0b4c41328a611f30d"
@@ -707,6 +707,20 @@ theorem exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠
     ⟨⟨y', z'⟩, hx, hy', hz'⟩
   exact ⟨y', z', hy', hz', hx⟩
 #align ennreal.exists_lt_add_of_lt_add ENNReal.exists_lt_add_of_lt_add
+
+theorem ofReal_cinfi (f : α → ℝ) [Nonempty α] :
+    ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
+  by_cases hf : BddBelow (range f)
+  · exact
+      Monotone.map_ciInf_of_continuousAt ENNReal.continuous_ofReal.continuousAt
+        (fun i j hij => ENNReal.ofReal_le_ofReal hij) hf
+  · symm
+    rw [Real.iInf_of_not_bddBelow hf, ENNReal.ofReal_zero, ← ENNReal.bot_eq_zero, iInf_eq_bot]
+    obtain ⟨y, hy_mem, hy_neg⟩ := not_bddBelow_iff.mp hf 0
+    obtain ⟨i, rfl⟩ := mem_range.mpr hy_mem
+    refine' fun x hx => ⟨i, _⟩
+    rwa [ENNReal.ofReal_of_nonpos hy_neg.le]
+#align ennreal.of_real_cinfi ENNReal.ofReal_cinfi
 
 end TopologicalSpace
 

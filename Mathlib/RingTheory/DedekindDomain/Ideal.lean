@@ -6,11 +6,9 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
-import Mathlib.Order.Hom.Basic
-import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.FractionalIdeal
-import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.ChainOfDivisors
+import Mathlib.RingTheory.DedekindDomain.Basic
+import Mathlib.RingTheory.FractionalIdeal.Operations
 
 #align_import ring_theory.dedekind_domain.ideal from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
@@ -597,12 +595,9 @@ Although this instance is a direct consequence of the instance
 `FractionalIdeal.semifield`, we define this instance to provide
 a computable alternative.
 -/
--- Porting note: added noncomputable because otherwise it fails, so it seems that the goal
--- is not achieved...
-noncomputable instance FractionalIdeal.cancelCommMonoidWithZero :
-    CancelCommMonoidWithZero (FractionalIdeal A⁰ K) :=
-  { @FractionalIdeal.commSemiring A _ A⁰ K _ _,  -- Project out the computable fields first.
-    (by infer_instance : CancelCommMonoidWithZero (FractionalIdeal A⁰ K)) with }
+instance FractionalIdeal.cancelCommMonoidWithZero :
+    CancelCommMonoidWithZero (FractionalIdeal A⁰ K) where
+  __ : CommSemiring (FractionalIdeal A⁰ K) := inferInstance
 #align fractional_ideal.cancel_comm_monoid_with_zero FractionalIdeal.cancelCommMonoidWithZero
 
 instance Ideal.cancelCommMonoidWithZero : CancelCommMonoidWithZero (Ideal A) :=
@@ -704,6 +699,31 @@ theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨
   ⟨fun hp => (eq_or_ne P ⊥).imp_right fun hp0 => Ideal.prime_of_isPrime hp0 hp, fun hp =>
     hp.elim (fun h => h.symm ▸ Ideal.bot_prime) Ideal.isPrime_of_prime⟩
 #align ideal.is_prime_iff_bot_or_prime Ideal.isPrime_iff_bot_or_prime
+
+@[simp]
+theorem Ideal.prime_span_singleton_iff {a : A} : Prime (Ideal.span {a}) ↔ Prime a := by
+  rcases eq_or_ne a 0 with rfl | ha
+  · rw [Set.singleton_zero, span_zero, ← Ideal.zero_eq_bot, ← not_iff_not]
+    simp only [not_prime_zero, not_false_eq_true]
+  · have ha' : span {a} ≠ ⊥ := by simpa only [ne_eq, span_singleton_eq_bot] using ha
+    rw [Ideal.prime_iff_isPrime ha', Ideal.span_singleton_prime ha]
+
+open Submodule.IsPrincipal in
+theorem Ideal.prime_generator_of_prime {P : Ideal A} (h : Prime P) [P.IsPrincipal] :
+    Prime (generator P) :=
+  have : Ideal.IsPrime P := Ideal.isPrime_of_prime h
+  prime_generator_of_isPrime _ h.ne_zero
+
+open UniqueFactorizationMonoid in
+nonrec theorem Ideal.mem_normalizedFactors_iff [DecidableEq (Ideal A)]
+    {p I : Ideal A} (hI : I ≠ ⊥) :
+    p ∈ normalizedFactors I ↔ p.IsPrime ∧ I ≤ p := by
+  rw [← Ideal.dvd_iff_le]
+  by_cases hp : p = 0
+  · rw [← zero_eq_bot] at hI
+    simp only [hp, zero_not_mem_normalizedFactors, zero_dvd_iff, hI, false_iff, not_and,
+      not_false_eq_true, implies_true]
+  · rwa [mem_normalizedFactors_iff hI, prime_iff_isPrime]
 
 theorem Ideal.pow_right_strictAnti (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     StrictAnti (I ^ · : ℕ → Ideal A) :=
@@ -869,6 +889,15 @@ theorem inf_eq_mul_of_coprime {I J : Ideal A} (coprime : IsCoprime I J) : I ⊓ 
 
 theorem isCoprime_iff_gcd {I J : Ideal A} : IsCoprime I J ↔ gcd I J = 1 := by
   rw [Ideal.isCoprime_iff_codisjoint, codisjoint_iff, one_eq_top, gcd_eq_sup]
+
+theorem factors_span_eq [DecidableEq K[X]] [DecidableEq (Ideal K[X])] {p : K[X]} :
+    factors (span {p}) = (factors p).map (fun q ↦ span {q}) := by
+  rcases eq_or_ne p 0 with rfl | hp; · simpa [Set.singleton_zero] using normalizedFactors_zero
+  have : ∀ q ∈ (factors p).map (fun q ↦ span {q}), Prime q := fun q hq ↦ by
+    obtain ⟨r, hr, rfl⟩ := Multiset.mem_map.mp hq
+    exact prime_span_singleton_iff.mpr <| prime_of_factor r hr
+  rw [← span_singleton_eq_span_singleton.mpr (factors_prod hp), ← multiset_prod_span_singleton,
+    factors_eq_normalizedFactors, normalizedFactors_prod_of_prime this]
 
 end Ideal
 
@@ -1402,6 +1431,16 @@ theorem span_singleton_dvd_span_singleton_iff_dvd {a b : R} :
   ⟨fun h => mem_span_singleton.mp (dvd_iff_le.mp h (mem_span_singleton.mpr (dvd_refl b))), fun h =>
     dvd_iff_le.mpr fun _d hd => mem_span_singleton.mpr (dvd_trans h (mem_span_singleton.mp hd))⟩
 #align span_singleton_dvd_span_singleton_iff_dvd span_singleton_dvd_span_singleton_iff_dvd
+
+@[simp]
+theorem Ideal.squarefree_span_singleton {a : R} :
+    Squarefree (span {a}) ↔ Squarefree a := by
+  refine ⟨fun h x hx ↦ ?_, fun h I hI ↦ ?_⟩
+  · rw [← span_singleton_dvd_span_singleton_iff_dvd, ← span_singleton_mul_span_singleton] at hx
+    simpa using h _ hx
+  · rw [← span_singleton_generator I, span_singleton_mul_span_singleton,
+      span_singleton_dvd_span_singleton_iff_dvd] at hI
+    exact isUnit_iff.mpr <| eq_top_of_isUnit_mem _ (Submodule.IsPrincipal.generator_mem I) (h _ hI)
 
 theorem singleton_span_mem_normalizedFactors_of_mem_normalizedFactors [NormalizationMonoid R]
     [DecidableEq R] [DecidableEq (Ideal R)] {a b : R} (ha : a ∈ normalizedFactors b) :
