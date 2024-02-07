@@ -532,9 +532,6 @@ theorem dvd_mul_gcd_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ m * gcd k n 
 
 /-- Represent a divisor of `m * n` as a product of a divisor of `m` and a divisor of `n`.
 
-In other words, a `GCDMonoid` is a decomposition monoid
-(more widely known as a pre-Schreier domain in the context of rings).
-
 Note: In general, this representation is highly non-unique.
 
 See `Nat.prodDvdAndDvdOfDvdProd` for a constructive version on `ℕ`.  -/

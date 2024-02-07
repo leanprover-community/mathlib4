@@ -112,11 +112,13 @@ theorem MonoidHom.map_dvd [Monoid M] [Monoid N] (f : M →* N) {a b} : a ∣ b �
 
 end map_dvd
 
-/-- An element `a` in a semigroup is primal if whenever `a` divides a product `b * c`, it can be
-factored into a product such that the factors divides `b` and `c` respectively. -/
+/-- An element `a` in a semigroup is primal if whenever `a` is a divisor of `b * c`, it can be
+factored as the product of a divisor of `b` and a divisor of `c`. -/
 def IsPrimal (a : α) : Prop := ∀ ⦃b c⦄, a ∣ b * c → ∃ a₁ a₂, a₁ ∣ b ∧ a₂ ∣ c ∧ a = a₁ * a₂
 
 variable (α) in
+/-- A monoid is a decomposition monoid if every element is primal. If the multiplicative monoid
+of an integral domain is a decomposition monoid, the domain is called pre-Schreier. -/
 class DecompositionMonoid : Prop where
   primal (a : α) : IsPrimal a
 
