@@ -147,12 +147,8 @@ theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s
   rwa [← s_ss_fixedBy gxs, inv_smul_smul] at gxs
 
 theorem smul_subset_of_set_mem_fixedBy {s t : Set α} {g : G} (t_ss_s : t ⊆ s)
-    (s_in_fixedBy : s ∈ fixedBy (Set α) g) : g • t ⊆ s := by
-  intro x x_in_gt
-  rw [Set.mem_smul_set_iff_inv_smul_mem] at x_in_gt
-  apply t_ss_s at x_in_gt
-  rw [← fixedBy_inv] at s_in_fixedBy
-  rwa [← s_in_fixedBy, Set.smul_mem_smul_set_iff] at x_in_gt
+    (s_in_fixedBy : s ∈ fixedBy (Set α) g) : g • t ⊆ s :=
+  (Set.set_smul_subset_set_smul_iff.mpr t_ss_s).trans s_in_fixedBy.subset
 
 /-!
 If a set `s : Set α` is a superset of `(MulAction.fixedBy α g)ᶜ` (resp. `(AddAction.fixedBy α g)ᶜ`),
@@ -202,11 +198,11 @@ theorem fixedBy_mem_fixedBy_of_commute {g h : G} (comm: Commute g h) :
     smul_left_cancel_iff, mem_fixedBy]
 
 /--
-If `g` and `h` commute, then `g` fixes `(h^j) • x` iff `g` fixes `x`.
+If `g` and `h` commute, then `g` fixes `(h ^ j) • x` iff `g` fixes `x`.
 -/
 @[to_additive "If `g` and `h` commute, then `g` fixes `(j • h) +ᵥ x` iff `g` fixes `x`."]
-theorem smul_zpow_fixedBy_eq_of_commute {g h : G} (comm : Commute g h) (j : ℤ):
-    h^j • fixedBy α g = fixedBy α g :=
+theorem smul_zpow_fixedBy_eq_of_commute {g h : G} (comm : Commute g h) (j : ℤ) :
+    h ^ j • fixedBy α g = fixedBy α g :=
   fixedBy_subset_fixedBy_zpow (Set α) h j (fixedBy_mem_fixedBy_of_commute comm)
 
 /--
@@ -217,14 +213,13 @@ This is equivalent to say that the set `(fixedBy α g)ᶜ` is fixed by `h`.
 This is equivalent to say that the set `(fixedBy α g)ᶜ` is fixed by `h`."]
 theorem movedBy_mem_fixedBy_of_commute {g h : G} (comm: Commute g h) :
     (fixedBy α g)ᶜ ∈ fixedBy (Set α) h := by
-  rw [mem_fixedBy, Set.compl_eq_univ_diff, Set.smul_set_sdiff,
-    Set.smul_set_univ, fixedBy_mem_fixedBy_of_commute comm]
+  rw [mem_fixedBy, Set.smul_set_compl, fixedBy_mem_fixedBy_of_commute comm]
 
 /--
-If `g` and `h` commute, then `g` moves `h^j • x` iff `g` moves `x`.
+If `g` and `h` commute, then `g` moves `h ^ j • x` iff `g` moves `x`.
 -/
 @[to_additive "If `g` and `h` commute, then `g` moves `(j • h) +ᵥ x` iff `g` moves `x`."]
-theorem smul_zpow_movedBy_eq_of_commute {g h : G} (comm : Commute g h) (j : ℤ):
+theorem smul_zpow_movedBy_eq_of_commute {g h : G} (comm : Commute g h) (j : ℤ) :
     h ^ j • (fixedBy α g)ᶜ = (fixedBy α g)ᶜ :=
   fixedBy_subset_fixedBy_zpow (Set α) h j (movedBy_mem_fixedBy_of_commute comm)
 
@@ -240,13 +235,8 @@ then `fixedBy α m = Set.univ` implies that `m = 1`. -/
 @[to_additive "If the additive action of `M` on `α` is faithful,
 then `fixedBy α m = Set.univ` implies that `m = 1`."]
 theorem fixedBy_eq_univ_iff_eq_one {m : M} : fixedBy α m = Set.univ ↔ m = 1 := by
-  refine ⟨fun moved_empty => ?eq_one, fun eq_one => eq_one ▸ fixedBy_one_eq_univ α M⟩
-  apply FaithfulSMul.eq_of_smul_eq_smul (α := α)
-  intro a
-  rw [one_smul]
-  by_contra ma_ne_a
-  rw [← mem_fixedBy, moved_empty] at ma_ne_a
-  exact ma_ne_a (Set.mem_univ a)
+  rw [← (smul_left_injective' (M := M) (α := α)).eq_iff, Set.eq_univ_iff_forall]
+  simp_rw [Function.funext_iff, one_smul, mem_fixedBy]
 
 /--
 If the image of the `(fixedBy α g)ᶜ` set by the pointwise action of `h: G`
@@ -256,10 +246,9 @@ is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute.
 is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute."]
 theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
     (disjoint : Disjoint (fixedBy α g)ᶜ (h • (fixedBy α g)ᶜ)) : ¬Commute g h := by
-  intro comm
-  rw [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty, ← Set.compl_univ,
+  contrapose! ne_one with comm
+  rwa [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty, ← Set.compl_univ,
     compl_inj_iff, fixedBy_eq_univ_iff_eq_one] at disjoint
-  exact ne_one disjoint
 
 end Faithful
 

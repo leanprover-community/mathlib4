@@ -39,8 +39,6 @@ TODO :
 
 * add `to_additive` for the various lemmas
 
-* `movingSubgroup`
-
 -/
 
 
