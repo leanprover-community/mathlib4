@@ -42,7 +42,7 @@ structure LocalizerMorphism where
   /-- a functor between the two categories -/
   functor : C₁ ⥤ C₂
   /-- the functor is compatible with the `MorphismProperty` -/
-  map : W₁ ⊆ W₂.inverseImage functor
+  map : W₁ ⊆ MorphismProperty.inverseImage functor W₂
 
 namespace LocalizerMorphism
 
@@ -164,8 +164,8 @@ lemma IsLocalizedEquivalence.of_equivalence [IsEquivalence Φ.functor]
       (Functor.asEquivalence Φ.functor).symm _ (Φ.inverts W₂.Q)
       ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight ((Equivalence.unitIso _).symm) _ ≪≫
         Functor.leftUnitor _)
-    erw [W₁.isoClosure.inverseImage_equivalence_functor_eq_essMap_inverse
-      W₁.isoClosure_respectsIso Φ.functor.asEquivalence]
+    erw [MorphismProperty.inverseImage_equivalence_functor_eq_essMap_inverse
+          Φ.functor.asEquivalence W₁.isoClosure_respectsIso]
     rw [MorphismProperty.essMap_isoClosure]
     exact h
   exact IsLocalizedEquivalence.of_isLocalization_of_isLocalization Φ W₂.Q

@@ -36,7 +36,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C] {D : Type*} [Category D]
+variable (C : Type u) [Category.{v} C] {D : Type*} [Category D] {E : Type*} [Category E]
 
 /-- A `MorphismProperty C` is a class of morphisms between objects in `C`. -/
 def MorphismProperty := ∀ ⦃X Y : C⦄, (X ⟶ Y) → Prop
@@ -138,7 +138,7 @@ theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
     simp only [Category.id_comp]
 #align category_theory.morphism_property.respects_iso.of_respects_arrow_iso CategoryTheory.MorphismProperty.RespectsIso.of_respects_arrow_iso
 
-/-- The closure by isomorphisms of a `MorphismProperty` -/
+/-- The closure by isomorphisms of a `MorphismProperty`. -/
 @[simps! apply]
 def isoClosure : ClosureOperator (MorphismProperty C) :=
   have H1 _ := RespectsIso.of_respects_arrow_iso _ $
@@ -170,176 +170,175 @@ lemma isoClosure_subset_iff (P Q : MorphismProperty C) (hQ : RespectsIso Q) :
   ClosureOperator.IsClosed.closure_le_iff (show isoClosure.IsClosed Q from hQ)
 
 /-- The inverse image of a `MorphismProperty D` by a functor `C ⥤ D` -/
-def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C :=
+def inverseImage (F : C ⥤ D) (P : MorphismProperty D) : MorphismProperty C :=
   fun _ _ f => P (F.map f)
 #align category_theory.morphism_property.inverse_image CategoryTheory.MorphismProperty.inverseImage
 
 /-- The image (strictly) of a `MorphismProperty C` by a functor `C ⥤ D` -/
-def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun X Y f =>
+def map (F : C ⥤ D) (P : MorphismProperty C) : MorphismProperty D := fun X Y f =>
   ∃ (X' Y' : C) (f' : X' ⟶ Y'), P f' ∧ ∃ (hX : F.obj X' = X) (hY : F.obj Y' = Y),
     F.map f' = eqToHom hX ≫ f ≫ eqToHom hY.symm
 
-lemma map_mem_map (P : MorphismProperty C) (F : C ⥤ D) {X Y : C}
-    (f : X ⟶ Y) (hf : P f) : (P.map F) (F.map f) := ⟨X, Y, f, hf, rfl, rfl,
+lemma map_mem_map (F : C ⥤ D) {P : MorphismProperty C} {X Y : C} {f : X ⟶ Y}
+    (hf : P f) : (map F P) (F.map f) := ⟨X, Y, f, hf, rfl, rfl,
   Eq.trans (Category.comp_id _).symm (Category.id_comp _).symm⟩
 
-lemma map_subset_iff (P : MorphismProperty C) (F : C ⥤ D) (Q : MorphismProperty D) :
-    P.map F ⊆ Q ↔ ∀ (X Y : C) (f : X ⟶ Y), P f → Q (F.map f) where
-  mp h _ _ _ hf := h _ (map_mem_map _ _ _ hf)
+lemma map_subset_iff (F : C ⥤ D) (P : MorphismProperty C) (Q : MorphismProperty D) :
+    map F P ⊆ Q ↔ ∀ (X Y : C) (f : X ⟶ Y), P f → Q (F.map f) where
+  mp h _ _ _ hf := h _ (map_mem_map F hf)
   mpr := by
     rintro H _ _ _ ⟨_, _, _, h1, rfl, rfl, h2⟩
     refine Eq.subst (Eq.trans h2 ?_) (H _ _ _ h1)
     exact Eq.trans (Category.id_comp _) (Category.comp_id _)
 
-lemma map_gc (F : C ⥤ D) : GaloisConnection (map . F) (inverseImage . F) :=
-  fun P Q => map_subset_iff P F Q
+lemma map_gc (F : C ⥤ D) : GaloisConnection (map F) (inverseImage F) :=
+  map_subset_iff F
 
-lemma monotone_inverseImage (P Q : MorphismProperty D) (F : C ⥤ D) (h : P ⊆ Q) :
-    P.inverseImage F ⊆ Q.inverseImage F := (map_gc F).monotone_u h
+lemma monotone_inverseImage (F : C ⥤ D) (P Q : MorphismProperty D) (h : P ⊆ Q) :
+    inverseImage F P ⊆ inverseImage F Q := (map_gc F).monotone_u h
 
-lemma monotone_map (P Q : MorphismProperty C) (F : C ⥤ D) (h : P ⊆ Q) :
-    P.map F ⊆ Q.map F := (map_gc F).monotone_l h
+lemma monotone_map (F : C ⥤ D) (P Q : MorphismProperty C) (h : P ⊆ Q) :
+    map F P ⊆ map F Q := (map_gc F).monotone_l h
 
-lemma map_inverseImage_subset (P : MorphismProperty D) (F : C ⥤ D) :
-    (P.inverseImage F).map F ⊆ P := (map_gc F).l_u_le P
+lemma map_inverseImage_subset (F : C ⥤ D) (P : MorphismProperty D) :
+    map F (inverseImage F P) ⊆ P := (map_gc F).l_u_le P
 
 lemma subset_inverseImage_map (P : MorphismProperty C) (F : C ⥤ D) :
-    P ⊆ (P.map F).inverseImage F := (map_gc F).le_u_l P
+    P ⊆ inverseImage F (map F P) := (map_gc F).le_u_l P
 
-lemma RespectsIso.inverseImage {P : MorphismProperty D} (h : RespectsIso P)
-    (F : C ⥤ D) : RespectsIso (inverseImage P F) :=
+lemma RespectsIso.inverseImage {P : MorphismProperty D} (F : C ⥤ D)
+    (h : RespectsIso P) : RespectsIso (inverseImage F P) :=
   RespectsIso.of_respects_arrow_iso _ $ fun _ _ =>
     Iff.mp ∘ h.arrow_iso_iff ∘ F.mapArrow.mapIso
 #align category_theory.morphism_property.respects_iso.inverse_image CategoryTheory.MorphismProperty.RespectsIso.inverseImage
 
 lemma isoClosure_inverseImage_subset_inverseImage_isoClosure
-    (P : MorphismProperty D) (F : C ⥤ D) :
-    isoClosure (inverseImage P F) ⊆ inverseImage (isoClosure P) F :=
+    (F : C ⥤ D) (P : MorphismProperty D) :
+    isoClosure (inverseImage F P) ⊆ inverseImage F (isoClosure P) :=
   (isoClosure_subset_iff _ _ ((isoClosure_respectsIso _).inverseImage _)).mpr
-  $ monotone_inverseImage _ _ F $ subset_isoClosure P
+  $ monotone_inverseImage F _ _ $ subset_isoClosure P
 
-lemma map_id (P : MorphismProperty C) : P.map (𝟭 _) = P :=
+lemma map_id (P : MorphismProperty C) : map (𝟭 _) P = P :=
   subset_antisymm ((map_subset_iff _ _ _).mpr (fun _ _ _ h => h))
-                  (@map_mem_map _ _ _ _ P (𝟭 C))
+                  (@map_mem_map _ _ _ _ (𝟭 C) P)
 
 @[simp]
-lemma map_map (P : MorphismProperty C) (F : C ⥤ D) {E : Type*} [Category E] (G : D ⥤ E) :
-    (P.map F).map G = P.map (F ⋙ G) :=
+lemma map_map (G : D ⥤ E) (F : C ⥤ D) (P : MorphismProperty C) :
+    map G (map F P) = map (F ⋙ G) P :=
   subset_antisymm ((map_subset_iff _ _ _).mpr $ (map_subset_iff _ _ _).mpr
-                  $ fun _ _ _ h => map_mem_map _ _ _ h)
+                  $ fun _ _ _ h => map_mem_map _ h)
                   ((map_subset_iff _ _ _).mpr $ fun _ _ _ h =>
-                    (map_mem_map _ _ _ (map_mem_map _ _ _ h)))
+                    map_mem_map _ (map_mem_map _ h))
 
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
-def essMap (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
+def essMap (F : C ⥤ D) (P : MorphismProperty C) : MorphismProperty D := fun _ _ f =>
   ∃ (X' Y' : C)  (f' : X' ⟶ Y'), P f' ∧ Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
 
-lemma map_subset_essMap (P : MorphismProperty C) (F : C ⥤ D) :
-    map P F ⊆ essMap P F :=
-  (map_subset_iff P F _).mpr (fun _ _ _ h => ⟨_, _, _, h, ⟨Iso.refl _⟩⟩)
+lemma map_subset_essMap (F : C ⥤ D) (P : MorphismProperty C) : map F P ⊆ essMap F P :=
+  (map_subset_iff F P _).mpr (fun _ _ _ h => ⟨_, _, _, h, ⟨Iso.refl _⟩⟩)
 
-lemma map_mem_essMap (P : MorphismProperty C) (F : C ⥤ D) {X Y : C}
-    (f : X ⟶ Y) (hf : P f) : (P.essMap F) (F.map f) :=
-  map_subset_essMap _ _ _ (map_mem_map _ _ _ hf)
+lemma map_mem_essMap (F : C ⥤ D) (P : MorphismProperty C) {X Y : C}
+    (f : X ⟶ Y) (hf : P f) : (essMap F P) (F.map f) :=
+  map_subset_essMap _ _ _ (map_mem_map _ hf)
 
-lemma essMap_respectsIso (P : MorphismProperty C) (F : C ⥤ D) :
-    (P.essMap F).RespectsIso :=
+lemma essMap_respectsIso (F : C ⥤ D) (P : MorphismProperty C) :
+    (essMap F P).RespectsIso :=
   RespectsIso.of_respects_arrow_iso  _
   $ fun _ _ e ⟨_, _, _, h, ⟨e'⟩⟩ => ⟨_, _, _, h, ⟨e' ≪≫ e⟩⟩
 
-lemma essMap_eq_isoClosure_map (P : MorphismProperty C) (F : C ⥤ D) :
-    essMap P F = isoClosure (map P F) :=
-  subset_antisymm (fun _ _ _ ⟨_, _, _, h, e⟩ => ⟨_, _, _, map_mem_map _ _ _ h, e⟩)
+lemma essMap_eq_isoClosure_map (F : C ⥤ D) (P : MorphismProperty C) :
+    essMap F P = isoClosure (map F P) :=
+  subset_antisymm (fun _ _ _ ⟨_, _, _, h, e⟩ => ⟨_, _, _, map_mem_map _ h, e⟩)
   $ (isoClosure_subset_iff _ _ (essMap_respectsIso _ _)).mpr (map_subset_essMap _ _)
 
-lemma mem_essMap_iff_mem_isoClosure_map (P : MorphismProperty C) (F : C ⥤ D)
-    (X Y : D) (f : X ⟶ Y) : essMap P F f ↔ isoClosure (map P F) f :=
-  iff_of_eq (congrFun₃ (essMap_eq_isoClosure_map P F) _ _ _)
+lemma mem_essMap_iff_mem_isoClosure_map (F : C ⥤ D) (P : MorphismProperty C)
+    (X Y : D) (f : X ⟶ Y) :
+    essMap F P f ↔ isoClosure (map F P) f :=
+  iff_of_eq (congrFun₃ (essMap_eq_isoClosure_map F P) _ _ _)
 
 lemma essMap_gc (F : C ⥤ D) :
-    GaloisConnection (Subtype.coind (essMap . F) (essMap_respectsIso . F))
-                     ((inverseImage . F) ∘ Subtype.val) := by
+    GaloisConnection (Subtype.coind (essMap F) (essMap_respectsIso F))
+                     (inverseImage F ∘ Subtype.val) := by
   refine Eq.mpr (congrArg₂ _ ?_ rfl) ((map_gc F).compose isoClosure.gi.gc)
-  exact funext (Subtype.eq $ essMap_eq_isoClosure_map . F)
+  exact funext (Subtype.eq ∘' essMap_eq_isoClosure_map F)
 
-lemma essMap_subset_iff (P : MorphismProperty C) (F : C ⥤ D)
-    (Q : MorphismProperty D) (hQ : RespectsIso Q) :
-    P.essMap F ⊆ Q ↔ ∀ (X Y : C) (f : X ⟶ Y), P f → Q (F.map f) :=
+lemma essMap_subset_iff (F : C ⥤ D) (P : MorphismProperty C)
+    {Q : MorphismProperty D} (hQ : RespectsIso Q) :
+    essMap F P ⊆ Q ↔ ∀ (X Y : C) (f : X ⟶ Y), P f → Q (F.map f) :=
   essMap_gc F P ⟨Q, hQ⟩
 
-lemma monotone_essMap (P Q : MorphismProperty C) (F : C ⥤ D) (h : P ⊆ Q) :
-    P.essMap F ⊆ Q.essMap F := (essMap_gc F).monotone_l h
+lemma monotone_essMap (F : C ⥤ D) (P Q : MorphismProperty C) (h : P ⊆ Q) :
+    essMap F P ⊆ essMap F Q := (essMap_gc F).monotone_l h
 
-lemma essMap_inverseImage_subset (P : MorphismProperty D) (F : C ⥤ D) :
-    (P.inverseImage F).essMap F ⊆ isoClosure P :=
-  subset_trans (monotone_essMap _ _ F (monotone_inverseImage _ _ F (subset_isoClosure P)))
+lemma essMap_inverseImage_subset (F : C ⥤ D) (P : MorphismProperty D) :
+    essMap F (inverseImage F P) ⊆ isoClosure P :=
+  subset_trans (monotone_essMap F _ _
+                $ monotone_inverseImage F _ _ (subset_isoClosure P))
                ((essMap_gc F).l_u_le ⟨isoClosure P, isoClosure_respectsIso _⟩)
 
-lemma subset_inverseImage_essMap (P : MorphismProperty C) (F : C ⥤ D) :
-    isoClosure P ⊆ (P.essMap F).inverseImage F :=
+lemma subset_inverseImage_essMap (F : C ⥤ D) (P : MorphismProperty C) :
+    isoClosure P ⊆ inverseImage F (essMap F P) :=
   (isoClosure_subset_iff _ _ ((essMap_respectsIso _ _).inverseImage _)).mpr
   $ (essMap_gc F).le_u_l P
 
 @[simp]
-lemma essMap_isoClosure (P : MorphismProperty C) (F : C ⥤ D) :
-    P.isoClosure.essMap F = P.essMap F :=
-  subset_antisymm ((essMap_gc F _ ⟨_, essMap_respectsIso P F⟩).mpr
-                    (subset_inverseImage_essMap P F))
+lemma essMap_isoClosure (F : C ⥤ D) (P : MorphismProperty C) :
+    essMap F (isoClosure P) = essMap F P :=
+  subset_antisymm ((essMap_gc F _ ⟨_, essMap_respectsIso F P⟩).mpr
+                    (subset_inverseImage_essMap F P))
                   (monotone_essMap _ _ _ (subset_isoClosure _))
 
 lemma essMap_id_eq_isoClosure (P : MorphismProperty C) :
-    P.essMap (𝟭 _) = isoClosure P :=
+    essMap (𝟭 _) P = isoClosure P :=
   Eq.trans (essMap_eq_isoClosure_map _ _) (congrArg _ (map_id P))
 
-lemma essMap_id (P : MorphismProperty C) (hP : RespectsIso P) :
-    P.essMap (𝟭 _) = P := by
-  rw [essMap_id_eq_isoClosure, hP.isoClosure_eq]
+lemma essMap_id {P : MorphismProperty C} (hP : RespectsIso P) :
+    essMap (𝟭 _) P = P := by rw [essMap_id_eq_isoClosure, hP.isoClosure_eq]
 
 @[simp]
-lemma essMap_essMap (P : MorphismProperty C) (F : C ⥤ D) {E : Type*}
-    [Category E] (G : D ⥤ E) : (P.essMap F).essMap G = P.essMap (F ⋙ G) := by
-  rw [essMap_eq_isoClosure_map P F, essMap_isoClosure, essMap_eq_isoClosure_map,
+lemma essMap_essMap (G : D ⥤ E) (F : C ⥤ D) (P : MorphismProperty C) :
+    essMap G (essMap F P) = essMap (F ⋙ G) P := by
+  rw [essMap_eq_isoClosure_map F P, essMap_isoClosure, essMap_eq_isoClosure_map,
       map_map, ← essMap_eq_isoClosure_map]
 
-lemma essMap_eq_of_iso (P : MorphismProperty C) :
-    {F G : C ⥤ D} → (F ≅ G) → P.essMap F = P.essMap G :=
-  suffices ∀ {F G : C ⥤ D}, (F ≅ G) → P.essMap F ⊆ P.essMap G
-  from fun e => le_antisymm (this e) (this e.symm); fun e =>
-  (essMap_subset_iff _ _ _ (essMap_respectsIso _ _)).mpr
+lemma essMap_eq_of_iso : {F G : C ⥤ D} → (F ≅ G) → ∀ P, essMap F P = essMap G P :=
+  suffices ∀ {F G : C ⥤ D}, (F ≅ G) → ∀ P, essMap F P ⊆ essMap G P
+  from fun e P => subset_antisymm (this e P) (this e.symm P); fun e _ =>
+  (essMap_subset_iff _ _ (essMap_respectsIso _ _)).mpr
   $ fun X Y f h =>
     ((essMap_respectsIso _ _).arrow_iso_iff
     $ (((Functor.mapArrowFunctor C D).mapIso e).app ⟨X, Y, f⟩)).mpr
   $ map_mem_essMap _ _ _ h
 
 lemma inverseImage_equivalence_inverse_eq_essMap_functor
-    (P : MorphismProperty D) (hP : RespectsIso P) (E : C ≌ D) :
-    P.inverseImage E.functor = P.essMap E.inverse := by
+    (E : C ≌ D) {P : MorphismProperty D} (hP : RespectsIso P) :
+    inverseImage E.functor P = essMap E.inverse P := by
   apply subset_antisymm
   · intro X Y f hf
     refine' ⟨_, _, _, hf, ⟨_⟩⟩
     exact ((Functor.mapArrowFunctor _ _).mapIso E.unitIso.symm).app (Arrow.mk f)
-  · rw [essMap_subset_iff _ _ _ (hP.inverseImage E.functor)]
+  · rw [essMap_subset_iff _ _ (hP.inverseImage E.functor)]
     intro X Y f hf
     exact (hP.arrow_mk_iso_iff
       (((Functor.mapArrowFunctor _ _).mapIso E.counitIso).app (Arrow.mk f))).2 hf
 
-lemma inverseImage_equivalence_functor_eq_essMap_inverse
-    (Q : MorphismProperty C) (hQ : RespectsIso Q) (E : C ≌ D) :
-    Q.inverseImage E.inverse = Q.essMap E.functor :=
-  inverseImage_equivalence_inverse_eq_essMap_functor Q hQ E.symm
+lemma inverseImage_equivalence_functor_eq_essMap_inverse (E : C ≌ D)
+    {Q : MorphismProperty C} (hQ : RespectsIso Q) :
+    inverseImage E.inverse Q = essMap E.functor Q :=
+  inverseImage_equivalence_inverse_eq_essMap_functor E.symm hQ
 
-lemma essMap_inverseImage_eq_of_isEquivalence
-    (P : MorphismProperty D) (hP : P.RespectsIso) (F : C ⥤ D) [IsEquivalence F] :
-    (P.inverseImage F).essMap F = P := by
-  erw [P.inverseImage_equivalence_inverse_eq_essMap_functor hP F.asEquivalence,
-       essMap_essMap, P.essMap_eq_of_iso F.asEquivalence.counitIso, essMap_id _ hP]
+lemma essMap_inverseImage_eq_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
+    {P : MorphismProperty D} (hP : RespectsIso P) :
+    essMap F (inverseImage F P) = P := by
+  erw [inverseImage_equivalence_inverse_eq_essMap_functor F.asEquivalence hP,
+       essMap_essMap, essMap_eq_of_iso F.asEquivalence.counitIso, essMap_id hP]
 
-lemma inverseImage_essMap_eq_of_isEquivalence
-    (P : MorphismProperty C) (hP : P.RespectsIso) (F : C ⥤ D) [IsEquivalence F] :
-    (P.essMap F).inverseImage F = P := by
-  erw [((P.essMap F).inverseImage_equivalence_inverse_eq_essMap_functor
-    (P.essMap_respectsIso F) (F.asEquivalence)), essMap_essMap,
-    P.essMap_eq_of_iso F.asEquivalence.unitIso.symm, essMap_id _ hP]
+lemma inverseImage_essMap_eq_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
+    {P : MorphismProperty C} (hP : RespectsIso P) :
+    inverseImage F (essMap F P) = P := by
+  erw [inverseImage_equivalence_inverse_eq_essMap_functor (F.asEquivalence)
+         (essMap_respectsIso F P), essMap_essMap,
+       essMap_eq_of_iso F.asEquivalence.unitIso.symm P, essMap_id hP]
 
 /-- A morphism property is `StableUnderComposition` if the composition of two such morphisms
 still falls in the class. -/
@@ -659,7 +658,7 @@ lemma IsInvertedBy.iff_comp {C₁ C₂ C₃ : Type*} [Category C₁] [Category C
 
 lemma IsInvertedBy.iff_map_subset_isomorphisms (W : MorphismProperty C) (F : C ⥤ D) :
     W.IsInvertedBy F ↔ W.map F ⊆ isomorphisms D :=
-  Iff.symm (map_subset_iff W F (isomorphisms D))
+  Iff.symm (map_subset_iff F W (isomorphisms D))
 
 lemma IsInvertedBy.map_iff {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) :

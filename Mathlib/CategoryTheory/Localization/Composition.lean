@@ -70,8 +70,8 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   let Φ : LocalizerMorphism W₂ W₂' :=
     { functor := E₂.functor
       map := by
-        have eq := W₂.isoClosure.inverseImage_essMap_eq_of_isEquivalence
-          W₂.isoClosure_respectsIso E₂.functor
+        have eq := MorphismProperty.inverseImage_essMap_eq_of_isEquivalence
+                      E₂.functor W₂.isoClosure_respectsIso
         rw [MorphismProperty.essMap_isoClosure] at eq
         rw [eq]
         apply W₂.subset_isoClosure }
@@ -94,9 +94,10 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   have hW₃' : W₃.IsInvertedBy (W₁.Q ⋙ W₂'.Q) := by
     simpa only [← MorphismProperty.IsInvertedBy.iff_comp _ _ E₃.inverse,
       MorphismProperty.IsInvertedBy.iff_of_iso W₃ iso] using hW₃
-  have hW₂₃' : W₂' ⊆ W₃.essMap W₁.Q := (MorphismProperty.monotone_essMap _ _ E₂.functor hW₂₃).trans
-    (by simpa only [W₃.essMap_essMap]
-      using subset_of_eq (W₃.essMap_eq_of_iso (compUniqFunctor L₁ W₁.Q W₁)))
+  have hW₂₃' : W₂' ⊆ MorphismProperty.essMap W₁.Q W₃ :=
+    (MorphismProperty.monotone_essMap E₂.functor _ _ hW₂₃).trans
+      (by simpa only [W₃.essMap_essMap]
+        using subset_of_eq (W₃.essMap_eq_of_iso (compUniqFunctor L₁ W₁.Q W₁)))
   have : (W₁.Q ⋙ W₂'.Q).IsLocalization W₃ := by
     refine' IsLocalization.mk' _ _ _ _
     all_goals
