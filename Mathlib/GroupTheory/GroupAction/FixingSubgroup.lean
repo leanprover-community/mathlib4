@@ -125,13 +125,11 @@ theorem mem_fixingSubgroup_iff {s : Set α} {m : M} : m ∈ fixingSubgroup M s �
 
 theorem mem_fixingSubgroup_iff_subset_fixedBy {s : Set α} {m : M} :
     m ∈ fixingSubgroup M s ↔ s ⊆ fixedBy α m := by
-  rw [mem_fixingSubgroup_iff, Set.subset_def]
-  simp only [mem_fixedBy]
+  simp_rw [mem_fixingSubgroup_iff, Set.subset_def, mem_fixedBy]
 
 theorem mem_fixingSubgroup_compl_iff_movedBy_subset {s : Set α} {m : M} :
     m ∈ fixingSubgroup M sᶜ ↔ (fixedBy α m)ᶜ ⊆ s := by
-  rw [mem_fixingSubgroup_iff_subset_fixedBy]
-  exact Set.compl_subset_comm
+  rw [mem_fixingSubgroup_iff_subset_fixedBy, Set.compl_subset_comm]
 
 variable (α)
 
@@ -175,8 +173,8 @@ theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
 #align fixed_points_subgroup_supr fixedPoints_subgroup_iSup
 
 /-- The orbit of the fixing subgroup of `sᶜ` (ie. the moving subgroup of `s`) is a subset of `s` -/
-theorem orbit_fixingSubgroup_compl_subset {s : Set α}
-    {a : α} (a_in_s : a ∈ s) : MulAction.orbit (fixingSubgroup M sᶜ) a ⊆ s := by
+theorem orbit_fixingSubgroup_compl_subset {s : Set α} {a : α} (a_in_s : a ∈ s) :
+    MulAction.orbit (fixingSubgroup M sᶜ) a ⊆ s := by
   intro b b_in_orbit
   let ⟨⟨g, g_fixing⟩, g_eq⟩ := MulAction.mem_orbit_iff.mp b_in_orbit
   rw [Submonoid.mk_smul] at g_eq
