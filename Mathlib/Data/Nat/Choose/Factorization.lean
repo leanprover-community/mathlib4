@@ -57,7 +57,7 @@ in the binomial coefficient. -/
 theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factorization p ≤ 1 := by
   apply factorization_choose_le_log.trans
   rcases eq_or_ne n 0 with (rfl | hn0); · simp
-  exact lt_succ_iff.1 (log_lt_of_lt_pow hn0 p_large)
+  exact Nat.lt_succ_iff.1 (log_lt_of_lt_pow hn0 p_large)
 #align nat.factorization_choose_le_one Nat.factorization_choose_le_one
 
 theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)

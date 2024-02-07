@@ -433,7 +433,7 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     have ub := minFac_le_of_dvd (le_refl 2) h
     have lb := minFac_pos n
     refine ub.eq_or_lt.resolve_right fun h' => ?_
-    have := le_antisymm (Nat.succ_le_of_lt lb) (lt_succ_iff.mp h')
+    have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
     rw [eq_comm, Nat.minFac_eq_one_iff] at this
     subst this
     exact not_lt_of_le (le_of_dvd zero_lt_one h) one_lt_two

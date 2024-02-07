@@ -115,7 +115,7 @@ theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, 
     exact k; assumption
   · rintro ⟨H, H'⟩
     rw [sInf_def (⟨_, H⟩ : s.Nonempty), find_eq_iff]
-    exact ⟨H, fun n hnk hns ↦ H' <| hs n k (lt_succ_iff.mp hnk) hns⟩
+    exact ⟨H, fun n hnk hns ↦ H' <| hs n k (Nat.lt_succ_iff.mp hnk) hns⟩
 #align nat.Inf_upward_closed_eq_succ_iff Nat.sInf_upward_closed_eq_succ_iff
 
 /-- This instance is necessary, otherwise the lattice operations would be derived via

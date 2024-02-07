@@ -1878,7 +1878,7 @@ theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
   rw [trunc, Ico_zero_eq_range, sum_range_succ, trunc, Ico_zero_eq_range]
 
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
-  rw [lt_succ_iff, natDegree_le_iff_coeff_eq_zero]
+  rw [Nat.lt_succ_iff, natDegree_le_iff_coeff_eq_zero]
   intros
   rw [coeff_trunc]
   split_ifs with h
