@@ -70,7 +70,7 @@ presentation corresponding to a Coxeter matrix which is registered in a Coxeter 
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*](bourbaki1968) chapter IV
   pages 4--5, 13--15
 
-* [J. Baez, Coxeter and Dynkin Diagrams](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
+* [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
 
 ## TODO
 
