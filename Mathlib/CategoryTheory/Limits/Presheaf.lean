@@ -457,7 +457,9 @@ def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) whe
   ι := { app := fun X => X.hom }
 
 /-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
-    representables. -/
+    representables.
+
+    Proposition 2.6.3(i) in [Kashiwara2006] -/
 def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
   desc := fun s => by
     refine' ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), _⟩
@@ -486,15 +488,19 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     erw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
     exact congr_arg _ (h (CostructuredArrow.mk t))
 
-variable {I : Type v₁} [SmallCategory I] (α : I ⥤ C)
+variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
 
-open Functor
+/-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
+    functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
+    `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
+    final.
 
-theorem final_toCostructuredArrow_comp_pre {c : Cocone (α ⋙ yoneda)} (hc : IsColimit c) :
-    Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre α yoneda c.pt) := by
-  apply cofinal_of_isTerminal_colimit_comp_yoneda
+    Proposition 2.6.3(ii) in [Kashiwara2006] -/
+theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
+    Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
+  apply Functor.cofinal_of_isTerminal_colimit_comp_yoneda
 
-  suffices IsTerminal (colimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre α yoneda c.pt) ⋙
+  suffices IsTerminal (colimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt)) by
     apply IsTerminal.isTerminalOfObj (overEquivPresheafCostructuredArrow c.pt).inverse
     apply IsTerminal.ofIso this
@@ -505,7 +511,7 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (α ⋙ yoneda)} (hc : Is
 
   apply IsTerminal.ofIso Over.mkIdTerminal
   let isc : IsColimit ((Over.forget _).mapCocone _) := PreservesColimit.preserves
-    (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre α yoneda c.pt) ⋙
+    (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
       CostructuredArrow.toOver yoneda c.pt))
   exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)
 
