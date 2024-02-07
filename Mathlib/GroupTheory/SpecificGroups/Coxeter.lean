@@ -160,14 +160,14 @@ variable {M : Matrix B B ℕ}
 
 /-- A Coxeter system for `W` with Coxeter matrix `M` indexed by `B`, is associated to
 a map `B → W` recording the images of the indices. -/
-instance funLike : FunLike (CoxeterSystem M W) B (fun _ => W) where
+instance funLike : FunLike (CoxeterSystem M W) B W where
   coe cs := fun b => cs.mulEquiv.symm (.of b)
   coe_injective' := by
     rintro ⟨cs⟩ ⟨cs'⟩ hcs'
     have H : (cs.symm : CoxeterGroup M →* W) = (cs'.symm : CoxeterGroup M →* W) := by
       unfold CoxeterGroup
       ext i; exact congr_fun hcs' i
-    have : cs.symm = cs'.symm := by ext x; exact FunLike.congr_fun H x
+    have : cs.symm = cs'.symm := by ext x; exact DFunLike.congr_fun H x
     rw [ofMulEquiv.injEq, ← MulEquiv.symm_symm cs, ← MulEquiv.symm_symm cs', this]
 
 @[simp]
@@ -175,7 +175,7 @@ theorem mulEquiv_apply_coe (cs : CoxeterSystem M W) (b : B) : cs.mulEquiv (cs b)
   cs.mulEquiv.eq_symm_apply.mp rfl
 
 /-- The map sending a Coxeter system to its associated map `B → W` is injective. -/
-theorem ext' {cs₁ cs₂ : CoxeterSystem M W} (H : ⇑cs₁ = ⇑cs₂) : cs₁ = cs₂ := FunLike.coe_injective H
+theorem ext' {cs₁ cs₂ : CoxeterSystem M W} (H : ⇑cs₁ = ⇑cs₂) : cs₁ = cs₂ := DFunLike.coe_injective H
 
 /-- Extensionality rule for Coxeter systems. -/
 theorem ext {cs₁ cs₂ : CoxeterSystem M W} (H : ∀ b, cs₁ b = cs₂ b) : cs₁ = cs₂ :=
@@ -266,6 +266,7 @@ abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
 
 theorem AₙIsCoxeter : IsCoxeter (Aₙ n) where
+  symmetric := by sorry
 
 /-- The Coxeter matrix of family Bₙ.
 
@@ -282,6 +283,7 @@ abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
 
 theorem BₙIsCoxeter : IsCoxeter (Bₙ n) where
+  symmetric := by sorry
 
 /-- The Coxeter matrix of family Dₙ.
 
@@ -301,6 +303,7 @@ abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
 
 theorem DₙIsCoxeter : IsCoxeter (Dₙ n) where
+  symmetric := by sorry
 
 /-- The Coxeter matrix of m-indexed family I₂(m).
 
@@ -314,6 +317,7 @@ abbrev I₂ₘ (m : ℕ) : Matrix (Fin 2) (Fin 2) ℕ :=
   Matrix.of fun i j => if i = j then 1 else m + 2
 
 theorem I₂ₘIsCoxeter (m : ℕ) : IsCoxeter (I₂ₘ m) where
+  symmetric := by sorry
 
 /-- The Coxeter matrix of system E₆.
 
