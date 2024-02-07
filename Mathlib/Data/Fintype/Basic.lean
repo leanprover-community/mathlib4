@@ -676,7 +676,7 @@ theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.N
 
 @[simp]
 theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toFinset ↔ s = t :=
-  ⟨fun h => by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h => by simp [h] ⟩
+  ⟨fun h => by rw [← s.coe_toFinset, h, t.coe_toFinset], fun h => by simp [h]⟩
 #align set.to_finset_inj Set.toFinset_inj
 
 @[mono]
@@ -1269,7 +1269,7 @@ noncomputable def seqOfForallFinsetExistsAux {α : Type*} [DecidableEq α] (P : 
       (h
         (Finset.image (fun i : Fin n => seqOfForallFinsetExistsAux P r h i)
           (Finset.univ : Finset (Fin n))))
-  decreasing_by exact i.2
+  decreasing_by all_goals exact i.2
 #align seq_of_forall_finset_exists_aux seqOfForallFinsetExistsAux
 
 /-- Induction principle to build a sequence, by adding one point at a time satisfying a given
