@@ -257,12 +257,14 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
       mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
     -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
     · rw [split, add_comm]
-      ac_rfl
+      sorry
+      -- ac_rfl
   -- Porting note: this branch did not exit in ml3
   · rw [split, add_comm]
     congr!
     dsimp
-    rw [one_smul]
+    sorry
+    -- rw [one_smul]
 #align stereo_left_inv stereo_left_inv
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by

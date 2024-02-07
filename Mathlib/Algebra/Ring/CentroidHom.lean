@@ -517,7 +517,7 @@ def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α wh
     exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
 
 lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
-    (centerToCentroid z) a = z * a := rfl
+    (centerToCentroid.toMulHom.toFun z) a = z * a := rfl
 
 lemma _root_.NonUnitalNonAssocSemiring.mem_center_iff (a : α) :
     a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ RingHom.rangeS (toEndRingHom α) := by

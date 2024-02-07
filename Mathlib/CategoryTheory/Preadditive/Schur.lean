@@ -156,7 +156,8 @@ noncomputable def fieldEndOfFiniteDimensional (X : C) [Simple X] [I : FiniteDime
       mul_comm := fun f g => by
         obtain ⟨c, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 f
         obtain ⟨d, rfl⟩ := endomorphism_simple_eq_smul_id 𝕜 g
-        simp [← mul_smul, mul_comm c d] }
+        simp -- [← mul_smul, mul_comm c d]
+        rw [← mul_smul, ← mul_smul, mul_comm c d]}
 #align category_theory.field_End_of_finite_dimensional CategoryTheory.fieldEndOfFiniteDimensional
 
 -- There is a symmetric argument that uses `[FiniteDimensional 𝕜 (Y ⟶ Y)]` instead,

@@ -145,6 +145,7 @@ theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |
     _ = sphere c |R| := by
       rw [Complex.range_exp_mul_I, smul_sphere R 0 zero_le_one]
       simp
+      rw [vadd_eq_add, add_zero]
 #align range_circle_map range_circleMap
 
 /-- The image of `(0, 2π]` under `circleMap c R` is the circle with center `c` and radius `|R|`. -/

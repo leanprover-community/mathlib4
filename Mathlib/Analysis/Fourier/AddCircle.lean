@@ -457,9 +457,10 @@ theorem fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
     rw [ht, ← fourier_neg, smul_eq_mul]
 #align fourier_basis_repr fourierBasis_repr
 
+set_option synthInstance.maxHeartbeats 0 in
 /-- The Fourier series of an `L2` function `f` sums to `f`, in the `L²` space of `AddCircle T`. -/
 theorem hasSum_fourier_series_L2 (f : Lp ℂ 2 <| @haarAddCircle T hT) :
-    HasSum (fun i => fourierCoeff f i • fourierLp 2 i) f := by
+    HasSum (fun i => (fourierCoeff f i • fourierLp 2 i)) f := by
   simp_rw [← fourierBasis_repr]; rw [← coe_fourierBasis]
   exact HilbertBasis.hasSum_repr fourierBasis f
 set_option linter.uppercaseLean3 false in

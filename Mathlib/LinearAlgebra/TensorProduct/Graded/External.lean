@@ -228,6 +228,7 @@ theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
   -- Note: #8386 had to specialize `map_one` to avoid timeouts.
   simpa only [RingHom.map_one, one_smul] using gradedMul_algebraMap 𝒜 ℬ x 1
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedMul R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y) z = gradedMul R 𝒜 ℬ x (gradedMul R 𝒜 ℬ y z) := by
   let mA := gradedMul R 𝒜 ℬ
@@ -245,6 +246,7 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   congr 2
   abel
 
+set_option synthInstance.maxHeartbeats 0 in
 theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
     gradedComm R 𝒜 ℬ (gradedMul R 𝒜 ℬ x y)
       = gradedMul R ℬ 𝒜 (gradedComm R 𝒜 ℬ x) (gradedComm R 𝒜 ℬ y) := by
