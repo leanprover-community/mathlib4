@@ -149,7 +149,7 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     _ = ⨅ x : Bool, ⨆ y : cond x PUnit s, match x with | true => a | false => y.1 := by
       simp_rw [iInf_bool_eq, cond, iSup_const, iSup_subtype, sSup_eq_iSup]
     _ = _ := iInf_iSup_eq
-    _ ≤ _ := by
+    _ ≤ ⨆ b ∈ s, a ⊓ b := by
       simp_rw [iInf_bool_eq]
       refine iSup_le fun g => le_trans ?_ (le_iSup _ (g false).1)
       refine le_trans ?_ (le_iSup _ (g false).2)
