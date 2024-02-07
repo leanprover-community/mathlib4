@@ -5,6 +5,7 @@ Authors: Johan Commelin, Eric Wieser
 -/
 import Mathlib.Algebra.DirectSum.Internal
 import Mathlib.Algebra.GradedMonoid
+import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.Polynomial.RingDivision
@@ -205,6 +206,19 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     exact h j (Finset.mem_insert_of_mem hjs)
 #align mv_polynomial.is_homogeneous.prod MvPolynomial.IsHomogeneous.prod
 
+section CommRing
+
+-- In this section we shadow the semiring `R` with a ring `R`.
+variable {R σ : Type*} [CommRing R] {φ ψ : MvPolynomial σ R} {n : ℕ}
+
+theorem neg (hφ : IsHomogeneous φ n) : IsHomogeneous (-φ) n :=
+  (homogeneousSubmodule σ R n).neg_mem hφ
+
+theorem sub (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneous (φ - ψ) n :=
+  (homogeneousSubmodule σ R n).sub_mem hφ hψ
+
+end CommRing
+
 theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ = n := by
   rw [MvPolynomial.totalDegree]
   apply le_antisymm
@@ -243,10 +257,13 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) 
 
 open Polynomial in
 private
-lemma exists_eval_ne_zero_of_totalDegree_le_card_aux₀
+lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     {N : ℕ} {F : MvPolynomial (Fin (Nat.succ N)) R} {n : ℕ} (hF : IsHomogeneous F n)
-    (hdeg : natDegree ((finSuccEquiv R N) F) < n + 1) (hFn : ((finSuccEquiv R N) F).coeff n ≠ 0) :
+    (hFn : ((finSuccEquiv R N) F).coeff n ≠ 0) :
     ∃ r, (eval r) F ≠ 0 := by
+  have hF₀ : F ≠ 0 := by contrapose! hFn; simp [hFn]
+  have hdeg : natDegree (finSuccEquiv R N F) < n + 1 := by
+    linarith [natDegree_finSuccEquiv F, degreeOf_le_totalDegree F 0, hF.totalDegree hF₀]
   use Fin.cons 1 0
   have aux : ∀ i ∈ Finset.range n, constantCoeff ((finSuccEquiv R N F).coeff i) = 0 := by
     intro i hi
@@ -270,10 +287,10 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux₀
       exact this i hi
     · simpa using hi
 
-section domain
+section IsDomain
 
 -- In this section we shadow the semiring `R` with a domain `R`.
-variable {R σ : Type*} [CommRing R] [IsDomain R] {F : MvPolynomial σ R} {n : ℕ}
+variable {R σ : Type*} [CommRing R] [IsDomain R] {F G : MvPolynomial σ R} {n : ℕ}
 
 open Cardinal Polynomial
 private
@@ -296,7 +313,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
       contrapose! hi
       exact coeff_eq_zero_of_natDegree_lt <| (Nat.le_of_lt_succ hdeg).trans_lt hi
     obtain hFn | hFn := ne_or_eq ((finSuccEquiv R N F).coeff n) 0
-    · exact hF.exists_eval_ne_zero_of_totalDegree_le_card_aux₀ hdeg hFn
+    · exact hF.exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux hFn
     have hin : i < n := hin.lt_or_eq.elim id <| by aesop
     obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by intros; omega
     obtain ⟨r, hr⟩ : ∃ r, (eval r) (Polynomial.coeff ((finSuccEquiv R N) F) i) ≠ 0 :=
@@ -331,19 +348,40 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card
   rwa [eval_rename]
 
 open Cardinal in
-/-- See `MvPolynomial.IsHomogeneous.funext` for a version that assumes `Infinite R`. -/
-lemma funext_of_le_card (hF : F.IsHomogeneous n) (hF₀ : ∀ r : σ → R, eval r F = 0) (h : n ≤ #R) :
+/-- See `MvPolynomial.IsHomogeneous.eq_zero_of_forall_eval_eq_zero`
+for a version that assumes `Infinite R`. -/
+lemma eq_zero_of_forall_eval_eq_zero_of_le_card
+    (hF : F.IsHomogeneous n) (hF₀ : ∀ r : σ → R, eval r F = 0) (hnR : n ≤ #R) :
     F = 0 := by
   contrapose! hF₀
-  exact exists_eval_ne_zero_of_totalDegree_le_card hF hF₀ h
+  exact exists_eval_ne_zero_of_totalDegree_le_card hF hF₀ hnR
 
-/-- See `MvPolynomial.IsHomogeneous.funext_of_le_card` for a version that assumes `n ≤ #R`. -/
-lemma funext [Infinite R] {F : MvPolynomial σ R} {n : ℕ}
+open Cardinal in
+/-- See `MvPolynomial.IsHomogeneous.funext`
+for a version that assumes `Infinite R`. -/
+lemma funext_of_le_card (hF : F.IsHomogeneous n) (hG : G.IsHomogeneous n)
+    (h : ∀ r : σ → R, eval r F = eval r G) (hnR : n ≤ #R) :
+    F = G := by
+  rw [← sub_eq_zero]
+  apply eq_zero_of_forall_eval_eq_zero_of_le_card (hF.sub hG) _ hnR
+  simpa [sub_eq_zero] using h
+
+/-- See `MvPolynomial.IsHomogeneous.eq_zero_of_forall_eval_eq_zero_of_le_card`
+for a version that assumes `n ≤ #R`. -/
+lemma eq_zero_of_forall_eval_eq_zero [Infinite R] {F : MvPolynomial σ R} {n : ℕ}
     (hF : F.IsHomogeneous n) (hF₀ : ∀ r : σ → R, eval r F = 0) : F = 0 := by
-  apply funext_of_le_card hF hF₀
+  apply eq_zero_of_forall_eval_eq_zero_of_le_card hF hF₀
   exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
-end domain
+/-- See `MvPolynomial.IsHomogeneous.funext_of_le_card`
+for a version that assumes `n ≤ #R`. -/
+lemma funext [Infinite R] {F G : MvPolynomial σ R} {n : ℕ}
+    (hF : F.IsHomogeneous n) (hG : G.IsHomogeneous n)
+    (h : ∀ r : σ → R, eval r F = eval r G) : F = G := by
+  apply funext_of_le_card hF hG h
+  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
+
+end IsDomain
 
 /-- The homogeneous submodules form a graded ring. This instance is used by `DirectSum.commSemiring`
 and `DirectSum.algebra`. -/
