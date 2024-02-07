@@ -182,6 +182,33 @@ theorem IsPRadical.pow_mem [IsPRadical i p] (x : L) :
 theorem IsPRadical.ker_le [IsPRadical i p] :
     RingHom.ker i ≤ pNilradical K p := ker_le'
 
+theorem IsPRadical.comap_pNilradical [IsPRadical i p] :
+    (pNilradical L p).comap i = pNilradical K p := by
+  refine le_antisymm (fun x h ↦ mem_pNilradical.2 ?_) (fun x h ↦ ?_)
+  · obtain ⟨n, h⟩ := mem_pNilradical.1 <| Ideal.mem_comap.1 h
+    obtain ⟨m, h⟩ := mem_pNilradical.1 <| ker_le i p ((map_pow i x _).symm ▸ h)
+    exact ⟨n + m, by rwa [pow_add, pow_mul]⟩
+  simp only [Ideal.mem_comap, mem_pNilradical] at h ⊢
+  obtain ⟨n, h⟩ := h
+  exact ⟨n, by simpa only [map_pow, map_zero] using congr(i $h)⟩
+
+variable (K) in
+instance IsPRadical.of_id : IsPRadical (RingHom.id K) p where
+  pow_mem' x := ⟨0, x, by rw [RingHom.id_apply, pow_zero, pow_one]⟩
+  ker_le' x h := by
+    rw [RingHom.mem_ker, RingHom.id_apply] at h
+    exact h ▸ Ideal.zero_mem _
+
+theorem IsPRadical.trans (j : L →+* M) [IsPRadical i p] [IsPRadical j p] :
+    IsPRadical (j.comp i) p where
+  pow_mem' x := by
+    obtain ⟨n, y, hy⟩ := pow_mem j p x
+    obtain ⟨m, z, hz⟩ := pow_mem i p y
+    exact ⟨n + m, z, by rw [RingHom.comp_apply, hz, map_pow, hy, pow_add, pow_mul]⟩
+  ker_le' x h := by
+    rw [RingHom.mem_ker, RingHom.comp_apply, ← RingHom.mem_ker] at h
+    simpa only [← Ideal.mem_comap, comap_pNilradical] using ker_le j p h
+
 /-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it makes `L`
 a perfect closure of `K` if the following conditions are satisfied:
 
@@ -248,6 +275,14 @@ theorem PerfectRing.liftAux_self_apply [PerfectRing L p] (x : L) : liftAux i i p
 
 theorem PerfectRing.liftAux_self [PerfectRing L p] : liftAux i i p = id :=
   funext (liftAux_self_apply i p)
+
+theorem PerfectRing.liftAux_id_apply (x : K) : liftAux (RingHom.id K) j p x = j x := by
+  have := RingHom.id_apply _ ▸ Classical.choose_spec (lift_aux (RingHom.id K) p x)
+  rw [liftAux, this, map_pow, ← iterateFrobenius_def, ← iterateFrobeniusEquiv_apply,
+    RingEquiv.symm_apply_apply]
+
+theorem PerfectRing.liftAux_id : liftAux (RingHom.id K) j p = j :=
+  funext (liftAux_id_apply j p)
 
 end PerfectRing.lift
 
@@ -323,6 +358,12 @@ theorem PerfectRing.lift_self_apply [PerfectRing L p] (x : L) : lift i i p x = x
 theorem PerfectRing.lift_self [PerfectRing L p] : lift i i p = RingHom.id L :=
   RingHom.ext (liftAux_self_apply i p)
 
+theorem PerfectRing.lift_id_apply (x : K) : lift (RingHom.id K) j p x = j x :=
+  liftAux_id_apply j p x
+
+theorem PerfectRing.lift_id : lift (RingHom.id K) j p = j :=
+  RingHom.ext (liftAux_id_apply j p)
+
 theorem PerfectRing.lift_comp_apply (x : K) : lift i j p (i x) = j x := by
   rw [lift_apply i j p _ 0 x (by rw [pow_zero, pow_one]), iterateFrobeniusEquiv_zero]; rfl
 
@@ -337,6 +378,7 @@ theorem PerfectRing.comp_lift_apply (f : L →+* M) (x : L) : lift i (f.comp i) 
 theorem PerfectRing.comp_lift (f : L →+* M) : lift i (f.comp i) p = f :=
   RingHom.ext (comp_lift_apply i p f)
 
+variable (M) in
 /-- If `i : K →+* L` is a homomorphisms of characteristic `p` rings, such that
 `i` is "purely inseparable", the kernel of `i` is contained in the `p`-nilradical of `K`,
 and `M` is a perfect ring of characteristic `p`, then `K →+* M` is one-to-one correspondence to
@@ -347,9 +389,15 @@ def PerfectRing.liftEquiv : (K →+* M) ≃ (L →+* M) where
   left_inv f := lift_comp i f p
   right_inv := comp_lift i p
 
-theorem PerfectRing.liftEquiv_apply : liftEquiv i p j = lift i j p := rfl
+theorem PerfectRing.liftEquiv_apply : liftEquiv M i p j = lift i j p := rfl
 
-theorem PerfectRing.liftEquiv_symm_apply (f : L →+* M) : (liftEquiv i p).symm f = f.comp i := rfl
+theorem PerfectRing.liftEquiv_symm_apply (f : L →+* M) : (liftEquiv M i p).symm f = f.comp i := rfl
+
+theorem PerfectRing.liftEquiv_id_apply : liftEquiv M (RingHom.id K) p j = j :=
+  lift_id j p
+
+theorem PerfectRing.liftEquiv_id : liftEquiv M (RingHom.id K) p = Equiv.refl _ :=
+  Equiv.ext (liftEquiv_id_apply · p)
 
 section comp
 
@@ -378,6 +426,30 @@ theorem PerfectRing.lift_comp_lift_eq_id [PerfectRing L p] :
   RingHom.ext (lift_comp_lift_apply_eq_self i j p)
 
 end comp
+
+section liftEquiv_comp
+
+variable {N : Type*} [CommRing N] [ExpChar N p] (k : L →+* N)
+  [IsPRadical k p] [IsPRadical (k.comp i) p]
+
+theorem PerfectRing.lift_lift_apply (x : N) :
+    lift k (lift i j p) p x = lift (k.comp i) j p x := by
+  obtain ⟨n, y, h⟩ := IsPRadical.pow_mem (k.comp i) p x
+  rw [lift_apply (k.comp i) j p _ _ _ h, lift_apply k _ p _ _ _ h,
+    lift_apply i j p (i y) 0 y (by rw [pow_zero, pow_one]), iterateFrobeniusEquiv_zero]
+  rfl
+
+theorem PerfectRing.lift_lift : lift k (lift i j p) p = lift (k.comp i) j p :=
+  RingHom.ext (lift_lift_apply i j p k)
+
+theorem PerfectRing.liftEquiv_comp_apply :
+    liftEquiv M k p (liftEquiv M i p j) = liftEquiv M (k.comp i) p j := lift_lift i j p k
+
+theorem PerfectRing.liftEquiv_trans :
+    (liftEquiv M i p).trans (liftEquiv M k p) = liftEquiv M (k.comp i) p :=
+  Equiv.ext (liftEquiv_comp_apply i · p k)
+
+end liftEquiv_comp
 
 end PerfectRing.lift
 
