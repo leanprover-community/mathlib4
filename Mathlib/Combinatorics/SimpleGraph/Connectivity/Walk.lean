@@ -21,16 +21,10 @@ Some definitions and theorems have inspiration from multigraph counterparts in [
 * `SimpleGraph.Walk` (with accompanying pattern definitions `Walk.nil'` and `Walk.cons'`)
 -/
 
-set_option autoImplicit true
-
-
-universe u v w
-
 namespace SimpleGraph
 
-variable {V : Type u} {V' : Type v} {V'' : Type w}
-
-variable (G : SimpleGraph V) (G' : SimpleGraph V') (G'' : SimpleGraph V'')
+variable {V V' V'' : Type*} (G : SimpleGraph V) (G' : SimpleGraph V') (G'' : SimpleGraph V'')
+  {u v w u' v' w' : V}
 
 /-- A walk is a sequence of adjacent vertices.  For vertices `u v : V`,
 the type `Walk u v` consists of all walks starting at `u` and ending at `v`.
@@ -40,7 +34,7 @@ walk visits is `SimpleGraph.Walk.support`.
 
 See `SimpleGraph.Walk.nil'` and `SimpleGraph.Walk.cons'` for patterns that
 can be useful in definitions since they make the vertices explicit. -/
-inductive Walk : V → V → Type u
+inductive Walk : V → V → Type*
   | nil {u : V} : Walk u u
   | cons {u v w : V} (h : G.Adj u v) (p : Walk v w) : Walk u w
   deriving DecidableEq
@@ -78,42 +72,41 @@ lemmas. While this is a simple wrapper around `Eq.rec`, it gives a canonical way
 
 The simp-normal form is for the `copy` to be pushed outward. That way calculations can
 occur within the "copy context." -/
-protected def copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') : G.Walk u' v' :=
+protected def copy (p : G.Walk u v) (hu : u = u') (hv : v = v') : G.Walk u' v' :=
   hu ▸ hv ▸ p
 #align simple_graph.walk.copy SimpleGraph.Walk.copy
 
 @[simp]
-theorem copy_rfl_rfl {u v} (p : G.Walk u v) : p.copy rfl rfl = p := rfl
+theorem copy_rfl_rfl (p : G.Walk u v) : p.copy rfl rfl = p := rfl
 #align simple_graph.walk.copy_rfl_rfl SimpleGraph.Walk.copy_rfl_rfl
 
 @[simp]
-theorem copy_copy {u v u' v' u'' v''} (p : G.Walk u v)
-    (hu : u = u') (hv : v = v') (hu' : u' = u'') (hv' : v' = v'') :
+theorem copy_copy (p : G.Walk u u') (hu : u = v) (hv : u' = v') (hu' : v = w) (hv' : v' = w') :
     (p.copy hu hv).copy hu' hv' = p.copy (hu.trans hu') (hv.trans hv') := by
   subst_vars
   rfl
 #align simple_graph.walk.copy_copy SimpleGraph.Walk.copy_copy
 
 @[simp]
-theorem copy_nil {u u'} (hu : u = u') : (Walk.nil : G.Walk u u).copy hu hu = Walk.nil := by
+theorem copy_nil (hu : u = u') : (Walk.nil : G.Walk u u).copy hu hu = Walk.nil := by
   subst_vars
   rfl
 #align simple_graph.walk.copy_nil SimpleGraph.Walk.copy_nil
 
-theorem copy_cons {u v w u' w'} (h : G.Adj u v) (p : G.Walk v w) (hu : u = u') (hw : w = w') :
+theorem copy_cons (h : G.Adj u v) (p : G.Walk v w) (hu : u = u') (hw : w = w') :
     (Walk.cons h p).copy hu hw = Walk.cons (hu ▸ h) (p.copy rfl hw) := by
   subst_vars
   rfl
 #align simple_graph.walk.copy_cons SimpleGraph.Walk.copy_cons
 
 @[simp]
-theorem cons_copy {u v w v' w'} (h : G.Adj u v) (p : G.Walk v' w') (hv : v' = v) (hw : w' = w) :
+theorem cons_copy (h : G.Adj u v) (p : G.Walk v' w') (hv : v' = v) (hw : w' = w) :
     Walk.cons h (p.copy hv hw) = (Walk.cons (hv ▸ h) p).copy rfl hw := by
   subst_vars
   rfl
 #align simple_graph.walk.cons_copy SimpleGraph.Walk.cons_copy
 
-theorem exists_eq_cons_of_ne {u v : V} (hne : u ≠ v) :
+theorem exists_eq_cons_of_ne (hne : u ≠ v) :
     ∀ (p : G.Walk u v), ∃ (w : V) (h : G.Adj u w) (p' : G.Walk w v), p = cons h p'
   | nil => (hne rfl).elim
   | cons h p' => ⟨_, h, p', rfl⟩
@@ -222,7 +215,7 @@ theorem append_assoc {u v w x : V} (p : G.Walk u v) (q : G.Walk v w) (r : G.Walk
 #align simple_graph.walk.append_assoc SimpleGraph.Walk.append_assoc
 
 @[simp]
-theorem append_copy_copy {u v w u' v' w'} (p : G.Walk u v) (q : G.Walk v w)
+theorem append_copy_copy (p : G.Walk u v) (q : G.Walk v w)
     (hu : u = u') (hv : v = v') (hw : w = w') :
     (p.copy hu hv).append (q.copy hv hw) = (p.append q).copy hu hw := by
   subst_vars
@@ -562,13 +555,13 @@ theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) 
 #align simple_graph.walk.mem_support_append_iff SimpleGraph.Walk.mem_support_append_iff
 
 @[simp]
-theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
+theorem subset_support_append_left {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support := by
   simp only [Walk.support_append, List.subset_append_left]
 #align simple_graph.walk.subset_support_append_left SimpleGraph.Walk.subset_support_append_left
 
 @[simp]
-theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
+theorem subset_support_append_right {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support := by
   intro h
   simp (config := { contextual := true }) only [mem_support_append_iff, or_true_iff, imp_true_iff]
@@ -786,7 +779,7 @@ inductive Nil : {v w : V} → G.Walk v w → Prop
 
 @[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
-@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬ (cons h p).Nil := fun.
+@[simp] lemma not_nil_cons {h : G.Adj u v} {p : G.Walk v w} : ¬(cons h p).Nil := fun.
 
 instance (p : G.Walk v w) : Decidable p.Nil :=
   match p with
@@ -795,7 +788,7 @@ instance (p : G.Walk v w) : Decidable p.Nil :=
 
 protected lemma Nil.eq {p : G.Walk v w} : p.Nil → v = w | .nil => rfl
 
-lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬ p.Nil := mt Nil.eq
+lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬p.Nil := mt Nil.eq
 
 lemma nil_iff_support_eq {p : G.Walk v w} : p.Nil ↔ p.support = [v] := by
   cases p <;> simp
@@ -804,53 +797,53 @@ lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 := by
   cases p <;> simp
 
 lemma not_nil_iff {p : G.Walk v w} :
-    ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
+    ¬p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
   cases p <;> simp [*]
 
 @[elab_as_elim]
-def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
+def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬p.Nil) → Sort*}
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) → motive (cons h q) not_nil_cons)
-    (p : G.Walk u w) : (hp : ¬ p.Nil) → motive p hp :=
+    (p : G.Walk u w) : (hp : ¬p.Nil) → motive p hp :=
   match p with
   | nil => fun hp => absurd .nil hp
   | .cons h q => fun _ => cons h q
 
 /-- The second vertex along a non-nil walk. -/
-def sndOfNotNil (p : G.Walk v w) (hp : ¬ p.Nil) : V :=
+def sndOfNotNil (p : G.Walk v w) (hp : ¬p.Nil) : V :=
   p.notNilRec (@fun _ u _ _ _ => u) hp
 
-@[simp] lemma adj_sndOfNotNil {p : G.Walk v w} (hp : ¬ p.Nil) :
+@[simp] lemma adj_sndOfNotNil {p : G.Walk v w} (hp : ¬p.Nil) :
     G.Adj v (p.sndOfNotNil hp) :=
   p.notNilRec (fun h _ => h) hp
 
 /-- The walk obtained by removing the first dart of a non-nil walk. -/
-def tail (p : G.Walk x y) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) y :=
+def tail (p : G.Walk u v) (hp : ¬p.Nil) : G.Walk (p.sndOfNotNil hp) v :=
   p.notNilRec (fun _ q => q) hp
 
 /-- The first dart of a walk. -/
 @[simps]
-def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
+def firstDart (p : G.Walk v w) (hp : ¬p.Nil) : G.Dart where
   fst := v
   snd := p.sndOfNotNil hp
   is_adj := p.adj_sndOfNotNil hp
 
-lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
+lemma edge_firstDart (p : G.Walk v w) (hp : ¬p.Nil) :
     (p.firstDart hp).edge = s(v, p.sndOfNotNil hp) := rfl
 
-@[simp] lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
+@[simp] lemma cons_tail_eq (p : G.Walk u v) (hp : ¬p.Nil) :
     cons (p.adj_sndOfNotNil hp) (p.tail hp) = p :=
   p.notNilRec (fun _ _ => rfl) hp
 
-@[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬ p.Nil) :
-    x :: (p.tail hp).support = p.support := by
+@[simp] lemma cons_support_tail (p : G.Walk u v) (hp : ¬p.Nil) :
+    u :: (p.tail hp).support = p.support := by
   rw [← support_cons, cons_tail_eq]
 
-@[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
+@[simp] lemma length_tail_add_one {p : G.Walk u v} (hp : ¬p.Nil) :
     (p.tail hp).length + 1 = p.length := by
   rw [← length_cons, cons_tail_eq]
 
-@[simp] lemma nil_copy {p : G.Walk x y} (hx : x = x') (hy : y = y') :
-    (p.copy hx hy).Nil = p.Nil := by
+@[simp] lemma nil_copy {p : G.Walk u v} (hu : u = u') (hv : v = v') :
+    (p.copy hu hv).Nil = p.Nil := by
   subst_vars; rfl
 
 /-! ### Walk decompositions -/
@@ -896,7 +889,7 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
       split_ifs with h' <;> subst_vars <;> simp [*]
 #align simple_graph.walk.take_spec SimpleGraph.Walk.take_spec
 
-theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
+theorem mem_support_iff_exists_append {G : SimpleGraph V} {u v w : V}
     {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), p = q.append r := by
   classical
   constructor
@@ -918,7 +911,7 @@ theorem count_support_takeUntil_eq_one {u v w : V} (p : G.Walk v w) (h : u ∈ p
       split_ifs with h' <;> rw [eq_comm] at h' <;> subst_vars <;> simp! [*, List.count_cons]
 #align simple_graph.walk.count_support_take_until_eq_one SimpleGraph.Walk.count_support_takeUntil_eq_one
 
-theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) (x : V) :
+theorem count_edges_takeUntil_le_one (p : G.Walk v w) (h : u ∈ p.support) (x : V) :
     (p.takeUntil u h).edges.count s(u, x) ≤ 1 := by
   induction' p with u' u' v' w' ha p' ih
   · rw [mem_support_nil_iff] at h
@@ -940,7 +933,7 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
 #align simple_graph.walk.count_edges_take_until_le_one SimpleGraph.Walk.count_edges_takeUntil_le_one
 
 @[simp]
-theorem takeUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w')
+theorem takeUntil_copy (p : G.Walk v w) (hv : v = v') (hw : w = w')
     (h : u ∈ (p.copy hv hw).support) :
     (p.copy hv hw).takeUntil u h = (p.takeUntil u (by subst_vars; exact h)).copy hv rfl := by
   subst_vars
@@ -948,7 +941,7 @@ theorem takeUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w'
 #align simple_graph.walk.take_until_copy SimpleGraph.Walk.takeUntil_copy
 
 @[simp]
-theorem dropUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w')
+theorem dropUntil_copy (p : G.Walk v w) (hv : v = v') (hw : w = w')
     (h : u ∈ (p.copy hv hw).support) :
     (p.copy hv hw).dropUntil u h = (p.dropUntil u (by subst_vars; exact h)).copy rfl hw := by
   subst_vars
@@ -1159,7 +1152,7 @@ end Walk
 
 namespace Walk
 
-variable {G}
+variable {G} {H : SimpleGraph V}
 
 /-- The walk `p` transferred to lie in `H`, given that `H` contains its edges. -/
 @[simp]
@@ -1293,8 +1286,6 @@ variable {G}
 /-! ### Walks as subgraphs -/
 
 namespace Walk
-
-variable {u v w : V}
 
 /-- The subgraph consisting of the vertices and edges of the walk. -/
 @[simp]
