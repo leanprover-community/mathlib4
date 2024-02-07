@@ -42,7 +42,8 @@ def stepBound (n : ℕ) : ℕ :=
   n * 4 ^ n
 #align szemeredi_regularity.step_bound SzemerediRegularity.stepBound
 
-theorem le_stepBound : id ≤ stepBound := fun n => Nat.le_mul_of_pos_right <| pow_pos (by norm_num) n
+theorem le_stepBound : id ≤ stepBound := fun n =>
+  Nat.le_mul_of_pos_right _ <| pow_pos (by norm_num) n
 #align szemeredi_regularity.le_step_bound SzemerediRegularity.le_stepBound
 
 theorem stepBound_mono : Monotone stepBound := fun a b h =>
@@ -214,7 +215,7 @@ noncomputable def bound : ℕ :=
 #align szemeredi_regularity.bound SzemerediRegularity.bound
 
 theorem initialBound_le_bound : initialBound ε l ≤ bound ε l :=
-  (id_le_iterate_of_id_le le_stepBound _ _).trans <| Nat.le_mul_of_pos_right <| by positivity
+  (id_le_iterate_of_id_le le_stepBound _ _).trans <| Nat.le_mul_of_pos_right _ <| by positivity
 #align szemeredi_regularity.initial_bound_le_bound SzemerediRegularity.initialBound_le_bound
 
 theorem le_bound : l ≤ bound ε l :=

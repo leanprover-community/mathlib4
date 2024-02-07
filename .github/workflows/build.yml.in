@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     # timeout-minutes: 3
     steps:
-      - uses: styfle/cancel-workflow-action@0.11.0
+      - uses: styfle/cancel-workflow-action@0.12.1
         with:
           all_but_latest: true
           access_token: ${{ github.token }}
@@ -163,10 +163,7 @@ jobs:
       - name: get cache
         run: |
           lake exe cache clean
-          # We've been seeing many failures at this step recently because of network errors.
-          # As a band-aid, we try twice.
-          # The 'sleep 1' is small pause to let the network recover.
-          lake exe cache get || (sleep 1; lake exe cache get)
+          lake exe cache get
 
       - name: build mathlib
         id: build
@@ -177,6 +174,7 @@ jobs:
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
 
       - name: check for noisy stdout lines
+        id: noisy
         run: |
           ! grep --after-context=1 "stdout:" stdout.log
 
@@ -184,13 +182,14 @@ jobs:
         run: lake build -KCI MathlibExtras
 
       - name: upload cache
-        if: always()
+        # We only upload the cache if the build ran (either succeeding or failing),
+        # but not if it was skipped.
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         run: |
           # run this in CI if it gets an incorrect lake hash for existing cache files somehow
           # lake exe cache pack! || true
           lake exe cache commit || true
-          # try twice in case of network errors
-          lake exe cache put || (sleep 1; lake exe cache put) || true
+          lake exe cache put || true
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
@@ -207,6 +206,7 @@ jobs:
           fi
 
       - name: build archive
+        id: archive
         run: |
           # Note: we should not be including `Archive` and `Countexamples` in the cache.
           # We do this for now for the sake of not rebuilding them in every CI run
@@ -215,19 +215,19 @@ jobs:
           # it should be possible to determine whether they need to be built without actually
           # storing and transferring oleans over the network.
           # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
-          # We retry twice in case of network errors.
-          lake exe cache get Archive.lean || (sleep 1; lake exe cache get Archive.lean)
+          lake exe cache get Archive.lean
           lake build Archive
-          lake exe cache put Archive.lean || (sleep 1; lake exe cache put Archive.lean)
+          lake exe cache put Archive.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: build counterexamples
+        id: counterexamples
         run: |
-          lake exe cache get Counterexamples.lean || (sleep 1; lake exe cache get Counterexamples.lean)
+          lake exe cache get Counterexamples.lean
           lake build Counterexamples
-          lake exe cache put Counterexamples.lean || (sleep 1; lake exe cache put Counterexamples.lean)
+          lake exe cache put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
@@ -243,12 +243,22 @@ jobs:
           rm import_graph.dot
 
       - name: test mathlib
-        id: test
-        run: |
-          # Tests use parts of ProofWidgets not imported by Mathlib.
-          # Ensure everything has been built.
-          lake build ProofWidgets
-          make -j 8 test
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: |
+            bash -o pipefail -c "
+            # Tests use parts of ProofWidgets not imported by Mathlib.
+            # Ensure everything has been built.
+            lake build ProofWidgets
+            make -j 8 test"
+
+      - name: check for unused imports
+        id: shake
+        uses: liskin/gh-problem-matcher-wrap@v2
+        with:
+          linters: gcc
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
         id: lint
@@ -262,7 +272,7 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout toolchain/v4.5.0-rc1
+          git checkout toolchain/v4.6.0-rc1
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .
@@ -277,9 +287,12 @@ jobs:
           TOKEN: ${{ secrets.LEAN_PR_TESTING }}
           GITHUB_CONTEXT: ${{ toJson(github) }}
           WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          NOISY_OUTCOME: ${{ steps.noisy.outcome }}
+          ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
+          COUNTEREXAMPLE_OUTCOME: ${{ steps.counterexamples.outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
-          BUILD_OUTCOME: ${{ steps.build.outcome }}
           CHECK_OUTCOME: ${{ steps.lean4checker.outcome }}
         run: |
           scripts/lean-pr-testing-comments.sh

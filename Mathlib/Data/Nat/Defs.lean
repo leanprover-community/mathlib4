@@ -277,8 +277,8 @@ lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
     · simp at h
     · exact Nat.not_lt_of_le (Nat.mul_le_mul h'.1 h'.2) h
   · obtain hm | hn := h.2.2
-    · exact Nat.mul_lt_mul hm h.2.1 Nat.zero_lt_one
-    · exact Nat.mul_lt_mul' h.1 hn h.1
+    · exact Nat.mul_lt_mul_of_lt_of_le' hm h.2.1 Nat.zero_lt_one
+    · exact Nat.mul_lt_mul_of_le_of_lt h.1 hn h.1
 
 /-! ### `div` -/
 
@@ -568,7 +568,7 @@ def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ m : ℕ, P m 0) (H0b 
   | m, 0 => Ha0 m
   | 0, n => H0b n
   | Nat.succ m, Nat.succ n => H _ _ (pincerRecursion Ha0 H0b H _ _) (pincerRecursion Ha0 H0b H _ _)
-termination_by pincerRecursion Ha0 Hab H n m => n + m
+termination_by n m => n + m
 #align nat.pincer_recursion Nat.pincerRecursion
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.

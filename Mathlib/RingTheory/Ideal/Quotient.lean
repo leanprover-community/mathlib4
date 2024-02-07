@@ -3,8 +3,6 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
-import Mathlib.Algebra.Ring.Fin
-import Mathlib.Algebra.Ring.Prod
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Ideal.Basic

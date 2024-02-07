@@ -258,6 +258,14 @@ alias ⟨IsUpperSet.Ici_subset, _⟩ := isUpperSet_iff_Ici_subset
 alias ⟨IsLowerSet.Iic_subset, _⟩ := isLowerSet_iff_Iic_subset
 #align is_lower_set.Iic_subset IsLowerSet.Iic_subset
 
+theorem IsUpperSet.Ioi_subset (h : IsUpperSet s) ⦃a⦄ (ha : a ∈ s) : Ioi a ⊆ s :=
+  Ioi_subset_Ici_self.trans <| h.Ici_subset ha
+#align is_upper_set.Ioi_subset IsUpperSet.Ioi_subset
+
+theorem IsLowerSet.Iio_subset (h : IsLowerSet s) ⦃a⦄ (ha : a ∈ s) : Iio a ⊆ s :=
+  h.toDual.Ioi_subset ha
+#align is_lower_set.Iio_subset IsLowerSet.Iio_subset
+
 theorem IsUpperSet.ordConnected (h : IsUpperSet s) : s.OrdConnected :=
   ⟨fun _ ha _ _ => Icc_subset_Ici_self.trans <| h.Ici_subset ha⟩
 #align is_upper_set.ord_connected IsUpperSet.ordConnected
@@ -285,6 +293,24 @@ theorem IsLowerSet.image (hs : IsLowerSet s) (f : α ≃o β) : IsLowerSet (f ''
   rw [Set.image_equiv_eq_preimage_symm]
   exact hs.preimage f.symm.monotone
 #align is_lower_set.image IsLowerSet.image
+
+theorem OrderEmbedding.image_Ici (e : α ↪o β) (he : IsUpperSet (range e)) (a : α) :
+    e '' Ici a = Ici (e a) := by
+  rw [← e.preimage_Ici, image_preimage_eq_inter_range,
+    inter_eq_left.2 <| he.Ici_subset (mem_range_self _)]
+
+theorem OrderEmbedding.image_Iic (e : α ↪o β) (he : IsLowerSet (range e)) (a : α) :
+    e '' Iic a = Iic (e a) :=
+  e.dual.image_Ici he a
+
+theorem OrderEmbedding.image_Ioi (e : α ↪o β) (he : IsUpperSet (range e)) (a : α) :
+    e '' Ioi a = Ioi (e a) := by
+  rw [← e.preimage_Ioi, image_preimage_eq_inter_range,
+    inter_eq_left.2 <| he.Ioi_subset (mem_range_self _)]
+
+theorem OrderEmbedding.image_Iio (e : α ↪o β) (he : IsLowerSet (range e)) (a : α) :
+    e '' Iio a = Iio (e a) :=
+  e.dual.image_Ioi he a
 
 @[simp]
 theorem Set.monotone_mem : Monotone (· ∈ s) ↔ IsUpperSet s :=
@@ -409,12 +435,6 @@ theorem isUpperSet_iff_Ioi_subset : IsUpperSet s ↔ ∀ ⦃a⦄, a ∈ s → Io
 theorem isLowerSet_iff_Iio_subset : IsLowerSet s ↔ ∀ ⦃a⦄, a ∈ s → Iio a ⊆ s := by
   simp [isLowerSet_iff_forall_lt, subset_def, @forall_swap (_ ∈ s)]
 #align is_lower_set_iff_Iio_subset isLowerSet_iff_Iio_subset
-
-alias ⟨IsUpperSet.Ioi_subset, _⟩ := isUpperSet_iff_Ioi_subset
-#align is_upper_set.Ioi_subset IsUpperSet.Ioi_subset
-
-alias ⟨IsLowerSet.Iio_subset, _⟩ := isLowerSet_iff_Iio_subset
-#align is_lower_set.Iio_subset IsLowerSet.Iio_subset
 
 end PartialOrder
 
@@ -1045,7 +1065,7 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
 
 @[simp]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  FunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
 #align upper_set.symm_map UpperSet.symm_map
 
 @[simp]
@@ -1090,7 +1110,7 @@ def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
 
 @[simp]
 theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  FunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
 #align lower_set.symm_map LowerSet.symm_map
 
 @[simp]

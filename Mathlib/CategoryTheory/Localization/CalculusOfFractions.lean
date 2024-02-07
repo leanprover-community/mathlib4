@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Opposite
+import Mathlib.CategoryTheory.MorphismProperty
 
 /-!
 # Calculus of fractions

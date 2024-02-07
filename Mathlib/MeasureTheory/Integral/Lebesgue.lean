@@ -354,9 +354,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
   rcases ENNReal.lt_iff_exists_coe.1 ha with ⟨r, rfl, _⟩
   have ha : r < 1 := ENNReal.coe_lt_coe.1 ha
   let rs := s.map fun a => r * a
-  have eq_rs : (const α r : α →ₛ ℝ≥0∞) * map c s = rs.map c := by
-    ext1 a
-    exact ENNReal.coe_mul.symm
+  have eq_rs : rs.map c = (const α r : α →ₛ ℝ≥0∞) * map c s := rfl
   have eq : ∀ p, rs.map c ⁻¹' {p} = ⋃ n, rs.map c ⁻¹' {p} ∩ { a | p ≤ f n a } := by
     intro p
     rw [← inter_iUnion]; nth_rw 1 [← inter_univ (map c rs ⁻¹' {p})]
@@ -381,7 +379,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     refine' inter_subset_inter (Subset.refl _) _
     intro x (hx : r ≤ f i x)
     exact le_trans hx (h_mono h x)
-  have h_meas : ∀ n, MeasurableSet { a : α | (⇑(map c rs)) a ≤ f n a } := fun n =>
+  have h_meas : ∀ n, MeasurableSet {a : α | map c rs a ≤ f n a} := fun n =>
     measurableSet_le (SimpleFunc.measurable _) (hf n)
   calc
     (r : ℝ≥0∞) * (s.map c).lintegral μ = ∑ r in (rs.map c).range, r * μ (rs.map c ⁻¹' {r}) := by
@@ -1053,6 +1051,44 @@ theorem lintegral_iInf {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurab
     (h_fin : ∫⁻ a, f 0 a ∂μ ≠ ∞) : ∫⁻ a, ⨅ n, f n a ∂μ = ⨅ n, ∫⁻ a, f n a ∂μ :=
   lintegral_iInf_ae h_meas (fun n => ae_of_all _ <| h_anti n.le_succ) h_fin
 #align measure_theory.lintegral_infi MeasureTheory.lintegral_iInf
+
+/-- Monotone convergence for an infimum over a directed family and indexed by a countable type -/
+theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Countable β]
+    {f : β → α → ℝ≥0∞} {μ : Measure α} (hμ : μ ≠ 0) (hf : ∀ b, Measurable (f b))
+    (hf_int : ∀ b, ∫⁻ a, f b a ∂μ ≠ ∞) (h_directed : Directed (· ≥ ·) f) :
+    ∫⁻ a, ⨅ b, f b a ∂μ = ⨅ b, ∫⁻ a, f b a ∂μ := by
+  cases nonempty_encodable β
+  cases isEmpty_or_nonempty β
+  · -- Porting note: the next `simp only` doesn't do anything, so added a workaround below.
+    -- simp only [WithTop.iInf_empty, lintegral_const]
+    conv =>
+      lhs
+      congr
+      · skip
+      · ext x
+        rw [WithTop.iInf_empty]
+    rw [WithTop.iInf_empty, lintegral_const]
+    rw [ENNReal.top_mul', if_neg]
+    simp only [Measure.measure_univ_eq_zero, hμ, not_false_iff]
+  inhabit β
+  have : ∀ a, ⨅ b, f b a = ⨅ n, f (h_directed.sequence f n) a := by
+    refine' fun a =>
+      le_antisymm (le_iInf fun n => iInf_le _ _)
+        (le_iInf fun b => iInf_le_of_le (Encodable.encode b + 1) _)
+    exact h_directed.sequence_le b a
+  -- Porting note: used `∘` below to deal with its reduced reducibility
+  calc
+    ∫⁻ a, ⨅ b, f b a ∂μ
+    _ = ∫⁻ a, ⨅ n, (f ∘ h_directed.sequence f) n a ∂μ := by simp only [this, Function.comp_apply]
+    _ = ⨅ n, ∫⁻ a, (f ∘ h_directed.sequence f) n a ∂μ := by
+      rw [lintegral_iInf ?_ h_directed.sequence_anti]
+      · exact hf_int _
+      · exact (fun n => hf _)
+    _ = ⨅ b, ∫⁻ a, f b a ∂μ := by
+      refine' le_antisymm (le_iInf fun b => _) (le_iInf fun n => _)
+      · exact iInf_le_of_le (Encodable.encode b + 1) (lintegral_mono <| h_directed.sequence_le b)
+      · exact iInf_le (fun b => ∫⁻ a, f b a ∂μ) _
+#align lintegral_infi_directed_of_measurable MeasureTheory.lintegral_iInf_directed_of_measurable
 
 /-- Known as Fatou's lemma, version with `AEMeasurable` functions -/
 theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :

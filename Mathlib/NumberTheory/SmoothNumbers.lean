@@ -250,7 +250,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
     Finset.mem_product, Finset.mem_powerset, Finset.mem_erase, Prod.exists]
   refine ⟨s, m, ⟨Finset.mem_powerset.mp hs, ?_, ?_⟩, hm.symm⟩
   · have := hm ▸ ne_zero_of_mem_smoothNumbers hn₂
-    simp only [ne_eq, _root_.mul_eq_zero, zero_lt_two, pow_eq_zero_iff, not_or] at this
+    simp only [ne_eq, _root_.mul_eq_zero, sq_eq_zero_iff, not_or] at this
     exact this.1
   · rw [lt_succ, le_sqrt']
     refine LE.le.trans ?_ (hm ▸ hn₁)
