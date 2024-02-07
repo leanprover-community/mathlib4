@@ -452,6 +452,9 @@ theorem IsFaceMap₂₂ {S : SSet} (f : Fin 2 →  S _[1]) :
     Fin.not_lt_zero, and_self, and_true]
   rfl
 
+private lemma forall_fin_three {p : Fin 3 → Prop} : (∀ i, p i) ↔ p 0 ∧ p 1 ∧ p 2:=
+  Fin.forall_fin_succ.trans <| and_congr_right fun _ => Fin.forall_fin_two
+
 /--For the horn `Λ[3,0]` the condition `IsFaceMap` is equivelent to
  `S.δ 1 (f 0) = S.δ 1 (f 1) ∧ S.δ 2 (f 0) = S.δ 1 (f 2) ∧ S.δ 2 (f 1) = S.δ 2 (f 2)`
 -/
