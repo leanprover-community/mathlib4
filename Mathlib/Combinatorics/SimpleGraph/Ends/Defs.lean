@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anand Rao, Rémi Bottinelli
 -/
 import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Basic
 import Mathlib.Data.Finite.Set
 
 #align_import combinatorics.simple_graph.ends.defs from "leanprover-community/mathlib"@"b99e2d58a5e6861833fa8de11e51a81144258db4"
