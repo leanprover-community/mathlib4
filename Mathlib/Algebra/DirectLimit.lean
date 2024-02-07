@@ -434,7 +434,12 @@ variable {G f}
 
 @[simp]
 theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
-  Module.DirectLimit.lift_of _ _ _
+  Module.DirectLimit.lift_of
+    -- Note: had to make these arguments explicit #8386
+    (f := (fun i j hij => (f i j hij).toIntLinearMap))
+    (fun i => (g i).toIntLinearMap)
+    Hg
+    x
 #align add_comm_group.direct_limit.lift_of AddCommGroup.DirectLimit.lift_of
 
 theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+ P) (x) :
@@ -719,7 +724,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         have := DirectedSystem.map_map (fun i j h => f' i j h) hij (le_refl j : j ≤ j)
         rw [this]
         exact sub_self _
-        exacts [Or.inr rfl, Or.inl rfl]
+        exacts [Or.inl rfl, Or.inr rfl]
     · refine' ⟨i, {⟨i, 1⟩}, _, isSupported_sub (isSupported_of.2 rfl) isSupported_one, _⟩
       · rintro k (rfl | h)
         rfl

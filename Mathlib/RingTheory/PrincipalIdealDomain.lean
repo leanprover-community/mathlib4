@@ -354,7 +354,10 @@ section
 
 open Ideal
 
-variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [GCDMonoid R]
+variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+
+section GCD
+variable [GCDMonoid R]
 
 theorem span_gcd (x y : R) : span ({gcd x y} : Set R) = span ({x, y} : Set R) := by
   obtain ⟨d, hd⟩ := IsPrincipalIdealRing.principal (span ({x, y} : Set R))
@@ -391,9 +394,12 @@ theorem gcd_isUnit_iff (x y : R) : IsUnit (gcd x y) ↔ IsCoprime x y := by
   rw [IsCoprime, ← Ideal.mem_span_pair, ← span_gcd, ← span_singleton_eq_top, eq_top_iff_one]
 #align gcd_is_unit_iff gcd_isUnit_iff
 
+end GCD
+
 -- this should be proved for UFDs surely?
 theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z ∈ nonunits R, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y := by
+  letI := UniqueFactorizationMonoid.toGCDMonoid R
   rw [← gcd_isUnit_iff]
   by_contra h
   refine' H _ h _ (gcd_dvd_left _ _) (gcd_dvd_right _ _)
@@ -423,7 +429,8 @@ theorem isCoprime_of_irreducible_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
 
 theorem isCoprime_of_prime_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : R, Prime z → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
-  isCoprime_of_irreducible_dvd nonzero fun z zi => H z <| GCDMonoid.prime_of_irreducible zi
+  isCoprime_of_irreducible_dvd nonzero fun z zi ↦
+    H z (PrincipalIdealRing.irreducible_iff_prime.1 zi)
 #align is_coprime_of_prime_dvd isCoprime_of_prime_dvd
 
 theorem Irreducible.coprime_iff_not_dvd {p n : R} (pp : Irreducible p) :
@@ -447,6 +454,7 @@ theorem Prime.coprime_iff_not_dvd {p n : R} (pp : Prime p) : IsCoprime p n ↔ �
   pp.irreducible.coprime_iff_not_dvd
 #align prime.coprime_iff_not_dvd Prime.coprime_iff_not_dvd
 
+/-- See also `Irreducible.coprime_iff_not_dvd'`. -/
 theorem Irreducible.dvd_iff_not_coprime {p n : R} (hp : Irreducible p) : p ∣ n ↔ ¬IsCoprime p n :=
   iff_not_comm.2 hp.coprime_iff_not_dvd
 #align irreducible.dvd_iff_not_coprime Irreducible.dvd_iff_not_coprime
@@ -462,6 +470,7 @@ theorem Irreducible.coprime_or_dvd {p : R} (hp : Irreducible p) (i : R) : IsCopr
 
 theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {k : ℕ}
     (h : a * b = c ^ k) : ∃ d : R, Associated (d ^ k) a :=
+  letI := UniqueFactorizationMonoid.toGCDMonoid R
   exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr hab) h
 #align exists_associated_pow_of_mul_eq_pow' exists_associated_pow_of_mul_eq_pow'
 

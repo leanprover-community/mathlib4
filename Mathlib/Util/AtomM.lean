@@ -45,7 +45,6 @@ put it in the list of atoms and return the new index, otherwise. -/
 def AtomM.addAtom (e : Expr) : AtomM Nat := do
   let c ← get
   for h : i in [:c.atoms.size] do
-    have : i < c.atoms.size := h.2
     if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
       return i
   modifyGet fun c ↦ (c.atoms.size, { c with atoms := c.atoms.push e })
