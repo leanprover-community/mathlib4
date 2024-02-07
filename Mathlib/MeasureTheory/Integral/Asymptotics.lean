@@ -112,12 +112,13 @@ end LinearOrder
 
 section LinearOrderedAddCommGroup
 
+variable [LinearOrderedAddCommGroup α] [CompactIccSpace α]
+
 /-- If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g`, for some
 `g` integrable at `atTop`, then `f` is integrable. -/
 theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_eq_norm_neg
-    [LinearOrderedAddCommGroup α] [CompactIccSpace α] [IsMeasurablyGenerated (atTop (α := α))]
-    [MeasurableNeg α] [μ.IsNegInvariant] (hf : LocallyIntegrable f μ)
-    (hsymm : norm ∘ f =ᵐ[μ] norm ∘ f ∘ Neg.neg) (ho : f =O[atTop] g)
+    [IsMeasurablyGenerated (atTop (α := α))] [MeasurableNeg α] [μ.IsNegInvariant]
+    (hf : LocallyIntegrable f μ) (hsymm : norm ∘ f =ᵐ[μ] norm ∘ f ∘ Neg.neg) (ho : f =O[atTop] g)
     (hg : IntegrableAtFilter g atTop μ) : Integrable f μ := by
   refine (isEmpty_or_nonempty α).casesOn (fun _ ↦ ?_) (fun _ ↦ ?_)
   · exact integrableOn_univ.mp (by convert integrableOn_empty)
