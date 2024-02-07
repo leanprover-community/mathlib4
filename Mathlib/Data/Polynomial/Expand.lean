@@ -224,11 +224,12 @@ theorem contract_expand {f : R[X]} (hp : p ≠ 0) : contract p (expand R p f) = 
   simp [coeff_contract hp, coeff_expand hp.bot_lt, Nat.mul_div_cancel _ hp.bot_lt]
 #align polynomial.contract_expand Polynomial.contract_expand
 
-section CharP
+theorem contract_one {f : R[X]} : contract 1 f = f :=
+  ext fun n ↦ by rw [coeff_contract one_ne_zero, mul_one]
 
-variable [CharP R p]
+section ExpChar
 
-theorem expand_contract [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0)
+theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0)
     (hp : p ≠ 0) : expand R p (contract p f) = f := by
   ext n
   rw [coeff_expand hp.bot_lt, coeff_contract hp]
@@ -245,11 +246,17 @@ theorem expand_contract [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivativ
     exact absurd h' h
 #align polynomial.expand_contract Polynomial.expand_contract
 
-variable [hp : Fact p.Prime]
+variable [ExpChar R p]
+
+theorem expand_contract' [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0) :
+    expand R p (contract p f) = f := by
+  obtain _ | @⟨_, hprime, hchar⟩ := ‹ExpChar R p›
+  · rw [expand_one, contract_one]
+  · haveI := Fact.mk hchar; exact expand_contract p hf hprime.ne_zero
 
 theorem expand_char (f : R[X]) : map (frobenius R p) (expand R p f) = f ^ p := by
   refine' f.induction_on' (fun a b ha hb => _) fun n a => _
-  · rw [AlgHom.map_add, Polynomial.map_add, ha, hb, add_pow_char]
+  · rw [AlgHom.map_add, Polynomial.map_add, ha, hb, add_pow_expChar]
   · rw [expand_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
       mul_pow, ← C.map_pow, frobenius_def]
     ring
@@ -264,7 +271,7 @@ theorem map_expand_pow_char (f : R[X]) (n : ℕ) :
     expand_mul, ← map_expand]
 #align polynomial.map_expand_pow_char Polynomial.map_expand_pow_char
 
-end CharP
+end ExpChar
 
 end CommSemiring
 

@@ -169,7 +169,7 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
   · simpa [ha₁, ha₂] using _root_.div_eq_zero_iff.mp this.symm
   · -- Porting note: was
     -- linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
-    exact tsub_pos_of_lt hp.out.one_lt
+    exact Nat.sub_ne_zero_of_lt hp.out.one_lt
 #align witt_vector.recursion_base.solution_nonzero WittVector.RecursionBase.solution_nonzero
 
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
