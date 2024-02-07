@@ -335,26 +335,20 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     rwa [eval_eq_eval_mv_eval']
 
 open Cardinal in
-lemma exists_eval_ne_zero_of_totalDegree_le_card
-    (hF : F.IsHomogeneous n) (hF₀ : F ≠ 0) (h : n ≤ #R) :
-    ∃ r : σ → R, eval r F ≠ 0 := by
-  -- reduce to the case where σ is finite
-  obtain ⟨k, f, hf, F, rfl⟩ := exists_fin_rename F
-  have hF₀ : F ≠ 0 := by rintro rfl; simp at hF₀
-  have hF : F.IsHomogeneous n := by rwa [rename_isHomogeneous_iff hf] at hF
-  obtain ⟨r, hr⟩ := exists_eval_ne_zero_of_totalDegree_le_card_aux hF hF₀ h
-  obtain ⟨r, rfl⟩ := (Function.factorsThrough_iff _).mp <| (hf.factorsThrough r)
-  use r
-  rwa [eval_rename]
-
-open Cardinal in
 /-- See `MvPolynomial.IsHomogeneous.eq_zero_of_forall_eval_eq_zero`
 for a version that assumes `Infinite R`. -/
 lemma eq_zero_of_forall_eval_eq_zero_of_le_card
-    (hF : F.IsHomogeneous n) (hF₀ : ∀ r : σ → R, eval r F = 0) (hnR : n ≤ #R) :
+    (hF : F.IsHomogeneous n) (h : ∀ r : σ → R, eval r F = 0) (hnR : n ≤ #R) :
     F = 0 := by
-  contrapose! hF₀
-  exact exists_eval_ne_zero_of_totalDegree_le_card hF hF₀ hnR
+  contrapose! h
+  -- reduce to the case where σ is finite
+  obtain ⟨k, f, hf, F, rfl⟩ := exists_fin_rename F
+  have hF₀ : F ≠ 0 := by rintro rfl; simp at h
+  have hF : F.IsHomogeneous n := by rwa [rename_isHomogeneous_iff hf] at hF
+  obtain ⟨r, hr⟩ := exists_eval_ne_zero_of_totalDegree_le_card_aux hF hF₀ hnR
+  obtain ⟨r, rfl⟩ := (Function.factorsThrough_iff _).mp <| (hf.factorsThrough r)
+  use r
+  rwa [eval_rename]
 
 open Cardinal in
 /-- See `MvPolynomial.IsHomogeneous.funext`
@@ -369,8 +363,8 @@ lemma funext_of_le_card (hF : F.IsHomogeneous n) (hG : G.IsHomogeneous n)
 /-- See `MvPolynomial.IsHomogeneous.eq_zero_of_forall_eval_eq_zero_of_le_card`
 for a version that assumes `n ≤ #R`. -/
 lemma eq_zero_of_forall_eval_eq_zero [Infinite R] {F : MvPolynomial σ R} {n : ℕ}
-    (hF : F.IsHomogeneous n) (hF₀ : ∀ r : σ → R, eval r F = 0) : F = 0 := by
-  apply eq_zero_of_forall_eval_eq_zero_of_le_card hF hF₀
+    (hF : F.IsHomogeneous n) (h : ∀ r : σ → R, eval r F = 0) : F = 0 := by
+  apply eq_zero_of_forall_eval_eq_zero_of_le_card hF h
   exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 /-- See `MvPolynomial.IsHomogeneous.funext_of_le_card`
