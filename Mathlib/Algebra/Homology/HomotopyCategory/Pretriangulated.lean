@@ -29,7 +29,7 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 * https://stacks.math.columbia.edu/tag/014P
 
 -/
-
+set_option says.verify true
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated
 
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
@@ -212,7 +212,7 @@ noncomputable def rotateHomotopyEquiv :
         simp only [Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
           Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
           shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_self 1), δ_inl,
-          Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
+          Int.reduceNeg, Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
           Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul,
           neg_neg, Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
           Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by linarith),
