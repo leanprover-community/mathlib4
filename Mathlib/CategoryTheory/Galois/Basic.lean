@@ -21,10 +21,10 @@ the definitions in Lenstras notes (see below for a reference).
 ## Main definitions
 
 * `PreGaloisCategory` : defining properties of Galois categories not involving a fiber functor
-* `FiberFunctor`      : a fiber functor from a PreGaloisCategory to `FintypeCat`
+* `FiberFunctor`      : a fiber functor from a `PreGaloisCategory` to `FintypeCat`
 * `GaloisCategory`    : a `PreGaloisCategory` that admits a `FiberFunctor`
-* `ConnectedObject`   : an object of a category that is not initial and has no non-trivial
-                        subobjects
+* `IsConnected`       : an object of a category is connected if it is not initial
+                        and does not have non-trivial subobjects
 
 ## Implementation details
 
@@ -92,18 +92,18 @@ class FiberFunctor {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory 
 
 /-- An object of a category `C` is connected if it is not initial
 and has no non-trivial subobjects. Lenstra, 3.12. -/
-class ConnectedObject {C : Type u₁} [Category.{u₂, u₁} C] (X : C) : Prop where
+class IsConnected {C : Type u₁} [Category.{u₂, u₁} C] (X : C) : Prop where
   /-- `X` is not an initial object. -/
   notInitial : IsInitial X → False
   /-- `X` has no non-trivial subobjects. -/
   noTrivialComponent (Y : C) (i : Y ⟶ X) [Mono i] : (IsInitial Y → False) → IsIso i
 
-/-- A functor is said to preserve connected objects if it sends
-connected objects to connected objects. -/
-class PreservesConnectedObjects {C : Type u₁} [Category.{u₂, u₁} C] {D : Type v₁}
+/-- A functor is said to preserve connectedness if whenever `X : C` is connected,
+also `F.obj X` is connected. -/
+class PreservesIsConnected {C : Type u₁} [Category.{u₂, u₁} C] {D : Type v₁}
     [Category.{v₂, v₁} D] (F : C ⥤ D) : Prop where
   /-- `F.obj X` is connected if `X` is connected. -/
-  preserves : ∀ {X : C} [ConnectedObject X], ConnectedObject (F.obj X)
+  preserves : ∀ {X : C} [IsConnected X], IsConnected (F.obj X)
 
 variable {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory C]
 
@@ -179,10 +179,10 @@ lemma not_initial_of_inhabited {X : C} (x : F.obj X) (h : IsInitial X) : False :
   ((initial_iff_fiber_empty F X).mp ⟨h⟩).false x
 
 /-- The fiber of a connected object is nonempty. -/
-instance nonempty_fiber_of_connected (X : C) [ConnectedObject X] : Nonempty (F.obj X) := by
+instance nonempty_fiber_of_isConnected (X : C) [IsConnected X] : Nonempty (F.obj X) := by
   by_contra h
   have ⟨hin⟩ : Nonempty (IsInitial X) := (initial_iff_fiber_empty F X).mpr (not_nonempty_iff.mp h)
-  exact ConnectedObject.notInitial hin
+  exact IsConnected.notInitial hin
 
 /-- The fiber of the equalizer of `f g : X ⟶ Y` is equivalent to the set of agreement of `f`
 and `g`. -/
@@ -194,20 +194,20 @@ private noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
   · exact Types.equalizerIso (F.map f) (F.map g)
 
 /-- The evaluation map is injective for connected objects. -/
-lemma evaluationInjective_of_connected (A X : C) [ConnectedObject A] (a : F.obj A) :
+lemma evaluationInjective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A) :
     Function.Injective (fun (f : A ⟶ X) ↦ F.map f a) := by
   intro f g (h : F.map f a = F.map g a)
   haveI : IsIso (equalizer.ι f g) := by
-    apply ConnectedObject.noTrivialComponent _ (equalizer.ι f g)
+    apply IsConnected.noTrivialComponent _ (equalizer.ι f g)
     exact not_initial_of_inhabited F ((fiberEqualizerEquiv F f g).symm ⟨a, h⟩)
   exact eq_of_epi_equalizer
 
 /-- The evaluation map on automorphisms is injective for connected objects. -/
-lemma evaluation_aut_injective_of_connected (A : C) [ConnectedObject A] (a : F.obj A) :
+lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj A) :
     Function.Injective (fun f : Aut A ↦ F.map (f.hom) a) := by
   show Function.Injective ((fun f : A ⟶ A ↦ F.map f a) ∘ (fun f : Aut A ↦ f.hom))
   apply Function.Injective.comp
-  · exact evaluationInjective_of_connected F A A a
+  · exact evaluationInjective_of_isConnected F A A a
   · exact @Aut.ext _ _ A
 
 end PreGaloisCategory
@@ -222,18 +222,18 @@ namespace PreGaloisCategory
 variable {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C]
 
 /-- In a `GaloisCategory` the set of morphisms out of a connected object is finite. -/
-instance (A X : C) [ConnectedObject A] : Finite (A ⟶ X) := by
+instance (A X : C) [IsConnected A] : Finite (A ⟶ X) := by
   obtain ⟨F, ⟨hF⟩⟩ := @GaloisCategory.hasFiberFunctor C _ _
-  obtain ⟨a⟩ := nonempty_fiber_of_connected F A
+  obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f a)
-  exact evaluationInjective_of_connected F A X a
+  exact evaluationInjective_of_isConnected F A X a
 
 /-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
-instance (A : C) [ConnectedObject A] : Finite (Aut A) := by
+instance (A : C) [IsConnected A] : Finite (Aut A) := by
   obtain ⟨F, ⟨hF⟩⟩ := @GaloisCategory.hasFiberFunctor C _ _
-  obtain ⟨a⟩ := nonempty_fiber_of_connected F A
+  obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f.hom a)
-  exact evaluation_aut_injective_of_connected F A a
+  exact evaluation_aut_injective_of_isConnected F A a
 
 end PreGaloisCategory
 

@@ -40,7 +40,7 @@ noncomputable instance {G : Type v} [Group G] [Finite G] :
 
 /-- A connected object `X` of `C` is Galois if the quotient `X / Aut X` is terminal. -/
 class IsGalois {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C] (X : C)
-    extends ConnectedObject X : Prop where
+    extends IsConnected X : Prop where
   quotientByAutTerminal : Nonempty (IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X)
 
 variable {C : Type u₁} [Category.{u₂, u₁} C]
@@ -60,7 +60,7 @@ variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 /-- For a connected object `X` of `C`, the quotient `X / Aut X` is terminal if and only if
 the quotient `F.obj X / Aut X` has exactly one element. -/
 noncomputable def quotientByAutTerminalEquivUniqueQuotient
-    (X : C) [ConnectedObject X] :
+    (X : C) [IsConnected X] :
     IsTerminal (colimit <| SingleObj.functor <| Aut.toEnd X) ≃
     Unique (MulAction.orbitRel.Quotient (Aut X) (F.obj X)) := by
   let J : SingleObj (Aut X) ⥤ C := SingleObj.functor (Aut.toEnd X)
@@ -72,13 +72,13 @@ noncomputable def quotientByAutTerminalEquivUniqueQuotient
     (isLimitEmptyConeEquiv _ (asEmptyCone _) (asEmptyCone _) e)
   exact Types.isTerminalEquivUnique _
 
-lemma isGalois_iff_aux (X : C) [ConnectedObject X] :
+lemma isGalois_iff_aux (X : C) [IsConnected X] :
     IsGalois X ↔ Nonempty (IsTerminal <| colimit <| SingleObj.functor <| Aut.toEnd X) :=
   ⟨fun h ↦ h.quotientByAutTerminal, fun h ↦ ⟨h⟩⟩
 
 /-- Given a fiber functor `F` and a connected object `X` of `C`. Then `X` is Galois if and only if
 the natural action of `Aut X` on `F.obj X` is transitive. -/
-theorem isGalois_iff_pretransitive (X : C) [ConnectedObject X] :
+theorem isGalois_iff_pretransitive (X : C) [IsConnected X] :
     IsGalois X ↔ MulAction.IsPretransitive (Aut X) (F.obj X) := by
   rw [isGalois_iff_aux, Equiv.nonempty_congr <| quotientByAutTerminalEquivUniqueQuotient F X]
   exact (MulAction.pretransitive_iff_unique_quotient_of_nonempty (Aut X) (F.obj X)).symm
