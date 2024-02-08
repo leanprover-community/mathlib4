@@ -11,8 +11,8 @@ import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 Given a morphism of localizers `Φ : LocalizerMorphism W₁ W₂` (i.e. `W₁` and `W₂` are
 morphism properties on categories `C₁` and `C₂`, and we have a functor
 `Φ.functor : C₁ ⥤ C₂` which sends morphisms in `W₁` to morphisms in `W₂`), we introduce
-the notion of right resolutions of objects in `C₂`: if `X₂ : C₂`,
-a right resolution consists of an object `X₁ : C₁` and a morphism
+the notion of right resolutions of objects in `C₂`: if `X₂ : C₂`.
+A right resolution consists of an object `X₁ : C₁` and a morphism
 `w : X₂ ⟶ Φ.functor.obj X₁` that is in `W₂`. Then, the typeclass
 `Φ.HasRightResolutions` holds when any `X₂ : C₂` has a right resolution.
 
