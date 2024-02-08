@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.MvPolynomial.Funext
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
