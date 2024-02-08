@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Integral.Bochner
 
 #align_import measure_theory.measure.haar.inner_product_space from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -153,13 +152,5 @@ def toMeasureEquiv : E ≃ᵐ F where
 @[simp] theorem coe_toMeasureEquiv : (f.toMeasureEquiv : E → F) = f := rfl
 
 theorem toMeasureEquiv_symm : f.toMeasureEquiv.symm = f.symm.toMeasureEquiv := rfl
-
-variable [NormedAddCommGroup A] [NormedSpace ℝ A]
-
-theorem integrable_comp (g : F → A) : Integrable (g ∘ f) ↔ Integrable g :=
-  f.measurePreserving.integrable_comp_emb f.toMeasureEquiv.measurableEmbedding
-
-theorem integral_comp (g : F → A) : ∫ (x : E), g (f x) = ∫ (y : F), g y :=
-  f.measurePreserving.integral_comp' (f := f.toMeasureEquiv) g
 
 end LinearIsometryEquiv
