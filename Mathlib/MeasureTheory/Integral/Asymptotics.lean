@@ -21,7 +21,7 @@ We establish integrability of `f` from `f = O(g)`.
 * `MeasureTheory.LocallyIntegrable.integrable_of_isBigO_atBot_atTop`: If `f` is locally integrable,
   and `f =O[atBot] g`, `f =O[atTop] g'` for some `g`, `g'` integrable `atBot` and `atTop`
   respectively, then `f` is integrable.
-* `MeasureTheory.LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_eq_norm_neg`:
+* `MeasureTheory.LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_isNegInvariant`:
   If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g` for some
   `g` integrable `atTop`, then `f` is integrable.
 -/
@@ -116,7 +116,7 @@ variable [LinearOrderedAddCommGroup α] [CompactIccSpace α]
 
 /-- If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g`, for some
 `g` integrable at `atTop`, then `f` is integrable. -/
-theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_eq_norm_neg
+theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_isNegInvariant
     [IsMeasurablyGenerated (atTop (α := α))] [MeasurableNeg α] [μ.IsNegInvariant]
     (hf : LocallyIntegrable f μ) (hsymm : norm ∘ f =ᵐ[μ] norm ∘ f ∘ Neg.neg) (ho : f =O[atTop] g)
     (hg : IntegrableAtFilter g atTop μ) : Integrable f μ := by
