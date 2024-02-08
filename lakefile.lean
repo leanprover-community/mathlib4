@@ -26,9 +26,9 @@ package mathlib where
 meta if get_config? doc = some "on" then -- do not download and build doc-gen4 by default
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
-require std from git "https://github.com/leanprover/std4" @ "nightly-testing-2024-02-02"
+require std from git "https://github.com/leanprover/std4" @ "bump/nightly-2024-02-8"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
-require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
+require aesop from git "https://github.com/leanprover-community/aesop" @ "bump/nightly-2024-02-08"
 require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.27"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
