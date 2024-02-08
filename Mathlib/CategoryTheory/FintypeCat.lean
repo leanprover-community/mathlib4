@@ -70,9 +70,7 @@ set_option linter.uppercaseLean3 false in
 #align Fintype.concrete_category_Fintype FintypeCat.concreteCategoryFintype
 
 /- Help typeclass inference infer fullness of forgetful functor. -/
-instance : Full (forget FintypeCat) := by
-  show Full FintypeCat.incl
-  infer_instance
+instance : Full (forget FintypeCat) := inferInstanceAs <| Full FintypeCat.incl
 
 @[simp]
 theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
