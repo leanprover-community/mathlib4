@@ -54,7 +54,7 @@ section BooleanRing
 
 variable [BooleanRing α] (a b : α)
 
-instance : IsIdempotent α (· * ·) :=
+instance : Std.IdempotentOp (α := α) (· * ·) :=
   ⟨BooleanRing.mul_self⟩
 
 @[simp]

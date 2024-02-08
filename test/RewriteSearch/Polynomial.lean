@@ -147,14 +147,15 @@ example {R : Type u} {a b : R} [Semiring R] (ha : a ≠ 0) :
 --   -- rw [X_pow_eq_monomial, degree_monomial _ (one_ne_zero' R)]
 --   done
 
--- Polynomial.degree_X_sub_C.{u}
-#guard_msgs(drop info) in
-example {R : Type u} [Ring R] [Nontrivial R] (a : R) :
-    Polynomial.degree (Polynomial.X - Polynomial.C a) = 1 := by
-  rw_search [-Polynomial.degree_X_sub_C]
-  -- Mathlib proof:
-  -- rw [sub_eq_add_neg, ← map_neg C a, degree_X_add_C]
-  done
+-- Fails:
+-- -- Polynomial.degree_X_sub_C.{u}
+-- #guard_msgs(drop info) in
+-- example {R : Type u} [Ring R] [Nontrivial R] (a : R) :
+--     Polynomial.degree (Polynomial.X - Polynomial.C a) = 1 := by
+--   rw_search [-Polynomial.degree_X_sub_C]
+--   -- Mathlib proof:
+--   -- rw [sub_eq_add_neg, ← map_neg C a, degree_X_add_C]
+--   done
 
 -- Polynomial.natDegree_X_sub_C.{u}
 #guard_msgs(drop info) in

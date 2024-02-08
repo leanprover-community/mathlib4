@@ -43,7 +43,7 @@ def TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoi
 
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-scoped[TensorProduct] notation:100 "⨂[" R "]^" n:arg => TensorPower R n
+@[inherit_doc] scoped[TensorProduct] notation:100 "⨂[" R "]^" n:arg => TensorPower R n
 
 namespace PiTensorProduct
 

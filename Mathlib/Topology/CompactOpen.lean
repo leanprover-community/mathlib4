@@ -106,30 +106,31 @@ lemma eventually_mapsTo {f : C(X, Y)} (hK : IsCompact K) (hU : IsOpen U) (h : Ma
 lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
     Tendsto f l (𝓝 g) ↔
       ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → ∀ᶠ a in l, MapsTo (f a) K U := by
-  simp_rw [compactOpen_eq_mapsTo, tendsto_nhds_generateFrom_iff, forall_image2_iff]; rfl
+  simp_rw [compactOpen_eq_mapsTo, tendsto_nhds_generateFrom_iff, forall_image2_iff,
+    mem_setOf, preimage_setOf_eq, eventually_iff]
 
 lemma continuous_compactOpen {f : X → C(Y, Z)} :
     Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} := by
-  simp_rw [compactOpen_eq, continuous_generateFrom_iff, forall_image2_iff, mapsTo']; rfl
+  simp_rw [compactOpen_eq, continuous_generateFrom_iff, forall_image2_iff, mapsTo',
+    CompactOpen.gen, image_subset_iff, preimage_setOf_eq, mem_setOf]
 
 section Functorial
 
-variable (g : C(Y, Z))
-
 /-- `C(X, ·)` is a functor. -/
-theorem continuous_comp : Continuous (g.comp : C(X, Y) → C(X, Z)) :=
+theorem continuous_comp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
   continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
 #align continuous_map.continuous_comp ContinuousMap.continuous_comp
 
 /-- If `g : C(Y, Z)` is a topology inducing map,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
-theorem inducing_comp (hg : Inducing g) : Inducing (g.comp : C(X, Y) → C(X, Z)) where
-  induced := by simp only [compactOpen_eq_mapsTo, induced_generateFrom_eq, image_image2,
-    hg.setOf_isOpen, image2_image_right]; rfl
+theorem inducing_comp (g : C(Y, Z)) (hg : Inducing g) : Inducing (g.comp : C(X, Y) → C(X, Z)) where
+  induced := by
+    simp only [compactOpen_eq_mapsTo, induced_generateFrom_eq, image_image2, hg.setOf_isOpen,
+      image2_image_right, MapsTo, mem_preimage, preimage_setOf_eq, comp_apply]
 
-/-- If `g : C(Y, Z)` is a topological embedding, then the composition
-`ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
-theorem embedding_comp (hg : Embedding g) : Embedding (g.comp : C(X, Y) → C(X, Z)) :=
+/-- If `g : C(Y, Z)` is a topological embedding,
+then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
+theorem embedding_comp (g : C(Y, Z)) (hg : Embedding g) : Embedding (g.comp : C(X, Y) → C(X, Z)) :=
   ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
 /-- `C(·, Z)` is a functor. -/
@@ -138,10 +139,12 @@ theorem continuous_comp_left (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
 #align continuous_map.continuous_comp_left ContinuousMap.continuous_comp_left
 
-/-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`, provided that `Y` is
-  locally compact. This is Prop. 9 of Chap. X, §3, №. 4 of Bourbaki's *Topologie Générale*. -/
-theorem continuous_comp' [LocallyCompactPair Y Z] :
-    Continuous fun x : C(X, Y) × C(Y, Z) => x.2.comp x.1 := by
+variable [LocallyCompactPair Y Z]
+
+/-- Composition is a continuous map from `C(X, Y) × C(Y, Z)` to `C(X, Z)`,
+provided that `Y` is locally compact.
+This is Prop. 9 of Chap. X, §3, №. 4 of Bourbaki's *Topologie Générale*. -/
+theorem continuous_comp' : Continuous fun x : C(X, Y) × C(Y, Z) => x.2.comp x.1 := by
   simp_rw [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_compactOpen]
   intro ⟨f, g⟩ K hK U hU (hKU : MapsTo (g ∘ f) K U)
   obtain ⟨L, hKL, hLc, hLU⟩ : ∃ L ∈ 𝓝ˢ (f '' K), IsCompact L ∧ MapsTo g L U :=
@@ -153,10 +156,34 @@ theorem continuous_comp' [LocallyCompactPair Y Z] :
       hg'.comp <| hf'.mono_right interior_subset
 #align continuous_map.continuous_comp' ContinuousMap.continuous_comp'
 
-theorem continuous.comp' {X : Type*} [TopologicalSpace X] [LocallyCompactPair Y Z] {f : X → C(X, Y)}
-    {g : X → C(Y, Z)} (hf : Continuous f) (hg : Continuous g) :
+lemma _root_.Filter.Tendsto.compCM {α : Type*} {l : Filter α} {g : α → C(Y, Z)} {g₀ : C(Y, Z)}
+    {f : α → C(X, Y)} {f₀ : C(X, Y)} (hg : Tendsto g l (𝓝 g₀)) (hf : Tendsto f l (𝓝 f₀)) :
+    Tendsto (fun a ↦ (g a).comp (f a)) l (𝓝 (g₀.comp f₀)) :=
+  (continuous_comp'.tendsto (f₀, g₀)).comp (hf.prod_mk_nhds hg)
+
+variable {X' : Type*} [TopologicalSpace X'] {a : X'} {g : X' → C(Y, Z)} {f : X' → C(X, Y)}
+  {s : Set X'}
+
+nonrec lemma _root_.ContinuousAt.compCM (hg : ContinuousAt g a) (hf : ContinuousAt f a) :
+    ContinuousAt (fun x ↦ (g x).comp (f x)) a :=
+  hg.compCM hf
+
+nonrec lemma _root_.ContinuousWithinAt.compCM (hg : ContinuousWithinAt g s a)
+    (hf : ContinuousWithinAt f s a) : ContinuousWithinAt (fun x ↦ (g x).comp (f x)) s a :=
+  hg.compCM hf
+
+lemma _root_.ContinuousOn.compCM (hg : ContinuousOn g s) (hf : ContinuousOn f s) :
+    ContinuousOn (fun x ↦ (g x).comp (f x)) s := fun a ha ↦
+  (hg a ha).compCM (hf a ha)
+
+lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
     Continuous fun x => (g x).comp (f x) :=
-  continuous_comp'.comp (hf.prod_mk hg : Continuous fun x => (f x, g x))
+  continuous_comp'.comp (hf.prod_mk hg)
+
+@[deprecated _root_.Continuous.compCM] -- deprecated on 2024/01/30
+lemma continuous.comp' (hf : Continuous f) (hg : Continuous g) :
+    Continuous fun x => (g x).comp (f x) :=
+  hg.compCM hf
 #align continuous_map.continuous.comp' ContinuousMap.continuous.comp'
 
 end Functorial
@@ -201,7 +228,7 @@ lemma isClosed_setOf_mapsTo {t : Set Y} (ht : IsClosed t) (s : Set X) :
 
 lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
     IsClopen {f : C(X, Y) | MapsTo f K U} :=
-  ⟨isOpen_setOf_mapsTo hK hU.isOpen, isClosed_setOf_mapsTo hU.isClosed K⟩
+  ⟨isClosed_setOf_mapsTo hU.isClosed K, isOpen_setOf_mapsTo hK hU.isOpen⟩
 
 instance [T0Space Y] : T0Space C(X, Y) :=
   t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
