@@ -8,7 +8,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.ContinuousFunction.CocompactMap
 
 /-!
-# CocompactMaps in normed groups
+# Cocompact maps in normed groups
 
 This file gives a characterization of cocompact maps in terms of norm estimates.
 
