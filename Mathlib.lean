@@ -2595,6 +2595,7 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Function.OfArity
+import Mathlib.Logic.Function.OfHArity
 import Mathlib.Logic.Hydra
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas

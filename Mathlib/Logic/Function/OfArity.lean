@@ -43,7 +43,7 @@ theorem ofArity_succ (α β : Type u) (n : ℕ) : OfArity α β n.succ = (α →
 
 namespace OfArity
 
-/-- Constant `n`-ary function with value `a`. -/
+/-- Constant `n`-ary function with value `b`. -/
 def const (α : Type u) {β : Type u} (b : β) : ∀ n, OfArity α β n
   | 0 => b
   | n + 1 => fun _ => const _ b n
