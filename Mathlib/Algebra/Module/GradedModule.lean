@@ -282,13 +282,14 @@ lemma proj_smul_mem_right {i j : ℕ} (a : A) (m : M) (hm : m ∈ ℳ i) :
     then GradedRing.proj 𝒜 (j - i) a • m
     else 0 := by
   classical
+  letI := isModule 𝒜 ℳ
   rw [← DirectSum.sum_support_decompose ℳ (a • m), map_sum, Finset.sum_eq_single j,
     proj_apply, decompose_of_mem_same (hx := SetLike.coe_mem _)]
   pick_goal 2
   · intro n _ hne; rw [proj_apply, decompose_of_mem_ne (hx := SetLike.coe_mem _) hne]
   pick_goal 2
-  · intro hj; simpa using hj
-  letI := isModule 𝒜 ℳ
+  · intro hj
+    simpa using hj
 
   have eq0 : decompose ℳ (a • m) = a • decompose ℳ m := (linearEquiv 𝒜 ℳ).1.map_smul a m
   rw [eq0]
