@@ -41,19 +41,23 @@ theorem ofHArity_succ {n} (p : Fin (n + 1) → Type u) (τ : Type u) :
 theorem ofHArity_cons {n} (α : Type u) (p : Fin n → Type u) (τ : Type u) :
     OfHArity (vecCons α p) τ = (α → OfHArity p τ) := ofHArity_succ _ τ
 
-@[simps!]
+/-- The (identity) equivalence between 0-ary heterogeneous functions and
+the terminal codomain type. -/
 def ofHArity_zero_equiv (p : Fin 0 → Type u) (τ : Type u) :
     OfHArity p τ ≃ τ := Equiv.refl _
 
-@[simps!]
+/-- The (identity) equivalence between `![]`-ary heterogeneous functions and
+the terminal codomain type. -/
 def ofHArity_nil_equiv (τ : Type u) : OfHArity ![] τ ≃ τ :=
   ofHArity_zero_equiv ![] τ
 
-@[simps!]
+/-- The (identity) equivalence between `p`-ary heterogeneous functions and
+unary functions from the head of `p` to `vecTail p`-ary heterogeneous functions. -/
 def ofHArity_succ_equiv {n} (p : Fin (n + 1) → Type u) (τ : Type u) :
     OfHArity p τ ≃ (vecHead p → OfHArity (vecTail p) τ) := Equiv.refl _
 
-@[simps!]
+/-- The (identity) equivalence between `(vecCons α p)`-ary heterogeneous functions and
+unary functions from `α` to `p`-ary heterogeneous functions. -/
 def ofHArity_cons_equiv {n} (α : Type u) (p : Fin n → Type u) (τ : Type u) :
     OfHArity (vecCons α p) τ ≃ (α → OfHArity p τ) := ofHArity_succ_equiv _ _
 
@@ -64,6 +68,8 @@ lemma ofHArity_fin_const {n} (α β : Type u) :
   | 0   => Eq.refl β
   | n+1 => congrArg (α → .) (@ofHArity_fin_const n α β)
 
+/-- The equivalence (not a definitional equality!) between `n`-ary heterogeneous
+functions that aren't actually heterogeneous and `n`-ary functions. -/
 def ofHArity_fin_const_equiv : {n : ℕ} → (α β : Type u) →
     OfHArity (fun (_ : Fin n) => α) β ≃ OfArity α β n
   | 0,   _, β => .refl β

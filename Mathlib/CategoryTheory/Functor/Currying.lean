@@ -25,22 +25,28 @@ universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C] {D : Type u₃}
   [Category.{v₃} D] {E : Type u₄} [Category.{v₄} E] {H : Type u₅} [Category.{v₅} H]
 
+/-- The action on objects of a bifunctor. -/
 def Functor.obj₂ (F : B ⥤ C ⥤ D) (X : B) (Y : C) : D :=
   (F.obj X).obj Y
 
+/-- The action on objects of a trifunctor. -/
 def Functor.obj₃ (F : B ⥤ C ⥤ D ⥤ E) (X : B) (Y : C) (Z : D) : E :=
   ((F.obj X).obj Y).obj Z
 
+/-- The component of a morphism of bifunctors at two objects. -/
 def NatTrans.app₂ {F G : B ⥤ C ⥤ D} (α : NatTrans F G) (X : B) (Y : C) :
     F.obj₂ X Y ⟶ G.obj₂ X Y := (α.app X).app Y
 
+/-- The component of a morphism of trifunctors at three objects. -/
 def NatTrans.app₃ {F G : B ⥤ C ⥤ D ⥤ E} (α : NatTrans F G) (X : B) (Y : C) (Z : D) :
     F.obj₃ X Y Z ⟶ G.obj₃ X Y Z := ((α.app X).app Y).app Z
 
+/-- The action on morphisms of a bifunctor. -/
 def Functor.map₂ (F : B ⥤ C ⥤ D) {X X' : B} {Y Y' : C} (f : X ⟶ X') (g : Y ⟶ Y') :
     F.obj₂ X Y ⟶ F.obj₂ X' Y' :=
   (F.map f).app Y ≫ (F.obj X').map g
 
+/-- The action on morphisms of a trifunctor. -/
 def Functor.map₃ (F : B ⥤ C ⥤ D ⥤ E) {X X' : B} {Y Y' : C} {Z Z' : D}
     (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
     F.obj₃ X Y Z ⟶ F.obj₃ X' Y' Z' :=
