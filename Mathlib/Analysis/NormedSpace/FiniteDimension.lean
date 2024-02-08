@@ -493,30 +493,25 @@ theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] :
 @[deprecated] -- Since 2024/02/02
 alias finiteDimensional_of_locallyCompactSpace := FiniteDimensional.of_locallyCompactSpace
 
-/-- If a function has compact multiplicative support, then either the function is trivial or the
-space is finite-dimensional. -/
-@[to_additive
-      "If a function has compact support, then either the function is trivial or the space is
-      finite-dimensional."]
-theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [TopologicalSpace X] [One X]
-    [T2Space X] {f : E → X} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
-    f = 1 ∨ FiniteDimensional 𝕜 E := by
-  by_cases h : ∀ x, f x = 1
-  · apply Or.inl
-    ext x
-    exact h x
-  apply Or.inr
-  push_neg at h
-  obtain ⟨x, hx⟩ : ∃ x, f x ≠ 1 := h
-  have : Function.mulSupport f ∈ 𝓝 x := h'f.isOpen_mulSupport.mem_nhds hx
-  -- Porting note: moved type ascriptions because of exists_prop changes
-  obtain ⟨r : ℝ, rpos : 0 < r, hr : Metric.closedBall x r ⊆ Function.mulSupport f⟩ :=
-    Metric.nhds_basis_closedBall.mem_iff.1 this
-  have : IsCompact (Metric.closedBall x r) :=
-    hf.of_isClosed_subset Metric.isClosed_ball (hr.trans (subset_mulTSupport _))
-  exact .of_isCompact_closedBall 𝕜 rpos this
-#align has_compact_mul_support.eq_one_or_finite_dimensional HasCompactMulSupport.eq_one_or_finiteDimensional
+/-- If a function has compact support, then either the function is trivial
+or the space is finite-dimensional. -/
+theorem HasCompactSupport.eq_zero_or_finiteDimensional {X : Type*} [TopologicalSpace X] [Zero X]
+    [T1Space X] {f : E → X} (hf : HasCompactSupport f) (h'f : Continuous f) :
+    f = 0 ∨ FiniteDimensional 𝕜 E :=
+  (HasCompactSupport.eq_zero_or_locallyCompactSpace_of_addGroup hf h'f).imp_right fun h ↦
+    -- TODO: Lean doesn't find the instance without this `have`
+    have : LocallyCompactSpace E := h; .of_locallyCompactSpace 𝕜
 #align has_compact_support.eq_zero_or_finite_dimensional HasCompactSupport.eq_zero_or_finiteDimensional
+
+/-- If a function has compact multiplicative support, then either the function is trivial
+or the space is finite-dimensional. -/
+@[to_additive existing]
+theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [TopologicalSpace X] [One X]
+    [T1Space X] {f : E → X} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
+    f = 1 ∨ FiniteDimensional 𝕜 E :=
+  have : T1Space (Additive X) := ‹_›
+  HasCompactSupport.eq_zero_or_finiteDimensional (X := Additive X) 𝕜 hf h'f
+#align has_compact_mul_support.eq_one_or_finite_dimensional HasCompactMulSupport.eq_one_or_finiteDimensional
 
 /-- A locally compact normed vector space is proper. -/
 lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
