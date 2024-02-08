@@ -69,6 +69,9 @@ instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
 set_option linter.uppercaseLean3 false in
 #align Fintype.concrete_category_Fintype FintypeCat.concreteCategoryFintype
 
+/- Help typeclass inference infer fullness of forgetful functor. -/
+instance : Full (forget FintypeCat) := inferInstanceAs <| Full FintypeCat.incl
+
 @[simp]
 theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
   rfl
@@ -212,5 +215,6 @@ noncomputable def isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl wh
   eqv := by infer_instance
 set_option linter.uppercaseLean3 false in
 #align Fintype.is_skeleton FintypeCat.isSkeleton
+
 
 end FintypeCat
