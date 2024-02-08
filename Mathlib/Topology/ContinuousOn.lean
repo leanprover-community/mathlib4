@@ -505,18 +505,20 @@ theorem preimage_coe_mem_nhds_subtype {s t : Set α} {a : s} : (↑) ⁻¹' t �
   rw [← map_nhds_subtype_val, mem_map]
 #align preimage_coe_mem_nhds_subtype preimage_coe_mem_nhds_subtype
 
+theorem eventually_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
+    (∀ᶠ x : s in 𝓝 a, P x) ↔ ∀ᶠ x in 𝓝[s] a, P x :=
+  preimage_coe_mem_nhds_subtype
+
+theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
+    (∃ᶠ x : s in 𝓝 a, P x) ↔ ∃ᶠ x in 𝓝[s] a, P x :=
+  eventually_nhds_subtype_iff s a (¬ P ·) |>.not
+
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
     Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
 #align tendsto_nhds_within_iff_subtype tendsto_nhdsWithin_iff_subtype
 
 variable [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
-
-/-- A function between topological spaces is continuous at a point `x₀` within a subset `s`
-if `f x` tends to `f x₀` when `x` tends to `x₀` while staying within `s`. -/
-def ContinuousWithinAt (f : α → β) (s : Set α) (x : α) : Prop :=
-  Tendsto f (𝓝[s] x) (𝓝 (f x))
-#align continuous_within_at ContinuousWithinAt
 
 /-- If a function is continuous within `s` at `x`, then it tends to `f x` within `s` by definition.
 We register this fact for use with the dot notation, especially to use `Filter.Tendsto.comp` as
@@ -525,12 +527,6 @@ theorem ContinuousWithinAt.tendsto {f : α → β} {s : Set α} {x : α} (h : Co
     Tendsto f (𝓝[s] x) (𝓝 (f x)) :=
   h
 #align continuous_within_at.tendsto ContinuousWithinAt.tendsto
-
-/-- A function between topological spaces is continuous on a subset `s`
-when it's continuous at every point of `s` within `s`. -/
-def ContinuousOn (f : α → β) (s : Set α) : Prop :=
-  ∀ x ∈ s, ContinuousWithinAt f s x
-#align continuous_on ContinuousOn
 
 theorem ContinuousOn.continuousWithinAt {f : α → β} {s : Set α} {x : α} (hf : ContinuousOn f s)
     (hx : x ∈ s) : ContinuousWithinAt f s x :=
