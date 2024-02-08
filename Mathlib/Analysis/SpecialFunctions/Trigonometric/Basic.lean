@@ -182,7 +182,7 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-def evalRealPi : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ _ := do
+def evalRealPi : PositivityExt where eval {_ _} _ _ _ := do
   pure (.positive (q(Real.pi_pos) : Lean.Expr))
 
 end Mathlib.Meta.Positivity

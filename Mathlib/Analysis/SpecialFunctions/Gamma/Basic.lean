@@ -594,13 +594,13 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
   rw [← ofReal_cpow (le_of_lt ht), IsROrC.ofReal_mul]
   rfl
 
-open Lean.Meta Qq in
+open Lean.Meta Qq Mathlib.Meta.Positivity in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
 @[positivity Gamma (_ : ℝ)]
 def _root_.Mathlib.Meta.Positivity.evalGamma :
-    Mathlib.Meta.Positivity.PositivityExt where eval {_ _α} zα pα (e : Q(ℝ)) := do
+    PositivityExt where eval {_ _α} zα pα (e : Q(ℝ)) := do
   let ~q(Gamma $a) := e | throwError "failed to match on Gamma application"
-  match ← Mathlib.Meta.Positivity.core zα pα a with
+  match ← core zα pα a with
   | .positive (pa : Q(0 < $a)) =>
     pure (.positive (q(Gamma_pos_of_pos $pa) : Q(0 < $e)))
   | .nonnegative (pa : Q(0 ≤ $a)) =>

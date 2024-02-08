@@ -351,7 +351,7 @@ open Lean Meta Qq
 /-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
 when the exponent is zero. The other cases are done in `evalRpow`. -/
 @[positivity (_ : ℝ) ^ (0 : ℝ), Pow.pow (_ : ℝ) (0 : ℝ), Real.rpow (_ : ℝ) (0 : ℝ)]
-def evalRpowZero : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
+def evalRpowZero : PositivityExt where eval {_ _} _ _ e := do
   let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (_ : Q(ℝ)) ← withReducible (whnf e)
     | throwError "not Real.rpow"
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
@@ -360,7 +360,7 @@ def evalRpowZero : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e 
 /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
 the base is nonnegative and positive when the base is positive. -/
 @[positivity (_ : ℝ) ^ (_ : ℝ), Pow.pow (_ : ℝ) (_ : ℝ), Real.rpow (_ : ℝ) (_ : ℝ)]
-def evalRpow : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} zα pα e := do
+def evalRpow : PositivityExt where eval {_ _} zα pα e := do
   let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (b : Q(ℝ)) ← withReducible (whnf e)
     | throwError "not Real.rpow"
   guard <| ← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
