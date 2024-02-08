@@ -655,9 +655,37 @@ theorem lift_face_to_hornFace {S :SSet} {n: ℕ } {i j  : Fin (n+3)} (hij : j �
   apply congrArg
   rfl
 
+--To be moved.
+lemma Fin.predAbove_le_of_le_castSucc {n: ℕ} (p : Fin (n+1)) {j: Fin (n+1)}  {i : Fin (n+2)}
+    (h: i ≤ j.castSucc): p.predAbove i ≤  j:= by
+  unfold Fin.predAbove
+  split_ifs with h1
+  · simp only [Fin.le_def,Fin.coe_pred, tsub_le_iff_right]
+    exact Nat.le.step h
+  · rw [Fin.le_def]
+    exact h
+--To be moved
+lemma Fin.predAbove_le_of_lt_Succ{n: ℕ} (p : Fin (n+1)) {i : Fin (n+2)} {j: Fin (n+1)}
+    (h: i<j.succ): p.predAbove i ≤  j :=
+  predAbove_le_of_le_castSucc p (Fin.le_castSucc_iff.mpr h)
+--To be moved
+lemma Fin.le_predAbove_of_castSucc_lt {n: ℕ} (p : Fin (n+1)) {i : Fin (n+2)} {j: Fin (n+1)}
+    (h: j.castSucc<i):  j ≤  p.predAbove i := by
+  unfold Fin.predAbove
+  split_ifs with h1
+  · simp only [Fin.le_def, Fin.coe_pred]
+    exact Nat.le_sub_one_of_lt h
+  · rw [Fin.le_def]
+    exact Nat.lt_succ.mp (Nat.le.step h)
+--To be moved.
+lemma Fin.le_predAbove_of_succ_le {n: ℕ} (p : Fin (n+1)) {i : Fin (n+2)} {j: Fin (n+1)}
+    (h: j.succ ≤ i):  j ≤  p.predAbove i :=
+  Fin.le_predAbove_of_castSucc_lt p h
+
+
 /--The subfaces of the filling face of a lift are related to the subfaces of the faces of the
 horn -/
-theorem faces_of_filler  {S :SSet} {n: ℕ } (i : Fin (n+3)) (f : Λ[n+2,i]⟶ S)
+theorem faces_of_filler  {S :SSet} {n: ℕ } {i : Fin (n+3)} (f : Λ[n+2,i]⟶ S)
     (l : Δ[n+2] ⟶ S) (hl: f = hornInclusion (n+2) i ≫ l) (j : Fin (n+2)):
     S.δ j (standardSimplex.faceInc l i) =
     if h : i<j.succ then
@@ -670,35 +698,22 @@ theorem faces_of_filler  {S :SSet} {n: ℕ } (i : Fin (n+3)) (f : Λ[n+2,i]⟶ S
     rw [standardSimplex.faceInc_subfaceCond l i j.succ h,dif_pos h,
     lift_face_to_hornFace (Fin.ne_of_gt h) f l hl]
     repeat apply congrArg
-    refine Fin.predAbove_succ_of_le (Fin.predAbove 0 i) j ?_
-    -- `(h :i<Fin.succ j) : Fin.predAbove 0 i ≤ j`
-    by_cases hi : i=0
-    · subst hi
-      simp only [Fin.predAbove_right_zero, Fin.zero_le]
-    · rw [Fin.predAbove_zero_of_ne_zero hi,Fin.le_def]
-      simp only [Fin.coe_pred, tsub_le_iff_right]
-      exact Nat.le_of_lt h
+    exact Fin.predAbove_succ_of_le (Fin.predAbove 0 i) j (Fin.predAbove_le_of_lt_Succ 0 h)
   ·  have hi : j.castSucc < i :=   Fin.not_lt.mp h
      nth_rewrite 1 [show j=j.castSucc.castPred
         (Fin.ne_of_lt (gt_of_ge_of_gt i.le_last hi)) from rfl]
      rw [← standardSimplex.faceInc_subfaceCond l j.castSucc i hi,dif_neg h,
      lift_face_to_hornFace (Fin.ne_of_lt hi) f l hl]
      repeat apply congrArg
-     refine Fin.predAbove_castSucc_of_le (Fin.predAbove 0 i) j ?_
-      -- `(h :Fin.castSucc j<i) : j < Fin.predAbove 0 i `
-     by_cases hj : i=0
-     · subst hj
-       simp only [Fin.not_lt_zero] at hi
-     · rw [Fin.predAbove_zero_of_ne_zero hj,Fin.le_def]
-       simp only [Fin.coe_pred, tsub_le_iff_right]
-       exact Nat.le_sub_one_of_lt hi
+     exact Fin.predAbove_castSucc_of_le (Fin.predAbove 0 i) j (Fin.le_predAbove_of_castSucc_lt 0 hi)
+
 
 open standardSimplex in
 theorem faces_of_filler₂₀  {S :SSet} (f : Λ[2,0]⟶ S)
     (l : Δ[2] ⟶ S) (hl: f = hornInclusion 2 0 ≫ l) :
     S.δ 0 (faceInc l 0) = S.δ 0 (hornToFaceMap f 0) ∧
     S.δ 1 (faceInc l 0) = S.δ 0 (hornToFaceMap f 1) := by
-  rw [faces_of_filler 0 f l hl,faces_of_filler 0 f l hl]
+  rw [faces_of_filler f l hl,faces_of_filler f l hl]
   simp only [Fin.succ_zero_eq_one, Fin.reduceLT, ↓reduceDite, Fin.succ_one_eq_two]
   apply And.intro
   all_goals rfl
@@ -708,7 +723,7 @@ theorem faces_of_filler₂₁ {S :SSet} (f : Λ[2,1]⟶ S)
     (l : Δ[2] ⟶ S) (hl: f = hornInclusion 2 1 ≫ l) :
     S.δ 0 (faceInc l 1) = S.δ 0 (hornToFaceMap f 0) ∧
     S.δ 1 (faceInc l 1) = S.δ 1 (hornToFaceMap f 1) := by
-  rw [faces_of_filler 1 f l hl,faces_of_filler 1 f l hl]
+  rw [faces_of_filler f l hl,faces_of_filler f l hl]
   simp only [Fin.succ_zero_eq_one, lt_self_iff_false, ↓reduceDite, Fin.pred_one,
     Fin.succ_one_eq_two, Fin.reduceLT, Fin.castPred_one, and_self]
 
@@ -717,7 +732,7 @@ theorem faces_of_filler₂₂ {S :SSet} (f : Λ[2,2]⟶ S)
     (l : Δ[2] ⟶ S) (hl: f = hornInclusion 2 2 ≫ l) :
     S.δ 0 (faceInc l 2) = S.δ 1 (hornToFaceMap f 0) ∧
     S.δ 1 (faceInc l 2) = S.δ 1 (hornToFaceMap f 1) := by
-  rw [faces_of_filler 2 f l hl,faces_of_filler 2 f l hl]
+  rw [faces_of_filler f l hl,faces_of_filler f l hl]
   simp only [Fin.succ_zero_eq_one, Fin.reduceLT, ↓reduceDite, Fin.succ_one_eq_two,
     lt_self_iff_false]
   apply And.intro
@@ -729,7 +744,7 @@ theorem faces_of_filler₃₀  {S :SSet} (f : Λ[3,0]⟶ S)
     S.δ 0 (faceInc l 0) = S.δ 0 (hornToFaceMap f 0) ∧
     S.δ 1 (faceInc l 0) = S.δ 0 (hornToFaceMap f 1) ∧
     S.δ 2 (faceInc l 0) = S.δ 0 (hornToFaceMap f 2) := by
-  rw [faces_of_filler 0 f l hl,faces_of_filler 0 f l hl,faces_of_filler 0 f l hl]
+  rw [faces_of_filler f l hl,faces_of_filler f l hl,faces_of_filler f l hl]
   simp only [Fin.succ_zero_eq_one, Fin.reduceLT, ↓reduceDite, Fin.succ_one_eq_two, Fin.succ_pos]
   repeat any_goals apply And.intro
   all_goals rfl
@@ -740,7 +755,7 @@ theorem faces_of_filler₃₁  {S :SSet} (f : Λ[3,1]⟶ S)
     S.δ 0 (faceInc l 1) = S.δ 0 (hornToFaceMap f 0) ∧
     S.δ 1 (faceInc l 1) = S.δ 1 (hornToFaceMap f 1) ∧
     S.δ 2 (faceInc l 1) = S.δ 1 (hornToFaceMap f 2) := by
-  rw [faces_of_filler 1 f l hl,faces_of_filler 1 f l hl,faces_of_filler 1 f l hl]
+  rw [faces_of_filler f l hl,faces_of_filler f l hl,faces_of_filler f l hl]
   simp only [Fin.succ_zero_eq_one, lt_self_iff_false, ↓reduceDite, Fin.pred_one,
     Fin.succ_one_eq_two, Fin.reduceLT, Fin.castPred_one, dite_eq_ite, ite_eq_left_iff, not_lt,
     true_and]
@@ -753,7 +768,7 @@ theorem faces_of_filler₃₂  {S :SSet} (f : Λ[3,2]⟶ S)
     S.δ 0 (faceInc l 2) = S.δ 1 (hornToFaceMap f 0) ∧
     S.δ 1 (faceInc l 2) = S.δ 1 (hornToFaceMap f 1) ∧
     S.δ 2 (faceInc l 2) = S.δ 2 (hornToFaceMap f 2) := by
-  rw [faces_of_filler 2 f l hl,faces_of_filler 2 f l hl,faces_of_filler 2 f l hl]
+  rw [faces_of_filler f l hl,faces_of_filler f l hl,faces_of_filler f l hl]
   simp only [Fin.succ_zero_eq_one, Fin.reduceLT, ↓reduceDite, Fin.succ_one_eq_two,
     lt_self_iff_false]
   repeat any_goals apply And.intro
@@ -765,7 +780,7 @@ theorem faces_of_filler₃₃  {S :SSet} (f : Λ[3,3]⟶ S)
     S.δ 0 (faceInc l 3) = S.δ 2 (hornToFaceMap f 0) ∧
     S.δ 1 (faceInc l 3) = S.δ 2 (hornToFaceMap f 1) ∧
     S.δ 2 (faceInc l 3) = S.δ 2 (hornToFaceMap f 2) := by
-  rw [faces_of_filler 3 f l hl,faces_of_filler 3 f l hl,faces_of_filler 3 f l hl]
+  rw [faces_of_filler f l hl,faces_of_filler f l hl,faces_of_filler f l hl]
   simp only [Fin.succ_zero_eq_one, Fin.reduceLT, ↓reduceDite, Fin.succ_one_eq_two]
   repeat any_goals apply And.intro
   any_goals rfl
