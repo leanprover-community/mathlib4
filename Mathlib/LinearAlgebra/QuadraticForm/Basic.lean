@@ -124,7 +124,7 @@ theorem polar_add_left_iff {f : M → R} {x x' y : M} :
     add_right_comm (f (x + y)), add_left_inj]
 #align quadratic_form.polar_add_left_iff QuadraticForm.polar_add_left_iff
 
-theorem polar_comp {F : Type*} [CommRing S] [AddMonoidHomClass F R S]
+theorem polar_comp {F : Type*} [CommRing S] [FunLike F R S] [AddMonoidHomClass F R S]
     (f : M → R) (g : F) (x y : M) :
     polar (g ∘ f) x y = g (polar f x y) := by
   simp only [polar, Pi.smul_apply, Function.comp_apply, map_sub]
@@ -239,8 +239,8 @@ theorem map_zero : Q 0 = 0 := by
   rw [← @zero_smul R _ _ _ _ (0 : M), map_smul, zero_mul, zero_mul]
 #align quadratic_form.map_zero QuadraticForm.map_zero
 
-instance zeroHomClass : ZeroHomClass (QuadraticForm R M) M R :=
-  { QuadraticForm.instFunLike with map_zero := map_zero }
+instance zeroHomClass : ZeroHomClass (QuadraticForm R M) M R where
+  map_zero := map_zero
 #align quadratic_form.zero_hom_class QuadraticForm.zeroHomClass
 
 theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M] (a : S)
@@ -568,9 +568,8 @@ def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S 
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨(B.restrictScalars₂ S).compr₂ f, fun x y => by
-      simp_rw [h, f.map_add]
-      rfl⟩
+    ⟨(B.restrictScalars₁₂ S).compr₂ f, fun x y => by
+      simp_rw [h, f.map_add, LinearMap.compr₂_apply, LinearMap.restrictScalars₁₂_apply_apply]⟩
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticForm
 
 end Comp
@@ -655,7 +654,7 @@ section Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- A bilinear map into `R` gives a quadratic form by applying the argument twice. -/
-def toQuadraticForm (B : M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
+def _root_.LinearMap.toQuadraticForm (B : M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
   toFun x := B x x
   toFun_smul a x := by
     simp only [SMulHomClass.map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc]
@@ -1290,8 +1289,8 @@ variable (R)
 
 The weights are applied using `•`; typically this definition is used either with `S = R` or
 `[Algebra S R]`, although this is stated more generally. -/
-def weightedSumSquares [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
-    (w : ι → S) : QuadraticForm R (ι → R) :=
+def weightedSumSquares [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] (w : ι → S) :
+    QuadraticForm R (ι → R) :=
   ∑ i : ι, w i • proj i i
 #align quadratic_form.weighted_sum_squares QuadraticForm.weightedSumSquares
 

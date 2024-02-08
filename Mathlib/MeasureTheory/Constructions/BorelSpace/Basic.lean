@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.Topology.Instances.EReal
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous

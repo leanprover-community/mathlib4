@@ -5,7 +5,6 @@ Authors: Hans Parshall
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.Matrix
-import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.Topology.UniformSpace.Matrix
@@ -132,14 +131,14 @@ lemma piLp_equiv_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
 structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`.  -/
 def l2OpNormedAddCommGroupAux : NormedAddCommGroup (Matrix m n 𝕜) :=
-  @NormedAddCommGroup.induced ((Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m))
+  @NormedAddCommGroup.induced ((Matrix m n 𝕜) ≃ₗ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m)) _
     _ _ _ ContinuousLinearMap.toNormedAddCommGroup.toNormedAddGroup _ _ <|
     (toEuclideanLin.trans toContinuousLinearMap).injective
 
 /-- An auxiliary definition used only to construct the true `NormedRing` (and `Metric`) structure
 provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedRingL2Op`.  -/
 def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
-  @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n))
+  @NormedRing.induced ((Matrix n n 𝕜) ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)) _
     _ _ _ ContinuousLinearMap.toNormedRing _ _ toEuclideanCLM.injective
 
 open Bornology Filter
@@ -221,7 +220,7 @@ alias l2_op_nnnorm_conjTranspose_mul_self :=
 
 -- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
 lemma l2_opNorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖ ≤ ‖A‖ * ‖x‖ :=
+    ‖(EuclideanSpace.equiv m 𝕜).symm <| A *ᵥ x‖ ≤ ‖A‖ * ‖x‖ :=
   toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) |>.trans toContinuousLinearMap A |>.le_opNorm x
 
 @[deprecated l2_opNorm_mulVec]
@@ -229,7 +228,7 @@ alias l2_op_norm_mulVec :=
   l2_opNorm_mulVec -- deprecated on 2024-02-02
 
 lemma l2_opNNNorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    ‖(EuclideanSpace.equiv m 𝕜).symm <| A.mulVec x‖₊ ≤ ‖A‖₊ * ‖x‖₊ :=
+    ‖(EuclideanSpace.equiv m 𝕜).symm <| A *ᵥ x‖₊ ≤ ‖A‖₊ * ‖x‖₊ :=
   A.l2_opNorm_mulVec x
 
 @[deprecated l2_opNNNorm_mulVec]

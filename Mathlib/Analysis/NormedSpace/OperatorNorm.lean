@@ -48,6 +48,8 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 Gₗ] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃}
   [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
+variable [FunLike 𝓕 E F]
+
 /-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
 theorem norm_image_of_norm_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f) {x : E}
     (hx : ‖x‖ = 0) : ‖f x‖ = 0 := by
@@ -2062,8 +2064,8 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
         simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
       map_smul' := fun m c => by
         ext x
-        simp only [smul_smul, coe_smulRightₗ, Algebra.id.smul_eq_mul, coe_smul', smulRight_apply,
-          LinearMap.smul_apply, RingHom.id_apply, Pi.smul_apply] }
+        dsimp
+        rw [smul_smul] }
     1 fun c x => by
       simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
         le_refl]
