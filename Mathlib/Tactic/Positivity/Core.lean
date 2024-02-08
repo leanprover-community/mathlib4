@@ -6,9 +6,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 import Std.Lean.Parser
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
-import Mathlib.Order.Basic
 import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Int.Cast.Lemmas
 import Qq
@@ -50,6 +48,19 @@ def Strictness.toString : Strictness zα pα e → String
   | nonnegative _ => "nonnegative"
   | nonzero _ => "nonzero"
   | none => "none"
+
+/-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`.
+-/
+def Strictness.toNonneg {e} : Strictness zα pα e → Option Q(0 ≤ $e)
+  | .positive pf => some q(le_of_lt $pf)
+  | .nonnegative pf => some pf
+  | _ => .none
+
+/-- Extract a proof that `e` is nonzero, if possible, from `Strictness` information about `e`. -/
+def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
+  | .positive pf => some q(ne_of_gt $pf)
+  | .nonzero pf => some pf
+  | _ => .none
 
 /-- An extension for `positivity`. -/
 structure PositivityExt where

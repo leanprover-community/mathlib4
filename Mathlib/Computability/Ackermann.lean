@@ -323,11 +323,11 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
     apply add_lt_ack
   -- Left projection:
   · refine' ⟨0, fun n => _⟩
-    rw [ack_zero, lt_succ_iff]
+    rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_left_le n
   -- Right projection:
   · refine' ⟨0, fun n => _⟩
-    rw [ack_zero, lt_succ_iff]
+    rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
   all_goals cases' IHf with a ha; cases' IHg with b hb
   -- Pairing:
