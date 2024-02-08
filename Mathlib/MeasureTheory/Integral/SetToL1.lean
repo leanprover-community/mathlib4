@@ -573,7 +573,7 @@ theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α 
       refine' Finset.sum_le_sum fun b _ => _; simp_rw [ContinuousLinearMap.le_opNorm]
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_op_norm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_opNorm
 
-@[deprecated norm_setToSimpleFunc_le_sum_opNorm]
+@[deprecated]
 alias norm_setToSimpleFunc_le_sum_op_norm :=
   norm_setToSimpleFunc_le_sum_opNorm -- deprecated on 2024-02-02
 
