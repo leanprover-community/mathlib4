@@ -91,64 +91,12 @@ lemma optionEquivLeft_symm_univ_isHomogeneous :
   · apply isHomogeneous_C
   · apply IsHomogeneous.prod
     rintro j -
-    rw [← mem_homogeneousSubmodule]
     by_cases h : i j = j
-    · simp only [h, ↓reduceIte, Polynomial.aevalTower_X]
-      apply Submodule.sub_mem <;> apply isHomogeneous_X
-    · simp only [h, ↓reduceIte, map_zero, zero_sub]
-      apply Submodule.neg_mem; apply isHomogeneous_X
-
--- move this
-open MvPolynomial in
-lemma _root_.MvPolynomial.coeff_isHomogeneous_of_optionEquivLeft_symm_isHomogeneous
-    {σ : Type*} [Fintype σ] {p : Polynomial (MvPolynomial σ R)} {n : ℕ}
-    (hp : ((optionEquivLeft R σ).symm p).IsHomogeneous n)
-    (i j : ℕ) (h : i + j = n) :
-    (p.coeff i).IsHomogeneous j := by
-  have e := Fintype.equivFin σ
-  let e' := e.optionCongr.trans (_root_.finSuccEquiv _).symm
-  let F := renameEquiv R e
-  let F' := renameEquiv R e'
-  let φ := F' ((optionEquivLeft R σ).symm p)
-  have hφ : φ.IsHomogeneous n := hp.rename_isHomogeneous
-  suffices IsHomogeneous (F (p.coeff i)) j by
-    rwa [← (IsHomogeneous.rename_isHomogeneous_iff e.injective)]
-  convert hφ.finSuccEquiv_coeff_isHomogeneous i j h using 1
-  dsimp only
-  clear hp hφ φ
-  induction p using Polynomial.induction_on'
-  case h_add H₁ H₂ => simp only [Polynomial.coeff_add, map_add, H₁, H₂]
-  case h_monomial k c =>
-    conv_rhs => rw [← Polynomial.C_mul_X_pow_eq_monomial]
-    simp only [
-      mul_ite, mul_one, mul_zero, renameEquiv_apply, _root_.map_mul, optionEquivLeft_symm_apply,
-      Polynomial.aevalTower_C, map_pow, Polynomial.aevalTower_X, Equiv.coe_trans, Function.comp_def,
-      Equiv.optionCongr_apply, rename_rename, Option.map_some', finSuccEquiv_symm_some, rename_X,
-      Option.map_none', finSuccEquiv_symm_none, finSuccEquiv_apply, coe_eval₂Hom, eval₂_rename,
-      Fin.cases_succ, eval₂Hom_X', Fin.cases_zero]
-    induction c using MvPolynomial.induction_on'
-    case h2 H₁ H₂ => simp [H₁, H₂, add_mul]
-    case h1 d a =>
-      simp only [eval₂_monomial, eq_intCast, Finsupp.prod_pow, Fintype.prod_prod_type,
-        Polynomial.coeff_mul_X_pow', Polynomial.coeff_intCast_mul,
-        RingHom.comp_apply]
-      simp_rw [← Polynomial.C_pow, ← map_prod, Polynomial.coeff_C_mul, Polynomial.coeff_C]
-      simp only [tsub_eq_zero_iff_le, mul_ite, mul_zero]
-      split
-      · split
-        · rw [Polynomial.coeff_monomial, if_pos]
-          · simp only [rename, aeval, algebraMap_int_eq, AlgHom.coe_mk, coe_eval₂Hom, eq_intCast,
-              eval₂_monomial, Function.comp_apply, Finsupp.prod_pow, Fintype.prod_prod_type]
-            rfl
-          · omega
-        · rw [Polynomial.coeff_monomial, if_neg, map_zero]
-          omega
-      · rw [Polynomial.coeff_monomial, if_neg, map_zero]
-        omega
+    · simp only [h, ↓reduceIte, Polynomial.aevalTower_X, IsHomogeneous.sub, isHomogeneous_X]
+    · simp only [h, ↓reduceIte, map_zero, zero_sub, (isHomogeneous_X _ _).neg]
 
 lemma univ_coeff_isHomogeneous (i j : ℕ) (h : i + j = Fintype.card n) :
     ((univ n).coeff i).IsHomogeneous j :=
-  MvPolynomial.coeff_isHomogeneous_of_optionEquivLeft_symm_isHomogeneous
-    (optionEquivLeft_symm_univ_isHomogeneous n) _ _ h
+  (optionEquivLeft_symm_univ_isHomogeneous n).coeff_isHomogeneous_of_optionEquivLeft_symm _ _ h
 
 end Matrix.charpoly

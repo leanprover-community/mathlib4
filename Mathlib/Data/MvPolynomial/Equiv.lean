@@ -519,6 +519,17 @@ theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin 
     (support_coeff_finSuccEquiv.1 hm)
 #align mv_polynomial.degree_of_coeff_fin_succ_equiv MvPolynomial.degreeOf_coeff_finSuccEquiv
 
+lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Option σ) R) :
+    ((finSuccEquiv R n) ((rename ((Equiv.optionCongr e).trans (_root_.finSuccEquiv n).symm)) φ)) =
+      Polynomial.map (rename e).toRingHom (optionEquivLeft R σ φ) := by
+  suffices (finSuccEquiv R n).toRingEquiv.toRingHom.comp (rename ((Equiv.optionCongr e).trans
+        (_root_.finSuccEquiv n).symm)).toRingHom =
+      (Polynomial.mapRingHom (rename e).toRingHom).comp (optionEquivLeft R σ) by
+    exact DFunLike.congr_fun this φ
+  apply ringHom_ext
+  · simp [Polynomial.algebraMap_apply, algebraMap_eq]
+  · rintro (i|i) <;> simp
+
 end
 
 end Equiv
