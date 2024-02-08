@@ -93,7 +93,7 @@ example : Precoherent CompHaus.{u} := inferInstance
 -- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae
-    {α : Type} [Fintype α] {B : CompHaus.{u}}
+    {α : Type} [Finite α] {B : CompHaus.{u}}
     (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B)) :
     TFAE
     [ EffectiveEpiFamily X π
@@ -135,7 +135,7 @@ theorem effectiveEpiFamily_tfae
   tfae_finish
 
 theorem effectiveEpiFamily_of_jointly_surjective
-    {α : Type} [Fintype α] {B : CompHaus.{u}}
+    {α : Type} [Finite α] {B : CompHaus.{u}}
     (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :
     EffectiveEpiFamily X π :=

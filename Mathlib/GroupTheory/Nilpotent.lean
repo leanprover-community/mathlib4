@@ -865,8 +865,8 @@ theorem IsPGroup.isNilpotent [Finite G] {p : ℕ} [hp : Fact (Nat.Prime p)] (h :
       have hcq : Fintype.card (G ⧸ center G) < Fintype.card G := by
         rw [card_eq_card_quotient_mul_card_subgroup (center G)]
         apply lt_mul_of_one_lt_right
-        exact Fintype.card_pos_iff.mpr One.instNonempty
-        exact (Subgroup.one_lt_card_iff_ne_bot _).mpr (ne_of_gt h.bot_lt_center)
+        · exact Fintype.card_pos_iff.mpr One.instNonempty
+        · exact (Subgroup.one_lt_card_iff_ne_bot _).mpr (ne_of_gt h.bot_lt_center)
       have hnq : IsNilpotent (G ⧸ center G) := ih _ hcq (h.to_quotient (center G))
       exact of_quotient_center_nilpotent hnq
 #align is_p_group.is_nilpotent IsPGroup.isNilpotent
