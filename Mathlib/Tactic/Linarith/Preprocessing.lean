@@ -313,7 +313,7 @@ partial def findSquares (s : HashSet (Expr × Bool)) (e : Expr) : MetaM (HashSet
   -- Completely traversing the expression is non-ideal,
   -- as we can descend into expressions that could not possibly be seen by `linarith`.
   -- As a result we visit expressions with bvars, which then cause panics.
-  -- Ideally this preprocessor would be reimplement so it only visits things that could be atoms.
+  -- Ideally this preprocessor would be reimplemented so it only visits things that could be atoms.
   -- In the meantime we just bail out if we ever encounter loose bvars.
   if e.hasLooseBVars then return s else
   match e.getAppFnArgs with
