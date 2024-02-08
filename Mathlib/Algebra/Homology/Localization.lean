@@ -5,10 +5,8 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Localization.Composition
 
 /-! The category of homological complexes up to quasi-isomorphisms
 
