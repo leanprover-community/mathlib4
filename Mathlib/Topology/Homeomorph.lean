@@ -318,6 +318,13 @@ theorem isConnected_preimage {s : Set Y} (h : X ≃ₜ Y) :
     IsConnected (h ⁻¹' s) ↔ IsConnected s := by
   rw [← image_symm, isConnected_image]
 
+theorem image_connectedComponentIn {s : Set X} (h : X ≃ₜ Y) {x : X} (hx : x ∈ s) :
+    h '' connectedComponentIn s x = connectedComponentIn (h '' s) (h x) := by
+  refine (h.continuous.image_connectedComponentIn_subset hx).antisymm ?_
+  have := h.symm.continuous.image_connectedComponentIn_subset (mem_image_of_mem h hx)
+  rwa [image_subset_iff, h.preimage_symm, h.image_symm, h.preimage_image, h.symm_apply_apply]
+    at this
+
 @[simp]
 theorem comap_cocompact (h : X ≃ₜ Y) : comap h (cocompact Y) = cocompact X :=
   (comap_cocompact_le h.continuous).antisymm <|

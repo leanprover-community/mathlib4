@@ -266,7 +266,7 @@ theorem mul_val_succ [Fintype n'] (A : Matrix (Fin m.succ) n' α) (B : Matrix n'
 
 @[simp]
 theorem cons_mul [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (B : Matrix n' o' α) :
-    of (vecCons v A) * B = of (vecCons (vecMul v B) (of.symm (of A * B))) := by
+    of (vecCons v A) * B = of (vecCons (v ᵥ* B) (of.symm (of A * B))) := by
   ext i j
   refine' Fin.cases _ _ i
   · rfl
@@ -280,32 +280,32 @@ section VecMul
 variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
-theorem empty_vecMul (v : Fin 0 → α) (B : Matrix (Fin 0) o' α) : vecMul v B = 0 :=
+theorem empty_vecMul (v : Fin 0 → α) (B : Matrix (Fin 0) o' α) : v ᵥ* B = 0 :=
   rfl
 #align matrix.empty_vec_mul Matrix.empty_vecMul
 
 @[simp]
-theorem vecMul_empty [Fintype n'] (v : n' → α) (B : Matrix n' (Fin 0) α) : vecMul v B = ![] :=
+theorem vecMul_empty [Fintype n'] (v : n' → α) (B : Matrix n' (Fin 0) α) : v ᵥ* B = ![] :=
   empty_eq _
 #align matrix.vec_mul_empty Matrix.vecMul_empty
 
 @[simp]
 theorem cons_vecMul (x : α) (v : Fin n → α) (B : Fin n.succ → o' → α) :
-    vecMul (vecCons x v) (of B) = x • vecHead B + vecMul v (of <| vecTail B) := by
+    vecCons x v ᵥ* of B = x • vecHead B + v ᵥ* of vecTail B := by
   ext i
   simp [vecMul]
 #align matrix.cons_vec_mul Matrix.cons_vecMul
 
 @[simp]
 theorem vecMul_cons (v : Fin n.succ → α) (w : o' → α) (B : Fin n → o' → α) :
-    vecMul v (of <| vecCons w B) = vecHead v • w + vecMul (vecTail v) (of B) := by
+    v ᵥ* of (vecCons w B) = vecHead v • w + vecTail v ᵥ* of B := by
   ext i
   simp [vecMul]
 #align matrix.vec_mul_cons Matrix.vecMul_cons
 
 -- @[simp] -- Porting note: simp can prove this
 theorem cons_vecMul_cons (x : α) (v : Fin n → α) (w : o' → α) (B : Fin n → o' → α) :
-    vecMul (vecCons x v) (of <| vecCons w B) = x • w + vecMul v (of B) := by simp
+    vecCons x v ᵥ* of (vecCons w B) = x • w + v ᵥ* of B := by simp
 #align matrix.cons_vec_mul_cons Matrix.cons_vecMul_cons
 
 end VecMul
@@ -315,25 +315,25 @@ section MulVec
 variable [NonUnitalNonAssocSemiring α]
 
 @[simp]
-theorem empty_mulVec [Fintype n'] (A : Matrix (Fin 0) n' α) (v : n' → α) : mulVec A v = ![] :=
+theorem empty_mulVec [Fintype n'] (A : Matrix (Fin 0) n' α) (v : n' → α) : A *ᵥ v = ![] :=
   empty_eq _
 #align matrix.empty_mul_vec Matrix.empty_mulVec
 
 @[simp]
-theorem mulVec_empty (A : Matrix m' (Fin 0) α) (v : Fin 0 → α) : mulVec A v = 0 :=
+theorem mulVec_empty (A : Matrix m' (Fin 0) α) (v : Fin 0 → α) : A *ᵥ v = 0 :=
   rfl
 #align matrix.mul_vec_empty Matrix.mulVec_empty
 
 @[simp]
 theorem cons_mulVec [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (w : n' → α) :
-    mulVec (of <| vecCons v A) w = vecCons (dotProduct v w) (mulVec (of A) w) := by
+    (of <| vecCons v A) *ᵥ w = vecCons (dotProduct v w) (of A *ᵥ w) := by
   ext i
   refine' Fin.cases _ _ i <;> simp [mulVec]
 #align matrix.cons_mul_vec Matrix.cons_mulVec
 
 @[simp]
 theorem mulVec_cons {α} [CommSemiring α] (A : m' → Fin n.succ → α) (x : α) (v : Fin n → α) :
-    mulVec (of A) (vecCons x v) = x • vecHead ∘ A + mulVec (of (vecTail ∘ A)) v := by
+    (of A) *ᵥ (vecCons x v) = x • vecHead ∘ A + (of (vecTail ∘ A)) *ᵥ v := by
   ext i
   simp [mulVec, mul_comm]
 #align matrix.mul_vec_cons Matrix.mulVec_cons

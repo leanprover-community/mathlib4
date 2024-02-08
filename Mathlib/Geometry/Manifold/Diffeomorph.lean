@@ -65,9 +65,8 @@ section Defs
 
 variable (I I' M M' n)
 
-/--
-`n`-times continuously differentiable diffeomorphism between `M` and `M'` with respect to I and I'
--/
+/-- `n`-times continuously differentiable diffeomorphism between `M` and `M'` with respect to `I`
+and `I'`. -/
 -- Porting note: was @[nolint has_nonempty_instance]
 structure Diffeomorph extends M ≃ M' where
   protected contMDiff_toFun : ContMDiff I I' n toEquiv
@@ -76,14 +75,18 @@ structure Diffeomorph extends M ≃ M' where
 
 end Defs
 
+@[inherit_doc]
 scoped[Manifold] notation M " ≃ₘ^" n:1000 "⟮" I ", " J "⟯ " N => Diffeomorph I J M N n
 
+/-- Infinitely differentiable diffeomorphism between `M` and `M'` with respect to `I` and `I'`. -/
 scoped[Manifold] notation M " ≃ₘ⟮" I ", " J "⟯ " N => Diffeomorph I J M N ⊤
 
+/-- `n`-times continuously differentiable diffeomorphism between `E` and `E'`. -/
 scoped[Manifold]
   notation E " ≃ₘ^" n:1000 "[" 𝕜 "] " E' =>
     Diffeomorph (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 E') E E' n
 
+/-- Infinitely differentiable diffeomorphism between `E` and `E'`. -/
 scoped[Manifold]
   notation E " ≃ₘ[" 𝕜 "] " E' =>
     Diffeomorph (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 E') E E' ⊤
