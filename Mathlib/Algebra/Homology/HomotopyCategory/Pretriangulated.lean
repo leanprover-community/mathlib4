@@ -161,7 +161,6 @@ noncomputable def triangleMap :
 
 end map
 
-
 /-
 
 As the number of simp lemmas that are required in the proofs below is huge,
