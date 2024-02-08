@@ -80,11 +80,11 @@ instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) wher
 #align add_circle.is_finite_measure AddCircle.isFiniteMeasure
 
 instance hasFunDom : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) ℝ where
-  has_add_fundamental_domain_characterization :=
+  ExistsIsAddFundamentalDomain :=
   ⟨Ioc 0 (0 + T), isAddFundamentalDomain_Ioc' Fact.out 0⟩
 
-instance : AddQuotientVolumeEqVolumePreimage (volume : Measure (AddCircle T)) := by
-  apply MeasureTheory.LeftInvariantIsAddQuotientVolumeEqVolumePreimage
+instance : AddQuotientMeasureEqMeasurePreimage volume (volume : Measure (AddCircle T)) := by
+  apply MeasureTheory.leftInvariantIsAddQuotientMeasureEqMeasurePreimage
   simp [(isAddFundamentalDomain_Ioc' hT.out 0).covolume_eq_volume, AddCircle.measure_univ]
 
 /-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
@@ -94,13 +94,14 @@ interval (t, t + T]. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
       (volume.restrict (Ioc t (t + T))) :=
-  measurePreserving_addQuotientGroup_mk_of_addQuotientVolumeEqVolumePreimage
-    (𝓕 := Ioc t (t+T)) (isAddFundamentalDomain_Ioc' hT.out _) _
+  measurePreserving_addQuotientGroup_mk_of_addQuotientMeasureEqMeasurePreimage
+    volume (𝓕 := Ioc t (t+T)) (isAddFundamentalDomain_Ioc' hT.out _) _
 #align add_circle.measure_preserving_mk AddCircle.measurePreserving_mk
 
 lemma add_projection_respects_measure (t : ℝ) {U : Set (AddCircle T)} (meas_U : MeasurableSet U) :
     volume U = volume (QuotientAddGroup.mk ⁻¹' U ∩ (Ioc t (t + T))) :=
-  MeasureTheory.add_projection_respects_measure (isAddFundamentalDomain_Ioc' hT.out _) meas_U
+  (isAddFundamentalDomain_Ioc' hT.out _).add_projection_respects_measure_apply
+    (volume : Measure (AddCircle T)) meas_U
 
 theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     volume (Metric.closedBall x ε) = ENNReal.ofReal (min T (2 * ε)) := by
