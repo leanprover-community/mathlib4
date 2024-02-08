@@ -11,7 +11,13 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 /-!
 # The universal characteristic polynomial
 
-In this file we define the universal characteristic polynomial.
+In this file we define the universal characteristic polynomial `Matrix.charpoly.univ`,
+which is the charactistic polynomial of the matrix with entries `Xᵢⱼ`,
+and hence has coefficients that are multivariate polynomials.
+
+It is universal in the sense that one obtains the characteristic polynomial of a matrix `M`
+by evaluating the coefficients of `univ` at the entries of `M`.
+
 We use it to show that the coeffients of the characteristic polynomial
 of a matrix are homogeneous polynomials in the matrix entries.
 
@@ -30,11 +36,20 @@ namespace Matrix.charpoly
 
 variable {R : Type*} (n : Type*) [CommRing R] [Fintype n] [DecidableEq n]
 
-/-- The universal characteristic polynomial for `n × n`-matrices.-/
+/-- The universal characteristic polynomial for `n × n`-matrices,
+is the charactistic polynomial of the matrix with entries `Xᵢⱼ`.
+
+Its `i`-th coefficient is a homogeneous polynomial of degree `n - i`,
+see `Matrix.charpoly.univ_coeff_isHomogeneous`.
+
+By evaluating the coefficients at the entries of a matrix `M`,
+one obtains the characteristic polynomial of `M`,
+see `Matrix.charpoly.univ_map`. -/
 noncomputable
 def univ : Polynomial (MvPolynomial (n × n) ℤ) :=
   charpoly <| Matrix.of fun i j ↦ MvPolynomial.X (i, j)
 
+@[simp]
 lemma univ_map (M : Matrix n n R) :
     (univ n).map (MvPolynomial.aeval fun ij ↦ M ij.1 ij.2).toRingHom = charpoly M := by
   rw [← Polynomial.coe_mapRingHom]
@@ -47,6 +62,7 @@ lemma univ_map (M : Matrix n n R) :
     rintro j -
     by_cases h : i j = j <;> simp [h]
 
+@[simp]
 lemma univ_coeff_aeval (M : Matrix n n R) (i : ℕ) :
     MvPolynomial.aeval (fun ij ↦ M ij.1 ij.2) ((univ n).coeff i) =
       (charpoly M).coeff i := by
