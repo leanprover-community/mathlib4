@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.NormedSpace.OperatorNorm
@@ -288,7 +289,7 @@ theorem Basis.opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
 #align basis.op_nnnorm_le Basis.opNNNorm_le
 
-@[deprecated Basis.opNNNorm_le]
+@[deprecated]
 alias Basis.op_nnnorm_le :=
   Basis.opNNNorm_le -- deprecated on 2024-02-02
 
@@ -298,7 +299,7 @@ theorem Basis.opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E �
   simpa using NNReal.coe_le_coe.mpr (v.opNNNorm_le ⟨M, hM⟩ hu)
 #align basis.op_norm_le Basis.opNorm_le
 
-@[deprecated Basis.opNorm_le]
+@[deprecated]
 alias Basis.op_norm_le :=
   Basis.opNorm_le -- deprecated on 2024-02-02
 
@@ -312,7 +313,7 @@ theorem Basis.exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) 
       (v.opNNNorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
 #align basis.exists_op_nnnorm_le Basis.exists_opNNNorm_le
 
-@[deprecated Basis.exists_opNNNorm_le]
+@[deprecated]
 alias Basis.exists_op_nnnorm_le :=
   Basis.exists_opNNNorm_le -- deprecated on 2024-02-02
 
@@ -326,7 +327,7 @@ theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
   simpa using h ⟨M, hM⟩ H
 #align basis.exists_op_norm_le Basis.exists_opNorm_le
 
-@[deprecated Basis.exists_opNorm_le]
+@[deprecated]
 alias Basis.exists_op_norm_le :=
   Basis.exists_opNorm_le -- deprecated on 2024-02-02
 
