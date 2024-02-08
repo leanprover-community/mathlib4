@@ -770,6 +770,7 @@ def isColimitCocone : IsColimit (cocone f g) :=
       · exact congr_fun h₁ x₁
       · exact congr_fun h₂ x₂)
 
+@[simp]
 lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
     Rel' f g (Sum.inl x₁) (Sum.inl y₁) ↔ x₁ = y₁ ∨
       ∃ (x₀ y₀ : S) (_ : g x₀ = g y₀), x₁ = f x₀ ∧ y₁ = f y₀ := by
@@ -781,21 +782,21 @@ lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
     · apply Rel'.refl
     · exact Rel'.inl_inl _ _ h
 
+@[simp]
 lemma inl_rel'_inr_iff (x₁ : X₁) (x₂ : X₂) :
     Rel' f g (Sum.inl x₁) (Sum.inr x₂) ↔
       ∃ (s : S), x₁ = f s ∧ x₂ = g s := by
   constructor
-  · intro h
-    cases h
+  · rintro ⟨_⟩
     exact ⟨_, rfl, rfl⟩
   · rintro ⟨s, rfl, rfl⟩
     exact Rel'.inl_inr _
 
+@[simp]
 lemma inr_rel'_inr_iff (x₂ y₂ : X₂) :
     Rel' f g (Sum.inr x₂) (Sum.inr y₂) ↔ x₂ = y₂ := by
   constructor
-  · intro h
-    cases h
+  · rintro ⟨_⟩
     rfl
   · rintro rfl
     apply Rel'.refl
@@ -876,7 +877,8 @@ def equivPushout' : Pushout f g ≃ Pushout' f g where
 lemma quot_mk_eq_iff [Mono f] (a b : X₁ ⊕ X₂) :
     (Quot.mk _ a : Pushout f g) = Quot.mk _ b ↔ Rel' f g a b := by
   rw [← (equivalence_rel' f g).quot_mk_eq_iff]
-  exact ⟨equivPushout' f g).symm.injective ·, equivPushout' f g).injective ·⟩
+  exact ⟨fun h => (equivPushout' f g).symm.injective h,
+    fun h => (equivPushout' f g).injective h⟩
 
 lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
     (inl f g x₁ = inr f g x₂) ↔
