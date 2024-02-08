@@ -60,11 +60,11 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)):
   have : I₀ ≠ 0 := by
     contrapose! h_nz
     rw [h_nz, mul_zero, show 0 = (⊥ : Ideal (𝓞 K)) by rfl, Ideal.span_singleton_eq_bot] at hI
-    simp only [FractionalIdeal.coe_mk0, hI, map_zero, Submodule.mk_eq_zero]
+    rw [Algebra.linearMap_apply, hI, map_zero]
   let I := (⟨I₀, mem_nonZeroDivisors_iff_ne_zero.mpr this⟩ : (Ideal (𝓞 K))⁰)
   refine ⟨I, ?_, ?_⟩
   · suffices ClassGroup.mk0 I = (ClassGroup.mk0 J)⁻¹ by rw [this, hJ, inv_inv]
-    exact ClassGroup.mk0_eq_mk0_inv_iff.mpr ⟨a, ne_zero_of_map h_nz, by rw [mul_comm, hI]⟩
+    exact ClassGroup.mk0_eq_mk0_inv_iff.mpr ⟨a, Subtype.ne_of_val_ne h_nz, by rw [mul_comm, hI]⟩
   · rw [← FractionalIdeal.absNorm_span_singleton (𝓞 K), Algebra.linearMap_apply,
       ← FractionalIdeal.coeIdeal_span_singleton, FractionalIdeal.coeIdeal_absNorm, hI, map_mul,
       Nat.cast_mul, Rat.cast_mul, show Ideal.absNorm I₀ = Ideal.absNorm (I : Ideal (𝓞 K)) by rfl,
@@ -78,7 +78,7 @@ theorem classNumber_eq_one_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ NrComplexPlaces K *
       ((finrank ℚ K) ^ (finrank ℚ K) / (finrank ℚ K).factorial)) ^ 2) :
     classNumber K = 1 := by
-  have : 0 < finrank ℚ K := finrank_pos
+  have : 0 < finrank ℚ K := finrank_pos -- Lean needs to know that for positivity to succeed
   rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff' (by positivity),
     mul_inv, ← inv_pow, inv_div, inv_div, mul_assoc, Int.cast_abs] at h
   rw [classNumber, Fintype.card_eq_one_iff]
