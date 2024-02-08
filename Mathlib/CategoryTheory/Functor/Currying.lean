@@ -3,7 +3,8 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Products.Associator
+import Mathlib.Data.Fin.Tuple.Curry
 
 #align_import category_theory.functor.currying from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
@@ -23,6 +24,27 @@ universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C] {D : Type u₃}
   [Category.{v₃} D] {E : Type u₄} [Category.{v₄} E] {H : Type u₅} [Category.{v₅} H]
+
+def Functor.obj₂ (F : B ⥤ C ⥤ D) (X : B) (Y : C) : D :=
+  (F.obj X).obj Y
+
+def Functor.obj₃ (F : B ⥤ C ⥤ D ⥤ E) (X : B) (Y : C) (Z : D) : E :=
+  ((F.obj X).obj Y).obj Z
+
+def NatTrans.app₂ {F G : B ⥤ C ⥤ D} (α : NatTrans F G) (X : B) (Y : C) :
+    F.obj₂ X Y ⟶ G.obj₂ X Y := (α.app X).app Y
+
+def NatTrans.app₃ {F G : B ⥤ C ⥤ D ⥤ E} (α : NatTrans F G) (X : B) (Y : C) (Z : D) :
+    F.obj₃ X Y Z ⟶ G.obj₃ X Y Z := ((α.app X).app Y).app Z
+
+def Functor.map₂ (F : B ⥤ C ⥤ D) {X X' : B} {Y Y' : C} (f : X ⟶ X') (g : Y ⟶ Y') :
+    F.obj₂ X Y ⟶ F.obj₂ X' Y' :=
+  (F.map f).app Y ≫ (F.obj X').map g
+
+def Functor.map₃ (F : B ⥤ C ⥤ D ⥤ E) {X X' : B} {Y Y' : C} {Z Z' : D}
+    (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
+    F.obj₃ X Y Z ⟶ F.obj₃ X' Y' Z' :=
+  (F.map f).app₂ Y Z ≫ (F.obj X').map₂ g h
 
 /-- The uncurrying functor, taking a functor `C ⥤ (D ⥤ E)` and producing a functor `(C × D) ⥤ E`.
 -/
@@ -46,6 +68,11 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E
         slice_lhs 1 2 => rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app]
         rw [Category.assoc] }
 #align category_theory.uncurry CategoryTheory.uncurry
+
+lemma uncurry_obj_obj_eq_uncurry_obj₂ (F : C ⥤ D ⥤ E) :
+    (uncurry.obj F).obj = F.obj₂.uncurry := rfl
+lemma uncurry_obj_map_eq_uncurry_map₂ (F : C ⥤ D ⥤ E) {X Y : C × D} :
+    ((uncurry.obj F).map : (X ⟶ Y) → _) = F.map₂.uncurry := rfl
 
 /-- The object level part of the currying functor. (See `curry` for the functorial version.)
 -/
@@ -79,16 +106,29 @@ def curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E where
         rw [NatTrans.naturality] }
 #align category_theory.curry CategoryTheory.curry
 
+lemma curry_obj_obj₂_eq_curry_obj (F : C × D ⥤ E) :
+    (curry.obj F).obj₂ = F.obj.curry := rfl
+
+lemma curry_obj_map₂_eq_curry_map₂ (F : C × D ⥤ E) {X X' Y Y'} :
+    (curry.obj F).map₂ = ((F.map (X := (X, Y)) (Y := (X', Y'))).curry) :=
+  funext₂ $ fun f g => Eq.trans (F.map_comp _ _).symm $ congrArg _
+  $ congrArg₂ _ (Category.comp_id f) (Category.id_comp g)
+
 -- create projection simp lemmas even though this isn't a `{ .. }`.
 /-- The equivalence of functor categories given by currying/uncurrying.
 -/
 @[simps!]
 def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E :=
-  Equivalence.mk uncurry curry
-    (NatIso.ofComponents fun F =>
-        NatIso.ofComponents fun X => NatIso.ofComponents fun Y => Iso.refl _)
-    (NatIso.ofComponents fun F => NatIso.ofComponents (fun X => eqToIso (by simp))
-      (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [← F.map_comp]; simp))
+  let η : 𝟭 (C ⥤ D ⥤ E) ≅ uncurry ⋙ curry :=
+    NatIso.ofComponents fun F =>
+      NatIso.ofComponents fun X => NatIso.ofComponents fun Y => Iso.refl _
+  let ε : curry ⋙ uncurry ≅ 𝟭 (C × D ⥤ E) :=
+    NatIso.ofComponents fun F => NatIso.ofComponents (fun X => eqToIso (by simp))
+      (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [← F.map_comp]; simp)
+  have H (F : C ⥤ D ⥤ E) :
+      uncurry.map (η.hom.app F) ≫ ε.hom.app (uncurry.obj F) = 𝟙 (uncurry.obj F) :=
+    by ext; exact Category.comp_id _
+  Equivalence.mk' uncurry curry η ε H
 #align category_theory.currying CategoryTheory.currying
 
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
@@ -103,6 +143,44 @@ swapping the factors followed by the uncurrying of `F`. -/
 def uncurryObjFlip (F : C ⥤ D ⥤ E) : uncurry.obj F.flip ≅ Prod.swap _ _ ⋙ uncurry.obj F :=
   NatIso.ofComponents fun p => Iso.refl _
 #align category_theory.uncurry_obj_flip CategoryTheory.uncurryObjFlip
+
+-- create projection simp lemmas even though this isn't a `{ .. }`.
+/-- The equivalence of trifunctor categories given by currying/uncurrying. -/
+@[simps!]
+def currying₃ : B ⥤ C ⥤ D ⥤ E ≌ B × C × D ⥤ E :=
+  .trans (@currying B _ C _ (D ⥤ E) _)
+  $ .trans (@currying (B × C) _ D _ E _)
+  $ (prod.associativity B C D).congrLeft (E := E)
+-- why is this so slow???
+
+/-- The ternary uncurrying functor, taking a functor `B ⥤ (C ⥤ (D ⥤ E))` and
+producing a functor `(B × C × D) ⥤ E`.-/
+@[simps!] def uncurry₃ : (B ⥤ C ⥤ D ⥤ E) ⥤ B × C × D ⥤ E := currying₃.functor
+
+/-- The ternary currying functor, taking a functor `(B × C × D) ⥤ E` and
+producing a functor `B ⥤ (C ⥤ (D ⥤ E))`.
+-/
+@[simps!] def curry₃ : (B × C × D ⥤ E) ⥤ B ⥤ C ⥤ D ⥤ E := currying₃.inverse
+
+lemma uncurry₃_obj_obj_eq_uncurry₃_obj₃ (F : B ⥤ C ⥤ D ⥤ E) :
+    (uncurry₃.obj F).obj = F.obj₃.uncurry₃ := rfl
+
+lemma uncurry₃_obj_map_eq_uncurry₃_map₃ (F : B ⥤ C ⥤ D ⥤ E) {X Y : B × C × D} :
+    ((uncurry₃.obj F).map : (X ⟶ Y) → _) = F.map₃.uncurry₃ :=
+  funext $ fun _ => Category.assoc _ _ _
+
+lemma curry₃_obj_obj₃_eq_curry₃_obj (F : B × C × D ⥤ E) :
+    (curry₃.obj F).obj₃ = F.obj.curry₃ := rfl
+
+lemma curry₃_obj_map₃_eq_curry₃_map (F : B × C × D ⥤ E) {X X' Y Y' Z Z'} :
+    (curry₃.obj F).map₃
+    = (F.map (X := (X, Y, Z)) (Y := (X', Y', Z'))).curry₃ :=
+  funext₃ $ fun _ _ _ =>
+    Eq.trans (congrArg (_ ≫ .) (F.map_comp _ _).symm)
+    $ Eq.trans (F.map_comp _ _).symm $ congrArg _
+    $ congrArg₂ _ (Eq.trans (congrArg _ (Category.comp_id _)) (Category.comp_id _))
+    $ congrArg₂ _ (Eq.trans (Category.id_comp _) (Category.comp_id _))
+                  (Eq.trans (Category.id_comp _) (Category.id_comp _))
 
 variable (B C D E)
 
