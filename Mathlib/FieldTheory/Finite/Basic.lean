@@ -228,10 +228,9 @@ theorem pow_card_sub_one_eq_one (a : K) (ha : a ≠ 0) : a ^ (q - 1) = 1 := by
 #align finite_field.pow_card_sub_one_eq_one FiniteField.pow_card_sub_one_eq_one
 
 theorem pow_card (a : K) : a ^ q = a := by
-  have hp : 0 < Fintype.card K := lt_trans zero_lt_one Fintype.one_lt_card
-  by_cases h : a = 0; · rw [h]; apply zero_pow hp
-  rw [← Nat.succ_pred_eq_of_pos hp, pow_succ, Nat.pred_eq_sub_one, pow_card_sub_one_eq_one a h,
-    mul_one]
+  by_cases h : a = 0; · rw [h]; apply zero_pow Fintype.card_ne_zero
+  rw [← Nat.succ_pred_eq_of_pos Fintype.card_pos, pow_succ, Nat.pred_eq_sub_one,
+    pow_card_sub_one_eq_one a h, mul_one]
 #align finite_field.pow_card FiniteField.pow_card
 
 theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
@@ -317,8 +316,7 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0
         mem_univ, mem_map, exists_prop_of_true, mem_singleton]
     calc
       ∑ x : K, x ^ i = ∑ x in univ \ {(0 : K)}, x ^ i := by
-        rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton,
-          zero_pow (Nat.pos_of_ne_zero hi), add_zero]
+        rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton, zero_pow hi, add_zero]
       _ = ∑ x : Kˣ, (x ^ i : K) := by simp [← this, univ.sum_map φ]
       _ = 0 := by rw [sum_pow_units K i, if_neg]; exact hiq
 #align finite_field.sum_pow_lt_card_sub_one FiniteField.sum_pow_lt_card_sub_one

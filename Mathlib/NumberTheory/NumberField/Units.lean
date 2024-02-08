@@ -33,7 +33,6 @@ as an additive `ℤ`-module.
 places `w` of `K`.
 
 * `NumberField.Units.exist_unique_eq_mul_prod`: **Dirichlet Unit Theorem**. Any unit of `𝓞 K`
-
 can be written uniquely as the product of a root of unity and powers of the units of the
 fundamental system `fundSystem`.
 

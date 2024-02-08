@@ -24,15 +24,17 @@ spectral theorem, diagonalization theorem
 
 namespace Matrix
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n] [DecidableEq n]
+variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
 
 variable {A : Matrix n n 𝕜}
-
-open scoped Matrix
 
 open scoped BigOperators
 
 namespace IsHermitian
+
+section DecidableEq
+
+variable [DecidableEq n]
 
 variable (hA : A.IsHermitian)
 
@@ -123,7 +125,7 @@ theorem spectral_theorem :
 
 theorem eigenvalues_eq (i : n) :
     hA.eigenvalues i =
-      IsROrC.re (star (hA.eigenvectorMatrixᵀ i) ⬝ᵥ A.mulVec (hA.eigenvectorMatrixᵀ i)) := by
+      IsROrC.re (star (hA.eigenvectorMatrixᵀ i) ⬝ᵥ A *ᵥ hA.eigenvectorMatrixᵀ i) := by
   have := hA.spectral_theorem
   rw [← @Matrix.mul_inv_eq_iff_eq_mul_of_invertible (A := hA.eigenvectorMatrixInv)] at this
   have := congr_arg IsROrC.re (congr_fun (congr_fun this i) i)
@@ -163,7 +165,7 @@ lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i 
 
 /-- The entries of `eigenvectorBasis` are eigenvectors. -/
 lemma mulVec_eigenvectorBasis (i : n) :
-    mulVec A (hA.eigenvectorBasis i) = hA.eigenvalues i • hA.eigenvectorBasis i := by
+    A *ᵥ hA.eigenvectorBasis i = hA.eigenvalues i • hA.eigenvectorBasis i := by
   have := congr_arg (· * hA.eigenvectorMatrix) hA.spectral_theorem'
   simp only [mul_assoc, mul_eq_one_comm.mp hA.eigenvectorMatrix_mul_inv, mul_one] at this
   ext1 j
@@ -172,9 +174,12 @@ lemma mulVec_eigenvectorBasis (i : n) :
   convert this using 1
   rw [mul_comm, Pi.smul_apply, IsROrC.real_smul_eq_coe_mul, hA.eigenvectorMatrix_apply]
 
+end DecidableEq
+
 /-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
-lemma exists_eigenvector_of_ne_zero (h_ne : A ≠ 0) :
-    ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ mulVec A v = t • v := by
+lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
+    ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ A *ᵥ v = t • v := by
+  classical
   have : hA.eigenvalues ≠ 0
   · contrapose! h_ne
     have := hA.spectral_theorem'
