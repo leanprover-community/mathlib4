@@ -8,6 +8,7 @@ import Lean.Meta.Tactic.Rewrite
 import Std.Lean.Expr
 import Std.Data.Rat.Basic
 import Std.Data.List.Basic
+import Std.Lean.Name
 
 /-!
 # Additional operations on Expr and related types
