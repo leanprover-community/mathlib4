@@ -99,13 +99,6 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
       rw [measure_preimage_mul]
     rw [this, ← preimage_smul_inv]; rfl
 
-
--- -- We restate the `SigmaFinite` instance. For some reason, this is needed for typeclass inference
--- @[to_additive] instance [SigmaFinite ν]
---     [IsMulRightInvariant (ν : Measure G)] [HasFundamentalDomain Γ.op G ν]
---     (μ : Measure (G ⧸ Γ)) [QuotientMeasureEqMeasurePreimage ν μ] : SigmaFinite μ :=
---   instSigmaFiniteQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace ν μ
-
 /-- Given a subgroup `Γ` of a topological group `G` with right-invariant measure `ν`, with a
   measure 'μ' on the quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction
   of `ν` to a fundamental domain is measure-preserving with respect to `μ`. -/
