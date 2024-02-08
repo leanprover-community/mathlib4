@@ -5,7 +5,6 @@ Authors: Joe Hendrix, Sebastian Ullrich, Harun Khan, Alex Keizer, Abdalrhman M M
 -/
 
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.ZMod.Defs
 import Std.Data.BitVec
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 
 #align_import category_theory.monoidal.coherence_lemmas from "leanprover-community/mathlib"@"b8b8bf3ea0c625fa1f950034a184e07c67f7bcfe"
 
@@ -26,12 +27,12 @@ variable {C : Type*} [Category C] [MonoidalCategory C]
 
 -- See Proposition 2.2.4 of <http://www-math.mit.edu/~etingof/egnobookfinal.pdf>
 @[reassoc]
-theorem leftUnitor_tensor' (X Y : C) :
+theorem leftUnitor_tensor'' (X Y : C) :
     (α_ (𝟙_ C) X Y).hom ≫ (λ_ (X ⊗ Y)).hom = (λ_ X).hom ⊗ 𝟙 Y := by
   coherence
-#align category_theory.monoidal_category.left_unitor_tensor' CategoryTheory.MonoidalCategory.leftUnitor_tensor'
+#align category_theory.monoidal_category.left_unitor_tensor' CategoryTheory.MonoidalCategory.leftUnitor_tensor''
 
-@[reassoc, simp]
+@[reassoc]
 theorem leftUnitor_tensor (X Y : C) :
     (λ_ (X ⊗ Y)).hom = (α_ (𝟙_ C) X Y).inv ≫ ((λ_ X).hom ⊗ 𝟙 Y) := by
   coherence

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Basic
 
 #align_import algebra.invertible from "leanprover-community/mathlib"@"722b3b152ddd5e0cf21c0a29787c76596cb6b422"
 
@@ -46,7 +45,7 @@ variables {α : Type*} [Monoid α]
 def something_that_needs_inverses (x : α) [Invertible x] := sorry
 
 section
-local attribute [instance] invertibleOne
+attribute [local instance] invertibleOne
 def something_one := something_that_needs_inverses 1
 end
 ```
