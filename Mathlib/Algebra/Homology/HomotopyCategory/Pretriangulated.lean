@@ -29,7 +29,7 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 * https://stacks.math.columbia.edu/tag/014P
 
 -/
-set_option says.verify true
+
 open CategoryTheory Category Limits CochainComplex.HomComplex Pretriangulated
 
 variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
