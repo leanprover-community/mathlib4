@@ -52,7 +52,7 @@ theorem Filter.tendsto_cocompact_cocompact_of_norm {f : E → F}
   apply hε
   simp [hr x hx]
 
-def ContinuousMapClass.toCocompactMapClass_of_norm [FunLike 𝓕 E F] [ContinuousMapClass 𝓕 E F]
+theorem ContinuousMapClass.toCocompactMapClass_of_norm [FunLike 𝓕 E F] [ContinuousMapClass 𝓕 E F]
     (h : ∀ (f : 𝓕) (ε : ℝ), ∃ r : ℝ, ∀ (x : E) (_hx : r < ‖x‖), ε < ‖f x‖) :
     CocompactMapClass 𝓕 E F where
   cocompact_tendsto := (tendsto_cocompact_cocompact_of_norm <| h ·)
