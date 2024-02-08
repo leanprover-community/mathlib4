@@ -171,9 +171,9 @@ def Multiset.ProveZeroOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Multiset $
   | .zero pf => .zero q(Eq.trans $eq $pf)
   | .cons a s' pf => .cons a s' q(Eq.trans $eq $pf)
 
-lemma Multiset.insert_eq_cons {α : Type*} [DecidableEq α] (a : α) (s : Multiset α) :
-    insert a s = Multiset.cons a s := by
-  ext; simp
+lemma Multiset.insert_eq_cons {α : Type*} (a : α) (s : Multiset α) :
+    insert a s = Multiset.cons a s :=
+  rfl
 
 lemma Multiset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
     Multiset.range n = 0 := by rw [pn.out, Nat.cast_zero, Multiset.range_zero]

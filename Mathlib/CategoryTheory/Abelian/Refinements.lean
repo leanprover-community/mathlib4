@@ -34,13 +34,10 @@ we get that an epimorphism is a morphism that is "surjective up to refinements".
 (This result is similar to the fact that a morphism of sheaves on
 a topological space or a site is epi iff sections can be lifted
 locally. Then, arguing "up to refinements" is very similar to
-arguing locally for a Grothendieck topology (TODO: show that it
-corresponds to arguing for the canonical topology on the abelian
-category `C` by showing that a morphism in `C` is an epi iff
-the corresponding morphisms of sheaves for the canonical
-topology is an epi, and that the criteria
-`epi_iff_surjective_up_to_refinements` could be deduced from
-this equivalence.)
+arguing locally for a Grothendieck topology (TODO: indeed,
+show that it corresponds to the "refinements" topology on an
+abelian category `C` that is defined by saying that
+a sieve is covering if it contains an epimorphism).
 
 Similarly, it is possible to show that a short complex in an abelian
 category is exact if and only if it is exact up to refinements
