@@ -1020,4 +1020,13 @@ end
 
 end MorphismProperty
 
+namespace NatTrans
+
+lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
+    IsIso (α.app X) ↔ IsIso (α.app Y) :=
+  MorphismProperty.RespectsIso.arrow_mk_iso_iff (MorphismProperty.RespectsIso.isomorphisms D)
+    (Arrow.isoMk (F.mapIso e) (G.mapIso e) (by simp))
+
+end NatTrans
+
 end CategoryTheory
