@@ -351,7 +351,7 @@ open Lean Meta Qq
 /-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
 when the exponent is zero. The other cases are done in `evalRpow`. -/
 @[positivity (_ : ℝ) ^ (0 : ℝ)]
-def evalRpowZero : Mathlib.Meta.Positivity.PositivityExt where eval {u α} _ _ e := do
+def evalRpowZero : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ (0 : ℝ)) =>
     assertInstancesCommute
@@ -361,7 +361,7 @@ def evalRpowZero : Mathlib.Meta.Positivity.PositivityExt where eval {u α} _ _ e
 /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
 the base is nonnegative and positive when the base is positive. -/
 @[positivity (_ : ℝ) ^ (_ : ℝ)]
-def evalRpow : Mathlib.Meta.Positivity.PositivityExt where eval {u α} _zα _pα e := do
+def evalRpow : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ ($b : ℝ)) =>
     let ra ← core q(inferInstance) q(inferInstance) a
@@ -799,7 +799,7 @@ lemma log_le_rpow_div {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : log x ≤ x ^
   exact (log_rpow h ε).symm.trans_le <| (log_le_sub_one_of_pos <| rpow_pos_of_pos h ε).trans
     (sub_one_lt _).le
 
-/-- The (real) logarithm of a natural number `n`is bounded by a multiple of every power of `n`
+/-- The (real) logarithm of a natural number `n` is bounded by a multiple of every power of `n`
 with positive exponent. -/
 lemma log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ n ^ ε / ε :=
   log_le_rpow_div n.cast_nonneg hε

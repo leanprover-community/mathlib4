@@ -267,13 +267,13 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
 
 end SzemerediRegularity
 
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 
 open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `SzemerediRegularity.initialBound` is always positive. -/
 @[positivity SzemerediRegularity.initialBound _ _]
-def evalInitialBound : Mathlib.Meta.Positivity.PositivityExt where eval {u α} _ _ e := do
+def evalInitialBound : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.initialBound $ε $l) =>
     assertInstancesCommute
@@ -285,7 +285,7 @@ example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.initialBound ε l := by p
 
 /-- Extension for the `positivity` tactic: `SzemerediRegularity.bound` is always positive. -/
 @[positivity SzemerediRegularity.bound _ _]
-def evalBound : Mathlib.Meta.Positivity.PositivityExt where eval {u α} _ _ e := do
+def evalBound : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(SzemerediRegularity.bound $ε $l) =>
     assertInstancesCommute
@@ -294,4 +294,4 @@ def evalBound : Mathlib.Meta.Positivity.PositivityExt where eval {u α} _ _ e :=
 
 example (ε : ℝ) (l : ℕ) : 0 < SzemerediRegularity.bound ε l := by positivity
 
-end Tactic
+end Mathlib.Meta.Positivity

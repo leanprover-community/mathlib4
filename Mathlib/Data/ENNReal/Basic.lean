@@ -90,7 +90,8 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 -/
 
 
-open Set BigOperators NNReal
+open Function Set NNReal
+open scoped BigOperators
 
 variable {α : Type*}
 
@@ -176,7 +177,12 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.c
 
 @[simp] theorem some_eq_coe' (a : ℝ≥0) : (WithTop.some a : ℝ≥0∞) = (↑a : ℝ≥0∞) := rfl
 
-protected theorem coe_injective : Function.Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
+lemma coe_injective : Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
+
+@[simp, norm_cast] lemma coe_inj : (p : ℝ≥0∞) = q ↔ p = q := coe_injective.eq_iff
+#align ennreal.coe_eq_coe ENNReal.coe_inj
+
+lemma coe_ne_coe : (p : ℝ≥0∞) ≠ q ↔ p ≠ q := coe_inj.not
 
 theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
 theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
@@ -368,9 +374,6 @@ theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤
 
 @[simp] theorem zero_lt_top : 0 < ∞ := coe_lt_top
 
-@[simp, norm_cast] theorem coe_eq_coe : (↑r : ℝ≥0∞) = ↑q ↔ r = q := WithTop.coe_eq_coe
-#align ennreal.coe_eq_coe ENNReal.coe_eq_coe
-
 @[simp, norm_cast] theorem coe_le_coe : (↑r : ℝ≥0∞) ≤ ↑q ↔ r ≤ q := WithTop.coe_le_coe
 #align ennreal.coe_le_coe ENNReal.coe_le_coe
 
@@ -390,31 +393,35 @@ theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
 
 theorem coe_strictMono : StrictMono ofNNReal := fun _ _ => coe_lt_coe.2
 
-@[simp, norm_cast] theorem coe_eq_zero : (↑r : ℝ≥0∞) = 0 ↔ r = 0 := coe_eq_coe
+@[simp, norm_cast] theorem coe_eq_zero : (↑r : ℝ≥0∞) = 0 ↔ r = 0 := coe_inj
 #align ennreal.coe_eq_zero ENNReal.coe_eq_zero
 
-@[simp, norm_cast] theorem zero_eq_coe : 0 = (↑r : ℝ≥0∞) ↔ 0 = r := coe_eq_coe
+@[simp, norm_cast] theorem zero_eq_coe : 0 = (↑r : ℝ≥0∞) ↔ 0 = r := coe_inj
 #align ennreal.zero_eq_coe ENNReal.zero_eq_coe
 
-@[simp, norm_cast] theorem coe_eq_one : (↑r : ℝ≥0∞) = 1 ↔ r = 1 := coe_eq_coe
+@[simp, norm_cast] theorem coe_eq_one : (↑r : ℝ≥0∞) = 1 ↔ r = 1 := coe_inj
 #align ennreal.coe_eq_one ENNReal.coe_eq_one
 
-@[simp, norm_cast] theorem one_eq_coe : 1 = (↑r : ℝ≥0∞) ↔ 1 = r := coe_eq_coe
+@[simp, norm_cast] theorem one_eq_coe : 1 = (↑r : ℝ≥0∞) ↔ 1 = r := coe_inj
 #align ennreal.one_eq_coe ENNReal.one_eq_coe
 
 @[simp, norm_cast] theorem coe_pos : 0 < (r : ℝ≥0∞) ↔ 0 < r := coe_lt_coe
 #align ennreal.coe_pos ENNReal.coe_pos
 
-theorem coe_ne_zero : (r : ℝ≥0∞) ≠ 0 ↔ r ≠ 0 := not_congr coe_eq_coe
+theorem coe_ne_zero : (r : ℝ≥0∞) ≠ 0 ↔ r ≠ 0 := coe_eq_zero.not
 #align ennreal.coe_ne_zero ENNReal.coe_ne_zero
 
-@[simp, norm_cast] theorem coe_add : ↑(r + p) = (r : ℝ≥0∞) + p := WithTop.coe_add _ _
+lemma coe_ne_one : (r : ℝ≥0∞) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
+
+@[simp, norm_cast] lemma coe_add (x y : ℝ≥0) : (↑(x + y) : ℝ≥0∞) = x + y := rfl
 #align ennreal.coe_add ENNReal.coe_add
 
-@[simp, norm_cast]
-theorem coe_mul : ↑(r * p) = (r : ℝ≥0∞) * p :=
-  WithTop.coe_mul
+@[simp, norm_cast] lemma coe_mul (x y : ℝ≥0) : (↑(x * y) : ℝ≥0∞) = x * y := rfl
 #align ennreal.coe_mul ENNReal.coe_mul
+
+@[norm_cast] lemma coe_nsmul (n : ℕ) (x : ℝ≥0) : (↑(n • x) : ℝ≥0∞) = n • x := rfl
+
+@[simp, norm_cast] lemma coe_pow (x : ℝ≥0) (n : ℕ) : (↑(x ^ n) : ℝ≥0∞) = x ^ n := rfl
 
 #noalign ennreal.coe_bit0
 #noalign ennreal.coe_bit1
@@ -513,9 +520,9 @@ theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
 def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
   toFun := some
   map_one' := coe_one
-  map_mul' _ _ := coe_mul
+  map_mul' _ _ := coe_mul _ _
   map_zero' := coe_zero
-  map_add' _ _ := coe_add
+  map_add' _ _ := coe_add _ _
 #align ennreal.of_nnreal_hom ENNReal.ofNNRealHom
 
 @[simp] theorem coe_ofNNRealHom : ⇑ofNNRealHom = some := rfl
