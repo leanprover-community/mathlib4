@@ -991,4 +991,23 @@ theorem QuotientMeasureEqMeasurePreimage.covolume_ne_top
 
 end QuotientMeasureEqMeasurePreimage
 
+section QuotientMeasureEqMeasurePreimage
+
+
+variable [Group G] [MulAction G α] [MeasureSpace α] [Countable G] [MeasurableSpace G]
+  [SMulInvariantMeasure G α volume] [MeasurableSMul G α]
+
+local notation "α_mod_G" => MulAction.orbitRel G α
+
+local notation "π" => @Quotient.mk _ α_mod_G
+
+/-- If a measure `μ` on a quotient satisfies `QuotientVolumeEqVolumePreimage` with respect to a
+sigma-finite measure, then it is itself `SigmaFinite`. -/
+@[to_additive MeasureTheory.instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace]
+instance [SigmaFinite (volume : Measure α)] [HasFundamentalDomain G α]
+    (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage volume μ] : SigmaFinite μ :=
+  QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient (volume : Measure α) μ
+
+end QuotientMeasureEqMeasurePreimage
+
 end MeasureTheory
