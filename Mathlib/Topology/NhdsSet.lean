@@ -32,13 +32,6 @@ open Set Filter Topology
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
   {s t s₁ s₂ t₁ t₂ : Set X} {x : X}
 
-/-- The filter of neighborhoods of a set in a topological space. -/
-def nhdsSet (s : Set X) : Filter X :=
-  sSup (nhds '' s)
-#align nhds_set nhdsSet
-
-@[inherit_doc] scoped[Topology] notation "𝓝ˢ" => nhdsSet
-
 theorem nhdsSet_diagonal (X) [TopologicalSpace (X × X)] :
     𝓝ˢ (diagonal X) = ⨆ (x : X), 𝓝 (x, x) := by
   rw [nhdsSet, ← range_diag, ← range_comp]
@@ -85,6 +78,14 @@ theorem eventually_nhdsSet_iff_forall {p : X → Prop} :
 theorem hasBasis_nhdsSet (s : Set X) : (𝓝ˢ s).HasBasis (fun U => IsOpen U ∧ s ⊆ U) fun U => U :=
   ⟨fun t => by simp [mem_nhdsSet_iff_exists, and_assoc]⟩
 #align has_basis_nhds_set hasBasis_nhdsSet
+
+@[simp]
+lemma lift'_nhdsSet_interior (s : Set X) : (𝓝ˢ s).lift' interior = 𝓝ˢ s :=
+  (hasBasis_nhdsSet s).lift'_interior_eq_self fun _ ↦ And.left
+
+lemma Filter.HasBasis.nhdsSet_interior {ι : Sort*} {p : ι → Prop} {s : ι → Set X} {t : Set X}
+    (h : (𝓝ˢ t).HasBasis p s) : (𝓝ˢ t).HasBasis p (interior <| s ·) :=
+  lift'_nhdsSet_interior t ▸ h.lift'_interior
 
 theorem IsOpen.mem_nhdsSet (hU : IsOpen s) : s ∈ 𝓝ˢ t ↔ t ⊆ s := by
   rw [← subset_interior_iff_mem_nhdsSet, hU.interior_eq]
