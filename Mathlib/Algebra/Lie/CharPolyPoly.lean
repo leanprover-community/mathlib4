@@ -98,7 +98,7 @@ lemma univ_coeff_isHomogeneous (i j : ℕ) (h : i + j = Fintype.card n) :
     apply optionEquivLeft_univ_isHomogeneous.rename_isHomogeneous
   suffices IsHomogeneous (F (univ.coeff i)) j by
     rwa [← (IsHomogeneous.rename_isHomogeneous_iff e.injective)]
-  replace hφ := IsHomogeneous.finSuccEquiv_coeff_isHomogeneous φ _ hφ i j h
+  replace hφ := IsHomogeneous.finSuccEquiv_coeff_isHomogeneous hφ i j h
   convert hφ using 1
   dsimp only
   generalize (univ (n := n)) = ψ

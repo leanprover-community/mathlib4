@@ -34,26 +34,24 @@ lemma MvPolynomial.IsHomogeneous.pow {φ : MvPolynomial σ R} {m : ℕ}
 -- move this
 lemma MvPolynomial.IsHomogeneous.eval₂ {φ : MvPolynomial σ R} {m n : ℕ}
     (hφ : φ.IsHomogeneous m) (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S)
-    (hf : ∃ f', f = MvPolynomial.C.comp f') (hg : ∀ i, (g i).IsHomogeneous n) :
+     (hf : ∀ r, (f r).IsHomogeneous 0) (hg : ∀ i, (g i).IsHomogeneous n) :
     (eval₂ f g φ).IsHomogeneous (n * m) := by
   apply IsHomogeneous.sum
   intro i hi
   rw [← zero_add (n * m)]
-  apply IsHomogeneous.mul _ _
-  · rcases hf with ⟨f, rfl⟩
-    apply isHomogeneous_C
-  · convert IsHomogeneous.prod _ _ (fun k ↦ n * i k) _
-    · rw [Finsupp.mem_support_iff] at hi
-      rw [← Finset.mul_sum, hφ hi]
-    · rintro k -
-      apply (hg k).pow
+  apply IsHomogeneous.mul (hf _) _
+  convert IsHomogeneous.prod _ _ (fun k ↦ n * i k) _
+  · rw [Finsupp.mem_support_iff] at hi
+    rw [← Finset.mul_sum, hφ hi]
+  · rintro k -
+    apply (hg k).pow
 
 -- move this
 lemma MvPolynomial.IsHomogeneous.map {φ : MvPolynomial σ R} {n : ℕ}
     (hφ : φ.IsHomogeneous n) (f : R →+* S) :
     (map f φ).IsHomogeneous n := by
   rw [← one_mul n]
-  apply hφ.eval₂ _ _ ⟨f, rfl⟩ (isHomogeneous_X _)
+  exact hφ.eval₂ _ _ (fun r ↦ isHomogeneous_C _ (f r)) (isHomogeneous_X _)
 
 end
 
@@ -100,7 +98,7 @@ lemma adCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = Fintype.card ι)
     ((adCharpoly b).coeff i).IsHomogeneous j := by
   rw [adCharpoly, Polynomial.coeff_map, ← one_mul j]
   apply (Matrix.charpoly.univ_coeff_isHomogeneous _ _ hij).eval₂
-  · exact ⟨Int.castRingHom _, by ext; simp⟩
+  · exact fun r ↦ MvPolynomial.isHomogeneous_C _ _
   rintro ⟨x, y⟩
   dsimp [adMatrixPoly]
   apply MvPolynomial.IsHomogeneous.sum
@@ -239,5 +237,3 @@ lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular R x := by
 end base_domain
 
 end LieAlgebra
-
--- end LieAlgebra
