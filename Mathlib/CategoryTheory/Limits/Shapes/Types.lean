@@ -869,11 +869,7 @@ def equivPushout' : Pushout f g ≃ Pushout' f g where
 lemma quot_mk_eq_iff [Mono f] (a b : X₁ ⊕ X₂) :
     (Quot.mk _ a : Pushout f g) = Quot.mk _ b ↔ Rel' f g a b := by
   rw [← (equivalence_rel' f g).quot_mk_eq_iff]
-  constructor
-  · intro h
-    exact (equivPushout' f g).symm.injective h
-  · intro h
-    exact (equivPushout' f g).injective h
+  exact ⟨equivPushout' f g).symm.injective ·, equivPushout' f g).injective ·⟩
 
 lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
     (inl f g x₁ = inr f g x₂) ↔
