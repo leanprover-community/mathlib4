@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 
+import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.ContinuousFunction.CocompactMap
-import Mathlib.Analysis.NormedSpace.Basic
 
 /-!
 # CocompactMaps in normed groups
