@@ -63,13 +63,15 @@ def castRingHom : ℕ →+* α :=
 #align nat.coe_cast_ring_hom Nat.coe_castRingHom
 
 lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
-  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero];
-    rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]]
+  induction n with
+  | zero => rw [zero_nsmul, Nat.cast_zero, mul_zero]
+  | succ n ih => rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]
 #align nsmul_eq_mul' nsmul_eq_mul'
 
 @[simp] lemma _root_.nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
-  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, zero_mul];
-    rw [succ_nsmul', ih, Nat.cast_succ, add_mul, one_mul]]
+  induction n with
+  | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
+  | succ n ih => rw [succ_nsmul', ih, Nat.cast_succ, add_mul, one_mul]
 #align nsmul_eq_mul nsmul_eq_mul
 
 end NonAssocSemiring
@@ -93,7 +95,7 @@ end Nat
 
 section AddMonoidHomClass
 
-variable {A B F : Type*} [AddMonoidWithOne B]
+variable {A B F : Type*} [AddMonoidWithOne B] [FunLike F ℕ A]
 
 theorem ext_nat' [AddMonoid A] [AddMonoidHomClass F ℕ A] (f g : F) (h : f 1 = g 1) : f = g :=
   DFunLike.ext f g <| by
@@ -117,7 +119,8 @@ theorem eq_natCast' [AddMonoidHomClass F ℕ A] (f : F) (h1 : f 1 = 1) : ∀ n :
   | n + 1 => by rw [map_add, h1, eq_natCast' f h1 n, Nat.cast_add_one]
 #align eq_nat_cast' eq_natCast'
 
-theorem map_natCast' {A} [AddMonoidWithOne A] [AddMonoidHomClass F A B] (f : F) (h : f 1 = 1) :
+theorem map_natCast' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F A B]
+    (f : F) (h : f 1 = 1) :
     ∀ n : ℕ, f n = n
   | 0 => by simp [map_zero f]
   | n + 1 => by
@@ -136,7 +139,7 @@ end AddMonoidHomClass
 
 section MonoidWithZeroHomClass
 
-variable {A F : Type*} [MulZeroOneClass A]
+variable {A F : Type*} [MulZeroOneClass A] [FunLike F ℕ A]
 
 /-- If two `MonoidWithZeroHom`s agree on the positive naturals they are equal. -/
 theorem ext_nat'' [MonoidWithZeroHomClass F ℕ A] (f g : F) (h_pos : ∀ {n : ℕ}, 0 < n → f n = g n) :
@@ -159,27 +162,28 @@ section RingHomClass
 variable {R S F : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 @[simp]
-theorem eq_natCast [RingHomClass F ℕ R] (f : F) : ∀ n, f n = n :=
+theorem eq_natCast [FunLike F ℕ R] [RingHomClass F ℕ R] (f : F) : ∀ n, f n = n :=
   eq_natCast' f <| map_one f
 #align eq_nat_cast eq_natCast
 
 @[simp]
-theorem map_natCast [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
+theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
   map_natCast' f <| map_one f
 #align map_nat_cast map_natCast
 
 --Porting note: new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem map_ofNat [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
+theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
     (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
   map_natCast f n
 
-theorem ext_nat [RingHomClass F ℕ R] (f g : F) : f = g :=
+theorem ext_nat [FunLike F ℕ R] [RingHomClass F ℕ R] (f g : F) : f = g :=
   ext_nat' f g <| by simp only [map_one f, map_one g]
 #align ext_nat ext_nat
 
-theorem NeZero.nat_of_neZero {R S} [Semiring R] [Semiring S] {F} [RingHomClass F R S] (f : F)
+theorem NeZero.nat_of_neZero {R S} [Semiring R] [Semiring S]
+    {F} [FunLike F R S] [RingHomClass F R S] (f : F)
     {n : ℕ} [hn : NeZero (n : S)] : NeZero (n : R) :=
   .of_map (f := f) (neZero := by simp only [map_natCast, hn])
 #align ne_zero.nat_of_ne_zero NeZero.nat_of_neZero

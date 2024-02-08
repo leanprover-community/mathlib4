@@ -13,7 +13,6 @@ import Mathlib.Control.Basic
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.DiscrTree
-import Mathlib.Tactic.TryThis
 
 /-!
 # The `rewrites` tactic.
@@ -32,10 +31,10 @@ namespace Lean.Meta
 
 /-- Extract the lemma, with arguments, that was used to produce a `RewriteResult`. -/
 -- This assumes that `r.eqProof` was constructed as:
--- `mkAppN (mkConst ``Eq.ndrec [u1, u2]) #[α, a, motive, h₁, b, h₂]`
--- and we want `h₂`.
+-- `mkApp6 (.const ``congrArg _) α eType lhs rhs motive heq`
+-- in `Lean.Meta.Tactic.Rewrite` and we want `heq`.
 def RewriteResult.by? (r : RewriteResult) : Option Expr :=
-  if r.eqProof.isAppOfArity ``Eq.ndrec 6 then
+  if r.eqProof.isAppOfArity ``congrArg 6 then
     r.eqProof.getArg! 5
   else
     none
