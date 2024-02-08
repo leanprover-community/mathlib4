@@ -202,8 +202,19 @@ instance : HeytingAlgebra (Opens X) := {
   toLattice := inferInstance,
   himp := fun s t => Opens.interior (sᶜ ∪ t : Set X),
   compl := fun s => Opens.interior (sᶜ : Set X),
-  le_himp_iff := sorry
-  himp_bot := sorry
+  le_himp_iff := by
+    intro s t u
+    change _ ≤ Opens.interior _ ↔ _
+    simp_rw [← SetLike.coe_subset_coe, Opens.coe_inf, Opens.coe_interior, Set.inter_subset]
+    refine ⟨fun subset => ?ss, fun subset => interior_maximal subset s.isOpen⟩
+    calc
+      (s : Set X) ⊆ _root_.interior (tᶜ ∪ u) := subset
+      _ ⊆ tᶜ ∪ _root_.interior u := (isClosed_compl_iff.mpr t.isOpen).interior_union_left
+      _ = (tᶜ : Set X) ∪ u := by rw [u.isOpen.interior_eq]
+  himp_bot := by
+    intro a
+    change Opens.interior (aᶜ ∪ ∅ : Set X) = Opens.interior (aᶜ : Set X)
+    rw [Set.union_empty]
 }
 theorem Opens.coe_compl {s : Opens X} : ↑(sᶜ) = interior (s : Set X)ᶜ := rfl
 
