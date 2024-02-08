@@ -432,6 +432,12 @@ theorem smul_mul_assoc [Mul β] [SMul α β] [IsScalarTower α β β] (r : α) (
 #align smul_mul_assoc smul_mul_assoc
 #align vadd_add_assoc vadd_add_assoc
 
+/-- Note that the `IsScalarTower α β β` typeclass argument is usually satisfied by `Algebra α β`.
+-/
+@[to_additive]
+lemma smul_div_assoc [DivInvMonoid β] [SMul α β] [IsScalarTower α β β] (r : α) (x y : β) :
+    r • x / y = r • (x / y) := by simp [div_eq_mul_inv, smul_mul_assoc]
+
 @[to_additive]
 theorem smul_smul_smul_comm [SMul α β] [SMul α γ] [SMul β δ] [SMul α δ] [SMul γ δ]
     [IsScalarTower α β δ] [IsScalarTower α γ δ] [SMulCommClass β γ δ] (a : α) (b : β) (c : γ)
@@ -756,6 +762,11 @@ theorem smul_zero (a : M) : a • (0 : A) = 0 :=
 
 lemma smul_ite_zero (p : Prop) [Decidable p] (a : M) (b : A) :
     (a • if p then b else 0) = if p then a • b else 0 := by split_ifs <;> simp
+
+lemma smul_eq_zero_of_right (a : M) {b : A} (h : b = 0) : a • b = 0 := h.symm ▸ smul_zero a
+#align smul_eq_zero_of_right smul_eq_zero_of_right
+lemma right_ne_zero_of_smul {a : M} {b : A} : a • b ≠ 0 → b ≠ 0 := mt <| smul_eq_zero_of_right a
+#align right_ne_zero_of_smul right_ne_zero_of_smul
 
 /-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
 See note [reducible non-instances]. -/

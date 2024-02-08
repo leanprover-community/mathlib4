@@ -1274,7 +1274,8 @@ theorem PseudoMetricSpace.replaceTopology_eq {γ} [U : TopologicalSpace γ] (m :
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
 uniformity are defeq in the pseudometric space and the pseudoemetric space. In this definition, the
 distance is given separately, to be able to prescribe some expression which is not defeq to the
-push-forward of the edistance to reals. -/
+push-forward of the edistance to reals. See note [reducible non-instances]. -/
+@[reducible]
 def PseudoEMetricSpace.toPseudoMetricSpaceOfDist {α : Type u} [e : PseudoEMetricSpace α]
     (dist : α → α → ℝ) (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤)
     (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) : PseudoMetricSpace α where
@@ -1846,7 +1847,7 @@ protected theorem _root_.Inducing.isSeparable_preimage {f : β → α} [Topologi
   have : Inducing ((mapsTo_preimage f s).restrict _ _ _) :=
     (hf.comp inducing_subtype_val).codRestrict _
   have := this.secondCountableTopology
-  exact isSeparable_of_separableSpace_subtype _
+  exact .of_subtype _
 #align inducing.is_separable_preimage Inducing.isSeparable_preimage
 
 protected theorem _root_.Embedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
@@ -1866,7 +1867,7 @@ end Metric
 /-- A compact set is separable. -/
 theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
   haveI : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  isSeparable_of_separableSpace_subtype s
+  .of_subtype s
 #align is_compact.is_separable IsCompact.isSeparable
 
 section Pi
