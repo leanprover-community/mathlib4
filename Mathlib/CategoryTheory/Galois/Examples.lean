@@ -98,6 +98,10 @@ noncomputable instance : FibreFunctor (Action.forget FintypeCat (MonCat.of G)) w
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
 
+/-- The category of finite `G`-sets is a `GaloisCategory`. -/
+instance : GaloisCategory (Action FintypeCat (MonCat.of G)) where
+  hasFibreFunctor := ⟨Action.forget FintypeCat (MonCat.of G), ⟨inferInstance⟩⟩
+
 end FintypeCat
 
 end CategoryTheory
