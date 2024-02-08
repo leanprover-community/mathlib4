@@ -122,10 +122,11 @@ end smulInvariantMeasure
 section normal
 
 section additive
+
 variable {G : Type*} [AddGroup G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalAddGroup G]
-  [BorelSpace G] [PolishSpace G] (ν : Measure G) {Γ : AddSubgroup G} [Countable Γ]
-  [AddSubgroup.Normal Γ] [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
-  [IsAddLeftInvariant ν] [IsAddRightInvariant ν] [SigmaFinite ν]
+  [BorelSpace G] [PolishSpace G] {Γ : AddSubgroup G} [Countable Γ] [AddSubgroup.Normal Γ]
+  [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
+  (ν : Measure G) [IsAddLeftInvariant ν] [IsAddRightInvariant ν] [SigmaFinite ν]
 
 /-- If `μ` on `G ⧸ Γ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a both left- and
 right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant measure.-/
@@ -178,14 +179,14 @@ theorem MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePrei
 
 end additive
 
-variable {G : Type*} [Group G] [MeasureSpace G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
   [BorelSpace G] [PolishSpace G] {Γ : Subgroup G} [Countable Γ] [Subgroup.Normal Γ]
   [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
 
 section mulInvariantMeasure
 
-variable (ν : Measure G) [IsMulLeftInvariant (ν : Measure G)] [IsMulRightInvariant (ν : Measure G)]
-  [SigmaFinite (ν : Measure G)]
+variable (ν : Measure G) [IsMulLeftInvariant ν] [IsMulRightInvariant ν]
+  [SigmaFinite ν]
 
 /-- If `μ` on `G ⧸ Γ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and
   right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant
@@ -214,7 +215,7 @@ measurable fundamental domain `s` with positive finite volume, and that there is
 set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the scaling is right). Then
 `μ` satisfies `QuotientMeasureEqMeasurePreimage`. The main tool of the proof is the uniqueness of
 left invariant measures, if normalized by a single positive finite-measured set. -/
-theorem MeasureTheory.Measure.IsMulLeftInvariant.QuotientMeasureEqMeasurePreimage_of_set {s : Set G}
+theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set {s : Set G}
     (fund_dom_s : IsFundamentalDomain Γ.op s ν) {V : Set (G ⧸ Γ)}
     (meas_V : MeasurableSet V) (neZeroV : μ V ≠ 0) (hV : μ V = ν (π ⁻¹' V ∩ s))
     (neTopV : μ V ≠ ⊤) : QuotientMeasureEqMeasurePreimage ν μ := by
@@ -242,16 +243,13 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.QuotientMeasureEqMeasurePreimag
 
 attribute [to_additive existing
   MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePreimage_of_set]
-  MeasureTheory.Measure.IsMulLeftInvariant.QuotientMeasureEqMeasurePreimage_of_set
-
-
---TO ADDITIVE FAILING
+  MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set
 
 /-- If a measure `μ` is left-invariant and satisfies the right scaling condition, then it
   satisfies `QuotientMeasureEqMeasurePreimage`. -/
--- @[to_additive MeasureTheory.leftInvariantIsAddQuotientMeasureEqMeasurePreimage "If a measure `μ` is
--- left-invariant and satisfies the right scaling condition, then it satisfies
--- `AddQuotientMeasureEqMeasurePreimage`."]
+@[to_additive MeasureTheory.leftInvariantIsAddQuotientMeasureEqMeasurePreimage "If a measure `μ` is
+left-invariant and satisfies the right scaling condition, then it satisfies
+`AddQuotientMeasureEqMeasurePreimage`."]
 theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteMeasure μ]
     [hasFun : HasFundamentalDomain Γ.op G ν]
     (h : covolume Γ.op G ν = μ univ) : QuotientMeasureEqMeasurePreimage ν μ := by
@@ -261,7 +259,7 @@ theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteM
   by_cases meas_s_ne_zero : ν s = 0
   · convert fund_dom_s.quotientMeasureEqMeasurePreimage_of_zero ν meas_s_ne_zero
     rw [← @measure_univ_eq_zero, ← h, meas_s_ne_zero]
-  apply IsMulLeftInvariant.QuotientMeasureEqMeasurePreimage_of_set (fund_dom_s := fund_dom_s)
+  apply IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set (fund_dom_s := fund_dom_s)
     (meas_V := MeasurableSet.univ)
   · rw [← h]
     exact meas_s_ne_zero
@@ -282,10 +280,10 @@ local notation "π" => @QuotientGroup.mk G _ Γ
 fundamental domain, satisfies `QuotientMeasureEqMeasurePreimage` relative to a standardized choice
 of Haar measure on `G`, and assuming `μ` is finite, then `μ` is itself Haar.
 TODO: Is it possible to drop the assumption that `μ` is finite? -/
--- @[to_additive "If a measure `μ` on the quotient `G ⧸ Γ` of an additive group `G` by a discrete
--- normal subgroup `Γ` having fundamental domain, satisfies `AddQuotientMeasureEqMeasurePreimage`
--- relative to a standardized choice of Haar measure on `G`, and assuming `μ` is finite, then `μ` is
--- itself Haar."]
+@[to_additive "If a measure `μ` on the quotient `G ⧸ Γ` of an additive group `G` by a discrete
+normal subgroup `Γ` having fundamental domain, satisfies `AddQuotientMeasureEqMeasurePreimage`
+relative to a standardized choice of Haar measure on `G`, and assuming `μ` is finite, then `μ` is
+itself Haar."]
 theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [LocallyCompactSpace G]
     [QuotientMeasureEqMeasurePreimage ν μ] [i : HasFundamentalDomain Γ.op G ν]
     [IsFiniteMeasure μ] : IsHaarMeasure μ := by
@@ -326,11 +324,11 @@ subgroup `Γ` of an additive topological group `G` with Haar measure `μ`, which
 right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
 properly normalized, satisfies `AddQuotientMeasureEqMeasurePreimage`."]
 theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_HaarMeasure {𝓕 : Set G}
-    (h𝓕 : IsFundamentalDomain Γ.op 𝓕) [IsMulLeftInvariant μ] [SigmaFinite μ]
+    (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) [IsMulLeftInvariant μ] [SigmaFinite μ]
     {V : Set (G ⧸ Γ)} (hV : (interior V).Nonempty) (meas_V : MeasurableSet V)
     (hμK : μ V = ν ((π ⁻¹' V) ∩ 𝓕)) (neTopV : μ V ≠ ⊤) :
-    QuotientMeasureEqMeasurePreimage μ := by
-  apply IsMulLeftInvariant.QuotientMeasureEqMeasurePreimage_of_set (fund_dom_s := h𝓕)
+    QuotientMeasureEqMeasurePreimage ν μ := by
+  apply IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set (fund_dom_s := h𝓕)
     (meas_V := meas_V)
   · rw [hμK]
     intro c_eq_zero
@@ -355,8 +353,8 @@ normal subgroup `Γ` of an additive topological group `G` with Haar measure `μ`
 right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
 properly normalized, satisfies `AddQuotientMeasureEqMeasurePreimage`."]
 theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {𝓕 : Set G}
-    (h𝓕 : IsFundamentalDomain Γ.op 𝓕) (h𝓕_finite : ν 𝓕 ≠ ⊤) :
-    QuotientMeasureEqMeasurePreimage
+    (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) (h𝓕_finite : ν 𝓕 ≠ ⊤) :
+    QuotientMeasureEqMeasurePreimage ν
       ((ν ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)) • haarMeasure K) := by
   set c := ν ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)
   have c_ne_top : c ≠ ⊤
