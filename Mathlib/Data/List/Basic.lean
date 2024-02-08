@@ -902,7 +902,7 @@ theorem nthLe_cons {l : List α} {a : α} {n} (hl) :
   split_ifs with h
   · simp [nthLe, h]
   cases l
-  · rw [length_singleton, lt_succ_iff, nonpos_iff_eq_zero] at hl
+  · rw [length_singleton, Nat.lt_succ_iff, nonpos_iff_eq_zero] at hl
     contradiction
   cases n
   · contradiction
@@ -1292,7 +1292,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
   · by_cases h₁ : l = []
     · subst h₁
       rw [get_singleton]
-      simp only [length_singleton, lt_succ_iff, nonpos_iff_eq_zero] at h
+      simp only [length_singleton, Nat.lt_succ_iff, nonpos_iff_eq_zero] at h
       subst h
       simp
     have h₂ := h

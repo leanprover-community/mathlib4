@@ -107,7 +107,7 @@ theorem one_le_cast : 1 ≤ (n : α) ↔ 1 ≤ n := by rw [← cast_one, cast_le
 
 @[simp, norm_cast]
 theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by
-  rw [← cast_one, cast_lt, lt_succ_iff, ← bot_eq_zero, le_bot_iff]
+  rw [← cast_one, cast_lt, Nat.lt_succ_iff, ← bot_eq_zero, le_bot_iff]
 #align nat.cast_lt_one Nat.cast_lt_one
 
 @[simp, norm_cast]
