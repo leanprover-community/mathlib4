@@ -6,6 +6,7 @@ Authors: Moritz Doll
 
 import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
+import Mathlib.Analysis.NormedSpace.Basic
 
 /-!
 # The span of a single vector
