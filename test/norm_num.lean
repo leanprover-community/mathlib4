@@ -163,6 +163,10 @@ example : ((-1 : ℤ) ≠ -1) = False := by norm_num1
 example : ((1 : α) ≠ 1) = False := by norm_num1
 example : ((-1 : α) = 2) = False := by norm_num1
 
+example : Int.natAbs 5 = 5 := by norm_num1
+example : Int.natAbs (-5) = 5 := by norm_num1
+example : Int.natAbs 0 = 0 := by norm_num1
+
 end Int
 
 section Rat
