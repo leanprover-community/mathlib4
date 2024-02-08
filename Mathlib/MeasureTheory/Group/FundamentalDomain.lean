@@ -926,8 +926,8 @@ theorem IsFundamentalDomain.measurePreserving_quotient_mk
     rw [h𝓕.projection_respects_measure (μ := μ)]
 
 /-- If a fundamental domain has volume 0, then `QuotientMeasureEqMeasurePreimage` holds. -/
-@[to_additive IsAddFundamentalDomain.AddQuotientMeasureEqMeasurePreimage_of_volume_zero]
-theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_of_volume_zero
+@[to_additive IsAddFundamentalDomain.addQuotientMeasureEqMeasurePreimage_of_zero]
+theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν)
     (vol_s : ν s = 0) :
     QuotientMeasureEqMeasurePreimage ν (0 : Measure (Quotient α_mod_G)) := by

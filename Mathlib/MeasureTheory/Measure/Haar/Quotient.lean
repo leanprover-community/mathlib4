@@ -25,13 +25,13 @@ subgroup `Γ` of a topological group `G` on `G` itself. Let `μ` be a measure on
 The next two results assume that `Γ` is normal, and that `G` is equipped with a left- and
 right-invariant measure.
 
-* `MeasureTheory.QuotientMeasureEqMeasurePreimage.MulInvariantMeasure_quotient`: If `μ` satisfies
+* `MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient`: If `μ` satisfies
   `QuotientMeasureEqMeasurePreimage`, then `μ` is a left-invariant measure.
 
-* `MeasureTheory.LeftInvariantIsQuotientMeasureEqMeasurePreimage`: If `μ` is left-invariant, and
+* `MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage`: If `μ` is left-invariant, and
   the action of `Γ` on `G` has finite covolume, and `μ` satisfies the right scaling condition, then
   it satisfies `QuotientMeasureEqMeasurePreimage`. This is a converse to
-  `MeasureTheory.QuotientMeasureEqMeasurePreimage.MulInvariantMeasure_quotient`.
+  `MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient`.
 
 The last result assumes that `G` is locally compact, that `Γ` is countable and normal, that its
 action on `G` has a fundamental domain, and that `μ` is a finite measure. We also assume that `G`
@@ -39,7 +39,7 @@ is equipped with a sigma-finite Haar measure.
 
 * `MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient`: If `μ` satisfies
   `QuotientMeasureEqMeasurePreimage`, then it is itself Haar. This is a variant of
-  `MeasureTheory.QuotientMeasureEqMeasurePreimage.MulInvariantMeasure_quotient`.
+  `MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient`.
 
 Note that a group `G` with Haar measure that is both left and right invariant is called
 **unimodular**.
@@ -212,25 +212,26 @@ local notation "π" => @QuotientGroup.mk G _ Γ
 /-- Assume that a measure `μ` is `IsMulLeftInvariant`, that the action of `Γ` on `G` has a
 measurable fundamental domain `s` with positive finite volume, and that there is a single measurable
 set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the scaling is right). Then
-`μ` satisfies `QuotientMeasureEqMeasurePreimage`. The main tool of the proof is the uniqueness of left
-invariant measures, if normalized by a single positive finite-measured set. -/
+`μ` satisfies `QuotientMeasureEqMeasurePreimage`. The main tool of the proof is the uniqueness of
+left invariant measures, if normalized by a single positive finite-measured set. -/
 theorem MeasureTheory.Measure.IsMulLeftInvariant.QuotientMeasureEqMeasurePreimage_of_set {s : Set G}
-    (fund_dom_s : IsFundamentalDomain Γ.op s) {V : Set (G ⧸ Γ)}
+    (fund_dom_s : IsFundamentalDomain Γ.op s ν) {V : Set (G ⧸ Γ)}
     (meas_V : MeasurableSet V) (neZeroV : μ V ≠ 0) (hV : μ V = ν (π ⁻¹' V ∩ s))
-    (neTopV : μ V ≠ ⊤) : QuotientMeasureEqMeasurePreimage μ := by
-  apply fund_dom_s.QuotientMeasureEqMeasurePreimage
-  intro U meas_U
+    (neTopV : μ V ≠ ⊤) : QuotientMeasureEqMeasurePreimage ν μ := by
+  apply fund_dom_s.quotientMeasureEqMeasurePreimage
+  ext U _
   have meas_π : Measurable (QuotientGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
   let μ' : Measure (G ⧸ Γ) := (ν.restrict s).map π
-  haveI has_fund : HasFundamentalDomain Γ.op G := ⟨⟨s, fund_dom_s⟩⟩
-  have : QuotientMeasureEqMeasurePreimage μ' :=
+  haveI has_fund : HasFundamentalDomain Γ.op G ν := ⟨⟨s, fund_dom_s⟩⟩
+  have i : QuotientMeasureEqMeasurePreimage ν μ' :=
     fund_dom_s.QuotientMeasureEqMeasurePreimage_quotientMeasure
   have : μ'.IsMulLeftInvariant :=
-    MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient
+    MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient ν
   suffices : μ = μ'
-  · rw [this, Measure.map_apply meas_π meas_U, Measure.restrict_apply]; rfl
-    exact measurableSet_quotient.mp meas_U
-  · rw [measure_eq_div_smul μ' μ meas_V neZeroV neTopV, hV]
+  · rw [this]
+    rfl
+  · have : SigmaFinite μ' := i.sigmaFiniteQuotient
+    rw [measure_eq_div_smul μ' μ meas_V neZeroV neTopV, hV]
     symm
     convert one_smul ENNReal μ
     rw [Measure.map_apply meas_π meas_V, Measure.restrict_apply]
@@ -243,19 +244,22 @@ attribute [to_additive existing
   MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePreimage_of_set]
   MeasureTheory.Measure.IsMulLeftInvariant.QuotientMeasureEqMeasurePreimage_of_set
 
+
+--TO ADDITIVE FAILING
+
 /-- If a measure `μ` is left-invariant and satisfies the right scaling condition, then it
   satisfies `QuotientMeasureEqMeasurePreimage`. -/
-@[to_additive MeasureTheory.LeftInvariantIsAddQuotientMeasureEqMeasurePreimage "If a measure `μ` is
-left-invariant and satisfies the right scaling condition, then it satisfies
-`AddQuotientMeasureEqMeasurePreimage`."]
-theorem MeasureTheory.LeftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteMeasure μ]
-    [hasFun : HasFundamentalDomain Γ.op G]
-    (h : covolume Γ.op G = μ univ) : QuotientMeasureEqMeasurePreimage μ := by
-  obtain ⟨s, fund_dom_s⟩ := hasFun.has_fundamental_domain_characterization
+-- @[to_additive MeasureTheory.leftInvariantIsAddQuotientMeasureEqMeasurePreimage "If a measure `μ` is
+-- left-invariant and satisfies the right scaling condition, then it satisfies
+-- `AddQuotientMeasureEqMeasurePreimage`."]
+theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteMeasure μ]
+    [hasFun : HasFundamentalDomain Γ.op G ν]
+    (h : covolume Γ.op G ν = μ univ) : QuotientMeasureEqMeasurePreimage ν μ := by
+  obtain ⟨s, fund_dom_s⟩ := hasFun.ExistsIsFundamentalDomain
   have finiteCovol : μ univ < ⊤ := measure_lt_top μ univ
   rw [fund_dom_s.covolume_eq_volume] at h
   by_cases meas_s_ne_zero : ν s = 0
-  · convert fund_dom_s.QuotientMeasureEqMeasurePreimage_of_volume_zero meas_s_ne_zero
+  · convert fund_dom_s.quotientMeasureEqMeasurePreimage_of_zero ν meas_s_ne_zero
     rw [← @measure_univ_eq_zero, ← h, meas_s_ne_zero]
   apply IsMulLeftInvariant.QuotientMeasureEqMeasurePreimage_of_set (fund_dom_s := fund_dom_s)
     (meas_V := MeasurableSet.univ)
@@ -270,31 +274,32 @@ end mulInvariantMeasure
 
 section haarMeasure
 
-variable [SigmaFinite (ν : Measure G)] [IsHaarMeasure (ν : Measure G)]
-  [IsMulRightInvariant (ν : Measure G)]
+variable (ν : Measure G) [SigmaFinite ν] [IsHaarMeasure ν] [IsMulRightInvariant ν]
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
 /-- If a measure `μ` on the quotient `G ⧸ Γ` of a group `G` by a discrete normal subgroup `Γ` having
-fundamental domain, satisfies `QuotientMeasureEqMeasurePreimage` relative to a standardized choice of
-Haar measure on `G`, and assuming `μ` is finite, then `μ` is itself Haar.
+fundamental domain, satisfies `QuotientMeasureEqMeasurePreimage` relative to a standardized choice
+of Haar measure on `G`, and assuming `μ` is finite, then `μ` is itself Haar.
 TODO: Is it possible to drop the assumption that `μ` is finite? -/
-@[to_additive "If a measure `μ` on the quotient `G ⧸ Γ` of an additive group `G` by a discrete
-normal subgroup `Γ` having fundamental domain, satisfies `AddQuotientMeasureEqMeasurePreimage`
-relative to a standardized choice of Haar measure on `G`, and assuming `μ` is finite, then `μ` is
-itself Haar."]
-instance MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [LocallyCompactSpace G]
-    [QuotientMeasureEqMeasurePreimage μ] [i : HasFundamentalDomain Γ.op G]
+-- @[to_additive "If a measure `μ` on the quotient `G ⧸ Γ` of an additive group `G` by a discrete
+-- normal subgroup `Γ` having fundamental domain, satisfies `AddQuotientMeasureEqMeasurePreimage`
+-- relative to a standardized choice of Haar measure on `G`, and assuming `μ` is finite, then `μ` is
+-- itself Haar."]
+theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [LocallyCompactSpace G]
+    [QuotientMeasureEqMeasurePreimage ν μ] [i : HasFundamentalDomain Γ.op G ν]
     [IsFiniteMeasure μ] : IsHaarMeasure μ := by
   obtain ⟨K⟩ := PositiveCompacts.nonempty' (α := G)
   let K' : PositiveCompacts (G ⧸ Γ) :=
     K.map π continuous_coinduced_rng (QuotientGroup.isOpenMap_coe Γ)
+  haveI : IsMulLeftInvariant μ :=
+    MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient ν
   rw [haarMeasure_unique μ K']
-  have finiteCovol : covolume Γ.op G ≠ ⊤ :=
-    QuotientMeasureEqMeasurePreimage.covolume_ne_top (μ := μ)
+  have finiteCovol : covolume Γ.op G ν ≠ ⊤ :=
+    ne_top_of_lt $ QuotientMeasureEqMeasurePreimage.covolume_ne_top μ (ν := ν)
   obtain ⟨s, fund_dom_s⟩ := i
   rw [fund_dom_s.covolume_eq_volume] at finiteCovol
-  rw [projection_respects_measure fund_dom_s K'.isCompact.measurableSet]
+  rw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
   apply IsHaarMeasure.smul
   · intro h
     haveI i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
