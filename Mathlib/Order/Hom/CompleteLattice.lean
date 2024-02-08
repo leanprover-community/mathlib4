@@ -83,8 +83,7 @@ section
 /-- `sSupHomClass F α β` states that `F` is a type of `⨆`-preserving morphisms.
 
 You should extend this class when you extend `sSupHom`. -/
-class sSupHomClass (F : Type*) (α β : outParam <| Type*) [SupSet α] [SupSet β] extends
-  DFunLike F α fun _ => β where
+class sSupHomClass (F α β : Type*) [SupSet α] [SupSet β] [FunLike F α β] : Prop where
   /-- The proposition that members of `sSupHomClass`s commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align Sup_hom_class sSupHomClass
@@ -92,8 +91,7 @@ class sSupHomClass (F : Type*) (α β : outParam <| Type*) [SupSet α] [SupSet �
 /-- `sInfHomClass F α β` states that `F` is a type of `⨅`-preserving morphisms.
 
 You should extend this class when you extend `sInfHom`. -/
-class sInfHomClass (F : Type*) (α β : outParam <| Type*) [InfSet α] [InfSet β] extends
-  DFunLike F α fun _ => β where
+class sInfHomClass (F α β : Type*) [InfSet α] [InfSet β] [FunLike F α β] : Prop where
   /-- The proposition that members of `sInfHomClass`s commute with arbitrary infima/meets. -/
   map_sInf (f : F) (s : Set α) : f (sInf s) = sInf (f '' s)
 #align Inf_hom_class sInfHomClass
@@ -101,8 +99,8 @@ class sInfHomClass (F : Type*) (α β : outParam <| Type*) [InfSet α] [InfSet �
 /-- `FrameHomClass F α β` states that `F` is a type of frame morphisms. They preserve `⊓` and `⨆`.
 
 You should extend this class when you extend `FrameHom`. -/
-class FrameHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
-  [CompleteLattice β] extends InfTopHomClass F α β where
+class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+  extends InfTopHomClass F α β : Prop where
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 #align frame_hom_class FrameHomClass
@@ -110,8 +108,8 @@ class FrameHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
 /-- `CompleteLatticeHomClass F α β` states that `F` is a type of complete lattice morphisms.
 
 You should extend this class when you extend `CompleteLatticeHom`. -/
-class CompleteLatticeHomClass (F : Type*) (α β : outParam <| Type*) [CompleteLattice α]
-  [CompleteLattice β] extends sInfHomClass F α β where
+class CompleteLatticeHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β]
+  [FunLike F α β] extends sInfHomClass F α β : Prop where
   /-- The proposition that members of `CompleteLatticeHomClass` commute with arbitrary
   suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
@@ -124,6 +122,10 @@ export sSupHomClass (map_sSup)
 export sInfHomClass (map_sInf)
 
 attribute [simp] map_sSup map_sInf
+
+section Hom
+
+variable [FunLike F α β]
 
 @[simp] theorem map_iSup [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ι → α) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by simp [iSup, ← Set.range_comp, Function.comp]
@@ -191,6 +193,12 @@ instance (priority := 100) CompleteLatticeHomClass.toBoundedLatticeHomClass [Com
   { sSupHomClass.toSupBotHomClass, sInfHomClass.toInfTopHomClass with }
 #align complete_lattice_hom_class.to_bounded_lattice_hom_class CompleteLatticeHomClass.toBoundedLatticeHomClass
 
+end Hom
+
+section Equiv
+
+variable [EquivLike F α β]
+
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : sSupHomClass F α β :=
@@ -217,6 +225,10 @@ instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLatt
     -- show sInfHomClass F α β from inferInstance with }
   { OrderIsoClass.tosSupHomClass, OrderIsoClass.tosInfHomClass with }
 #align order_iso_class.to_complete_lattice_hom_class OrderIsoClass.toCompleteLatticeHomClass
+
+end Equiv
+
+variable [FunLike F α β]
 
 /-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
 @[simps] def OrderIso.toCompleteLatticeHom [CompleteLattice α] [CompleteLattice β]
@@ -249,17 +261,12 @@ section SupSet
 
 variable [SupSet β] [SupSet γ] [SupSet δ]
 
-instance : sSupHomClass (sSupHom α β) α β
-    where
+instance : FunLike (sSupHom α β) α β where
   coe := sSupHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  map_sSup := sSupHom.map_sSup'
 
--- Porting note: We do not want CoeFun for this in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
--- directly. -/
--- instance : CoeFun (sSupHom α β) fun _ => α → β :=
---   DFunLike.hasCoeToFun
+instance : sSupHomClass (sSupHom α β) α β where
+  map_sSup := sSupHom.map_sSup'
 
 @[simp] lemma toFun_eq_coe (f : sSupHom α β) : f.toFun = f := rfl
 #align Sup_hom.to_fun_eq_coe sSupHom.toFun_eq_coe
@@ -395,17 +402,12 @@ section InfSet
 
 variable [InfSet β] [InfSet γ] [InfSet δ]
 
-instance : sInfHomClass (sInfHom α β) α β
-    where
+instance : FunLike (sInfHom α β) α β where
   coe := sInfHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  map_sInf := sInfHom.map_sInf'
 
--- Porting note: Do not want these CoeFun instances in lean4
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
--- directly. -/
--- instance : CoeFun (sInfHom α β) fun _ => α → β :=
---   DFunLike.hasCoeToFun
+instance : sInfHomClass (sInfHom α β) α β where
+  map_sInf := sInfHom.map_sInf'
 
 @[simp] lemma toFun_eq_coe (f : sInfHom α β) : f.toFun = f := rfl
 #align Inf_hom.to_fun_eq_coe sInfHom.toFun_eq_coe
@@ -537,22 +539,19 @@ namespace FrameHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
-instance : FrameHomClass (FrameHom α β) α β
+instance : FunLike (FrameHom α β) α β
     where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
+
+instance : FrameHomClass (FrameHom α β) α β
+    where
   map_sSup f := f.map_sSup'
   map_inf f := f.map_inf'
   map_top f := f.map_top'
-
--- Porting note: We do not want CoeFun for this in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
--- directly. -/
--- instance : CoeFun (FrameHom α β) fun _ => α → β :=
---   DFunLike.hasCoeToFun
 
 /-- Reinterpret a `FrameHom` as a `LatticeHom`. -/
 def toLatticeHom (f : FrameHom α β) : LatticeHom α β :=
@@ -659,15 +658,15 @@ end FrameHom
 
 /-! ### Complete lattice homomorphisms -/
 
-
 namespace CompleteLatticeHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] [CompleteLattice δ]
 
-instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β
-    where
+instance : FunLike (CompleteLatticeHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+
+instance : CompleteLatticeHomClass (CompleteLatticeHom α β) α β where
   map_sSup f := f.map_sSup'
   map_sInf f := f.map_sInf'
 

@@ -96,6 +96,10 @@ noncomputable instance : FibreFunctor (Action.forget FintypeCat (MonCat.of G)) w
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
 
+/-- The category of finite `G`-sets is a `GaloisCategory`. -/
+instance : GaloisCategory (Action FintypeCat (MonCat.of G)) where
+  hasFibreFunctor := ⟨Action.forget FintypeCat (MonCat.of G), ⟨inferInstance⟩⟩
+
 /-- The `G`-action on a connected finite `G`-set is transitive. -/
 theorem Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
     [ConnectedObject X] : MulAction.IsPretransitive G X.V where

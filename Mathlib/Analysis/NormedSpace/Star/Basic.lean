@@ -317,7 +317,7 @@ namespace StarSubalgebra
 
 instance toNormedAlgebra {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) S.algebra _ _ _ S.subtype
+  NormedAlgebra.induced 𝕜 S A S.subtype
 #align star_subalgebra.to_normed_algebra StarSubalgebra.toNormedAlgebra
 
 instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormedRing A] [StarRing A] [CstarRing A]
