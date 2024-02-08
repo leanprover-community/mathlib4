@@ -283,15 +283,11 @@ instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ :=
   coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)}
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
-  coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
   map_mul w _ _ := w.1.map_mul _ _
   map_one w := w.1.map_one
   map_zero w := w.1.map_zero
 
 instance : NonnegHomClass (InfinitePlace K) K ℝ where
-  coe w x := w x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
   map_nonneg w _ := w.1.nonneg _
 
 @[simp]
@@ -796,10 +792,11 @@ lemma nat_card_stabilizer_eq_one_or_two :
     · right; simp [*]
   · push_neg at h
     left
-    convert show Nat.card ({1} : Set (K ≃ₐ[k] K)) = 1 by simp
-    ext
-    simp only [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_singleton_iff, or_iff_left_iff_imp]
-    exact fun x ↦ (h _ x).elim
+    trans Nat.card ({1} : Set (K ≃ₐ[k] K))
+    · congr with x
+      simp only [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_singleton_iff, or_iff_left_iff_imp,
+        h x, IsEmpty.forall_iff]
+    · simp
 
 variable {k w}
 
