@@ -12,10 +12,10 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
-# Examples of Galois categories and fibre functors
+# Examples of Galois categories and fiber functors
 
 We show that for a group `G` the category of finite `G`-sets is a `PreGaloisCategory` and that the
-forgetful functor to `FintypeCat` is a `FibreFunctor`.
+forgetful functor to `FintypeCat` is a `FiberFunctor`.
 
 The connected finite `G`-sets are precisely the ones with transitive `G`-action.
 
@@ -90,15 +90,15 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
       (isColimitMapCoconeBinaryCofanEquiv (forget _) i _).symm
       (Types.isCoprodOfMono ((forget _).map i))⟩⟩
 
-/-- The forgetful functor from finite `G`-sets to sets is a `FibreFunctor`. -/
-noncomputable instance : FibreFunctor (Action.forget FintypeCat (MonCat.of G)) where
+/-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
+noncomputable instance : FiberFunctor (Action.forget FintypeCat (MonCat.of G)) where
   preservesFiniteCoproducts := ⟨fun _ _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
 
 /-- The category of finite `G`-sets is a `GaloisCategory`. -/
 instance : GaloisCategory (Action FintypeCat (MonCat.of G)) where
-  hasFibreFunctor := ⟨Action.forget FintypeCat (MonCat.of G), ⟨inferInstance⟩⟩
+  hasFiberFunctor := ⟨Action.forget FintypeCat (MonCat.of G), ⟨inferInstance⟩⟩
 
 /-- The `G`-action on a connected finite `G`-set is transitive. -/
 theorem Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
