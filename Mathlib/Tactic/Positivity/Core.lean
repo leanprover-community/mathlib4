@@ -235,9 +235,9 @@ def compareHypLT (lo e : Q($α)) (p₂ : Q($lo < $e)) : MetaM (Strictness zα p�
   | .nonnegative p₁ => pure (.positive q(lt_of_le_of_lt $p₁ $p₂))
   | _ => pure .none
 
-/-- A variation on `assumption` when the hypothesis is `a = b` where `a` is a numeral. -/
-def compareHypEq (e a : Q($α)) (p₂ : Q($a = $e)) : MetaM (Strictness zα pα e) := do
-  match ← normNumPositivity zα pα a with
+/-- A variation on `assumption` when the hypothesis is `x = e` where `x` is a numeral. -/
+def compareHypEq (e x : Q($α)) (p₂ : Q($x = $e)) : MetaM (Strictness zα pα e) := do
+  match ← normNumPositivity zα pα x with
   | .positive p₁ => pure (.positive q(lt_of_lt_of_eq $p₁ $p₂))
   | .nonnegative p₁ => pure (.nonnegative q(le_of_le_of_eq $p₁ $p₂))
   | .nonzero p₁ => pure (.nonzero q(ne_of_ne_of_eq' $p₁ $p₂))
