@@ -10,19 +10,27 @@ import Mathlib.Lean.Expr.ExtraRecognizers
 /-!
 # Sets in subtypes
 
-This file defines notation for sets in a type pulled down to sets in a subtype, and sets in
-a subtype, lifted up to sets in the ambient type.
+This file is about sets in `Set A` when `A` is a set.
 
-It also provides some related lemmas for convenience.
+It defines notation `↓∩` for sets in a type pulled down to sets in a subtype, as an inverse
+operation to the coercion that lifts sets in a subtype up to sets in the ambient type.
+
+This module also provides lemmas for `↓∩` and this coercion.
 
 ## Notation
 
-Let `α` be a `Type`, `A B : Set α` two sets in `α`, and `C : Set ↑A` a set in the subtype `↑A`.
+Let `α` be a `Type`, `A B : Set α` two sets in `α`, and `C : Set A` a set in the subtype `↑A`.
 
 - `A ↓∩ B` denotes `(Subtype.val ⁻¹' B : Set A)` (that is, `{x : ↑A | ↑x ∈ B}`).
 - `↑C` denotes `Subtype.val '' C` (that is, `{x : α | ∃ y ∈ C, ↑y = x}`).
 
-To access this notation, type `open Subset`.
+This notation is scoped to the `Set.Notation` namespace.
+To enable it, use `open Set.Notation`.
+
+
+## Naming conventions
+
+Theorem names refer to `↓∩` as `preimage_val`.
 
 ## Tags
 
@@ -33,13 +41,17 @@ open Set
 
 universe u
 
-variable {α β : Type u} {A B C: Set α} {D E : Set ↑A}
-variable {S : Set (Set α)} {T : Set (Set ↑A)} {i : β → Set α} {j : β → Set ↑A}
+variable {α β : Type u} {A B C : Set α} {D E : Set A}
+variable {S : Set (Set α)} {T : Set (Set A)} {i : β → Set α} {j : β → Set A}
 
-namespace Subset
+namespace Set.Notation
 
 /--
-Given two sets `A` and `B`, `A ↓∩ B` denotes `{x : ↑A | ↑x ∈ B}`.
+Given two sets `A` and `B`, `A ↓∩ B` denotes the intersection of `A` and `B` as a set in `Set A`.
+
+The notation is short for `((↑) ⁻¹' B : Set A)`, while giving hints to the elaborator
+that both `A` and `B` are terms of `Set α` for the same `α`.
+This set is the same as `{x : ↑A | ↑x ∈ B}`.
 -/
 scoped notation3 A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
 
@@ -55,12 +67,16 @@ def delab_set_image_subtype : Delab := do
   let e ← withAppArg delab
   `(↑$e)
 
+end Set.Notation
+
+namespace Set
+
+open Set.Notation
+
 lemma preimage_val_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   ext x
   simp only [mem_univ, iff_true]
   exact h x.2
-
-example : A ↓∩ B = {x : ↑A | ↑x ∈ B} := rfl
 
 lemma preimage_val_subset_preimage_val_iff : A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A ∩ C := by
   constructor
@@ -113,7 +129,7 @@ lemma coe_empty : ↑(∅ : Set A) = (∅ : Set α) := image_empty _
 @[simp]
 lemma coe_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := by
   ext x
-  simp_all only [mem_union, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
+  simp only [mem_union, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
   constructor
   · rintro ⟨_⟩
     simp_all only [exists_true_left]
@@ -206,7 +222,7 @@ lemma coe_iInter (b : β) : (↑(⋂ (B : β), j B) : Set α) = ⋂ (B : β), (�
     simp_all only [exists_true_left, mem_image, mem_iInter, Subtype.exists, exists_and_right,
       exists_eq_right, implies_true, exists_const]
 
-lemma coe_contained : ↑D ⊆ A := by
+lemma coe_of_subtype_set_subset : ↑D ⊆ A := by
   simp only [image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 @[simp]
@@ -226,7 +242,7 @@ lemma coe_inter_self_left_eq_coe : ↑D ∩ A = ↑D := by
   simp only [inter_eq_left, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
 
 @[simp]
-lemma coe_contained_iff : D ⊆ Subtype.val ⁻¹' ↑E ↔ D ⊆ E := by
+lemma coe_of_subtype_set_subset_iff : D ⊆ A ↓∩ ↑E ↔ D ⊆ E := by
   constructor
   · intro h x hx
     simp only [image_subset_iff] at h
@@ -241,14 +257,18 @@ lemma coe_contained_iff : D ⊆ Subtype.val ⁻¹' ↑E ↔ D ⊆ E := by
 
 @[simp]
 lemma coe_eq_iff : (D : Set α) = ↑E ↔ D = E := by
-  simp only [subset_antisymm_iff, image_subset_iff, coe_contained_iff]
+  simp only [subset_antisymm_iff, image_subset_iff, coe_of_subtype_set_subset_iff]
 
 lemma coe_inj (h : (↑D : Set α) = ↑E) : D = E := by
   rw [coe_eq_iff] at h
   exact h
 
-lemma coe_mono (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E := by
-  simp_all only [image_subset_iff, coe_contained_iff]
+lemma subset_of_coe_subset_coe (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E := by
+  simp_all only [image_subset_iff, coe_of_subtype_set_subset_iff]
+
+@[mono]
+lemma coe_mono (h : D ⊆ E) : (↑D : Set α) ⊆ ↑E := by
+  simp only [image_subset_iff, coe_of_subtype_set_subset_iff, h]
 
 /-!
 Relations between restriction and coercion.
@@ -257,4 +277,4 @@ Relations between restriction and coercion.
 lemma coe_preimage_val_subset_self : ↑(A ↓∩ B) ⊆ B := by
   simp only [Subtype.image_preimage_coe, inter_subset_left]
 
-end Subset
+end Set
