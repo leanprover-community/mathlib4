@@ -62,8 +62,8 @@ lemma hasFDerivAt_fourier_transform_integrand_right (v : V) (w : W) :
 /-- Norm of the `w`-derivative of the Fourier transform integrand. -/
 lemma norm_fderiv_fourier_transform_integrand_right
     (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E) (v : V) (w : W) :
-    ‖fourierChar [-L v w] • mul_L L f v‖ = (2 * π) * ‖L v‖ * ‖f v‖ :=
-  by rw [norm_smul, norm_eq_abs (fourierChar _ : ℂ), abs_coe_circle, one_mul, mul_L, norm_smul,
+    ‖fourierChar [-L v w] • mul_L L f v‖ = (2 * π) * ‖L v‖ * ‖f v‖ := by
+  rw [norm_smul, norm_eq_abs (fourierChar _ : ℂ), abs_coe_circle, one_mul, mul_L, norm_smul,
     norm_neg, norm_mul, norm_mul, norm_eq_abs I, abs_I, mul_one, norm_eq_abs ((_ : ℝ) : ℂ),
     Complex.abs_of_nonneg pi_pos.le, norm_eq_abs (2 : ℂ), Complex.abs_two,
     ContinuousLinearMap.norm_smulRight_apply, ← mul_assoc]
@@ -95,7 +95,7 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V]
     eventually_of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
   have h2 : Integrable (F w) μ := h0 w
   have h3 : AEStronglyMeasurable (F' w) μ
-  · change AEStronglyMeasurable (fun v ↦ fourierChar [-L v w] • mul_L L f v) μ
+  · simp only [F']
     refine AEStronglyMeasurable.smul ?_ ?_
     · refine (continuous_subtype_val.comp (continuous_fourierChar.comp ?_)).aestronglyMeasurable
       exact continuous_ofAdd.comp (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg

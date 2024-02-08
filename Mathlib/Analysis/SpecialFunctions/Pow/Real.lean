@@ -799,7 +799,7 @@ lemma log_le_rpow_div {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : log x ≤ x ^
   exact (log_rpow h ε).symm.trans_le <| (log_le_sub_one_of_pos <| rpow_pos_of_pos h ε).trans
     (sub_one_lt _).le
 
-/-- The (real) logarithm of a natural number `n`is bounded by a multiple of every power of `n`
+/-- The (real) logarithm of a natural number `n` is bounded by a multiple of every power of `n`
 with positive exponent. -/
 lemma log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ n ^ ε / ε :=
   log_le_rpow_div n.cast_nonneg hε

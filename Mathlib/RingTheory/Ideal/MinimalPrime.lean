@@ -39,14 +39,14 @@ protected def Ideal.minimalPrimes : Set (Ideal R) :=
   minimals (· ≤ ·) { p | p.IsPrime ∧ I ≤ p }
 #align ideal.minimal_primes Ideal.minimalPrimes
 
+variable (R) in
 /-- `minimalPrimes R` is the set of minimal primes of `R`.
 This is defined as `Ideal.minimalPrimes ⊥`. -/
-def minimalPrimes (R : Type*) [CommSemiring R] : Set (Ideal R) :=
+def minimalPrimes : Set (Ideal R) :=
   Ideal.minimalPrimes ⊥
 #align minimal_primes minimalPrimes
 
-lemma minimalPrimes_eq_minimals {R} [CommSemiring R] :
-    minimalPrimes R = minimals (· ≤ ·) (setOf Ideal.IsPrime) :=
+lemma minimalPrimes_eq_minimals : minimalPrimes R = minimals (· ≤ ·) (setOf Ideal.IsPrime) :=
   congr_arg (minimals (· ≤ ·)) (by simp)
 
 variable {I J}

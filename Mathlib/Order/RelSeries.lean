@@ -227,7 +227,7 @@ def map (p : RelSeries r)
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
 `aᵢ -r→ a -r→ a_ᵢ₊₁`, then
-`a₀ -r→ a₁ -r→ ... -r→ a_i -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
+`a₀ -r→ a₁ -r→ ... -r→ aᵢ -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
 is another `r`-series
 -/
 @[simps]

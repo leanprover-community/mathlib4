@@ -78,11 +78,9 @@ variable ⦃z : ℂ⦄ (hz : z ∈ EMetric.ball c r)
 is given by evaluating its Taylor series at `c` on this open ball. -/
 lemma hasSum_taylorSeries_on_emetric_ball :
     HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
-  obtain ⟨r', hr', hzr'⟩ : ∃ r' < r, z ∈ EMetric.ball c r'
-  · obtain ⟨r', h₁, h₂⟩ := exists_between (EMetric.mem_ball'.mp hz)
-    exact ⟨r', h₂, EMetric.mem_ball'.mpr h₁⟩
+  obtain ⟨r', hzr', hr'⟩ := exists_between (EMetric.mem_ball'.mp hz)
   lift r' to NNReal using ne_top_of_lt hr'
-  rw [Metric.emetric_ball_nnreal] at hzr'
+  rw [← EMetric.mem_ball', Metric.emetric_ball_nnreal] at hzr'
   refine hasSum_taylorSeries_on_ball ?_ hzr'
   rw [← Metric.emetric_ball_nnreal]
   exact hf.mono <| EMetric.ball_subset_ball hr'.le

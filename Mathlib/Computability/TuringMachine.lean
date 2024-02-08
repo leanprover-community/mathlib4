@@ -1015,10 +1015,10 @@ set_option linter.uppercaseLean3 false
 
 section
 
--- type of "labels" or TM states
+-- type of tape symbols
 variable (Γ : Type*) [Inhabited Γ]
 
--- type of tape symbols
+-- type of "labels" or TM states
 variable (Λ : Type*) [Inhabited Λ]
 
 /-- A Turing machine "statement" is just a command to either move

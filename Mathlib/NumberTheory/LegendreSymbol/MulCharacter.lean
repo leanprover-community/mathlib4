@@ -260,10 +260,10 @@ the source has a zero and another element. -/
 @[coe, simps]
 def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
     R →*₀ R' where
-      toFun := χ.toFun
-      map_zero' := χ.map_zero
-      map_one' := χ.map_one'
-      map_mul' := χ.map_mul'
+  toFun := χ.toFun
+  map_zero' := χ.map_zero
+  map_one' := χ.map_one'
+  map_mul' := χ.map_mul'
 
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
 theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :

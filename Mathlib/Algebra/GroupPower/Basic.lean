@@ -425,7 +425,7 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 @[to_additive add_one_zsmul]
 lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
   | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_ofNat, pow_succ']
-  | -[0+1] => by erw [zpow_zero, zpow_negSucc, pow_one, mul_left_inv]
+  | -[0+1] => by simp [negSucc_eq', Int.add_left_neg]
   | -[n + 1+1] => by
     rw [zpow_negSucc, pow_succ, mul_inv_rev, inv_mul_cancel_right]
     rw [Int.negSucc_eq, Int.neg_add, Int.neg_add_cancel_right]
