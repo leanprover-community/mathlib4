@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Topology.Algebra.ContinuousAffineMap
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 
