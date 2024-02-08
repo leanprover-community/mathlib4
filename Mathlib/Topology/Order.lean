@@ -463,7 +463,7 @@ theorem induced_id [t : TopologicalSpace α] : t.induced id = t :=
     funext fun s => propext <| ⟨fun ⟨_, hs, h⟩ => h ▸ hs, fun hs => ⟨s, hs, rfl⟩⟩
 #align induced_id induced_id
 
-theorem induced_compose [tγ : TopologicalSpace γ] {f : α → β} {g : β → γ} :
+theorem induced_compose {tγ : TopologicalSpace γ} {f : α → β} {g : β → γ} :
     (tγ.induced g).induced f = tγ.induced (g ∘ f) :=
   TopologicalSpace.ext <|
     funext fun _ => propext
