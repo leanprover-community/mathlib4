@@ -94,8 +94,7 @@ lemma preimage_val_subset_preimage_val_iff : A ↓∩ B ⊆ A ↓∩ C ↔ A ∩
     exact h.2
 
 lemma preimage_val_eq_iff : A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C := by
-  simp only [subset_antisymm_iff, preimage_val_subset_preimage_val_iff, subset_inter_iff,
-    inter_subset_left, true_and]
+  rw [Subtype.preimage_val_eq_preimage_val_iff, inter_comm _ A, inter_comm _ A]
 
 lemma preimage_val_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
@@ -103,8 +102,7 @@ lemma preimage_val_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ 
     exists_exists_and_eq_and]
 
 @[simp]
-lemma preimage_val_iInter : A ↓∩ (⋂ (B : β), i B) = ⋂ (B : β), A ↓∩ i B := by
-  exact preimage_iInter
+lemma preimage_val_iInter : A ↓∩ (⋂ (B : β), i B) = ⋂ (B : β), A ↓∩ i B := preimage_iInter
 
 lemma preimage_val_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
@@ -127,26 +125,10 @@ lemma coe_univ : ↑(univ : Set A) = A := by
 lemma coe_empty : ↑(∅ : Set A) = (∅ : Set α) := image_empty _
 
 @[simp]
-lemma coe_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := by
-  ext x
-  simp only [mem_union, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-  constructor
-  · rintro ⟨_⟩
-    simp_all only [exists_true_left]
-  · intro ha
-    rcases ha with ⟨a, ha⟩ | ⟨a, ha⟩
-    · exact ⟨a, Or.inl ha⟩
-    · exact ⟨a, Or.inr ha⟩
+lemma coe_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := image_union _ _ _
 
 @[simp]
-lemma coe_inter : (↑(D ∩ E) : Set α) = ↑D ∩ ↑E := by
-  ext
-  simp_all only [mem_inter_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right]
-  constructor
-  · rintro ⟨_⟩
-    simp_all only [and_self, exists_const]
-  · rintro ⟨⟨_⟩, ⟨_⟩⟩
-    simp_all only [exists_const, and_self]
+lemma coe_inter : (↑(D ∩ E) : Set α) = ↑D ∩ ↑E := image_inter Subtype.val_injective
 
 @[simp]
 lemma coe_compl : ↑(Dᶜ) = A \ ↑D := by
@@ -160,14 +142,7 @@ lemma coe_compl : ↑(Dᶜ) = A \ ↑D := by
     simp_all only [not_false_eq_true, exists_const]
 
 @[simp]
-lemma coe_diff : (↑(D \ E) : Set α) = ↑D \ ↑E := by
-  ext
-  simp_all only [mem_diff, mem_image, Subtype.exists, exists_and_right, exists_eq_right, not_exists]
-  constructor
-  · rintro ⟨_⟩
-    simp_all only [exists_const, not_false_eq_true, forall_true_left, and_self]
-  · intro
-    simp_all only [not_false_eq_true, and_true]
+lemma coe_diff : (↑(D \ E) : Set α) = ↑D \ ↑E := image_diff Subtype.val_injective _ _
 
 @[simp]
 lemma coe_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by
@@ -208,19 +183,8 @@ lemma coe_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B :
         exists_true_left, implies_true, forall_const, exists_const]
 
 @[simp]
-lemma coe_iInter (b : β) : (↑(⋂ (B : β), j B) : Set α) = ⋂ (B : β), (↑(j B) : Set α) := by
-  ext x
-  constructor
-  · intro a
-    simp_all only [mem_image, mem_iInter, Subtype.exists, exists_and_right, exists_eq_right]
-    intro i_1
-    cases a
-    simp_all only [exists_const]
-  · intro h
-    simp only [mem_iInter, mem_image, Subtype.exists, exists_and_right, exists_eq_right] at h
-    cases' h b with hxA hx
-    simp_all only [exists_true_left, mem_image, mem_iInter, Subtype.exists, exists_and_right,
-      exists_eq_right, implies_true, exists_const]
+lemma coe_iInter [Nonempty β] : (↑(⋂ (B : β), j B) : Set α) = ⋂ (B : β), (↑(j B) : Set α) :=
+  (Subtype.val_injective.injOn _).image_iInter_eq
 
 lemma coe_of_subtype_set_subset : ↑D ⊆ A := by
   simp only [image_subset_iff, Subtype.coe_preimage_self, subset_univ]
