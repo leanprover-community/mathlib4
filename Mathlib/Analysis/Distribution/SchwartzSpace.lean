@@ -119,9 +119,8 @@ protected theorem continuous (f : 𝓢(E, F)) : Continuous f :=
   (f.smooth 0).continuous
 #align schwartz_map.continuous SchwartzMap.continuous
 
-instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) E F :=
-  { instFunLike with
-    map_continuous := SchwartzMap.continuous }
+instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) E F where
+  map_continuous := SchwartzMap.continuous
 
 /-- Every Schwartz function is differentiable. -/
 protected theorem differentiable (f : 𝓢(E, F)) : Differentiable ℝ f :=
