@@ -868,17 +868,15 @@ class QuotientMeasureEqMeasurePreimage (ν : Measure α := by volume_tac)
 attribute [to_additive existing MeasureTheory.AddQuotientMeasureEqMeasurePreimage]
   MeasureTheory.QuotientMeasureEqMeasurePreimage
 
---- NOTE :: MAKE μ explicit
 @[to_additive add_projection_respects_measure]
 lemma IsFundamentalDomain.projection_respects_measure {ν : Measure α}
-    {μ : Measure (Quotient α_mod_G)} [i : QuotientMeasureEqMeasurePreimage ν μ] {t : Set α}
+    (μ : Measure (Quotient α_mod_G)) [i : QuotientMeasureEqMeasurePreimage ν μ] {t : Set α}
     (fund_dom_t : IsFundamentalDomain G t ν) : μ = (ν.restrict t).map π :=
   i.projection_respects_measure' t fund_dom_t
 
---- NOTE :: MAKE μ explicit
 @[to_additive add_projection_respects_measure_apply]
 lemma IsFundamentalDomain.projection_respects_measure_apply {ν : Measure α}
-    {μ : Measure (Quotient α_mod_G)} [i : QuotientMeasureEqMeasurePreimage ν μ] {t : Set α}
+    (μ : Measure (Quotient α_mod_G)) [i : QuotientMeasureEqMeasurePreimage ν μ] {t : Set α}
     (fund_dom_t : IsFundamentalDomain G t ν) {U : Set (Quotient α_mod_G)}
     (meas_U : MeasurableSet U) : μ U = ν (π ⁻¹' U ∩ t) := by
   rw [fund_dom_t.projection_respects_measure (μ := μ), measureRestrictMap_apply ν t meas_U]
@@ -914,17 +912,6 @@ lemma QuotientMeasureEqMeasurePreimage.unique
     μ = μ' := by
   obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
   rw [h𝓕.projection_respects_measure (μ := μ), h𝓕.projection_respects_measure (μ := μ')]
-
--- /-- Any measure satisfying `QuotientMeasureEqMeasurePreimage` is equal to the quotient measure
---   associated to the fundamental domain. -/
--- @[to_additive IsAddFundamentalDomain.eq_addQuotientMeasure]
--- lemma IsFundamentalDomain.eq_quotientMeasure
---     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν)
---     (μ : Measure (Quotient α_mod_G)) [i : QuotientMeasureEqMeasurePreimage ν μ] :
---     μ = (ν.restrict s).map π := by
---   haveI inst1 : HasFundamentalDomain G α ν := ⟨⟨s, fund_dom_s⟩⟩
---   haveI inst2 := fund_dom_s.QuotientMeasureEqMeasurePreimage_quotientMeasure ν
---   apply i.unique (ν := ν) (i' := inst2)
 
 /-- The quotient map to `α ⧸ G` is measure-preserving between the restriction of `volume` to a
   fundamental domain in `α` and a related measure satisfying `QuotientMeasureEqMeasurePreimage`. -/

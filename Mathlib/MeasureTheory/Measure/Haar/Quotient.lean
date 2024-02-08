@@ -137,8 +137,8 @@ lemma MeasureTheory.AddQuotientMeasureEqMeasurePreimage.addInvariantMeasure_quot
     intro A hA
     obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientAddGroup.leftRel Γ) x
     convert measure_preimage_vadd x₁ μ A using 1
-    rw [← h, Measure.map_apply (measurable_const_add _) hA]
-    rfl
+    · rw [← h, Measure.map_apply (measurable_const_add _) hA]
+      rfl
     exact vaddInvariantMeasure_quotient ν
 
 variable [IsAddLeftInvariant μ] [SigmaFinite μ]
@@ -179,29 +179,28 @@ theorem MeasureTheory.Measure.IsAddLeftInvariant.addQuotientMeasureEqMeasurePrei
 end additive
 
 variable {G : Type*} [Group G] [MeasureSpace G] [TopologicalSpace G] [TopologicalGroup G]
-  [BorelSpace G] [PolishSpace G]
-  {Γ : Subgroup G} [Countable Γ] [Subgroup.Normal Γ]
-  [T2Space (G ⧸ Γ)]
-  [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
+  [BorelSpace G] [PolishSpace G] {Γ : Subgroup G} [Countable Γ] [Subgroup.Normal Γ]
+  [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
 
 section mulInvariantMeasure
 
-variable
-  [IsMulLeftInvariant (ν : Measure G)] [IsMulRightInvariant (ν : Measure G)]
+variable (ν : Measure G) [IsMulLeftInvariant (ν : Measure G)] [IsMulRightInvariant (ν : Measure G)]
   [SigmaFinite (ν : Measure G)]
 
-/-- If `μ` on `G ⧸ Γ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and right-
-  invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant measure.-/
-instance MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient
-    [hasFun : HasFundamentalDomain Γ.op G] [QuotientMeasureEqMeasurePreimage μ] :
+/-- If `μ` on `G ⧸ Γ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and
+  right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant
+  measure.-/
+lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient
+    [hasFun : HasFundamentalDomain Γ.op G ν] [QuotientMeasureEqMeasurePreimage ν μ] :
     μ.IsMulLeftInvariant where
   map_mul_left_eq_self x := by
     apply Measure.ext
     intro A hA
     obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientGroup.leftRel Γ) x
     convert measure_preimage_smul x₁ μ A using 1
-    rw [← h, Measure.map_apply (measurable_const_mul _) hA]
-    rfl
+    · rw [← h, Measure.map_apply (measurable_const_mul _) hA]
+      rfl
+    exact smulInvariantMeasure_quotient ν
 
 attribute [to_additive existing]
   MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient
