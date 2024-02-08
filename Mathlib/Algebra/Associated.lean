@@ -621,7 +621,7 @@ lemma prime_pow_iff [CancelCommMonoidWithZero α] {p : α} {n : ℕ} :
     Prime (p ^ n) ↔ Prime p ∧ n = 1 := by
   refine ⟨fun hp ↦ ?_, fun ⟨hp, hn⟩ ↦ by simpa [hn]⟩
   suffices n = 1 by aesop
-  cases' n with n n
+  cases' n with n
   · simp at hp
   · rw [Nat.succ.injEq]
     rw [pow_succ, prime_mul_iff] at hp
