@@ -12,6 +12,9 @@
   ],
   "git.ignoreLimitWarning": true,
   "git.branchProtection": [
-    "master"
+    "master",
+    "stable",
+    "nightly-testing-*",
+    "bump/v4*"
   ]
 }
