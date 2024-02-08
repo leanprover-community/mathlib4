@@ -238,6 +238,7 @@ theorem supDegree_add_le {f g : R[A]} :
     (f + g).supDegree D ≤ (f.supDegree D) ⊔ (g.supDegree D) :=
   sup_support_add_le D f g
 
+@[simp]
 theorem supDegree_neg {f : R'[A]} :
     (-f).supDegree D = f.supDegree D := by
   rw [supDegree, supDegree, Finsupp.support_neg]
@@ -260,6 +261,7 @@ theorem supDegree_single (a : A) (r : R) :
 
 variable {p q : R[A]}
 
+@[simp]
 theorem supDegree_zero : (0 : R[A]).supDegree D = ⊥ := by simp [supDegree]
 
 theorem ne_zero_of_supDegree_ne_bot : p.supDegree D ≠ ⊥ → p ≠ 0 := mt (fun h => h ▸ supDegree_zero)
