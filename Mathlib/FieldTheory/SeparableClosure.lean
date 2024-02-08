@@ -283,7 +283,7 @@ theorem sepDegree_eq_of_equiv (K : Type v) [Field K] [Algebra F K] (i : E ≃ₐ
     sepDegree F E = sepDegree F K :=
   i.separableClosure.toLinearEquiv.rank_eq
 
-/-- The separable degree multiply by the inseparable degree is equal
+/-- The separable degree multiplied by the inseparable degree is equal
 to the (infinite) field extension degree. -/
 theorem sepDegree_mul_insepDegree : sepDegree F E * insepDegree F E = Module.rank F E :=
   rank_mul_rank F (separableClosure F E) E

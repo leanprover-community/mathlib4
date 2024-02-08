@@ -39,7 +39,7 @@ This file contains basics about the separable degree of a field extension.
 
   **Remark:** the `Cardinal`-valued, potentially infinite separable degree `Field.sepDegree F E`
   for a general algebraic extension `E / F` is defined to be the degree of `L / F`, where `L` is
-  the (relative) separable closure `separableClosure F E` of `E / F`, which is not defined in
+  the (relative) separable closure `separableClosure F E` of `F` in `E`, which is not defined in
   this file yet. Later we will show that (`Field.finSepDegree_eq`), if `Field.Emb F E` is finite,
   then these two definitions coincide.
 
