@@ -450,6 +450,8 @@ protected irreducible_def smul [SMul R M] [IsScalarTower R M M] (c : R) (z : Loc
         let ⟨t, ht⟩ := h
         use t
         dsimp only [Subtype.coe_mk] at ht ⊢
+-- TODO: this definition should take `SMulCommClass R M M` instead of `IsScalarTower R M M` if
+-- we ever want to generalize to the non-commutative case.
         haveI : SMulCommClass R M M :=
           ⟨fun r m₁ m₂ ↦ by simp_rw [smul_eq_mul, mul_comm m₁, smul_mul_assoc]⟩
         simp only [mul_smul_comm, ht]))
