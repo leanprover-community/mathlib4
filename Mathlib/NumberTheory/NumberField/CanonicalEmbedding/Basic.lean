@@ -139,13 +139,13 @@ theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 
 theorem mem_span_latticeBasis [NumberField K] {x : (K →+* ℂ) → ℂ} :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
       x ∈ ((canonicalEmbedding K).comp (algebraMap (𝓞 K) K)).range := by
-  rw [show Set.range (latticeBasis K) =
-      (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
-  rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
+  have h₁ : Set.range (latticeBasis K) =
+      (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) := by
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))
+  rw [h₁, ← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [← RingHom.map_range, Subring.mem_map, Set.mem_image]
-  simp only [SetLike.mem_coe, mem_span_integralBasis K]
-  rfl
+  simp only [SetLike.mem_coe, mem_span_integralBasis K, AlgHom.coe_toLinearMap,
+    RingHom.coe_toIntAlgHom]
 
 theorem mem_rat_span_latticeBasis [NumberField K] (x : K) :
     canonicalEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
@@ -167,8 +167,7 @@ theorem integralBasis_repr_apply [NumberField K] (x : K) (i : Free.ChooseBasisIn
   have : f (integralBasis K i) = ((latticeBasis K).restrictScalars ℚ) i := by
     apply Subtype.val_injective
     rw [LinearMap.codRestrict_apply, AlgHom.toLinearMap_apply, Basis.restrictScalars_apply,
-      latticeBasis_apply]
-    rfl
+      latticeBasis_apply, integralBasis_apply, RingHom.toRatAlgHom_apply]
   simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
 
 end NumberField.canonicalEmbedding
@@ -672,13 +671,11 @@ theorem latticeBasis_apply (i : ChooseBasisIndex ℤ (𝓞 K)) :
 theorem mem_span_latticeBasis {x : (mixedSpace K)} :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔
       x ∈ mixedEmbedding.integerLattice K := by
-  rw [show Set.range (latticeBasis K) =
-      (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
-  rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
-  simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
-    RingHom.mem_range, exists_exists_eq_and]
-  rfl
+  have h₁ : Set.range (latticeBasis K) =
+      (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) := by
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))
+  rw [h₁, ← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
+  simp [mem_span_integralBasis K]
 
 theorem span_latticeBasis :
     Submodule.span ℤ (Set.range (latticeBasis K)) = mixedEmbedding.integerLattice K :=
@@ -721,8 +718,7 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
   have : f (integralBasis K i) = ((latticeBasis K).restrictScalars ℚ) i := by
     apply Subtype.val_injective
     rw [LinearMap.codRestrict_apply, AlgHom.toLinearMap_apply, Basis.restrictScalars_apply,
-      latticeBasis_apply]
-    rfl
+      latticeBasis_apply, RingHom.toRatAlgHom_apply]
   simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, this, Basis.repr_self]
 
 variable (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
@@ -780,14 +776,14 @@ theorem fractionalIdealLatticeBasis_apply (i : ChooseBasisIndex ℤ I) :
 theorem mem_span_fractionalIdealLatticeBasis {x : (mixedSpace K)} :
     x ∈ Submodule.span ℤ (Set.range (fractionalIdealLatticeBasis K I)) ↔
       x ∈ mixedEmbedding K '' I := by
-  rw [show Set.range (fractionalIdealLatticeBasis K I) =
-        (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (basisOfFractionalIdeal K I)) by
-      rw [← Set.range_comp]
-      exact congr_arg Set.range (funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))]
-  rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
-  rw [show Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) by
-        ext; simp [mem_span_basisOfFractionalIdeal]]
-  rfl
+  have h₁ : Set.range (fractionalIdealLatticeBasis K I) =
+      (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (basisOfFractionalIdeal K I)) := by
+    rw [← Set.range_comp]
+    exact congr_arg Set.range (funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))
+  have h₂ : Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) := by
+    ext; simp [mem_span_basisOfFractionalIdeal]
+  rw [h₁, ← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe, h₂, AlgHom.coe_toLinearMap,
+    RingHom.coe_toIntAlgHom]
 
 theorem span_idealLatticeBasis :
     (Submodule.span ℤ (Set.range (fractionalIdealLatticeBasis K I))) =
