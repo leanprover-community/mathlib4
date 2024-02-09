@@ -1121,11 +1121,8 @@ from `P` to `N` induced by `f` is left inverse to the hom from `N` to `P` induce
     "Given two Localization maps `f : M →+ N, k : M →+ P` for a Submonoid `S ⊆ M`, the hom
 from `P` to `N` induced by `f` is left inverse to the hom from `N` to `P` induced by `k`."]
 theorem lift_left_inverse {k : LocalizationMap S P} (z : N) :
-    k.lift f.map_units (f.lift k.map_units z) = z := by
-have aux : k.lift f.map_units (f.lift k.map_units z) = f.lift f.map_units z :=
-  congrFun (congrArg DFunLike.coe (lift_comp_lift_eq f k f.map_units)) z
-rw [aux]
-exact lift_id f z
+    k.lift f.map_units (f.lift k.map_units z) = z := 
+  (DFunLike.congr_fun (lift_comp_lift_eq f k f.map_units) z).trans (lift_id f z)
 #align submonoid.localization_map.lift_left_inverse Submonoid.LocalizationMap.lift_left_inverse
 #align add_submonoid.localization_map.lift_left_inverse AddSubmonoid.LocalizationMap.lift_left_inverse
 
