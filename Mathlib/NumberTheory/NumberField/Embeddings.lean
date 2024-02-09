@@ -518,7 +518,7 @@ theorem prod_eq_abs_norm (x : K) :
   classical
   convert (congr_arg (‖·‖) (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
   · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
-      (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]; rfl]
+      (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
     have (w : InfinitePlace K) (φ) (hφ : φ ∈ ({φ | mk φ = w} : Finset _)) :
         ‖φ x‖ = w x := by rw [← (Finset.mem_filter.mp hφ).2, apply]
