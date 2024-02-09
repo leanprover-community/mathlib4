@@ -149,6 +149,7 @@ protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
 
+open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : MeasurableSet s) (n : ℕ) :
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by

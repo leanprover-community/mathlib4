@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
+import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
@@ -31,7 +32,7 @@ where `p` is the unique real number such that `∑ a_i b_i^p = 1`.
 
 ## Main definitions and results
 
-* `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satifies an Akra-Bazzi
+* `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
   recurrence with parameters `g`, `a`, `b` and `r` as above.
 * `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
   It roughly states that

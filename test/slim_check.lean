@@ -1,8 +1,25 @@
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SuccessIfFailWithMsg
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.Finsupp.Notation
 import Mathlib.Testing.SlimCheck.Functions
+
+/--
+warning: Gave up 91 times
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (z : Nat) (h : z = 37) : z ≠ 0 := by
+  slim_check (config := { randomSeed := some 257 })
+
+/--
+info: Success
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (z : Nat) (h : z ≤ 37) : z ≤ 37 := by
+  slim_check (config := { randomSeed := some 257 })
 
 -- Porting note:
 -- These are the tests from mathlib3, updated to Lean 4 syntax.

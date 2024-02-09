@@ -6,9 +6,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 import Std.Lean.Parser
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
-import Mathlib.Order.Basic
 import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Int.Cast.Lemmas
 import Qq
@@ -51,6 +49,19 @@ def Strictness.toString : Strictness zα pα e → String
   | nonzero _ => "nonzero"
   | none => "none"
 
+/-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`.
+-/
+def Strictness.toNonneg {e} : Strictness zα pα e → Option Q(0 ≤ $e)
+  | .positive pf => some q(le_of_lt $pf)
+  | .nonnegative pf => some pf
+  | _ => .none
+
+/-- Extract a proof that `e` is nonzero, if possible, from `Strictness` information about `e`. -/
+def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
+  | .positive pf => some q(ne_of_gt $pf)
+  | .nonzero pf => some pf
+  | _ => .none
+
 /-- An extension for `positivity`. -/
 structure PositivityExt where
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
@@ -74,7 +85,7 @@ initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
     (List Entry × DiscrTree PositivityExt) ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq PositivityExt := ⟨fun _ _ => false⟩
-  let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v discrTreeConfig) dt
+  let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
     addImportedFn := fun s => do

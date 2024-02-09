@@ -181,7 +181,7 @@ theorem algebraicIndependent_of_subsingleton [Subsingleton R] : AlgebraicIndepen
 
 theorem algebraicIndependent_equiv (e : ι ≃ ι') {f : ι' → A} :
     AlgebraicIndependent R (f ∘ e) ↔ AlgebraicIndependent R f :=
-  ⟨fun h => Function.comp.right_id f ▸ e.self_comp_symm ▸ h.comp _ e.symm.injective,
+  ⟨fun h => Function.comp_id f ▸ e.self_comp_symm ▸ h.comp _ e.symm.injective,
     fun h => h.comp _ e.injective⟩
 #align algebraic_independent_equiv algebraicIndependent_equiv
 
@@ -463,7 +463,6 @@ theorem AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 set_option linter.uppercaseLean3 false in
 #align algebraic_independent.mv_polynomial_option_equiv_polynomial_adjoin_X_some AlgebraicIndependent.mvPolynomialOptionEquivPolynomialAdjoin_X_some
 
-set_option synthInstance.maxHeartbeats 40000 in
 theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
     (hx : AlgebraicIndependent R x) (a : A) :
     RingHom.comp

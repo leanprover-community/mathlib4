@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Order.Disjointed
 import Mathlib.Tactic.Measurability
 
@@ -75,6 +74,8 @@ end MeasureTheory
 open MeasureTheory
 
 section
+
+open scoped symmDiff
 
 @[simp, measurability]
 theorem MeasurableSet.empty [MeasurableSpace α] : MeasurableSet (∅ : Set α) :=
