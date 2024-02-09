@@ -305,7 +305,8 @@ theorem Set.Countable.isLindelof_biUnion {s : Set ι} {f : ι → Set X} (hs : s
     (hf : ∀ i ∈ s, IsLindelof (f i)) : IsLindelof (⋃ i ∈ s, f i) := by
   apply isLindelof_of_countable_subcover
   intro i U hU hUcover
-  have hiU : ∀ i ∈ s, f i ⊆ ⋃ i, U i := by simp_all only [iUnion_subset_iff, implies_true]
+  have hiU : ∀ i ∈ s, f i ⊆ ⋃ i, U i :=
+    fun _ is ↦ _root_.subset_trans (subset_biUnion_of_mem is) hUcover
   have iSets := fun i is ↦ (hf i is).elim_countable_subcover U hU (hiU i is)
   choose! r hr using iSets
   use ⋃ i ∈ s, r i
