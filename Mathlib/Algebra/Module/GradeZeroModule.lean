@@ -3,8 +3,9 @@ Copyright (c) 2023 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
-import Mathlib.Algebra.Module.GradedModule
 import Mathlib.Algebra.DirectSum.Internal
+import Mathlib.Algebra.GradedMulAction
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # The i-th grade of a graded module over a graded semiring.
@@ -15,11 +16,11 @@ The main results of this file:
 -/
 
 variable {ιA ιM A M σ' σ : Type*}
-variable [AddMonoid ιA] [DecidableEq ιA] [AddAction ιA ιM] [DecidableEq ιM]
+variable [AddMonoid ιA] [DecidableEq ιA] [AddAction ιA ιM]
 variable [Semiring A] [SetLike σ' A] [AddSubmonoidClass σ' A]
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ M]
 variable (𝒜 : ιA → σ') (ℳ : ιM → σ)
-variable [SetLike.GradedMonoid 𝒜] [GradedRing 𝒜] [SetLike.GradedSMul 𝒜 ℳ]
+variable [GradedRing 𝒜] [SetLike.GradedSMul 𝒜 ℳ]
 
 namespace DirectSum
 
