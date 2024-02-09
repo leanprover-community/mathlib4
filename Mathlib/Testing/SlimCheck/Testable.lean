@@ -550,7 +550,7 @@ end Decorations
 open Decorations in
 /-- Run a test suite for `p` and throw an exception if `p` does not hold. -/
 def Testable.check (p : Prop) (cfg : Configuration := {})
-    (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : Lean.Core.CoreM PUnit := do
+    (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : Lean.CoreM PUnit := do
   match ← Testable.checkIO p' cfg with
   | TestResult.success _ => if !cfg.quiet then Lean.logInfo "Success"
   | TestResult.gaveUp n => if !cfg.quiet then Lean.logWarning s!"Gave up {n} times"
