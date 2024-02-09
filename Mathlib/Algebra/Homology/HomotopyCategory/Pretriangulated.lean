@@ -181,8 +181,8 @@ with `set_option says.verify true` (e.g. during CI).
 section Rotate
 
 set_option maxHeartbeats 400000 in
-/-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalence to
-the mapping cone of `inr φ : L ⟶ mappingCone φ` is homotopy equivalent. -/
+/-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalent to
+the mapping cone of `inr φ : L ⟶ mappingCone φ`. -/
 noncomputable def rotateHomotopyEquiv :
     HomotopyEquiv (K⟦(1 : ℤ)⟧) (mappingCone (inr φ)) where
   hom := lift (inr φ) (-(Cocycle.ofHom φ).leftShift 1 1 (zero_add 1))
