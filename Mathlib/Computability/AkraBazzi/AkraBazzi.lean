@@ -427,7 +427,7 @@ lemma eventually_one_add_smoothingFn_pos : ∀ᶠ (n:ℕ) in atTop, 0 < 1 + ε n
   refine Eventually.nat_cast_atTop (p := fun n => 0 < 1 + ε n) ?_
   filter_upwards [h₁ (by norm_num : (0:ℝ) < 1/2), eventually_gt_atTop 1] with x _ hx'
   have : 0 < log x := Real.log_pos hx'
-  unfold smoothingFn
+  show 0 < 1 + 1 / log x
   positivity
 
 lemma eventually_one_add_smoothingFn_r_pos : ∀ᶠ (n:ℕ) in atTop, ∀ i, 0 < 1 + ε (r i n) := by
@@ -438,7 +438,7 @@ lemma eventually_one_add_smoothingFn_nonneg : ∀ᶠ (n:ℕ) in atTop, 0 ≤ 1 +
   filter_upwards [eventually_one_add_smoothingFn_pos] with n hn; exact le_of_lt hn
 
 lemma strictAntiOn_smoothingFn : StrictAntiOn ε (Set.Ioi 1) := by
-  unfold smoothingFn
+  show StrictAntiOn (fun x => 1 / log x) (Set.Ioi 1)
   simp_rw [one_div]
   refine StrictAntiOn.comp_strictMonoOn inv_strictAntiOn ?log fun _ hx => log_pos hx
   refine StrictMonoOn.mono strictMonoOn_log (fun x hx => ?_)
