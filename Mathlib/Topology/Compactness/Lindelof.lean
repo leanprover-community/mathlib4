@@ -698,7 +698,7 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
-instance SecondCountableTopology.from_pseudometrizable_Lindelof [PseudoMetrizableSpace X]
+instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMetrizableSpace X]
     [LindelofSpace X] : SecondCountableTopology X := by
   letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   have h_dense : ∀ ε > 0, ∃ s : Set X, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
