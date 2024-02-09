@@ -27,7 +27,7 @@ open Function
 
 namespace Subtype
 
-variable {α β γ : Sort _} {p q : α → Prop}
+variable {α β γ : Sort*} {p q : α → Prop}
 
 attribute [coe] Subtype.val
 
@@ -73,7 +73,7 @@ theorem ext_iff {a1 a2 : { x // p x }} : a1 = a2 ↔ (a1 : α) = (a2 : α) :=
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     HEq a1 a2 ↔ (a1 : α) = (a2 : α) :=
   Eq.rec (motive := λ (pp: (α → Prop)) _ => ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
-         (λ _ => heq_iff_eq.trans ext_iff) (funext $ λ x => propext (h x)) a2
+         (λ _ => heq_iff_eq.trans ext_iff) (funext <| λ x => propext (h x)) a2
 #align subtype.heq_iff_coe_eq Subtype.heq_iff_coe_eq
 
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
@@ -148,17 +148,17 @@ theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
 #align exists_subtype_mk_eq_iff exists_subtype_mk_eq_iff
 
 /-- Restrict a (dependent) function to a subtype -/
-def restrict {α} {β : α → Type _} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=
+def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=
   f x
 #align subtype.restrict Subtype.restrict
 
-theorem restrict_apply {α} {β : α → Type _} (f : ∀ x, β x) (p : α → Prop) (x : Subtype p) :
+theorem restrict_apply {α} {β : α → Type*} (f : ∀ x, β x) (p : α → Prop) (x : Subtype p) :
     restrict p f x = f x.1 := by
   rfl
 #align subtype.restrict_apply Subtype.restrict_apply
 
 theorem restrict_def {α β} (f : α → β) (p : α → Prop) :
-  restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
+    restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
 #align subtype.restrict_def Subtype.restrict_def
 
 theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Injective f) :
@@ -166,7 +166,7 @@ theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Inject
   h.comp coe_injective
 #align subtype.restrict_injective Subtype.restrict_injective
 
-theorem surjective_restrict {α} {β : α → Type _} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
+theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
     Surjective fun f : ∀ x, β x ↦ restrict p f := by
   letI := Classical.decPred p
   refine' fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| _⟩
@@ -256,7 +256,7 @@ end Subtype
 namespace Subtype
 
 /-! Some facts about sets, which require that `α` is a type. -/
-variable {α β γ : Type _} {p : α → Prop}
+variable {α β γ : Type*} {p : α → Prop}
 
 @[simp]
 theorem coe_prop {S : Set α} (a : { a // a ∈ S }) : ↑a ∈ S :=

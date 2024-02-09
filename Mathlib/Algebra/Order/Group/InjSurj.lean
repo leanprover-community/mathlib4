@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.Group.Instances
 
 #align_import algebra.order.group.inj_surj from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
@@ -14,12 +13,12 @@ import Mathlib.Algebra.Order.Group.Instances
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- Pullback an `OrderedCommGroup` under an injective map.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible) "Pullback an `OrderedAddCommGroup` under an injective map."]
-def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type _} [One β] [Mul β] [Inv β]
+def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type*} [One β] [Mul β] [Inv β]
     [Div β] [Pow β ℕ] [Pow β ℤ] (f : β → α) (hf : Function.Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
@@ -32,7 +31,7 @@ def Function.Injective.orderedCommGroup [OrderedCommGroup α] {β : Type _} [One
 /-- Pullback a `LinearOrderedCommGroup` under an injective map.
 See note [reducible non-instances]. -/
 @[to_additive (attr := reducible) "Pullback a `LinearOrderedAddCommGroup` under an injective map."]
-def Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : Type _} [One β]
+def Function.Injective.linearOrderedCommGroup [LinearOrderedCommGroup α] {β : Type*} [One β]
     [Mul β] [Inv β] [Div β] [Pow β ℕ] [Pow β ℤ] [Sup β] [Inf β] (f : β → α)
     (hf : Function.Injective f) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)

@@ -3,9 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Group.OrderSynonym
 
 #align_import algebra.group_with_zero.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -41,7 +40,7 @@ open Classical
 
 open Function
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type _}
+variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 
 section
 
@@ -66,7 +65,7 @@ theorem mul_eq_zero_of_ne_zero_imp_eq_zero {a b : M₀} (h : a ≠ 0 → b = 0) 
 #align mul_eq_zero_of_ne_zero_imp_eq_zero mul_eq_zero_of_ne_zero_imp_eq_zero
 
 /-- To match `one_mul_eq_id`. -/
-theorem zero_mul_eq_const : (· * ·) (0 : M₀) = Function.const _ 0 :=
+theorem zero_mul_eq_const : ((0 : M₀) * ·) = Function.const _ 0 :=
   funext zero_mul
 #align zero_mul_eq_const zero_mul_eq_const
 
@@ -126,7 +125,7 @@ theorem subsingleton_iff_zero_eq_one : (0 : M₀) = 1 ↔ Subsingleton M₀ :=
   ⟨fun h => haveI := uniqueOfZeroEqOne h; inferInstance, fun h => @Subsingleton.elim _ h _ _⟩
 #align subsingleton_iff_zero_eq_one subsingleton_iff_zero_eq_one
 
-alias subsingleton_iff_zero_eq_one ↔ subsingleton_of_zero_eq_one _
+alias ⟨subsingleton_of_zero_eq_one, _⟩ := subsingleton_iff_zero_eq_one
 #align subsingleton_of_zero_eq_one subsingleton_of_zero_eq_one
 
 theorem eq_of_zero_eq_one (h : (0 : M₀) = 1) (a b : M₀) : a = b :=
@@ -154,23 +153,73 @@ theorem right_ne_zero_of_mul_eq_one (h : a * b = 1) : b ≠ 0 :=
 
 end
 
+section MonoidWithZero
+variable [MonoidWithZero M₀] {a : M₀} {m n : ℕ}
+
+@[simp] lemma zero_pow : ∀ {n : ℕ}, n ≠ 0 → (0 : M₀) ^ n = 0
+  | n + 1, _ => by rw [pow_succ, zero_mul]
+#align zero_pow zero_pow
+#align zero_pow' zero_pow
+
+lemma zero_pow_eq (n : ℕ) : (0 : M₀) ^ n = if n = 0 then 1 else 0 := by
+  split_ifs with h
+  · rw [h, pow_zero]
+  · rw [zero_pow h]
+#align zero_pow_eq zero_pow_eq
+
+lemma pow_eq_zero_of_le : ∀ {m n} (hmn : m ≤ n) (ha : a ^ m = 0), a ^ n = 0
+  | _, _, Nat.le.refl, ha => ha
+  | _, _, Nat.le.step hmn, ha => by rw [pow_succ, pow_eq_zero_of_le hmn ha, mul_zero]
+#align pow_eq_zero_of_le pow_eq_zero_of_le
+
+lemma ne_zero_pow (hn : n ≠ 0) (ha : a ^ n ≠ 0) : a ≠ 0 := by rintro rfl; exact ha $ zero_pow hn
+#align ne_zero_pow ne_zero_pow
+
+@[simp]
+lemma zero_pow_eq_zero [Nontrivial M₀] : (0 : M₀) ^ n = 0 ↔ n ≠ 0 :=
+  ⟨by rintro h rfl; simp at h, zero_pow⟩
+#align zero_pow_eq_zero zero_pow_eq_zero
+
+variable [NoZeroDivisors M₀]
+
+lemma pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0
+  | 0, ha => by simpa using congr_arg (a * ·) ha
+  | n + 1, ha => by rw [pow_succ, mul_eq_zero] at ha; exact ha.elim id pow_eq_zero
+#align pow_eq_zero pow_eq_zero
+
+@[simp] lemma pow_eq_zero_iff (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
+  ⟨pow_eq_zero, by rintro rfl; exact zero_pow hn⟩
+
+#align pow_eq_zero_iff pow_eq_zero_iff
+
+lemma pow_ne_zero_iff (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (pow_eq_zero_iff hn).not
+#align pow_ne_zero_iff pow_ne_zero_iff
+
+@[field_simps]
+lemma pow_ne_zero (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 := mt pow_eq_zero h
+#align pow_ne_zero pow_ne_zero
+
+instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out⟩
+#align ne_zero.pow NeZero.pow
+
+lemma sq_eq_zero_iff : a ^ 2 = 0 ↔ a = 0 := pow_eq_zero_iff two_ne_zero
+#align sq_eq_zero_iff sq_eq_zero_iff
+
+@[simp] lemma pow_eq_zero_iff' [Nontrivial M₀] : a ^ n = 0 ↔ a = 0 ∧ n ≠ 0 := by
+  obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+#align pow_eq_zero_iff' pow_eq_zero_iff'
+
+end MonoidWithZero
+
 section CancelMonoidWithZero
 
 variable [CancelMonoidWithZero M₀] {a b c : M₀}
 
 -- see Note [lower instance priority]
 instance (priority := 10) CancelMonoidWithZero.to_noZeroDivisors : NoZeroDivisors M₀ :=
-  ⟨fun ab0 => or_iff_not_imp_left.mpr <| fun ha => mul_left_cancel₀ ha <|
+  ⟨fun ab0 => or_iff_not_imp_left.mpr fun ha => mul_left_cancel₀ ha <|
     ab0.trans (mul_zero _).symm⟩
 #align cancel_monoid_with_zero.to_no_zero_divisors CancelMonoidWithZero.to_noZeroDivisors
-
-theorem mul_left_inj' (hc : c ≠ 0) : a * c = b * c ↔ a = b :=
-  (mul_left_injective₀ hc).eq_iff
-#align mul_left_inj' mul_left_inj'
-
-theorem mul_right_inj' (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
-  (mul_right_injective₀ ha).eq_iff
-#align mul_right_inj' mul_right_inj'
 
 @[simp]
 theorem mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
@@ -187,7 +236,6 @@ theorem mul_right_eq_self₀ : a * b = a ↔ b = 1 ∨ a = 0 :=
     a * b = a ↔ a * b = a * 1 := by rw [mul_one]
     _ ↔ b = 1 ∨ a = 0 := mul_eq_mul_left_iff
 #align mul_right_eq_self₀ mul_right_eq_self₀
-
 
 theorem mul_left_eq_self₀ : a * b = b ↔ a = 1 ∨ b = 0 :=
   calc
@@ -230,37 +278,6 @@ end CancelMonoidWithZero
 section GroupWithZero
 
 variable [GroupWithZero G₀] {a b c g h x : G₀}
-
-@[simp]
-theorem mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=
-  calc
-    a * b * b⁻¹ = a * (b * b⁻¹) := mul_assoc _ _ _
-    _ = a := by simp [h]
-#align mul_inv_cancel_right₀ mul_inv_cancel_right₀
-
-
-@[simp]
-theorem mul_inv_cancel_left₀ (h : a ≠ 0) (b : G₀) : a * (a⁻¹ * b) = b :=
-  calc
-    a * (a⁻¹ * b) = a * a⁻¹ * b := (mul_assoc _ _ _).symm
-    _ = b := by simp [h]
-#align mul_inv_cancel_left₀ mul_inv_cancel_left₀
-
-
--- Porting note: used `simpa` to prove `False` in lean3
-theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 => by
-  have := mul_inv_cancel h
-  simp [a_eq_0] at this
-#align inv_ne_zero inv_ne_zero
-
-@[simp]
-theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
-  calc
-    a⁻¹ * a = a⁻¹ * a * a⁻¹ * a⁻¹⁻¹ := by simp [inv_ne_zero h]
-    _ = a⁻¹ * a⁻¹⁻¹ := by simp [h]
-    _ = 1 := by simp [inv_ne_zero h]
-#align inv_mul_cancel inv_mul_cancel
-
 
 theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
     Function.Injective fun y => x * y := fun y y' w => by

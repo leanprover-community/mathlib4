@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 import Mathlib.Algebra.Star.Order
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
-import Mathlib.Tactic.Positivity
 
 #align_import data.real.sqrt from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -35,6 +34,8 @@ this sequence actually converges to `Real.sqrt (mk f)`.
 
 square root
 -/
+
+set_option autoImplicit true
 
 open Set Filter
 open scoped Filter NNReal Topology
@@ -124,7 +125,7 @@ theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 
 @[simp] theorem sqrt_pos : 0 < sqrt x ↔ 0 < x := by simp [pos_iff_ne_zero]
 
-alias sqrt_pos ↔ _ sqrt_pos_of_pos
+alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 end NNReal
 
@@ -148,7 +149,7 @@ theorem sqrtAux_nonneg (f : CauSeq ℚ abs) : ∀ i : ℕ, 0 ≤ sqrtAux f i
 
 /- TODO(Mario): finish the proof
 theorem sqrt_aux_converges (f : cau_seq ℚ abs) : ∃ h x, 0 ≤ x ∧ x * x = max 0 (mk f) ∧
-  mk ⟨sqrt_aux f, h⟩ = x :=
+    mk ⟨sqrt_aux f, h⟩ = x :=
 begin
   rcases sqrt_exists (le_max_left 0 (mk f)) with ⟨x, x0, hx⟩,
   suffices : ∃ h, mk ⟨sqrt_aux f, h⟩ = x,
@@ -206,7 +207,7 @@ theorem sqrt_mul_self (h : 0 ≤ x) : sqrt (x * x) = x :=
 theorem sqrt_eq_cases : sqrt x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 := by
   constructor
   · rintro rfl
-    cases' le_or_lt 0 x with hle hlt
+    rcases le_or_lt 0 x with hle | hlt
     · exact Or.inl ⟨mul_self_sqrt hle, sqrt_nonneg x⟩
     · exact Or.inr ⟨hlt, sqrt_eq_zero_of_nonpos hlt.le⟩
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
@@ -349,7 +350,7 @@ theorem sqrt_pos : 0 < sqrt x ↔ 0 < x :=
   lt_iff_lt_of_le_iff_le (Iff.trans (by simp [le_antisymm_iff, sqrt_nonneg]) sqrt_eq_zero')
 #align real.sqrt_pos Real.sqrt_pos
 
-alias sqrt_pos ↔ _ sqrt_pos_of_pos
+alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 #align real.sqrt_pos_of_pos Real.sqrt_pos_of_pos
 
 end Real
@@ -378,7 +379,7 @@ def evalSqrt : PositivityExt where eval {_ _} _zα _pα e := do
   let (.app _ (a : Q(Real))) ← whnfR e | throwError "not Real.sqrt"
   let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
   let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
-  let ra ← core zα' pα' a
+  let ra ← catchNone <| core zα' pα' a
   assertInstancesCommute
   match ra with
   | .positive pa => pure (.positive (q(Real.sqrt_pos_of_pos $pa) : Expr))
@@ -415,7 +416,7 @@ theorem sqrt_div' (x) {y : ℝ} (hy : 0 ≤ y) : sqrt (x / y) = sqrt x / sqrt y 
 
 @[simp]
 theorem div_sqrt : x / sqrt x = sqrt x := by
-  cases' le_or_lt x 0 with h h
+  rcases le_or_lt x 0 with h | h
   · rw [sqrt_eq_zero'.mpr h, div_zero]
   · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
 #align real.div_sqrt Real.div_sqrt
@@ -464,6 +465,11 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : Real.sqrt ↑a ≤ Nat.sqrt a + 1
     exact le_of_lt (Nat.lt_succ_sqrt' a)
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
+/-- Although the instance `IsROrC.toStarOrderedRing` exists, it is locked behind the
+`ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
+want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
+In addition, providing this instance here makes it available earlier in the import
+hierarchy; otherwise in order to access it we would need to import `Data.IsROrC.Basic` -/
 instance : StarOrderedRing ℝ :=
   StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨sqrt r, (mul_self_sqrt hr).symm⟩, ?_⟩
@@ -474,7 +480,7 @@ end Real
 
 open Real
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem Filter.Tendsto.sqrt {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) :
     Tendsto (fun x => sqrt (f x)) l (𝓝 (sqrt x)) :=

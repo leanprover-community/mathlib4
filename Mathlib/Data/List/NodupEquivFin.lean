@@ -31,7 +31,7 @@ Given a list `l`,
 
 namespace List
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Nodup
 
@@ -129,7 +129,7 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
       exact b.succ_pos
   have : ∀ ix, tl.get? ix = (l'.drop (f 0 + 1)).get? (f' ix) := by
     intro ix
-    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, add_tsub_cancel_of_le, ←hf, List.get?]
+    rw [List.get?_drop, OrderEmbedding.coe_ofMapLEIff, add_tsub_cancel_of_le, ← hf, List.get?]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
@@ -173,7 +173,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
   rw [sublist_iff_exists_orderEmbedding_get?_eq]
   constructor
   · rintro ⟨f, hf⟩
-    have h : ∀ {i : ℕ} (_ : i < l.length), f i < l'.length := by
+    have h : ∀ {i : ℕ}, i < l.length → f i < l'.length := by
       intro i hi
       specialize hf i
       rw [get?_eq_get hi, eq_comm, get?_eq_some] at hf

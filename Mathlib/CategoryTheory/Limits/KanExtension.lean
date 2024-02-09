@@ -3,9 +3,9 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
 -/
+import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.StructuredArrow
 
 #align_import category_theory.limits.kan_extension from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
@@ -184,11 +184,11 @@ set_option linter.uppercaseLean3 false in
 
 theorem reflective [Full ι] [Faithful ι] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     IsIso (adjunction D ι).counit := by
-  suffices : ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X) by
+    apply NatIso.isIso_of_isIso_app
   intro F
-  suffices : ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X) by
+    apply NatIso.isIso_of_isIso_app
   intro X
   dsimp [adjunction, equiv]
   simp only [Category.id_comp]
@@ -324,15 +324,24 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.equiv CategoryTheory.Lan.equiv
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.Ran.equiv_symm_apply_app
+  CategoryTheory.Ran.equiv_apply_app
+  CategoryTheory.Lan.equiv_symm_apply_app
+  CategoryTheory.Lan.equiv_apply_app
+
 end Lan
 
 /-- The left Kan extension of a functor. -/
 @[simps!]
-def lan [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] : (S ⥤ D) ⥤ L ⥤ D :=
+def lan [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] : (S ⥤ D) ⥤ L ⥤ D :=
   Adjunction.leftAdjointOfEquiv (fun F G => Lan.equiv ι F G) (by {
     intros X' X Y f g
     ext
-    simp [Lan.equiv] })
+    simp [Lan.equiv]
+    -- This used to be the end of the proof before leanprover/lean4#2644
+    erw [Equiv.coe_fn_mk, Equiv.coe_fn_mk]
+    simp })
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan CategoryTheory.lan
 
@@ -341,19 +350,19 @@ namespace Lan
 variable (D)
 
 /-- The adjunction associated to `Lan`. -/
-def adjunction [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
+def adjunction [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
     lan ι ⊣ (whiskeringLeft _ _ D).obj ι :=
   Adjunction.adjunctionOfEquivLeft _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.adjunction CategoryTheory.Lan.adjunction
 
-theorem coreflective [Full ι] [Faithful ι] [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
+theorem coreflective [Full ι] [Faithful ι] [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
     IsIso (adjunction D ι).unit := by
-  suffices : ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X) by
+    apply NatIso.isIso_of_isIso_app
   intro F
-  suffices : ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).unit F) X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).unit F) X) by
+    apply NatIso.isIso_of_isIso_app
   intro X
   dsimp [adjunction, equiv]
   simp only [Category.comp_id]

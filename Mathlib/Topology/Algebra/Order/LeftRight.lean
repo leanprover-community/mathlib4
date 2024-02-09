@@ -27,9 +27,47 @@ left continuous, right continuous
 
 open Set Filter Topology
 
+section Preorder
+
+variable {α : Type*} [TopologicalSpace α] [Preorder α]
+
+lemma frequently_lt_nhds (a : α) [NeBot (𝓝[<] a)] : ∃ᶠ x in 𝓝 a, x < a :=
+  frequently_iff_neBot.2 ‹_›
+
+lemma frequently_gt_nhds (a : α) [NeBot (𝓝[>] a)] : ∃ᶠ x in 𝓝 a, a < x :=
+  frequently_iff_neBot.2 ‹_›
+
+theorem Filter.Eventually.exists_lt {a : α} [NeBot (𝓝[<] a)] {p : α → Prop}
+    (h : ∀ᶠ x in 𝓝 a, p x) : ∃ b < a, p b :=
+  ((frequently_lt_nhds a).and_eventually h).exists
+#align filter.eventually.exists_lt Filter.Eventually.exists_lt
+
+theorem Filter.Eventually.exists_gt {a : α} [NeBot (𝓝[>] a)] {p : α → Prop}
+    (h : ∀ᶠ x in 𝓝 a, p x) : ∃ b > a, p b :=
+  ((frequently_gt_nhds a).and_eventually h).exists
+#align filter.eventually.exists_gt Filter.Eventually.exists_gt
+
+theorem nhdsWithin_Ici_neBot {a b : α} (H₂ : a ≤ b) : NeBot (𝓝[Ici a] b) :=
+  nhdsWithin_neBot_of_mem H₂
+#align nhds_within_Ici_ne_bot nhdsWithin_Ici_neBot
+
+instance nhdsWithin_Ici_self_neBot (a : α) : NeBot (𝓝[≥] a) :=
+  nhdsWithin_Ici_neBot (le_refl a)
+#align nhds_within_Ici_self_ne_bot nhdsWithin_Ici_self_neBot
+
+theorem nhdsWithin_Iic_neBot {a b : α} (H : a ≤ b) : NeBot (𝓝[Iic b] a) :=
+  nhdsWithin_neBot_of_mem H
+#align nhds_within_Iic_ne_bot nhdsWithin_Iic_neBot
+
+instance nhdsWithin_Iic_self_neBot (a : α) : NeBot (𝓝[≤] a) :=
+  nhdsWithin_Iic_neBot (le_refl a)
+#align nhds_within_Iic_self_ne_bot nhdsWithin_Iic_self_neBot
+
+end Preorder
+
 section PartialOrder
 
-variable {α β : Type _} [TopologicalSpace α] [PartialOrder α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [PartialOrder α] [TopologicalSpace β]
 
 theorem continuousWithinAt_Ioi_iff_Ici {a : α} {f : α → β} :
     ContinuousWithinAt f (Ioi a) a ↔ ContinuousWithinAt f (Ici a) a := by
@@ -53,7 +91,7 @@ end PartialOrder
 
 section TopologicalSpace
 
-variable {α β : Type _} [TopologicalSpace α] [LinearOrder α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [TopologicalSpace β]
 
 theorem nhds_left_sup_nhds_right (a : α) : 𝓝[≤] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ici, nhdsWithin_univ]

@@ -36,7 +36,7 @@ namespace CategoryTheory
 
 namespace Limits
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 /-- This condition expresses that inclusion morphisms into coproducts are monomorphisms. -/
 class MonoCoprod : Prop where

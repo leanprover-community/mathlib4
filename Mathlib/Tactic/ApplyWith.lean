@@ -1,4 +1,5 @@
-import Lean
+import Lean.Elab.Eval
+import Lean.Elab.Tactic.ElabTerm
 import Std.Util.TermUnsafe
 
 namespace Mathlib.Tactic

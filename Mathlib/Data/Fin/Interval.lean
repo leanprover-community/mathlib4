@@ -219,7 +219,7 @@ theorem card_Ici : (Ici a).card = n - a := by
   cases n with
   | zero => exact Fin.elim0 a
   | succ =>
-    rw [← card_map, map_valEmbedding_Ici, Nat.card_Icc, Nat.succ_sub_one]
+    rw [← card_map, map_valEmbedding_Ici, Nat.card_Icc, Nat.add_one_sub_one]
 #align fin.card_Ici Fin.card_Ici
 
 @[simp]

@@ -20,10 +20,10 @@ from `NonUnitalSeminormedRing` to `NormedField`.
 
 open Set Metric
 
-variable {𝕜 : Type _}
+variable {𝕜 : Type*}
 
 /-- Unit ball in a non unital semi normed ring as a bundled `Subsemigroup`. -/
-def Subsemigroup.unitBall (𝕜 : Type _) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜
+def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜
     where
   carrier := ball (0 : 𝕜) 1
   mul_mem' hx hy := by
@@ -52,7 +52,7 @@ theorem coe_mul_unitBall [NonUnitalSeminormedRing 𝕜] (x y : ball (0 : 𝕜) 1
 #align coe_mul_unit_ball coe_mul_unitBall
 
 /-- Closed unit ball in a non unital semi normed ring as a bundled `Subsemigroup`. -/
-def Subsemigroup.unitClosedBall (𝕜 : Type _) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜
+def Subsemigroup.unitClosedBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsemigroup 𝕜
     where
   carrier := closedBall 0 1
   mul_mem' hx hy := by
@@ -79,7 +79,7 @@ theorem coe_mul_unitClosedBall [NonUnitalSeminormedRing 𝕜] (x y : closedBall 
 #align coe_mul_unit_closed_ball coe_mul_unitClosedBall
 
 /-- Closed unit ball in a semi normed ring as a bundled `Submonoid`. -/
-def Submonoid.unitClosedBall (𝕜 : Type _) [SeminormedRing 𝕜] [NormOneClass 𝕜] : Submonoid 𝕜 :=
+def Submonoid.unitClosedBall (𝕜 : Type*) [SeminormedRing 𝕜] [NormOneClass 𝕜] : Submonoid 𝕜 :=
   { Subsemigroup.unitClosedBall 𝕜 with
     carrier := closedBall 0 1
     one_mem' := mem_closedBall_zero_iff.2 norm_one.le }
@@ -106,7 +106,7 @@ theorem coe_pow_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] (x : cl
 #align coe_pow_unit_closed_ball coe_pow_unitClosedBall
 
 /-- Unit sphere in a normed division ring as a bundled `Submonoid`. -/
-def Submonoid.unitSphere (𝕜 : Type _) [NormedDivisionRing 𝕜] : Submonoid 𝕜
+def Submonoid.unitSphere (𝕜 : Type*) [NormedDivisionRing 𝕜] : Submonoid 𝕜
     where
   carrier := sphere (0 : 𝕜) 1
   mul_mem' hx hy := by
@@ -171,7 +171,7 @@ theorem coe_pow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (
 #align coe_pow_unit_sphere coe_pow_unitSphere
 
 /-- Monoid homomorphism from the unit sphere to the group of units. -/
-def unitSphereToUnits (𝕜 : Type _) [NormedDivisionRing 𝕜] : sphere (0 : 𝕜) 1 →* Units 𝕜 :=
+def unitSphereToUnits (𝕜 : Type*) [NormedDivisionRing 𝕜] : sphere (0 : 𝕜) 1 →* Units 𝕜 :=
   Units.liftRight (Submonoid.unitSphere 𝕜).subtype
     (fun x => Units.mk0 x <| ne_zero_of_mem_unit_sphere _) fun _x => rfl
 #align unit_sphere_to_units unitSphereToUnits

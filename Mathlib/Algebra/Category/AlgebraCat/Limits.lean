@@ -44,7 +44,7 @@ instance algebraObj (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
   inferInstanceAs <| Algebra R (F.obj j)
 #align Algebra.algebra_obj AlgebraCat.algebraObj
 
-/-- The flat sections of a functor into `Algebra R` form a submodule of all sections.
+/-- The flat sections of a functor into `AlgebraCat R` form a submodule of all sections.
 -/
 def sectionsSubalgebra (F : J ⥤ AlgebraCatMax.{v, w} R) : Subalgebra R (∀ j, F.obj j) :=
   { SemiRingCat.sectionsSubsemiring
@@ -62,7 +62,7 @@ instance limitAlgebra (F : J ⥤ AlgebraCatMax.{v, w} R) :
   inferInstanceAs <| Algebra R (sectionsSubalgebra F)
 #align Algebra.limit_algebra AlgebraCat.limitAlgebra
 
-/-- `limit.π (F ⋙ forget (Algebra R)) j` as a `alg_hom`. -/
+/-- `limit.π (F ⋙ forget (AlgebraCat R)) j` as a `AlgHom`. -/
 def limitπAlgHom (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
     (Types.limitCone (F ⋙ forget (AlgebraCat R))).pt →ₐ[R]
       (F ⋙ forget (AlgebraCatMax.{v, w} R)).obj j :=
@@ -73,10 +73,10 @@ def limitπAlgHom (F : J ⥤ AlgebraCatMax.{v, w} R) (j) :
 
 namespace HasLimits
 
--- The next two definitions are used in the construction of `has_limits (Algebra R)`.
+-- The next two definitions are used in the construction of `HasLimits (AlgebraCat R)`.
 -- After that, the limits should be constructed using the generic limits API,
--- e.g. `limit F`, `limit.cone F`, and `limit.is_limit F`.
-/-- Construction of a limit cone in `Algebra R`.
+-- e.g. `limit F`, `limit.cone F`, and `limit.isLimit F`.
+/-- Construction of a limit cone in `AlgebraCat R`.
 (Internal use only; use the limits API.)
 -/
 def limitCone (F : J ⥤ AlgebraCatMax.{v, w} R) : Cone F where
@@ -87,7 +87,7 @@ def limitCone (F : J ⥤ AlgebraCatMax.{v, w} R) : Cone F where
         AlgHom.coe_fn_injective ((Types.limitCone (F ⋙ forget _)).π.naturality f) }
 #align Algebra.has_limits.limit_cone AlgebraCat.HasLimits.limitCone
 
-/-- Witness that the limit cone in `Algebra R` is a limit cone.
+/-- Witness that the limit cone in `AlgebraCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
 def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v, w} F) := by
@@ -100,21 +100,43 @@ def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v,
          _⟩, _⟩, _, _⟩, _⟩)
       (fun s => _)
   · intro j j' f
-    exact FunLike.congr_fun (Cone.w s f) v
+    exact DFunLike.congr_fun (Cone.w s f) v
   · -- Porting note: we could add a custom `ext` lemma here.
     apply Subtype.ext
     ext j
-    simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]
+    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map_eq_coe]
+    -- This used to be as below but we need `erw` after leanprover/lean4#2644
+    -- simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]
+    erw [map_one]
     rfl
   · intro x y
     apply Subtype.ext
     ext j
-    simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]
+    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map_eq_coe]
+    -- This used to be as below, but we need `erw` after leanprover/lean4#2644
+    -- simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]
+    erw [map_mul]
     rfl
-  · simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]
+  · simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map_eq_coe]
+    -- The below `simp` was enough before leanprover/lean4#2644
+    -- simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]
+    apply Subtype.ext
+    dsimp
+    funext u
+    erw [map_zero]
     rfl
   · intro x y
-    simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]
+    simp only [Functor.comp_obj, Functor.mapCone_pt, Functor.mapCone_π_app,
+      forget_map_eq_coe]
+    -- The below `simp` was enough before leanprover/lean4#2644
+    -- simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]
+    apply Subtype.ext
+    dsimp
+    funext u
+    erw [map_add]
     rfl
   · intro r
     apply Subtype.ext
@@ -159,12 +181,12 @@ instance forget₂RingPreservesLimits : PreservesLimits (forget₂ (AlgebraCat R
 /-- The forgetful functor from R-algebras to R-modules preserves all limits.
 -/
 instance forget₂ModulePreservesLimitsOfSize : PreservesLimitsOfSize.{v, v}
-    (forget₂ (AlgebraCatMax.{v, w} R) (ModuleCat.ModuleCatMax.{v, w} R)) where
+    (forget₂ (AlgebraCatMax.{v, w} R) (ModuleCatMax.{v, w} R)) where
   preservesLimitsOfShape :=
     { preservesLimit :=
         preservesLimitOfPreservesLimitCone (limitConeIsLimit _)
           (ModuleCat.HasLimits.limitConeIsLimit
-            (_ ⋙ forget₂ (AlgebraCatMax.{v, w} R) (ModuleCat.ModuleCatMax.{v, w} R))) }
+            (_ ⋙ forget₂ (AlgebraCatMax.{v, w} R) (ModuleCatMax.{v, w} R))) }
 #align Algebra.forget₂_Module_preserves_limits_of_size AlgebraCat.forget₂ModulePreservesLimitsOfSize
 
 instance forget₂ModulePreservesLimits :

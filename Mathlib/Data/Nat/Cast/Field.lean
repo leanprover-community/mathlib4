@@ -5,7 +5,8 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.CharZero
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Tactic.Common
 
 #align_import data.nat.cast.field from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
 
@@ -23,7 +24,7 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a field.
 
 namespace Nat
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[simp]
 theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :
@@ -36,7 +37,7 @@ theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (n_nonzero 
 #align nat.cast_div Nat.cast_div
 
 theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d : ℕ}
-  (hn : d ∣ n) (hm : d ∣ m) :
+    (hn : d ∣ n) (hm : d ∣ m) :
     (↑(m / d) : α) / (↑(n / d) : α) = (m : α) / n := by
   rcases eq_or_ne d 0 with (rfl | hd); · simp [zero_dvd_iff.mp hm]
   replace hd : (d : α) ≠ 0;
@@ -47,6 +48,10 @@ theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d
 section LinearOrderedSemifield
 
 variable [LinearOrderedSemifield α]
+
+lemma cast_inv_le_one : ∀ n : ℕ, (n⁻¹ : α) ≤ 1
+  | 0 => by simp
+  | n + 1 => inv_le_one $ by simp [Nat.cast_nonneg]
 
 /-- Natural division is always less than division in the field. -/
 theorem cast_div_le {m n : ℕ} : ((m / n : ℕ) : α) ≤ m / n := by

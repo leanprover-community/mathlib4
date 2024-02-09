@@ -22,9 +22,9 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type _} [CommRing R] (M : Submonoid R) {S : Type _} [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
 
-variable [Algebra R S] {P : Type _} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace IsFractionRing
 
@@ -32,9 +32,9 @@ open IsLocalization
 
 section NumDen
 
-variable (A : Type _) [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A]
+variable (A : Type*) [CommRing A] [IsDomain A] [UniqueFactorizationMonoid A]
 
-variable {K : Type _} [Field K] [Algebra A K] [IsFractionRing A K]
+variable {K : Type*} [Field K] [Algebra A K] [IsFractionRing A K]
 
 theorem exists_reduced_fraction (x : K) :
     ∃ (a : A) (b : nonZeroDivisors A), (∀ {d}, d ∣ a → d ∣ b → IsUnit d) ∧ mk' K a b = x := by
@@ -93,7 +93,7 @@ theorem num_mul_den_eq_num_mul_den_iff_eq {x y : K} :
 #align is_fraction_ring.num_mul_denom_eq_num_mul_denom_iff_eq IsFractionRing.num_mul_den_eq_num_mul_den_iff_eq
 
 theorem eq_zero_of_num_eq_zero {x : K} (h : num A x = 0) : x = 0 :=
-  num_mul_den_eq_num_iff_eq'.mp (by rw [MulZeroClass.zero_mul, h, RingHom.map_zero])
+  num_mul_den_eq_num_iff_eq'.mp (by rw [zero_mul, h, RingHom.map_zero])
 #align is_fraction_ring.eq_zero_of_num_eq_zero IsFractionRing.eq_zero_of_num_eq_zero
 
 theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A x := by

@@ -55,7 +55,7 @@ open TopologicalSpace Filter Set
 
 section Basic
 
-variable {α : Type _} [TopologicalSpace α] {C : Set α}
+variable {α : Type*} [TopologicalSpace α] {C : Set α}
 
 /-- If `x` is an accumulation point of a set `C` and `U` is a neighborhood of `x`,
 then `x` is an accumulation point of `U ∩ C`. -/
@@ -191,7 +191,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
       have : U ∈ v := ⟨hUb, hU_cnt⟩
       apply xD.2
       exact mem_biUnion this xU
-    by_contra' h
+    by_contra! h
     exact absurd (Countable.mono h (Set.countable_singleton _)) this
   · rw [inter_comm, inter_union_diff]
 #align exists_countable_union_perfect_of_is_closed exists_countable_union_perfect_of_isClosed
@@ -219,7 +219,7 @@ section CantorInjMetric
 
 open Function ENNReal
 
-variable {α : Type _} [MetricSpace α] {C : Set α} (hC : Perfect C) {ε : ℝ≥0∞}
+variable {α : Type*} [MetricSpace α] {C : Set α} (hC : Perfect C) {ε : ℝ≥0∞}
 
 private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C) :
     let D := closure (EMetric.ball x (ε / 2) ∩ C)
@@ -291,9 +291,9 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
     rcases Nat.exists_eq_succ_of_ne_zero hm with ⟨n, rfl⟩
     dsimp
     cases x n
-    · convert(h0 _ _ _).2.2.2
+    · convert (h0 _ _ _).2.2.2
       rw [PiNat.res_length]
-    convert(h1 _ _ _).2.2.2
+    convert (h1 _ _ _).2.2.2
     rw [PiNat.res_length]
   have hdisj' : CantorScheme.Disjoint D := by
     rintro l (a | a) (b | b) hab <;> try contradiction
@@ -315,7 +315,7 @@ end CantorInjMetric
 
 /-- Any closed uncountable subset of a Polish space admits a continuous injection
 from the Cantor space `ℕ → Bool`.-/
-theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type _} [TopologicalSpace α]
+theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type*} [TopologicalSpace α]
     [PolishSpace α] {C : Set α} (hC : IsClosed C) (hunc : ¬C.Countable) :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Function.Injective f := by
   letI := upgradePolishSpace α

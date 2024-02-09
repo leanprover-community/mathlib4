@@ -1,5 +1,6 @@
 import Std.Tactic.NoMatch
 
+set_option autoImplicit true
 example : False → α := fun.
 example : False → α := by intro.
 example : ¬ False := fun.

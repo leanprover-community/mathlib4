@@ -27,7 +27,7 @@ See the comments of #10679 for a possible implementation.
 -/
 
 
-variable {M : Type _}
+variable {M : Type*}
 
 namespace Submonoid
 

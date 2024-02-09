@@ -15,7 +15,7 @@ in `Init.Data.List.Basic`.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace List
 
@@ -52,8 +52,7 @@ theorem join_filter_isEmpty_eq_false [DecidablePred fun l : List α => l.isEmpty
   | [] :: L => by
       simp [join_filter_isEmpty_eq_false (L := L), isEmpty_iff_eq_nil]
   | (a :: l) :: L => by
-      have cons_not_empty : isEmpty (a :: l) = false := rfl
-      simp [join_filter_isEmpty_eq_false (L := L), cons_not_empty]
+      simp [join_filter_isEmpty_eq_false (L := L)]
 #align list.join_filter_empty_eq_ff List.join_filter_isEmpty_eq_false
 
 @[simp]
@@ -123,7 +122,7 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
   · simp
     rfl
   have : i < tail.length := by
-    simp at hi
+    simp? at hi says simp only [length_cons] at hi
     exact Nat.lt_of_succ_lt_succ hi
   simp [*]
   rfl
@@ -153,11 +152,10 @@ theorem drop_take_succ_join_eq_nthLe (L : List (List α)) {i : ℕ} (hi : i < L.
   simp [take_sum_join, this, drop_sum_join, drop_take_succ_eq_cons_nthLe _ hi]
 #align list.drop_take_succ_join_eq_nth_le List.drop_take_succ_join_eq_nthLe
 
-set_option linter.deprecated false in
 /-- Auxiliary lemma to control elements in a join. -/
 @[deprecated]
 theorem sum_take_map_length_lt1 (L : List (List α)) {i j : ℕ} (hi : i < L.length)
-    (hj : j < (nthLe L i hi).length) :
+    (hj : j < (L.get ⟨i, hi⟩).length) :
     ((L.map length).take i).sum + j < ((L.map length).take (i + 1)).sum := by
   simp [hi, sum_take_succ, hj]
 #align list.sum_take_map_length_lt1 List.sum_take_map_length_lt1
@@ -227,5 +225,21 @@ theorem join_reverse (L : List (List α)) :
     L.reverse.join = (List.map List.reverse L).join.reverse := by
   simpa [reverse_reverse, map_reverse] using congr_arg List.reverse (reverse_join L.reverse)
 #align list.join_reverse List.join_reverse
+
+/-- Any member of `l : List (List α))` is a sublist of `l.join` -/
+lemma sublist_join (l : List (List α)) {s : List α} (hs : s ∈ l) :
+    List.Sublist s (l.join) := by
+  induction l with
+  | nil =>
+    exfalso
+    exact not_mem_nil s hs
+  | cons t m ht =>
+    cases mem_cons.mp hs with
+    | inl h =>
+      rw [h]
+      simp only [join_cons, sublist_append_left]
+    | inr h =>
+      simp only [join_cons]
+      exact sublist_append_of_sublist_right (ht h)
 
 end List

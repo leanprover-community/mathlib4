@@ -13,7 +13,7 @@ import Mathlib.Algebra.Group.Units
 # Lemmas about divisibility and units
 -/
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Units
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Data.Polynomial.Eval
-import Mathlib.LinearAlgebra.Dimension
+import Mathlib.LinearAlgebra.Dimension.Constructions
 
 #align_import algebra.linear_recurrence from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
@@ -46,19 +46,19 @@ open BigOperators Polynomial
 
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/
-structure LinearRecurrence (α : Type _) [CommSemiring α] where
+structure LinearRecurrence (α : Type*) [CommSemiring α] where
   order : ℕ
   coeffs : Fin order → α
 #align linear_recurrence LinearRecurrence
 
-instance (α : Type _) [CommSemiring α] : Inhabited (LinearRecurrence α) :=
+instance (α : Type*) [CommSemiring α] : Inhabited (LinearRecurrence α) :=
   ⟨⟨0, default⟩⟩
 
 namespace LinearRecurrence
 
 section CommSemiring
 
-variable {α : Type _} [CommSemiring α] (E : LinearRecurrence α)
+variable {α : Type*} [CommSemiring α] (E : LinearRecurrence α)
 
 /-- We say that a sequence `u` is solution of `LinearRecurrence order coeffs` when we have
   `u (n + order) = ∑ i : Fin order, coeffs i * u (n + i)` for any `n`. -/
@@ -102,7 +102,7 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
   intro n
   rw [mkSol]
   split_ifs with h'
-  · exact_mod_cast heq ⟨n, h'⟩
+  · exact mod_cast heq ⟨n, h'⟩
   simp only
   rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
   congr with k
@@ -163,7 +163,7 @@ theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSol
   suffices h' : u' = v'; exact h' ▸ rfl
   rw [← E.toInit.toEquiv.apply_eq_iff_eq, LinearEquiv.coe_toEquiv]
   ext x
-  exact_mod_cast h (mem_range.mpr x.2)
+  exact mod_cast h (mem_range.mpr x.2)
 #align linear_recurrence.sol_eq_of_eq_init LinearRecurrence.sol_eq_of_eq_init
 
 /-! `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
@@ -192,7 +192,7 @@ section StrongRankCondition
 
 -- note: `StrongRankCondition` is the same as `Nontrivial` on `CommRing`s, but that result,
 -- `commRing_strongRankCondition`, is in a much later file.
-variable {α : Type _} [CommRing α] [StrongRankCondition α] (E : LinearRecurrence α)
+variable {α : Type*} [CommRing α] [StrongRankCondition α] (E : LinearRecurrence α)
 
 /-- The dimension of `E.solSpace` is `E.order`. -/
 theorem solSpace_rank : Module.rank α E.solSpace = E.order :=
@@ -204,7 +204,7 @@ end StrongRankCondition
 
 section CommRing
 
-variable {α : Type _} [CommRing α] (E : LinearRecurrence α)
+variable {α : Type*} [CommRing α] (E : LinearRecurrence α)
 
 /-- The characteristic polynomial of `E` is
 `X ^ E.order - ∑ i : Fin E.order, (E.coeffs i) * X ^ i`. -/

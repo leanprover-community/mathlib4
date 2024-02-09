@@ -34,7 +34,7 @@ subgroup, subgroups, IsSubgroup
 
 open Set Function
 
-variable {G : Type _} {H : Type _} {A : Type _} {a a₁ a₂ b c : G}
+variable {G : Type*} {H : Type*} {A : Type*} {a a₁ a₂ b c : G}
 
 section Group
 
@@ -110,7 +110,7 @@ theorem IsSubgroup.inter {s₁ s₂ : Set G} (hs₁ : IsSubgroup s₁) (hs₂ : 
 #align is_add_subgroup.inter IsAddSubgroup.inter
 
 @[to_additive]
-theorem IsSubgroup.iInter {ι : Sort _} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
+theorem IsSubgroup.iInter {ι : Sort*} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
     IsSubgroup (Set.iInter s) :=
   { IsSubmonoid.iInter fun y => (hs y).toIsSubmonoid with
     inv_mem := fun h =>
@@ -119,7 +119,7 @@ theorem IsSubgroup.iInter {ι : Sort _} {s : ι → Set G} (hs : ∀ y : ι, IsS
 #align is_add_subgroup.Inter IsAddSubgroup.iInter
 
 @[to_additive]
-theorem isSubgroup_iUnion_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set G}
+theorem isSubgroup_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set G}
     (hs : ∀ i, IsSubgroup (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubgroup (⋃ i, s i) :=
   { inv_mem := fun ha =>
@@ -229,7 +229,7 @@ theorem mem_norm_comm_iff {s : Set G} (hs : IsNormalSubgroup s) {a b : G} : a * 
 
 /-- The trivial subgroup -/
 @[to_additive "the trivial additive subgroup"]
-def trivial (G : Type _) [Group G] : Set G :=
+def trivial (G : Type*) [Group G] : Set G :=
   {1}
 #align is_subgroup.trivial IsSubgroup.trivial
 #align is_add_subgroup.trivial IsAddSubgroup.trivial
@@ -260,7 +260,7 @@ theorem univ_subgroup : IsNormalSubgroup (@univ G) := by refine' { .. } <;> simp
 
 /-- The underlying set of the center of a group. -/
 @[to_additive addCenter "The underlying set of the center of an additive group."]
-def center (G : Type _) [Group G] : Set G :=
+def center (G : Type*) [Group G] : Set G :=
   { z | ∀ g, g * z = z * g }
 #align is_subgroup.center IsSubgroup.center
 #align is_add_subgroup.add_center IsAddSubgroup.addCenter
@@ -645,7 +645,7 @@ theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.
 #align add_group.closure_eq_mclosure AddGroup.closure_eq_mclosure
 
 @[to_additive]
-theorem mem_closure_union_iff {G : Type _} [CommGroup G] {s t : Set G} {x : G} :
+theorem mem_closure_union_iff {G : Type*} [CommGroup G] {s t : Set G} {x : G} :
     x ∈ closure (s ∪ t) ↔ ∃ y ∈ closure s, ∃ z ∈ closure t, y * z = x := by
   simp only [closure_eq_mclosure, Monoid.mem_closure_union_iff, exists_prop, preimage_union];
   constructor

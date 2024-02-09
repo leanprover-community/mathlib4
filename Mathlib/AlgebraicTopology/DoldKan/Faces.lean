@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Homotopies
+import Mathlib.Tactic.Ring
 
-#align_import algebraic_topology.dold_kan.faces from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+#align_import algebraic_topology.dold_kan.faces from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -20,6 +21,8 @@ The main lemma in this file is `HigherFacesVanish.induction`. It is based
 on two technical lemmas `HigherFacesVanish.comp_Hσ_eq` and
 `HigherFacesVanish.comp_Hσ_eq_zero`.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
@@ -30,7 +33,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
 
 variable {X : SimplicialObject C}
 
@@ -82,7 +85,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   swap
   · rintro ⟨k, hk⟩
     suffices φ ≫ X.δ (⟨a + 2 + k, by linarith⟩ : Fin (n + 2)) = 0 by
-      simp only [this, Fin.natAdd_mk, Fin.castIso_mk, zero_comp, smul_zero]
+      simp only [this, Fin.natAdd_mk, Fin.cast_mk, zero_comp, smul_zero]
     convert v ⟨a + k + 1, by linarith⟩ (by rw [Fin.val_mk]; linarith)
     dsimp
     linarith
@@ -92,13 +95,13 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   · rintro ⟨k, hk⟩
     rw [assoc, X.δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
     · simp only [Fin.lt_iff_val_lt_val]
-      dsimp [Fin.natAdd, Fin.castIso]
+      dsimp [Fin.natAdd, Fin.cast]
       linarith
     · intro h
       rw [Fin.pred_eq_iff_eq_succ, Fin.ext_iff] at h
-      dsimp [Fin.castIso] at h
+      dsimp [Fin.cast] at h
       linarith
-    · dsimp [Fin.castIso, Fin.pred]
+    · dsimp [Fin.cast, Fin.pred]
       rw [Nat.add_right_comm, Nat.add_sub_assoc (by norm_num : 1 ≤ 3)]
       linarith
   simp only [assoc]
@@ -106,7 +109,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
     congr
     · rw [Fin.sum_univ_castSucc]
     · rw [Fin.sum_univ_castSucc, Fin.sum_univ_castSucc]
-  dsimp [Fin.castIso, Fin.castLE, Fin.castLT]
+  dsimp [Fin.cast, Fin.castLE, Fin.castLT]
   /- the purpose of the following `simplif` is to create three subgoals in order
       to finish the proof -/
   have simplif :
@@ -149,12 +152,12 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
       AlternatingFaceMapComplex.obj_d_eq]
     rw [← Fin.sum_congr' _ (show 2 + (n + 1) = n + 1 + 2 by linarith), Fin.sum_trunc]
     · simp only [Fin.sum_univ_castSucc, Fin.sum_univ_zero, zero_add, Fin.last, Fin.castLE_mk,
-        Fin.castIso_mk, Fin.castSucc_mk]
+        Fin.cast_mk, Fin.castSucc_mk]
       simp only [Fin.mk_zero, Fin.val_zero, pow_zero, one_zsmul, Fin.mk_one, Fin.val_one, pow_one,
         neg_smul, comp_neg]
       erw [δ_comp_σ_self, δ_comp_σ_succ, add_right_neg]
     · intro j
-      dsimp [Fin.castIso, Fin.castLE, Fin.castLT]
+      dsimp [Fin.cast, Fin.castLE, Fin.castLT]
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
       · simp only [Fin.lt_iff_val_lt_val]
         dsimp [Fin.succ]

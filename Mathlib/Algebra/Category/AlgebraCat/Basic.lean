@@ -13,7 +13,7 @@ import Mathlib.Algebra.Category.ModuleCat.Basic
 /-!
 # Category instance for algebras over a commutative ring
 
-We introduce the bundled category `AlgebraCat` of algebras over a fixed commutative ring `R ` along
+We introduce the bundled category `AlgebraCat` of algebras over a fixed commutative ring `R` along
 with the forgetful functors to `RingCat` and `ModuleCat`. We furthermore show that the functor
 associating to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
 -/
@@ -57,6 +57,9 @@ instance : Category (AlgebraCat.{v} R) where
   id A := AlgHom.id R A
   comp f g := g.comp f
 
+instance {M N : AlgebraCat.{v} R} : FunLike (M ⟶ N) M N :=
+  AlgHom.funLike
+
 instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N :=
   AlgHom.algHomClass
 
@@ -83,6 +86,16 @@ instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) w
     { obj := fun M => ModuleCat.of R M
       map := fun f => ModuleCat.ofHom f.toLinearMap }
 #align Algebra.has_forget_to_Module AlgebraCat.hasForgetToModule
+
+@[simp]
+lemma forget₂_module_obj (X : AlgebraCat.{v} R) :
+    (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).obj X = ModuleCat.of R X :=
+  rfl
+
+@[simp]
+lemma forget₂_module_map {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
+    (forget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.ofHom f.toLinearMap :=
+  rfl
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. -/
@@ -207,14 +220,16 @@ def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
     -- porting note: was `by tidy`
     change (i.hom ≫ i.inv) x = x
     simp only [hom_inv_id]
-    rw [id_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [id_apply]
   right_inv x := by
     -- porting note: was `by tidy`
     change (i.inv ≫ i.hom) x = x
     simp only [inv_hom_id]
-    rw [id_apply]
-  map_add' := i.hom.map_add -- Porting note: was `by tidy`
-  map_mul' := i.hom.map_mul -- Porting note: was `by tidy`
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [id_apply]
+  map_add' := by aesop
+  map_mul' := by aesop
   commutes' := i.hom.commutes -- Porting note: was `by tidy`
 #align category_theory.iso.to_alg_equiv CategoryTheory.Iso.toAlgEquiv
 

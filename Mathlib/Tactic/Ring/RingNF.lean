@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Tim Baanen
+Authors: Mario Carneiro, Anne Baanen
 -/
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Conv
@@ -16,6 +16,8 @@ prove some equations that `ring` cannot because they involve ring reasoning insi
 such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
+
+set_option autoImplicit true
 
 -- In this file we would like to be able to use multi-character auto-implicits.
 set_option relaxedAutoImplicit true
@@ -89,7 +91,7 @@ A tactic in the `RingNF.M` monad which will simplify expression `parent` to a no
 -/
 def rewrite (parent : Expr) (root := true) : M Simp.Result :=
   fun nctx rctx s ↦ do
-    let pre e :=
+    let pre : Simp.Simproc := fun e =>
       try
         guard <| root || parent != e -- recursion guard
         let e ← withReducible <| whnf e
@@ -104,8 +106,8 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         let r ← nctx.simp { expr := a, proof? := pa }
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
-      catch _ => pure <| .visit { expr := e }
-    let post := (Simp.postDefault · fun _ ↦ none)
+      catch _ => pure <| .continue
+    let post := Simp.postDefault #[]
     (·.1) <$> Simp.main parent nctx.ctx (methods := { pre, post })
 
 variable [CommSemiring R]
@@ -117,12 +119,11 @@ theorem add_neg {R} [Ring R] (a b : R) : a + -b = a - b := (sub_eq_add_neg ..).s
 theorem nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
 theorem nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
 theorem nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
-theorem int_rawCast_1 {R} [Ring R] : (Int.rawCast (.negOfNat 1) : R) = -1 := by
-  simp [Int.negOfNat_eq]
-theorem int_rawCast_2 {R} [Ring R] [Nat.AtLeastTwo n] :
-    (Int.rawCast (.negOfNat n) : R) = -OfNat.ofNat n := by
-  simp [Int.negOfNat_eq, OfNat.ofNat]
-theorem rat_rawCast_2 {R} [DivisionRing R] : (Rat.rawCast n d : R) = n / d := by simp
+theorem int_rawCast_neg {R} [Ring R] : (Int.rawCast (.negOfNat n) : R) = -Nat.rawCast n := by simp
+theorem rat_rawCast_pos {R} [DivisionRing R] :
+    (Rat.rawCast (.ofNat n) d : R) = Nat.rawCast n / Nat.rawCast d := by simp
+theorem rat_rawCast_neg {R} [DivisionRing R] :
+    (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
 
 /--
 Runs a tactic in the `RingNF.M` monad, given initial data:
@@ -136,18 +137,19 @@ partial def M.run
     (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
   let ctx := {
     simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
-    congrTheorems := ← getSimpCongrTheorems }
+    congrTheorems := ← getSimpCongrTheorems
+    config.singlePass := cfg.mode matches .raw }
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .SOP =>
     let thms : SimpTheorems := {}
     let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
       ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
-    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_1, ``int_rawCast_2,
-      ``rat_rawCast_2].foldlM (·.addConst · (post := false)) thms
+    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
+      ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
     let ctx' := { ctx with simpTheorems := #[thms] }
     pure fun r' : Simp.Result ↦ do
-      Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
   let nctx := { ctx, simp }
   let rec
     /-- The recursive context. -/
@@ -162,7 +164,8 @@ partial def M.run
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
 initialize ringCleanupRef.set fun e => do
   M.run (← IO.mkRef {}) { recursive := false } fun nctx _ _ =>
-    return (← nctx.simp { expr := e } nctx.ctx |>.run {}).1.expr
+    return (← nctx.simp { expr := e } ({} : Lean.Meta.Simp.Methods).toMethodsRef nctx.ctx
+      |>.run {}).1.expr
 
 open Elab.Tactic Parser.Tactic
 /-- Use `ring_nf` to rewrite the main goal. -/

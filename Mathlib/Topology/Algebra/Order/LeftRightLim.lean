@@ -39,7 +39,7 @@ open Topology
 
 section
 
-variable {α β : Type _} [LinearOrder α] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace β]
 
 /-- Let `f : α → β` be a function from a linear order `α` to a topological space `β`, and
 let `a : α`. The limit strictly to the left of `f` at `a`, denoted with `leftLim f a`, is defined
@@ -78,19 +78,34 @@ theorem leftLim_eq_of_eq_bot [hα : TopologicalSpace α] [h'α : OrderTopology �
   simp [leftLim, ite_eq_left_iff, h]
 #align left_lim_eq_of_eq_bot leftLim_eq_of_eq_bot
 
+theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]
+    {f : α → β} {a : α} {y : β} (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) :
+    Function.rightLim f a = y :=
+  @leftLim_eq_of_tendsto αᵒᵈ _ _ _ _ _ _ f a y h h'
+#align right_lim_eq_of_tendsto rightLim_eq_of_tendsto
+
+theorem rightLim_eq_of_eq_bot [TopologicalSpace α] [OrderTopology α] (f : α → β) {a : α}
+    (h : 𝓝[>] a = ⊥) : rightLim f a = f a :=
+  @leftLim_eq_of_eq_bot αᵒᵈ _ _ _ _ _  f a h
+
 end
 
 open Function
 
 namespace Monotone
 
-variable {α β : Type _} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Monotone f) {x y : α}
 
 theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
     leftLim f x = sSup (f '' Iio x) :=
   leftLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Iio x)
 #align monotone.left_lim_eq_Sup Monotone.leftLim_eq_sSup
+
+theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
+    rightLim f x = sInf (f '' Ioi x) :=
+  rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
+#align right_lim_eq_Inf Monotone.rightLim_eq_sInf
 
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   letI : TopologicalSpace α := Preorder.topology α
@@ -100,7 +115,7 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   haveI A : NeBot (𝓝[<] x) := neBot_iff.2 h'
   rw [leftLim_eq_sSup hf h']
   refine' csSup_le _ _
-  · simp only [nonempty_image_iff]
+  · simp only [image_nonempty]
     exact (forall_mem_nonempty_iff_neBot.2 A) _ self_mem_nhdsWithin
   · simp only [mem_image, mem_Iio, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     intro z hz
@@ -222,61 +237,32 @@ theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x 
 /-- In a second countable space, the set of points where a monotone function is not right-continuous
 is at most countable. Superseded by `countable_not_continuousAt` which gives the two-sided
 version. -/
-theorem countable_not_continuousWithinAt_Ioi [TopologicalSpace.SecondCountableTopology β] :
+theorem countable_not_continuousWithinAt_Ioi [SecondCountableTopology β] :
     Set.Countable { x | ¬ContinuousWithinAt f (Ioi x) x } := by
-  /- If `f` is not continuous on the right at `x`, there is an interval `(f x, z x)` which is not
-    reached by `f`. This gives a family of disjoint open intervals in `β`. Such a family can only
-    be countable as `β` is second-countable. -/
-  nontriviality α
-  let s := { x | ¬ContinuousWithinAt f (Ioi x) x }
-  have : ∀ x, x ∈ s → ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y := by
-    rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
-    contrapose! hx
-    refine' tendsto_order.2 ⟨fun m hm => _, fun u hu => _⟩
-    · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
-        (hf (le_of_lt hy))
-    rcases hx u hu with ⟨v, xv, fvu⟩
-    have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsWithin_Ioi ⟨le_refl _, xv⟩
-    filter_upwards [this]with y hy
-    apply (hf hy.2.le).trans_lt fvu
-  -- choose `z x` such that `f` does not take the values in `(f x, z x)`.
-  choose! z hz using this
-  have I : InjOn f s := by
-    apply StrictMonoOn.injOn
-    intro x hx y _ hxy
-    calc
-      f x < z x := (hz x hx).1
-      _ ≤ f y := (hz x hx).2 y hxy
-
-  -- show that `f s` is countable by arguing that a disjoint family of disjoint open intervals
-  -- (the intervals `(f x, z x)`) is at most countable.
-  have fs_count : (f '' s).Countable := by
-    have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
-      rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
-      wlog hle : u ≤ v generalizing u v
-      · exact (this v vs u us huv.symm (le_of_not_le hle)).symm
-      have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
-      apply disjoint_iff_forall_ne.2
-      rintro a ha b hb rfl
-      simp only [I.leftInvOn_invFunOn us, I.leftInvOn_invFunOn vs] at ha hb
-      exact lt_irrefl _ ((ha.2.trans_le ((hz u us).2 v hlt)).trans hb.1)
-    apply Set.PairwiseDisjoint.countable_of_Ioo A
-    rintro _ ⟨y, ys, rfl⟩
-    simpa only [I.leftInvOn_invFunOn ys] using (hz y ys).1
-  exact MapsTo.countable_of_injOn (mapsTo_image f s) I fs_count
+  apply (countable_image_lt_image_Ioi f).mono
+  rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
+  dsimp
+  contrapose! hx
+  refine' tendsto_order.2 ⟨fun m hm => _, fun u hu => _⟩
+  · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
+      (hf (le_of_lt hy))
+  rcases hx u hu with ⟨v, xv, fvu⟩
+  have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsWithin_Ioi ⟨le_refl _, xv⟩
+  filter_upwards [this] with y hy
+  apply (hf hy.2.le).trans_lt fvu
 #align monotone.countable_not_continuous_within_at_Ioi Monotone.countable_not_continuousWithinAt_Ioi
 
 /-- In a second countable space, the set of points where a monotone function is not left-continuous
 is at most countable. Superseded by `countable_not_continuousAt` which gives the two-sided
 version. -/
-theorem countable_not_continuousWithinAt_Iio [TopologicalSpace.SecondCountableTopology β] :
+theorem countable_not_continuousWithinAt_Iio [SecondCountableTopology β] :
     Set.Countable { x | ¬ContinuousWithinAt f (Iio x) x } :=
   hf.dual.countable_not_continuousWithinAt_Ioi
 #align monotone.countable_not_continuous_within_at_Iio Monotone.countable_not_continuousWithinAt_Iio
 
 /-- In a second countable space, the set of points where a monotone function is not continuous
 is at most countable. -/
-theorem countable_not_continuousAt [TopologicalSpace.SecondCountableTopology β] :
+theorem countable_not_continuousAt [SecondCountableTopology β] :
     Set.Countable { x | ¬ContinuousAt f x } := by
   apply
     (hf.countable_not_continuousWithinAt_Ioi.union hf.countable_not_continuousWithinAt_Iio).mono
@@ -292,7 +278,7 @@ end Monotone
 
 namespace Antitone
 
-variable {α β : Type _} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Antitone f) {x y : α}
 
 theorem le_leftLim (h : x ≤ y) : f y ≤ leftLim f x :=
@@ -369,7 +355,7 @@ theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x 
 
 /-- In a second countable space, the set of points where an antitone function is not continuous
 is at most countable. -/
-theorem countable_not_continuousAt [TopologicalSpace.SecondCountableTopology β] :
+theorem countable_not_continuousAt [SecondCountableTopology β] :
     Set.Countable { x | ¬ContinuousAt f x } :=
   hf.dual_right.countable_not_continuousAt
 #align antitone.countable_not_continuous_at Antitone.countable_not_continuousAt

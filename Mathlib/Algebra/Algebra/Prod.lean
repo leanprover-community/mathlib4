@@ -20,7 +20,7 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 -/
 
 
-variable {R A B C : Type _}
+variable {R A B C : Type*}
 
 variable [CommSemiring R]
 
@@ -33,7 +33,7 @@ variable (R A B)
 open Algebra
 
 instance algebra : Algebra R (A × B) :=
-  { Prod.module,
+  { Prod.instModule,
     RingHom.prod (algebraMap R A) (algebraMap R B) with
     commutes' := by
       rintro r ⟨a, b⟩
@@ -93,7 +93,7 @@ theorem snd_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (snd R B C).comp (pro
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  FunLike.coe_injective Pi.prod_fst_snd
+  DFunLike.coe_injective Pi.prod_fst_snd
 #align alg_hom.prod_fst_snd AlgHom.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of

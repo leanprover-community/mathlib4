@@ -78,7 +78,7 @@ theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected
     (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : OrdConnected (f' '' s) := by
   apply ordConnected_of_Ioo
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ - m ⟨hma, hmb⟩
-  cases' le_total a b with hab hab
+  rcases le_total a b with hab | hab
   · have : Icc a b ⊆ s := hs.out ha hb
     rcases exists_hasDerivWithinAt_eq_of_gt_of_lt hab (fun x hx => (hf x <| this hx).mono this) hma
         hmb with
@@ -154,4 +154,3 @@ theorem hasDerivWithinAt_forall_lt_or_forall_gt_of_forall_ne {s : Set ℝ} (hs :
   exact (hs.ordConnected.image_hasDerivWithinAt hf).out (mem_image_of_mem f' ha)
     (mem_image_of_mem f' hb) ⟨hma, hmb⟩
 #align has_deriv_within_at_forall_lt_or_forall_gt_of_forall_ne hasDerivWithinAt_forall_lt_or_forall_gt_of_forall_ne
-

@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov, Alex Kontorovich
 -/
 import Mathlib.Order.Filter.Bases
 
-#align_import order.filter.pi from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
+#align_import order.filter.pi from "leanprover-community/mathlib"@"ce64cd319bb6b3e82f31c2d38e79080d377be451"
 
 /-!
 # (Co)product of a family of filters
@@ -28,7 +28,8 @@ open Classical Filter
 
 namespace Filter
 
-variable {ι : Type _} {α : ι → Type _} {f f₁ f₂ : (i : ι) → Filter (α i)} {s : (i : ι) → Set (α i)}
+variable {ι : Type*} {α : ι → Type*} {f f₁ f₂ : (i : ι) → Filter (α i)} {s : (i : ι) → Set (α i)}
+  {p : ∀ i, α i → Prop}
 
 section Pi
 
@@ -46,7 +47,7 @@ theorem tendsto_eval_pi (f : ∀ i, Filter (α i)) (i : ι) : Tendsto (eval i) (
   tendsto_iInf' i tendsto_comap
 #align filter.tendsto_eval_pi Filter.tendsto_eval_pi
 
-theorem tendsto_pi {β : Type _} {m : β → ∀ i, α i} {l : Filter β} :
+theorem tendsto_pi {β : Type*} {m : β → ∀ i, α i} {l : Filter β} :
     Tendsto m l (pi f) ↔ ∀ i, Tendsto (fun x => m x i) l (f i) := by
   simp only [pi, tendsto_iInf, tendsto_comap_iff]; rfl
 #align filter.tendsto_pi Filter.tendsto_pi
@@ -103,6 +104,14 @@ theorem pi_mem_pi_iff [∀ i, NeBot (f i)] {I : Set ι} (hI : I.Finite) :
   ⟨fun h _i hi => mem_of_pi_mem_pi h hi, pi_mem_pi hI⟩
 #align filter.pi_mem_pi_iff Filter.pi_mem_pi_iff
 
+theorem Eventually.eval_pi {i : ι} (hf : ∀ᶠ x : α i in f i, p i x) :
+    ∀ᶠ x : ∀ i : ι, α i in pi f, p i (x i) := (tendsto_eval_pi _ _).eventually hf
+#align filter.eventually.eval_pi Filter.Eventually.eval_pi
+
+theorem eventually_pi [Finite ι] (hf : ∀ i, ∀ᶠ x in f i, p i x) :
+    ∀ᶠ x : ∀ i, α i in pi f, ∀ i, p i (x i) := eventually_all.2 fun _i => (hf _).eval_pi
+#align filter.eventually_pi Filter.eventually_pi
+
 theorem hasBasis_pi {ι' : ι → Type} {s : ∀ i, ι' i → Set (α i)} {p : ∀ i, ι' i → Prop}
     (h : ∀ i, (f i).HasBasis (p i) (s i)) :
     (pi f).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
@@ -122,7 +131,7 @@ theorem pi_inf_principal_univ_pi_eq_bot :
     exact hts (fun i _ => hxt i) (mem_univ_pi.2 hxs)
   · simp only [inf_principal_eq_bot]
     rintro ⟨i, hi⟩
-    filter_upwards [mem_pi_of_mem i hi]with x using mt fun h => h i trivial
+    filter_upwards [mem_pi_of_mem i hi] with x using mt fun h => h i trivial
 #align filter.pi_inf_principal_univ_pi_eq_bot Filter.pi_inf_principal_univ_pi_eq_bot
 
 @[simp]
@@ -203,8 +212,8 @@ theorem mem_coprodᵢ_iff {s : Set (∀ i, α i)} :
 #align filter.mem_Coprod_iff Filter.mem_coprodᵢ_iff
 
 theorem compl_mem_coprodᵢ {s : Set (∀ i, α i)} :
-    sᶜ ∈ Filter.coprodᵢ f ↔ ∀ i, (eval i '' s)ᶜ ∈ f i :=
-  by simp only [Filter.coprodᵢ, mem_iSup, compl_mem_comap]
+    sᶜ ∈ Filter.coprodᵢ f ↔ ∀ i, (eval i '' s)ᶜ ∈ f i := by
+  simp only [Filter.coprodᵢ, mem_iSup, compl_mem_comap]
 #align filter.compl_mem_Coprod Filter.compl_mem_coprodᵢ
 
 theorem coprodᵢ_neBot_iff' :
@@ -251,7 +260,7 @@ theorem coprodᵢ_mono (hf : ∀ i, f₁ i ≤ f₂ i) : Filter.coprodᵢ f₁ �
   iSup_mono fun i => comap_mono (hf i)
 #align filter.Coprod_mono Filter.coprodᵢ_mono
 
-variable {β : ι → Type _} {m : ∀ i, α i → β i}
+variable {β : ι → Type*} {m : ∀ i, α i → β i}
 
 theorem map_pi_map_coprodᵢ_le :
     map (fun k : ∀ i, α i => fun i => m i (k i)) (Filter.coprodᵢ f) ≤

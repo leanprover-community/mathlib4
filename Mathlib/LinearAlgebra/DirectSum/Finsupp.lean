@@ -34,9 +34,10 @@ open TensorProduct
 open TensorProduct
 
 open scoped Classical in
+-- `noncomputable` is a performance workaround for mathlib4#7103
 /-- The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`. -/
-def finsuppTensorFinsupp (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ M ⊗[R] N :=
+noncomputable def finsuppTensorFinsupp (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M]
+    [Module R M] [AddCommGroup N] [Module R N] : (ι →₀ M) ⊗[R] (κ →₀ N) ≃ₗ[R] ι × κ →₀ M ⊗[R] N :=
   TensorProduct.congr (finsuppLEquivDirectSum R M ι) (finsuppLEquivDirectSum R N κ) ≪≫ₗ
     ((TensorProduct.directSum R (fun _ : ι => M) fun _ : κ => N) ≪≫ₗ
       (finsuppLEquivDirectSum R (M ⊗[R] N) (ι × κ)).symm)
@@ -65,13 +66,11 @@ theorem finsuppTensorFinsupp_apply (R M N ι κ : Sort _) [CommRing R] [AddCommG
       simp [tmul_add, hg₁, hg₂]
     · intro k' n
       simp only [finsuppTensorFinsupp_single]
-      simp only [Finsupp.single_apply]
       -- split_ifs; finish can close the goal from here
       by_cases h1 : (i', k') = (i, k)
       · simp only [Prod.mk.inj_iff] at h1
         simp [h1]
-      · simp only [h1, if_false]
-        simp only [Prod.mk.inj_iff, not_and_or] at h1
+      · simp only [Prod.mk.inj_iff, not_and_or] at h1
         cases' h1 with h1 h1 <;> simp [h1]
 #align finsupp_tensor_finsupp_apply finsuppTensorFinsupp_apply
 
@@ -84,7 +83,7 @@ theorem finsuppTensorFinsupp_symm_single (R M N ι κ : Sort _) [CommRing R] [Ad
     (LinearEquiv.symm_apply_eq _).2 (finsuppTensorFinsupp_single _ _ _ _ _ _ _ _ _).symm
 #align finsupp_tensor_finsupp_symm_single finsuppTensorFinsupp_symm_single
 
-variable (S : Type _) [CommRing S] (α β : Type _)
+variable (S : Type*) [CommRing S] (α β : Type*)
 
 /-- A variant of `finsuppTensorFinsupp` where both modules are the ground ring. -/
 def finsuppTensorFinsupp' : (α →₀ S) ⊗[S] (β →₀ S) ≃ₗ[S] α × β →₀ S :=

@@ -23,7 +23,7 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 -/
 
 
-variable {M : Type _} {S T : Set M}
+variable {M : Type*} {S T : Set M}
 
 namespace Set
 
@@ -73,8 +73,8 @@ theorem mul_mem_centralizer [Semigroup M] (ha : a ∈ centralizer S) (hb : b ∈
 #align set.add_mem_add_centralizer Set.add_mem_addCentralizer
 
 @[to_additive (attr := simp) neg_mem_addCentralizer]
-theorem inv_mem_centralizer [Group M] (ha : a ∈ centralizer S) : a⁻¹ ∈ centralizer S := fun g hg =>
-  by rw [mul_inv_eq_iff_eq_mul, mul_assoc, eq_inv_mul_iff_mul_eq, ha g hg]
+theorem inv_mem_centralizer [Group M] (ha : a ∈ centralizer S) : a⁻¹ ∈ centralizer S :=
+  fun g hg => by rw [mul_inv_eq_iff_eq_mul, mul_assoc, eq_inv_mul_iff_mul_eq, ha g hg]
 #align set.inv_mem_centralizer Set.inv_mem_centralizer
 #align set.neg_mem_add_centralizer Set.neg_mem_addCentralizer
 
@@ -121,22 +121,25 @@ theorem centralizer_subset [Mul M] (h : S ⊆ T) : centralizer T ⊆ centralizer
 
 @[to_additive addCenter_subset_addCentralizer]
 theorem center_subset_centralizer [Mul M] (S : Set M) : Set.center M ⊆ S.centralizer :=
-  fun _ hx m _ => hx m
+  fun _ hx m _ => (hx.comm m).symm
 #align set.center_subset_centralizer Set.center_subset_centralizer
 #align set.add_center_subset_add_centralizer Set.addCenter_subset_addCentralizer
 
 @[to_additive (attr := simp) addCentralizer_eq_top_iff_subset]
-theorem centralizer_eq_top_iff_subset {s : Set M} [Mul M] :
+theorem centralizer_eq_top_iff_subset {s : Set M} [Semigroup M] :
     centralizer s = Set.univ ↔ s ⊆ center M :=
-  eq_top_iff.trans <| ⟨fun h _ hx _ => (h trivial _ hx).symm, fun h x _ _ hm => (h hm x).symm⟩
+  eq_top_iff.trans <| ⟨
+    fun h _ hx => Semigroup.mem_center_iff.mpr fun _ => by rw [h trivial _ hx],
+    fun h _ _ _ hm => (h hm).comm _⟩
 #align set.centralizer_eq_top_iff_subset Set.centralizer_eq_top_iff_subset
 #align set.add_centralizer_eq_top_iff_subset Set.addCentralizer_eq_top_iff_subset
 
 variable (M)
 
 @[to_additive (attr := simp) addCentralizer_univ]
-theorem centralizer_univ [Mul M] : centralizer univ = center M :=
-  Subset.antisymm (fun _ ha b => ha b (Set.mem_univ b)) fun _ ha b _ => ha b
+theorem centralizer_univ [Semigroup M] : centralizer univ = center M :=
+  Subset.antisymm (fun _ ha => Semigroup.mem_center_iff.mpr fun b => ha b (Set.mem_univ b))
+  fun _ ha b _ => (ha.comm b).symm
 #align set.centralizer_univ Set.centralizer_univ
 #align set.add_centralizer_univ Set.addCentralizer_univ
 

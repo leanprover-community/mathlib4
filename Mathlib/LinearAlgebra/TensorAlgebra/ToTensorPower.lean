@@ -15,10 +15,11 @@ In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of t
 `TensorAlgebra.equivDirectSum`.
 -/
 
+suppress_compilation
 
 open scoped DirectSum TensorProduct
 
-variable {R M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 namespace TensorPower
 
@@ -79,7 +80,7 @@ namespace TensorAlgebra
 /-- The canonical map from a direct sum of tensor powers to the tensor algebra. -/
 def ofDirectSum : (⨁ n, (⨂[R]^n) M) →ₐ[R] TensorAlgebra R M :=
   DirectSum.toAlgebra _ _ (fun _ => TensorPower.toTensorAlgebra) TensorPower.toTensorAlgebra_gOne
-    (fun {_ _} => TensorPower.toTensorAlgebra_gMul) TensorPower.toTensorAlgebra_galgebra_toFun
+    (fun {_ _} => TensorPower.toTensorAlgebra_gMul)
 #align tensor_algebra.of_direct_sum TensorAlgebra.ofDirectSum
 
 @[simp]
@@ -116,10 +117,10 @@ theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
   AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
 #align tensor_algebra.of_direct_sum_to_direct_sum TensorAlgebra.ofDirectSum_toDirectSum
 
-@[simp]
+@[simp, nolint simpNF] -- see std4#365 for the simpNF issue
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
-    (PiTensorProduct.reindex R M (Equiv.cast <| congr_arg Fin h) x) =
+    (PiTensorProduct.reindex R (fun _ ↦ M) (Equiv.cast <| congr_arg Fin h) x) =
     GradedMonoid.mk n x :=
   Eq.symm (PiTensorProduct.gradedMonoid_eq_of_reindex_cast h rfl)
 #align tensor_algebra.mk_reindex_cast TensorAlgebra.mk_reindex_cast
@@ -127,8 +128,8 @@ theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
 @[simp]
 theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
-    (PiTensorProduct.reindex R M (Fin.castIso h).toEquiv x) = GradedMonoid.mk n x :=
-  by rw [Fin.castIso_to_equiv, mk_reindex_cast h]
+    (PiTensorProduct.reindex R (fun _ ↦ M) (Fin.castIso h).toEquiv x) = GradedMonoid.mk n x := by
+  rw [Fin.castIso_to_equiv, mk_reindex_cast h]
 #align tensor_algebra.mk_reindex_fin_cast TensorAlgebra.mk_reindex_fin_cast
 
 /-- The product of tensor products made of a single vector is the same as a single product of
@@ -156,7 +157,6 @@ theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
     toDirectSum (tprod R M n x) = DirectSum.of _ n (PiTensorProduct.tprod R x) := by
   rw [tprod_apply, AlgHom.map_list_prod, List.map_ofFn]
   simp_rw [Function.comp, toDirectSum_ι]
-  dsimp only
   rw [DirectSum.list_prod_ofFn_of_eq_dProd]
   apply DirectSum.of_eq_of_gradedMonoid_eq
   rw [GradedMonoid.mk_list_dProd]

@@ -17,7 +17,7 @@ This file provides lemmas about Cauchy sequences in terms of infinite sums.
 
 open Filter Finset BigOperators NNReal Topology
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
@@ -37,7 +37,7 @@ theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → �
   rw [edist_comm]
   -- Then use `hf` to simplify the goal to the same form
   refine lt_of_le_of_lt (edist_le_Ico_sum_of_edist_le hn fun _ _ => hf _) ?_
-  exact_mod_cast hN.1
+  exact mod_cast hN.1
 #align cauchy_seq_of_edist_le_of_summable cauchySeq_of_edist_le_of_summable
 
 variable [PseudoMetricSpace α] {f : ℕ → α} {a : α}

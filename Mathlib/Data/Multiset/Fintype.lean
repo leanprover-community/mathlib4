@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Prod.Lex
 
 #align_import data.multiset.fintype from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
@@ -19,7 +18,7 @@ a multiset. These coercions and definitions make it easier to sum over multisets
 
 ## Main definitions
 
-* A coercion from `m : Multiset α` to a `Type _`. For `x : m`, then there is a coercion `↑x : α`,
+* A coercion from `m : Multiset α` to a `Type*`. For `x : m`, then there is a coercion `↑x : α`,
   and `x.2` is a term of `Fin (m.count x)`. The second component is what ensures each term appears
   with the correct multiplicity. Note that this coercion requires `decidableEq α` due to
   `Multiset.count`.
@@ -36,7 +35,7 @@ multiset enumeration
 
 open BigOperators
 
-variable {α : Type _} [DecidableEq α] {m : Multiset α}
+variable {α : Type*} [DecidableEq α] {m : Multiset α}
 
 /-- Auxiliary definition for the `hasCoeToSort` instance. This prevents the `hasCoe m α`
 instance from inadvertently applying to other sigma types. One should not use this definition
@@ -62,7 +61,7 @@ def Multiset.mkToType (m : Multiset α) (x : α) (i : Fin (m.count x)) : m :=
   ⟨x, i⟩
 #align multiset.mk_to_type Multiset.mkToType
 
-/-- As a convenience, there is a coercion from `m : Type _` to `α` by projecting onto the first
+/-- As a convenience, there is a coercion from `m : Type*` to `α` by projecting onto the first
 component. -/
 -- Porting note: was `Coe m α`
 instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
@@ -108,7 +107,7 @@ instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
       rintro ⟨x, i⟩
       simp only [Finset.mem_biUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
         Function.Embedding.coeFn_mk, Prod.mk.inj_iff, Set.mem_setOf_eq]
-      simp only [←and_assoc, exists_eq_right, and_iff_right_iff_imp]
+      simp only [← and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h ↦ Multiset.count_pos.mp (pos_of_gt h))
 
 /-- Construct a finset whose elements enumerate the elements of the multiset `m`.
@@ -237,7 +236,7 @@ theorem Multiset.map_univ_coe (m : Multiset α) :
 #align multiset.map_univ_coe Multiset.map_univ_coe
 
 @[simp]
-theorem Multiset.map_univ {β : Type _} (m : Multiset α) (f : α → β) :
+theorem Multiset.map_univ {β : Type*} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map fun (x : m) ↦ f (x : α)) = m.map f := by
   erw [← Multiset.map_map]
   rw [Multiset.map_univ_coe]
@@ -245,7 +244,7 @@ theorem Multiset.map_univ {β : Type _} (m : Multiset α) (f : α → β) :
 
 @[simp]
 theorem Multiset.card_toEnumFinset (m : Multiset α) : m.toEnumFinset.card = Multiset.card m := by
-  rw [Finset.card, ←Multiset.card_map Prod.fst m.toEnumFinset.val]
+  rw [Finset.card, ← Multiset.card_map Prod.fst m.toEnumFinset.val]
   congr
   exact m.map_toEnumFinset_fst
 #align multiset.card_to_enum_finset Multiset.card_toEnumFinset
@@ -273,7 +272,7 @@ theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
 #align multiset.sum_eq_sum_to_enum_finset Multiset.sum_eq_sum_toEnumFinset
 
 @[to_additive]
-theorem Multiset.prod_toEnumFinset {β : Type _} [CommMonoid β] (m : Multiset α) (f : α → ℕ → β) :
+theorem Multiset.prod_toEnumFinset {β : Type*} [CommMonoid β] (m : Multiset α) (f : α → ℕ → β) :
     ∏ x in m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
   rw [Fintype.prod_equiv m.coeEquiv (fun x ↦ f x x.2) fun x ↦ f x.1.1 x.1.2]
   · rw [← m.toEnumFinset.prod_coe_sort fun x ↦ f x.1 x.2]

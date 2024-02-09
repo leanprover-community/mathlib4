@@ -184,7 +184,6 @@ theorem IsConnected.of_induct [Nonempty J] {j₀ : J}
     have w := h { j | F j = F j₀ } rfl (fun {j₁} {j₂} f => by
       change F j₁ = F j₀ ↔ F j₂ = F j₀
       simp [a f];)
-    dsimp at w
     intro j j'
     rw [w j, w j']
 #align category_theory.is_connected.of_induct CategoryTheory.IsConnected.of_induct
@@ -206,7 +205,7 @@ given a type family `Z : J → Sort*` and
 a rule for transporting in *both* directions along a morphism in `J`,
 we can transport an `x : Z j₀` to a point in `Z j` for any `j`.
 -/
-theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort _)
+theorem isPreconnected_induction [IsPreconnected J] (Z : J → Sort*)
     (h₁ : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), Z j₁ → Z j₂) (h₂ : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), Z j₂ → Z j₁)
     {j₀ : J} (x : Z j₀) (j : J) : Nonempty (Z j) :=
   (induct_on_objects { j | Nonempty (Z j) } ⟨x⟩
@@ -250,8 +249,8 @@ instance isPreconnected_op [IsPreconnected J] : IsPreconnected Jᵒᵖ where
 #align category_theory.is_preconnected_op CategoryTheory.isPreconnected_op
 
 /-- If `J` is connected, then `Jᵒᵖ` is connected as well. -/
-instance isConnected_op [IsConnected J] : IsConnected Jᵒᵖ
-    where is_nonempty := Nonempty.intro (op (Classical.arbitrary J))
+instance isConnected_op [IsConnected J] : IsConnected Jᵒᵖ where
+  is_nonempty := Nonempty.intro (op (Classical.arbitrary J))
 #align category_theory.is_connected_op CategoryTheory.isConnected_op
 
 theorem isPreconnected_of_isPreconnected_op [IsPreconnected Jᵒᵖ] : IsPreconnected J :=

@@ -25,7 +25,7 @@ open Function Set
 
 open Pointwise
 
-variable {α : Type _}
+variable {α : Type*}
 
 -- Porting note : Swapped the place of `CompleteLattice` and `ConditionallyCompleteLattice`
 -- due to simpNF problem between `sSup_xx` `csSup_xx`.
@@ -176,7 +176,7 @@ end ConditionallyCompleteLattice
 
 namespace LinearOrderedField
 
-variable {K : Type _} [LinearOrderedField K] {a b r : K} (hr : 0 < r)
+variable {K : Type*} [LinearOrderedField K] {a b r : K} (hr : 0 < r)
 
 open Set
 

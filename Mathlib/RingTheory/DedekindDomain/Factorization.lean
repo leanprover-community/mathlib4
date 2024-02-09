@@ -31,7 +31,7 @@ open Set Function UniqueFactorizationMonoid IsDedekindDomain IsDedekindDomain.He
 /-! ### Factorization of ideals of Dedekind domains -/
 
 
-variable {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type _} [Field K]
+variable {R : Type*} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type*} [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- Given a maximal ideal `v` and an ideal `I` of `R`, `maxPowDividing` returns the maximal
@@ -48,7 +48,7 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
   refine'
     Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) _
   intro v w hvw
-  simp at hvw
+  simp? at hvw says simp only [Subtype.mk.injEq] at hvw
   exact Subtype.coe_injective ((HeightOneSpectrum.ext_iff (R := R) ↑v ↑w).mpr hvw)
 #align ideal.finite_factors Ideal.finite_factors
 

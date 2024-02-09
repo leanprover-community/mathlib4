@@ -21,13 +21,13 @@ compact open set is compact open.
 
 ## TODO
 
-Once we have `SpectralSpace`, `IsSpectralMap` should move to `topology.spectral.basic`.
+Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib.Topology.Spectral.Basic`.
 -/
 
 
 open Function OrderDual
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 section Unbundled
 
@@ -63,7 +63,7 @@ theorem IsSpectralMap.comp {f : β → γ} {g : α → β} (hf : IsSpectralMap f
 end Unbundled
 
 /-- The type of spectral maps from `α` to `β`. -/
-structure SpectralMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where
+structure SpectralMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] where
   /-- function between topological spaces-/
   toFun : α → β
   /-- proof that `toFun` is a spectral map-/
@@ -75,8 +75,8 @@ section
 /-- `SpectralMapClass F α β` states that `F` is a type of spectral maps.
 
 You should extend this class when you extend `SpectralMap`. -/
-class SpectralMapClass (F : Type _) (α β : outParam <| Type _) [TopologicalSpace α]
-  [TopologicalSpace β] extends FunLike F α fun _ => β where
+class SpectralMapClass (F α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
+    [FunLike F α β] : Prop where
   /-- statement that `F` is a type of spectral maps-/
   map_spectral (f : F) : IsSpectralMap f
 #align spectral_map_class SpectralMapClass
@@ -89,11 +89,11 @@ attribute [simp] map_spectral
 
 -- See note [lower instance priority]
 instance (priority := 100) SpectralMapClass.toContinuousMapClass [TopologicalSpace α]
-    [TopologicalSpace β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
+    [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] : ContinuousMapClass F α β :=
   { ‹SpectralMapClass F α β› with map_continuous := fun f => (map_spectral f).continuous }
 #align spectral_map_class.to_continuous_map_class SpectralMapClass.toContinuousMapClass
 
-instance [TopologicalSpace α] [TopologicalSpace β] [SpectralMapClass F α β] :
+instance [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] [SpectralMapClass F α β] :
     CoeTC F (SpectralMap α β) :=
   ⟨fun f => ⟨_, map_spectral f⟩⟩
 
@@ -109,17 +109,12 @@ def toContinuousMap (f : SpectralMap α β) : ContinuousMap α β :=
   ⟨_, f.spectral'.continuous⟩
 #align spectral_map.to_continuous_map SpectralMap.toContinuousMap
 
-instance : SpectralMapClass (SpectralMap α β) α β
-    where
+instance instFunLike : FunLike (SpectralMap α β) α β where
   coe := SpectralMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  map_spectral f := f.spectral'
 
--- Porting note: These CoeFun instances are not desirable in Lean 4.
---/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
---directly. -/
---instance : CoeFun (SpectralMap α β) fun _ => α → β :=
---  FunLike.hasCoeToFun
+instance : SpectralMapClass (SpectralMap α β) α β where
+  map_spectral f := f.spectral'
 
 @[simp]
 theorem toFun_eq_coe {f : SpectralMap α β} : f.toFun = (f : α → β) :=
@@ -128,7 +123,7 @@ theorem toFun_eq_coe {f : SpectralMap α β} : f.toFun = (f : α → β) :=
 
 @[ext]
 theorem ext {f g : SpectralMap α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align spectral_map.ext SpectralMap.ext
 
 /-- Copy of a `SpectralMap` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -143,7 +138,7 @@ theorem coe_copy (f : SpectralMap α β) (f' : α → β) (h : f' = f) : ⇑(f.c
 #align spectral_map.coe_copy SpectralMap.coe_copy
 
 theorem copy_eq (f : SpectralMap α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align spectral_map.copy_eq SpectralMap.copy_eq
 
 variable (α)
@@ -191,7 +186,7 @@ theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
 -- porting note: removed `simp` from this and added lemma above to address `simpNF` lint
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g := by
-    simp only [@coe_comp]; rfl
+  rfl
 #align spectral_map.coe_comp_continuous_map SpectralMap.coe_comp_continuousMap'
 
 @[simp]
@@ -210,12 +205,14 @@ theorem id_comp (f : SpectralMap α β) : (SpectralMap.id β).comp f = f :=
   ext fun _a => rfl
 #align spectral_map.id_comp SpectralMap.id_comp
 
+@[simp]
 theorem cancel_right {g₁ g₂ : SpectralMap β γ} {f : SpectralMap α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h,
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h,
    fun a => of_eq (congrFun (congrArg comp a) f)⟩
 #align spectral_map.cancel_right SpectralMap.cancel_right
 
+@[simp]
 theorem cancel_left {g : SpectralMap β γ} {f₁ f₂ : SpectralMap α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩

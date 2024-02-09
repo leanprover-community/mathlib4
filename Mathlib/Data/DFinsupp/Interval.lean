@@ -22,7 +22,7 @@ open DFinsupp Finset
 
 open BigOperators Pointwise
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace Finset
 
@@ -198,7 +198,7 @@ variable [DecidableEq ι] [∀ i, DecidableEq (α i)] [∀ i, Lattice (α i)] [�
   [∀ i, LocallyFiniteOrder (α i)] (f g : Π₀ i, α i)
 
 theorem card_uIcc : (uIcc f g).card = ∏ i in f.support ∪ g.support, (uIcc (f i) (g i)).card := by
-  rw [←support_inf_union_support_sup]; exact card_Icc _ _
+  rw [← support_inf_union_support_sup]; exact card_Icc _ _
 #align dfinsupp.card_uIcc DFinsupp.card_uIcc
 
 end Lattice
@@ -207,7 +207,7 @@ section CanonicallyOrdered
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
-variable [∀ i, CanonicallyOrderedAddMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
+variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
 
 variable (f : Π₀ i, α i)
 

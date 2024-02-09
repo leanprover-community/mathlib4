@@ -37,7 +37,7 @@ polar
 -/
 
 
-variable {𝕜 E F : Type _}
+variable {𝕜 E F : Type*}
 
 open Topology
 

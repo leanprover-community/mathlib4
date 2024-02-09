@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Defs
 
 /-!
 # Products of `OrderedSub` types.
 -/
+
+set_option autoImplicit true
 
 instance Prod.orderedSub
     [Preorder α] [Add α] [Sub α] [OrderedSub α] [Sub β] [Preorder β] [Add β] [OrderedSub β] :
@@ -17,7 +19,7 @@ instance Prod.orderedSub
   ⟨fun w ↦ ⟨tsub_le_iff_right.mp w.1, tsub_le_iff_right.mp w.2⟩,
    fun w ↦ ⟨tsub_le_iff_right.mpr w.1, tsub_le_iff_right.mpr w.2⟩⟩
 
-instance Pi.orderedSub {ι : Type _} {α : ι → Type _}
+instance Pi.orderedSub {ι : Type*} {α : ι → Type*}
     [∀ i, Preorder (α i)] [∀ i, Add (α i)] [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] :
     OrderedSub ((i : ι) → α i) where
   tsub_le_iff_right _ _ _ :=

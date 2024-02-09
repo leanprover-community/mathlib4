@@ -71,9 +71,8 @@ variable {R A}
 
 theorem FormallyEtale.iff_unramified_and_smooth :
     FormallyEtale R A ↔ FormallyUnramified R A ∧ FormallySmooth R A := by
-  rw [FormallyUnramified_iff, FormallySmooth_iff, FormallyEtale_iff]
-  simp_rw [← forall_and]
-  rfl
+  rw [formallyUnramified_iff, formallySmooth_iff, formallyEtale_iff]
+  simp_rw [← forall_and, Function.Bijective]
 #align algebra.formally_etale.iff_unramified_and_smooth Algebra.FormallyEtale.iff_unramified_and_smooth
 
 instance (priority := 100) FormallyEtale.to_unramified [h : FormallyEtale R A] :
@@ -193,7 +192,8 @@ theorem FormallySmooth.liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
   change _ = ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f) x
-  rw [← FormallySmooth.mk_lift _ hg'
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [← FormallySmooth.mk_lift _ hg'
     ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f)]
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
   rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective,
@@ -260,9 +260,7 @@ instance FormallySmooth.mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynom
 #align algebra.formally_smooth.mv_polynomial Algebra.FormallySmooth.mvPolynomial
 
 instance FormallySmooth.polynomial : FormallySmooth R R[X] :=
-  -- Porting note: this needed more underscores than in lean3.
-  @FormallySmooth.of_equiv _ _ _ _ _ _ _ _ (FormallySmooth.mvPolynomial R PUnit)
-    (MvPolynomial.pUnitAlgEquiv R)
+  FormallySmooth.of_equiv (MvPolynomial.pUnitAlgEquiv R)
 #align algebra.formally_smooth.polynomial Algebra.FormallySmooth.polynomial
 
 end Polynomial
@@ -339,7 +337,7 @@ theorem FormallySmooth.of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (Rin
       have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x : _)
       rwa [hx, map_zero, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero] at this
     intro x hx
-    have := (Ideal.pow_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
+    have := (Ideal.pow_right_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
     rwa [hI] at this
   have : i.comp f.kerSquareLift = (Ideal.Quotient.mkₐ R _).comp l := by
     apply AlgHom.coe_ringHom_injective
@@ -440,19 +438,9 @@ instance FormallyUnramified.base_change [FormallyUnramified R A] :
   intro C _ _ I hI f₁ f₂ e
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
-  apply AlgHom.restrictScalars_injective R
-  apply TensorProduct.ext
-  intro b a
-  have : b ⊗ₜ[R] a = b • (1 : B) ⊗ₜ a := by rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
-  rw [this, AlgHom.restrictScalars_apply, AlgHom.restrictScalars_apply, map_smul, map_smul]
-  congr 1
-  change
-    ((f₁.restrictScalars R).comp TensorProduct.includeRight) a =
-      ((f₂.restrictScalars R).comp TensorProduct.includeRight) a
-  congr 1
-  refine' FormallyUnramified.ext I ⟨2, hI⟩ _
-  intro x
-  exact AlgHom.congr_fun e (1 ⊗ₜ x)
+  ext : 1
+  · exact Subsingleton.elim _ _
+  · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
 #align algebra.formally_unramified.base_change Algebra.FormallyUnramified.base_change
 
 instance FormallySmooth.base_change [FormallySmooth R A] : FormallySmooth B (B ⊗[R] A) := by
@@ -463,7 +451,7 @@ instance FormallySmooth.base_change [FormallySmooth R A] : FormallySmooth B (B �
   refine' ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) _, _⟩
   · exact FormallySmooth.lift I ⟨2, hI⟩ ((f.restrictScalars R).comp TensorProduct.includeRight)
   · apply AlgHom.restrictScalars_injective R
-    apply TensorProduct.ext
+    apply TensorProduct.ext'
     intro b a
     suffices algebraMap B _ b * f (1 ⊗ₜ[R] a) = f (b ⊗ₜ[R] a) by simpa [Algebra.ofId_apply]
     rw [← Algebra.smul_def, ← map_smul, TensorProduct.smul_tmul', smul_eq_mul, mul_one]

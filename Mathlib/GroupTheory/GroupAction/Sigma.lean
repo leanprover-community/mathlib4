@@ -20,7 +20,7 @@ This file defines instances for arbitrary sum of additive and multiplicative act
 -/
 
 
-variable {ι : Type _} {M N : Type _} {α : ι → Type _}
+variable {ι : Type*} {M N : Type*} {α : ι → Type*}
 
 namespace Sigma
 
@@ -30,10 +30,10 @@ variable [∀ i, SMul M (α i)] [∀ i, SMul N (α i)] (a : M) (i : ι) (b : α 
 
 @[to_additive Sigma.VAdd]
 instance : SMul M (Σi, α i) :=
-  ⟨fun a => (Sigma.map id) fun _ => (· • ·) a⟩
+  ⟨fun a => (Sigma.map id) fun _ => (a • ·)⟩
 
 @[to_additive]
-theorem smul_def : a • x = x.map id fun _ => (· • ·) a :=
+theorem smul_def : a • x = x.map id fun _ => (a • ·) :=
   rfl
 #align sigma.smul_def Sigma.smul_def
 #align sigma.vadd_def Sigma.vadd_def

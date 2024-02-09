@@ -3,133 +3,61 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.Hom.Iterate
-import Mathlib.Algebra.Ring.Equiv
+import Mathlib.FieldTheory.Perfect
 
 #align_import field_theory.perfect_closure from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
-# The perfect closure of a field
--/
 
+# The perfect closure of a characteristic `p` ring
+
+## Main definitions
+
+- `PerfectClosure`: the perfect closure of a characteristic `p` ring, which is the smallest
+  extension that makes frobenius surjective.
+
+- `PerfectClosure.mk K p (n, x)`: for `n : ℕ` and `x : K` this is `x ^ (p ^ -n)` viewed as
+  an element of `PerfectClosure K p`. Every element of `PerfectClosure K p` is of this form
+  (`PerfectClosure.mk_surjective`).
+
+- `PerfectClosure.of`: the structure map from `K` to `PerfectClosure K p`.
+
+- `PerfectClosure.lift`: given a ring `K` of characteristic `p` and a perfect ring `L` of the same
+  characteristic, any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`.
+
+## Main results
+
+- `PerfectClosure.induction_on`: to prove a result for all elements of the prefect closure, one only
+  needs to prove it for all elements of the form `x ^ (p ^ -n)`.
+
+- `PerfectClosure.mk_mul_mk`, `PerfectClosure.one_def`, `PerfectClosure.mk_add_mk`,
+  `PerfectClosure.neg_mk`, `PerfectClosure.zero_def`, `PerfectClosure.mk_zero_zero`,
+  `PerfectClosure.mk_zero`, `PerfectClosure.mk_inv`, `PerfectClosure.mk_pow`:
+  how to do multiplication, addition, etc. on elements of form `x ^ (p ^ -n)`.
+
+- `PerfectClosure.mk_eq_iff`: when does `x ^ (p ^ -n)` equal.
+
+- `PerfectClosure.eq_iff`: same as `PerfectClosure.mk_eq_iff` but with additional assumption that
+  `K` being reduced, hence gives a simpler criterion.
+
+- `PerfectClosure.instPerfectRing`: `PerfectClosure K p` is a perfect ring.
+
+## Tags
+
+perfect ring, perfect closure
+
+-/
 
 universe u v
 
 open Function
 
-section Defs
-
-variable (R : Type u) [CommSemiring R] (p : ℕ) [Fact p.Prime] [CharP R p]
-
-/-- A perfect ring is a ring of characteristic p that has p-th root. -/
-class PerfectRing : Type u where
-  pthRoot' : R → R
-  frobenius_pthRoot' : ∀ x, frobenius R p (pthRoot' x) = x
-  pthRoot_frobenius' : ∀ x, pthRoot' (frobenius R p x) = x
-#align perfect_ring PerfectRing
-
-/-- Frobenius automorphism of a perfect ring. -/
-def frobeniusEquiv [PerfectRing R p] : R ≃+* R :=
-  { frobenius R p with
-    invFun := PerfectRing.pthRoot' p
-    left_inv := PerfectRing.pthRoot_frobenius'
-    right_inv := PerfectRing.frobenius_pthRoot' }
-#align frobenius_equiv frobeniusEquiv
-
-/-- `p`-th root of an element in a `PerfectRing` as a `RingHom`. -/
-def pthRoot [PerfectRing R p] : R →+* R :=
-  (frobeniusEquiv R p).symm
-#align pth_root pthRoot
-
-end Defs
-
-section
-
-variable {R : Type u} [CommSemiring R] {S : Type v} [CommSemiring S] (f : R →* S) (g : R →+* S)
-  {p : ℕ} [Fact p.Prime] [CharP R p] [PerfectRing R p] [CharP S p] [PerfectRing S p]
-
-@[simp]
-theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p :=
-  rfl
-#align coe_frobenius_equiv coe_frobeniusEquiv
-
-@[simp]
-theorem coe_frobeniusEquiv_symm : ⇑(frobeniusEquiv R p).symm = pthRoot R p :=
-  rfl
-#align coe_frobenius_equiv_symm coe_frobeniusEquiv_symm
-
-@[simp]
-theorem frobenius_pthRoot (x : R) : frobenius R p (pthRoot R p x) = x :=
-  (frobeniusEquiv R p).apply_symm_apply x
-#align frobenius_pth_root frobenius_pthRoot
-
-@[simp]
-theorem pthRoot_pow_p (x : R) : pthRoot R p x ^ p = x :=
-  frobenius_pthRoot x
-#align pth_root_pow_p pthRoot_pow_p
-
-@[simp]
-theorem pthRoot_frobenius (x : R) : pthRoot R p (frobenius R p x) = x :=
-  (frobeniusEquiv R p).symm_apply_apply x
-#align pth_root_frobenius pthRoot_frobenius
-
--- Porting note: @[simp] can prove this
-theorem pthRoot_pow_p' (x : R) : pthRoot R p (x ^ p) = x :=
-  pthRoot_frobenius x
-#align pth_root_pow_p' pthRoot_pow_p'
-
-theorem leftInverse_pthRoot_frobenius : LeftInverse (pthRoot R p) (frobenius R p) :=
-  pthRoot_frobenius
-#align left_inverse_pth_root_frobenius leftInverse_pthRoot_frobenius
-
-theorem rightInverse_pthRoot_frobenius : Function.RightInverse (pthRoot R p) (frobenius R p) :=
-  frobenius_pthRoot
-#align right_inverse_pth_root_frobenius rightInverse_pthRoot_frobenius
-
-theorem commute_frobenius_pthRoot : Function.Commute (frobenius R p) (pthRoot R p) := fun x =>
-  (frobenius_pthRoot x).trans (pthRoot_frobenius x).symm
-#align commute_frobenius_pth_root commute_frobenius_pthRoot
-
-theorem eq_pthRoot_iff {x y : R} : x = pthRoot R p y ↔ frobenius R p x = y :=
-  (frobeniusEquiv R p).toEquiv.eq_symm_apply
-#align eq_pth_root_iff eq_pthRoot_iff
-
-theorem pthRoot_eq_iff {x y : R} : pthRoot R p x = y ↔ x = frobenius R p y :=
-  (frobeniusEquiv R p).toEquiv.symm_apply_eq
-#align pth_root_eq_iff pthRoot_eq_iff
-
-theorem MonoidHom.map_pthRoot (x : R) : f (pthRoot R p x) = pthRoot S p (f x) :=
-  eq_pthRoot_iff.2 <| by rw [← f.map_frobenius, frobenius_pthRoot]
-#align monoid_hom.map_pth_root MonoidHom.map_pthRoot
-
-theorem MonoidHom.map_iterate_pthRoot (x : R) (n : ℕ) :
-    f ((pthRoot R p)^[n] x) = (pthRoot S p)^[n] (f x) :=
-  Semiconj.iterate_right f.map_pthRoot n x
-#align monoid_hom.map_iterate_pth_root MonoidHom.map_iterate_pthRoot
-
-theorem RingHom.map_pthRoot (x : R) : g (pthRoot R p x) = pthRoot S p (g x) :=
-  g.toMonoidHom.map_pthRoot x
-#align ring_hom.map_pth_root RingHom.map_pthRoot
-
-theorem RingHom.map_iterate_pthRoot (x : R) (n : ℕ) :
-    g ((pthRoot R p)^[n] x) = (pthRoot S p)^[n] (g x) :=
-  g.toMonoidHom.map_iterate_pthRoot x n
-#align ring_hom.map_iterate_pth_root RingHom.map_iterate_pthRoot
-
-variable (p)
-
-theorem injective_pow_p {x y : R} (hxy : x ^ p = y ^ p) : x = y :=
-  leftInverse_pthRoot_frobenius.injective hxy
-#align injective_pow_p injective_pow_p
-
-end
-
 section
 
 variable (K : Type u) [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
-/-- `PerfectClosure K p` is the quotient by this relation. -/
+/-- `PerfectClosure.R` is the relation `(n, x) ∼ (n + 1, x ^ p)` for `n : ℕ` and `x : K`.
+`PerfectClosure K p` is the quotient by this relation. -/
 @[mk_iff]
 inductive PerfectClosure.R : ℕ × K → ℕ × K → Prop
   | intro : ∀ n x, PerfectClosure.R (n, x) (n + 1, frobenius K p x)
@@ -150,10 +78,17 @@ section Ring
 
 variable [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
-/-- Constructor for `PerfectClosure`. -/
+/-- `PerfectClosure.mk K p (n, x)` for `n : ℕ` and `x : K` is an element of `PerfectClosure K p`,
+viewed as `x ^ (p ^ -n)`. Every element of `PerfectClosure K p` is of this form
+(`PerfectClosure.mk_surjective`). -/
 def mk (x : ℕ × K) : PerfectClosure K p :=
   Quot.mk (R K p) x
 #align perfect_closure.mk PerfectClosure.mk
+
+theorem mk_surjective : Function.Surjective (mk K p) := surjective_quot_mk _
+
+@[simp] theorem mk_succ_pow (m : ℕ) (x : K) : mk K p ⟨m + 1, x ^ p⟩ = mk K p ⟨m, x⟩ :=
+  Eq.symm <| Quot.sound (R.intro m x)
 
 @[simp]
 theorem quot_mk_eq_mk (x : ℕ × K) : (Quot.mk (R K p) x : PerfectClosure K p) = mk K p x :=
@@ -164,7 +99,7 @@ variable {K p}
 
 /-- Lift a function `ℕ × K → L` to a function on `PerfectClosure K p`. -/
 -- Porting note: removed `@[elab_as_elim]` for "unexpected eliminator resulting type L"
-def liftOn {L : Type _} (x : PerfectClosure K p) (f : ℕ × K → L)
+def liftOn {L : Type*} (x : PerfectClosure K p) (f : ℕ × K → L)
     (hf : ∀ x y, R K p x y → f x = f y) : L :=
   Quot.liftOn x f hf
 #align perfect_closure.lift_on PerfectClosure.liftOn
@@ -202,7 +137,7 @@ private theorem mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
       rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← frobenius_mul]
       apply R.intro
 
-instance : Mul (PerfectClosure K p) :=
+instance instMul : Mul (PerfectClosure K p) :=
   ⟨Quot.lift
       (fun x : ℕ × K =>
         Quot.lift
@@ -219,7 +154,7 @@ theorem mk_mul_mk (x y : ℕ × K) :
   rfl
 #align perfect_closure.mk_mul_mk PerfectClosure.mk_mul_mk
 
-instance : CommMonoid (PerfectClosure K p) :=
+instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
   { (inferInstance : Mul (PerfectClosure K p)) with
     mul_assoc := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
@@ -227,7 +162,7 @@ instance : CommMonoid (PerfectClosure K p) :=
           Quot.inductionOn g fun ⟨s, z⟩ => by
             simp only [quot_mk_eq_mk, mk_mul_mk] -- Porting note: added this line
             apply congr_arg (Quot.mk _)
-            simp only [add_assoc, mul_assoc, RingHom.iterate_map_mul, ← iterate_add_apply,
+            simp only [add_assoc, mul_assoc, iterate_map_mul, ← iterate_add_apply,
               add_comm, add_left_comm]
     one := mk K p (0, 1)
     one_mul := fun e =>
@@ -247,7 +182,7 @@ theorem one_def : (1 : PerfectClosure K p) = mk K p (0, 1) :=
   rfl
 #align perfect_closure.one_def PerfectClosure.one_def
 
-instance : Inhabited (PerfectClosure K p) :=
+instance instInhabited : Inhabited (PerfectClosure K p) :=
   ⟨1⟩
 
 private theorem add_aux_left (x1 x2 y : ℕ × K) (H : R K p x1 x2) :
@@ -269,7 +204,7 @@ private theorem add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
       rw [← iterate_succ_apply, iterate_succ_apply', iterate_succ_apply', ← frobenius_add]
       apply R.intro
 
-instance : Add (PerfectClosure K p) :=
+instance instAdd : Add (PerfectClosure K p) :=
   ⟨Quot.lift
       (fun x : ℕ × K =>
         Quot.lift
@@ -286,7 +221,7 @@ theorem mk_add_mk (x y : ℕ × K) :
   rfl
 #align perfect_closure.mk_add_mk PerfectClosure.mk_add_mk
 
-instance : Neg (PerfectClosure K p) :=
+instance instNeg : Neg (PerfectClosure K p) :=
   ⟨Quot.lift (fun x : ℕ × K => mk K p (x.1, -x.2)) fun x y (H : R K p x y) =>
       match x, y, H with
       | _, _, R.intro n x => Quot.sound <| by rw [← frobenius_neg]; apply R.intro⟩
@@ -296,7 +231,7 @@ theorem neg_mk (x : ℕ × K) : -mk K p x = mk K p (x.1, -x.2) :=
   rfl
 #align perfect_closure.neg_mk PerfectClosure.neg_mk
 
-instance : Zero (PerfectClosure K p) :=
+instance instZero : Zero (PerfectClosure K p) :=
   ⟨mk K p (0, 0)⟩
 
 theorem zero_def : (0 : PerfectClosure K p) = mk K p (0, 0) :=
@@ -330,7 +265,7 @@ theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
   apply R.intro
 #align perfect_closure.r.sound PerfectClosure.R.sound
 
-instance PerfectClosure.addCommGroup : AddCommGroup (PerfectClosure K p) :=
+instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
   { (inferInstance : Add (PerfectClosure K p)),
     (inferInstance : Neg (PerfectClosure K p)) with
     add_assoc := fun e f g =>
@@ -339,7 +274,7 @@ instance PerfectClosure.addCommGroup : AddCommGroup (PerfectClosure K p) :=
           Quot.inductionOn g fun ⟨s, z⟩ => by
             simp only [quot_mk_eq_mk, mk_add_mk] -- Porting note: added this line
             apply congr_arg (Quot.mk _)
-            simp only [RingHom.iterate_map_add, ← iterate_add_apply, add_assoc, add_comm s _]
+            simp only [iterate_map_add, ← iterate_add_apply, add_assoc, add_comm s _]
     zero := 0
     zero_add := fun e =>
       Quot.inductionOn e fun ⟨n, x⟩ =>
@@ -357,8 +292,8 @@ instance PerfectClosure.addCommGroup : AddCommGroup (PerfectClosure K p) :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ => congr_arg (Quot.mk _) <| by simp only [add_comm] }
 
-instance PerfectClosure.commRing : CommRing (PerfectClosure K p) :=
-  { PerfectClosure.addCommGroup K p, AddMonoidWithOne.unary,
+instance instCommRing : CommRing (PerfectClosure K p) :=
+  { instAddCommGroup K p, AddMonoidWithOne.unary,
     (inferInstance : CommMonoid (PerfectClosure K p)) with
     -- Porting note: added `zero_mul`, `mul_zero`
     zero_mul := fun a => by
@@ -376,7 +311,7 @@ instance PerfectClosure.commRing : CommRing (PerfectClosure K p) :=
             simp only [quot_mk_eq_mk, mk_add_mk, mk_mul_mk] -- Porting note: added this line
             simp only [add_assoc, add_comm, add_left_comm]
             apply R.sound
-            simp only [RingHom.iterate_map_mul, RingHom.iterate_map_add, ← iterate_add_apply,
+            simp only [iterate_map_mul, iterate_map_add, ← iterate_add_apply,
               mul_add, add_comm, add_left_comm]
     right_distrib := fun e f g =>
       Quot.inductionOn e fun ⟨m, x⟩ =>
@@ -385,19 +320,19 @@ instance PerfectClosure.commRing : CommRing (PerfectClosure K p) :=
             simp only [quot_mk_eq_mk, mk_add_mk, mk_mul_mk] -- Porting note: added this line
             simp only [add_assoc, add_comm _ s, add_left_comm _ s]
             apply R.sound
-            simp only [RingHom.iterate_map_mul, RingHom.iterate_map_add, ← iterate_add_apply,
+            simp only [iterate_map_mul, iterate_map_add, ← iterate_add_apply,
               add_mul, add_comm, add_left_comm] }
 
-theorem eq_iff' (x y : ℕ × K) :
+theorem mk_eq_iff (x y : ℕ × K) :
     mk K p x = mk K p y ↔ ∃ z, (frobenius K p)^[y.1 + z] x.2 = (frobenius K p)^[x.1 + z] y.2 := by
   constructor
   · intro H
     replace H := Quot.exact _ H
-    induction H
-    case rel x y H => cases' H with n x; exact ⟨0, rfl⟩
-    case refl H => exact ⟨0, rfl⟩
-    case symm x y H ih => cases' ih with w ih; exact ⟨w, ih.symm⟩
-    case trans x y z H1 H2 ih1 ih2 =>
+    induction H with
+    | rel x y H => cases' H with n x; exact ⟨0, rfl⟩
+    | refl H => exact ⟨0, rfl⟩
+    | symm x y H ih => cases' ih with w ih; exact ⟨w, ih.symm⟩
+    | trans x y z H1 H2 ih1 ih2 =>
       cases' ih1 with z1 ih1
       cases' ih2 with z2 ih2
       exists z2 + (y.1 + z1)
@@ -411,7 +346,18 @@ theorem eq_iff' (x y : ℕ × K) :
   cases' H with z H; dsimp only at H
   rw [R.sound K p (n + z) m x _ rfl, R.sound K p (m + z) n y _ rfl, H]
   rw [add_assoc, add_comm, add_comm z]
-#align perfect_closure.eq_iff' PerfectClosure.eq_iff'
+#align perfect_closure.eq_iff' PerfectClosure.mk_eq_iff
+
+@[simp]
+theorem mk_pow (x : ℕ × K) (n : ℕ) : mk K p x ^ n = mk K p (x.1, x.2 ^ n) := by
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, one_def, mk_eq_iff]
+    exact ⟨0, by simp_rw [← coe_iterateFrobenius, map_one]⟩
+  | succ n ih =>
+    rw [pow_succ, pow_succ, ih, mk_mul_mk, mk_eq_iff]
+    exact ⟨0, by simp_rw [iterate_frobenius, add_zero, mul_pow, ← pow_mul,
+      ← pow_add, mul_assoc, ← pow_add]⟩
 
 theorem nat_cast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   induction' n with n ih
@@ -433,13 +379,13 @@ theorem int_cast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
 
 theorem nat_cast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
   constructor <;> intro H
-  · rw [nat_cast K p 0, nat_cast K p 0, eq_iff'] at H
+  · rw [nat_cast K p 0, nat_cast K p 0, mk_eq_iff] at H
     cases' H with z H
     simpa only [zero_add, iterate_fixed (frobenius_nat_cast K p _)] using H
   rw [nat_cast K p 0, nat_cast K p 0, H]
 #align perfect_closure.nat_cast_eq_iff PerfectClosure.nat_cast_eq_iff
 
-instance : CharP (PerfectClosure K p) p := by
+instance instCharP : CharP (PerfectClosure K p) p := by
   constructor; intro x; rw [← CharP.cast_eq_zero_iff K]
   rw [← Nat.cast_zero, nat_cast_eq_iff, Nat.cast_zero]
 
@@ -451,13 +397,13 @@ theorem frobenius_mk (x : ℕ × K) :
   dsimp only
   suffices ∀ p' : ℕ, mk K p (n, x) ^ p' = mk K p (n, x ^ p') by apply this
   intro p
-  induction' p with p ih
-  case zero => apply R.sound; rw [(frobenius _ _).iterate_map_one, pow_zero]
-  case succ =>
+  induction p with
+  | zero => apply R.sound; rw [(frobenius _ _).iterate_map_one, pow_zero]
+  | succ p ih =>
     rw [pow_succ, ih]
     symm
     apply R.sound
-    simp only [pow_succ, (frobenius _ _).iterate_map_mul]
+    simp only [pow_succ, iterate_map_mul]
 #align perfect_closure.frobenius_mk PerfectClosure.frobenius_mk
 
 /-- Embedding of `K` into `PerfectClosure K p` -/
@@ -473,11 +419,69 @@ theorem of_apply (x : K) : of K p x = mk _ _ (0, x) :=
   rfl
 #align perfect_closure.of_apply PerfectClosure.of_apply
 
+instance instReduced : IsReduced (PerfectClosure K p) where
+  eq_zero x := induction_on x fun x ⟨n, h⟩ ↦ by
+    replace h : mk K p x ^ p ^ n = 0 := by
+      rw [← Nat.sub_add_cancel ((Nat.lt_pow_self (Fact.out : p.Prime).one_lt n).le),
+        pow_add, h, mul_zero]
+    simp only [zero_def, mk_pow, mk_eq_iff, zero_add, ← coe_iterateFrobenius, map_zero] at h ⊢
+    obtain ⟨m, h⟩ := h
+    exact ⟨n + m, by simpa only [iterateFrobenius_def, pow_add, pow_mul] using h⟩
+
+instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
+  bijective_frobenius := by
+    let f : PerfectClosure K p → PerfectClosure K p := fun e ↦
+      liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
+      match x, y, H with
+      | _, _, R.intro n x => Quot.sound (R.intro _ _)
+    refine bijective_iff_has_inverse.mpr ⟨f, fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_,
+      fun e ↦ induction_on e fun ⟨n, x⟩ ↦ ?_⟩ <;> simp only [liftOn_mk, frobenius_mk, mk_succ_pow]
+
+@[simp]
+theorem iterate_frobenius_mk (n : ℕ) (x : K) :
+    (frobenius (PerfectClosure K p) p)^[n] (mk K p ⟨n, x⟩) = of K p x := by
+  induction' n with n ih; rfl
+  rw [iterate_succ_apply, ← ih, frobenius_mk, mk_succ_pow]
+
+/-- Given a ring `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
+any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`. -/
+noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L p] :
+    (K →+* L) ≃ (PerfectClosure K p →+* L) where
+  toFun f :=
+    { toFun := by
+        refine' fun e => liftOn e (fun x => (frobeniusEquiv L p).symm^[x.1] (f x.2)) _
+        rintro - - ⟨n, x⟩
+        simp [f.map_frobenius]
+      map_one' := f.map_one
+      map_zero' := f.map_zero
+      map_mul' := by
+        rintro ⟨n, x⟩ ⟨m, y⟩
+        simp only [quot_mk_eq_mk, liftOn_mk, f.map_iterate_frobenius, mk_mul_mk, map_mul,
+          iterate_map_mul]
+        have := LeftInverse.iterate (frobeniusEquiv_symm_apply_frobenius L p)
+        rw [iterate_add_apply, this _ _, add_comm, iterate_add_apply, this _ _]
+      map_add' := by
+        rintro ⟨n, x⟩ ⟨m, y⟩
+        simp only [quot_mk_eq_mk, liftOn_mk, f.map_iterate_frobenius, mk_add_mk, map_add,
+          iterate_map_add]
+        have := LeftInverse.iterate (frobeniusEquiv_symm_apply_frobenius L p)
+        rw [iterate_add_apply, this _ _, add_comm n, iterate_add_apply, this _ _] }
+  invFun f := f.comp (of K p)
+  left_inv f := by ext x; rfl
+  right_inv f := by
+    ext ⟨n, x⟩
+    simp only [quot_mk_eq_mk, RingHom.comp_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+      liftOn_mk]
+    apply (injective_frobenius L p).iterate n
+    rw [← f.map_iterate_frobenius, iterate_frobenius_mk,
+      RightInverse.iterate (frobenius_apply_frobeniusEquiv_symm L p) n]
+#align perfect_closure.lift PerfectClosure.lift
+
 end Ring
 
-theorem eq_iff [CommRing K] [IsDomain K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
-    Quot.mk (R K p) x = Quot.mk (R K p) y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
-  (eq_iff' K p x y).trans
+theorem eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (x y : ℕ × K) :
+    mk K p x = mk K p y ↔ (frobenius K p)^[y.1] x.2 = (frobenius K p)^[x.1] y.2 :=
+  (mk_eq_iff K p x y).trans
     ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using H,
       fun H => ⟨0, H⟩⟩
 #align perfect_closure.eq_iff PerfectClosure.eq_iff
@@ -486,7 +490,7 @@ section Field
 
 variable [Field K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
-instance : Inv (PerfectClosure K p) :=
+instance instInv : Inv (PerfectClosure K p) :=
   ⟨Quot.lift (fun x : ℕ × K => Quot.mk (R K p) (x.1, x.2⁻¹)) fun x y (H : R K p x y) =>
       match x, y, H with
       | _, _, R.intro n x =>
@@ -501,7 +505,7 @@ theorem mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
   rfl
 
 -- Porting note: added to avoid "unknown free variable" error
-instance : DivisionRing (PerfectClosure K p) :=
+instance instDivisionRing : DivisionRing (PerfectClosure K p) :=
   { (inferInstance : Inv (PerfectClosure K p)) with
     exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
     mul_inv_cancel := fun e =>
@@ -511,78 +515,16 @@ instance : DivisionRing (PerfectClosure K p) :=
         rw [mk_inv, mk_mul_mk]
         refine (eq_iff K p _ _).2 ?_
         simp only [(frobenius _ _).iterate_map_one, (frobenius K p).iterate_map_zero,
-            iterate_zero_apply, ← (frobenius _ p).iterate_map_mul] at this ⊢
+            iterate_zero_apply, ← iterate_map_mul] at this ⊢
         rw [mul_inv_cancel this, (frobenius _ _).iterate_map_one]
     inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero]) }
 
-instance : Field (PerfectClosure K p) :=
+instance instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),
     (inferInstance : CommRing (PerfectClosure K p)) with }
 
-instance : PerfectRing (PerfectClosure K p) p where
-  pthRoot' e :=
-    liftOn e (fun x => mk K p (x.1 + 1, x.2)) fun x y H =>
-      match x, y, H with
-      | _, _, R.intro n x => Quot.sound (R.intro _ _)
-  frobenius_pthRoot' e :=
-    induction_on e fun ⟨n, x⟩ => by
-      simp only [liftOn_mk, frobenius_mk]
-      exact (Quot.sound <| R.intro _ _).symm
-  pthRoot_frobenius' e :=
-    induction_on e fun ⟨n, x⟩ => by
-      simp only [liftOn_mk, frobenius_mk]
-      exact (Quot.sound <| R.intro _ _).symm
-
-theorem eq_pthRoot (x : ℕ × K) :
-    mk K p x = (pthRoot (PerfectClosure K p) p)^[x.1] (of K p x.2) := by
-  rcases x with ⟨m, x⟩
-  induction' m with m ih
-  · rfl
-  rw [iterate_succ_apply', ← ih]
-  rfl
-#align perfect_closure.eq_pth_root PerfectClosure.eq_pthRoot
-
-/-- Given a field `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
-any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`. -/
-def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L p] :
-    (K →+* L) ≃ (PerfectClosure K p →+* L) where
-  toFun f :=
-    { toFun := by
-        refine' fun e => liftOn e (fun x => (pthRoot L p)^[x.1] (f x.2)) _
-        rintro a b ⟨n⟩
-        simp only [f.map_frobenius, iterate_succ_apply, pthRoot_frobenius],
-      map_one' := f.map_one,
-      map_zero' := f.map_zero,
-      map_mul' := by
-        have := (leftInverse_pthRoot_frobenius (R := L) (p := p)).iterate
-        rintro ⟨x⟩ ⟨y⟩
-        simp only [quot_mk_eq_mk, liftOn_mk, mk_mul_mk, RingHom.map_iterate_frobenius,
-          RingHom.iterate_map_mul, RingHom.map_mul]
-        rw [iterate_add_apply, this _ _, add_comm, iterate_add_apply, this _ _],
-      map_add' := by
-        have := (leftInverse_pthRoot_frobenius (R := L) (p := p)).iterate
-        rintro ⟨x⟩ ⟨y⟩
-        simp only [quot_mk_eq_mk, liftOn_mk, mk_add_mk, RingHom.map_iterate_frobenius,
-          RingHom.iterate_map_add, RingHom.map_add]
-        rw [iterate_add_apply, this _ _, add_comm x.1, iterate_add_apply, this _ _] }
-  invFun f := f.comp (of K p)
-  left_inv f := by ext x; rfl
-  right_inv f := by
-    ext ⟨x⟩
-    simp only [quot_mk_eq_mk, RingHom.comp_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-      liftOn_mk]
-    rw [eq_pthRoot, RingHom.map_iterate_pthRoot]
-#align perfect_closure.lift PerfectClosure.lift
+instance instPerfectField : PerfectField (PerfectClosure K p) := PerfectRing.toPerfectField _ p
 
 end Field
 
 end PerfectClosure
-
-/-- A reduced ring with prime characteristic and surjective frobenius map is perfect. -/
-noncomputable def PerfectRing.ofSurjective (k : Type _) [CommRing k] [IsReduced k] (p : ℕ)
-    [Fact p.Prime] [CharP k p] (h : Function.Surjective <| frobenius k p) : PerfectRing k p
-    where
-  pthRoot' := Function.surjInv h
-  frobenius_pthRoot' := Function.surjInv_eq h
-  pthRoot_frobenius' _ := frobenius_inj _ _ <| Function.surjInv_eq h _
-#align perfect_ring.of_surjective PerfectRing.ofSurjective

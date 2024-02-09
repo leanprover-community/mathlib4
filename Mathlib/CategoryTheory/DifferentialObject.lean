@@ -3,7 +3,8 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Int.Cast.Defs
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
@@ -28,7 +29,7 @@ universe v u
 
 namespace CategoryTheory
 
-variable (S : Type _) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
+variable (S : Type*) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
 
 variable [HasZeroMorphisms C] [HasShift C S]
 
@@ -95,8 +96,8 @@ theorem id_f (X : DifferentialObject S C) : (𝟙 X : X ⟶ X).f = 𝟙 X.obj :=
 #align category_theory.differential_object.id_f CategoryTheory.DifferentialObject.id_f
 
 @[simp]
-theorem comp_f {X Y Z : DifferentialObject S C} (f : X ⟶ Y) (g : Y ⟶ Z) : 
-    (f ≫ g).f = f.f ≫ g.f := 
+theorem comp_f {X Y Z : DifferentialObject S C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).f = f.f ≫ g.f :=
   rfl
 #align category_theory.differential_object.comp_f CategoryTheory.DifferentialObject.comp_f
 
@@ -137,8 +138,8 @@ instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject S C) where
 def isoApp {X Y : DifferentialObject S C} (f : X ≅ Y) : X.obj ≅ Y.obj where
   hom := f.hom.f
   inv := f.inv.f
-  hom_inv_id := by dsimp; rw [← comp_f, Iso.hom_inv_id, id_f]
-  inv_hom_id := by dsimp; rw [← comp_f, Iso.inv_hom_id, id_f]
+  hom_inv_id := by rw [← comp_f, Iso.hom_inv_id, id_f]
+  inv_hom_id := by rw [← comp_f, Iso.inv_hom_id, id_f]
 #align category_theory.differential_object.iso_app CategoryTheory.DifferentialObject.isoApp
 
 @[simp]
@@ -162,7 +163,6 @@ def mkIso {X Y : DifferentialObject S C} (f : X.obj ≅ Y.obj) (hf : X.d ≫ f.h
     X ≅ Y where
   hom := ⟨f.hom, hf⟩
   inv := ⟨f.inv, by
-    dsimp
     rw [← Functor.mapIso_inv, Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, Functor.mapIso_hom,
       hf]⟩
   hom_inv_id := by ext1; dsimp; exact f.hom_inv_id
@@ -201,8 +201,8 @@ def mapDifferentialObject (F : C ⥤ D)
         slice_lhs 2 3 => rw [← Functor.comp_map F (shiftFunctor D (1 : S)), ← η.naturality f.f]
         slice_lhs 1 2 => rw [Functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
         rw [Category.assoc] }
-  map_id := by intros; ext; simp
-  map_comp := by intros; ext; simp
+  map_id := by intros; ext; simp [autoParam]
+  map_comp := by intros; ext; simp [autoParam]
 #align category_theory.functor.map_differential_object CategoryTheory.Functor.mapDifferentialObject
 
 end Functor
@@ -213,26 +213,24 @@ namespace CategoryTheory
 
 namespace DifferentialObject
 
-variable (S : Type _) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
+variable (S : Type*) [AddMonoidWithOne S] (C : Type u) [Category.{v} C]
 
 variable [HasZeroObject C] [HasZeroMorphisms C] [HasShift C S]
 variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
 
 open scoped ZeroObject
 
-instance hasZeroObject : HasZeroObject (DifferentialObject S C) := by
-  -- Porting note(https://github.com/leanprover-community/mathlib4/issues/4998): added `aesop_cat`
-  -- Porting note: added `simp only [eq_iff_true_of_subsingleton]`
-  refine' ⟨⟨⟨0, 0, by aesop_cat⟩, fun X => ⟨⟨⟨⟨0, by aesop_cat⟩⟩, fun f => _⟩⟩,
-    fun X => ⟨⟨⟨⟨0, by aesop_cat⟩⟩, fun f => _⟩⟩⟩⟩ <;> ext <;>
-    simp only [eq_iff_true_of_subsingleton]
+instance hasZeroObject : HasZeroObject (DifferentialObject S C) where
+  zero := ⟨{ obj := 0, d := 0 },
+    { unique_to := fun X => ⟨⟨⟨{ f := 0 }⟩, fun f => by ext⟩⟩,
+      unique_from := fun X => ⟨⟨⟨{ f := 0 }⟩, fun f => by ext⟩⟩ }⟩
 #align category_theory.differential_object.has_zero_object CategoryTheory.DifferentialObject.hasZeroObject
 
 end DifferentialObject
 
 namespace DifferentialObject
 
-variable (S : Type _) [AddMonoidWithOne S]
+variable (S : Type*) [AddMonoidWithOne S]
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasZeroMorphisms C]
 variable [HasShift C S]
 
@@ -250,7 +248,7 @@ end DifferentialObject
 
 namespace DifferentialObject
 
-variable {S : Type _} [AddCommGroupWithOne S] (C : Type u) [Category.{v} C]
+variable {S : Type*} [AddCommGroupWithOne S] (C : Type u) [Category.{v} C]
 
 variable [HasZeroMorphisms C] [HasShift C S]
 

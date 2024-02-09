@@ -19,7 +19,7 @@ deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section SeminormedAddGroup
 
@@ -43,7 +43,7 @@ theorem nndist_smul_le (s : α) (x y : β) : nndist (s • x) (s • y) ≤ ‖s
   dist_smul_le s x y
 #align nndist_smul_le nndist_smul_le
 
-theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ ((· • ·) s : β → β) :=
+theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ (s • · : β → β) :=
   lipschitzWith_iff_dist_le_mul.2 <| dist_smul_le _
 #align lipschitz_with_smul lipschitzWith_smul
 
@@ -77,6 +77,9 @@ theorem BoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ �
   { dist_smul_pair' := fun a b₁ b₂ => by simpa [smul_sub, dist_eq_norm] using h a (b₁ - b₂)
     dist_pair_smul' := fun a₁ a₂ b => by simpa [sub_smul, dist_eq_norm] using h (a₁ - a₂) b }
 #align has_bounded_smul.of_norm_smul_le BoundedSMul.of_norm_smul_le
+
+theorem BoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
+    BoundedSMul α β := .of_norm_smul_le h
 
 end SeminormedRing
 

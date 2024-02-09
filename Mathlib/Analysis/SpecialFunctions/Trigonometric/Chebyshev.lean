@@ -23,7 +23,7 @@ namespace Polynomial.Chebyshev
 
 open Polynomial
 
-variable {R A : Type _} [CommRing R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 @[simp]
 theorem aeval_T (x : A) (n : ℕ) : aeval x (T R n) = (T A n).eval x := by
@@ -72,7 +72,7 @@ variable (θ : ℂ)
 value `cos (n * θ)`. -/
 @[simp]
 theorem T_complex_cos : ∀ n, (T ℂ n).eval (cos θ) = cos (n * θ)
-  | 0 => by simp only [T_zero, eval_one, Nat.cast_zero, MulZeroClass.zero_mul, cos_zero]
+  | 0 => by simp only [T_zero, eval_one, Nat.cast_zero, zero_mul, cos_zero]
   | 1 => by simp only [eval_X, one_mul, T_one, Nat.cast_one]
   | n + 2 => by
     -- Porting note: partially rewrote proof for lean4 numerals.
@@ -103,7 +103,8 @@ theorem U_complex_cos (n : ℕ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1
 
 end Complex
 
--- ### Real versions
+/-! ### Real versions -/
+
 section Real
 
 open Real
@@ -113,14 +114,14 @@ variable (θ : ℝ) (n : ℕ)
 /-- The `n`-th Chebyshev polynomial of the first kind evaluates on `cos θ` to the
 value `cos (n * θ)`. -/
 @[simp]
-theorem T_real_cos : (T ℝ n).eval (cos θ) = cos (n * θ) := by exact_mod_cast T_complex_cos θ n
+theorem T_real_cos : (T ℝ n).eval (cos θ) = cos (n * θ) := mod_cast T_complex_cos θ n
 #align polynomial.chebyshev.T_real_cos Polynomial.Chebyshev.T_real_cos
 
 /-- The `n`-th Chebyshev polynomial of the second kind evaluates on `cos θ` to the
 value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
-theorem U_real_cos : (U ℝ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) := by
-  exact_mod_cast U_complex_cos θ n
+theorem U_real_cos : (U ℝ n).eval (cos θ) * sin θ = sin ((n + 1) * θ) :=
+  mod_cast U_complex_cos θ n
 #align polynomial.chebyshev.U_real_cos Polynomial.Chebyshev.U_real_cos
 
 end Real

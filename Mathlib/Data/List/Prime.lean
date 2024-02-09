@@ -21,7 +21,7 @@ open List
 
 section CommMonoidWithZero
 
-variable {M : Type _} [CommMonoidWithZero M]
+variable {M : Type*} [CommMonoidWithZero M]
 
 /-- Prime `p` divides the product of a list `L` iff it divides some `a ∈ L` -/
 theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod ↔ ∃ a ∈ L, p ∣ a := by
@@ -40,14 +40,14 @@ theorem Prime.dvd_prod_iff {p : M} {L : List M} (pp : Prime p) : p ∣ L.prod �
 
 theorem Prime.not_dvd_prod {p : M} {L : List M} (pp : Prime p) (hL : ∀ a ∈ L, ¬p ∣ a) :
     ¬p ∣ L.prod :=
-  mt (Prime.dvd_prod_iff pp).1 <| not_exists.2 <| fun a => not_and.2 (hL a)
+  mt (Prime.dvd_prod_iff pp).1 <| not_exists.2 fun a => not_and.2 (hL a)
 #align prime.not_dvd_prod Prime.not_dvd_prod
 
 end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable {M : Type _} [CancelCommMonoidWithZero M] [Unique (Units M)]
+variable {M : Type*} [CancelCommMonoidWithZero M] [Unique (Units M)]
 
 theorem mem_list_primes_of_dvd_prod {p : M} (hp : Prime p) {L : List M} (hL : ∀ q ∈ L, Prime q)
     (hpL : p ∣ L.prod) : p ∈ L := by

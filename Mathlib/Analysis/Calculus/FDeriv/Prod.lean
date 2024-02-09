@@ -27,15 +27,15 @@ noncomputable section
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable {f f₀ f₁ g : E → F}
 
@@ -67,7 +67,7 @@ protected theorem HasStrictFDerivAt.prod (hf₁ : HasStrictFDerivAt f₁ f₁' x
 theorem HasFDerivAtFilter.prod (hf₁ : HasFDerivAtFilter f₁ f₁' x L)
     (hf₂ : HasFDerivAtFilter f₂ f₂' x L) :
     HasFDerivAtFilter (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x L :=
-  hf₁.prod_left hf₂
+  .of_isLittleO <| hf₁.isLittleO.prod_left hf₂.isLittleO
 #align has_fderiv_at_filter.prod HasFDerivAtFilter.prod
 
 nonrec theorem HasFDerivWithinAt.prod (hf₁ : HasFDerivWithinAt f₁ f₁' s x)
@@ -357,7 +357,7 @@ section Pi
 /-!
 ### Derivatives of functions `f : E → Π i, F' i`
 
-In this section we formulate `has_*fderiv*_pi` theorems as `iff`s, and provide two versions of each
+In this section we formulate `has*FDeriv*_pi` theorems as `iff`s, and provide two versions of each
 theorem:
 
 * the version without `'` deals with `φ : Π i, E → F' i` and `φ' : Π i, E →L[𝕜] F' i`
@@ -369,7 +369,7 @@ theorem:
 -/
 
 
-variable {ι : Type _} [Fintype ι] {F' : ι → Type _} [∀ i, NormedAddCommGroup (F' i)]
+variable {ι : Type*} [Fintype ι] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {φ' : ∀ i, E →L[𝕜] F' i} {Φ : E → ∀ i, F' i}
   {Φ' : E →L[𝕜] ∀ i, F' i}
 
@@ -391,7 +391,7 @@ theorem hasStrictFDerivAt_pi :
 theorem hasFDerivAtFilter_pi' :
     HasFDerivAtFilter Φ Φ' x L ↔
       ∀ i, HasFDerivAtFilter (fun x => Φ x i) ((proj i).comp Φ') x L := by
-  simp only [HasFDerivAtFilter, ContinuousLinearMap.coe_pi]
+  simp only [hasFDerivAtFilter_iff_isLittleO, ContinuousLinearMap.coe_pi]
   exact isLittleO_pi
 #align has_fderiv_at_filter_pi' hasFDerivAtFilter_pi'
 

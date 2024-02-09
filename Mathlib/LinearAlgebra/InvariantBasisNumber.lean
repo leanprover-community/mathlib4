@@ -103,7 +103,7 @@ theorem strongRankCondition_iff_succ :
         (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
 #align strong_rank_condition_iff_succ strongRankCondition_iff_succ
 
-theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]
+theorem card_le_of_injective [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α → R) →ₗ[R] β → R) (i : Injective f) : Fintype.card α ≤ Fintype.card β := by
   let P := LinearEquiv.funCongrLeft R R (Fintype.equivFin α)
   let Q := LinearEquiv.funCongrLeft R R (Fintype.equivFin β)
@@ -112,7 +112,7 @@ theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype �
       (((LinearEquiv.symm Q).injective.comp i).comp (LinearEquiv.injective P))
 #align card_le_of_injective card_le_of_injective
 
-theorem card_le_of_injective' [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]
+theorem card_le_of_injective' [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α →₀ R) →ₗ[R] β →₀ R) (i : Injective f) : Fintype.card α ≤ Fintype.card β := by
   let P := Finsupp.linearEquivFunOnFinite R R β
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
@@ -133,7 +133,7 @@ theorem le_of_fin_surjective [RankCondition R] {n m : ℕ} (f : (Fin n → R) �
   RankCondition.le_of_fin_surjective f
 #align le_of_fin_surjective le_of_fin_surjective
 
-theorem card_le_of_surjective [RankCondition R] {α β : Type _} [Fintype α] [Fintype β]
+theorem card_le_of_surjective [RankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α → R) →ₗ[R] β → R) (i : Surjective f) : Fintype.card β ≤ Fintype.card α := by
   let P := LinearEquiv.funCongrLeft R R (Fintype.equivFin α)
   let Q := LinearEquiv.funCongrLeft R R (Fintype.equivFin β)
@@ -142,7 +142,7 @@ theorem card_le_of_surjective [RankCondition R] {α β : Type _} [Fintype α] [F
       (((LinearEquiv.symm Q).surjective.comp i).comp (LinearEquiv.surjective P))
 #align card_le_of_surjective card_le_of_surjective
 
-theorem card_le_of_surjective' [RankCondition R] {α β : Type _} [Fintype α] [Fintype β]
+theorem card_le_of_surjective' [RankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α →₀ R) →ₗ[R] β →₀ R) (i : Surjective f) : Fintype.card β ≤ Fintype.card α := by
   let P := Finsupp.linearEquivFunOnFinite R R β
   let Q := (Finsupp.linearEquivFunOnFinite R R α).symm
@@ -185,7 +185,7 @@ theorem eq_of_fin_equiv {n m : ℕ} : ((Fin n → R) ≃ₗ[R] Fin m → R) → 
   InvariantBasisNumber.eq_of_fin_equiv
 #align eq_of_fin_equiv eq_of_fin_equiv
 
-theorem card_eq_of_linearEquiv {α β : Type _} [Fintype α] [Fintype β] (f : (α → R) ≃ₗ[R] β → R) :
+theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (α → R) ≃ₗ[R] β → R) :
     Fintype.card α = Fintype.card β :=
   eq_of_fin_equiv R
     ((LinearEquiv.funCongrLeft R R (Fintype.equivFin α)).trans f ≪≫ₗ
@@ -199,14 +199,14 @@ theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   refine' zero_ne_one (eq_of_fin_equiv R _)
   haveI := not_nontrivial_iff_subsingleton.1 h
   haveI : Subsingleton (Fin 1 → R) :=
-    Subsingleton.intro <| fun a b => funext fun x => Subsingleton.elim _ _
+    Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
   exact
     { toFun := 0
       invFun := 0
       map_add' := by aesop
       map_smul' := by aesop
-      left_inv := fun _ => by simp
-      right_inv := fun _ => by simp }
+      left_inv := fun _ => by simp [eq_iff_true_of_subsingleton]
+      right_inv := fun _ => by simp [eq_iff_true_of_subsingleton] }
 #align nontrivial_of_invariant_basis_number nontrivial_of_invariantBasisNumber
 
 end

@@ -70,7 +70,7 @@ attribute [to_additive existing] GroupFilterBasis GroupFilterBasis.conj'
 
 /-- `GroupFilterBasis` constructor in the commutative group case. -/
 @[to_additive "`AddGroupFilterBasis` constructor in the additive commutative group case."]
-def groupFilterBasisOfComm {G : Type _} [CommGroup G] (sets : Set (Set G))
+def groupFilterBasisOfComm {G : Type*} [CommGroup G] (sets : Set (Set G))
     (nonempty : sets.Nonempty) (inter_sets : ∀ x y, x ∈ sets → y ∈ sets → ∃ z ∈ sets, z ⊆ x ∩ y)
     (one : ∀ U ∈ sets, (1 : G) ∈ U) (mul : ∀ U ∈ sets, ∃ V ∈ sets, V * V ⊆ U)
     (inv : ∀ U ∈ sets, ∃ V ∈ sets, V ⊆ (fun x ↦ x⁻¹) ⁻¹' U) : GroupFilterBasis G :=
@@ -140,10 +140,10 @@ instance : Inhabited (GroupFilterBasis G) := ⟨by
     simp⟩
 
 @[to_additive]
-theorem prod_subset_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
-  fun x x_in ↦ ⟨1, x, one h, x_in, one_mul x⟩
-#align group_filter_basis.prod_subset_self GroupFilterBasis.prod_subset_self
-#align add_group_filter_basis.sum_subset_self AddGroupFilterBasis.sum_subset_self
+theorem subset_mul_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
+  fun x x_in ↦ ⟨1, one h, x, x_in, one_mul x⟩
+#align group_filter_basis.prod_subset_self GroupFilterBasis.subset_mul_self
+#align add_group_filter_basis.sum_subset_self AddGroupFilterBasis.subset_add_self
 
 /-- The neighborhood function of a `GroupFilterBasis`. -/
 @[to_additive "The neighborhood function of an `AddGroupFilterBasis`."]
@@ -190,7 +190,7 @@ theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = 
     use (fun y ↦ x * y) '' W, image_mem_map (FilterBasis.mem_filter_of_mem _ W_in)
     constructor
     · rw [image_subset_iff] at H ⊢
-      exact ((B.prod_subset_self W_in).trans hW).trans H
+      exact ((B.subset_mul_self W_in).trans hW).trans H
     · rintro y ⟨t, tW, rfl⟩
       rw [(B.hasBasis _).mem_iff]
       use W, W_in
@@ -251,7 +251,7 @@ instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     rcases mul U_in with ⟨V, V_in, hV⟩
     refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
     intro a b a_in b_in
-    exact hV ⟨a, b, a_in, b_in, rfl⟩
+    exact hV <| mul_mem_mul a_in b_in
   · rw [basis.tendsto_iff basis]
     intro U U_in
     simpa using inv U_in
@@ -318,7 +318,7 @@ instance (priority := 100) isTopologicalRing {R : Type u} [Ring R] (B : RingFilt
     rcases B.mul U_in with ⟨V, V_in, hV⟩
     refine' ⟨V, V, ⟨V_in, V_in⟩, _⟩
     intro a b a_in b_in
-    exact hV ⟨a, b, a_in, b_in, rfl⟩
+    exact hV <| mul_mem_mul a_in b_in
   · intro x₀
     rw [basis.tendsto_iff basis]
     intro U
@@ -335,7 +335,7 @@ end RingFilterBasis
   Example : if `M` is a topological module then the neighbourhoods of zero are a
   `ModuleFilterBasis`. Conversely given a `ModuleFilterBasis` one can define a topology
   compatible with the module structure on `M`. -/
-structure ModuleFilterBasis (R M : Type _) [CommRing R] [TopologicalSpace R] [AddCommGroup M]
+structure ModuleFilterBasis (R M : Type*) [CommRing R] [TopologicalSpace R] [AddCommGroup M]
   [Module R M] extends AddGroupFilterBasis M where
   smul' : ∀ {U}, U ∈ sets → ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ sets, V • W ⊆ U
   smul_left' : ∀ (x₀ : R) {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U
@@ -344,7 +344,7 @@ structure ModuleFilterBasis (R M : Type _) [CommRing R] [TopologicalSpace R] [Ad
 
 namespace ModuleFilterBasis
 
-variable {R M : Type _} [CommRing R] [TopologicalSpace R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [TopologicalSpace R] [AddCommGroup M] [Module R M]
   (B : ModuleFilterBasis R M)
 
 instance GroupFilterBasis.hasMem : Membership (Set M) (ModuleFilterBasis R M) :=
@@ -372,7 +372,7 @@ instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
       smul' := by
         rintro U (rfl : U ∈ {{(0 : M)}})
         use univ, univ_mem, {0}, rfl
-        rintro a ⟨x, m, -, rfl, rfl⟩
+        rintro a ⟨x, -, m, rfl, rfl⟩
         simp only [smul_zero, mem_singleton_iff]
       smul_left' := by
         rintro x₀ U (h : U ∈ {{(0 : M)}})
@@ -393,7 +393,7 @@ def topology : TopologicalSpace M :=
 /-- The topology associated to a module filter basis on a module over a topological ring.
 It has the given basis as a basis of neighborhoods of zero. This version gets the ring
 topology by unification instead of type class inference. -/
-def topology' {R M : Type _} [CommRing R] {_ : TopologicalSpace R} [AddCommGroup M] [Module R M]
+def topology' {R M : Type*} [CommRing R] {_ : TopologicalSpace R} [AddCommGroup M] [Module R M]
     (B : ModuleFilterBasis R M) : TopologicalSpace M :=
   B.toAddGroupFilterBasis.topology
 #align module_filter_basis.topology' ModuleFilterBasis.topology'
@@ -407,10 +407,10 @@ by their neighborhoods of 0 to obtain the `ContinuousSMul` on the pre-existing t
 
 But it turns out it's just easier to get it as a byproduct of the proof, so this is just a free
 quality-of-life improvement. -/
-theorem _root_.ContinuousSMul.of_basis_zero {ι : Type _} [TopologicalRing R] [TopologicalSpace M]
+theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [TopologicalRing R] [TopologicalSpace M]
     [TopologicalAddGroup M] {p : ι → Prop} {b : ι → Set M} (h : HasBasis (𝓝 0) p b)
-    (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ (j : _) (_ : p j), V • b j ⊆ b i)
-    (hsmul_left : ∀ (x₀ : R) {i}, p i → ∃ (j : _) (_ : p j), b j ⊆ (fun x ↦ x₀ • x) ⁻¹' b i)
+    (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • b j ⊆ b i)
+    (hsmul_left : ∀ (x₀ : R) {i}, p i → ∃ j, p j ∧ MapsTo (x₀ • ·) (b j) (b i))
     (hsmul_right : ∀ (m₀ : M) {i}, p i → ∀ᶠ x in 𝓝 (0 : R), x • m₀ ∈ b i) : ContinuousSMul R M := by
   apply ContinuousSMul.of_nhds_zero
   · rw [h.tendsto_right_iff]
@@ -443,7 +443,7 @@ instance (priority := 100) continuousSMul [TopologicalRing R] :
 #align module_filter_basis.has_continuous_smul ModuleFilterBasis.continuousSMul
 
 /-- Build a module filter basis from compatible ring and additive group filter bases. -/
-def ofBases {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M] (BR : RingFilterBasis R)
+def ofBases {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (BR : RingFilterBasis R)
     (BM : AddGroupFilterBasis M) (smul : ∀ {U}, U ∈ BM → ∃ V ∈ BR, ∃ W ∈ BM, V • W ⊆ U)
     (smul_left : ∀ (x₀ : R) {U}, U ∈ BM → ∃ V ∈ BM, V ⊆ (fun x ↦ x₀ • x) ⁻¹' U)
     (smul_right : ∀ (m₀ : M) {U}, U ∈ BM → ∃ V ∈ BR, V ⊆ (fun x ↦ x • m₀) ⁻¹' U) :

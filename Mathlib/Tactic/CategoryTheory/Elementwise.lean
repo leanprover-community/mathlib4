@@ -16,7 +16,7 @@ import Std.Tactic.Lint
 The `elementwise` attribute generates lemmas for concrete categories from lemmas
 that equate morphisms in a category.
 
-A sort of inverse to this for the `Type _` category is the `@[higher_order]` attribute.
+A sort of inverse to this for the `Type*` category is the `@[higher_order]` attribute.
 
 For more details, see the documentation attached to the `syntax` declaration.
 
@@ -32,6 +32,8 @@ This closely follows the implementation of the `@[reassoc]` attribute, due to Si
 reimplemented by Scott Morrison in Lean 4.
 -/
 
+set_option autoImplicit true
+
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
@@ -41,11 +43,11 @@ open CategoryTheory
 section theorems
 
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
-  (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
+    (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
-attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
-theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : FunLike.coe f = f := rfl
+theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : DFunLike.coe f = f := rfl
 
 theorem hom_elementwise [Category C] [ConcreteCategory C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
@@ -82,9 +84,9 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
       -- First simplify using elementwise-specific lemmas
       let mut eqPf' ← simpType (simpOnlyNames elementwiseThms (config := { decide := false })) eqPf
       if (← inferType eqPf') == .const ``True [] then
-        throwError "elementwise lemma for {src} is trivial after applying ConcreteCategory {""
-          }lemmas, which can be caused by how applications are unfolded. {""
-          }Using elementwise is unnecessary."
+        throwError "elementwise lemma for {src} is trivial after applying ConcreteCategory \
+          lemmas, which can be caused by how applications are unfolded. \
+          Using elementwise is unnecessary."
       if simpSides then
         let ctx := { ← Simp.Context.mkDefault with config.decide := false }
         let (ty', eqPf'') ← simpEq (fun e => return (← simp e ctx).1) (← inferType eqPf') eqPf'
@@ -92,9 +94,9 @@ def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
         forallTelescope ty' fun _ ty' => do
           if let some (_, lhs, rhs) := ty'.eq? then
             if ← Std.Tactic.Lint.isSimpEq lhs rhs then
-              throwError "applying simp to both sides reduces elementwise lemma for {src} {""
-                }to the trivial equality {ty'}. {""
-                }Either add `nosimp` or remove the `elementwise` attribute."
+              throwError "applying simp to both sides reduces elementwise lemma for {src} \
+                to the trivial equality {ty'}. \
+                Either add `nosimp` or remove the `elementwise` attribute."
         eqPf' ← mkExpectedTypeHint eqPf'' ty'
       if let some (w, instConcr) := instConcr? then
         return (← Meta.mkLambdaFVars (fvars.push instConcr) eqPf', w)
@@ -154,14 +156,14 @@ Example application of `elementwise`:
 
 ```lean
 @[elementwise]
-lemma some_lemma {C : Type _} [Category C]
+lemma some_lemma {C : Type*} [Category C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...) : f ≫ g = h := ...
 ```
 
 produces
 
 ```lean
-lemma some_lemma_apply {C : Type _} [Category C]
+lemma some_lemma_apply {C : Type*} [Category C]
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : X ⟶ Z) (w : ...)
     [ConcreteCategory C] (x : X) : g (f x) = h x := ...
 ```

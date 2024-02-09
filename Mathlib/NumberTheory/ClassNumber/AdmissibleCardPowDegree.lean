@@ -29,7 +29,7 @@ open Polynomial
 
 open AbsoluteValue Real
 
-variable {Fq : Type _} [Fintype Fq]
+variable {Fq : Type*} [Fintype Fq]
 
 /-- If `A` is a family of enough low-degree polynomials over a finite semiring, there is a
 pair of equal elements in `A`. -/
@@ -118,13 +118,11 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   · obtain ⟨i₀, i₁, i_ne, mod_eq⟩ :=
       exists_eq_polynomial le_rfl b le_b (fun i => A i % b) fun i => EuclideanDomain.mod_lt (A i) hb
     refine' ⟨i₀, i₁, i_ne, _⟩
-    simp only at mod_eq
     rwa [mod_eq, sub_self, map_zero, Int.cast_zero]
   -- Otherwise, it suffices to choose two elements whose difference is of small enough degree.
   rw [not_le] at le_b
   obtain ⟨i₀, i₁, i_ne, deg_lt⟩ := exists_approx_polynomial_aux le_rfl b (fun i => A i % b) fun i =>
     EuclideanDomain.mod_lt (A i) hb
-  simp only at deg_lt
   use i₀, i₁, i_ne
   -- Again, if the remainders are equal we are done.
   by_cases h : A i₁ % b = A i₀ % b
@@ -165,9 +163,9 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   refine' lt_of_le_of_lt _ (max_lt hxy hyz)
   rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
     cardPowDegree_nonzero _ hyz']
-  have : (1 : ℤ) ≤ Fintype.card Fq := by exact_mod_cast (@Fintype.one_lt_card Fq _ _).le
+  have : (1 : ℤ) ≤ Fintype.card Fq := mod_cast (@Fintype.one_lt_card Fq _ _).le
   simp only [Int.cast_pow, Int.cast_ofNat, le_max_iff]
-  refine' Or.imp (pow_le_pow this) (pow_le_pow this) _
+  refine' Or.imp (pow_le_pow_right this) (pow_le_pow_right this) _
   rw [natDegree_le_iff_degree_le, natDegree_le_iff_degree_le, ← le_max_iff, ←
     degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
   convert degree_add_le (x - y) (y - z) using 2
@@ -212,8 +210,7 @@ theorem exists_partition_polynomial_aux (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b :
   -- but not that `j` is uniquely defined (which is needed to keep the induction going).
   obtain ⟨j, hj⟩ : ∃ j, ∀ i : Fin n,
       t' i = j → (cardPowDegree (A 0 % b - A i.succ % b) : ℝ) < cardPowDegree b • ε := by
-    by_contra hg
-    push_neg at hg
+    by_contra! hg
     obtain ⟨j₀, j₁, j_ne, approx⟩ := exists_approx_polynomial hb hε
       (Fin.cons (A 0) fun j => A (Fin.succ (Classical.choose (hg j))))
     revert j_ne approx

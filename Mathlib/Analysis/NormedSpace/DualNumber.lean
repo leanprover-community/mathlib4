@@ -19,12 +19,13 @@ These are just restatements of similar statements about `TrivSqZeroExt R M`.
 
 -/
 
+open NormedSpace -- For `exp`.
 
 namespace DualNumber
 
 open TrivSqZeroExt
 
-variable (𝕜 : Type _) {R : Type _}
+variable (𝕜 : Type*) {R : Type*}
 
 variable [IsROrC 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R]
 
@@ -37,7 +38,7 @@ theorem exp_eps : exp 𝕜 (eps : DualNumber R) = 1 + eps :=
 
 @[simp]
 theorem exp_smul_eps (r : R) : exp 𝕜 (r • eps : DualNumber R) = 1 + r • eps := by
-  rw [eps, ← inr_smul, exp_inr, Nat.cast_one]
+  rw [eps, ← inr_smul, exp_inr]
 #align dual_number.exp_smul_eps DualNumber.exp_smul_eps
 
 end DualNumber

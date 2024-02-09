@@ -26,7 +26,7 @@ namespace UniformSpace
 
 namespace Completion
 
-variable (E : Type _)
+variable (E : Type*)
 
 instance [UniformSpace E] [Norm E] : Norm (Completion E) where
   norm := Completion.extension Norm.norm
