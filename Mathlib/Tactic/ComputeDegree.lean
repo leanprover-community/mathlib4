@@ -132,6 +132,13 @@ theorem degree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : degree f ≤ n) 
 
 theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coeff n := rfl
 
+lemma _root_.Polynomial.leadingCoeff_eq_of_natDegree_le_of_coeff_eq {R} [Semiring R]
+    {n : Nat} {r : R} {f : R[X]} (dn : f.natDegree ≤ n) (cn : f.coeff n = r) (r0 : r ≠ 0) :
+    f.leadingCoeff = r := by
+  subst cn
+  unfold leadingCoeff
+  rw [natDegree_eq_of_le_of_coeff_ne_zero dn r0]
+
 section congr_lemmas
 
 /--  The following two lemmas should be viewed as a hand-made "congr"-lemmas.
@@ -495,6 +502,18 @@ macro (name := monicityMacro) "monicity" : tactic =>
 @[inherit_doc monicityMacro]
 macro "monicity!" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
+
+elab "polynomial" : tactic => do
+  match (← getMainTarget).getAppFnArgs with
+  | (``Eq, #[_, lhs, _rhs]) =>
+    match lhs.getAppFn.constName with
+    | ``leadingCoeff => evalTactic (← `(tactic|
+      (apply leadingCoeff_eq_of_natDegree_le_of_coeff_eq <;> try compute_degree)))
+    | _ => evalTactic (← `(tactic| compute_degree))
+  | (``Monic, _) => evalTactic (← `(tactic| monicity))
+  | _ => evalTactic (← `(tactic| compute_degree))
+
+elab "polynomial!" : tactic => do evalTactic (← `(tactic| polynomial <;> norm_num))
 
 end Tactic
 
