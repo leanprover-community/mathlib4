@@ -35,7 +35,7 @@ and construct (pointwise) derived functors using this notion
 
 ## References
 * https://ncatlab.org/nlab/show/exact+square
-* [René Guitart, *Relations et carrés exacts*][Guitard1980]
+* [René Guitart, *Relations et carrés exacts*][Guitart1980]
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
