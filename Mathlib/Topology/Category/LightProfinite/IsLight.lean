@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.Topology.Category.LightProfinite.Basic
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.ClopenBox
 /-!
 # Being light is a property of profinite spaces
