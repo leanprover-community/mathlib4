@@ -77,6 +77,40 @@ def Isometry.inr (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) : Q
   toLinearMap := LinearMap.inr R _ _
   map_app' m₁ := by simp
 
+variable (M₂) in
+/-- `LinearMap.fst` as an isometry, when the second space has the zero quadratic form. -/
+@[simps!]
+def Isometry.fst (Q₁ : QuadraticForm R M₁) : (Q₁.prod (0 : QuadraticForm R M₂)) →qᵢ Q₁ where
+  toLinearMap := LinearMap.fst R _ _
+  map_app' m₁ := by simp
+
+variable (M₁) in
+/-- `LinearMap.snd` as an isometry, when the first space has the zero quadratic form. -/
+@[simps!]
+def Isometry.snd (Q₂ : QuadraticForm R M₂) : ((0 : QuadraticForm R M₁).prod Q₂) →qᵢ Q₂ where
+  toLinearMap := LinearMap.snd R _ _
+  map_app' m₁ := by simp
+
+@[simp]
+lemma Isometry.fst_comp_inl (Q₁ : QuadraticForm R M₁) :
+    (fst M₂ Q₁).comp (inl Q₁ (0 : QuadraticForm R M₂)) = .id _ :=
+  ext fun _ => rfl
+
+@[simp]
+lemma Isometry.snd_comp_inr (Q₂ : QuadraticForm R M₂) :
+    (snd M₁ Q₂).comp (inr (0 : QuadraticForm R M₁) Q₂) = .id _ :=
+  ext fun _ => rfl
+
+@[simp]
+lemma Isometry.snd_comp_inl (Q₂ : QuadraticForm R M₂) :
+    (snd M₁ Q₂).comp (inl (0 : QuadraticForm R M₁) Q₂) = 0 :=
+  ext fun _ => rfl
+
+@[simp]
+lemma Isometry.fst_comp_inr (Q₁ : QuadraticForm R M₁) :
+    (fst M₂ Q₁).comp (inr Q₁ (0 : QuadraticForm R M₂)) = 0 :=
+  ext fun _ => rfl
+
 theorem Equivalent.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₁' : QuadraticForm R N₁} {Q₂' : QuadraticForm R N₂} (e₁ : Q₁.Equivalent Q₁')
     (e₂ : Q₂.Equivalent Q₂') : (Q₁.prod Q₂).Equivalent (Q₁'.prod Q₂') :=
