@@ -1381,21 +1381,18 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
+/-- Let `p i` be a family of seminorms on `E`. Let `s` be an absorbent set in `𝕜`.
+If all seminorms are uniformly bounded at every point of `s`,
+then they are bounded in the space of seminorms. -/
 lemma bddAbove_of_absorbent {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absorbent 𝕜 s)
-    (h : ∀ x ∈ s, BddAbove (range fun i ↦ p i x)) :
-    BddAbove (range p) := by
+    (h : ∀ x ∈ s, BddAbove (range (p · x))) : BddAbove (range p) := by
   rw [Seminorm.bddAbove_range_iff]
   intro x
-  rcases (hs x).exists_pos with ⟨r, hr, hrx⟩
-  rcases exists_lt_norm 𝕜 r with ⟨k, hk⟩
-  have hk0 : k ≠ 0 := norm_pos_iff.mp (hr.trans hk)
-  have : k⁻¹ • x ∈ s := by
-    rw [← mem_smul_set_iff_inv_smul_mem₀ hk0]
-    exact hrx k hk.le rfl
-  rcases h (k⁻¹ • x) this with ⟨M, hM⟩
-  refine ⟨‖k‖ * M, forall_range_iff.mpr fun i ↦ ?_⟩
-  have := (forall_range_iff.mp hM) i
-  rwa [map_smul_eq_mul, norm_inv, inv_mul_le_iff (hr.trans hk)] at this
+  obtain ⟨c, hc₀, hc⟩ : ∃ c ≠ 0, (c : 𝕜) • x ∈ s :=
+    (eventually_mem_nhdsWithin.and (hs.eventually_nhdsWithin_zero x)).exists
+  rcases h _ hc with ⟨M, hM⟩
+  refine ⟨M / ‖c‖, forall_range_iff.mpr fun i ↦ (le_div_iff' (norm_pos_iff.2 hc₀)).2 ?_⟩
+  exact hM ⟨i, map_smul_eq_mul ..⟩
 
 end NontriviallyNormedField
 
