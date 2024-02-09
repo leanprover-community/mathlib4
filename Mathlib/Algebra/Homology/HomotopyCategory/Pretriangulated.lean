@@ -9,13 +9,8 @@ import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-! The pretriangulated structure on the homotopy category of complexes
 
-<<<<<<< HEAD
 In this file, we define the pretriangulated structure on the homotopy
 category `HomotopyCategory C (ComplexShape.up ℤ)` of an additive category `C`.
-=======
-In this file, we shall define the pretriangulated structure on the homotopy
-category `HomotopyCategory C (ComplexShape.up ℤ)` of an additive category `C` (TODO).
->>>>>>> origin/homotopy-category-pretriangulated-3
 The distinguished triangles are the triangles that are isomorphic to the
 image in the homotopy category of the standard triangle
 `K ⟶ L ⟶ mappingCone φ ⟶ K⟦(1 : ℤ)⟧` for some morphism of
@@ -181,8 +176,8 @@ with `set_option says.verify true` (e.g. during CI).
 section Rotate
 
 set_option maxHeartbeats 400000 in
-/-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalence to
-the mapping cone of `inr φ : L ⟶ mappingCone φ` is homotopy equivalent. -/
+/-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalent to
+the mapping cone of `inr φ : L ⟶ mappingCone φ`. -/
 noncomputable def rotateHomotopyEquiv :
     HomotopyEquiv (K⟦(1 : ℤ)⟧) (mappingCone (inr φ)) where
   hom := lift (inr φ) (-(Cocycle.ofHom φ).leftShift 1 1 (zero_add 1))
