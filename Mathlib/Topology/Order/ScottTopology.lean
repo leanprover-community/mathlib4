@@ -333,8 +333,6 @@ instance : IsScott (WithScott α) := ⟨rfl⟩
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
     IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ (scottHausdorff α).IsOpen u := Iff.rfl
 
-
-
 end WithScott
 end Scott
 
