@@ -414,9 +414,6 @@ instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedF
 
 section RestrictScalars
 
-variable (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
-
 instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : SeminormedAddCommGroup E] :
     SeminormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
   I
@@ -424,6 +421,43 @@ instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : SeminormedAddCommGroup 
 instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NormedAddCommGroup E] :
     NormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
   I
+
+instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NonUnitalSeminormedRing E] :
+    NonUnitalSeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NonUnitalNormedRing E] :
+    NonUnitalNormedRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : SeminormedRing E] :
+    SeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NormedRing E] :
+    NormedRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NonUnitalSeminormedCommRing E] :
+    NonUnitalSeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NonUnitalNormedCommRing E] :
+    NonUnitalNormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : SeminormedCommRing E] :
+    SeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NormedCommRing E] :
+    NormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+section NormedSpace
+
+variable (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
 
 /-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedSpace`. -/
@@ -452,5 +486,39 @@ inferred, and because it is likely to create instance diamonds.
 def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' _
 #align normed_space.restrict_scalars NormedSpace.restrictScalars
+
+end NormedSpace
+
+section NormedAlgebra
+
+variable (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  (E : Type*) [SeminormedRing E] [NormedAlgebra 𝕜' E]
+
+/-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
+`RestrictScalars.module` is additionally a `NormedAlgebra`. -/
+instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+  { RestrictScalars.algebra 𝕜 𝕜' E with
+    norm_smul_le := norm_smul_le }
+
+-- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
+-- appropriately modified here.
+/-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
+This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
+-/
+def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
+    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+/-- Warning: This declaration should be used judiciously.
+Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
+
+This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
+rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
+inferred, and because it is likely to create instance diamonds.
+-/
+def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
+  RestrictScalars.normedAlgebra _ 𝕜' _
+
+end NormedAlgebra
 
 end RestrictScalars
