@@ -1,8 +1,17 @@
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+
+
 import Mathlib.Algebra.Category.FGModuleCat.EpiMono
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
-# The concrete (co)kernels in the category of modules are (co)kernels in the categorical sense.
+# The concrete (co)kernels in the category of finitely generated modules over a Noetherian ring.
+
+This file is almost a copy of `Algebra/ModuleCat/Kernels.lean`
 -/
 
 open CategoryTheory CategoryTheory.Limits

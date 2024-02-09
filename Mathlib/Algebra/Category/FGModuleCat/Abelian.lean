@@ -1,7 +1,19 @@
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.FGModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.RingTheory.Noetherian
+
+/-!
+# The category of finitely generated modules over a Noetherian ring is abelian.
+
+This file is basically a copy of `Algebra/ModuleCat/Abelian.lean`
+-/
 
 open CategoryTheory CategoryTheory.Limits
 

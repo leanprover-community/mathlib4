@@ -1,11 +1,16 @@
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 
 /-!
-# Monomorphisms in `Module R`
+# Monomorphisms in finitely generated modules over a Noetherian ring
 
-This file shows that an `R`-linear map is a monomorphism in the category of `R`-modules
-if and only if it is injective, and similarly an epimorphism if and only if it is surjective.
+This file is almost a copy of `Algebra/ModuleCat/EpiMono.lean`
 -/
 
 

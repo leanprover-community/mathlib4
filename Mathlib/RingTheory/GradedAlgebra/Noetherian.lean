@@ -8,6 +8,8 @@ import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.RingTheory.FiniteType
 import Mathlib.Algebra.Module.GradeZeroModule
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.RingTheory.Finiteness
+import Mathlib.Algebra.Module.GradedModule
 
 /-!
 # The properties of a graded Noetherian ring.

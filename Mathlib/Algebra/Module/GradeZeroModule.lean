@@ -3,8 +3,8 @@ Copyright (c) 2023 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
-import Mathlib.Algebra.Module.GradedModule
-import Mathlib.RingTheory.Finiteness
+import Mathlib.Algebra.GradedMulAction
+import Mathlib.Algebra.DirectSum.Internal
 
 /-!
 # The i-th grade of a graded module over a graded semiring.

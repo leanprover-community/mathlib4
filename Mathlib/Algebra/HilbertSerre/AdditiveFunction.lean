@@ -1,6 +1,29 @@
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Tactic.Linarith
+
+/-!
+# Additive Functions from an abelian Category
+
+If `T` is an commutative additive group and `𝒞` an abelian category, then an additive function with
+value in `T` is a function `μ : 𝒞 → T` such that whenever `0 → A → B → C → 0` is short exact,
+we have `μ(B) = μ(A) + μ(C)`.
+
+## Main results
+
+- `μ(0) = 0`
+- `μ(A) = μ(B)` if `A ≅ B`
+- if `f : A ⟶ B`, then `μ (kernel f) + μ (image f) = μ A` and `μ (image f) + μ (cokernel f) = μ B`
+- if `A₀ → A₁ → A₂ → A₃ → A₄ → A₅` is exact, then
+  `μ(A₀) - μ(A₁) + μ(A₂) - μ(A₃) + μ(A₄) - μ(A₅) = μ (ker f₀) - μ (coker f₄)`.
+
+-/
 
 open CategoryTheory CategoryTheory.Limits
 
@@ -187,23 +210,8 @@ private noncomputable def im_eq_ker_succ (n : ℕ) (hn : n + 2 ≤ N := by omega
         hS.toIsComplex.zero n) _
       (imageToKernel_isIso_of_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <|
         (Abelian.exact_iff_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).mp <|
-        (exact_iff_shortComplex_exact (S.sc hS.toIsComplex n)).mpr <| hS.exact _)
-  -- (let h1 : IsIso (imageToKernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <| hS.toIsComplex.zero n) :=
-      -- imageToKernel_isIso_of_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <|
-      --   (Abelian.exact_iff_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).mp <|
-      --   (exact_iff_shortComplex_exact (S.sc hS.toIsComplex n)).mpr <| hS.exact _
-  --   asIso (imageToKernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <| hS.toIsComplex.zero n))
-    ≪≫
+        (exact_iff_shortComplex_exact (S.sc hS.toIsComplex n)).mpr <| hS.exact _) ≪≫
   kernelSubobjectIso (S.map' (n + 1) (n + 2))
-
-  -- calc (im_ n)
-  --   _ ≅ imageSubobject (S.map' n (n + 1)) := imageSubobjectIso _ |>.symm
-  --   _ ≅ kernelSubobject (S.map' (n + 1) (n + 2)) := by
-      -- letI := imageToKernel_isIso_of_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2)) <|
-      --   (Abelian.exact_iff_image_eq_kernel (S.map' n (n + 1)) (S.map' (n + 1) (n + 2))).mp <|
-      --   (exact_iff_shortComplex_exact (S.sc hS.toIsComplex n)).mpr <| hS.exact _
-  --     exact asIso (imageToKernel (S.map' (n + 1) (n + 2)) (S.map' n (n + 1)) _)
-  --   _ ≅ ker_ (n + 1) := kernelSubobjectIso _
 
 lemma apply_image_eq_apply_ker_succ (n : ℕ) (hn : n + 2 ≤ N) : μ (im_ n) = μ (ker_ (n + 1)) :=
   μ.eq_of_iso (im_eq_ker_succ S hS n hn)
