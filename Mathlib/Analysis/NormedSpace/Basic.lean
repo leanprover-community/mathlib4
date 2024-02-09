@@ -324,14 +324,14 @@ section NNReal
 variable [NormOneClass 𝕜'] [NormedAlgebra ℝ 𝕜']
 
 @[simp]
-theorem norm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
+theorem norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
   (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
-#align norm_algebra_map_nnreal norm_algebraMap_nNReal
+#align norm_algebra_map_nnreal norm_algebraMap_nnreal
 
 @[simp]
-theorem nnnorm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
-  Subtype.ext <| norm_algebraMap_nNReal 𝕜' x
-#align nnnorm_algebra_map_nnreal nnnorm_algebraMap_nNReal
+theorem nnnorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
+  Subtype.ext <| norm_algebraMap_nnreal 𝕜' x
+#align nnnorm_algebra_map_nnreal nnnorm_algebraMap_nnreal
 
 end NNReal
 
