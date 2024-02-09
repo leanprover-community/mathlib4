@@ -5,6 +5,7 @@ Authors: Joël Riou, Brendan Murphy
 -/
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.Data.Fin.Tuple.Curry
+import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Trifunctors obtained by composition of bifunctors and currying
