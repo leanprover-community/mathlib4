@@ -55,12 +55,11 @@ This set is the same as `{x : ↑A | ↑x ∈ B}`.
 -/
 scoped notation3 A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
 
-
 end Set.Notation
 
 namespace Set
 
-open Set.Notation
+open Notation
 
 lemma preimage_val_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   ext x

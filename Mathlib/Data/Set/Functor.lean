@@ -116,7 +116,7 @@ We define this coercion here.  -/
 /-- Coercion using `(Subtype.val '' ·)` -/
 instance : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
 
-namespace Set.Notation
+namespace Notation
 
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
@@ -131,7 +131,7 @@ def delab_set_image_subtype : Delab := do
   let e ← withAppArg delab
   `(↑$e)
 
-end Set.Notation
+end Notation
 
 /-- The coercion from `Set.monad` as an instance is equal to the coercion defined above. -/
 theorem coe_eq_image_val (t : Set s) :
