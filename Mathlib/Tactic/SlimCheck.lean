@@ -179,10 +179,10 @@ elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
   catch _ => throwError "Failed to create a `testable` instance for `{tgt}`.
 What to do:
 1. make sure that the types you are using have `SlimCheck.SampleableExt` instances
-   (you can use `#sample my_type` if you are unsure);
+  (you can use `#sample my_type` if you are unsure);
 2. make sure that the relations and predicates that your proposition use are decidable;
 3. make sure that instances of `SlimCheck.Testable` exist that, when combined,
-   apply to your decorated proposition:
+  apply to your decorated proposition:
 ```
 {tgt'}
 ```
@@ -199,9 +199,9 @@ set_option trace.Meta.synthInstance true
   --   when_tracing `slim_check.instance   <| do
   --   { inst ← summarize_instance inst >>= pp,
   --     trace!"\n[testable instance]{format.indent inst 2}" },
-  let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) e
+  let code ← unsafe evalExpr (CoreM PUnit) q(CoreM PUnit) e
   _ ← code
-  admitGoal (← getMainGoal)
+  admitGoal g
 
 -- Porting note: below is the remaining code from mathlib3 which supports the
 -- `trace.slim_check.instance` trace option, and which has not been ported.
