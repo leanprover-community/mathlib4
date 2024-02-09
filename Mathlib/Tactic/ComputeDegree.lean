@@ -503,7 +503,11 @@ macro (name := monicityMacro) "monicity" : tactic =>
 macro "monicity!" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
 
-elab "polynomial" : tactic => do
+/-- The `polynomial` tactic (and its more aggressive version `polynomial!`) tries to solve goals of
+the form `natDegree f = d`, `natDegree f ≤ d`, `degree f = d`, `degree f ≤ d`,
+`leadingCoeff f = r`, `Monic f`
+in the case where `f` is an *explicit* polynomial. -/
+elab (name := polynomialTac) "polynomial" : tactic => do
   match (← getMainTarget).getAppFnArgs with
   | (``Eq, #[_, lhs, _rhs]) =>
     match lhs.getAppFn.constName with
@@ -513,6 +517,7 @@ elab "polynomial" : tactic => do
   | (``Monic, _) => evalTactic (← `(tactic| monicity))
   | _ => evalTactic (← `(tactic| compute_degree))
 
+@[inherit_doc polynomialTac]
 elab "polynomial!" : tactic => do evalTactic (← `(tactic| polynomial <;> norm_num))
 
 end Tactic
