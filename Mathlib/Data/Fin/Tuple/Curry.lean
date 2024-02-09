@@ -5,7 +5,7 @@ Authors: Eric Wieser, Brendan Murphy
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Logic.Equiv.Fin
-import Mathlib.Logic.Function.OfHArity
+import Mathlib.Logic.Function.OfArity
 
 /-!
 # Currying and uncurrying of n-ary functions
@@ -29,74 +29,14 @@ universe u v w w'
 
 namespace Function
 
-@[inline] abbrev curry₂   := @Function.curry.{u, v, w}
-@[inline] abbrev uncurry₂ := @Function.uncurry.{u, v, w}
+/-- Currying for 3-ary functions. -/
 @[inline] def curry₃ {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'} :
     (α × β × γ → δ) → α → β → γ → δ := fun f a b c => f (a, b, c)
+/-- Uncurrying for 3-ary functions. -/
 @[inline] def uncurry₃ {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'} :
     (α → β → γ → δ) → (α × β × γ) → δ := fun f x => f x.1 x.2.1 x.2.2
 
 end Function
-
-namespace Function.OfArity
-
-variable {α β : Type u}
-
-/-- Uncurry all the arguments of `Function.OfArity α n` to get a function from a tuple.
-
-Note this can be used on raw functions if used. -/
-def uncurry {n} (f : Function.OfArity α β n) : (Fin n → α) → β :=
-  match n with
-  | 0 => fun _ => f
-  | _ + 1 => fun args => (f (args 0)).uncurry (args ∘ Fin.succ)
-
-/-- Curry all the arguments of `Function.OfArity α β n` to get a function from a tuple. -/
-def curry {n} (f : (Fin n → α) → β) : Function.OfArity α β n :=
-  match n with
-  | 0 => f Fin.elim0
-  | _ + 1 => fun a => curry (fun args => f (Fin.cons a args))
-
-@[simp]
-theorem curry_uncurry {n} (f : Function.OfArity α β n) :
-    curry (uncurry f) = f :=
-  match n with
-  | 0 => rfl
-  | n + 1 => funext fun a => by
-    dsimp [curry, uncurry, Function.comp_def]
-    simp only [Fin.cons_zero, Fin.cons_succ]
-    rw [curry_uncurry]
-
-@[simp]
-theorem uncurry_curry {n} (f : (Fin n → α) → β) :
-    uncurry (curry f) = f := by
-  ext args
-  induction args using Fin.consInduction with
-  | h0 => rfl
-  | h a as ih =>
-    dsimp [curry, uncurry, Function.comp_def]
-    simp only [Fin.cons_zero, Fin.cons_succ, ih (f <| Fin.cons a ·)]
-
-/-- `Equiv.curry` for n-ary functions. -/
-@[simps]
-def curryEquiv (n : ℕ) : ((Fin n → α) → β) ≃ OfArity α β n where
-  toFun := curry
-  invFun := uncurry
-  left_inv := uncurry_curry
-  right_inv := curry_uncurry
-
-lemma curry_2_eq_curry₂ {α β : Type u} (f : ((i : Fin 2) → α) → β) :
-    curry f = curry₂ (f ∘ (finTwoArrowEquiv α).symm) := rfl
-
-lemma uncurry_2_eq_uncurry₂ {α β : Type u} (f : OfArity α β 2) :
-    uncurry f = uncurry₂ f ∘ (finTwoArrowEquiv α) := rfl
-
-lemma curry_3_eq_curry₃ {α β : Type u} (f : ((i : Fin 3) → α) → β) :
-    curry f = curry₃ (f ∘ (finThreeArrowEquiv α).symm) := rfl
-
-lemma uncurry_3_eq_uncurry₃ {α β : Type u} (f : OfArity α β 3) :
-    uncurry f = uncurry₃ f ∘ (finThreeArrowEquiv α) := rfl
-
-end Function.OfArity
 
 namespace Function.OfHArity
 
@@ -162,13 +102,13 @@ def curryEquiv (p : Fin n → Type u) : (((i : Fin n) → p i) → τ) ≃ OfHAr
   left_inv := uncurry_curry
   right_inv := curry_uncurry
 
-lemma curry_2_eq_curry₂ {p : Fin 2 → Type u} {τ : Type u}
+lemma curry_2_eq_curry {p : Fin 2 → Type u} {τ : Type u}
     (f : ((i : Fin 2) → p i) → τ) :
-    curry f = curry₂ (f ∘ (piFinTwoEquiv p).symm) := rfl
+    curry f = Function.curry (f ∘ (piFinTwoEquiv p).symm) := rfl
 
-lemma uncurry_2_eq_uncurry₂ (p : Fin 2 → Type u) (τ : Type u)
+lemma uncurry_2_eq_uncurry (p : Fin 2 → Type u) (τ : Type u)
     (f : Function.OfHArity p τ) :
-    uncurry f = uncurry₂ f ∘ piFinTwoEquiv p := rfl
+    uncurry f = Function.uncurry f ∘ piFinTwoEquiv p := rfl
 
 lemma curry_3_eq_curry₃ {p : Fin 3 → Type u} {τ : Type u}
     (f : ((i : Fin 3) → p i) → τ) :
@@ -179,3 +119,46 @@ lemma uncurry_3_eq_uncurry₃ (p : Fin 3 → Type u) (τ : Type u)
     uncurry f = uncurry₃ f ∘ piFinThreeEquiv p := rfl
 
 end Function.OfHArity
+
+namespace Function.OfArity
+
+variable {α β : Type u}
+
+/-- Uncurry all the arguments of `Function.OfArity α n` to get a function from a tuple.
+
+Note this can be used on raw functions if used. -/
+def uncurry {n} (f : Function.OfArity α β n) : (Fin n → α) → β := OfHArity.uncurry f
+
+/-- Curry all the arguments of `Function.OfArity α β n` to get a function from a tuple. -/
+def curry {n} (f : (Fin n → α) → β) : Function.OfArity α β n := OfHArity.curry f
+
+@[simp]
+theorem curry_uncurry {n} (f : Function.OfArity α β n) :
+    curry (uncurry f) = f := OfHArity.curry_uncurry f
+
+@[simp]
+theorem uncurry_curry {n} (f : (Fin n → α) → β) :
+    uncurry (curry f) = f := OfHArity.uncurry_curry f
+
+/-- `Equiv.curry` for n-ary functions. -/
+@[simps!]
+def curryEquiv (n : ℕ) : ((Fin n → α) → β) ≃ OfArity α β n :=
+  OfHArity.curryEquiv _
+
+lemma curry_2_eq_curry {α β : Type u} (f : ((i : Fin 2) → α) → β) :
+    curry f = Function.curry (f ∘ (finTwoArrowEquiv α).symm) :=
+  OfHArity.curry_2_eq_curry f
+
+lemma uncurry_2_eq_uncurry {α β : Type u} (f : OfArity α β 2) :
+    uncurry f = Function.uncurry f ∘ (finTwoArrowEquiv α) :=
+  OfHArity.uncurry_2_eq_uncurry _ _ f
+
+lemma curry_3_eq_curry₃ {α β : Type u} (f : ((i : Fin 3) → α) → β) :
+    curry f = curry₃ (f ∘ (finThreeArrowEquiv α).symm) :=
+  OfHArity.curry_3_eq_curry₃ f
+
+lemma uncurry_3_eq_uncurry₃ {α β : Type u} (f : OfArity α β 3) :
+    uncurry f = uncurry₃ f ∘ (finThreeArrowEquiv α) :=
+  OfHArity.uncurry_3_eq_uncurry₃ _ _ f
+
+end Function.OfArity
