@@ -487,8 +487,6 @@ Coercion is already handled by all the HomClass constructions I believe -/
 --   ⟨toMulActionHom⟩
 -- #align distrib_mul_action_hom.has_coe' DistribMulActionHom.coe'
 
--- porting note: removed has_coe_to_fun instance, coercions handled differently now
-
 #noalign distrib_mul_action_hom.has_coe
 #noalign distrib_mul_action_hom.has_coe'
 #noalign distrib_mul_action_hom.has_coe_to_fun
@@ -502,6 +500,7 @@ instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B
   map_smulₛₗ m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
+  map_smul m := m.map_smul'
 
 variable {φ φ' A B B₁}
 variable {F : Type*}
@@ -839,6 +838,7 @@ instance : MulSemiringActionSemiHomClass (R →ₑ+*[φ] S) φ R S
   map_add m := m.map_add'
   map_one := MulSemiringActionHom.map_one'
   map_mul := MulSemiringActionHom.map_mul'
+  map_smul m := m.map_smul'
 
 variable {φ R S}
 variable {F : Type*}

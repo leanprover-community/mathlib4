@@ -53,18 +53,12 @@ instance : Bicategory (MonoidalSingleObj C) where
   Hom _ _ := C
   id _ := 𝟙_ C
   comp X Y := tensorObj X Y
-  whiskerLeft X Y Z f := tensorHom (𝟙 X) f
-  whiskerRight f Z := tensorHom f (𝟙 Z)
+  whiskerLeft X Y Z f := X ◁ f
+  whiskerRight f Z := f ▷ Z
   associator X Y Z := α_ X Y Z
   leftUnitor X := λ_ X
   rightUnitor X := ρ_ X
-  comp_whiskerLeft _ _ _ _ _ := by
-    simp_rw [associator_inv_naturality, Iso.hom_inv_id_assoc, tensor_id]
-  whisker_assoc _ _ _ _ _ := by simp_rw [associator_inv_naturality, Iso.hom_inv_id_assoc]
-  whiskerRight_comp _ _ _ := by simp_rw [← tensor_id, associator_naturality, Iso.inv_hom_id_assoc]
-  id_whiskerLeft _ := by simp_rw [leftUnitor_inv_naturality, Iso.hom_inv_id_assoc]
-  whiskerRight_id _ := by simp_rw [rightUnitor_inv_naturality, Iso.hom_inv_id_assoc]
-  pentagon _ _ _ _ := by simp_rw [pentagon]
+  whisker_exchange := whisker_exchange
 
 namespace MonoidalSingleObj
 
@@ -73,6 +67,8 @@ namespace MonoidalSingleObj
 protected def star : MonoidalSingleObj C :=
   PUnit.unit
 #align category_theory.monoidal_single_obj.star CategoryTheory.MonoidalSingleObj.star
+
+attribute [local simp] id_tensorHom tensorHom_id in
 
 /-- The monoidal functor from the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
@@ -86,15 +82,6 @@ def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.sta
   map f := f
   ε := 𝟙 _
   μ X Y := 𝟙 _
-  -- The proof will be automated after merging #6307.
-  μ_natural_left f g := by
-    simp_rw [Category.id_comp, Category.comp_id]
-    -- Should we provide further simp lemmas so this goal becomes visible?
-    exact (tensor_id_comp_id_tensor _ _).symm
-  μ_natural_right f g := by
-    simp_rw [Category.id_comp, Category.comp_id]
-    -- Should we provide further simp lemmas so this goal becomes visible?
-    exact (tensor_id_comp_id_tensor _ _).symm
 #align category_theory.monoidal_single_obj.End_monoidal_star_functor CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctor
 
 /-- The equivalence between the endomorphisms of the single object

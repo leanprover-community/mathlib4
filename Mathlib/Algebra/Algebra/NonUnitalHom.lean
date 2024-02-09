@@ -192,6 +192,7 @@ instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
+  map_smul f := f.map_smul'
 
 @[ext]
 theorem ext {f g : A →ₛₙₐ[φ] B} (h : ∀ x, f x = g x) : f = g :=

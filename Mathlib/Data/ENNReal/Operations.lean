@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.ENNReal.Basic
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
@@ -471,6 +472,10 @@ theorem mul_sub (h : 0 < c → c < b → a ≠ ∞) : a * (b - c) = a * b - a * 
   simp only [mul_comm a]
   exact sub_mul h
 #align ennreal.mul_sub ENNReal.mul_sub
+
+theorem sub_le_sub_iff_left (h : c ≤ a) (h' : a ≠ ∞) :
+    (a - b ≤ a - c) ↔ c ≤ b :=
+  (cancel_of_ne h').tsub_le_tsub_iff_left (cancel_of_ne (ne_top_of_le_ne_top h' h)) h
 
 end Sub
 
