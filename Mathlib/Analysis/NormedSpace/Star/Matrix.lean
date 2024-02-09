@@ -25,7 +25,7 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 
 ## Main statements
 
-* `entry_norm_bound_of_unitary`: the entries of a unitary matrix are uniformly boundd by `1`.
+* `entry_norm_bound_of_unitary`: the entries of a unitary matrix are uniformly bound by `1`.
 
 ## Implementation details
 
