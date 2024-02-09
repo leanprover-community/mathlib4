@@ -8,12 +8,38 @@ import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Rank
 
+
+-- move this
+namespace LinearMap
+
+variable {R M : Type*}
+variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [Module.Finite R M] [Module.Free R M]
+variable (φ : M →ₗ[R] M)
+
+open FiniteDimensional Polynomial
+
+lemma charpoly_eq_X_pow_iff :
+    φ.charpoly = X ^ finrank R M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 := by
+  constructor
+  · intro h m
+    use finrank R M
+    suffices φ ^ finrank R M = 0 by simp only [this, LinearMap.zero_apply]
+    simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
+  · sorry
+
+lemma charpoly_constantCoeff_eq_zero_iff :
+    constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 := by
+  sorry
+
+end LinearMap
+
 namespace LieAlgebra
 
 section CommRing
 
 variable {R L M : Type*}
-variable [Field R] [LieRing L] [LieAlgebra R L]
+variable [CommRing R] [Nontrivial R] [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [Module.Finite R L] [Module.Free R L]
 variable [Module.Finite R M] [Module.Free R M]
@@ -22,6 +48,8 @@ open FiniteDimensional LieSubalgebra Module.Free Polynomial
 
 local notation "φ" => LieModule.toEndomorphism R L M
 
+variable (R)
+
 lemma engel_zero : engel R (0 : L) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
@@ -29,13 +57,23 @@ lemma engel_zero : engel R (0 : L) = ⊤ := by
   use 1
   simp only [pow_one, LinearMap.zero_apply]
 
-lemma isRegular_iff_finrank_engel_eq_rank (x : L) :
-    IsRegular R x ↔ finrank R (engel R x) = rank R L := by
-  sorry
-
 lemma rank_le_finrank_engel (x : L) :
     rank R L ≤ finrank R (engel R x) := by
   sorry
+
+lemma isRegular_iff_finrank_engel_eq_rank (x : L) :
+    IsRegular R x ↔ finrank R (engel R x) = rank R L := by
+  rw [LieAlgebra.isRegular_iff_coeff_rank_ne_zero]
+  refine ⟨?_, ?_⟩
+  · intro h
+    apply le_antisymm _ (rank_le_finrank_engel R x)
+    sorry
+  · intro h
+    rw [← h]
+    simp only [lieCharpoly_eval, ne_eq]
+    sorry
+
+variable {R}
 
 namespace engel_le_engel
 
@@ -75,21 +113,6 @@ lemma lieCharpoly₁_map_eval (r : R) :
         map_smul, Finsupp.coe_add, Finsupp.coe_smul, MvPolynomial.eval_X, Pi.add_apply,
         Pi.smul_apply, smul_eq_mul, mul_comm r]
 
--- generalize and move
-lemma charpoly_eq_X_pow_iff :
-    (φ x).charpoly = X ^ finrank R M ↔ ∀ m : M, ∃ (n : ℕ), ((φ x) ^ n) m = 0 := by
-  constructor
-  · intro h m
-    use finrank R M
-    suffices (φ x) ^ finrank R M = 0 by simp only [this, LinearMap.zero_apply]
-    simpa only [h, map_pow, aeval_X] using (φ x).aeval_self_charpoly
-  · sorry
-
--- generalize and move
-lemma charpoly_constantCoeff_eq_zero_iff :
-    constantCoeff (φ x).charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ (φ x) m = 0 := by
-  sorry
-
 lemma lieCharpoly₁_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly₁ R M x y).coeff i).natDegree = j := by
   sorry
@@ -98,7 +121,7 @@ end engel_le_engel
 
 -- move
 open Cardinal in
-lemma eq_zero_of_forall_eval_zero_of_natDegree_lt_card (f : R[X])
+lemma eq_zero_of_forall_eval_zero_of_natDegree_lt_card [IsDomain R] (f : R[X])
     (hf : ∀ r, f.eval r = 0) (hfR : f.natDegree < #R) :
     f = 0 := by
   contrapose! hf
@@ -284,7 +307,7 @@ lemma exists_IsCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
   suffices finrank K (engel K x) ≤ finrank K (engel K y) by
     apply LieSubalgebra.to_submodule_injective
     apply eq_of_le_of_finrank_le hyx this
-  rw [(isRegular_iff_finrank_engel_eq_rank x).mp hx]
+  rw [(isRegular_iff_finrank_engel_eq_rank K x).mp hx]
   apply rank_le_finrank_engel
 
 lemma exists_IsCartanSubalgebra [Infinite K] :
