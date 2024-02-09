@@ -75,7 +75,6 @@ def id (Q : QuadraticForm R M) : Q →qᵢ Q where
   __ := LinearMap.id
   map_app' _ := rfl
 
-
 /-- The identity isometry between equal quadratic forms. -/
 @[simps!]
 def ofEq {Q₁ Q₂ : QuadraticForm R M₁} (h : Q₁ = Q₂) : Q₁ →qᵢ Q₂ where
