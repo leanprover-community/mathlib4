@@ -6,8 +6,8 @@ Authors: Jujian Zhang
 
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.FGModuleCat.Kernels
-import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.RingTheory.Noetherian
+import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # The category of finitely generated modules over a Noetherian ring is abelian.

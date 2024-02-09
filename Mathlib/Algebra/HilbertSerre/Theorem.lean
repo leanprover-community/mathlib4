@@ -5,7 +5,6 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.RingTheory.GradedAlgebra.Noetherian
-import Mathlib.Algebra.HilbertSerre.AdditiveFunction
 
 /-!
 # Hilbert Serre Theorem
