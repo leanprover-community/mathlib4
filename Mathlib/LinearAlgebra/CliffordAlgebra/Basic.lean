@@ -191,7 +191,9 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : s.val.comp (lift Q of) = AlgHom.id R (CliffordAlgebra Q) := by
     ext x
-    simp [of]
+    simp only [AlgHom.toLinearMap_id, LinearMap.id_comp, AlgHom.comp_toLinearMap,
+      LinearMap.coe_comp, AlgHom.coe_toLinearMap, Subalgebra.coe_val, Function.comp_apply,
+      lift_ι_apply, of]
     -- porting note: `simp` should fire with the following lemma automatically
     have := LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
     exact this
