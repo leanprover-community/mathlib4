@@ -438,16 +438,10 @@ variable {G A : Type*} [Mul G] [AddCommGroup A] [SMul G A]
 `g • x - x = f(g)` for all `g : G`. -/
 def IsOneCoboundary (f : G → A) : Prop := ∃ x : A, ∀ g : G, g • x - x = f g
 
-theorem isOneCoboundary_iff (f : G → A) :
-    IsOneCoboundary f ↔ ∃ x : A, ∀ g : G, g • x - x = f g := Iff.rfl
-
 /-- A function `f : G × G → A` satisfies the 2-coboundary condition if there's `x : G → A` such
 that `g • x(h) - x(gh) + x(g) = f(g, h)` for all `g, h : G`. -/
 def IsTwoCoboundary (f : G × G → A) : Prop :=
   ∃ x : G → A, ∀ g h : G, g • x h - x (g * h) + x g = f (g, h)
-
-theorem isTwoCoboundary_iff (f : G × G → A) :
-    IsTwoCoboundary f ↔ ∃ x : G → A, ∀ g h : G, g • x h - x (g * h) + x g = f (g, h) := Iff.rfl
 
 end IsCoboundary
 
