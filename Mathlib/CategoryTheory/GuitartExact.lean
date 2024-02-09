@@ -261,11 +261,13 @@ lemma whiskerVertical_iff {L' : C₁ ⥤ C₃} {R' : C₂ ⥤ C₄}
     (w.whiskerVertical α.hom β.inv).GuitartExact ↔ w.GuitartExact := by
   constructor
   · intro h
-    convert whiskerVertical (w.whiskerVertical α.hom β.inv) α.symm β.symm
-    ext X₁
-    simp only [Functor.comp_obj, Iso.symm_hom, Iso.symm_inv,
-      whiskerVertical_app, assoc, Iso.hom_inv_id_app_assoc,
-      ← B.map_comp, Iso.hom_inv_id_app, B.map_id, comp_id]
+    have : w = TwoSquare.whiskerVertical
+        (TwoSquare.whiskerVertical w α.hom β.inv) α.inv β.hom := by
+      ext X₁
+      simp only [Functor.comp_obj, whiskerVertical_app, assoc, Iso.hom_inv_id_app_assoc,
+        ← B.map_comp, Iso.hom_inv_id_app, B.map_id, comp_id]
+    rw [this]
+    exact whiskerVertical (w.whiskerVertical α.hom β.inv) α.symm β.symm
   · intro h
     exact whiskerVertical w α β
 

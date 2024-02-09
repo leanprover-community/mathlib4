@@ -164,43 +164,27 @@ lemma isLeftKanExtension_iff_of_iso {F' : H ⥤ D} {F'' : H ⥤ D} (e : F' ≅ F
 
 end
 
-class HasRightKanExtension (L : C ⥤ H) (F : C ⥤ D) : Prop where
-  hasTerminal : HasTerminal (RightExtension L F)
+abbrev HasRightKanExtension (L : C ⥤ H) (F : C ⥤ D) := HasTerminal (RightExtension L F)
 
 lemma HasRightKanExtension.mk' (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : L ⋙ F' ⟶ F)
-    [F'.IsRightKanExtension α] : HasRightKanExtension L F where
-  hasTerminal := (F'.isUniversalOfIsRightKanExtension α).hasTerminal
+    [F'.IsRightKanExtension α] : HasRightKanExtension L F :=
+  (F'.isUniversalOfIsRightKanExtension α).hasTerminal
 
-lemma hasRightKanExtension_iff (L : C ⥤ H) (F : C ⥤ D) :
-    HasRightKanExtension L F ↔ HasTerminal (RightExtension L F) :=
-  ⟨fun h => h.hasTerminal, fun h => ⟨h⟩⟩
-
-class HasLeftKanExtension (L : C ⥤ H) (F : C ⥤ D) : Prop where
-  hasInitial : HasInitial (LeftExtension L F)
+abbrev HasLeftKanExtension (L : C ⥤ H) (F : C ⥤ D) := HasInitial (LeftExtension L F)
 
 lemma HasLeftKanExtension.mk' (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F')
-    [F'.IsLeftKanExtension α] : HasLeftKanExtension L F where
-  hasInitial := (F'.isUniversalOfIsLeftKanExtension α).hasInitial
-
-lemma hasLeftKanExtension_iff (L : C ⥤ H) (F : C ⥤ D) :
-    HasLeftKanExtension L F ↔ HasInitial (LeftExtension L F) :=
-  ⟨fun h => h.hasInitial, fun h => ⟨h⟩⟩
+    [F'.IsLeftKanExtension α] : HasLeftKanExtension L F :=
+  (F'.isUniversalOfIsLeftKanExtension α).hasInitial
 
 section
 
 variable (L : C ⥤ H) (F : C ⥤ D) [HasRightKanExtension L F]
 
-noncomputable def rightExtensionTerminal : RightExtension L F :=
-  have : HasTerminal (RightExtension L F) := HasRightKanExtension.hasTerminal
-  ⊤_ _
-
-noncomputable def rightKanExtension : H ⥤ D := (rightExtensionTerminal L F).left
-noncomputable def rightKanExtensionCounit : L ⋙ rightKanExtension L F ⟶ F := (rightExtensionTerminal L F).hom
+noncomputable def rightKanExtension : H ⥤ D := (⊤_ _ : RightExtension L F).left
+noncomputable def rightKanExtensionCounit : L ⋙ rightKanExtension L F ⟶ F := (⊤_ _ : RightExtension L F).hom
 
 instance : (L.rightKanExtension F).IsRightKanExtension (L.rightKanExtensionCounit F) where
-  nonempty_isUniversal := ⟨by
-    have : HasTerminal (RightExtension L F) := HasRightKanExtension.hasTerminal
-    apply terminalIsTerminal⟩
+  nonempty_isUniversal := ⟨terminalIsTerminal⟩
 
 @[ext]
 lemma rightKanExtension_hom_ext {G : H ⥤ D} (γ₁ γ₂ : G ⟶ rightKanExtension L F)
@@ -215,17 +199,11 @@ section
 
 variable (L : C ⥤ H) (F : C ⥤ D) [HasLeftKanExtension L F]
 
-noncomputable def leftExtensionInitial : LeftExtension L F :=
-  have : HasInitial (LeftExtension L F) := HasLeftKanExtension.hasInitial
-  ⊥_ _
-
-noncomputable def leftKanExtension : H ⥤ D := (leftExtensionInitial L F).right
-noncomputable def leftKanExtensionUnit : F ⟶ L ⋙ leftKanExtension L F := (leftExtensionInitial L F).hom
+noncomputable def leftKanExtension : H ⥤ D := (⊥_ _ : LeftExtension L F).right
+noncomputable def leftKanExtensionUnit : F ⟶ L ⋙ leftKanExtension L F := (⊥_ _ : LeftExtension L F).hom
 
 instance : (L.leftKanExtension F).IsLeftKanExtension (L.leftKanExtensionUnit F) where
-  nonempty_isUniversal := ⟨by
-    have : HasInitial (LeftExtension L F) := HasLeftKanExtension.hasInitial
-    apply initialIsInitial⟩
+  nonempty_isUniversal := ⟨initialIsInitial⟩
 
 @[ext]
 lemma leftKanExtension_hom_ext {G : H ⥤ D} (γ₁ γ₂ : leftKanExtension L F ⟶ G)
@@ -276,8 +254,7 @@ noncomputable def rightExtensionEquivalenceOfPostcomp₁ :
 
 lemma hasRightExtension_iff_postcomp₁ :
     HasRightKanExtension L F ↔ HasRightKanExtension (L ⋙ e.functor) F := by
-  simp only [hasRightKanExtension_iff,
-    (rightExtensionEquivalenceOfPostcomp₁ L F e).hasTerminal_iff]
+  simp only [(rightExtensionEquivalenceOfPostcomp₁ L F e).hasTerminal_iff]
 
 noncomputable def leftExtensionEquivalenceOfPostcomp₁ :
     LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F := by
@@ -286,8 +263,7 @@ noncomputable def leftExtensionEquivalenceOfPostcomp₁ :
 
 lemma hasLeftExtension_iff_postcomp₁ :
     HasLeftKanExtension L F ↔ HasLeftKanExtension (L ⋙ e.functor) F := by
-  simp only [hasLeftKanExtension_iff,
-    (leftExtensionEquivalenceOfPostcomp₁ L F e).hasInitial_iff]
+  simp only [(leftExtensionEquivalenceOfPostcomp₁ L F e).hasInitial_iff]
 
 variable {L L'}
 
@@ -297,8 +273,7 @@ def rightExtensionEquivalenceOfIso₁ :
 
 lemma hasRightExtension_iff_of_iso₁ :
     HasRightKanExtension L F ↔ HasRightKanExtension L' F := by
-  simp only [hasRightKanExtension_iff,
-    (rightExtensionEquivalenceOfIso₁ iso₁ F).hasTerminal_iff]
+  simp only [(rightExtensionEquivalenceOfIso₁ iso₁ F).hasTerminal_iff]
 
 def leftExtensionEquivalenceOfIso₁ :
     LeftExtension L F ≌ LeftExtension L' F :=
@@ -306,8 +281,7 @@ def leftExtensionEquivalenceOfIso₁ :
 
 lemma hasLeftExtension_iff_of_iso₁ :
     HasLeftKanExtension L F ↔ HasLeftKanExtension L' F := by
-  simp only [hasLeftKanExtension_iff,
-    (leftExtensionEquivalenceOfIso₁ iso₁ F).hasInitial_iff]
+  simp only [(leftExtensionEquivalenceOfIso₁ iso₁ F).hasInitial_iff]
 
 variable (L) {F F'}
 
@@ -316,18 +290,16 @@ def rightExtensionEquivalenceOfIso₂ :
   CostructuredArrow.mapIso iso₂
 
 lemma hasRightExtension_iff_of_iso₂ :
-    HasRightKanExtension L F ↔ HasRightKanExtension L F' := by
-  simp only [hasRightKanExtension_iff,
-    (rightExtensionEquivalenceOfIso₂ L iso₂).hasTerminal_iff]
+    HasRightKanExtension L F ↔ HasRightKanExtension L F' :=
+  (rightExtensionEquivalenceOfIso₂ L iso₂).hasTerminal_iff
 
 def leftExtensionEquivalenceOfIso₂ :
     LeftExtension L F ≌ LeftExtension L F' :=
   StructuredArrow.mapIso iso₂
 
 lemma hasLeftExtension_iff_of_iso₂ :
-    HasLeftKanExtension L F ↔ HasLeftKanExtension L F' := by
-  simp only [hasLeftKanExtension_iff,
-    (leftExtensionEquivalenceOfIso₂ L iso₂).hasInitial_iff]
+    HasLeftKanExtension L F ↔ HasLeftKanExtension L F' :=
+  (leftExtensionEquivalenceOfIso₂ L iso₂).hasInitial_iff
 
 end Functor
 

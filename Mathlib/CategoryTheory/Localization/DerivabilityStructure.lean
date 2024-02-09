@@ -62,10 +62,8 @@ lemma guitartExact_of_isRightDerivabilityStructure [Φ.IsRightDerivabilityStruct
     TwoSquare.GuitartExact ((Φ.catCommSq L₁ L₂).iso).hom :=
   guitartExact_of_isRightDerivabilityStructure' _ _ _ _ _
 
-instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).HasRightResolutions := fun X₂ =>
-  ⟨{  X₁ := X₂
-      w := 𝟙 X₂
-      hw := W₁.id_mem X₂ }⟩
+instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).HasRightResolutions :=
+  fun X₂ => ⟨RightResolution.mk (𝟙 X₂) (W₁.id_mem X₂)⟩
 
 instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsRightDerivabilityStructure := by
   rw [(LocalizerMorphism.id W₁).isRightDerivabilityStructure_iff W₁.Q W₁.Q (𝟭 W₁.Localization)
