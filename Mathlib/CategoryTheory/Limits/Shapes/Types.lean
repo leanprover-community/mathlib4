@@ -817,8 +817,7 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
   refl := Rel'.refl
   symm h := h.symm
   trans := by
-    intro x y z hxy hyz
-    obtain _|⟨_, _, h⟩|s|_ := hxy
+    rintro x y z (_|⟨_, _, h⟩|s|_) hyz
     · exact hyz
     · obtain z₁|z₂ := z
       · rw [inl_rel'_inl_iff] at hyz
