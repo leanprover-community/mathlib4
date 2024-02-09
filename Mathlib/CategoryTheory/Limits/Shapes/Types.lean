@@ -858,8 +858,7 @@ def equivPushout' : Pushout f g ≃ Pushout' f g where
     apply Quot.sound
     apply Rel'.inl_inr)
   invFun := Quot.lift (Quot.mk _) (by
-    rintro a b h
-    obtain _|⟨x₀, y₀, h⟩|_|_ := h
+    rintro a b (_|⟨x₀, y₀, h⟩|_|_)
     · rfl
     · have h₀ : Rel f g _ _ := Rel.inl_inr x₀
       rw [Quot.sound h₀, h]
