@@ -179,10 +179,10 @@ elab_rules : tactic | `(tactic| slim_check $[$cfg]?) => withMainContext do
   catch _ => throwError "Failed to create a `testable` instance for `{tgt}`.
 What to do:
 1. make sure that the types you are using have `SlimCheck.SampleableExt` instances
-  (you can use `#sample my_type` if you are unsure);
+   (you can use `#sample my_type` if you are unsure);
 2. make sure that the relations and predicates that your proposition use are decidable;
 3. make sure that instances of `SlimCheck.Testable` exist that, when combined,
-  apply to your decorated proposition:
+   apply to your decorated proposition:
 ```
 {tgt'}
 ```
