@@ -136,7 +136,7 @@ theorem opow_isLimit_left {a b : Ordinal} (l : IsLimit a) (hb : b ≠ 0) : IsLim
 #align ordinal.opow_is_limit_left Ordinal.opow_isLimit_left
 
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
-  cases' lt_or_eq_of_le (one_le_iff_pos.2 h₁) with h₁ h₁
+  rcases lt_or_eq_of_le (one_le_iff_pos.2 h₁) with h₁ | h₁
   · exact (opow_le_opow_iff_right h₁).2 h₂
   · subst a
     -- Porting note: `le_refl` is required.
@@ -164,7 +164,7 @@ theorem opow_le_opow_left {a b : Ordinal} (c : Ordinal) (ab : a ≤ b) : a ^ c �
 theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := by
   nth_rw 1 [← opow_one a]
   cases' le_or_gt a 1 with a1 a1
-  · cases' lt_or_eq_of_le a1 with a0 a1
+  · rcases lt_or_eq_of_le a1 with a0 | a1
     · rw [lt_one_iff_zero] at a0
       rw [a0, zero_opow Ordinal.one_ne_zero]
       exact Ordinal.zero_le _
@@ -346,7 +346,7 @@ theorem log_pos {b o : Ordinal} (hb : 1 < b) (ho : o ≠ 0) (hbo : b ≤ o) : 0 
 theorem log_eq_zero {b o : Ordinal} (hbo : o < b) : log b o = 0 := by
   rcases eq_or_ne o 0 with (rfl | ho)
   · exact log_zero_right b
-  cases' le_or_lt b 1 with hb hb
+  rcases le_or_lt b 1 with hb | hb
   · rcases le_one_iff.1 hb with (rfl | rfl)
     · exact log_zero_left o
     · exact log_one_left o
@@ -383,7 +383,7 @@ theorem mod_opow_log_lt_self (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : o % (b
 
 theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (ho : o ≠ 0) (hbo : b ≤ o) :
     log b (o % (b ^ log b o)) < log b o := by
-  cases' eq_or_ne (o % (b ^ log b o)) 0 with h h
+  rcases eq_or_ne (o % (b ^ log b o)) 0 with h | h
   · rw [h, log_zero_right]
     apply log_pos hb ho hbo
   · rw [← succ_le_iff, succ_log_def hb h]

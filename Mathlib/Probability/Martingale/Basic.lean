@@ -353,7 +353,7 @@ theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Superma
   refine' (condexp_smul c (f j)).le.trans _
   filter_upwards [hf.2.1 i j hij] with _ hle
   simp_rw [Pi.smul_apply]
-  exact smul_le_smul_of_nonneg hle hc
+  exact smul_le_smul_of_nonneg_left hle hc
 #align measure_theory.supermartingale.smul_nonneg MeasureTheory.Supermartingale.smul_nonneg
 
 theorem smul_nonpos {f : ι → Ω → F} {c : ℝ} (hc : c ≤ 0) (hf : Supermartingale f ℱ μ) :

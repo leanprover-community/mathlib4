@@ -67,6 +67,8 @@ theorem iff_card [Fact p.Prime] [Fintype G] : IsPGroup p G ↔ ∃ n : ℕ, card
   exact (hq1.pow_eq_iff.mp (hg.symm.trans hk).symm).1.symm
 #align is_p_group.iff_card IsPGroup.iff_card
 
+alias ⟨exists_card_eq, _⟩ := iff_card
+
 section GIsPGroup
 
 variable (hG : IsPGroup p G)
@@ -197,7 +199,7 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
     refine'
       Eq.symm
         (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
-          (fun a₁ a₂ _ _ _ _ h =>
+          (fun a₁ _ _ a₂ _ _ h =>
             Subtype.eq (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
           (fun b => Quotient.inductionOn' b fun b _ hb => _) fun a ha _ => by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])

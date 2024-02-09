@@ -152,7 +152,7 @@ variable [DecidablePred q]
 
 theorem count_mono_left {n : ℕ} (hpq : ∀ k, p k → q k) : count p n ≤ count q n := by
   simp only [count_eq_card_filter_range]
-  exact card_le_of_subset ((range n).monotone_filter_right hpq)
+  exact card_le_card ((range n).monotone_filter_right hpq)
 #align nat.count_mono_left Nat.count_mono_left
 
 end Count

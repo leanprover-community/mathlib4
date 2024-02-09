@@ -199,6 +199,7 @@ theorem cons_of_coe_eq (a : α) (v : Vector α n) : a ::ₛ (↑v : Sym α n) = 
     rfl
 #align sym.cons_of_coe_eq Sym.cons_of_coe_eq
 
+open scoped List in
 theorem sound {a b : Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) = ↑b :=
   Subtype.ext <| Quotient.sound h
 #align sym.sound Sym.sound

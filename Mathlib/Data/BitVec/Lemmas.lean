@@ -3,7 +3,7 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Harun Khan
 -/
-
+import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.BitVec.Defs
 
 /-!
@@ -21,8 +21,14 @@ open Nat
 
 variable {w v : Nat}
 
-theorem toNat_injective {n : Nat} : Function.Injective (@Std.BitVec.toNat n)
+theorem toFin_injective {n : Nat} : Function.Injective (toFin : BitVec n → _)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
+theorem toFin_inj {x y : BitVec w} : x.toFin = y.toFin ↔ x = y :=
+  toFin_injective.eq_iff
+
+theorem toNat_injective {n : Nat} : Function.Injective (BitVec.toNat : BitVec n → _) :=
+  Fin.val_injective.comp toFin_injective
 
 theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
   toNat_injective.eq_iff
@@ -64,8 +70,6 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
 -- Since the statement is awkward and `Std.BitVec` has no comparable API, we just drop it.
 #noalign bitvec.to_nat_eq_foldr_reverse
 
-theorem toNat_lt {n : ℕ} (v : BitVec n) : v.toNat < 2 ^ n := by
-  exact v.toFin.2
 #align bitvec.to_nat_lt Std.BitVec.toNat_lt
 
 theorem addLsb_div_two {x b} : addLsb x b / 2 = x := by
@@ -104,5 +108,109 @@ theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i :=
 theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
   rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
+
+/-!
+### Distributivity of `Std.BitVec.ofFin`
+-/
+section
+variable (x y : Fin (2^w))
+
+@[simp] lemma ofFin_neg : ofFin (-x) = -(ofFin x) := by
+  rw [neg_eq_zero_sub]; rfl
+
+@[simp] lemma ofFin_and : ofFin (x &&& y) = ofFin x &&& ofFin y := by
+  simp only [HAnd.hAnd, AndOp.and, Fin.land, BitVec.and, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
+  exact mod_eq_of_lt (Nat.and_lt_two_pow _ y.prop)
+
+@[simp] lemma ofFin_or  : ofFin (x ||| y) = ofFin x ||| ofFin y := by
+  simp only [HOr.hOr, OrOp.or, Fin.lor, BitVec.or, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
+  exact mod_eq_of_lt (Nat.or_lt_two_pow x.prop y.prop)
+
+@[simp] lemma ofFin_xor : ofFin (x ^^^ y) = ofFin x ^^^ ofFin y := by
+  simp only [HXor.hXor, Xor.xor, Fin.xor, BitVec.xor, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
+  exact mod_eq_of_lt (Nat.xor_lt_two_pow x.prop y.prop)
+
+@[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
+
+-- These should be simp, but Std's simp-lemmas do not allow this yet.
+lemma ofFin_zero : ofFin (0 : Fin (2^w)) = 0 := rfl
+lemma ofFin_one  : ofFin (1 : Fin (2^w)) = 1 := by
+  simp only [OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod]
+
+lemma ofFin_nsmul (n : ℕ) (x : Fin (2^w)) : ofFin (n • x) = n • ofFin x := rfl
+lemma ofFin_zsmul (z : ℤ) (x : Fin (2^w)) : ofFin (z • x) = z • ofFin x := rfl
+@[simp] lemma ofFin_pow (n : ℕ) : ofFin (x ^ n) = ofFin x ^ n := rfl
+
+@[simp] lemma ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = n := by
+  simp only [Nat.cast, NatCast.natCast, OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod]
+  rfl
+
+-- See Note [no_index around OfNat.ofNat]
+@[simp] lemma ofFin_ofNat (n : ℕ) :
+    ofFin (no_index (OfNat.ofNat n : Fin (2^w))) = OfNat.ofNat n := by
+  simp only [OfNat.ofNat, Fin.ofNat', BitVec.ofNat, and_pow_two_is_mod]
+
+end
+
+/-!
+### Distributivity of `Std.BitVec.toFin`
+-/
+section
+variable (x y : BitVec w)
+
+@[simp] lemma toFin_neg : toFin (-x) = -(toFin x) := by
+  rw [neg_eq_zero_sub]; rfl
+
+@[simp] lemma toFin_and : toFin (x &&& y) = toFin x &&& toFin y := by
+  apply toFin_inj.mpr; simp only [ofFin_and]
+
+@[simp] lemma toFin_or  : toFin (x ||| y) = toFin x ||| toFin y := by
+  apply toFin_inj.mpr; simp only [ofFin_or]
+
+@[simp] lemma toFin_xor : toFin (x ^^^ y) = toFin x ^^^ toFin y := by
+  apply toFin_inj.mpr; simp only [ofFin_xor]
+
+@[simp] lemma toFin_add : toFin (x + y)   = toFin x + toFin y   := rfl
+@[simp] lemma toFin_sub : toFin (x - y)   = toFin x - toFin y   := rfl
+@[simp] lemma toFin_mul : toFin (x * y)   = toFin x * toFin y   := rfl
+
+-- These should be simp, but Std's simp-lemmas do not allow this yet.
+lemma toFin_zero : toFin (0 : BitVec w) = 0 := rfl
+lemma toFin_one  : toFin (1 : BitVec w) = 1 := by
+  apply toFin_inj.mpr; simp only [ofNat_eq_ofNat, ofFin_ofNat]
+
+lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := rfl
+lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
+@[simp] lemma toFin_pow (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := rfl
+
+@[simp] lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
+  apply toFin_inj.mpr; simp only [ofFin_natCast]
+
+-- See Note [no_index around OfNat.ofNat]
+lemma toFin_ofNat (n : ℕ) :
+    toFin (no_index (OfNat.ofNat n : BitVec w)) = OfNat.ofNat n := by
+  simp only [OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod, Fin.ofNat']
+
+end
+
+/-!
+### `IntCast`
+-/
+
+-- Either of these follows trivially from the other. Which one to
+-- prove is not yet clear.
+proof_wanted ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z
+
+proof_wanted toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z
+
+/-!
+## Ring
+-/
+
+-- TODO: generalize to `CommRing` after `ofFin_intCast` is proven
+instance : CommSemiring (BitVec w) :=
+  toFin_injective.commSemiring _
+    toFin_zero toFin_one toFin_add toFin_mul (Function.swap toFin_nsmul)
+    toFin_pow toFin_natCast
 
 end Std.BitVec

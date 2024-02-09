@@ -9,6 +9,7 @@ import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Data.TypeMax -- Porting note: added for universe issues
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Data.Set.Basic
 
 #align_import algebra.module.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
 
@@ -184,10 +185,6 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
       refine' le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
-      -- porting note: this subgoal didn't exist before the reenableeta branch
-      -- follow-up note: the subgoal was moved from after `refine'` in `is_extension` to here
-      -- after the behavior of `refine'` changed.
-      exact (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
     is_extension := fun m => by
       refine' Eq.trans (hnonempty.some.is_extension m) _
       symm
@@ -260,7 +257,7 @@ private theorem extensionOfMax_adjoin.aux1 {y : N} (x : supExtensionOfMaxSinglet
     ∃ (a : (extensionOfMax i f).domain) (b : R), x.1 = a.1 + b • y := by
   have mem1 : x.1 ∈ (_ : Set _) := x.2
   rw [Submodule.coe_sup] at mem1
-  rcases mem1 with ⟨a, b, a_mem, b_mem : b ∈ (Submodule.span R _ : Submodule R N), eq1⟩
+  rcases mem1 with ⟨a, a_mem, b, b_mem : b ∈ (Submodule.span R _ : Submodule R N), eq1⟩
   rw [Submodule.mem_span_singleton] at b_mem
   rcases b_mem with ⟨z, eq2⟩
   exact ⟨⟨a, a_mem⟩, z, by rw [← eq1, ← eq2]⟩

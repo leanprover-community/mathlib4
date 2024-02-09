@@ -119,9 +119,16 @@ theorem zero_mem_iff {a : A} : (0 : R) ∈ σ a ↔ ¬IsUnit a := by
   rw [mem_iff, map_zero, zero_sub, IsUnit.neg_iff]
 #align spectrum.zero_mem_iff spectrum.zero_mem_iff
 
+alias ⟨not_isUnit_of_zero_mem, zero_mem⟩ := spectrum.zero_mem_iff
+
 theorem zero_not_mem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
   rw [zero_mem_iff, Classical.not_not]
 #align spectrum.zero_not_mem_iff spectrum.zero_not_mem_iff
+
+alias ⟨isUnit_of_zero_not_mem, zero_not_mem⟩ := spectrum.zero_not_mem_iff
+
+lemma subset_singleton_zero_compl {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
+  Set.subset_compl_singleton_iff.mpr <| spectrum.zero_not_mem R ha
 
 variable {R}
 
@@ -388,7 +395,7 @@ section CommSemiring
 
 variable {F R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
-variable [AlgHomClass F R A B]
+variable [FunLike F A B] [AlgHomClass F R A B]
 
 local notation "σ" => spectrum R
 
@@ -409,7 +416,7 @@ section CommRing
 
 variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
-variable [AlgHomClass F R A R]
+variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R
 
@@ -429,7 +436,7 @@ end AlgHom
 
 @[simp]
 theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B] [Algebra R A]
-    [Algebra R B] [AlgEquivClass F R A B] (f : F) (a : A) :
+    [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) (a : A) :
     spectrum R (f a) = spectrum R a :=
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
     simpa only [AlgEquiv.coe_algHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using
