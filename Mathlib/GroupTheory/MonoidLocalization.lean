@@ -1276,7 +1276,6 @@ theorem map_comp_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoi
 #align submonoid.localization_map.map_comp_map Submonoid.LocalizationMap.map_comp_map
 #align add_submonoid.localization_map.map_comp_map AddSubmonoid.LocalizationMap.map_comp_map
 
-/-
 /-- If `CommMonoid` homs `g : M →* P, l : P →* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 @[to_additive
@@ -1293,7 +1292,6 @@ theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
   simp only [MonoidHom.coe_comp, comp_apply]
 #align submonoid.localization_map.map_map Submonoid.LocalizationMap.map_map
 #align add_submonoid.localization_map.map_map AddSubmonoid.LocalizationMap.map_map
--/
 
 /-- Given an injective `CommMonoid` homomorphism `g : M →* P`, and a submonoid `S ⊆ M`,
 the induced monoid homomorphism from the localization of `M` at `S` to the
