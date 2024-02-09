@@ -6,7 +6,7 @@ Authors: Josha Dekker
 import Mathlib.Topology.Bases
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Compactness.Compact
-import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.PseudoMetric
 
 /-!
 # Lindelöf sets and Lindelöf spaces
