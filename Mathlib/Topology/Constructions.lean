@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Topology.Maps
 import Mathlib.Order.Filter.Pi
+import Mathlib.Topology.NhdsSet
 
 #align_import topology.constructions from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
@@ -1728,8 +1729,8 @@ theorem Filter.eventually_nhdsSet_prod_iff {p : X × Y → Prop} :
     (∀ᶠ q in 𝓝ˢ (s ×ˢ t), p q) ↔
       ∀ x ∈ s, ∀ y ∈ t,
           ∃ px : X → Prop, (∀ᶠ x' in 𝓝 x, px x') ∧ ∃ py : Y → Prop, (∀ᶠ y' in 𝓝 y, py y') ∧
-            ∀ {x : X}, px x → ∀ {y : Y}, py y → p (x, y) :=
-  by simp_rw [eventually_nhdsSet_iff_forall, Set.forall_prod_set, nhds_prod_eq, eventually_prod_iff]
+            ∀ {x : X}, px x → ∀ {y : Y}, py y → p (x, y) := by
+  simp_rw [eventually_nhdsSet_iff_forall, Set.forall_prod_set, nhds_prod_eq, eventually_prod_iff]
 
 theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {px : X → Prop} {py : Y → Prop}
     (hp : ∀ {x : X}, px x → ∀ {y : Y}, py y → p (x, y)) (hs : ∀ᶠ x in 𝓝ˢ s, px x)
