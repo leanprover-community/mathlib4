@@ -137,7 +137,7 @@ variable {β : Type*} [CompleteLattice β]
 
 theorem _root_.biSup_sigma (s : Set ι) (t : ∀ i, Set (α i)) (f : Sigma α → β) :
     ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
-  by apply eq_of_forall_ge_iff; intro; constructor <;> simp_all
+  eq_of_forall_ge_iff fun _ ↦ ⟨by simp_all, by simp_all⟩
 
 theorem _root_.biSup_sigma' (s : Set ι) (t : ∀ i, Set (α i)) (f : ∀ i, α i → β) :
     ⨆ (i ∈ s) (j ∈ t i), f i j = ⨆ ij ∈ s.sigma t, f ij.fst ij.snd :=
