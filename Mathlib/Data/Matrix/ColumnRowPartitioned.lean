@@ -94,11 +94,11 @@ lemma toColumns₂_apply (A : Matrix m (n₁ ⊕ n₂) R) (i : m) (j : n₂) :
     (toColumns₂ A) i j = A i (Sum.inr j) := rfl
 
 @[simp]
-lemma toColumns₁_fromColumns  (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) :
+lemma toColumns₁_fromColumns (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) :
     toColumns₁ (fromColumns A₁ A₂) = A₁ := rfl
 
 @[simp]
-lemma toColumns₂_fromColumns  (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) :
+lemma toColumns₂_fromColumns (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) :
     toColumns₂ (fromColumns A₁ A₂) = A₂ := rfl
 
 @[simp]
@@ -143,6 +143,16 @@ lemma transpose_fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
 section Semiring
 
 variable [Semiring R]
+
+@[simp]
+lemma fromRows_mulVec (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (v : n → R) :
+    fromRows A₁ A₂ *ᵥ v = Sum.elim (A₁ *ᵥ v) (A₂ *ᵥ v) := by
+  ext (_ | _) <;> rfl
+
+@[simp]
+lemma vecMul_fromColumns (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂ R) (v : m → R) :
+    v ᵥ* Matrix.fromColumns B₁ B₂ = Sum.elim (v ᵥ* B₁) (v ᵥ* B₂) := by
+  ext (_ | _) <;> rfl
 
 @[simp]
 lemma fromRows_mul (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B : Matrix n m R) :
