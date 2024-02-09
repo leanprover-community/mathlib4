@@ -195,7 +195,7 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     refine' (le_of_eq _).trans (ContinuousMap.norm_coe_le_norm _ ⟨y + x, _⟩)
     · simp_rw [ContinuousMap.restrict_apply, ContinuousMap.comp_apply, ContinuousMap.coe_addRight]
     · exact ⟨by linarith [(hr hy).1], by linarith [(hr hy).2]⟩
-  simp_rw [cocompact_eq, isBigO_sup] at hf ⊢
+  simp_rw [cocompact_eq_atBot_atTop, isBigO_sup] at hf ⊢
   constructor
   · refine' (isBigO_of_le atBot _).trans (isBigO_norm_Icc_restrict_atBot hb hf.1 (-r) r)
     simp_rw [norm_norm]; exact this
