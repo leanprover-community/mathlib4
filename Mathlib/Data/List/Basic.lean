@@ -41,14 +41,12 @@ instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
       | a :: _ => isEmptyElim a }
 #align list.unique_of_is_empty List.uniqueOfIsEmpty
 
-instance : IsLeftId (List α) Append.append [] :=
-  ⟨nil_append⟩
+instance : Std.LawfulIdentity (α := List α) Append.append [] where
+  left_id := nil_append
+  right_id := append_nil
 
-instance : IsRightId (List α) Append.append [] :=
-  ⟨append_nil⟩
-
-instance : IsAssociative (List α) Append.append :=
-  ⟨append_assoc⟩
+instance : Std.Associative (α := List α) Append.append where
+  assoc := append_assoc
 
 #align list.cons_ne_nil List.cons_ne_nil
 #align list.cons_ne_self List.cons_ne_self
@@ -904,7 +902,7 @@ theorem nthLe_cons {l : List α} {a : α} {n} (hl) :
   split_ifs with h
   · simp [nthLe, h]
   cases l
-  · rw [length_singleton, lt_succ_iff, nonpos_iff_eq_zero] at hl
+  · rw [length_singleton, Nat.lt_succ_iff, nonpos_iff_eq_zero] at hl
     contradiction
   cases n
   · contradiction
@@ -941,7 +939,7 @@ def reverseRecOn {C : List α → Sort*} (l : List α) (H0 : C [])
     let ih := reverseRecOn (reverse tail) H0 H1
     rw [reverse_cons]
     exact H1 _ _ ih
-termination_by _ _ l _ _ => l.length
+termination_by l.length
 #align list.reverse_rec_on List.reverseRecOn
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
@@ -958,7 +956,7 @@ def bidirectionalRec {C : List α → Sort*} (H0 : C []) (H1 : ∀ a : α, C [a]
     rw [← dropLast_append_getLast (cons_ne_nil b l)]
     have : C l' := bidirectionalRec H0 H1 Hn l'
     exact Hn a l' b' this
-termination_by _ l => l.length
+termination_by l => l.length
 #align list.bidirectional_rec List.bidirectionalRecₓ -- universe order
 
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
@@ -1294,7 +1292,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
   · by_cases h₁ : l = []
     · subst h₁
       rw [get_singleton]
-      simp only [length_singleton, lt_succ_iff, nonpos_iff_eq_zero] at h
+      simp only [length_singleton, Nat.lt_succ_iff, nonpos_iff_eq_zero] at h
       subst h
       simp
     have h₂ := h
@@ -2665,7 +2663,7 @@ end FoldlEqFoldlr'
 
 section
 
-variable {op : α → α → α} [ha : IsAssociative α op] [hc : IsCommutative α op]
+variable {op : α → α → α} [ha : Std.Associative op] [hc : Std.Commutative op]
 
 /-- Notation for `op a b`. -/
 local notation a " ⋆ " b => op a b
@@ -4240,6 +4238,7 @@ theorem get_attach (L : List α) (i) :
       by rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
 
+set_option linter.deprecated false in
 @[simp, deprecated get_attach]
 theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
     (L.attach.nthLe i H).1 = L.nthLe i (length_attach L ▸ H) := get_attach ..
