@@ -920,13 +920,13 @@ end
 theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by
   refine le_antisymm ?_ ?_
-  · refine (op_nnnorm_le_iff _ |>.2 fun m => (nnnorm_smul_le _ _).trans ?_)
+  · refine (opNNNorm_le_iff _ |>.2 fun m => (nnnorm_smul_le _ _).trans ?_)
     rw [mul_right_comm]
     gcongr
-    exact le_op_nnnorm _ _
+    exact le_opNNNorm _ _
   · obtain hz | hz := eq_or_ne ‖z‖₊ 0
     · simp [hz]
-    rw [← NNReal.le_div_iff hz, op_nnnorm_le_iff]
+    rw [← NNReal.le_div_iff hz, opNNNorm_le_iff]
     intro m
     rw [div_mul_eq_mul_div, NNReal.le_div_iff hz]
     refine le_trans ?_ ((f.smulRight z).le_op_nnnorm m)
