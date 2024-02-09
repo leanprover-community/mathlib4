@@ -22,7 +22,7 @@ namespace EisensteinSeries
 
 open Finset
 
-/-- For `m : ℤ` this is the finset of `ℤ × ℤ` of elements such that the maximum of the
+/-- For  `m : ℤ` this is the finset of `ℤ × ℤ` of elements such that the maximum of the
 absolute values of the pair is `m` -/
 def square (m : ℤ) : Finset (ℤ × ℤ) :=
   ((Icc (-m) (m)) ×ˢ (Icc (-m) (m))).filter fun x => max x.1.natAbs x.2.natAbs = m
