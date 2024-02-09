@@ -362,6 +362,10 @@ def toLinearMap : A →ₗ[R] B where
 #align alg_hom.to_linear_map AlgHom.toLinearMap
 
 @[simp]
+theorem coe_toLinearMap : φ.toLinearMap = (φ : A → B) :=
+  rfl
+
+@[simp]
 theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
 #align alg_hom.to_linear_map_apply AlgHom.toLinearMap_apply
@@ -506,6 +510,15 @@ lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
 
+@[simp]
+lemma coe_toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) :
+    f.toIntAlgHom = (f : R → S) :=
+  rfl
+
+lemma toIntAlgHom_apply [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) {x : R} :
+    f.toIntAlgHom x = f x :=
+  rfl
+
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
 see `RingHom.equivRatAlgHom`. -/
 def toRatAlgHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) : R →ₐ[ℚ] S :=
@@ -517,6 +530,11 @@ theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] 
     ↑f.toRatAlgHom = f :=
   RingHom.ext fun _x => rfl
 #align ring_hom.to_rat_alg_hom_to_ring_hom RingHom.toRatAlgHom_toRingHom
+
+@[simp]
+theorem toRatAlgHom_apply [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] (f : R →+* S) {x : R} :
+    f.toRatAlgHom x = f x :=
+  rfl
 
 end RingHom
 
