@@ -43,7 +43,8 @@ import Mathlib.Algebra.Category.BoolRing
 import Mathlib.Algebra.Category.FGModuleCat.Abelian
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.EpiMono
-import Mathlib.Algebra.Category.FGModuleCat.Kernelsimport Mathlib.Algebra.Category.GroupCat.Abelian
+import Mathlib.Algebra.Category.FGModuleCat.Kernels
+import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.Adjunctions
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Biproducts
