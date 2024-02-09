@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Topology.Metrizable.Urysohn
 import Mathlib.Topology.UrysohnsLemma
@@ -49,7 +50,7 @@ the measures but discarding the assumption that they are finite on compact sets.
 `haarMeasure_unique` in the file `MeasureTheory.Measure.Haar.Basic`.
 -/
 
-open MeasureTheory Filter Set TopologicalSpace Function MeasureTheory Measure
+open Filter Set TopologicalSpace Function MeasureTheory Measure
 open scoped Uniformity Topology ENNReal Pointwise NNReal
 
 /-- In a locally compact regular space with an inner regular measure, the measure of a compact
@@ -223,19 +224,10 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     · simp [hf]
     · exact (H hf).elim
   -- Fix some nonzero continuous function with compact support `g`.
-  obtain ⟨g, g_cont, g_comp, g_nonneg, g_one⟩ :
-      ∃ (g : G → ℝ), Continuous g ∧ HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := by
-    rcases exists_compact_mem_nhds (1 : G) with ⟨k, hk, k_mem⟩
-    rcases exists_continuous_one_zero_of_isCompact hk isClosed_empty (disjoint_empty k)
-      with ⟨⟨g, g_cont⟩, gk, -, g_comp, hg⟩
-    refine ⟨g, g_cont, g_comp, fun x ↦ (hg x).1, ?_⟩
-    have := gk (mem_of_mem_nhds k_mem)
-    simp only [ContinuousMap.coe_mk, Pi.one_apply] at this
-    simp [this]
-  have int_g_pos : 0 < ∫ x, g x ∂μ := by
-    apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
-    · exact IsOpen.measure_pos μ g_cont.isOpen_support ⟨1, g_one⟩
-    · exact g_cont.integrable_of_hasCompactSupport g_comp
+  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
+      ∃ (g : C(G, ℝ)), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_pos : 0 < ∫ x, g x ∂μ := g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero
+    g_comp g_nonneg g_one
   -- The proportionality constant we are looking for will be the ratio of the integrals of `g`
   -- with respect to `μ'` and `μ`.
   let c : ℝ := (∫ x, g x ∂μ) ⁻¹ * (∫ x, g x ∂μ')
@@ -282,6 +274,15 @@ lemma integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     exact (exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ).choose_spec
       f hf h'f
 
+@[to_additive addHaarScalarFactor_eq_integral_div]
+lemma haarScalarFactor_eq_integral_div (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
+    {f : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f) (int_nonzero : ∫ x, f x ∂μ ≠ 0) :
+    haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
+  have := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ hf h'f
+  rw [integral_smul_nnreal_measure] at this
+  exact EuclideanDomain.eq_div_of_mul_eq_left int_nonzero this.symm
+
 /-- The scalar factor between two left-invariant measures is non-zero when both measures are
 positive on open sets. -/
 @[to_additive]
@@ -296,13 +297,37 @@ lemma haarScalarFactor_pos_of_isOpenPosMeasure (μ' μ : Measure G) [IsFiniteMea
   -- Fix some nonzero continuous function with compact support `g`.
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
       ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_pos : 0 < ∫ x, g x ∂μ' := by
-    apply (integral_pos_iff_support_of_nonneg g_nonneg _).2
-    · exact IsOpen.measure_pos μ' g_cont.isOpen_support ⟨1, g_one⟩
-    · exact g_cont.integrable_of_hasCompactSupport g_comp
+  have int_g_pos : 0 < ∫ x, g x ∂μ' := g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero
+    g_comp g_nonneg g_one
   have := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ g_cont g_comp
   simp only [H, zero_smul, integral_zero_measure] at this
   linarith
+
+@[to_additive]
+lemma haarScalarFactor_of_eq_smul [LocallyCompactSpace G]
+    (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
+    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
+    {c : ℝ≥0} (smul_eq : μ' = c • μ) : haarScalarFactor μ' μ = c := by
+  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
+      ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_nonzero : ∫ x, g x ∂μ ≠ 0 := ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero
+    g_comp g_nonneg g_one)
+  apply NNReal.coe_injective
+  calc
+    haarScalarFactor μ' μ = (∫ x, g x ∂μ') / ∫ x, g x ∂μ := haarScalarFactor_eq_integral_div _ _
+      g_cont g_comp int_g_nonzero
+    _ = (∫ x, g x ∂(c • μ)) / ∫ x, g x ∂μ := by rw [smul_eq]
+    _ = c • (∫ x, g x ∂μ) / ∫ x, g x ∂μ := by simp
+    _ = c * (∫ x, g x ∂μ) / ∫ x, g x ∂μ := rfl
+    _ = c := by simp [int_g_nonzero]
+
+@[to_additive]
+lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsFiniteMeasureOnCompacts μ]
+  [IsMulLeftInvariant μ] [IsOpenPosMeasure μ] : haarScalarFactor μ μ = 1 := by
+  by_cases hG : LocallyCompactSpace G; swap
+  · simp [haarScalarFactor, hG]
+  apply haarScalarFactor_of_eq_smul
+  simp only [one_smul]
 
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite on
 compacts and inner regular for finite measure sets with respect to compact sets,
