@@ -117,14 +117,19 @@ producing a functor `C₁ ⥤ (C₂ ⥤ (C₃ ⥤ C₄))`.
 lemma uncurry₃_obj_obj_eq_uncurry₃_obj₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) :
     (uncurry₃.obj F).obj = F.obj₃.uncurry₃ := rfl
 
-lemma uncurry₃_obj_map_eq_uncurry₃_map₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) {X Y : C₁ × C₂ × C₃} :
+lemma uncurry₃_obj_map_eq_uncurry₃_map₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) (X Y : C₁ × C₂ × C₃) :
     ((uncurry₃.obj F).map : (X ⟶ Y) → _) = F.map₃.uncurry₃ :=
   funext $ fun _ => Category.assoc _ _ _
+
+lemma uncurry₃_obj_map_apply_eq_uncurry₃_map₃_apply (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
+    {X Y} (f : X ⟶ Y) :
+    (uncurry₃.obj F).map f = F.map₃.uncurry₃ f :=
+  congrFun (uncurry₃_obj_map_eq_uncurry₃_map₃ F X Y) f
 
 lemma curry₃_obj_obj₃_eq_curry₃_obj (F : C₁ × C₂ × C₃ ⥤ C₄) :
     (curry₃.obj F).obj₃ = F.obj.curry₃ := rfl
 
-lemma curry₃_obj_map₃_eq_curry₃_map (F : C₁ × C₂ × C₃ ⥤ C₄) {X X' Y Y' Z Z'} :
+lemma curry₃_obj_map₃_eq_curry₃_map (F : C₁ × C₂ × C₃ ⥤ C₄) (X X' Y Y' Z Z') :
     (curry₃.obj F).map₃
     = (F.map (X := (X, Y, Z)) (Y := (X', Y', Z'))).curry₃ :=
   funext₃ $ fun _ _ _ =>
@@ -133,5 +138,38 @@ lemma curry₃_obj_map₃_eq_curry₃_map (F : C₁ × C₂ × C₃ ⥤ C₄) {X
     $ congrArg₂ _ (Eq.trans (congrArg _ (Category.comp_id _)) (Category.comp_id _))
     $ congrArg₂ _ (Eq.trans (Category.id_comp _) (Category.comp_id _))
                   (Eq.trans (Category.id_comp _) (Category.id_comp _))
+
+lemma curry₃_obj_map₃_apply_eq_curry₃_map_apply (F : C₁ × C₂ × C₃ ⥤ C₄)
+    {X X' Y Y' Z Z'} (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
+    (curry₃.obj F).map₃ f g h
+    = (F.map (X := (X, Y, Z)) (Y := (X', Y', Z'))).curry₃ f g h :=
+  congrFun₃ (curry₃_obj_map₃_eq_curry₃_map F X X' Y Y' Z Z') f g h
+
+@[simp]
+lemma Functor.map₃_id₂_id₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) {X X'} (f : X ⟶ X') (Y : C₂)
+    (Z : C₃) : F.map₃ f (𝟙 Y) (𝟙 Z) = (F.map f).app₂ Y Z := by
+  simp only [map₃, map₂, NatTrans.app₂, map_id, NatTrans.id_app]
+  exact Eq.trans (congrArg _ (Category.comp_id _)) (Category.comp_id _)
+
+@[simp]
+lemma Functor.map₃_id₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) (X : C₁) (Y : C₂) (Z : C₃) :
+    F.map₃ (𝟙 X) (𝟙 Y) (𝟙 Z) = 𝟙 (F.obj₃ X Y Z) :=
+  Eq.trans (map₃_id₂_id₃ F _ Y Z) (congrArg (NatTrans.app₂ . Y Z) (F.map_id _))
+
+@[simp]
+lemma Functor.map₃_comp₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) {X X' X'' Y Y' Y'' Z Z' Z''}
+    (f : X ⟶ X')    (g : Y ⟶ Y')    (h : Z ⟶ Z')
+    (f' : X' ⟶ X'') (g' : Y' ⟶ Y'') (h' : Z' ⟶ Z'') :
+    F.map₃ (f ≫ f') (g ≫ g') (h ≫ h') =
+    F.map₃ f g h ≫ F.map₃ f' g' h' :=
+  let p  : (X,  Y,  Z)  ⟶ (X',  Y',  Z')  := (f,  g,  h)
+  let p' : (X', Y', Z') ⟶ (X'', Y'', Z'') := (f', g', h')
+  Eq.trans (uncurry₃_obj_map_apply_eq_uncurry₃_map₃_apply F (p ≫ p')).symm
+  $ Eq.trans (Functor.map_comp _ p p')
+  $ congrArg₂ _ (uncurry₃_obj_map_apply_eq_uncurry₃_map₃_apply F p)
+                (uncurry₃_obj_map_apply_eq_uncurry₃_map₃_apply F p')
+
+--TODO: Postcomposition, precomposition with ₁, ₂, ₃, and 1+2 = 3 or 2+1 = 3
+-- operadic composition
 
 end CategoryTheory
