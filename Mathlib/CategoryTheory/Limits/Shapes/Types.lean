@@ -822,7 +822,7 @@ lemma equivalence_rel' [Mono f] : _root_.Equivalence (Rel' f g) where
     · exact hyz
     · obtain z₁|z₂ := z
       · rw [inl_rel'_inl_iff] at hyz
-        obtain rfl|⟨_, _, h', h'', rfl⟩  := hyz
+        obtain rfl|⟨_, _, h', h'', rfl⟩ := hyz
         · exact Rel'.inl_inl _ _ h
         · obtain rfl := (mono_iff_injective f).1 inferInstance h''
           exact Rel'.inl_inl _ _ (h.trans h')
