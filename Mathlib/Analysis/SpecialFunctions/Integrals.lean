@@ -566,20 +566,18 @@ theorem integral_cos_sq_sub_sin_sq :
       continuousOn_cos.intervalIntegrable continuousOn_sin.neg.intervalIntegrable
 #align integral_cos_sq_sub_sin_sq integral_cos_sq_sub_sin_sq
 
-@[simp]
-theorem integral_inv_one_add_sq : (∫ x : ℝ in a..b, (↑1 + x ^ 2)⁻¹) = arctan b - arctan a := by
-  simp only [← one_div]
-  refine' integral_deriv_eq_sub' _ _ _ (continuous_const.div _ fun x => _).continuousOn
-  · norm_num
-  · exact fun _ _ => differentiableAt_arctan _
-  · continuity
-  · nlinarith
-#align integral_inv_one_add_sq integral_inv_one_add_sq
-
 theorem integral_one_div_one_add_sq :
     (∫ x : ℝ in a..b, ↑1 / (↑1 + x ^ 2)) = arctan b - arctan a := by
-  simp only [one_div, integral_inv_one_add_sq]
+  refine integral_deriv_eq_sub' _ Real.deriv_arctan (fun _ _ => differentiableAt_arctan _)
+    (continuous_const.div ?_ fun x => ?_).continuousOn
+  · continuity
+  · nlinarith
 #align integral_one_div_one_add_sq integral_one_div_one_add_sq
+
+@[simp]
+theorem integral_inv_one_add_sq : (∫ x : ℝ in a..b, (↑1 + x ^ 2)⁻¹) = arctan b - arctan a := by
+  simp only [← one_div, integral_one_div_one_add_sq]
+#align integral_inv_one_add_sq integral_inv_one_add_sq
 
 section RpowCpow
 

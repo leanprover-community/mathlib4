@@ -227,6 +227,12 @@ theorem tendsto_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
   else Or.inl <| tendsto_atTop_atTop_of_monotone' h_mono H
 #align tendsto_of_monotone tendsto_of_monotone
 
+theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
+    Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
+  @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
+#align tendsto_of_antitone tendsto_of_antitone
+
 theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type*} [SemilatticeSup ι₁] [Preorder ι₂]
     [Nonempty ι₁] [TopologicalSpace α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
     [NoMaxOrder α] {f : ι₂ → α} {φ : ι₁ → ι₂} {l : α} (hf : Monotone f)

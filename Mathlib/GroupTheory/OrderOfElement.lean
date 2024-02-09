@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.Basic
@@ -1073,11 +1074,20 @@ lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n := by
 #align nsmul_eq_mod_card mod_card_nsmul
 
 @[to_additive (attr := simp) mod_card_zsmul]
-theorem zpow_mod_card (n : ℤ) : x ^ (n % Fintype.card G : ℤ) = x ^ n := by
+theorem zpow_mod_card (a : G) (n : ℤ) : a ^ (n % Fintype.card G : ℤ) = a ^ n := by
   rw [eq_comm, ← zpow_mod_orderOf, ← Int.emod_emod_of_dvd n (Int.coe_nat_dvd.2 orderOf_dvd_card),
     zpow_mod_orderOf]
 #align zpow_eq_mod_card zpow_mod_card
 #align zsmul_eq_mod_card mod_card_zsmul
+
+@[to_additive (attr := simp) mod_natCard_nsmul]
+lemma pow_mod_natCard (a : G) (n : ℕ) : a ^ (n % Nat.card G) = a ^ n := by
+  rw [eq_comm, ← pow_mod_orderOf, ← Nat.mod_mod_of_dvd n $ orderOf_dvd_natCard _, pow_mod_orderOf]
+
+@[to_additive (attr := simp) mod_natCard_zsmul]
+lemma zpow_mod_natCard (a : G) (n : ℤ) : a ^ (n % Nat.card G : ℤ) = a ^ n := by
+  rw [eq_comm, ← zpow_mod_orderOf,
+    ← Int.emod_emod_of_dvd n $ Int.coe_nat_dvd.2 $ orderOf_dvd_natCard _, zpow_mod_orderOf]
 
 /-- If `gcd(|G|,n)=1` then the `n`th power map is a bijection -/
 @[to_additive (attr := simps) "If `gcd(|G|,n)=1` then the smul by `n` is a bijection"]
@@ -1224,7 +1234,7 @@ theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
   cases' ne_or_eq |x| 1 with h h
   · simp [orderOf_abs_ne_one h]
   rcases eq_or_eq_neg_of_abs_eq h with (rfl | rfl)
-  · simp; decide
+  · simp
   apply orderOf_le_of_pow_eq_one <;> norm_num
 #align linear_ordered_ring.order_of_le_two LinearOrderedRing.orderOf_le_two
 
