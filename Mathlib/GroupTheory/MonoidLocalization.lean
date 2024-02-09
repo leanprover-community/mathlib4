@@ -444,14 +444,12 @@ protected irreducible_def smul [SMul R M] [IsScalarTower R M M] (c : R) (z : Loc
   Localization S :=
     Localization.liftOn z (fun a b ↦ mk (c • a) b)
       (fun {a a' b b'} h ↦ mk_eq_mk_iff.2 (by
-        cases' b with b hb
-        cases' b' with b' hb'
+        let ⟨b, hb⟩ := b
+        let ⟨b', hb'⟩ := b'
         rw [r_eq_r'] at h ⊢
-        cases' h with t ht
+        let ⟨t, ht⟩ := h
         use t
         dsimp only [Subtype.coe_mk] at ht ⊢
--- TODO: this definition should take `SMulCommClass R M M` instead of `IsScalarTower R M M` if
--- we ever want to generalize to the non-commutative case.
         haveI : SMulCommClass R M M :=
           ⟨fun r m₁ m₂ ↦ by simp_rw [smul_eq_mul, mul_comm m₁, smul_mul_assoc]⟩
         simp only [mul_smul_comm, ht]))
@@ -701,7 +699,7 @@ variable (f : LocalizationMap S N)
 theorem map_right_cancel {x y} {c : S} (h : f.toMap (c * x) = f.toMap (c * y)) :
     f.toMap x = f.toMap y := by
   rw [f.toMap.map_mul, f.toMap.map_mul] at h
-  cases' f.map_units c with u hu
+  let ⟨u, hu⟩ := f.map_units c
   rw [← hu] at h
   exact (Units.mul_right_inj u).1 h
 #align submonoid.localization_map.map_right_cancel Submonoid.LocalizationMap.map_right_cancel
@@ -1087,6 +1085,38 @@ theorem lift_id (x) : f.lift f.map_units x = x :=
 #align submonoid.localization_map.lift_id Submonoid.LocalizationMap.lift_id
 #align add_submonoid.localization_map.lift_id AddSubmonoid.LocalizationMap.lift_id
 
+/-- Given Localization maps `f : M →* N` for a Submonoid `S ⊆ M` and
+`k : M →* Q` for a Submonoid `T ⊆ M`, such that `S ≤ T`, and we have
+`l : M →* A`, the composition of the induced map `f.lift` for `k` with
+the induced map `k.lift` for `l` is equal to the  induced map `f.lift` for `l`. -/
+@[to_additive
+    "Given Localization maps `f : M →+ N` for a Submonoid `S ⊆ M` and
+`k : M →+ Q` for a Submonoid `T ⊆ M`, such that `S ≤ T`, and we have
+`l : M →+ A`, the composition of the induced map `f.lift` for `k` with
+the induced map `k.lift` for `l` is equal to the  induced map `f.lift` for `l`"]
+theorem lift_comp_lift {T : Submonoid M} (hST: S ≤ T) {Q : Type*} [CommMonoid Q]
+    (k : Submonoid.LocalizationMap T Q) {A : Type*} [CommMonoid A]{l : M →* A} (hl : ∀ w : T, IsUnit (l w)) :
+    (k.lift hl).comp (f.lift (fun _ => map_units k ⟨ _ , hST (SetLike.coe_mem _) ⟩ ) ) =
+    f.lift (fun _ ↦ hl ⟨ _ , hST (SetLike.coe_mem _) ⟩) := by
+  have hlS : ∀ (y : S), IsUnit (l ↑y) :=
+      (fun _ ↦ hl ⟨ _ , hST (SetLike.coe_mem _) ⟩)
+  have hkS : ∀ (y : S), IsUnit (k.toMap ↑y) :=
+      (fun _ => map_units k ⟨ _ , hST (SetLike.coe_mem _) ⟩ )
+  let j := (k.lift hl).comp (f.lift hkS)
+  suffices aux1:  j.comp f.toMap = l
+  exact (lift_unique f hlS (fun x ↦ congrFun (congrArg DFunLike.coe aux1) x)).symm
+  have aux2 : j.comp f.toMap = (k.lift hl).comp k.toMap:= by
+    rw[←lift_comp f hkS]
+    exact rfl
+  rw [aux2]
+  exact lift_comp k hl
+
+@[to_additive]
+theorem lift_comp_lift_eq {Q : Type*} [CommMonoid Q] (k : Submonoid.LocalizationMap S Q)
+    {A : Type*} [CommMonoid A]{l : M →* A} (hl : ∀ w : S, IsUnit (l w)) :
+    (k.lift hl).comp (f.lift (fun _ => map_units k _) ) = f.lift hl :=
+  lift_comp_lift f (le_refl S) k hl
+
 /-- Given two Localization maps `f : M →* N, k : M →* P` for a Submonoid `S ⊆ M`, the hom
 from `P` to `N` induced by `f` is left inverse to the hom from `N` to `P` induced by `k`. -/
 @[to_additive (attr := simp)
@@ -1094,20 +1124,10 @@ from `P` to `N` induced by `f` is left inverse to the hom from `N` to `P` induce
 from `P` to `N` induced by `f` is left inverse to the hom from `N` to `P` induced by `k`."]
 theorem lift_left_inverse {k : LocalizationMap S P} (z : N) :
     k.lift f.map_units (f.lift k.map_units z) = z := by
-  rw [lift_spec]
-  cases' f.surj z with x hx
-  conv_rhs =>
-    congr
-    next => skip
-    rw [f.eq_mk'_iff_mul_eq.2 hx]
-  rw [mk', ← mul_assoc, mul_inv_right f.map_units, ← f.toMap.map_mul, ← f.toMap.map_mul]
-  apply k.eq_of_eq f.map_units
-  rw [k.toMap.map_mul, k.toMap.map_mul, ← sec_spec, mul_assoc, lift_spec_mul]
-  repeat' rw [← k.toMap.map_mul]
-  apply f.eq_of_eq k.map_units
-  repeat' rw [f.toMap.map_mul]
-  rw [sec_spec', ← hx]
-  ac_rfl
+have aux : k.lift f.map_units (f.lift k.map_units z) = f.lift f.map_units z :=
+  congrFun (congrArg DFunLike.coe (lift_comp_lift_eq f k f.map_units)) z
+rw [aux]
+exact lift_id f z
 #align submonoid.localization_map.lift_left_inverse Submonoid.LocalizationMap.lift_left_inverse
 #align add_submonoid.localization_map.lift_left_inverse AddSubmonoid.LocalizationMap.lift_left_inverse
 
@@ -1256,6 +1276,7 @@ theorem map_comp_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoi
 #align submonoid.localization_map.map_comp_map Submonoid.LocalizationMap.map_comp_map
 #align add_submonoid.localization_map.map_comp_map AddSubmonoid.LocalizationMap.map_comp_map
 
+/-
 /-- If `CommMonoid` homs `g : M →* P, l : P →* A` induce maps of localizations, the composition
 of the induced maps equals the map of localizations induced by `l ∘ g`. -/
 @[to_additive
@@ -1272,6 +1293,7 @@ theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
   simp only [MonoidHom.coe_comp, comp_apply]
 #align submonoid.localization_map.map_map Submonoid.LocalizationMap.map_map
 #align add_submonoid.localization_map.map_map AddSubmonoid.LocalizationMap.map_map
+-/
 
 /-- Given an injective `CommMonoid` homomorphism `g : M →* P`, and a submonoid `S ⊆ M`,
 the induced monoid homomorphism from the localization of `M` at `S` to the
