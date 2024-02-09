@@ -151,7 +151,7 @@ lemma fromRows_mulVec (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (v : n �
 
 @[simp]
 lemma vecMul_fromColumns (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂ R) (v : m → R) :
-    v ᵥ* Matrix.fromColumns B₁ B₂ = Sum.elim (v ᵥ* B₁) (v ᵥ* B₂) := by
+    v ᵥ* fromColumns B₁ B₂ = Sum.elim (v ᵥ* B₁) (v ᵥ* B₂) := by
   ext (_ | _) <;> rfl
 
 @[simp]
