@@ -37,11 +37,11 @@ instance {M : Type*} : isId (@id M) where
 
 lemma comp_id {N P : Type*} {φ : N → N} [isId φ] {ψ : N → P} :
     CompTriple φ ψ ψ := {
-  comp_eq := by simp only [isId.eq_id, Function.comp.right_id]}
+  comp_eq := by simp only [isId.eq_id, Function.comp_id]}
 
 lemma id_comp {M N : Type*} {φ : M → N} {ψ : N → N} [isId ψ] :
     CompTriple φ ψ φ := {
-  comp_eq := by simp only [isId.eq_id, Function.comp.left_id]}
+  comp_eq := by simp only [isId.eq_id, Function.id_comp]}
 
 lemma comp {M N P : Type*}
     {φ : M → N} {ψ : N → P} :
