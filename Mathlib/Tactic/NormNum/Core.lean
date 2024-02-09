@@ -7,6 +7,7 @@ import Std.Lean.Parser
 import Std.Lean.Meta.DiscrTree
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Util.Qq
+import Lean.Elab.Tactic.Location
 
 /-!
 ## `norm_num` core functionality
