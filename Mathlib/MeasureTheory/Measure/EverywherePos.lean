@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Group.Measure
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Everywhere positive sets in measure spaces
