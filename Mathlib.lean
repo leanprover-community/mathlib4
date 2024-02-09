@@ -1788,6 +1788,9 @@ import Mathlib.Data.MvPolynomial.Polynomial
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.Supported
 import Mathlib.Data.MvPolynomial.Variables
+import Mathlib.Data.NNRat.BigOperators
+import Mathlib.Data.NNRat.Defs
+import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Bitwise
@@ -1858,9 +1861,6 @@ import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Nat.Units
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Nat.WithBot
-import Mathlib.Data.NNRat.BigOperators
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.Num.Basic
 import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Num.Lemmas
