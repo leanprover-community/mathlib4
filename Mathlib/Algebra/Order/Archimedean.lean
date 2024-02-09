@@ -3,6 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Rat.Floor
 import Mathlib.Data.Rat.NNRat
@@ -297,10 +299,10 @@ theorem exists_rat_btwn {x y : α} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : α)
   · rw [Rat.coe_int_den, Nat.cast_one]
     exact one_ne_zero
   · intro H
-    rw [Rat.coe_nat_num, Int.cast_ofNat, Nat.cast_eq_zero] at H
+    rw [Rat.num_natCast, Int.cast_ofNat, Nat.cast_eq_zero] at H
     subst H
     cases n0
-  · rw [Rat.coe_nat_den, Nat.cast_one]
+  · rw [Rat.den_natCast, Nat.cast_one]
     exact one_ne_zero
 #align exists_rat_btwn exists_rat_btwn
 
