@@ -6,6 +6,7 @@ Authors: Josha Dekker
 import Mathlib.Topology.Bases
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Lindelöf sets and Lindelöf spaces
@@ -695,6 +696,24 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     rcases this with ⟨t, ⟨htc, htu⟩⟩
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
+
+instance SecondCountableTopology.from_pseudometric_Lindelof {Z : Type*} [PseudoMetricSpace Z] [LindelofSpace Z]:
+    SecondCountableTopology Z := by
+  have h_dense : ∀ ε > 0, ∃ s : Set Z, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
+    intro ε hpos
+    let U := fun (z : Z) ↦ Metric.ball z ε
+    have hU : ∀ z, U z ∈ nhds z := by
+      intro z
+      have : IsOpen (U z) := Metric.isOpen_ball
+      refine IsOpen.mem_nhds this ?hx
+      simp_all only [gt_iff_lt, Metric.mem_ball, dist_self, zero_lt_two, mul_pos_iff_of_pos_left]
+    have ⟨t, hct, huniv⟩ := LindelofSpace.elim_nhds_subcover U hU
+    refine ⟨t, hct, ?_⟩
+    intro z
+    have ⟨y, ht, hzy⟩ : ∃ y ∈ t, z ∈ U y := exists_set_mem_of_union_eq_top t (fun i ↦ U i) huniv z
+    use y, ht
+    exact LT.lt.le hzy
+  exact Metric.secondCountable_of_almost_dense_set h_dense
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
