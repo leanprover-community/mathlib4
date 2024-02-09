@@ -384,7 +384,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           simp only [AlgHom.toRingHom_eq_coe, Ideal.Quotient.mkₐ_ker, zeroLocus_span, q₂]
           exact Set.diff_subset.trans (zeroLocus_anti_mono (by simp))
         · exact Set.image_subset_range _ _
-        · simp only [AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe] at hq₂g₂
+        · simp only [AlgHom.toLinearMap_apply, RingHom.coe_toIntAlgHom] at hq₂g₂
           have : q₂ c = 0 := by simp [q₂]
           simp only [BasicConstructibleSetData.toSet, Set.preimage_diff, preimage_comap_zeroLocus,
             preimage_comap_zeroLocus,
