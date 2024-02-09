@@ -1099,11 +1099,11 @@ theorem lift_comp_lift {T : Submonoid M} (hST: S ≤ T) {Q : Type*} [CommMonoid 
     (hl : ∀ w : T, IsUnit (l w)) :
     (k.lift hl).comp (f.lift (fun x => map_units k ⟨ _ , hST (SetLike.coe_mem x)⟩)) =
     f.lift (fun x ↦ hl ⟨ _ , hST (SetLike.coe_mem x)⟩) := by
-  have hlS : ∀ (y : S), IsUnit (l ↑y) := (fun x ↦ hl ⟨ _ , hST (SetLike.coe_mem x)⟩)
-  have hkS : ∀ (y : S), IsUnit (k.toMap ↑y) := (fun x => map_units k ⟨ _ , hST (SetLike.coe_mem x)⟩)
+  have hlS (y : S) : IsUnit (l ↑y) := hl ⟨ _ , hST (SetLike.coe_mem y)⟩
+  have hkS (y : S) : IsUnit (k.toMap ↑y) := map_units k ⟨ _ , hST (SetLike.coe_mem y)⟩
   let j := (k.lift hl).comp (f.lift hkS)
-  suffices aux1: j.comp f.toMap = l
-  exact (lift_unique f hlS (fun x ↦ congrFun (congrArg DFunLike.coe aux1) x)).symm
+  suffices aux1 : j.comp f.toMap = l by
+    exact (lift_unique f hlS (fun x ↦ congrFun (congrArg DFunLike.coe aux1) x)).symm
   have aux2 : j.comp f.toMap = (k.lift hl).comp k.toMap:= by
     rw[← lift_comp f hkS, @MonoidHom.comp_assoc]
   rw [aux2]
