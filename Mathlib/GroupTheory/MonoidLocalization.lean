@@ -1106,7 +1106,7 @@ theorem lift_comp_lift {T : Submonoid M} (hST: S ≤ T) {Q : Type*} [CommMonoid 
   suffices aux1:  j.comp f.toMap = l
   exact (lift_unique f hlS (fun x ↦ congrFun (congrArg DFunLike.coe aux1) x)).symm
   have aux2 : j.comp f.toMap = (k.lift hl).comp k.toMap:= by
-    rw[←lift_comp f hkS]
+    rw[← lift_comp f hkS]
     exact rfl
   rw [aux2]
   exact lift_comp k hl
