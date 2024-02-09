@@ -1095,7 +1095,8 @@ the induced map `k.lift` for `l` is equal to the  induced map `f.lift` for `l`. 
 `l : M →+ A`, the composition of the induced map `f.lift` for `k` with
 the induced map `k.lift` for `l` is equal to the  induced map `f.lift` for `l`"]
 theorem lift_comp_lift {T : Submonoid M} (hST: S ≤ T) {Q : Type*} [CommMonoid Q]
-    (k : Submonoid.LocalizationMap T Q) {A : Type*} [CommMonoid A]{l : M →* A} (hl : ∀ w : T, IsUnit (l w)) :
+    (k : Submonoid.LocalizationMap T Q) {A : Type*} [CommMonoid A]{l : M →* A} 
+    (hl : ∀ w : T, IsUnit (l w)) :
     (k.lift hl).comp (f.lift (fun _ => map_units k ⟨ _ , hST (SetLike.coe_mem _) ⟩ ) ) =
     f.lift (fun _ ↦ hl ⟨ _ , hST (SetLike.coe_mem _) ⟩) := by
   have hlS : ∀ (y : S), IsUnit (l ↑y) :=
