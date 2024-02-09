@@ -27,6 +27,11 @@ It is also equivalent to the fact that for any `X₂ : C₂`, the
 induced functor `StructuredArrow X₂ T ⥤ StructuredArrow (R.obj X₂) B`
 is initial.
 
+Various categorical notions (fully faithful functors, adjunctions, etc.) can
+be characterized in terms of Guitart exact squares. Their particular role
+in pointwise Kan extensions shall also be use in the construction of
+derived functors.
+
 ## TODO
 
 * Define the notion of derivability structure from
