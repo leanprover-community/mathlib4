@@ -155,7 +155,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     erw [TensorProduct.mk_apply, TensorProduct.mk_apply, id_apply, LinearMap.mul'_apply]
     simp only [id_coe, id_eq, AddHom.toFun_eq_coe, coe_toAddHom]
     simp only [LinearMap.mul'_apply, mul_assoc]
-    rfl
+    exact rfl
 #align Module.Mon_Module_equivalence_Algebra.inverse_obj ModuleCat.MonModuleEquivalenceAlgebra.inverseObj
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.

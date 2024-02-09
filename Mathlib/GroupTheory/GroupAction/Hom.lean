@@ -471,10 +471,10 @@ class DistribMulActionSemiHomClass (F : Type _)
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
   the additive monoid structure and equivariant with respect to the action of `M`.
     It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B` -/
-abbrev DistribMulActionHomClass (F : Type _)
-  (M : outParam (Type _)) (A B : outParam (Type _))
-  [Monoid M] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B] :=
-  DistribMulActionSemiHomClass F (MonoidHom.id M) A B
+abbrev DistribMulActionHomClass (F : Type _) (M : outParam (Type _))
+    (A B : outParam (Type _)) [Monoid M] [AddMonoid A] [AddMonoid B]
+    [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B] :=
+    DistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
 /- porting note: Removed a @[nolint dangerousInstance] for
 DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
