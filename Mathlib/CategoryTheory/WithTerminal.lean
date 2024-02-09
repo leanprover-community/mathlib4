@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
@@ -246,7 +246,185 @@ instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f :=
   | star => ⟨f, rfl, rfl⟩
 #align category_theory.with_terminal.is_iso_of_from_star CategoryTheory.WithTerminal.isIso_of_from_star
 
+
+/--From `WithTerminal C ⥤ D`, an object in the comma category defined by the functors `𝟭 (C ⥤ D)`
+and `(Functor.const C)`. -/
+def commaFromFunc {D : Type*} [Category D]  (G : WithTerminal C ⥤ D) :
+    Comma (𝟭 (C ⥤ D)) (Functor.const C) where
+  left  := incl ⋙ G
+  right :=G.obj star
+  hom := {
+    app :=  fun x => G.map (starTerminal.from (incl.obj x))
+    naturality := by
+     simp_all only [Functor.id_obj, Functor.comp_obj, Functor.const_obj_obj, Functor.comp_map, ←
+       G.map_comp, Limits.IsTerminal.comp_from, Functor.const_obj_map, Category.comp_id,
+       implies_true]
+     }
+
+/--Form an object in the comma category defined by the functors `𝟭 (C ⥤ D)`
+and `(Functor.const C)`, a functor `WithTerminal C ⥤ D`. -/
+def funcFromComma {D : Type*} [Category D]
+    (η : Comma (𝟭 (C ⥤ D)) (Functor.const C) )  : WithTerminal C ⥤ D :=by
+  refine lift η.left (fun x => η.hom.app x) ?_
+  simp only [NatTrans.naturality, Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id,
+    implies_true]
+
+/--The function `commaFromFunc` is left-inverse to `commaFromFunc` -/
+theorem funcFromComma_comp_commaFromFunc {D : Type*} [Category D]
+    (η : Comma (𝟭 (C ⥤ D)) (Functor.const C) ):
+    commaFromFunc (funcFromComma η) = η := by
+  constructor
+
+/--The function `commaFromFunc` is right-inverse to `commaFromFunc` -/
+theorem commFromFunc_comp_funcFromComma {D : Type*} [Category D]
+    (G : WithTerminal C ⥤ D):
+    funcFromComma (commaFromFunc G) = G := by
+  apply Functor.ext
+  · intro X Y f
+    match X, Y, f with
+    | of x, of y, f => simp only [Functor.id_obj, eqToHom_refl, Category.comp_id, Category.id_comp]
+                       rfl
+    | of x, star, x_1 => simp only [Functor.id_obj, eqToHom_refl, Category.comp_id,
+                               Category.id_comp]
+                         rfl
+    | star, star, x => simp only [Functor.id_obj, eqToHom_refl, Category.comp_id, Category.id_comp]
+                       exact (G.map_id star).symm
+  · intro X
+    match X with
+    | of x => rfl
+    | star => rfl
+
+/--From a natural transformation of functors `WithTerminal C ⥤ D`, a morphism in the comma category
+ defined by the functors `𝟭 (C ⥤ D)` and `(Functor.const C)`-/
+def commHomFromNatTrans {D : Type*} [Category D]  {G1 G2 : WithTerminal C ⥤ D} (η: G1 ⟶ G2) :
+    commaFromFunc G1 ⟶ commaFromFunc G2 where
+  left := whiskerLeft incl η
+  right := η.app star
+  w := by
+     apply NatTrans.ext
+     funext
+     simp only [commaFromFunc, Functor.id_obj, Functor.comp_obj, Functor.const_obj_obj,
+       Functor.id_map, NatTrans.comp_app, whiskerLeft_app, Functor.const_map_app,
+       NatTrans.naturality]
+
+/--From a morphism in the comma category defined by the functors `𝟭 (C ⥤ D)` and
+`(Functor.const C)`, a natural transformation of functors `WithTerminal C ⥤ D`,-/
+def natTransFromCommaHom {D : Type*} [Category D]  {c1 c2: Comma (𝟭 (C ⥤ D)) (Functor.const C)}
+    (η :c1⟶c2) :   funcFromComma c1 ⟶ funcFromComma c2 where
+  app X :=  match X with
+            | of x => η.left.app x
+            | star => η.right
+  naturality := by
+      intro X Y f
+      let h:= η.w
+      match X, Y, f with
+      | of x, of y, f => simp only [funcFromComma, Functor.id_obj, lift_obj, lift_map,
+                           NatTrans.naturality]
+      | of x, star, x_1 => simp only [Functor.id_obj, Functor.id_map] at h
+                           change _=(η.left ≫ c2.hom).app x
+                           rw [h]
+                           rfl
+      | star, star, _ => simp only [funcFromComma, Functor.id_obj, lift_obj, lift_map,
+        Category.id_comp, Category.comp_id]
+
+/--An equivalence of categoryes between the catgory of functors `(WithTerminal C ⥤ D)` and
+the comma category `Comma (𝟭 (C ⥤ D)) (Functor.const C)`.-/
+def equivToComma  {D : Type*} [Category D] :
+    (WithTerminal C ⥤ D) ≌  Comma (𝟭 (C ⥤ D)) (Functor.const C) :=
+  Equivalence.mk
+    ({ obj := commaFromFunc, map := commHomFromNatTrans})
+    ({ obj := funcFromComma, map := natTransFromCommaHom})
+    ({ hom := {app := fun G =>  eqToHom (commFromFunc_comp_funcFromComma G).symm}
+       inv := {app := fun G =>  eqToHom (commFromFunc_comp_funcFromComma G) } })
+    ({ hom := {app := fun G =>  eqToHom (funcFromComma_comp_commaFromFunc G)}
+       inv := {app := fun G =>  eqToHom (funcFromComma_comp_commaFromFunc G).symm }})
+
+/--From a functor `C⥤D`, the induced `WithTerminal C⥤ WithTerminal D`.-/
+def liftFunctor {D : Type*} [Category D]  (F: C ⥤ D) : WithTerminal C ⥤  WithTerminal D where
+  obj  := fun X =>
+        match X with
+        | of x => of (F.obj x)
+        | star => star
+  map := fun {X Y} f =>
+        match X, Y, f with
+        | of x, of y, f => F.map (down f)
+        | of x, star, _ => starTerminal.from (of (F.obj x))
+        | star, star, _ => 𝟙 _
+
+/--The map  `extendFunctor` preserves identities.-/
+theorem liftFunctor_id (D : Type*) [Category D]  : liftFunctor (𝟭  D) = 𝟭 (WithTerminal D) := by
+  unfold liftFunctor
+  apply Functor.ext
+  intro X Y f
+  match X, Y, f with
+  | of x, of y, f => simp only [Functor.id_obj, Functor.id_map, eqToHom_refl, Category.comp_id,
+    Category.id_comp]
+                     rfl
+  | of x, star, _ => rfl
+  | star, star, _ => rfl
+  intro X
+  match X with
+  | of x => rfl
+  | star => rfl
+
+theorem liftFunctor_comp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) (G:D⥤ E) :
+    liftFunctor (F⋙G) = (liftFunctor F )⋙ (liftFunctor G) := by
+  unfold liftFunctor
+  apply Functor.ext
+  intro X Y f
+  match X, Y, f with
+  | of x, of y, f => simp only [Functor.id_obj, Functor.id_map, eqToHom_refl, Category.comp_id,
+    Category.id_comp]
+                     rfl
+  | of x, star, _ => rfl
+  | star, star, _ => rfl
+  intro X
+  match X with
+  | of x => rfl
+  | star => rfl
+
+/--From a natrual transformation of functors `C⥤D`, the induced natural transformation
+of functors `WithTerminal C⥤ WithTerminal D` -/
+def liftNatTrans  {D : Type*} [Category D]  {F G: C ⥤ D} (η : F ⟶ G) :
+    liftFunctor F ⟶ liftFunctor G where
+  app := fun X =>
+        match X with
+        | of x => η.app x
+        | star => 𝟙 (star)
+  naturality := by
+          intro X Y f
+          match X, Y, f with
+          | of x, of y, f => exact η.naturality f
+          | of x, star, _ => rfl
+          | star, star, _ => rfl
+
+theorem  liftNatTrans_id  {D : Type*} [Category D]  {F : C ⥤ D}  :
+    liftNatTrans (𝟙 (F)) = 𝟙 (liftFunctor F):= by
+  aesop_cat
+theorem  liftNatTrans_comp   {D : Type*} [Category D]  {F G H : C ⥤ D} (η : F⟶ G) (μ : G⟶ H) :
+    liftNatTrans (η ≫ μ ) = liftNatTrans η≫ liftNatTrans μ  := by
+  aesop_cat
+
+def liftFuncIso {D : Type*} [Category D] {F G: C⥤ D} (η : F ≅ G) :
+    liftFunctor F ≅ liftFunctor G where
+  hom := liftNatTrans η.hom
+  inv := liftNatTrans η.inv
+  hom_inv_id := by rw [← liftNatTrans_comp,η.hom_inv_id,liftNatTrans_id]
+  inv_hom_id := by rw [← liftNatTrans_comp,η.inv_hom_id,liftNatTrans_id]
+
+
+def liftEquiv {D : Type*} [Category D]  (e: C ≌ D) : WithTerminal C ≌ WithTerminal D :=
+  Equivalence.mk (liftFunctor e.functor) (liftFunctor e.inverse)
+   ((eqToIso (liftFunctor_id C).symm).trans
+ ((liftFuncIso e.unitIso).trans (eqToIso (liftFunctor_comp e.functor e.inverse))))
+    ( (eqToIso (liftFunctor_comp e.inverse e.functor).symm).trans
+          ((liftFuncIso e.counitIso).trans (eqToIso (liftFunctor_id D))))
+
+
+
 end WithTerminal
+
+
 
 namespace WithInitial
 
@@ -437,6 +615,297 @@ instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f :=
   | star => ⟨f, rfl, rfl⟩
 #align category_theory.with_initial.is_iso_of_to_star CategoryTheory.WithInitial.isIso_of_to_star
 
+/--From `WithInitial C ⥤ D`, an object in the comma category defined by the functors
+ `(Functor.const C)` and `𝟭 (C ⥤ D)`. -/
+def commaFromFunc {D : Type*} [Category D]  (G : WithInitial C ⥤ D) :
+    Comma (Functor.const C) (𝟭 (C ⥤ D))  where
+  left  := G.obj star
+  right :=incl ⋙ G
+  hom := {
+    app :=  fun x => G.map (starInitial.to (incl.obj x))
+    naturality := by
+     simp only [Functor.const_obj_obj, Functor.id_obj, Functor.comp_obj, Functor.const_obj_map,
+       Category.id_comp, Functor.comp_map, ← G.map_comp, Limits.IsInitial.to_comp, implies_true]
+     }
+
+/--Form an object in the comma category defined by the functors
+ `(Functor.const C)` and `𝟭 (C ⥤ D)`, a functor `WithInitial C ⥤ D`. -/
+def funcFromComma {D : Type*} [Category D]
+    (η : Comma (Functor.const C)  (𝟭 (C ⥤ D)) )  : WithInitial C ⥤ D :=by
+  refine lift η.right (fun x => η.hom.app x) ?_
+  intro x y f
+  have h:=η.hom.naturality f
+  simp only [Functor.const_obj_obj, Functor.id_obj, Functor.const_obj_map, Category.id_comp] at h
+  exact h.symm
+
+
+/--The function `commaFromFunc` is left-inverse to `commaFromFunc` -/
+theorem funcFromComma_comp_commaFromFunc {D : Type*} [Category D]
+    (η : Comma  (Functor.const C) (𝟭 (C ⥤ D)) ):
+    commaFromFunc (funcFromComma η) = η := by
+  constructor
+
+/--The function `commaFromFunc` is right-inverse to `commaFromFunc` -/
+theorem commFromFunc_comp_funcFromComma {D : Type*} [Category D]
+    (G : WithInitial C ⥤ D):
+    funcFromComma (commaFromFunc G) = G := by
+  apply Functor.ext
+  · intro X Y f
+    match X, Y, f with
+    | of x, of y, f => simp only [Functor.id_obj, eqToHom_refl, Category.comp_id, Category.id_comp]
+                       rfl
+    | star, of y, x_1 => simp only [Functor.id_obj, eqToHom_refl, Category.comp_id,
+                               Category.id_comp]
+                         rfl
+    | star, star, x => simp only [Functor.id_obj, eqToHom_refl, Category.comp_id, Category.id_comp]
+                       exact (G.map_id star).symm
+  · intro X
+    match X with
+    | of x => rfl
+    | star => rfl
+
+/--From a natural transformation of functors `WithInitial C ⥤ D`, a morphism in the comma category
+ defined by the functors `(Functor.const C)` and `𝟭 (C ⥤ D)`-/
+def commHomFromNatTrans {D : Type*} [Category D]  {G1 G2 : WithInitial C ⥤ D} (η: G1 ⟶ G2) :
+    commaFromFunc G1 ⟶ commaFromFunc G2 where
+  left := η.app star
+  right := whiskerLeft incl η
+  w := by
+     apply NatTrans.ext
+     funext
+     simp only [commaFromFunc, Functor.id_obj, Functor.comp_obj, Functor.const_obj_obj,
+       Functor.id_map, NatTrans.comp_app, whiskerLeft_app, Functor.const_map_app,
+       NatTrans.naturality]
+
+/--From a morphism in the comma category defined by the functors
+`(Functor.const C)` and `𝟭 (C ⥤ D)`, a natural transformation of functors `WithInitial C ⥤ D`.-/
+def natTransFromCommaHom {D : Type*} [Category D]  {c1 c2: Comma (Functor.const C) (𝟭 (C ⥤ D)) }
+    (η :c1⟶c2) :   funcFromComma c1 ⟶ funcFromComma c2 where
+  app X :=  match X with
+            | of x => η.right.app x
+            | star => η.left
+  naturality := by
+      intro X Y f
+      let h:= η.w
+      match X, Y, f with
+      | of x, of y, f => simp only [funcFromComma, Functor.id_obj, lift_obj, lift_map,
+                           NatTrans.naturality]
+      | star , of y, x_1 => simp only [Functor.id_obj, Functor.id_map] at h
+                            change (c1.hom ≫ η.right ).app y=_
+                            rw [← h]
+                            rfl
+      | star, star, _ => simp only [funcFromComma, Functor.id_obj, lift_obj, lift_map,
+        Category.id_comp, Category.comp_id]
+
+/--An equivalence of categoryes between the catgory of functors `(WithInitial C ⥤ D)` and
+the comma category `Comma (Functor.const C) (𝟭 (C ⥤ D))`.-/
+def equivToComma  {D : Type*} [Category D] :
+     (WithInitial C ⥤ D) ≌  Comma (Functor.const C) (𝟭 (C ⥤ D)) :=
+  Equivalence.mk
+    ({ obj := commaFromFunc, map := commHomFromNatTrans})
+    ({ obj := funcFromComma, map := natTransFromCommaHom})
+    ({ hom := {app := fun G =>  eqToHom (commFromFunc_comp_funcFromComma G).symm}
+       inv := {app := fun G =>  eqToHom (commFromFunc_comp_funcFromComma G) } })
+    ({ hom := {app := fun G =>  eqToHom (funcFromComma_comp_commaFromFunc G)}
+       inv := {app := fun G =>  eqToHom (funcFromComma_comp_commaFromFunc G).symm }})
+
+/--From a functor `C⥤D`, the induced `WithInitial C⥤ WithInitial D`.-/
+def extendFunctor {D : Type*} [Category D]  (F: C ⥤ D) : WithInitial C ⥤  WithInitial D where
+  obj  := fun X =>
+        match X with
+        | of x => of (F.obj x)
+        | star => star
+  map := fun {X Y} f =>
+        match X, Y, f with
+        | of x, of y, f => F.map (down f)
+        | star, of x, _ => starInitial.to (of (F.obj x))
+        | star, star, _ => 𝟙 _
+
+/--The map `extendFunctor` preserves identities.-/
+theorem extendFunctor_id (D : Type*) [Category D]  : extendFunctor (𝟭  D) = 𝟭 (WithInitial D) := by
+  unfold extendFunctor
+  apply Functor.ext
+  intro X Y f
+  match X, Y, f with
+  | of x, of y, f => simp only [Functor.id_obj, Functor.id_map, eqToHom_refl, Category.comp_id,
+    Category.id_comp]
+                     rfl
+  | star, of x, _ => rfl
+  | star, star, _ => rfl
+  intro X
+  match X with
+  | of x => rfl
+  | star => rfl
+
+/--The map `extendFunctor` preserves compositions.-/
+theorem extendFunctor_comp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) (G:D⥤ E) :
+    extendFunctor (F⋙G) = (extendFunctor F )⋙ (extendFunctor G) := by
+  unfold extendFunctor
+  apply Functor.ext
+  intro X Y f
+  match X, Y, f with
+  | of x, of y, f => simp only [Functor.id_obj, Functor.id_map, eqToHom_refl, Category.comp_id,
+    Category.id_comp]
+                     rfl
+  | star, of x,  _ => rfl
+  | star, star, _ => rfl
+  intro X
+  match X with
+  | of x => rfl
+  | star => rfl
+
+/--From a natrual transformation of functors `C⥤D`, the induced natural transformation
+of functors `WithInitial C⥤ WithInitial D` -/
+def extendNatTrans  {D : Type*} [Category D]  {F G: C ⥤ D} (η : F ⟶ G) :
+    extendFunctor F ⟶ extendFunctor G where
+  app := fun X =>
+        match X with
+        | of x => η.app x
+        | star => 𝟙 (star)
+  naturality := by
+          intro X Y f
+          match X, Y, f with
+          | of x, of y, f => exact η.naturality f
+          | star, of x, _ => rfl
+          | star, star, _ => rfl
+
+/--The map `extendNatTrans` preserves identities.-/
+theorem  extendNatTrans_id  {D : Type*} [Category D]  {F : C ⥤ D}  :
+    extendNatTrans (𝟙 (F)) = 𝟙 (extendFunctor F):= by
+  aesop_cat
+
+/--The map `extendNatTrans` preserves compositions.-/
+theorem  extendNatTrans_comp   {D : Type*} [Category D]  {F G H : C ⥤ D} (η : F⟶ G) (μ : G⟶ H) :
+    extendNatTrans (η ≫ μ ) = extendNatTrans η≫ extendNatTrans μ  := by
+  aesop_cat
+
+/--Given an natural isomorphism between functors `C⥤D` we get a natural isomorphism between
+the functors `liftFunctor F ≅ liftFunctor G `.-/
+def extendFuncIso {D : Type*} [Category D] {F G: C⥤ D} (η : F ≅ G) :
+    extendFunctor F ≅ extendFunctor G where
+  hom := extendNatTrans η.hom
+  inv := extendNatTrans η.inv
+  hom_inv_id := by rw [← extendNatTrans_comp,η.hom_inv_id,extendNatTrans_id]
+  inv_hom_id := by rw [← extendNatTrans_comp,η.inv_hom_id,extendNatTrans_id]
+
+/--Given an equivalence between two categories `C` and `D` we get an equivalance between the
+categories  `WithInitial C` and  `WithInitial D  `.-/
+def extendEquiv {D : Type*} [Category D]  (e: C ≌ D) : WithInitial C ≌ WithInitial D :=
+  Equivalence.mk (extendFunctor e.functor) (extendFunctor e.inverse)
+   ((eqToIso (extendFunctor_id C).symm).trans
+ ((extendFuncIso e.unitIso).trans (eqToIso (extendFunctor_comp e.functor e.inverse))))
+    ( (eqToIso (extendFunctor_comp e.inverse e.functor).symm).trans
+          ((extendFuncIso e.counitIso).trans (eqToIso (extendFunctor_id D))))
+
+
+
+
 end WithInitial
+variable {C}
+open Opposite
+
+private def withTerminalOpToWithInitialOfOpObj  {D : Type*} [Category D] (X: WithTerminal D):
+    WithInitial Dᵒᵖ :=
+  match   X  with
+  |  WithTerminal.of x =>  (WithInitial.of (Opposite.op x))
+  |  WithTerminal.star =>  WithInitial.star
+
+private def withTerminalOpToWithInitialOfOpHom   {X Y: WithTerminal C} (f : X ⟶ Y):
+    withTerminalOpToWithInitialOfOpObj Y ⟶ withTerminalOpToWithInitialOfOpObj  X :=
+  match X, Y, f  with
+  | WithTerminal.of _, WithTerminal.of _, f' => (WithTerminal.down f').op
+  | WithTerminal.of x,WithTerminal.star, _ =>
+     (WithInitial.starInitial.to (WithInitial.of (Opposite.op x)))
+  | WithTerminal.star, WithTerminal.star, _ => 𝟙 _
+
+def withTerminalOpToWithInitialOfOp : (WithTerminal C)ᵒᵖ ⥤ (WithInitial Cᵒᵖ) where
+  obj X :=  withTerminalOpToWithInitialOfOpObj (unop X)
+  map {X Y} f := withTerminalOpToWithInitialOfOpHom f.unop
+  map_id :=by
+     intro X
+     cases X
+     aesop_cat
+  map_comp :=by
+     intro X Y Z f g
+     cases X; cases Y; cases Z; cases f; cases g;
+     rename_i Xp Yp Zp fp gp
+     rw [unop_op,unop_op] at fp gp
+     simp only [unop_op, unop_comp]
+     aesop_cat
+
+def withInitialOfOpToWithTerminal : (WithInitial Cᵒᵖ) ⥤ (WithTerminal C)ᵒᵖ   where
+  obj X :=
+    match  X  with
+    |  WithInitial.of x =>  op (WithTerminal.of (unop x))
+    |  WithInitial.star =>  op WithTerminal.star
+  map {X Y} f :=
+    match X, Y, f with
+    | WithInitial.of _, WithInitial.of _, f' => f'
+    | WithInitial.star, WithInitial.of x, _ =>
+        (WithTerminal.starTerminal.from ((WithTerminal.of (unop x)))).op
+    | WithInitial.star, WithInitial.star, _ => 𝟙 _
+
+
+
+lemma withInitialOfOpToWithTerminal_comp_withTerminalOpToWithInitialOfOp (X : (WithInitial Cᵒᵖ)) :
+    (withTerminalOpToWithInitialOfOp).obj ((withInitialOfOpToWithTerminal).obj X) = X := by
+  cases X <;> rfl
+
+lemma withTerminalOpToWithInitialOfOp_comp_withInitialOfOpToWithTerminal (X : (WithTerminal C)ᵒᵖ) :
+    (withInitialOfOpToWithTerminal ).obj ((withTerminalOpToWithInitialOfOp).obj X) = X := by
+  unfold withTerminalOpToWithInitialOfOp
+  simp
+  cases X
+  rename_i Y
+  simp only [unop_op]
+  aesop_cat
+
+
+
+def equivWithInitialOfOpWithTerminalOp (C : Type*) [Category C]:
+    WithInitial Cᵒᵖ  ≌ (WithTerminal C)ᵒᵖ  where
+  functor := withInitialOfOpToWithTerminal
+  inverse := withTerminalOpToWithInitialOfOp
+  unitIso := {
+    hom := {app := fun G =>
+     eqToHom (withInitialOfOpToWithTerminal_comp_withTerminalOpToWithInitialOfOp G).symm}
+    inv := {app := fun G =>
+     eqToHom (withInitialOfOpToWithTerminal_comp_withTerminalOpToWithInitialOfOp G) }
+  }
+  counitIso := {
+    hom := {
+      app := fun G =>
+        eqToHom (withTerminalOpToWithInitialOfOp_comp_withInitialOfOpToWithTerminal  G)
+      naturality := by
+          intro X Y f
+          cases X; cases Y; cases f;
+          rename_i Xp Yp fp
+          cases Xp <;> cases Yp <;>
+          simp only [Functor.id_obj, Functor.comp_obj, unop_op, Functor.id_map,
+            eqToHom_refl, Category.comp_id, Functor.comp_map, Category.id_comp]
+          any_goals rfl
+          simp only [unop_op] at fp
+          exact (WithTerminal.false_of_from_star fp).elim
+    }
+    inv := {
+      app := fun G =>
+         eqToHom (withTerminalOpToWithInitialOfOp_comp_withInitialOfOpToWithTerminal G).symm
+      naturality := by
+          intro X Y f
+          cases X; cases Y; cases f;
+          rename_i Xp Yp fp
+          cases Xp <;> cases Yp <;>
+          simp only [Functor.id_obj, Functor.comp_obj, unop_op, Functor.id_map,
+            eqToHom_refl, Category.comp_id, Functor.comp_map, Category.id_comp]
+          any_goals rfl
+          simp only [unop_op] at fp
+          exact (WithTerminal.false_of_from_star fp).elim
+    }
+  }
+
+def equivWithTerminalOfOpWithInitialOp :WithTerminal Cᵒᵖ  ≌ (WithInitial C)ᵒᵖ :=
+  ((Equivalence.op (WithInitial.extendEquiv (opOpEquivalence C)).symm).trans
+    ((Equivalence.op (equivWithInitialOfOpWithTerminalOp Cᵒᵖ)).trans
+      (opOpEquivalence (WithTerminal Cᵒᵖ)))).symm
 
 end CategoryTheory
