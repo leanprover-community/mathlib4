@@ -275,10 +275,10 @@ lemma integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
       f hf h'f
 
 @[to_additive addHaarScalarFactor_eq_integral_div]
-lemma haarScalarFactor_eq_integral_div (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
-    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
-    {f : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f) (int_nonzero : ∫ x, f x ∂μ ≠ 0) :
-    haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
+lemma haarScalarFactor_eq_integral_div (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ]
+    [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ] [IsMulLeftInvariant μ']
+    [IsOpenPosMeasure μ] {f : G → ℝ} (hf : Continuous f) (h'f : HasCompactSupport f)
+    (int_nonzero : ∫ x, f x ∂μ ≠ 0) : haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
   have := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ hf h'f
   rw [integral_smul_nnreal_measure] at this
   exact EuclideanDomain.eq_div_of_mul_eq_left int_nonzero this.symm
@@ -310,8 +310,8 @@ lemma haarScalarFactor_of_eq_smul [LocallyCompactSpace G]
     {c : ℝ≥0} (smul_eq : μ' = c • μ) : haarScalarFactor μ' μ = c := by
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
       ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_nonzero : ∫ x, g x ∂μ ≠ 0 := ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero
-    g_comp g_nonneg g_one)
+  have int_g_nonzero : ∫ x, g x ∂μ ≠ 0 := ne_of_gt
+    (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
   apply NNReal.coe_injective
   calc
     haarScalarFactor μ' μ = (∫ x, g x ∂μ') / ∫ x, g x ∂μ := haarScalarFactor_eq_integral_div _ _
@@ -323,7 +323,7 @@ lemma haarScalarFactor_of_eq_smul [LocallyCompactSpace G]
 
 @[to_additive]
 lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsFiniteMeasureOnCompacts μ]
-  [IsMulLeftInvariant μ] [IsOpenPosMeasure μ] : haarScalarFactor μ μ = 1 := by
+    [IsMulLeftInvariant μ] [IsOpenPosMeasure μ] : haarScalarFactor μ μ = 1 := by
   by_cases hG : LocallyCompactSpace G; swap
   · simp [haarScalarFactor, hG]
   apply haarScalarFactor_of_eq_smul
