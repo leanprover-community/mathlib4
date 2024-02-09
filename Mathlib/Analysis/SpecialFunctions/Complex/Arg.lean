@@ -246,10 +246,11 @@ theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
 
 open ComplexOrder in
 lemma arg_eq_zero_iff_zero_le {z : ℂ} : arg z = 0 ↔ 0 ≤ z := by
-  rw [arg_eq_zero_iff, eq_comm]; rfl
+  rw [arg_eq_zero_iff, eq_comm, nonneg_iff]
 
 theorem arg_eq_pi_iff {z : ℂ} : arg z = π ↔ z.re < 0 ∧ z.im = 0 := by
-  by_cases h₀ : z = 0; simp [h₀, lt_irrefl, Real.pi_ne_zero.symm]
+  by_cases h₀ : z = 0
+  · simp [h₀, lt_irrefl, Real.pi_ne_zero.symm]
   constructor
   · intro h
     rw [← abs_mul_cos_add_sin_mul_I z, h]

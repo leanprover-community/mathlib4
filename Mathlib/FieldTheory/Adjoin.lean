@@ -761,7 +761,7 @@ instance finiteDimensional_iSup_of_finset
 theorem finiteDimensional_iSup_of_finset'
     /-Porting note: this was the mathlib3 version. Using `[h : ...]`, as in mathlib3, causes the
     error "invalid parametric local instance".-/
-    {s : Finset ι} (h : ∀ i, i ∈ s → FiniteDimensional K (t i)) :
+    {s : Finset ι} (h : ∀ i ∈ s, FiniteDimensional K (t i)) :
     FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L) :=
   have := Subtype.forall'.mp h
   iSup_subtype'' s t ▸ IntermediateField.finiteDimensional_iSup_of_finite

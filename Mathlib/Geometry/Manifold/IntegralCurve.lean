@@ -147,9 +147,8 @@ lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
   have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
   hγ.continuousAt <| mem_of_mem_nhds hs
 
-lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
-    Continuous γ := continuous_iff_continuousAt.mpr
-      fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
+lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
+  continuous_iff_continuousAt.mpr fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/

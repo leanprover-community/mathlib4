@@ -61,8 +61,8 @@ theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x in Icc 1 n, x ! = sf n
     Nat.succ_eq_add_one, mul_comm]
 
 @[simp]
-theorem prod_range_factorial_succ : ∀ n : ℕ, ∏ x in range n, (x + 1)! = sf n :=
-  fun n => (prod_Icc_factorial n) ▸ range_eq_Ico ▸ Finset.prod_Ico_add' _ _ _ _
+theorem prod_range_factorial_succ (n : ℕ) : ∏ x in range n, (x + 1)! = sf n :=
+  (prod_Icc_factorial n) ▸ range_eq_Ico ▸ Finset.prod_Ico_add' _ _ _ _
 
 @[simp]
 theorem prod_range_succ_factorial : ∀ n : ℕ, ∏ x in range (n + 1), x ! = sf n
