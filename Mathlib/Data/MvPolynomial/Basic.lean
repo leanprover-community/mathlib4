@@ -255,6 +255,12 @@ theorem C_inj {σ : Type*} (R : Type*) [CommSemiring R] (r s : R) :
   (C_injective σ R).eq_iff
 #align mv_polynomial.C_inj MvPolynomial.C_inj
 
+instance nontrivial_of_nontrivial (σ : Type*) (R : Type*) [CommSemiring R] [Nontrivial R] :
+    Nontrivial (MvPolynomial σ R) :=
+  nontrivial_of_ne 0 1 <| by
+    rw [← C_0, ← C_1]
+    exact (C_injective σ R).ne zero_ne_one
+
 instance infinite_of_infinite (σ : Type*) (R : Type*) [CommSemiring R] [Infinite R] :
     Infinite (MvPolynomial σ R) :=
   Infinite.of_injective C (C_injective _ _)

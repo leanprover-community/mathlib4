@@ -24,7 +24,7 @@ of a matrix are homogeneous polynomials in the matrix entries.
 ## Main results
 
 * `Matrix.charpoly.univ`: the universal characteristic polynomial
-* `Matrix.charpoly.univ_map`: evaluating `univ` on the entries of a matrix `M`
+* `Matrix.charpoly.univ_map_aeval`: evaluating `univ` on the entries of a matrix `M`
   gives the characteristic polynomial of `M`.
 * `Matrix.charpoly.univ_coeff_isHomogeneous`:
   the `i`-th coefficient of `univ` is a homogeneous polynomial of degree `n - i`.
@@ -34,78 +34,73 @@ open BigOperators
 
 namespace Matrix.charpoly
 
-variable {R : Type*} (n : Type*) [CommRing R] [Fintype n] [DecidableEq n]
+variable {R S : Type*} (n : Type*) [CommRing R] [CommRing S] [Fintype n] [DecidableEq n]
+variable (f : R →+* S)
+
+variable (R)
 
 /-- The universal characteristic polynomial for `n × n`-matrices,
-is the charactistic polynomial of the matrix with entries `Xᵢⱼ`.
+is the charactistic polynomial of `Matrix.mvPolynomialX n n ℤ` with entries `Xᵢⱼ`.
 
 Its `i`-th coefficient is a homogeneous polynomial of degree `n - i`,
 see `Matrix.charpoly.univ_coeff_isHomogeneous`.
 
 By evaluating the coefficients at the entries of a matrix `M`,
 one obtains the characteristic polynomial of `M`,
-see `Matrix.charpoly.univ_map`. -/
+see `Matrix.charpoly.univ_map_aeval`. -/
 noncomputable
-def univ : Polynomial (MvPolynomial (n × n) ℤ) :=
-  charpoly <| Matrix.of fun i j ↦ MvPolynomial.X (i, j)
+abbrev univ : Polynomial (MvPolynomial (n × n) R) :=
+  charpoly <| mvPolynomialX n n R
 
+variable {R}
+
+open MvPolynomial RingHomClass in
 @[simp]
-lemma univ_map (M : Matrix n n R) :
-    (univ n).map (MvPolynomial.aeval fun ij ↦ M ij.1 ij.2).toRingHom = charpoly M := by
+lemma univ_map_eval₂Hom (M : n × n → S) :
+    (univ R n).map (eval₂Hom f M) = charpoly (Matrix.of M.curry) := by
   rw [← Polynomial.coe_mapRingHom]
   simp only [univ, charpoly, det_apply', map_sum, _root_.map_mul, map_prod]
   apply Finset.sum_congr rfl
   rintro i -
   congr 1
-  · simp only [AlgHom.toRingHom_eq_coe, map_intCast]
+  · simp only [map_intCast]
   · apply Finset.prod_congr rfl
     rintro j -
     by_cases h : i j = j <;> simp [h]
 
-@[simp]
-lemma univ_coeff_aeval (M : Matrix n n R) (i : ℕ) :
-    MvPolynomial.aeval (fun ij ↦ M ij.1 ij.2) ((univ n).coeff i) =
-      (charpoly M).coeff i := by
-  simp [← univ_map]
+lemma univ_map_map :
+    (univ R n).map (MvPolynomial.map f) = univ S n := by
+  rw [MvPolynomial.map, univ_map_eval₂Hom]; rfl
 
 @[simp]
-lemma univ_coeff_card : (univ n).coeff (Fintype.card n) = 1 := by
-  apply MvPolynomial.funext
-  intro M'
-  let M := Matrix.of <| Function.curry M'
-  erw [univ_coeff_aeval n M]
-  rw [_root_.map_one, ← M.charpoly_natDegree_eq_dim]
-  exact M.charpoly_monic.leadingCoeff
+lemma univ_coeff_eval₂Hom (M : n × n → S) (i : ℕ) :
+    MvPolynomial.eval₂Hom f M ((univ R n).coeff i) =
+      (charpoly (Matrix.of M.curry)).coeff i := by
+  rw [← univ_map_eval₂Hom n f M, Polynomial.coeff_map]
+
+variable (R)
+
+lemma univ_monic : (univ R n).Monic := charpoly_monic (mvPolynomialX n n R)
 
 @[simp]
-lemma univ_natDegree : (univ n).natDegree = Fintype.card n := by
-  have aux : univ n ≠ 0 := by
-    intro h; simpa [h] using univ_coeff_card n
-  apply le_antisymm
-  · rw [Polynomial.natDegree_eq_support_max' aux, Finset.max'_le_iff]
-    intro i hi
-    simp only [Polynomial.mem_support_iff, ne_eq] at hi
-    contrapose! hi
-    apply MvPolynomial.funext
-    intro M'
-    let M := Matrix.of <| Function.curry M'
-    rw [← M.charpoly_natDegree_eq_dim] at hi
-    erw [univ_coeff_aeval n M, Polynomial.coeff_eq_zero_of_natDegree_lt hi, map_zero]
-  · by_contra! h
-    simpa only [Polynomial.coeff_eq_zero_of_natDegree_lt h, zero_ne_one]
-      using univ_coeff_card n
+lemma univ_natDegree [Nontrivial R] : (univ R n).natDegree = Fintype.card n :=
+  charpoly_natDegree_eq_dim (mvPolynomialX n n R)
 
-lemma univ_monic : (univ n).Monic := by
-  simp only [Polynomial.Monic, Polynomial.leadingCoeff, univ_natDegree, univ_coeff_card]
+@[simp]
+lemma univ_coeff_card : (univ R n).coeff (Fintype.card n) = 1 := by
+  suffices Polynomial.coeff (univ ℤ n) (Fintype.card n) = 1 by
+    rw [← univ_map_map n (Int.castRingHom R), Polynomial.coeff_map, this, _root_.map_one]
+  rw [← univ_natDegree ℤ n]
+  exact (univ_monic ℤ n).leadingCoeff
 
 open MvPolynomial in
 lemma optionEquivLeft_symm_univ_isHomogeneous :
-    ((optionEquivLeft ℤ (n × n)).symm (univ n)).IsHomogeneous (Fintype.card n) := by
+    ((optionEquivLeft R (n × n)).symm (univ R n)).IsHomogeneous (Fintype.card n) := by
   have aux : Fintype.card n = 0 + ∑ i : n, 1 := by
     simp only [zero_add, Finset.sum_const, smul_eq_mul, mul_one, Fintype.card]
   simp only [aux, univ, charpoly, charmatrix, scalar_apply, RingHom.mapMatrix_apply, det_apply',
     sub_apply, map_apply, of_apply, map_sum, _root_.map_mul, map_intCast, map_prod, map_sub,
-    optionEquivLeft_symm_apply, Polynomial.aevalTower_C, rename_X, diagonal]
+    optionEquivLeft_symm_apply, Polynomial.aevalTower_C, rename_X, diagonal, mvPolynomialX]
   apply IsHomogeneous.sum
   rintro i -
   apply IsHomogeneous.mul
@@ -117,7 +112,7 @@ lemma optionEquivLeft_symm_univ_isHomogeneous :
     · simp only [h, ↓reduceIte, map_zero, zero_sub, (isHomogeneous_X _ _).neg]
 
 lemma univ_coeff_isHomogeneous (i j : ℕ) (h : i + j = Fintype.card n) :
-    ((univ n).coeff i).IsHomogeneous j :=
-  (optionEquivLeft_symm_univ_isHomogeneous n).coeff_isHomogeneous_of_optionEquivLeft_symm _ _ h
+    ((univ R n).coeff i).IsHomogeneous j :=
+  (optionEquivLeft_symm_univ_isHomogeneous R n).coeff_isHomogeneous_of_optionEquivLeft_symm _ _ h
 
 end Matrix.charpoly
