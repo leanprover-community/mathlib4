@@ -125,7 +125,18 @@ lemma annihilator_top_eq_ker_aeval [FaithfulSMul A M] :
     (⊤ : Submodule R[X] <| AEval R M a).annihilator = RingHom.ker (aeval a) := by
   ext p
   simp only [Submodule.mem_annihilator, Submodule.mem_top, forall_true_left, RingHom.mem_ker]
-  change (∀ m : M, aeval a p • m = 0) ↔ _
+  trans (∀ m : M, aeval a p • m = 0 • m)
+  · constructor
+    · intro h m
+      have := h (of _ _ _ m)
+      rw [← of_aeval_smul] at this
+      simp only [EmbeddingLike.map_eq_zero_iff] at this
+      simp only [zero_smul]
+      assumption
+    · intro h m
+      have := h ((of _ _ _).symm m)
+      simp only [zero_smul] at this
+      rwa [← of_symm_smul] at this
   exact ⟨fun h ↦ eq_of_smul_eq_smul (α := M) <| by simp [h], fun h ↦ by simp [h]⟩
 
 section Submodule
