@@ -87,19 +87,20 @@ variable {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃)
 /- In [the paper by Kahn and Maltsiniotis, §4.3][KahnMaltsiniotis2008], given
 `w : TwoSquare T L R B` and `g : R.obj X₂ ⟶ B.obj X₃`, a category `J` is introduced
 and it is observed that it is equivalent to the two categories
-`w.JRightwards g` and `w.JDownwards g`. We shall show below
-that there is an equivalence `w.equivalenceJ g : w.JRightwards g ≌ w.JDownwards g`. -/
+`w.StructuredArrowRightwards g` and `w.CostructuredArrowDownwards g`. We shall show below
+that there is an equivalence
+`w.equivalenceJ g : w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g`. -/
 
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is the
 category `StructuredArrow (CostructuredArrow.mk g) (w.costructuredArrowRightwards X₃)`,
-see the constructor `JRightwards.mk` for the data that is involved.-/
-abbrev JRightwards :=
+see the constructor `StructuredArrowRightwards.mk` for the data that is involved.-/
+abbrev StructuredArrowRightwards :=
   StructuredArrow (CostructuredArrow.mk g) (w.costructuredArrowRightwards X₃)
 
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is the
 category `CostructuredArrow (w.structuredArrowDownwards X₂) (StructuredArrow.mk g)`,
-see the constructor `JDownwards.mk` for the data that is involved. -/
-abbrev JDownwards :=
+see the constructor `CostructuredArrowDownwards.mk` for the data that is involved. -/
+abbrev CostructuredArrowDownwards :=
   CostructuredArrow (w.structuredArrowDownwards X₂) (StructuredArrow.mk g)
 
 section
@@ -107,12 +108,12 @@ section
 variable (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
   (comm : R.map a ≫ w.app X₁ ≫ B.map b = g)
 
-/-- Constructor for objects in `w.JRightwards g`. -/
-abbrev JRightwards.mk : w.JRightwards g :=
+/-- Constructor for objects in `w.StructuredArrowRightwards g`. -/
+abbrev StructuredArrowRightwards.mk : w.StructuredArrowRightwards g :=
   StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
-/-- Constructor for objects in `w.JDownwards g`. -/
-abbrev JDownwards.mk : w.JDownwards g :=
+/-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
+abbrev CoStructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
   CostructuredArrow.mk (Y := StructuredArrow.mk a)
     (StructuredArrow.homMk b (by simpa using comm))
 
@@ -121,9 +122,9 @@ end
 namespace EquivalenceJ
 
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
-the obvious functor `w.JRightwards g ⥤ w.JDownwards g`. -/
+the obvious functor `w.StructuredArrowRightwards g ⥤ w.CostructuredArrowDownwards g`. -/
 @[simps]
-def functor : w.JRightwards g ⥤ w.JDownwards g where
+def functor : w.StructuredArrowRightwards g ⥤ w.CostructuredArrowDownwards g where
   obj f := CostructuredArrow.mk (Y := StructuredArrow.mk f.hom.left)
       (StructuredArrow.homMk f.right.hom (by simpa using CostructuredArrow.w f.hom))
   map {f₁ f₂} φ :=
@@ -134,9 +135,9 @@ def functor : w.JRightwards g ⥤ w.JDownwards g where
   map_comp _ _ := rfl
 
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
-the obvious functor `w.JDownwards g ⥤ w.JRightwards g`. -/
+the obvious functor `w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g`. -/
 @[simps]
-def inverse : w.JDownwards g ⥤ w.JRightwards g where
+def inverse : w.CostructuredArrowDownwards g ⥤ w.StructuredArrowRightwards g where
   obj f := StructuredArrow.mk (Y := CostructuredArrow.mk f.hom.right)
       (CostructuredArrow.homMk f.left.hom (by simpa using StructuredArrow.w f.hom))
   map {f₁ f₂} φ :=
@@ -149,35 +150,40 @@ def inverse : w.JDownwards g ⥤ w.JRightwards g where
 end EquivalenceJ
 
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is
-the obvious equivalence of categories `w.JRightwards g ≌ w.JDownwards g`. -/
+the obvious equivalence of categories
+`w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g`. -/
 @[simps functor inverse unitIso counitIso]
-def equivalenceJ : w.JRightwards g ≌ w.JDownwards g where
+def equivalenceJ : w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownwards g where
   functor := EquivalenceJ.functor w g
   inverse := EquivalenceJ.inverse w g
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
 lemma isConnected_rightwards_iff_downwards :
-    IsConnected (w.JRightwards g) ↔ IsConnected (w.JDownwards g) :=
+    IsConnected (w.StructuredArrowRightwards g) ↔ IsConnected (w.CostructuredArrowDownwards g) :=
   isConnected_iff_of_equivalence (w.equivalenceJ g)
 
 end
 
 /-- Condition on `w : TwoSquare T L R B` expressing that it is a Guitart exact square.
-See lemmas `guitartExact_iff_isConnected_rightwards`, `guitartExact_iff_isConnected_downwards`,
-`guitartExact_iff_final`, `guitartExact_iff_initial` for various characterizations. -/
+It is equivalent to saying that for any `X₃ : C₃`, the induced functor
+`CostructuredArrow L X₃ ⥤ CostructuredArrow R (B.obj X₃)` is final (see `guitartExact_iff_final`)
+or equivalently that for any `X₂ : C₂`, the induced functor
+`StructuredArrow X₂ T ⥤ StructuredArrow (R.obj X₂) B` is initial (see `guitartExact_iff_initial`).
+See also  `guitartExact_iff_isConnected_rightwards`, `guitartExact_iff_isConnected_downwards`
+for characterizations in terms of the connectedness of auxiliary categories. -/
 class GuitartExact : Prop where
   isConnected_rightwards {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃) :
-    IsConnected (w.JRightwards g)
+    IsConnected (w.StructuredArrowRightwards g)
 
 lemma guitartExact_iff_isConnected_rightwards :
     w.GuitartExact ↔ ∀ {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃),
-      IsConnected (w.JRightwards g) :=
+      IsConnected (w.StructuredArrowRightwards g) :=
   ⟨fun h => h.isConnected_rightwards, fun h => ⟨h⟩⟩
 
 lemma guitartExact_iff_isConnected_downwards :
     w.GuitartExact ↔ ∀ {X₂ : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃),
-      IsConnected (w.JDownwards g) := by
+      IsConnected (w.CostructuredArrowDownwards g) := by
   simp only [guitartExact_iff_isConnected_rightwards,
     isConnected_rightwards_iff_downwards]
 
