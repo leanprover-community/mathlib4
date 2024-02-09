@@ -76,6 +76,7 @@ notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => Mu
 @[inherit_doc]
 notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
 
+
 /-
 /-- Equivariant functions -/
 abbrev MulActionHom (M : Type _) (X Y : Type _) [SMul M X] [SMul M Y] := MulActionHom (@id M) X Y
@@ -85,9 +86,9 @@ abbrev MulActionHom (M : Type _) (X Y : Type _) [SMul M X] [SMul M Y] := MulActi
   `F` is a type of morphisms which are `φ`-equivariant.
 
 You should extend this class when you extend `MulActionHom`. -/
-class MulActionSemiHomClass (F : Type _) {M N : outParam (Type _)}
-    (φ : outParam (M → N)) (X Y : outParam (Type _)) [SMul M X] [SMul N Y]
-    extends DFunLike F X fun _ => Y where
+class MulActionSemiHomClass (F : Type _)
+    {M N : outParam (Type _)} (φ : outParam (M → N))
+    (X Y : outParam (Type _)) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 #align smul_hom_class MulActionSemiHomClass
@@ -98,11 +99,16 @@ export MulActionSemiHomClass (map_smulₛₗ)
 morphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiHomClass`. -/
 abbrev MulActionHomClass (F : Type _) (M : outParam (Type _))
-    (X Y : outParam (Type _)) [SMul M X] [SMul M Y] :=
+    (X Y : outParam (Type _)) [SMul M X] [SMul M Y] [FunLike F X Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
+instance : FunLike (MulActionHom φ X Y) X Y where
+  coe := MulActionHom.toFun
+  coe_injective' f g h := by cases f; cases g; congr
+
 @[simp]
-theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y] [MulActionHomClass F M X Y]
+theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
+    [FunLike F X Y] [MulActionHomClass F M X Y]
     (f : F) (c : M) (x : X) : f (c • x) = c • f x :=
   map_smulₛₗ f c x
 
@@ -111,10 +117,7 @@ attribute [simp] map_smulₛₗ
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
 
-instance : MulActionSemiHomClass (X →ₑ[φ] Y) φ X Y
-    where
-  coe := MulActionHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
+instance : MulActionSemiHomClass (X →ₑ[φ] Y) φ X Y where
   map_smulₛₗ := MulActionHom.map_smul'
 
 initialize_simps_projections MulActionHom (toFun → apply)
@@ -122,7 +125,7 @@ initialize_simps_projections MulActionHom (toFun → apply)
 namespace MulActionHom
 
 variable {φ X Y}
-variable {F : Type*}
+variable {F : Type*} [FunLike F X Y]
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
@@ -353,7 +356,7 @@ def inverse (f : X →[M] Y₁) (g : Y₁ → X)
   map_smul' m x :=
     calc
       g (m • x) = g (m • f (g x)) := by rw [h₂]
-      _ = g (f (m • g x)) := by simp only [map_smulₛₗ, id_eq]
+      _ = g (f (m • g x)) := by simp only [map_smul, id_eq]
       _ = m • g x := by rw [h₁]
 
 /-- The inverse of a bijective equivariant map is equivariant. -/
@@ -457,10 +460,12 @@ notation:25 (name := «DistribMulActionHomIdLocal≺»)
   preserving the additive monoid structure and equivariant with respect to `φ`.
     You should extend this class when you extend `DistribMulActionSemiHom`. -/
 class DistribMulActionSemiHomClass (F : Type _)
-  {M N : outParam (Type _)} (φ : outParam (M → N)) (A B : outParam (Type _))
-  [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
-  extends MulActionSemiHomClass F φ A B,
-  AddMonoidHomClass F A B
+    {M N : outParam (Type _)} (φ : outParam (M → N))
+    (A B : outParam (Type _))
+    [Monoid M] [Monoid N]
+    [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
+    [FunLike F A B]
+    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B
 #align distrib_mul_action_hom_class DistribMulActionSemiHomClass
 
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
@@ -468,12 +473,11 @@ class DistribMulActionSemiHomClass (F : Type _)
     It is an abbreviation to `DistribMulActionHomClass F (MonoidHom.id M) A B` -/
 abbrev DistribMulActionHomClass (F : Type _)
   (M : outParam (Type _)) (A B : outParam (Type _))
-  [Monoid M] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] :=
+  [Monoid M] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] [FunLike F A B] :=
   DistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
 /- porting note: Removed a @[nolint dangerousInstance] for
 DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
-
 
 namespace DistribMulActionHom
 
@@ -491,19 +495,20 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign distrib_mul_action_hom.has_coe'
 #noalign distrib_mul_action_hom.has_coe_to_fun
 
-instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B
-    where
+instance : FunLike (A →ₑ+[φ] B) A B where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
     cases tF; cases tG; congr
+
+instance : DistribMulActionSemiHomClass (A →ₑ+[φ] B) φ A B
+    where
   map_smulₛₗ m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
-  map_smul m := m.map_smul'
 
 variable {φ φ' A B B₁}
-variable {F : Type*}
+variable {F : Type*} [FunLike F A B]
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/
@@ -790,8 +795,8 @@ class MulSemiringActionSemiHomClass (F : Type _)
     {M N : outParam (Type _)} [Monoid M] [Monoid N]
     (φ : outParam (M → N))
     (R S : outParam (Type _)) [Semiring R] [Semiring S]
-    [DistribMulAction M R] [DistribMulAction N S] extends
-    DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
+    [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S]
+    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
 #align mul_semiring_action_hom_class MulSemiringActionSemiHomClass
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
@@ -801,7 +806,7 @@ abbrev MulSemiringActionHomClass
     (F : Type _)
     {M : outParam (Type _)} [Monoid M]
     (R S : outParam (Type _)) [Semiring R] [Semiring S]
-    [DistribMulAction M R] [DistribMulAction M S] :=
+    [DistribMulAction M R] [DistribMulAction M S] [FunLike F R S] :=
   MulSemiringActionSemiHomClass F (MonoidHom.id M) R S
 
 /- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass.toRingHomClass
@@ -827,21 +832,22 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign mul_semiring_action_hom.has_coe'
 #noalign mul_semiring_action_hom.has_coe_to_fun
 
-instance : MulSemiringActionSemiHomClass (R →ₑ+*[φ] S) φ R S
-    where
+instance : FunLike (R →ₑ+*[φ] S) R S where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
     cases tF; cases tG; congr
+
+instance : MulSemiringActionSemiHomClass (R →ₑ+*[φ] S) φ R S
+    where
   map_smulₛₗ m := m.map_smul'
   map_zero m := m.map_zero'
   map_add m := m.map_add'
   map_one := MulSemiringActionHom.map_one'
   map_mul := MulSemiringActionHom.map_mul'
-  map_smul m := m.map_smul'
 
 variable {φ R S}
-variable {F : Type*}
+variable {F : Type*} [FunLike F R S]
 
 /- porting note: inserted following def & instance for consistent coercion behaviour,
 see also Algebra.Hom.Group -/

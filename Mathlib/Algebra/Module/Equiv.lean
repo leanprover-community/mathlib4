@@ -190,15 +190,6 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
 -- TODO : was map_smulₛₗ
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
--- TODO : Necessary ? Try to remove it!
-example {R S M N : Type*} [Semiring R] [Semiring S]
-    {φ : R →+* S} {ψ : S →+* R}
-    [RingHomInvPair ψ φ] [RingHomInvPair φ ψ]
-    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N] :
-    DFunLike (M ≃ₛₗ[φ] N) M (fun _ => N) :=
-  -- MulActionSemiHomClass.toFunLike
-  AddHomClass.toDFunLike
-
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
 theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
@@ -294,7 +285,7 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     toFun := e.toLinearMap.inverse e.invFun e.left_inv e.right_inv
     invFun := e.toEquiv.symm.invFun
 -- was map_smulₛₗ
-    map_smul' := fun r x => by dsimp only; rw [SemilinearMapClass.map_smulₛₗ] }
+    map_smul' := fun r x => by simp only [LinearMap.map_smulₛₗ] }
 #align linear_equiv.symm LinearEquiv.symm
 
 -- Porting note: this is new

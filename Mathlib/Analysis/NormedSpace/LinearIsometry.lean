@@ -67,7 +67,7 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam (Type*)} [Semiring R] [Semiring R₂]
   (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam (Type*)) [SeminormedAddCommGroup E]
   [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [FunLike 𝓕 E E₂] extends
-  SemilinearMapClass 𝓕 σ₁₂ E E₂ : Prop where
+  SemilinearMapClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 #align semilinear_isometry_class SemilinearIsometryClass
 
@@ -1150,7 +1150,9 @@ def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R]
     toFun := Equiv.prodAssoc E E₂ E₃
     invFun := (Equiv.prodAssoc E E₂ E₃).symm
     map_add' := by simp [-_root_.map_add] --  Fix timeout from #8386
-    map_smul' := by simp
+    map_smul' := by
+      rintro m ⟨⟨e, f⟩, g⟩
+      simp only [Prod.smul_mk, Equiv.prodAssoc_apply, RingHom.id_apply]
     norm_map' := by
       rintro ⟨⟨e, f⟩, g⟩
       simp only [LinearEquiv.coe_mk, Equiv.prodAssoc_apply, Prod.norm_def, max_assoc] }

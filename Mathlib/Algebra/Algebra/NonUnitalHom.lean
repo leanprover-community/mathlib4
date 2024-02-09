@@ -76,7 +76,7 @@ class NonUnitalAlgSemiHomClass (F : Type*)
     {R S : outParam (Type*)} [Monoid R] [Monoid S] (φ : outParam (R →* S))
     (A : outParam (Type*)) (B : outParam (Type*))
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-    [DistribMulAction R A] [DistribMulAction S B]
+    [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
 #align non_unital_alg_hom_class NonUnitalAlgSemiHomClass
 
@@ -87,7 +87,7 @@ class NonUnitalAlgSemiHomClass (F : Type*)
 abbrev NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*)) [Monoid R]
     (A : outParam (Type*)) (B : outParam (Type*))
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-    [DistribMulAction R A] [DistribMulAction R B] :=
+    [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] :=
   NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B
 
 -- Porting note: commented out, not dangerous
@@ -100,9 +100,9 @@ namespace NonUnitalAlgHomClass
 instance (priority := 100) toNonUnitalRingHomClass
   {F R S : Type*} [Monoid R] [Monoid S] {φ : outParam (R →* S)} {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [FunLike F A B]
     [NonUnitalAlgSemiHomClass F φ A B] : NonUnitalRingHomClass F A B :=
-  { ‹NonUnitalAlgSemiHomClass F φ A B› with coe := (⇑) }
+  { ‹NonUnitalAlgSemiHomClass F φ A B› with } -- coe := (⇑) }
 #align non_unital_alg_hom_class.non_unital_alg_hom_class.to_non_unital_ring_hom_class NonUnitalAlgHomClass.toNonUnitalRingHomClass
 
 variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
@@ -111,20 +111,21 @@ variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 
 -- Why do I need to specify R and S ?
 -- see Note [lower instance priority]
-instance (priority := 100) {F : Type*}
+instance (priority := 100) {F : Type*} [FunLike F A B]
     [NonUnitalAlgSemiHomClass (R := R) (S := S) F φ A B] :
     SemilinearMapClass F φ A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with map_smulₛₗ := map_smulₛₗ }
 
 -- TODO (ACL) : Why is this needed? Adjust priority?
-instance (priority := 100) {F : Type*} [Module R B] [NonUnitalAlgHomClass F R A B] :
+instance (priority := 100) {F : Type*} [FunLike F A B] [Module R B] [NonUnitalAlgHomClass F R A B] :
     LinearMapClass F R A B :=
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smulₛₗ }
 
 instance {F R S : Type*} [Monoid R] [Monoid S] {φ : R →* S}
     {A B : Type*}
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [NonUnitalAlgSemiHomClass F φ A B] :
+    [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
+    [FunLike F A B] [NonUnitalAlgSemiHomClass F φ A B] :
     CoeTC F (A →ₛₙₐ[φ] B)
     where coe f :=
     { (f : A →ₙ+* B) with
@@ -135,7 +136,7 @@ instance {F R S : Type*} [Monoid R] [Monoid S] {φ : R →* S}
 instance {F R : Type*} {A B : Type*} [Monoid R]
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
-    [NonUnitalAlgHomClass F R A B] :
+    [FunLike F A B] [NonUnitalAlgHomClass F R A B] :
     CoeTC F (A →ₙₐ[R] B)
     where coe f :=
     { (f : A →ₙ+* B) with
@@ -175,7 +176,8 @@ initialize_simps_projections NonUnitalAlgHom
   (toDistribMulActionHom_toMulActionHom_toFun → apply, -toDistribMulActionHom)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [NonUnitalAlgSemiHomClass F φ A B] (f : F) :
+protected theorem coe_coe {F : Type*} [FunLike F A B]
+    [NonUnitalAlgSemiHomClass F φ A B] (f : F) :
     ⇑(f : A →ₛₙₐ[φ] B) = f :=
   rfl
 #align non_unital_alg_hom.coe_coe NonUnitalAlgHom.coe_coe
@@ -184,15 +186,11 @@ theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (�
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 #align non_unital_alg_hom.coe_injective NonUnitalAlgHom.coe_injective
 
-instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B
-    where
-  coe f := f.toFun
-  coe_injective' := coe_injective
+instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B where
   map_smulₛₗ f := f.map_smul'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
-  map_smul f := f.map_smul'
 
 @[ext]
 theorem ext {f g : A →ₛₙₐ[φ] B} (h : ∀ x, f x = g x) : f = g :=
@@ -424,7 +422,7 @@ def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C
   map_zero' := by simp only [Pi.prod, Prod.zero_eq_mk, map_zero]
   map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
   map_mul' x y := by simp only [Pi.prod, Prod.mk_mul_mk, map_mul]
-  map_smul' c x := by simp only [Pi.prod, map_smulₛₗ, id_eq, Prod.smul_mk]
+  map_smul' c x := by simp only [Pi.prod, map_smul, MonoidHom.id_apply, id_eq, Prod.smul_mk]
 #align non_unital_alg_hom.prod NonUnitalAlgHom.prod
 
 theorem coe_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
@@ -502,7 +500,7 @@ variable {A B} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
   [Algebra R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
+instance (priority := 100) [FunLike F A B] [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smulₛₗ := map_smul }
 
 /-- A unital morphism of algebras is a `NonUnitalAlgHom`. -/
