@@ -579,6 +579,13 @@ instance atBot_isMeasurablyGenerated : (Filter.atBot : Filter α).IsMeasurablyGe
     (measurableSet_Iic : MeasurableSet (Iic a)).principal_isMeasurablyGenerated
 #align at_bot_is_measurably_generated atBot_isMeasurablyGenerated
 
+instance [R1Space α] : IsMeasurablyGenerated (cocompact α) where
+  exists_measurable_subset := by
+    intro _ hs
+    obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
+    exact ⟨(closure t)ᶜ, ht.closure.compl_mem_cocompact, isClosed_closure.measurableSet.compl,
+      (compl_subset_compl.2 subset_closure).trans hts⟩
+
 end Preorder
 
 section PartialOrder
