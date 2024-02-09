@@ -7,13 +7,14 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Rank
+import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
 
 -- move this
 namespace LinearMap
 
 variable {R M : Type*}
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
 variable [Module.Finite R M] [Module.Free R M]
 variable (φ : M →ₗ[R] M)
 
@@ -26,10 +27,16 @@ lemma charpoly_eq_X_pow_iff :
     use finrank R M
     suffices φ ^ finrank R M = 0 by simp only [this, LinearMap.zero_apply]
     simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
-  · sorry
+  · intro h
+    rw [← sub_eq_zero]
+    apply IsNilpotent.eq_zero
+    rw [finrank_eq_card_chooseBasisIndex]
+    apply Matrix.isNilpotent_charpoly_sub_pow_of_isNilpotent
+    sorry
 
 lemma charpoly_constantCoeff_eq_zero_iff :
     constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 := by
+  -- have := Module.End.hasEigenvalue_iff_isRoot (f := φ) 0
   sorry
 
 end LinearMap
