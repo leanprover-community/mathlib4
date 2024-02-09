@@ -417,7 +417,7 @@ theorem ClassGroup.mk0_eq_one_iff [IsDedekindDomain R] {I : Ideal R} (hI : I ∈
 
 theorem ClassGroup.mk0_eq_mk0_inv_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
     ClassGroup.mk0 I = (ClassGroup.mk0 J)⁻¹ ↔
-      ∃ (x : R) (_ : x ≠ 0), ↑I * ↑J = Ideal.span {x} := by
+      ∃ x ≠ (0 : R), I * J = Ideal.span {x} := by
   rw [eq_inv_iff_mul_eq_one, ← _root_.map_mul, ClassGroup.mk0_eq_one_iff,
     Submodule.isPrincipal_iff, Submonoid.coe_mul]
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨a, ?_, ha⟩, fun ⟨a, _, ha⟩ ↦ ⟨a, ha⟩⟩

@@ -74,14 +74,14 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)):
     refine le_of_mul_le_mul_of_pos_left h_nm ?_
     exact Nat.cast_pos.mpr <| Nat.pos_of_ne_zero <| Ideal.absNorm_ne_zero_of_nonZeroDivisors J
 
-theorem classNumber_eq_one_of_abs_discr_lt
+theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ NrComplexPlaces K *
       ((finrank ℚ K) ^ (finrank ℚ K) / (finrank ℚ K).factorial)) ^ 2) :
-    classNumber K = 1 := by
+    IsPrincipalIdealRing (ringOfIntegers K) := by
   have : 0 < finrank ℚ K := finrank_pos -- Lean needs to know that for positivity to succeed
   rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff' (by positivity),
     mul_inv, ← inv_pow, inv_div, inv_div, mul_assoc, Int.cast_abs] at h
-  rw [classNumber, Fintype.card_eq_one_iff]
+  rw [← classNumber_eq_one_iff, classNumber, Fintype.card_eq_one_iff]
   refine ⟨1, fun C ↦ ?_⟩
   obtain ⟨I, rfl, hI⟩ := exists_ideal_in_class_of_norm_le C
   have : Ideal.absNorm I.1 = 1 := by
