@@ -5,7 +5,6 @@ Authors: Miguel Marco
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
-import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
 # Sets in subtypes
@@ -24,7 +23,8 @@ Let `α` be a `Type`, `A B : Set α` two sets in `α`, and `C : Set A` a set in 
 - `A ↓∩ B` denotes `(Subtype.val ⁻¹' B : Set A)` (that is, `{x : ↑A | ↑x ∈ B}`).
 - `↑C` denotes `Subtype.val '' C` (that is, `{x : α | ∃ y ∈ C, ↑y = x}`).
 
-This notation is scoped to the `Set.Notation` namespace.
+This notation, (together with the `↑` notation for `Set.CoeHead` in `Mathlib.Data.Set.Functor`)
+is scoped to the `Set.Notation` namespace.
 To enable it, use `open Set.Notation`.
 
 
@@ -55,17 +55,6 @@ This set is the same as `{x : ↑A | ↑x ∈ B}`.
 -/
 scoped notation3 A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
 
-open Lean PrettyPrinter Delaborator SubExpr in
-/--
-Sets of a subtype coerced to the ambient type are denoted with `↑`.
--/
-@[scoped delab app.Set.image]
-def delab_set_image_subtype : Delab := do
-  let #[α, _, f, _] := (← getExpr).getAppArgs | failure
-  guard <| f.isAppOfArity ``Subtype.val 2
-  let some _ := α.coeTypeSet? | failure
-  let e ← withAppArg delab
-  `(↑$e)
 
 end Set.Notation
 
