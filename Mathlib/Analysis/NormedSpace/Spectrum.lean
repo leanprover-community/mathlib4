@@ -142,7 +142,7 @@ protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
 instance instCompactSpace [ProperSpace 𝕜] (a : A) : CompactSpace (spectrum 𝕜 a) :=
   isCompact_iff_compactSpace.mp <| spectrum.isCompact a
 
-instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
+instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
