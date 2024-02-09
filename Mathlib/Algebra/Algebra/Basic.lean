@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Module.ULift
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Module.Submodule.RestrictScalars
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
@@ -314,7 +315,7 @@ it suffices to check the `algebraMap`s agree.
 theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q : Algebra R A)
     (h : ∀ r : R, (haveI := P; algebraMap R A r) = haveI := Q; algebraMap R A r) :
     P = Q := by
-  replace h : P.toRingHom = Q.toRingHom := FunLike.ext _ _ h
+  replace h : P.toRingHom = Q.toRingHom := DFunLike.ext _ _ h
   have h' : (haveI := P; (· • ·) : R → A → A) = (haveI := Q; (· • ·) : R → A → A) := by
     funext r a
     rw [P.smul_def', Q.smul_def', h]
@@ -419,7 +420,7 @@ end
 
 variable (R A)
 
-/-- The canonical ring homomorphism `algebraMap R A : R →* A` for any `R`-algebra `A`,
+/-- The canonical ring homomorphism `algebraMap R A : R →+* A` for any `R`-algebra `A`,
 packaged as an `R`-linear map.
 -/
 protected def linearMap : R →ₗ[R] A :=
@@ -435,8 +436,14 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
   rfl
 #align algebra.coe_linear_map Algebra.coe_linearMap
 
-instance id : Algebra R R :=
-  (RingHom.id R).toAlgebra
+/- The identity map inducing an `Algebra` structure. -/
+instance id : Algebra R R where
+  -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
+  -- be made so without a significant performance hit.
+  -- see library note [reducible non-instances].
+  toFun x := x
+  toSMul := Mul.toSMul _
+  __ := (RingHom.id R).toAlgebra
 #align algebra.id Algebra.id
 
 variable {R A}
@@ -715,6 +722,10 @@ instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   commutes' := Rat.cast_commute
 #align algebra_rat algebraRat
 
+/-- The rational numbers are an algebra over the non-negative rationals. -/
+instance : Algebra NNRat ℚ :=
+  NNRat.coeHom.toAlgebra
+
 /-- The two `Algebra ℚ ℚ` instances should coincide. -/
 example : algebraRat = Algebra.id ℚ :=
   rfl
@@ -777,17 +788,12 @@ variable (R A)
 
 theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
     [NoZeroSMulDivisors R A] : Function.Injective (algebraMap R A) := by
-  -- porting note: todo: drop implicit args
-  have := @smul_left_injective R A CommRing.toRing Ring.toAddCommGroup Algebra.toModule
-    ‹_› 1 one_ne_zero
-  simpa only [algebraMap_eq_smul_one'] using this
+  simpa only [algebraMap_eq_smul_one'] using smul_left_injective R one_ne_zero
 #align no_zero_smul_divisors.algebra_map_injective NoZeroSMulDivisors.algebraMap_injective
 
 theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
     [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
-  -- porting note: todo: drop implicit args
-  @NeZero.nat_of_injective R A (R →+* A) _ _ n ‹_› _ _ <|
-    NoZeroSMulDivisors.algebraMap_injective R A
+  NeZero.nat_of_injective <| NoZeroSMulDivisors.algebraMap_injective R A
 #align ne_zero.of_no_zero_smul_divisors NeZero.of_noZeroSMulDivisors
 
 variable {R A}

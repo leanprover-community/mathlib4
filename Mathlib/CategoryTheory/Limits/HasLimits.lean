@@ -6,6 +6,7 @@ Authors: Reid Barton, Mario Carneiro, Scott Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.Logic.Equiv.Basic
 
 #align_import category_theory.limits.has_limits from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 

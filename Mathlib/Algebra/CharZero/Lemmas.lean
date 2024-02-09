@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Function.Support
-import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Cast.Field
 
 #align_import algebra.char_zero.lemmas from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
@@ -221,3 +221,17 @@ theorem RingHom.injective_nat (f : ℕ →+* R) [CharZero R] : Function.Injectiv
 #align ring_hom.injective_nat RingHom.injective_nat
 
 end RingHom
+
+section Units
+
+variable {R : Type*} [Ring R] [CharZero R]
+
+@[simp]
+theorem units_ne_neg_self (u : Rˣ) : u ≠ -u := by
+  simp_rw [ne_eq, Units.ext_iff, Units.val_neg, eq_neg_iff_add_eq_zero, ← two_mul,
+    Units.mul_left_eq_zero, two_ne_zero, not_false_iff]
+
+@[simp]
+theorem neg_units_ne_self (u : Rˣ) : -u ≠ u := (units_ne_neg_self u).symm
+
+end Units

@@ -122,7 +122,7 @@ namespace MonoidHom
 @[to_additive]
 theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f g : M →* N →* P} :
     f = g ↔ ∀ x y, f x y = g x y :=
-  FunLike.ext_iff.trans <| forall_congr' fun _ => FunLike.ext_iff
+  DFunLike.ext_iff.trans <| forall_congr' fun _ => DFunLike.ext_iff
 #align monoid_hom.ext_iff₂ MonoidHom.ext_iff₂
 #align add_monoid_hom.ext_iff₂ AddMonoidHom.ext_iff₂
 
@@ -333,11 +333,11 @@ theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
 
 lemma AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute {a : R} :
     mulLeft a = mulRight a ↔ ∀ b, Commute a b :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 
 lemma AddMonoidHom.mulRight_eq_mulLeft_iff_forall_commute {b : R} :
     mulRight b = mulLeft b ↔ ∀ a, Commute a b :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 
 /-- The left multiplication map: `(a, b) ↦ a * b`. See also `AddMonoidHom.mulLeft`. -/
 @[simps!]
