@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
 -/
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.NatIso
 
 #align_import category_theory.eq_to_hom from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -324,6 +325,11 @@ theorem eqToIso_map_trans (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
 theorem eqToHom_app {F G : C ⥤ D} (h : F = G) (X : C) :
     (eqToHom h : F ⟶ G).app X = eqToHom (Functor.congr_obj h X) := by subst h; rfl
 #align category_theory.eq_to_hom_app CategoryTheory.eqToHom_app
+
+@[simp]
+theorem eqToIso_app {F G : C ⥤ D} (h : F = G) (X : C) :
+    (eqToIso h : F ≅ G).app X = eqToIso (Functor.congr_obj h X) := by
+  subst h; rfl
 
 theorem NatTrans.congr {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (h : X = Y) :
     α.app X = F.map (eqToHom h) ≫ α.app Y ≫ G.map (eqToHom h.symm) := by
