@@ -24,7 +24,7 @@ of a matrix are homogeneous polynomials in the matrix entries.
 ## Main results
 
 * `Matrix.charpoly.univ`: the universal characteristic polynomial
-* `Matrix.charpoly.univ_map_aeval`: evaluating `univ` on the entries of a matrix `M`
+* `Matrix.charpoly.univ_map_eval₂Hom`: evaluating `univ` on the entries of a matrix `M`
   gives the characteristic polynomial of `M`.
 * `Matrix.charpoly.univ_coeff_isHomogeneous`:
   the `i`-th coefficient of `univ` is a homogeneous polynomial of degree `n - i`.
@@ -47,7 +47,7 @@ see `Matrix.charpoly.univ_coeff_isHomogeneous`.
 
 By evaluating the coefficients at the entries of a matrix `M`,
 one obtains the characteristic polynomial of `M`,
-see `Matrix.charpoly.univ_map_aeval`. -/
+see `Matrix.charpoly.univ_map_eval₂Hom`. -/
 noncomputable
 abbrev univ : Polynomial (MvPolynomial (n × n) R) :=
   charpoly <| mvPolynomialX n n R
