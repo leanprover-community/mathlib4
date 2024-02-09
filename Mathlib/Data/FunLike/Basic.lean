@@ -178,7 +178,7 @@ instance (priority := 100) hasCoeToFun : CoeFun F (fun _ ↦ ∀ a : α, β a) w
   coe := @DFunLike.coe _ _ β _ -- need to make explicit to beta reduce for non-dependent functions
 
 #eval Lean.Elab.Command.liftTermElabM do
-  Std.Tactic.Coe.registerCoercion ``DFunLike.coe
+  Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
 -- @[simp] -- porting note: this loops in lean 4

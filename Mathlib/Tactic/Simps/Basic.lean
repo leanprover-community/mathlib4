@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Lean.Elab.Tactic.Simp
 import Mathlib.Tactic.Simps.NotationClass
-import Std.Classes.Dvd
 import Std.Data.String.Basic
 import Std.Util.LibraryNote
 import Mathlib.Lean.Expr.Basic
