@@ -583,15 +583,16 @@ lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ← smul_eq_mul, realPart_I_smul]
     simp [conj_ofReal, ← two_mul]
 
-lemma star_mul_self_add_self_mul_star {A : Type*} [Ring A] [StarRing A]
-    [Algebra ℂ A] [StarModule ℂ A] (a : A) :
-    star a * a + a * star a = 2 • ((ℜ a) ^ 2 + (ℑ a) ^ 2) :=
+lemma star_mul_self_add_self_mul_star {A : Type*} [NonUnitalRing A] [StarRing A]
+    [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A] (a : A) :
+    star a * a + a * star a = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) :=
   have a_eq := (realPart_add_I_smul_imaginaryPart a).symm
   calc
     star a * a + a * star a = _ :=
       congr((star $(a_eq)) * $(a_eq) + $(a_eq) * (star $(a_eq)))
-    _ = 2 • ((ℜ a) ^ 2 + (ℑ a) ^ 2) := by
-      simp [mul_add, add_mul, smul_smul, two_smul, sq]
+    _ = 2 • (ℜ a * ℜ a + ℑ a * ℑ a) := by
+      simp [mul_add, add_mul, smul_smul, two_smul, mul_smul_comm,
+        smul_mul_assoc]
       abel
 
 end RealImaginaryPart
