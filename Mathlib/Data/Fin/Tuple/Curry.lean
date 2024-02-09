@@ -29,10 +29,10 @@ universe u v w w'
 
 namespace Function
 
-@[inline] abbrev curry₂   := @Function.curry.{u, v, w}
-@[inline] abbrev uncurry₂ := @Function.uncurry.{u, v, w}
+/-- Currying for 3-ary functions. -/
 @[inline] def curry₃ {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'} :
     (α × β × γ → δ) → α → β → γ → δ := fun f a b c => f (a, b, c)
+/-- Uncurrying for 3-ary functions. -/
 @[inline] def uncurry₃ {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'} :
     (α → β → γ → δ) → (α × β × γ) → δ := fun f x => f x.1 x.2.1 x.2.2
 
@@ -84,11 +84,11 @@ def curryEquiv (n : ℕ) : ((Fin n → α) → β) ≃ OfArity α β n where
   left_inv := uncurry_curry
   right_inv := curry_uncurry
 
-lemma curry_2_eq_curry₂ {α β : Type u} (f : ((i : Fin 2) → α) → β) :
-    curry f = curry₂ (f ∘ (finTwoArrowEquiv α).symm) := rfl
+lemma curry_2_eq_curry {α β : Type u} (f : ((i : Fin 2) → α) → β) :
+    curry f = Function.curry (f ∘ (finTwoArrowEquiv α).symm) := rfl
 
 lemma uncurry_2_eq_uncurry₂ {α β : Type u} (f : OfArity α β 2) :
-    uncurry f = uncurry₂ f ∘ (finTwoArrowEquiv α) := rfl
+    uncurry f = Function.uncurry f ∘ (finTwoArrowEquiv α) := rfl
 
 lemma curry_3_eq_curry₃ {α β : Type u} (f : ((i : Fin 3) → α) → β) :
     curry f = curry₃ (f ∘ (finThreeArrowEquiv α).symm) := rfl
@@ -164,11 +164,11 @@ def curryEquiv (p : Fin n → Type u) : (((i : Fin n) → p i) → τ) ≃ OfHAr
 
 lemma curry_2_eq_curry₂ {p : Fin 2 → Type u} {τ : Type u}
     (f : ((i : Fin 2) → p i) → τ) :
-    curry f = curry₂ (f ∘ (piFinTwoEquiv p).symm) := rfl
+    curry f = Function.curry (f ∘ (piFinTwoEquiv p).symm) := rfl
 
 lemma uncurry_2_eq_uncurry₂ (p : Fin 2 → Type u) (τ : Type u)
     (f : Function.OfHArity p τ) :
-    uncurry f = uncurry₂ f ∘ piFinTwoEquiv p := rfl
+    uncurry f = Function.uncurry f ∘ piFinTwoEquiv p := rfl
 
 lemma curry_3_eq_curry₃ {p : Fin 3 → Type u} {τ : Type u}
     (f : ((i : Fin 3) → p i) → τ) :

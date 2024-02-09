@@ -146,7 +146,6 @@ lemma curry₃_obj_map₃_apply_eq_curry₃_map_apply (F : C₁ × C₂ × C₃ 
     = (F.map (X := (X, Y, Z)) (Y := (X', Y', Z'))).curry₃ f g h :=
   congrFun₃ (curry₃_obj_map₃_eq_curry₃_map F X X' Y Y' Z Z') f g h
 
-@[simp]
 lemma Functor.map₃_id₂_id₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄) {X X'} (f : X ⟶ X') (Y : C₂)
     (Z : C₃) : F.map₃ f (𝟙 Y) (𝟙 Z) = (F.map f).app₂ Y Z := by
   simp only [map₃, map₂, NatTrans.app₂, map_id, NatTrans.id_app]
