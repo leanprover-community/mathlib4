@@ -42,7 +42,7 @@ lemma VectorFourier.mul_L_schwartz_apply (f : 𝓢(D, V)) (d : D) :
 
 lemma SchwartzMap.integrable_pow_mul [MeasurableSpace D] [BorelSpace D] [FiniteDimensional ℝ D]
     (f : 𝓢(D, V)) {μ : Measure D} (k : ℕ) [IsAddHaarMeasure μ] :
-    Integrable (fun x ↦ ‖x‖^k * ‖f x‖) μ := by
+    Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
   let l := finrank ℝ D + 1 + k
   obtain ⟨C, C_nonneg, hC⟩ : ∃ C, 0 ≤ C ∧ ∀ x, (1 + ‖x‖) ^ l * ‖f x‖ ≤ C := by
     let m : ℕ × ℕ := (l, 0)
@@ -58,16 +58,16 @@ lemma SchwartzMap.integrable_pow_mul [MeasurableSpace D] [BorelSpace D] [FiniteD
   rw [le_div_iff' (by positivity)]
   simp only [id_eq, Pi.mul_apply, Pi.pow_apply, norm_mul, norm_pow, norm_norm, rpow_nat_cast]
   calc
-  (1 + ‖x‖) ^ (finrank ℝ D + 1) * (‖x‖ ^ k * ‖f x‖)
-    ≤ (1 + ‖x‖) ^ (finrank ℝ D + 1) * ((1 + ‖x‖) ^ k * ‖f x‖) := by gcongr; simp
-  _ = (1 + ‖x‖) ^ (finrank ℝ D + 1 + k) * ‖f x‖ := by simp [pow_add]; ring
-  _ ≤ C := hC x
+    (1 + ‖x‖) ^ (finrank ℝ D + 1) * (‖x‖ ^ k * ‖f x‖)
+      ≤ (1 + ‖x‖) ^ (finrank ℝ D + 1) * ((1 + ‖x‖) ^ k * ‖f x‖) := by gcongr; simp
+    _ = (1 + ‖x‖) ^ (finrank ℝ D + 1 + k) * ‖f x‖ := by simp [pow_add]; ring
+    _ ≤ C := hC x
 
 lemma SchwartzMap.integrable [MeasurableSpace D] [BorelSpace D] [FiniteDimensional ℝ D]
     (f : 𝓢(D, V)) {μ : Measure D} [IsAddHaarMeasure μ] :
     Integrable f μ :=
   (f.integrable_pow_mul (μ := μ) 0).mono f.continuous.aestronglyMeasurable
-    (eventually_of_forall (fun x ↦ by simp))
+    (eventually_of_forall (fun _ ↦ by simp))
 
 attribute [local instance 200] secondCountableTopologyEither_of_left
 
