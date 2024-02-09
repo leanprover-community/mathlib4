@@ -12,7 +12,7 @@ import Mathlib.RingTheory.EuclideanDomain
 /-!
 # Theory of univariate polynomials
 
-This file starts looking like the ring theory of $ R[X] $
+This file starts looking like the ring theory of $R[X]$
 
 -/
 
@@ -73,7 +73,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
   · intro b hb hb0
     rw [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_smul, eval_pow,
       Nat.sub_sub_self (mem_range_succ_iff.mp hb), eval_sub, eval_X, eval_C, sub_self,
-      zero_pow' b hb0, smul_zero, zero_mul, smul_zero]
+      zero_pow hb0, smul_zero, zero_mul, smul_zero]
 
 theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors
     {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
@@ -507,7 +507,7 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
     have : p.coeff 1 ≠ 0 := by
       have h' := natDegree_eq_of_degree_eq_some h
       change natDegree p = 1 at h'; rw [← h']
-      exact mt leadingCoeff_eq_zero.1 fun h0 => by simp [h0] at h; contradiction
+      exact mt leadingCoeff_eq_zero.1 fun h0 => by simp [h0] at h
     conv in p => rw [eq_X_add_C_of_degree_le_one (show degree p ≤ 1 by rw [h])]
     simp [IsRoot, mul_div_cancel' _ this]⟩
 #align polynomial.exists_root_of_degree_eq_one Polynomial.exists_root_of_degree_eq_one
@@ -590,7 +590,7 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
     Monic.prime_of_degree_eq_one (hp1 ▸ degree_normalize)
-      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp [degree_zero, ← WithBot.coe_one]))
+      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp [degree_zero]))
   exact (normalize_associated _).prime this
 #align polynomial.prime_of_degree_eq_one Polynomial.prime_of_degree_eq_one
 

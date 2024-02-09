@@ -21,6 +21,8 @@ In particular, we construct an instance of `TotalComplexShape c c c` when `c : C
 and `I` is an additive monoid equipped with a group homomorphism `ε' : Multiplicative I → ℤˣ`
 satisfying certain properties (see `ComplexShape.TensorSigns`).
 
+TODO @joelriou: add more classes for the symmetry of the total complex, the associativity, etc.
+
 -/
 
 variable {I₁ I₂ I₁₂ : Type*}
@@ -40,7 +42,7 @@ class TotalComplexShape  where
   ε₂ : I₁ × I₂ → ℤˣ
   rel₁ {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) : c₁₂.Rel (π ⟨i₁, i₂⟩) (π ⟨i₁', i₂⟩)
   rel₂ (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') : c₁₂.Rel (π ⟨i₁, i₂⟩) (π ⟨i₁, i₂'⟩)
-  ε₂ε₁ {i₁ i₁' : I₁} {i₂ i₂' : I₂} (h₁ : c₁.Rel i₁ i₁') (h₂ : c₂.Rel i₂ i₂') :
+  ε₂_ε₁ {i₁ i₁' : I₁} {i₂ i₂' : I₂} (h₁ : c₁.Rel i₁ i₁') (h₂ : c₂.Rel i₂ i₂') :
     ε₂ ⟨i₁, i₂⟩ * ε₁ ⟨i₁, i₂'⟩ = - ε₁ ⟨i₁, i₂⟩ * ε₂ ⟨i₁', i₂⟩
 
 namespace ComplexShape
@@ -78,10 +80,10 @@ lemma next_π₂ (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') :
 
 variable {c₁}
 
-lemma ε₂ε₁ {i₁ i₁' : I₁} {i₂ i₂' : I₂} (h₁ : c₁.Rel i₁ i₁') (h₂ : c₂.Rel i₂ i₂') :
+lemma ε₂_ε₁ {i₁ i₁' : I₁} {i₂ i₂' : I₂} (h₁ : c₁.Rel i₁ i₁') (h₂ : c₂.Rel i₂ i₂') :
     ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ * ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂'⟩ =
       - ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ * ε₂ c₁ c₂ c₁₂ ⟨i₁', i₂⟩ :=
-  TotalComplexShape.ε₂ε₁ h₁ h₂
+  TotalComplexShape.ε₂_ε₁ h₁ h₂
 
 section
 
@@ -117,7 +119,6 @@ lemma ε_succ {p q : I} (hpq : c.Rel p q) : c.ε q = - c.ε p :=
 lemma ε_add (p q : I) : c.ε (p + q) = c.ε p * c.ε q := by
   apply MonoidHom.map_mul
 
-
 lemma next_add (p q : I) (hp : c.Rel p (c.next p)) :
     c.next (p + q) = c.next p + q :=
   c.next_eq' (c.rel_add hp q)
@@ -133,7 +134,7 @@ instance : TotalComplexShape c c c where
   ε₂ := fun ⟨p, _⟩ => c.ε p
   rel₁ h q := c.rel_add h q
   rel₂ p _ _ h := c.add_rel p h
-  ε₂ε₁ h _ := by
+  ε₂_ε₁ h _ := by
     dsimp
     rw [neg_mul, one_mul, mul_one, c.ε_succ h, neg_neg]
 
@@ -147,8 +148,7 @@ instance : TensorSigns (ComplexShape.down ℕ) where
     rw [pow_add, pow_one, mul_neg, mul_one, neg_neg]
 
 @[simp]
-lemma ε_down_ℕ (n : ℕ) :
-    (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n := rfl
+lemma ε_down_ℕ (n : ℕ) : (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n := rfl
 
 instance : TensorSigns (ComplexShape.up ℤ) where
   ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
@@ -160,8 +160,7 @@ instance : TensorSigns (ComplexShape.up ℤ) where
     rw [Int.negOnePow_succ]
 
 @[simp]
-lemma ε_up_ℤ (n : ℤ) :
-    (ComplexShape.up ℤ).ε n = n.negOnePow := rfl
+lemma ε_up_ℤ (n : ℤ) : (ComplexShape.up ℤ).ε n = n.negOnePow := rfl
 
 end
 

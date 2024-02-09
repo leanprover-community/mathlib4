@@ -10,9 +10,10 @@ import Mathlib.Algebra.Homology.HomologicalBicomplex
 /-!
 # The total complex of a bicomplex
 
-Given a preadditive `C`, two complex shapes `c₁ : ComplexShape I₁`, `c₂ : ComplexShape I₂`,
-a bicomplex `K : HomologicalComplex₂ C c₁ c₂`, and a third complex shape `c₁₂ : ComplexShape I₁₂`
-equipped with `[TotalComplexShape c₁ c₂ c₁₂]`, we construct the total complex
+Given a preadditive category `C`, two complex shapes `c₁ : ComplexShape I₁`,
+`c₂ : ComplexShape I₂`, a bicomplex `K : HomologicalComplex₂ C c₁ c₂`,
+and a third complex shape `c₁₂ : ComplexShape I₁₂` equipped
+with `[TotalComplexShape c₁ c₂ c₁₂]`, we construct the total complex
 `K.total c₁₂ : HomologicalComplex C c₁₂`.
 
 In particular, if `c := ComplexShape.up ℤ` and `K : HomologicalComplex₂ c c`, then for any
@@ -152,7 +153,7 @@ noncomputable def total : HomologicalComplex C c₁₂ where
           congr 1
           · dsimp
             rw [K.d₁_eq c₁₂ h₃ (c₂.next i₂) i₁₂'' h₆, Linear.comp_units_smul, smul_smul,
-              smul_smul, HomologicalComplex.Hom.comm_assoc, ComplexShape.ε₂ε₁ c₁₂ h₃ h₄,
+              smul_smul, HomologicalComplex.Hom.comm_assoc, ComplexShape.ε₂_ε₁ c₁₂ h₃ h₄,
               neg_mul, Units.neg_smul, add_right_neg]
           · by_cases h₈ : c₂.Rel (c₂.next i₂) (c₂.next (c₂.next i₂))
             · have h₉ : ComplexShape.π c₁ c₂ c₁₂ (i₁, c₂.next (c₂.next i₂)) = i₁₂'' := by

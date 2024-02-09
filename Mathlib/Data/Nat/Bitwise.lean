@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.Size
+import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.Set
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
@@ -128,12 +129,10 @@ theorem xor_bit : ∀ a m b n, bit a m ^^^ bit b n = bit (bne a b) (m ^^^ n) :=
 attribute [simp] Nat.testBit_bitwise
 #align nat.test_bit_bitwise Nat.testBit_bitwise
 
-@[simp]
 theorem testBit_lor : ∀ m n k, testBit (m ||| n) k = (testBit m k || testBit n k) :=
   testBit_bitwise rfl
 #align nat.test_bit_lor Nat.testBit_lor
 
-@[simp]
 theorem testBit_land : ∀ m n k, testBit (m &&& n) k = (testBit m k && testBit n k) :=
   testBit_bitwise rfl
 #align nat.test_bit_land Nat.testBit_land

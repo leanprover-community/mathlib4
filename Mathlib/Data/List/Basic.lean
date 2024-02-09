@@ -6,9 +6,10 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
-import Mathlib.Init.Core
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
+import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.Data.List.Lemmas
 
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -40,14 +41,12 @@ instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
       | a :: _ => isEmptyElim a }
 #align list.unique_of_is_empty List.uniqueOfIsEmpty
 
-instance : IsLeftId (List α) Append.append [] :=
-  ⟨nil_append⟩
+instance : Std.LawfulIdentity (α := List α) Append.append [] where
+  left_id := nil_append
+  right_id := append_nil
 
-instance : IsRightId (List α) Append.append [] :=
-  ⟨append_nil⟩
-
-instance : IsAssociative (List α) Append.append :=
-  ⟨append_assoc⟩
+instance : Std.Associative (α := List α) Append.append where
+  assoc := append_assoc
 
 #align list.cons_ne_nil List.cons_ne_nil
 #align list.cons_ne_self List.cons_ne_self
@@ -392,22 +391,20 @@ theorem cons_eq_append_iff {a b c : List α} {x : α} :
 
 #align list.append_inj_left' List.append_inj_left'ₓ -- implicits order
 
-theorem append_left_cancel {s t₁ t₂ : List α} (h : s ++ t₁ = s ++ t₂) : t₁ = t₂ :=
-  (append_right_inj _).1 h
-#align list.append_left_cancel List.append_left_cancel
+@[deprecated] alias append_left_cancel := append_cancel_left -- deprecated since 2024-01-18
+#align list.append_left_cancel List.append_cancel_left
 
-theorem append_right_cancel {s₁ s₂ t : List α} (h : s₁ ++ t = s₂ ++ t) : s₁ = s₂ :=
-  (append_left_inj _).1 h
-#align list.append_right_cancel List.append_right_cancel
+@[deprecated] alias append_right_cancel := append_cancel_right -- deprecated since 2024-01-18
+#align list.append_right_cancel List.append_cancel_right
 
 theorem append_right_injective (s : List α) : Injective fun t ↦ s ++ t :=
-  fun _ _ ↦ append_left_cancel
+  fun _ _ ↦ append_cancel_left
 #align list.append_right_injective List.append_right_injective
 
 #align list.append_right_inj List.append_right_inj
 
 theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
-  fun _ _ ↦ append_right_cancel
+  fun _ _ ↦ append_cancel_right
 #align list.append_left_injective List.append_left_injective
 
 #align list.append_left_inj List.append_left_inj
@@ -524,13 +521,13 @@ theorem concat_eq_append' (a : α) (l : List α) : concat l a = l ++ [a] :=
 theorem init_eq_of_concat_eq {a : α} {l₁ l₂ : List α} : concat l₁ a = concat l₂ a → l₁ = l₂ := by
   intro h
   rw [concat_eq_append, concat_eq_append] at h
-  exact append_right_cancel h
+  exact append_cancel_right h
 #align list.init_eq_of_concat_eq List.init_eq_of_concat_eq
 
 theorem last_eq_of_concat_eq {a b : α} {l : List α} : concat l a = concat l b → a = b := by
   intro h
   rw [concat_eq_append, concat_eq_append] at h
-  exact head_eq_of_cons_eq (append_left_cancel h)
+  exact head_eq_of_cons_eq (append_cancel_left h)
 #align list.last_eq_of_concat_eq List.last_eq_of_concat_eq
 
 theorem concat_ne_nil (a : α) (l : List α) : concat l a ≠ [] := by simp
@@ -695,13 +692,6 @@ theorem getLast_congr {l₁ l₂ : List α} (h₁ : l₁ ≠ []) (h₂ : l₂ �
     getLast l₁ h₁ = getLast l₂ h₂ := by subst l₁; rfl
 #align list.last_congr List.getLast_congr
 
-theorem getLast_mem : ∀ {l : List α} (h : l ≠ []), getLast l h ∈ l
-  | [], h => absurd rfl h
-  | [a], _ => by simp only [getLast, mem_singleton]
-  | a :: b :: l, h =>
-    List.mem_cons.2 <| Or.inr <| by
-        rw [getLast_cons_cons]
-        exact getLast_mem (cons_ne_nil b l)
 #align list.last_mem List.getLast_mem
 
 theorem getLast_replicate_succ (m : ℕ) (a : α) :
@@ -711,11 +701,6 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 #align list.last_replicate_succ List.getLast_replicate_succ
 
 /-! ### getLast? -/
-
--- Porting note: New lemma, since definition of getLast? is slightly different.
-@[simp]
-theorem getLast?_singleton (a : α) :
-    getLast? [a] = a := rfl
 
 -- Porting note: Moved earlier in file, for use in subsequent lemmas.
 @[simp]
@@ -917,7 +902,7 @@ theorem nthLe_cons {l : List α} {a : α} {n} (hl) :
   split_ifs with h
   · simp [nthLe, h]
   cases l
-  · rw [length_singleton, lt_succ_iff, nonpos_iff_eq_zero] at hl
+  · rw [length_singleton, Nat.lt_succ_iff, nonpos_iff_eq_zero] at hl
     contradiction
   cases n
   · contradiction
@@ -954,7 +939,7 @@ def reverseRecOn {C : List α → Sort*} (l : List α) (H0 : C [])
     let ih := reverseRecOn (reverse tail) H0 H1
     rw [reverse_cons]
     exact H1 _ _ ih
-termination_by _ _ l _ _ => l.length
+termination_by l.length
 #align list.reverse_rec_on List.reverseRecOn
 
 /-- Bidirectional induction principle for lists: if a property holds for the empty list, the
@@ -971,7 +956,7 @@ def bidirectionalRec {C : List α → Sort*} (H0 : C []) (H1 : ∀ a : α, C [a]
     rw [← dropLast_append_getLast (cons_ne_nil b l)]
     have : C l' := bidirectionalRec H0 H1 Hn l'
     exact Hn a l' b' this
-termination_by _ l => l.length
+termination_by l => l.length
 #align list.bidirectional_rec List.bidirectionalRecₓ -- universe order
 
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
@@ -1307,7 +1292,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
   · by_cases h₁ : l = []
     · subst h₁
       rw [get_singleton]
-      simp only [length_singleton, lt_succ_iff, nonpos_iff_eq_zero] at h
+      simp only [length_singleton, Nat.lt_succ_iff, nonpos_iff_eq_zero] at h
       subst h
       simp
     have h₂ := h
@@ -2504,6 +2489,21 @@ theorem foldlRecOn_nil {C : β → Sort*} (op : β → α → β) (b) (hb : C b)
   rfl
 #align list.foldl_rec_on_nil List.foldlRecOn_nil
 
+/-- Consider two lists `l₁` and `l₂` with designated elements `a₁` and `a₂` somewhere in them:
+`l₁ = x₁ ++ [a₁] ++ z₁` and `l₂ = x₂ ++ [a₂] ++ z₂`.
+Assume the designated element `a₂` is present in neither `x₁` nor `z₁`.
+We conclude that the lists are equal (`l₁ = l₂`) if and only if their respective parts are equal
+(`x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂`). -/
+lemma append_cons_inj_of_not_mem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
+    (notin_x : a₂ ∉ x₁) (notin_z : a₂ ∉ z₁) :
+    x₁ ++ a₁ :: z₁ = x₂ ++ a₂ :: z₂ ↔ x₁ = x₂ ∧ a₁ = a₂ ∧ z₁ = z₂ := by
+  constructor
+  · simp only [append_eq_append_iff, cons_eq_append, cons_eq_cons]
+    rintro (⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩ |
+      ⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩) <;> simp_all
+  · rintro ⟨rfl, rfl, rfl⟩
+    rfl
+
 section Scanl
 
 variable {f : β → α → β} {b : β} {a : α} {l : List α}
@@ -2663,7 +2663,7 @@ end FoldlEqFoldlr'
 
 section
 
-variable {op : α → α → α} [ha : IsAssociative α op] [hc : IsCommutative α op]
+variable {op : α → α → α} [ha : Std.Associative op] [hc : Std.Commutative op]
 
 /-- Notation for `op a b`. -/
 local notation a " ⋆ " b => op a b
@@ -4223,6 +4223,8 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
   · simpa using hl'
 #align list.last_reverse List.getLast_reverse
 
+set_option linter.deprecated false in
+@[deprecated]
 theorem ilast'_mem : ∀ a l, @ilast' α a l ∈ a :: l
   | a, [] => by simp [ilast']
   | a, b :: l => by rw [mem_cons]; exact Or.inr (ilast'_mem b l)
@@ -4236,6 +4238,7 @@ theorem get_attach (L : List α) (i) :
       by rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
 
+set_option linter.deprecated false in
 @[simp, deprecated get_attach]
 theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
     (L.attach.nthLe i H).1 = L.nthLe i (length_attach L ▸ H) := get_attach ..

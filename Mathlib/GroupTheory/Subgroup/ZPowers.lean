@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Basic
 
 #align_import group_theory.subgroup.zpowers from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 

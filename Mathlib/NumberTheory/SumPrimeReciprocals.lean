@@ -65,7 +65,7 @@ theorem not_summable_one_div_on_primes :
   intro h
   obtain ⟨k, hk⟩ := h.nat_tsum_vanishing (Iio_mem_nhds one_half_pos : Iio (1 / 2 : ℝ) ∈ nhds 0)
   specialize hk ({p | Nat.Prime p} ∩ {p | k ≤ p}) <| inter_subset_right ..
-  rw [tsum_subtype, indicator_indicator, inter_eq_left.mpr <| fun n hn ↦ hn.1, mem_Iio] at hk
+  rw [tsum_subtype, indicator_indicator, inter_eq_left.mpr fun n hn ↦ hn.1, mem_Iio] at hk
   have h' : Summable (indicator ({p | Nat.Prime p} ∩ {p | k ≤ p}) fun n ↦ (1 : ℝ) / n)
   · convert h.indicator {n : ℕ | k ≤ n} using 1
     simp only [indicator_indicator, inter_comm]
