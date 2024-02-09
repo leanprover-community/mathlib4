@@ -1108,7 +1108,7 @@ theorem lift_comp_lift {T : Submonoid M} (hST : S ≤ T) {Q : Type*} [CommMonoid
 theorem lift_comp_lift_eq {Q : Type*} [CommMonoid Q] (k : Submonoid.LocalizationMap S Q)
     {A : Type*} [CommMonoid A]{l : M →* A} (hl : ∀ w : S, IsUnit (l w)) :
     (k.lift hl).comp (f.lift (fun _ => map_units k _) ) = f.lift hl :=
-  lift_comp_lift f (le_refl S) k hl
+  lift_comp_lift f le_rfl k hl
 
 /-- Given two Localization maps `f : M →* N, k : M →* P` for a Submonoid `S ⊆ M`, the hom
 from `P` to `N` induced by `f` is left inverse to the hom from `N` to `P` induced by `k`. -/
