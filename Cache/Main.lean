@@ -77,20 +77,17 @@ def main (args : List String) : IO Unit := do
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
+  let get (args : List String) (force := false) (decompress := true) := do
+    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths (toPaths args)
+    getFiles hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
-  | ["get"] => getFiles hashMap false false goodCurl true
-  | ["get!"] => getFiles hashMap true true goodCurl true
-  | ["get-"] => getFiles hashMap false false goodCurl false
-  | "get"  :: args =>
-    getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl true
-  | "get!" :: args =>
-    getFiles (← hashMemo.filterByFilePaths (toPaths args)) true true goodCurl true
-  | "get-" :: args =>
-    getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl false
+  | "get"  :: args => get args
+  | "get!" :: args => get args (force := true)
+  | "get-" :: args => get args (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
   | ["unpack"] => unpackCache hashMap false
