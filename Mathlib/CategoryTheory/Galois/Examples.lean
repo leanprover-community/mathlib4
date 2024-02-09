@@ -12,10 +12,10 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
-# Examples of Galois categories and fibre functors
+# Examples of Galois categories and fiber functors
 
 We show that for a group `G` the category of finite `G`-sets is a `PreGaloisCategory` and that the
-forgetful functor to `FintypeCat` is a `FibreFunctor`.
+forgetful functor to `FintypeCat` is a `FiberFunctor`.
 
 The connected finite `G`-sets are precisely the ones with transitive `G`-action.
 
@@ -90,19 +90,19 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
       (isColimitMapCoconeBinaryCofanEquiv (forget _) i _).symm
       (Types.isCoprodOfMono ((forget _).map i))⟩⟩
 
-/-- The forgetful functor from finite `G`-sets to sets is a `FibreFunctor`. -/
-noncomputable instance : FibreFunctor (Action.forget FintypeCat (MonCat.of G)) where
+/-- The forgetful functor from finite `G`-sets to sets is a `FiberFunctor`. -/
+noncomputable instance : FiberFunctor (Action.forget FintypeCat (MonCat.of G)) where
   preservesFiniteCoproducts := ⟨fun _ _ ↦ inferInstance⟩
   preservesQuotientsByFiniteGroups _ _ _ := inferInstance
   reflectsIsos := ⟨fun f (h : IsIso f.hom) => inferInstance⟩
 
 /-- The category of finite `G`-sets is a `GaloisCategory`. -/
 instance : GaloisCategory (Action FintypeCat (MonCat.of G)) where
-  hasFibreFunctor := ⟨Action.forget FintypeCat (MonCat.of G), ⟨inferInstance⟩⟩
+  hasFiberFunctor := ⟨Action.forget FintypeCat (MonCat.of G), ⟨inferInstance⟩⟩
 
 /-- The `G`-action on a connected finite `G`-set is transitive. -/
-theorem Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
-    [ConnectedObject X] : MulAction.IsPretransitive G X.V where
+theorem Action.pretransitive_of_isConnected (X : Action FintypeCat (MonCat.of G))
+    [IsConnected X] : MulAction.IsPretransitive G X.V where
   exists_smul_eq x y := by
     /- We show that the `G`-orbit of `x` is a non-initial subobject of `X` and hence by
     connectedness, the orbit equals `X.V`. -/
@@ -113,7 +113,7 @@ theorem Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
     let i : T' ⟶ X := ⟨Subtype.val, fun _ ↦ rfl⟩
     have : Mono i := ConcreteCategory.mono_of_injective _ (Subtype.val_injective)
     have : IsIso i := by
-      apply ConnectedObject.noTrivialComponent T' i
+      apply IsConnected.noTrivialComponent T' i
       apply (not_initial_iff_fiber_nonempty (Action.forget _ _) T').mpr
       exact Set.Nonempty.coe_sort (MulAction.orbit_nonempty x)
     have hb : Function.Bijective i.hom := by
@@ -124,9 +124,9 @@ theorem Action.pretransitive_of_connected (X : Action FintypeCat (MonCat.of G))
     exact hg.trans hy'
 
 /-- A nonempty `G`-set with transitive `G`-action is connected. -/
-theorem Action.connected_of_transitive (X : FintypeCat) [MulAction G X]
+theorem Action.isConnected_of_transitive (X : FintypeCat) [MulAction G X]
     [MulAction.IsPretransitive G X] [h : Nonempty X] :
-    ConnectedObject (Action.FintypeCat.ofMulAction G X) where
+    IsConnected (Action.FintypeCat.ofMulAction G X) where
   notInitial := not_initial_of_inhabited (Action.forget _ _) h.some
   noTrivialComponent Y i hm hni := by
     /- We show that the induced inclusion `i.hom` of finite sets is surjective, using the
@@ -145,9 +145,9 @@ theorem Action.connected_of_transitive (X : FintypeCat) [MulAction G X]
     apply isIso_of_reflects_iso i (Action.forget _ _)
 
 /-- A nonempty finite `G`-set is connected if and only if the `G`-action is transitive. -/
-theorem Action.connected_iff_transitive (X : Action FintypeCat (MonCat.of G)) [Nonempty X.V] :
-    ConnectedObject X ↔ MulAction.IsPretransitive G X.V :=
-  ⟨fun _ ↦ pretransitive_of_connected G X, fun _ ↦ connected_of_transitive G X.V⟩
+theorem Action.isConnected_iff_transitive (X : Action FintypeCat (MonCat.of G)) [Nonempty X.V] :
+    IsConnected X ↔ MulAction.IsPretransitive G X.V :=
+  ⟨fun _ ↦ pretransitive_of_isConnected G X, fun _ ↦ isConnected_of_transitive G X.V⟩
 
 end FintypeCat
 
