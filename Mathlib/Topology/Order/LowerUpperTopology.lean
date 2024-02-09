@@ -301,10 +301,10 @@ end IsLower
 
 /-- If `α` is equipped with the lower topology, then it is homeomorphic to `WithLower α`.
 -/
-def WithLower.withLowerHomeomorph [Preorder α] [TopologicalSpace α] [IsLower α] :
+def WithLower.WithLowerHomeomorph [Preorder α] [TopologicalSpace α] [IsLower α] :
     WithLower α ≃ₜ α :=
   WithLower.ofLower.toHomeomorphOfInducing ⟨by erw [IsLower.topology_eq α, induced_id]; rfl⟩
-#align lower_topology.with_lower_topology_homeomorph Topology.WithLower.withLowerHomeomorph
+#align lower_topology.with_lower_topology_homeomorph Topology.WithLower.WithLowerHomeomorph
 
 namespace IsUpper
 
@@ -386,7 +386,7 @@ end IsUpper
 
 /-- If `α` is equipped with the upper topology, then it is homeomorphic to `WithUpper α`.
 -/
-def WithUpper.withUpperHomeomorph [Preorder α] [TopologicalSpace α] [IsUpper α] :
+def WithUpper.WithUpperHomeomorph [Preorder α] [TopologicalSpace α] [IsUpper α] :
     WithUpper α ≃ₜ α :=
   WithUpper.ofUpper.toHomeomorphOfInducing ⟨by erw [IsUpper.topology_eq α, induced_id]; rfl⟩
 
