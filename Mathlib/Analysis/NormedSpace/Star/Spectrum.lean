@@ -155,6 +155,24 @@ noncomputable instance (priority := 100) : ContinuousLinearMapClass F ℂ A B :=
 
 end StarAlgHom
 
+namespace StarAlgEquiv
+
+variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
+  [CstarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B]
+  [EquivLike F A B] [NonUnitalAlgEquivClass F ℂ A B] [StarAlgEquivClass F ℂ A B]
+
+lemma StarAlgEquiv.nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
+  le_antisymm (StarAlgHom.nnnorm_apply_le φ a) <| by
+    simpa using StarAlgHom.nnnorm_apply_le (symm (φ : A ≃⋆ₐ[ℂ] B)) ((φ : A ≃⋆ₐ[ℂ] B) a)
+
+lemma StarAlgEquiv.norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
+  congr_arg NNReal.toReal (nnnorm_map φ a)
+
+lemma StarAlgEquiv.isometry (φ : F) : Isometry φ :=
+  AddMonoidHomClass.isometry_of_norm φ (norm_map φ)
+
+end StarAlgEquiv
+
 end
 
 namespace WeakDual
