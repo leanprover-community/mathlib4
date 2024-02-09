@@ -40,9 +40,10 @@ import Mathlib.Algebra.Category.AlgebraCat.Limits
 import Mathlib.Algebra.Category.AlgebraCat.Monoidal
 import Mathlib.Algebra.Category.AlgebraCat.Symmetric
 import Mathlib.Algebra.Category.BoolRing
+import Mathlib.Algebra.Category.FGModuleCat.Abelian
 import Mathlib.Algebra.Category.FGModuleCat.Basic
-import Mathlib.Algebra.Category.FGModuleCat.Limits
-import Mathlib.Algebra.Category.GroupCat.Abelian
+import Mathlib.Algebra.Category.FGModuleCat.EpiMono
+import Mathlib.Algebra.Category.FGModuleCat.Kernelsimport Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.Adjunctions
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.GroupCat.Biproducts
@@ -229,6 +230,8 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.HierarchyDesign
+import Mathlib.Algebra.HilbertSerre.AdditiveFunction
+import Mathlib.Algebra.HilbertSerre.Theorem
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.ComplexShape
