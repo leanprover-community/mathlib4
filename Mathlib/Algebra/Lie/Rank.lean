@@ -213,7 +213,7 @@ def IsRegular (x : L) : Prop :=
 lemma isRegular_def (x : L) :
     IsRegular R x = (Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0) := rfl
 
-lemma isRegular_iff (x : L) :
+lemma isRegular_iff_coeff_rank_ne_zero (x : L) :
     IsRegular R x ↔
     MvPolynomial.eval ((chooseBasis R L).repr x)
       ((lieCharpoly (chooseBasis R L) (chooseBasis R L)).coeff (rank R L)) ≠ 0 := by
@@ -241,7 +241,7 @@ lemma exists_isRegular_of_finrank_le_card (h : finrank R L ≤ #R) :
     aux₁.exists_eval_ne_zero_of_totalDegree_le_card (lieCharpoly_coeff_rank_ne_zero R L) aux₂
   let c := Finsupp.equivFunOnFinite.symm x
   use b.repr.symm c
-  rwa [isRegular_iff, LinearEquiv.apply_symm_apply]
+  rwa [isRegular_iff_coeff_rank_ne_zero, LinearEquiv.apply_symm_apply]
 
 lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular R x := by
   apply exists_isRegular_of_finrank_le_card
