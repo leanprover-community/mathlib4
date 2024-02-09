@@ -578,8 +578,8 @@ instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g
   have :=
     bigSquareIsPullback (pullback.fst : W ⟶ _) (pullback.fst : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
       (Z.affineCover.map i) pullback.snd pullback.snd g pullback.condition.symm
-      pullback.condition.symm (PullbackCone.flipIsLimit <| pullbackIsPullback _ _)
-      (PullbackCone.flipIsLimit <| pullbackIsPullback _ _)
+      pullback.condition.symm (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
   have : HasPullback (pullback.snd ≫ Z.affineCover.map i : Xᵢ ⟶ _) g := ⟨⟨⟨_, this⟩⟩⟩
   rw [← pullback.condition] at this
   exact this
@@ -661,8 +661,8 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
   have :=
     bigSquareIsPullback (pullback.fst : W ⟶ _) (pullback.fst : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
       (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
-      (PullbackCone.flipIsLimit <| pullbackIsPullback _ _)
-      (PullbackCone.flipIsLimit <| pullbackIsPullback _ _)
+      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
   refine'
     @openCoverOfIsIso
       (f := (pullbackSymmetry _ _).hom ≫
