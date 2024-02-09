@@ -1097,19 +1097,12 @@ the induced map `k.lift` for `l` is equal to the  induced map `f.lift` for `l`. 
 `l : M →+ A`, the composition of the induced map `f.lift` for `k` with
 the induced map `k.lift` for `l` is equal to the  induced map `f.lift` for `l`"]
 theorem lift_comp_lift {T : Submonoid M} (hST: S ≤ T) {Q : Type*} [CommMonoid Q]
-    (k : Submonoid.LocalizationMap T Q) {A : Type*} [CommMonoid A]{l : M →* A}
+    (k : LocalizationMap T Q) {A : Type*} [CommMonoid A] {l : M →* A}
     (hl : ∀ w : T, IsUnit (l w)) :
-    (k.lift hl).comp (f.lift (fun x => map_units k ⟨ _ , hST (SetLike.coe_mem x)⟩)) =
-    f.lift (fun x ↦ hl ⟨ _ , hST (SetLike.coe_mem x)⟩) := by
-  have hlS (y : S) : IsUnit (l ↑y) := hl ⟨ _ , hST (SetLike.coe_mem y)⟩
-  have hkS (y : S) : IsUnit (k.toMap ↑y) := map_units k ⟨ _ , hST (SetLike.coe_mem y)⟩
-  let j := (k.lift hl).comp (f.lift hkS)
-  suffices aux1 : j.comp f.toMap = l by
-    exact (lift_unique f hlS (fun x ↦ congrFun (congrArg DFunLike.coe aux1) x)).symm
-  have aux2 : j.comp f.toMap = (k.lift hl).comp k.toMap:= by
-    rw[← lift_comp f hkS, @MonoidHom.comp_assoc]
-  rw [aux2]
-  exact lift_comp k hl
+    (k.lift hl).comp (f.lift (map_units k ⟨_, hST ·.2⟩)) =
+    f.lift (hl ⟨_, hST ·.2⟩) := .symm <|
+  lift_unique _ _ fun x ↦ by rw [← MonoidHom.comp_apply,
+    MonoidHom.comp_assoc, lift_comp, lift_comp]
 
 @[to_additive]
 theorem lift_comp_lift_eq {Q : Type*} [CommMonoid Q] (k : Submonoid.LocalizationMap S Q)
