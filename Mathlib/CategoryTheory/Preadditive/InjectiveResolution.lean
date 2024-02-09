@@ -55,7 +55,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution CategoryTheory.InjectiveResolution
 
 open InjectiveResolution in
-attribute [instance] injective quasiIso hasHomology
+attribute [instance] injective hasHomology InjectiveResolution.quasiIso
 
 /-- An object admits an injective resolution. -/
 class HasInjectiveResolution (Z : C) : Prop where

@@ -50,7 +50,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution CategoryTheory.ProjectiveResolution
 
 open ProjectiveResolution in
-attribute [instance] projective quasiIso hasHomology
+attribute [instance] projective hasHomology ProjectiveResolution.quasiIso
 
 /-- An object admits a projective resolution.
 -/
