@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
 
-import Mathlib.Logic.Function.OfArity
 import Mathlib.Data.Fin.VecNotation
 
 /-! # Function types of a given heterogeneous arity
 
 This provides `FunctionOfHArity`, such that `OfHArity ![α, β] τ = α → β → τ`.
-Note that it is often preferable to use `((i : Fin n) → p i) → τ` in place of `OfArity p τ`.
+Note that it is often preferable to use `((i : Fin n) → p i) → τ` in place of `OfHArity p τ`.
 
 ## Main definitions
 
@@ -28,46 +27,38 @@ def OfHArity : {n : ℕ} → (Fin n → Type u) → Type u → Type u
   | 0    , _, τ => τ
   | n + 1, p, τ => vecHead p → @OfHArity n (vecTail p) τ
 
-@[simp]
 theorem ofHArity_zero (p : Fin 0 → Type u) (τ : Type u) : OfHArity p τ = τ := rfl
 
 theorem ofHArity_nil (τ : Type u) : OfHArity ![] τ = τ := ofHArity_zero ![] τ
 
-@[simp low] -- prefer `ofHArity_cons` when it (syntactically) applies
+-- prefer `ofHArity_cons` when it (syntactically) applies
 theorem ofHArity_succ {n} (p : Fin (n + 1) → Type u) (τ : Type u) :
     OfHArity p τ = (vecHead p → OfHArity (vecTail p) τ) := rfl
 
-@[simp]
 theorem ofHArity_cons {n} (α : Type u) (p : Fin n → Type u) (τ : Type u) :
     OfHArity (vecCons α p) τ = (α → OfHArity p τ) := ofHArity_succ _ τ
 
+/-- The definitional equality between `0`-ary heterogeneous functions into `τ` and `τ`. -/
 @[simps!]
 def ofHArity_zero_equiv (p : Fin 0 → Type u) (τ : Type u) :
     OfHArity p τ ≃ τ := Equiv.refl _
 
+/-- The definitional equality between `![]`-ary heterogeneous functions into `τ` and `τ`. -/
 @[simps!]
 def ofHArity_nil_equiv (τ : Type u) : OfHArity ![] τ ≃ τ :=
   ofHArity_zero_equiv ![] τ
 
+/-- The definitional equality between `p`-ary heterogeneous functions into `τ`
+  and function from `vecHead p` to `(vecTail p)`-ary heterogeneous functions into `τ`. -/
 @[simps!]
 def ofHArity_succ_equiv {n} (p : Fin (n + 1) → Type u) (τ : Type u) :
     OfHArity p τ ≃ (vecHead p → OfHArity (vecTail p) τ) := Equiv.refl _
 
+/-- The definitional equality between `(vecCons α p)`-ary heterogeneous functions into `τ`
+  and function from `α` to `p`-ary heterogeneous functions into `τ`. -/
 @[simps!]
 def ofHArity_cons_equiv {n} (α : Type u) (p : Fin n → Type u) (τ : Type u) :
     OfHArity (vecCons α p) τ ≃ (α → OfHArity p τ) := ofHArity_succ_equiv _ _
-
--- not a definitional equality, generally prefer `ofHArity_fin_const_equiv`
-lemma ofHArity_fin_const {n} (α β : Type u) :
-    OfHArity (fun (_ : Fin n) => α) β = OfArity α β n :=
-  match n with
-  | 0   => Eq.refl β
-  | n+1 => congrArg (α → .) (@ofHArity_fin_const n α β)
-
-def ofHArity_fin_const_equiv : {n : ℕ} → (α β : Type u) →
-    OfHArity (fun (_ : Fin n) => α) β ≃ OfArity α β n
-  | 0,   _, β => .refl β
-  | n+1, α, β => .arrowCongr (.refl α) (@ofHArity_fin_const_equiv n α β)
 
 namespace OfHArity
 
