@@ -408,8 +408,11 @@ def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
   { f with commutes' := fun n => by simp }
 
 @[simp]
-lemma toIntAlgHom_coe [Ring R] [Ring S] (f : R →+* S) :
-    ⇑f.toIntAlgHom = ⇑f := rfl
+lemma coe_toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : ⇑f.toIntAlgHom = ⇑f :=
+  rfl
+
+@[deprecated (since := "2024-12-23")]
+alias toIntAlgHom_coe := coe_toIntAlgHom
 
 lemma toIntAlgHom_apply [Ring R] [Ring S] (f : R →+* S) (x : R) :
     f.toIntAlgHom x = f x := rfl
