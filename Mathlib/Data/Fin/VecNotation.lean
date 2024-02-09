@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
-import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Data.Set.Image
 
 #align_import data.fin.vec_notation from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
@@ -434,7 +434,7 @@ theorem empty_vecAlt1 (α) {h} : vecAlt1 h (![] : Fin 0 → α) = ![] := by
 
 end Val
 
-section Smul
+section SMul
 
 variable {M : Type*} [SMul M α]
 
@@ -449,7 +449,7 @@ theorem smul_cons (x : M) (y : α) (v : Fin n → α) : x • vecCons y v = vecC
   refine' Fin.cases _ _ i <;> simp
 #align matrix.smul_cons Matrix.smul_cons
 
-end Smul
+end SMul
 
 section Add
 

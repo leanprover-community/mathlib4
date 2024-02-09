@@ -86,20 +86,28 @@ theorem IntervalIntegrable.def (h : IntervalIntegrable f μ a b) : IntegrableOn 
   intervalIntegrable_iff.mp h
 #align interval_integrable.def IntervalIntegrable.def
 
-theorem intervalIntegrable_iff_integrable_Ioc_of_le (hab : a ≤ b) :
+theorem intervalIntegrable_iff_integrableOn_Ioc_of_le (hab : a ≤ b) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioc a b) μ := by
   rw [intervalIntegrable_iff, uIoc_of_le hab]
-#align interval_integrable_iff_integrable_Ioc_of_le intervalIntegrable_iff_integrable_Ioc_of_le
+#align interval_integrable_iff_integrable_Ioc_of_le intervalIntegrable_iff_integrableOn_Ioc_of_le
 
 theorem intervalIntegrable_iff' [NoAtoms μ] :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (uIcc a b) μ := by
   rw [intervalIntegrable_iff, ← Icc_min_max, uIoc, integrableOn_Icc_iff_integrableOn_Ioc]
 #align interval_integrable_iff' intervalIntegrable_iff'
 
-theorem intervalIntegrable_iff_integrable_Icc_of_le {f : ℝ → E} {a b : ℝ} (hab : a ≤ b)
+theorem intervalIntegrable_iff_integrableOn_Icc_of_le {f : ℝ → E} {a b : ℝ} (hab : a ≤ b)
     {μ : Measure ℝ} [NoAtoms μ] : IntervalIntegrable f μ a b ↔ IntegrableOn f (Icc a b) μ := by
-  rw [intervalIntegrable_iff_integrable_Ioc_of_le hab, integrableOn_Icc_iff_integrableOn_Ioc]
-#align interval_integrable_iff_integrable_Icc_of_le intervalIntegrable_iff_integrable_Icc_of_le
+  rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hab, integrableOn_Icc_iff_integrableOn_Ioc]
+#align interval_integrable_iff_integrable_Icc_of_le intervalIntegrable_iff_integrableOn_Icc_of_le
+
+theorem intervalIntegrable_iff_integrableOn_Ico_of_le [NoAtoms μ] (hab : a ≤ b) :
+    IntervalIntegrable f μ a b ↔ IntegrableOn f (Ico a b) μ := by
+  rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab, integrableOn_Icc_iff_integrableOn_Ico]
+
+theorem intervalIntegrable_iff_integrableOn_Ioo_of_le [NoAtoms μ] (hab : a ≤ b) :
+    IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioo a b) μ := by
+  rw [intervalIntegrable_iff_integrableOn_Icc_of_le hab, integrableOn_Icc_iff_integrableOn_Ioo]
 
 /-- If a function is integrable with respect to a given measure `μ` then it is interval integrable
   with respect to `μ` on `uIcc a b`. -/
@@ -876,7 +884,7 @@ variable {a b c d : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
 /-- If two functions are equal in the relevant interval, their interval integrals are also equal. -/
 theorem integral_congr {a b : ℝ} (h : EqOn f g [[a, b]]) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ := by
-  cases' le_total a b with hab hab <;>
+  rcases le_total a b with hab | hab <;>
     simpa [hab, integral_of_le, integral_of_ge] using
       set_integral_congr measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
 #align interval_integral.integral_congr intervalIntegral.integral_congr
@@ -973,7 +981,7 @@ theorem integral_const_of_cdf [IsFiniteMeasure μ] (c : E) :
 
 theorem integral_eq_integral_of_support_subset {a b} (h : support f ⊆ Ioc a b) :
     ∫ x in a..b, f x ∂μ = ∫ x, f x ∂μ := by
-  cases' le_total a b with hab hab
+  rcases le_total a b with hab | hab
   · rw [integral_of_le hab, ← integral_indicator measurableSet_Ioc, indicator_eq_self.2 h]
   · rw [Ioc_eq_empty hab.not_lt, subset_empty_iff, support_eq_empty_iff] at h
     simp [h]
@@ -1197,7 +1205,8 @@ theorem continuousOn_primitive [NoAtoms μ] (h_int : IntegrableOn f (Icc a b) μ
     rw [continuousOn_congr this]
     intro x₀ _
     refine' continuousWithinAt_primitive (measure_singleton x₀) _
-    simp only [intervalIntegrable_iff_integrable_Ioc_of_le, min_eq_left, max_eq_right, h, min_self]
+    simp only [intervalIntegrable_iff_integrableOn_Ioc_of_le, min_eq_left, max_eq_right, h,
+      min_self]
     exact h_int.mono Ioc_subset_Icc_self le_rfl
   · rw [Icc_eq_empty h]
     exact continuousOn_empty _
@@ -1263,7 +1272,7 @@ theorem integral_eq_zero_iff_of_le_of_nonneg_ae (hab : a ≤ b) (hf : 0 ≤ᵐ[�
 theorem integral_eq_zero_iff_of_nonneg_ae (hf : 0 ≤ᵐ[μ.restrict (Ioc a b ∪ Ioc b a)] f)
     (hfi : IntervalIntegrable f μ a b) :
     ∫ x in a..b, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict (Ioc a b ∪ Ioc b a)] 0 := by
-  cases' le_total a b with hab hab <;>
+  rcases le_total a b with hab | hab <;>
     simp only [Ioc_eq_empty hab.not_lt, empty_union, union_empty] at hf ⊢
   · exact integral_eq_zero_iff_of_le_of_nonneg_ae hab hf hfi
   · rw [integral_symm, neg_eq_zero, integral_eq_zero_iff_of_le_of_nonneg_ae hab hf hfi.symm]

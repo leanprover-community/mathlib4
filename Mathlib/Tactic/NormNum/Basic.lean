@@ -9,6 +9,7 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.Clear!
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 ## `norm_num` basic plugins
@@ -79,6 +80,24 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   let ⟨n', p⟩ ← deriveNat n sℕ
   haveI' x : $e =Q Int.ofNat $n := ⟨⟩
   return .isNat sℤ n' q(isNat_intOfNat $p)
+
+theorem isNat_natAbs_pos : {n : ℤ} → {a : ℕ} → IsNat n a → IsNat n.natAbs a
+  | _, _, ⟨rfl⟩ => ⟨rfl⟩
+
+theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) → IsNat n.natAbs a
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+/-- The `norm_num` extension which identifies the expression `Int.natAbs n` such that
+`norm_num` successfully recognizes `n`. -/
+@[norm_num Int.natAbs (_ : ℤ)] def evalIntNatAbs : NormNumExt where eval {u α} e := do
+  let .app (.const ``Int.natAbs _) (x : Q(ℤ)) ← whnfR e | failure
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
+  haveI' : $e =Q Int.natAbs $x := ⟨⟩
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  match ← derive (u := .zero) x with
+  | .isNat    _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_pos $p)
+  | .isNegNat _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_neg $p)
+  | _ => failure
 
 /-! # Casts -/
 
@@ -353,7 +372,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   simp only [Int.cast_mul, Int.cast_ofNat] at h₁
   simp only [← mul_assoc, (Nat.cast_commute (α := α) da nb).invOf_left.right_comm, h₁]
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
-  simp [← mul_assoc] at h₂; rw [H] at h₂
+  simp only [Nat.cast_mul, ← mul_assoc] at h₂; rw [H] at h₂
   simp only [mul_mul_invOf_self_cancel'] at h₂; rw [h₂, Nat.cast_commute]
   simp only [mul_mul_invOf_self_cancel,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
@@ -439,15 +458,10 @@ such that `norm_num` successfully recognises `a`. -/
 @[norm_num ¬_] def evalNot : NormNumExt where eval {u α} e := do
   let .app (.const ``Not _) (a : Q(Prop)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
-  let .isBool b p ← derive q($a) | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Prop := ⟨⟩
-  haveI' : $e =Q ¬ $a := ⟨⟩
-  if b then
-    have p : Q($a) := p
-    return .isFalse q(not_not_intro $p)
-  else
-    have p : Q(¬ $a) := p
-    return .isTrue q($p)
+  let ⟨b, p⟩ ← deriveBool q($a)
+  match b with
+  | true => return .isFalse q(not_not_intro $p)
+  | false => return .isTrue q($p)
 
 /-! # (In)equalities -/
 

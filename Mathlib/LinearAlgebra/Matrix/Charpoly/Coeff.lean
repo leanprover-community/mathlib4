@@ -163,7 +163,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
       (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
         fun x => (scalar_commute _ (Commute.all _) _).symm) from
-    FunLike.congr_fun this M
+    DFunLike.congr_fun this M
   ext : 1
   · ext M : 1
     simp [Function.comp]
@@ -222,7 +222,7 @@ lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
         simp only [one_apply_ne' hi, eval_zero, mul_zero, zero_add, zero_mul, add_zero]
         rw [det_eq_zero_of_column_eq_zero 0, eval_zero, mul_zero]
         intro j
-        rw [submatrix_apply, Fin.succAbove_below, one_apply_ne]
+        rw [submatrix_apply, Fin.succAbove_of_castSucc_lt, one_apply_ne]
         · exact (bne_iff_ne (Fin.succ j) (Fin.castSucc 0)).mp rfl
         · rw [Fin.castSucc_zero]; exact lt_of_le_of_ne (Fin.zero_le _) hi.symm
     · exact fun H ↦ (H <| Finset.mem_univ _).elim
@@ -363,7 +363,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
     eval 0 M.charpolyRev = 1 := by
   rw [charpolyRev, ← coe_evalRingHom, RingHom.map_det, ← det_one (R := R) (n := n)]
   have : (1 - (X : R[X]) • M.map C).map (eval 0) = 1 := by
-    ext i j; cases' eq_or_ne i j with hij hij <;> simp [hij]
+    ext i j; rcases eq_or_ne i j with hij | hij <;> simp [hij]
   congr
 
 @[simp] lemma coeff_charpolyRev_eq_neg_trace (M : Matrix n n R) :

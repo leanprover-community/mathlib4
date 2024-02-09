@@ -17,8 +17,8 @@ This file defines the discriminant of a number field.
 
 ## Main result
 
-* `NumberField.discr_gt_one`: **Hermite-Minkowski Theorem**. A nontrivial number field has
-nontrivial discriminant.
+* `NumberField.abs_discr_gt_two`: **Hermite-Minkowski Theorem**. A nontrivial number field has
+discriminant greater than `2`.
 
 ## Tags
 number field, discriminant
@@ -31,7 +31,7 @@ namespace NumberField
 
 open Classical NumberField Matrix NumberField.InfinitePlace FiniteDimensional
 
-open scoped Real
+open scoped Real nonZeroDivisors
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -53,10 +53,7 @@ theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι 
 theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
     discr K = discr L := by
   let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (f.restrictScalars ℤ).mapIntegralClosure.toLinearEquiv
-  let e : Module.Free.ChooseBasisIndex ℤ (𝓞 K) ≃ (K →ₐ[ℚ] ℂ) := by
-    refine Fintype.equivOfCardEq ?_
-    rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, AlgHom.card]
-  rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv ℚ ℂ (integralBasis K) e f,
+  rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv (integralBasis K) f,
     ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
   change _ = algebraMap ℤ ℚ _
   rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
@@ -103,51 +100,63 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 
-theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
-    ∃ (a : 𝓞 K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a:K)| ≤ (4 / π) ^ NrComplexPlaces K *
+theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+    ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
+      |Algebra.norm ℚ (a:K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
-  -- The smallest possible value for `exists_ne_zero_mem_ringOfIntegers_of_norm_le`
-  let B := (minkowskiBound K * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
-  have hB : 0 ≤ B := Real.rpow_nonneg_of_nonneg toReal_nonneg _
-  have h_le : (minkowskiBound K) ≤ volume (convexBodySum K B) := by
+  -- The smallest possible value for `exists_ne_zero_mem_ideal_of_norm_le`
+  let B := (minkowskiBound K I * (convexBodySumFactor K)⁻¹).toReal ^ (1 / (finrank ℚ K : ℝ))
+  have h_le : (minkowskiBound K I) ≤ volume (convexBodySum K B) := by
     refine le_of_eq ?_
-    rw [convexBodySum_volume, ← ENNReal.ofReal_pow hB, ← Real.rpow_nat_cast, ← Real.rpow_mul
-      toReal_nonneg, div_mul_cancel _ (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos)), Real.rpow_one,
-      ofReal_toReal, mul_comm, mul_assoc, ENNReal.inv_mul_cancel (convexBodySumFactor_ne_zero K)
+    rw [convexBodySum_volume, ← ENNReal.ofReal_pow (by positivity), ← Real.rpow_nat_cast,
+      ← Real.rpow_mul toReal_nonneg, div_mul_cancel, Real.rpow_one, ofReal_toReal, mul_comm,
+      mul_assoc, ENNReal.inv_mul_cancel (convexBodySumFactor_ne_zero K)
       (convexBodySumFactor_ne_top K), mul_one]
-    exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K))
-      (ENNReal.inv_ne_top.mpr (convexBodySumFactor_ne_zero K))
-  obtain ⟨x, h_nz, h_bd⟩ := exists_ne_zero_mem_ringOfIntegers_of_norm_le K h_le
-  refine ⟨x, h_nz, ?_⟩
-  convert h_bd
+    · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I))
+        (ENNReal.inv_ne_top.mpr (convexBodySumFactor_ne_zero K))
+    · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
+  convert exists_ne_zero_mem_ideal_of_norm_le K I h_le
   rw [div_pow B, ← Real.rpow_nat_cast B, ← Real.rpow_mul (by positivity), div_mul_cancel _
     (Nat.cast_ne_zero.mpr <| ne_of_gt finrank_pos), Real.rpow_one, mul_comm_div, mul_div_assoc']
   congr 1
   rw [eq_comm]
   calc
-    _ = (2:ℝ)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ * (2:ℝ) ^ finrank ℚ K *
-          ((2:ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K /
-          (Nat.factorial (finrank ℚ K)))⁻¹ := by
-      simp_rw [minkowskiBound, convexBodySumFactor, volume_fundamentalDomain_latticeBasis,
-        toReal_mul, toReal_inv, toReal_div, toReal_mul, coe_toReal, toReal_pow, toReal_inv,
-        toReal_ofNat, mixedEmbedding.finrank, toReal_div, toReal_ofNat, coe_toReal, coe_real_pi,
-        toReal_nat]
-    _ = (2:ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K + NrComplexPlaces K : ℤ) *
-          Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) * π⁻¹ ^ (NrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.1 * (2:ℝ)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ *
+          (2:ℝ) ^ finrank ℚ K * ((2:ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K /
+            (Nat.factorial (finrank ℚ K)))⁻¹ := by
+      simp_rw [minkowskiBound, convexBodySumFactor,
+        volume_fundamentalDomain_fractionalIdealLatticeBasis,
+        volume_fundamentalDomain_latticeBasis, toReal_mul, toReal_inv, toReal_div, toReal_mul,
+        coe_toReal, toReal_pow, toReal_inv, toReal_ofNat, mixedEmbedding.finrank, toReal_div,
+        toReal_ofNat, coe_toReal, coe_real_pi, toReal_nat, mul_assoc]
+      rw [ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.1))]
+    _ = FractionalIdeal.absNorm I.1 * (2:ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K +
+          NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
+            π⁻¹ ^ (NrComplexPlaces K) := by
       simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_coe_nat, mul_zpow,
         ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnnorm, sub_eq_add_neg,
         zpow_add₀ (two_ne_zero : (2:ℝ) ≠ 0)]
       ring
-    _ = (2:ℝ) ^ (2 * NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
-          π⁻¹ ^ (NrComplexPlaces K) := by
+    _ = FractionalIdeal.absNorm I.1 * (2:ℝ) ^ (2 * NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
+          Nat.factorial (finrank ℚ K) * π⁻¹ ^ (NrComplexPlaces K) := by
       congr
       rw [← card_add_two_mul_card_eq_rank, Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
       ring
-    _ = (4 / π) ^ NrComplexPlaces K * (finrank ℚ K).factorial * Real.sqrt |discr K| := by
+    _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K * (finrank ℚ K).factorial *
+          Real.sqrt |discr K| := by
       rw [show ‖discr K‖ = |(discr K : ℝ)| by rfl, zpow_mul, show (2:ℝ) ^ (2:ℤ) = 4 by norm_cast,
         div_pow, inv_eq_one_div, div_pow, one_pow, zpow_coe_nat]
       ring
+
+theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
+    ∃ (a : 𝓞 K), a ≠ 0 ∧
+      |Algebra.norm ℚ (a:K)| ≤ (4 / π) ^ NrComplexPlaces K *
+        (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
+  obtain ⟨_, h_mem, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K 1
+  obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
+  refine ⟨a, ne_zero_of_map h_nz, ?_⟩
+  simp_rw [Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one, one_mul] at h_nm
+  exact h_nm
 
 variable {K}
 
@@ -169,10 +178,9 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   let a : ℕ → ℝ := fun n => (n:ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial:ℝ) ^ 2)
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
-    refine div_le_div_of_le_left (by positivity) (by positivity) ?_
-    refine mul_le_mul_of_nonneg_right (pow_le_pow ?_ ?_) (by positivity)
-    · rw [_root_.le_div_iff Real.pi_pos, one_mul]
-      exact Real.pi_le_four
+    simp only -- unfold `a` and beta-reduce
+    gcongr
+    · exact (one_le_div Real.pi_pos).2 Real.pi_le_four
     · rw [← card_add_two_mul_card_eq_rank, mul_comm]
       exact Nat.le_add_left _ _
   intro n hn
@@ -189,8 +197,8 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
       refine le_trans (le_of_eq (by field_simp; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
       exact le_trans (by norm_num : (-2:ℝ) ≤ 0) (by positivity)
 
-/-- **Hermite-Minkowski Theorem**. A nontrivial number field has nontrivial discriminant. -/
-theorem discr_gt_one (h : 1 < finrank ℚ K) : 2 < |discr K| := by
+/-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
+theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
   have h₁ : 1 ≤ 3 * π / 4 := by
     rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
@@ -200,10 +208,10 @@ theorem discr_gt_one (h : 1 < finrank ℚ K) : 2 < |discr K| := by
     exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
   rw [← _root_.div_lt_iff' (by positivity), Int.int_cast_ofNat]
-  refine lt_of_lt_of_le ?_ (pow_le_pow (n := 2) h₁ h)
-  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow]
-  norm_num
-  rw [ ← _root_.div_lt_iff' (by positivity), show (72:ℝ) / 9 = 8 by norm_num]
+  refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
+  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow, show (2:ℝ) / (4 / 9) * 4 ^ 2 = 72 by
+    norm_num, show (3:ℝ) ^ 2 = 9 by norm_num, ← _root_.div_lt_iff' (by positivity),
+    show (72:ℝ) / 9 = 8 by norm_num]
   linarith [h₂]
 
 end NumberField
@@ -231,3 +239,39 @@ theorem numberField_discr : discr ℚ = 1 := by
 alias _root_.NumberField.discr_rat := numberField_discr
 
 end Rat
+
+variable {ι ι'} (K) [Field K] [DecidableEq ι] [DecidableEq ι'] [Fintype ι] [Fintype ι']
+
+/-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
+`∀ i j, IsIntegral ℤ (b.toMatrix b' i j)` and `∀ i j, IsIntegral ℤ (b'.toMatrix b i j)` then
+`discr ℚ b = discr ℚ b'`. -/
+theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
+    {b : Basis ι ℚ K} {b' : Basis ι' ℚ K} (h : ∀ i j, IsIntegral ℤ (b.toMatrix b' i j))
+    (h' : ∀ i j, IsIntegral ℤ (b'.toMatrix b i j)) : discr ℚ b = discr ℚ b' := by
+  replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j)
+  · intro i j
+    convert h' i ((b.indexEquiv b').symm j)
+-- Porting note: `simp; rfl` was `simpa`.
+    simp; rfl
+  classical
+  rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,
+    ← one_mul (discr ℚ b), Basis.coe_reindex, discr_reindex]
+  congr
+  have hint : IsIntegral ℤ ((b.reindex (b.indexEquiv b')).toMatrix b').det :=
+    IsIntegral.det fun i j => h _ _
+  obtain ⟨r, hr⟩ := IsIntegrallyClosed.isIntegral_iff.1 hint
+  have hunit : IsUnit r := by
+    have : IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b'))).det :=
+      IsIntegral.det fun i j => h' _ _
+    obtain ⟨r', hr'⟩ := IsIntegrallyClosed.isIntegral_iff.1 this
+    refine' isUnit_iff_exists_inv.2 ⟨r', _⟩
+    suffices algebraMap ℤ ℚ (r * r') = 1 by
+      rw [← RingHom.map_one (algebraMap ℤ ℚ)] at this
+      exact (IsFractionRing.injective ℤ ℚ) this
+    rw [RingHom.map_mul, hr, hr', ← Matrix.det_mul,
+      Basis.toMatrix_mul_toMatrix_flip, Matrix.det_one]
+  rw [← RingHom.map_one (algebraMap ℤ ℚ), ← hr]
+  cases' Int.isUnit_iff.1 hunit with hp hm
+  · simp [hp]
+  · simp [hm]
+#align algebra.discr_eq_discr_of_to_matrix_coeff_is_integral Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral

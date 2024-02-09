@@ -5,6 +5,8 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
+import Mathlib.FieldTheory.Finite.Basic
 
 #align_import ring_theory.roots_of_unity.minpoly from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
@@ -225,7 +227,7 @@ theorem totient_le_degree_minpoly : Nat.totient n ≤ (minpoly ℤ μ).natDegree
   -- minimal polynomial of `μ` sent to `K[X]`
   calc
     n.totient = (primitiveRoots n K).card := h.card_primitiveRoots.symm
-    _ ≤ P_K.roots.toFinset.card := (Finset.card_le_of_subset (is_roots_of_minpoly h))
+    _ ≤ P_K.roots.toFinset.card := (Finset.card_le_card (is_roots_of_minpoly h))
     _ ≤ Multiset.card P_K.roots := (Multiset.toFinset_card_le _)
     _ ≤ P_K.natDegree := (card_roots' _)
     _ ≤ P.natDegree := natDegree_map_le _ _

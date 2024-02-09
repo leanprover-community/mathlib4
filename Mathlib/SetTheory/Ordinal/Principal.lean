@@ -128,7 +128,7 @@ theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· 
   refine' ⟨fun ho₀ => _, fun a hao => _⟩
   · rw [ho₀] at ho₁
     exact not_lt_of_gt zero_lt_one ho₁
-  · cases' eq_or_ne a 0 with ha ha
+  · rcases eq_or_ne a 0 with ha | ha
     · rw [ha, succ_zero]
       exact ho₁
     · refine' lt_of_le_of_lt _ (ho hao hao)
@@ -373,7 +373,7 @@ theorem principal_add_of_principal_mul_opow {o b : Ordinal} (hb : 1 < b)
 theorem principal_mul_iff_le_two_or_omega_opow_opow {o : Ordinal} :
     Principal (· * ·) o ↔ o ≤ 2 ∨ ∃ a : Ordinal, o = (omega^omega^a) := by
   refine' ⟨fun ho => _, _⟩
-  · cases' le_or_lt o 2 with ho₂ ho₂
+  · rcases le_or_lt o 2 with ho₂ | ho₂
     · exact Or.inl ho₂
     rcases principal_add_iff_zero_or_omega_opow.1 (principal_add_of_principal_mul ho ho₂.ne') with
       (rfl | ⟨a, rfl⟩)

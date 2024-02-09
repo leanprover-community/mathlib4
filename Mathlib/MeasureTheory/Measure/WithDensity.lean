@@ -540,7 +540,7 @@ lemma SigmaFinite.withDensity [SigmaFinite μ] {f : α → ℝ≥0} (hf : AEMeas
         norm_cast
         exact (hs i).2.2 x hxs
   _ = i * μ (s i) := by rw [set_lintegral_const]
-  _ < ⊤ := ENNReal.mul_lt_top (by simp) (hs i).2.1.ne
+  _ < ∞ := ENNReal.mul_lt_top (by simp) (hs i).2.1.ne
 
 lemma SigmaFinite.withDensity_of_ne_top' [SigmaFinite μ] {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_top : ∀ x, f x ≠ ∞) :

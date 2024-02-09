@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
+import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.LinearAlgebra.Basic
-import Mathlib.Order.CompactlyGenerated
+import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
 
 #align_import linear_algebra.span from "leanprover-community/mathlib"@"10878f6bf1dab863445907ab23fbfcefcb5845d0"
@@ -38,7 +40,8 @@ variable {x : M} (p p' : Submodule R M)
 
 variable [Semiring R₂] {σ₁₂ : R →+* R₂}
 
-variable [AddCommMonoid M₂] [Module R₂ M₂] {F : Type*} [SemilinearMapClass F σ₁₂ M M₂]
+variable [AddCommMonoid M₂] [Module R₂ M₂]
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 section
 
@@ -91,20 +94,24 @@ theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScal
   span_eq (p.restrictScalars S)
 #align submodule.span_coe_eq_restrict_scalars Submodule.span_coe_eq_restrictScalars
 
+/-- A version of `Submodule.map_span_le` that does not require the `RingHomSurjective`
+assumption. -/
+theorem image_span_subset (f : F) (s : Set M) (N : Submodule R₂ M₂) :
+    f '' span R s ⊆ N ↔ ∀ m ∈ s, f m ∈ N := image_subset_iff.trans <| span_le (p := N.comap f)
+
+theorem image_span_subset_span (f : F) (s : Set M) : f '' span R s ⊆ span R₂ (f '' s) :=
+  (image_span_subset f s _).2 fun x hx ↦ subset_span ⟨x, hx, rfl⟩
+
 theorem map_span [RingHomSurjective σ₁₂] (f : F) (s : Set M) :
     (span R s).map f = span R₂ (f '' s) :=
-  Eq.symm <|
-    span_eq_of_le _ (Set.image_subset f subset_span) <|
-      map_le_iff_le_comap.2 <| span_le.2 fun x hx => subset_span ⟨x, hx, rfl⟩
+  Eq.symm <| span_eq_of_le _ (Set.image_subset f subset_span) (image_span_subset_span f s)
 #align submodule.map_span Submodule.map_span
 
 alias _root_.LinearMap.map_span := Submodule.map_span
 #align linear_map.map_span LinearMap.map_span
 
 theorem map_span_le [RingHomSurjective σ₁₂] (f : F) (s : Set M) (N : Submodule R₂ M₂) :
-    map f (span R s) ≤ N ↔ ∀ m ∈ s, f m ∈ N := by
-  rw [map_span, span_le, Set.image_subset_iff]
-  exact Iff.rfl
+    map f (span R s) ≤ N ↔ ∀ m ∈ s, f m ∈ N := image_span_subset f s N
 #align submodule.map_span_le Submodule.map_span_le
 
 alias _root_.LinearMap.map_span_le := Submodule.map_span_le
@@ -147,7 +154,7 @@ preserved under addition and scalar multiplication, then `p` holds for all eleme
 @[elab_as_elim]
 theorem span_induction {p : M → Prop} (h : x ∈ span R s) (Hs : ∀ x ∈ s, p x) (H0 : p 0)
     (H1 : ∀ x y, p x → p y → p (x + y)) (H2 : ∀ (a : R) (x), p x → p (a • x)) : p x :=
-  ((@span_le (p := ⟨ ⟨⟨p, by intros x y; exact H1 x y⟩, H0⟩, H2⟩)) s).2 Hs h
+  ((@span_le (p := ⟨⟨⟨p, by intros x y; exact H1 x y⟩, H0⟩, H2⟩)) s).2 Hs h
 #align submodule.span_induction Submodule.span_induction
 
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
@@ -179,6 +186,39 @@ theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
           Exists.elim hy fun hy' hy => ⟨add_mem hx' hy', H1 _ _ _ _ hx hy⟩)
       fun r x hx => Exists.elim hx fun hx' hx => ⟨smul_mem _ _ hx', H2 r _ _ hx⟩
 #align submodule.span_induction' Submodule.span_induction'
+
+open AddSubmonoid in
+theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ R • s) := by
+  refine le_antisymm
+    (fun x hx ↦ span_induction hx (fun x hx ↦ subset_closure ⟨1, trivial, x, hx, one_smul R x⟩)
+      (zero_mem _) (fun _ _ ↦ add_mem) fun r m hm ↦ closure_induction hm ?_ ?_ fun _ _ h h' ↦ ?_)
+    (closure_le.2 ?_)
+  · rintro _ ⟨r, -, m, hm, rfl⟩; exact smul_mem _ _ (subset_span hm)
+  · rintro _ ⟨r', -, m, hm, rfl⟩; exact subset_closure ⟨r * r', trivial, m, hm, mul_smul r r' m⟩
+  · rw [smul_zero]; apply zero_mem
+  · rw [smul_add]; exact add_mem h h'
+
+/-- A variant of `span_induction` that combines `∀ x ∈ s, p x` and `∀ r x, p x → p (r • x)`
+into a single condition `∀ r, ∀ x ∈ s, p (r • x)`, which can be easier to verify. -/
+@[elab_as_elim]
+theorem closure_induction {p : M → Prop} (h : x ∈ span R s) (H0 : p 0)
+    (H1 : ∀ x y, p x → p y → p (x + y)) (H2 : ∀ r : R, ∀ x ∈ s, p (r • x)) : p x := by
+  rw [← mem_toAddSubmonoid, span_eq_closure] at h
+  refine AddSubmonoid.closure_induction h ?_ H0 H1
+  rintro _ ⟨r, -, m, hm, rfl⟩
+  exact H2 r m hm
+
+/-- A dependent version of `Submodule.closure_induction`. -/
+theorem closure_induction' {p : ∀ x, x ∈ span R s → Prop}
+    (H0 : p 0 (Submodule.zero_mem _))
+    (H1 : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
+    (H2 : ∀ (r x) (h : x ∈ s), p (r • x) (Submodule.smul_mem _ _ <| subset_span h)) {x}
+    (hx : x ∈ span R s) : p x hx := by
+  refine Exists.elim ?_ fun (hx : x ∈ span R s) (hc : p x hx) ↦ hc
+  refine closure_induction hx ⟨zero_mem _, H0⟩
+    (fun x y hx hy ↦ Exists.elim hx fun hx' hx ↦
+      Exists.elim hy fun hy' hy ↦ ⟨add_mem hx' hy', H1 _ _ _ _ hx hy⟩)
+    fun r x hx ↦ ⟨smul_mem _ _ (subset_span hx), H2 r x hx⟩
 
 @[simp]
 theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = ⊤ :=
@@ -574,11 +614,16 @@ theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [AddCommGroup M]
     exact (span_singleton_group_smul_eq _ _ _).symm
 #align submodule.span_singleton_eq_span_singleton Submodule.span_singleton_eq_span_singleton
 
-@[simp]
+-- Should be `@[simp]` but doesn't fire due to `lean4#3701`.
 theorem span_image [RingHomSurjective σ₁₂] (f : F) :
     span R₂ (f '' s) = map f (span R s) :=
   (map_span f s).symm
 #align submodule.span_image Submodule.span_image
+
+@[simp] -- Should be replaced with `Submodule.span_image` when `lean4#3701` is fixed.
+theorem span_image' [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) :
+    span R₂ (f '' s) = map f (span R s) :=
+  span_image _
 
 theorem apply_mem_span_image_of_mem_span [RingHomSurjective σ₁₂] (f : F) {x : M}
     {s : Set M} (h : x ∈ Submodule.span R s) : f x ∈ Submodule.span R₂ (f '' s) := by
@@ -673,7 +718,7 @@ theorem finset_span_isCompactElement (S : Finset M) :
   simp only [Finset.mem_coe]
   rw [← Finset.sup_eq_iSup]
   exact
-    CompleteLattice.finset_sup_compact_of_compact S fun x _ => singleton_span_isCompactElement x
+    CompleteLattice.isCompactElement_finsetSup S fun x _ => singleton_span_isCompactElement x
 #align submodule.finset_span_is_compact_element Submodule.finset_span_isCompactElement
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/
@@ -692,8 +737,8 @@ instance : IsCompactlyGenerated (Submodule R M) :=
 
 /-- A submodule is equal to the supremum of the spans of the submodule's nonzero elements. -/
 theorem submodule_eq_sSup_le_nonzero_spans (p : Submodule R M) :
-    p = sSup { T : Submodule R M | ∃ (m : M) (_ : m ∈ p) (_ : m ≠ 0), T = span R {m} } := by
-  let S := { T : Submodule R M | ∃ (m : M) (_ : m ∈ p) (_ : m ≠ 0), T = span R {m} }
+    p = sSup { T : Submodule R M | ∃ m ∈ p, m ≠ 0 ∧ T = span R {m} } := by
+  let S := { T : Submodule R M | ∃ m ∈ p, m ≠ 0 ∧ T = span R {m} }
   apply le_antisymm
   · intro m hm
     by_cases h : m = 0
@@ -839,7 +884,7 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 
-variable {F : Type*} [sc : SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 theorem comap_map_eq (f : F) (p : Submodule R M) : comap f (map f p) = p ⊔ LinearMap.ker f := by
   refine' le_antisymm _ (sup_le (le_comap_map _ _) (comap_mono bot_le))
@@ -880,8 +925,8 @@ section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
-/-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `Wcovby` version. -/
-theorem wcovby_span_singleton_sup (x : V) (p : Submodule K V) : Wcovby p ((K ∙ x) ⊔ p) := by
+/-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `WCovBy` version. -/
+theorem wcovBy_span_singleton_sup (x : V) (p : Submodule K V) : WCovBy p ((K ∙ x) ⊔ p) := by
   refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_le ?_⟩
   rcases SetLike.exists_of_lt hpq with ⟨y, hyq, hyp⟩
   obtain ⟨c, z, hz, rfl⟩ : ∃ c : K, ∃ z ∈ p, c • x + z = y := by
@@ -892,9 +937,9 @@ theorem wcovby_span_singleton_sup (x : V) (p : Submodule K V) : Wcovby p ((K ∙
     · rwa [q.add_mem_iff_left (hpq.le hz), q.smul_mem_iff hc] at hyq
     simp [hpq.le, this]
 
-/-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `Covby` version. -/
-theorem covby_span_singleton_sup {x : V} {p : Submodule K V} (h : x ∉ p) : Covby p ((K ∙ x) ⊔ p) :=
-  ⟨by simpa, (wcovby_span_singleton_sup _ _).2⟩
+/-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `CovBy` version. -/
+theorem covBy_span_singleton_sup {x : V} {p : Submodule K V} (h : x ∉ p) : CovBy p ((K ∙ x) ⊔ p) :=
+  ⟨by simpa, (wcovBy_span_singleton_sup _ _).2⟩
 
 end DivisionRing
 
@@ -914,7 +959,7 @@ variable [Module R M] [Module R₂ M₂]
 
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
 
-variable {F : Type*} [sc : SemilinearMapClass F τ₁₂ M M₂]
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 protected theorem map_le_map_iff (f : F) {p p'} : map f p ≤ map f p' ↔ p ≤ p' ⊔ ker f := by
   rw [map_le_iff_le_comap, Submodule.comap_map_eq]
@@ -972,7 +1017,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 
-variable {F : Type*} {σ₁₂ : R →+* R₂} [SemilinearMapClass F σ₁₂ M M₂]
+variable {F : Type*} {σ₁₂ : R →+* R₂} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 /-- Two linear maps are equal on `Submodule.span s` iff they are equal on `s`. -/
 theorem eqOn_span_iff {s : Set M} {f g : F} : Set.EqOn f g (span R s) ↔ Set.EqOn f g s := by
@@ -998,7 +1043,7 @@ theorem eqOn_span {s : Set M} {f g : F} (H : Set.EqOn f g s) ⦃x⦄ (h : x ∈ 
 /-- If `s` generates the whole module and linear maps `f`, `g` are equal on `s`, then they are
 equal. -/
 theorem ext_on {s : Set M} {f g : F} (hv : span R s = ⊤) (h : Set.EqOn f g s) : f = g :=
-  FunLike.ext _ _ fun _ => eqOn_span h (eq_top_iff'.1 hv _)
+  DFunLike.ext _ _ fun _ => eqOn_span h (eq_top_iff'.1 hv _)
 #align linear_map.ext_on LinearMap.ext_on
 
 /-- If the range of `v : ι → M` generates the whole module and linear maps `f`, `g` are equal at
@@ -1051,15 +1096,17 @@ def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
   LinearEquiv.trans
     (LinearEquiv.ofInjective (LinearMap.toSpanSingleton R M x)
       (ker_eq_bot.1 <| ker_toSpanSingleton R M h))
-    (LinearEquiv.ofEq (range $ toSpanSingleton R M x) (R ∙ x) (span_singleton_eq_range R M x).symm)
+    (LinearEquiv.ofEq (range <| toSpanSingleton R M x) (R ∙ x) (span_singleton_eq_range R M x).symm)
 #align linear_equiv.to_span_nonzero_singleton LinearEquiv.toSpanNonzeroSingleton
+
+@[simp] theorem toSpanNonzeroSingleton_apply (t : R) :
+    LinearEquiv.toSpanNonzeroSingleton R M x h t =
+      (⟨t • x, Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self x)⟩ : R ∙ x) := by
+  rfl
 
 theorem toSpanNonzeroSingleton_one :
     LinearEquiv.toSpanNonzeroSingleton R M x h 1 =
-      (⟨x, Submodule.mem_span_singleton_self x⟩ : R ∙ x) := by
-  apply SetLike.coe_eq_coe.mp
-  have : ↑(toSpanNonzeroSingleton R M x h 1) = toSpanSingleton R M x 1 := rfl
-  rw [this, toSpanSingleton_one, Submodule.coe_mk]
+      (⟨x, Submodule.mem_span_singleton_self x⟩ : R ∙ x) := by simp
 #align linear_equiv.to_span_nonzero_singleton_one LinearEquiv.toSpanNonzeroSingleton_one
 
 /-- Given a nonzero element `x` of a torsion-free module `M` over a ring `R`, the natural

@@ -303,7 +303,7 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
     (lift <| Algebra.lsmul _ _ _ |>.toLinearMap |>.flip)
     (mk R A M R |>.flip 1)
     (LinearMap.ext <| one_smul _)
-    (ext <| fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
+    (ext fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
 
 theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M :=
   LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
@@ -341,7 +341,7 @@ variable [Algebra A B] [IsScalarTower A B M]
 
 /-- Heterobasic version of `TensorProduct.assoc`:
 
-Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`.
+`B`-linear equivalence between `(M ⊗[A] P) ⊗[R] Q` and `M ⊗[A] (P ⊗[R] Q)`.
 
 Note this is especially useful with `A = R` (where it is a "more linear" version of
 `TensorProduct.assoc`), or with `B = A`. -/
@@ -367,6 +367,30 @@ theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
   rfl
 
 end assoc
+
+section cancelBaseChange
+variable [Algebra A B] [IsScalarTower A B M]
+
+/-- `B`-linear equivalence between `M ⊗[A] (A ⊗[R] N)` and `M ⊗[R] N`.
+In particular useful with `B = A`. -/
+def cancelBaseChange : M ⊗[A] (A ⊗[R] N) ≃ₗ[B] M ⊗[R] N := by
+  letI g : (M ⊗[A] A) ⊗[R] N ≃ₗ[B] M ⊗[R] N :=
+    AlgebraTensorModule.congr (AlgebraTensorModule.rid A B M) (LinearEquiv.refl R N)
+  exact (AlgebraTensorModule.assoc R A B M A N).symm ≪≫ₗ g
+
+variable {M P N Q}
+
+@[simp]
+theorem cancelBaseChange_tmul (m : M) (n : N) (a : A) :
+    cancelBaseChange R A B M N (m ⊗ₜ (a ⊗ₜ n)) = (a • m) ⊗ₜ n :=
+  rfl
+
+@[simp]
+theorem cancelBaseChange_symm_tmul (m : M) (n : N) :
+    (cancelBaseChange R A B M N).symm (m ⊗ₜ n) = m ⊗ₜ (1 ⊗ₜ n) :=
+  rfl
+
+end cancelBaseChange
 
 section leftComm
 
@@ -403,9 +427,9 @@ def rightComm : (M ⊗[A] P) ⊗[R] Q ≃ₗ[A] (M ⊗[R] Q) ⊗[A] P :=
         ∘ₗ (mk R A (M ⊗[A] P) Q).flip)
     -- explicit `Eq.refl`s here help with performance, but also make it clear that the `ext` are
     -- letting us prove the result as an equality of pure tensors.
-    (TensorProduct.ext <| ext <| fun m q => LinearMap.ext <| fun p => Eq.refl <|
+    (TensorProduct.ext <| ext fun m q => LinearMap.ext fun p => Eq.refl <|
       (m ⊗ₜ[R] q) ⊗ₜ[A] p)
-    (curry_injective <| TensorProduct.ext' <| fun m p => LinearMap.ext <| fun q => Eq.refl <|
+    (curry_injective <| TensorProduct.ext' fun m p => LinearMap.ext fun q => Eq.refl <|
       (m ⊗ₜ[A] p) ⊗ₜ[R] q)
 
 variable {M N P Q}

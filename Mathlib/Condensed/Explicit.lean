@@ -21,7 +21,7 @@ We give the following three explicit descriptions of condensed sets:
 * `Condensed.ofSheafStonean`: A finite-product-preserving presheaf on `CompHaus`, satisfying
   `EqualizerCondition`.
 
-The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularExtensive`
+The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularExtensive.lean`
 and it says that for any effective epi `X ⟶ B` (in this case that is equivalent to being a
 continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of the two maps
 `F(X) ⇉ F(X ×_B X)`
@@ -34,7 +34,7 @@ open CategoryTheory Limits Opposite Functor Presieve regularCoverage
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C]
-  [FinitaryPreExtensive C] [Precoherent C]
+  [FinitaryPreExtensive C]
 
 theorem isSheaf_coherent_iff_regular_and_extensive : IsSheaf (coherentTopology C) F ↔
     IsSheaf (extensiveCoverage C).toGrothendieck F ∧

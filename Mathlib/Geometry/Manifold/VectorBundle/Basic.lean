@@ -20,7 +20,7 @@ is also a charted space over `H × F`.
 
 Now, we define `SmoothVectorBundle` as the `Prop` of having smooth transition functions.
 Recall the structure groupoid `smoothFiberwiseLinear` on `B × F` consisting of smooth, fiberwise
-linear local homeomorphisms.  We show that our definition of "smooth vector bundle" implies
+linear partial homeomorphisms.  We show that our definition of "smooth vector bundle" implies
 `HasGroupoid` for this groupoid, and show (by a "composition" of `HasGroupoid` instances) that
 this means that a smooth vector bundle is a smooth manifold.
 
@@ -58,9 +58,6 @@ fields, they can also be C^k vector bundles, etc.
 * `Bundle.Prod.smoothVectorBundle`: The direct sum of two smooth vector bundles is a smooth vector
   bundle.
 -/
-
-set_option autoImplicit true
-
 
 assert_not_exists mfderiv
 
@@ -328,58 +325,59 @@ theorem contMDiffOn_symm_coordChangeL :
 
 variable {e e'}
 
-theorem contMDiffAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
+theorem contMDiffAt_coordChangeL {x : B} (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     ContMDiffAt IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   (contMDiffOn_coordChangeL IB e e').contMDiffAt <|
     (e.open_baseSet.inter e'.open_baseSet).mem_nhds ⟨h, h'⟩
 
-theorem smoothAt_coordChangeL (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
+theorem smoothAt_coordChangeL {x : B} (h : x ∈ e.baseSet) (h' : x ∈ e'.baseSet) :
     SmoothAt IB 𝓘(𝕜, F →L[𝕜] F) (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F)) x :=
   contMDiffAt_coordChangeL IB h h'
 
 variable {IB}
+variable {s : Set M} {f : M → B} {g : M → F} {x : M}
 
-protected theorem ContMDiffWithinAt.coordChangeL {f : M → B}
+protected theorem ContMDiffWithinAt.coordChangeL
     (hf : ContMDiffWithinAt IM IB n f s x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffWithinAt IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
   (contMDiffAt_coordChangeL IB he he').comp_contMDiffWithinAt _ hf
 
-protected nonrec theorem ContMDiffAt.coordChangeL {f : M → B}
+protected nonrec theorem ContMDiffAt.coordChangeL
     (hf : ContMDiffAt IM IB n f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffAt IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
   hf.coordChangeL he he'
 
-protected theorem ContMDiffOn.coordChangeL {f : M → B}
+protected theorem ContMDiffOn.coordChangeL
     (hf : ContMDiffOn IM IB n f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     ContMDiffOn IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s :=
   fun x hx ↦ (hf x hx).coordChangeL (he hx) (he' hx)
 
-protected theorem ContMDiff.coordChangeL {f : M → B}
+protected theorem ContMDiff.coordChangeL
     (hf : ContMDiff IM IB n f) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     ContMDiff IM 𝓘(𝕜, F →L[𝕜] F) n (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) := fun x ↦
   (hf x).coordChangeL (he x) (he' x)
 
-protected nonrec theorem SmoothWithinAt.coordChangeL {f : M → B}
+protected nonrec theorem SmoothWithinAt.coordChangeL
     (hf : SmoothWithinAt IM IB f s x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothWithinAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s x :=
   hf.coordChangeL he he'
 
-protected nonrec theorem SmoothAt.coordChangeL {f : M → B}
+protected nonrec theorem SmoothAt.coordChangeL
     (hf : SmoothAt IM IB f x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothAt IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) x :=
   hf.coordChangeL he he'
 
-protected nonrec theorem SmoothOn.coordChangeL {f : M → B}
+protected nonrec theorem SmoothOn.coordChangeL
     (hf : SmoothOn IM IB f s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     SmoothOn IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) s :=
   hf.coordChangeL he he'
 
-protected nonrec theorem Smooth.coordChangeL {f : M → B}
+protected nonrec theorem Smooth.coordChangeL
     (hf : Smooth IM IB f) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     Smooth IM 𝓘(𝕜, F →L[𝕜] F) (fun y ↦ (e.coordChangeL 𝕜 e' (f y) : F →L[𝕜] F)) :=
   hf.coordChangeL he he'
 
-protected theorem ContMDiffWithinAt.coordChange {f : M → B} {g : M → F}
+protected theorem ContMDiffWithinAt.coordChange
     (hf : ContMDiffWithinAt IM IB n f s x) (hg : ContMDiffWithinAt IM 𝓘(𝕜, F) n g s x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) s x := by
@@ -390,39 +388,39 @@ protected theorem ContMDiffWithinAt.coordChange {f : M → B} {g : M → F}
     exact (Trivialization.coordChangeL_apply' e e' hy (g y)).symm
   · exact (Trivialization.coordChangeL_apply' e e' ⟨he, he'⟩ (g x)).symm
 
-protected nonrec theorem ContMDiffAt.coordChange {f : M → B} {g : M → F}
+protected nonrec theorem ContMDiffAt.coordChange
     (hf : ContMDiffAt IM IB n f x) (hg : ContMDiffAt IM 𝓘(𝕜, F) n g x) (he : f x ∈ e.baseSet)
     (he' : f x ∈ e'.baseSet) :
     ContMDiffAt IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) x :=
   hf.coordChange hg he he'
 
-protected theorem ContMDiffOn.coordChange {f : M → B} {g : M → F} (hf : ContMDiffOn IM IB n f s)
+protected theorem ContMDiffOn.coordChange (hf : ContMDiffOn IM IB n f s)
     (hg : ContMDiffOn IM 𝓘(𝕜, F) n g s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     ContMDiffOn IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) s := fun x hx ↦
   (hf x hx).coordChange (hg x hx) (he hx) (he' hx)
 
-protected theorem ContMDiff.coordChange {f : M → B} {g : M → F} (hf : ContMDiff IM IB n f)
+protected theorem ContMDiff.coordChange (hf : ContMDiff IM IB n f)
     (hg : ContMDiff IM 𝓘(𝕜, F) n g) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     ContMDiff IM 𝓘(𝕜, F) n (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
   (hf x).coordChange (hg x) (he x) (he' x)
 
-protected nonrec theorem SmoothWithinAt.coordChange {f : M → B} {g : M → F}
+protected nonrec theorem SmoothWithinAt.coordChange
     (hf : SmoothWithinAt IM IB f s x) (hg : SmoothWithinAt IM 𝓘(𝕜, F) g s x)
     (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothWithinAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) s x :=
   hf.coordChange hg he he'
 
-protected nonrec theorem SmoothAt.coordChange {f : M → B} {g : M → F} (hf : SmoothAt IM IB f x)
+protected nonrec theorem SmoothAt.coordChange (hf : SmoothAt IM IB f x)
     (hg : SmoothAt IM 𝓘(𝕜, F) g x) (he : f x ∈ e.baseSet) (he' : f x ∈ e'.baseSet) :
     SmoothAt IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) x :=
   hf.coordChange hg he he'
 
-protected nonrec theorem SmoothOn.coordChange {f : M → B} {g : M → F} (hf : SmoothOn IM IB f s)
+protected nonrec theorem SmoothOn.coordChange (hf : SmoothOn IM IB f s)
     (hg : SmoothOn IM 𝓘(𝕜, F) g s) (he : MapsTo f s e.baseSet) (he' : MapsTo f s e'.baseSet) :
     SmoothOn IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) s :=
   hf.coordChange hg he he'
 
-protected theorem Smooth.coordChange {f : M → B} {g : M → F} (hf : Smooth IM IB f)
+protected theorem Smooth.coordChange (hf : Smooth IM IB f)
     (hg : Smooth IM 𝓘(𝕜, F) g) (he : ∀ x, f x ∈ e.baseSet) (he' : ∀ x, f x ∈ e'.baseSet) :
     Smooth IM 𝓘(𝕜, F) (fun y ↦ e.coordChange e' (f y) (g y)) := fun x ↦
   (hf x).coordChange (hg x) (he x) (he' x)
@@ -479,7 +477,7 @@ instance SmoothFiberwiseLinear.hasGroupoid :
     refine' ⟨_, _, e.open_baseSet.inter e'.open_baseSet, smoothOn_coordChangeL IB e e',
       smoothOn_symm_coordChangeL IB e e', _⟩
     refine PartialHomeomorph.eqOnSourceSetoid.symm ⟨?_, ?_⟩
-    · simp only [e.symm_trans_source_eq e', FiberwiseLinear.localHomeomorph, trans_toPartialEquiv,
+    · simp only [e.symm_trans_source_eq e', FiberwiseLinear.partialHomeomorph, trans_toPartialEquiv,
         symm_toPartialEquiv]
     · rintro ⟨b, v⟩ hb
       exact (e.apply_symm_apply_eq_coordChangeL e' hb.1 v).symm

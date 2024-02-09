@@ -108,22 +108,14 @@ section Preorder
 
 variable [PartialOrder α] [Preorder β]
 
--- porting note: type class search sees right through the type synonrm for `α ×ₗ β` and uses the
--- `Preorder` structure for `α × β` instead
--- This is hopefully the same problems as in https://github.com/leanprover/lean4/issues/1891
--- and will be fixed in nightly-2022-11-30
-theorem toLex_mono : @Monotone _ _ _ (Prod.Lex.preorder α β) (toLex : α × β → α ×ₗ β) := by
+theorem toLex_mono : Monotone (toLex : α × β → α ×ₗ β) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ ⟨ha, hb⟩
   obtain rfl | ha : a₁ = a₂ ∨ _ := ha.eq_or_lt
   · exact right _ hb
   · exact left _ _ ha
 #align prod.lex.to_lex_mono Prod.Lex.toLex_mono
 
--- porting note: type class search sees right through the type synonrm for `α ×ₗ β` and uses the
--- `Preorder` structure for `α × β` instead
--- This is hopefully the same problems as in https://github.com/leanprover/lean4/issues/1891
--- and will be fixed in nightly-2022-11-30
-theorem toLex_strictMono : @StrictMono _ _ _ (Prod.Lex.preorder α β) (toLex : α × β → α ×ₗ β) := by
+theorem toLex_strictMono : StrictMono (toLex : α × β → α ×ₗ β) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ h
   obtain rfl | ha : a₁ = a₂ ∨ _ := h.le.1.eq_or_lt
   · exact right _ (Prod.mk_lt_mk_iff_right.1 h)

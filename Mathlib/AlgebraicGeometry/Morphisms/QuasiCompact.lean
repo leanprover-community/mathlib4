@@ -96,7 +96,7 @@ theorem isCompact_open_iff_eq_basicOpen_union {X : Scheme} [IsAffine X] (U : Set
 theorem quasiCompact_iff_forall_affine :
     QuasiCompact f ↔
       ∀ U : Opens Y.carrier, IsAffineOpen U → IsCompact (f.1.base ⁻¹' (U : Set Y.carrier)) := by
-  rw [QuasiCompact_iff]
+  rw [quasiCompact_iff]
   refine' ⟨fun H U hU => H U U.isOpen hU.isCompact, _⟩
   intro H U hU hU'
   obtain ⟨S, hS, rfl⟩ := (isCompact_open_iff_eq_finset_affine_union U).mp ⟨hU', hU⟩
@@ -320,10 +320,12 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   swap
   · delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict at H ⊢
     convert congr_arg (X.presheaf.map (homOfLE _).op) H
-    · simp only [← comp_apply, ← Functor.map_comp]
+    -- Note: the below was `simp only [← comp_apply]`
+    · rw [← comp_apply, ← comp_apply]
+      simp only [← Functor.map_comp]
       rfl
+      · simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
     · rw [map_zero]
-      simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
   choose n hn using H'
   haveI := hs.to_subtype
   cases nonempty_fintype s
