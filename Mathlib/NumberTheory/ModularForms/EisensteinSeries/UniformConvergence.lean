@@ -28,6 +28,8 @@ open scoped BigOperators NNReal Classical Filter Matrix UpperHalfPlane Complex
 
 namespace EisensteinSeries
 
+section bounding_functions
+
 /-- Auxilary function used for bounding Eisentein series-/
 def lowerBound1 (z : ℍ) : ℝ :=
   ((z.1.2 ^ (2 : ℕ)) / (z.1.1 ^ (2 : ℕ) + z.1.2 ^ (2 : ℕ)))
@@ -49,7 +51,7 @@ theorem r_pos (z : ℍ) : 0 < r z := by
 
 theorem r_ne_zero (z : ℍ) : r z ≠ 0 := ne_of_gt (r_pos z)
 
-lemma r_mul_n_pos (k : ℕ) (z : ℍ) (n : ℝ) (hn : 0 < n) :
+lemma r_mul_pos_pos (k : ℕ) (z : ℍ) (n : ℝ) (hn : 0 < n) :
     0 < (Complex.abs ((r z : ℂ) ^ (k : ℤ) * (n : ℂ)^ (k : ℤ))) := by
   norm_cast
   apply _root_.abs_pos.mpr (mul_ne_zero (pow_ne_zero k (ne_of_gt (r_pos z))) ?_)
@@ -136,7 +138,7 @@ lemma eis_bound_1 (k : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (C1 : 0 < Complex.abs 
   simp only [ne_eq, Matrix.cons_eq_zero_iff, Int.cast_eq_zero, Matrix.zero_empty, and_true, not_and]
   intro hx
   norm_cast at *
-  apply r_mul_n_pos k z (Complex.abs (x 0 : ℂ)) C1
+  apply r_mul_pos_pos k z (Complex.abs (x 0 : ℂ)) C1
 
 lemma eis_bound_2 (k : ℕ) (z : ℍ) (x : Fin 2 → ℤ)  (C2 : 0 < Complex.abs (x 1 : ℂ)) :
     (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ (k : ℤ)))⁻¹ ≤
@@ -159,7 +161,7 @@ lemma eis_bound_2 (k : ℕ) (z : ℍ) (x : Fin 2 → ℤ)  (C2 : 0 < Complex.abs
   simp only [ne_eq, Matrix.cons_eq_zero_iff, Int.cast_eq_zero, Matrix.zero_empty, and_true, not_and]
   intro hx
   norm_cast at *
-  apply r_mul_n_pos k z (Complex.abs (x 1 : ℂ)) C2
+  apply r_mul_pos_pos k z (Complex.abs (x 1 : ℂ)) C2
 
 theorem Eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
     (hx : ⟨x 0, x 1⟩ ∈ square n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤
@@ -207,6 +209,9 @@ theorem r_lower_bound_on_slice (A B : ℝ) (h : 0 < B) (z : upperHalfPlaneSlice 
   · positivity
   · apply (lowerBound1_pos z).le
 
+end bounding_functions
+
+section summability
 
 variable {α : Type*} {β : Type*} {i : α → Set β}
 
@@ -294,6 +299,8 @@ lemma summable_upper_bound (k : ℤ) (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
   simp only [one_div, inv_nonneg]
   apply zpow_nonneg (r_pos z).le
   simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, zpow_nonneg]
+
+end summability
 
 lemma eisensteinSeries_TendstoLocallyUniformlyOn (k : ℤ) (hk : 3 ≤ k) (N : ℕ)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
