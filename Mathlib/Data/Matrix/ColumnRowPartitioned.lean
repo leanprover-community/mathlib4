@@ -158,14 +158,10 @@ lemma vecMul_fromColumns (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂ R) (v : 
 lemma sum_elim_vecMul_fromRows (B₁ : Matrix m₁ n R) (B₂ : Matrix m₂ n R)
     (v₁ : m₁ → R) (v₂ : m₂ → R) :
     Sum.elim v₁ v₂ ᵥ* fromRows B₁ B₂ = v₁ ᵥ* B₁ + v₂ ᵥ* B₂ := by
-  ext j
+  ext
   rw [vecMul, fromRows]
-  convert_to
-    Sum.elim v₁ v₂ ⬝ᵥ Sum.elim (fun i ↦ B₁ i j) (fun i ↦ B₂ i j) =
-      (v₁ ⬝ᵥ fun i ↦ B₁ i j) + (v₂ ⬝ᵥ fun i ↦ B₂ i j) using 2
-  · ext i
-    cases i <;> rfl
-  rw [Matrix.sum_elim_dotProduct_sum_elim]
+  convert sum_elim_dotProduct_sum_elim ..
+  aesop
 
 @[simp]
 lemma fromColumns_mulVec_sum_elim (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R)
