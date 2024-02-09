@@ -116,9 +116,11 @@ See also `LinearMapClass F R M M₂` for the case where `σ` is the identity map
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
-  (σ : outParam (R →+* S)) (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂]
-  [Module R M] [Module S M₂] [FunLike F M M₂] extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
+class SemilinearMapClass (F : Type*)
+    {R S : outParam (Type*)} [Semiring R] [Semiring S] (σ : outParam (R →+* S))
+    (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂]
+    [Module R M] [Module S M₂] [FunLike F M M₂]
+    extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
   -- where
   -- /-- A semilinear map preserves scalar multiplication up to some ring homomorphism `σ`.
   -- See also `_root_.map_smul` for the case where `σ` is the identity. -/
@@ -173,7 +175,8 @@ instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearM
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
 
-instance (priority := 100) distribMulActionSemiHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
+instance (priority := 100) distribMulActionSemiHomClass
+    [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     DistribMulActionSemiHomClass F σ M M₃ :=
   { SemilinearMapClass.toAddHomClass with
     map_smulₛₗ := fun f c x ↦ by rw [map_smulₛₗ] }
