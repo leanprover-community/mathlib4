@@ -1,5 +1,10 @@
+/-
+Copyright (c) 2024 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
 import Mathlib.Algebra.Lie.CharPolyPoly
-import Mathlib.Algebra.Lie.EngelSubalgebra
+import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Data.MvPolynomial.Monad
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Dimension.Finrank
@@ -54,6 +59,13 @@ lemma MvPolynomial.IsHomogeneous.map {φ : MvPolynomial σ R} {n : ℕ}
   exact hφ.eval₂ _ _ (fun r ↦ isHomogeneous_C _ (f r)) (isHomogeneous_X _)
 
 end
+
+/-!
+
+We follow "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
+
+TODO: add bib entry
+-/
 
 namespace LieAlgebra
 
@@ -236,33 +248,5 @@ lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular R x := by
   exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 end IsDomain
-
-section Field
-
-variable {K L : Type*}
-variable [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
-
-open LieSubalgebra Polynomial in
-lemma engel_le_engel (U : LieSubalgebra K L) (x : L) (hx : x ∈ U) (hUx : U ≤ engel K x)
-    (hmin : ∀ y : L, y ∈ U → engel K y ≤ engel K x → engel K y = engel K x)
-    (y : L) (hy : y ∈ U) :
-    engel K x ≤ engel K y := by
-  let E : LieSubmodule K U L :=
-  { engel K x with
-    lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K x).lie_mem (hUx hu) hy }
-  let Q := L ⧸ E
-  let BU := chooseBasis K U
-  let BE := chooseBasis K E
-  let BQ := chooseBasis K Q
-  let r := finrank K E
-  let χ : U → Polynomial (K[X]) := fun u₁ ↦
-    (lieCharpoly BU BE).map (MvPolynomial.aeval fun i ↦
-      C (BU.repr ⟨x, hx⟩ i) + C (BU.repr u₁ i) * X).toRingHom
-  let ψ : U → Polynomial (K[X]) := fun u₁ ↦
-    (lieCharpoly BU BQ).map (MvPolynomial.aeval fun i ↦
-      C (BU.repr ⟨x, hx⟩ i) + C (BU.repr u₁ i) * X).toRingHom
-  sorry
-
-end Field
 
 end LieAlgebra
