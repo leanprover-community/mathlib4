@@ -468,6 +468,10 @@ theorem card_union_le (s t : Finset α) : (s ∪ t).card ≤ s.card + t.card :=
 #align finset.card_union_eq Finset.card_union_of_disjoint
 #align finset.card_disjoint_union Finset.card_union_of_disjoint
 
+-- 2024-02-09
+@[deprecated] alias card_union_eq := card_union_of_disjoint
+@[deprecated] alias card_disjoint_union := card_union_of_disjoint
+
 lemma cast_card_inter [AddGroupWithOne R] :
     ((s ∩ t).card : R) = s.card + t.card - (s ∪ t).card := by
   rw [eq_sub_iff_add_eq, ← cast_add, card_inter_add_card_union, cast_add]
