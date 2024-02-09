@@ -60,7 +60,7 @@ lemma SchwartzMap.integrable_pow_mul [MeasurableSpace D] [BorelSpace D] [FiniteD
   calc
     (1 + ‖x‖) ^ (finrank ℝ D + 1) * (‖x‖ ^ k * ‖f x‖)
       ≤ (1 + ‖x‖) ^ (finrank ℝ D + 1) * ((1 + ‖x‖) ^ k * ‖f x‖) := by gcongr; simp
-    _ = (1 + ‖x‖) ^ (finrank ℝ D + 1 + k) * ‖f x‖ := by simp [pow_add]; ring
+    _ = (1 + ‖x‖) ^ (finrank ℝ D + 1 + k) * ‖f x‖ := by simp only [pow_add, mul_assoc]
     _ ≤ C := hC x
 
 lemma SchwartzMap.integrable [MeasurableSpace D] [BorelSpace D] [FiniteDimensional ℝ D]
