@@ -281,6 +281,30 @@ def Isometry.single [Fintype ι] [DecidableEq ι] (Q : ∀ i, QuadraticForm R (M
   toLinearMap := LinearMap.single i
   map_app' := pi_apply_single _ _
 
+/-- `LinearMap.proj` as an isometry, when all but one quadratic form is zero. -/
+@[simps!]
+def Isometry.proj [Fintype ι] [DecidableEq ι] (i : ι) (Q : QuadraticForm R (Mᵢ i)) :
+    pi (Pi.single i Q) →qᵢ Q where
+  toLinearMap := LinearMap.proj i
+  map_app' m := by
+    dsimp
+    rw [pi_apply, Fintype.sum_eq_single i (fun j hij => ?_), Pi.single_eq_same]
+    rw [Pi.single_eq_of_ne hij, zero_apply]
+
+/-- Note that `QuadraticForm.Isometry.id` would not be well-typed as the RHS. -/
+@[simp]
+theorem Isometry.proj_comp_single_of_same [Fintype ι] [DecidableEq ι]
+    (i : ι) (Q : QuadraticForm R (Mᵢ i)) :
+    (proj i Q).comp (single _ i) = .ofEq (Pi.single_eq_same _ _) :=
+  ext fun _ => Pi.single_eq_same _ _
+
+/-- Note that `0 : 0 →qᵢ Q` alone would not be well-typed as the RHS. -/
+@[simp]
+theorem Isometry.proj_comp_single_of_ne [Fintype ι] [DecidableEq ι]
+    {i j : ι} (h : i ≠ j) (Q : QuadraticForm R (Mᵢ i)) :
+    (proj i Q).comp (single _ j) = (0 : 0 →qᵢ Q).comp (ofEq (Pi.single_eq_of_ne h.symm _)) :=
+  ext fun _ => Pi.single_eq_of_ne h _
+
 theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
     {Q' : ∀ i, QuadraticForm R (Nᵢ i)} (e : ∀ i, (Q i).Equivalent (Q' i)) :
     (pi Q).Equivalent (pi Q') :=
