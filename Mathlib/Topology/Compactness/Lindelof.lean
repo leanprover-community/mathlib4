@@ -6,7 +6,7 @@ Authors: Josha Dekker
 import Mathlib.Topology.Bases
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Compactness.Compact
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Lindelöf sets and Lindelöf spaces
@@ -698,11 +698,12 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
-instance SecondCountableTopology.from_pseudometric_Lindelof {Z : Type*} [PseudoMetricSpace Z]
-    [LindelofSpace Z] : SecondCountableTopology Z := by
-  have h_dense : ∀ ε > 0, ∃ s : Set Z, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
+instance SecondCountableTopology.from_pseudometrizable_Lindelof [PseudoMetrizableSpace X]
+    [LindelofSpace X] : SecondCountableTopology X := by
+  letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
+  have h_dense : ∀ ε > 0, ∃ s : Set X, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
     intro ε hpos
-    let U := fun (z : Z) ↦ Metric.ball z ε
+    let U := fun (z : X) ↦ Metric.ball z ε
     have hU : ∀ z, U z ∈ nhds z := by
       intro z
       have : IsOpen (U z) := Metric.isOpen_ball
