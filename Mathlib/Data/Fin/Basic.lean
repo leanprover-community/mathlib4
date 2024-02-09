@@ -961,11 +961,11 @@ def castSuccEmb : Fin n ↪o Fin (n + 1) :=
 @[simp]
 theorem castSucc_le_castSucc_iff : castSucc a ≤ castSucc b ↔ a ≤ b := Iff.rfl
 @[simp]
-theorem succ_le_castSucc_iff : succ a ≤ castSucc b ↔ a < b :=
-  by rw [le_castSucc_iff, succ_lt_succ_iff]
+theorem succ_le_castSucc_iff : succ a ≤ castSucc b ↔ a < b := by
+  rw [le_castSucc_iff, succ_lt_succ_iff]
 @[simp]
-theorem castSucc_lt_succ_iff : castSucc a < succ b ↔ a ≤ b :=
-  by rw [castSucc_lt_iff_succ_le, succ_le_succ_iff]
+theorem castSucc_lt_succ_iff : castSucc a < succ b ↔ a ≤ b := by
+  rw [castSucc_lt_iff_succ_le, succ_le_succ_iff]
 
 theorem le_of_castSucc_lt_of_succ_lt {a b : Fin (n + 1)} {i : Fin n}
     (hl : castSucc i < a) (hu : b < succ i) : b < a := (castSucc_lt_iff_succ_le.mp hl).trans_lt' hu
@@ -1168,10 +1168,9 @@ theorem monotone_pred_comp [Preorder α] {f : α → Fin (n + 1)} (hf : ∀ a, f
 
 #align fin.nat_add_sub_nat_cast Fin.natAdd_subNat_castₓ
 
-theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm):
-    Fin.pred (1 : Fin (n + 1)) h = 0 :=
-    by simp_rw [Fin.ext_iff, coe_pred, val_one', val_zero',
-      tsub_eq_zero_iff_le, Nat.mod_le]
+theorem pred_one' [NeZero n] (h := (zero_ne_one' (n := n)).symm) :
+    Fin.pred (1 : Fin (n + 1)) h = 0 := by
+  simp_rw [Fin.ext_iff, coe_pred, val_one', val_zero', tsub_eq_zero_iff_le, Nat.mod_le]
 
 theorem pred_last (h := last_pos'.ne') :
     pred (last (n + 1)) h = last n := by simp_rw [← succ_last, pred_succ]
