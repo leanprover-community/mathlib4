@@ -651,8 +651,7 @@ lemma _root_.Function.HasTemperateGrowth.zero :
 
 lemma _root_.Function.HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
-  .of_fderiv (by simpa using Function.HasTemperateGrowth.zero)
-    (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
+  .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
 
 lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     Function.HasTemperateGrowth f := by
