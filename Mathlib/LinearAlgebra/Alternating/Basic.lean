@@ -22,7 +22,7 @@ arguments of the same type.
 * `f.map_perm` expresses how `f` varies by a sign change under a permutation of its inputs.
 * An `AddCommMonoid`, `AddCommGroup`, and `Module` structure over `AlternatingMap`s that
   matches the definitions over `MultilinearMap`s.
-* `MultilinearMap.domDomCongr`, for permutating the elements within a family.
+* `MultilinearMap.domDomCongr`, for permuting the elements within a family.
 * `MultilinearMap.alternatization`, which makes an alternating map out of a non-alternating one.
 * `AlternatingMap.curryLeft`, for binding the leftmost argument of an alternating map indexed
   by `Fin n.succ`.
