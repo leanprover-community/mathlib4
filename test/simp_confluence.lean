@@ -28,14 +28,14 @@ example {s : Set α} (hs : Set.Nonempty s) (t : Set β) (a : β) :
   fail_if_success simp [hs, -Nonempty.subset_preimage_const]
   simp [hs]
 
-/-- Without `univ_subset_preimage`, `image_subset_iff` and `image_univ` create a
+/-- Without `preimage_eq_univ_iff`, `image_subset_iff` and `image_univ` create a
   simp confluence issue. -/
 example {f : α → β} (s) : f '' univ ⊆ s ↔ f '' univ ⊆ s := by
   conv =>
     congr
-    · simp [-image_univ, -univ_subset_preimage]
-    · simp [-image_subset_iff, -univ_subset_preimage]
-  fail_if_success simp [-univ_subset_preimage]
+    · simp [-image_univ, -preimage_eq_univ_iff]
+    · simp [-image_subset_iff, -preimage_eq_univ_iff]
+  fail_if_success simp [-preimage_eq_univ_iff]
   simp
 
 end Set

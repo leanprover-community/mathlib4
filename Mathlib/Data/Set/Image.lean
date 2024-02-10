@@ -704,8 +704,8 @@ theorem image_univ {f : α → β} : f '' univ = range f := by
 #align set.image_univ Set.image_univ
 
 @[simp]
-theorem univ_subset_preimage {f : α → β} {s} : univ ⊆ f ⁻¹' s ↔ range f ⊆ s := by
-  rw [← image_subset_iff, image_univ]
+theorem preimage_eq_univ_iff {f : α → β} {s} : f ⁻¹' s = univ ↔ range f ⊆ s := by
+  rw [← univ_subset_iff, ← image_subset_iff, image_univ]
 
 theorem image_subset_range (f : α → β) (s) : f '' s ⊆ range f := by
   rw [← image_univ]; exact image_subset _ (subset_univ _)
