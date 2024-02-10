@@ -416,7 +416,6 @@ theorem iteratedDeriv_fourierIntegral {f : ℝ → E} {N : ℕ∞} {n : ℕ}
   congr with y
   suffices (-(2 * π * I)) ^ n • y ^ n • f y = (-(2 * π * I * y)) ^ n • f y by
     simpa [innerSL_apply _]
-  have : y ^ n • f y = ((y ^ n : ℝ) : ℂ) • f y := rfl
-  simp only [← neg_mul, this, smul_smul, mul_pow, ofReal_pow, mul_assoc]
+  simp only [← neg_mul, ← coe_smul, smul_smul, mul_pow, ofReal_pow, mul_assoc]
 
 end Real

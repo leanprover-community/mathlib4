@@ -293,12 +293,12 @@ theorem convexBodySumFun_neg (x : E K) :
 theorem convexBodySumFun_add_le (x y : E K) :
     convexBodySumFun (x + y) ≤ convexBodySumFun x + convexBodySumFun y := by
   simp_rw [convexBodySumFun, Prod.fst_add, Pi.add_apply, Prod.snd_add]
-  refine le_trans (add_le_add
+  refine (add_le_add
     (Finset.sum_le_sum (fun w _ => norm_add_le (x.1 w) (y.1 w)))
     (mul_le_mul_of_nonneg_left
-      (Finset.sum_le_sum (fun w _ => norm_add_le (x.2 w) (y.2 w))) (by norm_num))) ?_
+      (Finset.sum_le_sum (fun w _ => norm_add_le (x.2 w) (y.2 w))) (by norm_num))).trans_eq ?_
   simp_rw [Finset.sum_add_distrib, mul_add]
-  exact le_of_eq (by ring)
+  ring
 
 theorem convexBodySumFun_smul (c : ℝ) (x : E K) :
     convexBodySumFun (c • x) = |c| * convexBodySumFun x := by

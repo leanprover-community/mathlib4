@@ -863,8 +863,7 @@ local notation "π" => @Quotient.mk _ α_mod_G
   `U` of the quotient, `μ U = ν ((π ⁻¹' U) ∩ t)`. -/
 class QuotientMeasureEqMeasurePreimage (ν : Measure α := by volume_tac)
     (μ : Measure (Quotient α_mod_G)) : Prop where
-  projection_respects_measure' : ∀ (t : Set α) (_ : IsFundamentalDomain G t ν),
-    μ = (ν.restrict t).map π
+  projection_respects_measure' (t : Set α) : IsFundamentalDomain G t ν → μ = (ν.restrict t).map π
 
 attribute [to_additive]
   MeasureTheory.QuotientMeasureEqMeasurePreimage
@@ -892,9 +891,7 @@ an artificial way to generate a measure downstairs such that the pair satisfies 
 lemma IsFundamentalDomain.quotientMeasureEqMeasurePreimage_quotientMeasure
     {s : Set α} (fund_dom_s : IsFundamentalDomain G s ν) :
     QuotientMeasureEqMeasurePreimage ν ((ν.restrict s).map π) where
-  projection_respects_measure' := by
-    intro t fund_dom_t
-    rw [fund_dom_s.quotientMeasure_eq _ fund_dom_t]
+  projection_respects_measure' t fund_dom_t := by rw [fund_dom_s.quotientMeasure_eq _ fund_dom_t]
 
 /-- One can prove `QuotientMeasureEqMeasurePreimage` by checking behavior with respect to a single
 fundamental domain. -/
@@ -1007,8 +1004,8 @@ sigma-finite measure, then it is itself `SigmaFinite`. -/
 @[to_additive MeasureTheory.instSigmaFiniteAddQuotientOrbitRelInstMeasurableSpaceToMeasurableSpace]
 instance [SigmaFinite (volume : Measure α)] [HasFundamentalDomain G α]
     (μ : Measure (Quotient α_mod_G)) [QuotientMeasureEqMeasurePreimage volume μ] :
-    SigmaFinite μ := by
-  exact QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient (ν := (volume : Measure α)) (μ := μ)
+    SigmaFinite μ :=
+  QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient (ν := (volume : Measure α)) (μ := μ)
 
 end QuotientMeasureEqMeasurePreimage
 
