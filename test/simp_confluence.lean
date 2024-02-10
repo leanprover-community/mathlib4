@@ -6,15 +6,15 @@ open Function
 
 variable {α β : Type*}
 
-/-- Without `preimage_subset_preimage`, `image_subset_iff` and `image_preimage_eq` create a simp
+/-- Without `subset_range_of_surjective`, `image_subset_iff` and `image_preimage_eq` create a simp
   confluence issue. -/
 example {f : α → β} (s t : Set β) (h : Surjective f) :
     f '' (f ⁻¹' s) ⊆ t ↔ f '' (f ⁻¹' s) ⊆ t := by
   conv =>
     congr
-    · simp [h, -image_preimage_eq, -preimage_subset_preimage]
-    · simp [h, -image_subset_iff, -preimage_subset_preimage]
-  fail_if_success simp [h, -preimage_subset_preimage]
+    · simp [h, -image_preimage_eq, -subset_range_of_surjective]
+    · simp [h, -image_subset_iff, -subset_range_of_surjective]
+  fail_if_success simp [h, -subset_range_of_surjective]
   simp [h]
 
 /-- Without `Nonempty.subset_preimage_const`, `image_subset_iff` and `Nonempty.image_const` create a
