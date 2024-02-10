@@ -49,6 +49,19 @@ def Strictness.toString : Strictness zα pα e → String
   | nonzero _ => "nonzero"
   | none => "none"
 
+/-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`.
+-/
+def Strictness.toNonneg {e} : Strictness zα pα e → Option Q(0 ≤ $e)
+  | .positive pf => some q(le_of_lt $pf)
+  | .nonnegative pf => some pf
+  | _ => .none
+
+/-- Extract a proof that `e` is nonzero, if possible, from `Strictness` information about `e`. -/
+def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
+  | .positive pf => some q(ne_of_gt $pf)
+  | .nonzero pf => some pf
+  | _ => .none
+
 /-- An extension for `positivity`. -/
 structure PositivityExt where
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
