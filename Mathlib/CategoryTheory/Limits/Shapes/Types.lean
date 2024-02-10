@@ -711,10 +711,20 @@ theorem pullbackIsoPullback_inv_fst :
 #align category_theory.limits.types.pullback_iso_pullback_inv_fst CategoryTheory.Limits.Types.pullbackIsoPullback_inv_fst
 
 @[simp]
+theorem pullbackIsoPullback_inv_fst_apply (x : (Types.pullbackCone f g).pt) :
+    (pullback.fst : _ ⟶ X) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).fst) x := by
+  rw [elementwise_of% pullbackIsoPullback_inv_fst]
+
+@[simp]
 theorem pullbackIsoPullback_inv_snd :
     (pullbackIsoPullback f g).inv ≫ pullback.snd = fun p => (p.1 : X × Y).snd :=
   (pullbackConeIsoPullback f g).inv.w right
 #align category_theory.limits.types.pullback_iso_pullback_inv_snd CategoryTheory.Limits.Types.pullbackIsoPullback_inv_snd
+
+@[simp]
+theorem pullbackIsoPullback_inv_snd_apply (x : (Types.pullbackCone f g).pt) :
+    (pullback.snd : _ ⟶ Y) ((pullbackIsoPullback f g).inv x) = (fun p => (p.1 : X × Y).snd) x := by
+  rw [elementwise_of% pullbackIsoPullback_inv_snd]
 
 end Pullback
 
