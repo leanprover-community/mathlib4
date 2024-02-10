@@ -1473,6 +1473,7 @@ import Mathlib.Condensed.Light.Abelian
 import Mathlib.Condensed.Light.Adjunctions
 import Mathlib.Condensed.Light.Basic
 import Mathlib.Condensed.Light.Discrete
+import Mathlib.Condensed.Light.Explicit
 import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Limits
 import Mathlib.Condensed.Solid
