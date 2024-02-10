@@ -303,7 +303,7 @@ lemma haarScalarFactor_pos_of_isOpenPosMeasure (μ' μ : Measure G) [IsFiniteMea
   simp only [H, zero_smul, integral_zero_measure] at this
   linarith
 
-@[to_additive]
+@[to_additive addHaarScalarFactor_of_eq_smul]
 lemma haarScalarFactor_of_eq_smul [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
