@@ -962,8 +962,8 @@ theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonem
 
 /-- A version of `Finset.sup'_mono` acceptable for `@[gcongr]`. -/
 @[gcongr]
-lemma sup'_gmono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} :
-    s₁.sup' h₁ f ≤ s₂.sup' h₂ f :=
+lemma _root_.GCongr.finset_sup'_le {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
+    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₁.sup' h₁ f ≤ s₂.sup' h₂ f :=
   sup'_mono f h h₁
 
 end Sup'
@@ -1133,8 +1133,8 @@ theorem inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonem
 
 /-- A version of `Finset.inf'_mono` acceptable for `@[gcongr]`. -/
 @[gcongr]
-lemma inf'_gmono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} :
-    s₂.inf' h₂ f ≤ s₁.inf' h₁ f :=
+lemma _root_.GCongr.finset_inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
+    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₂.inf' h₂ f ≤ s₁.inf' h₁ f :=
   inf'_mono f h h₁
 
 end Inf'
