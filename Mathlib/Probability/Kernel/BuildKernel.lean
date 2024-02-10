@@ -18,11 +18,17 @@ open scoped NNReal ENNReal MeasureTheory Topology
 
 namespace ProbabilityTheory
 
-variable {α : Type*} [MeasurableSpace α]
+variable {α : Type*} [MeasurableSpace α] {f : α → ℚ → ℝ} {hf : ∀ q, Measurable fun a ↦ f a q}
 
 noncomputable
-def IsCDFLike.kernel {f : α → ℚ → ℝ} (hf : IsCDFLike f) : kernel α ℝ where
-  val (a : α) := (todo2 hf a).measure
-  property := measurable_measure_todo2 hf
+def cdfKernel (hf : ∀ q, Measurable fun a ↦ f a q) : kernel α ℝ where
+  val a := (todo3 f hf a).measure
+  property := measurable_measure_todo3 hf
+
+instance instIsMarkovKernel_cdfKernel : IsMarkovKernel (cdfKernel hf) :=
+  ⟨fun _ ↦ instIsProbabilityMeasure_todo3 _ _⟩
+
+lemma cdfKernel_Iic (a : α) (x : ℝ) :
+    cdfKernel hf a (Iic x) = ENNReal.ofReal (todo3 f hf a x) := measure_todo3_Iic hf a x
 
 end ProbabilityTheory
