@@ -202,7 +202,10 @@ lemma mono_of_injective' [HasCoproduct (X ∘ ι)] [HasCoproduct X]
   mono_of_injective X ι hι _ _ (colimit.isColimit _) (colimit.isColimit _)
 
 end
-
+lemma inj_mono_of_injective' [HasCoproduct X] (i : I)
+    [HasCoproduct (fun (k : (Set.range (fun _ : Unit ↦ i)).compl) => X k.1)] :
+    Mono (Sigma.ι X i) :=
+  inj_mono_of_injective X _ (colimit.isColimit _) i
 end MonoCoprod
 
 end Limits
