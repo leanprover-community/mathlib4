@@ -2215,7 +2215,7 @@ variable [Zero α] [Zero β] [SMulWithZero α β] [DecidableEq β] {s : Finset �
 
 /-!
 Note that we have neither `SMulWithZero α (Finset β)` nor `SMulWithZero (Finset α) (Finset β)`
-because `0 * ∅ ≠ 0`.
+because `0 • ∅ ≠ 0`.
 -/
 
 lemma zero_smul_subset (t : Finset β) : (0 : Finset α) • t ⊆ 0 := by simp [subset_iff, mem_smul]

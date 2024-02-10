@@ -5,8 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
-import Mathlib.Analysis.NormedSpace.LinearIsometry
+import Mathlib.Analysis.NormedSpace.Span
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.Module.StrongTopology
 import Mathlib.Tactic.SuppressCompilation
@@ -2202,7 +2201,7 @@ theorem coord_norm (x : E) (h : x ≠ 0) : ‖coord 𝕜 x h‖ = ‖x‖⁻¹ :
   have hx : 0 < ‖x‖ := norm_pos_iff.mpr h
   haveI : Nontrivial (𝕜 ∙ x) := Submodule.nontrivial_span_singleton h
   exact ContinuousLinearMap.homothety_norm _ fun y =>
-    homothety_inverse _ hx _ (toSpanNonzeroSingleton_homothety 𝕜 x h) _
+    homothety_inverse _ hx _ (LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x h) _
 #align continuous_linear_equiv.coord_norm ContinuousLinearEquiv.coord_norm
 
 end
