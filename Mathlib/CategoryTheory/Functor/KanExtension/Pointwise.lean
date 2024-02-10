@@ -8,27 +8,25 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 /-!
 # Pointwise Kan extensions
 
-In this file, we define the notion of pointwise (left) Kan Extension. Given two functors
-`F : C ⥤ H` and `L : C ⥤ D`, and `E : LeftExtension L F`, we introduce a cocone
-`E.coconeAt Y` for the functor `CostructuredArrow.proj L Y ⋙ F : CostructuredArrow L Y ⥤ H`,
-and the type `E.IsPointwiseLeftKanExtensionAt Y` which expresses that `E.coconeAt Y` is colimit.
-When this holds for all `Y : D`, we may say that `E` is a pointwise left Kan extension
-(`E.IsPointwiseLeftKanExtension`).
+In this file, we define the notion of pointwise (left) Kan extension. Given two functors
+`L : C ⥤ D` and `F : C ⥤ H`, and `E : LeftExtension L F`, we introduce a cocone
+`E.coconeAt Y` for the functor `CostructuredArrow.proj L Y ⋙ F : CostructuredArrow L Y ⥤ H`
+the point of which is `E.right.obj Y`, and the type `E.IsPointwiseLeftKanExtensionAt Y`
+which expresses that `E.coconeAt Y` is colimit. When this holds for all `Y : D`,
+we may say that `E` is a pointwise left Kan extension (`E.IsPointwiseLeftKanExtension`).
 
 Conversely, when `CostructuredArrow.proj L Y ⋙ F` has a colimit, we say that
 `F` has a pointwise left Kan extension at `Y : D` (`HasPointwiseLeftKanExtensionAt L F Y`),
 and if this holds for all `Y : D`, we construct a functor
-`pointwiseLeftKanExtension L F : D ⥤ H` and show
-
- we say that `F` has a pointwise left Kan Extension at `Y : D`
-(`HasPointwiseLeftKanExtensionAt L F Y`) if the functor
-`CostructuredArrow.proj L Y ⋙ F : CostructuredArrow L Y ⥤ H` has a colimit.
-
-
+`pointwiseLeftKanExtension L F : D ⥤ H` and show it is a pointwise Kan extension.
 
 ## TODO
 
-* Dualize the results
+* obtain similar results for right Kan extensions
+* refactor the file `CategoryTheory.Limits.KanExtension` using this new general API
+
+## References
+* https://ncatlab.org/nlab/show/Kan+extension
 
 -/
 
@@ -40,15 +38,22 @@ namespace Functor
 
 variable {C D H : Type*} [Category C] [Category D] [Category H] (L : C ⥤ D) (F : C ⥤ H)
 
+/-- The condition that a functor `F` has a pointwise left Kan extension along `L` at `Y`.
+It means that the functor `CostructuredArrow.proj L Y ⋙ F : CostructuredArrow L Y ⥤ H`
+has a colimit. -/
 abbrev HasPointwiseLeftKanExtensionAt (Y : D) :=
   HasColimit (CostructuredArrow.proj L Y ⋙ F)
 
+/-- The condition that a functor `F` has a pointwise left Kan extension along `L`: it means
+that it has a pointwise left Kan extension at any object. -/
 abbrev HasPointwiseLeftKanExtension := ∀ (Y : D), HasPointwiseLeftKanExtensionAt L F Y
 
 namespace LeftExtension
 
 variable {F L} (E : LeftExtension L F)
 
+/-- The cocone for `CostructuredArrow.proj L Y ⋙ F` attached to `E : LeftExtension L F`.
+The point is this cocone is `E.right.obj Y` -/
 @[simps]
 def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
   pt := E.right.obj Y
@@ -60,6 +65,8 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
         simp only [assoc, NatTrans.naturality_assoc, Functor.comp_map,
           Functor.map_comp, comp_id] }
 
+/-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension at `Y` when
+`E.coconeAt Y` is a colimit cocone. -/
 def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
 
 variable {E}
@@ -70,6 +77,8 @@ lemma IsPointwiseLeftKanExtensionAt.hasPointwiseLeftKanExtensionAt
 
 variable (E)
 
+/-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension when
+it is a pointwise left Kan extension at any object. -/
 abbrev IsPointwiseLeftKanExtension := ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y
 
 variable (h : E.IsPointwiseLeftKanExtension)
@@ -78,7 +87,8 @@ lemma IsPointwiseLeftKanExtension.hasPointwiseLeftKanExtension :
     HasPointwiseLeftKanExtension L F :=
   fun Y => (h Y).hasPointwiseLeftKanExtensionAt
 
-def isUniversalOfPointwise : E.IsUniversal :=
+/-- A pointwise left Kan extension is universal, i.e. it is a left Kan extension. -/
+def IsPointwiseLeftKanExtension.isUniversal : E.IsUniversal :=
   IsInitial.ofUniqueHom (fun G => StructuredArrow.homMk
         { app := fun Y => (h Y).desc (LeftExtension.coconeAt G Y)
           naturality := fun Y₁ Y₂ φ => (h Y₁).hom_ext (fun X => by
@@ -99,8 +109,14 @@ def isUniversalOfPointwise : E.IsUniversal :=
       simp only [assoc, NatTrans.naturality]
       rw [reassoc_of% eq₁, reassoc_of% eq₂])
 
---lemma IsPointwiseLeftKanExtension.hasLeftKanExtension :
---    HasLeftKanExtension L F where
+lemma IsPointwiseLeftKanExtension.isLeftKanExtension :
+    E.right.IsLeftKanExtension E.hom where
+  nonempty_isUniversal := ⟨h.isUniversal⟩
+
+lemma IsPointwiseLeftKanExtension.hasLeftKanExtension :
+    HasLeftKanExtension L F :=
+  have := h.isLeftKanExtension
+  HasLeftKanExtension.mk E.right E.hom
 
 end LeftExtension
 
@@ -108,6 +124,7 @@ section
 
 variable [HasPointwiseLeftKanExtension L F]
 
+/-- The constructed pointwise left Kan extension when `HasPointwiseLeftKanExtension L F` holds. -/
 @[simps]
 noncomputable def pointwiseLeftKanExtension : D ⥤ H where
   obj Y := colimit (CostructuredArrow.proj L Y ⋙ F)
@@ -130,9 +147,12 @@ noncomputable def pointwiseLeftKanExtension : D ⥤ H where
     congr 1
     apply CostructuredArrow.map_comp)
 
+/-- The unit of the constructed pointwise left Kan extension when
+`HasPointwiseLeftKanExtension L F` holds. -/
 @[simps]
 noncomputable def pointwiseLeftKanExtensionUnit : F ⟶ L ⋙ pointwiseLeftKanExtension L F where
-  app X := colimit.ι (CostructuredArrow.proj L (L.obj X) ⋙ F) (CostructuredArrow.mk (𝟙 (L.obj X)))
+  app X := colimit.ι (CostructuredArrow.proj L (L.obj X) ⋙ F)
+    (CostructuredArrow.mk (𝟙 (L.obj X)))
   naturality {X₁ X₂} f:= by
     simp only [comp_obj, pointwiseLeftKanExtension_obj, comp_map,
       pointwiseLeftKanExtension_map, colimit.ι_desc, CostructuredArrow.map_mk]
@@ -141,6 +161,8 @@ noncomputable def pointwiseLeftKanExtensionUnit : F ⟶ L ⋙ pointwiseLeftKanEx
       CostructuredArrow.homMk f
     exact colimit.w (CostructuredArrow.proj L (L.obj X₂) ⋙ F) φ
 
+/-- The functor `pointwiseLeftKanExtension L F` is a pointwise left Kan
+extension of `F` along `L`. -/
 noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtension :
     (LeftExtension.mk _ (pointwiseLeftKanExtensionUnit L F)).IsPointwiseLeftKanExtension :=
   fun X => IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) (fun j => by
@@ -150,17 +172,17 @@ noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtension :
     rw [id_comp]
     rfl))
 
+/-- The functor `pointwiseLeftKanExtension L F` is a left Kan extension of `F` along `L`. -/
 noncomputable def pointwiseLeftKanExtensionIsUniversal :
     (LeftExtension.mk _ (pointwiseLeftKanExtensionUnit L F)).IsUniversal :=
-  LeftExtension.isUniversalOfPointwise _
-    (pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L F)
+  (pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L F).isUniversal
 
 instance : (pointwiseLeftKanExtension L F).IsLeftKanExtension
     (pointwiseLeftKanExtensionUnit L F) where
   nonempty_isUniversal := ⟨pointwiseLeftKanExtensionIsUniversal L F⟩
 
---instance : HasLeftKanExtension L F :=
---  HasLeftKanExtension.mk' _ (F.pointwiseLeftKanExtensionNatTrans L)
+instance : HasLeftKanExtension L F :=
+  HasLeftKanExtension.mk _ (pointwiseLeftKanExtensionUnit L F)
 
 end
 

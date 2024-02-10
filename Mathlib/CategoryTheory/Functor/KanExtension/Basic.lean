@@ -26,12 +26,10 @@ are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 ## TODO (@joelriou)
 
-* define a condition expressing that a functor is a pointwise Kan extension
-* refactor the file `CategoryTheory.Limits.KanExtension` using this new general API
 * define left/right derived functors as particular cases of Kan extensions
 
 ## References
-https://ncatlab.org/nlab/show/Kan+extension
+* https://ncatlab.org/nlab/show/Kan+extension
 
 -/
 
