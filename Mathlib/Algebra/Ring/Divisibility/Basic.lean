@@ -20,8 +20,8 @@ imports. Further results about divisibility in rings may be found in
 
 variable {α β : Type*}
 
-theorem map_dvd_iff [Semigroup α] [Semigroup β] {F : Type*} [MulEquivClass F α β] (f : F) {a b} :
-    f a ∣ f b ↔ a ∣ b :=
+theorem map_dvd_iff [Semigroup α] [Semigroup β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β]
+    (f : F) {a b} : f a ∣ f b ↔ a ∣ b :=
   let f := MulEquivClass.toMulEquiv f
   ⟨fun h ↦ by rw [← f.left_inv a, ← f.left_inv b]; exact map_dvd f.symm h, map_dvd f⟩
 
