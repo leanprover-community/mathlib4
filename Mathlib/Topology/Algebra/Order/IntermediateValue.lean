@@ -678,33 +678,11 @@ theorem ContinuousOn.StrictMonoOn_of_InjOn_Icc {a b : α} {f : α → δ}
     (hab : a ≤ b) (hfab : f a ≤ f b)
     (hf_c : ContinuousOn f (Icc a b)) (hf_i : InjOn f (Icc a b)) :
     StrictMonoOn f (Icc a b) := by
--- I learned this proof from
--- <https://www.math.cuhk.edu.hk/course_builder/2021/math1050b/1050b-l14h-3.pdf>
-  intro s hs t ht hst
-  by_contra! hfts
-  replace hfts : f t < f s := lt_of_le_of_ne hfts <| hf_i.ne ht hs hst.ne'
-  by_cases hsa : f s ≤ f a
-  · have hat : Icc t b ⊆ Icc a b := Icc_subset_Icc_left ht.1
-    have : f a ∈ Ioc (f t) (f b) := ⟨(hfts.trans_le hsa), hfab⟩
-    obtain ⟨u, hu⟩ : f a ∈ f '' Ioc t b :=
-      intermediate_value_Ioc ht.2 (hf_c.mono hat) this
-    apply (lt_of_lt_of_le' hu.1.1 ht.1).ne'
-    exact hf_i (hat (Ioc_subset_Icc_self hu.1)) (left_mem_Icc.mpr hab) hu.2
-  · by_cases hat : f a < f t
-    · have hsb : Icc a s ⊆ Icc a b := Icc_subset_Icc_right hs.2
-      obtain ⟨u, hu⟩ : f t ∈ f '' Ioo a s :=
-        intermediate_value_Ioo hs.1 (hf_c.mono hsb) ⟨hat, hfts⟩
-      apply (hu.1.2.trans hst).ne
-      exact hf_i (hsb (Ioo_subset_Icc_self hu.1)) ht hu.2
-    · push_neg at hsa hat
-      have : a ≠ t := (lt_of_lt_of_le' hst hs.1).ne
-      have : f a ≠ f t := hf_i.ne (left_mem_Icc.mpr hab) ht this
-      replace hat : f t < f a := this.symm.lt_of_le hat
-      have hstab : Icc s t ⊆ Icc a b := Icc_subset_Icc hs.1 ht.2
-      obtain ⟨u, hu⟩ : f a ∈ f '' Ioo s t :=
-        intermediate_value_Ioo' hst.le (hf_c.mono hstab) ⟨hat, hsa⟩
-      apply (lt_of_lt_of_le' hu.1.1 hs.1).ne'
-      exact hf_i (hstab (Ioo_subset_Icc_self hu.1)) (left_mem_Icc.mpr hab) hu.2
+  letI := Icc.completeLinearOrder hab
+  refine StrictMono.of_restrict ?_
+  set g : Icc a b → δ := Set.restrict (Icc a b) f
+  have hgab : g ⊥ ≤ g ⊤ := by aesop
+  exact Continuous.strictMono_of_injective (f := g) hf_c.restrict hgab hf_i.injective
 
 /-- Suppose `f : [a, b] → δ` is
 continuous and injective. Then `f` is strictly antitone (decreasing)
