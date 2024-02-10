@@ -39,10 +39,8 @@ subsets
 
 open Set
 
-universe u
-
-variable {α β : Type u} {A B C : Set α} {D E : Set A}
-variable {S : Set (Set α)} {T : Set (Set A)} {i : β → Set α} {j : β → Set A}
+variable {ι : Sort*} {α : Type*} {A B C : Set α} {D E : Set A}
+variable {S : Set (Set α)} {T : Set (Set A)} {s : ι → Set α} {t : ι → Set A}
 
 namespace Set.Notation
 
@@ -78,7 +76,7 @@ lemma preimage_val_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ 
     exists_exists_and_eq_and]
 
 @[simp]
-lemma preimage_val_iInter : A ↓∩ (⋂ (B : β), i B) = ⋂ (B : β), A ↓∩ i B := preimage_iInter
+lemma preimage_val_iInter : A ↓∩ (⋂ i, s i) = ⋂ i, A ↓∩ s i := preimage_iInter
 
 lemma preimage_val_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
   ext x
@@ -120,7 +118,7 @@ lemma image_val_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by
   simp_rw [sUnion_eq_biUnion, image_iUnion]
 
 @[simp]
-lemma image_val_iUnion : ↑(⋃ (B : β), j B) = ⋃ (B : β), (j B : Set α) := image_iUnion
+lemma image_val_iUnion : ↑(⋃ i, t i) = ⋃ i, (t i : Set α) := image_iUnion
 
 @[simp]
 lemma image_val_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T } := by
@@ -147,7 +145,7 @@ lemma image_val_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (
         exists_true_left, implies_true, forall_const, exists_const]
 
 @[simp]
-lemma image_val_iInter [Nonempty β] : (↑(⋂ (B : β), j B) : Set α) = ⋂ (B : β), (↑(j B) : Set α) :=
+lemma image_val_iInter [Nonempty ι] : (↑(⋂ i, t i) : Set α) = ⋂ i, (↑(t i) : Set α) :=
   (Subtype.val_injective.injOn _).image_iInter_eq
 
 lemma image_val_subset_set : ↑D ⊆ A := by
