@@ -3,7 +3,7 @@ Copyright (c) 2023 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Sites.RegularExtensive
+import Mathlib.CategoryTheory.Sites.Coherent.RegularExtensive
 import Mathlib.Topology.Category.Profinite.Limits
 
 /-!
