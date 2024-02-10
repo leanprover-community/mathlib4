@@ -92,9 +92,6 @@ type, if possible.
 -/
 
 @[simp]
-lemma image_val_univ : ↑(univ : Set A) = A := Subtype.coe_image_univ A
-
-@[simp]
 lemma image_val_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := image_union _ _ _
 
 @[simp]
