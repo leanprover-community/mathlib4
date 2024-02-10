@@ -101,10 +101,9 @@ theorem auxbound2 (z : ℍ) (δ ε : ℝ) (hε : 1 ≤ ε^2) : r z ≤ Complex.a
   exact H1
 
 
-lemma asfd (a : ℝ) (ha : a ≠ 0) : 1 ≤ a^2 / |a|^2 := by
-    simp
-    rw [le_div_iff']
-    simp
+lemma one_le_sq_div_abs_sq (a : ℝ) (ha : a ≠ 0) : 1 ≤ a^2 / |a|^2 := by
+    rw [_root_.sq_abs, le_div_iff']
+    simp only [mul_one, le_refl]
     exact (sq_pos_iff a).mpr ha
 
 lemma int_abs_eq_complex_abs (a : ℤ) : Complex.abs a = a.natAbs := by
@@ -115,28 +114,23 @@ lemma int_abs_eq_complex_abs (a : ℤ) : Complex.abs a = a.natAbs := by
   rfl
 
 lemma ne_zero_if_max (x : Fin 2 → ℤ) (hx : x ≠ 0)
-  (h : (max (x 0).natAbs (x 1).natAbs) = (x 0).natAbs) : (x 0) ≠ 0 := by
+    (h : (max (x 0).natAbs (x 1).natAbs) = (x 0).natAbs) : (x 0) ≠ 0 := by
   intro h0
   rw [h0] at h
-  simp at h
-  simp at hx
+  simp only [ne_eq, Int.natAbs_zero, ge_iff_le, zero_le, max_eq_right, Int.natAbs_eq_zero] at *
   have : x = ![x 0, x 1] := by
     exact List.ofFn_inj.mp rfl
   rw [h0, h] at this
   rw [this] at hx
-  simp at hx
+  simp only [Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_self, not_true_eq_false] at hx
 
 lemma ne_zero_if_max' (x : Fin 2 → ℤ) (hx : x ≠ 0)
-  (h : (max (x 0).natAbs (x 1).natAbs) = (x 1).natAbs) : (x 1) ≠ 0 := by
-  intro h0
-  rw [h0] at h
-  simp at h
-  simp at hx
-  have : x = ![x 0, x 1] := by
-    exact List.ofFn_inj.mp rfl
-  rw [h0, h] at this
-  rw [this] at hx
-  simp at hx
+   (h : (max (x 0).natAbs (x 1).natAbs) = (x 1).natAbs) : (x 1) ≠ 0 := by
+  apply ne_zero_if_max ![x 1, x 0] ?_ (by simpa using h)
+  simp only [ne_eq, Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_true, not_and]
+  intro h1 h0
+  rw [fun_ne_zero_cases, h1, h0] at hx
+  simp only [ne_eq, not_true_eq_false, or_self] at *
 
 
 lemma sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) : (1 : ℝ) ≤ (x 0 / (max (x 0).natAbs (x 1).natAbs))^2 ∨
@@ -148,8 +142,8 @@ lemma sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) : (1 : ℝ) ≤ (x 0 / (max (
   have : (x 0 : ℝ) ≠ 0 := by
     have t :=  ne_zero_if_max x hx H1
     simpa using t
-  have h1 := asfd (x 0 : ℝ) this
-  simp at *
+  have h1 := one_le_sq_div_abs_sq (x 0 : ℝ) this
+  simp only [ne_eq, max_eq_left_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
   convert h1
   norm_cast
   rw [int_abs_eq_complex_abs]
@@ -158,14 +152,14 @@ lemma sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) : (1 : ℝ) ≤ (x 0 / (max (
   have : (x 1 : ℝ) ≠ 0 := by
     have t :=  ne_zero_if_max' x hx H2
     simpa using t
-  have h1 := asfd (x 1 : ℝ) this
-  simp at *
+  have h1 := one_le_sq_div_abs_sq (x 1 : ℝ) this
+  simp only [ne_eq, max_eq_right_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
   convert h1
   norm_cast
   rw [int_abs_eq_complex_abs]
 
 
-lemma bound3 (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
+lemma bound (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
     ((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs)^k ≤
       Complex.abs (((x 0 : ℂ) * (z : ℂ) + (x 1 : ℂ)) ^ k) := by
   by_cases hk : k ≠ 0
@@ -229,26 +223,23 @@ theorem Eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → �
   · have hx2 : x ≠ 0 := by
       rw [EisensteinSeries.square_ne_zero n x hx]
       exact hn
-    simp at hx
+    simp only [square_mem] at hx
     rw [inv_le_inv]
-    have := bound3 z x hx2 k
-    rw [←hx]
-    simp
+    have := bound z x hx2 k
+    simp only [← hx, map_mul, map_pow, abs_ofReal, abs_natCast, Nat.cast_max, ge_iff_le]
     convert this
     apply abs_eq_self.mpr ((r_pos z).le )
-    simp
-    simp
+    simp only [Nat.cast_max]
+    simp only [map_pow]
     have := Complex.abs.pos (pow_ne_zero k (linear_ne_zero ![x 0, x 1] z ?_))
     apply this
     simp only [ne_eq, Matrix.cons_eq_zero_iff, Int.cast_eq_zero, Matrix.zero_empty, and_true,
       not_and] at *
-    intro hg
-    intro h1
+    intro hg h1
     have : x = ![x 0, x 1] := by
       exact List.ofFn_inj.mp rfl
-    rw [this] at hx2
-    rw [hg,h1] at hx2
-    simp at *
+    rw [this, hg,h1 ] at hx2
+    simp only [Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_self, not_true_eq_false] at *
     apply r_mul_pos_pos
     norm_cast
     exact Nat.pos_of_ne_zero hn
