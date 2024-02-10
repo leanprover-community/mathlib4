@@ -169,25 +169,9 @@ variable (c : Cofan X) (c₁ : Cofan (X ∘ ι)) (hc : IsColimit c) (hc₁ : IsC
 
 lemma mono_of_injective_aux (c₂ : Cofan (fun (k : (Set.range ι).compl) => X k.1))
     (hc₂ : IsColimit c₂) : Mono (Cofan.IsColimit.desc hc₁ (fun i => c.inj (ι i))) := by
-  let φ : J ⊕ (Set.range ι).compl → I := fun i => match i with
-    | Sum.inl j => ι j
-    | Sum.inr k => k.1
-  let e := Equiv.ofBijective φ (by
-    constructor
-    · rintro (j₁|k₁) (j₂|k₂) h
-      · simp only [Sum.inl.injEq] at h ⊢
-        exact hι h
-      · exfalso
-        exact k₂.2 ⟨j₁, h⟩
-      · exfalso
-        exact k₁.2 ⟨j₂, h.symm⟩
-      · simpa only [Sum.inr.injEq, ← Subtype.ext_iff] using h
-    · intro i
-      by_cases h : i ∈ Set.range ι
-      · obtain ⟨j, rfl⟩ := h
-        exact ⟨Sum.inl j, rfl⟩
-      · exact ⟨Sum.inr ⟨i, h⟩, rfl⟩)
-  refine mono_binaryCofanSum_inl' (Cofan.mk c.pt (fun i' => c.inj (φ i'))) _ _ ?_
+  classical
+  let e := ((Equiv.ofInjective ι hι).sumCongr (Equiv.refl _)).trans (Equiv.Set.sumCompl _)
+  refine mono_binaryCofanSum_inl' (Cofan.mk c.pt (fun i' => c.inj (e i'))) _ _ ?_
     hc₁ hc₂ _ (by simp)
   exact IsColimit.ofIsoColimit ((IsColimit.ofCoconeEquiv (Cocones.equivalenceOfReindexing
     (Discrete.equivalence e) (Iso.refl _))).symm hc) (Cocones.ext (Iso.refl _))
