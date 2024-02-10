@@ -110,7 +110,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
 theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [SecondCountableTopology E] {f : α → E} (hf : ∀ c : Dual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) :
     f =ᵐ[μ] 0 :=
-  ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (isSeparable_of_separableSpace (Set.univ : Set E)) hf
+  ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
     (eventually_of_forall fun _ => Set.mem_univ _)
 #align measure_theory.ae_eq_zero_of_forall_dual MeasureTheory.ae_eq_zero_of_forall_dual
 

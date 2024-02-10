@@ -1,7 +1,6 @@
 /-
 Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Dilations of emetric and metric spaces
 Authors: Hanting Zhang
 -/
 import Mathlib.Topology.MetricSpace.Antilipschitz
@@ -22,7 +21,7 @@ injective. The value `r = ∞` is not allowed because this way we can define `Di
 not `Dilation.ratio f : ℝ≥0∞`. Also, we do not often need maps sending distinct points to points at
 infinite distance.
 
-## Main defintions
+## Main definitions
 
 * `Dilation.ratio f : ℝ≥0`: the value of `r` in the relation above, defaulting to 1 in the case
   where it is not well-defined.
@@ -34,7 +33,7 @@ infinite distance.
 ## Implementation notes
 
 The type of dilations defined in this file are also referred to as "similarities" or "similitudes"
-by other authors. The name `Dilation` was choosen to match the Wikipedia name.
+by other authors. The name `Dilation` was chosen to match the Wikipedia name.
 
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
 theory for `PseudoEMetricSpace` and we specialize to `PseudoMetricSpace` and `MetricSpace` when
@@ -184,7 +183,7 @@ theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
 theorem nndist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
     [DilationClass F α β] (f : F) (x y : α) :
     nndist (f x) (f y) = ratio f * nndist x y := by
-  simp only [← ENNReal.coe_eq_coe, ← edist_nndist, ENNReal.coe_mul, edist_eq]
+  simp only [← ENNReal.coe_inj, ← edist_nndist, ENNReal.coe_mul, edist_eq]
 #align dilation.nndist_eq Dilation.nndist_eq
 
 @[simp]
@@ -198,7 +197,7 @@ theorem dist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] 
 `dist` and `nndist` versions below -/
 theorem ratio_unique [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (h₀ : edist x y ≠ 0)
     (htop : edist x y ≠ ⊤) (hr : edist (f x) (f y) = r * edist x y) : r = ratio f := by
-  simpa only [hr, ENNReal.mul_eq_mul_right h₀ htop, ENNReal.coe_eq_coe] using edist_eq f x y
+  simpa only [hr, ENNReal.mul_eq_mul_right h₀ htop, ENNReal.coe_inj] using edist_eq f x y
 #align dilation.ratio_unique Dilation.ratio_unique
 
 /-- The `ratio` is equal to the distance ratio for any two points
@@ -357,7 +356,7 @@ theorem ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}
   have hgf := (edist_eq (g.comp f) x y).symm
   simp_rw [coe_comp, Function.comp, edist_eq, ← mul_assoc, ENNReal.mul_eq_mul_right hα.1 hα.2]
     at hgf
-  rwa [← ENNReal.coe_eq_coe, ENNReal.coe_mul]
+  rwa [← ENNReal.coe_inj, ENNReal.coe_mul]
 #align dilation.comp_ratio Dilation.ratio_comp'
 
 @[simp]
