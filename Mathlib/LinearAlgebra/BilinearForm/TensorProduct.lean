@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.LinearAlgebra.TensorProduct.LinearMap
 
 #align_import linear_algebra.bilinear_form.tensor_product from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
@@ -44,13 +45,8 @@ variable (R A) in
 Note this is heterobasic; the bilinear form on the left can take values in an (commutative) algebra
 over the ring in which the right bilinear form is valued. -/
 def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
-  ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).dualMap
-    ≪≫ₗ (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm
-    ≪≫ₗ LinearMap.toBilin).toLinearMap
-  ∘ₗ TensorProduct.AlgebraTensorModule.dualDistrib R _ _ _
-  ∘ₗ (TensorProduct.AlgebraTensorModule.congr
-    (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv A _ _ _)
-    (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv R _ _ _)).toLinearMap
+  LinearMap.toBilin.toLinearMap ∘ₗ (LinearMap.tensorDistrib R A ∘ₗ
+    (TensorProduct.AlgebraTensorModule.congr toLin toLin ).toLinearMap)
 #align bilin_form.tensor_distrib BilinForm.tensorDistrib
 
 -- TODO: make the RHS `MulOpposite.op (B₂ m₂ m₂') • B₁ m₁ m₁'` so that this has a nicer defeq for
