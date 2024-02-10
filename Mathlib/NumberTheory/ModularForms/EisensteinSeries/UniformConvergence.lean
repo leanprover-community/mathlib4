@@ -125,7 +125,7 @@ lemma ne_zero_if_max (x : Fin 2 → ℤ) (hx : x ≠ 0)
   simp only [Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_self, not_true_eq_false] at hx
 
 lemma ne_zero_if_max' (x : Fin 2 → ℤ) (hx : x ≠ 0)
-   (h : (max (x 0).natAbs (x 1).natAbs) = (x 1).natAbs) : (x 1) ≠ 0 := by
+    (h : (max (x 0).natAbs (x 1).natAbs) = (x 1).natAbs) : (x 1) ≠ 0 := by
   apply ne_zero_if_max ![x 1, x 0] ?_ (by simpa using h)
   simp only [ne_eq, Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_true, not_and]
   intro h1 h0
@@ -140,7 +140,7 @@ lemma sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) : (1 : ℝ) ≤ (x 0 / (max (
   left
   rw [H1]
   have : (x 0 : ℝ) ≠ 0 := by
-    have t :=  ne_zero_if_max x hx H1
+    have t := ne_zero_if_max x hx H1
     simpa using t
   have h1 := one_le_sq_div_abs_sq (x 0 : ℝ) this
   simp only [ne_eq, max_eq_left_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
@@ -150,7 +150,7 @@ lemma sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) : (1 : ℝ) ≤ (x 0 / (max (
   right
   rw [H2]
   have : (x 1 : ℝ) ≠ 0 := by
-    have t :=  ne_zero_if_max' x hx H2
+    have t := ne_zero_if_max' x hx H2
     simpa using t
   have h1 := one_le_sq_div_abs_sq (x 1 : ℝ) this
   simp only [ne_eq, max_eq_right_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
@@ -176,11 +176,11 @@ lemma bound (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
     simp
     congr
     simp
-  have h11 :  ((x 0) * ↑z + (x 1)) ^ (k : ℤ) =
+  have h11 : ((x 0) * ↑z + (x 1)) ^ (k : ℤ) =
     (((x 0 : ℝ) / (n : ℝ) ) * (z : ℂ) + (x 1 : ℝ) /(n : ℝ)) ^ (k : ℤ) * ((n : ℝ)^ (k : ℤ)) := by
     simp only [Nat.cast_max] at h1
     field_simp
-  have h2 : (1 : ℝ) ≤ ((x 0)/n)^2  ∨ (1 : ℝ) ≤  (x 1/ n)^2 :=  sq_ge_one x hx
+  have h2 : (1 : ℝ) ≤ ((x 0)/n)^2 ∨ (1 : ℝ) ≤ (x 1/ n)^2 := sq_ge_one x hx
   cases' h2 with H1 H2
   norm_cast at *
   rw [h11]
