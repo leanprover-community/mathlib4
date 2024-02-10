@@ -3,6 +3,7 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.Analysis.Normed.Field.Basic
 
@@ -576,7 +577,7 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
   toFun := Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
   nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
-  eq_zero' q := Quotient.inductionOn q <| fun r ↦ by
+  eq_zero' q := Quotient.inductionOn q fun r ↦ by
     rw [Padic.zero_def, Quotient.eq]
     exact PadicSeq.norm_zero_iff r
   add_le' q r := by
@@ -601,7 +602,7 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (Padic.mk f - f i : ℚ_[p]) < ε := by
   dsimp [padicNormE]
   change ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε
-  by_contra' h
+  by_contra! h
   cases' cauchy₂ f hε with N hN
   rcases h N with ⟨i, hi, hge⟩
   have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by
@@ -655,7 +656,7 @@ variable {p : ℕ} [Fact p.Prime] (f : CauSeq _ (@padicNormE p _))
 
 theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicNormE (q - r : ℚ_[p]) < ε :=
   Quotient.inductionOn q fun q' ↦
-    have : ∃ N, ∀ (m) (_ : m ≥ N) (n) (_ : n ≥ N), padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
+    have : ∃ N, ∀ m ≥ N, ∀ n ≥ N, padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
     let ⟨N, hN⟩ := this
     ⟨q' N, by
       dsimp [padicNormE]
@@ -710,7 +711,7 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
     exact mod_cast this
   · apply lt_of_le_of_lt
     · apply padicNormE.add_le
-    · rw [←add_thirds ε]
+    · rw [← add_thirds ε]
       apply _root_.add_lt_add
       · suffices padicNormE (limSeq f j - f j + (f j - f (max N N2)) : ℚ_[p]) < ε / 3 + ε / 3 by
           simpa only [sub_add_sub_cancel]
@@ -992,7 +993,7 @@ theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf :
   -- Porting note: `Setoid.symm` cannot work out which `Setoid` to use, so instead swap the order
   -- now, I use a rewrite to swap it later
   obtain ⟨N, hN⟩ := (CauSeq.equiv_lim f) _ ha
-  rw [←sub_add_cancel f.lim (f N)]
+  rw [← sub_add_cancel f.lim (f N)]
   refine le_trans (padicNormE.nonarchimedean _ _) ?_
   rw [norm_sub_rev]
   exact max_le (le_of_lt (hN _ le_rfl)) (hf _)

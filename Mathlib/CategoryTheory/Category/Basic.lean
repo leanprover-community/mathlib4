@@ -22,9 +22,9 @@ Introduces notations in the `CategoryTheory` scope
 * `𝟙 X` for the identity morphism on `X` (type as `\b1`),
 * `f ≫ g` for composition in the 'arrows' convention (type as `\gg`).
 
-Users may like to add `f ⊚ g` for composition in the standard convention, using
+Users may like to add `g ⊚ f` for composition in the standard convention, using
 ```lean
-local notation f ` ⊚ `:80 g:80 := category.comp g f    -- type as \oo
+local notation g ` ⊚ `:80 f:80 := category.comp f g    -- type as \oo
 ```
 
 ## Porting note
@@ -116,8 +116,8 @@ use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop $c* (options := { introsTransparency? := some .default, terminal := true })
-            (simp_options := { decide := true })
+  aesop $c* (config := { introsTransparency? := some .default, terminal := true })
+            (simp_config := { decide := true })
   (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 
 /--
@@ -125,7 +125,7 @@ We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop
 -/
 macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop? $c* (options := { introsTransparency? := some .default, terminal := true })
+  aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
   (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
 A variant of `aesop_cat` which does not fail when it is unable to solve the
@@ -134,7 +134,7 @@ nonterminal `simp`.
 -/
 macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
-    aesop $c* (options := { introsTransparency? := some .default, warnOnNonterminal := false })
+    aesop $c* (config := { introsTransparency? := some .default, warnOnNonterminal := false })
     (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 
 

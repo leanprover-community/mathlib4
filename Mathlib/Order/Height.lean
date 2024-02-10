@@ -92,7 +92,7 @@ theorem chainHeight_eq_iSup_subtype : s.chainHeight = ⨆ l : s.subchain, ↑l.1
 
 theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
     ∃ l ∈ s.subchain, length l = n := by
-  cases' (le_top : s.chainHeight ≤ ⊤).eq_or_lt with ha ha <;>
+  rcases (le_top : s.chainHeight ≤ ⊤).eq_or_lt with ha | ha <;>
     rw [chainHeight_eq_iSup_subtype] at ha
   · obtain ⟨_, ⟨⟨l, h₁, h₂⟩, rfl⟩, h₃⟩ :=
       not_bddAbove_iff'.mp (WithTop.iSup_coe_eq_top.1 ha) n

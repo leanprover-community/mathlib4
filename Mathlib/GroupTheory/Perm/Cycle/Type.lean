@@ -293,7 +293,7 @@ theorem mem_cycleType_iff {n : ℕ} {σ : Perm α} :
     obtain ⟨l, rfl, hlc, hld⟩ := truncCycleFactors σ
     rw [cycleType_eq _ rfl hlc hld, Multiset.mem_coe, List.mem_map] at h
     obtain ⟨c, cl, rfl⟩ := h
-    rw [(List.perm_cons_erase cl).pairwise_iff Disjoint.symmetric] at hld
+    rw [(List.perm_cons_erase cl).pairwise_iff @(Disjoint.symmetric)] at hld
     refine' ⟨c, (l.erase c).prod, _, _, hlc _ cl, rfl⟩
     · rw [← List.prod_cons, (List.perm_cons_erase cl).symm.prod_eq' (hld.imp Disjoint.commute)]
     · exact disjoint_prod_right _ fun g => List.rel_of_pairwise_cons hld
@@ -340,7 +340,7 @@ theorem card_fixedPoints_modEq [DecidableEq α] {f : Function.End α} {p n : ℕ
     leftInverse_iff_comp.mpr ((pow_sub_mul_pow f (Nat.one_le_pow n p hp.out.pos)).trans hf),
     leftInverse_iff_comp.mpr ((pow_mul_pow_sub f (Nat.one_le_pow n p hp.out.pos)).trans hf)⟩
   have hσ : σ ^ p ^ n = 1
-  · rw [FunLike.ext'_iff, coe_pow]
+  · rw [DFunLike.ext'_iff, coe_pow]
     exact (hom_coe_pow (fun g : Function.End α ↦ g) rfl (fun g h ↦ rfl) f (p ^ n)).symm.trans hf
   suffices : Fintype.card f.fixedPoints = (support σ)ᶜ.card
   · exact this ▸ (card_compl_support_modEq hσ).symm

@@ -102,7 +102,7 @@ theorem IsSatisfiable.isFinitelySatisfiable (h : T.IsSatisfiable) : T.IsFinitely
   fun _ => h.mono
 #align first_order.language.Theory.is_satisfiable.is_finitely_satisfiable FirstOrder.Language.Theory.IsSatisfiable.isFinitelySatisfiable
 
-/-- The Compactness Theorem of first-order logic: A theory is satisfiable if and only if it is
+/-- The **Compactness Theorem of first-order logic**: A theory is satisfiable if and only if it is
 finitely satisfiable. -/
 theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
     T.IsSatisfiable ↔ T.IsFinitelySatisfiable :=
@@ -260,11 +260,11 @@ direction between then `M` and a structure of cardinality `κ`. -/
 theorem exists_elementaryEmbedding_card_eq (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ) :
     ∃ N : Bundled L.Structure, (Nonempty (N ↪ₑ[L] M) ∨ Nonempty (M ↪ₑ[L] N)) ∧ #N = κ := by
-  cases le_or_gt (lift.{w'} κ) (Cardinal.lift.{w} #M)
-  case inl h =>
+  cases le_or_gt (lift.{w'} κ) (Cardinal.lift.{w} #M) with
+  | inl h =>
     obtain ⟨N, hN1, hN2⟩ := exists_elementaryEmbedding_card_eq_of_le L M κ h1 h2 h
     exact ⟨N, Or.inl hN1, hN2⟩
-  case inr h =>
+  | inr h =>
     obtain ⟨N, hN1, hN2⟩ := exists_elementaryEmbedding_card_eq_of_ge L M κ h2 (le_of_lt h)
     exact ⟨N, Or.inr hN1, hN2⟩
 #align first_order.language.exists_elementary_embedding_card_eq FirstOrder.Language.exists_elementaryEmbedding_card_eq
@@ -683,8 +683,7 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
   ⟨hS, fun φ => by
     obtain ⟨_, _⟩ := Theory.exists_model_card_eq ⟨hS.some, hT hS.some⟩ κ h1 h2
     rw [Theory.models_sentence_iff, Theory.models_sentence_iff]
-    by_contra con
-    push_neg at con
+    by_contra! con
     obtain ⟨⟨MF, hMF⟩, MT, hMT⟩ := con
     rw [Sentence.realize_not, Classical.not_not] at hMT
     refine' hMF _

@@ -213,13 +213,14 @@ theorem index_of_argmax :
       simp_all
     rw [h] at hm
     dsimp only at hm
+    simp only [cond_eq_if, beq_iff_eq]
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_lt ‹_› ‹_›
     · rw [if_pos rfl]
     · rw [if_neg, if_neg]
       exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
-      · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne'
-      · exact ne_of_apply_ne _ ‹f hd < f _›.ne'
+      · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne
+      · exact ne_of_apply_ne _ ‹f hd < f _›.ne
     · rw [if_pos rfl]
       exact Nat.zero_le _
 #align list.index_of_argmax List.index_of_argmax
@@ -345,7 +346,7 @@ variable [LinearOrder α] {l : List α} {a m : α}
 
 theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximum l) a := by
   simp only [maximum, argmax_concat, id]
-  cases h : argmax id l
+  cases argmax id l
   · exact (max_eq_right bot_le).symm
   · simp [WithBot.some_eq_coe, max_def_lt, WithBot.coe_lt_coe]
 #align list.maximum_concat List.maximum_concat

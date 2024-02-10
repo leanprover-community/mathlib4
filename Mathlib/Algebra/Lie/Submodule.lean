@@ -128,7 +128,6 @@ theorem coe_toSet_mk (S : Set M) (h₁ h₂ h₃ h₄) :
   rfl
 #align lie_submodule.coe_to_set_mk LieSubmodule.coe_toSet_mk
 
-@[simp]
 theorem coe_toSubmodule_mk (p : Submodule R M) (h) :
     (({ p with lie_mem := h } : LieSubmodule R L M) : Submodule R M) = p := by cases p; rfl
 #align lie_submodule.coe_to_submodule_mk LieSubmodule.coe_toSubmodule_mk
@@ -186,7 +185,7 @@ instance {S : Type*} [Semiring S] [SMul S R] [SMul Sᵐᵒᵖ R] [Module S M] [M
     [IsScalarTower S R M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S N :=
   N.toSubmodule.isCentralScalar
 
-instance : LieModule R L N where
+instance instLieModule : LieModule R L N where
   lie_smul := by intro t x y; apply SetCoe.ext; apply lie_smul
   smul_lie := by intro t x y; apply SetCoe.ext; apply smul_lie
 
@@ -367,13 +366,13 @@ theorem bot_coe : ((⊥ : LieSubmodule R L M) : Set M) = {0} :=
 #align lie_submodule.bot_coe LieSubmodule.bot_coe
 
 @[simp]
-theorem coeSubmodule_eq_bot_iff : (N : Submodule R M) = ⊥ ↔ N = ⊥ := by
-  rw [← coe_toSubmodule_eq_iff]; rfl
-
-@[simp]
 theorem bot_coeSubmodule : ((⊥ : LieSubmodule R L M) : Submodule R M) = ⊥ :=
   rfl
 #align lie_submodule.bot_coe_submodule LieSubmodule.bot_coeSubmodule
+
+@[simp]
+theorem coeSubmodule_eq_bot_iff : (N : Submodule R M) = ⊥ ↔ N = ⊥ := by
+  rw [← coe_toSubmodule_eq_iff, bot_coeSubmodule]
 
 @[simp]
 theorem mem_bot (x : M) : x ∈ (⊥ : LieSubmodule R L M) ↔ x = 0 :=
@@ -389,13 +388,13 @@ theorem top_coe : ((⊤ : LieSubmodule R L M) : Set M) = univ :=
 #align lie_submodule.top_coe LieSubmodule.top_coe
 
 @[simp]
-theorem coeSubmodule_eq_top_iff : (N : Submodule R M) = ⊤ ↔ N = ⊤ := by
-  rw [← coe_toSubmodule_eq_iff]; rfl
-
-@[simp]
 theorem top_coeSubmodule : ((⊤ : LieSubmodule R L M) : Submodule R M) = ⊤ :=
   rfl
 #align lie_submodule.top_coe_submodule LieSubmodule.top_coeSubmodule
+
+@[simp]
+theorem coeSubmodule_eq_top_iff : (N : Submodule R M) = ⊤ ↔ N = ⊤ := by
+  rw [← coe_toSubmodule_eq_iff, top_coeSubmodule]
 
 @[simp]
 theorem mem_top (x : M) : x ∈ (⊤ : LieSubmodule R L M) :=
@@ -945,6 +944,8 @@ variable (N) in
 noncomputable def equivMapOfInjective (hf : Function.Injective f) :
     N ≃ₗ⁅R,L⁆ N.map f :=
   { Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N with
+    -- Note: #8386 had to specify `invFun` explicitly this way, otherwise we'd get a type mismatch
+    invFun := by exact DFunLike.coe (Submodule.equivMapOfInjective (f : M →ₗ[R] M') hf N).symm
     map_lie' := by rintro x ⟨m, hm : m ∈ N⟩; ext; exact f.map_lie x m }
 
 /-- An equivalence of Lie modules yields an order-preserving equivalence of their lattices of Lie

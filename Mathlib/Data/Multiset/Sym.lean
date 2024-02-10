@@ -48,7 +48,7 @@ theorem sym2_eq_zero_iff {m : Multiset α} : m.sym2 = 0 ↔ m = 0 :=
   m.inductionOn fun xs => by simp
 
 theorem mk_mem_sym2_iff {m : Multiset α} {a b : α} :
-    ⟦(a, b)⟧ ∈ m.sym2 ↔ a ∈ m ∧ b ∈ m :=
+    s(a, b) ∈ m.sym2 ↔ a ∈ m ∧ b ∈ m :=
   m.inductionOn fun xs => by simp [List.mk_mem_sym2_iff]
 
 theorem mem_sym2_iff {m : Multiset α} {z : Sym2 α} :
@@ -58,6 +58,7 @@ theorem mem_sym2_iff {m : Multiset α} {z : Sym2 α} :
 protected theorem Nodup.sym2 {m : Multiset α} (h : m.Nodup) : m.sym2.Nodup :=
   m.inductionOn (fun _ h => List.Nodup.sym2 h) h
 
+open scoped List in
 @[simp, mono]
 theorem sym2_mono {m m' : Multiset α} (h : m ≤ m') : m.sym2 ≤ m'.sym2 := by
   refine Quotient.inductionOn₂ m m' (fun xs ys h => ?_) h

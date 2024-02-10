@@ -142,7 +142,7 @@ lemma memberSubfamily_image_insert (h𝒜 : ∀ s ∈ 𝒜, a ∉ s) :
   simp only [mem_memberSubfamily, mem_image]
   refine ⟨?_, fun hs ↦ ⟨⟨s, hs, rfl⟩, h𝒜 _ hs⟩⟩
   rintro ⟨⟨t, ht, hts⟩, hs⟩
-  rwa [←insert_erase_invOn.2.injOn (h𝒜 _ ht) hs hts]
+  rwa [← insert_erase_invOn.2.injOn (h𝒜 _ ht) hs hts]
 
 @[simp] lemma nonMemberSubfamily_image_insert : (𝒜.image <| insert a).nonMemberSubfamily a = ∅ := by
   simp [eq_empty_iff_forall_not_mem]
@@ -182,7 +182,7 @@ lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
   clear_value u
   induction' u using Finset.induction with a u _ ih generalizing 𝒜
   · simp_rw [subset_empty] at hu
-    rw [←subset_singleton_iff', subset_singleton_iff] at hu
+    rw [← subset_singleton_iff', subset_singleton_iff] at hu
     obtain rfl | rfl := hu <;> assumption
   refine subfamily a (ih _ ?_) (ih _ ?_)
   · simp only [mem_nonMemberSubfamily, and_imp]
@@ -211,7 +211,7 @@ protected lemma family_induction_on {p : Finset (Finset α) → Prop}
     (subfamily : ∀ (a : α) ⦃𝒜 : Finset (Finset α)⦄,
       p (𝒜.filter (a ∉ ·)) → p (𝒜.filter (a ∈ ·)) → p 𝒜) : p 𝒜 := by
   refine memberFamily_induction_on 𝒜 empty singleton_empty fun a 𝒜 h𝒜₀ h𝒜₁ ↦ subfamily a h𝒜₀ ?_
-  rw [←image_insert_memberSubfamily]
+  rw [← image_insert_memberSubfamily]
   exact image_insert _ (by simp) h𝒜₁
 
 end Finset
@@ -282,7 +282,7 @@ theorem compression_idem (a : α) (𝒜 : Finset (Finset α)) : 𝓓 a (𝓓 a �
 /-- Down-compressing a family doesn't change its size. -/
 @[simp]
 theorem card_compression (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).card = 𝒜.card := by
-  rw [compression, card_disjUnion, image_filter,
+  rw [compression, card_disjUnion, filter_image,
     card_image_of_injOn ((erase_injOn' _).mono fun s hs => _), ← card_disjoint_union]
   · conv_rhs => rw [← filter_union_filter_neg_eq (fun s => (erase s a ∈ 𝒜)) 𝒜]
   · exact disjoint_filter_filter_neg 𝒜 𝒜 (fun s => (erase s a ∈ 𝒜))

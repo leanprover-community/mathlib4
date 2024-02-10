@@ -103,7 +103,7 @@ lemma isSheafFor_of_factorsThru
     (h : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, T f → ∃ (R : Presieve Y),
       R.IsSeparatedFor P ∧ R.FactorsThruAlong S f):
     T.IsSheafFor P := by
-  simp only [←Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
+  simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
   choose W i e h1 h2 using H
   refine ⟨?_, fun x hx => ?_⟩
   · intro x y₁ y₂ h₁ h₂

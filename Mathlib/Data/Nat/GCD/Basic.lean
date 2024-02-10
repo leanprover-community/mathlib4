@@ -135,7 +135,7 @@ theorem lcm_mul_left {m n k : ℕ} : (m * n).lcm (m * k) = m * n.lcm k := by
   apply dvd_antisymm
   · exact lcm_dvd (mul_dvd_mul_left m (dvd_lcm_left n k)) (mul_dvd_mul_left m (dvd_lcm_right n k))
   · have h : m ∣ lcm (m * n) (m * k) := (dvd_mul_right m n).trans (dvd_lcm_left (m * n) (m * k))
-    rw [←dvd_div_iff h, lcm_dvd_iff, dvd_div_iff h, dvd_div_iff h, ←lcm_dvd_iff]
+    rw [← dvd_div_iff h, lcm_dvd_iff, dvd_div_iff h, dvd_div_iff h, ← lcm_dvd_iff]
 
 theorem lcm_mul_right {m n k : ℕ} : (m * n).lcm (k * n) = m.lcm k * n := by
  rw [mul_comm, mul_comm k n, lcm_mul_left, mul_comm]
@@ -283,12 +283,12 @@ See `exists_dvd_and_dvd_of_dvd_mul` for the more general but less constructive v
 `GCDMonoid`s. -/
 def prodDvdAndDvdOfDvdProd {m n k : ℕ} (H : k ∣ m * n) :
     { d : { m' // m' ∣ m } × { n' // n' ∣ n } // k = d.1 * d.2 } := by
-  cases h0 : gcd k m
-  case zero =>
+  cases h0 : gcd k m with
+  | zero =>
     obtain rfl : k = 0 := eq_zero_of_gcd_eq_zero_left h0
     obtain rfl : m = 0 := eq_zero_of_gcd_eq_zero_right h0
     exact ⟨⟨⟨0, dvd_refl 0⟩, ⟨n, dvd_refl n⟩⟩, (zero_mul n).symm⟩
-  case succ tmp =>
+  | succ tmp =>
     have hpos : 0 < gcd k m := h0.symm ▸ Nat.zero_lt_succ _; clear h0 tmp
     have hd : gcd k m * (k / gcd k m) = k := Nat.mul_div_cancel' (gcd_dvd_left k m)
     refine' ⟨⟨⟨gcd k m, gcd_dvd_right k m⟩, ⟨k / gcd k m, _⟩⟩, hd.symm⟩
@@ -308,7 +308,7 @@ theorem dvd_mul {x m n : ℕ} : x ∣ m * n ↔ ∃ y z, y ∣ m ∧ z ∣ n ∧
 
 theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : 0 < n) : a ^ n ∣ b ^ n ↔ a ∣ b := by
   refine' ⟨fun h => _, fun h => pow_dvd_pow_of_dvd h _⟩
-  cases' Nat.eq_zero_or_pos (gcd a b) with g0 g0
+  rcases Nat.eq_zero_or_pos (gcd a b) with g0 | g0
   · simp [eq_zero_of_gcd_eq_zero_right g0]
   rcases exists_coprime' g0 with ⟨g, a', b', g0', co, rfl, rfl⟩
   rw [mul_pow, mul_pow] at h

@@ -3,8 +3,9 @@ Copyright (c) 2023 Matthew Robert Ballard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Robert Ballard
 -/
-
-import Mathlib.Data.Nat.Pow
+import Mathlib.Algebra.Divisibility.Units
+import Mathlib.Algebra.Order.WithZero
+import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Tactic.Common
 
 /-!
@@ -95,7 +96,7 @@ theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
     rw [if_pos h]
     have ⟨c,hc⟩ := pow_dvd p (n / p)
     rw [go_succ, pow_succ]
-    nth_rw 2 [←mod_add_div' n p]
+    nth_rw 2 [← mod_add_div' n p]
     rw [h.right.right, zero_add]
     exact ⟨c,by nth_rw 1 [hc]; ac_rfl⟩
   · rw [if_neg h]

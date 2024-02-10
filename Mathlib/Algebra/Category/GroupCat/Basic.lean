@@ -65,8 +65,8 @@ instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (X →* Y) X (fun _ => Y) from inferInstance
+instance FunLike_instance (X Y : GroupCat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (X →* Y) X Y from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -214,8 +214,8 @@ instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
 
 @[to_additive]
-instance FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
-  show FunLike (X →* Y) X (fun _ => Y) from inferInstance
+instance FunLike_instance (X Y : CommGroupCat) : FunLike (X ⟶ Y) X Y :=
+  show FunLike (X →* Y) X Y from inferInstance
 
 -- porting note: added
 @[to_additive (attr := simp)]
@@ -491,7 +491,7 @@ end CategoryTheory.Aut
 instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
+    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
     exact IsIso.of_iso e.toGroupCatIso
 set_option linter.uppercaseLean3 false in
 #align Group.forget_reflects_isos GroupCat.forget_reflects_isos
@@ -502,7 +502,7 @@ set_option linter.uppercaseLean3 false in
 instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
+    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}
     exact IsIso.of_iso e.toCommGroupCatIso
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos

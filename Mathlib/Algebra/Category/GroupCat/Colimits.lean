@@ -111,13 +111,13 @@ def ColimitType : Type max u v w :=
 instance : AddCommGroup (ColimitType.{w} F) where
   zero := Quotient.mk _ zero
   neg := Quotient.map neg Relation.neg_1
-  add := Quotient.map₂ add <| fun x x' rx y y' ry =>
+  add := Quotient.map₂ add fun x x' rx y y' ry =>
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
-  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
-  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
-  add_comm := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.add_comm _ _
-  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+  zero_add := Quotient.ind fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_comm := Quotient.ind₂ fun _ _ => Quotient.sound <| Relation.add_comm _ _
+  add_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
 
 instance ColimitTypeInhabited : Inhabited (ColimitType.{w} F) := ⟨0⟩
@@ -202,7 +202,7 @@ def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
     | symm _ _ _ r_ih => exact r_ih.symm
     | trans _ _ _ _ _ r_ih_h r_ih_k => exact Eq.trans r_ih_h r_ih_k
     | map j j' f x => simpa only [descFunLift, Functor.const_obj_obj] using
-      FunLike.congr_fun (s.ι.naturality f) x
+      DFunLike.congr_fun (s.ι.naturality f) x
     | zero => simp
     | neg => simp
     | add => simp
@@ -221,16 +221,16 @@ def descMorphism (s : Cocone F) : colimit.{w} F ⟶ s.pt where
   toFun := descFun F s
   map_zero' := rfl
   -- Porting note : in `mathlib3`, nothing needs to be done after `induction`
-  map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp; rw [←quot_add F]; rfl
+  map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp; rw [← quot_add F]; rfl
 #align AddCommGroup.colimits.desc_morphism AddCommGroupCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
   desc s := descMorphism F s
-  uniq s m w := FunLike.ext _ _ <| fun x => Quot.inductionOn x fun x => by
+  uniq s m w := DFunLike.ext _ _ fun x => Quot.inductionOn x fun x => by
     change (m : ColimitType F →+ s.pt) _ = (descMorphism F s : ColimitType F →+ s.pt) _
     induction x using Prequotient.recOn with
-    | of j x => exact FunLike.congr_fun (w j) x
+    | of j x => exact DFunLike.congr_fun (w j) x
     | zero =>
       dsimp only [quot_zero]
       rw [map_zero, map_zero]

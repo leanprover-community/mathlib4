@@ -169,7 +169,7 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
   · simpa [ha₁, ha₂] using _root_.div_eq_zero_iff.mp this.symm
   · -- Porting note: was
     -- linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
-    exact tsub_pos_of_lt hp.out.one_lt
+    exact Nat.sub_ne_zero_of_lt hp.out.one_lt
 #align witt_vector.recursion_base.solution_nonzero WittVector.RecursionBase.solution_nonzero
 
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
@@ -272,8 +272,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
 #align witt_vector.exists_frobenius_solution_fraction_ring_aux WittVector.exists_frobenius_solution_fractionRing_aux
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
-    ∃ (b : FractionRing (𝕎 k)) (_ : b ≠ 0) (m : ℤ),
-      φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
+    ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
   refine' Localization.induction_on a _
   rintro ⟨r, q, hq⟩ hrq

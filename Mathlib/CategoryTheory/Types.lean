@@ -5,9 +5,8 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Data.Set.Defs
 
 #align_import category_theory.types from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -131,6 +130,15 @@ lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
     {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
   s.property f
 
+variable (J)
+
+/-- The functor which sends a functor to types to its sections. -/
+@[simps]
+def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
+  obj F := F.sections
+  map {F G} φ x := ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
+    (congr_fun (φ.naturality f) (x.1 j)).symm.trans (by simp [x.2 f])⟩
+
 end Functor
 
 namespace FunctorToTypes
@@ -156,6 +164,11 @@ theorem naturality (f : X ⟶ Y) (x : F.obj X) : σ.app Y ((F.map f) x) = (G.map
 theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
   rfl
 #align category_theory.functor_to_types.comp CategoryTheory.FunctorToTypes.comp
+
+@[simp]
+theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
+    F.map (eqToHom q) (F.map (eqToHom p) x) = F.map (eqToHom <| p.trans q) x := by
+  aesop_cat
 
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
 
@@ -388,7 +401,7 @@ instance : SplitEpiCategory (Type u) where
 end CategoryTheory
 
 -- We prove `equivIsoIso` and then use that to sneakily construct `equivEquivIso`.
--- (In this order the proofs are handled by `obviously`.)
+-- (In this order the proofs are handled by `aesop_cat`.)
 /-- Equivalences (between types in the same universe) are the same as (isomorphic to) isomorphisms
 of types. -/
 @[simps]

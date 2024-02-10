@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.LinearMap.End
 
 #align_import algebra.module.equiv from "leanprover-community/mathlib"@"ea94d7cd54ad9ca6b7710032868abb7c6a104c9c"
 
@@ -93,8 +93,9 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearEquivClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
-  AddEquivClass F M M₂ where
+  (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+  [EquivLike F M M₂]
+  extends AddEquivClass F M M₂ : Prop where
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_equiv_class SemilinearEquivClass
@@ -105,7 +106,7 @@ class SemilinearEquivClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Se
 This is an abbreviation for `SemilinearEquivClass F (RingHom.id R) M M₂`.
 -/
 abbrev LinearEquivClass (F : Type*) (R M M₂ : outParam (Type*)) [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂] :=
+    [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
   SemilinearEquivClass F (RingHom.id R) M M₂
 #align linear_equiv_class LinearEquivClass
 
@@ -120,10 +121,8 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
-  { s with
-    coe := (s.coe : F → M → M₂)
-    coe_injective' := @FunLike.coe_injective F _ _ _ }
+  [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
+  { s with }
 
 end SemilinearEquivClass
 
@@ -171,11 +170,22 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛ
   toLinearMap_injective.eq_iff
 #align linear_equiv.to_linear_map_inj LinearEquiv.toLinearMap_inj
 
-instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
+instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   inv := LinearEquiv.invFun
-  coe_injective' _ _ h _ := toLinearMap_injective (FunLike.coe_injective h)
+  coe_injective' _ _ h _ := toLinearMap_injective (DFunLike.coe_injective h)
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
+
+/-- Helper instance for when inference gets stuck on following the normal chain
+`EquivLike → FunLike`.
+
+TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
+-/
+instance : FunLike (M ≃ₛₗ[σ] M₂) M M₂ where
+  coe := DFunLike.coe
+  coe_injective' := DFunLike.coe_injective
+
+instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
@@ -186,7 +196,7 @@ theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
 #align linear_equiv.coe_mk LinearEquiv.coe_mk
 
 theorem coe_injective : @Injective (M ≃ₛₗ[σ] M₂) (M → M₂) CoeFun.coe :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align linear_equiv.coe_injective LinearEquiv.coe_injective
 
 end
@@ -232,19 +242,19 @@ variable {e e'}
 
 @[ext]
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align linear_equiv.ext LinearEquiv.ext
 
 theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align linear_equiv.ext_iff LinearEquiv.ext_iff
 
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
-  FunLike.congr_arg e
+  DFunLike.congr_arg e
 #align linear_equiv.congr_arg LinearEquiv.congr_arg
 
 protected theorem congr_fun (h : e = e') (x : M) : e x = e' x :=
-  FunLike.congr_fun h x
+  DFunLike.congr_fun h x
 #align linear_equiv.congr_fun LinearEquiv.congr_fun
 
 end
@@ -342,11 +352,11 @@ def trans
 #align linear_equiv.trans LinearEquiv.trans
 
 /-- The notation `e₁ ≪≫ₗ e₂` denotes the composition of the linear equivalences `e₁` and `e₂`. -/
-infixl:80 " ≪≫ₗ " =>
+notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
   @LinearEquiv.trans _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     (RingHom.id _) (RingHom.id _) (RingHom.id _) RingHomCompTriple.ids RingHomCompTriple.ids
     RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids RingHomInvPair.ids
-    RingHomInvPair.ids
+    RingHomInvPair.ids e₁ e₂
 
 variable {e₁₂} {e₂₃}
 
@@ -519,9 +529,7 @@ theorem symm_symm (e : M ≃ₛₗ[σ] M₂) : e.symm.symm = e := by
 
 theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [RingHomInvPair σ σ'] :
     Function.Bijective (symm : (M ≃ₛₗ[σ] M₂) → M₂ ≃ₛₗ[σ'] M) :=
-  Equiv.bijective
-    ⟨(symm : (M ≃ₛₗ[σ] M₂) → M₂ ≃ₛₗ[σ'] M), (symm : (M₂ ≃ₛₗ[σ'] M) → M ≃ₛₗ[σ] M₂), symm_symm,
-      symm_symm⟩
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align linear_equiv.symm_bijective LinearEquiv.symm_bijective
 
 @[simp]
@@ -660,6 +668,21 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   one_mul f := ext fun x => rfl
   mul_left_inv f := ext <| f.left_inv
 #align linear_equiv.automorphism_group LinearEquiv.automorphismGroup
+
+@[simp]
+lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
+
+@[simp]
+lemma coe_toLinearMap_one : (↑(1 : M ≃ₗ[R] M) : M →ₗ[R] M) = LinearMap.id := rfl
+
+@[simp]
+lemma coe_toLinearMap_mul {e₁ e₂ : M ≃ₗ[R] M} :
+    (↑(e₁ * e₂) : M →ₗ[R] M) = (e₁ : M →ₗ[R] M) * (e₂ : M →ₗ[R] M) := by
+  rfl
+
+theorem coe_pow (e : M ≃ₗ[R] M) (n : ℕ) : ⇑(e ^ n) = e^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+
+theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m := congr_fun (coe_pow e n) m
 
 /-- Restriction from `R`-linear automorphisms of `M` to `R`-linear endomorphisms of `M`,
 promoted to a monoid hom. -/
@@ -824,7 +847,7 @@ theorem toNatLinearEquiv_toAddEquiv : ↑e.toNatLinearEquiv = e := by
 @[simp]
 theorem _root_.LinearEquiv.toAddEquiv_toNatLinearEquiv (e : M ≃ₗ[ℕ] M₂) :
     AddEquiv.toNatLinearEquiv ↑e = e :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align linear_equiv.to_add_equiv_to_nat_linear_equiv LinearEquiv.toAddEquiv_toNatLinearEquiv
 
 @[simp]
@@ -871,7 +894,7 @@ theorem toIntLinearEquiv_toAddEquiv : ↑e.toIntLinearEquiv = e := by
 @[simp]
 theorem _root_.LinearEquiv.toAddEquiv_toIntLinearEquiv (e : M ≃ₗ[ℤ] M₂) :
     AddEquiv.toIntLinearEquiv (e : M ≃+ M₂) = e :=
-  FunLike.coe_injective rfl
+  DFunLike.coe_injective rfl
 #align linear_equiv.to_add_equiv_to_int_linear_equiv LinearEquiv.toAddEquiv_toIntLinearEquiv
 
 @[simp]

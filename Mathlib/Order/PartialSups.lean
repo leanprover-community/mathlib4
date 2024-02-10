@@ -5,7 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
+import Mathlib.Data.Set.Finite
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import order.partial_sups from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -121,6 +122,10 @@ theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
     partialSups f n = (Finset.range (n + 1)).sup' ⟨n, Finset.self_mem_range_succ n⟩ f :=
   eq_of_forall_ge_iff fun _ ↦ by simp [Nat.lt_succ_iff]
 #align partial_sups_eq_sup'_range partialSups_eq_sup'_range
+
+lemma partialSups_apply {ι : Type*} {π : ι → Type*} [(i : ι) → SemilatticeSup (π i)]
+    (f : ℕ → (i : ι) → π i) (n : ℕ) (i : ι) : partialSups f n i = partialSups (f · i) n := by
+  simp only [partialSups_eq_sup'_range, Finset.sup'_apply]
 
 end SemilatticeSup
 

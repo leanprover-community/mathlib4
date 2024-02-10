@@ -74,7 +74,7 @@ element, then `b` is `M`-regular. -/
 theorem of_smul (a : R) (ab : IsSMulRegular M (a • s)) : IsSMulRegular M s :=
   @Function.Injective.of_comp _ _ _ (fun m : M => a • m) _ fun c d cd => by
   dsimp only [Function.comp_def] at cd
-  rw [←smul_assoc, ←smul_assoc] at cd
+  rw [← smul_assoc, ← smul_assoc] at cd
   exact ab cd
 #align is_smul_regular.of_smul IsSMulRegular.of_smul
 

@@ -79,7 +79,8 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
             (b i).repr.symm (g.comapDomain _ (Set.injOn_of_injective sigma_mk_injective _))
           support := g.support.image Sigma.fst
           mem_support_toFun := fun i => by
-            rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply, FunLike.ext_iff]
+            rw [Ne.def, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply,
+                DFunLike.ext_iff]
             simp only [exists_prop, LinearEquiv.map_zero, comapDomain_apply, zero_apply,
               exists_and_right, mem_support_iff, exists_eq_right, Sigma.exists, Finset.mem_image,
               not_forall] }
@@ -179,12 +180,6 @@ theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
     rwa [mem_singleton_iff] at hx
   simp [hx']
 #align finset.sum_single_ite Finset.sum_single_ite
-
--- Porting note: LHS of equivFun_symm_stdBasis simplifies to this
-@[simp]
-theorem _root_.Finset.sum_univ_ite (b : n → M) (i : n) :
-    (Finset.sum Finset.univ fun (x : n) => (if i = x then (1:R) else 0) • b x) = b i := by
-  simp only [ite_smul, zero_smul, one_smul, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
 
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by

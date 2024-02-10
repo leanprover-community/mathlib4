@@ -80,16 +80,16 @@ theorem equiv_lpPiLp_norm (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖f‖ := by
 #align equiv_lp_pi_Lp_norm equiv_lpPiLp_norm
 
 /-- The canonical `AddEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u` with
-`[Fintype α]` and `[Fact (1 ≤ p)]`. -/
-def AddEquiv.lpPiLp [Fact (1 ≤ p)] : lp E p ≃+ PiLp p E :=
+`[Fintype α]`. -/
+def AddEquiv.lpPiLp : lp E p ≃+ PiLp p E :=
   { Equiv.lpPiLp with map_add' := fun _f _g => rfl }
 #align add_equiv.lp_pi_Lp AddEquiv.lpPiLp
 
-theorem coe_addEquiv_lpPiLp [Fact (1 ≤ p)] (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
+theorem coe_addEquiv_lpPiLp  (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
   rfl
 #align coe_add_equiv_lp_pi_Lp coe_addEquiv_lpPiLp
 
-theorem coe_addEquiv_lpPiLp_symm [Fact (1 ≤ p)] (f : PiLp p E) :
+theorem coe_addEquiv_lpPiLp_symm (f : PiLp p E) :
     (AddEquiv.lpPiLp.symm f : ∀ i, E i) = f :=
   rfl
 #align coe_add_equiv_lp_pi_Lp_symm coe_addEquiv_lpPiLp_symm
@@ -141,7 +141,7 @@ variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
 
 section NormedAddCommGroup
 
-/-- The canonical map between `lp (λ (_ : α), E) ∞` and `α →ᵇ E` as an `AddEquiv`. -/
+/-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as an `AddEquiv`. -/
 noncomputable def AddEquiv.lpBcf : lp (fun _ : α => E) ∞ ≃+ (α →ᵇ E) where
   toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.prop)
   invFun f := ⟨⇑f, f.bddAbove_range_norm_comp⟩
@@ -164,7 +164,7 @@ variable (E)
 annotating with `(E := E)` everywhere, so we just make it explicit. This file has no
 dependencies. -/
 
-/-- The canonical map between `lp (λ (_ : α), E) ∞` and `α →ᵇ E` as a `LinearIsometryEquiv`. -/
+/-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as a `LinearIsometryEquiv`. -/
 noncomputable def lpBcfₗᵢ : lp (fun _ : α => E) ∞ ≃ₗᵢ[𝕜] α →ᵇ E :=
   { AddEquiv.lpBcf with
     map_smul' := fun k f => rfl
@@ -186,7 +186,7 @@ end NormedAddCommGroup
 
 section RingAlgebra
 
-/-- The canonical map between `lp (λ (_ : α), R) ∞` and `α →ᵇ R` as a `RingEquiv`. -/
+/-- The canonical map between `lp (fun _ : α ↦ R) ∞` and `α →ᵇ R` as a `RingEquiv`. -/
 noncomputable def RingEquiv.lpBcf : lp (fun _ : α => R) ∞ ≃+* (α →ᵇ R) :=
   { @AddEquiv.lpBcf _ R _ _ _ with
     map_mul' := fun _f _g => BoundedContinuousFunction.ext fun _x => rfl }
@@ -207,7 +207,7 @@ variable (α)
 -- even `α` needs to be explicit here for elaboration
 -- the `NormOneClass A` shouldn't really be necessary, but currently it is for
 -- `one_memℓp_infty` to get the `Ring` instance on `lp`.
-/-- The canonical map between `lp (λ (_ : α), A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
+/-- The canonical map between `lp (fun _ : α ↦ A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBcf : lp (fun _ : α => A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
   { RingEquiv.lpBcf A with commutes' := fun _k => rfl }
 #align alg_equiv.lp_bcf AlgEquiv.lpBcf

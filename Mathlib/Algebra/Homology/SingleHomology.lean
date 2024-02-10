@@ -238,3 +238,27 @@ noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
 #align cochain_complex.homology_functor_succ_single₀ CochainComplex.homology'FunctorSuccSingle₀
 
 end CochainComplex
+
+namespace ChainComplex
+
+open HomologicalComplex
+
+variable {C}
+
+lemma exactAt_succ_single_obj (A : C) (n : ℕ) :
+    ExactAt ((single₀ C).obj A) (n + 1) :=
+  exactAt_single_obj _ _ _ _ (by simp)
+
+end ChainComplex
+
+namespace CochainComplex
+
+open HomologicalComplex
+
+variable {C}
+
+lemma exactAt_succ_single_obj (A : C) (n : ℕ) :
+    ExactAt ((single₀ C).obj A) (n + 1) :=
+  exactAt_single_obj _ _ _ _ (by simp)
+
+end CochainComplex
