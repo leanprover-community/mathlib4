@@ -83,7 +83,7 @@ theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
 
 @[gcongr] alias ⟨_, GCongr.zpow_lt_of_lt⟩ := zpow_lt_iff_lt
 
-@[deprecated] -- Since 2024/02/10
+@[deprecated] -- Since 2024-02-10
 alias zpow_lt_of_lt := GCongr.zpow_lt_of_lt
 
 @[simp]
