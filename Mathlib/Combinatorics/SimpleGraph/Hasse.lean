@@ -123,7 +123,7 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covBy_iff, Nat.covBy_iff_succ_eq]
 
-/-- Hommorphism from smaller path graph to bigger path graph· -/
+/-- Homomorphism that includes a path graph as a prefix of another path graph. -/
 @[simps]
 protected def Hom.pathGraph {n m : ℕ} (hnm : n ≤ m) : pathGraph n →g pathGraph m where
   toFun v := ⟨v.val, trans v.is_lt hnm⟩
