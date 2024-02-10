@@ -577,10 +577,15 @@ instance innerRegular_map_smul {α} [BorelSpace G] [TopologicalGroup G] [Group �
     [InnerRegular μ] (a : α) : InnerRegular (Measure.map (a • · : G → G) μ) :=
   InnerRegular.map_of_continuous (continuous_const_smul a)
 
+/-- The image of an inner regular measure under left multiplication is again inner regular. -/
+@[to_additive "The image of an inner regular measure under left addition is again inner regular."]
+instance innerRegular_map_mul_left [BorelSpace G] [TopologicalGroup G] [InnerRegular μ] (g : G) :
+    InnerRegular (Measure.map (g * ·) μ) := InnerRegular.map_of_continuous (continuous_mul_left g)
+
 /-- The image of an inner regular measure under right multiplication is again inner regular. -/
 @[to_additive "The image of an inner regular measure under right addition is again inner regular."]
 instance innerRegular_map_mul_right [BorelSpace G] [TopologicalGroup G] [InnerRegular μ] (g : G) :
-    InnerRegular (Measure.map (· * g) μ) := innerRegular_map_smul (MulOpposite.op g)
+    InnerRegular (Measure.map (· * g) μ) := InnerRegular.map_of_continuous (continuous_mul_right g)
 
 variable [TopologicalGroup G]
 
