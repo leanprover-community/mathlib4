@@ -99,3 +99,21 @@ lemma Complex_abs_eq_of_mem_square (n : ℕ) (x : ℤ × ℤ) (h : x ∈ square 
 lemma Complex_abs_square_left_ne (n : ℕ) (x : ℤ × ℤ) (h : x ∈ square n)
     (hx : Complex.abs (x.1) ≠ n) : Complex.abs (x.2) = n :=
   Complex_abs_eq_of_mem_square n x h |>.resolve_left hx
+
+lemma square_ne_zero (n : ℕ) (x : Fin 2 → ℤ) (hx : ⟨x 0, x 1 ⟩ ∈ square n) : x ≠ 0 ↔ n ≠ 0 := by
+  constructor
+  intro h h0
+  rw [h0] at hx
+  simp at hx
+  have : x = ![x 0, x 1] := by exact List.ofFn_inj.mp rfl
+  rw [hx.1, hx.2] at this
+  rw [this] at h
+  simp at *
+  intro hn h
+  have hx0 : x 0 = 0 := by
+    simp [h]
+  have hx1 : x 1 = 0 := by
+    simp [h]
+  rw [hx0, hx1] at hx
+  simp at hx
+  exact hn (id hx.symm)
