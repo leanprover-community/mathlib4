@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Data.NNRat.Defs
-import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Rat.Field
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
