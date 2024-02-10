@@ -441,7 +441,7 @@ theorem getVert_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
   | nil => simp
   | cons h p ih => cases i <;> simp [getVert, ih, Nat.succ_lt_succ_iff]
 
-theorem reverse_getVert {u v : V} (p : G.Walk u v) (i : ℕ) :
+theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
     p.reverse.getVert i = p.getVert (p.length - i) := by
   induction p with
   | nil => rfl
