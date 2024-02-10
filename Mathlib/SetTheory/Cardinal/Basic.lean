@@ -1014,11 +1014,12 @@ protected theorem iSup_of_empty {ι} (f : ι → Cardinal) [IsEmpty ι] : iSup f
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
     (hω : ¬ Order.IsSuccLimit ω)
-    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω :=
-  (Classical.em <| BddAbove <| range f).elim
-    (fun hf ↦ IsLUB.exists_of_not_isSuccLimit (h ▸ isLUB_csSup' hf) hω) fun hf ↦ by
-      rw [iSup, csSup_of_not_bddAbove hf, csSup_empty] at h
-      exact (hω <| h ▸ Order.isSuccLimit_bot).elim
+    (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
+  subst h
+  refine (isLUB_csSup' ?_).exists_of_not_isSuccLimit hω
+  contrapose! hω with hf
+  rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
+  exact Order.isSuccLimit_bot
 
 lemma exists_eq_of_iSup_eq_of_not_isLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
@@ -1527,8 +1528,7 @@ theorem mk_le_aleph0 [Countable α] : #α ≤ ℵ₀ :=
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem le_aleph0_iff_set_countable {s : Set α} : #s ≤ ℵ₀ ↔ s.Countable := by
-  rw [mk_le_aleph0_iff, countable_coe_iff]
+theorem le_aleph0_iff_set_countable {s : Set α} : #s ≤ ℵ₀ ↔ s.Countable := mk_le_aleph0_iff
 #align cardinal.le_aleph_0_iff_set_countable Cardinal.le_aleph0_iff_set_countable
 
 alias ⟨_, _root_.Set.Countable.le_aleph0⟩ := le_aleph0_iff_set_countable

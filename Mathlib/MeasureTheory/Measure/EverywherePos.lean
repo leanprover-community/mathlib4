@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Group.Measure
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Everywhere positive sets in measure spaces
@@ -229,7 +230,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   choose W W_open mem_W hW using this
   let V n := ⋂ i ∈ Finset.range n, W i
   suffices ⋂ n, V n * k ⊆ k by
-    have : k = ⋂ n, V n * k := by
+    replace : k = ⋂ n, V n * k := by
       apply Subset.antisymm (subset_iInter_iff.2 (fun n ↦ ?_)) this
       exact subset_mul_right k (by simp [mem_W])
     rw [this]
@@ -251,8 +252,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
     le_antisymm (ge_of_tendsto u_lim (eventually_of_forall A)) bot_le
   have C : μ (k \ (z * x⁻¹) • k) = 0 := by
     have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
-    convert this using 2
-    rw [smul_set_sdiff, smul_smul]
+    rw [← this, smul_set_sdiff, smul_smul]
     group
     simp
   by_contra H

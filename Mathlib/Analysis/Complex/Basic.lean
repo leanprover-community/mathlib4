@@ -105,7 +105,7 @@ theorem dist_mk (x₁ y₁ x₂ y₂ : ℝ) :
 #align complex.dist_mk Complex.dist_mk
 
 theorem dist_of_re_eq {z w : ℂ} (h : z.re = w.re) : dist z w = dist z.im w.im := by
-  rw [dist_eq_re_im, h, sub_self, zero_pow two_pos, zero_add, Real.sqrt_sq_eq_abs, Real.dist_eq]
+  rw [dist_eq_re_im, h, sub_self, zero_pow two_ne_zero, zero_add, Real.sqrt_sq_eq_abs, Real.dist_eq]
 #align complex.dist_of_re_eq Complex.dist_of_re_eq
 
 theorem nndist_of_re_eq {z w : ℂ} (h : z.re = w.re) : nndist z w = nndist z.im w.im :=
@@ -117,7 +117,7 @@ theorem edist_of_re_eq {z w : ℂ} (h : z.re = w.re) : edist z w = edist z.im w.
 #align complex.edist_of_re_eq Complex.edist_of_re_eq
 
 theorem dist_of_im_eq {z w : ℂ} (h : z.im = w.im) : dist z w = dist z.re w.re := by
-  rw [dist_eq_re_im, h, sub_self, zero_pow two_pos, add_zero, Real.sqrt_sq_eq_abs, Real.dist_eq]
+  rw [dist_eq_re_im, h, sub_self, zero_pow two_ne_zero, add_zero, Real.sqrt_sq_eq_abs, Real.dist_eq]
 #align complex.dist_of_im_eq Complex.dist_of_im_eq
 
 theorem nndist_of_im_eq {z w : ℂ} (h : z.im = w.im) : nndist z w = nndist z.re w.re :=
@@ -491,6 +491,15 @@ theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
   rw [norm_eq_abs, abs_ofReal, _root_.abs_of_nonneg (id hz.1 : 0 ≤ z)]
 #align complex.eq_coe_norm_of_nonneg Complex.eq_coe_norm_of_nonneg
 
+/-- We show that the partial order and the topology on `ℂ` are compatible.
+We turn this into an instance scoped to `ComplexOrder`. -/
+lemma orderClosedTopology : OrderClosedTopology ℂ where
+  isClosed_le' := by
+    simp_rw [le_def, Set.setOf_and]
+    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
+
+scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
+
 end ComplexOrder
 
 end Complex
@@ -685,9 +694,9 @@ open scoped ComplexOrder
 /-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
 def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
-lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Iff.rfl
+lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
 
-lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := rfl
+lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := Set.setOf_or.symm
 
 lemma isOpen_slitPlane : IsOpen slitPlane :=
   (isOpen_lt continuous_const continuous_re).union (isOpen_ne_fun continuous_im continuous_const)

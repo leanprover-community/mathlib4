@@ -722,6 +722,10 @@ instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   commutes' := Rat.cast_commute
 #align algebra_rat algebraRat
 
+/-- The rational numbers are an algebra over the non-negative rationals. -/
+instance : Algebra NNRat ℚ :=
+  NNRat.coeHom.toAlgebra
+
 /-- The two `Algebra ℚ ℚ` instances should coincide. -/
 example : algebraRat = Algebra.id ℚ :=
   rfl
