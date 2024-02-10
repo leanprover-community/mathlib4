@@ -3,7 +3,7 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.OrderHom
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Set.Intervals.Basic
 
@@ -868,7 +868,8 @@ theorem insertNth_zero_right [∀ j, Zero (α j)] (i : Fin (n + 1)) (x : α i) :
 
 lemma insertNth_rev {α : Type*} (i : Fin (n + 1)) (a : α) (f : Fin n → α) (j : Fin (n + 1)) :
     insertNth (α := fun _ ↦ α) i a f (rev j) = insertNth (α := fun _ ↦ α) i.rev a (f ∘ rev) j := by
-  induction j using Fin.succAboveCases; exact rev i
+  induction j using Fin.succAboveCases
+  · exact rev i
   · simp
   · simp [rev_succAbove]
 

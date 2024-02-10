@@ -1,96 +1,28 @@
 /-
 Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Nick Kuhn
 -/
-
-import Mathlib.CategoryTheory.Sites.Canonical
-import Mathlib.CategoryTheory.Sites.Coverage
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
-import Mathlib.Data.Fintype.Sigma
+import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 /-!
 
-# The Coherent Grothendieck Topology
+# Description of the covering sieves of the coherent topology
 
-This file defines the coherent Grothendieck topology (and coverage) on a category `C`.
-The category `C` must satisfy a `Precoherent C` condition, which is essentially the minimal
-requirement for the coherent coverage to exist.
-Given such a category, the coherent coverage is `coherentCoverage C` and the corresponding
-Grothendieck topology is `coherentTopology C`.
+This file characterises the covering sieves of the coherent topology.
 
-In `isSheaf_coherent`, we characterize the sheaf condition for presheaves of types for the
-coherent Grothendieck topology in terms of finite effective epimorphic families.
+## Main result
 
-## References:
-- [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1, Example 2.1.12.
-- [nLab, *Coherent Coverage*](https://ncatlab.org/nlab/show/coherent+coverage)
+* `coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily`: a sieve is a covering sieve for the
+  coherent topology if and only if it contains a finite effective epimorphic family.
 
 -/
-
-set_option autoImplicit true
 
 namespace CategoryTheory
 
-open Limits
-
-variable (C : Type*) [Category C]
-
-/--
-The condition `Precoherent C` is essentially the minimal condition required to define the
-coherent coverage on `C`.
--/
-class Precoherent : Prop where
-  /--
-  Given an effective epi family `π₁` over `B₁` and a morphism `f : B₂ ⟶ B₁`, there exists
-  an effective epi family `π₂` over `B₂`, such that `π₂` factors through `π₁`.
-  -/
-  pullback {B₁ B₂ : C} (f : B₂ ⟶ B₁) :
-    ∀ (α : Type) [Fintype α] (X₁ : α → C) (π₁ : (a : α) → (X₁ a ⟶ B₁)),
-      EffectiveEpiFamily X₁ π₁ →
-    ∃ (β : Type) (_ : Fintype β) (X₂ : β → C) (π₂ : (b : β) → (X₂ b ⟶ B₂)),
-      EffectiveEpiFamily X₂ π₂ ∧
-      ∃ (i : β → α) (ι : (b :  β) → (X₂ b ⟶ X₁ (i b))),
-      ∀ (b : β), ι b ≫ π₁ _ = π₂ _ ≫ f
-
-/--
-The coherent coverage on a precoherent category `C`.
--/
-def coherentCoverage [Precoherent C] : Coverage C where
-  covering B := { S | ∃ (α : Type) (_ : Fintype α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
-    S = Presieve.ofArrows X π ∧ EffectiveEpiFamily X π }
-  pullback := by
-    rintro B₁ B₂ f S ⟨α, _, X₁, π₁, rfl, hS⟩
-    obtain ⟨β,_,X₂,π₂,h,i,ι,hh⟩ := Precoherent.pullback f α X₁ π₁ hS
-    refine ⟨Presieve.ofArrows X₂ π₂, ⟨β, inferInstance, X₂, π₂, rfl, h⟩, ?_⟩
-    rintro _ _ ⟨b⟩
-    exact ⟨(X₁ (i b)), ι _, π₁ _, ⟨_⟩, hh _⟩
-
-/--
-The coherent Grothendieck topology on a precoherent category `C`.
--/
-def coherentTopology [Precoherent C] : GrothendieckTopology C :=
-  Coverage.toGrothendieck _ <| coherentCoverage C
-
-lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
-    Presieve.IsSheaf (coherentTopology C) P ↔
-    (∀ (B : C) (α : Type) [Fintype α] (X : α → C) (π : (a : α) → (X a ⟶ B)),
-      EffectiveEpiFamily X π → (Presieve.ofArrows X π).IsSheafFor P) := by
-  constructor
-  · intro hP B α _ X π h
-    simp only [coherentTopology, Presieve.isSheaf_coverage] at hP
-    apply hP
-    refine ⟨α, inferInstance, X, π, rfl, h⟩
-  · intro h
-    simp only [coherentTopology, Presieve.isSheaf_coverage]
-    rintro B S ⟨α, _, X, π, rfl, hS⟩
-    exact h _ _ _ _ hS
-
+variable {C : Type*} [Category C] [Precoherent C] {X : C}
 
 namespace coherentTopology
 
-variable {C : Type*} [Category C] [Precoherent C]
-
-variable {X : C}
 /--
 For a precoherent category, any sieve that contains an `EffectiveEpiFamily` is a sieve of the
 coherent topology.
@@ -111,32 +43,7 @@ theorem mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
   apply Coverage.saturate_of_superset (coherentCoverage C) h_le
   exact Coverage.saturate.of X _ ⟨α, inferInstance, Y, π, ⟨rfl, hπ.1⟩⟩
 
-/-- Every Yoneda-presheaf is a sheaf for the coherent topology. -/
-theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yoneda.obj W) := by
-  rw [isSheaf_coherent]
-  intro X α _ Y π H
-  have h_colim := isColimitOfEffectiveEpiFamilyStruct Y π H.effectiveEpiFamily.some
-  rw [← Sieve.generateFamily_eq] at h_colim
-  intro x hx
-  let x_ext := Presieve.FamilyOfElements.sieveExtend x
-  have hx_ext := Presieve.FamilyOfElements.Compatible.sieveExtend hx
-  let S := Sieve.generate (Presieve.ofArrows Y π)
-  obtain ⟨t, t_amalg, t_uniq⟩ : ∃! t, x_ext.IsAmalgamation t :=
-    (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
-  refine ⟨t, ?_, ?_⟩
-  · convert Presieve.isAmalgamation_restrict (Sieve.le_generate (Presieve.ofArrows Y π)) _ _ t_amalg
-    exact (Presieve.restrict_extend hx).symm
-  · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
-
-/-- The coherent topology on a precoherent category is subcanonical. -/
-theorem subcanonical : Sheaf.Subcanonical (coherentTopology C) :=
-  Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
-
 end coherentTopology
-
-variable {C : Type*} [Category C] [Precoherent C]
-
-variable {X : C}
 
 /--
 Effective epi families in a precoherent category are transitive, in the sense that an
