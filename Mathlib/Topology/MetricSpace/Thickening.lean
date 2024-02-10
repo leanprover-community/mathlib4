@@ -701,12 +701,13 @@ end Metric
 
 open Metric in
 theorem IsCompact.exists_thickening_image_subset [PseudoEMetricSpace α] [PseudoEMetricSpace β]
-    {f : α → β} {K : Set α} {U : Set β} (hK : IsCompact K)
-    (ho : IsOpen U) (hf : Continuous f) (hKU : MapsTo f K U) :
+    {f : α → β} {K : Set α} {U : Set β} (hK : IsCompact K) (ho : IsOpen U)
+    {s : Set α} (hs : s ∈ 𝓝ˢ K) (hf : ContinuousOn f s) (hKU : MapsTo f K U) :
     ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U := by
-  rcases (hK.image hf).exists_thickening_subset_open ho hKU.image_subset with ⟨r, hr₀, hr⟩
+  obtain ⟨r, hr₀, hr⟩ := (hK.image_of_continuousOn (hf.mono (subset_of_mem_nhdsSet hs))
+    ).exists_thickening_subset_open ho hKU.image_subset
   refine ⟨r / 2, half_pos hr₀, f ⁻¹' thickening (r / 2) (f '' K),
-    hf.tendsto_nhdsSet (mapsTo_image _ _) (thickening_mem_nhdsSet _ (half_pos hr₀)), ?_⟩
+    hf.tendsto_nhdsSet hs (mapsTo_image _ _) (thickening_mem_nhdsSet _ (half_pos hr₀)), ?_⟩
   calc
     thickening (r / 2) (f '' (f ⁻¹' thickening (r / 2) (f '' K))) ⊆
         thickening (r / 2) (thickening (r / 2) (f '' K)) :=
