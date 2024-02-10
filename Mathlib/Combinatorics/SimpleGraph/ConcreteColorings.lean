@@ -95,6 +95,6 @@ theorem walk_coloring  {α} (G : SimpleGraph α) (c : G.Coloring Prop) {u v : α
   let w' : G.Walk v u := w.reverse
   let i' : Fin (w'.length + 1) := ⟨i.val, by simp [Walk.length_reverse]⟩
   rw [← walk_coloring_rev G c w' hcu i']
-  simp [Walk.reverse_getVert, Nat.sub_sub_self i.is_le]
+  simp [Walk.getVert_reverse, Nat.sub_sub_self i.is_le]
 
 end SimpleGraph
