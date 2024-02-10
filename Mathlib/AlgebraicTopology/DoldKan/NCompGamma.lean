@@ -12,7 +12,7 @@ import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 
 In order to construct the unit isomorphism of the Dold-Kan equivalence,
 we first construct natural transformations
-`Γ₂N₁.natTrans : N₁ ⋙ Γ₂ ⟶ toKaroubi (simplicial_object C)` and
+`Γ₂N₁.natTrans : N₁ ⋙ Γ₂ ⟶ toKaroubi (SimplicialObject C)` and
 `Γ₂N₂.natTrans : N₂ ⋙ Γ₂ ⟶ 𝟭 (SimplicialObject C)`.
 It is then shown that `Γ₂N₂.natTrans` is an isomorphism by using
 that it becomes an isomorphism after the application of the functor
@@ -151,14 +151,14 @@ def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
         apply (Γ₀.splitting K[X]).hom_ext
         intro n
         dsimp [N₁]
-        simp only [← Splitting.ιSummand_id, Splitting.ι_desc, comp_id, Splitting.ι_desc_assoc,
+        simp only [← Splitting.cofan_inj_id, Splitting.ι_desc, comp_id, Splitting.ι_desc_assoc,
           assoc, PInfty_f_idem_assoc] }
   naturality {X Y} f := by
     ext1
     apply (Γ₀.splitting K[X]).hom_ext
     intro n
     dsimp [N₁, toKaroubi]
-    simp only [← Splitting.ιSummand_id, Splitting.ι_desc, Splitting.ι_desc_assoc, assoc,
+    simp only [← Splitting.cofan_inj_id, Splitting.ι_desc, Splitting.ι_desc_assoc, assoc,
       PInfty_f_idem_assoc, Karoubi.comp_f, NatTrans.comp_app, Γ₂_map_f_app,
       HomologicalComplex.comp_f, AlternatingFaceMapComplex.map_f, PInfty_f_naturality_assoc,
       NatTrans.naturality, Splitting.IndexSet.id_fst, unop_op, len_mk]
@@ -230,9 +230,9 @@ theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
     N₂.map (Γ₂N₂.natTrans.app P) = 𝟙 (N₂.obj P) := by
   ext n
   have eq₁ : (N₂Γ₂.inv.app (N₂.obj P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) ≫
-      (Γ₀.splitting (N₂.obj P).X).ιSummand (Splitting.IndexSet.id (op [n])) := by
+      ((Γ₀.splitting (N₂.obj P).X).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
     simp only [N₂Γ₂_inv_app_f_f, N₂_obj_p_f, assoc]
-  have eq₂ : (Γ₀.splitting (N₂.obj P).X).ιSummand (Splitting.IndexSet.id (op [n])) ≫
+  have eq₂ : ((Γ₀.splitting (N₂.obj P).X).cofan _).inj (Splitting.IndexSet.id (op [n])) ≫
       (N₂.map (Γ₂N₂.natTrans.app P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) := by
     dsimp
     rw [PInfty_on_Γ₀_splitting_summand_eq_self_assoc, Γ₂N₂.natTrans_app_f_app]

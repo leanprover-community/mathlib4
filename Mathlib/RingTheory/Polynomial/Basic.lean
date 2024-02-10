@@ -3,13 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.UniqueFactorizationDomain
-import Mathlib.RingTheory.Ideal.QuotientOperations
 
 #align_import ring_theory.polynomial.basic from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
@@ -47,6 +46,9 @@ variable [Semiring R]
 instance instCharP (p : ℕ) [h : CharP R p] : CharP R[X] p :=
   let ⟨h⟩ := h
   ⟨fun n => by rw [← map_natCast C, ← C_0, C_inj, h]⟩
+
+instance instExpChar (p : ℕ) [h : ExpChar R p] : ExpChar R[X] p := by
+  cases h; exacts [ExpChar.zero, ExpChar.prime ‹_›]
 
 variable (R)
 
@@ -305,7 +307,7 @@ theorem Monic.geom_sum {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.natDegree) {n : �
   · simp only [Finset.mem_range, degree_eq_natDegree (hP.pow _).ne_zero]
     simp only [Nat.cast_lt, hP.natDegree_pow]
     intro k
-    exact nsmul_lt_nsmul hdeg
+    exact nsmul_lt_nsmul_left hdeg
   · rw [bot_lt_iff_ne_bot, Ne.def, degree_eq_bot]
     exact (hP.pow _).ne_zero
 #align polynomial.monic.geom_sum Polynomial.Monic.geom_sum
@@ -636,7 +638,7 @@ theorem mem_leadingCoeffNth (n : ℕ) (x) :
     mem_degreeLE]
   constructor
   · rintro ⟨p, ⟨hpdeg, hpI⟩, rfl⟩
-    cases' lt_or_eq_of_le hpdeg with hpdeg hpdeg
+    rcases lt_or_eq_of_le hpdeg with hpdeg | hpdeg
     · refine' ⟨0, I.zero_mem, bot_le, _⟩
       rw [leadingCoeff_zero, eq_comm]
       exact coeff_eq_zero_of_degree_lt hpdeg
@@ -698,7 +700,7 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
       apply sum_mem
       rintro ⟨i, j⟩ e
       obtain rfl : i + j = k := mem_antidiagonal.mp e
-      apply Ideal.pow_le_pow add_tsub_add_le_tsub_add_tsub
+      apply Ideal.pow_le_pow_right add_tsub_add_le_tsub_add_tsub
       rw [pow_add]
       exact
         Ideal.mul_mem_mul (h _ (Finset.mem_insert.mpr <| Or.inl rfl) _)
@@ -745,7 +747,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
   -- `(Quotient.isDomain_iff_prime (map C P : Ideal R[X]))`
   constructor
   · intro H
-    have := @comap_isPrime R R[X] (R →+* R[X]) _ _ _ C (map C P) H
+    have := comap_isPrime C (map C P)
     convert this using 1
     ext x
     simp only [mem_comap, mem_map_C_iff]
@@ -979,7 +981,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         intro p hp
         generalize hn : p.natDegree = k
         induction' k using Nat.strong_induction_on with k ih generalizing p
-        cases' le_or_lt k N with h h
+        rcases le_or_lt k N with h | h
         · subst k
           refine' hs2 ⟨Polynomial.mem_degreeLE.2
             (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h), hp⟩
@@ -1176,22 +1178,15 @@ theorem noZeroDivisors_of_finite (R : Type u) (σ : Type v) [CommSemiring R] [Fi
 #align mv_polynomial.no_zero_divisors_of_finite MvPolynomial.noZeroDivisors_of_finite
 
 instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
-    NoZeroDivisors (MvPolynomial σ R) :=
-  ⟨fun {p} {q} h => by
-    classical
-    obtain ⟨s, p, rfl⟩ := exists_finset_rename p
-    obtain ⟨t, q, rfl⟩ := exists_finset_rename q
-    have :
-        rename (Subtype.map id (Finset.subset_union_left s t) :
-          { x // x ∈ s } → { x // x ∈ s ∪ t }) p *
-        rename (Subtype.map id (Finset.subset_union_right s t) :
-          { x // x ∈ t } → { x // x ∈ s ∪ t }) q =
-        0 := by
+    NoZeroDivisors (MvPolynomial σ R) where
+  eq_zero_or_eq_zero_of_mul_eq_zero {p q} h := by
+    obtain ⟨s, p, q, rfl, rfl⟩ := exists_finset_rename₂ p q
+    let _nzd := MvPolynomial.noZeroDivisors_of_finite R s
+    have : p * q = 0 := by
       apply rename_injective _ Subtype.val_injective
       simpa using h
-    letI that := MvPolynomial.noZeroDivisors_of_finite R { x // x ∈ s ∪ t }
     rw [mul_eq_zero] at this
-    apply this.imp <;> intro that <;> simpa using congr_arg (rename Subtype.val) that⟩
+    apply this.imp <;> rintro rfl <;> simp
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
 instance isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :

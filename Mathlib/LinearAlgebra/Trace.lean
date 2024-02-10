@@ -3,14 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.TensorProductBasis
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.FreeModule.PID
 
 #align_import linear_algebra.trace from "leanprover-community/mathlib"@"4cf7ca0e69e048b006674cf4499e5c7d296a89e0"
 
@@ -262,7 +255,8 @@ theorem trace_comp_comm :
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
   ext g m f n
   simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, coe_restrictScalars,
-    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ, RingHom.id_apply,
+    -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ _, RingHom.id_apply,
     trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
 

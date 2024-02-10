@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
 
 /-! # Results about inverses in Clifford algebras
 
@@ -53,5 +53,24 @@ theorem invOf_ι_mul_ι_mul_ι (a b : M) [Invertible (ι Q a)] [Invertible (Q a)
   rw [invOf_ι, map_smul, smul_mul_assoc, smul_mul_assoc, ι_mul_ι_mul_ι, ← map_smul, smul_sub,
     smul_smul, smul_smul, invOf_mul_self, one_smul]
 #align clifford_algebra.inv_of_ι_mul_ι_mul_ι CliffordAlgebra.invOf_ι_mul_ι_mul_ι
+
+section
+variable [Invertible (2 : R)]
+
+/-- Over a ring where `2` is invertible, `Q m` is invertible whenever `ι Q m`. -/
+def invertibleOfInvertibleι (m : M) [Invertible (ι Q m)] : Invertible (Q m) :=
+  ExteriorAlgebra.invertibleAlgebraMapEquiv M (Q m) <|
+    .algebraMapOfInvertibleAlgebraMap (equivExterior Q).toLinearMap (by simp) <|
+      .copy (.mul ‹Invertible (ι Q m)› ‹Invertible (ι Q m)›) _ (ι_sq_scalar _ _).symm
+
+theorem isUnit_of_isUnit_ι {m : M} (h : IsUnit (ι Q m)) : IsUnit (Q m) := by
+  cases h.nonempty_invertible
+  letI := invertibleOfInvertibleι Q m
+  exact isUnit_of_invertible (Q m)
+
+@[simp] theorem isUnit_ι_iff {m : M} : IsUnit (ι Q m) ↔ IsUnit (Q m) :=
+  ⟨isUnit_of_isUnit_ι Q, isUnit_ι_of_isUnit Q⟩
+
+end
 
 end CliffordAlgebra

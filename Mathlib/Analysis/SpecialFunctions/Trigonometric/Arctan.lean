@@ -43,14 +43,6 @@ theorem tan_two_mul {x : ℝ} : tan (2 * x) = 2 * tan x / (1 - tan x ^ 2) := by
   norm_cast at *
 #align real.tan_two_mul Real.tan_two_mul
 
-theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π / 2 := by
-  rw [← Complex.ofReal_ne_zero, Complex.ofReal_tan, Complex.tan_ne_zero_iff]; norm_cast
-#align real.tan_ne_zero_iff Real.tan_ne_zero_iff
-
-theorem tan_eq_zero_iff {θ : ℝ} : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π / 2 := by
-  rw [← not_iff_not, not_exists, ← Ne, tan_ne_zero_iff]
-#align real.tan_eq_zero_iff Real.tan_eq_zero_iff
-
 theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
 #align real.tan_int_mul_pi_div_two Real.tan_int_mul_pi_div_two
@@ -72,7 +64,7 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne.def]
   rw [cos_eq_zero_iff]
   rintro hx_gt hx_lt ⟨r, hxr_eq⟩
-  cases' le_or_lt 0 r with h h
+  rcases le_or_lt 0 r with h | h
   · rw [lt_iff_not_ge] at hx_lt
     refine' hx_lt _
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, mul_le_mul_right (half_pos pi_pos)]

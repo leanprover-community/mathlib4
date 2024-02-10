@@ -690,23 +690,23 @@ theorem Ico_eq_locus_Ioc_eq_iUnion_Ioo :
     Classical.not_not]
 #align Ico_eq_locus_Ioc_eq_Union_Ioo Ico_eq_locus_Ioc_eq_iUnion_Ioo
 
-theorem toIocDiv_wcovby_toIcoDiv (a b : α) : toIocDiv hp a b ⩿ toIcoDiv hp a b := by
+theorem toIocDiv_wcovBy_toIcoDiv (a b : α) : toIocDiv hp a b ⩿ toIcoDiv hp a b := by
   suffices toIocDiv hp a b = toIcoDiv hp a b ∨ toIocDiv hp a b + 1 = toIcoDiv hp a b by
-    rwa [wcovby_iff_eq_or_covby, ← Order.succ_eq_iff_covby]
+    rwa [wcovBy_iff_eq_or_covBy, ← Order.succ_eq_iff_covBy]
   rw [eq_comm, ← not_modEq_iff_toIcoDiv_eq_toIocDiv, eq_comm, ←
     modEq_iff_toIcoDiv_eq_toIocDiv_add_one]
   exact em' _
-#align to_Ioc_div_wcovby_to_Ico_div toIocDiv_wcovby_toIcoDiv
+#align to_Ioc_div_wcovby_to_Ico_div toIocDiv_wcovBy_toIcoDiv
 
 theorem toIcoMod_le_toIocMod (a b : α) : toIcoMod hp a b ≤ toIocMod hp a b := by
   rw [toIcoMod, toIocMod, sub_le_sub_iff_left]
-  exact zsmul_mono_left hp.le (toIocDiv_wcovby_toIcoDiv _ _ _).le
+  exact zsmul_mono_left hp.le (toIocDiv_wcovBy_toIcoDiv _ _ _).le
 #align to_Ico_mod_le_to_Ioc_mod toIcoMod_le_toIocMod
 
 theorem toIocMod_le_toIcoMod_add (a b : α) : toIocMod hp a b ≤ toIcoMod hp a b + p := by
   rw [toIcoMod, toIocMod, sub_add, sub_le_sub_iff_left, sub_le_iff_le_add, ← add_one_zsmul,
     (zsmul_strictMono_left hp).le_iff_le]
-  apply (toIocDiv_wcovby_toIcoDiv _ _ _).le_succ
+  apply (toIocDiv_wcovBy_toIcoDiv _ _ _).le_succ
 #align to_Ioc_mod_le_to_Ico_mod_add toIocMod_le_toIcoMod_add
 
 end IcoIoc
@@ -863,7 +863,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
   · obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
     rw [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
     assumption -- Porting note: was `simpa`
-  cases' le_or_lt x₃' (x₁ + p) with h₃₁ h₁₃
+  rcases le_or_lt x₃' (x₁ + p) with h₃₁ | h₁₃
   · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p
     · exact hIoc₂₁.symm.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2

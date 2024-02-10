@@ -11,7 +11,6 @@ import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.GCongr.Core
 
 #align_import data.real.nnreal from "leanprover-community/mathlib"@"de29c328903507bb7aff506af9135f4bdaf1849c"
@@ -877,10 +876,7 @@ end Sub
 
 section Inv
 
-theorem sum_div {ι} (s : Finset ι) (f : ι → ℝ≥0) (b : ℝ≥0) :
-    (∑ i in s, f i) / b = ∑ i in s, f i / b :=
-  Finset.sum_div
-#align nnreal.sum_div NNReal.sum_div
+#align nnreal.sum_div Finset.sum_div
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
@@ -988,7 +984,7 @@ theorem div_lt_one_of_lt {a b : ℝ≥0} (h : a < b) : a / b < 1 := by
 #align nnreal.div_lt_one_of_lt NNReal.div_lt_one_of_lt
 
 theorem _root_.Real.toNNReal_inv {x : ℝ} : Real.toNNReal x⁻¹ = (Real.toNNReal x)⁻¹ := by
-  cases' le_total 0 x with hx hx
+  rcases le_total 0 x with hx | hx
   · nth_rw 1 [← Real.coe_toNNReal x hx]
     rw [← NNReal.coe_inv, Real.toNNReal_coe]
   · rw [toNNReal_eq_zero.mpr hx, inv_zero, toNNReal_eq_zero.mpr (inv_nonpos.mpr hx)]
@@ -1046,7 +1042,7 @@ theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
 theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_of_empty f
 
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
-  rw [iInf_of_empty', sInf_empty]
+  rw [_root_.iInf_of_isEmpty, sInf_empty]
 #align nnreal.infi_empty NNReal.iInf_empty
 
 @[simp]
@@ -1135,7 +1131,7 @@ theorem image_coe_nnreal_real (h : t.OrdConnected) : ((↑) '' t : Set ℝ).OrdC
 -- porting note: todo: does it generalize to a `GaloisInsertion`?
 theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConnected := by
   refine' ⟨ball_image_iff.2 fun x hx => ball_image_iff.2 fun y hy z hz => _⟩
-  cases' le_total y 0 with hy₀ hy₀
+  rcases le_total y 0 with hy₀ | hy₀
   · rw [mem_Icc, Real.toNNReal_of_nonpos hy₀, nonpos_iff_eq_zero] at hz
     exact ⟨y, hy, (toNNReal_of_nonpos hy₀).trans hz.2.symm⟩
   · lift y to ℝ≥0 using hy₀

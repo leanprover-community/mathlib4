@@ -135,6 +135,11 @@ theorem infinite_mul : (s * t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infi
 #align set.infinite_mul Set.infinite_mul
 #align set.infinite_add Set.infinite_add
 
+@[to_additive]
+lemma finite_mul : (s * t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ :=
+  finite_image2  (fun _ _ ↦ (mul_left_injective _).injOn _)
+    fun _ _ ↦ (mul_right_injective _).injOn _
+
 end Cancel
 
 section Group
@@ -174,11 +179,10 @@ variable {G : Type*} [Group G] [Fintype G] (S : Set G)
 @[to_additive]
 theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k)] :
     ∀ k, Fintype.card G ≤ k → Fintype.card (↥(S ^ k)) = Fintype.card (↥(S ^ Fintype.card G)) := by
-  have hG : 0 < Fintype.card G := Fintype.card_pos_iff.mpr ⟨1⟩
-  by_cases hS : S = ∅
+  have hG : 0 < Fintype.card G := Fintype.card_pos
+  rcases S.eq_empty_or_nonempty with (rfl | ⟨a, ha⟩)
   · refine' fun k hk ↦ Fintype.card_congr _
-    rw [hS, empty_pow (ne_of_gt (lt_of_lt_of_le hG hk)), empty_pow (ne_of_gt hG)]
-  obtain ⟨a, ha⟩ := Set.nonempty_iff_ne_empty.2 hS
+    rw [empty_pow (hG.trans_le hk).ne', empty_pow (ne_of_gt hG)]
   have key : ∀ (a) (s t : Set G) [Fintype s] [Fintype t],
       (∀ b : G, b ∈ s → a * b ∈ t) → Fintype.card s ≤ Fintype.card t := by
     refine' fun a s t _ _ h ↦ Fintype.card_le_of_injective (fun ⟨b, hb⟩ ↦ ⟨a * b, h b hb⟩) _
@@ -195,9 +199,9 @@ theorem card_pow_eq_card_pow_card_univ [∀ k : ℕ, DecidablePred (· ∈ S ^ k
     refine' Set.eq_of_subset_of_card_le _ (le_trans (ge_of_eq h) _)
     · exact mul_subset_mul (Set.singleton_subset_iff.mpr ha) Set.Subset.rfl
     · convert key a (S ^ n) ({a} * S ^ n) fun b hb ↦ Set.mul_mem_mul (Set.mem_singleton a) hb
-  rw [pow_succ', ← h₂, mul_assoc, ← pow_succ', h₂]
-  rintro _ ⟨b, c, hb, hc, rfl⟩
-  rwa [Set.mem_singleton_iff.mp hb, inv_mul_cancel_left]
+  rw [pow_succ', ← h₂, mul_assoc, ← pow_succ', h₂, singleton_mul, ball_image_iff]
+  intro x hx
+  rwa [inv_mul_cancel_left]
 #align group.card_pow_eq_card_pow_card_univ Group.card_pow_eq_card_pow_card_univ
 #align add_group.card_nsmul_eq_card_nsmul_card_univ AddGroup.card_nsmul_eq_card_nsmul_card_univ
 

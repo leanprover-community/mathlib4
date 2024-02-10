@@ -3,6 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Int.Cast.Lemmas
@@ -296,7 +297,7 @@ theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [
 #align rat.lt_one_iff_num_lt_denom Rat.lt_one_iff_num_lt_denom
 
 theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
-  cases' le_total q 0 with hq hq
+  rcases le_total q 0 with hq | hq
   · rw [abs_of_nonpos hq]
     rw [← @num_den q, ← divInt_zero_one, Rat.le_def (Int.coe_nat_pos.2 q.pos) zero_lt_one, mul_one,
       zero_mul] at hq

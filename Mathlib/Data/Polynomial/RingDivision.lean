@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
 -/
-import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Degree.Lemmas
 import Mathlib.Data.Polynomial.Div
@@ -15,7 +14,7 @@ import Mathlib.Algebra.Polynomial.BigOperators
 /-!
 # Theory of univariate polynomials
 
-This file starts looking like the ring theory of $ R[X] $
+This file starts looking like the ring theory of $R[X]$
 
 ## Main definitions
 
@@ -156,12 +155,10 @@ theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trail
 @[simp]
 theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p := by
   classical
-  exact if hp0 : p = 0 then
-    if hn0 : n = 0 then by simp [hp0, hn0]
-    else by rw [hp0, zero_pow (Nat.pos_of_ne_zero hn0)]; simp
-  else
-    natDegree_pow'
-      (by rw [← leadingCoeff_pow, Ne.def, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp0)
+  obtain rfl | hp := eq_or_ne p 0
+  · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+  exact natDegree_pow' $ by
+    rw [← leadingCoeff_pow, Ne.def, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp
 #align polynomial.nat_degree_pow Polynomial.natDegree_pow
 
 theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
@@ -332,7 +329,7 @@ theorem Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : 
     simpa only [nextCoeff, hnd, add_right_cancel hda, hdb] using ha.nextCoeff_mul hb
   · rintro ⟨c₁, c₂, hmul, hadd⟩
     refine
-      ⟨X + C c₁, X + C c₂, monic_X_add_C _, monic_X_add_C _, ?_, ?_ ⟩
+      ⟨X + C c₁, X + C c₂, monic_X_add_C _, monic_X_add_C _, ?_, ?_⟩
     · rw [p.as_sum_range_C_mul_X_pow, hnd, Finset.sum_range_succ, Finset.sum_range_succ,
         Finset.sum_range_one, ← hnd, hm.coeff_natDegree, hnd, hmul, hadd, C_mul, C_add, C_1]
       ring
@@ -599,7 +596,7 @@ theorem exists_multiset_roots [DecidableEq R] :
       ⟨0, (degree_eq_natDegree hp).symm ▸ WithBot.coe_le_coe.2 (Nat.zero_le _), by
         intro a
         rw [count_zero, rootMultiplicity_eq_zero (not_exists.mp h a)]⟩
-termination_by _ p _ => natDegree p
+termination_by p => natDegree p
 decreasing_by {
   simp_wf
   apply (Nat.cast_lt (α := WithBot ℕ)).mp
@@ -693,7 +690,7 @@ lemma mem_roots_iff_aeval_eq_zero (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 
 
 theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ p.roots) :
     Z.card ≤ p.natDegree :=
-  (Multiset.card_le_of_le (Finset.val_le_iff_val_subset.2 h)).trans (Polynomial.card_roots' p)
+  (Multiset.card_le_card (Finset.val_le_iff_val_subset.2 h)).trans (Polynomial.card_roots' p)
 #align polynomial.card_le_degree_of_subset_roots Polynomial.card_le_degree_of_subset_roots
 
 theorem finite_setOf_isRoot {p : R[X]} (hp : p ≠ 0) : Set.Finite { x | IsRoot p x } := by
@@ -812,7 +809,7 @@ theorem roots_pow (p : R[X]) (n : ℕ) : (p ^ n).roots = n • p.roots := by
   induction' n with n ihn
   · rw [pow_zero, roots_one, Nat.zero_eq, zero_smul, empty_eq_zero]
   · rcases eq_or_ne p 0 with (rfl | hp)
-    · rw [zero_pow n.succ_pos, roots_zero, smul_zero]
+    · rw [zero_pow n.succ_ne_zero, roots_zero, smul_zero]
     · rw [pow_succ', roots_mul (mul_ne_zero (pow_ne_zero _ hp) hp), ihn, Nat.succ_eq_add_one,
         add_smul, one_smul]
 #align polynomial.roots_pow Polynomial.roots_pow
@@ -890,6 +887,11 @@ theorem nthRoots_zero (r : R) : nthRoots 0 r = 0 := by
   simp only [empty_eq_zero, pow_zero, nthRoots, ← C_1, ← C_sub, roots_C]
 #align polynomial.nth_roots_zero Polynomial.nthRoots_zero
 
+@[simp]
+theorem nthRoots_zero_right {R} [CommRing R] [IsDomain R] (n : ℕ) :
+    nthRoots n (0 : R) = Multiset.replicate n 0 := by
+  rw [nthRoots, C.map_zero, sub_zero, roots_pow, roots_X, Multiset.nsmul_singleton]
+
 theorem card_nthRoots (n : ℕ) (a : R) : Multiset.card (nthRoots n a) ≤ n := by
   classical exact
   (if hn : n = 0 then
@@ -953,7 +955,7 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} (hη : η ∈ nthRootsFinset n R)
   | zero =>
     simp only [Nat.zero_eq, nthRootsFinset_zero, not_mem_empty] at hη
   | succ n =>
-    rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_pos] at hη
+    rw [mem_nthRootsFinset n.succ_pos, zero_pow n.succ_ne_zero] at hη
     exact zero_ne_one hη
 
 theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n R := by
@@ -1068,8 +1070,8 @@ theorem aroots_one [CommRing S] [IsDomain S] [Algebra T S] :
 
 @[simp]
 theorem aroots_neg [CommRing S] [IsDomain S] [Algebra T S] (p : T[X]) :
-    (-p).aroots S = p.aroots S :=
-  by rw [aroots, Polynomial.map_neg, roots_neg]
+    (-p).aroots S = p.aroots S := by
+  rw [aroots, Polynomial.map_neg, roots_neg]
 
 @[simp]
 theorem aroots_C_mul [CommRing S] [IsDomain S] [Algebra T S]
@@ -1253,11 +1255,42 @@ theorem leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R)
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality
   cases' hp.lt_or_lt with hd hd
-  · rw [degree_eq_bot.mp <| (Nat.WithBot.lt_zero_iff _).mp hd, zero_divByMonic]
+  · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
   refine' leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) _
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]
 set_option linter.uppercaseLean3 false in
 #align polynomial.leading_coeff_div_by_monic_X_sub_C Polynomial.leadingCoeff_divByMonic_X_sub_C
+
+theorem eq_of_dvd_of_natDegree_le_of_leadingCoeff {p q : R[X]} (hpq : p ∣ q)
+    (h₁ : q.natDegree ≤ p.natDegree) (h₂ : p.leadingCoeff = q.leadingCoeff) :
+    p = q := by
+  by_cases hq : q = 0
+  · rwa [hq, leadingCoeff_zero, leadingCoeff_eq_zero, ← hq] at h₂
+  replace h₁ := (natDegree_le_of_dvd hpq hq).antisymm h₁
+  obtain ⟨u, rfl⟩ := hpq
+  replace hq := mul_ne_zero_iff.mp hq
+  rw [natDegree_mul hq.1 hq.2, self_eq_add_right] at h₁
+  rw [eq_C_of_natDegree_eq_zero h₁, leadingCoeff_mul, leadingCoeff_C,
+    eq_comm, mul_eq_left₀ (leadingCoeff_ne_zero.mpr hq.1)] at h₂
+  rw [eq_C_of_natDegree_eq_zero h₁, h₂, map_one, mul_one]
+
+theorem associated_of_dvd_of_natDegree_le_of_leadingCoeff {p q : R[X]} (hpq : p ∣ q)
+    (h₁ : q.natDegree ≤ p.natDegree) (h₂ : q.leadingCoeff ∣ p.leadingCoeff) :
+    Associated p q :=
+  have ⟨r, hr⟩ := hpq
+  have ⟨u, hu⟩ := associated_of_dvd_dvd ⟨leadingCoeff r, hr ▸ leadingCoeff_mul p r⟩ h₂
+  ⟨Units.map C.toMonoidHom u, eq_of_dvd_of_natDegree_le_of_leadingCoeff
+    (by rwa [Units.mul_right_dvd]) (by simpa [natDegree_mul_C] using h₁) (by simpa using hu)⟩
+
+theorem associated_of_dvd_of_natDegree_le {K} [Field K] {p q : K[X]} (hpq : p ∣ q) (hq : q ≠ 0)
+    (h₁ : q.natDegree ≤ p.natDegree) : Associated p q :=
+  associated_of_dvd_of_natDegree_le_of_leadingCoeff hpq h₁
+    (IsUnit.dvd (by rwa [← leadingCoeff_ne_zero, ← isUnit_iff_ne_zero] at hq))
+
+theorem associated_of_dvd_of_degree_eq {K} [Field K] {p q : K[X]} (hpq : p ∣ q)
+    (h₁ : p.degree = q.degree) : Associated p q :=
+  (Classical.em (q = 0)).elim (fun hq ↦ (show p = q by simpa [hq] using h₁) ▸ Associated.refl p)
+    (associated_of_dvd_of_natDegree_le hpq · (natDegree_le_natDegree h₁.ge))
 
 theorem eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le {R} [CommRing R] {p q : R[X]}
     (hp : p.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
@@ -1305,6 +1338,16 @@ lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero' {R} [CommRing R] [IsDomain R
     p = 0 :=
   eq_zero_of_natDegree_lt_card_of_eval_eq_zero p Subtype.val_injective
     (fun i : s ↦ heval i i.prop) (hcard.trans_eq (Fintype.card_coe s).symm)
+
+open Cardinal in
+lemma exists_eval_ne_zero_of_natDegree_lt_card (f : R[X]) (hf : f ≠ 0) (hfR : f.natDegree < #R) :
+    ∃ r, f.eval r ≠ 0 := by
+  contrapose! hf
+  obtain hR|hR := finite_or_infinite R
+  · have := Fintype.ofFinite R
+    apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero f Function.injective_id hf
+    aesop
+  · exact zero_of_eval_zero _ hf
 
 theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (a - b)) :
     IsCoprime (X - C a) (X - C b) :=
@@ -1460,7 +1503,7 @@ theorem map_roots_le_of_injective [IsDomain A] [IsDomain B] (p : A[X]) {f : A �
 theorem card_roots_le_map [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :
     Multiset.card p.roots ≤ Multiset.card (p.map f).roots := by
   rw [← p.roots.card_map f]
-  exact Multiset.card_le_of_le (map_roots_le h)
+  exact Multiset.card_le_card (map_roots_le h)
 #align polynomial.card_roots_le_map Polynomial.card_roots_le_map
 
 theorem card_roots_le_map_of_injective [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B}

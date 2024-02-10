@@ -102,8 +102,8 @@ attribute [gcongr]
 /-! # ≤, ^ -/
 
 attribute [gcongr]
-  pow_le_pow pow_le_pow' zpow_le_zpow zpow_le_of_le -- ff ^ tt
-  pow_le_pow_of_le_left pow_le_pow_of_le_left' zpow_le_zpow' -- tt ^ ff
+  pow_le_pow_right pow_le_pow_right' zpow_le_zpow zpow_le_of_le -- ff ^ tt
+  pow_le_pow_left pow_le_pow_left' zpow_le_zpow' -- tt ^ ff
 
 /-! # <, ^ -/
 
@@ -112,8 +112,8 @@ theorem zpow_lt_of_lt [LinearOrderedSemifield α] {a : α} {m n : ℤ} (hx : 1 <
   zpow_strictMono hx h
 
 attribute [gcongr]
-  pow_lt_pow pow_lt_pow' zpow_lt_zpow zpow_lt_of_lt -- ff ^ tt
-  pow_lt_pow_of_lt_left zpow_lt_zpow' -- tt ^ ff
+  pow_lt_pow_right pow_lt_pow_right' zpow_lt_zpow zpow_lt_of_lt -- ff ^ tt
+  pow_lt_pow_left zpow_lt_zpow' -- tt ^ ff
 
 /-! # coercions -/
 

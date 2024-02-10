@@ -143,7 +143,7 @@ end Inv₀
 points. Then the coercion `G₀ˣ → G₀` is a topological embedding. -/
 theorem Units.embedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
     Embedding (val : G₀ˣ → G₀) :=
-  embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono <| fun _ ↦ IsUnit.ne_zero
+  embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono fun _ ↦ IsUnit.ne_zero
 #align units.embedding_coe₀ Units.embedding_val₀
 
 section NhdsInv

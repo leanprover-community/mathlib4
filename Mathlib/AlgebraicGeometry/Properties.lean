@@ -215,7 +215,7 @@ instance [h : IsIntegral X] : IsDomain (X.presheaf.obj (op ⊤)) :=
 instance (priority := 900) isReducedOfIsIntegral [IsIntegral X] : IsReduced X := by
   constructor
   intro U
-  cases' U.1.eq_empty_or_nonempty with h h
+  rcases U.1.eq_empty_or_nonempty with h | h
   · have : U = ⊥ := SetLike.ext' h
     haveI := CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty this)
     change _root_.IsReduced (X.sheaf.val.obj (op U))

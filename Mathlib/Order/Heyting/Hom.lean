@@ -13,7 +13,7 @@ import Mathlib.Order.Hom.Lattice
 A Heyting homomorphism between two Heyting algebras is a bounded lattice homomorphism that preserves
 Heyting implication.
 
-We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
+We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
 
 ## Types of morphisms
@@ -67,8 +67,8 @@ structure BiheytingHom (α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra �
 /-- `HeytingHomClass F α β` states that `F` is a type of Heyting homomorphisms.
 
 You should extend this class when you extend `HeytingHom`. -/
-class HeytingHomClass (F : Type*) (α β : outParam <| Type*) [HeytingAlgebra α]
-  [HeytingAlgebra β] extends LatticeHomClass F α β where
+class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] [FunLike F α β]
+  extends LatticeHomClass F α β : Prop where
   /-- The proposition that a Heyting homomorphism preserves the bottom element.-/
   map_bot (f : F) : f ⊥ = ⊥
   /-- The proposition that a Heyting homomorphism preserves the Heyting implication.-/
@@ -78,8 +78,8 @@ class HeytingHomClass (F : Type*) (α β : outParam <| Type*) [HeytingAlgebra α
 /-- `CoheytingHomClass F α β` states that `F` is a type of co-Heyting homomorphisms.
 
 You should extend this class when you extend `CoheytingHom`. -/
-class CoheytingHomClass (F : Type*) (α β : outParam <| Type*) [CoheytingAlgebra α]
-  [CoheytingAlgebra β] extends LatticeHomClass F α β where
+class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebra β] [FunLike F α β]
+  extends LatticeHomClass F α β : Prop where
   /-- The proposition that a co-Heyting homomorphism preserves the top element.-/
   map_top (f : F) : f ⊤ = ⊤
   /-- The proposition that a co-Heyting homomorphism preserves the difference operation.-/
@@ -89,8 +89,8 @@ class CoheytingHomClass (F : Type*) (α β : outParam <| Type*) [CoheytingAlgebr
 /-- `BiheytingHomClass F α β` states that `F` is a type of bi-Heyting homomorphisms.
 
 You should extend this class when you extend `BiheytingHom`. -/
-class BiheytingHomClass (F : Type*) (α β : outParam <| Type*) [BiheytingAlgebra α]
-  [BiheytingAlgebra β] extends LatticeHomClass F α β where
+class BiheytingHomClass (F α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra β] [FunLike F α β]
+  extends LatticeHomClass F α β : Prop where
   /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication.-/
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
   /-- The proposition that a bi-Heyting homomorphism preserves the difference operation.-/
@@ -102,6 +102,10 @@ export HeytingHomClass (map_himp)
 export CoheytingHomClass (map_sdiff)
 
 attribute [simp] map_himp map_sdiff
+
+section Hom
+
+variable [FunLike F α β]
 
 /- Porting note: `[HeytingAlgebra α, β]` -> `{ _ : HeytingAlgebra α, β}` as a dangerous instance fix
 similar for Coheyting & Biheyting instances -/
@@ -132,6 +136,12 @@ instance (priority := 100) BiheytingHomClass.toCoheytingHomClass [BiheytingAlgeb
   { ‹BiheytingHomClass F α β› with
     map_top := fun f => by rw [← @himp_self α _ ⊥, ← himp_self, map_himp] }
 #align biheyting_hom_class.to_coheyting_hom_class BiheytingHomClass.toCoheytingHomClass
+
+end Hom
+
+section Equiv
+
+variable [EquivLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toHeytingHomClass [HeytingAlgebra α]
@@ -171,11 +181,15 @@ instance (priority := 100) OrderIsoClass.toBiheytingHomClass [BiheytingAlgebra �
         simp }
 #align order_iso_class.to_biheyting_hom_class OrderIsoClass.toBiheytingHomClass
 
+end Equiv
+
+variable [FunLike F α β]
+
 -- Porting note: Revisit this issue to see if it works in Lean 4. -/
 -- See note [reducible non instances]
 /-- This can't be an instance because of typeclass loops. -/
 @[reducible]
-def BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
+lemma BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
     [BoundedLatticeHomClass F α β] : BiheytingHomClass F α β :=
   { ‹BoundedLatticeHomClass F α β› with
     map_himp := fun f a b => by rw [himp_eq, himp_eq, map_sup, (isCompl_compl.map _).compl_eq]
@@ -183,6 +197,8 @@ def BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgeb
 #align bounded_lattice_hom_class.to_biheyting_hom_class BoundedLatticeHomClass.toBiheytingHomClass
 
 section HeytingAlgebra
+
+open scoped symmDiff
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] (f : F)
 
@@ -198,6 +214,8 @@ theorem map_bihimp (a b : α) : f (a ⇔ b) = f a ⇔ f b := by simp_rw [bihimp,
 end HeytingAlgebra
 
 section CoheytingAlgebra
+
+open scoped symmDiff
 
 variable [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingHomClass F α β] (f : F)
 
@@ -241,9 +259,11 @@ namespace HeytingHom
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingAlgebra γ] [HeytingAlgebra δ]
 
-instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
+instance instFunLike : FunLike (HeytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+
+instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_bot f := f.map_bot'
@@ -251,10 +271,10 @@ instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
 
 
 -- Porting note: CoeFun undesired here in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `FunLike.CoeFun`
+-- /-- Helper instance for when there's too many metavariables to apply `DFunLike.CoeFun`
 -- directly. -/
 -- instance : CoeFun (HeytingHom α β) fun _ => α → β :=
---   FunLike.hasCoeToFun
+--   DFunLike.hasCoeToFun
 
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : HeytingHom α β} : f.toFun = ⇑f :=
@@ -267,7 +287,7 @@ theorem toFun_eq_coe_aux {f : HeytingHom α β} : (↑f.toLatticeHom) = ⇑f :=
 
 @[ext]
 theorem ext {f g : HeytingHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align heyting_hom.ext HeytingHom.ext
 
 /-- Copy of a `HeytingHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -286,7 +306,7 @@ theorem coe_copy (f : HeytingHom α β) (f' : α → β) (h : f' = f) : ⇑(f.co
 #align heyting_hom.coe_copy HeytingHom.coe_copy
 
 theorem copy_eq (f : HeytingHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align heyting_hom.copy_eq HeytingHom.copy_eq
 
 variable (α)
@@ -314,7 +334,7 @@ instance : Inhabited (HeytingHom α α) :=
   ⟨HeytingHom.id _⟩
 
 instance : PartialOrder (HeytingHom α β) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 /-- Composition of `HeytingHom`s as a `HeytingHom`. -/
 def comp (f : HeytingHom β γ) (g : HeytingHom α β) : HeytingHom α γ :=
@@ -354,7 +374,7 @@ theorem id_comp (f : HeytingHom α β) : (HeytingHom.id β).comp f = f :=
 
 @[simp]
 theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align heyting_hom.cancel_right HeytingHom.cancel_right
 
 @[simp]
@@ -368,20 +388,15 @@ namespace CoheytingHom
 
 variable [CoheytingAlgebra α] [CoheytingAlgebra β] [CoheytingAlgebra γ] [CoheytingAlgebra δ]
 
-instance : CoheytingHomClass (CoheytingHom α β) α β where
+instance : FunLike (CoheytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+
+instance : CoheytingHomClass (CoheytingHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_top f := f.map_top'
   map_sdiff := CoheytingHom.map_sdiff'
-
--- Porting note: CoeFun undesired here in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `FunLike.CoeFun`
--- directly. -/
--- instance : CoeFun (CoheytingHom α β) fun _ => α → β :=
---   FunLike.hasCoeToFun
-
 
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : CoheytingHom α β} : f.toFun = (f : α → β) :=
@@ -394,7 +409,7 @@ theorem toFun_eq_coe_aux {f : CoheytingHom α β} : (↑f.toLatticeHom) = ⇑f :
 
 @[ext]
 theorem ext {f g : CoheytingHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align coheyting_hom.ext CoheytingHom.ext
 
 /-- Copy of a `CoheytingHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -413,7 +428,7 @@ theorem coe_copy (f : CoheytingHom α β) (f' : α → β) (h : f' = f) : ⇑(f.
 #align coheyting_hom.coe_copy CoheytingHom.coe_copy
 
 theorem copy_eq (f : CoheytingHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align coheyting_hom.copy_eq CoheytingHom.copy_eq
 
 variable (α)
@@ -441,7 +456,7 @@ instance : Inhabited (CoheytingHom α α) :=
   ⟨CoheytingHom.id _⟩
 
 instance : PartialOrder (CoheytingHom α β) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 /-- Composition of `CoheytingHom`s as a `CoheytingHom`. -/
 def comp (f : CoheytingHom β γ) (g : CoheytingHom α β) : CoheytingHom α γ :=
@@ -481,7 +496,7 @@ theorem id_comp (f : CoheytingHom α β) : (CoheytingHom.id β).comp f = f :=
 
 @[simp]
 theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align coheyting_hom.cancel_right CoheytingHom.cancel_right
 
 @[simp]
@@ -495,19 +510,15 @@ namespace BiheytingHom
 
 variable [BiheytingAlgebra α] [BiheytingAlgebra β] [BiheytingAlgebra γ] [BiheytingAlgebra δ]
 
-instance : BiheytingHomClass (BiheytingHom α β) α β where
+instance : FunLike (BiheytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+
+instance : BiheytingHomClass (BiheytingHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_himp f := f.map_himp'
   map_sdiff f := f.map_sdiff'
-
--- Porting note: CoeFun undesired here in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `FunLike.CoeFun`
--- directly. -/
--- instance : CoeFun (BiheytingHom α β) fun _ => α → β :=
---   FunLike.hasCoeToFun
 
 -- @[simp] -- Porting note: not in simp-nf, simp can simplify lhs. Added aux simp lemma
 theorem toFun_eq_coe {f : BiheytingHom α β} : f.toFun = (f : α → β) :=
@@ -520,7 +531,7 @@ theorem toFun_eq_coe_aux {f : BiheytingHom α β} : (↑f.toLatticeHom) = ⇑f :
 
 @[ext]
 theorem ext {f g : BiheytingHom α β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align biheyting_hom.ext BiheytingHom.ext
 
 /-- Copy of a `BiheytingHom` with a new `toFun` equal to the old one. Useful to fix definitional
@@ -539,7 +550,7 @@ theorem coe_copy (f : BiheytingHom α β) (f' : α → β) (h : f' = f) : ⇑(f.
 #align biheyting_hom.coe_copy BiheytingHom.coe_copy
 
 theorem copy_eq (f : BiheytingHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align biheyting_hom.copy_eq BiheytingHom.copy_eq
 
 variable (α)
@@ -565,7 +576,7 @@ instance : Inhabited (BiheytingHom α α) :=
   ⟨BiheytingHom.id _⟩
 
 instance : PartialOrder (BiheytingHom α β) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 /-- Composition of `BiheytingHom`s as a `BiheytingHom`. -/
 def comp (f : BiheytingHom β γ) (g : BiheytingHom α β) : BiheytingHom α γ :=
@@ -605,7 +616,7 @@ theorem id_comp (f : BiheytingHom α β) : (BiheytingHom.id β).comp f = f :=
 
 @[simp]
 theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align biheyting_hom.cancel_right BiheytingHom.cancel_right
 
 @[simp]

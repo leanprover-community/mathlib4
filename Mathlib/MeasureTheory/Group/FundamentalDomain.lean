@@ -110,7 +110,7 @@ sufficiently large. -/
   to check that its translates `g +ᵥ s` are (almost) disjoint and that the sum `∑' g, μ (g +ᵥ s)` is
   sufficiently large."]
 theorem mk_of_measure_univ_le [IsFiniteMeasure μ] [Countable G] (h_meas : NullMeasurableSet s μ)
-    (h_ae_disjoint : ∀ (g) (_ : g ≠ (1 : G)), AEDisjoint μ (g • s) s)
+    (h_ae_disjoint : ∀ g ≠ (1 : G), AEDisjoint μ (g • s) s)
     (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • · : α → α) μ μ)
     (h_measure_univ_le : μ (univ : Set α) ≤ ∑' g : G, μ (g • s)) : IsFundamentalDomain G s μ :=
   have aedisjoint : Pairwise (AEDisjoint μ on fun g : G => g • s) :=
@@ -681,9 +681,8 @@ variable [Countable G] [Group G] [MulAction G α] [MeasurableSpace α] {μ : Mea
 
 @[to_additive MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier]
 theorem measure_fundamentalFrontier : μ (fundamentalFrontier G s) = 0 := by
-  simpa only [fundamentalFrontier, iUnion₂_inter, measure_iUnion_null_iff', one_smul,
-    measure_iUnion_null_iff, inter_comm s, Function.onFun] using fun g (hg : g ≠ 1) =>
-    hs.aedisjoint hg
+  simpa only [fundamentalFrontier, iUnion₂_inter, one_smul, measure_iUnion_null_iff, inter_comm s,
+    Function.onFun] using fun g (hg : g ≠ 1) => hs.aedisjoint hg
 #align measure_theory.is_fundamental_domain.measure_fundamental_frontier MeasureTheory.IsFundamentalDomain.measure_fundamentalFrontier
 #align measure_theory.is_add_fundamental_domain.measure_add_fundamental_frontier MeasureTheory.IsAddFundamentalDomain.measure_addFundamentalFrontier
 

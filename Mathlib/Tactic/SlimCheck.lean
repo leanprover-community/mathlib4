@@ -5,7 +5,6 @@ Authors: Simon Hudon, Scott Morrison
 -/
 
 import Mathlib.Testing.SlimCheck.Testable
-import Mathlib.Data.List.Sort
 import Qq
 
 /-!
@@ -216,12 +215,12 @@ set_option trace.Meta.synthInstance true
   trace[slim_check.decoration] "[testable decoration]\n  {tgt'}"
   -- Porting note: I have not ported support for `trace.slim_check.instance`.
   -- See the commented out code below from mathlib3 if you would like to implement this.
-  --   when_tracing `slim_check.instance   $ do
+  --   when_tracing `slim_check.instance   <| do
   --   { inst ← summarize_instance inst >>= pp,
   --     trace!"\n[testable instance]{format.indent inst 2}" },
-  let code ← unsafe evalExprCore3090 (IO PUnit) e (fun _ => pure ())
+  let code ← unsafe evalExprCore3090 (CoreM PUnit) e (fun _ => pure ())
   _ ← code
-  admitGoal (← getMainGoal)
+  admitGoal g
 
 -- Porting note: below is the remaining code from mathlib3 which supports the
 -- `trace.slim_check.instance` trace option, and which has not been ported.
@@ -242,18 +241,18 @@ set_option trace.Meta.synthInstance true
 -- meta def summarize_instance : expr → tactic instance_tree
 -- | (lam n bi d b) := do
 --    v ← mk_local' n bi d,
---    summarize_instance $ b.instantiate_var v
+--    summarize_instance <| b.instantiate_var v
 -- | e@(app f x) := do
 --    `(testable %%p) ← infer_type e,
 --    xs ← e.get_app_args.mmap_filter (try_core ∘ summarize_instance),
---    pure $ instance_tree.node e.get_app_fn.const_name p xs
+--    pure <| instance_tree.node e.get_app_fn.const_name p xs
 -- | e := do
 --   failed
 
 -- /-- format an `instance_tree` -/
 -- meta def instance_tree.to_format : instance_tree → tactic format
 -- | (instance_tree.node n p xs) := do
---   xs ← format.join <$> (xs.mmap $ λ t, flip format.indent 2 <$> instance_tree.to_format t),
+--   xs ← format.join <$> (xs.mmap <| λ t, flip format.indent 2 <$> instance_tree.to_format t),
 --   ys ← pformat!"testable ({p})",
 --   pformat!"+ {n} :{format.indent ys 2}\n{xs}"
 
