@@ -324,7 +324,7 @@ private
 lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     {N : ℕ} {F : MvPolynomial (Fin (Nat.succ N)) R} {n : ℕ} (hF : IsHomogeneous F n)
     (hFn : ((finSuccEquiv R N) F).coeff n ≠ 0) :
-    ∃ r, (eval r) F ≠ 0 := by
+    ∃ r, eval r F ≠ 0 := by
   have hF₀ : F ≠ 0 := by contrapose! hFn; simp [hFn]
   have hdeg : natDegree (finSuccEquiv R N F) < n + 1 := by
     linarith [natDegree_finSuccEquiv F, degreeOf_le_totalDegree F 0, hF.totalDegree hF₀]

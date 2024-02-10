@@ -188,9 +188,10 @@ lemma eq_of_pairing_pairing_eq_two [NoZeroSMulDivisors ℤ M] (i j : ι)
   set f : ℕ → M := fun n ↦ β + (2 * n : ℤ) • (α - β)
   have hf : ∀ n : ℕ, (sαβ^[n]) β = f n := by
     intro n
-    induction' n with n ih
-    · simp [f]
-    · simp only [f, α, β, sα, sβ, sαβ, iterate_succ', ih, hα, hβ, two_smul, smul_add,
+    induction n with
+    | zero => simp [f]
+    | succ n ih =>
+      simp only [f, α, β, sα, sβ, sαβ, iterate_succ', ih, hα, hβ, two_smul, smul_add,
         mul_add, add_smul, comp_apply, map_zsmul, zsmul_sub, map_add, neg_sub, map_neg,
         smul_neg, map_sub, Nat.cast_succ, mul_one, LinearEquiv.trans_apply,
         reflection_apply_self] -- v4.7.0-rc1 issues

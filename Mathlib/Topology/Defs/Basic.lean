@@ -12,7 +12,7 @@ import Mathlib.Tactic.FunProp
 # Basic definitions about topological spaces
 
 This file contains definitions about topology that do not require imports
-other than `Mathlib/Data/Set/Lattice`.
+other than `Mathlib.Data.Set.Lattice`.
 
 ## Main definitions
 

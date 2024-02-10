@@ -16,7 +16,7 @@ import Mathlib.Data.Int.Basic
 
 This file provides basic results about `List.prod`, `List.sum`, which calculate the product and sum
 of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
-counterparts. These are defined in [`Data.List.BigOperators.Defs`](./Defs).
+counterparts. These are defined in `Mathlib.Data.List.BigOperators.Defs`
 -/
 
 variable {ι α M N P M₀ G R : Type*}
