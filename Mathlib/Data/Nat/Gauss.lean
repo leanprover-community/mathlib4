@@ -283,13 +283,44 @@ theorem gauss_succ_self_right : ∀ n : ℕ, gauss (n + 1) n = (∑ i in range (
   | 0 => by simp
   | n + 1 => by rw [gauss_succ_succ, gauss_succ_self_right n, gauss_self, mul_one, ← sum_range_succ]
 
+@[simp]
+theorem gauss_symm {n k : ℕ} (hk : k ≤ n) : gauss n (n - k) = gauss n k :=
+  have h : q_factorial (n - k) * q_factorial (n - (n - k)) ≠ 0 :=
+    by apply_rules [q_factorial_ne_zero, mul_ne_zero]
+  mul_right_cancel₀ h <|
+  calc
+    n.gauss (n - k) * (q_factorial (n - k) * q_factorial (n - (n - k))) = q_factorial n :=
+        by rw [← mul_assoc, gauss_mul_q_factorial_mul_q_factorial (sub_le n k)]
+    _ = n.gauss k * q_factorial (n - k) * q_factorial (k) := by
+        rw [← gauss_mul_q_factorial_mul_q_factorial hk, mul_assoc, mul_comm (q_factorial k),
+          ← mul_assoc]
+    _ = n.gauss k * (q_factorial (n - k) * q_factorial (n - (n - k))) := by
+        rw [@Nat.sub_eq_of_eq_add n (n - k) k, ← mul_assoc]
+        rw [Nat.add_sub_of_le hk]
+
+theorem gauss_symm_of_eq_add {n a b : ℕ} (h : n = a + b) : gauss n a = gauss n b := by
+  suffices gauss n (n - b) = gauss n b by
+    rw [h, add_tsub_cancel_right] at this; rwa [h]
+  exact gauss_symm (h ▸ le_add_left _ _)
+
+theorem gauss_symm_add {a b : ℕ} : gauss (a + b) a = gauss (a + b) b :=
+  gauss_symm_of_eq_add rfl
+
+theorem gauss_symm_half (m : ℕ) : gauss (2 * m + 1) (m + 1) = gauss (2 * m + 1) m := by
+  apply gauss_symm_of_eq_add
+  rw [add_comm m 1, add_assoc 1 m m, add_comm (2 * m) 1, two_mul m]
+
+/-theorem gauss_succ_right_eq (n k : ℕ) : gauss n (k + 1) * (∑ i in range (k + 1), (X ^ i)) =
+  gauss n k * (∑ i in range (n - k), (X ^ i)) := by
+  have e : (∑ i in range (n + 1), (X ^ i)) * gauss n k = gauss n k * (∑ i in range (k + 1), (X ^ i))
+    + X ^ (k + 1) * gauss n (k + 1) * (∑ i in range (k + 1), (X ^ i)) := by
+    rw [← right_distrib, ← gauss_succ_succ, succ_mul_gauss_eq]
+  rw [← tsub_eq_of_eq_add_rev e, mul_comm, ← mul_tsub, add_tsub_add_eq_tsub_right]-/
 
 /-theorem gauss_eq_factorial_div_factorial {n k : ℕ} (hk : k ≤ n) :
     gauss n k = q_factorial n / (q_factorial k * q_factorial (n - k)) := by
   rw [← gauss_mul_factorial_mul_factorial hk, mul_assoc]
   exact (mul_div_left _ (mul_pos (factorial_pos _) (factorial_pos _))).symm-/
-
-theorem gauss_symm (n k : ℕ) : gauss n k = gauss n (n - k) := by sorry
 
 @[simp]
 theorem gauss_pred_right (n : ℕ) : gauss n (n - 1) = (∑ i in range n, (X ^ i) : ℕ[X]) := by
