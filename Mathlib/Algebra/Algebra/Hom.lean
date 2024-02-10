@@ -586,6 +586,10 @@ instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
   smul_mul := fun x y z => by ext; exact x.map_mul _ _
   smul_one := fun x => by ext; exact x.map_one
 
+@[simp]
+theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
+    f • x = Units.map (f : A →* A) x := rfl
+
 end MulDistribMulAction
 end Algebra
 
