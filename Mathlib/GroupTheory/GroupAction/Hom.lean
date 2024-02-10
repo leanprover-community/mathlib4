@@ -88,7 +88,8 @@ abbrev MulActionHom (M : Type _) (X Y : Type _) [SMul M X] [SMul M Y] := MulActi
 You should extend this class when you extend `MulActionHom`. -/
 class MulActionSemiHomClass (F : Type _)
     {M N : outParam (Type _)} (φ : outParam (M → N))
-    (X Y : outParam (Type _)) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop where
+    (X Y : outParam (Type _)) [SMul M X] [SMul N Y] [FunLike F X Y] : Prop
+   where
   /-- The proposition that the function preserves the action. -/
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 #align smul_hom_class MulActionSemiHomClass
@@ -112,7 +113,7 @@ theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
     (f : F) (c : M) (x : X) : f (c • x) = c • f x :=
   map_smulₛₗ f c x
 
-attribute [simp] map_smulₛₗ
+-- attribute [simp] map_smulₛₗ
 
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
@@ -145,7 +146,7 @@ instance [MulActionSemiHomClass F φ X Y] : CoeTC F (X →ₑ[φ] Y) :=
 
 variable (M' X Y F) in
 /-- If Y/X/M forms a scalar tower, any map X → Y preserving X-action also preserves M-action. -/
-def _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTower M' X Y]
+theorem _root_.IsScalarTower.smulHomClass [MulOneClass X] [SMul X Y] [IsScalarTower M' X Y]
     [MulActionHomClass F X X Y] : MulActionHomClass F M' X Y where
   map_smulₛₗ f m x := by
     rw [← mul_one (m • x), ← smul_eq_mul, map_smul, smul_assoc, ← map_smul,
@@ -465,7 +466,7 @@ class DistribMulActionSemiHomClass (F : Type _)
     [Monoid M] [Monoid N]
     [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction N B]
     [FunLike F A B]
-    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B
+    extends MulActionSemiHomClass F φ A B, AddMonoidHomClass F A B : Prop
 #align distrib_mul_action_hom_class DistribMulActionSemiHomClass
 
 /-- `DistribMulActionHomClass F M A B` states that `F` is a type of morphisms preserving
@@ -796,7 +797,7 @@ class MulSemiringActionSemiHomClass (F : Type _)
     (φ : outParam (M → N))
     (R S : outParam (Type _)) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction N S] [FunLike F R S]
-    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
+    extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S : Prop
 #align mul_semiring_action_hom_class MulSemiringActionSemiHomClass
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving

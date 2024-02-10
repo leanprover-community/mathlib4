@@ -120,7 +120,7 @@ class SemilinearMapClass (F : Type*)
     {R S : outParam (Type*)} [Semiring R] [Semiring S] (σ : outParam (R →+* S))
     (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module S M₂] [FunLike F M M₂]
-    extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
+    extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂ : Prop
   -- where
   -- /-- A semilinear map preserves scalar multiplication up to some ring homomorphism `σ`.
   -- See also `_root_.map_smul` for the case where `σ` is the identity. -/
