@@ -318,7 +318,7 @@ lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsFini
     _ = (c • (∫ x, g x ∂μ')) / ∫ x, g x ∂μ := by simp
     _ = c • ((∫ x, g x ∂μ') / ∫ x, g x ∂μ) := smul_div_assoc c _ _
     _ = c • haarScalarFactor μ' μ := by
-      rw [←haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero]
+      rw [← haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero]
 
 @[to_additive (attr := simp) addHaarScalarFactor_self_eq_one]
 lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsFiniteMeasureOnCompacts μ]
