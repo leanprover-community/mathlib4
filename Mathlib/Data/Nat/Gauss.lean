@@ -59,7 +59,7 @@ lemma degree_sum (n : ℕ) : degree (∑ i in range (n + 1), (X ^ i) : ℚ[X]) �
       (max_le (le_trans hn (WithBot.coe_le_coe.2 (le_succ n)))
       (le_of_eq (@degree_X_pow ℚ _ _ (n + 1))))
 
-lemma degree_sum_eq (n : ℕ) : degree (∑ i in range (n + 1), (X ^ i) : ℤ[X]) = n := by
+lemma degree_sum_eq (n : ℕ) : degree (∑ i in range (n + 1), (X ^ i) : ℕ[X]) = n := by
   induction' n with n hn
   · rw [range_one, sum_singleton]
     simp
@@ -68,7 +68,7 @@ lemma degree_sum_eq (n : ℕ) : degree (∑ i in range (n + 1), (X ^ i) : ℤ[X]
     apply WithBot.lt_coe_iff.2 fun a hna => by simp [← WithBot.coe_eq_coe.1 hna]
 
 /-- `q_factorial n` is the q-analog factorial of `n`. -/
-def q_factorial : ℕ → ℤ[X]
+def q_factorial : ℕ → ℕ[X]
   | 0 => 1
   | succ n => (∑ i in range (n + 1), (X ^ i)) * q_factorial n
 
@@ -152,7 +152,7 @@ theorem gauss'_recurrence (n k : ℕ) : (gauss' (succ n) (succ k)) =
 
 /-- `gauss n k`, when evaluated at a prime power `q`, is the number of `k`-dimensional subspaces
   in an `n`-dimensional vector space over `fin q → 𝔽`. Also known as Gaussian binomial coefficients. -/
-def gauss : ℕ → ℕ → ℤ[X]
+def gauss : ℕ → ℕ → ℕ[X]
   | _, 0 => 1
   | 0, _ + 1 => 0
   | n + 1, k + 1 => gauss n k + X ^ (k + 1) * gauss n (k + 1)
@@ -200,7 +200,7 @@ theorem gauss_succ_self (n : ℕ) : gauss n (succ n) = 0 :=
   gauss_eq_zero_of_lt (lt_succ_self _)
 
 @[simp]
-theorem gauss_one_right (n : ℕ) : gauss n 1 = (∑ i in range n, (X ^ i) : ℤ[X]) := by
+theorem gauss_one_right (n : ℕ) : gauss n 1 = (∑ i in range n, (X ^ i) : ℕ[X]) := by
   induction n <;> simp [*, gauss, sum_range_succ', add_comm, ← monomial_one_one_eq_X, mul_sum,
   monomial_mul_monomial]
 
@@ -243,16 +243,43 @@ theorem gauss_mul_q_factorial_mul_q_factorial : ∀ {n k}, k ≤ n →
         (le_of_lt (succ_lt_succ_iff.1 hk₁)), add_comm]
     · rw [hk₁]; simp [hk₁, mul_comm, gauss, tsub_self]
 
--- don't have mul_right_cancel instance for ℤ[X]
+instance : IsRightCancelMulZero (ℕ[X]) where
+  mul_right_cancel_of_ne_zero := by
+    intro a b c hb h_eq
+    have h_inj: Function.Injective (Polynomial.map Int.ofNatHom) :=
+      fun f g hfg => by simpa [Polynomial.ext_iff] using hfg
+    apply_fun Polynomial.map Int.ofNatHom using h_inj
+    apply_fun Polynomial.map Int.ofNatHom at h_eq
+    simp only [Polynomial.map_mul, mul_eq_mul_right_iff] at h_eq
+    obtain (h | h) := h_eq
+    · exact h
+    refine (hb ?_).elim
+    rwa [Polynomial.map_eq_zero_iff] at h
+    exact RingHom.injective_nat Int.ofNatHom
+
 theorem gauss_mul {n k s : ℕ} (hkn : k ≤ n) (hsk : s ≤ k) :
     n.gauss k * k.gauss s = n.gauss s * (n - s).gauss (k - s) :=
   have h : q_factorial (n - k) * q_factorial (k - s) * q_factorial s ≠ 0 :=
     by apply_rules [q_factorial_ne_zero, mul_ne_zero]
   mul_right_cancel₀ h <|
-  sorry
+  calc
+    n.gauss k * k.gauss s * (q_factorial (n - k) * q_factorial (k - s) * q_factorial s) =
+        n.gauss k * (k.gauss s * q_factorial s * q_factorial (k - s)) * q_factorial (n - k) :=
+      by rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc _ (q_factorial s), mul_assoc,
+        mul_comm (q_factorial (n - k)), mul_comm (q_factorial s)]
+    _ = q_factorial n :=
+      by rw [gauss_mul_q_factorial_mul_q_factorial hsk, gauss_mul_q_factorial_mul_q_factorial hkn]
+    _ = n.gauss s * q_factorial s * ((n - s).gauss (k - s) * q_factorial (k - s)
+      * q_factorial (n - s - (k - s))) :=
+      by rw [gauss_mul_q_factorial_mul_q_factorial (tsub_le_tsub_right hkn _),
+        gauss_mul_q_factorial_mul_q_factorial (hsk.trans hkn)]
+    _ = n.gauss s * (n - s).gauss (k - s) * (q_factorial (n - k) * q_factorial (k - s)
+      * q_factorial s) :=
+      by rw [tsub_tsub_tsub_cancel_right hsk, mul_assoc, mul_left_comm (q_factorial s), mul_assoc,
+        mul_comm (q_factorial (k - s)), mul_comm (q_factorial s), mul_right_comm, ← mul_assoc]
 
 @[simp]
-theorem gauss_succ_self_right : ∀ n : ℕ, gauss (n + 1) n = (∑ i in range (n + 1), (X ^ i) : ℤ[X])
+theorem gauss_succ_self_right : ∀ n : ℕ, gauss (n + 1) n = (∑ i in range (n + 1), (X ^ i) : ℕ[X])
   | 0 => by simp
   | n + 1 => by rw [gauss_succ_succ, gauss_succ_self_right n, gauss_self, mul_one, ← sum_range_succ]
 
@@ -265,7 +292,7 @@ theorem gauss_succ_self_right : ∀ n : ℕ, gauss (n + 1) n = (∑ i in range (
 theorem gauss_symm (n k : ℕ) : gauss n k = gauss n (n - k) := by sorry
 
 @[simp]
-theorem gauss_pred_right (n : ℕ) : gauss n (n - 1) = (∑ i in range n, (X ^ i) : ℤ[X]) := by
+theorem gauss_pred_right (n : ℕ) : gauss n (n - 1) = (∑ i in range n, (X ^ i) : ℕ[X]) := by
   induction n <;> simp [*, gauss, sum_range_succ', add_comm, ← monomial_one_one_eq_X, mul_sum,
   monomial_mul_monomial]
   sorry
