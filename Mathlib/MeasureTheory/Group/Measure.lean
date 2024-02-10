@@ -568,6 +568,20 @@ instance Measure.Regular.inv [ContinuousInv G] [Regular μ] : Regular μ.inv :=
 instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerRegular μ.inv :=
   InnerRegular.map (Homeomorph.inv G)
 
+/-- The image of an inner regular measure under map of a left action is again inner regular. -/
+@[to_additive
+   "The image of a inner regular measure under map of a left additive action is again
+    inner regular"]
+instance innerRegular_map_smul {α} [BorelSpace G] [TopologicalGroup G] [Group α] [MulAction α G]
+    [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G] [ContinuousConstSMul α G]
+    [InnerRegular μ] (a : α) : InnerRegular (Measure.map (a • · : G → G) μ) :=
+  InnerRegular.map_of_continuous (continuous_const_smul a)
+
+/-- The image of an inner regular measure under right multiplication is again inner regular. -/
+@[to_additive "The image of a Haar measure under right addition is again a Haar measure."]
+instance innerRegular_map_mul_right [BorelSpace G] [TopologicalGroup G] [InnerRegular μ] (g : G) :
+    InnerRegular (Measure.map (· * g) μ) := innerRegular_map_smul (MulOpposite.op g)
+
 variable [TopologicalGroup G]
 
 @[to_additive]
