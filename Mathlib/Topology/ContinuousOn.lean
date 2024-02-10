@@ -1385,3 +1385,17 @@ theorem ContinuousOn.tendsto_nhdsSet {f : α → β} {s s' : Set α} {t : Set β
   · intro h
     rw [← mem_preimage]
     exact mem_of_mem_inter_right h
+
+/-- Preimage of a set neighborhood of `t` under a continuous map `f` is a set neighborhood of `s`
+provided that `f` maps `s` to `t`.  -/
+theorem Continuous.tendsto_nhdsSet {f : α → β} {s : Set α} {t : Set β} (hf : Continuous f)
+    (hst : MapsTo f s t) : Tendsto f (𝓝ˢ s) (𝓝ˢ t) :=
+  ((hasBasis_nhdsSet s).tendsto_iff (hasBasis_nhdsSet t)).mpr fun U hU =>
+    ⟨f ⁻¹' U, ⟨hU.1.preimage hf, hst.mono Subset.rfl hU.2⟩, fun _ => id⟩
+#align continuous.tendsto_nhds_set Continuous.tendsto_nhdsSet
+
+lemma Continuous.tendsto_nhdsSet_nhds {f : α → β} {s : Set α} {b : β}
+    (h : Continuous f) (h' : EqOn f (fun _ ↦ b) s) :
+    Tendsto f (𝓝ˢ s) (𝓝 b) := by
+  rw [← nhdsSet_singleton]
+  exact h.tendsto_nhdsSet h'
