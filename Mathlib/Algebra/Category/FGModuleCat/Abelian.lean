@@ -25,6 +25,9 @@ namespace FGModuleCat
 
 variable {M N : FGModuleCat R} (f : M ⟶ N)
 
+/--
+A monomorphism between finitely generated modules is a normal monomorphism
+-/
 noncomputable def normalMono (hf : Mono f) : NormalMono f where
   Z := of R (N ⧸ LinearMap.range f)
   g := f.range.mkQ
@@ -36,6 +39,9 @@ noncomputable def normalMono (hf : Mono f) : NormalMono f where
           (LinearMap.quotKerEquivRange f ≪≫ₗ
           LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext; rfl
 
+/--
+An epimorphism between finitely generated modules is a normal epimorphism
+-/
 noncomputable def normalEpi (hf : Epi f) : NormalEpi f where
   W := of R (LinearMap.ker f)
   g := (LinearMap.ker f).subtype
