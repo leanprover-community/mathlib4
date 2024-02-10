@@ -303,31 +303,37 @@ lemma haarScalarFactor_pos_of_isOpenPosMeasure (μ' μ : Measure G) [IsFiniteMea
   simp only [H, zero_smul, integral_zero_measure] at this
   linarith
 
-@[to_additive addHaarScalarFactor_of_eq_smul]
-lemma haarScalarFactor_of_eq_smul [LocallyCompactSpace G]
-    (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts μ']
-    [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] [IsOpenPosMeasure μ]
-    {c : ℝ≥0} (smul_eq : μ' = c • μ) : haarScalarFactor μ' μ = c := by
+@[to_additive (attr := simp) addHaarScalarFactor_smul]
+lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsFiniteMeasureOnCompacts μ]
+    [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ] [IsMulLeftInvariant μ']
+    [IsOpenPosMeasure μ] {c : ℝ≥0} : haarScalarFactor (c • μ') μ = c • haarScalarFactor μ' μ := by
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
       ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_nonzero : ∫ x, g x ∂μ ≠ 0 := ne_of_gt
+  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 := ne_of_gt
     (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
   apply NNReal.coe_injective
   calc
-    haarScalarFactor μ' μ = (∫ x, g x ∂μ') / ∫ x, g x ∂μ := haarScalarFactor_eq_integral_div _ _
-      g_cont g_comp int_g_nonzero
-    _ = (∫ x, g x ∂(c • μ)) / ∫ x, g x ∂μ := by rw [smul_eq]
-    _ = c • (∫ x, g x ∂μ) / ∫ x, g x ∂μ := by simp
-    _ = c * (∫ x, g x ∂μ) / ∫ x, g x ∂μ := rfl
-    _ = c := by simp [int_g_nonzero]
+    haarScalarFactor (c • μ') μ = (∫ x, g x ∂(c • μ')) / ∫ x, g x ∂μ :=
+      haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero
+    _ = (c • (∫ x, g x ∂μ')) / ∫ x, g x ∂μ := by simp
+    _ = c • ((∫ x, g x ∂μ') / ∫ x, g x ∂μ) := smul_div_assoc c _ _
+    _ = c • haarScalarFactor μ' μ := by
+      rw [←haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero]
 
-@[to_additive]
+@[to_additive (attr := simp) addHaarScalarFactor_self_eq_one]
 lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsFiniteMeasureOnCompacts μ]
     [IsMulLeftInvariant μ] [IsOpenPosMeasure μ] : haarScalarFactor μ μ = 1 := by
   by_cases hG : LocallyCompactSpace G; swap
   · simp [haarScalarFactor, hG]
-  apply haarScalarFactor_of_eq_smul
-  simp only [one_smul]
+  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
+      ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 := ne_of_gt
+    (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+  apply NNReal.coe_injective
+  calc
+    haarScalarFactor μ μ = (∫ x, g x ∂μ) / ∫ x, g x ∂μ :=
+      haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero
+    _ = 1 := div_self int_g_ne_zero
 
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite on
 compacts and inner regular for finite measure sets with respect to compact sets,
