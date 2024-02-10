@@ -18,53 +18,42 @@ n-ary generalizations of the binary `curry` and `uncurry`.
 
 * `Function.OfArity.uncurry`: convert an `n`-ary function to a function from `Fin n → α`.
 * `Function.OfArity.curry`: convert a function from `Fin n → α` to an `n`-ary function.
-* `Function.OfHArity.uncurry`: convert an `p`-ary heterogeneous function to a
+* `Function.FromTypes.uncurry`: convert an `p`-ary heterogeneous function to a
   function from `(i : Fin n) → p i`.
-* `Function.OfHArity.curry`: convert a function from `(i : Fin n) → p i` to a
+* `Function.FromTypes.curry`: convert a function from `(i : Fin n) → p i` to a
   `p`-ary heterogeneous function.
 
 -/
 
 universe u v w w'
 
-namespace Function
-
-/-- Currying for 3-ary functions. -/
-@[inline] def curry₃ {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'} :
-    (α × β × γ → δ) → α → β → γ → δ := fun f a b c => f (a, b, c)
-/-- Uncurrying for 3-ary functions. -/
-@[inline] def uncurry₃ {α : Type u} {β : Type v} {γ : Type w} {δ : Type w'} :
-    (α → β → γ → δ) → (α × β × γ) → δ := fun f x => f x.1 x.2.1 x.2.2
-
-end Function
-
-namespace Function.OfHArity
+namespace Function.FromTypes
 
 open Matrix (vecCons vecHead vecTail vecEmpty)
 
-/-- Uncurry all the arguments of `Function.OfHArity p τ` to get
+/-- Uncurry all the arguments of `Function.FromTypes p τ` to get
 a function from a tuple.
 
 Note this can be used on raw functions if used. -/
 def uncurry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
-    (f : Function.OfHArity p τ) → ((i : Fin n) → p i) → τ
+    (f : Function.FromTypes p τ) → ((i : Fin n) → p i) → τ
   | 0    , _, _, f => fun _    => f
   | _ + 1, _, _, f => fun args => (f (args 0)).uncurry (args ∘' Fin.succ)
 
-/-- Curry all the arguments of `Function.OfHArity p τ` to get a function from a tuple. -/
+/-- Curry all the arguments of `Function.FromTypes p τ` to get a function from a tuple. -/
 def curry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
-    (((i : Fin n) → p i) → τ) → Function.OfHArity p τ
+    (((i : Fin n) → p i) → τ) → Function.FromTypes p τ
   | 0    , _, _, f => f isEmptyElim
   | _ + 1, _, _, f => fun a => curry (fun args => f (Fin.cons a args))
 
 @[simp]
 theorem uncurry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}
-    (f : Function.OfHArity (vecCons α p) τ) (a : α) (args : (i : Fin n) → p i) :
+    (f : Function.FromTypes (vecCons α p) τ) (a : α) (args : (i : Fin n) → p i) :
     uncurry f (Fin.cons a args) = @uncurry _ p _ (f a) args := rfl
 
 @[simp low]
 theorem uncurry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
-    (f : Function.OfHArity p τ) (args : (i : Fin (n + 1)) → p i) :
+    (f : Function.FromTypes p τ) (args : (i : Fin (n + 1)) → p i) :
     uncurry f args = uncurry (f (args 0)) (Fin.tail args) :=
   @uncurry_apply_cons n (p 0) (vecTail p) τ f (args 0) (Fin.tail args)
 
@@ -81,7 +70,7 @@ theorem curry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
 variable {n : ℕ} {p : Fin n → Type u} {τ : Type u}
 
 @[simp]
-theorem curry_uncurry (f : Function.OfHArity p τ) : curry (uncurry f) = f := by
+theorem curry_uncurry (f : Function.FromTypes p τ) : curry (uncurry f) = f := by
   induction n with
   | zero => rfl
   | succ n ih => exact funext (ih $ f .)
@@ -96,7 +85,7 @@ theorem uncurry_curry (f : ((i : Fin n) → p i) → τ) :
 
 /-- `Equiv.curry` for `p`-ary heterogeneous functions. -/
 @[simps]
-def curryEquiv (p : Fin n → Type u) : (((i : Fin n) → p i) → τ) ≃ OfHArity p τ where
+def curryEquiv (p : Fin n → Type u) : (((i : Fin n) → p i) → τ) ≃ FromTypes p τ where
   toFun := curry
   invFun := uncurry
   left_inv := uncurry_curry
@@ -107,18 +96,10 @@ lemma curry_2_eq_curry {p : Fin 2 → Type u} {τ : Type u}
     curry f = Function.curry (f ∘ (piFinTwoEquiv p).symm) := rfl
 
 lemma uncurry_2_eq_uncurry (p : Fin 2 → Type u) (τ : Type u)
-    (f : Function.OfHArity p τ) :
+    (f : Function.FromTypes p τ) :
     uncurry f = Function.uncurry f ∘ piFinTwoEquiv p := rfl
 
-lemma curry_3_eq_curry₃ {p : Fin 3 → Type u} {τ : Type u}
-    (f : ((i : Fin 3) → p i) → τ) :
-    curry f = curry₃ (f ∘ (piFinThreeEquiv p).symm) := rfl
-
-lemma uncurry_3_eq_uncurry₃ (p : Fin 3 → Type u) (τ : Type u)
-    (f : Function.OfHArity p τ) :
-    uncurry f = uncurry₃ f ∘ piFinThreeEquiv p := rfl
-
-end Function.OfHArity
+end Function.FromTypes
 
 namespace Function.OfArity
 
@@ -127,38 +108,30 @@ variable {α β : Type u}
 /-- Uncurry all the arguments of `Function.OfArity α n` to get a function from a tuple.
 
 Note this can be used on raw functions if used. -/
-def uncurry {n} (f : Function.OfArity α β n) : (Fin n → α) → β := OfHArity.uncurry f
+def uncurry {n} (f : Function.OfArity α β n) : (Fin n → α) → β := FromTypes.uncurry f
 
 /-- Curry all the arguments of `Function.OfArity α β n` to get a function from a tuple. -/
-def curry {n} (f : (Fin n → α) → β) : Function.OfArity α β n := OfHArity.curry f
+def curry {n} (f : (Fin n → α) → β) : Function.OfArity α β n := FromTypes.curry f
 
 @[simp]
 theorem curry_uncurry {n} (f : Function.OfArity α β n) :
-    curry (uncurry f) = f := OfHArity.curry_uncurry f
+    curry (uncurry f) = f := FromTypes.curry_uncurry f
 
 @[simp]
 theorem uncurry_curry {n} (f : (Fin n → α) → β) :
-    uncurry (curry f) = f := OfHArity.uncurry_curry f
+    uncurry (curry f) = f := FromTypes.uncurry_curry f
 
 /-- `Equiv.curry` for n-ary functions. -/
 @[simps!]
 def curryEquiv (n : ℕ) : ((Fin n → α) → β) ≃ OfArity α β n :=
-  OfHArity.curryEquiv _
+  FromTypes.curryEquiv _
 
 lemma curry_2_eq_curry {α β : Type u} (f : ((i : Fin 2) → α) → β) :
     curry f = Function.curry (f ∘ (finTwoArrowEquiv α).symm) :=
-  OfHArity.curry_2_eq_curry f
+  FromTypes.curry_2_eq_curry f
 
 lemma uncurry_2_eq_uncurry {α β : Type u} (f : OfArity α β 2) :
     uncurry f = Function.uncurry f ∘ (finTwoArrowEquiv α) :=
-  OfHArity.uncurry_2_eq_uncurry _ _ f
-
-lemma curry_3_eq_curry₃ {α β : Type u} (f : ((i : Fin 3) → α) → β) :
-    curry f = curry₃ (f ∘ (finThreeArrowEquiv α).symm) :=
-  OfHArity.curry_3_eq_curry₃ f
-
-lemma uncurry_3_eq_uncurry₃ {α β : Type u} (f : OfArity α β 3) :
-    uncurry f = uncurry₃ f ∘ (finThreeArrowEquiv α) :=
-  OfHArity.uncurry_3_eq_uncurry₃ _ _ f
+  FromTypes.uncurry_2_eq_uncurry _ _ f
 
 end Function.OfArity
