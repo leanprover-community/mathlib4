@@ -24,7 +24,7 @@ The outline is that we define:
 
 * $k$ (`Q60596.K`) as the commutative ring $𝔽₂[α, β, γ] / (α², β², γ²)$
 * $L$ (`Q60596.L`) as the $k$-module $⟨x,y,z⟩ / ⟨αx + βy + γz⟩$
-* $Q$ (`Q60596.Q`) as the quadratic form sending $Q(\overline{ax + by = cz}) = a² + b² + c²$
+* $Q$ (`Q60596.Q`) as the quadratic form sending $Q(\overline{ax + by + cz}) = a² + b² + c²$
 
 and discover that $αβγ ≠ 0$ as an element of $K$, but $αβγ = 0$ as an element of $𝒞l(Q)$.
 
