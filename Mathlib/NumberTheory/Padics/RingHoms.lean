@@ -269,7 +269,7 @@ to coerce to rings of arbitrary characteristic, instead of only rings of charact
 This coercion is only a ring homomorphism if it coerces into a ring whose characteristic divides
 `p`. While this is not the case here we can still make use of the coercion.
 -/
-theorem toZMod_spec : x - (toZMod x : ℤ_[p]) ∈ maximalIdeal ℤ_[p] := by
+theorem toZMod_spec : x - (ZMod.cast (toZMod x) : ℤ_[p]) ∈ maximalIdeal ℤ_[p] := by
   convert sub_zmodRepr_mem x using 2
   dsimp [toZMod, toZModHom]
   rcases exists_eq_add_of_lt hp_prime.1.pos with ⟨p', rfl⟩
@@ -370,7 +370,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
   rw [show (x - (appr x n : ℤ_[p])).valuation = ((p : ℤ_[p]) ^ n * c).valuation by rw [hc]]
   rw [valuation_p_pow_mul _ _ hc', add_sub_cancel', _root_.pow_succ', ← mul_sub]
   apply mul_dvd_mul_left
-  obtain hc0 | hc0 := c.valuation.natAbs.eq_zero_or_pos
+  obtain hc0 | hc0 := eq_or_ne c.valuation.natAbs 0
   · simp only [hc0, mul_one, _root_.pow_zero]
     rw [mul_comm, unitCoeff_spec h] at hc
     suffices c = unitCoeff h by
@@ -382,10 +382,9 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
       rw [isUnit_iff, norm_eq_pow_val hc', hc0, neg_zero, zpow_zero]
     rw [DiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
     exact irreducible_p
-  · rw [zero_pow hc0]
-    simp only [sub_zero, ZMod.cast_zero, mul_zero]
+  · simp only [zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
     rw [unitCoeff_spec hc']
-    exact (dvd_pow_self (p : ℤ_[p]) hc0.ne').mul_left _
+    exact (dvd_pow_self (p : ℤ_[p]) hc0).mul_left _
 #align padic_int.appr_spec PadicInt.appr_spec
 
 /-- A ring hom from `ℤ_[p]` to `ZMod (p^n)`, with underlying function `PadicInt.appr n`. -/
@@ -441,7 +440,8 @@ theorem zmod_cast_comp_toZModPow (m n : ℕ) (h : m ≤ n) :
 #align padic_int.zmod_cast_comp_to_zmod_pow PadicInt.zmod_cast_comp_toZModPow
 
 @[simp]
-theorem cast_toZModPow (m n : ℕ) (h : m ≤ n) (x : ℤ_[p]) : ↑(toZModPow n x) = toZModPow m x := by
+theorem cast_toZModPow (m n : ℕ) (h : m ≤ n) (x : ℤ_[p]) :
+    ZMod.cast (toZModPow n x) = toZModPow m x := by
   rw [← zmod_cast_comp_toZModPow _ _ h]
   rfl
 #align padic_int.cast_to_zmod_pow PadicInt.cast_toZModPow
@@ -533,7 +533,7 @@ theorem nthHomSeq_one : nthHomSeq f_compat 1 ≈ 1 := by
   use 1
   intro j hj
   haveI : Fact (1 < p ^ j) := ⟨Nat.one_lt_pow _ _ (by linarith) hp_prime.1.one_lt⟩
-  suffices ((1 : ZMod (p ^ j)) : ℚ) = 1 by simp [nthHomSeq, nthHom, this, hε]
+  suffices (ZMod.cast (1 : ZMod (p ^ j)) : ℚ) = 1 by simp [nthHomSeq, nthHom, this, hε]
   rw [ZMod.cast_eq_val, ZMod.val_one, Nat.cast_one]
 #align padic_int.nth_hom_seq_one PadicInt.nthHomSeq_one
 

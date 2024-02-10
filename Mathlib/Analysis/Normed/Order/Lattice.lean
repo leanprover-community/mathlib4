@@ -63,7 +63,7 @@ theorem LatticeOrderedAddCommGroup.isSolid_ball (r : ℝ) :
 
 instance : HasSolidNorm ℝ := ⟨fun _ _ => id⟩
 
-instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le] ⟩
+instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le]⟩
 
 end SolidNorm
 
