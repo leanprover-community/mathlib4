@@ -181,7 +181,21 @@ lemma mono_of_injective [HasCoproduct (fun (k : (Set.range ι).compl) => X k.1)]
   mono_of_injective_aux X ι hι c c₁ hc hc₁ _ (colimit.isColimit _)
 
 end
+section
 
+variable [MonoCoprod C] (X : I → C) (c : Cofan X) (h : IsColimit c)
+
+lemma inj_mono_of_injective (i : I)
+    [HasCoproduct (fun (k : (Set.range (fun _ : Unit ↦ i)).compl) => X k.1)] :
+    Mono (Cofan.inj c i) := by
+  let ι : Unit → I := fun _ ↦ i
+  have hinj : Function.Injective ι := fun _ _ _ ↦ rfl
+  let c₁ : Cofan (X ∘ ι) := Cofan.mk (X i) (fun _ ↦ 𝟙 _)
+  let hc₁ : IsColimit c₁ := mkCofanColimit _ (fun s => s.inj ())
+  show Mono (Cofan.IsColimit.desc hc₁ (fun _ => c.inj i))
+  exact mono_of_injective X ι hinj c c₁ h hc₁
+
+end
 lemma mono_of_injective' [HasCoproduct (X ∘ ι)] [HasCoproduct X]
     [HasCoproduct (fun (k : (Set.range ι).compl) => X k.1)] :
     Mono (Sigma.desc (f := X ∘ ι) (fun i => Sigma.ι X (ι i))) :=
