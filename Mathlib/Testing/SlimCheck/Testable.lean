@@ -105,7 +105,7 @@ The constructors are:
 inductive TestResult (p : Prop) where
   | success : PSum Unit p → TestResult p
   | gaveUp : Nat → TestResult p
-  | failure : ¬ p → List String → Nat → TestResult p
+  | failure : ¬ p → List Lean.MessageData → Nat → TestResult p
   deriving Inhabited
 
 /-- Configuration for testing a property. -/
@@ -156,13 +156,13 @@ def NamedBinder (_n : String) (p : Prop) : Prop := p
 
 namespace TestResult
 
-def toString : TestResult p → String
+def toMessageData : TestResult p → Lean.MessageData
   | success (PSum.inl _) => "success (no proof)"
   | success (PSum.inr _) => "success (proof)"
   | gaveUp n => s!"gave {n} times"
-  | failure _ counters _ => s!"failed {counters}"
+  | failure _ counters _ => m!"failed {counters}"
 
-instance : ToString (TestResult p) := ⟨toString⟩
+instance : Lean.ToMessageData (TestResult p) := ⟨toMessageData⟩
 
 /-- Applicative combinator proof carrying test results. -/
 def combine {p q : Prop} : PSum Unit (p → q) → PSum Unit p → PSum Unit q
@@ -208,7 +208,7 @@ def iff (h : q ↔ p) (r : TestResult p) : TestResult q :=
 /-- When we assign a value to a universally quantified variable,
 we record that value using this function so that our counter-examples
 can be informative. -/
-def addInfo (x : String) (h : q → p) (r : TestResult p)
+def addInfo (x : Lean.MessageData) (h : q → p) (r : TestResult p)
     (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
   if let failure h2 xs n := r then
     failure (mt h h2) (x :: xs) n
@@ -216,9 +216,9 @@ def addInfo (x : String) (h : q → p) (r : TestResult p)
     imp h r p
 
 /-- Add some formatting to the information recorded by `addInfo`. -/
-def addVarInfo [Repr γ] (var : String) (x : γ) (h : q → p) (r : TestResult p)
+def addVarInfo [Lean.ToMessageData γ] (var : String) (x : γ) (h : q → p) (r : TestResult p)
     (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
-  addInfo s!"{var} := {repr x}" h r p
+  addInfo m!"{var} := {x}" h r p
 
 def isFailure : TestResult p → Bool
   | failure _ _ _ => true
@@ -244,7 +244,9 @@ open TestResult
 def runProp (p : Prop) [Testable p] : Configuration → Bool → Gen (TestResult p) := Testable.run
 
 /-- A `dbgTrace` with special formatting -/
-def slimTrace [Pure m] (s : String) : m PUnit := dbgTrace s!"[SlimCheck: {s}]" (λ _ => pure ())
+def slimTrace [Monad m] [Lean.MonadLog m] [Lean.AddMessageContext m] [Lean.MonadOptions m]
+    (s : Lean.MessageData) : m PUnit :=
+  Lean.logInfo m!"[SlimCheck: {s}]"
 
 instance andTestable [Testable p] [Testable q] : Testable (p ∧ q) where
   run := λ cfg min => do
@@ -369,6 +371,7 @@ instance varTestable [SampleableExt α] {β : α → Prop} [∀ x, Testable (β 
           pure <| ⟨x, r⟩
       else
         pure <| ⟨x, r⟩
+    let foo := @SampleableExt.proxyRepr α _
     pure <| addVarInfo var finalX (· <| SampleableExt.interp finalX) finalR
 
 /-- Test a universal property about propositions -/

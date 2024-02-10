@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Rat.Defs
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Testing.SlimCheck.Gen
 
@@ -111,7 +112,7 @@ For that purpose, `SampleableExt` provides a proxy representation
 as interpreted (using `interp`) as an object of the right type. -/
 class SampleableExt (α : Sort u) where
   proxy : Type v
-  [proxyRepr : Repr proxy]
+  [proxyRepr : Lean.ToExpr proxy]
   [shrink : Shrinkable proxy]
   sample : Gen proxy
   interp : proxy → α
@@ -123,7 +124,7 @@ namespace SampleableExt
 
 /-- Use to generate instance whose purpose is to simply generate values
 of a type directly using the `Gen` monad -/
-def mkSelfContained [Repr α] [Shrinkable α] (sample : Gen α) : SampleableExt α where
+def mkSelfContained [Lean.ToExpr α] [Shrinkable α] (sample : Gen α) : SampleableExt α where
   proxy := α
   proxyRepr := inferInstance
   shrink := inferInstance
@@ -196,6 +197,27 @@ section Samplers
 
 open SampleableExt
 
+open Qq
+def _root_.Lean.Expr.ofNatQ (α : Q(Type u)) (_aα : Q(AddMonoidWithOne $α)) : ℕ → Q($α)
+  | 0 => q(0)
+  | 1 => q(1)
+  | n + 2 =>
+    have ne : Q(ℕ) := Lean.mkRawNatLit n
+    have ne2 : Q(ℕ) := Lean.mkRawNatLit (n + 2)
+    letI : $ne2 =Q $ne + 2 := ⟨⟩
+    q(OfNat.ofNat $ne2)
+
+def _root_.Lean.Expr.ofIntQ (α : Q(Type u)) (_aα : Q(AddGroupWithOne $α)) : ℤ → Q($α)
+  | .ofNat n => Lean.Expr.ofNatQ α q(inferInstance) n
+  | .negSucc n => q(-$(Lean.Expr.ofNatQ α q(inferInstance) (n + 1)))
+
+def _root_.Lean.Expr.ofRatQ (α : Q(Type u)) (_aα : Q(AddGroupWithOne $α)) (_dα : Q(Div $α)) (q : Rat) :
+    Q($α) :=
+  if q.den = 1 then
+    Lean.Expr.ofIntQ α q(inferInstance) q.num
+  else
+    q($(Lean.Expr.ofIntQ α q(inferInstance) q.num) / $(Lean.Expr.ofNatQ α q(inferInstance) q.den))
+
 instance Nat.sampleableExt : SampleableExt Nat :=
   mkSelfContained (do choose Nat 0 (← getSize) (Nat.zero_le _))
 
@@ -204,10 +226,20 @@ instance Fin.sampleableExt {n : Nat} : SampleableExt (Fin (n.succ)) :=
     simp only [Fin.ofNat, Fin.val_zero]
     exact Nat.zero_le _))
 
+instance : Lean.ToExpr Int where
+  toExpr z := Lean.Expr.ofIntQ q(ℤ) q(inferInstance) z
+  toTypeExpr := q(Int)
+
 instance Int.sampleableExt : SampleableExt Int :=
   mkSelfContained (do
     choose Int (-(← getSize)) (← getSize)
       (le_trans (Int.neg_nonpos_of_nonneg (Int.ofNat_zero_le _)) (Int.ofNat_zero_le _)))
+
+
+open Qq in
+instance : Lean.ToExpr Rat where
+  toExpr x := Lean.Expr.ofRatQ q(Rat) q(inferInstance) q(inferInstance) x
+  toTypeExpr := q(Rat)
 
 instance Rat.sampleableExt : SampleableExt Rat :=
   mkSelfContained (do
@@ -266,12 +298,12 @@ def mk (x : α) : NoShrink α := x
 def get (x : NoShrink α) : α := x
 
 instance inhabited [inst : Inhabited α] : Inhabited (NoShrink α) := inst
-instance repr [inst : Repr α] : Repr (NoShrink α) := inst
+instance toExpr [inst : Lean.ToExpr α] : Lean.ToExpr (NoShrink α) := inst
 
 instance shrinkable : Shrinkable (NoShrink α) where
   shrink := λ _ => []
 
-instance sampleableExt [SampleableExt α] [Repr α] : SampleableExt (NoShrink α) :=
+instance sampleableExt [SampleableExt α] [Lean.ToExpr α] : SampleableExt (NoShrink α) :=
   SampleableExt.mkSelfContained <| (NoShrink.mk ∘ SampleableExt.interp) <$> SampleableExt.sample
 
 end NoShrink
