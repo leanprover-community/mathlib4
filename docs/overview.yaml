@@ -130,7 +130,7 @@ General algebra:
     quadratic reciprocity: 'legendreSym.quadratic_reciprocity'
     "solutions to Pell's equation": 'Pell.pell'
     "Matiyasevič's theorem": 'Pell.matiyasevic'
-    arithmetic functions: 'Nat.ArithmeticFunction'
+    arithmetic functions: 'ArithmeticFunction'
     Bernoulli numbers: 'bernoulli'
     Chevalley-Warning theorem: 'char_dvd_card_solutions'
     "Hensel's lemma (for $\\mathbb{Z}_p$)": 'hensels_lemma'

@@ -455,9 +455,9 @@ set_option linter.uppercaseLean3 false in
 
 section ArithmeticFunction
 
-open Nat.ArithmeticFunction
+open ArithmeticFunction
 
-open scoped Nat.ArithmeticFunction
+open scoped ArithmeticFunction
 
 /-- `cyclotomic n R` can be expressed as a product in a fraction field of `R[X]`
   using Möbius inversion. -/
