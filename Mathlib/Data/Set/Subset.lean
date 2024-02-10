@@ -102,7 +102,7 @@ lemma image_val_diff : (↑(D \ E) : Set α) = ↑D \ ↑E := image_diff Subtype
 
 @[simp]
 lemma image_val_compl : ↑(Dᶜ) = A \ ↑D := by
-  rw [compl_eq_univ_diff, image_val_diff, image_val_univ]
+  rw [compl_eq_univ_diff, image_val_diff, image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
 
 @[simp]
 lemma image_val_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by
