@@ -405,10 +405,8 @@ theorem integrable_iff_integrableAtFilter_atBot [LinearOrder X] [OrderTop X] [Co
   exact h.1.filter_mono cocompact_le_atBot
 
 theorem integrable_iff_integrableAtFilter_atTop [LinearOrder X] [OrderBot X] [CompactIccSpace X] :
-    Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ := by
-  use fun hf ↦ ⟨hf.integrableAtFilter _, hf.locallyIntegrable⟩
-  refine fun h ↦ integrable_iff_integrableAtFilter_cocompact.mpr ⟨?_, h.2⟩
-  exact h.1.filter_mono cocompact_le_atTop
+    Integrable f μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrable f μ :=
+  integrable_iff_integrableAtFilter_atBot (X := Xᵒᵈ)
 
 variable {a : X}
 
@@ -421,12 +419,8 @@ theorem integrableOn_Iic_iff_integrableAtFilter_atBot [LinearOrder X] [CompactIc
   exact h.integrableOn_compact_subset Icc_subset_Iic_self isCompact_Icc
 
 theorem integrableOn_Ici_iff_integrableAtFilter_atTop [LinearOrder X] [CompactIccSpace X] :
-    IntegrableOn f (Ici a) μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrableOn f (Ici a) μ := by
-  refine ⟨fun h ↦ ⟨⟨Ici a, Ici_mem_atTop a, h⟩, h.locallyIntegrableOn⟩, fun ⟨⟨s, hsl, hs⟩, h⟩ ↦ ?_⟩
-  haveI : Nonempty X := Nonempty.intro a
-  obtain ⟨a', ha'⟩ := mem_atTop_sets.mp hsl
-  refine (integrableOn_union.mpr ⟨?_, hs.mono ha' le_rfl⟩).mono Ici_subset_Icc_union_Ici le_rfl
-  exact h.integrableOn_compact_subset Icc_subset_Ici_self isCompact_Icc
+    IntegrableOn f (Ici a) μ ↔ IntegrableAtFilter f atTop μ ∧ LocallyIntegrableOn f (Ici a) μ :=
+  integrableOn_Iic_iff_integrableAtFilter_atBot (X := Xᵒᵈ)
 
 end MeasureTheory
 
