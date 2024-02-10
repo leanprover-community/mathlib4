@@ -85,7 +85,7 @@ theorem rightZigzag_idempotent_of_left_triangle
       simp [bicategoricalComp]; coherence
     _ = 𝟙 _ ⊗≫ g ◁ (η ▷ 𝟙 a ≫ (f ≫ g) ◁ η) ⊗≫ (ε ▷ (g ≫ f) ≫ 𝟙 b ◁ ε) ▷ g ⊗≫ 𝟙 _ := by
       rw [← whisker_exchange]; simp [bicategoricalComp]; coherence
-    _ = 𝟙 _ ⊗≫ g ◁ η ⊗≫ g ◁ leftZigzag η ε ▷ g ⊗≫ ε ▷ g ⊗≫ 𝟙 _ := by
+    _ = g ◁ η ⊗≫ g ◁ leftZigzag η ε ▷ g ⊗≫ ε ▷ g := by
       rw [← whisker_exchange,  ← whisker_exchange]; simp [leftZigzag, bicategoricalComp]; coherence
     _ = g ◁ η ⊗≫ ε ▷ g := by
       rw [h]; simp [bicategoricalComp]; coherence
