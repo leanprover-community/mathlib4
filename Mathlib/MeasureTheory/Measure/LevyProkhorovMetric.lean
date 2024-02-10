@@ -385,7 +385,8 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt
   · exact intble₁
   · exact intble₂.add <| integrable_const ε
 
-lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ) (εs : ℕ → ℝ) (εs_lim : Tendsto εs atTop (𝓝[>] 0))
+lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
+    (εs : ℕ → ℝ) (εs_lim : Tendsto εs atTop (𝓝[>] 0))
     {A : Set ℝ} (A_finmeas : volume A ≠ ∞) (μ : ProbabilityMeasure Ω) :
     Tendsto (fun n ↦ (∫ t in A, ENNReal.toReal (μ (thickening (εs n) {a | t ≤ f a})))) atTop
       (𝓝 (∫ t in A, ENNReal.toReal (μ {a | t ≤ f a}))) := by
@@ -439,7 +440,8 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
       simp only [gt_iff_lt, eventually_atTop, ge_iff_le, ne_eq, mem_map,
         mem_atTop_sets, mem_preimage, mem_Iio] at *
       specialize εs_pos n
-      have bound := BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (Ps n) P (ε := dist (μs n) ν + εs n) ?_ ?_ f ?_
+      have bound := BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt
+                      (Ps n) P (ε := dist (μs n) ν + εs n) ?_ ?_ f ?_
       · refine bound.trans ?_
         apply (add_le_add hn.le rfl.le).trans
         rw [BoundedContinuousFunction.integral_eq_integral_meas_le']
@@ -457,7 +459,8 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
       · rw [ENNReal.ofReal_add (by positivity) (by positivity), ← add_zero (levyProkhorovEDist _ _)]
         apply ENNReal.add_lt_add_of_le_of_lt (levyProkhorovEDist_ne_top _ _)
               (le_of_eq ?_) (ofReal_pos.mpr εs_pos)
-        rw [levyProkhorov_dist_def, levyProkhorovDist, ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
+        rw [levyProkhorov_dist_def, levyProkhorovDist,
+            ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
         rfl
       · exact eventually_of_forall f_nn
     · apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ε_of_room
