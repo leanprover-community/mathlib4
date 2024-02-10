@@ -80,7 +80,7 @@ In any base, we have `ofDigits b L = L.foldr (fun x y ↦ x + b * y) 0`.
 Note this differs from the existing `Nat.to_digits` in core, which is used for printing numerals.
 In particular, `Nat.to_digits b 0 = [0]`, while `digits b 0 = []`.
 -/
-def digits : ℕ → ℕ → List ℕ
+irreducible_def digits : ℕ → ℕ → List ℕ
   | 0 => digitsAux0
   | 1 => digitsAux1
   | b + 2 => digitsAux (b + 2) (by norm_num)
@@ -91,29 +91,29 @@ theorem digits_zero (b : ℕ) : digits b 0 = [] := by
   rcases b with (_ | ⟨_ | ⟨_⟩⟩) <;> simp [digits, digitsAux0, digitsAux1]
 #align nat.digits_zero Nat.digits_zero
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem digits_zero_zero : digits 0 0 = [] :=
-  rfl
+  digits_zero 0
 #align nat.digits_zero_zero Nat.digits_zero_zero
 
 @[simp]
-theorem digits_zero_succ (n : ℕ) : digits 0 n.succ = [n + 1] :=
-  rfl
+theorem digits_zero_succ (n : ℕ) : digits 0 n.succ = [n + 1] := by
+  rw [digits_def]; rfl
 #align nat.digits_zero_succ Nat.digits_zero_succ
 
 theorem digits_zero_succ' : ∀ {n : ℕ}, n ≠ 0 → digits 0 n = [n]
   | 0, h => (h rfl).elim
-  | _ + 1, _ => rfl
+  | _ + 1, _ => by rw [digits_def]; rfl
 #align nat.digits_zero_succ' Nat.digits_zero_succ'
 
 @[simp]
-theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
-  rfl
+theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 := by
+  rw [digits_def]; rfl
 #align nat.digits_one Nat.digits_one
 
--- @[simp] -- Porting note: dsimp can prove this
-theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
-  rfl
+@[simp]
+theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n := by
+  rw [digits_def]; rfl
 #align nat.digits_one_succ Nat.digits_one_succ
 
 theorem digits_add_two_add_one (b n : ℕ) :
@@ -130,7 +130,7 @@ theorem digits_def' :
     ∀ {b : ℕ} (_ : 1 < b) {n : ℕ} (_ : 0 < n), digits b n = (n % b) :: digits b (n / b)
   | 0, h => absurd h (by decide)
   | 1, h => absurd h (by decide)
-  | b + 2, _ => digitsAux_def _ (by simp) _
+  | b + 2, _ => by rw[digits_def]; exact digitsAux_def _ (by simp) _
 #align nat.digits_def' Nat.digits_def'
 
 @[simp]
@@ -145,7 +145,8 @@ theorem digits_add (b : ℕ) (h : 1 < b) (x y : ℕ) (hxb : x < b) (hxy : x ≠ 
   rcases exists_eq_add_of_le' h with ⟨b, rfl : _ = _ + 2⟩
   cases y
   · simp [hxb, hxy.resolve_right (absurd rfl)]
-  dsimp [digits]
+  rw [digits_def]
+  dsimp
   rw [digitsAux_def]
   · congr
     · simp [Nat.add_mod, mod_eq_of_lt hxb]
@@ -260,21 +261,22 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
 
 theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
   cases' b with b
-  · cases' n with n
+  · rw [digits_def]
+    cases' n with n
     · rfl
     · change ofDigits 0 [n + 1] = n + 1
       dsimp [ofDigits]
   · cases' b with b
     · induction' n with n ih
-      · rfl
-      · rw[show succ zero = 1 by rfl] at ih ⊢
+      · rw [digits_def]; rfl
+      · dsimp at ih ⊢
+        rw[show succ zero = 1 by rfl] at ih ⊢
         simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
     · apply Nat.strongInductionOn n _
       clear n
       intro n h
       cases n
-      · rw [digits_zero]
-        rfl
+      · rw [digits_def]; rfl
       · simp only [Nat.succ_eq_add_one, digits_add_two_add_one]
         dsimp [ofDigits]
         rw [h _ (Nat.div_lt_self' _ b)]
@@ -594,7 +596,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
-  · rfl
+  · rw [digits_def]; rfl
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]
