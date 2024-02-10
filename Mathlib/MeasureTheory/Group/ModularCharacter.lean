@@ -20,7 +20,7 @@ noncomputable def modularCharacter_map (μ : Measure G) [IsHaarMeasure μ] [Inne
     G → ℝ≥0 := fun g => haarScalarFactor (map (· * g) μ) μ
 
 /-- The modular character does not depend on the choice of the haar measure. -/
-@[to_additive]
+@[to_additive addModularCharacter_map_eq]
 theorem modularCharacter_map_eq (μ μ': Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ']
     [InnerRegular μ] [InnerRegular μ'] : modularCharacter_map μ' = modularCharacter_map μ := by
   ext g
