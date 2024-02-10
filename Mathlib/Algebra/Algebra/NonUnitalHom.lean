@@ -77,7 +77,7 @@ class NonUnitalAlgSemiHomClass (F : Type*)
     (A : outParam (Type*)) (B : outParam (Type*))
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
-    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
+    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B : Prop
 #align non_unital_alg_hom_class NonUnitalAlgSemiHomClass
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms

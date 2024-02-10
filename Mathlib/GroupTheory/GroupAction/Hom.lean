@@ -162,13 +162,12 @@ theorem ext {f g : X →ₑ[φ] Y} :
   DFunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
 
-theorem ext_iff [MulActionSemiHomClass F φ X Y] {f g : F} :
+theorem ext_iff  {f g : X →ₑ[φ] Y} :
     f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align mul_action_hom.ext_iff MulActionHom.ext_iff
 
-protected theorem congr_fun [MulActionSemiHomClass F φ X Y] {f g : F}
-    (h : f = g) (x : X) :
+protected theorem congr_fun {f g : X →ₑ[φ] Y} (h : f = g) (x : X) :
     f x = g x :=
   DFunLike.congr_fun h _
 #align mul_action_hom.congr_fun MulActionHom.congr_fun
