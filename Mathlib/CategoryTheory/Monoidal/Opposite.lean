@@ -168,9 +168,8 @@ end Iso
 
 namespace IsIso
 
-variable {X Y : C}
-
-instance (f : X ⟶ Y) [i : IsIso f] : IsIso (mop f) := i
+instance {X Y : C}    (f : X ⟶ Y) [i : IsIso f] : IsIso f.mop := i
+instance {X Y : Cᴹᵒᵖ} (f : X ⟶ Y) [i : IsIso f] : IsIso f.unmop := i
 
 end IsIso
 

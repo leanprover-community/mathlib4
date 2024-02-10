@@ -28,6 +28,10 @@ The rationale is that we are not carrying any additional data, just requiring a 
 * Construct the Drinfeld center of a monoidal category as a braided monoidal category.
 * Say something about pseudo-natural transformations.
 
+## References
+
+* [Pavel Etingof, Shlomo Gelaki, Dmitri Nikshych, Victor Ostrik, *Tensor categories*][egno15]
+
 -/
 
 
@@ -678,22 +682,15 @@ end Tensor
 namespace MonoidalOpposite
 
 instance instBraiding : BraidedCategory Cᴹᵒᵖ where
-  braiding X Y := ((reverseBraiding C).braiding (unmop Y) (unmop X)).mop
-  braiding_naturality_right X {_ _} f :=
-    (reverseBraiding C).braiding_naturality_left f.unmop (unmop X)
-  braiding_naturality_left {_ _} f Z :=
-    (reverseBraiding C).braiding_naturality_right (unmop Z) f.unmop
-  hexagon_forward X Y Z :=
-    (reverseBraiding C).hexagon_reverse (unmop Z) (unmop Y) (unmop X)
-  hexagon_reverse X Y Z :=
-    (reverseBraiding C).hexagon_forward (unmop Z) (unmop Y) (unmop X)
+  braiding X Y := (β_ (unmop Y) (unmop X)).mop
+  braiding_naturality_right X {_ _} f := braiding_naturality_left f.unmop (unmop X)
+  braiding_naturality_left {_ _} f Z := braiding_naturality_right (unmop Z) f.unmop
+  hexagon_forward X Y Z := hexagon_reverse (unmop Z) (unmop Y) (unmop X)
+  hexagon_reverse X Y Z := hexagon_forward (unmop Z) (unmop Y) (unmop X)
 
-@[simps!] def mopMonoidalFunctor : MonoidalFunctor C Cᴹᵒᵖ where
+@[simps!] def mopBraidedFunctor : BraidedFunctor C Cᴹᵒᵖ where
   μ X Y := (β_ (mop X) (mop Y)).hom
   ε := 𝟙 (𝟙_ Cᴹᵒᵖ)
-  μ_isIso X Y := inferInstanceAs (IsIso (β_ X Y).inv)
-  μ_natural_left f X' := braiding_naturality f.mop (𝟙 (mop X'))
-  μ_natural_right {X Y} X' f := braiding_naturality (𝟙 (mop X')) f.mop
   associativity X Y Z := by
     simp only [tensorHom_id, id_tensorHom]
     change (β_ (mop X) (mop Y)).hom ▷ (mop Z) ≫ (β_ (mop Y ⊗ mop X) (mop Z)).hom
@@ -714,12 +711,9 @@ instance instBraiding : BraidedCategory Cᴹᵒᵖ where
     $ Eq.trans (id_comp _) (braiding_leftUnitor Cᴹᵒᵖ (mop X))
   __ := mopFunctor C
 
-@[simps!] def unmopMonoidalFunctor : MonoidalFunctor Cᴹᵒᵖ C where
+@[simps!] def unmopBraidedFunctor : BraidedFunctor Cᴹᵒᵖ C where
   μ X Y := (β_ (unmop X) (unmop Y)).hom
   ε := 𝟙 (𝟙_ C)
-  μ_isIso X Y := inferInstanceAs (IsIso (β_ (unmop X) (unmop Y)).hom)
-  μ_natural_left f X' := braiding_naturality f.unmop (𝟙 (unmop X'))
-  μ_natural_right {X Y} X' f := braiding_naturality (𝟙 (unmop X')) f.unmop
   associativity X Y Z := by
     simp only [tensorHom_id, id_tensorHom]
     change (β_ (unmop X) (unmop Y)).hom ▷ (unmop Z) ≫ (β_ (unmop Y ⊗ unmop X) (unmop Z)).hom
