@@ -337,12 +337,11 @@ lemma integrableOn_of_meas_lt_top_of_norm_le {α : Type*} [MeasurableSpace α]
   exact (ofReal_norm_eq_coe_nnnorm (f a)).symm
 
 -- This might be the more useful variant.
-lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt
-    (μ ν : Measure Ω) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    {ε : ℝ} (ε_pos : 0 < ε) (hμν : levyProkhorovEDist μ ν < ENNReal.ofReal ε)
-    (f : Ω →ᵇ ℝ) (f_nn : 0 ≤ᵐ[μ] f) :
-    ∫ ω, f ω ∂μ ≤ (∫ t in Ioc 0 ‖f‖, ENNReal.toReal (ν (thickening ε {a | t ≤ f a}))) + ε * ‖f‖ :=
-    by
+lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Measure Ω)
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] {ε : ℝ} (ε_pos : 0 < ε)
+    (hμν : levyProkhorovEDist μ ν < ENNReal.ofReal ε) (f : Ω →ᵇ ℝ) (f_nn : 0 ≤ᵐ[μ] f) :
+    ∫ ω, f ω ∂μ
+      ≤ (∫ t in Ioc 0 ‖f‖, ENNReal.toReal (ν (thickening ε {a | t ≤ f a}))) + ε * ‖f‖ := by
   rw [BoundedContinuousFunction.integral_eq_integral_meas_le' f μ f_nn]
   have key : (fun (t : ℝ) ↦ ENNReal.toReal (μ {a | t ≤ f a}))
               ≤ (fun (t : ℝ) ↦ ENNReal.toReal (ν (thickening ε {a | t ≤ f a})) + ε) := by
