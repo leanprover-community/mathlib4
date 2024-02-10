@@ -154,7 +154,7 @@ end LittleWedderburn
 
 open LittleWedderburn
 
-/-- A finite division ring is a field. See `Finite.isDomain_to_isField` and
+/-- A finite division ring is a field. See `IsField.of_finite_of_isDomain` and
 `Fintype.divisionRingOfIsDomain` for more general statements, but these create data, and therefore
 may cause diamonds if used improperly. -/
 instance (priority := 100) littleWedderburn (D : Type*) [DivisionRing D] [Finite D] : Field D :=
@@ -164,9 +164,12 @@ instance (priority := 100) littleWedderburn (D : Type*) [DivisionRing D] [Finite
 alias Finite.divisionRing_to_field := littleWedderburn
 
 /-- A finite domain is a field. See also `littleWedderburn` and `Fintype.divisionRingOfIsDomain`. -/
-theorem Finite.isDomain_to_isField (D : Type*) [Finite D] [Ring D] [IsDomain D] : IsField D := by
+theorem IsField.of_finite_of_isDomain (D : Type*) [Finite D] [Ring D] [IsDomain D] : IsField D := by
   classical
   cases nonempty_fintype D
   let _ := Fintype.divisionRingOfIsDomain D
   let _ := littleWedderburn D
   exact Field.toIsField D
+
+@[deprecated (since := "2024-06-22")]
+alias Finite.isDomain_to_isField := IsField.of_finite_of_isDomain
