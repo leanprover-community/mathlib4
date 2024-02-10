@@ -52,11 +52,19 @@ instance : Algebra (𝒜 0) A := Algebra.ofSubring (SetLike.GradeZero.subring �
 
 open BigOperators Pointwise SetLike
 
+/--
+a finite homogeneous generating set of an ideal `I` is a set of non-zero homogeneous elements that
+spans `I`.
+-/
 structure HomogeneousGeneratingSetOf (I : Ideal A) where
-toFinset : Finset A
-homogeneous' : ∀ {a : A}, a ∈ toFinset → Homogeneous 𝒜 a
-ne_zero' : ∀ {a : A}, a ∈ toFinset → a ≠ 0
-span_eq : Ideal.span toFinset = I
+  /--the underlying set of a finite homogeneous generating set -/
+  toFinset : Finset A
+  /--every element is homogeneous -/
+  homogeneous' : ∀ {a : A}, a ∈ toFinset → Homogeneous 𝒜 a
+  /--every element is not zero-/
+  ne_zero' : ∀ {a : A}, a ∈ toFinset → a ≠ 0
+  /--the set spans the ideal-/
+  span_eq : Ideal.span toFinset = I
 
 namespace HomogeneousGeneratingSetOf
 
@@ -70,6 +78,7 @@ lemma homogeneous {a : A} (h : a ∈ S) : Homogeneous 𝒜 a := S.homogeneous' h
 
 lemma ne_zero {a : A} (h : a ∈ S) : a ≠ 0 := S.ne_zero' h
 
+/-- Since each elements is homogeneous, it has a degree-/
 noncomputable def deg {a : A} (h : a ∈ S) : ℕ :=
   S.homogeneous h |>.choose
 
@@ -77,6 +86,7 @@ lemma mem_deg {a : A} (h : a ∈ S) : a ∈ 𝒜 (S.deg h) :=
   S.homogeneous h |>.choose_spec
 
 variable (𝒜) in
+/-- An arbitrary chosen finite homogeneous generating set for the irrelevant ideal.-/
 noncomputable def Irrelevant :
     HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal :=
   let H := Ideal.fg_iff_homogeneously_fg _  |>.mp <|
@@ -236,7 +246,7 @@ def degreeMonomial
     (deg : ⦃a : A⦄ → (ha : a ∈ f.support) → ℕ) : ℕ :=
   ∑ i in f.support.attach, deg i.2 * f i
 
-@[simp] lemma degreeMonomial_zero : degreeMonomial (A := A) 0 (fun a h ↦ by simp at h) = 0 := by
+lemma degreeMonomial_zero : degreeMonomial (A := A) 0 (fun a h ↦ by simp at h) = 0 := by
   simp [degreeMonomial]
 
 lemma evalMonomial_mem_aux {ι : Type*} (s : Finset ι)
@@ -444,11 +454,18 @@ variable (ℳ : ℕ → AddSubgroup M) [SetLike.GradedSMul 𝒜 ℳ] [DirectSum.
 
 open BigOperators Pointwise SetLike
 
+/--
+a finite homogeneous generating set of a submodule `p` is a set of non-zero homogeneous elements
+that spans `p`.
+-/
 structure HomogeneousGeneratingSetOf (p : Submodule A M) where
-toFinset : Finset M
-homogeneous' : ∀ {m : M}, m ∈ toFinset → Homogeneous ℳ m
-ne_zero' : ∀ {m : M}, m ∈ toFinset → m ≠ 0
-span_eq : Submodule.span A toFinset = p
+  /--the underlying set of a finite homogeneous generating set -/
+  toFinset : Finset M
+  homogeneous' : ∀ {m : M}, m ∈ toFinset → Homogeneous ℳ m
+  /--every element is not zero-/
+  ne_zero' : ∀ {m : M}, m ∈ toFinset → m ≠ 0
+  /--the set spans the ideal-/
+  span_eq : Submodule.span A toFinset = p
 
 namespace HomogeneousGeneratingSetOf
 
@@ -462,6 +479,7 @@ lemma homogeneous {a : M} (h : a ∈ S) : Homogeneous ℳ a := S.homogeneous' h
 
 lemma ne_zero {a : M} (h : a ∈ S) : a ≠ 0 := S.ne_zero' h
 
+/-- Since each element is homogeneous, it has a degree. -/
 noncomputable def deg {a : M} (h : a ∈ S) : ℕ :=
   S.homogeneous h |>.choose
 
@@ -469,6 +487,7 @@ lemma mem_deg {a : M} (h : a ∈ S) : a ∈ ℳ (S.deg h) :=
   S.homogeneous h |>.choose_spec
 
 variable (A ℳ) in
+/-- An arbitrary chosen finite generating set for the top submodule. -/
 noncomputable def Top :
     HomogeneousGeneratingSetOf ℳ (⊤ : Submodule A M) :=
   let H := Submodule.fg_iff_homogeneously_fg (A := A) (ℳ := ℳ) (p := ⊤) |>.mp finite_module.out
