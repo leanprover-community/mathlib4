@@ -166,6 +166,14 @@ def mop (f : X ≅ Y) : mop X ≅ mop Y where
 
 end Iso
 
+namespace IsIso
+
+variable {X Y : C}
+
+instance (f : X ⟶ Y) [i : IsIso f] : IsIso (mop f) := i
+
+end IsIso
+
 variable [MonoidalCategory.{v₁} C]
 
 open Opposite MonoidalCategory
@@ -221,5 +229,54 @@ theorem mop_tensorObj (X Y : Cᴹᵒᵖ) : X ⊗ Y = mop (unmop Y ⊗ unmop X) :
 theorem mop_tensorUnit : 𝟙_ Cᴹᵒᵖ = mop (𝟙_ C) :=
   rfl
 #align category_theory.mop_tensor_unit CategoryTheory.mop_tensorUnit
+
+variable (C)
+
+@[simps!] def mopFunctor : C ⥤ Cᴹᵒᵖ := Functor.mk ⟨mop, mop⟩
+@[simps!] def unmopFunctor : Cᴹᵒᵖ ⥤ C := Functor.mk ⟨unmop, unmop⟩
+
+@[simps!]
+def MonoidalOpposite.underlyingEquiv : C ≌ Cᴹᵒᵖ := Equivalence.refl
+
+-- todo: upgrade to monoidal equivalence
+@[simps!] def MonoidalOpposite.double_dual_equiv : Cᴹᵒᵖᴹᵒᵖ ≌ C := Equivalence.refl
+
+@[simps!]
+def MonoidalOpposite.tensor_iso :
+    tensor Cᴹᵒᵖ ≅ (unmopFunctor C).prod (unmopFunctor C)
+                  ⋙ Prod.swap C C ⋙ tensor C ⋙ mopFunctor C :=
+  Iso.refl _
+
+variable {C}
+
+@[simps!]
+def MonoidalOpposite.tensorLeft_iso (X : Cᴹᵒᵖ) :
+    tensorLeft X ≅ unmopFunctor C ⋙ tensorRight (unmop X) ⋙ mopFunctor C :=
+  Iso.refl _
+
+@[simps!]
+def MonoidalOpposite.tensorLeft_mop_iso (X : C) :
+    tensorLeft (mop X) ≅ unmopFunctor C ⋙ tensorRight X ⋙ mopFunctor C :=
+  Iso.refl _
+
+@[simps!]
+def MonoidalOpposite.tensorLeft_unmop_iso (X : Cᴹᵒᵖ) :
+    tensorLeft (unmop X) ≅ mopFunctor C ⋙ tensorRight X ⋙ mopFunctor C :=
+  Iso.refl _
+
+@[simps!]
+def MonoidalOpposite.tensorRight_iso (X : Cᴹᵒᵖ) :
+    tensorRight X ≅ unmopFunctor C ⋙ tensorLeft (unmop X) ⋙ mopFunctor C :=
+  Iso.refl _
+
+@[simps!]
+def MonoidalOpposite.tensorRight_mop_iso (X : C) :
+    tensorRight (mop X) ≅ unmopFunctor C ⋙ tensorLeft X ⋙ mopFunctor C :=
+  Iso.refl _
+
+@[simps!]
+def MonoidalOpposite.tensorRight_unmop_iso (X : Cᴹᵒᵖ) :
+    tensorRight (unmop X) ≅ mopFunctor C ⋙ tensorLeft X ⋙ mopFunctor C :=
+  Iso.refl _
 
 end CategoryTheory
