@@ -7,7 +7,7 @@ import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.ContinuousFunction.Basic
-import Mathlib.Order.CompactlyGenerated
+import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.Copy
 
 #align_import topology.sets.opens from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"

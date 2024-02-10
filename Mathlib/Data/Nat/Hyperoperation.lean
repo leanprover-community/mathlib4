@@ -39,7 +39,7 @@ def hyperoperation : ℕ → ℕ → ℕ → ℕ
   | 2, _, 0 => 0
   | _ + 3, _, 0 => 1
   | n + 1, m, k + 1 => hyperoperation n m (hyperoperation (n + 1) m k)
-  termination_by hyperoperation a b c => (a, b, c)
+  termination_by a b c => (a, b, c)
 #align hyperoperation hyperoperation
 
 -- Basic hyperoperation lemmas

@@ -34,7 +34,7 @@ instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
     ext b
     simpa using hι b
 
-theorem effectiveEpi_desc_iff_effectiveEpiFamily [FinitaryPreExtensive C] {α : Type} [Fintype α]
+theorem effectiveEpi_desc_iff_effectiveEpiFamily [FinitaryPreExtensive C] {α : Type} [Finite α]
     {B : C} (X : α → C) (π : (a : α) → X a ⟶ B) :
     EffectiveEpi (Sigma.desc π) ↔ EffectiveEpiFamily X π := by
   exact ⟨fun h ↦ ⟨⟨@effectiveEpiFamilyStructOfEffectiveEpiDesc _ _ _ _ X π _ h _ _ (fun g ↦
