@@ -34,7 +34,7 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [TopologicalAddGroup 
   ⟨fun x hx ↦ by
     rcases geometric_hahn_banach_point_point hx.symm with ⟨f, hf⟩
     simp only [map_zero] at hf
-    exact ⟨f, hf.ne'⟩ ⟩
+    exact ⟨f, hf.ne'⟩⟩
 
 instance {E 𝕜 : Type*} [IsROrC 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦ by
@@ -125,12 +125,14 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
     map_smul' := by simp [smul_smul]
     left_inv := fun z ↦ by
       simp only [id_eq, eq_mpr_eq_cast, RingHom.id_apply, smul_eq_mul, AddHom.toFun_eq_coe,
-        AddHom.coe_mk, map_add, map_smulₛₗ, map_sub, Gx, mul_sub, mul_one, add_sub_cancel'_right]
+        -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+        AddHom.coe_mk, map_add, map_smulₛₗ _, map_sub, Gx, mul_sub, mul_one, add_sub_cancel'_right]
       rw [mul_comm (G z), ← mul_assoc, inv_mul_cancel Gy]
       simp only [smul_sub, one_mul]
       abel
     right_inv := fun z ↦ by
-      simp only [map_add, map_smulₛₗ, map_mul, map_inv₀, RingHom.id_apply, map_sub, Gx,
+        -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+      simp only [map_add, map_smulₛₗ _, map_mul, map_inv₀, RingHom.id_apply, map_sub, Gx,
         smul_eq_mul, mul_sub, mul_one]
       rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel Gy]
       simp only [smul_sub, one_mul, add_sub_cancel'_right]
