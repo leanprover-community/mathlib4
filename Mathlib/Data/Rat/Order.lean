@@ -12,15 +12,15 @@ import Mathlib.Data.Int.Cast.Lemmas
 /-!
 # Order for Rational Numbers
 
-## Summary
+This file constructs the order on `ℚ` and proves that `ℚ` is a discrete, linearly ordered
+commutative ring.
 
-We define the order on `ℚ`, prove that `ℚ` is a discrete, linearly ordered field, and define
-functions such as `abs` and `sqrt` that depend on this order.
-
+`ℚ` is in fact a linearly ordered field, but this fact is located in `Data.Rat.Field` instead of
+here because we need the order on `ℚ` to define `ℚ≥0`, which we itself need to define `Field`.
 
 ## Tags
 
-rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering, sqrt, abs
+rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
 
