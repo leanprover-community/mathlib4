@@ -25,17 +25,20 @@ namespace HilbertSerre
 
 section base_case
 
+variable {𝒜}
+
 lemma eventually_eq_zero_of_empty_generatorSet
-    (card_generator : (GradedRing.HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset.card = 0) :
+    (S : GradedRing.HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal)
+    (card_generator : S.toFinset.card = 0) :
     ∃ N : ℕ, ∀ n : ℕ, N < n → ∀ (x : ℳ n), x = 0 := by
   classical
   rw [Finset.card_eq_zero] at card_generator
 
-  let T := GradedModule.HomogeneousGeneratingSetOf.top A ℳ
+  let T := GradedModule.HomogeneousGeneratingSetOf.Top A ℳ
   let deg : T.toFinset → ℕ := fun x ↦ T.deg x.2
   by_cases ne_empty : T.toFinset = ∅
   · refine ⟨1, fun n _ x ↦ ?_⟩
-    have eq1 := kth_degree_eq_span 𝒜 ℳ n
+    have eq1 := kth_degree_eq_span S T n
     simp_rw [card_generator, Finset.subset_empty, Finsupp.support_eq_empty] at eq1
     replace eq1 := calc ⊤
       _ = _ := eq1
@@ -58,7 +61,7 @@ lemma eventually_eq_zero_of_empty_generatorSet
   have hn' (m : M) (hm : m ∈ T.toFinset) : T.deg hm < n
   · exact lt_of_le_of_lt (Finset.le_max' _ _ <| by aesop) hn
 
-  have eq0 := kth_degree_eq_span 𝒜 ℳ n
+  have eq0 := kth_degree_eq_span S T n
   simp_rw [card_generator, Finset.subset_empty, Finsupp.support_eq_empty] at eq0
   replace eq0 := calc _
     _ = _ := eq0
@@ -94,9 +97,10 @@ lemma eventually_eq_zero_of_empty_generatorSet
   exact not_le_of_lt (hn' x (support_le hx)) r
 
 lemma eventually_subsingleton_of_empty_generatorSet
-    (card_generator : (GradedRing.HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset.card = 0) :
+    (S : GradedRing.HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal)
+    (card_generator : S.toFinset.card = 0) :
     ∃ N : ℕ, ∀ n : ℕ, N < n → Subsingleton (ℳ n) := by
-  obtain ⟨N, h⟩ := eventually_eq_zero_of_empty_generatorSet 𝒜 ℳ card_generator
+  obtain ⟨N, h⟩ := eventually_eq_zero_of_empty_generatorSet ℳ S card_generator
   exact ⟨N, fun n hn ↦ ⟨fun x y ↦ (h n hn x).trans (h n hn y).symm⟩⟩
 
 end base_case

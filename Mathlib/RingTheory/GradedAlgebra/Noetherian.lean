@@ -77,7 +77,7 @@ lemma mem_deg {a : A} (h : a ∈ S) : a ∈ 𝒜 (S.deg h) :=
   S.homogeneous h |>.choose_spec
 
 variable (𝒜) in
-noncomputable def irrelevant :
+noncomputable def Irrelevant :
     HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal :=
   let H := Ideal.fg_iff_homogeneously_fg _  |>.mp <|
     isNoetherianRing_iff_ideal_fg A |>.mp inferInstance
@@ -87,10 +87,12 @@ noncomputable def irrelevant :
     ne_zero' := fun h ↦ H.choose_spec.1 _ h |>.2
     span_eq := H.choose_spec.2 |>.symm }
 
-lemma irrelevant.deg_pos {a : A} (h : a ∈ irrelevant 𝒜) : 0 < deg _ h := by
+variable (S : HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal)
+
+lemma irrelevant.deg_pos {a : A} (h : a ∈ S) : 0 < deg _ h := by
   by_contra! rid
   simp only [nonpos_iff_eq_zero] at rid
-  have m : a ∈ Ideal.span (irrelevant 𝒜).toFinset := Ideal.subset_span h
+  have m : a ∈ Ideal.span S.toFinset := Ideal.subset_span h
   have h_deg1 := mem_deg _ h
   rw [rid] at h_deg1
   erw [span_eq, HomogeneousIdeal.mem_irrelevant_iff,
@@ -98,32 +100,34 @@ lemma irrelevant.deg_pos {a : A} (h : a ∈ irrelevant 𝒜) : 0 < deg _ h := by
   exact (ne_zero _ h) m
 
 lemma irrelevant.adjoin_eq_top :
-    Algebra.adjoin (𝒜 0) (irrelevant 𝒜).toFinset = (⊤ : Subalgebra (𝒜 0) A) := by
+    Algebra.adjoin (𝒜 0) S.toFinset = (⊤ : Subalgebra (𝒜 0) A) := by
     classical
-  let S : Finset A := (irrelevant 𝒜).toFinset
   symm
   suffices subset (m : ℕ) :
-    (𝒜 m : Set A) ⊆ (Algebra.adjoin (𝒜 0) S : Subalgebra (𝒜 0) A)
+    (𝒜 m : Set A) ⊆ (Algebra.adjoin (𝒜 0) S.toFinset : Subalgebra (𝒜 0) A)
   · refine le_antisymm (fun a _ ↦ ?_) le_top
     rw [← DirectSum.sum_support_decompose 𝒜 a]
     exact Subalgebra.sum_mem _ fun j _ ↦ subset j <| Subtype.mem _
 
   suffices (n : ℕ) :
     𝒜 n.succ =
-    ⨆ (s : {s : S | (irrelevant 𝒜).deg s.2 ≤ n + 1 }), (s : A) • 𝒜 (n.succ - deg _ s.1.2)
+    ⨆ (s : {s : S.toFinset | S.deg s.2 ≤ n + 1 }), (s : A) • 𝒜 (n.succ - deg _ s.1.2)
   · cases m with | zero => ?_ | succ m => ?_
     · simp only [Nat.zero_eq]
       intro x hx
       show _ ∈ Subsemiring.closure (_ ∪ _)
-      rw [Subsemiring.closure_union (Set.range <| algebraMap (𝒜 0) A) S]
+      rw [Subsemiring.closure_union (Set.range <| algebraMap (𝒜 0) A) S.toFinset]
       exact @le_sup_left (Subsemiring A) _ (Subsemiring.closure _) (Subsemiring.closure _) _ <|
         Subsemiring.subset_closure ⟨⟨_, hx⟩, rfl⟩
+
     induction' m using Nat.strong_induction_on with m ih
     rw [this]
+
     intro x hx
     simp only [SetLike.mem_coe] at hx ⊢
-    refine AddSubgroup.iSup_induction (C := fun y ↦ y ∈ Algebra.adjoin (𝒜 0) (S : Set A))
-      (fun (s : {s : S | (irrelevant 𝒜).deg s.2 ≤ m + 1 }) ↦ (s : A) • 𝒜 (m.succ - deg _ s.1.2)) hx
+    refine AddSubgroup.iSup_induction (C := fun y ↦ y ∈ Algebra.adjoin (𝒜 0) (S.toFinset : Set A))
+      (fun (s : {s : S.toFinset | S.deg s.2 ≤ m + 1 }) ↦
+        (s : A) • 𝒜 (m.succ - deg _ s.1.2)) hx
       ?_ ?_ ?_
     · rintro ⟨⟨x, hx1⟩, (hx2 : deg _ _ ≤ _)⟩ y hy1
       simp only at hy1
@@ -132,27 +136,27 @@ lemma irrelevant.adjoin_eq_top :
       by_cases ineq1 : x = 0
       · rw [ineq1, zero_smul]; exact Subalgebra.zero_mem _
 
-      by_cases ineq0 : m < (irrelevant 𝒜).deg hx1
-      · have eq0 : m.succ - (irrelevant 𝒜).deg hx1 = 0
+      by_cases ineq0 : m < S.deg hx1
+      · have eq0 : m.succ - S.deg hx1 = 0
         · simp only [tsub_eq_zero_iff_le]
           exact ineq0
         rw [eq0] at hy1
         refine Subalgebra.mul_mem _ (show _ ∈ Subsemiring.closure (_ ∪ _) from ?_)
           (show _ ∈ Subsemiring.closure (_ ∪ _) from ?_) <;>
-        rw [Subsemiring.closure_union (Set.range <| algebraMap (𝒜 0) A) S]
+        rw [Subsemiring.closure_union (Set.range <| algebraMap (𝒜 0) A) S.toFinset]
         · exact @le_sup_right (Subsemiring A) _ (Subsemiring.closure _) (Subsemiring.closure _) _ <|
             Subsemiring.subset_closure hx1
         · exact @le_sup_left (Subsemiring A) _ (Subsemiring.closure _) (Subsemiring.closure _) _ <|
             Subsemiring.subset_closure ⟨⟨_, hy1⟩, rfl⟩
       simp only [not_lt] at ineq0
-      specialize ih (m - deg _ hx1) (Nat.sub_lt_self (irrelevant.deg_pos _) ineq0) <|
+      specialize ih (m - deg _ hx1) (Nat.sub_lt_self (irrelevant.deg_pos S _) ineq0) <|
         show y ∈ _ by
           simp only [SetLike.mem_coe]
           convert hy1 using 2
           rw [Nat.succ_sub]
           exact ineq0
       refine Subalgebra.mul_mem _ (show _ ∈ Subsemiring.closure (_ ∪ _) from ?_) ih
-      rw [Subsemiring.closure_union (Set.range <| algebraMap (𝒜 0) A) S]
+      rw [Subsemiring.closure_union (Set.range <| algebraMap (𝒜 0) A) S.toFinset]
       exact @le_sup_right (Subsemiring A) _ (Subsemiring.closure _) (Subsemiring.closure _) _ <|
         Subsemiring.subset_closure hx1
 
@@ -166,7 +170,7 @@ lemma irrelevant.adjoin_eq_top :
     · erw [HomogeneousIdeal.mem_irrelevant_iff, GradedRing.proj_apply,
         DirectSum.decompose_of_mem_ne (hx := hx)]
       norm_num
-    erw [← (irrelevant 𝒜).span_eq, mem_span_set] at m
+    erw [← S.span_eq, mem_span_set] at m
     obtain ⟨f, hf, (eq0 : ∑ i in f.support, f i * i = x)⟩ := m
     replace eq0 :=
       calc x
@@ -196,7 +200,7 @@ lemma irrelevant.adjoin_eq_top :
     · exact AddSubgroup.zero_mem _
   · intro hx
     refine AddSubgroup.iSup_induction (C := fun y ↦ y ∈ 𝒜 n.succ)
-      (fun (s : {s : S | (irrelevant 𝒜).deg s.2 ≤ n + 1 }) ↦ (s : A) • 𝒜 (n.succ - deg _ s.1.2)) hx
+      (fun (s : {s : S.toFinset | S.deg s.2 ≤ n + 1 }) ↦ (s : A) • 𝒜 (n.succ - deg _ s.1.2)) hx
       ?_ ?_ ?_
     · rintro ⟨⟨x, hx1⟩, (hx2 : deg _ _ ≤ _)⟩ z hz1
       simp only at hz1
@@ -268,18 +272,20 @@ lemma evalMonomial_mem
     (fun i ↦ deg i.2) (fun i ↦ f i) Subtype.val (fun ⟨i, hi⟩ ↦ h_deg hi)
   exact Finset.prod_attach _ _ |>.symm
 
+variable (S : HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal)
+
 lemma evalMonomial_homogeneous
-    (f : A →₀ ℕ) (hf : f.support ⊆ (HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset) :
+    (f : A →₀ ℕ) (hf : f.support ⊆ S.toFinset) :
     Homogeneous 𝒜 (evalMonomial f) := by
   exact ⟨degreeMonomial _ _,
     evalMonomial_mem
-      (deg := fun _ h ↦ (HomogeneousGeneratingSetOf.irrelevant 𝒜).deg (hf h))
-      (h_deg := fun _ h ↦ (HomogeneousGeneratingSetOf.irrelevant 𝒜).mem_deg (hf h))⟩
+      (deg := fun _ h ↦ S.deg (hf h))
+      (h_deg := fun _ h ↦ S.mem_deg (hf h))⟩
 
 lemma top_eq_span_monomial :
     (⊤ : Submodule (𝒜 0) A) =
     Submodule.span (𝒜 0)
-      {a | ∃ (f : A →₀ ℕ), f.support ⊆ (HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset ∧ a =
+      {a | ∃ (f : A →₀ ℕ), f.support ⊆ S.toFinset ∧ a =
         evalMonomial f } := by
   classical
   refine le_antisymm ?_ le_top
@@ -308,8 +314,7 @@ lemma top_eq_span_monomial :
           sup_le (α := Finset A) hf hg
       · simp only [evalMonomial, Finsupp.coe_add, Pi.add_apply]
         rw [Finset.prod_subset (h := hf), Finset.prod_subset (h := hg),
-          Finset.prod_subset
-            (h := (_ : (f + g).support ⊆ (HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset))]
+          Finset.prod_subset (h := (_ : (f + g).support ⊆ S.toFinset))]
         rotate_left
         · intro x _ hx2
           simp only [Finsupp.mem_support_iff, Finsupp.coe_add, Pi.add_apply, ne_eq, add_eq_zero,
@@ -370,29 +375,26 @@ lemma Finset.single_le_sum' {ι : Type*}
       norm_num
 
 lemma monomial_finite_of_bounded_degree (k : ℕ) :
-    {p | ∃ (hp1 : p.support ⊆ (HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset),
-      (degreeMonomial p fun a ha ↦
-        (HomogeneousGeneratingSetOf.irrelevant 𝒜).deg (hp1 ha)) ≤ k}.Finite := by
-  let S := {p | ∃ (hp1 : p.support ⊆ (HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset),
-    (degreeMonomial p fun a ha ↦ (HomogeneousGeneratingSetOf.irrelevant 𝒜).deg (hp1 ha)) ≤ k}
-  let e : (s : S) → ((HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset → Finset.range (k + 1)) :=
+    {p | ∃ (hp1 : p.support ⊆ S.toFinset),
+      (degreeMonomial p fun a ha ↦ S.deg (hp1 ha)) ≤ k}.Finite := by
+  let SMonomials := {p | ∃ (hp1 : p.support ⊆ S.toFinset),
+    (degreeMonomial p fun a ha ↦ S.deg (hp1 ha)) ≤ k}
+  let e : (s : SMonomials) → (S.toFinset → Finset.range (k + 1)) :=
     fun s a ↦ ⟨s.1 a, by
       have le1 : Finset.sum _ _ ≤ _ := s.2.2
       dsimp only at le1
       simp only [Set.mem_setOf_eq] at le1
       by_cases mem1 : a.1 ∈ s.1.support
-      · have le2 : (HomogeneousGeneratingSetOf.irrelevant 𝒜).deg (s.2.1 mem1) * s.1 a.1 ≤ k
+      · have le2 : S.deg (s.2.1 mem1) * s.1 a.1 ≤ k
         · refine le_trans ?_ le1
           exact Finset.single_le_sum' (s := s.1.support)
-            (f := fun i ↦ (HomogeneousGeneratingSetOf.irrelevant 𝒜).deg (s.2.1 i.2) * s.1 i.1)
-              (a := ⟨a, mem1⟩)
+            (f := fun i ↦ S.deg (s.2.1 i.2) * s.1 i.1) (a := ⟨a, mem1⟩)
         by_cases le3 : a.1 = 0
         · exfalso
-          exact (HomogeneousGeneratingSetOf.irrelevant 𝒜).ne_zero (s.2.1 mem1) le3
-        · have le4 := HomogeneousGeneratingSetOf.irrelevant.deg_pos (s.2.1 mem1)
+          exact S.ne_zero (s.2.1 mem1) le3
+        · have le4 := HomogeneousGeneratingSetOf.irrelevant.deg_pos S (s.2.1 mem1)
           have le5 : s.1 a.1 ≤ k
-          · have := Nat.div_le_div_right
-              (c := (HomogeneousGeneratingSetOf.irrelevant 𝒜).deg (s.2.1 mem1)) le2
+          · have := Nat.div_le_div_right (c := S.deg (s.2.1 mem1)) le2
             erw [mul_comm, Nat.mul_div_cancel _ le4] at this
             refine this.trans (Nat.div_le_self _ _)
           simp only [Set.mem_setOf_eq, Finset.mem_union, Finset.mem_range, Finset.mem_singleton]
@@ -401,7 +403,7 @@ lemma monomial_finite_of_bounded_degree (k : ℕ) :
       · simp only [Set.mem_setOf_eq, Finsupp.mem_support_iff, ne_eq, not_not] at mem1
         rw [mem1]
         aesop⟩
-  suffices : Finite S
+  suffices : Finite SMonomials
   · exact Set.toFinite _
   suffices inj : Function.Injective e
   · exact Finite.of_injective _ inj
@@ -425,8 +427,8 @@ If `A ≅ ⨁ᵢ, Aᵢ` is a noetherian graded ring, then `A` is a finite `A₀`
 -/
 instance finite_algebra_over_degree_zero_subring : Algebra.FiniteType (𝒜 0) A := by
   constructor
-  exact ⟨(HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset,
-    HomogeneousGeneratingSetOf.irrelevant.adjoin_eq_top⟩
+  exact ⟨(HomogeneousGeneratingSetOf.Irrelevant 𝒜).toFinset,
+    HomogeneousGeneratingSetOf.irrelevant.adjoin_eq_top _⟩
 
 end CommRing
 
@@ -467,7 +469,7 @@ lemma mem_deg {a : M} (h : a ∈ S) : a ∈ ℳ (S.deg h) :=
   S.homogeneous h |>.choose_spec
 
 variable (A ℳ) in
-noncomputable def top :
+noncomputable def Top :
     HomogeneousGeneratingSetOf ℳ (⊤ : Submodule A M) :=
   let H := Submodule.fg_iff_homogeneously_fg (A := A) (ℳ := ℳ) (p := ⊤) |>.mp finite_module.out
   { toFinset := H.choose
@@ -481,33 +483,30 @@ namespace finite_module_over_degree_zero_subring
 
 open GradedRing.finite_algebra_over_degree_zero_subring
 
+variable (T : GradedRing.HomogeneousGeneratingSetOf 𝒜 (HomogeneousIdeal.irrelevant 𝒜).toIdeal)
+variable (TM : HomogeneousGeneratingSetOf ℳ (⊤ : Submodule A M))
+
+variable {𝒜 ℳ} in
 lemma generatingSet_is_finite (k : ℕ) :
     {x : ℳ k |
-      ∃ (ω : M)
-        (_ : ω ∈ HomogeneousGeneratingSetOf.top A ℳ)
-        (p : A →₀ ℕ)
-        (hp1 : p.support ⊆ (GradedRing.HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset),
-      degreeMonomial p
-        (fun _ h ↦ (GradedRing.HomogeneousGeneratingSetOf.irrelevant 𝒜).deg (hp1 h)) ≤ k ∧
-      (x : M) = evalMonomial p • ω }.Finite := by
-  let T := GradedRing.HomogeneousGeneratingSetOf.irrelevant 𝒜
+      ∃ (ω : M) (_ : ω ∈ TM.toFinset) (p : A →₀ ℕ) (hp1 : p.support ⊆ T.toFinset),
+        degreeMonomial p (fun _ h ↦ T.deg (hp1 h)) ≤ k ∧
+        (x : M) = evalMonomial p • ω }.Finite := by
   let S := {x : ℳ k |
-      ∃ (ω : M)
-        (_ : ω ∈ HomogeneousGeneratingSetOf.top A ℳ)
-        (p : A →₀ ℕ) (hp1 : p.support ⊆ T.toFinset),
+      ∃ (ω : M) (_ : ω ∈ TM.toFinset) (p : A →₀ ℕ) (hp1 : p.support ⊆ T.toFinset),
       degreeMonomial p (fun _ h ↦ T.deg (hp1 h)) ≤ k ∧ (x : M) = evalMonomial p • ω }
   change S.Finite
   have eq1 := calc
-      S = ⋃ (ω ∈ HomogeneousGeneratingSetOf.top A ℳ),
+      S = ⋃ (ω ∈ TM.toFinset),
             {x : ℳ k | ∃ (p : A →₀ ℕ) (hp1 : p.support ⊆ T.toFinset),
               degreeMonomial p (fun a ha ↦ T.deg (hp1 ha)) ≤ k ∧ (x : M) = evalMonomial p • ω} :=
           by ext s; simp
-      _ = ⋃ (ω ∈ HomogeneousGeneratingSetOf.top A ℳ),
+      _ = ⋃ (ω ∈ TM.toFinset),
           ⋃ (p ∈ {p : A →₀ ℕ | ∃ (hp1 : p.support ⊆ T.toFinset),
                     degreeMonomial p (fun _ h ↦ T.deg (hp1 h)) ≤ k}),
             {x : ℳ k | (x : M) = evalMonomial p • ω} := by ext; simp
   rw [eq1]
-  apply Set.Finite.biUnion' (hs := (HomogeneousGeneratingSetOf.top A ℳ).toFinset.finite_toSet)
+  apply Set.Finite.biUnion' (hs := TM.toFinset.finite_toSet)
   intro ω _
   apply Set.Finite.biUnion
   · apply monomial_finite_of_bounded_degree
@@ -520,34 +519,28 @@ lemma generatingSet_is_finite (k : ℕ) :
     exact Set.toFinite _
 
 set_option maxHeartbeats 500000 in
+variable {𝒜 ℳ} in
 lemma kth_degree_eq_span (k : ℕ) :
     (⊤ : Submodule (𝒜 0) (ℳ k)) =
     Submodule.span (𝒜 0)
       {x : ℳ k |
-        ∃ (ω : M)
-          (_ : ω ∈ HomogeneousGeneratingSetOf.top A ℳ)
-          (p : A →₀ ℕ)
-          (hp1 : p.support ⊆ (GradedRing.HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset),
-          degreeMonomial p
-            (fun a ha ↦ (GradedRing.HomogeneousGeneratingSetOf.irrelevant 𝒜).deg (hp1 ha)) ≤ k ∧
+        ∃ (ω : M) (_ : ω ∈ TM.toFinset) (p : A →₀ ℕ) (hp1 : p.support ⊆ T.toFinset),
+          degreeMonomial p (fun a ha ↦ T.deg (hp1 ha)) ≤ k ∧
           (x : M) = evalMonomial p • ω } := by
   refine le_antisymm ?_ le_top
   rintro ⟨x, hx⟩ -
 
   have mem1 : x ∈ (⊤ : Submodule A M) := ⟨⟩
-  rw [← (HomogeneousGeneratingSetOf.top A ℳ).span_eq, mem_span_set] at mem1
+  rw [← TM.span_eq, mem_span_set] at mem1
 
   obtain ⟨f, f_support_le, (eq0 : ∑ i in f.support, (f i) • i = x)⟩ := mem1
 
   have mem1 (a : A) : a ∈ (⊤ : Submodule (𝒜 0) A) := ⟨⟩
-  simp_rw [top_eq_span_monomial 𝒜, mem_span_set] at mem1
+  simp_rw [top_eq_span_monomial 𝒜 T, mem_span_set] at mem1
   choose r hr1 hr2 using mem1
   change ∀ a, ∑ j in (r a).support, (r a) j • j = a at hr2
   replace hr1 (a : A) :
-    ∀ j ∈ (r a).support,
-      ∃ f,
-        f.support ⊆ (GradedRing.HomogeneousGeneratingSetOf.irrelevant 𝒜).toFinset ∧
-        j = evalMonomial f
+    ∀ j ∈ (r a).support, ∃ f, f.support ⊆ T.toFinset ∧ j = evalMonomial f
   · specialize hr1 a
     exact hr1
   choose p hp1 hp2 using hr1
@@ -575,8 +568,6 @@ lemma kth_degree_eq_span (k : ℕ) :
   conv_lhs at eq0 => rw [GradedModule.proj_apply, DirectSum.decompose_of_mem_same _ hx]
   simp_rw [map_sum] at eq0
 
-  let S := HomogeneousGeneratingSetOf.top A ℳ
-  let T := GradedRing.HomogeneousGeneratingSetOf.irrelevant 𝒜
   replace eq0 := calc
     x = ∑ i in f.support, ∑ j in (r (f i)).support.attach,
           GradedModule.proj ℳ k ((r (f i) j : A) • (evalMonomial (p _ _ j.2) : A) • (i : M)) := eq0
@@ -587,18 +578,18 @@ lemma kth_degree_eq_span (k : ℕ) :
           GradedModule.proj ℳ k (((r (f i) j : A) * (evalMonomial (p _ _ j.2) : A)) • (i : M)) :=
         Finset.sum_attach _ _ |>.symm
     _ = ∑ i in f.support.attach, ∑ j in (r (f i)).support.attach,
-          if S.deg (f_support_le i.2) ≤ k
+          if TM.deg (f_support_le i.2) ≤ k
           then
-            GradedRing.proj 𝒜 (k - S.deg (f_support_le i.2))
+            GradedRing.proj 𝒜 (k - TM.deg (f_support_le i.2))
               ((r (f i) j : A) * (evalMonomial (p _ _ j.2) : A)) • (i : M)
           else 0 :=
         Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ by
           rw [GradedModule.proj_smul_mem_right 𝒜 ℳ _ _
-            (S.mem_deg (f_support_le i.2))]
+            (TM.mem_deg (f_support_le i.2))]
     _ = ∑ i in f.support.attach.filter fun i : f.support ↦
-          S.deg (f_support_le i.2) ≤ k,
+          TM.deg (f_support_le i.2) ≤ k,
         ∑ j in (r (f i)).support.attach,
-          GradedRing.proj 𝒜 (k - S.deg (f_support_le i.2))
+          GradedRing.proj 𝒜 (k - TM.deg (f_support_le i.2))
             ((r (f i) j : A) * (evalMonomial (p _ _ j.2) : A)) • (i : M) := by
         rw [Finset.sum_filter]
         refine Finset.sum_congr rfl ?_
@@ -607,18 +598,18 @@ lemma kth_degree_eq_span (k : ℕ) :
         · rfl
         · rw [Finset.sum_const, smul_zero]
     _ = ∑ i in f.support.attach.filter fun i : f.support ↦
-          S.deg (f_support_le i.2) ≤ k,
+          TM.deg (f_support_le i.2) ≤ k,
         (∑ j in (r (f i)).support.attach,
-          GradedRing.proj 𝒜 (k - S.deg (f_support_le i.2))
+          GradedRing.proj 𝒜 (k - TM.deg (f_support_le i.2))
             ((r (f i) j : A) * (evalMonomial (p _ _ j.2) : A))) • (i : M) :=
         Finset.sum_congr rfl fun _ _ ↦ by rw [Finset.sum_smul]
-    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ S.deg (f_support_le i.2) ≤ k,
+    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ TM.deg (f_support_le i.2) ≤ k,
         (∑ j in (r (f i)).support.attach,
           if degreeMonomial (p _ _ j.2)
-            (fun _ h ↦ T.deg (hp1 _ _ j.2 h)) ≤ k - S.deg (f_support_le i.2)
+            (fun _ h ↦ T.deg (hp1 _ _ j.2 h)) ≤ k - TM.deg (f_support_le i.2)
           then
             GradedRing.proj 𝒜
-              ((k - S.deg (f_support_le i.2)) -
+              ((k - TM.deg (f_support_le i.2)) -
                 degreeMonomial (p _ _ j.2) fun a ha ↦ T.deg (hp1 _ _ j.2 ha))
               (r (f i) j : A) * (evalMonomial (p _ _ j.2) : A)
           else 0) • (i : M) := by
@@ -634,40 +625,40 @@ lemma kth_degree_eq_span (k : ℕ) :
           rintro a ha
           apply T.mem_deg (hp1 _ _ hj ha)
         rfl
-    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ S.deg (f_support_le i.2) ≤ k,
+    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ TM.deg (f_support_le i.2) ≤ k,
         (∑ j in (r (f i)).support.attach.filter fun j : (r (f i)).support ↦
             degreeMonomial (p _ _ j.2) (fun a ha ↦ T.deg (hp1 _ _ j.2 ha)) ≤
-            k - S.deg (f_support_le i.2),
+            k - TM.deg (f_support_le i.2),
           GradedRing.proj 𝒜
-              ((k - S.deg (f_support_le i.2)) -
+              ((k - TM.deg (f_support_le i.2)) -
                 degreeMonomial (p _ _ j.2) fun a ha ↦ T.deg (hp1 _ _ j.2 ha))
               (r (f i) j : A) * (evalMonomial (p _ _ j.2) : A)) • (i : M) :=
         Finset.sum_congr rfl fun _ _ ↦ by rw [Finset.sum_filter]
-    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ S.deg (f_support_le i.2) ≤ k,
+    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ TM.deg (f_support_le i.2) ≤ k,
         ∑ j in (r (f i)).support.attach.filter
           fun j : (r (f i)).support ↦
             degreeMonomial (p _ _ j.2) (fun _ h ↦ T.deg (hp1 _ _ j.2 h)) ≤
-            k - S.deg (f_support_le i.2),
+            k - TM.deg (f_support_le i.2),
           (GradedRing.proj 𝒜
-              ((k - S.deg (f_support_le i.2)) -
+              ((k - TM.deg (f_support_le i.2)) -
                 degreeMonomial (p _ _ j.2) fun _ h ↦ T.deg (hp1 _ _ j.2 h))
               (r (f i) j : A) * (evalMonomial (p _ _ j.2) : A)) • (i : M) :=
         Finset.sum_congr rfl fun _ _ ↦ by rw [Finset.sum_smul]
-    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ S.deg (f_support_le i.2) ≤ k,
+    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ TM.deg (f_support_le i.2) ≤ k,
         ∑ j in (r (f i)).support.attach.filter fun j : (r (f i)).support ↦
             degreeMonomial (p _ _ j.2) (fun _ h ↦ T.deg (hp1 _ _ j.2 h)) ≤
-            k - S.deg (f_support_le i.2),
+            k - TM.deg (f_support_le i.2),
           (GradedRing.proj 𝒜
-              ((k - S.deg (f_support_le i.2)) -
+              ((k - TM.deg (f_support_le i.2)) -
                 degreeMonomial (p _ _ j.2) fun _ h ↦ T.deg (hp1 _ _ j.2 h))
               (r (f i) j : A)) • (evalMonomial (p _ _ j.2) : A) • (i : M) :=
         Finset.sum_congr rfl fun _ _ ↦ Finset.sum_congr rfl fun _ _ ↦ by rw [mul_smul]
-    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ S.deg (f_support_le i.2) ≤ k,
+    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ TM.deg (f_support_le i.2) ≤ k,
         ∑ j in (r (f i)).support.attach.filter fun j : (r (f i)).support ↦
             degreeMonomial (p _ _ j.2) (fun a ha ↦ T.deg (hp1 _ _ j.2 ha)) ≤
-            k - S.deg (f_support_le i.2),
+            k - TM.deg (f_support_le i.2),
           (if degreeMonomial (p _ _ j.2) (fun a ha ↦ T.deg (hp1 _ _ j.2 ha)) =
-              k - S.deg (f_support_le i.2)
+              k - TM.deg (f_support_le i.2)
             then (r (f i) j : A)
             else 0) • (evalMonomial (p _ _ j.2) : A) • (i : M) :=
         Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j hj ↦ by
@@ -680,10 +671,10 @@ lemma kth_degree_eq_span (k : ℕ) :
             rw [eq_comm, Nat.sub_eq_zero_iff_le] at rid
             rw [Finset.mem_filter] at hj
             exact ineq1 <| le_antisymm hj.2 rid
-    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ S.deg (f_support_le i.2) ≤ k,
+    _ = ∑ i in f.support.attach.filter fun i : f.support ↦ TM.deg (f_support_le i.2) ≤ k,
         ∑ j in (r (f i)).support.attach.filter fun j : (r (f i)).support ↦
             degreeMonomial (p _ _ j.2) (fun a ha ↦ T.deg (hp1 _ _ j.2 ha)) =
-            k - S.deg (f_support_le i.2),
+            k - TM.deg (f_support_le i.2),
           (r (f i) j : A) • (evalMonomial (p _ _ j.2) : A) • (i : M) := by
         refine Finset.sum_congr rfl ?_
         rintro ⟨i, hi1⟩ _
@@ -693,29 +684,29 @@ lemma kth_degree_eq_span (k : ℕ) :
         simp only [ite_smul, zero_smul, ite_eq_left_iff, not_le]
         intro rid
         rw [if_neg (Ne.symm (ne_of_lt rid))]
-    _ = ∑ i in (f.support.attach.filter fun i : f.support ↦ S.deg (f_support_le i.2) ≤ k).attach,
+    _ = ∑ i in (f.support.attach.filter fun i : f.support ↦ TM.deg (f_support_le i.2) ≤ k).attach,
         ∑ j in (r (f i)).support.attach.filter fun j : (r (f i)).support ↦
             degreeMonomial (p _ _ j.2) (fun a ha ↦ T.deg (hp1 _ _ j.2 ha)) =
-            k - S.deg (f_support_le i.1.2),
+            k - TM.deg (f_support_le i.1.2),
           (r (f i) j : A) • (evalMonomial (p _ _ j.2) : A) • (i : M) :=
         Finset.sum_attach _ _ |>.symm
-    _ = ∑ i in (f.support.attach.filter fun i : f.support ↦ S.deg (f_support_le i.2) ≤ k).attach,
+    _ = ∑ i in (f.support.attach.filter fun i : f.support ↦ TM.deg (f_support_le i.2) ≤ k).attach,
         ∑ j in ((r (f i)).support.attach.filter fun j : (r (f i)).support ↦
             degreeMonomial (p _ _ j.2) (fun a ha ↦ T.deg (hp1 _ _ j.2 ha)) =
-            k - S.deg (f_support_le i.1.2)).attach,
+            k - TM.deg (f_support_le i.1.2)).attach,
           (r (f i) j : A) • (evalMonomial (p _ _ j.1.2) : A) • (i : M) :=
         Finset.sum_congr rfl fun _ _ ↦ Finset.sum_attach _ _ |>.symm
   replace eq0 :
     (⟨x, hx⟩ : ℳ k) =
-    ∑ i in (f.support.attach.filter fun i : f.support ↦ S.deg (f_support_le i.2) ≤ k).attach,
+    ∑ i in (f.support.attach.filter fun i : f.support ↦ TM.deg (f_support_le i.2) ≤ k).attach,
         ∑ j in ((r (f i)).support.attach.filter fun j : (r (f i)).support ↦
             degreeMonomial (p _ _ j.2) (fun a ha ↦ T.deg (hp1 _ _ j.2 ha)) =
-            k - S.deg (f_support_le i.1.2)).attach,
+            k - TM.deg (f_support_le i.1.2)).attach,
           r (f i) j • (⟨(evalMonomial (p _ _ j.1.2) : A) • (i : M), by
             convert (inferInstance : SetLike.GradedSMul 𝒜 ℳ).smul_mem
               (evalMonomial_mem 𝒜 (p _ _ j.1.2) (fun a ha ↦ T.deg (hp1 _ _ j.1.2 ha))
                 (fun a ha ↦ T.mem_deg (hp1 _ _ j.1.2 ha)))
-              (S.mem_deg (f_support_le i.1.2))
+              (TM.mem_deg (f_support_le i.1.2))
             have mem := j.2
             simp only [Finset.filter_congr_decidable, Finset.mem_filter, Finset.mem_attach,
               true_and] at mem
@@ -746,7 +737,13 @@ end finite_module_over_degree_zero_subring
 
 open finite_module_over_degree_zero_subring in
 instance (k : ℕ) : Module.Finite (𝒜 0) (ℳ k) :=
-  ⟨Set.Finite.toFinset (generatingSet_is_finite 𝒜 ℳ k),
-    by simpa only [Set.Finite.coe_toFinset] using (kth_degree_eq_span 𝒜 ℳ k).symm⟩
+  ⟨Set.Finite.toFinset
+    (generatingSet_is_finite
+      (GradedRing.HomogeneousGeneratingSetOf.Irrelevant 𝒜)
+      (HomogeneousGeneratingSetOf.Top A ℳ) k),
+    by simpa only [Set.Finite.coe_toFinset] using
+      (kth_degree_eq_span
+        (GradedRing.HomogeneousGeneratingSetOf.Irrelevant 𝒜)
+        (HomogeneousGeneratingSetOf.Top A ℳ) k).symm⟩
 
 end GradedModule
