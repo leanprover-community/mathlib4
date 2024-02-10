@@ -6,13 +6,14 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Data.NNRat.Defs
+import Mathlib.Data.Rat.Basic
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
 /-!
 # Algebraic structures on the nonnegative rationals
 
-This file provides additional results about `nnrat` that cannot live in earlier files due to import
+This file provides additional results about `NNRat` that cannot live in earlier files due to import
 cycles.
 -/
 
@@ -21,10 +22,10 @@ open scoped NNRat
 
 deriving instance CanonicallyLinearOrderedSemifield, LinearOrderedCommGroupWithZero for NNRat
 
-instance instDenselyOrdered : DenselyOrdered NNRat := Nonneg.densely_ordered
-
 namespace NNRat
 variable {α : Type*} {p q : ℚ≥0}
+
+instance instDenselyOrdered : DenselyOrdered ℚ≥0 := Nonneg.instDenselyOrdered
 
 open Rat (toNNRat)
 
