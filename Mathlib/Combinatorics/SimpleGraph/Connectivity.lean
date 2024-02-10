@@ -446,18 +446,15 @@ theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
   induction p with
   | nil => rfl
   | cons h p ih =>
-    simp [getVert_append, ih]
-    match em (i < p.length) with
-    | Or.inl hi =>
+    simp only [reverse_cons, getVert_append, length_reverse, ih, length_cons]
+    split_ifs
+    next hi =>
       rw [Nat.succ_sub (Nat.le_of_lt hi)]
       simp [hi, getVert]
-    | Or.inr hi =>
-      match Nat.eq_or_lt_of_not_lt hi with
-      | Or.inl hi' =>
-        simp [hi', getVert]
-      | Or.inr hi' =>
-        rw [Nat.eq_add_of_sub_eq (Nat.sub_pos_of_lt hi') rfl]
-        rw [Nat.sub_eq_zero_of_le hi']
+    next hi =>
+      obtain rfl | hi' := Nat.eq_or_lt_of_not_lt hi
+      · simp [getVert]
+      · rw [Nat.eq_add_of_sub_eq (Nat.sub_pos_of_lt hi') rfl, Nat.sub_eq_zero_of_le hi']
         simp [hi, getVert]
 
 section ConcatRec
