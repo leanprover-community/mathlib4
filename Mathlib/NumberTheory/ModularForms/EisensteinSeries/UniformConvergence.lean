@@ -205,7 +205,7 @@ lemma bound (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
   simp only [pow_zero, Nat.cast_max, mul_one, map_one, le_refl]
 
 
-theorem Eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
+theorem eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
     (hx : ⟨x 0, x 1⟩ ∈ square n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤
       (Complex.abs ((r z) ^ k * n ^ k))⁻¹ := by
   by_cases hn : n = 0
@@ -378,7 +378,7 @@ lemma eisensteinSeries_TendstoLocallyUniformlyOn (k : ℤ) (hk : 3 ≤ k) (N : �
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
   have sq := square_mem (max (v.1 0).natAbs (v.1 1).natAbs ) ⟨(v.1 0), v.1 1⟩
-  have := Eis_is_bounded_on_square k x (max (v.1 0).natAbs (v.1 1).natAbs ) v
+  have := eis_is_bounded_on_square k x (max (v.1 0).natAbs (v.1 1).natAbs ) v
   simp only [Nat.cast_max, Int.coe_natAbs, iff_true, zpow_coe_nat, one_div, coe_eq_fst, map_pow,
     map_mul, abs_ofReal, abs_natCast, mul_inv_rev, eisSummand, norm_inv, norm_pow, norm_eq_abs,
     ge_iff_le] at *
