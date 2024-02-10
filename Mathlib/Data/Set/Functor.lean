@@ -118,18 +118,18 @@ instance : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
 
 namespace Notation
 
-open Lean PrettyPrinter Delaborator SubExpr in
-/--
-If the `Set.Notation` namespace is open, sets of a subtype coerced to the ambient type are
-represented with `↑`.
--/
-@[scoped delab app.Set.image]
-def delab_set_image_subtype : Delab := do
-  let #[α, _, f, _] := (← getExpr).getAppArgs | failure
-  guard <| f.isAppOfArity ``Subtype.val 2
-  let some _ := α.coeTypeSet? | failure
-  let e ← withAppArg delab
-  `(↑$e)
+-- open Lean PrettyPrinter Delaborator SubExpr in
+-- /--
+-- If the `Set.Notation` namespace is open, sets of a subtype coerced to the ambient type are
+-- represented with `↑`.
+-- -/
+-- @[scoped delab app.Set.image]
+-- def delab_set_image_subtype : Delab := do
+--   let #[α, _, f, _] := (← getExpr).getAppArgs | failure
+--   guard <| f.isAppOfArity ``Subtype.val 2
+--   let some _ := α.coeTypeSet? | failure
+--   let e ← withAppArg delab
+--   `(↑$e)
 
 end Notation
 
