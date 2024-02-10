@@ -147,9 +147,8 @@ lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
   have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
   hγ.continuousAt <| mem_of_mem_nhds hs
 
-lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
-    Continuous γ := continuous_iff_continuousAt.mpr
-      fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
+lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
+  continuous_iff_continuousAt.mpr fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
@@ -345,7 +344,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
     mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
   have hft2 := mem_extChartAt_source I xₜ
   -- express the derivative of the integral curve in the local chart
-  refine ⟨(continuousAt_extChartAt_symm'' _ _ hf3').comp h.continuousAt,
+  refine ⟨(continuousAt_extChartAt_symm'' _ hf3').comp h.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
   show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t
@@ -438,7 +437,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) := by
   set s := {t | γ t = γ' t} ∩ Ioo a b with hs
   -- since `Ioo a b` is connected, we get `s = Ioo a b` by showing that `s` is clopen in `Ioo a b`
-  -- in the subtype toplogy (`s` is also non-empty by assumption)
+  -- in the subtype topology (`s` is also non-empty by assumption)
   -- here we use a slightly weaker alternative theorem
   suffices hsub : Ioo a b ⊆ s from fun t ht ↦ mem_setOf.mp ((subset_def ▸ hsub) t ht).1
   apply isPreconnected_Ioo.subset_of_closure_inter_subset (s := Ioo a b) (u := s) _

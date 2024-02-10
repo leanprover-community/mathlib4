@@ -560,7 +560,7 @@ theorem haarContent_apply (K₀ : PositiveCompacts G) (K : Compacts G) :
 /-- The variant of `chaar_self` for `haarContent` -/
 @[to_additive "The variant of `addCHaar_self` for `addHaarContent`."]
 theorem haarContent_self {K₀ : PositiveCompacts G} : haarContent K₀ K₀.toCompacts = 1 := by
-  simp_rw [← ENNReal.coe_one, haarContent_apply, ENNReal.coe_eq_coe, chaar_self]; rfl
+  simp_rw [← ENNReal.coe_one, haarContent_apply, ENNReal.coe_inj, chaar_self]; rfl
 #align measure_theory.measure.haar.haar_content_self MeasureTheory.Measure.haar.haarContent_self
 #align measure_theory.measure.haar.add_haar_content_self MeasureTheory.Measure.haar.addHaarContent_self
 
@@ -568,7 +568,7 @@ theorem haarContent_self {K₀ : PositiveCompacts G} : haarContent K₀ K₀.toC
 @[to_additive "The variant of `is_left_invariant_addCHaar` for `addHaarContent`"]
 theorem is_left_invariant_haarContent {K₀ : PositiveCompacts G} (g : G) (K : Compacts G) :
     haarContent K₀ (K.map _ <| continuous_mul_left g) = haarContent K₀ K := by
-  simpa only [ENNReal.coe_eq_coe, ← NNReal.coe_eq, haarContent_apply] using
+  simpa only [ENNReal.coe_inj, ← NNReal.coe_eq, haarContent_apply] using
     is_left_invariant_chaar g K
 #align measure_theory.measure.haar.is_left_invariant_haar_content MeasureTheory.Measure.haar.is_left_invariant_haarContent
 #align measure_theory.measure.haar.is_left_invariant_add_haar_content MeasureTheory.Measure.haar.is_left_invariant_addHaarContent
@@ -719,19 +719,12 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
     refine ⟨closure K, ?_, K_comp.closure, isClosed_closure, ?_⟩
     · exact K_comp.closure_subset_measurableSet hE KE
     · rwa [K_comp.measure_closure_eq_of_group]
-  obtain ⟨V, hV1, hV⟩ : ∃ V ∈ 𝓝 (1 : G), ∀ g ∈ V, μ (g • K \ K) < μ K :=
-    exists_nhds_measure_smul_diff_lt hK K_closed hKpos.ne'
-  have hv : ∀ v : G, v ∈ V → ¬Disjoint (v • K) K := by
-    intro v hv hKv
-    have Z := hV v hv
-    rw [hKv.symm.sdiff_eq_right, measure_smul] at Z
-    exact lt_irrefl _ Z
-  suffices V ⊆ E / E from Filter.mem_of_superset hV1 this
-  intro v hvV
-  obtain ⟨x, hxK, hxvK⟩ : ∃ x : G, x ∈ v • K ∧ x ∈ K := Set.not_disjoint_iff.1 (hv v hvV)
-  refine ⟨x, hKE hxvK, v⁻¹ * x, hKE ?_, ?_⟩
-  · simpa [mem_smul_set_iff_inv_smul_mem] using hxK
-  · simp only [div_eq_iff_eq_mul, ← mul_assoc, mul_right_inv, one_mul]
+  filter_upwards [eventually_nhds_one_measure_smul_diff_lt hK K_closed hKpos.ne' (μ := μ)] with g hg
+  have : ¬Disjoint (g • K) K := fun hd ↦ by
+    rw [hd.symm.sdiff_eq_right, measure_smul] at hg
+    exact hg.false
+  rcases Set.not_disjoint_iff.1 this with ⟨_, ⟨x, hxK, rfl⟩, hgxK⟩
+  simpa using div_mem_div (hKE hgxK) (hKE hxK)
 #align measure_theory.measure.div_mem_nhds_one_of_haar_pos MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
 #align measure_theory.measure.sub_mem_nhds_zero_of_add_haar_pos MeasureTheory.Measure.sub_mem_nhds_zero_of_addHaar_pos
 

@@ -110,7 +110,7 @@ theorem exists_pow_nat_eq [IsSepClosed k] (x : k) (n : ℕ) [hn : NeZero (n : k)
     rw [degree_X_pow_sub_C hn' x]
     exact (WithBot.coe_lt_coe.2 hn').ne'
   by_cases hx : x = 0
-  · exact ⟨0, by rw [hx, pow_eq_zero_iff hn']⟩
+  · exact ⟨0, by rw [hx, pow_eq_zero_iff hn'.ne']⟩
   · obtain ⟨z, hz⟩ := exists_root _ this <| separable_X_pow_sub_C x hn.out hx
     use z
     simpa [eval_C, eval_X, eval_pow, eval_sub, IsRoot.def, sub_eq_zero] using hz
