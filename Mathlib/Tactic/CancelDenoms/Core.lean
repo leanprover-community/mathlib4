@@ -159,6 +159,7 @@ def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
 structure CancelResult {u : Level} {α : Q(Type u)} (mα : Q(Mul $α)) (e : Q($α)) (v : Q($α)) where
   /-- An expression with denominators cancelled. -/
   cancelled : Q($α)
+  /-- The proof that `cancelled` is valid. -/
   pf : Q($v * $e = $cancelled)
 
 /--
