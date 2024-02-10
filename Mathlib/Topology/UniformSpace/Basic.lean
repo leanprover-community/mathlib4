@@ -265,8 +265,7 @@ def UniformSpace.Core.mk' {α : Type u} (U : Filter (α × α)) (refl : ∀ r �
 /-- Defining a `UniformSpace.Core` from a filter basis satisfying some uniformity-like axioms. -/
 def UniformSpace.Core.mkOfBasis {α : Type u} (B : FilterBasis (α × α))
     (refl : ∀ r ∈ B, ∀ (x), (x, x) ∈ r) (symm : ∀ r ∈ B, ∃ t ∈ B, t ⊆ Prod.swap ⁻¹' r)
-    (comp : ∀ r ∈ B, ∃ t ∈ B, t ○ t ⊆ r) : UniformSpace.Core α
-    where
+    (comp : ∀ r ∈ B, ∃ t ∈ B, t ○ t ⊆ r) : UniformSpace.Core α where
   uniformity := B.filter
   refl := B.hasBasis.ge_iff.mpr fun _r ru => idRel_subset.2 <| refl _ ru
   symm := (B.hasBasis.tendsto_iff B.hasBasis).mpr symm
@@ -274,16 +273,10 @@ def UniformSpace.Core.mkOfBasis {α : Type u} (B : FilterBasis (α × α))
     B.hasBasis).2 comp
 #align uniform_space.core.mk_of_basis UniformSpace.Core.mkOfBasis
 
--- porting note: TODO: use `mkOfNhds`?
 /-- A uniform space generates a topological space -/
 def UniformSpace.Core.toTopologicalSpace {α : Type u} (u : UniformSpace.Core α) :
-    TopologicalSpace α where
-  IsOpen s := ∀ x ∈ s, { p : α × α | p.1 = x → p.2 ∈ s } ∈ u.uniformity
-  isOpen_univ := by simp
-  isOpen_inter := fun s t hs ht x ⟨xs, xt⟩ => by
-    filter_upwards [hs x xs, ht x xt] with x hxs hxt hx using ⟨hxs hx, hxt hx⟩
-  isOpen_sUnion := fun s hs x ⟨t, ts, xt⟩ => by
-    filter_upwards [hs t ts x xt] with p ph h using ⟨t, ts, ph h⟩
+    TopologicalSpace α :=
+  .mkOfNhds fun x ↦ .comap (Prod.mk x) u.uniformity
 #align uniform_space.core.to_topological_space UniformSpace.Core.toTopologicalSpace
 
 theorem UniformSpace.Core.ext :
@@ -301,28 +294,19 @@ theorem UniformSpace.Core.ext :
   A metric space has a natural uniformity, and a uniform space has a natural topology.
   A topological group also has a natural uniformity, even when it is not metrizable. -/
 class UniformSpace (α : Type u) extends TopologicalSpace α, UniformSpace.Core α where
-  /-- The uniformity agrees with the topology: a set `s` is open if and only if for `x ∈ s`,
-  the set `{ p : α × α | p.1 = x → p.2 ∈ s }` belongs to `uniformity`. -/
-  isOpen_uniformity :
-    ∀ s, IsOpen[toTopologicalSpace] s ↔ ∀ x ∈ s, { p : α × α | p.1 = x → p.2 ∈ s } ∈ uniformity
+  /-- The uniformity agrees with the topology: the neighborhoods filter of each point `x`
+  is equal to `Filter.comap (Prod.mk x) (𝓤 α)`. -/
+  nhds_eq_comap_uniformity (x : α) : 𝓝 x = comap (Prod.mk x) uniformity
 #align uniform_space UniformSpace
 
+set_option linter.unusedVariables false in -- false positive
 /-- Alternative constructor for `UniformSpace α` when a topology is already given. -/
 @[match_pattern, reducible]
 def UniformSpace.mk' {α} (t : TopologicalSpace α) (c : UniformSpace.Core α)
-    (isOpen_uniformity :
-      ∀ s : Set α, IsOpen[t] s ↔ ∀ x ∈ s, { p : α × α | p.1 = x → p.2 ∈ s } ∈ c.uniformity) :
+    (nhds_eq : ∀ x : α, 𝓝 x = comap (Prod.mk x) c.uniformity) :
     UniformSpace α :=
-  ⟨c, isOpen_uniformity⟩
+  ⟨c, nhds_eq⟩
 #align uniform_space.mk' UniformSpace.mk'
-
-/-- Construct a `UniformSpace` from a `UniformSpace.Core`. -/
-@[reducible]
-def UniformSpace.ofCore {α : Type u} (u : UniformSpace.Core α) : UniformSpace α where
-  toCore := u
-  toTopologicalSpace := u.toTopologicalSpace
-  isOpen_uniformity _ := Iff.rfl
-#align uniform_space.of_core UniformSpace.ofCore
 
 /-- Construct a `UniformSpace` from a `u : UniformSpace.Core` and a `TopologicalSpace` structure
 that is equal to `u.toTopologicalSpace`. -/
@@ -331,8 +315,21 @@ def UniformSpace.ofCoreEq {α : Type u} (u : UniformSpace.Core α) (t : Topologi
     (h : t = u.toTopologicalSpace) : UniformSpace α where
   toCore := u
   toTopologicalSpace := t
-  isOpen_uniformity _ := h.symm ▸ Iff.rfl
+  nhds_eq_comap_uniformity x := by
+    rw [h]
+    apply TopologicalSpace.nhds_mkOfNhds_of_hasBasis (fun _ ↦ (basis_sets _).comap _)
+    · exact fun a U hU ↦ u.refl hU rfl
+    · intro a U hU
+      
 #align uniform_space.of_core_eq UniformSpace.ofCoreEq
+
+/-- Construct a `UniformSpace` from a `UniformSpace.Core`. -/
+@[reducible]
+def UniformSpace.ofCore {α : Type u} (u : UniformSpace.Core α) : UniformSpace α where
+  toCore := u
+  toTopologicalSpace := u.toTopologicalSpace
+  isOpen_uniformity _ := Iff.rfl
+#align uniform_space.of_core UniformSpace.ofCore
 
 theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
     u.toCore.toTopologicalSpace = u.toTopologicalSpace :=
