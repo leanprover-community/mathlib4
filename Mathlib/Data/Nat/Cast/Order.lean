@@ -34,10 +34,10 @@ theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 #align nat.mono_cast Nat.mono_cast
 
-@[deprecated mono_cast]
+@[deprecated mono_cast] -- Since 2024-02-10
 theorem cast_le_cast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
 
-@[gcongr] -- Since 2024/02/10
+@[gcongr]
 theorem _root_.GCongr.natCast_le_natCast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
 
 /-- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`. -/
