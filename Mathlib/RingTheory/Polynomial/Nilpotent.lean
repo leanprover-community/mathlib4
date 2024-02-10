@@ -6,7 +6,9 @@ Authors: Emilie Uthaiwat, Oliver Nash
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Div
+import Mathlib.Data.Polynomial.Identities
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Nilpotency in polynomial rings.
@@ -109,11 +111,9 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     exact hunit.map C }
   set P₁ := P.eraseLead with hP₁
   suffices IsUnit P₁ by
-    rw [← eraseLead_add_monomial_natDegree_leadingCoeff P, ← C_mul_X_pow_eq_monomial]
-    obtain ⟨Q, hQ⟩ := this
-    rw [← hP₁, ← hQ]
-    refine' Commute.IsNilpotent.add_isUnit (isNilpotent_C_mul_pow_X_of_isNilpotent _ (hnil _ hdeg))
-      ((Commute.all _ _).mul_left (Commute.all _ _))
+    rw [← eraseLead_add_monomial_natDegree_leadingCoeff P, ← C_mul_X_pow_eq_monomial, ← hP₁]
+    refine IsNilpotent.isUnit_add_left_of_commute ?_ this (Commute.all _ _)
+    exact isNilpotent_C_mul_pow_X_of_isNilpotent _ (hnil _ hdeg)
   have hdeg₂ := lt_of_le_of_lt P.eraseLead_natDegree_le (Nat.sub_lt
     (Nat.pos_of_ne_zero hdeg) zero_lt_one)
   refine' hind P₁.natDegree _ _ (fun i hi => _) rfl
@@ -170,5 +170,26 @@ lemma isUnit_iff' :
   simp [modByMonic_X]
 
 end CommRing
+
+section CommAlgebra
+
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (P : R[X]) {a b : S}
+
+lemma isNilpotent_aeval_sub_of_isNilpotent_sub (h : IsNilpotent (a - b)) :
+    IsNilpotent (aeval a P - aeval b P) := by
+  simp only [← eval_map_algebraMap]
+  have ⟨c, hc⟩ := evalSubFactor (map (algebraMap R S) P) a b
+  exact hc ▸ (Commute.all _ _).isNilpotent_mul_right h
+
+variable {P}
+
+lemma isUnit_aeval_of_isUnit_aeval_of_isNilpotent_sub
+    (hb : IsUnit (aeval b P)) (hab : IsNilpotent (a - b)) :
+    IsUnit (aeval a P) := by
+  rw [← add_sub_cancel'_right (aeval b P) (aeval a P)]
+  refine IsNilpotent.isUnit_add_left_of_commute ?_ hb (Commute.all _ _)
+  exact isNilpotent_aeval_sub_of_isNilpotent_sub P hab
+
+end CommAlgebra
 
 end Polynomial

@@ -285,7 +285,7 @@ noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [C
 
 noncomputable instance (priority := 100) perfectField [IsAlgClosed k] : PerfectField k := by
   obtain _ | ⟨p, _, _⟩ := CharP.exists' k
-  exacts [.ofCharZero k, PerfectRing.toPerfectField k p]
+  exacts [.ofCharZero, PerfectRing.toPerfectField k p]
 
 /-- Algebraically closed fields are infinite since `Xⁿ⁺¹ - 1` is separable when `#K = n` -/
 instance (priority := 500) {K : Type*} [Field K] [IsAlgClosed K] : Infinite K := by
