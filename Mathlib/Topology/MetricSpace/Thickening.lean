@@ -700,8 +700,8 @@ theorem thickening_ball [PseudoMetricSpace α] (x : α) (ε δ : ℝ) :
 end Metric
 
 open Metric in
-theorem IsCompact.exists_thickening_image_subset [PseudoEMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
-    {K : Set α} {U : Set β} (hK : IsCompact K)
+theorem IsCompact.exists_thickening_image_subset [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    {f : α → β} {K : Set α} {U : Set β} (hK : IsCompact K)
     (ho : IsOpen U) (hf : Continuous f) (hKU : MapsTo f K U) :
     ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U := by
   rcases (hK.image hf).exists_thickening_subset_open ho hKU.image_subset with ⟨r, hr₀, hr⟩
