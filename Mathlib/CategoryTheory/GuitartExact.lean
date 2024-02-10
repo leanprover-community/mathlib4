@@ -29,7 +29,7 @@ is initial.
 
 Various categorical notions (fully faithful functors, adjunctions, etc.) can
 be characterized in terms of Guitart exact squares. Their particular role
-in pointwise Kan extensions shall also be use in the construction of
+in pointwise Kan extensions shall also be used in the construction of
 derived functors.
 
 ## TODO
