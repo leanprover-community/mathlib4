@@ -64,12 +64,12 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet (hM : 1 < M) :
 
 end StolzSet
 
-variable {f : ℕ → ℂ} {l : ℂ} (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l))
+variable {f : ℕ → ℂ} {l : ℂ}
 
 /-- Auxiliary lemma for Abel's limit theorem. The difference between the sum `l` at 1 and the
 power series's value at a point `z` away from 1 can be rewritten as `1 - z` times a power series
 whose coefficients are tail sums of `l`. -/
-lemma abel_aux {z : ℂ} (hz : ‖z‖ < 1) :
+lemma abel_aux (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) {z : ℂ} (hz : ‖z‖ < 1) :
     Tendsto (fun n ↦ (1 - z) * ∑ i in range n, (l - ∑ j in range (i + 1), f j) * z ^ i)
       atTop (𝓝 (l - ∑' n, f n * z ^ n)) := by
   let s := fun n ↦ ∑ i in range n, f i
@@ -102,7 +102,8 @@ lemma abel_aux {z : ℂ} (hz : ‖z‖ < 1) :
 
 /-- **Abel's limit theorem**. Given a power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 within a fixed Stolz set. -/
-theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet {M : ℝ} :
+theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
+    (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) {M : ℝ} :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) (𝓝[stolzSet M] 1) (𝓝 l) := by
   -- If `M ≤ 1` the Stolz set is empty and the statement is trivial
   cases' le_or_lt M 1 with hM hM
@@ -154,7 +155,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet {M : ℝ} :
   have S₁ : ‖1 - z‖ * ∑ i in range B₁, ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 :=
     calc
       _ ≤ ‖1 - z‖ * ∑ i in range B₁, ‖l - s (i + 1)‖ := by
-        gcongr; nth_rw 2 [← mul_one ‖_‖]
+        gcongr; nth_rw 3 [← mul_one ‖_‖]
         gcongr; exact pow_le_one _ (norm_nonneg _) zn.le
       _ ≤ ‖1 - z‖ * (F + 1) := by gcongr; linarith only
       _ < _ := by rwa [norm_sub_rev, lt_div_iff (by positivity)] at zd
@@ -180,7 +181,8 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet {M : ℝ} :
   convert add_lt_add S₁ S₂ using 1
   linarith only
 
-theorem tendsto_tsum_powerSeries_nhdsWithin_lt :
+theorem tendsto_tsum_powerSeries_nhdsWithin_lt
+    (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) ((𝓝[<] 1).map ofReal') (𝓝 l) :=
   (tendsto_tsum_powerSeries_nhdsWithin_stolzSet (M := 2) h).mono_left
     (nhdsWithin_lt_le_nhdsWithin_stolzSet one_lt_two)
@@ -191,11 +193,12 @@ namespace Real
 
 open Complex
 
-variable {f : ℕ → ℝ} {l : ℝ} (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l))
+variable {f : ℕ → ℝ} {l : ℝ}
 
 /-- **Abel's limit theorem**. Given a real power series converging at 1, the corresponding function
 is continuous at 1 when approaching 1 from the left. -/
-theorem tendsto_tsum_powerSeries_nhdsWithin_lt :
+theorem tendsto_tsum_powerSeries_nhdsWithin_lt
+    (h : Tendsto (fun n ↦ ∑ i in range n, f i) atTop (𝓝 l)) :
     Tendsto (fun x ↦ ∑' n, f n * x ^ n) (𝓝[<] 1) (𝓝 l) := by
   have m : (𝓝 l).map ofReal' ≤ 𝓝 ↑l := ofRealCLM.continuous.tendsto l
   replace h := (tendsto_map.comp h).mono_right m
