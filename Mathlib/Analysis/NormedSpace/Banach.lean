@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 
@@ -59,7 +60,7 @@ noncomputable def ContinuousLinearEquiv.toNonlinearRightInverse (f : E ≃L[𝕜
     ContinuousLinearMap.NonlinearRightInverse (f : E →L[𝕜] F) where
   toFun := f.invFun
   nnnorm := ‖(f.symm : F →L[𝕜] E)‖₊
-  bound' _ := ContinuousLinearMap.le_op_norm (f.symm : F →L[𝕜] E) _
+  bound' _ := ContinuousLinearMap.le_opNorm (f.symm : F →L[𝕜] E) _
   right_inv' := f.apply_symm_apply
 #align continuous_linear_equiv.to_nonlinear_right_inverse ContinuousLinearEquiv.toNonlinearRightInverse
 

@@ -867,7 +867,7 @@ theorem lift_omega : lift ω = ω :=
 In this paragraph, we introduce the addition on ordinals, and prove just enough properties to
 deduce that the order on ordinals is total (and therefore well-founded). Further properties of
 the addition, together with properties of the other operations, are proved in
-`OrdinalArithmetic.lean`.
+`Ordinal/Arithmetic.lean`.
 -/
 
 
@@ -1057,7 +1057,7 @@ theorem succ_zero : succ (0 : Ordinal) = 1 :=
 -- Porting note: Proof used to be rfl
 @[simp]
 theorem succ_one : succ (1 : Ordinal) = 2 := by
-  unfold instOfNat OfNat.ofNat
+  unfold instOfNatAtLeastTwo OfNat.ofNat
   simpa using by rfl
 #align ordinal.succ_one Ordinal.succ_one
 
