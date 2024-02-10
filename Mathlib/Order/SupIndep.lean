@@ -367,12 +367,12 @@ theorem independent_def'' :
 
 @[simp]
 theorem independent_empty (t : Empty → α) : Independent t :=
-  fun.
+  nofun
 #align complete_lattice.independent_empty CompleteLattice.independent_empty
 
 @[simp]
 theorem independent_pempty (t : PEmpty → α) : Independent t :=
-  fun.
+  nofun
 #align complete_lattice.independent_pempty CompleteLattice.independent_pempty
 
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
