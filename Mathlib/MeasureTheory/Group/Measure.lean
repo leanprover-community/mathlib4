@@ -572,9 +572,8 @@ instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerReg
 @[to_additive
    "The image of a inner regular measure under map of a left additive action is again
     inner regular"]
-instance innerRegular_map_smul {α} [BorelSpace G] [TopologicalGroup G] [Group α] [MulAction α G]
-    [MeasurableSpace α] [MeasurableSMul α G] [ContinuousConstSMul α G] [InnerRegular μ] (a : α) :
-    InnerRegular (Measure.map (a • · : G → G) μ) :=
+instance innerRegular_map_smul {α} [Group α] [MulAction α G] [ContinuousConstSMul α G]
+    [InnerRegular μ] (a : α) : InnerRegular (Measure.map (a • · : G → G) μ) :=
   InnerRegular.map_of_continuous (continuous_const_smul a)
 
 /-- The image of an inner regular measure under left multiplication is again inner regular. -/
