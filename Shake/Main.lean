@@ -167,6 +167,27 @@ def Edits.add (ed : Edits) (src : Name) (tgt : Nat) : Edits :=
   | none => ed.insert src (∅, 1 <<< tgt)
   | some (a, b) => ed.insert src (a, b ||| (1 <<< tgt))
 
+/-- Parse a source file to extract the location of the import lines, for edits and error messages.
+
+Returns `(path, inputCtx, headerStx, endPos)` where `headerStx` is the `Lean.Parser.Module.header`
+and `endPos` is the position of the end of the header.
+-/
+def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
+    IO (System.FilePath × Parser.InputContext × Syntax × String.Pos) := do
+  -- Parse the input file
+  let some path ← srcSearchPath.findModuleWithExt "lean" mod
+    | throw <| .userError "error: failed to find source file for {mod}"
+  let text ← IO.FS.readFile path
+  let inputCtx := Parser.mkInputContext text path.toString
+  let (header, parserState, msgs) ← Parser.parseHeader inputCtx
+  if !msgs.isEmpty then -- skip this file if there are parse errors
+    msgs.forM fun msg => msg.toString >>= IO.println
+    throw <| .userError "parse errors in file"
+  -- the insertion point for `add` is the first newline after the imports
+  let insertion := header.getTailPos?.getD parserState.pos
+  let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
+  pure (path, inputCtx, header, insertion)
+
 /-- Analyze and report issues from module `i`. Arguments:
 
 * `s`: The main state (contains all the modules and dependency information)
@@ -179,7 +200,8 @@ def Edits.add (ed : Edits) (src : Name) (tgt : Nat) : Edits :=
 * `downstream`: if true, then we report downstream files that need to be fixed too
  -/
 def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
-    (i : Nat) (needs : Bitset) (edits : Edits) (downstream := true) : IO Edits := do
+    (i : Nat) (needs : Bitset) (edits : Edits)
+    (downstream := true) (githubStyle := false) : IO Edits := do
   -- Do transitive reduction of `needs` in `deps` and transitive closure in `transDeps`.
   -- Include the `ignoreImps` in `transDeps`
   let mut deps := needs
@@ -215,6 +237,20 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
   -- mark and report the removals
   let mut edits := toRemove.foldl (init := edits) fun edits n =>
     edits.remove s.modNames[i]! s.modNames[n]!
+  if githubStyle then
+    try
+      let (path, inputCtx, header, endHeader) ← parseHeader srcSearchPath s.modNames[i]!
+      for stx in header[1].getArgs do
+        if toRemove.any fun i => s.modNames[i]! == stx[2].getId then
+          let pos := inputCtx.fileMap.toPosition stx.getPos?.get!
+          println! "{path}:{pos.line}:{pos.column+1}: warning: unused import \
+            (use `lake exe shake --fix` to fix this, or `lake exe shake --update` to ignore)"
+      if !toAdd.isEmpty then
+        -- we put the insert message on the beginning of the last import line
+        let pos := inputCtx.fileMap.toPosition endHeader
+        println! "{path}:{pos.line-1}:1: warning: \
+          import {toAdd.map (s.modNames[·]!)} instead"
+    catch _ => pure ()
   if let some path ← srcSearchPath.findModuleWithExt "lean" s.modNames[i]! then
     println! "{path}:"
   else
@@ -248,7 +284,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
             toFixArr := toFixArr.push j
         edits := toFixArr.foldl (init := edits) fun edits n =>
           edits.add s.modNames[n]! r.toNat
-        println! "  fix {s.modNames[r]!}: {toFixArr.map (s.modNames[·]!)}"
+        println! "  instead import {s.modNames[r]!} in: {toFixArr.map (s.modNames[·]!)}"
   return edits
 
 /-- Convert a list of module names to a bitset of module indexes -/
@@ -264,10 +300,14 @@ structure Args where
   help : Bool := false
   /-- `--no-downstream`: disables downstream mode -/
   downstream : Bool := true
+  /-- `--gh-style`: output messages that can be parsed by `gh-problem-matcher-wrap` -/
+  githubStyle : Bool := false
   /-- `--fix`: apply the fixes directly -/
   fix : Bool := false
   /-- `--update`: update the config file -/
   update : Bool := false
+  /-- `--global`: with `--update`, add imports to `ignoreImport` instead of `ignore` -/
+  global : Bool := false
   /-- `--cfg FILE`: choose a custom location for the config file -/
   cfg : Option String := none
   /-- `<MODULE>..`: the list of root modules to check -/
@@ -292,7 +332,7 @@ structure ShakeCfg where
   deriving FromJson, ToJson
 
 /-- The main entry point. See `help` for more information on arguments. -/
-def main (args : List String) : IO Unit := do
+def main (args : List String) : IO UInt32 := do
   initSearchPath (← findSysroot)
   -- Parse the arguments
   let rec parseArgs (args : Args) : List String → Args
@@ -300,7 +340,9 @@ def main (args : List String) : IO Unit := do
     | "--help" :: rest => parseArgs { args with help := true } rest
     | "--no-downstream" :: rest => parseArgs { args with downstream := false } rest
     | "--fix" :: rest => parseArgs { args with fix := true } rest
+    | "--gh-style" :: rest => parseArgs { args with githubStyle := true } rest
     | "--update" :: rest => parseArgs { args with update := true } rest
+    | "--global" :: rest => parseArgs { args with global := true } rest
     | "--cfg" :: cfg :: rest => parseArgs { args with cfg := cfg } rest
     | "--" :: rest => { args with mods := args.mods ++ rest.map (·.toName) }
     | other :: rest => parseArgs { args with mods := args.mods.push other.toName } rest
@@ -350,11 +392,16 @@ def main (args : List String) : IO Unit := do
   -- Run the calculation of the `needs` array in parallel
   let needs := s.mods.mapIdx fun i mod =>
     if args.downstream || noIgnore i then
-      some <| Task.spawn fun _ => calcNeeds s.constToIdx mod
+      some <| Task.spawn fun _ =>
+        -- remove the module from its own `needs`
+        (calcNeeds s.constToIdx mod ||| (1 <<< i.1)) ^^^ (1 <<< i.1)
     else
       none
   if args.downstream then
     s := { s with needs := needs.map (·.get!.get) }
+
+  if args.fix then
+    println! "The following changes will be made automatically:"
 
   -- Check all selected modules
   let mut edits : Edits := mkHashMap
@@ -362,66 +409,97 @@ def main (args : List String) : IO Unit := do
     if let some t := t then
       if noIgnore i then
         let ignoreImps := ignoreImps ||| ignore.findD s.modNames[i]! 0
-        edits ← visitModule s srcSearchPath ignoreImps i t.get edits args.downstream
+        edits ← visitModule s srcSearchPath ignoreImps i t.get edits
+          args.downstream args.githubStyle
 
   -- Write the config file
   if args.update then
     if let some cfgFile := cfgFile then
-      let mut map := cfg.ignore?.getD {}
+      let mut ignore := cfg.ignore?.getD {}
+      let ignoreImport := cfg.ignoreImport?.getD {}
+      let mut ignoreImportSet : NameSet := ignoreImport.foldl .insert {}
       -- if `args.fix` is true then we assume the errors will be fixed after,
       -- so it's just reformatting the existing file
       if !args.fix then
-        map := edits.fold (init := map) fun ignore mod (remove, _) =>
-          let ns := (ignore.findD mod #[]).foldl (init := remove) (·.insert ·)
-          if ns.isEmpty then ignore.erase mod else ignore.insert mod (ns.toArray.qsort Name.lt)
+        if args.global then
+          -- in global mode all the edits are added to `ignoreImport`
+          ignoreImportSet := edits.fold (init := ignoreImportSet)
+            (fun ignore _ (remove, _) => ignore.union remove)
+        else
+          -- in local mode all the edits are added to `ignore`
+          ignore := edits.fold (init := ignore) fun ignore mod (remove, _) =>
+            let ns := (ignore.findD mod #[]).foldl (init := remove) (·.insert ·)
+            if ns.isEmpty then ignore.erase mod else
+              ignore.insert mod ns.toArray
+      -- If an entry is in `ignoreAll`, the `ignore` key is redundant
+      for i in cfg.ignoreAll?.getD {} do
+        if ignore.contains i then
+          ignore := ignore.erase i
+      -- If an entry is in `ignoreImport`, the `ignore` value is redundant
+      ignore := ignore.fold (init := {}) fun ignore mod ns =>
+        let ns := ns.filter (!ignoreImportSet.contains ·)
+        if ns.isEmpty then ignore else ignore.insert mod (ns.qsort (·.toString < ·.toString))
+      -- Sort the lists alphabetically
+      let ignoreImport := (ignoreImportSet.toArray.qsort (·.toString < ·.toString)).toList
       let cfg : ShakeCfg := {
         ignoreAll? := cfg.ignoreAll?.filter (!·.isEmpty)
-        ignoreImport? := cfg.ignoreImport?.filter (!·.isEmpty)
-        ignore? := (some map).filter (!·.isEmpty)
+        ignoreImport? := (some ignoreImport).filter (!·.isEmpty)
+        ignore? := (some ignore).filter (!·.isEmpty)
       }
       IO.FS.writeFile cfgFile <| toJson cfg |>.pretty
 
+  if !args.fix then
+    -- return error if any issues were found
+    return if edits.isEmpty then 0 else 1
+
   -- Apply the edits to existing files
-  if !args.fix then return
-  edits.forM fun mod (remove, add) => do
+  let count ← edits.foldM (init := 0) fun count mod (remove, add) => do
     -- Only edit files in the current package
-    if pkg.isPrefixOf mod then
-      -- Compute the transitive reduction of `add` and convert to a list of names
-      let add := if add == 0 then #[] else Id.run do
-        let mut val := add
-        for i in [0:s.mods.size] do
-          if val &&& (1 <<< i) != 0 then
-            val := val ^^^ (val &&& s.transDeps[i]!) ^^^ (1 <<< i)
-        let mut out := #[]
-        for i in [0:s.mods.size] do
-          if val &&& (1 <<< i) != 0 then
-            out := out.push s.modNames[i]!
-        out.qsort Name.lt
+    if !pkg.isPrefixOf mod then
+      return count
+    -- Compute the transitive reduction of `add` and convert to a list of names
+    let add := if add == 0 then #[] else Id.run do
+      let mut val := add
+      for i in [0:s.mods.size] do
+        if val &&& (1 <<< i) != 0 then
+          val := val ^^^ (val &&& s.transDeps[i]!) ^^^ (1 <<< i)
+      let mut out := #[]
+      for i in [0:s.mods.size] do
+        if val &&& (1 <<< i) != 0 then
+          out := out.push s.modNames[i]!
+      out.qsort Name.lt
 
-      -- Parse the input file
-      let some path ← srcSearchPath.findModuleWithExt "lean" mod
-        | println! "error: failed to find source file for {mod}"
-      let text ← IO.FS.readFile path
-      let inputCtx := Parser.mkInputContext text path.toString
-      let (header, parserState, msgs) ← Parser.parseHeader inputCtx
-      if !msgs.isEmpty then -- skip this file if there are parse errors
-        msgs.forM fun msg => msg.toString >>= IO.println
-        return
+    -- Parse the input file
+    let (path, inputCtx, header, insertion) ←
+      try parseHeader srcSearchPath mod
+      catch e => println! e.toString; return count
+    let text := inputCtx.input
 
-      -- Calculate the edit result
-      let mut pos : String.Pos := 0
-      let mut out : String := ""
-      for stx in header[1].getArgs do
-        if remove.contains stx[2].getId then
-          out := out ++ text.extract pos stx.getPos?.get!
-          -- We use the end position of the syntax, but include whitespace up to the first newline
-          pos := text.findAux (· == '\n') text.endPos stx.getTailPos?.get! + ⟨1⟩
-      -- the insertion point for `add` is the first newline after the imports
-      let insertion := header.getTailPos?.getD parserState.pos
-      let insertion := text.findAux (· == '\n') text.endPos insertion + ⟨1⟩
-      out := out ++ text.extract pos insertion
-      for mod in add do
+    -- Calculate the edit result
+    let mut pos : String.Pos := 0
+    let mut out : String := ""
+    let mut seen : NameSet := {}
+    for stx in header[1].getArgs do
+      let mod := stx[2].getId
+      if remove.contains mod || seen.contains mod then
+        out := out ++ text.extract pos stx.getPos?.get!
+        -- We use the end position of the syntax, but include whitespace up to the first newline
+        pos := text.findAux (· == '\n') text.endPos stx.getTailPos?.get! + ⟨1⟩
+      seen := seen.insert mod
+    out := out ++ text.extract pos insertion
+    for mod in add do
+      if !seen.contains mod then
+        seen := seen.insert mod
         out := out ++ s!"import {mod}\n"
-      out := out ++ text.extract insertion text.endPos
+    out := out ++ text.extract insertion text.endPos
 
-      IO.FS.writeFile path out
+    IO.FS.writeFile path out
+    return count + 1
+
+  -- Since we throw an error upon encountering issues, we can be sure that everything worked
+  -- if we reach this point of the script.
+  if count > 0 then
+    println! "Successfully applied {count} suggestions."
+  else
+    println! "No edits required."
+  return 0

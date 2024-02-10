@@ -325,6 +325,7 @@ theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪
   (measure_union_lt_top hs.lt_top ht.lt_top).ne
 #align measure_theory.measure_union_ne_top MeasureTheory.measure_union_ne_top
 
+open scoped symmDiff in
 theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∆ t) ≠ ∞ :=
   ne_top_of_le_ne_top (measure_union_ne_top hs ht) <| measure_mono symmDiff_subset_union
 
@@ -492,6 +493,7 @@ theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 #align measure_theory.ae_eq_set MeasureTheory.ae_eq_set
 
+open scoped symmDiff in
 @[simp]
 theorem measure_symmDiff_eq_zero_iff {s t : Set α} : μ (s ∆ t) = 0 ↔ s =ᵐ[μ] t := by
   simp [ae_eq_set, symmDiff_def]

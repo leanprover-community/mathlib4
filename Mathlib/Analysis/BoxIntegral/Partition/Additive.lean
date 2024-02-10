@@ -48,8 +48,12 @@ structure BoxAdditiveMap (ι M : Type*) [AddCommMonoid M] (I : WithTop (Box ι))
     ∑ Ji in π.boxes, toFun Ji = toFun J
 #align box_integral.box_additive_map BoxIntegral.BoxAdditiveMap
 
+
+/-- A function on `Box ι` is called box additive if for every box `J` and a partition `π` of `J`
+we have `f J = ∑ Ji in π.boxes, f Ji`. -/
 scoped notation:25 ι " →ᵇᵃ " M => BoxIntegral.BoxAdditiveMap ι M ⊤
-scoped notation:25 ι " →ᵇᵃ[" I "] " M => BoxIntegral.BoxAdditiveMap ι M I
+
+@[inherit_doc] scoped notation:25 ι " →ᵇᵃ[" I "] " M => BoxIntegral.BoxAdditiveMap ι M I
 
 namespace BoxAdditiveMap
 
@@ -118,7 +122,7 @@ def restrict (f : ι →ᵇᵃ[I₀] M) (I : WithTop (Box ι)) (hI : I ≤ I₀)
 
 /-- If `f : Box ι → M` is box additive on partitions of the form `split I i x`, then it is box
 additive. -/
-def ofMapSplitAdd [Fintype ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
+def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
     (hf : ∀ I : Box ι, ↑I ≤ I₀ → ∀ {i x}, x ∈ Ioo (I.lower i) (I.upper i) →
       (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f = f I) :
     ι →ᵇᵃ[I₀] M := by
