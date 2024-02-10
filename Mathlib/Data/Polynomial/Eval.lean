@@ -1115,6 +1115,9 @@ theorem iterate_comp_eval :
   iterate_comp_eval₂ _
 #align polynomial.iterate_comp_eval Polynomial.iterate_comp_eval
 
+lemma isRoot_comp {R} [CommSemiring R] {p q : R[X]} {r : R} :
+    (p.comp q).IsRoot r ↔ p.IsRoot (q.eval r) := by simp_rw [IsRoot, eval_comp]
+
 /-- `comp p`, regarded as a ring homomorphism from `R[X]` to itself. -/
 def compRingHom : R[X] → R[X] →+* R[X] :=
   eval₂RingHom C
