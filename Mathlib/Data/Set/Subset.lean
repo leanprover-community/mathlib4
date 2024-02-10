@@ -51,7 +51,7 @@ The notation is short for `((↑) ⁻¹' B : Set A)`, while giving hints to the 
 that both `A` and `B` are terms of `Set α` for the same `α`.
 This set is the same as `{x : ↑A | ↑x ∈ B}`.
 -/
-scoped notation A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
+scoped notation3 A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
 
 end Set.Notation
 
