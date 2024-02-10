@@ -736,7 +736,7 @@ def lift : (A →ₙₐ[R] C) ≃ (Unitization R A →ₐ[R] C) where
   left_inv φ := by
     ext a
     unfold inrNonUnitalAlgHom
-    simp only [Function.comp.left_id, AlgHom.toNonUnitalAlgHom_eq_coe]
+    simp only [Function.comp_id, AlgHom.toNonUnitalAlgHom_eq_coe]
     rw [NonUnitalAlgHom.comp_apply]
     simp only [NonUnitalAlgHom.coe_mk, NonUnitalAlgHom.toAlgHom_apply,
       fst_inr, map_zero, snd_inr, zero_add]
