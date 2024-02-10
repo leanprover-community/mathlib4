@@ -335,6 +335,29 @@ lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsFiniteMeasureOnCompacts �
       haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_ne_zero
     _ = 1 := div_self int_g_ne_zero
 
+@[to_additive]
+lemma haarScalarFactor_mul_haarScalarFactor (μ₁ μ₂ μ₃ : Measure G) [IsFiniteMeasureOnCompacts μ₁]
+    [IsFiniteMeasureOnCompacts μ₂] [IsFiniteMeasureOnCompacts μ₃] [IsMulLeftInvariant μ₁]
+    [IsMulLeftInvariant μ₂] [IsMulLeftInvariant μ₃]  [IsOpenPosMeasure μ₂] [IsOpenPosMeasure μ₃] :
+    haarScalarFactor μ₁ μ₂ * haarScalarFactor μ₂ μ₃ = haarScalarFactor μ₁ μ₃ := by
+  by_cases hG : LocallyCompactSpace G; swap
+  · simp [haarScalarFactor, hG]
+  obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
+      ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_μ₂_nonzero : ∫ x, g x ∂μ₂ ≠ 0 := ne_of_gt
+    (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+  have int_g_μ₃_nonzero : ∫ x, g x ∂μ₃ ≠ 0 := ne_of_gt
+    (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+  apply NNReal.coe_injective
+  calc
+    haarScalarFactor μ₁ μ₂ * haarScalarFactor μ₂ μ₃ =
+      ((∫ x, g x ∂μ₁) / ∫ x, g x ∂μ₂) * ((∫ x, g x ∂μ₂) / ∫ x, g x ∂μ₃) :=
+      by rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_μ₂_nonzero,
+        haarScalarFactor_eq_integral_div _ _ g_cont g_comp int_g_μ₃_nonzero]
+    _ = (∫ x, g x ∂μ₁) / ∫ x, g x ∂μ₃ := div_mul_div_cancel _ int_g_μ₂_nonzero
+    _ = haarScalarFactor μ₁ μ₃ := (haarScalarFactor_eq_integral_div _ _ g_cont g_comp
+      int_g_μ₃_nonzero).symm
+
 /-- **Uniqueness of left-invariant measures**: Given two left-invariant measures which are finite on
 compacts and inner regular for finite measure sets with respect to compact sets,
 they coincide in the following sense: they give the same value to finite measure sets,
