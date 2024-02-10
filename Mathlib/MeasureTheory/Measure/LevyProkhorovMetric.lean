@@ -237,10 +237,10 @@ open BoundedContinuousFunction
 variable {ι : Type*} (Ω : Type*) [MeasurableSpace Ω]
 
 def levyProkhorov_to_probabilityMeasure (μ : LevyProkhorov (ProbabilityMeasure Ω)) :
-  ProbabilityMeasure Ω := μ
+    ProbabilityMeasure Ω := μ
 
 def levyProkhorov_to_finiteMeasure (μ : LevyProkhorov (FiniteMeasure Ω)) :
-  FiniteMeasure Ω := μ
+    FiniteMeasure Ω := μ
 
 variable [MetricSpace Ω] [OpensMeasurableSpace Ω]
 
@@ -454,7 +454,7 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
           apply add_le_add rfl.le <| (add_le_add rfl.le also).trans <| by linarith
         · exact eventually_of_forall f_nn
       · positivity
-      · rw [ENNReal.ofReal_add (by positivity) (by positivity), ←add_zero (levyProkhorovEDist _ _)]
+      · rw [ENNReal.ofReal_add (by positivity) (by positivity), ← add_zero (levyProkhorovEDist _ _)]
         apply ENNReal.add_lt_add_of_le_of_lt (levyProkhorovEDist_ne_top _ _)
               (le_of_eq ?_) (ofReal_pos.mpr εs_pos)
         rw [levyProkhorov_dist_def, levyProkhorovDist, ofReal_toReal (levyProkhorovEDist_ne_top _ _)]
