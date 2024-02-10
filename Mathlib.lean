@@ -1112,6 +1112,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 import Mathlib.CategoryTheory.Limits.Creates
+import Mathlib.CategoryTheory.Limits.EpiMono
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
 import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Filtered
@@ -1193,6 +1194,7 @@ import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Equivalence
+import Mathlib.CategoryTheory.Localization.FiniteProducts
 import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Localization.Opposite
@@ -1297,7 +1299,12 @@ import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Closed
-import Mathlib.CategoryTheory.Sites.Coherent
+import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
+import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
+import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
 import Mathlib.CategoryTheory.Sites.CompatiblePlus
 import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 import Mathlib.CategoryTheory.Sites.ConcreteSheafification
@@ -1320,7 +1327,6 @@ import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Preserves
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pullback
-import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.SheafHom
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
@@ -2742,6 +2748,7 @@ import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.MeasureTheory.Measure.Dirac
 import Mathlib.MeasureTheory.Measure.Doubling
+import Mathlib.MeasureTheory.Measure.EverywherePos
 import Mathlib.MeasureTheory.Measure.FiniteMeasure
 import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
 import Mathlib.MeasureTheory.Measure.GiryMonad
@@ -2837,7 +2844,7 @@ import Mathlib.NumberTheory.FermatPsp
 import Mathlib.NumberTheory.FrobeniusNumber
 import Mathlib.NumberTheory.FunctionField
 import Mathlib.NumberTheory.KummerDedekind
-import Mathlib.NumberTheory.LSeries
+import Mathlib.NumberTheory.LSeries.Basic
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 import Mathlib.NumberTheory.LegendreSymbol.Basic
 import Mathlib.NumberTheory.LegendreSymbol.GaussEisensteinLemmas
