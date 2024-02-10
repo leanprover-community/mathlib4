@@ -118,9 +118,6 @@ instance : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
 
 namespace Notation
 
-set_option pp.coercions false
-#check ((1 : ℕ) : Int)
-
 open Lean PrettyPrinter Delaborator SubExpr in
 /--
 If the `Set.Notation` namespace is open, sets of a subtype coerced to the ambient type are
