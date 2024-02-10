@@ -256,14 +256,13 @@ end bounding_functions
 
 section summability
 
-variable {α : Type*} {β : Type*} {i : α → Set β}
+variable {α : Type*} {β : Type*}
 
 /--Equivalence between the sigma of a fammily of finsets of `β × β` and `β × β`-/
 def sigmaEquiv (ι : α → Finset (β × β)) (HI : ∀ y : β × β , ∃! i : α, y ∈ ι i) :
     (Σ s : α, ((ι s) : Set (β × β))) ≃ (β × β) where
   toFun x := x.2
-  invFun x := by
-    refine ⟨(HI x).choose, x, (HI x).choose_spec.1⟩
+  invFun x := ⟨(HI x).choose, x, (HI x).choose_spec.1⟩
   left_inv x := by
       ext
       exact ((HI x.2).choose_spec.2 x.1 x.2.2).symm
