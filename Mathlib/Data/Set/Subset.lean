@@ -93,8 +93,7 @@ The following simp lemmas try to transform operations in the subtype into operat
 type, if possible.
 -/
 
-lemma image_val_univ : ↑(univ : Set A) = A := by
-  simp only [image_univ, Subtype.range_coe_subtype, setOf_mem_eq]
+lemma image_val_univ : ↑(univ : Set A) = A := Subtype.coe_image_univ A
 
 lemma image_val_empty : ↑(∅ : Set A) = (∅ : Set α) := image_empty _
 
@@ -122,75 +121,52 @@ lemma image_val_iUnion : ↑(⋃ i, t i) = ⋃ i, (t i : Set α) := image_iUnion
 
 @[simp]
 lemma image_val_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (↑B : Set α) | B ∈ T } := by
-  ext x
-  cases' hT with L hL
-  constructor
-  · intro h
-    simp_all only [mem_image, mem_sInter, Subtype.exists, exists_and_right, exists_eq_right,
-      mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    intro a a_1
-    rcases h with ⟨_, _⟩
-    simp_all only [exists_const]
-  · intro h
-    have haux : x ∈ (L : Set α)
-    · simp only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-        mem_image, Subtype.exists, exists_and_right, exists_eq_right] at h
-      specialize h L hL
-      cases' h with y hy
-      use ⟨x, y⟩
-    · simp only [mem_image, mem_sInter, Subtype.exists, exists_and_right, exists_eq_right]
-      rcases haux with ⟨⟨y, hyA⟩, ⟨_, rfl⟩⟩
-      simp_all only [mem_sInter, mem_setOf_eq, forall_exists_index, and_imp,
-        forall_apply_eq_imp_iff₂, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-        exists_true_left, implies_true, forall_const, exists_const]
+  erw [sInter_image]
+  rw [sInter_eq_biInter, (Subtype.val_injective.injOn _).image_biInter_eq hT]
 
 @[simp]
 lemma image_val_iInter [Nonempty ι] : (↑(⋂ i, t i) : Set α) = ⋂ i, (↑(t i) : Set α) :=
   (Subtype.val_injective.injOn _).image_iInter_eq
 
-lemma image_val_subset_set : ↑D ⊆ A := by
-  simp only [image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+lemma image_val_subset_set : ↑D ⊆ A := image_val_subset
 
 @[simp]
-lemma image_val_union_self_right_eq : A ∪ ↑D = A := by
-  simp only [union_eq_left, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+lemma image_val_union_self_right_eq : A ∪ ↑D = A :=
+  union_eq_left.2 image_val_subset
 
 @[simp]
-lemma image_val_union_self_left_eq : ↑D ∪ A = A := by
-  simp only [union_eq_right, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+lemma image_val_union_self_left_eq : ↑D ∪ A = A :=
+  union_eq_right.2 image_val_subset
 
 @[simp]
-lemma cou_inter_self_right_eq_coe : A ∩ ↑D = ↑D := by
-  simp only [inter_eq_right, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+lemma cou_inter_self_right_eq_coe : A ∩ ↑D = ↑D :=
+  inter_eq_right.2 image_val_subset
 
 @[simp]
-lemma image_val_inter_self_left_eq_coe : ↑D ∩ A = ↑D := by
-  simp only [inter_eq_left, image_subset_iff, Subtype.coe_preimage_self, subset_univ]
+lemma image_val_inter_self_left_eq_coe : ↑D ∩ A = ↑D :=
+  inter_eq_left.2 image_val_subset
 
 @[simp]
 lemma subset_preimage_val_image_val_iff : D ⊆ A ↓∩ ↑E ↔ D ⊆ E := by
   rw [preimage_image_eq _ Subtype.val_injective]
 
 @[simp]
-lemma image_val_eq_iff : (D : Set α) = ↑E ↔ D = E := by
-  simp only [subset_antisymm_iff, image_subset_iff, subset_preimage_val_image_val_iff]
+lemma image_val_eq_iff : (D : Set α) = ↑E ↔ D = E := Subtype.val_injective.image_injective.eq_iff
 
-lemma image_val_inj (h : (↑D : Set α) = ↑E) : D = E := by
-  rw [image_val_eq_iff] at h
-  exact h
+lemma image_val_inj (h : (↑D : Set α) = ↑E) : D = E := Subtype.val_injective.image_injective h
 
-lemma subset_of_image_val_subset_image_val (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E := by
-  simp_all only [image_subset_iff, subset_preimage_val_image_val_iff]
+lemma subset_of_image_val_subset_image_val (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E :=
+  (image_subset_image_iff Subtype.val_injective).1 h
 
 @[mono]
-lemma image_val_mono (h : D ⊆ E) : (↑D : Set α) ⊆ ↑E := by
-  simp only [image_subset_iff, subset_preimage_val_image_val_iff, h]
+lemma image_val_mono (h : D ⊆ E) : (↑D : Set α) ⊆ ↑E :=
+  (image_subset_image_iff Subtype.val_injective).2 h
 
 /-!
 Relations between restriction and coercion.
 -/
 
-lemma image_val_preimage_val_subset_self : ↑(A ↓∩ B) ⊆ B := by
-  simp only [Subtype.image_preimage_coe, inter_subset_left]
+lemma image_val_preimage_val_subset_self : ↑(A ↓∩ B) ⊆ B :=
+  image_preimage_subset _ _
 
 end Set
