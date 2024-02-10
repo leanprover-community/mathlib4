@@ -993,14 +993,14 @@ theorem isInt_rpow_neg {a b : ℝ} {nb ne : ℕ}
 
 theorem isRat_rpow_pos {a b : ℝ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
-    (pb : IsNat b nb) (pe' : IsRat (a^nb) num den) :
-    IsRat (a^b) num den := by
+    (pb : IsNat b nb) (pe' : IsRat (a ^ nb) num den) :
+    IsRat (a ^ b) num den := by
   rwa [pb.out, rpow_nat_cast]
 
 theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a^(Int.negOfNat nb)) num den) :
-    IsRat (a^b) num den := by
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a ^ (Int.negOfNat nb)) num den) :
+    IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_int_cast]
 
 /-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.-/
