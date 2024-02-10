@@ -77,6 +77,9 @@ instance : LargeCategory (FGModuleCat R) := by
   dsimp [FGModuleCat]
   infer_instance
 
+instance {M N : FGModuleCat R} : FunLike (M ⟶ N) M N :=
+  LinearMap.instFunLike
+
 instance {M N : FGModuleCat R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
 
@@ -213,8 +216,8 @@ instance (V W : FGModuleCat K) : Module.Finite K (V ⟶ W) :=
   (by infer_instance : Module.Finite K (V →ₗ[K] W))
 
 instance closedPredicateModuleFinite :
-    MonoidalCategory.ClosedPredicate fun V : ModuleCat.{u} K => Module.Finite K V where
-  prop_ihom := @fun X Y hX hY => @Module.Finite.linearMap K X Y _ _ _ _ _ _ _ hX hY
+    MonoidalCategory.ClosedPredicate fun V : ModuleCat.{u} K ↦ Module.Finite K V where
+  prop_ihom {X Y} _ _ := Module.Finite.linearMap K K X Y
 #align fgModule.closed_predicate_module_finite FGModuleCat.closedPredicateModuleFinite
 
 instance : MonoidalClosed (FGModuleCat K) := by

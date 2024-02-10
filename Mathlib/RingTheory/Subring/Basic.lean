@@ -114,7 +114,6 @@ instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClas
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
 instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] : IsDomain s :=
-  have := SubsemiringClass.noZeroDivisors (s := s) -- porting note: todo: fails without `have`
   NoZeroDivisors.to_isDomain _
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
@@ -602,7 +601,7 @@ theorem coe_map (f : R →+* S) (s : Subring R) : (s.map f : Set S) = f '' s :=
 
 @[simp]
 theorem mem_map {f : R →+* S} {s : Subring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
-  Set.mem_image_iff_bex.trans $ by simp
+  Set.mem_image_iff_bex.trans <| by simp
 #align subring.mem_map Subring.mem_map
 
 @[simp]

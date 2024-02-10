@@ -737,7 +737,7 @@ theorem lift.of {x} : lift f (of x) = f x :=
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
     g x = FreeGroup.lift f x :=
-  FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
+  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
 #align free_group.lift.unique FreeGroup.lift.unique
 #align free_add_group.lift.unique FreeAddGroup.lift.unique
 
@@ -754,7 +754,7 @@ theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f 
 
 @[to_additive]
 theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
-  FunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
+  DFunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
 #align free_group.lift.of_eq FreeGroup.lift.of_eq
 #align free_add_group.lift.of_eq FreeAddGroup.lift.of_eq
 
@@ -1363,7 +1363,7 @@ instance Red.decidableRel : DecidableRel (@Red α)
     if h : (x1, b1) = (x2, b2) then
       match Red.decidableRel tl1 tl2 with
       | isTrue H => isTrue <| h ▸ Red.cons_cons H
-      | isFalse H => isFalse fun H2 => H $ (Red.cons_cons_iff _).1 $ h.symm ▸ H2
+      | isFalse H => isFalse fun H2 => H <| (Red.cons_cons_iff _).1 <| h.symm ▸ H2
     else
       match Red.decidableRel tl1 ((x1, ! b1) :: (x2, b2) :: tl2) with
       | isTrue H => isTrue <| (Red.cons_cons H).tail Red.Step.cons_not

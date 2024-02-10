@@ -54,7 +54,7 @@ theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
 #align ordinal.is_open_singleton_iff Ordinal.isOpen_singleton_iff
 
 -- porting note: todo: generalize to a `SuccOrder`
-theorem nhds_right' (a : Ordinal) : 𝓝[>] a = ⊥ := (covby_succ a).nhdsWithin_Ioi
+theorem nhds_right' (a : Ordinal) : 𝓝[>] a = ⊥ := (covBy_succ a).nhdsWithin_Ioi
 
 -- todo: generalize to a `SuccOrder`
 theorem nhds_left'_eq_nhds_ne (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a := by

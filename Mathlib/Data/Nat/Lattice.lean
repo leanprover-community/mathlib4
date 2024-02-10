@@ -63,7 +63,7 @@ theorem sInf_empty : sInf ∅ = 0 := by
 
 @[simp]
 theorem iInf_of_empty {ι : Sort*} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 := by
-  rw [iInf_of_empty', sInf_empty]
+  rw [iInf_of_isEmpty, sInf_empty]
 #align nat.infi_of_empty Nat.iInf_of_empty
 
 /-- This combines `Nat.iInf_of_empty` with `ciInf_const`. -/
@@ -115,7 +115,7 @@ theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, 
     exact k; assumption
   · rintro ⟨H, H'⟩
     rw [sInf_def (⟨_, H⟩ : s.Nonempty), find_eq_iff]
-    exact ⟨H, fun n hnk hns ↦ H' <| hs n k (lt_succ_iff.mp hnk) hns⟩
+    exact ⟨H, fun n hnk hns ↦ H' <| hs n k (Nat.lt_succ_iff.mp hnk) hns⟩
 #align nat.Inf_upward_closed_eq_succ_iff Nat.sInf_upward_closed_eq_succ_iff
 
 /-- This instance is necessary, otherwise the lattice operations would be derived via
