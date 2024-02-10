@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Join
 
 #align_import analysis.convex.stone_separation from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
@@ -41,15 +42,12 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
     rw [zero_smul, zero_add, habv, one_smul]
     exact ⟨q, right_mem_segment _ _ _, subset_convexHull _ _ <| by simp⟩
   obtain ⟨au, bu, hau, hbu, habu, rfl⟩ := hu
-  have hab : 0 < az * av + bz * au :=
-    add_pos_of_pos_of_nonneg (mul_pos haz' hav') (mul_nonneg hbz hau)
-  refine'
-    ⟨(az * av / (az * av + bz * au)) • (au • x + bu • p) +
-        (bz * au / (az * av + bz * au)) • (av • y + bv • q),
-      ⟨_, _, _, _, _, rfl⟩, _⟩
-  · exact div_nonneg (mul_nonneg haz hav) hab.le
-  · exact div_nonneg (mul_nonneg hbz hau) hab.le
-  · rw [← add_div, div_self hab.ne']
+  have hab : 0 < az * av + bz * au := by positivity
+  refine ⟨(az * av / (az * av + bz * au)) • (au • x + bu • p) +
+    (bz * au / (az * av + bz * au)) • (av • y + bv • q), ⟨_, _, ?_, ?_, ?_, rfl⟩, ?_⟩
+  · positivity
+  · positivity
+  · rw [← add_div, div_self]; positivity
   rw [smul_add, smul_add, add_add_add_comm, add_comm, ← mul_smul, ← mul_smul]
   classical
     let w : Fin 3 → 𝕜 := ![az * av * bu, bz * au * bv, au * av]
@@ -101,7 +99,7 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
         (hC.2.symm.mono (ht.segment_subset hut hvt) <| convexHull_min _ hC.1)
     simpa [insert_subset_iff, hp, hq, singleton_subset_iff.2 hzC]
   rintro c hc
-  by_contra' h
+  by_contra! h
   suffices h : Disjoint (convexHull 𝕜 (insert c C)) t
   · rw [←
       hCmax _ ⟨convex_convexHull _ _, h⟩ ((subset_insert _ _).trans <| subset_convexHull _ _)] at hc

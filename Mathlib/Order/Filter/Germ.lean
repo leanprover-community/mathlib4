@@ -182,7 +182,7 @@ alias ⟨_, _root_.Filter.EventuallyEq.germ_eq⟩ := coe_eq
 
 /-- Lift a function `β → γ` to a function `Germ l β → Germ l γ`. -/
 def map (op : β → γ) : Germ l β → Germ l γ :=
-  map' ((· ∘ ·) op) fun _ _ H => H.mono fun _ H => congr_arg op H
+  map' (op ∘ ·) fun _ _ H => H.mono fun _ H => congr_arg op H
 #align filter.germ.map Filter.Germ.map
 
 @[simp]
@@ -457,14 +457,16 @@ theorem coe_nat [NatCast M] (n : ℕ) : ((fun _ ↦ n : α → M) : Germ l M) = 
 @[simp, norm_cast]
 theorem const_nat [NatCast M] (n : ℕ) : ((n : M) : Germ l M) = n := rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
-    ((OfNat.ofNat n : α → M) : Germ l M) = OfNat.ofNat n :=
+    ((no_index (OfNat.ofNat n : α → M)) : Germ l M) = OfNat.ofNat n :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem const_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
-    ((OfNat.ofNat n : M) : Germ l M) = OfNat.ofNat n :=
+    ((no_index (OfNat.ofNat n : M)) : Germ l M) = OfNat.ofNat n :=
   rfl
 
 instance intCast [IntCast M] : IntCast (Germ l M) where
@@ -530,11 +532,11 @@ instance divInvMonoid [DivInvMonoid G] : DivInvMonoid (Germ l G) :=
   { monoid, inv, div with
     zpow := fun z f => f ^ z
     zpow_zero' := Quotient.ind' fun _ => congrArg ofFun <|
-      funext <| fun _ => DivInvMonoid.zpow_zero' _
+      funext fun _ => DivInvMonoid.zpow_zero' _
     zpow_succ' := fun _ => Quotient.ind' fun _ => congrArg ofFun <|
-      funext <| fun _ => DivInvMonoid.zpow_succ' ..
+      funext fun _ => DivInvMonoid.zpow_succ' ..
     zpow_neg' := fun _ => Quotient.ind' fun _ => congrArg ofFun <|
-      funext <| fun _ => DivInvMonoid.zpow_neg' ..
+      funext fun _ => DivInvMonoid.zpow_neg' ..
     div_eq_mul_inv := Quotient.ind₂' fun _ _ => congrArg ofFun <|
       div_eq_mul_inv .. }
 
@@ -853,7 +855,7 @@ instance existsMulOfLE [Mul β] [LE β] [ExistsMulOfLE β] : ExistsMulOfLE (Germ
   exists_mul_of_le {x y} := inductionOn₂ x y fun f g (h : f ≤ᶠ[l] g) ↦ by
     classical
     choose c hc using fun x (hx : f x ≤ g x) ↦ exists_mul_of_le hx
-    refine ⟨ofFun <| fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 ?_⟩
+    refine ⟨ofFun fun x ↦ if hx : f x ≤ g x then c x hx else f x, coe_eq.2 ?_⟩
     filter_upwards [h] with x hx
     rw [dif_pos hx, hc]
 

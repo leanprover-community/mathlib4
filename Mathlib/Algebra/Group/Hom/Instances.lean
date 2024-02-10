@@ -122,7 +122,7 @@ namespace MonoidHom
 @[to_additive]
 theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f g : M →* N →* P} :
     f = g ↔ ∀ x y, f x y = g x y :=
-  FunLike.ext_iff.trans <| forall_congr' fun _ => FunLike.ext_iff
+  DFunLike.ext_iff.trans <| forall_congr' fun _ => DFunLike.ext_iff
 #align monoid_hom.ext_iff₂ MonoidHom.ext_iff₂
 #align add_monoid_hom.ext_iff₂ AddMonoidHom.ext_iff₂
 
@@ -331,6 +331,14 @@ theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
   Iff.symm AddMonoidHom.ext_iff₂
 #align add_monoid_hom.map_mul_iff AddMonoidHom.map_mul_iff
 
+lemma AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute {a : R} :
+    mulLeft a = mulRight a ↔ ∀ b, Commute a b :=
+  DFunLike.ext_iff
+
+lemma AddMonoidHom.mulRight_eq_mulLeft_iff_forall_commute {b : R} :
+    mulRight b = mulLeft b ↔ ∀ a, Commute a b :=
+  DFunLike.ext_iff
+
 /-- The left multiplication map: `(a, b) ↦ a * b`. See also `AddMonoidHom.mulLeft`. -/
 @[simps!]
 def AddMonoid.End.mulLeft : R →+ AddMonoid.End R :=
@@ -346,3 +354,17 @@ def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
 #align add_monoid.End.mul_right_apply_apply AddMonoid.End.mulRight_apply_apply
 
 end Semiring
+
+section CommSemiring
+
+variable {R S : Type*} [NonUnitalNonAssocCommSemiring R]
+
+namespace AddMonoid.End
+
+lemma mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) :=
+  AddMonoidHom.ext fun _ =>
+    Eq.symm <| AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute.2 (.all _)
+
+end AddMonoid.End
+
+end CommSemiring

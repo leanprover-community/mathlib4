@@ -106,21 +106,19 @@ instance isFiniteMeasure_trim (hm : m ≤ m0) [IsFiniteMeasure μ] : IsFiniteMea
 
 theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)
     (hm₂ : m₂ ≤ m) [SigmaFinite (μ.trim (hm₂.trans hm))] : SigmaFinite (μ.trim hm) := by
-  have _ := Measure.FiniteSpanningSetsIn (μ.trim (hm₂.trans hm)) Set.univ
-  refine' Measure.FiniteSpanningSetsIn.sigmaFinite _
-  · exact Set.univ
-  · refine'
-      { set := spanningSets (μ.trim (hm₂.trans hm))
-        set_mem := fun _ => Set.mem_univ _
-        finite := fun i => _ -- This is the only one left to prove
-        spanning := iUnion_spanningSets _ }
-    calc
-      (μ.trim hm) (spanningSets (μ.trim (hm₂.trans hm)) i) =
-          ((μ.trim hm).trim hm₂) (spanningSets (μ.trim (hm₂.trans hm)) i) :=
-        by rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurable_spanningSets _ _)]
-      _ = (μ.trim (hm₂.trans hm)) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
-        rw [@trim_trim _ _ μ _ _ hm₂ hm]
-      _ < ∞ := measure_spanningSets_lt_top _ _
+  refine ⟨⟨?_⟩⟩
+  refine
+    { set := spanningSets (μ.trim (hm₂.trans hm))
+      set_mem := fun _ => Set.mem_univ _
+      finite := fun i => ?_
+      spanning := iUnion_spanningSets _ }
+  calc
+    (μ.trim hm) (spanningSets (μ.trim (hm₂.trans hm)) i) =
+        ((μ.trim hm).trim hm₂) (spanningSets (μ.trim (hm₂.trans hm)) i) :=
+      by rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurable_spanningSets _ _)]
+    _ = (μ.trim (hm₂.trans hm)) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
+      rw [@trim_trim _ _ μ _ _ hm₂ hm]
+    _ < ∞ := measure_spanningSets_lt_top _ _
 #align measure_theory.sigma_finite_trim_mono MeasureTheory.sigmaFiniteTrim_mono
 
 theorem sigmaFinite_trim_bot_iff : SigmaFinite (μ.trim bot_le) ↔ IsFiniteMeasure μ := by

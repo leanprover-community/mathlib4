@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 Some proofs and docs came from `algebra/commute` (c) Neil Strickland
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Init.Logic
 import Mathlib.Tactic.Cases
 
 #align_import algebra.group.semiconj from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
@@ -32,7 +33,7 @@ operations (`pow_right`, field inverse etc) are in the files that define corresp
 variable {S M G : Type*}
 
 /-- `x` is semiconjugate to `y` by `a`, if `a * x = y * a`. -/
-@[to_additive AddSemiconjBy "`x` is additive semiconjugate to `y` by `a` if `a + x = y + a`"]
+@[to_additive "`x` is additive semiconjugate to `y` by `a` if `a + x = y + a`"]
 def SemiconjBy [Mul M] (a x y : M) : Prop :=
   a * x = y * a
 #align semiconj_by SemiconjBy
@@ -143,7 +144,7 @@ end Group
 
 end SemiconjBy
 
-@[to_additive (attr := simp) addSemiconjBy_iff_eq]
+@[to_additive (attr := simp)]
 theorem semiconjBy_iff_eq [CancelCommMonoid M] {a x y : M} : SemiconjBy a x y ↔ x = y :=
   ⟨fun h => mul_left_cancel (h.trans (mul_comm _ _)), fun h => by rw [h, SemiconjBy, mul_comm]⟩
 #align semiconj_by_iff_eq semiconjBy_iff_eq

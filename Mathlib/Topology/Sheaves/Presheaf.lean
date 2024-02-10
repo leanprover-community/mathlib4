@@ -5,9 +5,9 @@ Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.Topology.Sheaves.Init
+import Mathlib.Data.Set.Basic
 
 #align_import topology.sheaves.presheaf from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
@@ -55,6 +55,9 @@ variable {C}
 
 namespace Presheaf
 
+@[simp] theorem comp_app {P Q R : Presheaf C X} (f : P ⟶ Q) (g : Q ⟶ R) :
+    (f ≫ g).app U = f.app U ≫ g.app U := rfl
+
 -- Porting note: added an `ext` lemma,
 -- since `NatTrans.ext` can not see through the definition of `Presheaf`.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
@@ -67,7 +70,7 @@ lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U
   apply w
 
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
-  CategoryTheory.ConcreteCategory.funLike
+  CategoryTheory.ConcreteCategory.instFunLike
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
@@ -79,16 +82,20 @@ attribute [sheaf_restrict] bot_le le_top le_refl inf_le_left inf_le_right
 /-- `restrict_tac` solves relations among subsets (copied from `aesop cat`) -/
 macro (name := restrict_tac) "restrict_tac" c:Aesop.tactic_clause* : tactic =>
 `(tactic| first | assumption |
-  aesop $c* (options :=
-    { terminal := true, assumptionTransparency := .reducible })
-    (simp_options := { enabled := false })
-  (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
+  aesop $c*
+    (config := { terminal := true
+                 assumptionTransparency := .reducible
+                 enableSimp := false })
+    (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
 /-- `restrict_tac?` passes along `Try this` from `aesop` -/
 macro (name := restrict_tac?) "restrict_tac?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  aesop? $c* (options :=
-    { terminal := true, assumptionTransparency := .reducible, maxRuleApplications := 300 })
+  aesop? $c*
+    (config := { terminal := true
+                 assumptionTransparency := .reducible
+                 enableSimp := false
+                 maxRuleApplications := 300 })
   (rule_sets [-default, -builtin, $(Lean.mkIdent `Restrict):ident]))
 
 attribute[aesop 10% (rule_sets [Restrict])] le_trans
@@ -243,7 +250,7 @@ set_option linter.uppercaseLean3 false in
 @[simp (high)]
 theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (op ⟨U, p⟩)) := by
   dsimp [id]
-  simp [CategoryStruct.comp]
+  simp
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app' TopCat.Presheaf.Pushforward.id_hom_app'
 
@@ -474,7 +481,7 @@ theorem pushforwardToOfIso_app {X Y : TopCat} (H₁ : X ≅ Y) {ℱ : Y.Presheaf
     (pushforwardToOfIso H₁ H₂).app U =
       H₂.app (op ((Opens.map H₁.inv).obj (unop U))) ≫
         𝒢.map (eqToHom (by simp [Opens.map, Set.preimage_preimage])) := by
-  simp [pushforwardToOfIso, Equivalence.toAdjunction, CategoryStruct.comp]
+  simp [pushforwardToOfIso, Equivalence.toAdjunction]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward_to_of_iso_app TopCat.Presheaf.pushforwardToOfIso_app
 

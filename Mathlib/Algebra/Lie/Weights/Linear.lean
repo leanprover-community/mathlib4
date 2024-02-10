@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.LinearAlgebra.Trace
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lie modules with linear weights
@@ -39,10 +40,6 @@ or `R` has characteristic zero.
 -/
 
 open Set
-
-attribute [local instance]
-  isNoetherian_of_isNoetherianRing_of_finite
-  Module.free_of_finite_type_torsion_free'
 
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -79,13 +76,13 @@ instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R 
       rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
     intro χ hχ x y
     simp_rw [Ne.def, ← LieSubmodule.coe_toSubmodule_eq_iff, weightSpace, weightSpaceOf,
-      LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule, Submodule.eta] at hχ
+      LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule] at hχ
     exact Module.End.map_add_of_iInf_generalizedEigenspace_ne_bot_of_commute
       (toEndomorphism R L M).toLinearMap χ hχ h x y
   { map_add := aux
     map_smul := fun χ hχ t x ↦ by
       simp_rw [Ne.def, ← LieSubmodule.coe_toSubmodule_eq_iff, weightSpace, weightSpaceOf,
-        LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule, Submodule.eta] at hχ
+        LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule] at hχ
       exact Module.End.map_smul_of_iInf_generalizedEigenspace_ne_bot
         (toEndomorphism R L M).toLinearMap χ hχ t x
     map_lie := fun χ hχ t x ↦ by

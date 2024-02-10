@@ -49,7 +49,8 @@ variable {F α β : Type*} [DecidableEq α] [DecidableEq β]
 namespace Finset
 
 section Sups
-variable [SemilatticeSup α] [SemilatticeSup β] [SupHomClass F α β] (s s₁ s₂ t t₁ t₂ u v : Finset α)
+variable [SemilatticeSup α] [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
+variable (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
 /-- `s ⊻ t` is the finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasSups : HasSups (Finset α) :=
@@ -179,7 +180,7 @@ theorem subset_sups {s t : Set α} :
 #align finset.subset_sups Finset.subset_sups
 
 lemma image_sups (f : F) (s t : Finset α) : image f (s ⊻ t) = image f s ⊻ image f t :=
-  image_image₂_distrib $ map_sup f
+  image_image₂_distrib <| map_sup f
 
 lemma map_sups (f : F) (hf) (s t : Finset α) :
     map ⟨f, hf⟩ (s ⊻ t) = map ⟨f, hf⟩ s ⊻ map ⟨f, hf⟩ t := by
@@ -233,7 +234,8 @@ theorem sups_sups_sups_comm : s ⊻ t ⊻ (u ⊻ v) = s ⊻ u ⊻ (t ⊻ v) :=
 end Sups
 
 section Infs
-variable [SemilatticeInf α] [SemilatticeInf β] [InfHomClass F α β] (s s₁ s₂ t t₁ t₂ u v : Finset α)
+variable [SemilatticeInf α] [SemilatticeInf β] [FunLike F α β] [InfHomClass F α β]
+variable (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
 /-- `s ⊼ t` is the finset of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
 protected def hasInfs : HasInfs (Finset α) :=
@@ -363,7 +365,7 @@ theorem subset_infs {s t : Set α} :
 #align finset.subset_infs Finset.subset_infs
 
 lemma image_infs (f : F) (s t : Finset α) : image f (s ⊼ t) = image f s ⊼ image f t :=
-  image_image₂_distrib $ map_inf f
+  image_image₂_distrib <| map_inf f
 
 lemma map_infs (f : F) (hf) (s t : Finset α) :
     map ⟨f, hf⟩ (s ⊼ t) = map ⟨f, hf⟩ s ⊼ map ⟨f, hf⟩ t := by
@@ -500,7 +502,7 @@ theorem disjSups_subset_sups : s ○ t ⊆ s ⊻ t := by
 variable (s t)
 
 theorem card_disjSups_le : (s ○ t).card ≤ s.card * t.card :=
-  (card_le_of_subset disjSups_subset_sups).trans <| card_sups_le _ _
+  (card_le_card disjSups_subset_sups).trans <| card_sups_le _ _
 #align finset.card_disj_sups_le Finset.card_disjSups_le
 
 variable {s s₁ s₂ t t₁ t₂}
@@ -757,7 +759,7 @@ variable [Fintype α] {𝒜 : Finset (Finset α)} {n : ℕ}
 
 protected lemma _root_.Set.Sized.compls (h𝒜 : (𝒜 : Set (Finset α)).Sized n) :
     (𝒜ᶜˢ : Set (Finset α)).Sized (Fintype.card α - n) :=
-  Finset.forall_mem_compls.2 $ λ s hs ↦ by rw [Finset.card_compl, h𝒜 hs]
+  Finset.forall_mem_compls.2 <| λ s hs ↦ by rw [Finset.card_compl, h𝒜 hs]
 
 lemma sized_compls (hn : n ≤ Fintype.card α) :
     (𝒜ᶜˢ : Set (Finset α)).Sized n ↔ (𝒜 : Set (Finset α)).Sized (Fintype.card α - n) where

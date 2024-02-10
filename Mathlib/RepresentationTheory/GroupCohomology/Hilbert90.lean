@@ -3,7 +3,7 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Fixed
 import Mathlib.RingTheory.Norm
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.LinearAlgebra.LinearIndependent
@@ -25,9 +25,11 @@ analyzing the cohomology of finite cyclic groups in general.
 
 ## Main statements
 
-* `groupCohomology.hilbert90`: for all $f: Aut_K(L) \to L^\times$ satisfying the 1-cocycle
+* `groupCohomology.isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units`: Noether's generalization
+of Hilbert's Theorem 90: for all $f: Aut_K(L) \to L^\times$ satisfying the 1-cocycle
 condition, there exists `β : Lˣ` such that $g(β)/β = f(g)$ for all `g : Aut_K(L)`.
-* `groupCohomology.H1ofAutOnUnitsUnique`: $H^1(Aut_K(L), L^\times)$ is trivial.
+* `groupCohomology.H1ofAutOnUnitsUnique`: Noether's generalization of Hilbert's Theorem 90:
+$H^1(Aut_K(L), L^\times)$ is trivial.
 * `groupCohomology.hilbert90Cyclic`: Given `L/K` finite, Galois and cyclic with generator
 `g : Gal(L/K)`, then for any `x : L` such that $N_{L/K} = 1,$ there exists `y : L` such that
 $g(y)/y = x.$
@@ -65,24 +67,25 @@ linear independence of characters -/
   have : LinearIndependent L (fun (f : L ≃ₐ[K] L) => (f : L → L)) :=
     LinearIndependent.comp (ι' := L ≃ₐ[K] L)
       (linearIndependent_monoidHom L L) (fun f => f)
-      (fun x y h => by ext; exact FunLike.ext_iff.1 h _)
+      (fun x y h => by ext; exact DFunLike.ext_iff.1 h _)
   have h := linearIndependent_iff.1 this
     (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
-  fun H => Units.ne_zero (f 1) (FunLike.ext_iff.1 (h H) 1)
+  fun H => Units.ne_zero (f 1) (DFunLike.ext_iff.1 (h H) 1)
 
 end Hilbert90
 section
 open Hilbert90
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
-/-- Given a finite extension of fields and a function `f : Aut_K(L) → Lˣ` satisfying
-`f(gh) = g(f(h)) * f(g)` for all `g, h : Aut_K(L)`, there exists `β : Lˣ` such that
-`g(β)/β = f(g)` for all `g : Aut_K(L).` -/
-theorem hilbert90 (f : (L ≃ₐ[K] L) → Lˣ) (hf : IsMulOneCocycle f) :
+/-- Noether's generalization of Hilbert's Theorem 90: given a finite extension of fields and a
+function `f : Aut_K(L) → Lˣ` satisfying `f(gh) = g(f(h)) * f(g)` for all `g, h : Aut_K(L)`, there
+exists `β : Lˣ` such that `g(β)/β = f(g)` for all `g : Aut_K(L).` -/
+theorem isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units
+    (f : (L ≃ₐ[K] L) → Lˣ) (hf : IsMulOneCocycle f) :
     IsMulOneCoboundary f := by
 /- Let `z : L` be such that `∑ f(h) * h(z) ≠ 0`, for `h ∈ Aut_K(L)` -/
   obtain ⟨z, hz⟩ : ∃ z, aux f z ≠ 0 :=
-    not_forall.1 (fun H => aux_ne_zero f $ funext $ fun x => H x)
+    not_forall.1 (fun H => aux_ne_zero f <| funext <| fun x => H x)
   have : aux f z = ∑ h, f h * h z := by simp [aux, Finsupp.total, Finsupp.sum_fintype]
 /- Let `β = (∑ f(h) * h(z))⁻¹.` -/
   use (Units.mk0 (aux f z) hz)⁻¹
@@ -98,13 +101,14 @@ theorem hilbert90 (f : (L ≃ₐ[K] L) → Lˣ) (hf : IsMulOneCocycle f) :
 end
 variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
-/-- Given a finite extension of fields `L/K`, the first group cohomology `H¹(Aut_K(L), Lˣ)` is
-trivial. -/
+/-- Noether's generalization of Hilbert's Theorem 90: given a finite extension of fields `L/K`, the
+first group cohomology `H¹(Aut_K(L), Lˣ)` is trivial. -/
 noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
   default := 0
   uniq := fun a => Quotient.inductionOn' a fun x => (Submodule.Quotient.mk_eq_zero _).2 <| by
-    refine' (oneCoboundariesOfIsMulOneCoboundary _ _).2
-    rcases hilbert90 x.1 (isMulOneCocycle_of_oneCocycles x) with ⟨β, hβ⟩
+    refine' (oneCoboundariesOfIsMulOneCoboundary _).2
+    rcases isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units x.1
+      (isMulOneCocycle_of_oneCocycles x) with ⟨β, hβ⟩
     use β
 
 end groupCohomology
@@ -141,5 +145,6 @@ theorem hilbert90_cyclic (x : L) (hx : Algebra.norm K x = 1) : ∃ y : Lˣ, g y 
   simpa only [AlgEquiv.smul_units_def, Rep.ofAlgebraAutOnUnits, Function.comp_apply,
     oneCocyclesOfGenerator_self, Units.ext_iff, Units.val_div_eq_div_val, Units.coe_map,
     MonoidHom.coe_coe] using hε
+
 
 end groupCohomology
