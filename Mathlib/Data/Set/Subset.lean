@@ -91,9 +91,8 @@ The following simp lemmas try to transform operations in the subtype into operat
 type, if possible.
 -/
 
+@[simp]
 lemma image_val_univ : ↑(univ : Set A) = A := Subtype.coe_image_univ A
-
-lemma image_val_empty : ↑(∅ : Set A) = (∅ : Set α) := image_empty _
 
 @[simp]
 lemma image_val_union : (↑(D ∪ E) : Set α) = ↑D ∪ ↑E := image_union _ _ _
@@ -126,8 +125,6 @@ lemma image_val_sInter (hT : T.Nonempty) : (↑(⋂₀ T) : Set α) = ⋂₀ { (
 lemma image_val_iInter [Nonempty ι] : (↑(⋂ i, t i) : Set α) = ⋂ i, (↑(t i) : Set α) :=
   (Subtype.val_injective.injOn _).image_iInter_eq
 
-lemma image_val_subset_set : ↑D ⊆ A := image_val_subset
-
 @[simp]
 lemma image_val_union_self_right_eq : A ∪ ↑D = A :=
   union_eq_left.2 image_val_subset
@@ -149,9 +146,10 @@ lemma subset_preimage_val_image_val_iff : D ⊆ A ↓∩ ↑E ↔ D ⊆ E := by
   rw [preimage_image_eq _ Subtype.val_injective]
 
 @[simp]
-lemma image_val_eq_iff : (D : Set α) = ↑E ↔ D = E := Subtype.val_injective.image_injective.eq_iff
+lemma image_val_inj : (D : Set α) = ↑E ↔ D = E := Subtype.val_injective.image_injective.eq_iff
 
-lemma image_val_inj (h : (↑D : Set α) = ↑E) : D = E := Subtype.val_injective.image_injective h
+lemma image_val_injective : Function.Injective ((↑) : Set A → Set α) :=
+  Subtype.val_injective.image_injective
 
 lemma subset_of_image_val_subset_image_val (h : (↑D : Set α) ⊆ ↑E) : D ⊆ E :=
   (image_subset_image_iff Subtype.val_injective).1 h
