@@ -1371,3 +1371,17 @@ theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} 
       ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 #align continuous_within_at_prod_iff continuousWithinAt_prod_iff
+
+/-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
+the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/
+-- See `Continuous.tendsto_nhdsSet` for a special case.
+theorem ContinuousOn.tendsto_nhdsSet {f : α → β} {s s' : Set α} {t : Set β}
+    (hf : ContinuousOn f s') (hs' : s' ∈ 𝓝ˢ s) (hst : MapsTo f s t) : Tendsto f (𝓝ˢ s) (𝓝ˢ t) := by
+  obtain ⟨V, hV, hsV, hVs'⟩:= mem_nhdsSet_iff_exists.mp hs'
+  refine ((hasBasis_nhdsSet s).tendsto_iff (hasBasis_nhdsSet t)).mpr fun U hU ↦
+    ⟨V ∩ f ⁻¹' U, ?_, fun _ ↦ ?_⟩
+  · exact ⟨(hf.mono hVs').isOpen_inter_preimage hV hU.1,
+      subset_inter hsV (hst.mono Subset.rfl hU.2)⟩
+  · intro h
+    rw [← mem_preimage]
+    exact mem_of_mem_inter_right h
