@@ -3,6 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
+import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.Condensed.Light.Basic
 
 /-!
@@ -21,7 +22,7 @@ TODO (Dagur):
 
 * Define the functor `Type u ⥤ LightCondSet.{u}` which takes a set `X` to the presheaf given by
   mapping a light profinite space `S` to `LocallyConstant S X`, along with the isomorphism with
-  the functor that goes through `TopCat.{u+1}`.
+  the functor that goes through `TopCat.{u}`.
 
 -/
 

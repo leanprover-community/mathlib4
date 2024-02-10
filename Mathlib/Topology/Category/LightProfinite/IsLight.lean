@@ -65,7 +65,7 @@ instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
     · intro x
       simp only [setOf, Setoid.Rel]
       obtain ⟨i, h⟩ := t.prop.2 x
-      convert i.2.1 with z
+      convert i.2.2 with z
       refine ⟨fun ⟨j, hh⟩ ↦ ?_, fun hh ↦ ?_⟩
       · suffices i = j by rw [this]; exact hh.2.2
         by_contra hhh
