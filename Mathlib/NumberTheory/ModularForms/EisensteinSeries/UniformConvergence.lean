@@ -70,11 +70,11 @@ theorem auxlb (z : ℍ) (δ ε : ℝ) (hε : 1 ≤ ε^2) :
     apply pow_two_nonneg
   · apply_rules [add_pos_of_nonneg_of_pos, pow_two_nonneg, (pow_pos z.im_pos 2)]
 
-theorem auxbound1 (z : ℍ) (δ ε: ℝ) (hε : 1 ≤ ε^2) : r z ≤ Complex.abs (ε * (z : ℂ) + δ) := by
+theorem auxbound1 (z : ℍ) (δ ε : ℝ) (hδ : 1 ≤ δ^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
   rw [r, Complex.abs]
   have H1 : (z : ℂ).im ≤
-    Real.sqrt ((ε * (z : ℂ).re + δ) * (ε * (z : ℂ).re + δ) + (ε * z : ℂ).im * (ε * z : ℂ).im) := by
-    have h1 : (ε * z : ℂ).im * (ε * z : ℂ).im = ε^2 * (z : ℂ).im * (z : ℂ).im := by
+    Real.sqrt ((δ * (z : ℂ).re + ε) * (δ * (z : ℂ).re + ε) + (δ * z : ℂ).im * (δ * z : ℂ).im) := by
+    have h1 : (δ * z : ℂ).im * (δ * z : ℂ).im = δ^2 * (z : ℂ).im * (z : ℂ).im := by
       simp only [mul_im, ofReal_re, coe_im, ofReal_im, coe_re, zero_mul, add_zero]
       ring
     rw [Real.le_sqrt', h1 ]
@@ -83,9 +83,9 @@ theorem auxbound1 (z : ℍ) (δ ε: ℝ) (hε : 1 ≤ ε^2) : r z ≤ Complex.ab
   simp only [UpperHalfPlane.coe_im, UpperHalfPlane.coe_re, AbsoluteValue.coe_mk, MulHom.coe_mk,
     min_le_iff] at *
   left
-  simp  [normSq_apply, add_re, coe_re, ofReal_re, add_im, coe_im, ofReal_im, add_zero] at *
+  simp only [one_le_sq_iff_one_le_abs, mul_im, ofReal_re, coe_im, ofReal_im, coe_re, zero_mul,
+    add_zero, normSq_apply, add_re, mul_re, sub_zero, add_im] at *
   exact H1
-
 
 theorem auxbound2 (z : ℍ) (δ ε : ℝ) (hε : 1 ≤ ε^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
   rw [r, Complex.abs, min_le_iff]
@@ -99,7 +99,6 @@ theorem auxbound2 (z : ℍ) (δ ε : ℝ) (hε : 1 ≤ ε^2) : r z ≤ Complex.a
     mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero, int_cast_re, add_im, mul_im, add_zero,
     int_cast_im] at *
   exact H1
-
 
 lemma one_le_sq_div_abs_sq (a : ℝ) (ha : a ≠ 0) : 1 ≤ a^2 / |a|^2 := by
     rw [_root_.sq_abs, le_div_iff']
@@ -132,78 +131,66 @@ lemma ne_zero_if_max' (x : Fin 2 → ℤ) (hx : x ≠ 0)
   rw [fun_ne_zero_cases, h1, h0] at hx
   simp only [ne_eq, not_true_eq_false, or_self] at *
 
-
 lemma sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) : (1 : ℝ) ≤ (x 0 / (max (x 0).natAbs (x 1).natAbs))^2 ∨
     (1 : ℝ) ≤ (x 1 / (max (x 0).natAbs (x 1).natAbs))^2 := by
-  have h := max_choice (x 0).natAbs (x 1).natAbs
-  cases' h with H1 H2
-  left
-  rw [H1]
-  have : (x 0 : ℝ) ≠ 0 := by
-    have t := ne_zero_if_max x hx H1
-    simpa using t
-  have h1 := one_le_sq_div_abs_sq (x 0 : ℝ) this
-  simp only [ne_eq, max_eq_left_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
-  convert h1
-  norm_cast
-  rw [int_abs_eq_complex_abs]
-  right
-  rw [H2]
-  have : (x 1 : ℝ) ≠ 0 := by
-    have t := ne_zero_if_max' x hx H2
-    simpa using t
-  have h1 := one_le_sq_div_abs_sq (x 1 : ℝ) this
-  simp only [ne_eq, max_eq_right_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
-  convert h1
-  norm_cast
-  rw [int_abs_eq_complex_abs]
-
+  cases' (max_choice (x 0).natAbs (x 1).natAbs) with H1 H2
+  · left
+    rw [H1]
+    have : (x 0 : ℝ) ≠ 0 := by
+      simpa using (ne_zero_if_max x hx H1)
+    have h1 := one_le_sq_div_abs_sq (x 0 : ℝ) this
+    simp only [ne_eq, max_eq_left_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
+    convert h1
+    norm_cast
+    rw [int_abs_eq_complex_abs]
+  · right
+    rw [H2]
+    have : (x 1 : ℝ) ≠ 0 := by
+      simpa using (ne_zero_if_max' x hx H2)
+    have h1 := one_le_sq_div_abs_sq (x 1 : ℝ) this
+    simp only [ne_eq, max_eq_right_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
+    convert h1
+    norm_cast
+    rw [int_abs_eq_complex_abs]
 
 lemma bound (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
     ((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs)^k ≤
       Complex.abs (((x 0 : ℂ) * (z : ℂ) + (x 1 : ℂ)) ^ k) := by
   by_cases hk : k ≠ 0
-  let n := max (x 0).natAbs (x 1).natAbs
-  have h1 : ((n : ℝ) : ℂ)^k ≠ 0 := by
-    rw [pow_ne_zero_iff]
-    norm_cast
-    have := EisensteinSeries.square_ne_zero n x ?_
-    rw [this] at hx
-    exact hx
-    rw [square_mem]
-    exact hk
-  have hc : Complex.abs ((n : ℝ)^k : ℂ) = n^k := by
-    simp
-    congr
-    simp
-  have h11 : ((x 0) * ↑z + (x 1)) ^ (k : ℤ) =
-    (((x 0 : ℝ) / (n : ℝ) ) * (z : ℂ) + (x 1 : ℝ) /(n : ℝ)) ^ (k : ℤ) * ((n : ℝ)^ (k : ℤ)) := by
-    simp only [Nat.cast_max] at h1
-    field_simp
-  have h2 : (1 : ℝ) ≤ ((x 0)/n)^2 ∨ (1 : ℝ) ≤ (x 1/ n)^2 := sq_ge_one x hx
-  cases' h2 with H1 H2
-  norm_cast at *
-  rw [h11]
-  simp only [hc, map_pow, map_mul, abs_ofReal, Complex.abs_abs, ge_iff_le, zpow_coe_nat] at *
-  apply mul_le_mul ?_ (by rfl)
-  simp only [Nat.cast_pow, Nat.cast_max, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self,
-    pow_nonneg]
-  apply pow_nonneg (Complex.abs.nonneg _) k
-  apply pow_le_pow_left (r_pos _).le
-  apply auxbound1 z ((x 1 /n) : ℝ) (((x 0 : ℝ) / (n : ℝ))) H1
-  norm_cast at *
-  rw [h11]
-  simp only [hc, map_pow, map_mul, abs_ofReal, Complex.abs_abs, ge_iff_le, zpow_coe_nat] at *
-  apply mul_le_mul ?_ (by rfl)
-  simp only [Nat.cast_pow, Nat.cast_max, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self,
-    pow_nonneg]
-  apply pow_nonneg (Complex.abs.nonneg _) k
-  apply pow_le_pow_left (r_pos _).le
-  apply auxbound2 z ((x 0 /n) : ℝ) (((x 1 : ℝ) / (n : ℝ))) H2
-  simp at hk
-  simp_rw [hk]
-  simp only [pow_zero, Nat.cast_max, mul_one, map_one, le_refl]
-
+  · let n := max (x 0).natAbs (x 1).natAbs
+    have h1 : ((n : ℝ) : ℂ)^k ≠ 0 := by
+      rw [pow_ne_zero_iff hk]
+      norm_cast
+      rw [EisensteinSeries.square_ne_zero n x (by rw [square_mem])] at hx
+      exact hx
+    have hc : Complex.abs ((n : ℝ)^k : ℂ) = n^k := by
+      simp only [Nat.cast_max, map_pow, abs_ofReal, ge_iff_le, abs_nonneg, le_max_iff,
+        Nat.cast_nonneg, or_self]
+      congr
+      simp only [abs_eq_self, le_max_iff, Nat.cast_nonneg, or_self]
+    have h11 : ((x 0) * ↑z + (x 1)) ^ (k : ℤ) =
+      (((x 0 : ℝ) / (n : ℝ) ) * (z : ℂ) + (x 1 : ℝ) /(n : ℝ)) ^ (k : ℤ) * ((n : ℝ)^ (k : ℤ)) := by
+      simp only [Nat.cast_max] at h1
+      field_simp
+    cases' (sq_ge_one x hx) with H1 H2
+    · norm_cast at *
+      rw [h11]
+      simp only [hc, map_pow, map_mul, abs_ofReal, Complex.abs_abs, ge_iff_le, zpow_coe_nat] at *
+      apply mul_le_mul ?_ (by rfl)
+      simp only [Nat.cast_pow, Nat.cast_max, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self,
+        pow_nonneg]
+      apply pow_nonneg (Complex.abs.nonneg _) k
+      apply pow_le_pow_left (r_pos _).le (auxbound1 z (x 0 / n) (x 1 / n) H1)
+    · norm_cast at *
+      rw [h11]
+      simp only [hc, map_pow, map_mul, abs_ofReal, Complex.abs_abs, ge_iff_le, zpow_coe_nat] at *
+      apply mul_le_mul ?_ (by rfl)
+      simp only [Nat.cast_pow, Nat.cast_max, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self,
+        pow_nonneg]
+      apply pow_nonneg (Complex.abs.nonneg _) k
+      apply pow_le_pow_left (r_pos _).le (auxbound2 z (x 0 / n) (x 1 / n) H2)
+  · simp only [ne_eq, not_not] at hk
+    simp only [hk, pow_zero, Nat.cast_max, mul_one, map_one, le_refl]
 
 theorem eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
     (hx : ⟨x 0, x 1⟩ ∈ square n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤
@@ -244,7 +231,7 @@ theorem eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → �
     norm_cast
     exact Nat.pos_of_ne_zero hn
 
-theorem r_lower_bound_on_slice (A B : ℝ) (h : 0 < B) (z : upperHalfPlaneSlice A B) :
+lemma r_lower_bound_on_slice (A B : ℝ) (h : 0 < B) (z : upperHalfPlaneSlice A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z.1 := by
   have hz := z.2
   simp only [slice_mem, abs_ofReal, ge_iff_le] at hz
@@ -283,7 +270,7 @@ def sigmaEquiv (ι : α → Finset (β × β)) (HI : ∀ y : β × β , ∃! i :
       repeat {rfl}
   right_inv x := by rfl
 
-theorem summable_lemma (f : (Fin 2 → ℤ) → ℝ) (h : ∀ y : (Fin 2 → ℤ), 0 ≤ f y)
+lemma summable_lemma (f : (Fin 2 → ℤ) → ℝ) (h : ∀ y : (Fin 2 → ℤ), 0 ≤ f y)
     (ι : ℕ → Finset (ℤ × ℤ)) (HI : ∀ y : ℤ × ℤ, ∃! i : ℕ, y ∈ ι i) :
       Summable f ↔ Summable fun n : ℕ => ∑ x in ι n, f ![x.1, x.2] := by
   let h2 := Equiv.trans (sigmaEquiv ι HI) (piFinTwoEquiv fun _ => ℤ).symm
@@ -358,21 +345,19 @@ lemma summable_upper_bound (k : ℤ) (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
 
 end summability
 
-lemma eisensteinSeries_TendstoLocallyUniformlyOn (k : ℤ) (hk : 3 ≤ k) (N : ℕ)
+theorem eisensteinSeries_TendstoLocallyUniformlyOn (k : ℤ) (hk : 3 ≤ k) (N : ℕ)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
-      (fun (z : ℍ) => ∑ x in s, eisSummand k x z ) )
+      (fun (z : ℍ) => ∑ x in s, eisSummand k x z))
         ( fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop ⊤ := by
   have hk0 : 0 ≤ k := by linarith
   lift k to ℕ using hk0
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact, eisensteinSeries_SIF]
   simp only [top_eq_univ, subset_univ, eisensteinSeries, forall_true_left]
   intros K hK
-  obtain ⟨A,B,hB, HABK⟩:= compact_in_some_slice K hK
-  let u := fun x : (gammaSet N a ) =>
-    (1/((r ⟨⟨A, B⟩, hB⟩)^k))* ( (max (x.1 0).natAbs (x.1 1).natAbs : ℝ)^k)⁻¹
-  have hu : Summable u := by
-    have := Summable.subtype (summable_upper_bound k hk ⟨⟨A, B⟩, hB⟩) (gammaSet N a )
-    apply this.congr
+  obtain ⟨A, B, hB, HABK⟩:= compact_in_some_slice K hK
+  have hu : Summable fun x : (gammaSet N a ) =>
+    (1/(r ⟨⟨A, B⟩, hB⟩) ^ k) * ((max (x.1 0).natAbs (x.1 1).natAbs : ℝ) ^ k)⁻¹ := by
+    apply (Summable.subtype (summable_upper_bound k hk ⟨⟨A, B⟩, hB⟩) (gammaSet N a )).congr
     intro v
     simp only [zpow_coe_nat, one_div, Function.comp_apply]
   apply tendstoUniformlyOn_tsum hu
