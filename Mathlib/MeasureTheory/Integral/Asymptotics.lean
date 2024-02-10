@@ -58,8 +58,7 @@ theorem IsBigO.eventually_integrableOn [Norm F]
   obtain ⟨u, hu, v, hv, huv⟩ := Filter.mem_prod_iff.mp htl
   obtain ⟨w, hwl, hw⟩ := hfm.exists_mem
   refine eventually_iff_exists_mem.mpr ⟨w ∩ v, inter_mem hwl hv, fun x hx ↦ ?_⟩
-  haveI : IsFiniteMeasure (μ.restrict s) :=
-    ⟨by convert hμ using 1; exact Measure.restrict_apply_univ s⟩
+  haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rw [Measure.restrict_apply_univ s]; exact hμ⟩
   refine Integrable.mono' (integrable_const (C * ‖g x‖)) (hw x hx.1) ?_
   filter_upwards [MeasureTheory.self_mem_ae_restrict hs]
   intro y hy
@@ -78,15 +77,13 @@ theorem IsBigO.set_integral_isBigO
   refine isBigO_iff.mpr ⟨C * (μ s).toReal, eventually_iff_exists_mem.mpr ⟨v, hv, fun x hx ↦ ?_⟩⟩
   rewrite [mul_assoc, ← smul_eq_mul (a' := ‖g x‖), ← MeasureTheory.Measure.restrict_apply_univ,
     ← integral_const, mul_comm, ← smul_eq_mul, ← integral_smul_const]
+  haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rw [Measure.restrict_apply_univ s]; exact hμ⟩
   refine (norm_integral_le_integral_norm _).trans <|
-    integral_mono_of_nonneg (univ_mem' fun _ ↦ norm_nonneg _) ?_ ?_
-  · haveI : IsFiniteMeasure (μ.restrict s) :=
-      ⟨by convert hμ using 1; exact Measure.restrict_apply_univ s⟩
-    exact integrable_const _
-  · filter_upwards [MeasureTheory.self_mem_ae_restrict hs]
-    intro y hy
-    rewrite [smul_eq_mul, mul_comm]
-    exact ht (y, x) <| huv ⟨hu hy, hx⟩
+    integral_mono_of_nonneg (univ_mem' fun _ ↦ norm_nonneg _) (integrable_const _) ?_
+  filter_upwards [MeasureTheory.self_mem_ae_restrict hs]
+  intro y hy
+  rewrite [smul_eq_mul, mul_comm]
+  exact ht (y, x) <| huv ⟨hu hy, hx⟩
 
 end Uniform
 

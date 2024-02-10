@@ -72,18 +72,12 @@ theorem isLittleO_const_snd_atBot [NoMinOrder α] [ClosedIicTopology α] (c : F)
   exact isLittleO_const_id_atBot c
 
 theorem isLittleO_const_fst_atTop [NoMaxOrder α] [ClosedIciTopology α] (c : F) (ly : Filter E) :
-    (fun (_ : α × E) ↦ c) =o[atTop ×ˢ ly] Prod.fst := by
-  refine ly.eq_or_neBot.casesOn (fun h ↦ by simp [h]) (fun _ ↦ ?_)
-  show ((fun _ ↦ c) ∘ Prod.fst) =o[atTop ×ˢ ly] (id ∘ Prod.fst)
-  rewrite [← isLittleO_map, map_fst_prod]
-  exact isLittleO_const_id_atTop c
+    (fun (_ : α × E) ↦ c) =o[atTop ×ˢ ly] Prod.fst :=
+  isLittleO_const_fst_atBot c ly (α := αᵒᵈ)
 
 theorem isLittleO_const_snd_atTop [NoMaxOrder α] [ClosedIciTopology α] (c : F) (lx : Filter E) :
-    (fun (_ : E × α) ↦ c) =o[lx ×ˢ atTop] Prod.snd := by
-  refine lx.eq_or_neBot.casesOn (fun h ↦ by simp [h]) (fun _ ↦ ?_)
-  show ((fun _ ↦ c) ∘ Prod.snd) =o[lx ×ˢ atTop] (id ∘ Prod.snd)
-  rewrite [← isLittleO_map, map_snd_prod]
-  exact isLittleO_const_id_atTop c
+    (fun (_ : E × α) ↦ c) =o[lx ×ˢ atTop] Prod.snd :=
+  isLittleO_const_snd_atBot c lx (α := αᵒᵈ)
 
 end Order
 
