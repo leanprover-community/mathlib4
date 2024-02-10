@@ -1101,6 +1101,11 @@ theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕 E F] (f : 𝓕) {K 
 #align one_hom_class.bound_of_antilipschitz OneHomClass.bound_of_antilipschitz
 #align zero_hom_class.bound_of_antilipschitz ZeroHomClass.bound_of_antilipschitz
 
+@[to_additive]
+theorem Isometry.nnnorm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
+    ‖f x‖₊ = ‖x‖₊ :=
+  Subtype.ext <| hi.norm_map_of_map_one h₁ x
+
 end NNNorm
 
 @[to_additive]
