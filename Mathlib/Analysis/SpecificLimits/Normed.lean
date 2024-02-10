@@ -696,10 +696,9 @@ theorem Antitone.tendsto_alternating_series_of_tendsto_zero (hfa : Antitone f)
 
 end
 
-section
-
 /-! ### Partial sum bounds on alternating convergent series -/
 
+section
 
 variable {E : Type*} [OrderedRing E] [TopologicalSpace E] [OrderClosedTopology E]
   {l : E} {f : ℕ → E}
