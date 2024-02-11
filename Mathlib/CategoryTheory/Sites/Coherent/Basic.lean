@@ -55,9 +55,9 @@ class Precoherent : Prop where
   an effective epi family `π₂` over `B₂`, such that `π₂` factors through `π₁`.
   -/
   pullback {B₁ B₂ : C} (f : B₂ ⟶ B₁) :
-    ∀ (α : Type) [Fintype α] (X₁ : α → C) (π₁ : (a : α) → (X₁ a ⟶ B₁)),
+    ∀ (α : Type) [Finite α] (X₁ : α → C) (π₁ : (a : α) → (X₁ a ⟶ B₁)),
       EffectiveEpiFamily X₁ π₁ →
-    ∃ (β : Type) (_ : Fintype β) (X₂ : β → C) (π₂ : (b : β) → (X₂ b ⟶ B₂)),
+    ∃ (β : Type) (_ : Finite β) (X₂ : β → C) (π₂ : (b : β) → (X₂ b ⟶ B₂)),
       EffectiveEpiFamily X₂ π₂ ∧
       ∃ (i : β → α) (ι : (b :  β) → (X₂ b ⟶ X₁ (i b))),
       ∀ (b : β), ι b ≫ π₁ _ = π₂ _ ≫ f
@@ -66,7 +66,7 @@ class Precoherent : Prop where
 The coherent coverage on a precoherent category `C`.
 -/
 def coherentCoverage [Precoherent C] : Coverage C where
-  covering B := { S | ∃ (α : Type) (_ : Fintype α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
+  covering B := { S | ∃ (α : Type) (_ : Finite α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
     S = Presieve.ofArrows X π ∧ EffectiveEpiFamily X π }
   pullback := by
     rintro B₁ B₂ f S ⟨α, _, X₁, π₁, rfl, hS⟩
@@ -134,7 +134,7 @@ The extensive coverage on an extensive category `C`
 TODO: use general colimit API instead of `IsIso (Sigma.desc π)`
 -/
 def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
-  covering B := { S | ∃ (α : Type) (_ : Fintype α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
+  covering B := { S | ∃ (α : Type) (_ : Finite α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
     S = Presieve.ofArrows X π ∧ IsIso (Sigma.desc π) }
   pullback := by
     intro X Y f S ⟨α, hα, Z, π, hS, h_iso⟩
