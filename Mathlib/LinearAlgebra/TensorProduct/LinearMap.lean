@@ -13,6 +13,11 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 * `LinearMap.tensorDistrib (B₁ ⊗ₜ B₂)`: the bilinear map on `M₁ ⊗ M₂` constructed by applying
   `B₁` on `M₁` and `B₂` on `M₂`.
+
+## TODO
+
+Move results to bilinear map namespace #10424
+
 -/
 
 suppress_compilation
