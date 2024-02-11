@@ -8,12 +8,12 @@ import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Intervals.Group
-import Mathlib.Data.Set.Lattice
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Data.Set.Basic
+import Mathlib.Order.GaloisConnection
 
 #align_import algebra.order.floor from "leanprover-community/mathlib"@"afdb43429311b885a7988ea15d0bac2aac80f69c"
 
@@ -1626,7 +1626,7 @@ end round
 namespace Nat
 
 variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] [FloorSemiring α] [FloorSemiring β]
-  [RingHomClass F α β] {a : α} {b : β}
+variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 -- Porting note: no longer needed
 -- include β
@@ -1655,7 +1655,7 @@ end Nat
 namespace Int
 
 variable [LinearOrderedRing α] [LinearOrderedRing β] [FloorRing α] [FloorRing β]
-  [RingHomClass F α β] {a : α} {b : β}
+variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 -- Porting note: no longer needed
 -- include β
@@ -1685,7 +1685,7 @@ end Int
 namespace Int
 
 variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRing β]
-  [RingHomClass F α β] {a : α} {b : β}
+variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 -- Porting note: no longer needed
 -- include β
