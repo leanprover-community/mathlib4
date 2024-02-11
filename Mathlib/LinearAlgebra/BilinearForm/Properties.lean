@@ -52,7 +52,7 @@ variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
 variable {M₂' M₂'' : Type*}
 variable [AddCommMonoid M₂'] [AddCommMonoid M₂''] [Module R₂ M₂'] [Module R₂ M₂'']
 
-variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
+variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂} {B₃ : BilinForm R₃ M₃}
 
 namespace BilinForm
 
@@ -60,40 +60,40 @@ namespace BilinForm
 
 
 /-- The proposition that a bilinear form is reflexive -/
-def IsRefl (B : BilinForm R M) : Prop :=
-  ∀ x y : M, B x y = 0 → B y x = 0
+def IsRefl (B : BilinForm R₂ M₂) : Prop :=
+  ∀ x y : M₂, B x y = 0 → B y x = 0
 #align bilin_form.is_refl BilinForm.IsRefl
 
 namespace IsRefl
 
-variable (H : B.IsRefl)
+variable (H : B₂.IsRefl)
 
-theorem eq_zero : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {x y} => H x y
+theorem eq_zero : ∀ {x y : M₂}, B₂ x y = 0 → B₂ y x = 0 := fun {x y} => H x y
 #align bilin_form.is_refl.eq_zero BilinForm.IsRefl.eq_zero
 
-protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
+protected theorem neg {B : BilinForm R₃ M₃} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
 #align bilin_form.is_refl.neg BilinForm.IsRefl.neg
 
-protected theorem smul {α} [Semiring α] [Module α R] [SMulCommClass α R R] [NoZeroSMulDivisors α R]
-    (a : α) {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun _ _ h =>
-  (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
+protected theorem smul {α} [Semiring α] [Module α R₂] [SMulCommClass α R₂ R₂]
+    [NoZeroSMulDivisors α R₂] (a : α) {B : BilinForm R₂ M₂} (hB : B.IsRefl) : (a • B).IsRefl :=
+  fun _ _ h => (smul_eq_zero.mp h).elim (fun ha => smul_eq_zero_of_left ha _) fun hBz =>
     smul_eq_zero_of_right _ (hB _ _ hBz)
 #align bilin_form.is_refl.smul BilinForm.IsRefl.smul
 
-protected theorem groupSMul {α} [Group α] [DistribMulAction α R] [SMulCommClass α R R] (a : α)
-    {B : BilinForm R M} (hB : B.IsRefl) : (a • B).IsRefl := fun x y =>
+protected theorem groupSMul {α} [Group α] [DistribMulAction α R₂] [SMulCommClass α R₂ R₂] (a : α)
+    {B : BilinForm R₂ M₂} (hB : B.IsRefl) : (a • B).IsRefl := fun x y =>
   (smul_eq_zero_iff_eq _).mpr ∘ hB x y ∘ (smul_eq_zero_iff_eq _).mp
 #align bilin_form.is_refl.group_smul BilinForm.IsRefl.groupSMul
 
 end IsRefl
 
 @[simp]
-theorem isRefl_zero : (0 : BilinForm R M).IsRefl := fun _ _ _ => rfl
+theorem isRefl_zero : (0 : BilinForm R₂ M₂).IsRefl := fun _ _ _ => rfl
 #align bilin_form.is_refl_zero BilinForm.isRefl_zero
 
 @[simp]
-theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
+theorem isRefl_neg {B : BilinForm R₃ M₃} : (-B).IsRefl ↔ B.IsRefl :=
   ⟨fun h => neg_neg B ▸ h.neg, IsRefl.neg⟩
 #align bilin_form.is_refl_neg BilinForm.isRefl_neg
 
@@ -169,7 +169,7 @@ theorem neg_eq (H : B₁.IsAlt) (x y : M₁) : -B₁ x y = B₁ y x := by
   exact H1
 #align bilin_form.is_alt.neg_eq BilinForm.IsAlt.neg_eq
 
-theorem isRefl (H : B₁.IsAlt) : B₁.IsRefl := by
+theorem isRefl (H : B₃.IsAlt) : B₃.IsRefl := by
   intro x y h
   rw [← neg_eq H, h, neg_zero]
 #align bilin_form.is_alt.is_refl BilinForm.IsAlt.isRefl

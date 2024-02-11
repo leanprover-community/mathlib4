@@ -50,7 +50,7 @@ variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
 variable {M₂' M₂'' : Type*}
 variable [AddCommMonoid M₂'] [AddCommMonoid M₂''] [Module R₂ M₂'] [Module R₂ M₂'']
 
-variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
+variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂} {B₃ : BilinForm R₃ M₃}
 
 namespace BilinForm
 
@@ -76,11 +76,11 @@ theorem ne_zero_of_not_isOrtho_self {B : BilinForm K V} (x : V) (hx₁ : ¬B.IsO
   fun hx₂ => hx₁ (hx₂.symm ▸ isOrtho_zero_left _)
 #align bilin_form.ne_zero_of_not_is_ortho_self BilinForm.ne_zero_of_not_isOrtho_self
 
-theorem IsRefl.ortho_comm (H : B.IsRefl) {x y : M} : IsOrtho B x y ↔ IsOrtho B y x :=
+theorem IsRefl.ortho_comm (H : B₂.IsRefl) {x y : M₂} : IsOrtho B₂ x y ↔ IsOrtho B₂ y x :=
   ⟨eq_zero H, eq_zero H⟩
 #align bilin_form.is_refl.ortho_comm BilinForm.IsRefl.ortho_comm
 
-theorem IsAlt.ortho_comm (H : B₁.IsAlt) {x y : M₁} : IsOrtho B₁ x y ↔ IsOrtho B₁ y x :=
+theorem IsAlt.ortho_comm (H : B₃.IsAlt) {x y : M₃} : IsOrtho B₃ x y ↔ IsOrtho B₃ y x :=
   H.isRefl.ortho_comm
 #align bilin_form.is_alt.ortho_comm BilinForm.IsAlt.ortho_comm
 
@@ -163,7 +163,7 @@ def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
     rw [IsOrtho, smul_right, show B n x = 0 from hx n hn, mul_zero]
 #align bilin_form.orthogonal BilinForm.orthogonal
 
-variable {N L : Submodule R M}
+variable {N L : Submodule R M} {N₂ : Submodule R₂ M₂}
 
 @[simp]
 theorem mem_orthogonal_iff {N : Submodule R M} {m : M} :
@@ -174,7 +174,7 @@ theorem mem_orthogonal_iff {N : Submodule R M} {m : M} :
 theorem orthogonal_le (h : N ≤ L) : B.orthogonal L ≤ B.orthogonal N := fun _ hn l hl => hn l (h hl)
 #align bilin_form.orthogonal_le BilinForm.orthogonal_le
 
-theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogonal N) :=
+theorem le_orthogonal_orthogonal (b : B₂.IsRefl) : N₂ ≤ B₂.orthogonal (B₂.orthogonal N₂) :=
   fun n hn _ hm => b _ _ (hm n hn)
 #align bilin_form.le_orthogonal_orthogonal BilinForm.le_orthogonal_orthogonal
 
@@ -229,10 +229,10 @@ variable [AddCommMonoid M₂'] [Module R₂ M₂']
 
 /-- The restriction of a reflexive bilinear form `B` onto a submodule `W` is
 nondegenerate if `Disjoint W (B.orthogonal W)`. -/
-theorem nondegenerateRestrictOfDisjointOrthogonal (B : BilinForm R₁ M₁) (b : B.IsRefl)
-    {W : Submodule R₁ M₁} (hW : Disjoint W (B.orthogonal W)) : (B.restrict W).Nondegenerate := by
+theorem nondegenerateRestrictOfDisjointOrthogonal (B : BilinForm R₃ M₃) (b : B.IsRefl)
+    {W : Submodule R₃ M₃} (hW : Disjoint W (B.orthogonal W)) : (B.restrict W).Nondegenerate := by
   rintro ⟨x, hx⟩ b₁
-  rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R₁]
+  rw [Submodule.mk_eq_zero, ← Submodule.mem_bot R₃]
   refine' hW.le_bot ⟨hx, fun y hy => _⟩
   specialize b₁ ⟨y, hy⟩
   rw [restrict_apply, Submodule.coe_mk, Submodule.coe_mk] at b₁
