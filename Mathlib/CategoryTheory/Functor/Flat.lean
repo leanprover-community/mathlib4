@@ -282,34 +282,31 @@ section SmallCategory
 variable {C D : Type u₁} [SmallCategory C] [SmallCategory D] (E : Type u₂) [Category.{u₁} E]
 
 
+-- this should be moved to `CategoryTheory.Functor.KanExtension.Adjunction`
 /-- (Implementation)
 The evaluation of `Lan F` at `X` is the colimit over the costructured arrows over `X`.
 -/
 noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     [∀ X : D, HasColimitsOfShape (CostructuredArrow F X) E] :
-    lan F ⋙ (evaluation D E).obj X ≅
+    F.lan ⋙ (evaluation D E).obj X ≅
       (whiskeringLeft _ _ E).obj (CostructuredArrow.proj F X) ⋙ colim :=
-  NatIso.ofComponents (fun G => colim.mapIso (Iso.refl _))
-    (by
-      intro G H i
-      -- porting note: was `ext` in lean 3
-      -- Now `ext` can't see that `lan` is a colimit.
-      -- Uncertain whether it makes sense to add another `@[ext]` lemma.
-      -- See https://github.com/leanprover-community/mathlib4/issues/5229
-      apply colimit.hom_ext
-      intro j
-      simp only [Functor.comp_map, Functor.mapIso_refl, evaluation_obj_map, whiskeringLeft_obj_map,
-        lan_map_app, colimit.ι_desc_assoc, Category.comp_id, Category.assoc]
-      -- porting note: this deals with the fact that the type of `lan_map_app` has changed
-      -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
-      erw [show ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
-        colimit.ι (Lan.diagram F H (F.obj j.left))
-        (CostructuredArrow.mk (𝟙 (F.obj j.left))) by apply Category.comp_id]
-      erw [colimit.ι_pre_assoc (Lan.diagram F H X) (CostructuredArrow.map j.hom), Category.id_comp,
-        Category.comp_id, colimit.ι_map]
-      rcases j with ⟨j_left, ⟨⟨⟩⟩, j_hom⟩
-      congr
-      rw [CostructuredArrow.map_mk, Category.id_comp, CostructuredArrow.mk])
+  NatIso.ofComponents (fun G =>
+    IsColimit.coconePointUniqueUpToIso (Functor.isPointwiseLeftKanExtensionLanUnit F G X)
+    (colimit.isColimit _)) (fun {G₁ G₂} φ => by
+      apply (Functor.isPointwiseLeftKanExtensionLanUnit F G₁ X).hom_ext
+      intro T
+      dsimp
+      have h₁ := IsColimit.comp_coconePointUniqueUpToIso_hom
+        (Functor.isPointwiseLeftKanExtensionLanUnit F G₁ X) (colimit.isColimit _) T
+      have h₂ := IsColimit.comp_coconePointUniqueUpToIso_hom
+        (Functor.isPointwiseLeftKanExtensionLanUnit F G₂ X) (colimit.isColimit _) T
+      have h₃ := congr_app (F.lanUnit.naturality φ) T.left
+      dsimp at h₁ h₂ h₃
+      simp only [Category.assoc] at h₁ h₂ ⊢
+      rw [reassoc_of% h₁, NatTrans.naturality_assoc, ← reassoc_of% h₃, h₂,
+        ι_colimMap, whiskerLeft_app]
+      rfl)
+
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_evaluation_iso_colim CategoryTheory.lanEvaluationIsoColim
 
@@ -323,10 +320,10 @@ variable [PreservesLimits (forget E)]
 `Lan F.op` that takes presheaves over `C` to presheaves over `D` preserves finite limits.
 -/
 noncomputable instance lanPreservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F] :
-    PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
+    PreservesFiniteLimits (F.op.lan : _ ⥤ Dᵒᵖ ⥤ E) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
   intro J _ _; skip
-  apply preservesLimitsOfShapeOfEvaluation (lan F.op : (Cᵒᵖ ⥤ E) ⥤ Dᵒᵖ ⥤ E) J
+  apply preservesLimitsOfShapeOfEvaluation (F.op.lan : (Cᵒᵖ ⥤ E) ⥤ Dᵒᵖ ⥤ E) J
   intro K
   haveI : IsFiltered (CostructuredArrow F.op K) :=
     IsFiltered.of_equivalence (structuredArrowOpEquivalence F (unop K))
@@ -335,7 +332,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_preserves_finite_limits_of_flat CategoryTheory.lanPreservesFiniteLimitsOfFlat
 
 instance lan_flat_of_flat (F : C ⥤ D) [RepresentablyFlat F] :
-    RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) :=
+    RepresentablyFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ E) :=
   flat_of_preservesFiniteLimits _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_flat_of_flat CategoryTheory.lan_flat_of_flat
@@ -343,17 +340,17 @@ set_option linter.uppercaseLean3 false in
 variable [HasFiniteLimits C]
 
 noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C ⥤ D)
-    [PreservesFiniteLimits F] : PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
+    [PreservesFiniteLimits F] : PreservesFiniteLimits (F.op.lan : _ ⥤ Dᵒᵖ ⥤ E) := by
   haveI := flat_of_preservesFiniteLimits F
   infer_instance
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan_preserves_finite_limits_of_preserves_finite_limits CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
-    RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
+    RepresentablyFlat F ↔ RepresentablyFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
   ⟨fun H => inferInstance, fun H => by
     skip
-    haveI := preservesFiniteLimitsOfFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁)
+    haveI := preservesFiniteLimitsOfFlat (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁)
     haveI : PreservesFiniteLimits F := by
       apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
       intros; skip; apply preservesLimitOfLanPreservesLimit
@@ -365,7 +362,7 @@ set_option linter.uppercaseLean3 false in
 `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves finite limits.
 -/
 noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D) :
-    PreservesFiniteLimits F ≃ PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) where
+    PreservesFiniteLimits F ≃ PreservesFiniteLimits (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u₁) where
   toFun _ := inferInstance
   invFun _ := by
     apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}

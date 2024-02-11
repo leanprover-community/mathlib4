@@ -6,6 +6,7 @@ Authors: Bhavik Mehta
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Elements
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
@@ -239,57 +240,41 @@ noncomputable def isExtensionAlongYoneda :
 noncomputable instance : PreservesColimits (extendAlongYoneda A) :=
   (yonedaAdjunction A).leftAdjointPreservesColimits
 
-/-- Show that the images of `X` after `extendAlongYoneda` and `Lan yoneda` are indeed isomorphic.
-This follows from `CategoryTheory.CategoryOfElements.costructuredArrowYonedaEquivalence`.
--/
-@[simps]
-noncomputable def extendAlongYonedaIsoKanApp (X) :
-    (extendAlongYoneda A).obj X ≅ ((lan yoneda : (_ ⥤ ℰ) ⥤ _).obj A).obj X :=
-  let eq := CategoryOfElements.costructuredArrowYonedaEquivalence X
-  { hom := colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) eq.functor
-    inv := colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) eq.inverse
-    hom_inv_id := by
-      erw [colimit.pre_pre ((CategoryOfElements.π X).leftOp ⋙ A) eq.inverse]
-      trans colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) (𝟭 _)
-      congr
-      · exact congr_arg Functor.op (CategoryOfElements.from_toCostructuredArrow_eq X)
-      · ext
-        simp only [colimit.ι_pre]
-        erw [Category.comp_id]
-        congr
-    inv_hom_id := by
-      erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) eq.functor]
-      trans colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) (𝟭 _)
-      congr
-      · exact CategoryOfElements.to_fromCostructuredArrow_eq X
-      · ext
-        simp only [colimit.ι_pre]
-        erw [Category.comp_id]
-        congr }
-set_option linter.uppercaseLean3 false in
-#align category_theory.colimit_adj.extend_along_yoneda_iso_Kan_app CategoryTheory.ColimitAdj.extendAlongYonedaIsoKanApp
+noncomputable def extendAlongYonedaIsPointwiseLeftKanExtension :
+    (Functor.LeftExtension.mk _
+      (isExtensionAlongYoneda A).inv).IsPointwiseLeftKanExtension := fun X => by
+  refine' IsColimit.ofWhiskerEquivalence (CategoryOfElements.costructuredArrowYonedaEquivalence X)
+    (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) ?_))
+  intro j
+  dsimp
+  sorry
+  /-rw [← cancel_epi ((isExtensionAlongYoneda A).hom.app _), Iso.hom_inv_id_app_assoc, comp_id,
+    extendAlongYoneda_map]
+  apply colimit.hom_ext
+  intro x
+  simp
+  --erw [colimit.ι_pre]
+  --simp [isExtensionAlongYoneda]
+  sorry-/
+
+instance : Functor.IsLeftKanExtension _ (isExtensionAlongYoneda A).inv :=
+  (extendAlongYonedaIsPointwiseLeftKanExtension A).isLeftKanExtension
 
 /-- Verify that `extendAlongYoneda` is indeed the left Kan extension along the yoneda embedding.
 -/
 @[simps!]
 noncomputable def extendAlongYonedaIsoKan :
-    extendAlongYoneda A ≅ (lan yoneda : (_ ⥤ ℰ) ⥤ _).obj A :=
-  NatIso.ofComponents (extendAlongYonedaIsoKanApp A) (by
-    intro X Y f; simp
-    rw [extendAlongYoneda_map]
-    erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y) (CostructuredArrow.map f)]
-    erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A Y)
-        (CategoryOfElements.costructuredArrowYonedaEquivalence Y).functor]
-    congr 1
-    apply CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality)
+    extendAlongYoneda A ≅ yoneda.lan.obj A :=
+  Functor.leftKanExtensionUnique _ _ (isExtensionAlongYoneda A).inv (yoneda.lanUnit.app A)
 set_option linter.uppercaseLean3 false in
 #align category_theory.colimit_adj.extend_along_yoneda_iso_Kan CategoryTheory.ColimitAdj.extendAlongYonedaIsoKan
 
-/-- extending `F ⋙ yoneda` along the yoneda embedding is isomorphic to `Lan F.op`. -/
+
+/-- extending `F ⋙ yoneda` along the yoneda embedding is isomorphic to `F.op.lan`. -/
 noncomputable def extendOfCompYonedaIsoLan {D : Type u₁} [SmallCategory D] (F : C ⥤ D) :
-    extendAlongYoneda (F ⋙ yoneda) ≅ lan F.op :=
+    extendAlongYoneda (F ⋙ yoneda) ≅ F.op.lan :=
   Adjunction.natIsoOfRightAdjointNatIso (yonedaAdjunction (F ⋙ yoneda))
-    (Lan.adjunction (Type u₁) F.op)
+    (Functor.Lan.adjunction F.op (Type u₁))
     (isoWhiskerRight curriedYonedaLemma' ((whiskeringLeft Cᵒᵖ Dᵒᵖ (Type u₁)).obj F.op : _))
 set_option linter.uppercaseLean3 false in
 #align category_theory.colimit_adj.extend_of_comp_yoneda_iso_Lan CategoryTheory.ColimitAdj.extendOfCompYonedaIsoLan
@@ -301,10 +286,10 @@ end ColimitAdj
 
 open ColimitAdj
 
-/-- `F ⋙ yoneda` is naturally isomorphic to `yoneda ⋙ Lan F.op`. -/
+/-- `F ⋙ yoneda` is naturally isomorphic to `yoneda ⋙ F.op.lan`. -/
 @[simps!]
 noncomputable def compYonedaIsoYonedaCompLan {D : Type u₁} [SmallCategory D] (F : C ⥤ D) :
-    F ⋙ yoneda ≅ yoneda ⋙ lan F.op :=
+    F ⋙ yoneda ≅ yoneda ⋙ F.op.lan :=
   (isExtensionAlongYoneda (F ⋙ yoneda)).symm ≪≫ isoWhiskerLeft yoneda (extendOfCompYonedaIsoLan F)
 set_option linter.uppercaseLean3 false in
 #align category_theory.comp_yoneda_iso_yoneda_comp_Lan CategoryTheory.compYonedaIsoYonedaCompLan

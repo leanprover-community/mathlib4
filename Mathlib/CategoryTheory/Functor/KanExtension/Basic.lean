@@ -300,6 +300,20 @@ lemma hasLeftExtension_iff_of_iso₂ : HasLeftKanExtension L F ↔ HasLeftKanExt
 
 end
 
+section
+
+variable (F₁ F₂ : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α₁ : F ⟶ L ⋙ F₁) (α₂ : F ⟶ L ⋙ F₂)
+
+@[simps]
+noncomputable def leftKanExtensionUnique [F₁.IsLeftKanExtension α₁] [F₂.IsLeftKanExtension α₂] :
+    F₁ ≅ F₂ where
+  hom := F₁.descOfIsLeftKanExtension α₁ F₂ α₂
+  inv := F₂.descOfIsLeftKanExtension α₂ F₁ α₁
+  hom_inv_id := F₁.hom_ext_of_isLeftKanExtension α₁ _ _ (by aesop_cat)
+  inv_hom_id := F₂.hom_ext_of_isLeftKanExtension α₂ _ _ (by aesop_cat)
+
+end
+
 end Functor
 
 end CategoryTheory

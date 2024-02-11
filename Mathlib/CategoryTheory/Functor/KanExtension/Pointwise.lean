@@ -50,7 +50,7 @@ abbrev HasPointwiseLeftKanExtension := ∀ (Y : D), HasPointwiseLeftKanExtension
 
 namespace LeftExtension
 
-variable {F L} (E : LeftExtension L F)
+variable {F L} (E E' : LeftExtension L F)
 
 /-- The cocone for `CostructuredArrow.proj L Y ⋙ F` attached to `E : LeftExtension L F`.
 The point is this cocone is `E.right.obj Y` -/
@@ -65,21 +65,53 @@ def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
         simp only [assoc, NatTrans.naturality_assoc, Functor.comp_map,
           Functor.map_comp, comp_id] }
 
+variable (L F)
+
+@[simps]
+def coconeAtFunctor (Y : D) : LeftExtension L F ⥤ Cocone (CostructuredArrow.proj L Y ⋙ F) where
+  obj E := E.coconeAt Y
+  map {E E'} φ := CoconeMorphism.mk (φ.right.app Y) (fun G => by
+    dsimp
+    rw [← StructuredArrow.w φ]
+    simp only [assoc, NatTrans.naturality, const_obj_obj, whiskeringLeft_obj_obj,
+      whiskeringLeft_obj_map, NatTrans.comp_app, comp_obj, whiskerLeft_app])
+
+variable {L F}
+
+
 /-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension at `Y` when
 `E.coconeAt Y` is a colimit cocone. -/
 def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
 
-variable {E}
-
+variable {E} in
 lemma IsPointwiseLeftKanExtensionAt.hasPointwiseLeftKanExtensionAt
-    {E : LeftExtension L F} {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y) :
+    {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y) :
   HasPointwiseLeftKanExtensionAt L F Y := ⟨_, h⟩
-
-variable (E)
 
 /-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension when
 it is a pointwise left Kan extension at any object. -/
 abbrev IsPointwiseLeftKanExtension := ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y
+
+variable {E E'}
+
+def isPointwiseLeftKanExtensionAtEquivOfIso (e : E ≅ E') (Y : D) :
+    E.IsPointwiseLeftKanExtensionAt Y ≃ E'.IsPointwiseLeftKanExtensionAt Y where
+  toFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor L F Y).mapIso e)
+  invFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor L F Y).mapIso e.symm)
+  left_inv h := by
+    dsimp only [IsPointwiseLeftKanExtensionAt]
+    apply Subsingleton.elim
+  right_inv h := by
+    dsimp only [IsPointwiseLeftKanExtensionAt]
+    apply Subsingleton.elim
+
+def isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
+    E.IsPointwiseLeftKanExtension ≃ E'.IsPointwiseLeftKanExtension where
+  toFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y) (h Y)
+  invFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y).symm (h Y)
+  left_inv h := by aesop_cat
+  right_inv h := by aesop
+
 
 variable (h : E.IsPointwiseLeftKanExtension)
 
@@ -183,6 +215,16 @@ instance : (pointwiseLeftKanExtension L F).IsLeftKanExtension
 
 instance : HasLeftKanExtension L F :=
   HasLeftKanExtension.mk _ (pointwiseLeftKanExtensionUnit L F)
+
+variable {F L}
+
+noncomputable def isPointwiseLeftKanExtensionOfIsLeftKanExtension (F' : D ⥤ H) (α : F ⟶ L ⋙ F')
+    [F'.IsLeftKanExtension α] :
+    (LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
+  LeftExtension.isPointwiseLeftKanExtensionEquivOfIso
+    (IsColimit.coconePointUniqueUpToIso (pointwiseLeftKanExtensionIsUniversal L F)
+      (F'.isUniversalOfIsLeftKanExtension α))
+    (pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L F)
 
 end
 
