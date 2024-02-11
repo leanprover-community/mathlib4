@@ -25,7 +25,7 @@ where the top arrow is the forgetful functor forgetting the yoneda-costructure, 
 the aforementioned equivalence and the diagonal arrow is the Yoneda embedding.
 
 In the notation of Kashiwara-Schapira, the type of the equivalence is written `C^ₐ ≌ Cₐ^`, where
-`·ₐ` is `CostructuredArrow` (with the functor `S` being either the identity or the Yonenda
+`·ₐ` is `CostructuredArrow` (with the functor `S` being either the identity or the Yoneda
 embedding) and `^` is taking presheaves. The equivalence is a key ingredient in various results in
 Kashiwara-Schapira.
 
@@ -82,7 +82,7 @@ attribute [local simp] FunctorToTypes.naturality
     that `yoneda.obj X ⟶ F` lifts to a morphism in `Over A`. -/
 structure MakesOverArrow {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) {X : C} (s : yoneda.obj X ⟶ A)
     (u : F.obj (op X)) : Prop where
-  (app : η.app (op X) u = yonedaEquiv s)
+  app : η.app (op X) u = yonedaEquiv s
 
 namespace MakesOverArrow
 
