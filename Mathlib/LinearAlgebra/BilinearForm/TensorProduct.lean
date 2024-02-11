@@ -129,10 +129,12 @@ variable (R M₁ M₂) in
 @[simp]
 theorem tensorDistribEquiv_toLinearMap :
     (tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂)).toLinearMap = tensorDistrib R R := by
+  rw [tensorDistribEquiv, tensorDistrib, ← LinearMap.tensorDistribEquiv_toLinearMap]
   ext B₁ B₂ : 3
-  apply toLin.injective
-  ext
-  exact mul_comm _ _
+  simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
+    LinearEquiv.coe_coe, LinearEquiv.trans_apply, AlgebraTensorModule.congr_tmul,
+    LinearMap.tensorDistribEquiv_apply, LinearMap.tensorDistribEquiv_toLinearMap,
+    LinearMap.coe_comp, Function.comp_apply]
 
 @[simp]
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :
