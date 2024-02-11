@@ -941,7 +941,7 @@ If a function `f : E → F` has two representations as power series at a point `
 to formal multilinear series `p₁` and `p₂`, then these representations agree term-by-term. That is,
 for any `n : ℕ` and `y : E`, `p₁ n (fun i ↦ y) = p₂ n (fun i ↦ y)`. In the one-dimensional case,
 when `f : 𝕜 → E`, the continuous multilinear maps `p₁ n` and `p₂ n` are given by
-`ContinuousMultilinearMap.mkPiField`, and hence are determined completely by the value of
+`ContinuousMultilinearMap.mkPiRing`, and hence are determined completely by the value of
 `p₁ n (fun i ↦ 1)`, so `p₁ = p₂`. Consequently, the radius of convergence for one series can be
 transferred to the other.
 -/
@@ -1026,7 +1026,7 @@ theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x :
   -- porting note: `funext; ext` was `ext (n x)`
   funext n
   ext x
-  rw [← mkPiField_apply_one_eq_self (p n)]
+  rw [← mkPiRing_apply_one_eq_self (p n)]
   -- porting note: nasty hack, was `simp [h.apply_eq_zero n 1]`
   have := Or.intro_right ?_ (h.apply_eq_zero n 1)
   simpa using this

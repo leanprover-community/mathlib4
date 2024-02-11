@@ -458,5 +458,6 @@ lemma NoZeroSMulDivisors.isReduced (R M : Type*)
   · obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
     have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]
     rw [pow_succ, mul_smul] at this
-    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx; rfl
-    exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm
+    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx
+    · rfl
+    · exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm
