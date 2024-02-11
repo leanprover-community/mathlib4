@@ -266,44 +266,36 @@ variable {L L'}
 
 /-- The equivalence `RightExtension L F ≌ RightExtension L' F` induced by
 a natural isomorphism `L ≅ L'`. -/
-def rightExtensionEquivalenceOfIso₁ :
-    RightExtension L F ≌ RightExtension L' F :=
+def rightExtensionEquivalenceOfIso₁ : RightExtension L F ≌ RightExtension L' F :=
   CostructuredArrow.mapNatIso ((whiskeringLeft C H D).mapIso iso₁)
 
-lemma hasRightExtension_iff_of_iso₁ :
-    HasRightKanExtension L F ↔ HasRightKanExtension L' F :=
+lemma hasRightExtension_iff_of_iso₁ : HasRightKanExtension L F ↔ HasRightKanExtension L' F :=
   (rightExtensionEquivalenceOfIso₁ iso₁ F).hasTerminal_iff
 
 /-- The equivalence `LeftExtension L F ≌ LeftExtension L' F` induced by
 a natural isomorphism `L ≅ L'`. -/
-def leftExtensionEquivalenceOfIso₁ :
-    LeftExtension L F ≌ LeftExtension L' F :=
+def leftExtensionEquivalenceOfIso₁ : LeftExtension L F ≌ LeftExtension L' F :=
   StructuredArrow.mapNatIso ((whiskeringLeft C H D).mapIso iso₁)
 
-lemma hasLeftExtension_iff_of_iso₁ :
-    HasLeftKanExtension L F ↔ HasLeftKanExtension L' F :=
+lemma hasLeftExtension_iff_of_iso₁ : HasLeftKanExtension L F ↔ HasLeftKanExtension L' F :=
   (leftExtensionEquivalenceOfIso₁ iso₁ F).hasInitial_iff
 
 variable (L) {F F'}
 
 /-- The equivalence `RightExtension L F ≌ RightExtension L F'` induced by
 a natural isomorphism `F ≅ F'`. -/
-def rightExtensionEquivalenceOfIso₂ :
-    RightExtension L F ≌ RightExtension L F' :=
+def rightExtensionEquivalenceOfIso₂ : RightExtension L F ≌ RightExtension L F' :=
   CostructuredArrow.mapIso iso₂
 
-lemma hasRightExtension_iff_of_iso₂ :
-    HasRightKanExtension L F ↔ HasRightKanExtension L F' :=
+lemma hasRightExtension_iff_of_iso₂ : HasRightKanExtension L F ↔ HasRightKanExtension L F' :=
   (rightExtensionEquivalenceOfIso₂ L iso₂).hasTerminal_iff
 
 /-- The equivalence `LeftExtension L F ≌ LeftExtension L F'` induced by
 a natural isomorphism `F ≅ F'`. -/
-def leftExtensionEquivalenceOfIso₂ :
-    LeftExtension L F ≌ LeftExtension L F' :=
+def leftExtensionEquivalenceOfIso₂ : LeftExtension L F ≌ LeftExtension L F' :=
   StructuredArrow.mapIso iso₂
 
-lemma hasLeftExtension_iff_of_iso₂ :
-    HasLeftKanExtension L F ↔ HasLeftKanExtension L F' :=
+lemma hasLeftExtension_iff_of_iso₂ : HasLeftKanExtension L F ↔ HasLeftKanExtension L F' :=
   (leftExtensionEquivalenceOfIso₂ L iso₂).hasInitial_iff
 
 end
