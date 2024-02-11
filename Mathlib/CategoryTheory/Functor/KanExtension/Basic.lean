@@ -268,8 +268,7 @@ variable {L L'}
 
 /-- The equivalence `RightExtension L F ≌ RightExtension L' F` induced by
 a natural isomorphism `L ≅ L'`. -/
-def rightExtensionEquivalenceOfIso₁ :
-    RightExtension L F ≌ RightExtension L' F :=
+def rightExtensionEquivalenceOfIso₁ : RightExtension L F ≌ RightExtension L' F :=
   CostructuredArrow.mapNatIso ((whiskeringLeft C H D).mapIso iso₁)
 
 lemma hasRightExtension_iff_of_iso₁ :
