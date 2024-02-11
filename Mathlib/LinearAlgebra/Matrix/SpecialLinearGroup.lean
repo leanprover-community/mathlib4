@@ -271,7 +271,7 @@ variable [Fact (Even (Fintype.card n))]
 
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
-instance : Neg (SpecialLinearGroup n R) :=
+instance instNeg : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
     simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
 
@@ -382,7 +382,7 @@ lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2):
 /-- A vector with coprime entries, right-multiplied by a matrix in `SL(2, R)`, has
 coprime entries. -/
 lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
-    IsCoprime (vecMul v A.1 0) (vecMul v A.1 1) := by
+    IsCoprime ((v ᵥ* A.1) 0) ((v ᵥ* A.1) 1) := by
   obtain ⟨g, hg⟩ := hab.exists_SL2_row 0
   have : v = g 0 := funext fun t ↦ by { fin_cases t <;> tauto }
   simpa only [this] using isCoprime_row (g * A) 0
@@ -390,7 +390,7 @@ lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
 /-- A vector with coprime entries, left-multiplied by a matrix in `SL(2, R)`, has
 coprime entries. -/
 lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
-    IsCoprime (mulVec A.1 v 0) (mulVec A.1 v 1) := by
+    IsCoprime ((A.1 *ᵥ v) 0) ((A.1 *ᵥ v) 1) := by
   simpa only [← vecMul_transpose] using hab.vecMulSL A.transpose
 
 end IsCoprime
@@ -412,12 +412,12 @@ This element acts naturally on the Euclidean plane as a rotation about the origi
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
 represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
 def S : SL(2, ℤ) :=
-  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of] ⟩
+  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of]⟩
 #align modular_group.S ModularGroup.S
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)` -/
 def T : SL(2, ℤ) :=
-  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of] ⟩
+  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of]⟩
 #align modular_group.T ModularGroup.T
 
 theorem coe_S : ↑ₘS = !![0, -1; 1, 0] :=
