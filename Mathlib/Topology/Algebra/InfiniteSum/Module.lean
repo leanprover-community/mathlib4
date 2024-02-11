@@ -32,6 +32,10 @@ theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : ∑' z, f z • 
 
 end SMulConst
 
+/-!
+Note we cannot derive the `mul` lemmas from these `smul` lemmas, as the `mul` versions do not
+require associativity, but `Module` does.
+-/
 section tsum_smul_tsum
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]

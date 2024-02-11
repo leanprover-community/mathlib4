@@ -374,9 +374,9 @@ variable (𝕜 E)
 
 /-- In the trivial model with corners, the associated `PartialEquiv` is the identity. -/
 @[simp, mfld_simps]
-theorem modelWithCornersSelf_localEquiv : 𝓘(𝕜, E).toPartialEquiv = PartialEquiv.refl E :=
+theorem modelWithCornersSelf_partialEquiv : 𝓘(𝕜, E).toPartialEquiv = PartialEquiv.refl E :=
   rfl
-#align model_with_corners_self_local_equiv modelWithCornersSelf_localEquiv
+#align model_with_corners_self_local_equiv modelWithCornersSelf_partialEquiv
 
 @[simp, mfld_simps]
 theorem modelWithCornersSelf_coe : (𝓘(𝕜, E) : E → E) = id :=

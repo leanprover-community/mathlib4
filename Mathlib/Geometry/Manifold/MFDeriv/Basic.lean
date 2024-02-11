@@ -82,7 +82,7 @@ theorem UniqueMDiffWithinAt.inter (hs : UniqueMDiffWithinAt I s x) (ht : t ∈ �
   hs.inter' (nhdsWithin_le_nhds ht)
 #align unique_mdiff_within_at.inter UniqueMDiffWithinAt.inter
 
-theorem IsOpen.uniqueMDiffWithinAt (xs : x ∈ s) (hs : IsOpen s) : UniqueMDiffWithinAt I s x :=
+theorem IsOpen.uniqueMDiffWithinAt (hs : IsOpen s) (xs : x ∈ s) : UniqueMDiffWithinAt I s x :=
   (uniqueMDiffWithinAt_univ I).mono_of_mem <| nhdsWithin_le_nhds <| hs.mem_nhds xs
 #align is_open.unique_mdiff_within_at IsOpen.uniqueMDiffWithinAt
 
@@ -90,8 +90,8 @@ theorem UniqueMDiffOn.inter (hs : UniqueMDiffOn I s) (ht : IsOpen t) : UniqueMDi
   fun _x hx => UniqueMDiffWithinAt.inter (hs _ hx.1) (ht.mem_nhds hx.2)
 #align unique_mdiff_on.inter UniqueMDiffOn.inter
 
-theorem IsOpen.uniqueMDiffOn (hs : IsOpen s) : UniqueMDiffOn I s := fun _x hx =>
-  IsOpen.uniqueMDiffWithinAt hx hs
+theorem IsOpen.uniqueMDiffOn (hs : IsOpen s) : UniqueMDiffOn I s :=
+  fun _x hx => hs.uniqueMDiffWithinAt hx
 #align is_open.unique_mdiff_on IsOpen.uniqueMDiffOn
 
 theorem uniqueMDiffOn_univ : UniqueMDiffOn I (univ : Set M) :=
