@@ -138,9 +138,9 @@ theorem yang_baxter (X Y Z : C) :
       ≫ (Z ◁ (β_ X Y).hom) := by
   have := (braiding_naturality_right_assoc X (β_ Y Z).hom (α_ Z Y X).hom).symm
   refine Eq.trans (Eq.symm ?_) (Eq.trans this ?_)
-  . refine Eq.trans (congrArg (. ≫ _) (braiding_tensor_right X Y Z)) ?_
+  · refine Eq.trans (congrArg (. ≫ _) (braiding_tensor_right X Y Z)) ?_
     simp only [assoc]
-  . refine congrArg (_ ≫ .) ((Iso.eq_comp_inv _).mp ?_)
+  · refine congrArg (_ ≫ .) ((Iso.eq_comp_inv _).mp ?_)
     refine Eq.trans (braiding_tensor_right X Z Y) ?_
     simp only [assoc]
 
