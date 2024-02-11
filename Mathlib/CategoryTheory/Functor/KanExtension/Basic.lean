@@ -289,8 +289,7 @@ a natural isomorphism `F ≅ F'`. -/
 def rightExtensionEquivalenceOfIso₂ : RightExtension L F ≌ RightExtension L F' :=
   CostructuredArrow.mapIso iso₂
 
-lemma hasRightExtension_iff_of_iso₂ :
-    HasRightKanExtension L F ↔ HasRightKanExtension L F' :=
+lemma hasRightExtension_iff_of_iso₂ : HasRightKanExtension L F ↔ HasRightKanExtension L F' :=
   (rightExtensionEquivalenceOfIso₂ L iso₂).hasTerminal_iff
 
 /-- The equivalence `LeftExtension L F ≌ LeftExtension L F'` induced by
