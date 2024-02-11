@@ -1679,7 +1679,7 @@ theorem mem_subgroupOf {H K : Subgroup G} {h : K} : h ∈ H.subgroupOf K ↔ (h 
 
 @[to_additive (attr := simp)]
 theorem subgroupOf_map_subtype (H K : Subgroup G) : (H.subgroupOf K).map K.subtype = H ⊓ K :=
-  SetLike.ext' <| Subtype.image_preimage_coe _ _
+  SetLike.ext' <| by refine Subtype.image_preimage_coe _ _ |>.trans ?_; apply Set.inter_comm
 #align subgroup.subgroup_of_map_subtype Subgroup.subgroupOf_map_subtype
 #align add_subgroup.add_subgroup_of_map_subtype AddSubgroup.addSubgroupOf_map_subtype
 
