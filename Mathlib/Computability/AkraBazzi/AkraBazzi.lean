@@ -32,7 +32,7 @@ where `p` is the unique real number such that `∑ a_i b_i^p = 1`.
 
 ## Main definitions and results
 
-* `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satifies an Akra-Bazzi
+* `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
   recurrence with parameters `g`, `a`, `b` and `r` as above.
 * `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
   It roughly states that
@@ -441,9 +441,8 @@ lemma strictAntiOn_smoothingFn : StrictAntiOn ε (Set.Ioi 1) := by
   show StrictAntiOn (fun x => 1 / log x) (Set.Ioi 1)
   simp_rw [one_div]
   refine StrictAntiOn.comp_strictMonoOn inv_strictAntiOn ?log fun _ hx => log_pos hx
-  refine StrictMonoOn.mono strictMonoOn_log (fun x (hx : 1 < x) => ?_)
-  show 0 < x
-  linarith
+  refine StrictMonoOn.mono strictMonoOn_log (fun x hx => ?_)
+  exact Set.Ioi_subset_Ioi zero_le_one hx
 
 lemma strictMonoOn_one_sub_smoothingFn : StrictMonoOn (fun (x:ℝ) => (1:ℝ) - ε x) (Set.Ioi 1) := by
   simp_rw [sub_eq_add_neg]
@@ -511,10 +510,8 @@ lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) 
 lemma tendsto_zero_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) atTop (𝓝 0) := by
   have h₁ : Finset.univ.sum (fun _ : α => (0:ℝ)) = 0 := by simp
   rw [← h₁]
-  refine tendsto_finset_sum  (univ : Finset α) (fun i _ => ?_)
-  have h₂ : (0:ℝ) = (a i : ℝ) * 0 := by simp
-  show Tendsto (fun z => (a i : ℝ) * b i ^ z) atTop (𝓝 0)
-  rw [h₂]
+  refine tendsto_finset_sum (univ : Finset α) (fun i _ => ?_)
+  rw [← mul_zero (a i)]
   refine Tendsto.mul (by simp) <| tendsto_rpow_atTop_of_base_lt_one _ ?_ (R.b_lt_one i)
   have := R.b_pos i
   linarith
@@ -525,9 +522,7 @@ lemma tendsto_atTop_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) 
       <| tendsto_rpow_atBot_of_base_lt_one _
       (by have := R.b_pos (max_bi b); linarith) (R.b_lt_one _)
   refine tendsto_atTop_mono (fun p => ?_) h₁
-  let f := fun i => (a i : ℝ) * b i ^ p
-  show f (max_bi b) ≤ Finset.univ.sum f
-  refine Finset.single_le_sum (fun i _ => ?_) (mem_univ _)
+  refine Finset.single_le_sum (f := fun i => (a i : ℝ) * b i ^ p) (fun i _ => ?_) (mem_univ _)
   have h₁ : 0 < a i := R.a_pos i
   have h₂ : 0 < b i := R.b_pos i
   positivity
@@ -543,11 +538,9 @@ lemma one_mem_range_sumCoeffsExp : 1 ∈ Set.range (fun (p : ℝ) => ∑ i, a i 
 lemma injective_sumCoeffsExp : Function.Injective (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) :=
     R.strictAnti_sumCoeffsExp.injective
 
-variable (a) (b)
+variable (a b) in
 /-- The exponent `p` associated with a particular Akra-Bazzi recurrence. -/
 noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
-
-variable {a} {b}
 
 @[simp]
 lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
@@ -965,6 +958,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
       (DifferentiableOn.mono (differentiableOn_rpow_const _) fun z hz => ?_)
         differentiableOn_one_sub_smoothingFn
     rw [Set.mem_compl_singleton_iff]
+    rw [Set.mem_Ioi] at hz
     exact ne_of_gt <| zero_lt_one.trans hz
   have h_deriv_q : deriv q =O[atTop] fun x => x ^ ((p a b) - 1) := calc
     deriv q = deriv fun x => (fun z => z ^ (p a b)) x * (fun z => 1 - ε z) x := by rfl
@@ -1030,9 +1024,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
                   refine sub_nonneg_of_le <|
                     (strictAntiOn_smoothingFn.le_iff_le ?n_gt_one ?bn_gt_one).mpr ?le
                   case n_gt_one =>
-                    show 1 < (n:ℝ)
-                    rw [Nat.one_lt_cast]
-                    exact hn'
+                    rwa [Set.mem_Ioi, Nat.one_lt_cast]
                   case bn_gt_one =>
                     calc 1 = b i * (b i)⁻¹ := by rw [mul_inv_cancel (by positivity)]
                         _ ≤ b i * ⌈(b i)⁻¹⌉₊ := by gcongr; exact Nat.le_ceil _
@@ -1061,6 +1053,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
         (DifferentiableOn.mono (differentiableOn_rpow_const _) fun z hz => ?_)
         differentiableOn_one_add_smoothingFn
     rw [Set.mem_compl_singleton_iff]
+    rw [Set.mem_Ioi] at hz
     exact ne_of_gt <| zero_lt_one.trans hz
   have h_deriv_q : deriv q =O[atTop] fun x => x ^ ((p a b) - 1) := calc
     deriv q = deriv fun x => (fun z => z ^ (p a b)) x * (fun z => 1 + ε z) x := by rfl
@@ -1207,7 +1200,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
     calc T n / ((1 - ε ↑n) * asympBound g a b n)
            ≤ (Finset.Ico (⌊b' * n₀⌋₊) n₀).sup' h_base_nonempty
                 (fun z => T z / ((1 - ε z) * asympBound g a b z)) :=
-                  Finset.le_sup'_of_le _ (b := n) hn <| le_refl _
+                  Finset.le_sup'_of_le _ (b := n) hn le_rfl
          _ ≤ C := le_max_right _ _
   have h_asympBound_pos' : 0 < asympBound g a b n := h_asympBound_pos n hn
   have h_one_sub_smoothingFn_pos' : 0 < 1 - ε n := h_smoothing_pos n hn
@@ -1444,7 +1437,7 @@ theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
          _ =O[atTop] (fun n => 1 * asympBound g a b n) := by
               refine IsBigO.mul (isBigO_const_of_tendsto (y := 1) ?_ one_ne_zero)
                 (isBigO_refl _ _)
-              show Tendsto ((fun n => 1 - ε n) ∘ (Nat.cast : ℕ → ℝ)) atTop (𝓝 1)
+              rw [← Function.comp_def (fun n => 1 - ε n) Nat.cast]
               exact Tendsto.comp isEquivalent_one_sub_smoothingFn_one.tendsto_const
                 tendsto_nat_cast_atTop_atTop
          _ = asympBound g a b := by simp
@@ -1454,9 +1447,8 @@ theorem isBigO_symm_asympBound : asympBound g a b =O[atTop] T := by
   calc asympBound g a b = (fun n => 1 * asympBound g a b n)  := by simp
                  _ ~[atTop] (fun n => (1 + ε n) * asympBound g a b n) := by
                             refine IsEquivalent.mul (IsEquivalent.symm ?_) IsEquivalent.refl
-                            show (fun (n:ℕ) => 1 + ε n) ~[atTop] Function.const ℕ (1:ℝ)
-                            rw [isEquivalent_const_iff_tendsto one_ne_zero]
-                            show Tendsto ((fun n => 1 + ε n) ∘ (Nat.cast : ℕ → ℝ)) atTop (𝓝 1)
+                            rw [Function.const_def, isEquivalent_const_iff_tendsto one_ne_zero,
+                              ← Function.comp_def (fun n => 1 + ε n) Nat.cast]
                             exact Tendsto.comp isEquivalent_one_add_smoothingFn_one.tendsto_const
                               tendsto_nat_cast_atTop_atTop
                  _ =O[atTop] T := R.smoothingFn_mul_asympBound_isBigO_T

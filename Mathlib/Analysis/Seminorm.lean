@@ -6,7 +6,6 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.LocallyConvex.Basic
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Data.Real.Sqrt
 
 #align_import analysis.seminorm from "leanprover-community/mathlib"@"09079525fd01b3dda35e96adaa08d2f943e1648c"
@@ -57,7 +56,7 @@ attribute [nolint docBlame] Seminorm.toAddGroupSeminorm
 
 You should extend this class when you extend `Seminorm`. -/
 class SeminormClass (F : Type*) (𝕜 E : outParam <| Type*) [SeminormedRing 𝕜] [AddGroup E]
-  [SMul 𝕜 E] extends AddGroupSeminormClass F E ℝ where
+  [SMul 𝕜 E] [FunLike F E ℝ] extends AddGroupSeminormClass F E ℝ : Prop where
   /-- The seminorm of a scalar multiplication is the product of the absolute value of the scalar
   and the original seminorm. -/
   map_smul_eq_mul (f : F) (a : 𝕜) (x : E) : f (a • x) = ‖a‖ * f x
@@ -115,21 +114,19 @@ section SMul
 
 variable [SMul 𝕜 E]
 
-instance instSeminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
+instance instFunLike : FunLike (Seminorm 𝕜 E) E ℝ where
   coe f := f.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨_⟩⟩
     rcases g with ⟨⟨_⟩⟩
     congr
+
+instance instSeminormClass : SeminormClass (Seminorm 𝕜 E) 𝕜 E where
   map_zero f := f.map_zero'
   map_add_le_add f := f.add_le'
   map_neg_eq_map f := f.neg'
   map_smul_eq_mul f := f.smul'
 #align seminorm.seminorm_class Seminorm.instSeminormClass
-
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`. -/
-instance instCoeFun : CoeFun (Seminorm 𝕜 E) fun _ => E → ℝ :=
-  DFunLike.hasCoeToFun
 
 @[ext]
 theorem ext {p q : Seminorm 𝕜 E} (h : ∀ x, (p : E → ℝ) x = q x) : p = q :=
@@ -310,7 +307,8 @@ def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm
     toFun := fun x => p (f x)
     -- Porting note: the `simp only` below used to be part of the `rw`.
     -- I'm not sure why this change was needed, and am worried by it!
-    smul' := fun _ _ => by simp only [map_smulₛₗ]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
+    -- Note: #8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
+    smul' := fun _ _ => by simp only [map_smulₛₗ _]; rw [map_smul_eq_mul, RingHomIsometric.is_iso] }
 #align seminorm.comp Seminorm.comp
 
 theorem coe_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : ⇑(p.comp f) = p ∘ f :=
@@ -1383,21 +1381,18 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
+/-- Let `p i` be a family of seminorms on `E`. Let `s` be an absorbent set in `𝕜`.
+If all seminorms are uniformly bounded at every point of `s`,
+then they are bounded in the space of seminorms. -/
 lemma bddAbove_of_absorbent {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absorbent 𝕜 s)
-    (h : ∀ x ∈ s, BddAbove (range fun i ↦ p i x)) :
-    BddAbove (range p) := by
+    (h : ∀ x ∈ s, BddAbove (range (p · x))) : BddAbove (range p) := by
   rw [Seminorm.bddAbove_range_iff]
   intro x
-  rcases (hs x).exists_pos with ⟨r, hr, hrx⟩
-  rcases exists_lt_norm 𝕜 r with ⟨k, hk⟩
-  have hk0 : k ≠ 0 := norm_pos_iff.mp (hr.trans hk)
-  have : k⁻¹ • x ∈ s := by
-    rw [← mem_smul_set_iff_inv_smul_mem₀ hk0]
-    exact hrx k hk.le rfl
-  rcases h (k⁻¹ • x) this with ⟨M, hM⟩
-  refine ⟨‖k‖ * M, forall_range_iff.mpr fun i ↦ ?_⟩
-  have := (forall_range_iff.mp hM) i
-  rwa [map_smul_eq_mul, norm_inv, inv_mul_le_iff (hr.trans hk)] at this
+  obtain ⟨c, hc₀, hc⟩ : ∃ c ≠ 0, (c : 𝕜) • x ∈ s :=
+    (eventually_mem_nhdsWithin.and (hs.eventually_nhdsWithin_zero x)).exists
+  rcases h _ hc with ⟨M, hM⟩
+  refine ⟨M / ‖c‖, forall_range_iff.mpr fun i ↦ (le_div_iff' (norm_pos_iff.2 hc₀)).2 ?_⟩
+  exact hM ⟨i, map_smul_eq_mul ..⟩
 
 end NontriviallyNormedField
 

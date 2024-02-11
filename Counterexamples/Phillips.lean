@@ -434,7 +434,7 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
       have I :
         ‖ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s)‖ ≤ 1 := by
         apply norm_ofNormedAddCommGroup_le _ zero_le_one
-      apply le_trans (f.le_op_norm _)
+      apply le_trans (f.le_opNorm _)
       simpa using mul_le_mul_of_nonneg_left I (norm_nonneg f)⟩
 #align continuous_linear_map.to_bounded_additive_measure ContinuousLinearMap.toBoundedAdditiveMeasure
 
