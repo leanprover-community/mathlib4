@@ -39,6 +39,7 @@ this requires a definition of submanifolds
 -/
 
 open Set
+open scoped Topology
 
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

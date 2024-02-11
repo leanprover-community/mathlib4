@@ -35,6 +35,7 @@ can be lifted along epimorphisms).
 universe u
 
 open CategoryTheory
+open scoped Topology
 
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
 structure Stonean where

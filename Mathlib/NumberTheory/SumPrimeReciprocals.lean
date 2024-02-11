@@ -22,6 +22,9 @@ See the sixth proof for the infinity of primes in Chapter 1 of [aigner1999proofs
 The proof is due to Erdős.
 -/
 
+open Set Nat
+open scoped BigOperators Topology
+
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by `N` times the sum
 of `1/p` over the primes `k ≤ p ≤ N`. -/
 -- This needs `Mathlib.Data.IsROrC.Basic`, so we put it here
@@ -32,8 +35,6 @@ lemma Nat.roughNumbersUpTo_card_le' (N k : ℕ) :
   simp_rw [Finset.mul_sum, mul_one_div]
   exact (Nat.cast_le.mpr <| roughNumbersUpTo_card_le N k).trans <|
     (cast_sum (β := ℝ) ..) ▸ Finset.sum_le_sum fun n _ ↦ cast_div_le
-
-open Set Nat BigOperators
 
 /-- The sum over primes `k ≤ p ≤ 4^(π(k-1)+1)` over `1/p` (as a real number) is at least `1/2`. -/
 lemma one_half_le_sum_primes_ge_one_div (k : ℕ) :

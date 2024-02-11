@@ -11,7 +11,7 @@ import Mathlib.Data.IsROrC.Basic
 
 -/
 
-open Set Algebra Filter
+open Set Algebra Filter Topology
 
 variable (𝕜 : Type*) [IsROrC 𝕜]
 

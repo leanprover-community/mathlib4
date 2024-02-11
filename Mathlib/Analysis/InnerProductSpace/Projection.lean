@@ -168,17 +168,17 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     positivity
     -- third goal : `Tendsto (fun (n : ℕ) => sqrt (b n)) atTop (𝓝 0)`
     apply Tendsto.comp (f := b) (g := sqrt)
-    · have : Tendsto sqrt (𝓝 0) (𝓝 0) := continuous_sqrt.continuousAt
+    · have : Tendsto sqrt (nhds 0) (nhds (sqrt 0)) := continuous_sqrt.continuousAt
       convert this
       exact sqrt_zero.symm
-    have eq₁ : Tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) atTop (𝓝 (0 : ℝ)) := by
+    have eq₁ : Tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert (tendsto_const_nhds (x := 8 * δ)).mul tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [mul_zero]
-    have : Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) atTop (𝓝 (0 : ℝ)) := by
+    have : Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert (tendsto_const_nhds (x := 4)).mul tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [mul_zero]
     have eq₂ :
-        Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) atTop (𝓝 (0 : ℝ)) := by
+        Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
       convert this.mul tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [mul_zero]
     convert eq₁.add eq₂

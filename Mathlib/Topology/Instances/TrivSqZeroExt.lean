@@ -26,7 +26,7 @@ one value.
 
 -/
 
-
+open scoped Topology
 variable {α S R M : Type*}
 
 -- mathport name: exprtsze
