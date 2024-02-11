@@ -133,12 +133,8 @@ lemma isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
     E.IsPointwiseLeftKanExtension ≃ E'.IsPointwiseLeftKanExtension where
   toFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y) (h Y)
   invFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y).symm (h Y)
-  left_inv h := by
-    aesop_cat
-    funext
-  right_inv h := by
-    aesop
-    funext
+  left_inv h := by aesop_cat
+  right_inv h := by aesop
 
 def isPointwiseLeftKanExtensionAtOfIso'
     {Y : D} (hY : E.IsPointwiseLeftKanExtensionAt Y) {Y' : D} (e : Y ≅ Y') :
