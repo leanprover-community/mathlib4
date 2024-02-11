@@ -19,6 +19,7 @@ be satisfied by itself and all stricter types.
 
 
 open Function
+open scoped Topology
 
 /-- The type of continuous maps from `α` to `β`.
 
