@@ -256,18 +256,18 @@ protected theorem IsVonNBounded.vadd (hs : IsVonNBounded 𝕜 s) (x : E) :
 theorem isVonNBounded_vadd (x : E) : IsVonNBounded 𝕜 (x +ᵥ s) ↔ IsVonNBounded 𝕜 s :=
   ⟨fun h ↦ by simpa using h.vadd (-x), fun h ↦ h.vadd x⟩
 
-theorem IsVonNBounded.right_of_add (hst : IsVonNBounded 𝕜 (s + t)) (hs : s.Nonempty) :
+theorem IsVonNBounded.of_add_right (hst : IsVonNBounded 𝕜 (s + t)) (hs : s.Nonempty) :
     IsVonNBounded 𝕜 t :=
   let ⟨x, hx⟩ := hs
   (isVonNBounded_vadd x).mp <| hst.subset <| image_subset_image2_right hx
 
-theorem IsVonNBounded.left_of_add (hst : IsVonNBounded 𝕜 (s + t)) (ht : t.Nonempty) :
+theorem IsVonNBounded.of_add_left (hst : IsVonNBounded 𝕜 (s + t)) (ht : t.Nonempty) :
     IsVonNBounded 𝕜 s :=
-  ((add_comm s t).subst hst).right_of_add ht
+  ((add_comm s t).subst hst).of_add_right ht
 
 theorem isVonNBounded_add_of_nonempty (hs : s.Nonempty) (ht : t.Nonempty) :
     IsVonNBounded 𝕜 (s + t) ↔ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t :=
-  ⟨fun h ↦ ⟨h.left_of_add ht, h.right_of_add hs⟩, and_imp.2 IsVonNBounded.add⟩
+  ⟨fun h ↦ ⟨h.of_add_left ht, h.of_add_right hs⟩, and_imp.2 IsVonNBounded.add⟩
 
 theorem isVonNBounded_add :
     IsVonNBounded 𝕜 (s + t) ↔ s = ∅ ∨ t = ∅ ∨ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t := by
@@ -279,9 +279,9 @@ theorem isVonNBounded_add :
 theorem isVonNBounded_add_self : IsVonNBounded 𝕜 (s + s) ↔ IsVonNBounded 𝕜 s := by
   rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [isVonNBounded_add_of_nonempty, *]
 
-theorem IsVonNBounded.left_of_sub (hst : IsVonNBounded 𝕜 (s - t)) (ht : t.Nonempty) :
+theorem IsVonNBounded.of_sub_left (hst : IsVonNBounded 𝕜 (s - t)) (ht : t.Nonempty) :
     IsVonNBounded 𝕜 s :=
-  ((sub_eq_add_neg s t).subst hst).left_of_add ht.neg
+  ((sub_eq_add_neg s t).subst hst).of_add_left ht.neg
 
 end ContinuousAdd
 
@@ -289,17 +289,17 @@ section TopologicalAddGroup
 
 variable [TopologicalAddGroup E] {s t : Set E}
 
-theorem IsVonNBounded.right_of_sub (hst : IsVonNBounded 𝕜 (s - t)) (hs : s.Nonempty) :
+theorem IsVonNBounded.of_sub_right (hst : IsVonNBounded 𝕜 (s - t)) (hs : s.Nonempty) :
     IsVonNBounded 𝕜 t :=
-  (((sub_eq_add_neg s t).subst hst).right_of_add hs).of_neg
+  (((sub_eq_add_neg s t).subst hst).of_add_right hs).of_neg
+
+theorem isVonNBounded_sub_of_nonempty (hs : s.Nonempty) (ht : t.Nonempty) :
+    IsVonNBounded 𝕜 (s - t) ↔ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t := by
+  simp [sub_eq_add_neg, isVonNBounded_add_of_nonempty, hs, ht]
 
 theorem isVonNBounded_sub :
     IsVonNBounded 𝕜 (s - t) ↔ s = ∅ ∨ t = ∅ ∨ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t := by
   simp [sub_eq_add_neg, isVonNBounded_add]
-
-theorem isVonNBounded_sub_of_nonempty (hs : s.Nonempty) (ht : t.Nonempty) :
-    IsVonNBounded 𝕜 (s - t) ↔ IsVonNBounded 𝕜 s ∧ IsVonNBounded 𝕜 t := by
-  simp [isVonNBounded_sub, hs.ne_empty, ht.ne_empty]
 
 end TopologicalAddGroup
 
