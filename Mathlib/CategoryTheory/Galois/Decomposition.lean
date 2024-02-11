@@ -33,24 +33,29 @@ variable {C : Type u₁} [Category.{u₂} C]
 
 namespace Cofan
 
-variable {ι₁ ι₂ : Type} {X X₁ X₂ : C} (v₁ : X₁ ⟶ X) (v₂ : X₂ ⟶ X)
-    (f₁ : ι₁ → C) (f₂ : ι₂ → C) (g₁ : (i : ι₁) → (f₁ i) ⟶ X₁) (g₂ : (i : ι₂) → (f₂ i) ⟶ X₂)
+variable {ι₁ ι₂ : Type} {X X₁ X₂ : C} {f₁ : ι₁ → C} {f₂ : ι₂ → C}
+    (g₁ : (i : ι₁) → (f₁ i) ⟶ X₁) (g₂ : (i : ι₂) → (f₂ i) ⟶ X₂) (v₁ : X₁ ⟶ X) (v₂ : X₂ ⟶ X)
     (h₁ : IsColimit (Cofan.mk X₁ g₁)) (h₂ : IsColimit (Cofan.mk X₂ g₂))
     (h : IsColimit (BinaryCofan.mk v₁ v₂))
 
+/-- For maps `f₁ : ι₁ → C`, `f₂ : ι₂ → C`, families of morphisms `g₁ i : f₁ i ⟶ X₁`,
+`g₂ i : f₂ i ⟶ X₂` and morphisms `v₁ : X₁ ⟶ X`, `v₂ : X₂ ⟶ X`, construct one family of
+morphisms on `ι₁ ⊕ ι₂` -/
 @[simp]
-abbrev combPairG : (i : ι₁ ⊕ ι₂) → Sum.elim f₁ f₂ i ⟶ X
+abbrev combPairHoms : (i : ι₁ ⊕ ι₂) → Sum.elim f₁ f₂ i ⟶ X
   | .inl a => g₁ a ≫ v₁
   | .inr a => g₂ a ≫ v₂
 
-def combPairIsColimit : IsColimit (Cofan.mk X (combPairG v₁ v₂ f₁ f₂ g₁ g₂)) :=
+/-- Combining two colimit cofans and one colimiting binary cofan on the two cone points
+is again colimiting. -/
+def combPairIsColimit : IsColimit (Cofan.mk X (combPairHoms g₁ g₂ v₁ v₂)) :=
   mkCofanColimit _
     (fun s ↦ Cofan.IsColimit.desc h <| fun i ↦ by
       cases i
       · exact Cofan.IsColimit.desc h₁ (fun a ↦ s.inj (.inl a))
       · exact Cofan.IsColimit.desc h₂ (fun a ↦ s.inj (.inr a)))
     (fun s w ↦ by
-      simp only [cofan_mk_inj, combPairG]
+      simp only [cofan_mk_inj, combPairHoms]
       cases w
       · have h1 : v₁ = Cofan.inj (BinaryCofan.mk v₁ v₂) .left := rfl
         simp only [h1, ← cofan_mk_inj X₁ g₁, Category.assoc, Cofan.IsColimit.fac]
@@ -60,18 +65,20 @@ def combPairIsColimit : IsColimit (Cofan.mk X (combPairG v₁ v₂ f₁ f₂ g�
       cases w
       · refine Cofan.IsColimit.hom_ext h₁ _ _ (fun a ↦ ?_)
         simp only [← hm, Cofan.IsColimit.fac, cofan_mk_inj]
-        rw [← cofan_mk_inj X₁ g₁ a, Cofan.IsColimit.fac, combPairG, Category.assoc]; rfl
+        rw [← cofan_mk_inj X₁ g₁ a, Cofan.IsColimit.fac, combPairHoms, Category.assoc]; rfl
       · refine Cofan.IsColimit.hom_ext h₂ _ _ (fun a ↦ ?_)
         simp only [← hm, Cofan.IsColimit.fac, cofan_mk_inj, Category.assoc]
-        rw [← cofan_mk_inj X₂ g₂ a, Cofan.IsColimit.fac, combPairG, Category.assoc]; rfl)
+        rw [← cofan_mk_inj X₂ g₂ a, Cofan.IsColimit.fac, combPairHoms, Category.assoc]; rfl)
 
 end Cofan
 
 namespace PreGaloisCategory
 
-variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
+variable [GaloisCategory C]
 
-/-!
+section Decomposition
+
+/-! ### Decomposition in connected components
 
 To show that an object `X` of a Galois category admits a decomposition into connected objects,
 we proceed by induction on the cardinality of the fiber under an arbitrary fiber functor.
@@ -98,9 +105,10 @@ private lemma has_decomp_connected_components_aux_initial (X : C) (h : IsInitial
   refine ⟨by simp only [IsEmpty.forall_iff], inferInstance⟩
 
 /- Show decomposition by inducting on `Nat.card (F.obj X)`. -/
-private lemma has_decomp_connected_components_aux (n : ℕ) :
-    ∀ (X : C), n = Nat.card (F.obj X) → ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X)
-    (_ : IsColimit (Cofan.mk X g)), (∀ i, IsConnected (f i)) ∧ Finite ι := by
+private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
+    (n : ℕ) : ∀ (X : C), n = Nat.card (F.obj X) → ∃ (ι : Type) (f : ι → C)
+    (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
+    (∀ i, IsConnected (f i)) ∧ Finite ι := by
   induction' n using Nat.strongRecOn with n hi
   intro X hn
   by_cases h : IsConnected X
@@ -122,8 +130,8 @@ private lemma has_decomp_connected_components_aux (n : ℕ) :
       exact Nat.pos_of_ne_zero (non_zero_card_fiber_of_not_initial F Y hni)
     let ⟨ι₁, f₁, g₁, hc₁, hf₁, he₁⟩ := hi (Nat.card (F.obj Y)) hn1 Y rfl
     let ⟨ι₂, f₂, g₂, hc₂, hf₂, he₂⟩ := hi (Nat.card (F.obj Z)) hn2 Z rfl
-    refine ⟨ι₁ ⊕ ι₂, Sum.elim f₁ f₂, Cofan.combPairG v u f₁ f₂ g₁ g₂, ?_⟩
-    use Cofan.combPairIsColimit v u f₁ f₂ g₁ g₂ hc₁ hc₂ c
+    refine ⟨ι₁ ⊕ ι₂, Sum.elim f₁ f₂, Cofan.combPairHoms g₁ g₂ v u, ?_⟩
+    use Cofan.combPairIsColimit g₁ g₂ v u hc₁ hc₂ c
     refine ⟨fun i ↦ ?_, inferInstance⟩
     cases i; exact hf₁ _; exact hf₂ _
   · simp at nhi
@@ -144,6 +152,8 @@ theorem has_decomp_connected_components' (X : C) :
     ∃ (ι : Type) (_ : Finite ι) (f : ι → C) (_ : ∐ f ≅ X), ∀ i, IsConnected (f i) := by
   obtain ⟨ι, f, g, hl, hc, hf⟩ := has_decomp_connected_components X
   refine ⟨ι, hf, f, colimit.isoColimitCocone ⟨Cofan.mk X g, hl⟩, hc⟩
+
+variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 
 /-- Every element in the fiber of `X` lies in some connected component of `X`. -/
 lemma fiber_in_connected_component (X : C) (x : F.obj X) : ∃ (Y : C) (i : Y ⟶ X) (y : F.obj Y),
@@ -188,6 +198,8 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   show (F.toPrefunctor.map u ≫ F.toPrefunctor.map _) y = F.toPrefunctor.map v y
   simp only [← F.map_comp, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom,
     IsIso.hom_inv_id_assoc]
+
+end Decomposition
 
 end PreGaloisCategory
 
