@@ -217,6 +217,7 @@ theorem beta_aux (a b : ℕ) :
       ∫ x : I, ((a ! : ℝ)⁻¹ • (x.val : ℝ) ^ a) * (b ! : ℝ)⁻¹ • (1 - x.val : ℝ)^ b :=
   sorry
 
+open scoped RightActions in
 set_option maxHeartbeats 400000 in
 /-- If `exp R x.fst` converges to `e` then `(exp R x).snd` converges to `e • x.snd`. -/
 theorem hasSum_snd_expSeries' {R M} [NormedRing R] [NormedAddCommGroup M]
@@ -228,7 +229,7 @@ theorem hasSum_snd_expSeries' {R M} [NormedRing R] [NormedAddCommGroup M]
     {e : Set.Icc 0 (1 : ℝ) → R}
     (h : ∀ t, HasSum (fun n => expSeries ℝ R n fun _ => t.val • x.fst) (e t)) :
     HasSum (fun n => snd (expSeries ℝ (tsze R M) n fun _ => x))
-      (∫ t : I, e t • MulOpposite.op (e (unitInterval.symm t)) • x.snd) := by
+      (∫ t : I, e t •> (x.snd <• e (unitInterval.symm t))) := by
   have h2 : ∀ t : I, HasSum _ _ := fun t =>
     (h t).smul ((h (unitInterval.symm t)).op.smul_const x.snd) sorry
   simp_rw [expSeries_apply_eq] at *
