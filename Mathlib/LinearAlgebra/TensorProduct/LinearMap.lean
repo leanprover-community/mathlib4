@@ -78,7 +78,10 @@ theorem baseChange₂_tmul (B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R) (a : A) (m�
     B₂.baseChange₂ A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (B₂ m₂ m₂') • (a * a') :=
   rfl
 
-
+variable (A) in
+/-- The base change of a symmetric bilinear form is symmetric. -/
+lemma IsSymm.baseChange {B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R} (hB₂ : B₂.IsSymm) : (B₂.baseChange₂ A).IsSymm :=
+  IsSymm.tmul mul_comm hB₂
 
 
 end LinearMap
