@@ -116,11 +116,8 @@ noncomputable def tensorDistribEquiv :
     BilinForm R M₁ ⊗[R] BilinForm R M₂ ≃ₗ[R] BilinForm R (M₁ ⊗[R] M₂) :=
   -- the same `LinearEquiv`s as from `tensorDistrib`,
   -- but with the inner linear map also as an equiv
-  TensorProduct.congr (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv R _ _ _)
-    (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv R _ _ _) ≪≫ₗ
-  TensorProduct.dualDistribEquiv R (M₁ ⊗ M₁) (M₂ ⊗ M₂) ≪≫ₗ
-  (TensorProduct.tensorTensorTensorComm R _ _ _ _).dualMap ≪≫ₗ
-  (TensorProduct.lift.equiv R _ _ _).symm ≪≫ₗ LinearMap.toBilin
+  (TensorProduct.AlgebraTensorModule.congr toLin toLin ) ≪≫ₗ LinearMap.tensorDistribEquiv R  ≪≫ₗ
+  LinearMap.toBilin
 #align bilin_form.tensor_distrib_equiv BilinForm.tensorDistribEquiv
 
 -- this is a dsimp lemma
