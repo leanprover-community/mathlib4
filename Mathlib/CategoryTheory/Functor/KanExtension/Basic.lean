@@ -279,8 +279,7 @@ a natural isomorphism `L ≅ L'`. -/
 def leftExtensionEquivalenceOfIso₁ : LeftExtension L F ≌ LeftExtension L' F :=
   StructuredArrow.mapNatIso ((whiskeringLeft C H D).mapIso iso₁)
 
-lemma hasLeftExtension_iff_of_iso₁ :
-    HasLeftKanExtension L F ↔ HasLeftKanExtension L' F :=
+lemma hasLeftExtension_iff_of_iso₁ : HasLeftKanExtension L F ↔ HasLeftKanExtension L' F :=
   (leftExtensionEquivalenceOfIso₁ iso₁ F).hasInitial_iff
 
 variable (L) {F F'}
