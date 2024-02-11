@@ -72,11 +72,7 @@ protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinFo
 attribute [ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
 lemma IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R M₂}
-    (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
-  rw [isSymm_iff_flip R]
-  apply toLin.injective
-  ext x₁ x₂ y₁ y₂
-  exact (congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)).symm
+    (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := LinearMap.IsSymm.tmul hB₁ hB₂
 
 variable (A) in
 /-- The base change of a bilinear form. -/
