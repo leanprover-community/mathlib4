@@ -18,7 +18,11 @@ while `arg 0` defaults to `0`
 ## Main definitions
 
 * `Complex.arg`: Argument of a complex number
-* `Complex.arcLength`: Arc-length between two complex numbers.
+* `Complex.arcDist`: Arc-distance between two complex numbers.
+
+## Tags
+
+arc-length
 -/
 
 noncomputable section
@@ -561,41 +565,6 @@ lemma arg_mul_eq_add_arg_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
       Real.Angle.toReal_coe_eq_self_iff_mem_Ioc]
 
 alias ⟨_, arg_mul⟩ := arg_mul_eq_add_arg_iff
-
-/-! ### Arc-length -/
-
-/-- The arc-length between two complex numbers is the absolute value of their argument.
-
-The arc-length to `0` is always zero. -/
-noncomputable def arcLength (x y : ℂ) : ℝ := |(x / y).arg|
-
-lemma arcLength_comm (x y : ℂ) : arcLength x y = arcLength y x := by
-  rw [arcLength, ← abs_arg_inv, inv_div, arcLength]
-
-@[simp] lemma arcLength_zero_left (y : ℂ) : arcLength 0 y = 0 := by simp [arcLength]
-@[simp] lemma arcLength_zero_right (x : ℂ) : arcLength x 0 = 0 := by simp [arcLength]
-lemma arcLength_one_left (y : ℂ) : arcLength 1 y = |y.arg| := by simp [arcLength]
-lemma arcLength_one_right (x : ℂ) : arcLength x 1 = |x.arg| := by simp [arcLength]
-@[simp] lemma arcLength_mul_left (ha : a ≠ 0) (x y : ℂ) :
-    arcLength (a * x) (a * y) = arcLength x y := by simp [arcLength, mul_div_mul_left _ _ ha]
-@[simp] lemma arcLength_mul_right (ha : a ≠ 0) (x y : ℂ) :
-    arcLength (x * a) (y * a) = arcLength x y := by simp [arcLength, mul_div_mul_right _ _ ha]
-
-lemma arcLength_div_left_eq_arcLength_mul_right (a x y : ℂ) :
-    arcLength (x / a) y = arcLength x (y * a) := by simp [arcLength, div_div, mul_comm]
-
-lemma arcLength_div_right_eq_arcLength_mul_left (a x y : ℂ) :
-    arcLength x (y / a) = arcLength (x * a) y := by
-  rw [arcLength_comm, arcLength_div_left_eq_arcLength_mul_right, arcLength_comm]
-
-lemma arcLength_exp_exp (x y : ℝ) :
-    arcLength (exp (x * I)) (exp (y * I)) =
-      |toIocMod (mul_pos two_pos Real.pi_pos) (-π) (x - y)| := by
-  simp_rw [arcLength, ← exp_sub, ← sub_mul, ← ofReal_sub, arg_exp_mul_I]
-
-lemma arcLength_exp_one (x : ℝ) :
-    arcLength (exp (x * I)) 1 = |toIocMod (mul_pos two_pos Real.pi_pos) (-π) x| := by
-  simpa using arcLength_exp_exp x 0
 
 section slitPlane
 
