@@ -84,7 +84,7 @@ theorem IsAlt.ortho_comm (H : B₁.IsAlt) {x y : M₁} : IsOrtho B₁ x y ↔ Is
   H.isRefl.ortho_comm
 #align bilin_form.is_alt.ortho_comm BilinForm.IsAlt.ortho_comm
 
-theorem IsSymm.ortho_comm (H : B.IsSymm) {x y : M} : IsOrtho B x y ↔ IsOrtho B y x :=
+theorem IsSymm.ortho_comm (H : B₂.IsSymm) {x y : M₂} : IsOrtho B₂ x y ↔ IsOrtho B₂ y x :=
   H.isRefl.ortho_comm
 #align bilin_form.is_symm.ortho_comm BilinForm.IsSymm.ortho_comm
 
