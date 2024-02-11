@@ -295,13 +295,12 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     (colimit.isColimit _)) (fun {G₁ G₂} φ => by
       apply (Functor.isPointwiseLeftKanExtensionLanUnit F G₁ X).hom_ext
       intro T
-      dsimp
       have h₁ := IsColimit.comp_coconePointUniqueUpToIso_hom
         (Functor.isPointwiseLeftKanExtensionLanUnit F G₁ X) (colimit.isColimit _) T
       have h₂ := IsColimit.comp_coconePointUniqueUpToIso_hom
         (Functor.isPointwiseLeftKanExtensionLanUnit F G₂ X) (colimit.isColimit _) T
       have h₃ := congr_app (F.lanUnit.naturality φ) T.left
-      dsimp at h₁ h₂ h₃
+      dsimp at h₁ h₂ h₃ ⊢
       simp only [Category.assoc] at h₁ h₂ ⊢
       rw [reassoc_of% h₁, NatTrans.naturality_assoc, ← reassoc_of% h₃, h₂,
         ι_colimMap, whiskerLeft_app]
