@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
 /-!
 # Kan extensions
@@ -19,9 +20,12 @@ extension of `F` along `L`, i.e. that it is a terminal object in a
 category `RightExtension L F` of costructured arrows. The condition
 `F'.IsLeftKanExtension α` for `α : F ⟶ L ⋙ F'` is defined similarly.
 
+We also introduce typeclasses `HasRightKanExtension L F` and `HasLeftKanExtension L F`
+which assert the existence of a right or left Kan extension, and chosen Kan extensions
+are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
+
 ## TODO (@joelriou)
 
-* define a property `HasRightKanExtension L F` and related API
 * define a condition expressing that a functor is a pointwise Kan extension
 * refactor the file `CategoryTheory.Limits.KanExtension` using this new general API
 * define left/right derived functors as particular cases of Kan extensions
@@ -37,7 +41,7 @@ open Category Limits
 
 namespace Functor
 
-variable {C D H : Type*} [Category C] [Category D] [Category H]
+variable {C D H H' : Type*} [Category C] [Category D] [Category H] [Category H']
 
 /-- Given two functors `L : C ⥤ H` and `F : C ⥤ D`, this is the category of functors
 `F' : H ⥤ D` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
@@ -166,6 +170,135 @@ lemma isLeftKanExtension_iff_of_iso {F' : H ⥤ D} {F'' : H ⥤ D} (e : F' ≅ F
   · intro
     refine isLeftKanExtension_of_iso e.symm α' α ?_
     rw [← comm, assoc, ← whiskerLeft_comp, Iso.symm_hom, e.hom_inv_id, whiskerLeft_id', comp_id]
+
+end
+
+/-- This property `HasRightKanExtension L F` holds when the functor `F` has a right
+Kan extension along `L`. -/
+abbrev HasRightKanExtension (L : C ⥤ H) (F : C ⥤ D) := HasTerminal (RightExtension L F)
+
+lemma HasRightKanExtension.mk (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : L ⋙ F' ⟶ F)
+    [F'.IsRightKanExtension α] : HasRightKanExtension L F :=
+  (F'.isUniversalOfIsRightKanExtension α).hasTerminal
+
+/-- This property `HasLeftKanExtension L F` holds when the functor `F` has a left
+Kan extension along `L`. -/
+abbrev HasLeftKanExtension (L : C ⥤ H) (F : C ⥤ D) := HasInitial (LeftExtension L F)
+
+lemma HasLeftKanExtension.mk (F' : H ⥤ D) {L : C ⥤ H} {F : C ⥤ D} (α : F ⟶ L ⋙ F')
+    [F'.IsLeftKanExtension α] : HasLeftKanExtension L F :=
+  (F'.isUniversalOfIsLeftKanExtension α).hasInitial
+
+section
+
+variable (L : C ⥤ H) (F : C ⥤ D) [HasRightKanExtension L F]
+
+/-- A chosen right Kan extension when `[HasRightKanExtension L F]` holds. -/
+noncomputable def rightKanExtension : H ⥤ D := (⊤_ _ : RightExtension L F).left
+
+/-- The counit of the chosen right Kan extension `rightKanExtension L F`. -/
+noncomputable def rightKanExtensionCounit : L ⋙ rightKanExtension L F ⟶ F :=
+  (⊤_ _ : RightExtension L F).hom
+
+instance : (L.rightKanExtension F).IsRightKanExtension (L.rightKanExtensionCounit F) where
+  nonempty_isUniversal := ⟨terminalIsTerminal⟩
+
+@[ext]
+lemma rightKanExtension_hom_ext {G : H ⥤ D} (γ₁ γ₂ : G ⟶ rightKanExtension L F)
+    (hγ : whiskerLeft L γ₁ ≫ rightKanExtensionCounit L F =
+      whiskerLeft L γ₂ ≫ rightKanExtensionCounit L F) :
+    γ₁ = γ₂ :=
+  hom_ext_of_isRightKanExtension _ _ _ _ hγ
+
+end
+
+section
+
+variable (L : C ⥤ H) (F : C ⥤ D) [HasLeftKanExtension L F]
+
+/-- A chosen left Kan extension when `[HasLeftKanExtension L F]` holds. -/
+noncomputable def leftKanExtension : H ⥤ D := (⊥_ _ : LeftExtension L F).right
+
+/-- The unit of the chosen left Kan extension `leftKanExtension L F`. -/
+noncomputable def leftKanExtensionUnit : F ⟶ L ⋙ leftKanExtension L F :=
+  (⊥_ _ : LeftExtension L F).hom
+
+instance : (L.leftKanExtension F).IsLeftKanExtension (L.leftKanExtensionUnit F) where
+  nonempty_isUniversal := ⟨initialIsInitial⟩
+
+@[ext]
+lemma leftKanExtension_hom_ext {G : H ⥤ D} (γ₁ γ₂ : leftKanExtension L F ⟶ G)
+    (hγ : leftKanExtensionUnit L F ≫ whiskerLeft L γ₁ =
+      leftKanExtensionUnit L F ≫ whiskerLeft L γ₂) : γ₁ = γ₂ :=
+  hom_ext_of_isLeftKanExtension _ _ _ _ hγ
+
+end
+
+section
+
+variable (L L' : C ⥤ H) (iso₁ : L ≅ L') (F F' : C ⥤ D) (e : H ≌ H') (iso₂ : F ≅ F')
+
+/-- The equivalence of categories `RightExtension (L ⋙ e.functor) F ≌ RightExtension L F`
+when `e` is an equivalence. -/
+noncomputable def rightExtensionEquivalenceOfPostcomp₁ :
+    RightExtension (L ⋙ e.functor) F ≌ RightExtension L F := by
+  have := CostructuredArrow.isEquivalencePre ((whiskeringLeft H H' D).obj e.functor)
+    ((whiskeringLeft C H D).obj L) F
+  exact Functor.asEquivalence (CostructuredArrow.pre ((whiskeringLeft H H' D).obj e.functor)
+    ((whiskeringLeft C H D).obj L) F)
+
+lemma hasRightExtension_iff_postcomp₁ :
+    HasRightKanExtension L F ↔ HasRightKanExtension (L ⋙ e.functor) F :=
+  (rightExtensionEquivalenceOfPostcomp₁ L F e).symm.hasTerminal_iff
+
+/-- The equivalence of categories `LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F`
+when `e` is an equivalence. -/
+noncomputable def leftExtensionEquivalenceOfPostcomp₁ :
+    LeftExtension (L ⋙ e.functor) F ≌ LeftExtension L F := by
+  have := StructuredArrow.isEquivalencePre F ((whiskeringLeft H H' D).obj e.functor)
+    ((whiskeringLeft C H D).obj L)
+  exact Functor.asEquivalence (StructuredArrow.pre F ((whiskeringLeft H H' D).obj e.functor)
+    ((whiskeringLeft C H D).obj L))
+
+lemma hasLeftExtension_iff_postcomp₁ :
+    HasLeftKanExtension L F ↔ HasLeftKanExtension (L ⋙ e.functor) F :=
+  (leftExtensionEquivalenceOfPostcomp₁ L F e).symm.hasInitial_iff
+
+variable {L L'}
+
+/-- The equivalence `RightExtension L F ≌ RightExtension L' F` induced by
+a natural isomorphism `L ≅ L'`. -/
+def rightExtensionEquivalenceOfIso₁ : RightExtension L F ≌ RightExtension L' F :=
+  CostructuredArrow.mapNatIso ((whiskeringLeft C H D).mapIso iso₁)
+
+lemma hasRightExtension_iff_of_iso₁ : HasRightKanExtension L F ↔ HasRightKanExtension L' F :=
+  (rightExtensionEquivalenceOfIso₁ iso₁ F).hasTerminal_iff
+
+/-- The equivalence `LeftExtension L F ≌ LeftExtension L' F` induced by
+a natural isomorphism `L ≅ L'`. -/
+def leftExtensionEquivalenceOfIso₁ : LeftExtension L F ≌ LeftExtension L' F :=
+  StructuredArrow.mapNatIso ((whiskeringLeft C H D).mapIso iso₁)
+
+lemma hasLeftExtension_iff_of_iso₁ : HasLeftKanExtension L F ↔ HasLeftKanExtension L' F :=
+  (leftExtensionEquivalenceOfIso₁ iso₁ F).hasInitial_iff
+
+variable (L) {F F'}
+
+/-- The equivalence `RightExtension L F ≌ RightExtension L F'` induced by
+a natural isomorphism `F ≅ F'`. -/
+def rightExtensionEquivalenceOfIso₂ : RightExtension L F ≌ RightExtension L F' :=
+  CostructuredArrow.mapIso iso₂
+
+lemma hasRightExtension_iff_of_iso₂ : HasRightKanExtension L F ↔ HasRightKanExtension L F' :=
+  (rightExtensionEquivalenceOfIso₂ L iso₂).hasTerminal_iff
+
+/-- The equivalence `LeftExtension L F ≌ LeftExtension L F'` induced by
+a natural isomorphism `F ≅ F'`. -/
+def leftExtensionEquivalenceOfIso₂ : LeftExtension L F ≌ LeftExtension L F' :=
+  StructuredArrow.mapIso iso₂
+
+lemma hasLeftExtension_iff_of_iso₂ : HasLeftKanExtension L F ↔ HasLeftKanExtension L F' :=
+  (leftExtensionEquivalenceOfIso₂ L iso₂).hasInitial_iff
 
 end
 
