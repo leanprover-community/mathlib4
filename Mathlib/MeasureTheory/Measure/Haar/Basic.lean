@@ -253,7 +253,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
     le_trans
       (add_le_add (this K₁.1 <| Subset.trans (subset_union_left _ _) h1s)
         (this K₂.1 <| Subset.trans (subset_union_right _ _) h1s)) _
-  rw [← Finset.card_union_eq, Finset.filter_union_right]
+  rw [← Finset.card_union_of_disjoint, Finset.filter_union_right]
   exact s.card_filter_le _
   apply Finset.disjoint_filter.mpr
   rintro g₁ _ ⟨g₂, h1g₂, h2g₂⟩ ⟨g₃, h1g₃, h2g₃⟩
