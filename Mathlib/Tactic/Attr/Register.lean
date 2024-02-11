@@ -83,3 +83,5 @@ register_simp_attr nontriviality
 
 /-- A stub attribute for `is_poly`. -/
 register_label_attr is_poly
+
+register_simp_attr nat_digits_simps

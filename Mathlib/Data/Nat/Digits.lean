@@ -761,6 +761,10 @@ theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 
     (Nat.div_eq_zero_iff ((zero_le n).trans_lt nb)).2 nb, Nat.digits_zero]
 #align nat.norm_digits.digits_one Nat.NormDigits.digits_one
 
+attribute [nat_digits_simps] digits_of_two_le_of_pos reduceLE
+                             reduceMod reduceDiv
+                             zero_lt_succ digits_zero reduceMul reduceAdd
+
 /-
 Porting note: this part of the file is tactic related.
 
