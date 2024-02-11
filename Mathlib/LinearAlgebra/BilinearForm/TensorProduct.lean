@@ -59,7 +59,8 @@ def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm
 theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
     (m₁' : M₁) (m₂' : M₂) :
     tensorDistrib R A (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
-      = B₂ m₂ m₂' • B₁ m₁ m₁' := LinearMap.tensorDistrib_tmul (toLin B₁) (toLin B₂) m₁ m₂ m₁' m₂'
+      = B₂ m₂ m₂' • B₁ m₁ m₁' :=
+  rfl
 #align bilin_form.tensor_distrib_tmul BilinForm.tensorDistrib_tmulₓ
 
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
@@ -71,7 +72,8 @@ protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinFo
 attribute [ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
 lemma IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R M₂} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁.tmul B₂).IsSymm := LinearMap.IsSymm.tmul hB₁ hB₂
+    (B₁.tmul B₂).IsSymm :=
+  LinearMap.IsSymm.tmul hB₁ hB₂
 
 variable (A) in
 /-- The base change of a bilinear form. -/
@@ -79,11 +81,9 @@ protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
   LinearMap.toBilin (LinearMap.baseChange₂ A (toLin B))
 
 @[simp]
-theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
-    (a' : A) (m₂' : M₂) :
+theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂) (a' : A) (m₂' : M₂) :
     B₂.baseChange A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (B₂ m₂ m₂') • (a * a') :=
-  LinearMap.baseChange₂_tmul (toLin B₂) a m₂ a' m₂'
-
+  rfl
 
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/
@@ -121,7 +121,8 @@ noncomputable def tensorDistribEquiv :
 theorem tensorDistribEquiv_tmul (B₁ : BilinForm R M₁) (B₂ : BilinForm R M₂) (m₁ : M₁) (m₂ : M₂)
     (m₁' : M₁) (m₂' : M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) (B₁ ⊗ₜ[R] B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
-      = B₁ m₁ m₁' * B₂ m₂ m₂' := LinearMap.tensorDistribEquiv_tmul _ _ _ _ _ _
+      = B₁ m₁ m₁' * B₂ m₂ m₂' :=
+  rfl
 
 variable (R M₁ M₂) in
 -- TODO: make this `rfl`
