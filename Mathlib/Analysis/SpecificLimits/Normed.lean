@@ -518,7 +518,7 @@ theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * 
 theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : ((1 - x) * ∑' i : ℕ, x ^ i) = 1 := by
   have := (NormedRing.summable_geometric_of_norm_lt_one x h).hasSum.mul_left (1 - x)
   refine' tendsto_nhds_unique this.tendsto_sum_nat _
-  have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (nhds 1) := by
+  have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
     simpa using tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
   convert← this
   rw [← mul_neg_geom_sum, Finset.mul_sum]

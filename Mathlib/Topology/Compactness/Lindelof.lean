@@ -704,7 +704,7 @@ instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMet
   have h_dense : ∀ ε > 0, ∃ s : Set X, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
     intro ε hpos
     let U := fun (z : X) ↦ Metric.ball z ε
-    have hU : ∀ z, U z ∈ nhds z := by
+    have hU : ∀ z, U z ∈ 𝓝 z := by
       intro z
       have : IsOpen (U z) := Metric.isOpen_ball
       refine IsOpen.mem_nhds this ?hx

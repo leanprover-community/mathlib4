@@ -89,9 +89,9 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     let w : ℕ → K := fun n => Classical.choose (h n)
     exact ⟨w, fun n => Classical.choose_spec (h n)⟩
   rcases exists_seq with ⟨w, hw⟩
-  have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (nhds δ) := by
-    have h : Tendsto (fun _ : ℕ => δ) atTop (nhds δ) := tendsto_const_nhds
-    have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (nhds δ) := by
+  have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 δ) := by
+    have h : Tendsto (fun _ : ℕ => δ) atTop (𝓝 δ) := tendsto_const_nhds
+    have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (𝓝 δ) := by
       convert h.add tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [add_zero]
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
@@ -191,7 +191,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   use hv
   have h_cont : Continuous fun v => ‖u - v‖ :=
     Continuous.comp continuous_norm (Continuous.sub continuous_const continuous_id)
-  have : Tendsto (fun n => ‖u - w n‖) atTop (nhds ‖u - v‖)
+  have : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 ‖u - v‖)
   convert Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto
 #align exists_norm_eq_infi_of_complete_convex exists_norm_eq_iInf_of_complete_convex
