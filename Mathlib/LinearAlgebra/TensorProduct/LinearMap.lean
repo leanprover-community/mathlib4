@@ -25,6 +25,8 @@ open TensorProduct
 
 namespace LinearMap
 
+section CommSemiring
+
 variable [CommSemiring R] [CommSemiring A]
 variable [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁]
@@ -83,5 +85,57 @@ variable (A) in
 lemma IsSymm.baseChange {B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R} (hB₂ : B₂.IsSymm) : (B₂.baseChange₂ A).IsSymm :=
   IsSymm.tmul mul_comm hB₂
 
+end CommSemiring
+
+section CommRing
+
+variable [CommRing R]
+
+variable [AddCommGroup M₁] [AddCommGroup M₂]
+
+variable [Module R M₁] [Module R M₂]
+
+variable [Module.Free R M₁] [Module.Finite R M₁]
+
+variable [Module.Free R M₂] [Module.Finite R M₂]
+
+variable [Nontrivial R]
+
+variable (R) in
+/-- `tensorDistrib` as an equivalence. -/
+noncomputable def tensorDistribEquiv :
+    (M₁ →ₗ[R] M₁ →ₗ[R] R) ⊗[R] (M₂ →ₗ[R] M₂ →ₗ[R] R) ≃ₗ[R]
+    (M₁ ⊗[R] M₂) →ₗ[R] (M₁ ⊗[R] M₂) →ₗ[R] R :=
+  -- the same `LinearEquiv`s as from `tensorDistrib`,
+  -- but with the inner linear map also as an equiv
+  TensorProduct.congr (TensorProduct.lift.equiv R _ _ _)
+    (TensorProduct.lift.equiv R _ _ _) ≪≫ₗ
+  TensorProduct.dualDistribEquiv R (M₁ ⊗ M₁) (M₂ ⊗ M₂) ≪≫ₗ
+  (TensorProduct.tensorTensorTensorComm R _ _ _ _).dualMap ≪≫ₗ
+  (TensorProduct.lift.equiv R _ _ _).symm
+
+-- this is a dsimp lemma
+@[simp, nolint simpNF]
+theorem tensorDistribEquiv_tmul (B₁ : M₁ →ₗ[R] M₁ →ₗ[R] R) (B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R)
+    (m₁ : M₁) (m₂ : M₂) (m₁' : M₁) (m₂' : M₂) :
+    tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) (B₁ ⊗ₜ[R] B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
+      = B₁ m₁ m₁' * B₂ m₂ m₂' :=
+  rfl
+
+variable (R M₁ M₂) in
+-- TODO: make this `rfl`
+@[simp]
+theorem tensorDistribEquiv_toLinearMap :
+    (tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂)).toLinearMap = tensorDistrib R R := by
+  ext B₁ B₂ : 3
+  ext
+  exact mul_comm _ _
+
+@[simp]
+theorem tensorDistribEquiv_apply (B : (M₁ →ₗ[R] M₁ →ₗ[R] R) ⊗ (M₂ →ₗ[R] M₂ →ₗ[R] R)) :
+    tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) B = tensorDistrib R R B :=
+  DFunLike.congr_fun (tensorDistribEquiv_toLinearMap R M₁ M₂) B
+
+end CommRing
 
 end LinearMap
