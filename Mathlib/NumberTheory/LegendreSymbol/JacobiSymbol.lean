@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
+Authors: Michael Stoll, Thomas Zhu, Mario Carneiro
 -/
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
