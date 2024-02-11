@@ -75,8 +75,6 @@ local macro "↑ₘ" t:term:80 : term => `(term| ($t : Matrix (Fin 2) (Fin 2) �
 
 open scoped UpperHalfPlane ComplexConjugate
 
-attribute [local instance] Fintype.card_fin_even
-
 namespace ModularGroup
 
 variable {g : SL(2, ℤ)} (z : ℍ)
