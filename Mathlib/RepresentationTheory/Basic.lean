@@ -10,7 +10,6 @@ import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.RingTheory.TensorProduct
---import Mathlib.GroupTheory.Subgroup.Finite
 
 #align_import representation_theory.basic from "leanprover-community/mathlib"@"c04bc6e93e23aa0182aba53661a2211e80b6feac"
 
@@ -51,7 +50,7 @@ abbrev Representation :=
 
 end
 namespace Representation
-section Hom
+/-section Hom
 
 structure Hom {k G V W : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V]
     [Module k V] [AddCommMonoid W] [Module k W]
@@ -315,7 +314,7 @@ def mk' (f : V ≃ₗ[k] W) (hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f) :
 @[simp] lemma symm_mk'_apply {f : V ≃ₗ[k] W} {hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f} (x : W) :
     (Iso.mk' f hf).symm x = f.symm x := rfl
 
-end Iso
+end Iso-/
 section trivial
 
 variable (k : Type*) {G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
@@ -554,16 +553,23 @@ theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (
   Finsupp.mapDomain_single
 #align representation.of_mul_action_single Representation.ofMulAction_single
 
+variable (k G)
+
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
-noncomputable def leftRegular : Representation k G (G →₀ k) :=
+noncomputable abbrev leftRegular : Representation k G (G →₀ k) :=
   ofMulAction k G G
+
+/-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
+noncomputable abbrev diagonal (n : ℕ) : Representation k G ((Fin n → G) →₀ k) :=
+  ofMulAction k G (Fin n → G)
 
 section
 
+variable {k G}
 variable {A : Type*} [AddCommMonoid A] [Module k A] (ρ : Representation k G A)
 
-noncomputable abbrev leftRegularHom (x : A) :
-    (Representation.ofMulAction k G G).Hom ρ :=
+/-noncomputable abbrev leftRegularHom (x : A) :
+    (Representation.leftRegular k G).Hom ρ :=
   Hom.mk' (Finsupp.lift _ _ _ fun g => ρ g x) fun g => Finsupp.lhom_ext' fun y =>
     LinearMap.ext_ring <| by
       simp only [LinearMap.comp_apply, Finsupp.lsingle_apply,
@@ -579,7 +585,7 @@ theorem leftRegularHom_Hom_single (x : A) :
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
-noncomputable def leftRegularHomEquiv : (ofMulAction k G G).Hom ρ ≃ₗ[k] A where
+noncomputable def leftRegularHomEquiv : (leftRegular k G).Hom ρ ≃ₗ[k] A where
   toFun f := f.1 (Finsupp.single 1 1)
   map_add' x y := rfl
   map_smul' r x := rfl
@@ -589,11 +595,8 @@ noncomputable def leftRegularHomEquiv : (ofMulAction k G G).Hom ρ ≃ₗ[k] A w
       smul_eq_mul, mul_one, Hom.mk'_toLinearMap, coe_comp, Function.comp_apply,
       Finsupp.lsingle_apply, Finsupp.lift_apply, zero_smul, Finsupp.sum_single_index, one_smul]
   right_inv x := leftRegularHom_Hom_single _ x
-
+-/
 end
-/-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
-noncomputable def diagonal (n : ℕ) : Representation k G ((Fin n → G) →₀ k) :=
-  ofMulAction k G (Fin n → G)
 
 end MulAction
 section DistribMulAction
@@ -649,21 +652,21 @@ theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (
 
 -- Porting note: did not need this in ML3; noncomputable because IR check complains
 noncomputable instance :
-    HMul (MonoidAlgebra k G) ((ofMulAction k G G).asModule) (MonoidAlgebra k G) :=
+    HMul (MonoidAlgebra k G) ((leftRegular k G).asModule) (MonoidAlgebra k G) :=
   inferInstanceAs <| HMul (MonoidAlgebra k G) (MonoidAlgebra k G) (MonoidAlgebra k G)
 
-theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k G G).asModule) :
+theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (leftRegular k G).asModule) :
     x • y = (x * y : MonoidAlgebra k G) := -- by
   -- Porting note: trouble figuring out the motive
   x.induction_on (p := fun z => z • y = z * y)
     (fun g => by
-      show asAlgebraHom (ofMulAction k G G) _ _ = _; ext;
+      show asAlgebraHom (leftRegular k G) _ _ = _; ext;
       simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
         ofMulAction_apply, smul_eq_mul]
       -- Porting note : single_mul_apply not firing in simp
       rw [MonoidAlgebra.single_mul_apply, one_mul])
     (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
-    show asAlgebraHom (ofMulAction k G G) _ _ = _  -- Porting note: was simpa [← hx]
+    show asAlgebraHom (leftRegular k G) _ _ = _  -- Porting note: was simpa [← hx]
     simp only [map_smul, smul_apply, Algebra.smul_mul_assoc]
     rw [← hx]
     rfl
@@ -673,10 +676,10 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
 `G` on itself, the resulting object is isomorphic as a `k[G]`-module to `k[G]` with its natural
 `k[G]`-module structure. -/
 @[simps]
-noncomputable def ofMulActionSelfAsModuleEquiv :
-    (ofMulAction k G G).asModule ≃ₗ[MonoidAlgebra k G] MonoidAlgebra k G :=
+noncomputable def leftRegularAsModuleEquiv :
+    (leftRegular k G).asModule ≃ₗ[MonoidAlgebra k G] MonoidAlgebra k G :=
   { asModuleEquiv _ with map_smul' := ofMulAction_self_smul_eq_mul }
-#align representation.of_mul_action_self_as_module_equiv Representation.ofMulActionSelfAsModuleEquiv
+#align representation.of_mul_action_self_as_module_equiv Representation.leftRegularAsModuleEquiv
 
 /-- When `G` is a group, a `k`-linear representation of `G` on `V` can be thought of as
 a group homomorphism from `G` into the invertible `k`-linear endomorphisms of `V`.
@@ -857,29 +860,32 @@ variable {k G : Type*} [CommRing k] [Group G] {α A B : Type*}
           LinearMap.toAddMonoidHom_coe, LinearMap.coe_comp, Function.comp_apply,
           LinearMap.mul_apply, DFinsupp.lsingle_apply]-/
 
-@[simps] def finsupp (α : Type*) :
+def finsupp (α : Type*) :
     Representation k G (α →₀ A) where
       toFun := fun g => Finsupp.lsum k fun i => (Finsupp.lsingle i).comp (ρ g)
       map_one' := Finsupp.lhom_ext (fun i x => by simp)
       map_mul' := fun g h => Finsupp.lhom_ext (fun i x => by simp)
 
-lemma finsupp_single (g : G) (x : α) (a : A) :
+lemma finsupp_apply {ρ : Representation k G A} {α : Type*} (g : G) :
+    finsupp ρ α g = Finsupp.lsum k fun i => (Finsupp.lsingle i).comp (ρ g) := rfl
+
+@[simp] lemma finsupp_single (g : G) (x : α) (a : A) :
     ρ.finsupp α g (Finsupp.single x a) = Finsupp.single x (ρ g a) := by
   simp only [finsupp_apply, Finsupp.coe_lsum, LinearMap.coe_comp, Function.comp_apply, map_zero,
     Finsupp.sum_single_index, Finsupp.lsingle_apply]
 
-@[simps! toLinearMap] def lsingle {α : Type*} (a : α) :
+/-@[simps! toLinearMap] def lsingle {α : Type*} (a : α) :
   ρ.Hom (ρ.finsupp α) where
     toLinearMap := Finsupp.lsingle a
     comm_apply' := fun g x => by simp only [AddHom.toFun_eq_coe, coe_toAddHom,
       Finsupp.lsingle_apply, finsupp_apply, Finsupp.coe_lsum, coe_comp, Function.comp_apply,
-      map_zero, Finsupp.sum_single_index]
+      map_zero, Finsupp.sum_single_index]-/
 
 def free (k G : Type*) [CommRing k] [Group G] (α : Type*) :
     Representation k G (α →₀ G →₀ k) :=
-  finsupp (ofMulAction k G G) α
+  finsupp (leftRegular k G) α
 
-abbrev finsuppHom {β : Type*} (f : α → β) :
+/-abbrev finsuppHom {β : Type*} (f : α → β) :
     (finsupp ρ α).Hom (finsupp ρ β) :=
   Hom.mk' (Finsupp.lmapDomain A k f) fun g =>
     Finsupp.lhom_ext fun i x => by
@@ -888,16 +894,14 @@ abbrev finsuppHom {β : Type*} (f : α → β) :
         Finsupp.mapDomain_single]
 
 abbrev freeHom {β : Type*} (f : α → β) :
-    (free k G α).Hom (free k G β) := finsuppHom _ f
+    (free k G α).Hom (free k G β) := finsuppHom _ f-/
 
-@[simp] lemma free_ρ_single_single (g h : G) (i : α) (r : k) :
+@[simp] lemma free_single_single (g h : G) (i : α) (r : k) :
     free k G α g (Finsupp.single i (Finsupp.single h r)) =
       Finsupp.single i (Finsupp.single (g * h) r) := by
-  unfold free
-  rw [finsupp_single]
-  simp only [leftRegular, ofMulAction_single, smul_eq_mul]
+  simp only [free, finsupp_single, ofMulAction_single, smul_eq_mul]
 
-abbrev freeLift (f : α → A) :
+/-abbrev freeLift (f : α → A) :
     (free k G α).Hom ρ :=
   Hom.mk' (Finsupp.total (α × G) A k
     (fun x => ρ x.2 (f x.1)) ∘ₗ (Finsupp.finsuppProdLEquiv
@@ -946,11 +950,11 @@ lemma freeLiftEquiv_naturality {β : Type*}
       LinearEquiv.coe_coe, Finsupp.finsuppProdLEquiv_symm_single_single, Finsupp.total_single,
       map_one, one_apply, one_smul, Hom.coe_toLinearMap, Hom.comp_apply, Hom.mk'_apply,
       Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
-
+-/
 variable (k G α)
-
+/-
 abbrev tprodIsoFree :
-    ((ofMulAction k G G).tprod (trivial k (G := G) (V := α →₀ k))).Iso (free k G α) :=
+    ((leftRegular k G).tprod (trivial k (G := G) (V := α →₀ k))).Iso (free k G α) :=
   Iso.mk' (finsuppTensorFinsupp' k G α
       ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ
       Finsupp.finsuppProdLEquiv k) fun g => TensorProduct.ext <| Finsupp.lhom_ext fun i x =>
@@ -999,6 +1003,6 @@ variable {C : Type*} [AddCommGroup C] [Module k C] (η : Representation k G C)
           linHom_apply, ← mul_apply, ← map_mul, mul_left_inv, map_one, one_apply]
   left_inv f := Hom.ext <| TensorProduct.ext' fun _ _ => rfl
   right_inv f := by ext; rfl
-
+-/
 end
 end Representation

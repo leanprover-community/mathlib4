@@ -144,13 +144,13 @@ lemma mkHom_ext_right {A B : Rep k G} (f : A ⟶ B) (g : A →ₗ[k] B)
     {hg : ∀ x, g ∘ₗ A.ρ x = B.ρ x ∘ₗ g} (h : f.hom = g) :
     f = mkHom g hg := by ext : 1; exact h
 
-@[simps] def homLEquiv (A B : Rep k G) : (A ⟶ B) ≃ₗ[k] A.ρ.Hom B.ρ where
+/-@[simps] def homLEquiv (A B : Rep k G) : (A ⟶ B) ≃ₗ[k] A.ρ.Hom B.ρ where
   toFun := fun f => Representation.Hom.mk' f.hom f.comm
   map_add' := fun x y => rfl
   map_smul' := fun r x => rfl
   invFun := fun f => ⟨f.toLinearMap, f.comm⟩
   left_inv := fun f => by ext; rfl
-  right_inv := fun f => by ext; rfl
+  right_inv := fun f => by ext; rfl-/
 
 variable (k G)
 
@@ -450,9 +450,39 @@ set_option linter.uppercaseLean3 false in
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
-def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) :=
-  (Rep.homLEquiv (A ⊗ B) C).toEquiv.trans ((A.ρ.homEquiv B.ρ C.ρ).trans
-    (Rep.homLEquiv B ((Rep.ihom A).obj C)).toEquiv.symm)
+def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
+  toFun f :=
+    { hom := (TensorProduct.curry f.hom).flip
+      comm := fun g => by
+        refine' LinearMap.ext fun x => LinearMap.ext fun y => _
+        change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
+        rw [← hom_comm_apply]
+        change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
+        simp only [← map_mul, mul_inv_self, map_one]
+        rfl }
+  invFun f :=
+    { hom := TensorProduct.uncurry k _ _ _ f.hom.flip
+      comm := fun g => TensorProduct.ext' fun x y => by
+/- Porting note: rest of broken proof was
+        dsimp only [MonoidalCategory.tensorLeft_obj, ModuleCat.comp_def, LinearMap.comp_apply,
+          tensor_rho, ModuleCat.MonoidalCategory.hom_apply, TensorProduct.map_tmul]
+        simp only [TensorProduct.uncurry_apply f.hom.flip, LinearMap.flip_apply, Action_ρ_eq_ρ,
+          hom_comm_apply f g y, Rep.ihom_obj_ρ_apply, LinearMap.comp_apply, ρ_inv_self_apply] -/
+        change TensorProduct.uncurry k _ _ _ f.hom.flip (A.ρ g x ⊗ₜ[k] B.ρ g y) =
+          C.ρ g (TensorProduct.uncurry k _ _ _ f.hom.flip (x ⊗ₜ[k] y))
+        -- The next 3 tactics used to be `rw` before leanprover/lean4#2644
+        erw [TensorProduct.uncurry_apply, LinearMap.flip_apply, hom_comm_apply,
+          Rep.ihom_obj_ρ_apply,
+          LinearMap.comp_apply, LinearMap.comp_apply] --, ρ_inv_self_apply (A := C)]
+        dsimp
+        erw [ρ_inv_self_apply]
+        rfl}
+  left_inv f := Action.Hom.ext _ _ (TensorProduct.ext' fun _ _ => rfl)
+  right_inv f := by ext; rfl
+set_option linter.uppercaseLean3 false in
+#align Rep.hom_equiv Rep.homEquiv
+  --(Rep.homLEquiv (A ⊗ B) C).toEquiv.trans ((A.ρ.homEquiv B.ρ C.ρ).trans
+  --  (Rep.homLEquiv B ((Rep.ihom A).obj C)).toEquiv.symm)
 
 variable {A B C}
 

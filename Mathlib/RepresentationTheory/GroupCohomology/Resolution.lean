@@ -718,59 +718,65 @@ set_option linter.uppercaseLean3 false in
 
 namespace Rep
 variable {k G}
-def finsuppObj (α : Type u) (A : Rep k G) :
+abbrev finsuppObj (α : Type u) (A : Rep k G) :
     Rep k G := of (Representation.finsupp A.ρ α)
 
 def finsuppMap {α β : Type u}
     (f : α → β) (A : Rep k G) : finsuppObj α A ⟶ finsuppObj β A :=
-  mkHom (A.ρ.finsuppHom f).hom (A.ρ.finsuppHom f).comm
-/-  mkHom (Finsupp.lmapDomain A k f) fun g => Finsupp.lhom_ext fun i x => by
-    simp only [LinearMap.coe_comp, Function.comp_apply]
-    simp only [finsuppObj, coe_of, of_ρ, Representation.finsupp_apply, Finsupp.coe_lsum,
-      LinearMap.coe_comp, Function.comp_apply, map_zero, Finsupp.sum_single_index,
-      Finsupp.lsingle_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single]
-    -- erm. strange-/
+ -- mkHom (A.ρ.finsuppHom f).hom (A.ρ.finsuppHom f).comm
+  mkHom (Finsupp.lmapDomain A k f) fun g => Finsupp.lhom_ext fun i x => by
+    simp_rw [LinearMap.coe_comp, Function.comp_apply, finsuppObj, coe_of, of_ρ,
+      Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Representation.finsupp_single,
+      Finsupp.mapDomain_single]
+    -- can't just simp only this; coe_of & of_ρ seem to interfere with the comp lemmas?
 
-def finsupp (A : Rep k G) :
+@[simp] lemma finsuppMap_single {α β : Type u} {f : α → β} {A : Rep k G}
+    (i : α) (x : A) : (finsuppMap f A).hom (Finsupp.single i x) = Finsupp.single (f i) x :=
+  Finsupp.mapDomain_single
+
+@[simps] def finsupp (A : Rep k G) :
     Type u ⥤ Rep k G where
-      obj := fun α => finsuppObj α A
-      map := fun f => finsuppMap f A
-      map_id := fun _ => Action.hom_ext _ _ <| Finsupp.lmapDomain_id _ _
-      map_comp := fun _ _ => Action.hom_ext _ _ <| Finsupp.lmapDomain_comp _ _ _ _
+  obj := fun α => finsuppObj α A
+  map := fun f => finsuppMap f A
+  map_id := fun _ => Action.hom_ext _ _ <| Finsupp.lmapDomain_id _ _
+  map_comp := fun _ _ => Action.hom_ext _ _ <| Finsupp.lmapDomain_comp _ _ _ _
 
-lemma finsupp_ρ_single {A : Rep k G} {α : Type u} (g : G) (i : α) (x : A) :
+/-lemma finsupp_ρ_single {A : Rep k G} {α : Type u} (g : G) (i : α) (x : A) :
     ((finsupp A).obj α).ρ g (Finsupp.single i x) = Finsupp.single i (A.ρ g x) :=
-Representation.finsupp_single _ _ _ _
+Representation.finsupp_single _ _ _ _-/
 
 variable (k G)
 
-def free : Type u ⥤ Rep k G := finsupp (leftRegular k G)
+abbrev freeObj (α : Type u) := @Rep.of k G _ _ _ Finsupp.addCommGroup _ (Representation.free k G α)
+--abbrev free : Type u ⥤ Rep k G := finsupp (leftRegular k G)
 
 variable {k G}
 
-lemma free_ρ_single_single {α : Type u} (g h : G) (i : α) (r : k) :
+/-lemma free_ρ_single_single {α : Type u} (g h : G) (i : α) (r : k) :
     ((free k G).obj α).ρ g (Finsupp.single i (Finsupp.single h r)) =
       Finsupp.single i (Finsupp.single (g * h) r) :=
-  Representation.free_ρ_single_single _ _ _ _
+  Representation.free_single_single _ _ _ _-/
 
-@[simp] lemma free_map_hom {α β : Type u} (f : α → β) :
-    ((free k G).map f).hom = Finsupp.lmapDomain _ k f := rfl
+/-@[simp] lemma free_map_hom {α β : Type u} (f : α → β) :
+    ((free k G).map f).hom = Finsupp.lmapDomain _ k f := rfl-/
 
 def freeLift {α : Type u} (A : Rep k G) (f : α → A) :
-    (free k G).obj α ⟶ A :=
-  mkHom (A.ρ.freeLift f).hom (A.ρ.freeLift f).comm
-  /-(Finsupp.total (α × G) A k
+    freeObj k G α ⟶ A :=
+  mkHom --(A.ρ.freeLift f).hom (A.ρ.freeLift f).comm
+  (Finsupp.total (α × G) A k
     (fun x => A.ρ x.2 (f x.1)) ∘ₗ (Finsupp.finsuppProdLEquiv
       (α := α) (β := G) k (M := k)).symm.toLinearMap) fun g =>
         Finsupp.lhom_ext' fun i => Finsupp.lhom_ext fun j y => by
-          dsimp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+          simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
             Finsupp.lsingle_apply]
-          erw [Finsupp.lsingle_apply]
+          simp?
+          simp only [finsupp_obj, coe_of, of_ρ]
+          rw [Finsupp.lsingle_apply]
           erw [free_ρ_single_single]
           erw [Finsupp.finsuppProdLEquiv_symm_single_single]
           erw [Finsupp.finsuppProdLEquiv_symm_single_single]
           simp only [Finsupp.total_single, map_mul, LinearMap.mul_apply, map_smul]
--/
+
 
 @[simp] lemma freeLift_hom_single_single {α : Type u} (A : Rep k G) (f : α → A) (i : α) (g : G) (r : k) :
     (freeLift A f).hom (Finsupp.single i (Finsupp.single g r)) = r • A.ρ g (f i) :=
