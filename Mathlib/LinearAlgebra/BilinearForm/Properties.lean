@@ -98,56 +98,56 @@ theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
 #align bilin_form.is_refl_neg BilinForm.isRefl_neg
 
 /-- The proposition that a bilinear form is symmetric -/
-def IsSymm (B : BilinForm R M) : Prop :=
-  ∀ x y : M, B x y = B y x
+def IsSymm (B : BilinForm R₂ M₂) : Prop :=
+  ∀ x y : M₂, B x y = B y x
 #align bilin_form.is_symm BilinForm.IsSymm
 
 namespace IsSymm
 
-variable (H : B.IsSymm)
+variable (H : B₂.IsSymm)
 
-protected theorem eq (x y : M) : B x y = B y x :=
+protected theorem eq (x y : M₂) : B₂ x y = B₂ y x :=
   H x y
 #align bilin_form.is_symm.eq BilinForm.IsSymm.eq
 
-theorem isRefl : B.IsRefl := fun x y H1 => H x y ▸ H1
+theorem isRefl : B₂.IsRefl := fun x y H1 => H x y ▸ H1
 #align bilin_form.is_symm.is_refl BilinForm.IsSymm.isRefl
 
-protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
+protected theorem add {B₁ B₂ : BilinForm R₂ M₂} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
     (B₁ + B₂).IsSymm := fun x y => (congr_arg₂ (· + ·) (hB₁ x y) (hB₂ x y) : _)
 #align bilin_form.is_symm.add BilinForm.IsSymm.add
 
-protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
+protected theorem sub {B₁ B₂ : BilinForm R₃ M₃} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
     (B₁ - B₂).IsSymm := fun x y => (congr_arg₂ Sub.sub (hB₁ x y) (hB₂ x y) : _)
 #align bilin_form.is_symm.sub BilinForm.IsSymm.sub
 
-protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := fun x y =>
+protected theorem neg {B : BilinForm R₃ M₃} (hB : B.IsSymm) : (-B).IsSymm := fun x y =>
   congr_arg Neg.neg (hB x y)
 #align bilin_form.is_symm.neg BilinForm.IsSymm.neg
 
-protected theorem smul {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R R] (a : α)
-    {B : BilinForm R M} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
+protected theorem smul {α} [Monoid α] [DistribMulAction α R₂] [SMulCommClass α R₂ R₂] (a : α)
+    {B : BilinForm R₂ M₂} (hB : B.IsSymm) : (a • B).IsSymm := fun x y =>
   congr_arg (a • ·) (hB x y)
 #align bilin_form.is_symm.smul BilinForm.IsSymm.smul
 
 /-- The restriction of a symmetric bilinear form on a submodule is also symmetric. -/
-theorem restrict {B : BilinForm R M} (b : B.IsSymm) (W : Submodule R M) :
+theorem restrict {B : BilinForm R₂ M₂} (b : B.IsSymm) (W : Submodule R₂ M₂) :
     (B.restrict W).IsSymm := fun x y => b x y
 #align bilin_form.restrict_symm BilinForm.IsSymm.restrict
 
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : BilinForm R M).IsSymm := fun _ _ => rfl
+theorem isSymm_zero : (0 : BilinForm R₂ M₂).IsSymm := fun _ _ => rfl
 #align bilin_form.is_symm_zero BilinForm.isSymm_zero
 
 @[simp]
-theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
+theorem isSymm_neg {B : BilinForm R₃ M₃} : (-B).IsSymm ↔ B.IsSymm :=
   ⟨fun h => neg_neg B ▸ h.neg, IsSymm.neg⟩
 #align bilin_form.is_symm_neg BilinForm.isSymm_neg
 
-variable (R₂) in
-theorem isSymm_iff_flip [Algebra R₂ R] : B.IsSymm ↔ flipHom R₂ B = B :=
+variable (R₄ : Type*) [CommSemiring R₄] in
+theorem isSymm_iff_flip [Algebra R₄ R₂] : B₂.IsSymm ↔ flipHom R₄ B₂ = B₂ :=
   (forall₂_congr fun _ _ => by exact eq_comm).trans ext_iff.symm
 #align bilin_form.is_symm_iff_flip' BilinForm.isSymm_iff_flip
 
