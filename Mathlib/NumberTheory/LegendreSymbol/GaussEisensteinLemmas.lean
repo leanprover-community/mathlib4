@@ -234,7 +234,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
       have := le_total (x.2 * p) (x.1 * q)
       simp only [mem_union, mem_filter, mem_Ico, mem_product]
       tauto
-  rw [sum_Ico_eq_card_lt, sum_Ico_eq_card_lt, hswap, ← card_disjoint_union hdisj, hunion,
+  rw [sum_Ico_eq_card_lt, sum_Ico_eq_card_lt, hswap, ← card_union_of_disjoint hdisj, hunion,
     card_product]
   simp only [card_Ico, tsub_zero, succ_sub_succ_eq_sub]
 #align zmod.sum_mul_div_add_sum_mul_div_eq_mul ZMod.sum_mul_div_add_sum_mul_div_eq_mul
