@@ -144,7 +144,7 @@ With the addition of
 `import CategoryTheory.Limits.Shapes.Types`
 we can use:
 ```
-local attribute [instance] hasLimit_of_hasLimit_comp_eval
+attribute [local instance] hasLimit_of_hasLimit_comp_eval
 example : hasBinaryProducts (I → Type v₁) := ⟨by infer_instance⟩
 ```
 -/

@@ -287,7 +287,7 @@ instance instAddTorsor : AddTorsor (G × G') (P × P') where
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
   vsub p₁ p₂ := (p₁.1 -ᵥ p₂.1, p₁.2 -ᵥ p₂.2)
-  nonempty := Prod.Nonempty
+  nonempty := Prod.instNonempty
   vsub_vadd' _ _ := Prod.ext (vsub_vadd _ _) (vsub_vadd _ _)
   vadd_vsub' _ _ := Prod.ext (vadd_vsub _ _) (vadd_vsub _ _)
 

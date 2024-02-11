@@ -8,6 +8,7 @@ import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.Data.Set.Basic
 
 #align_import data.finsupp.basic from "leanprover-community/mathlib"@"f69db8cecc668e2d5894d7e9bfc491da60db3b9f"
 
@@ -201,7 +202,7 @@ end ZeroHom
 section AddMonoidHom
 
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable {F : Type*} [AddMonoidHomClass F M N]
+variable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N]
 
 /-- Composition with a fixed additive homomorphism is itself an additive homomorphism on functions.
 -/
@@ -883,7 +884,7 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
     simp only -- porting note: necessary to beta reduce to activate `split_ifs`
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
-        -- tauto
+        tauto
 #align finsupp.filter Finsupp.filter
 
 theorem filter_apply (a : α) : f.filter p a = if p a then f a else 0 := rfl
