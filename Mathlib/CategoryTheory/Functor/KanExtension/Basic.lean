@@ -294,8 +294,7 @@ lemma hasRightExtension_iff_of_iso₂ : HasRightKanExtension L F ↔ HasRightKan
 
 /-- The equivalence `LeftExtension L F ≌ LeftExtension L F'` induced by
 a natural isomorphism `F ≅ F'`. -/
-def leftExtensionEquivalenceOfIso₂ :
-    LeftExtension L F ≌ LeftExtension L F' :=
+def leftExtensionEquivalenceOfIso₂ : LeftExtension L F ≌ LeftExtension L F' :=
   StructuredArrow.mapIso iso₂
 
 lemma hasLeftExtension_iff_of_iso₂ :
