@@ -357,7 +357,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
       using 1
     rw [mul_pow]
   · simp_rw [hsa, Finset.mem_filter, Finset.mem_range]
-    refine' ⟨lt_succ_iff.mpr (le_of_dvd hn _), _, ⟨b * x, rfl⟩⟩ <;> use y <;> rw [hy] <;> ring
+    refine' ⟨Nat.lt_succ_iff.mpr (le_of_dvd hn _), _, ⟨b * x, rfl⟩⟩ <;> use y <;> rw [hy] <;> ring
 #align nat.sq_mul_squarefree_of_pos Nat.sq_mul_squarefree_of_pos
 
 theorem sq_mul_squarefree_of_pos' {n : ℕ} (h : 0 < n) :

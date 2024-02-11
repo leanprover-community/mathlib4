@@ -762,7 +762,7 @@ theorem inner_le_Lp_mul_Lq (hpq : p.IsConjugateExponent q) :
     le_of_lt hpq.symm.pos, le_of_lt hpq.symm.one_div_pos] at this
   convert this using 1 <;> [skip; congr 2] <;> [skip; skip; simp; skip; simp] <;>
     · refine Finset.sum_congr rfl fun i hi => ?_
-      simp [H'.1 i hi, H'.2 i hi, -WithZero.coe_mul, WithTop.coe_mul.symm]
+      simp [H'.1 i hi, H'.2 i hi, -WithZero.coe_mul]
 #align ennreal.inner_le_Lp_mul_Lq ENNReal.inner_le_Lp_mul_Lq
 
 /-- For `1 ≤ p`, the `p`-th power of the sum of `f i` is bounded above by a constant times the

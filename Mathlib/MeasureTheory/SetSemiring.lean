@@ -49,7 +49,7 @@ for all `s, t ∈ C`, `s \ t` is equal to a disjoint union of finitely many sets
 structure IsSetSemiring (C : Set (Set α)) : Prop where
   empty_mem : ∅ ∈ C
   inter_mem : ∀ s ∈ C, ∀ t ∈ C, s ∩ t ∈ C
-  diff_eq_Union' : ∀ s ∈ C, ∀ t ∈ C,
+  diff_eq_sUnion' : ∀ s ∈ C, ∀ t ∈ C,
     ∃ I : Finset (Set α), ↑I ⊆ C ∧ PairwiseDisjoint (I : Set (Set α)) id ∧ s \ t = ⋃₀ I
 
 namespace IsSetSemiring
@@ -66,7 +66,7 @@ gives an arbitrary `Finset (Set α)` that satisfies the equality.
 We remove the empty set to ensure that `t ∉ hC.diffFinset hs ht` even if `t = ∅`. -/
 noncomputable def diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     Finset (Set α) :=
-  (hC.diff_eq_Union' s hs t ht).choose \ {∅}
+  (hC.diff_eq_sUnion' s hs t ht).choose \ {∅}
 
 lemma empty_not_mem_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     ∅ ∉ hC.diffFinset hs ht := by
@@ -78,19 +78,19 @@ lemma diffFinset_subset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     ↑(hC.diffFinset hs ht) ⊆ C := by
   classical
   simp only [diffFinset, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
-  exact (hC.diff_eq_Union' s hs t ht).choose_spec.1.trans (Set.subset_insert _ _)
+  exact (hC.diff_eq_sUnion' s hs t ht).choose_spec.1.trans (Set.subset_insert _ _)
 
 lemma pairwiseDisjoint_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     PairwiseDisjoint (hC.diffFinset hs ht : Set (Set α)) id := by
   classical
   simp only [diffFinset, coe_sdiff, coe_singleton]
-  exact Set.PairwiseDisjoint.subset (hC.diff_eq_Union' s hs t ht).choose_spec.2.1
+  exact Set.PairwiseDisjoint.subset (hC.diff_eq_sUnion' s hs t ht).choose_spec.2.1
       (Set.diff_subset _ _)
 
 lemma sUnion_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     ⋃₀ hC.diffFinset hs ht = s \ t := by
   classical
-  rw [(hC.diff_eq_Union' s hs t ht).choose_spec.2.2]
+  rw [(hC.diff_eq_sUnion' s hs t ht).choose_spec.2.2]
   simp only [diffFinset, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   rw [sUnion_diff_singleton_empty]
 
@@ -135,20 +135,20 @@ variable {I : Finset (Set α)}
 finite set of sets in `C` whose union is `s \ ⋃₀ I`.
 See `IsSetSemiring.diffFinset₀` for a definition that gives such a set. -/
 lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
-    ∃ (J : Finset (Set α)) (_h_ss : ↑J ⊆ C) (_h_dis : PairwiseDisjoint (J : Set (Set α)) id),
+    ∃ J : Finset (Set α), ↑J ⊆ C ∧ PairwiseDisjoint (J : Set (Set α)) id ∧
       s \ ⋃₀ I = ⋃₀ J := by
   classical
-  revert hI
-  refine Finset.induction ?_ ?_ I
-  · intro
+  induction I using Finset.induction with
+  | empty =>
     simp only [coe_empty, sUnion_empty, diff_empty, exists_prop]
     refine ⟨{s}, singleton_subset_set_iff.mpr hs, ?_⟩
     simp only [coe_singleton, pairwiseDisjoint_singleton, sUnion_singleton, eq_self_iff_true,
       and_self_iff]
-  intro t I' _ h h_insert_subset
-  rw [coe_insert] at h_insert_subset
-  have ht : t ∈ C := h_insert_subset (Set.mem_insert _ _)
-  obtain ⟨J, h_ss, h_dis, h_eq⟩ := h ((Set.subset_insert _ _).trans h_insert_subset)
+  | @insert t I' _ h => ?_
+
+  rw [coe_insert] at hI
+  have ht : t ∈ C := hI (Set.mem_insert _ _)
+  obtain ⟨J, h_ss, h_dis, h_eq⟩ := h ((Set.subset_insert _ _).trans hI)
   let Ju : ∀ u ∈ C, Finset (Set α) := fun u hu ↦ hC.diffFinset hu ht
   have hJu_subset : ∀ (u) (hu : u ∈ C), ↑(Ju u hu) ⊆ C := by
     intro u hu x hx
@@ -215,19 +215,19 @@ lemma diffFinset₀_subset (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ 
     ↑(hC.diffFinset₀ hs hI) ⊆ C := by
   classical
   simp only [diffFinset₀, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
-  exact (hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.choose.trans (Set.subset_insert _ _)
+  exact (hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.1.trans (Set.subset_insert _ _)
 
 lemma pairwiseDisjoint_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     PairwiseDisjoint (hC.diffFinset₀ hs hI : Set (Set α)) id := by
   classical
   simp only [diffFinset₀, coe_sdiff, coe_singleton]
   exact Set.PairwiseDisjoint.subset
-    (hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.choose_spec.choose (Set.diff_subset _ _)
+    (hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.2.1 (Set.diff_subset _ _)
 
 lemma diff_sUnion_eq_sUnion_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     s \ ⋃₀ I = ⋃₀ hC.diffFinset₀ hs hI := by
   classical
-  rw [(hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.choose_spec.choose_spec]
+  rw [(hC.exists_disjoint_finset_diff_eq hs hI).choose_spec.2.2]
   simp only [diffFinset₀, coe_sdiff, coe_singleton, diff_singleton_subset_iff]
   rw [sUnion_diff_singleton_empty]
 
@@ -292,7 +292,7 @@ lemma inter_mem (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) : s ∩ t ∈ C
 lemma isSetSemiring (hC : IsSetRing C) : IsSetSemiring C where
   empty_mem := hC.empty_mem
   inter_mem := fun s hs t ht => hC.inter_mem hs ht
-  diff_eq_Union' := by
+  diff_eq_sUnion' := by
     refine fun s hs t ht => ⟨{s \ t}, ?_, ?_, ?_⟩
     · simp only [coe_singleton, Set.singleton_subset_iff]
       exact hC.diff_mem hs ht
