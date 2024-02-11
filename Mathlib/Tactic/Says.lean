@@ -5,6 +5,8 @@ Authors: Kim Liesinger
 -/
 import Std.Data.String.Basic
 import Std.Tactic.GuardMsgs
+import Std.Tactic.TryThis
+import Std.Linter.UnreachableTactic
 import Qq.Match
 
 /-!
