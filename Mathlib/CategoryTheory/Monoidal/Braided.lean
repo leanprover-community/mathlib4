@@ -130,12 +130,12 @@ theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
   simp_rw [Category.assoc, braiding_naturality_left, braiding_naturality_right_assoc]
 
 theorem yang_baxter (X Y Z : C) :
-    (α_ X Y Z).inv ≫ ((β_ X Y).hom ▷ Z) ≫ (α_ Y X Z).hom
-    ≫ (Y ◁ (β_ X Z).hom) ≫ (α_ Y Z X).inv
-    ≫ ((β_ Y Z).hom ▷ X) ≫ (α_ Z Y X).hom
-    = (X ◁ (β_ Y Z).hom) ≫ (α_ X Z Y).inv
-      ≫ ((β_ X Z).hom ▷ Y) ≫ (α_ Z X Y).hom
-      ≫ (Z ◁ (β_ X Y).hom) := by
+    (α_ X Y Z).inv ≫ ((β_ X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫ 
+    (Y ◁ (β_ X Z).hom) ≫ (α_ Y Z X).inv ≫
+    ((β_ Y Z).hom ▷ X) ≫ (α_ Z Y X).hom
+    = (X ◁ (β_ Y Z).hom) ≫ (α_ X Z Y).inv ≫
+      ((β_ X Z).hom ▷ Y) ≫ (α_ Z X Y).hom ≫
+      (Z ◁ (β_ X Y).hom) := by
   have := (braiding_naturality_right_assoc X (β_ Y Z).hom (α_ Z Y X).hom).symm
   refine Eq.trans (Eq.symm ?_) (Eq.trans this ?_)
   · refine Eq.trans (congrArg (. ≫ _) (braiding_tensor_right X Y Z)) ?_
@@ -154,12 +154,12 @@ theorem yang_baxter' (X Y Z : C) :
              comp_id, assoc, tensor_id, id_comp, yang_baxter]
 
 theorem yang_baxter_iso (X Y Z : C) :
-    (α_ X Y Z).symm ≪≫ whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z
-    ≪≫ whiskerLeftIso Y (β_ X Z) ≪≫ (α_ Y Z X).symm
-    ≪≫ whiskerRightIso (β_ Y Z) X ≪≫ (α_ Z Y X)
-    = whiskerLeftIso X (β_ Y Z) ≪≫ (α_ X Z Y).symm
-      ≪≫ whiskerRightIso (β_ X Z) Y ≪≫ α_ Z X Y
-      ≪≫ whiskerLeftIso Z (β_ X Y) := Iso.ext (yang_baxter X Y Z)
+    (α_ X Y Z).symm ≪≫ whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫ 
+    whiskerLeftIso Y (β_ X Z) ≪≫ (α_ Y Z X).symm ≪≫
+    whiskerRightIso (β_ Y Z) X ≪≫ (α_ Z Y X)
+    = whiskerLeftIso X (β_ Y Z) ≪≫ (α_ X Z Y).symm ≪≫
+      whiskerRightIso (β_ X Z) Y ≪≫ α_ Z X Y ≪≫
+      whiskerLeftIso Z (β_ X Y) := Iso.ext (yang_baxter X Y Z)
 
 end BraidedCategory
 
@@ -676,10 +676,10 @@ monoidal opposite, upgraded to a braided functor. -/
   ε := 𝟙 (𝟙_ Cᴹᵒᵖ)
   associativity X Y Z := by
     simp only [tensorHom_id, id_tensorHom]
-    change (β_ (mop X) (mop Y)).hom ▷ (mop Z) ≫ (β_ (mop Y ⊗ mop X) (mop Z)).hom
-              ≫ (α_ (mop Z) (mop Y) (mop X)).inv
-            = (α_ (mop X) (mop Y) (mop Z)).hom ≫ (mop X) ◁ (β_ (mop Y) (mop Z)).hom
-              ≫ (β_ (mop X) (mop Z ⊗ mop Y)).hom
+    change (β_ (mop X) (mop Y)).hom ▷ (mop Z) ≫ (β_ (mop Y ⊗ mop X) (mop Z)).hom ≫
+              (α_ (mop Z) (mop Y) (mop X)).inv
+            = (α_ (mop X) (mop Y) (mop Z)).hom ≫ (mop X) ◁ (β_ (mop Y) (mop Z)).hom ≫
+                (β_ (mop X) (mop Z ⊗ mop Y)).hom
     refine (α_ (mop X) (mop Y) (mop Z)).inv_comp_eq.mp ?_
     simp only [← assoc]
     refine (α_ (mop Z) (mop Y) (mop X)).comp_inv_eq.mpr ?_
