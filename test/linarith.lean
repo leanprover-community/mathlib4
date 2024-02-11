@@ -2,6 +2,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Interval
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
@@ -586,3 +587,13 @@ error: Argument passed to nlinarith has metavariables:
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
   nlinarith [p ?a]
+
+open BigOperators
+
+example (h : False): True := by
+  have : ∑ k in Finset.empty, k^2 = 0 := by contradiction
+  have : ∀ k : Nat, 0 ≤ k := by
+    intro h
+    -- this should not panic:
+    nlinarith
+  trivial
