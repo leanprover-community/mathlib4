@@ -285,7 +285,7 @@ theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁
     (h₂ : ∀ x ∈ s₂, f x = g x) (comm) :
     noncommProd s₁ f comm =
       noncommProd s₂ g fun x hx y hy h => by
-        dsimp only
+        dsimp only [Function.onFun]
         rw [← h₂ _ hx, ← h₂ _ hy]
         subst h₁
         exact comm hx hy h :=
