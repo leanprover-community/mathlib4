@@ -567,8 +567,7 @@ instance isEquivalenceTrans (F : C ⥤ D) (G : D ⥤ E) [IsEquivalence F] [IsEqu
   IsEquivalence.ofEquivalence (Equivalence.trans (asEquivalence F) (asEquivalence G))
 #align category_theory.functor.is_equivalence_trans CategoryTheory.Functor.isEquivalenceTrans
 
-instance (F : C ⥤ D) [IsEquivalence F] :
-    IsEquivalence ((whiskeringLeft C D E).obj F) :=
+instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringLeft C D E).obj F) :=
   (inferInstance : IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse)
 
 instance (F : C ⥤ D) [IsEquivalence F] :
