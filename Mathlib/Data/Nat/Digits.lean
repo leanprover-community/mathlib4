@@ -91,7 +91,7 @@ theorem digits_zero (b : ℕ) : digits b 0 = [] := by
   rcases b with (_ | ⟨_ | ⟨_⟩⟩) <;> simp [digits, digitsAux0, digitsAux1]
 #align nat.digits_zero Nat.digits_zero
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem digits_zero_zero : digits 0 0 = [] :=
   digits_zero 0
 #align nat.digits_zero_zero Nat.digits_zero_zero
@@ -111,7 +111,7 @@ theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 := by
   rw [digits_def]; rfl
 #align nat.digits_one Nat.digits_one
 
-@[simp]
+-- @[simp] -- Porting note: simp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n := by
   rw [digits_def]; rfl
 #align nat.digits_one_succ Nat.digits_one_succ
