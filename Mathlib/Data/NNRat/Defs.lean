@@ -390,3 +390,6 @@ theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
 #align nnrat.ext_num_denom_iff NNRat.ext_num_den_iff
 
 end NNRat
+
+-- `NNRat` needs to be available in the definition of `Field`
+assert_not_exists Field
