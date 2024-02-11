@@ -336,6 +336,10 @@ class SymmetricCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] e
 
 attribute [reassoc (attr := simp)] SymmetricCategory.symmetry
 
+lemma SymmetricCategory.braiding_swap_eq_inv_braiding {C : Type u₁}
+    [Category.{v₁} C] [MonoidalCategory C] [SymmetricCategory C] (X Y : C) :
+    (β_ Y X).hom = (β_ X Y).inv := Iso.inv_ext' (symmetry X Y)
+
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
 variable (D : Type u₂) [Category.{v₂} D] [MonoidalCategory D] [BraidedCategory D]
 variable (E : Type u₃) [Category.{v₃} E] [MonoidalCategory E] [BraidedCategory E]
@@ -656,29 +660,6 @@ attribute [reassoc] associator_monoidal
 
 end Tensor
 
-@[reducible] def reverseBraiding : BraidedCategory C where
-  braiding X Y := (β_ Y X).symm
-  braiding_naturality_right := by
-    simp_rw [Iso.symm_hom, Iso.comp_inv_eq, assoc, Iso.eq_inv_comp,
-             braiding_naturality_left, implies_true]
-  braiding_naturality_left  := by
-    simp_rw [Iso.symm_hom, Iso.comp_inv_eq, assoc, Iso.eq_inv_comp,
-             braiding_naturality_right, implies_true]
-  hexagon_forward := by
-    intros X Y Z
-    simp only [← Iso.symm_inv, ← Iso.trans_inv,
-               ← whiskerLeftIso_inv, ← whiskerRightIso_inv]
-    refine (Iso.inv_eq_inv _ _).mpr ?_
-    simp only [Iso.trans_hom, Iso.symm_symm_eq, Iso.symm_hom, assoc]
-    exact hexagon_reverse Y Z X
-  hexagon_reverse := by
-    intros X Y Z
-    simp only [← Iso.symm_inv, ← Iso.trans_inv,
-               ← whiskerLeftIso_inv, ← whiskerRightIso_inv]
-    refine (Iso.inv_eq_inv _ _).mpr ?_
-    simp only [Iso.trans_hom, Iso.symm_symm_eq, Iso.symm_hom, assoc]
-    exact hexagon_forward Z X Y
-
 namespace MonoidalOpposite
 
 instance instBraiding : BraidedCategory Cᴹᵒᵖ where
@@ -688,6 +669,8 @@ instance instBraiding : BraidedCategory Cᴹᵒᵖ where
   hexagon_forward X Y Z := hexagon_reverse (unmop Z) (unmop Y) (unmop X)
   hexagon_reverse X Y Z := hexagon_forward (unmop Z) (unmop Y) (unmop X)
 
+/-- The identity functor on `C`, viewed as a functor from `C` to its
+monoidal opposite, upgraded to a braided functor. -/
 @[simps!] def mopBraidedFunctor : BraidedFunctor C Cᴹᵒᵖ where
   μ X Y := (β_ (mop X) (mop Y)).hom
   ε := 𝟙 (𝟙_ Cᴹᵒᵖ)
@@ -711,6 +694,8 @@ instance instBraiding : BraidedCategory Cᴹᵒᵖ where
     $ Eq.trans (id_comp _) (braiding_leftUnitor Cᴹᵒᵖ (mop X))
   __ := mopFunctor C
 
+/-- The identity functor on `C`, viewed as a functor from the
+monoidal opposite of `C` to `C`, upgraded to a braided functor. -/
 @[simps!] def unmopBraidedFunctor : BraidedFunctor Cᴹᵒᵖ C where
   μ X Y := (β_ (unmop X) (unmop Y)).hom
   ε := 𝟙 (𝟙_ C)
@@ -735,5 +720,48 @@ instance instBraiding : BraidedCategory Cᴹᵒᵖ where
   __ := unmopFunctor C
 
 end MonoidalOpposite
+
+/-- The braided monoidal category obtained from `C` by replacing its braiding
+`β_ X Y : X ⊗ Y ≅ Y ⊗ X` with the inverse `(β_ Y X)⁻¹ : X ⊗ Y ≅ Y ⊗ X`.
+This corresponds to the automorphism of the braid group swapping
+over-crossings and under-crossings. -/
+@[reducible] def reverseBraiding : BraidedCategory C where
+  braiding X Y := (β_ Y X).symm
+  braiding_naturality_right := by
+    simp_rw [Iso.symm_hom, Iso.comp_inv_eq, assoc, Iso.eq_inv_comp,
+             braiding_naturality_left, implies_true]
+  braiding_naturality_left  := by
+    simp_rw [Iso.symm_hom, Iso.comp_inv_eq, assoc, Iso.eq_inv_comp,
+             braiding_naturality_right, implies_true]
+  hexagon_forward := by
+    intros X Y Z
+    simp only [← Iso.symm_inv, ← Iso.trans_inv,
+               ← whiskerLeftIso_inv, ← whiskerRightIso_inv]
+    refine (Iso.inv_eq_inv _ _).mpr ?_
+    simp only [Iso.trans_hom, Iso.symm_symm_eq, Iso.symm_hom, assoc]
+    exact hexagon_reverse Y Z X
+  hexagon_reverse := by
+    intros X Y Z
+    simp only [← Iso.symm_inv, ← Iso.trans_inv,
+               ← whiskerLeftIso_inv, ← whiskerRightIso_inv]
+    refine (Iso.inv_eq_inv _ _).mpr ?_
+    simp only [Iso.trans_hom, Iso.symm_symm_eq, Iso.symm_hom, assoc]
+    exact hexagon_forward Z X Y
+
+lemma SymmetricCategory.reverseBraiding_eq (C : Type u₁) [Category.{v₁} C]
+    [MonoidalCategory C] [i : SymmetricCategory C] :
+    reverseBraiding C = i.toBraidedCategory := by
+  dsimp only [reverseBraiding]
+  congr
+  funext X Y
+  exact Iso.ext (braiding_swap_eq_inv_braiding Y X).symm
+
+/-- The identity functor from `C` to `C`, where the codomain is given the
+reversed braiding, upgraded to a braided functor. -/
+def SymmetricCategory.equivReverseBraiding (C : Type u₁) [Category.{v₁} C]
+    [MonoidalCategory C] [SymmetricCategory C] :=
+  @BraidedFunctor.mk C _ _ _ C _ _ (reverseBraiding C) (.id C) $ fun X Y =>
+    (IsIso.eq_inv_comp _).mpr $ Eq.trans (id_comp _)
+    $ Eq.trans (braiding_swap_eq_inv_braiding Y X) (comp_id _).symm
 
 end CategoryTheory
