@@ -178,7 +178,8 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
   have hn : 0 < ((n + 1 : ℕ) : ℝ) := mod_cast Nat.succ_pos'
   convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
   all_goals dsimp
-  erw [coe_pow, ← rpow_nat_cast, ← rpow_mul, mul_one_div_cancel hn.ne', rpow_one]
+  rw [one_div, pow_rpow_inv_natCast]
+  positivity
   rw [Nat.cast_succ, ENNReal.coe_mul_rpow]
 #align spectrum.spectral_radius_le_pow_nnnorm_pow_one_div spectrum.spectralRadius_le_pow_nnnorm_pow_one_div
 
@@ -262,11 +263,11 @@ power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻
 radius `‖a‖₊⁻¹`. -/
 theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
-      (fun n => ContinuousMultilinearMap.mkPiField 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
+      (fun n => ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
   { r_le := by
       refine'
         le_of_forall_nnreal_lt fun r hr => le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => _
-      rw [← norm_toNNReal, norm_mkPiField, norm_toNNReal]
+      rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       cases' n with n
       · simp only [Nat.zero_eq, le_refl, mul_one, or_true_iff, le_max_iff, pow_zero]
       · refine'
@@ -335,10 +336,10 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
   refine' ENNReal.inv_le_inv.mp (le_of_forall_pos_nnreal_lt fun r r_pos r_lt => _)
   simp_rw [inv_limsup, ← one_div]
   let p : FormalMultilinearSeries ℂ ℂ A := fun n =>
-    ContinuousMultilinearMap.mkPiField ℂ (Fin n) (a ^ n)
+    ContinuousMultilinearMap.mkPiRing ℂ (Fin n) (a ^ n)
   suffices h : (r : ℝ≥0∞) ≤ p.radius
   · convert h
-    simp only [p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiField]
+    simp only [p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiRing]
     congr
     ext n
     rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), if_neg]
@@ -499,9 +500,8 @@ variable {F : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [C
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
-/-- An algebra homomorphism into the base field, as a continuous linear map (since it is
-automatically bounded). See note [lower instance priority] -/
-instance (priority := 100) [AlgHomClass F 𝕜 A 𝕜] : ContinuousLinearMapClass F 𝕜 A 𝕜 :=
+instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
+    ContinuousLinearMapClass F 𝕜 A 𝕜 :=
   { AlgHomClass.linearMapClass with
     map_continuous := fun φ =>
       AddMonoidHomClass.continuous_of_bound φ ‖(1 : A)‖ fun a =>
@@ -518,12 +518,13 @@ theorem coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuou
   rfl
 #align alg_hom.coe_to_continuous_linear_map AlgHom.coe_toContinuousLinearMap
 
-theorem norm_apply_le_self_mul_norm_one [AlgHomClass F 𝕜 A 𝕜] (f : F) (a : A) :
+theorem norm_apply_le_self_mul_norm_one [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] (f : F) (a : A) :
     ‖f a‖ ≤ ‖a‖ * ‖(1 : A)‖ :=
   spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum f _)
 #align alg_hom.norm_apply_le_self_mul_norm_one AlgHom.norm_apply_le_self_mul_norm_one
 
-theorem norm_apply_le_self [NormOneClass A] [AlgHomClass F 𝕜 A 𝕜] (f : F) (a : A) : ‖f a‖ ≤ ‖a‖ :=
+theorem norm_apply_le_self [NormOneClass A] [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜]
+    (f : F) (a : A) : ‖f a‖ ≤ ‖a‖ :=
   spectrum.norm_le_norm_of_mem (apply_mem_spectrum f _)
 #align alg_hom.norm_apply_le_self AlgHom.norm_apply_le_self
 
@@ -538,7 +539,7 @@ local notation "↑ₐ" => algebraMap 𝕜 A
 @[simp]
 theorem toContinuousLinearMap_norm [NormOneClass A] (φ : A →ₐ[𝕜] 𝕜) :
     ‖φ.toContinuousLinearMap‖ = 1 :=
-  ContinuousLinearMap.op_norm_eq_of_bounds zero_le_one
+  ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one
     (fun a => (one_mul ‖a‖).symm ▸ spectrum.norm_le_norm_of_mem (apply_mem_spectrum φ _))
     fun _ _ h => by simpa only [coe_toContinuousLinearMap, map_one, norm_one, mul_one] using h 1
 #align alg_hom.to_continuous_linear_map_norm AlgHom.toContinuousLinearMap_norm

@@ -333,7 +333,7 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
 -- as declaring new variables.
 variable {M₁ M₂}
 variable [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
-  {F : Type*} [MonoidHomClass F M₁ M₂] {l : Filter α}
+  {F : Type*} [FunLike F M₁ M₂] [MonoidHomClass F M₁ M₂] {l : Filter α}
 
 /-- Construct a bundled monoid homomorphism `M₁ →* M₂` from a function `f` and a proof that it
 belongs to the closure of the range of the coercion from `M₁ →* M₂` (or another type of bundled
@@ -373,7 +373,7 @@ theorem MonoidHom.isClosed_range_coe : IsClosed (Set.range ((↑) : (M₁ →* M
 end PointwiseLimits
 
 @[to_additive]
-theorem Inducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [MulHomClass F M N]
+theorem Inducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
     [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F) (hf : Inducing f) :
     ContinuousMul M :=
   ⟨(hf.continuousSMul hf.continuous (map_mul f _ _)).1⟩
@@ -381,7 +381,7 @@ theorem Inducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [MulHomClass F M 
 #align inducing.has_continuous_add Inducing.continuousAdd
 
 @[to_additive]
-theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [MulHomClass F M N]
+theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
     [TopologicalSpace N] [ContinuousMul N] (f : F) : @ContinuousMul M (induced f ‹_›) _ :=
   letI := induced f ‹_›
   Inducing.continuousMul f ⟨rfl⟩
@@ -401,6 +401,39 @@ instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul 
   S.toSubsemigroup.continuousMul
 #align submonoid.has_continuous_mul Submonoid.continuousMul
 #align add_submonoid.has_continuous_add AddSubmonoid.continuousAdd
+
+section MulOneClass
+
+variable [TopologicalSpace M] [MulOneClass M] [ContinuousMul M]
+
+@[to_additive exists_open_nhds_zero_half]
+theorem exists_open_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
+    ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ ∀ v ∈ V, ∀ w ∈ V, v * w ∈ s := by
+  have : (fun a : M × M => a.1 * a.2) ⁻¹' s ∈ 𝓝 ((1, 1) : M × M) :=
+    tendsto_mul (by simpa only [one_mul] using hs)
+  simpa only [prod_subset_iff] using exists_nhds_square this
+#align exists_open_nhds_one_split exists_open_nhds_one_split
+#align exists_open_nhds_zero_half exists_open_nhds_zero_half
+
+@[to_additive exists_nhds_zero_half]
+theorem exists_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
+    ∃ V ∈ 𝓝 (1 : M), ∀ v ∈ V, ∀ w ∈ V, v * w ∈ s :=
+  let ⟨V, Vo, V1, hV⟩ := exists_open_nhds_one_split hs
+  ⟨V, IsOpen.mem_nhds Vo V1, hV⟩
+#align exists_nhds_one_split exists_nhds_one_split
+#align exists_nhds_zero_half exists_nhds_zero_half
+
+/-- Given a neighborhood `U` of `1` there is an open neighborhood `V` of `1`
+such that `V * V ⊆ U`. -/
+@[to_additive "Given an open neighborhood `U` of `0` there is an open neighborhood `V` of `0`
+  such that `V + V ⊆ U`."]
+theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
+    ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
+  simpa only [mul_subset_iff] using exists_open_nhds_one_split hU
+#align exists_open_nhds_one_mul_subset exists_open_nhds_one_mul_subset
+#align exists_open_nhds_zero_add_subset exists_open_nhds_zero_add_subset
+
+end MulOneClass
 
 section ContinuousMul
 
@@ -471,23 +504,6 @@ def Submonoid.commMonoidTopologicalClosure [T2Space M] (s : Submonoid M)
 #align submonoid.comm_monoid_topological_closure Submonoid.commMonoidTopologicalClosure
 #align add_submonoid.add_comm_monoid_topological_closure AddSubmonoid.addCommMonoidTopologicalClosure
 
-@[to_additive exists_open_nhds_zero_half]
-theorem exists_open_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
-    ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ ∀ v ∈ V, ∀ w ∈ V, v * w ∈ s := by
-  have : (fun a : M × M => a.1 * a.2) ⁻¹' s ∈ 𝓝 ((1, 1) : M × M) :=
-    tendsto_mul (by simpa only [one_mul] using hs)
-  simpa only [prod_subset_iff] using exists_nhds_square this
-#align exists_open_nhds_one_split exists_open_nhds_one_split
-#align exists_open_nhds_zero_half exists_open_nhds_zero_half
-
-@[to_additive exists_nhds_zero_half]
-theorem exists_nhds_one_split {s : Set M} (hs : s ∈ 𝓝 (1 : M)) :
-    ∃ V ∈ 𝓝 (1 : M), ∀ v ∈ V, ∀ w ∈ V, v * w ∈ s :=
-  let ⟨V, Vo, V1, hV⟩ := exists_open_nhds_one_split hs
-  ⟨V, IsOpen.mem_nhds Vo V1, hV⟩
-#align exists_nhds_one_split exists_nhds_one_split
-#align exists_nhds_zero_half exists_nhds_zero_half
-
 @[to_additive exists_nhds_zero_quarter]
 theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
     ∃ V ∈ 𝓝 (1 : M), ∀ {v w s t}, v ∈ V → w ∈ V → s ∈ V → t ∈ V → v * w * s * t ∈ u := by
@@ -498,19 +514,6 @@ theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
   simpa only [mul_assoc] using h _ (h' v v_in w w_in) _ (h' s s_in t t_in)
 #align exists_nhds_one_split4 exists_nhds_one_split4
 #align exists_nhds_zero_quarter exists_nhds_zero_quarter
-
-/-- Given a neighborhood `U` of `1` there is an open neighborhood `V` of `1`
-such that `VV ⊆ U`. -/
-@[to_additive "Given an open neighborhood `U` of `0` there is an open neighborhood `V` of `0`
-  such that `V + V ⊆ U`."]
-theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
-    ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
-  rcases exists_open_nhds_one_split hU with ⟨V, Vo, V1, hV⟩
-  use V, Vo, V1
-  rintro _ ⟨x, hx, y, hy, rfl⟩
-  exact hV _ hx _ hy
-#align exists_open_nhds_one_mul_subset exists_open_nhds_one_mul_subset
-#align exists_open_nhds_zero_add_subset exists_open_nhds_zero_add_subset
 
 @[to_additive]
 theorem IsCompact.mul {s t : Set M} (hs : IsCompact s) (ht : IsCompact t) : IsCompact (s * t) := by

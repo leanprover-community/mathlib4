@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.NormedSpace.OperatorNorm
@@ -269,9 +270,9 @@ theorem isOpen_setOf_nat_le_rank (n : ℕ) :
   exact isOpen_setOf_linearIndependent.preimage this
 #align is_open_set_of_nat_le_rank isOpen_setOf_nat_le_rank
 
-theorem Basis.op_nnnorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} (M : ℝ≥0)
+theorem Basis.opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} (M : ℝ≥0)
     (hu : ∀ i, ‖u (v i)‖₊ ≤ M) : ‖u‖₊ ≤ Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖₊ * M :=
-  u.op_nnnorm_le_bound _ fun e => by
+  u.opNNNorm_le_bound _ fun e => by
     set φ := v.equivFunL.toContinuousLinearMap
     calc
       ‖u e‖₊ = ‖u (∑ i, v.equivFun e i • v i)‖₊ := by rw [v.sum_equivFun]
@@ -284,35 +285,51 @@ theorem Basis.op_nnnorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : 
         gcongr
         calc
           ∑ i, ‖v.equivFun e i‖₊ ≤ Fintype.card ι • ‖φ e‖₊ := Pi.sum_nnnorm_apply_le_nnnorm _
-          _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_right (φ.le_op_nnnorm e) _
+          _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_right (φ.le_opNNNorm e) _
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
-#align basis.op_nnnorm_le Basis.op_nnnorm_le
+#align basis.op_nnnorm_le Basis.opNNNorm_le
 
-theorem Basis.op_norm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
+@[deprecated]
+alias Basis.op_nnnorm_le :=
+  Basis.opNNNorm_le -- deprecated on 2024-02-02
+
+theorem Basis.opNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} {M : ℝ}
     (hM : 0 ≤ M) (hu : ∀ i, ‖u (v i)‖ ≤ M) :
     ‖u‖ ≤ Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖ * M := by
-  simpa using NNReal.coe_le_coe.mpr (v.op_nnnorm_le ⟨M, hM⟩ hu)
-#align basis.op_norm_le Basis.op_norm_le
+  simpa using NNReal.coe_le_coe.mpr (v.opNNNorm_le ⟨M, hM⟩ hu)
+#align basis.op_norm_le Basis.opNorm_le
 
-/-- A weaker version of `Basis.op_nnnorm_le` that abstracts away the value of `C`. -/
-theorem Basis.exists_op_nnnorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
+@[deprecated]
+alias Basis.op_norm_le :=
+  Basis.opNorm_le -- deprecated on 2024-02-02
+
+/-- A weaker version of `Basis.opNNNorm_le` that abstracts away the value of `C`. -/
+theorem Basis.exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
     ∃ C > (0 : ℝ≥0), ∀ {u : E →L[𝕜] F} (M : ℝ≥0), (∀ i, ‖u (v i)‖₊ ≤ M) → ‖u‖₊ ≤ C * M := by
   cases nonempty_fintype ι
   exact
     ⟨max (Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖₊) 1,
       zero_lt_one.trans_le (le_max_right _ _), fun {u} M hu =>
-      (v.op_nnnorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
-#align basis.exists_op_nnnorm_le Basis.exists_op_nnnorm_le
+      (v.opNNNorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
+#align basis.exists_op_nnnorm_le Basis.exists_opNNNorm_le
 
-/-- A weaker version of `Basis.op_norm_le` that abstracts away the value of `C`. -/
-theorem Basis.exists_op_norm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
+@[deprecated]
+alias Basis.exists_op_nnnorm_le :=
+  Basis.exists_opNNNorm_le -- deprecated on 2024-02-02
+
+/-- A weaker version of `Basis.opNorm_le` that abstracts away the value of `C`. -/
+theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
     ∃ C > (0 : ℝ), ∀ {u : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖u (v i)‖ ≤ M) → ‖u‖ ≤ C * M := by
-  obtain ⟨C, hC, h⟩ := v.exists_op_nnnorm_le (F := F)
+  obtain ⟨C, hC, h⟩ := v.exists_opNNNorm_le (F := F)
   -- Porting note: used `Subtype.forall'` below
   refine ⟨C, hC, ?_⟩
   intro u M hM H
   simpa using h ⟨M, hM⟩ H
-#align basis.exists_op_norm_le Basis.exists_op_norm_le
+#align basis.exists_op_norm_le Basis.exists_opNorm_le
+
+@[deprecated]
+alias Basis.exists_op_norm_le :=
+  Basis.exists_opNorm_le -- deprecated on 2024-02-02
 
 instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
@@ -327,7 +344,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
   obtain
     ⟨C : ℝ, C_pos : 0 < C, hC :
       ∀ {φ : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖φ (v i)‖ ≤ M) → ‖φ‖ ≤ C * M⟩ :=
-    v.exists_op_norm_le (E := E) (F := F)
+    v.exists_opNorm_le (E := E) (F := F)
   have h_2C : 0 < 2 * C := mul_pos zero_lt_two C_pos
   have hε2C : 0 < ε / (2 * C) := div_pos ε_pos h_2C
   have : ∀ φ : E →L[𝕜] F, ∃ n : Fin d → ℕ, ‖φ - (v.constrL <| u ∘ n)‖ ≤ ε / 2 := by
@@ -476,30 +493,25 @@ theorem FiniteDimensional.of_locallyCompactSpace [LocallyCompactSpace E] :
 @[deprecated] -- Since 2024/02/02
 alias finiteDimensional_of_locallyCompactSpace := FiniteDimensional.of_locallyCompactSpace
 
-/-- If a function has compact multiplicative support, then either the function is trivial or the
-space is finite-dimensional. -/
-@[to_additive
-      "If a function has compact support, then either the function is trivial or the space is
-      finite-dimensional."]
-theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [TopologicalSpace X] [One X]
-    [T2Space X] {f : E → X} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
-    f = 1 ∨ FiniteDimensional 𝕜 E := by
-  by_cases h : ∀ x, f x = 1
-  · apply Or.inl
-    ext x
-    exact h x
-  apply Or.inr
-  push_neg at h
-  obtain ⟨x, hx⟩ : ∃ x, f x ≠ 1 := h
-  have : Function.mulSupport f ∈ 𝓝 x := h'f.isOpen_mulSupport.mem_nhds hx
-  -- Porting note: moved type ascriptions because of exists_prop changes
-  obtain ⟨r : ℝ, rpos : 0 < r, hr : Metric.closedBall x r ⊆ Function.mulSupport f⟩ :=
-    Metric.nhds_basis_closedBall.mem_iff.1 this
-  have : IsCompact (Metric.closedBall x r) :=
-    hf.of_isClosed_subset Metric.isClosed_ball (hr.trans (subset_mulTSupport _))
-  exact .of_isCompact_closedBall 𝕜 rpos this
-#align has_compact_mul_support.eq_one_or_finite_dimensional HasCompactMulSupport.eq_one_or_finiteDimensional
+/-- If a function has compact support, then either the function is trivial
+or the space is finite-dimensional. -/
+theorem HasCompactSupport.eq_zero_or_finiteDimensional {X : Type*} [TopologicalSpace X] [Zero X]
+    [T1Space X] {f : E → X} (hf : HasCompactSupport f) (h'f : Continuous f) :
+    f = 0 ∨ FiniteDimensional 𝕜 E :=
+  (HasCompactSupport.eq_zero_or_locallyCompactSpace_of_addGroup hf h'f).imp_right fun h ↦
+    -- TODO: Lean doesn't find the instance without this `have`
+    have : LocallyCompactSpace E := h; .of_locallyCompactSpace 𝕜
 #align has_compact_support.eq_zero_or_finite_dimensional HasCompactSupport.eq_zero_or_finiteDimensional
+
+/-- If a function has compact multiplicative support, then either the function is trivial
+or the space is finite-dimensional. -/
+@[to_additive existing]
+theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [TopologicalSpace X] [One X]
+    [T1Space X] {f : E → X} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
+    f = 1 ∨ FiniteDimensional 𝕜 E :=
+  have : T1Space (Additive X) := ‹_›
+  HasCompactSupport.eq_zero_or_finiteDimensional (X := Additive X) 𝕜 hf h'f
+#align has_compact_mul_support.eq_one_or_finite_dimensional HasCompactMulSupport.eq_one_or_finiteDimensional
 
 /-- A locally compact normed vector space is proper. -/
 lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜]
@@ -551,7 +563,7 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
             (LinearEquiv.piRing 𝕜 E ι 𝕜).symm.toLinearMap)
         (Fintype.card ι : ℝ) fun g => ?_
       rw [← nsmul_eq_mul]
-      refine op_norm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t => ?_
+      refine opNorm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t => ?_
       simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
         LinearMap.coe_toContinuousLinearMap', LinearEquiv.piRing_symm_apply]
       apply le_trans (norm_sum_le _ _)
@@ -662,7 +674,7 @@ theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
     set e := v.equivFunL
     have H : Summable fun x => ‖e (f x)‖ := this (e.summable.2 hf)
     refine .of_norm_bounded _ (H.mul_left ↑‖(e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E)‖₊) fun i ↦ ?_
-    simpa using (e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E).le_op_norm (e <| f i)
+    simpa using (e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E).le_opNorm (e <| f i)
   clear! E
   -- Now we deal with `g : α → Fin N → ℝ`
   intro N g hg
