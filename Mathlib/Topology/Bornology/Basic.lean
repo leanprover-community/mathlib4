@@ -48,11 +48,11 @@ Such spaces are equivalently specified by their bounded sets, see `Bornology.ofB
 and `Bornology.ext_iff_isBounded`-/
 class Bornology (α : Type*) where
   /-- The filter of cobounded sets in a bornology. This is a field of the structure, but one
-  should always prefer `Bornology.cobounded` because it makes the `α` argument explciit. -/
+  should always prefer `Bornology.cobounded` because it makes the `α` argument explicit. -/
   cobounded' : Filter α
   /-- The cobounded filter in a bornology is smaller than the cofinite filter. This is a field of
   the structure, but one should always prefer `Bornology.le_cofinite` because it makes the `α`
-  argument explciit. -/
+  argument explicit. -/
   le_cofinite' : cobounded' ≤ cofinite
 #align bornology Bornology
 
