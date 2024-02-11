@@ -4,10 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.CategoryTheory.Galois.GaloisObjects
-import Mathlib.CategoryTheory.GradedObject
-import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.Data.Finite.Card
 
 /-!
 # Decomposition of objects into connected components and applications
@@ -173,7 +169,8 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   let u : Y ⟶ A := pullback.fst
   let v : Y ⟶ B := pullback.snd
   let G := F ⋙ FintypeCat.incl
-  let e : F.obj Y ≃ { p : F.obj A × F.obj B // F.map i p.1 = F.map j p.2 } := fiberPullbackEquiv F i j
+  let e : F.obj Y ≃ { p : F.obj A × F.obj B // F.map i p.1 = F.map j p.2 } :=
+    fiberPullbackEquiv F i j
   let y : F.obj Y := e.symm ⟨(a, b), h⟩
   have hn : IsInitial Y → False := not_initial_of_inhabited F y
   have : IsIso u := IsConnected.noTrivialComponent Y u hn
