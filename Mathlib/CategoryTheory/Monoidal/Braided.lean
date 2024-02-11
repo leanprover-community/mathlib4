@@ -130,7 +130,7 @@ theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
   simp_rw [Category.assoc, braiding_naturality_left, braiding_naturality_right_assoc]
 
 theorem yang_baxter (X Y Z : C) :
-    (α_ X Y Z).inv ≫ ((β_ X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫ 
+    (α_ X Y Z).inv ≫ ((β_ X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫
     (Y ◁ (β_ X Z).hom) ≫ (α_ Y Z X).inv ≫
     ((β_ Y Z).hom ▷ X) ≫ (α_ Z Y X).hom
     = (X ◁ (β_ Y Z).hom) ≫ (α_ X Z Y).inv ≫
@@ -154,7 +154,7 @@ theorem yang_baxter' (X Y Z : C) :
              comp_id, assoc, tensor_id, id_comp, yang_baxter]
 
 theorem yang_baxter_iso (X Y Z : C) :
-    (α_ X Y Z).symm ≪≫ whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫ 
+    (α_ X Y Z).symm ≪≫ whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫
     whiskerLeftIso Y (β_ X Z) ≪≫ (α_ Y Z X).symm ≪≫
     whiskerRightIso (β_ Y Z) X ≪≫ (α_ Z Y X)
     = whiskerLeftIso X (β_ Y Z) ≪≫ (α_ X Z Y).symm ≪≫
