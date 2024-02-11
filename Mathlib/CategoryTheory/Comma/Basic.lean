@@ -49,7 +49,7 @@ comma, slice, coslice, over, under, arrow
 namespace CategoryTheory
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
+universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
@@ -196,17 +196,65 @@ def isoMk {X Y : Comma L₁ R₁} (l : X.left ≅ Y.left) (r : X.right ≅ Y.rig
         simp }
 #align category_theory.comma.iso_mk CategoryTheory.Comma.isoMk
 
-/-- A natural transformation `L₁ ⟶ L₂` induces a functor `Comma L₂ R ⥤ Comma L₁ R`. -/
+#where
+
+section
+variable {A' : Type u₄} [Category.{v₄} A']
+variable {B' : Type u₅} [Category.{v₅} B']
+variable {T' : Type u₆} [Category.{v₆} T']
+variable (L : A ⥤ T) (R : B ⥤ T) (L' : A' ⥤ T') (R' : B' ⥤ T')
+variable (F : A ⥤ A') (G : T ⥤ T') (H : B ⥤ B')
+variable (α : F ⋙ L' ⟶ L ⋙ G) (β : R ⋙ G ⟶ H ⋙ R')
+
+/-- Construct a functor `Comma L R ⥤ Comma L' R` from suitable data. -/
 @[simps]
-def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R where
+def map : Comma L R ⥤ Comma L' R' where
   obj X :=
-    { left := X.left
-      right := X.right
-      hom := l.app X.left ≫ X.hom }
-  map f :=
-    { left := f.left
-      right := f.right }
-#align category_theory.comma.map_left CategoryTheory.Comma.mapLeft
+    { left := F.obj X.left
+      right := H.obj X.right
+      hom := α.app X.left ≫ G.map X.hom ≫ β.app X.right }
+  map {X Y} f :=
+    { left := F.map f.left
+      right := H.map f.right
+      w := calc
+        L'.map (F.map f.left) ≫ α.app Y.left ≫ G.map Y.hom ≫ β.app Y.right =
+            α.app X.left ≫ G.map (L.map f.left) ≫ G.map Y.hom ≫ β.app Y.right :=
+          by rw [← Functor.comp_map, α.naturality_assoc, Functor.comp_map]
+        _ = α.app X.left ≫ G.map X.hom ≫ G.map (R.map f.right) ≫ β.app Y.right :=
+          by rw [← G.map_comp_assoc, f.w, G.map_comp, Category.assoc]
+        _ = (α.app X.left ≫ G.map X.hom ≫ β.app X.right) ≫ R'.map (H.map f.right) :=
+          by rw [← Functor.comp_map, β.naturality, Functor.comp_map, Category.assoc,
+              Category.assoc] }
+
+lemma map_faithful [Faithful F] [Faithful H] : Faithful (map L R L' R' F G H α β) where
+  map_injective {_ _} _ _ hfg := CommaMorphism.ext _ _
+    (F.map_injective <| congr_arg CommaMorphism.left hfg)
+    (H.map_injective <| congr_arg CommaMorphism.right hfg)
+
+lemma map_full [Full F] [Faithful G] [Full H] [IsIso α] [IsIso β] :
+    Full (map L R L' R' F G H α β) where
+  preimage {X Y} f :=
+    { left := F.preimage f.left
+      right := H.preimage f.right
+      w := by
+        have := f.w
+        simp only [map_obj_left, map_obj_right, map_obj_hom, Functor.comp_obj, Category.assoc]
+          at this
+        apply G.map_injective
+        rw [← cancel_epi (α.app X.left), ← cancel_mono (β.app Y.right), Functor.map_comp,
+          ← Functor.comp_map, ← α.naturality_assoc, Functor.comp_map, Category.assoc,
+          F.image_preimage, Category.assoc, this, Category.assoc, G.map_comp, ← Functor.comp_map,
+          Category.assoc, β.naturality, Functor.comp_map, H.image_preimage] }
+
+
+
+end
+
+/-- A natural transformation `L₁ ⟶ L₂` induces a functor `Comma L₂ R ⥤ Comma L₁ R`. -/
+@[simps!]
+def mapLeft (l : L₁ ⟶ L₂) : Comma L₂ R ⥤ Comma L₁ R :=
+  map L₂ R L₁ R (𝟭 A) (𝟭 T) (𝟭 B)
+    (L₁.leftUnitor.hom ≫ l ≫ L₂.rightUnitor.inv) (R.rightUnitor.hom ≫ R.leftUnitor.inv)
 
 /-- The functor `Comma L R ⥤ Comma L R` induced by the identity natural transformation on `L` is
     naturally isomorphic to the identity functor. -/
