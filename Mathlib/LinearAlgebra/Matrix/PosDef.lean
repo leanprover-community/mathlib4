@@ -341,7 +341,7 @@ theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
 theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
     M.toQuadraticForm'.PosDef := by
   intro x hx
-  simp [Matrix.toQuadraticForm', LinearMap.toQuadraticForm_apply, Matrix.toLinearMap₂'_apply']
+  simp only [Matrix.toQuadraticForm', LinearMap.toQuadraticForm_apply, toLinearMap₂'_apply']
   apply hM.2 x hx
 #align matrix.pos_def_to_quadratic_form' Matrix.PosDef.toQuadraticForm'
 
