@@ -20,6 +20,10 @@ import Mathlib.LinearAlgebra.TensorProduct.LinearMap
 * `BilinForm.tensorDistribEquiv`: `BilinForm.tensorDistrib` as an equivalence on finite free
   modules.
 
+## Implementation notes
+
+BilinForm versions of some results in `LinearAlgebra.TensorProduct.LinearMap`.
+
 -/
 
 suppress_compilation
