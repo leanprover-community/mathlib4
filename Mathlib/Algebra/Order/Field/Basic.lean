@@ -7,6 +7,7 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Tactic.Positivity.Core
 
 #align_import algebra.order.field.basic from "leanprover-community/mathlib"@"84771a9f5f0bd5e5d6218811556508ddf476dcbd"
 
@@ -1008,3 +1009,70 @@ theorem abs_one_div (a : α) : |1 / a| = 1 / |a| := by rw [abs_div, abs_one]
 #align abs_one_div abs_one_div
 
 end
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Function
+
+section LinearOrderedSemifield
+variable {α : Type*} [LinearOrderedSemifield α] {a b : α}
+
+private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
+  div_nonneg ha.le hb
+
+private lemma div_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
+  div_nonneg ha hb.le
+
+private lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
+  div_ne_zero ha.ne' hb
+
+private lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
+  div_ne_zero ha hb.ne'
+
+private lemma zpow_zero_pos (a : α) : 0 < a ^ (0 : ℤ) := zero_lt_one.trans_eq (zpow_zero a).symm
+
+end LinearOrderedSemifield
+
+/-- The `positivity` extension which identifies expressions of the form `a / b`,
+such that `positivity` successfully recognises both `a` and `b`. -/
+@[positivity _ / _] def evalDiv : PositivityExt where eval {u α} zα pα e := do
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
+    | throwError "not /"
+  let _e_eq : $e =Q $f $a $b := ⟨⟩
+  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  assumeInstancesCommute
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
+  let ra ← core zα pα a; let rb ← core zα pα b
+  match ra, rb with
+  | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
+  | .positive pa, .nonnegative pb => pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
+  | .nonnegative pa, .positive pb => pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
+  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(div_nonneg $pa $pb))
+  | .positive pa, .nonzero pb => pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
+  | .nonzero pa, .positive pb => pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
+  | .nonzero pa, .nonzero pb => pure (.nonzero q(div_ne_zero $pa $pb))
+  | _, _ => pure .none
+
+/-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
+such that `positivity` successfully recognises `a`. -/
+@[positivity _⁻¹]
+def evalInv : PositivityExt where eval {u α} zα pα e := do
+  let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
+  let _e_eq : $e =Q $f $a := ⟨⟩
+  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  assumeInstancesCommute
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
+  let ra ← core zα pα a
+  match ra with
+  | .positive pa => pure (.positive q(inv_pos_of_pos $pa))
+  | .nonnegative pa => pure (.nonnegative q(inv_nonneg_of_nonneg $pa))
+  | .nonzero pa => pure (.nonzero q(inv_ne_zero $pa))
+  | .none => pure .none
+
+/-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
+@[positivity _ ^ (0:ℤ), Pow.pow _ (0:ℤ)]
+def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
+  let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
+  _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  pure (.positive (q(zpow_zero_pos $a) : Expr))
+
+end Mathlib.Meta.Positivity

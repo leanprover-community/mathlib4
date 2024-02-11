@@ -674,6 +674,11 @@ theorem isUnit_of_mul_eq_one [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit a
 #align is_unit_of_mul_eq_one isUnit_of_mul_eq_one
 #align is_add_unit_of_add_eq_zero isAddUnit_of_add_eq_zero
 
+@[to_additive]
+theorem isUnit_of_mul_eq_one_right [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit b := by
+  rw [mul_comm] at h
+  exact isUnit_of_mul_eq_one b a h
+
 section Monoid
 variable [Monoid M] {a b : M}
 

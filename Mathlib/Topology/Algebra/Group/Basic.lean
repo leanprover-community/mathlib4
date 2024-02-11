@@ -673,7 +673,7 @@ variable {G}
 
 @[to_additive]
 protected theorem Inducing.topologicalGroup {F : Type*} [Group H] [TopologicalSpace H]
-    [MonoidHomClass F H G] (f : F) (hf : Inducing f) : TopologicalGroup H :=
+    [FunLike F H G] [MonoidHomClass F H G] (f : F) (hf : Inducing f) : TopologicalGroup H :=
   { toContinuousMul := hf.continuousMul _
     toContinuousInv := hf.continuousInv (map_inv f) }
 #align inducing.topological_group Inducing.topologicalGroup
@@ -681,7 +681,8 @@ protected theorem Inducing.topologicalGroup {F : Type*} [Group H] [TopologicalSp
 
 @[to_additive]
 -- Porting note: removed `protected` (needs to be in namespace)
-theorem topologicalGroup_induced {F : Type*} [Group H] [MonoidHomClass F H G] (f : F) :
+theorem topologicalGroup_induced {F : Type*} [Group H] [FunLike F H G] [MonoidHomClass F H G]
+    (f : F) :
     @TopologicalGroup H (induced f ‹_›) _ :=
   letI := induced f ‹_›
   Inducing.topologicalGroup f ⟨rfl⟩
@@ -869,7 +870,8 @@ also `uniformContinuous_of_continuousAt_one`. -/
   continuous provided that it is continuous at zero. See also
   `uniformContinuous_of_continuousAt_zero`."]
 theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [TopologicalSpace M]
-    [ContinuousMul M] [MonoidHomClass hom G M] (f : hom) (hf : ContinuousAt f 1) :
+    [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
+    (hf : ContinuousAt f 1) :
     Continuous f :=
   continuous_iff_continuousAt.2 fun x => by
     simpa only [ContinuousAt, ← map_mul_left_nhds_one x, tendsto_map'_iff, (· ∘ ·), map_mul,
@@ -1806,11 +1808,8 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} {k : Set G} (hk : IsCompact k) (hf : support f ⊆ k) (h'f : Continuous f) :
     f = 0 ∨ LocallyCompactSpace G := by
-  by_cases h : ∀ x, f x = 0
-  · apply Or.inl
-    ext x
-    exact h x
-  apply Or.inr
+  refine or_iff_not_imp_left.mpr fun h => ?_
+  simp_rw [funext_iff, Pi.zero_apply] at h
   push_neg at h
   obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h
   have : k ∈ 𝓝 x :=
