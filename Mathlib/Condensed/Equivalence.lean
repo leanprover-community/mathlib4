@@ -6,9 +6,8 @@ Authors: Adam Topaz, Nick Kuhn, Dagur Asgeirsson
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
 import Mathlib.Condensed.Basic
-import Mathlib.CategoryTheory.Sites.DenseSubsite
+import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.InducedTopology
-import Mathlib.CategoryTheory.Sites.Closed
 /-!
 # Sheaves on CompHaus are equivalent to sheaves on Stonean
 

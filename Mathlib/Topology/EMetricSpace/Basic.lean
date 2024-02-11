@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Data.Nat.Interval
-import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.ENNReal.Real
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
@@ -1180,7 +1180,7 @@ instance [PseudoEMetricSpace X] : EMetricSpace (UniformSpace.SeparationQuotient 
       edist_comm := fun x y => Quotient.inductionOn₂' x y edist_comm,
       edist_triangle := fun x y z => Quotient.inductionOn₃' x y z edist_triangle,
       toUniformSpace := inferInstance,
-      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans $ iInf_congr fun ε =>
+      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans <| iInf_congr fun ε =>
         iInf_congr fun _ => congr_arg 𝓟 <| by
           ext ⟨⟨x⟩, ⟨y⟩⟩
           refine ⟨?_, fun h => ⟨(x, y), h, rfl⟩⟩

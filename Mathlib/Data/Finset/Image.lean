@@ -162,6 +162,18 @@ theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s
    fun h => by simp [subset_def, Multiset.map_subset_map h]⟩
 #align finset.map_subset_map Finset.map_subset_map
 
+/-- The `Finset` version of `Equiv.subset_symm_image`. -/
+theorem subset_map_symm {t : Finset β} {f : α ≃ β} : s ⊆ t.map f.symm ↔ s.map f ⊆ t := by
+  constructor <;> intro h x hx
+  · simp only [mem_map_equiv, Equiv.symm_symm] at hx
+    simpa using h hx
+  · simp only [mem_map_equiv]
+    exact h (by simp [hx])
+
+/-- The `Finset` version of `Equiv.symm_image_subset`. -/
+theorem map_symm_subset {t : Finset β} {f : α ≃ β} : t.map f.symm ⊆ s ↔ t ⊆ s.map f := by
+  simp only [← subset_map_symm, Equiv.symm_symm]
+
 /-- Associate to an embedding `f` from `α` to `β` the order embedding that maps a finset to its
 image under `f`. -/
 def mapEmbedding (f : α ↪ β) : Finset α ↪o Finset β :=
@@ -408,22 +420,24 @@ theorem fiber_nonempty_iff_mem_image (f : α → β) (s : Finset α) (y : β) :
 #align finset.fiber_nonempty_iff_mem_image Finset.fiber_nonempty_iff_mem_image
 
 @[simp, norm_cast]
-theorem coe_image {f : α → β} : ↑(s.image f) = f '' ↑s :=
+theorem coe_image : ↑(s.image f) = f '' ↑s :=
   Set.ext <| by simp only [mem_coe, mem_image, Set.mem_image, implies_true]
 #align finset.coe_image Finset.coe_image
 
+@[simp]
+lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty := by
+  exact_mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
+#align finset.nonempty.image_iff Finset.image_nonempty
+
 protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).Nonempty :=
-  let ⟨a, ha⟩ := h
-  ⟨f a, mem_image_of_mem f ha⟩
+  image_nonempty.2 h
 #align finset.nonempty.image Finset.Nonempty.image
 
-@[simp]
+alias ⟨Nonempty.of_image, _⟩ := image_nonempty
+
+@[deprecated image_nonempty] -- Since 29 December 2023
 theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
-  ⟨fun ⟨_, hy⟩ =>
-    let ⟨x, hx, _⟩ := mem_image.mp hy
-    ⟨x, hx⟩,
-    fun h => h.image f⟩
-#align finset.nonempty.image_iff Finset.Nonempty.image_iff
+  image_nonempty
 
 theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=
@@ -571,6 +585,7 @@ theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Inj
     exact Set.image_diff hf _ _
 #align finset.image_sdiff Finset.image_sdiff
 
+open scoped symmDiff in
 theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s ∆ t).image f = s.image f ∆ t.image f :=
   coe_injective <| by
@@ -816,6 +831,8 @@ theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter
   simp [Finset.fin, Finset.map_map]
 #align finset.fin_map Finset.fin_map
 
+/-- If a `Finset` is a subset of the image of a `Set` under `f`,
+then it is equal to the `Finset.image` of a `Finset` subset of that `Set`. -/
 theorem subset_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : α → β} :
     ↑t ⊆ f '' s ↔ ∃ s' : Finset α, ↑s' ⊆ s ∧ s'.image f = t := by
   constructor; swap

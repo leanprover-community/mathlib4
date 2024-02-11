@@ -7,17 +7,17 @@ open Nat
 example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :
     a + c * e + a + c + 0 ≤ b + d * e + b + d + e :=
   Nat.add_le_add (Nat.add_le_add (Nat.add_le_add
-    (Nat.add_le_add h1 (Nat.mul_le_mul_of_nonneg_right h2)) h1) h2) h3
+    (Nat.add_le_add h1 (Nat.mul_le_mul_right _ h2)) h1) h2) h3
 
 example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :
     a + c * e + a + c + 0 ≤ b + d * e + b + d + e := by
-  apply_rules [Nat.add_le_add, Nat.mul_le_mul_of_nonneg_right]
+  apply_rules [Nat.add_le_add, Nat.mul_le_mul_right]
 
 -- Check that when we supply an iteration bound,
 -- `apply_rules` works up to that bound and returns the remaining goals.
 example {a b c d e : Nat} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 0 ≤ e) :
     a + c * e + a + c + 0 ≤ b + d * e + b + d + e := by
-  apply_rules (config := {maxDepth := 9}) [Nat.add_le_add, Nat.mul_le_mul_of_nonneg_right]
+  apply_rules (config := {maxDepth := 9}) [Nat.add_le_add, Nat.mul_le_mul_right]
   guard_target = 0 ≤ e
   assumption
 

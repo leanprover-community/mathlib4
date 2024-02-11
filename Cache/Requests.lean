@@ -24,7 +24,7 @@ def URL : String :=
 def getToken : IO String := do
   let envVar := if useFROCache then "MATHLIB_CACHE_S3_TOKEN" else "MATHLIB_CACHE_SAS"
   let some token ← IO.getEnv envVar
-    | throw $ IO.userError s!"environment variable {envVar} must be set to upload caches"
+    | throw <| IO.userError s!"environment variable {envVar} must be set to upload caches"
   return token
 
 open System (FilePath)
@@ -58,7 +58,7 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
 
     -- Note we append a '.part' to the filenames here,
     -- which `downloadFiles` then removes when the download is successful.
-    pure $ acc ++ s!"url = {mkFileURL URL fileName}\n\
+    pure <| acc ++ s!"url = {mkFileURL URL fileName}\n\
       -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
@@ -87,6 +87,7 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
     let failed ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent hashMap)
       let args := #["--request", "GET", "--parallel", "--fail", "--silent",
+          "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
       let (_, success, failed, done) ←
           IO.runCurlStreaming args (← IO.monoMsNow, 0, 0, 0) fun a line => do
@@ -194,17 +195,17 @@ def putFiles (fileNames : Array String) (overwrite : Bool) (token : String) : IO
   if size > 0 then
     IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent fileNames token)
     IO.println s!"Attempting to upload {size} file(s)"
-    if useFROCache then
+    let args := if useFROCache then
       -- TODO: reimplement using HEAD requests?
       let _ := overwrite
-      discard $ IO.runCurl #["-s", "-X", "PUT", "--aws-sigv4", "aws:amz:auto:s3", "--user", token,
-        "--parallel", "-K", IO.CURLCFG.toString]
+      #["--aws-sigv4", "aws:amz:auto:s3", "--user", token]
     else if overwrite then
-      discard $ IO.runCurl #["-s", "-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "--parallel",
-        "-K", IO.CURLCFG.toString]
+      #["-H", "x-ms-blob-type: BlockBlob"]
     else
-      discard $ IO.runCurl #["-s", "-X", "PUT", "-H", "x-ms-blob-type: BlockBlob",
-        "-H", "If-None-Match: *", "--parallel", "-K", IO.CURLCFG.toString]
+      #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
+    _ ← IO.runCurl (stderrAsErr := false) (args ++ #[
+      "--retry", "5", -- there seem to be some intermittent failures
+      "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString])
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 
@@ -226,17 +227,17 @@ def commit (hashMap : IO.HashMap) (overwrite : Bool) (token : String) : IO Unit 
   let hash ← getGitCommitHash
   let path := IO.CACHEDIR / hash
   IO.mkDir IO.CACHEDIR
-  IO.FS.writeFile path $ ("\n".intercalate $ hashMap.hashes.toList.map toString) ++ "\n"
+  IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
   if useFROCache then
     -- TODO: reimplement using HEAD requests?
     let _ := overwrite
-    discard $ IO.runCurl $ #["-T", path.toString, "--aws-sigv4", "aws:amz:auto:s3",
-      "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
+    discard <| IO.runCurl #["-T", path.toString,
+      "--aws-sigv4", "aws:amz:auto:s3", "--user", token, s!"{UPLOAD_URL}/c/{hash}"]
   else
     let params := if overwrite
       then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob"]
       else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-    discard $ IO.runCurl $ params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
+    discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
   IO.FS.removeFile path
 
 end Commit
@@ -252,7 +253,7 @@ def QueryType.prefix : QueryType → String
   | all     => default
 
 def formatError : IO α :=
-  throw $ IO.userError "Invalid format for curl return"
+  throw <| IO.userError "Invalid format for curl return"
 
 def QueryType.desc : QueryType → String
   | files   => "hosted files"
@@ -264,7 +265,7 @@ Retrieves metadata about hosted files: their names and the timestamps of last mo
 
 Example: `["f/39476538726384726.tar.gz", "Sat, 24 Dec 2022 17:33:01 GMT"]`
 -/
-def getFilesInfo (q : QueryType) : IO $ List (String × String) := do
+def getFilesInfo (q : QueryType) : IO <| List (String × String) := do
   if useFROCache then
     throw <| .userError "FIXME: getFilesInfo is not adapted to FRO cache yet"
   IO.println s!"Downloading info list of {q.desc}"
