@@ -286,8 +286,7 @@ variable (L) {F F'}
 
 /-- The equivalence `RightExtension L F ≌ RightExtension L F'` induced by
 a natural isomorphism `F ≅ F'`. -/
-def rightExtensionEquivalenceOfIso₂ :
-    RightExtension L F ≌ RightExtension L F' :=
+def rightExtensionEquivalenceOfIso₂ : RightExtension L F ≌ RightExtension L F' :=
   CostructuredArrow.mapIso iso₂
 
 lemma hasRightExtension_iff_of_iso₂ :
