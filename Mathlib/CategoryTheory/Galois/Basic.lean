@@ -6,6 +6,7 @@ Authors: Christian Merten
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.FintypeCat
+import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
@@ -195,12 +196,21 @@ instance nonempty_fiber_of_isConnected (X : C) [IsConnected X] : Nonempty (F.obj
 
 /-- The fiber of the equalizer of `f g : X ⟶ Y` is equivalent to the set of agreement of `f`
 and `g`. -/
-private noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
+noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
     F.obj (equalizer f g) ≃ { x : F.obj X // F.map f x = F.map g x } := by
   apply Iso.toEquiv
-  trans
+  apply Iso.trans
   · exact PreservesEqualizer.iso (F ⋙ FintypeCat.incl) f g
   · exact Types.equalizerIso (F.map f) (F.map g)
+
+/-- The fiber of the pullback is the fiber product of the fibers. -/
+@[simp]
+noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
+    F.obj (pullback f g) ≃ { p : F.obj A × F.obj B // F.map f p.1 = F.map g p.2 } := by
+  apply Iso.toEquiv
+  apply Iso.trans
+  · exact PreservesPullback.iso (F ⋙ FintypeCat.incl) f g
+  · exact Types.pullbackIsoPullback (F.map f) (F.map g)
 
 /-- The evaluation map is injective for connected objects. -/
 lemma evaluationInjective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A) :
@@ -291,6 +301,11 @@ instance (A : C) [IsConnected A] : Finite (Aut A) := by
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f.hom a)
   exact evaluation_aut_injective_of_isConnected F A a
+
+/-- Coproduct inclusions are monic in Galois categories. -/
+instance : MonoCoprod C := by
+  obtain ⟨F, ⟨hf⟩⟩ := @GaloisCategory.hasFiberFunctor C _ _
+  exact MonoCoprod.monoCoprod_of_preservesCoprod_of_reflectsMono F
 
 end PreGaloisCategory
 
