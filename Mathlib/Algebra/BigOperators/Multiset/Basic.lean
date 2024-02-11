@@ -3,6 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.Multiset.Basic
 
@@ -133,14 +134,14 @@ theorem prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by
 
 @[to_additive]
 theorem prod_map_eq_pow_single [DecidableEq ι] (i : ι)
-    (hf : ∀ (i') (_ : i' ≠ i), i' ∈ m → f i' = 1) : (m.map f).prod = f i ^ m.count i := by
+    (hf : ∀ i' ≠ i, i' ∈ m → f i' = 1) : (m.map f).prod = f i ^ m.count i := by
   induction' m using Quotient.inductionOn with l
   simp [List.prod_map_eq_pow_single i f hf]
 #align multiset.prod_map_eq_pow_single Multiset.prod_map_eq_pow_single
 #align multiset.sum_map_eq_nsmul_single Multiset.sum_map_eq_nsmul_single
 
 @[to_additive]
-theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ (a') (_ : a' ≠ a), a' ∈ s → a' = 1) :
+theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ a' ≠ a, a' ∈ s → a' = 1) :
     s.prod = a ^ s.count a := by
   induction' s using Quotient.inductionOn with l
   simp [List.prod_eq_pow_single a h]
@@ -154,14 +155,16 @@ theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).
 #align multiset.nsmul_count Multiset.nsmul_count
 
 @[to_additive]
-theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [MonoidHomClass F α β] (f : F) :
+theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [FunLike F α β]
+    [MonoidHomClass F α β] (f : F) :
     (s.map f).prod = f s.prod :=
   Quotient.inductionOn s fun l => by simp only [l.prod_hom f, quot_mk_to_coe, coe_map, coe_prod]
 #align multiset.prod_hom Multiset.prod_hom
 #align multiset.sum_hom Multiset.sum_hom
 
 @[to_additive]
-theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type*} [MonoidHomClass F α β] (f : F)
+theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type*} [FunLike F α β]
+    [MonoidHomClass F α β] (f : F)
     (g : ι → α) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
   convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
@@ -285,6 +288,7 @@ theorem prod_eq_zero {s : Multiset α} (h : (0 : α) ∈ s) : s.prod = 0 := by
 
 variable [NoZeroDivisors α] [Nontrivial α] {s : Multiset α}
 
+@[simp]
 theorem prod_eq_zero_iff : s.prod = 0 ↔ (0 : α) ∈ s :=
   Quotient.inductionOn s fun l => by
     rw [quot_mk_to_coe, coe_prod]
@@ -310,7 +314,7 @@ theorem prod_map_inv' (m : Multiset α) : (m.map Inv.inv).prod = m.prod⁻¹ :=
 @[to_additive (attr := simp)]
 theorem prod_map_inv : (m.map fun i => (f i)⁻¹).prod = (m.map f).prod⁻¹ := by
   -- Porting note: used `convert`
-  simp_rw [←(m.map f).prod_map_inv', map_map, Function.comp_apply]
+  simp_rw [← (m.map f).prod_map_inv', map_map, Function.comp_apply]
 #align multiset.prod_map_inv Multiset.prod_map_inv
 #align multiset.sum_map_neg Multiset.sum_map_neg
 
@@ -427,6 +431,25 @@ theorem pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := b
 
 end OrderedCommMonoid
 
+section OrderedCancelCommMonoid
+
+variable [OrderedCancelCommMonoid α] {s : Multiset ι} {f g : ι → α}
+
+@[to_additive sum_lt_sum]
+theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
+    (s.map f).prod < (s.map g).prod := by
+  obtain ⟨l⟩ := s
+  simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_prod]
+  exact List.prod_lt_prod' f g hle hlt
+
+@[to_additive sum_lt_sum_of_nonempty]
+theorem prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) :
+    (s.map f).prod < (s.map g).prod := by
+  obtain ⟨i, hi⟩ := exists_mem_of_ne_zero hs
+  exact prod_lt_prod' (fun i hi => le_of_lt (hfg i hi)) ⟨i, hi, hfg i hi⟩
+
+end OrderedCancelCommMonoid
+
 theorem prod_nonneg [OrderedCommSemiring α] {m : Multiset α} (h : ∀ a ∈ m, (0 : α) ≤ a) :
     0 ≤ m.prod := by
   revert h
@@ -541,7 +564,8 @@ theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)
 end Multiset
 
 @[to_additive]
-theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type*} [MonoidHomClass F α β] (f : F)
+theorem map_multiset_prod [CommMonoid α] [CommMonoid β] {F : Type*} [FunLike F α β]
+    [MonoidHomClass F α β] (f : F)
     (s : Multiset α) : f s.prod = (s.map f).prod :=
   (s.prod_hom f).symm
 #align map_multiset_prod map_multiset_prod

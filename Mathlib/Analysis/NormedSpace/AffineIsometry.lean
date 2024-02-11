@@ -53,6 +53,7 @@ structure AffineIsometry extends P →ᵃ[𝕜] P₂ where
 
 variable {𝕜 P P₂}
 
+@[inherit_doc]
 notation:25 -- `→ᵃᵢ` would be more consistent with the linear isometry notation, but it is uglier
 P " →ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometry 𝕜 P P₂
 
@@ -71,7 +72,7 @@ theorem linear_eq_linearIsometry : f.linear = f.linearIsometry.toLinearMap := by
   rfl
 #align affine_isometry.linear_eq_linear_isometry AffineIsometry.linear_eq_linearIsometry
 
-instance : FunLike (P →ᵃⁱ[𝕜] P₂) P fun _ => P₂ :=
+instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ :=
   { coe := fun f => f.toFun,
     coe_injective' := fun f g => by cases f; cases g; simp }
 
@@ -143,14 +144,12 @@ theorem dist_map (x y : P) : dist (f x) (f y) = dist x y := by
   rw [dist_eq_norm_vsub V₂, dist_eq_norm_vsub V, ← map_vsub, f.linearIsometry.norm_map]
 #align affine_isometry.dist_map AffineIsometry.dist_map
 
--- Porting note: added `(dist_map)` to simp
 @[simp]
-theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := by simp [nndist_dist, (dist_map)]
+theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := by simp [nndist_dist]
 #align affine_isometry.nndist_map AffineIsometry.nndist_map
 
--- Porting note: added `(dist_map)` to simp
 @[simp]
-theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist, (dist_map)]
+theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist]
 #align affine_isometry.edist_map AffineIsometry.edist_map
 
 protected theorem isometry : Isometry f :=
@@ -339,7 +338,7 @@ instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
       cases f
       cases g
       congr
-      simpa [FunLike.coe_injective.eq_iff] using h }
+      simpa [DFunLike.coe_injective.eq_iff] using h }
 
 @[simp]
 theorem coe_mk (e : P ≃ᵃ[𝕜] P₂) (he : ∀ x, ‖e.linear x‖ = ‖x‖) : ⇑(mk e he) = e :=
@@ -724,7 +723,7 @@ def constVSub (p : P) : P ≃ᵃⁱ[𝕜] V :=
 variable {𝕜}
 
 @[simp]
-theorem coe_constVSub (p : P) : ⇑(constVSub 𝕜 p) = (· -ᵥ ·) p :=
+theorem coe_constVSub (p : P) : ⇑(constVSub 𝕜 p) = (p -ᵥ ·) :=
   rfl
 #align affine_isometry_equiv.coe_const_vsub AffineIsometryEquiv.coe_constVSub
 
@@ -747,7 +746,7 @@ def constVAdd (v : V) : P ≃ᵃⁱ[𝕜] P :=
 variable {𝕜 P}
 
 @[simp]
-theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (· +ᵥ ·) v :=
+theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (v +ᵥ ·) :=
   rfl
 #align affine_isometry_equiv.coe_const_vadd AffineIsometryEquiv.coe_constVAdd
 
@@ -877,7 +876,7 @@ namespace AffineSubspace
 /-- An affine subspace is isomorphic to its image under an injective affine map.
 This is the affine version of `Submodule.equivMapOfInjective`.
 -/
-@[simps]
+@[simps linear, simps! toFun]
 noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E] (φ : P₁ →ᵃ[𝕜] P₂)
     (hφ : Function.Injective φ) : E ≃ᵃ[𝕜] E.map φ :=
   { Equiv.Set.image _ (E : Set P₁) hφ with

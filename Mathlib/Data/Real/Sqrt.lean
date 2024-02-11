@@ -7,7 +7,6 @@ import Mathlib.Algebra.Star.Order
 import Mathlib.Algebra.NthRoot
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
-import Mathlib.Tactic.Positivity
 
 #align_import data.real.sqrt from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -212,7 +211,7 @@ theorem sqrt_mul_self (h : 0 ≤ x) : √(x * x) = x :=
 theorem sqrt_eq_cases : √x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 := by
   constructor
   · rintro rfl
-    cases' le_or_lt 0 x with hle hlt
+    rcases le_or_lt 0 x with hle | hlt
     · exact Or.inl ⟨mul_self_sqrt hle, sqrt_nonneg x⟩
     · exact Or.inr ⟨hlt, sqrt_eq_zero_of_nonpos hlt.le⟩
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
@@ -382,7 +381,7 @@ def evalSqrt : PositivityExt where eval {_ _} _zα _pα e := do
   let (.app _ (a : Q(Real))) ← whnfR e | throwError "not Real.sqrt"
   let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
   let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
-  let ra ← core zα' pα' a
+  let ra ← catchNone <| core zα' pα' a
   assertInstancesCommute
   match ra with
   | .positive pa => pure (.positive (q(Real.sqrt_pos_of_pos $pa) : Expr))
@@ -421,7 +420,7 @@ theorem sqrt_div' (x) {y : ℝ} (hy : 0 ≤ y) : √(x / y) = √x / √y := by
 
 @[simp]
 theorem div_sqrt : x / √x = √x := by
-  cases' le_or_lt x 0 with h h
+  rcases le_or_lt x 0 with h | h
   · rw [sqrt_eq_zero'.mpr h, div_zero]
   · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
 #align real.div_sqrt Real.div_sqrt

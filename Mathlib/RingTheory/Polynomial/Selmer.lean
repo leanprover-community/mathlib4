@@ -26,8 +26,6 @@ namespace Polynomial
 
 open scoped Polynomial
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {n : ℕ}
 
 theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^ n + z ^ 2 = 0) := by
@@ -40,7 +38,7 @@ theorem X_pow_sub_X_sub_one_irreducible_aux (z : ℂ) : ¬(z ^ n = z + 1 ∧ z ^
     interval_cases n % 3 <;>
     simp only [this, pow_zero, pow_one, eq_self_iff_true, or_true_iff, true_or_iff]
   have z_ne_zero : z ≠ 0 := fun h =>
-    zero_ne_one ((zero_pow zero_lt_three).symm.trans (show (0 : ℂ) ^ 3 = 1 from h ▸ h3))
+    zero_ne_one ((zero_pow three_ne_zero).symm.trans (show (0 : ℂ) ^ 3 = 1 from h ▸ h3))
   rcases key with (key | key | key)
   · exact z_ne_zero (by rwa [key, self_eq_add_left] at h1)
   · exact one_ne_zero (by rwa [key, self_eq_add_right] at h1)

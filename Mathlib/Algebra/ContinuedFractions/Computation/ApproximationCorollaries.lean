@@ -6,7 +6,7 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Order.Basic
 
 #align_import algebra.continued_fractions.computation.approximation_corollaries from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -98,7 +98,7 @@ open Nat
 theorem of_convergence_epsilon :
     ∀ ε > (0 : K), ∃ N : ℕ, ∀ n ≥ N, |v - (of v).convergents n| < ε := by
   intro ε ε_pos
-  -- use the archimedean property to obtian a suitable N
+  -- use the archimedean property to obtain a suitable N
   rcases (exists_nat_gt (1 / ε) : ∃ N' : ℕ, 1 / ε < N') with ⟨N', one_div_ε_lt_N'⟩
   let N := max N' 5
   -- set minimum to 5 to have N ≤ fib N work
@@ -109,12 +109,12 @@ theorem of_convergence_epsilon :
   · have : v = g.convergents n := of_correctness_of_terminatedAt terminated_at_n
     have : v - g.convergents n = 0 := sub_eq_zero.mpr this
     rw [this]
-    exact_mod_cast ε_pos
+    exact mod_cast ε_pos
   · let B := g.denominators n
     let nB := g.denominators (n + 1)
     have abs_v_sub_conv_le : |v - g.convergents n| ≤ 1 / (B * nB) :=
       abs_sub_convergents_le not_terminated_at_n
-    suffices : 1 / (B * nB) < ε; exact lt_of_le_of_lt abs_v_sub_conv_le this
+    suffices 1 / (B * nB) < ε from lt_of_le_of_lt abs_v_sub_conv_le this
     -- show that `0 < (B * nB)` and then multiply by `B * nB` to get rid of the division
     have nB_ineq : (fib (n + 2) : K) ≤ nB :=
       haveI : ¬g.TerminatedAt (n + 1 - 1) := not_terminated_at_n
@@ -122,29 +122,23 @@ theorem of_convergence_epsilon :
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminated_at_n
       succ_nth_fib_le_of_nth_denom (Or.inr this)
-    have zero_lt_B : 0 < B := B_ineq.trans_lt' $ by exact_mod_cast fib_pos.2 n.succ_pos
-    have nB_pos : 0 < nB := nB_ineq.trans_lt' $ by exact_mod_cast fib_pos.2 $ succ_pos _
+    have zero_lt_B : 0 < B := B_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
+    have nB_pos : 0 < nB := nB_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     have zero_lt_mul_conts : 0 < B * nB := by positivity
-    suffices : 1 < ε * (B * nB); exact (div_lt_iff zero_lt_mul_conts).mpr this
-    -- use that `N ≥ n` was obtained from the archimedean property to show the following
-    have one_lt_ε_mul_N : 1 < ε * n := by
-      have one_lt_ε_mul_N' : 1 < ε * (N' : K) := (div_lt_iff' ε_pos).mp one_div_ε_lt_N'
-      have : (N' : K) ≤ N := by exact_mod_cast le_max_left _ _
-      have : ε * N' ≤ ε * n :=
-        (mul_le_mul_left ε_pos).mpr (le_trans this (by exact_mod_cast n_ge_N))
-      exact lt_of_lt_of_le one_lt_ε_mul_N' this
-    suffices : ε * n ≤ ε * (B * nB); exact lt_of_lt_of_le one_lt_ε_mul_N this
+    suffices 1 < ε * (B * nB) from (div_lt_iff zero_lt_mul_conts).mpr this
+    -- use that `N' ≥ n` was obtained from the archimedean property to show the following
+    calc 1 < ε * (N' : K) := (div_lt_iff' ε_pos).mp one_div_ε_lt_N'
+      _ ≤ ε * (B * nB) := ?_
     -- cancel `ε`
-    suffices : (n : K) ≤ B * nB;
-    exact (mul_le_mul_left ε_pos).mpr this
-    show (n : K) ≤ B * nB
+    gcongr
     calc
-      (n : K) ≤ fib n := by exact_mod_cast le_fib_self <| le_trans (le_max_right N' 5) n_ge_N
+      (N' : K) ≤ (N : K) := by exact_mod_cast le_max_left _ _
+      _ ≤ n := by exact_mod_cast n_ge_N
+      _ ≤ fib n := by exact_mod_cast le_fib_self <| le_trans (le_max_right N' 5) n_ge_N
       _ ≤ fib (n + 1) := by exact_mod_cast fib_le_fib_succ
       _ ≤ fib (n + 1) * fib (n + 1) := by exact_mod_cast (fib (n + 1)).le_mul_self
-      _ ≤ fib (n + 1) * fib (n + 2) :=
-            mul_le_mul_of_nonneg_left (by exact_mod_cast fib_le_fib_succ) (cast_nonneg _)
-      _ ≤ B * nB := mul_le_mul B_ineq nB_ineq (cast_nonneg _) zero_lt_B.le
+      _ ≤ fib (n + 1) * fib (n + 2) := by gcongr; exact_mod_cast fib_le_fib_succ
+      _ ≤ B * nB := by gcongr
 #align generalized_continued_fraction.of_convergence_epsilon GeneralizedContinuedFraction.of_convergence_epsilon
 
 attribute [local instance] Preorder.topology

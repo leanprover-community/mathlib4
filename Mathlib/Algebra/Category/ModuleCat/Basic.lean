@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Markus Himmel
 -/
 import Mathlib.Algebra.Category.GroupCat.Preadditive
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 #align_import algebra.category.Module.basic from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
@@ -93,15 +91,16 @@ attribute [coe] ModuleCat.carrier
 
 instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   Hom M N := M →ₗ[R] N
-  id _ := LinearMap.id -- porting note: was `1`
+  id _ := LinearMap.id
   comp f g := g.comp f
   id_comp _ := LinearMap.id_comp _
   comp_id _ := LinearMap.comp_id _
-  assoc f g h := @LinearMap.comp_assoc _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    RingHomCompTriple.ids RingHomCompTriple.ids RingHomCompTriple.ids f g h
+  assoc f g h := LinearMap.comp_assoc (f := f) (g := g) (h := h)
 #align Module.Module_category ModuleCat.moduleCategory
 
--- porting note: was not necessary in mathlib
+instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M N :=
+  LinearMap.instFunLike
+
 instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
 
@@ -123,10 +122,9 @@ instance {M : ModuleCat.{v} R} : AddCommGroup ((forget (ModuleCat R)).obj M) :=
 instance {M : ModuleCat.{v} R} : Module R ((forget (ModuleCat R)).obj M) :=
   (inferInstance : Module R M)
 
--- porting note: added to ease automation
 @[ext]
 lemma ext {M N : ModuleCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGroupCat where
   forget₂ :=
@@ -276,9 +274,6 @@ def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂
   inv_hom_id := by ext; apply e.right_inv
 #align linear_equiv.to_Module_iso LinearEquiv.toModuleIso
 
--- porting note: for the following three definitions, Lean3 is not able to see that
--- `Module.of R M` is defeq to `M` when `M : Module R`. Lean4 is, so that we no longer
--- need different versions of `LinearEquiv.toModuleIso`.
 /-- Build an isomorphism in the category `Module R` from a `LinearEquiv` between `Module`s. -/
 abbrev LinearEquiv.toModuleIso' {M N : ModuleCat.{v} R} (i : M ≃ₗ[R] N) : M ≅ N :=
   i.toModuleIso
@@ -299,20 +294,8 @@ abbrev LinearEquiv.toModuleIso'Right [AddCommGroup X₁] [Module R X₁] {X₂ :
 namespace CategoryTheory.Iso
 
 /-- Build a `linear_equiv` from an isomorphism in the category `Module R`. -/
-@[simps]
-def toLinearEquiv {X Y : ModuleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y where
-  toFun := i.hom
-  invFun := i.inv
-  left_inv x := by
-    -- porting note: was `by tidy`
-    change (i.hom ≫ i.inv) x = x
-    simp
-  right_inv x := by
-    -- porting note: was `by tidy`
-    change (i.inv ≫ i.hom) x = x
-    simp
-  map_add' := by simp
-  map_smul' := by simp
+def toLinearEquiv {X Y : ModuleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y :=
+  LinearEquiv.ofLinear i.hom i.inv i.inv_hom_id i.hom_inv_id
 #align category_theory.iso.to_linear_equiv CategoryTheory.Iso.toLinearEquiv
 
 end CategoryTheory.Iso
@@ -338,9 +321,6 @@ instance : Preadditive (ModuleCat.{v} R) where
     dsimp
     erw [map_add]
     rfl
-  comp_add P Q R f g g' := by
-    ext
-    rfl
 
 instance forget₂_addCommGroupCat_additive : (forget₂ (ModuleCat.{v} R) AddCommGroupCat).Additive
     where
@@ -357,10 +337,6 @@ instance : Linear S (ModuleCat.{v} S) where
     ext
     dsimp
     rw [LinearMap.smul_apply, LinearMap.smul_apply, map_smul]
-    rfl
-  comp_smul := by
-    intros
-    ext
     rfl
 
 variable {X Y X' Y' : ModuleCat.{v} S}
@@ -433,8 +409,8 @@ lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :
     r • x = (show A ⟶ A from φ r) x := rfl
 
 instance : Module R (mkOfSMul' φ) where
-  smul_zero _ := map_zero _
-  smul_add _ _ _ := map_add _ _ _
+  smul_zero _ := map_zero (N := A) _
+  smul_add _ _ _ := map_add (N := A) _ _ _
   one_smul := by simp
   mul_smul := by simp
   add_smul _ _ _ := by simp; rfl
@@ -464,7 +440,7 @@ with the scalar multiplication. -/
 @[simps]
 def homMk : M ⟶ N where
   toFun := φ
-  map_add' _ _ := map_add _ _ _
+  map_add' _ _ := φ.map_add _ _
   map_smul' r x := (congr_hom (hφ r) x).symm
 
 lemma forget₂_map_homMk :

@@ -82,7 +82,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_smul_aux_eq_of_rel ModuleCat.FilteredColimits.colimitSMulAux_eq_of_rel
 
 /-- Scalar multiplication in the colimit. See also `colimitSMulAux`. -/
-instance colimitHasSmul : SMul R (M F) where
+instance colimitHasSMul : SMul R (M F) where
   smul r x := by
     refine' Quot.lift (colimitSMulAux F r) _ x
     intro x y h
@@ -90,7 +90,7 @@ instance colimitHasSmul : SMul R (M F) where
     apply Types.FilteredColimit.rel_of_quot_rel
     exact h
 set_option linter.uppercaseLean3 false in
-#align Module.filtered_colimits.colimit_has_smul ModuleCat.FilteredColimits.colimitHasSmul
+#align Module.filtered_colimits.colimit_has_smul ModuleCat.FilteredColimits.colimitHasSMul
 
 @[simp]
 theorem colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk F x = M.mk F ⟨x.1, r • x.2⟩ :=
@@ -118,7 +118,7 @@ instance colimitMulAction : MulAction R (M F) where
 instance colimitSMulWithZero : SMulWithZero R (M F) :=
 { colimitMulAction F with
   smul_zero := fun r => by
-    erw [colimit_zero_eq _ (IsFiltered.Nonempty.some : J), colimit_smul_mk_eq, smul_zero]
+    erw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
     rfl
   zero_smul := fun x => by
     refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x

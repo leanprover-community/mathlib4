@@ -5,7 +5,6 @@ Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.Tactic.Positivity
 
 #align_import algebra.order.pi from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -56,13 +55,10 @@ instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z
 
 @[to_additive]
 instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
-    OrderedCancelCommMonoid (∀ i : I, f i) :=
-  { Pi.partialOrder, Pi.commMonoid with
-    npow := Monoid.npow,
-    le_of_mul_le_mul_left := fun _ _ _ h i =>
-      OrderedCancelCommMonoid.le_of_mul_le_mul_left _ _ _ (h i)
-    mul_le_mul_left := fun _ _ c h i =>
-      OrderedCancelCommMonoid.mul_le_mul_left _ _ (c i) (h i) }
+    OrderedCancelCommMonoid (∀ i : I, f i) where
+  __ := Pi.commMonoid
+  le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
+  mul_le_mul_left _ _ c h i := mul_le_mul_left' (c i) (h i)
 --Porting note: Old proof was
   -- refine_struct
   --     { Pi.partialOrder, Pi.monoid with

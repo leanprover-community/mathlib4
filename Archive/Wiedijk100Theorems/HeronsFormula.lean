@@ -25,8 +25,6 @@ open Real EuclideanGeometry
 
 open scoped Real EuclideanGeometry
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace Theorems100
 
 local notation "√" => Real.sqrt
@@ -60,7 +58,7 @@ theorem heron {p1 p2 p3 : P} (h1 : p1 ≠ p2) (h2 : p3 ≠ p2) :
     cases' div_nonneg_iff.mp frac_nonneg with h h
     · exact h.left
     · simpa [h1, h2] using le_antisymm h.right (sq_nonneg _)
-  have ab2_nonneg : 0 ≤ 2 * a * b := by simp [mul_nonneg, dist_nonneg]
+  have ab2_nonneg : 0 ≤ 2 * a * b := by positivity
   calc
     1 / 2 * a * b * sin γ = 1 / 2 * a * b * (√ numerator / √ denominator) := by
       rw [sin_eq_sqrt_one_sub_cos_sq, split_to_frac, sqrt_div numerator_nonneg] <;>
