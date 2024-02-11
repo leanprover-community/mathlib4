@@ -2219,7 +2219,7 @@ theorem modifyNth_zero_cons (f : α → α) (a l) :
 
 @[simp]
 theorem modifyNth_succ_cons (f : α → α) (n a l) :
-    modifyNth f n.succ (a :: l) = a :: modifyNth f n l := rfl
+    modifyNth f (n + 1) (a :: l) = a :: modifyNth f n l := rfl
 
 theorem modifyNth_eq_take_drop (f : α → α) :
     ∀ n l, modifyNth f n l = take n l ++ modifyHead f (drop n l) :=
