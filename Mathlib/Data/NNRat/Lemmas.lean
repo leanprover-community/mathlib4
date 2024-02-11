@@ -11,7 +11,7 @@ import Mathlib.Data.Rat.Field
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
 /-!
-# Algebraic structures on the nonnegative rationals
+# Field and action structures on the nonnegative rationals
 
 This file provides additional results about `NNRat` that cannot live in earlier files due to import
 cycles.
@@ -26,8 +26,6 @@ namespace NNRat
 variable {α : Type*} {p q : ℚ≥0}
 
 instance instDenselyOrdered : DenselyOrdered ℚ≥0 := Nonneg.instDenselyOrdered
-
-open Rat (toNNRat)
 
 @[simp, norm_cast] lemma coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ := rfl
 #align nnrat.coe_inv NNRat.coe_inv
