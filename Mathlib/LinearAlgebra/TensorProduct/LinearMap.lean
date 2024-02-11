@@ -69,7 +69,7 @@ protected def baseChange₂ (B : M₂ →ₗ[R] M₂ →ₗ[R] R) :
   LinearMap.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.mul A A) B
 
 @[simp]
-theorem baseChange_tmul₂ (B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R) (a : A) (m₂ : M₂)
+theorem baseChange₂_tmul (B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R) (a : A) (m₂ : M₂)
     (a' : A) (m₂' : M₂) :
     B₂.baseChange₂ A (a ⊗ₜ m₂) (a' ⊗ₜ m₂') = (B₂ m₂ m₂') • (a * a') :=
   rfl
