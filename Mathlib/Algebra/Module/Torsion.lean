@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.GroupTheory.Torsion
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Finiteness
+import Mathlib.Data.Set.Lattice
 
 #align_import algebra.module.torsion from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
 

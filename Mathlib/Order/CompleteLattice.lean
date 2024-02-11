@@ -9,7 +9,7 @@ import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Set
-import Mathlib.Mathport.Notation
+import Mathlib.Order.SetNotation
 
 #align_import order.complete_lattice from "leanprover-community/mathlib"@"5709b0d8725255e76f47debca6400c07b5c2d8e6"
 
@@ -50,126 +50,6 @@ set_option autoImplicit true
 open Function OrderDual Set
 
 variable {α β β₂ γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
-
-/-- Class for the `sSup` operator -/
-class SupSet (α : Type*) where
-  sSup : Set α → α
-#align has_Sup SupSet
-#align has_Sup.Sup SupSet.sSup
-
-
-/-- Class for the `sInf` operator -/
-class InfSet (α : Type*) where
-  sInf : Set α → α
-#align has_Inf InfSet
-#align has_Inf.Inf InfSet.sInf
-
-
-export SupSet (sSup)
-
-export InfSet (sInf)
-
-/-- Supremum of a set -/
-add_decl_doc SupSet.sSup
-
-/-- Infimum of a set -/
-add_decl_doc InfSet.sInf
-
-/-- Indexed supremum -/
-def iSup [SupSet α] {ι} (s : ι → α) : α :=
-  sSup (range s)
-#align supr iSup
-
-/-- Indexed infimum -/
-def iInf [InfSet α] {ι} (s : ι → α) : α :=
-  sInf (range s)
-#align infi iInf
-
-instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
-  ⟨sInf ∅⟩
-#align has_Inf_to_nonempty infSet_to_nonempty
-
-instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
-  ⟨sSup ∅⟩
-#align has_Sup_to_nonempty supSet_to_nonempty
-
-/-
-Porting note: the code below could replace the `notation3` command
-open Std.ExtendedBinder in
-syntax "⨆ " extBinder ", " term:51 : term
-
-macro_rules
-  | `(⨆ $x:ident, $p) => `(iSup fun $x:ident ↦ $p)
-  | `(⨆ $x:ident : $t, $p) => `(iSup fun $x:ident : $t ↦ $p)
-  | `(⨆ $x:ident $b:binderPred, $p) =>
-    `(iSup fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p) -/
-
-/-- Indexed supremum. -/
-notation3 "⨆ "(...)", "r:60:(scoped f => iSup f) => r
-
-/-- Indexed infimum. -/
-notation3 "⨅ "(...)", "r:60:(scoped f => iInf f) => r
-
-section delaborators
-
-open Lean Lean.PrettyPrinter.Delaborator
-
-/-- Delaborator for indexed supremum. -/
-@[delab app.iSup]
-def iSup_delab : Delab := whenPPOption Lean.getPPNotation do
-  let #[_, _, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
-  unless f.isLambda do failure
-  let prop ← Meta.isProp ι
-  let dep := f.bindingBody!.hasLooseBVar 0
-  let ppTypes ← getPPOption getPPFunBinderTypes
-  let stx ← SubExpr.withAppArg do
-    let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName fun x => do
-      let x : TSyntax `ident := .mk x
-      let body ← delab
-      if prop && !dep then
-        `(⨆ (_ : $dom), $body)
-      else if prop || ppTypes then
-        `(⨆ ($x:ident : $dom), $body)
-      else
-        `(⨆ $x:ident, $body)
-  -- Cute binders
-  let stx : Term ←
-    match stx with
-    | `(⨆ $x:ident, ⨆ (_ : $y:ident ∈ $s), $body)
-    | `(⨆ ($x:ident : $_), ⨆ (_ : $y:ident ∈ $s), $body) =>
-      if x == y then `(⨆ $x:ident ∈ $s, $body) else pure stx
-    | _ => pure stx
-  return stx
-
-/-- Delaborator for indexed infimum. -/
-@[delab app.iInf]
-def iInf_delab : Delab := whenPPOption Lean.getPPNotation do
-  let #[_, _, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
-  unless f.isLambda do failure
-  let prop ← Meta.isProp ι
-  let dep := f.bindingBody!.hasLooseBVar 0
-  let ppTypes ← getPPOption getPPFunBinderTypes
-  let stx ← SubExpr.withAppArg do
-    let dom ← SubExpr.withBindingDomain delab
-    withBindingBodyUnusedName fun x => do
-      let x : TSyntax `ident := .mk x
-      let body ← delab
-      if prop && !dep then
-        `(⨅ (_ : $dom), $body)
-      else if prop || ppTypes then
-        `(⨅ ($x:ident : $dom), $body)
-      else
-        `(⨅ $x:ident, $body)
-  -- Cute binders
-  let stx : Term ←
-    match stx with
-    | `(⨅ $x:ident, ⨅ (_ : $y:ident ∈ $s), $body)
-    | `(⨅ ($x:ident : $_), ⨅ (_ : $y:ident ∈ $s), $body) =>
-      if x == y then `(⨅ $x:ident ∈ $s, $body) else pure stx
-    | _ => pure stx
-  return stx
-end delaborators
 
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩

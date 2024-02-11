@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 import Mathlib.Topology.Defs.Basic
 import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Definitions about filters in topological spaces
