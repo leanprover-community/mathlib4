@@ -58,6 +58,14 @@ protected def tmul (B₁ : M₁ →ₗ[A] M₁ →ₗ[A] A) (B₂ : M₂ →ₗ[
     (M₁ ⊗[R] M₂) →ₗ[A] (M₁ ⊗[R] M₂) →ₗ[A] A :=
   LinearMap.tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
+attribute [ext] TensorProduct.ext in
+/-- A tensor product of symmetric bilinear forms is symmetric. -/
+lemma IsSymm.tmul {B₁ : M₁ →ₗ[A] M₁ →ₗ[A] A} {B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R}
+    (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
+  rw [LinearMap.isSymm_iff_eq_flip]
+  ext x₁ x₂ y₁ y₂
+  exact congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)
+
 variable (A) in
 /-- The base change of a bilinear form. -/
 protected def baseChange₂ (B : M₂ →ₗ[R] M₂ →ₗ[R] R) :
@@ -71,12 +79,6 @@ theorem baseChange₂_tmul (B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R) (a : A) (m�
   rfl
 
 
-attribute [ext] TensorProduct.ext in
-/-- A tensor product of symmetric bilinear forms is symmetric. -/
-lemma IsSymm.tmul {B₁ : M₁ →ₗ[A] M₁ →ₗ[A] A} {B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R}
-    (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
-  rw [LinearMap.isSymm_iff_eq_flip]
-  ext x₁ x₂ y₁ y₂
-  exact congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)
+
 
 end LinearMap
