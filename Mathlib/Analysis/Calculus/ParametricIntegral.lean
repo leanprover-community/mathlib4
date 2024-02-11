@@ -173,9 +173,9 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip_interval [NormedSpace ℝ H
     (hF_int : IntervalIntegrable (F x₀) μ a b)
     (hF'_meas : AEStronglyMeasurable F' <| μ.restrict (Ι a b))
     (h_lip : ∀ᵐ t ∂μ.restrict (Ι a b),
-      LipschitzOnWith (Real.nnabs <| bound t) (fun x ↦ F x t) (ball x₀ ε))
+      LipschitzOnWith (Real.nnabs <| bound t) (F · t) (ball x₀ ε))
     (bound_integrable : IntervalIntegrable bound μ a b)
-    (h_diff : ∀ᵐ t ∂μ.restrict (Ι a b), HasFDerivAt (fun x ↦ F x t) (F' t) x₀) :
+    (h_diff : ∀ᵐ t ∂μ.restrict (Ι a b), HasFDerivAt (F · t) (F' t) x₀) :
     IntervalIntegrable F' μ a b ∧
       HasFDerivAt (fun x ↦ ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
   simp_rw [AEStronglyMeasurable.aestronglyMeasurable_uIoc_iff, eventually_and] at hF_meas hF'_meas
@@ -201,7 +201,7 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F' : H → α → H →L
     HasFDerivAt (fun x ↦ ∫ a, F x a ∂μ) (∫ a, F' x₀ a ∂μ) x₀ := by
   letI : NormedSpace ℝ H := NormedSpace.restrictScalars ℝ 𝕜 H
   have x₀_in : x₀ ∈ ball x₀ ε := mem_ball_self ε_pos
-  have diff_x₀ : ∀ᵐ a ∂μ, HasFDerivAt (fun x ↦ F x a) (F' x₀ a) x₀ :=
+  have diff_x₀ : ∀ᵐ a ∂μ, HasFDerivAt (F · a) (F' x₀ a) x₀ :=
     h_diff.mono fun a ha ↦ ha x₀ x₀_in
   have : ∀ᵐ a ∂μ, LipschitzOnWith (Real.nnabs (bound a)) (F · a) (ball x₀ ε) := by
     apply (h_diff.and h_bound).mono
@@ -222,7 +222,7 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ
     (hF'_meas : AEStronglyMeasurable (F' x₀) <| μ.restrict (Ι a b))
     (h_bound : ∀ᵐ t ∂μ.restrict (Ι a b), ∀ x ∈ ball x₀ ε, ‖F' x t‖ ≤ bound t)
     (bound_integrable : IntervalIntegrable bound μ a b)
-    (h_diff : ∀ᵐ t ∂μ.restrict (Ι a b), ∀ x ∈ ball x₀ ε, HasFDerivAt (fun x ↦ F x t) (F' x t) x) :
+    (h_diff : ∀ᵐ t ∂μ.restrict (Ι a b), ∀ x ∈ ball x₀ ε, HasFDerivAt (F · t) (F' x t) x) :
     HasFDerivAt (fun x ↦ ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' x₀ t ∂μ) x₀ := by
   rw [ae_restrict_uIoc_iff] at h_diff h_bound
   simp_rw [AEStronglyMeasurable.aestronglyMeasurable_uIoc_iff, eventually_and] at hF_meas hF'_meas
