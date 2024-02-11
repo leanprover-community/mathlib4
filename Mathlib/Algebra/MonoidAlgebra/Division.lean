@@ -123,7 +123,7 @@ theorem of'_divOf (a : G) : of' k G a /ᵒᶠ a = 1 := by
 
 /-- The remainder upon division by `of' k G g`. -/
 noncomputable def modOf (x : k[G]) (g : G) : k[G] :=
-  letI := Classical.decPred (fun g₁ => ∃ g₂, g₁ = g + g₂)
+  letI := Classical.decPred fun g₁ => ∃ g₂, g₁ = g + g₂
   x.filter fun g₁ => ¬∃ g₂, g₁ = g + g₂
 #align add_monoid_algebra.mod_of AddMonoidAlgebra.modOf
 

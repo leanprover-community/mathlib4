@@ -878,13 +878,12 @@ variable [Zero M] (p : α → Prop) [DecidablePred p] (f : α →₀ M)
 otherwise. -/
 def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M where
   toFun a := if p a then f a else 0
-  support := f.support.filter fun a => p a
+  support := f.support.filter p
   mem_support_toFun a := by
     simp only -- porting note: necessary to beta reduce to activate `split_ifs`
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
-        -- porting note: I needed to provide the instance explicitly
-        tauto
+        -- tauto
 #align finsupp.filter Finsupp.filter
 
 theorem filter_apply (a : α) : f.filter p a = if p a then f a else 0 := rfl
@@ -1117,7 +1116,7 @@ theorem filter_sum [DecidablePred p] (s : Finset ι) (f : ι → α →₀ M) :
   map_sum (filterAddHom p) f s
 #align finsupp.filter_sum Finsupp.filter_sum
 
-theorem filter_eq_sum (p : α → Prop) [ DecidablePred p] (f : α →₀ M) :
+theorem filter_eq_sum (p : α → Prop) [DecidablePred p] (f : α →₀ M) :
     f.filter p = ∑ i in f.support.filter p, single i (f i) :=
   (f.filter p).sum_single.symm.trans <|
     Finset.sum_congr rfl fun x hx => by
