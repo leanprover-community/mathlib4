@@ -144,7 +144,7 @@ theorem of_convergence_epsilon :
 attribute [local instance] Preorder.topology
 
 theorem of_convergence [OrderTopology K] :
-    Filter.Tendsto (of v).convergents Filter.atTop <| nhds v := by
+    Filter.Tendsto (of v).convergents Filter.atTop <| 𝓝 v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v
 #align generalized_continued_fraction.of_convergence GeneralizedContinuedFraction.of_convergence
 

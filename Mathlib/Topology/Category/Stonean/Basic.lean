@@ -188,7 +188,7 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   let C := Set.range f
   have hC : IsClosed C := (isCompact_range f.continuous).isClosed
   let U := Cᶜ
-  have hUy : U ∈ nhds y := by
+  have hUy : U ∈ 𝓝 y := by
     simp only [Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
   obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
   classical
