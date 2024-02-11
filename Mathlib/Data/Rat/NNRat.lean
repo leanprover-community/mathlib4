@@ -402,7 +402,7 @@ variable {p q : ℚ≥0}
 #align nnrat.denom NNRat.den
 
 @[norm_cast] lemma num_coe (q : ℚ≥0) : (q : ℚ).num = q.num := by
-  simp [num, abs_of_nonneg, Rat.num_nonneg_iff_zero_le.2 q.2]
+  simp [num, abs_of_nonneg, Rat.num_nonneg, q.2]
 
 theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 #align nnrat.nat_abs_num_coe NNRat.natAbs_num_coe
