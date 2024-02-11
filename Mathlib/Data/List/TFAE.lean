@@ -5,7 +5,7 @@ Authors: Johan Commelin, Simon Hudon
 -/
 import Std.Data.List.Lemmas
 import Std.Tactic.RCases
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 import Mathlib.Mathport.Rename
 
 #align_import data.list.tfae from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"

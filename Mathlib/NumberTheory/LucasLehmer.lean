@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
 -/
 import Mathlib.Data.Nat.Parity
-import Mathlib.Data.PNat.Interval
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype

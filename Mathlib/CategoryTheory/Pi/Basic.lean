@@ -6,7 +6,6 @@ Authors: Simon Hudon, Scott Morrison
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.Data.Sum.Basic
 
 #align_import category_theory.pi.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
