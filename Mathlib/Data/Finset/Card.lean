@@ -459,6 +459,12 @@ theorem card_inter_add_card_union (s t : Finset α) :
     (s ∩ t).card + (s ∪ t).card = s.card + t.card := by rw [add_comm, card_union_add_card_inter]
 #align finset.card_inter_add_card_union Finset.card_inter_add_card_union
 
+lemma card_union (s t : Finset α) : (s ∪ t).card = s.card + t.card - (s ∩ t).card := by
+  rw [← card_union_add_card_inter, Nat.add_sub_cancel]
+
+lemma card_inter (s t : Finset α) : (s ∩ t).card = s.card + t.card - (s ∪ t).card := by
+  rw [← card_inter_add_card_union, Nat.add_sub_cancel]
+
 theorem card_union_le (s t : Finset α) : (s ∪ t).card ≤ s.card + t.card :=
   card_union_add_card_inter s t ▸ Nat.le_add_right _ _
 #align finset.card_union_le Finset.card_union_le
