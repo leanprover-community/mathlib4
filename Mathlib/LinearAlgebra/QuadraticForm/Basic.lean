@@ -1133,8 +1133,6 @@ theorem QuadraticForm.toMatrix'_smul (a : R) (Q : QuadraticForm R (n → R)) :
   simp only [toMatrix', LinearEquiv.map_smul, LinearMap.map_smul]
 #align quadratic_form.to_matrix'_smul QuadraticForm.toMatrix'_smul
 
-#check (associated_isSymm _ _).eq
-
 theorem QuadraticForm.isSymm_toMatrix' (Q : QuadraticForm R (n → R)) : Q.toMatrix'.IsSymm := by
   ext i j
   rw [toMatrix', Matrix.transpose_apply, BilinForm.toMatrix'_apply, BilinForm.toMatrix'_apply,
