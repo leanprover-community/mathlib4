@@ -570,8 +570,7 @@ instance isEquivalenceTrans (F : C ⥤ D) (G : D ⥤ E) [IsEquivalence F] [IsEqu
 instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringLeft C D E).obj F) :=
   (inferInstance : IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse)
 
-instance (F : C ⥤ D) [IsEquivalence F] :
-    IsEquivalence ((whiskeringRight E C D).obj F) :=
+instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D).obj F) :=
   (inferInstance : IsEquivalence (Equivalence.congrRight F.asEquivalence).functor)
 
 end Functor
