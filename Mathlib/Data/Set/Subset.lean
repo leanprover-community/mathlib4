@@ -77,9 +77,11 @@ lemma preimage_val_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ 
 @[simp]
 lemma preimage_val_iInter : A ↓∩ (⋂ i, s i) = ⋂ i, A ↓∩ s i := preimage_iInter
 
-lemma preimage_val_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
+lemma preimage_val_sInter_eq_sInter : A ↓∩ (⋂₀ S) = ⋂₀ { (A ↓∩ B) | B ∈ S } := by
   erw [sInter_image]
   simp_rw [sInter_eq_biInter, preimage_iInter]
+
+lemma preimage_val_sInter : A ↓∩ (⋂₀ S) = ⋂ (B ∈ S), A ↓∩ B := preimage_sInter
 
 lemma eq_of_preimage_val_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B = A ↓∩ C) : B = C := by
   simp only [← inter_eq_right] at hB hC
