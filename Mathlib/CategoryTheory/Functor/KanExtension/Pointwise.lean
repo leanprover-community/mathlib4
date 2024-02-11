@@ -118,7 +118,7 @@ lemma IsPointwiseLeftKanExtension.hasPointwiseLeftKanExtension {E : LeftExtensio
 
 variable {E E'}
 
-lemma isPointwiseLeftKanExtensionAtEquivOfIso (e : E ≅ E') (Y : D) :
+def isPointwiseLeftKanExtensionAtEquivOfIso (e : E ≅ E') (Y : D) :
     E.IsPointwiseLeftKanExtensionAt Y ≃ E'.IsPointwiseLeftKanExtensionAt Y where
   toFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor F L Y).mapIso e)
   invFun h := IsColimit.ofIsoColimit h ((coconeAtFunctor F L Y).mapIso e.symm)
@@ -129,7 +129,7 @@ lemma isPointwiseLeftKanExtensionAtEquivOfIso (e : E ≅ E') (Y : D) :
     dsimp only [IsPointwiseLeftKanExtensionAt]
     apply Subsingleton.elim
 
-lemma isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
+def isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
     E.IsPointwiseLeftKanExtension ≃ E'.IsPointwiseLeftKanExtension where
   toFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y) (h Y)
   invFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y).symm (h Y)
