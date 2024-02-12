@@ -284,7 +284,7 @@ lemma coe_rootSpaceProductNegSelf_apply (x : rootSpace H α) (y : rootSpace H (-
 
 lemma mem_range_rootSpaceProductNegSelf {x : H} :
     x ∈ (rootSpaceProductNegSelf α).range ↔
-    (x : L) ∈ Submodule.span R {w | ∃ᵉ (y ∈ rootSpace H α) (z ∈ rootSpace H (-α)), ⁅y, z⁆ = w} := by
+    (x : L) ∈ Submodule.span R {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} := by
   have : x ∈ (rootSpaceProductNegSelf α).range ↔
       (x : L) ∈ (rootSpaceProductNegSelf α).range.map H.toLieSubmodule.incl := by
     simpa using exists_congr fun _ ↦ H.toLieSubmodule.injective_incl.eq_iff.symm
