@@ -511,6 +511,11 @@ theorem image_preimage_eq {f : α → β} (s : Set β) (h : Surjective f) : f ''
 #align set.image_preimage_eq Set.image_preimage_eq
 
 @[simp]
+theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : Set β) (a : β) :
+    s ⊆ (fun _ => a) ⁻¹' t ↔ a ∈ t := by
+  rw [← image_subset_iff, hs.image_const, singleton_subset_iff]
+
+@[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
   Iff.intro
     fun eq => by rw [← image_preimage_eq s hf, ← image_preimage_eq t hf, eq]
@@ -688,10 +693,18 @@ alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_iff_surjective
 #align function.surjective.range_eq Function.Surjective.range_eq
 
 @[simp]
+theorem subset_range_of_surjective {f : α → β} (h : Surjective f) (s : Set β) :
+    s ⊆ range f := Surjective.range_eq h ▸ subset_univ s
+
+@[simp]
 theorem image_univ {f : α → β} : f '' univ = range f := by
   ext
   simp [image, range]
 #align set.image_univ Set.image_univ
+
+@[simp]
+theorem preimage_eq_univ_iff {f : α → β} {s} : f ⁻¹' s = univ ↔ range f ⊆ s := by
+  rw [← univ_subset_iff, ← image_subset_iff, image_univ]
 
 theorem image_subset_range (f : α → β) (s) : f '' s ⊆ range f := by
   rw [← image_univ]; exact image_subset _ (subset_univ _)
@@ -806,6 +819,7 @@ theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
   rw [← forall_range_iff, range_image]; rfl
 
+@[simp]
 theorem preimage_subset_preimage_iff {s t : Set α} {f : β → α} (hs : s ⊆ range f) :
     f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by
   constructor
