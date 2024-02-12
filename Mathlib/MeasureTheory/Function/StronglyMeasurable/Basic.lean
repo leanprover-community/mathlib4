@@ -1908,7 +1908,7 @@ theorem _root_.aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGr
 lemma of_absolutelyContinuous {α β : Type*} [MeasurableSpace α] [TopologicalSpace β]
     {μ ν : Measure α} (h : ν ≪ μ) (g : α → β) (hμ : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable g ν := by obtain ⟨g₁, hg₁, hg₁'⟩ := hμ; exact ⟨g₁, hg₁, h.ae_eq hg₁'⟩
-#align measure_theory.ae_strongly_measurable_of_absolutely_continuous MeasureTheory.aEStronglyMeasurable_of_absolutelyContinuous
+#align measure_theory.ae_strongly_measurable_of_absolutely_continuous MeasureTheory.AEStronglyMeasurable.of_absolutelyContinuous
 
 end AEStronglyMeasurable
 
