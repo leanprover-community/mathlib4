@@ -86,7 +86,7 @@ axiom A : Nat → Prop
 axiom B : Nat → Prop
 axiom C : Nat → Prop
 
-axiom S : {n : Nat} → A n → Prop
+axiom S : (n : Nat) → A n → Prop
 
 example (n : Nat) (h : A n) (h' : B n) : True := by
   guard_hyp h : A n
@@ -97,9 +97,9 @@ example (n : Nat) (h : A n) (h' : B n) : True := by
     trivial
 
 -- Forward dependencies are accounted for
-example (n : Nat) (h : A n) (_h' : S h) : True := by
+example (n : Nat) (h : A n) (_h' : S n h) : True := by
   guard_hyp h : A n
-  guard_hyp _h' : S h
+  guard_hyp _h' : S n h
   wlog h'' : C n generalizing n replacing h
   · guard_hyp this : ∀ (n : ℕ), C n → True
     trivial
@@ -107,10 +107,26 @@ example (n : Nat) (h : A n) (_h' : S h) : True := by
     success_if_fail_with_msg "unknown identifier '_h''" guard_hyp _h' : S h
     trivial
 
+def err₁ := "replaced hypotheses
+  [m]
+were expected to depend on the generalized hypotheses
+  [n]"
+
 -- Can't replace something not generalized
 example (n m : Nat) : True := by
-  success_if_fail_with_msg "generalized hypotheses were expected to include [m]"
-    wlog h : True generalizing n replacing m
+  success_if_fail_with_msg err₁ wlog h : True generalizing n replacing m
+  trivial
+
+def err₂ := "  S n h → True
+depends on the replaced hypotheses
+  [h]
+which in turn depend on the reverted hypotheses
+  [n]"
+
+example (n : Nat) (h : A n) : True := by
+  guard_hyp h : A n
+  /- If this worked, we'd have `this : ∀ (n : ℕ), S n h → True`. `this` can't possibly be type-correct: since `P := S n h` depends on `h`, and `h` depends on a reverted (not replaced) variable `n` (via `h : A n`), the `n` in `h : A n` would be the `n` in the local context, which is not the same as the `n` bound by `∀ (n : ℕ)`. -/
+  success_if_fail_with_msg err₂ wlog h'' : S n h generalizing n replacing h
   trivial
 
 end Replacing

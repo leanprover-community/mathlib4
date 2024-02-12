@@ -45,6 +45,18 @@ structure WLOGResult where
   `hypothesisGoal`). -/
   revertedFVarIds  : Array FVarId
 
+/-- `HType` must be formed in `MkBinding.M`, where we cannot throw errors. This type communicates
+either a successful result or various sorts of errors together with any data needed to throw a
+valid error message. -/
+private inductive HTypeResult where
+  /-- An `HType` was successfully produced. -/
+  | ok (HType : Expr) : HTypeResult
+  /-- Error: The replaced fvars were not among the forward dependencies of the generalized ones. -/
+  | unreplaceable : HTypeResult
+  /-- Error: `HSuffix` depended on replaced fvars which were among the forward dependencies of the
+  remaining reverted fvars (once replaced fvars had been removed). -/
+  | illFormed (offending : Array FVarId) : HTypeResult
+
 open private withFreshCache mkAuxMVarType from Lean.MetavarContext in
 /-- `wlog goal h P xs H` will return two goals: the `hypothesisGoal`, which adds an assumption
 `h : P` to the context of `goal`, and the `reductionGoal`, which requires showing that the case
@@ -80,6 +92,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let rfvars ← getFVarIdsAt goal ys
   let rfvars := rfvars.map Expr.fvar
   let lctx := (← goal.getDecl).lctx
+  -- Detail: `HType? : HTypeResult`. See `HTypeResult`.
   let (revertedFVars, replacedFVars, HType?) ← liftMkBindingM fun ctx => (do
     let gf ← collectForwardDeps lctx gfvars
     let revertedFVars := filterOutImplementationDetails lctx (gf.map Expr.fvarId!)
@@ -87,15 +100,33 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     let rf ← collectForwardDeps lctx rfvars
     let replacedFVars := filterOutImplementationDetails lctx (rf.map Expr.fvarId!)
     unless replacedFVars.all revertedFVars.contains do
-      return (revertedFVars, replacedFVars, none)
+      return (revertedFVars, replacedFVars, HTypeResult.unreplaceable)
     let revertedFVars := revertedFVars.filter (not ∘ replacedFVars.contains)
+    /- If `HSuffix` depends on a replaced fvar which, in turn, depends on a *reverted* fvar, throw
+    an error (see below). -/
+    let rvf := (← collectForwardDeps lctx <| revertedFVars.map Expr.fvar).map Expr.fvarId!
+    let isIllFormed ← dependsOnPred HSuffix fun fvarId =>
+      replacedFVars.contains fvarId && rvf.contains fvarId
+    if isIllFormed then
+      let offending ← replacedFVars.filterM fun fvarId =>
+        pure (rvf.contains fvarId) <&&> exprDependsOn HSuffix fvarId
+      return (revertedFVars, replacedFVars, .illFormed offending)
     let HType ← withFreshCache do mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix
-    return (revertedFVars, replacedFVars, some HType))
+    return (revertedFVars, replacedFVars, .ok HType))
       { preserveOrder := false, mainModule := ctx.mainModule }
-  let some HType := HType?
-    | let unrevertedReplaced := replacedFVars.filter (not ∘ revertedFVars.contains)
-      let unrevertedReplaced ← unrevertedReplaced.mapM (·.getUserName)
-      throwError "generalized hypotheses were expected to include {unrevertedReplaced}"
+  let HType ←
+    match HType? with
+    | .ok HType => pure HType
+    | .unreplaceable => do
+      let unrevertedReplaced := replacedFVars.filter (not ∘ revertedFVars.contains)
+      throwError "replaced hypotheses{indentD (unrevertedReplaced.map Expr.fvar).toList}\n\
+        were expected to depend on the generalized hypotheses\
+        {indentD (revertedFVars.map Expr.fvar).toList}"
+    | .illFormed offending => do
+      throwError "{indentD HSuffix}\n\
+        depends on the replaced hypotheses{indentD (offending.map Expr.fvar).toList}\n\
+        which in turn depend on the reverted hypotheses\
+        {indentD (revertedFVars.map Expr.fvar).toList}"
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
   is obtained through `introNP` -/
   let HExpr ← mkFreshExprSyntheticOpaqueMVar HType
