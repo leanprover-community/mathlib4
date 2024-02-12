@@ -258,25 +258,20 @@ theorem iUnion_Iic_eq_Iic_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R
   @iUnion_Ici_eq_Ici_iInf ι (OrderDual R) _ f has_greatest_elem
 #align Union_Iic_eq_Iic_supr iUnion_Iic_eq_Iic_iSup
 
-theorem iUnion_Iio_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) :
-    ⋃ i, Iio (f i) = univ := by
-  simpa [not_bddAbove_iff, Set.eq_univ_iff_forall] using hf
+theorem iUnion_Iio_eq_univ_iff : ⋃ i, Iio (f i) = univ ↔ (¬ BddAbove (range f)) := by
+  simp [not_bddAbove_iff, Set.eq_univ_iff_forall]
 
-theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) :
-    ⋃ i, Iic (f i) = univ := by
-  rw [← Set.univ_subset_iff]
-  apply subset_trans (subset_of_eq (iUnion_Iio_of_not_bddAbove_range hf).symm)
+theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, Iic (f i) = univ := by
+  refine  Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
   gcongr
   exact Iio_subset_Iic_self
 
-theorem iInter_Iic_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) :
-    ⋂ i, Iic (f i) = ∅ := by
-  simpa [not_bddBelow_iff, Set.eq_empty_iff_forall_not_mem] using hf
+theorem iInter_Iic_eq_iff : ⋂ i, Iic (f i) = ∅ ↔ ¬ BddBelow (range f) := by
+  simp [not_bddBelow_iff, Set.eq_empty_iff_forall_not_mem]
 
-theorem iInter_Iio_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) :
-    ⋂ i, Iio (f i) = ∅ := by
-  apply eq_empty_of_subset_empty
-  rw [← iInter_Iic_of_not_bddBelow_range hf]
+theorem iInter_Iio_eq_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
+  refine' eq_empty_of_subset_empty _
+  rw [← iInter_Iic_eq_iff.mpr hf]
   gcongr
   exact Iio_subset_Iic_self
 
