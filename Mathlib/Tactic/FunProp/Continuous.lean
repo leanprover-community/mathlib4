@@ -17,28 +17,6 @@ import Mathlib.Tactic.FunProp
 
 section Missing
 
-section lambda_rules
-
-
-variable {α : Type*} {β : Type*} {γ : Type*}
-variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
-variable {ι : Type*} {π : ι → Type*} {κ : Type*} [TopologicalSpace α]
-  [T : ∀ i, TopologicalSpace (π i)] {f : α → ∀ i : ι, π i}
-
-theorem continuousOn_id' (s) : ContinuousOn (fun x : α => x) s := continuousOn_id
-
-theorem ContinuousOn.comp'' {g : β → γ} {f : α → β} {s : Set α} {t : Set β} (hg : ContinuousOn g t)
-    (hf : ContinuousOn f s) (h : Set.MapsTo f s t) : ContinuousOn (fun x => g (f x)) s :=
-  ContinuousOn.comp hg hf h
-
-theorem continuousOn_apply (i : ι) (s) : ContinuousOn (fun p : ∀ i, π i => p i) s :=
-  Continuous.continuousOn (continuous_apply i)
-
-theorem continuousOn_pi' {f : α → ∀ i, π i} {s : Set α}
-    (hf : ∀ i, ContinuousOn (fun y => f y i) s) : ContinuousOn f s := continuousOn_pi.2 hf
-
-end lambda_rules
-
 section div
 
 variable {α β G₀ : Type*} [TopologicalSpace α]
@@ -61,24 +39,6 @@ end Missing
 
 
 
-
--- lambda rules
-attribute [fun_prop]
-  continuousOn_id'
-  continuousOn_const
-  ContinuousOn.comp'
-  continuousOn_apply
-  continuousOn_pi'
-
--- product
-attribute [fun_prop]
-  ContinuousOn.prod
-  ContinuousOn.fst
-  ContinuousOn.snd
-
--- transitions
-attribute [fun_prop]
-  Continuous.continuousOn
 
 -- algebra
 attribute [fun_prop]
