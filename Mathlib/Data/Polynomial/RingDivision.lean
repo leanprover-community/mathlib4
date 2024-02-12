@@ -433,6 +433,14 @@ theorem natDegree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
     0 < natDegree a :=
   natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_not_isUnit_of_dvd_monic ha hap hp
 
+theorem degree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
+    0 < degree a :=
+  degree_pos_of_not_isUnit_of_dvd_monic hu dvd_rfl ha
+
+theorem natDegree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
+    0 < natDegree a :=
+  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_monic_of_not_isUnit hu ha
+
 theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
     p.rootMultiplicity t = (p.comp (X + C t)).rootMultiplicity 0 := by
   classical
