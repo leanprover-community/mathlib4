@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.Convex.Between
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 
