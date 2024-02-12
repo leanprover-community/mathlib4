@@ -138,7 +138,7 @@ end Pullbacks
 
 section FiniteCoproducts
 
-variable {α : Type} [Fintype α] (X : α → CompHaus.{u})
+variable {α : Type} [Finite α] (X : α → CompHaus.{u})
 
 /--
 The coproduct of a finite family of objects in `CompHaus`, constructed as the disjoint
