@@ -3078,6 +3078,7 @@ import Mathlib.Probability.Distributions.Gamma
 import Mathlib.Probability.Distributions.Gaussian
 import Mathlib.Probability.Distributions.Geometric
 import Mathlib.Probability.Distributions.Poisson
+import Mathlib.Probability.Distributions.Uniform
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.Conditional
@@ -3109,7 +3110,6 @@ import Mathlib.Probability.ProbabilityMassFunction.Binomial
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
 import Mathlib.Probability.ProbabilityMassFunction.Integrals
 import Mathlib.Probability.ProbabilityMassFunction.Monad
-import Mathlib.Probability.ProbabilityMassFunction.Uniform
 import Mathlib.Probability.Process.Adapted
 import Mathlib.Probability.Process.Filtration
 import Mathlib.Probability.Process.HittingTime
