@@ -3,7 +3,7 @@ Copyright (c) 2023 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Finite
 
 /-!
 # Local graph operations
@@ -103,7 +103,7 @@ theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
     (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_not_adj hn,
-    card_disjoint_union G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
+    card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
     tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
   congr 2
   rw [card_image_of_injective, card_neighborFinset_eq_degree]
@@ -114,7 +114,7 @@ theorem card_edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
     (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t - 1 := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff (by simp [ha]),
-    card_disjoint_union G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
+    card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
     tsub_add_eq_add_tsub <| card_le_card inc, card_incidenceFinset_eq_degree]
   congr 2
   rw [card_image_of_injective, card_neighborFinset_eq_degree]

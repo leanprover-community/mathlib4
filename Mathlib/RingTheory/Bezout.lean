@@ -95,7 +95,7 @@ end Gcd
 
 attribute [local instance] toGCDDomain
 
--- Note that the proof depends on the `local attribute [instance]` above, and is thus necessary to
+-- Note that the proof depends on the `attribute [local instance]` above, and is thus necessary to
 -- be stated.
 instance (priority := 100) [IsDomain R] [IsBezout R] : IsIntegrallyClosed R := by
   classical exact GCDMonoid.toIsIntegrallyClosed
