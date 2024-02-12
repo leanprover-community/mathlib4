@@ -65,8 +65,6 @@ theorem one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n :=
   one_le_pow n (m + 1) (succ_pos m)
 #align nat.one_le_pow' Nat.one_le_pow'
 
-theorem one_le_two_pow (n : ℕ) : 1 ≤ 2 ^ n :=
-  one_le_pow n 2 (by decide)
 #align nat.one_le_two_pow Nat.one_le_two_pow
 
 theorem one_lt_pow (n m : ℕ) (h₀ : n ≠ 0) (h₁ : 1 < m) : 1 < m ^ n := by
@@ -85,7 +83,6 @@ theorem one_lt_pow_iff {k n : ℕ} (h : k ≠ 0) : 1 < n ^ k ↔ 1 < n :=
   one_lt_pow_iff_of_nonneg (zero_le _) h
 #align nat.one_lt_pow_iff Nat.one_lt_pow_iff
 
-theorem one_lt_two_pow (n : ℕ) (h₀ : n ≠ 0) : 1 < 2 ^ n := one_lt_pow n 2 h₀ (by decide)
 #align nat.one_lt_two_pow Nat.one_lt_two_pow
 
 theorem one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) :=
