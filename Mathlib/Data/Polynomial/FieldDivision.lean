@@ -236,6 +236,13 @@ theorem degree_mul_leadingCoeff_inv (p : R[X]) (h : q ≠ 0) :
   rw [degree_mul, degree_C h₁, add_zero]
 #align polynomial.degree_mul_leading_coeff_inv Polynomial.degree_mul_leadingCoeff_inv
 
+theorem natDegree_mul_leadingCoeff_inv (p : R[X]) (h : q ≠ 0) :
+    natDegree (p * C (leadingCoeff q)⁻¹) = natDegree p := by
+  by_cases hp : p = 0
+  · simp [hp]
+  have h₁ : (leadingCoeff q)⁻¹ ≠ 0 := inv_ne_zero (mt leadingCoeff_eq_zero.1 h)
+  rw [natDegree_mul hp (C_ne_zero.mpr h₁), natDegree_C, add_zero]
+
 @[simp]
 theorem map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 := by
   simp only [Polynomial.ext_iff]
@@ -661,10 +668,10 @@ divisors that have smaller degree.
 See also: `Polynomial.Monic.irreducible_iff_natDegree`.
 -/
 theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
-    Irreducible p ↔ ∀ q, q.degree < degree p → q ∣ p → IsUnit q := by
+    Irreducible p ↔ ∀ q, q.degree ≤ ↑(natDegree p / 2) → q ∣ p → IsUnit q := by
   rw [← irreducible_mul_C_leadingCoeff_inv hp0,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_degree_lt]
-  simp [hp0]
+  simp [hp0, natDegree_mul_leadingCoeff_inv]
   · contrapose! hpu
     exact isUnit_of_mul_eq_one _ _ hpu
 
@@ -674,29 +681,15 @@ divisors of degree `0 < d ≤ degree p / 2`.
 See also: `Polynomial.Monic.irreducible_iff_natDegree'`.
 -/
 theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
-    Irreducible p ↔ ∀ q, q ∣ p → natDegree q ∉ Finset.Ioc 0 (natDegree p / 2) := by
-  rw [← irreducible_mul_C_leadingCoeff_inv hp0,
-      (monic_mul_leadingCoeff_inv hp0).irreducible_iff_natDegree']
+    Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
   have : p * C (leadingCoeff p)⁻¹ ≠ 1
   · contrapose! hpu
     exact isUnit_of_mul_eq_one _ _ hpu
-  simp only [ne_eq, this, not_false_eq_true, Finset.mem_Ioc, not_and, not_le, true_and]
-  constructor
-  · rintro h f ⟨g, rfl⟩ hf
-    obtain ⟨hf0, hg0⟩ := mul_ne_zero_iff.mp hp0
-    convert h (g * C (leadingCoeff g)⁻¹) (f * C (leadingCoeff f)⁻¹)
-      (monic_mul_leadingCoeff_inv hg0) (monic_mul_leadingCoeff_inv hf0)
-      ?_
-      ?_ using 1
-    · rw [natDegree_mul_C_leadingCoeff_inv hp0]
-    · rw [natDegree_mul_C_leadingCoeff_inv hf0]
-    · simp; ring
-    · rwa [natDegree_mul_C_leadingCoeff_inv hf0]
-  · rintro h f g _ _ hfg hdeg
-    convert h g ⟨f * C (leadingCoeff p), ?_⟩ hdeg using 2
-    · rw [natDegree_mul_C_leadingCoeff_inv hp0]
-    · rw [mul_left_comm, ← mul_assoc, hfg, mul_assoc, ← map_mul, inv_mul_cancel, map_one, mul_one]
-      exact leadingCoeff_ne_zero.mpr hp0
+  rw [← irreducible_mul_C_leadingCoeff_inv hp0,
+      (monic_mul_leadingCoeff_inv hp0).irreducible_iff_lt_natDegree_lt this,
+      natDegree_mul_leadingCoeff_inv _ hp0]
+  simp only [IsUnit.dvd_mul_right
+    (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
 
 end Field
 
