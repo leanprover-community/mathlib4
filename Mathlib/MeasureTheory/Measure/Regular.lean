@@ -798,6 +798,9 @@ protected lemma _root_.IsCompact.measure_eq_iInf_isOpen [InnerRegularCompactLTTo
   · apply le_of_forall_lt'
     simpa only [iInf_lt_iff, exists_prop, exists_and_left] using hK.exists_isOpen_lt_of_lt
 
+@[deprecated] -- Since 28 Jan 2024
+alias _root_.IsCompact.measure_eq_infi_isOpen := IsCompact.measure_eq_iInf_isOpen
+
 protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTop μ]
     [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [RegularSpace α]
     [BorelSpace α] {K : Set α} (hK : IsCompact K) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
