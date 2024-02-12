@@ -2,13 +2,10 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.monoidal.End
-! leanprover-community/mathlib commit 85075bccb68ab7fa49fb05db816233fb790e4fe9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
+
+#align_import category_theory.monoidal.End from "leanprover-community/mathlib"@"85075bccb68ab7fa49fb05db816233fb790e4fe9"
 
 /-!
 # Endofunctors as a monoidal category.
@@ -35,8 +32,10 @@ with tensor product given by composition of functors
 -/
 def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
+  whiskerLeft X _ _ F := whiskerLeft X F
+  whiskerRight F X := whiskerRight F X
   tensorHom α β := α ◫ β
-  tensorUnit' := 𝟭 C
+  tensorUnit := 𝟭 C
   associator F G H := Functor.associator F G H
   leftUnitor F := Functor.leftUnitor F
   rightUnitor F := Functor.rightUnitor F
@@ -62,6 +61,14 @@ attribute [local instance] endofunctorMonoidalCategory
     {F G H K : C ⥤ C} {α : F ⟶ G} {β : H ⟶ K} (X : C) :
     (α ⊗ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
 
+@[simp] theorem endofunctorMonoidalCategory_whiskerLeft_app
+    {F H K : C ⥤ C} {β : H ⟶ K} (X : C) :
+    (F ◁ β).app X = β.app (F.obj X) := rfl
+
+@[simp] theorem endofunctorMonoidalCategory_whiskerRight_app
+    {F G H : C ⥤ C} {α : F ⟶ G} (X : C) :
+    (α ▷ H).app X = H.map (α.app X) := rfl
+
 @[simp] theorem endofunctorMonoidalCategory_associator_hom_app (F G H : C ⥤ C) (X : C) :
   (α_ F G H).hom.app X = 𝟙 _ := rfl
 
@@ -83,35 +90,25 @@ attribute [local instance] endofunctorMonoidalCategory
 -- porting note: used `dsimp [endofunctorMonoidalCategory]` when necessary instead
 -- attribute [local reducible] endofunctorMonoidalCategory
 
+attribute [local simp] id_tensorHom tensorHom_id in
+
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
 @[simps!]
 def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C) :=
   { tensoringRight C with
     ε := (rightUnitorNatIso C).inv
-    μ := fun X Y => { app := fun Z => (α_ Z X Y).hom  }
-    μ_natural := fun f g => by
-      ext Z
-      dsimp
-      simp only [← id_tensor_comp_tensor_id g f, id_tensor_comp, ← tensor_id, Category.assoc,
-        associator_naturality, associator_naturality_assoc]
-    associativity := fun X Y Z => by
-      ext W
-      simp [pentagon]
+    μ := fun X Y => { app := fun Z => (α_ Z X Y).hom }
     μ_isIso := fun X Y =>
       -- We could avoid needing to do this explicitly by
       -- constructing a partially applied analogue of `associatorNatIso`.
-      ⟨⟨{ app := fun Z => (α_ Z X Y).inv
-          naturality := fun Z Z' f => by
-            dsimp
-            rw [← associator_inv_naturality]
-            simp },
+      ⟨⟨{ app := fun Z => (α_ Z X Y).inv },
           by aesop_cat⟩⟩ }
 #align category_theory.tensoring_right_monoidal CategoryTheory.tensoringRightMonoidal
 
 variable {C}
 
-variable {M : Type _} [Category M] [MonoidalCategory M] (F : MonoidalFunctor M (C ⥤ C))
+variable {M : Type*} [Category M] [MonoidalCategory M] (F : MonoidalFunctor M (C ⥤ C))
 
 @[reassoc (attr := simp)]
 theorem μ_hom_inv_app (i j : M) (X : C) : (F.μ i j).app X ≫ (F.μIso i j).inv.app X = 𝟙 _ :=

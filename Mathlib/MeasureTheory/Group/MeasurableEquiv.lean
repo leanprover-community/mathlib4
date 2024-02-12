@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.group.measurable_equiv
-! leanprover-community/mathlib commit 95413e23e3d29b45c701fcd31f2dbadaf1b79cba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Group.Arithmetic
+
+#align_import measure_theory.group.measurable_equiv from "leanprover-community/mathlib"@"95413e23e3d29b45c701fcd31f2dbadaf1b79cba"
 
 /-!
 # (Scalar) multiplication and (vector) addition as measurable equivalences
@@ -41,12 +38,12 @@ measurable, equivalence, group action
 
 namespace MeasurableEquiv
 
-variable {G G₀ α : Type _} [MeasurableSpace G] [MeasurableSpace G₀] [MeasurableSpace α] [Group G]
+variable {G G₀ α : Type*} [MeasurableSpace G] [MeasurableSpace G₀] [MeasurableSpace α] [Group G]
   [GroupWithZero G₀] [MulAction G α] [MulAction G₀ α] [MeasurableSMul G α] [MeasurableSMul G₀ α]
 
 /-- If a group `G` acts on `α` by measurable maps, then each element `c : G` defines a measurable
 automorphism of `α`. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false }) toEquiv apply)
+@[to_additive (attr := simps! (config := .asFn) toEquiv apply)
       "If an additive group `G` acts on `α` by measurable maps, then each element `c : G`
       defines a measurable automorphism of `α`." ]
 def smul (c : G) : α ≃ᵐ α where
@@ -57,7 +54,7 @@ def smul (c : G) : α ≃ᵐ α where
 #align measurable_equiv.vadd MeasurableEquiv.vadd
 
 @[to_additive]
-theorem _root_.measurableEmbedding_const_smul (c : G) : MeasurableEmbedding ((· • ·) c : α → α) :=
+theorem _root_.measurableEmbedding_const_smul (c : G) : MeasurableEmbedding (c • · : α → α) :=
   (smul c).measurableEmbedding
 #align measurable_embedding_const_smul measurableEmbedding_const_smul
 #align measurable_embedding_const_vadd measurableEmbedding_const_vadd
@@ -74,9 +71,7 @@ def smul₀ (c : G₀) (hc : c ≠ 0) : α ≃ᵐ α :=
   MeasurableEquiv.smul (Units.mk0 c hc)
 #align measurable_equiv.smul₀ MeasurableEquiv.smul₀
 
-@[simp]
-theorem coe_smul₀ {c : G₀} (hc : c ≠ 0) : ⇑(smul₀ c hc : α ≃ᵐ α) = (· • ·) c :=
-  rfl
+@[simp] lemma coe_smul₀ {c : G₀} (hc : c ≠ 0) : ⇑(smul₀ c hc : α ≃ᵐ α) = (c • ·) := rfl
 #align measurable_equiv.coe_smul₀ MeasurableEquiv.coe_smul₀
 
 @[simp]
@@ -86,7 +81,7 @@ theorem symm_smul₀ {c : G₀} (hc : c ≠ 0) :
 #align measurable_equiv.symm_smul₀ MeasurableEquiv.symm_smul₀
 
 theorem _root_.measurableEmbedding_const_smul₀ {c : G₀} (hc : c ≠ 0) :
-    MeasurableEmbedding ((· • ·) c : α → α) :=
+    MeasurableEmbedding (c • · : α → α) :=
   (smul₀ c hc).measurableEmbedding
 #align measurable_embedding_const_smul₀ measurableEmbedding_const_smul₀
 
@@ -105,7 +100,7 @@ def mulLeft (g : G) : G ≃ᵐ G :=
 #align measurable_equiv.add_left MeasurableEquiv.addLeft
 
 @[to_additive (attr := simp)]
-theorem coe_mulLeft (g : G) : ⇑(mulLeft g) = (· * ·) g :=
+theorem coe_mulLeft (g : G) : ⇑(mulLeft g) = (g * ·) :=
   rfl
 #align measurable_equiv.coe_mul_left MeasurableEquiv.coe_mulLeft
 #align measurable_equiv.coe_add_left MeasurableEquiv.coe_addLeft
@@ -123,7 +118,7 @@ theorem toEquiv_mulLeft (g : G) : (mulLeft g).toEquiv = Equiv.mulLeft g :=
 #align measurable_equiv.to_equiv_add_left MeasurableEquiv.toEquiv_addLeft
 
 @[to_additive]
-theorem _root_.measurableEmbedding_mulLeft (g : G) : MeasurableEmbedding ((· * ·) g) :=
+theorem _root_.measurableEmbedding_mulLeft (g : G) : MeasurableEmbedding (g * ·) :=
   (mulLeft g).measurableEmbedding
 #align measurable_embedding_mul_left measurableEmbedding_mulLeft
 #align measurable_embedding_add_left measurableEmbedding_addLeft
@@ -171,13 +166,11 @@ def mulLeft₀ (g : G₀) (hg : g ≠ 0) : G₀ ≃ᵐ G₀ :=
 #align measurable_equiv.mul_left₀ MeasurableEquiv.mulLeft₀
 
 theorem _root_.measurableEmbedding_mulLeft₀ {g : G₀} (hg : g ≠ 0) :
-    MeasurableEmbedding ((· * ·) g) :=
+    MeasurableEmbedding (g * ·) :=
   (mulLeft₀ g hg).measurableEmbedding
 #align measurable_embedding_mul_left₀ measurableEmbedding_mulLeft₀
 
-@[simp]
-theorem coe_mulLeft₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulLeft₀ g hg) = (· * ·) g :=
-  rfl
+@[simp] lemma coe_mulLeft₀ {g : G₀} (hg : g ≠ 0) : ⇑(mulLeft₀ g hg) = (g * ·) := rfl
 #align measurable_equiv.coe_mul_left₀ MeasurableEquiv.coe_mulLeft₀
 
 @[simp]
@@ -223,7 +216,7 @@ theorem toEquiv_mulRight₀ {g : G₀} (hg : g ≠ 0) : (mulRight₀ g hg).toEqu
 end Mul
 
 /-- Inversion as a measurable automorphism of a group or group with zero. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false }) toEquiv apply)
+@[to_additive (attr := simps! (config := .asFn) toEquiv apply)
     "Negation as a measurable automorphism of an additive group."]
 def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G where
   toEquiv := Equiv.inv G

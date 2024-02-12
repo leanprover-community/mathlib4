@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module order.rel_iso.set
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Logic.Embedding.Set
+
+#align_import order.rel_iso.set from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
 /-!
 # Interactions between relation homomorphisms and sets
@@ -23,23 +20,23 @@ open Function
 
 universe u v w
 
-variable {α β γ δ : Type _} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
+variable {α β γ δ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
   {u : δ → δ → Prop}
 
 namespace RelHomClass
 
-variable {F : Type _}
+variable {F : Type*}
 
-theorem map_inf [SemilatticeInf α] [LinearOrder β]
-    [RelHomClass F ((· < ·) : β → β → Prop) ((· < ·) : α → α → Prop)] (a : F) (m n : β) :
+theorem map_inf [SemilatticeInf α] [LinearOrder β] [FunLike F β α]
+    [RelHomClass F (· < ·) (· < ·)] (a : F) (m n : β) :
     a (m ⊓ n) = a m ⊓ a n :=
   (StrictMono.monotone fun _ _ => map_rel a).map_inf m n
 #align rel_hom_class.map_inf RelHomClass.map_inf
 
-theorem map_sup [SemilatticeSup α] [LinearOrder β]
-    [RelHomClass F ((· > ·) : β → β → Prop) ((· > ·) : α → α → Prop)] (a : F) (m n : β) :
+theorem map_sup [SemilatticeSup α] [LinearOrder β] [FunLike F β α]
+    [RelHomClass F (· > ·) (· > ·)] (a : F) (m n : β) :
     a (m ⊔ n) = a m ⊔ a n :=
-  @map_inf αᵒᵈ βᵒᵈ _ _ _ _ _ _ _
+  map_inf (α := αᵒᵈ) (β := βᵒᵈ) _ _ _
 #align rel_hom_class.map_sup RelHomClass.map_sup
 
 end RelHomClass
@@ -48,7 +45,7 @@ namespace RelIso
 
 @[simp]
 theorem range_eq (e : r ≃r s) : Set.range e = Set.univ :=
-  Function.Surjective.range_eq e.surjective
+  e.surjective.range_eq
 #align rel_iso.range_eq RelIso.range_eq
 
 end RelIso

@@ -2,14 +2,11 @@
 Copyright (c) 2023 Mark Andrew Gerads. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mark Andrew Gerads, Junyan Xu, Eric Wieser
-
-! This file was ported from Lean 3 source module data.nat.hyperoperation
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Nat.Parity
+
+#align_import data.nat.hyperoperation from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Hyperoperation sequence
@@ -42,7 +39,7 @@ def hyperoperation : ℕ → ℕ → ℕ → ℕ
   | 2, _, 0 => 0
   | _ + 3, _, 0 => 1
   | n + 1, m, k + 1 => hyperoperation n m (hyperoperation (n + 1) m k)
-  termination_by hyperoperation a b c => (a, b, c)
+  termination_by a b c => (a, b, c)
 #align hyperoperation hyperoperation
 
 -- Basic hyperoperation lemmas
@@ -122,7 +119,7 @@ theorem hyperoperation_ge_four_zero (n k : ℕ) :
     hyperoperation (n + 4) 0 k = if Even k then 1 else 0 := by
   induction' k with kk kih
   · rw [hyperoperation_ge_three_eq_one]
-    simp only [even_zero, if_true]
+    simp only [Nat.zero_eq, even_zero, if_true]
   · rw [hyperoperation_recursion]
     rw [kih]
     simp_rw [Nat.even_add_one]

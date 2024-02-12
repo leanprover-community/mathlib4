@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Morenikeji Neri
-
-! This file was ported from Lean 3 source module ring_theory.principal_ideal_domain
-! leanprover-community/mathlib commit 6010cf523816335f7bae7f8584cb2edaace73940
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.RingTheory.UniqueFactorizationDomain
+
+#align_import ring_theory.principal_ideal_domain from "leanprover-community/mathlib"@"6010cf523816335f7bae7f8584cb2edaace73940"
 
 /-!
 # Principal ideal rings and principal ideal domains
@@ -72,7 +69,7 @@ instance top_isPrincipal : (⊤ : Submodule R R).IsPrincipal :=
 variable (R)
 
 /-- A ring is a principal ideal ring if all (left) ideals are principal. -/
-@[mk_iff isPrincipalIdealRing_iff]
+@[mk_iff]
 class IsPrincipalIdealRing (R : Type u) [Ring R] : Prop where
   principal : ∀ S : Ideal R, S.IsPrincipal
 #align is_principal_ideal_ring IsPrincipalIdealRing
@@ -106,6 +103,7 @@ theorem span_singleton_generator (S : Submodule R M) [S.IsPrincipal] : span R {g
   Eq.symm (Classical.choose_spec (principal S))
 #align submodule.is_principal.span_singleton_generator Submodule.IsPrincipal.span_singleton_generator
 
+@[simp]
 theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
     Ideal.span ({generator I} : Set R) = I :=
   Eq.symm (Classical.choose_spec (principal I))
@@ -131,6 +129,11 @@ end Ring
 section CommRing
 
 variable [CommRing R] [Module R M]
+
+theorem associated_generator_span_self [IsPrincipalIdealRing R] [IsDomain R] (r : R) :
+    Associated (generator <| Ideal.span {r}) r := by
+  rw [← Ideal.span_singleton_eq_span_singleton]
+  exact Ideal.span_singleton_generator _
 
 theorem mem_iff_generator_dvd (S : Ideal R) [S.IsPrincipal] {x : R} : x ∈ S ↔ generator S ∣ x :=
   (mem_iff_eq_smul_generator S).trans (exists_congr fun a => by simp only [mul_comm, smul_eq_mul])
@@ -176,12 +179,12 @@ theorem to_maximal_ideal [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] {S :
     ⟨(ne_top_iff_one S).1 hpi.1, by
       intro T x hST hxS hxT
       cases' (mem_iff_generator_dvd _).1 (hST <| generator_mem S) with z hz
-      cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S)
-      case inl h =>
+      cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S) with
+      | inl h =>
         have hTS : T ≤ S
         rwa [← T.span_singleton_generator, Ideal.span_le, singleton_subset_iff]
         exact (hxS <| hTS hxT).elim
-      case inr h =>
+      | inr h =>
         cases' (mem_iff_generator_dvd _).1 h with y hy
         have : generator S ≠ 0 := mt (eq_bot_iff_generator_eq_zero _).2 hS
         rw [← mul_one (generator S), hy, mul_left_comm, mul_right_inj' this] at hz
@@ -202,8 +205,8 @@ theorem mod_mem_iff {S : Ideal R} {x y : R} (hy : y ∈ S) : x % y ∈ S ↔ x �
 #align mod_mem_iff mod_mem_iff
 
 -- see Note [lower instance priority]
-instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R
-    where principal S :=
+instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R where
+  principal S :=
     ⟨if h : { x : R | x ∈ S ∧ x ≠ 0 }.Nonempty then
         have wf : WellFounded (EuclideanDomain.r : R → R → Prop) := EuclideanDomain.r_wellFounded
         have hmin : WellFounded.min wf { x : R | x ∈ S ∧ x ≠ 0 } h ∈ S ∧
@@ -231,7 +234,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
 
 end
 
-theorem IsField.isPrincipalIdealRing {R : Type _} [CommRing R] (h : IsField R) :
+theorem IsField.isPrincipalIdealRing {R : Type*} [CommRing R] (h : IsField R) :
     IsPrincipalIdealRing R :=
   @EuclideanDomain.to_principal_ideal_domain R (@Field.toEuclideanDomain R h.toField)
 #align is_field.is_principal_ideal_ring IsField.isPrincipalIdealRing
@@ -293,14 +296,14 @@ theorem ne_zero_of_mem_factors {R : Type v} [CommRing R] [IsDomain R] [IsPrincip
 
 theorem mem_submonoid_of_factors_subset_of_units_subset (s : Submonoid R) {a : R} (ha : a ≠ 0)
     (hfac : ∀ b ∈ factors a, b ∈ s) (hunit : ∀ c : Rˣ, (c : R) ∈ s) : a ∈ s := by
-  rcases(factors_spec a ha).2 with ⟨c, hc⟩
+  rcases (factors_spec a ha).2 with ⟨c, hc⟩
   rw [← hc]
   exact mul_mem (multiset_prod_mem _ hfac) (hunit _)
 #align principal_ideal_ring.mem_submonoid_of_factors_subset_of_units_subset PrincipalIdealRing.mem_submonoid_of_factors_subset_of_units_subset
 
 /-- If a `RingHom` maps all units and all factors of an element `a` into a submonoid `s`, then it
 also maps `a` into that submonoid. -/
-theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type _} [CommRing R]
+theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type*} [CommRing R]
     [IsDomain R] [IsPrincipalIdealRing R] [Semiring S] (f : R →+* S) (s : Submonoid S) (a : R)
     (ha : a ≠ 0) (h : ∀ b ∈ factors a, f b ∈ s) (hf : ∀ c : Rˣ, f c ∈ s) : f a ∈ s :=
   mem_submonoid_of_factors_subset_of_units_subset (s.comap f.toMonoidHom) ha h hf
@@ -321,7 +324,7 @@ section Surjective
 
 open Submodule
 
-variable {S N : Type _} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
+variable {S N : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N] [Ring S]
 
 variable [Module R M] [Module R N]
 
@@ -351,7 +354,10 @@ section
 
 open Ideal
 
-variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] [GCDMonoid R]
+variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+
+section GCD
+variable [GCDMonoid R]
 
 theorem span_gcd (x y : R) : span ({gcd x y} : Set R) = span ({x, y} : Set R) := by
   obtain ⟨d, hd⟩ := IsPrincipalIdealRing.principal (span ({x, y} : Set R))
@@ -365,9 +371,9 @@ theorem span_gcd (x y : R) : span ({gcd x y} : Set R) = span ({x, y} : Set R) :=
   · rw [dvd_gcd_iff]
     constructor <;> rw [← Ideal.mem_span_singleton, ← hd, Ideal.mem_span_pair]
     · use 1, 0
-      rw [one_mul, MulZeroClass.zero_mul, add_zero]
+      rw [one_mul, zero_mul, add_zero]
     · use 0, 1
-      rw [one_mul, MulZeroClass.zero_mul, zero_add]
+      rw [one_mul, zero_mul, zero_add]
   · obtain ⟨r, s, rfl⟩ : ∃ r s, r * x + s * y = d := by
       rw [← Ideal.mem_span_pair, hd, Ideal.mem_span_singleton]
     apply dvd_add <;> apply dvd_mul_of_dvd_right
@@ -388,9 +394,12 @@ theorem gcd_isUnit_iff (x y : R) : IsUnit (gcd x y) ↔ IsCoprime x y := by
   rw [IsCoprime, ← Ideal.mem_span_pair, ← span_gcd, ← span_singleton_eq_top, eq_top_iff_one]
 #align gcd_is_unit_iff gcd_isUnit_iff
 
+end GCD
+
 -- this should be proved for UFDs surely?
 theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z ∈ nonunits R, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y := by
+  letI := UniqueFactorizationMonoid.toGCDMonoid R
   rw [← gcd_isUnit_iff]
   by_contra h
   refine' H _ h _ (gcd_dvd_left _ _) (gcd_dvd_right _ _)
@@ -420,7 +429,8 @@ theorem isCoprime_of_irreducible_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
 
 theorem isCoprime_of_prime_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : R, Prime z → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
-  isCoprime_of_irreducible_dvd nonzero fun z zi => H z <| GCDMonoid.prime_of_irreducible zi
+  isCoprime_of_irreducible_dvd nonzero fun z zi ↦
+    H z (PrincipalIdealRing.irreducible_iff_prime.1 zi)
 #align is_coprime_of_prime_dvd isCoprime_of_prime_dvd
 
 theorem Irreducible.coprime_iff_not_dvd {p n : R} (pp : Irreducible p) :
@@ -444,6 +454,7 @@ theorem Prime.coprime_iff_not_dvd {p n : R} (pp : Prime p) : IsCoprime p n ↔ �
   pp.irreducible.coprime_iff_not_dvd
 #align prime.coprime_iff_not_dvd Prime.coprime_iff_not_dvd
 
+/-- See also `Irreducible.coprime_iff_not_dvd'`. -/
 theorem Irreducible.dvd_iff_not_coprime {p n : R} (hp : Irreducible p) : p ∣ n ↔ ¬IsCoprime p n :=
   iff_not_comm.2 hp.coprime_iff_not_dvd
 #align irreducible.dvd_iff_not_coprime Irreducible.dvd_iff_not_coprime
@@ -459,6 +470,7 @@ theorem Irreducible.coprime_or_dvd {p : R} (hp : Irreducible p) (i : R) : IsCopr
 
 theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {k : ℕ}
     (h : a * b = c ^ k) : ∃ d : R, Associated (d ^ k) a :=
+  letI := UniqueFactorizationMonoid.toGCDMonoid R
   exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr hab) h
 #align exists_associated_pow_of_mul_eq_pow' exists_associated_pow_of_mul_eq_pow'
 

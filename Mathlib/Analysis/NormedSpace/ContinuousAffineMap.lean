@@ -2,15 +2,13 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module analysis.normed_space.continuous_affine_map
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.ContinuousAffineMap
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 import Mathlib.Analysis.NormedSpace.OperatorNorm
+
+#align_import analysis.normed_space.continuous_affine_map from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # Continuous affine maps between normed spaces.
@@ -46,7 +44,7 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 
 namespace ContinuousAffineMap
 
-variable {𝕜 R V W W₂ P Q Q₂ : Type _}
+variable {𝕜 R V W W₂ P Q Q₂ : Type*}
 
 variable [NormedAddCommGroup V] [MetricSpace P] [NormedAddTorsor V P]
 
@@ -200,7 +198,7 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
         simp only [coe_add, max_le_iff]
         -- Porting note: previously `Pi.add_apply, add_contLinear, ` in the previous `simp only`
         -- suffices, but now they don't fire.
-        rw [ContinuousAffineMap.add_apply, add_contLinear]
+        rw [add_contLinear]
         exact
           ⟨(norm_add_le _ _).trans (add_le_add (le_max_left _ _) (le_max_left _ _)),
             (norm_add_le _ _).trans (add_le_add (le_max_right _ _) (le_max_right _ _))⟩
@@ -238,13 +236,13 @@ theorem norm_comp_le (g : W₂ →A[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g
       ‖f.comp g 0‖ = ‖f (g 0)‖ := by simp
       _ = ‖f.contLinear (g 0) + f 0‖ := by rw [f.decomp]; simp
       _ ≤ ‖f.contLinear‖ * ‖g 0‖ + ‖f 0‖ :=
-        ((norm_add_le _ _).trans (add_le_add_right (f.contLinear.le_op_norm _) _))
+        ((norm_add_le _ _).trans (add_le_add_right (f.contLinear.le_opNorm _) _))
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ :=
         add_le_add_right
           (mul_le_mul f.norm_contLinear_le g.norm_image_zero_le (norm_nonneg _) (norm_nonneg _)) _
   · calc
       ‖(f.comp g).contLinear‖ ≤ ‖f.contLinear‖ * ‖g.contLinear‖ :=
-        (g.comp_contLinear f).symm ▸ f.contLinear.op_norm_comp_le _
+        (g.comp_contLinear f).symm ▸ f.contLinear.opNorm_comp_le _
       _ ≤ ‖f‖ * ‖g‖ :=
         (mul_le_mul f.norm_contLinear_le g.norm_contLinear_le (norm_nonneg _) (norm_nonneg _))
       _ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by rw [le_add_iff_nonneg_right]; apply norm_nonneg

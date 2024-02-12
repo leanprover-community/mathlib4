@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.ascending_descending_sequences
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Powerset
+
+#align_import wiedijk_100_theorems.ascending_descending_sequences from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Erdős–Szekeres theorem
@@ -27,7 +24,7 @@ sequences, increasing, decreasing, Ramsey, Erdos-Szekeres, Erdős–Szekeres, Er
 -/
 
 
-variable {α : Type _} [LinearOrder α] {β : Type _}
+variable {α : Type*} [LinearOrder α] {β : Type*}
 
 open Function Finset
 
@@ -139,8 +136,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- Finished both goals!
   -- Now that we have uniqueness of each label, it remains to do some counting to finish off.
   -- Suppose all the labels are small.
-  by_contra q
-  push_neg at q
+  by_contra! q
   -- Then the labels `(a_i, b_i)` all fit in the following set: `{ (x,y) | 1 ≤ x ≤ r, 1 ≤ y ≤ s }`
   let ran : Finset (ℕ × ℕ) := (range r).image Nat.succ ×ˢ (range s).image Nat.succ
   -- which we prove here.
@@ -170,7 +166,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- To get our contradiction, it suffices to prove `n ≤ r * s`
   apply not_le_of_lt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
-  simpa [Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_of_subset this
+  simpa [Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
 #align theorems_100.erdos_szekeres Theorems100.erdos_szekeres
 
 end Theorems100

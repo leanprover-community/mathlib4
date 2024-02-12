@@ -11,7 +11,7 @@ else
     brew update
 fi
 
-brew install elan
+brew install elan-init
 elan toolchain install stable
 elan default stable
 

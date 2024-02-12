@@ -2,16 +2,14 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.order.absolute_value
-! leanprover-community/mathlib commit 0013240bce820e3096cebb7ccf6d17e3f35f77ca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Hom.Basic
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.Regular
+
+#align_import algebra.order.absolute_value from "leanprover-community/mathlib"@"0013240bce820e3096cebb7ccf6d17e3f35f77ca"
 
 /-!
 # Absolute values
@@ -28,10 +26,12 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
    value
 -/
 
+set_option autoImplicit true
+
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy the triangle equality. -/
-structure AbsoluteValue (R S : Type _) [Semiring R] [OrderedSemiring S] extends R →ₙ* S where
+structure AbsoluteValue (R S : Type*) [Semiring R] [OrderedSemiring S] extends R →ₙ* S where
   /-- The absolute value is nonnegative -/
   nonneg' : ∀ x, 0 ≤ toFun x
   /-- The absolute value is positive definitive -/
@@ -48,24 +48,26 @@ section OrderedSemiring
 
 section Semiring
 
-variable {R S : Type _} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
-instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
+instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+
+instance zeroHomClass : ZeroHomClass (AbsoluteValue R S) R S where
   map_zero f := (f.eq_zero' _).2 rfl
 #align absolute_value.zero_hom_class AbsoluteValue.zeroHomClass
 
 instance mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.zeroHomClass with map_mul := fun f => f.map_mul' }
+  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_mul := fun f => f.map_mul' }
 #align absolute_value.mul_hom_class AbsoluteValue.mulHomClass
 
 instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.zeroHomClass with map_nonneg := fun f => f.nonneg' }
+  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_nonneg := fun f => f.nonneg' }
 #align absolute_value.nonneg_hom_class AbsoluteValue.nonnegHomClass
 
 instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.zeroHomClass with map_add_le_add := fun f => f.add_le' }
+  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_add_le_add := fun f => f.add_le' }
 #align absolute_value.subadditive_hom_class AbsoluteValue.subadditiveHomClass
 
 @[simp]
@@ -75,7 +77,7 @@ theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h�
 
 @[ext]
 theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
-  FunLike.ext _ _
+  DFunLike.ext _ _
 #align absolute_value.ext AbsoluteValue.ext
 
 /-- See Note [custom simps projection]. -/
@@ -85,10 +87,10 @@ def Simps.apply (f : AbsoluteValue R S) : R → S :=
 
 initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.has_coe_to_fun`
 directly. -/
 instance : CoeFun (AbsoluteValue R S) fun _ => R → S :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[simp]
 theorem coe_toMulHom : ⇑abv.toMulHom = abv :=
@@ -143,13 +145,13 @@ end Semiring
 
 section Ring
 
-variable {R S : Type _} [Ring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Ring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 
 protected theorem sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
   simpa [sub_eq_add_neg, add_assoc] using abv.add_le (a - b) (b - c)
 #align absolute_value.sub_le AbsoluteValue.sub_le
 
-@[simp high] -- porting note: added `high` to apply it before `abv.eq_zero`
+@[simp high] -- porting note: added `high` to apply it before `AbsoluteValue.eq_zero`
 theorem map_sub_eq_zero_iff (a b : R) : abv (a - b) = 0 ↔ a = b :=
   abv.eq_zero.trans sub_eq_zero
 #align absolute_value.map_sub_eq_zero_iff AbsoluteValue.map_sub_eq_zero_iff
@@ -166,7 +168,7 @@ section IsDomain
 
 -- all of these are true for `NoZeroDivisors S`; but it doesn't work smoothly with the
 -- `IsDomain`/`CancelMonoidWithZero` API
-variable {R S : Type _} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
 
 variable [IsDomain S] [Nontrivial R]
 
@@ -211,7 +213,7 @@ end Semiring
 
 section Ring
 
-variable {R S : Type _} [Ring R] [OrderedRing S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Ring R] [OrderedRing S] (abv : AbsoluteValue R S)
 
 protected theorem le_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
   sub_le_iff_le_add.2 <| by simpa using abv.add_le (a - b) b
@@ -223,7 +225,7 @@ end OrderedRing
 
 section OrderedCommRing
 
-variable {R S : Type _} [Ring R] [OrderedCommRing S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Ring R] [OrderedCommRing S] (abv : AbsoluteValue R S)
 
 variable [NoZeroDivisors S]
 
@@ -240,7 +242,7 @@ protected theorem map_sub (a b : R) : abv (a - b) = abv (b - a) := by rw [← ne
 
 end OrderedCommRing
 
-instance {R S : Type _} [Ring R] [OrderedCommRing S] [Nontrivial R] [IsDomain S] :
+instance {R S : Type*} [Ring R] [OrderedCommRing S] [Nontrivial R] [IsDomain S] :
     MulRingNormClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.subadditiveHomClass,
     AbsoluteValue.monoidWithZeroHomClass with
@@ -249,7 +251,7 @@ instance {R S : Type _} [Ring R] [OrderedCommRing S] [Nontrivial R] [IsDomain S]
 
 section LinearOrderedRing
 
-variable {R S : Type _} [Semiring R] [LinearOrderedRing S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Semiring R] [LinearOrderedRing S] (abv : AbsoluteValue R S)
 
 /-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
 @[simps]
@@ -270,7 +272,7 @@ end LinearOrderedRing
 
 section LinearOrderedCommRing
 
-variable {R S : Type _} [Ring R] [LinearOrderedCommRing S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Ring R] [LinearOrderedCommRing S] (abv : AbsoluteValue R S)
 
 theorem abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :=
   abs_sub_le_iff.2 ⟨abv.le_sub _ _, by rw [abv.map_sub]; apply abv.le_sub⟩
@@ -303,9 +305,9 @@ namespace IsAbsoluteValue
 
 section OrderedSemiring
 
-variable {S : Type _} [OrderedSemiring S]
+variable {S : Type*} [OrderedSemiring S]
 
-variable {R : Type _} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
+variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
 #align is_absolute_value.abv_nonneg IsAbsoluteValue.abv_nonneg
@@ -359,7 +361,7 @@ end OrderedSemiring
 
 section LinearOrderedRing
 
-variable {S : Type _} [LinearOrderedRing S]
+variable {S : Type*} [LinearOrderedRing S]
 
 instance abs_isAbsoluteValue : IsAbsoluteValue (abs : S → S) :=
   AbsoluteValue.abs.isAbsoluteValue
@@ -369,11 +371,11 @@ end LinearOrderedRing
 
 section OrderedRing
 
-variable {S : Type _} [OrderedRing S]
+variable {S : Type*} [OrderedRing S]
 
 section Semiring
 
-variable {R : Type _} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
+variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 variable [IsDomain S]
 
@@ -395,7 +397,7 @@ end Semiring
 
 section Ring
 
-variable {R : Type _} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
+variable {R : Type*} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
   simpa [sub_eq_add_neg, add_assoc] using abv_add abv (a - b) (b - c)
@@ -411,11 +413,11 @@ end OrderedRing
 
 section OrderedCommRing
 
-variable {S : Type _} [OrderedCommRing S]
+variable {S : Type*} [OrderedCommRing S]
 
 section Ring
 
-variable {R : Type _} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
+variable {R : Type*} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 
 variable [NoZeroDivisors S]
 
@@ -433,11 +435,11 @@ end OrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {S : Type _} [LinearOrderedCommRing S]
+variable {S : Type*} [LinearOrderedCommRing S]
 
 section Ring
 
-variable {R : Type _} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
+variable {R : Type*} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :=
   (toAbsoluteValue abv).abs_abv_sub_le_abv_sub a b
@@ -449,11 +451,11 @@ end LinearOrderedCommRing
 
 section LinearOrderedField
 
-variable {S : Type _} [LinearOrderedSemifield S]
+variable {S : Type*} [LinearOrderedSemifield S]
 
 section Semiring
 
-variable {R : Type _} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValue abv]
+variable {R : Type*} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_one' : abv 1 = 1 :=
   (toAbsoluteValue abv).map_one_of_isLeftRegular <|
@@ -461,15 +463,15 @@ theorem abv_one' : abv 1 = 1 :=
 #align is_absolute_value.abv_one' IsAbsoluteValue.abv_one'
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
-def abvHom' : R →*₀ S :=
-  ⟨⟨abv, abv_zero abv⟩, abv_one' abv, abv_mul abv⟩
+def abvHom' : R →*₀ S where
+  toFun := abv; map_zero' := abv_zero abv; map_one' := abv_one' abv; map_mul' := abv_mul abv
 #align is_absolute_value.abv_hom' IsAbsoluteValue.abvHom'
 
 end Semiring
 
 section DivisionSemiring
 
-variable {R : Type _} [DivisionSemiring R] (abv : R → S) [IsAbsoluteValue abv]
+variable {R : Type*} [DivisionSemiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_inv (a : R) : abv a⁻¹ = (abv a)⁻¹ :=
   map_inv₀ (abvHom' abv) a

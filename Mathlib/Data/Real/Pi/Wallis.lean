@@ -2,13 +2,10 @@
 Copyright (c) 2021 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
-
-! This file was ported from Lean 3 source module data.real.pi.wallis
-! leanprover-community/mathlib commit 980755c33b9168bc82f774f665eaa27878140fac
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
+
+#align_import data.real.pi.wallis from "leanprover-community/mathlib"@"980755c33b9168bc82f774f665eaa27878140fac"
 
 /-! # The Wallis formula for Pi
 
@@ -43,8 +40,6 @@ namespace Real
 
 namespace Wallis
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 set_option linter.uppercaseLean3 false
 
 /-- The product of the first `k` terms in Wallis' formula for `π`. -/
@@ -67,7 +62,7 @@ theorem W_pos (k : ℕ) : 0 < W k := by
 theorem W_eq_factorial_ratio (n : ℕ) :
     W n = 2 ^ (4 * n) * n ! ^ 4 / ((2 * n)! ^ 2 * (2 * n + 1)) := by
   induction' n with n IH
-  · simp only [W, prod_range_zero, Nat.factorial_zero, MulZeroClass.mul_zero, pow_zero,
+  · simp only [W, prod_range_zero, Nat.factorial_zero, mul_zero, pow_zero,
       algebraMap.coe_one, one_pow, mul_one, algebraMap.coe_zero, zero_add, div_self, Ne.def,
       one_ne_zero, not_false_iff]
     norm_num
@@ -98,8 +93,8 @@ theorem le_W (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ W k :=
   rw [W_eq_integral_sin_pow_div_integral_sin_pow, le_div_iff (integral_sin_pow_pos _)]
   convert integral_sin_pow_succ_le (2 * k + 1)
   rw [integral_sin_pow (2 * k)]
-  simp only [sin_zero, zero_pow', Ne.def, Nat.succ_ne_zero, zero_mul, sin_pi, tsub_zero, zero_div,
-    zero_add]
+  simp only [sin_zero, ne_eq, add_eq_zero, and_false, not_false_eq_true, zero_pow, cos_zero,
+    mul_one, sin_pi, cos_pi, mul_neg, neg_zero, sub_self, zero_div, zero_add]
   norm_cast
 #align real.wallis.le_W Real.Wallis.le_W
 

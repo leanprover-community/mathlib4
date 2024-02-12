@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.mul_p
-! leanprover-community/mathlib commit 7abfbc92eec87190fba3ed3d5ec58e7c167e7144
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.IsPoly
+
+#align_import ring_theory.witt_vector.mul_p from "leanprover-community/mathlib"@"7abfbc92eec87190fba3ed3d5ec58e7c167e7144"
 
 /-!
 ## Multiplication by `n` in the ring of Witt vectors
@@ -31,7 +28,7 @@ and Verschiebung is equal to multiplication by `p`.
 
 namespace WittVector
 
-variable {p : ℕ} {R : Type _} [hp : Fact p.Prime] [CommRing R]
+variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -53,7 +50,7 @@ variable {p}
 theorem mulN_coeff (n : ℕ) (x : 𝕎 R) (k : ℕ) :
     (x * n).coeff k = aeval x.coeff (wittMulN p n k) := by
   induction' n with n ih generalizing k
-  · simp only [Nat.zero_eq, Nat.cast_zero, MulZeroClass.mul_zero, zero_coeff, wittMulN,
+  · simp only [Nat.zero_eq, Nat.cast_zero, mul_zero, zero_coeff, wittMulN,
       AlgHom.map_zero, Pi.zero_apply]
   · rw [wittMulN, Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, mul_add, mul_one, aeval_bind₁,
       add_coeff]
@@ -76,7 +73,7 @@ theorem mulN_isPoly (n : ℕ) : IsPoly p fun R _Rcr x => x * n :=
 theorem bind₁_wittMulN_wittPolynomial (n k : ℕ) :
     bind₁ (wittMulN p n) (wittPolynomial p ℤ k) = n * wittPolynomial p ℤ k := by
   induction' n with n ih
-  · simp [wittMulN, Nat.cast_zero, MulZeroClass.zero_mul, bind₁_zero_wittPolynomial]
+  · simp [wittMulN, Nat.cast_zero, zero_mul, bind₁_zero_wittPolynomial]
   · rw [wittMulN, ← bind₁_bind₁, wittAdd, wittStructureInt_prop]
     simp only [AlgHom.map_add, Nat.cast_succ, bind₁_X_right]
     rw [add_mul, one_mul, bind₁_rename, bind₁_rename]

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.pullbacks
-! leanprover-community/mathlib commit 7316286ff2942aa14e540add9058c6b0aa1c8070
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.CategoryTheory.Limits.Opposites
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+
+#align_import algebraic_geometry.pullbacks from "leanprover-community/mathlib"@"7316286ff2942aa14e540add9058c6b0aa1c8070"
 
 /-!
 # Fibred products of schemes
@@ -581,8 +578,8 @@ instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g
   have :=
     bigSquareIsPullback (pullback.fst : W ⟶ _) (pullback.fst : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
       (Z.affineCover.map i) pullback.snd pullback.snd g pullback.condition.symm
-      pullback.condition.symm (PullbackCone.flipIsLimit <| pullbackIsPullback _ _)
-      (PullbackCone.flipIsLimit <| pullbackIsPullback _ _)
+      pullback.condition.symm (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
   have : HasPullback (pullback.snd ≫ Z.affineCover.map i : Xᵢ ⟶ _) g := ⟨⟨⟨_, this⟩⟩⟩
   rw [← pullback.condition] at this
   exact this
@@ -664,8 +661,8 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
   have :=
     bigSquareIsPullback (pullback.fst : W ⟶ _) (pullback.fst : Yᵢ ⟶ _) (pullback.snd : Xᵢ ⟶ _)
       (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
-      (PullbackCone.flipIsLimit <| pullbackIsPullback _ _)
-      (PullbackCone.flipIsLimit <| pullbackIsPullback _ _)
+      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+      (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
   refine'
     @openCoverOfIsIso
       (f := (pullbackSymmetry _ _).hom ≫
@@ -675,7 +672,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     rfl
   · simp only [Category.comp_id, Category.id_comp]
   -- Porting note : this `IsIso` instance was `inferInstance`
-  . apply IsIso.comp_isIso
+  · apply IsIso.comp_isIso
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base' AlgebraicGeometry.Scheme.Pullback.openCoverOfBase'
 
 /-- Given an open cover `{ Zᵢ }` of `Z`, then `X ×[Z] Y` is covered by `Xᵢ ×[Zᵢ] Yᵢ`, where
@@ -695,7 +692,7 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
   -- Porting note : deviated from original proof a bit so that it won't timeout.
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
   apply pullback.hom_ext <;> dsimp <;>
-  . simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
+  · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
       limit.lift_π_assoc, cospan_left, Category.comp_id, limit.isoLimitCone_inv_π,
       limit.isoLimitCone_inv_π_assoc, pullbackSymmetry_hom_comp_fst_assoc,
       pullbackSymmetry_hom_comp_snd_assoc]

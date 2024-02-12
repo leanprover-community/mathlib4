@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.creates
-! leanprover-community/mathlib commit fe5e4ce6c72d96d77ad40ac832a6e7f8040990bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.creates from "leanprover-community/mathlib"@"fe5e4ce6c72d96d77ad40ac832a6e7f8040990bc"
 
 /-!
 # Creating (co)limits
@@ -87,13 +84,11 @@ class CreatesLimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
 
 -- This should be used with explicit universe variables.
 /-- `F` creates limits if it creates limits of shape `J` for any `J`. -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class CreatesLimitsOfSize (F : C ⥤ D) where
   CreatesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesLimitsOfShape J F := by
     infer_instance
 #align category_theory.creates_limits_of_size CategoryTheory.CreatesLimitsOfSize
-
-pp_with_univ CreatesLimitsOfSize
 
 /-- `F` creates small limits if it creates limits of shape `J` for any small `J`. -/
 abbrev CreatesLimits (F : C ⥤ D) :=
@@ -122,13 +117,11 @@ class CreatesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
 
 -- This should be used with explicit universe variables.
 /-- `F` creates colimits if it creates colimits of shape `J` for any small `J`. -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class CreatesColimitsOfSize (F : C ⥤ D) where
   CreatesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesColimitsOfShape J F := by
     infer_instance
 #align category_theory.creates_colimits_of_size CategoryTheory.CreatesColimitsOfSize
-
-pp_with_univ CreatesColimitsOfSize
 
 /-- `F` creates small colimits if it creates colimits of shape `J` for any small `J`. -/
 abbrev CreatesColimits (F : C ⥤ D) :=
@@ -346,6 +339,11 @@ def createsLimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faith
   createsLimitOfFullyFaithfulOfIso' (limit.isLimit _) X i
 #align category_theory.creates_limit_of_fully_faithful_of_iso CategoryTheory.createsLimitOfFullyFaithfulOfIso
 
+/-- A fully faithful functor that preserves a limit that exists also creates the limit. -/
+def createsLimitOfFullyFaithfulOfPreserves {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+    [HasLimit K] [PreservesLimit K F] : CreatesLimit K F :=
+  createsLimitOfFullyFaithfulOfLift' (PreservesLimit.preserves <| limit.isLimit K) _ (Iso.refl _)
+
 -- see Note [lower instance priority]
 /-- `F` preserves the limit of `K` if it creates the limit and `K ⋙ F` has the limit. -/
 instance (priority := 100) preservesLimitOfCreatesLimitAndHasLimit (K : J ⥤ C) (F : C ⥤ D)
@@ -422,6 +420,12 @@ def createsColimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fa
     CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfLift' (colimit.isColimit _) c i
 #align category_theory.creates_colimit_of_fully_faithful_of_lift CategoryTheory.createsColimitOfFullyFaithfulOfLift
+
+/-- A fully faithful functor that preserves a colimit that exists also creates the colimit. -/
+def createsColimitOfFullyFaithfulOfPreserves {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+    [HasColimit K] [PreservesColimit K F] : CreatesColimit K F :=
+  createsColimitOfFullyFaithfulOfLift' (PreservesColimit.preserves <| colimit.isColimit K) _
+    (Iso.refl _)
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
@@ -515,8 +519,8 @@ def createsLimitsOfShapeOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesLimitsOfS
 
 /-- If `F` creates limits and `F ≅ G`, then `G` creates limits. -/
 def createsLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesLimitsOfSize.{w, w'} F] :
-    CreatesLimitsOfSize.{w, w'} G
-    where CreatesLimitsOfShape := createsLimitsOfShapeOfNatIso h
+    CreatesLimitsOfSize.{w, w'} G where
+  CreatesLimitsOfShape := createsLimitsOfShapeOfNatIso h
 #align category_theory.creates_limits_of_nat_iso CategoryTheory.createsLimitsOfNatIso
 
 /-- Transfer creation of colimits along a natural isomorphism in the diagram. -/
@@ -555,8 +559,8 @@ def createsColimitsOfShapeOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesColimit
 
 /-- If `F` creates colimits and `F ≅ G`, then `G` creates colimits. -/
 def createsColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [CreatesColimitsOfSize.{w, w'} F] :
-    CreatesColimitsOfSize.{w, w'} G
-    where CreatesColimitsOfShape := createsColimitsOfShapeOfNatIso h
+    CreatesColimitsOfSize.{w, w'} G where
+  CreatesColimitsOfShape := createsColimitsOfShapeOfNatIso h
 #align category_theory.creates_colimits_of_nat_iso CategoryTheory.createsColimitsOfNatIso
 
 -- For the inhabited linter later.
@@ -589,8 +593,8 @@ def idLiftsCone (c : Cone (K ⋙ 𝟭 C)) : LiftableCone K (𝟭 C) c
 #align category_theory.id_lifts_cone CategoryTheory.idLiftsCone
 
 /-- The identity functor creates all limits. -/
-instance idCreatesLimits : CreatesLimitsOfSize.{w, w'} (𝟭 C)
-    where CreatesLimitsOfShape :=
+instance idCreatesLimits : CreatesLimitsOfSize.{w, w'} (𝟭 C) where
+  CreatesLimitsOfShape :=
     { CreatesLimit := { lifts := fun c _ => idLiftsCone c } }
 #align category_theory.id_creates_limits CategoryTheory.idCreatesLimits
 
@@ -604,8 +608,8 @@ def idLiftsCocone (c : Cocone (K ⋙ 𝟭 C)) : LiftableCocone K (𝟭 C) c
 #align category_theory.id_lifts_cocone CategoryTheory.idLiftsCocone
 
 /-- The identity functor creates all colimits. -/
-instance idCreatesColimits : CreatesColimitsOfSize.{w, w'} (𝟭 C)
-    where CreatesColimitsOfShape :=
+instance idCreatesColimits : CreatesColimitsOfSize.{w, w'} (𝟭 C) where
+  CreatesColimitsOfShape :=
     { CreatesColimit := { lifts := fun c _ => idLiftsCocone c } }
 #align category_theory.id_creates_colimits CategoryTheory.idCreatesColimits
 

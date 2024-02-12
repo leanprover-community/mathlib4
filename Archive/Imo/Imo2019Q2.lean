@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module imo.imo2019_q2
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Euclidean.Angle.Sphere
 import Mathlib.Geometry.Euclidean.Sphere.SecondInter
+
+#align_import imo.imo2019_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2019 Q2
@@ -68,9 +65,9 @@ open scoped Affine EuclideanGeometry Real
 
 set_option linter.uppercaseLean3 false
 
-attribute [local instance] FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two
+attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
-variable (V : Type _) (Pt : Type _)
+variable (V : Type*) (Pt : Type*)
 
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
 
@@ -445,7 +442,7 @@ theorem not_collinear_QPA₂ : ¬Collinear ℝ ({cfg.Q, cfg.P, cfg.A₂} : Set P
   have h : Cospherical ({cfg.B, cfg.A, cfg.A₂} : Set Pt) := by
     refine' cfg.triangleABC.circumsphere.cospherical.subset _
     simp only [Set.insert_subset_iff, cfg.A_mem_circumsphere, cfg.B_mem_circumsphere,
-      cfg.A₂_mem_circumsphere, Sphere.mem_coe, Set.singleton_subset_iff]
+      cfg.A₂_mem_circumsphere, Sphere.mem_coe, Set.singleton_subset_iff, and_true]
   exact h.affineIndependent_of_ne cfg.A_ne_B.symm cfg.A₂_ne_B.symm cfg.A₂_ne_A.symm
 #align imo2019_q2.imo2019q2_cfg.not_collinear_QPA₂ Imo2019Q2.Imo2019q2Cfg.not_collinear_QPA₂
 

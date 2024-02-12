@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module topology.continuous_function.units
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Topology.ContinuousFunction.Algebra
+
+#align_import topology.continuous_function.units from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Units of continuous functions
@@ -20,7 +17,7 @@ and `M` has some monoid structure compatible with its topology.
 -/
 
 
-variable {X M R 𝕜 : Type _} [TopologicalSpace X]
+variable {X M R 𝕜 : Type*} [TopologicalSpace X]
 
 namespace ContinuousMap
 
@@ -93,8 +90,8 @@ noncomputable def unitsOfForallIsUnit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) : 
 
 instance canLift :
     CanLift C(X, R) C(X, Rˣ) (fun f => ⟨fun x => f x, Units.continuous_val.comp f.continuous⟩)
-      fun f => ∀ x, IsUnit (f x)
-    where prf f h := ⟨unitsOfForallIsUnit h, by ext; rfl⟩
+      fun f => ∀ x, IsUnit (f x) where
+  prf f h := ⟨unitsOfForallIsUnit h, by ext; rfl⟩
 #align continuous_map.can_lift ContinuousMap.canLift
 
 theorem isUnit_iff_forall_isUnit (f : C(X, R)) : IsUnit f ↔ ∀ x, IsUnit (f x) :=

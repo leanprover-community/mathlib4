@@ -6,6 +6,7 @@ Authors: Arthur Paulino
 
 import Cache.IO
 import Lean.Elab.ParseImportsFast
+import Lake.Build.Trace
 
 namespace Cache.Hashing
 
@@ -52,7 +53,7 @@ def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
 /-- Computes a canonical hash of a file's contents. -/
 def hashFileContents (contents : String) : UInt64 :=
   -- revert potential file transformation by git's `autocrlf`
-  let contents := contents.replace "\r\n" "\n"
+  let contents := Lake.crlf2lf contents
   hash contents
 
 /--
@@ -60,12 +61,22 @@ Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
 * `lean-toolchain`
 * `lake-manifest.json`
+and the hash of `Lean.versionString`.
+
+(We hash `Lean.versionString` in case the toolchain changes even though `lean-toolchain` hasn't.
+This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are updated.)
 -/
 def getRootHash : IO UInt64 := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
   let isMathlibRoot ← isMathlibRoot
-  hash <$> rootFiles.mapM fun path =>
-    hashFileContents <$> IO.FS.readFile (if isMathlibRoot then path else mathlibDepPath / path)
+  let qualifyPath ←
+    if isMathlibRoot then
+      pure id
+    else
+      pure ((← mathlibDepPath) / ·)
+  let hashs ← rootFiles.mapM fun path =>
+    hashFileContents <$> IO.FS.readFile (qualifyPath path)
+  return hash (hash Lean.githash :: hashs)
 
 /--
 Computes the hash of a file, which mixes:
@@ -74,15 +85,14 @@ Computes the hash of a file, which mixes:
 * The hash of its content
 * The hashes of the imported files that are part of `Mathlib`
 -/
-partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
-  let stt ← get
-  match stt.cache.find? filePath with
+partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
+  match (← get).cache.find? filePath with
   | some hash? => return hash?
   | none =>
     let fixedPath := (← IO.getPackageDir filePath) / filePath
     if !(← fixedPath.pathExists) then
       IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it"
-      set { stt with cache := stt.cache.insert filePath none }
+      modify fun stt => { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath
     let fileImports := getFileImports content pkgDirs
@@ -91,11 +101,11 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
       match importHash? with
       | some importHash => importHashes := importHashes.push importHash
       | none =>
-        set { stt with cache := stt.cache.insert filePath none }
+        modify fun stt => { stt with cache := stt.cache.insert filePath none }
         return none
     let rootHash := (← get).rootHash
     let pathHash := hash filePath.components
-    let fileHash := hash $ rootHash :: pathHash :: hashFileContents content :: importHashes.toList
+    let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
       (some fileHash, { stt with
         hashMap := stt.hashMap.insert filePath fileHash
@@ -103,10 +113,11 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
         depsMap := stt.depsMap.insert filePath fileImports })
 
 /-- Files to start hashing from. -/
-def roots : Array FilePath := #["Mathlib.lean", "MathlibExtras.lean"]
+def roots : Array FilePath :=
+  #["Mathlib.lean", "MathlibExtras.lean"]
 
 /-- Main API to retrieve the hashes of the Lean files -/
-def getHashMemo : IO HashMemo :=
-  return (← StateT.run (roots.mapM getFileHash) { rootHash := ← getRootHash }).2
+def getHashMemo (extraRoots : Array FilePath) : IO HashMemo :=
+  return (← StateT.run ((roots ++ extraRoots).mapM getFileHash) { rootHash := ← getRootHash }).2
 
 end Cache.Hashing

@@ -68,13 +68,13 @@ private def printInduct (id : Name) (levelParams : List Name) (_numParams : Nat)
 private def printIdCore (id : Name) : ConstantInfo → CoreM MessageData
   | ConstantInfo.axiomInfo { levelParams := us, type := t, isUnsafe := u, .. } =>
     mkHeader' "axiom" id us t u
-  | ConstantInfo.defnInfo  { levelParams := us, type := t, value := v, safety := s, .. } =>
+  | ConstantInfo.defnInfo { levelParams := us, type := t, value := v, safety := s, .. } =>
     printDefLike "def" id us t v s
-  | ConstantInfo.thmInfo  { levelParams := us, type := t, value := v, .. } =>
+  | ConstantInfo.thmInfo { levelParams := us, type := t, value := v, .. } =>
     printDefLike "theorem" id us t v
-  | ConstantInfo.opaqueInfo  { levelParams := us, type := t, isUnsafe := u, .. } =>
+  | ConstantInfo.opaqueInfo { levelParams := us, type := t, isUnsafe := u, .. } =>
     mkHeader' "constant" id us t u
-  | ConstantInfo.quotInfo  { levelParams := us, type := t, .. } =>
+  | ConstantInfo.quotInfo { levelParams := us, type := t, .. } =>
     mkHeader' "Quotient primitive" id us t false
   | ConstantInfo.ctorInfo { levelParams := us, type := t, isUnsafe := u, .. } =>
     mkHeader' "constructor" id us t u
@@ -107,7 +107,7 @@ def whatsNew (old new : Environment) : CoreM MessageData := do
 
   if diffs.isEmpty then return "no new constants"
 
-  pure $ MessageData.joinSep diffs.toList "\n\n"
+  pure <| MessageData.joinSep diffs.toList "\n\n"
 
 /-- `whatsnew in $command` executes the command and then prints the
 declarations that were added to the environment. -/

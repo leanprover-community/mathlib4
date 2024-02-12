@@ -2,15 +2,12 @@
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.skew_adjoint
-! leanprover-community/mathlib commit 075b3f7d19b9da85a0b54b3e33055a74fc388dec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Matrix
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.Tactic.NoncommRing
+
+#align_import algebra.lie.skew_adjoint from "leanprover-community/mathlib"@"075b3f7d19b9da85a0b54b3e33055a74fc388dec"
 
 /-!
 # Lie algebras of skew-adjoint endomorphisms of a bilinear form
@@ -106,10 +103,9 @@ theorem Matrix.lie_transpose (A B : Matrix n n R) : ⁅A, B⁆ᵀ = ⁅Bᵀ, A�
 theorem Matrix.isSkewAdjoint_bracket {A B : Matrix n n R} (hA : A ∈ skewAdjointMatricesSubmodule J)
     (hB : B ∈ skewAdjointMatricesSubmodule J) : ⁅A, B⁆ ∈ skewAdjointMatricesSubmodule J := by
   simp only [mem_skewAdjointMatricesSubmodule] at *
-  change ⁅A, B⁆ᵀ ⬝ J = J ⬝ (-⁅A, B⁆)
-  change Aᵀ ⬝ J = J ⬝ (-A) at hA
-  change Bᵀ ⬝ J = J ⬝ (-B) at hB
-  simp only [← Matrix.mul_eq_mul] at *
+  change ⁅A, B⁆ᵀ * J = J * (-⁅A, B⁆)
+  change Aᵀ * J = J * (-A) at hA
+  change Bᵀ * J = J * (-B) at hB
   rw [Matrix.lie_transpose, LieRing.of_associative_ring_bracket,
     LieRing.of_associative_ring_bracket, sub_mul, mul_assoc, mul_assoc, hA, hB, ← mul_assoc,
     ← mul_assoc, hA, hB]
@@ -131,20 +127,21 @@ theorem mem_skewAdjointMatricesLieSubalgebra (A : Matrix n n R) :
 /-- An invertible matrix `P` gives a Lie algebra equivalence between those endomorphisms that are
 skew-adjoint with respect to a square matrix `J` and those with respect to `PᵀJP`. -/
 def skewAdjointMatricesLieSubalgebraEquiv (P : Matrix n n R) (h : Invertible P) :
-    skewAdjointMatricesLieSubalgebra J ≃ₗ⁅R⁆ skewAdjointMatricesLieSubalgebra (Pᵀ ⬝ J ⬝ P) :=
+    skewAdjointMatricesLieSubalgebra J ≃ₗ⁅R⁆ skewAdjointMatricesLieSubalgebra (Pᵀ * J * P) :=
   LieEquiv.ofSubalgebras _ _ (P.lieConj h).symm <| by
     ext A
     suffices P.lieConj h A ∈ skewAdjointMatricesSubmodule J ↔
-        A ∈ skewAdjointMatricesSubmodule (Pᵀ ⬝ J ⬝ P) by
+        A ∈ skewAdjointMatricesSubmodule (Pᵀ * J * P) by
       simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
         LinearEquiv.coe_coe]
       exact this
     simp [Matrix.IsSkewAdjoint, J.isAdjointPair_equiv' _ _ P (isUnit_of_invertible P)]
 #align skew_adjoint_matrices_lie_subalgebra_equiv skewAdjointMatricesLieSubalgebraEquiv
 
+-- TODO(mathlib4#6607): fix elaboration so annotation on `A` isn't needed
 theorem skewAdjointMatricesLieSubalgebraEquiv_apply (P : Matrix n n R) (h : Invertible P)
     (A : skewAdjointMatricesLieSubalgebra J) :
-    ↑(skewAdjointMatricesLieSubalgebraEquiv J P h A) = P⁻¹ ⬝ ↑A ⬝ P := by
+    ↑(skewAdjointMatricesLieSubalgebraEquiv J P h A) = P⁻¹ * (A : Matrix n n R) * P := by
   simp [skewAdjointMatricesLieSubalgebraEquiv]
 #align skew_adjoint_matrices_lie_subalgebra_equiv_apply skewAdjointMatricesLieSubalgebraEquiv_apply
 
@@ -158,7 +155,7 @@ def skewAdjointMatricesLieSubalgebraEquivTranspose {m : Type w} [DecidableEq m] 
     suffices J.IsSkewAdjoint (e.symm A) ↔ (e J).IsSkewAdjoint A by
       -- Porting note: Originally `simpa [this]`
       simpa [- LieSubalgebra.mem_map, LieSubalgebra.mem_map_submodule]
-    simp only [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, ← Matrix.mul_eq_mul, ← h,
+    simp only [Matrix.IsSkewAdjoint, Matrix.IsAdjointPair, ← h,
       ← Function.Injective.eq_iff e.injective, map_mul, AlgEquiv.apply_symm_apply, map_neg]
 #align skew_adjoint_matrices_lie_subalgebra_equiv_transpose skewAdjointMatricesLieSubalgebraEquivTranspose
 

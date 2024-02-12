@@ -2,13 +2,10 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.monomial
-! leanprover-community/mathlib commit 220f71ba506c8958c9b41bd82226b3d06b0991e8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Basic
+
+#align_import data.polynomial.monomial from "leanprover-community/mathlib"@"220f71ba506c8958c9b41bd82226b3d06b0991e8"
 
 /-!
 # Univariate monomials
@@ -56,7 +53,7 @@ theorem card_support_le_one_iff_monomial {f : R[X]} :
       simp [this, Ne.symm hi, coeff_monomial]
   · rintro ⟨n, a, rfl⟩
     rw [← Finset.card_singleton n]
-    apply Finset.card_le_of_subset
+    apply Finset.card_le_card
     exact support_monomial' _ _
 #align polynomial.card_support_le_one_iff_monomial Polynomial.card_support_le_one_iff_monomial
 

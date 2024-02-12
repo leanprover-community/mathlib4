@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.group_with_zero
-! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.algebra.group_with_zero from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
 
 /-!
 # Topological group with zero
@@ -45,7 +42,7 @@ operations on `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `Continuou
 -/
 
 
-variable {α β G₀ : Type _}
+variable {α β G₀ : Type*}
 
 section DivConst
 
@@ -83,7 +80,7 @@ end DivConst
 
 /-- A type with `0` and `Inv` such that `fun x ↦ x⁻¹` is continuous at all nonzero points. Any
 normed (semi)field has this property. -/
-class HasContinuousInv₀ (G₀ : Type _) [Zero G₀] [Inv G₀] [TopologicalSpace G₀] : Prop where
+class HasContinuousInv₀ (G₀ : Type*) [Zero G₀] [Inv G₀] [TopologicalSpace G₀] : Prop where
   /-- The map `fun x ↦ x⁻¹` is continuous at all nonzero points. -/
   continuousAt_inv₀ : ∀ ⦃x : G₀⦄, x ≠ 0 → ContinuousAt Inv.inv x
 #align has_continuous_inv₀ HasContinuousInv₀
@@ -146,8 +143,22 @@ end Inv₀
 points. Then the coercion `G₀ˣ → G₀` is a topological embedding. -/
 theorem Units.embedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
     Embedding (val : G₀ˣ → G₀) :=
-  embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono <| fun _ ↦ IsUnit.ne_zero
+  embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono fun _ ↦ IsUnit.ne_zero
 #align units.embedding_coe₀ Units.embedding_val₀
+
+section NhdsInv
+
+variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] {x : G₀}
+
+lemma nhds_inv₀ (hx : x ≠ 0) : 𝓝 x⁻¹ = (𝓝 x)⁻¹ := by
+  refine le_antisymm (inv_le_iff_le_inv.1 ?_) (tendsto_inv₀ hx)
+  simpa only [inv_inv] using tendsto_inv₀ (inv_ne_zero hx)
+
+lemma tendsto_inv_iff₀ {l : Filter α} {f : α → G₀} (hx : x ≠ 0) :
+    Tendsto (fun x ↦ (f x)⁻¹) l (𝓝 x⁻¹) ↔ Tendsto f l (𝓝 x) := by
+  simp only [nhds_inv₀ hx, ← Filter.comap_inv, tendsto_comap_iff, (· ∘ ·), inv_inv]
+
+end NhdsInv
 
 /-!
 ### Continuity of division
@@ -309,7 +320,7 @@ theorem HasContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (
 
 end map_comap
 
-section Zpow
+section ZPow
 
 variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] [ContinuousMul G₀]
 
@@ -331,7 +342,7 @@ theorem Filter.Tendsto.zpow₀ {f : α → G₀} {l : Filter α} {a : G₀} (hf 
   (continuousAt_zpow₀ _ m h).tendsto.comp hf
 #align filter.tendsto.zpow₀ Filter.Tendsto.zpow₀
 
-variable {X : Type _} [TopologicalSpace X] {a : X} {s : Set X} {f : X → G₀}
+variable {X : Type*} [TopologicalSpace X] {a : X} {s : Set X} {f : X → G₀}
 
 nonrec theorem ContinuousAt.zpow₀ (hf : ContinuousAt f a) (m : ℤ) (h : f a ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => f x ^ m) a :=
@@ -353,4 +364,4 @@ theorem Continuous.zpow₀ (hf : Continuous f) (m : ℤ) (h0 : ∀ a, f a ≠ 0 
   continuous_iff_continuousAt.2 fun x => (hf.tendsto x).zpow₀ m (h0 x)
 #align continuous.zpow₀ Continuous.zpow₀
 
-end Zpow
+end ZPow

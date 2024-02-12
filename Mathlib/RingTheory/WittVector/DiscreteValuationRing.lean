@@ -2,16 +2,13 @@
 Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth, Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.discrete_valuation_ring
-! leanprover-community/mathlib commit c163ec99dfc664628ca15d215fce0a5b9c265b68
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Domain
 import Mathlib.RingTheory.WittVector.MulCoeff
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.Tactic.LinearCombination
+
+#align_import ring_theory.witt_vector.discrete_valuation_ring from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
 
 /-!
 
@@ -33,8 +30,6 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 namespace WittVector
 
 variable {p : ℕ} [hp : Fact p.Prime]
@@ -43,7 +38,7 @@ local notation "𝕎" => WittVector p
 
 section CommRing
 
-variable {k : Type _} [CommRing k] [CharP k p]
+variable {k : Type*} [CommRing k] [CharP k p]
 
 /-- This is the `n+1`st coefficient of our inverse. -/
 def succNthValUnits (n : ℕ) (a : Units k) (A : 𝕎 k) (bs : Fin (n + 1) → k) : k :=
@@ -73,7 +68,7 @@ def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
     have H := Units.mul_inv (a ^ p ^ (n + 1))
     linear_combination (norm := skip) -H_coeff * H
     have ha : (a : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1)) := by norm_cast
-    have ha_inv : (↑a⁻¹ : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1))⁻¹ := by norm_cast; norm_num
+    have ha_inv : (↑a⁻¹ : k) ^ p ^ (n + 1) = ↑(a ^ p ^ (n + 1))⁻¹ := by norm_cast
     simp only [nthRemainder_spec, inverseCoeff, succNthValUnits, hA,
       one_coeff_eq_of_pos, Nat.succ_pos', ha_inv, ha, inv_pow]
     ring!)
@@ -88,7 +83,7 @@ end CommRing
 
 section Field
 
-variable {k : Type _} [Field k] [CharP k p]
+variable {k : Type*} [Field k] [CharP k p]
 
 theorem isUnit_of_coeff_zero_ne_zero (x : 𝕎 k) (hx : x.coeff 0 ≠ 0) : IsUnit x := by
   let y : kˣ := Units.mk0 (x.coeff 0) hx
@@ -121,7 +116,7 @@ end Field
 
 section PerfectRing
 
-variable {k : Type _} [CommRing k] [CharP k p] [PerfectRing k p]
+variable {k : Type*} [CommRing k] [CharP k p] [PerfectRing k p]
 
 theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
     ∃ (m : ℕ) (b : 𝕎 k), b.coeff 0 ≠ 0 ∧ a = (p : 𝕎 k) ^ m * b := by
@@ -133,8 +128,7 @@ theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
   rw [← this] at hcm
   refine' ⟨m, b, _, _⟩
   · contrapose! hc
-    have : 0 < p ^ m := pow_pos (Nat.Prime.pos Fact.out) _
-    simp [hc, zero_pow this]
+    simp [hc, zero_pow $ pow_ne_zero _ hp.out.ne_zero]
   · simp_rw [← mul_left_iterate (p : 𝕎 k) m]
     convert hcm using 2
     ext1 x
@@ -145,7 +139,7 @@ end PerfectRing
 
 section PerfectField
 
-variable {k : Type _} [Field k] [CharP k p] [PerfectRing k p]
+variable {k : Type*} [Field k] [CharP k p] [PerfectRing k p]
 
 theorem exists_eq_pow_p_mul' (a : 𝕎 k) (ha : a ≠ 0) :
     ∃ (m : ℕ) (b : Units (𝕎 k)), a = (p : 𝕎 k) ^ m * b := by

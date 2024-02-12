@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.bitraversable.basic
-! leanprover-community/mathlib commit 6f1d45dcccf674593073ee4e54da10ba35aedbc0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Bifunctor
 import Mathlib.Control.Traversable.Basic
+
+#align_import control.bitraversable.basic from "leanprover-community/mathlib"@"6f1d45dcccf674593073ee4e54da10ba35aedbc0"
 
 /-!
 # Bitraversable type class
@@ -30,7 +27,7 @@ and value respectively with `Bitraverse f g : AList key val → IO (AList key' v
 
 * `Bitraversable`: Bare typeclass to hold the `Bitraverse` function.
 * `LawfulBitraversable`: Typeclass for the laws of the `Bitraverse` function. Similar to
-  `IsLawfulTraversable`.
+  `LawfulTraversable`.
 
 ## References
 
@@ -63,7 +60,7 @@ open Functor
 
 /-- Bifunctor. This typeclass asserts that a lawless bitraversable bifunctor is lawful. -/
 class LawfulBitraversable (t : Type u → Type u → Type u) [Bitraversable t] extends
-  LawfulBifunctor t where
+  LawfulBifunctor t : Prop where
   -- Porting note: need to specify `m := Id` because `id` no longer has a `Monad` instance
   id_bitraverse : ∀ {α β} (x : t α β), bitraverse (m := Id) pure pure x = pure x
   comp_bitraverse :

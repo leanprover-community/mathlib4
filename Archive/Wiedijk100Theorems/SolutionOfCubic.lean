@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jeoff Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeoff Lee
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.solution_of_cubic
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.LinearCombination
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+
+#align_import wiedijk_100_theorems.solution_of_cubic from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # The Solution of a Cubic
@@ -46,7 +43,7 @@ section Field
 
 open Polynomial
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
 variable [Invertible (2 : K)] [Invertible (3 : K)]
 
@@ -108,8 +105,8 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
   have hi3 : (3 : K) ≠ 0 := nonzero_of_invertible _
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
-  have h₁ : a * x ^ 3 + b * x ^ 2 + c * x + d = a * (x ^ 3 + b / a * x ^ 2 + c / a * x + d / a) :=
-    by field_simp; ring
+  have h₁ : a * x ^ 3 + b * x ^ 2 + c * x + d
+    = a * (x ^ 3 + b / a * x ^ 2 + c / a * x + d / a) := by field_simp; ring
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   have hp' : p = (3 * (c / a) - (b / a) ^ 2) / 9 := by field_simp [hp, h9]; ring_nf
   have hq' : q = (9 * (b / a) * (c / a) - 2 * (b / a) ^ 3 - 27 * (d / a)) / 54 := by
@@ -134,13 +131,13 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
   have hi2 : (2 : K) ≠ 0 := nonzero_of_invertible _
   have hi3 : (3 : K) ≠ 0 := nonzero_of_invertible _
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
-  have hb2 : b ^ 2 = 3 * a * c := by rw [sub_eq_zero] at hpz ; rw [hpz]
+  have hb2 : b ^ 2 = 3 * a * c := by rw [sub_eq_zero] at hpz; rw [hpz]
   have hb3 : b ^ 3 = 3 * a * b * c := by rw [pow_succ, hb2]; ring
   have h₂ :=
     calc
       a * x ^ 3 + b * x ^ 2 + c * x + d =
-          a * (x + b / (3 * a)) ^ 3 + (c - b ^ 2 / (3 * a)) * x + (d - b ^ 3 * a / (3 * a) ^ 3) :=
-        by field_simp; ring
+      a * (x + b / (3 * a)) ^ 3 + (c - b ^ 2 / (3 * a)) * x + (d - b ^ 3 * a / (3 * a) ^ 3) := by
+        field_simp; ring
       _ = a * (x + b / (3 * a)) ^ 3 + (d - (9 * a * b * c - 2 * b ^ 3) * a / (3 * a) ^ 3) := by
         simp only [hb2, hb3]; field_simp; ring
       _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; field_simp [h54]; ring

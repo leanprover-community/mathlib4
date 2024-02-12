@@ -2,13 +2,10 @@
 Copyright (c) 2022 Rishikesh Vaishnav. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rishikesh Vaishnav
-
-! This file was ported from Lean 3 source module probability.conditional_probability
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Typeclasses
+
+#align_import probability.conditional_probability from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Conditional Probability
@@ -63,7 +60,7 @@ noncomputable section
 
 open ENNReal MeasureTheory MeasurableSpace
 
-variable {Ω : Type _} {m : MeasurableSpace Ω} (μ : Measure Ω) {s t : Set Ω}
+variable {Ω : Type*} {m : MeasurableSpace Ω} (μ : Measure Ω) {s t : Set Ω}
 
 namespace ProbabilityTheory
 
@@ -78,8 +75,8 @@ def cond (s : Set Ω) : Measure Ω :=
 
 end Definitions
 
-scoped notation μ "[" s "|" t "]" => ProbabilityTheory.cond μ t s
-scoped notation:60 μ "[|" t "]" => ProbabilityTheory.cond μ t
+@[inherit_doc] scoped notation μ "[" s "|" t "]" => ProbabilityTheory.cond μ t s
+@[inherit_doc] scoped notation:60 μ "[|" t "]" => ProbabilityTheory.cond μ t
 
 /-- The conditional probability measure of any finite measure on any set of positive measure
 is a probability measure. -/

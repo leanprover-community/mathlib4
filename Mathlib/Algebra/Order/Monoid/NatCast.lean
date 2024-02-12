@@ -2,32 +2,29 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuyang Zhao
-
-! This file was ported from Lean 3 source module algebra.order.monoid.nat_cast
-! leanprover-community/mathlib commit 07fee0ca54c320250c98bacf31ca5f288b2bcbe2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Nat.Cast.Defs
 
+#align_import algebra.order.monoid.nat_cast from "leanprover-community/mathlib"@"07fee0ca54c320250c98bacf31ca5f288b2bcbe2"
+
 /-!
 # Order of numerals in an `AddMonoidWithOne`.
 -/
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Function
 
 lemma lt_add_one [One α] [AddZeroClass α] [PartialOrder α] [ZeroLEOneClass α]
-  [NeZero (1 : α)] [CovariantClass α α (·+·) (·<·)] (a : α) : a < a + 1 :=
-lt_add_of_pos_right _ zero_lt_one
+    [NeZero (1 : α)] [CovariantClass α α (·+·) (·<·)] (a : α) : a < a + 1 :=
+  lt_add_of_pos_right _ zero_lt_one
 #align lt_add_one lt_add_one
 
 lemma lt_one_add [One α] [AddZeroClass α] [PartialOrder α] [ZeroLEOneClass α]
-  [NeZero (1 : α)] [CovariantClass α α (swap (·+·)) (·<·)] (a : α) : a < 1 + a :=
-lt_add_of_pos_left _ zero_lt_one
+    [NeZero (1 : α)] [CovariantClass α α (swap (·+·)) (·<·)] (a : α) : a < 1 + a :=
+  lt_add_of_pos_left _ zero_lt_one
 #align lt_one_add lt_one_add
 
 variable [AddMonoidWithOne α]
@@ -39,7 +36,7 @@ lemma zero_le_two [Preorder α] [ZeroLEOneClass α] [CovariantClass α α (·+·
 #align zero_le_two zero_le_two
 
 lemma zero_le_three [Preorder α] [ZeroLEOneClass α] [CovariantClass α α (·+·) (·≤·)] :
-  (0 : α) ≤ 3 := by
+    (0 : α) ≤ 3 := by
   rw [← two_add_one_eq_three]
   exact add_nonneg zero_le_two zero_le_one
 #align zero_le_three zero_le_three
@@ -51,15 +48,15 @@ lemma zero_le_four [Preorder α] [ZeroLEOneClass α] [CovariantClass α α (·+�
 #align zero_le_four zero_le_four
 
 lemma one_le_two [LE α] [ZeroLEOneClass α] [CovariantClass α α (·+·) (·≤·)] :
-  (1 : α) ≤ 2 :=
-calc (1 : α) = 1 + 0 := (add_zero 1).symm
+    (1 : α) ≤ 2 :=
+  calc (1 : α) = 1 + 0 := (add_zero 1).symm
      _ ≤ 1 + 1 := add_le_add_left zero_le_one _
      _ = 2 := one_add_one_eq_two
 #align one_le_two one_le_two
 
 lemma one_le_two' [LE α] [ZeroLEOneClass α] [CovariantClass α α (swap (·+·)) (·≤·)] :
-  (1 : α) ≤ 2 :=
-calc (1 : α) = 0 + 1 := (zero_add 1).symm
+    (1 : α) ≤ 2 :=
+  calc (1 : α) = 0 + 1 := (zero_add 1).symm
      _ ≤ 1 + 1 := add_le_add_right zero_le_one _
      _ = 2 := one_add_one_eq_two
 #align one_le_two' one_le_two'
@@ -113,11 +110,11 @@ lemma one_lt_two [CovariantClass α α (·+·) (·<·)] : (1 : α) < 2 := by
 
 end
 
-alias zero_lt_two ← two_pos
+alias two_pos := zero_lt_two
 #align two_pos two_pos
 
-alias zero_lt_three ← three_pos
+alias three_pos := zero_lt_three
 #align three_pos three_pos
 
-alias zero_lt_four ← four_pos
+alias four_pos := zero_lt_four
 #align four_pos four_pos

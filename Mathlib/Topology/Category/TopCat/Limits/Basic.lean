@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
-
-! This file was ported from Lean 3 source module topology.category.Top.limits.basic
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.Types
+
+#align_import topology.category.Top.limits.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # The category of topological spaces has all limits and colimits
@@ -94,12 +91,12 @@ def limitConeIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitCone.{v,u} F) 
           erw [← S.w f]
           rfl⟩
       continuous_toFun :=
-        Continuous.subtype_mk (continuous_pi <| fun j => (S.π.app j).2) fun x i j f => by
+        Continuous.subtype_mk (continuous_pi fun j => (S.π.app j).2) fun x i j f => by
           dsimp
           rw [← S.w f]
           rfl }
   uniq S m h := by
-    apply ContinuousMap.ext ; intros a ; apply Subtype.ext ; funext j
+    apply ContinuousMap.ext; intros a; apply Subtype.ext; funext j
     dsimp
     rw [← h]
     rfl
@@ -112,10 +109,10 @@ Generally you should just use `limit.isLimit F`, unless you need the actual defi
 def limitConeInfiIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitConeInfi.{v,u} F) := by
   refine IsLimit.ofFaithful forget (Types.limitConeIsLimit.{v,u} (F ⋙ forget))
     -- Porting note: previously could infer all ?_ except continuity
-    (fun s => ⟨fun v => ⟨ fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
+    (fun s => ⟨fun v => ⟨fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
   · dsimp [Functor.sections]
     intro _ _ _
-    rw [←comp_apply', forget_map_eq_coe, ←s.π.naturality, forget_map_eq_coe]
+    rw [← comp_apply', forget_map_eq_coe, ← s.π.naturality, forget_map_eq_coe]
     dsimp
     rw [Category.id_comp]
   · exact

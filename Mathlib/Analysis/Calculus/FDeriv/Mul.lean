@@ -2,25 +2,22 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv.mul
-! leanprover-community/mathlib commit e3fb84046afd187b710170887195d50bada934ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Bilinear
+
+#align_import analysis.calculus.fderiv.mul from "leanprover-community/mathlib"@"d608fc5d4e69d4cc21885913fb573a88b0deb521"
 
 /-!
 # Multiplicative operations on derivatives
 
 For detailed documentation of the Fréchet derivative,
-see the module docstring of `analysis/calculus/fderiv/basic.lean`.
+see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
 
 * multiplication of a function by a scalar function
 * multiplication of two scalar functions
-* inverse function (assuming that it exists; the inverse function theorem is in `../inverse.lean`)
+* taking the pointwise multiplicative inverse (i.e. `Inv.inv` or `Ring.inverse`) of a function
 -/
 
 
@@ -30,15 +27,15 @@ noncomputable section
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable {f f₀ f₁ g : E → F}
 
@@ -52,12 +49,12 @@ variable {s t : Set E}
 
 variable {L L₁ L₂ : Filter E}
 
-section ClmCompApply
+section CLMCompApply
 
 /-! ### Derivative of the pointwise composition/application of continuous linear maps -/
 
 
-variable {H : Type _} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G →L[𝕜] H}
+variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G →L[𝕜] H}
   {c' : E →L[𝕜] G →L[𝕜] H} {d : E → F →L[𝕜] G} {d' : E →L[𝕜] F →L[𝕜] G} {u : E → G} {u' : E →L[𝕜] G}
 
 theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
@@ -116,18 +113,18 @@ theorem fderiv_clm_comp (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 
 theorem HasStrictFDerivAt.clm_apply (hc : HasStrictFDerivAt c c' x)
     (hu : HasStrictFDerivAt u u' x) :
     HasStrictFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
-  (isBoundedBilinearMapApply.hasStrictFDerivAt (c x, u x)).comp x (hc.prod hu)
+  (isBoundedBilinearMap_apply.hasStrictFDerivAt (c x, u x)).comp x (hc.prod hu)
 #align has_strict_fderiv_at.clm_apply HasStrictFDerivAt.clm_apply
 
 theorem HasFDerivWithinAt.clm_apply (hc : HasFDerivWithinAt c c' s x)
     (hu : HasFDerivWithinAt u u' s x) :
     HasFDerivWithinAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) s x :=
-  (isBoundedBilinearMapApply.hasFDerivAt (c x, u x)).comp_hasFDerivWithinAt x (hc.prod hu)
+  (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x)).comp_hasFDerivWithinAt x (hc.prod hu)
 #align has_fderiv_within_at.clm_apply HasFDerivWithinAt.clm_apply
 
 theorem HasFDerivAt.clm_apply (hc : HasFDerivAt c c' x) (hu : HasFDerivAt u u' x) :
     HasFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
-  (isBoundedBilinearMapApply.hasFDerivAt (c x, u x)).comp x (hc.prod hu)
+  (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x)).comp x (hc.prod hu)
 #align has_fderiv_at.clm_apply HasFDerivAt.clm_apply
 
 theorem DifferentiableWithinAt.clm_apply (hc : DifferentiableWithinAt 𝕜 c s x)
@@ -160,7 +157,70 @@ theorem fderiv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt
   (hc.hasFDerivAt.clm_apply hu.hasFDerivAt).fderiv
 #align fderiv_clm_apply fderiv_clm_apply
 
-end ClmCompApply
+end CLMCompApply
+
+section ContinuousMultilinearApplyConst
+
+/-! ### Derivative of the application of continuous multilinear maps to a constant -/
+
+variable {ι : Type*} [Fintype ι]
+  {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
+  {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+  {c : E → ContinuousMultilinearMap 𝕜 M H}
+  {c' : E →L[𝕜] ContinuousMultilinearMap 𝕜 M H}
+
+theorem HasStrictFDerivAt.continuousMultilinear_apply_const (hc : HasStrictFDerivAt c c' x)
+    (u : ∀ i, M i) : HasStrictFDerivAt (fun y ↦ (c y) u) (c'.flipMultilinear u) x :=
+  (ContinuousMultilinearMap.apply 𝕜 M H u).hasStrictFDerivAt.comp x hc
+
+theorem HasFDerivWithinAt.continuousMultilinear_apply_const (hc : HasFDerivWithinAt c c' s x)
+    (u : ∀ i, M i) :
+    HasFDerivWithinAt (fun y ↦ (c y) u) (c'.flipMultilinear u) s x :=
+  (ContinuousMultilinearMap.apply 𝕜 M H u).hasFDerivAt.comp_hasFDerivWithinAt x hc
+
+theorem HasFDerivAt.continuousMultilinear_apply_const (hc : HasFDerivAt c c' x) (u : ∀ i, M i) :
+    HasFDerivAt (fun y ↦ (c y) u) (c'.flipMultilinear u) x :=
+  (ContinuousMultilinearMap.apply 𝕜 M H u).hasFDerivAt.comp x hc
+
+theorem DifferentiableWithinAt.continuousMultilinear_apply_const
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) :
+    DifferentiableWithinAt 𝕜 (fun y ↦ (c y) u) s x :=
+  (hc.hasFDerivWithinAt.continuousMultilinear_apply_const u).differentiableWithinAt
+
+theorem DifferentiableAt.continuousMultilinear_apply_const (hc : DifferentiableAt 𝕜 c x)
+    (u : ∀ i, M i) :
+    DifferentiableAt 𝕜 (fun y ↦ (c y) u) x :=
+  (hc.hasFDerivAt.continuousMultilinear_apply_const u).differentiableAt
+
+theorem DifferentiableOn.continuousMultilinear_apply_const (hc : DifferentiableOn 𝕜 c s)
+    (u : ∀ i, M i) : DifferentiableOn 𝕜 (fun y ↦ (c y) u) s :=
+  fun x hx ↦ (hc x hx).continuousMultilinear_apply_const u
+
+theorem Differentiable.continuousMultilinear_apply_const (hc : Differentiable 𝕜 c) (u : ∀ i, M i) :
+    Differentiable 𝕜 fun y ↦ (c y) u := fun x ↦ (hc x).continuousMultilinear_apply_const u
+
+theorem fderivWithin_continuousMultilinear_apply_const (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) :
+    fderivWithin 𝕜 (fun y ↦ (c y) u) s x = ((fderivWithin 𝕜 c s x).flipMultilinear u) :=
+  (hc.hasFDerivWithinAt.continuousMultilinear_apply_const u).fderivWithin hxs
+
+theorem fderiv_continuousMultilinear_apply_const (hc : DifferentiableAt 𝕜 c x) (u : ∀ i, M i) :
+    (fderiv 𝕜 (fun y ↦ (c y) u) x) = (fderiv 𝕜 c x).flipMultilinear u :=
+  (hc.hasFDerivAt.continuousMultilinear_apply_const u).fderiv
+
+/-- Application of a `ContinuousMultilinearMap` to a constant commutes with `fderivWithin`. -/
+theorem fderivWithin_continuousMultilinear_apply_const_apply (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ∀ i, M i) (m : E) :
+    (fderivWithin 𝕜 (fun y ↦ (c y) u) s x) m = (fderivWithin 𝕜 c s x) m u := by
+  simp [fderivWithin_continuousMultilinear_apply_const hxs hc]
+
+/-- Application of a `ContinuousMultilinearMap` to a constant commutes with `fderiv`. -/
+theorem fderiv_continuousMultilinear_apply_const_apply (hc : DifferentiableAt 𝕜 c x)
+    (u : ∀ i, M i) (m : E) :
+    (fderiv 𝕜 (fun y ↦ (c y) u) x) m = (fderiv 𝕜 c x) m u := by
+  simp [fderiv_continuousMultilinear_apply_const hc]
+
+end ContinuousMultilinearApplyConst
 
 section SMul
 
@@ -174,7 +234,7 @@ normed vector space.
 -/
 
 
-variable {𝕜' : Type _} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F]
 
 variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
@@ -277,7 +337,7 @@ section Mul
 /-! ### Derivative of the product of two functions -/
 
 
-variable {𝔸 𝔸' : Type _} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
+variable {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
   {a b : E → 𝔸} {a' b' : E →L[𝕜] 𝔸} {c d : E → 𝔸'} {c' d' : E →L[𝕜] 𝔸'}
 
 theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
@@ -508,7 +568,7 @@ end Mul
 
 section AlgebraInverse
 
-variable {R : Type _} [NormedRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
+variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
 
 open NormedRing ContinuousLinearMap Ring
 
@@ -525,14 +585,112 @@ theorem hasFDerivAt_ring_inverse (x : Rˣ) :
   by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 #align has_fderiv_at_ring_inverse hasFDerivAt_ring_inverse
 
-theorem differentiableAt_inverse (x : Rˣ) : DifferentiableAt 𝕜 (@Ring.inverse R _) x :=
-  (hasFDerivAt_ring_inverse x).differentiableAt
-#align differentiable_at_inverse differentiableAt_inverse
+theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
+    DifferentiableAt 𝕜 (@Ring.inverse R _) x :=
+  let ⟨u, hu⟩ := hx; hu ▸ (hasFDerivAt_ring_inverse u).differentiableAt
+
+theorem differentiableWithinAt_inverse {x : R} (hx : IsUnit x) (s : Set R) :
+    DifferentiableWithinAt 𝕜 (@Ring.inverse R _) s x :=
+  (differentiableAt_inverse hx).differentiableWithinAt
+#align differentiable_within_at_inverse differentiableWithinAt_inverse
+
+theorem differentiableOn_inverse : DifferentiableOn 𝕜 (@Ring.inverse R _) {x | IsUnit x} :=
+  fun _x hx => differentiableWithinAt_inverse hx _
+#align differentiable_on_inverse differentiableOn_inverse
 
 theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹ :=
   (hasFDerivAt_ring_inverse x).fderiv
 #align fderiv_inverse fderiv_inverse
 
+variable {h : E → R} {z : E} {S : Set E}
+
+theorem DifferentiableWithinAt.inverse (hf : DifferentiableWithinAt 𝕜 h S z) (hz : IsUnit (h z)) :
+    DifferentiableWithinAt 𝕜 (fun x => Ring.inverse (h x)) S z :=
+  (differentiableAt_inverse hz).comp_differentiableWithinAt z hf
+#align differentiable_within_at.inverse DifferentiableWithinAt.inverse
+
+@[simp]
+theorem DifferentiableAt.inverse (hf : DifferentiableAt 𝕜 h z) (hz : IsUnit (h z)) :
+    DifferentiableAt 𝕜 (fun x => Ring.inverse (h x)) z :=
+  (differentiableAt_inverse hz).comp z hf
+#align differentiable_at.inverse DifferentiableAt.inverse
+
+theorem DifferentiableOn.inverse (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, IsUnit (h x)) :
+    DifferentiableOn 𝕜 (fun x => Ring.inverse (h x)) S := fun x h => (hf x h).inverse (hz x h)
+#align differentiable_on.inverse DifferentiableOn.inverse
+
+@[simp]
+theorem Differentiable.inverse (hf : Differentiable 𝕜 h) (hz : ∀ x, IsUnit (h x)) :
+    Differentiable 𝕜 fun x => Ring.inverse (h x) := fun x => (hf x).inverse (hz x)
+#align differentiable.inverse Differentiable.inverse
+
 end AlgebraInverse
+
+/-! ### Derivative of the inverse in a division ring
+
+Note these lemmas are primed as they need `CompleteSpace R`, whereas the other lemmas in
+`Mathlib/Analysis/Calculus/Deriv/Inv.lean` do not, but instead need `NontriviallyNormedField R`.
+-/
+
+section DivisionRingInverse
+
+variable {R : Type*} [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [CompleteSpace R]
+
+open NormedRing ContinuousLinearMap Ring
+
+/-- At an invertible element `x` of a normed division algebra `R`, the Fréchet derivative of the
+inversion operation is the linear map `λ t, - x⁻¹ * t * x⁻¹`. -/
+theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) : HasFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x :=
+  by simpa using hasFDerivAt_ring_inverse (Units.mk0 _ hx)
+#align has_fderiv_at_inv' hasFDerivAt_inv'
+
+theorem differentiableAt_inv' {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=
+  (hasFDerivAt_inv' hx).differentiableAt
+#align differentiable_at_inv' differentiableAt_inv'
+
+theorem differentiableWithinAt_inv' {x : R} (hx : x ≠ 0) (s : Set R) :
+    DifferentiableWithinAt 𝕜 (fun x => x⁻¹) s x :=
+  (differentiableAt_inv' hx).differentiableWithinAt
+#align differentiable_within_at_inv' differentiableWithinAt_inv'
+
+theorem differentiableOn_inv' : DifferentiableOn 𝕜 (fun x : R => x⁻¹) {x | x ≠ 0} := fun _x hx =>
+  differentiableWithinAt_inv' hx _
+#align differentiable_on_inv' differentiableOn_inv'
+
+/-- Non-commutative version of `fderiv_inv` -/
+theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ :=
+  (hasFDerivAt_inv' hx).fderiv
+#align fderiv_inv' fderiv_inv'
+
+/-- Non-commutative version of `fderivWithin_inv` -/
+theorem fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (fun x => x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ := by
+  rw [DifferentiableAt.fderivWithin (differentiableAt_inv' hx) hxs]
+  exact fderiv_inv' hx
+#align fderiv_within_inv' fderivWithin_inv'
+
+variable {h : E → R} {z : E} {S : Set E}
+
+theorem DifferentiableWithinAt.inv' (hf : DifferentiableWithinAt 𝕜 h S z) (hz : h z ≠ 0) :
+    DifferentiableWithinAt 𝕜 (fun x => (h x)⁻¹) S z :=
+  (differentiableAt_inv' hz).comp_differentiableWithinAt z hf
+#align differentiable_within_at.inv' DifferentiableWithinAt.inv'
+
+@[simp]
+theorem DifferentiableAt.inv' (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
+    DifferentiableAt 𝕜 (fun x => (h x)⁻¹) z :=
+  (differentiableAt_inv' hz).comp z hf
+#align differentiable_at.inv' DifferentiableAt.inv'
+
+theorem DifferentiableOn.inv' (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, h x ≠ 0) :
+    DifferentiableOn 𝕜 (fun x => (h x)⁻¹) S := fun x h => (hf x h).inv' (hz x h)
+#align differentiable_on.inv' DifferentiableOn.inv'
+
+@[simp]
+theorem Differentiable.inv' (hf : Differentiable 𝕜 h) (hz : ∀ x, h x ≠ 0) :
+    Differentiable 𝕜 fun x => (h x)⁻¹ := fun x => (hf x).inv' (hz x)
+#align differentiable.inv' Differentiable.inv'
+
+end DivisionRingInverse
 
 end

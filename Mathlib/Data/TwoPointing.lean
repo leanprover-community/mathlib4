@@ -2,15 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module data.two_pointing
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Sum.Basic
-import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Logic.Nonempty
+
+#align_import data.two_pointing from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
 /-!
 # Two-pointings
@@ -30,11 +26,11 @@ bipointed types. Two-pointed types form a full subcategory of those.
 
 open Function
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- Two-pointing of a type. This is a Type-valued termed `Nontrivial`. -/
 @[ext]
-structure TwoPointing (α : Type _) extends α × α where
+structure TwoPointing (α : Type*) extends α × α where
   /-- `fst` and `snd` are distinct terms -/
   fst_ne_snd : fst ≠ snd
   deriving DecidableEq
@@ -142,7 +138,7 @@ theorem sum_snd : (p.sum q).snd = Sum.inr q.snd :=
 
 /-- The `false`, `true` two-pointing of `Bool`. -/
 protected def bool : TwoPointing Bool :=
-  ⟨(false, true), Bool.ff_ne_tt⟩
+  ⟨(false, true), Bool.false_ne_true⟩
 #align two_pointing.bool TwoPointing.bool
 
 @[simp]

@@ -2,21 +2,18 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module analysis.normed.group.hom_completion
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.Completion
+
+#align_import analysis.normed.group.hom_completion from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # Completion of normed group homs
 
 Given two (semi) normed groups `G` and `H` and a normed group hom `f : NormedAddGroupHom G H`,
 we build and study a normed group hom
-`f.completion  : NormedAddGroupHom (completion G) (completion H)` such that the diagram
+`f.completion : NormedAddGroupHom (completion G) (completion H)` such that the diagram
 
 ```
                    f
@@ -58,8 +55,8 @@ open Set NormedAddGroupHom UniformSpace
 
 section Completion
 
-variable {G : Type _} [SeminormedAddCommGroup G] {H : Type _} [SeminormedAddCommGroup H]
-  {K : Type _} [SeminormedAddCommGroup K]
+variable {G : Type*} [SeminormedAddCommGroup G] {H : Type*} [SeminormedAddCommGroup H]
+  {K : Type*} [SeminormedAddCommGroup K]
 
 /-- The normed group hom induced between completions. -/
 def NormedAddGroupHom.completion (f : NormedAddGroupHom G H) :
@@ -200,9 +197,9 @@ end Completion
 
 section Extension
 
-variable {G : Type _} [SeminormedAddCommGroup G]
+variable {G : Type*} [SeminormedAddCommGroup G]
 
-variable {H : Type _} [SeminormedAddCommGroup H] [SeparatedSpace H] [CompleteSpace H]
+variable {H : Type*} [SeminormedAddCommGroup H] [SeparatedSpace H] [CompleteSpace H]
 
 /-- If `H` is complete, the extension of `f : NormedAddGroupHom G H` to a
 `NormedAddGroupHom (completion G) H`. -/

@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Murrills
 -/
-import Lean
 import Mathlib.Tactic.Core
 
 /-!
@@ -81,7 +80,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let rfvars ← getFVarIdsAt goal ys
   let rfvars := rfvars.map Expr.fvar
   let lctx := (← goal.getDecl).lctx
-  let (revertedFVars, replacedFVars, HType?) ← liftMkBindingM <| fun ctx => (do
+  let (revertedFVars, replacedFVars, HType?) ← liftMkBindingM fun ctx => (do
     let gf ← collectForwardDeps lctx gfvars
     let revertedFVars := filterOutImplementationDetails lctx (gf.map Expr.fvarId!)
     -- Ensure the replaced fvars are among the reverted ones
@@ -156,7 +155,6 @@ wlog h : P generalizing x y replacing w z with H
 syntax (name := wlog) "wlog " binderIdent " : " term (" generalizing" (ppSpace colGt ident)*)?
   (" replacing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
-open private Lean.Elab.Term.expandBinderIdent from Lean.Elab.Binders in
 elab_rules : tactic
 | `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ replacing $ys*]?
     $[ with $H:ident]?) => withMainContext do

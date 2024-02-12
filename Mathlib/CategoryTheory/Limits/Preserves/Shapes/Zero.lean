@@ -2,14 +2,11 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.zero
-! leanprover-community/mathlib commit bbe25d4d92565a5fd773e52e041a90387eee3c93
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+
+#align_import category_theory.limits.preserves.shapes.zero from "leanprover-community/mathlib"@"bbe25d4d92565a5fd773e52e041a90387eee3c93"
 
 /-!
 # Preservation of zero objects and zero morphisms
@@ -46,7 +43,7 @@ variable [HasZeroMorphisms C] [HasZeroMorphisms D]
 
 /-- A functor preserves zero morphisms if it sends zero morphisms to zero morphisms. -/
 class PreservesZeroMorphisms (F : C ⥤ D) : Prop where
-  /-- For any pair objects `F (0: X ⟶  Y) = (0 : F X ⟶  F Y)` -/
+  /-- For any pair objects `F (0: X ⟶ Y) = (0 : F X ⟶ F Y)` -/
   map_zero : ∀ X Y : C, F.map (0 : X ⟶ Y) = 0 := by aesop
 #align category_theory.functor.preserves_zero_morphisms CategoryTheory.Functor.PreservesZeroMorphisms
 
@@ -55,6 +52,11 @@ protected theorem map_zero (F : C ⥤ D) [PreservesZeroMorphisms F] (X Y : C) :
     F.map (0 : X ⟶ Y) = 0 :=
   PreservesZeroMorphisms.map_zero _ _
 #align category_theory.functor.map_zero CategoryTheory.Functor.map_zero
+
+lemma map_isZero (F : C ⥤ D) [PreservesZeroMorphisms F] {X : C} (hX : IsZero X) :
+    IsZero (F.obj X) := by
+  simp only [IsZero.iff_id_eq_zero] at hX ⊢
+  rw [← F.map_id, hX, F.map_zero]
 
 theorem zero_of_map_zero (F : C ⥤ D) [PreservesZeroMorphisms F] [Faithful F] {X Y : C} (f : X ⟶ Y)
     (h : F.map f = 0) : f = 0 :=
@@ -72,7 +74,6 @@ instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D)
     PreservesZeroMorphisms F where
   map_zero X Y := by
     let adj := Adjunction.ofLeftAdjoint F
-    dsimp
     calc
       F.map (0 : X ⟶ Y) = F.map 0 ≫ F.map (adj.unit.app Y) ≫ adj.counit.app (F.obj Y) := ?_
       _ = F.map 0 ≫ F.map ((rightAdjoint F).map (0 : F.obj X ⟶ _)) ≫ adj.counit.app (F.obj Y) := ?_
@@ -103,6 +104,9 @@ instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F]
       F.map (0 : X ⟶ Y) = F.map (0 ≫ F.preimage (0 : F.obj Y ⟶ F.obj Y)) := by rw [zero_comp]
       _ = 0 := by rw [F.map_comp, F.image_preimage, comp_zero]
 #align category_theory.functor.preserves_zero_morphisms_of_full CategoryTheory.Functor.preservesZeroMorphisms_of_full
+
+instance preservesZeroMorphisms_evaluation_obj (j : D) :
+    PreservesZeroMorphisms ((evaluation D C).obj j) where
 
 end ZeroMorphisms
 

@@ -2,17 +2,14 @@
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module imo.imo1998_q2
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Int.Parity
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Tactic.Ring
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
+
+#align_import imo.imo1998_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 1998 Q2
@@ -48,19 +45,19 @@ set_option linter.uppercaseLean3 false
 
 open scoped Classical
 
-variable {C J : Type _} (r : C → J → Prop)
+variable {C J : Type*} (r : C → J → Prop)
 
 namespace Imo1998Q2
 
 noncomputable section
 
 /-- An ordered pair of judges. -/
-abbrev JudgePair (J : Type _) :=
+abbrev JudgePair (J : Type*) :=
   J × J
 #align imo1998_q2.judge_pair Imo1998Q2.JudgePair
 
 /-- A triple consisting of contestant together with an ordered pair of judges. -/
-abbrev AgreedTriple (C J : Type _) :=
+abbrev AgreedTriple (C J : Type*) :=
   C × JudgePair J
 #align imo1998_q2.agreed_triple Imo1998Q2.AgreedTriple
 
@@ -165,13 +162,13 @@ theorem A_card_upper_bound {k : ℕ}
   rw [← Finset.offDiag_card]
   apply Finset.card_le_mul_card_image_of_maps_to (A_maps_to_offDiag_judgePair r)
   intro p hp
-  have hp' : p.Distinct := by simp [Finset.mem_offDiag] at hp ; exact hp
+  have hp' : p.Distinct := by simp [Finset.mem_offDiag] at hp; exact hp
   rw [← A_fibre_over_judgePair_card r hp']; apply hk; exact hp'
 #align imo1998_q2.A_card_upper_bound Imo1998Q2.A_card_upper_bound
 
 end
 
-theorem add_sq_add_sq_sub {α : Type _} [Ring α] (x y : α) :
+theorem add_sq_add_sq_sub {α : Type*} [Ring α] (x y : α) :
     (x + y) * (x + y) + (x - y) * (x - y) = 2 * x * x + 2 * y * y := by noncomm_ring
 #align imo1998_q2.add_sq_add_sq_sub Imo1998Q2.add_sq_add_sq_sub
 
@@ -213,7 +210,7 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
       aesop
   have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ]; rfl
   rw [Finset.filter_and, ← Finset.sdiff_sdiff_self_left s t, Finset.card_sdiff]
-  · rw [hst']; rw [add_assoc] at hs ; apply le_tsub_of_add_le_right hs
+  · rw [hst']; rw [add_assoc] at hs; apply le_tsub_of_add_le_right hs
   · apply Finset.sdiff_subset
 #align imo1998_q2.distinct_judge_pairs_card_lower_bound Imo1998Q2.distinct_judge_pairs_card_lower_bound
 
@@ -232,7 +229,7 @@ theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff]
   -- porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
-  · convert @Nat.cast_le ℚ _ _ _ _
+  · convert Nat.cast_le (α := ℚ)
     · aesop
     · norm_cast
   all_goals simp [ha, hb]
@@ -249,7 +246,7 @@ theorem imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = 
     (hk : ∀ p : JudgePair J, p.Distinct → (agreedContestants r p).card ≤ k) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a := by
   rw [clear_denominators ha hb.pos]
-  obtain ⟨z, hz⟩ := hb; rw [hz] at hJ ; rw [hz]
+  obtain ⟨z, hz⟩ := hb; rw [hz] at hJ; rw [hz]
   have h := le_trans (A_card_lower_bound r hJ) (A_card_upper_bound r hk)
   rw [hC, hJ] at h
   -- We are now essentially done; we just need to bash `h` into exactly the right shape.

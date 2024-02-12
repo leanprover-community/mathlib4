@@ -2,6 +2,8 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Char
 import Mathlib.Data.UInt
 
+set_option autoImplicit true
+
 namespace Nat
 
 /- Up -/
@@ -12,7 +14,7 @@ def Up (ub a i : ℕ) := i < a ∧ i < ub
 lemma Up.next {ub i} (h : i < ub) : Up ub (i+1) i := ⟨Nat.lt_succ_self _, h⟩
 
 lemma Up.WF (ub) : WellFounded (Up ub) :=
-  Subrelation.wf (h₂ := (measure (ub - .)).wf) fun ⟨ia, iu⟩ ↦ Nat.sub_lt_sub_left iu ia
+  Subrelation.wf (h₂ := (measure (ub - ·)).wf) fun ⟨ia, iu⟩ ↦ Nat.sub_lt_sub_left iu ia
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
 def upRel (ub : ℕ) : WellFoundedRelation Nat := ⟨Up ub, Up.WF ub⟩
@@ -50,13 +52,13 @@ def toArray : ByteSlice → ByteArray
 
 /-- The inner loop of the `forIn` implementation for byte slices. -/
 def forIn.loop [Monad m] (f : UInt8 → β → m (ForInStep β))
-  (arr : ByteArray) (off _end : Nat) (i : Nat) (b : β) : m β :=
+    (arr : ByteArray) (off _end : Nat) (i : Nat) (b : β) : m β :=
   if h : i < _end then do
     match ← f (arr.get! i) b with
     | ForInStep.done b => pure b
     | ForInStep.yield b => have := Nat.Up.next h; loop f arr off _end (i+1) b
   else pure b
-termination_by _ => _end - i
+termination_by _end - i
 
 instance : ForIn m ByteSlice UInt8 :=
   ⟨fun ⟨arr, off, len⟩ b f ↦ forIn.loop f arr off (off + len) off b⟩
@@ -80,8 +82,8 @@ def String.toAsciiByteArray (s : String) : ByteArray :=
       Nat.sub_lt_sub_left (Nat.lt_of_not_le <| mt decide_eq_true h)
         (Nat.lt_add_of_pos_right (String.csize_pos _))
     loop (s.next p) (out.push c.toUInt8)
+    termination_by utf8ByteSize s - p.byteIdx
   loop 0 ByteArray.empty
-termination_by _ => utf8ByteSize s - p.byteIdx
 
 /-- Convert a byte slice into a string. This does not handle non-ASCII characters correctly:
 every byte will become a unicode character with codepoint < 256. -/

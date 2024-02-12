@@ -2,14 +2,11 @@
 Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
-
-! This file was ported from Lean 3 source module algebra.category.Module.filtered_colimits
-! leanprover-community/mathlib commit 806bbb0132ba63b93d5edbe4789ea226f8329979
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
 import Mathlib.Algebra.Category.ModuleCat.Basic
+
+#align_import algebra.category.Module.filtered_colimits from "leanprover-community/mathlib"@"806bbb0132ba63b93d5edbe4789ea226f8329979"
 
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
@@ -85,7 +82,7 @@ set_option linter.uppercaseLean3 false in
 #align Module.filtered_colimits.colimit_smul_aux_eq_of_rel ModuleCat.FilteredColimits.colimitSMulAux_eq_of_rel
 
 /-- Scalar multiplication in the colimit. See also `colimitSMulAux`. -/
-instance colimitHasSmul : SMul R (M F) where
+instance colimitHasSMul : SMul R (M F) where
   smul r x := by
     refine' Quot.lift (colimitSMulAux F r) _ x
     intro x y h
@@ -93,7 +90,7 @@ instance colimitHasSmul : SMul R (M F) where
     apply Types.FilteredColimit.rel_of_quot_rel
     exact h
 set_option linter.uppercaseLean3 false in
-#align Module.filtered_colimits.colimit_has_smul ModuleCat.FilteredColimits.colimitHasSmul
+#align Module.filtered_colimits.colimit_has_smul ModuleCat.FilteredColimits.colimitHasSMul
 
 @[simp]
 theorem colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk F x = M.mk F ⟨x.1, r • x.2⟩ :=
@@ -121,7 +118,7 @@ instance colimitMulAction : MulAction R (M F) where
 instance colimitSMulWithZero : SMulWithZero R (M F) :=
 { colimitMulAction F with
   smul_zero := fun r => by
-    erw [colimit_zero_eq _ (IsFiltered.Nonempty.some : J), colimit_smul_mk_eq, smul_zero]
+    erw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
     rfl
   zero_smul := fun x => by
     refine' Quot.inductionOn x _; clear x; intro x; cases' x with j x

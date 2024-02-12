@@ -2,16 +2,13 @@
 Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module algebra.category.Module.subobject
-! leanprover-community/mathlib commit 6d584f1709bedbed9175bd9350df46599bdd7213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.CategoryTheory.Subobject.Limits
+
+#align_import algebra.category.Module.subobject from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 
 /-!
 # Subobjects in the category of `R`-modules
@@ -70,7 +67,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
           rw [this, comp_def, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
-        refine' ⟨fun h => _, fun h => mk_le_mk_of_comm (↟(Submodule.ofLe h)) rfl⟩
+        refine' ⟨fun h => _, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
         convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h) (↾T.subtype)
         · simpa only [← comp_def, ofMkLEMk_comp] using (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }
