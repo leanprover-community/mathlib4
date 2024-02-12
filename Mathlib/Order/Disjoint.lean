@@ -29,7 +29,7 @@ variable {α : Type*}
 
 section Disjoint
 
-section PreOrderBot
+section PreorderBot
 
 variable [Preorder α] [OrderBot α] {a b c d : α}
 
@@ -80,7 +80,7 @@ theorem Disjoint.mono_right : b ≤ c → Disjoint a c → Disjoint a b :=
   Disjoint.mono le_rfl
 #align disjoint.mono_right Disjoint.mono_right
 
-end PreOrderBot
+end PreorderBot
 
 section PartialOrderBot
 
