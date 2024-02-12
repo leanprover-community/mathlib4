@@ -191,7 +191,6 @@ lemma lieCharpoly_coeff_rank_ne_zero :
   apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
   apply lieCharpoly_ne_zero
 
-
 open FiniteDimensional
 lemma rank_le_card : rank R L ≤ Fintype.card ι := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
@@ -206,20 +205,42 @@ lemma rank_le_finrank : rank R L ≤ finrank R L := by
 
 variable {L}
 
+lemma rank_le_natTrailingDegree_charpoly_ad :
+    rank R L ≤ (ad R L x).charpoly.natTrailingDegree := by
+  apply Polynomial.natTrailingDegree_le_of_ne_zero
+  intro h
+  apply_fun (MvPolynomial.eval ((chooseBasis R L).repr x)) at h
+  rw [lieCharpoly_eval, map_zero] at h
+  apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr _ h
+  apply (LinearMap.charpoly_monic _).ne_zero
+
 /-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
 Then `x` is *regular*
 if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero. -/
 def IsRegular (x : L) : Prop :=
   Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0
 
-lemma isRegular_def (x : L) :
+lemma isRegular_def :
     IsRegular R x = (Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0) := rfl
 
-lemma isRegular_iff_coeff_rank_ne_zero (x : L) :
+lemma isRegular_iff_coeff_lieCharpoly_rank_ne_zero :
     IsRegular R x ↔
     MvPolynomial.eval ((chooseBasis R L).repr x)
       ((lieCharpoly (chooseBasis R L) (chooseBasis R L)).coeff (rank R L)) ≠ 0 := by
   rw [IsRegular, lieCharpoly_eval, ad]
+
+lemma isRegular_iff_natTrailingDegree_charpoly_eq_rank :
+    IsRegular R x ↔ (ad R L x).charpoly.natTrailingDegree = rank R L := by
+  rw [isRegular_def]
+  constructor
+  · intro h
+    exact le_antisymm
+      (Polynomial.natTrailingDegree_le_of_ne_zero h)
+      (rank_le_natTrailingDegree_charpoly_ad R x)
+  · intro h
+    rw [← h]
+    apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
+    apply (LinearMap.charpoly_monic _).ne_zero
 
 section IsDomain
 
@@ -243,7 +264,7 @@ lemma exists_isRegular_of_finrank_le_card (h : finrank R L ≤ #R) :
     aux₁.exists_eval_ne_zero_of_totalDegree_le_card (lieCharpoly_coeff_rank_ne_zero R L) aux₂
   let c := Finsupp.equivFunOnFinite.symm x
   use b.repr.symm c
-  rwa [isRegular_iff_coeff_rank_ne_zero, LinearEquiv.apply_symm_apply]
+  rwa [isRegular_iff_coeff_lieCharpoly_rank_ne_zero, LinearEquiv.apply_symm_apply]
 
 lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular R x := by
   apply exists_isRegular_of_finrank_le_card

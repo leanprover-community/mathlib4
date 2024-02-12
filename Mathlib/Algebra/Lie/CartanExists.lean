@@ -68,13 +68,24 @@ lemma engel_zero : engel R (0 : L) = ⊤ := by
   use 1
   simp only [pow_one, LinearMap.zero_apply]
 
-lemma rank_le_finrank_engel (x : L) :
-    rank R L ≤ finrank R (engel R x) := by
+lemma natTrailingDegree_charpoly_ad_le_finrank_engel (x : L) :
+    (ad R L x).charpoly.natTrailingDegree ≤ finrank R (engel R x) := by
   sorry
+
+-- needs `R` to be a field ??
+lemma finrank_engel (x : L) :
+    finrank R (engel R x) = (ad R L x).charpoly.natTrailingDegree := by
+  apply le_antisymm _ (natTrailingDegree_charpoly_ad_le_finrank_engel R x)
+  sorry
+
+lemma rank_le_finrank_engel (x : L) :
+    rank R L ≤ finrank R (engel R x) :=
+  (rank_le_natTrailingDegree_charpoly_ad R x).trans
+    (natTrailingDegree_charpoly_ad_le_finrank_engel R x)
 
 lemma isRegular_iff_finrank_engel_eq_rank (x : L) :
     IsRegular R x ↔ finrank R (engel R x) = rank R L := by
-  rw [LieAlgebra.isRegular_iff_coeff_rank_ne_zero]
+  rw [LieAlgebra.isRegular_iff_coeff_lieCharpoly_rank_ne_zero]
   refine ⟨?_, ?_⟩
   · intro h
     apply le_antisymm _ (rank_le_finrank_engel R x)
