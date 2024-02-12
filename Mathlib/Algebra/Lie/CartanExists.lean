@@ -135,19 +135,44 @@ lemma lieCharpoly₁_map_eval (r : R) :
         map_smul, Finsupp.coe_add, Finsupp.coe_smul, MvPolynomial.eval_X, Pi.add_apply,
         Pi.smul_apply, smul_eq_mul, mul_comm r]
 
+lemma _root_.MvPolynomial.IsHomogeneous.totalDegree_le
+    {σ : Type*} {n : ℕ} (F : MvPolynomial σ R) (hF : F.IsHomogeneous n) :
+    F.totalDegree ≤ n := by
+  apply Finset.sup_le
+  intro d hd
+  rw [MvPolynomial.mem_support_iff] at hd
+  rw [Finsupp.sum, hF hd]
+
 -- TODO: rename, move
-lemma foo {σ : Type*} {m n : ℕ} (F : MvPolynomial σ R) (hF : F.IsHomogeneous n)
-    (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ m) :
+open BigOperators in
+lemma foo {σ : Type*} {m n : ℕ} (F : MvPolynomial σ R) (hF : F.totalDegree ≤ m)
+    (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ n) :
     (MvPolynomial.aeval f F).natDegree ≤ m * n := by
-  sorry
+  rw [MvPolynomial.aeval_def, MvPolynomial.eval₂]
+  apply (Polynomial.natDegree_sum_le _ _).trans
+  simp only [Function.comp_apply]
+  apply Finset.sup_le
+  intro d hd
+  rw [← C_eq_algebraMap]
+  apply (Polynomial.natDegree_C_mul_le _ _).trans
+  apply (Polynomial.natDegree_prod_le _ _).trans
+  have : ∑ i in d.support, (d i) * n ≤ m * n := by
+    rw [← Finset.sum_mul]
+    apply mul_le_mul' (.trans _ hF) le_rfl
+    rw [MvPolynomial.totalDegree]
+    exact Finset.le_sup_of_le hd le_rfl
+  apply (Finset.sum_le_sum _).trans this
+  rintro i -
+  apply Polynomial.natDegree_pow_le.trans
+  exact mul_le_mul' le_rfl (hf i)
 
 lemma lieCharpoly₁_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly₁ R M x y).coeff i).natDegree ≤ j := by
   rw [finrank_eq_card_chooseBasisIndex] at hij
   classical
   have := lieCharpoly_coeff_isHomogeneous (chooseBasis R L) (chooseBasis R M) _ _ hij
-  rw [← one_mul j, lieCharpoly₁, coeff_map]
-  apply foo _ _ this _ _
+  rw [← mul_one j, lieCharpoly₁, coeff_map]
+  apply foo _ _ this.totalDegree_le _ _
   intro k
   apply Polynomial.natDegree_add_le_of_degree_le
   · apply (Polynomial.natDegree_C_mul_le _ _).trans
