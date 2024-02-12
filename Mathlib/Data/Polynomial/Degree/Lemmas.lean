@@ -426,24 +426,38 @@ section Field
 variable {K : Type*} [Field K]
 
 /-! Useful lemmas for the "monicization" of a nonzero polynomial `p`. -/
-@[simp] lemma irreducible_mul_C_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :
-    Irreducible (p * C (leadingCoeff p)⁻¹) ↔ Irreducible p :=
-  irreducible_mul_isUnit <| isUnit_C.mpr <| IsUnit.mk0 _ <|
-    inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0
+@[simp]
+theorem irreducible_mul_leadingCoeff_inv {p : K[X]} :
+    Irreducible (p * C (leadingCoeff p)⁻¹) ↔ Irreducible p := by
+  by_cases hp0 : p = 0
+  · simp [hp0]
+  exact irreducible_mul_isUnit
+    (isUnit_C.mpr (IsUnit.mk0 _ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))
 
-@[simp] lemma dvd_mul_C_leadingCoeff_inv {p q : K[X]} (hp0 : p ≠ 0) :
+@[simp] lemma dvd_mul_leadingCoeff_inv {p q : K[X]} (hp0 : p ≠ 0) :
     q ∣ p * C (leadingCoeff p)⁻¹ ↔ q ∣ p :=
   IsUnit.dvd_mul_right <| isUnit_C.mpr <| IsUnit.mk0 _ <|
     inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0
 
--- `simp` normal form of `degree_mul_C_leadingCoeff_inv`
-@[simp] lemma degree_C_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :
+-- `simp` normal form of `degree_mul_leadingCoeff_inv`
+@[simp] lemma degree_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :
     degree (C (leadingCoeff p)⁻¹) = 0 :=
   degree_C (inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0)
 
-lemma degree_mul_C_leadingCoeff_inv {p : K[X]} (hp0 : p ≠ 0) :
-    degree (p * C (leadingCoeff p)⁻¹) = degree p := by
-  simp [degree_C_leadingCoeff_inv hp0]
+theorem monic_mul_leadingCoeff_inv {p : K[X]} (h : p ≠ 0) : Monic (p * C (leadingCoeff p)⁻¹) := by
+  rw [Monic, leadingCoeff_mul, leadingCoeff_C,
+    mul_inv_cancel (show leadingCoeff p ≠ 0 from mt leadingCoeff_eq_zero.1 h)]
+#align polynomial.monic_mul_leading_coeff_inv Polynomial.monic_mul_leadingCoeff_inv
+
+theorem degree_mul_leadingCoeff_inv (p : K[X]) {q : K[X]} (h : q ≠ 0) :
+    degree (p * C (leadingCoeff q)⁻¹) = degree p := by
+  have h₁ : (leadingCoeff q)⁻¹ ≠ 0 := inv_ne_zero (mt leadingCoeff_eq_zero.1 h)
+  rw [degree_mul, degree_C h₁, add_zero]
+#align polynomial.degree_mul_leading_coeff_inv Polynomial.degree_mul_leadingCoeff_inv
+
+theorem natDegree_mul_leadingCoeff_inv (p : K[X]) {q : K[X]} (h : q ≠ 0) :
+    natDegree (p * C (leadingCoeff q)⁻¹) = natDegree p :=
+  natDegree_eq_of_degree_eq (degree_mul_leadingCoeff_inv _ h)
 
 end Field
 
