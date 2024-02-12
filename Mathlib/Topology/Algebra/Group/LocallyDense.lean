@@ -6,7 +6,7 @@ Authors: Emilie Burgun
 
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
-import Mathlib.Topology.Basic
+import Mathlib.Topology.Perfect
 import Mathlib.Topology.Sets.RegularOpens
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Group.InjectiveAction
@@ -97,7 +97,7 @@ If a group action is locally moving and faithful and the topology is Hausdorff,
 then only `1` commutes with every other member of `G`.
 -/
 @[to_additive]
-theorem center_eq_bot [T2Space α] [FaithfulSMul G α] [NoIsolatedPoints α] :
+theorem center_eq_bot [T2Space α] [FaithfulSMul G α] [PerfectSpace α] :
     Subgroup.center G = ⊥ := by
   simp only [Subgroup.eq_bot_iff_forall, Subgroup.mem_center_iff]
   intro g g_in_center
@@ -139,7 +139,7 @@ theorem LocallyMovingSMul.locally_moving {s : Set α} (s_open : IsOpen s) (s_non
     G•[sᶜ] ≠ ⊥ := LocallyMovingSMul.locally_moving' (G := G) s_open s_nonempty
 
 @[to_additive]
-instance LocallyMovingSMul.of_locallyDense [LocallyDenseSMul G α] [T1Space α] [NoIsolatedPoints α] :
+instance LocallyMovingSMul.of_locallyDense [LocallyDenseSMul G α] [T1Space α] [PerfectSpace α] :
     LocallyMovingSMul G α := by
   constructor
   intro s s_open ⟨p, p_in_s⟩ fixingSubgroup_eq_bot
@@ -174,7 +174,7 @@ theorem LocallyMovingSMul.nontrivial_elem_of_nonempty [LocallyMovingSMul G α] {
   exact ⟨g, g_in_fixing, g_ne_one⟩
 
 variable (G : Type*) [CommGroup G] [T2Space α] [Nonempty α] [MulAction G α] [FaithfulSMul G α]
-  [NoIsolatedPoints α] in
+  [PerfectSpace α] in
 /--
 A faithful, abelian group action on a Hausdorff space with no isolated points
 cannot be locally moving.
@@ -327,7 +327,7 @@ theorem fixingSubgroup_compl_le_iff_le_of_regularOpen (s t : RegularOpens α) :
   let ⟨f, f_in_fixing, f_ne_one⟩ := LocallyMovingSMul.nontrivial_elem_of_nonempty
     G u_open u_nonempty
   apply f_ne_one
-  apply Subgroup.disjoint_def.mp <| fixingSubgroup_compl_disjoint G (↑t : Set α)
+  apply Subgroup.disjoint_def.mp <| fixingSubgroup_compl_disjoint (t : Set α)
   · apply fixingSubgroup_antitone _ _ ?ss f_in_fixing
     unfold_let
     rw [Set.diff_eq, Set.compl_inter, compl_compl]

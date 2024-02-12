@@ -5,6 +5,7 @@ Authors: Emilie Burgun
 -/
 
 import Mathlib.Topology.Separation
+import Mathlib.Topology.Perfect
 import Mathlib.Topology.Algebra.Group.LocallyDense
 import Mathlib.GroupTheory.GroupAction.FixedPoints
 import Mathlib.Topology.Sets.RegularOpens
@@ -15,6 +16,10 @@ import Mathlib.Topology.Sets.RegularOpens
 This module defines the notion of a regular support in the proof of Rubin's theorem.
 The regular support of a group element `g` is the `interior` of the `closure` of the set
 `(fixedBy α g)ᶜ`.
+
+## TODO
+
+Move this out of the `Rubin` folder & namespace
 
 ## References
 
@@ -132,7 +137,7 @@ def RegularSupportBasis.ofFinite (s : Set G) (s_finite : s.Finite) : RegularSupp
 theorem RegularSupportBasis.coe_ofFinite {s : Set G} (s_finite : s.Finite) :
     (↑(RegularSupportBasis.ofFinite α s s_finite) : Set α) = ⋂ g ∈ s, RegularSupport α g := rfl
 
-variable [LocallyCompactSpace α] [T2Space α] [NoIsolatedPoints α]
+variable [LocallyCompactSpace α] [T2Space α] [PerfectSpace α]
 variable [ContinuousConstSMul G α] [LocallyDenseSMul G α]
 
 variable (G) in

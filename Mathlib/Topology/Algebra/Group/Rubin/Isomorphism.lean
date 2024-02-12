@@ -26,7 +26,7 @@ open MulAction
 open Pointwise
 
 variable {G : Type*} (α : Type*) [Group G] [MulAction G α] [TopologicalSpace α] [T2Space α]
-variable [ContinuousConstSMul G α] [LocallyDenseSMul G α] [FaithfulSMul G α] [NoIsolatedPoints α]
+variable [ContinuousConstSMul G α] [LocallyDenseSMul G α] [FaithfulSMul G α] [PerfectSpace α]
 
 theorem movingSubgroup_regularSupport_le_algSupport (g : G) :
     G•[(RegularSupport α g : Set α)ᶜ] ≤ AlgSupport g := by
@@ -35,7 +35,7 @@ theorem movingSubgroup_regularSupport_le_algSupport (g : G) :
   intro i' ⟨i, i_disj, i_eq⟩
 
   apply Commute.symm <| Commute.eq _
-  apply commute_of_fixingSubgroup_compl_of_disjoint _ h_in_fixing
+  apply commute_of_fixingSubgroup_compl_of_disjoint h_in_fixing
   rw [← i_eq]
   apply Set.disjoint_of_subset_left _ (Disjoint.closure_left i_disj.disjoint_movedBy
     <| isOpen_compl_iff.mpr (isClosed_fixedBy α _))

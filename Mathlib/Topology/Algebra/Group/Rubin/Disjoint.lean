@@ -6,6 +6,7 @@ Authors: Emilie Burgun
 
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Topology.Separation
+import Mathlib.Topology.Perfect
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Group.LocallyDense
 import Mathlib.GroupTheory.Commutator
@@ -158,7 +159,7 @@ variable [T2Space α] [ContinuousConstSMul G α]
 If two points have disjoint `(fixedBy α g)ᶜ` sets, then they are algebraically disjoint.
 -/
 theorem IsAlgDisjoint.of_disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul G α]
-    [NoIsolatedPoints α] {f g : G} (disj_fg : Disjoint (fixedBy α f)ᶜ (fixedBy α g)ᶜ) :
+    [PerfectSpace α] {f g : G} (disj_fg : Disjoint (fixedBy α f)ᶜ (fixedBy α g)ᶜ) :
     IsAlgDisjoint f g := by
   intro i nc
 
@@ -210,7 +211,7 @@ theorem IsAlgDisjoint.of_disjoint_movedBy [LocallyDenseSMul G α] [FaithfulSMul 
     -- requires a few intermediate steps:
     calc
       (fixedBy α ⁅f₁, ⁅f₂, i⁆⁆)ᶜ = (fixedBy α ⁅⁅f₂, i⁆, f₁⁆)ᶜ := by
-        rw [← fixedBy_inv_eq_fixedBy, commutatorElement_inv]
+        rw [← fixedBy_inv, commutatorElement_inv]
       _ ⊆ (fixedBy α f₁)ᶜ ∪ ⁅f₂, i⁆ • (fixedBy α f₁)ᶜ := by
         rw [Set.smul_set_compl, ← Set.compl_inter, Set.compl_subset_compl,
           commutatorElement_def _ f₁]
@@ -258,7 +259,7 @@ lemma dvd_twelve_of_lt_5_of_pos {i : ℕ} (i_pos : 0 < i) (i_lt_5 : i < 5) : i �
   }
   all_goals (intro; norm_num)
 
-variable [LocallyDenseSMul G α] [FaithfulSMul G α] [NoIsolatedPoints α]
+variable [LocallyDenseSMul G α] [FaithfulSMul G α] [PerfectSpace α]
 
 /--
 If one can construct a set `s` such that `g ^ i • s` is pairwise disjoint for `i < 5`,
@@ -297,7 +298,7 @@ theorem not_isAlgDisjoint_of_pairwise_disjoint {f g h: G} {s : Set α}
     have h₁ := movedBy_mem_fixedBy_of_commute (α := α) disj_elem.comm_elem_commute
     apply fixedBy_subset_fixedBy_zpow _ _ i.val at h₁
     rw [zpow_coe_nat] at h₁
-    exact (smul_mem_of_set_mem_fixedBy h₁).mp y_in_movedBy_c
+    exact (smul_mem_of_set_mem_fixedBy h₁).mpr y_in_movedBy_c
 
   have gi_in_image := fun i => (Set.mem_iUnion.mp (movedBy_c_ss_union (gi_in_movedBy_c i)))
 
