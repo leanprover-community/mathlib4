@@ -203,11 +203,6 @@ theorem exists_prime_factors (a : α) :
   apply WfDvdMonoid.exists_factors a
 #align unique_factorization_monoid.exists_prime_factors UniqueFactorizationMonoid.exists_prime_factors
 
-def Submonoid.isPrimal (α) [CancelCommMonoidWithZero α] : Submonoid α where
-  carrier := {a | IsPrimal a}
-  mul_mem' := IsPrimal.mul
-  one_mem' := isUnit_one.isPrimal
-
 instance : DecompositionMonoid α where
   primal a := by
     obtain rfl | ha := eq_or_ne a 0; · exact isPrimal_zero
