@@ -434,9 +434,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
   rw [this]
   refine' continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp _ _)
   · apply Real.continuousAt_rpow
-    simp only [Ne.def] at h
-    rw [← NNReal.coe_eq_zero x] at h
-    exact h
+    simpa using h
   · exact ((continuous_subtype_val.comp continuous_fst).prod_mk continuous_snd).continuousAt
 #align nnreal.continuous_at_rpow NNReal.continuousAt_rpow
 
