@@ -775,43 +775,36 @@ instance (priority := 50) [BorelSpace α] [R1Space α] [h : InnerRegularCompactL
   innerRegular := InnerRegularWRT.trans h.innerRegular <|
     InnerRegularWRT.of_imp (fun U hU ↦ ⟨hU.measurableSet, measure_ne_top μ U⟩)
 
-/-- I`μ` is inner regular for finite measure sets with respect to compact sets in a regular locally
-compact space, then any compact set can be approximated from outside by open sets. -/
+protected lemma _root_.IsCompact.exists_isOpen_lt_of_lt [InnerRegularCompactLTTop μ]
+    [IsLocallyFiniteMeasure μ] [R1Space α] [BorelSpace α] {K : Set α}
+    (hK : IsCompact K) (r : ℝ≥0∞) (hr : μ K < r) :
+    ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < r := by
+  rcases hK.exists_open_superset_measure_lt_top μ with ⟨V, hKV, hVo, hμV⟩
+  have := Fact.mk hμV
+  obtain ⟨U, hKU, hUo, hμU⟩ : ∃ U, K ⊆ U ∧ IsOpen U ∧ μ.restrict V U < r :=
+    exists_isOpen_lt_of_lt K r <| (restrict_apply_le _ _).trans_lt hr
+  refine ⟨U ∩ V, subset_inter hKU hKV, hUo.inter hVo, ?_⟩
+  rwa [restrict_apply hUo.measurableSet] at hμU
+
+/-- If `μ` is inner regular for finite measure sets with respect to compact sets
+and is locally finite in an R₁ space,
+then any compact set can be approximated from outside by open sets. -/
 protected lemma _root_.IsCompact.measure_eq_iInf_isOpen [InnerRegularCompactLTTop μ]
-    [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [RegularSpace α]
-    [BorelSpace α] {K : Set α} (hK : IsCompact K) :
+    [IsLocallyFiniteMeasure μ] [R1Space α] [BorelSpace α] {K : Set α} (hK : IsCompact K) :
     μ K = ⨅ (U : Set α) (_ : K ⊆ U) (_ : IsOpen U), μ U := by
   apply le_antisymm
   · simp only [le_iInf_iff]
-    rintro U KU -
-    exact measure_mono KU
-  apply le_of_forall_lt' (fun r hr ↦ ?_)
-  simp only [iInf_lt_iff, exists_prop, exists_and_left]
-  obtain ⟨L, L_comp, KL, -⟩ : ∃ L, IsCompact L ∧ K ⊆ interior L ∧ L ⊆ univ :=
-    exists_compact_between hK isOpen_univ (subset_univ _)
-  have : Fact (μ (interior L) < ∞) :=
-    ⟨(measure_mono interior_subset).trans_lt L_comp.measure_lt_top⟩
-  obtain ⟨U, KU, U_open, hU⟩ : ∃ U, K ⊆ U ∧ IsOpen U ∧ μ.restrict (interior L) U < r := by
-    apply exists_isOpen_lt_of_lt K r
-    exact (restrict_apply_le _ _).trans_lt hr
-  refine ⟨U ∩ interior L, subset_inter KU KL, U_open.inter isOpen_interior, ?_⟩
-  rwa [restrict_apply U_open.measurableSet] at hU
+    exact fun U KU _ ↦ measure_mono KU
+  · apply le_of_forall_lt'
+    simpa only [iInf_lt_iff, exists_prop, exists_and_left] using hK.exists_isOpen_lt_of_lt
 
 @[deprecated] -- Since 28 Jan 2024
 alias _root_.IsCompact.measure_eq_infi_isOpen := IsCompact.measure_eq_iInf_isOpen
 
-protected lemma _root_.IsCompact.exists_isOpen_lt_of_lt [InnerRegularCompactLTTop μ]
-    [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [RegularSpace α]
-    [BorelSpace α] {K : Set α} (hK : IsCompact K) (r : ℝ≥0∞) (hr : μ K < r) :
-    ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < r := by
-  have : ⨅ (U : Set α) (_ : K ⊆ U) (_ : IsOpen U), μ U < r := by
-    rwa [hK.measure_eq_iInf_isOpen] at hr
-  simpa only [iInf_lt_iff, exists_prop, exists_and_left]
-
 protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTop μ]
-    [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [RegularSpace α]
-    [BorelSpace α] {K : Set α} (hK : IsCompact K) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-     ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < μ K + ε :=
+    [IsLocallyFiniteMeasure μ] [R1Space α] [BorelSpace α]
+    {K : Set α} (hK : IsCompact K) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < μ K + ε :=
   hK.exists_isOpen_lt_of_lt _ (ENNReal.lt_add_right hK.measure_lt_top.ne hε)
 
 instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := by
