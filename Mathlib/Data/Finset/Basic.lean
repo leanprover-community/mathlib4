@@ -3355,6 +3355,16 @@ theorem toFinset_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multi
     (m.dedup.bind f).toFinset = (m.bind f).toFinset := by simp_rw [toFinset, dedup_bind_dedup]
 #align multiset.to_finset_bind_dedup Multiset.toFinset_bind_dedup
 
+@[simp]
+theorem toFinset_range (n : ℕ) :
+    Multiset.toFinset (Multiset.range n) = Finset.range n := by
+  ext; simp
+
+@[simp]
+theorem toFinset_filter (s : Multiset α) (p : α → Prop) [DecidablePred p] :
+    Multiset.toFinset (s.filter p) = s.toFinset.filter p := by
+  ext; simp
+
 instance isWellFounded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) := by
   classical
   exact Subrelation.isWellFounded (InvImage _ toFinset) toFinset_ssubset.2
@@ -3490,6 +3500,15 @@ theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
 theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
   simp [Finset.nonempty_iff_ne_empty]
 #align list.to_finset_nonempty_iff List.toFinset_nonempty_iff
+
+@[simp]
+theorem toFinset_range (n : ℕ) : (List.range n).toFinset = Finset.range n := by
+  ext; simp
+
+@[simp]
+theorem toFinset_filter (s : List α) (p : α → Bool) :
+    (s.filter p).toFinset = s.toFinset.filter (p ·) := by
+  ext; simp [List.mem_filter]
 
 end List
 
