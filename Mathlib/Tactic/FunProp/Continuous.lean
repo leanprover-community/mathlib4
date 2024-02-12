@@ -59,9 +59,6 @@ attribute [fun_prop]
   Continuous.inf
   Continuous.abs
 
-  Continuous.max
-  Continuous.min
-
   ContinuousAt.sub
   ContinuousAt.neg
   ContinuousAt.zpow
