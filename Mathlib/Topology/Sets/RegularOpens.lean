@@ -322,7 +322,7 @@ theorem fromSet_coe (r : RegularOpens α) : fromSet (↑r : Set α) = r := by
 theorem coe_opens_fromSet (s : Set α) : (fromSet s : Opens α) = Opens.interior (closure s) := rfl
 
 theorem fromSet_mono {s t : Set α} (s_ss_t : s ⊆ t) : fromSet s ≤ fromSet t := by
-  rw [← SetLike.coe_subset, coe_fromSet, coe_fromSet]
+  rw [← SetLike.coe_subset_coe, coe_fromSet, coe_fromSet]
   exact interior_mono (closure_mono s_ss_t)
 
 variable (α) in
