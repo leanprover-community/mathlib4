@@ -106,7 +106,7 @@ def fromListChain' (x : List α) (x_ne_empty : x ≠ []) (hx : x.Chain' r) : Rel
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other. -/
-protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
+protected def equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
   toFun x := ⟨_, x.toList_ne_empty, x.toList_chain'⟩
   invFun x := fromListChain' _ x.2.1 x.2.2
   left_inv x := ext (by simp) <| by ext; apply List.get_ofFn
