@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Init.Data.Bool.Lemmas
-import Mathlib.Algebra.Order.Field.Defs
-import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 
 #align_import data.rat.order from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
@@ -13,15 +12,15 @@ import Mathlib.Data.Int.Cast.Lemmas
 /-!
 # Order for Rational Numbers
 
-## Summary
+This file constructs the order on `ℚ` and proves that `ℚ` is a discrete, linearly ordered
+commutative ring.
 
-We define the order on `ℚ`, prove that `ℚ` is a discrete, linearly ordered field, and define
-functions such as `abs` and `sqrt` that depend on this order.
-
+`ℚ` is in fact a linearly ordered field, but this fact is located in `Data.Rat.Field` instead of
+here because we need the order on `ℚ` to define `ℚ≥0`, which we itself need to define `Field`.
 
 ## Tags
 
-rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering, sqrt, abs
+rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
 
@@ -252,17 +251,14 @@ protected theorem mul_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a
   rw [← nonneg_iff_zero_le] at ha hb ⊢; exact Rat.nonneg_mul ha hb
 #align rat.mul_nonneg Rat.mul_nonneg
 
-instance : LinearOrderedField ℚ :=
-  { Rat.field, Rat.linearOrder, Rat.semiring with
-    zero_le_one := by decide
-    add_le_add_left := fun a b ab c => Rat.add_le_add_left.2 ab
-    mul_pos := fun a b ha hb =>
-      lt_of_le_of_ne (Rat.mul_nonneg (le_of_lt ha) (le_of_lt hb))
-        (mul_ne_zero (ne_of_lt ha).symm (ne_of_lt hb).symm).symm }
+instance instLinearOrderedCommRing : LinearOrderedCommRing ℚ where
+  __ := Rat.linearOrder
+  __ := Rat.commRing
+  zero_le_one := by decide
+  add_le_add_left := fun a b ab c => Rat.add_le_add_left.2 ab
+  mul_pos a b ha hb := (Rat.mul_nonneg ha.le hb.le).lt_of_ne' (mul_ne_zero ha.ne' hb.ne')
 
 -- Extra instances to short-circuit type class resolution
-instance : LinearOrderedCommRing ℚ := by infer_instance
-
 instance : LinearOrderedRing ℚ := by infer_instance
 
 instance : OrderedRing ℚ := by infer_instance
