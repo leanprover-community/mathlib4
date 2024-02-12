@@ -411,20 +411,21 @@ theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α �
   simp [separableSpace_iff, countable_univ_iff]
 
 /-- In a separable space, a family of nonempty disjoint open sets is countable. -/
-theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι : Type*}
-    {s : ι → Set α} {a : Set ι} (h : a.PairwiseDisjoint s) (ha : ∀ i ∈ a, IsOpen (s i))
-    (h'a : ∀ i ∈ a, (s i).Nonempty) : a.Countable := by
+theorem _root_.Pairwise.countable_of_isOpen_disjoint [SeparableSpace α] {ι : Type*}
+    {s : ι → Set α} (hd : Pairwise (Disjoint on s)) (ho : ∀ i, IsOpen (s i))
+    (hne : ∀ i, (s i).Nonempty) : Countable ι := by
   rcases exists_countable_dense α with ⟨u, u_countable, u_dense⟩
-  have : ∀ i : a, (s i ∩ u).Nonempty := fun i =>
-    dense_iff_inter_open.1 u_dense (s i) (ha i i.2) (h'a i i.2)
-  choose f hfs hfu using this
-  lift f to a → u using hfu
-  have f_inj : Injective f := by
-    refine' injective_iff_pairwise_ne.mpr
-      ((h.subtype _ _).mono fun i j hij hfij => hij.le_bot ⟨hfs i, _⟩)
-    simp only [congr_arg Subtype.val hfij, hfs j]
+  choose f hfu hfs using fun i ↦ u_dense.exists_mem_open (ho i) (hne i)
+  have f_inj : Injective f := fun i j hij ↦
+    hd.eq <| not_disjoint_iff.2 ⟨f i, hfs i, hij.symm ▸ hfs j⟩
   have := u_countable.to_subtype
-  exact f_inj.countable
+  exact (f_inj.codRestrict hfu).countable
+
+/-- In a separable space, a family of nonempty disjoint open sets is countable. -/
+theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι : Type*}
+    {s : ι → Set α} {a : Set ι} (h : a.PairwiseDisjoint s) (ho : ∀ i ∈ a, IsOpen (s i))
+    (hne : ∀ i ∈ a, (s i).Nonempty) : a.Countable :=
+  (h.subtype _ _).countable_of_isOpen_disjoint (Subtype.forall.2 ho) (Subtype.forall.2 hne)
 #align set.pairwise_disjoint.countable_of_is_open Set.PairwiseDisjoint.countable_of_isOpen
 
 /-- In a separable space, a family of disjoint sets with nonempty interiors is countable. -/
