@@ -14,12 +14,3 @@ import Mathlib.Tactic.FunProp
 /-!
 ## `funProp` minimal setup for Continuous(At/On)
 -/
-
-
--- special function
-attribute [fun_prop]
-  Continuous.pow
-
-  ContinuousAt.pow
-
-  ContinuousOn.pow
