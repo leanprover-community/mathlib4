@@ -54,7 +54,6 @@ attribute [fun_prop]
   Continuous.div₀
   Continuous.inv
   Continuous.inv₀
-  Continuous.star
   Continuous.abs
 
   ContinuousAt.sub
@@ -69,7 +68,6 @@ attribute [fun_prop]
   ContinuousAt.div₀
   ContinuousAt.inv
   ContinuousAt.inv₀
-  ContinuousAt.star
   ContinuousAt.abs
 
   ContinuousOn.sub
@@ -84,7 +82,6 @@ attribute [fun_prop]
   ContinuousOn.div₀
   ContinuousOn.inv
   ContinuousOn.inv₀
-  ContinuousOn.star
   ContinuousOn.abs
 
 -- analysis
