@@ -146,7 +146,7 @@ theorem toPartENat_lift (c : Cardinal.{v}) : toPartENat (lift.{u, v} c) = toPart
     exact hc
 #align cardinal.to_part_enat_lift Cardinal.toPartENat_lift
 
-theorem toPartENat_congr {α β : Type*} (e : α ≃ β) : toPartENat #α = toPartENat #β := by
+theorem toPartENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toPartENat #α = toPartENat #β := by
   rw [← toPartENat_lift, lift_mk_eq.{_, _,v}.mpr ⟨e⟩, toPartENat_lift]
 #align cardinal.to_part_enat_congr Cardinal.toPartENat_congr
 
