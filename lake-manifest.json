@@ -22,7 +22,7 @@
   {"url": "https://github.com/leanprover-community/aesop",
    "type": "git",
    "subDir": null,
-   "rev": "204c8f47bd79fba6b53d72536826a97fd58c016a",
+   "rev": "1f200b89e635064ba6f614ae82c7aced0b28d929",
    "name": "aesop",
    "manifestFile": "lake-manifest.json",
    "inputRev": "master",
