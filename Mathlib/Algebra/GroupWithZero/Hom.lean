@@ -172,9 +172,6 @@ lemma copy_eq {_ : MulZeroOneClass α} {_ : MulZeroOneClass β} (f : α →*₀ 
 protected lemma map_one (f : α →*₀ β) : f 1 = 1 := f.map_one'
 #align monoid_with_zero_hom.map_one MonoidWithZeroHom.map_one
 
-/-- If `f` is an additive monoid homomorphism then `f 0 = 0`. -/
-add_decl_doc AddMonoidHom.map_zero
-
 protected lemma map_zero (f : α →*₀ β) : f 0 = 0 := f.map_zero'
 #align monoid_with_zero_hom.map_zero MonoidWithZeroHom.map_zero
 

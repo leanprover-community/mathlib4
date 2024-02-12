@@ -773,7 +773,7 @@ protected theorem OneHom.map_one [One M] [One N] (f : OneHom M N) : f 1 = 1 :=
 #align zero_hom.map_zero ZeroHom.map_zero
 
 /-- If `f` is a monoid homomorphism then `f 1 = 1`. -/
-@[to_additive]
+@[to_additive "If `f` is an additive monoid homomorphism then `f 0 = 0`."]
 protected theorem MonoidHom.map_one [MulOneClass M] [MulOneClass N] (f : M →* N) : f 1 = 1 :=
   f.map_one'
 #align monoid_hom.map_one MonoidHom.map_one
@@ -822,7 +822,7 @@ theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y *
 end MonoidHom
 
 /-- The identity map from a type with 1 to itself. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) "The identity map from a type with zero to itself."]
 def OneHom.id (M : Type*) [One M] : OneHom M M where
   toFun x := x
   map_one' := rfl
@@ -832,7 +832,7 @@ def OneHom.id (M : Type*) [One M] : OneHom M M where
 #align one_hom.id_apply OneHom.id_apply
 
 /-- The identity map from a type with multiplication to itself. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) "The identity map from a type with addition to itself."]
 def MulHom.id (M : Type*) [Mul M] : M →ₙ* M where
   toFun x := x
   map_mul' _ _ := rfl
@@ -842,7 +842,7 @@ def MulHom.id (M : Type*) [Mul M] : M →ₙ* M where
 #align mul_hom.id_apply MulHom.id_apply
 
 /-- The identity map from a monoid to itself. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) "The identity map from an additive monoid to itself."]
 def MonoidHom.id (M : Type*) [MulOneClass M] : M →* M where
   toFun x := x
   map_one' := rfl
@@ -852,17 +852,8 @@ def MonoidHom.id (M : Type*) [MulOneClass M] : M →* M where
 #align monoid_hom.id_apply MonoidHom.id_apply
 #align add_monoid_hom.id_apply AddMonoidHom.id_apply
 
-/-- The identity map from a type with zero to itself. -/
-add_decl_doc ZeroHom.id
-
-/-- The identity map from a type with addition to itself. -/
-add_decl_doc AddHom.id
-
-/-- The identity map from an additive monoid to itself. -/
-add_decl_doc AddMonoidHom.id
-
 /-- Composition of `OneHom`s as a `OneHom`. -/
-@[to_additive]
+@[to_additive "Composition of `ZeroHom`s as a `ZeroHom`."]
 def OneHom.comp [One M] [One N] [One P] (hnp : OneHom N P) (hmn : OneHom M N) : OneHom M P where
   toFun := hnp ∘ hmn
   map_one' := by simp
@@ -870,7 +861,7 @@ def OneHom.comp [One M] [One N] [One P] (hnp : OneHom N P) (hmn : OneHom M N) : 
 #align zero_hom.comp ZeroHom.comp
 
 /-- Composition of `MulHom`s as a `MulHom`. -/
-@[to_additive]
+@[to_additive "Composition of `AddHom`s as an `AddHom`."]
 def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) : M →ₙ* P where
   toFun := hnp ∘ hmn
   map_mul' x y := by simp
@@ -878,7 +869,7 @@ def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) 
 #align add_hom.comp AddHom.comp
 
 /-- Composition of monoid morphisms as a monoid morphism. -/
-@[to_additive]
+@[to_additive "Composition of additive monoid morphisms as an additive monoid morphism."]
 def MonoidHom.comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (hnp : N →* P) (hmn : M →* N) :
     M →* P where
   toFun := hnp ∘ hmn
@@ -886,15 +877,6 @@ def MonoidHom.comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (hnp : N →*
   map_mul' := by simp
 #align monoid_hom.comp MonoidHom.comp
 #align add_monoid_hom.comp AddMonoidHom.comp
-
-/-- Composition of `ZeroHom`s as a `ZeroHom`. -/
-add_decl_doc ZeroHom.comp
-
-/-- Composition of `AddHom`s as an `AddHom`. -/
-add_decl_doc AddHom.comp
-
-/-- Composition of additive monoid morphisms as an additive monoid morphism. -/
-add_decl_doc AddMonoidHom.comp
 
 @[to_additive (attr := simp)]
 theorem OneHom.coe_comp [One M] [One N] [One P] (g : OneHom N P) (f : OneHom M N) :
