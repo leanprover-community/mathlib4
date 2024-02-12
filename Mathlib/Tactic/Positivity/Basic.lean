@@ -236,6 +236,7 @@ where `a` and `b` are integers. -/
     assertInstancesCommute
     match ra, rb with
     | .positive (pa : Q(0 < $a)), .positive (pb : Q(0 < $b)) =>
+      -- Only attempts to prove `0 < a / a`, otherwise falls back to `0 ≤ a / b`
       match ← isDefEqQ a b with
       | .defEq _ => pure (.positive q(int_div_self_pos $pa))
       | .notDefEq => pure (.nonnegative q(int_div_nonneg_of_pos_of_pos $pa $pb))
