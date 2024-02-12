@@ -336,9 +336,7 @@ theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
 #align edist_ne_top edist_ne_top
 
 /-- `nndist x x` vanishes-/
-@[simp]
-theorem nndist_self (a : α) : nndist a a = 0 :=
-  (NNReal.coe_eq_zero _).1 (dist_self a)
+@[simp] theorem nndist_self (a : α) : nndist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
 #align nndist_self nndist_self
 
 -- porting note: `dist_nndist` and `coe_nndist` moved up
@@ -1938,7 +1936,7 @@ theorem dist_pi_le_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 ≤ r) :
 theorem dist_pi_eq_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 < r) :
     dist f g = r ↔ (∃ i, dist (f i) (g i) = r) ∧ ∀ b, dist (f b) (g b) ≤ r := by
   lift r to ℝ≥0 using hr.le
-  simp_rw [← coe_nndist, NNReal.coe_eq, nndist_pi_eq_iff hr, NNReal.coe_le_coe]
+  simp_rw [← coe_nndist, NNReal.coe_inj, nndist_pi_eq_iff hr, NNReal.coe_le_coe]
 #align dist_pi_eq_iff dist_pi_eq_iff
 
 theorem dist_pi_le_iff' [Nonempty β] {f g : ∀ b, π b} {r : ℝ} :
