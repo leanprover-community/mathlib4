@@ -15,44 +15,6 @@ import Mathlib.Tactic.FunProp
 ## `funProp` minimal setup for Continuous(At/On)
 -/
 
-section Missing
-
-section div
-
-variable {α β G₀ : Type*} [TopologicalSpace α]
-variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] [ContinuousMul G₀]
-  {f g : α → G₀} {a} {s}
-
-theorem Continuous.div₀ (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
-    Continuous (fun x => f x / g x) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
-
-theorem ContinuousAt.div₀ (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
-    ContinuousAt (fun x => f x / g x) a := ContinuousAt.div hf hg h₀
-
-theorem ContinuousOn.div₀ (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
-    ContinuousOn (fun x => f x / g x) s := ContinuousOn.div hf hg h₀
-
-
-end div
-
-end Missing
-
-
-
-
--- algebra
-attribute [fun_prop]
-  Continuous.zpow₀
-  Continuous.div₀
-  Continuous.inv₀
-
-  ContinuousAt.zpow₀
-  ContinuousAt.div₀
-  ContinuousAt.inv₀
-
-  ContinuousOn.zpow₀
-  ContinuousOn.div₀
-  ContinuousOn.inv₀
 
 -- analysis
 attribute [fun_prop]
