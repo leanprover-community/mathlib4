@@ -20,6 +20,15 @@ open Lean Meta Qq
 
 namespace Meta.FunProp
 
+
+def fpropNormalForm (f : Expr) : FunPropM Expr := do
+  -- make sure `f` is lambda with at least one bound variable
+  let .lam xName xType xBody xBi ← etaExpand1 f | return f
+  -- beta reduce body
+  let xBody := (Mor.headBeta xBody.consumeMData).consumeMData
+  return (.lam xName xType xBody xBi)
+
+
 /-- unfold function head -/
 def FunctionData.unfold? (fData : FunctionData) : FunPropM (Option Expr) := do
   withLCtx fData.lctx fData.insts do
@@ -757,8 +766,8 @@ mutual
         let e' := e.setArg funPropDecl.funArgId b
         funProp (← mkLambdaFVars xs e')
 
-    -- make sure `f` is lambda with at least one bound variable
-    let f ← etaExpand1 f
+    let f ← fpropNormalForm f
+
     -- reset `f` to the new form in `e`
     -- todo: remove this as it should not be necessary but some parts of the
     --       code still relies on this
@@ -767,7 +776,7 @@ mutual
     let .lam _xName xType xBody _xBi := f
       | throwError "funProp bug: function {← ppExpr f} is in invalid form"
 
-    match xBody.consumeMData.headBeta.consumeMData with
+    match xBody with
     | (.bvar 0) =>
       trace[Meta.Tactic.fun_prop.step] "case `P (fun x => x)\n{e}"
       applyIdRule funPropDecl e xType funProp

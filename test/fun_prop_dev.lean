@@ -270,5 +270,9 @@ example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x : α
 example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x => f x (g x)) := by fun_prop
 
 
--- is working up to here
+example (f : α → β ->> γ) (hf : Con (fun (x,y) => f x y)) (g : α → α) (hg : Con g) : Con (fun (x, y) => f (g x) y) := by fun_prop
+-- stess test of unfolding HasUncurry.uncurry
+example (f : α → β ->> γ) (hf : Con ↿f) (g : α → α) (hg : Con g) : Con (↿fun x => f (g x)) := by fun_prop
+example (f : α → β ->> γ ->> γ ->> γ) (hf : Con ↿f) (g : α → α) (hg : Con g) : Con (↿fun x => f (g x)) := by fun_prop
 
+-- is working up to here
