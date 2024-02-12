@@ -506,7 +506,7 @@ variable [IsPrincipalIdealRing R]
 
 theorem isCoprime_of_irreducible_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : R, Irreducible z → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
-  (isRelPrime_of_irreducible_dvd nonzero H).isCoprime
+  (WfDvdMonoid.isRelPrime_of_no_irreducible_factors nonzero H).isCoprime
 #align is_coprime_of_irreducible_dvd isCoprime_of_irreducible_dvd
 
 theorem isCoprime_of_prime_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
