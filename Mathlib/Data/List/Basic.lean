@@ -2209,6 +2209,18 @@ theorem modifyNthTail_eq_take_drop (f : List α → List α) (H : f [] = []) :
   | n + 1, b :: l => congr_arg (cons b) (modifyNthTail_eq_take_drop f H n l)
 #align list.modify_nth_tail_eq_take_drop List.modifyNthTail_eq_take_drop
 
+@[simp]
+theorem modifyNth_nil (f : α → α) (n : ℕ) :
+    modifyNth f n [] = [] := by cases n <;> rfl
+
+@[simp]
+theorem modifyNth_zero_cons (f : α → α) (a : α) (l : List α) :
+    modifyNth f 0 (a :: l) = f a :: l := rfl
+
+@[simp]
+theorem modifyNth_succ_cons (f : α → α) (n : ℕ) (a : α) (l : List α) :
+    modifyNth f (n + 1) (a :: l) = a :: modifyNth f n l := rfl
+
 theorem modifyNth_eq_take_drop (f : α → α) :
     ∀ n l, modifyNth f n l = take n l ++ modifyHead f (drop n l) :=
   modifyNthTail_eq_take_drop _ rfl
