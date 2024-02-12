@@ -2065,37 +2065,19 @@ open Finset.HasAntidiagonal Finset
 
 variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 
--- Ugly proof, by rewriting as much as possible to use the case of
--- multivariable power series
-
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
-    coeff R d (∏ j in s, f j) =
-      ∑ l in piAntidiagonal s d,
-        ∏ i in s, coeff R (l i) (f i) := by
-  simp only [PowerSeries.coeff]
+    coeff R d (∏ j in s, f j) = ∑ l in piAntidiagonal s d, ∏ i in s, coeff R (l i) (f i) := by
+  simp only [coeff]
   convert MvPowerSeries.coeff_prod f (fun₀ | () => d) s
--- maybe it would be better to have this in general
-  suffices this : ((AddEquiv.symm AddEquiv.finsuppUnique) d)
-    = fun₀ | () => d
-  rw [← this, ← Finset.mapRange_piAntidiagonal_eq, Finset.sum_map,
-    Finset.sum_congr rfl]
+  rw [← AddEquiv.finsuppUnique_symm Unit d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]
   intro x _
-  apply Finset.prod_congr rfl
+  apply prod_congr rfl
   intro i _
+  congr 2
   simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
     Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
-    Finsupp.mapRange_apply]
-  congr
-  ext
-  simp only [PUnit.default_eq_unit, Finsupp.single_eq_same]
-  rfl
-  · -- which proof is better?
-    -- rw [AddEquiv.symm_apply_eq, AddEquiv.finsuppUnique]
-    -- simp
-    rw [Finsupp.unique_single  (AddEquiv.finsuppUnique.symm d),
-      Finsupp.unique_single_eq_iff]
-    rfl
+    Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm Unit]
 
 end CommSemiring
 
