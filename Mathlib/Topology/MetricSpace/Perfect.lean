@@ -31,9 +31,11 @@ accumulation point, perfect set, cantor-bendixson.
 
 --/
 
+open Set Filter
+
 section CantorInjMetric
 
-open Function ENNReal Set Filter
+open Function ENNReal
 
 variable {α : Type*} [MetricSpace α] {C : Set α} (hC : Perfect C) {ε : ℝ≥0∞}
 
