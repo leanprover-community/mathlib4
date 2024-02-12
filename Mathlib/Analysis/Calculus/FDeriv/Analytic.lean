@@ -291,6 +291,80 @@ theorem CPolynomialOn.iterated_deriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
 
 end deriv
 
+namespace ContinuousMultilinearMap
+
+variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F)
+
+open FormalMultilinearSeries
+
+protected theorem hasFiniteFPowerSeriesOnBall :
+    HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0 (Fintype.card ι + 1) ⊤ :=
+  .mk' (fun m hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
+    rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
+    · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
+    · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
+
+theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
+    f.toFormalMultilinearSeries.changeOriginSeries k l = 0 :=
+  Finset.sum_eq_zero fun _ _ ↦ by
+    simp_rw [FormalMultilinearSeries.changeOriginSeriesTerm,
+      toFormalMultilinearSeries, dif_neg h.symm, LinearIsometryEquiv.map_zero]
+
+variable {n : ℕ∞} (x : ∀ i, E i)
+
+open Finset in
+theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
+    continuousMultilinearCurryFin1 𝕜 (∀ i, E i) F (f.toFormalMultilinearSeries.changeOrigin x 1) =
+    f.linearDeriv x := by
+  ext y
+  rw [continuousMultilinearCurryFin1_apply, linearDeriv_apply,
+      changeOrigin, FormalMultilinearSeries.sum]
+  cases isEmpty_or_nonempty ι
+  · have (l) : 1 + l ≠ Fintype.card ι := by
+      rw [add_comm, Fintype.card_eq_zero]; exact Nat.succ_ne_zero _
+    simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), zero_apply _, tsum_zero]; rfl
+  rw [tsum_eq_single (Fintype.card ι - 1), changeOriginSeries]; swap
+  · intro m hm
+    rw [Ne, eq_tsub_iff_add_eq_of_le (by exact Fintype.card_pos), add_comm] at hm
+    rw [f.changeOriginSeries_support hm, zero_apply]
+  rw [sum_apply, ContinuousMultilinearMap.sum_apply, Fin.snoc_zero]
+  simp_rw [changeOriginSeriesTerm_apply]
+  refine (Fintype.sum_bijective (?_ ∘ Fintype.equivFinOfCardEq (Nat.add_sub_of_le
+    Fintype.card_pos).symm) (.comp ?_ <| Equiv.bijective _) _ _ fun i ↦ ?_).symm
+  · exact (⟨{·}ᶜ, by
+      rw [card_compl, Fintype.card_fin, card_singleton, Nat.add_sub_cancel_left]⟩)
+  · use fun _ _ ↦ (singleton_injective <| compl_injective <| Subtype.ext_iff.mp ·)
+    intro ⟨s, hs⟩
+    have h : sᶜ.card = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
+    obtain ⟨a, ha⟩ := card_eq_one.mp h
+    refine ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
+  rw [Function.comp_apply, Subtype.coe_mk, compl_singleton, piecewise_erase_univ,
+    toFormalMultilinearSeries, dif_pos (Nat.add_sub_of_le Fintype.card_pos).symm]
+  simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
+    Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
+  congr; ext j
+  obtain rfl | hj := eq_or_ne j i
+  · rw [Function.update_same, if_pos rfl]
+  · rw [Function.update_noteq hj, if_neg hj]
+
+protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x := by
+  rw [← changeOrigin_toFormalMultilinearSeries]
+  convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
+  rw [zero_add]
+
+lemma cPolynomialAt : CPolynomialAt 𝕜 f x :=
+  f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
+    (by simp only [Metric.emetric_ball_top, Set.mem_univ])
+
+lemma cPolyomialOn : CPolynomialOn 𝕜 f ⊤ := fun x _ ↦ f.cPolynomialAt x
+
+lemma contDiffAt : ContDiffAt 𝕜 n f x := (f.cPolynomialAt x).contDiffAt
+
+lemma contDiff : ContDiff 𝕜 n f := contDiff_iff_contDiffAt.mpr f.contDiffAt
+
+end ContinuousMultilinearMap
+
 namespace FormalMultilinearSeries
 
 variable (p : FormalMultilinearSeries 𝕜 E F)
@@ -304,8 +378,8 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
     coe_sum', Finset.sum_apply, continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
   convert Finset.sum_const _
   · rw [Fin.snoc_zero, changeOriginSeriesTerm_apply, Finset.piecewise_same, add_comm]
-  · erw [← card, card_subtype, ← Finset.powersetCard_eq_filter, Finset.card_powersetCard, ← card,
-      card_fin, eq_comm, add_comm, Nat.choose_succ_self_right]
+  · rw [← card, card_subtype, ← Finset.powerset_univ, ← Finset.powersetCard_eq_filter,
+      Finset.card_powersetCard, ← card, card_fin, eq_comm, add_comm, Nat.choose_succ_self_right]
 
 end FormalMultilinearSeries
 
@@ -320,7 +394,7 @@ theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
   ext
   convert (h.hasSum <| EMetric.mem_ball_self h.r_pos).tsum_eq.symm
   · rw [iteratedFDeriv_zero_apply, add_zero]
-  · rw [tsum_eq_single 0 <| fun n hn ↦ by haveI := NeZero.mk hn; exact (p n).map_zero]
+  · rw [tsum_eq_single 0 fun n hn ↦ by haveI := NeZero.mk hn; exact (p n).map_zero]
     exact congr(p 0 $(Subsingleton.elim _ _))
 
 open ContinuousLinearMap
@@ -341,7 +415,7 @@ theorem factorial_smul (n : ℕ) :
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
   cases n
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
-  · erw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
+  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
       factorial_smul'.{_,u,v} _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 

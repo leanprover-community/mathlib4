@@ -287,7 +287,7 @@ theorem summable_norm_apply (p : FormalMultilinearSeries 𝕜 E F) {x : E}
     (hx : x ∈ EMetric.ball (0 : E) p.radius) : Summable fun n : ℕ => ‖p n fun _ => x‖ := by
   rw [mem_emetric_ball_zero_iff] at hx
   refine' .of_nonneg_of_le
-    (fun _ ↦ norm_nonneg _) (fun n ↦ ((p n).le_op_norm _).trans_eq _) (p.summable_norm_mul_pow hx)
+    (fun _ ↦ norm_nonneg _) (fun n ↦ ((p n).le_opNorm _).trans_eq _) (p.summable_norm_mul_pow hx)
   simp
 #align formal_multilinear_series.summable_norm_apply FormalMultilinearSeries.summable_norm_apply
 
@@ -689,7 +689,7 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
   intro n
   calc
     ‖(p n) fun _ : Fin n => y‖
-    _ ≤ ‖p n‖ * ∏ _i : Fin n, ‖y‖ := ContinuousMultilinearMap.le_op_norm _ _
+    _ ≤ ‖p n‖ * ∏ _i : Fin n, ‖y‖ := ContinuousMultilinearMap.le_opNorm _ _
     _ = ‖p n‖ * (r' : ℝ) ^ n * (‖y‖ / r') ^ n := by field_simp [mul_right_comm]
     _ ≤ C * a ^ n * (‖y‖ / r') ^ n := by gcongr ?_ * _; apply hp
     _ ≤ C * (a * (‖y‖ / r')) ^ n := by rw [mul_pow, mul_assoc]
@@ -941,7 +941,7 @@ If a function `f : E → F` has two representations as power series at a point `
 to formal multilinear series `p₁` and `p₂`, then these representations agree term-by-term. That is,
 for any `n : ℕ` and `y : E`, `p₁ n (fun i ↦ y) = p₂ n (fun i ↦ y)`. In the one-dimensional case,
 when `f : 𝕜 → E`, the continuous multilinear maps `p₁ n` and `p₂ n` are given by
-`ContinuousMultilinearMap.mkPiField`, and hence are determined completely by the value of
+`ContinuousMultilinearMap.mkPiRing`, and hence are determined completely by the value of
 `p₁ n (fun i ↦ 1)`, so `p₁ = p₂`. Consequently, the radius of convergence for one series can be
 transferred to the other.
 -/
@@ -1026,7 +1026,7 @@ theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x :
   -- porting note: `funext; ext` was `ext (n x)`
   funext n
   ext x
-  rw [← mkPiField_apply_one_eq_self (p n)]
+  rw [← mkPiRing_apply_one_eq_self (p n)]
   -- porting note: nasty hack, was `simp [h.apply_eq_zero n 1]`
   have := Or.intro_right ?_ (h.apply_eq_zero n 1)
   simpa using this
@@ -1147,8 +1147,8 @@ theorem nnnorm_changeOriginSeriesTerm_apply_le (k l : ℕ) (s : Finset (Fin (k +
     ‖p.changeOriginSeriesTerm k l s hs (fun _ => x) fun _ => y‖₊ ≤
       ‖p (k + l)‖₊ * ‖x‖₊ ^ l * ‖y‖₊ ^ k := by
   rw [← p.nnnorm_changeOriginSeriesTerm k l s hs, ← Fin.prod_const, ← Fin.prod_const]
-  apply ContinuousMultilinearMap.le_of_op_nnnorm_le
-  apply ContinuousMultilinearMap.le_op_nnnorm
+  apply ContinuousMultilinearMap.le_of_opNNNorm_le
+  apply ContinuousMultilinearMap.le_opNNNorm
 #align formal_multilinear_series.nnnorm_change_origin_series_term_apply_le FormalMultilinearSeries.nnnorm_changeOriginSeriesTerm_apply_le
 
 /-- The power series for `f.changeOrigin k`.
@@ -1172,7 +1172,7 @@ theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
     ‖p.changeOriginSeries k l fun _ => x‖₊ ≤
       ∑' _ : { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + l)‖₊ * ‖x‖₊ ^ l := by
   rw [NNReal.tsum_mul_right, ← Fin.prod_const]
-  exact (p.changeOriginSeries k l).le_of_op_nnnorm_le _ (p.nnnorm_changeOriginSeries_le_tsum _ _)
+  exact (p.changeOriginSeries k l).le_of_opNNNorm_le _ (p.nnnorm_changeOriginSeries_le_tsum _ _)
 #align formal_multilinear_series.nnnorm_change_origin_series_apply_le_tsum FormalMultilinearSeries.nnnorm_changeOriginSeries_apply_le_tsum
 
 /-- Changing the origin of a formal multilinear series `p`, so that
@@ -1297,7 +1297,6 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
 
 /-- `derivSeries p` is a power series for `fderiv 𝕜 f` if `p` is a power series for `f`,
 see `HasFPowerSeriesOnBall.fderiv`. -/
-noncomputable
 def derivSeries : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) :=
   (continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
     |>.compFormalMultilinearSeries (p.changeOriginSeries 1)
@@ -1344,7 +1343,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
         apply hasSum_fintype
       · refine' .of_nnnorm_bounded _
           (p.changeOriginSeries_summable_aux₂ (mem_emetric_ball_zero_iff.1 x_mem_ball) k) fun s => _
-        refine' (ContinuousMultilinearMap.le_op_nnnorm _ _).trans_eq _
+        refine' (ContinuousMultilinearMap.le_opNNNorm _ _).trans_eq _
         simp
   refine' hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 _)
   refine' HasSum.sigma_of_hasSum
