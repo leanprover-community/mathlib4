@@ -430,7 +430,7 @@ theorem Monic.C_dvd_iff_isUnit {p : R[X]} (hp : Monic p) {a : R} :
     C a ∣ p ↔ IsUnit a :=
   ⟨fun h => isUnit_iff_dvd_one.mpr <|
       hp.coeff_natDegree ▸ (C_dvd_iff_dvd_coeff _ _).mp h p.natDegree,
-   fun ha => IsUnit.dvd (ha.map C)⟩
+   (·.map C).dvd⟩
 
 theorem degree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
     (hap : a ∣ p) (hp : Monic p) :
