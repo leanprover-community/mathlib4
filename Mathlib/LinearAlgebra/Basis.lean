@@ -882,11 +882,9 @@ open Basis
 
 open Fintype
 
-variable [Fintype ι] (b : Basis ι R M)
-
 /-- A module over `R` with a finite basis is linearly equivalent to functions from its basis to `R`.
 -/
-def Basis.equivFun : M ≃ₗ[R] ι → R :=
+def Basis.equivFun [Finite ι] (b : Basis ι R M) : M ≃ₗ[R] ι → R :=
   LinearEquiv.trans b.repr
     ({ Finsupp.equivFunOnFinite with
         toFun := (↑)
@@ -896,12 +894,12 @@ def Basis.equivFun : M ≃ₗ[R] ι → R :=
 #align basis.equiv_fun Basis.equivFun
 
 /-- A module over a finite ring that admits a finite basis is finite. -/
-def Module.fintypeOfFintype (b : Basis ι R M) [Fintype R] : Fintype M :=
+def Module.fintypeOfFintype [Fintype ι] (b : Basis ι R M) [Fintype R] : Fintype M :=
   haveI := Classical.decEq ι
   Fintype.ofEquiv _ b.equivFun.toEquiv.symm
 #align module.fintype_of_fintype Module.fintypeOfFintype
 
-theorem Module.card_fintype (b : Basis ι R M) [Fintype R] [Fintype M] :
+theorem Module.card_fintype [Fintype ι] (b : Basis ι R M) [Fintype R] [Fintype M] :
     card M = card R ^ card ι := by
   classical
     calc
@@ -912,60 +910,55 @@ theorem Module.card_fintype (b : Basis ι R M) [Fintype R] [Fintype M] :
 /-- Given a basis `v` indexed by `ι`, the canonical linear equivalence between `ι → R` and `M` maps
 a function `x : ι → R` to the linear combination `∑_i x i • v i`. -/
 @[simp]
-theorem Basis.equivFun_symm_apply (x : ι → R) : b.equivFun.symm x = ∑ i, x i • b i := by
+theorem Basis.equivFun_symm_apply [Fintype ι] (b : Basis ι R M) (x : ι → R) :
+    b.equivFun.symm x = ∑ i, x i • b i := by
   simp [Basis.equivFun, Finsupp.total_apply, Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
 #align basis.equiv_fun_symm_apply Basis.equivFun_symm_apply
 
 @[simp]
-theorem Basis.equivFun_apply (u : M) : b.equivFun u = b.repr u :=
+theorem Basis.equivFun_apply [Finite ι] (b : Basis ι R M) (u : M) : b.equivFun u = b.repr u :=
   rfl
 #align basis.equiv_fun_apply Basis.equivFun_apply
 
 @[simp]
-theorem Basis.map_equivFun (f : M ≃ₗ[R] M') : (b.map f).equivFun = f.symm.trans b.equivFun :=
+theorem Basis.map_equivFun [Finite ι] (b : Basis ι R M) (f : M ≃ₗ[R] M') :
+    (b.map f).equivFun = f.symm.trans b.equivFun :=
   rfl
 #align basis.map_equiv_fun Basis.map_equivFun
 
-theorem Basis.sum_equivFun (u : M) : ∑ i, b.equivFun u i • b i = u := by
-  conv_rhs => rw [← b.total_repr u]
-  simp [Finsupp.total_apply, Finsupp.sum_fintype, b.equivFun_apply]
+theorem Basis.sum_equivFun [Fintype ι] (b : Basis ι R M) (u : M) :
+    ∑ i, b.equivFun u i • b i = u := by
+  rw [← b.equivFun_symm_apply, b.equivFun.symm_apply_apply]
 #align basis.sum_equiv_fun Basis.sum_equivFun
 
-theorem Basis.sum_repr (u : M) : ∑ i, b.repr u i • b i = u :=
+theorem Basis.sum_repr [Fintype ι] (b : Basis ι R M) (u : M) : ∑ i, b.repr u i • b i = u :=
   b.sum_equivFun u
 #align basis.sum_repr Basis.sum_repr
 
 @[simp]
-theorem Basis.equivFun_self [DecidableEq ι] (i j : ι) :
+theorem Basis.equivFun_self [Finite ι] [DecidableEq ι] (b : Basis ι R M) (i j : ι) :
     b.equivFun (b i) j = if i = j then 1 else 0 := by rw [b.equivFun_apply, b.repr_self_apply]
 #align basis.equiv_fun_self Basis.equivFun_self
 
-theorem Basis.repr_sum_self (c : ι → R) : ⇑(b.repr (∑ i, c i • b i)) = c := by
-  ext j
-  simp only [map_sum, LinearEquiv.map_smul, repr_self, Finsupp.smul_single, smul_eq_mul, mul_one,
-    Finset.sum_apply']
-  rw [Finset.sum_eq_single j, Finsupp.single_eq_same]
-  · rintro i - hi
-    exact Finsupp.single_eq_of_ne hi
-  · intros
-    have := Finset.mem_univ j
-    contradiction
+theorem Basis.repr_sum_self [Fintype ι] (b : Basis ι R M) (c : ι → R) :
+    b.repr (∑ i, c i • b i) = c := by
+  simp_rw [← b.equivFun_symm_apply, ← b.equivFun_apply, b.equivFun.apply_symm_apply]
 #align basis.repr_sum_self Basis.repr_sum_self
 
 /-- Define a basis by mapping each vector `x : M` to its coordinates `e x : ι → R`,
 as long as `ι` is finite. -/
-def Basis.ofEquivFun (e : M ≃ₗ[R] ι → R) : Basis ι R M :=
+def Basis.ofEquivFun [Finite ι] (e : M ≃ₗ[R] ι → R) : Basis ι R M :=
   .ofRepr <| e.trans <| LinearEquiv.symm <| Finsupp.linearEquivFunOnFinite R R ι
 #align basis.of_equiv_fun Basis.ofEquivFun
 
 @[simp]
-theorem Basis.ofEquivFun_repr_apply (e : M ≃ₗ[R] ι → R) (x : M) (i : ι) :
+theorem Basis.ofEquivFun_repr_apply [Finite ι] (e : M ≃ₗ[R] ι → R) (x : M) (i : ι) :
     (Basis.ofEquivFun e).repr x i = e x i :=
   rfl
 #align basis.of_equiv_fun_repr_apply Basis.ofEquivFun_repr_apply
 
 @[simp]
-theorem Basis.coe_ofEquivFun [DecidableEq ι] (e : M ≃ₗ[R] ι → R) :
+theorem Basis.coe_ofEquivFun [Finite ι] [DecidableEq ι] (e : M ≃ₗ[R] ι → R) :
     (Basis.ofEquivFun e : ι → M) = fun i => e.symm (Function.update 0 i 1) :=
   funext fun i =>
     e.injective <|
@@ -974,16 +967,14 @@ theorem Basis.coe_ofEquivFun [DecidableEq ι] (e : M ≃ₗ[R] ι → R) :
 #align basis.coe_of_equiv_fun Basis.coe_ofEquivFun
 
 @[simp]
-theorem Basis.ofEquivFun_equivFun (v : Basis ι R M) : Basis.ofEquivFun v.equivFun = v := by
-  classical
-    ext j
-    simp only [Basis.equivFun_symm_apply, Basis.coe_ofEquivFun]
-    simp_rw [Function.update_apply, ite_smul]
-    simp only [Finset.mem_univ, if_true, Pi.zero_apply, one_smul, Finset.sum_ite_eq', zero_smul]
+theorem Basis.ofEquivFun_equivFun [Finite ι] (v : Basis ι R M) :
+    Basis.ofEquivFun v.equivFun = v :=
+  Basis.repr_injective <| by ext; rfl
 #align basis.of_equiv_fun_equiv_fun Basis.ofEquivFun_equivFun
 
 @[simp]
-theorem Basis.equivFun_ofEquivFun (e : M ≃ₗ[R] ι → R) : (Basis.ofEquivFun e).equivFun = e := by
+theorem Basis.equivFun_ofEquivFun [Finite ι] (e : M ≃ₗ[R] ι → R) :
+    (Basis.ofEquivFun e).equivFun = e := by
   ext j
   simp_rw [Basis.equivFun_apply, Basis.ofEquivFun_repr_apply]
 #align basis.equiv_fun_of_equiv_fun Basis.equivFun_ofEquivFun
@@ -993,21 +984,22 @@ variable (S : Type*) [Semiring S] [Module S M']
 variable [SMulCommClass R S M']
 
 @[simp]
-theorem Basis.constr_apply_fintype (f : ι → M') (x : M) :
+theorem Basis.constr_apply_fintype [Fintype ι] (b : Basis ι R M) (f : ι → M') (x : M) :
     (constr (M' := M') b S f : M → M') x = ∑ i, b.equivFun x i • f i := by
   simp [b.constr_apply, b.equivFun_apply, Finsupp.sum_fintype]
 #align basis.constr_apply_fintype Basis.constr_apply_fintype
 
 /-- If the submodule `P` has a finite basis,
 `x ∈ P` iff it is a linear combination of basis vectors. -/
-theorem Basis.mem_submodule_iff' {P : Submodule R M} (b : Basis ι R P) {x : M} :
+theorem Basis.mem_submodule_iff' [Fintype ι] {P : Submodule R M} (b : Basis ι R P) {x : M} :
     x ∈ P ↔ ∃ c : ι → R, x = ∑ i, c i • (b i : M) :=
   b.mem_submodule_iff.trans <|
     Finsupp.equivFunOnFinite.exists_congr_left.trans <|
       exists_congr fun c => by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
 #align basis.mem_submodule_iff' Basis.mem_submodule_iff'
 
-theorem Basis.coord_equivFun_symm (i : ι) (f : ι → R) : b.coord i (b.equivFun.symm f) = f i :=
+theorem Basis.coord_equivFun_symm [Finite ι] (b : Basis ι R M) (i : ι) (f : ι → R) :
+    b.coord i (b.equivFun.symm f) = f i :=
   b.coord_repr_symm i (Finsupp.equivFunOnFinite.symm f)
 #align basis.coord_equiv_fun_symm Basis.coord_equivFun_symm
 
@@ -1536,9 +1528,8 @@ lemma basis_finite_of_finite_spans (w : Set M) (hw : w.Finite) (s : span R w = �
     rw [← b.total_repr x, Finsupp.span_image_eq_map_total, Submodule.mem_map]
     use b.repr x
     simp only [and_true_iff, eq_self_iff_true, Finsupp.mem_supported]
-    change (b.repr x).support ≤ S
-    convert Finset.le_sup (α := Finset ι) (by simp : (⟨x, m⟩ : w) ∈ Finset.univ)
-    rfl
+    rw [Finset.coe_subset, ← Finset.le_iff_subset]
+    exact Finset.le_sup (f := fun x : w ↦ (b.repr ↑x).support) (Finset.mem_univ (⟨x, m⟩ : w))
   -- Thus this finite subset of the basis elements spans the entire module.
   have k : span R bS = ⊤ := eq_top_iff.2 (le_trans s.ge (span_le.2 h))
   -- Now there is some `x : ι` not in `S`, since `ι` is infinite.
@@ -1571,7 +1562,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
   have r : range v ⊆ range v' := by
     rintro - ⟨k, rfl⟩
     use some k
-    rfl
+    simp only [Option.elim_some]
   have r' : b b' ∉ range v := by
     rintro ⟨k, p⟩
     simpa [w] using congr_arg (fun m => (b.repr m) b') p
@@ -1579,7 +1570,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     intro e
     have p : b b' ∈ range v' := by
       use none
-      rfl
+      simp only [Option.elim_none]
     rw [← e] at p
     exact r' p
   -- The key step in the proof is checking that this strictly larger family is linearly independent.
