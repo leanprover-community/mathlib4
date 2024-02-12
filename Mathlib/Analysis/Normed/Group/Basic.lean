@@ -536,7 +536,8 @@ open Lean Meta Qq Function
 @[positivity Norm.norm _]
 def evalMulNorm : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(‖$a‖) =>
+  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
+    let _inst ← synthInstanceQ q(SeminormedGroup $β)
     assertInstancesCommute
     pure (.nonnegative q(norm_nonneg' $a))
   | _, _, _ => throwError "not ‖ · ‖"
@@ -545,7 +546,8 @@ def evalMulNorm : PositivityExt where eval {u α} _zα _pα e := do
 @[positivity Norm.norm _]
 def evalAddNorm : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(‖$a‖) =>
+  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
+    let _inst ← synthInstanceQ q(SeminormedAddGroup $β)
     assertInstancesCommute
     pure (.nonnegative q(norm_nonneg $a))
   | _, _, _ => throwError "not ‖ · ‖"
