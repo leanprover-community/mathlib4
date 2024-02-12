@@ -25,12 +25,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 variable {ι : Type*} {π : ι → Type*} {κ : Type*} [TopologicalSpace α]
   [T : ∀ i, TopologicalSpace (π i)] {f : α → ∀ i : ι, π i}
 
-theorem continuousAt_id' (y) : ContinuousAt (fun x : α => x) y := continuousAt_id
-
 theorem continuousOn_id' (s) : ContinuousOn (fun x : α => x) s := continuousOn_id
-
-theorem ContinuousAt.comp' {g : β → γ} {f : α → β} {x : α} (hg : ContinuousAt g (f x))
-    (hf : ContinuousAt f x) : ContinuousAt (fun x => g (f x)) x := ContinuousAt.comp hg hf
 
 theorem ContinuousOn.comp'' {g : β → γ} {f : α → β} {s : Set α} {t : Set β} (hg : ContinuousOn g t)
     (hf : ContinuousOn f s) (h : Set.MapsTo f s t) : ContinuousOn (fun x => g (f x)) s :=
@@ -72,15 +67,9 @@ end Missing
 
 -- lambda rules
 attribute [fun_prop]
-  continuous_id'
-  continuous_const
-  Continuous.comp'
   continuous_apply
   continuous_pi
 
-  continuousAt_id'
-  continuousAt_const
-  ContinuousAt.comp'
   continuousAt_apply
   continuousAt_pi'
 
@@ -106,7 +95,6 @@ attribute [fun_prop]
 
 -- transitions
 attribute [fun_prop]
-  Continuous.continuousAt
   Continuous.continuousOn
 
 -- algebra
