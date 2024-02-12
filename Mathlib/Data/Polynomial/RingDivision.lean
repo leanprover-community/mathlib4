@@ -327,6 +327,17 @@ theorem Monic.irreducible_iff_natDegree' (hp : p.Monic) : Irreducible p ↔ p �
     · exact ⟨f, g, hf, hg, rfl, h.2, add_le_add_right hl _⟩
 #align polynomial.monic.irreducible_iff_nat_degree' Polynomial.Monic.irreducible_iff_natDegree'
 
+/-- Alternate phrasing of `Polynomial.Monic.irreducible_iff_natDegree'` where we only have to check
+one divisor at a time. -/
+theorem Monic.irreducible_iff_lt_natDegree_lt {p : R[X]} (hp : p.Monic) (hp1 : p ≠ 1) :
+    Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
+  rw [hp.irreducible_iff_natDegree', and_iff_right hp1]
+  constructor
+  · rintro h g hg hdg ⟨f, rfl⟩
+    exact h f g (hg.of_mul_monic_left hp) hg (mul_comm f g) hdg
+  · rintro h f g - hg rfl hdg
+    exact h g hg hdg (dvd_mul_left g f)
+
 theorem Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : p.natDegree = 2) :
     ¬Irreducible p ↔ ∃ c₁ c₂, p.coeff 0 = c₁ * c₂ ∧ p.coeff 1 = c₁ + c₂ := by
   cases subsingleton_or_nontrivial R
@@ -1479,30 +1490,30 @@ theorem prod_multiset_X_sub_C_of_monic_of_roots_card_eq (hp : p.Monic)
 set_option linter.uppercaseLean3 false in
 #align polynomial.prod_multiset_X_sub_C_of_monic_of_roots_card_eq Polynomial.prod_multiset_X_sub_C_of_monic_of_roots_card_eq
 
+theorem Monic.isUnit_leadingCoeff_of_dvd {a p : R[X]} (hp : Monic p) (hap : a ∣ p) :
+    IsUnit a.leadingCoeff :=
+  isUnit_of_dvd_one (by simpa only [hp.leadingCoeff] using leadingCoeff_dvd_leadingCoeff hap)
+
 /-- To check a monic polynomial is irreducible, it suffices to check only for
 divisors that have smaller degree.
 
 See also: `Polynomial.Monic.irreducible_iff_natDegree`.
 -/
 theorem Monic.irreducible_iff_degree_lt (p : R[X]) (p_monic : Monic p) (p_1 : p ≠ 1) :
-    Irreducible p ↔ ∀ q, degree q < degree p → q ∣ p → IsUnit q := by
-  have : Nontrivial R := Nontrivial.of_polynomial_ne p_1
-  simp only [irreducible_iff, mt p_monic.isUnit_iff.mp p_1, not_false_eq_true, true_and]
+    Irreducible p ↔ ∀ q, degree q ≤ ↑(p.natDegree / 2) → q ∣ p → IsUnit q := by
+  simp only [p_monic.irreducible_iff_lt_natDegree_lt p_1, mem_Ioc, and_imp,
+    natDegree_pos_iff_degree_pos, natDegree_le_iff_degree_le]
   constructor
-  · rintro p_dvd q q_deg ⟨r, rfl⟩
-    cases p_dvd q r rfl
-    case inl h => assumption
-    case inr h =>
-      simp [degree_eq_zero_of_isUnit h] at q_deg
-  · rintro hp a b rfl
-    by_cases ha : IsUnit a
-    · exact .inl ha
-    refine .inr (hp b (degree_lt_degree ?_) (dvd_mul_left b a))
-    rw [Polynomial.natDegree_mul
-        (ne_zero_of_dvd_ne_zero p_monic.ne_zero (dvd_mul_right a b))
-        (ne_zero_of_dvd_ne_zero p_monic.ne_zero (dvd_mul_left b a))]
-    exact lt_add_of_pos_left _ <|
-      natDegree_pos_of_not_isUnit_of_dvd_monic ha (dvd_mul_right a b) p_monic
+  · rintro h q deg_le dvd
+    by_contra q_unit
+    have := degree_pos_of_not_isUnit_of_dvd_monic q_unit dvd p_monic
+    have hu := p_monic.isUnit_leadingCoeff_of_dvd dvd
+    refine (h _ (monic_of_isUnit_leadingCoeff_inv_smul hu) ?_ ?_ (dvd_trans ?_ dvd)).elim
+    · rwa [degree_smul_of_smul_regular _ (isSMulRegular_of_group _)]
+    · rwa [degree_smul_of_smul_regular _ (isSMulRegular_of_group _)]
+    · rw [Units.smul_def, Polynomial.smul_eq_C_mul, (isUnit_C.mpr (Units.isUnit _)).mul_left_dvd]
+  · rintro h q _ deg_pos deg_le dvd
+    exact deg_pos.ne' <| degree_eq_zero_of_isUnit (h q deg_le dvd)
 
 end CommRing
 
