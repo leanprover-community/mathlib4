@@ -31,21 +31,21 @@ namespace EisensteinSeries
 section bounding_functions
 
 /-- Auxilary function used for bounding Eisentein series-/
-def lowerBound1 (z : ℍ) : ℝ := ((z.im ^ (2 : ℕ)) / (z.re ^ (2 : ℕ) + z.im ^ (2 : ℕ)))
+def r1 (z : ℍ) : ℝ := ((z.im ^ (2 : ℕ)) / (z.re ^ (2 : ℕ) + z.im ^ (2 : ℕ)))
 
-lemma lowerBound1' (z : ℍ) : lowerBound1 z = 1/((z.re / z.im) ^ (2 : ℕ) + 1) := by
-  field_simp [lowerBound1, im_pos z]
+lemma r1' (z : ℍ) : r1 z = 1/((z.re / z.im) ^ (2 : ℕ) + 1) := by
+  field_simp [r1, im_pos z]
 
-theorem lowerBound1_pos (z : ℍ) : 0 < lowerBound1 z := by
+theorem r1_pos (z : ℍ) : 0 < r1 z := by
   have H2 : 0 < (z.re ^ (2 : ℕ) + z.im ^ (2 : ℕ)) := by
     apply_rules [pow_pos, add_pos_of_nonneg_of_pos, pow_two_nonneg, z.2]
   exact div_pos (pow_pos z.im_pos 2) H2
 
 /-- This function is used to give an upper bound on Eisenstein series-/
-def r (z : ℍ) : ℝ := min (z.im) (Real.sqrt (lowerBound1 z))
+def r (z : ℍ) : ℝ := min (z.im) (Real.sqrt (r1 z))
 
 theorem r_pos (z : ℍ) : 0 < r z := by
-  simp only [r, lt_min_iff, im_pos, Real.sqrt_pos, lowerBound1_pos, and_self]
+  simp only [r, lt_min_iff, im_pos, Real.sqrt_pos, r1_pos, and_self]
 
 lemma r_mul_pos_pos (k : ℕ) (z : ℍ) (n : ℝ) (hn : 0 < n) :
     0 < (Complex.abs ((r z : ℂ) ^ (k : ℤ) * (n : ℂ)^ (k : ℤ))) := by
@@ -55,7 +55,7 @@ lemma r_mul_pos_pos (k : ℕ) (z : ℍ) (n : ℝ) (hn : 0 < n) :
   intro _
   linarith
 
-theorem auxlb (z : ℍ) (δ ε : ℝ) (hε : 1 ≤ ε^2) :
+theorem r1_bound (z : ℍ) (δ ε : ℝ) (hε : 1 ≤ ε^2) :
     (z.im ^ 2 ) / (z.re ^ 2 + z.im ^ 2) ≤ (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 := by
   have H1 : (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 =
         δ ^ 2 * (z.re ^ 2 + z.im ^ 2) + ε * 2 * δ * z.re + ε^2 := by ring
@@ -87,10 +87,10 @@ theorem auxbound1 (z : ℍ) (δ ε : ℝ) (hδ : 1 ≤ δ^2) : r z ≤ Complex.a
 
 theorem auxbound2 (z : ℍ) (δ ε : ℝ) (hε : 1 ≤ ε^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
   rw [r, Complex.abs, min_le_iff]
-  have H1 : Real.sqrt (lowerBound1 z) ≤ Real.sqrt ((δ * (z : ℂ).re + ε) * (δ * (z : ℂ).re + ε ) +
+  have H1 : Real.sqrt (r1 z) ≤ Real.sqrt ((δ * (z : ℂ).re + ε) * (δ * (z : ℂ).re + ε ) +
       δ * (z : ℂ).im * (δ * (z : ℂ).im)) := by
-    rw [lowerBound1, Real.sqrt_le_sqrt_iff, ← pow_two, ← pow_two]
-    apply auxlb z δ ε hε
+    rw [r1, Real.sqrt_le_sqrt_iff, ← pow_two, ← pow_two]
+    apply r1_bound z δ ε hε
     nlinarith
   right
   simp only [ne_eq, coe_re, coe_im, normSq_apply, AbsoluteValue.coe_mk, MulHom.coe_mk, add_re,
@@ -98,6 +98,7 @@ theorem auxbound2 (z : ℍ) (δ ε : ℝ) (hε : 1 ≤ ε^2) : r z ≤ Complex.a
     int_cast_im] at *
   exact H1
 
+--any suggestions as to where to put the lemmas below?
 lemma one_le_sq_div_abs_sq (a : ℝ) (ha : a ≠ 0) : 1 ≤ a^2 / |a|^2 := by
     rw [_root_.sq_abs, le_div_iff']
     simp only [mul_one, le_refl]
@@ -127,8 +128,9 @@ lemma ne_zero_if_max' (x : Fin 2 → ℤ) (hx : x ≠ 0)
   rw [fun_ne_zero_cases, h1, h0] at hx
   simp only [ne_eq, not_true_eq_false, or_self] at *
 
-lemma sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) : (1 : ℝ) ≤ (x 0 / (max (x 0).natAbs (x 1).natAbs))^2 ∨
-    (1 : ℝ) ≤ (x 1 / (max (x 0).natAbs (x 1).natAbs))^2 := by
+lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
+    (1 : ℝ) ≤ (x 0 / (max (x 0).natAbs (x 1).natAbs))^2 ∨
+      (1 : ℝ) ≤ (x 1 / (max (x 0).natAbs (x 1).natAbs))^2 := by
   cases' (max_choice (x 0).natAbs (x 1).natAbs) with H1 H2
   · left
     rw [H1]
@@ -149,6 +151,8 @@ lemma sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) : (1 : ℝ) ≤ (x 0 / (max (
     norm_cast
     rw [int_abs_eq_complex_abs]
 
+/-This should work for complex `k` (with a condition on `k.re`) but last I checked we were missing
+some lemmas about this -/
 lemma bound (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
     ((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs)^k ≤
       Complex.abs (((x 0 : ℂ) * (z : ℂ) + (x 1 : ℂ)) ^ k) := by
@@ -168,7 +172,7 @@ lemma bound (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
       (((x 0 : ℝ) / (n : ℝ) ) * (z : ℂ) + (x 1 : ℝ) /(n : ℝ)) ^ (k : ℤ) * ((n : ℝ)^ (k : ℤ)) := by
       simp only [Nat.cast_max] at h1
       field_simp
-    cases' (sq_ge_one x hx) with H1 H2
+    cases' (div_max_sq_ge_one x hx) with H1 H2
     · norm_cast at *
       rw [h11]
       simp only [hc, map_pow, map_mul, abs_ofReal, Complex.abs_abs, ge_iff_le, zpow_coe_nat] at *
@@ -229,14 +233,14 @@ lemma r_lower_bound_on_slice (A B : ℝ) (h : 0 < B) (z : upperHalfPlaneSlice A 
     r ⟨⟨A, B⟩, h⟩ ≤ r z.1 := by
   have hz := z.2
   simp only [slice_mem, abs_ofReal, ge_iff_le] at hz
-  rw [r, r]
+  simp_rw [r]
   apply min_le_min
   · dsimp only
     convert hz.2
     have := abs_eq_self.mpr (UpperHalfPlane.im_pos z.1).le
     convert this.symm
   rw [Real.sqrt_le_sqrt_iff]
-  simp [lowerBound1']
+  simp only [r1', div_pow, one_div]
   rw [inv_le_inv, add_le_add_iff_right]
   apply div_le_div (sq_nonneg _)
   · simpa [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
@@ -244,7 +248,7 @@ lemma r_lower_bound_on_slice (A B : ℝ) (h : 0 < B) (z : upperHalfPlaneSlice A 
   · simpa [even_two.pow_abs] using pow_le_pow_left h.le hz.2 2
   · positivity
   · positivity
-  · apply (lowerBound1_pos z).le
+  · apply (r1_pos z).le
 
 end bounding_functions
 
@@ -318,9 +322,9 @@ lemma summable_upper_bound (k : ℤ) (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
     apply (this b).symm
   · intro y
     apply mul_nonneg
-    simp only [one_div, inv_nonneg]
-    apply zpow_nonneg (r_pos z).le
-    simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, zpow_nonneg]
+    · simp only [one_div, inv_nonneg]
+      apply zpow_nonneg (r_pos z).le
+    · simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, zpow_nonneg]
 
 end summability
 
