@@ -126,6 +126,15 @@ theorem ne_zero_of_dvd_ne_zero {p q : α} (h₁ : q ≠ 0) (h₂ : p ∣ q) : p 
 theorem isPrimal_zero : IsPrimal (0 : α) :=
   fun a b h ↦ ⟨a, b, dvd_rfl, dvd_rfl, (zero_dvd_iff.mp h).symm⟩
 
+theorem IsPrimal.mul {α} [CancelCommMonoidWithZero α] {m n : α}
+    (hm : IsPrimal m) (hn : IsPrimal n) : IsPrimal (m * n) := by
+  obtain rfl | h0 := eq_or_ne m 0; · rwa [zero_mul]
+  intro b c h
+  obtain ⟨a₁, a₂, ⟨b, rfl⟩, ⟨c, rfl⟩, rfl⟩ := hm (dvd_of_mul_right_dvd h)
+  rw [mul_mul_mul_comm, mul_dvd_mul_iff_left h0] at h
+  obtain ⟨a₁', a₂', h₁, h₂, rfl⟩ := hn h
+  exact ⟨a₁ * a₁', a₂ * a₂', mul_dvd_mul_left _ h₁, mul_dvd_mul_left _ h₂, mul_mul_mul_comm _ _ _ _⟩
+
 end MonoidWithZero
 
 section CancelCommMonoidWithZero

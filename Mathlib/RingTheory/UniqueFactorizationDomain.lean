@@ -203,6 +203,17 @@ theorem exists_prime_factors (a : α) :
   apply WfDvdMonoid.exists_factors a
 #align unique_factorization_monoid.exists_prime_factors UniqueFactorizationMonoid.exists_prime_factors
 
+def Submonoid.isPrimal (α) [CancelCommMonoidWithZero α] : Submonoid α where
+  carrier := {a | IsPrimal a}
+  mul_mem' := IsPrimal.mul
+  one_mem' := isUnit_one.isPrimal
+
+instance : DecompositionMonoid α where
+  primal a := by
+    obtain rfl | ha := eq_or_ne a 0; · exact isPrimal_zero
+    obtain ⟨f, hf, u, rfl⟩ := exists_prime_factors a ha
+    exact ((Submonoid.isPrimal α).multiset_prod_mem f (hf · ·|>.isPrimal)).mul u.isUnit.isPrimal
+
 lemma exists_prime_iff :
     (∃ (p : α), Prime p) ↔ ∃ (x : α), x ≠ 0 ∧ ¬ IsUnit x := by
   refine ⟨fun ⟨p, hp⟩ ↦ ⟨p, hp.ne_zero, hp.not_unit⟩, fun ⟨x, hx₀, hxu⟩ ↦ ?_⟩
@@ -895,22 +906,9 @@ theorem isRelPrime_iff_no_prime_factors {a b : R} (ha : a ≠ 0) :
 
 /-- Euclid's lemma: if `a ∣ b * c` and `a` and `c` have no common prime factors, `a ∣ b`.
 Compare `IsCoprime.dvd_of_dvd_mul_left`. -/
-theorem dvd_of_dvd_mul_left_of_no_prime_factors {a b c : R} (ha : a ≠ 0) :
-    (∀ ⦃d⦄, d ∣ a → d ∣ c → ¬Prime d) → a ∣ b * c → a ∣ b := by
-  refine' induction_on_prime c _ _ _
-  · intro no_factors
-    simp only [dvd_zero, mul_zero, forall_prop_of_true]
-    haveI := Classical.propDecidable
-    exact
-      isUnit_iff_forall_dvd.mp
-        ((isRelPrime_iff_no_prime_factors ha).mpr no_factors (dvd_refl a) (dvd_zero a)) _
-  · rintro _ ⟨x, rfl⟩ _ a_dvd_bx
-    apply Units.dvd_mul_right.mp a_dvd_bx
-  · intro c p _ hp ih no_factors a_dvd_bpc
-    apply ih fun {q} dvd_a dvd_c hq => no_factors dvd_a (dvd_c.mul_left _) hq
-    rw [mul_left_comm] at a_dvd_bpc
-    refine' Or.resolve_left (hp.left_dvd_or_dvd_right_of_dvd_mul a_dvd_bpc) fun h => _
-    exact no_factors h (dvd_mul_right p c) hp
+theorem dvd_of_dvd_mul_left_of_no_prime_factors {a b c : R} (ha : a ≠ 0)
+    (h : ∀ ⦃d⦄, d ∣ a → d ∣ c → ¬Prime d) : a ∣ b * c → a ∣ b :=
+  ((isRelPrime_iff_no_prime_factors ha).mpr h).dvd_of_dvd_mul_right
 #align unique_factorization_monoid.dvd_of_dvd_mul_left_of_no_prime_factors UniqueFactorizationMonoid.dvd_of_dvd_mul_left_of_no_prime_factors
 
 /-- Euclid's lemma: if `a ∣ b * c` and `a` and `b` have no common prime factors, `a ∣ c`.
