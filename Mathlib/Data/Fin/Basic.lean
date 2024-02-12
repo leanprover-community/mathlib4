@@ -996,6 +996,11 @@ theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
 theorem eq_castSucc_or_eq_last {n : Nat} (i : Fin (n + 1)) :
     (∃ j : Fin n, i = j.castSucc) ∨ i = last n := i.lastCases (Or.inr rfl) (Or.inl ⟨·, rfl⟩)
 
+theorem exists_fin_succ' {P : Fin (n + 1) → Prop} :
+    (∃ i, P i) ↔ (∃ i : Fin n, P i.castSucc) ∨ P (.last _) :=
+  ⟨fun ⟨i, h⟩ => Fin.lastCases Or.inr (fun i hi => Or.inl ⟨i, hi⟩) i h,
+   fun h => h.elim (fun ⟨i, hi⟩ => ⟨i.castSucc, hi⟩) (fun h => ⟨.last _, h⟩)⟩
+
 /--
 The `Fin.castSucc_zero` in `Std` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
