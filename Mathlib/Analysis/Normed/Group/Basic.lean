@@ -534,7 +534,7 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via
 `norm_nonneg'`. -/
 @[positivity Norm.norm _]
-def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
+def evalMulNorm : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(‖$a‖) =>
     assertInstancesCommute
@@ -543,7 +543,7 @@ def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
 @[positivity Norm.norm _]
-def evalAddNorm : PositivityExt where eval {_ _} _zα _pα e := do
+def evalAddNorm : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(‖$a‖) =>
     assertInstancesCommute
