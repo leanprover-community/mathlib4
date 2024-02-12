@@ -1,6 +1,6 @@
 import Mathlib.Probability.Kernel.Disintegration
 import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Kernel.BuildKernel
+import Mathlib.Probability.Kernel.Disintegration.BuildKernel
 
 open MeasureTheory Set Filter
 

@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Probability.Kernel.BuildKernel
+import Mathlib.Probability.Kernel.Disintegration.BuildKernel
 
 #align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
 
