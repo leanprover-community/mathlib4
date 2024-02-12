@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Johan Commelin
 -/
 import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Nat.Basic
 
 example {x y : ℕ} : True := by
