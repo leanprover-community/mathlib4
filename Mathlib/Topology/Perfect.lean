@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Felix Weilacher, Emilie Burgun
+Authors: Felix Weilacher
 -/
 
 import Mathlib.Topology.Separation
@@ -52,33 +52,30 @@ accumulation point, perfect set, cantor-bendixson.
 -/
 
 
-open Topology Filter Set
-open TopologicalSpace (IsTopologicalBasis)
+open Topology Filter
+
+open TopologicalSpace Filter Set
 
 section Basic
 
-variable {α : Type*} [TopologicalSpace α] {s t : Set α}
+variable {α : Type*} [TopologicalSpace α] {C : Set α}
 
 /-- If `x` is an accumulation point of a set `C` and `U` is a neighborhood of `x`,
 then `x` is an accumulation point of `U ∩ C`. -/
-theorem accPt_principal_iff_inter_of_mem_nhds {x : α} (t_nhds : t ∈ 𝓝 x) :
-    AccPt x (𝓟 s) ↔ AccPt x (𝓟 (s ∩ t)) := by
-  refine ⟨fun h_acc => ?acc_inter,
-    fun h_acc => AccPt.mono h_acc <| Filter.principal_mono.mpr <| Set.inter_subset_left _ _⟩
-  have : 𝓝[≠] x ≤ 𝓟 t := le_principal_iff.mpr <| mem_nhdsWithin_of_mem_nhds t_nhds
-  rw [AccPt, ← inf_principal, inf_comm (a := 𝓟 s), ← inf_assoc, inf_of_le_left this]
+theorem AccPt.nhds_inter {x : α} {U : Set α} (h_acc : AccPt x (𝓟 C)) (hU : U ∈ 𝓝 x) :
+    AccPt x (𝓟 (U ∩ C)) := by
+  have : 𝓝[≠] x ≤ 𝓟 U := by
+    rw [le_principal_iff]
+    exact mem_nhdsWithin_of_mem_nhds hU
+  rw [AccPt, ← inf_principal, ← inf_assoc, inf_of_le_left this]
   exact h_acc
-
-theorem AccPt.nhds_inter {x : α} (h_acc : AccPt x (𝓟 s)) (t_nhds : t ∈ 𝓝 x) :
-    AccPt x (𝓟 (t ∩ s)) :=
-  Set.inter_comm _ _ ▸ (accPt_principal_iff_inter_of_mem_nhds t_nhds).mp h_acc
 #align acc_pt.nhds_inter AccPt.nhds_inter
 
 /-- A set `C` is preperfect if all of its points are accumulation points of itself.
 If `C` is nonempty and `α` is a T1 space, this is equivalent to the closure of `C` being perfect.
 See `preperfect_iff_perfect_closure`.-/
 def Preperfect (C : Set α) : Prop :=
-  ∀ ⦃x⦄, x ∈ C → AccPt x (𝓟 C)
+  ∀ x ∈ C, AccPt x (𝓟 C)
 #align preperfect Preperfect
 
 /-- A set `C` is called perfect if it is closed and all of its
@@ -89,38 +86,39 @@ structure Perfect (C : Set α) : Prop where
   acc : Preperfect C
 #align perfect Perfect
 
-theorem preperfect_iff_nhds : Preperfect s ↔ ∀ x ∈ s, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ s, y ≠ x := by
+theorem preperfect_iff_nhds : Preperfect C ↔ ∀ x ∈ C, ∀ U ∈ 𝓝 x, ∃ y ∈ U ∩ C, y ≠ x := by
   simp only [Preperfect, accPt_iff_nhds]
 #align preperfect_iff_nhds preperfect_iff_nhds
 
 /-- The intersection of a preperfect set and an open set is preperfect. -/
-theorem Preperfect.open_inter (s_prePerfect : Preperfect s) (t_open : IsOpen t) :
-    Preperfect (s ∩ t) := fun _ ⟨x_in_s, x_in_t⟩ =>
-  (accPt_principal_iff_inter_of_mem_nhds <| t_open.mem_nhds x_in_t).mp (s_prePerfect x_in_s)
-
+theorem Preperfect.open_inter {U : Set α} (hC : Preperfect C) (hU : IsOpen U) :
+    Preperfect (U ∩ C) := by
+  rintro x ⟨xU, xC⟩
+  apply (hC _ xC).nhds_inter
+  exact hU.mem_nhds xU
 #align preperfect.open_inter Preperfect.open_inter
 
 /-- The closure of a preperfect set is perfect.
 For a converse, see `preperfect_iff_perfect_closure`. -/
-theorem Preperfect.perfect_closure (s_prePerfect : Preperfect s) : Perfect (closure s) := by
+theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := by
   constructor; · exact isClosed_closure
   intro x hx
-  by_cases h : x ∈ s <;> apply AccPt.mono _ (principal_mono.mpr subset_closure)
-  · exact s_prePerfect h
-  have : {x}ᶜ ∩ s = s := by simp [h]
+  by_cases h : x ∈ C <;> apply AccPt.mono _ (principal_mono.mpr subset_closure)
+  · exact hC _ h
+  have : {x}ᶜ ∩ C = C := by simp [h]
   rw [AccPt, nhdsWithin, inf_assoc, inf_principal, this]
   rw [closure_eq_cluster_pts] at hx
   exact hx
 #align preperfect.perfect_closure Preperfect.perfect_closure
 
 /-- In a T1 space, being preperfect is equivalent to having perfect closure.-/
-theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect s ↔ Perfect (closure s) := by
+theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
   constructor <;> intro h
   · exact h.perfect_closure
   intro x xC
-  have H : AccPt x (𝓟 (closure s)) := h.acc (subset_closure xC)
+  have H : AccPt x (𝓟 (closure C)) := h.acc _ (subset_closure xC)
   rw [accPt_iff_frequently] at *
-  have : ∀ y, y ≠ x ∧ y ∈ closure s → ∃ᶠ z in 𝓝 y, z ≠ x ∧ z ∈ s := by
+  have : ∀ y, y ≠ x ∧ y ∈ closure C → ∃ᶠ z in 𝓝 y, z ≠ x ∧ z ∈ C := by
     rintro y ⟨hyx, yC⟩
     simp only [← mem_compl_singleton_iff, and_comm, ← frequently_nhdsWithin_iff,
       hyx.nhdsWithin_compl_singleton, ← mem_closure_iff_frequently]
@@ -129,25 +127,28 @@ theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect s ↔ Perfect (
   exact H.mono this
 #align preperfect_iff_perfect_closure preperfect_iff_perfect_closure
 
-theorem Perfect.closure_nhds_inter (s_perfect : Perfect s) (x : α) (x_in_s : x ∈ s) (x_in_t : x ∈ t)
-    (t_open : IsOpen t) : Perfect (closure (t ∩ s)) ∧ (closure (t ∩ s)).Nonempty := ⟨
-  Preperfect.perfect_closure <| Set.inter_comm _ _ ▸ s_perfect.acc.open_inter t_open,
-  ⟨x, subset_closure ⟨x_in_t, x_in_s⟩⟩⟩
+theorem Perfect.closure_nhds_inter {U : Set α} (hC : Perfect C) (x : α) (xC : x ∈ C) (xU : x ∈ U)
+    (Uop : IsOpen U) : Perfect (closure (U ∩ C)) ∧ (closure (U ∩ C)).Nonempty := by
+  constructor
+  · apply Preperfect.perfect_closure
+    exact hC.acc.open_inter Uop
+  apply Nonempty.closure
+  exact ⟨x, ⟨xU, xC⟩⟩
 #align perfect.closure_nhds_inter Perfect.closure_nhds_inter
 
 /-- Given a perfect nonempty set in a T2.5 space, we can find two disjoint perfect subsets.
 This is the main inductive step in the proof of the Cantor-Bendixson Theorem. -/
-theorem Perfect.splitting [T25Space α] (hC : Perfect s) (hnonempty : s.Nonempty) :
+theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty) :
     ∃ C₀ C₁ : Set α,
-    (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ s) ∧ (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ s) ∧ Disjoint C₀ C₁ := by
+    (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C) ∧ (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C) ∧ Disjoint C₀ C₁ := by
   cases' hnonempty with y yC
-  obtain ⟨x, xC, hxy⟩ : ∃ x ∈ s, x ≠ y := by
-    have := hC.acc yC
+  obtain ⟨x, xC, hxy⟩ : ∃ x ∈ C, x ≠ y := by
+    have := hC.acc _ yC
     rw [accPt_iff_nhds] at this
     rcases this univ univ_mem with ⟨x, xC, hxy⟩
     exact ⟨x, xC.2, hxy⟩
   obtain ⟨U, xU, Uop, V, yV, Vop, hUV⟩ := exists_open_nhds_disjoint_closure hxy
-  use closure (U ∩ s), closure (V ∩ s)
+  use closure (U ∩ C), closure (V ∩ C)
   constructor <;> rw [← and_assoc]
   · refine' ⟨hC.closure_nhds_inter x xC xU Uop, _⟩
     rw [hC.closed.closure_subset_iff]
@@ -164,17 +165,17 @@ section Kernel
 /-- The **Cantor-Bendixson Theorem**: Any closed subset of a second countable space
 can be written as the union of a countable set and a perfect set.-/
 theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
-    (hclosed : IsClosed s) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ s = V ∪ D := by
+    (hclosed : IsClosed C) : ∃ V D : Set α, V.Countable ∧ Perfect D ∧ C = V ∪ D := by
   obtain ⟨b, bct, _, bbasis⟩ := TopologicalSpace.exists_countable_basis α
-  let v := { U ∈ b | (U ∩ s).Countable }
+  let v := { U ∈ b | (U ∩ C).Countable }
   let V := ⋃ U ∈ v, U
-  let D := s \ V
-  have Vct : (V ∩ s).Countable := by
+  let D := C \ V
+  have Vct : (V ∩ C).Countable := by
     simp only [iUnion_inter, mem_sep_iff]
     apply Countable.biUnion
     · exact Countable.mono (inter_subset_left _ _) bct
     · exact inter_subset_right _ _
-  refine' ⟨V ∩ s, D, Vct, ⟨_, _⟩, _⟩
+  refine' ⟨V ∩ C, D, Vct, ⟨_, _⟩, _⟩
   · refine' hclosed.sdiff (isOpen_biUnion fun _ ↦ _)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub
   · rw [preperfect_iff_nhds]
@@ -183,8 +184,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
       intro h
       obtain ⟨U, hUb, xU, hU⟩ : ∃ U ∈ b, x ∈ U ∧ U ⊆ E :=
         (IsTopologicalBasis.mem_nhds_iff bbasis).mp xE
-      have hU_cnt : (U ∩ s).Countable := by
-        apply @Countable.mono _ _ (E ∩ D ∪ V ∩ s)
+      have hU_cnt : (U ∩ C).Countable := by
+        apply @Countable.mono _ _ (E ∩ D ∪ V ∩ C)
         · rintro y ⟨yU, yC⟩
           by_cases h : y ∈ V
           · exact mem_union_right _ (mem_inter h yC)
@@ -200,7 +201,7 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
 
 /-- Any uncountable closed set in a second countable space contains a nonempty perfect subset.-/
 theorem exists_perfect_nonempty_of_isClosed_of_not_countable [SecondCountableTopology α]
-    (hclosed : IsClosed s) (hunc : ¬s.Countable) : ∃ D : Set α, Perfect D ∧ D.Nonempty ∧ D ⊆ s := by
+    (hclosed : IsClosed C) (hunc : ¬C.Countable) : ∃ D : Set α, Perfect D ∧ D.Nonempty ∧ D ⊆ C := by
   rcases exists_countable_union_perfect_of_isClosed hclosed with ⟨V, D, Vct, Dperf, VD⟩
   refine' ⟨D, ⟨Dperf, _⟩⟩
   constructor
