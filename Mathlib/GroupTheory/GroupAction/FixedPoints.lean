@@ -81,8 +81,8 @@ variable (α) in
 theorem fixedBy_subset_fixedBy_zpow (g : G) (j : ℤ) :
     fixedBy α g ⊆ fixedBy α (g ^ j) := by
   intro a a_in_fixedBy
-  rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd,
-    minimalPeriod_eq_one_iff_fixedBy.mpr a_in_fixedBy, Nat.cast_one]
+  rw [mem_fixedBy, zpow_smul_eq_iff_period_dvd,
+    period_eq_one_iff_fixedBy.mpr a_in_fixedBy, Nat.cast_one]
   exact one_dvd j
 
 variable (α) in
@@ -123,7 +123,7 @@ theorem smul_fixedBy (g h: G) :
 variable (α) in
 theorem fixedBy_commutatorElement (g h : G) :
     fixedBy α h ∩ g • fixedBy α h ⊆ fixedBy α ⁅g, h⁆ := by
-  rw [smul_fixedBy, commutatorElement_def, Set.inter_comm, ← fixedBy_inv_eq_fixedBy α (g := h)]
+  rw [smul_fixedBy, commutatorElement_def, Set.inter_comm, ← fixedBy_inv α (g := h)]
   apply fixedBy_mul α
 
 @[to_additive]
@@ -216,7 +216,7 @@ lemma commutatorElement_smul_eq_of_subset_fixedBy_conj {f g : G} {s : Set α}
   repeat rw [mul_smul]
   rw [smul_left_cancel_iff]
   repeat rw [← mul_smul]
-  rw [← smul_fixedBy, ← fixedBy_inv_eq_fixedBy, smul_fixedBy] at subset
+  rw [← smul_fixedBy, ← fixedBy_inv, smul_fixedBy] at subset
   exact set_mem_fixedBy_of_subset_fixedBy subset
 
 end Pointwise
@@ -339,7 +339,7 @@ theorem commute_of_disjoint_movedBy {g h : G} (disjoint : Disjoint (fixedBy α g
 
   all_goals {
     rw [a_fixed]
-    rw [← fixedBy_inv_eq_fixedBy] at disjoint
+    rw [← fixedBy_inv] at disjoint
     rw [← set_mem_fixedBy_of_movedBy_subset disjoint, Set.mem_inv_smul_set_iff] at a_fixed
     rw [a_fixed]
   }
