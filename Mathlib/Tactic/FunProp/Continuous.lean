@@ -34,9 +34,6 @@ theorem ContinuousOn.comp'' {g : β → γ} {f : α → β} {s : Set α} {t : Se
 theorem continuousOn_apply (i : ι) (s) : ContinuousOn (fun p : ∀ i, π i => p i) s :=
   Continuous.continuousOn (continuous_apply i)
 
-theorem continuousAt_pi' {f : α → ∀ i, π i} {x : α} (hf : ∀ i, ContinuousAt (fun y => f y i) x) :
-    ContinuousAt f x := continuousAt_pi.2 hf
-
 theorem continuousOn_pi' {f : α → ∀ i, π i} {s : Set α}
     (hf : ∀ i, ContinuousOn (fun y => f y i) s) : ContinuousOn f s := continuousOn_pi.2 hf
 
@@ -67,12 +64,6 @@ end Missing
 
 -- lambda rules
 attribute [fun_prop]
-  continuous_apply
-  continuous_pi
-
-  continuousAt_apply
-  continuousAt_pi'
-
   continuousOn_id'
   continuousOn_const
   ContinuousOn.comp'
@@ -81,14 +72,6 @@ attribute [fun_prop]
 
 -- product
 attribute [fun_prop]
-  Continuous.prod_mk
-  Continuous.fst
-  Continuous.snd
-
-  ContinuousAt.prod
-  ContinuousAt.fst
-  ContinuousAt.snd
-
   ContinuousOn.prod
   ContinuousOn.fst
   ContinuousOn.snd
