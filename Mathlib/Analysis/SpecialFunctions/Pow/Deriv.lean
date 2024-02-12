@@ -132,8 +132,8 @@ theorem DifferentiableWithinAt.const_cpow (hf : DifferentiableWithinAt ℂ f s x
 #align differentiable_within_at.const_cpow DifferentiableWithinAt.const_cpow
 
 theorem DifferentiableOn.cpow (hf : DifferentiableOn ℂ f s) (hg : DifferentiableOn ℂ g s)
-    (h0 : ∀ x ∈ s, f x ∈ slitPlane) : DifferentiableOn ℂ (fun x ↦ f x ^ g x) s :=
-  fun x hx ↦ (hf x hx).cpow (hg x hx) (h0 x hx)
+    (h0 : Set.MapsTo f s slitPlane) : DifferentiableOn ℂ (fun x ↦ f x ^ g x) s :=
+  fun x hx ↦ (hf x hx).cpow (hg x hx) (h0 hx)
 
 theorem DifferentiableOn.const_cpow (hf : DifferentiableOn ℂ f s)
     (h0 : c ≠ 0 ∨ ∀ x ∈ s, f x ≠ 0) : DifferentiableOn ℂ (fun x ↦ c ^ f x) s :=
