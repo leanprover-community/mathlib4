@@ -42,13 +42,10 @@ end Missing
 
 -- algebra
 attribute [fun_prop]
-  Continuous.add
   Continuous.sub
   Continuous.neg
-  Continuous.pow
   Continuous.zpow
   Continuous.zpow₀
-  Continuous.mul
   Continuous.smul
   Continuous.const_smul
   Continuous.vadd
@@ -65,13 +62,10 @@ attribute [fun_prop]
   Continuous.max
   Continuous.min
 
-  ContinuousAt.add
   ContinuousAt.sub
   ContinuousAt.neg
-  ContinuousAt.pow
   ContinuousAt.zpow
   ContinuousAt.zpow₀
-  ContinuousAt.mul
   ContinuousAt.smul
   ContinuousAt.const_smul
   ContinuousAt.vadd
@@ -85,13 +79,10 @@ attribute [fun_prop]
   ContinuousAt.inf
   ContinuousAt.abs
 
-  ContinuousOn.add
   ContinuousOn.sub
   ContinuousOn.neg
-  ContinuousOn.pow
   ContinuousOn.zpow
   ContinuousOn.zpow₀
-  ContinuousOn.mul
   ContinuousOn.smul
   ContinuousOn.const_smul
   ContinuousOn.vadd
