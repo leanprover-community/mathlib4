@@ -132,9 +132,15 @@ def mkHom {A B : Rep k G} (f : A →ₗ[k] B)
     (mkHom f hf).hom x = f x := rfl
 
 /-- Alternative constructor for representation isomorphisms with less categorical terms. -/
-def mkIso {A B : Rep k G} (f : A ≃ₗ[k] B)
-    (hf : ∀ g, f ∘ₗ A.ρ g = B.ρ g ∘ₗ f) : A ≅ B :=
-Action.mkIso f.toModuleIso hf
+abbrev mkIso {A B : Rep k G} (f : A ≃ₗ[k] B)
+    (hf : ∀ g, f ∘ₗ A.ρ g = B.ρ g ∘ₗ f) : A ≅ B where
+  hom := mkHom f hf
+  inv := mkHom f.symm fun g => by
+    ext x
+    apply_fun f.toEquiv
+    have := LinearMap.ext_iff.1 (hf g) (f.symm x)
+    simpa only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      LinearEquiv.coe_toEquiv, LinearEquiv.apply_symm_apply] using this.symm
 
 lemma mkHom_ext_left {A B : Rep k G} (f : A →ₗ[k] B) (g : A ⟶ B)
     {hf : ∀ g, f ∘ₗ A.ρ g = B.ρ g ∘ₗ f} (h : f = g.hom) :
@@ -451,15 +457,16 @@ set_option linter.uppercaseLean3 false in
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
 def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
-  toFun f :=
-    { hom := (TensorProduct.curry f.hom).flip
-      comm := fun g => by
-        refine' LinearMap.ext fun x => LinearMap.ext fun y => _
-        change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
-        rw [← hom_comm_apply]
-        change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
-        simp only [← map_mul, mul_inv_self, map_one]
-        rfl }
+  toFun f := mkHom (TensorProduct.curry f.hom).flip
+    fun g => LinearMap.ext fun x => LinearMap.ext fun y => by
+      simp only [ihom_obj, coe_of, Equivalence.symm_inverse, functorCategoryEquivalence_functor,
+        FunctorCategoryEquivalence.functor_obj_obj, Monoidal.transportStruct_tensorObj,
+        Equivalence.symm_functor, functorCategoryEquivalence_inverse, of_ρ]
+      change f.hom (_ ⊗ₜ[k] _) = C.ρ g (f.hom (_ ⊗ₜ[k] _))
+      rw [← hom_comm_apply]
+      change _ = f.hom ((A.ρ g * A.ρ g⁻¹) y ⊗ₜ[k] _)
+      simp only [← map_mul, mul_inv_self, map_one]
+      rfl
   invFun f :=
     { hom := TensorProduct.uncurry k _ _ _ f.hom.flip
       comm := fun g => TensorProduct.ext' fun x y => by

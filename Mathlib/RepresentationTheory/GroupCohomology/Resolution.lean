@@ -748,6 +748,20 @@ Representation.finsupp_single _ _ _ _-/
 variable (k G)
 
 abbrev freeObj (α : Type u) := @Rep.of k G _ _ _ Finsupp.addCommGroup _ (Representation.free k G α)
+
+def freeMap {α β : Type u} (f : α → β) : freeObj k G α ⟶ freeObj k G β :=
+  mkHom (Finsupp.lmapDomain _ k f) fun g => Finsupp.lhom_ext' fun i =>
+    Finsupp.lhom_ext fun j g => by
+      simp_rw [LinearMap.coe_comp, Function.comp_apply, coe_of, of_ρ, Finsupp.lsingle_apply,
+        Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Representation.free_single_single,
+        Finsupp.mapDomain_single]
+
+@[simps] def free : Type u ⥤ Rep k G where
+  obj := freeObj k G
+  map := freeMap k G
+  map_id := fun _ => Action.hom_ext _ _ <| Finsupp.lmapDomain_id _ _
+  map_comp := fun _ _ => Action.hom_ext _ _ <| Finsupp.lmapDomain_comp _ _ _ _
+
 --abbrev free : Type u ⥤ Rep k G := finsupp (leftRegular k G)
 
 variable {k G}
@@ -767,39 +781,36 @@ def freeLift {α : Type u} (A : Rep k G) (f : α → A) :
     (fun x => A.ρ x.2 (f x.1)) ∘ₗ (Finsupp.finsuppProdLEquiv
       (α := α) (β := G) k (M := k)).symm.toLinearMap) fun g =>
         Finsupp.lhom_ext' fun i => Finsupp.lhom_ext fun j y => by
-          simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-            Finsupp.lsingle_apply]
-          simp?
-          simp only [finsupp_obj, coe_of, of_ρ]
-          rw [Finsupp.lsingle_apply]
-          erw [free_ρ_single_single]
-          erw [Finsupp.finsuppProdLEquiv_symm_single_single]
-          erw [Finsupp.finsuppProdLEquiv_symm_single_single]
-          simp only [Finsupp.total_single, map_mul, LinearMap.mul_apply, map_smul]
+          simp only [coe_of, of_ρ, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+            Finsupp.lsingle_apply, Representation.free_single_single,
+            Finsupp.finsuppProdLEquiv_symm_single_single, Finsupp.total_single, map_mul,
+            LinearMap.mul_apply, map_smul]
 
+@[simp] lemma freeLift_hom_single_single {α : Type u} (A : Rep k G)
+    (f : α → A) (i : α) (g : G) (r : k) :
+    (freeLift A f).hom (Finsupp.single i (Finsupp.single g r)) = r • A.ρ g (f i) := by
+  simp only [freeLift, coe_of, mkHom_hom_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    Function.comp_apply, Finsupp.finsuppProdLEquiv_symm_single_single, Finsupp.total_single]
 
-@[simp] lemma freeLift_hom_single_single {α : Type u} (A : Rep k G) (f : α → A) (i : α) (g : G) (r : k) :
-    (freeLift A f).hom (Finsupp.single i (Finsupp.single g r)) = r • A.ρ g (f i) :=
-  Representation.freeLift_hom_single_single _ _ _ _ _
+@[simps] def freeLiftEquiv (α : Type u) (A : Rep k G) :
+    ((free k G).obj α ⟶ A) ≃ₗ[k] (α → A) where
+--(homLEquiv _ _).trans <| Representation.freeLiftEquiv A.ρ α
+  toFun := fun f i => f.hom (Finsupp.single i (Finsupp.single 1 1))
+  invFun := freeLift A
+  left_inv := fun x => mkHom_ext_left _ _ <| Finsupp.lhom_ext' fun i =>
+    Finsupp.lhom_ext fun j y => by
+    simp only [coe_of, free_obj, ← hom_comm_apply, of_ρ, Representation.free_single_single, mul_one,
+      LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, Finsupp.lsingle_apply,
+      Finsupp.finsuppProdLEquiv_symm_single_single, Finsupp.total_single]
+    rw [← Finsupp.smul_single_one j y, ← Finsupp.smul_single, map_smul]
+    rfl
+  right_inv := fun x => by
+    ext i
+    simp only [free_obj, freeLift_hom_single_single, map_one, LinearMap.one_apply, one_smul]
+  map_add' := fun x y => rfl
+  map_smul' := fun r x => rfl
 
-def freeLiftEquiv (α : Type u) (A : Rep k G) :
-    ((free k G).obj α ⟶ A) ≃ₗ[k] (α → A) :=
-(homLEquiv _ _).trans <| Representation.freeLiftEquiv A.ρ α
-      /-toFun := fun f i => f.hom (Finsupp.single i (Finsupp.single 1 1))
-      invFun := freeLift A
-      left_inv := fun x => Action.hom_ext _ _ <| Finsupp.lhom_ext' fun i =>
-        Finsupp.lhom_ext fun j y => by
-        simp_rw [LinearMap.comp_apply]
-        erw [Finsupp.lsingle_apply, freeLift_hom_single_single]
-        rw [← Finsupp.smul_single_one j, ← Finsupp.smul_single, map_smul,
-          ← hom_comm_apply, free_ρ_single_single, mul_one]
-        rfl
-      right_inv := fun x => by
-        ext i
-        simp_rw [freeLift_hom_single_single, one_smul, map_one]
-        rfl-/
-
-@[simp] lemma freeLiftEquiv_apply {α : Type u} {A : Rep k G} (f : (free k G).obj α ⟶ A) (x : α) :
+/-@[simp] lemma freeLiftEquiv_apply {α : Type u} {A : Rep k G} (f : (free k G).obj α ⟶ A) (x : α) :
     freeLiftEquiv α A f x = f.hom (Finsupp.single x (Finsupp.single 1 1)) :=
   Representation.freeLiftEquiv_apply _ _ _ _
 
@@ -807,11 +818,12 @@ def freeLiftEquiv (α : Type u) (A : Rep k G) :
     (x : α) (g : G) (r : k) :
     ((freeLiftEquiv α A).symm f).hom (Finsupp.single x (Finsupp.single g r))
       = r • A.ρ g (f x) :=
-  Representation.freeLift_hom_single_single _ _ _ _ _
+  Representation.freeLift_hom_single_single _ _ _ _ _-/
 
+-- don't like it makes me erw
 lemma free_ext {α : Type u} (A : Rep k G) (f g : (free k G).obj α ⟶ A)
-  (h : ∀ i : α, f.hom (Finsupp.single i (Finsupp.single 1 1))
-    = g.hom (Finsupp.single i (Finsupp.single 1 1))) : f = g :=
+    (h : ∀ i : α, f.hom (Finsupp.single i (Finsupp.single 1 1))
+      = g.hom (Finsupp.single i (Finsupp.single 1 1))) : f = g :=
   (freeLiftEquiv α A).injective (Function.funext_iff.2 h)
 
 variable (k G)
@@ -819,22 +831,14 @@ variable (k G)
 def freeAdjunction : free k G ⊣ forget (Rep k G) :=
 Adjunction.mkOfHomEquiv <| {
   homEquiv := fun α A => (freeLiftEquiv α A).toEquiv
-  homEquiv_naturality_left_symm := fun f g => by
-    refine' Action.Hom.ext _ _ _
-    dsimp
-    simp only [freeLiftEquiv, types_comp, Equiv.symm_trans_apply, LinearEquiv.coe_toEquiv_symm,
-      EquivLike.coe_coe, homLEquiv_symm_apply_hom]
-    exact (Representation.hom.ext_iff _ _).1 (Representation.freeLiftEquiv_naturality _ _ _)
-  /-fun f g => by
-    dsimp
-    refine' free_ext _ _ _ _
-    intro i
-    simp only [Action.comp_hom, ModuleCat.coe_comp, Function.comp_apply]
-    erw [freeLiftEquiv_symm_apply, freeLiftEquiv_symm_apply,
-      freeLift_hom_single_single, one_smul, free_map_hom,
-      Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, freeLift_hom_single_single,
-      one_smul]
-    rfl-/
+  homEquiv_naturality_left_symm := fun {X Y Z} f g => mkHom_ext_left _ _ <|
+    Finsupp.lhom_ext' fun i => Finsupp.lhom_ext fun j x => by
+      simp only [coe_of, types_comp_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
+        Function.comp_apply, Finsupp.lsingle_apply, Finsupp.finsuppProdLEquiv_symm_single_single,
+        Finsupp.total_single, freeMap]
+      show _ = ((freeLiftEquiv Y Z).symm g).hom (Finsupp.mapDomain _ _)
+      simp_rw [Finsupp.mapDomain_single, freeLiftEquiv_symm_apply, free_obj,
+        freeLift_hom_single_single]
   homEquiv_naturality_right := fun f g => rfl }
 
 instance : IsLeftAdjoint (free k G) where
@@ -846,7 +850,7 @@ instance : Limits.PreservesColimitsOfSize.{u, u} (free k G) :=
 
 def moduleCatFreeCompEquivalenceToFree : ModuleCat.free (MonoidAlgebra k G)
   ⋙ equivalenceModuleMonoidAlgebra.inverse ⟶ free k G :=
-  (transferNatTransSelf  (freeAdjunction k G) ((ModuleCat.adj (MonoidAlgebra k G)).comp
+  (transferNatTransSelf (freeAdjunction k G) ((ModuleCat.adj (MonoidAlgebra k G)).comp
     (equivalenceModuleMonoidAlgebra (k := k) (G := G)).symm.toAdjunction)).symm (𝟙 _)
 
 instance : IsIso (moduleCatFreeCompEquivalenceToFree k G) := by
@@ -855,23 +859,40 @@ instance : IsIso (moduleCatFreeCompEquivalenceToFree k G) := by
 
 open MonoidalCategory
 
--- i guess this one was already fine actually.
+-- why are you so slow
 def tprodIsoFree (α : Type u) :
     leftRegular k G ⊗ trivial k G (α →₀ k) ≅ (free k G).obj α :=
-  mkIso (Representation.tprodIsoFree k G α).toLinearEquiv
-    (Representation.tprodIsoFree k G α).comm
+  (Representation.repOfTprodIso _ _).symm ≪≫ mkIso (finsuppTensorFinsupp' k G α
+      ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ Finsupp.finsuppProdLEquiv k) fun g =>
+    TensorProduct.ext <| Finsupp.lhom_ext fun x r => Finsupp.lhom_ext fun j y => by
+      show Finsupp.finsuppProdLEquiv k _ = (freeObj k G α).ρ g (Finsupp.finsuppProdLEquiv k _)
+      simp only [coe_of, of_ρ, Representation.tprod_apply, TensorProduct.mk_apply,
+        TensorProduct.map_tmul, Representation.ofMulAction_single, smul_eq_mul,
+        Representation.apply_eq_self, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+        finsuppTensorFinsupp'_single_tmul_single, Finsupp.domLCongr_apply, Finsupp.domCongr_apply,
+        Finsupp.equivMapDomain_single, Equiv.prodComm_apply, Prod.swap_prod_mk,
+        Finsupp.finsuppProdLEquiv_single, Representation.free_single_single]
 
 variable {α : Type u} (i : α)
 
 @[simp] lemma tprodIsoFree_inv_hom_single_single {α : Type u} (i : α) (g : G) (r : k) :
     (tprodIsoFree k G α).inv.hom (Finsupp.single i (Finsupp.single g r)) =
-      TensorProduct.tmul k (Finsupp.single g r) (Finsupp.single i 1) :=
-  Representation.tprodIsoFree_inv_hom_single_single _ _ _ _ _ _
+      TensorProduct.tmul k (Finsupp.single g r) (Finsupp.single i 1) := by
+  show (finsuppTensorFinsupp' k G α).symm _ = _
+  simp only [LinearEquiv.coe_toEquiv_symm, Finsupp.domLCongr_symm, Equiv.prodComm_symm, free_obj,
+    coe_of, EquivLike.coe_coe, Finsupp.finsuppProdLEquiv_symm_single_single,
+    Finsupp.domLCongr_apply, Finsupp.domCongr_apply, Finsupp.equivMapDomain_single,
+    Equiv.prodComm_apply, Prod.swap_prod_mk, Finsupp.finsuppTensorFinsupp'_symm_single,
+    Equivalence.symm_inverse, Action.functorCategoryEquivalence_functor,
+    Action.FunctorCategoryEquivalence.functor_obj_obj,
+    TensorProduct.smul_tmul', Finsupp.smul_single_one]
 
 @[simp] lemma tprodIsoFree_hom_hom_single_tmul_single {α : Type u} (i : α) (g : G) (r s : k) :
     (tprodIsoFree k G α).hom.hom (Finsupp.single g r ⊗ₜ Finsupp.single i s)
-      = Finsupp.single i (Finsupp.single g (r * s)) :=
-  Representation.tprodIsoFree_hom_hom_single_tmul_single _ _ _ _ _ _ _
+      = Finsupp.single i (Finsupp.single g (r * s)) := by
+  show Finsupp.finsuppProdLEquiv k (Finsupp.mapDomain _ _) = _
+  erw [Representation.repOfTprodIso_apply]
+  sorry
 
 def diagonalIsoFree (n : ℕ) :
   diagonal k G (n + 1) ≅ (free k G).obj (Fin n → G) :=
