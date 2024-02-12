@@ -129,7 +129,7 @@ def sCorec : X → ∀ n, CofixA F n
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
   induction' n with n n_ih generalizing i
   constructor
-  cases' h : f i with y g
+  cases' f i with y g
   constructor
   introv
   apply n_ih
@@ -578,7 +578,7 @@ theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map 
   cases' n with n
   · dsimp only [sCorec, Approx.sMk]
   · dsimp only [sCorec, Approx.sMk]
-    cases h : f x₀
+    cases f x₀
     dsimp only [PFunctor.map]
     congr
 set_option linter.uppercaseLean3 false in

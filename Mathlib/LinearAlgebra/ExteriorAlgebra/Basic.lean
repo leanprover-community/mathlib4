@@ -263,7 +263,7 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
     by_cases h : i = 0
     · rw [h, ι_sq_zero, zero_mul]
     · replace hn :=
-        congr_arg (ι R (f 0) * ·) $ hn (fun i => f <| Fin.succ i) (i.pred h)
+        congr_arg (ι R (f 0) * ·) <| hn (fun i => f <| Fin.succ i) (i.pred h)
       simp only at hn
       rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
       refine' (eq_zero_iff_eq_zero_of_add_eq_zero _).mp hn

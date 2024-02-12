@@ -422,6 +422,7 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
   have hα : IsIntegral F α := .of_finite F α
   use FiniteDimensional.finrank F⟮α⟯ p.SplittingField
   suffices (minpoly F α).natDegree = p.natDegree by
+    letI _ : AddCommGroup F⟮α⟯ := Ring.toAddCommGroup
     rw [← FiniteDimensional.finrank_mul_finrank F F⟮α⟯ p.SplittingField,
       IntermediateField.adjoin.finrank hα, this]
   suffices minpoly F α ∣ p by
@@ -487,7 +488,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
       exact ⟨(mem_rootSet.mp w.2).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩
     · rintro ⟨hz1, hz2⟩
       exact ⟨⟨z, mem_rootSet.mpr ⟨hp, hz1⟩⟩, Equiv.Perm.mem_support.mpr (mt (hc0 _).mp hz2), rfl⟩
-  rw [← Finset.card_disjoint_union]
+  rw [← Finset.card_union_of_disjoint]
   · apply congr_arg Finset.card
     simp_rw [Finset.ext_iff, Finset.mem_union, ha, hb, hc]
     tauto

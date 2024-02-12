@@ -278,11 +278,11 @@ theorem smul_quot [Algebra S R] {n : S} {a : R} :
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
+  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
 
 instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
+  ⟨fun s t ⟨a⟩ => Quot.inductionOn a fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
 instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) where
   add := (· + ·)

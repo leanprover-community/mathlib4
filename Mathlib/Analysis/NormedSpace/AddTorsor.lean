@@ -3,9 +3,9 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
+import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.Topology.Instances.RealVectorSpace
 
@@ -214,7 +214,7 @@ theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
   rw [dist_eq_norm_vsub V, dist_eq_norm_vsub V, dist_eq_norm_vsub V, midpoint_vsub_midpoint]
   try infer_instance
   rw [midpoint_eq_smul_add, norm_smul, invOf_eq_inv, norm_inv, ← div_eq_inv_mul]
-  exact div_le_div_of_le_of_nonneg (norm_add_le _ _) (norm_nonneg _)
+  exact div_le_div_of_le (norm_nonneg _) (norm_add_le _ _)
 #align dist_midpoint_midpoint_le' dist_midpoint_midpoint_le'
 
 theorem nndist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :

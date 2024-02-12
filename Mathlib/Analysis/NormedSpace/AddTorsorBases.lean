@@ -116,8 +116,7 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
 #align is_open.exists_between_affine_independent_span_eq_top IsOpen.exists_between_affineIndependent_span_eq_top
 
 theorem IsOpen.exists_subset_affineIndependent_span_eq_top {u : Set P} (hu : IsOpen u)
-    (hne : u.Nonempty) :
-    ∃ (s : _) (_ : s ⊆ u), AffineIndependent ℝ ((↑) : s → P) ∧ affineSpan ℝ s = ⊤ := by
+    (hne : u.Nonempty) : ∃ s ⊆ u, AffineIndependent ℝ ((↑) : s → P) ∧ affineSpan ℝ s = ⊤ := by
   rcases hne with ⟨x, hx⟩
   rcases hu.exists_between_affineIndependent_span_eq_top (singleton_subset_iff.mpr hx)
     (singleton_nonempty _) (affineIndependent_of_subsingleton _ _) with ⟨s, -, hsu, hs⟩

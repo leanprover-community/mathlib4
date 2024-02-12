@@ -271,7 +271,7 @@ section
 variable (R η)
 
 /-- The basis on `η → R` where the `i`th basis vector is `Function.update 0 i 1`. -/
-noncomputable def basisFun : Basis η R (∀ _ : η, R) :=
+noncomputable def basisFun : Basis η R (η → R) :=
   Basis.ofEquivFun (LinearEquiv.refl _ _)
 #align pi.basis_fun Pi.basisFun
 

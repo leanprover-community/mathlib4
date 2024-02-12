@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 import Mathlib.Algebra.Star.Order
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
-import Mathlib.Tactic.Positivity
 
 #align_import data.real.sqrt from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -392,7 +391,7 @@ namespace Real
 
 @[simp]
 theorem sqrt_mul (hx : 0 ≤ x) (y : ℝ) : sqrt (x * y) = sqrt x * sqrt y := by
-  simp_rw [sqrt, ← NNReal.coe_mul, NNReal.coe_eq, Real.toNNReal_mul hx, NNReal.sqrt_mul]
+  simp_rw [sqrt, ← NNReal.coe_mul, NNReal.coe_inj, Real.toNNReal_mul hx, NNReal.sqrt_mul]
 #align real.sqrt_mul Real.sqrt_mul
 
 @[simp]

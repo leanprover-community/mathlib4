@@ -3,7 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Function
 
@@ -33,8 +32,8 @@ theorem decide_False {h} : @decide False h = false :=
 @[simp]
 theorem decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
-  · exact decide_eq_false $ λ j => by cases j
-  · exact decide_eq_true $ rfl
+  · exact decide_eq_false <| λ j => by cases j
+  · exact decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
@@ -105,7 +104,7 @@ theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
   ⟨fun ⟨b, h⟩ ↦ by cases b; exact Or.inl h; exact Or.inr h,
   fun h ↦ match h with
   | .inl h => ⟨_, h⟩
-  | .inr h => ⟨_, h⟩ ⟩
+  | .inr h => ⟨_, h⟩⟩
 #align bool.exists_bool Bool.exists_bool
 
 /-- If `p b` is decidable for all `b : Bool`, then `∀ b, p b` is decidable -/
@@ -262,6 +261,8 @@ instance linearOrder : LinearOrder Bool where
   le_antisymm := by decide
   le_total := by decide
   decidableLE := inferInstance
+  decidableEq := inferInstance
+  decidableLT := inferInstance
   lt_iff_le_not_le := by decide
   max_def := by decide
   min_def := by decide

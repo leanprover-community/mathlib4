@@ -74,8 +74,6 @@ theorem one_lt_pow (n m : ℕ) (h₀ : n ≠ 0) (h₁ : 1 < m) : 1 < m ^ n := by
   exact Nat.pow_lt_pow_left h₁ h₀
 #align nat.one_lt_pow Nat.one_lt_pow
 
-theorem two_pow_pos (n : ℕ) : 0 < 2^n := Nat.pos_pow_of_pos _ (by decide)
-
 theorem two_pow_succ (n : ℕ) : 2^(n + 1) = 2^n + 2^n := by simp [pow_succ, mul_two]
 
 theorem one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
@@ -184,7 +182,7 @@ theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ}, 0 < x → (x ^ k
     · intro a
       cases' x with x
       · simp
-      · have le := (pow_le_pow_iff_right $ by simp).mp a
+      · have le := (pow_le_pow_iff_right <| by simp).mp a
         use (x + 2) ^ (l - k)
         rw [← pow_add, add_comm k, tsub_add_cancel_of_le le]
 #align nat.pow_dvd_pow_iff_pow_le_pow Nat.pow_dvd_pow_iff_pow_le_pow
@@ -241,3 +239,5 @@ Those lemmas have been deprecated on 2023-12-23.
 @[deprecated] protected alias Nat.pow_right_strictMono := pow_right_strictMono
 @[deprecated] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
 @[deprecated] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right
+
+assert_not_exists Set.range

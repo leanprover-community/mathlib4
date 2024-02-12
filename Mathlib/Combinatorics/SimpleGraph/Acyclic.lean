@@ -134,7 +134,7 @@ theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.P
 theorem isTree_iff_existsUnique_path :
     G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : G.Walk v w, p.IsPath := by
   classical
-  rw [IsTree_iff, isAcyclic_iff_path_unique]
+  rw [isTree_iff, isAcyclic_iff_path_unique]
   constructor
   · rintro ⟨hc, hu⟩
     refine ⟨hc.nonempty, ?_⟩

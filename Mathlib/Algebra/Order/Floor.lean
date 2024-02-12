@@ -4,14 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Set.Intervals.Group
-import Mathlib.Data.Set.Lattice
-import Mathlib.Init.Meta.WellFoundedTactics
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
+import Mathlib.Data.Set.Basic
+import Mathlib.Order.GaloisConnection
 
 #align_import algebra.order.floor from "leanprover-community/mathlib"@"afdb43429311b885a7988ea15d0bac2aac80f69c"
 
@@ -540,7 +542,7 @@ theorem floor_div_nat (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
   refine' (floor_eq_iff _).2 _
   · exact div_nonneg ha n.cast_nonneg
   constructor
-  · exact cast_div_le.trans (div_le_div_of_le_of_nonneg (floor_le ha) n.cast_nonneg)
+  · exact cast_div_le.trans (div_le_div_of_le n.cast_nonneg (floor_le ha))
   rw [div_lt_iff, add_mul, one_mul, ← cast_mul, ← cast_add, ← floor_lt ha]
   · exact lt_div_mul_add hn
   · exact cast_pos.2 hn
@@ -965,7 +967,7 @@ theorem fract_nonneg (a : α) : 0 ≤ fract a :=
 
 /-- The fractional part of `a` is positive if and only if `a ≠ ⌊a⌋`. -/
 lemma fract_pos : 0 < fract a ↔ a ≠ ⌊a⌋ :=
-  (fract_nonneg a).lt_iff_ne.trans $ ne_comm.trans sub_ne_zero
+  (fract_nonneg a).lt_iff_ne.trans <| ne_comm.trans sub_ne_zero
 #align int.fract_pos Int.fract_pos
 
 theorem fract_lt_one (a : α) : fract a < 1 :=
@@ -1624,7 +1626,7 @@ end round
 namespace Nat
 
 variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] [FloorSemiring α] [FloorSemiring β]
-  [RingHomClass F α β] {a : α} {b : β}
+variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 -- Porting note: no longer needed
 -- include β
@@ -1653,7 +1655,7 @@ end Nat
 namespace Int
 
 variable [LinearOrderedRing α] [LinearOrderedRing β] [FloorRing α] [FloorRing β]
-  [RingHomClass F α β] {a : α} {b : β}
+variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 -- Porting note: no longer needed
 -- include β
@@ -1683,7 +1685,7 @@ end Int
 namespace Int
 
 variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRing β]
-  [RingHomClass F α β] {a : α} {b : β}
+variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 -- Porting note: no longer needed
 -- include β

@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Prime
 import Mathlib.Tactic.NormNum.Basic
 
@@ -33,7 +32,7 @@ namespace Mathlib.Meta.NormNum
 
 theorem not_prime_mul_of_ble (a b n : ℕ) (h : a * b = n) (h₁ : a.ble 1 = false)
     (h₂ : b.ble 1 = false) : ¬ n.Prime :=
-  not_prime_mul' h (ble_eq_false.mp h₁) (ble_eq_false.mp h₂)
+  not_prime_mul' h (ble_eq_false.mp h₁).ne' (ble_eq_false.mp h₂).ne'
 
 /-- Produce a proof that `n` is not prime from a factor `1 < d < n`. `en` should be the expression
   that is the natural number literal `n`. -/
