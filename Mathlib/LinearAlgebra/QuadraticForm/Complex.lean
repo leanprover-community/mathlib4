@@ -65,7 +65,7 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
 
 /-- The isometry between a weighted sum of squares on the complex numbers and the
 sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/
-noncomputable def isometryEquivSumSquaresUnits [DecidableEq ι] (w : ι → Units ℂ) :
+noncomputable def isometryEquivSumSquaresUnits (w : ι → Units ℂ) :
     IsometryEquiv (weightedSumSquares ℂ w) (weightedSumSquares ℂ (1 : ι → ℂ)) := by
   simpa using isometryEquivSumSquares ((↑) ∘ w)
 #align quadratic_form.isometry_sum_squares_units QuadraticForm.isometryEquivSumSquaresUnits
