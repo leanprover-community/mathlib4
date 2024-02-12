@@ -99,8 +99,36 @@ lemma charpoly_constantCoeff_eq_zero_iff :
     constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 :=
   (charpoly_constantCoeff_tfae φ).out 0 1
 
+open Module.Free in
 lemma finrank_maximalGeneralizedEigenspace :
     finrank K (φ.maximalGeneralizedEigenspace 0) = natTrailingDegree (φ.charpoly) := by
+  set V := φ.maximalGeneralizedEigenspace 0
+  have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
+    simp [Module.End.maximalGeneralizedEigenspace, Module.End.generalizedEigenspace]
+  let W := ⨅ (n : ℕ), LinearMap.range (φ ^ n)
+  have hVW : IsCompl V W := by
+    rw [hV]
+    exact LinearMap.isCompl_iSup_ker_pow_iInf_range_pow φ
+  have hφV : ∀ x ∈ V, φ x ∈ V := by
+    simp only [Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero,
+      forall_exists_index]
+    intro x n hx
+    use n
+    rw [← LinearMap.mul_apply, ← pow_succ', pow_succ, LinearMap.mul_apply, hx, map_zero]
+  have hφW : ∀ x ∈ W, φ x ∈ W := by
+    simp only [Submodule.mem_iInf, mem_range]
+    intro x H n
+    obtain ⟨y, rfl⟩ := H n
+    use φ y
+    rw [← LinearMap.mul_apply, ← pow_succ', pow_succ, LinearMap.mul_apply]
+  let F := φ.restrict hφV
+  let G := φ.restrict hφW
+  let ψ := F.prodMap G
+  let e := Submodule.prodEquivOfIsCompl V W hVW
+  let bV := chooseBasis K V
+  let bW := chooseBasis K W
+  let b := bV.prod bW
+  let bM := b.map e
   sorry
 
 end LinearMap
