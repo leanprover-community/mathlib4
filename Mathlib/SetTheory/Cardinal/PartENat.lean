@@ -19,6 +19,8 @@ universe u v
 
 open Function
 
+variable {α : Type u}
+
 namespace Cardinal
 
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
@@ -59,7 +61,7 @@ theorem toPartENat_cast (n : ℕ) : toPartENat n = n := by
 #align cardinal.to_part_enat_cast Cardinal.toPartENat_cast
 
 @[simp]
-theorem mk_toPartENat_of_infinite {α : Type*} [h : Infinite α] : toPartENat #α = ⊤ :=
+theorem mk_toPartENat_of_infinite [h : Infinite α] : toPartENat #α = ⊤ :=
   toPartENat_apply_of_aleph0_le (infinite_iff.1 h)
 #align cardinal.mk_to_part_enat_of_infinite Cardinal.mk_toPartENat_of_infinite
 
@@ -147,11 +149,11 @@ theorem toPartENat_lift (c : Cardinal.{v}) : toPartENat (lift.{u, v} c) = toPart
     exact hc
 #align cardinal.to_part_enat_lift Cardinal.toPartENat_lift
 
-theorem toPartENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toPartENat #α = toPartENat #β := by
+theorem toPartENat_congr {β : Type v} (e : α ≃ β) : toPartENat #α = toPartENat #β := by
   rw [← toPartENat_lift, lift_mk_eq.{_, _,v}.mpr ⟨e⟩, toPartENat_lift]
 #align cardinal.to_part_enat_congr Cardinal.toPartENat_congr
 
-theorem mk_toPartENat_eq_coe_card {α : Type*} [Fintype α] : toPartENat #α = Fintype.card α := by
+theorem mk_toPartENat_eq_coe_card [Fintype α] : toPartENat #α = Fintype.card α := by
   simp
 #align cardinal.mk_to_part_enat_eq_coe_card Cardinal.mk_toPartENat_eq_coe_card
 
