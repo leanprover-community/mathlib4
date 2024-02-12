@@ -831,7 +831,7 @@ TC inference. -/
 def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.sum _ $ι $instα $s $f) =>
-    let i : Q($ι) ← mkFreshExprMVarQ q($ι)
+    let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := Expr.betaRev f #[i]
     let rbody ← core zα pα body
     -- Try to show that the sum is positive
@@ -876,5 +876,6 @@ example (a : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (a j^2 + 1) := by
 example (s : Finset ℕ) : 0 ≤ ∑ j in s, j := by positivity
 example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
 example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
+example (f : ℕ → ℕ) (hf₀ : 0 ≤ f 0) : 0 ≤ ∑ n in Finset.range 10, f n := by positivity
 
 end Mathlib.Meta.Positivity
