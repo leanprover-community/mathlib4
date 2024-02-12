@@ -8,6 +8,8 @@ import Mathlib.Topology.Perfect
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.CantorScheme
 
+#align_import topology.perfect from "leanprover-community/mathlib"@"3905fa80e62c0898131285baab35559fbc4e5cda"
+
 /-!
 # Perfect Sets
 
