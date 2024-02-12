@@ -610,7 +610,6 @@ section TemperateGrowth
 
 /-! ### Functions of temperate growth -/
 
-
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
 polynomially bounded. -/
 def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
@@ -634,6 +633,35 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   refine' pow_le_pow_right (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
   exact Finset.le_sup hN
 #align function.has_temperate_growth.norm_iterated_fderiv_le_uniform_aux Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
+
+lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
+    (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
+    (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
+    Function.HasTemperateGrowth f := by
+  refine ⟨contDiff_top_iff_fderiv.2 ⟨hf, h'f.1⟩ , fun n ↦ ?_⟩
+  rcases n with rfl|m
+  · exact ⟨k, C, fun x ↦ by simpa using h x⟩
+  · rcases h'f.2 m with ⟨k', C', h'⟩
+    refine ⟨k', C', fun x ↦ ?_⟩
+    simpa only [ContinuousLinearMap.strongUniformity_topology_eq, Function.comp_apply,
+      LinearIsometryEquiv.norm_map, iteratedFDeriv_succ_eq_comp_right] using h' x
+
+lemma _root_.Function.HasTemperateGrowth.zero :
+    Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
+  refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
+  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero, forall_const]
+  positivity
+
+lemma _root_.Function.HasTemperateGrowth.const (c : F) :
+    Function.HasTemperateGrowth (fun _ : E ↦ c) :=
+  .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
+
+lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
+    Function.HasTemperateGrowth f := by
+  apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
+  · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
+    simpa [this] using .const _
+  · exact (f.le_op_norm x).trans (by simp [mul_add])
 
 end TemperateGrowth
 
