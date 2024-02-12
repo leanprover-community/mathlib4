@@ -167,7 +167,7 @@ theorem Real.summable_nat_rpow_inv {p : ℝ} :
   · rw [← summable_condensed_iff_of_nonneg]
     · simp_rw [Nat.cast_pow, Nat.cast_two, ← rpow_nat_cast, ← rpow_mul zero_lt_two.le, mul_comm _ p,
         rpow_mul zero_lt_two.le, rpow_nat_cast, ← inv_pow, ← mul_pow,
-        summable_geometric_iff_norm_lt_1]
+        summable_geometric_iff_norm_lt_one]
       nth_rw 1 [← rpow_one 2]
       rw [← division_def, ← rpow_sub zero_lt_two, norm_eq_abs,
         abs_of_pos (rpow_pos_of_pos zero_lt_two _), rpow_lt_one_iff zero_lt_two.le]
