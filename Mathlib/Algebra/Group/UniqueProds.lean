@@ -533,6 +533,7 @@ theorem _root_.MulEquiv.twoUniqueProds_iff (f : G ≃* H) : TwoUniqueProds G ↔
     simp_rw [mem_product, mem_image, ← filter_nonempty_iff] at h1 h2
     replace h1 := uniqueMul_of_twoUniqueMul ?_ h1.1 h1.2
     replace h2 := uniqueMul_of_twoUniqueMul ?_ h2.1 h2.2
+
     · obtain ⟨a1, ha1, b1, hb1, hu1⟩ := h1
       obtain ⟨a2, ha2, b2, hb2, hu2⟩ := h2
       rw [mem_filter] at ha1 hb1 ha2 hb2
@@ -542,9 +543,10 @@ theorem _root_.MulEquiv.twoUniqueProds_iff (f : G ≃* H) : TwoUniqueProds G ↔
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha2.2 hb2.2 hi2 hu2⟩
       contrapose! hne; rw [Prod.mk.inj_iff] at hne ⊢
       rw [← ha1.2, ← hb1.2, ← ha2.2, ← hb2.2, hne.1, hne.2]; exact ⟨rfl, rfl⟩
-    all_goals
-      rcases hc with hc | hc; · exact ihA _ (hc.2 _)
-      by_cases hA : A.filter (· i = _) = A; rw [hA]
+    all_goals rcases hc with hc | hc; · exact ihA _ (hc.2 _)
+    · by_cases hA : A.filter (· i = p2.1) = A; rw [hA]
+      exacts [ihB _ (hc.2 _), ihA _ ((A.filter_subset _).ssubset_of_ne hA)]
+    · by_cases hA : A.filter (· i = p1.1) = A; rw [hA]
       exacts [ihB _ (hc.2 _), ihA _ ((A.filter_subset _).ssubset_of_ne hA)]
 
 open ULift in

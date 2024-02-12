@@ -2038,7 +2038,7 @@ theorem eventually_comap : (∀ᶠ a in comap f l, p a) ↔ ∀ᶠ b in l, ∀ a
 
 @[simp]
 theorem frequently_comap : (∃ᶠ a in comap f l, p a) ↔ ∃ᶠ b in l, ∃ a, f a = b ∧ p a := by
-  simp only [Filter.Frequently, eventually_comap, not_exists, not_and]
+  simp only [Filter.Frequently, eventually_comap, not_exists, _root_.not_and]
 #align filter.frequently_comap Filter.frequently_comap
 
 theorem mem_comap_iff_compl : s ∈ comap f l ↔ (f '' sᶜ)ᶜ ∈ l := by

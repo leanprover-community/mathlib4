@@ -290,8 +290,7 @@ theorem shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (
 theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
-@[simp]
-theorem testBit_zero (b n) : testBit (bit b n) 0 = b := by
+theorem testBit_bit_zero (b n) : testBit (bit b n) 0 = b := by
   rw [testBit, bit]
   cases b
   · simp [bit0, ← Nat.mul_two]
@@ -307,7 +306,7 @@ theorem bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
   | 1 => rfl
   | n + 2 => by simpa using bodd_eq_and_one_ne_zero n
 
-theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
+theorem testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
     simp only [shiftRight_eq_div_pow]
     simp [← div2_val, div2_bit]
