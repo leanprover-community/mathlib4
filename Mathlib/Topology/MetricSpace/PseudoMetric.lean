@@ -267,10 +267,13 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]
-def evalDist : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app (.app _ a) b ← whnfR e | throwError "not dist"
-  let p ← mkAppOptM ``dist_nonneg #[none, none, a, b]
-  pure (.nonnegative p)
+def evalDist : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Dist.dist $β $inst $a $b) =>
+    let _inst ← synthInstanceQ q(PseudoMetricSpace $β)
+    assertInstancesCommute
+    pure (.nonnegative q(dist_nonneg))
+  | _, _, _ => throwError "not dist"
 
 end Mathlib.Meta.Positivity
 

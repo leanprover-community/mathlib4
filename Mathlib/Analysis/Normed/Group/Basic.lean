@@ -534,17 +534,23 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via
 `norm_nonneg'`. -/
 @[positivity Norm.norm _]
-def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ a ← whnfR e | throwError "not ‖ · ‖"
-  let p ← mkAppM ``norm_nonneg' #[a]
-  pure (.nonnegative p)
+def evalMulNorm : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
+    let _inst ← synthInstanceQ q(SeminormedGroup $β)
+    assertInstancesCommute
+    pure (.nonnegative q(norm_nonneg' $a))
+  | _, _, _ => throwError "not ‖ · ‖"
 
 /-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
 @[positivity Norm.norm _]
-def evalAddNorm : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ a ← whnfR e | throwError "not ‖ · ‖"
-  let p ← mkAppM ``norm_nonneg #[a]
-  pure (.nonnegative p)
+def evalAddNorm : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
+    let _inst ← synthInstanceQ q(SeminormedAddGroup $β)
+    assertInstancesCommute
+    pure (.nonnegative q(norm_nonneg $a))
+  | _, _, _ => throwError "not ‖ · ‖"
 
 end Mathlib.Meta.Positivity
 

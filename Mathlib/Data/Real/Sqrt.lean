@@ -362,28 +362,28 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
 @[positivity NNReal.sqrt _]
-def evalNNRealSqrt : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app _ (a : Q(NNReal))) ← whnfR e | throwError "not NNReal.sqrt"
-  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(NNReal.sqrt_pos_of_pos $pa) : Expr))
-  | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
+def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
+    let ra ← core  q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
+    | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
+  | _, _, _ => throwError "not NNReal.sqrt"
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
 @[positivity Real.sqrt _]
-def evalSqrt : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app _ (a : Q(Real))) ← whnfR e | throwError "not Real.sqrt"
-  let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
-  let ra ← catchNone <| core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(Real.sqrt_pos_of_pos $pa) : Expr))
-  | _ => pure (.nonnegative (q(Real.sqrt_nonneg $a) : Expr))
+def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.sqrt $a) =>
+    let ra ← catchNone <| core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(Real.sqrt_pos_of_pos $pa))
+    | _ => pure (.nonnegative q(Real.sqrt_nonneg $a))
+  | _, _, _ => throwError "not Real.sqrt"
 
 end Mathlib.Meta.Positivity
 
