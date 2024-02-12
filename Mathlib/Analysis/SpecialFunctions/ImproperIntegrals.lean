@@ -189,8 +189,7 @@ theorem integrable_one_div_one_add_sq : Integrable fun (x : ℝ) ↦ 1 / (1 + x 
     tendsto_id (by simpa only [this] using intervalIntegral_one_div_one_add_sq_tendsto)
   by_cases hi : i = 0
   · rewrite [hi, Set.Ioc_eq_empty (by norm_num)]; exact integrableOn_empty
-  · refine (intervalIntegral.intervalIntegrable_of_integral_ne_zero ?_).1
-    simp [← two_mul, arctan_ne_zero hi]
+  · exact (intervalIntegral.intervalIntegrable_of_integral_ne_zero (by simp [← two_mul, hi])).1
 
 theorem integral_Iic_one_div_one_add_sq {i : ℝ} :
     ∫ (x : ℝ) in Set.Iic i, 1 / (1 + x ^ 2) = arctan i + (π / 2) :=
