@@ -118,13 +118,14 @@ section NonAssocSemiring
 
 variable [Fintype α] [NonAssocSemiring R] {a b : α} {e : Sym2 α}
 
-theorem sum_incMatrix_apply [DecidableEq α] [DecidableRel G.Adj] :
+theorem sum_incMatrix_apply [DecidableRel G.Adj] :
     ∑ e, G.incMatrix R a e = G.degree a := by
-  simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
+  classical simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
 #align simple_graph.sum_inc_matrix_apply SimpleGraph.sum_incMatrix_apply
 
-theorem incMatrix_mul_transpose_diag [DecidableEq α] [DecidableRel G.Adj] :
+theorem incMatrix_mul_transpose_diag [DecidableRel G.Adj] :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
+  classical
   rw [← sum_incMatrix_apply]
   simp only [mul_apply, incMatrix_apply', transpose_apply, mul_ite, mul_one, mul_zero]
   simp_all only [ite_true, sum_boole]
