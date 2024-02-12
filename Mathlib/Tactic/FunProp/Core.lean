@@ -21,6 +21,9 @@ open Lean Meta Qq
 namespace Meta.FunProp
 
 
+/-- Puts function `f` into expected form
+  1. has at least one lambda binder
+  2. body of the lambda is (morphism)beta reduced -/
 def fpropNormalForm (f : Expr) : FunPropM Expr := do
   -- make sure `f` is lambda with at least one bound variable
   let .lam xName xType xBody xBi ← etaExpand1 f | return f
