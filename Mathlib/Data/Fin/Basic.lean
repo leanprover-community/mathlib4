@@ -1517,8 +1517,6 @@ protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl
 #align fin.coe_neg Fin.coe_neg
 
-protected theorem coe_sub (a b : Fin n) : ((a - b : Fin n) : ℕ) = (a + (n - b)) % n := by
-  cases a; cases b; rfl
 #align fin.coe_sub Fin.coe_sub
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
