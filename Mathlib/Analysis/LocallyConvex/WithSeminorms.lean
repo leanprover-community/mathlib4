@@ -324,7 +324,7 @@ theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
 /-- The `x`-neighbourhoods of a space whose topology is induced by a family of seminorms
 are exactly the sets which contain seminorm balls around `x`.-/
 theorem WithSeminorms.mem_nhds_iff (hp : WithSeminorms p) (x : E) (U : Set E) :
-    U ∈ nhds x ↔ ∃ s : Finset ι, ∃ r > 0, (s.sup p).ball x r ⊆ U := by
+    U ∈ 𝓝 x ↔ ∃ s : Finset ι, ∃ r > 0, (s.sup p).ball x r ⊆ U := by
   rw [hp.hasBasis_ball.mem_iff, Prod.exists]
 #align with_seminorms.mem_nhds_iff WithSeminorms.mem_nhds_iff
 
@@ -516,7 +516,7 @@ theorem WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded {s : Set E} (hp 
   · intro h I
     simp only [id.def] at h
     specialize h ((I.sup p).ball 0 1) (p.basisSets_mem I zero_lt_one)
-    rcases h with ⟨r, hr, h⟩
+    rcases h.exists_pos with ⟨r, hr, h⟩
     cases' NormedField.exists_lt_norm 𝕜 r with a ha
     specialize h a (le_of_lt ha)
     rw [Seminorm.smul_ball_zero (norm_pos_iff.1 <| hr.trans ha), mul_one] at h

@@ -107,7 +107,6 @@ def HasFiniteIntegral {_ : MeasurableSpace α} (f : α → β) (μ : Measure α 
   (∫⁻ a, ‖f a‖₊ ∂μ) < ∞
 #align measure_theory.has_finite_integral MeasureTheory.HasFiniteIntegral
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
     HasFiniteIntegral f μ ↔ ((∫⁻ a, ‖f a‖₊ ∂μ) < ∞) :=
   Iff.rfl
@@ -184,14 +183,13 @@ theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : �
   (hasFiniteIntegral_const C).mono' hC
 #align measure_theory.has_finite_integral_of_bounded MeasureTheory.hasFiniteIntegral_of_bounded
 
-theorem hasFiniteIntegral_of_fintype [Fintype α] [IsFiniteMeasure μ] {f : α → β} :
+theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α → β} :
     HasFiniteIntegral f μ :=
-  hasFiniteIntegral_of_bounded (C := (Finset.sup .univ (fun a => ‖f a‖₊) : NNReal)) <| by
-    apply ae_of_all μ
-    intro x
-    rw [← coe_nnnorm (f x)]
-    apply NNReal.toReal_le_toReal
-    apply Finset.le_sup (Finset.mem_univ x)
+  let ⟨_⟩ := nonempty_fintype α
+  hasFiniteIntegral_of_bounded <| ae_of_all μ <| norm_le_pi_norm f
+
+@[deprecated] -- Since 2024/02/05
+alias hasFiniteIntegral_of_fintype := HasFiniteIntegral.of_finite
 
 theorem HasFiniteIntegral.mono_measure {f : α → β} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
@@ -443,7 +441,6 @@ def Integrable {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α :=
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 #align measure_theory.integrable MeasureTheory.Integrable
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
 theorem integrable_def {α} {_ : MeasurableSpace α} (f : α → β) (μ : Measure α) :
     Integrable f μ ↔ (AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ) :=
   Iff.rfl
@@ -508,10 +505,12 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
 #align measure_theory.integrable_const MeasureTheory.integrable_const
 
 @[simp]
-theorem integrable_of_fintype [Fintype α] [MeasurableSpace α] [MeasurableSingletonClass α]
+theorem Integrable.of_finite [Finite α] [MeasurableSpace α] [MeasurableSingletonClass α]
     (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
-  ⟨ StronglyMeasurable.aestronglyMeasurable (stronglyMeasurable_of_fintype f),
-    hasFiniteIntegral_of_fintype ⟩
+  ⟨(StronglyMeasurable.of_finite f).aestronglyMeasurable, .of_finite⟩
+
+@[deprecated] -- Since 2024/02/05
+alias integrable_of_fintype := Integrable.of_finite
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by
@@ -1521,7 +1520,7 @@ theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →L[𝕜] E)
     Integrable (fun a : α => L (φ a)) μ :=
   ((Integrable.norm φ_int).const_mul ‖L‖).mono'
     (L.continuous.comp_aestronglyMeasurable φ_int.aestronglyMeasurable)
-    (eventually_of_forall fun a => L.le_op_norm (φ a))
+    (eventually_of_forall fun a => L.le_opNorm (φ a))
 #align continuous_linear_map.integrable_comp ContinuousLinearMap.integrable_comp
 
 theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}
