@@ -85,13 +85,25 @@ namespace LeftExtension
 namespace IsPointwiseLeftKanExtensionAt
 
 variable {F}
-variable {G : C ⥤ E} (e : LeftExtension F G) {X : C}
+variable {G : C ⥤ E} {e : LeftExtension F G} {X : C}
     (he : e.IsPointwiseLeftKanExtensionAt (F.obj X))
 
 lemma isIso_hom_app [Full F] [Faithful F] : IsIso (e.hom.app X) := by
   simpa using he.isIso_ι_app_of_isTerminal _ CostructuredArrow.mkIdTerminal
 
 end IsPointwiseLeftKanExtensionAt
+
+namespace IsPointwiseLeftKanExtension
+
+variable {F}
+variable {G : C ⥤ E} {e : LeftExtension F G}
+    (he : e.IsPointwiseLeftKanExtension)
+
+lemma isIso_hom [Full F] [Faithful F] : IsIso e.hom := by
+  have : ∀ (X : C), IsIso (e.hom.app X) := fun (X : C) => (he (F.obj X)).isIso_hom_app
+  apply NatIso.isIso_of_isIso_app
+
+end IsPointwiseLeftKanExtension
 
 end LeftExtension
 

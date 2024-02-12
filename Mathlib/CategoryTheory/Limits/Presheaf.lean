@@ -59,7 +59,7 @@ namespace ColimitAdj
 
 section
 
-variable {ℰ : Type u₂} [Category.{v₂} ℰ] (A : C ⥤ ℰ)
+variable {ℰ : Type u₂} [Category.{u₁} ℰ] (A : C ⥤ ℰ)
 
 /--
 The functor taking `(E : ℰ) (c : Cᵒᵖ)` to the homset `(A.obj C ⟶ E)`. It is shown in `L_adjunction`
@@ -70,10 +70,11 @@ In the case where `ℰ = Cᵒᵖ ⥤ Type u` and `A = yoneda`, this functor is i
 Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 -/
 @[simps!]
-def restrictedYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type v₂ :=
-  yoneda ⋙ (whiskeringLeft _ _ (Type v₂)).obj (Functor.op A)
+def restrictedYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type u₁ :=
+  yoneda ⋙ (whiskeringLeft _ _ (Type u₁)).obj (Functor.op A)
 #align category_theory.colimit_adj.restricted_yoneda CategoryTheory.ColimitAdj.restrictedYoneda
 
+/-
 /--
 The functor `restrictedYoneda` is isomorphic to the identity functor when evaluated at the yoneda
 embedding.
@@ -126,10 +127,84 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type v₂) (E₁ E₂ : 
       restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g := by
   ext x X
   apply (assoc _ _ _).symm
-#align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural
+#align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural-/
 
-variable [HasColimitsOfSize.{u₁, max u₁ v₂} ℰ]
+variable [yoneda.HasPointwiseLeftKanExtension A] -- follows from  `[HasColimits ℰ]`
 
+def homEquiv' (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ) :
+    (CostructuredArrow.proj yoneda P ⋙ A ⟶
+      (Functor.const (CostructuredArrow yoneda P)).obj E) ≃
+      (P ⟶ (restrictedYoneda A).obj E) where
+  toFun f :=
+    { app := fun X x => f.app (CostructuredArrow.mk (yonedaEquiv.symm x))
+      naturality := fun {X₁ X₂} φ => by
+        ext x
+        dsimp
+        let ψ : CostructuredArrow.mk (yonedaEquiv.symm (P.toPrefunctor.map φ x)) ⟶
+          CostructuredArrow.mk (yonedaEquiv.symm x) := CostructuredArrow.homMk φ.unop (by
+            dsimp [yonedaEquiv]
+            aesop_cat )
+        simpa using (f.naturality ψ).symm }
+  invFun g :=
+    { app := fun y => yonedaEquiv (y.hom ≫ g)
+      naturality := fun {X₁ X₂} φ => by
+        dsimp
+        rw [← CostructuredArrow.w φ]
+        dsimp [yonedaEquiv]
+        simp only [comp_id, id_comp]
+        refine' (congr_fun (g.naturality φ.left.op) (X₂.hom.app (Opposite.op X₂.left)
+          (𝟙 _))).symm.trans _
+        dsimp
+        apply congr_arg
+        simpa using congr_fun (X₂.hom.naturality φ.left.op).symm (𝟙 _) }
+  left_inv f := by
+    ext x
+    dsimp
+    erw [yonedaEquiv_apply]
+    simp
+    congr 1
+    obtain ⟨X, ⟨⟨⟩⟩, f⟩ := x
+    dsimp [CostructuredArrow.mk]
+    suffices yonedaEquiv.symm (f.app (Opposite.op X) (𝟙 X)) = f by
+      erw [this]
+    ext Y y
+    simpa using congr_fun (f.naturality y.op).symm (𝟙 _)
+  right_inv g := by
+    ext X x
+    dsimp
+    erw [yonedaEquiv_apply]
+    rw [FunctorToTypes.comp]
+    erw [yonedaEquiv_symm_app_apply]
+    simp
+
+noncomputable def homEquiv (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ) :
+    ((yoneda.leftKanExtension A).obj P ⟶ E) ≃ (P ⟶ (restrictedYoneda A).obj E) :=
+  ((Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _
+    (yoneda.leftKanExtensionUnit A) P).homEquiv E).trans (homEquiv' A P E)
+
+noncomputable def yonedaAdjunction : yoneda.leftKanExtension A ⊣ restrictedYoneda A :=
+  Adjunction.mkOfHomEquiv
+    { homEquiv := homEquiv A
+      homEquiv_naturality_left_symm := sorry
+      homEquiv_naturality_right := sorry }
+
+/-- See Property 2 of https://ncatlab.org/nlab/show/Yoneda+extension#properties. -/
+noncomputable instance : PreservesColimits (yoneda.leftKanExtension A) :=
+  (yonedaAdjunction A).leftAdjointPreservesColimits
+
+instance : IsIso (yoneda.leftKanExtensionUnit A) :=
+  (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _
+    (yoneda.leftKanExtensionUnit A)).isIso_hom
+
+noncomputable def isExtensionAlongYoneda :
+    yoneda ⋙ yoneda.leftKanExtension A ≅ A :=
+  (asIso (yoneda.leftKanExtensionUnit A)).symm
+
+
+#exit
+
+
+/-
 /--
 The left adjoint to the functor `restrictedYoneda` (shown in `yonedaAdjunction`). It is also an
 extension of `A` along the yoneda embedding (shown in `isExtensionAlongYoneda`), in particular
@@ -165,6 +240,7 @@ theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type v₂} (f : X ⟶ Y) :
   simp [extendAlongYoneda, restrictYonedaHomEquiv, restrictYonedaHomEquiv', IsColimit.homEquiv]
   rfl
 #align category_theory.colimit_adj.extend_along_yoneda_map CategoryTheory.ColimitAdj.extendAlongYoneda_map
+-/
 
 /-- Show `extendAlongYoneda` is left adjoint to `restrictedYoneda`.
 
