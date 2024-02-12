@@ -41,7 +41,7 @@ open Function Set
 variable (𝕜 : Type*) {V V₁ V₂ V₃ V₄ : Type*} {P₁ : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
   [NormedField 𝕜]
   [SeminormedAddCommGroup V] [NormedSpace 𝕜 V] [PseudoMetricSpace P] [NormedAddTorsor V P]
-  [NormedAddCommGroup V₁] [NormedSpace 𝕜 V₁] [MetricSpace P₁] [NormedAddTorsor V₁ P₁]
+  [SeminormedAddCommGroup V₁] [NormedSpace 𝕜 V₁] [MetricSpace P₁] [NormedAddTorsor V₁ P₁]
   [SeminormedAddCommGroup V₂] [NormedSpace 𝕜 V₂] [PseudoMetricSpace P₂] [NormedAddTorsor V₂ P₂]
   [SeminormedAddCommGroup V₃] [NormedSpace 𝕜 V₃] [PseudoMetricSpace P₃] [NormedAddTorsor V₃ P₃]
   [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P₄] [NormedAddTorsor V₄ P₄]
