@@ -184,9 +184,8 @@ lemma not_initial_of_inhabited {X : C} (x : F.obj X) (h : IsInitial X) : False :
 lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)
     (hi : IsInitial X → False) :
     ∃ (Y : C) (v : Y ⟶ X), (IsInitial Y → False) ∧ Mono v ∧ (¬ IsIso v) := by
-  by_contra h2
-  simp only [exists_and_left, not_exists, not_and, not_not] at h2
-  exact hc ⟨hi, fun Y i hm hni ↦ h2 Y hni i hm⟩
+  contrapose! hc
+  exact ⟨hi, fun Y i hm hni ↦ hc Y i hni hm⟩
 
 /-- The fiber of a connected object is nonempty. -/
 instance nonempty_fiber_of_isConnected (X : C) [IsConnected X] : Nonempty (F.obj X) := by
@@ -286,25 +285,35 @@ class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C]
 
 namespace PreGaloisCategory
 
-variable {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C]
+variable (C : Type u₁) [Category.{u₂, u₁} C] [GaloisCategory C]
+
+/-- Arbitrarily choose a fiber functor for a Galois category using choice. -/
+noncomputable def GaloisCategory.getFiberFunctor : C ⥤ FintypeCat.{u₂} :=
+  Classical.choose <| @GaloisCategory.hasFiberFunctor C _ _
+
+/-- The arbitrarily chosen fiber functor `GaloisCategory.getFiberFunctor` is a fiber functor. -/
+noncomputable instance : FiberFunctor (GaloisCategory.getFiberFunctor C) :=
+  Classical.choice <| Classical.choose_spec (@GaloisCategory.hasFiberFunctor C _ _)
+
+variable {C}
 
 /-- In a `GaloisCategory` the set of morphisms out of a connected object is finite. -/
 instance (A X : C) [IsConnected A] : Finite (A ⟶ X) := by
-  obtain ⟨F, ⟨hF⟩⟩ := @GaloisCategory.hasFiberFunctor C _ _
+  let F := GaloisCategory.getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f a)
   exact evaluationInjective_of_isConnected F A X a
 
 /-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
 instance (A : C) [IsConnected A] : Finite (Aut A) := by
-  obtain ⟨F, ⟨hF⟩⟩ := @GaloisCategory.hasFiberFunctor C _ _
+  let F := GaloisCategory.getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f.hom a)
   exact evaluation_aut_injective_of_isConnected F A a
 
 /-- Coproduct inclusions are monic in Galois categories. -/
 instance : MonoCoprod C := by
-  obtain ⟨F, ⟨hf⟩⟩ := @GaloisCategory.hasFiberFunctor C _ _
+  let F := GaloisCategory.getFiberFunctor C
   exact MonoCoprod.monoCoprod_of_preservesCoprod_of_reflectsMono F
 
 end PreGaloisCategory

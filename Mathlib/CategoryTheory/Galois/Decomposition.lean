@@ -40,7 +40,7 @@ variable {ι₁ ι₂ : Type} {X X₁ X₂ : C} {f₁ : ι₁ → C} {f₂ : ι�
 
 /-- For maps `f₁ : ι₁ → C`, `f₂ : ι₂ → C`, families of morphisms `g₁ i : f₁ i ⟶ X₁`,
 `g₂ i : f₂ i ⟶ X₂` and morphisms `v₁ : X₁ ⟶ X`, `v₂ : X₂ ⟶ X`, construct one family of
-morphisms on `ι₁ ⊕ ι₂` -/
+morphisms indexed by `ι₁ ⊕ ι₂` -/
 @[simp]
 abbrev combPairHoms : (i : ι₁ ⊕ ι₂) → Sum.elim f₁ f₂ i ⟶ X
   | .inl a => g₁ a ≫ v₁
@@ -144,14 +144,14 @@ theorem has_decomp_connected_components (X : C) :
     (g : (i : ι) → f i ⟶ X)
     (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  obtain ⟨F, ⟨hf⟩⟩ := @GaloisCategory.hasFiberFunctor C _ _
+  let F := GaloisCategory.getFiberFunctor C
   exact has_decomp_connected_components_aux F (Nat.card <| F.obj X) X rfl
 
 /-- In a Galois category, every object is the sum of connected objects. -/
 theorem has_decomp_connected_components' (X : C) :
     ∃ (ι : Type) (_ : Finite ι) (f : ι → C) (_ : ∐ f ≅ X), ∀ i, IsConnected (f i) := by
   obtain ⟨ι, f, g, hl, hc, hf⟩ := has_decomp_connected_components X
-  refine ⟨ι, hf, f, colimit.isoColimitCocone ⟨Cofan.mk X g, hl⟩, hc⟩
+  exact ⟨ι, hf, f, colimit.isoColimitCocone ⟨Cofan.mk X g, hl⟩, hc⟩
 
 variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 
@@ -162,12 +162,10 @@ lemma fiber_in_connected_component (X : C) (x : F.obj X) : ∃ (Y : C) (i : Y �
   have : Fintype ι := Fintype.ofFinite ι
   let s : Cocone (Discrete.functor f ⋙ F) := F.mapCocone (Cofan.mk X g)
   let s' : IsColimit s := isColimitOfPreserves F hl
-  have : ∃ (j : Discrete ι) (z : (Discrete.functor f ⋙ F).obj j), s.ι.app j z = x :=
-    Concrete.isColimit_exists_rep _ s' x
-  obtain ⟨⟨j⟩, z, h⟩ := this
+  obtain ⟨⟨j⟩, z, h⟩ := Concrete.isColimit_exists_rep _ s' x
   refine ⟨f j, g j, z, ⟨?_, hc j, MonoCoprod.mono_inj _ (Cofan.mk X g) hl j⟩⟩
   subst h
-  simp only [mapCocone_pt, Cofan.mk_pt, mapCocone_ι_app, Discrete.functor_obj, Cofan.mk_ι_app]
+  rfl
 
 /-- Up to isomorphism an element of the fiber of `X` only lies in one connected component. -/
 lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a : F.obj A)
