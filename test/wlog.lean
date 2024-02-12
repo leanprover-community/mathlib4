@@ -125,7 +125,10 @@ which in turn depend on the reverted hypotheses
 
 example (n : Nat) (h : A n) : True := by
   guard_hyp h : A n
-  /- If this worked, we'd have `this : ∀ (n : ℕ), S n h → True`. `this` can't possibly be type-correct: since `P := S n h` depends on `h`, and `h` depends on a reverted (not replaced) variable `n` (via `h : A n`), the `n` in `h : A n` would be the `n` in the local context, which is not the same as the `n` bound by `∀ (n : ℕ)`. -/
+  /- If this worked, we'd have `this : ∀ (n : ℕ), S n h → True`. `this` can't possibly be
+  type-correct: since `P := S n h` depends on `h`, and `h` depends on a reverted (not replaced)
+  variable `n` (via `h : A n`), the `n` in `h : A n` would be the `n` in the local context, which
+  is not the same as the `n` bound by `∀ (n : ℕ)`. -/
   success_if_fail_with_msg err₂ wlog h'' : S n h generalizing n replacing h
   trivial
 
