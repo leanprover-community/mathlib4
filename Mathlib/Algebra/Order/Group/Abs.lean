@@ -459,7 +459,7 @@ theorem abs_abs_sub_abs_le_abs_sub (a b : α) : |(|a| - |b|)| ≤ |a - b| :=
 /-- `|a - b| ≤ n` if `0 ≤ a ≤ n` and `0 ≤ b ≤ n`. -/
 theorem abs_sub_le_of_nonneg_of_le {a b n : α} (a_nonneg : 0 ≤ a) (a_le_n : a ≤ n)
     (b_nonneg : 0 ≤ b) (b_le_n : b ≤ n) : |a - b| ≤ n := by
-  rw [abs_sub_le_iff, @sub_le_iff_le_add α, @sub_le_iff_le_add α]
+  rw [abs_sub_le_iff, sub_le_iff_le_add, sub_le_iff_le_add]
   exact ⟨le_add_of_le_of_nonneg a_le_n b_nonneg, le_add_of_le_of_nonneg b_le_n a_nonneg⟩
 
 /-- `|a - b| < n` if `0 ≤ a < n` and `0 ≤ b < n`. -/
@@ -523,8 +523,7 @@ theorem eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
 #align eq_of_abs_sub_nonpos eq_of_abs_sub_nonpos
 
 theorem abs_sub_pos_iff_ne : 0 < |a - b| ↔ a ≠ b :=
-  ⟨fun h eq => (lt_self_iff_false (0 : α)).mp (by
-    rwa [eq, sub_self, abs_zero] at h),
+  ⟨fun h eq => lt_irrefl (0 : α) (by rwa [eq, sub_self, abs_zero] at h),
   fun h => lt_iff_not_le.mpr (mt eq_of_abs_sub_nonpos h)⟩
 
 @[simp]

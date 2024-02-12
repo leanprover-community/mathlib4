@@ -80,7 +80,7 @@ theorem natAbs_inj_of_nonpos_of_nonneg {a b : ℤ} (ha : a ≤ 0) (hb : 0 ≤ b)
 /-- A specialization of `abs_sub_le_of_nonneg_of_le` for working with the signed subtraction
   of natural numbers. -/
 theorem natAbs_coe_sub_coe_le_of_le {a b n : ℕ} (a_le_n : a ≤ n) (b_le_n : b ≤ n) :
-    natAbs (↑b - ↑a) ≤ n := by
+    natAbs (b - a : ℤ) ≤ n := by
   rw [← Nat.cast_le (α := ℤ), coe_natAbs, abs_sub_comm]
   exact abs_sub_le_of_nonneg_of_le (ofNat_nonneg a) ((Nat.cast_le (α := ℤ)).mpr a_le_n)
     (ofNat_nonneg b) ((Nat.cast_le (α := ℤ)).mpr b_le_n)
@@ -88,7 +88,7 @@ theorem natAbs_coe_sub_coe_le_of_le {a b n : ℕ} (a_le_n : a ≤ n) (b_le_n : b
 /-- A specialization of `abs_sub_lt_of_nonneg_of_lt` for working with the signed subtraction
   of natural numbers. -/
 theorem natAbs_coe_sub_coe_lt_of_lt {a b n : ℕ} (a_lt_n : a < n) (b_lt_n : b < n) :
-    natAbs (↑b - ↑a) < n := by
+    natAbs (b - a : ℤ) < n := by
   rw [← Nat.cast_lt (α := ℤ), coe_natAbs, abs_sub_comm]
   exact abs_sub_lt_of_nonneg_of_lt (ofNat_nonneg a) ((Nat.cast_lt (α := ℤ)).mpr a_lt_n)
     (Int.ofNat_nonneg b) ((Nat.cast_lt (α := ℤ)).mpr b_lt_n)
