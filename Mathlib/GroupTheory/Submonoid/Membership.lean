@@ -793,3 +793,9 @@ theorem ofAdd_image_multiples_eq_powers_ofAdd [AddMonoid A] {x : A} :
 #align of_add_image_multiples_eq_powers_of_add ofAdd_image_multiples_eq_powers_ofAdd
 
 end mul_add
+
+/-- The submonoid of primal elements in a cancellative commutative monoid with zero. -/
+def Submonoid.isPrimal (α) [CancelCommMonoidWithZero α] : Submonoid α where
+  carrier := {a | IsPrimal a}
+  mul_mem' := IsPrimal.mul
+  one_mem' := isUnit_one.isPrimal

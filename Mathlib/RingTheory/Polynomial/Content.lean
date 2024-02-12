@@ -494,7 +494,7 @@ noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMono
     iterate 3 rw [dvd_iff_content_dvd_content_and_primPart_dvd_primPart hs]
     rw [content_mul, rprim.content_eq_one, mul_one, content_C, normalize_lcm, lcm_dvd_iff,
       primPart_mul (mul_ne_zero hpq rprim.ne_zero), rprim.primPart_eq,
-      IsUnit.mul_left_dvd _ _ _ (isUnit_primPart_C (lcm p.content q.content)), ← hr s.primPart]
+      (isUnit_primPart_C (lcm p.content q.content)).mul_left_dvd, ← hr s.primPart]
     tauto
 #align polynomial.normalized_gcd_monoid Polynomial.normalizedGcdMonoid
 
