@@ -44,25 +44,19 @@ end Missing
 attribute [fun_prop]
   Continuous.zpow₀
   Continuous.smul
-  Continuous.const_smul
   Continuous.vadd
-  Continuous.const_vadd
   Continuous.div₀
   Continuous.inv₀
 
   ContinuousAt.zpow₀
   ContinuousAt.smul
-  ContinuousAt.const_smul
   ContinuousAt.vadd
-  ContinuousAt.const_vadd
   ContinuousAt.div₀
   ContinuousAt.inv₀
 
   ContinuousOn.zpow₀
   ContinuousOn.smul
-  ContinuousOn.const_smul
   ContinuousOn.vadd
-  ContinuousOn.const_vadd
   ContinuousOn.div₀
   ContinuousOn.inv₀
 
