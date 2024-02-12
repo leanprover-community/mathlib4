@@ -1651,5 +1651,3 @@ lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
 end Cardinal
 
 end OrdinalIndices
-
-open Cardinal
