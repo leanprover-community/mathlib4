@@ -5,8 +5,9 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Order.Basic
 
-#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"c0c52abb75074ed8b73a948341f50521fbf43b4c"
+#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
 
 /-!
 # Topological facts about upper/lower/order-connected sets
@@ -59,7 +60,40 @@ instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedComm
 #align ordered_comm_group.to_has_upper_lower_closure OrderedCommGroup.to_hasUpperLowerClosure
 #align ordered_add_comm_group.to_has_upper_lower_closure OrderedAddCommGroup.to_hasUpperLowerClosure
 
-variable [Preorder α] [HasUpperLowerClosure α] {s : Set α}
+variable [Preorder α]
+
+section OrderClosedTopology
+variable [OrderClosedTopology α] {s : Set α}
+
+@[simp] lemma upperBounds_closure (s : Set α) : upperBounds (closure s : Set α) = upperBounds s :=
+  ext fun a ↦ by simp_rw [mem_upperBounds_iff_subset_Iic, is_closed_Iic.closure_subset_iff]
+#align upper_bounds_closure upperBounds_closure
+
+@[simp] lemma lowerBounds_closure (s : Set α) : lowerBounds (closure s : Set α) = lowerBounds s :=
+  ext fun a ↦ by simp_rw [mem_lowerBounds_iff_subset_Ici, is_closed_Ici.closure_subset_iff]
+#align lower_bounds_closure lowerBounds_closure
+
+@[simp] lemma bddAbove_closure : BddAbove (closure s) ↔ BddAbove s := by
+  simp_rw [BddAbove, upperBounds_closure]
+#align bdd_above_closure bddAbove_closure
+
+@[simp] lemma bddBelow_closure : BddBelow (closure s) ↔ BddBelow s := by
+  simp_rw [BddBelow, lowerBounds_closure]
+#align bdd_below_closure bddBelow_closure
+
+alias ⟨BddAbove.of_closure, BddAbove.closure⟩ := bddAbove_closure
+#align bdd_above.of_closure BddAbove.of_closure
+#align bdd_above.closure BddAbove.closure
+
+alias ⟨BddBelow.of_closure, BddBelow.closure⟩ := bddBelow_closure
+#align bdd_below.of_closure BddBelow.of_closure
+#align bdd_below.closure BddBelow.closure
+
+attribute [protected] BddAbove.closure BddBelow.closure
+
+end OrderClosedTopology
+
+variable [HasUpperLowerClosure α] {s : Set α}
 
 protected theorem IsUpperSet.closure : IsUpperSet s → IsUpperSet (closure s) :=
   HasUpperLowerClosure.isUpperSet_closure _

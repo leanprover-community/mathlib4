@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Function.SimpleFuncDense
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
-#align_import measure_theory.function.strongly_measurable.basic from "leanprover-community/mathlib"@"ef95945cd48c932c9e034872bd25c3c220d9c946"
+#align_import measure_theory.function.strongly_measurable.basic from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -1904,6 +1904,11 @@ theorem _root_.aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGr
     simp only [Ne.def, ENNReal.coe_eq_zero] at h'x
     simpa only [NNReal.coe_eq_zero, Ne.def] using h'x
 #align ae_strongly_measurable_with_density_iff aestronglyMeasurable_withDensity_iff
+
+lemma of_absolutelyContinuous {α β : Type*} [MeasurableSpace α] [TopologicalSpace β]
+    {μ ν : Measure α} (h : ν ≪ μ) (g : α → β) (hμ : AEStronglyMeasurable g μ) :
+    AEStronglyMeasurable g ν := by obtain ⟨g₁, hg₁, hg₁'⟩ := hμ; exact ⟨g₁, hg₁, h.ae_eq hg₁'⟩
+#align measure_theory.ae_strongly_measurable_of_absolutely_continuous MeasureTheory.aEStronglyMeasurable_of_absolutelyContinuous
 
 end AEStronglyMeasurable
 
