@@ -9,6 +9,15 @@ class AA (X Y : Type*) where
   mul : X → X → X
   one_mul (x : X) : mul one x = x
 
+inductive LawvereWord : List Name → List Name → Type where
+  | of (opName : Name) (inputs : List Name) (output : Name) : LawvereWord inputs [output]
+  | id (sorts : List Name) : LawvereWord sorts sorts
+  | comp (A B C : List Name) : LawvereWord A B → LawvereWord B C → LawvereWord A C
+  | fst (A B : List Name) : LawvereWord (A ++ B) A
+  | snd (A B : List Name) : LawvereWord (A ++ B) B
+  | lift (T A B : List Name) : LawvereWord T A → LawvereWord T B → LawvereWord T (A ++ B)
+  | toNil (A : List Name) : LawvereWord A []
+
 def foobar (str : Name) : MetaM Unit := do
   let env ← getEnv
   let some constInfo := env.find? str | throwError s!"{str} not found in the environment."
@@ -61,6 +70,12 @@ def foobar (str : Name) : MetaM Unit := do
         let .fvar id := tp | continue
         let nm ← id.getUserName
         vars := vars.push nm
+        match body with
+        | .app (.app (.app (.const ``Eq _) S) _) _ =>
+          let .fvar id := S | throwError "EEE"
+          let output ← id.getUserName
+          IO.println s!"Output: {output}"
+        | _ => continue
       return vars
     IO.println axData
 
