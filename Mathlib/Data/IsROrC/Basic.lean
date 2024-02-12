@@ -57,6 +57,21 @@ This typeclass captures properties shared by ℝ and ℂ, with an API that close
 While the name of the class begins with `Is`,
 this typeclass carries data (all operations common to real and complex numbers),
 not just claims existence of these operations.
+
+This class has exactly two instances: one for `ℝ` and one for `ℂ`.
+In particular, there is no instance for `ULift K`.
+This is done to make it possible to use` [IsROrC K] [NormedSpace K E]`
+as an assumption of an instance.
+
+To avoid non-defeq instance diamonds, every data-carrying instance for `IsROrC` fields
+must agree with corresponding instances for `ℝ` and `ℂ`.
+In most cases, we ensure these definitional equalities by `extend`ing corresponding typeclasses
+and reusing their `ℝ` and `ℂ` instances in the instances for `IsROrC ℝ` and `IsROrC ℂ`.
+
+Some `Prop`-valued axioms of this typeclass (e.g., completeness) can be deduced from the others,
+but we do not minimize the axioms,
+because it is easier to prove extra axioms in 2 instances
+than to deduce them from other axioms.
 -/
 class IsROrC (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
