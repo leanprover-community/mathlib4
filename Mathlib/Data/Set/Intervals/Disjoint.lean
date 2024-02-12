@@ -269,7 +269,7 @@ theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, I
 theorem iInter_Iic_eq_iff : ⋂ i, Iic (f i) = ∅ ↔ ¬ BddBelow (range f) := by
   simp [not_bddBelow_iff, Set.eq_empty_iff_forall_not_mem]
 
-theorem iInter_Iio_eq_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
+theorem iInter_Iio_eq_empty_iff (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
   refine' eq_empty_of_subset_empty _
   rw [← iInter_Iic_eq_iff.mpr hf]
   gcongr
