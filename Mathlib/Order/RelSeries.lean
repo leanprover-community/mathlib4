@@ -115,7 +115,7 @@ def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSe
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other. -/
-protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
+protected def equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
   toFun x := ⟨_, x.toList_ne_nil, x.toList_chain'⟩
   invFun x := fromListChain' _ x.2.1 x.2.2
   left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
@@ -125,7 +125,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
     simp_all [toList]
 
 lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
-  fun _ _ h ↦ (RelSeries.Equiv).injective <| Subtype.ext h
+  fun _ _ h ↦ (RelSeries.equiv).injective <| Subtype.ext h
 
 -- TODO : build a similar bijection between `RelSeries α` and `Quiver.Path`
 
@@ -257,7 +257,7 @@ lemma toList_getElem_zero_eq_head (p : RelSeries r) : p.toList[0] = p.head :=
 @[simp]
 lemma toList_fromListChain' (l : List α) (l_ne_nil : l ≠ []) (hl : l.Chain' r) :
     (fromListChain' l l_ne_nil hl).toList = l :=
-  Subtype.ext_iff.mp <| RelSeries.Equiv.right_inv ⟨l, ⟨l_ne_nil, hl⟩⟩
+  Subtype.ext_iff.mp <| RelSeries.equiv.right_inv ⟨l, ⟨l_ne_nil, hl⟩⟩
 
 @[simp]
 lemma head_fromListChain' (l : List α) (l_ne_nil : l ≠ [])
