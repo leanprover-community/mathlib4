@@ -88,34 +88,20 @@ lemma square_zero : square 0 = {(0, 0)} := rfl
 theorem square_zero_card : Finset.card (square 0) = 1 := by
   rw [square_zero, card_singleton]
 
-lemma Complex_abs_eq_of_mem_square (n : ℕ) (x : ℤ × ℤ) (h : x ∈ square n) :
-    Complex.abs x.1 = n ∨ Complex.abs x.2 = n := by
-  simp_rw [eq_comm (b := (n : ℝ)), ← int_cast_abs, square_mem] at *
-  norm_cast
-  subst n
-  simp only [Nat.cast_max, Int.coe_natAbs, max_eq_left_iff, max_eq_right_iff] at *
-  exact Int.le_total |x.2| |x.1|
-
-lemma Complex_abs_square_left_ne (n : ℕ) (x : ℤ × ℤ) (h : x ∈ square n)
-    (hx : Complex.abs (x.1) ≠ n) : Complex.abs (x.2) = n :=
-  Complex_abs_eq_of_mem_square n x h |>.resolve_left hx
-
 lemma fun_ne_zero_cases (x : Fin 2 → ℤ) : x ≠ 0 ↔ x 0 ≠ 0 ∨ x 1 ≠ 0 := by
   rw [Function.ne_iff]
   exact Fin.exists_fin_two
 
-lemma square_ne_zero (n : ℕ) (x : Fin 2 → ℤ) (hx : ⟨x 0, x 1 ⟩ ∈ square n) : x ≠ 0 ↔ n ≠ 0 := by
+lemma square_mem_ne_zero_iff_ne_zero (n : ℕ) (x : Fin 2 → ℤ) (hx : ⟨x 0, x 1⟩ ∈ square n) :
+    x ≠ 0 ↔ n ≠ 0 := by
   constructor
   intro h h0
-  rw [h0] at hx
-  simp only [Nat.cast_zero, square_zero, mem_singleton, Prod.mk.injEq] at hx
+  simp only [h0, Nat.cast_zero, square_zero, mem_singleton, Prod.mk.injEq] at hx
   rw [fun_ne_zero_cases, hx.1, hx.2] at h
   simp only [ne_eq, not_true_eq_false, or_self] at *
   intro hn h
-  have hx0 : x 0 = 0 := by
-    simp only [h, Pi.zero_apply]
-  have hx1 : x 1 = 0 := by
-    simp only [h, Pi.zero_apply]
-  rw [hx0, hx1] at hx
+  have hxx : x 0 = 0 ∧ x 1 = 0 := by
+    simp only [h, Pi.zero_apply, and_self]
+  rw [hxx.1, hxx.2] at hx
   simp only [square_mem, Int.natAbs_zero, max_self] at hx
   exact hn (id hx.symm)
