@@ -68,7 +68,7 @@ namespace NNReal
 scoped notation "ℝ≥0" => NNReal
 
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
-instance : DenselyOrdered ℝ≥0 := Nonneg.densely_ordered
+instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
 instance : Archimedean ℝ≥0 := Nonneg.archimedean
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
