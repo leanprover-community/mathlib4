@@ -32,6 +32,19 @@ example {a : ℤ} (ha : 0 ≤ a) : 0 ≤ a := by positivity
 example {a : ℤ} (ha : a ≠ 0) : a ≠ 0 := by positivity
 example {a : ℤ} (ha : a = 0) : 0 ≤ a := by positivity
 
+section
+
+variable [Zero α] [PartialOrder α] {a : α}
+
+example (ha : 0 < a) : 0 < a := by positivity
+example (ha : 0 < a) : 0 ≤ a := by positivity
+example (ha : 0 < a) : a ≠ 0 := by positivity
+example (ha : 0 ≤ a) : 0 ≤ a := by positivity
+example (ha : a ≠ 0) : a ≠ 0 := by positivity
+example (ha : a = 0) : 0 ≤ a := by positivity
+
+end
+
 /- ### Reversing hypotheses -/
 
 example {a : ℤ} (ha : a > 0) : 0 < a := by positivity

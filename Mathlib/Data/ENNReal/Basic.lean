@@ -3,11 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Real.NNReal
+import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Data.Real.NNReal
 import Mathlib.Data.Set.Intervals.WithBotTop
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -443,7 +442,7 @@ theorem toNNReal_eq_toNNReal_iff (x y : ℝ≥0∞) :
 
 theorem toReal_eq_toReal_iff (x y : ℝ≥0∞) :
     x.toReal = y.toReal ↔ x = y ∨ x = 0 ∧ y = ⊤ ∨ x = ⊤ ∧ y = 0 := by
-  simp only [ENNReal.toReal, NNReal.coe_eq, toNNReal_eq_toNNReal_iff]
+  simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff]
 #align ennreal.to_real_eq_to_real_iff ENNReal.toReal_eq_toReal_iff
 
 theorem toNNReal_eq_toNNReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ ⊤) :
@@ -453,7 +452,7 @@ theorem toNNReal_eq_toNNReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y �
 
 theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ ⊤) :
     x.toReal = y.toReal ↔ x = y := by
-  simp only [ENNReal.toReal, NNReal.coe_eq, toNNReal_eq_toNNReal_iff' hx hy]
+  simp only [ENNReal.toReal, NNReal.coe_inj, toNNReal_eq_toNNReal_iff' hx hy]
 #align ennreal.to_real_eq_to_real_iff' ENNReal.toReal_eq_toReal_iff'
 
 @[simp]
