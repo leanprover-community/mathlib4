@@ -257,10 +257,10 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) 
 
 -- TODO: develop API for `optionEquivLeft` and get rid of the `[Fintype σ]` assumption
 lemma coeff_isHomogeneous_of_optionEquivLeft_symm
-    [Fintype σ] {p : Polynomial (MvPolynomial σ R)}
+    [hσ : Finite σ] {p : Polynomial (MvPolynomial σ R)}
     (hp : ((optionEquivLeft R σ).symm p).IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
     (p.coeff i).IsHomogeneous j := by
-  let e := Fintype.equivFin σ
+  obtain ⟨k, ⟨e⟩⟩ := Finite.exists_equiv_fin σ
   let e' := e.optionCongr.trans (_root_.finSuccEquiv _).symm
   let F := renameEquiv R e
   let F' := renameEquiv R e'

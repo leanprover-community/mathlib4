@@ -257,9 +257,7 @@ theorem C_inj {σ : Type*} (R : Type*) [CommSemiring R] (r s : R) :
 
 instance nontrivial_of_nontrivial (σ : Type*) (R : Type*) [CommSemiring R] [Nontrivial R] :
     Nontrivial (MvPolynomial σ R) :=
-  nontrivial_of_ne 0 1 <| by
-    rw [← C_0, ← C_1]
-    exact (C_injective σ R).ne zero_ne_one
+  inferInstanceAs (Nontrivial <| AddMonoidAlgebra R (σ →₀ ℕ))
 
 instance infinite_of_infinite (σ : Type*) (R : Type*) [CommSemiring R] [Infinite R] :
     Infinite (MvPolynomial σ R) :=
