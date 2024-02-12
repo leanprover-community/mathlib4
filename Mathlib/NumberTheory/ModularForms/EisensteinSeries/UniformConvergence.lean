@@ -31,23 +31,21 @@ namespace EisensteinSeries
 section bounding_functions
 
 /-- Auxilary function used for bounding Eisentein series-/
-def lowerBound1 (z : ℍ) : ℝ :=
-  ((z.1.2 ^ (2 : ℕ)) / (z.1.1 ^ (2 : ℕ) + z.1.2 ^ (2 : ℕ)))
+def lowerBound1 (z : ℍ) : ℝ := ((z.im ^ (2 : ℕ)) / (z.re ^ (2 : ℕ) + z.im ^ (2 : ℕ)))
 
-lemma lowerBound1' (z : ℍ) : lowerBound1 z = 1/((z.1.1 / z.1.2) ^ (2 : ℕ) + 1) := by
-  have := z.2
-  field_simp [lowerBound1]
+lemma lowerBound1' (z : ℍ) : lowerBound1 z = 1/((z.re / z.im) ^ (2 : ℕ) + 1) := by
+  field_simp [lowerBound1, im_pos z]
 
 theorem lowerBound1_pos (z : ℍ) : 0 < lowerBound1 z := by
-  have H2 : 0 < (z.1.1 ^ (2 : ℕ) + z.1.2 ^ (2 : ℕ)) := by
+  have H2 : 0 < (z.re ^ (2 : ℕ) + z.im ^ (2 : ℕ)) := by
     apply_rules [pow_pos, add_pos_of_nonneg_of_pos, pow_two_nonneg, z.2]
   exact div_pos (pow_pos z.im_pos 2) H2
 
 /-- This function is used to give an upper bound on Eisenstein series-/
-def r (z : ℍ) : ℝ := min (z.1.2) (Real.sqrt (lowerBound1 z))
+def r (z : ℍ) : ℝ := min (z.im) (Real.sqrt (lowerBound1 z))
 
 theorem r_pos (z : ℍ) : 0 < r z := by
-  simp only [r, lt_min_iff, z.property, Real.sqrt_pos, lowerBound1_pos, and_self]
+  simp only [r, lt_min_iff, im_pos, Real.sqrt_pos, lowerBound1_pos, and_self]
 
 lemma r_mul_pos_pos (k : ℕ) (z : ℍ) (n : ℝ) (hn : 0 < n) :
     0 < (Complex.abs ((r z : ℂ) ^ (k : ℤ) * (n : ℂ)^ (k : ℤ))) := by
@@ -58,11 +56,11 @@ lemma r_mul_pos_pos (k : ℕ) (z : ℍ) (n : ℝ) (hn : 0 < n) :
   linarith
 
 theorem auxlb (z : ℍ) (δ ε : ℝ) (hε : 1 ≤ ε^2) :
-    (z.1.2 ^ 2 ) / (z.1.1 ^ 2 + z.1.2 ^ 2) ≤ (δ * z.1.1 + ε) ^ 2 + (δ * z.1.2) ^ 2 := by
-  have H1 : (δ * z.1.1 + ε) ^ 2 + (δ * z.1.2) ^ 2 =
-        δ ^ 2 * (z.1.1 ^ 2 + z.1.2 ^ 2) + ε * 2 * δ * z.1.1 + ε^2 := by ring
-  have H4 : (δ ^ 2 * (z.1.1 ^ 2 + z.1.2 ^ 2) + ε * 2 * δ * z.1.1 + ε^2) * (z.1.1 ^ 2 + z.1.2 ^ 2)
-    - (z.1.2 ^ 2) = (δ * (z.1.1 ^ 2 + z.1.2 ^ 2)+ ε * z.1.1)^2 + (ε^2 - 1)* (z.1.2)^2 := by ring
+    (z.im ^ 2 ) / (z.re ^ 2 + z.im ^ 2) ≤ (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 := by
+  have H1 : (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 =
+        δ ^ 2 * (z.re ^ 2 + z.im ^ 2) + ε * 2 * δ * z.re + ε^2 := by ring
+  have H4 : (δ ^ 2 * (z.re ^ 2 + z.im ^ 2) + ε * 2 * δ * z.re + ε^2) * (z.re ^ 2 + z.im ^ 2)
+    - (z.im ^ 2) = (δ * (z.re ^ 2 + z.im ^ 2)+ ε * z.re)^2 + (ε^2 - 1)* (z.im)^2 := by ring
   rw [H1, div_le_iff, ← sub_nonneg, H4]
   · apply add_nonneg (pow_two_nonneg _) ?_
     apply mul_nonneg
@@ -117,11 +115,9 @@ lemma ne_zero_if_max (x : Fin 2 → ℤ) (hx : x ≠ 0)
   intro h0
   rw [h0] at h
   simp only [ne_eq, Int.natAbs_zero, ge_iff_le, zero_le, max_eq_right, Int.natAbs_eq_zero] at *
-  have : x = ![x 0, x 1] := by
-    exact List.ofFn_inj.mp rfl
+  have : x = ![x 0, x 1] := List.ofFn_inj.mp rfl
   rw [h0, h] at this
-  rw [this] at hx
-  simp only [Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_self, not_true_eq_false] at hx
+  simp only [this, Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_self, not_true_eq_false] at hx
 
 lemma ne_zero_if_max' (x : Fin 2 → ℤ) (hx : x ≠ 0)
     (h : (max (x 0).natAbs (x 1).natAbs) = (x 1).natAbs) : (x 1) ≠ 0 := by
@@ -212,14 +208,12 @@ theorem eis_is_bounded_on_square (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → �
       exact hn
     simp only [square_mem] at hx
     rw [inv_le_inv]
-    have := bound z x hx2 k
     simp only [← hx, map_mul, map_pow, abs_ofReal, abs_natCast, Nat.cast_max, ge_iff_le]
-    convert this
+    convert (bound z x hx2 k)
     apply abs_eq_self.mpr ((r_pos z).le )
     simp only [Nat.cast_max]
     simp only [map_pow]
-    have := Complex.abs.pos (pow_ne_zero k (linear_ne_zero ![x 0, x 1] z ?_))
-    apply this
+    apply Complex.abs.pos (pow_ne_zero k (linear_ne_zero ![x 0, x 1] z ?_))
     simp only [ne_eq, Matrix.cons_eq_zero_iff, Int.cast_eq_zero, Matrix.zero_empty, and_true,
       not_and] at *
     intro hg h1
@@ -255,19 +249,6 @@ lemma r_lower_bound_on_slice (A B : ℝ) (h : 0 < B) (z : upperHalfPlaneSlice A 
 end bounding_functions
 
 section summability
-
-variable {α : Type*} {β : Type*}
-
-/--Equivalence between the sigma of a fammily of finsets of `β × β` and `β × β`-/
-def sigmaEquiv (ι : α → Finset (β × β)) (HI : ∀ y : β × β , ∃! i : α, y ∈ ι i) :
-    (Σ s : α, ((ι s) : Set (β × β))) ≃ (β × β) where
-  toFun x := x.2
-  invFun x := ⟨(HI x).choose, x, (HI x).choose_spec.1⟩
-  left_inv x := by
-      ext
-      exact ((HI x.2).choose_spec.2 x.1 x.2.2).symm
-      repeat {rfl}
-  right_inv x := by rfl
 
 lemma summable_lemma (f : (Fin 2 → ℤ) → ℝ) (h : ∀ y : (Fin 2 → ℤ), 0 ≤ f y)
     (ι : ℕ → Finset (ℤ × ℤ)) (HI : ∀ y : ℤ × ℤ, ∃! i : ℕ, y ∈ ι i) :
