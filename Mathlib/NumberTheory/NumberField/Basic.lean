@@ -115,7 +115,8 @@ theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (x : K) :=
   x.2
 #align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe
 
-theorem map_mem {F L : Type*} [Field L] [CharZero K] [CharZero L] [AlgHomClass F ℚ K L] (f : F)
+theorem map_mem {F L : Type*} [Field L] [CharZero K] [CharZero L]
+    [FunLike F K L] [AlgHomClass F ℚ K L] (f : F)
     (x : 𝓞 K) : f x ∈ 𝓞 L :=
   (mem_ringOfIntegers _ _).2 <| map_isIntegral_int f <| RingOfIntegers.isIntegral_coe x
 #align number_field.ring_of_integers.map_mem NumberField.RingOfIntegers.map_mem
@@ -168,6 +169,11 @@ theorem integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     integralBasis K i = algebraMap (𝓞 K) K (RingOfIntegers.basis K i) :=
   Basis.localizationLocalization_apply ℚ (nonZeroDivisors ℤ) K (RingOfIntegers.basis K) i
 #align number_field.integral_basis_apply NumberField.integralBasis_apply
+
+@[simp]
+theorem integralBasis_repr_apply (x : (𝓞 K)) (i : Free.ChooseBasisIndex ℤ (𝓞 K)):
+    (integralBasis K).repr x i = (algebraMap ℤ ℚ) ((RingOfIntegers.basis K).repr x i) :=
+  Basis.localizationLocalization_repr_algebraMap ℚ (nonZeroDivisors ℤ) K _ x i
 
 theorem mem_span_integralBasis {x : K} :
     x ∈ Submodule.span ℤ (Set.range (integralBasis K)) ↔ x ∈ 𝓞 K := by

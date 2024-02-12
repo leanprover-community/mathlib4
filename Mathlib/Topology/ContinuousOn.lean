@@ -112,7 +112,7 @@ theorem diff_mem_nhdsWithin_diff {x : α} {s t : Set α} (hs : s ∈ 𝓝[t] x) 
 theorem nhds_of_nhdsWithin_of_nhds {s t : Set α} {a : α} (h1 : s ∈ 𝓝 a) (h2 : t ∈ 𝓝[s] a) :
     t ∈ 𝓝 a := by
   rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.mp h2 with ⟨_, Hw, hw⟩
-  exact (nhds a).sets_of_superset ((nhds a).inter_sets Hw h1) hw
+  exact (𝓝 a).sets_of_superset ((𝓝 a).inter_sets Hw h1) hw
 #align nhds_of_nhds_within_of_nhds nhds_of_nhdsWithin_of_nhds
 
 theorem mem_nhdsWithin_iff_eventually {s t : Set α} {x : α} :
@@ -520,12 +520,6 @@ theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : 
 
 variable [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
-/-- A function between topological spaces is continuous at a point `x₀` within a subset `s`
-if `f x` tends to `f x₀` when `x` tends to `x₀` while staying within `s`. -/
-def ContinuousWithinAt (f : α → β) (s : Set α) (x : α) : Prop :=
-  Tendsto f (𝓝[s] x) (𝓝 (f x))
-#align continuous_within_at ContinuousWithinAt
-
 /-- If a function is continuous within `s` at `x`, then it tends to `f x` within `s` by definition.
 We register this fact for use with the dot notation, especially to use `Filter.Tendsto.comp` as
 `ContinuousWithinAt.comp` will have a different meaning. -/
@@ -533,12 +527,6 @@ theorem ContinuousWithinAt.tendsto {f : α → β} {s : Set α} {x : α} (h : Co
     Tendsto f (𝓝[s] x) (𝓝 (f x)) :=
   h
 #align continuous_within_at.tendsto ContinuousWithinAt.tendsto
-
-/-- A function between topological spaces is continuous on a subset `s`
-when it's continuous at every point of `s` within `s`. -/
-def ContinuousOn (f : α → β) (s : Set α) : Prop :=
-  ∀ x ∈ s, ContinuousWithinAt f s x
-#align continuous_on ContinuousOn
 
 theorem ContinuousOn.continuousWithinAt {f : α → β} {s : Set α} {x : α} (hf : ContinuousOn f s)
     (hx : x ∈ s) : ContinuousWithinAt f s x :=

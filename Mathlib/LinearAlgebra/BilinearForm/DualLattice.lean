@@ -79,10 +79,11 @@ lemma dualSubmoduleToDual_injective (hB : B.Nondegenerate) [NoZeroSMulDivisors R
   intro z hz
   simpa using congr_arg (algebraMap R S) (LinearMap.congr_fun e ⟨z, hz⟩)
 
-lemma dualSubmodule_span_of_basis {ι} [Fintype ι] [DecidableEq ι]
+lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.dualSubmodule (Submodule.span R (Set.range b)) =
       Submodule.span R (Set.range <| B.dualBasis hB b) := by
+  cases nonempty_fintype ι
   apply le_antisymm
   · intro x hx
     rw [← (B.dualBasis hB b).sum_repr x]
@@ -102,7 +103,7 @@ lemma dualSubmodule_span_of_basis {ι} [Fintype ι] [DecidableEq ι]
       mul_ite, mul_one, mul_zero, ← (algebraMap R S).map_zero, ← apply_ite]
     exact ⟨_, rfl⟩
 
-lemma dualSubmodule_dualSubmodule_flip_of_basis {ι} [Fintype ι]
+lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.dualSubmodule (B.flip.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
@@ -111,7 +112,7 @@ lemma dualSubmodule_dualSubmodule_flip_of_basis {ι} [Fintype ι]
   rw [dualSubmodule_span_of_basis _ hB.flip, dualSubmodule_span_of_basis B hB,
     dualBasis_dualBasis_flip B hB]
 
-lemma dualSubmodule_flip_dualSubmodule_of_basis {ι} [Fintype ι]
+lemma dualSubmodule_flip_dualSubmodule_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.flip.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
@@ -121,7 +122,7 @@ lemma dualSubmodule_flip_dualSubmodule_of_basis {ι} [Fintype ι]
     dualBasis_flip_dualBasis B hB]
 
 lemma dualSubmodule_dualSubmodule_of_basis
-    {ι} [Fintype ι] (hB : B.Nondegenerate) (hB' : B.IsSymm) (b : Basis ι S M) :
+    {ι} [Finite ι] (hB : B.Nondegenerate) (hB' : B.IsSymm) (b : Basis ι S M) :
     B.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
