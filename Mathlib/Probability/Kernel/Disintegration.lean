@@ -60,23 +60,24 @@ section Real
 
 /-- Conditional measure on the second space of the product given the value on the first, as a
 kernel. Use the more general `condKernel`. -/
-noncomputable def condKernelReal (ρ : Measure (α × ℝ)) : kernel α ℝ where
-  val a := (condCDF ρ a).measure
-  property := measurable_measure_condCDF ρ
+noncomputable def condKernelReal (ρ : Measure (α × ℝ)) : kernel α ℝ :=
+  kernel.comap (cdfKernel (fun (p : Unit × α) r ↦ (preCDF ρ r p.2).toReal)
+    (fun _ ↦ measurable_preCDF.ennreal_toReal.comp measurable_snd)) (fun a ↦ ((), a))
+    measurable_prod_mk_left
 #align probability_theory.cond_kernel_real ProbabilityTheory.condKernelReal
 
-instance (ρ : Measure (α × ℝ)) : IsMarkovKernel (condKernelReal ρ) :=
-  ⟨fun a => by rw [condKernelReal]; exact instIsProbabilityMeasure ρ a⟩
+instance (ρ : Measure (α × ℝ)) : IsMarkovKernel (condKernelReal ρ) := by
+  rw [condKernelReal]; infer_instance
 
 theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
-    condKernelReal ρ a (Iic x) = ENNReal.ofReal (condCDF ρ a x) :=
-  measure_condCDF_Iic ρ a x
+    condKernelReal ρ a (Iic x) = ENNReal.ofReal (condCDF ρ a x) := by
+  rw [condKernelReal, kernel.comap_apply, cdfKernel_Iic, condCDF_eq_todo3_unit_prod]
 #align probability_theory.cond_kernel_real_Iic ProbabilityTheory.condKernelReal_Iic
 
 theorem set_lintegral_condKernelReal_Iic (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ)
     {s : Set α} (hs : MeasurableSet s) :
-    ∫⁻ a in s, condKernelReal ρ a (Iic x) ∂ρ.fst = ρ (s ×ˢ Iic x) := by
-  simp_rw [condKernelReal_Iic]; exact set_lintegral_condCDF ρ x hs
+    ∫⁻ a in s, condKernelReal ρ a (Iic x) ∂ρ.fst = ρ (s ×ˢ Iic x) :=
+  set_lintegral_cdfKernel_Iic (isRatKernelCDF_preCDF ρ) () x hs
 #align probability_theory.set_lintegral_cond_kernel_real_Iic ProbabilityTheory.set_lintegral_condKernelReal_Iic
 
 theorem set_lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) {s : Set α} (hs : MeasurableSet s) :
@@ -94,111 +95,14 @@ theorem lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) :
 variable (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
 
 theorem set_lintegral_condKernelReal_prod {s : Set α} (hs : MeasurableSet s) {t : Set ℝ}
-    (ht : MeasurableSet t) : ∫⁻ a in s, condKernelReal ρ a t ∂ρ.fst = ρ (s ×ˢ t) := by
-  -- `set_lintegral_condKernelReal_Iic` gives the result for `t = Iic x`. These sets form a
-  -- π-system that generates the Borel σ-algebra, hence we can get the same equality for any
-  -- measurable set `t`.
-  apply MeasurableSpace.induction_on_inter (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic _ _ _ _ ht
-  · simp only [measure_empty, lintegral_const, zero_mul, prod_empty]
-  · rintro t ⟨q, rfl⟩
-    exact set_lintegral_condKernelReal_Iic ρ q hs
-  · intro t ht ht_lintegral
-    calc
-      ∫⁻ a in s, condKernelReal ρ a tᶜ ∂ρ.fst =
-          ∫⁻ a in s, condKernelReal ρ a univ - condKernelReal ρ a t ∂ρ.fst := by
-        congr with a; rw [measure_compl ht (measure_ne_top (condKernelReal ρ a) _)]
-      _ = ∫⁻ a in s, condKernelReal ρ a univ ∂ρ.fst - ∫⁻ a in s, condKernelReal ρ a t ∂ρ.fst := by
-        rw [lintegral_sub (kernel.measurable_coe (condKernelReal ρ) ht)]
-        · rw [ht_lintegral]
-          exact measure_ne_top ρ _
-        · exact eventually_of_forall fun a => measure_mono (subset_univ _)
-      _ = ρ (s ×ˢ univ) - ρ (s ×ˢ t) := by
-        rw [set_lintegral_condKernelReal_univ ρ hs, ht_lintegral]
-      _ = ρ (s ×ˢ tᶜ) := by
-        rw [← measure_diff _ (hs.prod ht) (measure_ne_top ρ _)]
-        · rw [prod_diff_prod, compl_eq_univ_diff]
-          simp only [diff_self, empty_prod, union_empty]
-        · rw [prod_subset_prod_iff]
-          exact Or.inl ⟨subset_rfl, subset_univ t⟩
-  · intro f hf_disj hf_meas hf_eq
-    simp_rw [measure_iUnion hf_disj hf_meas]
-    rw [lintegral_tsum fun i => (kernel.measurable_coe _ (hf_meas i)).aemeasurable.restrict,
-      prod_iUnion, measure_iUnion]
-    · simp_rw [hf_eq]
-    · intro i j hij
-      rw [Function.onFun, Set.disjoint_prod]
-      exact Or.inr (hf_disj hij)
-    · exact fun i => MeasurableSet.prod hs (hf_meas i)
+    (ht : MeasurableSet t) :
+    ∫⁻ a in s, condKernelReal ρ a t ∂ρ.fst = ρ (s ×ˢ t) :=
+  set_lintegral_cdfKernel_prod (isRatKernelCDF_preCDF ρ) () hs ht
 #align probability_theory.set_lintegral_cond_kernel_real_prod ProbabilityTheory.set_lintegral_condKernelReal_prod
 
 theorem lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s) :
-    ∫⁻ a, condKernelReal ρ a {x | (a, x) ∈ s} ∂ρ.fst = ρ s := by
-  -- `set_lintegral_condKernelReal_prod` gives the result for sets of the form `t₁ × t₂`. These
-  -- sets form a π-system that generates the product σ-algebra, hence we can get the same equality
-  -- for any measurable set `s`.
-  apply MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs
-  · simp only [mem_empty_iff_false, setOf_false, measure_empty, lintegral_const,
-      zero_mul]
-  · rintro _ ⟨t₁, ht₁, t₂, ht₂, rfl⟩
-    have h_prod_eq_snd : ∀ a ∈ t₁, {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = t₂ := by
-      intro a ha
-      simp only [ha, prod_mk_mem_set_prod_eq, true_and_iff, setOf_mem_eq]
-    rw [← lintegral_add_compl _ ht₁]
-    have h_eq1 : ∫⁻ a in t₁, condKernelReal ρ a {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} ∂ρ.fst =
-        ∫⁻ a in t₁, condKernelReal ρ a t₂ ∂ρ.fst := by
-      refine' set_lintegral_congr_fun ht₁ (eventually_of_forall fun a ha => _)
-      rw [h_prod_eq_snd a ha]
-    have h_eq2 : ∫⁻ a in t₁ᶜ, condKernelReal ρ a {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} ∂ρ.fst = 0 := by
-      suffices h_eq_zero : ∀ a ∈ t₁ᶜ, condKernelReal ρ a {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = 0
-      · rw [set_lintegral_congr_fun ht₁.compl (eventually_of_forall h_eq_zero)]
-        simp only [lintegral_const, zero_mul]
-      intro a hat₁
-      rw [mem_compl_iff] at hat₁
-      simp only [hat₁, prod_mk_mem_set_prod_eq, false_and_iff, setOf_false, measure_empty]
-    rw [h_eq1, h_eq2, add_zero]
-    exact set_lintegral_condKernelReal_prod ρ ht₁ ht₂
-  · intro t ht ht_eq
-    calc
-      ∫⁻ a, condKernelReal ρ a {x : ℝ | (a, x) ∈ tᶜ} ∂ρ.fst =
-          ∫⁻ a, condKernelReal ρ a {x : ℝ | (a, x) ∈ t}ᶜ ∂ρ.fst := rfl
-      _ = ∫⁻ a, condKernelReal ρ a univ - condKernelReal ρ a {x : ℝ | (a, x) ∈ t} ∂ρ.fst := by
-        congr with a : 1
-        exact measure_compl (measurable_prod_mk_left ht) (measure_ne_top (condKernelReal ρ a) _)
-      _ = ∫⁻ a, condKernelReal ρ a univ ∂ρ.fst -
-          ∫⁻ a, condKernelReal ρ a {x : ℝ | (a, x) ∈ t} ∂ρ.fst := by
-        have h_le : (fun a => condKernelReal ρ a {x : ℝ | (a, x) ∈ t}) ≤ᵐ[ρ.fst] fun a =>
-            condKernelReal ρ a univ := eventually_of_forall fun a => measure_mono (subset_univ _)
-        rw [lintegral_sub _ _ h_le]
-        · exact kernel.measurable_kernel_prod_mk_left ht
-        refine' ((lintegral_mono_ae h_le).trans_lt _).ne
-        rw [lintegral_condKernelReal_univ]
-        exact measure_lt_top ρ univ
-      _ = ρ univ - ρ t := by rw [ht_eq, lintegral_condKernelReal_univ]
-      _ = ρ tᶜ := (measure_compl ht (measure_ne_top _ _)).symm
-  · intro f hf_disj hf_meas hf_eq
-    have h_eq : ∀ a, {x | (a, x) ∈ ⋃ i, f i} = ⋃ i, {x | (a, x) ∈ f i} := by
-      intro a
-      ext1 x
-      simp only [mem_iUnion, mem_setOf_eq]
-    simp_rw [h_eq]
-    have h_disj : ∀ a, Pairwise (Disjoint on fun i => {x | (a, x) ∈ f i}) := by
-      intro a i j hij
-      have h_disj := hf_disj hij
-      rw [Function.onFun, disjoint_iff_inter_eq_empty] at h_disj ⊢
-      ext1 x
-      simp only [mem_inter_iff, mem_setOf_eq, mem_empty_iff_false, iff_false_iff]
-      intro h_mem_both
-      suffices (a, x) ∈ ∅ by rwa [mem_empty_iff_false] at this
-      rwa [← h_disj, mem_inter_iff]
-    calc
-      ∫⁻ a, condKernelReal ρ a (⋃ i, {x | (a, x) ∈ f i}) ∂ρ.fst =
-          ∫⁻ a, ∑' i, condKernelReal ρ a {x | (a, x) ∈ f i} ∂ρ.fst := by
-        congr with a : 1
-        rw [measure_iUnion (h_disj a) fun i => measurable_prod_mk_left (hf_meas i)]
-      _ = ∑' i, ∫⁻ a, condKernelReal ρ a {x | (a, x) ∈ f i} ∂ρ.fst :=
-        (lintegral_tsum fun i => (kernel.measurable_kernel_prod_mk_left (hf_meas i)).aemeasurable)
-      _ = ∑' i, ρ (f i) := by simp_rw [hf_eq]
-      _ = ρ (iUnion f) := (measure_iUnion hf_disj hf_meas).symm
+    ∫⁻ a, condKernelReal ρ a {x | (a, x) ∈ s} ∂ρ.fst = ρ s :=
+  lintegral_cdfKernel_mem (isRatKernelCDF_preCDF ρ) () hs
 #align probability_theory.lintegral_cond_kernel_real_mem ProbabilityTheory.lintegral_condKernelReal_mem
 
 theorem kernel.const_eq_compProd_real (γ : Type*) [MeasurableSpace γ] (ρ : Measure (α × ℝ))
@@ -222,18 +126,9 @@ theorem lintegral_condKernelReal {f : α × ℝ → ℝ≥0∞} (hf : Measurable
 
 theorem ae_condKernelReal_eq_one {s : Set ℝ} (hs : MeasurableSet s) (hρ : ρ {x | x.snd ∈ sᶜ} = 0) :
     ∀ᵐ a ∂ρ.fst, condKernelReal ρ a s = 1 := by
-  have h : ρ {x | x.snd ∈ sᶜ} = (ρ.fst ⊗ₘ condKernelReal ρ) {x | x.snd ∈ sᶜ} := by
-    rw [← measure_eq_compProd_real]
-  rw [hρ, Measure.compProd_apply] at h
-  swap; · exact measurable_snd hs.compl
-  rw [eq_comm, lintegral_eq_zero_iff] at h
-  swap
-  · simp only [mem_compl_iff, mem_setOf_eq]
-    exact kernel.measurable_coe _ hs.compl
-  simp only [mem_compl_iff, mem_setOf_eq, kernel.prodMkLeft_apply'] at h
-  filter_upwards [h] with a ha
-  change condKernelReal ρ a sᶜ = 0 at ha
-  rwa [prob_compl_eq_zero_iff hs] at ha
+  have h := ae_cdfKernel_eq_one (isRatKernelCDF_preCDF ρ) () hs
+  simp only [kernel.const_apply] at h
+  exact h hρ
 #align probability_theory.ae_cond_kernel_real_eq_one ProbabilityTheory.ae_condKernelReal_eq_one
 
 end Real

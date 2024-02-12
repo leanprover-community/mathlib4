@@ -41,9 +41,11 @@ lemma measurableSet_tendsto_fun {β γ ι : Type*} [MeasurableSpace β]
 
 namespace ProbabilityTheory
 
-variable {α β ι : Type*} [MeasurableSpace α] {f : α → ℚ → ℝ}
+variable {α β ι : Type*} [MeasurableSpace α]
 
 section IsCDFLike
+
+variable {f : α → ℚ → ℝ}
 
 structure IsRatStieltjesPoint (f : α → ℚ → ℝ) (a : α) : Prop where
   mono : Monotone (f a)
@@ -53,23 +55,30 @@ structure IsRatStieltjesPoint (f : α → ℚ → ℝ) (a : α) : Prop where
   tendsto_atBot_zero : Tendsto (f a) atBot (𝓝 0)
   iInf_rat_gt_eq : ∀ t : ℚ, ⨅ r : Ioi t, f a r = f a t
 
+lemma isRatStieltjesPoint_unit_prod_iff (f : α → ℚ → ℝ) (a : α) :
+    IsRatStieltjesPoint (fun p : Unit × α ↦ f p.2) ((), a)
+      ↔ IsRatStieltjesPoint f a := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact ⟨h.mono, h.nonneg, h.le_one, h.tendsto_atTop_one, h.tendsto_atBot_zero,
+      h.iInf_rat_gt_eq⟩
+  · exact ⟨h.mono, h.nonneg, h.le_one, h.tendsto_atTop_one, h.tendsto_atBot_zero,
+      h.iInf_rat_gt_eq⟩
+
 lemma measurableSet_isRatStieltjesPoint (hf : ∀ q, Measurable (fun a ↦ f a q)) :
     MeasurableSet {a | IsRatStieltjesPoint f a} := by
   have h1 : MeasurableSet {a | Monotone (f a)} := by
-    change MeasurableSet {a | ∀ q r (hqr : q ≤ r), f a q ≤ f a r}
+    change MeasurableSet {a | ∀ q r (_ : q ≤ r), f a q ≤ f a r}
     simp_rw [Set.setOf_forall]
     refine MeasurableSet.iInter (fun q ↦ ?_)
     refine MeasurableSet.iInter (fun r ↦ ?_)
-    refine MeasurableSet.iInter (fun hqr ↦ ?_)
+    refine MeasurableSet.iInter (fun _ ↦ ?_)
     exact measurableSet_le (hf q) (hf r)
   have h2 : MeasurableSet {a | ∀ q, 0 ≤ f a q} := by
     simp_rw [Set.setOf_forall]
-    refine MeasurableSet.iInter (fun q ↦ ?_)
-    exact measurableSet_le measurable_const (hf q)
+    exact MeasurableSet.iInter (fun q ↦ measurableSet_le measurable_const (hf q))
   have h3 : MeasurableSet {a | ∀ q, f a q ≤ 1} := by
     simp_rw [Set.setOf_forall]
-    refine MeasurableSet.iInter (fun q ↦ ?_)
-    exact measurableSet_le (hf q) measurable_const
+    exact MeasurableSet.iInter (fun q ↦ measurableSet_le (hf q) measurable_const)
   have h4 : MeasurableSet {a | Tendsto (f a) atTop (𝓝 1)} :=
     measurableSet_tendsto_nhds (fun q ↦ hf q) 1
   have h5 : MeasurableSet {a | Tendsto (f a) atBot (𝓝 0)} :=
@@ -78,8 +87,18 @@ lemma measurableSet_isRatStieltjesPoint (hf : ∀ q, Measurable (fun a ↦ f a q
     rw [Set.setOf_forall]
     refine MeasurableSet.iInter (fun q ↦ ?_)
     exact measurableSet_eq_fun (measurable_iInf fun _ ↦ hf _) (hf _)
-  have h := ((((h1.inter h2).inter h3).inter h4).inter h5).inter h6
-  sorry
+  suffices {a | IsRatStieltjesPoint f a}
+      = ({a | Monotone (f a)} ∩ {a | ∀ (q : ℚ), 0 ≤ f a q} ∩ {a | ∀ (q : ℚ), f a q ≤ 1}
+        ∩ {a | Tendsto (f a) atTop (𝓝 1)} ∩ {a | Tendsto (f a) atBot (𝓝 0)} ∩
+        {a | ∀ t : ℚ, ⨅ r : Ioi t, f a r = f a t}) by
+    rw [this]
+    exact ((((h1.inter h2).inter h3).inter h4).inter h5).inter h6
+  ext a
+  simp only [mem_setOf_eq, mem_inter_iff]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact ⟨⟨⟨⟨⟨h.mono, h.nonneg⟩, h.le_one⟩, h.tendsto_atTop_one⟩, h.tendsto_atBot_zero⟩,
+      h.iInf_rat_gt_eq⟩
+  · exact ⟨h.1.1.1.1.1, h.1.1.1.1.2, h.1.1.1.2, h.1.1.2, h.1.2, h.2⟩
 
 structure IsCDFLike (f : α → ℚ → ℝ) : Prop where
   mono : ∀ a, Monotone (f a)
@@ -89,17 +108,6 @@ structure IsCDFLike (f : α → ℚ → ℝ) : Prop where
   tendsto_atBot_zero : ∀ a, Tendsto (f a) atBot (𝓝 0)
   iInf_rat_gt_eq : ∀ a, ∀ t : ℚ, ⨅ r : Ioi t, f a r = f a t
   measurable : ∀ q, Measurable (fun a ↦ f a q)
-
-lemma IsCDFLike.ite {s : Set α} (hs : MeasurableSet s) [DecidablePred (fun a ↦ a ∈ s)]
-    {f g : α → ℚ → ℝ} (hf : IsCDFLike f) (hg : IsCDFLike g) :
-    IsCDFLike (fun a q ↦ if a ∈ s then f a q else g a q) where
-  mono a := by split_ifs; exacts [hf.mono a, hg.mono a]
-  nonneg a := by split_ifs; exacts [hf.nonneg a, hg.nonneg a]
-  le_one a := by split_ifs; exacts [hf.le_one a, hg.le_one a]
-  tendsto_atTop_one a := by split_ifs; exacts [hf.tendsto_atTop_one a, hg.tendsto_atTop_one a]
-  tendsto_atBot_zero a := by split_ifs; exacts [hf.tendsto_atBot_zero a, hg.tendsto_atBot_zero a]
-  iInf_rat_gt_eq a := by split_ifs; exacts [hf.iInf_rat_gt_eq a, hg.iInf_rat_gt_eq a]
-  measurable q := Measurable.ite hs (hf.measurable q) (hg.measurable q)
 
 end IsCDFLike
 
@@ -180,6 +188,8 @@ end DefaultRatCDF
 
 section ToCDFLike
 
+variable {f : α → ℚ → ℝ}
+
 open Classical in
 noncomputable
 def toCDFLike (f : α → ℚ → ℝ) : α → ℚ → ℝ := fun a q ↦
@@ -206,6 +216,11 @@ lemma isCDFLike_toCDFLike (hf : ∀ q, Measurable fun a ↦ f a q) :
   measurable q :=
     Measurable.ite (measurableSet_isRatStieltjesPoint hf) (hf q) (measurable_defaultRatCDF α q)
 
+lemma toCDFLike_unit_prod (a : α) :
+    toCDFLike (fun (p : Unit × α) ↦ f p.2) ((), a) = toCDFLike f a := by
+  unfold toCDFLike
+  rw [isRatStieltjesPoint_unit_prod_iff]
+
 end ToCDFLike
 
 section IsCDFLike.stieltjesFunction
@@ -216,6 +231,9 @@ variable {f : α → ℚ → ℝ} (hf : IsCDFLike f)
 definition used to define `cond_cdf`. -/
 noncomputable irreducible_def todo1 (f : α → ℚ → ℝ) : α → ℝ → ℝ :=
   fun a t ↦ ⨅ r : { r' : ℚ // t < r' }, f a r
+
+lemma todo1_def' (f : α → ℚ → ℝ) (a : α) :
+    todo1 f a = fun (t : ℝ) ↦ ⨅ r : { r' : ℚ // t < r' }, f a r := by ext t; exact todo1_def f a t
 
 lemma todo1_eq (a : α) (r : ℚ) :
     todo1 f a r = f a r := by
@@ -228,6 +246,9 @@ lemma todo1_eq (a : α) (r : ℚ) :
         right_inv := fun t ↦ by simp only [Subtype.coe_eta] }
   · intro t
     simp only [Equiv.coe_fn_mk, Subtype.coe_mk]
+
+lemma todo1_unit_prod (a : α) :
+    todo1 (fun (p : Unit × α) ↦ f p.2) ((), a) = todo1 f a := by simp_rw [todo1_def']
 
 theorem todo1_nonneg (a : α) (r : ℝ) : 0 ≤ todo1 f a r := by
   have : Nonempty { r' : ℚ // r < ↑r' } := by
@@ -385,6 +406,8 @@ end Measure
 
 end IsCDFLike.stieltjesFunction
 
+section todo3
+
 variable {f : α → ℚ → ℝ}
 
 noncomputable
@@ -393,6 +416,15 @@ def todo3 (f : α → ℚ → ℝ) (hf : ∀ q, Measurable fun a ↦ f a q) : α
 
 theorem todo3_eq (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (r : ℚ) :
     todo3 f hf a r = toCDFLike f a r := todo2_eq _ a r
+
+lemma todo3_unit_prod (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
+    todo3 (fun (p : Unit × α) ↦ f p.2) (fun q ↦ (hf q).comp measurable_snd) ((), a)
+      = todo3 f hf a := by
+  simp_rw [todo3,IsCDFLike.stieltjesFunction, ← todo1_unit_prod a]
+  congr with x
+  congr 1 with p : 1
+  cases p with
+  | mk _ b => rw [← toCDFLike_unit_prod b]
 
 /-- The conditional cdf is non-negative for all `a : α`. -/
 theorem todo3_nonneg (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (r : ℝ) :
@@ -435,3 +467,5 @@ theorem measurable_measure_todo3 (hf : ∀ q, Measurable fun a ↦ f a q) :
     Measurable fun a ↦ (todo3 f hf a).measure := measurable_measure_todo2 _
 
 end Measure
+
+end todo3

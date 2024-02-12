@@ -17,6 +17,15 @@ section dissection_system
 
 def I (n : ℕ) (k : ℤ) : Set ℝ := Set.Ico (k * (2⁻¹ : ℝ) ^ n) ((k + 1) * ((2 : ℝ) ^ n)⁻¹)
 
+lemma mem_I_iff_mul {n : ℕ} {k : ℤ} (x : ℝ) : x ∈ I n k ↔ k ≤ x * 2 ^ n ∧ x * 2 ^ n < k + 1 := by
+  simp only [I, inv_pow, mem_Ico]
+  rw [← div_eq_mul_inv, div_le_iff, ← div_eq_mul_inv, lt_div_iff]
+  · positivity
+  · positivity
+
+lemma mem_I_iff_floor {n : ℕ} {k : ℤ} (x : ℝ) : x ∈ I n k ↔ ⌊x * 2 ^ n⌋ = k := by
+  simp [mem_I_iff_mul, Int.floor_eq_iff]
+
 lemma measurableSet_I (n : ℕ) (k : ℤ) : MeasurableSet (I n k) := measurableSet_Ico
 
 lemma Measure.iInf_Iic_gt_prod {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
@@ -30,9 +39,10 @@ lemma pairwise_disjoint_I (n : ℕ) : Pairwise (Disjoint on fun k ↦ I n k) := 
   intro i j hij
   rw [Function.onFun, Set.disjoint_iff]
   intro x
-  simp only [I, inv_pow, mem_inter_iff, mem_Ico, mem_empty_iff_false, and_imp, imp_false, not_lt]
-  intro h1 h2 h3
-  sorry
+  simp only [mem_inter_iff, mem_I_iff_floor, mem_empty_iff_false, and_imp, imp_false]
+  intro hi hj
+  rw [hi] at hj
+  exact hij hj
 
 lemma I_succ_union (n : ℕ) (k : ℤ) : I (n+1) (2 * k) ∪ I (n+1) (2 * k + 1) = I n k := by
   ext x
@@ -53,7 +63,17 @@ lemma I_succ_union (n : ℕ) (k : ℤ) : I (n+1) (2 * k) ∪ I (n+1) (2 * k + 1)
   | inr h =>
     simp only [I, inv_pow, mem_Ico, Int.cast_mul, Int.int_cast_ofNat, Int.cast_add,
       Int.cast_one, mem_union, not_lt.mpr h, and_false, h, true_and, false_or]
-    sorry
+    have : k * (2 ^ n)⁻¹ ≤ x := by
+      refine le_trans ?_ h
+      rw [pow_add, pow_one, mul_inv, mul_comm _ 2⁻¹, ← mul_assoc, mul_comm _ 2⁻¹, mul_add,
+        ← mul_assoc, inv_mul_cancel two_ne_zero, mul_one, one_mul, add_mul]
+      simp only [le_add_iff_nonneg_right, gt_iff_lt, inv_pos, zero_lt_two,
+        mul_nonneg_iff_of_pos_left, inv_nonneg]
+      positivity
+    simp only [this, true_and]
+    rw [pow_add, pow_one, mul_inv, mul_comm _ 2⁻¹, ← mul_assoc, mul_comm _ 2⁻¹, add_assoc]
+    norm_num
+    rw [one_div, mul_add, ← mul_assoc, inv_mul_cancel two_ne_zero, one_mul]
 
 -- todo : `Filtration` should be renamed to `filtration`
 def ℱ : Filtration ℕ (borel ℝ) where
@@ -104,21 +124,7 @@ lemma measurable_indexI (n : ℕ) : Measurable[ℱ n] (indexI n) := by
   refine @measurable_to_countable' ℤ ℝ _ _ (ℱ n) _ (fun k ↦ ?_)
   have : (fun t ↦ ⌊t * (2 : ℝ) ^ n⌋) ⁻¹' {k} = I n k := by
     ext t
-    simp only [mem_preimage, mem_singleton_iff, I, inv_pow, mem_Ico]
-    rw [Int.floor_eq_iff]
-    refine ⟨fun ⟨h1, h2⟩ ↦ ⟨?_, ?_⟩, fun ⟨h1, h2⟩ ↦ ⟨?_, ?_⟩⟩
-    · rw [mul_inv_le_iff, mul_comm]
-      · exact h1
-      · positivity
-    · rw [← div_eq_mul_inv, lt_div_iff]
-      · exact h2
-      · positivity
-    · rw [mul_inv_le_iff, mul_comm] at h1
-      · exact h1
-      · positivity
-    · rw [← div_eq_mul_inv, lt_div_iff] at h2
-      · exact h2
-      · positivity
+    simp only [mem_I_iff_floor, mem_preimage, mem_singleton_iff]
   rw [this]
   exact measurableSet_ℱ_I n k
 
@@ -142,7 +148,11 @@ lemma iInter_biUnion_I (x : ℝ) : ⋂ n, ⋃ (k) (_ : indexI n x ≤ k), I n k 
   ext t
   simp [iUnion_ge_I]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · sorry
+  · by_contra h_lt
+    push_neg at h_lt
+    --have h_pos : ∀ i, 0 < (2 : ℝ) ^ i := fun i ↦ by positivity
+    --simp_rw [← div_eq_mul_inv, div_le_iff (h_pos _)] at h
+    sorry
   · intro n
     refine le_trans ?_ h
     rw [← div_eq_mul_inv, div_le_iff]
@@ -783,25 +793,258 @@ lemma set_integral_mLimsup (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
         exact fun i ↦ (hf i).prod hs
     · rwa [iSup_ℱ] at hf
 
+lemma tendsto_integral_mLimsup_of_monotone (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+    (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ)
+    (hs_meas : ∀ n, MeasurableSet (s n)) :
+    Tendsto (fun m ↦ ∫ t, MLimsup κ a (s m) t ∂(kernel.fst κ a)) atTop (𝓝 1) := by
+  simp_rw [integral_mLimsup κ a (hs_meas _)]
+  rw [← ENNReal.one_toReal]
+  have h_cont := ENNReal.continuousOn_toReal.continuousAt (x := 1) ?_
+  swap
+  · rw [mem_nhds_iff]
+    refine ⟨Iio 2, fun x hx ↦ ne_top_of_lt (?_ : x < 2), isOpen_Iio, ENNReal.one_lt_two⟩
+    simpa using hx
+  refine h_cont.tendsto.comp ?_
+  have h := tendsto_measure_iUnion (s := fun n ↦ univ ×ˢ s n) (μ := κ a) ?_
+  swap; · intro n m hnm x; simp only [mem_prod, mem_univ, true_and]; exact fun h ↦ hs hnm h
+  convert h
+  rw [← prod_iUnion, hs_iUnion]
+  simp only [univ_prod_univ, measure_univ]
+
+lemma tendsto_integral_mLimsup_of_antitone (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+    (a : α) (s : ℕ → Set β) (hs : Antitone s) (hs_iInter : ⋂ i, s i = ∅)
+    (hs_meas : ∀ n, MeasurableSet (s n)) :
+    Tendsto (fun m ↦ ∫ t, MLimsup κ a (s m) t ∂(kernel.fst κ a)) atTop (𝓝 0) := by
+  simp_rw [integral_mLimsup κ a (hs_meas _)]
+  rw [← ENNReal.zero_toReal]
+  have h_cont := ENNReal.continuousOn_toReal.continuousAt (x := 0) ?_
+  swap
+  · rw [mem_nhds_iff]
+    refine ⟨Iio 1, fun x hx ↦ ne_top_of_lt (?_ : x < 1), isOpen_Iio, ?_⟩
+    · simpa using hx
+    · simp
+  refine h_cont.tendsto.comp ?_
+  have h := tendsto_measure_iInter (s := fun n ↦ univ ×ˢ s n) (μ := κ a)
+    (fun n ↦ MeasurableSet.univ.prod (hs_meas n)) ?_ ?_
+  rotate_left
+  · intro n m hnm x; simp only [mem_prod, mem_univ, true_and]; exact fun h ↦ hs hnm h
+  · refine ⟨0, measure_ne_top _ _⟩
+  convert h
+  rw [← prod_iInter, hs_iInter]
+  simp only [ne_eq, prod_empty, OuterMeasure.empty', forall_exists_index]
+
+lemma ae_eq_of_integral_eq_of_ae_le {μ : Measure α} {f g : α → ℝ} (hf : Integrable f μ)
+    (hg : Integrable g μ) (h_le : f ≤ᵐ[μ] g) (h_eq : ∫ a, f a ∂μ = ∫ a, g a ∂μ) :
+    f =ᵐ[μ] g := by
+  suffices g - f =ᵐ[μ] 0 by
+    filter_upwards [this] with a ha
+    symm
+    simpa only [Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using ha
+  have h_eq' : ∫ a, (g - f) a ∂μ = 0 := by
+    simp_rw [Pi.sub_apply]
+    rwa [integral_sub hg hf, sub_eq_zero, eq_comm]
+  rwa [integral_eq_zero_iff_of_nonneg_ae _ (hg.sub hf)] at h_eq'
+  filter_upwards [h_le] with a ha
+  simpa
+
+lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Monotone fun n ↦ f n x)
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
+    Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
+  let f' := fun n x ↦ f n x - f 0 x
+  have hf'_nonneg : ∀ᵐ x ∂μ, ∀ n, 0 ≤ f' n x := by
+    filter_upwards [h_mono] with a ha n
+    simp [ha (zero_le n)]
+  have hf'_meas : ∀ n, Integrable (f' n) μ := fun n ↦ (hf n).sub (hf 0)
+  suffices Tendsto (fun n ↦ ∫ x, f' n x ∂μ) atTop (𝓝 (∫ x, (F - f 0) x ∂μ)) by
+    rw [integral_sub' hF (hf 0)] at this
+    have h_sub : ∀ n, ∫ x, f' n x ∂μ = ∫ x, f n x ∂μ - ∫ x, f 0 x ∂μ := by
+      intro n
+      simp only
+      rw [integral_sub (hf n) (hf 0)]
+    simp_rw [h_sub] at this
+    have h1 : (fun n ↦ ∫ x, f n x ∂μ)
+        = fun n ↦ (∫ x, f n x ∂μ - ∫ x, f 0 x ∂μ) + ∫ x, f 0 x ∂μ := by ext n; abel
+    have h2 : ∫ x, F x ∂μ = (∫ x, F x ∂μ - ∫ x, f 0 x ∂μ) + ∫ x, f 0 x ∂μ := by abel
+    rw [h1, h2]
+    exact this.add tendsto_const_nhds
+  have hF_ge : 0 ≤ᵐ[μ] fun x ↦ (F - f 0) x := by
+    filter_upwards [h_tendsto, h_mono] with x hx_tendsto hx_mono
+    simp only [Pi.zero_apply, Pi.sub_apply, sub_nonneg]
+    exact ge_of_tendsto' hx_tendsto (fun n ↦ hx_mono (zero_le _))
+  rw [ae_all_iff] at hf'_nonneg
+  simp_rw [integral_eq_lintegral_of_nonneg_ae (hf'_nonneg _) (hf'_meas _).1]
+  rw [integral_eq_lintegral_of_nonneg_ae hF_ge (hF.1.sub (hf 0).1)]
+  have h_cont := ENNReal.continuousOn_toReal.continuousAt
+    (x := ∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ) ?_
+  swap
+  · rw [mem_nhds_iff]
+    refine ⟨Iio (∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ + 1), ?_, isOpen_Iio, ?_⟩
+    · intro x
+      simp only [Pi.sub_apply, mem_Iio, ne_eq, mem_setOf_eq]
+      exact ne_top_of_lt
+    · simp only [Pi.sub_apply, mem_Iio]
+      refine ENNReal.lt_add_right ?_ one_ne_zero
+      rw [← ofReal_integral_eq_lintegral_ofReal]
+      · exact ENNReal.ofReal_ne_top
+      · exact hF.sub (hf 0)
+      · exact hF_ge
+  refine h_cont.tendsto.comp ?_
+  refine lintegral_tendsto_of_tendsto_of_monotone ?_ ?_ ?_
+  · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennreal_ofReal
+  · filter_upwards [h_mono] with x hx
+    intro n m hnm
+    refine ENNReal.ofReal_le_ofReal ?_
+    simp only [tsub_le_iff_right, sub_add_cancel]
+    exact hx hnm
+  · filter_upwards [h_tendsto] with x hx
+    refine (ENNReal.continuous_ofReal.tendsto _).comp ?_
+    simp only [Pi.sub_apply]
+    exact Tendsto.sub hx tendsto_const_nhds
+
+lemma integral_tendsto_of_tendsto_of_antitone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Antitone fun n ↦ f n x)
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
+    Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
+  suffices Tendsto (fun n ↦ ∫ x, -f n x ∂μ) atTop (𝓝 (∫ x, -F x ∂μ)) by
+    suffices Tendsto (fun n ↦ ∫ x, - -f n x ∂μ) atTop (𝓝 (∫ x, - -F x ∂μ)) by
+      simp_rw [neg_neg] at this
+      exact this
+    convert this.neg <;> rw [integral_neg]
+  refine integral_tendsto_of_tendsto_of_monotone (fun n ↦ (hf n).neg) hF.neg ?_ ?_
+  · filter_upwards [h_mono] with x hx
+    intro n m hnm
+    simp only [neg_le_neg_iff]
+    exact hx hnm
+  · filter_upwards [h_tendsto] with x hx
+    exact hx.neg
+
+theorem tendsto_atTop_atBot_iff_of_antitone {α β : Type*}
+    [Nonempty α] [SemilatticeSup α] [Preorder β] {f : α → β}
+    (hf : Antitone f) :
+    Tendsto f atTop atBot ↔ ∀ b : β, ∃ a : α, f a ≤ b :=
+  @tendsto_atTop_atTop_iff_of_monotone _ βᵒᵈ _ _ _ _ hf
+
 lemma tendsto_mLimsup_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 1) := by
-  have h1 := tendsto_m_atTop_ae_of_monotone κ a s hs hs_iUnion
-  have h2 := fun (n : ℕ) ↦ tendsto_m_mLimsup κ a (hs_meas n)
-  rw [← ae_all_iff] at h1 h2
-  filter_upwards [h1, h2] with t h_tendsto_set h_tendsto_nat
-  sorry
+  have h_mono : ∀ t, Monotone (fun m ↦ MLimsup κ a (s m) t) :=
+    fun t n m hnm ↦ mLimsup_mono_set κ a (hs hnm) t
+  have h_le_one : ∀ m t, MLimsup κ a (s m) t ≤ 1 := fun m t ↦ mLimsup_le_one κ a (s m) t
+  -- for all `t`, `fun m ↦ MLimsup κ a (s m) t` has a limit
+  have h_exists : ∀ t, ∃ l, Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 l) := by
+    intro t
+    have h_tendsto : Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop atTop ∨
+        ∃ l, Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 l) :=
+      tendsto_of_monotone (h_mono t)
+    cases' h_tendsto with h_absurd h_tendsto
+    · rw [tendsto_atTop_atTop_iff_of_monotone (h_mono t)] at h_absurd
+      obtain ⟨r, hr⟩ := h_absurd 2
+      exact absurd (hr.trans (h_le_one r t)) one_lt_two.not_le
+    · exact h_tendsto
+  -- let `F` be the pointwise limit of `fun m ↦ MLimsup κ a (s m) t` for all `t`
+  let F : ℝ → ℝ := fun t ↦ (h_exists t).choose
+  have hF_tendsto : ∀ t, Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 (F t)) :=
+    fun t ↦ (h_exists t).choose_spec
+  have hF_nonneg : ∀ t, 0 ≤ F t :=
+    fun t ↦ ge_of_tendsto' (hF_tendsto t) (fun m ↦ mLimsup_nonneg κ a (s m) t)
+  have hF_le_one : ∀ t, F t ≤ 1 := fun t ↦ le_of_tendsto' (hF_tendsto t) (fun m ↦ h_le_one m t)
+  have hF_int : Integrable F (kernel.fst κ a) := by
+    rw [← memℒp_one_iff_integrable]
+    refine ⟨?_, ?_⟩
+    · refine aestronglyMeasurable_of_tendsto_ae atTop (fun n ↦ ?_) (ae_of_all _ hF_tendsto)
+      exact (measurable_mLimsup_right κ (hs_meas _) a).aestronglyMeasurable
+    · rw [snorm_one_eq_lintegral_nnnorm]
+      calc ∫⁻ x, ‖F x‖₊ ∂(kernel.fst κ a) ≤ ∫⁻ _, 1 ∂(kernel.fst κ a) := by
+            refine lintegral_mono (fun x ↦ ?_)
+            rw [← ofReal_norm_eq_coe_nnnorm, Real.norm_eq_abs, ENNReal.ofReal_le_one,
+              abs_of_nonneg (hF_nonneg _)]
+            exact hF_le_one _
+      _ < ⊤ := by simp only [lintegral_const, measure_univ, mul_one, ENNReal.one_lt_top]
+   -- it suffices to show that the limit `F` is 1 a.e.
+  suffices ∀ᵐ t ∂(kernel.fst κ a), F t = 1 by
+    filter_upwards [this] with t ht_eq
+    rw [← ht_eq]
+    exact hF_tendsto t
+  -- since `F` is at most 1, proving that its integral is the same as the integral of 1 will tell
+  -- us that `F` is 1 a.e.
+  refine ae_eq_of_integral_eq_of_ae_le hF_int (integrable_const _) (ae_of_all _ hF_le_one) ?_
+  have h_integral :
+    Tendsto (fun m : ℕ ↦ ∫ t, MLimsup κ a (s m) t ∂(kernel.fst κ a)) atTop
+      (𝓝 (∫ t, F t ∂(kernel.fst κ a))) := by
+    refine integral_tendsto_of_tendsto_of_monotone ?_ hF_int ?_ ?_
+    · exact fun n ↦ integrable_mLimsup _ _ (hs_meas n)
+    · exact ae_of_all _ h_mono
+    · exact ae_of_all _ hF_tendsto
+  have h_integral' :
+    Tendsto (fun m : ℕ ↦ ∫ t, MLimsup κ a (s m) t ∂(kernel.fst κ a)) atTop
+      (𝓝 (∫ _, 1 ∂(kernel.fst κ a))) := by
+    rw [integral_const, measure_univ]
+    simp only [ENNReal.one_toReal, smul_eq_mul, mul_one]
+    exact tendsto_integral_mLimsup_of_monotone κ a s hs hs_iUnion hs_meas
+  exact tendsto_nhds_unique h_integral h_integral'
 
 lemma tendsto_mLimsup_atTop_ae_of_antitone (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Antitone s) (hs_iInter : ⋂ i, s i = ∅)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 0) := by
-  have h1 := tendsto_m_atTop_of_antitone κ a s hs hs_iInter hs_meas
-  have h2 := fun (n : ℕ) ↦ tendsto_m_mLimsup κ a (hs_meas n)
-  rw [← ae_all_iff] at h2
-  filter_upwards [h2] with t h_tendsto_nat
-  sorry
+  have h_anti : ∀ t, Antitone (fun m ↦ MLimsup κ a (s m) t) :=
+    fun t n m hnm ↦ mLimsup_mono_set κ a (hs hnm) t
+  have h_le_one : ∀ m t, MLimsup κ a (s m) t ≤ 1 := fun m t ↦ mLimsup_le_one κ a (s m) t
+  -- for all `t`, `fun m ↦ MLimsup κ a (s m) t` has a limit
+  have h_exists : ∀ t, ∃ l, Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 l) := by
+    intro t
+    have h_tendsto : Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop atBot ∨
+        ∃ l, Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 l) :=
+      tendsto_of_antitone (h_anti t)
+    cases' h_tendsto with h_absurd h_tendsto
+    · rw [tendsto_atTop_atBot_iff_of_antitone (h_anti t)] at h_absurd
+      obtain ⟨r, hr⟩ := h_absurd (-1)
+      have h_nonneg := mLimsup_nonneg κ a (s r) t
+      linarith
+    · exact h_tendsto
+  -- let `F` be the pointwise limit of `fun m ↦ MLimsup κ a (s m) t` for all `t`
+  let F : ℝ → ℝ := fun t ↦ (h_exists t).choose
+  have hF_tendsto : ∀ t, Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 (F t)) :=
+    fun t ↦ (h_exists t).choose_spec
+  have hF_nonneg : ∀ t, 0 ≤ F t :=
+    fun t ↦ ge_of_tendsto' (hF_tendsto t) (fun m ↦ mLimsup_nonneg κ a (s m) t)
+  have hF_le_one : ∀ t, F t ≤ 1 := fun t ↦ le_of_tendsto' (hF_tendsto t) (fun m ↦ h_le_one m t)
+  have hF_int : Integrable F (kernel.fst κ a) := by
+    rw [← memℒp_one_iff_integrable]
+    refine ⟨?_, ?_⟩
+    · refine aestronglyMeasurable_of_tendsto_ae atTop (fun n ↦ ?_) (ae_of_all _ hF_tendsto)
+      exact (measurable_mLimsup_right κ (hs_meas _) a).aestronglyMeasurable
+    · rw [snorm_one_eq_lintegral_nnnorm]
+      calc ∫⁻ x, ‖F x‖₊ ∂(kernel.fst κ a) ≤ ∫⁻ _, 1 ∂(kernel.fst κ a) := by
+            refine lintegral_mono (fun x ↦ ?_)
+            rw [← ofReal_norm_eq_coe_nnnorm, Real.norm_eq_abs, ENNReal.ofReal_le_one,
+              abs_of_nonneg (hF_nonneg _)]
+            exact hF_le_one _
+      _ < ⊤ := by simp only [lintegral_const, measure_univ, mul_one, ENNReal.one_lt_top]
+   -- it suffices to show that the limit `F` is 0 a.e.
+  suffices ∀ᵐ t ∂(kernel.fst κ a), F t = 0 by
+    filter_upwards [this] with t ht_eq
+    rw [← ht_eq]
+    exact hF_tendsto t
+  -- since `F` is nonnegative, proving that its integral is 0 is sufficient to get that
+  -- `F` is 0 a.e.
+  suffices ∀ᵐ (t : ℝ) ∂(kernel.fst κ) a, 0 = F t by filter_upwards [this] with a ha; simp [ha]
+  refine ae_eq_of_integral_eq_of_ae_le (integrable_const _) hF_int  (ae_of_all _ hF_nonneg) ?_
+  have h_integral :
+    Tendsto (fun m : ℕ ↦ ∫ t, MLimsup κ a (s m) t ∂(kernel.fst κ a)) atTop
+      (𝓝 (∫ t, F t ∂(kernel.fst κ a))) := by
+    refine integral_tendsto_of_tendsto_of_antitone ?_ hF_int ?_ ?_
+    · exact fun n ↦ integrable_mLimsup _ _ (hs_meas n)
+    · exact ae_of_all _ h_anti
+    · exact ae_of_all _ hF_tendsto
+  have h_integral' :
+    Tendsto (fun m : ℕ ↦ ∫ t, MLimsup κ a (s m) t ∂(kernel.fst κ a)) atTop
+      (𝓝 (∫ _, 0 ∂(kernel.fst κ a))) := by
+    simp only [integral_zero]
+    exact tendsto_integral_mLimsup_of_antitone κ a s hs hs_iInter hs_meas
+  exact (tendsto_nhds_unique h_integral h_integral').symm
 
 section Iic_Q
 
@@ -829,10 +1072,24 @@ lemma mLimsupIic_nonneg (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : �
 lemma mLimsupIic_le_one (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) : mLimsupIic κ a t q ≤ 1 :=
   mLimsup_le_one κ a _ t
 
+theorem tendsto_nat_ceil_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
+    Tendsto (fun x : α ↦ ⌈x⌉₊) atTop atTop := by
+  refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
+  simp only [Nat.ceil_natCast, le_refl]
+
 lemma tendsto_atTop_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun q ↦ mLimsupIic κ a t q) atTop (𝓝 1) := by
   suffices ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun (n : ℕ) ↦ mLimsupIic κ a t n) atTop (𝓝 1) by
-    sorry
+    filter_upwards [this] with t ht
+    let f := fun q : ℚ ↦ mLimsupIic κ a t ⌊q⌋₊
+    let g := fun q : ℚ ↦ mLimsupIic κ a t ⌈q⌉₊
+    have hf_le : ∀ᶠ q in atTop, f q ≤ mLimsupIic κ a t q := by
+      simp only [eventually_atTop, ge_iff_le]
+      exact ⟨0, fun q hq ↦ monotone_mLimsupIic κ a t (Nat.floor_le hq)⟩
+    have hg_le : ∀ q, mLimsupIic κ a t q ≤ g q := fun q ↦ monotone_mLimsupIic κ a t (Nat.le_ceil _)
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ ?_ hf_le (eventually_of_forall hg_le)
+    · exact ht.comp tendsto_nat_floor_atTop
+    · exact ht.comp tendsto_nat_ceil_atTop
   let s : ℕ → Set ℝ := fun n ↦ Iic n
   have hs : Monotone s := fun i j hij ↦ Iic_subset_Iic.mpr (by exact mod_cast hij)
   have hs_iUnion : ⋃ i, s i = univ := by
@@ -852,7 +1109,21 @@ lemma tendsto_atBot_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ]
     rw [h_eq_neg]
     exact ht.comp tendsto_neg_atBot_atTop
   suffices ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun (n : ℕ) ↦ mLimsupIic κ a t (-n)) atTop (𝓝 0) by
-    sorry
+    filter_upwards [this] with t ht
+    let f := fun q : ℚ ↦ mLimsupIic κ a t (-⌊q⌋₊)
+    let g := fun q : ℚ ↦ mLimsupIic κ a t (-⌈q⌉₊)
+    have hf_le : ∀ᶠ q in atTop, mLimsupIic κ a t (-q) ≤ f q := by
+      simp only [eventually_atTop, ge_iff_le]
+      refine ⟨0, fun q hq ↦ monotone_mLimsupIic κ a t ?_⟩
+      rw [neg_le_neg_iff]
+      exact Nat.floor_le hq
+    have hg_le : ∀ q, g q ≤ mLimsupIic κ a t (-q) := by
+      refine fun q ↦ monotone_mLimsupIic κ a t ?_
+      rw [neg_le_neg_iff]
+      exact Nat.le_ceil _
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le' ?_ ?_ (eventually_of_forall hg_le) hf_le
+    · exact ht.comp tendsto_nat_ceil_atTop
+    · exact ht.comp tendsto_nat_floor_atTop
   let s : ℕ → Set ℝ := fun n ↦ Iic (-n)
   have hs : Antitone s := fun i j hij ↦ Iic_subset_Iic.mpr (neg_le_neg (by exact mod_cast hij))
   have hs_iInter : ⋂ i, s i = ∅ := by
@@ -948,234 +1219,183 @@ lemma isRatStieltjesPoint_mLimsupIic_ae (κ : kernel α (ℝ × ℝ)) [IsMarkovK
   · exact ht_bot
   · exact ht_iInf
 
-lemma todo3_mLimsupIic_ae_eq (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) (q : ℚ) :
-    (fun t ↦ todo3 _ (measurable_mLimsupIic κ) (a, t) q)
-      =ᵐ[kernel.fst κ a] fun t ↦ mLimsupIic κ a t q := by
-  filter_upwards [isRatStieltjesPoint_mLimsupIic_ae κ a] with a ha
-  rw [todo3_eq, toCDFLike_of_isRatStieltjesPoint ha]
+lemma isRatKernelCDF_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] :
+    IsRatKernelCDF (fun p : α × ℝ ↦ mLimsupIic κ p.1 p.2) κ (kernel.fst κ) where
+  measurable := measurable_mLimsupIic κ
+  isRatStieltjesPoint_ae := isRatStieltjesPoint_mLimsupIic_ae κ
+  integrable := integrable_mLimsupIic κ
+  isCDF := fun _ _ hs _ ↦ set_integral_mLimsupIic _ _ _ hs
 
 end Rat
 
 -- todo: name?
 noncomputable
 def kernel.condexpReal (κ : kernel α (ℝ × ℝ)) : kernel (α × ℝ) ℝ :=
-  cdfKernel (measurable_mLimsupIic κ)
+  cdfKernel _ (measurable_mLimsupIic κ)
 
 instance (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] : IsMarkovKernel (kernel.condexpReal κ) := by
   unfold kernel.condexpReal; infer_instance
 
-lemma condexpReal_Iic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) (t x : ℝ) :
-    kernel.condexpReal κ (a, t) (Iic x)
-      = ENNReal.ofReal (todo3 _ (measurable_mLimsupIic κ) (a, t) x) :=
-  cdfKernel_Iic _ _
-
-lemma set_lintegral_condexpReal_Iic_rat (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) (q : ℚ)
-    {s : Set ℝ} (hs : MeasurableSet s) :
-    ∫⁻ t in s, kernel.condexpReal κ (a, t) (Iic q) ∂(kernel.fst κ a) = κ a (s ×ˢ Iic (q : ℝ)) := by
-  simp_rw [condexpReal_Iic]
-  rw [← ofReal_integral_eq_lintegral_ofReal]
-  · rw [set_integral_congr_ae (g := fun t ↦ mLimsupIic κ a t q) hs,
-      set_integral_mLimsupIic κ _ _ hs, ENNReal.ofReal_toReal]
-    · exact measure_ne_top _ _
-    · filter_upwards [todo3_mLimsupIic_ae_eq κ a q] with t ht
-      exact fun _ ↦ ht
-  · refine Integrable.restrict ?_
-    rw [integrable_congr (todo3_mLimsupIic_ae_eq κ a q)]
-    exact integrable_mLimsupIic _ _ _
-  · exact ae_of_all _ (fun x ↦ todo3_nonneg _ _ _)
-
-lemma set_lintegral_condexpReal_Iic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) (x : ℝ)
-    {s : Set ℝ} (hs : MeasurableSet s) :
-    ∫⁻ t in s, kernel.condexpReal κ (a, t) (Iic x) ∂(kernel.fst κ a) = κ a (s ×ˢ Iic x) := by
-  -- We have the result for `x : ℚ` thanks to `set_lintegral_condexpReal_Iic_rat`.
-  -- We use the equality `condCDF ρ a x = ⨅ r : {r' : ℚ // x < r'}, condCDF ρ a r` and a monotone
-  -- convergence argument to extend it to the reals.
-  by_cases hρ_zero : (kernel.fst κ a).restrict s = 0
-  · rw [hρ_zero, lintegral_zero_measure]
-    refine le_antisymm (zero_le _) ?_
-    calc κ a (s ×ˢ Iic x)
-      ≤ κ a (Prod.fst ⁻¹' s) := measure_mono (prod_subset_preimage_fst s (Iic x))
-    _ = kernel.fst κ a s := by rw [kernel.fst_apply' _ _ hs]; rfl
-    _ = (kernel.fst κ a).restrict s univ := by rw [Measure.restrict_apply_univ]
-    _ = 0 := by simp only [hρ_zero, Measure.coe_zero, Pi.zero_apply]
-  have h : ∫⁻ t in s, kernel.condexpReal κ (a, t) (Iic x) ∂(kernel.fst κ a)
-      = ∫⁻ t in s, ⨅ r : { r' : ℚ // x < r' },
-        kernel.condexpReal κ (a, t) (Iic r) ∂(kernel.fst κ a) := by
-    congr with t : 1
-    rw [← measure_iInter_eq_iInf]
-    · congr with y : 1
-      simp only [mem_Iic, mem_iInter, Subtype.forall]
-      refine ⟨fun h a ha ↦ h.trans ?_, fun h ↦ ?_⟩
-      · exact mod_cast ha.le
-      · refine le_of_forall_lt_rat_imp_le fun q hq ↦ h q ?_
-        exact mod_cast hq
-    · exact fun _ ↦ measurableSet_Iic
-    · refine Monotone.directed_ge fun r r' hrr' ↦ ?_
-      refine Iic_subset_Iic.mpr ?_
-      exact mod_cast hrr'
-    · obtain ⟨q, hq⟩ := exists_rat_gt x
-      exact ⟨⟨q, hq⟩, measure_ne_top _ _⟩
-  have h_nonempty : Nonempty { r' : ℚ // x < ↑r' } := by
-    obtain ⟨r, hrx⟩ := exists_rat_gt x
-    exact ⟨⟨r, hrx⟩⟩
-  rw [h, lintegral_iInf_directed_of_measurable hρ_zero fun q : { r' : ℚ // x < ↑r' } ↦ ?_]
-  rotate_left
-  · intro b
-    rw [set_lintegral_condexpReal_Iic_rat _ _ _ hs]
-    exact measure_ne_top _ _
-  · refine Monotone.directed_ge fun i j hij t ↦ measure_mono (Iic_subset_Iic.mpr ?_)
-    exact mod_cast hij
-  · exact (kernel.measurable_coe _ measurableSet_Iic).comp measurable_prod_mk_left
-  simp_rw [set_lintegral_condexpReal_Iic_rat κ _ _ hs]
-  rw [← measure_iInter_eq_iInf]
-  · rw [← prod_iInter]
-    congr with y
-    simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
-    exact ⟨le_of_forall_lt_rat_imp_le, fun hyx q hq ↦ hyx.trans hq.le⟩
-  · exact fun i ↦ hs.prod measurableSet_Iic
-  · refine Monotone.directed_ge fun i j hij ↦ ?_
-    refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
-    exact mod_cast hij
-  · exact ⟨h_nonempty.some, measure_ne_top _ _⟩
-
-lemma set_lintegral_condexpReal_univ (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α)
-    {s : Set ℝ} (hs : MeasurableSet s) :
-    ∫⁻ t in s, kernel.condexpReal κ (a, t) univ ∂(kernel.fst κ a) = κ a (s ×ˢ univ) := by
-  simp only [measure_univ, lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
-    one_mul, kernel.fst_apply' _ _ hs]
-  congr with x
-  simp only [mem_prod, mem_univ, and_true, mem_setOf_eq]
-
-lemma lintegral_condexpReal_univ (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) :
-    ∫⁻ t, kernel.condexpReal κ (a, t) univ ∂(kernel.fst κ a) = κ a univ := by
-  rw [← set_lintegral_univ, set_lintegral_condexpReal_univ κ a MeasurableSet.univ,
-    univ_prod_univ]
-
-lemma set_lintegral_condexpReal_prod (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α)
-    {s t : Set ℝ} (hs : MeasurableSet s) (ht : MeasurableSet t) :
-    ∫⁻ x in s, kernel.condexpReal κ (a, x) t ∂(kernel.fst κ a) = κ a (s ×ˢ t) := by
-  -- `set_lintegral_condKernelReal_Iic` gives the result for `t = Iic x`. These sets form a
-  -- π-system that generates the Borel σ-algebra, hence we can get the same equality for any
-  -- measurable set `t`.
-  apply MeasurableSpace.induction_on_inter (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic _ _ _ _ ht
-  · simp only [measure_empty, lintegral_const, zero_mul, prod_empty]
-  · rintro t ⟨q, rfl⟩
-    exact set_lintegral_condexpReal_Iic κ a _ hs
-  · intro t ht ht_lintegral
-    calc ∫⁻ x in s, kernel.condexpReal κ (a, x) tᶜ ∂(kernel.fst κ a)
-      = ∫⁻ x in s, kernel.condexpReal κ (a, x) univ - kernel.condexpReal κ (a, x) t ∂(kernel.fst κ a) := by
-          congr with x; rw [measure_compl ht (measure_ne_top (kernel.condexpReal κ (a, x)) _)]
-    _ = ∫⁻ x in s, kernel.condexpReal κ (a, x) univ ∂(kernel.fst κ a)
-          - ∫⁻ x in s, kernel.condexpReal κ (a, x) t ∂(kernel.fst κ a) := by
-        rw [lintegral_sub]
-        · exact (kernel.measurable_coe (kernel.condexpReal κ) ht).comp measurable_prod_mk_left
-        · rw [ht_lintegral]
-          exact measure_ne_top _ _
-        · exact eventually_of_forall fun a ↦ measure_mono (subset_univ _)
-    _ = κ a (s ×ˢ univ) - κ a (s ×ˢ t) := by
-        rw [set_lintegral_condexpReal_univ κ a hs, ht_lintegral]
-    _ = κ a (s ×ˢ tᶜ) := by
-        rw [← measure_diff _ (hs.prod ht) (measure_ne_top _ _)]
-        · rw [prod_diff_prod, compl_eq_univ_diff]
-          simp only [diff_self, empty_prod, union_empty]
-        · rw [prod_subset_prod_iff]
-          exact Or.inl ⟨subset_rfl, subset_univ t⟩
-  · intro f hf_disj hf_meas hf_eq
-    simp_rw [measure_iUnion hf_disj hf_meas]
-    rw [lintegral_tsum, prod_iUnion, measure_iUnion]
-    · simp_rw [hf_eq]
-    · intro i j hij
-      rw [Function.onFun, Set.disjoint_prod]
-      exact Or.inr (hf_disj hij)
-    · exact fun i ↦ MeasurableSet.prod hs (hf_meas i)
-    · exact fun i ↦
-        ((kernel.measurable_coe _ (hf_meas i)).comp measurable_prod_mk_left).aemeasurable.restrict
-
-lemma lintegral_condexpReal_mem (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α)
-    {s : Set (ℝ × ℝ)} (hs : MeasurableSet s) :
-    ∫⁻ x, kernel.condexpReal κ (a, x) {y | (x, y) ∈ s} ∂(kernel.fst κ a) = κ a s := by
-  -- `set_lintegral_condKernelReal_prod` gives the result for sets of the form `t₁ × t₂`. These
-  -- sets form a π-system that generates the product σ-algebra, hence we can get the same equality
-  -- for any measurable set `s`.
-  apply MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod _ _ _ _ hs
-  · simp only [mem_empty_iff_false, setOf_false, measure_empty, lintegral_const,
-      zero_mul]
-  · rintro _ ⟨t₁, ht₁, t₂, ht₂, rfl⟩
-    simp only [mem_setOf_eq] at ht₁ ht₂
-    have h_prod_eq_snd : ∀ a ∈ t₁, {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = t₂ := by
-      intro a ha
-      simp only [ha, prod_mk_mem_set_prod_eq, true_and_iff, setOf_mem_eq]
-    rw [← lintegral_add_compl _ ht₁]
-    have h_eq1 : ∫⁻ x in t₁, kernel.condexpReal κ (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(kernel.fst κ a)
-        = ∫⁻ x in t₁, kernel.condexpReal κ (a, x) t₂ ∂(kernel.fst κ a) := by
-      refine' set_lintegral_congr_fun ht₁ (eventually_of_forall fun a ha ↦ _)
-      rw [h_prod_eq_snd a ha]
-    have h_eq2 : ∫⁻ x in t₁ᶜ, kernel.condexpReal κ (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(kernel.fst κ a) = 0 := by
-      suffices h_eq_zero : ∀ x ∈ t₁ᶜ, kernel.condexpReal κ (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} = 0
-      · rw [set_lintegral_congr_fun ht₁.compl (eventually_of_forall h_eq_zero)]
-        simp only [lintegral_const, zero_mul]
-      intro a hat₁
-      rw [mem_compl_iff] at hat₁
-      simp only [hat₁, prod_mk_mem_set_prod_eq, false_and_iff, setOf_false, measure_empty]
-    rw [h_eq1, h_eq2, add_zero]
-    exact set_lintegral_condexpReal_prod κ a ht₁ ht₂
-  · intro t ht ht_eq
-    calc ∫⁻ x, kernel.condexpReal κ (a, x) {y : ℝ | (x, y) ∈ tᶜ} ∂(kernel.fst κ a)
-      = ∫⁻ x, kernel.condexpReal κ (a, x) {y : ℝ | (x, y) ∈ t}ᶜ ∂(kernel.fst κ a) := rfl
-    _ = ∫⁻ x, kernel.condexpReal κ (a, x) univ
-          - kernel.condexpReal κ (a, x) {y : ℝ | (x, y) ∈ t} ∂(kernel.fst κ a) := by
-        congr with x : 1
-        exact measure_compl (measurable_prod_mk_left ht)
-          (measure_ne_top (kernel.condexpReal κ (a, x)) _)
-    _ = ∫⁻ x, kernel.condexpReal κ (a, x) univ ∂(kernel.fst κ a) -
-          ∫⁻ x, kernel.condexpReal κ (a, x) {y : ℝ | (x, y) ∈ t} ∂(kernel.fst κ a) := by
-        have h_le : (fun x ↦ kernel.condexpReal κ (a, x) {y : ℝ | (x, y) ∈ t})
-              ≤ᵐ[kernel.fst κ a] fun x ↦ kernel.condexpReal κ (a, x) univ :=
-          eventually_of_forall fun _ ↦ measure_mono (subset_univ _)
-        rw [lintegral_sub _ _ h_le]
-        · exact kernel.measurable_kernel_prod_mk_left' ht a
-        refine ((lintegral_mono_ae h_le).trans_lt ?_).ne
-        rw [lintegral_condexpReal_univ]
-        exact measure_lt_top _ univ
-    _ = κ a univ - κ a t := by rw [ht_eq, lintegral_condexpReal_univ]
-    _ = κ a tᶜ := (measure_compl ht (measure_ne_top _ _)).symm
-  · intro f hf_disj hf_meas hf_eq
-    have h_eq : ∀ a, {x | (a, x) ∈ ⋃ i, f i} = ⋃ i, {x | (a, x) ∈ f i} := by
-      intro a; ext x; simp only [mem_iUnion, mem_setOf_eq]
-    simp_rw [h_eq]
-    have h_disj : ∀ a, Pairwise (Disjoint on fun i ↦ {x | (a, x) ∈ f i}) := by
-      intro a i j hij
-      have h_disj := hf_disj hij
-      rw [Function.onFun, disjoint_iff_inter_eq_empty] at h_disj ⊢
-      ext1 x
-      simp only [mem_inter_iff, mem_setOf_eq, mem_empty_iff_false, iff_false_iff]
-      intro h_mem_both
-      suffices (a, x) ∈ ∅ by rwa [mem_empty_iff_false] at this
-      rwa [← h_disj, mem_inter_iff]
-    calc ∫⁻ x, kernel.condexpReal κ (a, x) (⋃ i, {y | (x, y) ∈ f i}) ∂(kernel.fst κ a)
-      = ∫⁻ x, ∑' i, kernel.condexpReal κ (a, x) {y | (x, y) ∈ f i} ∂(kernel.fst κ a) := by
-          congr with x : 1
-          rw [measure_iUnion (h_disj x) fun i ↦ measurable_prod_mk_left (hf_meas i)]
-    _ = ∑' i, ∫⁻ x, kernel.condexpReal κ (a, x) {y | (x, y) ∈ f i} ∂(kernel.fst κ a) :=
-          lintegral_tsum fun i ↦ (kernel.measurable_kernel_prod_mk_left' (hf_meas i) a).aemeasurable
-    _ = ∑' i, κ a (f i) := by simp_rw [hf_eq]
-    _ = κ a (iUnion f) := (measure_iUnion hf_disj hf_meas).symm
-
 lemma kernel.eq_compProd_condexpReal (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] :
-    κ = kernel.fst κ ⊗ₖ kernel.condexpReal κ := by
-  ext a s hs
-  rw [kernel.compProd_apply _ _ _ hs, lintegral_condexpReal_mem κ a hs]
+    κ = kernel.fst κ ⊗ₖ kernel.condexpReal κ :=
+  kernel.eq_compProd_cdfKernel (isRatKernelCDF_mLimsupIic κ)
 
 end Real
 
 variable {Ω' : Type*} [MeasurableSpace Ω'] [StandardBorelSpace Ω'] [Nonempty Ω']
 
-def kernel.condexp (κ : kernel α (Ω × Ω')) [IsMarkovKernel (kernel.fst κ)] :
-    kernel (α × Ω) Ω' :=
-  sorry
+noncomputable
+def measurableEmbedding_real (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] : Ω → ℝ :=
+  (exists_measurableEmbedding_real Ω).choose
 
-theorem kernel.eq_compProd (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] :
-    κ = kernel.fst κ ⊗ₖ kernel.condexp κ := by
-  sorry
+lemma measurableEmbedding_measurableEmbedding_real
+    (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] :
+    MeasurableEmbedding (measurableEmbedding_real Ω) :=
+  (exists_measurableEmbedding_real Ω).choose_spec
+
+noncomputable
+def condKernelAux (κ : kernel α (ℝ × Ω')) [IsMarkovKernel κ] : kernel (α × ℝ) Ω' :=
+  let f := measurableEmbedding_real Ω'
+  let hf := measurableEmbedding_measurableEmbedding_real Ω'
+  let κ' := kernel.map κ (Prod.map (id : ℝ → ℝ) f) (measurable_id.prod_map hf.measurable)
+  let x₀ := (range_nonempty f).choose
+  kernel.comapRight
+    (kernel.piecewise (measurableSet_eq_one (isRatKernelCDF_mLimsupIic κ') hf.measurableSet_range)
+      (kernel.condexpReal κ') (kernel.deterministic (fun _ ↦ x₀) measurable_const))
+    hf
+
+instance instIsMarkovKernel_condKernelAux (κ : kernel α (ℝ × Ω')) [IsMarkovKernel κ] :
+    IsMarkovKernel (condKernelAux κ) := by
+  rw [condKernelAux]
+  refine kernel.IsMarkovKernel.comapRight _ _ fun a ↦ ?_
+  rw [kernel.piecewise_apply']
+  split_ifs with h_mem
+  · exact h_mem
+  · classical
+    rw [kernel.deterministic_apply' _ _
+        (measurableEmbedding_measurableEmbedding_real Ω').measurableSet_range,
+      Set.indicator_apply, if_pos]
+    exact (range_nonempty (measurableEmbedding_real Ω')).choose_spec
+
+lemma compProd_fst_condKernelAux (κ : kernel α (ℝ × Ω')) [IsMarkovKernel κ] :
+    kernel.fst κ ⊗ₖ condKernelAux κ = κ := by
+  let f := measurableEmbedding_real Ω'
+  let hf := measurableEmbedding_measurableEmbedding_real Ω'
+  let κ' := kernel.map κ (Prod.map (id : ℝ → ℝ) f) (measurable_id.prod_map hf.measurable)
+  have h_prod_embed : MeasurableEmbedding (Prod.map (id : ℝ → ℝ) f) :=
+    MeasurableEmbedding.id.prod_mk hf
+  have h_fst : kernel.fst κ' = kernel.fst κ := by
+    ext a u hu
+    unfold_let κ'
+    rw [kernel.fst_apply' _ _ hu, kernel.fst_apply' _ _ hu,
+      kernel.map_apply' κ h_prod_embed.measurable]
+    · rfl
+    · exact measurable_fst hu
+  have : κ = kernel.comapRight κ' h_prod_embed := by
+    ext c t ht : 2
+    unfold_let κ'
+    rw [kernel.comapRight_apply' _ _ _ ht, kernel.map_apply' κ h_prod_embed.measurable
+      _ (h_prod_embed.measurableSet_image.mpr ht)]
+    congr with x : 1
+    rw [← @Prod.mk.eta _ _ x]
+    simp only [id.def, mem_preimage, Prod.map_mk, mem_image, Prod.mk.inj_iff, Prod.exists]
+    refine' ⟨fun h => ⟨x.1, x.2, h, rfl, rfl⟩, _⟩
+    rintro ⟨a, b, h_mem, rfl, hf_eq⟩
+    rwa [hf.injective hf_eq] at h_mem
+  conv_rhs => rw [this, kernel.eq_compProd_condexpReal κ']
+  ext c t ht : 2
+  rw [kernel.comapRight_apply' _ _ _ ht,
+    kernel.compProd_apply _ _ _ (h_prod_embed.measurableSet_image.mpr ht),
+    h_fst, kernel.compProd_apply _ _ _ ht]
+  refine lintegral_congr_ae ?_
+  let ρ_set := {p : α × ℝ | kernel.condexpReal κ' p (range f) = 1}
+  have h_ae : ∀ a, ∀ᵐ t ∂(kernel.fst κ a), (a, t) ∈ ρ_set := by
+    intro a
+    rw [← h_fst]
+    refine ae_cdfKernel_eq_one (isRatKernelCDF_mLimsupIic κ') a hf.measurableSet_range ?_
+    simp only [mem_compl_iff, mem_range, not_exists]
+    rw [kernel.map_apply']
+    · have h_empty : {a : ℝ × Ω' | ∀ (x : Ω'), ¬f x = f a.2} = ∅ := by
+        ext x
+        simp only [mem_setOf_eq, mem_empty_iff_false, iff_false, not_forall, not_not,
+          exists_apply_eq_apply]
+      simp [h_empty]
+    · have : {x : ℝ × ℝ | ∀ (y : Ω'), ¬ f y = x.2} = univ ×ˢ (range f)ᶜ := by
+        ext x
+        simp only [mem_setOf_eq, mem_prod, mem_univ, mem_compl_iff, mem_range, not_exists, true_and]
+      rw [this]
+      exact MeasurableSet.univ.prod hf.measurableSet_range.compl
+  filter_upwards [h_ae c] with a ha
+  rw [condKernelAux, kernel.comapRight_apply']
+  swap; · exact measurable_prod_mk_left ht
+  have h1 : {c : ℝ | (a, c) ∈ Prod.map id f '' t} = f '' {c : Ω' | (a, c) ∈ t} := by
+    ext1 x
+    simp only [Prod_map, id.def, mem_image, Prod.mk.inj_iff, Prod.exists, mem_setOf_eq]
+    constructor
+    · rintro ⟨a', b, h_mem, rfl, hf_eq⟩
+      exact ⟨b, h_mem, hf_eq⟩
+    · rintro ⟨b, h_mem, hf_eq⟩
+      exact ⟨a, b, h_mem, rfl, hf_eq⟩
+  rw [h1, kernel.piecewise_apply, if_pos]
+  exact ha
+
+noncomputable
+def condKernel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] : kernel (α × Ω) Ω' :=
+  let f := measurableEmbedding_real Ω
+  let hf := measurableEmbedding_measurableEmbedding_real Ω
+  let κ' := kernel.map κ (Prod.map f (id : Ω' → Ω')) (hf.measurable.prod_map measurable_id)
+  kernel.comap (condKernelAux κ') (Prod.map (id : α → α) f) (measurable_id.prod_map hf.measurable)
+
+instance instIsMarkovKernel_condKernel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] :
+    IsMarkovKernel (condKernel κ) := by rw [condKernel]; infer_instance
+
+lemma compProd_fst_condKernel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] :
+    kernel.fst κ ⊗ₖ condKernel κ = κ := by
+  let f := measurableEmbedding_real Ω
+  let hf := measurableEmbedding_measurableEmbedding_real Ω
+  let κ' : kernel α (ℝ × Ω') :=
+    kernel.map κ (Prod.map f (id : Ω' → Ω')) (hf.measurable.prod_map measurable_id)
+  have h_condKernel : condKernel κ
+    = kernel.comap (condKernelAux κ') (Prod.map (id : α → α) f)
+      (measurable_id.prod_map hf.measurable) := rfl
+  have h_compProd := compProd_fst_condKernelAux κ'
+  have h_prod_embed : MeasurableEmbedding (Prod.map f (id : Ω' → Ω')) :=
+    hf.prod_mk MeasurableEmbedding.id
+  have : κ = kernel.comapRight κ' h_prod_embed := by
+    ext c t ht : 2
+    unfold_let κ'
+    rw [kernel.comapRight_apply' _ _ _ ht, kernel.map_apply' κ h_prod_embed.measurable
+      _ (h_prod_embed.measurableSet_image.mpr ht)]
+    congr with x : 1
+    rw [← @Prod.mk.eta _ _ x]
+    simp only [Prod.mk.eta, Prod_map, id_eq, mem_preimage, mem_image, Prod.mk.injEq, Prod.exists,
+      exists_eq_right_right]
+    refine ⟨fun h ↦ ⟨x.1, h, rfl⟩, ?_⟩
+    rintro ⟨ω, h_mem, h⟩
+    rwa [hf.injective h] at h_mem
+  have h_fst : kernel.fst κ' = kernel.map (kernel.fst κ) f hf.measurable := by
+    ext a s hs
+    unfold_let κ'
+    rw [kernel.map_apply' _ _ _ hs, kernel.fst_apply', kernel.fst_apply', kernel.map_apply']
+    · congr
+    · exact measurable_fst hs
+    · exact hf.measurable hs
+    · exact hs
+  conv_rhs => rw [this, ← h_compProd]
+  ext a s hs
+  rw [h_condKernel, h_fst]
+  rw [kernel.comapRight_apply' _ _ _ hs, kernel.compProd_apply _ _ _ hs, kernel.compProd_apply]
+  swap; · exact h_prod_embed.measurableSet_image.mpr hs
+  rw [kernel.map_apply, lintegral_map]
+  congr with ω
+  rw [kernel.comap_apply']
+  · congr with ω'
+    simp only [mem_setOf_eq, Prod_map, id_eq, mem_image, Prod.mk.injEq, Prod.exists,
+      exists_eq_right_right]
+    refine ⟨fun h ↦ ⟨ω, h, rfl⟩, ?_⟩
+    rintro ⟨a, h_mem, h⟩
+    rwa [hf.injective h] at h_mem
+  · exact kernel.measurable_kernel_prod_mk_left' (h_prod_embed.measurableSet_image.mpr hs) _
+  · exact hf.measurable
 
 end ProbabilityTheory
