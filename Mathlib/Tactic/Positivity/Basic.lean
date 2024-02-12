@@ -148,7 +148,7 @@ is nonnegative, strictly positive if at least one is positive, and nonzero if bo
 
 /-- The `positivity` extension which identifies expressions of the form `a + b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity _ + _, Add.add _ _] def evalAdd : PositivityExt where eval {u α} zα pα e := do
+@[positivity _ + _] def evalAdd : PositivityExt where eval {u α} zα pα e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not +"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
@@ -189,7 +189,7 @@ private theorem mul_ne_zero_of_pos_of_ne_zero [OrderedSemiring α] [NoZeroDiviso
 
 /-- The `positivity` extension which identifies expressions of the form `a * b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity _ * _, Mul.mul _ _] def evalMul : PositivityExt where eval {u α} zα pα e := do
+@[positivity _ * _] def evalMul : PositivityExt where eval {u α} zα pα e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not *"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
@@ -251,7 +251,7 @@ private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 <
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
-@[positivity (_ : α) ^ (0:ℕ), Pow.pow _ (0:ℕ)]
+@[positivity (_ : α) ^ (0:ℕ)]
 def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   _ ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))
@@ -261,7 +261,7 @@ def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
 set_option linter.deprecated false in
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℕ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity (_ : α) ^ (_ : ℕ), Pow.pow _ (_ : ℕ)]
+@[positivity (_ : α) ^ (_ : ℕ)]
 def evalPow : PositivityExt where eval {u α} zα pα e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℕ)) ← withReducible (whnf e) | throwError "not ^"
   let result ← catchNone do
