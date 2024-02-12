@@ -87,10 +87,8 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   /- Compute the type for H and keep track of the FVarId's reverted in doing so. (Do not modify the
   tactic state.) -/
   let HSuffix := Expr.forallE h P (← goal.getType) .default
-  let gfvars ← getFVarIdsAt goal xs
-  let gfvars := gfvars.map Expr.fvar
-  let rfvars ← getFVarIdsAt goal ys
-  let rfvars := rfvars.map Expr.fvar
+  let gfvars := (← getFVarIdsAt goal xs).map Expr.fvar
+  let rfvars := (← getFVarIdsAt goal ys).map Expr.fvar
   let lctx := (← goal.getDecl).lctx
   -- Detail: `HType? : HTypeResult`. See `HTypeResult`.
   let (revertedFVars, replacedFVars, HType?) ← liftMkBindingM fun ctx => (do
@@ -130,13 +128,12 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
   is obtained through `introNP` -/
   let HExpr ← mkFreshExprSyntheticOpaqueMVar HType
-  let hGoal := HExpr.mvarId!
   /- Begin the "reduction goal" which will contain hypotheses `H` and `¬h`. For now, it only
   contains `H`. Keep track of that hypothesis' FVarId. -/
   let (HFVarId, reductionGoal) ← goal.assertHypotheses #[⟨H, HType, HExpr⟩]
   let HFVarId := HFVarId[0]!
   /- Clear the reverted fvars from the branch that will contain `h` as a hypothesis. -/
-  let hGoal ← hGoal.tryClearMany (revertedFVars ++ replacedFVars)
+  let hGoal ← HExpr.mvarId!.tryClearMany (revertedFVars ++ replacedFVars)
   /- Introduce all of the reverted fvars to the context in order to restore the original target as
   well as finally introduce the hypothesis `h`. -/
   let (_, hGoal) ← hGoal.introNP revertedFVars.size
