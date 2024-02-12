@@ -839,7 +839,7 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
       let .positive pbody := rbody | failure -- Fail if the body is not positive
       -- TODO: If we replace the next line by
       -- let rs : Option Q(Finset.Nonempty $s) ← do
-      -- then the type-ascription is ignored
+      -- then the type-ascription is ignored. See leanprover/lean4#3126
       let (.some ps : Option Q(Finset.Nonempty $s)) ← do
         try
           match s with
@@ -861,7 +861,9 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
       let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
       assertInstancesCommute
-      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
+      let proof := q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
+      proof.check
+      return .nonnegative proof
   | _ => throwError "not Finset.sum"
 
 example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j in range n, a j^2 := by positivity
