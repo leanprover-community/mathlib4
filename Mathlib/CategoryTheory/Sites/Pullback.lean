@@ -62,14 +62,14 @@ def Functor.sheafPullback : Sheaf J A ⥤ Sheaf K A :=
 #align category_theory.sites.pushforward CategoryTheory.Functor.sheafPullback
 
 instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by
-  have : PreservesFiniteLimits (lan (Functor.op G) ⋙ presheafToSheaf K A) :=
+  have : PreservesFiniteLimits (G.op.lan ⋙ presheafToSheaf K A) :=
     compPreservesFiniteLimits _ _
   apply compPreservesFiniteLimits
 
 /-- The pullback functor is left adjoint to the pushforward functor. -/
 def Functor.sheafAdjunctionContinuous [Functor.IsContinuous.{v₁} G J K] :
     G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K :=
-  ((Lan.adjunction A G.op).comp (sheafificationAdjunction K A)).restrictFullyFaithful
+  ((Lan.adjunction G.op A).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (sheafToPresheaf J A) (𝟭 _) (Iso.refl _) (Iso.refl _)
 #align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Functor.sheafAdjunctionContinuous
 
