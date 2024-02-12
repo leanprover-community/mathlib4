@@ -169,8 +169,7 @@ noncomputable def pointwiseLeftKanExtensionIsPointwiseLeftKanExtension :
     dsimp
     simp only [comp_id, colimit.ι_desc, CostructuredArrow.map_mk]
     congr 1
-    rw [id_comp]
-    rfl))
+    rw [id_comp, ← CostructuredArrow.eq_mk]
 
 /-- The functor `pointwiseLeftKanExtension L F` is a left Kan extension of `F` along `L`. -/
 noncomputable def pointwiseLeftKanExtensionIsUniversal :
