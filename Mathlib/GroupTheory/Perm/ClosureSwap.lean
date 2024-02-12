@@ -26,8 +26,6 @@ open Equiv List MulAction Pointwise Set Subgroup
 
 variable {G α : Type*} [Group G] [MulAction G α] [DecidableEq α]
 
--- begin lemmas for mathlib
-
 theorem finite_compl_fixedBy_closure_iff {S : Set G} :
     (∀ g ∈ closure S, (fixedBy α g)ᶜ.Finite) ↔ ∀ g ∈ S, (fixedBy α g)ᶜ.Finite :=
   ⟨fun h g hg ↦ h g (subset_closure hg), fun h g hg ↦ by
@@ -43,17 +41,7 @@ theorem Equiv.Perm.IsSwap.finite_compl_fixedBy {σ : Perm α} (h : σ.IsSwap) :
   obtain ⟨x, y, -, rfl⟩ := h
   exact finite_compl_fixedBy_swap
 
-theorem SubmonoidClass.swap_mem_trans {a b c : α} {C} [SetLike C (Perm α)]
-    [SubmonoidClass C (Perm α)] (M : C)
-    (hab : swap a b ∈ M) (hbc : swap b c ∈ M) : swap a c ∈ M := by
-  obtain rfl | hab' := eq_or_ne a b; exact hbc
-  obtain rfl | hac := eq_or_ne a c; exact swap_self a ▸ one_mem M
-  rw [swap_comm, ← swap_mul_swap_mul_swap hab' hac]
-  exact mul_mem (mul_mem hbc hab) hbc
-
--- end lemmas for mathlib
-
-theorem aux1 (S : Set G) (T : Set α) {a : α} (hS : ∀ g ∈ S, g⁻¹ ∈ S)
+private theorem orbit_closure_aux (S : Set G) (T : Set α) {a : α} (hS : ∀ g ∈ S, g⁻¹ ∈ S)
     (subset : T ⊆ orbit (closure S) a) (not_mem : a ∉ T) (nonempty : T.Nonempty) :
     ∃ σ ∈ S, ∃ a ∈ T, σ • a ∉ T := by
   have key0 : ¬ closure S ≤ stabilizer G T
@@ -72,7 +60,7 @@ theorem swap_mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap)
     swap x y ∈ closure S ↔ x ∈ orbit (closure S) y := by
   refine ⟨fun h ↦ ⟨⟨swap x y, h⟩, swap_apply_right x y⟩, fun hf ↦ ?_⟩
   by_contra h
-  have := aux1 S {x | swap x y ∈ closure S} (fun f hf ↦ ?_) (fun z hz ↦ ?_) h ⟨y, ?_⟩
+  have := orbit_closure_aux S {x | swap x y ∈ closure S} (fun f hf ↦ ?_) (fun z hz ↦ ?_) h ⟨y, ?_⟩
   · obtain ⟨σ, hσ, a, ha, hσa⟩ := this
     obtain ⟨z, w, hzw, rfl⟩ := hS σ hσ
     have := ne_of_mem_of_not_mem ha hσa
