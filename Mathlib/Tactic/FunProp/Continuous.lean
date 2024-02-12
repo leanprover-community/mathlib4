@@ -42,43 +42,28 @@ end Missing
 
 -- algebra
 attribute [fun_prop]
-  Continuous.sub
-  Continuous.neg
-  Continuous.zpow
   Continuous.zpow₀
   Continuous.smul
   Continuous.const_smul
   Continuous.vadd
   Continuous.const_vadd
-  Continuous.div'
   Continuous.div₀
-  Continuous.inv
   Continuous.inv₀
 
-  ContinuousAt.sub
-  ContinuousAt.neg
-  ContinuousAt.zpow
   ContinuousAt.zpow₀
   ContinuousAt.smul
   ContinuousAt.const_smul
   ContinuousAt.vadd
   ContinuousAt.const_vadd
-  ContinuousAt.div'
   ContinuousAt.div₀
-  ContinuousAt.inv
   ContinuousAt.inv₀
 
-  ContinuousOn.sub
-  ContinuousOn.neg
-  ContinuousOn.zpow
   ContinuousOn.zpow₀
   ContinuousOn.smul
   ContinuousOn.const_smul
   ContinuousOn.vadd
   ContinuousOn.const_vadd
-  ContinuousOn.div'
   ContinuousOn.div₀
-  ContinuousOn.inv
   ContinuousOn.inv₀
 
 -- analysis
