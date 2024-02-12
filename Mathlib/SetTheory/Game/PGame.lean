@@ -6,7 +6,7 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Logic.Relation
-import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
 
 #align_import set_theory.game.pgame from "leanprover-community/mathlib"@"8900d545017cd21961daa2a1734bb658ef52c618"
