@@ -7,6 +7,7 @@ import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
 
@@ -37,6 +38,7 @@ variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
 instance nontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
+attribute [gcongr] Nat.succ_le_succ
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
   -- Nat.bit1_ne_bit0
@@ -305,6 +307,7 @@ lemma one_le_div_iff (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff
 lemma div_lt_one_iff (hb : 0 < b) : a / b < 1 ↔ a < b := by simp only [← not_le, one_le_div_iff hb]
 #align nat.div_lt_one_iff Nat.div_lt_one_iff
 
+@[gcongr]
 protected lemma div_le_div_right (h : a ≤ b) : a / c ≤ b / c :=
   (c.eq_zero_or_pos.elim fun hc ↦ by simp [hc]) fun hc ↦
     (le_div_iff_mul_le' hc).2 <| le_trans (Nat.div_mul_le_self _ _) h
@@ -666,9 +669,15 @@ lemma eq_zero_of_dvd_of_div_eq_zero (hab : a ∣ b) (h : b / a = 0) : b = 0 := b
   rw [← Nat.div_mul_cancel hab, h, Nat.zero_mul]
 #align nat.eq_zero_of_dvd_of_div_eq_zero Nat.eq_zero_of_dvd_of_div_eq_zero
 
+@[gcongr]
 lemma div_le_div_left (hcb : c ≤ b) (hc : 0 < c) : a / b ≤ a / c :=
   (Nat.le_div_iff_mul_le hc).2 <| le_trans (Nat.mul_le_mul_left _ hcb) (div_mul_le_self _ _)
 #align nat.div_le_div_left Nat.div_le_div_left
+
+@[gcongr]
+protected theorem div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) : a / c ≤ b / d :=
+  calc a / c ≤ b / c := Nat.div_le_div_right h1
+    _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
 
 -- Moved to Std
 #align nat.mul_div_le Nat.mul_div_le
