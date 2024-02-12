@@ -325,20 +325,20 @@ alias ⟨IsTheta.of_const_mul_right, IsTheta.const_mul_right⟩ := isTheta_const
 #align asymptotics.is_Theta.of_const_mul_right Asymptotics.IsTheta.of_const_mul_right
 #align asymptotics.is_Theta.const_mul_right Asymptotics.IsTheta.const_mul_right
 
-theorem IsLittleO.right_isTheta_add {f₁ f₂ : α → E'} (h : f₂ =o[l] f₁) :
-    f₁ =Θ[l] (f₂ + f₁) :=
-  ⟨h.right_isBigO_add, (isBigO_refl _ _).isLittleO_add h⟩
+theorem IsLittleO.right_isTheta_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
+    f₂ =Θ[l] (f₁ + f₂) :=
+  ⟨h.right_isBigO_add, h.add_isBigO (isBigO_refl _ _)⟩
 
-theorem IsLittleO.left_isTheta_add {f₁ f₂ : α → E'} (h : f₂ =o[l] f₁) :
-    f₁ =Θ[l] (f₁ + f₂) :=
-  ⟨h.left_isBigO_add, (isBigO_refl _ _).add_isLittleO h⟩
+theorem IsLittleO.right_isTheta_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
+    f₂ =Θ[l] (f₂ + f₁) :=
+  Trans.trans h.right_isTheta_add (add_comm _ _)
 
 lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'} {g : α → F}
     (hΘ : f₁ =Θ[l] g) (ho : f₂ =o[l] g) : (f₁ + f₂) =Θ[l] g :=
-  ⟨hΘ.1.add_isLittleO ho, hΘ.2.trans <| (ho.trans_isTheta hΘ.symm).left_isBigO_add⟩
+  ⟨hΘ.1.add_isLittleO ho, hΘ.2.trans <| (ho.trans_isTheta hΘ.symm).right_isBigO_add'⟩
 
-lemma IsTheta.isLittleO_add {f₁ f₂ : α → E'} {g : α → F}
-    (hΘ : f₁ =Θ[l] g) (ho : f₂ =o[l] g) : (f₂ + f₁) =Θ[l] g :=
-  ⟨hΘ.1.isLittleO_add ho, hΘ.2.trans <| (ho.trans_isTheta hΘ.symm).right_isBigO_add⟩
+lemma IsLittleO.add_isTheta {f₁ f₂ : α → E'} {g : α → F}
+    (ho : f₁ =o[l] g) (hΘ : f₂ =Θ[l] g) : (f₁ + f₂) =Θ[l] g :=
+  Trans.trans (add_comm _ _) (hΘ.add_isLittleO ho)
 
 end Asymptotics

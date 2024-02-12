@@ -1125,9 +1125,6 @@ theorem IsBigO.add_isLittleO (h₁ : f₁ =O[l] g) (h₂ : f₂ =o[l] g) : (fun 
   h₁.add h₂.isBigO
 #align asymptotics.is_O.add_is_o Asymptotics.IsBigO.add_isLittleO
 
-theorem IsBigO.isLittleO_add (h₁ : f₁ =O[l] g) (h₂ : f₂ =o[l] g) : (fun x => f₂ x + f₁ x) =O[l] g :=
-  h₂.isBigO.add h₁
-
 theorem IsLittleO.add_isBigO (h₁ : f₁ =o[l] g) (h₂ : f₂ =O[l] g) : (fun x => f₁ x + f₂ x) =O[l] g :=
   h₁.isBigO.add h₂
 #align asymptotics.is_o.add_is_O Asymptotics.IsLittleO.add_isBigO
@@ -2140,10 +2137,9 @@ theorem IsLittleO.right_isBigO_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂)
   ((h.def' one_half_pos).right_le_add_of_lt_one one_half_lt_one).isBigO
 #align asymptotics.is_o.right_is_O_add Asymptotics.IsLittleO.right_isBigO_add
 
-theorem IsLittleO.left_isBigO_add {f₁ f₂ : α → E'} (h : f₂ =o[l] f₁) :
-    f₁ =O[l] (f₁ + f₂) := by
-  rewrite [add_comm]
-  exact h.right_isBigO_add
+theorem IsLittleO.right_isBigO_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
+    f₂ =O[l] (f₂ + f₁) :=
+  Trans.trans h.right_isBigO_add (add_comm _ _)
 
 /-- If `f x = O(g x)` along `cofinite`, then there exists a positive constant `C` such that
 `‖f x‖ ≤ C * ‖g x‖` whenever `g x ≠ 0`. -/
