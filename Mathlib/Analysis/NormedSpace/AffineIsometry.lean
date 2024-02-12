@@ -39,11 +39,12 @@ algebra-homomorphisms.)
 open Function Set
 
 variable (𝕜 : Type*) {V V₁ V₂ V₃ V₄ : Type*} {P₁ : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
-  [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup V₁] [SeminormedAddCommGroup V₂]
-  [SeminormedAddCommGroup V₃] [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V] [NormedSpace 𝕜 V₁]
-  [NormedSpace 𝕜 V₂] [NormedSpace 𝕜 V₃] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P] [MetricSpace P₁]
-  [PseudoMetricSpace P₂] [PseudoMetricSpace P₃] [PseudoMetricSpace P₄] [NormedAddTorsor V P]
-  [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂] [NormedAddTorsor V₃ P₃] [NormedAddTorsor V₄ P₄]
+  [NormedField 𝕜]
+  [SeminormedAddCommGroup V] [NormedSpace 𝕜 V] [PseudoMetricSpace P] [NormedAddTorsor V P]
+  [NormedAddCommGroup V₁] [NormedSpace 𝕜 V₁] [MetricSpace P₁] [NormedAddTorsor V₁ P₁]
+  [SeminormedAddCommGroup V₂] [NormedSpace 𝕜 V₂] [PseudoMetricSpace P₂] [NormedAddTorsor V₂ P₂]
+  [SeminormedAddCommGroup V₃] [NormedSpace 𝕜 V₃] [PseudoMetricSpace P₃] [NormedAddTorsor V₃ P₃]
+  [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P₄] [NormedAddTorsor V₄ P₄]
 
 /-- A `𝕜`-affine isometric embedding of one normed add-torsor over a normed `𝕜`-space into
 another. -/
@@ -373,18 +374,18 @@ theorem coe_toAffineIsometry : ⇑e.toAffineIsometry = e :=
 linear part at one base point. Namely, this function takes a map `e : P₁ → P₂`, a linear isometry
 equivalence `e' : V₁ ≃ᵢₗ[k] V₂`, and a point `p` such that for any other point `p'` we have
 `e p' = e' (p' -ᵥ p) +ᵥ e p`. -/
-def mk' (e : P₁ → P₂) (e' : V₁ ≃ₗᵢ[𝕜] V₂) (p : P₁) (h : ∀ p' : P₁, e p' = e' (p' -ᵥ p) +ᵥ e p) :
-    P₁ ≃ᵃⁱ[𝕜] P₂ :=
+def mk' (e : P → P₂) (e' : V ≃ₗᵢ[𝕜] V₂) (p : P) (h : ∀ p' : P, e p' = e' (p' -ᵥ p) +ᵥ e p) :
+    P ≃ᵃⁱ[𝕜] P₂ :=
   { AffineEquiv.mk' e e'.toLinearEquiv p h with norm_map := e'.norm_map }
 #align affine_isometry_equiv.mk' AffineIsometryEquiv.mk'
 
 @[simp]
-theorem coe_mk' (e : P₁ → P₂) (e' : V₁ ≃ₗᵢ[𝕜] V₂) (p h) : ⇑(mk' e e' p h) = e :=
+theorem coe_mk' (e : P → P₂) (e' : V ≃ₗᵢ[𝕜] V₂) (p h) : ⇑(mk' e e' p h) = e :=
   rfl
 #align affine_isometry_equiv.coe_mk' AffineIsometryEquiv.coe_mk'
 
 @[simp]
-theorem linearIsometryEquiv_mk' (e : P₁ → P₂) (e' : V₁ ≃ₗᵢ[𝕜] V₂) (p h) :
+theorem linearIsometryEquiv_mk' (e : P → P₂) (e' : V ≃ₗᵢ[𝕜] V₂) (p h) :
     (mk' e e' p h).linearIsometryEquiv = e' := by
   ext
   rfl
@@ -877,12 +878,11 @@ namespace AffineSubspace
 This is the affine version of `Submodule.equivMapOfInjective`.
 -/
 @[simps linear, simps! toFun]
-noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E] (φ : P₁ →ᵃ[𝕜] P₂)
+noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P) [Nonempty E] (φ : P →ᵃ[𝕜] P₂)
     (hφ : Function.Injective φ) : E ≃ᵃ[𝕜] E.map φ :=
-  { Equiv.Set.image _ (E : Set P₁) hφ with
-    linear :=
-      (E.direction.equivMapOfInjective φ.linear (φ.linear_injective_iff.mpr hφ)).trans
-        (LinearEquiv.ofEq _ _ (AffineSubspace.map_direction _ _).symm)
+  { Equiv.Set.image _ (E : Set P) hφ with
+    linear := (E.direction.equivMapOfInjective φ.linear (φ.linear_injective_iff.mpr hφ)).trans
+      (LinearEquiv.ofEq _ _ (AffineSubspace.map_direction _ _).symm)
     map_vadd' := fun p v => Subtype.ext <| φ.map_vadd p v }
 #align affine_subspace.equiv_map_of_injective AffineSubspace.equivMapOfInjective
 
