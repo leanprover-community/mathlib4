@@ -833,28 +833,35 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
   | ~q(@Finset.sum _ $ι $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι)
     have body : Q($α) := Expr.betaRev f #[i]
-    let so : Option Q(Finset.Nonempty $s) ← do
-      try
-        match s with
-        | ~q(@univ _ $fi) => do
-          let _no ← synthInstanceQ q(Nonempty $ι)
-          return some q(Finset.univ_nonempty (α := $ι))
-        | _ => throwError "`s` is not `univ`"
-      catch _ => do
-        let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s) | pure none
-        pure (some (.fvar fv))
-    match ← core zα pα body, so with
-    | .nonnegative pb, _ => do
-      let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
-      assertInstancesCommute
-      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pb
-      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
-    | .positive pb, .some (fi : Q(Finset.Nonempty $s)) => do
+    let rbody ← core zα pα body
+    -- Try to show that the sum is positive
+    try
+      let .positive pbody := rbody | failure -- Fail if the body is not positive
+      -- TODO: If we replace the next line by
+      -- let rs : Option Q(Finset.Nonempty $s) ← do
+      -- then the type-ascription is ignored
+      let (.some ps : Option Q(Finset.Nonempty $s)) ← do
+        try
+          match s with
+          | ~q(@univ _ $fi) => do
+            let _no ← synthInstanceQ q(Nonempty $ι)
+            return some q(Finset.univ_nonempty (α := $ι))
+          | _ => throwError "`s` is not `univ`"
+        catch _ => do
+          let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s) | pure none
+          pure (some (.fvar fv))
+        | failure -- Fail if the body is not nonempty
       let pα' ← synthInstanceQ q(OrderedCancelAddCommMonoid $α)
       assertInstancesCommute
-      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pb
-      return .positive q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $fi)
-    | _, _ => pure .none
+      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
+      return .positive q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps)
+    -- Try to show that the sum is nonnegative
+    catch _ => do
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
+      assertInstancesCommute
+      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j in range n, a j^2 := by positivity
@@ -864,7 +871,8 @@ example (n : ℕ) (a : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (a j^2 + 1) := by
 example (a : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (a j^2 + 1) := by
   have : Finset.Nonempty {1} := singleton_nonempty 1
   positivity
-example (s : Finset (ℕ)) : 0 ≤ ∑ j in s, j := by positivity
-example (s : Finset (ℕ)) : 0 ≤ s.sum id := by positivity
+example (s : Finset ℕ) : 0 ≤ ∑ j in s, j := by positivity
+example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
+example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
 
 end Mathlib.Meta.Positivity
