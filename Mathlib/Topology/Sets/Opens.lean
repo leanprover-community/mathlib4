@@ -169,6 +169,9 @@ theorem mk_inf_mk {U V : Set α} {hU : IsOpen U} {hV : IsOpen V} :
   rfl
 #align topological_space.opens.mk_inf_mk TopologicalSpace.Opens.mk_inf_mk
 
+@[simp]
+theorem coe_interior (s : Set α) : ((interior s) : Set α) = _root_.interior s := rfl
+
 @[simp, norm_cast]
 theorem coe_inf (s t : Opens α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl

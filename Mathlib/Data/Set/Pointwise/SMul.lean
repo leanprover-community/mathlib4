@@ -973,6 +973,16 @@ theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ 
 #align set.vadd_univ Set.vadd_univ
 
 @[to_additive]
+theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
+  rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ, Set.compl_eq_univ_diff]
+
+/-- `g • s` and `g • t` are disjoint if and only if `s` and `t` are disjoint. -/
+@[to_additive "`g +ᵥ s` and `g +ᵥ t` are disjoint if and only if `s` and `t` are disjoint."]
+theorem smul_set_disjoint {s t : Set β} (g : α) :
+    Disjoint (g • s) (g • t) ↔ Disjoint s t := by
+  simp_rw [Set.disjoint_iff_inter_eq_empty, ← smul_set_inter, smul_set_eq_empty]
+
+@[to_additive]
 theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
     x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
   rw [← nonempty_iff_ne_empty]
