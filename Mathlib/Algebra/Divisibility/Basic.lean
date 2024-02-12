@@ -117,9 +117,10 @@ factored as the product of a divisor of `b` and a divisor of `c`. -/
 def IsPrimal (a : α) : Prop := ∀ ⦃b c⦄, a ∣ b * c → ∃ a₁ a₂, a₁ ∣ b ∧ a₂ ∣ c ∧ a = a₁ * a₂
 
 variable (α) in
-/-- A monoid is a decomposition monoid if every element is primal. If the multiplicative monoid
-of an integral domain is a decomposition monoid, the domain is called pre-Schreier. -/
-class DecompositionMonoid : Prop where
+/-- A monoid is a decomposition monoid if every element is primal. An integral domain whose
+multiplicative monoid is a decomposition monoid, is called a pre-Schreier domain; it is a
+Schreier domain if it is moreover integrally closed. -/
+@[mk_iff] class DecompositionMonoid : Prop where
   primal (a : α) : IsPrimal a
 
 theorem exists_dvd_and_dvd_of_dvd_mul [DecompositionMonoid α] {b c a : α} (H : a ∣ b * c) :

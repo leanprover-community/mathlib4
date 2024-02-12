@@ -234,6 +234,10 @@ theorem IsRelPrime.mul_dvd_of_left_isPrimal (H : IsRelPrime x y) (H1 : x ∣ z) 
     (hx : IsPrimal x) : x * y ∣ z := by
   rw [mul_comm]; exact H.symm.mul_dvd_of_right_isPrimal H2 H1 hx
 
+/-! `IsRelPrime` enjoys the desirable properties in a decomposition monoid.
+See Lemma 6.3 in *On properties of square-free elements in commutative cancellative monoids*,
+https://doi.org/10.1007/s00233-019-10022-3. -/
+
 variable [DecompositionMonoid α]
 
 theorem IsRelPrime.dvd_of_dvd_mul_right (H1 : IsRelPrime x z) (H2 : x ∣ y * z) : x ∣ y :=

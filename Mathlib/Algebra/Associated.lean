@@ -318,14 +318,16 @@ end CommMonoid
 
 section CommMonoidWithZero
 
-variable [CommMonoidWithZero α] [DecompositionMonoid α] {a : α} (irr : Irreducible a)
+variable [CommMonoidWithZero α]
 
-theorem Irreducible.prime_of_isPrimal (primal : IsPrimal a) : Prime a :=
+theorem Irreducible.prime_of_isPrimal {a : α}
+    (irr : Irreducible a) (primal : IsPrimal a) : Prime a :=
   ⟨irr.ne_zero, irr.not_unit, fun a b dvd ↦ by
     obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := primal dvd
     exact (of_irreducible_mul irr).symm.imp (·.mul_right_dvd.mpr h₁) (·.mul_left_dvd.mpr h₂)⟩
 
-theorem Irreducible.prime : Prime a := irr.prime_of_isPrimal (DecompositionMonoid.primal a)
+theorem Irreducible.prime [DecompositionMonoid α] {a : α} (irr : Irreducible a) : Prime a :=
+  irr.prime_of_isPrimal (DecompositionMonoid.primal a)
 
 end CommMonoidWithZero
 
@@ -723,6 +725,7 @@ theorem Associated.of_pow_associated_of_prime' [CancelCommMonoidWithZero α] {p�
   (h.symm.of_pow_associated_of_prime hp₂ hp₁ hk₂).symm
 #align associated.of_pow_associated_of_prime' Associated.of_pow_associated_of_prime'
 
+/-- See also `Irreducible.coprime_iff_not_dvd`. -/
 lemma Irreducible.isRelPrime_iff_not_dvd [Monoid α] {p n : α} (hp : Irreducible p) :
     IsRelPrime p n ↔ ¬ p ∣ n := by
   refine ⟨fun h contra ↦ hp.not_unit (h dvd_rfl contra), fun hpn d hdp hdn ↦ ?_⟩
@@ -998,12 +1001,22 @@ theorem mk_dvd_mk {a b : α} : Associates.mk a ∣ Associates.mk b ↔ a ∣ b :
   Iff.intro dvd_of_mk_le_mk mk_le_mk_of_dvd
 #align associates.mk_dvd_mk Associates.mk_dvd_mk
 
+theorem isPrimal_iff {a : α} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
+  simp_rw [IsPrimal, forall_associated, mk_surjective.exists, mk_mul_mk, mk_dvd_mk]
+  constructor <;> intro h b c dvd <;> obtain ⟨a₁, a₂, h₁, h₂, eq⟩ := @h b c dvd
+  · obtain ⟨u, rfl⟩ := mk_eq_mk_iff_associated.mp eq.symm
+    exact ⟨a₁, a₂ * u, h₁, Units.mul_right_dvd.mpr h₂, mul_assoc _ _ _⟩
+  · exact ⟨a₁, a₂, h₁, h₂, congr_arg _ eq⟩
 
-instance instDecompositionMonoid [DecompositionMonoid α] : DecompositionMonoid (Associates α) where
-  primal := by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
-    obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := exists_dvd_and_dvd_of_dvd_mul (mk_dvd_mk.mp h)
-    exact ⟨_, _, mk_dvd_mk.mpr h₁, mk_dvd_mk.mpr h₂, rfl⟩
+theorem decompositionMonoid_iff : DecompositionMonoid (Associates α) ↔ DecompositionMonoid α := by
+  simp_rw [_root_.decompositionMonoid_iff, forall_associated, isPrimal_iff]
+
+instance instDecompositionMonoid [DecompositionMonoid α] : DecompositionMonoid (Associates α) :=
+  decompositionMonoid_iff.mpr ‹_›
+
+theorem mk_isRelPrime_iff {a b : α} :
+    IsRelPrime (Associates.mk a) (Associates.mk b) ↔ IsRelPrime a b := by
+  simp_rw [IsRelPrime, forall_associated, mk_dvd_mk, isUnit_mk]
 
 end CommMonoid
 

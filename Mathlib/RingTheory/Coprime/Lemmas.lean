@@ -14,9 +14,10 @@ import Mathlib.RingTheory.Coprime.Basic
 # Additional lemmas about elements of a ring satisfying `IsCoprime`
 and elements of a monoid satisfying `IsRelPrime`
 
-These lemmas are in a separate file to the definition of `IsCoprime` as they require more imports.
+These lemmas are in a separate file to the definition of `IsCoprime` or `IsRelPrime`
+as they require more imports.
 
-Notably, this includes lemmas about `Finset.prod` as this requires importing big_operators, and
+Notably, this includes lemmas about `Finset.prod` as this requires importing BigOperators, and
 lemmas about `HasPow` since these are easiest to prove via `Finset.prod`.
 
 -/
@@ -236,7 +237,6 @@ section RelPrime
 
 variable {α I} [CommMonoid α] [DecompositionMonoid α] {x y z : α} {s : I → α} {t : Finset I}
 
-
 theorem IsRelPrime.prod_left : (∀ i ∈ t, IsRelPrime (s i) x) → IsRelPrime (∏ i in t, s i) x := by
   classical
   refine Finset.induction_on t (fun _ ↦ isRelPrime_one_left) fun b t hbt ih H ↦ ?_
@@ -293,28 +293,33 @@ theorem pairwise_isRelPrime_iff_isRelPrime_prod [DecidableEq I] :
     apply IsRelPrime.prod_right_iff.mp (hp i hi)
     exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩
 
+namespace IsRelPrime
+
 variable {m n : ℕ}
 
-theorem IsRelPrime.pow_left (H : IsRelPrime x y) : IsRelPrime (x ^ m) y := by
+theorem pow_left (H : IsRelPrime x y) : IsRelPrime (x ^ m) y := by
   rw [← Finset.card_range m, ← Finset.prod_const]
   exact IsRelPrime.prod_left fun _ _ ↦ H
 
-theorem IsRelPrime.pow_right (H : IsRelPrime x y) : IsRelPrime x (y ^ n) := by
+theorem pow_right (H : IsRelPrime x y) : IsRelPrime x (y ^ n) := by
   rw [← Finset.card_range n, ← Finset.prod_const]
   exact IsRelPrime.prod_right fun _ _ ↦ H
 
-theorem IsRelPrime.pow (H : IsRelPrime x y) : IsRelPrime (x ^ m) (y ^ n) :=
+theorem pow (H : IsRelPrime x y) : IsRelPrime (x ^ m) (y ^ n) :=
   H.pow_left.pow_right
 
-theorem IsRelPrime.pow_left_iff (hm : 0 < m) : IsRelPrime (x ^ m) y ↔ IsRelPrime x y := by
+theorem pow_left_iff (hm : 0 < m) : IsRelPrime (x ^ m) y ↔ IsRelPrime x y := by
   refine' ⟨fun h ↦ _, IsRelPrime.pow_left⟩
   rw [← Finset.card_range m, ← Finset.prod_const] at h
   exact h.of_prod_left 0 (Finset.mem_range.mpr hm)
 
-theorem IsRelPrime.pow_right_iff (hm : 0 < m) : IsRelPrime x (y ^ m) ↔ IsRelPrime x y :=
+theorem pow_right_iff (hm : 0 < m) : IsRelPrime x (y ^ m) ↔ IsRelPrime x y :=
   isRelPrime_comm.trans <| (IsRelPrime.pow_left_iff hm).trans <| isRelPrime_comm
 
-theorem IsRelPrime.pow_iff (hm : 0 < m) (hn : 0 < n) : IsRelPrime (x ^ m) (y ^ n) ↔ IsRelPrime x y :=
-  (IsRelPrime.pow_left_iff hm).trans <| IsRelPrime.pow_right_iff hn
+theorem pow_iff (hm : 0 < m) (hn : 0 < n) :
+    IsRelPrime (x ^ m) (y ^ n) ↔ IsRelPrime x y :=
+  (IsRelPrime.pow_left_iff hm).trans (IsRelPrime.pow_right_iff hn)
+
+end IsRelPrime
 
 end RelPrime

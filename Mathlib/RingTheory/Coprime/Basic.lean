@@ -13,13 +13,16 @@ import Mathlib.Tactic.Ring
 #align_import ring_theory.coprime.basic from "leanprover-community/mathlib"@"a95b16cbade0f938fc24abd05412bde1e84bab9b"
 
 /-!
-# Coprime elements of a ring
+# Coprime elements of a ring or monoid
 
-## Main definitions
+## Main definition
 
 * `IsCoprime x y`: that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
-that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,
-e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
+that `a * x + b * y = 1`. Note that elements with no common divisors (`IsRelPrime`) are not
+necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
+The two notions are equivalent in Bézout rings, see `isRelPrime_iff_isCoprime`.
+
+This file also contains lemmas about `IsRelPrime` parallel to `IsCoprime`.
 
 See also `RingTheory.Coprime.Lemmas` for further development of coprime elements.
 -/
