@@ -153,7 +153,7 @@ noncomputable def pointwiseLeftKanExtension : D ⥤ H where
 noncomputable def pointwiseLeftKanExtensionUnit : F ⟶ L ⋙ pointwiseLeftKanExtension L F where
   app X := colimit.ι (CostructuredArrow.proj L (L.obj X) ⋙ F)
     (CostructuredArrow.mk (𝟙 (L.obj X)))
-  naturality {X₁ X₂} f:= by
+  naturality {X₁ X₂} f := by
     simp only [comp_obj, pointwiseLeftKanExtension_obj, comp_map,
       pointwiseLeftKanExtension_map, colimit.ι_desc, CostructuredArrow.map_mk]
     rw [id_comp]
