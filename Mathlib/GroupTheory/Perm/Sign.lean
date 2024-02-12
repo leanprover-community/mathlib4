@@ -26,7 +26,7 @@ universe u v
 
 open Equiv Function Fintype Finset
 
-open BigOperators Pointwise
+open BigOperators
 
 variable {α : Type u} {β : Type v}
 

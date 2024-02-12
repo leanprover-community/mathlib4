@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Junyan Xu
 -/
 import Mathlib.Data.Set.Finite
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.GroupTheory.GroupAction.FixedPoints
 import Mathlib.GroupTheory.Perm.Support
 
 /-!
@@ -28,24 +28,11 @@ variable {G α : Type*} [Group G] [MulAction G α] [DecidableEq α]
 
 -- begin lemmas for mathlib
 
-@[simp] lemma fixedBy_one : fixedBy α (1 : G) = univ := by
-  ext
-  simp
-
-@[simp] lemma fixedBy_inv (g : G) : fixedBy α g⁻¹ = fixedBy α g := by
-  ext
-  simp_rw [mem_fixedBy, inv_smul_eq_iff, eq_comm]
-
-lemma fixedBy_inter_subset_fixedBy_mul (g h : G) :
-    fixedBy α g ∩ fixedBy α h ⊆ fixedBy α (g * h) := by
-  intro x ⟨hx1, hx2⟩
-  rw [mem_fixedBy, mul_smul, hx2, hx1]
-
 theorem finite_compl_fixedBy_closure_iff {S : Set G} :
     (∀ g ∈ closure S, (fixedBy α g)ᶜ.Finite) ↔ ∀ g ∈ S, (fixedBy α g)ᶜ.Finite :=
   ⟨fun h g hg ↦ h g (subset_closure hg), fun h g hg ↦ by
     refine closure_induction hg h (by simp) (fun g g' hg hg' ↦ (hg.union hg').subset ?_) (by simp)
-    simp_rw [← compl_inter, compl_subset_compl, fixedBy_inter_subset_fixedBy_mul]⟩
+    simp_rw [← compl_inter, compl_subset_compl, fixedBy_mul]⟩
 
 theorem finite_compl_fixedBy_swap {x y : α} : (fixedBy α (swap x y))ᶜ.Finite :=
   Set.Finite.subset (s := {x, y}) (by simp)
