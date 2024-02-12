@@ -304,10 +304,7 @@ lemma Finset.le_card_infs_mul_card_sups [DecidableEq α] (s t : Finset α) :
   simpa using four_functions_theorem (1 : α → ℕ) 1 1 1 zero_le_one zero_le_one zero_le_one
     zero_le_one (fun _ _ ↦ le_rfl) s t
 
-end Finset
-
-variable [DistribLattice α] [Fintype α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β]
-  (f f₁ f₂ f₃ f₄ g μ : α → β)
+variable [Fintype α]
 
 /-- Special case of the **Four Functions Theorem** when `s = t = univ`. -/
 lemma four_functions_theorem_univ (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
