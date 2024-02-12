@@ -422,14 +422,14 @@ theorem Monic.C_dvd_iff_isUnit {p : R[X]} (hp : Monic p) {a : R} :
    fun ha => IsUnit.dvd (ha.map C)⟩
 
 theorem degree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
-    (hap : a ∣ p) (hp : Monic p):
+    (hap : a ∣ p) (hp : Monic p) :
     0 < degree a :=
   lt_of_not_ge <| fun h => ha <| by
     rw [Polynomial.eq_C_of_degree_le_zero h] at hap ⊢
     simpa [hp.C_dvd_iff_isUnit, isUnit_C] using hap
 
 theorem natDegree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
-    (hap : a ∣ p) (hp : Monic p):
+    (hap : a ∣ p) (hp : Monic p) :
     0 < natDegree a :=
   natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_not_isUnit_of_dvd_monic ha hap hp
 
