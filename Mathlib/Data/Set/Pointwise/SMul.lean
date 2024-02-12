@@ -973,6 +973,10 @@ theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ 
 #align set.vadd_univ Set.vadd_univ
 
 @[to_additive]
+theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
+  simp_rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ]
+
+@[to_additive]
 theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
     x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
   rw [← nonempty_iff_ne_empty]
