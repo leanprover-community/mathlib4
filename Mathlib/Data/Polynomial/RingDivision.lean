@@ -382,6 +382,38 @@ instance : IsDomain R[X] :=
 
 end Ring
 
+section CommSemiring
+
+variable [CommSemiring R]
+
+theorem Monic.C_dvd_iff_isUnit {p : R[X]} (hp : Monic p) {a : R} :
+    C a ∣ p ↔ IsUnit a :=
+  ⟨fun h => isUnit_iff_dvd_one.mpr <|
+      hp.coeff_natDegree ▸ (C_dvd_iff_dvd_coeff _ _).mp h p.natDegree,
+   fun ha => (ha.map C).dvd⟩
+
+theorem degree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
+    (hap : a ∣ p) (hp : Monic p) :
+    0 < degree a :=
+  lt_of_not_ge <| fun h => ha <| by
+    rw [Polynomial.eq_C_of_degree_le_zero h] at hap ⊢
+    simpa [hp.C_dvd_iff_isUnit, isUnit_C] using hap
+
+theorem natDegree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
+    (hap : a ∣ p) (hp : Monic p) :
+    0 < natDegree a :=
+  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_not_isUnit_of_dvd_monic ha hap hp
+
+theorem degree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
+    0 < degree a :=
+  degree_pos_of_not_isUnit_of_dvd_monic hu dvd_rfl ha
+
+theorem natDegree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
+    0 < natDegree a :=
+  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_monic_of_not_isUnit hu ha
+
+end CommSemiring
+
 section CommRing
 
 variable [CommRing R]
@@ -425,32 +457,6 @@ theorem comp_X_add_C_eq_zero_iff {p : R[X]} (t : R) :
 
 theorem comp_X_add_C_ne_zero_iff {p : R[X]} (t : R) :
     p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := Iff.not <| comp_X_add_C_eq_zero_iff t
-
-theorem Monic.C_dvd_iff_isUnit {p : R[X]} (hp : Monic p) {a : R} :
-    C a ∣ p ↔ IsUnit a :=
-  ⟨fun h => isUnit_iff_dvd_one.mpr <|
-      hp.coeff_natDegree ▸ (C_dvd_iff_dvd_coeff _ _).mp h p.natDegree,
-   (·.map C).dvd⟩
-
-theorem degree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
-    (hap : a ∣ p) (hp : Monic p) :
-    0 < degree a :=
-  lt_of_not_ge <| fun h => ha <| by
-    rw [Polynomial.eq_C_of_degree_le_zero h] at hap ⊢
-    simpa [hp.C_dvd_iff_isUnit, isUnit_C] using hap
-
-theorem natDegree_pos_of_not_isUnit_of_dvd_monic {a p : R[X]} (ha : ¬ IsUnit a)
-    (hap : a ∣ p) (hp : Monic p) :
-    0 < natDegree a :=
-  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_not_isUnit_of_dvd_monic ha hap hp
-
-theorem degree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
-    0 < degree a :=
-  degree_pos_of_not_isUnit_of_dvd_monic hu dvd_rfl ha
-
-theorem natDegree_pos_of_monic_of_not_isUnit {a : R[X]} (hu : ¬ IsUnit a) (ha : Monic a) :
-    0 < natDegree a :=
-  natDegree_pos_iff_degree_pos.mpr <| degree_pos_of_monic_of_not_isUnit hu ha
 
 theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
     p.rootMultiplicity t = (p.comp (X + C t)).rootMultiplicity 0 := by
