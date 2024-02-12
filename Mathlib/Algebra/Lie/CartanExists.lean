@@ -135,12 +135,23 @@ lemma lieCharpoly₁_map_eval (r : R) :
         map_smul, Finsupp.coe_add, Finsupp.coe_smul, MvPolynomial.eval_X, Pi.add_apply,
         Pi.smul_apply, smul_eq_mul, mul_comm r]
 
+lemma foo {σ : Type*} {m n : ℕ} (F : MvPolynomial σ R) (hF : F.IsHomogeneous n)
+    (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ m) :
+    (MvPolynomial.aeval f F).natDegree ≤ m * n := by
+  sorry
+
 lemma lieCharpoly₁_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly₁ R M x y).coeff i).natDegree ≤ j := by
   rw [finrank_eq_card_chooseBasisIndex] at hij
   classical
   have := lieCharpoly_coeff_isHomogeneous (chooseBasis R L) (chooseBasis R M) _ _ hij
-  sorry
+  rw [← one_mul j, lieCharpoly₁, coeff_map]
+  apply foo _ _ this _ _
+  intro k
+  apply Polynomial.natDegree_add_le_of_degree_le
+  · apply (Polynomial.natDegree_C_mul_le _ _).trans
+    simp only [natDegree_X, le_rfl]
+  · simp only [natDegree_C, zero_le]
 
 end engel_le_engel
 
