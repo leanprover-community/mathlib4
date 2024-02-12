@@ -57,11 +57,10 @@ theorem tendsto_ENNReal_indicator_lt (f : α → ℝ≥0∞) (x : α) :
     simp only [not_lt, Set.mem_setOf_eq, one_div, inv_le_iff_inv_le]
     simp only [one_div, ge_iff_le, Nat.ceil_le] at hn
     calc
-      (f x)⁻¹ = _ := (ofReal_toReal (inv_ne_top.mpr hfx)).symm
-      _       ≤ _ := ENNReal.ofReal_le_ofReal hn
-      ENNReal.ofReal ↑n
-              = _ := by norm_cast
-      ↑n      ≤ ↑n + 1 := by norm_num
+      (f x)⁻¹ = .ofReal (f x)⁻¹.toReal := (ofReal_toReal (inv_ne_top.mpr hfx)).symm
+      _       ≤ .ofReal n              := ENNReal.ofReal_le_ofReal hn
+      _       = ↑n                     := by norm_cast
+      _       ≤ ↑n + 1                 := by norm_num
   · refine' tendsto_atTop_of_eventually_const (i₀ := 0) fun n _ => _
     simp only [ne_eq, not_not] at hfx
     simp only [mem_setOf_eq, not_lt, indicator_apply_eq_zero]
@@ -102,15 +101,12 @@ protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ) (hp : 1 �
   rw [compl_union]
   calc
     snorm (indicator (s₁ᶜ ∩ s₂ᶜ) (f i)) p μ + snorm (indicator (s₁ᶜ ∩ s₂ᶜ) (g i)) p μ
-      = _ := by
+      = snorm (indicator (s₂ᶜ ∩ s₁ᶜ) (f i)) p μ + _ := by
         congr; rw [inter_comm]
-    snorm (indicator (s₂ᶜ ∩ s₁ᶜ) (f i)) p μ + _
-      ≤ _ := by
+    _ ≤ snorm (indicator s₁ᶜ (f i)) p μ + snorm (indicator s₂ᶜ (g i)) p μ := by
         gcongr <;> rw [← indicator_indicator] <;> exact snorm_indicator_le _
-    snorm (indicator s₁ᶜ (f i)) p μ + snorm (indicator s₂ᶜ (g i)) p μ
-      ≤ _ := add_le_add (hfε₁ i) (hgε₂ i)
-    .ofReal (ε / 2) + .ofReal (ε / 2)
-      = ENNReal.ofReal ε := hε_halves.symm
+    _ ≤ .ofReal (ε / 2) + .ofReal (ε / 2) := add_le_add (hfε₁ i) (hgε₂ i)
+    _ = ENNReal.ofReal ε := hε_halves.symm
 
 protected theorem neg (hf : UnifTight f p μ) : UnifTight (-f) p μ := by
   simp_rw [UnifTight, Pi.neg_apply, Set.indicator_neg', snorm_neg]
@@ -145,8 +141,8 @@ theorem lintegral_indicator_compl_le
   have hgf := haemg.ae_eq_mk
   set f := haemg.mk
   have hf := calc
-    ∫⁻ a, f a ∂μ = _ := (lintegral_congr_ae hgf).symm
-    ∫⁻ a, g a ∂μ < ∞ := hg
+    ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := (lintegral_congr_ae hgf).symm
+    _            < ∞ := hg
   simp (config := { zeta := false } /- prevent let expansion -/)
     only [lintegral_congr_ae hgf.indicator]
   have hmeas_lt : ∀ M : ℕ, MeasurableSet { x | f x < 1 / (↑M + 1) } := by
@@ -190,9 +186,9 @@ theorem lintegral_indicator_compl_le
   rw [compl_compl] at hms
   have hμs := calc
     μ { x | 1 / (↑M + 1) ≤ f x }
-      ≤ _ := meas_ge_le_lintegral_div hmf.aemeasurable (by norm_num) (by norm_num)
-    (∫⁻ a, f a ∂μ) / (1 / (↑M + 1))
-      < ∞ := by apply div_lt_top hf.ne (by norm_num)
+      ≤ (∫⁻ a, f a ∂μ) / (1 / (↑M + 1)) :=
+        meas_ge_le_lintegral_div hmf.aemeasurable (by norm_num) (by norm_num)
+    _ < ∞ := by apply div_lt_top hf.ne (by norm_num)
   set s := { x | 1 / (↑M + 1) ≤ f x }
   -- fulfill the goal
   use s, hms, hμs, hM
@@ -215,9 +211,8 @@ theorem Memℒp.snorm_indicator_compl_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
   rw [snorm_eq_snorm' (by assumption) (by assumption)] at hsnf
   have hinpf := calc
     ∫⁻ a, ‖f a‖₊ ^ p.toReal ∂μ
-      = _ := lintegral_rpow_nnnorm_eq_rpow_snorm' hrp_pos
-    (snorm' f p.toReal μ) ^ p.toReal
-      < ∞ := (rpow_lt_top_iff_of_pos hrp_pos).mpr hsnf
+      = (snorm' f p.toReal μ) ^ p.toReal := lintegral_rpow_nnnorm_eq_rpow_snorm' hrp_pos
+    _ < ∞                                := (rpow_lt_top_iff_of_pos hrp_pos).mpr hsnf
   -- get a.e. measurability for the integrand
   -- XXX: Why does `AEStronglyMeasurable.ennnorm` only give the weaker AEMeasurable?
   --      It would make sense to me to use `haesmf.ennnorm.aemeasurable` below.
@@ -398,53 +393,46 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
   have hmfngE : AEStronglyMeasurable _ μ := (((hf n).sub hg).indicator hmE).aestronglyMeasurable
   have hfngEε := calc
     snorm (E.indicator (f n - g)) p μ
-      = _ := snorm_indicator_eq_snorm_restrict hmE
-    snorm (f n - g) p (μ.restrict E)
-      ≤ ε / 3 := hfngε n hn
+      = snorm (f n - g) p (μ.restrict E) := snorm_indicator_eq_snorm_restrict hmE
+    _ ≤ ε / 3                            := hfngε n hn
   -- get exterior estimates
   have hmgEc : AEStronglyMeasurable _ μ := (hg.indicator hmE.compl).aestronglyMeasurable
   have hgEcε := calc
     snorm (Eᶜ.indicator g) p μ
-      ≤ _ := by
+      ≤ snorm (Efᶜ.indicator (Egᶜ.indicator g)) p μ := by
         unfold_let E; rw [compl_union, ← indicator_indicator]
-    snorm (Efᶜ.indicator (Egᶜ.indicator g)) p μ
-      ≤ _ := snorm_indicator_le _
-    snorm (Egᶜ.indicator g) p μ
-      ≤ _ := hgε
+    _ ≤ snorm (Egᶜ.indicator g) p μ := snorm_indicator_le _
+    _ ≤ .ofReal (ε / 3).toReal := hgε
     _ = ε / 3 := ENNReal.ofReal_toReal hε''
   have hmfnEc : AEStronglyMeasurable _ μ := ((hf n).indicator hmE.compl).aestronglyMeasurable
   have hfnEcε : snorm (Eᶜ.indicator (f n)) p μ ≤ ε / 3 := calc
     snorm (Eᶜ.indicator (f n)) p μ
-      ≤ _ := by
+      ≤ snorm (Egᶜ.indicator (Efᶜ.indicator (f n))) p μ := by
         unfold_let E; rw [compl_union, inter_comm, ← indicator_indicator]
-    snorm (Egᶜ.indicator (Efᶜ.indicator (f n))) p μ
-      ≤ _ := snorm_indicator_le _
-    snorm (Efᶜ.indicator (f n)) p μ
-      ≤ _ := hfε n
+    _ ≤ snorm (Efᶜ.indicator (f n)) p μ := snorm_indicator_le _
+    _ ≤ .ofReal (ε / 3).toReal := hfε n
     _ = ε / 3 := ENNReal.ofReal_toReal hε''
   have hmfngEc : AEStronglyMeasurable _ μ :=
     (((hf n).sub hg).indicator hmE.compl).aestronglyMeasurable
   have hfngEcε := calc
     snorm (Eᶜ.indicator (f n - g)) p μ
-      = _ := by rw [(Eᶜ.indicator_sub' _ _)]
-    snorm (Eᶜ.indicator (f n) - Eᶜ.indicator g) p μ
-      ≤ _ := by apply snorm_sub_le (by assumption) (by assumption) hp
-    snorm (Eᶜ.indicator (f n)) p μ + snorm (Eᶜ.indicator g) p μ
-      ≤ ε / 3 + ε / 3 := add_le_add hfnEcε hgEcε
+      = snorm (Eᶜ.indicator (f n) - Eᶜ.indicator g) p μ := by
+        rw [(Eᶜ.indicator_sub' _ _)]
+    _ ≤ snorm (Eᶜ.indicator (f n)) p μ + snorm (Eᶜ.indicator g) p μ := by
+        apply snorm_sub_le (by assumption) (by assumption) hp
+    _ ≤ ε / 3 + ε / 3 := add_le_add hfnEcε hgEcε
   -- finally, combine interior and exterior estimates
   calc
     snorm (f n - g) p μ
-      = _ := by
+      = snorm (Eᶜ.indicator (f n - g) + E.indicator (f n - g)) p μ := by
         congr; exact (E.indicator_compl_add_self _).symm
-    snorm (Eᶜ.indicator (f n - g) + E.indicator (f n - g)) p μ
-      ≤ _ := by
+    _ ≤ snorm (indicator Eᶜ (f n - g)) p μ + snorm (indicator E (f n - g)) p μ := by
         apply snorm_add_le (by assumption) (by assumption) hp
-    snorm (indicator Eᶜ (f n - g)) p μ + snorm (indicator E (f n - g)) p μ
-      ≤ _ := add_le_add hfngEcε hfngEε
-    (ε / 3 + ε / 3) + ε / 3
-      = ε := by simp only [ENNReal.add_thirds] --ENNReal.add_thirds ε
+    _ ≤ (ε / 3 + ε / 3) + ε / 3 := add_le_add hfngEcε hfngEε
+    _ = ε := by simp only [ENNReal.add_thirds] --ENNReal.add_thirds ε
 
-/- Lemma used in `tendsto_Lp_notFinite_of_tendsto_ae`. Alternative name: `ae_tendsto_ae_congr`? -/
+/- Lemma used in `tendsto_Lp_notFinite_of_tendsto_ae`.
+   XXX: Alternative name: `ae_tendsto_ae_congr`? -/
 theorem tendsto_ae_congr_ae {f f' : ℕ → α → β} {g g' : α → β}
     (hff' : ∀ (n : ℕ), f n =ᵐ[μ] f' n) (hgg' : g =ᵐ[μ] g')
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
