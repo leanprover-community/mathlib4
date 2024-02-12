@@ -82,13 +82,9 @@ where $\sim$ denotes the adjacency relation -/
 theorem lapMatrix_toLinearMap₂' [Field α] [CharZero α] (x : V → α) :
     toLinearMap₂' (G.lapMatrix α) x x =
     (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j)^2 else 0) / 2 := by
-  rw [toLinearMap₂'_apply']
-  unfold lapMatrix
-  rw [sub_mulVec]
-  simp only [dotProduct_sub]
-  rw [dotProduct_mulVec_degMatrix, dotProduct_mulVec_adjMatrix, ← sum_sub_distrib]
-  simp only [degree_eq_sum_if_adj, sum_mul, ← sum_sub_distrib, ite_mul, one_mul,
-             zero_mul, ite_sub_ite, sub_zero]
+  simp_rw [toLinearMap₂'_apply', lapMatrix, sub_mulVec, dotProduct_sub, dotProduct_mulVec_degMatrix,
+    dotProduct_mulVec_adjMatrix, ← sum_sub_distrib, degree_eq_sum_if_adj, sum_mul, ite_mul, one_mul,
+    zero_mul, ← sum_sub_distrib, ite_sub_ite, sub_zero]
   rw [← half_add_self (∑ x_1 : V, ∑ x_2 : V, _)]
   conv_lhs => enter [1,2,2,i,2,j]; rw [if_congr (adj_comm G i j) rfl rfl]
   conv_lhs => enter [1,2]; rw [Finset.sum_comm]
