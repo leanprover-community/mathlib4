@@ -16,25 +16,6 @@ import Mathlib.Tactic.FunProp
 -/
 
 
--- analysis
-attribute [fun_prop]
-  Continuous.edist
-
-  Continuous.norm
-  Continuous.nnnorm
-  Continuous.norm'
-  Continuous.nnnorm'
-
-  ContinuousAt.norm
-  ContinuousAt.nnnorm
-  ContinuousAt.norm'
-  ContinuousAt.nnnorm'
-
-  ContinuousOn.norm
-  ContinuousOn.nnnorm
-  ContinuousOn.norm'
-  ContinuousOn.nnnorm'
-
 -- special function
 attribute [fun_prop]
   Continuous.exp
