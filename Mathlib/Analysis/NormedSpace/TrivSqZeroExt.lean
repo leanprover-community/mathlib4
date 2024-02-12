@@ -200,7 +200,7 @@ open scoped BigOperators
 @[simp]
 theorem List.toFinset_range (n) : List.toFinset (List.range n) = Finset.range n := by ext; simp
 
-
+-- https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Triangular.20infinite.20sums/near/411499166
 /-- An infinite triangular sum can be transposed. -/
 theorem HasSum_sum_range_iff {α} [TopologicalSpace α] [AddCommMonoid α] [ContinuousAdd α]
     (f : ℕ → ℕ → α) (a : α):
@@ -208,6 +208,7 @@ theorem HasSum_sum_range_iff {α} [TopologicalSpace α] [AddCommMonoid α] [Cont
   sorry
 open unitInterval
 
+-- mathlib4#10452
 noncomputable instance : MeasureTheory.MeasureSpace I where
   volume := MeasureTheory.MeasureSpace.volume.comap Subtype.val
 
