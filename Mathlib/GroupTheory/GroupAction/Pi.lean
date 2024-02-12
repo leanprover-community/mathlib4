@@ -270,10 +270,9 @@ theorem Function.extend_smul {R α β γ : Type*} [SMul R γ] (r : R) (f : α �
   funext fun x => by
   -- Porting note: Lean4 is unable to automatically call `Classical.propDecidable`
   haveI : Decidable (∃ a : α, f a = x) := Classical.propDecidable _
-  rw [extend_def, Pi.smul_apply, Pi.smul_apply, extend_def]
+  simp only [extend_def, Pi.smul_apply]
   split_ifs <;>
   rfl
-  -- convert (apply_dite (fun c : γ => r • c) _ _ _).symm
 #align function.extend_smul Function.extend_smul
 #align function.extend_vadd Function.extend_vadd
 
