@@ -5,8 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
-import Mathlib.Analysis.NormedSpace.LinearIsometry
+import Mathlib.Analysis.NormedSpace.Span
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.Module.StrongTopology
 import Mathlib.Tactic.SuppressCompilation
@@ -647,7 +646,7 @@ theorem sSup_unit_ball_eq_norm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
     [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} [NormedSpace 𝕜 E]
     [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖) '' ball 0 1) = ‖f‖ := by
-  simpa only [NNReal.coe_sSup, Set.image_image] using NNReal.coe_eq.2 f.sSup_unit_ball_eq_nnnorm
+  simpa only [NNReal.coe_sSup, Set.image_image] using NNReal.coe_inj.2 f.sSup_unit_ball_eq_nnnorm
 #align continuous_linear_map.Sup_unit_ball_eq_norm ContinuousLinearMap.sSup_unit_ball_eq_norm
 
 theorem sSup_closed_unit_ball_eq_nnnorm {𝕜 𝕜₂ E F : Type*} [NormedAddCommGroup E]
@@ -668,7 +667,7 @@ theorem sSup_closed_unit_ball_eq_norm {𝕜 𝕜₂ E F : Type*} [NormedAddCommG
     [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖) '' closedBall 0 1) = ‖f‖ := by
   simpa only [NNReal.coe_sSup, Set.image_image] using
-    NNReal.coe_eq.2 f.sSup_closed_unit_ball_eq_nnnorm
+    NNReal.coe_inj.2 f.sSup_closed_unit_ball_eq_nnnorm
 #align continuous_linear_map.Sup_closed_unit_ball_eq_norm ContinuousLinearMap.sSup_closed_unit_ball_eq_norm
 
 end Sup
@@ -2202,7 +2201,7 @@ theorem coord_norm (x : E) (h : x ≠ 0) : ‖coord 𝕜 x h‖ = ‖x‖⁻¹ :
   have hx : 0 < ‖x‖ := norm_pos_iff.mpr h
   haveI : Nontrivial (𝕜 ∙ x) := Submodule.nontrivial_span_singleton h
   exact ContinuousLinearMap.homothety_norm _ fun y =>
-    homothety_inverse _ hx _ (toSpanNonzeroSingleton_homothety 𝕜 x h) _
+    homothety_inverse _ hx _ (LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x h) _
 #align continuous_linear_equiv.coord_norm ContinuousLinearEquiv.coord_norm
 
 end
