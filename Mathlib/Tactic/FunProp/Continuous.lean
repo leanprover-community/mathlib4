@@ -69,11 +69,6 @@ end Missing
 
 
 
--- mark definition
-attribute [fun_prop]
-  ContinuousAt
-  ContinuousOn
-
 
 -- lambda rules
 attribute [fun_prop]
