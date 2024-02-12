@@ -22,16 +22,13 @@ attribute [fun_prop]
   Continuous.cexp
   Continuous.log
   Continuous.pow
-  Continuous.sqrt
 
   ContinuousAt.exp
   ContinuousAt.cexp
   ContinuousAt.log
   ContinuousAt.pow
-  ContinuousAt.sqrt
 
   ContinuousOn.exp
   ContinuousOn.cexp
   ContinuousOn.log
   ContinuousOn.pow
-  ContinuousOn.sqrt
