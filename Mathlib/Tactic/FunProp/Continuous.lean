@@ -43,20 +43,14 @@ end Missing
 -- algebra
 attribute [fun_prop]
   Continuous.zpow₀
-  Continuous.smul
-  Continuous.vadd
   Continuous.div₀
   Continuous.inv₀
 
   ContinuousAt.zpow₀
-  ContinuousAt.smul
-  ContinuousAt.vadd
   ContinuousAt.div₀
   ContinuousAt.inv₀
 
   ContinuousOn.zpow₀
-  ContinuousOn.smul
-  ContinuousOn.vadd
   ContinuousOn.div₀
   ContinuousOn.inv₀
 
