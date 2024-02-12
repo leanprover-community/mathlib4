@@ -317,25 +317,36 @@ section AddCommGroupWithOne
 variable [AddCommGroupWithOne α] [CharZero α]
 
 @[simp, norm_cast]
-theorem int_cast_modEq_int_cast {a b z : ℤ} : a ≡ b [PMOD (z : α)] ↔ a ≡ b [PMOD z] := by
+theorem intCast_modEq_intCast {a b z : ℤ} : a ≡ b [PMOD (z : α)] ↔ a ≡ b [PMOD z] := by
   simp_rw [ModEq, ← Int.cast_mul_eq_zsmul_cast]
   norm_cast
-#align add_comm_group.int_cast_modeq_int_cast AddCommGroup.int_cast_modEq_int_cast
+#align add_comm_group.int_cast_modeq_int_cast AddCommGroup.intCast_modEq_intCast
 
 @[simp, norm_cast]
-theorem nat_cast_modEq_nat_cast {a b n : ℕ} : a ≡ b [PMOD (n : α)] ↔ a ≡ b [MOD n] := by
-  simp_rw [← Int.coe_nat_modEq_iff, ← modEq_iff_int_modEq, ← @int_cast_modEq_int_cast α,
+lemma intCast_modEq_intCast' {a b : ℤ} {n : ℕ} : a ≡ b [PMOD (n : α)] ↔ a ≡ b [PMOD (n : ℤ)] := by
+  simpa using intCast_modEq_intCast (α := α) (z := n)
+
+@[simp, norm_cast]
+theorem natCast_modEq_natCast {a b n : ℕ} : a ≡ b [PMOD (n : α)] ↔ a ≡ b [MOD n] := by
+  simp_rw [← Int.coe_nat_modEq_iff, ← modEq_iff_int_modEq, ← @intCast_modEq_intCast α,
     Int.cast_ofNat]
-#align add_comm_group.nat_cast_modeq_nat_cast AddCommGroup.nat_cast_modEq_nat_cast
+#align add_comm_group.nat_cast_modeq_nat_cast AddCommGroup.natCast_modEq_natCast
 
-alias ⟨ModEq.of_int_cast, ModEq.int_cast⟩ := int_cast_modEq_int_cast
-#align add_comm_group.modeq.of_int_cast AddCommGroup.ModEq.of_int_cast
-#align add_comm_group.modeq.int_cast AddCommGroup.ModEq.int_cast
+alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast
+#align add_comm_group.modeq.of_int_cast AddCommGroup.ModEq.of_intCast
+#align add_comm_group.modeq.int_cast AddCommGroup.ModEq.intCast
 
-alias ⟨_root_.Nat.ModEq.of_nat_cast, ModEq.nat_cast⟩ := nat_cast_modEq_nat_cast
-#align nat.modeq.of_nat_cast Nat.ModEq.of_nat_cast
-#align add_comm_group.modeq.nat_cast AddCommGroup.ModEq.nat_cast
+alias ⟨_root_.Nat.ModEq.of_natCast, ModEq.natCast⟩ := natCast_modEq_natCast
+#align nat.modeq.of_nat_cast Nat.ModEq.of_natCast
+#align add_comm_group.modeq.nat_cast AddCommGroup.ModEq.natCast
 
 end AddCommGroupWithOne
 
+section DivisionRing
+variable [DivisionRing α] {a b c p : α}
+
+@[simp] lemma div_modEq_div (hc : c ≠ 0) : a / c ≡ b / c [PMOD p] ↔ a ≡ b [PMOD (p * c)] := by
+  simp [ModEq, ← sub_div, div_eq_iff hc, mul_assoc]
+
+end DivisionRing
 end AddCommGroup

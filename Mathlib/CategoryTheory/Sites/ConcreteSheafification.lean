@@ -241,7 +241,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     mk x = mk y ↔ ∃ (W : J.Cover X) (h1 : W ⟶ S) (h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
   constructor
   · intro h
-    obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq _ _ _ h
+    obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq.{u} _ _ _ h
     use W.unop, h1.unop, h2.unop
     ext I
     apply_fun Multiequalizer.ι (W.unop.index P) I at hh

@@ -790,21 +790,23 @@ an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map 
 The naming is similar to `MultilinearMap.domDomCongr`: here we are applying the restriction to the
 domain of the domain.
 -/
-def domDomRestrict [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P]
+def domDomRestrict (f : MultilinearMap R M₁ M₂) (P : ι → Prop) [DecidablePred P]
     (z : (i : {a : ι // ¬ P a}) → M₁ i) :
     MultilinearMap R (fun (i : {a : ι // P a}) => M₁ i) M₂ where
   toFun x := f (fun j ↦ if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩)
   map_add' x i a b := by
+    classical
     simp only
     repeat (rw [domDomRestrict_aux])
     simp only [MultilinearMap.map_add]
   map_smul' z i c a := by
+    classical
     simp only
     repeat (rw [domDomRestrict_aux])
     simp only [MultilinearMap.map_smul]
 
 @[simp]
-lemma domDomRestrict_apply [DecidableEq ι] (f : MultilinearMap R M₁ M₂) (P : ι → Prop)
+lemma domDomRestrict_apply (f : MultilinearMap R M₁ M₂) (P : ι → Prop)
     [DecidablePred P] (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) :
     f.domDomRestrict P z x = f (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) := rfl
 
@@ -892,7 +894,7 @@ instance [Monoid S] [DistribMulAction S M₂] [Module R M₂] [SMulCommClass R S
 
 section Module
 
-variable [Semiring S] [Module S M₂] [Module R M₂] [SMulCommClass R S M₂]
+variable [Semiring S] [Module S M₂] [SMulCommClass R S M₂]
 
 /-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
 addition and scalar multiplication. -/
@@ -906,7 +908,7 @@ variable (R S M₁ M₂ M₃)
 
 section OfSubsingleton
 
-variable [AddCommMonoid M₃] [Semiring S] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
+variable [AddCommMonoid M₃] [Module S M₃] [Module R M₃] [SMulCommClass R S M₃]
 
 /-- Linear equivalence between linear maps `M₂ →ₗ[R] M₃`
 and one-multilinear maps `MultilinearMap R (fun _ : ι ↦ M₂) M₃`. -/

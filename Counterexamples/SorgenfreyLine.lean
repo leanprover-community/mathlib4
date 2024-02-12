@@ -270,7 +270,7 @@ theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
 
 /-- An antidiagonal is a separable set but is not a separable space. -/
 theorem isSeparable_antidiagonal (c : ℝₗ) : IsSeparable {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
-  isSeparable_of_separableSpace _
+  .of_separableSpace _
 
 /-- An antidiagonal is a separable set but is not a separable space. -/
 theorem not_separableSpace_antidiagonal (c : ℝₗ) :

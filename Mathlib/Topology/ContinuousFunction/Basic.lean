@@ -19,6 +19,7 @@ be satisfied by itself and all stricter types.
 
 
 open Function
+open scoped Topology
 
 /-- The type of continuous maps from `α` to `β`.
 
@@ -41,8 +42,8 @@ section
 /-- `ContinuousMapClass F α β` states that `F` is a type of continuous maps.
 
 You should extend this class when you extend `ContinuousMap`. -/
-class ContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] extends DFunLike F α (fun _ => β) where
+class ContinuousMapClass (F α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
+    [FunLike F α β] : Prop where
   /-- Continuity -/
   map_continuous (f : F) : Continuous f
 #align continuous_map_class ContinuousMapClass
@@ -55,7 +56,8 @@ attribute [continuity] map_continuous
 
 section ContinuousMapClass
 
-variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [ContinuousMapClass F α β]
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β]
+variable [ContinuousMapClass F α β]
 
 theorem map_continuousAt (f : F) (a : α) : ContinuousAt f a :=
   (map_continuous f).continuousAt
@@ -80,16 +82,12 @@ namespace ContinuousMap
 variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
+instance funLike : FunLike C(α, β) α β where
   coe := ContinuousMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  map_continuous := ContinuousMap.continuous_toFun
 
-/- Porting note: Probably not needed anymore
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
-directly. -/
-instance : CoeFun C(α, β) fun _ => α → β :=
-  DFunLike.hasCoeToFun-/
+instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
+  map_continuous := ContinuousMap.continuous_toFun
 
 @[simp]
 theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
@@ -105,7 +103,8 @@ def Simps.apply (f : C(α, β)) : α → β := f
 initialize_simps_projections ContinuousMap (toFun → apply)
 
 @[simp] -- Porting note: removed `norm_cast` attribute
-protected theorem coe_coe {F : Type*} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
+protected theorem coe_coe {F : Type*} [FunLike F α β] [ContinuousMapClass F α β] (f : F) :
+    ⇑(f : C(α, β)) = f :=
   rfl
 #align continuous_map.coe_coe ContinuousMap.coe_coe
 
@@ -442,7 +441,7 @@ section Gluing
 
 variable {ι : Type*} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
   (hφ : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), φ i ⟨x, hxi⟩ = φ j ⟨x, hxj⟩)
-  (hS : ∀ x : α, ∃ i, S i ∈ nhds x)
+  (hS : ∀ x : α, ∃ i, S i ∈ 𝓝 x)
 
 /-- A family `φ i` of continuous maps `C(S i, β)`, where the domains `S i` contain a neighbourhood
 of each point in `α` and the functions `φ i` agree pairwise on intersections, can be glued to
@@ -472,7 +471,7 @@ theorem liftCover_restrict {i : ι} : (liftCover S φ hφ hS).restrict (S i) = �
 variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
   (hF : ∀ (s) (hs : s ∈ A) (t) (ht : t ∈ A) (x : α) (hxi : x ∈ s) (hxj : x ∈ t),
     F s hs ⟨x, hxi⟩ = F t ht ⟨x, hxj⟩)
-  (hA : ∀ x : α, ∃ i ∈ A, i ∈ nhds x)
+  (hA : ∀ x : α, ∃ i ∈ A, i ∈ 𝓝 x)
 
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree

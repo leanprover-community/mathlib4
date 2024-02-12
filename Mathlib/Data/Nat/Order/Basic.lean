@@ -142,7 +142,7 @@ theorem two_le_iff : ∀ n, 2 ≤ n ↔ n ≠ 0 ∧ n ≠ 1
 
 @[simp]
 theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
-  lt_succ_iff.trans nonpos_iff_eq_zero
+  Nat.lt_succ_iff.trans nonpos_iff_eq_zero
 #align nat.lt_one_iff Nat.lt_one_iff
 
 /-! ### `add` -/
@@ -567,9 +567,10 @@ theorem findGreatest_eq_iff :
       · rintro ⟨hle, hP, hm⟩
         refine ⟨hle.trans k.le_succ, hP, fun n hlt hle => ?_⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt')
-        exacts [hk, hm hlt <| lt_succ_iff.1 hlt']
+        exacts [hk, hm hlt <| Nat.lt_succ_iff.1 hlt']
       · rintro ⟨hle, hP, hm⟩
-        refine ⟨lt_succ_iff.1 (hle.lt_of_ne ?_), hP, fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
+        refine ⟨Nat.lt_succ_iff.1 (hle.lt_of_ne ?_), hP,
+          fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
         rintro rfl
         exact hk (hP k.succ_ne_zero)
 #align nat.find_greatest_eq_iff Nat.findGreatest_eq_iff
@@ -743,7 +744,7 @@ instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [H : DecidablePred P] :
 instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
-    ball_congr fun _ _ => imp_congr lt_succ_iff Iff.rfl
+    ball_congr fun _ _ => imp_congr Nat.lt_succ_iff Iff.rfl
 #align nat.decidable_lo_hi_le Nat.decidableLoHiLe
 
 end Nat

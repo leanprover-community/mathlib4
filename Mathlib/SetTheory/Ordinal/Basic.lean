@@ -867,7 +867,7 @@ theorem lift_omega : lift ω = ω :=
 In this paragraph, we introduce the addition on ordinals, and prove just enough properties to
 deduce that the order on ordinals is total (and therefore well-founded). Further properties of
 the addition, together with properties of the other operations, are proved in
-`OrdinalArithmetic.lean`.
+`Ordinal/Arithmetic.lean`.
 -/
 
 

@@ -12,9 +12,8 @@ import Mathlib.Algebra.Order.Monoid.MinMax
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Pi.Algebra
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Tauto
 
 #align_import algebra.order.ring.defs from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
@@ -586,6 +585,7 @@ protected theorem Decidable.mul_lt_mul'' [@DecidableRel α (· ≤ ·)] (h1 : a 
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
 #align decidable.mul_lt_mul'' Decidable.mul_lt_mul''
 
+@[gcongr]
 theorem mul_lt_mul'' : a < c → b < d → 0 ≤ a → 0 ≤ b → a * b < c * d := by classical
   exact Decidable.mul_lt_mul''
 #align mul_lt_mul'' mul_lt_mul''

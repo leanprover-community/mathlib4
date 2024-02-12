@@ -3,8 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Function.Indicator
-import Mathlib.Algebra.Order.Nonneg.Field
+import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Rat.Order
 
@@ -13,8 +12,10 @@ import Mathlib.Data.Rat.Order
 /-!
 # Nonnegative rationals
 
-This file defines the nonnegative rationals as a subtype of `Rat` and provides its algebraic order
-structure.
+This file defines the nonnegative rationals as a subtype of `Rat` and provides its basic algebraic
+order structure.
+
+Note that `NNRat` is not declared as a `Field` here. See `Data.NNRat.Lemmas` for that instance.
 
 We also define an instance `CanLift ℚ ℚ≥0`. This instance can be used by the `lift` tactic to
 replace `x : ℚ` and `hx : 0 ≤ x` in the proof context with `x : ℚ≥0` while replacing all occurrences
@@ -31,14 +32,12 @@ open Function
 
 /-- Nonnegative rational numbers. -/
 def NNRat := { q : ℚ // 0 ≤ q } deriving
-  CanonicallyOrderedCommSemiring, CanonicallyLinearOrderedSemifield, LinearOrderedCommGroupWithZero,
-  Sub, Inhabited
+  CanonicallyOrderedCommSemiring, CanonicallyLinearOrderedAddCommMonoid, Sub, Inhabited
 #align nnrat NNRat
 
 -- Porting note: Added these instances to get `OrderedSub, DenselyOrdered, Archimedean`
 -- instead of `deriving` them
 instance : OrderedSub NNRat := Nonneg.orderedSub
-instance : DenselyOrdered NNRat := Nonneg.densely_ordered
 
 -- mathport name: nnrat
 scoped[NNRat] notation "ℚ≥0" => NNRat
@@ -47,8 +46,7 @@ namespace NNRat
 
 variable {α : Type*} {p q : ℚ≥0}
 
-instance : Coe ℚ≥0 ℚ :=
-  ⟨Subtype.val⟩
+instance instCoe : Coe ℚ≥0 ℚ := ⟨Subtype.val⟩
 
 /-
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.
@@ -130,16 +128,6 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
   rfl
 #align nnrat.coe_mul NNRat.coe_mul
 
-@[simp, norm_cast]
-theorem coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ :=
-  rfl
-#align nnrat.coe_inv NNRat.coe_inv
-
-@[simp, norm_cast]
-theorem coe_div (p q : ℚ≥0) : ((p / q : ℚ≥0) : ℚ) = p / q :=
-  rfl
-#align nnrat.coe_div NNRat.coe_div
-
 -- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
 #noalign nnrat.coe_bit0
 #noalign nnrat.coe_bit1
@@ -214,24 +202,10 @@ theorem mk_coe_nat (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ
   ext (coe_natCast n).symm
 #align nnrat.mk_coe_nat NNRat.mk_coe_nat
 
-/-- A `MulAction` over `ℚ` restricts to a `MulAction` over `ℚ≥0`. -/
-instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
-  MulAction.compHom α coeHom.toMonoidHom
-
-/-- A `DistribMulAction` over `ℚ` restricts to a `DistribMulAction` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [DistribMulAction ℚ α] : DistribMulAction ℚ≥0 α :=
-  DistribMulAction.compHom α coeHom.toMonoidHom
-
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
 #align nnrat.coe_coe_hom NNRat.coe_coeHom
-
-@[simp, norm_cast]
-theorem coe_indicator (s : Set α) (f : α → ℚ≥0) (a : α) :
-    ((s.indicator f a : ℚ≥0) : ℚ) = s.indicator (fun x ↦ ↑(f x)) a :=
-  (coeHom : ℚ≥0 →+ ℚ).map_indicator _ _ _
-#align nnrat.coe_indicator NNRat.coe_indicator
 
 @[simp, norm_cast]
 theorem coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
@@ -359,21 +333,6 @@ theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := 
     rw [toNNRat_eq_zero.2 hq, toNNRat_eq_zero.2 hpq, mul_zero]
 #align rat.to_nnrat_mul Rat.toNNRat_mul
 
-theorem toNNRat_inv (q : ℚ) : toNNRat q⁻¹ = (toNNRat q)⁻¹ := by
-  obtain hq | hq := le_total q 0
-  · rw [toNNRat_eq_zero.mpr hq, inv_zero, toNNRat_eq_zero.mpr (inv_nonpos.mpr hq)]
-  · nth_rw 1 [← Rat.coe_toNNRat q hq]
-    rw [← coe_inv, toNNRat_coe]
-#align rat.to_nnrat_inv Rat.toNNRat_inv
-
-theorem toNNRat_div (hp : 0 ≤ p) : toNNRat (p / q) = toNNRat p / toNNRat q := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, ← toNNRat_inv, ← toNNRat_mul hp]
-#align rat.to_nnrat_div Rat.toNNRat_div
-
-theorem toNNRat_div' (hq : 0 ≤ q) : toNNRat (p / q) = toNNRat p / toNNRat q := by
-  rw [div_eq_inv_mul, div_eq_inv_mul, toNNRat_mul (inv_nonneg.2 hq), toNNRat_inv]
-#align rat.to_nnrat_div' Rat.toNNRat_div'
-
 end Rat
 
 /-- The absolute value on `ℚ` as a map to `ℚ≥0`. -/
@@ -394,24 +353,29 @@ namespace NNRat
 variable {p q : ℚ≥0}
 
 /-- The numerator of a nonnegative rational. -/
-def num (q : ℚ≥0) : ℕ :=
-  (q : ℚ).num.natAbs
+@[pp_dot] def num (q : ℚ≥0) : ℕ := (q : ℚ).num.natAbs
 #align nnrat.num NNRat.num
 
 /-- The denominator of a nonnegative rational. -/
-def den (q : ℚ≥0) : ℕ :=
-  (q : ℚ).den
+@[pp_dot] def den (q : ℚ≥0) : ℕ := (q : ℚ).den
 #align nnrat.denom NNRat.den
 
-@[simp]
-theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num :=
-  rfl
+@[norm_cast] lemma num_coe (q : ℚ≥0) : (q : ℚ).num = q.num := by
+  simp [num, abs_of_nonneg, Rat.num_nonneg_iff_zero_le.2 q.2]
+
+theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 #align nnrat.nat_abs_num_coe NNRat.natAbs_num_coe
 
-@[simp]
-theorem den_coe : (q : ℚ).den = q.den :=
-  rfl
+@[simp, norm_cast] lemma den_coe : (q : ℚ).den = q.den := rfl
 #align nnrat.denom_coe NNRat.den_coe
+
+@[simp] lemma num_ne_zero : q.num ≠ 0 ↔ q ≠ 0 := by simp [num]
+@[simp] lemma num_pos : 0 < q.num ↔ 0 < q := by simp [pos_iff_ne_zero]
+@[simp] lemma den_pos (q : ℚ≥0) : 0 < q.den := Rat.den_pos _
+
+-- TODO: Rename `Rat.coe_nat_num`, `Rat.intCast_den`, `Rat.ofNat_num`, `Rat.ofNat_den`
+@[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
+@[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
   ext
@@ -425,18 +389,7 @@ theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
   ⟨by rintro rfl; exact ⟨rfl, rfl⟩, fun h ↦ ext_num_den h.1 h.2⟩
 #align nnrat.ext_num_denom_iff NNRat.ext_num_den_iff
 
-@[simp]
-theorem num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
-  ext1
-  rw [coe_div, coe_natCast, coe_natCast, num, ← Int.cast_ofNat,
-    Int.natAbs_of_nonneg (Rat.num_nonneg_iff_zero_le.2 q.prop)]
-  exact Rat.num_div_den q
-#align nnrat.num_div_denom NNRat.num_div_den
-
-/-- A recursor for nonnegative rationals in terms of numerators and denominators. -/
-protected def rec {α : ℚ≥0 → Sort*} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q := by
-  rw [← num_div_den q]
-  apply h
-#align nnrat.rec NNRat.rec
-
 end NNRat
+
+-- `NNRat` needs to be available in the definition of `Field`
+assert_not_exists Field
