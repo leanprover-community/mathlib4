@@ -55,11 +55,11 @@ section SmallCategory
 
 variable {C : Type u₁} [SmallCategory C]
 
-variable {ℰ : Type u₂} [Category.{u₁} ℰ]
-
-variable (A : C ⥤ ℰ)
-
 namespace ColimitAdj
+
+section
+
+variable {ℰ : Type u₂} [Category.{v₂} ℰ] (A : C ⥤ ℰ)
 
 /--
 The functor taking `(E : ℰ) (c : Cᵒᵖ)` to the homset `(A.obj C ⟶ E)`. It is shown in `L_adjunction`
@@ -70,8 +70,8 @@ In the case where `ℰ = Cᵒᵖ ⥤ Type u` and `A = yoneda`, this functor is i
 Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 -/
 @[simps!]
-def restrictedYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type u₁ :=
-  yoneda ⋙ (whiskeringLeft _ _ (Type u₁)).obj (Functor.op A)
+def restrictedYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type v₂ :=
+  yoneda ⋙ (whiskeringLeft _ _ (Type v₂)).obj (Functor.op A)
 #align category_theory.colimit_adj.restricted_yoneda CategoryTheory.ColimitAdj.restrictedYoneda
 
 /--
@@ -90,40 +90,37 @@ def restrictedYonedaYoneda : restrictedYoneda (yoneda : C ⥤ Cᵒᵖ ⥤ Type u
         simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id]
 #align category_theory.colimit_adj.restricted_yoneda_yoneda CategoryTheory.ColimitAdj.restrictedYonedaYoneda
 
+def restrictYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type v₂) (E : ℰ) :
+    ((CategoryOfElements.π P).leftOp ⋙ A ⟶
+        (Functor.const (Functor.Elements P)ᵒᵖ).toPrefunctor.obj E) ≃
+      (P ⟶ (restrictedYoneda A).obj E) where
+  toFun k :=
+    { app := fun X p => k.app (Opposite.op ⟨_, p⟩)
+      naturality := fun X₁ X₂ f => by
+        ext p
+        let φ : P.elementsMk X₁ p ⟶ P.elementsMk X₂ (P.map f p) := ⟨f, rfl⟩
+        simpa using (k.naturality φ.op).symm }
+  invFun τ :=
+    { app := fun e => τ.app e.unop.1 e.unop.2
+      naturality := fun p₁ p₂ f => by
+        simpa [← f.unop.2] using (congr_fun (τ.naturality f.unop.1) p₂.unop.2).symm }
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
+
 /-- (Implementation). The equivalence of homsets which helps construct the left adjoint to
 `colimitAdj.restrictedYoneda`.
 It is shown in `restrictYonedaHomEquivNatural` that this is a natural bijection.
 -/
-def restrictYonedaHomEquiv (P : Cᵒᵖ ⥤ Type u₁) (E : ℰ)
+def restrictYonedaHomEquiv (P : Cᵒᵖ ⥤ Type v₂) (E : ℰ)
     {c : Cocone ((CategoryOfElements.π P).leftOp ⋙ A)} (t : IsColimit c) :
     (c.pt ⟶ E) ≃ (P ⟶ (restrictedYoneda A).obj E) :=
-  ((uliftTrivial _).symm ≪≫ t.homIso' E).toEquiv.trans
-    { toFun := fun k =>
-        { app := fun c p => k.1 (Opposite.op ⟨_, p⟩)
-          naturality := fun c c' f =>
-            funext fun p =>
-              (k.2
-                  (Quiver.Hom.op ⟨f, rfl⟩ :
-                    (Opposite.op ⟨c', P.map f p⟩ : P.Elementsᵒᵖ) ⟶ Opposite.op ⟨c, p⟩)).symm }
-      invFun := fun τ =>
-        { val := fun p => τ.app p.unop.1 p.unop.2
-          property := @fun p p' f => by
-            simp_rw [← f.unop.2]
-            apply (congr_fun (τ.naturality f.unop.1) p'.unop.2).symm }
-      left_inv := by
-        rintro ⟨k₁, k₂⟩
-        ext
-        dsimp
-        congr 1
-      right_inv := by
-        rintro ⟨_, _⟩
-        rfl }
+  (t.homEquiv E).trans (restrictYonedaHomEquiv' A P E)
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv CategoryTheory.ColimitAdj.restrictYonedaHomEquiv
 
 /--
 (Implementation). Show that the bijection in `restrictYonedaHomEquiv` is natural (on the right).
 -/
-theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : ℰ) (g : E₁ ⟶ E₂) {c : Cocone _}
+theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type v₂) (E₁ E₂ : ℰ) (g : E₁ ⟶ E₂) {c : Cocone _}
     (t : IsColimit c) (k : c.pt ⟶ E₁) :
     restrictYonedaHomEquiv A P E₂ t (k ≫ g) =
       restrictYonedaHomEquiv A P E₁ t k ≫ (restrictedYoneda A).map g := by
@@ -131,20 +128,20 @@ theorem restrictYonedaHomEquiv_natural (P : Cᵒᵖ ⥤ Type u₁) (E₁ E₂ : 
   apply (assoc _ _ _).symm
 #align category_theory.colimit_adj.restrict_yoneda_hom_equiv_natural CategoryTheory.ColimitAdj.restrictYonedaHomEquiv_natural
 
-variable [HasColimits ℰ]
+variable [HasColimitsOfSize.{u₁, max u₁ v₂} ℰ]
 
 /--
 The left adjoint to the functor `restrictedYoneda` (shown in `yonedaAdjunction`). It is also an
 extension of `A` along the yoneda embedding (shown in `isExtensionAlongYoneda`), in particular
 it is the left Kan extension of `A` through the yoneda embedding.
 -/
-noncomputable def extendAlongYoneda : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ :=
+noncomputable def extendAlongYoneda : (Cᵒᵖ ⥤ Type v₂) ⥤ ℰ :=
   Adjunction.leftAdjointOfEquiv (fun P E => restrictYonedaHomEquiv A P E (colimit.isColimit _))
     fun P E E' g => restrictYonedaHomEquiv_natural A P E E' g _
 #align category_theory.colimit_adj.extend_along_yoneda CategoryTheory.ColimitAdj.extendAlongYoneda
 
 @[simp]
-theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
+theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type v₂) :
     (extendAlongYoneda A).obj P = colimit ((CategoryOfElements.π P).leftOp ⋙ A) :=
   rfl
 #align category_theory.colimit_adj.extend_along_yoneda_obj CategoryTheory.ColimitAdj.extendAlongYoneda_obj
@@ -154,29 +151,18 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
 -- `(extendAlongYoneda A).obj P` is definitionally a colimit, and the ext lemma is just
 -- a special case of `CategoryTheory.Limits.colimit.hom_ext`.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
-@[ext] lemma extendAlongYoneda_obj.hom_ext {P : Cᵒᵖ ⥤ Type u₁}
+@[ext] lemma extendAlongYoneda_obj.hom_ext {P : Cᵒᵖ ⥤ Type v₂}
     {f f' : (extendAlongYoneda A).obj P ⟶ X}
     (w : ∀ j, colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f =
       colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f') : f = f' :=
 CategoryTheory.Limits.colimit.hom_ext w
 
-theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
+theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type v₂} (f : X ⟶ Y) :
     (extendAlongYoneda A).map f =
       colimit.pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op := by
   ext J
   erw [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
-  dsimp only [extendAlongYoneda, restrictYonedaHomEquiv, IsColimit.homIso', IsColimit.homIso,
-    uliftTrivial]
-  -- porting note: in mathlib3 the rest of the proof was `simp, refl`; this is squeezed
-  -- and appropriately reordered, presumably because of a non-confluence issue.
-  simp only [Adjunction.leftAdjointOfEquiv_map, Iso.symm_mk, Iso.toEquiv_comp, Equiv.coe_trans,
-    Equiv.coe_fn_mk, Iso.toEquiv_fun, Equiv.symm_trans_apply, Equiv.coe_fn_symm_mk,
-    Iso.toEquiv_symm_fun, id.def, colimit.isColimit_desc, colimit.ι_desc, FunctorToTypes.comp,
-    Cocone.extend_ι, Cocone.extensions_app, Functor.map_id, Category.comp_id, colimit.cocone_ι]
-  simp only [Functor.comp_obj, Functor.leftOp_obj, CategoryOfElements.π_obj, colimit.cocone_x,
-    Functor.comp_map, Functor.leftOp_map, CategoryOfElements.π_map, Opposite.unop_op,
-    Adjunction.leftAdjointOfEquiv_obj, Function.comp_apply, Functor.map_id, comp_id,
-    colimit.cocone_ι, Functor.op_obj]
+  simp [extendAlongYoneda, restrictYonedaHomEquiv, restrictYonedaHomEquiv', IsColimit.homEquiv]
   rfl
 #align category_theory.colimit_adj.extend_along_yoneda_map CategoryTheory.ColimitAdj.extendAlongYoneda_map
 
@@ -207,6 +193,10 @@ def isInitial (A : C) : IsInitial (Elements.initial A) where
   fac := by rintro s ⟨⟨⟩⟩
 #align category_theory.colimit_adj.is_initial CategoryTheory.ColimitAdj.isInitial
 
+end
+
+variable {ℰ : Type u₂} [Category.{u₁} ℰ] (A : C ⥤ ℰ) [HasColimits ℰ]
+
 /--
 `extendAlongYoneda A` is an extension of `A` to the presheaf category along the yoneda embedding.
 `uniqueExtensionAlongYoneda` shows it is unique among functors preserving colimits with this
@@ -216,7 +206,7 @@ The first part of [MM92], Chapter I, Section 5, Corollary 4.
 See Property 1 of <https://ncatlab.org/nlab/show/Yoneda+extension#properties>.
 -/
 noncomputable def isExtensionAlongYoneda :
-    (yoneda : C ⥤ Cᵒᵖ ⥤ Type u₁) ⋙ extendAlongYoneda A ≅ A :=
+    (yoneda : C ⥤ Cᵒᵖ ⥤ Type _) ⋙ extendAlongYoneda A ≅ A :=
   NatIso.ofComponents
     (fun X =>
       (colimit.isColimit _).coconePointUniqueUpToIso
@@ -235,6 +225,23 @@ noncomputable def isExtensionAlongYoneda :
       congr 1)
 #align category_theory.colimit_adj.is_extension_along_yoneda CategoryTheory.ColimitAdj.isExtensionAlongYoneda
 
+@[reassoc]
+lemma isExtensionAlongYoneda_inv_app_extendAlongYoneda_map_yonedaSections (X : Cᵒᵖ ⥤ Type u₁) (j : X.Elements) :
+      (isExtensionAlongYoneda A).inv.app j.1.unop ≫ (extendAlongYoneda A).map ((yonedaSections j.1.unop X).inv ⟨j.2⟩) =
+      colimit.ι ((CategoryOfElements.costructuredArrowYonedaEquivalence X).functor ⋙
+        CostructuredArrow.proj yoneda X ⋙ A) (Opposite.op j) := by
+  have eq := IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit  ((CategoryOfElements.π (yoneda.obj j.1.unop)).leftOp ⋙ A))
+    (colimitOfDiagramTerminal (terminalOpOfInitial (isInitial _)) _) (Opposite.op (Elements.initial j.1.unop))
+  dsimp at eq
+  simp only [IsTerminal.from_self, unop_id, Opposite.unop_op, CategoryOfElements.id_val,
+    yoneda_obj_obj, Functor.map_id, id_comp] at eq
+  dsimp [isExtensionAlongYoneda]
+  rw [eq, extendAlongYoneda_map]
+  erw [colimit.ι_desc]
+  dsimp [Cocone.whisker, CategoryOfElements.map, Elements.initial]
+  congr 1
+  simp
+
 /-- See Property 2 of https://ncatlab.org/nlab/show/Yoneda+extension#properties. -/
 noncomputable instance : PreservesColimits (extendAlongYoneda A) :=
   (yonedaAdjunction A).leftAdjointPreservesColimits
@@ -246,15 +253,8 @@ noncomputable def extendAlongYonedaIsPointwiseLeftKanExtension :
     (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _) ?_))
   intro j
   dsimp
-  sorry
-  /-rw [← cancel_epi ((isExtensionAlongYoneda A).hom.app _), Iso.hom_inv_id_app_assoc, comp_id,
-    extendAlongYoneda_map]
-  apply colimit.hom_ext
-  intro x
-  simp
-  --erw [colimit.ι_pre]
-  --simp [isExtensionAlongYoneda]
-  sorry-/
+  rw [isExtensionAlongYoneda_inv_app_extendAlongYoneda_map_yonedaSections, comp_id]
+  rfl
 
 instance : Functor.IsLeftKanExtension _ (isExtensionAlongYoneda A).inv :=
   (extendAlongYonedaIsPointwiseLeftKanExtension A).isLeftKanExtension
@@ -358,6 +358,8 @@ noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type u₁) :
   rw [colimit.desc_extend, colimit.desc_cocone]
   infer_instance
 #align category_theory.colimit_of_representable CategoryTheory.colimitOfRepresentable
+
+variable {ℰ : Type u₂} [Category.{u₁} ℰ] (A : C ⥤ ℰ) [HasColimits ℰ]
 
 /-- Given two functors L₁ and L₂ which preserve colimits, if they agree when restricted to the
 representable presheaves then they agree everywhere.
