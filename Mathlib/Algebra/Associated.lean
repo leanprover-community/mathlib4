@@ -79,8 +79,9 @@ theorem not_prime_one : ¬Prime (1 : α) := fun h => h.not_unit isUnit_one
 
 section Map
 
-variable [CommMonoidWithZero β] {F : Type*} {G : Type*} [MonoidWithZeroHomClass F α β]
-  [MulHomClass G β α] (f : F) (g : G) {p : α}
+variable [CommMonoidWithZero β] {F : Type*} {G : Type*} [FunLike F α β]
+variable [MonoidWithZeroHomClass F α β] [FunLike G β α] [MulHomClass G β α]
+variable (f : F) (g : G) {p : α}
 
 theorem comap_prime (hinv : ∀ a, g (f a : β) = a) (hp : Prime (f p)) : Prime p :=
   ⟨fun h => hp.1 <| by simp [h], fun h => hp.2.1 <| h.map f, fun a b h => by
@@ -535,7 +536,7 @@ theorem Associated.mul_right [CommMonoid α] {a b : α} (h : a ~ᵤ b) (c : α) 
 #align associated.mul_right Associated.mul_right
 
 theorem Associated.pow_pow [CommMonoid α] {a b : α} {n : ℕ} (h : a ~ᵤ b) : a ^ n ~ᵤ b ^ n := by
-  induction' n with n ih;
+  induction' n with n ih
   · simp [h]; rfl
   convert h.mul_mul ih <;> rw [pow_succ]
 #align associated.pow_pow Associated.pow_pow
@@ -604,6 +605,32 @@ protected theorem Associated.prime [CommMonoidWithZero α] {p q : α} (h : p ~�
         intro a b
         exact hp.dvd_or_dvd⟩⟩
 #align associated.prime Associated.prime
+
+theorem prime_mul_iff [CancelCommMonoidWithZero α] {x y : α} :
+    Prime (x * y) ↔ (Prime x ∧ IsUnit y) ∨ (IsUnit x ∧ Prime y) := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases of_irreducible_mul h.irreducible with hx | hy
+    · exact Or.inr ⟨hx, (associated_unit_mul_left y x hx).prime h⟩
+    · exact Or.inl ⟨(associated_mul_unit_left x y hy).prime h, hy⟩
+  · rintro (⟨hx, hy⟩ | ⟨hx, hy⟩)
+    · exact (associated_mul_unit_left x y hy).symm.prime hx
+    · exact (associated_unit_mul_right y x hx).prime hy
+
+@[simp]
+lemma prime_pow_iff [CancelCommMonoidWithZero α] {p : α} {n : ℕ} :
+    Prime (p ^ n) ↔ Prime p ∧ n = 1 := by
+  refine ⟨fun hp ↦ ?_, fun ⟨hp, hn⟩ ↦ by simpa [hn]⟩
+  suffices n = 1 by aesop
+  cases' n with n
+  · simp at hp
+  · rw [Nat.succ.injEq]
+    rw [pow_succ, prime_mul_iff] at hp
+    rcases hp with ⟨hp, hpn⟩ | ⟨hp, hpn⟩
+    · by_contra contra
+      rw [isUnit_pow_iff contra] at hpn
+      exact hp.not_unit hpn
+    · exfalso
+      exact hpn.not_unit (hp.pow n)
 
 theorem Irreducible.dvd_iff [Monoid α] {x y : α} (hx : Irreducible x) :
     y ∣ x ↔ IsUnit y ∨ Associated x y := by
@@ -702,13 +729,17 @@ theorem Associated.of_pow_associated_of_prime' [CancelCommMonoidWithZero α] {p�
   (h.symm.of_pow_associated_of_prime hp₂ hp₁ hk₂).symm
 #align associated.of_pow_associated_of_prime' Associated.of_pow_associated_of_prime'
 
+/-- See also `Irreducible.coprime_iff_not_dvd`. -/
+lemma Irreducible.coprime_iff_not_dvd' [Monoid α] {p n : α} (hp : Irreducible p) :
+    (∀ d, d ∣ p → d ∣ n → IsUnit d) ↔ ¬ p ∣ n := by
+  refine ⟨fun h contra ↦ hp.not_unit (h p (refl _) contra), fun hpn d hdp hdn ↦ ?_⟩
+  contrapose! hpn
+  suffices Associated p d from this.dvd.trans hdn
+  exact (hp.dvd_iff.mp hdp).resolve_left hpn
+
 section UniqueUnits
 
 variable [Monoid α] [Unique αˣ]
-
-theorem units_eq_one (u : αˣ) : u = 1 :=
-  Subsingleton.elim u 1
-#align units_eq_one units_eq_one
 
 theorem associated_iff_eq {x y : α} : x ~ᵤ y ↔ x = y := by
   constructor

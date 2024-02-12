@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Instances.Int
 
 #align_import topology.instances.real from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
@@ -74,13 +74,11 @@ theorem Real.isTopologicalBasis_Ioo_rat :
 theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
   simp only [← comap_dist_right_atTop (0 : ℝ), Real.dist_eq, sub_zero, comap_abs_atTop]
 
-@[simp]
-theorem Real.cocompact_eq : cocompact ℝ = atBot ⊔ atTop := by
-  rw [← cobounded_eq_cocompact, cobounded_eq]
+@[deprecated] alias Real.cocompact_eq := cocompact_eq_atBot_atTop
 #align real.cocompact_eq Real.cocompact_eq
 
-theorem Real.atBot_le_cocompact : atBot ≤ cocompact ℝ := by simp
-theorem Real.atTop_le_cocompact : atTop ≤ cocompact ℝ := by simp
+@[deprecated] alias Real.atBot_le_cocompact := atBot_le_cocompact -- deprecated on 2024-02-07
+@[deprecated] alias Real.atTop_le_cocompact := atBot_le_cocompact -- deprecated on 2024-02-07
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
@@ -247,7 +245,7 @@ theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact
 inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
     Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
-  apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_discrete $ smul_left_injective ℤ ha
+  apply (zmultiplesHom ℝ a).tendsto_coe_cofinite_of_discrete <| smul_left_injective ℤ ha
   rw [AddSubgroup.range_zmultiplesHom]
   infer_instance
 #align int.tendsto_zmultiples_hom_cofinite Int.tendsto_zmultiplesHom_cofinite

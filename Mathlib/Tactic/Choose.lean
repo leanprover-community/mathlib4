@@ -130,8 +130,8 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
         return (neFail, fvar, g)
       | .const ``And _, #[p, q] => do
         let data ← mkFreshNameFrom data `h
-        let e1 ← mkLambdaFVars ctx $ mkApp3 (.const ``And.left  []) p q (mkAppN h ctx)
-        let e2 ← mkLambdaFVars ctx $ mkApp3 (.const ``And.right []) p q (mkAppN h ctx)
+        let e1 ← mkLambdaFVars ctx <| mkApp3 (.const ``And.left  []) p q (mkAppN h ctx)
+        let e2 ← mkLambdaFVars ctx <| mkApp3 (.const ``And.right []) p q (mkAppN h ctx)
         let t1 ← inferType e1
         let t2 ← inferType e2
         let (fvar, g) ← (← (← g.assert .anonymous t2 e2).assert data t1 e1).intro1P
