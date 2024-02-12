@@ -50,11 +50,12 @@ lemma zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := fun m n
 #align zpow_mono_right zpow_mono_right
 #align zsmul_mono_left zsmul_mono_left
 
-@[to_additive] lemma zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_mono_right ha h
+@[to_additive (attr := gcongr)]
+lemma zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_mono_right ha h
 #align zpow_le_zpow zpow_le_zpow
 #align zsmul_le_zsmul zsmul_le_zsmul
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 lemma zpow_lt_zpow (ha : 1 < a) (h : m < n) : a ^ m < a ^ n := zpow_right_strictMono ha h
 #align zpow_lt_zpow zpow_lt_zpow
 #align zsmul_lt_zsmul zsmul_lt_zsmul
@@ -85,12 +86,12 @@ lemma zpow_mono_left (hn : 0 ≤ n) : Monotone ((· ^ n) : α → α) := fun a b
 
 variable {α}
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 lemma zpow_le_zpow' (hn : 0 ≤ n) (h : a ≤ b) : a ^ n ≤ b ^ n := zpow_mono_left α hn h
 #align zpow_le_zpow' zpow_le_zpow'
 #align zsmul_le_zsmul' zsmul_le_zsmul'
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 lemma zpow_lt_zpow' (hn : 0 < n) (h : a < b) : a ^ n < b ^ n := zpow_strictMono_left α hn h
 #align zpow_lt_zpow' zpow_lt_zpow'
 #align zsmul_lt_zsmul' zsmul_lt_zsmul'
@@ -204,6 +205,7 @@ theorem pow_right_mono (h : 1 ≤ a) : Monotone (a ^ ·) :=
     exact le_mul_of_one_le_left (pow_nonneg (zero_le_one.trans h) _) h
 #align pow_mono pow_right_mono
 
+@[gcongr]
 theorem pow_le_pow_right (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m := pow_right_mono ha h
 #align pow_le_pow pow_le_pow_right
 
@@ -212,7 +214,7 @@ theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m := by
 #align self_le_pow le_self_pow
 #align le_self_pow le_self_pow
 
-@[mono]
+@[mono, gcongr]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n
   | 0 => by simp
   | n + 1 => by simpa only [pow_succ]
@@ -237,6 +239,7 @@ section StrictOrderedSemiring
 
 variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
 
+@[gcongr]
 theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → x ^ n < y ^ n
   | 0, hn => by contradiction
   | n + 1, _ => by
@@ -256,6 +259,7 @@ lemma pow_right_strictMono (h : 1 < a) : StrictMono (a ^ ·) :=
     simpa only [one_mul, pow_succ] using mul_lt_mul h (le_refl (a ^ n)) (pow_pos this _) this.le
 #align pow_strict_mono_right pow_right_strictMono
 
+@[gcongr]
 theorem pow_lt_pow_right (h : 1 < a) (hmn : m < n) : a ^ m < a ^ n := pow_right_strictMono h hmn
 #align pow_lt_pow_right pow_lt_pow_right
 

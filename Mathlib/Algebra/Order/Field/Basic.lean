@@ -247,7 +247,7 @@ theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
 ### Bi-implications of inequalities using inversions
 -/
 
-
+@[gcongr]
 theorem inv_le_inv_of_le (ha : 0 < a) (h : a ≤ b) : b⁻¹ ≤ a⁻¹ := by
   rwa [← one_div a, le_div_iff' ha, ← div_eq_mul_inv, div_le_iff (ha.trans_le h), one_mul]
 #align inv_le_inv_of_le inv_le_inv_of_le
@@ -276,6 +276,7 @@ theorem inv_lt_inv (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b⁻¹ ↔ b < a :=
   lt_iff_lt_of_le_iff_le (inv_le_inv hb ha)
 #align inv_lt_inv inv_lt_inv
 
+@[gcongr]
 theorem inv_lt_inv_of_lt (hb : 0 < b) (h : b < a) : a⁻¹ < b⁻¹ :=
   (inv_lt_inv (hb.trans h) hb).2 h
 #align inv_lt_inv_of_lt inv_lt_inv_of_lt
@@ -339,13 +340,14 @@ theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
 -/
 
 
-@[mono]
+@[mono, gcongr]
 theorem div_le_div_of_le (hc : 0 ≤ c) (h : a ≤ b) : a / c ≤ b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 hc)
 #align div_le_div_of_le div_le_div_of_le
 
 -- Not a `mono` lemma b/c `div_le_div` is strictly more general
+@[gcongr]
 theorem div_le_div_of_le_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact mul_le_mul_of_nonneg_left ((inv_le_inv (hc.trans_le h) hc).mpr h) ha
@@ -356,6 +358,7 @@ theorem div_le_div_of_le_of_nonneg (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b 
   div_le_div_of_le hc hab
 #align div_le_div_of_le_of_nonneg div_le_div_of_le_of_nonneg
 
+@[gcongr]
 theorem div_lt_div_of_lt (hc : 0 < c) (h : a < b) : a / c < b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_lt_mul_of_pos_right h (one_div_pos.2 hc)
@@ -385,12 +388,13 @@ theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤
   rw [le_div_iff d0, div_mul_eq_mul_div, div_le_iff b0]
 #align div_le_div_iff div_le_div_iff
 
-@[mono]
+@[mono, gcongr]
 theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d := by
   rw [div_le_div_iff (hd.trans_le hbd) hd]
   exact mul_le_mul hac hbd hd.le hc
 #align div_le_div div_le_div
 
+@[gcongr]
 theorem div_lt_div (hac : a < c) (hbd : d ≤ b) (c0 : 0 ≤ c) (d0 : 0 < d) : a / b < c / d :=
   (div_lt_div_iff (d0.trans_le hbd) d0).2 (mul_lt_mul hac hbd d0 c0)
 #align div_lt_div div_lt_div
@@ -399,6 +403,7 @@ theorem div_lt_div' (hac : a ≤ c) (hbd : d < b) (c0 : 0 < c) (d0 : 0 < d) : a 
   (div_lt_div_iff (d0.trans hbd) d0).2 (mul_lt_mul' hac hbd d0.le c0)
 #align div_lt_div' div_lt_div'
 
+@[gcongr]
 theorem div_lt_div_of_lt_left (hc : 0 < c) (hb : 0 < b) (h : b < a) : c / a < c / b :=
   (div_lt_div_left hc (hb.trans h) hb).mpr h
 #align div_lt_div_of_lt_left div_lt_div_of_lt_left
