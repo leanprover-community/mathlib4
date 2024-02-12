@@ -109,24 +109,19 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedFi
     Matrix.toLinearMap₂' (G.lapMatrix α) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   constructor
   · intro h i j
-    by_contra hn
-    push_neg at hn
+    by_contra! hn
     suffices hc : toLinearMap₂' (G.lapMatrix α) x x > 0
     · exact gt_irrefl _ (h ▸ hc)
     rw [lapMatrix_toLinearMap₂']
-    refine div_pos (sum_pos' (λ k _ ↦ sum_nonneg' (λ l ↦ ?_)) ?_) two_pos
-    · split_ifs
-      · apply sq_nonneg
-      · rfl
-    · refine ⟨i, mem_univ _, sum_pos' (λ k _ ↦ ?_) ⟨j, mem_univ _, ?_⟩⟩
-      · split_ifs
-        · apply sq_nonneg
-        · rfl
+    refine div_pos (sum_pos' (fun k _ ↦ sum_nonneg' (fun l ↦ ?_)) ?_) two_pos
+    · exact ite_nonneg (sq_nonneg _) le_rfl
+    · refine ⟨i, mem_univ _, sum_pos' (fun k _ ↦ ?_) ⟨j, mem_univ _, ?_⟩⟩
+      · exact ite_nonneg (sq_nonneg _) le_rfl
       · simpa only [hn, ite_true, gt_iff_lt, sub_pos] using
           sq_pos_of_ne_zero _ (sub_ne_zero.mpr hn.2)
   · intro h
     rw [lapMatrix_toLinearMap₂', div_eq_zero_iff]
-    refine Or.inl <| sum_eq_zero λ i _ ↦ (sum_eq_zero λ j _ ↦ ?_)
+    refine Or.inl <| sum_eq_zero fun i _ ↦ (sum_eq_zero fun j _ ↦ ?_)
     simpa only [ite_eq_right_iff, zero_lt_two, pow_eq_zero_iff, sub_eq_zero] using h i j
 
 theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
