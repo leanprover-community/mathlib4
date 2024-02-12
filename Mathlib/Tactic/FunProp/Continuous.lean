@@ -18,11 +18,8 @@ import Mathlib.Tactic.FunProp
 
 -- special function
 attribute [fun_prop]
-  Continuous.log
   Continuous.pow
 
-  ContinuousAt.log
   ContinuousAt.pow
 
-  ContinuousOn.log
   ContinuousOn.pow
