@@ -234,19 +234,16 @@ lemma IsUniform.uniformMeasure {s : Set E} : IsUniform (id : E → E) s (uniform
 away the choice of random variable and probability space. -/
 def uniformPDF {s : Set E} {x : E} : ℝ≥0∞ := s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x
 
-/-- Alternative definition for `uniformPDF` based on if-then-else rather than Set.indicator. -/
-def uniformPDF_ite {s : Set E} {x : E} : ℝ≥0∞ := if x ∈ s then (μ s)⁻¹ else 0
-
 /-- Check that indeed any uniform random variable has the uniformPDF. -/
 lemma uniformPDF_eq_pdf {s : Set E} (hs : MeasurableSet s) (hu : pdf.IsUniform X s ℙ μ) :
     @uniformPDF _ _ μ s  =ᵐ[μ] pdf X ℙ μ := by
   unfold uniformPDF
   exact Filter.EventuallyEq.trans (pdf.IsUniform.pdf_eq hs hu).symm (ae_eq_refl _)
 
-lemma uniformPDF_eq_ite {s : Set E} {x : E} :
-    @uniformPDF _ _ μ s x = @uniformPDF_ite _ _ μ s x := by
+/-- Alternative way of writing the uniformPDF. -/
+lemma uniformPDF_ite {s : Set E} {x : E} :
+    @uniformPDF _ _ μ s x = if x ∈ s then (μ s)⁻¹ else 0 := by
   unfold uniformPDF
-  unfold uniformPDF_ite
   unfold Set.indicator
   rename_i inst x_1
   simp_all only [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
