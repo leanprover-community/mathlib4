@@ -836,21 +836,21 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
     let rbody ← core zα pα body
     -- Try to show that the sum is positive
     try
-      let .positive pbody := rbody | failure -- Fail if the body is not positive
+      let .positive pbody := rbody | failure -- Fail if the body is not provably positive
       -- TODO: If we replace the next line by
-      -- let rs : Option Q(Finset.Nonempty $s) ← do
+      -- let ps : Q(Finset.Nonempty $s) ← do
       -- then the type-ascription is ignored. See leanprover/lean4#3126
-      let (.some ps : Option Q(Finset.Nonempty $s)) ← do
+      let (ps : Q(Finset.Nonempty $s)) ← do
         try
           match s with
           | ~q(@univ _ $fi) => do
             let _no ← synthInstanceQ q(Nonempty $ι)
-            return some q(Finset.univ_nonempty (α := $ι))
+            return q(Finset.univ_nonempty (α := $ι))
           | _ => throwError "`s` is not `univ`"
         catch _ => do
-          let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s) | pure none
-          pure (some (.fvar fv))
-        | failure -- Fail if the body is not nonempty
+          let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s)
+            | failure -- Fail if the set is not provably nonempty
+          pure (.fvar fv)
       let pα' ← synthInstanceQ q(OrderedCancelAddCommMonoid $α)
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
@@ -876,6 +876,10 @@ example (a : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (a j^2 + 1) := by
 example (s : Finset ℕ) : 0 ≤ ∑ j in s, j := by positivity
 example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
 example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
-example (f : ℕ → ℕ) (hf₀ : 0 ≤ f 0) : 0 ≤ ∑ n in Finset.range 10, f n := by positivity
+
+-- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
+-- `0` because of the `hf` assumption
+set_option linter.unusedVariables false in
+example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n in Finset.range 10, f n := by positivity
 
 end Mathlib.Meta.Positivity
