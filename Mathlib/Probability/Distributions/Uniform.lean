@@ -72,15 +72,15 @@ theorem uniformMeasure_apply {s : Set E} {A : Set E}
   rw [smul_apply, restrict_apply hA, ENNReal.div_eq_inv_mul, smul_eq_mul, Set.inter_comm]
 
 theorem isProbabilityMeasure {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞) :
-    IsProbabilityMeasure (uniformMeasure s μ) :=
-  ⟨by
+    IsProbabilityMeasure (uniformMeasure s μ) where
+  measure_univ := by
     unfold uniformMeasure
     simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, MeasurableSet.univ,
       restrict_apply, Set.univ_inter, smul_eq_mul]
-    exact ENNReal.inv_mul_cancel hns hnt⟩
+    exact ENNReal.inv_mul_cancel hns hnt
 
 theorem toMeasurable_eq {s : Set E} :
-    uniformMeasure (toMeasurable μ s) μ = uniformMeasure s μ:= by
+    uniformMeasure (toMeasurable μ s) μ = uniformMeasure s μ := by
   unfold uniformMeasure
   by_cases hnt : μ s = ∞
   · simp [hnt]
@@ -97,7 +97,7 @@ variable {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
 /-- A random variable `X` has uniform distribution on `s` if its push-forward measure is
 `(μ s)⁻¹ • μ.restrict s`. -/
 def IsUniform (X : Ω → E) (s : Set E) (ℙ : Measure Ω) (μ : Measure E := by volume_tac) :=
-  (map X ℙ) = uniformMeasure s μ -- was `(μ s)⁻¹ • μ.restrict s
+  map X ℙ = uniformMeasure s μ
 #align measure_theory.pdf.is_uniform MeasureTheory.pdf.IsUniform
 
 namespace IsUniform
@@ -226,7 +226,7 @@ end IsUniform
 
 variable {X : Ω → E}
 
-lemma uniformMeasure.IsUniform {s : Set E} : IsUniform (id : E → E) s (uniformMeasure s μ) μ := by
+lemma IsUniform.uniformMeasure {s : Set E} : IsUniform (id : E → E) s (uniformMeasure s μ) μ := by
   unfold IsUniform
   rw [Measure.map_id]
 
