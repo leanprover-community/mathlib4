@@ -99,13 +99,12 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
       rw [measure_preimage_mul]
     rw [this, ← preimage_smul_inv]; rfl
 
-/-- Given a subgroup `Γ` of a topological group `G` with right-invariant measure `ν`, with a
-  measure 'μ' on the quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction
+/-- Given a subgroup `Γ` of a topological group `G` with measure `ν`, and a measure 'μ' on the
+  quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction
   of `ν` to a fundamental domain is measure-preserving with respect to `μ`. -/
 @[to_additive measurePreserving_addQuotientGroup_mk_of_addQuotientMeasureEqMeasurePreimage]
 theorem measurePreserving_quotientGroup_mk_of_QuotientMeasureEqMeasurePreimage
-    [IsMulRightInvariant ν] {𝓕 : Set G}
-    (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) (μ : Measure (G ⧸ Γ))
+    {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) (μ : Measure (G ⧸ Γ))
     [QuotientMeasureEqMeasurePreimage ν μ] :
     MeasurePreserving (@QuotientGroup.mk G _ Γ) (ν.restrict 𝓕) μ :=
   h𝓕.measurePreserving_quotient_mk ν μ
