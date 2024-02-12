@@ -73,7 +73,7 @@ variable {E}
 
 lemma IsPointwiseLeftKanExtensionAt.hasPointwiseLeftKanExtensionAt
     {E : LeftExtension L F} {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y) :
-  HasPointwiseLeftKanExtensionAt L F Y := ⟨_, h⟩
+    HasPointwiseLeftKanExtensionAt L F Y := ⟨_, h⟩
 
 variable (E)
 
