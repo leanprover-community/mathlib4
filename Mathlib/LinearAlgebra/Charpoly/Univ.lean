@@ -58,15 +58,7 @@ open MvPolynomial RingHomClass in
 @[simp]
 lemma univ_map_eval₂Hom (M : n × n → S) :
     (univ R n).map (eval₂Hom f M) = charpoly (Matrix.of M.curry) := by
-  rw [← Polynomial.coe_mapRingHom]
-  simp only [univ, charpoly, det_apply', map_sum, _root_.map_mul, map_prod]
-  apply Finset.sum_congr rfl
-  rintro i -
-  congr 1
-  · simp only [map_intCast]
-  · apply Finset.prod_congr rfl
-    rintro j -
-    by_cases h : i j = j <;> simp [h]
+  erw [univ, ← charpoly_map, mvPolynomialX_map_eval₂ _ (Matrix.of M.curry)]
 
 lemma univ_map_map :
     (univ R n).map (MvPolynomial.map f) = univ S n := by

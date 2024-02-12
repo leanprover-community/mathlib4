@@ -35,7 +35,7 @@ universe u v w
 
 open Polynomial Matrix BigOperators Polynomial
 
-variable {R : Type u} [CommRing R]
+variable {R S : Type*} [CommRing R] [CommRing S]
 
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
@@ -87,6 +87,11 @@ theorem charmatrix_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m
   all_goals simp [h]
 #align charmatrix_reindex charmatrix_reindex
 
+lemma charmatrix_map (M : Matrix n n R) (f : R →+* S) :
+    charmatrix (M.map f) = (charmatrix M).map (Polynomial.map f) := by
+  ext i j
+  by_cases h : i = j <;> simp [h, charmatrix, diagonal]
+
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$.
 -/
 def Matrix.charpoly (M : Matrix n n R) : R[X] :=
@@ -98,6 +103,11 @@ theorem Matrix.charpoly_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n 
   unfold Matrix.charpoly
   rw [charmatrix_reindex, Matrix.det_reindex_self]
 #align matrix.charpoly_reindex Matrix.charpoly_reindex
+
+lemma Matrix.charpoly_map (M : Matrix n n R) (f : R →+* S) :
+    (M.map f).charpoly = M.charpoly.map f := by
+  rw [charpoly, charmatrix_map, ← Polynomial.coe_mapRingHom, charpoly, RingHom.map_det]
+  rfl
 
 -- This proof follows http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 /-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix,
