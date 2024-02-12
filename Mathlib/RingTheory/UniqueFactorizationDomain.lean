@@ -126,6 +126,12 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
     not_isUnit_of_not_isUnit_dvd (hi b h).not_unit <| he ▸ Multiset.dvd_prod h⟩
 #align wf_dvd_monoid.not_unit_iff_exists_factors_eq WfDvdMonoid.not_unit_iff_exists_factors_eq
 
+theorem isRelPrime_of_no_irreducible_factors {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
+    (H : ∀ z : α, Irreducible z → z ∣ x → ¬z ∣ y) : IsRelPrime x y :=
+  isRelPrime_of_no_nonunits_factors nonzero fun _z znu znz zx zy ↦
+    have ⟨i, h1, h2⟩ := exists_irreducible_factor znu znz
+    H i h1 (h2.trans zx) (h2.trans zy)
+
 end WfDvdMonoid
 
 theorem WfDvdMonoid.of_wellFounded_associates [CancelCommMonoidWithZero α]
@@ -881,28 +887,23 @@ namespace UniqueFactorizationMonoid
 
 variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
-theorem no_factors_of_no_prime_factors {a b : R} (ha : a ≠ 0)
-    (h : ∀ {d}, d ∣ a → d ∣ b → ¬Prime d) : IsRelPrime a b := fun {d} =>
-  induction_on_prime d
-    (by
-      simp only [zero_dvd_iff]
-      intros
-      contradiction)
-    (fun x hx _ _ => hx) fun d q _ hq _ dvd_a dvd_b =>
-    absurd hq (h (dvd_of_mul_right_dvd dvd_a) (dvd_of_mul_right_dvd dvd_b))
-#align unique_factorization_monoid.no_factors_of_no_prime_factors UniqueFactorizationMonoid.no_factors_of_no_prime_factors
+theorem isRelPrime_iff_no_prime_factors {a b : R} (ha : a ≠ 0) :
+    IsRelPrime a b ↔ ∀ ⦃d⦄, d ∣ a → d ∣ b → ¬Prime d :=
+  ⟨fun h _ ha hb ↦ (·.not_unit <| h ha hb), fun h ↦ WfDvdMonoid.isRelPrime_of_no_irreducible_factors
+    (ha ·.1) fun _ irr ha hb ↦ h ha hb (UniqueFactorizationMonoid.irreducible_iff_prime.mp irr)⟩
+#align unique_factorization_monoid.no_factors_of_no_prime_factors UniqueFactorizationMonoid.isRelPrime_iff_no_prime_factors
 
 /-- Euclid's lemma: if `a ∣ b * c` and `a` and `c` have no common prime factors, `a ∣ b`.
 Compare `IsCoprime.dvd_of_dvd_mul_left`. -/
 theorem dvd_of_dvd_mul_left_of_no_prime_factors {a b c : R} (ha : a ≠ 0) :
-    (∀ {d}, d ∣ a → d ∣ c → ¬Prime d) → a ∣ b * c → a ∣ b := by
+    (∀ ⦃d⦄, d ∣ a → d ∣ c → ¬Prime d) → a ∣ b * c → a ∣ b := by
   refine' induction_on_prime c _ _ _
   · intro no_factors
     simp only [dvd_zero, mul_zero, forall_prop_of_true]
     haveI := Classical.propDecidable
     exact
       isUnit_iff_forall_dvd.mp
-        (no_factors_of_no_prime_factors ha (@no_factors) (dvd_refl a) (dvd_zero a)) _
+        ((isRelPrime_iff_no_prime_factors ha).mpr no_factors (dvd_refl a) (dvd_zero a)) _
   · rintro _ ⟨x, rfl⟩ _ a_dvd_bx
     apply Units.dvd_mul_right.mp a_dvd_bx
   · intro c p _ hp ih no_factors a_dvd_bpc
@@ -1081,7 +1082,7 @@ theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α
     (is_coprime : ∀ᵉ (q ∈ insert p s) (q' ∈ insert p s), q ∣ q' → q = q') :
     IsRelPrime (p ^ i p) (∏ p' in s, p' ^ i p') := by
   have hp := is_prime _ (Finset.mem_insert_self _ _)
-  refine' no_factors_of_no_prime_factors (pow_ne_zero _ hp.ne_zero) _
+  refine (isRelPrime_iff_no_prime_factors <| pow_ne_zero _ hp.ne_zero).mpr ?_
   intro d hdp hdprod hd
   apply hps
   replace hdp := hd.dvd_of_dvd_pow hdp

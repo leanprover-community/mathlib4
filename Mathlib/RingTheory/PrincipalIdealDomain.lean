@@ -186,7 +186,9 @@ instance span_pair_isPrincipal [IsBezout R] (x y : R) : (Ideal.span {x, y}).IsPr
 
 variable (x y : R) [(Ideal.span {x, y}).IsPrincipal]
 
-/-- The gcd of two elements in a bezout domain. -/
+/-- A choice of gcd of two elements in a Bézout domain.
+
+Note that the choice is usually not unique. -/
 noncomputable def gcd : R := Submodule.IsPrincipal.generator (Ideal.span {x, y})
 #align is_bezout.gcd IsBezout.gcd
 
@@ -460,23 +462,12 @@ theorem gcd_isUnit_iff (x y : R) : IsUnit (gcd x y) ↔ IsCoprime x y := by
 end GCD
 
 theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
-    (H : ∀ z ∈ nonunits R, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y := by
-  classical
-  letI := IsBezout.toGCDDomain R
-  rw [← gcd_isUnit_iff]
-  by_contra h
-  refine' H _ h _ (gcd_dvd_left _ _) (gcd_dvd_right _ _)
-  rwa [Ne, gcd_eq_zero_iff]
+    (H : ∀ z ∈ nonunits R, z ≠ 0 → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
+  (isRelPrime_of_no_nonunits_factors nonzero H).isCoprime
 #align is_coprime_of_dvd isCoprime_of_dvd
 
-theorem dvd_or_coprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y := by
-  refine' or_iff_not_imp_left.2 fun h' => _
-  apply isCoprime_of_dvd
-  · rintro ⟨rfl, rfl⟩
-    simp at h
-  · rintro z nu - ⟨w, rfl⟩ dy
-    refine' h' (dvd_trans _ dy)
-    simpa using mul_dvd_mul_left z (isUnit_iff_dvd_one.1 <| (of_irreducible_mul h).resolve_left nu)
+theorem dvd_or_coprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y :=
+  h.dvd_or_isRelPrime.imp_right IsRelPrime.isCoprime
 #align dvd_or_coprime dvd_or_coprime
 
 /-- See also `Irreducible.isRelPrime_iff_not_dvd`. -/
@@ -514,13 +505,8 @@ end Bezout
 variable [IsPrincipalIdealRing R]
 
 theorem isCoprime_of_irreducible_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))
-    (H : ∀ z : R, Irreducible z → z ∣ x → ¬z ∣ y) : IsCoprime x y := by
-  apply isCoprime_of_dvd x y nonzero
-  intro z znu znz zx zy
-  obtain ⟨i, h1, h2⟩ := WfDvdMonoid.exists_irreducible_factor znu znz
-  apply H i h1 <;>
-    · apply dvd_trans h2
-      assumption
+    (H : ∀ z : R, Irreducible z → z ∣ x → ¬z ∣ y) : IsCoprime x y :=
+  (isRelPrime_of_irreducible_dvd nonzero H).isCoprime
 #align is_coprime_of_irreducible_dvd isCoprime_of_irreducible_dvd
 
 theorem isCoprime_of_prime_dvd {x y : R} (nonzero : ¬(x = 0 ∧ y = 0))

@@ -733,6 +733,9 @@ lemma Irreducible.isRelPrime_iff_not_dvd [Monoid α] {p n : α} (hp : Irreducibl
   suffices Associated p d from this.dvd.trans hdn
   exact (hp.dvd_iff.mp hdp).resolve_left hpn
 
+lemma Irreducible.dvd_or_isRelPrime [Monoid α] {p n : α} (hp : Irreducible p) :
+    p ∣ n ∨ IsRelPrime p n := Classical.or_iff_not_imp_left.mpr hp.isRelPrime_iff_not_dvd.2
+
 section UniqueUnits
 
 variable [Monoid α] [Unique αˣ]
