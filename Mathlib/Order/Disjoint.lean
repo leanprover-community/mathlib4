@@ -90,6 +90,7 @@ variable [PartialOrder α] [OrderBot α] {a b c d : α}
 theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
   ⟨fun hd ↦ bot_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ ha.trans_eq h⟩
 #align disjoint_self disjoint_self
+
 /- TODO: Rename `Disjoint.eq_bot` to `Disjoint.inf_eq` and `Disjoint.eq_bot_of_self` to
 `Disjoint.eq_bot` -/
 alias ⟨Disjoint.eq_bot_of_self, _⟩ := disjoint_self
