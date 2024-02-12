@@ -244,6 +244,14 @@ theorem natDegree_mul_leadingCoeff_inv (p : R[X]) (h : q ≠ 0) :
   rw [natDegree_mul hp (C_ne_zero.mpr h₁), natDegree_C, add_zero]
 
 @[simp]
+theorem irreducible_mul_leadingCoeff_inv {p : R[X]} :
+    Irreducible (p * C (leadingCoeff p)⁻¹) ↔ Irreducible p := by
+  by_cases hp0 : p = 0
+  · simp [hp0]
+  exact irreducible_mul_isUnit
+    (isUnit_C.mpr (IsUnit.mk0 _ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))
+
+@[simp]
 theorem map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 := by
   simp only [Polynomial.ext_iff]
   congr!

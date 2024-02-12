@@ -14,32 +14,43 @@ Facts about polynomials that have a specific integer degree.
 
 namespace Polynomial
 
+section IsDomain
+
+variable {R : Type*} [CommRing R] [IsDomain R]
+
+/-- A polynomial of degree 2 or 3 is irreducible iff it doesn't have roots. -/
+theorem Monic.irreducible_iff_roots_eq_zero_of_degree_le_three {R} [CommRing R] [IsDomain R]
+    {p : R[X]} (hp : p.Monic)
+    (hp2 : 2 ≤ p.natDegree) (hp3 : p.natDegree ≤ 3) : Irreducible p ↔ p.roots = 0 := by
+  have hp0 : p ≠ 0 := hp.ne_zero
+  have hp1 : p ≠ 1 := by rintro rfl; rw [natDegree_one] at hp2; cases hp2
+  rw [hp.irreducible_iff_lt_natDegree_lt hp1]
+  simp_rw [show p.natDegree / 2 = 1 from
+      (Nat.div_le_div_right hp3).antisymm
+        (by apply Nat.div_le_div_right (c := 2) hp2),
+    show Finset.Ioc 0 1 = {1} from rfl,
+    Finset.mem_singleton, Multiset.eq_zero_iff_forall_not_mem, mem_roots hp0, ← dvd_iff_isRoot]
+  refine ⟨fun h r ↦ h _ (monic_X_sub_C r) (natDegree_X_sub_C r), fun h q hq hq1 ↦ ?_⟩
+  rw [hq.eq_X_add_C hq1, ← sub_neg_eq_add, ← C_neg]
+  apply h
+
+end IsDomain
+
+section Field
+
 variable {K : Type*} [Field K]
 
 /-- A polynomial of degree 2 or 3 is irreducible iff it doesn't have roots. -/
 theorem irreducible_iff_roots_eq_zero_of_degree_le_three
-    {p : K[X]} (hpl : 2 ≤ p.natDegree) (hp : p.natDegree ≤ 3) : Irreducible p ↔ p.roots = 0 := by
-  have hp0 : p ≠ 0 := ne_zero_of_natDegree_gt hpl
-  have hpu : ¬ IsUnit p := p.not_isUnit_of_natDegree_pos (pos_of_gt hpl)
+    {p : K[X]} (hp2 : 2 ≤ p.natDegree) (hp3 : p.natDegree ≤ 3) : Irreducible p ↔ p.roots = 0 := by
+  have hp0 : p ≠ 0 := by rintro rfl; rw [natDegree_zero] at hp2; cases hp2
+  rw [← irreducible_mul_leadingCoeff_inv,
+      (monic_mul_leadingCoeff_inv hp0).irreducible_iff_roots_eq_zero_of_degree_le_three,
+      mul_comm, roots_C_mul]
+  · exact inv_ne_zero (leadingCoeff_ne_zero.mpr hp0)
+  · rwa [natDegree_mul_leadingCoeff_inv _ hp0]
+  · rwa [natDegree_mul_leadingCoeff_inv _ hp0]
 
-  -- Since the degree is at most three, the only divisors should be of degree one.
-  -- (We take the contrapositive for ease of proving.)
-  suffices : (∃ x, x ∣ p ∧ natDegree x = 1) ↔ ¬roots p = 0
-  · rw [irreducible_iff_lt_natDegree_lt hp0 hpu, ← not_iff_not, ← this]
-    have : (natDegree p) / 2 = 1
-    · interval_cases natDegree p
-      · rfl
-      · rfl
-    simp [this]
-  constructor
-  · rintro ⟨q, hdvd, hdeg⟩ hroots
-    have hndeg := (degree_eq_iff_natDegree_eq (ne_zero_of_dvd_ne_zero hp0 hdvd)).mpr hdeg
-    obtain ⟨r, hr⟩ := exists_root_of_degree_eq_one hndeg
-    simpa [hroots] using (mem_roots hp0).mpr (hr.dvd hdvd)
-  · intro h
-    obtain ⟨r, hr⟩ := Multiset.exists_mem_of_ne_zero h
-    exact ⟨X - C r,
-      ⟨p /ₘ (X - C r), (mul_divByMonic_eq_iff_isRoot.mpr (isRoot_of_mem_roots hr)).symm⟩,
-      natDegree_X_sub_C _⟩
+end Field
 
 end Polynomial
