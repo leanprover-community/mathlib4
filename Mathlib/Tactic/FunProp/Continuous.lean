@@ -18,8 +18,6 @@ import Mathlib.Tactic.FunProp
 
 -- analysis
 attribute [fun_prop]
-  Continuous.dist
-  Continuous.nndist
   Continuous.edist
 
   Continuous.norm
