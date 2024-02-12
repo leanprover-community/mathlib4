@@ -62,8 +62,8 @@ theorem lapMatrix_mulVec_const_eq_zero [Ring α] : mulVec (G.lapMatrix α) (fun 
 
 theorem dotProduct_mulVec_adjMatrix [Ring α] (x : V → α) :
     x ⬝ᵥ (G.adjMatrix α).mulVec x = ∑ i : V, ∑ j : V, if G.Adj i j then x i * x j else 0 := by
-  unfold mulVec dotProduct
-  simp [mul_sum]
+  simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
+    mul_zero]
 
 theorem dotProduct_mulVec_degMatrix [CommRing α] (x : V → α) :
     x ⬝ᵥ (G.degMatrix α).mulVec x = ∑ i : V, G.degree i * x i * x i := by
