@@ -13,19 +13,23 @@ import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 -- move this
 namespace LinearMap
 
-variable {R M : Type*}
-variable [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
-variable [Module.Finite R M] [Module.Free R M]
-variable (φ : M →ₗ[R] M)
+variable {K M : Type*}
+variable [Field K] [IsDomain K] [AddCommGroup M] [Module K M]
+variable [Module.Finite K M] [Module.Free K M]
+variable (φ : Module.End K M)
 
 open FiniteDimensional Polynomial
 
+lemma finrank_maximalGeneralizedEigenspace :
+    finrank K (φ.maximalGeneralizedEigenspace 0) = natTrailingDegree (φ.charpoly) := by
+  sorry
+
 lemma charpoly_eq_X_pow_iff :
-    φ.charpoly = X ^ finrank R M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 := by
+    φ.charpoly = X ^ finrank K M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 := by
   constructor
   · intro h m
-    use finrank R M
-    suffices φ ^ finrank R M = 0 by simp only [this, LinearMap.zero_apply]
+    use finrank K M
+    suffices φ ^ finrank K M = 0 by simp only [this, LinearMap.zero_apply]
     simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
   · intro h
     rw [← sub_eq_zero]

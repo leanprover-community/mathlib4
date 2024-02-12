@@ -103,6 +103,9 @@ def lieCharpoly : Polynomial (MvPolynomial ι R) :=
 lemma lieCharpoly_monic : (lieCharpoly b bₘ).Monic :=
   Matrix.charpoly.univ_monic.map _
 
+lemma lieCharpoly_ne_zero [Nontrivial R] : (lieCharpoly b bₘ) ≠ 0 := by
+  apply (lieCharpoly_monic _ _).ne_zero
+
 @[simp]
 lemma lieCharpoly_natDegree [Nontrivial R] : (lieCharpoly b bₘ).natDegree = Fintype.card ιM := by
   rw [lieCharpoly, Matrix.charpoly.univ_monic.natDegree_map, Matrix.charpoly.univ_natDegree]
@@ -180,21 +183,20 @@ The *rank* of `L` is the smallest `n` for which the `n`-th coefficient
 is not the zero polynomial.
 -/
 noncomputable
-def rank : ℕ :=
-  Nat.find (exists_lieCharpoly_coeff_ne_zero (chooseBasis R L) (chooseBasis R L))
+def rank : ℕ := (lieCharpoly (chooseBasis R L) (chooseBasis R L)).natTrailingDegree
 
 -- TODO: generalize to arbitrary basis
 lemma lieCharpoly_coeff_rank_ne_zero :
     (lieCharpoly (chooseBasis R L) (chooseBasis R L)).coeff (rank R L) ≠ 0 := by
-  classical
-  exact Nat.find_spec (exists_lieCharpoly_coeff_ne_zero (chooseBasis R L) (chooseBasis R L))
+  apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
+  apply lieCharpoly_ne_zero
+
 
 open FiniteDimensional
 lemma rank_le_card : rank R L ≤ Fintype.card ι := by
-  rw [← FiniteDimensional.finrank_eq_card_basis b, finrank_eq_card_chooseBasisIndex]
-  classical
-  apply Nat.find_le
-  rw [← lieCharpoly_natDegree (chooseBasis R L) (chooseBasis R L), Polynomial.coeff_natDegree,
+  apply Polynomial.natTrailingDegree_le_of_ne_zero
+  rw [← FiniteDimensional.finrank_eq_card_basis b, finrank_eq_card_chooseBasisIndex,
+      ← lieCharpoly_natDegree (chooseBasis R L) (chooseBasis R L), Polynomial.coeff_natDegree,
     (lieCharpoly_monic _ _).leadingCoeff]
   apply one_ne_zero
 
