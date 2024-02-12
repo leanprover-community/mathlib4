@@ -6,7 +6,6 @@ import Mathlib.Data.Matrix.Notation
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Qq
-import Std.Tactic.GuardExpr
 
 open Qq
 

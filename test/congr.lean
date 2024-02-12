@@ -1,5 +1,4 @@
 import Mathlib.Tactic.Congr!
-import Std.Tactic.GuardExpr
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.List.BigOperators.Basic

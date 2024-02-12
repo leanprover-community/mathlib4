@@ -1,5 +1,4 @@
 import Mathlib.Tactic.LiftLets
-import Std.Tactic.GuardExpr
 
 private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true

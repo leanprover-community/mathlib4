@@ -1,6 +1,5 @@
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.GeneralizeProofs
-import Std.Tactic.GuardExpr
 import Mathlib.Tactic.LibrarySearch
 
 private axiom test_sorry : ∀ {α}, α
