@@ -8,6 +8,7 @@ import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Topology.Algebra.Order.UpperLower
 
 #align_import analysis.normed.order.upper_lower from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
 
@@ -22,7 +23,7 @@ We also prove lemmas specific to `ℝⁿ`. Those are helpful to prove that order
 are measurable.
 -/
 
-open Function Metric Set
+open Bornology Function Metric Set
 open scoped Pointwise
 
 variable {α ι : Type*}
@@ -126,7 +127,7 @@ variable [Fintype ι] {s t : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι →
 
 -- TODO: Generalise those lemmas so that they also apply to `ℝ` and `euclidean_space ι ℝ`
 lemma dist_inf_sup (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
-  refine' congr_arg coe (Finset.sup_congr rfl fun i _ ↦ _)
+  refine' congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ _)
   simp only [Real.nndist_eq', sup_eq_max, inf_eq_min, max_sub_min_eq_abs, Pi.inf_apply,
     Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
 #align dist_inf_sup dist_inf_sup
@@ -139,7 +140,7 @@ lemma dist_mono_left : MonotoneOn (dist · y) (Ici y) := by
 #align dist_mono_left dist_mono_left
 
 lemma dist_mono_right : MonotoneOn (dist x) (Ici x) := by
-  simpa only [dist_comm] using dist_mono_left
+  simpa only [dist_comm _ x] using dist_mono_left (y := x)
 #align dist_mono_right dist_mono_right
 
 lemma dist_anti_left : AntitoneOn (dist · y) (Iic y) := by
@@ -150,7 +151,7 @@ lemma dist_anti_left : AntitoneOn (dist · y) (Iic y) := by
 #align dist_anti_left dist_anti_left
 
 lemma dist_anti_right : AntitoneOn (dist x) (Iic x) := by
-  simpa only [dist_comm] using dist_anti_left
+  simpa only [dist_comm] using dist_anti_left (y := x)
 #align dist_anti_right dist_anti_right
 
 lemma dist_le_dist_of_le (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) : dist a₁ b₁ ≤ dist a₂ b₂ :=
@@ -158,43 +159,45 @@ lemma dist_le_dist_of_le (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ 
     dist_anti_left (ha.trans $ h₁.trans hb) (h₁.trans hb) ha
 #align dist_le_dist_of_le dist_le_dist_of_le
 
-protected lemma Bornology.IsBounded.bddBelow : Bounded s → BddBelow s := by
+protected lemma Bornology.IsBounded.bddBelow : IsBounded s → BddBelow s := by
+  rw [isBounded_iff]
   rintro ⟨r, hr⟩
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · exact bddBelow_empty
-  · exact ⟨x - const _ r, fun y hy i ↦
-      sub_le_comm.1 (abs_sub_le_iff.1 $ (dist_le_pi_dist _ _ _).trans $ hr _ hx _ hy).1⟩
+  · exact ⟨(x · - r), fun y hy i ↦
+      sub_le_comm.1 (abs_sub_le_iff.1 $ (dist_le_pi_dist _ _ _).trans $ hr hx hy).1⟩
 #align metric.bounded.bdd_below Bornology.IsBounded.bddBelow
 
-protected lemma Bornology.IsBounded.bddAbove : Bounded s → BddAbove s := by
+protected lemma Bornology.IsBounded.bddAbove : IsBounded s → BddAbove s := by
+  rw [isBounded_iff]
   rintro ⟨r, hr⟩
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · exact bddAbove_empty
-  · exact ⟨x + const _ r, fun y hy i ↦
-      sub_le_iff_le_add'.1 $ (abs_sub_le_iff.1 $ (dist_le_pi_dist _ _ _).trans $ hr _ hx _ hy).2⟩
+  · exact ⟨(x · + r), fun y hy i ↦
+      sub_le_iff_le_add'.1 $ (abs_sub_le_iff.1 $ (dist_le_pi_dist _ _ _).trans $ hr hx hy).2⟩
 #align metric.bounded.bdd_above Bornology.IsBounded.bddAbove
 
-protected lemma BddBelow.isBounded : BddBelow s → BddAbove s → Bounded s := by
+protected lemma BddBelow.isBounded : BddBelow s → BddAbove s → IsBounded s := by
   rintro ⟨a, ha⟩ ⟨b, hb⟩
-  refine' ⟨dist a b, fun x hx y hy ↦ _⟩
+  refine isBounded_iff.2 ⟨dist a b, fun x hx y hy ↦ ?_⟩
   rw [← dist_inf_sup]
   exact dist_le_dist_of_le (le_inf (ha hx) $ ha hy) inf_le_sup (sup_le (hb hx) $ hb hy)
 #align bdd_below.bounded BddBelow.isBounded
 
-protected lemma BddAbove.isBounded : BddAbove s → BddBelow s → Bounded s :=
+protected lemma BddAbove.isBounded : BddAbove s → BddBelow s → IsBounded s :=
   flip BddBelow.isBounded
 #align bdd_above.bounded BddAbove.isBounded
 
-lemma isBounded_iff_bddBelow_bddAbove : Bounded s ↔ BddBelow s ∧ BddAbove s :=
-  ⟨fun h ↦ ⟨h.BddBelow, h.BddAbove⟩, fun h ↦ h.1.Bounded h.2⟩
+lemma isBounded_iff_bddBelow_bddAbove : IsBounded s ↔ BddBelow s ∧ BddAbove s :=
+  ⟨fun h ↦ ⟨h.bddBelow, h.bddAbove⟩, fun h ↦ h.1.isBounded h.2⟩
 #align bounded_iff_bdd_below_bdd_above isBounded_iff_bddBelow_bddAbove
 
-lemma BddBelow.isBounded_inter (hs : BddBelow s) (ht : BddAbove t) : Bounded (s ∩ t) :=
-  (hs.mono $ inter_subset_left _ _).Bounded $ ht.mono $ inter_subset_right _ _
+lemma BddBelow.isBounded_inter (hs : BddBelow s) (ht : BddAbove t) : IsBounded (s ∩ t) :=
+  (hs.mono $ inter_subset_left _ _).isBounded $ ht.mono $ inter_subset_right _ _
 #align bdd_below.bounded_inter BddBelow.isBounded_inter
 
-lemma BddAbove.isBounded_inter (hs : BddAbove s) (ht : BddBelow t) : Bounded (s ∩ t) :=
-  (hs.mono $ inter_subset_left _ _).Bounded $ ht.mono $ inter_subset_right _ _
+lemma BddAbove.isBounded_inter (hs : BddAbove s) (ht : BddBelow t) : IsBounded (s ∩ t) :=
+  (hs.mono $ inter_subset_left _ _).isBounded $ ht.mono $ inter_subset_right _ _
 #align bdd_above.bounded_inter BddAbove.isBounded_inter
 
 theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
@@ -241,14 +244,15 @@ section Finite
 
 variable [Finite ι] {s t : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
 
-lema IsAntichain.interior_eq_empty [Nonempty ι] (hs : IsAntichain (· ≤ ·) s) : interior s = ∅ := by
+lemma IsAntichain.interior_eq_empty [Nonempty ι] (hs : IsAntichain (· ≤ ·) s) : interior s = ∅ := by
   cases nonempty_fintype ι
   refine' eq_empty_of_forall_not_mem fun x hx ↦ _
   have hx' := interior_subset hx
   rw [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at hx
   obtain ⟨ε, hε, hx⟩ := hx
-  refine' hs.not_lt hx' (hx _) (lt_add_of_pos_right _ (by positivity : 0 < const ι (ε / 2)))
-  simpa [const, @pi_norm_const ι ℝ _ _ _ (ε / 2), abs_of_nonneg hε.lt.le]
+  refine hs.not_lt hx' (hx ?_) $ lt_add_of_pos_right _ $ const_pos.2 $ (by positivity : 0 < ε / 2)
+  unfold const
+  simpa [@pi_norm_const ι ℝ _ _ _ (ε / 2), abs_of_nonneg hε.le]
 #align is_antichain.interior_eq_empty IsAntichain.interior_eq_empty
 
 /-!
@@ -265,11 +269,11 @@ protected theorem IsClosed.upperClosure (hs : IsClosed s) (hs' : BddBelow s) :
   cases nonempty_fintype ι
   refine' IsSeqClosed.isClosed fun f x hf hx ↦ _
   choose g hg hgf using hf
-  obtain ⟨a, ha⟩ := hx.bdd_above_range
-  obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.bounded_inter bddAbove_Iic) fun n ↦
+  obtain ⟨a, ha⟩ := hx.bddAbove_range
+  obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.isBounded_inter bddAbove_Iic) fun n ↦
     ⟨hg n, (hgf _).trans $ ha $ mem_range_self _⟩
   exact ⟨b, closure_minimal (inter_subset_left _ _) hs hb,
-    le_of_tendsto_of_tendsto' hbf (hx.comp hφ.tendsto_at_top) fun _ ↦ hgf _⟩
+    le_of_tendsto_of_tendsto' hbf (hx.comp hφ.tendsto_atTop) fun _ ↦ hgf _⟩
 #align is_closed.upper_closure IsClosed.upperClosure
 
 protected lemma IsClosed.lowerClosure (hs : IsClosed s) (hs' : BddAbove s) :
@@ -277,20 +281,20 @@ protected lemma IsClosed.lowerClosure (hs : IsClosed s) (hs' : BddAbove s) :
   cases nonempty_fintype ι
   refine IsSeqClosed.isClosed fun f x hf hx ↦ ?_
   choose g hg hfg using hf
-  haveI : BoundedGeNhdsClass ℝ := by infer_instance
-  obtain ⟨a, ha⟩ := hx.bdd_below_range
-  obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.bounded_inter bddBelow_Ici) fun n ↦
+  haveI : BoundedGENhdsClass ℝ := by infer_instance
+  obtain ⟨a, ha⟩ := hx.bddBelow_range
+  obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.isBounded_inter bddBelow_Ici) fun n ↦
     ⟨hg n, (ha $ mem_range_self _).trans $ hfg _⟩
   exact ⟨b, closure_minimal (inter_subset_left _ _) hs hb,
-    le_of_tendsto_of_tendsto' (hx.comp hφ.tendsto_at_top) hbf fun _ ↦ hfg _⟩
+    le_of_tendsto_of_tendsto' (hx.comp hφ.tendsto_atTop) hbf fun _ ↦ hfg _⟩
 #align is_closed.lower_closure IsClosed.lowerClosure
 
 protected lemma IsClopen.upperClosure (hs : IsClopen s) (hs' : BddBelow s) :
-    IsClopen (upperClosure s : Set (ι → ℝ)) := ⟨hs.1.upperClosure, hs.2.upperClosure hs'⟩
+    IsClopen (upperClosure s : Set (ι → ℝ)) := ⟨hs.1.upperClosure hs', hs.2.upperClosure⟩
 #align is_clopen.upper_closure IsClopen.upperClosure
 
 protected lemma IsClopen.lowerClosure (hs : IsClopen s) (hs' : BddAbove s) :
-    IsClopen (lowerClosure s : Set (ι → ℝ)) := ⟨hs.1.lowerClosure, hs.2.lowerClosure hs'⟩
+    IsClopen (lowerClosure s : Set (ι → ℝ)) := ⟨hs.1.lowerClosure hs', hs.2.lowerClosure⟩
 #align is_clopen.lower_closure IsClopen.lowerClosure
 
 lemma closure_upperClosure_comm (hs : BddBelow s) :
