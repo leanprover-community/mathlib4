@@ -165,4 +165,8 @@ Relations between restriction and coercion.
 lemma image_val_preimage_val_subset_self : ↑(A ↓∩ B) ⊆ B :=
   image_preimage_subset _ _
 
+@[simp]
+lemma preimage_val_image_val_eq_self : A ↓∩ ↑D = D :=
+  Function.Injective.preimage_image Subtype.val_injective _
+
 end Set
