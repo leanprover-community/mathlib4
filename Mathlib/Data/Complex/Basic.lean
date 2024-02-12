@@ -968,6 +968,96 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
     mul_div_cancel_left _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
 
+section reProdIm
+
+/-- The preimage under `equivRealProd` of `s ×ˢ t` is `s ×ℂ t`. -/
+lemma preimage_equivRealProd_prod (s t : Set ℝ) : equivRealProd ⁻¹' (s ×ˢ t) = s ×ℂ t := rfl
+
+/-- The inequality `s × t ⊆ s₁ × t₁` holds in `ℂ` iff it holds in `ℝ × ℝ`. -/
+lemma reProdIm_subset_iff {s s₁ t t₁ : Set ℝ} : s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ×ˢ t ⊆ s₁ ×ˢ t₁ := by
+  rw [← @preimage_equivRealProd_prod s t, ← @preimage_equivRealProd_prod s₁ t₁]
+  exact Equiv.preimage_subset equivRealProd _ _
+
+/-- If `s ⊆ s₁ ⊆ ℝ` and `t ⊆ t₁ ⊆ ℝ`, then `s × t ⊆ s₁ × t₁` in `ℂ`. -/
+lemma reProdIm_subset_iff' {s s₁ t t₁ : Set ℝ} :
+    s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
+  convert prod_subset_prod_iff
+  exact reProdIm_subset_iff
+
+end reProdIm
+
+open scoped Interval
+
+section Rectangle
+
+/-- A `Rectangle` is an axis-parallel rectangle with corners `z` and `w`. -/
+def Rectangle (z w : ℂ) : Set ℂ := [[z.re, w.re]] ×ℂ [[z.im, w.im]]
+
+/-- The axis-parallel complex rectangle with opposite corners `z` and `w` is complex product
+  of two intervals, which is also the convex hull of the four corners. -/
+lemma segment_reProdIm_segment_eq_convexHull (z w : ℂ) :
+    [[z.re, w.re]] ×ℂ [[z.im, w.im]] = convexHull ℝ {z, z.re + w.im * I, w.re + z.im * I, w} := by
+  simp_rw [← segment_eq_uIcc, ← convexHull_pair, ← convexHull_reProdIm,
+    ← preimage_equivRealProd_prod, insert_prod, singleton_prod, image_pair,
+    insert_union, ← insert_eq, preimage_equiv_eq_image_symm, image_insert_eq, image_singleton,
+    equivRealProd_symm_apply, re_add_im]
+
+/-- If the four corners of a rectangle are contained in a convex set `U`, then the whole
+  rectangle is. -/
+lemma rectangle_in_convex {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ} (hz : z ∈ U)
+    (hw : w ∈ U) (hzw : (z.re + w.im * I) ∈ U) (hwz : (w.re + z.im * I) ∈ U) :
+    Rectangle z w ⊆ U := by
+  rw [Rectangle, segment_reProdIm_segment_eq_convexHull]
+  convert convexHull_min ?_ (U_convex)
+  refine insert_subset hz (insert_subset hzw (insert_subset hwz ?_))
+  exact singleton_subset_iff.mpr hw
+
+/-- If `z` is in a ball centered at `c`, then `z.re + c.im * I` is in the ball. -/
+lemma cornerRectangle_in_disc {c : ℂ} {r : ℝ} {z : ℂ} (hz : z ∈ ball c r) :
+    z.re + c.im * I ∈ ball c r := by
+  simp only [mem_ball] at hz ⊢
+  rw [dist_of_im_eq] <;> simp only [add_re, I_re, mul_zero, I_im, zero_add, add_im,
+    add_zero, sub_self, mul_re, mul_one, ofReal_im, mul_im, ofReal_re]
+  apply lt_of_le_of_lt ?_ hz
+  rw [dist_eq_re_im, Real.dist_eq]
+  apply Real.le_sqrt_of_sq_le
+  simp only [_root_.sq_abs, le_add_iff_nonneg_right, ge_iff_le, sub_nonneg]
+  exact sq_nonneg _
+
+end Rectangle
+
+section Segments
+
+/-- A real segment `[a₁, a₂]` translated by `b * I` is the complex line segment. -/
+lemma horizontalSegment_eq (a₁ a₂ b : ℝ) :
+    (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] = [[a₁, a₂]] ×ℂ {b} := by
+  rw [← preimage_equivRealProd_prod]
+  ext x
+  constructor
+  · intro hx
+    obtain ⟨x₁, hx₁, hx₁'⟩ := hx
+    simp [← hx₁', mem_preimage, mem_prod, hx₁]
+  · intro hx
+    obtain ⟨x₁, hx₁, hx₁', hx₁''⟩ := hx
+    refine ⟨x.re, x₁, by simp⟩
+
+/-- A vertical segment `[b₁, b₂]` translated by `a` is the complex line segment. -/
+lemma verticalSegment_eq (a b₁ b₂ : ℝ) :
+    (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] = {a} ×ℂ [[b₁, b₂]] := by
+  rw [← preimage_equivRealProd_prod]
+  ext x
+  constructor
+  · intro hx
+    obtain ⟨x₁, hx₁, hx₁'⟩ := hx
+    simp [← hx₁', mem_preimage, mem_prod, hx₁]
+  · intro hx
+    simp only [equivRealProd_apply, singleton_prod, mem_image, Prod.mk.injEq,
+      exists_eq_right_right, mem_preimage] at hx
+    obtain ⟨x₁, hx₁, hx₁', hx₁''⟩ := hx
+    refine ⟨x.im, x₁, by simp⟩
+
+end Segments
+
 end Complex
 
 assert_not_exists Multiset
