@@ -53,6 +53,10 @@ open ComplexConjugate
 
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
+
+While the name of the class begins with `Is`,
+this typeclass carries data (all operations common to real and complex numbers),
+not just claims existence of these operations.
 -/
 class IsROrC (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
