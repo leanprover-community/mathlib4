@@ -202,7 +202,8 @@ instance instCommSemigroup [CommSemigroup G] [CommSemigroup H] : CommSemigroup (
 
 instance [SemigroupWithZero M] [SemigroupWithZero N] : SemigroupWithZero (M × N) :=
   { zero_mul := by simp,
-    mul_zero := by simp }
+    mul_zero := by simp,
+    mul_assoc := mul_assoc }
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=
@@ -212,10 +213,9 @@ instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
   { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
-    npow_zero := fun z => ext (Monoid.npow_zero _) (Monoid.npow_zero _),
-    npow_succ := fun z a => ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
-    one_mul := by simp,
-    mul_one := by simp }
+    npow_zero := fun _ => ext (Monoid.npow_zero _) (Monoid.npow_zero _),
+    npow_succ := fun _ _ => ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
+    mul_assoc := mul_assoc }
 
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) :=
@@ -264,13 +264,11 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp }
+  { mul_left_cancel := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp }
+  { mul_right_cancel := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
@@ -282,7 +280,7 @@ instance instCommMonoid [CommMonoid M] [CommMonoid N] : CommMonoid (M × N) :=
 
 @[to_additive]
 instance [CancelCommMonoid M] [CancelCommMonoid N] : CancelCommMonoid (M × N) :=
-  { mul_comm := fun ⟨m₁, n₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm m₁, mul_comm n₁] }
+  { mul_left_cancel := by simp }
 
 instance [MulZeroOneClass M] [MulZeroOneClass N] : MulZeroOneClass (M × N) :=
   { zero_mul := by simp,
@@ -293,8 +291,7 @@ instance [MonoidWithZero M] [MonoidWithZero N] : MonoidWithZero (M × N) :=
     mul_zero := by simp }
 
 instance [CommMonoidWithZero M] [CommMonoidWithZero N] : CommMonoidWithZero (M × N) :=
-  { zero_mul := by simp,
-    mul_zero := by simp }
+  { mul_comm := mul_comm }
 
 @[to_additive]
 instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
