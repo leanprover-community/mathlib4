@@ -66,11 +66,11 @@ section OrderClosedTopology
 variable [OrderClosedTopology α] {s : Set α}
 
 @[simp] lemma upperBounds_closure (s : Set α) : upperBounds (closure s : Set α) = upperBounds s :=
-  ext fun a ↦ by simp_rw [mem_upperBounds_iff_subset_Iic, is_closed_Iic.closure_subset_iff]
+  ext fun a ↦ by simp_rw [mem_upperBounds_iff_subset_Iic, isClosed_Iic.closure_subset_iff]
 #align upper_bounds_closure upperBounds_closure
 
 @[simp] lemma lowerBounds_closure (s : Set α) : lowerBounds (closure s : Set α) = lowerBounds s :=
-  ext fun a ↦ by simp_rw [mem_lowerBounds_iff_subset_Ici, is_closed_Ici.closure_subset_iff]
+  ext fun a ↦ by simp_rw [mem_lowerBounds_iff_subset_Ici, isClosed_Ici.closure_subset_iff]
 #align lower_bounds_closure lowerBounds_closure
 
 @[simp] lemma bddAbove_closure : BddAbove (closure s) ↔ BddAbove s := by
@@ -81,15 +81,13 @@ variable [OrderClosedTopology α] {s : Set α}
   simp_rw [BddBelow, lowerBounds_closure]
 #align bdd_below_closure bddBelow_closure
 
-alias ⟨BddAbove.of_closure, BddAbove.closure⟩ := bddAbove_closure
+protected alias ⟨BddAbove.of_closure, BddAbove.closure⟩ := bddAbove_closure
 #align bdd_above.of_closure BddAbove.of_closure
 #align bdd_above.closure BddAbove.closure
 
-alias ⟨BddBelow.of_closure, BddBelow.closure⟩ := bddBelow_closure
+protected alias ⟨BddBelow.of_closure, BddBelow.closure⟩ := bddBelow_closure
 #align bdd_below.of_closure BddBelow.of_closure
 #align bdd_below.closure BddBelow.closure
-
-attribute [protected] BddAbove.closure BddBelow.closure
 
 end OrderClosedTopology
 
