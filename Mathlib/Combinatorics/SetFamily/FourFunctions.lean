@@ -52,7 +52,7 @@ earlier file and give it a proper API.
 [*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
 
-open Finset Fintype
+open Finset Fintype Function
 open scoped BigOperators FinsetFamily
 
 variable {α β : Type*}
@@ -259,13 +259,11 @@ private lemma four_functions_theorem_aux (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂)
 end Finset
 
 section DistribLattice
-variable [DistribLattice α] [DecidableEq α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β]
+variable [DistribLattice α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β]
   (f f₁ f₂ f₃ f₄ g μ : α → β)
 
-open Function
-
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
-lemma four_functions_theorem (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
+lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :
     (∑ a in s, f₁ a) * ∑ a in t, f₂ a ≤ (∑ a in s ⊼ t, f₃ a) * ∑ a in s ⊻ t, f₄ a := by
   classical
@@ -301,7 +299,7 @@ lemma four_functions_theorem (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 �
 
 /-- An inequality of Daykin. Interestingly, any lattice in which this inequality holds is
 distributive. -/
-lemma Finset.le_card_infs_mul_card_sups (s t : Finset α) :
+lemma Finset.le_card_infs_mul_card_sups [DecidableEq α] (s t : Finset α) :
     s.card * t.card ≤ (s ⊼ t).card * (s ⊻ t).card := by
   simpa using four_functions_theorem (1 : α → ℕ) 1 1 1 zero_le_one zero_le_one zero_le_one
     zero_le_one (fun _ _ ↦ le_rfl) s t
@@ -312,12 +310,13 @@ variable [Fintype α]
 lemma four_functions_theorem_univ (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) :
     (∑ a, f₁ a) * ∑ a, f₂ a ≤ (∑ a, f₃ a) * ∑ a, f₄ a := by
-  simpa using four_functions_theorem f₁ f₂ f₃ f₄ h₁ h₂ h₃ h₄ h univ univ
+  classical simpa using four_functions_theorem f₁ f₂ f₃ f₄ h₁ h₂ h₃ h₄ h univ univ
 
 /-- The **Holley Inequality**. -/
 lemma holley (hμ₀ : 0 ≤ μ) (hf : 0 ≤ f) (hg : 0 ≤ g) (hμ : Monotone μ)
     (hfg : ∑ a, f a = ∑ a, g a) (h : ∀ a b, f a * g b ≤ f (a ⊓ b) * g (a ⊔ b)) :
     ∑ a, μ a * f a ≤ ∑ a, μ a * g a := by
+  classical
   obtain rfl | hf := hf.eq_or_lt
   · simp only [Pi.zero_apply, sum_const_zero, eq_comm, Fintype.sum_eq_zero_iff_of_nonneg hg] at hfg
     simp [hfg]
