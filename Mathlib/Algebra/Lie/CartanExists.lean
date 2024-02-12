@@ -135,6 +135,7 @@ lemma lieCharpoly₁_map_eval (r : R) :
         map_smul, Finsupp.coe_add, Finsupp.coe_smul, MvPolynomial.eval_X, Pi.add_apply,
         Pi.smul_apply, smul_eq_mul, mul_comm r]
 
+-- TODO: rename, move
 lemma foo {σ : Type*} {m n : ℕ} (F : MvPolynomial σ R) (hF : F.IsHomogeneous n)
     (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ m) :
     (MvPolynomial.aeval f F).natDegree ≤ m * n := by
