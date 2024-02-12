@@ -279,6 +279,12 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
       simp at hxy
 #align simple_graph.adj_matrix_pow_apply_eq_card_walk SimpleGraph.adjMatrix_pow_apply_eq_card_walk
 
+theorem dotProduct_mulVec_adjMatrix [Ring α] (vec : V → α) :
+    vec ⬝ᵥ (G.adjMatrix α).mulVec vec =
+    ∑ i : V, ∑ j : V, if G.Adj i j then vec i * vec j else 0 := by
+  simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
+    mul_zero]
+
 end SimpleGraph
 
 namespace Matrix.IsAdjMatrix
