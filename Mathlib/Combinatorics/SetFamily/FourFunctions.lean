@@ -259,14 +259,11 @@ private lemma four_functions_theorem_aux (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂)
 end Finset
 
 section DistribLattice
-
-section Finset
-
-variable [DistribLattice α] [DecidableEq α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β]
+variable [DistribLattice α] [LinearOrderedCommSemiring β] [ExistsAddOfLE β]
   (f f₁ f₂ f₃ f₄ g μ : α → β)
 
 /-- The **Four Functions Theorem**, aka **Ahlswede-Daykin Inequality**. -/
-lemma four_functions_theorem (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
+lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 ≤ f₃) (h₄ : 0 ≤ f₄)
     (h : ∀ a b, f₁ a * f₂ b ≤ f₃ (a ⊓ b) * f₄ (a ⊔ b)) (s t : Finset α) :
     (∑ a in s, f₁ a) * ∑ a in t, f₂ a ≤ (∑ a in s ⊼ t, f₃ a) * ∑ a in s ⊻ t, f₄ a := by
   classical
@@ -302,7 +299,7 @@ lemma four_functions_theorem (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 �
 
 /-- An inequality of Daykin. Interestingly, any lattice in which this inequality holds is
 distributive. -/
-lemma Finset.le_card_infs_mul_card_sups (s t : Finset α) :
+lemma Finset.le_card_infs_mul_card_sups [DecidableEq α] (s t : Finset α) :
     s.card * t.card ≤ (s ⊼ t).card * (s ⊻ t).card := by
   simpa using four_functions_theorem (1 : α → ℕ) 1 1 1 zero_le_one zero_le_one zero_le_one
     zero_le_one (fun _ _ ↦ le_rfl) s t
