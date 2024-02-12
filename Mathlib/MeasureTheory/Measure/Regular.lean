@@ -789,8 +789,7 @@ protected lemma _root_.IsCompact.exists_isOpen_lt_of_lt [InnerRegularCompactLTTo
 /-- I`μ` is inner regular for finite measure sets with respect to compact sets in a regular locally
 compact space, then any compact set can be approximated from outside by open sets. -/
 protected lemma _root_.IsCompact.measure_eq_iInf_isOpen [InnerRegularCompactLTTop μ]
-    [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [RegularSpace α]
-    [BorelSpace α] {K : Set α} (hK : IsCompact K) :
+    [IsLocallyFiniteMeasure μ] [R1Space α] [BorelSpace α] {K : Set α} (hK : IsCompact K) :
     μ K = ⨅ (U : Set α) (_ : K ⊆ U) (_ : IsOpen U), μ U := by
   apply le_antisymm
   · simp only [le_iInf_iff]
@@ -802,9 +801,9 @@ protected lemma _root_.IsCompact.measure_eq_iInf_isOpen [InnerRegularCompactLTTo
 alias _root_.IsCompact.measure_eq_infi_isOpen := IsCompact.measure_eq_iInf_isOpen
 
 protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTop μ]
-    [IsFiniteMeasureOnCompacts μ] [LocallyCompactSpace α] [RegularSpace α]
-    [BorelSpace α] {K : Set α} (hK : IsCompact K) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-     ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < μ K + ε :=
+    [IsLocallyFiniteMeasure μ] [R1Space α] [BorelSpace α]
+    {K : Set α} (hK : IsCompact K) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < μ K + ε :=
   hK.exists_isOpen_lt_of_lt _ (ENNReal.lt_add_right hK.measure_lt_top.ne hε)
 
 instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := by
