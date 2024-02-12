@@ -290,7 +290,7 @@ lemma mem_range_rootSpaceProductNegSelf {x : H} :
     simpa using exists_congr fun _ ↦ H.toLieSubmodule.injective_incl.eq_iff.symm
   simp_rw [this, ← LieModuleHom.map_top, ← LieSubmodule.mem_coeSubmodule,
     LieSubmodule.coeSubmodule_map, LieSubmodule.top_coeSubmodule, ← TensorProduct.span_tmul_eq_top,
-    LinearMap.map_span, Set.image, Set.mem_setOf_eq, exists_exists_and_exists_and_eq_and']
+    LinearMap.map_span, Set.image, Set.mem_setOf_eq, exists_exists_exists_and_eq]
   change (x : L) ∈ Submodule.span R
     {x | ∃ (a : rootSpace H α) (b : rootSpace H (-α)), ⁅(a : L), (b : L)⁆ = x} ↔ _
   simp
