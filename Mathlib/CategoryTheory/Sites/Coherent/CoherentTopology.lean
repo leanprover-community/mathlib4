@@ -27,7 +27,7 @@ coherent topology.
 Note: This is one direction of `mem_sieves_iff_hasEffectiveEpiFamily`, but is needed for the proof.
 -/
 theorem coherentTopology.mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
-    (∃ (α : Type) (_ : Fintype α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
+    (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
       EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) →
         (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
   intro ⟨α, _, Y, π, hπ⟩
@@ -46,8 +46,8 @@ Effective epi families in a precoherent category are transitive, in the sense th
 `EffectiveEpiFamily`.
 Note: The finiteness condition is an artifact of the proof and is probably unnecessary.
 -/
-theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α → C}
-    (π : (a : α) → (Y a ⟶ X)) (h : EffectiveEpiFamily Y π) {β : α → Type} [∀ (a: α), Fintype (β a)]
+theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α → C}
+    (π : (a : α) → (Y a ⟶ X)) (h : EffectiveEpiFamily Y π) {β : α → Type} [∀ (a: α), Finite (β a)]
     {Y_n : (a : α) → β a → C} (π_n : (a : α) → (b : β a) → (Y_n a b ⟶ Y a))
     (H : ∀ a, EffectiveEpiFamily (Y_n a) (π_n a)) :
     EffectiveEpiFamily
@@ -78,7 +78,7 @@ A sieve belongs to the coherent topology if and only if it contains a finite
 -/
 theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
     (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) ↔
-    (∃ (α : Type) (_ : Fintype α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
+    (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
   constructor
   · intro h
@@ -87,7 +87,7 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
       refine ⟨a, h, Y', π, inferInstance, fun a' ↦ ?_⟩
       rcases h' with ⟨rfl, _⟩
       exact ⟨Y' a', 𝟙 Y' a', π a', Presieve.ofArrows.mk a', by simp⟩
-    · exact ⟨Unit, Unit.fintype, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩
+    · exact ⟨Unit, inferInstance, fun _ => Y, fun _ => (𝟙 Y), inferInstance, by simp⟩
     · rcases a with ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩
       choose β _ Y_n π_n H using fun a => b (h₂ a)
       exact ⟨(Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a),

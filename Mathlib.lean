@@ -34,6 +34,7 @@ import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
+import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.AlgebraCat.Limits
