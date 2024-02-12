@@ -67,8 +67,7 @@ theorem dotProduct_mulVec_adjMatrix [Ring α] (x : V → α) :
 
 theorem dotProduct_mulVec_degMatrix [CommRing α] (x : V → α) :
     x ⬝ᵥ (G.degMatrix α).mulVec x = ∑ i : V, G.degree i * x i * x i := by
-  unfold dotProduct degMatrix
-  simp only [mulVec_diagonal, ← mul_assoc, mul_comm (x _)]
+  simp only [dotProduct, degMatrix, mulVec_diagonal, ← mul_assoc, mul_comm]
 
 variable (α)
 
