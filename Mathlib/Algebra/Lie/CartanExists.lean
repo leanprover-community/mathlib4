@@ -7,23 +7,35 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Rank
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
+-- namespace LinearMap
+
+-- variable {R M : Type*}
+-- variable [CommRing R] [AddCommGroup M] [Module R M]
+-- variable [Module.Finite R M] [Module.Free R M]
+-- variable (φ : Module.End R M)
+
+-- open FiniteDimensional Polynomial
+
+-- lemma natTrailingDegree_le_finrank_maximalGeneralizedEigenspace :
+--     natTrailingDegree (φ.charpoly) ≤ finrank R (φ.maximalGeneralizedEigenspace 0) := by
+--   sorry
+
+-- end LinearMap
 
 -- move this
 namespace LinearMap
 
 variable {K M : Type*}
-variable [Field K] [IsDomain K] [AddCommGroup M] [Module K M]
-variable [Module.Finite K M] [Module.Free K M]
+variable [Field K] [AddCommGroup M] [Module K M]
+variable [Module.Finite K M]
 variable (φ : Module.End K M)
 
 open FiniteDimensional Polynomial
 
-lemma finrank_maximalGeneralizedEigenspace :
-    finrank K (φ.maximalGeneralizedEigenspace 0) = natTrailingDegree (φ.charpoly) := by
-  sorry
-
+open Module.Free in
 lemma charpoly_eq_X_pow_iff :
     φ.charpoly = X ^ finrank K M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 := by
   constructor
@@ -36,11 +48,59 @@ lemma charpoly_eq_X_pow_iff :
     apply IsNilpotent.eq_zero
     rw [finrank_eq_card_chooseBasisIndex]
     apply Matrix.isNilpotent_charpoly_sub_pow_of_isNilpotent
-    sorry
+    refine IsNilpotent.map ?_ (toMatrixAlgEquiv (chooseBasis K M))
+    obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp <| φ.eventually_iSup_ker_pow_eq
+    use n
+    ext x
+    rw [zero_apply, ← mem_ker, ← hn n le_rfl]
+    obtain ⟨k, hk⟩ := h x
+    rw [← mem_ker] at hk
+    exact Submodule.mem_iSup_of_mem _ hk
+
+open Module.Free in
+lemma charpoly_constantCoeff_tfae :
+    List.TFAE
+    [ constantCoeff φ.charpoly = 0
+    , ∃ (m : M), m ≠ 0 ∧ φ m = 0
+    , ⊥ < ker φ
+    , ker φ ≠ ⊥
+    , Module.End.HasEigenvalue φ 0
+    , IsRoot (minpoly K φ) 0
+    , LinearMap.det φ = 0 ] := by
+  tfae_have 3 → 4
+  · exact ne_of_gt
+  tfae_have 7 → 3
+  · exact bot_lt_ker_of_det_eq_zero
+  tfae_have 5 ↔ 6
+  · exact Module.End.hasEigenvalue_iff_isRoot
+  tfae_have 4 → 2
+  · contrapose!
+    intro h
+    ext x
+    simp only [mem_ker, Submodule.mem_bot]
+    constructor
+    · intro hx; contrapose! hx; exact h x hx
+    · rintro rfl; exact map_zero _
+  tfae_have 6 → 1
+  · obtain ⟨F, hF⟩ := minpoly_dvd_charpoly φ
+    simp only [IsRoot.def, constantCoeff_apply, coeff_zero_eq_eval_zero, hF, eval_mul]
+    intro h; rw [h, zero_mul]
+  tfae_have 1 → 7
+  · rw [← LinearMap.det_toMatrix (chooseBasis K M), Matrix.det_eq_sign_charpoly_coeff,
+      constantCoeff_apply, charpoly]
+    intro h; rw [h, mul_zero]
+  tfae_have 2 → 5
+  · rintro ⟨x, h1, h2⟩
+    apply Module.End.hasEigenvalue_of_hasEigenvector ⟨_, h1⟩
+    simpa only [Module.End.eigenspace_zero, mem_ker] using h2
+  tfae_finish
 
 lemma charpoly_constantCoeff_eq_zero_iff :
-    constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 := by
-  -- have := Module.End.hasEigenvalue_iff_isRoot (f := φ) 0
+    constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 :=
+  (charpoly_constantCoeff_tfae φ).out 0 1
+
+lemma finrank_maximalGeneralizedEigenspace :
+    finrank K (φ.maximalGeneralizedEigenspace 0) = natTrailingDegree (φ.charpoly) := by
   sorry
 
 end LinearMap
@@ -49,9 +109,11 @@ namespace LieAlgebra
 
 section CommRing
 
-variable {R L M : Type*}
-variable [CommRing R] [Nontrivial R] [LieRing L] [LieAlgebra R L]
+variable {K R L M : Type*}
+variable [Field K] [CommRing R] [Nontrivial R]
+variable [LieRing L] [LieAlgebra K L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable [Module.Finite K L]
 variable [Module.Finite R L] [Module.Free R L]
 variable [Module.Finite R M] [Module.Free R M]
 
@@ -69,31 +131,21 @@ lemma engel_zero : engel R (0 : L) = ⊤ := by
   simp only [pow_one, LinearMap.zero_apply]
 
 lemma natTrailingDegree_charpoly_ad_le_finrank_engel (x : L) :
-    (ad R L x).charpoly.natTrailingDegree ≤ finrank R (engel R x) := by
-  sorry
-
--- needs `R` to be a field ??
-lemma finrank_engel (x : L) :
-    finrank R (engel R x) = (ad R L x).charpoly.natTrailingDegree := by
-  apply le_antisymm _ (natTrailingDegree_charpoly_ad_le_finrank_engel R x)
-  sorry
+    (ad K L x).charpoly.natTrailingDegree ≤ finrank K (engel K x) := by
+  erw [engel, (ad K L x).finrank_maximalGeneralizedEigenspace]
 
 lemma rank_le_finrank_engel (x : L) :
-    rank R L ≤ finrank R (engel R x) :=
-  (rank_le_natTrailingDegree_charpoly_ad R x).trans
-    (natTrailingDegree_charpoly_ad_le_finrank_engel R x)
+    rank K L ≤ finrank K (engel K x) :=
+  (rank_le_natTrailingDegree_charpoly_ad K x).trans
+    (natTrailingDegree_charpoly_ad_le_finrank_engel x)
+
+lemma finrank_engel (x : L) :
+    finrank K (engel K x) = (ad K L x).charpoly.natTrailingDegree :=
+  (ad K L x).finrank_maximalGeneralizedEigenspace
 
 lemma isRegular_iff_finrank_engel_eq_rank (x : L) :
-    IsRegular R x ↔ finrank R (engel R x) = rank R L := by
-  rw [LieAlgebra.isRegular_iff_coeff_lieCharpoly_rank_ne_zero]
-  refine ⟨?_, ?_⟩
-  · intro h
-    apply le_antisymm _ (rank_le_finrank_engel R x)
-    sorry
-  · intro h
-    rw [← h]
-    simp only [lieCharpoly_eval, ne_eq]
-    sorry
+    IsRegular K x ↔ finrank K (engel K x) = rank K L := by
+  rw [isRegular_iff_natTrailingDegree_charpoly_eq_rank, finrank_engel]
 
 variable {R}
 
@@ -370,7 +422,7 @@ lemma exists_IsCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
   suffices finrank K (engel K x) ≤ finrank K (engel K y) by
     apply LieSubalgebra.to_submodule_injective
     apply eq_of_le_of_finrank_le hyx this
-  rw [(isRegular_iff_finrank_engel_eq_rank K x).mp hx]
+  rw [(isRegular_iff_finrank_engel_eq_rank x).mp hx]
   apply rank_le_finrank_engel
 
 lemma exists_IsCartanSubalgebra [Infinite K] :
