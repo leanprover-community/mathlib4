@@ -136,7 +136,10 @@ lemma lieCharpoly₁_map_eval (r : R) :
         Pi.smul_apply, smul_eq_mul, mul_comm r]
 
 lemma lieCharpoly₁_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
-    ((lieCharpoly₁ R M x y).coeff i).natDegree = j := by
+    ((lieCharpoly₁ R M x y).coeff i).natDegree ≤ j := by
+  rw [finrank_eq_card_chooseBasisIndex] at hij
+  classical
+  have := lieCharpoly_coeff_isHomogeneous (chooseBasis R L) (chooseBasis R M) _ _ hij
   sorry
 
 end engel_le_engel
@@ -259,7 +262,8 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     have ht : t.card ≤ finrank K L - r := by
       refine (Multiset.toFinset_card_le _).trans ?_
       refine (card_roots' _).trans ?_
-      rw [constantCoeff_apply, lieCharpoly₁_coeff_natDegree _ _ _ _ 0 (finrank K L - r)]
+      rw [constantCoeff_apply]
+      apply lieCharpoly₁_coeff_natDegree
       suffices finrank K Q + r = finrank K L by omega
       apply Submodule.finrank_quotient_add_finrank
     obtain ⟨s, hs⟩ := exists_subset_le_card K _ hLK
