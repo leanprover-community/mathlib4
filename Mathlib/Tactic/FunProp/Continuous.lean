@@ -54,7 +54,3 @@ attribute [fun_prop]
   ContinuousOn.log
   ContinuousOn.pow
   ContinuousOn.sqrt
-
--- FunLike
-attribute [fun_prop]
-  map_continuous
