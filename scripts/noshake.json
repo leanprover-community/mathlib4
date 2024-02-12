@@ -247,7 +247,8 @@
   ["Mathlib.Analysis.SpecialFunctions.Log.Basic",
    "Mathlib.Tactic.FunProp",
    "Mathlib.Topology.Algebra.Field",
-   "Mathlib.Topology.Algebra.Group.Basic"],
+   "Mathlib.Topology.Algebra.Group.Basic",
+   "Mathlib.Topology.Order.Lattice"],
   "Mathlib.Tactic.FunProp.ContDiff":
   ["Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas",
    "Mathlib.Analysis.SpecialFunctions.ExpDeriv",
