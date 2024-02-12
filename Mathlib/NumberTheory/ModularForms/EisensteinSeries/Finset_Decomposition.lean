@@ -3,8 +3,11 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Data.Complex.Abs
-import Mathlib.Data.IsROrC.Basic
+
+import Mathlib.Data.Int.Interval
+import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum.Ineq
 
 /-! # Decomposing `ℤ × ℤ` into squares
 
@@ -12,9 +15,7 @@ We partition `ℤ × ℤ` into squares of the form `Icc (-n) n × Icc (-n) n` fo
 for bounding Eisenstein series.
 -/
 
-open Complex
-
-open scoped BigOperators NNReal Classical Filter Matrix
+open scoped BigOperators Classical
 
 noncomputable section
 
