@@ -60,16 +60,16 @@ of the additive haar measure."]
 theorem modularCharacter_eq (μ μ': Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ']
     [InnerRegular μ] [InnerRegular μ'] : modularCharacter_fun μ' = modularCharacter_fun μ := by
   ext g
-  rw [modularCharacter_fun, NNReal.coe_eq]
+  rw [modularCharacter_fun, NNReal.coe_inj]
   have : map (· * g) μ' = modularCharacter_fun μ g • μ' := by
     calc
       map (· * g) μ' = map (· * g) ((haarScalarFactor μ' μ) • μ) := by
-        rw [←isMulLeftInvariant_eq_smul_of_innerRegular]
+        rw [← isMulLeftInvariant_eq_smul_of_innerRegular]
       _ = haarScalarFactor μ' μ • (map (· * g) μ) := by rw [Measure.map_smul_nnreal]
       _ = haarScalarFactor μ' μ • (modularCharacter_fun μ g • μ) := by
         rw [map_right_mul_eq_modularCharacter_smul]
       _ = modularCharacter_fun μ g • (haarScalarFactor μ' μ • μ) := by rw [smul_algebra_smul_comm]
-      _ = modularCharacter_fun μ g • μ' := by rw [←isMulLeftInvariant_eq_smul_of_innerRegular]
+      _ = modularCharacter_fun μ g • μ' := by rw [← isMulLeftInvariant_eq_smul_of_innerRegular]
   simp [this]
 
 /-- The homomorphism modular character. -/
