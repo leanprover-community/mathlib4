@@ -71,7 +71,6 @@ end Missing
 
 -- mark definition
 attribute [fun_prop]
-  Continuous
   ContinuousAt
   ContinuousOn
 
