@@ -3,10 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.AbsoluteValue
-import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Ring
 
@@ -690,7 +688,7 @@ variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α]
 lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → α) :
     (∑ i in s, f i * g i) ^ 2 ≤ (∑ i in s, f i ^ 2) * ∑ i in s, g i ^ 2 := by
   nontriviality α
-  obtain h' | h' := (sum_nonneg fun _ _ ↦ sq_nonneg $ g _).eq_or_lt
+  obtain h' | h' := (sum_nonneg fun _ _ ↦ sq_nonneg <| g _).eq_or_lt
   · have h'' : ∀ i ∈ s, g i = 0 := fun i hi ↦ by
       simpa using (sum_eq_zero_iff_of_nonneg fun i _ ↦ sq_nonneg (g i)).1 h'.symm i hi
     rw [← h', sum_congr rfl (show ∀ i ∈ s, f i * g i = 0 from fun i hi ↦ by simp [h'' i hi])]
@@ -753,11 +751,11 @@ lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' λ _ 
 
 @[to_additive]
 lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
-  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans $ by simp [Function.funext_iff]
+  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans <| by simp [Function.funext_iff]
 
 @[to_additive]
 lemma prod_eq_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
-  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans $ by simp [Function.funext_iff]
+  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans <| by simp [Function.funext_iff]
 
 end OrderedCommMonoid
 
@@ -774,11 +772,11 @@ theorem prod_strictMono' : StrictMono fun f : ι → M ↦ ∏ x, f x :=
 
 @[to_additive sum_pos]
 lemma one_lt_prod (hf : 1 < f) : 1 < ∏ i, f i :=
-  Finset.one_lt_prod' (λ _ _ ↦ hf.le _) $ by simpa using (Pi.lt_def.1 hf).2
+  Finset.one_lt_prod' (λ _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
 
 @[to_additive]
 lemma prod_lt_one (hf : f < 1) : ∏ i, f i < 1 :=
-  Finset.prod_lt_one' (λ _ _ ↦ hf.le _) $ by simpa using (Pi.lt_def.1 hf).2
+  Finset.prod_lt_one' (λ _ _ ↦ hf.le _) <| by simpa using (Pi.lt_def.1 hf).2
 
 @[to_additive sum_pos_iff_of_nonneg]
 lemma one_lt_prod_iff_of_one_le (hf : 1 ≤ f) : 1 < ∏ i, f i ↔ 1 < f := by
@@ -790,37 +788,6 @@ lemma prod_lt_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i < 1 ↔ f < 1 := by
 
 end OrderedCancelCommMonoid
 end Fintype
-
-namespace WithTop
-
-open Finset
-
-/-- A product of finite numbers is still finite -/
-theorem prod_lt_top [CommMonoidWithZero R] [NoZeroDivisors R] [Nontrivial R] [DecidableEq R] [LT R]
-    {s : Finset ι} {f : ι → WithTop R} (h : ∀ i ∈ s, f i ≠ ⊤) : ∏ i in s, f i < ⊤ :=
-  prod_induction f (fun a ↦ a < ⊤) (fun _ _ h₁ h₂ ↦ mul_lt_top' h₁ h₂) (coe_lt_top 1)
-    fun a ha ↦ WithTop.lt_top_iff_ne_top.2 (h a ha)
-#align with_top.prod_lt_top WithTop.prod_lt_top
-
-/-- A sum of numbers is infinite iff one of them is infinite -/
-theorem sum_eq_top_iff [AddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
-    ∑ i in s, f i = ⊤ ↔ ∃ i ∈ s, f i = ⊤ := by
-  induction s using Finset.cons_induction <;> simp [*]
-#align with_top.sum_eq_top_iff WithTop.sum_eq_top_iff
-
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top_iff [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M} :
-    ∑ i in s, f i < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
-  simp only [WithTop.lt_top_iff_ne_top, ne_eq, sum_eq_top_iff, not_exists, not_and]
-#align with_top.sum_lt_top_iff WithTop.sum_lt_top_iff
-
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M}
-    (h : ∀ i ∈ s, f i ≠ ⊤) : ∑ i in s, f i < ⊤ :=
-  sum_lt_top_iff.2 fun i hi => WithTop.lt_top_iff_ne_top.2 (h i hi)
-#align with_top.sum_lt_top WithTop.sum_lt_top
-
-end WithTop
 
 section AbsoluteValue
 

@@ -4,10 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Control.Random
-import Mathlib.Control.ULiftable
-import Mathlib.Data.List.Perm
-import Mathlib.Data.Subtype
-import Mathlib.Data.Nat.Basic
 
 #align_import testing.slim_check.gen from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -97,7 +93,7 @@ def oneOf (xs : Array (Gen α)) (pos : 0 < xs.size := by decide) : Gen α := do
 /-- Given a list of examples, choose one to create an example. -/
 def elements (xs : List α) (pos : 0 < xs.length) : Gen α := do
   let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.length pos
-  pure $ xs.get ⟨x, h2⟩
+  pure <| xs.get ⟨x, h2⟩
 
 open List in
 /-- Generate a random permutation of a given list. -/

@@ -339,7 +339,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     rcases lt_or_le (n : ℝ) x with (hxn | hxn)
     · rw [indicator_of_not_mem (not_mem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
-      exact rpow_nonneg_of_nonneg (le_of_lt hx) _
+      exact rpow_nonneg (le_of_lt hx) _
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_eq_abs,
         Complex.abs_of_nonneg
           (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le hxn <| by positivity) _),
@@ -459,7 +459,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
       rw [Complex.sin_ne_zero_iff]
       intro k
       apply_fun im
-      rw [ofReal_mul_im, ← ofReal_int_cast, ← ofReal_mul, ofReal_im]
+      rw [im_ofReal_mul, ← ofReal_int_cast, ← ofReal_mul, ofReal_im]
       exact mul_ne_zero Real.pi_pos.ne' h_im
     have A := div_ne_zero (ofReal_ne_zero.mpr Real.pi_pos.ne') this
     rw [← Complex.Gamma_mul_Gamma_one_sub s, mul_ne_zero_iff] at A

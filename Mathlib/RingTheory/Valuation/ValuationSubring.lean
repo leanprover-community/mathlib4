@@ -385,7 +385,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
 #align valuation_subring.prime_spectrum_equiv ValuationSubring.primeSpectrumEquiv
 
 /-- An ordered variant of `primeSpectrumEquiv`. -/
-@[simps]
+@[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
   { primeSpectrumEquiv A with
     map_rel_iff' :=
@@ -762,7 +762,7 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
     (QuotientGroup.quotientKerEquivOfSurjective _ A.surjective_unitGroupToResidueFieldUnits)
 #align valuation_subring.units_mod_principal_units_equiv_residue_field_units ValuationSubring.unitsModPrincipalUnitsEquivResidueFieldUnits
 
--- Porting note: Lean needs to be reminded of this instance
+/-- Porting note: Lean needs to be reminded of this instance -/
 local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
   Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 

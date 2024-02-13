@@ -87,7 +87,7 @@ instance Pi.infinite_of_left {ι : Sort*} {π : ι → Sort _} [∀ i, Nontrivia
 /-- If at least one `π i` is infinite and the rest nonempty, the pi type of all `π` is infinite. -/
 theorem Pi.infinite_of_exists_right {ι : Type*} {π : ι → Type*} (i : ι) [Infinite <| π i]
     [∀ i, Nonempty <| π i] : Infinite (∀ i : ι, π i) :=
-  let ⟨m⟩ := @Pi.Nonempty ι π _
+  let ⟨m⟩ := @Pi.instNonempty ι π _
   Infinite.of_injective _ (update_injective m i)
 #align pi.infinite_of_exists_right Pi.infinite_of_exists_right
 

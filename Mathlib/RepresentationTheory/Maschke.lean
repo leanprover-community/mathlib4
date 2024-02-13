@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.CharP.Invertible
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 #align_import representation_theory.maschke from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -155,8 +154,8 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
     ∃ g : W →ₗ[MonoidAlgebra k G] V, g.comp f = LinearMap.id := by
   obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
     simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
-  refine ⟨φ.equivariantProjection G, FunLike.ext _ _ ?_⟩
-  exact φ.equivariantProjection_condition G _ <| FunLike.congr_fun hφ
+  refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ ?_⟩
+  exact φ.equivariantProjection_condition G _ <| DFunLike.congr_fun hφ
 #align monoid_algebra.exists_left_inverse_of_injective MonoidAlgebra.exists_leftInverse_of_injective
 
 namespace Submodule
@@ -166,7 +165,7 @@ theorem exists_isCompl (p : Submodule (MonoidAlgebra k G) V) :
   have : IsScalarTower k (MonoidAlgebra k G) p := p.isScalarTower'
   rcases MonoidAlgebra.exists_leftInverse_of_injective p.subtype p.ker_subtype with ⟨f, hf⟩
   refine ⟨LinearMap.ker f, LinearMap.isCompl_of_proj ?_⟩
-  exact FunLike.congr_fun hf
+  exact DFunLike.congr_fun hf
 #align monoid_algebra.submodule.exists_is_compl MonoidAlgebra.Submodule.exists_isCompl
 
 /-- This also implies an instance `IsSemisimpleModule (MonoidAlgebra k G) V`. -/

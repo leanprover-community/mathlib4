@@ -5,6 +5,7 @@ Authors: Stuart Presnell, Eric Wieser, Yaël Dillies, Patrick Massot, Scott Morr
 -/
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Ring.Regular
+import Mathlib.Data.Set.Intervals.Basic
 
 #align_import data.set.intervals.instances from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
 
