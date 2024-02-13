@@ -1,15 +1,11 @@
-import Mathlib
+import Mathlib.Order.Filter.CountableInter
 
-variable {ι : Sort*} {α β : Type*}
+variable {α : Type*}
 
 open Set Filter
 
-def cocountable : Filter α := by
-  apply ofCountableUnion hc Set.Countable
-  · intro _ _ _
-    exact hc
-  · intro _ _ _ _
-    simp_all only [Cardinal.mk_eq_aleph0]
+def cocountable : Filter α := ofCountableUnion Set.Countable
+  (fun _ hs hs2 ↦ Countable.sUnion hs hs2)  (fun _ ht _ a => Countable.mono a ht)
 
 /-- Construct a filter with cardinal intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the cardinal intersection property. -/
