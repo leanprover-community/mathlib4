@@ -135,11 +135,11 @@ theorem const_le_one : const β a ≤ 1 ↔ a ≤ 1 :=
 #align function.const_le_one Function.const_le_one
 #align function.const_nonpos Function.const_nonpos
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) const_neg']
 theorem const_lt_one : const β a < 1 ↔ a < 1 :=
   @const_lt_const _ _ _ _ _ 1
 #align function.const_lt_one Function.const_lt_one
-#align function.const_neg Function.const_neg
+#align function.const_neg Function.const_neg'
 
 end const
 

@@ -182,8 +182,12 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-def evalRealPi : PositivityExt where eval {_ _} _ _ _ := do
-  pure (.positive (q(Real.pi_pos) : Lean.Expr))
+def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.pi) =>
+    assertInstancesCommute
+    pure (.positive q(Real.pi_pos))
+  | _, _, _ => throwError "not Real.pi"
 
 end Mathlib.Meta.Positivity
 
