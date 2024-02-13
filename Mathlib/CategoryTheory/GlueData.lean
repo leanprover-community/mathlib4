@@ -249,9 +249,6 @@ theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
 
 variable (F : C ⥤ C') [H : ∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
--- porting note: commented out include
--- include H
-
 instance (i j k : D.J) : HasPullback (F.map (D.f i j)) (F.map (D.f i k)) :=
   ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit F (D.f i j) (D.f i k)⟩⟩⟩
 
@@ -335,15 +332,9 @@ theorem diagramIso_inv_app_right (i : D.J) :
 
 variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F]
 
--- porting note: commented out omit
--- omit H
-
 theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
   ⟨⟨⟨_, PreservesColimit.preserves (colimit.isColimit _)⟩⟩⟩
 #align category_theory.glue_data.has_colimit_multispan_comp CategoryTheory.GlueData.hasColimit_multispan_comp
-
--- porting note: commented out include
--- include H
 
 attribute [local instance] hasColimit_multispan_comp
 

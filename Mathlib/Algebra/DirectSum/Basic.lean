@@ -104,9 +104,6 @@ theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i 
 
 variable (β)
 
--- Porting note: commented out
--- include dec_ι
-
 /-- `mk β s x` is the element of `⨁ i, β i` that is zero outside `s`
 and has coefficient `x i` for `i` in `s`. -/
 def mk (s : Finset ι) : (∀ i : (↑s : Set ι), β i.1) →+ ⨁ i, β i
@@ -304,9 +301,6 @@ end CongrLeft
 section Option
 
 variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)]
-
--- Porting note: commented out
--- include dec_ι
 
 /-- Isomorphism obtained by separating the term of index `none` of a direct sum over `Option ι`.-/
 @[simps!]

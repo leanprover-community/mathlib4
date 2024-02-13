@@ -248,9 +248,6 @@ section comm
 
 variable {G : Type*} {P : Type*} [AddCommGroup G] [AddTorsor G P]
 
--- Porting note: Removed:
--- include G
-
 /-- Cancellation subtracting the results of two subtractions. -/
 @[simp]
 theorem vsub_sub_vsub_cancel_left (p₁ p₂ p₃ : P) : p₃ -ᵥ p₂ - (p₃ -ᵥ p₁) = p₁ -ᵥ p₂ := by
@@ -355,9 +352,6 @@ end Pi
 namespace Equiv
 
 variable {G : Type*} {P : Type*} [AddGroup G] [AddTorsor G P]
-
--- Porting note: Removed:
--- include G
 
 /-- `v ↦ v +ᵥ p` as an equivalence. -/
 def vaddConst (p : P) : G ≃ P where
