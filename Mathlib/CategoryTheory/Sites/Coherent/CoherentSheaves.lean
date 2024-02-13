@@ -25,7 +25,7 @@ variable {C : Type*} [Category C] [Precoherent C]
 universe w in
 lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (coherentTopology C) P ↔
-    (∀ (B : C) (α : Type) [Fintype α] (X : α → C) (π : (a : α) → (X a ⟶ B)),
+    (∀ (B : C) (α : Type) [Finite α] (X : α → C) (π : (a : α) → (X a ⟶ B)),
       EffectiveEpiFamily X π → (Presieve.ofArrows X π).IsSheafFor P) := by
   constructor
   · intro hP B α _ X π h

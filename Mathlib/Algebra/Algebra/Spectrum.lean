@@ -142,6 +142,20 @@ theorem mem_resolventSet_iff {r : R} {a : A} : r ∈ resolventSet R a ↔ IsUnit
 #align spectrum.mem_resolvent_set_iff spectrum.mem_resolventSet_iff
 
 @[simp]
+theorem algebraMap_mem_iff (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
+    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} {r : R} :
+    algebraMap R S r ∈ spectrum S a ↔ r ∈ spectrum R a := by
+  simp only [spectrum.mem_iff, Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
+
+protected alias ⟨of_algebraMap_mem, algebraMap_mem⟩ := spectrum.algebraMap_mem_iff
+
+@[simp]
+theorem preimage_algebraMap (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
+    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} :
+    algebraMap R S ⁻¹' spectrum S a = spectrum R a :=
+  Set.ext fun _ => spectrum.algebraMap_mem_iff _
+
+@[simp]
 theorem resolventSet_of_subsingleton [Subsingleton A] (a : A) : resolventSet R a = Set.univ := by
   simp_rw [resolventSet, Subsingleton.elim (algebraMap R A _ - a) 1, isUnit_one, Set.setOf_true]
 #align spectrum.resolvent_set_of_subsingleton spectrum.resolventSet_of_subsingleton
