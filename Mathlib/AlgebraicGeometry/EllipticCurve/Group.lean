@@ -98,7 +98,7 @@ section Ring
 instance instIsDomainCoordinateRing [IsDomain R] [NormalizedGCDMonoid R] :
     IsDomain W.CoordinateRing :=
   (Quotient.isDomain_iff_prime _).mpr <| by
-    simpa only [span_singleton_prime W.polynomial_ne_zero, ← GCDMonoid.irreducible_iff_prime]
+    simpa only [span_singleton_prime W.polynomial_ne_zero, ← irreducible_iff_prime]
       using W.irreducible_polynomial
 #align weierstrass_curve.coordinate_ring.is_domain WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing
 
