@@ -173,10 +173,9 @@ theorem nhds_compactConvergence :
     @nhds _ compactConvergenceTopology f = (compactConvergenceFilterBasis f).filter := by
   rw [TopologicalSpace.nhds_mkOfNhds_filterBasis] <;> rintro g - ⟨⟨K, V⟩, ⟨hK, hV⟩, rfl⟩
   · exact self_mem_compactConvNhd g hV
-  · obtain ⟨V', hV', h₁, h₂⟩ := compactConvNhd_nhd_basis g hV
-    exact
-      ⟨compactConvNhd K V' g, ⟨⟨K, V'⟩, ⟨hK, hV'⟩, rfl⟩, compactConvNhd_mono g h₁, fun g' hg' =>
-        ⟨compactConvNhd K V' g', ⟨⟨K, V'⟩, ⟨hK, hV'⟩, rfl⟩, h₂ g' hg'⟩⟩
+  · obtain ⟨V', hV', _, h₂⟩ := compactConvNhd_nhd_basis g hV
+    exact ⟨compactConvNhd K V' g, ⟨⟨K, V'⟩, ⟨hK, hV'⟩, rfl⟩, fun g' hg' =>
+      ⟨compactConvNhd K V' g', ⟨⟨K, V'⟩, ⟨hK, hV'⟩, rfl⟩, h₂ g' hg'⟩⟩
 #align continuous_map.nhds_compact_convergence ContinuousMap.nhds_compactConvergence
 
 theorem hasBasis_nhds_compactConvergence :

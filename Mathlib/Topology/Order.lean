@@ -107,19 +107,23 @@ protected def mkOfNhds (n : α → Filter α) : TopologicalSpace α where
     mem_of_superset (hs x hx _ hxa) (subset_sUnion_of_mem hx)
 #align topological_space.mk_of_nhds TopologicalSpace.mkOfNhds
 
+theorem nhds_mkOfNhds_of_hasBasis {n : α → Filter α} {ι : α → Sort*} {p : ∀ a, ι a → Prop}
+    {s : ∀ a, ι a → Set α} (hb : ∀ a, (n a).HasBasis (p a) (s a))
+    (hpure : ∀ a i, p a i → a ∈ s a i) (hopen : ∀ a i, p a i → ∀ᶠ x in n a, s a i ∈ n x) (a : α) :
+    @nhds α (.mkOfNhds n) a = n a := by
+  let t : TopologicalSpace α := .mkOfNhds n
+  apply le_antisymm
+  · intro U hU
+    replace hpure : pure ≤ n := fun x ↦ (hb x).ge_iff.2 (hpure x)
+    refine mem_nhds_iff.2 ⟨{x | U ∈ n x}, fun x hx ↦ hpure x hx, fun x hx ↦ ?_, hU⟩
+    rcases (hb x).mem_iff.1 hx with ⟨i, hpi, hi⟩
+    exact (hopen x i hpi).mono fun y hy ↦ mem_of_superset hy hi
+  · exact (nhds_basis_opens a).ge_iff.2 fun U ⟨haU, hUo⟩ ↦ hUo a haU
+
 theorem nhds_mkOfNhds (n : α → Filter α) (a : α) (h₀ : pure ≤ n)
-    (h₁ : ∀ a s, s ∈ n a → ∃ t ∈ n a, t ⊆ s ∧ ∀ a' ∈ t, s ∈ n a') :
-    @nhds α (TopologicalSpace.mkOfNhds n) a = n a := by
-  letI := TopologicalSpace.mkOfNhds n
-  apply le_antisymm <;> intros s hs
-  · have h₀ : { b | s ∈ n b } ⊆ s := fun b hb => mem_pure.1 <| h₀ b hb
-    have h₁ : { b | s ∈ n b } ∈ 𝓝 a := by
-      refine' IsOpen.mem_nhds (fun b (hb : s ∈ n b) => _) hs
-      rcases h₁ _ _ hb with ⟨t, ht, -, h⟩
-      exact mem_of_superset ht h
-    exact mem_of_superset h₁ h₀
-  · rcases mem_nhds_iff.1 hs with ⟨t, hts, ht, hat⟩
-    exact (n a).sets_of_superset (ht _ hat) hts
+    (h₁ : ∀ a, ∀ s ∈ n a, ∀ᶠ y in n a, s ∈ n y) :
+    @nhds α (TopologicalSpace.mkOfNhds n) a = n a :=
+  nhds_mkOfNhds_of_hasBasis (fun a ↦ (n a).basis_sets) h₀ h₁ _
 #align topological_space.nhds_mk_of_nhds TopologicalSpace.nhds_mkOfNhds
 
 theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : pure a₀ ≤ l) (b : α) :
@@ -127,26 +131,17 @@ theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : p
       (update pure a₀ l : α → Filter α) b := by
   refine' nhds_mkOfNhds _ _ (le_update_iff.mpr ⟨h, fun _ _ => le_rfl⟩) fun a s hs => _
   rcases eq_or_ne a a₀ with (rfl | ha)
-  · refine' ⟨s, hs, Subset.rfl, fun b hb => _⟩
+  · filter_upwards [hs] with b hb
     rcases eq_or_ne b a with (rfl | hb)
     · exact hs
     · rwa [update_noteq hb]
-  · have hs' := hs
-    rw [update_noteq ha] at hs ⊢
-    exact ⟨{a}, rfl, singleton_subset_iff.mpr hs, forall_eq.2 hs'⟩
+  · simpa only [update_noteq ha, mem_pure, eventually_pure] using hs
 #align topological_space.nhds_mk_of_nhds_single TopologicalSpace.nhds_mkOfNhds_single
 
-theorem nhds_mkOfNhds_filterBasis (B : α → FilterBasis α) (a : α) (h₀ : ∀ (x), ∀ n ∈ B x, x ∈ n)
-    (h₁ : ∀ (x), ∀ n ∈ B x, ∃ n₁ ∈ B x, n₁ ⊆ n ∧ ∀ x' ∈ n₁, ∃ n₂ ∈ B x', n₂ ⊆ n) :
-    @nhds α (TopologicalSpace.mkOfNhds fun x => (B x).filter) a = (B a).filter := by
-  rw [TopologicalSpace.nhds_mkOfNhds] <;> intro x n hn <;>
-    obtain ⟨m, hm₁, hm₂⟩ := (B x).mem_filter_iff.mp hn
-  · exact hm₂ (h₀ _ _ hm₁)
-  · obtain ⟨n₁, hn₁, hn₂, hn₃⟩ := h₁ x m hm₁
-    refine'
-      ⟨n₁, (B x).mem_filter_of_mem hn₁, hn₂.trans hm₂, fun x' hx' => (B x').mem_filter_iff.mp _⟩
-    obtain ⟨n₂, hn₄, hn₅⟩ := hn₃ x' hx'
-    exact ⟨n₂, hn₄, hn₅.trans hm₂⟩
+theorem nhds_mkOfNhds_filterBasis (B : α → FilterBasis α) (a : α) (h₀ : ∀ x, ∀ n ∈ B x, x ∈ n)
+    (h₁ : ∀ x, ∀ n ∈ B x, ∃ n₁ ∈ B x, ∀ x' ∈ n₁, ∃ n₂ ∈ B x', n₂ ⊆ n) :
+    @nhds α (TopologicalSpace.mkOfNhds fun x => (B x).filter) a = (B a).filter :=
+  nhds_mkOfNhds_of_hasBasis (fun a ↦ (B a).hasBasis) h₀ h₁ a
 #align topological_space.nhds_mk_of_nhds_filter_basis TopologicalSpace.nhds_mkOfNhds_filterBasis
 
 section Lattice

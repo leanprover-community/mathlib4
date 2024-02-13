@@ -50,17 +50,17 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
         ⟨u::v, List.Forall₂.cons hu hv,
           Subset.trans (Set.seq_mono (Set.image_subset _ hut) hvss) hus⟩
     rcases this with ⟨v, hv, hvs⟩
-    refine' ⟨sequence v, mem_traverse _ _ _, hvs, _⟩
-    · exact hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
-    · intro u hu
-      have hu := (List.mem_traverse _ _).1 hu
-      have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
-        refine' List.Forall₂.flip _
-        replace hv := hv.flip
-        simp only [List.forall₂_and_left, flip] at hv ⊢
-        exact ⟨hv.1, hu.flip⟩
-      refine' mem_of_superset _ hvs
-      exact mem_traverse _ _ (this.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha)
+    have : sequence v ∈ traverse 𝓝 l :=
+      mem_traverse _ _ <| hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
+    refine mem_of_superset this fun u hu ↦ ?_
+    have hu := (List.mem_traverse _ _).1 hu
+    have : List.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) u v := by
+      refine' List.Forall₂.flip _
+      replace hv := hv.flip
+      simp only [List.forall₂_and_left, flip] at hv ⊢
+      exact ⟨hv.1, hu.flip⟩
+    refine' mem_of_superset _ hvs
+    exact mem_traverse _ _ (this.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha)
 #align nhds_list nhds_list
 
 @[simp]
