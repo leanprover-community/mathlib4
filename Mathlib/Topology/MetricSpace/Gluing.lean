@@ -493,7 +493,7 @@ def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
   @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 #align metric.glue_space Metric.GlueSpace
 
-instance  (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
+instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
   inferInstanceAs <| MetricSpace <|
     @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 
