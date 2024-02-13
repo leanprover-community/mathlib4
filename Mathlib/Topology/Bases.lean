@@ -121,24 +121,19 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
 
 /-- If a family of open sets `s` is such that every open neighbourhood contains some
 member of `s`, then `s` is a topological basis. -/
-theorem isTopologicalBasis_of_isOpen_of_hasBasis {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
-    (h_nhds : ∀ (a : α), (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) :
-    IsTopologicalBasis s := by
-  refine ⟨?_, ?_, ?_⟩
-  · intro t₁ ht₁ t₂ ht₂ x hx
-    simpa only [and_assoc, h_nhds x] using (h_nhds x).mem_iff.1 <|
-      (h_open _ ht₁).inter (h_open _ ht₂) |>.mem_nhds hx
-  · exact sUnion_eq_univ_iff.2 fun a ↦ (h_nhds a).ex_mem
-  · refine ext_nhds fun x ↦ ?_
-    simpa only [nhds_generateFrom, and_comm] using (h_nhds x).eq_biInf
-
-/-- If a family of open sets `s` is such that every open neighbourhood contains some
-member of `s`, then `s` is a topological basis. -/
 theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
     (h_nhds : ∀ (a : α) (u : Set α), a ∈ u → IsOpen u → ∃ v ∈ s, a ∈ v ∧ v ⊆ u) :
-    IsTopologicalBasis s :=
-  isTopologicalBasis_of_isOpen_of_hasBasis h_open <| fun a ↦ (nhds_basis_opens a).to_hasBasis'
-    (by simpa [and_assoc] using h_nhds a) (fun t ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat)
+    IsTopologicalBasis s := by
+  have : ∀ (a : α), (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id := fun a ↦
+    (nhds_basis_opens a).to_hasBasis' (by simpa [and_assoc] using h_nhds a)
+      fun t ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
+  refine ⟨?_, ?_, ?_⟩
+  · intro t₁ ht₁ t₂ ht₂ x hx
+    simpa only [and_assoc, this x] using (this x).mem_iff.1 <|
+      (h_open _ ht₁).inter (h_open _ ht₂) |>.mem_nhds hx
+  · exact sUnion_eq_univ_iff.2 fun x ↦ (this x).ex_mem
+  · refine ext_nhds fun x ↦ ?_
+    simpa only [nhds_generateFrom, and_comm] using (this x).eq_biInf
 #align topological_space.is_topological_basis_of_open_of_nhds TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
 
 /-- A set `s` is in the neighbourhood of `a` iff there is some basis set `t`, which
