@@ -1043,7 +1043,7 @@ namespace IsPrimitiveRoot
 variable {K : Type*} [Field K] [NumberField K] {ζ : K} {k : ℕ}
 
 theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k) :
-  NumberField.InfinitePlace.NrRealPlaces K = 0 := by
+    NumberField.InfinitePlace.NrRealPlaces K = 0 := by
   refine (@Fintype.card_eq_zero_iff _ (_)).2 ⟨fun ⟨w, hwreal⟩ ↦ ?_⟩
   rw [NumberField.InfinitePlace.isReal_iff] at hwreal
   let f := w.embedding
