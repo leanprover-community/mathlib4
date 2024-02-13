@@ -199,6 +199,8 @@
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
+  "Mathlib.Topology.Defs.Basic":
+  ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
   ["Mathlib.Topology.Algebra.UniformRing"],
   "Mathlib.Tactic.Widget.SelectPanelUtils":
