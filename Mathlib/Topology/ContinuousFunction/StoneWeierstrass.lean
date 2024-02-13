@@ -3,8 +3,9 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Heather Macbeth
 -/
-import Mathlib.Topology.ContinuousFunction.Weierstrass
 import Mathlib.Data.IsROrC.Basic
+import Mathlib.Topology.Algebra.StarSubalgebra
+import Mathlib.Topology.ContinuousFunction.Weierstrass
 
 #align_import topology.continuous_function.stone_weierstrass from "leanprover-community/mathlib"@"16e59248c0ebafabd5d071b1cd41743eb8698ffb"
 
@@ -364,21 +365,18 @@ theorem Subalgebra.SeparatesPoints.isROrC_to_real {A : StarSubalgebra 𝕜 C(X, 
     simp only [coe_smul, coe_one, smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
       const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
-  refine' ⟨_, ⟨(⟨IsROrC.normSq, continuous_normSq⟩ : C(𝕜, ℝ)).comp F, _, rfl⟩, _⟩
+  refine' ⟨_, ⟨⟨(‖F ·‖ ^ 2), by continuity⟩, _, rfl⟩, _⟩
   · -- This is also an element of the subalgebra, and takes only real values
     rw [SetLike.mem_coe, Subalgebra.mem_comap]
     convert (A.restrictScalars ℝ).mul_mem hFA (star_mem hFA : star F ∈ A)
     ext1
-    exact (IsROrC.mul_conj (K := 𝕜) _).symm
+    simp [← IsROrC.mul_conj]
   · -- And it also separates the points `x₁`, `x₂`
-    have : f x₁ - f x₂ ≠ 0 := sub_ne_zero.mpr hf
-    simpa only [comp_apply, coe_sub, coe_const, sub_apply, coe_mk, sub_self, map_zero, Ne.def,
-      normSq_eq_zero, const_apply] using this
+    simpa using sub_ne_zero.mpr hf
 #align subalgebra.separates_points.is_R_or_C_to_real Subalgebra.SeparatesPoints.isROrC_to_real
 
 variable [CompactSpace X]
 
-set_option synthInstance.maxHeartbeats 30000 in
 /-- The Stone-Weierstrass approximation theorem, `IsROrC` version, that a star subalgebra `A` of
 `C(X, 𝕜)`, where `X` is a compact topological space and `IsROrC 𝕜`, is dense if it separates
 points. -/
@@ -386,7 +384,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
     (A : StarSubalgebra 𝕜 C(X, 𝕜)) (hA : A.SeparatesPoints) : A.topologicalClosure = ⊤ := by
   rw [StarSubalgebra.eq_top_iff]
   -- Let `I` be the natural inclusion of `C(X, ℝ)` into `C(X, 𝕜)`
-  let I : C(X, ℝ) →ₗ[ℝ] C(X, 𝕜) := ofRealClm.compLeftContinuous ℝ X
+  let I : C(X, ℝ) →ₗ[ℝ] C(X, 𝕜) := ofRealCLM.compLeftContinuous ℝ X
   -- The main point of the proof is that its range (i.e., every real-valued function) is contained
   -- in the closure of `A`
   have key : LinearMap.range I ≤ (A.toSubmodule.restrictScalars ℝ).topologicalClosure := by
@@ -401,14 +399,14 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
     rw [← Submodule.map_top, ← SW]
     -- So it suffices to prove that the image under `I` of the closure of `A₀` is contained in the
     -- closure of `A`, which follows by abstract nonsense
-    have h₁ := A₀.topologicalClosure_map ((@ofRealClm 𝕜 _).compLeftContinuousCompact X)
+    have h₁ := A₀.topologicalClosure_map ((@ofRealCLM 𝕜 _).compLeftContinuousCompact X)
     have h₂ := (A.toSubmodule.restrictScalars ℝ).map_comap_le I
     exact h₁.trans (Submodule.topologicalClosure_mono h₂)
   -- In particular, for a function `f` in `C(X, 𝕜)`, the real and imaginary parts of `f` are in the
   -- closure of `A`
   intro f
-  let f_re : C(X, ℝ) := (⟨IsROrC.re, IsROrC.reClm.continuous⟩ : C(𝕜, ℝ)).comp f
-  let f_im : C(X, ℝ) := (⟨IsROrC.im, IsROrC.imClm.continuous⟩ : C(𝕜, ℝ)).comp f
+  let f_re : C(X, ℝ) := (⟨IsROrC.re, IsROrC.reCLM.continuous⟩ : C(𝕜, ℝ)).comp f
+  let f_im : C(X, ℝ) := (⟨IsROrC.im, IsROrC.imCLM.continuous⟩ : C(𝕜, ℝ)).comp f
   have h_f_re : I f_re ∈ A.topologicalClosure := key ⟨f_re, rfl⟩
   have h_f_im : I f_im ∈ A.topologicalClosure := key ⟨f_im, rfl⟩
   -- So `f_re + I • f_im` is in the closure of `A`

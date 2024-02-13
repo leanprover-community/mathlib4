@@ -5,7 +5,6 @@ Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.Tactic.Positivity
 
 #align_import algebra.order.pi from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
@@ -136,11 +135,11 @@ theorem const_le_one : const β a ≤ 1 ↔ a ≤ 1 :=
 #align function.const_le_one Function.const_le_one
 #align function.const_nonpos Function.const_nonpos
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) const_neg']
 theorem const_lt_one : const β a < 1 ↔ a < 1 :=
   @const_lt_const _ _ _ _ _ 1
 #align function.const_lt_one Function.const_lt_one
-#align function.const_neg Function.const_neg
+#align function.const_neg Function.const_neg'
 
 end const
 

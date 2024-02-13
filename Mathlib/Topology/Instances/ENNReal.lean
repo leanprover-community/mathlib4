@@ -8,7 +8,7 @@ import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Algebra.Order.T5
-import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
 
 #align_import topology.instances.ennreal from "leanprover-community/mathlib"@"ec4b2eeb50364487f80421c0b4c41328a611f30d"
@@ -708,6 +708,20 @@ theorem exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠
   exact ⟨y', z', hy', hz', hx⟩
 #align ennreal.exists_lt_add_of_lt_add ENNReal.exists_lt_add_of_lt_add
 
+theorem ofReal_cinfi (f : α → ℝ) [Nonempty α] :
+    ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
+  by_cases hf : BddBelow (range f)
+  · exact
+      Monotone.map_ciInf_of_continuousAt ENNReal.continuous_ofReal.continuousAt
+        (fun i j hij => ENNReal.ofReal_le_ofReal hij) hf
+  · symm
+    rw [Real.iInf_of_not_bddBelow hf, ENNReal.ofReal_zero, ← ENNReal.bot_eq_zero, iInf_eq_bot]
+    obtain ⟨y, hy_mem, hy_neg⟩ := not_bddBelow_iff.mp hf 0
+    obtain ⟨i, rfl⟩ := mem_range.mpr hy_mem
+    refine' fun x hx => ⟨i, _⟩
+    rwa [ENNReal.ofReal_of_nonpos hy_neg.le]
+#align ennreal.of_real_cinfi ENNReal.ofReal_cinfi
+
 end TopologicalSpace
 
 section Liminf
@@ -727,7 +741,7 @@ theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x :
   simp_rw [not_exists, not_frequently, not_lt] at h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
-  filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs_self _)
+  filter_upwards [h (-r)] with i hi using(le_neg.1 hi).trans (neg_le_abs _)
 #align ennreal.exists_frequently_lt_of_liminf_ne_top' ENNReal.exists_frequently_lt_of_liminf_ne_top'
 
 theorem exists_upcrossings_of_not_bounded_under {ι : Type*} {l : Filter ι} {x : ι → ℝ}
@@ -1647,7 +1661,7 @@ end truncateToReal
 
 section LimsupLiminf
 
-set_option autoImplicit true
+variable {ι : Type*}
 
 lemma limsup_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c :=

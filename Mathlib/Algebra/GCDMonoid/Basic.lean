@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Tactic.Common
 
@@ -310,6 +309,18 @@ section GCDMonoid
 
 variable [CancelCommMonoidWithZero α]
 
+instance [NormalizationMonoid α] : Nonempty (NormalizationMonoid α) := ⟨‹_›⟩
+instance [GCDMonoid α] : Nonempty (GCDMonoid α) := ⟨‹_›⟩
+instance [NormalizedGCDMonoid α] : Nonempty (NormalizedGCDMonoid α) := ⟨‹_›⟩
+instance [h : Nonempty (NormalizedGCDMonoid α)] : Nonempty (NormalizationMonoid α) :=
+  h.elim fun _ ↦ inferInstance
+instance [h : Nonempty (NormalizedGCDMonoid α)] : Nonempty (GCDMonoid α) :=
+  h.elim fun _ ↦ inferInstance
+
+theorem gcd_isUnit_iff_isRelPrime [GCDMonoid α] {a b : α} :
+    IsUnit (gcd a b) ↔ IsRelPrime a b :=
+  ⟨fun h _ ha hb ↦ isUnit_of_dvd_unit (dvd_gcd ha hb) h, (· (gcd_dvd_left a b) (gcd_dvd_right a b))⟩
+
 -- Porting note: lower priority to avoid linter complaints about simp-normal form
 @[simp 1100]
 theorem normalize_gcd [NormalizedGCDMonoid α] : ∀ a b : α, normalize (gcd a b) = gcd a b :=
@@ -356,11 +367,11 @@ theorem gcd_assoc' [GCDMonoid α] (m n k : α) : Associated (gcd (gcd m n) k) (g
       ((gcd_dvd_right m (gcd n k)).trans (gcd_dvd_right n k)))
 #align gcd_assoc' gcd_assoc'
 
-instance [NormalizedGCDMonoid α] : IsCommutative α gcd :=
-  ⟨gcd_comm⟩
+instance [NormalizedGCDMonoid α] : Std.Commutative (α := α) gcd where
+  comm := gcd_comm
 
-instance [NormalizedGCDMonoid α] : IsAssociative α gcd :=
-  ⟨gcd_assoc⟩
+instance [NormalizedGCDMonoid α] : Std.Associative (α := α) gcd where
+  assoc := gcd_assoc
 
 theorem gcd_eq_normalize [NormalizedGCDMonoid α] {a b c : α} (habc : gcd a b ∣ c)
     (hcab : c ∣ gcd a b) : gcd a b = normalize c :=
@@ -521,35 +532,26 @@ theorem dvd_mul_gcd_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ m * gcd k n 
 
 /-- Represent a divisor of `m * n` as a product of a divisor of `m` and a divisor of `n`.
 
-In other words, the nonzero elements of a `GCDMonoid` form a decomposition monoid
-(more widely known as a pre-Schreier domain in the context of rings).
-
 Note: In general, this representation is highly non-unique.
 
 See `Nat.prodDvdAndDvdOfDvdProd` for a constructive version on `ℕ`.  -/
-theorem exists_dvd_and_dvd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) :
-    ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by
-  by_cases h0 : gcd k m = 0
-  · rw [gcd_eq_zero_iff] at h0
-    rcases h0 with ⟨rfl, rfl⟩
-    refine' ⟨0, n, dvd_refl 0, dvd_refl n, _⟩
-    simp
-  · obtain ⟨a, ha⟩ := gcd_dvd_left k m
-    refine' ⟨gcd k m, a, gcd_dvd_right _ _, _, ha⟩
-    suffices h : gcd k m * a ∣ gcd k m * n by
-      cases' h with b hb
-      use b
-      rw [mul_assoc] at hb
-      apply mul_left_cancel₀ h0 hb
-    rw [← ha]
-    exact dvd_gcd_mul_of_dvd_mul H
-#align exists_dvd_and_dvd_of_dvd_mul exists_dvd_and_dvd_of_dvd_mul
-
-theorem dvd_mul [GCDMonoid α] {k m n : α} : k ∣ m * n ↔ ∃ d₁ d₂, d₁ ∣ m ∧ d₂ ∣ n ∧ k = d₁ * d₂ := by
-  refine' ⟨exists_dvd_and_dvd_of_dvd_mul, _⟩
-  rintro ⟨d₁, d₂, hy, hz, rfl⟩
-  exact mul_dvd_mul hy hz
-#align dvd_mul dvd_mul
+instance [h : Nonempty (GCDMonoid α)] : DecompositionMonoid α where
+  primal k m n H := by
+    cases h
+    by_cases h0 : gcd k m = 0
+    · rw [gcd_eq_zero_iff] at h0
+      rcases h0 with ⟨rfl, rfl⟩
+      refine' ⟨0, n, dvd_refl 0, dvd_refl n, _⟩
+      simp
+    · obtain ⟨a, ha⟩ := gcd_dvd_left k m
+      refine' ⟨gcd k m, a, gcd_dvd_right _ _, _, ha⟩
+      suffices h : gcd k m * a ∣ gcd k m * n by
+        cases' h with b hb
+        use b
+        rw [mul_assoc] at hb
+        apply mul_left_cancel₀ h0 hb
+      rw [← ha]
+      exact dvd_gcd_mul_of_dvd_mul H
 
 theorem gcd_mul_dvd_mul_gcd [GCDMonoid α] (k m n : α) : gcd k (m * n) ∣ gcd k m * gcd k n := by
   obtain ⟨m', n', hm', hn', h⟩ := exists_dvd_and_dvd_of_dvd_mul (gcd_dvd_right k (m * n))
@@ -605,7 +607,7 @@ theorem pow_dvd_of_mul_eq_pow [GCDMonoid α] {a b c d₁ d₂ : α} (ha : a ≠ 
   rw [mul_comm] at h2
   have h3 : d₁ ^ k ∣ a := by
     apply (dvd_gcd_mul_of_dvd_mul h2).trans
-    rw [IsUnit.mul_left_dvd _ _ _ h1]
+    rw [h1.mul_left_dvd]
   have h4 : d₁ ^ k ≠ 0 := by
     intro hdk
     rw [hdk] at h3
@@ -620,13 +622,9 @@ theorem exists_associated_pow_of_mul_eq_pow [GCDMonoid α] {a b c : α} (hab : I
     rw [Subsingleton.elim a (0 ^ k)]
   by_cases ha : a = 0
   · use 0
-    rw [ha]
-    obtain rfl | hk := k.eq_zero_or_pos
-    · exfalso
-      revert h
-      rw [ha, zero_mul, pow_zero]
-      apply zero_ne_one
-    · rw [zero_pow hk]
+    obtain rfl | hk := eq_or_ne k 0
+    · simp [ha] at h
+    · rw [ha, zero_pow hk]
   by_cases hb : b = 0
   · use 1
     rw [one_pow]
@@ -784,11 +782,11 @@ theorem lcm_assoc' [GCDMonoid α] (m n k : α) : Associated (lcm (lcm m n) k) (l
       (lcm_dvd ((dvd_lcm_right _ _).trans (dvd_lcm_left _ _)) (dvd_lcm_right _ _)))
 #align lcm_assoc' lcm_assoc'
 
-instance [NormalizedGCDMonoid α] : IsCommutative α lcm :=
-  ⟨lcm_comm⟩
+instance [NormalizedGCDMonoid α] : Std.Commutative (α := α) lcm where
+  comm := lcm_comm
 
-instance [NormalizedGCDMonoid α] : IsAssociative α lcm :=
-  ⟨lcm_assoc⟩
+instance [NormalizedGCDMonoid α] : Std.Associative (α := α) lcm where
+  assoc := lcm_assoc
 
 theorem lcm_eq_normalize [NormalizedGCDMonoid α] {a b c : α} (habc : lcm a b ∣ c)
     (hcab : c ∣ lcm a b) : lcm a b = normalize c :=
@@ -892,28 +890,10 @@ theorem lcm_eq_of_associated_right [NormalizedGCDMonoid α] {m n : α} (h : Asso
 
 end LCM
 
-namespace GCDMonoid
-
-theorem prime_of_irreducible [GCDMonoid α] {x : α} (hi : Irreducible x) : Prime x :=
-  ⟨hi.ne_zero,
-    ⟨hi.1, fun a b h => by
-      cases' gcd_dvd_left x a with y hy
-      cases' hi.isUnit_or_isUnit hy with hu hu
-      · right
-        trans gcd (x * b) (a * b)
-        apply dvd_gcd (dvd_mul_right x b) h
-        rw [(gcd_mul_right' b x a).dvd_iff_dvd_left]
-        exact (associated_unit_mul_left _ _ hu).dvd
-      · left
-        rw [hy]
-        exact dvd_trans (associated_mul_unit_left _ _ hu).dvd (gcd_dvd_right x a)⟩⟩
-#align gcd_monoid.prime_of_irreducible GCDMonoid.prime_of_irreducible
-
-theorem irreducible_iff_prime [GCDMonoid α] {p : α} : Irreducible p ↔ Prime p :=
-  ⟨prime_of_irreducible, Prime.irreducible⟩
-#align gcd_monoid.irreducible_iff_prime GCDMonoid.irreducible_iff_prime
-
-end GCDMonoid
+@[deprecated] alias GCDMonoid.prime_of_irreducible := Irreducible.prime
+#align gcd_monoid.prime_of_irreducible Irreducible.prime
+@[deprecated] alias GCDMonoid.irreducible_iff_prime := irreducible_iff_prime
+#align gcd_monoid.irreducible_iff_prime irreducible_iff_prime
 
 end GCDMonoid
 
