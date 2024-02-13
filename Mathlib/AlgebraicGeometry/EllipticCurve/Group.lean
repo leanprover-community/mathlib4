@@ -98,7 +98,7 @@ section Ring
 instance instIsDomainCoordinateRing [IsDomain R] [NormalizedGCDMonoid R] :
     IsDomain W.CoordinateRing :=
   (Quotient.isDomain_iff_prime _).mpr <| by
-    simpa only [span_singleton_prime W.polynomial_ne_zero, ← GCDMonoid.irreducible_iff_prime]
+    simpa only [span_singleton_prime W.polynomial_ne_zero, ← irreducible_iff_prime]
       using W.irreducible_polynomial
 #align weierstrass_curve.coordinate_ring.is_domain WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing
 
@@ -500,12 +500,12 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
           · convert (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>
-                exact WithBot.coe_lt_coe.mpr <| by linarith only [hpq]
+                exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
           · rw [sub_sub]
             convert (degree_sub_eq_left_of_degree_lt <| (degree_add_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdpq.trans_lt _, hdq.trans_lt _⟩).trans
               (max_eq_left_of_lt _).symm <;> rw [hdp] <;>
-                exact WithBot.coe_lt_coe.mpr <| by linarith only [hpq]
+                exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
 #align weierstrass_curve.coordinate_ring.degree_norm_smul_basis WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis
 
 variable {W}

@@ -555,16 +555,20 @@ sometimes as a real manifold over `ℝ^(2n)`.
 -/
 @[ext]
 class ChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M] where
+  /-- The atlas of charts in the `ChartedSpace`. -/
   protected atlas : Set (PartialHomeomorph M H)
+  /-- The preferred chart at each point in the charted space. -/
   protected chartAt : M → PartialHomeomorph M H
   protected mem_chart_source : ∀ x, x ∈ (chartAt x).source
   protected chart_mem_atlas : ∀ x, chartAt x ∈ atlas
 #align charted_space ChartedSpace
 
+/-- The atlas of charts in a `ChartedSpace`. -/
 abbrev atlas (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] : Set (PartialHomeomorph M H) :=
   ChartedSpace.atlas
 
+/-- The preferred chart at a point `x` in a charted space `M`. -/
 abbrev chartAt (H : Type*) [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
     [ChartedSpace H M] (x : M) : PartialHomeomorph M H :=
   ChartedSpace.chartAt x

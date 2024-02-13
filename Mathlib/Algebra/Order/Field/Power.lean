@@ -27,7 +27,7 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 
 /-! ### Integer powers -/
 
-
+@[gcongr]
 theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := by
   have ha₀ : 0 < a := one_pos.trans_le ha
   lift n - m to ℕ using sub_nonneg.2 h with k hk
@@ -80,6 +80,11 @@ theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ · : ℤ
 theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
   (zpow_strictMono hx).lt_iff_lt
 #align zpow_lt_iff_lt zpow_lt_iff_lt
+
+@[gcongr] alias ⟨_, GCongr.zpow_lt_of_lt⟩ := zpow_lt_iff_lt
+
+@[deprecated] -- Since 2024-02-10
+alias zpow_lt_of_lt := GCongr.zpow_lt_of_lt
 
 @[simp]
 theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
@@ -254,7 +259,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q $m + $m := ⟨⟩ -- b = bit0 m
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (by exact .nonnegative q(zpow_bit0_nonneg $a $m))
+      pure (.nonnegative q(zpow_bit0_nonneg $a $m))
     | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
       let b' ← whnfR b'
       let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
@@ -263,7 +268,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q (-$m) + (-$m) := ⟨⟩ -- b = bit0 (-m)
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (by exact .nonnegative q(zpow_bit0_nonneg $a (-$m)))
+      pure (.nonnegative q(zpow_bit0_nonneg $a (-$m)))
     | _ => throwError "not a ^ n where n is a literal or a negated literal"
   orElse result do
     let ra ← core zα pα a
@@ -271,19 +276,19 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
         MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
-      pure (by exact .nonnegative (q(zpow_nonneg $pa $b)))
+      pure (.nonnegative q(zpow_nonneg $pa $b))
     let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(GroupWithZero $α)) : MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       let _a ← synthInstanceQ q(GroupWithZero $α)
       assumeInstancesCommute
-      pure (.nonzero (by exact q(zpow_ne_zero $b $pa)))
+      pure (.nonzero q(zpow_ne_zero $b $pa))
     match ra with
     | .positive pa =>
       try
         let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
         haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
-        pure (by exact .positive (q(zpow_pos_of_pos $pa $b)))
+        pure (.positive q(zpow_pos_of_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
         let oα ← synthInstanceQ q(LinearOrderedSemifield $α)
