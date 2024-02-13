@@ -887,7 +887,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
       have hgxk' : 0 < (1 + ‖g x‖) ^ k' := by positivity
       rw [← div_le_iff hgxk'] at hg_upper''
       have hpos : (0 : ℝ) ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by
-        have : 0 ≤ seminorm_f := map_nonneg _ _
+        have : 0 ≤ seminorm_f := apply_nonneg _ _
         positivity
       refine' le_trans (mul_le_mul_of_nonneg_right hg_upper'' hpos) _
       rw [← mul_assoc])
@@ -1059,7 +1059,7 @@ def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
       have : MulAction NNReal (Seminorm 𝕜 𝓢(E, F)) := Seminorm.instDistribMulAction.toMulAction
       simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
         schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
-        BoundedContinuousFunction.norm_le (map_nonneg _ _)]
+        BoundedContinuousFunction.norm_le (apply_nonneg _ _)]
       exact norm_le_seminorm 𝕜 _ }
 #align schwartz_map.to_bounded_continuous_function_clm SchwartzMap.toBoundedContinuousFunctionCLM
 
@@ -1102,7 +1102,7 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
         rw [norm_pos_iff']
         intro hxzero
         simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
-        exact hx (map_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
+        exact hx (apply_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
       have := norm_pow_mul_le_seminorm ℝ f 1 x
       rw [pow_one, ← le_div_iff' hxpos] at this
       apply lt_of_le_of_lt this
@@ -1146,7 +1146,7 @@ def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
       simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
         schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
         ← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
-        BoundedContinuousFunction.norm_le (map_nonneg _ _)]
+        BoundedContinuousFunction.norm_le (apply_nonneg _ _)]
       exact norm_le_seminorm 𝕜 _ }
 
 @[simp] theorem toZeroAtInftyCLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyCLM 𝕜 E F f x = f x :=
