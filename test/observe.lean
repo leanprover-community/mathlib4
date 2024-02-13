@@ -4,14 +4,19 @@ import Mathlib.Data.Nat.Prime
 
 open Nat
 
+set_option maxHeartbeats 150000 in
 theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   let N := n.factorial + 1
   let p := minFac N
   use p
   have prime : p.Prime := by
-    apply minFac_prime
+    -- we write this in a funny way,
+    -- so that we can test that `observe` (aka `apply?`)
+    -- finds `minFac_prime` in time
     observe : n.factorial > 0
-    linarith
+    have : N ≠ 1 := by linarith
+    observe : p.Prime
+    assumption
   constructor
   · by_contra!
     observe : p ∣ n.factorial
