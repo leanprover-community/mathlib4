@@ -122,33 +122,27 @@ lemma measureEntropy_nonneg (μ : Measure S) : 0 ≤ Hm[μ] := by
 lemma measureEntropy_le_card_aux [MeasurableSingletonClass S] [IsProbabilityMeasure μ]
     (A : Finset S) (hμ : μ Aᶜ = 0) :
     Hm[μ] ≤ log A.card := by
-  have μA : μ A = 1 := by
-    rw [← compl_compl (A : Set S), measure_compl A.measurableSet.compl (measure_ne_top _ _), hμ]
-    simp
+  have μA : μ A = 1 := by rwa [prob_compl_eq_zero_iff A.measurableSet] at hμ
   let N := A.card
   have N_pos : (0 : ℝ) < N := by
     rcases Finset.eq_empty_or_nonempty A with rfl|hA
     · simp at μA
     · simpa using Finset.card_pos.mpr hA
   simp only [measureEntropy_def, measure_univ, inv_one, one_smul]
-  calc
-  ∑' x, negMulLog (μ {x}).toReal
+  calc ∑' x, negMulLog (μ {x}).toReal
     = ∑ x in A, negMulLog (μ {x}).toReal := by
-      apply tsum_eq_sum
-      intro i hi
-      have : μ {i} = 0 :=
-        le_antisymm ((measure_mono (by simpa using hi)).trans (le_of_eq hμ)) bot_le
-      simp [this]
+        refine tsum_eq_sum (fun i hi ↦ ?_)
+        have : μ {i} = 0 := measure_mono_null (by simpa using hi) hμ
+        simp [this]
   _ = N * ∑ x in A, (N : ℝ)⁻¹ * negMulLog (μ {x}).toReal := by
-      rw [Finset.mul_sum]
-      congr with x
-      rw [← mul_assoc, mul_inv_cancel, one_mul]
-      exact N_pos.ne'
+        rw [Finset.mul_sum]
+        congr with x
+        rw [← mul_assoc, mul_inv_cancel N_pos.ne', one_mul]
   _ ≤ N * negMulLog (∑ x in A, (N : ℝ)⁻¹ * (μ {x}).toReal) :=
-      mul_le_mul_of_nonneg_left
-        (concaveOn_negMulLog.le_map_sum (by simp) (by simp [mul_inv_cancel N_pos.ne']) (by simp))
-        (by positivity)
-  _ = N * negMulLog ((N : ℝ)⁻¹) := by simp [← Finset.mul_sum, μA]
+        mul_le_mul_of_nonneg_left
+          (concaveOn_negMulLog.le_map_sum (by simp) (by simp [mul_inv_cancel N_pos.ne']) (by simp))
+          (by positivity)
+  _ = N * negMulLog (N : ℝ)⁻¹ := by simp [← Finset.mul_sum, μA]
   _ = log A.card := by simp [negMulLog, ← mul_assoc, mul_inv_cancel N_pos.ne']
 
 lemma measureEntropy_le_log_card_of_mem [MeasurableSingletonClass S]
@@ -156,9 +150,10 @@ lemma measureEntropy_le_log_card_of_mem [MeasurableSingletonClass S]
     Hm[μ] ≤ log (Nat.card A) := by
   have h_log_card_nonneg : 0 ≤ log (Nat.card A) := log_nat_cast_nonneg (Nat.card ↑A)
   rcases eq_zero_or_neZero μ with rfl|hμ
-  · simp [h_log_card_nonneg]; positivity
+  · simp only [measureEntropy_zero, Nat.card_eq_fintype_card, Fintype.card_coe, ge_iff_le]
+    positivity
   · by_cases hμ_fin : IsFiniteMeasure μ
-    swap;
+    swap
     · rw [measureEntropy_of_not_isFiniteMeasure hμ_fin]
       exact h_log_card_nonneg
     rw [← measureEntropy_univ_smul]
