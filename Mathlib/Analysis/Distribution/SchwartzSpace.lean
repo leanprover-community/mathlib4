@@ -610,7 +610,6 @@ section TemperateGrowth
 
 /-! ### Functions of temperate growth -/
 
-
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
 polynomially bounded. -/
 def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
@@ -634,6 +633,35 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   refine' pow_le_pow_right (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
   exact Finset.le_sup hN
 #align function.has_temperate_growth.norm_iterated_fderiv_le_uniform_aux Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
+
+lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
+    (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
+    (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
+    Function.HasTemperateGrowth f := by
+  refine ⟨contDiff_top_iff_fderiv.2 ⟨hf, h'f.1⟩ , fun n ↦ ?_⟩
+  rcases n with rfl|m
+  · exact ⟨k, C, fun x ↦ by simpa using h x⟩
+  · rcases h'f.2 m with ⟨k', C', h'⟩
+    refine ⟨k', C', fun x ↦ ?_⟩
+    simpa only [ContinuousLinearMap.strongUniformity_topology_eq, Function.comp_apply,
+      LinearIsometryEquiv.norm_map, iteratedFDeriv_succ_eq_comp_right] using h' x
+
+lemma _root_.Function.HasTemperateGrowth.zero :
+    Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
+  refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
+  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero, forall_const]
+  positivity
+
+lemma _root_.Function.HasTemperateGrowth.const (c : F) :
+    Function.HasTemperateGrowth (fun _ : E ↦ c) :=
+  .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
+
+lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
+    Function.HasTemperateGrowth f := by
+  apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
+  · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
+    simpa [this] using .const _
+  · exact (f.le_op_norm x).trans (by simp [mul_add])
 
 end TemperateGrowth
 
@@ -859,7 +887,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
       have hgxk' : 0 < (1 + ‖g x‖) ^ k' := by positivity
       rw [← div_le_iff hgxk'] at hg_upper''
       have hpos : (0 : ℝ) ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by
-        have : 0 ≤ seminorm_f := map_nonneg _ _
+        have : 0 ≤ seminorm_f := apply_nonneg _ _
         positivity
       refine' le_trans (mul_le_mul_of_nonneg_right hg_upper'' hpos) _
       rw [← mul_assoc])
@@ -1031,7 +1059,7 @@ def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
       have : MulAction NNReal (Seminorm 𝕜 𝓢(E, F)) := Seminorm.instDistribMulAction.toMulAction
       simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
         schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
-        BoundedContinuousFunction.norm_le (map_nonneg _ _)]
+        BoundedContinuousFunction.norm_le (apply_nonneg _ _)]
       exact norm_le_seminorm 𝕜 _ }
 #align schwartz_map.to_bounded_continuous_function_clm SchwartzMap.toBoundedContinuousFunctionCLM
 
@@ -1074,7 +1102,7 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
         rw [norm_pos_iff']
         intro hxzero
         simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
-        exact hx (map_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
+        exact hx (apply_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
       have := norm_pow_mul_le_seminorm ℝ f 1 x
       rw [pow_one, ← le_div_iff' hxpos] at this
       apply lt_of_le_of_lt this
@@ -1118,7 +1146,7 @@ def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
       simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
         schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
         ← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
-        BoundedContinuousFunction.norm_le (map_nonneg _ _)]
+        BoundedContinuousFunction.norm_le (apply_nonneg _ _)]
       exact norm_le_seminorm 𝕜 _ }
 
 @[simp] theorem toZeroAtInftyCLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyCLM 𝕜 E F f x = f x :=
