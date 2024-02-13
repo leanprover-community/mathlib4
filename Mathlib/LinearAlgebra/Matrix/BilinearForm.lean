@@ -135,7 +135,7 @@ theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₂) : Matrix.toBilin'Aux M = Mat
 #align matrix.to_bilin'_aux_eq Matrix.toBilin'Aux_eq
 
 theorem Matrix.toBilin'_apply (M : Matrix n n R₂) (x y : n → R₂) :
-    Matrix.toBilin' M x y = ∑ i, ∑ j, (x i * M i j) * y j := by
+    Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j := by
     conv_rhs => {
       apply Finset.sum_congr rfl fun i  _ => Finset.sum_congr rfl fun j _ => by
           rw [mul_assoc, ← smul_eq_mul, ← smul_eq_mul]
