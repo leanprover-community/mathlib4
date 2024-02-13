@@ -1286,12 +1286,13 @@ theorem scalar_inj [Nonempty n] {r s : α} : scalar n r = scalar n s ↔ r = s :
   (diagonal_injective.comp Function.const_injective).eq_iff
 #align matrix.scalar_inj Matrix.scalar_inj
 
+theorem scalar_commute_iff [Fintype n] [DecidableEq n] {r : α} {M : Matrix n n α} :
+    Commute (scalar n r) M ↔ r • M = MulOpposite.op r • M := by
+  simp_rw [Commute, SemiconjBy, scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
+
 theorem scalar_commute [Fintype n] [DecidableEq n] (r : α) (hr : ∀ r', Commute r r')
     (M : Matrix n n α) :
-    Commute (scalar n r) M := by
-  simp_rw [Commute, SemiconjBy, scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
-  ext i j'
-  exact hr _
+    Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ => hr _
 #align matrix.scalar.commute Matrix.scalar_commuteₓ
 
 end Scalar
