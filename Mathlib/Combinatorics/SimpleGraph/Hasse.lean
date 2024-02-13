@@ -179,17 +179,12 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
           intro hadjab
           exact adj_symm G (hsymm (adj_symm (pathGraph (p.length + 2)) hadjab))
         intro (h' : (pathGraph (p.length + 2)).Adj a b)
-        have htoFun : ∀ (c : Fin (length p + 1)),
-            toFun ⟨c.val + 1, Nat.add_lt_add_right c.prop 1⟩ = fun' c := by
-          simp [toFun]
         match em (a.val = 0), em (b.val = 0) with
         | Or.inl ha, Or.inl hb =>
-          have hab : b = a := Fin.ext (Eq.trans hb ha.symm)
-          rw [hab] at h'
+          rw [Fin.ext (Eq.trans hb ha.symm)] at h'
           exact ((pathGraph (p.length + 2)).loopless a h').elim
         | Or.inl ha, Or.inr _ =>
-          have ha' : toFun a = u := by
-            simp [toFun, ha]
+          have ha' : toFun a = u := by simp [toFun, ha]
           have hb'' : toFun b = v := by
             simp only [pathGraph_adj, ha, add_eq_zero, and_false, or_false] at h'
             simp only [toFun, h'.symm]
@@ -218,7 +213,7 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
             intro hba
             exact (Nat.not_lt_of_ge (Nat.succ_le.mp (Nat.le_of_eq hba)) (Nat.lt_succ.mpr hab)).elim
           rw [ha', hb']
-          simp only [htoFun]
+          simp only [toFun]
           apply hom'.map_rel ?_
           simp only [pathGraph_adj]
           rw [← hab']
@@ -262,11 +257,9 @@ theorem Walk.length_ofPathGraphHom_end {G : SimpleGraph α} {n : ℕ} (hom : pat
     have hi' : i.val < n := Fin.val_lt_last hi
     let j : Fin (n + 1) := ⟨i.val + 1, Nat.add_lt_add_right hi' 1⟩
     simp only [length_cons, length_ofPathGraphHom_end hom j]
-    calc
-      n - (i.val + 1) + 1
-        = n - i.val - 1 + 1 := rfl
-      _ = n - i.val := tsub_add_cancel_of_le (Nat.le_sub_of_add_le' hi')
-    done
+    have hni : 1 ≤ n - i.val := Nat.le_sub_of_add_le' hi'
+    rw [← tsub_add_cancel_of_le hni]
+    rfl
 termination_by _ => n - i.val
 
 @[simp]
@@ -320,26 +313,22 @@ theorem Walk.ofPathGraphHom_val_rec (G : SimpleGraph α) {n : ℕ} (hom : pathGr
       have hi : i.val < n := Fin.val_lt_last h
       let i' : Fin (n + 1) := ⟨i.val + 1, Nat.add_lt_add_right hi 1⟩
       let j' : Fin (n + 1 - i'.val) := ⟨j.val - 1, by
-          simp [i']
+          simp only [Nat.succ_sub_succ_eq_sub]
           apply (tsub_lt_iff_right h').mpr ?_
           rw [tsub_add_eq_add_tsub hi.le]
           exact j.prop⟩
       have ih := Walk.ofPathGraphHom_val_rec G hom i' j'
-      have h2 : getVert
-            (cons (ofPathGraphHom_end.proof_8 α G hom i (Fin.val_lt_last h)) (ofPathGraphHom_end α G hom i'))
-            (j'.val + 1) =
-          getVert (ofPathGraphHom_end α G hom i') j'.val :=
+      have h2 : (cons (ofPathGraphHom_end.proof_8 α G hom i (Fin.val_lt_last h))
+            (ofPathGraphHom_end α G hom i')).getVert (j'.val + 1) =
+          (ofPathGraphHom_end α G hom i').getVert j'.val :=
         rfl
-      simp
-      simp [i', Nat.sub_add_cancel h'] at h2
+      simp only
+      simp only [i', Nat.sub_add_cancel h'] at h2
       rw [h2, ih]
       refine DFunLike.congr_arg hom (Fin.eq_mk_iff_val_eq.mpr ?_)
       simp [i', j']
-      calc
-        i.val + 1 + (j.val - 1)
-          = i.val + 1 + j.val - 1 := (Nat.add_sub_assoc h' (i.val + 1)).symm
-        _ = i.val + j.val := Nat.succ_add_sub_one j.val i.val
-      done
+      rw [← j.val.succ_add_sub_one i.val]
+      exact (Nat.add_sub_assoc h' (i.val + 1)).symm
 termination_by _ => n - i.val
 
 theorem Walk.ofPathGraphHom_val (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G)
