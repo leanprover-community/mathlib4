@@ -110,7 +110,7 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
     HasStrictFDerivAt T.reApplyInnerSelf (2 • (innerSL ℝ (T x₀))) x₀ := by
   convert T.hasStrictFDerivAt.inner ℝ (hasStrictFDerivAt_id x₀) using 1
   ext y
-  rw [ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply, fderivInnerClm_apply,
+  rw [ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply, fderivInnerCLM_apply,
     ContinuousLinearMap.prod_apply, innerSL_apply, id.def, ContinuousLinearMap.id_apply,
     hT.apply_clm x₀ y, real_inner_comm _ x₀, two_smul]
 #align linear_map.is_symmetric.has_strict_fderiv_at_re_apply_inner_self LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf
@@ -132,7 +132,8 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
   refine' ⟨a, b, h₁, _⟩
   apply (InnerProductSpace.toDualMap ℝ F).injective
   simp only [LinearIsometry.map_add, LinearIsometry.map_smul, LinearIsometry.map_zero]
-  simp only [map_smulₛₗ, IsROrC.conj_to_real]
+  -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
+  simp only [map_smulₛₗ _, IsROrC.conj_to_real]
   change a • innerSL ℝ x₀ + b • innerSL ℝ (T x₀) = 0
   apply smul_right_injective (F →L[ℝ] ℝ) (two_ne_zero : (2 : ℝ) ≠ 0)
   simpa only [two_smul, smul_add, add_smul, add_zero] using h₂

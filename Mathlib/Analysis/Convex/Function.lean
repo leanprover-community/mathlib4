@@ -547,8 +547,8 @@ theorem ConvexOn.convex_lt (hf : ConvexOn 𝕜 s f) (r : β) : Convex 𝕜 ({ x 
       calc
         f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx.1 hy.1 ha.le hb.le hab
         _ < a • r + b • r :=
-          (add_lt_add_of_lt_of_le (smul_lt_smul_of_pos hx.2 ha)
-            (smul_le_smul_of_nonneg hy.2.le hb.le))
+          (add_lt_add_of_lt_of_le (smul_lt_smul_of_pos_left hx.2 ha)
+            (smul_le_smul_of_nonneg_left hy.2.le hb.le))
         _ = r := Convex.combo_self hab _⟩
 #align convex_on.convex_lt ConvexOn.convex_lt
 
@@ -563,8 +563,8 @@ theorem ConvexOn.openSegment_subset_strict_epigraph (hf : ConvexOn 𝕜 s f) (p 
   refine' ⟨hf.1 hp.1 hq.1 ha.le hb.le hab, _⟩
   calc
     f (a • p.1 + b • q.1) ≤ a • f p.1 + b • f q.1 := hf.2 hp.1 hq.1 ha.le hb.le hab
-    _ < a • p.2 + b • q.2 :=
-      add_lt_add_of_lt_of_le (smul_lt_smul_of_pos hp.2 ha) (smul_le_smul_of_nonneg hq.2 hb.le)
+    _ < a • p.2 + b • q.2 := add_lt_add_of_lt_of_le
+       (smul_lt_smul_of_pos_left hp.2 ha) (smul_le_smul_of_nonneg_left hq.2 hb.le)
 #align convex_on.open_segment_subset_strict_epigraph ConvexOn.openSegment_subset_strict_epigraph
 
 theorem ConcaveOn.openSegment_subset_strict_hypograph (hf : ConcaveOn 𝕜 s f) (p q : E × β)
@@ -709,13 +709,12 @@ variable [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f g :
 theorem ConvexOn.le_left_of_right_le' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) (hfy : f y ≤ f (a • x + b • y)) :
     f (a • x + b • y) ≤ f x :=
-  le_of_not_lt fun h =>
-    lt_irrefl (f (a • x + b • y)) <|
-      calc
-        f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha.le hb hab
-        _ < a • f (a • x + b • y) + b • f (a • x + b • y) :=
-          (add_lt_add_of_lt_of_le (smul_lt_smul_of_pos h ha) (smul_le_smul_of_nonneg hfy hb))
-        _ = f (a • x + b • y) := Convex.combo_self hab _
+  le_of_not_lt fun h ↦ lt_irrefl (f (a • x + b • y)) <|
+    calc
+      f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha.le hb hab
+      _ < a • f (a • x + b • y) + b • f (a • x + b • y) := add_lt_add_of_lt_of_le
+          (smul_lt_smul_of_pos_left h ha) (smul_le_smul_of_nonneg_left hfy hb)
+      _ = f (a • x + b • y) := Convex.combo_self hab _
 #align convex_on.le_left_of_right_le' ConvexOn.le_left_of_right_le'
 
 theorem ConcaveOn.left_le_of_le_right' (hf : ConcaveOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
@@ -770,13 +769,12 @@ the writing, we decided the resulting lemmas wouldn't be useful. Feel free to re
 theorem ConvexOn.lt_left_of_right_lt' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) (hfy : f y < f (a • x + b • y)) :
     f (a • x + b • y) < f x :=
-  not_le.1 fun h =>
-    lt_irrefl (f (a • x + b • y)) <|
-      calc
-        f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha.le hb.le hab
-        _ < a • f (a • x + b • y) + b • f (a • x + b • y) :=
-          (add_lt_add_of_le_of_lt (smul_le_smul_of_nonneg h ha.le) (smul_lt_smul_of_pos hfy hb))
-        _ = f (a • x + b • y) := Convex.combo_self hab _
+  not_le.1 fun h ↦ lt_irrefl (f (a • x + b • y)) <|
+    calc
+      f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha.le hb.le hab
+      _ < a • f (a • x + b • y) + b • f (a • x + b • y) := add_lt_add_of_le_of_lt
+          (smul_le_smul_of_nonneg_left h ha.le) (smul_lt_smul_of_pos_left hfy hb)
+      _ = f (a • x + b • y) := Convex.combo_self hab _
 #align convex_on.lt_left_of_right_lt' ConvexOn.lt_left_of_right_lt'
 
 theorem ConcaveOn.left_lt_of_lt_right' (hf : ConcaveOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
@@ -834,7 +832,9 @@ theorem neg_convexOn_iff : ConvexOn 𝕜 s (-f) ↔ ConcaveOn 𝕜 s f := by
   constructor
   · rintro ⟨hconv, h⟩
     refine' ⟨hconv, fun x hx y hy a b ha hb hab => _⟩
-    simp [neg_apply, neg_le, add_comm] at h
+    simp? [neg_apply, neg_le, add_comm] at h says
+      simp only [Pi.neg_apply, smul_neg, le_add_neg_iff_add_le, add_comm,
+        add_neg_le_iff_le_add] at h
     exact h hx hy ha hb hab
   · rintro ⟨hconv, h⟩
     refine' ⟨hconv, fun x hx y hy a b ha hb hab => _⟩
@@ -855,7 +855,8 @@ theorem neg_strictConvexOn_iff : StrictConvexOn 𝕜 s (-f) ↔ StrictConcaveOn 
   constructor
   · rintro ⟨hconv, h⟩
     refine' ⟨hconv, fun x hx y hy hxy a b ha hb hab => _⟩
-    simp [neg_apply, neg_lt, add_comm] at h
+    simp only [ne_eq, Pi.neg_apply, smul_neg, lt_add_neg_iff_add_lt, add_comm,
+      add_neg_lt_iff_lt_add] at h
     exact h hx hy hxy ha hb hab
   · rintro ⟨hconv, h⟩
     refine' ⟨hconv, fun x hx y hy hxy a b ha hb hab => _⟩
@@ -977,7 +978,7 @@ theorem ConvexOn.smul {c : 𝕜} (hc : 0 ≤ c) (hf : ConvexOn 𝕜 s f) : Conve
   ⟨hf.1, fun x hx y hy a b ha hb hab =>
     calc
       c • f (a • x + b • y) ≤ c • (a • f x + b • f y) :=
-        smul_le_smul_of_nonneg (hf.2 hx hy ha hb hab) hc
+        smul_le_smul_of_nonneg_left (hf.2 hx hy ha hb hab) hc
       _ = a • c • f x + b • c • f y := by rw [smul_add, smul_comm c, smul_comm c]⟩
 #align convex_on.smul ConvexOn.smul
 
@@ -1141,10 +1142,10 @@ lemma StrictConvexOn.eq_of_isMinOn (hf : StrictConvexOn 𝕜 s f) (hfx : IsMinOn
     (hfy : IsMinOn f s y) (hx : x ∈ s) (hy : y ∈ s) : x = y := by
   by_contra hxy
   let z := (2 : 𝕜)⁻¹ • x + (2 : 𝕜)⁻¹ • y
-  have hz : z ∈ s := hf.1 hx hy (by norm_num) (by norm_num) $ by norm_num
+  have hz : z ∈ s := hf.1 hx hy (by norm_num) (by norm_num) <| by norm_num
   refine lt_irrefl (f z) ?_
   calc
-    f z < _ := hf.2 hx hy hxy (by norm_num) (by norm_num) $ by norm_num
+    f z < _ := hf.2 hx hy hxy (by norm_num) (by norm_num) <| by norm_num
     _ ≤ (2 : 𝕜)⁻¹ • f z + (2 : 𝕜)⁻¹ • f z := by gcongr; exacts [hfx hz, hfy hz]
     _ = f z := by rw [← _root_.add_smul]; norm_num
 

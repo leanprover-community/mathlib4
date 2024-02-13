@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Homotopy.Path
+import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.Homotopy.Basic
 
 #align_import topology.homotopy.H_spaces from "leanprover-community/mathlib"@"729d23f9e1640e1687141be89b106d3c8f9d10c0"
 

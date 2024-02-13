@@ -3,7 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Algebra.Function.Indicator
 import Mathlib.Topology.Constructions
 
 #align_import topology.continuous_on from "leanprover-community/mathlib"@"d4f691b9e5f94cfc64639973f3544c95f8d5d494"
@@ -28,9 +28,6 @@ equipped with the subspace topology.
 * `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`.
 
 -/
-
-set_option autoImplicit true
-
 
 open Set Filter Function Topology Filter
 
@@ -115,7 +112,7 @@ theorem diff_mem_nhdsWithin_diff {x : α} {s t : Set α} (hs : s ∈ 𝓝[t] x) 
 theorem nhds_of_nhdsWithin_of_nhds {s t : Set α} {a : α} (h1 : s ∈ 𝓝 a) (h2 : t ∈ 𝓝[s] a) :
     t ∈ 𝓝 a := by
   rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.mp h2 with ⟨_, Hw, hw⟩
-  exact (nhds a).sets_of_superset ((nhds a).inter_sets Hw h1) hw
+  exact (𝓝 a).sets_of_superset ((𝓝 a).inter_sets Hw h1) hw
 #align nhds_of_nhds_within_of_nhds nhds_of_nhdsWithin_of_nhds
 
 theorem mem_nhdsWithin_iff_eventually {s t : Set α} {x : α} :
@@ -508,18 +505,20 @@ theorem preimage_coe_mem_nhds_subtype {s t : Set α} {a : s} : (↑) ⁻¹' t �
   rw [← map_nhds_subtype_val, mem_map]
 #align preimage_coe_mem_nhds_subtype preimage_coe_mem_nhds_subtype
 
+theorem eventually_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
+    (∀ᶠ x : s in 𝓝 a, P x) ↔ ∀ᶠ x in 𝓝[s] a, P x :=
+  preimage_coe_mem_nhds_subtype
+
+theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
+    (∃ᶠ x : s in 𝓝 a, P x) ↔ ∃ᶠ x in 𝓝[s] a, P x :=
+  eventually_nhds_subtype_iff s a (¬ P ·) |>.not
+
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
     Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
 #align tendsto_nhds_within_iff_subtype tendsto_nhdsWithin_iff_subtype
 
 variable [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
-
-/-- A function between topological spaces is continuous at a point `x₀` within a subset `s`
-if `f x` tends to `f x₀` when `x` tends to `x₀` while staying within `s`. -/
-def ContinuousWithinAt (f : α → β) (s : Set α) (x : α) : Prop :=
-  Tendsto f (𝓝[s] x) (𝓝 (f x))
-#align continuous_within_at ContinuousWithinAt
 
 /-- If a function is continuous within `s` at `x`, then it tends to `f x` within `s` by definition.
 We register this fact for use with the dot notation, especially to use `Filter.Tendsto.comp` as
@@ -528,12 +527,6 @@ theorem ContinuousWithinAt.tendsto {f : α → β} {s : Set α} {x : α} (h : Co
     Tendsto f (𝓝[s] x) (𝓝 (f x)) :=
   h
 #align continuous_within_at.tendsto ContinuousWithinAt.tendsto
-
-/-- A function between topological spaces is continuous on a subset `s`
-when it's continuous at every point of `s` within `s`. -/
-def ContinuousOn (f : α → β) (s : Set α) : Prop :=
-  ∀ x ∈ s, ContinuousWithinAt f s x
-#align continuous_on ContinuousOn
 
 theorem ContinuousOn.continuousWithinAt {f : α → β} {s : Set α} {x : α} (hf : ContinuousOn f s)
     (hx : x ∈ s) : ContinuousWithinAt f s x :=
@@ -753,7 +746,7 @@ theorem ContinuousWithinAt.mono_of_mem {f : α → β} {s t : Set α} {x : α}
   h.mono_left (nhdsWithin_le_of_mem hs)
 #align continuous_within_at.mono_of_mem ContinuousWithinAt.mono_of_mem
 
-theorem continuousWithinAt_congr_nhds {f : α → β} (h : 𝓝[s] x = 𝓝[t] x) :
+theorem continuousWithinAt_congr_nhds {f : α → β} {s t : Set α} {x : α} (h : 𝓝[s] x = 𝓝[t] x) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   simp only [ContinuousWithinAt, h]
 
@@ -1104,7 +1097,7 @@ theorem continuousOn_of_locally_continuousOn {f : α → β} {s : Set α}
 -- porting note: new lemma
 theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α → β} :
     @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
-  forall₂_congr <| fun x _ => by
+  forall₂_congr fun x _ => by
     delta ContinuousWithinAt
     simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
       and_imp]

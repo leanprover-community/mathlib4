@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Data.Nat.Interval
-import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.ENNReal.Real
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
@@ -132,9 +132,9 @@ theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + e
 /-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
 theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
     edist (f m) (f n) ≤ ∑ i in Finset.Ico m n, edist (f i) (f (i + 1)) := by
-  induction n, h using Nat.le_induction
-  case base => rw [Finset.Ico_self, Finset.sum_empty, edist_self]
-  case succ n hle ihn =>
+  induction n, h using Nat.le_induction with
+  | base => rw [Finset.Ico_self, Finset.sum_empty, edist_self]
+  | succ n hle ihn =>
     calc
       edist (f m) (f (n + 1)) ≤ edist (f m) (f n) + edist (f n) (f (n + 1)) := edist_triangle _ _ _
       _ ≤ (∑ i in Finset.Ico m n, _) + _ := add_le_add ihn le_rfl
@@ -510,7 +510,7 @@ spaces. -/
 instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetricSpace (∀ b, π b) where
   edist_self f := bot_unique <| Finset.sup_le <| by simp
   edist_comm f g := by simp [edist_pi_def, edist_comm]
-  edist_triangle f g h := edist_pi_le_iff.2 <| fun b => le_trans (edist_triangle _ (g b) _)
+  edist_triangle f g h := edist_pi_le_iff.2 fun b => le_trans (edist_triangle _ (g b) _)
     (add_le_add (edist_le_pi_edist _ _ _) (edist_le_pi_edist _ _ _))
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
@@ -1180,8 +1180,8 @@ instance [PseudoEMetricSpace X] : EMetricSpace (UniformSpace.SeparationQuotient 
       edist_comm := fun x y => Quotient.inductionOn₂' x y edist_comm,
       edist_triangle := fun x y z => Quotient.inductionOn₃' x y z edist_triangle,
       toUniformSpace := inferInstance,
-      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans $ iInf_congr $ fun ε =>
-        iInf_congr $ fun _ => congr_arg 𝓟 <| by
+      uniformity_edist := (uniformity_basis_edist.map _).eq_biInf.trans <| iInf_congr fun ε =>
+        iInf_congr fun _ => congr_arg 𝓟 <| by
           ext ⟨⟨x⟩, ⟨y⟩⟩
           refine ⟨?_, fun h => ⟨(x, y), h, rfl⟩⟩
           rintro ⟨⟨x', y'⟩, h', h⟩

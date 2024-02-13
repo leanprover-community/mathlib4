@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Oliver Nash
 -/
 import Mathlib.Topology.PartialHomeomorph
-import Mathlib.Analysis.NormedSpace.AddTorsor
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Data.Real.Sqrt
 
 #align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
@@ -114,7 +115,7 @@ def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : PartialHomeomorph E P :=
     rw [image_comp, image_smul, smul_unitBall hr.ne', IsometryEquiv.image_ball]
     simp [abs_of_pos hr]
 
-/-- If `r > 0`, then `PartialHomeomorph.univBall c r` is a smooth local homeomorphism
+/-- If `r > 0`, then `PartialHomeomorph.univBall c r` is a smooth partial homeomorphism
 with `source = Set.univ` and `target = Metric.ball c r`.
 Otherwise, it is the translation by `c`.
 Thus in all cases, it sends `0` to `c`, see `PartialHomeomorph.univBall_apply_zero`. -/

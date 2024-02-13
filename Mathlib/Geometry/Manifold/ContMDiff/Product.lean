@@ -405,7 +405,7 @@ theorem contMDiffWithinAt_pi_space :
   -- Porting note: `simp` fails to apply it on the LHS
   rw [contMDiffWithinAt_iff]
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
-    writtenInExtChartAt, extChartAt_model_space_eq_id, (· ∘ ·), LocalEquiv.refl_coe, id]
+    writtenInExtChartAt, extChartAt_model_space_eq_id, (· ∘ ·), PartialEquiv.refl_coe, id]
 #align cont_mdiff_within_at_pi_space contMDiffWithinAt_pi_space
 
 theorem contMDiffOn_pi_space :
