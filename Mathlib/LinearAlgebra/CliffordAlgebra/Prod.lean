@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Prod
 /-!
 # Clifford algebras of a direct sum of two vector spaces
 
-We show that the clifford algebra of a direct sum is the graded tensor product of the clifford
+We show that the Clifford algebra of a direct sum is the graded tensor product of the Clifford
 algebras, as `CliffordAlgebra.equivProd`.
 
 ## Main definitions:
@@ -130,8 +130,8 @@ lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.i
 lemma ofProd_comp_toProd : (ofProd Q₁ Q₂).comp (toProd Q₁ Q₂) = AlgHom.id _ _ := by
   ext <;> (dsimp; simp)
 
-/-- The clifford algebra over an orthogonal direct sum of quadratic vector spaces is isomorphic
-as an algebra to the graded tensor product of the clifford algebras of each space.
+/-- The Clifford algebra over an orthogonal direct sum of quadratic vector spaces is isomorphic
+as an algebra to the graded tensor product of the Clifford algebras of each space.
 
 This is `CliffordAlgebra.toProd` and `CliffordAlgebra.ofProd` as an equivalence. -/
 @[simps!]
