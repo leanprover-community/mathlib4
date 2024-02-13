@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Data.ULift
 import Mathlib.Data.ZMod.Defs
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.PartENat
 
 #align_import set_theory.cardinal.finite from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
 
