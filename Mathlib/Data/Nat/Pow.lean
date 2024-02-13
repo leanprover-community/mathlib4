@@ -24,8 +24,6 @@ variable {m n x y : ℕ}
 
 -- The global `pow_le_pow_left` needs an extra hypothesis `0 ≤ x`.
 
-protected alias pow_le_pow_left := pow_le_pow_of_le_left
-protected alias pow_le_pow_right := pow_le_pow_of_le_right
 #align nat.pow_le_pow_of_le_left Nat.pow_le_pow_left
 #align nat.pow_le_pow_of_le_right Nat.pow_le_pow_right
 
@@ -34,9 +32,6 @@ protected theorem pow_lt_pow_left (h : x < y) (hn : n ≠ 0) : x ^ n < y ^ n :=
 #align nat.pow_lt_pow_of_lt_left Nat.pow_lt_pow_left
 
 #align nat.pow_lt_pow_of_lt_right pow_lt_pow_right
-
-theorem pow_lt_pow_succ {p : ℕ} (h : 1 < p) (n : ℕ) : p ^ n < p ^ (n + 1) :=
-  pow_lt_pow_right h n.lt_succ_self
 #align nat.pow_lt_pow_succ Nat.pow_lt_pow_succ
 
 theorem le_self_pow {n : ℕ} (hn : n ≠ 0) : ∀ m : ℕ, m ≤ m ^ n
@@ -49,7 +44,7 @@ theorem lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
   | n + 1 =>
     calc
       n + 1 < p ^ n + 1 := Nat.add_lt_add_right (lt_pow_self h _) _
-      _ ≤ p ^ (n + 1) := pow_lt_pow_succ h _
+      _ ≤ p ^ (n + 1) := Nat.pow_lt_pow_succ h
 #align nat.lt_pow_self Nat.lt_pow_self
 
 theorem lt_two_pow (n : ℕ) : n < 2 ^ n :=
@@ -171,26 +166,8 @@ theorem mod_pow_succ {b : ℕ} (w m : ℕ) : m % b ^ succ w = b * (m / b % b ^ w
         rw [Eq.symm (mod_eq_sub_mod p_b_ge)]
 #align nat.mod_pow_succ Nat.mod_pow_succ
 
-theorem pow_dvd_pow_iff_pow_le_pow {k l : ℕ} : ∀ {x : ℕ}, 0 < x → (x ^ k ∣ x ^ l ↔ x ^ k ≤ x ^ l)
-  | x + 1, w => by
-    constructor
-    · intro a
-      exact le_of_dvd (pow_pos (succ_pos x) l) a
-    · intro a
-      cases' x with x
-      · simp
-      · have le := (pow_le_pow_iff_right <| by simp).mp a
-        use (x + 2) ^ (l - k)
-        rw [← pow_add, add_comm k, tsub_add_cancel_of_le le]
 #align nat.pow_dvd_pow_iff_pow_le_pow Nat.pow_dvd_pow_iff_pow_le_pow
-
-/-- If `1 < x`, then `x^k` divides `x^l` if and only if `k` is at most `l`. -/
-theorem pow_dvd_pow_iff_le_right {x k l : ℕ} (w : 1 < x) : x ^ k ∣ x ^ l ↔ k ≤ l := by
-  rw [pow_dvd_pow_iff_pow_le_pow (lt_of_succ_lt w), pow_le_pow_iff_right w]
 #align nat.pow_dvd_pow_iff_le_right Nat.pow_dvd_pow_iff_le_right
-
-theorem pow_dvd_pow_iff_le_right' {b k l : ℕ} : (b + 2) ^ k ∣ (b + 2) ^ l ↔ k ≤ l :=
-  pow_dvd_pow_iff_le_right (Nat.lt_of_sub_eq_succ rfl)
 #align nat.pow_dvd_pow_iff_le_right' Nat.pow_dvd_pow_iff_le_right'
 
 theorem not_pos_pow_dvd : ∀ {p k : ℕ} (_ : 1 < p) (_ : 1 < k), ¬p ^ k ∣ p

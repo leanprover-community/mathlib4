@@ -320,4 +320,5 @@
   "Mathlib.Algebra.Module.LinearMap": ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Category.Ring.Basic":
-  ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"]}}
+  ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
+  "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"]}}

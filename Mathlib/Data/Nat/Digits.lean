@@ -136,13 +136,13 @@ theorem digits_def' :
 @[simp]
 theorem digits_of_lt (b x : ℕ) (hx : x ≠ 0) (hxb : x < b) : digits b x = [x] := by
   rcases exists_eq_succ_of_ne_zero hx with ⟨x, rfl⟩
-  rcases exists_eq_add_of_le' ((Nat.le_add_left 1 x).trans_lt hxb) with ⟨b, rfl⟩
+  rcases Nat.exists_eq_add_of_le' ((Nat.le_add_left 1 x).trans_lt hxb) with ⟨b, rfl⟩
   rw [digits_add_two_add_one, div_eq_of_lt hxb, digits_zero, mod_eq_of_lt hxb]
 #align nat.digits_of_lt Nat.digits_of_lt
 
 theorem digits_add (b : ℕ) (h : 1 < b) (x y : ℕ) (hxb : x < b) (hxy : x ≠ 0 ∨ y ≠ 0) :
     digits b (x + b * y) = x :: digits b y := by
-  rcases exists_eq_add_of_le' h with ⟨b, rfl : _ = _ + 2⟩
+  rcases Nat.exists_eq_add_of_le' h with ⟨b, rfl : _ = _ + 2⟩
   cases y
   · simp [hxb, hxy.resolve_right (absurd rfl)]
   dsimp [digits]
