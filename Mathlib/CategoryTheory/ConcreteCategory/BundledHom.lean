@@ -126,9 +126,6 @@ def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F)
 
 section
 
--- porting note: commented out
---omit 𝒞
-
 /-- We use the empty `ParentProjection` class to label functions like `CommMonoid.toMonoid`,
 which we would like to use to automatically construct `BundledHom` instances from.
 
