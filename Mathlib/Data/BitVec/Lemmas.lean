@@ -245,8 +245,6 @@ using the result as argument to `ofFin` to construct a bitvector.
 This result ist the final piece needed to show that bitvectors form a commutative ring.
 -/
 
-#check Std.BitVec.add_eq_adc
-
 @[simp]
 lemma negOne_eq_allOnes {w : Nat} : -1#w = allOnes w := rfl
 
