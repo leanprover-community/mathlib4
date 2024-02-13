@@ -48,14 +48,14 @@ def bernoulliFun (k : ℕ) (x : ℝ) : ℝ :=
   (Polynomial.map (algebraMap ℚ ℝ) (Polynomial.bernoulli k)).eval x
 #align bernoulli_fun bernoulliFun
 
-theorem bernoulliFun_eval_zero (k : ℕ) : bernoulliFun k 0 = bernoulli k := by
+theorem bernoulliFun_eval_zero (k : ℕ) : bernoulliFun k 0 = bernoulli' k := by
   rw [bernoulliFun, Polynomial.eval_zero_map, Polynomial.bernoulli_eval_zero, eq_ratCast]
 #align bernoulli_fun_eval_zero bernoulliFun_eval_zero
 
 theorem bernoulliFun_endpoints_eq_of_ne_one {k : ℕ} (hk : k ≠ 1) :
     bernoulliFun k 1 = bernoulliFun k 0 := by
   rw [bernoulliFun_eval_zero, bernoulliFun, Polynomial.eval_one_map, Polynomial.bernoulli_eval_one,
-    bernoulli_eq_bernoulli'_of_ne_one hk, eq_ratCast]
+    bernoulli'_eq_bernoulli_of_ne_one hk, eq_ratCast]
 #align bernoulli_fun_endpoints_eq_of_ne_one bernoulliFun_endpoints_eq_of_ne_one
 
 theorem bernoulliFun_eval_one (k : ℕ) : bernoulliFun k 1 = bernoulliFun k 0 + ite (k = 1) 1 0 := by
@@ -63,7 +63,7 @@ theorem bernoulliFun_eval_one (k : ℕ) : bernoulliFun k 1 = bernoulliFun k 0 + 
   split_ifs with h
   · rw [h, bernoulli_one, bernoulli'_one, eq_ratCast]
     push_cast; ring
-  · rw [bernoulli_eq_bernoulli'_of_ne_one h, add_zero, eq_ratCast]
+  · rw [bernoulli'_eq_bernoulli_of_ne_one h, add_zero, eq_ratCast]
 #align bernoulli_fun_eval_one bernoulliFun_eval_one
 
 theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
@@ -336,6 +336,7 @@ theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
     HasSum (fun n : ℕ => 1 / (n : ℝ) ^ (2 * k))
       ((-1 : ℝ) ^ (k + 1) * (2 : ℝ) ^ (2 * k - 1) * π ^ (2 * k) *
         bernoulli (2 * k) / (2 * k)!) := by
+  rw [← bernoulli'_eq_bernoulli_of_ne_one (by simp)]
   convert hasSum_one_div_nat_pow_mul_cos hk (left_mem_Icc.mpr zero_le_one) using 1
   · ext1 n; rw [mul_zero, Real.cos_zero, mul_one]
   rw [Polynomial.eval_zero_map, Polynomial.bernoulli_eval_zero, eq_ratCast]
@@ -356,25 +357,23 @@ end Cleanup
 section Examples
 
 theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π ^ 2 / 6) := by
-  convert hasSum_zeta_nat one_ne_zero using 1; rw [mul_one]
-  rw [bernoulli_eq_bernoulli'_of_ne_one (by decide : 2 ≠ 1), bernoulli'_two]
+  convert hasSum_zeta_nat one_ne_zero using 1
+  rw [mul_one, bernoulli_two]
   norm_num [Nat.factorial]; field_simp; ring
 #align has_sum_zeta_two hasSum_zeta_two
 
 theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
-  convert hasSum_zeta_nat two_ne_zero using 1; norm_num
-  rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
-  norm_num [Nat.factorial]; field_simp; ring; decide
+  convert hasSum_zeta_nat two_ne_zero using 1
+  norm_num [Nat.factorial]; field_simp; ring
 #align has_sum_zeta_four hasSum_zeta_four
 
 theorem Polynomial.bernoulli_three_eval_one_quarter :
     (Polynomial.bernoulli 3).eval (1 / 4) = 3 / 64 := by
   simp_rw [Polynomial.bernoulli, Finset.sum_range_succ, Polynomial.eval_add,
     Polynomial.eval_monomial]
-  rw [Finset.sum_range_zero, Polynomial.eval_zero, zero_add, bernoulli_one]
-  rw [bernoulli_eq_bernoulli'_of_ne_one zero_ne_one, bernoulli'_zero,
-    bernoulli_eq_bernoulli'_of_ne_one (by decide : 2 ≠ 1), bernoulli'_two,
-    bernoulli_eq_bernoulli'_of_ne_one (by decide : 3 ≠ 1), bernoulli'_three]
+  rw [Finset.sum_range_zero, Polynomial.eval_zero, zero_add, bernoulli'_zero, bernoulli'_one,
+    bernoulli'_eq_bernoulli_of_ne_one (by decide : 2 ≠ 1), bernoulli_two,
+    bernoulli'_eq_bernoulli_of_ne_one (by decide : 3 ≠ 1), bernoulli_three]
   norm_num
 #align polynomial.bernoulli_three_eval_one_quarter Polynomial.bernoulli_three_eval_one_quarter
 

@@ -25,7 +25,7 @@ $$ \frac{t e^{tX} }{ e^t - 1} = ∑_{n = 0}^{\infty} B_n(X) \frac{t^n}{n!} $$
 
 ## Implementation detail
 
-Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
+Bernoulli polynomials are defined using `bernoulli'`, the negative Bernoulli numbers.
 
 ## Main theorems
 
@@ -53,11 +53,11 @@ namespace Polynomial
 
 /-- The Bernoulli polynomials are defined in terms of the negative Bernoulli numbers. -/
 def bernoulli (n : ℕ) : ℚ[X] :=
-  ∑ i in range (n + 1), Polynomial.monomial (n - i) (_root_.bernoulli i * choose n i)
+  ∑ i in range (n + 1), Polynomial.monomial (n - i) (bernoulli' i * choose n i)
 #align polynomial.bernoulli Polynomial.bernoulli
 
 theorem bernoulli_def (n : ℕ) : bernoulli n =
-    ∑ i in range (n + 1), Polynomial.monomial i (_root_.bernoulli (n - i) * choose n i) := by
+    ∑ i in range (n + 1), Polynomial.monomial i (bernoulli' (n - i) * choose n i) := by
   rw [← sum_range_reflect, add_succ_sub_one, add_zero, bernoulli]
   apply sum_congr rfl
   rintro x hx
@@ -74,9 +74,9 @@ theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 #align polynomial.bernoulli_zero Polynomial.bernoulli_zero
 
 @[simp]
-theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
+theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = bernoulli' n := by
   rw [bernoulli, eval_finset_sum, sum_range_succ]
-  have : (∑ x : ℕ in range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x)) = 0 := by
+  have : (∑ x : ℕ in range n, bernoulli' x * n.choose x * 0 ^ (n - x)) = 0 := by
     apply sum_eq_zero fun x hx => _
     intros x hx
     have h : x < n := (mem_range.1 hx)
@@ -85,14 +85,14 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
 #align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero
 
 @[simp]
-theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
+theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = _root_.bernoulli n := by
   simp only [bernoulli, eval_finset_sum]
   simp only [← succ_eq_add_one, sum_range_succ, mul_one, cast_one, choose_self,
-    (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_C, eval_monomial, one_mul]
+    (bernoulli' _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_C, eval_monomial, one_mul]
   by_cases h : n = 1
   · norm_num [h]
   · simp [h]
-    exact bernoulli_eq_bernoulli'_of_ne_one h
+    exact bernoulli'_eq_bernoulli_of_ne_one h
 #align polynomial.bernoulli_eval_one Polynomial.bernoulli_eval_one
 
 end Examples
@@ -124,7 +124,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   simp_rw [bernoulli_def, Finset.smul_sum, Finset.range_eq_Ico, ← Finset.sum_Ico_Ico_comm,
     Finset.sum_Ico_eq_sum_range]
   simp only [add_tsub_cancel_left, tsub_zero, zero_add, map_add]
-  simp_rw [smul_monomial, mul_comm (_root_.bernoulli _) _, smul_eq_mul, ← mul_assoc]
+  simp_rw [smul_monomial, mul_comm (bernoulli' _) _, smul_eq_mul, ← mul_assoc]
   conv_lhs =>
     apply_congr
     · skip
@@ -138,8 +138,8 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   simp_rw [← sum_smul]
   rw [sum_range_succ_comm]
   simp only [add_right_eq_self, mul_one, cast_one, cast_add, add_tsub_cancel_left,
-    choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
-    map_add, range_one, bernoulli_zero, mul_one, one_mul, add_zero, choose_self]
+    choose_succ_self_right, one_smul, bernoulli'_zero, sum_singleton, zero_add,
+    map_add, range_one, bernoulli'_zero, mul_one, one_mul, add_zero, choose_self]
   apply sum_eq_zero fun x hx => _
   have f : ∀ x ∈ range n, ¬n + 1 - x = 1 := by
     rintro x H
@@ -147,7 +147,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
     rw [eq_comm]
     exact _root_.ne_of_lt (Nat.lt_of_lt_of_le one_lt_two (le_tsub_of_add_le_left (succ_le_succ H)))
   intro x hx
-  rw [sum_bernoulli]
+  rw [sum_bernoulli']
   have g : ite (n + 1 - x = 1) (1 : ℚ) 0 = 0 := by
     simp only [ite_eq_right_iff, one_ne_zero]
     intro h₁
@@ -166,7 +166,7 @@ theorem bernoulli_eq_sub_sum (n : ℕ) :
 /-- Another version of `sum_range_pow`. -/
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     ((p + 1 : ℚ) * ∑ k in range n, (k : ℚ) ^ p) = (bernoulli p.succ).eval (n : ℚ) -
-    _root_.bernoulli p.succ := by
+    bernoulli' p.succ := by
   rw [sum_range_pow, bernoulli_def, eval_finset_sum, ← sum_div, mul_div_cancel' _ _]
   · simp_rw [eval_monomial]
     symm
@@ -184,7 +184,7 @@ theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
 
 /-- Rearrangement of `Polynomial.sum_range_pow_eq_bernoulli_sub`. -/
 theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
-    _root_.bernoulli p.succ + (p + 1 : ℚ) * ∑ k in range n, (k : ℚ) ^ p := by
+    bernoulli' p.succ + (p + 1 : ℚ) * ∑ k in range n, (k : ℚ) ^ p := by
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
 #align polynomial.bernoulli_succ_eval Polynomial.bernoulli_succ_eval
@@ -205,7 +205,7 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
       · rw [eval_smul, hd _ (mem_range.1 (by assumption))]
   rw [eval_sub, eval_finset_sum]
   simp_rw [eval_smul, smul_add]
-  rw [sum_add_distrib, sub_add, sub_eq_sub_iff_sub_eq_sub, _root_.add_sub_sub_cancel]
+  rw [sum_add_distrib, sub_add, sub_eq_sub_iff_sub_eq_sub, add_sub_sub_cancel]
   conv_rhs =>
     congr
     · skip
