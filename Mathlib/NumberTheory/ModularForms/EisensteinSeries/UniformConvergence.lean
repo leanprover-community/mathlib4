@@ -12,14 +12,14 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Data.Finset.LocallyFinite.Box
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 
-open Finset
-
 /-!
 # Uniform convergence of Eisenstein series
 
 We show that `eis` converges locally uniformly on `ℍ` to the Eisenstein series `E` of weight `k`
 and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`.
 -/
+
+open Finset
 
 lemma fun_ne_zero_cases (x : Fin 2 → ℤ) : x ≠ 0 ↔ x 0 ≠ 0 ∨ x 1 ≠ 0 := by
   rw [Function.ne_iff]; exact Fin.exists_fin_two
