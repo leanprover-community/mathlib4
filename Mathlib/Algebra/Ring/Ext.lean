@@ -11,18 +11,18 @@ import Mathlib.Algebra.Group.Ext
 # Extensionality lemmas for rings and similar structures
 
 In this file we prove extensionality lemmas for the ring-like structures defined in
-`Algebra/Ring/Defs`, ranging from `NonUnitalNonAssocSemiring` to `CommRing`. These extensionality
-lemmas take the form of asserting that two algebraic structures on a type are equal whenever the
-addition and multiplication defined by them are both the same.
+`Mathlib/Algebra/Ring/Defs.lean`, ranging from `NonUnitalNonAssocSemiring` to `CommRing`. These
+extensionality lemmas take the form of asserting that two algebraic structures on a type are equal
+whenever the addition and multiplication defined by them are both the same.
 
 ## Implementation details
 
-We follow `Algebra/Group/Ext` in using the term `(letI := i; HMul.hMul : R → R → R)` to refer to the
-multiplication specified by a typeclass instance `i` on a type `R` (and similarly for addition). We
-abbreviate these using some local notations.
+We follow `Mathlib/Algebra/Group/Ext.lean` in using the term `(letI := i; HMul.hMul : R → R → R)` to
+refer to the multiplication specified by a typeclass instance `i` on a type `R` (and similarly for
+addition). We abbreviate these using some local notations.
 
-Since `Algebra/Group/Ext` proved several injectivity lemmas, we do so as well — even if sometimes we
-don't need them to prove extensionality.
+Since `Mathlib/Algebra/Group/Ext.lean` proved several injectivity lemmas, we do so as well — even if
+sometimes we don't need them to prove extensionality.
 
 ## Tags
 semiring, ring, extensionality
@@ -112,7 +112,7 @@ namespace NonAssocSemiring
 
 /- The best place to prove that the `NatCast` is determined by the other operations is probably in
 an extensionality lemma for `AddMonoidWithOne`, in which case we may as well do the typeclasses
-defined in `Algebra/GroupWithZero/Defs` as well. -/
+defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
 @[ext] theorem ext ⦃inst₁ inst₂ : NonAssocSemiring R⦄
     (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
     (h_mul : ∀ x y, x *[R, inst₁] y = x *[R, inst₂] y) :
