@@ -74,7 +74,7 @@ noncomputable section
 
 open scoped Classical Topology BigOperators NNReal ENNReal MeasureTheory Pointwise
 
-open Set Filter TopologicalSpace ENNReal EMetric Finset
+open Set Filter TopologicalSpace ENNReal EMetric
 
 namespace MeasureTheory
 

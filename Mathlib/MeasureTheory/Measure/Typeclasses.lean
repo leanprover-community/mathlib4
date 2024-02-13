@@ -166,7 +166,7 @@ theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
 #align measure_theory.summable_measure_to_real MeasureTheory.summable_measure_toReal
 
 @[simp]
-lemma Finset.sum_toReal_measure_singleton {s : Finset α} [MeasurableSingletonClass α]
+lemma _root_.Finset.sum_toReal_measure_singleton {s : Finset α} [MeasurableSingletonClass α]
     [IsFiniteMeasure μ] :
     ∑ x in s, (μ {x}).toReal = (μ s).toReal := by
   rw [← ENNReal.toReal_sum (fun _ _ ↦ measure_ne_top _ _)]
