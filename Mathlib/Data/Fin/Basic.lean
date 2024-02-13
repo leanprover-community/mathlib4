@@ -1555,29 +1555,7 @@ theorem coe_sub_one {n} (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a 
   rw [add_le_add_iff_left, Nat.one_le_iff_ne_zero]
   rwa [Fin.ext_iff] at h
 #align fin.coe_sub_one Fin.coe_sub_one
-
-theorem coe_sub_iff_le {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = a - b ↔ b ≤ a := by
-  cases n; · exact @finZeroElim (fun _ => _) a
-  rw [le_iff_val_le_val, Fin.coe_sub, ← add_tsub_assoc_of_le b.is_lt.le a]
-  rcases le_or_lt (b : ℕ) a with h | h
-  · simp [← tsub_add_eq_add_tsub h, val_fin_le.mp h,
-      Nat.mod_eq_of_lt ((Nat.sub_le _ _).trans_lt a.is_lt)]
-  · rw [Nat.mod_eq_of_lt, tsub_eq_zero_of_le h.le, tsub_eq_zero_iff_le, ← not_iff_not]
-    · simpa [b.is_lt.trans_le le_add_self] using h
-    · rwa [tsub_lt_iff_left (b.is_lt.le.trans le_add_self), add_lt_add_iff_right]
 #align fin.coe_sub_iff_le Fin.coe_sub_iff_le
-
-theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b ↔ a < b := by
-  cases' n with n
-  · exact @finZeroElim (fun _ => _) a
-  rw [lt_iff_val_lt_val, Fin.coe_sub, add_comm]
-  rcases le_or_lt (b : ℕ) a with h | h
-  · refine iff_of_false ?_ (not_lt_of_le h)
-    simpa [add_tsub_assoc_of_le h] using
-      ((Nat.mod_lt _ (Nat.succ_pos _)).trans_le le_self_add).ne
-  · simp [← tsub_tsub_assoc b.is_lt.le h.le, ← tsub_add_eq_add_tsub b.is_lt.le,
-      Nat.mod_eq_of_lt (tsub_lt_self (Nat.succ_pos _) (tsub_pos_of_lt h)), val_fin_le.mp _]
-    exact h
 #align fin.coe_sub_iff_lt Fin.coe_sub_iff_lt
 
 @[simp]
