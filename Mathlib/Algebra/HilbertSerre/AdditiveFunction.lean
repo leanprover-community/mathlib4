@@ -346,7 +346,7 @@ lemma alternating_sum_apply_of_length6 :
   simp only [Int.ofNat_eq_coe, Int.Nat.cast_ofNat_Int, id_eq, Nat.cast_ofNat, Fin.zero_eta,
     Fin.mk_one, ComposableArrows.map', sub_add_sub_cancel]
 
-lemma alternating_sum_apply_eq_zero_of_zero_zero_of_length6
+lemma alternating_sum_apply_eq_zero_of_zero_zero_of_length6_aux
     (left_zero : IsZero S.left) (right_zero : IsZero S.right) :
     (μ_ 0) - (μ_ 1) + (μ_ 2) - (μ_ 3) + (μ_ 4) - (μ_ 5) = 0 := by
   rw [alternating_sum_apply_of_length6 (hS := hS)]
@@ -358,6 +358,26 @@ lemma alternating_sum_apply_eq_zero_of_zero_zero_of_length6
   · rw [μ.eq_of_iso, μ.map_zero]
     rw [show ComposableArrows.map' S 0 1 = 0 from IsZero.eq_zero_of_src left_zero _]
     exact kernelZeroIsoSource ≪≫ left_zero.isoZero
+
+lemma alternating_sum_apply_eq_zero_of_zero_zero_of_length6
+    (left_zero : IsZero S.left) (right_zero : IsZero S.right) :
+    - (μ_ 1) + (μ_ 2) - (μ_ 3) + (μ_ 4) = 0 := by
+  refine Eq.trans ?_ <|
+    μ.alternating_sum_apply_eq_zero_of_zero_zero_of_length6_aux (hS := hS)
+      left_zero right_zero
+  rw [show (μ_ 0) = 0 from (μ.eq_of_iso <| IsZero.iso left_zero <| isZero_zero _).trans μ.map_zero]
+  rw [show (μ_ 5) = 0 from (μ.eq_of_iso <| IsZero.iso right_zero <| isZero_zero _).trans μ.map_zero]
+  rw [zero_sub, sub_zero]
+
+
+lemma alternating_sum_apply_eq_zero_of_zero_zero_of_length6'
+    (left_zero : IsZero S.left) (right_zero : IsZero S.right) :
+    (μ_ 1) - (μ_ 2) + (μ_ 3) - (μ_ 4) = 0 := by
+  have eq0 : - _ = - 0 := congr_arg (-·) <|
+    μ.alternating_sum_apply_eq_zero_of_zero_zero_of_length6 (hS := hS) left_zero right_zero
+  rw [neg_zero] at eq0
+  rw [← eq0]
+  abel
 
 end length6
 
