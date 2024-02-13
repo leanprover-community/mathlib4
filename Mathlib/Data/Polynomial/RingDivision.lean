@@ -250,10 +250,6 @@ theorem not_isUnit_of_natDegree_pos (p : R[X])
     (hpl : 0 < p.natDegree) : ¬ IsUnit p :=
   not_isUnit_of_degree_pos _ (natDegree_pos_iff_degree_pos.mp hpl)
 
-lemma natDegree_mul_C_leadingCoeff_inv {K} [Field K] {p : K[X]} (hp0 : p ≠ 0) :
-    natDegree (p * C (leadingCoeff p)⁻¹) = natDegree p := by
-  simp [natDegree_mul hp0 (C_ne_zero.mpr (inv_ne_zero <| leadingCoeff_ne_zero.mpr hp0))]
-
 variable [CharZero R]
 
 -- Porting note: bit0/bit1 are deprecated

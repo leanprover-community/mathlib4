@@ -421,9 +421,9 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
 
 end NoZeroDivisors
 
-section Field
+section DivisionRing
 
-variable {K : Type*} [Field K]
+variable {K : Type*} [DivisionRing K]
 
 /-! Useful lemmas for the "monicization" of a nonzero polynomial `p`. -/
 @[simp]
@@ -459,6 +459,6 @@ theorem natDegree_mul_leadingCoeff_inv (p : K[X]) {q : K[X]} (h : q ≠ 0) :
     natDegree (p * C (leadingCoeff q)⁻¹) = natDegree p :=
   natDegree_eq_of_degree_eq (degree_mul_leadingCoeff_inv _ h)
 
-end Field
+end DivisionRing
 
 end Polynomial
