@@ -175,7 +175,7 @@ variable (μ)
 integral. -/
 theorem exists_measurable_le_lintegral_eq (f : α → ℝ≥0∞) :
     ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := by
-  cases' eq_or_ne (∫⁻ a, f a ∂μ) 0 with h₀ h₀
+  rcases eq_or_ne (∫⁻ a, f a ∂μ) 0 with h₀ | h₀
   · exact ⟨0, measurable_zero, zero_le f, h₀.trans lintegral_zero.symm⟩
   rcases exists_seq_strictMono_tendsto' h₀.bot_lt with ⟨L, _, hLf, hL_tendsto⟩
   have : ∀ n, ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ L n < ∫⁻ a, g a ∂μ := by
@@ -347,7 +347,6 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
   set c : ℝ≥0 → ℝ≥0∞ := (↑)
   set F := fun a : α => ⨆ n, f n a
-  have _ : Measurable F := measurable_iSup hf
   refine' le_antisymm _ (iSup_lintegral_le _)
   rw [lintegral_eq_nnreal]
   refine' iSup_le fun s => iSup_le fun hsf => _
@@ -355,9 +354,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
   rcases ENNReal.lt_iff_exists_coe.1 ha with ⟨r, rfl, _⟩
   have ha : r < 1 := ENNReal.coe_lt_coe.1 ha
   let rs := s.map fun a => r * a
-  have eq_rs : (const α r : α →ₛ ℝ≥0∞) * map c s = rs.map c := by
-    ext1 a
-    exact ENNReal.coe_mul.symm
+  have eq_rs : rs.map c = (const α r : α →ₛ ℝ≥0∞) * map c s := rfl
   have eq : ∀ p, rs.map c ⁻¹' {p} = ⋃ n, rs.map c ⁻¹' {p} ∩ { a | p ≤ f n a } := by
     intro p
     rw [← inter_iUnion]; nth_rw 1 [← inter_univ (map c rs ⁻¹' {p})]
@@ -382,7 +379,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     refine' inter_subset_inter (Subset.refl _) _
     intro x (hx : r ≤ f i x)
     exact le_trans hx (h_mono h x)
-  have h_meas : ∀ n, MeasurableSet { a : α | (⇑(map c rs)) a ≤ f n a } := fun n =>
+  have h_meas : ∀ n, MeasurableSet {a : α | map c rs a ≤ f n a} := fun n =>
     measurableSet_le (SimpleFunc.measurable _) (hf n)
   calc
     (r : ℝ≥0∞) * (s.map c).lintegral μ = ∑ r in (rs.map c).range, r * μ (rs.map c ⁻¹' {r}) := by
@@ -720,7 +717,8 @@ theorem lintegral_const_mul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r �
     rw [mul_comm]
     exact rinv
   have := lintegral_const_mul_le (μ := μ) r⁻¹ fun x => r * f x
-  simp [(mul_assoc _ _ _).symm, rinv'] at this
+  simp? [(mul_assoc _ _ _).symm, rinv'] at this says
+    simp only [(mul_assoc _ _ _).symm, rinv', one_mul] at this
   simpa [(mul_assoc _ _ _).symm, rinv] using mul_le_mul_left' this r
 #align measure_theory.lintegral_const_mul' MeasureTheory.lintegral_const_mul'
 
@@ -815,15 +813,15 @@ theorem set_lintegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : 
 #align measure_theory.set_lintegral_eq_const MeasureTheory.set_lintegral_eq_const
 
 theorem lintegral_indicator_one_le (s : Set α) : ∫⁻ a, s.indicator 1 a ∂μ ≤ μ s :=
-  (lintegral_indicator_const_le _ _).trans $ (one_mul _).le
+  (lintegral_indicator_const_le _ _).trans <| (one_mul _).le
 
 @[simp]
 theorem lintegral_indicator_one₀ (hs : NullMeasurableSet s μ) : ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
-  (lintegral_indicator_const₀ hs _).trans $ one_mul _
+  (lintegral_indicator_const₀ hs _).trans <| one_mul _
 
 @[simp]
 theorem lintegral_indicator_one (hs : MeasurableSet s) : ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
-  (lintegral_indicator_const hs _).trans $ one_mul _
+  (lintegral_indicator_const hs _).trans <| one_mul _
 #align measure_theory.lintegral_indicator_one MeasureTheory.lintegral_indicator_one
 
 /-- A version of **Markov's inequality** for two functions. It doesn't follow from the standard
@@ -883,8 +881,8 @@ theorem lintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} (hf :
 
 theorem setLintegral_eq_top_of_measure_eq_top_ne_zero (hf : AEMeasurable f (μ.restrict s))
     (hμf : μ ({x ∈ s | f x = ∞}) ≠ 0) : ∫⁻ x in s, f x ∂μ = ∞ :=
-  lintegral_eq_top_of_measure_eq_top_ne_zero hf $
-    mt (eq_bot_mono $ by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
+  lintegral_eq_top_of_measure_eq_top_ne_zero hf <|
+    mt (eq_bot_mono <| by rw [← setOf_inter_eq_sep]; exact Measure.le_restrict_apply _ _) hμf
 #align measure_theory.set_lintegral_eq_top_of_measure_eq_top_ne_zero MeasureTheory.setLintegral_eq_top_of_measure_eq_top_ne_zero
 
 theorem measure_eq_top_of_lintegral_ne_top (hf : AEMeasurable f μ) (hμf : ∫⁻ x, f x ∂μ ≠ ∞) :
@@ -894,7 +892,7 @@ theorem measure_eq_top_of_lintegral_ne_top (hf : AEMeasurable f μ) (hμf : ∫�
 
 theorem measure_eq_top_of_setLintegral_ne_top (hf : AEMeasurable f (μ.restrict s))
     (hμf : ∫⁻ x in s, f x ∂μ ≠ ∞) : μ ({x ∈ s | f x = ∞}) = 0 :=
-  of_not_not fun h => hμf $ setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
+  of_not_not fun h => hμf <| setLintegral_eq_top_of_measure_eq_top_ne_zero hf h
 #align measure_theory.measure_eq_top_of_set_lintegral_ne_top MeasureTheory.measure_eq_top_of_setLintegral_ne_top
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
@@ -1053,6 +1051,44 @@ theorem lintegral_iInf {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measurab
     (h_fin : ∫⁻ a, f 0 a ∂μ ≠ ∞) : ∫⁻ a, ⨅ n, f n a ∂μ = ⨅ n, ∫⁻ a, f n a ∂μ :=
   lintegral_iInf_ae h_meas (fun n => ae_of_all _ <| h_anti n.le_succ) h_fin
 #align measure_theory.lintegral_infi MeasureTheory.lintegral_iInf
+
+/-- Monotone convergence for an infimum over a directed family and indexed by a countable type -/
+theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Countable β]
+    {f : β → α → ℝ≥0∞} {μ : Measure α} (hμ : μ ≠ 0) (hf : ∀ b, Measurable (f b))
+    (hf_int : ∀ b, ∫⁻ a, f b a ∂μ ≠ ∞) (h_directed : Directed (· ≥ ·) f) :
+    ∫⁻ a, ⨅ b, f b a ∂μ = ⨅ b, ∫⁻ a, f b a ∂μ := by
+  cases nonempty_encodable β
+  cases isEmpty_or_nonempty β
+  · -- Porting note: the next `simp only` doesn't do anything, so added a workaround below.
+    -- simp only [WithTop.iInf_empty, lintegral_const]
+    conv =>
+      lhs
+      congr
+      · skip
+      · ext x
+        rw [WithTop.iInf_empty]
+    rw [WithTop.iInf_empty, lintegral_const]
+    rw [ENNReal.top_mul', if_neg]
+    simp only [Measure.measure_univ_eq_zero, hμ, not_false_iff]
+  inhabit β
+  have : ∀ a, ⨅ b, f b a = ⨅ n, f (h_directed.sequence f n) a := by
+    refine' fun a =>
+      le_antisymm (le_iInf fun n => iInf_le _ _)
+        (le_iInf fun b => iInf_le_of_le (Encodable.encode b + 1) _)
+    exact h_directed.sequence_le b a
+  -- Porting note: used `∘` below to deal with its reduced reducibility
+  calc
+    ∫⁻ a, ⨅ b, f b a ∂μ
+    _ = ∫⁻ a, ⨅ n, (f ∘ h_directed.sequence f) n a ∂μ := by simp only [this, Function.comp_apply]
+    _ = ⨅ n, ∫⁻ a, (f ∘ h_directed.sequence f) n a ∂μ := by
+      rw [lintegral_iInf ?_ h_directed.sequence_anti]
+      · exact hf_int _
+      · exact (fun n => hf _)
+    _ = ⨅ b, ∫⁻ a, f b a ∂μ := by
+      refine' le_antisymm (le_iInf fun b => _) (le_iInf fun n => _)
+      · exact iInf_le_of_le (Encodable.encode b + 1) (lintegral_mono <| h_directed.sequence_le b)
+      · exact iInf_le (fun b => ∫⁻ a, f b a ∂μ) _
+#align lintegral_infi_directed_of_measurable MeasureTheory.lintegral_iInf_directed_of_measurable
 
 /-- Known as Fatou's lemma, version with `AEMeasurable` functions -/
 theorem lintegral_liminf_le' {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, AEMeasurable (f n) μ) :
@@ -1754,7 +1790,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       simp only [hc, ENNReal.coe_zero, zero_mul, not_lt_zero] at hL
     have : L / c < μ s := by
       rwa [ENNReal.div_lt_iff, mul_comm]
-      · simp only [c_ne_zero, Ne.def, coe_eq_zero, not_false_iff, true_or_iff]
+      · simp only [c_ne_zero, Ne.def, ENNReal.coe_eq_zero, not_false_iff, true_or_iff]
       · simp only [Ne.def, coe_ne_top, not_false_iff, true_or_iff]
     obtain ⟨t, ht, ts, mlt, t_top⟩ :
       ∃ t : Set α, MeasurableSet t ∧ t ⊆ s ∧ L / ↑c < μ t ∧ μ t < ∞ :=
@@ -1769,7 +1805,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
         piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
         lintegral_const, Measure.restrict_apply', univ_inter]
       rwa [mul_comm, ← ENNReal.div_lt_iff]
-      · simp only [c_ne_zero, Ne.def, coe_eq_zero, not_false_iff, true_or_iff]
+      · simp only [c_ne_zero, Ne.def, ENNReal.coe_eq_zero, not_false_iff, true_or_iff]
       · simp only [Ne.def, coe_ne_top, not_false_iff, true_or_iff]
   · replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ
     · rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]

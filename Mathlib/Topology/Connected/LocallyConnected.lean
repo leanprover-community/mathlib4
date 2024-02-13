@@ -83,7 +83,7 @@ theorem isOpen_connectedComponent [LocallyConnectedSpace α] {x : α} :
 
 theorem isClopen_connectedComponent [LocallyConnectedSpace α] {x : α} :
     IsClopen (connectedComponent x) :=
-  ⟨isOpen_connectedComponent, isClosed_connectedComponent⟩
+  ⟨isClosed_connectedComponent, isOpen_connectedComponent⟩
 #align is_clopen_connected_component isClopen_connectedComponent
 
 theorem locallyConnectedSpace_iff_connectedComponentIn_open :
@@ -119,7 +119,7 @@ theorem locallyConnectedSpace_iff_connected_basis :
     LocallyConnectedSpace α ↔
       ∀ x, (𝓝 x).HasBasis (fun s : Set α => s ∈ 𝓝 x ∧ IsPreconnected s) id := by
   rw [locallyConnectedSpace_iff_connected_subsets]
-  exact forall_congr' <| fun x => Filter.hasBasis_self.symm
+  exact forall_congr' fun x => Filter.hasBasis_self.symm
 #align locally_connected_space_iff_connected_basis locallyConnectedSpace_iff_connected_basis
 
 theorem locallyConnectedSpace_of_connected_bases {ι : Type*} (b : α → ι → Set α) (p : α → ι → Prop)

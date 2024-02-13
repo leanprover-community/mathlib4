@@ -28,28 +28,17 @@ theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedd
 #align fin.map_subtype_embedding_univ Fin.map_valEmbedding_univ
 
 @[simp]
-theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmbedding _).toEmbedding := by
-  ext i
-  simp only [mem_Ioi, mem_map, mem_univ, Function.Embedding.coeFn_mk, exists_true_left]
-  constructor
-  · refine' cases _ _ i
-    · rintro ⟨⟨⟩⟩
-    · intro j _
-      use j
-      simp only [val_succEmbedding, and_self, RelEmbedding.coe_toEmbedding]
-  · rintro ⟨i, _, rfl⟩
-    exact succ_pos _
+theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmb _).toEmbedding :=
+  coe_injective <| by ext; simp [pos_iff_ne_zero]
 #align fin.Ioi_zero_eq_map Fin.Ioi_zero_eq_map
 
 @[simp]
-theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding := by
-  apply Finset.map_injective Fin.valEmbedding
-  rw [Finset.map_map, Fin.map_valEmbedding_Iio, Fin.val_last]
-  exact map_valEmbedding_univ.symm
+theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb.toEmbedding :=
+  coe_injective <| by ext; simp [lt_def]
 #align fin.Iio_last_eq_map Fin.Iio_last_eq_map
 
 @[simp]
-theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmbedding _).toEmbedding := by
+theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _).toEmbedding := by
   ext i
   simp only [mem_filter, mem_Ioi, mem_map, mem_univ, true_and_iff, Function.Embedding.coeFn_mk,
     exists_true_left]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
 import Archive.MiuLanguage.DecisionNec
+import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.Linarith
 
 #align_import miu_language.decision_suf from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
@@ -157,7 +158,7 @@ private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c =
   refine' ⟨g + 2, _, _⟩
   · rw [mul_succ, ← add_assoc, pow_add]
     change c + 3 * k + 3 ≤ 2 ^ g * (1 + 3); rw [mul_add (2 ^ g) 1 3, mul_one]
-    linarith [hkg, one_le_two_pow g]
+    linarith [hkg, @Nat.one_le_two_pow g]
   · rw [pow_add, ← mul_one c]
     exact ModEq.mul hgmod rfl
 

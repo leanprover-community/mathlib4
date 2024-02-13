@@ -7,6 +7,7 @@ import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.Algebra.GeomSum
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import wiedijk_100_theorems.perfect_numbers from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -36,7 +37,7 @@ theorem odd_mersenne_succ (k : ℕ) : ¬2 ∣ mersenne (k + 1) := by
 
 namespace Nat
 
-open Nat.ArithmeticFunction Finset
+open ArithmeticFunction Finset
 
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
   simp_rw [sigma_one_apply, mersenne, show 2 = 1 + 1 from rfl, ← geom_sum_mul_add 1 (k + 1)]
@@ -115,7 +116,7 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
       | .succ k =>
         apply ne_of_lt _ jcon2
         rw [mersenne, ← Nat.pred_eq_sub_one, Nat.lt_pred_iff, ← pow_one (Nat.succ 1)]
-        apply pow_lt_pow (Nat.lt_succ_self 1) (Nat.succ_lt_succ (Nat.succ_pos k))
+        apply pow_lt_pow_right (Nat.lt_succ_self 1) (Nat.succ_lt_succ (Nat.succ_pos k))
     contrapose! hm
     simp [hm]
 #align theorems_100.nat.eq_two_pow_mul_prime_mersenne_of_even_perfect Theorems100.Nat.eq_two_pow_mul_prime_mersenne_of_even_perfect

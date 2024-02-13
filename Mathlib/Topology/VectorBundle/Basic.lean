@@ -54,8 +54,6 @@ notes" section of `Mathlib.Topology.FiberBundle.Basic`.
 Vector bundle
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Bundle Set Classical
@@ -680,7 +678,7 @@ def localTriv (i : ι) : Trivialization F (π F Z.Fiber) :=
 
 -- porting note: moved from below to fix the next instance
 @[simp, mfld_simps]
-theorem localTriv_apply (p : Z.TotalSpace) :
+theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 #align vector_bundle_core.local_triv_apply VectorBundleCore.localTriv_apply
@@ -848,8 +846,8 @@ open VectorBundle
 /-- This structure permits to define a vector bundle when trivializations are given as local
 equivalences but there is not yet a topology on the total space or the fibers.
 The total space is hence given a topology in such a way that there is a fiber bundle structure for
-which the local equivalences are also local homeomorphisms and hence vector bundle trivializations.
-The topology on the fibers is induced from the one on the total space.
+which the partial equivalences are also partial homeomorphisms and hence vector bundle
+trivializations. The topology on the fibers is induced from the one on the total space.
 
 The field `exists_coordChange` is stated as an existential statement (instead of 3 separate
 fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).

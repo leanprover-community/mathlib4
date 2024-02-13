@@ -182,7 +182,7 @@ theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay 
       (eventually_of_forall fun x => abs_nonneg _) (hfg.mono fun x hx => _)
   calc
     |k x ^ z * g x| = |k x ^ z| * |g x| := abs_mul (k x ^ z) (g x)
-    _ ≤ |k x ^ z| * |f x| := by gcongr; exact hx
+    _ ≤ |k x ^ z| * |f x| := by gcongr _ * ?_; exact hx
     _ = |k x ^ z * f x| := (abs_mul (k x ^ z) (f x)).symm
 #align asymptotics.superpolynomial_decay.trans_eventually_abs_le Asymptotics.SuperpolynomialDecay.trans_eventually_abs_le
 

@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 #align_import algebra.category.Ring.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -144,12 +143,12 @@ def ColimitType : Type v :=
 instance ColimitType.AddGroup : AddGroup (ColimitType F) where
   zero := Quotient.mk _ zero
   neg := Quotient.map neg Relation.neg_1
-  add := Quotient.map₂ add <| fun x x' rx y y' ry =>
+  add := Quotient.map₂ add fun x x' rx y y' ry =>
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
-  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
-  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
-  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+  zero_add := Quotient.ind fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
 
 -- Porting note : failed to derive `Inhabited` instance

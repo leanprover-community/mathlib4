@@ -2,6 +2,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Interval
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
@@ -192,7 +193,7 @@ by linarith (config := {exfalso := false})
 example (x y : Rat)
     (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) : False := by
   fail_if_success
-    linarith (config := {split_hypotheses := false})
+    linarith (config := {splitHypotheses := false})
   linarith
 
 example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) (l : (-7 : ℤ) < 5) : 3 < 7 := by
@@ -586,3 +587,13 @@ error: Argument passed to nlinarith has metavariables:
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
   nlinarith [p ?a]
+
+open BigOperators
+
+example (h : False): True := by
+  have : ∑ k in Finset.empty, k^2 = 0 := by contradiction
+  have : ∀ k : Nat, 0 ≤ k := by
+    intro h
+    -- this should not panic:
+    nlinarith
+  trivial

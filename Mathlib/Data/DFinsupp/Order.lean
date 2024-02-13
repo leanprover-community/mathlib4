@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Data.DFinsupp.Basic
 
 #align_import data.dfinsupp.order from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
@@ -46,13 +47,13 @@ lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 
 /-- The order on `DFinsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
-  toFun := FunLike.coe
-  inj' := FunLike.coe_injective
+  toFun := DFunLike.coe
+  inj' := DFunLike.coe_injective
   map_rel_iff' := by rfl
 #align dfinsupp.order_embedding_to_fun DFinsupp.orderEmbeddingToFun
 
 @[simp, norm_cast]
-lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = FunLike.coe := rfl
+lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.coe := rfl
 
 -- Porting note: we added implicit arguments here in #3414.
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
@@ -123,11 +124,11 @@ instance lattice : Lattice (Π₀ i, α i) :=
 variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)]
 
 theorem support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
-  coe_injective $ compl_injective $ by ext; simp [inf_eq_and_sup_eq_iff]
+  coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
 #align dfinsupp.support_inf_union_support_sup DFinsupp.support_inf_union_support_sup
 
 theorem support_sup_union_support_inf : (f ⊔ g).support ∪ (f ⊓ g).support = f.support ∪ g.support :=
-  (union_comm _ _).trans $ support_inf_union_support_sup _ _
+  (union_comm _ _).trans <| support_inf_union_support_sup _ _
 #align dfinsupp.support_sup_union_support_inf DFinsupp.support_sup_union_support_inf
 
 end Lattice
@@ -150,6 +151,42 @@ instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) 
     ContravariantClass (Π₀ i, α i) (Π₀ i, α i) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
 
+section Module
+variable {α : Type*} {β : ι → Type*} [Semiring α] [Preorder α] [∀ i, AddCommMonoid (β i)]
+  [∀ i, Preorder (β i)] [∀ i, Module α (β i)]
+
+instance instPosSMulMono [∀ i, PosSMulMono α (β i)] : PosSMulMono α (Π₀ i, β i) :=
+  PosSMulMono.lift _ coe_le_coe coe_smul
+
+instance instSMulPosMono [∀ i, SMulPosMono α (β i)] : SMulPosMono α (Π₀ i, β i) :=
+  SMulPosMono.lift _ coe_le_coe coe_smul coe_zero
+
+instance instPosSMulReflectLE [∀ i, PosSMulReflectLE α (β i)] : PosSMulReflectLE α (Π₀ i, β i) :=
+  PosSMulReflectLE.lift _ coe_le_coe coe_smul
+
+instance instSMulPosReflectLE [∀ i, SMulPosReflectLE α (β i)] : SMulPosReflectLE α (Π₀ i, β i) :=
+  SMulPosReflectLE.lift _ coe_le_coe coe_smul coe_zero
+
+end Module
+
+section Module
+variable {α : Type*} {β : ι → Type*} [Semiring α] [PartialOrder α] [∀ i, AddCommMonoid (β i)]
+  [∀ i, PartialOrder (β i)] [∀ i, Module α (β i)]
+
+instance instPosSMulStrictMono [∀ i, PosSMulStrictMono α (β i)] : PosSMulStrictMono α (Π₀ i, β i) :=
+  PosSMulStrictMono.lift _ coe_le_coe coe_smul
+
+instance instSMulPosStrictMono [∀ i, SMulPosStrictMono α (β i)] : SMulPosStrictMono α (Π₀ i, β i) :=
+  SMulPosStrictMono.lift _ coe_le_coe coe_smul coe_zero
+
+-- Note: There is no interesting instance for `PosSMulReflectLT α (Π₀ i, β i)` that's not already
+-- implied by the other instances
+
+instance instSMulPosReflectLT [∀ i, SMulPosReflectLT α (β i)] : SMulPosReflectLT α (Π₀ i, β i) :=
+  SMulPosReflectLT.lift _ coe_le_coe coe_smul coe_zero
+
+end Module
+
 section CanonicallyOrderedAddCommMonoid
 
 -- porting note: Split into 2 lines to satisfy the unusedVariables linter.
@@ -168,7 +205,7 @@ protected theorem bot_eq_zero : (⊥ : Π₀ i, α i) = 0 :=
 
 @[simp]
 theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
-  simp [FunLike.ext_iff, forall_and]
+  simp [DFunLike.ext_iff, forall_and]
 #align dfinsupp.add_eq_zero_iff DFinsupp.add_eq_zero_iff
 
 section LE

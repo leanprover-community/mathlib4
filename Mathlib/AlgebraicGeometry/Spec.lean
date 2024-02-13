@@ -117,7 +117,7 @@ theorem Spec.sheafedSpaceMap_id {R : CommRingCat} :
   AlgebraicGeometry.PresheafedSpace.Hom.ext _ _ (Spec.topMap_id R) <| by
     ext U
     dsimp
-    erw [NatTrans.comp_app, sheafedSpaceMap_c_app, PresheafedSpace.id_c_app, comap_id]; swap
+    erw [PresheafedSpace.id_c_app, comap_id]; swap
     · rw [Spec.topMap_id, TopologicalSpace.Opens.map_id_obj_unop]
     simp [eqToHom_map]
 set_option linter.uppercaseLean3 false in
@@ -241,9 +241,10 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat} (f : R ⟶ S) (p : PrimeS
   (stalkIso R (PrimeSpectrum.comap f p)).eq_inv_comp.mp <|
     (stalkIso S p).comp_inv_eq.mpr <|
       Localization.localRingHom_unique _ _ _ _ fun x => by
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        rw [stalkIso_hom, stalkIso_inv]; erw [comp_apply, comp_apply]; rw [localizationToStalk_of]
-        erw [stalkMap_toStalk_apply f p x, stalkToFiberRingHom_toStalk]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644 and #8386
+        rw [stalkIso_hom, stalkIso_inv]
+        erw [comp_apply, comp_apply, localizationToStalk_of, stalkMap_toStalk_apply f p x,
+            stalkToFiberRingHom_toStalk]
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.local_ring_hom_comp_stalk_iso AlgebraicGeometry.localRingHom_comp_stalkIso
 

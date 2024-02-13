@@ -202,7 +202,7 @@ theorem forall₂_iff_zip {l₁ l₂} :
       · simp at h₁
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
-          (IH h₁ <| fun h => h₂ <| by
+          (IH h₁ fun h => h₂ <| by
             simp only [zip, zipWith, find?, mem_cons, Prod.mk.injEq]; right
             simpa [zip] using h)⟩
 #align list.forall₂_iff_zip List.forall₂_iff_zip

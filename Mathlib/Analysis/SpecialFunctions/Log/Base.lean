@@ -182,7 +182,7 @@ private theorem b_ne_one' : b ≠ 1 := by linarith
 
 @[simp]
 theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x ≤ y := by
-  rw [logb, logb, div_le_div_right (log_pos hb), log_le_log h h₁]
+  rw [logb, logb, div_le_div_right (log_pos hb), log_le_log_iff h h₁]
 #align real.logb_le_logb Real.logb_le_logb
 
 @[gcongr]
@@ -295,7 +295,7 @@ private theorem b_ne_one : b ≠ 1 := by linarith
 
 @[simp]
 theorem logb_le_logb_of_base_lt_one (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ y ≤ x := by
-  rw [logb, logb, div_le_div_right_of_neg (log_neg b_pos b_lt_one), log_le_log h₁ h]
+  rw [logb, logb, div_le_div_right_of_neg (log_neg b_pos b_lt_one), log_le_log_iff h₁ h]
 #align real.logb_le_logb_of_base_lt_one Real.logb_le_logb_of_base_lt_one
 
 theorem logb_lt_logb_of_base_lt_one (hx : 0 < x) (hxy : x < y) : logb b y < logb b x := by

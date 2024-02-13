@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Data.Finsupp.Order
 
 #align_import algebra.monoid_algebra.division from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 
@@ -71,7 +70,7 @@ theorem support_divOf (g : G) (x : k[G]) :
 
 @[simp]
 theorem zero_divOf (g : G) : (0 : k[G]) /ᵒᶠ g = 0 :=
-  map_zero _
+  map_zero (Finsupp.comapDomain.addMonoidHom _)
 #align add_monoid_algebra.zero_div_of AddMonoidAlgebra.zero_divOf
 
 @[simp]
@@ -81,7 +80,7 @@ theorem divOf_zero (x : k[G]) : x /ᵒᶠ 0 = x := by
 #align add_monoid_algebra.div_of_zero AddMonoidAlgebra.divOf_zero
 
 theorem add_divOf (x y : k[G]) (g : G) : (x + y) /ᵒᶠ g = x /ᵒᶠ g + y /ᵒᶠ g :=
-  map_add _ _ _
+  map_add (Finsupp.comapDomain.addMonoidHom _) _ _
 #align add_monoid_algebra.add_div_of AddMonoidAlgebra.add_divOf
 
 theorem divOf_add (x : k[G]) (a b : G) : x /ᵒᶠ (a + b) = x /ᵒᶠ a /ᵒᶠ b := by

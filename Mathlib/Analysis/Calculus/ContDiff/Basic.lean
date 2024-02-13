@@ -907,6 +907,40 @@ theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} {n : ℕ�
 
 end SpecificBilinearMaps
 
+section ClmApplyConst
+
+/-- Application of a `ContinuousLinearMap` to a constant commutes with `iteratedFDerivWithin`. -/
+theorem iteratedFDerivWithin_clm_apply_const_apply
+    {s : Set E} (hs : UniqueDiffOn 𝕜 s) {n : ℕ∞} {c : E → F →L[𝕜] G} (hc : ContDiffOn 𝕜 n c s)
+    {i : ℕ} (hi : i ≤ n) {x : E} (hx : x ∈ s) {u : F} {m : Fin i → E} :
+    (iteratedFDerivWithin 𝕜 i (fun y ↦ (c y) u) s x) m = (iteratedFDerivWithin 𝕜 i c s x) m u := by
+  induction i generalizing x with
+  | zero => simp
+  | succ i ih =>
+    replace hi : i < n := lt_of_lt_of_le (by norm_cast; simp) hi
+    have h_deriv_apply : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i (fun y ↦ (c y) u) s) s :=
+      (hc.clm_apply contDiffOn_const).differentiableOn_iteratedFDerivWithin hi hs
+    have h_deriv : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i c s) s :=
+      hc.differentiableOn_iteratedFDerivWithin hi hs
+    simp only [iteratedFDerivWithin_succ_apply_left]
+    rw [← fderivWithin_continuousMultilinear_apply_const_apply (hs x hx) (h_deriv_apply x hx)]
+    rw [fderivWithin_congr' (fun x hx ↦ ih hi.le hx) hx]
+    rw [fderivWithin_clm_apply (hs x hx) (h_deriv.continuousMultilinear_apply_const _ x hx)
+      (differentiableWithinAt_const u)]
+    rw [fderivWithin_const_apply _ (hs x hx)]
+    simp only [ContinuousLinearMap.flip_apply, ContinuousLinearMap.comp_zero, zero_add]
+    rw [fderivWithin_continuousMultilinear_apply_const_apply (hs x hx) (h_deriv x hx)]
+
+/-- Application of a `ContinuousLinearMap` to a constant commutes with `iteratedFDeriv`. -/
+theorem iteratedFDeriv_clm_apply_const_apply
+    {n : ℕ∞} {c : E → F →L[𝕜] G} (hc : ContDiff 𝕜 n c)
+    {i : ℕ} (hi : i ≤ n) {x : E} {u : F} {m : Fin i → E} :
+    (iteratedFDeriv 𝕜 i (fun y ↦ (c y) u) x) m = (iteratedFDeriv 𝕜 i c x) m u := by
+  simp only [← iteratedFDerivWithin_univ]
+  exact iteratedFDerivWithin_clm_apply_const_apply uniqueDiffOn_univ hc.contDiffOn hi (mem_univ _)
+
+end ClmApplyConst
+
 /-- The natural equivalence `(E × F) × G ≃ E × (F × G)` is smooth.
 
 Warning: if you think you need this lemma, it is likely that you can simplify your proof by
@@ -1516,7 +1550,7 @@ end MulProd
 
 /-! ### Scalar multiplication -/
 
-section Smul
+section SMul
 
 -- The scalar multiplication is smooth.
 theorem contDiff_smul : ContDiff 𝕜 n fun p : 𝕜 × F => p.1 • p.2 :=
@@ -1548,7 +1582,7 @@ theorem ContDiffOn.smul {s : Set E} {f : E → 𝕜} {g : E → F} (hf : ContDif
   (hf x hx).smul (hg x hx)
 #align cont_diff_on.smul ContDiffOn.smul
 
-end Smul
+end SMul
 
 /-! ### Constant scalar multiplication
 
@@ -1559,7 +1593,7 @@ Porting note: TODO: generalize results in this section.
   lemmas.
 -/
 
-section ConstSmul
+section ConstSMul
 
 variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F]
 
@@ -1608,7 +1642,7 @@ theorem iteratedFDeriv_const_smul_apply {x : E} (hf : ContDiff 𝕜 i f) :
   refine' iteratedFDerivWithin_const_smul_apply hf uniqueDiffOn_univ (Set.mem_univ _)
 #align iterated_fderiv_const_smul_apply iteratedFDeriv_const_smul_apply
 
-end ConstSmul
+end ConstSMul
 
 /-! ### Cartesian product of two functions -/
 
@@ -1899,7 +1933,7 @@ namespace PartialHomeomorph
 
 variable (𝕜)
 
-/-- Restrict a local homeomorphism to the subsets of the source and target
+/-- Restrict a partial homeomorphism to the subsets of the source and target
 that consist of points `x ∈ f.source`, `y = f x ∈ f.target`
 such that `f` is `C^n` at `x` and `f.symm` is `C^n` at `y`.
 
@@ -1910,7 +1944,7 @@ def restrContDiff (f : PartialHomeomorph E F) (n : ℕ) : PartialHomeomorph E F 
   haveI H : f.IsImage {x | ContDiffAt 𝕜 n f x ∧ ContDiffAt 𝕜 n f.symm (f x)}
       {y | ContDiffAt 𝕜 n f.symm y ∧ ContDiffAt 𝕜 n f (f.symm y)} := fun x hx ↦ by
     simp [hx, and_comm]
-  H.restr <| isOpen_iff_mem_nhds.2 <| fun x ⟨hxs, hxf, hxf'⟩ ↦
+  H.restr <| isOpen_iff_mem_nhds.2 fun x ⟨hxs, hxf, hxf'⟩ ↦
     inter_mem (f.open_source.mem_nhds hxs) <| hxf.eventually.and <|
     f.continuousAt hxs hxf'.eventually
 

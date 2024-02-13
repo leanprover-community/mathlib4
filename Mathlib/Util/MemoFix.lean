@@ -25,7 +25,7 @@ private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Objec
     let b := f fix a
     cache.modify (·.insert a b)
     pure b
-  pure $ fix a
+  pure <| fix a
 
 private unsafe def memoFixImpl {α : Type u} {β : Type v} [Nonempty β] :
     (f : (α → β) → (α → β)) → (a : α) → β :=
