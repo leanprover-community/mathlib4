@@ -494,66 +494,67 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     exact le_top
   let χ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly₁ K E ⟨x, hx⟩ u₁
   let ψ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly₁ K Q ⟨x, hx⟩ u₁
-  suffices ∀ u, χ u = X ^ r by sorry
-    -- specialize this (⟨y, hy⟩ - ⟨x, hx⟩)
-    -- apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
-    -- simp only [lieCharpoly₁_map_eval, coe_bracket_of_module, one_smul, sub_add_cancel,
-    --   Polynomial.map_pow, map_X, charpoly_eq_X_pow_iff, Subtype.ext_iff,
-    --   LieSubmodule.coe_toEndomorphism_pow, toEndomorphism_mk] at this
-    -- intro z hz
-    -- obtain ⟨n, hn⟩ := this ⟨z, hz⟩
-    -- rw [mem_engel_iff]
-    -- use n
-    -- simpa only [ZeroMemClass.coe_zero] using hn
-  suffices ∀ u, ∀ i < r, (χ u).coeff i = 0 by sorry
-    -- intro u
-    -- specialize this u
-    -- ext i : 1
-    -- obtain hi|rfl|hi := lt_trichotomy i r
-    -- · rw [this i hi, coeff_X_pow, if_neg hi.ne]
-    -- · simp only [coeff_X_pow, ← lieCharpoly₁_natDegree K E ⟨x, hx⟩ u, if_true]
-    --   have := (lieCharpoly₁_monic K E ⟨x, hx⟩ u).leadingCoeff
-    --   rwa [leadingCoeff] at this
-    -- · rw [coeff_eq_zero_of_natDegree_lt, coeff_X_pow, if_neg hi.ne']
-    --   rwa [lieCharpoly₁_natDegree K E ⟨x, hx⟩ u]
+  suffices ∀ u, χ u = X ^ r by -- sorry
+    specialize this (⟨y, hy⟩ - ⟨x, hx⟩)
+    apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
+    simp only [lieCharpoly₁_map_eval, coe_bracket_of_module, one_smul, sub_add_cancel,
+      Polynomial.map_pow, map_X, LinearMap.charpoly_eq_X_pow_iff, Subtype.ext_iff,
+      LieSubmodule.coe_toEndomorphism_pow, toEndomorphism_mk] at this
+    intro z hz
+    obtain ⟨n, hn⟩ := this ⟨z, hz⟩
+    rw [mem_engel_iff]
+    use n
+    simpa only [ZeroMemClass.coe_zero] using hn
+  suffices ∀ u, ∀ i < r, (χ u).coeff i = 0 by -- sorry
+    intro u
+    specialize this u
+    ext i : 1
+    obtain hi|rfl|hi := lt_trichotomy i r
+    · rw [this i hi, coeff_X_pow, if_neg hi.ne]
+    · simp only [coeff_X_pow, ← lieCharpoly₁_natDegree K E ⟨x, hx⟩ u, if_true]
+      have := (lieCharpoly₁_monic K E ⟨x, hx⟩ u).leadingCoeff
+      rwa [leadingCoeff] at this
+    · rw [coeff_eq_zero_of_natDegree_lt, coeff_X_pow, if_neg hi.ne']
+      rwa [lieCharpoly₁_natDegree K E ⟨x, hx⟩ u]
   intro u i hi
   obtain rfl|hi0 := eq_or_ne i 0
-  · sorry
-    -- apply eq_zero_of_forall_eval_zero_of_natDegree_lt_card _ _ ?deg
-    -- case deg =>
-    --   rw [lieCharpoly₁_coeff_natDegree _ _ _ _ 0 r (zero_add r)]
-    --   apply lt_of_lt_of_le _ hLK
-    --   rwa [Nat.cast_lt]
-    -- intro α
-    -- -- extract the following idiom, it is also used in the proof of `hψ` below, and more
-    -- rw [← coe_evalRingHom, ← coeff_map, lieCharpoly₁_map_eval,
-    --   ← constantCoeff_apply, charpoly_constantCoeff_eq_zero_iff]
-    -- let z := α • u + ⟨x, hx⟩
-    -- obtain hz₀|hz₀ := eq_or_ne z 0
-    -- · refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
-    --   · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
-    --   · dsimp only at hz₀
-    --     simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
-    -- refine ⟨⟨z, hUx z.2⟩, ?_, ?_⟩
-    -- · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
-    -- · show ⁅z, _⁆ = (0 : E)
-    --   ext
-    --   exact lie_self z.1
-  have hψ : ∀ u, constantCoeff (ψ u) ≠ 0 := by sorry
-    -- intro u H
-    -- obtain ⟨z, hz0, hxz⟩ : ∃ z : L ⧸ E, z ≠ 0 ∧ ⁅(⟨x, hx⟩ : U), z⁆ = 0 := by
-    --   apply_fun (evalRingHom 0) at H
-    --   rw [constantCoeff_apply, ← coeff_map, lieCharpoly₁_map_eval,
-    --     ← constantCoeff_apply, map_zero, charpoly_constantCoeff_eq_zero_iff] at H
-    --   simpa only [coe_bracket_of_module, ne_eq, zero_smul, zero_add,
-    --     LieModule.toEndomorphism_apply_apply] using H
-    -- apply hz0
-    -- obtain ⟨z, rfl⟩ := LieSubmodule.Quotient.surjective_mk' E z
-    -- have : ⁅(⟨x, hx⟩ : U), z⁆ ∈ E := by rwa [← LieSubmodule.Quotient.mk_eq_zero']
-    -- simp [mem_engel_iff] at this ⊢
-    -- obtain ⟨n, hn⟩ := this
-    -- use n+1
-    -- rwa [pow_succ']
+  · -- sorry
+    apply eq_zero_of_forall_eval_zero_of_natDegree_lt_card _ _ ?deg
+    case deg =>
+      apply lt_of_lt_of_le _ hLK
+      rw [Nat.cast_lt]
+      apply lt_of_le_of_lt _ hr
+      apply lieCharpoly₁_coeff_natDegree _ _ _ _ 0 r (zero_add r)
+    intro α
+    -- extract the following idiom, it is also used in the proof of `hψ` below, and more
+    rw [← coe_evalRingHom, ← coeff_map, lieCharpoly₁_map_eval,
+      ← constantCoeff_apply, LinearMap.charpoly_constantCoeff_eq_zero_iff]
+    let z := α • u + ⟨x, hx⟩
+    obtain hz₀|hz₀ := eq_or_ne z 0
+    · refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
+      · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
+      · dsimp only at hz₀
+        simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
+    refine ⟨⟨z, hUx z.2⟩, ?_, ?_⟩
+    · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
+    · show ⁅z, _⁆ = (0 : E)
+      ext
+      exact lie_self z.1
+  have hψ : ∀ u, constantCoeff (ψ u) ≠ 0 := by -- sorry
+    intro u H
+    obtain ⟨z, hz0, hxz⟩ : ∃ z : L ⧸ E, z ≠ 0 ∧ ⁅(⟨x, hx⟩ : U), z⁆ = 0 := by
+      apply_fun (evalRingHom 0) at H
+      rw [constantCoeff_apply, ← coeff_map, lieCharpoly₁_map_eval,
+        ← constantCoeff_apply, map_zero, LinearMap.charpoly_constantCoeff_eq_zero_iff] at H
+      simpa only [coe_bracket_of_module, ne_eq, zero_smul, zero_add,
+        LieModule.toEndomorphism_apply_apply] using H
+    apply hz0
+    obtain ⟨z, rfl⟩ := LieSubmodule.Quotient.surjective_mk' E z
+    have : ⁅(⟨x, hx⟩ : U), z⁆ ∈ E := by rwa [← LieSubmodule.Quotient.mk_eq_zero']
+    simp [mem_engel_iff] at this ⊢
+    obtain ⟨n, hn⟩ := this
+    use n+1
+    rwa [pow_succ']
   obtain ⟨s, hs, hsψ⟩ : ∃ s : Finset K, r ≤ s.card ∧ ∀ α ∈ s, (constantCoeff (ψ u)).eval α ≠ 0 := by
     specialize hψ u
     classical
@@ -573,47 +574,48 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     · intro α hα
       simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and] at hα
       exact hα.2 hψ
-  sorry -- the proof below works
-  -- have hcard : natDegree (coeff (χ u) i) < s.card := by
-  --   rw [lieCharpoly₁_coeff_natDegree _ _ _ _ i (r - i)] <;> omega
-  -- apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero' _ s _ hcard
-  -- intro α hα
-  -- let y := α • u + ⟨x, hx⟩
-  -- suffices engel K (y : L) ≤ engel K x by sorry
-  --   -- rw [← coe_evalRingHom, ← coeff_map, lieCharpoly₁_map_eval, (charpoly_eq_X_pow_iff _ _ _).mpr,
-  --   --   coeff_X_pow, if_neg hi.ne]
-  --   -- specialize hmin y y.2 this
-  --   -- intro z
-  --   -- simpa only [mem_engel_iff, Subtype.ext_iff, LieSubmodule.coe_toEndomorphism_pow]
-  --   --   using hmin.ge z.2
-  -- intro z hz
-  -- show z ∈ E
-  -- have hz' : ∃ n : ℕ, ((toEndomorphism K U Q) y ^ n) (LieSubmodule.Quotient.mk' E z) = 0 := by
-  --   rw [mem_engel_iff] at hz
-  --   obtain ⟨n, hn⟩ := hz
-  --   use n
-  --   apply_fun LieSubmodule.Quotient.mk' E at hn
-  --   rw [LieModuleHom.map_zero] at hn
-  --   rw [← hn]
-  --   clear hn
-  --   induction n with
-  --   | zero => simp only [Nat.zero_eq, pow_zero, LinearMap.one_apply]
-  --   | succ n ih => rw [pow_succ, pow_succ, LinearMap.mul_apply, ih]; rfl
-  -- classical
-  -- set n := Nat.find hz' with hn'
-  -- have hn := Nat.find_spec hz'
-  -- rw [← hn'] at hn
-  -- rw [← LieSubmodule.Quotient.mk_eq_zero']
-  -- obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
-  -- · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
-  -- specialize hsψ α hα
-  -- rw [← coe_evalRingHom, constantCoeff_apply, ← coeff_map, lieCharpoly₁_map_eval,
-  --   ← constantCoeff_apply, ne_eq, charpoly_constantCoeff_eq_zero_iff] at hsψ
-  -- contrapose! hsψ
-  -- use ((LieModule.toEndomorphism K U Q) y ^ k) (LieSubmodule.Quotient.mk' E z)
-  -- refine ⟨?_, ?_⟩
-  -- · apply Nat.find_min hz'; omega
-  -- · rw [← hn, hk, pow_succ, LinearMap.mul_apply]
+  -- sorry -- the proof below works
+  have hcard : natDegree (coeff (χ u) i) < s.card := by
+    apply lt_of_le_of_lt (lieCharpoly₁_coeff_natDegree _ _ _ _ i (r - i) _)
+    all_goals omega
+  apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero' _ s _ hcard
+  intro α hα
+  let y := α • u + ⟨x, hx⟩
+  suffices engel K (y : L) ≤ engel K x by -- sorry
+    rw [← coe_evalRingHom, ← coeff_map, lieCharpoly₁_map_eval,
+      (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, if_neg hi.ne]
+    specialize hmin y y.2 this
+    intro z
+    simpa only [mem_engel_iff, Subtype.ext_iff, LieSubmodule.coe_toEndomorphism_pow]
+      using hmin.ge z.2
+  intro z hz
+  show z ∈ E
+  have hz' : ∃ n : ℕ, ((toEndomorphism K U Q) y ^ n) (LieSubmodule.Quotient.mk' E z) = 0 := by
+    rw [mem_engel_iff] at hz
+    obtain ⟨n, hn⟩ := hz
+    use n
+    apply_fun LieSubmodule.Quotient.mk' E at hn
+    rw [LieModuleHom.map_zero] at hn
+    rw [← hn]
+    clear hn
+    induction n with
+    | zero => simp only [Nat.zero_eq, pow_zero, LinearMap.one_apply]
+    | succ n ih => rw [pow_succ, pow_succ, LinearMap.mul_apply, ih]; rfl
+  classical
+  set n := Nat.find hz' with hn'
+  have hn := Nat.find_spec hz'
+  rw [← hn'] at hn
+  rw [← LieSubmodule.Quotient.mk_eq_zero']
+  obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
+  · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
+  specialize hsψ α hα
+  rw [← coe_evalRingHom, constantCoeff_apply, ← coeff_map, lieCharpoly₁_map_eval,
+    ← constantCoeff_apply, ne_eq, LinearMap.charpoly_constantCoeff_eq_zero_iff] at hsψ
+  contrapose! hsψ
+  use ((LieModule.toEndomorphism K U Q) y ^ k) (LieSubmodule.Quotient.mk' E z)
+  refine ⟨?_, ?_⟩
+  · apply Nat.find_min hz'; omega
+  · rw [← hn, hk, pow_succ, LinearMap.mul_apply]
 
 lemma foo {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [Module.Finite K V]
     (W₁ W₂ : Submodule K V) (h1 : W₁ ≤ W₂) (h2 : finrank K W₂ ≤ finrank K W₁) :
