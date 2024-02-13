@@ -366,7 +366,7 @@ variable (C)
 
 namespace Pretriangulated
 
-/-- A triangle in `HomotopyCategory C (ComplexShape.up ℤ)` if it is isomorphic to
+/-- A triangle in `HomotopyCategory C (ComplexShape.up ℤ)` is distinguished if it is isomorphic to
 the triangle `CochainComplex.mappingCone.triangleh φ` for some morphism of cochain
 complexes `φ`. -/
 def distinguishedTriangles : Set (Triangle (HomotopyCategory C (ComplexShape.up ℤ))) :=
