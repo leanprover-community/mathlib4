@@ -13,6 +13,8 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 * `LinearMap.tensorDistrib (B₁ ⊗ₜ B₂)`: the bilinear map on `M₁ ⊗ M₂` constructed by applying
   `B₁` on `M₁` and `B₂` on `M₂`.
+* `LinearMap.tensorDistribEquiv`: `LinearMap.tensorDistrib` as an equivalence on finite free
+  modules.
 
 ## TODO
 
