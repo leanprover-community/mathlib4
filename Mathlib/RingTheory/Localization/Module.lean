@@ -3,10 +3,12 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Anne Baanen
 -/
+
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
+import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 #align_import ring_theory.localization.module from "leanprover-community/mathlib"@"2e59a6de168f95d16b16d217b808a36290398c0a"
 
@@ -174,6 +176,17 @@ theorem Basis.localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis �
 theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
       LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := b.ofIsLocalizedModule_span Rₛ S _
+
+--Note that `StrongRankCondition R` and `StrongRankCondition Rₛ` are automatic, but the file that
+--proves it is not imported here.
+theorem FiniteDimensional.finrank_eq_finrank_of_isLocalization {R Rₛ A Aₛ : Type*} [CommRing R]
+    [CommRing Rₛ] [StrongRankCondition R] [StrongRankCondition Rₛ] (S : Submonoid R) [Algebra R Rₛ]
+    [IsLocalization S Rₛ] [CommRing A] [Algebra R A] [CommRing Aₛ] [Algebra A Aₛ] [Algebra Rₛ Aₛ]
+    [Algebra R Aₛ] [IsScalarTower R Rₛ Aₛ] [IsScalarTower R A Aₛ] {ι : Type*} [Fintype ι]
+    [IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ] (b : Basis ι R A) :
+    FiniteDimensional.finrank R A = FiniteDimensional.finrank Rₛ Aₛ := by
+  let B := b.localizationLocalization Rₛ S Aₛ
+  rw [FiniteDimensional.finrank_eq_card_basis B, FiniteDimensional.finrank_eq_card_basis b]
 
 end LocalizationLocalization
 
