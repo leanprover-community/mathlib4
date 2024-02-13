@@ -639,18 +639,18 @@ theorem ext {Γ R V} [PartialOrder Γ] [Zero V] [SMul R V]
     (x y : HahnModule Γ R V) (coeff : x.coeff = y.coeff) : x = y := by
   simp_all only [HahnSeries.coeff_inj]
 
-variable {V : Type*} [AddCommMonoid V]
+variable {V : Type*} [AddCommMonoid V] [SMul R V]
 
-instance instZero [SMul R V] : Zero (HahnModule Γ R V) :=
+instance instZero : Zero (HahnModule Γ R V) :=
   ⟨{  coeff := 0
       isPWO_support' := by simp }⟩
 
-instance instAddHahnModule [SMul R V] : Add (HahnModule Γ R V) where
+instance instAddHahnModule : Add (HahnModule Γ R V) where
   add x y :=
     { coeff := x.coeff + y.coeff
       isPWO_support' := (x.isPWO_support.union y.isPWO_support).mono (Function.support_add _ _) }
 
-instance instAddCommMonoidHahnMonoid [SMul R V] : AddCommMonoid (HahnModule Γ R V) where
+instance instAddCommMonoidHahnMonoid : AddCommMonoid (HahnModule Γ R V) where
   zero := 0
   add := (· + ·)
   add_assoc x y z := by
@@ -667,10 +667,10 @@ instance instAddCommMonoidHahnMonoid [SMul R V] : AddCommMonoid (HahnModule Γ R
     apply add_comm
 
 @[simp]
-theorem add_coeff'' [SMul R V] {x y : HahnModule Γ R V} {a : Γ} :
+theorem add_coeff {x y : HahnModule Γ R V} {a : Γ} :
     (x + y).coeff a = x.coeff a + y.coeff a := rfl
 
-instance instSMul [Zero R] [SMul R V] : SMul (HahnSeries Γ R)
+instance instSMul [Zero R] : SMul (HahnSeries Γ R)
     (HahnModule Γ R V) where
   smul x y := {
     coeff := fun a =>
@@ -687,32 +687,34 @@ instance instSMul [Zero R] [SMul R V] : SMul (HahnSeries Γ R)
           simp [not_nonempty_iff_eq_empty.1 ha]
         isPWO_support_addAntidiagonal.mono h }
 
-theorem smul_coeff' [Zero R] [SMul R V] {x : HahnSeries Γ R}
+theorem smul_coeff [Zero R] {x : HahnSeries Γ R}
     {y : HahnModule Γ R V} {a : Γ} : (x • y).coeff a = ∑ ij in addAntidiagonal x.isPWO_support
     y.isPWO_support a, x.coeff ij.fst • y.coeff ij.snd := rfl
 
-instance instSMulZeroClass [Zero R] [SMulZeroClass R V] : SMulZeroClass (HahnSeries Γ R)
-    (HahnModule Γ R V) where
+variable {W : Type*} [Zero R] [AddCommMonoid W]
+
+instance instSMulZeroClass [SMulZeroClass R W] :
+    SMulZeroClass (HahnSeries Γ R) (HahnModule Γ R W) where
   smul_zero := fun _ => by
     ext
-    simp [smul_coeff']
+    simp [smul_coeff]
 
-theorem smul_coeff_right' [Zero R] [SMulZeroClass R V] {x : HahnSeries Γ R}
-    {y : HahnModule Γ R V} {a : Γ} {s : Set Γ} (hs : s.IsPWO) (hys : y.support ⊆ s) :
+theorem smul_coeff_right [SMulZeroClass R W] {x : HahnSeries Γ R}
+    {y : HahnModule Γ R W} {a : Γ} {s : Set Γ} (hs : s.IsPWO) (hys : y.support ⊆ s) :
     (x • y).coeff a =
       ∑ ij in addAntidiagonal x.isPWO_support hs a, x.coeff ij.fst • y.coeff ij.snd := by
-  rw [smul_coeff']
+  rw [smul_coeff]
   apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_right hys) _ fun _ _ => rfl
   intro b hb
   simp only [not_and, mem_sdiff, mem_addAntidiagonal, HahnSeries.mem_support, not_imp_not] at hb
   rw [hb.2 hb.1.1 hb.1.2.2, smul_zero]
 
-theorem smul_coeff_left' [Zero R] [SMulWithZero R V] {x : HahnSeries Γ R}
-    {y : HahnModule Γ R V} {a : Γ} {s : Set Γ}
+theorem smul_coeff_left [SMulWithZero R W] {x : HahnSeries Γ R}
+    {y : HahnModule Γ R W} {a : Γ} {s : Set Γ}
     (hs : s.IsPWO) (hxs : x.support ⊆ s) :
     (x • y).coeff a =
       ∑ ij in addAntidiagonal hs y.isPWO_support a, x.coeff ij.fst • y.coeff ij.snd := by
-  rw [smul_coeff']
+  rw [smul_coeff]
   apply sum_subset_zero_on_sdiff (addAntidiagonal_mono_left hxs) _ fun _ _ => rfl
   intro b hb
   simp only [not_and', mem_sdiff, mem_addAntidiagonal, HahnSeries.mem_support, not_ne_iff] at hb
@@ -738,7 +740,7 @@ theorem mul_coeff_right' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {
     (x * y).coeff a =
       ∑ ij in addAntidiagonal x.isPWO_support hs a, x.coeff ij.fst * y.coeff ij.snd := by
   simp only [← smul_eq_mul]
-  exact @HahnModule.smul_coeff_right' Γ R _ R _ _ _ x y a s hs hys
+  exact @HahnModule.smul_coeff_right Γ R _ R _ _ _ x y a s hs hys
 #align hahn_series.mul_coeff_right' HahnSeries.mul_coeff_right'
 
 theorem mul_coeff_left' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a : Γ} {s : Set Γ}
@@ -746,7 +748,7 @@ theorem mul_coeff_left' [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} {a
     (x * y).coeff a =
       ∑ ij in addAntidiagonal hs y.isPWO_support a, x.coeff ij.fst * y.coeff ij.snd := by
   simp only [← smul_eq_mul]
-  exact @HahnModule.smul_coeff_left' Γ R _ R _ _ _ x y a s hs hxs
+  exact @HahnModule.smul_coeff_left Γ R _ R _ _ _ x y a s hs hxs
 #align hahn_series.mul_coeff_left' HahnSeries.mul_coeff_left'
 
 instance [NonUnitalNonAssocSemiring R] : Distrib (HahnSeries Γ R) :=
