@@ -357,10 +357,6 @@ theorem HasBasis.to_hasBasis (hl : l.HasBasis p s) (h : ∀ i, p i → ∃ i', p
     hl.mem_iff.2 ⟨i, hi, hss'⟩
 #align filter.has_basis.to_has_basis Filter.HasBasis.to_hasBasis
 
-protected theorem HasBasis.image {ι : Type*} {p : ι → Prop} {s : ι → Set α} (hl : l.HasBasis p s) :
-    l.HasBasis (· ∈ s '' {i : ι | p i}) id :=
-  .mk fun t ↦ by simp [hl.mem_iff]
-
 protected lemma HasBasis.congr (hl : l.HasBasis p s) {p' s'} (hp : ∀ i, p i ↔ p' i)
     (hs : ∀ i, p i → s i = s' i) : l.HasBasis p' s' :=
   ⟨fun t ↦ by simp only [hl.mem_iff, ← hp]; exact exists_congr fun i ↦
