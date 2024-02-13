@@ -63,7 +63,7 @@ instance mulHomClass : MulHomClass (AbsoluteValue R S) R S :=
 #align absolute_value.mul_hom_class AbsoluteValue.mulHomClass
 
 instance nonnegHomClass : NonnegHomClass (AbsoluteValue R S) R S :=
-  { AbsoluteValue.zeroHomClass (R := R) (S := S) with map_nonneg := fun f => f.nonneg' }
+  { AbsoluteValue.zeroHomClass (R := R) (S := S) with apply_nonneg := fun f => f.nonneg' }
 #align absolute_value.nonneg_hom_class AbsoluteValue.nonnegHomClass
 
 instance subadditiveHomClass : SubadditiveHomClass (AbsoluteValue R S) R S :=

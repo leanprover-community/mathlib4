@@ -536,7 +536,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
   obtain hp | hp := { r : ℝ | 0 < r ∧ x ∈ r • p.ball 0 1 }.eq_empty_or_nonempty
   · rw [gauge, hp, Real.sInf_empty]
     by_contra h
-    have hpx : 0 < p x := (map_nonneg _ _).lt_of_ne h
+    have hpx : 0 < p x := (apply_nonneg _ _).lt_of_ne h
     have hpx₂ : 0 < 2 * p x := mul_pos zero_lt_two hpx
     refine' hp.subset ⟨hpx₂, (2 * p x)⁻¹ • x, _, smul_inv_smul₀ hpx₂.ne' _⟩
     rw [p.mem_ball_zero, map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hpx₂),
@@ -549,7 +549,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
     exact mul_le_of_le_one_right hr.le hy.le
   · have hpε : 0 < p x + ε :=
       -- Porting note: was `by positivity`
-      add_pos_of_nonneg_of_pos (map_nonneg _ _) hε
+      add_pos_of_nonneg_of_pos (apply_nonneg _ _) hε
     refine' hr ⟨hpε, (p x + ε)⁻¹ • x, _, smul_inv_smul₀ hpε.ne' _⟩
     rw [p.mem_ball_zero, map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hpε),
       inv_mul_lt_iff hpε, mul_one]

@@ -151,9 +151,9 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
           rw [h]
           exact one_ne_zero⟩,
       fun h => ?_⟩
-  obtain hp0 | hp0 := (map_nonneg p (1 : R)).eq_or_gt
+  obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_gt
   · exfalso
-    refine h (ext fun x => (map_nonneg _ _).antisymm' ?_)
+    refine h (ext fun x => (apply_nonneg _ _).antisymm' ?_)
     simpa only [hp0, mul_one, mul_zero] using map_mul_le_mul p x 1
   · refine' hp.antisymm ((le_mul_iff_one_le_left hp0).1 _)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
@@ -336,7 +336,7 @@ def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f 
             (le_trans (map_mul_le_mul f _ _)
               (by rw [← RingSeminorm.toFun_eq_coe, ← AddGroupSeminorm.toFun_eq_coe, hx,
                 zero_mul]))
-            (map_nonneg f _)
+            (apply_nonneg f _)
       exact hc hc0 }
 #align ring_seminorm.to_ring_norm RingSeminorm.toRingNorm
 

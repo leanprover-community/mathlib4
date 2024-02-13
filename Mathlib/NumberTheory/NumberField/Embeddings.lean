@@ -288,7 +288,7 @@ instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_zero w := w.1.map_zero
 
 instance : NonnegHomClass (InfinitePlace K) K ℝ where
-  map_nonneg w _ := w.1.nonneg _
+  apply_nonneg w _ := w.1.nonneg _
 
 @[simp]
 theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = Complex.abs (φ x) := rfl
