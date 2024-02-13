@@ -242,20 +242,12 @@
    "Mathlib.Analysis.Calculus.FDeriv.Prod",
    "Mathlib.Analysis.SpecialFunctions.ExpDeriv",
    "Mathlib.Analysis.SpecialFunctions.Log.Deriv",
-   "Mathlib.Tactic.FunProp",
-   "Mathlib.Tactic.FunProp.Continuous"],
-  "Mathlib.Tactic.FunProp.Continuous":
-  ["Mathlib.Analysis.SpecialFunctions.Log.Basic",
-   "Mathlib.Tactic.FunProp",
-   "Mathlib.Topology.Algebra.Field",
-   "Mathlib.Topology.Algebra.Group.Basic",
-   "Mathlib.Topology.Order.Lattice"],
+   "Mathlib.Tactic.FunProp"],
   "Mathlib.Tactic.FunProp.ContDiff":
   ["Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas",
    "Mathlib.Analysis.SpecialFunctions.ExpDeriv",
    "Mathlib.Analysis.SpecialFunctions.Log.Deriv",
    "Mathlib.Tactic.FunProp",
-   "Mathlib.Tactic.FunProp.Continuous",
    "Mathlib.Tactic.FunProp.Differentiable"],
   "Mathlib.Tactic.FunProp.AEMesurable":
   ["Mathlib.MeasureTheory.Constructions.Pi",
