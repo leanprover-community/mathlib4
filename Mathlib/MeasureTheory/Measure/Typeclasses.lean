@@ -20,7 +20,7 @@ We introduce the following typeclasses for measures:
   `∀ s, 0 < μ s → ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s`.
 -/
 
-open scoped ENNReal NNReal Topology
+open scoped ENNReal NNReal Topology BigOperators
 open Set MeasureTheory Measure Filter Function MeasurableSpace ENNReal
 
 variable {α β δ ι : Type*}
@@ -164,6 +164,13 @@ theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
   rw [← MeasureTheory.measure_iUnion hf₂ hf₁]
   exact ne_of_lt (measure_lt_top _ _)
 #align measure_theory.summable_measure_to_real MeasureTheory.summable_measure_toReal
+
+@[simp]
+lemma Finset.sum_toReal_measure_singleton {s : Finset α} [MeasurableSingletonClass α]
+    [IsFiniteMeasure μ] :
+    ∑ x in s, (μ {x}).toReal = (μ s).toReal := by
+  rw [← ENNReal.toReal_sum (fun _ _ ↦ measure_ne_top _ _)]
+  simp
 
 theorem ae_eq_univ_iff_measure_eq [IsFiniteMeasure μ] (hs : NullMeasurableSet s μ) :
     s =ᵐ[μ] univ ↔ μ s = μ univ := by

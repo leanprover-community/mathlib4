@@ -225,6 +225,14 @@ theorem sum_measure_preimage_singleton (s : Finset β) {f : α → β}
     Finset.set_biUnion_preimage_singleton]
 #align measure_theory.sum_measure_preimage_singleton MeasureTheory.sum_measure_preimage_singleton
 
+@[simp]
+lemma Finset.sum_measure_singleton {s : Finset α} [MeasurableSingletonClass α] :
+    ∑ x in s, μ {x} = μ s := by
+  change ∑ x in s, μ (id ⁻¹' {x}) = _
+  rw [sum_measure_preimage_singleton]
+  · simp
+  · simp
+
 theorem measure_diff_null' (h : μ (s₁ ∩ s₂) = 0) : μ (s₁ \ s₂) = μ s₁ :=
   measure_congr <| diff_ae_eq_self.2 h
 #align measure_theory.measure_diff_null' MeasureTheory.measure_diff_null'
