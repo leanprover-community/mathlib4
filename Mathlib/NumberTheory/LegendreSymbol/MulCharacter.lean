@@ -77,7 +77,7 @@ instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
 class MulCharClass (F : Type*) (R R' : outParam <| Type*) [CommMonoid R]
-  [CommMonoidWithZero R'] extends MonoidHomClass F R R' where
+  [CommMonoidWithZero R'] [FunLike F R R'] extends MonoidHomClass F R R' : Prop where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 #align mul_char_class MulCharClass
 
@@ -133,8 +133,6 @@ theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
 #align mul_char.ext' MulChar.ext'
 
 instance : MulCharClass (MulChar R R') R R' where
-  coe χ := χ.toMonoidHom.toFun
-  coe_injective' _ _ h := ext' fun a => congr_fun h a
   map_mul χ := χ.map_mul'
   map_one χ := χ.map_one'
   map_nonunit χ := χ.map_nonunit' _
@@ -262,10 +260,10 @@ the source has a zero and another element. -/
 @[coe, simps]
 def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : MulChar R R') :
     R →*₀ R' where
-      toFun := χ.toFun
-      map_zero' := χ.map_zero
-      map_one' := χ.map_one'
-      map_mul' := χ.map_mul'
+  toFun := χ.toFun
+  map_zero' := χ.map_zero
+  map_one' := χ.map_one'
+  map_mul' := χ.map_mul'
 
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
 theorem map_ringChar {R : Type u} [CommRing R] [Nontrivial R] (χ : MulChar R R') :

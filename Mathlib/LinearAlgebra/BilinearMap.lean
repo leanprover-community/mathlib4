@@ -132,7 +132,9 @@ def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁
   mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun n₁ n₂ m => (f m).map_add _ _)
     (fun c n  m  => (f m).map_smulₛₗ _ _)
     (fun n m₁ m₂ => by simp only [map_add, add_apply])
-    (fun c n  m  => by simp only [map_smulₛₗ, smul_apply])
+    -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
+    -- It looks like we now run out of assignable metavariables.
+    (fun c n  m  => by simp only [map_smulₛₗ _, smul_apply])
 #align linear_map.flip LinearMap.flip
 
 end
@@ -401,13 +403,6 @@ theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : M →ₗ[R] M →ₗ[R] R) :
     p →ₗ[R] p →ₗ[R] R :=
   f.compl₁₂ p.subtype p.subtype
-
-/-- `linMulLin f g` is the bilinear form mapping `x` and `y` to `f x * g y` -/
-def linMulLin (f g : M →ₗ[R] R) : M →ₗ[R] M →ₗ[R] R :=
-  LinearMap.mk₂ R (fun x y => f x * g y) (fun x y z => by simp only [map_add, add_mul])
-  (fun _ _ => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_assoc, forall_const])
-  (fun _ _ _ => by simp only [map_add, mul_add])
-  (fun _ _ => by simp only [SMulHomClass.map_smul, smul_eq_mul, mul_left_comm, forall_const])
 
 end CommSemiring
 

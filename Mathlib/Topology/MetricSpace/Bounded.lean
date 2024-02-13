@@ -172,6 +172,31 @@ theorem cobounded_le_cocompact : cobounded α ≤ cocompact α :=
 #align comap_dist_right_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
 #align comap_dist_left_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
 
+theorem isCobounded_iff_closedBall_compl_subset {s : Set α} (c : α) :
+    IsCobounded s ↔ ∃ (r : ℝ), (Metric.closedBall c r)ᶜ ⊆ s := by
+  rw [← isBounded_compl_iff, isBounded_iff_subset_closedBall c]
+  apply exists_congr
+  intro r
+  rw [compl_subset_comm]
+
+theorem _root_.Bornology.IsCobounded.closedBall_compl_subset {s : Set α} (hs : IsCobounded s)
+    (c : α) : ∃ (r : ℝ), (Metric.closedBall c r)ᶜ ⊆ s :=
+  (isCobounded_iff_closedBall_compl_subset c).mp hs
+
+theorem closedBall_compl_subset_of_mem_cocompact {s : Set α} (hs : s ∈ cocompact α) (c : α) :
+    ∃ (r : ℝ), (Metric.closedBall c r)ᶜ ⊆ s :=
+  IsCobounded.closedBall_compl_subset (cobounded_le_cocompact hs) c
+
+theorem mem_cocompact_of_closedBall_compl_subset [ProperSpace α] (c : α)
+    (h : ∃ r, (closedBall c r)ᶜ ⊆ s) : s ∈ cocompact α := by
+  rcases h with ⟨r, h⟩
+  rw [Filter.mem_cocompact]
+  exact ⟨closedBall c r, isCompact_closedBall c r, h⟩
+
+theorem mem_cocompact_iff_closedBall_compl_subset [ProperSpace α] (c : α) :
+    s ∈ cocompact α ↔ ∃ r, (closedBall c r)ᶜ ⊆ s :=
+  ⟨(closedBall_compl_subset_of_mem_cocompact · _), mem_cocompact_of_closedBall_compl_subset _⟩
+
 /-- Characterization of the boundedness of the range of a function -/
 theorem isBounded_range_iff {f : β → α} : IsBounded (range f) ↔ ∃ C, ∀ x y, dist (f x) (f y) ≤ C :=
   isBounded_iff.trans <| by simp only [forall_range_iff]
@@ -548,10 +573,12 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]
-def evalDiam : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ s ← whnfR e | throwError "not Metric.diam"
-  let p ← mkAppOptM ``Metric.diam_nonneg #[none, none, s]
-  pure (.nonnegative p)
+def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Metric.diam _ $inst $s) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Metric.diam_nonneg))
+  | _, _, _ => throwError "not ‖ · ‖"
 
 end Mathlib.Meta.Positivity
 
