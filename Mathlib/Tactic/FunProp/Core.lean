@@ -758,6 +758,8 @@ mutual
   /-- Main `funProp` function. Returns proof of `e`. -/
   private partial def main (e : Expr) : FunPropM (Option Result) := do
 
+    let e ← instantiateMVars e
+
     let .some (funPropDecl, f) ← getFunProp? e
       | return none
 
