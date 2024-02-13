@@ -23,11 +23,11 @@ The two cases are proven in `buffon_short` and `buffon_long`.
 
 We define a random variable `B : Ω → ℝ × ℝ` with a uniform distribution on `[-d/2, d/2] × [0, π]`.
 This represents the needle's x-position and angle with respect to a vertical line. By symmetry, we
-need to consider only a single verticalm line positioned at `x = 0`. A needle therefore crosses the
+need to consider only a single vertical line positioned at `x = 0`. A needle therefore crosses the
 vertical line if its projection onto the x-axis contains `0`.
 
 We define a random variable `N : Ω → ℝ` that is `1` if the needle crosses a vertical line, and `0`
-otherwise. This is defined as `fun ω => Set.indicator (needle_x_proj l (B ω).1 (B ω).2) 1 0`.
+otherwise. This is defined as `fun ω => Set.indicator (needleProjX l (B ω).1 (B ω).2) 1 0`.
 
 As in many references, the problem is split into two cases, `l ≤ d` (`buffon_short`), and `l ≥ d`
 (`buffon_long`). For both cases, we show that
@@ -68,8 +68,8 @@ We then show the two integrals equal their respective values `l - (l^2 - d^2).sq
 open MeasureTheory (MeasureSpace IsProbabilityMeasure pdf.IsUniform Measure)
 open ProbabilityTheory Real
 
-lemma set_integral_toReal_ofReal_nonneg_ae {α : Type _} [MeasureSpace α] {s : Set α} {f : α → ℝ}
-    (hs : MeasurableSet s) (hf : ∀ᵐ x : α, x ∈ s → f x ≥ 0) :
+lemma set_integral_toReal_ofReal_nonneg_ae {α : Type*} [MeasureSpace α] {s : Set α} {f : α → ℝ}
+    (hs : MeasurableSet s) (hf : ∀ᵐ x : α, x ∈ s → 0 ≤ f x) :
     ∫ (x : α) in s, ENNReal.toReal (ENNReal.ofReal (f x)) =
     ∫ (x : α) in s, f x := by
 
@@ -108,19 +108,19 @@ variable
   x-coordinate `x`, of length `l` and angle `θ`. Note, `θ` is measured
   relative to the y-axis, that is, a vertical needle has `θ = 0`.
 -/
-def needle_x_proj (x θ : ℝ) : Set ℝ := Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
+def needleProjX (x θ : ℝ) : Set ℝ := Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
 
 /--
   A random variable representing whether the needle crosses a line.
 
-  The line is at `x = 0`, and the needle crosses the line if it's projection
+  The line is at `x = 0`, and the needle crosses the line if its projection
   onto the x-axis contains `0`. This random variable is `1` if the needle
   crosses the line, and `0` otherwise.
 
   Note: `N : Ω → ℝ` is the random variable; the definition of `N' : ℝ × ℝ` is
   provided for convenience.
 -/
-noncomputable def N' (p : ℝ × ℝ) : ℝ := Set.indicator (needle_x_proj l p.1 p.2) 1 0
+noncomputable def N' (p : ℝ × ℝ) : ℝ := Set.indicator (needleProjX l p.1 p.2) 1 0
 noncomputable def N : Ω → ℝ := N' l ∘ B
 
 lemma short_needle_inter_eq (h : l ≤ d) (θ : ℝ) :
@@ -134,9 +134,9 @@ lemma short_needle_inter_eq (h : l ≤ d) (θ : ℝ) :
 abbrev B_range := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
 
 lemma B_range_volume : ℙ (B_range d) = ENNReal.ofReal (d * π) := by
-  simp_rw [MeasureTheory.Measure.volume_eq_prod, MeasureTheory.Measure.prod_prod, Real.volume_Icc]
+  simp_rw [MeasureTheory.Measure.volume_eq_prod, MeasureTheory.Measure.prod_prod, Real.volume_Icc,
+    ENNReal.ofReal_mul hd.le]
   ring_nf
-  exact (ENNReal.ofReal_mul hd.le).symm
 
 lemma B_range_nonzero : ℙ (B_range d) ≠ 0 := by
   simp_rw [B_range_volume d hd, ne_eq, ENNReal.ofReal_eq_zero, not_le, mul_pos hd Real.pi_pos]
@@ -165,7 +165,7 @@ lemma N'_measurable : Measurable (N' l) := by
     simp_rw [← Function.comp_apply (f := Real.sin) (g := Prod.snd),
       Continuous.comp Real.continuous_sin continuous_snd]
 
-lemma N'_strongly_measurable : MeasureTheory.StronglyMeasurable (N' l) := by
+lemma N'_stronglyMeasurable : MeasureTheory.StronglyMeasurable (N' l) := by
   refine' stronglyMeasurable_iff_measurable_separable.mpr ⟨N'_measurable l, {0, 1}, ?seperable⟩
 
   have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
@@ -174,7 +174,7 @@ lemma N'_strongly_measurable : MeasureTheory.StronglyMeasurable (N' l) := by
   rw [IsClosed.closure_eq range_finite.isClosed, Set.subset_def, Set.range]
 
   intro x ⟨p, hxp⟩
-  by_cases hp : 0 ∈ needle_x_proj l p.1 p.2
+  by_cases hp : 0 ∈ needleProjX l p.1 p.2
   · simp_rw [N', Set.indicator_of_mem hp, Pi.one_apply] at hxp
     apply Or.inr hxp.symm
   · simp_rw [N', Set.indicator_of_not_mem hp] at hxp
@@ -192,12 +192,12 @@ lemma N'_integrable_prod :
 
   have N'_le_one p : N' l p ≤ 1 := by
     unfold N'
-    by_cases hp : 0 ∈ needle_x_proj l p.1 p.2
+    by_cases hp : 0 ∈ needleProjX l p.1 p.2
     · simp_rw [Set.indicator_of_mem hp, Pi.one_apply, le_refl]
     · simp_rw [Set.indicator_of_not_mem hp, zero_le_one]
 
   refine' And.intro
-    (N'_strongly_measurable l).aestronglyMeasurable
+    (N'_stronglyMeasurable l).aestronglyMeasurable
     ((MeasureTheory.hasFiniteIntegral_iff_norm (N' l)).mpr _)
   refine' lt_of_le_of_lt (MeasureTheory.lintegral_mono (g := 1) ?le_const) ?lt_top
 
@@ -219,7 +219,7 @@ lemma buffon_integral :
 
   simp_rw [N, Function.comp_apply]
   rw [
-    ← MeasureTheory.integral_map hBₘ.aemeasurable (N'_strongly_measurable l).aestronglyMeasurable,
+    ← MeasureTheory.integral_map hBₘ.aemeasurable (N'_stronglyMeasurable l).aestronglyMeasurable,
     hB, MeasureTheory.integral_smul_measure, B_range_volume d hd,
     ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
     ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul,
@@ -237,7 +237,7 @@ lemma buffon_integral :
 
   case integrable => simp_rw [Function.uncurry_def, Prod.mk.eta, N'_integrable_prod d l hd]
 
-  simp only [N', needle_x_proj, Set.mem_Icc]
+  simp only [N', needleProjX, Set.mem_Icc]
 
   have indicator_eq (x θ : ℝ) :
     Set.indicator (Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)) 1 0 =
@@ -282,7 +282,7 @@ theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
 
 lemma min_sin_mul_continuous : Continuous (fun (θ : ℝ) => min d (θ.sin * l)) := by
   apply Continuous.min continuous_const
-  apply Continuous.mul Real.continuous_sin continuous_const
+  continuity
 
 lemma integral_min_eq_two_mul :
     ∫ θ in (0)..π, min d (θ.sin * l) = 2 * ∫ θ in (0)..π/2, min d (θ.sin * l) := by
