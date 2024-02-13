@@ -154,9 +154,8 @@ lemma reflection_same (x : M) : P.reflection i (P.reflection i x) = x :=
 
 lemma reflection_invOn_self : InvOn (P.reflection i) (P.reflection i) (range P.root)
     (range P.root) := by
-  constructor
-  exact fun x _ => Module.involutive_reflection (P.coroot_root_two i) x
-  exact fun x _ => Module.involutive_reflection (P.coroot_root_two i) x
+  constructor <;>
+    exact fun x _ => Module.involutive_reflection (P.coroot_root_two i) x
 
 lemma bijOn_reflection_root : BijOn (P.reflection i) (range P.root) (range P.root) := InvOn.bijOn
   (reflection_invOn_self P i) (mapsTo_preReflection_root P i) (mapsTo_preReflection_root P i)
