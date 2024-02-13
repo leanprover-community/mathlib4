@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
+Authors: Rémy Degenne, Sébastien Gouëzel, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
@@ -111,8 +111,7 @@ lemma measureEntropy_univ_smul : Hm[(μ Set.univ)⁻¹ • μ] = Hm[μ] := by
 lemma measureEntropy_nonneg (μ : Measure S) : 0 ≤ Hm[μ] := by
   by_cases hμ_fin : IsFiniteMeasure μ
   swap; · rw [measureEntropy_of_not_isFiniteMeasure hμ_fin]
-  apply tsum_nonneg
-  intro s
+  refine tsum_nonneg (fun s ↦ ?_)
   apply negMulLog_nonneg (by positivity)
   refine ENNReal.toReal_le_of_le_ofReal zero_le_one ?_
   rw [ENNReal.ofReal_one]
