@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.JordanHolder
-import Mathlib.Order.CompleteLatticeIntervals
+import Mathlib.Order.CompactlyGenerated.Intervals
 
 #align_import ring_theory.simple_module from "leanprover-community/mathlib"@"cce7f68a7eaadadf74c82bbac20721cdc03a1cc1"
 
@@ -120,14 +120,14 @@ theorem is_semisimple_iff_top_eq_sSup_simples :
     exact IsSemisimpleModule.sSup_simples_eq_top⟩
 #align is_semisimple_iff_top_eq_Sup_simples is_semisimple_iff_top_eq_sSup_simples
 
-lemma isSemisimpleModule_of_IsSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
+lemma isSemisimpleModule_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
     (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) (hp' : ⨆ i ∈ s, p i = ⊤) :
     IsSemisimpleModule R M := by
   refine complementedLattice_of_complementedLattice_Iic (fun i hi ↦ ?_) hp'
   let e : Submodule R (p i) ≃o Set.Iic (p i) := Submodule.MapSubtype.relIso (p i)
   simpa only [← e.complementedLattice_iff] using hp i hi
 
-lemma isSemisimpleModule_biSup_of_IsSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
+lemma isSemisimpleModule_biSup_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
     (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) :
     IsSemisimpleModule R ↥(⨆ i ∈ s, p i) := by
   let q := ⨆ i ∈ s, p i
@@ -141,12 +141,12 @@ lemma isSemisimpleModule_biSup_of_IsSemisimpleModule_submodule {s : Set ι} {p :
     apply Submodule.map_injective_of_injective q.injective_subtype
     simp_rw [Submodule.map_top, Submodule.range_subtype, Submodule.map_iSup]
     exact biSup_congr fun i hi ↦ Submodule.map_comap_eq_of_le (hp₀ i hi)
-  exact isSemisimpleModule_of_IsSemisimpleModule_submodule hp₁ hp₂
+  exact isSemisimpleModule_of_isSemisimpleModule_submodule hp₁ hp₂
 
-lemma isSemisimpleModule_of_IsSemisimpleModule_submodule' {p : ι → Submodule R M}
+lemma isSemisimpleModule_of_isSemisimpleModule_submodule' {p : ι → Submodule R M}
     (hp : ∀ i, IsSemisimpleModule R (p i)) (hp' : ⨆ i, p i = ⊤) :
     IsSemisimpleModule R M :=
-  isSemisimpleModule_of_IsSemisimpleModule_submodule (s := Set.univ) (fun i _ ↦ hp i) (by simpa)
+  isSemisimpleModule_of_isSemisimpleModule_submodule (s := Set.univ) (fun i _ ↦ hp i) (by simpa)
 
 namespace LinearMap
 

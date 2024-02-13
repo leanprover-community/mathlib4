@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Data.Set.Intervals.OrderEmbedding
-import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Antichain
+import Mathlib.Order.SetNotation
 
 #align_import data.set.intervals.ord_connected from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
@@ -154,7 +154,7 @@ theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s
 
 theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=
-  ⟨fun _ hx _ hy => subset_sInter fun s hs => (hS s hs).out (hx s hs) (hy s hs)⟩
+  ⟨fun _x hx _y hy _z hz s hs => (hS s hs).out (hx s hs) (hy s hs) hz⟩
 #align set.ord_connected_sInter Set.ordConnected_sInter
 
 theorem ordConnected_iInter {ι : Sort*} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
@@ -248,13 +248,13 @@ instance instDenselyOrdered [DenselyOrdered α] {s : Set α} [hs : OrdConnected 
     ⟨⟨x, (hs.out a.2 b.2) (Ioo_subset_Icc_self H)⟩, H⟩⟩
 
 @[instance]
-theorem ordConnected_preimage {F : Type*} [OrderHomClass F α β] (f : F) {s : Set β}
-    [hs : OrdConnected s] : OrdConnected (f ⁻¹' s) :=
+theorem ordConnected_preimage {F : Type*} [FunLike F α β] [OrderHomClass F α β] (f : F)
+    {s : Set β} [hs : OrdConnected s] : OrdConnected (f ⁻¹' s) :=
   ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨OrderHomClass.mono _ hz.1, OrderHomClass.mono _ hz.2⟩⟩
 #align set.ord_connected_preimage Set.ordConnected_preimage
 
 @[instance]
-theorem ordConnected_image {E : Type*} [OrderIsoClass E α β] (e : E) {s : Set α}
+theorem ordConnected_image {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) {s : Set α}
     [hs : OrdConnected s] : OrdConnected (e '' s) := by
   erw [(e : α ≃o β).image_eq_preimage]
   apply ordConnected_preimage (e : α ≃o β).symm
@@ -262,7 +262,8 @@ theorem ordConnected_image {E : Type*} [OrderIsoClass E α β] (e : E) {s : Set 
 
 -- porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
 @[instance]
-theorem ordConnected_range {E : Type*} [OrderIsoClass E α β] (e : E) : OrdConnected (range e) := by
+theorem ordConnected_range {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
+    OrdConnected (range e) := by
   simp_rw [← image_univ]
   exact ordConnected_image (e : α ≃o β)
 #align set.ord_connected_range Set.ordConnected_range

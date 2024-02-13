@@ -523,6 +523,10 @@ theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
 #align norm_nonneg' norm_nonneg'
 #align norm_nonneg norm_nonneg
 
+@[to_additive (attr := simp) abs_norm]
+theorem abs_norm' (z : E) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg' _
+#align abs_norm abs_norm
+
 namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
@@ -530,17 +534,23 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via
 `norm_nonneg'`. -/
 @[positivity Norm.norm _]
-def evalMulNorm : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ a ← whnfR e | throwError "not ‖ · ‖"
-  let p ← mkAppM ``norm_nonneg' #[a]
-  pure (.nonnegative p)
+def evalMulNorm : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
+    let _inst ← synthInstanceQ q(SeminormedGroup $β)
+    assertInstancesCommute
+    pure (.nonnegative q(norm_nonneg' $a))
+  | _, _, _ => throwError "not ‖ · ‖"
 
 /-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
 @[positivity Norm.norm _]
-def evalAddNorm : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ a ← whnfR e | throwError "not ‖ · ‖"
-  let p ← mkAppM ``norm_nonneg #[a]
-  pure (.nonnegative p)
+def evalAddNorm : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
+    let _inst ← synthInstanceQ q(SeminormedAddGroup $β)
+    assertInstancesCommute
+    pure (.nonnegative q(norm_nonneg $a))
+  | _, _, _ => throwError "not ‖ · ‖"
 
 end Mathlib.Meta.Positivity
 
@@ -818,6 +828,8 @@ theorem NormedCommGroup.uniformity_basis_dist :
 
 open Finset
 
+variable [FunLike 𝓕 E F]
+
 /-- A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant `C` such that
 for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a linear map of
 (semi)normed spaces is in `Mathlib/Analysis/NormedSpace/OperatorNorm.lean`. -/
@@ -1094,6 +1106,11 @@ theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕 E F] (f : 𝓕) {K 
   h.le_mul_nnnorm' (map_one f) x
 #align one_hom_class.bound_of_antilipschitz OneHomClass.bound_of_antilipschitz
 #align zero_hom_class.bound_of_antilipschitz ZeroHomClass.bound_of_antilipschitz
+
+@[to_additive]
+theorem Isometry.nnnorm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
+    ‖f x‖₊ = ‖x‖₊ :=
+  Subtype.ext <| hi.norm_map_of_map_one h₁ x
 
 end NNNorm
 
@@ -1405,6 +1422,8 @@ end SeminormedGroup
 section Induced
 
 variable (E F)
+
+variable [FunLike 𝓕 E F]
 
 -- See note [reducible non-instances]
 /-- A group homomorphism from a `Group` to a `SeminormedGroup` induces a `SeminormedGroup`

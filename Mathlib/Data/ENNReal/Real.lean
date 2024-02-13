@@ -64,7 +64,7 @@ theorem toReal_add_le : (a + b).toReal ≤ a.toReal + b.toReal :=
 
 theorem ofReal_add {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     ENNReal.ofReal (p + q) = ENNReal.ofReal p + ENNReal.ofReal q := by
-  rw [ENNReal.ofReal, ENNReal.ofReal, ENNReal.ofReal, ← coe_add, coe_eq_coe,
+  rw [ENNReal.ofReal, ENNReal.ofReal, ENNReal.ofReal, ← coe_add, coe_inj,
     Real.toNNReal_add hp hq]
 #align ennreal.of_real_add ENNReal.ofReal_add
 
@@ -195,7 +195,7 @@ lemma ofReal_lt_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p < .ofReal q ↔ p < q
 @[simp]
 theorem ofReal_eq_ofReal_iff {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
     ENNReal.ofReal p = ENNReal.ofReal q ↔ p = q := by
-  rw [ENNReal.ofReal, ENNReal.ofReal, coe_eq_coe, Real.toNNReal_eq_toNNReal_iff hp hq]
+  rw [ENNReal.ofReal, ENNReal.ofReal, coe_inj, Real.toNNReal_eq_toNNReal_iff hp hq]
 #align ennreal.of_real_eq_of_real_iff ENNReal.ofReal_eq_ofReal_iff
 
 @[simp]
@@ -277,11 +277,11 @@ lemma ofNat_lt_ofReal {n : ℕ} [n.AtLeastTwo] {r : ℝ} :
 
 @[simp]
 lemma ofReal_eq_nat_cast {r : ℝ} {n : ℕ} (h : n ≠ 0) : ENNReal.ofReal r = n ↔ r = n :=
-  ENNReal.coe_eq_coe.trans <| Real.toNNReal_eq_nat_cast h
+  ENNReal.coe_inj.trans <| Real.toNNReal_eq_nat_cast h
 
 @[simp]
 lemma ofReal_eq_one {r : ℝ} : ENNReal.ofReal r = 1 ↔ r = 1 :=
-  ENNReal.coe_eq_coe.trans Real.toNNReal_eq_one
+  ENNReal.coe_inj.trans Real.toNNReal_eq_one
 
 @[simp]
 lemma ofReal_eq_ofNat {r : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
@@ -351,7 +351,7 @@ theorem ofReal_nsmul {x : ℝ} {n : ℕ} : ENNReal.ofReal (n • x) = n • ENNR
 #align ennreal.of_real_nsmul ENNReal.ofReal_nsmul
 
 theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : (ENNReal.ofReal x)⁻¹ = ENNReal.ofReal x⁻¹ := by
-  rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_eq_coe,
+  rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_inj,
     ← Real.toNNReal_inv]
 #align ennreal.of_real_inv_of_pos ENNReal.ofReal_inv_of_pos
 
@@ -437,7 +437,7 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
 theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
-  simp only [coe_eq_coe, NNReal.coe_eq, coe_toReal]
+  simp only [coe_inj, NNReal.coe_inj, coe_toReal]
 #align ennreal.to_real_eq_to_real ENNReal.toReal_eq_toReal
 
 theorem toReal_smul (r : ℝ≥0) (s : ℝ≥0∞) : (r • s).toReal = r • s.toReal := by
@@ -498,7 +498,7 @@ theorem toReal_div (a b : ℝ≥0∞) : (a / b).toReal = a.toReal / b.toReal := 
 
 theorem ofReal_prod_of_nonneg {α : Type*} {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈ s → 0 ≤ f i) :
     ENNReal.ofReal (∏ i in s, f i) = ∏ i in s, ENNReal.ofReal (f i) := by
-  simp_rw [ENNReal.ofReal, ← coe_finset_prod, coe_eq_coe]
+  simp_rw [ENNReal.ofReal, ← coe_finset_prod, coe_inj]
   exact Real.toNNReal_prod_of_nonneg hf
 #align ennreal.of_real_prod_of_nonneg ENNReal.ofReal_prod_of_nonneg
 
@@ -672,14 +672,13 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofReal`. -/
 @[positivity ENNReal.ofReal _]
-def evalENNRealOfReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(Real → ENNReal)) (a : Q(Real))) ← whnfR e | throwError "not ENNReal.ofReal"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.ofReal)
-  let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa) : Expr))
-  | _ => pure .none
+def evalENNRealOfReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "not ENNReal.ofReal"
 end Mathlib.Meta.Positivity

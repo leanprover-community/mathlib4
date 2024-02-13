@@ -427,7 +427,7 @@ theorem map_eq_neg_iff_det_neg (x : Orientation R M ι) (f : M ≃ₗ[R] M)
   have H : 0 < finrank R M := by
     rw [← h]
     exact Fintype.card_pos
-  haveI : FiniteDimensional R M := finiteDimensional_of_finrank H
+  haveI : FiniteDimensional R M := of_finrank_pos H
   rw [map_eq_det_inv_smul _ _ h, units_inv_smul, units_smul_eq_neg_iff, LinearEquiv.coe_det]
 #align orientation.map_eq_neg_iff_det_neg Orientation.map_eq_neg_iff_det_neg
 

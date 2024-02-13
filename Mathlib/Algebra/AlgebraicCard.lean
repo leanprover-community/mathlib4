@@ -72,7 +72,7 @@ variable [Countable R]
 
 @[simp]
 protected theorem countable : Set.Countable { x : A | IsAlgebraic R x } := by
-  rw [← le_aleph0_iff_set_countable, ← lift_le]
+  rw [← le_aleph0_iff_set_countable, ← lift_le_aleph0]
   apply (cardinal_mk_lift_le_max R A).trans
   simp
 #align algebraic.countable Algebraic.countable

@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
@@ -118,6 +118,9 @@ theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
 protected theorem continuous (f : 𝓢(E, F)) : Continuous f :=
   (f.smooth 0).continuous
 #align schwartz_map.continuous SchwartzMap.continuous
+
+instance instContinuousMapClass : ContinuousMapClass 𝓢(E, F) E F where
+  map_continuous := SchwartzMap.continuous
 
 /-- Every Schwartz function is differentiable. -/
 protected theorem differentiable (f : 𝓢(E, F)) : Differentiable ℝ f :=
@@ -607,7 +610,6 @@ section TemperateGrowth
 
 /-! ### Functions of temperate growth -/
 
-
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
 polynomially bounded. -/
 def _root_.Function.HasTemperateGrowth (f : E → F) : Prop :=
@@ -631,6 +633,35 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   refine' pow_le_pow_right (by simp only [le_add_iff_nonneg_right, norm_nonneg]) _
   exact Finset.le_sup hN
 #align function.has_temperate_growth.norm_iterated_fderiv_le_uniform_aux Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
+
+lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}
+    (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
+    (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
+    Function.HasTemperateGrowth f := by
+  refine ⟨contDiff_top_iff_fderiv.2 ⟨hf, h'f.1⟩ , fun n ↦ ?_⟩
+  rcases n with rfl|m
+  · exact ⟨k, C, fun x ↦ by simpa using h x⟩
+  · rcases h'f.2 m with ⟨k', C', h'⟩
+    refine ⟨k', C', fun x ↦ ?_⟩
+    simpa only [ContinuousLinearMap.strongUniformity_topology_eq, Function.comp_apply,
+      LinearIsometryEquiv.norm_map, iteratedFDeriv_succ_eq_comp_right] using h' x
+
+lemma _root_.Function.HasTemperateGrowth.zero :
+    Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
+  refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
+  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero, forall_const]
+  positivity
+
+lemma _root_.Function.HasTemperateGrowth.const (c : F) :
+    Function.HasTemperateGrowth (fun _ : E ↦ c) :=
+  .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
+
+lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
+    Function.HasTemperateGrowth f := by
+  apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
+  · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
+    simpa [this] using .const _
+  · exact (f.le_op_norm x).trans (by simp [mul_add])
 
 end TemperateGrowth
 
@@ -957,7 +988,16 @@ theorem iteratedPDeriv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E,
       simp only [hmtail, iteratedPDeriv_succ_left, hmzero, Fin.tail_init_eq_init_tail]
 #align schwartz_map.iterated_pderiv_succ_right SchwartzMap.iteratedPDeriv_succ_right
 
--- Todo: `iteratedPDeriv 𝕜 m f x = iteratedFDeriv ℝ f x m`
+theorem iteratedPDeriv_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
+    iteratedPDeriv 𝕜 m f x = iteratedFDeriv ℝ n f x m := by
+  induction n generalizing x with
+  | zero => simp
+  | succ n ih =>
+    simp only [iteratedPDeriv_succ_left, iteratedFDeriv_succ_apply_left]
+    rw [← fderiv_continuousMultilinear_apply_const_apply]
+    · simp [← ih]
+    · exact f.smooth'.differentiable_iteratedFDeriv (WithTop.coe_lt_top n) _
+
 end Derivatives
 
 section BoundedContinuousFunction
@@ -966,6 +1006,11 @@ section BoundedContinuousFunction
 
 
 open scoped BoundedContinuousFunction
+
+instance instBoundedContinuousMapClass : BoundedContinuousMapClass 𝓢(E, F) E F :=
+  { instContinuousMapClass with
+    map_bounded := fun f ↦ ⟨2 * (SchwartzMap.seminorm ℝ 0 0) f,
+      (BoundedContinuousFunction.dist_le_two_norm' (norm_le_seminorm ℝ f))⟩ }
 
 /-- Schwartz functions as bounded continuous functions -/
 def toBoundedContinuousFunction (f : 𝓢(E, F)) : E →ᵇ F :=
@@ -1015,8 +1060,7 @@ def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
       simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
         schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
         BoundedContinuousFunction.norm_le (map_nonneg _ _)]
-      intro x
-      exact norm_le_seminorm 𝕜 _ _ }
+      exact norm_le_seminorm 𝕜 _ }
 #align schwartz_map.to_bounded_continuous_function_clm SchwartzMap.toBoundedContinuousFunctionCLM
 
 @[simp]
@@ -1038,5 +1082,76 @@ theorem delta_apply (x₀ : E) (f : 𝓢(E, F)) : delta 𝕜 F x₀ f = f x₀ :
 #align schwartz_map.delta_apply SchwartzMap.delta_apply
 
 end BoundedContinuousFunction
+
+section ZeroAtInfty
+
+open scoped ZeroAtInfty
+
+variable [ProperSpace E]
+
+instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(E, F) E F :=
+  { instContinuousMapClass with
+    zero_at_infty := by
+      intro f
+      apply zero_at_infty_of_norm_le
+      intro ε hε
+      use (SchwartzMap.seminorm ℝ 1 0) f / ε
+      intro x hx
+      rw [div_lt_iff hε] at hx
+      have hxpos : 0 < ‖x‖ := by
+        rw [norm_pos_iff']
+        intro hxzero
+        simp only [hxzero, norm_zero, zero_mul, ← not_le] at hx
+        exact hx (map_nonneg (SchwartzMap.seminorm ℝ 1 0) f)
+      have := norm_pow_mul_le_seminorm ℝ f 1 x
+      rw [pow_one, ← le_div_iff' hxpos] at this
+      apply lt_of_le_of_lt this
+      rwa [div_lt_iff' hxpos] }
+
+/-- Schwartz functions as continuous functions vanishing at infinity. -/
+def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
+  toFun := f
+  zero_at_infty' := zero_at_infty f
+
+@[simp] theorem toZeroAtInfty_apply (f : 𝓢(E, F)) (x : E) : f.toZeroAtInfty x = f x :=
+  rfl
+
+@[simp] theorem toZeroAtInfty_toBCF (f : 𝓢(E, F)) :
+    f.toZeroAtInfty.toBCF = f.toBoundedContinuousFunction := by
+  ext; rfl
+
+variable (𝕜 E F)
+variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+
+/-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
+linear map. -/
+def toZeroAtInftyLM : 𝓢(E, F) →ₗ[𝕜] C₀(E, F) where
+  toFun f := f.toZeroAtInfty
+  map_add' f g := by ext; exact add_apply
+  map_smul' a f := by ext; exact smul_apply
+
+@[simp] theorem toZeroAtInftyLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyLM 𝕜 E F f x = f x :=
+  rfl
+
+/-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
+continuous linear map. -/
+def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
+  { toZeroAtInftyLM 𝕜 E F with
+    cont := by
+      change Continuous (toZeroAtInftyLM 𝕜 E F)
+      refine'
+        Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 E F)
+          (norm_withSeminorms 𝕜 (C₀(E, F))) _ fun _ => ⟨{0}, 1, fun f => _⟩
+      haveI : MulAction NNReal (Seminorm 𝕜 𝓢(E, F)) := Seminorm.instDistribMulAction.toMulAction
+      simp only [Seminorm.comp_apply, coe_normSeminorm, Finset.sup_singleton,
+        schwartzSeminormFamily_apply_zero, Seminorm.smul_apply, one_smul, ge_iff_le,
+        ← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
+        BoundedContinuousFunction.norm_le (map_nonneg _ _)]
+      exact norm_le_seminorm 𝕜 _ }
+
+@[simp] theorem toZeroAtInftyCLM_apply (f : 𝓢(E, F)) (x : E) : toZeroAtInftyCLM 𝕜 E F f x = f x :=
+  rfl
+
+end ZeroAtInfty
 
 end SchwartzMap
