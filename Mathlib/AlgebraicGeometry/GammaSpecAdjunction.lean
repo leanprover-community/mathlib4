@@ -310,6 +310,8 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
         = toΓSpecFun X x := by rw [ContinuousMap.coe_mk]
       erw [this]
       dsimp [toΓSpecFun]
+      -- note to reviewers: this instance was found automatically before the refactor
+      have := @AlgebraicGeometry.LocallyRingedSpace.isLocalRingHomStalkMap X Y
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]

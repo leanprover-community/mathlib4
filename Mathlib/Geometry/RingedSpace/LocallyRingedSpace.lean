@@ -115,7 +115,7 @@ set_option linter.uppercaseLean3 false in
 instance {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) : IsLocalRingHom (stalkMap f x) :=
   f.2 x
 
-instance {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
+instance isLocalRingHomStalkMap {X Y : LocallyRingedSpace} (f : X ⟶ Y) (x : X) :
     IsLocalRingHom (PresheafedSpace.stalkMap f.1 x) :=
   f.2 x
 
