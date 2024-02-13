@@ -154,9 +154,6 @@ set_option linter.uppercaseLean3 false in
 
 variable {x} {S}
 
--- porting note: no longer needed
--- include hu hS hx
-
 /-- Given a `G(Y) ⊆ U`, we can find a unique section `X ⟶ ℱ(Y)` that agrees with `x`. -/
 def getSection (Y : StructuredArrow (op U) G.op) : X ⟶ ℱ.val.obj Y.right := by
   letI hom_sh := whiskerRight ((Ran.adjunction A G.op).counit.app ℱ.val) (coyoneda.obj (op X))
