@@ -90,22 +90,6 @@ theorem auxbound2 (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) : r z ≤ C
     int_cast_im] at *
   exact H1
 
---any suggestions as to where to put the lemmas below?
-
-lemma one_le_sq_div_abs_sq (a : ℝ) (ha : a ≠ 0) : 1 ≤ a^2 / |a|^2 := by
-    rw [_root_.sq_abs, le_div_iff']
-    simp only [mul_one, le_refl]
-    exact (sq_pos_iff a).mpr ha
-
---#find_home! one_le_sq_div_abs_sq
-
-lemma int_abs_eq_complex_abs (a : ℤ) : Complex.abs a = a.natAbs := by
-  have : Complex.abs a = Complex.abs (a : ℝ) := by rfl
-  rw [this, abs_ofReal]
-  norm_cast
-  rw [Int.abs_eq_natAbs a]
-  rfl
-
 lemma ne_zero_if_max {x : Fin 2 → ℤ} (hx : x ≠ 0)
     (h : (max (x 0).natAbs (x 1).natAbs) = (x 0).natAbs) : (x 0) ≠ 0 := by
   intro h0
@@ -135,7 +119,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     simp only [ne_eq, max_eq_left_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
     convert h1
     norm_cast
-    rw [int_abs_eq_complex_abs]
+    rw [complex_abs_of_int_eq_natAbs]
   · right
     rw [H2]
     have : (x 1 : ℝ) ≠ 0 := by
@@ -144,7 +128,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     simp only [ne_eq, max_eq_right_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
     convert h1
     norm_cast
-    rw [int_abs_eq_complex_abs]
+    rw [complex_abs_of_int_eq_natAbs]
 
 /-This should work for complex `k` (with a condition on `k.re`) but last I checked we were missing
 some lemmas about this -/

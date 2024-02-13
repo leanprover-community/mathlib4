@@ -119,6 +119,11 @@ section LinearOrderedField
 
 variable [LinearOrderedField α] {a b c d : α} {n : ℤ}
 
+lemma one_le_sq_div_abs_sq (ha : a ≠ 0) : 1 ≤ a^2 / |a|^2 := by
+  rw [_root_.sq_abs, le_div_iff']
+  simp only [mul_one, le_refl]
+  exact (sq_pos_iff a).mpr ha
+
 /-! ### Lemmas about powers to numerals. -/
 
 section bits
