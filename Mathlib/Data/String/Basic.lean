@@ -59,13 +59,13 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ = ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ := by
   apply ltb.inductionOn ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ (motive := fun ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ ↦
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ =
-    ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩) <;> simp <;>
+    ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩) <;> simp only <;>
   intro ⟨cs₁⟩ ⟨cs₂⟩ i₁ i₂ <;>
   intros <;>
   (conv => lhs; rw [ltb]) <;> (conv => rhs; rw [ltb]) <;>
   simp only [Iterator.hasNext_cons_addChar, ite_false, ite_true, *]
   · rename_i h₂ h₁ heq ih
-    simp [Iterator.curr, get_cons_addChar, Iterator.next, next, *] at *
+    simp only [Iterator.next, next, heq, Iterator.curr, get_cons_addChar, ite_true] at ih ⊢
     repeat rw [Pos.addChar_right_comm _ c]
     exact ih
   · rename_i h₂ h₁ hne
@@ -84,8 +84,9 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
       · rw [ltb]; simp [Iterator.hasNext, Iterator.curr]
       · apply not_lt_of_lt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; rw [ltb]
-      simp [Iterator.hasNext, endPos, utf8ByteSize, utf8ByteSize.go, csize_pos, Iterator.curr, get,
-            utf8GetAux, Iterator.next, next]
+      simp only [Iterator.hasNext, Pos.byteIdx_zero, endPos, utf8ByteSize, utf8ByteSize.go,
+        add_pos_iff, csize_pos, or_true, decide_eq_true_eq, ↓reduceIte, Iterator.curr, get,
+        utf8GetAux, Iterator.next, next, Bool.ite_eq_true_distrib]
       split_ifs with h
       · subst c₂
         suffices ltb ⟨⟨c₁ :: cs₁⟩, ⟨csize c₁⟩⟩ ⟨⟨c₁ :: cs₂⟩, ⟨csize c₁⟩⟩ = ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩
