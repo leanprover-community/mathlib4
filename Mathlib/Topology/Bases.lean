@@ -127,10 +127,7 @@ theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u 
   have : ∀ (a : α), (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id := fun a ↦
     (nhds_basis_opens a).to_hasBasis' (by simpa [and_assoc] using h_nhds a)
       fun t ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
-  refine ⟨?_, ?_, ?_⟩
-  · intro t₁ ht₁ t₂ ht₂ x hx
-    simpa only [and_assoc, this x] using (this x).mem_iff.1 <|
-      (h_open _ ht₁).inter (h_open _ ht₂) |>.mem_nhds hx
+  refine ⟨fun t₁ ht₁ t₂ ht₂ x hx ↦ h_nhds _ _ hx ((h_open _ ht₁).inter (h_open _ ht₂)), ?_, ?_⟩
   · exact sUnion_eq_univ_iff.2 fun x ↦ (this x).ex_mem
   · refine ext_nhds fun x ↦ ?_
     simpa only [nhds_generateFrom, and_comm] using (this x).eq_biInf
