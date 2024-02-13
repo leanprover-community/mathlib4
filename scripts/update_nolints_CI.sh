@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Check if there are changes to `nolints.json` or `style-exceptions.txt`,
+# and file a PR updating these files otherwise.
+# DO NOT run this as a human; this is meant only for automation usage!
+
 set -e
 set -x
 
@@ -12,7 +16,7 @@ git fetch $remote_name
 git rev-parse --verify --quiet refs/remotes/$remote_name/$branch_name && exit 0
 
 # Exit if there are no changes relative to master
-git diff-index --quiet refs/remotes/$remote_name/master -- scripts/nolints.txt scripts/style-exceptions.txt && exit 0
+git diff-index --quiet refs/remotes/$remote_name/master -- scripts/nolints.json scripts/style-exceptions.txt && exit 0
 
 pr_title='chore(scripts): update nolints.json and style-exceptions.txt'
 pr_body='I am happy to remove some nolints for you!'

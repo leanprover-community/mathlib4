@@ -80,6 +80,6 @@ jobs:
           git config --unset http.https://github.com/.extraheader
 
       - name: update nolints.json and style-exceptions.txt
-        run: ./scripts/update_nolints.sh
+        run: ./scripts/update_nolints_CI.sh
         env:
           DEPLOY_GITHUB_TOKEN: ${{ secrets.LCB_TOKEN }}
