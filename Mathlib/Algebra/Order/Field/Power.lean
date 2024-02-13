@@ -119,11 +119,6 @@ section LinearOrderedField
 
 variable [LinearOrderedField α] {a b c d : α} {n : ℤ}
 
-lemma one_eq_sq_div_abs_sq (ha : a ≠ 0) : a^2 / |a|^2 = 1 := by
-  rw [_root_.sq_abs]
-  apply div_self
-  exact pow_ne_zero 2 ha
-
 /-! ### Lemmas about powers to numerals. -/
 
 section bits
