@@ -414,45 +414,51 @@ instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedF
 
 section RestrictScalars
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : SeminormedAddCommGroup E] :
+section NormInstances
+
+variable {𝕜 𝕜' E : Type*}
+
+instance [I : SeminormedAddCommGroup E] :
     SeminormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NormedAddCommGroup E] :
+instance [I : NormedAddCommGroup E] :
     NormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NonUnitalSeminormedRing E] :
+instance [I : NonUnitalSeminormedRing E] :
     NonUnitalSeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NonUnitalNormedRing E] :
+instance [I : NonUnitalNormedRing E] :
     NonUnitalNormedRing (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : SeminormedRing E] :
+instance [I : SeminormedRing E] :
     SeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NormedRing E] :
+instance [I : NormedRing E] :
     NormedRing (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NonUnitalSeminormedCommRing E] :
+instance [I : NonUnitalSeminormedCommRing E] :
     NonUnitalSeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NonUnitalNormedCommRing E] :
+instance [I : NonUnitalNormedCommRing E] :
     NonUnitalNormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : SeminormedCommRing E] :
+instance [I : SeminormedCommRing E] :
     SeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NormedCommRing E] :
+instance [I : NormedCommRing E] :
     NormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
   I
+
+end NormInstances
 
 section NormedSpace
 
