@@ -163,6 +163,7 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     congrArg (·.toNatCast) this
   -- Split into `NonUnitalNonAssocSemiring`, `One` and `natCast` instances.
   cases inst₁; cases inst₂
+  congr
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
