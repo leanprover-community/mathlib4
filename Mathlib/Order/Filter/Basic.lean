@@ -3064,6 +3064,11 @@ theorem Tendsto.comp {f : α → β} {g : β → γ} {x : Filter α} {y : Filter
     (hg : Tendsto g y z) (hf : Tendsto f x y) : Tendsto (g ∘ f) x z := fun _ hs => hf (hg hs)
 #align filter.tendsto.comp Filter.Tendsto.comp
 
+protected theorem Tendsto.iterate {f : α → α} {l : Filter α} (h : Tendsto f l l) :
+    ∀ n, Tendsto (f^[n]) l l
+  | 0 => tendsto_id
+  | (n + 1) => (h.iterate n).comp h
+
 theorem Tendsto.mono_left {f : α → β} {x y : Filter α} {z : Filter β} (hx : Tendsto f x z)
     (h : y ≤ x) : Tendsto f y z :=
   (map_mono h).trans hx
