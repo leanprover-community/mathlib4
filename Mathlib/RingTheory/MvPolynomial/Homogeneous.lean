@@ -228,7 +228,7 @@ lemma _root_.MvPolynomial.isHomogeneous_C_mul_X_pow (r : R) (i : σ) (n : ℕ) :
   (isHomogeneous_X_pow _ _).C_mul _
 
 lemma eval₂ (hφ : φ.IsHomogeneous m) (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S)
-     (hf : ∀ r, (f r).IsHomogeneous 0) (hg : ∀ i, (g i).IsHomogeneous n) :
+    (hf : ∀ r, (f r).IsHomogeneous 0) (hg : ∀ i, (g i).IsHomogeneous n) :
     (eval₂ f g φ).IsHomogeneous (n * m) := by
   apply IsHomogeneous.sum
   intro i hi
