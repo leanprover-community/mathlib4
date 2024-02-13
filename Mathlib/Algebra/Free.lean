@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Data.List.Basic
