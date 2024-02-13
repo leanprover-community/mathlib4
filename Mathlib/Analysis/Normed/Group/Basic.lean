@@ -27,7 +27,8 @@ In this file we define 10 classes:
 
 We also prove basic properties of (semi)normed groups and provide some instances.
 
-TODO: this file is huge. Move material into separate files,
+## TODO
+This file is huge; move material into separate files,
 such as `Mathlib/Analysis/Normed/Group/Lemmas.lean`.
 
 ## Notes

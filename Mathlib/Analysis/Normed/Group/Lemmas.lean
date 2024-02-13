@@ -7,11 +7,15 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Instances.NNReal
 
 /-!
-## Further lemmas about normed groups
+# Further lemmas about normed groups
 
 This file contains further lemmas about normed groups, requiring heavier imports than
 `Mathlib/Analysis/Normed/Group/Basic.lean`.
-TODO(everybody): move lemmas from `Basic` to other places, included this.
+
+## TODO
+
+- Move lemmas from `Basic` to other places, including this file.
+
 -/
 
 variable {E : Type*} [SeminormedAddCommGroup E]
