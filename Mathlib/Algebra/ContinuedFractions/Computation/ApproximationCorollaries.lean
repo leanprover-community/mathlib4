@@ -6,7 +6,6 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.Order.Archimedean
-import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Order.Basic
 
@@ -46,8 +45,8 @@ convergence, fractions
 variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 
 open GeneralizedContinuedFraction (of)
-
 open GeneralizedContinuedFraction
+open scoped Topology
 
 theorem GeneralizedContinuedFraction.of_isSimpleContinuedFraction :
     (of v).IsSimpleContinuedFraction := fun _ _ nth_part_num_eq =>
@@ -99,7 +98,7 @@ open Nat
 theorem of_convergence_epsilon :
     ∀ ε > (0 : K), ∃ N : ℕ, ∀ n ≥ N, |v - (of v).convergents n| < ε := by
   intro ε ε_pos
-  -- use the archimedean property to obtian a suitable N
+  -- use the archimedean property to obtain a suitable N
   rcases (exists_nat_gt (1 / ε) : ∃ N' : ℕ, 1 / ε < N') with ⟨N', one_div_ε_lt_N'⟩
   let N := max N' 5
   -- set minimum to 5 to have N ≤ fib N work
@@ -115,7 +114,7 @@ theorem of_convergence_epsilon :
     let nB := g.denominators (n + 1)
     have abs_v_sub_conv_le : |v - g.convergents n| ≤ 1 / (B * nB) :=
       abs_sub_convergents_le not_terminated_at_n
-    suffices : 1 / (B * nB) < ε; exact lt_of_le_of_lt abs_v_sub_conv_le this
+    suffices 1 / (B * nB) < ε from lt_of_le_of_lt abs_v_sub_conv_le this
     -- show that `0 < (B * nB)` and then multiply by `B * nB` to get rid of the division
     have nB_ineq : (fib (n + 2) : K) ≤ nB :=
       haveI : ¬g.TerminatedAt (n + 1 - 1) := not_terminated_at_n
@@ -123,13 +122,13 @@ theorem of_convergence_epsilon :
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : ¬g.TerminatedAt (n - 1) := mt (terminated_stable n.pred_le) not_terminated_at_n
       succ_nth_fib_le_of_nth_denom (Or.inr this)
-    have zero_lt_B : 0 < B := B_ineq.trans_lt' $ mod_cast fib_pos.2 n.succ_pos
-    have nB_pos : 0 < nB := nB_ineq.trans_lt' $ mod_cast fib_pos.2 $ succ_pos _
+    have zero_lt_B : 0 < B := B_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
+    have nB_pos : 0 < nB := nB_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     have zero_lt_mul_conts : 0 < B * nB := by positivity
-    suffices : 1 < ε * (B * nB); exact (div_lt_iff zero_lt_mul_conts).mpr this
-    -- use that `N ≥ n` was obtained from the archimedean property to show the following
+    suffices 1 < ε * (B * nB) from (div_lt_iff zero_lt_mul_conts).mpr this
+    -- use that `N' ≥ n` was obtained from the archimedean property to show the following
     calc 1 < ε * (N' : K) := (div_lt_iff' ε_pos).mp one_div_ε_lt_N'
-      _ ≤  ε * (B * nB) := ?_
+      _ ≤ ε * (B * nB) := ?_
     -- cancel `ε`
     gcongr
     calc
@@ -142,10 +141,8 @@ theorem of_convergence_epsilon :
       _ ≤ B * nB := by gcongr
 #align generalized_continued_fraction.of_convergence_epsilon GeneralizedContinuedFraction.of_convergence_epsilon
 
-attribute [local instance] Preorder.topology
-
-theorem of_convergence [OrderTopology K] :
-    Filter.Tendsto (of v).convergents Filter.atTop <| nhds v := by
+theorem of_convergence [TopologicalSpace K] [OrderTopology K] :
+    Filter.Tendsto (of v).convergents Filter.atTop <| 𝓝 v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v
 #align generalized_continued_fraction.of_convergence GeneralizedContinuedFraction.of_convergence
 

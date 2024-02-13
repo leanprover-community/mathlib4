@@ -39,7 +39,7 @@ theorem radon_partition (h : ¬ AffineIndependent 𝕜 f) :
       with ⟨pos_w_index, h1', h2'⟩
     exact sum_pos' (λ _i hi ↦ (mem_filter.1 hi).2)
       ⟨pos_w_index, by simp only [mem_filter, h1', h2'.le, and_self, h2']⟩
-  have hp : centerMass J w f = p := Finset.centerMass_of_sum_add_sum_eq_zero hJI $ by
+  have hp : centerMass J w f = p := Finset.centerMass_of_sum_add_sum_eq_zero hJI <| by
     simpa only [← h_vsum, not_lt] using sum_filter_add_sum_filter_not s (fun i ↦ w i < 0) _
   refine ⟨I, p, ?_, ?_⟩
   · exact centerMass_mem_convexHull _ (fun _i hi ↦ (mem_filter.mp hi).2) hI

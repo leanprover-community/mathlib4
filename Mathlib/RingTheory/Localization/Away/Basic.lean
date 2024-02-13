@@ -231,7 +231,7 @@ theorem selfZPow_sub_cast_nat {n m : ℕ} :
 
 @[simp]
 theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZPow x B m := by
-  cases' le_or_lt 0 n with hn hn <;> cases' le_or_lt 0 m with hm hm
+  rcases le_or_lt 0 n with hn | hn <;> rcases le_or_lt 0 m with hm | hm
   · rw [selfZPow_of_nonneg _ _ hn, selfZPow_of_nonneg _ _ hm,
       selfZPow_of_nonneg _ _ (add_nonneg hn hm), Int.natAbs_add_nonneg hn hm, pow_add]
   · have : n + m = n.natAbs - m.natAbs := by

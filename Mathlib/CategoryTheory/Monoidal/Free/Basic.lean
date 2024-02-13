@@ -341,13 +341,17 @@ def project : MonoidalFunctor (F C) D where
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
   ε := 𝟙 _
   μ X Y := 𝟙 _
-  μ_natural := @fun _ _ _ _ f g => by
+  μ_natural_left := fun f _ => by
     induction' f using Quotient.recOn
-    · induction' g using Quotient.recOn
-      · dsimp
-        simp
-        rfl
-      · rfl
+    · dsimp
+      simp
+      rfl
+    · rfl
+  μ_natural_right := fun _ f => by
+    induction' f using Quotient.recOn
+    · dsimp
+      simp
+      rfl
     · rfl
 #align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project
 

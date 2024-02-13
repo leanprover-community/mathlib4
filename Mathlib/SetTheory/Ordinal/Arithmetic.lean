@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Data.Nat.SuccPred
 
 #align_import set_theory.ordinal.arithmetic from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
@@ -2345,7 +2346,7 @@ theorem nat_cast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n :=
 
 @[simp, norm_cast]
 theorem nat_cast_sub (m n : ℕ) : ((m - n : ℕ) : Ordinal) = m - n := by
-  cases' le_total m n with h h
+  rcases le_total m n with h | h
   · rw [tsub_eq_zero_iff_le.2 h, Ordinal.sub_eq_zero_iff_le.2 (nat_cast_le.2 h)]
     rfl
   · apply (add_left_cancel n).1

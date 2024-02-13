@@ -20,7 +20,7 @@ distinguished triangles: this defines the typeclass `Functor.IsTriangulated`.
 
 namespace CategoryTheory
 
-open Category Limits Pretriangulated
+open Category Limits Pretriangulated Preadditive
 
 namespace Functor
 
@@ -64,6 +64,34 @@ instance [Full F] [Faithful F] : Full F.mapTriangle where
         rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app Y.obj₁)]
         simpa only [mapTriangle_obj, map_comp, assoc, commShiftIso_hom_naturality,
           image_preimage, Triangle.mk_mor₃] using f.comm₃) }
+
+section Additive
+
+variable [Preadditive C] [Preadditive D] [F.Additive]
+
+/-- The functor `F.mapTriangle` commutes with the shift. -/
+@[simps!]
+noncomputable def mapTriangleCommShiftIso (n : ℤ) :
+    Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
+  NatIso.ofComponents (fun T => Triangle.isoMk _ _
+    ((F.commShiftIso n).app _) ((F.commShiftIso n).app _) ((F.commShiftIso n).app _)
+    (by aesop_cat) (by aesop_cat) (by
+      dsimp
+      simp only [map_units_smul, map_comp, Linear.units_smul_comp, assoc,
+        Linear.comp_units_smul, ← F.commShiftIso_hom_naturality_assoc]
+      rw [F.map_shiftFunctorComm_hom_app T.obj₁ 1 n]
+      simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
+        ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by aesop_cat)
+
+attribute [local simp] commShiftIso_zero commShiftIso_add
+  shiftFunctorAdd'_eq_shiftFunctorAdd
+
+set_option maxHeartbeats 400000 in
+noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
+    [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
+  iso := F.mapTriangleCommShiftIso
+
+end Additive
 
 variable [HasZeroObject C] [HasZeroObject D] [Preadditive C] [Preadditive D]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
