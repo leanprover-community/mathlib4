@@ -1327,7 +1327,7 @@ theorem frontier_inter_open_inter {s t : Set α} (ht : IsOpen t) :
     frontier (s ∩ t) ∩ t = frontier s ∩ t := by
   simp only [Set.inter_comm _ t, ← Subtype.preimage_coe_eq_preimage_coe_iff,
     ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtype_val,
-    Subtype.preimage_coe_inter_self]
+    Subtype.preimage_coe_self_inter]
 #align frontier_inter_open_inter frontier_inter_open_inter
 
 theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
