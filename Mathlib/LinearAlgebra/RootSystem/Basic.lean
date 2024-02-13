@@ -178,7 +178,7 @@ lemma coreflection_eq_flip_reflection (f : N) : P.coreflection i f = P.flip.refl
   rfl
 
 @[simp]
-lemma coreflection_same (x : N) : P.coreflection i (P.coreflection i x) = x :=
+lemma coreflection_self (x : N) : P.coreflection i (P.coreflection i x) = x :=
   reflection_same P.flip i x
 
 lemma coreflection_invOn_self : InvOn (P.coreflection i) (P.coreflection i) (range P.coroot)
