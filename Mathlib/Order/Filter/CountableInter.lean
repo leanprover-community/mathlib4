@@ -171,6 +171,11 @@ instance Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂
     CountableInterFilter (Filter.ofCountableUnion p h₁ h₂) :=
   countableInter_ofCountableInter ..
 
+/-- The filter defined by all sets that have a countable complement. -/
+def cocountable : Filter α := ofCountableUnion Set.Countable
+  (fun _ hs hs2 ↦ Countable.sUnion hs hs2)  (fun _ ht _ a => Countable.mono a ht)
+
+
 @[simp]
 theorem Filter.mem_ofCountableUnion {p : Set α → Prop} {hunion hmono s} :
     s ∈ ofCountableUnion p hunion hmono ↔ p sᶜ :=
