@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Data.Nat.SuccPred
 
 #align_import set_theory.ordinal.arithmetic from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
