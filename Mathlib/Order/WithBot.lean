@@ -1185,7 +1185,7 @@ instance preorder [Preorder α] : Preorder (WithTop α) where
   le_trans := @le_trans (WithBot αᵒᵈ)ᵒᵈ _
 
 instance partialOrder [PartialOrder α] : PartialOrder (WithTop α) where
-  le_antisymm := @le_antisymm  (WithBot αᵒᵈ)ᵒᵈ _
+  le_antisymm := @le_antisymm (WithBot αᵒᵈ)ᵒᵈ _
 #align with_top.partial_order WithTop.partialOrder
 
 section Preorder

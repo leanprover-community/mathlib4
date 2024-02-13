@@ -61,7 +61,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
   `Cardinal.{u} : Type (u + 1)` is the quotient of types in `Type u`.
   The operation `Cardinal.lift` lifts cardinal numbers to a higher level.
 * Cardinal arithmetic specifically for infinite cardinals (like `κ * κ = κ`) is in the file
-  `SetTheory/CardinalOrdinal.lean`.
+  `SetTheory/Cardinal/Ordinal.lean`.
 * There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
   the base and the exponent live in the same universe. As a workaround, you can add
   ```

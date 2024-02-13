@@ -585,6 +585,7 @@ protected theorem Decidable.mul_lt_mul'' [@DecidableRel α (· ≤ ·)] (h1 : a 
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
 #align decidable.mul_lt_mul'' Decidable.mul_lt_mul''
 
+@[gcongr]
 theorem mul_lt_mul'' : a < c → b < d → 0 ≤ a → 0 ≤ b → a * b < c * d := by classical
   exact Decidable.mul_lt_mul''
 #align mul_lt_mul'' mul_lt_mul''
