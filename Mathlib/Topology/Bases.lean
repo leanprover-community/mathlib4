@@ -121,19 +121,24 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
 
 /-- If a family of open sets `s` is such that every open neighbourhood contains some
 member of `s`, then `s` is a topological basis. -/
+theorem isTopologicalBasis_of_isOpen_of_hasBasis {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
+    (h_nhds : ∀ (a : α), (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) :
+    IsTopologicalBasis s := by
+  refine ⟨?_, ?_, ?_⟩
+  · intro t₁ ht₁ t₂ ht₂ x hx
+    simpa only [and_assoc, h_nhds x] using (h_nhds x).mem_iff.1 <|
+      (h_open _ ht₁).inter (h_open _ ht₂) |>.mem_nhds hx
+  · exact sUnion_eq_univ_iff.2 fun a ↦ (h_nhds a).ex_mem
+  · refine ext_nhds fun x ↦ ?_
+    simpa only [nhds_generateFrom, and_comm] using (h_nhds x).eq_biInf
+
+/-- If a family of open sets `s` is such that every open neighbourhood contains some
+member of `s`, then `s` is a topological basis. -/
 theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
     (h_nhds : ∀ (a : α) (u : Set α), a ∈ u → IsOpen u → ∃ v ∈ s, a ∈ v ∧ v ⊆ u) :
-    IsTopologicalBasis s := by
-  refine'
-    ⟨fun t₁ ht₁ t₂ ht₂ x hx => h_nhds _ _ hx (IsOpen.inter (h_open _ ht₁) (h_open _ ht₂)), _, _⟩
-  · refine' sUnion_eq_univ_iff.2 fun a => _
-    rcases h_nhds a univ trivial isOpen_univ with ⟨u, h₁, h₂, -⟩
-    exact ⟨u, h₁, h₂⟩
-  · refine' (le_generateFrom h_open).antisymm fun u hu => _
-    refine (@isOpen_iff_nhds α u (generateFrom s)).mpr fun a ha ↦ ?_
-    rcases h_nhds a u ha hu with ⟨v, hvs, hav, hvu⟩
-    rw [nhds_generateFrom]
-    exact iInf₂_le_of_le v ⟨hav, hvs⟩ (le_principal_iff.2 hvu)
+    IsTopologicalBasis s :=
+  isTopologicalBasis_of_isOpen_of_hasBasis h_open <| fun a ↦ (nhds_basis_opens a).to_hasBasis'
+    (by simpa [and_assoc] using h_nhds a) (fun t ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat)
 #align topological_space.is_topological_basis_of_open_of_nhds TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
 
 /-- A set `s` is in the neighbourhood of `a` iff there is some basis set `t`, which
@@ -245,31 +250,43 @@ theorem isTopologicalBasis_opens : IsTopologicalBasis { U : Set α | IsOpen U } 
   isTopologicalBasis_of_isOpen_of_nhds (by tauto) (by tauto)
 #align topological_space.is_topological_basis_opens TopologicalSpace.isTopologicalBasis_opens
 
-protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set (Set α)}
-    {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) :
-    IsTopologicalBasis (image2 (· ×ˢ ·) B₁ B₂) := by
-  refine' isTopologicalBasis_of_isOpen_of_nhds _ _
-  · rintro _ ⟨u₁, hu₁, u₂, hu₂, rfl⟩
-    exact (h₁.isOpen hu₁).prod (h₂.isOpen hu₂)
-  · rintro ⟨a, b⟩ u hu uo
-    rcases (h₁.nhds_hasBasis.prod_nhds h₂.nhds_hasBasis).mem_iff.1 (IsOpen.mem_nhds uo hu) with
-      ⟨⟨s, t⟩, ⟨⟨hs, ha⟩, ht, hb⟩, hu⟩
-    exact ⟨s ×ˢ t, mem_image2_of_mem hs ht, ⟨ha, hb⟩, hu⟩
-#align topological_space.is_topological_basis.prod TopologicalSpace.IsTopologicalBasis.prod
-
 protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
     (hf : Inducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) := by
   refine' isTopologicalBasis_of_isOpen_of_nhds _ _
   · rintro _ ⟨V, hV, rfl⟩
-    rw [hf.isOpen_iff]
-    refine' ⟨V, h.isOpen hV, rfl⟩
+    exact h.isOpen hV |>.preimage hf.continuous
   · intro a U ha hU
-    rw [hf.isOpen_iff] at hU
-    obtain ⟨V, hV, rfl⟩ := hU
-    obtain ⟨S, hS, rfl⟩ := h.open_eq_sUnion hV
-    obtain ⟨W, hW, ha⟩ := ha
-    refine' ⟨f ⁻¹' W, ⟨_, hS hW, rfl⟩, ha, Set.preimage_mono <| Set.subset_sUnion_of_mem hW⟩
+    rcases (hf.nhds_eq_comap a).symm ▸ (h.nhds_hasBasis (a := f a)).comap f
+      |>.mem_iff.1 (IsOpen.mem_nhds hU ha) with ⟨V, ⟨hV, haV⟩, hVU⟩
+    exact ⟨f ⁻¹' V, mem_image_of_mem _ hV, haV, hVU⟩
 #align topological_space.is_topological_basis.inducing TopologicalSpace.IsTopologicalBasis.inducing
+
+protected theorem IsTopologicalBasis.induced [s : TopologicalSpace β] (f : α → β)
+    {T : Set (Set β)} (h : IsTopologicalBasis T) :
+    IsTopologicalBasis (t := induced f s) ((preimage f) '' T) :=
+  h.inducing (t := induced f s) (inducing_induced f)
+
+#check Filter.HasBasis
+
+protected theorem IsTopologicalBasis.inf {t₁ t₂ : TopologicalSpace β} {B₁ B₂ : Set (Set β)}
+    (h₁ : IsTopologicalBasis (t := t₁) B₁) (h₂ : IsTopologicalBasis (t := t₂) B₂) :
+    IsTopologicalBasis (t := t₁ ⊓ t₂) (image2 (· ∩ ·) B₁ B₂) := by
+  let _ : TopologicalSpace β := t₁ ⊓ t₂
+  refine isTopologicalBasis_of_isOpen_of_nhds (t := _) ?_ ?_
+  · rintro _ ⟨u₁, hu₁, u₂, hu₂, rfl⟩
+    exact ((h₁.isOpen (t := t₁) hu₁).mono inf_le_left).inter
+      ((h₂.isOpen (t := t₂) hu₂).mono inf_le_right)
+  · rintro x u hu uo
+    rcases (nhds_inf (a := x)).symm ▸ (h₁.nhds_hasBasis (t := t₁)).inf (h₂.nhds_hasBasis (t := t₂))
+      |>.mem_iff.1 (uo.mem_nhds hu) with ⟨⟨s, t⟩, ⟨⟨hs, ha⟩, ht, hb⟩, hu⟩
+    exact ⟨s ∩ t, mem_image2_of_mem hs ht, ⟨ha, hb⟩, hu⟩
+
+protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set (Set α)}
+    {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) :
+    IsTopologicalBasis (image2 (· ×ˢ ·) B₁ B₂) := by
+  have := (h₁.induced Prod.fst).inf (h₂.induced Prod.snd)
+  rwa [image2_image_left, image2_image_right] at this
+#align topological_space.is_topological_basis.prod TopologicalSpace.IsTopologicalBasis.prod
 
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
     (Uc : ⋃ i, U i = univ) {b : ∀ i, Set (Set (U i))} (hb : ∀ i, IsTopologicalBasis (b i)) :
