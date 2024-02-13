@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Polynomial
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Norm
 import Mathlib.Topology.Instances.Complex
+import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import number_theory.number_field.embeddings from "leanprover-community/mathlib"@"caa58cbf5bfb7f81ccbaca4e8b8ac4bc2b39cc1c"
 
@@ -990,3 +990,36 @@ lemma IsUnramifiedAtInfinitePlaces.card_infinitePlace [NumberField k] [NumberFie
   exact InfinitePlace.isUnramifiedIn K
 
 end InfinitePlace
+
+namespace IsPrimitiveRoot
+
+variable {K : Type*} [Field K] [NumberField K] {ζ : K} {k : ℕ}
+
+theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k) :
+  NumberField.InfinitePlace.NrRealPlaces K = 0 := by
+  refine (@Fintype.card_eq_zero_iff _ (_)).2 ⟨fun ⟨w, hwreal⟩ ↦ ?_⟩
+  rw [NumberField.InfinitePlace.isReal_iff] at hwreal
+  let f := w.embedding
+  have hζ' : IsPrimitiveRoot (f ζ) k := hζ.map_of_injective f.injective
+  have him : (f ζ).im = 0 := by
+    · rw [← Complex.conj_eq_iff_im, ← NumberField.ComplexEmbedding.conjugate_coe_eq]
+      congr
+  have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
+    · rw [← Complex.abs_re_eq_abs] at him
+      have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
+      rw [Complex.norm_eq_abs, ← him] at this
+      by_cases hpos : 0 ≤ (f ζ).re
+      · rw [_root_.abs_of_nonneg hpos] at this
+        left; exact this
+      · rw [_root_.abs_of_neg (not_le.1 hpos)] at this
+        right; simp [← this]
+  cases hre with
+  | inl hone =>
+    refine hζ'.ne_one (by linarith) <| Complex.ext (by simp [hone]) (by simp [him])
+  | inr hnegone =>
+    replace hζ' := hζ'.eq_orderOf
+    simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
+      orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
+    linarith
+
+end IsPrimitiveRoot
