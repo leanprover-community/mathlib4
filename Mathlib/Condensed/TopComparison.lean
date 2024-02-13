@@ -63,7 +63,7 @@ condition which is required to be a sheaf for the regular topology.
 theorem equalizerCondition_yonedaPresheaf
     [∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) G]
     (hq : ∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], QuotientMap (G.map π)) :
-      EqualizerCondition.{v, u} (yonedaPresheaf G X) := by
+      EqualizerCondition (yonedaPresheaf G X) := by
   intro Z B π _ _
   refine ⟨fun a b h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
   · simp only [yonedaPresheaf, unop_op, Quiver.Hom.unop_op, Set.coe_setOf, MapToEqualizer,
@@ -80,7 +80,7 @@ theorem equalizerCondition_yonedaPresheaf
     simp only [yonedaPresheaf, unop_op] at a
     refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩
     congr
-    exact FunLike.ext'_iff.mp ((hq Z B π).lift_comp a (factorsThrough_of_pullbackCondition G X ha))
+    exact DFunLike.ext'_iff.mp ((hq Z B π).lift_comp a (factorsThrough_of_pullbackCondition G X ha))
 
 /--
 If `G` preserves finite coproducts (which is the case when `C` is `CompHaus`, `Profinite` or
