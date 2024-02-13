@@ -21,6 +21,7 @@ functions are endowed with a multiplication, given by Dirichlet convolution, and
 to form the Dirichlet ring.
 
 ## Main Definitions
+
  * `ArithmeticFunction R` consists of functions `f : ℕ → R` such that `f 0 = 0`.
  * An arithmetic function `f` `IsMultiplicative` when `x.coprime y → f (x * y) = f x * f y`.
  * The pointwise operations `pmul` and `ppow` differ from the multiplication
@@ -34,6 +35,7 @@ to form the Dirichlet ring.
  * `μ` is the Möbius function (spelled `moebius` in code).
 
 ## Main Results
+
  * Several forms of Möbius inversion:
  * `sum_eq_iff_sum_mul_moebius_eq` for functions to a `CommRing`
  * `sum_eq_iff_sum_smul_moebius_eq` for functions to an `AddCommGroup`
@@ -47,14 +49,21 @@ to form the Dirichlet ring.
  * `prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero` for functions to a `CommGroupWithZero`
 
 ## Notation
+
 All notation is localized in the namespace `ArithmeticFunction`.
 
 The arithmetic functions `ζ`, `σ`, `ω`, `Ω` and `μ` have Greek letter names.
+
+In addition, there are separate locales `ArithmeticFunction.zeta` for `ζ`,
+`ArithmeticFunction.sigma` for `σ`, `ArithmeticFunction.omega` for `ω`,
+`ArithmeticFunction.Omega` for `Ω`, and `ArithmeticFunction.Moebius` for `μ`,
+to allow for selective access to these notations.
 
 The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom notation
 `∏ᵖ p ∣ n, f p` when applied to `n`.
 
 ## Tags
+
 arithmetic functions, dirichlet convolution, divisors
 
 -/
@@ -418,9 +427,11 @@ def zeta : ArithmeticFunction ℕ :=
   ⟨fun x => ite (x = 0) 0 1, rfl⟩
 #align nat.arithmetic_function.zeta ArithmeticFunction.zeta
 
--- porting note: added `Nat.` to the scoped namespace
 @[inherit_doc]
 scoped[ArithmeticFunction] notation "ζ" => ArithmeticFunction.zeta
+
+@[inherit_doc]
+scoped[ArithmeticFunction.zeta] notation "ζ" => ArithmeticFunction.zeta
 
 @[simp]
 theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
@@ -490,6 +501,11 @@ theorem pmul_comm [CommMonoidWithZero R] (f g : ArithmeticFunction R) : f.pmul g
   ext
   simp [mul_comm]
 #align nat.arithmetic_function.pmul_comm ArithmeticFunction.pmul_comm
+
+lemma pmul_assoc [CommMonoidWithZero R] (f₁ f₂ f₃ : ArithmeticFunction R) :
+    pmul (pmul f₁ f₂) f₃ = pmul f₁ (pmul f₂ f₃) := by
+  ext
+  simp only [pmul_apply, mul_assoc]
 
 section NonAssocSemiring
 
@@ -842,9 +858,11 @@ def sigma (k : ℕ) : ArithmeticFunction ℕ :=
   ⟨fun n => ∑ d in divisors n, d ^ k, by simp⟩
 #align nat.arithmetic_function.sigma ArithmeticFunction.sigma
 
--- porting note: added `Nat.` to the scoped namespace
 @[inherit_doc]
 scoped[ArithmeticFunction] notation "σ" => ArithmeticFunction.sigma
+
+@[inherit_doc]
+scoped[ArithmeticFunction.sigma] notation "σ" => ArithmeticFunction.sigma
 
 theorem sigma_apply {k n : ℕ} : σ k n = ∑ d in divisors n, d ^ k :=
   rfl
@@ -911,9 +929,11 @@ def cardFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.factors.length, by simp⟩
 #align nat.arithmetic_function.card_factors ArithmeticFunction.cardFactors
 
--- porting note: added `Nat.` to the scoped namespace
 @[inherit_doc]
 scoped[ArithmeticFunction] notation "Ω" => ArithmeticFunction.cardFactors
+
+@[inherit_doc]
+scoped[ArithmeticFunction.Omega] notation "Ω" => ArithmeticFunction.cardFactors
 
 theorem cardFactors_apply {n : ℕ} : Ω n = n.factors.length :=
   rfl
@@ -965,9 +985,11 @@ def cardDistinctFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.factors.dedup.length, by simp⟩
 #align nat.arithmetic_function.card_distinct_factors ArithmeticFunction.cardDistinctFactors
 
--- porting note: added `Nat.` to the scoped namespace
 @[inherit_doc]
 scoped[ArithmeticFunction] notation "ω" => ArithmeticFunction.cardDistinctFactors
+
+@[inherit_doc]
+scoped[ArithmeticFunction.omega] notation "ω" => ArithmeticFunction.cardDistinctFactors
 
 theorem cardDistinctFactors_zero : ω 0 = 0 := by simp
 #align nat.arithmetic_function.card_distinct_factors_zero ArithmeticFunction.cardDistinctFactors_zero
@@ -1008,9 +1030,11 @@ def moebius : ArithmeticFunction ℤ :=
   ⟨fun n => if Squarefree n then (-1) ^ cardFactors n else 0, by simp⟩
 #align nat.arithmetic_function.moebius ArithmeticFunction.moebius
 
--- porting note: added `Nat.` to the scoped namespace
 @[inherit_doc]
 scoped[ArithmeticFunction] notation "μ" => ArithmeticFunction.moebius
+
+@[inherit_doc]
+scoped[ArithmeticFunction.Moebius] notation "μ" => ArithmeticFunction.moebius
 
 @[simp]
 theorem moebius_apply_of_squarefree {n : ℕ} (h : Squarefree n) : μ n = (-1) ^ cardFactors n :=

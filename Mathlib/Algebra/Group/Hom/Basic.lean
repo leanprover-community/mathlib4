@@ -5,7 +5,7 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.NeZero
 
 #align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
