@@ -77,20 +77,20 @@ structure Base extends Basis α R (Submodule.span R (Set.range P.root)) where
   /-- Any root has same-sign coordinates with respect to the basis. -/
   same_sign : ∀(i : ι) (j k : α), 0 ≤ (repr (P.root' i) j) * (repr (P.root' i) k)
 
-def isIndecomposableFor (x : N) (y : M) : Prop :=
-  P.toLin y x > 0 ∧ ¬ ∃(a b : M), P.toLin a x > 0 ∧ P.toLin b x > 0 ∧ y = a + b
-
-
+/-- An root is indecomposable if it is positive, and cannot be written as a sum of two positive
+roots. -/
+def isIndecomposableFor (x : N) (i : ι) : Prop :=
+  P.toLin (P.root i) x > 0 ∧ ¬ ∃(a b : ι),
+  P.toLin (P.root a) x > 0 ∧ P.toLin (P.root b) x > 0 ∧ P.root i = P.root a + P.root b
 
 /-!
-lemma if `x` is regular, then the indecomposable elements for `x` are a base. (only works when we
-have a positive-definite form)
+lemma if `x` is regular, and ι is finite then the indecomposable elements for `x` are a base.
+(tricky to generalize, since the proof uses positive-definiteness - maybe semidefinite is okay, so
+we can do affine roots.  False in general.)
 
 Make a Cartan matrix.
 
 Show that the Cartan matrix is unique?
 Show that there is one Weyl orbit of bases, up to sign?
-
-
 
 -/
