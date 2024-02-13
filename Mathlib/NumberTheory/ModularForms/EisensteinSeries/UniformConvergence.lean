@@ -144,8 +144,8 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     norm_cast
     rw [complex_abs_of_int_eq_natAbs]
 
-/-This should work for complex `k` (with a condition on `k.re`) but last I checked we were missing
-some lemmas about this -/
+/-This should work for complex `k`  (with a condition on `k.re`and taking the power out of the abs)
+but last I checked we were missing some lemmas about this -/
 lemma bound (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
     ((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs)^k ≤
       Complex.abs (((x 0 : ℂ) * (z : ℂ) + (x 1 : ℂ)) ^ k) := by
@@ -186,7 +186,7 @@ lemma bound (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
     simp only [hk, pow_zero, Nat.cast_max, mul_one, map_one, le_refl]
 
 theorem eis_is_bounded_on_box (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
-    (hx : (⟨x 0, x 1⟩ : ℤ × ℤ) ∈ box n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤
+    (hx : (x 0, x 1) ∈ box n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤
       (Complex.abs ((r z) ^ k * n ^ k))⁻¹ := by
   by_cases hn : n = 0
   · rw [hn] at hx
@@ -326,7 +326,7 @@ end summability
 theorem eisensteinSeries_TendstoLocallyUniformlyOn {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
       (fun (z : ℍ) => ∑ x in s, eisSummand k x z))
-        ( fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop ⊤ := by
+        (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop ⊤ := by
   have hk0 : 0 ≤ k := by linarith
   lift k to ℕ using hk0
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact, eisensteinSeries_SIF]
