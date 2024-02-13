@@ -140,6 +140,10 @@ theorem ssubset_univ_iff {s : Finset α} : s ⊂ univ ↔ s ≠ univ :=
   @lt_top_iff_ne_top _ _ _ s
 #align finset.ssubset_univ_iff Finset.ssubset_univ_iff
 
+@[simp]
+theorem univ_subset_iff {s : Finset α} : univ ⊆ s ↔ s = univ :=
+  @top_le_iff _ _ _ s
+
 theorem codisjoint_left : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → a ∈ t := by
   classical simp [codisjoint_iff, eq_univ_iff_forall, or_iff_not_imp_left]
 #align finset.codisjoint_left Finset.codisjoint_left

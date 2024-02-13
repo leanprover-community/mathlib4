@@ -193,22 +193,22 @@ theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using
 end deprecated
 
 @[simp]
-theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_zero
+theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_zero]; clear testBit_zero;
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_bit_zero]; clear testBit_bit_zero;
         cases b <;>
       rfl
-#align int.test_bit_zero Int.testBit_zero
+#align int.test_bit_zero Int.testBit_bit_zero
 
 @[simp]
-theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_succ
+theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_succ
   | -[n+1] => by
     dsimp only [testBit]
     simp only [bit_negSucc]
-    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_succ]
-#align int.test_bit_succ Int.testBit_succ
+    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
+#align int.test_bit_succ Int.testBit_bit_succ
 
 -- Porting note: TODO
 -- /- ./././Mathport/Syntax/Translate/Expr.lean:333:4: warning: unsupported (TODO): `[tacs] -/

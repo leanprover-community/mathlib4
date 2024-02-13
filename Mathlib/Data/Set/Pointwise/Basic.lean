@@ -261,6 +261,10 @@ theorem image_inv : Inv.inv '' s = s⁻¹ :=
 #align set.image_neg Set.image_neg
 
 @[to_additive (attr := simp)]
+theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := by
+  rw [← image_inv, image_eq_empty]
+
+@[to_additive (attr := simp)]
 noncomputable instance involutiveInv : InvolutiveInv (Set α) where
   inv := Inv.inv
   inv_inv s := by simp only [← inv_preimage, preimage_preimage, inv_inv, preimage_id']
