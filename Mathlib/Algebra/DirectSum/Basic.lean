@@ -253,9 +253,6 @@ def setToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, β i) →+ ⨁ i : T, β
 
 variable {β}
 
--- Porting note: commented out
--- omit dec_ι
-
 instance unique [∀ i, Subsingleton (β i)] : Unique (⨁ i, β i) :=
   DFinsupp.unique
 #align direct_sum.unique DirectSum.unique

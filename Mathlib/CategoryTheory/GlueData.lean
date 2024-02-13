@@ -388,9 +388,6 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
 set_option linter.uppercaseLean3 false in
 #align category_theory.glue_data.V_pullback_cone_is_limit_of_map CategoryTheory.GlueData.vPullbackConeIsLimitOfMap
 
--- porting note: commenting out omit
--- omit H
-
 /-- If there is a forgetful functor into `Type` that preserves enough (co)limits, then `D.ι` will
 be jointly surjective. -/
 theorem ι_jointly_surjective (F : C ⥤ Type v) [PreservesColimit D.diagram.multispan F]

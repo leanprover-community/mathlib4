@@ -475,9 +475,6 @@ theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P} (h : Injective (bi
     neg_eq_iff_add_eq_zero, ← bit0, ← bit0_zero, h.eq_iff, vsub_eq_zero_iff_eq, eq_comm]
 #align equiv.point_reflection_fixed_iff_of_injective_bit0 Equiv.pointReflection_fixed_iff_of_injective_bit0
 
--- Porting note: Removed:
--- omit G
-
 -- Porting note: need this to calm down CI
 theorem injective_pointReflection_left_of_injective_bit0 {G P : Type*} [AddCommGroup G]
     [AddTorsor G P] (h : Injective (bit0 : G → G)) (y : P) :
