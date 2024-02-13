@@ -169,7 +169,7 @@ lemma coreflection_apply (f : N) :
     P.coreflection i f = f - (P.toLin (P.root i) f) • P.coroot i :=
   rfl
 
-  @[simp]
+@[simp]
 lemma coreflection_apply_self :
     P.coreflection i (P.coroot i) = - P.coroot i :=
   Module.reflection_apply_self (P.flip.coroot_root_two i)
