@@ -17,24 +17,39 @@ algebras, as `CliffordAlgebra.equivProd`.
 
 * `CliffordAlgebra.equivProd : CliffordAlgebra (Q₁.prod Q₂) ≃ₐ[R] (evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂)`
 
+## TODO:
+
+Introduce morphisms and equivalences of graded algebas, and upgrade `CliffordAlgebra.equivProd` to a
+graded algebra equivalence.
+
 -/
 
 suppress_compilation
 
-variable {R M₁ M₂ : Type*}
-variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [Module R M₁] [Module R M₂]
+variable {R M₁ M₂ N : Type*}
+variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N]
+variable [Module R M₁] [Module R M₂] [Module R N]
 
-variable (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
+variable (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Qₙ : QuadraticForm R N)
 
 open scoped TensorProduct
 
 namespace CliffordAlgebra
 
-theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
-    (m₁ : CliffordAlgebra Q₁) (hm₁ : m₁ ∈ evenOdd Q₁ i₁)
-    (m₂ : CliffordAlgebra Q₂) (hm₂ : m₂ ∈ evenOdd Q₂ i₂) :
-    map (.inl Q₁ Q₂) m₁ * map (.inr Q₁ Q₂) m₂ =
-      (-1 : ℤˣ) ^ (i₂ * i₁) • (map (.inr Q₁ Q₂) m₂ * map (.inl Q₁ Q₂) m₁) := by
+
+section map_mul_map
+
+variable {Q₁ Q₂ Qₙ}
+variable (f₁ : Q₁ →qᵢ Qₙ) (f₂ : Q₂ →qᵢ Qₙ) (hf : ∀ x y, Qₙ.IsOrtho (f₁ x) (f₂ y))
+variable (m₁ : CliffordAlgebra Q₁) (m₂ : CliffordAlgebra Q₂)
+
+/-- If `m₁` and `m₂` are both homogenous,
+and the quadratic spaces `Q₁` and `Q₂` map into
+orthogonal subspaces of `Qₙ` (for instance, when `Qₙ = Q₁.prod Q₂`),
+then the product of the embedding in `CliffordAlgebra Q` commutes up to a sign factor. -/
+nonrec theorem map_mul_map_of_isOrtho_of_mem_evenOdd
+    {i₁ i₂ : ZMod 2} (hm₁ : m₁ ∈ evenOdd Q₁ i₁) (hm₂ : m₂ ∈ evenOdd Q₂ i₂) :
+    map f₁ m₁ * map f₂ m₂ = (-1 : ℤˣ) ^ (i₂ * i₁) • (map f₂ m₂ * map f₁ m₁) := by
   -- the strategy; for each variable, induct on powers of `ι`, then on the exponent of each
   -- power.
   induction hm₁ using Submodule.iSup_induction' with
@@ -52,8 +67,7 @@ theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
       obtain ⟨v₁, rfl⟩ := hm₁
       -- this is the first interesting goal
       rw [map_mul, mul_assoc, ih₁, mul_smul_comm, map_apply_ι, Nat.cast_succ, mul_add_one,
-        uzpow_add, mul_smul, ← mul_assoc, ← mul_assoc, ← smul_mul_assoc ((-1) ^ i₂),
-        QuadraticForm.Isometry.inl_apply]
+        uzpow_add, mul_smul, ← mul_assoc, ← mul_assoc, ← smul_mul_assoc ((-1) ^ i₂)]
       clear ih₁
       congr 2
       induction hm₂ using Submodule.iSup_induction' with
@@ -71,10 +85,26 @@ theorem map_inl_mul_map_inr_of_mem_evenOdd {i₁ i₂ : ZMod 2}
         | hmul m₂ hm₂ i x₂ _hx₂ ih₂ =>
           obtain ⟨v₂, rfl⟩ := hm₂
           -- this is the second interesting goal
-          rw [map_mul, map_apply_ι, QuadraticForm.Isometry.inr_apply, Nat.cast_succ, ← mul_assoc,
-            ι_mul_ι_comm_of_isOrtho (.inl_inr _ _), neg_mul, mul_assoc, ih₂, mul_smul_comm,
+          rw [map_mul, map_apply_ι, Nat.cast_succ, ← mul_assoc,
+            ι_mul_ι_comm_of_isOrtho (hf _ _), neg_mul, mul_assoc, ih₂, mul_smul_comm,
             ← mul_assoc, ← Units.neg_smul, uzpow_add, uzpow_one, mul_neg_one]
 
+theorem commute_map_mul_map_of_isOrtho_of_mem_evenOdd_zero_left
+    {i₂ : ZMod 2} (hm₁ : m₁ ∈ evenOdd Q₁ 0) (hm₂ : m₂ ∈ evenOdd Q₂ i₂) :
+    Commute (map f₁ m₁) (map f₂ m₂) :=
+  (map_mul_map_of_isOrtho_of_mem_evenOdd _ _ hf _ _ hm₁ hm₂).trans <| by simp
+
+theorem commute_map_mul_map_of_isOrtho_of_mem_evenOdd_zero_right
+    {i₁ : ZMod 2} (hm₁ : m₁ ∈ evenOdd Q₁ i₁) (hm₂ : m₂ ∈ evenOdd Q₂ 0) :
+    Commute (map f₁ m₁) (map f₂ m₂) :=
+  (map_mul_map_of_isOrtho_of_mem_evenOdd _ _ hf _ _ hm₁ hm₂).trans <| by simp
+
+theorem map_mul_map_eq_neg_of_isOrtho_of_mem_evenOdd_one
+    (hm₁ : m₁ ∈ evenOdd Q₁ 1) (hm₂ : m₂ ∈ evenOdd Q₂ 1) :
+    map f₁ m₁ * map f₂ m₂ = - map f₂ m₂ * map f₁ m₁ := by
+  simp [map_mul_map_of_isOrtho_of_mem_evenOdd _ _ hf _ _ hm₁ hm₂]
+
+end map_mul_map
 
 /-- The forward direction of `CliffordAlgebra.prodEquiv`. -/
 def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂) :=
@@ -108,7 +138,7 @@ def toProd : evenOdd Q₁ ᵍ⊗[R] evenOdd Q₂ →ₐ[R] CliffordAlgebra (Q₁
   GradedTensorProduct.lift _ _
     (CliffordAlgebra.map <| .inl _ _)
     (CliffordAlgebra.map <| .inr _ _)
-    fun _i₁ _i₂ x₁ x₂ => map_inl_mul_map_inr_of_mem_evenOdd _ _ _ x₁.prop _ x₂.prop
+    fun _i₁ _i₂ x₁ x₂ => map_mul_map_of_isOrtho_of_mem_evenOdd _ _ (.inl_inr) _ _ x₁.prop x₂.prop
 
 @[simp]
 lemma toProd_ι_tmul_one (m₁ : M₁) : toProd Q₁ Q₂ (ι _ m₁ ᵍ⊗ₜ 1) = ι _ (m₁, 0) := by
