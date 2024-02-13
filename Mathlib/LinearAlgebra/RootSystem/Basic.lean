@@ -14,7 +14,7 @@ This file contains basic definitions for root systems and root data.
 ## Main definitions / results:
 
  * `RootPairing`: Given two perfectly-paired `R`-modules `M` and `N` (over some commutative ring
-   `R`) a root pairing with finite indexing set `ι` is the data of an `ι`-indexed subset of `M`
+   `R`) a root pairing with indexing set `ι` is the data of an `ι`-indexed subset of `M`
    ("the roots") and an `ι`-indexed subset of `N` ("the coroots") satisfying the axioms familiar
    from the traditional theory of root systems / data.
  * `RootDatum`: A root datum is a root pairing for which the roots and coroots take values in
@@ -66,10 +66,10 @@ open AddSubgroup (zmultiples)
 
 noncomputable section
 
-variable (ι R M N : Type*) [Finite ι]
+variable (ι R M N : Type*)
   [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
-/-- Given two perfectly-paired `R`-modules `M` and `N`, a root pairing with finite indexing set `ι`
+/-- Given two perfectly-paired `R`-modules `M` and `N`, a root pairing with indexing set `ι`
 is the data of an `ι`-indexed subset of `M` ("the roots") and an `ι`-indexed subset of `N`
 ("the coroots") satisfying the axioms familiar from the traditional theory of root systems / data.
 
@@ -148,6 +148,18 @@ lemma reflection_apply_self :
     P.reflection i (P.root i) = - P.root i :=
   Module.reflection_apply_self (P.coroot_root_two i)
 
+@[simp]
+lemma reflection_same (x : M) : P.reflection i (P.reflection i x) = x :=
+  Module.involutive_reflection (P.coroot_root_two i) x
+
+lemma reflection_invOn_self : InvOn (P.reflection i) (P.reflection i) (range P.root)
+    (range P.root) := by
+  constructor <;>
+    exact fun x _ => Module.involutive_reflection (P.coroot_root_two i) x
+
+lemma bijOn_reflection_root : BijOn (P.reflection i) (range P.root) (range P.root) := InvOn.bijOn
+  (reflection_invOn_self P i) (mapsTo_preReflection_root P i) (mapsTo_preReflection_root P i)
+
 /-- The reflection associated to a coroot. -/
 def coreflection : N ≃ₗ[R] N :=
   Module.reflection (P.root_coroot_two i)
@@ -156,15 +168,23 @@ lemma coreflection_apply (f : N) :
     P.coreflection i f = f - (P.toLin (P.root i) f) • P.coroot i :=
   rfl
 
-lemma bijOn_reflection_root :
-    BijOn (P.reflection i) (range P.root) (range P.root) :=
-  ((finite_range P.root).injOn_iff_bijOn_of_mapsTo (P.mapsTo_preReflection_root i)).mp <|
-    (P.reflection i).injective.injOn _
+@[simp]
+lemma coreflection_apply_self :
+    P.coreflection i (P.coroot i) = - P.coroot i :=
+  Module.reflection_apply_self (P.flip.coroot_root_two i)
 
-lemma bijOn_coreflection_coroot :
-    BijOn (P.coreflection i) (range P.coroot) (range P.coroot) :=
-  ((finite_range P.coroot).injOn_iff_bijOn_of_mapsTo (P.mapsTo_preReflection_coroot i)).mp <|
-    (P.coreflection i).injective.injOn _
+lemma coreflection_eq_flip_reflection (f : N) : P.coreflection i f = P.flip.reflection i f :=
+  rfl
+
+@[simp]
+lemma coreflection_self (x : N) : P.coreflection i (P.coreflection i x) = x :=
+  reflection_same P.flip i x
+
+lemma coreflection_invOn_self : InvOn (P.coreflection i) (P.coreflection i) (range P.coroot)
+    (range P.coroot) := reflection_invOn_self P.flip i
+
+lemma bijOn_coreflection_coroot : BijOn (P.coreflection i) (range P.coroot) (range P.coroot) :=
+  bijOn_reflection_root P.flip i
 
 @[simp]
 lemma reflection_image_eq :
@@ -180,6 +200,8 @@ lemma reflection_dualMap_eq_coreflection :
     (P.reflection i).dualMap ∘ₗ P.toLin.flip = P.toLin.flip ∘ₗ P.coreflection i := by
   ext n m
   simp [coreflection_apply, reflection_apply, mul_comm (P.toLin m (P.coroot i))]
+
+variable [Finite ι]
 
 /-- Even though the roots may not span, coroots are distinguished by their pairing with the
 roots. The proof depends crucially on the fact that there are finitely-many roots.
@@ -291,11 +313,11 @@ namespace RootSystem
 
 open RootPairing
 
-variable {ι}
+variable {ι} [Finite ι]
 variable (P : RootSystem ι R M N)
 
-/-- In characteristic zero if there is no torsion, a root system is determined entirely by its
-roots. -/
+/-- In characteristic zero if there is no torsion, a finite root system is determined entirely by
+its roots. -/
 @[ext]
 protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     {P₁ P₂ : RootSystem ι R M N}
