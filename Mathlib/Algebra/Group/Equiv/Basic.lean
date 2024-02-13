@@ -617,7 +617,7 @@ theorem map_ne_one_iff (h : M ≃* N) {x : M} : h x ≠ 1 ↔ x ≠ 1 :=
 /-- A bijective `Semigroup` homomorphism is an isomorphism -/
 @[to_additive (attr := simps! apply) "A bijective `AddSemigroup` homomorphism is an isomorphism"]
 noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N]
-(f : F) (hf : Bijective f) : M ≃* N :=
+    (f : F) (hf : Bijective f) : M ≃* N :=
   { Equiv.ofBijective f hf with map_mul' := map_mul f }
 #align mul_equiv.of_bijective MulEquiv.ofBijective
 #align add_equiv.of_bijective AddEquiv.ofBijective
