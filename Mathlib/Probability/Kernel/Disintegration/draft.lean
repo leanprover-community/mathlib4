@@ -1228,17 +1228,29 @@ lemma isRatKernelCDF_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ
 
 end Rat
 
+section KernelCDF
+
+noncomputable
+def mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] : α × ℝ → StieltjesFunction :=
+  todo3 (fun p : α × ℝ ↦ mLimsupIic κ p.1 p.2) (isRatKernelCDF_mLimsupIic κ).measurable
+
+lemma isKernelCDF_mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] :
+    IsKernelCDF (mLimsupCDF κ) κ (kernel.fst κ) :=
+  isKernelCDF_todo3 (isRatKernelCDF_mLimsupIic κ)
+
+end KernelCDF
+
 -- todo: name?
 noncomputable
-def kernel.condexpReal (κ : kernel α (ℝ × ℝ)) : kernel (α × ℝ) ℝ :=
-  cdfKernel _ (measurable_mLimsupIic κ)
+def kernel.condexpReal (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] : kernel (α × ℝ) ℝ :=
+  cdfKernel _ (isKernelCDF_mLimsupCDF κ)
 
 instance (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] : IsMarkovKernel (kernel.condexpReal κ) := by
   unfold kernel.condexpReal; infer_instance
 
 lemma kernel.eq_compProd_condexpReal (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] :
     κ = kernel.fst κ ⊗ₖ kernel.condexpReal κ :=
-  kernel.eq_compProd_cdfKernel (isRatKernelCDF_mLimsupIic κ)
+  kernel.eq_compProd_cdfKernel (isKernelCDF_mLimsupCDF κ)
 
 end Real
 
@@ -1260,7 +1272,7 @@ def condKernelAux (κ : kernel α (ℝ × Ω')) [IsMarkovKernel κ] : kernel (α
   let κ' := kernel.map κ (Prod.map (id : ℝ → ℝ) f) (measurable_id.prod_map hf.measurable)
   let x₀ := (range_nonempty f).choose
   kernel.comapRight
-    (kernel.piecewise (measurableSet_eq_one (isRatKernelCDF_mLimsupIic κ') hf.measurableSet_range)
+    (kernel.piecewise (measurableSet_eq_one (isKernelCDF_mLimsupCDF κ') hf.measurableSet_range)
       (kernel.condexpReal κ') (kernel.deterministic (fun _ ↦ x₀) measurable_const))
     hf
 
@@ -1312,7 +1324,7 @@ lemma compProd_fst_condKernelAux (κ : kernel α (ℝ × Ω')) [IsMarkovKernel �
   have h_ae : ∀ a, ∀ᵐ t ∂(kernel.fst κ a), (a, t) ∈ ρ_set := by
     intro a
     rw [← h_fst]
-    refine ae_cdfKernel_eq_one (isRatKernelCDF_mLimsupIic κ') a hf.measurableSet_range ?_
+    refine ae_cdfKernel_eq_one (isKernelCDF_mLimsupCDF κ') a hf.measurableSet_range ?_
     simp only [mem_compl_iff, mem_range, not_exists]
     rw [kernel.map_apply']
     · have h_empty : {a : ℝ × Ω' | ∀ (x : Ω'), ¬f x = f a.2} = ∅ := by

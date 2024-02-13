@@ -151,65 +151,130 @@ lemma integral_todo3 [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ ν) (a : α) 
     ∫ t, todo3 f hf.measurable (a, t) x ∂(ν a) = (μ a (univ ×ˢ Iic x)).toReal := by
   rw [← integral_univ, set_integral_todo3 hf _ _ MeasurableSet.univ]
 
+end todo3
+
+section IsKernelCDF
+
+variable {α β : Type*} [MeasurableSpace α] {mβ : MeasurableSpace β}
+  {f : α × β → StieltjesFunction} {μ : kernel α (β × ℝ)} {ν : kernel α β}
+
 structure IsKernelCDF (f : α × β → StieltjesFunction) (μ : kernel α (β × ℝ)) (ν : kernel α β) :
     Prop :=
   (measurable (x : ℝ) : Measurable fun p ↦ f p x)
   (integrable (a : α) (x : ℝ) : Integrable (fun t ↦ f (a, t) x) (ν a))
   (tendsto_atTop_one (p : α × β) : Tendsto (f p) atTop (𝓝 1))
   (tendsto_atBot_zero (p : α × β) : Tendsto (f p) atBot (𝓝 0))
-  (isCDF (a : α) {s : Set β} (_hs : MeasurableSet s) (x : ℝ) :
+  (set_integral (a : α) {s : Set β} (_hs : MeasurableSet s) (x : ℝ) :
     ∫ t in s, f (a, t) x ∂(ν a) = (μ a (s ×ˢ Iic x)).toReal)
 -- todo: nonneg and le_one are consequences of tendsto_atTop_one and tendsto_atBot_zero
 
-lemma isKernelCDF_todo3 (hf : IsRatKernelCDF f μ ν) [IsFiniteKernel μ] :
+lemma IsKernelCDF.nonneg (hf : IsKernelCDF f μ ν) (p : α × β) (x : ℝ) : 0 ≤ f p x :=
+  Monotone.le_of_tendsto (f p).mono (hf.tendsto_atBot_zero p) x
+
+lemma IsKernelCDF.le_one (hf : IsKernelCDF f μ ν) (p : α × β) (x : ℝ) : f p x ≤ 1 :=
+  Monotone.ge_of_tendsto (f p).mono (hf.tendsto_atTop_one p) x
+
+lemma IsKernelCDF.set_lintegral [IsFiniteKernel μ]
+    {f : α × β → StieltjesFunction} (hf : IsKernelCDF f μ ν)
+    (a : α) {s : Set β} (hs : MeasurableSet s) (x : ℝ) :
+    ∫⁻ t in s, ENNReal.ofReal (f (a, t) x) ∂(ν a) = μ a (s ×ˢ Iic x) := by
+  rw [← ofReal_integral_eq_lintegral_ofReal (hf.integrable a x).restrict
+    (ae_of_all _ (fun _ ↦ hf.nonneg _ _)), hf.set_integral a hs x, ENNReal.ofReal_toReal]
+  exact measure_ne_top _ _
+
+lemma isKernelCDF_todo3 {f : α × β → ℚ → ℝ} (hf : IsRatKernelCDF f μ ν) [IsFiniteKernel μ] :
     IsKernelCDF (todo3 f hf.measurable) μ ν where
   measurable := measurable_todo3 hf.measurable
   integrable := integrable_todo3 hf
   tendsto_atTop_one := tendsto_todo3_atTop hf.measurable
   tendsto_atBot_zero := tendsto_todo3_atBot hf.measurable
-  isCDF a _ hs x := set_integral_todo3 hf a x hs
+  set_integral a _ hs x := set_integral_todo3 hf a x hs
 
-end todo3
+end IsKernelCDF
 
 section kernel
 
-variable {f : α → ℚ → ℝ} {hf : ∀ q, Measurable fun a ↦ f a q}
+variable {_ : MeasurableSpace β} {f : α × β → StieltjesFunction}
+  {μ : kernel α (β × ℝ)} {ν : kernel α β} {hf : IsKernelCDF f μ ν}
+
+lemma isProbabilityMeasure_stieltjesFunction {f : StieltjesFunction}
+    (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto f atTop (𝓝 1)) :
+    IsProbabilityMeasure f.measure :=
+  ⟨by simp [StieltjesFunction.measure_univ _ hf_bot hf_top]⟩
+
+lemma StieltjesFunction.measurable_measure {f : α → StieltjesFunction}
+    (hf : ∀ q, Measurable fun a ↦ f a q)
+    (hf_bot : ∀ a, Tendsto (f a) atBot (𝓝 0))
+    (hf_top : ∀ a, Tendsto (f a) atTop (𝓝 1)) :
+    Measurable fun a ↦ (f a).measure := by
+  rw [Measure.measurable_measure]
+  have : ∀ a, IsProbabilityMeasure (f a).measure :=
+    fun a ↦ isProbabilityMeasure_stieltjesFunction (hf_bot _) (hf_top _)
+  refine fun s hs ↦ ?_
+  -- Porting note: supplied `C`
+  refine MeasurableSpace.induction_on_inter
+    (C := fun s ↦ Measurable fun b ↦ StieltjesFunction.measure (f b) s)
+    (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic ?_ ?_ ?_ ?_ hs
+  · simp only [measure_empty, measurable_const]
+  · rintro S ⟨u, rfl⟩
+    simp_rw [StieltjesFunction.measure_Iic (f _) (hf_bot _)]
+    simp only [sub_zero]
+    exact (hf _).ennreal_ofReal
+  · intro t ht ht_cd_meas
+    have : (fun a ↦ (f a).measure tᶜ) =
+        (fun a ↦ (f a).measure univ)
+          - fun a ↦ (f a).measure t := by
+      ext1 a
+      rw [measure_compl ht, Pi.sub_apply]
+      exact measure_ne_top _ _
+    simp_rw [this, measure_univ]
+    exact Measurable.sub measurable_const ht_cd_meas
+  · intro f hf_disj hf_meas hf_cd_meas
+    simp_rw [measure_iUnion hf_disj hf_meas]
+    exact Measurable.ennreal_tsum hf_cd_meas
 
 noncomputable
-def cdfKernel (f : α → ℚ → ℝ) (hf : ∀ q, Measurable fun a ↦ f a q) : kernel α ℝ where
-  val a := (todo3 f hf a).measure
-  property := measurable_measure_todo3 hf
+def cdfKernel (f : α × β → StieltjesFunction) (hf : IsKernelCDF f μ ν) : kernel (α × β) ℝ where
+  val p := (f p).measure
+  property := StieltjesFunction.measurable_measure hf.measurable
+    hf.tendsto_atBot_zero hf.tendsto_atTop_one
+
+lemma cdfKernel_apply (p : α × β) : cdfKernel f hf p = (f p).measure := rfl
 
 instance instIsMarkovKernel_cdfKernel : IsMarkovKernel (cdfKernel f hf) :=
-  ⟨fun _ ↦ instIsProbabilityMeasure_todo3 _ _⟩
+  ⟨fun _ ↦ isProbabilityMeasure_stieltjesFunction
+    (hf.tendsto_atBot_zero _) (hf.tendsto_atTop_one _)⟩
 
-lemma cdfKernel_Iic (a : α) (x : ℝ) :
-    cdfKernel f hf a (Iic x) = ENNReal.ofReal (todo3 f hf a x) := measure_todo3_Iic hf a x
+lemma cdfKernel_Iic (p : α × β) (x : ℝ) :
+    cdfKernel f hf p (Iic x) = ENNReal.ofReal (f p x) := by
+  rw [cdfKernel_apply p, (f p).measure_Iic (hf.tendsto_atBot_zero p)]
+  simp
 
-lemma cdfKernel_unit_prod_Iic (a : α) (x : ℝ) :
-    cdfKernel (fun p : Unit × α ↦ f p.2) (fun q ↦ (hf q).comp measurable_snd) ((), a) (Iic x)
-      = cdfKernel f hf a (Iic x) := by
-  simp only [cdfKernel_Iic]
-  rw [todo3_unit_prod hf a]
+--lemma cdfKernel_unit_prod_Iic (a : α) (x : ℝ) :
+--    cdfKernel (fun p : Unit × α ↦ f p.2) (fun q ↦ (hf q).comp measurable_snd) ((), a) (Iic x)
+--      = cdfKernel f hf a (Iic x) := by
+--  simp only [cdfKernel_Iic]
+--  rw [todo3_unit_prod hf a]
 
 end kernel
 
 section
 
 variable {α β : Type*} [MeasurableSpace α] {mβ : MeasurableSpace β}
-  {f : α × β → ℚ → ℝ} {μ : kernel α (β × ℝ)} {ν : kernel α β}
+  {f : α × β → StieltjesFunction} {μ : kernel α (β × ℝ)} {ν : kernel α β}
+  {hf : IsKernelCDF f μ ν}
 
-lemma set_lintegral_cdfKernel_Iic [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ ν)
+lemma set_lintegral_cdfKernel_Iic [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
     (a : α) (x : ℝ) {s : Set β} (hs : MeasurableSet s) :
-    ∫⁻ t in s, cdfKernel f hf.measurable (a, t) (Iic x) ∂(ν a) = μ a (s ×ˢ Iic x) := by
+    ∫⁻ t in s, cdfKernel f hf (a, t) (Iic x) ∂(ν a) = μ a (s ×ˢ Iic x) := by
   simp_rw [cdfKernel_Iic]
-  rw [set_lintegral_todo3 hf _ _ hs]
+  exact hf.set_lintegral _ hs _
 
 theorem Real.iUnion_Iic_rat' : ⋃ r : ℚ, Iic (r : ℝ) = univ := sorry
 
-lemma set_lintegral_cdfKernel_univ [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ ν)
+lemma set_lintegral_cdfKernel_univ [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
-    ∫⁻ t in s, cdfKernel f hf.measurable (a, t) univ ∂(ν a) = μ a (s ×ˢ univ) := by
+    ∫⁻ t in s, cdfKernel f hf (a, t) univ ∂(ν a) = μ a (s ×ˢ univ) := by
   rw [← Real.iUnion_Iic_rat', prod_iUnion]
   have h_dir : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
     refine Monotone.directed_le fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
@@ -226,13 +291,13 @@ lemma set_lintegral_cdfKernel_univ [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ
   · refine Monotone.directed_le fun i j hij t ↦ measure_mono (Iic_subset_Iic.mpr ?_)
     exact mod_cast hij
 
-lemma lintegral_cdfKernel_univ [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ ν) (a : α) :
-    ∫⁻ t, cdfKernel f hf.measurable (a, t) univ ∂(ν a) = μ a univ := by
+lemma lintegral_cdfKernel_univ [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν) (a : α) :
+    ∫⁻ t, cdfKernel f hf (a, t) univ ∂(ν a) = μ a univ := by
   rw [← set_lintegral_univ, set_lintegral_cdfKernel_univ hf a MeasurableSet.univ, univ_prod_univ]
 
-lemma set_lintegral_cdfKernel_prod [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ ν)
+lemma set_lintegral_cdfKernel_prod [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
     (a : α) {s : Set β} (hs : MeasurableSet s) {t : Set ℝ} (ht : MeasurableSet t) :
-    ∫⁻ x in s, cdfKernel f hf.measurable (a, x) t ∂(ν a) = μ a (s ×ˢ t) := by
+    ∫⁻ x in s, cdfKernel f hf (a, x) t ∂(ν a) = μ a (s ×ˢ t) := by
   -- `set_lintegral_cdfKernel_Iic` gives the result for `t = Iic x`. These sets form a
   -- π-system that generates the Borel σ-algebra, hence we can get the same equality for any
   -- measurable set `t`.
@@ -241,13 +306,13 @@ lemma set_lintegral_cdfKernel_prod [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ
   · rintro t ⟨q, rfl⟩
     exact set_lintegral_cdfKernel_Iic hf a _ hs
   · intro t ht ht_lintegral
-    calc ∫⁻ x in s, cdfKernel f hf.measurable (a, x) tᶜ ∂(ν a)
-      = ∫⁻ x in s, cdfKernel f hf.measurable (a, x) univ - cdfKernel f hf.measurable (a, x) t ∂(ν a) := by
-          congr with x; rw [measure_compl ht (measure_ne_top (cdfKernel f hf.measurable (a, x)) _)]
-    _ = ∫⁻ x in s, cdfKernel f hf.measurable (a, x) univ ∂(ν a)
-          - ∫⁻ x in s, cdfKernel f hf.measurable (a, x) t ∂(ν a) := by
+    calc ∫⁻ x in s, cdfKernel f hf (a, x) tᶜ ∂(ν a)
+      = ∫⁻ x in s, cdfKernel f hf (a, x) univ - cdfKernel f hf (a, x) t ∂(ν a) := by
+          congr with x; rw [measure_compl ht (measure_ne_top (cdfKernel f hf (a, x)) _)]
+    _ = ∫⁻ x in s, cdfKernel f hf (a, x) univ ∂(ν a)
+          - ∫⁻ x in s, cdfKernel f hf (a, x) t ∂(ν a) := by
         rw [lintegral_sub]
-        · exact (kernel.measurable_coe (cdfKernel f hf.measurable) ht).comp measurable_prod_mk_left
+        · exact (kernel.measurable_coe (cdfKernel f hf) ht).comp measurable_prod_mk_left
         · rw [ht_lintegral]
           exact measure_ne_top _ _
         · exact eventually_of_forall fun a ↦ measure_mono (subset_univ _)
@@ -270,9 +335,9 @@ lemma set_lintegral_cdfKernel_prod [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ
     · exact fun i ↦
         ((kernel.measurable_coe _ (hf_meas i)).comp measurable_prod_mk_left).aemeasurable.restrict
 
-lemma lintegral_cdfKernel_mem [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ ν)
+lemma lintegral_cdfKernel_mem [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
     (a : α) {s : Set (β × ℝ)} (hs : MeasurableSet s) :
-    ∫⁻ x, cdfKernel f hf.measurable (a, x) {y | (x, y) ∈ s} ∂(ν a) = μ a s := by
+    ∫⁻ x, cdfKernel f hf (a, x) {y | (x, y) ∈ s} ∂(ν a) = μ a s := by
   -- `set_lintegral_cdfKernel_prod` gives the result for sets of the form `t₁ × t₂`. These
   -- sets form a π-system that generates the product σ-algebra, hence we can get the same equality
   -- for any measurable set `s`.
@@ -285,14 +350,14 @@ lemma lintegral_cdfKernel_mem [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ ν)
       intro a ha
       simp only [ha, prod_mk_mem_set_prod_eq, true_and_iff, setOf_mem_eq]
     rw [← lintegral_add_compl _ ht₁]
-    have h_eq1 : ∫⁻ x in t₁, cdfKernel f hf.measurable (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a)
-        = ∫⁻ x in t₁, cdfKernel f hf.measurable (a, x) t₂ ∂(ν a) := by
+    have h_eq1 : ∫⁻ x in t₁, cdfKernel f hf (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a)
+        = ∫⁻ x in t₁, cdfKernel f hf (a, x) t₂ ∂(ν a) := by
       refine' set_lintegral_congr_fun ht₁ (eventually_of_forall fun a ha ↦ _)
       rw [h_prod_eq_snd a ha]
     have h_eq2 :
-        ∫⁻ x in t₁ᶜ, cdfKernel f hf.measurable (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a) = 0 := by
+        ∫⁻ x in t₁ᶜ, cdfKernel f hf (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a) = 0 := by
       suffices h_eq_zero :
-          ∀ x ∈ t₁ᶜ, cdfKernel f hf.measurable (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} = 0 by
+          ∀ x ∈ t₁ᶜ, cdfKernel f hf (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} = 0 by
         rw [set_lintegral_congr_fun ht₁.compl (eventually_of_forall h_eq_zero)]
         simp only [lintegral_const, zero_mul]
       intro a hat₁
@@ -301,17 +366,17 @@ lemma lintegral_cdfKernel_mem [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ ν)
     rw [h_eq1, h_eq2, add_zero]
     exact set_lintegral_cdfKernel_prod hf a ht₁ ht₂
   · intro t ht ht_eq
-    calc ∫⁻ x, cdfKernel f hf.measurable (a, x) {y : ℝ | (x, y) ∈ tᶜ} ∂(ν a)
-      = ∫⁻ x, cdfKernel f hf.measurable (a, x) {y : ℝ | (x, y) ∈ t}ᶜ ∂(ν a) := rfl
-    _ = ∫⁻ x, cdfKernel f hf.measurable (a, x) univ
-          - cdfKernel f hf.measurable (a, x) {y : ℝ | (x, y) ∈ t} ∂(ν a) := by
+    calc ∫⁻ x, cdfKernel f hf (a, x) {y : ℝ | (x, y) ∈ tᶜ} ∂(ν a)
+      = ∫⁻ x, cdfKernel f hf (a, x) {y : ℝ | (x, y) ∈ t}ᶜ ∂(ν a) := rfl
+    _ = ∫⁻ x, cdfKernel f hf (a, x) univ
+          - cdfKernel f hf (a, x) {y : ℝ | (x, y) ∈ t} ∂(ν a) := by
         congr with x : 1
         exact measure_compl (measurable_prod_mk_left ht)
-          (measure_ne_top (cdfKernel f hf.measurable (a, x)) _)
-    _ = ∫⁻ x, cdfKernel f hf.measurable (a, x) univ ∂(ν a) -
-          ∫⁻ x, cdfKernel f hf.measurable (a, x) {y : ℝ | (x, y) ∈ t} ∂(ν a) := by
-        have h_le : (fun x ↦ cdfKernel f hf.measurable (a, x) {y : ℝ | (x, y) ∈ t})
-              ≤ᵐ[ν a] fun x ↦ cdfKernel f hf.measurable (a, x) univ :=
+          (measure_ne_top (cdfKernel f hf (a, x)) _)
+    _ = ∫⁻ x, cdfKernel f hf (a, x) univ ∂(ν a) -
+          ∫⁻ x, cdfKernel f hf (a, x) {y : ℝ | (x, y) ∈ t} ∂(ν a) := by
+        have h_le : (fun x ↦ cdfKernel f hf (a, x) {y : ℝ | (x, y) ∈ t})
+              ≤ᵐ[ν a] fun x ↦ cdfKernel f hf (a, x) univ :=
           eventually_of_forall fun _ ↦ measure_mono (subset_univ _)
         rw [lintegral_sub _ _ h_le]
         · exact kernel.measurable_kernel_prod_mk_left' ht a
@@ -333,26 +398,26 @@ lemma lintegral_cdfKernel_mem [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ ν)
       intro h_mem_both
       suffices (a, x) ∈ ∅ by rwa [mem_empty_iff_false] at this
       rwa [← h_disj, mem_inter_iff]
-    calc ∫⁻ x, cdfKernel f hf.measurable (a, x) (⋃ i, {y | (x, y) ∈ f' i}) ∂(ν a)
-      = ∫⁻ x, ∑' i, cdfKernel f hf.measurable (a, x) {y | (x, y) ∈ f' i} ∂(ν a) := by
+    calc ∫⁻ x, cdfKernel f hf (a, x) (⋃ i, {y | (x, y) ∈ f' i}) ∂(ν a)
+      = ∫⁻ x, ∑' i, cdfKernel f hf (a, x) {y | (x, y) ∈ f' i} ∂(ν a) := by
           congr with x : 1
           rw [measure_iUnion (h_disj x) fun i ↦ measurable_prod_mk_left (hf_meas i)]
-    _ = ∑' i, ∫⁻ x, cdfKernel f hf.measurable (a, x) {y | (x, y) ∈ f' i} ∂(ν a) :=
+    _ = ∑' i, ∫⁻ x, cdfKernel f hf (a, x) {y | (x, y) ∈ f' i} ∂(ν a) :=
           lintegral_tsum fun i ↦ (kernel.measurable_kernel_prod_mk_left' (hf_meas i) a).aemeasurable
     _ = ∑' i, μ a (f' i) := by simp_rw [hf_eq]
     _ = μ a (iUnion f') := (measure_iUnion hf_disj hf_meas).symm
 
 lemma kernel.eq_compProd_cdfKernel [IsFiniteKernel μ] [IsSFiniteKernel ν]
-    (hf : IsRatKernelCDF f μ ν) :
-    μ = ν ⊗ₖ cdfKernel f hf.measurable := by
+    (hf : IsKernelCDF f μ ν) :
+    μ = ν ⊗ₖ cdfKernel f hf := by
   ext a s hs
   rw [kernel.compProd_apply _ _ _ hs, lintegral_cdfKernel_mem hf a hs]
 
-lemma ae_cdfKernel_eq_one [IsFiniteKernel μ] [IsSFiniteKernel ν] (hf : IsRatKernelCDF f μ ν) (a : α)
+lemma ae_cdfKernel_eq_one [IsFiniteKernel μ] [IsSFiniteKernel ν] (hf : IsKernelCDF f μ ν) (a : α)
     {s : Set ℝ} (hs : MeasurableSet s) (hμs : μ a {x | x.snd ∈ sᶜ} = 0) :
-    ∀ᵐ t ∂(ν a), cdfKernel f hf.measurable (a, t) s = 1 := by
-  have h_eq : μ = ν ⊗ₖ cdfKernel f hf.measurable := kernel.eq_compProd_cdfKernel hf
-  have h : μ a {x | x.snd ∈ sᶜ} = (ν ⊗ₖ cdfKernel f hf.measurable) a {x | x.snd ∈ sᶜ} := by
+    ∀ᵐ t ∂(ν a), cdfKernel f hf (a, t) s = 1 := by
+  have h_eq : μ = ν ⊗ₖ cdfKernel f hf := kernel.eq_compProd_cdfKernel hf
+  have h : μ a {x | x.snd ∈ sᶜ} = (ν ⊗ₖ cdfKernel f hf) a {x | x.snd ∈ sᶜ} := by
     rw [← h_eq]
   rw [hμs, kernel.compProd_apply] at h
   swap; · exact measurable_snd hs.compl
@@ -363,11 +428,11 @@ lemma ae_cdfKernel_eq_one [IsFiniteKernel μ] [IsSFiniteKernel ν] (hf : IsRatKe
     exact (kernel.measurable_coe _ hs.compl).comp measurable_prod_mk_left
   simp only [mem_compl_iff, mem_setOf_eq, kernel.prodMkLeft_apply'] at h
   filter_upwards [h] with t ht
-  change cdfKernel f hf.measurable (a, t) sᶜ = 0 at ht
+  change cdfKernel f hf (a, t) sᶜ = 0 at ht
   rwa [prob_compl_eq_zero_iff hs] at ht
 
-lemma measurableSet_eq_one (hf : IsRatKernelCDF f μ ν) {s : Set ℝ} (hs : MeasurableSet s) :
-    MeasurableSet {p | cdfKernel f hf.measurable p s = 1} :=
+lemma measurableSet_eq_one (hf : IsKernelCDF f μ ν) {s : Set ℝ} (hs : MeasurableSet s) :
+    MeasurableSet {p | cdfKernel f hf p s = 1} :=
   (kernel.measurable_coe _ hs) (measurableSet_singleton 1)
 
 end

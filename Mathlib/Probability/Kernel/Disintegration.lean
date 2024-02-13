@@ -60,16 +60,15 @@ section Real
 
 /-- Conditional measure on the second space of the product given the value on the first, as a
 kernel. Use the more general `condKernel`. -/
-noncomputable def condKernelReal (ρ : Measure (α × ℝ)) : kernel α ℝ :=
-  kernel.comap (cdfKernel (fun (p : Unit × α) r ↦ (preCDF ρ r p.2).toReal)
-    (fun _ ↦ measurable_preCDF.ennreal_toReal.comp measurable_snd)) (fun a ↦ ((), a))
-    measurable_prod_mk_left
+noncomputable def condKernelReal (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] : kernel α ℝ :=
+  kernel.comap (cdfKernel (fun (p : Unit × α) ↦ condCDF ρ p.2) (isKernelCDF_condCDF ρ))
+    (fun a ↦ ((), a)) measurable_prod_mk_left
 #align probability_theory.cond_kernel_real ProbabilityTheory.condKernelReal
 
-instance (ρ : Measure (α × ℝ)) : IsMarkovKernel (condKernelReal ρ) := by
+instance (ρ : Measure (α × ℝ))  [IsFiniteMeasure ρ] : IsMarkovKernel (condKernelReal ρ) := by
   rw [condKernelReal]; infer_instance
 
-theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
+theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (a : α) (x : ℝ) :
     condKernelReal ρ a (Iic x) = ENNReal.ofReal (condCDF ρ a x) := by
   rw [condKernelReal, kernel.comap_apply, cdfKernel_Iic, condCDF_eq_todo3_unit_prod]
 #align probability_theory.cond_kernel_real_Iic ProbabilityTheory.condKernelReal_Iic
@@ -77,16 +76,17 @@ theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
 theorem set_lintegral_condKernelReal_Iic (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ)
     {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in s, condKernelReal ρ a (Iic x) ∂ρ.fst = ρ (s ×ˢ Iic x) :=
-  set_lintegral_cdfKernel_Iic (isRatKernelCDF_preCDF ρ) () x hs
+  set_lintegral_cdfKernel_Iic (isKernelCDF_condCDF ρ) () x hs
 #align probability_theory.set_lintegral_cond_kernel_real_Iic ProbabilityTheory.set_lintegral_condKernelReal_Iic
 
-theorem set_lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) {s : Set α} (hs : MeasurableSet s) :
+theorem set_lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
+    {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a in s, condKernelReal ρ a univ ∂ρ.fst = ρ (s ×ˢ univ) := by
   simp only [measure_univ, lintegral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter,
     one_mul, Measure.fst_apply hs, ← prod_univ]
 #align probability_theory.set_lintegral_cond_kernel_real_univ ProbabilityTheory.set_lintegral_condKernelReal_univ
 
-theorem lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) :
+theorem lintegral_condKernelReal_univ (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     ∫⁻ a, condKernelReal ρ a univ ∂ρ.fst = ρ univ := by
   rw [← set_lintegral_univ, set_lintegral_condKernelReal_univ ρ MeasurableSet.univ,
     univ_prod_univ]
@@ -97,12 +97,12 @@ variable (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
 theorem set_lintegral_condKernelReal_prod {s : Set α} (hs : MeasurableSet s) {t : Set ℝ}
     (ht : MeasurableSet t) :
     ∫⁻ a in s, condKernelReal ρ a t ∂ρ.fst = ρ (s ×ˢ t) :=
-  set_lintegral_cdfKernel_prod (isRatKernelCDF_preCDF ρ) () hs ht
+  set_lintegral_cdfKernel_prod (isKernelCDF_condCDF ρ) () hs ht
 #align probability_theory.set_lintegral_cond_kernel_real_prod ProbabilityTheory.set_lintegral_condKernelReal_prod
 
 theorem lintegral_condKernelReal_mem {s : Set (α × ℝ)} (hs : MeasurableSet s) :
     ∫⁻ a, condKernelReal ρ a {x | (a, x) ∈ s} ∂ρ.fst = ρ s :=
-  lintegral_cdfKernel_mem (isRatKernelCDF_preCDF ρ) () hs
+  lintegral_cdfKernel_mem (isKernelCDF_condCDF ρ) () hs
 #align probability_theory.lintegral_cond_kernel_real_mem ProbabilityTheory.lintegral_condKernelReal_mem
 
 theorem kernel.const_eq_compProd_real (γ : Type*) [MeasurableSpace γ] (ρ : Measure (α × ℝ))
@@ -126,7 +126,7 @@ theorem lintegral_condKernelReal {f : α × ℝ → ℝ≥0∞} (hf : Measurable
 
 theorem ae_condKernelReal_eq_one {s : Set ℝ} (hs : MeasurableSet s) (hρ : ρ {x | x.snd ∈ sᶜ} = 0) :
     ∀ᵐ a ∂ρ.fst, condKernelReal ρ a s = 1 := by
-  have h := ae_cdfKernel_eq_one (isRatKernelCDF_preCDF ρ) () hs
+  have h := ae_cdfKernel_eq_one (isKernelCDF_condCDF ρ) () hs
   simp only [kernel.const_apply] at h
   exact h hρ
 #align probability_theory.ae_cond_kernel_real_eq_one ProbabilityTheory.ae_condKernelReal_eq_one

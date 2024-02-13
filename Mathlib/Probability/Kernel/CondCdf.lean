@@ -576,10 +576,9 @@ theorem measurable_condCDF (ρ : Measure (α × ℝ)) (x : ℝ) : Measurable fun
 theorem set_lintegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) {s : Set α}
     (hs : MeasurableSet s) :
     ∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x) := by
-  have h := set_lintegral_cdfKernel_Iic (isRatKernelCDF_preCDF ρ) () x hs
+  have h := set_lintegral_todo3 (isRatKernelCDF_preCDF ρ) () x hs
   simp only [kernel.const_apply] at h
   rw [← h]
-  simp_rw [cdfKernel_Iic]
   congr with a
   congr
   exact condCDF_eq_todo3_unit_prod _ _
@@ -596,7 +595,7 @@ theorem stronglyMeasurable_condCDF (ρ : Measure (α × ℝ)) (x : ℝ) :
 #align probability_theory.strongly_measurable_cond_cdf ProbabilityTheory.stronglyMeasurable_condCDF
 
 theorem integrable_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) :
-    Integrable (fun a => condCDF ρ a x) ρ.fst := by
+    Integrable (fun a ↦ condCDF ρ a x) ρ.fst := by
   refine' integrable_of_forall_fin_meas_le _ (measure_lt_top ρ.fst univ) _ fun t _ _ => _
   · exact (stronglyMeasurable_condCDF ρ _).aestronglyMeasurable
   · have : ∀ y, (‖condCDF ρ y x‖₊ : ℝ≥0∞) ≤ 1 := by
@@ -626,6 +625,15 @@ theorem integral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : �
     ∫ a, condCDF ρ a x ∂ρ.fst = (ρ (univ ×ˢ Iic x)).toReal := by
   rw [← set_integral_condCDF ρ _ MeasurableSet.univ, Measure.restrict_univ]
 #align probability_theory.integral_cond_cdf ProbabilityTheory.integral_condCDF
+
+lemma isKernelCDF_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
+    IsKernelCDF (fun p : Unit × α ↦ condCDF ρ p.2) (kernel.const Unit ρ)
+      (kernel.const Unit ρ.fst) where
+  measurable x := (measurable_condCDF ρ x).comp measurable_snd
+  integrable _ x := integrable_condCDF ρ x
+  tendsto_atTop_one p := tendsto_condCDF_atTop ρ p.2
+  tendsto_atBot_zero p := tendsto_condCDF_atBot ρ p.2
+  set_integral _ _ hs x := set_integral_condCDF ρ x hs
 
 section Measure
 
