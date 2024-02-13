@@ -3962,10 +3962,10 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
   let e := Equiv.Finset.union s t h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
-/--Equivalence between the sigma of a fammily of finsets of `β × β` and `β × β`-/
+/--Equivalence between the sigma of a family of finsets of `β × γ` and `β × γ`-/
 noncomputable
-def sigmaEquiv {α : Type*} {β : Type*} (ι : α → Finset (β × β))
-    (HI : ∀ y : β × β , ∃! i : α, y ∈ ι i) : (Σ s : α, ((ι s) : Set (β × β))) ≃ (β × β) where
+def sigmaEquiv {α β γ : Type*} (ι : α → Finset (β × γ))
+    (HI : ∀ y : β × γ , ∃! i : α, y ∈ ι i) : (Σ s : α, ((ι s) : Set (β × γ))) ≃ (β × γ) where
   toFun x := x.2
   invFun x := ⟨(HI x).choose, x, (HI x).choose_spec.1⟩
   left_inv x := by

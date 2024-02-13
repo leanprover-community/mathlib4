@@ -15,11 +15,9 @@ We partition `ℤ × ℤ` into squares of the form `Icc (-n) n × Icc (-n) n` fo
 for bounding Eisenstein series.
 -/
 
-open scoped BigOperators Classical
+open scoped BigOperators
 
 noncomputable section
-
-namespace EisensteinSeries
 
 open Finset
 

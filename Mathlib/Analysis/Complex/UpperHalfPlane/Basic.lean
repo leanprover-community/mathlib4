@@ -123,8 +123,6 @@ theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=
   rfl
 #align upper_half_plane.mk_coe UpperHalfPlane.mk_coe
 
-lemma coe_eq_fst (z : ℍ) : (z : ℂ) = z.1 := rfl
-
 theorem re_add_im (z : ℍ) : (z.re + z.im * Complex.I : ℂ) = z :=
   Complex.re_add_im z
 #align upper_half_plane.re_add_im UpperHalfPlane.re_add_im

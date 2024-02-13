@@ -390,10 +390,10 @@ section slices
 def upperHalfPlaneSlice (A B : ℝ) :=
   {z : ℍ | Complex.abs z.1.1 ≤ A ∧ Complex.abs z.1.2 ≥ B}
 
-theorem slice_mem (A B : ℝ) (z : ℍ) :
+theorem slice_mem_iff (A B : ℝ) (z : ℍ) :
     z ∈ upperHalfPlaneSlice A B ↔ Complex.abs z.1.1 ≤ A ∧ Complex.abs z.1.2 ≥ B := Iff.rfl
 
-lemma compact_in_some_slice (K : Set ℍ) (hK : IsCompact K) : ∃  A B : ℝ, 0 < B ∧
+lemma subset_slice_of_isCompact {K : Set ℍ} (hK : IsCompact K) : ∃  A B : ℝ, 0 < B ∧
     K ⊆ upperHalfPlaneSlice A B  := by
   by_cases hne : Set.Nonempty K
   · have hcts : ContinuousOn (fun t =>  t.im) K := by
@@ -404,7 +404,7 @@ lemma compact_in_some_slice (K : Set ℍ) (hK : IsCompact K) : ∃  A B : ℝ, 0
     obtain ⟨r, _, hr2⟩ := Bornology.IsBounded.subset_closedBall_lt hK.isBounded 0 t
     refine' ⟨Real.sinh (r) + Complex.abs ((UpperHalfPlane.center t r)), b.im, b.2, _⟩
     intro z hz
-    simp only [I_im, slice_mem, abs_ofReal, ge_iff_le] at *
+    simp only [I_im, slice_mem_iff, abs_ofReal, ge_iff_le] at *
     constructor
     have hr3 := hr2 hz
     simp only [Metric.mem_closedBall] at hr3
@@ -423,11 +423,7 @@ lemma compact_in_some_slice (K : Set ℍ) (hK : IsCompact K) : ∃  A B : ℝ, 0
     convert hbz
     rw [UpperHalfPlane.im]
     apply abs_eq_self.mpr z.2.le
-  · rw [not_nonempty_iff_eq_empty] at hne
-    rw [hne]
-    simp only [empty_subset, and_true, exists_const]
-    use 1
-    linarith
+  · exact ⟨1, 1, Real.zero_lt_one, by simp [not_nonempty_iff_eq_empty.1 hne]⟩
 
 end slices
 
