@@ -38,7 +38,7 @@ initial segment (or, equivalently, in any way). This total order is well founded
 
 * `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
   every element of `o₁` is smaller than every element of `o₂`. The main properties of addition
-  (and the other operations on ordinals) are stated and proved in `OrdinalArithmetic.lean`. Here,
+  (and the other operations on ordinals) are stated and proved in `Ordinal/Arithmetic.lean`. Here,
   we only introduce it and prove its basic properties to deduce the fact that the order on ordinals
   is total (and well founded).
 * `succ o` is the successor of the ordinal `o`.
@@ -867,7 +867,7 @@ theorem lift_omega : lift ω = ω :=
 In this paragraph, we introduce the addition on ordinals, and prove just enough properties to
 deduce that the order on ordinals is total (and therefore well-founded). Further properties of
 the addition, together with properties of the other operations, are proved in
-`OrdinalArithmetic.lean`.
+`Ordinal/Arithmetic.lean`.
 -/
 
 

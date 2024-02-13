@@ -179,7 +179,7 @@ theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
 
 theorem Ico_succ_right : Ico a b.succ = Icc a b := by
   ext x
-  rw [mem_Ico, mem_Icc, lt_succ_iff]
+  rw [mem_Ico, mem_Icc, Nat.lt_succ_iff]
 #align nat.Ico_succ_right Nat.Ico_succ_right
 
 theorem Ico_succ_left : Ico a.succ b = Ioo a b := by
@@ -194,7 +194,7 @@ theorem Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b := by
 
 theorem Ico_succ_succ : Ico a.succ b.succ = Ioc a b := by
   ext x
-  rw [mem_Ico, mem_Ioc, succ_le_iff, lt_succ_iff]
+  rw [mem_Ico, mem_Ioc, succ_le_iff, Nat.lt_succ_iff]
 #align nat.Ico_succ_succ Nat.Ico_succ_succ
 
 @[simp]
@@ -253,7 +253,7 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
       rw [← succ_sub_succ c]
       exact (tsub_le_tsub_iff_left (succ_le_succ <| hx.2.le.trans h)).2 hx.2
   · rintro ⟨hb, ha⟩
-    rw [lt_tsub_iff_left, lt_succ_iff] at ha
+    rw [lt_tsub_iff_left, Nat.lt_succ_iff] at ha
     have hx : x ≤ c := (Nat.le_add_left _ _).trans ha
     refine' ⟨c - x, _, tsub_tsub_cancel_of_le hx⟩
     · rw [mem_Ico]

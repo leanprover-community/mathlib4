@@ -378,8 +378,8 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
     coe_sum', Finset.sum_apply, continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
   convert Finset.sum_const _
   · rw [Fin.snoc_zero, changeOriginSeriesTerm_apply, Finset.piecewise_same, add_comm]
-  · erw [← card, card_subtype, ← Finset.powersetCard_eq_filter, Finset.card_powersetCard, ← card,
-      card_fin, eq_comm, add_comm, Nat.choose_succ_self_right]
+  · rw [← card, card_subtype, ← Finset.powerset_univ, ← Finset.powersetCard_eq_filter,
+      Finset.card_powersetCard, ← card, card_fin, eq_comm, add_comm, Nat.choose_succ_self_right]
 
 end FormalMultilinearSeries
 
@@ -415,7 +415,7 @@ theorem factorial_smul (n : ℕ) :
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
   cases n
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
-  · erw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
+  · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
       factorial_smul'.{_,u,v} _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 

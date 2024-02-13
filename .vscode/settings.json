@@ -14,5 +14,9 @@
   "git.branchProtection": [
     "master",
     "stable"
-  ]
+  ],
+  "files.readonlyInclude": {
+    "**/.elan/**": true,
+    "**/.lake/**": true
+  }
 }

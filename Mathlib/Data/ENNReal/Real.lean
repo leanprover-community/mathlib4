@@ -437,7 +437,7 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
 theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
   lift a to ℝ≥0 using ha
   lift b to ℝ≥0 using hb
-  simp only [coe_inj, NNReal.coe_eq, coe_toReal]
+  simp only [coe_inj, NNReal.coe_inj, coe_toReal]
 #align ennreal.to_real_eq_to_real ENNReal.toReal_eq_toReal
 
 theorem toReal_smul (r : ℝ≥0) (s : ℝ≥0∞) : (r • s).toReal = r • s.toReal := by
@@ -672,14 +672,13 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofReal`. -/
 @[positivity ENNReal.ofReal _]
-def evalENNRealOfReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(Real → ENNReal)) (a : Q(Real))) ← whnfR e | throwError "not ENNReal.ofReal"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.ofReal)
-  let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa) : Expr))
-  | _ => pure .none
+def evalENNRealOfReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa))
+    | _ => pure .none
+  | _, _, _ => throwError "not ENNReal.ofReal"
 end Mathlib.Meta.Positivity
