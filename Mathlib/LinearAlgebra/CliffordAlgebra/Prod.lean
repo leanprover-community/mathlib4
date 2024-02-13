@@ -115,16 +115,14 @@ def ofProd : CliffordAlgebra (Q₁.prod Q₂) →ₐ[R] (evenOdd Q₁ ᵍ⊗[R] 
       ((GradedTensorProduct.includeRight (evenOdd Q₁) (evenOdd Q₂)).toLinearMap
           ∘ₗ (evenOdd Q₂ 1).subtype ∘ₗ (ι Q₂).codRestrict _ (ι_mem_evenOdd_one Q₂)),
     fun m => by
-      dsimp only [LinearMap.coprod_apply, LinearMap.coe_comp, Function.comp_apply,
+      simp_rw [LinearMap.coprod_apply, LinearMap.coe_comp, Function.comp_apply,
         AlgHom.toLinearMap_apply, QuadraticForm.prod_apply, Submodule.coeSubtype,
-        GradedTensorProduct.includeLeft_apply, GradedTensorProduct.includeRight_apply]
-      simp only [map_add, add_mul, mul_add, GradedTensorProduct.algebraMap_def]
-      rw [GradedTensorProduct.tmul_one_mul_one_tmul, GradedTensorProduct.tmul_one_mul_coe_tmul,
-        GradedTensorProduct.tmul_coe_mul_one_tmul, GradedTensorProduct.tmul_coe_mul_coe_tmul]
-      dsimp
-      simp_rw [one_mul, uzpow_one, Units.neg_smul, one_smul]
-      rw [ι_sq_scalar, ι_sq_scalar, mul_one]
-      simp_rw [← GradedTensorProduct.algebraMap_def, ← GradedTensorProduct.algebraMap_def']
+        GradedTensorProduct.includeLeft_apply, GradedTensorProduct.includeRight_apply, map_add,
+        add_mul, mul_add, GradedTensorProduct.algebraMap_def,
+        GradedTensorProduct.tmul_one_mul_one_tmul, GradedTensorProduct.tmul_one_mul_coe_tmul,
+        GradedTensorProduct.tmul_coe_mul_one_tmul, GradedTensorProduct.tmul_coe_mul_coe_tmul,
+        LinearMap.codRestrict_apply, one_mul, uzpow_one, Units.neg_smul, one_smul, ι_sq_scalar,
+        mul_one, ← GradedTensorProduct.algebraMap_def, ← GradedTensorProduct.algebraMap_def']
       abel⟩
 
 @[simp]
