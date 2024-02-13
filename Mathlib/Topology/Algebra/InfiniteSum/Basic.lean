@@ -269,7 +269,8 @@ theorem Equiv.summable_iff_of_support {g : γ → α} (e : support f ≃ support
 #align equiv.summable_iff_of_support Equiv.summable_iff_of_support
 
 protected theorem HasSum.map [AddCommMonoid γ] [TopologicalSpace γ] (hf : HasSum f a) {G}
-    [AddMonoidHomClass G α γ] (g : G) (hg : Continuous g) : HasSum (g ∘ f) (g a) :=
+    [FunLike G α γ] [AddMonoidHomClass G α γ] (g : G) (hg : Continuous g) :
+    HasSum (g ∘ f) (g a) :=
   have : (g ∘ fun s : Finset β => ∑ b in s, f b) = fun s : Finset β => ∑ b in s, g (f b) :=
     funext <| map_sum g _
   show Tendsto (fun s : Finset β => ∑ b in s, g (f b)) atTop (𝓝 (g a)) from
@@ -277,12 +278,13 @@ protected theorem HasSum.map [AddCommMonoid γ] [TopologicalSpace γ] (hf : HasS
 #align has_sum.map HasSum.map
 
 protected theorem Summable.map [AddCommMonoid γ] [TopologicalSpace γ] (hf : Summable f) {G}
-    [AddMonoidHomClass G α γ] (g : G) (hg : Continuous g) : Summable (g ∘ f) :=
+    [FunLike G α γ] [AddMonoidHomClass G α γ] (g : G) (hg : Continuous g) : Summable (g ∘ f) :=
   (hf.hasSum.map g hg).summable
 #align summable.map Summable.map
 
 protected theorem Summable.map_iff_of_leftInverse [AddCommMonoid γ] [TopologicalSpace γ] {G G'}
-    [AddMonoidHomClass G α γ] [AddMonoidHomClass G' γ α] (g : G) (g' : G') (hg : Continuous g)
+    [FunLike G α γ] [AddMonoidHomClass G α γ] [FunLike G' γ α] [AddMonoidHomClass G' γ α]
+    (g : G) (g' : G') (hg : Continuous g)
     (hg' : Continuous g') (hinv : Function.LeftInverse g' g) : Summable (g ∘ f) ↔ Summable f :=
   ⟨fun h => by
     have := h.map _ hg'
@@ -291,9 +293,9 @@ protected theorem Summable.map_iff_of_leftInverse [AddCommMonoid γ] [Topologica
 
 /-- A special case of `Summable.map_iff_of_leftInverse` for convenience -/
 protected theorem Summable.map_iff_of_equiv [AddCommMonoid γ] [TopologicalSpace γ] {G}
-    [AddEquivClass G α γ] (g : G) (hg : Continuous g)
-    (hg' : Continuous (AddEquivClass.toEquivLike.inv g : γ → α)) : Summable (g ∘ f) ↔ Summable f :=
-  Summable.map_iff_of_leftInverse g (g : α ≃+ γ).symm hg hg' (AddEquivClass.toEquivLike.left_inv g)
+    [EquivLike G α γ] [AddEquivClass G α γ] (g : G) (hg : Continuous g)
+    (hg' : Continuous (EquivLike.inv g : γ → α)) : Summable (g ∘ f) ↔ Summable f :=
+  Summable.map_iff_of_leftInverse g (g : α ≃+ γ).symm hg hg' (EquivLike.left_inv g)
 #align summable.map_iff_of_equiv Summable.map_iff_of_equiv
 
 /-- If `f : ℕ → α` has sum `a`, then the partial sums `∑_{i=0}^{n-1} f i` converge to `a`. -/
@@ -569,7 +571,7 @@ theorem Function.Injective.tsum_eq {g : γ → β} (hg : Injective g) {f : β �
     (hf : support f ⊆ Set.range g) : ∑' c, f (g c) = ∑' b, f b := by
   have : support f = g '' support (f ∘ g) := by
     rw [support_comp_eq_preimage, Set.image_preimage_eq_iff.2 hf]
-  change tsum (f ∘ g) = tsum f
+  rw [← Function.comp_def]
   by_cases hf_fin : (support f).Finite
   · have hfg_fin : (support (f ∘ g)).Finite := hf_fin.preimage (hg.injOn _)
     lift g to γ ↪ β using hg

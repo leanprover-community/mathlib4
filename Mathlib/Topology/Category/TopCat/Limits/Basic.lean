@@ -109,7 +109,7 @@ Generally you should just use `limit.isLimit F`, unless you need the actual defi
 def limitConeInfiIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitConeInfi.{v,u} F) := by
   refine IsLimit.ofFaithful forget (Types.limitConeIsLimit.{v,u} (F ⋙ forget))
     -- Porting note: previously could infer all ?_ except continuity
-    (fun s => ⟨fun v => ⟨ fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
+    (fun s => ⟨fun v => ⟨fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
   · dsimp [Functor.sections]
     intro _ _ _
     rw [← comp_apply', forget_map_eq_coe, ← s.π.naturality, forget_map_eq_coe]

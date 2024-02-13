@@ -98,6 +98,9 @@ instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   assoc f g h := LinearMap.comp_assoc (f := f) (g := g) (h := h)
 #align Module.Module_category ModuleCat.moduleCategory
 
+instance {M N : ModuleCat.{v} R} : FunLike (M ⟶ N) M N :=
+  LinearMap.instFunLike
+
 instance {M N : ModuleCat.{v} R} : LinearMapClass (M ⟶ N) R M N :=
   LinearMap.semilinearMapClass
 
@@ -406,8 +409,8 @@ lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :
     r • x = (show A ⟶ A from φ r) x := rfl
 
 instance : Module R (mkOfSMul' φ) where
-  smul_zero _ := map_zero _
-  smul_add _ _ _ := map_add _ _ _
+  smul_zero _ := map_zero (N := A) _
+  smul_add _ _ _ := map_add (N := A) _ _ _
   one_smul := by simp
   mul_smul := by simp
   add_smul _ _ _ := by simp; rfl
@@ -437,7 +440,7 @@ with the scalar multiplication. -/
 @[simps]
 def homMk : M ⟶ N where
   toFun := φ
-  map_add' _ _ := map_add _ _ _
+  map_add' _ _ := φ.map_add _ _
   map_smul' r x := (congr_hom (hφ r) x).symm
 
 lemma forget₂_map_homMk :
