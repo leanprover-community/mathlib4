@@ -202,11 +202,11 @@ theorem bernoulli_eq_bernoulli' (n : ℕ) : bernoulli n = (-1) ^ n * bernoulli' 
 
 @[simp]
 theorem bernoulli'_zero : bernoulli' 0 = 1 := by simp [bernoulli']
-#align bernoulli_zero bernoulli_zero
+#align bernoulli_zero bernoulli'_zero
 
 @[simp]
 theorem bernoulli'_one : bernoulli' 1 = -1 / 2 := by norm_num [bernoulli']
-#align bernoulli_one bernoulli_one
+#align bernoulli_one bernoulli'_one
 
 theorem bernoulli'_eq_bernoulli_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli' n = bernoulli n := by
   by_cases h0 : n = 0; · simp [h0]
