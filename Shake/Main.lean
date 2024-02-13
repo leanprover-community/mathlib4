@@ -377,6 +377,10 @@ def main (args : List String) : IO UInt32 := do
     IO.println help
     IO.Process.exit 0
 
+  if (← IO.Process.output { cmd := "lake", args := #["build", "--no-build"] }).exitCode != 0 then
+    IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
+    IO.Process.exit 1
+
   -- Parse the `--cfg` argument
   let srcSearchPath ← initSrcSearchPath
   let cfgFile ← if let some cfg := args.cfg then
