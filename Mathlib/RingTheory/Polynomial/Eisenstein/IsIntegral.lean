@@ -370,7 +370,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     have hppdiv : p ^ B.dim ∣ p ^ B.dim * r := dvd_mul_of_dvd_left dvd_rfl _
     rwa [← IsFractionRing.injective R K hQ, mul_comm, ← Units.coe_neg_one, mul_pow, ←
       Units.val_pow_eq_pow_val, ← Units.val_pow_eq_pow_val, mul_assoc,
-      IsUnit.dvd_mul_left _ _ _ ⟨_, rfl⟩, mul_comm, ← Nat.succ_eq_add_one, hn] at hppdiv
+      Units.dvd_mul_left, mul_comm, ← Nat.succ_eq_add_one, hn] at hppdiv
 #align mem_adjoin_of_smul_prime_smul_of_minpoly_is_eiseinstein_at mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt
 
 /-- Let `K` be the field of fraction of an integrally closed domain `R` and let `L` be a separable

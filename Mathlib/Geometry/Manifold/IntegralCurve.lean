@@ -147,9 +147,8 @@ lemma IsIntegralCurveAt.continuousAt (hγ : IsIntegralCurveAt γ v t₀) :
   have ⟨_, hs, hγ⟩ := isIntegralCurveAt_iff.mp hγ
   hγ.continuousAt <| mem_of_mem_nhds hs
 
-lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) :
-    Continuous γ := continuous_iff_continuousAt.mpr
-      fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
+lemma IsIntegralCurve.continuous (hγ : IsIntegralCurve γ v) : Continuous γ :=
+  continuous_iff_continuousAt.mpr fun _ ↦ (hγ.isIntegralCurveOn univ).continuousAt (mem_univ _)
 
 /-- If `γ` is an integral curve of a vector field `v`, then `γ t` is tangent to `v (γ t)` when
   expressed in the local chart around the initial point `γ t₀`. -/
@@ -386,7 +385,7 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   -- extract a set `s` on which `v'` is Lipschitz
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
-  obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
+  obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ 𝓝 _, LipschitzOnWith K v' s :=
     (hv.contDiffAt (range_mem_nhds_isInteriorPoint hγt₀)).snd.exists_lipschitzOnWith
   have hlip (t : ℝ) : LipschitzOnWith K ((fun _ ↦ v') t) ((fun _ ↦ s) t) := hlip
   -- internal lemmas to reduce code duplication
@@ -438,7 +437,7 @@ theorem isIntegralCurveOn_Ioo_eqOn_of_contMDiff (ht₀ : t₀ ∈ Ioo a b)
     (h : γ t₀ = γ' t₀) : EqOn γ γ' (Ioo a b) := by
   set s := {t | γ t = γ' t} ∩ Ioo a b with hs
   -- since `Ioo a b` is connected, we get `s = Ioo a b` by showing that `s` is clopen in `Ioo a b`
-  -- in the subtype toplogy (`s` is also non-empty by assumption)
+  -- in the subtype topology (`s` is also non-empty by assumption)
   -- here we use a slightly weaker alternative theorem
   suffices hsub : Ioo a b ⊆ s from fun t ht ↦ mem_setOf.mp ((subset_def ▸ hsub) t ht).1
   apply isPreconnected_Ioo.subset_of_closure_inter_subset (s := Ioo a b) (u := s) _
