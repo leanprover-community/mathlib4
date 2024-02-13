@@ -143,39 +143,33 @@ protected theorem ae_eq (hf : UnifIntegrable f p μ) (hfg : ∀ n, f n =ᵐ[μ] 
   simp_rw [Set.indicator_apply, hx]
 #align measure_theory.unif_integrable.ae_eq MeasureTheory.UnifIntegrable.ae_eq
 
-end UnifIntegrable
-
 /-- Uniform integrability is preserved by restriction of functions to a set. -/
-theorem UnifIntegrable.indicator {f : ι → α → β} {p : ℝ≥0∞} {μ : Measure α}
-    (hui : UnifIntegrable f p μ) (E : Set α) :
-    UnifIntegrable (fun i => E.indicator (f i)) p μ := by
-  intro ε hε; obtain ⟨δ, hδ_pos, hε⟩ := hui hε
-  use δ, hδ_pos; intro i s hs hμs
-  dsimp only -- cosmetic eta reduction (but for some reason `eta_reduce` does nothing)
+protected theorem indicator (hf : UnifIntegrable f p μ) (E : Set α) :
+    UnifIntegrable (fun i => E.indicator (f i)) p μ := fun ε hε ↦ by
+  obtain ⟨δ, hδ_pos, hε⟩ := hf hε
+  refine ⟨δ, hδ_pos, fun i s hs hμs ↦ ?_⟩
   calc
-    ENNReal.ofReal ε ≥ _ := (hε i s hs hμs)
-    _ ≥ _ := (snorm_indicator_le _)
-    _ = _ := by rw [indicator_indicator, inter_comm, ← indicator_indicator]
+    snorm (s.indicator (E.indicator (f i))) p μ = snorm (E.indicator (s.indicator (f i))) p μ := by
+      simp only [indicator_indicator, inter_comm]
+    _ ≤ snorm (s.indicator (f i)) p μ := snorm_indicator_le _
+    _ ≤ ENNReal.ofReal ε := hε _ _ hs hμs
 
 /-- Uniform integrability is preserved by restriction of measure to measurable set. -/
-theorem unifIntegrable_restrict {f : ι → α → β} {p : ℝ≥0∞} {μ : Measure α} {E : Set α}
-    (hui : UnifIntegrable f p μ) (hE : MeasurableSet E) :
-    UnifIntegrable (fun i => f i) p (μ.restrict E) := by
-  intro ε hε; obtain ⟨δ, hδ_pos, hε⟩ := hui hε
-  use δ, hδ_pos; intro i s hs hμs
-  have hμEs : μ (E ∩ s) ≤ _ := by calc
-    _ = _ := by rw [inter_comm]
-    _ = (μ.restrict E) s := (μ.restrict_apply hs).symm
-    _ ≤ ENNReal.ofReal δ := hμs
-  have hEε := (hε i (E ∩ s) (hE.inter hs) hμEs)
-  eta_reduce -- cosmetic, goal is met without it
+protected theorem restrict (hf : UnifIntegrable f p μ) (E : Set α) :
+    UnifIntegrable f p (μ.restrict E) := fun ε hε ↦ by
+  obtain ⟨δ, hδ_pos, hδε⟩ := hf hε
+  refine ⟨δ, hδ_pos, fun i s hs hμs ↦ ?_⟩
+  rw [μ.restrict_apply hs, ← measure_toMeasurable] at hμs
   calc
-    _ = _ := (snorm_indicator_eq_snorm_restrict hE).symm
-    _ = _ := by conv => { lhs; rw [indicator_indicator, ← E.inter_self, inter_assoc,
-                                   ← indicator_indicator] }
-    _ = _ := snorm_indicator_eq_snorm_restrict hE
-    _ ≤ _ := by exact (snorm_mono_measure _ μ.restrict_le_self)
-    _ ≤ ENNReal.ofReal ε := hEε
+    snorm (indicator s (f i)) p (μ.restrict E) = snorm (f i) p (μ.restrict (s ∩ E)) := by
+      rw [snorm_indicator_eq_snorm_restrict hs, μ.restrict_restrict hs]
+    _ ≤ snorm (f i) p (μ.restrict (toMeasurable μ (s ∩ E))) :=
+      snorm_mono_measure _ <| Measure.restrict_mono (subset_toMeasurable _ _) le_rfl
+    _ = snorm (indicator (toMeasurable μ (s ∩ E)) (f i)) p μ :=
+      (snorm_indicator_eq_snorm_restrict (measurableSet_toMeasurable _ _)).symm
+    _ ≤ ENNReal.ofReal ε := hδε i _ (measurableSet_toMeasurable _ _) hμs
+
+end UnifIntegrable
 
 theorem unifIntegrable_zero_meas [MeasurableSpace α] {p : ℝ≥0∞} {f : ι → α → β} :
     UnifIntegrable f p (0 : Measure α) :=

@@ -84,7 +84,6 @@ theorem restrict_mono' {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ ⦃μ ν :
     _ ≤ μ (t ∩ s') := (measure_mono_ae <| hs.mono fun _x hx ⟨hxt, hxs⟩ => ⟨hxt, hx hxs⟩)
     _ ≤ ν (t ∩ s') := (le_iff'.1 hμν (t ∩ s'))
     _ = ν.restrict s' t := (restrict_apply ht).symm
-
 #align measure_theory.measure.restrict_mono' MeasureTheory.Measure.restrict_mono'
 
 /-- Restriction of a measure to a subset is monotone both in set and in measure. -/

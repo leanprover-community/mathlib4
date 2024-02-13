@@ -376,7 +376,7 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
   set E : Set α := Ef ∪ Eg
   -- use uniform integrability to get control on the limit over E
   have hgE' := Memℒp.restrict E hg'
-  have huiE := unifIntegrable_restrict hui hmE
+  have huiE := hui.restrict  E
   have hfgE : (∀ᵐ x ∂(μ.restrict E), Tendsto (fun n => f n x) atTop (𝓝 (g x))) :=
     ae_restrict_of_ae hfg
   -- `tendsto_Lp_of_tendsto_ae_of_meas` needs to
