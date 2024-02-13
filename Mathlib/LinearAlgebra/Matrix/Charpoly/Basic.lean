@@ -111,7 +111,7 @@ theorem charpoly_reindex (e : n ≃ m)
   rw [charmatrix_reindex, Matrix.det_reindex_self]
 #align matrix.charpoly_reindex Matrix.charpoly_reindex
 
-lemma Matrix.charpoly_map (M : Matrix n n R) (f : R →+* S) :
+lemma charpoly_map (M : Matrix n n R) (f : R →+* S) :
     (M.map f).charpoly = M.charpoly.map f := by
   rw [charpoly, charmatrix_map, ← Polynomial.coe_mapRingHom, charpoly, RingHom.map_det]
   rfl
