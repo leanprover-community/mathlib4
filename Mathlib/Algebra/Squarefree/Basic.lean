@@ -37,6 +37,9 @@ def Squarefree [Monoid R] (r : R) : Prop :=
   ∀ x : R, x * x ∣ r → IsUnit x
 #align squarefree Squarefree
 
+theorem IsRelPrime.of_squarefree_mul [CommMonoid R] {m n : R} (h : Squarefree (m * n)) :
+    IsRelPrime m n := fun c hca hcb ↦ h c (mul_dvd_mul hca hcb)
+
 @[simp]
 theorem IsUnit.squarefree [CommMonoid R] {x : R} (h : IsUnit x) : Squarefree x := fun _ hdvd =>
   isUnit_of_mul_isUnit_left (isUnit_of_dvd_unit hdvd h)
@@ -154,26 +157,23 @@ section Irreducible
 
 variable [CommMonoidWithZero R] [WfDvdMonoid R]
 
+theorem squarefree_iff_no_irreducibles {x : R} (hx₀ : x ≠ 0) :
+    Squarefree x ↔ ∀ p, Irreducible p → ¬ (p * p ∣ x) := by
+  refine ⟨fun h p hp hp' ↦ hp.not_unit (h p hp'), fun h d hd ↦ by_contra fun hdu ↦ ?_⟩
+  have hd₀ : d ≠ 0 := ne_zero_of_dvd_ne_zero (ne_zero_of_dvd_ne_zero hx₀ hd) (dvd_mul_left d d)
+  obtain ⟨p, irr, dvd⟩ := WfDvdMonoid.exists_irreducible_factor hdu hd₀
+  exact h p irr ((mul_dvd_mul dvd dvd).trans hd)
+
 theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r : R) :
     (∀ x : R, Irreducible x → ¬x * x ∣ r) ↔ (r = 0 ∧ ∀ x : R, ¬Irreducible x) ∨ Squarefree r := by
-  symm
-  constructor
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases eq_or_ne r 0 with (rfl | hr)
+    · exact .inl (by simpa using h)
+    · exact .inr ((squarefree_iff_no_irreducibles hr).mpr h)
   · rintro (⟨rfl, h⟩ | h)
     · simpa using h
     intro x hx t
     exact hx.not_unit (h x t)
-  intro h
-  rcases eq_or_ne r 0 with (rfl | hr)
-  · exact Or.inl (by simpa using h)
-  right
-  intro x hx
-  by_contra i
-  have : x ≠ 0 := by
-    rintro rfl
-    apply hr
-    simpa only [zero_dvd_iff, mul_zero] using hx
-  obtain ⟨j, hj₁, hj₂⟩ := WfDvdMonoid.exists_irreducible_factor i this
-  exact h _ hj₁ ((mul_dvd_mul hj₂ hj₂).trans hx)
 #align irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree
 
 theorem squarefree_iff_irreducible_sq_not_dvd_of_ne_zero {r : R} (hr : r ≠ 0) :
@@ -191,42 +191,84 @@ end Irreducible
 
 section IsRadical
 
-variable [CancelCommMonoidWithZero R]
+section
+variable [CommMonoidWithZero R] [DecompositionMonoid R]
 
-theorem IsRadical.squarefree {x : R} (h0 : x ≠ 0) (h : IsRadical x) : Squarefree x := by
+theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
+  (isRadical_iff_pow_one_lt 2 one_lt_two).2 fun y hy ↦ by
+    obtain ⟨a, b, ha, hb, rfl⟩ := exists_dvd_and_dvd_of_dvd_mul (sq y ▸ hy)
+    exact (IsRelPrime.of_squarefree_mul hx).mul_dvd ha hb
+#align squarefree.is_radical Squarefree.isRadical
+
+theorem Squarefree.dvd_pow_iff_dvd {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
+    x ∣ y ^ n ↔ x ∣ y := ⟨hsq.isRadical n y, (·.pow h0)⟩
+#align unique_factorization_monoid.dvd_pow_iff_dvd_of_squarefree Squarefree.dvd_pow_iff_dvd
+@[deprecated]
+alias UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree := Squarefree.dvd_pow_iff_dvd
+
+end
+
+variable [CancelCommMonoidWithZero R] {x y p d : R}
+
+theorem IsRadical.squarefree (h0 : x ≠ 0) (h : IsRadical x) : Squarefree x := by
   rintro z ⟨w, rfl⟩
   specialize h 2 (z * w) ⟨w, by simp_rw [pow_two, mul_left_comm, ← mul_assoc]⟩
   rwa [← one_mul (z * w), mul_assoc, mul_dvd_mul_iff_right, ← isUnit_iff_dvd_one] at h
   rw [mul_assoc, mul_ne_zero_iff] at h0; exact h0.2
 #align is_radical.squarefree IsRadical.squarefree
 
-variable [GCDMonoid R]
+namespace Squarefree
 
-theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
-  (isRadical_iff_pow_one_lt 2 one_lt_two).2 fun y hy =>
-    And.right <|
-      (dvd_gcd_iff x x y).1
-        (by
-          by_cases h : gcd x y = 0
-          · rw [h]
-            apply dvd_zero
-          replace hy := ((dvd_gcd_iff x x _).2 ⟨dvd_rfl, hy⟩).trans gcd_pow_right_dvd_pow_gcd
-          obtain ⟨z, hz⟩ := gcd_dvd_left x y
-          nth_rw 1 [hz] at hy ⊢
-          rw [pow_two, mul_dvd_mul_iff_left h] at hy
-          obtain ⟨w, hw⟩ := hy
-          exact (hx z ⟨w, by rwa [mul_right_comm, ← hw]⟩).mul_right_dvd.2 dvd_rfl)
-#align squarefree.is_radical Squarefree.isRadical
+theorem pow_dvd_of_squarefree_of_pow_succ_dvd_mul_right {k : ℕ}
+    (hx : Squarefree x) (hp : Prime p) (h : p ^ (k + 1) ∣ x * y) :
+    p ^ k ∣ y := by
+  by_cases hxp : p ∣ x
+  · obtain ⟨x', rfl⟩ := hxp
+    have hx' : ¬ p ∣ x' := fun contra ↦ hp.not_unit <| hx p (mul_dvd_mul_left p contra)
+    replace h : p ^ k ∣ x' * y := by
+      rw [pow_succ, mul_assoc] at h
+      exact (mul_dvd_mul_iff_left hp.ne_zero).mp h
+    exact hp.pow_dvd_of_dvd_mul_left _ hx' h
+  · exact (pow_dvd_pow _ k.le_succ).trans (hp.pow_dvd_of_dvd_mul_left _ hxp h)
 
-theorem isRadical_iff_squarefree_or_zero {x : R} : IsRadical x ↔ Squarefree x ∨ x = 0 :=
-  ⟨fun hx => (em <| x = 0).elim Or.inr fun h => Or.inl <| hx.squarefree h,
+theorem pow_dvd_of_squarefree_of_pow_succ_dvd_mul_left {k : ℕ}
+    (hy : Squarefree y) (hp : Prime p) (h : p ^ (k + 1) ∣ x * y) :
+    p ^ k ∣ x := by
+  rw [mul_comm] at h
+  exact pow_dvd_of_squarefree_of_pow_succ_dvd_mul_right hy hp h
+
+variable [DecompositionMonoid R]
+
+theorem dvd_of_squarefree_of_mul_dvd_mul_right (hx : Squarefree x) (h : d * d ∣ x * y) : d ∣ y := by
+  nontriviality R
+  obtain ⟨a, b, ha, hb, eq⟩ := exists_dvd_and_dvd_of_dvd_mul h
+  replace ha : Squarefree a := hx.squarefree_of_dvd ha
+  obtain ⟨c, hc⟩ : a ∣ d := ha.isRadical 2 d ⟨b, by rw [sq, eq]⟩
+  rw [hc, mul_assoc, (mul_right_injective₀ ha.ne_zero).eq_iff] at eq
+  exact dvd_trans ⟨c, by rw [hc, ← eq, mul_comm]⟩ hb
+
+theorem dvd_of_squarefree_of_mul_dvd_mul_left (hy : Squarefree y) (h : d * d ∣ x * y) : d ∣ x :=
+  dvd_of_squarefree_of_mul_dvd_mul_right hy (mul_comm x y ▸ h)
+
+end Squarefree
+
+variable [DecompositionMonoid R]
+
+/-- `x * y` is square-free iff `x` and `y` have no common factors and are themselves square-free. -/
+theorem squarefree_mul_iff : Squarefree (x * y) ↔ IsRelPrime x y ∧ Squarefree x ∧ Squarefree y :=
+  ⟨fun h ↦ ⟨IsRelPrime.of_squarefree_mul h, h.of_mul_left, h.of_mul_right⟩,
+    fun ⟨hp, sqx, sqy⟩ _ dvd ↦ hp (sqy.dvd_of_squarefree_of_mul_dvd_mul_left dvd)
+      (sqx.dvd_of_squarefree_of_mul_dvd_mul_right dvd)⟩
+
+theorem isRadical_iff_squarefree_or_zero : IsRadical x ↔ Squarefree x ∨ x = 0 :=
+  ⟨fun hx ↦ (em <| x = 0).elim .inr fun h ↦ .inl <| hx.squarefree h,
     Or.rec Squarefree.isRadical <| by
       rintro rfl
       rw [zero_isRadical_iff]
       infer_instance⟩
 #align is_radical_iff_squarefree_or_zero isRadical_iff_squarefree_or_zero
 
-theorem isRadical_iff_squarefree_of_ne_zero {x : R} (h : x ≠ 0) : IsRadical x ↔ Squarefree x :=
+theorem isRadical_iff_squarefree_of_ne_zero (h : x ≠ 0) : IsRadical x ↔ Squarefree x :=
   ⟨IsRadical.squarefree h, Squarefree.isRadical⟩
 #align is_radical_iff_squarefree_of_ne_zero isRadical_iff_squarefree_of_ne_zero
 
@@ -235,6 +277,21 @@ end IsRadical
 namespace UniqueFactorizationMonoid
 
 variable [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
+
+lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
+    ∃ (y : R) (n : ℕ), Squarefree y ∧ y ∣ x ∧ x ∣ y ^ n := by
+  induction' x using WfDvdMonoid.induction_on_irreducible with u hu z p hz hp ih
+  · contradiction
+  · exact ⟨1, 0, squarefree_one, one_dvd u, hu.dvd⟩
+  · obtain ⟨y, n, hy, hyx, hy'⟩ := ih hz
+    rcases n.eq_zero_or_pos with rfl | hn
+    · exact ⟨p, 1, hp.squarefree, dvd_mul_right p z, by simp [isUnit_of_dvd_one (pow_zero y ▸ hy')]⟩
+    by_cases hp' : p ∣ y
+    · exact ⟨y, n + 1, hy, dvd_mul_of_dvd_right hyx _,
+        mul_comm p z ▸ pow_succ' y n ▸ mul_dvd_mul hy' hp'⟩
+    · suffices Squarefree (p * y) from ⟨p * y, n, this,
+        mul_dvd_mul_left p hyx, mul_pow p y n ▸ mul_dvd_mul (dvd_pow_self p hn.ne') hy'⟩
+      exact squarefree_mul_iff.mpr ⟨hp.isRelPrime_iff_not_dvd.mpr hp', hp.squarefree, hy⟩
 
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [DecidableEq R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
@@ -261,13 +318,6 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [Decidabl
     specialize h (normalize b)
     assumption_mod_cast
 #align unique_factorization_monoid.squarefree_iff_nodup_normalized_factors UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors
-
-theorem dvd_pow_iff_dvd_of_squarefree {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
-    x ∣ y ^ n ↔ x ∣ y := by
-  classical
-    haveI := UniqueFactorizationMonoid.toGCDMonoid R
-    exact ⟨hsq.isRadical n y, fun h => h.pow h0⟩
-#align unique_factorization_monoid.dvd_pow_iff_dvd_of_squarefree UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree
 
 end UniqueFactorizationMonoid
 

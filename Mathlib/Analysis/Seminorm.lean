@@ -368,7 +368,7 @@ def pullback (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜₂ E₂ →+ Semin
 
 instance instOrderBot : OrderBot (Seminorm 𝕜 E) where
   bot := 0
-  bot_le := map_nonneg
+  bot_le := apply_nonneg
 
 @[simp]
 theorem coe_bot : ⇑(⊥ : Seminorm 𝕜 E) = 0 :=
@@ -383,11 +383,11 @@ theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (ha
     a • p ≤ b • q := by
   simp_rw [le_def]
   intro x
-  exact mul_le_mul hab (hpq x) (map_nonneg p x) (NNReal.coe_nonneg b)
+  exact mul_le_mul hab (hpq x) (apply_nonneg p x) (NNReal.coe_nonneg b)
 #align seminorm.smul_le_smul Seminorm.smul_le_smul
 
 theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
-    s.sup p x = ↑(s.sup fun i => ⟨p i x, map_nonneg (p i) x⟩ : ℝ≥0) := by
+    s.sup p x = ↑(s.sup fun i => ⟨p i x, apply_nonneg (p i) x⟩ : ℝ≥0) := by
   induction' s using Finset.cons_induction_on with a s ha ih
   · rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply]
     norm_cast
@@ -397,7 +397,7 @@ theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
 
 theorem exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) {s : Finset ι} (hs : s.Nonempty) (x : E) :
     ∃ i ∈ s, s.sup p x = p i x := by
-  rcases Finset.exists_mem_eq_sup s hs (fun i ↦ (⟨p i x, map_nonneg _ _⟩ : ℝ≥0)) with ⟨i, hi, hix⟩
+  rcases Finset.exists_mem_eq_sup s hs (fun i ↦ (⟨p i x, apply_nonneg _ _⟩ : ℝ≥0)) with ⟨i, hi, hix⟩
   rw [finset_sup_apply]
   exact ⟨i, hi, congr_arg _ hix⟩
 
@@ -412,7 +412,7 @@ theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥
   ext x
   rw [smul_apply, finset_sup_apply, finset_sup_apply]
   symm
-  exact congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.mul_finset_sup C s (fun i ↦ ⟨p i x, map_nonneg _ _⟩))
+  exact congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.mul_finset_sup C s (fun i ↦ ⟨p i x, apply_nonneg _ _⟩))
 
 theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p ≤ ∑ i in s, p i := by
   classical
@@ -493,7 +493,7 @@ noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
           refine'
             ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
               -- Porting note: the following was previously `fun i => by positivity`
-              (fun i => add_nonneg (map_nonneg _ _) (map_nonneg _ _))
+              (fun i => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _))
               fun x hx => ⟨0, by rwa [map_zero, sub_zero, map_zero, add_zero]⟩
         simp_rw [Real.mul_iInf_of_nonneg (norm_nonneg a), mul_add, ← map_smul_eq_mul p, ←
           map_smul_eq_mul q, smul_sub]
@@ -842,13 +842,13 @@ variable (p : Seminorm 𝕜 E)
 
 theorem preimage_metric_ball {r : ℝ} : p ⁻¹' Metric.ball 0 r = { x | p x < r } := by
   ext x
-  simp only [mem_setOf, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (map_nonneg p _)]
+  simp only [mem_setOf, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
 #align seminorm.preimage_metric_ball Seminorm.preimage_metric_ball
 
 theorem preimage_metric_closedBall {r : ℝ} : p ⁻¹' Metric.closedBall 0 r = { x | p x ≤ r } := by
   ext x
   simp only [mem_setOf, mem_preimage, mem_closedBall_zero_iff,
-    Real.norm_of_nonneg (map_nonneg p _)]
+    Real.norm_of_nonneg (apply_nonneg p _)]
 #align seminorm.preimage_metric_closed_ball Seminorm.preimage_metric_closedBall
 
 theorem ball_zero_eq_preimage_ball {r : ℝ} : p.ball 0 r = p ⁻¹' Metric.ball 0 r := by
@@ -876,7 +876,7 @@ theorem balanced_ball_zero (r : ℝ) : Balanced 𝕜 (ball p 0 r) := by
   rintro a ha x ⟨y, hy, hx⟩
   rw [mem_ball_zero, ← hx, map_smul_eq_mul]
   calc
-    _ ≤ p y := mul_le_of_le_one_left (map_nonneg p _) ha
+    _ ≤ p y := mul_le_of_le_one_left (apply_nonneg p _) ha
     _ < r := by rwa [mem_ball_zero] at hy
 #align seminorm.balanced_ball_zero Seminorm.balanced_ball_zero
 
@@ -885,7 +885,7 @@ theorem balanced_closedBall_zero (r : ℝ) : Balanced 𝕜 (closedBall p 0 r) :=
   rintro a ha x ⟨y, hy, hx⟩
   rw [mem_closedBall_zero, ← hx, map_smul_eq_mul]
   calc
-    _ ≤ p y := mul_le_of_le_one_left (map_nonneg p _) ha
+    _ ≤ p y := mul_le_of_le_one_left (apply_nonneg p _) ha
     _ ≤ r := by rwa [mem_closedBall_zero] at hy
 #align seminorm.balanced_closed_ball_zero Seminorm.balanced_closedBall_zero
 
@@ -919,7 +919,7 @@ theorem closedBall_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : 
 theorem ball_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r ≤ 0) : p.ball x r = ∅ := by
   ext
   rw [Seminorm.mem_ball, Set.mem_empty_iff_false, iff_false_iff, not_lt]
-  exact hr.trans (map_nonneg p _)
+  exact hr.trans (apply_nonneg p _)
 #align seminorm.ball_eq_emptyset Seminorm.ball_eq_emptyset
 
 @[simp]
@@ -927,13 +927,13 @@ theorem closedBall_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r <
     p.closedBall x r = ∅ := by
   ext
   rw [Seminorm.mem_closedBall, Set.mem_empty_iff_false, iff_false_iff, not_le]
-  exact hr.trans_le (map_nonneg _ _)
+  exact hr.trans_le (apply_nonneg _ _)
 #align seminorm.closed_ball_eq_emptyset Seminorm.closedBall_eq_emptyset
 
 theorem closedBall_smul_ball (p : Seminorm 𝕜 E) {r₁ : ℝ} (hr₁ : r₁ ≠ 0) (r₂ : ℝ) :
     Metric.closedBall (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
   simp only [smul_subset_iff, mem_ball_zero, mem_closedBall_zero_iff, map_smul_eq_mul]
-  refine fun a ha b hb ↦ mul_lt_mul' ha hb (map_nonneg _ _) ?_
+  refine fun a ha b hb ↦ mul_lt_mul' ha hb (apply_nonneg _ _) ?_
   exact hr₁.lt_or_lt.resolve_left <| ((norm_nonneg a).trans ha).not_lt
 
 theorem ball_smul_closedBall (p : Seminorm 𝕜 E) (r₁ : ℝ) {r₂ : ℝ} (hr₂ : r₂ ≠ 0) :
@@ -943,7 +943,7 @@ theorem ball_smul_closedBall (p : Seminorm 𝕜 E) (r₁ : ℝ) {r₂ : ℝ} (hr
   intro a ha b hb
   rw [mul_comm, mul_comm r₁]
   refine mul_lt_mul' hb ha (norm_nonneg _) (hr₂.lt_or_lt.resolve_left ?_)
-  exact ((map_nonneg p b).trans hb).not_lt
+  exact ((apply_nonneg p b).trans hb).not_lt
 
 theorem ball_smul_ball (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
     Metric.ball (0 : 𝕜) r₁ • p.ball 0 r₂ ⊆ p.ball 0 (r₁ * r₂) := by
@@ -1369,7 +1369,7 @@ lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
     q x ≤ (C • s.sup p) x := by
   rcases hx with ⟨j, hj, hjx⟩
   have : (s.sup p) x ≠ 0 :=
-    ne_of_gt ((hjx.symm.lt_of_le <| map_nonneg _ _).trans_le (le_finset_sup_apply hj))
+    ne_of_gt ((hjx.symm.lt_of_le <| apply_nonneg _ _).trans_le (le_finset_sup_apply hj))
   refine (s.sup p).bound_of_shell_smul q ε_pos hc (fun y hle hlt ↦ ?_) this
   rcases exists_apply_eq_finset_sup p ⟨j, hj⟩ y with ⟨i, hi, hiy⟩
   rw [smul_apply, hiy]
