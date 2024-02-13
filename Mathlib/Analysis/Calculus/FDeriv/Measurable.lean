@@ -1003,9 +1003,7 @@ theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [Measurab
         rintro - ⟨x, rfl⟩
         exact mem_range_self (p.1, x)
       exact closure_mono (Submodule.span_mono B) A
-    apply (IsSeparable.span _).closure.mono this
-    rw [← image_univ]
-    exact (isSeparable_of_separableSpace univ).image hf
+    exact (isSeparable_range hf).span.closure.mono this
   · exact (measurable_deriv_with_param hf).stronglyMeasurable
 
 theorem aemeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]

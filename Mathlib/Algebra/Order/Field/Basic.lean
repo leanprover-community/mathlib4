@@ -7,6 +7,7 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Tactic.Positivity.Core
 
 #align_import algebra.order.field.basic from "leanprover-community/mathlib"@"84771a9f5f0bd5e5d6218811556508ddf476dcbd"
 
@@ -246,7 +247,7 @@ theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
 ### Bi-implications of inequalities using inversions
 -/
 
-
+@[gcongr]
 theorem inv_le_inv_of_le (ha : 0 < a) (h : a ≤ b) : b⁻¹ ≤ a⁻¹ := by
   rwa [← one_div a, le_div_iff' ha, ← div_eq_mul_inv, div_le_iff (ha.trans_le h), one_mul]
 #align inv_le_inv_of_le inv_le_inv_of_le
@@ -275,6 +276,7 @@ theorem inv_lt_inv (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b⁻¹ ↔ b < a :=
   lt_iff_lt_of_le_iff_le (inv_le_inv hb ha)
 #align inv_lt_inv inv_lt_inv
 
+@[gcongr]
 theorem inv_lt_inv_of_lt (hb : 0 < b) (h : b < a) : a⁻¹ < b⁻¹ :=
   (inv_lt_inv (hb.trans h) hb).2 h
 #align inv_lt_inv_of_lt inv_lt_inv_of_lt
@@ -338,13 +340,14 @@ theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 :=
 -/
 
 
-@[mono]
+@[mono, gcongr]
 theorem div_le_div_of_le (hc : 0 ≤ c) (h : a ≤ b) : a / c ≤ b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 hc)
 #align div_le_div_of_le div_le_div_of_le
 
 -- Not a `mono` lemma b/c `div_le_div` is strictly more general
+@[gcongr]
 theorem div_le_div_of_le_left (ha : 0 ≤ a) (hc : 0 < c) (h : c ≤ b) : a / b ≤ a / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact mul_le_mul_of_nonneg_left ((inv_le_inv (hc.trans_le h) hc).mpr h) ha
@@ -355,6 +358,7 @@ theorem div_le_div_of_le_of_nonneg (hab : a ≤ b) (hc : 0 ≤ c) : a / c ≤ b 
   div_le_div_of_le hc hab
 #align div_le_div_of_le_of_nonneg div_le_div_of_le_of_nonneg
 
+@[gcongr]
 theorem div_lt_div_of_lt (hc : 0 < c) (h : a < b) : a / c < b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
   exact mul_lt_mul_of_pos_right h (one_div_pos.2 hc)
@@ -384,12 +388,13 @@ theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤
   rw [le_div_iff d0, div_mul_eq_mul_div, div_le_iff b0]
 #align div_le_div_iff div_le_div_iff
 
-@[mono]
+@[mono, gcongr]
 theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d := by
   rw [div_le_div_iff (hd.trans_le hbd) hd]
   exact mul_le_mul hac hbd hd.le hc
 #align div_le_div div_le_div
 
+@[gcongr]
 theorem div_lt_div (hac : a < c) (hbd : d ≤ b) (c0 : 0 ≤ c) (d0 : 0 < d) : a / b < c / d :=
   (div_lt_div_iff (d0.trans_le hbd) d0).2 (mul_lt_mul hac hbd d0 c0)
 #align div_lt_div div_lt_div
@@ -398,6 +403,7 @@ theorem div_lt_div' (hac : a ≤ c) (hbd : d < b) (c0 : 0 < c) (d0 : 0 < d) : a 
   (div_lt_div_iff (d0.trans hbd) d0).2 (mul_lt_mul' hac hbd d0.le c0)
 #align div_lt_div' div_lt_div'
 
+@[gcongr]
 theorem div_lt_div_of_lt_left (hc : 0 < c) (hb : 0 < b) (h : b < a) : c / a < c / b :=
   (div_lt_div_left hc (hb.trans h) hb).mpr h
 #align div_lt_div_of_lt_left div_lt_div_of_lt_left
@@ -1008,3 +1014,70 @@ theorem abs_one_div (a : α) : |1 / a| = 1 / |a| := by rw [abs_div, abs_one]
 #align abs_one_div abs_one_div
 
 end
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Function
+
+section LinearOrderedSemifield
+variable {α : Type*} [LinearOrderedSemifield α] {a b : α}
+
+private lemma div_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
+  div_nonneg ha.le hb
+
+private lemma div_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
+  div_nonneg ha hb.le
+
+private lemma div_ne_zero_of_pos_of_ne_zero (ha : 0 < a) (hb : b ≠ 0) : a / b ≠ 0 :=
+  div_ne_zero ha.ne' hb
+
+private lemma div_ne_zero_of_ne_zero_of_pos (ha : a ≠ 0) (hb : 0 < b) : a / b ≠ 0 :=
+  div_ne_zero ha hb.ne'
+
+private lemma zpow_zero_pos (a : α) : 0 < a ^ (0 : ℤ) := zero_lt_one.trans_eq (zpow_zero a).symm
+
+end LinearOrderedSemifield
+
+/-- The `positivity` extension which identifies expressions of the form `a / b`,
+such that `positivity` successfully recognises both `a` and `b`. -/
+@[positivity _ / _] def evalDiv : PositivityExt where eval {u α} zα pα e := do
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
+    | throwError "not /"
+  let _e_eq : $e =Q $f $a $b := ⟨⟩
+  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  assumeInstancesCommute
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(HDiv.hDiv)
+  let ra ← core zα pα a; let rb ← core zα pα b
+  match ra, rb with
+  | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
+  | .positive pa, .nonnegative pb => pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
+  | .nonnegative pa, .positive pb => pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
+  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(div_nonneg $pa $pb))
+  | .positive pa, .nonzero pb => pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
+  | .nonzero pa, .positive pb => pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
+  | .nonzero pa, .nonzero pb => pure (.nonzero q(div_ne_zero $pa $pb))
+  | _, _ => pure .none
+
+/-- The `positivity` extension which identifies expressions of the form `a⁻¹`,
+such that `positivity` successfully recognises `a`. -/
+@[positivity _⁻¹]
+def evalInv : PositivityExt where eval {u α} zα pα e := do
+  let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
+  let _e_eq : $e =Q $f $a := ⟨⟩
+  let _a ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  assumeInstancesCommute
+  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ (u := u.succ) f q(Inv.inv)
+  let ra ← core zα pα a
+  match ra with
+  | .positive pa => pure (.positive q(inv_pos_of_pos $pa))
+  | .nonnegative pa => pure (.nonnegative q(inv_nonneg_of_nonneg $pa))
+  | .nonzero pa => pure (.nonzero q(inv_ne_zero $pa))
+  | .none => pure .none
+
+/-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℤ)`. -/
+@[positivity _ ^ (0:ℤ), Pow.pow _ (0:ℤ)]
+def evalPowZeroInt : PositivityExt where eval {u α} _zα _pα e := do
+  let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
+  _ ← synthInstanceQ (q(LinearOrderedSemifield $α) : Q(Type u))
+  pure (.positive (q(zpow_zero_pos $a) : Expr))
+
+end Mathlib.Meta.Positivity

@@ -6,6 +6,7 @@ Authors: Tomáš Skřivan
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Field
+import Mathlib.Topology.Order.Lattice
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 import Mathlib.Tactic.FunProp
@@ -119,61 +120,107 @@ attribute [fun_prop]
   Continuous.add
   Continuous.sub
   Continuous.neg
+  Continuous.pow
+  Continuous.zpow
+  Continuous.zpow₀
   Continuous.mul
   Continuous.smul
+  Continuous.const_smul
+  Continuous.vadd
+  Continuous.const_vadd
   Continuous.div'
   Continuous.div₀
   Continuous.inv
   Continuous.inv₀
+  Continuous.star
+  Continuous.sup
+  Continuous.inf
+  Continuous.abs
+
+  Continuous.max
+  Continuous.min
 
   ContinuousAt.add
   ContinuousAt.sub
   ContinuousAt.neg
+  ContinuousAt.pow
+  ContinuousAt.zpow
+  ContinuousAt.zpow₀
   ContinuousAt.mul
   ContinuousAt.smul
+  ContinuousAt.const_smul
+  ContinuousAt.vadd
+  ContinuousAt.const_vadd
   ContinuousAt.div'
   ContinuousAt.div₀
   ContinuousAt.inv
   ContinuousAt.inv₀
+  ContinuousAt.star
+  ContinuousAt.sup
+  ContinuousAt.inf
+  ContinuousAt.abs
 
   ContinuousOn.add
   ContinuousOn.sub
   ContinuousOn.neg
+  ContinuousOn.pow
+  ContinuousOn.zpow
+  ContinuousOn.zpow₀
   ContinuousOn.mul
   ContinuousOn.smul
+  ContinuousOn.const_smul
+  ContinuousOn.vadd
+  ContinuousOn.const_vadd
   ContinuousOn.div'
   ContinuousOn.div₀
   ContinuousOn.inv
   ContinuousOn.inv₀
+  ContinuousOn.star
+  ContinuousOn.sup
+  ContinuousOn.inf
+  ContinuousOn.abs
 
+-- analysis
+attribute [fun_prop]
+  Continuous.dist
+  Continuous.nndist
+  Continuous.edist
+
+  Continuous.norm
+  Continuous.nnnorm
+  Continuous.norm'
+  Continuous.nnnorm'
+
+  ContinuousAt.norm
+  ContinuousAt.nnnorm
+  ContinuousAt.norm'
+  ContinuousAt.nnnorm'
+
+  ContinuousOn.norm
+  ContinuousOn.nnnorm
+  ContinuousOn.norm'
+  ContinuousOn.nnnorm'
 
 -- special function
 attribute [fun_prop]
   Continuous.exp
+  Continuous.cexp
   Continuous.log
   Continuous.pow
+  Continuous.sqrt
 
   ContinuousAt.exp
+  ContinuousAt.cexp
   ContinuousAt.log
   ContinuousAt.pow
+  ContinuousAt.sqrt
 
   ContinuousOn.exp
+  ContinuousOn.cexp
   ContinuousOn.log
   ContinuousOn.pow
+  ContinuousOn.sqrt
 
-
-example : ContinuousOn (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) {0}ᶜ :=
-  by fun_prop (disch:=aesop)
-
-example (y : ℝ) (hy : y≠0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y :=
-  by fun_prop (disch:=aesop)
-
-private noncomputable def S (a b c d : ℝ) : ℝ :=
-    a / (a + b + d) + b / (a + b + c) +
-    c / (b + c + d) + d / (a + c + d)
-
-private noncomputable def T (t : ℝ) : ℝ := S 1 (1 - t) t (t * (1 - t))
-
-example : ContinuousOn T (Set.Icc 0 1) := by
-  unfold T S
-  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
+-- FunLike
+attribute [fun_prop]
+  map_continuous
