@@ -89,10 +89,10 @@ def conjBy {α β} [Preorder α] [Preorder β] (c : ClosureOperator α)
   toFun := e.conj c
   IsClosed b := c.IsClosed (e.symm b)
   monotone' _ _ h :=
-    (map_le_map_iff e).mpr $ c.monotone $ (map_le_map_iff e.symm).mpr h
+    (map_le_map_iff e).mpr <| c.monotone <| (map_le_map_iff e.symm).mpr h
   le_closure' _ := e.symm_apply_le.mp (c.le_closure' _)
   idempotent' _ :=
-    congrArg e $ Eq.trans (congrArg c (e.symm_apply_apply _)) (c.idempotent' _)
+    congrArg e <| Eq.trans (congrArg c (e.symm_apply_apply _)) (c.idempotent' _)
   isClosed_iff := Iff.trans c.isClosed_iff e.eq_symm_apply
 
 lemma conjBy_refl {α} [Preorder α] (c : ClosureOperator α) :
@@ -228,8 +228,8 @@ lemma closure_IsGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) wher
 
 theorem ext_IsClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext' c₁ c₂ $ fun x => IsGLB.unique (c₁.closure_IsGLB x)
-  $ (Set.ext (and_congr_right' $ h .)).substr (c₂.closure_IsGLB x)
+  ext' c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_IsGLB x) <|
+    (Set.ext (and_congr_right' <| h .)).substr (c₂.closure_IsGLB x)
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
 `ofPred` constructor. -/
@@ -300,8 +300,8 @@ def ofCompletePred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (s
 
 theorem sInf_IsClosed {c : ClosureOperator α} {S : Set α}
     (H : ∀ x ∈ S, c.IsClosed x) : c.IsClosed (sInf S) :=
-  isClosed_iff_closure_le.mpr $ le_of_le_of_eq c.monotone.map_sInf_le
-  $ Eq.trans (biInf_congr (c.isClosed_iff.mp $ H . .)) sInf_eq_iInf.symm
+  isClosed_iff_closure_le.mpr <| le_of_le_of_eq c.monotone.map_sInf_le <|
+    Eq.trans (biInf_congr (c.isClosed_iff.mp <| H . .)) sInf_eq_iInf.symm
 
 @[simp]
 theorem closure_iSup_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
@@ -328,9 +328,9 @@ def OrderIso.equivClosureOperator {α β} [Preorder α] [Preorder β] (e : α �
   toFun     c := c.conjBy e
   invFun    c := c.conjBy e.symm
   left_inv  c := Eq.trans (c.conjBy_trans _ _).symm
-                 $ Eq.trans (congrArg _ e.self_trans_symm) c.conjBy_refl
+                 <| Eq.trans (congrArg _ e.self_trans_symm) c.conjBy_refl
   right_inv c := Eq.trans (c.conjBy_trans _ _).symm
-                 $ Eq.trans (congrArg _ e.symm_trans_self) c.conjBy_refl
+                 <| Eq.trans (congrArg _ e.symm_trans_self) c.conjBy_refl
 
 /-! ### Lower adjoint -/
 
