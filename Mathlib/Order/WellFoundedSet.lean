@@ -706,7 +706,7 @@ section LocallyFiniteOrder
 
 variable {s : Set α} [Preorder α] [LocallyFiniteOrder α]
 
-theorem BddBelow_wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) := by
+theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) := by
   rw [wellFoundedOn_iff_no_descending_seq]
   rintro ⟨a, ha⟩ f hf
   refine infinite_range_of_injective f.injective ?_
@@ -714,7 +714,7 @@ theorem BddBelow_wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) := 
     ⟨ha <| hf _, antitone_iff_forall_lt.2 (fun a b hab => (f.map_rel_iff.2 hab).le) <| zero_le _⟩
 
 theorem BddAbove.wellFoundedOn_gt : BddAbove s → s.WellFoundedOn (· > ·) :=
-  fun h => BddBelow_wellFoundedOn_lt h.dual
+  fun h => h.dual.wellFoundedOn_lt
 
 end LocallyFiniteOrder
 
