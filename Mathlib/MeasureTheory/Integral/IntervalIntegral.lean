@@ -971,6 +971,12 @@ theorem integral_Iic_sub_Iic (ha : IntegrableOn f (Iic a) μ) (hb : IntegrableOn
   exacts [measurableSet_Ioc, ha, hb.mono_set fun _ => And.right]
 #align interval_integral.integral_Iic_sub_Iic intervalIntegral.integral_Iic_sub_Iic
 
+theorem integral_Iic_add_Ioi (h_left : IntegrableOn f (Iic b) μ)
+    (h_right : IntegrableOn f (Ioi b) μ) :
+    (∫ x in Iic b, f x ∂μ) + (∫ x in Ioi b, f x ∂μ) = ∫ (x : ℝ), f x ∂μ := by
+  convert (integral_union (Iic_disjoint_Ioi <| Eq.le rfl) measurableSet_Ioi h_left h_right).symm
+  rw [Iic_union_Ioi, Measure.restrict_univ]
+
 /-- If `μ` is a finite measure then `∫ x in a..b, c ∂μ = (μ (Iic b) - μ (Iic a)) • c`. -/
 theorem integral_const_of_cdf [IsFiniteMeasure μ] (c : E) :
     ∫ _ in a..b, c ∂μ = ((μ (Iic b)).toReal - (μ (Iic a)).toReal) • c := by
