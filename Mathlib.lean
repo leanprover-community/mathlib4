@@ -221,6 +221,7 @@ import Mathlib.Algebra.GroupWithZero.Bitwise
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
@@ -487,7 +488,6 @@ import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Algebra.Squarefree.UniqueFactorizationDomain
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.CHSH
@@ -1026,6 +1026,7 @@ import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Presheaf
 import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
@@ -3344,8 +3345,10 @@ import Mathlib.SetTheory.Cardinal.Divisibility
 import Mathlib.SetTheory.Cardinal.ENat
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.PartENat
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.SetTheory.Cardinal.Subfield
+import Mathlib.SetTheory.Cardinal.ToNat
 import Mathlib.SetTheory.Cardinal.UnivLE
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.SetTheory.Game.Birthday
