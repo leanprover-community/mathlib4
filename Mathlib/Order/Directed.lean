@@ -1,11 +1,9 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
+Authors: Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Order.Lattice
-import Mathlib.Order.Max
 
 #align_import order.directed from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
 
@@ -309,6 +307,28 @@ theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : �
 #align exists_lt_of_directed_le exists_lt_of_directed_le
 
 end Preorder
+
+section
+
+variable [Preorder α] [PartialOrder β] {f : α → β}
+
+/-- If `f` is monotone and antitone (increasing and decreasing) on `α` with a directed order,
+then `f` is constant.-/
+theorem Monotone.directed_constant [IsDirected α (· ≤ ·)]
+    (hf : Monotone f) (hf' : Antitone f) (a b : α) : f a = f b := by
+  obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
+  exact le_antisymm ((hf hac).trans $ hf' hbc) ((hf hbc).trans $ hf' hac)
+
+/-- If `f` is monotone and antitone (increasing and decreasing) on a directed set `s`,
+then `f` is constant on `s`.-/
+theorem MonotoneOn.directedOn_constant {a b : α} {s : Set α}
+    (hf : MonotoneOn f s) (hf' : AntitoneOn f s)
+    (hs : DirectedOn (· ≤ ·) s)
+    (ha : a ∈ s) (hb : b ∈ s) : f a = f b := by
+  obtain ⟨c, hc, hac, hbc⟩ := hs _ ha _ hb
+  exact le_antisymm ((hf ha hc hac).trans $ hf' hb hc hbc) ((hf hb hc hbc).trans $ hf' ha hc hac)
+
+end
 
 -- see Note [lower instance priority]
 instance (priority := 100) SemilatticeSup.to_isDirected_le [SemilatticeSup α] :
