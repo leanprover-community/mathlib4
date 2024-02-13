@@ -59,8 +59,6 @@ instance : Std.Associative (α := List α) Append.append where
 
 #align list.cons_inj List.cons_inj
 
-theorem cons_eq_cons {a b : α} {l l' : List α} : a :: l = b :: l' ↔ a = b ∧ l = l' :=
-  ⟨List.cons.inj, fun h => h.1 ▸ h.2 ▸ rfl⟩
 #align list.cons_eq_cons List.cons_eq_cons
 
 theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
@@ -505,12 +503,7 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
 
 /-! ### concat -/
 
-theorem concat_nil (a : α) : concat [] a = [a] :=
-  rfl
 #align list.concat_nil List.concat_nil
-
-theorem concat_cons (a b : α) (l : List α) : concat (a :: l) b = a :: concat l b :=
-  rfl
 #align list.concat_cons List.concat_cons
 
 @[deprecated concat_eq_append]
@@ -518,22 +511,9 @@ theorem concat_eq_append' (a : α) (l : List α) : concat l a = l ++ [a] :=
   concat_eq_append l a
 #align list.concat_eq_append List.concat_eq_append'
 
-theorem init_eq_of_concat_eq {a : α} {l₁ l₂ : List α} : concat l₁ a = concat l₂ a → l₁ = l₂ := by
-  intro h
-  rw [concat_eq_append, concat_eq_append] at h
-  exact append_cancel_right h
 #align list.init_eq_of_concat_eq List.init_eq_of_concat_eq
-
-theorem last_eq_of_concat_eq {a b : α} {l : List α} : concat l a = concat l b → a = b := by
-  intro h
-  rw [concat_eq_append, concat_eq_append] at h
-  exact head_eq_of_cons_eq (append_cancel_left h)
 #align list.last_eq_of_concat_eq List.last_eq_of_concat_eq
-
-theorem concat_ne_nil (a : α) (l : List α) : concat l a ≠ [] := by simp
 #align list.concat_ne_nil List.concat_ne_nil
-
-theorem concat_append (a : α) (l₁ l₂ : List α) : concat l₁ a ++ l₂ = l₁ ++ a :: l₂ := by simp
 #align list.concat_append List.concat_append
 
 @[deprecated length_concat]
@@ -541,7 +521,6 @@ theorem length_concat' (a : α) (l : List α) : length (concat l a) = succ (leng
   simp only [concat_eq_append, length_append, length]
 #align list.length_concat List.length_concat'
 
-theorem append_concat (a : α) (l₁ l₂ : List α) : l₁ ++ concat l₂ a = concat (l₁ ++ l₂) a := by simp
 #align list.append_concat List.append_concat
 
 /-! ### reverse -/
@@ -2208,6 +2187,18 @@ theorem modifyNthTail_eq_take_drop (f : List α → List α) (H : f [] = []) :
   | _ + 1, [] => H.symm
   | n + 1, b :: l => congr_arg (cons b) (modifyNthTail_eq_take_drop f H n l)
 #align list.modify_nth_tail_eq_take_drop List.modifyNthTail_eq_take_drop
+
+@[simp]
+theorem modifyNth_nil (f : α → α) (n : ℕ) :
+    modifyNth f n [] = [] := by cases n <;> rfl
+
+@[simp]
+theorem modifyNth_zero_cons (f : α → α) (a : α) (l : List α) :
+    modifyNth f 0 (a :: l) = f a :: l := rfl
+
+@[simp]
+theorem modifyNth_succ_cons (f : α → α) (n : ℕ) (a : α) (l : List α) :
+    modifyNth f (n + 1) (a :: l) = a :: modifyNth f n l := rfl
 
 theorem modifyNth_eq_take_drop (f : α → α) :
     ∀ n l, modifyNth f n l = take n l ++ modifyHead f (drop n l) :=

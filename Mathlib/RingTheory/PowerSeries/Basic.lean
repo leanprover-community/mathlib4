@@ -677,7 +677,7 @@ def truncFun (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
   ∑ m in Finset.Iio n, MvPolynomial.monomial m (coeff R m φ)
 #align mv_power_series.trunc_fun MvPowerSeries.truncFun
 
-theorem coeff_truncFun [DecidableEq σ] (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
+theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (truncFun n φ).coeff m = if m < n then coeff R m φ else 0 := by
   classical
   simp [truncFun, MvPolynomial.coeff_sum]
