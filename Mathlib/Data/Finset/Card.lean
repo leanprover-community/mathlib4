@@ -469,13 +469,10 @@ theorem card_union_le (s t : Finset α) : (s ∪ t).card ≤ s.card + t.card :=
   card_union_add_card_inter s t ▸ Nat.le_add_right _ _
 #align finset.card_union_le Finset.card_union_le
 
-theorem card_union_eq_iff : (s ∪ t).card = s.card + t.card ↔ Disjoint s t := by
-  have H := card_union_add_card_inter s t
-  exact ⟨fun h ↦ by rwa [h, add_right_eq_self, card_eq_zero, ← disjoint_iff_inter_eq_empty] at H,
-    fun h ↦ by rwa [disjoint_iff_inter_eq_empty.1 h, card_empty, add_zero] at H⟩
+lemma card_union_eq_card_add_card : (s ∪ t).card = s.card + t.card ↔ Disjoint s t := by
+  rw [← card_union_add_card_inter]; simp [disjoint_iff_inter_eq_empty]
 
-@[simp] alias ⟨_, card_union_of_disjoint⟩ := card_union_eq_iff
-
+@[simp] alias ⟨_, card_union_of_disjoint⟩ := card_union_eq_card_add_card
 #align finset.card_union_eq Finset.card_union_of_disjoint
 #align finset.card_disjoint_union Finset.card_union_of_disjoint
 
