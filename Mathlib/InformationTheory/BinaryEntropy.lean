@@ -58,7 +58,7 @@ lemma mul_log2_lt {x y : ℝ} : x < y ↔ x * log 2 < y * log 2 := by field_simp
 /-- `h₂` is symmetric about 1/2, i.e.,
 
 `h₂ (1 - p) = h₂ p` -/
-@[simp] lemma h2_p_eq_h2_1_minus_p (p : ℝ) : h₂ (1 - p) = h₂ p := by simp [h₂]; ring
+@[simp] lemma h2_eq_h2_one_minus (p : ℝ) : h₂ (1 - p) = h₂ p := by simp [h₂]; ring
 
 lemma h2_gt_0 {p : ℝ} (pge0 : 0 < p) (ple1 : p < 1) : 0 < h₂ p := by
   rw [h₂, log₂, log₂, logb, logb, mul_log2_lt]
@@ -79,12 +79,12 @@ lemma h2_gt_0 {p : ℝ} (pge0 : 0 < p) (ple1 : p < 1) : 0 < h₂ p := by
     exact Linarith.mul_neg fac2 fac1
 
 /-- TODO assumptions not needed? -/
-lemma h2_zero_iff_p_zero_or_1 {p : ℝ} (domup : p ≤ 1) (domun : 0 ≤ p) :
-    0 = h₂ p ↔ p = 0 ∨ p = 1 := by
+lemma h2_zero_iff_zero_or_one {p : ℝ} (domup : p ≤ 1) (domun : 0 ≤ p) :
+    h₂ p = 0 ↔ p = 0 ∨ p = 1 := by
   constructor <;> intro h
   · by_cases pz : p = 0
     · left; assumption
-    · by_cases p_is_1 : p = 1
+    · by_cases p_is_one : p = 1
       · right; assumption
       · have : 0 < h₂ p := by
           apply h2_gt_0 (Ne.lt_of_le ?_ domun)
@@ -99,7 +99,7 @@ lemma h2_zero_iff_p_zero_or_1 {p : ℝ} (domup : p ≤ 1) (domun : 0 ≤ p) :
 
  h₂ p < 1.
 -/
-lemma h2_lt_1_of_p_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) : h₂ p < 1 := by
+lemma h2_lt_one_of_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) : h₂ p < 1 := by
   -- Proof by concavity of log.
   unfold h₂ log₂ logb
   have (x y : ℝ) :  x < y ↔ x * log 2 < y * log 2 := by field_simp
@@ -126,36 +126,56 @@ lemma h2_lt_1_of_p_lt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) : h₂
     rw [this]
     exact logConcave
 
-lemma h2_lt_one_of_p_gt_half {p : ℝ} : 1/2 < p → p ≤ 1 → h₂ p < 1 := by
+lemma h2_lt_one_of_gt_half {p : ℝ} : 1/2 < p → p ≤ 1 → h₂ p < 1 := by
   intros
-  rw [← h2_p_eq_h2_1_minus_p]
-  exact h2_lt_1_of_p_lt_half (by linarith) (by linarith)
+  rw [← h2_eq_h2_one_minus]
+  exact h2_lt_one_of_lt_half (by linarith) (by linarith)
 
-lemma h2_one_iff_p_is_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p = 1 ↔ p = 1/2 := by
+lemma h2_one_iff_eq_half {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p = 1 ↔ p = 1/2 := by
   constructor <;> intro h
   · by_cases h' : p < 1/2
-    · linarith [h2_lt_1_of_p_lt_half pge0 h']
+    · linarith [h2_lt_one_of_lt_half pge0 h']
     · by_cases pgthalf : 1/2 < p
-      · have := h2_lt_one_of_p_gt_half pgthalf ple1
+      · have := h2_lt_one_of_gt_half pgthalf ple1
         linarith
       · linarith
   · simp [h]
 
-lemma h2_le_1 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p ≤ 1 := by
+lemma h2_le_one {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p ≤ 1 := by
   by_cases hh: p = 1/2
   · simp [*];
   · by_cases h₂ p = 1
     · simp [*]
     · by_cases hhh: p < 1/2
-      · linarith [h2_lt_1_of_p_lt_half pge0 hhh]
+      · linarith [h2_lt_one_of_lt_half pge0 hhh]
       · have : 1/2 < p := by
           refine Ne.lt_of_le ?_ ?_
           aesop
           aesop
-        have := h2_lt_one_of_p_gt_half this ple1
+        have := h2_lt_one_of_gt_half this ple1
         exact LT.lt.le this
 
----------------------------------------------------------------------------------- derivatives
+
+/- Binary entropy is continuous everywhere.
+This is due to definition of `Real.log` for negative numbers. -/
+lemma h₂_continuous : Continuous h₂ := by
+  have mycalc (x : ℝ) : (-x * (log x / log 2)) = -((x * log x) / log 2) := by
+      field_simp
+  unfold h₂ log₂ logb
+  apply Continuous.add
+  simp_rw [mycalc]
+  apply Continuous.neg
+  apply Continuous.div_const
+  apply continuous_mul_log
+  have mycalc2 (x : ℝ) : -((1-x) * (log (1-x) / log 2)) = -(((1-x) * log (1-x))) / log 2 := by
+    field_simp
+  simp_rw [mycalc2]
+  apply Continuous.div_const
+  apply Continuous.neg
+  exact Continuous.comp continuous_mul_log (continuous_sub_left 1)
+
+
+/-! ### Derivatives of binary entropy function -/
 
 /-- Derivative of binary entropy function (shown in `deriv_h₂`) -/
 protected noncomputable def h₂deriv (p : ℝ) : ℝ := log₂ (1 - p) - log₂ p
@@ -165,7 +185,7 @@ protected noncomputable def h₂deriv (p : ℝ) : ℝ := log₂ (1 - p) - log₂
   simp_rw [onem]
   simp only [neg_add_rev, neg_neg, differentiableAt_const, deriv_const_add', deriv_neg'']
 
-@[simp] lemma differentiable_1_minusp (p : ℝ) : DifferentiableAt ℝ (fun p => 1 - p) p := by
+@[simp] lemma differentiable_one_minus (p : ℝ) : DifferentiableAt ℝ (fun p => 1 - p) p := by
   have (p : ℝ) : 1 - p = -(p - 1) := by ring
   simp_rw [this]
   apply differentiableAt_neg_iff.mpr
@@ -177,7 +197,7 @@ lemma deriv_log_one_sub {x : ℝ} (hh : x ≠ 1): deriv (fun p ↦ log (1 - p)) 
   rw [deriv.log]
   simp only [deriv_one_minus]
   field_simp
-  exact differentiable_1_minusp x
+  exact differentiable_one_minus x
   exact sub_ne_zero.mpr hh.symm
 
 @[simp] lemma differentiableAt_log_const_neg {x c : ℝ} (h : x ≠ c) :
@@ -208,7 +228,7 @@ lemma deriv_h₂' {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
       _ = -log x + log (1 - x) := by
         field_simp [sub_ne_zero.mpr hh.symm]
         ring
-    apply differentiable_1_minusp
+    apply differentiable_one_minus
     exact sub_ne_zero.mpr hh.symm
     apply differentiableAt_id'
     exact differentiableAt_log_const_neg hh
@@ -216,7 +236,7 @@ lemma deriv_h₂' {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
   · apply DifferentiableAt.mul
     apply differentiableAt_id'
     apply DifferentiableAt.log
-    exact differentiable_1_minusp x
+    exact differentiable_one_minus x
     exact sub_ne_zero.mpr hh.symm
   · apply DifferentiableAt.neg
     apply DifferentiableAt.mul
@@ -224,7 +244,7 @@ lemma deriv_h₂' {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
     apply DifferentiableAt.div_const
     exact differentiableAt_log h
   · apply DifferentiableAt.mul
-    apply differentiable_1_minusp
+    apply differentiable_one_minus
     apply DifferentiableAt.div_const
     exact differentiableAt_log_const_neg hh
 
@@ -258,28 +278,38 @@ lemma hasDerivAt_h₂ {x : ℝ} (xne0: x ≠ 0) (gne1 : x ≠ 1) :
   convert hasDerivAt_deriv_iff.mpr diffAtStuff using 1
   exact (deriv_h₂' xne0 gne1).symm
 
-lemma cancel_log2 (x : ℝ) : log x / log 2 * log 2 = log x := by field_simp
+open Filter Topology
+
+/- Second derivative.
+TODO Assumptions not needed (use junk value after proving that `¬DifferentiableAt` there) ?!-/
+lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1 / (x * (1-x) * log 2) := by
+  have the_calculation {x : ℝ} (hx : x ≠ 0) (h2 : x ≠ 1) :
+      -1 / (1 - x) / log 2 - x⁻¹ / log 2 = -1 / (x * (1 - x) * log 2) := by
+    field_simp [sub_ne_zero.mpr h2.symm]
+    ring
+  simp only [Function.iterate_succ]
+  suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ h₂ x) y = log₂ (1 - y) - log₂ y by
+    refine (Filter.EventuallyEq.deriv_eq this).trans ?_
+    rw [deriv_sub]
+    unfold log₂ logb
+    · repeat rw [deriv_div_const]
+      repeat rw [deriv.log]
+      simp only [deriv_one_minus, deriv_id'', one_div]
+      · exact the_calculation h hh.symm -- TODO just puting here the tactics used above doesn't work
+      exact differentiableAt_id'
+      exact h
+      exact differentiable_one_minus x
+      exact sub_ne_zero.mpr hh
+    · apply DifferentiableAt.div_const
+      apply DifferentiableAt.log (differentiable_one_minus x)
+      exact sub_ne_zero.mpr hh
+    · exact differentiableAt_log₂ h
+  filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh.symm] with y h h2 using deriv_h₂ h h2
+
+
+/-! ### Strict Monotonicity of binary entropy -/
 
 open Set
-
-/- Binary entropy is continuous everywhere.
-This is due to definition of `Real.log` for negative numbers. -/
-lemma h₂_continuous : Continuous h₂ := by
-  have mycalc (x : ℝ) : (-x * (log x / log 2)) = -((x * log x) / log 2) := by
-      field_simp
-  unfold h₂ log₂ logb
-  apply Continuous.add
-  simp_rw [mycalc]
-  apply Continuous.neg
-  apply Continuous.div_const
-  apply continuous_mul_log
-  have mycalc2 (x : ℝ) : -((1-x) * (log (1-x) / log 2)) = -(((1-x) * log (1-x))) / log 2 := by
-    field_simp
-  simp_rw [mycalc2]
-  apply Continuous.div_const
-  apply Continuous.neg
-  exact Continuous.comp continuous_mul_log (continuous_sub_left 1)
-
 /- Binary entropy is strictly increasing in interval [0, 1/2]. -/
 lemma h2_strictMono : StrictMonoOn h₂ (Set.Icc 0 (1/2)) := by
   intro p1 hp1 p2 hp2 p1le2
@@ -298,36 +328,10 @@ lemma h2_strictMono : StrictMonoOn h₂ (Set.Icc 0 (1/2)) := by
       apply Real.strictMonoOn_log hx.1 this
       linarith
 
-open Filter Topology
+/-! ### Strict Concavity of binary entropy -/
 
 lemma log2_ne_0 : log 2 ≠ 0 := by norm_num
 lemma log2_gt_0 : 0 < log 2 := by positivity
-
-/- Assumptions not needed
-(use junk value after proving that `¬DifferentiableAt` there) ?!-/
-lemma deriv2_h₂ {x : ℝ} (h : x ≠ 0) (hh : 1 ≠ x) : deriv^[2] h₂ x = -1 / (x * (1-x) * log 2) := by
-  have the_calculation {x : ℝ} (hx : x ≠ 0) (h2 : x ≠ 1) :
-      -1 / (1 - x) / log 2 - x⁻¹ / log 2 = -1 / (x * (1 - x) * log 2) := by
-    field_simp [sub_ne_zero.mpr h2.symm]
-    ring
-  simp only [Function.iterate_succ]
-  suffices ∀ᶠ y in (𝓝 x), deriv (fun x ↦ h₂ x) y = log₂ (1 - y) - log₂ y by
-    refine (Filter.EventuallyEq.deriv_eq this).trans ?_
-    rw [deriv_sub]
-    unfold log₂ logb
-    · repeat rw [deriv_div_const]
-      repeat rw [deriv.log]
-      simp only [deriv_one_minus, deriv_id'', one_div]
-      · exact the_calculation h hh.symm -- TODO just puting here the tactics used above doesn't work
-      exact differentiableAt_id'
-      exact h
-      exact differentiable_1_minusp x
-      exact sub_ne_zero.mpr hh
-    · apply DifferentiableAt.div_const
-      apply DifferentiableAt.log (differentiable_1_minusp x)
-      exact sub_ne_zero.mpr hh
-    · exact differentiableAt_log₂ h
-  filter_upwards [eventually_ne_nhds h, eventually_ne_nhds hh.symm] with y h h2 using deriv_h₂ h h2
 
 lemma strictConcave_h2 : StrictConcaveOn ℝ (Icc 0 1) h₂ := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) h₂_continuous.continuousOn
