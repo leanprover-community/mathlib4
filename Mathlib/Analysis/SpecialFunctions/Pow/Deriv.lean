@@ -223,7 +223,7 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
       · exact hasDerivAt_id (x : ℂ)
       · simp [hx]
   · -- harder case : `x < 0`
-    have : ∀ᶠ y : ℝ in nhds x,
+    have : ∀ᶠ y : ℝ in 𝓝 x,
         (y : ℂ) ^ (r + 1) / (r + 1) = (-y : ℂ) ^ (r + 1) * exp (π * I * (r + 1)) / (r + 1) := by
       refine' Filter.eventually_of_mem (Iio_mem_nhds hx) fun y hy => _
       rw [ofReal_cpow_of_nonpos (le_of_lt hy)]
