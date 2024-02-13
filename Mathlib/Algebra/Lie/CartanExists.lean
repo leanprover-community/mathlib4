@@ -10,6 +10,35 @@ import Mathlib.Algebra.Lie.Rank
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
+
+-- move this
+lemma List.TFAE.not (l : List (Prop)) :
+    TFAE (l.map Not) ↔ TFAE l := by
+  simp only [TFAE, mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, not_iff_not]
+
+namespace Matrix
+
+variable {K R m n : Type*}
+variable [DecidableEq m] [DecidableEq n] [DecidableEq (m ⊕ n)]
+variable [Fintype m] [Fintype n]
+variable [Field K] [CommRing R] [Nontrivial R]
+
+variable (A : Matrix m m R) (B : Matrix m n R) (C : Matrix n m R) (D : Matrix n n R)
+
+lemma charmatrix_fromBlocks :
+    charmatrix (fromBlocks A B C D) =
+    fromBlocks (charmatrix A) (- B.map Polynomial.C) (- C.map Polynomial.C) (charmatrix D) := by
+  simp only [charmatrix]
+  ext (i|i) (j|j) : 2 <;> simp [diagonal]
+
+lemma charpoly_fromBlocks_zero₁₂ :
+    (fromBlocks A 0 C D).charpoly = (A.charpoly * D.charpoly) := by
+  rw [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero]
+  have := det_fromBlocks_zero₁₂ (charmatrix A) (- C.map Polynomial.C) (charmatrix D)
+  convert this -- need to bash through two different `DecidableEq` instances
+
+end Matrix
+
 -- namespace LinearMap
 
 -- variable {R M : Type*}
@@ -24,6 +53,7 @@ import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 --   sorry
 
 -- end LinearMap
+
 
 -- move this
 namespace LinearMap
@@ -58,7 +88,7 @@ lemma charpoly_eq_X_pow_iff :
     exact Submodule.mem_iSup_of_mem _ hk
 
 open Module.Free in
-lemma charpoly_constantCoeff_tfae :
+lemma hasEigenvalue_zero_tfae :
     List.TFAE
     [ constantCoeff φ.charpoly = 0
     , ∃ (m : M), m ≠ 0 ∧ φ m = 0
@@ -97,7 +127,48 @@ lemma charpoly_constantCoeff_tfae :
 
 lemma charpoly_constantCoeff_eq_zero_iff :
     constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 :=
-  (charpoly_constantCoeff_tfae φ).out 0 1
+  (hasEigenvalue_zero_tfae φ).out 0 1
+
+open Module.Free in
+lemma not_hasEigenvalue_zero_tfae :
+    List.TFAE
+    [ constantCoeff φ.charpoly ≠ 0
+    , ∀ (m : M), φ m = 0 → m = 0
+    , ker φ ≤ ⊥
+    , ker φ = ⊥
+    , ¬ Module.End.HasEigenvalue φ 0
+    , ¬ IsRoot (minpoly K φ) 0
+    , LinearMap.det φ ≠ 0 ] := by
+  rw [← List.TFAE.not]
+  dsimp only [List.map]
+  push_neg
+  have aux₁ : ∀ m, φ m = 0 ∧ m ≠ 0 ↔ m ≠ 0 ∧ φ m = 0 := by intro m; rw [and_comm]
+  have aux₂ : ¬ ker φ ≤ ⊥ ↔ ⊥ < ker φ := by rw [le_bot_iff, bot_lt_iff_ne_bot]
+  simp only [aux₁, aux₂]
+  exact hasEigenvalue_zero_tfae φ
+
+open Module.Free in
+lemma toMatrix_prodMap {M₁ M₂ ι₁ ι₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
+    [Module K M₁] [Module K M₂]
+    [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁] [DecidableEq ι₂] [DecidableEq (ι₁ ⊕ ι₂)]
+    (b₁ : Basis ι₁ K M₁) (b₂ : Basis ι₂ K M₂)
+    (φ₁ : Module.End K M₁) (φ₂ : Module.End K M₂) :
+    toMatrix (b₁.prod b₂) (b₁.prod b₂) (φ₁.prodMap φ₂) =
+      Matrix.fromBlocks (toMatrix b₁ b₁ φ₁) 0 0 (toMatrix b₂ b₂ φ₂) := by
+  ext (i|i) (j|j) <;> simp [toMatrix]
+
+open Module.Free in
+lemma charpoly_prodMap {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
+    [Module K M₁] [Module K M₂] [Module.Finite K M₁] [Module.Finite K M₂]
+    [Module.Free K M₁] [Module.Free K M₂]
+    (φ₁ : Module.End K M₁) (φ₂ : Module.End K M₂) :
+    (φ₁.prodMap φ₂).charpoly = φ₁.charpoly * φ₂.charpoly := by
+  let b₁ := chooseBasis K M₁
+  let b₂ := chooseBasis K M₂
+  let b := b₁.prod b₂
+  classical
+  rw [← charpoly_toMatrix φ₁ b₁, ← charpoly_toMatrix φ₂ b₂, ← charpoly_toMatrix (φ₁.prodMap φ₂) b,
+    toMatrix_prodMap b₁ b₂ φ₁ φ₂, Matrix.charpoly_fromBlocks_zero₁₂]
 
 open Module.Free in
 lemma finrank_maximalGeneralizedEigenspace :
