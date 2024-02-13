@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Data.Int.Defs
 import Mathlib.Algebra.Group.Basic
 
 #align_import data.int.cast.basic from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
