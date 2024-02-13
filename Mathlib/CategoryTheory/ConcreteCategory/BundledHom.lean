@@ -54,9 +54,6 @@ namespace BundledHom
 
 variable [𝒞 : BundledHom hom]
 
--- porting note: include not needed
--- include 𝒞
-
 set_option synthInstance.checkSynthOrder false in
 /-- Every `@BundledHom c _` defines a category with objects in `Bundled c`.
 
@@ -104,9 +101,6 @@ variable {d : Type u → Type u}
 variable (hom)
 
 section
-
--- porting note: commented out
--- omit 𝒞
 
 /-- The `hom` corresponding to first forgetting along `F`, then taking the `hom` associated to `c`.
 
