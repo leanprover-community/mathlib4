@@ -63,9 +63,9 @@ theorem sub_one_pos : 0 < p - 1 := sub_pos.2 h.one_lt
 theorem sub_one_ne_zero : p - 1 ≠ 0 := ne_of_gt h.sub_one_pos
 #align real.is_conjugate_exponent.sub_one_ne_zero Real.IsConjugateExponent.sub_one_ne_zero
 
-nonrec lemma inv_pos : 0 < p⁻¹ := inv_pos.2 h.pos
-lemma inv_nonneg : 0 ≤ p⁻¹ := h.inv_pos.le
-lemma inv_ne_zero : p⁻¹ ≠ 0 := h.inv_pos.ne'
+protected lemma inv_pos : 0 < p⁻¹ := inv_pos.2 h.pos
+protected lemma inv_nonneg : 0 ≤ p⁻¹ := h.inv_pos.le
+protected lemma inv_ne_zero : p⁻¹ ≠ 0 := h.inv_pos.ne'
 
 theorem one_div_pos : 0 < 1 / p := _root_.one_div_pos.2 h.pos
 #align real.is_conjugate_exponent.one_div_pos Real.IsConjugateExponent.one_div_pos
