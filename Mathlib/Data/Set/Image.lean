@@ -1414,11 +1414,15 @@ theorem preimage_coe_eq_preimage_coe_iff {s t u : Set α} :
   rw [← image_preimage_coe, ← image_preimage_coe, coe_injective.image_injective.eq_iff]
 #align subtype.preimage_coe_eq_preimage_coe_iff Subtype.preimage_coe_eq_preimage_coe_iff
 
+theorem preimage_coe_self_inter (s t : Set α) :
+    ((↑) : s → α) ⁻¹' (s ∩ t) = ((↑) : s → α) ⁻¹' t := by
+  rw [preimage_coe_eq_preimage_coe_iff, ← inter_assoc, inter_self]
+
 -- Porting note:
 -- @[simp] `simp` can prove this
 theorem preimage_coe_inter_self (s t : Set α) :
-    ((↑) : s → α) ⁻¹' (s ∩ t) = ((↑) : s → α) ⁻¹' t := by
-  rw [preimage_coe_eq_preimage_coe_iff, ← inter_assoc, inter_self]
+    ((↑) : s → α) ⁻¹' (t ∩ s) = ((↑) : s → α) ⁻¹' t := by
+  rw [inter_comm, preimage_coe_self_inter]
 #align subtype.preimage_coe_inter_self Subtype.preimage_coe_inter_self
 
 theorem preimage_val_eq_preimage_val_iff (s t u : Set α) :
