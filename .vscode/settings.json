@@ -13,6 +13,7 @@
   "git.ignoreLimitWarning": true,
   "git.branchProtection": [
     "master",
-    "stable"
+    "stable",
+    "staging"
   ]
 }
