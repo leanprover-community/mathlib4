@@ -977,6 +977,12 @@ theorem integral_Iic_add_Ioi (h_left : IntegrableOn f (Iic b) μ)
   convert (integral_union (Iic_disjoint_Ioi <| Eq.le rfl) measurableSet_Ioi h_left h_right).symm
   rw [Iic_union_Ioi, Measure.restrict_univ]
 
+theorem integral_Iio_add_Ici (h_left : IntegrableOn f (Iio b) μ)
+    (h_right : IntegrableOn f (Ici b) μ) :
+    (∫ x in Iio b, f x ∂μ) + (∫ x in Ici b, f x ∂μ) = ∫ (x : ℝ), f x ∂μ := by
+  convert (integral_union (Iio_disjoint_Ici <| Eq.le rfl) measurableSet_Ici h_left h_right).symm
+  rw [Iio_union_Ici, Measure.restrict_univ]
+
 /-- If `μ` is a finite measure then `∫ x in a..b, c ∂μ = (μ (Iic b) - μ (Iic a)) • c`. -/
 theorem integral_const_of_cdf [IsFiniteMeasure μ] (c : E) :
     ∫ _ in a..b, c ∂μ = ((μ (Iic b)).toReal - (μ (Iic a)).toReal) • c := by
