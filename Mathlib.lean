@@ -3883,6 +3883,7 @@ import Mathlib.Topology.UniformSpace.Separation
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 import Mathlib.Topology.UniformSpace.UniformEmbedding
+import Mathlib.Topology.UniformSpace.UniformOrder
 import Mathlib.Topology.UnitInterval
 import Mathlib.Topology.UrysohnsBounded
 import Mathlib.Topology.UrysohnsLemma
