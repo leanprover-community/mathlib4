@@ -323,16 +323,8 @@ lemma mul_div_le_mul_div_assoc (a b c : ℕ) : a * (b / c) ≤ a * b / c :=
       (by rw [Nat.mul_assoc]; exact Nat.mul_le_mul_left _ (Nat.div_mul_le_self _ _))
 #align nat.mul_div_le_mul_div_assoc Nat.mul_div_le_mul_div_assoc
 
-protected lemma eq_mul_of_div_eq_right (H1 : b ∣ a) (H2 : a / b = c) : a = b * c := by
-  rw [← H2, Nat.mul_div_cancel' H1]
 #align nat.eq_mul_of_div_eq_right Nat.eq_mul_of_div_eq_right
-
-protected lemma div_eq_iff_eq_mul_right (H : 0 < b) (H' : b ∣ a) : a / b = c ↔ a = b * c :=
-  ⟨Nat.eq_mul_of_div_eq_right H', Nat.div_eq_of_eq_mul_right H⟩
 #align nat.div_eq_iff_eq_mul_right Nat.div_eq_iff_eq_mul_right
-
-protected lemma div_eq_iff_eq_mul_left (H : 0 < b) (H' : b ∣ a) : a / b = c ↔ a = c * b := by
-  rw [Nat.mul_comm]; exact Nat.div_eq_iff_eq_mul_right H H'
 #align nat.div_eq_iff_eq_mul_left Nat.div_eq_iff_eq_mul_left
 
 protected lemma eq_mul_of_div_eq_left (H1 : b ∣ a) (H2 : a / b = c) : a = c * b := by
