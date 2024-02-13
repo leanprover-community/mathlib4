@@ -3,7 +3,7 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
-import Lean
+import Lean.Elab.Command
 
 /-!
 # User commands for assert the (non-)existence of declaration or instances.
@@ -49,7 +49,7 @@ You should *not* delete the `assert_not_exists` statement without careful discus
 -/
 elab "assert_not_exists " n:ident : command =>
   do let [] ← try resolveGlobalConstWithInfos n catch _ => return
-      | throw <| .error n <| m!"Declaration {n} is not allowed to be imported by this file.\n\n{
-           ""}These invariants are maintained by `assert_not_exists` statements, {
-           ""}and exist in order to ensure that \"complicated\" parts of the library {
-           ""}are not accidentally introduced as dependencies of \"simple\" parts of the library."
+      | throw <| .error n m!"Declaration {n} is not allowed to be imported by this file.\n\n\
+          These invariants are maintained by `assert_not_exists` statements, \
+          and exist in order to ensure that \"complicated\" parts of the library \
+          are not accidentally introduced as dependencies of \"simple\" parts of the library."

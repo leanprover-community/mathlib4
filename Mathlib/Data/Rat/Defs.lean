@@ -44,6 +44,11 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 #align rat.of_int_eq_cast Rat.ofInt_eq_cast
 
+-- TODO: Replace `Rat.ofNat_num`/`Rat.ofNat_den` in Std
+-- See note [no_index around OfNat.ofNat]
+@[simp] lemma num_ofNat (n : ℕ) : num (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
+@[simp] lemma den_ofNat (n : ℕ) : den (no_index (OfNat.ofNat n)) = 1 := rfl
+
 @[simp, norm_cast]
 theorem coe_int_num (n : ℤ) : (n : ℚ).num = n :=
   rfl
@@ -147,8 +152,8 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
   generalize ha : a /. b = x; cases' x with n₁ d₁ h₁ c₁; rw [num_den'] at ha
   generalize hc : c /. d = x; cases' x with n₂ d₂ h₂ c₂; rw [num_den'] at hc
   rw [fv]
-  have d₁0 := ne_of_gt (Int.ofNat_lt.2 $ Nat.pos_of_ne_zero h₁)
-  have d₂0 := ne_of_gt (Int.ofNat_lt.2 $ Nat.pos_of_ne_zero h₂)
+  have d₁0 := ne_of_gt (Int.ofNat_lt.2 <| Nat.pos_of_ne_zero h₁)
+  have d₂0 := ne_of_gt (Int.ofNat_lt.2 <| Nat.pos_of_ne_zero h₂)
   exact (divInt_eq_iff (f0 d₁0 d₂0) (f0 b0 d0)).2
     (H ((divInt_eq_iff b0 d₁0).1 ha) ((divInt_eq_iff d0 d₂0).1 hc))
 #align rat.lift_binop_eq Rat.lift_binop_eq
@@ -531,15 +536,15 @@ theorem coe_nat_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
   rw [← Int.cast_ofNat, coe_int_eq_divInt]
 #align rat.coe_nat_eq_mk Rat.coe_nat_eq_divInt
 
-@[simp, norm_cast]
-theorem coe_nat_num (n : ℕ) : (n : ℚ).num = n := by
-  rw [← Int.cast_ofNat, coe_int_num]
-#align rat.coe_nat_num Rat.coe_nat_num
+@[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
+#align rat.coe_nat_num Rat.num_natCast
 
-@[simp, norm_cast]
-theorem coe_nat_den (n : ℕ) : (n : ℚ).den = 1 := by
-  rw [← Int.cast_ofNat, coe_int_den]
-#align rat.coe_nat_denom Rat.coe_nat_den
+@[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
+#align rat.coe_nat_denom Rat.den_natCast
+
+-- TODO: Fix the names in Std
+alias num_intCast := intCast_num
+alias den_intCast := intCast_den
 
 -- Will be subsumed by `Int.coe_inj` after we have defined
 -- `LinearOrderedField ℚ` (which implies characteristic zero).
