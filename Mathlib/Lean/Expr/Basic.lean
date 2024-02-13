@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
 Floris van Doorn, E.W.Ayers, Arthur Paulino
 -/
-import Lean
+import Lean.Meta.Tactic.Rewrite
 import Std.Lean.Expr
+import Std.Lean.Name
+import Std.Data.Rat.Basic
 import Std.Data.List.Basic
 
 /-!
@@ -323,17 +325,20 @@ def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M
   | app f a => mkApp f <$> modifier a
   | e => pure e
 
-def modifyAppArg (modifier : Expr → Expr) : Expr → Expr :=
-  modifyAppArgM (M := Id) modifier
-
 def modifyRevArg (modifier : Expr → Expr) : Nat → Expr → Expr
-  | 0 => modifyAppArg modifier
-  | (i+1) => modifyAppArg (modifyRevArg modifier i)
+  | 0,     (.app f x) => .app f (modifier x)
+  | (i+1), (.app f x) => .app (modifyRevArg modifier i f) x
+  | _, e => e
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument or
 returns the original expression if out of bounds. -/
 def modifyArg (modifier : Expr → Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Expr :=
   modifyRevArg modifier (n - i - 1) e
+
+/-- Given `f a₀ a₁ ... aₙ₋₁`, sets the argument on the `i`th argument to `x` or
+returns the original expression if out of bounds. -/
+def setArg (e : Expr) (i : Nat) (x : Expr) (n := e.getAppNumArgs) : Expr :=
+  e.modifyArg (fun _ => x) i n
 
 def getRevArg? : Expr → Nat → Option Expr
   | app _ a, 0   => a

@@ -3,6 +3,7 @@ Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Intervals.Basic
 
 #align_import data.set.intervals.with_bot_top from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
@@ -27,12 +28,11 @@ theorem preimage_coe_top : (some : α → WithTop α) ⁻¹' {⊤} = (∅ : Set 
   eq_empty_of_subset_empty fun _ => coe_ne_top
 #align with_top.preimage_coe_top WithTop.preimage_coe_top
 
-variable [PartialOrder α] {a b : α}
+variable [Preorder α] {a b : α}
 
 theorem range_coe : range (some : α → WithTop α) = Iio ⊤ := by
   ext x
-  rw [mem_Iio, lt_top_iff_ne_top, mem_range, ← none_eq_top, Option.ne_none_iff_exists]
-  rfl
+  rw [mem_Iio, WithTop.lt_top_iff_ne_top, mem_range, ne_top_iff_exists]
 #align with_top.range_coe WithTop.range_coe
 
 @[simp]
@@ -137,7 +137,7 @@ theorem preimage_coe_bot : (some : α → WithBot α) ⁻¹' {⊥} = (∅ : Set 
   @WithTop.preimage_coe_top αᵒᵈ
 #align with_bot.preimage_coe_bot WithBot.preimage_coe_bot
 
-variable [PartialOrder α] {a b : α}
+variable [Preorder α] {a b : α}
 
 theorem range_coe : range (some : α → WithBot α) = Ioi ⊥ :=
   @WithTop.range_coe αᵒᵈ _
