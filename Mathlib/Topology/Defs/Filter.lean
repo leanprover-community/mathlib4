@@ -211,7 +211,6 @@ def MapClusterPt {ι : Type*} (x : X) (F : Filter ι) (u : ι → X) : Prop :=
 See also `ClusterPt`. -/
 def AccPt (x : X) (F : Filter X) : Prop :=
   NeBot (𝓝[≠] x ⊓ F)
-#align acc_pt AccPt
 
 /-- A set `s` is compact if for every nontrivial filter `f` that contains `s`,
     there exists `a ∈ s` such that every set of `f` meets every neighborhood of `a`. -/

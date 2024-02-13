@@ -5,6 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Order.Filter.Basic
 import Mathlib.Data.Set.Countable
+import Mathlib.SetTheory.Cardinal.Basic
 
 #align_import order.filter.countable_Inter from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
 
