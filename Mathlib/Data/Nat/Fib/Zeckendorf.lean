@@ -104,7 +104,7 @@ lemma greatestFib_sub_fib_greatestFib_le_greatestFib (hn : n ≠ 0) :
     succ_pred, ← fib_add_one]
   exact n.lt_fib_greatestFib_add_one
   · simpa
-  · simpa [← succ_le_iff] using hn.bot_lt
+  · simpa [← succ_le_iff, tsub_eq_zero_iff_le] using hn.bot_lt
 
 private lemma zeckendorf_aux (hm : 0 < m) : m - fib (greatestFib m) < m :=
 tsub_lt_self hm <| fib_pos.2 <| findGreatest_pos.2 ⟨1, zero_lt_one, le_add_self, hm⟩
