@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-
+import Mathlib.CategoryTheory.Bicategory.Functor
 #align_import category_theory.with_terminal from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
@@ -513,6 +513,115 @@ theorem map_id (D : Type*) [Category D]  : map (𝟭  D) = 𝟭 (WithInitial D) 
   match X with
   | of x => rfl
   | star => rfl
+
+def mapId  (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) where
+  hom := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+  inv := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+
+def mapComp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) (G:D⥤ E) :
+    map (F⋙G) ≅ (map F) ⋙ (map G) where
+  hom := {app := fun X =>  eqToHom (by cases X <;> rfl)}
+  inv := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+
+/--From a natrual transformation of functors `C⥤D`, the induced natural transformation
+of functors `WithInitial C⥤ WithInitial D` -/
+def map₂  {D : Type*} [Category D]  {F G: C ⥤ D} (η : F ⟶ G) :
+    map F ⟶ map G where
+  app := fun X =>
+        match X with
+        | of x => η.app x
+        | star => 𝟙 (star)
+  naturality := by
+          intro X Y f
+          match X, Y, f with
+          | of x, of y, f => exact η.naturality f
+          | star, of x, _ => rfl
+          | star, star, _ => rfl
+
+def psedofunctor: Pseudofunctor Cat Cat where
+  obj C :=Cat.of (WithInitial C)
+  map {C D} F := map F
+  map₂ := map₂
+  mapId C := mapId C
+  mapComp {C D E} F G  := mapComp F G
+  map₂_id := by
+        intros
+        apply NatTrans.ext
+        funext X
+        cases X <;> rfl
+  map₂_comp := by
+        intros
+        apply NatTrans.ext
+        funext X
+        cases X <;> rfl
+  map₂_whisker_left := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold mapComp map  map₂
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Category.comp_id, Category.id_comp]
+      rfl
+    · rfl
+  map₂_whisker_right := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold mapComp map  map₂
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Category.comp_id, Category.id_comp]
+      rfl
+    · rfl
+  map₂_associator := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app]
+      simp only [Bicategory.Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom, Cat.comp_obj]
+      unfold map₂ mapComp map
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Bicategory.whiskerRight, whiskerRight_app, down_id, Functor.map_id, Bicategory.whiskerLeft,
+        whiskerLeft_app, Category.comp_id, Category.id_comp]
+    · rfl
+  map₂_left_unitor := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold map₂ mapComp mapId map
+      simp only [Cat.comp_obj, Cat.comp_map, Cat.id_map, Bicategory.Strict.leftUnitor_eqToIso,
+        eqToIso_refl, Iso.refl_hom, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Bicategory.whiskerRight, Functor.id_obj, Functor.id_map, whiskerRight_app, Category.id_comp]
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Category.comp_id]
+      rw [← Functor.map_id]
+      rfl
+    · rfl
+  map₂_right_unitor := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold map₂ mapComp mapId map
+      simp [Bicategory.whiskerLeft]
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Category.comp_id]
+      rw [← Functor.map_id]
+      rfl
+    · rfl
+
+
+
+
+
 /--`map` preserves compositions.-/
 theorem map_comp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) (G:D⥤ E) :
     map (F⋙G) = (map F )⋙ (map G) := by
@@ -529,6 +638,7 @@ theorem map_comp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) 
   match X with
   | of x => rfl
   | star => rfl
+
 
 instance {X : WithInitial C} : Unique (star ⟶ X) where
   default :=
