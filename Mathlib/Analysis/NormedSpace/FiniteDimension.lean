@@ -231,6 +231,32 @@ theorem LinearMap.exists_antilipschitzWith [FiniteDimensional 𝕜 E] (f : E →
     exact ⟨_, e.nnnorm_symm_pos, e.antilipschitz⟩
 #align linear_map.exists_antilipschitz_with LinearMap.exists_antilipschitzWith
 
+open Function in
+/-- A `LinearMap` on a finite-dimensional space over a complete field
+  is injective iff it is anti-Lipschitz. -/
+theorem LinearMap.injective_iff_antilipschitz
+    [FiniteDimensional 𝕜 E] [CompleteSpace 𝕜] (f : E →ₗ[𝕜] F) :
+    Injective f ↔ ∃ K > 0, AntilipschitzWith K f := by
+  constructor
+  · rw [← LinearMap.ker_eq_bot]
+    exact f.exists_antilipschitzWith
+  · rintro ⟨K, -, H⟩
+    exact H.injective
+
+open Function in
+/-- Injectivity of continuous linear maps `E → F` is open,
+  if `E` is finite-dimensional over a complete field. -/
+theorem ContinuousLinearMap.isOpen_injective [FiniteDimensional 𝕜 E] [CompleteSpace 𝕜] :
+    IsOpen { L : E →L[𝕜] F | Injective L } := by
+  rw [isOpen_iff_eventually]
+  rintro φ₀ hφ₀
+  rcases φ₀.injective_iff_antilipschitz.mp hφ₀ with ⟨K, K_pos, H⟩
+  have : ∀ᶠ φ in 𝓝 φ₀, ‖φ - φ₀‖₊ < K⁻¹ := eventually_nnnorm_sub_lt _ <| inv_pos_of_pos K_pos
+  filter_upwards [this] with φ hφ
+  apply φ.injective_iff_antilipschitz.mpr
+  exact ⟨(K⁻¹ - ‖φ - φ₀‖₊)⁻¹, inv_pos_of_pos (tsub_pos_of_lt hφ),
+    AntilipschitzWith.add_sub_lipschitzWith H (φ - φ₀).lipschitz hφ⟩
+
 protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
     (hf : LinearIndependent 𝕜 f) : ∀ᶠ g in 𝓝 f, LinearIndependent 𝕜 g := by
   cases nonempty_fintype ι

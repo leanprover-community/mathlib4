@@ -9,6 +9,7 @@ import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.Sequences
+import Mathlib.Topology.Instances.NNReal
 
 #align_import analysis.normed.group.basic from "leanprover-community/mathlib"@"41bef4ae1254365bc190aee63b947674d2977f01"
 
@@ -2835,3 +2836,12 @@ instance normedAddCommGroup [Ring 𝕜] [NormedAddCommGroup E] [Module 𝕜 E]
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end Submodule
+
+-- TODO: these conceptually belong in Normed/Group/Basic, but require the NNReal topology
+theorem eventually_nnnorm_sub_lt [SeminormedAddCommGroup α] (x₀ : α) {ε : ℝ≥0} (ε_pos : 0 < ε) :
+    ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖₊ < ε :=
+  (continuousAt_id.sub continuousAt_const).nnnorm (gt_mem_nhds <| by simpa)
+
+theorem eventually_norm_sub_lt [SeminormedAddCommGroup α] (x₀ : α) {ε : ℝ} (ε_pos : 0 < ε) :
+    ∀ᶠ x in 𝓝 x₀, ‖x - x₀‖ < ε :=
+  (continuousAt_id.sub continuousAt_const).norm (gt_mem_nhds <| by simpa)
