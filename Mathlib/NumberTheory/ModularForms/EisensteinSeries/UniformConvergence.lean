@@ -129,7 +129,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     rw [H1]
     have : (x 0 : ℝ) ≠ 0 := by
       simpa using (ne_zero_if_max hx H1)
-    have h1 := one_le_sq_div_abs_sq this
+    have h1 := (one_eq_sq_div_abs_sq this).symm.le
     simp only [ne_eq, max_eq_left_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
     convert h1
     norm_cast
@@ -138,7 +138,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     rw [H2]
     have : (x 1 : ℝ) ≠ 0 := by
       simpa using (ne_zero_if_max' hx H2)
-    have h1 := one_le_sq_div_abs_sq this
+    have h1 := (one_eq_sq_div_abs_sq this).symm.le
     simp only [ne_eq, max_eq_right_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
     convert h1
     norm_cast
