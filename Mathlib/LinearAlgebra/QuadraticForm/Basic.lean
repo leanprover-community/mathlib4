@@ -1270,19 +1270,22 @@ open Finset BilinForm
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable {ι : Type*} [Fintype ι] {v : Basis ι R M}
+variable {ι : Type*}
 
 /-- Given a quadratic form `Q` and a basis, `basisRepr` is the basis representation of `Q`. -/
-noncomputable def basisRepr (Q : QuadraticForm R M) (v : Basis ι R M) : QuadraticForm R (ι → R) :=
+noncomputable def basisRepr [Finite ι] (Q : QuadraticForm R M) (v : Basis ι R M) :
+    QuadraticForm R (ι → R) :=
   Q.comp v.equivFun.symm
 #align quadratic_form.basis_repr QuadraticForm.basisRepr
 
 @[simp]
-theorem basisRepr_apply (Q : QuadraticForm R M) (w : ι → R) :
+theorem basisRepr_apply [Fintype ι] {v : Basis ι R M} (Q : QuadraticForm R M) (w : ι → R) :
     Q.basisRepr v w = Q (∑ i : ι, w i • v i) := by
   rw [← v.equivFun_symm_apply]
   rfl
 #align quadratic_form.basis_repr_apply QuadraticForm.basisRepr_apply
+
+variable [Fintype ι] {v : Basis ι R M}
 
 section
 
