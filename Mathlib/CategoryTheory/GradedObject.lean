@@ -465,6 +465,22 @@ lemma hasMap_comp [X.HasMap p] [(X.mapObj p).HasMap q] : X.HasMap r :=
 
 end
 
+section HasZeroMorphisms
+
+end HasZeroMorphisms
+
+variable [HasZeroMorphisms C] [DecidableEq J] (i : I) (j : J)
+
+/-- The canonical inclusion `X i ⟶ X.mapObj p j` when `p i = j`, the zero morphism otherwise. -/
+noncomputable def ιMapObjOrZero : X i ⟶ X.mapObj p j :=
+  if h : p i = j
+    then X.ιMapObj p i j h
+    else 0
+
+lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dif_pos h
+
+lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
+
 end GradedObject
 
 end CategoryTheory
