@@ -515,7 +515,7 @@ theorem sub_nfBelow : ∀ {o₁ o₂ b}, NFBelow o₁ b → NF o₂ → NFBelow 
     · apply NFBelow.zero
     · simp only [h, Ordering.compares_eq] at this
       subst e₂
-      cases mn : (n₁ : ℕ) - n₂ <;> simp [sub]
+      cases (n₁ : ℕ) - n₂ <;> simp [sub]
       · by_cases en : n₁ = n₂ <;> simp [en]
         · exact h'.mono (le_of_lt h₁.lt)
         · exact NFBelow.zero
@@ -1161,7 +1161,7 @@ def fastGrowing : ONote → ℕ → ℕ
     | Sum.inr f, h => fun i =>
       have : f i < o := (h.2.1 i).2.1
       fastGrowing (f i) i
-  termination_by fastGrowing o => o
+  termination_by o => o
 #align onote.fast_growing ONote.fastGrowing
 
 -- Porting note: the bug of the linter, should be fixed.

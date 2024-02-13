@@ -5,7 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Control.Basic
 import Mathlib.Init.Set
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.TypeStar
 import Std.Tactic.Lint
 
 #align_import control.functor from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
@@ -43,7 +43,7 @@ theorem Functor.map_id : (id <$> ·) = (id : F α → F α) := funext id_map
 
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
     ((g <$> ·) ∘ (f <$> ·) : F α → F γ) = ((g ∘ f) <$> ·) :=
-  funext <| fun _ => (comp_map _ _ _).symm
+  funext fun _ => (comp_map _ _ _).symm
   -- porting note: was `apply funext <;> intro <;> rw [comp_map]` but `rw` failed?
 #align functor.map_comp_map Functor.map_comp_map
 

@@ -7,6 +7,7 @@ import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.Algebra.GeomSum
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.Tactic.NormNum.Prime
 
 #align_import wiedijk_100_theorems.perfect_numbers from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -36,7 +37,7 @@ theorem odd_mersenne_succ (k : ℕ) : ¬2 ∣ mersenne (k + 1) := by
 
 namespace Nat
 
-open Nat.ArithmeticFunction Finset
+open ArithmeticFunction Finset
 
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
   simp_rw [sigma_one_apply, mersenne, show 2 = 1 + 1 from rfl, ← geom_sum_mul_add 1 (k + 1)]

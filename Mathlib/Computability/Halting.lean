@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.PartrecCode
+import Mathlib.Data.Set.Basic
 
 #align_import computability.halting from "leanprover-community/mathlib"@"a50170a88a47570ed186b809ca754110590f9476"
 
@@ -297,10 +298,10 @@ open Nat (Partrec')
 open Nat.Partrec'
 
 theorem to_part {n f} (pf : @Partrec' n f) : _root_.Partrec f := by
-  induction pf
-  case prim n f hf => exact hf.to_prim.to_comp
-  case comp m n f g _ _ hf hg => exact (Partrec.vector_mOfFn fun i => hg i).bind (hf.comp snd)
-  case rfind n f _ hf =>
+  induction pf with
+  | prim hf => exact hf.to_prim.to_comp
+  | comp _ _ _ hf hg => exact (Partrec.vector_mOfFn hg).bind (hf.comp snd)
+  | rfind _ hf =>
     have := hf.comp (vector_cons.comp snd fst)
     have :=
       ((Primrec.eq.comp _root_.Primrec.id (_root_.Primrec.const 0)).to_comp.comp

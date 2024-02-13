@@ -141,7 +141,7 @@ instance : Inhabited (GroupFilterBasis G) := ⟨by
 
 @[to_additive]
 theorem subset_mul_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U ⊆ U * U :=
-  fun x x_in ↦ ⟨1, x, one h, x_in, one_mul x⟩
+  fun x x_in ↦ ⟨1, one h, x, x_in, one_mul x⟩
 #align group_filter_basis.prod_subset_self GroupFilterBasis.subset_mul_self
 #align add_group_filter_basis.sum_subset_self AddGroupFilterBasis.subset_add_self
 
@@ -372,7 +372,7 @@ instance [DiscreteTopology R] : Inhabited (ModuleFilterBasis R M) :=
       smul' := by
         rintro U (rfl : U ∈ {{(0 : M)}})
         use univ, univ_mem, {0}, rfl
-        rintro a ⟨x, m, -, rfl, rfl⟩
+        rintro a ⟨x, -, m, rfl, rfl⟩
         simp only [smul_zero, mem_singleton_iff]
       smul_left' := by
         rintro x₀ U (h : U ∈ {{(0 : M)}})
