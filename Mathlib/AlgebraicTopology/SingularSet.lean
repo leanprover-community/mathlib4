@@ -54,7 +54,7 @@ the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
 It is left adjoint to `TopCat.toSSet`, as witnessed by `sSetTopAdj`. -/
 noncomputable def SSet.toTop : SSet ⥤ TopCat :=
-  ColimitAdj.extendAlongYoneda SimplexCategory.toTop
+  yoneda.leftKanExtension SimplexCategory.toTop
 set_option linter.uppercaseLean3 false in
 #align sSet.to_Top SSet.toTop
 
