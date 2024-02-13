@@ -587,13 +587,12 @@ theorem exists_one_lt_of_prod_one_of_exists_ne_one' (f : ι → M) (h₁ : ∏ i
 
 end LinearOrderedCancelCommMonoid
 
-section OrderedCommSemiring
+section CommMonoidWithZero
+variable [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R]
 
-variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
+section PosMulMono
+variable [PosMulMono R] {f g : ι → R} {s t : Finset ι}
 
-open Classical
-
--- this is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i in s, f i :=
   prod_induction f (fun i ↦ 0 ≤ i) (fun _ _ ha hb ↦ mul_nonneg ha hb) zero_le_one h0
 #align finset.prod_nonneg Finset.prod_nonneg
@@ -603,14 +602,15 @@ product of `f i` is less than or equal to the product of `g i`. See also `Finset
 the case of an ordered commutative multiplicative monoid. -/
 theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
     ∏ i in s, f i ≤ ∏ i in s, g i := by
-  induction' s using Finset.induction with a s has ih h
+  induction' s using Finset.cons_induction with a s has ih h
   · simp
-  · simp only [prod_insert has]
+  · simp only [prod_cons]
+    have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
     apply mul_le_mul
-    · exact h1 a (mem_insert_self a s)
-    · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact mem_insert_of_mem H
-    · apply prod_nonneg fun x H ↦ h0 x (mem_insert_of_mem H)
-    · apply le_trans (h0 a (mem_insert_self a s)) (h1 a (mem_insert_self a s))
+    · exact h1 a (mem_cons_self a s)
+    · refine ih (fun x H ↦ h0 _ ?_) (fun x H ↦ h1 _ ?_) <;> exact subset_cons _ H
+    · apply prod_nonneg fun x H ↦ h0 x (subset_cons _ H)
+    · apply le_trans (h0 a (mem_cons_self a s)) (h1 a (mem_cons_self a s))
 #align finset.prod_le_prod Finset.prod_le_prod
 
 /-- If all `f i`, `i ∈ s`, are nonnegative and each `f i` is less than or equal to `g i`, then the
@@ -630,31 +630,10 @@ theorem prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) 
   exact Finset.prod_const_one
 #align finset.prod_le_one Finset.prod_le_one
 
-/-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
-  sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
-theorem prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h i ≤ f i)
-    (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
-    (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
-  simp_rw [prod_eq_mul_prod_diff_singleton hi]
-  refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
-  · rw [right_distrib]
-    refine add_le_add ?_ ?_ <;>
-    · refine mul_le_mul_of_nonneg_left ?_ ?_
-      · refine prod_le_prod ?_ ?_
-        <;> simp (config := { contextual := true }) [*]
-      · try apply_assumption
-        try assumption
-  · apply prod_nonneg
-    simp only [and_imp, mem_sdiff, mem_singleton]
-    intro j h1j h2j
-    exact le_trans (hg j h1j) (hgf j h1j h2j)
-#align finset.prod_add_prod_le Finset.prod_add_prod_le
+end PosMulMono
 
-end OrderedCommSemiring
-
-section StrictOrderedCommSemiring
-
-variable [StrictOrderedCommSemiring R] {f g : ι → R} {s : Finset ι}
+section PosMulStrictMono
+variable [PosMulStrictMono R] [MulPosMono R] [Nontrivial R] {f g : ι → R} {s t : Finset ι}
 
 -- This is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i in s, f i :=
@@ -667,11 +646,12 @@ theorem prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i
   classical
   obtain ⟨i, hi, hilt⟩ := hlt
   rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
-  apply mul_lt_mul hilt
+  have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono R›
+  refine mul_lt_mul_of_le_of_lt' hilt ?_ ?_ ?_
   · exact prod_le_prod (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
       (fun _ hj ↦ hfg _ <| mem_of_mem_erase hj)
+  · exact (hf i hi).le.trans hilt.le
   · exact prod_pos fun j hj => hf j (mem_of_mem_erase hj)
-  · exact le_of_lt <| (hf i hi).trans hilt
 
 theorem prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i < g i)
     (h_ne : s.Nonempty) :
@@ -680,7 +660,36 @@ theorem prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s,
   obtain ⟨i, hi⟩ := h_ne
   exact ⟨i, hi, hfg i hi⟩
 
+end PosMulStrictMono
+end CommMonoidWithZero
+
+section StrictOrderedCommSemiring
+
 end StrictOrderedCommSemiring
+
+section OrderedCommSemiring
+variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
+
+/-- If `g, h ≤ f` and `g i + h i ≤ f i`, then the product of `f` over `s` is at least the
+  sum of the products of `g` and `h`. This is the version for `OrderedCommSemiring`. -/
+lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h i ≤ f i)
+    (hgf : ∀ j ∈ s, j ≠ i → g j ≤ f j) (hhf : ∀ j ∈ s, j ≠ i → h j ≤ f j) (hg : ∀ i ∈ s, 0 ≤ g i)
+    (hh : ∀ i ∈ s, 0 ≤ h i) : ((∏ i in s, g i) + ∏ i in s, h i) ≤ ∏ i in s, f i := by
+  classical
+  simp_rw [prod_eq_mul_prod_diff_singleton hi]
+  refine le_trans ?_ (mul_le_mul_of_nonneg_right h2i ?_)
+  · rw [right_distrib]
+    refine add_le_add ?_ ?_ <;>
+    · refine mul_le_mul_of_nonneg_left ?_ ?_
+      · refine prod_le_prod ?_ ?_ <;> simp (config := { contextual := true }) [*]
+      · try apply_assumption
+        try assumption
+  · apply prod_nonneg
+    simp only [and_imp, mem_sdiff, mem_singleton]
+    exact fun j hj hji ↦ le_trans (hg j hj) (hgf j hj hji)
+#align finset.prod_add_prod_le Finset.prod_add_prod_le
+
+end OrderedCommSemiring
 
 section LinearOrderedCommSemiring
 variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α]
@@ -825,7 +834,7 @@ positive if each `f i` is and `s` is nonempty.
 
 Note that this does not do any complicated reasoning. In particular, it does not try to feed in the
 `i ∈ s` hypothesis to local assumptions, and the only ways it can prove `s` is nonempty is if there
-is a local `s.Nonempty` hypothesis or `s = (univ : Finset α)` and `Nonempty α` can be synthesized by
+is a local `s.Nonempty` hypothesis or `s = (univ : Finset ι)` and `Nonempty ι` can be synthesized by
 TC inference.
 
 TODO: The following example does not work
@@ -852,7 +861,7 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
           match s with
           | ~q(@univ _ $fi) => do
             let _no ← synthInstanceQ q(Nonempty $ι)
-            return q(Finset.univ_nonempty (α := $ι))
+            pure q(Finset.univ_nonempty (α := $ι))
           | _ => throwError "`s` is not `univ`"
         catch _ => do
           let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s)
@@ -861,16 +870,14 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
       let pα' ← synthInstanceQ q(OrderedCancelAddCommMonoid $α)
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return .positive q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps)
+      pure $ .positive q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps)
     -- Try to show that the sum is nonnegative
     catch _ => do
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
       let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
       assertInstancesCommute
-      let proof := q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
-      proof.check
-      return .nonnegative proof
+      pure $ .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j in range n, a j^2 := by positivity
@@ -888,5 +895,77 @@ example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by p
 -- `0` because of the `hf` assumption
 set_option linter.unusedVariables false in
 example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n in Finset.range 10, f n := by positivity
+
+/-- We make an alias by hand to keep control over the order of the arguments. -/
+private lemma prod_ne_zero {ι α : Type*} [CommMonoidWithZero α] [Nontrivial α] [NoZeroDivisors α]
+    {f : ι → α} {s : Finset ι} : (∀ i ∈ s, f i ≠ 0) → ∏ i in s, f i ≠ 0 := prod_ne_zero_iff.2
+
+/-- The `positivity` extension which proves that `∏ i in s, f i` is nonnegative if `f` is, and
+positive if each `f i` is.
+
+Note that this does not do any complicated reasoning. In particular, it does not try to feed in the
+`i ∈ s` hypothesis to local assumptions.
+
+TODO: The following example does not work
+```
+example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.prod f := by positivity
+```
+because `compareHyp` can't look for assumptions behind binders.
+-/
+@[positivity Finset.prod _ _]
+def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
+  match e with
+  | ~q(@Finset.prod _ $ι $instα $s $f) =>
+    let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
+    have body : Q($α) := Expr.betaRev f #[i]
+    let rbody ← core zα pα body
+    -- Try to show that the sum is positive
+    try
+      let .positive pbody := rbody | failure -- Fail if the body is not provably positive
+      let instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
+      let instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
+      let instαposmul ← synthInstanceQ q(PosMulStrictMono $α)
+      let instαnontriv ← synthInstanceQ q(Nontrivial $α)
+      assertInstancesCommute
+      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
+      pure $ .positive q(@prod_pos $ι $α $instαmon $pα $instαzeroone $instαposmul $instαnontriv $f
+        $s fun i _ ↦ $pr i)
+    -- Try to show that the sum is nonnegative
+    catch _ => try
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      let instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
+      let instαzeroone ← synthInstanceQ q(ZeroLEOneClass $α)
+      let instαposmul ← synthInstanceQ q(PosMulMono $α)
+      assertInstancesCommute
+      pure $ .nonnegative q(@prod_nonneg $ι $α $instαmon $pα $instαzeroone $instαposmul $f $s
+        fun i _ ↦ $pr i)
+    catch _ =>
+      let pbody ← rbody.toNonzero
+      let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody
+      let instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
+      let instαnontriv ← synthInstanceQ q(Nontrivial $α)
+      let instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
+      assertInstancesCommute
+      pure $ .nonzero q(@prod_ne_zero $ι $α $instαmon $instαnontriv $instαnozerodiv $f $s
+        fun i _ ↦ $pr i)
+  | _ => throwError "not Finset.sum"
+
+example (n : ℕ) : ∏ j in range n, (-1) ≠ 0 := by positivity
+example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j in range n, a j^2 := by positivity
+example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∏ j in s, a j^2 := by positivity
+example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∏ j : Fin 8, ∏ i in range n, (a j^2 + i ^ 2) := by positivity
+example (n : ℕ) (a : ℕ → ℤ) : 0 < ∏ j : Fin (n + 1), (a j^2 + 1) := by positivity
+example (a : ℕ → ℤ) : 0 < ∏ j in ({1} : Finset ℕ), (a j^2 + 1) := by
+  have : Finset.Nonempty {1} := singleton_nonempty 1
+  positivity
+example (s : Finset ℕ) : 0 ≤ ∏ j in s, j := by positivity
+example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
+example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
+
+-- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
+-- `0` because of the `hf` assumption
+set_option linter.unusedVariables false in
+example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∏ n in Finset.range 10, f n := by positivity
 
 end Mathlib.Meta.Positivity
