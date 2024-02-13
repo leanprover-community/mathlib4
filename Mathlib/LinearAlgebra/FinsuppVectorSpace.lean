@@ -20,8 +20,7 @@ This file contains results on the `R`-module structure on functions of finite su
 noncomputable section
 
 open Set LinearMap Submodule
-
-open Cardinal
+open scoped Cardinal BigOperators
 
 universe u v w
 
@@ -160,29 +159,19 @@ namespace Basis
 
 variable {R M n : Type*}
 
-variable [DecidableEq n] [Fintype n]
+variable [DecidableEq n]
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
--- Porting note: looks like a diamond with Subtype.fintype
-attribute [-instance] fintypePure fintypeSingleton
-theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
-    (Finset.univ.sum fun x : n => Finsupp.single x (ite (i = x) a 0)) = Finsupp.single i a := by
-  rw [Finset.sum_congr_set {i} (fun x : n => Finsupp.single x (ite (i = x) a 0)) fun _ =>
-      Finsupp.single i a]
-  · simp
-  · intro x hx
-    rw [Set.mem_singleton_iff] at hx
-    simp [hx]
-  intro x hx
-  have hx' : ¬i = x := by
-    refine' ne_comm.mp _
-    rwa [mem_singleton_iff] at hx
-  simp [hx']
+theorem _root_.Finset.sum_single_ite [Fintype n] (a : R) (i : n) :
+    (∑ x : n, Finsupp.single x (if i = x then a else 0)) = Finsupp.single i a := by
+  simp only [apply_ite (Finsupp.single _), Finsupp.single_zero, Finset.sum_ite_eq,
+    if_pos (Finset.mem_univ _)]
 #align finset.sum_single_ite Finset.sum_single_ite
 
-theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
+theorem equivFun_symm_stdBasis [Finite n] (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
+  cases nonempty_fintype n
   simp
 #align basis.equiv_fun_symm_std_basis Basis.equivFun_symm_stdBasis
 
