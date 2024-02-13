@@ -56,6 +56,11 @@ On second-countable groups, one can arrive to slightly different uniqueness resu
 the operations are measurable. In particular, one can get uniqueness assuming σ-finiteness of
 the measures but discarding the assumption that they are finite on compact sets. See
 `haarMeasure_unique` in the file `MeasureTheory.Measure.Haar.Basic`.
+
+## References
+
+[Halmos, Measure Theory][halmos1950measure]
+[Fremlin, *Measure Theory* (volume 4)][fremlin_vol4]
 -/
 
 open MeasureTheory Filter Set TopologicalSpace Function MeasureTheory Measure
