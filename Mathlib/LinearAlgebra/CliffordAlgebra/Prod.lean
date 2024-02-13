@@ -149,7 +149,7 @@ lemma toProd_one_tmul_ι (m₂ : M₂) : toProd Q₁ Q₂ (1 ᵍ⊗ₜ ι _ m₂
     QuadraticForm.Isometry.inr_apply]
 
 lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.id _ _ := by
-  ext m₁ <;> dsimp
+  ext m <;> dsimp
   · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, ← Prod.zero_eq_mk,
       LinearMap.map_zero, add_zero]
   · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, ← Prod.zero_eq_mk,
