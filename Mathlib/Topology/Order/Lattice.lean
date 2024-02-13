@@ -3,8 +3,8 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Constructions
+import Mathlib.Topology.Order.OrderClosed
 
 #align_import topology.order.lattice from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
