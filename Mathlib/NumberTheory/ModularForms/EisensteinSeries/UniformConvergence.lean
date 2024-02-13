@@ -302,7 +302,7 @@ lemma summable_over_box {k : ℤ} (z : ℍ) (h : 3 ≤ k):
 
 lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 → ℤ) =>
     (1 / (r z) ^ k) * ((max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹ := by
-  rw [summable_lemma _ _ (fun (n : ℕ) => box n)  Int.existsUnique_mem_box]
+  rw [summable_lemma _ _ (fun (n : ℕ) => box n) Int.existsUnique_mem_box]
   · have : ∀ n : ℕ, ∑ v in (box n : Finset (ℤ × ℤ)),
       (1 / (r z) ^ k) * ((max v.1.natAbs v.2.natAbs: ℝ) ^ k)⁻¹ =
         ∑ v in box n, (1 / (r z) ^ k) * ((n : ℝ)^k)⁻¹ := by
@@ -356,4 +356,4 @@ theorem eisensteinSeries_TendstoLocallyUniformlyOn {k : ℤ} (hk : 3 ≤ k) (N :
   · apply pow_pos (abs_pos.mpr (ne_of_gt (r_pos x)))
   · apply pow_pos (r_pos _)
   · simp only [Int.mem_box]
-  · simp
+  · simp only [Set.top_eq_univ, isOpen_univ]
