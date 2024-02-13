@@ -475,7 +475,7 @@ lemma nonDegenerateFlip_iff {B : BilinForm K V} :
 
 section DualBasis
 
-variable {ι : Type*} [DecidableEq ι] [Fintype ι]
+variable {ι : Type*} [DecidableEq ι] [Finite ι]
 
 /-- The `B`-dual basis `B.dualBasis hB b` to a finite basis `b` satisfies
 `B (B.dualBasis hB b i) (b j) = B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0`,
@@ -507,7 +507,7 @@ theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : 
 
 @[simp]
 lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
-    [Fintype ι] [DecidableEq ι] (b : Basis ι K V) :
+    [Finite ι] [DecidableEq ι] (b : Basis ι K V) :
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
   refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
@@ -517,13 +517,13 @@ lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
 
 @[simp]
 lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
-    [Fintype ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
+    [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
     B.flip.dualBasis hB.flip (B.dualBasis hB b) = b :=
   dualBasis_dualBasis_flip _ hB.flip b
 
 @[simp]
 lemma dualBasis_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.IsSymm) {ι}
-    [Fintype ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
+    [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
     B.dualBasis hB (B.dualBasis hB b) = b := by
   convert dualBasis_dualBasis_flip _ hB.flip b
   rwa [eq_comm, ← isSymm_iff_flip]

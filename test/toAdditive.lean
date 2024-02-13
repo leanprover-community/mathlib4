@@ -221,11 +221,6 @@ attribute [to_additive add_some_def] some_def
 
 run_cmd do liftCoreM <| successIfFail (getConstInfo `Test.add_some_def.in_namespace)
 
--- [todo] currently this test breaks.
--- example : (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ)
---         = (AddUnits.mk_of_add_eq_zero 0 0 (by simp) : ℕ) :=
--- by norm_cast
-
 section
 
 set_option linter.unusedVariables false
@@ -276,7 +271,7 @@ class FooClass (α) : Prop where
   refle : ∀ a : α, a = a
 
 @[to_additive]
-instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl ⟩
+instance FooClass_one [One α] : FooClass α := ⟨λ _ => rfl⟩
 
 lemma one_fooClass [One α] : FooClass α := by infer_instance
 

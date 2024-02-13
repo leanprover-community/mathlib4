@@ -53,6 +53,7 @@ structure AffineIsometry extends P →ᵃ[𝕜] P₂ where
 
 variable {𝕜 P P₂}
 
+@[inherit_doc]
 notation:25 -- `→ᵃᵢ` would be more consistent with the linear isometry notation, but it is uglier
 P " →ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometry 𝕜 P P₂
 
@@ -875,7 +876,7 @@ namespace AffineSubspace
 /-- An affine subspace is isomorphic to its image under an injective affine map.
 This is the affine version of `Submodule.equivMapOfInjective`.
 -/
-@[simps]
+@[simps linear, simps! toFun]
 noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E] (φ : P₁ →ᵃ[𝕜] P₂)
     (hφ : Function.Injective φ) : E ≃ᵃ[𝕜] E.map φ :=
   { Equiv.Set.image _ (E : Set P₁) hφ with

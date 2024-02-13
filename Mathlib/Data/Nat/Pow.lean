@@ -65,16 +65,12 @@ theorem one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n :=
   one_le_pow n (m + 1) (succ_pos m)
 #align nat.one_le_pow' Nat.one_le_pow'
 
-theorem one_le_two_pow (n : ℕ) : 1 ≤ 2 ^ n :=
-  one_le_pow n 2 (by decide)
 #align nat.one_le_two_pow Nat.one_le_two_pow
 
 theorem one_lt_pow (n m : ℕ) (h₀ : n ≠ 0) (h₁ : 1 < m) : 1 < m ^ n := by
   rw [← one_pow n]
   exact Nat.pow_lt_pow_left h₁ h₀
 #align nat.one_lt_pow Nat.one_lt_pow
-
-theorem two_pow_pos (n : ℕ) : 0 < 2^n := Nat.pos_pow_of_pos _ (by decide)
 
 theorem two_pow_succ (n : ℕ) : 2^(n + 1) = 2^n + 2^n := by simp [pow_succ, mul_two]
 
@@ -87,7 +83,6 @@ theorem one_lt_pow_iff {k n : ℕ} (h : k ≠ 0) : 1 < n ^ k ↔ 1 < n :=
   one_lt_pow_iff_of_nonneg (zero_le _) h
 #align nat.one_lt_pow_iff Nat.one_lt_pow_iff
 
-theorem one_lt_two_pow (n : ℕ) (h₀ : n ≠ 0) : 1 < 2 ^ n := one_lt_pow n 2 h₀ (by decide)
 #align nat.one_lt_two_pow Nat.one_lt_two_pow
 
 theorem one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) :=
@@ -241,3 +236,5 @@ Those lemmas have been deprecated on 2023-12-23.
 @[deprecated] protected alias Nat.pow_right_strictMono := pow_right_strictMono
 @[deprecated] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
 @[deprecated] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right
+
+assert_not_exists Set.range

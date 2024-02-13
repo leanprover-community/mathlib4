@@ -8,6 +8,7 @@ import Mathlib.Order.Category.BoolAlg
 import Mathlib.Order.Category.FinBddDistLat
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Data.Set.Basic
 
 #align_import order.category.FinBoolAlg from "leanprover-community/mathlib"@"937b1c59c58710ef8ed91f8727ef402d49d621a2"
 
@@ -77,6 +78,9 @@ instance largeCategory : LargeCategory FinBoolAlg :=
 instance concreteCategory : ConcreteCategory FinBoolAlg :=
   InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
 #align FinBoolAlg.concrete_category FinBoolAlg.concreteCategory
+
+instance instFunLike {X Y : FinBoolAlg} : FunLike (X ⟶ Y) X Y :=
+  BoundedLatticeHom.instFunLike
 
 -- Porting note: added
 -- TODO: in all of the earlier bundled order categories,
