@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
 
 /-!
 # Decomposition of objects into connected components and applications
@@ -30,41 +31,6 @@ namespace CategoryTheory
 open Limits Functor
 
 variable {C : Type u₁} [Category.{u₂} C]
-
-namespace Cofan
-
-variable {ι₁ ι₂ : Type} {X : C} {f₁ : ι₁ → C} {f₂ : ι₂ → C}
-    (c₁ : Cofan f₁) (c₂ : Cofan f₂) (bc : BinaryCofan c₁.pt c₂.pt)
-    (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (h : IsColimit bc)
-
-/-- For cofans on maps `f₁ : ι₁ → C`, `f₂ : ι₂ → C` and a binary cofan on their
-cocone points, construct one family of morphisms indexed by `ι₁ ⊕ ι₂` -/
-@[simp]
-abbrev combPairHoms : (i : ι₁ ⊕ ι₂) → Sum.elim f₁ f₂ i ⟶ bc.pt
-  | .inl a => c₁.inj a ≫ bc.inl
-  | .inr a => c₂.inj a ≫ bc.inr
-
-variable {c₁ c₂ bc}
-
-/-- If `c₁` and `c₂` are colimit cofans and `bc` is a colimit binary cofan on their cocone
-points, then the cofan constructed from `combPairHoms` is a colimit cocone.  -/
-def combPairIsColimit : IsColimit (Cofan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
-  mkCofanColimit _
-    (fun s ↦ Cofan.IsColimit.desc h <| fun i ↦ by
-      cases i
-      · exact Cofan.IsColimit.desc h₁ (fun a ↦ s.inj (.inl a))
-      · exact Cofan.IsColimit.desc h₂ (fun a ↦ s.inj (.inr a)))
-    (fun s w ↦ by
-      cases w <;>
-      · simp only [cofan_mk_inj, combPairHoms, Category.assoc]
-        erw [h.fac]
-        simp only [Cofan.mk_ι_app, Cofan.IsColimit.fac])
-    (fun s m hm ↦ Cofan.IsColimit.hom_ext h _ _ <| fun w ↦ by
-      cases w
-      · refine Cofan.IsColimit.hom_ext h₁ _ _ (fun a ↦ by aesop)
-      · refine Cofan.IsColimit.hom_ext h₂ _ _ (fun a ↦ by aesop))
-
-end Cofan
 
 namespace PreGaloisCategory
 
