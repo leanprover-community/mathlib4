@@ -10,6 +10,7 @@ import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.RingHomProperties
+import Mathlib.Data.Set.Basic
 
 #align_import ring_theory.local_properties from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
@@ -397,7 +398,9 @@ lemma Module.Finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommRing
   rw [IsLocalization.mk'_eq_mul_mk'_one, mul_comm, Finset.coe_image]
   have hy : y ∈ Submodule.span R ↑T := by rw [hT]; trivial
   replace hy : algebraMap S Sₚ y ∈ Submodule.map (IsScalarTower.toAlgHom R S Sₚ).toLinearMap
-    (Submodule.span R (T : Set S)) := Submodule.mem_map_of_mem hy
+    (Submodule.span R (T : Set S)) := Submodule.mem_map_of_mem
+--     -- Note: #8386 had to specify the value of `f` below
+      (f := (IsScalarTower.toAlgHom R S Sₚ).toLinearMap) hy
   rw [Submodule.map_span (IsScalarTower.toAlgHom R S Sₚ).toLinearMap T] at hy
   have H : Submodule.span R (algebraMap S Sₚ '' T) ≤
       (Submodule.span Rₚ (algebraMap S Sₚ '' T)).restrictScalars R := by

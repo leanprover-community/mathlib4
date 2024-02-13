@@ -3,7 +3,6 @@ Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather
 -/
-import Std.Tactic.Lint.Frontend
 import Std.Tactic.Lint.Misc
 import Std.Tactic.CoeExt
 import Mathlib.Mathport.Rename

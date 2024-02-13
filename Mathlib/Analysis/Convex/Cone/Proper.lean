@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Analysis.Convex.Cone.Closure
+import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 #align_import analysis.convex.cone.proper from "leanprover-community/mathlib"@"147b294346843885f952c5171e9606616a8fd869"
 
@@ -85,7 +86,7 @@ theorem mem_coe {x : E} {K : ProperCone 𝕜 E} : x ∈ (K : PointedCone 𝕜 E)
 instance instZero (K : ProperCone 𝕜 E) : Zero K := PointedCone.instZero (K.toSubmodule)
 
 protected theorem nonempty (K : ProperCone 𝕜 E) : (K : Set E).Nonempty :=
-  ⟨0, by { simp_rw [SetLike.mem_coe, ← ProperCone.mem_coe, Submodule.zero_mem] } ⟩
+  ⟨0, by { simp_rw [SetLike.mem_coe, ← ProperCone.mem_coe, Submodule.zero_mem] }⟩
 #align proper_cone.nonempty ProperCone.nonempty
 
 protected theorem isClosed (K : ProperCone 𝕜 E) : IsClosed (K : Set E) :=

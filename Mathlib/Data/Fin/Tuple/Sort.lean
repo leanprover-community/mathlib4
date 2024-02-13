@@ -168,7 +168,7 @@ theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) 
     exact (graphEquiv₂ f).strictMono
   · have := Subsingleton.elim (graphEquiv₂ f) (h.orderIsoOfSurjective _ <| Equiv.surjective _)
     ext1 x
-    exact (graphEquiv₁ f).apply_eq_iff_eq_symm_apply.1 (FunLike.congr_fun this x).symm
+    exact (graphEquiv₁ f).apply_eq_iff_eq_symm_apply.1 (DFunLike.congr_fun this x).symm
 #align tuple.eq_sort_iff' Tuple.eq_sort_iff'
 
 /-- A permutation `σ` equals `sort f` if and only if `f ∘ σ` is monotone and whenever `i < j`
@@ -185,7 +185,7 @@ theorem eq_sort_iff :
 
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/
 theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f := by
-  rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp.right_id]
+  rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp_id]
   simp only [id.def, and_iff_left_iff_imp]
   exact fun _ _ _ hij _ => hij
 #align tuple.sort_eq_refl_iff_monotone Tuple.sort_eq_refl_iff_monotone

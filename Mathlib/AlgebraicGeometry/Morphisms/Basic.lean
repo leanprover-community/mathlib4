@@ -166,6 +166,9 @@ structure AffineTargetMorphismProperty.IsLocal (P : AffineTargetMorphismProperty
       (∀ r : s, @P _ _ (f ∣_ Y.basicOpen r.1) ((topIsAffineOpen Y).basicOpenIsAffine _)) → P f
 #align algebraic_geometry.affine_target_morphism_property.is_local AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal
 
+/-- Specialization of `ConcreteCategory.id_apply` because `simp` can't see through the defeq. -/
+@[simp] lemma CommRingCat.id_apply (R : CommRingCat) (x : R) : 𝟙 R x = x := rfl
+
 theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : P.IsLocal)
     {X Y : Scheme} (f : X ⟶ Y) (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)]
     (h𝒰 : ∀ i, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) :
@@ -198,9 +201,9 @@ theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : 
       simp only [eqToHom_op, eqToHom_map, Finset.coe_image]
       have : ∀ {R S : CommRingCat} (e : S = R) (s : Set S),
           Ideal.span (eqToHom e '' s) = Ideal.comap (eqToHom e.symm) (Ideal.span s) := by
-        intro _ _ e _
+        intro _ S e _
         subst e
-        simp only [eqToHom_refl, id_apply, Set.image_id']
+        simp only [eqToHom_refl, CommRingCat.id_apply, Set.image_id']
         -- Porting note : Lean didn't see `𝟙 _` is just ring hom id
         exact (Ideal.comap_id _).symm
       apply this

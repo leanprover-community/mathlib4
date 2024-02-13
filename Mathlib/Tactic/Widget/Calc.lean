@@ -3,8 +3,9 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-
+import Lean.Elab.Tactic.Calc
 import Std.CodeAction
+import Std.Data.Json
 
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.SelectPanelUtils
