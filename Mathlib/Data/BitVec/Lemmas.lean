@@ -195,34 +195,6 @@ lemma toFin_ofNat (n : ℕ) :
 end
 
 /-!
-### Distributivity of `Std.BitVec.toNat`
--/
-
-section
-variable (x y : BitVec w)
-open BitVec (toNat)
-
-@[simp] lemma toNat_and : (x &&& y).toNat = x.toNat &&& y.toNat := rfl
-@[simp] lemma toNat_xor : (x ^^^ y).toNat = x.toNat ^^^ y.toNat := rfl
-
-/- `Std.BitVec.toNat_add` and `Std.BitVec.toNat_or` already exist in Std. -/
-
-lemma toNat_mul : (x * y).toNat = (x.toNat * y.toNat) % 2 ^ w           := rfl
-lemma toNat_sub : (x - y).toNat = (x.toNat + (2 ^ w - y.toNat)) % 2 ^ w := rfl
-
-lemma toNat_neg : (-x).toNat = (2 ^ w - x.toNat) % 2 ^ w := by
-  simp only [Neg.neg, BitVec.neg, BitVec.sub_eq, toNat_sub, ofNat_eq_ofNat, toNat_ofNat, zero_mod,
-    zero_add]
-
-end
-
-@[simp] lemma toNat_neg_ofNat_one : (-1#w).toNat = 2^w - 1 := by
-  simp only [ofNat_eq_ofNat, toNat_neg, toNat_ofNat]
-  cases' w with w
-  · rfl
-  · rw [mod_eq_of_lt (a:=1) (by simp), mod_eq_of_lt (sub_lt (two_pow_pos _) Nat.one_pos)]
-
-/-!
 ## `CommSemiring` and `AddCommGroup`
 These are precursors to proving that bitvectors are a commutative ring
 -/
@@ -235,41 +207,6 @@ instance : CommSemiring (BitVec w) :=
 instance : AddCommGroup (BitVec w) :=
   toFin_injective.addCommGroup _
     toFin_zero toFin_add toFin_neg toFin_sub (Function.swap toFin_nsmul) (Function.swap toFin_zsmul)
-
-/-!
-## Extensionality
--/
-
-/-- If two bitvectors agree on all in-bound bits, then they agree on all bits -/
-private lemma getLsb_eq_of_getLsb' {x y : BitVec w} (h : ∀ (i : Fin w), x.getLsb' i = y.getLsb' i) :
-    ∀ (i : ℕ), x.getLsb i = y.getLsb i := by
-  simp only [getLsb, testBit]
-  intro i
-  cases' lt_or_le i w with hi hi
-  · exact h ⟨i, hi⟩
-  · have (z : BitVec w) : z.toNat < 2 ^ i :=
-      Nat.lt_of_lt_of_le z.toNat_lt (pow_le_pow_right (le_succ 1) hi)
-    rw [Nat.shiftRight_eq_zero_iff_lt.mpr (this x), Nat.shiftRight_eq_zero_iff_lt.mpr (this y)]
-
-/-- If two bitvectors agree on all bits, then they are equal. See also `Std.BitVec.ext_msb` -/
-@[ext]
-theorem ext_lsb {x y : BitVec w} (h : ∀ i, x.getLsb' i = y.getLsb' i) : x = y := by
-  apply toNat_inj.mp
-  apply Nat.eq_of_testBit_eq
-  simp only [testBit_toNat]
-  exact getLsb_eq_of_getLsb' h
-
-theorem getLsb'_rev (x : BitVec w) (i : Fin w) :
-    x.getLsb' i.rev = x.getMsb' i := by
-  simp [getMsb', getMsb, getLsb', tsub_add_eq_tsub_tsub_swap]
-
-theorem getMsb'_rev (x : BitVec w) (i : Fin w) :
-    x.getMsb' i.rev = x.getLsb' i := by
-  rw [← getLsb'_rev, Fin.rev_involutive]
-
-/-- If two bitvectors agree on all bits, then they are equal. See also `Std.BitVec.ext_lsb` -/
-theorem ext_msb {x y : BitVec w} (h : ∀ i, x.getMsb' i = y.getMsb' i) : x = y := by
-  ext i; simpa [← getLsb'_rev] using h i.rev
 
 /-!
 ### Distributivity of `Std.BitVec.getLsb'`
@@ -287,57 +224,19 @@ variable (x y : BitVec w) (i : Fin w)
 @[simp] lemma getLsb'_xor : (x ^^^ y).getLsb' i = (xor (x.getLsb' i) (y.getLsb' i)) := by
   simp only [getLsb', getLsb, toNat_xor, testBit_xor]
 
-@[simp] lemma getLsb'_not : (~~~x).getLsb' i = !(x.getLsb' i) := by
-  simp only [getLsb', getLsb, Complement.complement, BitVec.not, toNat_xor, toNat_ofFin,
-    testBit_xor, Nat.testBit_ones, Fin.is_lt, decide_True, Bool.true_xor]
+-- @[simp] lemma getLsb'_not : (~~~x).getLsb' i = !(x.getLsb' i) := by
+--   simp only [getLsb', getLsb, Complement.complement, BitVec.not, toNat_xor, toNat_ofFin,
+--     testBit_xor, Nat.testBit_ones, Fin.is_lt, decide_True, Bool.true_xor]
 
 @[simp] lemma getLsb'_ofNat_zero : getLsb' 0#w i = false := by
   simp only [getLsb', getLsb, toNat_ofNat, zero_mod, zero_testBit]
 
-@[simp] lemma getLsb'_neg_ofNat_one : getLsb' (-1#w) i = true := by
-  simp only [getLsb', getLsb, toNat_neg_ofNat_one, testBit_two_pow_sub_one, Fin.is_lt, decide_True]
+-- @[simp] lemma getLsb'_neg_ofNat_one : getLsb' (-1#w) i = true := by
+--   simp only [getLsb', getLsb, toNat_neg_ofNat_one, testBit_two_pow_sub_one, Fin.is_lt, decide_True]
 
-@[simp] lemma getLsb_val_eq_getLsb' : x.getLsb i.val = x.getLsb' i := rfl
-
-end
-
-/-!
-### Distributivity of `Std.BitVec.getMsb'`
--/
-
-section
-variable (x y : BitVec w) (i : Fin w)
-
-@[simp] lemma getMsb'_and : (x &&& y).getMsb' i = (x.getMsb' i && y.getMsb' i) := by
-  simp only [← getLsb'_rev, getLsb'_and]
-
-@[simp] lemma getMsb'_or : (x ||| y).getMsb' i = (x.getMsb' i || y.getMsb' i) := by
-  simp only [← getLsb'_rev, getLsb'_or]
-
-@[simp] lemma getMsb'_xor : (x ^^^ y).getMsb' i = (xor (x.getMsb' i) (y.getMsb' i)) := by
-  simp only [← getLsb'_rev, getLsb'_xor]
-
-@[simp] lemma getMsb'_not : (~~~x).getMsb' i = !(x.getMsb' i) := by
-  simp only [← getLsb'_rev, getLsb'_not]
-
-@[simp] lemma getMsb'_ofNat_zero : getMsb' 0#w i = false := by
-  simp only [← getLsb'_rev, getLsb'_ofNat_zero]
-
-@[simp] lemma getMsb'_neg_ofNat_one : getMsb' (-1#w) i = true := by
-  simp only [← getLsb'_rev, getLsb'_neg_ofNat_one]
+-- @[simp] lemma getLsb_val_eq_getLsb' : x.getLsb i.val = x.getLsb' i := rfl
 
 end
-
-/-!
-### `Unique`
-There is exactly one zero-width bitvector
--/
-
-/-- Every zero-width bitvector is equal to the canonical zero-width bitvector `0#0` -/
-theorem eq_ofNat_zero_of_width_zero (x : BitVec 0) : x = 0#0 := eq_of_getMsb_eq (congrFun rfl)
-
-instance : Unique (BitVec 0) where
-  uniq := eq_ofNat_zero_of_width_zero
 
 /-!
 ### `IntCast` & `CommRing`
@@ -346,9 +245,14 @@ using the result as argument to `ofFin` to construct a bitvector.
 This result ist the final piece needed to show that bitvectors form a commutative ring.
 -/
 
+#check Std.BitVec.add_eq_adc
+
+@[simp]
+lemma negOne_eq_allOnes {w : Nat} : -1#w = allOnes w := rfl
+
 /-- Adding a bitvector to its own complement yields the all ones bitpattern -/
 @[simp] lemma add_not_self (x : BitVec w) : x + ~~~x = -1#w := by
-  rw [add_as_adc, adc, iunfoldr_replace (fun _ => false) (-1#w)]
+  rw [add_eq_adc, adc, iunfoldr_replace (fun _ => false) (-1#w)]
   · rfl
   · simp [adcb]
 
@@ -368,7 +272,7 @@ lemma not_eq_sub (x : BitVec w) :
 theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = Int.cast z := by
   cases w
   case zero =>
-    simp only [eq_ofNat_zero_of_width_zero]
+    simp only [eq_nil]
   case succ w =>
     simp only [Int.cast, IntCast.intCast, BitVec.ofInt]
     unfold Int.castDef

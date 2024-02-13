@@ -301,24 +301,6 @@ lemma pred_bit0 {x : ℕ} (h : x > 0) : pred (bit0 x) = bit1 (pred x) := by
   · contradiction
   · simp only [bit0_val, mul_succ, Nat.pred_succ, bit_val, bit1_val, cond_true]
 
-/-- The expressions `pred (1 <<< w)` represents the number with the `w` least significant bits as
-`1`, and all other bits `0`.
-It's used as the all-ones bitvector in the implementation of `Std.BitVec.not` -/
-lemma testBit_ones (w i : ℕ) : testBit (pred <| 1 <<< w) i = decide (i < w) := by
-  induction' w with w ih generalizing i
-  · simp only [zero_eq, shiftLeft_zero, Nat.pred_succ, zero_testBit, not_lt_zero', decide_False]
-  · suffices
-      testBit (pred <| bit false (1 <<< w)) i = decide (i < w + 1)
-    by simpa only [bit_val, Bool.cond_false, shiftLeft_succ] using this
-    rw [bit_false, Nat.pred_bit0 (by
-      rw [shiftLeft_eq, one_mul]
-      exact two_pow_pos w
-    )]
-    cases i
-    · simp only [Nat.zero_eq, ← Nat.bit_true, testBit_zero, zero_lt_succ, decide_True]
-    · simp only [testBit_succ, ih, ← Nat.bit_true, decide_eq_decide]
-      exact succ_lt_succ_iff.symm
-
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n
@@ -514,10 +496,5 @@ lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 
   apply bitwise_lt
   · rw [add_comm]; apply shiftLeft_lt hy
   · apply lt_of_lt_of_le hx <| pow_le_pow_right (le_succ _) (le_add_right _ _)
-
-theorem shiftRight_eq_zero_iff_lt {x y} :
-    x >>> y = 0 ↔ x < 2^y := by
-  rw [Nat.shiftRight_eq_div_pow, ← lt_one_iff, div_lt_iff_lt_mul, one_mul]
-  exact two_pow_pos y
 
 end Nat
