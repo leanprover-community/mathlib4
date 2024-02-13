@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Selsam, Mario Carneiro
 -/
 import Std.Data.Option.Lemmas
+import Std.Data.Nat.Lemmas
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Logic
 import Mathlib.Tactic.Relation.Symm

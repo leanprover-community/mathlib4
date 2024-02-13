@@ -32,7 +32,7 @@ def runDefEqTactic (m : Expr → MetaM Expr)
   withLocation (expandOptLocation (Lean.mkOptionalNode loc?))
     (atLocal := fun h => liftMetaTactic1 fun mvarId => do
       let ty ← instantiateMVars (← h.getType)
-      mvarId.changeLocalDecl' (checkDefEq := checkDefEq) h (← m ty))
+      mvarId.changeLocalDecl (checkDefEq := checkDefEq) h (← m ty))
     (atTarget := liftMetaTactic1 fun mvarId => do
       let ty ← instantiateMVars (← mvarId.getType)
       mvarId.change (checkDefEq := checkDefEq) (← m ty))
