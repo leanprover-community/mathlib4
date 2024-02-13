@@ -30,8 +30,7 @@ Pochhammer polynomial `X(X+1)⋯(X+(k-1))` at any element is divisible by `k!`. 
 ## TODO
 
 * Replace `Nat.multichoose` with `Ring.multichoose`.
-* `Ring.choose` for binomial rings.
-* Generalize to the power-associative case (needs PR #9139).
+* Generalize from `Semiring` to `AddCommMonoid` with `Pow R ℕ` using `smeval`.
 
 -/
 
