@@ -43,5 +43,3 @@ EOF
 gh_api repos/$owner_name/mathlib/issues/$pr_id/comments -X POST -d @- <<EOF
 { "body": "bors r+" }
 EOF
-
-git checkout master
