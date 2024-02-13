@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import linear_algebra.matrix.sesquilinear_form from "leanprover-community/mathlib"@"84582d2872fb47c0c17eec7382dc097c9ec7137a"
 
@@ -43,6 +44,8 @@ open BigOperators
 open Finset LinearMap Matrix
 
 open Matrix
+
+open scoped RightActions
 
 section AuxToLinearMap
 
@@ -155,6 +158,7 @@ This section deals with the conversion between matrices and sesquilinear maps on
 
 
 variable [CommSemiring R] [Semiring R₁] [Semiring R₂] [AddCommMonoid N₂] [Module R N₂]
+  [Module Rᵐᵒᵖ N₂] [IsCentralScalar R N₂]
 
 variable [Fintype n] [Fintype m]
 
@@ -198,8 +202,9 @@ theorem Matrix.toLinearMapₛₗ₂'_aux_eq (M : Matrix n m N₂) :
 
 theorem Matrix.toLinearMapₛₗ₂'_apply (M : Matrix n m N₂) (x : n → R₁) (y : m → R₂) :
     -- porting note: we don't seem to have `∑ i j` as valid notation yet
-    Matrix.toLinearMapₛₗ₂' σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) • σ₂ (y j) • M i j :=
-  rfl
+    Matrix.toLinearMapₛₗ₂' σ₁ σ₂ M x y = ∑ i, ∑ j, σ₁ (x i) • M i j <• σ₂ (y j) := by
+  simp only [op_smul_eq_smul]
+  exact rfl
 #align matrix.to_linear_mapₛₗ₂'_apply Matrix.toLinearMapₛₗ₂'_apply
 
 theorem Matrix.toLinearMap₂'_apply (M : Matrix n m N₂) (x : n → R) (y : m → R) :
