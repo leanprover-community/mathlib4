@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.Basic
+import Mathlib.SetTheory.Cardinal.ToNat
 
 #align_import linear_algebra.finrank from "leanprover-community/mathlib"@"347636a7a80595d55bedf6e6fbd996a3c39da69a"
 

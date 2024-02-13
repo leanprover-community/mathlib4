@@ -256,7 +256,7 @@ protected theorem smul_def {A} [AddMonoid A] (f : AddAut A) (a : A) : f • a = 
 
 /-- `AddAut.applyDistribMulAction` is faithful. -/
 instance apply_faithfulSMul {A} [AddMonoid A] : FaithfulSMul (AddAut A) A :=
-  ⟨fun h => AddEquiv.ext h ⟩
+  ⟨fun h => AddEquiv.ext h⟩
 #align add_aut.apply_has_faithful_smul AddAut.apply_faithfulSMul
 
 /-- Additive group conjugation, `AddAut.conj g h = g + h - g`, as an additive monoid

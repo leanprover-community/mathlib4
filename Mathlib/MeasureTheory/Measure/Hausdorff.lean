@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.MetricSpace.MetricSeparated
@@ -218,7 +217,8 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   intro i j hj
   have A : ((↑(2 * j + r))⁻¹ : ℝ≥0∞) < (↑(2 * i + 1 + r))⁻¹ := by
     rw [ENNReal.inv_lt_inv, Nat.cast_lt]; linarith
-  refine' ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa using A, fun x hx y hy => _⟩
+  refine' ⟨(↑(2 * i + 1 + r))⁻¹ - (↑(2 * j + r))⁻¹, by simpa [tsub_eq_zero_iff_le] using A,
+    fun x hx y hy => _⟩
   have : infEdist y t < (↑(2 * j + r))⁻¹ := not_le.1 fun hle => hy.2 ⟨hy.1, hle⟩
   rcases infEdist_lt_iff.mp this with ⟨z, hzt, hyz⟩
   have hxz : (↑(2 * i + 1 + r))⁻¹ ≤ edist x z := le_infEdist.1 hx.2 _ hzt

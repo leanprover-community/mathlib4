@@ -7,6 +7,8 @@ import Mathlib.Algebra.Quotient
 import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.Subgroup.MulOpposite
+import Mathlib.GroupTheory.Subgroup.Actions
+import Mathlib.Data.Set.Basic
 
 #align_import group_theory.coset from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -765,12 +767,12 @@ theorem quotientiInfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (g 
 #align subgroup.quotient_infi_embedding_apply_mk Subgroup.quotientiInfEmbedding_apply_mk
 #align add_subgroup.quotient_infi_embedding_apply_mk AddSubgroup.quotientiInfEmbedding_apply_mk
 
-@[to_additive]
+@[to_additive AddSubgroup.card_eq_card_quotient_mul_card_addSubgroup]
 theorem card_eq_card_quotient_mul_card_subgroup [Fintype α] (s : Subgroup α) [Fintype s]
     [DecidablePred fun a => a ∈ s] : Fintype.card α = Fintype.card (α ⧸ s) * Fintype.card s := by
   rw [← Fintype.card_prod]; exact Fintype.card_congr Subgroup.groupEquivQuotientProdSubgroup
 #align subgroup.card_eq_card_quotient_mul_card_subgroup Subgroup.card_eq_card_quotient_mul_card_subgroup
-#align add_subgroup.card_eq_card_quotient_add_card_add_subgroup AddSubgroup.card_eq_card_quotient_add_card_addSubgroup
+#align add_subgroup.card_eq_card_quotient_add_card_add_subgroup AddSubgroup.card_eq_card_quotient_mul_card_addSubgroup
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
 @[to_additive "**Lagrange's Theorem**: The order of an additive subgroup divides the order of its

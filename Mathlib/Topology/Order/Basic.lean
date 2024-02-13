@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Intervals.Pi
-import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Filter.Interval
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Support
+import Mathlib.Tactic.NormNum
+import Mathlib.Topology.Separation
 import Mathlib.Topology.Algebra.Order.LeftRight
 
 #align_import topology.order.basic from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
@@ -1844,17 +1845,18 @@ theorem nhdsWithin_Ici_basis_Ico [NoMaxOrder α] (a : α) :
   ⟨fun _ => mem_nhdsWithin_Ici_iff_exists_Ico_subset⟩
 #align nhds_within_Ici_basis_Ico nhdsWithin_Ici_basis_Ico
 
+/-- The filter of right neighborhoods has a basis of closed intervals. -/
+theorem nhdsWithin_Ici_basis_Icc [NoMaxOrder α] [DenselyOrdered α] {a : α} :
+    (𝓝[≥] a).HasBasis (a < ·) (Icc a) :=
+  (nhdsWithin_Ici_basis _).to_hasBasis
+    (fun _u hu ↦ (exists_between hu).imp fun _v hv ↦ hv.imp_right Icc_subset_Ico_right)
+    fun u hu ↦ ⟨u, hu, Ico_subset_Icc_self⟩
+
 /-- A set is a neighborhood of `a` within `[a, +∞)` if and only if it contains an interval `[a, u]`
 with `a < u`. -/
 theorem mem_nhdsWithin_Ici_iff_exists_Icc_subset [NoMaxOrder α] [DenselyOrdered α] {a : α}
-    {s : Set α} : s ∈ 𝓝[≥] a ↔ ∃ u, a < u ∧ Icc a u ⊆ s := by
-  rw [mem_nhdsWithin_Ici_iff_exists_Ico_subset]
-  constructor
-  · rintro ⟨u, au, as⟩
-    rcases exists_between au with ⟨v, hv⟩
-    exact ⟨v, hv.1, fun x hx => as ⟨hx.1, lt_of_le_of_lt hx.2 hv.2⟩⟩
-  · rintro ⟨u, au, as⟩
-    exact ⟨u, au, Subset.trans Ico_subset_Icc_self as⟩
+    {s : Set α} : s ∈ 𝓝[≥] a ↔ ∃ u, a < u ∧ Icc a u ⊆ s :=
+  nhdsWithin_Ici_basis_Icc.mem_iff
 #align mem_nhds_within_Ici_iff_exists_Icc_subset mem_nhdsWithin_Ici_iff_exists_Icc_subset
 
 open List in
@@ -1904,6 +1906,11 @@ theorem mem_nhdsWithin_Iic_iff_exists_Icc_subset [NoMinOrder α] [DenselyOrdered
     mem_nhdsWithin_Ici_iff_exists_Icc_subset
   _ ↔ ∃ l, l < a ∧ Icc l a ⊆ s := by simp only [dual_Icc]; rfl
 #align mem_nhds_within_Iic_iff_exists_Icc_subset mem_nhdsWithin_Iic_iff_exists_Icc_subset
+
+/-- The filter of left neighborhoods has a basis of closed intervals. -/
+theorem nhdsWithin_Iic_basis_Icc [NoMinOrder α] [DenselyOrdered α] {a : α} :
+    (𝓝[≤] a).HasBasis (· < a) (Icc · a) :=
+  ⟨fun _ ↦ mem_nhdsWithin_Iic_iff_exists_Icc_subset⟩
 
 end OrderTopology
 

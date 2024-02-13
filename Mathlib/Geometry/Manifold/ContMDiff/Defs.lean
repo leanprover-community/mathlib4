@@ -438,9 +438,9 @@ theorem contMDiffWithinAt_iff_of_mem_source' {x' : M} {y : M'} (hx : x' ∈ (cha
   rw [and_congr_right_iff]
   set e := extChartAt I x; set e' := extChartAt I' (f x)
   refine' fun hc => contDiffWithinAt_congr_nhds _
-  rw [← e.image_source_inter_eq', ← map_extChartAt_nhdsWithin_eq_image' I x hx, ←
-    map_extChartAt_nhdsWithin' I x hx, inter_comm, nhdsWithin_inter_of_mem]
-  exact hc (extChartAt_source_mem_nhds' _ _ hy)
+  rw [← e.image_source_inter_eq', ← map_extChartAt_nhdsWithin_eq_image' I hx, ←
+    map_extChartAt_nhdsWithin' I hx, inter_comm, nhdsWithin_inter_of_mem]
+  exact hc (extChartAt_source_mem_nhds' _ hy)
 #align cont_mdiff_within_at_iff_of_mem_source' contMDiffWithinAt_iff_of_mem_source'
 
 theorem contMDiffAt_iff_of_mem_source {x' : M} {y : M'} (hx : x' ∈ (chartAt H x).source)
@@ -465,7 +465,7 @@ theorem contMDiffWithinAt_iff_target_of_mem_source {x : M} {y : M'}
   simp_rw [StructureGroupoid.liftPropWithinAt_self_target]
   simp_rw [((chartAt H' y).continuousAt hy).comp_continuousWithinAt hf]
   rw [← extChartAt_source I'] at hy
-  simp_rw [(continuousAt_extChartAt' I' _ hy).comp_continuousWithinAt hf]
+  simp_rw [(continuousAt_extChartAt' I' hy).comp_continuousWithinAt hf]
   rfl
 #align cont_mdiff_within_at_iff_target_of_mem_source contMDiffWithinAt_iff_target_of_mem_source
 
@@ -583,7 +583,7 @@ theorem contMDiffOn_iff_target :
         ∀ y : M',
           ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (s ∩ f ⁻¹' (extChartAt I' y).source) := by
   simp only [contMDiffOn_iff, ModelWithCorners.source_eq, chartAt_self_eq,
-    PartialHomeomorph.refl_localEquiv, PartialEquiv.refl_trans, extChartAt,
+    PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_trans, extChartAt,
     PartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
   intro h
   constructor

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-import Mathlib.NumberTheory.ModularForms.JacobiTheta.Basic
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 
 #align_import number_theory.modular_forms.jacobi_theta.manifold from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 

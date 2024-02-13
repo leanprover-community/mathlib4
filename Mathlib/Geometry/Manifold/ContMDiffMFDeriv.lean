@@ -137,8 +137,8 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
       rw [(extChartAt I (g x₂)).left_inv hx, (extChartAt I' (f x₂ (g x₂))).left_inv h2x]
     refine' Filter.EventuallyEq.fderivWithin_eq_nhds _
     refine' eventually_of_mem (inter_mem _ _) this
-    · exact extChartAt_preimage_mem_nhds' _ _ hx₂ (extChartAt_source_mem_nhds I (g x₂))
-    refine' extChartAt_preimage_mem_nhds' _ _ hx₂ _
+    · exact extChartAt_preimage_mem_nhds' _ hx₂ (extChartAt_source_mem_nhds I (g x₂))
+    refine' extChartAt_preimage_mem_nhds' _ hx₂ _
     exact h2x₂.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds _ _)
   /- The conclusion is equal to the following, when unfolding coord_change of
       `tangentBundleCore` -/
@@ -490,7 +490,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
         tangentMapWithin I' I' r r.source (tangentMapWithin I I' f s' q) =
           tangentMap I' I' r (tangentMapWithin I I' f s' q) := by
         apply tangentMapWithin_eq_tangentMap
-        · apply IsOpen.uniqueMDiffWithinAt _ r.open_source; simp [hq]
+        · apply r.open_source.uniqueMDiffWithinAt _
+          simp [hq]
         · exact mdifferentiableAt_atlas I' (chart_mem_atlas H' (f p.proj)) hq.1.1
       have : f p.proj = (tangentMapWithin I I' f s p).1 := rfl
       rw [A]

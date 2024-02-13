@@ -52,11 +52,11 @@ protected nonrec theorem HasStrictDerivAt.star (h : HasStrictDerivAt f f' x) :
 
 protected theorem derivWithin.star (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun y => star (f y)) s x = star (derivWithin f s x) :=
-  FunLike.congr_fun (fderivWithin_star hxs) _
+  DFunLike.congr_fun (fderivWithin_star hxs) _
 #align deriv_within.star derivWithin.star
 
 protected theorem deriv.star : deriv (fun y => star (f y)) x = star (deriv f x) :=
-  FunLike.congr_fun fderiv_star _
+  DFunLike.congr_fun fderiv_star _
 #align deriv.star deriv.star
 
 @[simp]
