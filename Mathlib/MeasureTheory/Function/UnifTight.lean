@@ -77,53 +77,57 @@ variable {f g : ι → α → β} {p : ℝ≥0∞}
 
 /-- Definition of being Uniformly Tight. -/
 def UnifTight {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
-  ∀ ⦃ε : ℝ⦄ (_ : 0 < ε), ∃ (s : Set α) (_: MeasurableSet s) (_: μ s < ∞),
-    ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ENNReal.ofReal ε
+  ∀ ⦃ε : ℝ≥0∞⦄, 0 < ε → ∃ s : Set α, μ s ≠ ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ ≤ ε
 
 namespace UnifTight
 
-protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ) (hp : 1 ≤ p)
+theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∀ᶠ s in μ.cofinite.smallSets, ∀ i, snorm (s.indicator (f i)) p μ < ε := by
+  rcases exists_between (pos_iff_ne_zero.2 hε) with ⟨ε', hε'_pos, hε'ε⟩
+  rcases hf hε'_pos with ⟨s, hμs, hfs⟩
+  refine (eventually_smallSets' ?_).2 ⟨sᶜ, ?_, fun i ↦ (hfs i).trans_lt hε'ε⟩
+  · intro s t hst ht i
+    exact (snorm_mono <| norm_indicator_le_of_subset hst _).trans_lt (ht i)
+  · rwa [Measure.compl_mem_cofinite, lt_top_iff_ne_top]
+
+protected theorem exists_measurableSet_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ s, MeasurableSet s ∧ μ s < ∞ ∧ ∀ i, snorm (sᶜ.indicator (f i)) p μ < ε :=
+  let ⟨s, hμs, hsm, hfs⟩ := (hf.eventually_cofinite_indicator hε).exists_measurable_mem_of_smallSets
+  ⟨sᶜ, hsm.compl, hμs, by rwa [compl_compl s]⟩
+
+protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
     (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
-    UnifTight (f + g) p μ := by
-  intro ε hε
-  have hε2 : 0 < ε / 2 := half_pos hε
-  obtain ⟨s₁, hms₁, hμs₁, hfε₁⟩ := hf hε2
-  obtain ⟨s₂, hms₂, hμs₂, hgε₂⟩ := hg hε2
-  have hms := hms₁.union hms₂
-  refine' ⟨s₁ ∪ s₂, hms,
-    (measure_union_le (μ := μ) s₁ s₂).trans_lt (ENNReal.add_lt_top.mpr ⟨hμs₁,hμs₂⟩),
-    fun i => _⟩
-  simp_rw [Pi.add_apply, Set.indicator_add']
-  refine' (snorm_add_le ((hf_meas i).indicator hms.compl)
-    ((hg_meas i).indicator hms.compl) hp).trans _
-  have hε_halves : ENNReal.ofReal ε = ENNReal.ofReal (ε / 2) + ENNReal.ofReal (ε / 2) := by
-    rw [← ENNReal.ofReal_add hε2.le hε2.le, add_halves]
-  rw [compl_union]
+    UnifTight (f + g) p μ := fun ε hε ↦ by
+  rcases exists_Lp_half β μ p hε.ne' with ⟨η, hη_pos, hη⟩
+  obtain ⟨s, hμs, hsm, hfs, hgs⟩ :
+      ∃ s ∈ μ.cofinite, MeasurableSet s ∧
+        (∀ i, snorm (s.indicator (f i)) p μ < η) ∧ (∀ i, snorm (s.indicator (g i)) p μ < η) :=
+    ((hf.eventually_cofinite_indicator hη_pos.ne').and
+      (hg.eventually_cofinite_indicator hη_pos.ne')).exists_measurable_mem_of_smallSets
+  refine ⟨sᶜ, ne_of_lt hμs, fun i ↦ ?_⟩
   calc
-    snorm (indicator (s₁ᶜ ∩ s₂ᶜ) (f i)) p μ + snorm (indicator (s₁ᶜ ∩ s₂ᶜ) (g i)) p μ
-      = snorm (indicator (s₂ᶜ ∩ s₁ᶜ) (f i)) p μ + _ := by
-        congr; rw [inter_comm]
-    _ ≤ snorm (indicator s₁ᶜ (f i)) p μ + snorm (indicator s₂ᶜ (g i)) p μ := by
-        gcongr <;> rw [← indicator_indicator] <;> exact snorm_indicator_le _
-    _ ≤ .ofReal (ε / 2) + .ofReal (ε / 2) := add_le_add (hfε₁ i) (hgε₂ i)
-    _ = ENNReal.ofReal ε := hε_halves.symm
+    snorm (indicator sᶜᶜ (f i + g i)) p μ = snorm (indicator s (f i) + indicator s (g i)) p μ := by
+      rw [compl_compl, indicator_add']
+    _ ≤ ε := le_of_lt <|
+      hη _ _ ((hf_meas i).indicator hsm) ((hg_meas i).indicator hsm)
+        (hfs i).le (hgs i).le
 
 protected theorem neg (hf : UnifTight f p μ) : UnifTight (-f) p μ := by
   simp_rw [UnifTight, Pi.neg_apply, Set.indicator_neg', snorm_neg]
   exact hf
 
-protected theorem sub (hf : UnifTight f p μ) (hg : UnifTight g p μ) (hp : 1 ≤ p)
+protected theorem sub (hf : UnifTight f p μ) (hg : UnifTight g p μ)
     (hf_meas : ∀ i, AEStronglyMeasurable (f i) μ) (hg_meas : ∀ i, AEStronglyMeasurable (g i) μ) :
     UnifTight (f - g) p μ := by
   rw [sub_eq_add_neg]
-  exact hf.add hg.neg hp hf_meas fun i => (hg_meas i).neg
+  exact hf.add hg.neg hf_meas fun i => (hg_meas i).neg
 
 
 protected theorem ae_eq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
     UnifTight g p μ := by
   intro ε hε
-  obtain ⟨s, hms, hμs, hfε⟩ := hf hε
-  refine' ⟨s, hms, hμs, fun n => (le_of_eq <| snorm_congr_ae _).trans (hfε n)⟩
+  obtain ⟨s, hμs, hfε⟩ := hf hε
+  refine' ⟨s, hμs, fun n => (le_of_eq <| snorm_congr_ae _).trans (hfε n)⟩
   filter_upwards [hfg n] with x hx
   simp only [indicator, mem_compl_iff, ite_not, hx]
 
