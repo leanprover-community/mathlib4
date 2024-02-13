@@ -2077,7 +2077,7 @@ theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
   congr 2
   simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
     Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
-    Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm Unit]
+    Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
 
 end CommSemiring
 
