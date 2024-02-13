@@ -1359,8 +1359,7 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
         -- on `M` and `c` is one on `s`: we need to show that restricting `e` to `s` and composing
         -- with `c'` yields a chart in the maximal atlas of `s`.
         fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
-          (G.restriction_mem_maximalAtlas_subtype he h c' hc')
-  }
+          (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
   · have : IsEmpty s := not_nonempty_iff.mp h
     have : IsEmpty t := isEmpty_coe_sort.mpr
       (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp this))
