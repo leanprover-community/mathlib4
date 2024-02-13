@@ -139,6 +139,15 @@ protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
   Metric.isCompact_of_isClosed_isBounded (spectrum.isClosed a) (isBounded a)
 #align spectrum.is_compact spectrum.isCompact
 
+instance instCompactSpace [ProperSpace 𝕜] (a : A) : CompactSpace (spectrum 𝕜 a) :=
+  isCompact_iff_compactSpace.mp <| spectrum.isCompact a
+
+instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+    (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
+  rw [← isCompact_iff_compactSpace] at *
+  rw [← preimage_algebraMap ℝ]
+  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+
 theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
   refine' iSup₂_le fun k hk => _
   exact mod_cast norm_le_norm_of_mem hk
