@@ -47,7 +47,7 @@ structure Cost (α β δ : Type*) where
   delete : α → δ
   /-- Cost in insert an element into a list. -/
   insert : β → δ
-  /-- Cost to substitute one elemenet for another in a list. -/
+  /-- Cost to substitute one element for another in a list. -/
   substitute : α → β → δ
 
 /-- The default cost structure, for which all operations cost `1`. -/
