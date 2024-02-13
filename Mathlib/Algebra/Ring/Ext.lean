@@ -108,6 +108,35 @@ theorem ext_iff (inst₁ inst₂ : NonUnitalSemiring R) :
 end NonUnitalSemiring
 
 /-! ### NonAssocSemiring -/
+/- TODO consider relocating these lemmas. -/
+@[ext] theorem AddMonoidWithOne.ext ⦃inst₁ inst₂ : AddMonoidWithOne R⦄
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one : R)) :
+    inst₁ = inst₂ := by
+  have h_monoid : inst₁.toAddMonoid = inst₂.toAddMonoid := by ext; apply h_add
+  have h_zero' : inst₁.toZero = inst₂.toZero := congrArg (·.toZero) h_monoid
+  have h_one' : inst₁.toOne = inst₂.toOne :=
+    congrArg One.mk h_one
+  have h_natCast : inst₁.toNatCast.natCast = inst₂.toNatCast.natCast := by
+    funext n; induction n with
+    | zero     => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]
+                  exact congrArg (@Zero.zero R) h_zero'
+    | succ n h => rw [inst₁.natCast_succ, inst₂.natCast_succ, h_add]
+                  exact congrArg₂ _ h h_one
+  rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
+  congr
+
+theorem AddCommMonoidWithOne.toAddMonoidWithOne_injective :
+    Function.Injective (@AddCommMonoidWithOne.toAddMonoidWithOne R) := by
+  rintro ⟨⟩ ⟨⟩ _; congr
+
+@[ext] theorem AddCommMonoidWithOne.ext ⦃inst₁ inst₂ : AddCommMonoidWithOne R⦄
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one : R)) :
+    inst₁ = inst₂ :=
+  AddCommMonoidWithOne.toAddMonoidWithOne_injective <|
+    AddMonoidWithOne.ext h_add h_one
+
 namespace NonAssocSemiring
 
 /- The best place to prove that the `NatCast` is determined by the other operations is probably in
@@ -128,16 +157,12 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
   have h_one : (inst₁.toMulZeroOneClass).toMulOneClass.toOne.one
                = (inst₂.toMulZeroOneClass).toMulOneClass.toOne.one :=
     congrArg (@One.one R) h_one'
-  -- Mathematically non-trivial fact: `natCast` is determined by `0`, `1` and `+`.
-  have h_natCast : inst₁.toNatCast.natCast = inst₂.toNatCast.natCast := by
-    funext n; induction n with
-    | zero     => rewrite [inst₁.natCast_zero, inst₂.natCast_zero]; exact h_zero
-    | succ n h => rw [inst₁.natCast_succ, inst₂.natCast_succ, h_add]
-                  exact congrArg₂ _ h h_one
-  -- Split into `NonUnitalNonAssocSemiring`, `One` instances, `natCast` function and properties.
-  rcases inst₁ with @⟨_, _, _, _, ⟨⟩⟩; rcases inst₂ with @⟨_, _, _, _, ⟨⟩⟩
-  -- Prove equality of parts using the above lemmas.
-  congr
+  have : inst₁.toAddCommMonoidWithOne = inst₂.toAddCommMonoidWithOne :=
+    by ext <;> apply_assumption
+  have : inst₁.toNatCast = inst₂.toNatCast :=
+    congrArg (·.toNatCast) this
+  -- Split into `NonUnitalNonAssocSemiring`, `One` and `natCast` instances.
+  cases inst₁; cases inst₂
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
@@ -213,6 +238,36 @@ theorem ext_iff (inst₁ inst₂ : NonUnitalRing R) :
 end NonUnitalRing
 
 /-! ### NonAssocRing -/
+/- TODO consider relocating these lemmas. -/
+@[ext] theorem AddGroupWithOne.ext ⦃inst₁ inst₂ : AddGroupWithOne R⦄
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one)) :
+    inst₁ = inst₂ := by
+  have : inst₁.toAddMonoidWithOne = inst₂.toAddMonoidWithOne :=
+    AddMonoidWithOne.ext h_add h_one
+  have : inst₁.toNatCast = inst₂.toNatCast := congrArg (·.toNatCast) this
+  have h_group : inst₁.toAddGroup = inst₂.toAddGroup := by ext; apply h_add
+  -- Extract equality of necessary substructures from h_group
+  injection h_group with h_group; injection h_group
+  have : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
+    funext n; cases n with
+    | ofNat n   => rewrite [← Int.coe_nat_eq, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
+    | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
+  rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
+  congr
+
+@[ext] theorem AddCommGroupWithOne.ext ⦃inst₁ inst₂ : AddCommGroupWithOne R⦄
+    (h_add : ∀ x y, x +[R, inst₁] y = x +[R, inst₂] y)
+    (h_one : (letI := inst₁; One.one : R) = (letI := inst₂; One.one)) :
+    inst₁ = inst₂ := by
+  have : inst₁.toAddCommGroup = inst₂.toAddCommGroup :=
+    AddCommGroup.ext (funext₂ h_add)
+  have : inst₁.toAddGroupWithOne = inst₂.toAddGroupWithOne :=
+    AddGroupWithOne.ext h_add h_one
+  injection this with _ h_addMonoidWithOne; injection h_addMonoidWithOne
+  cases inst₁; cases inst₂
+  congr
+
 namespace NonAssocRing
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonAssocRing R⦄
@@ -224,15 +279,10 @@ namespace NonAssocRing
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
     ext <;> apply_assumption
   -- Mathematically non-trivial fact: `intCast` is determined by the rest.
-  have h_intCast : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
-    have : inst₁.toNatCast = inst₂.toNatCast := by injection h₂
-    funext n; cases n with
-    | ofNat n   => rewrite [← Int.coe_nat_eq, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
-    | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
-  -- Split into fields (extracting `intCast` function) and prove they are equal using the above.
-  rcases inst₁ with @⟨_, _, _, _, _, _, _, ⟨⟩⟩
-  rcases inst₂ with @⟨_, _, _, _, _, _, _, ⟨⟩⟩
-  congr <;> try solve| injection h₁ | injection h₂
+  have h₃ : inst₁.toAddCommGroupWithOne = inst₂.toAddCommGroupWithOne :=
+    AddCommGroupWithOne.ext h_add (congrArg (·.toOne.one) h₂)
+  cases inst₁; cases inst₂
+  congr <;> solve| injection h₁ | injection h₂ | injection h₃
 
 theorem toNonAssocSemiring_injective :
     Function.Injective (@toNonAssocSemiring R) := by
