@@ -44,13 +44,13 @@ section
 
 variable (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂)
 
-/-- The horizontal differential in the total complex. -/
+/-- The horizontal differential in the total complex on a given summand. -/
 noncomputable def d₁ :
     (K.X i₁).X i₂ ⟶ (K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂)) i₁₂ :=
   ComplexShape.ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ • ((K.d i₁ (c₁.next i₁)).f i₂ ≫
     K.toGradedObject.ιMapObjOrZero (ComplexShape.π c₁ c₂ c₁₂) ⟨_, i₂⟩ i₁₂)
 
-/-- The vertical differential in the total complex. -/
+/-- The vertical differential in the total complex on a given summand. -/
 noncomputable def d₂ :
     (K.X i₁).X i₂ ⟶ (K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂)) i₁₂ :=
   ComplexShape.ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ • ((K.X i₁).d i₂ (c₂.next i₂) ≫
@@ -104,80 +104,132 @@ lemma d₂_eq (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') (i₁�
     K.toGradedObject.ιMapObj (ComplexShape.π c₁ c₂ c₁₂) ⟨i₁, i₂'⟩ i₁₂ h') := by
   rw [K.d₂_eq' c₁₂ i₁ h i₁₂, K.toGradedObject.ιMapObjOrZero_eq]
 
-/-- The total complex of a bicomplex. -/
-noncomputable def total : HomologicalComplex C c₁₂ where
-  X := K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂)
-  d i₁₂ i₁₂' := GradedObject.descMapObj _ (ComplexShape.π c₁ c₂ c₁₂)
-    (fun ⟨i₁, i₂⟩ _ => K.d₁ c₁₂ i₁ i₂ i₁₂' + K.d₂ c₁₂ i₁ i₂ i₁₂')
-  shape i₁₂ i₁₂' h₁₂ := by
-    ext ⟨i₁, i₂⟩ h
-    have w₁ : K.d₁ c₁₂ i₁ i₂ i₁₂' = 0 := by
-      by_cases h₁ : c₁.Rel i₁ (c₁.next i₁)
-      · rw [K.d₁_eq_zero' c₁₂ h₁ i₂ i₁₂']
-        intro h₂
-        exact h₁₂ (by simpa only [← h, ← h₂] using ComplexShape.rel_π₁ c₂ c₁₂ h₁ i₂)
-      · exact d₁_eq_zero _ _ _ _ _ h₁
-    have w₂ : K.d₂ c₁₂ i₁ i₂ i₁₂' = 0 := by
-      by_cases h₁ : c₂.Rel i₂ (c₂.next i₂)
-      · rw [K.d₂_eq_zero' c₁₂ i₁ h₁ i₁₂']
-        intro h₂
-        exact h₁₂ (by simpa only [← h, ← h₂] using ComplexShape.rel_π₂ c₁ c₁₂ i₁ h₁)
-      · exact d₂_eq_zero _ _ _ _ _ h₁
-    simp only [GradedObject.ι_descMapObj, comp_zero, w₁, w₂, add_zero]
-  d_comp_d' i₁₂ i₁₂' i₁₂'' h₁ h₂ := by
-    ext ⟨i₁, i₂⟩ h₁₂
-    simp only [GradedObject.ι_descMapObj_assoc, add_comp, comp_zero]
-    by_cases h₃ : c₁.Rel i₁ (c₁.next i₁)
-    · rw [K.d₁_eq c₁₂ h₃ i₂ i₁₂']; swap
-      · rw [← ComplexShape.next_π₁ c₂ c₁₂ h₃ i₂, ← c₁₂.next_eq' h₁, h₁₂]
-      simp only [Linear.units_smul_comp, assoc, GradedObject.ι_descMapObj,
-        comp_add, smul_add]
-      rw [add_assoc]
-      conv_rhs => rw [← add_zero 0]
-      congr 1
-      · by_cases h₄ : c₁.Rel (c₁.next i₁) (c₁.next (c₁.next i₁))
+/-- The horizontal differential in the total complex. -/
+noncomputable def D₁ (i₁₂ i₁₂' : I₁₂) :
+    K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂) i₁₂ ⟶
+      K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂) i₁₂' :=
+  GradedObject.descMapObj _ (ComplexShape.π c₁ c₂ c₁₂)
+    (fun ⟨i₁, i₂⟩ _ => K.d₁ c₁₂ i₁ i₂ i₁₂')
+
+@[reassoc (attr := simp)]
+lemma ι_D₁ (i₁₂ i₁₂' : I₁₂) (i : I₁ × I₂) (h : ComplexShape.π c₁ c₂ c₁₂ i = i₁₂) :
+    K.toGradedObject.ιMapObj (ComplexShape.π c₁ c₂ c₁₂) i i₁₂ h ≫ K.D₁ c₁₂ i₁₂ i₁₂' =
+      K.d₁ c₁₂ i.1 i.2 i₁₂' := by
+  simp [D₁]
+
+/-- The vertical differential in the total complex. -/
+noncomputable def D₂ (i₁₂ i₁₂' : I₁₂) :
+    K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂) i₁₂ ⟶
+      K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂) i₁₂' :=
+  GradedObject.descMapObj _ (ComplexShape.π c₁ c₂ c₁₂)
+    (fun ⟨i₁, i₂⟩ _ => K.d₂ c₁₂ i₁ i₂ i₁₂')
+
+@[reassoc (attr := simp)]
+lemma ι_D₂ (i₁₂ i₁₂' : I₁₂) (i : I₁ × I₂) (h : ComplexShape.π c₁ c₂ c₁₂ i = i₁₂) :
+    K.toGradedObject.ιMapObj (ComplexShape.π c₁ c₂ c₁₂) i i₁₂ h ≫ K.D₂ c₁₂ i₁₂ i₁₂' =
+      K.d₂ c₁₂ i.1 i.2 i₁₂' := by
+  simp [D₂]
+
+lemma D₁_shape (i₁₂ i₁₂' : I₁₂) (h₁₂ : ¬ c₁₂.Rel i₁₂ i₁₂') : K.D₁ c₁₂ i₁₂ i₁₂' = 0 := by
+  ext ⟨i₁, i₂⟩ h
+  simp only [ι_D₁, comp_zero]
+  by_cases h₁ : c₁.Rel i₁ (c₁.next i₁)
+  · rw [K.d₁_eq_zero' c₁₂ h₁ i₂ i₁₂']
+    intro h₂
+    exact h₁₂ (by simpa only [← h, ← h₂] using ComplexShape.rel_π₁ c₂ c₁₂ h₁ i₂)
+  · exact d₁_eq_zero _ _ _ _ _ h₁
+
+lemma D₂_shape (i₁₂ i₁₂' : I₁₂) (h₁₂ : ¬ c₁₂.Rel i₁₂ i₁₂') : K.D₂ c₁₂ i₁₂ i₁₂' = 0 := by
+  ext ⟨i₁, i₂⟩ h
+  simp only [ι_D₂, comp_zero]
+  by_cases h₂ : c₂.Rel i₂ (c₂.next i₂)
+  · rw [K.d₂_eq_zero' c₁₂ i₁ h₂ i₁₂']
+    intro h₁
+    exact h₁₂ (by simpa only [← h, ← h₁] using ComplexShape.rel_π₂ c₁ c₁₂ i₁ h₂)
+  · exact d₂_eq_zero _ _ _ _ _ h₂
+
+@[reassoc (attr := simp)]
+lemma D₁_D₁ (i₁₂ i₁₂' i₁₂'' : I₁₂) : K.D₁ c₁₂ i₁₂ i₁₂' ≫ K.D₁ c₁₂ i₁₂' i₁₂'' = 0 := by
+  by_cases h₁ : c₁₂.Rel i₁₂ i₁₂'
+  · by_cases h₂ : c₁₂.Rel i₁₂' i₁₂''
+    · ext ⟨i₁, i₂⟩ h
+      simp only [ι_D₁_assoc, comp_zero]
+      by_cases h₃ : c₁.Rel i₁ (c₁.next i₁)
+      · rw [K.d₁_eq c₁₂ h₃ i₂ i₁₂']; swap
+        · rw [← ComplexShape.next_π₁ c₂ c₁₂ h₃ i₂, ← c₁₂.next_eq' h₁, h]
+        simp only [Linear.units_smul_comp, assoc, ι_D₁]
+        by_cases h₄ : c₁.Rel (c₁.next i₁) (c₁.next (c₁.next i₁))
         · rw [K.d₁_eq c₁₂ h₄ i₂ i₁₂'', Linear.comp_units_smul,
             d_f_comp_d_f_assoc, zero_comp, smul_zero, smul_zero]
           rw [← ComplexShape.next_π₁ c₂ c₁₂ h₄, ← ComplexShape.next_π₁ c₂ c₁₂ h₃,
-            h₁₂, c₁₂.next_eq' h₁, c₁₂.next_eq' h₂]
+            h, c₁₂.next_eq' h₁, c₁₂.next_eq' h₂]
         · rw [K.d₁_eq_zero _ _ _ _ h₄, comp_zero, smul_zero]
-      · by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
+      · rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, zero_comp]
+    · rw [K.D₁_shape c₁₂ _ _ h₂, comp_zero]
+  · rw [K.D₁_shape c₁₂ _ _ h₁, zero_comp]
+
+@[reassoc (attr := simp)]
+lemma D₂_D₂ (i₁₂ i₁₂' i₁₂'' : I₁₂) : K.D₂ c₁₂ i₁₂ i₁₂' ≫ K.D₂ c₁₂ i₁₂' i₁₂'' = 0 := by
+  by_cases h₁ : c₁₂.Rel i₁₂ i₁₂'
+  · by_cases h₂ : c₁₂.Rel i₁₂' i₁₂''
+    · ext ⟨i₁, i₂⟩ h
+      simp only [ι_D₂_assoc, comp_zero]
+      by_cases h₃ : c₂.Rel i₂ (c₂.next i₂)
+      · rw [K.d₂_eq c₁₂ i₁ h₃ i₁₂']; swap
+        · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₃, ← c₁₂.next_eq' h₁, h]
+        simp only [Linear.units_smul_comp, assoc, ι_D₂]
+        by_cases h₄ : c₂.Rel (c₂.next i₂) (c₂.next (c₂.next i₂))
+        · rw [K.d₂_eq c₁₂ i₁ h₄ i₁₂'', Linear.comp_units_smul,
+            HomologicalComplex.d_comp_d_assoc, zero_comp, smul_zero, smul_zero]
+          rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄, ← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₃,
+            h, c₁₂.next_eq' h₁, c₁₂.next_eq' h₂]
+        · rw [K.d₂_eq_zero c₁₂ _ _ _ h₄, comp_zero, smul_zero]
+      · rw [K.d₂_eq_zero c₁₂ _ _ _ h₃, zero_comp]
+    · rw [K.D₂_shape c₁₂ _ _ h₂, comp_zero]
+  · rw [K.D₂_shape c₁₂ _ _ h₁, zero_comp]
+
+@[reassoc (attr := simp)]
+lemma D₂_D₁ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
+    K.D₂ c₁₂ i₁₂ i₁₂' ≫ K.D₁ c₁₂ i₁₂' i₁₂'' = - K.D₁ c₁₂ i₁₂ i₁₂' ≫ K.D₂ c₁₂ i₁₂' i₁₂'' := by
+  by_cases h₁ : c₁₂.Rel i₁₂ i₁₂'
+  · by_cases h₂ : c₁₂.Rel i₁₂' i₁₂''
+    · ext ⟨i₁, i₂⟩ h
+      simp only [ι_D₂_assoc, comp_neg, ι_D₁_assoc]
+      by_cases h₃ : c₁.Rel i₁ (c₁.next i₁)
+      · rw [K.d₁_eq c₁₂ h₃ i₂ i₁₂']; swap
+        · rw [← ComplexShape.next_π₁ c₂ c₁₂ h₃ i₂, ← c₁₂.next_eq' h₁, h]
+        simp only [Linear.units_smul_comp, assoc, ι_D₂]
+        by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
         · have h₅ : ComplexShape.π c₁ c₂ c₁₂ (i₁, c₂.next i₂) = i₁₂' := by
-            rw [← c₁₂.next_eq' h₁, ← h₁₂, ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄]
+            rw [← c₁₂.next_eq' h₁, ← h, ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄]
           have h₆ : ComplexShape.π c₁ c₂ c₁₂ (c₁.next i₁, c₂.next i₂) = i₁₂'' := by
             rw [← c₁₂.next_eq' h₂, ← ComplexShape.next_π₁ c₂ c₁₂ h₃, h₅]
-          rw [K.d₂_eq c₁₂ i₁ h₄ i₁₂' h₅, K.d₂_eq c₁₂ (c₁.next i₁) h₄ i₁₂'' h₆,
-            Linear.comp_units_smul, Linear.units_smul_comp, assoc, GradedObject.ι_descMapObj,
-            comp_add, smul_add, ← add_assoc]
-          conv_rhs => rw [← zero_add 0]
-          congr 1
-          · dsimp
-            rw [K.d₁_eq c₁₂ h₃ (c₂.next i₂) i₁₂'' h₆, Linear.comp_units_smul, smul_smul,
-              smul_smul, HomologicalComplex.Hom.comm_assoc, ComplexShape.ε₂_ε₁ c₁₂ h₃ h₄,
-              neg_mul, Units.neg_smul, add_right_neg]
-          · by_cases h₈ : c₂.Rel (c₂.next i₂) (c₂.next (c₂.next i₂))
-            · have h₉ : ComplexShape.π c₁ c₂ c₁₂ (i₁, c₂.next (c₂.next i₂)) = i₁₂'' := by
-                rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₈, h₅, c₁₂.next_eq' h₂]
-              rw [K.d₂_eq c₁₂ i₁ h₈ i₁₂'' h₉, Linear.comp_units_smul,
-                HomologicalComplex.d_comp_d_assoc, zero_comp, smul_zero, smul_zero]
-            · rw [K.d₂_eq_zero _ _ _ _ h₈, comp_zero, smul_zero]
-        · rw [K.d₂_eq_zero _ _ _ _ h₄, K.d₂_eq_zero _ _ _ _ h₄, comp_zero, zero_comp,
-            smul_zero, add_zero]
-    · rw [K.d₁_eq_zero _ _ _ _ h₃, zero_comp, zero_add]
-      by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
-      · by_cases h₅ : ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, c₂.next i₂⟩ = i₁₂'
-        · simp only [K.d₂_eq c₁₂ i₁ h₄ _ h₅, Linear.units_smul_comp, assoc,
-            GradedObject.ι_descMapObj, comp_add, smul_add, zero_add,
-            K.d₁_eq_zero c₁₂ i₁ (c₂.next i₂) i₁₂'' h₃, comp_zero, smul_zero]
-          by_cases h₆ : c₂.Rel (c₂.next i₂) (c₂.next (c₂.next i₂))
-          · rw [K.d₂_eq c₁₂ i₁ h₆ _]; swap
-            · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₆,
-                ← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄,
-                ← c₁₂.next_eq' h₂, ← c₁₂.next_eq' h₁, h₁₂]
-            rw [Linear.comp_units_smul, HomologicalComplex.d_comp_d_assoc,
-              zero_comp, smul_zero, smul_zero]
-          · rw [K.d₂_eq_zero _ _ _ _ h₆, comp_zero, smul_zero]
-        · rw [K.d₂_eq_zero' c₁₂ i₁ h₄ _ h₅, zero_comp]
-      · rw [K.d₂_eq_zero _ _ _ _ h₄, zero_comp]
+          simp only [K.d₂_eq c₁₂ _ h₄ _ h₅, K.d₂_eq c₁₂ _ h₄ _ h₆,
+            Linear.units_smul_comp, assoc, ι_D₁, Linear.comp_units_smul,
+            K.d₁_eq c₁₂ h₃ _ _ h₆, HomologicalComplex.Hom.comm_assoc, smul_smul,
+            ComplexShape.ε₂_ε₁ c₁₂ h₃ h₄, neg_mul, Units.neg_smul]
+        · simp only [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp, comp_zero, smul_zero, neg_zero]
+      · rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, zero_comp, neg_zero]
+        · by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
+          · rw [K.d₂_eq c₁₂ i₁ h₄ i₁₂']; swap
+            · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄, ← c₁₂.next_eq' h₁, h]
+            simp only [Linear.units_smul_comp, assoc, ι_D₁]
+            rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, comp_zero, smul_zero]
+          · rw [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp]
+    · rw [K.D₁_shape c₁₂ _ _ h₂, K.D₂_shape c₁₂ _ _ h₂, comp_zero, comp_zero, neg_zero]
+  · rw [K.D₁_shape c₁₂ _ _ h₁, K.D₂_shape c₁₂ _ _ h₁, zero_comp, zero_comp, neg_zero]
+
+@[reassoc]
+lemma D₁_D₂ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
+    K.D₁ c₁₂ i₁₂ i₁₂' ≫ K.D₂ c₁₂ i₁₂' i₁₂'' = - K.D₂ c₁₂ i₁₂ i₁₂' ≫ K.D₁ c₁₂ i₁₂' i₁₂'' := by simp
+
+/-- The total complex of a bicomplex. -/
+@[simps]
+noncomputable def total : HomologicalComplex C c₁₂ where
+  X := K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂)
+  d i₁₂ i₁₂' := K.D₁ c₁₂ i₁₂ i₁₂' + K.D₂ c₁₂ i₁₂ i₁₂'
+  shape i₁₂ i₁₂' h₁₂ := by
+    dsimp
+    rw [K.D₁_shape c₁₂ _ _ h₁₂, K.D₂_shape c₁₂ _ _ h₁₂, zero_add]
 
 end HomologicalComplex₂
