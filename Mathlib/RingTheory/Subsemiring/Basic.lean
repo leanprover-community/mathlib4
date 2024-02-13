@@ -1470,18 +1470,11 @@ end Subsemiring
 
 end Actions
 
--- While this definition is not about `Subsemiring`s, this is the earliest we have
--- both `StrictOrderedSemiring` and `Submonoid` available.
-/-- Submonoid of positive elements of an ordered semiring. -/
-def posSubmonoid (R : Type*) [StrictOrderedSemiring R] : Submonoid R
-    where
-  carrier := { x | 0 < x }
-  one_mem' := show (0 : R) < 1 from zero_lt_one
-  mul_mem' {x y} (hx : 0 < x) (hy : 0 < y) := mul_pos hx hy
-#align pos_submonoid posSubmonoid
-
-@[simp]
-theorem mem_posSubmonoid {R : Type*} [StrictOrderedSemiring R] (u : Rˣ) :
-    ↑u ∈ posSubmonoid R ↔ (0 : R) < u :=
-  Iff.rfl
-#align mem_pos_monoid mem_posSubmonoid
+/-- The set of nonnegative elements in an ordered semiring, as a subsemiring. -/
+@[simps]
+def Subsemiring.nonneg (R : Type*) [OrderedSemiring R] : Subsemiring R where
+  carrier := Set.Ici 0
+  mul_mem' := mul_nonneg
+  one_mem' := zero_le_one
+  add_mem' := add_nonneg
+  zero_mem' := le_rfl

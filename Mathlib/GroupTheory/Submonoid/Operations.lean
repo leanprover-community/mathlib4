@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
@@ -1559,3 +1561,39 @@ instance mulDistribMulAction [Monoid α] [MulDistribMulAction M' α] (S : Submon
   MulDistribMulAction.compHom _ S.subtype
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
+
+section Preorder
+variable (M)
+variable [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)] {a : M}
+
+/-- The submonoid of elements greater than `1`. -/
+@[to_additive (attr := simps) nonneg "The submonoid of nonnegative elements."]
+def oneLE : Submonoid M where
+  carrier := Set.Ici 1
+  mul_mem' := one_le_mul
+  one_mem' := le_rfl
+
+variable {M}
+
+@[to_additive (attr := simp)] lemma mem_oneLE : a ∈ oneLE M ↔ 1 ≤ a := Iff.rfl
+
+end Preorder
+
+section MulZeroClass
+variable (α) [MulZeroOneClass α] [PartialOrder α] [PosMulStrictMono α] [ZeroLEOneClass α]
+  [NeZero (1 : α)] {a : α}
+
+/-- The submonoid of positive elements. -/
+@[simps] def pos : Submonoid α where
+  carrier := Set.Ioi 0
+  one_mem' := zero_lt_one
+  mul_mem' := mul_pos
+#align pos_submonoid Submonoid.pos
+
+variable {α}
+
+@[simp] lemma mem_pos : a ∈ pos α ↔ 0 < a := Iff.rfl
+#align mem_pos_monoid Submonoid.mem_pos
+
+end MulZeroClass
+end Submonoid

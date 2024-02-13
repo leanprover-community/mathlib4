@@ -1534,7 +1534,7 @@ end Actions
 -- both ordered ring structures and submonoids available
 /-- The subgroup of positive units of a linear ordered semiring. -/
 def Units.posSubgroup (R : Type*) [LinearOrderedSemiring R] : Subgroup Rˣ :=
-  { (posSubmonoid R).comap (Units.coeHom R) with
+  { (Submonoid.pos R).comap (Units.coeHom R) with
     carrier := { x | (0 : R) < x }
     inv_mem' := Units.inv_pos.mpr }
 #align units.pos_subgroup Units.posSubgroup
