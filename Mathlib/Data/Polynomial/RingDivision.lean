@@ -239,12 +239,14 @@ theorem isUnit_iff : IsUnit p ↔ ∃ r : R, IsUnit r ∧ C r = p :=
     fun ⟨_, hr, hrp⟩ => hrp ▸ isUnit_C.2 hr⟩
 #align polynomial.is_unit_iff Polynomial.isUnit_iff
 
-theorem not_isUnit_of_degree_pos [IsDomain R] (p : R[X])
+theorem not_isUnit_of_degree_pos (p : R[X])
     (hpl : 0 < p.degree) : ¬ IsUnit p := by
+  cases subsingleton_or_nontrivial R
+  · simp [Subsingleton.elim p 0] at hpl
   intro h
   simp [degree_eq_zero_of_isUnit h] at hpl
 
-theorem not_isUnit_of_natDegree_pos [IsDomain R] (p : R[X])
+theorem not_isUnit_of_natDegree_pos (p : R[X])
     (hpl : 0 < p.natDegree) : ¬ IsUnit p :=
   not_isUnit_of_degree_pos _ (natDegree_pos_iff_degree_pos.mp hpl)
 
