@@ -1452,7 +1452,7 @@ theorem union_comm (s₁ s₂ : Finset α) : s₁ ∪ s₂ = s₂ ∪ s₁ :=
   sup_comm
 #align finset.union_comm Finset.union_comm
 
-instance : IsCommutative (Finset α) (· ∪ ·) :=
+instance : Std.Commutative (α := Finset α) (· ∪ ·) :=
   ⟨union_comm⟩
 
 @[simp]
@@ -1460,7 +1460,7 @@ theorem union_assoc (s₁ s₂ s₃ : Finset α) : s₁ ∪ s₂ ∪ s₃ = s₁
   sup_assoc
 #align finset.union_assoc Finset.union_assoc
 
-instance : IsAssociative (Finset α) (· ∪ ·) :=
+instance : Std.Associative (α := Finset α) (· ∪ ·) :=
   ⟨union_assoc⟩
 
 @[simp]
@@ -1468,7 +1468,7 @@ theorem union_idempotent (s : Finset α) : s ∪ s = s :=
   sup_idem
 #align finset.union_idempotent Finset.union_idempotent
 
-instance : IsIdempotent (Finset α) (· ∪ ·) :=
+instance : Std.IdempotentOp (α := Finset α) (· ∪ ·) :=
   ⟨union_idempotent⟩
 
 theorem union_subset_left (h : s ∪ t ⊆ u) : s ⊆ u :=
@@ -2705,6 +2705,10 @@ theorem piecewise_mem_Icc' {δ : α → Type*} [∀ i, Preorder (δ i)] {f g : �
   piecewise_mem_Icc_of_mem_of_mem _ (Set.right_mem_Icc.2 h) (Set.left_mem_Icc.2 h)
 #align finset.piecewise_mem_Icc' Finset.piecewise_mem_Icc'
 
+lemma piecewise_same : s.piecewise f f = f := by
+  ext i
+  by_cases h : i ∈ s <;> simp [h]
+
 end Piecewise
 
 section DecidablePiExists
@@ -3351,6 +3355,16 @@ theorem toFinset_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multi
     (m.dedup.bind f).toFinset = (m.bind f).toFinset := by simp_rw [toFinset, dedup_bind_dedup]
 #align multiset.to_finset_bind_dedup Multiset.toFinset_bind_dedup
 
+@[simp]
+theorem toFinset_range (n : ℕ) :
+    Multiset.toFinset (Multiset.range n) = Finset.range n := by
+  ext; simp
+
+@[simp]
+theorem toFinset_filter (s : Multiset α) (p : α → Prop) [DecidablePred p] :
+    Multiset.toFinset (s.filter p) = s.toFinset.filter p := by
+  ext; simp
+
 instance isWellFounded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) := by
   classical
   exact Subrelation.isWellFounded (InvImage _ toFinset) toFinset_ssubset.2
@@ -3486,6 +3500,15 @@ theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
 theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
   simp [Finset.nonempty_iff_ne_empty]
 #align list.to_finset_nonempty_iff List.toFinset_nonempty_iff
+
+@[simp]
+theorem toFinset_range (n : ℕ) : (List.range n).toFinset = Finset.range n := by
+  ext; simp
+
+@[simp]
+theorem toFinset_filter (s : List α) (p : α → Bool) :
+    (s.filter p).toFinset = s.toFinset.filter (p ·) := by
+  ext; simp [List.mem_filter]
 
 end List
 

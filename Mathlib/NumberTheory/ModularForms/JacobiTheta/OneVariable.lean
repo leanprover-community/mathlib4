@@ -46,8 +46,9 @@ theorem jacobiTheta_S_smul (τ : ℍ) :
   have h0 : (τ : ℂ) ≠ 0 := ne_of_apply_ne im (zero_im.symm ▸ ne_of_gt τ.2)
   simp_rw [UpperHalfPlane.modular_S_smul, jacobiTheta_eq_jacobiTheta₂]
   conv_rhs => erw [← ofReal_zero, jacobiTheta₂_functional_equation 0 τ.2]
-  erw [zero_pow two_pos, mul_zero, zero_div, Complex.exp_zero, mul_one, ← mul_assoc,
-    mul_one_div, div_self, one_mul, UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
+  rw [zero_pow two_ne_zero, mul_zero, zero_div, Complex.exp_zero, mul_one, ← mul_assoc, mul_one_div]
+  erw [div_self]
+  rw [one_mul, UpperHalfPlane.coe_mk, inv_neg, neg_div, one_div]
   · rfl
   · rw [Ne.def, cpow_eq_zero_iff, not_and_or]
     exact Or.inl <| mul_ne_zero (neg_ne_zero.mpr I_ne_zero) h0
@@ -83,7 +84,7 @@ theorem exists_summable_bound_exp_mul_sq {R : ℝ} (hR : 0 < R) :
     rwa [mul_le_mul_left_of_neg (neg_lt_zero.mpr pi_pos)]
   all_goals
     simpa only [Int.natAbs_neg, Int.natAbs_ofNat] using
-      summable_geometric_of_lt_1 (Real.exp_pos _).le h
+      summable_geometric_of_lt_one (Real.exp_pos _).le h
 #align exists_summable_bound_exp_mul_sq exists_summable_bound_exp_mul_sq
 
 theorem summable_exp_mul_sq {τ : ℂ} (hτ : 0 < τ.im) :
@@ -127,7 +128,7 @@ theorem norm_jacobiTheta_sub_one_le {τ : ℂ} (hτ : 0 < im τ) :
   have s : HasSum (fun n : ℕ =>
       rexp (-π * τ.im) ^ (n + 1)) (rexp (-π * τ.im) / (1 - rexp (-π * τ.im))) := by
     simp_rw [pow_succ, div_eq_mul_inv, hasSum_mul_left_iff (Real.exp_ne_zero _)]
-    exact hasSum_geometric_of_lt_1 (exp_pos (-π * τ.im)).le
+    exact hasSum_geometric_of_lt_one (exp_pos (-π * τ.im)).le
       (exp_lt_one_iff.mpr <| mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hτ)
   have aux : Summable fun n : ℕ => ‖cexp (π * I * ((n : ℂ) + 1) ^ 2 * τ)‖ :=
     .of_nonneg_of_le (fun n => norm_nonneg _) this s.summable

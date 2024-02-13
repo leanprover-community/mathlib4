@@ -302,7 +302,7 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 theorem xor_comm (a b) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm]
 #align xor_comm xor_comm
 
-instance : IsCommutative Prop Xor' := ⟨xor_comm⟩
+instance : Std.Commutative Xor' := ⟨xor_comm⟩
 
 @[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
 #align xor_self xor_self
@@ -439,7 +439,7 @@ theorem imp_or {a b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) := Dec
 theorem imp_or' : a → b ∨ c ↔ (a → b) ∨ (a → c) := Decidable.imp_or'
 #align imp_or_distrib' imp_or'ₓ -- universes
 
-theorem not_imp : ¬(a → b) ↔ a ∧ ¬b := Decidable.not_imp
+theorem not_imp : ¬(a → b) ↔ a ∧ ¬b := Decidable.not_imp_iff_and_not
 #align not_imp not_imp
 
 theorem peirce (a b : Prop) : ((a → b) → a) → a := Decidable.peirce _ _
@@ -474,12 +474,12 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ a → b := Decidable.not_and_not_r
 
 /-! ### De Morgan's laws -/
 
-#align decidable.not_and_distrib Decidable.not_and
-#align decidable.not_and_distrib' Decidable.not_and'
+#align decidable.not_and_distrib Decidable.not_and_iff_or_not_not
+#align decidable.not_and_distrib' Decidable.not_and_iff_or_not_not'
 
 /-- One of **de Morgan's laws**: the negation of a conjunction is logically equivalent to the
 disjunction of the negations. -/
-theorem not_and_or : ¬(a ∧ b) ↔ ¬a ∨ ¬b := Decidable.not_and
+theorem not_and_or : ¬(a ∧ b) ↔ ¬a ∨ ¬b := Decidable.not_and_iff_or_not_not
 #align not_and_distrib not_and_or
 
 #align not_or_distrib not_or
@@ -775,6 +775,12 @@ theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun
     (∃ c, (∃ a, p a ∧ ∃ b, q b ∧ f a b = c) ∧ r c) ↔ ∃ a, p a ∧ ∃ b, q b ∧ r (f a b) :=
   ⟨fun ⟨_, ⟨a, ha, b, hb, hab⟩, hc⟩ ↦ ⟨a, ha, b, hb, hab.symm ▸ hc⟩,
     fun ⟨a, ha, b, hb, hab⟩ ↦ ⟨f a b, ⟨a, ha, b, hb, rfl⟩, hab⟩⟩
+
+@[simp] theorem exists_exists_exists_and_eq {α β γ : Type*}
+    {f : α → β → γ} {p : γ → Prop} :
+    (∃ c, (∃ a, ∃ b, f a b = c) ∧ p c) ↔ ∃ a, ∃ b, p (f a b) :=
+  ⟨fun ⟨_, ⟨a, b, hab⟩, hc⟩ ↦ ⟨a, b, hab.symm ▸ hc⟩,
+    fun ⟨a, b, hab⟩ ↦ ⟨f a b, ⟨a, b, rfl⟩, hab⟩⟩
 
 @[simp] theorem exists_or_eq_left (y : α) (p : α → Prop) : ∃ x : α, x = y ∨ p x := ⟨y, .inl rfl⟩
 #align exists_or_eq_left exists_or_eq_left
