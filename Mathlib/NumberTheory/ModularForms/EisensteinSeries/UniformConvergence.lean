@@ -4,14 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-import Mathlib.Data.Int.Interval
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.FinsetDecomposition
+import Mathlib.Data.Finset.LocallyFinite.Box
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 
 /-!
 # Uniform convergence of Eisenstein series
@@ -19,6 +18,19 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.FinsetDecomposition
 We show that `eis` converges locally uniformly on `ℍ` to the Eisenstein series `E` of weight `k`
 and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`.
 -/
+
+lemma fun_ne_zero_cases (x : Fin 2 → ℤ) : x ≠ 0 ↔ x 0 ≠ 0 ∨ x 1 ≠ 0 := by
+  rw [Function.ne_iff]; exact Fin.exists_fin_two
+
+lemma mem_box_ne_zero_iff_ne_zero (n : ℕ) (x : Fin 2 → ℤ) (hx : (x 0, x 1) ∈ box n) :
+    x ≠ 0 ↔ n ≠ 0 := by
+  constructor
+  intro h h0
+  simp only [h0, Nat.cast_zero, box_zero, mem_singleton, Prod.ext_iff] at hx
+  rw [fun_ne_zero_cases, hx.1, hx.2] at h
+  · simp at h
+  rintro hn rfl
+  simp [hn, eq_comm] at hx
 
 noncomputable section
 
