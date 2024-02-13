@@ -331,7 +331,7 @@ theorem IsLittleO.right_isTheta_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂
 
 theorem IsLittleO.right_isTheta_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
     f₂ =Θ[l] (f₂ + f₁) :=
-  Trans.trans h.right_isTheta_add (add_comm _ _)
+  add_comm f₁ f₂ ▸ h.right_isTheta_add
 
 lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'} {g : α → F}
     (hΘ : f₁ =Θ[l] g) (ho : f₂ =o[l] g) : (f₁ + f₂) =Θ[l] g :=
@@ -339,6 +339,6 @@ lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'} {g : α → F}
 
 lemma IsLittleO.add_isTheta {f₁ f₂ : α → E'} {g : α → F}
     (ho : f₁ =o[l] g) (hΘ : f₂ =Θ[l] g) : (f₁ + f₂) =Θ[l] g :=
-  Trans.trans (add_comm _ _) (hΘ.add_isLittleO ho)
+  add_comm f₁ f₂ ▸ hΘ.add_isLittleO ho
 
 end Asymptotics

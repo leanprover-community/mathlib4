@@ -2139,7 +2139,7 @@ theorem IsLittleO.right_isBigO_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂)
 
 theorem IsLittleO.right_isBigO_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
     f₂ =O[l] (f₂ + f₁) :=
-  Trans.trans h.right_isBigO_add (add_comm _ _)
+  add_comm f₁ f₂ ▸ h.right_isBigO_add
 
 /-- If `f x = O(g x)` along `cofinite`, then there exists a positive constant `C` such that
 `‖f x‖ ≤ C * ‖g x‖` whenever `g x ≠ 0`. -/
