@@ -11,7 +11,7 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Finset_Decomposition
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.FinsetDecomposition
 
 /-!
 # Uniform convergence of Eisenstein series
