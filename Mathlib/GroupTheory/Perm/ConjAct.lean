@@ -45,6 +45,7 @@ theorem cycleFactorsFinset_conj (g k : Perm α) :
   simp only [MulEquiv.toEquiv_eq_coe, MulEquiv.coe_toEquiv_symm, MulAut.conj_symm_apply]
   group
 
+@[simp]
 /-- A permutation `c` is a cycle of `g` iff `k • c` is a cycle of `k • g` -/
 theorem mem_cycleFactorsFinset_conj'
     (k : ConjAct (Perm α)) (g c : Perm α) :
