@@ -317,7 +317,7 @@ variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
 variable [Module 𝕜 E] [BoundedSMul 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
 -- TODO: define `ContinuousAffineEquiv` and reimplement this as one of those.
-/-- Scaling by a an element `k` of the scalar ring as a `DilationEquiv` with ratio `‖k‖₊`, mapping
+/-- Scaling by an element `k` of the scalar ring as a `DilationEquiv` with ratio `‖k‖₊`, mapping
 from a normed space to a normed torsor over that space sending `0` to `c`. -/
 @[simps]
 def DilationEquiv.smulTorsor (c : P) {k : 𝕜} (hk : k ≠ 0) : E ≃ᵈ P where
@@ -335,8 +335,8 @@ lemma DilationEquiv.smulTorsor_ratio {c : P} {k : 𝕜} (hk : k ≠ 0) {x y : E}
   Eq.symm <| ratio_unique_of_dist_ne_zero h <| by simp [dist_eq_norm, ← smul_sub, norm_smul]
 
 @[simp]
-lemma DilationEquiv.smulTorsor_ball_ball {c : P} {k : 𝕜} (hk : k ≠ 0) :
-    Metric.ball (0 : E) 1 = smulTorsor c hk ⁻¹' (Metric.ball c ‖k‖₊) := by
+lemma DilationEquiv.smulTorsor_preimage_ball {c : P} {k : 𝕜} (hk : k ≠ 0) :
+    smulTorsor c hk ⁻¹' (Metric.ball c ‖k‖₊) = Metric.ball (0 : E) 1 := by
   aesop (add simp norm_smul)
 
 end
