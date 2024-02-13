@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -530,9 +531,9 @@ variable [PartialOrder α] [Preorder β]
 lemma PosSMulMono.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, b₁ ≤ b₂ → a • b₁ ≤ a • b₂) :
     PosSMulMono α β where
   elim a ha b₁ b₂ h := by
-      obtain ha | ha := ha.eq_or_lt
-      · simp [← ha]
-      · exact h₀ _ ha _ _ h
+    obtain ha | ha := ha.eq_or_lt
+    · simp [← ha]
+    · exact h₀ _ ha _ _ h
 
 /-- A constructor for `PosSMulReflectLT` requiring you to prove `a • b₁ < a • b₂ → b₁ < b₂` only
 when `0 < a`-/
@@ -561,7 +562,7 @@ lemma SMulPosMono.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ 
 when `0 < b`-/
 lemma SMulPosReflectLT.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ • b < a₂ • b → a₁ < a₂) :
     SMulPosReflectLT α β where
-  elim  b hb a₁ a₂ h := by
+  elim b hb a₁ a₂ h := by
     obtain hb | hb := hb.eq_or_lt
     · simp [← hb] at h
     · exact h₀ _ hb _ _ h
@@ -1122,6 +1123,26 @@ lemma SMulPosReflectLT.lift [SMulPosReflectLT α γ] : SMulPosReflectLT α β wh
 
 end Lift
 
+section Nat
+
+instance OrderedSemiring.toPosSMulMonoNat [OrderedSemiring α] : PosSMulMono ℕ α where
+  elim _n _ _a _b hab := nsmul_le_nsmul_right hab _
+
+instance OrderedSemiring.toSMulPosMonoNat [OrderedSemiring α] : SMulPosMono ℕ α where
+  elim _a ha _m _n hmn := nsmul_le_nsmul_left ha hmn
+
+instance StrictOrderedSemiring.toPosSMulStrictMonoNat [StrictOrderedSemiring α] :
+    PosSMulStrictMono ℕ α where
+  elim _n hn _a _b hab := nsmul_right_strictMono hn.ne' hab
+
+instance StrictOrderedSemiring.toSMulPosStrictMonoNat [StrictOrderedSemiring α] :
+    SMulPosStrictMono ℕ α where
+  elim _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
+
+end Nat
+
+-- TODO: Instances for `Int` and `Rat`
+
 namespace Mathlib.Meta.Positivity
 section OrderedSMul
 variable [Zero α] [Zero β] [SMulZeroClass α β] [Preorder α] [Preorder β] [PosSMulMono α β] {a : α}
@@ -1154,8 +1175,8 @@ def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
           (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
-  let zM : Q(Zero $β) ← synthInstanceQ (q(Zero $β))
-  let pM : Q(PartialOrder $β) ← synthInstanceQ (q(PartialOrder $β))
+  let zM : Q(Zero $β) ← synthInstanceQ q(Zero $β)
+  let pM : Q(PartialOrder $β) ← synthInstanceQ q(PartialOrder $β)
   -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
   -- required typeclasses. Ideally we could tell `q()` to do this automatically.
   match ← core zM pM a, ← core zα pα b with

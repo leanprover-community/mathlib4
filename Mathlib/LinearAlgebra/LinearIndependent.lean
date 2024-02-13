@@ -10,6 +10,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Lean.Expr.ExtraRecognizers
+import Mathlib.Data.Set.Basic
 
 #align_import linear_algebra.linear_independent from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -144,7 +145,7 @@ theorem linearIndependent_iff' :
               (fun j _hjs hji => by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne hji])
               fun hnis => hnis.elim his
         _ = (∑ j in s, Finsupp.single j (g j)) i := (map_sum ..).symm
-        _ = 0 := FunLike.ext_iff.1 h i,
+        _ = 0 := DFunLike.ext_iff.1 h i,
       fun hf l hl =>
       Finsupp.ext fun i =>
         _root_.by_contradiction fun hni => hni <| hf _ _ hl _ <| Finsupp.mem_support_iff.2 hni⟩
@@ -237,6 +238,14 @@ theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf 
   convert h_map_domain x
   rw [Finsupp.mapDomain_apply hf]
 #align linear_independent.comp LinearIndependent.comp
+
+/-- A family is linearly independent if and only if all of its finite subfamily is
+linearly independent. -/
+theorem linearIndependent_iff_finset_linearIndependent :
+    LinearIndependent R v ↔ ∀ (s : Finset ι), LinearIndependent R (v ∘ (Subtype.val : s → ι)) :=
+  ⟨fun H _ ↦ H.comp _ Subtype.val_injective, fun H ↦ linearIndependent_iff'.2 fun s g hg i hi ↦
+    Fintype.linearIndependent_iff.1 (H s) (g ∘ Subtype.val)
+      (hg ▸ Finset.sum_attach s fun j ↦ g j • v j) ⟨i, hi⟩⟩
 
 theorem LinearIndependent.coe_range (i : LinearIndependent R v) :
     LinearIndependent R ((↑) : range v → M) := by simpa using i.comp _ (rangeSplitting_injective v)
@@ -604,7 +613,8 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulActio
     exact (hgs i hi).symm ▸ smul_zero _
   · rw [← hsum, Finset.sum_congr rfl _]
     intros
-    erw [Pi.smul_apply, smul_assoc, smul_comm]
+    dsimp
+    rw [smul_assoc, smul_comm]
 #align linear_independent.group_smul LinearIndependent.group_smul
 
 -- This lemma cannot be proved with `LinearIndependent.group_smul` since the action of
@@ -1091,7 +1101,8 @@ theorem LinearIndependent.inl_union_inr {s : Set M} {t : Set M'}
     (ht : LinearIndependent R (fun x => x : t → M')) :
     LinearIndependent R (fun x => x : ↥(inl R M M' '' s ∪ inr R M M' '' t) → M × M') := by
   refine' (hs.image_subtype _).union (ht.image_subtype _) _ <;> [simp; simp; skip]
-  simp only [span_image]
+  -- Note: #8386 had to change `span_image` into `span_image _`
+  simp only [span_image _]
   simp [disjoint_iff, prod_inf_prod]
 #align linear_independent.inl_union_inr LinearIndependent.inl_union_inr
 
@@ -1204,7 +1215,7 @@ lemma linearIndependent_algHom_toLinearMap
   apply LinearIndependent.of_comp (LinearMap.ltoFun K M L)
   exact (linearIndependent_monoidHom M L).comp
     (RingHom.toMonoidHom ∘ AlgHom.toRingHom)
-    (fun _ _ e ↦ AlgHom.ext (FunLike.congr_fun e : _))
+    (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e : _))
 
 lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
     [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :

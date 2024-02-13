@@ -32,13 +32,6 @@ Like in `Topology/UniformSpace/UniformConvergenceTopology`, we use the type alia
 `UniformFun` (denoted `α →ᵤ β`) and `UniformOnFun` (denoted `α →ᵤ[𝔖] β`) for functions from `α`
 to `β` endowed with the structures of uniform convergence and `𝔖`-convergence.
 
-## TODO
-
-* `UniformOnFun.continuousSMul_induced_of_image_bounded` unnecessarily asks for `𝔖` to be
-  nonempty and directed. This will be easy to solve once we know that replacing `𝔖` by its
-  ***noncovering*** bornology (i.e ***not*** what `Bornology` currently refers to in mathlib)
-  doesn't change the topology.
-
 ## References
 
 * [N. Bourbaki, *General Topology, Chapter X*][bourbaki1966]
@@ -51,7 +44,8 @@ uniform convergence, strong dual
 -/
 
 open Filter
-open scoped Topology Pointwise UniformConvergence
+
+open scoped Topology Pointwise UniformConvergence Uniformity
 
 section AlgebraicInstances
 
@@ -312,7 +306,42 @@ section Module
 
 variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddCommGroup H] [Module 𝕜 H]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [UniformAddGroup E]
-  [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α} [LinearMapClass hom 𝕜 H (α →ᵤ[𝔖] E)]
+  [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α}
+  [FunLike hom H (α → E)] [LinearMapClass hom 𝕜 H (α → E)]
+
+/-- Let `E` be a topological vector space over a normed field `𝕜`, let `α` be any type.
+Let `H` be a submodule of `α →ᵤ E` such that the range of each `f ∈ H` is von Neumann bounded.
+Then `H` is a topological vector space over `𝕜`,
+i.e., the pointwise scalar multiplication is continuous in both variables.
+
+For convenience we require that `H` is a vector space over `𝕜`
+with a topology induced by `UniformFun.ofFun ∘ φ`, where `φ : H →ₗ[𝕜] (α → E)`. -/
+lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
+    (hφ : Inducing (ofFun ∘ φ)) (h : ∀ u : H, Bornology.IsVonNBounded 𝕜 (Set.range (φ u))) :
+    ContinuousSMul 𝕜 H := by
+  have : TopologicalAddGroup H :=
+    let ofFun' : (α → E) →+ (α →ᵤ E) := AddMonoidHom.id _
+    Inducing.topologicalAddGroup (ofFun'.comp (φ : H →+ (α → E))) hφ
+  have hb : (𝓝 (0 : H)).HasBasis (· ∈ 𝓝 (0 : E)) fun V ↦ {u | ∀ x, φ u x ∈ V} := by
+    simp only [hφ.nhds_eq_comap, Function.comp_apply, map_zero]
+    exact UniformFun.hasBasis_nhds_zero.comap _
+  apply ContinuousSMul.of_basis_zero hb
+  · intro U hU
+    have : Tendsto (fun x : 𝕜 × E ↦ x.1 • x.2) (𝓝 0) (𝓝 0) :=
+      continuous_smul.tendsto' _ _ (zero_smul _ _)
+    rcases ((Filter.basis_sets _).prod_nhds (Filter.basis_sets _)).tendsto_left_iff.1 this U hU
+      with ⟨⟨V, W⟩, ⟨hV, hW⟩, hVW⟩
+    refine ⟨V, hV, W, hW, Set.smul_subset_iff.2 fun a ha u hu x ↦ ?_⟩
+    rw [map_smul]
+    exact hVW (Set.mk_mem_prod ha (hu x))
+  · intro c U hU
+    have : Tendsto (c • · : E → E) (𝓝 0) (𝓝 0) :=
+      (continuous_const_smul c).tendsto' _ _ (smul_zero _)
+    refine ⟨_, this hU, fun u hu x ↦ ?_⟩
+    simpa only [map_smul] using hu x
+  · intro u U hU
+    simp only [Set.mem_setOf_eq, map_smul, Pi.smul_apply]
+    simpa only [Set.mapsTo_range_iff] using (h u hU).eventually_nhds_zero (mem_of_mem_nhds hU)
 
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,
@@ -322,50 +351,20 @@ For convenience, we don't literally ask for `H : Submodule (α →ᵤ[𝔖] E)`.
 result for any vector space `H` equipped with a linear inducing to `α →ᵤ[𝔖] E`, which is often
 easier to use. We also state the `Submodule` version as
 `UniformOnFun.continuousSMul_submodule_of_image_bounded`. -/
-theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.Nonempty)
-    (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) (φ : hom) (hφ : Inducing φ)
+theorem UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : Inducing (ofFun 𝔖 ∘ φ))
     (h : ∀ u : H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 ((φ u : α → E) '' s)) :
     ContinuousSMul 𝕜 H := by
-  have : TopologicalAddGroup H := by
-    rw [hφ.induced]
-    exact topologicalAddGroup_induced φ
-  have : (𝓝 0 : Filter H).HasBasis _ _ := by
-    rw [hφ.induced, nhds_induced, map_zero]
-    exact (UniformOnFun.hasBasis_nhds_zero 𝔖 h𝔖₁ h𝔖₂).comap φ
-  refine' ContinuousSMul.of_basis_zero this _ _ _
-  · rintro ⟨S, V⟩ ⟨hS, hV⟩
-    have : Tendsto (fun kx : 𝕜 × E => kx.1 • kx.2) (𝓝 (0, 0)) (𝓝 <| (0 : 𝕜) • (0 : E)) :=
-      continuous_smul.tendsto (0 : 𝕜 × E)
-    rw [zero_smul, nhds_prod_eq] at this
-    have := this hV
-    rw [mem_map, mem_prod_iff] at this
-    rcases this with ⟨U, hU, W, hW, hUW⟩
-    refine' ⟨U, hU, ⟨S, W⟩, ⟨hS, hW⟩, _⟩
-    rw [Set.smul_subset_iff]
-    intro a ha u hu x hx
-    rw [map_smul]
-    exact hUW (⟨ha, hu x hx⟩ : (a, φ u x) ∈ U ×ˢ W)
-  · rintro a ⟨S, V⟩ ⟨hS, hV⟩
-    have : Tendsto (fun x : E => a • x) (𝓝 0) (𝓝 <| a • (0 : E)) := tendsto_id.const_smul a
-    rw [smul_zero] at this
-    refine' ⟨⟨S, (a • ·) ⁻¹' V⟩, ⟨hS, this hV⟩, fun f hf x hx => _⟩
-    rw [map_smul]
-    exact hf x hx
-  · rintro u ⟨S, V⟩ ⟨hS, hV⟩
-    rcases h u S hS hV with ⟨r, hrpos, hr⟩
-    rw [Metric.eventually_nhds_iff_ball]
-    refine' ⟨r⁻¹, inv_pos.mpr hrpos, fun a ha x hx => _⟩
-    by_cases ha0 : a = 0
-    · rw [ha0]
-      simpa using mem_of_mem_nhds hV
-    · rw [mem_ball_zero_iff] at ha
-      rw [map_smul, Pi.smul_apply]
-      have : φ u x ∈ a⁻¹ • V := by
-        have ha0 : 0 < ‖a‖ := norm_pos_iff.mpr ha0
-        refine' (hr a⁻¹ _) (Set.mem_image_of_mem (φ u) hx)
-        rw [norm_inv, le_inv hrpos ha0]
-        exact ha.le
-      rwa [Set.mem_inv_smul_set_iff₀ ha0] at this
+  obtain rfl := hφ.induced; clear hφ
+  simp only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
+  refine continuousSMul_iInf fun s ↦ continuousSMul_iInf fun hs ↦ ?_
+  letI : TopologicalSpace H :=
+    .induced (UniformFun.ofFun ∘ s.restrict ∘ φ) (UniformFun.topologicalSpace s E)
+  set φ' : H →ₗ[𝕜] (s → E) :=
+    { toFun := s.restrict ∘ φ,
+      map_smul' := fun c x ↦ by exact congr_arg s.restrict (map_smul φ c x),
+      map_add' := fun x y ↦ by exact congr_arg s.restrict (map_add φ x y) }
+  refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ ?_
+  simpa only [Set.image_eq_range] using h u s hs
 #align uniform_on_fun.has_continuous_smul_induced_of_image_bounded UniformOnFun.continuousSMul_induced_of_image_bounded
 
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
@@ -373,13 +372,10 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
 equipped with the topology of `𝔖`-convergence, is a TVS.
 
 If you have a hard time using this lemma, try the one above instead. -/
-theorem UniformOnFun.continuousSMul_submodule_of_image_bounded (h𝔖₁ : 𝔖.Nonempty)
-    (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) (H : Submodule 𝕜 (α →ᵤ[𝔖] E))
+theorem UniformOnFun.continuousSMul_submodule_of_image_bounded (H : Submodule 𝕜 (α →ᵤ[𝔖] E))
     (h : ∀ u ∈ H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 (u '' s)) :
     @ContinuousSMul 𝕜 H _ _ ((UniformOnFun.topologicalSpace α E 𝔖).induced ((↑) : H → α →ᵤ[𝔖] E)) :=
-  haveI : TopologicalAddGroup H :=
-    topologicalAddGroup_induced (LinearMap.id.domRestrict H : H →ₗ[𝕜] α → E)
-  UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜 α E H h𝔖₁ h𝔖₂
+  UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜 α E H
     (LinearMap.id.domRestrict H : H →ₗ[𝕜] α → E) inducing_subtype_val fun ⟨u, hu⟩ => h u hu
 #align uniform_on_fun.has_continuous_smul_submodule_of_image_bounded UniformOnFun.continuousSMul_submodule_of_image_bounded
 

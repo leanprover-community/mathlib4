@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.LinearAlgebra.Basis.Bilinear
 
 #align_import linear_algebra.matrix.sesquilinear_form from "leanprover-community/mathlib"@"84582d2872fb47c0c17eec7382dc097c9ec7137a"
 
@@ -214,7 +215,7 @@ theorem Matrix.toLinearMap₂'_apply (M : Matrix n m N₂) (x : n → R) (y : m 
 #align matrix.to_linear_map₂'_apply Matrix.toLinearMap₂'_apply
 
 theorem Matrix.toLinearMap₂'_apply' (M : Matrix n m R) (v : n → R) (w : m → R) :
-    Matrix.toLinearMap₂' M v w = Matrix.dotProduct v (M.mulVec w) := by
+    Matrix.toLinearMap₂' M v w = Matrix.dotProduct v (M *ᵥ w) := by
   simp_rw [Matrix.toLinearMap₂'_apply, Matrix.dotProduct, Matrix.mulVec, Matrix.dotProduct]
   refine' Finset.sum_congr rfl fun _ _ => _
   rw [Finset.mul_sum]

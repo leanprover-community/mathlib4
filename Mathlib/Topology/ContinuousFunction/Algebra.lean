@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Nicolò Cavalleri
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.StarAlgHom
@@ -618,8 +619,7 @@ theorem coe_smul [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) : �
 #align continuous_map.coe_smul ContinuousMap.coe_smul
 #align continuous_map.coe_vadd ContinuousMap.coe_vadd
 
--- Porting note: adding `@[simp]` here, as `Pi.smul_apply` no longer fires.
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem smul_apply [SMul R M] [ContinuousConstSMul R M] (c : R) (f : C(α, M)) (a : α) :
     (c • f) a = c • f a :=
   rfl
@@ -854,7 +854,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
     Subsingleton (Subalgebra R C(α, R)) :=
   ⟨fun s₁ s₂ => by
     cases isEmpty_or_nonempty α
-    · haveI : Subsingleton C(α, R) := FunLike.coe_injective.subsingleton
+    · haveI : Subsingleton C(α, R) := DFunLike.coe_injective.subsingleton
       exact Subsingleton.elim _ _
     · inhabit α
       ext f
@@ -919,20 +919,23 @@ variable {β : Type*} [TopologicalSpace β]
 
 @[to_additive]
 instance instCovariantClass_mul_le_left [PartialOrder β] [Mul β] [ContinuousMul β]
-  [CovariantClass β β (· * ·) (· ≤ ·)] :
-  CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
-⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
+    [CovariantClass β β (· * ·) (· ≤ ·)] :
+    CovariantClass C(α, β) C(α, β) (· * ·) (· ≤ ·) :=
+  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
 
 @[to_additive]
 instance instCovariantClass_mul_le_right [PartialOrder β] [Mul β] [ContinuousMul β]
-  [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
-  CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
-⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
+    [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] :
+    CovariantClass C(α, β) C(α, β) (Function.swap (· * ·)) (· ≤ ·) :=
+  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
 
 variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
 
-@[to_additive (attr := simp, norm_cast)] lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
-@[to_additive (attr := simp)] lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
+
+@[to_additive (attr := simp)]
+lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
 #align continuous_map.abs_apply ContinuousMap.abs_apply
 
 end Lattice
