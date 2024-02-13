@@ -105,7 +105,7 @@ def BlankExtends.above {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} (h₁ : Blank
 theorem BlankExtends.above_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
     BlankExtends l₁ l → BlankExtends l₂ l → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ := by
   rintro ⟨i, rfl⟩ ⟨j, e⟩ h; use i - j
-  refine' List.append_right_cancel (e.symm.trans _)
+  refine' List.append_cancel_right (e.symm.trans _)
   rw [List.append_assoc, ← List.replicate_add, tsub_add_cancel_of_le]
   apply_fun List.length at e
   simp only [List.length_append, List.length_replicate] at e
@@ -1015,10 +1015,10 @@ set_option linter.uppercaseLean3 false
 
 section
 
--- type of "labels" or TM states
+-- type of tape symbols
 variable (Γ : Type*) [Inhabited Γ]
 
--- type of tape symbols
+-- type of "labels" or TM states
 variable (Λ : Type*) [Inhabited Λ]
 
 /-- A Turing machine "statement" is just a command to either move

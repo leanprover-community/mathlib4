@@ -209,6 +209,16 @@ theorem pairwise_bot_iff : s.Pairwise (⊥ : α → α → Prop) ↔ (s : Set α
 alias ⟨Pairwise.subsingleton, _⟩ := pairwise_bot_iff
 #align set.pairwise.subsingleton Set.Pairwise.subsingleton
 
+/-- See also `Function.injective_iff_pairwise_ne` -/
+lemma injOn_iff_pairwise_ne {s : Set ι} : InjOn f s ↔ s.Pairwise (f · ≠ f ·) := by
+  simp only [InjOn, Set.Pairwise, not_imp_not]
+
+alias ⟨InjOn.pairwise_ne, _⟩ := injOn_iff_pairwise_ne
+
+protected theorem Pairwise.image {s : Set ι} (h : s.Pairwise (r on f)) : (f '' s).Pairwise r :=
+  ball_image_iff.2 fun _x hx ↦ ball_image_iff.2 fun _y hy hne ↦ h hx hy <| ne_of_apply_ne _ hne
+
+/-- See also `Set.Pairwise.image`. -/
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
     (f '' s).Pairwise r ↔ s.Pairwise (r on f) := by
   simp (config := { contextual := true }) [h.eq_iff, Set.Pairwise]

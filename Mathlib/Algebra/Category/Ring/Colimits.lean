@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 #align_import algebra.category.Ring.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

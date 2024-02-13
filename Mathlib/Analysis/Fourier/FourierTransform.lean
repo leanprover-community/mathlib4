@@ -262,7 +262,7 @@ theorem fourierIntegral_def (f : ℝ → E) (w : ℝ) :
   rfl
 #align real.fourier_integral_def Real.fourierIntegral_def
 
-scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
+@[inherit_doc] scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
 
 theorem fourierIntegral_eq_integral_exp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
     (f : ℝ → E) (w : ℝ) :

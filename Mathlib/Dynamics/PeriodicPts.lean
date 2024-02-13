@@ -353,7 +353,7 @@ theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod
       hm
 #align function.le_of_lt_minimal_period_of_iterate_eq Function.le_of_lt_minimalPeriod_of_iterate_eq
 
-theorem iterate_injOn_Iio_minimalPeriod : (Iio $ minimalPeriod f x).InjOn (f^[·] x) :=
+theorem iterate_injOn_Iio_minimalPeriod : (Iio <| minimalPeriod f x).InjOn (f^[·] x) :=
   fun _m hm _n hn hmn ↦ (le_of_lt_minimalPeriod_of_iterate_eq hm hmn).antisymm
     (le_of_lt_minimalPeriod_of_iterate_eq hn hmn.symm)
 #align function.eq_of_lt_minimal_period_of_iterate_eq Function.iterate_injOn_Iio_minimalPeriod
@@ -564,7 +564,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
     rw [periodicOrbit, ← Cycle.map_coe, Cycle.chain_map, ← hM, Cycle.chain_range_succ]
     refine' ⟨_, fun H => ⟨_, fun m hm => H _ (hm.trans (Nat.lt_succ_self _))⟩⟩
     · rintro ⟨hr, H⟩ n hn
-      cases' eq_or_lt_of_le (lt_succ_iff.1 hn) with hM' hM'
+      cases' eq_or_lt_of_le (Nat.lt_succ_iff.1 hn) with hM' hM'
       · rwa [hM', hM, iterate_minimalPeriod]
       · exact H _ hM'
     · rw [iterate_zero_apply]
