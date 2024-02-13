@@ -58,7 +58,7 @@ def TopologicalSpace.PositiveCompacts.Icc01 : PositiveCompacts ℝ where
 universe u
 
 /-- The set `[0,1]^ι` as a compact set with non-empty interior. -/
-def TopologicalSpace.PositiveCompacts.piIcc01 (ι : Type*) [Fintype ι] :
+def TopologicalSpace.PositiveCompacts.piIcc01 (ι : Type*) [Finite ι] :
     PositiveCompacts (ι → ℝ) where
   carrier := pi univ fun _ => Icc 0 1
   isCompact' := isCompact_univ_pi fun _ => isCompact_Icc
