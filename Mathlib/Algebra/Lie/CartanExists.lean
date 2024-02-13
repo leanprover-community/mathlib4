@@ -39,6 +39,25 @@ lemma charpoly_fromBlocks_zero₁₂ :
 
 end Matrix
 
+lemma Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
+    {R : Type*} [CommRing R] {p : Polynomial R} (h : constantCoeff p ≠ 0) :
+    p.natTrailingDegree = 0 :=
+  le_antisymm (natTrailingDegree_le_of_ne_zero h) zero_le'
+
+lemma Polynomial.eq_X_pow_of_monic_of_natDegree_eq_natTrailingDegree
+    {R : Type*} [CommRing R] {p : Polynomial R}
+    (h₁ : p.Monic) (h₂ : p.natDegree = p.natTrailingDegree) :
+    p = X ^ p.natDegree := by
+  ext n
+  obtain hn|rfl|hn := lt_trichotomy n p.natDegree
+  · rw [coeff_X_pow, if_neg hn.ne]
+    rw [h₂] at hn
+    exact coeff_eq_zero_of_lt_natTrailingDegree hn
+  · rw [coeff_X_pow, if_pos rfl]
+    exact h₁.leadingCoeff
+  · rw [coeff_X_pow, if_neg hn.ne']
+    exact coeff_eq_zero_of_natDegree_lt hn
+
 -- namespace LinearMap
 
 -- variable {R M : Type*}
@@ -64,6 +83,50 @@ variable [Module.Finite K M]
 variable (φ : Module.End K M)
 
 open FiniteDimensional Polynomial
+
+open Module.Free in
+lemma charpoly_nilpotent_tfae :
+    List.TFAE
+    [ φ.charpoly = X ^ finrank K M
+    , ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0
+    , IsNilpotent φ
+    , natTrailingDegree φ.charpoly = finrank K M
+    ] := by
+  tfae_have 1 → 2
+  · intro h m
+    use finrank K M
+    suffices φ ^ finrank K M = 0 by simp only [this, LinearMap.zero_apply]
+    simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
+  tfae_have 2 → 3
+  · intro h
+    obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp <| φ.eventually_iSup_ker_pow_eq
+    use n
+    ext x
+    rw [zero_apply, ← mem_ker, ← hn n le_rfl]
+    obtain ⟨k, hk⟩ := h x
+    rw [← mem_ker] at hk
+    exact Submodule.mem_iSup_of_mem _ hk
+  tfae_have 3 → 1
+  · intro h
+    rw [← sub_eq_zero]
+    apply IsNilpotent.eq_zero
+    rw [finrank_eq_card_chooseBasisIndex]
+    apply Matrix.isNilpotent_charpoly_sub_pow_of_isNilpotent
+    exact h.map (toMatrixAlgEquiv (chooseBasis K M))
+  tfae_have 1 → 4
+  · intro h
+    rw [h, ← one_mul (X ^ _)]
+    -- extract `natTrailingDegree_X_pow`
+    rw [natTrailingDegree_mul_X_pow one_ne_zero]
+    simp only [natTrailingDegree_one, zero_add]
+  tfae_have 4 → 1
+  · intro h
+    -- extract `charpoly_natDegree`
+    have : natDegree (charpoly φ) = finrank K M := by
+      erw [Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
+    erw [Polynomial.eq_X_pow_of_monic_of_natDegree_eq_natTrailingDegree (charpoly_monic _), this]
+    rw [h, this]
+  tfae_finish
 
 open Module.Free in
 lemma charpoly_eq_X_pow_iff :
@@ -171,6 +234,22 @@ lemma charpoly_prodMap {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M�
     toMatrix_prodMap b₁ b₂ φ₁ φ₂, Matrix.charpoly_fromBlocks_zero₁₂]
 
 open Module.Free in
+lemma charpoly_eq_of_equiv {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
+    [Module K M₁] [Module K M₂] [Module.Finite K M₁] [Module.Finite K M₂]
+    [Module.Free K M₁] [Module.Free K M₂]
+    (φ₁ : Module.End K M₁) (φ₂ : Module.End K M₂) (e : M₁ ≃ₗ[K] M₂)
+    (H : (e.toLinearMap.comp <| φ₁.comp e.symm.toLinearMap) = φ₂) :
+    φ₁.charpoly = φ₂.charpoly := by
+  let b₁ := chooseBasis K M₁
+  let b₂ := b₁.map e
+  rw [← charpoly_toMatrix φ₁ b₁, ← charpoly_toMatrix φ₂ b₂]
+  -- extract the following idiom
+  dsimp only [Matrix.charpoly]
+  congr 1
+  ext i j : 2
+  simp [charmatrix, toMatrix, Matrix.diagonal, ← H]
+
+open Module.Free in
 lemma finrank_maximalGeneralizedEigenspace :
     finrank K (φ.maximalGeneralizedEigenspace 0) = natTrailingDegree (φ.charpoly) := by
   set V := φ.maximalGeneralizedEigenspace 0
@@ -199,8 +278,40 @@ lemma finrank_maximalGeneralizedEigenspace :
   let bV := chooseBasis K V
   let bW := chooseBasis K W
   let b := bV.prod bW
-  let bM := b.map e
-  sorry
+  rw [charpoly_eq_of_equiv φ ψ e.symm, charpoly_prodMap]
+  swap
+  · rw [LinearEquiv.symm_symm, LinearEquiv.toLinearMap_symm_comp_eq]
+    apply b.ext
+    simp only [Submodule.coe_prodEquivOfIsCompl, Basis.prod_apply, coe_inl, coe_inr, coe_comp,
+      Function.comp_apply, coprod_apply, Submodule.coeSubtype, map_add, prodMap_apply,
+      restrict_coe_apply, Sum.forall, implies_true, and_self]
+  rw [natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
+  have hG : natTrailingDegree (charpoly G) = 0 := by
+    apply Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
+    apply ((not_hasEigenvalue_zero_tfae G).out 0 1).mpr
+    intro x hx
+    suffices x.1 ∈ V ⊓ W by
+      rw [hVW.inf_eq_bot, Submodule.mem_bot] at this
+      rwa [Subtype.ext_iff]
+    have hxV : x.1 ∈ V := by
+      simp only [Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero]
+      use 1
+      rw [Subtype.ext_iff] at hx
+      rwa [pow_one]
+    exact ⟨hxV, x.2⟩
+  rw [hG, add_zero, eq_comm]
+  apply ((charpoly_nilpotent_tfae F).out 1 3).mp
+  simp only [Subtype.forall, Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero]
+  rintro x ⟨n, hx⟩
+  use n
+  apply Subtype.ext
+  rw [ZeroMemClass.coe_zero]
+  refine .trans ?_ hx
+  generalize_proofs h'
+  clear hx
+  induction n with
+  | zero => simp only [Nat.zero_eq, pow_zero, one_apply]
+  | succ n ih => simp only [pow_succ, LinearMap.mul_apply, ih, restrict_apply]
 
 end LinearMap
 
