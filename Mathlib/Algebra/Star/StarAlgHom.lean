@@ -787,9 +787,9 @@ def toStarAlgEquiv {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B]
 
 /-- Any type satisfying `StarAlgEquivClass` can be cast into `StarAlgEquiv` via
 `StarAlgEquivClass.toStarAlgEquiv`. -/
-instance instCoeTC {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
+instance instCoeHead {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
     [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarAlgEquivClass F R A B] :
-    CoeTC F (A ≃⋆ₐ[R] B) :=
+    CoeHead F (A ≃⋆ₐ[R] B) :=
   ⟨toStarAlgEquiv⟩
 
 end StarAlgEquivClass
