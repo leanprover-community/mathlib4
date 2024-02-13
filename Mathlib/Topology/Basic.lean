@@ -1641,8 +1641,7 @@ theorem continuousAt_id : ContinuousAt id x :=
 
 theorem ContinuousAt.iterate {f : X → X} (hf : ContinuousAt f x) (hx : f x = x) (n : ℕ) :
     ContinuousAt f^[n] x :=
-  Nat.recOn n continuousAt_id fun n ihn =>
-    show ContinuousAt (f^[n] ∘ f) x from ContinuousAt.comp (hx.symm ▸ ihn) hf
+  Nat.recOn n continuousAt_id fun _n ihn ↦ ihn.comp_of_eq hf hx
 #align continuous_at.iterate ContinuousAt.iterate
 
 theorem continuous_iff_isClosed : Continuous f ↔ ∀ s, IsClosed s → IsClosed (f ⁻¹' s) :=
