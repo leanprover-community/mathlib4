@@ -12,9 +12,11 @@ import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
 
 -- move this
-lemma List.TFAE.not (l : List (Prop)) :
+lemma List.TFAE.not_iff {l : List (Prop)} :
     TFAE (l.map Not) ↔ TFAE l := by
   simp only [TFAE, mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, not_iff_not]
+
+alias ⟨_, List.TFAE.not⟩ := List.TFAE.not_iff
 
 namespace Matrix
 
@@ -202,13 +204,12 @@ lemma not_hasEigenvalue_zero_tfae :
     , ¬ Module.End.HasEigenvalue φ 0
     , ¬ IsRoot (minpoly K φ) 0
     , LinearMap.det φ ≠ 0 ] := by
-  rw [← List.TFAE.not]
-  dsimp only [List.map]
-  push_neg
-  have aux₁ : ∀ m, φ m = 0 ∧ m ≠ 0 ↔ m ≠ 0 ∧ φ m = 0 := by intro m; rw [and_comm]
-  have aux₂ : ¬ ker φ ≤ ⊥ ↔ ⊥ < ker φ := by rw [le_bot_iff, bot_lt_iff_ne_bot]
-  simp only [aux₁, aux₂]
-  exact hasEigenvalue_zero_tfae φ
+  have := (hasEigenvalue_zero_tfae φ).not
+  dsimp only [List.map] at this
+  push_neg at this
+  have aux₁ : ∀ m, (m ≠ 0 → φ m ≠ 0) ↔ (φ m = 0 → m = 0) := by intro m; apply not_imp_not
+  have aux₂ : ker φ ≤ ⊥ ↔ ¬ ⊥ < ker φ := by rw [le_bot_iff, bot_lt_iff_ne_bot, not_not]
+  simpa only [aux₁, aux₂] using this
 
 open Module.Free in
 lemma toMatrix_prodMap {M₁ M₂ ι₁ ι₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
