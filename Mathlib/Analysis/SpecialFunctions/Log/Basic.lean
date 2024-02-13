@@ -446,12 +446,12 @@ nonrec theorem ContinuousAt.log (hf : ContinuousAt f a) (h₀ : f a ≠ 0) :
   hf.log h₀
 #align continuous_at.log ContinuousAt.log
 
-@[fun_prop]
 nonrec theorem ContinuousWithinAt.log (hf : ContinuousWithinAt f s a) (h₀ : f a ≠ 0) :
     ContinuousWithinAt (fun x => log (f x)) s a :=
   hf.log h₀
 #align continuous_within_at.log ContinuousWithinAt.log
 
+@[fun_prop]
 theorem ContinuousOn.log (hf : ContinuousOn f s) (h₀ : ∀ x ∈ s, f x ≠ 0) :
     ContinuousOn (fun x => log (f x)) s := fun x hx => (hf x hx).log (h₀ x hx)
 #align continuous_on.log ContinuousOn.log
