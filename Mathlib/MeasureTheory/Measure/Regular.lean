@@ -539,8 +539,8 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         isClosed_biUnion_finset fun k _ => hFc k, isOpen_iUnion hUo, ht.le.trans _, _⟩
     · calc
         (∑ k in t, μ (s k)) + ε / 2 ≤ ((∑ k in t, μ (F k)) + ∑ k in t, δ k) + ε / 2 := by
-          rw [← sum_add_distrib]
-          exact add_le_add_right (sum_le_sum fun k _ => hF k) _
+          rw [← Finset.sum_add_distrib]
+          exact add_le_add_right (Finset.sum_le_sum fun k _ => hF k) _
         _ ≤ (∑ k in t, μ (F k)) + ε / 2 + ε / 2 :=
           (add_le_add_right (add_le_add_left ((ENNReal.sum_le_tsum _).trans hδε.le) _) _)
         _ = μ (⋃ k ∈ t, F k) + ε := by
