@@ -42,7 +42,7 @@ lemma disjoint_box_succ_prod (n : ℕ) : Disjoint (box (n + 1)) (Icc (-n : α) n
 @[simp] lemma box_succ_union_prod (n : ℕ) :
     box (n + 1) ∪ Icc (-n : α) n = Icc (-n.succ : α) n.succ := Icc_neg_mono.disjointed_succ_sup _
 
-@[simp] lemma box_succ_disjUnion (n : ℕ) :
+lemma box_succ_disjUnion (n : ℕ) :
     (box (n + 1)).disjUnion (Icc (-n : α) n) (disjoint_box_succ_prod _) =
       Icc (-n.succ : α) n.succ := by rw [disjUnion_eq_union, box_succ_union_prod]
 
