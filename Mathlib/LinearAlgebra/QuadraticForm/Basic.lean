@@ -382,7 +382,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 section SMul
 
 variable [Monoid S] [Monoid T] [DistribMulAction S R] [DistribMulAction T R]
-variable [SMulCommClass R S R] [SMulCommClass S R R] [SMulCommClass T R R] [SMulCommClass R T R]
+variable [SMulCommClass S R R] [SMulCommClass T R R]
 
 /-- `QuadraticForm R M` inherits the scalar action from any algebra over `R`.
 
@@ -393,6 +393,7 @@ instance : SMul S (QuadraticForm R M) :=
       toFun_smul := fun b x => by rw [Pi.smul_apply, map_smul, Pi.smul_apply, mul_smul_comm]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
+        letI := SMulCommClass.symm S R R
         ⟨a • B, by simp [h]⟩ }⟩
 
 @[simp]
@@ -486,7 +487,7 @@ theorem sum_apply {ι : Type*} (Q : ι → QuadraticForm R M) (s : Finset ι) (x
 
 end Sum
 
-instance [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [SMulCommClass R S R] :
+instance [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] :
     DistribMulAction S (QuadraticForm R M) where
   mul_smul a b Q := ext fun x => by simp only [smul_apply, mul_smul]
   one_smul Q := ext fun x => by simp only [QuadraticForm.smul_apply, one_smul]
@@ -497,7 +498,7 @@ instance [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [SMulCommClass 
     ext
     simp only [zero_apply, smul_apply, smul_zero]
 
-instance [Semiring S] [Module S R] [SMulCommClass S R R] [SMulCommClass R S R] :
+instance [Semiring S] [Module S R] [SMulCommClass S R R] :
     Module S (QuadraticForm R M) where
   zero_smul Q := by
     ext
@@ -577,9 +578,8 @@ def _root_.LinearMap.compQuadraticForm [CommSemiring S] [Algebra S R] [Module S 
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨(LinearMap.restrictScalars S (LinearMap.restrictScalars S B.flip).flip).compr₂ f, fun x y => by
-      simp_rw [h, f.map_add]
-      rfl⟩
+    ⟨(B.restrictScalars₁₂ S).compr₂ f, fun x y => by
+      simp_rw [h, f.map_add, LinearMap.compr₂_apply, LinearMap.restrictScalars₁₂_apply_apply]⟩
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticForm
 
 end Comp
@@ -595,9 +595,9 @@ def linMulLin (f g : M →ₗ[R] R) : QuadraticForm R M where
     simp only [smul_eq_mul, RingHom.id_apply, Pi.mul_apply, LinearMap.map_smulₛₗ]
     ring
   exists_companion' :=
-    ⟨LinearMap.linMulLin f g + LinearMap.linMulLin g f, fun x y => by
-      simp only [Pi.mul_apply, map_add, LinearMap.linMulLin, LinearMap.add_apply,
-        LinearMap.mk₂_apply]
+    ⟨(LinearMap.mul R R).compl₁₂ f g + (LinearMap.mul R R).compl₁₂ g f, fun x y => by
+      simp only [Pi.mul_apply, map_add, LinearMap.compl₁₂_apply, LinearMap.mul_apply',
+        LinearMap.add_apply]
       ring_nf⟩
 #align quadratic_form.lin_mul_lin QuadraticForm.linMulLin
 
@@ -664,7 +664,7 @@ section Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- A bilinear map into `R` gives a quadratic form by applying the argument twice. -/
-def _root_.LinearMap.toQuadraticForm (B: M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
+def _root_.LinearMap.toQuadraticForm (B : M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
   toFun x := B x x
   toFun_smul a x := by
     simp only [SMulHomClass.map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc]
@@ -702,7 +702,7 @@ theorem toQuadraticForm_add (B₁ B₂ : BilinForm R M) :
 
 @[simp]
 theorem toQuadraticForm_smul [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
-    [SMulCommClass R S R] (a : S) (B : BilinForm R M) :
+    (a : S) (B : BilinForm R M) :
     (a • B).toQuadraticForm = a • B.toQuadraticForm :=
   rfl
 #align bilin_form.to_quadratic_form_smul BilinForm.toQuadraticForm_smul
@@ -721,7 +721,7 @@ def toQuadraticFormAddMonoidHom : BilinForm R M →+ QuadraticForm R M where
 
 /-- `BilinForm.toQuadraticForm` as a linear map -/
 @[simps!]
-def toQuadraticFormLinearMap [Semiring S] [Module S R] [SMulCommClass S R R] [SMulCommClass R S R] :
+def toQuadraticFormLinearMap [Semiring S] [Module S R] [SMulCommClass S R R] :
     BilinForm R M →ₗ[S] QuadraticForm R M where
   toFun := toQuadraticForm
   map_smul' := toQuadraticForm_smul
@@ -1270,19 +1270,22 @@ open Finset BilinForm
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable {ι : Type*} [Fintype ι] {v : Basis ι R M}
+variable {ι : Type*}
 
 /-- Given a quadratic form `Q` and a basis, `basisRepr` is the basis representation of `Q`. -/
-noncomputable def basisRepr (Q : QuadraticForm R M) (v : Basis ι R M) : QuadraticForm R (ι → R) :=
+noncomputable def basisRepr [Finite ι] (Q : QuadraticForm R M) (v : Basis ι R M) :
+    QuadraticForm R (ι → R) :=
   Q.comp v.equivFun.symm
 #align quadratic_form.basis_repr QuadraticForm.basisRepr
 
 @[simp]
-theorem basisRepr_apply (Q : QuadraticForm R M) (w : ι → R) :
+theorem basisRepr_apply [Fintype ι] {v : Basis ι R M} (Q : QuadraticForm R M) (w : ι → R) :
     Q.basisRepr v w = Q (∑ i : ι, w i • v i) := by
   rw [← v.equivFun_symm_apply]
   rfl
 #align quadratic_form.basis_repr_apply QuadraticForm.basisRepr_apply
+
+variable [Fintype ι] {v : Basis ι R M}
 
 section
 
@@ -1292,8 +1295,8 @@ variable (R)
 
 The weights are applied using `•`; typically this definition is used either with `S = R` or
 `[Algebra S R]`, although this is stated more generally. -/
-def weightedSumSquares [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [SMulCommClass R S R]
-    (w : ι → S) : QuadraticForm R (ι → R) :=
+def weightedSumSquares [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] (w : ι → S) :
+    QuadraticForm R (ι → R) :=
   ∑ i : ι, w i • proj i i
 #align quadratic_form.weighted_sum_squares QuadraticForm.weightedSumSquares
 
@@ -1301,7 +1304,7 @@ end
 
 @[simp]
 theorem weightedSumSquares_apply [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
-    [SMulCommClass R S R] (w : ι → S) (v : ι → R) :
+    (w : ι → S) (v : ι → R) :
     weightedSumSquares R w v = ∑ i : ι, w i • (v i * v i) :=
   QuadraticForm.sum_apply _ _ _
 #align quadratic_form.weighted_sum_squares_apply QuadraticForm.weightedSumSquares_apply

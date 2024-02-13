@@ -45,7 +45,7 @@ open scoped Matrix
 /-- A matrix `M : Matrix n n R` is positive semidefinite if it is Hermitian and `xᴴ * M * x` is
 nonnegative for all `x`. -/
 def PosSemidef (M : Matrix n n R) :=
-  M.IsHermitian ∧ ∀ x : n → R, 0 ≤ dotProduct (star x) (M.mulVec x)
+  M.IsHermitian ∧ ∀ x : n → R, 0 ≤ dotProduct (star x) (M *ᵥ x)
 #align matrix.pos_semidef Matrix.PosSemidef
 
 /-- A diagonal matrix is positive semidefinite iff its diagonal entries are nonnegative. -/
@@ -62,7 +62,7 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosSemidef) : M.IsHermitian :=
   hM.1
 
 theorem re_dotProduct_nonneg {M : Matrix n n 𝕜} (hM : M.PosSemidef) (x : n → 𝕜) :
-    0 ≤ IsROrC.re (dotProduct (star x) (M.mulVec x)) :=
+    0 ≤ IsROrC.re (dotProduct (star x) (M *ᵥ x)) :=
   IsROrC.nonneg_iff.mp (hM.2 _) |>.1
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
@@ -71,7 +71,7 @@ lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
   constructor
   · exact isHermitian_conjTranspose_mul_mul B hA.1
   · intro x
-    simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.2 (mulVec B x)
+    simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.2 (B *ᵥ x)
 
 lemma mul_mul_conjTranspose_same {A : Matrix n n R} (hA : PosSemidef A)
     {m : Type*} [Fintype m] (B : Matrix m n R):
@@ -198,29 +198,29 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
   `⟨v, (A - B) v⟩ = 0`, but this is a nonzero scalar multiple of `⟨v, v⟩`, contradiction. -/
   by_contra h_ne
   let ⟨v, t, ht, hv, hv'⟩ := (hA.1.sub hB.1).exists_eigenvector_of_ne_zero (sub_ne_zero.mpr h_ne)
-  have h_sum : 0 = t * (star v ⬝ᵥ mulVec A v + star v ⬝ᵥ mulVec B v)
+  have h_sum : 0 = t * (star v ⬝ᵥ A *ᵥ v + star v ⬝ᵥ B *ᵥ v)
   · calc
-      0 = star v ⬝ᵥ mulVec (A ^ 2 - B ^ 2) v := by rw [hAB, sub_self, zero_mulVec, dotProduct_zero]
-      _ = star v ⬝ᵥ mulVec A (mulVec (A - B) v)  + star v ⬝ᵥ mulVec (A - B) (mulVec B v) := by
+      0 = star v ⬝ᵥ (A ^ 2 - B ^ 2) *ᵥ v := by rw [hAB, sub_self, zero_mulVec, dotProduct_zero]
+      _ = star v ⬝ᵥ A *ᵥ (A - B) *ᵥ v + star v ⬝ᵥ (A - B) *ᵥ B *ᵥ v := by
         rw [mulVec_mulVec, mulVec_mulVec, ← dotProduct_add, ← add_mulVec, mul_sub, sub_mul,
           add_sub, sub_add_cancel, pow_two, pow_two]
-      _ = t * (star v ⬝ᵥ mulVec A v) + vecMul (star v) (A - B)ᴴ ⬝ᵥ mulVec B v := by
+      _ = t * (star v ⬝ᵥ A *ᵥ v) + (star v) ᵥ* (A - B)ᴴ ⬝ᵥ B *ᵥ v := by
         rw [hv', mulVec_smul, dotProduct_smul, IsROrC.real_smul_eq_coe_mul,
           dotProduct_mulVec _ (A - B), hA.1.sub hB.1]
-      _ = t * (star v ⬝ᵥ mulVec A v + star v ⬝ᵥ mulVec B v) := by
+      _ = t * (star v ⬝ᵥ A *ᵥ v + star v ⬝ᵥ B *ᵥ v) := by
         simp_rw [← star_mulVec, hv', mul_add, ← IsROrC.real_smul_eq_coe_mul, ← smul_dotProduct]
         congr 2 with i
         simp only [Pi.star_apply, Pi.smul_apply, IsROrC.real_smul_eq_coe_mul, star_mul',
           IsROrC.star_def, IsROrC.conj_ofReal]
-  replace h_sum : star v ⬝ᵥ mulVec A v + star v ⬝ᵥ mulVec B v = 0
+  replace h_sum : star v ⬝ᵥ A *ᵥ v + star v ⬝ᵥ B *ᵥ v = 0
   · rw [eq_comm, ← mul_zero (t : 𝕜)] at h_sum
     exact mul_left_cancel₀ (IsROrC.ofReal_ne_zero.mpr ht) h_sum
-  have h_van : star v ⬝ᵥ mulVec A v = 0 ∧ star v ⬝ᵥ mulVec B v = 0
+  have h_van : star v ⬝ᵥ A *ᵥ v = 0 ∧ star v ⬝ᵥ B *ᵥ v = 0
   · refine ⟨le_antisymm ?_ (hA.2 v), le_antisymm ?_ (hB.2 v)⟩
     · rw [add_comm, add_eq_zero_iff_eq_neg] at h_sum
       simpa only [h_sum, neg_nonneg] using hB.2 v
     · simpa only [add_eq_zero_iff_eq_neg.mp h_sum, neg_nonneg] using hA.2 v
-  have aux : star v ⬝ᵥ mulVec (A - B) v = 0
+  have aux : star v ⬝ᵥ (A - B) *ᵥ v = 0
   · rw [sub_mulVec, dotProduct_sub, h_van.1, h_van.2, sub_zero]
   rw [hv', dotProduct_smul, IsROrC.real_smul_eq_coe_mul, ← mul_zero ↑t] at aux
   exact hv <| Matrix.dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
@@ -279,7 +279,7 @@ lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem PosSemidef.dotProduct_mulVec_zero_iff
     {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
-    star x ⬝ᵥ mulVec A x = 0 ↔ mulVec A x = 0 := by
+    star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
   constructor
   · obtain ⟨B, rfl⟩ := posSemidef_iff_eq_transpose_mul_self.mp hA
     rw [← Matrix.mulVec_mulVec, dotProduct_mulVec,
@@ -302,7 +302,7 @@ theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
 /-- A matrix `M : Matrix n n R` is positive definite if it is hermitian
    and `xᴴMx` is greater than zero for all nonzero `x`. -/
 def PosDef (M : Matrix n n R) :=
-  M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < dotProduct (star x) (M.mulVec x)
+  M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < dotProduct (star x) (M *ᵥ x)
 #align matrix.pos_def Matrix.PosDef
 
 namespace PosDef
@@ -312,7 +312,7 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
 #align matrix.pos_def.is_hermitian Matrix.PosDef.isHermitian
 
 theorem re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
-    0 < IsROrC.re (dotProduct (star x) (M.mulVec x)) :=
+    0 < IsROrC.re (dotProduct (star x) (M *ᵥ x)) :=
   IsROrC.pos_iff.mp (hM.2 _ hx) |>.1
 
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
@@ -396,7 +396,7 @@ variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
 noncomputable def NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
-    { inner := fun x y => dotProduct (star x) (M.mulVec y)
+    { inner := fun x y => dotProduct (star x) (M *ᵥ y)
       conj_symm := fun x y => by
         dsimp only [Inner.inner]
         rw [star_dotProduct, starRingEnd_apply, star_star, star_mulVec, dotProduct_mulVec,

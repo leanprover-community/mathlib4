@@ -15,5 +15,9 @@
     "master",
     "stable",
     "staging"
-  ]
+  ],
+  "files.readonlyInclude": {
+    "**/.elan/**": true,
+    "**/.lake/**": true
+  }
 }

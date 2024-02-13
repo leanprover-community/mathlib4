@@ -5,7 +5,6 @@ Authors: Siddhartha Gadgil, Mario Carneiro
 -/
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Elab.Tactic.Basic
-import Lean.Elab.Tactic.Location
 
 /-!
 # `trans` tactic

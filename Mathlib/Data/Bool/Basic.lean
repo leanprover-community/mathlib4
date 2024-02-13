@@ -261,6 +261,8 @@ instance linearOrder : LinearOrder Bool where
   le_antisymm := by decide
   le_total := by decide
   decidableLE := inferInstance
+  decidableEq := inferInstance
+  decidableLT := inferInstance
   lt_iff_le_not_le := by decide
   max_def := by decide
   min_def := by decide

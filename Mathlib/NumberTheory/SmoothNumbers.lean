@@ -183,7 +183,7 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
     nth_rw 3 [← prod_factors hm₀]
     have : m.factors.filter (· = p) = m.factors.filter (¬ · < p)
     · refine (filter_congr' fun q hq ↦ ?_).symm
-      have H : ¬ p < q := fun hf ↦ Nat.lt_le_asymm hf <| lt_succ_iff.mp (hm q hq)
+      have H : ¬ p < q := fun hf ↦ Nat.lt_le_asymm hf <| Nat.lt_succ_iff.mp (hm q hq)
       simp only [not_lt, le_iff_eq_or_lt, H, or_false, eq_comm, true_eq_decide_iff]
     refine prod_eq <| (filter_eq m.factors p).symm ▸ this ▸ perm_append_comm.trans ?_
     convert filter_append_perm ..
@@ -213,7 +213,7 @@ def roughNumbersUpTo (N k : ℕ) : Finset ℕ :=
 lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
     (smoothNumbersUpTo N k).card + (roughNumbersUpTo N k).card = N := by
   rw [smoothNumbersUpTo, roughNumbersUpTo,
-    ← Finset.card_union_eq <| Finset.disjoint_filter.mpr fun n _ hn₂ h ↦ h.2 hn₂,
+    ← Finset.card_union_of_disjoint <| Finset.disjoint_filter.mpr fun n _ hn₂ h ↦ h.2 hn₂,
     Finset.filter_union_right]
   suffices : Finset.card (Finset.filter (fun x ↦ x ≠ 0) (Finset.range (succ N))) = N
   · convert this with n
