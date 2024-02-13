@@ -76,8 +76,6 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
 
 variable [DecidableEq n] [DecidableEq m]
 
---variable [Module Rᵐᵒᵖ N₂] [IsCentralScalar R N₂]
-
 theorem Matrix.toLinearMap₂'Aux_stdBasis (f : Matrix n m N₂) (i : n) (j : m) :
     f.toLinearMap₂'Aux σ₁ σ₂ (LinearMap.stdBasis R₁ (fun _ => R₁) i 1)
       (LinearMap.stdBasis R₂ (fun _ => R₂) j 1) = f i j := by
