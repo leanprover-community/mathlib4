@@ -219,14 +219,6 @@ lemma arctan_ne_mul_pi_div_two {x : ℝ} : ∀ (k : ℤ), arctan x ≠ (2 * k + 
   rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_right (by positivity)] at ub
   norm_cast at lb ub; change -1 < _ at lb; omega
 
-/-- Preliminary version of `arctan_add` with more complicated hypotheses.
-Use `arctan_add` instead. -/
-theorem arctan_add' {x y : ℝ} (h₁ : -(π / 2) < arctan x + arctan y)
-    (h₂ : arctan x + arctan y < π / 2) : arctan x + arctan y = arctan ((x + y) / (1 - x * y)) := by
-  rw [← arctan_tan h₁ h₂]; congr
-  conv_rhs => rw [← tan_arctan x, ← tan_arctan y]
-  exact tan_add' ⟨arctan_ne_mul_pi_div_two, arctan_ne_mul_pi_div_two⟩
-
 lemma arctan_add_arctan_lt_pi_div_two {x y : ℝ} (h : x * y < 1) : arctan x + arctan y < π / 2 := by
   cases' le_or_lt y 0 with hy hy
   · rw [← add_zero (π / 2), ← arctan_zero]
@@ -237,10 +229,14 @@ lemma arctan_add_arctan_lt_pi_div_two {x y : ℝ} (h : x * y < 1) : arctan x + a
 
 theorem arctan_add {x y : ℝ} (h : x * y < 1) :
     arctan x + arctan y = arctan ((x + y) / (1 - x * y)) := by
-  apply arctan_add'
-  rw [neg_lt, neg_add, ← arctan_neg, ← arctan_neg]
-  rw [← neg_mul_neg] at h
-  all_goals exact arctan_add_arctan_lt_pi_div_two h
+  rw [← arctan_tan (x := _ + _)]
+  · congr
+    conv_rhs => rw [← tan_arctan x, ← tan_arctan y]
+    exact tan_add' ⟨arctan_ne_mul_pi_div_two, arctan_ne_mul_pi_div_two⟩
+  · rw [neg_lt, neg_add, ← arctan_neg, ← arctan_neg]
+    rw [← neg_mul_neg] at h
+    exact arctan_add_arctan_lt_pi_div_two h
+  · exact arctan_add_arctan_lt_pi_div_two h
 
 theorem arctan_add_eq_add_pi {x y : ℝ} (h : 1 < x * y) (hx : 0 < x) :
     arctan x + arctan y = arctan ((x + y) / (1 - x * y)) + π := by
@@ -262,8 +258,9 @@ theorem arctan_add_eq_sub_pi {x y : ℝ} (h : 1 < x * y) (hx : x < 0) :
   simp only [arctan_neg, neg_add, neg_neg, ← sub_eq_add_neg _ π] at k
   exact k
 
-theorem two_mul_arctan {x : ℝ} (h : x * x < 1) : 2 * arctan x = arctan (2 * x / (1 - x ^ 2)) := by
-  rw [two_mul, arctan_add h]; congr 1; ring
+theorem two_mul_arctan {x : ℝ} (h₁ : -1 < x) (h₂ : x < 1) :
+    2 * arctan x = arctan (2 * x / (1 - x ^ 2)) := by
+  rw [two_mul, arctan_add (by nlinarith)]; congr 1; ring
 
 theorem two_mul_arctan_add_pi {x : ℝ} (h : 1 < x) :
     2 * arctan x = arctan (2 * x / (1 - x ^ 2)) + π := by
@@ -274,22 +271,18 @@ theorem two_mul_arctan_sub_pi {x : ℝ} (h : x < -1) :
   rw [two_mul, arctan_add_eq_sub_pi (by nlinarith) (by linarith)]; congr 2; ring
 
 theorem arctan_inv_2_add_arctan_inv_3 : arctan 2⁻¹ + arctan 3⁻¹ = π / 4 := by
-  rw [arctan_add]
-  all_goals norm_num
+  rw [arctan_add] <;> norm_num
 
 theorem two_mul_arctan_inv_2_sub_arctan_inv_7 : 2 * arctan 2⁻¹ - arctan 7⁻¹ = π / 4 := by
-  rw [two_mul_arctan, ← arctan_one, sub_eq_iff_eq_add, arctan_add]
-  all_goals norm_num
+  rw [two_mul_arctan, ← arctan_one, sub_eq_iff_eq_add, arctan_add] <;> norm_num
 
 theorem two_mul_arctan_inv_3_add_arctan_inv_7 : 2 * arctan 3⁻¹ + arctan 7⁻¹ = π / 4 := by
-  rw [two_mul_arctan, arctan_add]
-  all_goals norm_num
+  rw [two_mul_arctan, arctan_add] <;> norm_num
 
 /-- **John Machin's 1706 formula**, which he used to compute π to 100 decimal places. -/
 theorem four_mul_arctan_inv_5_sub_arctan_inv_239 : 4 * arctan 5⁻¹ - arctan 239⁻¹ = π / 4 := by
   rw [show 4 * arctan _ = 2 * (2 * _) by ring, two_mul_arctan, two_mul_arctan, ← arctan_one,
-    sub_eq_iff_eq_add, arctan_add]
-  all_goals norm_num
+    sub_eq_iff_eq_add, arctan_add] <;> norm_num
 
 end ArctanAdd
 
