@@ -245,7 +245,8 @@ end MainDefinitions
 
 section WedgeIntDeriv
 
-variable {c : ℂ} {r : ℝ} {f : ℂ → E} (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
+variable {c : ℂ} {r : ℝ} {f : ℂ → E} (f_cont : ContinuousOn f (ball c r)) {z : ℂ}
+  (hz : z ∈ ball c r)
 
 /-- If a function `f` `VanishesOnRectanglesInDisc` of center `c`, then, for all `w` in a
   neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
