@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
-# Constructors for combining (co)fans 
+# Constructors for combining (co)fans
 
 We provide constructors for combining (co)fans and show their (co)limit properties.
 
