@@ -350,29 +350,29 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: exponentiation by a real number is positive (namely 1)
 when the exponent is zero. The other cases are done in `evalRpow`. -/
-@[positivity (_ : ℝ) ^ (0 : ℝ), Pow.pow (_ : ℝ) (0 : ℝ), Real.rpow (_ : ℝ) (0 : ℝ)]
-def evalRpowZero : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
-  let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (_ : Q(ℝ)) ← withReducible (whnf e)
-    | throwError "not Real.rpow"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
-  pure (.positive (q(Real.rpow_zero_pos $a) : Expr))
+@[positivity (_ : ℝ) ^ (0 : ℝ)]
+def evalRpowZero : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q($a ^ (0 : ℝ)) =>
+    assertInstancesCommute
+    pure (.positive q(Real.rpow_zero_pos $a))
+  | _, _, _ => throwError "not Real.rpow"
 
 /-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
 the base is nonnegative and positive when the base is positive. -/
-@[positivity (_ : ℝ) ^ (_ : ℝ), Pow.pow (_ : ℝ) (_ : ℝ), Real.rpow (_ : ℝ) (_ : ℝ)]
-def evalRpow : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} zα pα e := do
-  let .app (.app (f : Q(ℝ → ℝ → ℝ)) (a : Q(ℝ))) (b : Q(ℝ)) ← withReducible (whnf e)
-    | throwError "not Real.rpow"
-  guard <| ← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.rpow)
-  let ra ← core zα pα a
-  match ra with
-  | .positive pa =>
-      have pa' : Q(0 < $a) := pa
-      pure (.positive (q(Real.rpow_pos_of_pos $pa' $b) : Expr))
-  | .nonnegative pa =>
-      have pa' : Q(0 ≤ $a) := pa
-      pure (.nonnegative (q(Real.rpow_nonneg $pa' $b) : Expr))
-  | _ => pure .none
+@[positivity (_ : ℝ) ^ (_ : ℝ)]
+def evalRpow : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q($a ^ ($b : ℝ)) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa =>
+        pure (.positive q(Real.rpow_pos_of_pos $pa $b))
+    | .nonnegative pa =>
+        pure (.nonnegative q(Real.rpow_nonneg $pa $b))
+    | _ => pure .none
+  | _, _, _ => throwError "not Real.rpow"
 
 end Mathlib.Meta.Positivity
 
@@ -799,7 +799,7 @@ lemma log_le_rpow_div {x ε : ℝ} (hx : 0 ≤ x) (hε : 0 < ε) : log x ≤ x ^
   exact (log_rpow h ε).symm.trans_le <| (log_le_sub_one_of_pos <| rpow_pos_of_pos h ε).trans
     (sub_one_lt _).le
 
-/-- The (real) logarithm of a natural number `n`is bounded by a multiple of every power of `n`
+/-- The (real) logarithm of a natural number `n` is bounded by a multiple of every power of `n`
 with positive exponent. -/
 lemma log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : log n ≤ n ^ ε / ε :=
   log_le_rpow_div n.cast_nonneg hε
@@ -993,14 +993,14 @@ theorem isInt_rpow_neg {a b : ℝ} {nb ne : ℕ}
 
 theorem isRat_rpow_pos {a b : ℝ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
-    (pb : IsNat b nb) (pe' : IsRat (a^nb) num den) :
-    IsRat (a^b) num den := by
+    (pb : IsNat b nb) (pe' : IsRat (a ^ nb) num den) :
+    IsRat (a ^ b) num den := by
   rwa [pb.out, rpow_nat_cast]
 
 theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
     {num : ℤ} {den : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a^(Int.negOfNat nb)) num den) :
-    IsRat (a^b) num den := by
+    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a ^ (Int.negOfNat nb)) num den) :
+    IsRat (a ^ b) num den := by
   rwa [pb.out, Real.rpow_int_cast]
 
 /-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.-/

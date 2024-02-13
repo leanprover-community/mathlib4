@@ -244,7 +244,7 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ
         cardQuot_pow_of_prime hI.ne_zero)
       fun {I J} hIJ => cardQuot_mul_of_coprime <| Ideal.isCoprime_iff_sup_eq.mpr
         (Ideal.isUnit_iff.mp
-          (hIJ _ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
+          (hIJ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
 #align card_quot_mul cardQuot_mul
 
 /-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
@@ -407,6 +407,9 @@ theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := b
     rwa [Ideal.span_singleton_le_iff_mem]
   · rintro rfl
     exact absNorm_bot
+
+theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : Ideal.absNorm (I : Ideal S) ≠ 0 :=
+  Ideal.absNorm_eq_zero_iff.not.mpr <| nonZeroDivisors.coe_ne_zero _
 
 theorem irreducible_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.absNorm I)) :
     Irreducible I :=

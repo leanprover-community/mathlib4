@@ -25,7 +25,7 @@ where the top arrow is the forgetful functor forgetting the yoneda-costructure, 
 the aforementioned equivalence and the diagonal arrow is the Yoneda embedding.
 
 In the notation of Kashiwara-Schapira, the type of the equivalence is written `C^ₐ ≌ Cₐ^`, where
-`·ₐ` is `CostructuredArrow` (with the functor `S` being either the identity or the Yonenda
+`·ₐ` is `CostructuredArrow` (with the functor `S` being either the identity or the Yoneda
 embedding) and `^` is taking presheaves. The equivalence is a key ingredient in various results in
 Kashiwara-Schapira.
 
@@ -82,7 +82,7 @@ attribute [local simp] FunctorToTypes.naturality
     that `yoneda.obj X ⟶ F` lifts to a morphism in `Over A`. -/
 structure MakesOverArrow {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) {X : C} (s : yoneda.obj X ⟶ A)
     (u : F.obj (op X)) : Prop where
-  (app : η.app (op X) u = yonedaEquiv s)
+  app : η.app (op X) u = yonedaEquiv s
 
 namespace MakesOverArrow
 
@@ -197,7 +197,7 @@ end OverArrows
 /-- This is basically just `yoneda.obj η : (Over A)ᵒᵖ ⥤ Type (max u v)` restricted along the
     forgetful functor `CostructuredArrow yoneda A ⥤ Over A`, but done in a way that we land in a
     smaller universe. -/
-@[simps (config := { fullyApplied := false }) obj map]
+@[simps]
 def restrictedYonedaObj {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) :
     (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v where
   obj s := OverArrows η s.unop.hom
@@ -369,7 +369,7 @@ end YonedaCollection
 
 /-- Given `F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v`, this is the presheaf that is given by
     `YonedaCollection F X` on objects. -/
-@[simps (config := { fullyApplied := false })]
+@[simps]
 def yonedaCollectionPresheaf (A : Cᵒᵖ ⥤ Type v) (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) :
     Cᵒᵖ ⥤ Type v where
   obj X := YonedaCollection F X.unop
@@ -386,20 +386,20 @@ def yonedaCollectionPresheafMap₁ {F G : (CostructuredArrow yoneda A)ᵒᵖ ⥤
     simp
 
 /-- This is the functor `F ↦ X ↦ YonedaCollection F X`. -/
-@[simps (config := { fullyApplied := false }) obj map]
+@[simps]
 def yonedaCollectionFunctor (A : Cᵒᵖ ⥤ Type v) :
     ((CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) ⥤ Cᵒᵖ ⥤ Type v where
   obj := yonedaCollectionPresheaf A
   map η := yonedaCollectionPresheafMap₁ η
 
 /-- The Yoneda lemma yields a natural transformation `yonedaCollectionPresheaf A F ⟶ A`. -/
-@[simps (config := { fullyApplied := false }) app]
+@[simps]
 def yonedaCollectionPresheafToA (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) :
     yonedaCollectionPresheaf A F ⟶ A where
   app X := YonedaCollection.yonedaEquivFst
 
 /-- This is the reverse direction of the equivalence we're constructing. -/
-@[simps! (config := { fullyApplied := false }) obj map]
+@[simps! obj map]
 def costructuredArrowPresheafToOver (A : Cᵒᵖ ⥤ Type v) :
     ((CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) ⥤ Over A :=
   (yonedaCollectionFunctor A).toOver _ (yonedaCollectionPresheafToA) (by aesop_cat)
@@ -538,7 +538,7 @@ def counitAuxAux (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) (s : Costru
   inv_hom_id := counitForward_counitBackward F s
 
 /-- Intermediate stage of assembling the counit. -/
-@[simps! (config := { fullyApplied := false }) hom]
+@[simps! hom]
 def counitAux (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) :
     F ≅ restrictedYonedaObj (yonedaCollectionPresheafToA F) :=
   NatIso.ofComponents (fun s => counitAuxAux F s.unop) (by aesop_cat)
