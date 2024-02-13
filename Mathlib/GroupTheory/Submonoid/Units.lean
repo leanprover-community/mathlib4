@@ -35,9 +35,7 @@ All of these are distinct from `S.leftInv`, which is the submonoid of `M` which 
 every member of `M` with a right inverse in `S`.
 -/
 
-variable {M : Type*}
-
-variable [Monoid M]
+variable {M : Type*} [Monoid M]
 
 open Units
 
