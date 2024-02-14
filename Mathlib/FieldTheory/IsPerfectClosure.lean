@@ -79,12 +79,13 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
 
 section IsPerfectClosure
 
-variable {K L M : Type*}
+variable {K L M N : Type*}
 
 section CommSemiring
 
 variable [CommSemiring K] [CommSemiring L] [CommSemiring M]
-  (i : K →+* L) (j : K →+* M) (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p]
+  (i : K →+* L) (j : K →+* M) (f : L →+* M)
+  (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p]
 
 /-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it is called
 `p`-radical if the following conditions are satisfied:
@@ -121,15 +122,15 @@ instance IsPRadical.of_id : IsPRadical (RingHom.id K) p where
     rw [RingHom.mem_ker, RingHom.id_apply] at h
     exact h ▸ Ideal.zero_mem _
 
-theorem IsPRadical.trans (j : L →+* M) [IsPRadical i p] [IsPRadical j p] :
-    IsPRadical (j.comp i) p where
+theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
+    IsPRadical (f.comp i) p where
   pow_mem' x := by
-    obtain ⟨n, y, hy⟩ := pow_mem j p x
+    obtain ⟨n, y, hy⟩ := pow_mem f p x
     obtain ⟨m, z, hz⟩ := pow_mem i p y
     exact ⟨n + m, z, by rw [RingHom.comp_apply, hz, map_pow, hy, pow_add, pow_mul]⟩
   ker_le' x h := by
     rw [RingHom.mem_ker, RingHom.comp_apply, ← RingHom.mem_ker] at h
-    simpa only [← Ideal.mem_comap, comap_pNilradical] using ker_le j p h
+    simpa only [← Ideal.mem_comap, comap_pNilradical] using ker_le f p h
 
 /-- If `i : K →+* L` is a ring homomorphism of characteristic `p` rings, then it makes `L`
 a perfect closure of `K` if the following conditions are satisfied:
@@ -212,8 +213,9 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing K] [CommRing L] [CommRing M]
-  (i : K →+* L) (j : K →+* M) (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p]
+variable [CommRing K] [CommRing L] [CommRing M] [CommRing N]
+  (i : K →+* L) (j : K →+* M) (k : K →+* N) (f : L →+* M) (g : L →+* N)
+  (p : ℕ) [ExpChar K p] [ExpChar L p] [ExpChar M p] [ExpChar N p]
 
 section PerfectRing.lift
 
@@ -292,13 +294,13 @@ theorem PerfectRing.lift_comp_apply (x : K) : lift i j p (i x) = j x := by
 theorem PerfectRing.lift_comp : (lift i j p).comp i = j :=
   RingHom.ext (lift_comp_apply i j p)
 
-theorem PerfectRing.comp_lift_apply (f : L →+* M) (x : L) : lift i (f.comp i) p x = f x := by
+theorem PerfectRing.comp_lift_apply (x : L) : lift i (f.comp i) p x = f x := by
   obtain ⟨n, y, h⟩ := IsPRadical.pow_mem i p x
   rw [lift_apply i _ p _ _ _ h, RingHom.comp_apply, h, ← iterate_frobenius, f.map_iterate_frobenius,
     ← coe_iterateFrobenius, ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply]
 
-theorem PerfectRing.comp_lift (f : L →+* M) : lift i (f.comp i) p = f :=
-  RingHom.ext (comp_lift_apply i p f)
+theorem PerfectRing.comp_lift : lift i (f.comp i) p = f :=
+  RingHom.ext (comp_lift_apply i f p)
 
 variable (M) in
 /-- If `i : K →+* L` is a homomorphisms of characteristic `p` rings, such that
@@ -309,11 +311,11 @@ def PerfectRing.liftEquiv : (K →+* M) ≃ (L →+* M) where
   toFun j := lift i j p
   invFun f := f.comp i
   left_inv f := lift_comp i f p
-  right_inv := comp_lift i p
+  right_inv f := comp_lift i f p
 
 theorem PerfectRing.liftEquiv_apply : liftEquiv M i p j = lift i j p := rfl
 
-theorem PerfectRing.liftEquiv_symm_apply (f : L →+* M) : (liftEquiv M i p).symm f = f.comp i := rfl
+theorem PerfectRing.liftEquiv_symm_apply : (liftEquiv M i p).symm f = f.comp i := rfl
 
 theorem PerfectRing.liftEquiv_id_apply : liftEquiv M (RingHom.id K) p j = j :=
   lift_id j p
@@ -323,8 +325,7 @@ theorem PerfectRing.liftEquiv_id : liftEquiv M (RingHom.id K) p = Equiv.refl _ :
 
 section comp
 
-variable {N : Type*} [CommRing N] (k : K →+* N) [ExpChar N p] [PerfectRing N p]
-  [IsPRadical j p]
+variable [PerfectRing N p] [IsPRadical j p]
 
 theorem PerfectRing.lift_comp_lift_apply (x : L) :
     lift j k p (lift i j p x) = lift i k p x := by
@@ -337,7 +338,7 @@ theorem PerfectRing.lift_comp_lift_apply (x : L) :
 
 theorem PerfectRing.lift_comp_lift :
     (lift j k p).comp (lift i j p) = lift i k p :=
-  RingHom.ext (lift_comp_lift_apply i j p k)
+  RingHom.ext (lift_comp_lift_apply i j k p)
 
 theorem PerfectRing.lift_comp_lift_apply_eq_self [PerfectRing L p] (x : L) :
     lift j i p (lift i j p x) = x := by
@@ -351,25 +352,24 @@ end comp
 
 section liftEquiv_comp
 
-variable {N : Type*} [CommRing N] [ExpChar N p] (k : L →+* N)
-  [IsPRadical k p] [IsPRadical (k.comp i) p]
+variable [IsPRadical g p] [IsPRadical (g.comp i) p]
 
 theorem PerfectRing.lift_lift_apply (x : N) :
-    lift k (lift i j p) p x = lift (k.comp i) j p x := by
-  obtain ⟨n, y, h⟩ := IsPRadical.pow_mem (k.comp i) p x
-  rw [lift_apply (k.comp i) j p _ _ _ h, lift_apply k _ p _ _ _ h,
+    lift g (lift i j p) p x = lift (g.comp i) j p x := by
+  obtain ⟨n, y, h⟩ := IsPRadical.pow_mem (g.comp i) p x
+  rw [lift_apply (g.comp i) j p _ _ _ h, lift_apply g _ p _ _ _ h,
     lift_apply i j p (i y) 0 y (by rw [pow_zero, pow_one]), iterateFrobeniusEquiv_zero]
   rfl
 
-theorem PerfectRing.lift_lift : lift k (lift i j p) p = lift (k.comp i) j p :=
-  RingHom.ext (lift_lift_apply i j p k)
+theorem PerfectRing.lift_lift : lift g (lift i j p) p = lift (g.comp i) j p :=
+  RingHom.ext (lift_lift_apply i j g p)
 
 theorem PerfectRing.liftEquiv_comp_apply :
-    liftEquiv M k p (liftEquiv M i p j) = liftEquiv M (k.comp i) p j := lift_lift i j p k
+    liftEquiv M g p (liftEquiv M i p j) = liftEquiv M (g.comp i) p j := lift_lift i j g p
 
 theorem PerfectRing.liftEquiv_trans :
-    (liftEquiv M i p).trans (liftEquiv M k p) = liftEquiv M (k.comp i) p :=
-  Equiv.ext (liftEquiv_comp_apply i · p k)
+    (liftEquiv M i p).trans (liftEquiv M g p) = liftEquiv M (g.comp i) p :=
+  Equiv.ext (liftEquiv_comp_apply i · g p)
 
 end liftEquiv_comp
 
@@ -419,15 +419,15 @@ theorem IsPerfectClosure.equiv_comp : (equiv i j p).toRingHom.comp i = j :=
 
 section comp
 
-variable {N : Type*} [CommRing N] (k : K →+* N) [ExpChar N p] [IsPerfectClosure k p]
+variable [IsPerfectClosure k p]
 
 theorem IsPerfectClosure.equiv_comp_equiv_apply (x : L) :
     equiv j k p (equiv i j p x) = equiv i k p x :=
   haveI := perfectRing j p; haveI := perfectRing k p;
-  PerfectRing.lift_comp_lift_apply i j p k x
+  PerfectRing.lift_comp_lift_apply i j k p x
 
 theorem IsPerfectClosure.equiv_comp_equiv : (equiv i j p).trans (equiv j k p) = equiv i k p :=
-  RingEquiv.ext (equiv_comp_equiv_apply i j p k)
+  RingEquiv.ext (equiv_comp_equiv_apply i j k p)
 
 theorem IsPerfectClosure.equiv_comp_equiv_apply_eq_self (x : L) :
     equiv j i p (equiv i j p x) = x := by
