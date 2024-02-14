@@ -4,7 +4,7 @@ import Mathlib.Data.Nat.Prime
 
 open Nat
 
-set_option maxHeartbeats 150000 in
+set_option maxHeartbeats 10000 in
 theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   let N := n.factorial + 1
   let p := minFac N

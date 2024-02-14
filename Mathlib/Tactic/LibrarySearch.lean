@@ -107,7 +107,9 @@ def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) 
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
   let cfg : SolveByElim.Config :=
     { maxDepth := depth, exfalso := exfalso, symm := true, commitIndependentGoals := true,
-      transparency := ← getTransparency }
+      transparency := ← getTransparency,
+      -- Make sure to turn off `constructor`, it significantly slows down `exact?`.
+      constructor := false }
   let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
   SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
