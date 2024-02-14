@@ -20,7 +20,26 @@ namespace CategoryTheory
 
 universe v u v' u'
 
-section
+section Skeletal
+
+variable {C : Type u} [Category.{v} C]
+variable [Limits.HasZeroMorphisms C] [Limits.HasBinaryBiproducts C] [Limits.HasZeroObject C]
+
+/-- If `C` has binary biproducts and is skeletal, it is a commutative additive monoid.
+See note [reducible non-instances]. -/
+@[reducible]
+noncomputable def addCommMonoidOfSkeletal (hC : Skeletal C) : AddCommMonoid C where
+  add X Y := (X ⊞ Y : C)
+  toZero := CategoryTheory.Limits.HasZeroObject.zero' _
+  zero_add X := hC ⟨(Limits.isoZeroBiprod (Limits.isZero_zero _)).symm⟩
+  add_zero X := hC ⟨(Limits.isoBiprodZero (Limits.isZero_zero _)).symm⟩
+  add_assoc X Y Z := hC ⟨Limits.biprod.associator X Y Z⟩
+  add_comm X Y := hC ⟨Limits.biprod.braiding X Y⟩
+
+end Skeletal
+
+/-! TODO: surely we have all this stuff somewhere? -/
+section Transport
 variable {C D : Type u} {E : Type u'} [Category.{v} C] [Category.{v} D] [Category.{v'} E]
 
 open Limits
@@ -179,21 +198,12 @@ theorem Limits.HasBinaryBiproduct.transport
       (P := e.inverse.obj X) (Q := e.inverse.obj Y)).map fun d =>
       d.transport e
 
-end
+end Transport
+
+section Skeleton
 
 variable {C : Type u} [Category.{v} C]
 variable [Limits.HasZeroMorphisms C] [Limits.HasBinaryBiproducts C] [Limits.HasZeroObject C]
-
-/-- If `C` has binary biproducts and is skeletal, it is a commutative additive monoid.
-See note [reducible non-instances]. -/
-@[reducible]
-noncomputable def addCommMonoidOfSkeletal (hC : Skeletal C) : AddCommMonoid C where
-  add X Y := (X ⊞ Y : C)
-  toZero := CategoryTheory.Limits.HasZeroObject.zero' _
-  zero_add X := hC ⟨(Limits.isoZeroBiprod (Limits.isZero_zero _)).symm⟩
-  add_zero X := hC ⟨(Limits.isoBiprodZero (Limits.isZero_zero _)).symm⟩
-  add_assoc X Y Z := hC ⟨Limits.biprod.associator X Y Z⟩
-  add_comm X Y := hC ⟨Limits.biprod.braiding X Y⟩
 
 instance : Limits.HasZeroObject (Skeleton C) :=
   Limits.HasZeroObject.transport (skeletonEquivalence C).symm
@@ -213,3 +223,5 @@ is given by the biproduct, and satisfies the monoid axioms since it is a skeleto
 -/
 noncomputable instance Skeleton.instAddCommMonoid : AddCommMonoid (Skeleton C) :=
   addCommMonoidOfSkeletal (skeletonIsSkeleton _).skel
+
+end Skeleton
