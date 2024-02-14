@@ -55,13 +55,13 @@ universe u v w w'
 variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
-class Order.Frame (α : Type*) extends CompleteLattice α where
+class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α where
   /-- `⊓` distributes over `⨆`. -/
   inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
-class Order.Coframe (α : Type*) extends CompleteLattice α where
+class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α where
   /-- `⊔` distributes over `⨅`. -/
   iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 
@@ -76,7 +76,7 @@ add_decl_doc CompleteDistribLattice.iInf_sup_le_sup_sInf
 
 /-- A completely distributive lattice is a complete lattice whose `⨅` and `⨆`
 distribute over each other. -/
-class CompletelyDistribLattice (α : Type u) extends CompleteLattice α where
+class CompletelyDistribLattice (α : Type u) extends CompleteLattice α, BiheytingAlgebra α where
   protected iInf_iSup_eq {ι : Type u} {κ : ι → Type u} (f : ∀ a, κ a → α) :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a)
 
@@ -116,6 +116,7 @@ theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
 
 instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     [CompletelyDistribLattice α] : CompleteDistribLattice α where
+  __ := ‹CompletelyDistribLattice α›
   iInf_sup_le_sup_sInf a s := calc
     _ = ⨅ b : s, ⨆ x : Bool, cond x a b := by simp_rw [iInf_subtype, iSup_bool_eq, cond]
     _ = _ := iInf_iSup_eq
@@ -139,6 +140,7 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
 -- See note [lower instance priority]
 instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [CompleteLinearOrder α] :
     CompletelyDistribLattice α where
+  __ := ‹CompleteLinearOrder α›
   iInf_iSup_eq {α β} g := by
     let lhs := ⨅ a, ⨆ b, g a b
     let rhs := ⨆ h : ∀ a, β a, ⨅ a, g a (h a)
@@ -170,6 +172,7 @@ variable [Frame α] {s t : Set α} {a b : α}
 
 instance OrderDual.instCoframe : Coframe αᵒᵈ where
   __ := instCompleteLattice
+  __ := instCoheytingAlgebra
   iInf_sup_le_sup_sInf := @Frame.inf_sSup_le_iSup_inf α _
 
 theorem inf_sSup_eq : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
@@ -243,11 +246,13 @@ instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
 
 instance Prod.instFrame [Frame α] [Frame β] : Frame (α × β) where
   __ := instCompleteLattice
+  __ := instHeytingAlgebra
   inf_sSup_le_iSup_inf a s := by
     simp [Prod.le_def, sSup_eq_iSup, fst_iSup, snd_iSup, fst_iInf, snd_iInf, inf_iSup_eq]
 
 instance Pi.instFrame {ι : Type*} {π : ι → Type*} [∀ i, Frame (π i)] : Frame (∀ i, π i) where
   __ := instCompleteLattice
+  __ := instHeytingAlgebra
   inf_sSup_le_iSup_inf a s i := by
     simp only [sSup_apply, iSup_apply, inf_apply, inf_iSup_eq, ← iSup_subtype'']; rfl
 
@@ -259,6 +264,7 @@ variable [Coframe α] {s t : Set α} {a b : α}
 
 instance OrderDual.instFrame : Frame αᵒᵈ where
   __ := instCompleteLattice
+  __ := instHeytingAlgebra
   inf_sSup_le_iSup_inf := @Coframe.iInf_sup_le_sup_sInf α _
 
 theorem sup_sInf_eq : a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
@@ -306,11 +312,13 @@ instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where
 
 instance Prod.instCoframe [Coframe β] : Coframe (α × β) where
   __ := instCompleteLattice
+  __ := instCoheytingAlgebra
   iInf_sup_le_sup_sInf a s := by
     simp [Prod.le_def, sInf_eq_iInf, fst_iSup, snd_iSup, fst_iInf, snd_iInf, sup_iInf_eq]
 
 instance Pi.instCoframe {ι : Type*} {π : ι → Type*} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) where
   __ := instCompleteLattice
+  __ := instCoheytingAlgebra
   iInf_sup_le_sup_sInf a s i := by
     simp only [sInf_apply, iInf_apply, sup_apply, sup_iInf_eq, ← iInf_subtype'']; rfl
 
@@ -342,16 +350,19 @@ section CompletelyDistribLattice
 instance OrderDual.instCompletelyDistribLattice [CompletelyDistribLattice α] :
     CompletelyDistribLattice αᵒᵈ where
   __ := instFrame
+  __ := instCoframe
   iInf_iSup_eq _ := iSup_iInf_eq (α := α)
 
 instance Prod.instCompletelyDistribLattice [CompletelyDistribLattice α]
     [CompletelyDistribLattice β] : CompletelyDistribLattice (α × β) where
   __ := instFrame
+  __ := instCoframe
   iInf_iSup_eq f := by ext <;> simp [fst_iSup, fst_iInf, snd_iSup, snd_iInf, iInf_iSup_eq]
 
 instance Pi.instCompletelyDistribLattice {ι : Type*} {π : ι → Type*}
     [∀ i, CompletelyDistribLattice (π i)] : CompletelyDistribLattice (∀ i, π i) where
   __ := instFrame
+  __ := instCoframe
   iInf_iSup_eq f := by ext i; simp only [iInf_apply, iSup_apply, iInf_iSup_eq]
 
 end CompletelyDistribLattice
@@ -447,6 +458,7 @@ instance OrderDual.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebr
 instance Prop.instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Prop where
   __ := Prop.instCompleteLattice
   __ := Prop.instBooleanAlgebra
+  __ := BooleanAlgebra.toBiheytingAlgebra
   iInf_iSup_eq f := by simp [Classical.skolem]
 
 instance Prop.instCompleteBooleanAlgebra : CompleteBooleanAlgebra Prop := inferInstance
@@ -456,11 +468,13 @@ section lift
 -- See note [reducible non-instances]
 /-- Pullback an `Order.Frame` along an injection. -/
 protected abbrev Function.Injective.frame [Sup α] [Inf α] [SupSet α] [InfSet α] [Top α] [Bot α]
-    [Frame β] (f : α → β) (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
-    (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
-    (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) :
-    Frame α where
+    [HasCompl α] [HImp α] [Frame β] (f : α → β) (hf : Injective f)
+    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
+    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
+    (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : Frame α where
   __ := hf.completeLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.heytingAlgebra f map_sup map_inf map_top map_bot map_compl map_himp
   inf_sSup_le_iSup_inf a s := by
     change f (a ⊓ sSup s) ≤ f _
     rw [← sSup_image, map_inf, map_sSup s, inf_iSup₂_eq]
@@ -470,11 +484,13 @@ protected abbrev Function.Injective.frame [Sup α] [Inf α] [SupSet α] [InfSet 
 -- See note [reducible non-instances]
 /-- Pullback an `Order.Coframe` along an injection. -/
 protected abbrev Function.Injective.coframe [Sup α] [Inf α] [SupSet α] [InfSet α] [Top α] [Bot α]
-    [Coframe β] (f : α → β) (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
-    (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
-    (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) :
-    Coframe α where
+    [HNot α] [SDiff α] [Coframe β] (f : α → β) (hf : Injective f)
+    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
+    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_hnot : ∀ a, f (￢a) = ￢f a)
+    (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : Coframe α where
   __ := hf.completeLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.coheytingAlgebra f map_sup map_inf map_top map_bot map_hnot map_sdiff
   iInf_sup_le_sup_sInf a s := by
     change f _ ≤ f (a ⊔ sInf s)
     rw [← sInf_image, map_sup, map_sInf s, sup_iInf₂_eq]
@@ -484,21 +500,30 @@ protected abbrev Function.Injective.coframe [Sup α] [Inf α] [SupSet α] [InfSe
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteDistribLattice` along an injection. -/
 protected abbrev Function.Injective.completeDistribLattice [Sup α] [Inf α] [SupSet α] [InfSet α]
-    [Top α] [Bot α] [CompleteDistribLattice β] (f : α → β) (hf : Function.Injective f)
+    [Top α] [Bot α] [HasCompl α] [HImp α] [HNot α] [SDiff α] [CompleteDistribLattice β] (f : α → β)
+    (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompleteDistribLattice α where
-  __ := hf.frame f map_sup map_inf map_sSup map_sInf map_top map_bot
-  __ := hf.coframe f map_sup map_inf map_sSup map_sInf map_top map_bot
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
+    (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b)
+    (map_hnot : ∀ a, f (￢a) = ￢f a) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
+    CompleteDistribLattice α where
+  __ := hf.frame f map_sup map_inf map_sSup map_sInf map_top map_bot map_compl map_himp
+  __ := hf.coframe f map_sup map_inf map_sSup map_sInf map_top map_bot map_hnot map_sdiff
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompletelyDistribLattice` along an injection. -/
 protected abbrev Function.Injective.completelyDistribLattice [Sup α] [Inf α] [SupSet α] [InfSet α]
-    [Top α] [Bot α] [CompletelyDistribLattice β] (f : α → β) (hf : Function.Injective f)
+    [Top α] [Bot α] [HasCompl α] [HImp α] [HNot α] [SDiff α] [CompletelyDistribLattice β]
+    (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompletelyDistribLattice α where
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
+    (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b)
+    (map_hnot : ∀ a, f (￢a) = ￢f a) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
+    CompletelyDistribLattice α where
   __ := hf.completeLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.biheytingAlgebra f map_sup map_inf map_top map_bot map_compl map_hnot map_himp map_sdiff
   iInf_iSup_eq g := hf <| by
     simp_rw [iInf, map_sInf, iInf_range, iSup, map_sSup, iSup_range, map_sInf, iInf_range,
       iInf_iSup_eq]
@@ -506,25 +531,30 @@ protected abbrev Function.Injective.completelyDistribLattice [Sup α] [Inf α] [
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteBooleanAlgebra` along an injection. -/
 protected abbrev Function.Injective.completeBooleanAlgebra [Sup α] [Inf α] [SupSet α] [InfSet α]
-    [Top α] [Bot α] [HasCompl α] [SDiff α] [CompleteBooleanAlgebra β] (f : α → β)
-    (hf : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
+    [Top α] [Bot α] [HasCompl α] [HImp α] [HNot α] [SDiff α] [CompleteBooleanAlgebra β] (f : α → β)
+    (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
     (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
-    (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
+    (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b)
+    (map_hnot : ∀ a, f (￢a) = ￢f a) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     CompleteBooleanAlgebra α where
-  __ := hf.completeDistribLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.completeDistribLattice f map_sup map_inf map_sSup map_sInf map_top map_bot map_compl
+    map_himp map_hnot map_sdiff
   __ := hf.booleanAlgebra f map_sup map_inf map_top map_bot map_compl map_sdiff
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteAtomicBooleanAlgebra` along an injection. -/
 protected abbrev Function.Injective.completeAtomicBooleanAlgebra [Sup α] [Inf α] [SupSet α]
-    [InfSet α] [Top α] [Bot α] [HasCompl α] [SDiff α] [CompleteAtomicBooleanAlgebra β] (f : α → β)
-    (hf : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
-    (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
-    (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
-    (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
+    [InfSet α] [Top α] [Bot α] [HasCompl α] [HImp α] [HNot α] [SDiff α]
+    [CompleteAtomicBooleanAlgebra β] (f : α → β) (hf : Injective f)
+    (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
+    (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
+    (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b)
+    (map_hnot : ∀ a, f (￢a) = ￢f a) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     CompleteAtomicBooleanAlgebra α where
-  __ := hf.completelyDistribLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
+  __ := hf.completelyDistribLattice f map_sup map_inf map_sSup map_sInf map_top map_bot map_compl
+    map_himp map_hnot map_sdiff
   __ := hf.booleanAlgebra f map_sup map_inf map_top map_bot map_compl map_sdiff
 
 end lift
