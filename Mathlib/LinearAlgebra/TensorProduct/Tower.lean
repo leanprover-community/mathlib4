@@ -3,8 +3,9 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.LinearAlgebra.Basic
+import Mathlib.LinearAlgebra.TensorProduct
 
 #align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 

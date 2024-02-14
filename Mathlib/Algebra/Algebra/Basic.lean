@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Module.ULift
-import Mathlib.LinearAlgebra.Basic
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Algebra.Module.ULift
+import Mathlib.RingTheory.Subring.Basic
 
 #align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 

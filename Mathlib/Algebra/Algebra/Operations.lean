@@ -6,15 +6,16 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Module.Opposites
+import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.Finset.Pointwise
-import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Pointwise.BigOperators
+import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.LinearAlgebra.Basic
 
 #align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 
