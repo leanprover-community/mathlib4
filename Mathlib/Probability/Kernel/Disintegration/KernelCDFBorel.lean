@@ -1,3 +1,4 @@
+import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Kernel.Disintegration.BuildKernel
 
@@ -159,9 +160,36 @@ lemma iInter_biUnion_I (x : ℝ) : ⋂ n, ⋃ (k) (_ : indexI n x ≤ k), I n k 
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_contra h_lt
     push_neg at h_lt
-    --have h_pos : ∀ i, 0 < (2 : ℝ) ^ i := fun i ↦ by positivity
-    --simp_rw [← div_eq_mul_inv, div_le_iff (h_pos _)] at h
-    sorry
+    have h_pos : ∀ i, 0 < (2 : ℝ) ^ i := fun i ↦ by positivity
+    simp_rw [← div_eq_mul_inv, div_le_iff (h_pos _)] at h
+    obtain ⟨i, hi⟩ : ∃ i, 1 < (x - t) * 2 ^ i := by
+      suffices ∃ i : ℝ, 1 ≤ (x - t) * 2 ^ i by
+        obtain ⟨i, hi⟩ := this
+        use ⌈i⌉₊ + 1
+        refine hi.trans_lt ?_
+        gcongr
+        · simp [h_lt]
+        · refine ((Real.rpow_lt_rpow_left_iff one_lt_two).mpr (?_ : i < ⌈i⌉₊ + 1)).trans_eq ?_
+          · refine (Nat.le_ceil _).trans_lt ?_
+            norm_num
+          · norm_cast
+      use Real.logb 2 ((x - t)⁻¹)
+      rw [Real.rpow_logb]
+      · rw [mul_inv_cancel]
+        rw [sub_ne_zero]
+        exact h_lt.ne'
+      · exact zero_lt_two
+      · simp
+      · simp [h_lt]
+    specialize h i
+    rw [mul_comm, mul_sub, lt_sub_iff_add_lt', mul_comm] at hi
+    have h' : ⌈x * 2 ^ i⌉ ≤ t * 2 ^ i + 1 := by
+      calc (⌈x * 2 ^ i⌉ : ℝ) ≤ ⌊x * 2 ^ i⌋ + 1 := by
+            exact mod_cast (Int.ceil_le_floor_add_one (x * 2 ^ i))
+      _ ≤ t * 2 ^ i + 1 := by gcongr
+    have h'' : ↑⌈x * 2 ^ i⌉ < 2 ^ i * x := h'.trans_lt hi
+    rw [← not_le, mul_comm] at h''
+    exact h'' (Int.le_ceil _)
   · intro n
     refine le_trans ?_ h
     rw [← div_eq_mul_inv, div_le_iff]
