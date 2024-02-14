@@ -68,7 +68,7 @@ lemma sqrt_le_sqrt : sqrt x ≤ sqrt y ↔ x ≤ y := sqrt.le_iff_le
 lemma sqrt_lt_sqrt : sqrt x < sqrt y ↔ x < y := sqrt.lt_iff_lt
 #align nnreal.sqrt_lt_sqrt_iff NNReal.sqrt_lt_sqrt
 
-lemma sqrt_eq_iff_eq_sq : sqrt x = y ↔ x =  y ^ 2 := sqrt.toEquiv.apply_eq_iff_eq_symm_apply
+lemma sqrt_eq_iff_eq_sq : sqrt x = y ↔ x = y ^ 2 := sqrt.toEquiv.apply_eq_iff_eq_symm_apply
 #align nnreal.sqrt_eq_iff_sq_eq NNReal.sqrt_eq_iff_eq_sq
 
 lemma sqrt_le_iff_le_sq : sqrt x ≤ y ↔ x ≤ y ^ 2 := sqrt.to_galoisConnection _ _
@@ -531,9 +531,9 @@ theorem Continuous.sqrt (h : Continuous f) : Continuous fun x => sqrt (f x) :=
 
 namespace Finset
 
-lemma cauchy_schwarz_sqrt {α : Type*} (s : Finset α) (f g : α → ℝ) :
+lemma sum_mul_le_sqrt_mul_sqrt {α : Type*} (s : Finset α) (f g : α → ℝ) :
     ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ 2).sqrt * (∑ i in s, g i ^ 2).sqrt :=
-  (le_sqrt_of_sq_le $ sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq $ sqrt_mul
+  (le_sqrt_of_sq_le <| sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul
     (sum_nonneg fun _ _ ↦ by positivity) _
 
 end Finset
