@@ -56,7 +56,7 @@ This typeclass captures properties shared by ℝ and ℂ, with an API that close
 
 While the name of the class begins with `Is`,
 this typeclass carries data (all operations common to real and complex numbers),
-not just claims existence of these operations.
+it does not just claim the existence of these operations.
 
 This class has exactly two instances: one for `ℝ` and one for `ℂ`.
 In particular, there is no instance for `ULift K`.
