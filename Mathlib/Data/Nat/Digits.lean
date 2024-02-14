@@ -26,8 +26,12 @@ and reconstructing numbers from their digits.
 We also prove some divisibility tests based on digits, in particular completing
 Theorem #85 from https://www.cs.ru.nl/~freek/100/.
 
-A basic `norm_digits` tactic is also provided for proving goals of the form
-`Nat.digits a b = l` where `a` and `b` are numerals.
+Also included is a bound on the length of `Nat.toDigits` from core.
+
+## TODO
+
+A basic `norm_digits` tactic for proving goals of the form `Nat.digits a b = l` where `a` and `b`
+are numerals is not yet ported.
 -/
 
 set_option autoImplicit true
@@ -77,8 +81,8 @@ In any base, we have `ofDigits b L = L.foldr (fun x y ↦ x + b * y) 0`.
 * For `b = 1`, we define `digits 1 n = List.replicate n 1`.
 * For `b = 0`, we define `digits 0 n = [n]`, except `digits 0 0 = []`.
 
-Note this differs from the existing `Nat.to_digits` in core, which is used for printing numerals.
-In particular, `Nat.to_digits b 0 = [0]`, while `digits b 0 = []`.
+Note this differs from the existing `Nat.toDigits` in core, which is used for printing numerals.
+In particular, `Nat.toDigits b 0 = [0]`, while `digits b 0 = []`.
 -/
 def digits : ℕ → ℕ → List ℕ
   | 0 => digitsAux0
@@ -737,6 +741,64 @@ theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digit
   rw [(p.map _).reverse_eq, _root_.pow_succ, h.neg_one_pow, mul_one, neg_one_zsmul] at this
   exact eq_zero_of_neg_eq this.symm
 #align nat.eleven_dvd_of_palindrome Nat.eleven_dvd_of_palindrome
+
+/-! ### `Nat.toDigits` length -/
+
+lemma toDigitsCore_lens_eq_aux (b f : Nat) :
+    ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
+    (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
+  induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
+  | zero => assumption
+  | succ f ih =>
+    split_ifs
+    · simp only [List.length, congrArg (fun l ↦ l + 1) hlen]
+    · simpa only [List.length, congrArg (fun l ↦ l + 1) hlen, forall_true_left] using
+        ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
+
+lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
+    (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
+  induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
+  | succ f ih =>
+    split_ifs
+    · simp only [List.length]
+    · rw [← ih (n / b) c]
+      apply toDigitsCore_lens_eq_aux
+      simp
+
+/-- The String representation produced by `Nat.toDigitsCore` has the proper length relative to
+the number of digits in `n < e` for some base `b`. Since this works with any base greater
+than one, it can be used for binary, decimal, and hex. -/
+lemma toDigitsCore_length (b : Nat) (f n e : Nat)
+    (h_e_pos : 0 < e) (hlt : n < b ^ e) : (Nat.toDigitsCore b f n []).length <= e := by
+  induction f generalizing n e hlt h_e_pos with
+    simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
+  | succ f ih =>
+    cases e with
+    | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
+    | succ e =>
+      cases Nat.eq_zero_or_pos e with
+      | inr h_pred_pos =>
+        specialize ih (n / b) e h_pred_pos (Nat.div_lt_of_lt_mul <| by rwa [← pow_succ'])
+        split_ifs
+        · simp only [List.length_singleton, _root_.zero_le, succ_le_succ]
+        · simp only [toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b),
+            Nat.succ_le_succ_iff, ih]
+      | inl h =>
+        subst h
+        rw [← one_eq_succ_zero, pow_one] at hlt
+        simp [Nat.div_eq_of_lt hlt]
+
+/-- The core implementation of `Nat.toDigits` returns a String with length less than or equal to the
+number of digits in the base-`b` number (represented by `e`). For example, the string
+representation of any number less than `b ^ 3` has a length less than or equal to 3. -/
+lemma toDigits_length (b n e : Nat) : 0 < e → n < b ^ e → (Nat.toDigits b n).length <= e :=
+  toDigitsCore_length _ _ _ _
+
+/-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
+number of digits in the decimal number (represented by `e`). For example, the decimal string
+representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
+lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= e :=
+  toDigits_length _ _ _
 
 /-! ### `norm_digits` tactic -/
 

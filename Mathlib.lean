@@ -1846,6 +1846,7 @@ import Mathlib.Data.Nat.Factorization.Root
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.Fib.Zeckendorf
+import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
@@ -2372,7 +2373,7 @@ import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Bits
 import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Nat.Div
 import Mathlib.Init.Data.Nat.GCD
