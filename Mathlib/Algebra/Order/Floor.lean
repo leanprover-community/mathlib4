@@ -1740,17 +1740,23 @@ theorem Int.ofNat_floor_eq_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋ :
   rw [← Int.floor_toNat, Int.toNat_of_nonneg (Int.floor_nonneg.2 ha)]
 #align nat.cast_floor_eq_int_floor Int.ofNat_floor_eq_floor
 
-theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
-  rw [← Int.ofNat_floor_eq_floor ha, Int.cast_ofNat]
-#align nat.cast_floor_eq_cast_int_floor natCast_floor_eq_intCast_floor
-
 theorem Int.ofNat_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
   rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg ha)]
 #align nat.cast_ceil_eq_int_ceil Int.ofNat_ceil_eq_ceil
 
+theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
+  rw [← Int.ofNat_floor_eq_floor ha, Int.cast_ofNat]
+#align nat.cast_floor_eq_cast_int_floor natCast_floor_eq_intCast_floor
+
 theorem natCast_ceil_eq_intCast_ceil  (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
   rw [← Int.ofNat_ceil_eq_ceil ha, Int.cast_ofNat]
 #align nat.cast_ceil_eq_cast_int_ceil natCast_ceil_eq_intCast_ceil
+
+-- 2024-02-14
+@[deprecated] alias Nat.cast_floor_eq_int_floor := Int.ofNat_floor_eq_floor
+@[deprecated] alias Nat.cast_ceil_eq_int_ceil := Int.ofNat_ceil_eq_ceil
+@[deprecated] alias Nat.cast_floor_eq_cast_int_floor := natCast_floor_eq_intCast_floor
+@[deprecated] alias Nat.cast_ceil_eq_cast_int_ceil := natCast_ceil_eq_intCast_ceil
 
 end FloorRingToSemiring
 
