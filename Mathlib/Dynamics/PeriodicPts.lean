@@ -680,24 +680,36 @@ theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
       pow_smul_eq_iff_period_dvd]
 
 @[to_additive (attr := simp)]
-theorem pow_smul_plus_period (n o : ℕ) (m : M) (a : α) :
-    m ^ (n + (period m a) * o) • a = m ^ n • a := by
-  rw [pow_add, mul_smul, pow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
-
-@[to_additive (attr := simp)]
-theorem zpow_smul_plus_period (i j : ℤ) (g : G) (a : α) :
-    g ^ (i + (period g a : ℤ) * j) • a = g ^ i • a := by
-  rw [zpow_add, mul_smul, zpow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
-
-@[to_additive (attr := simp)]
-theorem pow_smul_mod_period (n : ℕ) {m : M} {a : α} :
+theorem pow_mod_period_smul (n : ℕ) {m : M} {a : α} :
     m ^ (n % period m a) • a = m ^ n • a := by
-  conv_rhs => rw [← Nat.mod_add_div n (period m a), pow_smul_plus_period]
+  conv_rhs => rw [← Nat.mod_add_div n (period m a), pow_add, mul_smul,
+    pow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
 
 @[to_additive (attr := simp)]
-theorem zpow_smul_mod_period (j : ℤ) {g : G} {a : α} :
+theorem zpow_mod_period_smul (j : ℤ) {g : G} {a : α} :
     g ^ (j % (period g a : ℤ)) • a = g ^ j • a := by
-  conv_rhs => rw [← Int.emod_add_ediv j (period g a), zpow_smul_plus_period]
+  conv_rhs => rw [← Int.emod_add_ediv j (period g a), zpow_add, mul_smul,
+    zpow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
+
+@[to_additive (attr := simp)]
+theorem pow_add_period_smul (n : ℕ) (m : M) (a : α) :
+    m ^ (n + period m a) • a = m ^ n • a := by
+  rw [← pow_mod_period_smul, Nat.add_mod_right, pow_mod_period_smul]
+
+@[to_additive (attr := simp)]
+theorem pow_period_add_smul (n : ℕ) (m : M) (a : α) :
+    m ^ (period m a + n) • a = m ^ n • a := by
+  rw [← pow_mod_period_smul, Nat.add_mod_left, pow_mod_period_smul]
+
+@[to_additive (attr := simp)]
+theorem zpow_add_period_smul (i : ℤ) (g : G) (a : α) :
+    g ^ (i + period g a) • a = g ^ i • a := by
+  rw [← zpow_mod_period_smul, Int.add_emod_self, zpow_mod_period_smul]
+
+@[to_additive (attr := simp)]
+theorem zpow_period_add_smul (i : ℤ) (g : G) (a : α) :
+    g ^ (period g a + i) • a = g ^ i • a := by
+  rw [← zpow_mod_period_smul, Int.add_emod_self_left, zpow_mod_period_smul]
 
 variable {a : G} {b : α}
 
@@ -720,14 +732,14 @@ variable (a b)
 @[to_additive (attr := simp)]
 theorem pow_smul_mod_minimalPeriod (n : ℕ) :
     a ^ (n % minimalPeriod (a • ·) b) • b = a ^ n • b := by
-  rw [← period_eq_minimalPeriod, pow_smul_mod_period]
+  rw [← period_eq_minimalPeriod, pow_mod_period_smul]
 #align mul_action.pow_smul_mod_minimal_period MulAction.pow_smul_mod_minimalPeriod
 #align add_action.nsmul_vadd_mod_minimal_period AddAction.nsmul_vadd_mod_minimalPeriod
 
 @[to_additive (attr := simp)]
 theorem zpow_smul_mod_minimalPeriod (n : ℤ) :
     a ^ (n % (minimalPeriod (a • ·) b : ℤ)) • b = a ^ n • b := by
-  rw [← period_eq_minimalPeriod, zpow_smul_mod_period]
+  rw [← period_eq_minimalPeriod, zpow_mod_period_smul]
 #align mul_action.zpow_smul_mod_minimal_period MulAction.zpow_smul_mod_minimalPeriod
 #align add_action.zsmul_vadd_mod_minimal_period AddAction.zsmul_vadd_mod_minimalPeriod
 
