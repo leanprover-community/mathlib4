@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Kexing Ying
+Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.CondCdf
 import Mathlib.Probability.Kernel.Disintegration.KernelCDFBorel
@@ -24,8 +24,7 @@ variable {α β Ω Ω': Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
 section BorelSnd
 
 noncomputable
-def condKernelBorelSnd (κ : kernel α (β × Ω')) [IsMarkovKernel κ]
-    {f : α × β → StieltjesFunction}
+def condKernelBorelSnd (κ : kernel α (β × Ω')) {f : α × β → StieltjesFunction}
     (hf : IsKernelCDF f
       (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω'))
         (measurable_id.prod_map (measurableEmbedding_measurableEmbedding_real Ω').measurable))
@@ -40,7 +39,7 @@ def condKernelBorelSnd (κ : kernel α (β × Ω')) [IsMarkovKernel κ]
       (cdfKernel f hf) (kernel.deterministic (fun _ ↦ x₀) measurable_const))
     he
 
-instance instIsMarkovKernel_condKernelBorelSnd (κ : kernel α (β × Ω')) [IsMarkovKernel κ]
+instance instIsMarkovKernel_condKernelBorelSnd (κ : kernel α (β × Ω'))
     {f : α × β → StieltjesFunction}
     (hf : IsKernelCDF f
       (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω'))
@@ -59,7 +58,7 @@ instance instIsMarkovKernel_condKernelBorelSnd (κ : kernel α (β × Ω')) [IsM
       Set.indicator_apply, if_pos]
     exact (range_nonempty (measurableEmbedding_real Ω')).choose_spec
 
-lemma compProd_fst_condKernelBorelSnd (κ : kernel α (β × Ω')) [IsMarkovKernel κ]
+lemma compProd_fst_condKernelBorelSnd (κ : kernel α (β × Ω')) [IsFiniteKernel κ]
     {f : α × β → StieltjesFunction}
     (hf : IsKernelCDF f
       (kernel.map κ (Prod.map (id : β → β) (measurableEmbedding_real Ω'))
@@ -173,7 +172,7 @@ def condKernelBorel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] : kernel (�
 instance instIsMarkovKernel_condKernelBorel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] :
     IsMarkovKernel (condKernelBorel κ) := by rw [condKernelBorel]; infer_instance
 
-lemma compProd_fst_condKernel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] :
+lemma compProd_fst_condKernelBorel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] :
     kernel.fst κ ⊗ₖ condKernelBorel κ = κ := by
   let f := measurableEmbedding_real Ω
   let hf := measurableEmbedding_measurableEmbedding_real Ω
@@ -224,14 +223,152 @@ lemma compProd_fst_condKernel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] :
 
 end StandardBorel
 
-section Countable
-
 section Unit
 
+section Real
 
+noncomputable def condKernelUnitReal (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] :
+    kernel (Unit × α) ℝ :=
+  cdfKernel (fun (p : Unit × α) ↦ condCDF (ρ ()) p.2) (isKernelCDF_condCDF (ρ ()))
+
+instance (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] : IsMarkovKernel (condKernelUnitReal ρ) := by
+  rw [condKernelUnitReal]; infer_instance
+
+lemma fst_compProd_condKernelUnitReal (ρ : kernel Unit (α × ℝ)) [IsFiniteKernel ρ] :
+    kernel.fst ρ ⊗ₖ condKernelUnitReal ρ = ρ := by
+  have : ρ = kernel.const Unit (ρ ()) := by ext; simp
+  conv_rhs => rw [this, kernel.eq_compProd_cdfKernel (isKernelCDF_condCDF (ρ ()))]
+
+end Real
+
+section BorelSnd
+
+noncomputable
+def condKernelUnitBorel (κ : kernel Unit (α × Ω')) [IsFiniteKernel κ] : kernel (Unit × α) Ω' :=
+  let f := measurableEmbedding_real Ω'
+  let hf := measurableEmbedding_measurableEmbedding_real Ω'
+  let κ' := kernel.map κ (Prod.map (id : α → α) f) (measurable_id.prod_map hf.measurable)
+  condKernelBorelSnd κ (isKernelCDF_condCDF (κ' ()))
+
+instance instIsMarkovKernel_condKernelUnitBorel (κ : kernel Unit (α × Ω')) [IsFiniteKernel κ] :
+    IsMarkovKernel (condKernelUnitBorel κ) := by
+  rw [condKernelUnitBorel]
+  infer_instance
+
+lemma compProd_fst_condKernelUnitBorel (κ : kernel Unit (α × Ω')) [IsFiniteKernel κ] :
+    kernel.fst κ ⊗ₖ condKernelUnitBorel κ = κ := by
+  rw [condKernelUnitBorel, compProd_fst_condKernelBorelSnd]
+
+end BorelSnd
 
 end Unit
 
+section Measure
+
+/-- Conditional kernel of a measure on a product space: a Markov kernel such that
+`ρ = ρ.fst ⊗ₘ ρ.condKernel` (see `ProbabilityTheory.measure_eq_compProd`). -/
+noncomputable
+def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω')) [IsFiniteMeasure ρ] :
+    kernel α Ω' where
+  val a := condKernelUnitBorel (kernel.const Unit ρ) ((), a)
+  property := (condKernelUnitBorel (kernel.const Unit ρ)).property.comp measurable_prod_mk_left
+#align measure_theory.measure.cond_kernel MeasureTheory.Measure.condKernel
+
+lemma _root_.MeasureTheory.Measure.condKernel_apply (ρ : Measure (α × Ω')) [IsFiniteMeasure ρ]
+    (a : α) :
+    ρ.condKernel a = condKernelUnitBorel (kernel.const Unit ρ) ((), a) := rfl
+
+instance _root_.MeasureTheory.Measure.instIsMarkovKernel_condKernel
+    (ρ : Measure (α × Ω')) [IsFiniteMeasure ρ] :
+    IsMarkovKernel ρ.condKernel := by
+  constructor
+  intro a
+  change IsProbabilityMeasure (condKernelUnitBorel (kernel.const Unit ρ) ((), a))
+  infer_instance
+
+lemma _root_.MeasureTheory.Measure.compProd_fst_condKernel
+    (ρ : Measure (α × Ω')) [IsFiniteMeasure ρ] :
+    ρ.fst ⊗ₘ ρ.condKernel = ρ := by
+  have h1 : kernel.const Unit (Measure.fst ρ) = kernel.fst (kernel.const Unit ρ) := by
+    ext
+    simp only [kernel.fst_apply, Measure.fst, kernel.const_apply]
+  have h2 : kernel.prodMkLeft Unit (Measure.condKernel ρ)
+      = condKernelUnitBorel (kernel.const Unit ρ) := by
+    ext
+    simp only [kernel.prodMkLeft_apply, Measure.condKernel_apply]
+  rw [Measure.compProd, h1, h2, compProd_fst_condKernelUnitBorel]
+  simp
+
+end Measure
+
+section Countable
+
+variable [MeasurableSingletonClass α] [Countable α]
+
+noncomputable
+def condKernelCountable (κ : kernel α (β × Ω')) [IsFiniteKernel κ] : kernel (α × β) Ω' where
+  val p := (κ p.1).condKernel p.2
+  property := by
+    change Measurable ((fun q : β × α ↦ (κ q.2).condKernel q.1) ∘ Prod.swap)
+    refine (measurable_from_prod_countable (fun a ↦ ?_)).comp measurable_swap
+    exact kernel.measurable (κ a).condKernel
+
+lemma condKernelCountable_apply (κ : kernel α (β × Ω')) [IsFiniteKernel κ] (p : α × β) :
+    condKernelCountable κ p = (κ p.1).condKernel p.2 := rfl
+
+instance instIsMarkovKernel_condKernelCountable (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
+    IsMarkovKernel (condKernelCountable κ) :=
+  ⟨fun p ↦ (Measure.instIsMarkovKernel_condKernel (κ p.1)).isProbabilityMeasure p.2⟩
+
+lemma compProd_fst_condKernelCountable (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
+    kernel.fst κ ⊗ₖ condKernelCountable κ = κ := by
+  ext a s hs
+  have h := (κ a).compProd_fst_condKernel
+  conv_rhs => rw [← h]
+  simp_rw [kernel.compProd_apply _ _ _ hs, condKernelCountable_apply, Measure.compProd_apply hs]
+  congr
+
 end Countable
+
+section CountableOrStandardBorel
+
+class CountableOrStandardBorel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Prop :=
+  (countableOrStandardBorel : (Countable α ∧ MeasurableSingletonClass α) ∨ StandardBorelSpace β)
+
+instance instCountableOrStandardBorel_of_countable
+    [h1 : Countable α] [h2 : MeasurableSingletonClass α] :
+  CountableOrStandardBorel α β := ⟨Or.inl ⟨h1, h2⟩⟩
+
+instance instCountableOrStandardBorel_of_standardBorelSpace [h : StandardBorelSpace β] :
+  CountableOrStandardBorel α β := ⟨Or.inr h⟩
+
+open Classical in
+noncomputable
+def kernel.condKernel [h : CountableOrStandardBorel α β]
+    (κ : kernel α (β × Ω')) [IsMarkovKernel κ] :
+    kernel (α × β) Ω' :=
+  if hα : Countable α ∧ MeasurableSingletonClass α then
+    letI := hα.1; letI := hα.2; condKernelCountable κ
+  else
+    letI := h.countableOrStandardBorel.resolve_left hα; condKernelBorel κ
+
+instance instIsMarkovKernel_condKernel [CountableOrStandardBorel α β]
+    (κ : kernel α (β × Ω')) [IsMarkovKernel κ] :
+    IsMarkovKernel (kernel.condKernel κ) := by
+  unfold kernel.condKernel
+  split_ifs <;> infer_instance
+
+lemma compProd_fst_condKernel [hαβ : CountableOrStandardBorel α β]
+    (κ : kernel α (β × Ω')) [IsMarkovKernel κ] :
+    kernel.fst κ ⊗ₖ kernel.condKernel κ = κ := by
+  unfold kernel.condKernel
+  split_ifs with h
+  · have := h.1
+    have := h.2
+    exact compProd_fst_condKernelCountable κ
+  · have := hαβ.countableOrStandardBorel.resolve_left h
+    exact compProd_fst_condKernelBorel κ
+
+end CountableOrStandardBorel
 
 end ProbabilityTheory
