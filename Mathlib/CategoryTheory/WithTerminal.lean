@@ -1,10 +1,10 @@
 /-
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-
+import Mathlib.CategoryTheory.Bicategory.Functor
 #align_import category_theory.with_terminal from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
@@ -19,7 +19,7 @@ The terminal resp. initial object is `WithTerminal.star` resp. `WithInitial.star
 the proofs that these are terminal resp. initial are in `WithTerminal.star_terminal`
 and `WithInitial.star_initial`.
 
-The inclusion from `C` intro `WithTerminal C` resp. `WithInitial C` is denoted
+The inclusion from `C` into `WithTerminal C` resp. `WithInitial C` is denoted
 `WithTerminal.incl` resp. `WithInitial.incl`.
 
 The relevant constructions needed for the universal properties of these constructions are:
@@ -31,6 +31,9 @@ The relevant constructions needed for the universal properties of these construc
 
 In addition to this, we provide `WithTerminal.map` and `WithInitial.map` providing the
 functoriality of these constructions with respect to functors on the base categories.
+
+We define corresponding pseudofunctors `WithTerminal.pseudofunctor` and `WithInitial.pseudofunctor`
+from `Cat` to `Cat`.
 
 -/
 
@@ -137,6 +140,116 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal
     | of _, star, _ => PUnit.unit
     | star, star, _ => PUnit.unit
 #align category_theory.with_terminal.map CategoryTheory.WithTerminal.map
+
+/--A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithTerminal C)`.-/
+def mapId  (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) where
+  hom := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+  inv := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+
+/--A natural isomorphism between the functor `map (F⋙G) ` and `map F ⋙ map G `.-/
+def mapComp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) (G:D⥤ E) :
+    map (F⋙G) ≅ map F ⋙ map G where
+  hom := {app := fun X =>  eqToHom (by cases X <;> rfl)}
+  inv := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+
+/--From a natrual transformation of functors `C⥤D`, the induced natural transformation
+of functors `WithTerminal C ⥤ WithTerminal D`. -/
+def map₂  {D : Type*} [Category D]  {F G: C ⥤ D} (η : F ⟶ G) :
+    map F ⟶ map G where
+  app := fun X =>
+        match X with
+        | of x => η.app x
+        | star => 𝟙 (star)
+  naturality := by
+          intro X Y f
+          match X, Y, f with
+          | of x, of y, f => exact η.naturality f
+          | of x, star, _ => rfl
+          | star, star, _ => rfl
+
+/-- The pseudofunctor from `Cat` to `Cat` defined with `WithTerminal`.-/
+def pseudofunctor: Pseudofunctor Cat Cat where
+  obj C := Cat.of (WithTerminal C)
+  map {C D} F := map F
+  map₂ := map₂
+  mapId C := mapId C
+  mapComp {C D E} F G  := mapComp F G
+  map₂_id := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X <;> rfl
+  map₂_comp := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X <;> rfl
+  map₂_whisker_left := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app, NatTrans.comp_app]
+      unfold mapComp map  map₂
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Category.comp_id, Category.id_comp]
+      rfl
+    · rfl
+  map₂_whisker_right := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app, NatTrans.comp_app]
+      unfold mapComp map  map₂
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Category.comp_id, Category.id_comp]
+      rfl
+    · rfl
+  map₂_associator := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app]
+      simp only [Bicategory.Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom, Cat.comp_obj]
+      unfold map₂ mapComp map
+      rw [NatTrans.id_app, NatTrans.id_app]
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Bicategory.whiskerRight, whiskerRight_app, down_id, Functor.map_id, Bicategory.whiskerLeft,
+        whiskerLeft_app, Category.comp_id, Category.id_comp]
+    · rfl
+  map₂_left_unitor := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app, NatTrans.comp_app]
+      unfold map₂ mapComp mapId map
+      simp only [Cat.comp_obj, Cat.comp_map, Cat.id_map, Bicategory.Strict.leftUnitor_eqToIso,
+        eqToIso_refl, Iso.refl_hom, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Bicategory.whiskerRight, Functor.id_obj, Functor.id_map, whiskerRight_app, Category.id_comp]
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Category.comp_id]
+      rw [← Functor.map_id]
+      rfl
+    · rfl
+  map₂_right_unitor := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app, NatTrans.comp_app]
+      unfold map₂ mapComp mapId map
+      simp only [Cat.comp_obj, Cat.comp_map, Cat.id_map, Bicategory.Strict.rightUnitor_eqToIso,
+        eqToIso_refl, Iso.refl_hom, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Bicategory.whiskerLeft, Functor.id_obj, Functor.id_map, whiskerLeft_app, Category.id_comp]
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Category.comp_id]
+      rw [← Functor.map_id]
+      rfl
+    · rfl
+
 
 instance {X : WithTerminal C} : Unique (X ⟶ star) where
   default :=
@@ -325,6 +438,117 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D
     | star, star, _ => PUnit.unit
 
 #align category_theory.with_initial.map CategoryTheory.WithInitial.map
+
+/--A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithInitial C)`.-/
+def mapId  (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) where
+  hom := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+  inv := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+
+/--A natural isomorphism between the functor `map (F⋙G) ` and `map F ⋙ map G `.-/
+def mapComp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) (G:D⥤ E) :
+    map (F⋙G) ≅ map F ⋙ map G where
+  hom := {app := fun X =>  eqToHom (by cases X <;> rfl)}
+  inv := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+
+/--From a natrual transformation of functors `C⥤D`, the induced natural transformation
+of functors `WithInitial C ⥤ WithInitial D`. -/
+def map₂  {D : Type*} [Category D]  {F G: C ⥤ D} (η : F ⟶ G) :
+    map F ⟶ map G where
+  app := fun X =>
+        match X with
+        | of x => η.app x
+        | star => 𝟙 (star)
+  naturality := by
+          intro X Y f
+          match X, Y, f with
+          | of x, of y, f => exact η.naturality f
+          | star, of x, _ => rfl
+          | star, star, _ => rfl
+
+/-- The pseudofunctor from `Cat` to `Cat` defined with `WithInitial`.-/
+def pseudofunctor: Pseudofunctor Cat Cat where
+  obj C :=Cat.of (WithInitial C)
+  map {C D} F := map F
+  map₂ := map₂
+  mapId C := mapId C
+  mapComp {C D E} F G  := mapComp F G
+  map₂_id := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X <;> rfl
+  map₂_comp := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X <;> rfl
+  map₂_whisker_left := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold mapComp map  map₂
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Category.comp_id, Category.id_comp]
+      rfl
+    · rfl
+  map₂_whisker_right := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold mapComp map  map₂
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Category.comp_id, Category.id_comp]
+      rfl
+    · rfl
+  map₂_associator := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app]
+      simp only [Bicategory.Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom, Cat.comp_obj]
+      unfold map₂ mapComp map
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Bicategory.whiskerRight, whiskerRight_app, down_id, Functor.map_id, Bicategory.whiskerLeft,
+        whiskerLeft_app, Category.comp_id, Category.id_comp]
+    · rfl
+  map₂_left_unitor := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold map₂ mapComp mapId map
+      simp only [Cat.comp_obj, Cat.comp_map, Cat.id_map, Bicategory.Strict.leftUnitor_eqToIso,
+        eqToIso_refl, Iso.refl_hom, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Bicategory.whiskerRight, Functor.id_obj, Functor.id_map, whiskerRight_app, Category.id_comp]
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Category.comp_id]
+      rw [← Functor.map_id]
+      rfl
+    · rfl
+  map₂_right_unitor := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold map₂ mapComp mapId map
+      simp only [Cat.comp_obj, Cat.comp_map, Cat.id_map, Bicategory.Strict.rightUnitor_eqToIso,
+        eqToIso_refl, Iso.refl_hom, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Bicategory.whiskerLeft, Functor.id_obj, Functor.id_map, whiskerLeft_app, Category.id_comp]
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Category.comp_id]
+      rw [← Functor.map_id]
+      rfl
+    · rfl
+
+
 
 instance {X : WithInitial C} : Unique (star ⟶ X) where
   default :=
