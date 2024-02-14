@@ -26,8 +26,6 @@ instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+) (
       simp_rw [mk_coe, @exists_comm (_ < _) (_ = _), exists_prop, exists_eq_left']
 #align pnat.decidable_pred_exists_nat PNat.decidablePredExistsNat
 
---include h
-
 /-- The `PNat` version of `Nat.findX` -/
 protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
   have : ∃ (n' : ℕ) (n : ℕ+) (_ : n' = n), p n := Exists.elim h fun n hn => ⟨n, n, rfl, hn⟩
