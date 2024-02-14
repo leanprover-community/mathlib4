@@ -32,13 +32,8 @@ theorem three_pid [h : IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (
   have hp : Fact (Nat.Prime ((3 : ℕ+) : ℕ)) := ⟨Nat.prime_three⟩
   have hlt : (2 : ℕ+) < 3 := by decide
   apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
-  have hemb : NrComplexPlaces K = 1 := by
-    rw [← Nat.mul_right_inj (show 2 ≠ 0 from by omega), nrComplexPlaces_eq_finrank K hlt,
-      IsCyclotomicExtension.finrank (n := 3) K (cyclotomic.irreducible_rat hpos),
-      totient_prime hp.1]
-    rfl
   rw [absdiscr_prime 3 K, IsCyclotomicExtension.finrank (n := 3) K
-    (cyclotomic.irreducible_rat hpos), hemb, totient_prime hp.1]
+    (cyclotomic.irreducible_rat hpos), nrComplexPlaces_eq_totient_div_two _ hlt, totient_prime hp.1]
   simp only [Int.reduceNeg, show ((3 : ℕ+) : ℕ) = 3 by rfl, succ_sub_succ_eq_sub, tsub_zero,
     zero_lt_two, Nat.div_self, pow_one, cast_ofNat, neg_mul, one_mul, abs_neg, Int.cast_abs,
     Int.int_cast_ofNat, factorial_two, gt_iff_lt, abs_of_pos (show (0 : ℝ) < 3 from by norm_num)]
@@ -53,13 +48,8 @@ theorem five_pid [h : IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (�
   have hp : Fact (Nat.Prime ((5 : ℕ+) : ℕ)) := ⟨by decide⟩
   have hlt : (2 : ℕ+) < 5 := by decide
   apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
-  have hemb : NrComplexPlaces K = 2 := by
-    rw [← Nat.mul_right_inj (show 2 ≠ 0 from by omega), nrComplexPlaces_eq_finrank K hlt,
-      IsCyclotomicExtension.finrank (n := 5) K (cyclotomic.irreducible_rat hpos),
-      totient_prime hp.1]
-    rfl
   rw [absdiscr_prime 5 K, IsCyclotomicExtension.finrank (n := 5) K
-    (cyclotomic.irreducible_rat hpos), hemb, totient_prime hp.1]
+    (cyclotomic.irreducible_rat hpos), nrComplexPlaces_eq_totient_div_two _ hlt, totient_prime hp.1]
   simp only [Int.reduceNeg, show ((5 : ℕ+) : ℕ) = 5 by rfl, succ_sub_succ_eq_sub, tsub_zero,
     reduceDiv, even_two, Even.neg_pow, one_pow, cast_ofNat, Int.reducePow, one_mul, Int.cast_abs,
     Int.int_cast_ofNat, div_pow, gt_iff_lt, show 4! = 24 by rfl, abs_of_pos
