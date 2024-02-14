@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.asymptotics.theta from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -325,8 +326,20 @@ alias ⟨IsTheta.of_const_mul_right, IsTheta.const_mul_right⟩ := isTheta_const
 #align asymptotics.is_Theta.of_const_mul_right Asymptotics.IsTheta.of_const_mul_right
 #align asymptotics.is_Theta.const_mul_right Asymptotics.IsTheta.const_mul_right
 
-lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'}
-    (h : f₂ =o[l] f₁) : (f₁ + f₂) =Θ[l] f₁ :=
-  ⟨(isBigO_refl _ _).add_isLittleO h, by rw [add_comm]; exact h.right_isBigO_add⟩
+theorem IsLittleO.right_isTheta_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
+    f₂ =Θ[l] (f₁ + f₂) :=
+  ⟨h.right_isBigO_add, h.add_isBigO (isBigO_refl _ _)⟩
+
+theorem IsLittleO.right_isTheta_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
+    f₂ =Θ[l] (f₂ + f₁) :=
+  add_comm f₁ f₂ ▸ h.right_isTheta_add
+
+lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'} {g : α → F}
+    (hΘ : f₁ =Θ[l] g) (ho : f₂ =o[l] g) : (f₁ + f₂) =Θ[l] g :=
+  (ho.trans_isTheta hΘ.symm).right_isTheta_add'.symm.trans hΘ
+
+lemma IsLittleO.add_isTheta {f₁ f₂ : α → E'} {g : α → F}
+    (ho : f₁ =o[l] g) (hΘ : f₂ =Θ[l] g) : (f₁ + f₂) =Θ[l] g :=
+  add_comm f₁ f₂ ▸ hΘ.add_isLittleO ho
 
 end Asymptotics

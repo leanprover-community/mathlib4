@@ -707,7 +707,7 @@ theorem _root_.HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f)
   rw [integral_Ioi_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, zero_sub]
   refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
-  exact h2f.filter_mono atTop_le_cocompact |>.tendsto
+  exact h2f.filter_mono _root_.atTop_le_cocompact |>.tendsto
 
 /-- When a function has a limit at infinity, and its derivative is nonnegative, then the derivative
 is automatically integrable on `(a, +∞)`. Version assuming differentiability
@@ -857,7 +857,7 @@ theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
   rw [integral_Iic_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, sub_zero]
   refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
-  exact h2f.filter_mono atBot_le_cocompact |>.tendsto
+  exact h2f.filter_mono _root_.atBot_le_cocompact |>.tendsto
 
 end IicFTC
 
