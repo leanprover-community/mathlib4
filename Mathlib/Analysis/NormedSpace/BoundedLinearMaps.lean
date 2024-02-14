@@ -123,7 +123,7 @@ theorem snd : IsBoundedLinearMap R fun x : E × F => x.2 := by
 variable {f g : E → F}
 
 theorem smul [SeminormedRing 𝕜] [Module 𝕜 F] [BoundedSMul 𝕜 F] [SMulCommClass R 𝕜 F]
-  (c : 𝕜) (hf : IsBoundedLinearMap R f) :
+    (c : 𝕜) (hf : IsBoundedLinearMap R f) :
     IsBoundedLinearMap R (c • f) :=
   let ⟨hlf, M, _, hM⟩ := hf
   (c • hlf.mk' f).isLinear.with_bound (‖c‖ * M) fun x =>
