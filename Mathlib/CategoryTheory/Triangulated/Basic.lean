@@ -331,7 +331,6 @@ lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
 
 end
 
-
 namespace Triangle
 
 /-- The first projection `Triangle C ⥤ C`. -/
