@@ -9,10 +9,16 @@ import Mathlib.Topology.TietzeExtension
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
 import Mathlib.Analysis.NormedSpace.IsROrC
 /-!
-# `ℂ` satisfies the Tietze extension theorem
+# Finite dimensional topological vector spaces over `ℝ` satisfy the Tietze extension property
 
-We provide this result here in order to avoid pulling unnecessary imports into either of
-`Topology.TietzeExtension` or `Analysis.Complex.Basic`.
+There are two main results here:
+
+- `IsROrC.instTietzeExtensionTVS`: finite dimensional topological vector spaces over `ℝ` (or `ℂ`)
+  have the Tietze extension property.
+- `BoundedContinuousFunction.exists_norm_eq_restrict_eq`: when mapping into a finite dimensional
+  normed vector space over `ℝ` (or `ℂ`), the extension can be chosen to preserve the norm of the
+  bounded continuous function it extends.
+
 -/
 
 universe u u₁ v w
@@ -27,7 +33,7 @@ theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E
 instance Complex.instTietzeExtension : TietzeExtension ℂ :=
   TietzeExtension.of_tvs ℝ
 
-instance IsROrC.instTietzeExtension {𝕜 : Type*} [IsROrC 𝕜] : TietzeExtension 𝕜 :=
+instance (priority := 900) IsROrC.instTietzeExtension {𝕜 : Type*} [IsROrC 𝕜] : TietzeExtension 𝕜 :=
   TietzeExtension.of_tvs ℝ
 
 instance IsROrC.instTietzeExtensionTVS {𝕜 : Type v} [IsROrC 𝕜] {E : Type w}
@@ -66,57 +72,6 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [IsROrC 𝕜] {E 
       Metric.mem_ball, dist_zero_right, not_lt, id_eq, ne_eq, norm_eq_zero]
     exact fun x hx ↦ norm_pos_iff.mp <| one_pos.trans_le hx
 
-def DilationEquiv.toHomeomorph {X Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
-    (e : X ≃ᵈ Y) : X ≃ₜ Y where
-  continuous_toFun := Dilation.toContinuous e
-  continuous_invFun := Dilation.toContinuous e.symm
-  __ := e.toEquiv
-
-@[simp]
-lemma DilationEquiv.coe_toHomeomorph {X Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
-    {e : X ≃ᵈ Y} : ⇑e.toHomeomorph = e :=
-  rfl
-
-@[simp]
-lemma DilationEquiv.toHomeomorph_symm {X Y : Type*} [PseudoEMetricSpace X]
-    [PseudoEMetricSpace Y] {e : X ≃ᵈ Y} : e.toHomeomorph.symm = e.symm.toHomeomorph :=
-  rfl
-
-open NNReal
-
-@[simps]
-def NormedSpace.dilationEquiv (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] (y : E) {r : ℝ} (hr : 0 < r) :
-    E ≃ᵈ E where
-  toFun w := (‖r‖ : 𝕜) • w + y
-  invFun w := (‖r‖⁻¹ : 𝕜) • (w - y)
-  left_inv w := by simp [smul_smul, inv_mul_cancel (show ((|r| : ℝ) : 𝕜) ≠ 0 by simpa using hr.ne')]
-  right_inv w := by simp [smul_smul, mul_inv_cancel (show ((|r| : ℝ) : 𝕜) ≠ 0 by simpa using hr.ne')]
-  edist_eq' := by
-    lift r to ℝ≥0 using hr.le
-    simp only [ne_eq, Real.norm_eq_abs, edist_add_right]
-    refine ⟨r, by exact_mod_cast hr.ne', fun w₁ w₁ ↦ ?_⟩
-    simp only [NNReal.abs_eq, edist_eq_coe_nnnorm_sub, ← smul_sub, sub_sub_sub_cancel_right,
-      nnnorm_smul, ENNReal.coe_mul]
-    norm_cast
-    ext
-    simp
-
-def Homeomorph.subtype {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {p : X → Prop}
-    {q : Y → Prop} (e : X ≃ₜ Y) (he : ∀ x, p x ↔ q (e x)) :
-    {x // p x} ≃ₜ {y // q y} where
-  toFun := Subtype.map e (he · |>.mp)
-  invFun := Subtype.map e.symm fun y hy ↦ he _ |>.mpr ((e.apply_symm_apply y).symm ▸ hy)
-  left_inv x := by ext; simp
-  right_inv y := by ext; simp
-  continuous_toFun := by simp only; exact e.continuous.subtype_map _
-  continuous_invFun := by simp only; exact e.symm.continuous.subtype_map _
-
-def Homeomorph.sets {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s : Set X}
-    {t : Set Y} (e : X ≃ₜ Y) (he : s = e ⁻¹' t) :
-    s ≃ₜ t :=
-  Homeomorph.subtype e <| Set.ext_iff.mp he
-
 theorem Metric.instTietzeExtensionBall {𝕜 : Type v} [IsROrC 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] {r : ℝ} (hr : 0 < r) :
     TietzeExtension.{u, w} (Metric.ball (0 : E) r) :=
@@ -130,18 +85,16 @@ theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [IsROrC 𝕜] {E : 
   .of_homeo <| by
     show (Metric.closedBall y r) ≃ₜ (Metric.closedBall (0 : E) 1)
     symm
-    refine NormedSpace.dilationEquiv 𝕜 y hr |>.toHomeomorph.sets ?_
+    apply (DilationEquiv.smulTorsor y (k := (r : 𝕜)) <| by exact_mod_cast hr.ne').toHomeomorph.sets
     ext x
-    simp only [Metric.mem_closedBall, dist_zero_right, Set.mem_preimage,
-      DilationEquiv.coe_toHomeomorph, NormedSpace.dilationEquiv_apply, Real.norm_eq_abs,
-      dist_add_self_left, norm_smul]
-    rw [IsROrC.norm_ofReal, abs_abs, abs_of_nonneg hr.le]
+    simp only [mem_closedBall, dist_zero_right, DilationEquiv.coe_toHomeomorph, Set.mem_preimage,
+      DilationEquiv.smulTorsor_apply, vadd_eq_add, dist_add_self_left, norm_smul,
+      IsROrC.norm_ofReal, abs_of_nonneg hr.le]
     exact (mul_le_iff_le_one_right hr).symm
 
 instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y] [Unique Y] :
     TietzeExtension.{u, v} Y where
   exists_restrict_eq' _ _ f := ⟨.const _ default, by ext x; exact Subsingleton.elim _ _⟩
-
 
 -- why don't we have this instance?
 instance {X : Type*} [PartialOrder X] (x : X) : Unique (Set.Icc x x) where
