@@ -368,7 +368,7 @@ lemma lintegral_cdfKernel_mem [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
     rw [← lintegral_add_compl _ ht₁]
     have h_eq1 : ∫⁻ x in t₁, cdfKernel f hf (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a)
         = ∫⁻ x in t₁, cdfKernel f hf (a, x) t₂ ∂(ν a) := by
-      refine' set_lintegral_congr_fun ht₁ (eventually_of_forall fun a ha ↦ _)
+      refine set_lintegral_congr_fun ht₁ (eventually_of_forall fun a ha ↦ ?_)
       rw [h_prod_eq_snd a ha]
     have h_eq2 :
         ∫⁻ x in t₁ᶜ, cdfKernel f hf (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a) = 0 := by

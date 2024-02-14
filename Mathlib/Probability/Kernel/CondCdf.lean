@@ -3,6 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 import Mathlib.Probability.Kernel.Disintegration.BuildKernel
 
 #align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
@@ -620,24 +621,8 @@ lemma isKernelCDF_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
   tendsto_atBot_zero p := tendsto_condCDF_atBot ρ p.2
   set_integral _ _ hs x := set_integral_condCDF ρ x hs
 
-section Measure
-
-theorem measure_condCDF_Iic (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) :
-    (condCDF ρ a).measure (Iic x) = ENNReal.ofReal (condCDF ρ a x) := measure_todo3_Iic _ _ _
-#align probability_theory.measure_cond_cdf_Iic ProbabilityTheory.measure_condCDF_Iic
-
-theorem measure_condCDF_univ (ρ : Measure (α × ℝ)) (a : α) : (condCDF ρ a).measure univ = 1 :=
-  measure_todo3_univ _ _
-#align probability_theory.measure_cond_cdf_univ ProbabilityTheory.measure_condCDF_univ
-
-instance instIsProbabilityMeasure (ρ : Measure (α × ℝ)) (a : α) :
-    IsProbabilityMeasure (condCDF ρ a).measure := by rw [condCDF]; infer_instance
-
-/-- The function `a ↦ (condCDF ρ a).measure` is measurable. -/
-theorem measurable_measure_condCDF (ρ : Measure (α × ℝ)) :
-    Measurable fun a => (condCDF ρ a).measure := measurable_measure_todo3 _
-#align probability_theory.measurable_measure_cond_cdf ProbabilityTheory.measurable_measure_condCDF
-
-end Measure
+#noalign probability_theory.measure_cond_cdf_Iic
+#noalign probability_theory.measure_cond_cdf_univ
+#noalign probability_theory.measurable_measure_cond_cdf
 
 end ProbabilityTheory

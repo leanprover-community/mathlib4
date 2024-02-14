@@ -63,7 +63,7 @@ noncomputable def condKernelReal (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
     (fun a ↦ ((), a)) measurable_prod_mk_left
 #align probability_theory.cond_kernel_real ProbabilityTheory.condKernelReal
 
-instance (ρ : Measure (α × ℝ))  [IsFiniteMeasure ρ] : IsMarkovKernel (condKernelReal ρ) := by
+instance (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] : IsMarkovKernel (condKernelReal ρ) := by
   rw [condKernelReal]; infer_instance
 
 theorem condKernelReal_Iic (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (a : α) (x : ℝ) :
