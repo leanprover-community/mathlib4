@@ -524,7 +524,7 @@ theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
     rw [← InfinitePlace.prod_eq_abs_norm, ← Finset.prod_const_one]
     refine Finset.prod_lt_prod_of_nonempty (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
     · exact pow_pos (pos_iff.mpr ((Subalgebra.coe_eq_zero _).not.mpr ha)) _
-    · refine pow_lt_one (map_nonneg _ _) ?_ (by rw [mult]; split_ifs <;> norm_num)
+    · refine pow_lt_one (apply_nonneg _ _) ?_ (by rw [mult]; split_ifs <;> norm_num)
       by_cases hz : z = w
       · rwa [hz]
       · exact h hz
@@ -537,7 +537,7 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt (x : 𝓞 K)
     (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) : ℚ⟮(x:K)⟯ = ⊤ := by
   rw [Field.primitive_element_iff_algHom_eq_of_eval ℚ ℂ ?_ _ w.embedding.toRatAlgHom]
   · intro ψ hψ
-    have h : 1 ≤ w x := ge_one_of_lt_one h₁ h₂
+    have h : 1 ≤ w x := one_le_of_lt_one h₁ h₂
     have main : w = InfinitePlace.mk ψ.toRingHom := by
       erw [← norm_embedding_eq, hψ] at h
       contrapose! h
