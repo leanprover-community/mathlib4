@@ -180,25 +180,7 @@ lemma toFin_ofNat (n : ℕ) :
 
 end
 
-/-!
-## `CommSemiring` and `AddCommGroup`
-These are precursors to proving that bitvectors are a commutative ring
--/
-
-instance : CommSemiring (BitVec w) :=
-  toFin_injective.commSemiring _
-    toFin_zero toFin_one toFin_add toFin_mul (Function.swap toFin_nsmul)
-    toFin_pow toFin_natCast
-
-instance : AddCommGroup (BitVec w) :=
-  toFin_injective.addCommGroup _
-    toFin_zero toFin_add toFin_neg toFin_sub (Function.swap toFin_nsmul) (Function.swap toFin_zsmul)
-/-!
-### `IntCast` & `CommRing`
-Show that casting `z : Int` to a bitvector is the same as casting `z` to `Fin 2^w`, and
-using the result as argument to `ofFin` to construct a bitvector.
-This result ist the final piece needed to show that bitvectors form a commutative ring.
--/
+/-! ## `CommRing` -/
 
 @[simp]
 lemma negOne_eq_allOnes {w : Nat} : -1#w = allOnes w := rfl
@@ -217,7 +199,7 @@ theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = Int.cast z := by
     · rfl
     · simp only [cast_add, cast_one, neg_add_rev]
       rw [← add_ofFin, ofFin_neg, ofFin_ofNat, ofNat_eq_ofNat, ofFin_neg, ofFin_natCast,
-        natCast_eq, ← sub_eq_add_neg (G := BitVec _), negOne_eq_allOnes, allOnes_sub_eq_not]
+        natCast_eq, negOne_eq_allOnes, ← sub_toAdd, allOnes_sub_eq_not]
 
 theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
   apply toFin_inj.mpr <| (ofFin_intCast z).symm
