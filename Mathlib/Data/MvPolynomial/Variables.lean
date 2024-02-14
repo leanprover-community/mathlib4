@@ -137,7 +137,6 @@ theorem degrees_one : degrees (1 : MvPolynomial σ R) = 0 :=
 theorem degrees_add [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).degrees ≤ p.degrees ⊔ q.degrees := by
   simp_rw [degrees_def]; exact supDegree_add_le
-
 #align mv_polynomial.degrees_add MvPolynomial.degrees_add
 
 theorem degrees_sum {ι : Type*} [DecidableEq σ] (s : Finset ι) (f : ι → MvPolynomial σ R) :

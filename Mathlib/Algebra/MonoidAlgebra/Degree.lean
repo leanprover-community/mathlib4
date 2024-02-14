@@ -257,6 +257,7 @@ theorem supDegree_add_le {f g : R[A]} :
     (f + g).supDegree D ≤ (f.supDegree D) ⊔ (g.supDegree D) :=
   sup_support_add_le D f g
 
+@[simp]
 theorem supDegree_neg {f : R'[A]} :
     (-f).supDegree D = f.supDegree D := by
   rw [supDegree, supDegree, Finsupp.support_neg]
@@ -357,6 +358,7 @@ theorem apply_add_of_supDegree_le (hD : D.Injective) {ap aq : A}
   · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
     rw [Finsupp.not_mem_support_iff.mp h, zero_mul]
 
+@[deprecated apply_add_of_supDegree_le]
 lemma apply_add_of_supDegree_eq (hD : D.Injective) {ap aq : A}
     (hp : p.supDegree D = D ap) (hq : q.supDegree D = D aq) :
     (p * q) (ap + aq) = p ap * q aq :=
@@ -471,7 +473,7 @@ lemma apply_supDegree_add_supDegree :
   obtain ⟨ap, -, hp⟩ := exists_supDegree_mem_support D hp
   obtain ⟨aq, -, hq⟩ := exists_supDegree_mem_support D hq
   simp_rw [leadingCoeff, hp, hq, ← hadd, Function.leftInverse_invFun hD _]
-  exact apply_add_of_supDegree_eq hadd hD hp hq
+  exact apply_add_of_supDegree_le hadd hD hp.le hq.le
 
 lemma Monic.supDegree_mul_of_ne_zero (hq : q.Monic D) (hp : p ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
