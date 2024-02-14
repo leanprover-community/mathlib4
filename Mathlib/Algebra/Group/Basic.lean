@@ -3,6 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
+import Aesop
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Cases
@@ -289,6 +290,14 @@ theorem self_ne_mul_left : b ≠ a * b ↔ a ≠ 1 := self_eq_mul_left.not
 #align self_ne_add_left self_ne_add_left
 
 end RightCancelMonoid
+
+section CancelCommMonoid
+variable [CancelCommMonoid α] {a b c d : α}
+
+@[to_additive] lemma eq_iff_eq_of_mul_eq_mul (h : a * b = c * d) : a = c ↔ b = d := by aesop
+@[to_additive] lemma ne_iff_ne_of_mul_eq_mul (h : a * b = c * d) : a ≠ c ↔ b ≠ d := by aesop
+
+end CancelCommMonoid
 
 section InvolutiveInv
 
