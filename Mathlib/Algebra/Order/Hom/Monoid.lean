@@ -221,6 +221,7 @@ variable [FunLike F α β]
 variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [OrderAddMonoidHomClass F α β] (f : F)
   {a : α}
 
+/-- See also `NonnegHomClass.apply_nonneg`. -/
 theorem map_nonneg (ha : 0 ≤ a) : 0 ≤ f a := by
   rw [← map_zero f]
   exact OrderHomClass.mono _ ha

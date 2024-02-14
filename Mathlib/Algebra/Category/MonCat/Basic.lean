@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Functor.ReflectsIso
 #align_import algebra.category.Mon.basic from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
 
 /-!
-# Category instances for monoid, add_monoid, comm_monoid, and add_comm_monoid.
+# Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMmonoid`.
 
 We introduce the bundled categories:
 * `MonCat`
