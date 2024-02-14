@@ -8,7 +8,6 @@ import Lean.Compiler.CSimpAttr
 import Lean.Meta.RecursorInfo
 import Lean.Meta.Tactic.Subst
 import Lean.Util.FoldConsts
-import Std.Tactic.RunCmd
 
 /-!
 # Define the `compile_inductive%` command.

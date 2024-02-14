@@ -5,7 +5,7 @@ Authors: Gabriel Ebner
 -/
 import Lean.Elab.Tactic.Conv.Basic
 import Std.Lean.Parser
-import Std.Tactic.RunCmd
+import Lean.Elab.Command
 
 /-!
 Additional `conv` tactics.

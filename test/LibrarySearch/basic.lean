@@ -94,19 +94,19 @@ example {α : Type} (x y : α) : x = y ↔ y = x := by apply?
 
 /- info: Try this: exact Nat.add_pos_left ha b -/
 #guard_msgs (drop info) in
-example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
+example (a b : ℕ) (_ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /- info: Try this: exact Nat.add_pos_left ha b -/
 #guard_msgs (drop info) in
 -- Verify that if maxHeartbeats is 0 we don't stop immediately.
 set_option maxHeartbeats 0 in
-example (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
+example (a b : ℕ) (_ha : 0 < a) (_hb : 0 < b) : 0 < a + b := by apply?
 
 section synonym
 
 /- info: Try this: exact Nat.add_pos_left ha b -/
 #guard_msgs (drop info) in
-example (a b : ℕ) (ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
+example (a b : ℕ) (_ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /-- info: Try this: exact Nat.le_of_dvd w h -/
 #guard_msgs in
