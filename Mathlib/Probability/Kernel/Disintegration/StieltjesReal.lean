@@ -300,21 +300,21 @@ noncomputable def IsCDFLike.stieltjesFunction (a : α) : StieltjesFunction where
   mono' := monotone_todo1 hf a
   right_continuous' x := continuousWithinAt_todo1_Ici hf a x
 
-theorem todo2_eq (a : α) (r : ℚ) : hf.stieltjesFunction a r = f a r := todo1_eq hf a r
+theorem IsCDFLike.stieltjesFunction_eq (a : α) (r : ℚ) : hf.stieltjesFunction a r = f a r := todo1_eq hf a r
 
 /-- The conditional cdf is non-negative for all `a : α`. -/
-theorem todo2_nonneg (a : α) (r : ℝ) : 0 ≤ hf.stieltjesFunction a r := todo1_nonneg hf a r
+theorem IsCDFLike.stieltjesFunction_nonneg (a : α) (r : ℝ) : 0 ≤ hf.stieltjesFunction a r := todo1_nonneg hf a r
 
 /-- The conditional cdf is lower or equal to 1 for all `a : α`. -/
-theorem todo2_le_one (a : α) (x : ℝ) : hf.stieltjesFunction a x ≤ 1 := by
+theorem IsCDFLike.stieltjesFunction_le_one (a : α) (x : ℝ) : hf.stieltjesFunction a x ≤ 1 := by
   obtain ⟨r, hrx⟩ := exists_rat_gt x
   rw [← StieltjesFunction.iInf_rat_gt_eq]
-  simp_rw [todo2_eq]
+  simp_rw [IsCDFLike.stieltjesFunction_eq]
   refine ciInf_le_of_le (bddBelow_range_gt hf a x) ?_ (hf.le_one _ _)
   exact ⟨r, hrx⟩
 
 /-- The conditional cdf tends to 0 at -∞ for all `a : α`. -/
-theorem tendsto_todo2_atBot (a : α) :
+theorem IsCDFLike.tendsto_stieltjesFunction_atBot (a : α) :
     Tendsto (hf.stieltjesFunction a) atBot (𝓝 0) := by
   have h_exists : ∀ x : ℝ, ∃ q : ℚ, x < q ∧ ↑q < x + 1 := fun x ↦ exists_rat_btwn (lt_add_one x)
   let qs : ℝ → ℚ := fun x ↦ (h_exists x).choose
@@ -326,12 +326,12 @@ theorem tendsto_todo2_atBot (a : α) :
     rw [sub_add_cancel] at h_le
     exact mod_cast h_le
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    ((hf.tendsto_atBot_zero a).comp hqs_tendsto) (todo2_nonneg hf a) fun x ↦ ?_
-  rw [Function.comp_apply, ← todo2_eq hf]
+    ((hf.tendsto_atBot_zero a).comp hqs_tendsto) (stieltjesFunction_nonneg hf a) fun x ↦ ?_
+  rw [Function.comp_apply, ← stieltjesFunction_eq hf]
   exact (hf.stieltjesFunction a).mono (h_exists x).choose_spec.1.le
 
 /-- The conditional cdf tends to 1 at +∞ for all `a : α`. -/
-theorem tendsto_todo2_atTop (a : α) :
+theorem IsCDFLike.tendsto_stieltjesFunction_atTop (a : α) :
     Tendsto (hf.stieltjesFunction a) atTop (𝓝 1) := by
   have h_exists : ∀ x : ℝ, ∃ q : ℚ, x - 1 < q ∧ ↑q < x := fun x ↦ exists_rat_btwn (sub_one_lt x)
   let qs : ℝ → ℚ := fun x ↦ (h_exists x).choose
@@ -342,43 +342,43 @@ theorem tendsto_todo2_atTop (a : α) :
     rw [sub_le_iff_le_add] at h_le
     exact_mod_cast le_of_add_le_add_right (hy.trans h_le)
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le ((hf.tendsto_atTop_one a).comp hqs_tendsto)
-      tendsto_const_nhds ?_ (todo2_le_one hf a)
+      tendsto_const_nhds ?_ (stieltjesFunction_le_one hf a)
   intro x
-  rw [Function.comp_apply, ← todo2_eq hf]
+  rw [Function.comp_apply, ← stieltjesFunction_eq hf]
   exact (hf.stieltjesFunction a).mono (le_of_lt (h_exists x).choose_spec.2)
 
 /-- The conditional cdf is a measurable function of `a : α` for all `x : ℝ`. -/
-theorem measurable_todo2 (x : ℝ) : Measurable fun a ↦ hf.stieltjesFunction a x := by
+theorem IsCDFLike.measurable_stieltjesFunction (x : ℝ) : Measurable fun a ↦ hf.stieltjesFunction a x := by
   have : (fun a ↦ hf.stieltjesFunction a x) = fun a ↦ ⨅ r : { r' : ℚ // x < r' }, f a ↑r := by
     ext1 a
     rw [← StieltjesFunction.iInf_rat_gt_eq]
     congr with q
-    rw [todo2_eq]
+    rw [stieltjesFunction_eq]
   rw [this]
   exact measurable_iInf (fun q ↦ hf.measurable q)
 
 /-- The conditional cdf is a strongly measurable function of `a : α` for all `x : ℝ`. -/
-theorem stronglyMeasurable_todo2 (x : ℝ) :
+theorem IsCDFLike.stronglyMeasurable_stieltjesFunction (x : ℝ) :
     StronglyMeasurable fun a ↦ hf.stieltjesFunction a x :=
-  (measurable_todo2 hf x).stronglyMeasurable
+  (measurable_stieltjesFunction hf x).stronglyMeasurable
 
 section Measure
 
-theorem measure_todo2_Iic (a : α) (x : ℝ) :
+theorem IsCDFLike.measure_stieltjesFunction_Iic (a : α) (x : ℝ) :
     (hf.stieltjesFunction a).measure (Iic x) = ENNReal.ofReal (hf.stieltjesFunction a x) := by
   rw [← sub_zero (hf.stieltjesFunction a x)]
-  exact (hf.stieltjesFunction a).measure_Iic (tendsto_todo2_atBot hf a) _
+  exact (hf.stieltjesFunction a).measure_Iic (tendsto_stieltjesFunction_atBot hf a) _
 
-theorem measure_todo2_univ (a : α) : (hf.stieltjesFunction a).measure univ = 1 := by
+theorem IsCDFLike.measure_stieltjesFunction_univ (a : α) : (hf.stieltjesFunction a).measure univ = 1 := by
   rw [← ENNReal.ofReal_one, ← sub_zero (1 : ℝ)]
-  exact StieltjesFunction.measure_univ _ (tendsto_todo2_atBot hf a) (tendsto_todo2_atTop hf a)
+  exact StieltjesFunction.measure_univ _ (tendsto_stieltjesFunction_atBot hf a) (tendsto_stieltjesFunction_atTop hf a)
 
-instance instIsProbabilityMeasure_todo2 (a : α) :
+instance IsCDFLike.instIsProbabilityMeasure_stieltjesFunction (a : α) :
     IsProbabilityMeasure (hf.stieltjesFunction a).measure :=
-  ⟨measure_todo2_univ hf a⟩
+  ⟨measure_stieltjesFunction_univ hf a⟩
 
 /-- The function `a ↦ (condCDF ρ a).measure` is measurable. -/
-theorem measurable_measure_todo2 :
+theorem IsCDFLike.measurable_measure_stieltjesFunction :
     Measurable fun a ↦ (hf.stieltjesFunction a).measure := by
   rw [Measure.measurable_measure]
   refine' fun s hs ↦ ?_
@@ -388,15 +388,15 @@ theorem measurable_measure_todo2 :
     (borel_eq_generateFrom_Iic ℝ) isPiSystem_Iic _ _ _ _ hs
   · simp only [measure_empty, measurable_const]
   · rintro S ⟨u, rfl⟩
-    simp_rw [measure_todo2_Iic hf _ u]
-    exact (measurable_todo2 hf u).ennreal_ofReal
+    simp_rw [measure_stieltjesFunction_Iic hf _ u]
+    exact (measurable_stieltjesFunction hf u).ennreal_ofReal
   · intro t ht ht_cd_meas
     have : (fun a ↦ (hf.stieltjesFunction a).measure tᶜ) =
         (fun a ↦ (hf.stieltjesFunction a).measure univ)
           - fun a ↦ (hf.stieltjesFunction a).measure t := by
       ext1 a
       rw [measure_compl ht (measure_ne_top (hf.stieltjesFunction a).measure _), Pi.sub_apply]
-    simp_rw [this, measure_todo2_univ hf]
+    simp_rw [this, measure_stieltjesFunction_univ hf]
     exact Measurable.sub measurable_const ht_cd_meas
   · intro f hf_disj hf_meas hf_cd_meas
     simp_rw [measure_iUnion hf_disj hf_meas]
@@ -415,7 +415,7 @@ def todo3 (f : α → ℚ → ℝ) (hf : ∀ q, Measurable fun a ↦ f a q) : α
   (isCDFLike_toCDFLike hf).stieltjesFunction
 
 theorem todo3_eq (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (r : ℚ) :
-    todo3 f hf a r = toCDFLike f a r := todo2_eq _ a r
+    todo3 f hf a r = toCDFLike f a r := IsCDFLike.stieltjesFunction_eq _ a r
 
 lemma todo3_unit_prod (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
     todo3 (fun (p : Unit × α) ↦ f p.2) (fun q ↦ (hf q).comp measurable_snd) ((), a)
@@ -428,43 +428,43 @@ lemma todo3_unit_prod (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
 
 /-- The conditional cdf is non-negative for all `a : α`. -/
 theorem todo3_nonneg (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (r : ℝ) :
-    0 ≤ todo3 f hf a r := todo2_nonneg _ a r
+    0 ≤ todo3 f hf a r := IsCDFLike.stieltjesFunction_nonneg _ a r
 
 /-- The conditional cdf is lower or equal to 1 for all `a : α`. -/
 theorem todo3_le_one (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (x : ℝ) :
-    todo3 f hf a x ≤ 1 := todo2_le_one _ a x
+    todo3 f hf a x ≤ 1 := IsCDFLike.stieltjesFunction_le_one _ a x
 
 /-- The conditional cdf tends to 0 at -∞ for all `a : α`. -/
 theorem tendsto_todo3_atBot (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
-    Tendsto (todo3 f hf a) atBot (𝓝 0) := tendsto_todo2_atBot _ a
+    Tendsto (todo3 f hf a) atBot (𝓝 0) := IsCDFLike.tendsto_stieltjesFunction_atBot _ a
 
 /-- The conditional cdf tends to 1 at +∞ for all `a : α`. -/
 theorem tendsto_todo3_atTop (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
-    Tendsto (todo3 f hf a) atTop (𝓝 1) := tendsto_todo2_atTop _ a
+    Tendsto (todo3 f hf a) atTop (𝓝 1) := IsCDFLike.tendsto_stieltjesFunction_atTop _ a
 
 /-- The conditional cdf is a measurable function of `a : α` for all `x : ℝ`. -/
 theorem measurable_todo3 (hf : ∀ q, Measurable fun a ↦ f a q) (x : ℝ) :
-    Measurable fun a ↦ todo3 f hf a x := measurable_todo2 _ x
+    Measurable fun a ↦ todo3 f hf a x := IsCDFLike.measurable_stieltjesFunction _ x
 
 /-- The conditional cdf is a strongly measurable function of `a : α` for all `x : ℝ`. -/
 theorem stronglyMeasurable_todo3 (hf : ∀ q, Measurable fun a ↦ f a q) (x : ℝ) :
-    StronglyMeasurable fun a ↦ todo3 f hf a x := stronglyMeasurable_todo2 _ x
+    StronglyMeasurable fun a ↦ todo3 f hf a x := IsCDFLike.stronglyMeasurable_stieltjesFunction _ x
 
 section Measure
 
 theorem measure_todo3_Iic (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (x : ℝ) :
     (todo3 f hf a).measure (Iic x) = ENNReal.ofReal (todo3 f hf a x) :=
-  measure_todo2_Iic _ _ _
+  IsCDFLike.measure_stieltjesFunction_Iic _ _ _
 
 theorem measure_todo3_univ (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
-    (todo3 f hf a).measure univ = 1 := measure_todo2_univ _ _
+    (todo3 f hf a).measure univ = 1 := IsCDFLike.measure_stieltjesFunction_univ _ _
 
 instance instIsProbabilityMeasure_todo3 (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
     IsProbabilityMeasure (todo3 f hf a).measure :=
-  instIsProbabilityMeasure_todo2 _ _
+  IsCDFLike.instIsProbabilityMeasure_stieltjesFunction _ _
 
 theorem measurable_measure_todo3 (hf : ∀ q, Measurable fun a ↦ f a q) :
-    Measurable fun a ↦ (todo3 f hf a).measure := measurable_measure_todo2 _
+    Measurable fun a ↦ (todo3 f hf a).measure := IsCDFLike.measurable_measure_stieltjesFunction _
 
 end Measure
 

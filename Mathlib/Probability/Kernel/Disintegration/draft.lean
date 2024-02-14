@@ -1,4 +1,3 @@
-import Mathlib.Probability.Kernel.Disintegration
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Kernel.Disintegration.BuildKernel
 
@@ -31,9 +30,19 @@ lemma measurableSet_I (n : ℕ) (k : ℤ) : MeasurableSet (I n k) := measurableS
 lemma Measure.iInf_Iic_gt_prod {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
     {s : Set α} (hs : MeasurableSet s) (t : ℚ) :
     ⨅ r : { r' : ℚ // t < r' }, ρ (s ×ˢ Iic (r : ℝ)) = ρ (s ×ˢ Iic (t : ℝ)) := by
-  have h := Measure.iInf_IicSnd_gt ρ t hs
-  simp_rw [Measure.IicSnd_apply ρ _ hs] at h
-  rw [← h]
+  rw [← measure_iInter_eq_iInf]
+  · rw [← prod_iInter]
+    congr with x : 1
+    simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
+    refine' ⟨fun h => _, fun h a hta => h.trans _⟩
+    · refine' le_of_forall_lt_rat_imp_le fun q htq => h q _
+      exact mod_cast htq
+    · exact mod_cast hta.le
+  · exact fun _ => hs.prod measurableSet_Iic
+  · refine' Monotone.directed_ge fun r r' hrr' => prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, _⟩)
+    refine' Iic_subset_Iic.mpr _
+    exact mod_cast hrr'
+  · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 
 lemma pairwise_disjoint_I (n : ℕ) : Pairwise (Disjoint on fun k ↦ I n k) := by
   intro i j hij

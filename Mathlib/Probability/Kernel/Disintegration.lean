@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
 import Mathlib.Probability.Kernel.CondCdf
-import Mathlib.MeasureTheory.Constructions.Polish
-import Mathlib.Probability.Kernel.MeasureCompProd
 
 #align_import probability.kernel.disintegration from "leanprover-community/mathlib"@"6315581f5650ffa2fbdbbbedc41243c8d7070981"
 

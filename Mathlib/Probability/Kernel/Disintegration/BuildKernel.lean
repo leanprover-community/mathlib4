@@ -15,6 +15,24 @@ import Mathlib.Probability.Kernel.MeasureCompProd
 open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
+section AuxLemmasToBeMoved
+
+variable {α β ι : Type*}
+
+theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
+  ext1 x
+  simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
+  obtain ⟨r, hr⟩ := exists_rat_gt x
+  exact ⟨r, hr.le⟩
+#align real.Union_Iic_rat Real.iUnion_Iic_rat
+
+theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
+  ext1 x
+  simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
+  exact exists_rat_lt x
+#align real.Inter_Iic_rat Real.iInter_Iic_rat
+
+end AuxLemmasToBeMoved
 
 namespace ProbabilityTheory
 
@@ -270,12 +288,10 @@ lemma set_lintegral_cdfKernel_Iic [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
   simp_rw [cdfKernel_Iic]
   exact hf.set_lintegral _ hs _
 
-theorem Real.iUnion_Iic_rat' : ⋃ r : ℚ, Iic (r : ℝ) = univ := sorry
-
 lemma set_lintegral_cdfKernel_univ [IsFiniteKernel μ] (hf : IsKernelCDF f μ ν)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ t in s, cdfKernel f hf (a, t) univ ∂(ν a) = μ a (s ×ˢ univ) := by
-  rw [← Real.iUnion_Iic_rat', prod_iUnion]
+  rw [← Real.iUnion_Iic_rat, prod_iUnion]
   have h_dir : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
     refine Monotone.directed_le fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
     exact mod_cast hrr'
