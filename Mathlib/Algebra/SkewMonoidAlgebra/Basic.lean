@@ -819,7 +819,7 @@ def equivariantOfLinearOfComm [SmulTrivAction G k k] : V →ₗ[SkewMonoidAlgebr
 
 @[simp]
 theorem equivariantOfLinearOfComm_apply [SmulTrivAction G k k] (v : V) :
-  (equivariantOfLinearOfComm f h) v = f v := rfl
+    (equivariantOfLinearOfComm f h) v = f v := rfl
 
 end
 
