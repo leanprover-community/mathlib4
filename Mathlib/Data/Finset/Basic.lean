@@ -3679,7 +3679,8 @@ private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.fi
   fun x' hx y' hy hne ↦ by
     simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
 
-@[simp] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
+-- False positive, it seems
+@[simp, nolint simpNF] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
     t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers =
       s.filter fun c ↦ f c ∈ t :=
   ext fun b => by simpa using and_comm
