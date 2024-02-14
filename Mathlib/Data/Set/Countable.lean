@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Equiv.List
+import Mathlib.Data.Set.Basic
 
 #align_import data.set.countable from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 

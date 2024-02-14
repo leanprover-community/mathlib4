@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
@@ -546,6 +547,19 @@ def sigmaFiberEquiv {α β : Type*} (f : α → β) : (Σ y : β, { x // f x = y
 #align equiv.sigma_fiber_equiv_apply Equiv.sigmaFiberEquiv_apply
 #align equiv.sigma_fiber_equiv_symm_apply_fst Equiv.sigmaFiberEquiv_symm_apply_fst
 #align equiv.sigma_fiber_equiv_symm_apply_snd_coe Equiv.sigmaFiberEquiv_symm_apply_snd_coe
+
+/-- Inhabited types are equivalent to `Option β` for some `β` by identifying `default` with `none`.
+-/
+def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
+    Σ β : Type u, α ≃ Option β where
+  fst := {a // a ≠ default}
+  snd.toFun a := if h : a = default then none else some ⟨a, h⟩
+  snd.invFun := Option.elim' default (↑)
+  snd.left_inv a := by dsimp only; split_ifs <;> simp [*]
+  snd.right_inv
+    | none => by simp
+    | some ⟨a, ha⟩ => dif_neg ha
+#align equiv.sigma_equiv_option_of_inhabited Equiv.sigmaEquivOptionOfInhabited
 
 end
 
@@ -1962,10 +1976,10 @@ theorem semiconj_conj (f : α₁ → α₁) : Semiconj e f (e.conj f) := fun x =
 theorem semiconj₂_conj : Semiconj₂ e f (e.arrowCongr e.conj f) := fun x y => by simp [arrowCongr]
 #align equiv.semiconj₂_conj Equiv.semiconj₂_conj
 
-instance [IsAssociative α₁ f] : IsAssociative β₁ (e.arrowCongr (e.arrowCongr e) f) :=
+instance [Std.Associative f] : Std.Associative (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isAssociative_right e.surjective
 
-instance [IsIdempotent α₁ f] : IsIdempotent β₁ (e.arrowCongr (e.arrowCongr e) f) :=
+instance [Std.IdempotentOp f] : Std.IdempotentOp (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isIdempotent_right e.surjective
 
 instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=

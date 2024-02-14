@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.Topology.Instances.EReal
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
@@ -349,6 +349,34 @@ theorem IsCompact.measurableSet [T2Space α] (h : IsCompact s) : MeasurableSet s
   h.isClosed.measurableSet
 #align is_compact.measurable_set IsCompact.measurableSet
 
+/-- If two points are topologically inseparable,
+then they can't be separated by a Borel measurable set. -/
+theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
+    (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
+  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun s _ hs ↦ hs.not)
+    fun _ _ _ h ↦ by simp [h]
+
+/-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,
+then `s` includes the closure of `K` as well. -/
+theorem IsCompact.closure_subset_measurableSet [R1Space γ] {K s : Set γ} (hK : IsCompact K)
+    (hs : MeasurableSet s) (hKs : K ⊆ s) : closure K ⊆ s := by
+  rw [hK.closure_eq_biUnion_inseparable, iUnion₂_subset_iff]
+  exact fun x hx y hy ↦ (hy.mem_measurableSet_iff hs).1 (hKs hx)
+
+/-- In an R₁ topological space with Borel measure `μ`,
+the measure of the closure of a compact set `K` is equal to the measure of `K`.
+
+See also `MeasureTheory.Measure.OuterRegular.measure_closure_eq_of_isCompact`
+for a version that assumes `μ` to be outer regular
+but does not assume the `σ`-algebra to be Borel.  -/
+theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (μ : Measure γ) :
+    μ (closure K) = μ K := by
+  refine le_antisymm ?_ (measure_mono subset_closure)
+  calc
+    μ (closure K) ≤ μ (toMeasurable μ K) := measure_mono <|
+      hK.closure_subset_measurableSet (measurableSet_toMeasurable ..) (subset_toMeasurable ..)
+    _ = μ K := measure_toMeasurable ..
+
 @[measurability]
 theorem measurableSet_closure : MeasurableSet (closure s) :=
   isClosed_closure.measurableSet
@@ -551,6 +579,13 @@ instance atBot_isMeasurablyGenerated : (Filter.atBot : Filter α).IsMeasurablyGe
     (measurableSet_Iic : MeasurableSet (Iic a)).principal_isMeasurablyGenerated
 #align at_bot_is_measurably_generated atBot_isMeasurablyGenerated
 
+instance [R1Space α] : IsMeasurablyGenerated (cocompact α) where
+  exists_measurable_subset := by
+    intro _ hs
+    obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
+    exact ⟨(closure t)ᶜ, ht.closure.compl_mem_cocompact, isClosed_closure.measurableSet.compl,
+      (compl_subset_compl.2 subset_closure).trans hts⟩
+
 end Preorder
 
 section PartialOrder
@@ -629,6 +664,15 @@ theorem nullMeasurableSet_lt [SecondCountableTopology α] {μ : Measure δ} {f g
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : NullMeasurableSet { a | f a < g a } μ :=
   (hf.prod_mk hg).nullMeasurable measurableSet_lt'
 #align null_measurable_set_lt nullMeasurableSet_lt
+
+theorem nullMeasurableSet_lt' [SecondCountableTopology α] {μ : Measure (α × α)} :
+    NullMeasurableSet { p : α × α | p.1 < p.2 } μ :=
+  measurableSet_lt'.nullMeasurableSet
+
+theorem nullMeasurableSet_le [SecondCountableTopology α] {μ : Measure δ}
+    {f g : δ → α} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    NullMeasurableSet { a | f a ≤ g a } μ :=
+  (hf.prod_mk hg).nullMeasurable measurableSet_le'
 
 theorem Set.OrdConnected.measurableSet (h : OrdConnected s) : MeasurableSet s := by
   let u := ⋃ (x ∈ s) (y ∈ s), Ioo x y
@@ -1563,8 +1607,7 @@ def Homemorph.toMeasurableEquiv (h : α ≃ₜ β) : α ≃ᵐ β where
 protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasureOnCompacts μ]
     (f : α ≃ₜ β) : IsFiniteMeasureOnCompacts (Measure.map f μ) := by
   refine ⟨fun K hK ↦ ?_⟩
-  change Measure.map f.toMeasurableEquiv μ K < ∞
-  rw [MeasurableEquiv.map_apply]
+  rw [← Homeomorph.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
   exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
 #align is_finite_measure_on_compacts.map IsFiniteMeasureOnCompacts.map
 

@@ -32,8 +32,6 @@ open Matrix Matrix.SpecialLinearGroup
 
 open scoped Classical BigOperators MatrixGroups
 
-attribute [local instance] Fintype.card_fin_even
-
 /- Disable these instances as they are not the simp-normal form, and having them disabled ensures
 we state lemmas in this file without spurious `coe_fn` terms. -/
 attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
@@ -50,7 +48,7 @@ def UpperHalfPlane :=
   { point : ℂ // 0 < point.im }
 #align upper_half_plane UpperHalfPlane
 
-scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
+@[inherit_doc] scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
 
 open UpperHalfPlane
 
@@ -148,26 +146,20 @@ open Lean Meta Qq
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
 @[positivity UpperHalfPlane.im _]
 def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
-  -- TODO: can't merge the `match`es without lean4#3060
-  match u with
-  | 0 => match α, e with
-    | ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
-      assertInstancesCommute
-      pure (.positive q(@UpperHalfPlane.im_pos $a))
-    | _, _ => throwError "not UpperHalfPlane.im"
-  | _ => throwError "not UpperHalfPlane.im"
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
+    assertInstancesCommute
+    pure (.positive q(@UpperHalfPlane.im_pos $a))
+  | _, _, _ => throwError "not UpperHalfPlane.im"
 
 /-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
 @[positivity UpperHalfPlane.coe _]
 def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
-  -- TODO: can't merge the `match`es without lean4#3060
-  match u with
-  | 0 => match α, e with
-    | ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
-      assertInstancesCommute
-      pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
-    | _, _ => throwError "not UpperHalfPlane.coe"
-  | _ => throwError "not UpperHalfPlane.coe"
+  match u, α, e with
+  | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
+    assertInstancesCommute
+    pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
+  | _, _, _ => throwError "not UpperHalfPlane.coe"
 
 end Mathlib.Meta.Positivity
 
@@ -390,9 +382,6 @@ theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
     (g • z).im = det ↑ₘg * z.im / Complex.normSq (denom g z) :=
   smulAux'_im g z
 #align upper_half_plane.im_smul_eq_div_norm_sq UpperHalfPlane.im_smul_eq_div_normSq
-
--- Porting note FIXME: this instance isn't being found, but is needed here.
-instance : Fact (Even (Fintype.card (Fin 2))) := ⟨Nat.even_iff.mpr rfl⟩
 
 @[simp]
 theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by

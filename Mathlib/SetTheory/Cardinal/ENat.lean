@@ -3,15 +3,16 @@ Copyright (c) 2024 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Data.ENat.Basic
+import Mathlib.SetTheory.Cardinal.ToNat
 
 /-!
 # Conversion between `Cardinal` and `ℕ∞`
 
 In this file we define a coercion `Cardinal.ofENat : ℕ∞ → Cardinal`
 and a projection `Cardinal.toENat : Cardinal →+*o ℕ∞`.
-We also prove basic theorems about these definitons.
+We also prove basic theorems about these definitions.
 
 ## Implementation notes
 

@@ -99,7 +99,7 @@ theorem norm_condexpL2_le_one (hm : m ≤ m0) : ‖@condexpL2 α E 𝕜 _ _ _ _ 
 #align measure_theory.norm_condexp_L2_le_one MeasureTheory.norm_condexpL2_le_one
 
 theorem norm_condexpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) : ‖condexpL2 E 𝕜 hm f‖ ≤ ‖f‖ :=
-  ((@condexpL2 _ E 𝕜 _ _ _ _ _ _ μ hm).le_op_norm f).trans
+  ((@condexpL2 _ E 𝕜 _ _ _ _ _ _ μ hm).le_opNorm f).trans
     (mul_le_of_le_one_left (norm_nonneg _) (norm_condexpL2_le_one hm))
 #align measure_theory.norm_condexp_L2_le MeasureTheory.norm_condexpL2_le
 
