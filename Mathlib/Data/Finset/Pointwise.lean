@@ -168,7 +168,7 @@ theorem singletonOneHom_apply (a : α) : singletonOneHom a = {a} :=
 
 /-- Lift a `OneHom` to `Finset` via `image`. -/
 @[to_additive (attr := simps) "Lift a `ZeroHom` to `Finset` via `image`"]
-def imageOneHom [DecidableEq β] [One β] [OneHomClass F α β] (f : F) :
+def imageOneHom [DecidableEq β] [One β] [FunLike F α β] [OneHomClass F α β] (f : F) :
     OneHom (Finset α) (Finset β) where
   toFun := Finset.image f
   map_one' := by rw [image_one, map_one, singleton_one]
@@ -264,6 +264,9 @@ alias ⟨Nonempty.of_inv, Nonempty.inv⟩ := inv_nonempty_iff
 
 attribute [to_additive] Nonempty.inv Nonempty.of_inv
 
+@[to_additive (attr := simp)]
+theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := image_eq_empty
+
 @[to_additive (attr := mono)]
 theorem inv_subset_inv (h : s ⊆ t) : s⁻¹ ⊆ t⁻¹ :=
   image_subset_image h
@@ -341,8 +344,8 @@ end InvolutiveInv
 
 section Mul
 
-variable [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [MulHomClass F α β] (f : F)
-  {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
+variable [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
+  (f : F) {s s₁ s₂ t t₁ t₂ u : Finset α} {a b : α}
 
 /-- The pointwise multiplication of finsets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}`
 in locale `Pointwise`. -/
@@ -951,7 +954,8 @@ theorem coeMonoidHom_apply (s : Finset α) : coeMonoidHom s = s :=
 
 /-- Lift a `MonoidHom` to `Finset` via `image`. -/
 @[to_additive (attr := simps) "Lift an `add_monoid_hom` to `Finset` via `image`"]
-def imageMonoidHom [MulOneClass β] [MonoidHomClass F α β] (f : F) : Finset α →* Finset β :=
+def imageMonoidHom [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β] (f : F) :
+    Finset α →* Finset β :=
   { imageMulHom f, imageOneHom f with }
 #align finset.image_monoid_hom Finset.imageMonoidHom
 #align finset.image_add_monoid_hom Finset.imageAddMonoidHom
@@ -1215,7 +1219,8 @@ end MulZeroClass
 
 section Group
 
-variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (f : F) {s t : Finset α} {a b : α}
+variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α β]
+variable (f : F) {s t : Finset α} {a b : α}
 
 /-! Note that `Finset` is not a `Group` because `s / s ≠ 1` in general. -/
 
@@ -2054,7 +2059,7 @@ theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α 
 #align finset.image_vadd_comm Finset.image_vadd_comm
 
 @[to_additive]
-theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Monoid α] [Monoid β]
+theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Monoid α] [Monoid β] [FunLike F α β]
     [MonoidHomClass F α β] (f : F) (a : α) (s : Finset α) : (a • s).image f = f a • s.image f :=
   image_comm <| map_mul _ _
 #align finset.image_smul_distrib Finset.image_smul_distrib
@@ -2213,7 +2218,7 @@ variable [Zero α] [Zero β] [SMulWithZero α β] [DecidableEq β] {s : Finset �
 
 /-!
 Note that we have neither `SMulWithZero α (Finset β)` nor `SMulWithZero (Finset α) (Finset β)`
-because `0 * ∅ ≠ 0`.
+because `0 • ∅ ≠ 0`.
 -/
 
 lemma zero_smul_subset (t : Finset β) : (0 : Finset α) • t ⊆ 0 := by simp [subset_iff, mem_smul]

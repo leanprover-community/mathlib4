@@ -131,6 +131,22 @@ theorem DifferentiableWithinAt.const_cpow (hf : DifferentiableWithinAt ℂ f s x
   (hf.hasFDerivWithinAt.const_cpow h0).differentiableWithinAt
 #align differentiable_within_at.const_cpow DifferentiableWithinAt.const_cpow
 
+theorem DifferentiableOn.cpow (hf : DifferentiableOn ℂ f s) (hg : DifferentiableOn ℂ g s)
+    (h0 : Set.MapsTo f s slitPlane) : DifferentiableOn ℂ (fun x ↦ f x ^ g x) s :=
+  fun x hx ↦ (hf x hx).cpow (hg x hx) (h0 hx)
+
+theorem DifferentiableOn.const_cpow (hf : DifferentiableOn ℂ f s)
+    (h0 : c ≠ 0 ∨ ∀ x ∈ s, f x ≠ 0) : DifferentiableOn ℂ (fun x ↦ c ^ f x) s :=
+  fun x hx ↦ (hf x hx).const_cpow (h0.imp_right fun h ↦ h x hx)
+
+theorem Differentiable.cpow (hf : Differentiable ℂ f) (hg : Differentiable ℂ g)
+    (h0 : ∀ x, f x ∈ slitPlane) : Differentiable ℂ (fun x ↦ f x ^ g x) :=
+  fun x ↦ (hf x).cpow (hg x) (h0 x)
+
+theorem Differentiable.const_cpow (hf : Differentiable ℂ f)
+    (h0 : c ≠ 0 ∨ ∀ x, f x ≠ 0) : Differentiable ℂ (fun x ↦ c ^ f x) :=
+  fun x ↦ (hf x).const_cpow (h0.imp_right fun h ↦ h x)
+
 end fderiv
 
 section deriv
@@ -223,7 +239,7 @@ theorem hasDerivAt_ofReal_cpow {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1
       · exact hasDerivAt_id (x : ℂ)
       · simp [hx]
   · -- harder case : `x < 0`
-    have : ∀ᶠ y : ℝ in nhds x,
+    have : ∀ᶠ y : ℝ in 𝓝 x,
         (y : ℂ) ^ (r + 1) / (r + 1) = (-y : ℂ) ^ (r + 1) * exp (π * I * (r + 1)) / (r + 1) := by
       refine' Filter.eventually_of_mem (Iio_mem_nhds hx) fun y hy => _
       rw [ofReal_cpow_of_nonpos (le_of_lt hy)]

@@ -260,15 +260,15 @@ theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
 theorem mem_range_scalar_iff_commute_stdBasisMatrix {M : Matrix n n α} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M := by
   refine ⟨fun ⟨r, hr⟩ i j _ => hr ▸ Commute.symm ?_, mem_range_scalar_of_commute_stdBasisMatrix⟩
-  rw [scalar_commute_iff, smul_stdBasisMatrix, smul_stdBasisMatrix, smul_eq_mul, op_smul_eq_mul,
-    mul_one, one_mul]
+  rw [scalar_commute_iff]
+  simp
 
 /-- `M` is a scalar matrix if and only if it commutes with every `stdBasisMatrix`.​ -/
 theorem mem_range_scalar_iff_commute_stdBasisMatrix' {M : Matrix n n α} :
     M ∈ Set.range (Matrix.scalar n) ↔ ∀ (i j : n), Commute (stdBasisMatrix i j 1) M := by
   refine ⟨fun ⟨r, hr⟩ i j => hr ▸ Commute.symm ?_,
-    fun hM => mem_range_scalar_iff_commute_stdBasisMatrix.mpr <| fun i j _ ↦ hM i j⟩
-  rewrite [scalar_commute_iff]
+    fun hM => mem_range_scalar_iff_commute_stdBasisMatrix.mpr <| fun i j _ => hM i j⟩
+  rw [scalar_commute_iff]
   simp
 
 end Commute

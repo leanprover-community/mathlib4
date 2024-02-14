@@ -27,7 +27,6 @@ import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Choose
-import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Clear!
@@ -93,7 +92,6 @@ import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
-import Mathlib.Util.Syntax
 import Mathlib.Util.WithWeakNamespace
 import Mathlib.Mathport.Notation
 
