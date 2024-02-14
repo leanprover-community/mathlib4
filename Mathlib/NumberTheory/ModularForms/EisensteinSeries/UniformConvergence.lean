@@ -293,10 +293,8 @@ lemma summable_over_box {k : ℤ} (z : ℍ) (h : 3 ≤ k):
   intro b
   by_cases b0 : b = 0
   · rw [b0]
-    have hk0 : k ≠ 0 := by linarith
-    have hk1 : k - 1 ≠ 0 := by linarith
     norm_cast
-    rw [zero_zpow k hk0, zero_zpow (k - 1) hk1]
+    rw [zero_zpow k (by linarith), zero_zpow (k - 1) (by linarith)]
     simp only [inv_zero, mul_zero, box_zero, Finset.card_singleton, Nat.cast_one]
   · rw [Int.card_box b0, zpow_sub_one₀ (a:= ( b: ℝ)) (Nat.cast_ne_zero.mpr b0) k]
     simp only [mul_inv_rev, inv_inv, Nat.cast_mul, Nat.cast_ofNat]
