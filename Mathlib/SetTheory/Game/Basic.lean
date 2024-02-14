@@ -22,9 +22,6 @@ imply `x * z ≈ y * z`. Hence, multiplication is not a well-defined operation o
 the abelian group structure on games allows us to simplify many proofs for pre-games.
 -/
 
--- Porting note: many definitions here are noncomputable as the compiler does not support PGame.rec
-noncomputable section
-
 namespace SetTheory
 
 open Function PGame
@@ -339,13 +336,13 @@ theorem mul_moveRight_inr {x y : PGame} {i j} :
   rfl
 #align pgame.mul_move_right_inr SetTheory.PGame.mul_moveRight_inr
 
--- @[simp] -- Porting note: simpNF linter complains
+@[simp] -- Porting note: simpNF linter complains
 theorem neg_mk_mul_moveLeft_inl {xl xr yl yr} {xL xR yL yR} {i j} :
-    (-(mk xl xr xL xR * mk yl yr yL yR)).moveLeft (Sum.inl (i, j)) =
+    -moveRight (mk xl xr xL xR * mk yl yr yL yR) (toLeftMovesNeg.symm (Sum.inl (i, j))) =
       -(xL i * mk yl yr yL yR + mk xl xr xL xR * yR j - xL i * yR j) :=
   rfl
 #align pgame.neg_mk_mul_move_left_inl SetTheory.PGame.neg_mk_mul_moveLeft_inl
-
+#lint
 -- @[simp] -- Porting note: simpNF linter complains
 theorem neg_mk_mul_moveLeft_inr {xl xr yl yr} {xL xR yL yR} {i j} :
     (-(mk xl xr xL xR * mk yl yr yL yR)).moveLeft (Sum.inr (i, j)) =
