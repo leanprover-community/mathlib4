@@ -123,19 +123,15 @@ theorem LocallyIntegrable.integrable_of_isBigO_atTop_of_norm_isNegInvariant
   refine (isEmpty_or_nonempty α).casesOn (fun _ ↦ ?_) (fun _ ↦ ?_)
   · exact integrableOn_univ.mp (by convert integrableOn_empty)
   let a := -|Classical.arbitrary α|
-  have h_int : IntegrableOn f (Ici a) μ :=
-    LocallyIntegrableOn.integrableOn_of_isBigO_atTop (hf.locallyIntegrableOn _) ho hg
+  have h_int := (hf.locallyIntegrableOn (Ici a)).integrableOn_of_isBigO_atTop ho hg
+  refine integrableOn_univ.mp <| show univ = Iic (-a) ∪ Ici a by simp [Iic_union_Ici_of_le] ▸
+    integrableOn_union.mpr ⟨?_, h_int⟩
   have h_map_neg : (μ.restrict (Ici a)).map Neg.neg = μ.restrict (Iic (-a)) := by
-    rw [show Ici a = Neg.neg ⁻¹' Iic (-a) by simp, ← measurableEmbedding_neg.restrict_map,
-      Measure.map_neg_eq_self]
-  have h_int_neg : IntegrableOn (f ∘ Neg.neg) (Ici a) μ := by
-    refine h_int.congr' ?_ hsymm.restrict
-    refine AEStronglyMeasurable.comp_aemeasurable ?_ measurable_neg.aemeasurable
-    convert hf.aestronglyMeasurable.restrict
-  replace h_int_neg := measurableEmbedding_neg.integrable_map_iff.mpr h_int_neg
-  rewrite [h_map_neg] at h_int_neg
-  refine integrableOn_univ.mp ?_
-  convert integrableOn_union.mpr ⟨h_int_neg, h_int⟩
-  simp [Set.Iic_union_Ici_of_le]
+    conv => rhs; rw [← Measure.map_neg_eq_self μ, measurableEmbedding_neg.restrict_map]
+    simp
+  rewrite [IntegrableOn, ← h_map_neg, measurableEmbedding_neg.integrable_map_iff]
+  refine h_int.congr' ?_ hsymm.restrict
+  refine AEStronglyMeasurable.comp_aemeasurable ?_ measurable_neg.aemeasurable
+  exact h_map_neg ▸ hf.aestronglyMeasurable.restrict
 
 end LinearOrderedAddCommGroup
