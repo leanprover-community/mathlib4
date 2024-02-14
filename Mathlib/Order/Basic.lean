@@ -882,6 +882,10 @@ instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 #align is_refl.compl IsRefl.compl
 
+instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
+  convert eq_isEquiv α
+  simp [compl]
+
 /-! ### Order instances on the function space -/
 
 
