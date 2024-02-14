@@ -10,6 +10,10 @@ by simp
 example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 3 = 4 :=
 by simp
 
+/--
+info:
+-/
+#guard_msgs in
 #eval show Lean.MetaM Unit from
   guard <|
     reprStr (Finsupp.mk {1, 2} (fun | 1 | 2 => 3 | _ => 0) (fun x => by aesop))

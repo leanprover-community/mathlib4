@@ -145,7 +145,7 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
     exact (zero_le_one.not_lt hP).elim
   -- If every root of P(P(t)) - t is also a root of P(t) - t, then we're done.
   by_cases H : (P.comp P - X).roots.toFinset ⊆ (P - X).roots.toFinset
-  · exact (Finset.card_le_of_subset H).trans
+  · exact (Finset.card_le_card H).trans
       ((Multiset.toFinset_card_le _).trans ((card_roots' _).trans_eq hPX))
   -- Otherwise, take a, b with P(a) = b, P(b) = a, a ≠ b.
   · rcases Finset.not_subset.1 H with ⟨a, ha, hab⟩
@@ -170,7 +170,7 @@ theorem imo2006_q5' {P : Polynomial ℤ} (hP : 1 < P.natDegree) :
     -- We claim that every root of P(P(t)) - t is a root of P(t) + t - a - b. This allows us to
     -- conclude the problem.
     suffices H' : (P.comp P - X).roots.toFinset ⊆ (P + (X : ℤ[X]) - a - b).roots.toFinset
-    · exact (Finset.card_le_of_subset H').trans
+    · exact (Finset.card_le_card H').trans
         ((Multiset.toFinset_card_le _).trans <| (card_roots' _).trans_eq hPab)
     · -- Let t be a root of P(P(t)) - t, define u = P(t).
       intro t ht
@@ -196,7 +196,7 @@ open Imo2006Q5
 /-- The general problem follows easily from the k = 2 case. -/
 theorem imo2006_q5 {P : Polynomial ℤ} (hP : 1 < P.natDegree) {k : ℕ} (hk : 0 < k) :
     (P.comp^[k] X - X).roots.toFinset.card ≤ P.natDegree := by
-  refine' (Finset.card_le_of_subset fun t ht => _).trans (imo2006_q5' hP)
+  refine' (Finset.card_le_card fun t ht => _).trans (imo2006_q5' hP)
   have hP' : P.comp P - X ≠ 0 := by
     simpa [Nat.iterate] using Polynomial.iterate_comp_sub_X_ne hP zero_lt_two
   replace ht := isRoot_of_mem_roots (Multiset.mem_toFinset.1 ht)

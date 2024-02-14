@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Convex.Topology
-import Mathlib.LinearAlgebra.Dimension
+import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.Topology.Algebra.Module.Cardinality
 
 /-!
@@ -89,12 +89,12 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   simp only [compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_nonempty_iff_eq_empty]
     at ht
   have JA : JoinedIn sᶜ a z := by
-    apply JoinedIn_of_segment_subset
+    apply JoinedIn.of_segment_subset
     rw [subset_compl_iff_disjoint_right, disjoint_iff_inter_eq_empty]
     convert ht.2
     exact Ia.symm
   have JB : JoinedIn sᶜ b z := by
-    apply JoinedIn_of_segment_subset
+    apply JoinedIn.of_segment_subset
     rw [subset_compl_iff_disjoint_right, disjoint_iff_inter_eq_empty]
     convert ht.1
     exact Ib.symm

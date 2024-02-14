@@ -169,7 +169,7 @@ theorem get_tail (x : Vector α n) (i) :
   cases' i with i ih; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
-  rw [←h] at ih
+  rw [← h] at ih
   contradiction
 #align vector.nth_tail Vector.get_tail
 
@@ -393,7 +393,7 @@ theorem scanl_get (i : Fin n) :
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get]
+    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
@@ -516,26 +516,27 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
 
 /-- Define `motive v` by case-analysis on `v : Vector α n` -/
 def casesOn {motive : ∀ {n}, Vector α n → Sort*} (v : Vector α m)
-    (nil : motive nil) (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
+    (nil : motive nil)
+    (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
     motive v :=
   inductionOn (C := motive) v nil @fun _ hd tl _ => cons hd tl
 
 /-- Define `motive v₁ v₂` by case-analysis on `v₁ : Vector α n` and `v₂ : Vector β n` -/
 def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort*} (v₁ : Vector α m) (v₂ : Vector β m)
-              (nil : motive nil nil)
-              (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
-                      → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
-              motive v₁ v₂ :=
-    inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
+    (nil : motive nil nil)
+    (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
+      → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
+    motive v₁ v₂ :=
+  inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
 
 /-- Define `motive v₁ v₂ v₃` by case-analysis on `v₁ : Vector α n`, `v₂ : Vector β n`, and
     `v₃ : Vector γ n` -/
 def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort*} (v₁ : Vector α m)
-              (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
-              (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
-                        → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
-              motive v₁ v₂ v₃ :=
-    inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
+    (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
+    (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
+      → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
+    motive v₁ v₂ v₃ :=
+  inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
 
 /-- Cast a vector to an array. -/
 def toArray : Vector α n → Array α
@@ -627,7 +628,7 @@ theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i 
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
     (v.set i a).get j = v.get j := by
   cases v; cases i; cases j
-  simp [Vector.set, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
+  simp only [set, get_eq_get, toList_mk, Fin.cast_mk, ne_eq]
   rw [List.get_set_of_ne]
   · simpa using h
 #align vector.nth_update_nth_of_ne Vector.get_set_of_ne
@@ -722,7 +723,7 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) :
 
 variable (η : ApplicativeTransformation F G)
 
-protected theorem naturality {α β : Type _} (f : α → F β) (x : Vector α n) :
+protected theorem naturality {α β : Type u} (f : α → F β) (x : Vector α n) :
     η (x.traverse f) = x.traverse (@η _ ∘ f) := by
   induction' x using Vector.inductionOn with n x xs ih
   · simp! [functor_norm, cast, η.preserves_pure]
@@ -798,10 +799,10 @@ variable (ys : Vector β n)
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
   clear * - v₁ v₂
-  induction v₁, v₂ using inductionOn₂
-  case nil =>
+  induction v₁, v₂ using inductionOn₂ with
+  | nil =>
     exact Fin.elim0 i
-  case cons x xs y ys ih =>
+  | cons ih =>
     rw [map₂_cons]
     cases i using Fin.cases
     · simp only [get_zero, head_cons]

@@ -7,7 +7,7 @@ respects equivalence and is preserved by any mapping that is injective on its el
 
 It might make sense to remove this when we have a proper theory of finite sets.
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Order.Basic
 
 set_option autoImplicit true
 
@@ -16,7 +16,7 @@ namespace List
 def inj_on (f : α → β) (as : List α) := ∀ {x y}, x ∈ as → y ∈ as → f x = f y → x = y
 
 theorem inj_on_of_subset {f : α → β} {as bs : List α} (h : inj_on f bs) (hsub : as ⊆ bs) :
-  inj_on f as := fun xas yas heq ↦ h (hsub xas) (hsub yas) heq
+    inj_on f as := fun xas yas heq ↦ h (hsub xas) (hsub yas) heq
 
 protected def equiv (as bs : List α) := ∀ x, x ∈ as ↔ x ∈ bs
 
@@ -44,13 +44,13 @@ theorem mem_remove_iff {a b : α} {as : List α} : b ∈ remove a as ↔ b ∈ a
   induction as with
   | nil => simp [remove]
   | cons a' as ih =>
-    simp [remove]
+    simp only [remove, Bool.not_eq_true, mem_cons, ne_eq]
     cases Decidable.em (a = a') with
     | inl h =>
       simp only [if_pos h, ih]
       exact ⟨fun ⟨h1, h2⟩ ↦ ⟨Or.inr h1, h2⟩, fun ⟨h1, h2⟩ ↦ ⟨Or.resolve_left h1 (h ▸ h2), h2⟩⟩
     | inr h =>
-      simp [if_neg h, ih]
+      simp only [if_neg h, Bool.not_eq_true, mem_cons, ih, ne_eq]
       constructor
       { focus
         intro h'
@@ -102,7 +102,7 @@ theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as =
   | (a' :: as), h => by
     cases Decidable.em (a = a') with
     | inl h' =>
-      simp [remove, if_pos h']
+      simp only [remove, if_pos h']
       cases Decidable.em (a ∈ as) with
       | inl h'' =>
         have h₃ : a' ∈ as := h' ▸ h''
@@ -112,7 +112,7 @@ theorem card_remove_of_mem {a : α} : ∀ {as : List α}, a ∈ as → card as =
         simp [card_cons_of_not_mem h₃, remove_eq_of_not_mem h'']
     | inr h' =>
         have h₃ : a ∈ as := (mem_cons.1 h).resolve_left h'
-        simp [remove, h']
+        simp only [remove, h', ite_false]
         cases Decidable.em (a' ∈ as) with
         | inl h'' =>
           have : a' ∈ remove a as := by rw [mem_remove_iff]; exact ⟨h'', Ne.symm h'⟩
@@ -184,7 +184,8 @@ theorem card_append_disjoint : ∀ {as bs : List α},
       simp [h, card_append_disjoint disj']
     | inr h =>
       have h1 : a ∉ bs := fun h' ↦ disj (mem_cons_self a as) h'
-      simp [h, h1, card_append_disjoint disj']
+      simp only [cons_append, mem_append, h, h1, or_self, not_false_eq_true, card_cons_of_not_mem,
+        card_append_disjoint disj']
       rw [Nat.add_right_comm]
 
 theorem card_union_disjoint {as bs : List α} (h : Disjoint as bs) :

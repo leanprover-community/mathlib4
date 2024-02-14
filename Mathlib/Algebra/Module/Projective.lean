@@ -90,7 +90,7 @@ theorem projective_def :
 
 theorem projective_def' :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id :=
-  by simp_rw [projective_def, FunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
+  by simp_rw [projective_def, DFunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
 #align module.projective_def' Module.projective_def'
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
@@ -112,7 +112,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   use φ.comp s
   ext p
   conv_rhs => rw [← hs p]
-  simp [Finsupp.total_apply, Function.surjInv_eq hf]
+  simp [Finsupp.total_apply, Function.surjInv_eq hf, map_finsupp_sum]
 #align module.projective_lifting_property Module.projective_lifting_property
 
 /-- A module which satisfies the universal property is projective: If all surjections of
@@ -140,7 +140,7 @@ instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
   .of_lifting_property'' fun f hf ↦ by
     classical
       choose g hg using fun i ↦ projective_lifting_property f (DFinsupp.lsingle i) hf
-      replace hg : ∀ i x, f (g i x) = DFinsupp.single i x := fun i ↦ FunLike.congr_fun (hg i)
+      replace hg : ∀ i x, f (g i x) = DFinsupp.single i x := fun i ↦ DFunLike.congr_fun (hg i)
       refine ⟨DFinsupp.coprodMap g, ?_⟩
       ext i x j
       simp only [comp_apply, id_apply, DFinsupp.lsingle_apply, DFinsupp.coprodMap_apply_single, hg]
@@ -158,7 +158,7 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
   intro m
   simp only [b.constr_apply, mul_one, id.def, Finsupp.smul_single', Finsupp.total_single,
-    LinearMap.map_finsupp_sum]
+    map_finsupp_sum]
   exact b.total_repr m
 #align module.projective_of_basis Module.Projective.of_basis
 

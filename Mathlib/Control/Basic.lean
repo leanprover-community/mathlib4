@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Init.Control.Combinators
+import Mathlib.Init.Function
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Attr.Core
-import Std.Data.List.Basic
 
 #align_import control.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -59,8 +59,8 @@ theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
 @[functor_norm]
 theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
     x <*> f <$> y = (· ∘ f) <$> x <*> y := by
-  simp [← pure_seq]
-  simp [seq_assoc, ← comp_map, (· ∘ ·)]
+  simp only [← pure_seq]
+  simp only [seq_assoc, Function.comp, seq_pure, ← comp_map]
   simp [pure_seq]
 #align seq_map_assoc seq_map_assoc
 
@@ -87,26 +87,29 @@ theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
 
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
-  show bind (f <$> x) g = bind x (g ∘ f)
-  by rw [← bind_pure_comp, bind_assoc]; simp [pure_bind, (· ∘ ·)]
+  show bind (f <$> x) g = bind x (g ∘ f) by
+    rw [← bind_pure_comp, bind_assoc]
+    simp [pure_bind, Function.comp_def]
 #align seq_bind_eq seq_bind_eq
 
 #align seq_eq_bind_map seq_eq_bind_mapₓ
 -- order of implicits and `Seq.seq` has a lazily evaluated second argument using `Unit`
 
 @[functor_norm]
-theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by simp only [(· >=> ·), functor_norm]
+theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_pure fish_pure
 
 @[functor_norm]
-theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by simp only [(· >=> ·), functor_norm]
+theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_pipe fish_pipe
 
 -- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
 theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
     (f >=> g) >=> h = f >=> g >=> h := by
-  simp only [(· >=> ·), functor_norm]
+  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
 #align fish_assoc fish_assoc
 
 variable {β' γ' : Type v}
@@ -140,7 +143,7 @@ section
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
-  joinM (Functor.map f <$> a) = f <$> joinM a := by
+    joinM (Functor.map f <$> a) = f <$> joinM a := by
   simp only [joinM, (· ∘ ·), id.def, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
 #align mjoin_map_map joinM_map_map
 

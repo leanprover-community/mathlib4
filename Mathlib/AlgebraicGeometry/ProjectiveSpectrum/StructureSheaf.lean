@@ -6,7 +6,7 @@ Authors: Jujian Zhang
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
-import Mathlib.AlgebraicGeometry.LocallyRingedSpace
+import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 #align_import algebraic_geometry.projective_spectrum.structure_sheaf from "leanprover-community/mathlib"@"486cb2f3bda4a67557c6285f5bd0c3348c1eea81"
 
@@ -210,6 +210,10 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top ð
       map_mul' := fun x y => rfl }
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.projective_spectrum.structure_sheaf.structure_presheaf_in_CommRing AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF]
+  AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_apply
 
 /-- Some glue, verifying that that structure presheaf valued in `CommRing` agrees with the `Type`
 valued structure presheaf.-/

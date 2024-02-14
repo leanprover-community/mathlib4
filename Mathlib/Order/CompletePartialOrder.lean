@@ -53,16 +53,16 @@ protected lemma DirectedOn.sSup_le (hd : DirectedOn (. ≤ .) d) (ha : ∀ b ∈
 hd.isLUB_sSup.2 ha
 
 protected lemma Directed.le_iSup (hf : Directed (. ≤ .) f) (i : ι) : f i ≤ ⨆ j, f j :=
-hf.directedOn_range.le_sSup $ Set.mem_range_self _
+hf.directedOn_range.le_sSup <| Set.mem_range_self _
 
 protected lemma Directed.iSup_le (hf : Directed (. ≤ .) f) (ha : ∀ i, f i ≤ a) :  ⨆ i, f i ≤ a :=
-hf.directedOn_range.sSup_le $ Set.forall_range_iff.2 ha
+hf.directedOn_range.sSup_le <| Set.forall_range_iff.2 ha
 
 --TODO: We could mimic more `sSup`/`iSup` lemmas
 
 /-- Scott-continuity takes on a simpler form in complete partial orders. -/
 lemma CompletePartialOrder.scottContinuous {f : α → β} :
-  ScottContinuous f ↔
+    ScottContinuous f ↔
     ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (. ≤ .) d → IsLUB (f '' d) (f (sSup d)) := by
   refine' ⟨λ h d hd₁ hd₂ ↦ h hd₁ hd₂ hd₂.isLUB_sSup, λ h d hne hd a hda ↦ _⟩
   rw [hda.unique hd.isLUB_sSup]

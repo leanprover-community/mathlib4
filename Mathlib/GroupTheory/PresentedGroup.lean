@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2019 Michael Howes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Howes
+Authors: Michael Howes, Newell Jensen
 -/
-import Mathlib.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup
 
 #align_import group_theory.presented_group from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
@@ -87,6 +87,30 @@ theorem toGroup.unique (g : PresentedGroup rels →* G)
   refine' QuotientGroup.induction_on x _
   exact fun _ ↦ FreeGroup.lift.unique (g.comp (QuotientGroup.mk' _)) hg
 #align presented_group.to_group.unique PresentedGroup.toGroup.unique
+
+@[ext]
+theorem ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) = ψ (.of x)) : φ = ψ := by
+  unfold PresentedGroup
+  ext
+  apply hx
+
+variable {β : Type*}
+
+/-- Presented groups of isomorphic types are isomorphic. -/
+def equivPresentedGroup (rels : Set (FreeGroup α)) (e : α ≃ β) :
+    PresentedGroup rels ≃* PresentedGroup (FreeGroup.freeGroupCongr e '' rels) :=
+  QuotientGroup.congr (Subgroup.normalClosure rels)
+    (Subgroup.normalClosure ((FreeGroup.freeGroupCongr e) '' rels)) (FreeGroup.freeGroupCongr e)
+    (Subgroup.map_normalClosure rels (FreeGroup.freeGroupCongr e).toMonoidHom
+      (FreeGroup.freeGroupCongr e).surjective)
+
+theorem equivPresentedGroup_apply_of (x : α) (rels : Set (FreeGroup α)) (e : α ≃ β) :
+    equivPresentedGroup rels e (PresentedGroup.of x) =
+      PresentedGroup.of (rels := FreeGroup.freeGroupCongr e '' rels) (e x) := rfl
+
+theorem equivPresentedGroup_symm_apply_of (x : β) (rels : Set (FreeGroup α)) (e : α ≃ β) :
+    (equivPresentedGroup rels e).symm (PresentedGroup.of x) =
+      PresentedGroup.of (rels := rels) (e.symm x) := rfl
 
 end ToGroup
 

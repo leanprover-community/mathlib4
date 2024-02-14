@@ -196,7 +196,7 @@ instance : TopologicalSpace (OnePoint X) where
     suffices IsOpen ((↑) ⁻¹' ⋃₀ S : Set X) by
       refine' ⟨_, this⟩
       rintro ⟨s, hsS : s ∈ S, hs : ∞ ∈ s⟩
-      refine' isCompact_of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
+      refine' IsCompact.of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
       exact compl_subset_compl.mpr (preimage_mono <| subset_sUnion_of_mem hsS)
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2

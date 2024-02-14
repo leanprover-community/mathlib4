@@ -66,7 +66,7 @@ theorem Algebra.norm_localization [Module.Free R S] [Module.Finite R S] (a : S) 
     Algebra.norm Rₘ (algebraMap S Sₘ a) = algebraMap R Rₘ (Algebra.norm R a) := by
   cases subsingleton_or_nontrivial R
   · haveI : Subsingleton Rₘ := Module.subsingleton R Rₘ
-    simp
+    simp [eq_iff_true_of_subsingleton]
   let b := Module.Free.chooseBasis R S
   letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
   rw [Algebra.norm_eq_matrix_det (b.localizationLocalization Rₘ M Sₘ),
@@ -80,7 +80,7 @@ theorem Algebra.trace_localization [Module.Free R S] [Module.Finite R S] (a : S)
     Algebra.trace Rₘ Sₘ (algebraMap S Sₘ a) = algebraMap R Rₘ (Algebra.trace R S a) := by
   cases subsingleton_or_nontrivial R
   · haveI : Subsingleton Rₘ := Module.subsingleton R Rₘ
-    simp
+    simp [eq_iff_true_of_subsingleton]
   let b := Module.Free.chooseBasis R S
   letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
   rw [Algebra.trace_eq_matrix_trace (b.localizationLocalization Rₘ M Sₘ),
@@ -112,7 +112,7 @@ theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :
 discriminant of `b`.
 -/
 theorem Algebra.discr_localizationLocalization (b : Basis ι R S) :
-  Algebra.discr Rₘ (b.localizationLocalization Rₘ M Sₘ) =
+    Algebra.discr Rₘ (b.localizationLocalization Rₘ M Sₘ) =
     algebraMap R Rₘ (Algebra.discr R b) := by
   rw [Algebra.discr_def, Algebra.discr_def, RingHom.map_det,
     Algebra.traceMatrix_localizationLocalization]

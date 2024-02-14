@@ -35,7 +35,7 @@ this is a basis over `Fin 3 → R`.
 -/
 
 
-open Function Submodule
+open Function Set Submodule
 
 open BigOperators
 
@@ -98,7 +98,7 @@ theorem proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ
 theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (stdBasis R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine' iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 _
-  simp only [←ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
+  simp only [← ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
   rw [proj_stdBasis_ne R φ j i, zero_apply]
   rintro rfl
@@ -182,7 +182,6 @@ theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i,
     exact (hs j).map' _ (ker_stdBasis _ _ _)
   apply linearIndependent_iUnion_finite hs'
   · intro j J _ hiJ
-    simp only
     have h₀ :
       ∀ j, span R (range fun i : ιs j => stdBasis R Ms j (v j i)) ≤
         LinearMap.range (stdBasis R Ms j) := by
@@ -272,7 +271,7 @@ section
 variable (R η)
 
 /-- The basis on `η → R` where the `i`th basis vector is `Function.update 0 i 1`. -/
-noncomputable def basisFun : Basis η R (∀ _ : η, R) :=
+noncomputable def basisFun : Basis η R (η → R) :=
   Basis.ofEquivFun (LinearEquiv.refl _ _)
 #align pi.basis_fun Pi.basisFun
 
@@ -296,6 +295,29 @@ end
 end Module
 
 end Pi
+
+namespace Module
+
+variable (ι R M N : Type*) [Fintype ι] [CommSemiring R]
+  [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+
+/-- The natural linear equivalence: `Mⁱ ≃ Hom(Rⁱ, M)` for an `R`-module `M`. -/
+noncomputable def piEquiv : (ι → M) ≃ₗ[R] ((ι → R) →ₗ[R] M) := Basis.constr (Pi.basisFun R ι) R
+
+lemma piEquiv_apply_apply (v : ι → M) (w : ι → R) :
+    piEquiv ι R M v w = ∑ i, w i • v i := by
+  simp only [piEquiv, Basis.constr_apply_fintype, Basis.equivFun_apply]
+  congr
+
+@[simp] lemma range_piEquiv (v : ι → M) :
+    LinearMap.range (piEquiv ι R M v) = span R (range v) :=
+  Basis.constr_range _ _
+
+@[simp] lemma surjective_piEquiv_apply_iff (v : ι → M) :
+    Surjective (piEquiv ι R M v) ↔ span R (range v) = ⊤ := by
+  rw [← LinearMap.range_eq_top, range_piEquiv]
+
+end Module
 
 namespace Matrix
 

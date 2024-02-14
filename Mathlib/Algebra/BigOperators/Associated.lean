@@ -50,6 +50,26 @@ theorem exists_mem_finset_dvd {s : Finset β} {f : β → α} : p ∣ s.prod f �
 
 end Prime
 
+theorem Prod.associated_iff {M N : Type*} [Monoid M] [Monoid N] {x z : M × N} :
+    x ~ᵤ z ↔ x.1 ~ᵤ z.1 ∧ x.2 ~ᵤ z.2 :=
+  ⟨fun ⟨u, hu⟩ => ⟨⟨(MulEquiv.prodUnits.toFun u).1, (Prod.eq_iff_fst_eq_snd_eq.1 hu).1⟩,
+    ⟨(MulEquiv.prodUnits.toFun u).2, (Prod.eq_iff_fst_eq_snd_eq.1 hu).2⟩⟩,
+  fun ⟨⟨u₁, h₁⟩, ⟨u₂, h₂⟩⟩ =>
+    ⟨MulEquiv.prodUnits.invFun (u₁, u₂), Prod.eq_iff_fst_eq_snd_eq.2 ⟨h₁, h₂⟩⟩⟩
+
+theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
+    (g : ι → M) (h : ∀ i, i ∈ s → (f i) ~ᵤ (g i)) : (∏ i in s, f i) ~ᵤ (∏ i in s, g i) := by
+  induction s using Finset.induction with
+  | empty =>
+    simp only [Finset.prod_empty]
+    rfl
+  | @insert j s hjs IH =>
+    classical
+    convert_to (∏ i in insert j s, f i) ~ᵤ (∏ i in insert j s, g i)
+    rw [Finset.prod_insert hjs, Finset.prod_insert hjs]
+    exact Associated.mul_mul (h j (Finset.mem_insert_self j s))
+      (IH (fun i hi ↦ h i (Finset.mem_insert_of_mem hi)))
+
 theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α} (hp : Prime p)
     {s : Multiset α} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
   Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps => by
@@ -114,8 +134,9 @@ theorem finset_prod_mk {p : Finset β} {f : β → α} :
     (∏ i in p, Associates.mk (f i)) = Associates.mk (∏ i in p, f i) := by
   -- Porting note: added
   have : (fun i => Associates.mk (f i)) = Associates.mk ∘ f :=
-    funext <| fun x => Function.comp_apply
-  rw [Finset.prod_eq_multiset_prod, this, ←Multiset.map_map, prod_mk, ←Finset.prod_eq_multiset_prod]
+    funext fun x => Function.comp_apply
+  rw [Finset.prod_eq_multiset_prod, this, ← Multiset.map_map, prod_mk,
+    ← Finset.prod_eq_multiset_prod]
 #align associates.finset_prod_mk Associates.finset_prod_mk
 
 theorem rel_associated_iff_map_eq_map {p q : Multiset α} :
@@ -180,9 +201,17 @@ theorem Prime.dvd_finset_prod_iff {S : Finset α} {p : M} (pp : Prime p) (g : α
   ⟨pp.exists_mem_finset_dvd, fun ⟨_, ha1, ha2⟩ => dvd_trans ha2 (dvd_prod_of_mem g ha1)⟩
 #align prime.dvd_finset_prod_iff Prime.dvd_finset_prod_iff
 
+theorem Prime.not_dvd_finset_prod {S : Finset α} {p : M} (pp : Prime p) {g : α → M}
+    (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g := by
+  exact mt (Prime.dvd_finset_prod_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
+
 theorem Prime.dvd_finsupp_prod_iff {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p) :
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=
   Prime.dvd_finset_prod_iff pp _
 #align prime.dvd_finsupp_prod_iff Prime.dvd_finsupp_prod_iff
+
+theorem Prime.not_dvd_finsupp_prod {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p)
+    (hS : ∀ a ∈ f.support, ¬p ∣ g a (f a)) : ¬p ∣ f.prod g :=
+  Prime.not_dvd_finset_prod pp hS
 
 end CommMonoidWithZero
