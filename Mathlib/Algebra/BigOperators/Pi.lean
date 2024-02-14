@@ -157,7 +157,7 @@ lemma card_filter_piFinset_eq_of_mem [∀ a, DecidableEq (α a)] (s : ∀ i, Fin
   let t : ∀ i, Finset (α i) := fun j ↦ if h : i = j then {(@Eq.ndrec _ _ α a _ h : α j)} else s j
   have : (t i).card = 1 := by simp
   have h₁ : ∏ j in univ.erase i, (s j).card = ∏ j, (t j).card := by
-    rw [←@prod_erase ℕ ι _ _ univ (fun j ↦ (t j).card) i this]
+    rw [← @prod_erase ℕ ι _ _ univ (fun j ↦ (t j).card) i this]
     refine Finset.prod_congr rfl fun b hb ↦ ?_
     simp only [mem_erase, Ne.def, mem_univ, and_true_iff] at hb
     simp only [dif_neg (Ne.symm hb)]
