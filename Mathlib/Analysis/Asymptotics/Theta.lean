@@ -335,7 +335,7 @@ theorem IsLittleO.right_isTheta_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f�
 
 lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'} {g : α → F}
     (hΘ : f₁ =Θ[l] g) (ho : f₂ =o[l] g) : (f₁ + f₂) =Θ[l] g :=
-  ⟨hΘ.1.add_isLittleO ho, hΘ.2.trans <| (ho.trans_isTheta hΘ.symm).right_isBigO_add'⟩
+  (ho.trans_isTheta hΘ.symm).right_isTheta_add'.symm.trans hΘ
 
 lemma IsLittleO.add_isTheta {f₁ f₂ : α → E'} {g : α → F}
     (ho : f₁ =o[l] g) (hΘ : f₂ =Θ[l] g) : (f₁ + f₂) =Θ[l] g :=
