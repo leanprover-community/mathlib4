@@ -21,7 +21,7 @@ universe u
 
 namespace IsCyclotomicExtension.Rat
 
-open NumberField InfinitePlace FiniteDimensional Complex Nat
+open NumberField InfinitePlace FiniteDimensional Complex Nat Polynomial
 
 open scoped Cyclotomic
 
@@ -34,11 +34,16 @@ theorem nrRealPlaces_eq_zero [IsCyclotomicExtension {n} ℚ K]
   have := IsCyclotomicExtension.numberField {n} ℚ K
   apply (IsCyclotomicExtension.zeta_spec n ℚ K).nrRealPlaces_eq_zero_of_two_lt hn
 
-theorem nrComplexPlaces_eq_finrank [IsCyclotomicExtension {n} ℚ K]
+theorem nrComplexPlaces_eq_totient_div_two [IsCyclotomicExtension {n} ℚ K]
     (hn : 2 < n) :
     haveI := IsCyclotomicExtension.numberField {n} ℚ K
-    2 * NrComplexPlaces K = FiniteDimensional.finrank ℚ K := by
+    NrComplexPlaces K = φ n / 2 := by
   have := IsCyclotomicExtension.numberField {n} ℚ K
-  simpa [nrRealPlaces_eq_zero K hn] using card_add_two_mul_card_eq_rank K
+  obtain ⟨k, hk : φ n = k + k⟩ := totient_even hn
+  have key := card_add_two_mul_card_eq_rank K
+  rw [nrRealPlaces_eq_zero K hn, zero_add, IsCyclotomicExtension.finrank (n := n) K
+    (cyclotomic.irreducible_rat n.pos), hk, ← two_mul, Nat.mul_right_inj (by norm_num)] at key
+  simp [hk, key, ← two_mul]
+
 
 end IsCyclotomicExtension.Rat
