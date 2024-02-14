@@ -729,7 +729,7 @@ theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
 
 variable (A) in
 theorem mapDomain_algebraMap
-  {F : Type*} [FunLike F G H] [MonoidHomClass F G H] [MulSemiringAction G A]
+    {F : Type*} [FunLike F G H] [MonoidHomClass F G H] [MulSemiringAction G A]
     [MulSemiringAction H A] [SmulTrivAction G k A] [SmulTrivAction H k A] (f : F) (r : k) :
     mapDomain f (algebraMap k (SkewMonoidAlgebra A G) r) =
       algebraMap k (SkewMonoidAlgebra A H) r := by
