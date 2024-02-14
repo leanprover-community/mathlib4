@@ -179,10 +179,6 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
     Complex.one_re]
 #align integral_Ioi_cpow_of_lt integral_Ioi_cpow_of_lt
 
-theorem intervalIntegral_inv_one_add_sq_tendsto :
-    Tendsto (fun i => ∫ (x : ℝ) in -i..i, (1 + x ^ 2)⁻¹) atTop (𝓝[<] π) := by
-  convert TendstoNhdsWithinIio.const_mul (b := 2) (by norm_num) arctan_atTop <;> simp [two_mul]
-
 theorem integrable_inv_one_add_sq : Integrable fun (x : ℝ) ↦ (1 + x ^ 2)⁻¹ := by
   suffices Integrable fun (x : ℝ) ↦ (1 + ‖x‖ ^ 2) ^ ((-2 : ℝ) / 2) by simpa [rpow_neg_one]
   exact integrable_rpow_neg_one_add_norm_sq (by simpa using by norm_num)
@@ -190,18 +186,18 @@ theorem integrable_inv_one_add_sq : Integrable fun (x : ℝ) ↦ (1 + x ^ 2)⁻�
 @[simp]
 theorem integral_Iic_inv_one_add_sq {i : ℝ} :
     ∫ (x : ℝ) in Set.Iic i, (1 + x ^ 2)⁻¹ = arctan i + (π / 2) :=
-  integral_Iic_of_hasDerivAt_of_tendsto' (fun _ _ => by rw [← one_div]; apply hasDerivAt_arctan)
+  integral_Iic_of_hasDerivAt_of_tendsto' (fun x _ => hasDerivAt_arctan' x)
     integrable_inv_one_add_sq.integrableOn (tendsto_nhds_of_tendsto_nhdsWithin arctan_atBot)
     |>.trans (sub_neg_eq_add _ _)
 
 @[simp]
 theorem integral_Ioi_inv_one_add_sq {i : ℝ} :
     ∫ (x : ℝ) in Set.Ioi i, (1 + x ^ 2)⁻¹ = (π / 2) - arctan i :=
-  integral_Ioi_of_hasDerivAt_of_tendsto' (fun _ _ => by rw [← one_div]; apply hasDerivAt_arctan)
+  integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => hasDerivAt_arctan' x)
     integrable_inv_one_add_sq.integrableOn (tendsto_nhds_of_tendsto_nhdsWithin arctan_atTop)
 
 @[simp]
 theorem integral_volume_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
-  tendsto_nhds_unique
-    (intervalIntegral_tendsto_integral integrable_inv_one_add_sq tendsto_neg_atTop_atBot tendsto_id)
-    (tendsto_nhds_of_tendsto_nhdsWithin intervalIntegral_inv_one_add_sq_tendsto)
+  (by ring : π = (π / 2) - (-(π / 2))) ▸ integral_of_hasDerivAt_of_tendsto hasDerivAt_arctan'
+    integrable_inv_one_add_sq (tendsto_nhds_of_tendsto_nhdsWithin arctan_atBot)
+    (tendsto_nhds_of_tendsto_nhdsWithin arctan_atTop)
