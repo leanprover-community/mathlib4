@@ -949,8 +949,8 @@ order homomorphisms gives an order isomorphism between the two function prosets.
 @[simps apply symm_apply]
 def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
     (f : α ≃o γ) (g : β ≃o δ) : (α →o β) ≃o (γ →o δ) where
-  toFun := (.comp g <| .comp . f.symm)
-  invFun := (.comp g.symm <| .comp . f)
+  toFun  p := .comp g <| .comp p f.symm
+  invFun p := .comp g.symm <| .comp p f
   left_inv p := DFunLike.coe_injective <| by
     change (g.symm ∘ g) ∘ p ∘ (f.symm ∘ f) = p
     simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,

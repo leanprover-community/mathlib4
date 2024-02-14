@@ -229,7 +229,7 @@ lemma closure_IsGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) wher
 theorem ext_IsClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
   ext' c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_IsGLB x) <|
-    (Set.ext (and_congr_right' <| h .)).substr (c₂.closure_IsGLB x)
+    (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_IsGLB x)
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
 `ofPred` constructor. -/
@@ -301,7 +301,7 @@ def ofCompletePred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (s
 theorem sInf_IsClosed {c : ClosureOperator α} {S : Set α}
     (H : ∀ x ∈ S, c.IsClosed x) : c.IsClosed (sInf S) :=
   isClosed_iff_closure_le.mpr <| le_of_le_of_eq c.monotone.map_sInf_le <|
-    Eq.trans (biInf_congr (c.isClosed_iff.mp <| H . .)) sInf_eq_iInf.symm
+    Eq.trans (biInf_congr (c.isClosed_iff.mp <| H · ·)) sInf_eq_iInf.symm
 
 @[simp]
 theorem closure_iSup_closure (f : ι → α) : c (⨆ i, c (f i)) = c (⨆ i, f i) :=
