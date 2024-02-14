@@ -39,8 +39,8 @@ class CardinalInterFilter (l : Filter α) (hc : Cardinal.aleph0 ≤ c) : Prop wh
 
 variable {l : Filter α} {hc : Cardinal.aleph0 ≤ c} [CardinalInterFilter l hc]
 
-theorem cardinal_sInter_mem {S : Set (Set α)} (hSc : Cardinal.mk S < c) : ⋂₀ S ∈ l ↔ ∀ s ∈ S, s ∈ l
-    := ⟨fun hS _s hs => mem_of_superset hS (sInter_subset_of_mem hs),
+theorem cardinal_sInter_mem {S : Set (Set α)} (hSc : Cardinal.mk S < c) :
+    ⋂₀ S ∈ l ↔ ∀ s ∈ S, s ∈ l := ⟨fun hS _s hs => mem_of_superset hS (sInter_subset_of_mem hs),
   CardinalInterFilter.cardinal_sInter_mem _ _ hSc⟩
 
 theorem cardinal_iInter_mem {s : ι → Set α} (hic : Cardinal.mk ι < c) :
@@ -69,7 +69,8 @@ theorem eventually_cardinal_ball {S : Set ι} (hS : Cardinal.mk S < c)
 
 theorem EventuallyLE.cardinal_iUnion {s t : ι → Set α} (hic : Cardinal.mk ι < c)
     (h : ∀ i, s i ≤ᶠ[l] t i) : ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
-  ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs => mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
+  ((eventually_cardinal_forall hic).2 h).mono fun _ hst hs => mem_iUnion.2 <|
+    (mem_iUnion.1 hs).imp hst
 
 theorem EventuallyEq.cardinal_iUnion {s t : ι → Set α} (hic : Cardinal.mk ι < c)
     (h : ∀ i, s i =ᶠ[l] t i) : ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
