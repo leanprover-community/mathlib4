@@ -23,6 +23,8 @@ namespace IsCyclotomicExtension.Rat
 
 open NumberField InfinitePlace FiniteDimensional Complex Nat Polynomial
 
+open scoped Cyclotomic
+
 variable {n : ℕ+} (K : Type u) [Field K] [CharZero K]
 
 theorem nrRealPlaces_eq_zero [IsCyclotomicExtension {n} ℚ K]
