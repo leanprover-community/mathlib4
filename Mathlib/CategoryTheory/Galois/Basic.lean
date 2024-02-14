@@ -6,11 +6,13 @@ Authors: Christian Merten
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.FintypeCat
+import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.SingleObj
+import Mathlib.Data.Finite.Card
 
 /-!
 # Definition and basic properties of Galois categories
@@ -178,6 +180,13 @@ lemma not_initial_iff_fiber_nonempty (X : C) : (IsInitial X → False) ↔ Nonem
 lemma not_initial_of_inhabited {X : C} (x : F.obj X) (h : IsInitial X) : False :=
   ((initial_iff_fiber_empty F X).mp ⟨h⟩).false x
 
+/-- An object that is neither initial or connected has a non-trivial subobject. -/
+lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)
+    (hi : IsInitial X → False) :
+    ∃ (Y : C) (v : Y ⟶ X), (IsInitial Y → False) ∧ Mono v ∧ (¬ IsIso v) := by
+  contrapose! hc
+  exact ⟨hi, fun Y i hm hni ↦ hc Y i hni hm⟩
+
 /-- The fiber of a connected object is nonempty. -/
 instance nonempty_fiber_of_isConnected (X : C) [IsConnected X] : Nonempty (F.obj X) := by
   by_contra h
@@ -186,12 +195,21 @@ instance nonempty_fiber_of_isConnected (X : C) [IsConnected X] : Nonempty (F.obj
 
 /-- The fiber of the equalizer of `f g : X ⟶ Y` is equivalent to the set of agreement of `f`
 and `g`. -/
-private noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
+noncomputable def fiberEqualizerEquiv {X Y : C} (f g : X ⟶ Y) :
     F.obj (equalizer f g) ≃ { x : F.obj X // F.map f x = F.map g x } := by
   apply Iso.toEquiv
-  trans
+  apply Iso.trans
   · exact PreservesEqualizer.iso (F ⋙ FintypeCat.incl) f g
   · exact Types.equalizerIso (F.map f) (F.map g)
+
+/-- The fiber of the pullback is the fiber product of the fibers. -/
+@[simp]
+noncomputable def fiberPullbackEquiv {X A B : C} (f : A ⟶ X) (g : B ⟶ X) :
+    F.obj (pullback f g) ≃ { p : F.obj A × F.obj B // F.map f p.1 = F.map g p.2 } := by
+  apply Iso.toEquiv
+  apply Iso.trans
+  · exact PreservesPullback.iso (F ⋙ FintypeCat.incl) f g
+  · exact Types.pullbackIsoPullback (F.map f) (F.map g)
 
 /-- The evaluation map is injective for connected objects. -/
 lemma evaluationInjective_of_isConnected (A X : C) [IsConnected A] (a : F.obj A) :
@@ -210,6 +228,54 @@ lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj
   · exact evaluationInjective_of_isConnected F A A a
   · exact @Aut.ext _ _ A
 
+section CardFiber
+
+open ConcreteCategory
+
+/-- A mono between objects with equally sized fibers is an iso. -/
+lemma isIso_of_mono_of_eqCardFiber {X Y : C} (f : X ⟶ Y) [Mono f]
+    (h : Nat.card (F.obj X) = Nat.card (F.obj Y)) : IsIso f := by
+  have : IsIso (F.map f) := by
+    apply (ConcreteCategory.isIso_iff_bijective (F.map f)).mpr
+    apply (Fintype.bijective_iff_injective_and_card (F.map f)).mpr
+    refine ⟨injective_of_mono_of_preservesPullback (F.map f), ?_⟩
+    simp only [← Nat.card_eq_fintype_card, h]
+  exact isIso_of_reflects_iso f F
+
+/-- Along a mono that is not an iso, the cardinality of the fiber strictly increases. -/
+lemma ltCardFiber_of_mono_of_notIso {X Y : C} (f : X ⟶ Y) [Mono f]
+    (h : ¬ IsIso f ) : Nat.card (F.obj X) < Nat.card (F.obj Y) := by
+  by_contra hlt
+  apply h
+  apply isIso_of_mono_of_eqCardFiber F f
+  simp only [gt_iff_lt, not_lt] at hlt
+  exact Nat.le_antisymm
+    (Finite.card_le_of_injective (F.map f) (injective_of_mono_of_preservesPullback (F.map f))) hlt
+
+/-- The cardinality of the fiber of a not-initial object is non-zero. -/
+lemma non_zero_card_fiber_of_not_initial (X : C) (h : IsInitial X → False) :
+    Nat.card (F.obj X) ≠ 0 := by
+  intro hzero
+  refine Nonempty.elim ?_ h
+  rw [initial_iff_fiber_empty F]
+  exact Finite.card_eq_zero_iff.mp hzero
+
+/-- The cardinality of the fiber of a coproduct is the sum of the cardinalities of the fibers. -/
+lemma cardFiber_coprod_eq_sum (X Y : C) :
+    Nat.card (F.obj (X ⨿ Y)) = Nat.card (F.obj X) + Nat.card (F.obj Y) := by
+  let e : F.obj (X ⨿ Y) ≃ F.obj X ⊕ F.obj Y := Iso.toEquiv
+    <| (PreservesColimitPair.iso (F ⋙ FintypeCat.incl) X Y).symm.trans
+    <| Types.binaryCoproductIso (FintypeCat.incl.obj (F.obj X)) (FintypeCat.incl.obj (F.obj Y))
+  rw [← Nat.card_sum]
+  exact Nat.card_eq_of_bijective e.toFun (Equiv.bijective e)
+
+/-- The cardinality of the fiber is preserved under isomorphisms. -/
+lemma cardFiber_eq_of_iso {X Y : C} (i : X ≅ Y) : Nat.card (F.obj X) = Nat.card (F.obj Y) := by
+  have e : F.obj X ≃ F.obj Y := Iso.toEquiv (mapIso (F ⋙ FintypeCat.incl) i)
+  exact Nat.card_eq_of_bijective e (Equiv.bijective e)
+
+end CardFiber
+
 end PreGaloisCategory
 
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fiber functor. -/
@@ -219,21 +285,36 @@ class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C]
 
 namespace PreGaloisCategory
 
-variable {C : Type u₁} [Category.{u₂, u₁} C] [GaloisCategory C]
+variable (C : Type u₁) [Category.{u₂, u₁} C] [GaloisCategory C]
+
+/-- Arbitrarily choose a fiber functor for a Galois category using choice. -/
+noncomputable def GaloisCategory.getFiberFunctor : C ⥤ FintypeCat.{u₂} :=
+  Classical.choose <| @GaloisCategory.hasFiberFunctor C _ _
+
+/-- The arbitrarily chosen fiber functor `GaloisCategory.getFiberFunctor` is a fiber functor. -/
+noncomputable instance : FiberFunctor (GaloisCategory.getFiberFunctor C) :=
+  Classical.choice <| Classical.choose_spec (@GaloisCategory.hasFiberFunctor C _ _)
+
+variable {C}
 
 /-- In a `GaloisCategory` the set of morphisms out of a connected object is finite. -/
 instance (A X : C) [IsConnected A] : Finite (A ⟶ X) := by
-  obtain ⟨F, ⟨hF⟩⟩ := @GaloisCategory.hasFiberFunctor C _ _
+  let F := GaloisCategory.getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f a)
   exact evaluationInjective_of_isConnected F A X a
 
 /-- In a `GaloisCategory` the set of automorphism of a connected object is finite. -/
 instance (A : C) [IsConnected A] : Finite (Aut A) := by
-  obtain ⟨F, ⟨hF⟩⟩ := @GaloisCategory.hasFiberFunctor C _ _
+  let F := GaloisCategory.getFiberFunctor C
   obtain ⟨a⟩ := nonempty_fiber_of_isConnected F A
   apply Finite.of_injective (fun f ↦ F.map f.hom a)
   exact evaluation_aut_injective_of_isConnected F A a
+
+/-- Coproduct inclusions are monic in Galois categories. -/
+instance : MonoCoprod C := by
+  let F := GaloisCategory.getFiberFunctor C
+  exact MonoCoprod.monoCoprod_of_preservesCoprod_of_reflectsMono F
 
 end PreGaloisCategory
 

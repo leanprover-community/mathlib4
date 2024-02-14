@@ -3,6 +3,8 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
@@ -218,6 +220,36 @@ instance mono_ι [HasCoproduct X] (i : I)
   mono_inj X _ (colimit.isColimit _) i
 
 end
+
+open Functor
+
+section Preservation
+
+variable {D : Type*} [Category D] (F : C ⥤ D)
+
+theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
+    [PreservesColimitsOfShape (Discrete WalkingPair) F]
+    [ReflectsMonomorphisms F] : MonoCoprod C where
+  binaryCofan_inl {A B} c h := by
+    let c' := BinaryCofan.mk (F.map c.inl) (F.map c.inr)
+    apply mono_of_mono_map F
+    show Mono c'.inl
+    apply MonoCoprod.binaryCofan_inl
+    apply mapIsColimitOfPreservesOfIsColimit F
+    apply IsColimit.ofIsoColimit h
+    refine Cocones.ext (φ := eqToIso rfl) ?_
+    rintro ⟨(j₁|j₂)⟩ <;> simp only [const_obj_obj, eqToIso_refl, Iso.refl_hom,
+      Category.comp_id, BinaryCofan.mk_inl, BinaryCofan.mk_inr]
+
+end Preservation
+
+section Concrete
+
+instance [ConcreteCategory C] [PreservesColimitsOfShape (Discrete WalkingPair) (forget C)]
+    [ReflectsMonomorphisms (forget C)] : MonoCoprod C :=
+  monoCoprod_of_preservesCoprod_of_reflectsMono (forget C)
+
+end Concrete
 
 end MonoCoprod
 
