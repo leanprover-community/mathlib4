@@ -32,16 +32,34 @@ theorem nrRealPlaces_eq_zero [IsCyclotomicExtension {n} ℚ K]
   have := IsCyclotomicExtension.numberField {n} ℚ K
   apply (IsCyclotomicExtension.zeta_spec n ℚ K).nrRealPlaces_eq_zero_of_two_lt hn
 
-theorem nrComplexPlaces_eq_totient_div_two [IsCyclotomicExtension {n} ℚ K]
-    (hn : 2 < n) :
+theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K] :
     haveI := IsCyclotomicExtension.numberField {n} ℚ K
     NrComplexPlaces K = φ n / 2 := by
   have := IsCyclotomicExtension.numberField {n} ℚ K
-  obtain ⟨k, hk : φ n = k + k⟩ := totient_even hn
-  have key := card_add_two_mul_card_eq_rank K
-  rw [nrRealPlaces_eq_zero K hn, zero_add, IsCyclotomicExtension.finrank (n := n) K
-    (cyclotomic.irreducible_rat n.pos), hk, ← two_mul, Nat.mul_right_inj (by norm_num)] at key
-  simp [hk, key, ← two_mul]
+  by_cases hn : 2 < n
+  · obtain ⟨k, hk : φ n = k + k⟩ := totient_even hn
+    have key := card_add_two_mul_card_eq_rank K
+    rw [nrRealPlaces_eq_zero K hn, zero_add, IsCyclotomicExtension.finrank (n := n) K
+      (cyclotomic.irreducible_rat n.pos), hk, ← two_mul, Nat.mul_right_inj (by norm_num)] at key
+    simp [hk, key, ← two_mul]
+  · have : n.1 = 0 ∨ n.1 = 1 ∨ n.1 = 2 := by
+      suffices n.1 ≤ 2 by
+        omega
+      exact not_lt.1 hn
+    rcases this with (h0 | h1 | h2)
+    · exfalso
+      exact n.2.ne' h0
+    · simp only [PNat.coe_eq_one_iff.1 h1, PNat.one_coe, totient_one, reduceDiv]
+      apply nrComplexPlaces_eq_zero_of_finrank_eq_one
+      rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat n.pos)]
+      convert totient_one
+    · have h2' : n = 2 := by
+        rw [← PNat.coe_inj]
+        exact h2
+      simp only [h2', show ((2 : ℕ+) : ℕ) = 2 from rfl, totient_two, reduceDiv]
+      apply nrComplexPlaces_eq_zero_of_finrank_eq_one
+      rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat n.pos)]
+      convert totient_two
 
 
 end IsCyclotomicExtension.Rat
