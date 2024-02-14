@@ -54,8 +54,8 @@ lemma sin_le (hx : 0 ≤ x) : sin x ≤ x := by
   · simp
   · exact (sin_lt hx).le
 
-lemma lt_sin (hx : x < 0) : x < sin x := by simpa using sin_lt $ neg_pos.2 hx
-lemma le_sin (hx : x ≤ 0) : x ≤ sin x := by simpa using sin_le $ neg_nonneg.2 hx
+lemma lt_sin (hx : x < 0) : x < sin x := by simpa using sin_lt <| neg_pos.2 hx
+lemma le_sin (hx : x ≤ 0) : x ≤ sin x := by simpa using sin_le <| neg_nonneg.2 hx
 
 lemma cos_quadratic_lower_bound : 1 - x ^ 2 / 2 ≤ cos x := by
   wlog hx₀ : 0 ≤ x
