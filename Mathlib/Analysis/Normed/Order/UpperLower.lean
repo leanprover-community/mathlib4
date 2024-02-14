@@ -244,8 +244,6 @@ section Finite
 
 variable [Finite ι] {s t : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
 
-example [Nonempty ι] (hs : IsAntichain (· ≤ ·) s) : interior s = ∅ := IsAntichain.interior_eq_empty hs
-
 /-!
 #### Note
 
