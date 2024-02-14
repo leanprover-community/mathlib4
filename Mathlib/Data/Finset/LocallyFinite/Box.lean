@@ -6,12 +6,12 @@ Authors: Yaël Dillies
 import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Data.Int.Interval
 import Mathlib.Order.Disjointed
-import Mathlib.Tactic.Ring.RingNF
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Algebra.Order.Group.Prod
 -- TODO: Why is the `OrderedRing` instance not under `Algebra.Order`?
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # Decomposing a locally finite ordered ring into boxes

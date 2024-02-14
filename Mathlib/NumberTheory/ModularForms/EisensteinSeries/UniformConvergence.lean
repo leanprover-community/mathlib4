@@ -11,6 +11,7 @@ import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
 import Mathlib.Data.Finset.LocallyFinite.Box
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+import Mathlib.Tactic.Ring.RingNF
 
 /-!
 # Uniform convergence of Eisenstein series
