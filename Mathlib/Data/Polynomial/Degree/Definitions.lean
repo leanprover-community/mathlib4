@@ -138,9 +138,8 @@ theorem degree_eq_natDegree (hp : p ≠ 0) : degree p = (natDegree p : WithBot �
 #align polynomial.degree_eq_nat_degree Polynomial.degree_eq_natDegree
 
 theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegree := by
-  by_cases h : p = 0
-  · subst p
-    simp
+  obtain rfl|h := eq_or_ne p 0
+  · simp
   apply WithBot.coe_injective
   rw [← AddMonoidAlgebra.supDegree_withBot_some_comp, Function.comp_id, supDegree_eq_degree,
     degree_eq_natDegree h, Nat.cast_withBot]
