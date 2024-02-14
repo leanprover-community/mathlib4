@@ -91,13 +91,7 @@ alias ⟨of_le_succ, _⟩ := le_succ_iff
 #align nat.of_le_succ Nat.of_le_succ
 
 #align nat.lt_succ_iff_lt_or_eq Nat.lt_succ_iff_lt_or_eq
-
-lemma eq_of_lt_succ_of_not_lt (hmn : m < n + 1) (h : ¬ m < n) : m = n :=
-  (Nat.lt_succ_iff_lt_or_eq.1 hmn).resolve_left h
 #align nat.eq_of_lt_succ_of_not_lt Nat.eq_of_lt_succ_of_not_lt
-
-lemma eq_of_le_of_lt_succ (h₁ : n ≤ m) (h₂ : m < n + 1) : m = n :=
-  Nat.le_antisymm (le_of_succ_le_succ h₂) h₁
 #align nat.eq_of_le_of_lt_succ Nat.eq_of_le_of_lt_succ
 
 lemma lt_iff_le_pred : ∀ {n}, 0 < n → (m < n ↔ m ≤ n - 1) | _ + 1, _ => Nat.lt_succ_iff
@@ -219,14 +213,8 @@ lemma pred_add_self (n : ℕ) : pred n + n = (2 * n).pred := sub_one_add_self n
 @[simp] lemma add_def : Nat.add m n = m + n := rfl
 #align nat.add_def Nat.add_def
 
-lemma exists_eq_add_of_le (h : m ≤ n) : ∃ k : ℕ, n = m + k := ⟨n - m, (add_sub_of_le h).symm⟩
 #align nat.exists_eq_add_of_le Nat.exists_eq_add_of_le
-
-lemma exists_eq_add_of_le' (h : m ≤ n) : ∃ k : ℕ, n = k + m := ⟨n - m, (Nat.sub_add_cancel h).symm⟩
 #align nat.exists_eq_add_of_le' Nat.exists_eq_add_of_le'
-
-lemma exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
-  ⟨n - (m + 1), by rw [Nat.add_right_comm, add_sub_of_le h]⟩
 #align nat.exists_eq_add_of_lt Nat.exists_eq_add_of_lt
 
 /-! ### `mul` -/
@@ -335,16 +323,8 @@ lemma mul_div_le_mul_div_assoc (a b c : ℕ) : a * (b / c) ≤ a * b / c :=
       (by rw [Nat.mul_assoc]; exact Nat.mul_le_mul_left _ (Nat.div_mul_le_self _ _))
 #align nat.mul_div_le_mul_div_assoc Nat.mul_div_le_mul_div_assoc
 
-protected lemma eq_mul_of_div_eq_right (H1 : b ∣ a) (H2 : a / b = c) : a = b * c := by
-  rw [← H2, Nat.mul_div_cancel' H1]
 #align nat.eq_mul_of_div_eq_right Nat.eq_mul_of_div_eq_right
-
-protected lemma div_eq_iff_eq_mul_right (H : 0 < b) (H' : b ∣ a) : a / b = c ↔ a = b * c :=
-  ⟨Nat.eq_mul_of_div_eq_right H', Nat.div_eq_of_eq_mul_right H⟩
 #align nat.div_eq_iff_eq_mul_right Nat.div_eq_iff_eq_mul_right
-
-protected lemma div_eq_iff_eq_mul_left (H : 0 < b) (H' : b ∣ a) : a / b = c ↔ a = c * b := by
-  rw [Nat.mul_comm]; exact Nat.div_eq_iff_eq_mul_right H H'
 #align nat.div_eq_iff_eq_mul_left Nat.div_eq_iff_eq_mul_left
 
 protected lemma eq_mul_of_div_eq_left (H1 : b ∣ a) (H2 : a / b = c) : a = c * b := by
@@ -632,11 +612,6 @@ protected lemma mul_dvd_mul_iff_right (hc : 0 < c) : a * c ∣ b * c ↔ a ∣ b
 #align nat.mul_dvd_mul_iff_right Nat.mul_dvd_mul_iff_right
 
 #align nat.dvd_one Nat.dvd_one
-
-@[simp] lemma mod_mod_of_dvd (a : ℕ) (h : c ∣ b) : a % b % c = a % c := by
-  conv_rhs => rw [← mod_add_div a b]
-  obtain ⟨x, rfl⟩ := h
-  rw [Nat.mul_assoc, add_mul_mod_self_left]
 #align nat.mod_mod_of_dvd Nat.mod_mod_of_dvd
 
 -- Moved to Std
