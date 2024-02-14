@@ -559,6 +559,21 @@ theorem card_add_two_mul_card_eq_rank :
 
 variable {K}
 
+theorem nrComplexPlaces_eq_zero_of_finrank_eq_one (h : finrank ℚ K = 1) :
+    NrComplexPlaces K = 0 := by
+  have := card_add_two_mul_card_eq_rank K
+  rw [h, Nat.add_eq_one_iff] at this
+  rcases this with (⟨-, H⟩ | ⟨-, H⟩)
+  · exfalso
+    exact (Nat.even_iff_not_odd.1 <| (even_iff_exists_two_mul 1).2 ⟨NrComplexPlaces K, H.symm⟩)
+      ⟨0, rfl⟩
+  · simpa using H
+
+theorem nrRealPlaces_eq_one_of_finrank_eq_one (h : finrank ℚ K = 1) :
+    NrRealPlaces K = 1 := by
+  have := card_add_two_mul_card_eq_rank K
+  rwa [nrComplexPlaces_eq_zero_of_finrank_eq_one h, h, mul_zero, add_zero] at this
+
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
   ⟨w.1.comp f.injective, w.embedding.comp f,
