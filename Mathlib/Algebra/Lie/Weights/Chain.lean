@@ -20,7 +20,7 @@ TODO
 
 open Set
 
-variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [IsNoetherian R L]
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieModule
@@ -84,7 +84,7 @@ lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right (hp : weightSpace M (
   rw [← weightSpaceChain_neg] at hy ⊢
   exact lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M (-α) χ (-q) (-p) hp hx hy
 
-lemma trace_toEndomorphism_weightSpaceChain_eq_zero
+lemma trace_toEndomorphism_weightSpaceChain_eq_zero [IsNoetherian R L]
     (hp : weightSpace M (p • α + χ) = ⊥) (hq : weightSpace M (q • α + χ) = ⊥)
     {x : H} (hx : x ∈ (rootSpaceProductNegSelf α).range) :
     LinearMap.trace R _ (toEndomorphism R H (weightSpaceChain M α χ p q) x) = 0 := by
