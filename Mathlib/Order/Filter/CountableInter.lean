@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Order.Filter.Basic
 import Mathlib.Data.Set.Countable
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 #align_import order.filter.countable_Inter from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
 
@@ -173,8 +173,7 @@ instance Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂
 
 /-- The filter defined by all sets that have a countable complement. -/
 def cocountable : Filter α := ofCountableUnion Set.Countable
-  (fun _ hs hs2 ↦ Countable.sUnion hs hs2)  (fun _ ht _ a => Countable.mono a ht)
-
+  (fun _ hs hs2 ↦ Countable.sUnion hs hs2)  (fun _ ht _ hst => Countable.mono hst ht)
 
 @[simp]
 theorem Filter.mem_ofCountableUnion {p : Set α → Prop} {hunion hmono s} :
