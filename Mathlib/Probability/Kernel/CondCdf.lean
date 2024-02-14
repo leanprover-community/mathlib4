@@ -8,7 +8,6 @@ import Mathlib.Data.Set.Lattice
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
-import Mathlib.Topology.Order.Basic
 
 #align_import probability.kernel.cond_cdf from "leanprover-community/mathlib"@"3b88f4005dc2e28d42f974cc1ce838f0dafb39b8"
 
