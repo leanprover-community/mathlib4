@@ -2823,7 +2823,7 @@ theorem filter_False {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ 
 
 variable {p q}
 
-theorem filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
+@[simp] lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
 #align finset.filter_eq_self Finset.filter_eq_self
 
 theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p x := by simp [Finset.ext_iff]
@@ -3673,14 +3673,19 @@ theorem disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β →
   eq_of_veq <| Multiset.bind_assoc.trans (Multiset.attach_bind_coe _ _).symm
 #align finset.disj_Union_disj_Union Finset.disjiUnion_disjiUnion
 
-theorem disjiUnion_filter_eq_of_maps_to [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
-    (h : ∀ x ∈ s, f x ∈ t) :
-    t.disjiUnion (fun a => s.filter (fun c => f c = a))
-      (fun x' hx y' hy hne => by
-        simp_rw [disjoint_left, mem_filter]
-        rintro i ⟨_, rfl⟩ ⟨_, rfl⟩
-        exact hne rfl) = s :=
-  ext fun b => by simpa using h b
+variable [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
+
+private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.filter (f · = a) :=
+  fun x' hx y' hy hne ↦ by
+    simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
+
+@[simp] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
+    t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers =
+      s.filter fun c ↦ f c ∈ t :=
+  ext fun b => by simpa using and_comm
+
+lemma disjiUnion_filter_eq_of_maps_to (h : ∀ x ∈ s, f x ∈ t) :
+    t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers = s := by simpa
 #align finset.disj_Union_filter_eq_of_maps_to Finset.disjiUnion_filter_eq_of_maps_to
 
 end DisjiUnion

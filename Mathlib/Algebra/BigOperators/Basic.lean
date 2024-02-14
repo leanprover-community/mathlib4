@@ -724,6 +724,19 @@ lemma prod_of_injOn (e : ι → κ) (he : Set.InjOn e s) (hest : Set.MapsTo e s 
 variable [DecidableEq κ]
 
 @[to_additive]
+lemma prod_fiberwise_eq_prod_filter (s : Finset ι) (t : Finset κ) (g : ι → κ) (f : ι → α) :
+    ∏ j in t, ∏ i in s.filter fun i ↦ g i = j, f i = ∏ i in s.filter fun i ↦ g i ∈ t, f i := by
+  rw [← prod_disjiUnion, disjiUnion_filter_eq]
+
+@[to_additive]
+lemma prod_fiberwise_eq_prod_filter' (s : Finset ι) (t : Finset κ) (g : ι → κ) (f : κ → α) :
+    ∏ j in t, ∏ _i in s.filter fun i ↦ g i = j, f j = ∏ i in s.filter fun i ↦ g i ∈ t, f (g i) := by
+  calc
+    _ = ∏ j in t, ∏ i in s.filter fun i ↦ g i = j, f (g i) :=
+        prod_congr rfl fun j _ ↦ prod_congr rfl fun i hi ↦ by rw [(mem_filter.1 hi).2]
+    _ = _ := prod_fiberwise_eq_prod_filter _ _ _ _
+
+@[to_additive]
 lemma prod_fiberwise_of_maps_to {g : ι → κ} (h : ∀ i ∈ s, g i ∈ t) (f : ι → α) :
     ∏ j in t, ∏ i in s.filter fun i ↦ g i = j, f i = ∏ i in s, f i := by
   rw [← prod_disjiUnion, disjiUnion_filter_eq_of_maps_to h]
@@ -1976,6 +1989,23 @@ theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) 
 
 end CommMonoid
 
+section CancelCommMonoid
+variable [DecidableEq ι] [CancelCommMonoid α] {s t : Finset ι} {f : ι → α}
+
+@[to_additive]
+lemma prod_sdiff_eq_prod_sdiff :
+    ∏ i in s \ t, f i = ∏ i in t \ s, f i ↔ ∏ i in s, f i = ∏ i in t, f i :=
+  eq_comm.trans $ eq_iff_eq_of_mul_eq_mul $ by
+    rw [← prod_union disjoint_sdiff_self_left, ←prod_union disjoint_sdiff_self_left,
+      sdiff_union_self_eq_union, sdiff_union_self_eq_union, union_comm]
+
+@[to_additive]
+lemma prod_sdiff_ne_prod_sdiff :
+    ∏ i in s \ t, f i ≠ ∏ i in t \ s, f i ↔ ∏ i in s, f i ≠ ∏ i in t, f i :=
+  prod_sdiff_eq_prod_sdiff.not
+
+end CancelCommMonoid
+
 /-- If `f = g = h` everywhere but at `i`, where `f i = g i + h i`, then the product of `f` over `s`
   is the sum of the products of `g` and `h`. -/
 theorem prod_add_prod_eq [CommSemiring β] {s : Finset α} {i : α} {f g h : α → β} (hi : i ∈ s)
@@ -1995,6 +2025,10 @@ theorem sum_const_nat {m : ℕ} {f : α → ℕ} (h₁ : ∀ x ∈ s, f x = m) :
   rw [← Nat.nsmul_eq_mul, ← sum_const]
   apply sum_congr rfl h₁
 #align finset.sum_const_nat Finset.sum_const_nat
+
+lemma sum_card_fiberwise_eq_card_filter {κ : Type*} [DecidableEq κ] (s : Finset ι) (t : Finset κ)
+    (g : ι → κ) : ∑ j in t, (s.filter fun i ↦ g i = j).card = (s.filter fun i ↦ g i ∈ t).card := by
+  simpa only [card_eq_sum_ones] using sum_fiberwise_eq_sum_filter _ _ _ _
 
 lemma natCast_card_filter [AddCommMonoidWithOne β] (p) [DecidablePred p] (s : Finset α) :
     ((filter p s).card : β) = ∑ a in s, if p a then (1 : β) else 0 := by
@@ -2219,9 +2253,12 @@ theorem prod_int_mod (s : Finset α) (n : ℤ) (f : α → ℤ) :
 end Finset
 
 namespace Fintype
-variable {ι κ α : Type*} [Fintype ι] [Fintype κ] [CommMonoid α]
+variable {ι κ α : Type*} [Fintype ι] [Fintype κ]
 
 open Finset
+
+section CommMonoid
+variable [CommMonoid α]
 
 /-- `Fintype.prod_bijective` is a variant of `Finset.prod_bij` that accepts `Function.Bijective`.
 
@@ -2318,6 +2355,30 @@ theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid �
     · simp
 #align fintype.prod_subtype_mul_prod_subtype Fintype.prod_subtype_mul_prod_subtype
 #align fintype.sum_subtype_add_sum_subtype Fintype.sum_subtype_add_sum_subtype
+
+@[to_additive]
+lemma prod_ite_exists (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p i → p j → i = j) (a : α) :
+    ∏ i, ite (p i) a 1 = ite (∃ i, p i) a 1 := by simp [prod_ite_one univ p (by simpa using h)]
+
+variable [DecidableEq ι]
+
+@[to_additive (attr := simp)] lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → α) :
+    ∏ j, (if h : i = j then f j h else 1) = f i rfl := by simp
+
+@[to_additive (attr := simp)] lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → α) :
+    ∏ j, (if h : j = i then f j h else 1) = f i rfl := by simp
+
+@[to_additive (attr := simp)]
+lemma prod_ite_eq (i : ι) (f : ι → α) : ∏ j, (if i = j then f j else 1) = f i := by simp
+
+@[to_additive (attr := simp)]
+lemma prod_ite_eq' (i : ι) (f : ι → α) : ∏ j, (if j = i then f j else 1) = f i := by simp
+
+end CommMonoid
+
+variable [CommMonoidWithZero α] {p : ι → Prop} [DecidablePred p]
+
+lemma prod_boole : ∏ i, ite (p i) (1 : α) 0 = ite (∀ i, p i) 1 0 := by simp [Finset.prod_boole]
 
 end Fintype
 
