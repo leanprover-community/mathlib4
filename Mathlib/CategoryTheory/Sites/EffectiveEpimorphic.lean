@@ -747,8 +747,7 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h) a)
     simp only [Functor.id_obj, Functor.comp_obj, Function.comp_apply, Functor.map_comp,
         Category.assoc, Equivalence.fun_inv_map, Iso.inv_hom_id_app, Category.comp_id] at this
-    rw [this]
-    exact e.toAdjunction.left_triangle_components_assoc _ _
+    rw [this, reassoc_of% e.functor_unit_comp]
   uniq ε h m hm := by
     simp only [Functor.comp_obj, Adjunction.homEquiv_counit, Functor.id_obj,
       Equivalence.toAdjunction_counit]
