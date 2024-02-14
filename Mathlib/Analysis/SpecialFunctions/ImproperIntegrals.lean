@@ -197,7 +197,7 @@ theorem integral_Ioi_inv_one_add_sq {i : ℝ} :
     integrable_inv_one_add_sq.integrableOn (tendsto_nhds_of_tendsto_nhdsWithin arctan_atTop)
 
 @[simp]
-theorem integral_volume_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
+theorem integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
   (by ring : π = (π / 2) - (-(π / 2))) ▸ integral_of_hasDerivAt_of_tendsto hasDerivAt_arctan'
     integrable_inv_one_add_sq (tendsto_nhds_of_tendsto_nhdsWithin arctan_atBot)
     (tendsto_nhds_of_tendsto_nhdsWithin arctan_atTop)
