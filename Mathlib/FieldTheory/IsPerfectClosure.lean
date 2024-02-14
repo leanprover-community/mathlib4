@@ -3,7 +3,7 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.SeparableDegree
+import Mathlib.FieldTheory.PurelyInseparable
 import Mathlib.FieldTheory.PerfectClosure
 
 /-!
@@ -445,18 +445,46 @@ end CommRing
 
 namespace PerfectClosure
 
-variable (K) in
-/-- The absolute perfect closure `PerfectClosure` is a perfect closure. -/
-instance isPerfectClosure [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p] :
-    IsPerfectClosure (PerfectClosure.of K p) p where
-  isPRadical'.pow_mem' x := PerfectClosure.induction_on x fun x ↦ ⟨x.1, x.2, by
+variable [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p]
+
+variable (K)
+
+/-- The absolute perfect closure `PerfectClosure` is a `p`-radical extension over the base ring. -/
+instance isPRadical : IsPRadical (PerfectClosure.of K p) p where
+  pow_mem' x := PerfectClosure.induction_on x fun x ↦ ⟨x.1, x.2, by
     rw [← iterate_frobenius, iterate_frobenius_mk K p x.1 x.2]⟩
-  isPRadical'.ker_le' x h := by
+  ker_le' x h := by
     rw [RingHom.mem_ker, of_apply, zero_def, mk_eq_iff] at h
     obtain ⟨n, h⟩ := h
     simp_rw [zero_add, ← coe_iterateFrobenius, map_zero] at h
     exact mem_pNilradical.2 ⟨n, h⟩
 
+/-- The absolute perfect closure `PerfectClosure` is a perfect closure. -/
+instance isPerfectClosure :
+    IsPerfectClosure (PerfectClosure.of K p) p := inferInstance
+
 end PerfectClosure
+
+section Field
+
+variable [Field K] [Field L] [Algebra K L] (p : ℕ) [ExpChar K p]
+
+variable (K L)
+
+theorem IsPRadical.isPurelyInseparable [IsPRadical (algebraMap K L) p] :
+    IsPurelyInseparable K L :=
+  (isPurelyInseparable_iff_pow_mem K p).2 (IsPRadical.pow_mem (algebraMap K L) p)
+
+instance IsPurelyInseparable.isPRadical [IsPurelyInseparable K L] :
+    IsPRadical (algebraMap K L) p where
+  pow_mem' := (isPurelyInseparable_iff_pow_mem K p).1 ‹_›
+  ker_le' := (RingHom.injective_iff_ker_eq_bot _).1 (algebraMap K L).injective ▸ bot_le
+
+/-- If `L` is a perfect field of characteristic `p`, then the (relative) perfect closure
+`perfectClosure K L` is a perfect closure of `K`. -/
+instance perfectClosure.isPerfectClosure [ExpChar L p] [PerfectRing L p] :
+    IsPerfectClosure (algebraMap K (perfectClosure K L)) p := inferInstance
+
+end Field
 
 end IsPerfectClosure
