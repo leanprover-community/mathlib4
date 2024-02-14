@@ -3,6 +3,7 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
@@ -182,15 +183,9 @@ theorem intervalIntegral_inv_one_add_sq_tendsto :
     Tendsto (fun i => ∫ (x : ℝ) in -i..i, (1 + x ^ 2)⁻¹) atTop (𝓝[<] π) := by
   convert TendstoNhdsWithinIio.const_mul (b := 2) (by norm_num) arctan_atTop <;> simp [two_mul]
 
-@[simp]
 theorem integrable_inv_one_add_sq : Integrable fun (x : ℝ) ↦ (1 + x ^ 2)⁻¹ := by
-  refine integrable_of_intervalIntegral_norm_tendsto π (fun i ↦ ?_)
-    tendsto_neg_atTop_atBot
-    tendsto_id <| by simpa only [norm_of_nonneg (by positivity : 0 ≤ (1 + (_ : ℝ) ^ 2)⁻¹)] using
-    tendsto_nhds_of_tendsto_nhdsWithin intervalIntegral_inv_one_add_sq_tendsto
-  by_cases hi : i = 0
-  · rewrite [hi, Set.Ioc_eq_empty (by norm_num)]; exact integrableOn_empty
-  · exact (intervalIntegral.intervalIntegrable_of_integral_ne_zero (by simp [← two_mul, hi])).1
+  suffices Integrable fun (x : ℝ) ↦ (1 + ‖x‖ ^ 2) ^ ((-2 : ℝ) / 2) by simpa [rpow_neg_one]
+  exact integrable_rpow_neg_one_add_norm_sq (by simpa using by norm_num)
 
 @[simp]
 theorem integral_Iic_inv_one_add_sq {i : ℝ} :
