@@ -312,24 +312,12 @@ theorem limit.lift_extend {F : J ⥤ C} [HasLimit F] (c : Cone F) {X : C} (f : X
     limit.lift F (c.extend f) = f ≫ limit.lift F c := by aesop_cat
 #align category_theory.limits.limit.lift_extend CategoryTheory.Limits.limit.lift_extend
 
-/-- Transport a `LimitCone` along an equivalence. -/
-def LimitCone.transport {F G : J ⥤ C} (α : F ≅ G) (c : LimitCone F) : LimitCone G where
-  cone := (Cones.postcompose α.hom).obj c.cone
-  isLimit :=
-    { lift := fun s => c.isLimit.lift ((Cones.postcompose α.inv).obj s)
-      fac := fun s j => by
-        rw [Cones.postcompose_obj_π, NatTrans.comp_app, ← Category.assoc, c.isLimit.fac]
-        simp
-      uniq := fun s m w => by
-        apply c.isLimit.hom_ext; intro j
-        rw [c.isLimit.fac, Cones.postcompose_obj_π, NatTrans.comp_app, ← NatIso.app_inv,
-          Iso.eq_comp_inv]
-        simpa using w j }
-
 /-- If a functor `F` has a limit, so does any naturally isomorphic functor.
 -/
-theorem hasLimitOfIso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G where
-  exists_limit := HasLimit.exists_limit.map <| .transport α
+theorem hasLimitOfIso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G :=
+  HasLimit.mk
+    { cone := (Cones.postcompose α.hom).obj (limit.cone F)
+      isLimit := (IsLimit.postcomposeHomEquiv _ _).symm (limit.isLimit F) }
 #align category_theory.limits.has_limit_of_iso CategoryTheory.Limits.hasLimitOfIso
 
 -- See the construction of limits from products and equalizers
@@ -920,26 +908,14 @@ theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} 
     colimit.desc F (c.extend f) = colimit.desc F c ≫ f := by ext1; rw [← Category.assoc]; simp
 #align category_theory.limits.colimit.desc_extend CategoryTheory.Limits.colimit.desc_extend
 
-/-- Transport a `ColimitCocone` along an equivalence. -/
-def ColimitCocone.transport {F G : J ⥤ C} (α : G ≅ F) (c : ColimitCocone F) : ColimitCocone G where
-  cocone := (Cocones.precompose α.hom).obj c.cocone
-  isColimit :=
-    { desc := fun s => c.isColimit.desc ((Cocones.precompose α.inv).obj s)
-      fac := fun s j => by
-        rw [Cocones.precompose_obj_ι, NatTrans.comp_app]
-        rw [Category.assoc, c.isColimit.fac, ← NatIso.app_hom, ← Iso.eq_inv_comp]; rfl
-      uniq := fun s m w => by
-        apply c.isColimit.hom_ext; intro j
-        rw [c.isColimit.fac, Cocones.precompose_obj_ι, NatTrans.comp_app, ← NatIso.app_inv,
-          Iso.eq_inv_comp]
-        simpa using w j }
-
 -- This has the isomorphism pointing in the opposite direction than in `has_limit_of_iso`.
 -- This is intentional; it seems to help with elaboration.
 /-- If `F` has a colimit, so does any naturally isomorphic functor.
 -/
-theorem hasColimitOfIso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColimit G where
-  exists_colimit := HasColimit.exists_colimit.map <| .transport α
+theorem hasColimitOfIso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasColimit G :=
+  HasColimit.mk
+    { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
+      isColimit := (IsColimit.precomposeHomEquiv _ _).symm (colimit.isColimit F) }
 #align category_theory.limits.has_colimit_of_iso CategoryTheory.Limits.hasColimitOfIso
 
 /-- If a functor `G` has the same collection of cocones as a functor `F`
