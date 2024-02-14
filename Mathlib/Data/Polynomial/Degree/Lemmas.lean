@@ -162,14 +162,11 @@ theorem natDegree_lt_coeff_mul (h : p.natDegree + q.natDegree < m + n) :
 
 theorem coeff_mul_of_natDegree_le (pm : p.natDegree ≤ m) (qn : q.natDegree ≤ n) :
     (p * q).coeff (m + n) = p.coeff m * q.coeff n := by
-  rcases eq_or_lt_of_le pm with (rfl | hm) <;> rcases eq_or_lt_of_le qn with (rfl | hn)
-  · exact natDegree_add_coeff_mul _ _
-  · rw [coeff_eq_zero_of_natDegree_lt hn, mul_zero]
-    exact natDegree_lt_coeff_mul (add_lt_add_left hn _)
-  · rw [coeff_eq_zero_of_natDegree_lt hm, zero_mul]
-    exact natDegree_lt_coeff_mul (add_lt_add_right hm _)
-  · rw [coeff_eq_zero_of_natDegree_lt hn, mul_zero]
-    exact natDegree_lt_coeff_mul (add_lt_add hm hn)
+  simp_rw [← Polynomial.toFinsupp_apply, toFinsupp_mul]
+  refine AddMonoidAlgebra.apply_add_of_supDegree_le ?_ Function.injective_id ?_ ?_
+  · simp
+  · rwa [supDegree_eq_natDegree, id_eq]
+  · rwa [supDegree_eq_natDegree, id_eq]
 #align polynomial.coeff_mul_of_nat_degree_le Polynomial.coeff_mul_of_natDegree_le
 
 theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
