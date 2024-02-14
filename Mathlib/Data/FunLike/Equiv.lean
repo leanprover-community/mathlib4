@@ -236,7 +236,7 @@ lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
   ⟨fun f g ↦ DFunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
 #align equiv_like.subsingleton_dom EquivLike.subsingleton_dom
 
-lemma EquivLike.exists_congr_left' {P : β → Prop}
+protected lemma exists_congr_left' {P : β → Prop}
     (e : E) : (∃ x, P (e x)) ↔ ∃ x, P x := by
   rw [(EquivLike.surjective e).exists]
 
