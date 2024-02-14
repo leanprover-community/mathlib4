@@ -36,6 +36,11 @@ theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l |
 #align set.range_list_map_coe Set.range_list_map_coe
 
 @[simp]
+theorem exists_nthLe_eq (x : α) : (∃ k : Fin l.length, List.nthLe l k k.2 = x) ↔ x ∈ l := by
+  rw [mem_iff_get]
+  exact ⟨fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩, fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩⟩
+
+@[simp]
 theorem range_list_nthLe : (range fun k : Fin l.length => l.nthLe k k.2) = { x | x ∈ l } := by
   ext x
   rw [mem_setOf_eq, mem_iff_get]
@@ -62,6 +67,16 @@ theorem range_list_getD (d : α) : (range fun n => l.getD n d) = insert d { x | 
 theorem range_list_getI [Inhabited α] (l : List α) : range l.getI = insert default { x | x ∈ l } :=
   range_list_getD l default
 #align set.range_list_inth Set.range_list_getI
+
+@[simp]
+theorem exists_getD_eq (d : α) (x : α) : (∃ y, List.getD l y d = x) ↔ x = d ∨ x ∈ l := by
+  rw [← Set.mem_range, Set.range_list_getD]
+  simp
+
+@[simp]
+theorem exists_getI_eq [Inhabited α] (l : List α) (x : α) :
+    (∃ y, List.getI l y = x) ↔ x = default ∨ x ∈ l :=
+  exists_getD_eq l default x
 
 end Set
 

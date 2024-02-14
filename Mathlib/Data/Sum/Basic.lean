@@ -191,6 +191,45 @@ theorem swap_rightInverse : Function.RightInverse (@swap α β) swap :=
 
 mk_iff_of_inductive_prop Sum.LiftRel Sum.liftRel_iff
 
+@[simp]
+theorem forall_inl_ne_iff (x : α ⊕ β) : (∀ (y : α), ¬Sum.inl y = x) ↔ ∃ y, Sum.inr y = x := by
+  cases x <;> simp
+
+@[simp]
+theorem forall_inr_ne_iff (x : α ⊕ β): (∀ y, ¬Sum.inr y = x) ↔ ∃ y, Sum.inl y = x := by
+  cases x <;> simp
+
+@[simp]
+theorem exists_inl_eq_or_exists_inr_eq (x : α ⊕ β) :
+    (∃ y, Sum.inl y = x) ∨ ∃ y, Sum.inr y = x :=
+  suffices ∃ y, y = x from
+     Sum.exists.mp this
+  ⟨x, rfl⟩
+
+@[simp]
+theorem exists_inr_eq_or_exists_inl_eq (x : α ⊕ β) :
+    (∃ y, Sum.inr y = x) ∨ ∃ y, Sum.inl y = x :=
+  (exists_inl_eq_or_exists_inr_eq x).symm
+
+library_note "iff_true" /--
+In order for a simp lemma to apply specifically to implications `P → Q`,
+it needs to be in the form `(P → Q) ↔ True`.
+Otherwise, the simplifier would treat the `P` as a side condition of the simp lemma
+and typically fail to provide it.
+
+If `(config := {contextual := true})` were enabled by default, then we wouldn't need this hack,
+because `P` would be a hypothesis while trying to simplify `Q`.-/
+
+-- See library note [iff_true].
+@[simp]
+theorem exists_inl_eq_of_inl_eq_iff_true (x : α ⊕ β) (y : α) : (Sum.inl y = x → ∃ y', Sum.inl y' = x) ↔ True :=
+  iff_true_intro <| fun h ↦ ⟨y, h⟩
+
+-- See library note [iff_true].
+@[simp]
+theorem exists_inr_eq_of_inr_eq_iff_true (x : α ⊕ β) (y : β) : (Sum.inr y = x → ∃ y, Sum.inr y = x) ↔ True :=
+  iff_true_intro <| fun h ↦ ⟨y, h⟩
+
 namespace LiftRel
 
 #align sum.lift_rel Sum.LiftRel

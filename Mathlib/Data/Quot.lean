@@ -358,6 +358,16 @@ theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
   Quot.exists_rep
 #align surjective_quotient_mk surjective_quotient_mk'
 
+@[simp]
+theorem Quot.exists_lift_iff {f : ι → α} {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = f y) (x : α) :
+    (∃ y, Quot.lift f hf y = x) ↔ ∃ y, f y = x := by
+  simp [(surjective_quot_mk r).exists]
+
+@[simp]
+theorem Quotient.exists_lift_iff {f : ι → α} [Setoid ι] (hf : ∀ a b, a ≈ b → f a = f b) (x : α):
+    (∃ y, Quotient.lift f hf y = x) ↔ ∃ y, f y = x :=
+  Quot.exists_lift_iff hf x
+
 /-- Choose an element of the equivalence class using the axiom of choice.
   Sound but noncomputable. -/
 noncomputable def Quot.out {r : α → α → Prop} (q : Quot r) : α :=
@@ -804,6 +814,21 @@ theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out' = q :=
 theorem mk_out' (a : α) : @Setoid.r α s₁ (Quotient.mk'' a : Quotient s₁).out' a :=
   Quotient.exact (Quotient.out_eq _)
 #align quotient.mk_out' Quotient.mk_out'
+
+attribute [simp] Quotient.exists_rep
+
+@[simp]
+theorem Quotient.exists_rep' {s : Setoid α} (q : Quotient s) : ∃ y, Quotient.mk' y = q :=
+  exists_rep q
+
+@[simp]
+theorem Quotient.exists_rep'' {s : Setoid α} (q : Quotient s) : ∃ y, Quotient.mk'' y = q :=
+  exists_rep q
+
+@[simp]
+theorem exists_liftOn'_iff {f : ι → α} {_ : Setoid ι} (hf : ∀ a b, Setoid.r a b → f a = f b) (x : α) :
+    (∃ y, Quotient.liftOn' y f hf = x) ↔ ∃ y, f y = x :=
+  Quot.exists_lift_iff hf x
 
 section
 

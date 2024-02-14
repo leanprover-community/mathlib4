@@ -829,8 +829,15 @@ def castLEEmb (h : n ≤ m) : Fin n ↪o Fin m :=
   rfl
 
 @[simp]
-theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } :=
-  Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, Fin.ext rfl⟩⟩
+theorem exists_castLE_eq_iff {n k : ℕ} (h : n ≤ k) (x : Fin k) :
+    (∃ y, castLE h y = x) ↔ ↑x < n :=
+  ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, Fin.ext rfl⟩⟩
+
+@[simp]
+theorem range_castLE {n k : ℕ} (h : n ≤ k) :
+    Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } := by
+  ext
+  simp
 #align fin.range_cast_le Fin.range_castLE
 
 @[simp]
@@ -1061,6 +1068,10 @@ theorem coe_eq_castSucc {a : Fin n} : (a : Fin (n + 1)) = castSucc a := by
 #align fin.coe_succ_eq_succ Fin.coeSucc_eq_succ
 
 #align fin.lt_succ Fin.lt_succ
+
+@[simp]
+theorem exists_castSucc_eq_iff {n : ℕ} (x : Fin (n + 1)) : (∃ y, castSucc y = x) ↔ ↑x < n :=
+  exists_castLE_eq_iff le_self_add x
 
 @[simp]
 theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
