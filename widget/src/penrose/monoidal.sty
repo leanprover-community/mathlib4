@@ -1,0 +1,91 @@
+const {
+    -- Minimum size of a row/column in the object grid.
+    gridMinSize = 50
+    gridPadHorizontal = 50
+    gridPadVertical = 50
+    curveOffset = 20
+    labelOffsetFrac = 0.3
+}
+
+layout = [Grid, Arrows, EnsureOnCanvas]
+
+forall Mor2 f {
+    float f.centerX = ? in [Grid, EnsureOnCanvas]
+    float f.centerY = ? in [Grid, EnsureOnCanvas]
+    vec2 f.center = (f.centerX, f.centerY)
+    -- The `textBoxCenter` is where the text box is. It may differ from `center`
+    -- when the label is offset towards one side.
+    vec2 f.textBoxCenter = f.center
+
+    shape f.textBox = Rectangle {
+        center: f.textBoxCenter
+        cornerRadius: 5
+        -- Default size, will be overwritten dynamically.
+        width: 50
+        height: 30
+        fillColor: theme.tooltipBackground
+        strokeColor: theme.tooltipBorder
+    }
+
+    f.left = f.center[0] - f.textBox.width/2.
+    f.right = f.center[0] + f.textBox.width/2.
+    f.top = f.center[1] + f.textBox.height/2.
+    f.bot = f.center[1] - f.textBox.height/2.
+}
+
+forall Id f {
+  f.textBox.strokeWidth = 0.5
+}
+
+forall Core f {
+  f.textBox.strokeWidth = 1.5
+}
+
+forall Mor2 A {
+    -- We optimize the sizes of every row and column in a grid which determines
+    -- object placement. Each object keeps track of the size of the grid column
+    -- to the right of it, and the grid row below it. Positioning predicates propagate
+    -- these, for example IsLeftHorizontal/IsRightHorizontal propagates gridBelow.
+    -- Sizes propagate to the right and downwards so that the leftmost, uppermost
+    -- object is the "root" of the diagram.
+    --
+    -- Penrose objectives are arbitrary reals, so to obtain a positive value we make
+    -- the it the square of an objective. The size of a grid row/column is then the minimal,
+    -- fixed size `gridMinSize` plus an optimized offset.
+    float preGridRight = ? in Grid
+    float preGridBelow = ? in Grid
+    float gridRight = preGridRight*preGridRight
+    float gridBelow = preGridBelow*preGridBelow
+    float A.gridRight = const.gridMinSize + gridRight
+    float A.gridBelow = const.gridMinSize + gridBelow
+
+    encourage minimal(gridRight) in Grid
+    encourage minimal(gridBelow) in Grid
+}
+
+forall Mor2 f, g where Left(f, g) {
+    ensure lessThan(f.right, g.left, 15.)
+    ensure equal(f.center[1], g.center[1])
+}
+
+forall Mor2 f, g where Above(f, g) {
+    ensure equal(f.center[1] - g.center[1], 100.)
+}
+
+forall Mor1 X; Mor2 f; Mor2 g
+where X := MakeString(f, g) {
+    scalar X.x = ?
+    vec2 X.v1 = (X.x, f.center[1])
+    vec2 X.v2 = (X.x, g.center[1])
+
+    shape X.shape = Line {
+        start: f.center
+        end: g.center
+        strokeWidth: 1.0
+        strokeColor: theme.tooltipForeground
+    }
+
+    encourage equal(abs(f.centerX - g.centerX), 0)
+    f.textBox above X.shape
+    g.textBox above X.shape
+}
