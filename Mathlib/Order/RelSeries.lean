@@ -3,8 +3,9 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Logic.Equiv.Fin
-import Mathlib.Data.List.Indexes
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.List.Chain
+import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
@@ -226,7 +227,7 @@ def map (p : RelSeries r)
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
 `aᵢ -r→ a -r→ a_ᵢ₊₁`, then
-`a₀ -r→ a₁ -r→ ... -r→ a_i -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
+`a₀ -r→ a₁ -r→ ... -r→ aᵢ -r→ a -r→ aᵢ₊₁ -r→ ... -r→ aₙ`
 is another `r`-series
 -/
 @[simps]

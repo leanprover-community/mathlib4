@@ -58,7 +58,7 @@ theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
   exact Finsupp.smul_apply _ _ _
 #align polynomial.coeff_smul Polynomial.coeff_smul
 
-theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
+theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
   simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
@@ -66,17 +66,13 @@ theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
   simp [hi]
 #align polynomial.support_smul Polynomial.support_smul
 
+open scoped Pointwise in
 theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.support.card := by
   calc (p * q).support.card
    _ = (p.toFinsupp * q.toFinsupp).support.card := by rw [← support_toFinsupp, toFinsupp_mul]
-   _ ≤ _ := Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
-   _ ≤ _ := by
-    apply Finset.card_biUnion_le_card_mul
-    intro _ _
-    rw [← mul_one q.support.card]
-    apply Finset.card_biUnion_le_card_mul
-    intro _ _
-    exact (Finset.card_singleton _) ▸ le_rfl
+   _ ≤ (p.toFinsupp.support + q.toFinsupp.support).card :=
+    Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
+   _ ≤ p.support.card * q.support.card := Finset.card_image₂_le ..
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]

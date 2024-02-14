@@ -8,7 +8,6 @@ import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Nontriviality
 
 #align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -674,6 +673,11 @@ theorem isUnit_of_mul_eq_one [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit a
   ⟨Units.mkOfMulEqOne a b h, rfl⟩
 #align is_unit_of_mul_eq_one isUnit_of_mul_eq_one
 #align is_add_unit_of_add_eq_zero isAddUnit_of_add_eq_zero
+
+@[to_additive]
+theorem isUnit_of_mul_eq_one_right [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit b := by
+  rw [mul_comm] at h
+  exact isUnit_of_mul_eq_one b a h
 
 section Monoid
 variable [Monoid M] {a b : M}

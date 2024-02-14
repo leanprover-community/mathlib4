@@ -63,7 +63,7 @@ namespace ElementaryEmbedding
 
 attribute [coe] toFun
 
-instance funLike : FunLike (M ↪ₑ[L] N) M fun _ => N where
+instance instFunLike : FunLike (M ↪ₑ[L] N) M N where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
@@ -71,10 +71,10 @@ instance funLike : FunLike (M ↪ₑ[L] N) M fun _ => N where
     simp only [ElementaryEmbedding.mk.injEq]
     ext x
     exact Function.funext_iff.1 h x
-#align first_order.language.elementary_embedding.fun_like FirstOrder.Language.ElementaryEmbedding.funLike
+#align first_order.language.elementary_embedding.fun_like FirstOrder.Language.ElementaryEmbedding.instFunLike
 
 instance : CoeFun (M ↪ₑ[L] N) fun _ => M → N :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 @[simp]
 theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.BoundedFormula α n)
@@ -86,12 +86,12 @@ theorem map_boundedFormula (f : M ↪ₑ[L] N) {α : Type*} {n : ℕ} (φ : L.Bo
         (Sum.elim (v ∘ (↑)) xs ∘ (Fintype.equivFin _).symm)
     simp only [Formula.realize_relabel, BoundedFormula.realize_toFormula, iff_eq_eq] at h
     rw [← Function.comp.assoc _ _ (Fintype.equivFin _).symm,
-      Function.comp.assoc _ (Fintype.equivFin _).symm (Fintype.equivFin _), Equiv.symm_comp_self,
-      Function.comp.right_id, Function.comp.assoc, Sum.elim_comp_inl,
+      Function.comp.assoc _ (Fintype.equivFin _).symm (Fintype.equivFin _),
+      _root_.Equiv.symm_comp_self, Function.comp_id, Function.comp.assoc, Sum.elim_comp_inl,
       Function.comp.assoc _ _ Sum.inr, Sum.elim_comp_inr, ← Function.comp.assoc] at h
     refine' h.trans _
-    erw [Function.comp.assoc _ _ (Fintype.equivFin _), Equiv.symm_comp_self, Function.comp.right_id,
-      Sum.elim_comp_inl, Sum.elim_comp_inr (v ∘ Subtype.val) xs,
+    erw [Function.comp.assoc _ _ (Fintype.equivFin _), _root_.Equiv.symm_comp_self,
+      Function.comp_id, Sum.elim_comp_inl, Sum.elim_comp_inr (v ∘ Subtype.val) xs,
       ← Set.inclusion_eq_id (s := (BoundedFormula.freeVarFinset φ : Set α)) Set.Subset.rfl,
       BoundedFormula.realize_restrictFreeVar Set.Subset.rfl]
 #align first_order.language.elementary_embedding.map_bounded_formula FirstOrder.Language.ElementaryEmbedding.map_boundedFormula
@@ -127,7 +127,7 @@ theorem injective (φ : M ↪ₑ[L] N) : Function.Injective φ := by
 #align first_order.language.elementary_embedding.injective FirstOrder.Language.ElementaryEmbedding.injective
 
 instance embeddingLike : EmbeddingLike (M ↪ₑ[L] N) M N :=
-  { show FunLike (M ↪ₑ[L] N) M fun _ => N from inferInstance with injective' := injective }
+  { show FunLike (M ↪ₑ[L] N) M N from inferInstance with injective' := injective }
 #align first_order.language.elementary_embedding.embedding_like FirstOrder.Language.ElementaryEmbedding.embeddingLike
 
 @[simp]
@@ -186,16 +186,16 @@ theorem coe_toEmbedding (f : M ↪ₑ[L] N) : (f.toEmbedding : M → N) = (f : M
 #align first_order.language.elementary_embedding.coe_to_embedding FirstOrder.Language.ElementaryEmbedding.coe_toEmbedding
 
 theorem coe_injective : @Function.Injective (M ↪ₑ[L] N) (M → N) (↑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align first_order.language.elementary_embedding.coe_injective FirstOrder.Language.ElementaryEmbedding.coe_injective
 
 @[ext]
 theorem ext ⦃f g : M ↪ₑ[L] N⦄ (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align first_order.language.elementary_embedding.ext FirstOrder.Language.ElementaryEmbedding.ext
 
 theorem ext_iff {f g : M ↪ₑ[L] N} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align first_order.language.elementary_embedding.ext_iff FirstOrder.Language.ElementaryEmbedding.ext_iff
 
 variable (L) (M)

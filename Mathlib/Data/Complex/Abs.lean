@@ -124,7 +124,7 @@ theorem abs_two : Complex.abs 2 = 2 := abs_ofNat 2
 @[simp]
 theorem range_abs : range Complex.abs = Ici 0 :=
   Subset.antisymm
-    (by simp only [range_subset_iff, Ici, mem_setOf_eq, map_nonneg, forall_const])
+    (by simp only [range_subset_iff, Ici, mem_setOf_eq, apply_nonneg, forall_const])
     (fun x hx => ⟨x, Complex.abs_of_nonneg hx⟩)
 #align complex.range_abs Complex.range_abs
 

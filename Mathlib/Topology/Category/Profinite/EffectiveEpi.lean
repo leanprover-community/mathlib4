@@ -3,7 +3,7 @@ Copyright (c) 2023 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Sites.RegularExtensive
+import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.Topology.Category.Profinite.Limits
 
 /-!
@@ -45,15 +45,16 @@ noncomputable
 def struct {B X : Profinite.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) :
     EffectiveEpiStruct π where
   desc e h := (QuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
-    FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+    DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
     (by ext; exact hab)) a
   fac e h := ((QuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
-    fun a b hab ↦ FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+    fun a b hab ↦ DFunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
     (by ext; exact hab)) a)
   uniq e h g hm := by
     suffices g = (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
-      fun a b hab ↦ FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-      (by ext; exact hab)) a⟩ by assumption
+      fun a b hab ↦ DFunLike.congr_fun
+        (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩ (by ext; exact hab))
+        a⟩ by assumption
     rw [← Equiv.symm_apply_eq (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
     ext
     simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
@@ -90,7 +91,7 @@ example : Precoherent Profinite.{u} := inferInstance
 -- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae
-    {α : Type} [Fintype α] {B : Profinite.{u}}
+    {α : Type} [Finite α] {B : Profinite.{u}}
     (X : α → Profinite.{u}) (π : (a : α) → (X a ⟶ B)) :
     TFAE
     [ EffectiveEpiFamily X π
@@ -132,7 +133,7 @@ theorem effectiveEpiFamily_tfae
   tfae_finish
 
 theorem effectiveEpiFamily_of_jointly_surjective
-    {α : Type} [Fintype α] {B : Profinite.{u}}
+    {α : Type} [Finite α] {B : Profinite.{u}}
     (X : α → Profinite.{u}) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :
     EffectiveEpiFamily X π :=
