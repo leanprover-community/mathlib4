@@ -49,22 +49,25 @@ instance isAlgClosed : IsAlgClosed ℂ :=
 
 end Complex
 
-/-- If `z` is a non-real complex root of a real polynomial,
-then `p` is divisible by a quadratic polynomial. -/
-lemma Polynomial.quadratic_dvd_of_aeval_eq_zero_im_ne_zero (p : ℝ[X]) {z : ℂ} (h0 : aeval z p = 0)
-    (hz : z.im ≠ 0) : X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2) ∣ p := by
-  have H :=
-    calc
-      map (algebraMap ℝ ℂ) (X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2))
-      _ = X ^ 2 - C (↑(2 * z.re) : ℂ) * X + C (‖z‖ ^ 2 : ℂ) := by simp
-      _ = (X - C (conj z)) * (X - C z) := by
-        rw [← add_conj, map_add, ← mul_conj', map_mul]
-        ring
-  rw [← map_dvd_map' (algebraMap ℝ ℂ), H]
+lemma Polynomial.mul_star_dvd_of_aeval_eq_zero_im_ne_zero (p : ℝ[X]) {z : ℂ} (h0 : aeval z p = 0)
+    (hz : z.im ≠ 0) : (X - C ((starRingEnd ℂ) z)) * (X - C z) ∣ map (algebraMap ℝ ℂ) p := by
   apply IsCoprime.mul_dvd
   · exact isCoprime_X_sub_C_of_isUnit_sub <| .mk0 _ <| sub_ne_zero.2 <| mt conj_eq_iff_im.1 hz
   · simpa [dvd_iff_isRoot, aeval_conj]
   · simpa [dvd_iff_isRoot]
+
+/-- If `z` is a non-real complex root of a real polynomial,
+then `p` is divisible by a quadratic polynomial. -/
+lemma Polynomial.quadratic_dvd_of_aeval_eq_zero_im_ne_zero (p : ℝ[X]) {z : ℂ} (h0 : aeval z p = 0)
+    (hz : z.im ≠ 0) : X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2) ∣ p := by
+  rw [← map_dvd_map' (algebraMap ℝ ℂ)]
+  convert p.mul_star_dvd_of_aeval_eq_zero_im_ne_zero h0 hz
+  calc
+    map (algebraMap ℝ ℂ) (X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2))
+    _ = X ^ 2 - C (↑(2 * z.re) : ℂ) * X + C (‖z‖ ^ 2 : ℂ) := by simp
+    _ = (X - C (conj z)) * (X - C z) := by
+      rw [← add_conj, map_add, ← mul_conj', map_mul]
+      ring
 
 /-- An irreducible real polynomial has degree at most two. -/
 lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤ 2 := by
