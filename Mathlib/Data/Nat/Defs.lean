@@ -7,6 +7,7 @@ import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Cases
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Use
 
@@ -37,6 +38,7 @@ variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
 instance nontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
+attribute [gcongr] Nat.succ_le_succ
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
   -- Nat.zero_ne_bit1 Nat.bit1_ne_zero Nat.bit0_ne_one Nat.one_ne_bit0 Nat.bit0_ne_bit1
   -- Nat.bit1_ne_bit0
@@ -89,13 +91,7 @@ alias ⟨of_le_succ, _⟩ := le_succ_iff
 #align nat.of_le_succ Nat.of_le_succ
 
 #align nat.lt_succ_iff_lt_or_eq Nat.lt_succ_iff_lt_or_eq
-
-lemma eq_of_lt_succ_of_not_lt (hmn : m < n + 1) (h : ¬ m < n) : m = n :=
-  (Nat.lt_succ_iff_lt_or_eq.1 hmn).resolve_left h
 #align nat.eq_of_lt_succ_of_not_lt Nat.eq_of_lt_succ_of_not_lt
-
-lemma eq_of_le_of_lt_succ (h₁ : n ≤ m) (h₂ : m < n + 1) : m = n :=
-  Nat.le_antisymm (le_of_succ_le_succ h₂) h₁
 #align nat.eq_of_le_of_lt_succ Nat.eq_of_le_of_lt_succ
 
 lemma lt_iff_le_pred : ∀ {n}, 0 < n → (m < n ↔ m ≤ n - 1) | _ + 1, _ => Nat.lt_succ_iff
@@ -217,14 +213,8 @@ lemma pred_add_self (n : ℕ) : pred n + n = (2 * n).pred := sub_one_add_self n
 @[simp] lemma add_def : Nat.add m n = m + n := rfl
 #align nat.add_def Nat.add_def
 
-lemma exists_eq_add_of_le (h : m ≤ n) : ∃ k : ℕ, n = m + k := ⟨n - m, (add_sub_of_le h).symm⟩
 #align nat.exists_eq_add_of_le Nat.exists_eq_add_of_le
-
-lemma exists_eq_add_of_le' (h : m ≤ n) : ∃ k : ℕ, n = k + m := ⟨n - m, (Nat.sub_add_cancel h).symm⟩
 #align nat.exists_eq_add_of_le' Nat.exists_eq_add_of_le'
-
-lemma exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
-  ⟨n - (m + 1), by rw [Nat.add_right_comm, add_sub_of_le h]⟩
 #align nat.exists_eq_add_of_lt Nat.exists_eq_add_of_lt
 
 /-! ### `mul` -/
@@ -305,6 +295,7 @@ lemma one_le_div_iff (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff
 lemma div_lt_one_iff (hb : 0 < b) : a / b < 1 ↔ a < b := by simp only [← not_le, one_le_div_iff hb]
 #align nat.div_lt_one_iff Nat.div_lt_one_iff
 
+@[gcongr]
 protected lemma div_le_div_right (h : a ≤ b) : a / c ≤ b / c :=
   (c.eq_zero_or_pos.elim fun hc ↦ by simp [hc]) fun hc ↦
     (le_div_iff_mul_le' hc).2 <| le_trans (Nat.div_mul_le_self _ _) h
@@ -629,11 +620,6 @@ protected lemma mul_dvd_mul_iff_right (hc : 0 < c) : a * c ∣ b * c ↔ a ∣ b
 #align nat.mul_dvd_mul_iff_right Nat.mul_dvd_mul_iff_right
 
 #align nat.dvd_one Nat.dvd_one
-
-@[simp] lemma mod_mod_of_dvd (a : ℕ) (h : c ∣ b) : a % b % c = a % c := by
-  conv_rhs => rw [← mod_add_div a b]
-  obtain ⟨x, rfl⟩ := h
-  rw [Nat.mul_assoc, add_mul_mod_self_left]
 #align nat.mod_mod_of_dvd Nat.mod_mod_of_dvd
 
 -- Moved to Std
@@ -666,9 +652,15 @@ lemma eq_zero_of_dvd_of_div_eq_zero (hab : a ∣ b) (h : b / a = 0) : b = 0 := b
   rw [← Nat.div_mul_cancel hab, h, Nat.zero_mul]
 #align nat.eq_zero_of_dvd_of_div_eq_zero Nat.eq_zero_of_dvd_of_div_eq_zero
 
+@[gcongr]
 lemma div_le_div_left (hcb : c ≤ b) (hc : 0 < c) : a / b ≤ a / c :=
   (Nat.le_div_iff_mul_le hc).2 <| le_trans (Nat.mul_le_mul_left _ hcb) (div_mul_le_self _ _)
 #align nat.div_le_div_left Nat.div_le_div_left
+
+@[gcongr]
+protected theorem div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) : a / c ≤ b / d :=
+  calc a / c ≤ b / c := Nat.div_le_div_right h1
+    _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
 
 -- Moved to Std
 #align nat.mul_div_le Nat.mul_div_le

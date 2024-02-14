@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Tactic.FinCases
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.Sets.Closeds
 
 #align_import topology.locally_constant.basic from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -600,6 +600,18 @@ def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ Lo
     intro
     rw [comap_comap _ _ e.symm.continuous e.continuous]
     simp
+
+variable (X) in
+/--
+The set of clopen subsets of a topological space is equivalent to the locally constant maps to
+a two-element set
+-/
+def equivClopens [∀ (s : Set X) x, Decidable (x ∈ s)] :
+    LocallyConstant X (Fin 2) ≃ TopologicalSpace.Clopens X where
+  toFun f := ⟨f ⁻¹' {0}, f.2.isClopen_fiber _⟩
+  invFun s := ofIsClopen s.2
+  left_inv _ := locallyConstant_eq_of_fiber_zero_eq _ _ (by simp)
+  right_inv _ := by simp
 
 end Equiv
 
