@@ -435,10 +435,12 @@ theorem Filter.Tendsto.log {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tends
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {a : α}
 
+@[fun_prop]
 theorem Continuous.log (hf : Continuous f) (h₀ : ∀ x, f x ≠ 0) : Continuous fun x => log (f x) :=
   continuousOn_log.comp_continuous hf h₀
 #align continuous.log Continuous.log
 
+@[fun_prop]
 nonrec theorem ContinuousAt.log (hf : ContinuousAt f a) (h₀ : f a ≠ 0) :
     ContinuousAt (fun x => log (f x)) a :=
   hf.log h₀
@@ -449,6 +451,7 @@ nonrec theorem ContinuousWithinAt.log (hf : ContinuousWithinAt f s a) (h₀ : f 
   hf.log h₀
 #align continuous_within_at.log ContinuousWithinAt.log
 
+@[fun_prop]
 theorem ContinuousOn.log (hf : ContinuousOn f s) (h₀ : ∀ x ∈ s, f x ≠ 0) :
     ContinuousOn (fun x => log (f x)) s := fun x hx => (hf x hx).log (h₀ x hx)
 #align continuous_on.log ContinuousOn.log

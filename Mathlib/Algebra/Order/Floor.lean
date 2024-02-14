@@ -1628,9 +1628,6 @@ namespace Nat
 variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] [FloorSemiring α] [FloorSemiring β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
--- Porting note: no longer needed
--- include β
-
 theorem floor_congr (h : ∀ n : ℕ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋₊ = ⌊b⌋₊ := by
   have h₀ : 0 ≤ a ↔ 0 ≤ b := by simpa only [cast_zero] using h 0
   obtain ha | ha := lt_or_le a 0
@@ -1656,9 +1653,6 @@ namespace Int
 
 variable [LinearOrderedRing α] [LinearOrderedRing β] [FloorRing α] [FloorRing β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
-
--- Porting note: no longer needed
--- include β
 
 theorem floor_congr (h : ∀ n : ℤ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋ = ⌊b⌋ :=
   (le_floor.2 <| (h _).1 <| floor_le _).antisymm <| le_floor.2 <| (h _).2 <| floor_le _
@@ -1686,9 +1680,6 @@ namespace Int
 
 variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRing β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
-
--- Porting note: no longer needed
--- include β
 
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
   have H : f 2 = 2 := map_natCast f 2
