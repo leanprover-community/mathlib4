@@ -2362,17 +2362,24 @@ lemma prod_ite_exists (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p i → 
 
 variable [DecidableEq ι]
 
-@[to_additive (attr := simp)] lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → α) :
+@[to_additive] lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → α) :
     ∏ j, (if h : i = j then f j h else 1) = f i rfl := by simp
 
-@[to_additive (attr := simp)] lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → α) :
+@[to_additive] lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → α) :
     ∏ j, (if h : j = i then f j h else 1) = f i rfl := by simp
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma prod_ite_eq (i : ι) (f : ι → α) : ∏ j, (if i = j then f j else 1) = f i := by simp
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma prod_ite_eq' (i : ι) (f : ι → α) : ∏ j, (if j = i then f j else 1) = f i := by simp
+
+@[to_additive]
+lemma prod_pi_mulSingle {α : ι → Type*} [∀ i, CommMonoid (α i)] (i : ι) (f : ∀ i, α i) :
+    ∏ j, Pi.mulSingle j (f j) i = f i := prod_dite_eq _ _
+
+@[to_additive]
+lemma prod_pi_mulSingle' (i : ι) (a : α) : ∏ j, Pi.mulSingle i a j = a := prod_dite_eq' _ _
 
 end CommMonoid
 
