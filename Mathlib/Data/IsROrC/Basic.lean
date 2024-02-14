@@ -56,7 +56,7 @@ This typeclass captures properties shared by ℝ and ℂ, with an API that close
 
 While the name of the class begins with `Is`,
 this typeclass carries data (all operations common to real and complex numbers),
-not just claims existence of these operations.
+it does not just claim the existence of these operations.
 
 In particular, `IsROrC.I` is equal to `Complex.I`, not `-Complex.I`
 in case of the complex numbers instance.
@@ -68,7 +68,7 @@ This is done to make it possible to use` [IsROrC K] [NormedSpace K E]`
 as an assumption of an instance.
 
 To avoid non-defeq instance diamonds, every data-carrying instance for `IsROrC` fields
-must agree with corresponding instances for `ℝ` and `ℂ`.
+must agree with the corresponding instances for `ℝ` and `ℂ`.
 In most cases, we ensure these definitional equalities by `extend`ing corresponding typeclasses
 and reusing their `ℝ` and `ℂ` instances in the instances for `IsROrC ℝ` and `IsROrC ℂ`.
 
