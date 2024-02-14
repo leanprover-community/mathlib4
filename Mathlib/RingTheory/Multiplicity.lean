@@ -7,6 +7,7 @@ import Mathlib.Algebra.Associated
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.PartENat
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Nat.Pow
 
 #align_import ring_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -251,12 +252,12 @@ theorem multiplicity_eq_multiplicity_iff {a b : α} {c d : β} :
       (multiplicity_le_multiplicity_iff.mpr fun n => (h n).mpr)⟩
 #align multiplicity.multiplicity_eq_multiplicity_iff multiplicity.multiplicity_eq_multiplicity_iff
 
-theorem le_multiplicity_map {F : Type*} [MonoidHomClass F α β] (f : F) {a b : α} :
-    multiplicity a b ≤ multiplicity (f a) (f b) :=
+theorem le_multiplicity_map {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
+    (f : F) {a b : α} : multiplicity a b ≤ multiplicity (f a) (f b) :=
   multiplicity_le_multiplicity_iff.mpr fun n ↦ by rw [← map_pow]; exact map_dvd f
 
-theorem multiplicity_map_eq {F : Type*} [MulEquivClass F α β] (f : F) {a b : α} :
-    multiplicity (f a) (f b) = multiplicity a b :=
+theorem multiplicity_map_eq {F : Type*} [EquivLike F α β] [MulEquivClass F α β]
+    (f : F) {a b : α} : multiplicity (f a) (f b) = multiplicity a b :=
   multiplicity_eq_multiplicity_iff.mpr fun n ↦ by rw [← map_pow]; exact map_dvd_iff f
 
 theorem multiplicity_le_multiplicity_of_dvd_right {a b c : α} (h : b ∣ c) :

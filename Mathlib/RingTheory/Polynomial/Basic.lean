@@ -747,7 +747,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
   -- `(Quotient.isDomain_iff_prime (map C P : Ideal R[X]))`
   constructor
   · intro H
-    have := @comap_isPrime R R[X] (R →+* R[X]) _ _ _ C (map C P) H
+    have := comap_isPrime C (map C P)
     convert this using 1
     ext x
     simp only [mem_comap, mem_map_C_iff]
@@ -1275,11 +1275,8 @@ namespace Polynomial
 
 attribute [-instance] Ring.toSemiring in
 instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid D[X] := by
-  letI := Classical.decEq (Associates D)
-  letI := Classical.decEq D
-  haveI : NormalizationMonoid D := Inhabited.default
-  haveI := toNormalizedGCDMonoid D
-  exact ufm_of_gcd_of_wfDvdMonoid
+  letI := Classical.arbitrary (NormalizedGCDMonoid D)
+  exact ufm_of_decomposition_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid
 
 /-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
