@@ -39,7 +39,7 @@ open BigOperators
 
 variable {α : Type*} [DecidableEq α] {m : Multiset α}
 
-/-- Auxiliary definition for the `CoeSort` instance. This prevents the `CoeSort m α`
+/-- Auxiliary definition for the `CoeSort` instance. This prevents the `CoeOut m α`
 instance from inadvertently applying to other sigma types. -/
 def Multiset.ToType (m : Multiset α) : Type _ := (x : α) × Fin (m.count x)
 #align multiset.to_type Multiset.ToType
