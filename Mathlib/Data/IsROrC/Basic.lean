@@ -64,7 +64,7 @@ This is done to make it possible to use` [IsROrC K] [NormedSpace K E]`
 as an assumption of an instance.
 
 To avoid non-defeq instance diamonds, every data-carrying instance for `IsROrC` fields
-must agree with corresponding instances for `ℝ` and `ℂ`.
+must agree with the corresponding instances for `ℝ` and `ℂ`.
 In most cases, we ensure these definitional equalities by `extend`ing corresponding typeclasses
 and reusing their `ℝ` and `ℂ` instances in the instances for `IsROrC ℝ` and `IsROrC ℂ`.
 
