@@ -3,7 +3,6 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
@@ -131,11 +130,9 @@ theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
 
 theorem yang_baxter (X Y Z : C) :
     (α_ X Y Z).inv ≫ ((β_ X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫
-    (Y ◁ (β_ X Z).hom) ≫ (α_ Y Z X).inv ≫
-    ((β_ Y Z).hom ▷ X) ≫ (α_ Z Y X).hom
-    = (X ◁ (β_ Y Z).hom) ≫ (α_ X Z Y).inv ≫
-      ((β_ X Z).hom ▷ Y) ≫ (α_ Z X Y).hom ≫
-      (Z ◁ (β_ X Y).hom) := by
+    (Y ◁ (β_ X Z).hom) ≫ (α_ Y Z X).inv ≫ ((β_ Y Z).hom ▷ X) ≫ (α_ Z Y X).hom =
+      (X ◁ (β_ Y Z).hom) ≫ (α_ X Z Y).inv ≫ ((β_ X Z).hom ▷ Y) ≫
+      (α_ Z X Y).hom ≫ (Z ◁ (β_ X Y).hom) := by
   have := (braiding_naturality_right_assoc X (β_ Y Z).hom (α_ Z Y X).hom).symm
   refine Eq.trans (Eq.symm ?_) (Eq.trans this ?_)
   · refine Eq.trans (congrArg (. ≫ _) (braiding_tensor_right X Y Z)) ?_
@@ -145,13 +142,11 @@ theorem yang_baxter (X Y Z : C) :
     simp only [assoc]
 
 theorem yang_baxter' (X Y Z : C) :
-    Iso.homCongr (α_ X Y Z) (α_ Z Y X)
-      (((β_ X Y).hom ▷ Z) ⊗≫ (Y ◁ (β_ X Z).hom) ⊗≫ ((β_ Y Z).hom ▷ X))
-    = ((X ◁ (β_ Y Z).hom) ⊗≫ ((β_ X Z).hom ▷ Y) ⊗≫ (Z ◁ (β_ X Y).hom)) := by
-  dsimp only [Mathlib.Tactic.Coherence.monoidalComp,
-              Mathlib.Tactic.Coherence.MonoidalCoherence.hom, Iso.homCongr_apply]
-  simp only [whiskerRight_tensor, id_whiskerRight, id_comp, Iso.inv_hom_id,
-             comp_id, assoc, tensor_id, id_comp, yang_baxter]
+    ((β_ X Y).hom ▷ Z) ⊗≫ (Y ◁ (β_ X Z).hom) ⊗≫ ((β_ Y Z).hom ▷ X) =
+      𝟙 _ ⊗≫ ((X ◁ (β_ Y Z).hom) ⊗≫ ((β_ X Z).hom ▷ Y) ⊗≫ (Z ◁ (β_ X Y).hom)) ⊗≫ 𝟙 _ := by
+  rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
+  convert yang_baxter X Y Z using 1
+  all_goals coherence
 
 theorem yang_baxter_iso (X Y Z : C) :
     (α_ X Y Z).symm ≪≫ whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫
@@ -686,12 +681,8 @@ monoidal opposite, upgraded to a braided functor. -/
     simp only [braiding_tensor_left, braiding_tensor_right,
                assoc, Iso.inv_hom_id, comp_id]
     exact yang_baxter (mop X) (mop Y) (mop Z)
-  left_unitality X :=
-    Eq.symm $ Eq.trans (congrArg (. ≫ _) (tensor_id _ _))
-    $ Eq.trans (id_comp _) (braiding_rightUnitor Cᴹᵒᵖ (mop X))
-  right_unitality X :=
-    Eq.symm $ Eq.trans (congrArg (. ≫ _) (tensor_id _ _))
-    $ Eq.trans (id_comp _) (braiding_leftUnitor Cᴹᵒᵖ (mop X))
+  left_unitality := by intro; erw [tensor_id, id_comp, braiding_rightUnitor]
+  right_unitality := by intro; erw [tensor_id, id_comp, braiding_leftUnitor]
   __ := mopFunctor C
 
 /-- The identity functor on `C`, viewed as a functor from the
@@ -711,12 +702,8 @@ monoidal opposite of `C` to `C`, upgraded to a braided functor. -/
     simp only [braiding_tensor_left, braiding_tensor_right,
                assoc, Iso.inv_hom_id, comp_id]
     exact yang_baxter (unmop X) (unmop Y) (unmop Z)
-  left_unitality X :=
-    Eq.symm $ Eq.trans (congrArg (. ≫ _) (tensor_id _ _))
-    $ Eq.trans (id_comp _) (braiding_rightUnitor C (unmop X))
-  right_unitality X :=
-    Eq.symm $ Eq.trans (congrArg (. ≫ _) (tensor_id _ _))
-    $ Eq.trans (id_comp _) (braiding_leftUnitor C (unmop X))
+  left_unitality := by intro; erw [tensor_id, id_comp, braiding_rightUnitor]
+  right_unitality := by intro; erw [tensor_id, id_comp, braiding_leftUnitor]
   __ := unmopFunctor C
 
 end MonoidalOpposite
