@@ -1996,7 +1996,7 @@ variable [DecidableEq ι] [CancelCommMonoid α] {s t : Finset ι} {f : ι → α
 lemma prod_sdiff_eq_prod_sdiff :
     ∏ i in s \ t, f i = ∏ i in t \ s, f i ↔ ∏ i in s, f i = ∏ i in t, f i :=
   eq_comm.trans $ eq_iff_eq_of_mul_eq_mul $ by
-    rw [← prod_union disjoint_sdiff_self_left, ←prod_union disjoint_sdiff_self_left,
+    rw [← prod_union disjoint_sdiff_self_left, ← prod_union disjoint_sdiff_self_left,
       sdiff_union_self_eq_union, sdiff_union_self_eq_union, union_comm]
 
 @[to_additive]
