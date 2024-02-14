@@ -58,6 +58,10 @@ While the name of the class begins with `Is`,
 this typeclass carries data (all operations common to real and complex numbers),
 not just claims existence of these operations.
 
+In particular, `IsROrC.I` is equal to `Complex.I`, not `-Complex.I`
+in case of the complex numbers instance.
+For real numbers, it is chosen to be zero.
+
 This class has exactly two instances: one for `ℝ` and one for `ℂ`.
 In particular, there is no instance for `ULift K`.
 This is done to make it possible to use` [IsROrC K] [NormedSpace K E]`
