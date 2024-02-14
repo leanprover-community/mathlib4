@@ -36,6 +36,7 @@ inductive LambdaTheoremArgs
   | proj (x Y : Nat)
   | projDep (x Y : Nat)
   | comp (f g : Nat)
+  | letE (f g : Nat)
   | pi (f : Nat)
   deriving Inhabited, BEq, Repr, Hashable
 
@@ -46,9 +47,10 @@ inductive LambdaTheoremArgs
 - proj    `Continuous fun (f : X → Y) => f x`
 - projDep `Continuous fun (f : (x : X) → Y x => f x)`
 - comp    `Continuous f → Continuous g → Continuous fun x => f (g x)`
+- letE    `Continuous f → Continuous g → Continuous fun x => let y := g x; f x y`
 - pi      `∀ y, Continuous (f · y) → Continuous fun x y => f x y` -/
 inductive LambdaTheoremType
-  | id  | const | proj| projDep | comp  | pi
+  | id  | const | proj| projDep | comp | letE  | pi
   deriving Inhabited, BEq, Repr, Hashable
 
 /-- -/
@@ -59,6 +61,7 @@ def LambdaTheoremArgs.type (t : LambdaTheoremArgs) : LambdaTheoremType :=
   | .proj .. => .proj
   | .projDep .. => .projDep
   | .comp .. => .comp
+  | .letE .. => .letE
   | .pi .. => .pi
 
 set_option linter.unusedVariables false in
@@ -96,6 +99,10 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
        | _ => return none
     | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) =>
       -- fun x => f (g x)
+      let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
+      let .some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
+      return .some <| .comp argId_f argId_g
+    | .letE yName yType (.app (.fvar gId) (.bvar 0)) (.app (.app (.fvar fId) (.bvar 1)) (.bvar 0)) dep =>
       let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
       let .some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
       return .some <| .comp argId_f argId_g
