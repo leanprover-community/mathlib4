@@ -295,12 +295,6 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
-@[simp]
-lemma pred_bit0 {x : ℕ} (h : x > 0) : pred (bit0 x) = bit1 (pred x) := by
-  cases x
-  · contradiction
-  · simp only [bit0_val, mul_succ, Nat.pred_succ, bit_val, bit1_val, cond_true]
-
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n
