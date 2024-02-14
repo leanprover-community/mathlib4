@@ -44,7 +44,7 @@ class PerfectRing (R : Type*) (p : ℕ) [CommSemiring R] [ExpChar R p] : Prop wh
 
 section PerfectRing
 
-variable (R : Type*) (p n : ℕ) [CommSemiring R] [ExpChar R p]
+variable (R : Type*) (p m n : ℕ) [CommSemiring R] [ExpChar R p]
 
 /-- For a reduced ring, surjectivity of the Frobenius map is a sufficient condition for perfection.
 -/
@@ -81,6 +81,8 @@ noncomputable def frobeniusEquiv : R ≃+* R :=
 theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
 #align coe_frobenius_equiv coe_frobeniusEquiv
 
+theorem frobeniusEquiv_def (x : R) : frobeniusEquiv R p x = x ^ p := rfl
+
 /-- The iterated Frobenius automorphism for a perfect ring. -/
 @[simps! apply]
 noncomputable def iterateFrobeniusEquiv : R ≃+* R :=
@@ -88,6 +90,39 @@ noncomputable def iterateFrobeniusEquiv : R ≃+* R :=
 
 @[simp]
 theorem coe_iterateFrobeniusEquiv : ⇑(iterateFrobeniusEquiv R p n) = iterateFrobenius R p n := rfl
+
+theorem iterateFrobeniusEquiv_def (x : R) : iterateFrobeniusEquiv R p n x = x ^ p ^ n := rfl
+
+theorem iterateFrobeniusEquiv_add_apply (x : R) : iterateFrobeniusEquiv R p (m + n) x =
+    iterateFrobeniusEquiv R p m (iterateFrobeniusEquiv R p n x) :=
+  iterateFrobenius_add_apply R p m n x
+
+theorem iterateFrobeniusEquiv_add : iterateFrobeniusEquiv R p (m + n) =
+    (iterateFrobeniusEquiv R p n).trans (iterateFrobeniusEquiv R p m) :=
+  RingEquiv.ext (iterateFrobeniusEquiv_add_apply R p m n)
+
+theorem iterateFrobeniusEquiv_symm_add_apply (x : R) : (iterateFrobeniusEquiv R p (m + n)).symm x =
+    (iterateFrobeniusEquiv R p m).symm ((iterateFrobeniusEquiv R p n).symm x) :=
+  (iterateFrobeniusEquiv R p (m + n)).injective <| by rw [RingEquiv.apply_symm_apply, add_comm,
+    iterateFrobeniusEquiv_add_apply, RingEquiv.apply_symm_apply, RingEquiv.apply_symm_apply]
+
+theorem iterateFrobeniusEquiv_symm_add : (iterateFrobeniusEquiv R p (m + n)).symm =
+    (iterateFrobeniusEquiv R p n).symm.trans (iterateFrobeniusEquiv R p m).symm :=
+  RingEquiv.ext (iterateFrobeniusEquiv_symm_add_apply R p m n)
+
+theorem iterateFrobeniusEquiv_zero_apply (x : R) : iterateFrobeniusEquiv R p 0 x = x := by
+  rw [iterateFrobeniusEquiv_def, pow_zero, pow_one]
+
+theorem iterateFrobeniusEquiv_one_apply (x : R) : iterateFrobeniusEquiv R p 1 x = x ^ p := by
+  rw [iterateFrobeniusEquiv_def, pow_one]
+
+@[simp]
+theorem iterateFrobeniusEquiv_zero  : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
+  RingEquiv.ext (iterateFrobeniusEquiv_zero_apply R p)
+
+@[simp]
+theorem iterateFrobeniusEquiv_one : iterateFrobeniusEquiv R p 1 = frobeniusEquiv R p :=
+  RingEquiv.ext (iterateFrobeniusEquiv_one_apply R p)
 
 theorem iterateFrobeniusEquiv_eq_pow : iterateFrobeniusEquiv R p n = frobeniusEquiv R p ^ n :=
   DFunLike.ext' <| show _ = ⇑(RingAut.toPerm _ _) by
