@@ -1424,6 +1424,19 @@ theorem map_top : LieSubmodule.map f ⊤ = f.range := by ext; simp [LieSubmodule
 theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
   rw [SetLike.ext'_iff, coe_range, LieSubmodule.top_coe, Set.range_iff_surjective]
 
+/-- A morphism of Lie modules `f : M → N` whose values lie in a Lie submodule `P ⊆ N` can be
+restricted to a morphism of Lie modules `M → P`. -/
+def codRestrict (P : LieSubmodule R L N) (f : M →ₗ⁅R,L⁆ N) (h : ∀ m, f m ∈ P) :
+    M →ₗ⁅R,L⁆ P where
+  toFun := f.toLinearMap.codRestrict P h
+  __ := f.toLinearMap.codRestrict P h
+  map_lie' {x m} := by ext; simp
+
+@[simp]
+lemma codRestrict_apply (P : LieSubmodule R L N) (f : M →ₗ⁅R,L⁆ N) (h : ∀ m, f m ∈ P) (m : M) :
+    (f.codRestrict P h m : N) = f m :=
+  rfl
+
 end LieModuleHom
 
 namespace LieSubmodule

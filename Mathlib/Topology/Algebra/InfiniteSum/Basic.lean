@@ -571,7 +571,7 @@ theorem Function.Injective.tsum_eq {g : γ → β} (hg : Injective g) {f : β �
     (hf : support f ⊆ Set.range g) : ∑' c, f (g c) = ∑' b, f b := by
   have : support f = g '' support (f ∘ g) := by
     rw [support_comp_eq_preimage, Set.image_preimage_eq_iff.2 hf]
-  change tsum (f ∘ g) = tsum f
+  rw [← Function.comp_def]
   by_cases hf_fin : (support f).Finite
   · have hfg_fin : (support (f ∘ g)).Finite := hf_fin.preimage (hg.injOn _)
     lift g to γ ↪ β using hg
