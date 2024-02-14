@@ -673,7 +673,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
     let Y : ℕ → Ω → ℝ := fun n ↦ F ∘ (X n)
     have : ∀ᵐ (ω : Ω), Tendsto (fun (n : ℕ) ↦ (n : ℝ)⁻¹ • ∑ i in Finset.range n, Y i ω)
         atTop (𝓝 𝔼[Y 0]) := by
-      simp only [Pi.const_one, smul_eq_mul, ← div_eq_inv_mul]
+      simp only [Function.const_one, smul_eq_mul, ← div_eq_inv_mul]
       apply strong_law_ae_real
       · exact SimpleFunc.integrable_of_isFiniteMeasure
           ((SimpleFunc.piecewise s hs (SimpleFunc.const _ (1 : ℝ))
