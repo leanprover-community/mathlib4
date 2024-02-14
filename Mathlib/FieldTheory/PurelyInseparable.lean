@@ -359,6 +359,42 @@ alias AlgEquiv.perfectClosure := perfectClosure.algEquivOfAlgEquiv
 
 end map
 
+-- TODO: move to suitable location
+instance IntermediateField.charZero [CharZero F] (L : IntermediateField F E) :
+    CharZero L := charZero_of_injective_algebraMap (algebraMap F _).injective
+
+-- TODO: move to suitable location
+instance IntermediateField.charP (p : ℕ) [CharP F p] (L : IntermediateField F E) :
+    CharP L p := charP_of_injective_algebraMap (algebraMap F _).injective p
+
+-- TODO: move to suitable location
+instance IntermediateField.expChar (p : ℕ) [ExpChar F p] (L : IntermediateField F E) :
+    ExpChar L p := expChar_of_injective_algebraMap (algebraMap F _).injective p
+
+-- TODO: move to suitable location
+instance IntermediateField.charZero' [CharZero E] (L : IntermediateField F E) :
+    CharZero L := (algebraMap _ E).charZero
+
+-- TODO: move to suitable location
+instance IntermediateField.charP' (p : ℕ) [CharP E p] (L : IntermediateField F E) :
+    CharP L p := RingHom.charP _ (algebraMap _ E).injective p
+
+-- TODO: move to suitable location
+instance IntermediateField.expChar' (p : ℕ) [ExpChar E p] (L : IntermediateField F E) :
+    ExpChar L p := RingHom.expChar _ (algebraMap _ E).injective p
+
+/-- If `E` is a perfect field of characteristic `p`, then the (relative) perfect closure
+`perfectClosure F E` is perfect. -/
+instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
+    [PerfectRing E p] : PerfectRing (perfectClosure F E) p := .ofSurjective _ p fun x ↦ by
+  haveI := RingHom.expChar _ (algebraMap F E).injective p
+  obtain ⟨x', hx⟩ := surjective_frobenius E p x.1
+  obtain ⟨n, y, hy⟩ := (mem_perfectClosure_iff_pow_mem p).1 x.2
+  rw [frobenius_def] at hx
+  rw [← hx, ← pow_mul, ← pow_succ] at hy
+  exact ⟨⟨x', (mem_perfectClosure_iff_pow_mem p).2 ⟨n + 1, y, hy⟩⟩, by
+    simp_rw [frobenius_def, SubmonoidClass.mk_pow, hx]⟩
+
 end perfectClosure
 
 section IsPurelyInseparable
