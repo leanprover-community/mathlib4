@@ -383,14 +383,6 @@ theorem natSepDegree_mul (g : F[X]) :
   simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_mul h, Multiset.toFinset_add]
   exact Finset.card_union_le _ _
 
--- TODO: remove once XX is merged
-theorem Finset.card_union_eq_iff {α : Type*} {s t : Finset α} [DecidableEq α] :
-    (s ∪ t).card = s.card + t.card ↔ Disjoint s t := by
-  have H := Finset.card_union_add_card_inter s t
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rwa [h, add_right_eq_self, Finset.card_eq_zero, ← Finset.disjoint_iff_inter_eq_empty] at H
-  rwa [Finset.disjoint_iff_inter_eq_empty.1 h, Finset.card_empty, add_zero] at H
-
 theorem natSepDegree_mul_eq_iff (g : F[X]) :
     (f * g).natSepDegree = f.natSepDegree + g.natSepDegree ↔ (f = 0 ∧ g = 0) ∨ IsCoprime f g := by
   by_cases h : f * g = 0
@@ -408,7 +400,7 @@ theorem natSepDegree_mul_eq_iff (g : F[X]) :
     · exact ⟨0, by rw [h, map_zero]⟩
     exact ⟨x, h⟩
   simp_rw [natSepDegree_eq_of_isAlgClosed (AlgebraicClosure F), aroots_mul h, Multiset.toFinset_add,
-    Finset.card_union_eq_iff, Finset.disjoint_iff_ne, Multiset.mem_toFinset, mem_aroots]
+    Finset.card_union_eq_card_add_card, Finset.disjoint_iff_ne, Multiset.mem_toFinset, mem_aroots]
   rw [mul_eq_zero, not_or] at h
   refine ⟨fun H ↦ .inr (isCoprime_of_irreducible_dvd (not_and.2 fun _ ↦ h.2)
     fun u hu ⟨v, hf⟩ ⟨w, hg⟩ ↦ ?_), ?_⟩
@@ -500,76 +492,9 @@ theorem natSepDegree_eq_one_iff_of_monic (q : ℕ) [ExpChar F q] (hm : f.Monic)
     (hi : Irreducible f) : f.natSepDegree = 1 ↔ ∃ (n : ℕ) (y : F), f = X ^ q ^ n - C y := by
   simp_rw [hi.natSepDegree_eq_one_iff_of_monic' q hm, map_sub, expand_X, expand_C]
 
--- -- unused
--- -- TODO: move to suitable file
--- theorem natDegree_pos (h : Irreducible f) : 0 < f.natDegree := Nat.pos_of_ne_zero fun H ↦ by
---   obtain ⟨x, hf⟩ := natDegree_eq_zero.1 H
---   by_cases hx : x = 0
---   · rw [← hf, hx, map_zero] at h; exact not_irreducible_zero h
---   exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))
-
 end Irreducible
 
 namespace Polynomial
-
--- unused
--- TODO: move to suitable file
-theorem roots_X_pow_char_pow_sub_C {R : Type*} [CommRing R] [IsDomain R]
-    {p n : ℕ} {y : R} [ExpChar R p] [PerfectRing R p] :
-    (X ^ p ^ n - C y).roots = p ^ n • {(iterateFrobeniusEquiv R p n).symm y} := by
-  have H := roots_expand_pow (p := p) (n := n) (f := X - C y)
-  rwa [roots_X_sub_C, Multiset.map_singleton, map_sub, expand_X, expand_C] at H
-
--- unused
--- TODO: move to suitable file
-theorem roots_X_pow_char_pow_sub_C_pow {R : Type*} [CommRing R] [IsDomain R]
-    {p m n : ℕ} {y : R} [ExpChar R p] [PerfectRing R p] :
-    ((X ^ p ^ n - C y) ^ m).roots = (m * p ^ n) • {(iterateFrobeniusEquiv R p n).symm y} := by
-  rw [roots_pow, roots_X_pow_char_pow_sub_C, mul_smul]
-
--- unused
-variable {F} in
--- TODO: move to suitable file
-theorem exists_monic_irreducible_factor (f : F[X]) (hu : ¬IsUnit f) :
-    ∃ g : F[X], g.Monic ∧ Irreducible g ∧ g ∣ f := by
-  by_cases hf : f = 0
-  · exact ⟨X, monic_X, irreducible_X, hf ▸ dvd_zero X⟩
-  obtain ⟨g, hi, hf⟩ := WfDvdMonoid.exists_irreducible_factor hu hf
-  have ha : Associated g (g * C g.leadingCoeff⁻¹) := associated_mul_unit_right _ _ <|
-    isUnit_C.2 (leadingCoeff_ne_zero.2 hi.ne_zero).isUnit.inv
-  exact ⟨_, monic_mul_leadingCoeff_inv hi.ne_zero, ha.irreducible hi, ha.dvd_iff_dvd_left.1 hf⟩
-
-open Multiset in
--- TODO: move to suitable file
-lemma _root_.Multiset.toFinset_eq_singleton_iff
-    {α : Type*} [DecidableEq α] (s : Multiset α) (a : α) :
-    s.toFinset = {a} ↔ card s ≠ 0 ∧ s = card s • {a} := by
-  refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
-  · have : card s ≠ 0 := fun h ↦ by
-      rw [card_eq_zero.1 h, toFinset_zero] at H
-      exact Finset.singleton_ne_empty _ H.symm
-    refine ⟨this, ext' fun x ↦ ?_⟩
-    rw [count_nsmul, count_singleton]
-    by_cases hx : x = a
-    · simp_rw [hx, ite_true, mul_one, count_eq_card]
-      intro y hy
-      rw [← mem_toFinset, H, Finset.mem_singleton] at hy
-      exact hy.symm
-    have hx' : x ∉ s := fun h' ↦ hx <| by rwa [← mem_toFinset, H, Finset.mem_singleton] at h'
-    simp_rw [count_eq_zero_of_not_mem hx', hx, ite_false, mul_zero]
-  simpa only [toFinset_nsmul _ _ H.1, toFinset_singleton] using congr($(H.2).toFinset)
-
-open Multiset in
--- TODO: move to suitable file
-lemma _root_.Multiset.toFinset_card_eq_one_iff
-    {α : Type*} [DecidableEq α] (s : Multiset α) :
-    s.toFinset.card = 1 ↔ card s ≠ 0 ∧ ∃ a : α, s = card s • {a} := by
-  simp_rw [Finset.card_eq_one, toFinset_eq_singleton_iff, exists_and_left]
-
--- TODO: move to suitable file
-theorem map_contract {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S] {p : ℕ} (hp : p ≠ 0)
-    {f : R →+* S} {q : R[X]} : (q.contract p).map f = (q.map f).contract p := ext fun n ↦ by
-  simp only [coeff_map, coeff_contract hp]
 
 namespace Monic
 
@@ -581,13 +506,10 @@ alias natSepDegree_eq_one_iff_of_irreducible' := Irreducible.natSepDegree_eq_one
 
 alias natSepDegree_eq_one_iff_of_irreducible := Irreducible.natSepDegree_eq_one_iff_of_monic
 
--- TODO: move to suitable file
-lemma nextCoeff_pow (hm : f.Monic) (n : ℕ) : (f ^ n).nextCoeff = n • f.nextCoeff := by
-  induction n with
-  | zero => rw [pow_zero, Nat.zero_eq, zero_smul, ← map_one (f := C), nextCoeff_C_eq_zero]
-  | succ n ih => rw [pow_succ, hm.nextCoeff_mul (hm.pow n), ih, succ_nsmul]
-
-lemma eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic) (hs : f.Splits (RingHom.id F))
+/-- If a monic polynomial of separable degree one splits, then it is of form `(X - C y) ^ m` for
+some non-zero natural number `m` and some element `y` of `F`. -/
+theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
+    (hs : f.Splits (RingHom.id F))
     (h : f.natSepDegree = 1) : ∃ (m : ℕ) (y : F), m ≠ 0 ∧ f = (X - C y) ^ m := by
   have h1 := eq_prod_roots_of_monic_of_splits_id hm hs
   have h2 := (natSepDegree_eq_of_splits f hs).symm
