@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.Fintype.Powerset
-
+assert_not_exists Module
 #align_import algebra.big_operators.ring from "leanprover-community/mathlib"@"b2c89893177f66a48daf993b7ba5ef7cddeff8c9"
 
 /-!
