@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
 
-import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Exponent
+import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Period of a group action
@@ -28,44 +28,34 @@ variable {M : Type u} [Monoid M] [MulAction M α]
 
 /-- If the action is periodic, then a lower bound for its period can be computed. -/
 @[to_additive]
-theorem period_gt_of_moved {m : M} {a : α} {n : ℕ} (period_pos : 0 < period m a)
-    (moved : ∀ k, 0 < k → k < n → m^k • a ≠ a) : n ≤ period m a := by
-  by_contra period_le_n
-  rw [not_le] at period_le_n
-  apply moved _ period_pos period_le_n
-  exact pow_period_smul m a
+theorem le_period {m : M} {a : α} {n : ℕ} (period_pos : 0 < period m a)
+    (moved : ∀ k, 0 < k → k < n → m ^ k • a ≠ a) : n ≤ period m a :=
+  le_of_not_gt fun period_lt_n =>
+    moved _ period_pos period_lt_n <| pow_period_smul m a
 
 /-- If for some `n`, `m ^ n • a = a`, then `period m a ≤ n`. -/
 @[to_additive]
 theorem period_le_of_fixed {m : M} {a : α} {n : ℕ} (n_pos : 0 < n) (fixed : m ^ n • a = a) :
-    period m a ≤ n := by
-  rw [period_eq_minimalPeriod]
-  rw [← isPeriodicPt_smul_iff] at fixed
-  exact Function.IsPeriodicPt.minimalPeriod_le n_pos fixed
+    period m a ≤ n :=
+  (isPeriodicPt_smul_iff.mpr fixed).minimalPeriod_le n_pos
 
 /-- If for some `n`, `m ^ n • a = a`, then `0 < period m a`. -/
 @[to_additive]
 theorem period_pos_of_fixed {m : M} {a : α} {n : ℕ} (n_pos : 0 < n) (fixed : m ^ n • a = a) :
-    0 < period m a := by
-  rw [← isPeriodicPt_smul_iff] at fixed
-  rw [period_eq_minimalPeriod]
-  exact Function.IsPeriodicPt.minimalPeriod_pos n_pos fixed
+    0 < period m a :=
+  (isPeriodicPt_smul_iff.mpr fixed).minimalPeriod_pos n_pos
 
 @[to_additive]
-theorem period_eq_one_of_fixed {m : M} {a : α} (fixed : m • a = a) : period m a = 1 := by
-  symm
-  rw [← pow_one m] at fixed
-  refine Nat.eq_of_le_of_lt_succ (period_le_of_fixed Nat.one_pos fixed) ?pos
-  rw [Nat.lt_add_left_iff_pos]
-  exact period_pos_of_fixed Nat.one_pos fixed
+theorem period_eq_one_of_fixed {m : M} {a : α} (fixed : m • a = a) : period m a = 1 :=
+  le_antisymm
+    (period_le_of_fixed one_pos (by simpa))
+    (period_pos_of_fixed one_pos (by simpa))
 
-/-- For any non-zero `n` less than the period, `a` is moved by `m^n`. -/
+/-- For any non-zero `n` less than the period, `a` is moved by `m ^ n`. -/
 @[to_additive]
 theorem moved_of_lt_period {m : M} {a : α} {n : ℕ} (n_pos : 0 < n) (n_lt_period : n < period m a) :
-    m^n • a ≠ a := by
-  intro a_fixed
-  apply Nat.not_le.mpr n_lt_period
-  exact period_le_of_fixed n_pos a_fixed
+    m ^ n • a ≠ a := fun a_fixed =>
+  not_le_of_gt n_lt_period <| period_le_of_fixed n_pos a_fixed
 
 section MonoidExponent
 
@@ -75,13 +65,13 @@ The period of a given element `m : M` can be bounded by the `Monoid.exponent M` 
 -/
 
 @[to_additive]
-theorem period_pos_of_orderOf_pos {m : M} (order_pos : 0 < orderOf m) (a : α):
+theorem period_pos_of_orderOf_pos {m : M} (order_pos : 0 < orderOf m) (a : α) :
     0 < period m a := by
   apply period_pos_of_fixed order_pos
   rw [pow_orderOf_eq_one, one_smul]
 
 @[to_additive]
-theorem period_le_orderOf {m : M} (order_pos : 0 < orderOf m) (a : α):
+theorem period_le_orderOf {m : M} (order_pos : 0 < orderOf m) (a : α) :
     period m a ≤ orderOf m := by
   apply period_le_of_fixed order_pos
   rw [pow_orderOf_eq_one, one_smul]
@@ -104,8 +94,7 @@ variable (α)
 theorem period_bounded_of_exponent_pos (exp_pos : 0 < Monoid.exponent M) (m : M) :
     BddAbove (Set.range (fun a : α => period m a)) := by
   use Monoid.exponent M
-  simp [upperBounds]
-  apply period_le_exponent exp_pos
+  simpa [upperBounds] using period_le_exponent exp_pos _
 
 end MonoidExponent
 
