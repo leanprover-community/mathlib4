@@ -194,37 +194,6 @@ instance : CommSemiring (BitVec w) :=
 instance : AddCommGroup (BitVec w) :=
   toFin_injective.addCommGroup _
     toFin_zero toFin_add toFin_neg toFin_sub (Function.swap toFin_nsmul) (Function.swap toFin_zsmul)
-
-/-!
-### Distributivity of `Std.BitVec.getLsb'`
--/
-
-section
-variable (x y : BitVec w) (i : Fin w)
-
-@[simp] lemma getLsb'_and : (x &&& y).getLsb' i = (x.getLsb' i && y.getLsb' i) := by
-  simp only [getLsb', getLsb, toNat_and, testBit_land]
-
-@[simp] lemma getLsb'_or : (x ||| y).getLsb' i = (x.getLsb' i || y.getLsb' i) := by
-  simp only [getLsb', getLsb, toNat_or, testBit_lor]
-
-@[simp] lemma getLsb'_xor : (x ^^^ y).getLsb' i = (xor (x.getLsb' i) (y.getLsb' i)) := by
-  simp only [getLsb', getLsb, toNat_xor, testBit_xor]
-
--- @[simp] lemma getLsb'_not : (~~~x).getLsb' i = !(x.getLsb' i) := by
---   simp only [getLsb', getLsb, Complement.complement, BitVec.not, toNat_xor, toNat_ofFin,
---     testBit_xor, Nat.testBit_ones, Fin.is_lt, decide_True, Bool.true_xor]
-
-@[simp] lemma getLsb'_ofNat_zero : getLsb' 0#w i = false := by
-  simp only [getLsb', getLsb, toNat_ofNat, zero_mod, zero_testBit]
-
--- @[simp] lemma getLsb'_neg_ofNat_one : getLsb' (-1#w) i = true := by
---   simp only [getLsb', getLsb, toNat_neg_ofNat_one, testBit_two_pow_sub_one, Fin.is_lt, decide_True]
-
--- @[simp] lemma getLsb_val_eq_getLsb' : x.getLsb i.val = x.getLsb' i := rfl
-
-end
-
 /-!
 ### `IntCast` & `CommRing`
 Show that casting `z : Int` to a bitvector is the same as casting `z` to `Fin 2^w`, and
@@ -234,22 +203,6 @@ This result ist the final piece needed to show that bitvectors form a commutativ
 
 @[simp]
 lemma negOne_eq_allOnes {w : Nat} : -1#w = allOnes w := rfl
-
-/-- Adding a bitvector to its own complement yields the all ones bitpattern -/
-@[simp] lemma add_not_self (x : BitVec w) : x + ~~~x = -1#w := by
-  rw [add_eq_adc, adc, iunfoldr_replace (fun _ => false) (-1#w)]
-  · rfl
-  · simp [adcb]
-
-/-- Subtracting `x` from the all ones bitvector is equivalent to taking its complement -/
-lemma negOne_sub_eq_not (x : BitVec w) : -1#w - x = ~~~x := by
-  rw [← add_not_self x]; abel
-
-/-- Negating every bit of `x` is the same as subtracting `x` from the all-ones bitvector -/
-lemma not_eq_sub (x : BitVec w) :
-    ~~~x = (-1#w) - x := by
-  suffices ~~~x + x = -1#w from eq_sub_of_add_eq this
-  rw [add_comm, add_not_self]
 
 @[simp] lemma natCast_eq (x w : Nat) :
     Nat.cast x = x#w := rfl
@@ -265,7 +218,7 @@ theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = Int.cast z := by
     · rfl
     · simp only [cast_add, cast_one, neg_add_rev]
       rw [← add_ofFin, ofFin_neg, ofFin_ofNat, ofNat_eq_ofNat, ofFin_neg, ofFin_natCast,
-        natCast_eq, ← sub_eq_add_neg (G := BitVec _), not_eq_sub]
+        natCast_eq, ← sub_eq_add_neg (G := BitVec _), negOne_eq_allOnes, allOnes_sub_eq_not]
 
 theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
   apply toFin_inj.mpr <| (ofFin_intCast z).symm
