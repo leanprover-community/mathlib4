@@ -236,4 +236,9 @@ lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
   ⟨fun f g ↦ DFunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
 #align equiv_like.subsingleton_dom EquivLike.subsingleton_dom
 
+lemma EquivLike.exists_congr_left' {ι ι' : Sort*} {P : ι' → Prop} {E : Type*} [EquivLike E ι ι']
+    (e : E) : (∃ x, P (e x)) ↔ ∃ x, P x := by
+  refine ⟨fun ⟨x, hx⟩ ↦ ⟨e x, hx⟩, fun ⟨x, hx⟩ ↦ ⟨EquivLike.inv e x, ?_⟩⟩
+  simpa
+
 end EquivLike

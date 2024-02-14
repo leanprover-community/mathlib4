@@ -14,7 +14,7 @@ example {f : α → β} (s t : Set β) (h : Surjective f) :
     congr
     · simp [h, -image_preimage_eq, -subset_range_of_surjective]
     · simp [h, -image_subset_iff, -subset_range_of_surjective]
-  fail_if_success simp [h, -subset_range_of_surjective]
+  fail_if_success simpa [h, -subset_range_of_surjective]
   simp [h]
 
 /-- Without `Nonempty.subset_preimage_const`, `image_subset_iff` and `Nonempty.image_const` create a
@@ -25,7 +25,7 @@ example {s : Set α} (hs : Set.Nonempty s) (t : Set β) (a : β) :
     congr
     · simp [hs, -Nonempty.image_const, -Nonempty.subset_preimage_const]
     · simp [hs, -image_subset_iff, -Nonempty.subset_preimage_const]
-  fail_if_success simp [hs, -Nonempty.subset_preimage_const]
+  fail_if_success simpa [hs, -Nonempty.subset_preimage_const]
   simp [hs]
 
 /-- Without `preimage_eq_univ_iff`, `image_subset_iff` and `image_univ` create a
@@ -35,7 +35,23 @@ example {f : α → β} (s) : f '' univ ⊆ s ↔ f '' univ ⊆ s := by
     congr
     · simp [-image_univ, -preimage_eq_univ_iff]
     · simp [-image_subset_iff, -preimage_eq_univ_iff]
-  fail_if_success simp [-preimage_eq_univ_iff]
+  fail_if_success simpa [-preimage_eq_univ_iff]
   simp
 
 end Set
+
+namespace EquivLike
+
+/-- Without `memRange_congr_left'`, `range_comp` and `Set.mem_range` create a simp confluence issue.
+-/
+example {ι : Type*} {ι' : Type*} {E : Type*} [EquivLike E ι ι']
+    {α : Type*} (f : ι' → α) (e : E) (x : α) :
+    x ∈ Set.range (f ∘ ⇑e) ↔ x ∈ Set.range (f ∘ ⇑e) := by
+  conv =>
+    congr
+    · simp [-range_comp, -memRange_congr_left']
+    · simp [-Set.mem_range, -memRange_congr_left']
+  fail_if_success simpa [-memRange_congr_left']
+  simp
+
+end EquivLike

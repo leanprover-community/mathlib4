@@ -1351,6 +1351,12 @@ variable {E : Type*} [EquivLike E ι ι']
   (EquivLike.surjective _).range_comp _
 #align equiv_like.range_comp EquivLike.range_comp
 
+/-- `EquivLike.exists_congr_left'` specialized to `x ∈ Set.range (f ∘ ⇑e)` so `simp` can apply it.-/
+@[simp]
+theorem EquivLike.memRange_congr_left' {ι ι' : Sort*} {E : Type*} [EquivLike E ι ι'] {α : Type*} (f : ι' → α)
+    (e : E) (x : α) : (∃ y, f (e y) = x) ↔ ∃ y, f y = x :=
+  EquivLike.exists_congr_left' e (P := fun y ↦ f y = x)
+
 end EquivLike
 
 /-! ### Image and preimage on subtypes -/
