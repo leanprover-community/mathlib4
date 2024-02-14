@@ -21,8 +21,6 @@ is represented by a Galois object.
   connected component.
 * `connected_component_unique`: Up to isomorphism, for each element `x` in the fiber of `X` there
   is only one connected component whose fiber contains `x`.
-* `connected_component_unique`: Up to isomorphism, for each element `x` in the fiber of `X` there
-  is only one connected component whose fiber contains `x`.
 * `exists_galois_representative`: The fiber of `X` is represented by some Galois object `A`:
   Evaluation at some `a` in the fiber of `A` induces a bijection `A ⟶ X` to `F.obj X`.
 
