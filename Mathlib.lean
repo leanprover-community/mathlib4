@@ -365,6 +365,9 @@ import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Algebra
 import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.CauSeq.Basic
+import Mathlib.Algebra.Order.CauSeq.BigOperators
+import Mathlib.Algebra.Order.CauSeq.Completion
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Algebra.Order.CompleteField
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
@@ -1988,9 +1991,6 @@ import Mathlib.Data.Rbtree.MinMax
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Cardinality
-import Mathlib.Algebra.Order.CauSeq.Basic
-import Mathlib.Algebra.Order.CauSeq.BigOperators
-import Mathlib.Algebra.Order.CauSeq.Completion
 import Mathlib.Data.Real.ConjugateExponents
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Real.EReal
