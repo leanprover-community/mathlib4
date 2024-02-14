@@ -494,15 +494,17 @@ nonrec theorem ContinuousWithinAt.sqrt (h : ContinuousWithinAt f s x) :
   h.sqrt
 #align continuous_within_at.sqrt ContinuousWithinAt.sqrt
 
+@[fun_prop]
 nonrec theorem ContinuousAt.sqrt (h : ContinuousAt f x) : ContinuousAt (fun x => sqrt (f x)) x :=
   h.sqrt
 #align continuous_at.sqrt ContinuousAt.sqrt
 
+@[fun_prop]
 theorem ContinuousOn.sqrt (h : ContinuousOn f s) : ContinuousOn (fun x => sqrt (f x)) s :=
   fun x hx => (h x hx).sqrt
 #align continuous_on.sqrt ContinuousOn.sqrt
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.sqrt (h : Continuous f) : Continuous fun x => sqrt (f x) :=
   continuous_sqrt.comp h
 #align continuous.sqrt Continuous.sqrt
