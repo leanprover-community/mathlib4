@@ -313,7 +313,7 @@ open Set
 /- Binary entropy is strictly increasing in interval [0, 1/2]. -/
 lemma h2_strictMono : StrictMonoOn h₂ (Set.Icc 0 (1/2)) := by
   intro p1 hp1 p2 hp2 p1le2
-  apply Convex.strictMonoOn_of_deriv_pos (convex_Icc 0 (1 / 2)) _ _ hp1 hp2 p1le2
+  apply strictMonoOn_of_deriv_pos (convex_Icc 0 (1 / 2)) _ _ hp1 hp2 p1le2
   · apply h₂_continuous.continuousOn
   · intro x hx
     simp at hx
