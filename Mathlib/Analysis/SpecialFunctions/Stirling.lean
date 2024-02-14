@@ -48,17 +48,16 @@ namespace Stirling
 Stirling's formula states that this sequence has limit $\sqrt(π)$.
 -/
 noncomputable def stirlingSeq (n : ℕ) : ℝ :=
-  n ! / (Real.sqrt (2 * n) * (n / exp 1) ^ n)
+  n ! / (√(2 * n : ℝ) * (n / exp 1) ^ n)
 #align stirling.stirling_seq Stirling.stirlingSeq
 
 @[simp]
 theorem stirlingSeq_zero : stirlingSeq 0 = 0 := by
-  rw [stirlingSeq, cast_zero, mul_zero, Real.sqrt_zero, zero_mul,
-    div_zero]
+  rw [stirlingSeq, cast_zero, mul_zero, Real.sqrt_zero, zero_mul, div_zero]
 #align stirling.stirling_seq_zero Stirling.stirlingSeq_zero
 
 @[simp]
-theorem stirlingSeq_one : stirlingSeq 1 = exp 1 / Real.sqrt 2 := by
+theorem stirlingSeq_one : stirlingSeq 1 = exp 1 / √2 := by
   rw [stirlingSeq, pow_one, factorial_one, cast_one, mul_one, mul_one_div, one_div_div]
 #align stirling.stirling_seq_one Stirling.stirlingSeq_one
 
@@ -247,7 +246,7 @@ theorem second_wallis_limit (a : ℝ) (hane : a ≠ 0) (ha : Tendsto stirlingSeq
 #align stirling.second_wallis_limit Stirling.second_wallis_limit
 
 /-- **Stirling's Formula** -/
-theorem tendsto_stirlingSeq_sqrt_pi : Tendsto (fun n : ℕ => stirlingSeq n) atTop (𝓝 (sqrt π)) := by
+theorem tendsto_stirlingSeq_sqrt_pi : Tendsto stirlingSeq atTop (𝓝 (√π)) := by
   obtain ⟨a, hapos, halimit⟩ := stirlingSeq_has_pos_limit_a
   have hπ : π / 2 = a ^ 2 / 2 :=
     tendsto_nhds_unique Wallis.tendsto_W_nhds_pi_div_two (second_wallis_limit a hapos.ne' halimit)

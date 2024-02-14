@@ -180,7 +180,7 @@ theorem Measurable.sinh : Measurable fun x => Real.sinh (f x) :=
 #align measurable.sinh Measurable.sinh
 
 @[measurability]
-theorem Measurable.sqrt : Measurable fun x => sqrt (f x) :=
+theorem Measurable.sqrt : Measurable fun x => √(f x) :=
   continuous_sqrt.measurable.comp hf
 #align measurable.sqrt Measurable.sqrt
 
