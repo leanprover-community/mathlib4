@@ -6,6 +6,7 @@ Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Topology.Category.TopCat.Limits.Konig
+import Mathlib.Data.Set.Basic
 
 #align_import category_theory.cofiltered_system from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -158,7 +159,7 @@ theorem IsMittagLeffler.subset_image_eventualRange (h : F.IsMittagLeffler) (f : 
   obtain ⟨k, g, hg⟩ := F.isMittagLeffler_iff_eventualRange.1 h j
   rw [hg]; intro x hx
   obtain ⟨x, rfl⟩ := F.mem_eventualRange_iff.1 hx (g ≫ f)
-  refine' ⟨_, ⟨x, rfl⟩, by rw [map_comp_apply] ⟩
+  refine' ⟨_, ⟨x, rfl⟩, by rw [map_comp_apply]⟩
 #align category_theory.functor.is_mittag_leffler.subset_image_eventual_range CategoryTheory.Functor.IsMittagLeffler.subset_image_eventualRange
 
 theorem eventualRange_eq_range_precomp (f : i ⟶ j) (g : j ⟶ k)
@@ -184,11 +185,11 @@ def toPreimages : J ⥤ Type v where
     rw [← mem_preimage, preimage_preimage, mem_preimage]
     convert h (g ≫ f); rw [F.map_comp]; rfl
   map_id j := by
-    simp_rw [MapsTo.restrict, Subtype.map, F.map_id]
+    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
     rfl
   map_comp f g := by
-    simp_rw [MapsTo.restrict, Subtype.map, F.map_comp]
+    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp]
     rfl
 #align category_theory.functor.to_preimages CategoryTheory.Functor.toPreimages
 
@@ -271,11 +272,11 @@ def toEventualRanges : J ⥤ Type v where
   obj j := F.eventualRange j
   map f := (F.eventualRange_mapsTo f).restrict _ _ _
   map_id i := by
-    simp_rw [MapsTo.restrict, Subtype.map, F.map_id]
+    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
     rfl
   map_comp _ _ := by
-    simp_rw [MapsTo.restrict, Subtype.map, F.map_comp]
+    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp]
     rfl
 #align category_theory.functor.to_eventual_ranges CategoryTheory.Functor.toEventualRanges
 

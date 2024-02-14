@@ -8,10 +8,7 @@ import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Rename
-import Mathlib.Data.Nat.Parity
-import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Symmetric
-import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Newton's Identities
@@ -53,9 +50,9 @@ namespace MvPolynomial
 
 open Finset Nat
 
-variable (σ : Type*) [Fintype σ] [DecidableEq σ] (R : Type*) [CommRing R]
-
 namespace NewtonIdentities
+
+variable (σ : Type*) [Fintype σ] [DecidableEq σ] (R : Type*) [CommRing R]
 
 private def pairs (k : ℕ) : Finset (Finset σ × σ) :=
   univ.filter (fun t ↦ card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst))
@@ -93,6 +90,7 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
     simp only [card_erase_of_mem h1, tsub_le_iff_right, mem_erase, ne_eq, h1]
     refine ⟨le_step h, ?_⟩
     by_contra h2
+    simp only [not_true_eq_false, and_true, not_forall, not_false_eq_true, exists_prop] at h2
     rw [← h2] at h
     exact not_le_of_lt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
   · rw [pairMap_of_snd_nmem_fst σ h1]
@@ -184,8 +182,9 @@ private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k 
       have hnk' : n.fst ≤ k := by apply le_of_lt; aesop
       aesop
     · simp_all only [mem_antidiagonal, mem_filter, mem_pairs, disjiUnion_eq_biUnion,
-        add_tsub_cancel_of_le]
-    · simp_all only [mem_antidiagonal, mem_filter, mem_pairs, disjiUnion_eq_biUnion, implies_true]
+        add_tsub_cancel_of_le, and_true]
+    · simp_all only [mem_antidiagonal, mem_filter, mem_pairs, disjiUnion_eq_biUnion,
+        implies_true, and_true]
   simp only [← hdisj, disj_equiv]
 
 private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
@@ -234,11 +233,14 @@ private theorem esymm_mul_psum_to_weight (k : ℕ) :
 
 end NewtonIdentities
 
+variable (σ : Type*) [Fintype σ] (R : Type*) [CommRing R]
+
 /-- **Newton's identities** give a recurrence relation for the kth elementary symmetric polynomial
 in terms of lower degree elementary symmetric polynomials and power sums. -/
 theorem mul_esymm_eq_sum (k : ℕ) : k * esymm σ R k =
     (-1) ^ (k + 1) * ∑ a in (antidiagonal k).filter (fun a ↦ a.fst < k),
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
+  classical
   rw [NewtonIdentities.esymm_to_weight σ R k, NewtonIdentities.esymm_mul_psum_to_weight σ R k,
     eq_comm, ← sub_eq_zero, sub_eq_add_neg, neg_mul_eq_neg_mul,
     neg_eq_neg_one_mul ((-1 : MvPolynomial σ R) ^ k)]
@@ -280,7 +282,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) : psum σ R k =
     rw [mem_filter, mem_antidiagonal, mem_singleton]
     refine' ⟨_, fun ha ↦ by aesop⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
-    rw [← ha, Nat.eq_zero_of_nonpos a.fst ha0, zero_add, ← Nat.eq_zero_of_nonpos a.fst ha0]
+    rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides
   simp only [_root_.pow_zero, esymm_zero, mul_one, one_mul, filter_filter] at sub_both_sides
   exact sub_both_sides.symm

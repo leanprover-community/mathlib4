@@ -110,7 +110,7 @@ theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
   rintro - ⟨a, ha, rfl⟩
   obtain ⟨b, hb, hab⟩ := mem_approxOrderOf_iff.mp ha
   replace hb : b ^ m ∈ {u : A | orderOf u = n} := by
-    rw [← hb] at hmn ⊢; exact orderOf_pow_coprime hmn
+    rw [← hb] at hmn ⊢; exact hmn.orderOf_pow
   apply ball_subset_thickening hb ((m : ℝ) • δ)
   convert pow_mem_ball hm hab using 1
   simp only [nsmul_eq_mul, Algebra.id.smul_eq_mul]
@@ -315,7 +315,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
   · replace h : ∀ p : Nat.Primes, (u p +ᵥ E : Set _) =ᵐ[μ] E
     · intro p
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
-      have h_qmp : MeasureTheory.Measure.QuasiMeasurePreserving ((· +ᵥ ·) (-u p)) μ μ :=
+      have h_qmp : Measure.QuasiMeasurePreserving (-u p +ᵥ ·) μ μ :=
         (measurePreserving_vadd _ μ).quasiMeasurePreserving
       refine' (h_qmp.vadd_ae_eq_of_ae_eq (u p) hE₂).trans (ae_eq_trans _ hE₂.symm)
       rw [hC]
@@ -326,14 +326,9 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [hE₁ p]
     cases hp
     · cases' hA p with _ h; · contradiction
-      -- Porting note: was `simp only [h, union_ae_eq_univ_of_ae_eq_univ_left]`
-      have := union_ae_eq_univ_of_ae_eq_univ_left (t := B ↑p) h
-      exact union_ae_eq_univ_of_ae_eq_univ_left (t := C ↑p) this
+      simp only [h, union_ae_eq_univ_of_ae_eq_univ_left]
     · cases' hB p with _ h; · contradiction
-      -- Porting note: was
-      -- `simp only [h, union_ae_eq_univ_of_ae_eq_univ_left, union_ae_eq_univ_of_ae_eq_univ_right]`
-      have := union_ae_eq_univ_of_ae_eq_univ_right (s := A ↑p) h
-      exact union_ae_eq_univ_of_ae_eq_univ_left (t := C ↑p) this
+      simp only [h, union_ae_eq_univ_of_ae_eq_univ_left, union_ae_eq_univ_of_ae_eq_univ_right]
 #align add_circle.add_well_approximable_ae_empty_or_univ AddCircle.addWellApproximable_ae_empty_or_univ
 
 /-- A general version of **Dirichlet's approximation theorem**.
@@ -366,7 +361,7 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
   replace hδ : 0 ≤ δ/2 := by
     by_contra contra
     suffices : μ (closedBall 0 (δ/2)) = 0
-    · apply isOpen_univ.measure_ne_zero μ univ_nonempty $ le_zero_iff.mp $ le_trans hδ _
+    · apply isOpen_univ.measure_ne_zero μ univ_nonempty <| le_zero_iff.mp <| le_trans hδ _
       simp [this]
     rw [not_le, ← closedBall_eq_empty (x := (0 : A))] at contra
     simp [contra]
@@ -380,7 +375,7 @@ lemma exists_norm_nsmul_le (ξ : 𝕊) {n : ℕ} (hn : 0 < n) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ T / ↑(n + 1) := by
   apply NormedAddCommGroup.exists_norm_nsmul_le (μ := volume) ξ hn
   rw [AddCircle.measure_univ, volume_closedBall, ← ENNReal.ofReal_nsmul,
-    mul_div_cancel' _ two_ne_zero, min_eq_right (div_le_self hT.out.le $ by simp), nsmul_eq_mul,
+    mul_div_cancel' _ two_ne_zero, min_eq_right (div_le_self hT.out.le <| by simp), nsmul_eq_mul,
     mul_div_cancel' _ (Nat.cast_ne_zero.mpr n.succ_ne_zero)]
 
 end AddCircle

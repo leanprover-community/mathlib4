@@ -230,7 +230,7 @@ variable {f : ℝ → ℝ} {f' : ℝ} {a b : ℝ}
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
 theorem IsLocalMin.hasDerivAt_eq_zero (h : IsLocalMin f a) (hf : HasDerivAt f f' a) : f' = 0 := by
-  simpa using FunLike.congr_fun (h.hasFDerivAt_eq_zero (hasDerivAt_iff_hasFDerivAt.1 hf)) 1
+  simpa using DFunLike.congr_fun (h.hasFDerivAt_eq_zero (hasDerivAt_iff_hasFDerivAt.1 hf)) 1
 #align is_local_min.has_deriv_at_eq_zero IsLocalMin.hasDerivAt_eq_zero
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/

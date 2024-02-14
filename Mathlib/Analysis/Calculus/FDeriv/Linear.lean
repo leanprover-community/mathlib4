@@ -64,7 +64,7 @@ protected theorem ContinuousLinearMap.hasStrictFDerivAt {x : E} : HasStrictFDeri
 #align continuous_linear_map.has_strict_fderiv_at ContinuousLinearMap.hasStrictFDerivAt
 
 protected theorem ContinuousLinearMap.hasFDerivAtFilter : HasFDerivAtFilter e e x L :=
-  (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
+  .of_isLittleO <| (isLittleO_zero _ _).congr_left fun x => by simp only [e.map_sub, sub_self]
 #align continuous_linear_map.has_fderiv_at_filter ContinuousLinearMap.hasFDerivAtFilter
 
 protected theorem ContinuousLinearMap.hasFDerivWithinAt : HasFDerivWithinAt e e s x :=

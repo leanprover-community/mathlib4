@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Prod.Lex
 
@@ -14,16 +14,16 @@ import Mathlib.Data.Prod.Lex
 
 namespace Prod
 
-variable {α β M N : Type*}
+variable {α β : Type*}
 
 @[to_additive]
 instance [OrderedCommMonoid α] [OrderedCommMonoid β] : OrderedCommMonoid (α × β) where
   mul_le_mul_left _ _ h _ := ⟨mul_le_mul_left' h.1 _, mul_le_mul_left' h.2 _⟩
 
 @[to_additive]
-instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid M] [OrderedCancelCommMonoid N] :
-    OrderedCancelCommMonoid (M × N) :=
-  { (inferInstance : OrderedCommMonoid (M × N)) with
+instance instOrderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelCommMonoid β] :
+    OrderedCancelCommMonoid (α × β) :=
+  { (inferInstance : OrderedCommMonoid (α × β)) with
     le_of_mul_le_mul_left :=
       fun _ _ _ h ↦ ⟨le_of_mul_le_mul_left' h.1, le_of_mul_le_mul_left' h.2⟩ }
 
@@ -48,9 +48,11 @@ namespace Lex
 instance orderedCommMonoid [OrderedCommMonoid α]
     [CovariantClass α α (· * ·) (· < ·)] [OrderedCommMonoid β] :
     OrderedCommMonoid (α ×ₗ β) where
-  mul_le_mul_left x y hxy z := ((le_iff _ _).1 hxy).elim
+  mul_le_mul_left _ _ hxy z := ((le_iff _ _).1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
-    (fun hxy => (le_iff _ _).2 <| Or.inr ⟨by rw [hxy.1], mul_le_mul_left' hxy.2 _⟩)
+    -- Note: the `congr_arg` used to be `rw [hxy.1]` before #8386
+    -- but the definition of `Mul.mul` got unfolded differently.
+    (fun hxy => (le_iff _ _).2 <| Or.inr ⟨congr_arg (z.1 * ·) hxy.1, mul_le_mul_left' hxy.2 _⟩)
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelCommMonoid β] :

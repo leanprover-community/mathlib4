@@ -295,7 +295,7 @@ theorem gcd_eq_left {m n : ℕ+} : m ∣ n → m.gcd n = m := by
   apply Nat.gcd_eq_left h
 #align pnat.gcd_eq_left PNat.gcd_eq_left
 
-theorem Coprime.pow {m n : ℕ+} (k l : ℕ) (h : m.Coprime n) : (m ^ k).Coprime (n ^ l) := by
+theorem Coprime.pow {m n : ℕ+} (k l : ℕ) (h : m.Coprime n) : (m ^ k : ℕ).Coprime (n ^ l) := by
   rw [← coprime_coe] at *; apply Nat.Coprime.pow; apply h
 #align pnat.coprime.pow PNat.Coprime.pow
 

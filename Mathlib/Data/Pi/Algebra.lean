@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Data.Sum.Basic
-import Mathlib.Tactic.Classical
 
 #align_import data.pi.algebra from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -55,11 +54,9 @@ theorem one_def [∀ i, One <| f i] : (1 : ∀ i, f i) = fun _ => 1 :=
 #align pi.one_def Pi.one_def
 #align pi.zero_def Pi.zero_def
 
-@[to_additive (attr := simp)]
-theorem const_one [One β] : const α (1 : β) = 1 :=
-  rfl
-#align pi.const_one Pi.const_one
-#align pi.const_zero Pi.const_zero
+@[to_additive (attr := simp)] lemma _root_.Function.const_one [One β] : const α (1 : β) = 1 := rfl
+#align pi.const_one Function.const_one
+#align pi.const_zero Function.const_zero
 
 @[to_additive (attr := simp)]
 theorem one_comp [One γ] (x : α → β) : (1 : β → γ) ∘ x = 1 :=
@@ -92,10 +89,9 @@ theorem mul_def [∀ i, Mul <| f i] : x * y = fun i => x i * y i :=
 #align pi.add_def Pi.add_def
 
 @[to_additive (attr := simp)]
-theorem const_mul [Mul β] (a b : β) : const α a * const α b = const α (a * b) :=
-  rfl
-#align pi.const_mul Pi.const_mul
-#align pi.const_add Pi.const_add
+lemma _root_.Function.const_mul [Mul β] (a b : β) : const α a * const α b = const α (a * b) := rfl
+#align pi.const_mul Function.const_mul
+#align pi.const_add Function.const_add
 
 @[to_additive]
 theorem mul_comp [Mul γ] (x y : β → γ) (z : α → β) : (x * y) ∘ z = x ∘ z * y ∘ z :=
@@ -128,11 +124,10 @@ theorem pow_def [∀ i, Pow (f i) β] (x : ∀ i, f i) (b : β) : x ^ b = fun i 
 #align pi.vadd_def Pi.vadd_def
 
 @[to_additive (attr := simp, to_additive) (reorder := 2 3, 5 6) smul_const]
-theorem const_pow [Pow α β] (a : α) (b : β) : const I a ^ b = const I (a ^ b) :=
-  rfl
-#align pi.const_pow Pi.const_pow
-#align pi.smul_const Pi.smul_const
-#align pi.vadd_const Pi.vadd_const
+lemma _root_.Function.const_pow [Pow α β] (a : α) (b : β) : const I a ^ b = const I (a ^ b) := rfl
+#align pi.const_pow Function.const_pow
+#align pi.smul_const Function.smul_const
+#align pi.vadd_const Function.vadd_const
 
 @[to_additive (attr := to_additive) (reorder := 6 7) smul_comp]
 theorem pow_comp [Pow γ α] (x : β → γ) (a : α) (y : I → β) : (x ^ a) ∘ y = x ∘ y ^ a :=
@@ -180,10 +175,9 @@ theorem inv_def [∀ i, Inv <| f i] : x⁻¹ = fun i => (x i)⁻¹ :=
 #align pi.neg_def Pi.neg_def
 
 @[to_additive]
-theorem const_inv [Inv β] (a : β) : (const α a)⁻¹ = const α a⁻¹ :=
-  rfl
-#align pi.const_inv Pi.const_inv
-#align pi.const_neg Pi.const_neg
+lemma _root_.Function.const_inv [Inv β] (a : β) : (const α a)⁻¹ = const α a⁻¹ := rfl
+#align pi.const_inv Function.const_inv
+#align pi.const_neg Function.const_neg
 
 @[to_additive]
 theorem inv_comp [Inv γ] (x : β → γ) (y : α → β) : x⁻¹ ∘ y = (x ∘ y)⁻¹ :=
@@ -216,10 +210,9 @@ theorem div_comp [Div γ] (x y : β → γ) (z : α → β) : (x / y) ∘ z = x 
 #align pi.sub_comp Pi.sub_comp
 
 @[to_additive (attr := simp)]
-theorem const_div [Div β] (a b : β) : const α a / const α b = const α (a / b) :=
-  rfl
-#align pi.const_div Pi.const_div
-#align pi.const_sub Pi.const_sub
+lemma _root_.Function.const_div [Div β] (a b : β) : const α a / const α b = const α (a / b) := rfl
+#align pi.const_div Function.const_div
+#align pi.const_sub Function.const_sub
 
 section
 
@@ -368,7 +361,7 @@ theorem extend_mul [Mul γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   funext x
   simp only [not_exists, extend_def, Pi.mul_apply, apply_dite₂, dite_eq_ite, ite_self]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite2 (*) _ _ _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· * ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.
@@ -382,7 +375,7 @@ theorem extend_inv [Inv γ] (f : α → β) (g : α → γ) (e : β → γ) :
   funext x
   simp only [not_exists, extend_def, Pi.inv_apply, apply_dite Inv.inv]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite has_inv.inv _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite Inv.inv _ _ _).symm`
 -- However this does not work, and we're not sure why.
@@ -396,7 +389,7 @@ theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
   funext x
   simp [Function.extend_def, apply_dite₂]
 -- Porting note: The Lean3 statement was
--- `funext $ λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
+-- `funext <| λ _, by convert (apply_dite2 (/) _ _ _ _ _).symm`
 -- which converts to
 -- `funext fun _ => by convert (apply_dite₂ (· / ·) _ _ _ _ _).symm`
 -- However this does not work, and we're not sure why.

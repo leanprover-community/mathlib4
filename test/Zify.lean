@@ -5,6 +5,7 @@ Authors: Moritz Doll, Robert Y. Lewis
 -/
 
 import Mathlib.Tactic.Zify
+import Mathlib.Data.Int.Basic
 import Std.Tactic.GuardExpr
 
 private axiom test_sorry : ∀ {α}, α

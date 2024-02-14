@@ -167,11 +167,10 @@ instance (priority := 100) completable : CompletableTopField K :=
       · rw [mem_map]
         apply mem_of_superset (Filter.inter_mem M₀_in M₁_in)
         exact subset_preimage_image _ _
-      · rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨y_in₀, y_in₁⟩, rfl⟩
+      · rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨_, y_in₁⟩, rfl⟩
         simp only [mem_setOf_eq]
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
-        replace := H₀ y y_in₀
         clear H₀
         apply Valuation.inversion_estimate
         · have : (v x : Γ₀) ≠ 0 := by
@@ -323,11 +322,11 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   ext x
   let γ₀ := extensionValuation x
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
-    cases' eq_or_ne γ₀ 0 with h h
+    rcases eq_or_ne γ₀ 0 with h | h
     · simp only [h, (Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
         iff_true_iff]
       apply subset_closure
-      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and_iff]; rfl ⟩
+      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and_iff]; rfl⟩
     · exact this h
   intro h
   have hγ₀ : extension ⁻¹' {γ₀} ∈ 𝓝 x :=

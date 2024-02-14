@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Pi
-import Mathlib.Algebra.Hom.Ring.Defs
+import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import algebra.ring.pi from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 
@@ -134,7 +134,7 @@ variable {I : Type u}
 
 /-- Evaluation of functions into an indexed collection of non-unital rings at a point is a
 non-unital ring homomorphism. This is `Function.eval` as a `NonUnitalRingHom`. -/
-@[simps]
+@[simps!]
 def Pi.evalNonUnitalRingHom (f : I → Type v) [∀ i, NonUnitalNonAssocSemiring (f i)] (i : I) :
     (∀ i, f i) →ₙ+* f i :=
   { Pi.evalMulHom f i, Pi.evalAddMonoidHom f i with }
