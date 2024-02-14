@@ -530,21 +530,15 @@ theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α} (hs : De
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
 
+@[deprecated OrderBot.atBot_eq] -- 2024-02-14
 theorem atBot_le_nhds_bot [OrderBot α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
-  cases subsingleton_or_nontrivial α
-  · simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
-      eq_iff_true_of_subsingleton, imp_true_iff, exists_const]
-  have h : atBot.HasBasis (fun _ : α => True) Iic := @atBot_basis α _ _
-  have h_nhds : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) fun a => Iio a := @nhds_bot_basis α _ _ _ _ _
-  intro s
-  rw [h.mem_iff, h_nhds.mem_iff]
-  rintro ⟨a, ha_bot_lt, h_Iio_a_subset_s⟩
-  refine' ⟨⊥, trivial, _root_.trans _ h_Iio_a_subset_s⟩
-  simpa only [Iic_bot, singleton_subset_iff, mem_Iio]
+  rw [OrderBot.atBot_eq]
+  apply pure_le_nhds
 #align at_bot_le_nhds_bot atBot_le_nhds_bot
 
+@[deprecated OrderTop.atTop_eq] -- 2024-02-14
 theorem atTop_le_nhds_top [OrderTop α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
-  @atBot_le_nhds_bot αᵒᵈ _ _ _ _
+  set_option linter.deprecated false in @atBot_le_nhds_bot αᵒᵈ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
 
 variable (α)

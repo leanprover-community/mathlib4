@@ -351,13 +351,7 @@ theorem tendsto_preCDF_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
   have h_exists : ∀ᵐ a ∂ρ.fst, ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) := by
     filter_upwards [monotone_preCDF ρ] with a ha
     have h_anti : Antitone fun r => preCDF ρ (-r) a := fun p q hpq => ha (neg_le_neg hpq)
-    have h_tendsto :
-      Tendsto (fun r => preCDF ρ (-r) a) atTop atBot ∨
-        ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) :=
-      tendsto_of_antitone h_anti
-    cases' h_tendsto with h_bot h_tendsto
-    · exact ⟨0, Tendsto.mono_right h_bot atBot_le_nhds_bot⟩
-    · exact h_tendsto
+    exact ⟨_, tendsto_atTop_iInf h_anti⟩
   classical
   let F : α → ℝ≥0∞ := fun a =>
     if h : ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) then h.choose else 0
