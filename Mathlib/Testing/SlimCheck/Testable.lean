@@ -512,11 +512,11 @@ partial def addDecorations (e : Expr) : MetaM Expr :=
     if not (← Meta.inferType e).isProp then
       return .continue
     else if let Expr.forallE name type body data := expr then
-      let n := name.toString
       let newType ← addDecorations type
-      let newBody ← addDecorations body
+      let newBody ← Meta.withLocalDecl name data type fun fvar => do
+        return (← addDecorations (body.instantiate1 fvar)).abstract #[fvar]
       let rest := Expr.forallE name newType newBody data
-      return .done <| (← Meta.mkAppM `SlimCheck.NamedBinder #[mkStrLit n, rest])
+      return .done <| (← Meta.mkAppM `SlimCheck.NamedBinder #[mkStrLit name.toString, rest])
     else
       return .continue
 

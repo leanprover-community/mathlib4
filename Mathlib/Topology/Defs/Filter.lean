@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 import Mathlib.Topology.Defs.Basic
 import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Definitions about filters in topological spaces
@@ -151,18 +152,21 @@ def nhdsSet (s : Set X) : Filter X :=
 
 /-- A function between topological spaces is continuous at a point `x₀`
 if `f x` tends to `f x₀` when `x` tends to `x₀`. -/
+@[fun_prop]
 def ContinuousAt (f : X → Y) (x : X) :=
   Tendsto f (𝓝 x) (𝓝 (f x))
 #align continuous_at ContinuousAt
 
 /-- A function between topological spaces is continuous at a point `x₀` within a subset `s`
 if `f x` tends to `f x₀` when `x` tends to `x₀` while staying within `s`. -/
+@[fun_prop]
 def ContinuousWithinAt (f : X → Y) (s : Set X) (x : X) : Prop :=
   Tendsto f (𝓝[s] x) (𝓝 (f x))
 #align continuous_within_at ContinuousWithinAt
 
 /-- A function between topological spaces is continuous on a subset `s`
 when it's continuous at every point of `s` within `s`. -/
+@[fun_prop]
 def ContinuousOn (f : X → Y) (s : Set X) : Prop :=
   ∀ x ∈ s, ContinuousWithinAt f s x
 #align continuous_on ContinuousOn
