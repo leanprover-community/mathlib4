@@ -13,6 +13,11 @@ In this file we define `CardinalInterFilter c` to be the class of filters with t
 property: for any collection of sets `s ∈ l` with cardinality at most `c`, their intersection
 belongs to `l` as well.
 
+For `c = aleph0`, this property is satisfied by all filters.
+For `c = aleph1`, this agrees (to be shown!) with the CountableInterFilter.
+
+Most results from CountableInterFilter generalise in a straightforward way.
+
 ## Tags
 filter, cardinal
 -/
