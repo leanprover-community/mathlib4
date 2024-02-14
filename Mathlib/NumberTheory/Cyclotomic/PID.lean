@@ -14,8 +14,8 @@ We prove that `𝓞 ℚ(ζₚ)` is a PID for specific values of `p`. The result 
 `19`, but the proof is more and more involved.
 
 ## Main results
-* `three_Pid`: If `IsCyclotomicExtension {3} ℚ K` then `𝓞 K` is a principal ideal domain.
-* `five_Pid`: If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain.
+* `three_pid`: If `IsCyclotomicExtension {3} ℚ K` then `𝓞 K` is a principal ideal domain.
+* `five_pid`: If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain.
 -/
 
 universe u
@@ -48,7 +48,7 @@ theorem three_pid [h : IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (
   exact pi_gt_three
 
 /-- If `IsCyclotomicExtension {5} ℚ K` then `𝓞 K` is a principal ideal domain. -/
-theorem five_Pid [h : IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
+theorem five_pid [h : IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   have hpos : 0 < 5 := by norm_num
   have hp : Fact (Nat.Prime ((5 : ℕ+) : ℕ)) := ⟨by decide⟩
   have hodd : (5 : ℕ+) ≠ 2 := by decide
