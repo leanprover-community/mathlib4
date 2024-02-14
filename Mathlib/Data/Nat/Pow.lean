@@ -183,7 +183,13 @@ theorem not_pos_pow_dvd : ∀ {p k : ℕ} (_ : 1 < p) (_ : 1 < k), ¬p ^ k ∣ p
 #align nat.not_pos_pow_dvd Nat.not_pos_pow_dvd
 
 #align nat.pow_dvd_of_le_of_pow_dvd Nat.pow_dvd_of_le_of_pow_dvd
+<<<<<<< HEAD
 #align nat.dvd_of_pow_dvd Nat.dvd_of_pow_dvd
+=======
+
+#align nat.dvd_of_pow_dvd Nat.dvd_of_pow_dvd
+
+>>>>>>> 0b6e8fde11537e3265eb5baeafc0b3a7ae697446
 #align nat.pow_div Nat.pow_div
 
 theorem lt_of_pow_dvd_right {p i n : ℕ} (hn : n ≠ 0) (hp : 2 ≤ p) (h : p ^ i ∣ n) : i < n := by

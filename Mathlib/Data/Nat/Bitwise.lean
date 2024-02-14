@@ -5,7 +5,7 @@ Authors: Markus Himmel, Alex Keizer
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Pow
+import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Tactic.Set
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
