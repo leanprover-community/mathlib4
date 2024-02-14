@@ -63,6 +63,29 @@ instance nhdsWithin_Iic_self_neBot (a : α) : NeBot (𝓝[≤] a) :=
   nhdsWithin_Iic_neBot (le_refl a)
 #align nhds_within_Iic_self_ne_bot nhdsWithin_Iic_self_neBot
 
+theorem nhds_left'_le_nhds_ne (a : α) : 𝓝[<] a ≤ 𝓝[≠] a :=
+  nhdsWithin_mono a fun _ => ne_of_lt
+#align nhds_left'_le_nhds_ne nhds_left'_le_nhds_ne
+
+theorem nhds_right'_le_nhds_ne (a : α) : 𝓝[>] a ≤ 𝓝[≠] a :=
+  nhdsWithin_mono a fun _ => ne_of_gt
+#align nhds_right'_le_nhds_ne nhds_right'_le_nhds_ne
+
+-- TODO: add instances for `NeBot (𝓝[<] x)` on (indexed) product types
+
+lemma IsAntichain.interior_eq_empty [∀ x : α, (𝓝[<] x).NeBot] {s : Set α}
+    (hs : IsAntichain (· ≤ ·) s) : interior s = ∅ := by
+  refine eq_empty_of_forall_not_mem fun x hx ↦ ?_
+  have : ∀ᶠ y in 𝓝 x, y ∈ s := mem_interior_iff_mem_nhds.1 hx
+  rcases this.exists_lt with ⟨y, hyx, hys⟩
+  exact hs hys (interior_subset hx) hyx.ne hyx.le
+#align is_antichain.interior_eq_empty IsAntichain.interior_eq_empty
+
+lemma IsAntichain.interior_eq_empty' [∀ x : α, (𝓝[>] x).NeBot] {s : Set α}
+    (hs : IsAntichain (· ≤ ·) s) : interior s = ∅ :=
+  have : ∀ x : αᵒᵈ, NeBot (𝓝[<] x) := ‹_›
+  hs.to_dual.interior_eq_empty
+
 end Preorder
 
 section PartialOrder
@@ -78,14 +101,6 @@ theorem continuousWithinAt_Iio_iff_Iic {a : α} {f : α → β} :
     ContinuousWithinAt f (Iio a) a ↔ ContinuousWithinAt f (Iic a) a :=
   @continuousWithinAt_Ioi_iff_Ici αᵒᵈ _ _ _ _ _ f
 #align continuous_within_at_Iio_iff_Iic continuousWithinAt_Iio_iff_Iic
-
-theorem nhds_left'_le_nhds_ne (a : α) : 𝓝[<] a ≤ 𝓝[≠] a :=
-  nhdsWithin_mono a fun _ => ne_of_lt
-#align nhds_left'_le_nhds_ne nhds_left'_le_nhds_ne
-
-theorem nhds_right'_le_nhds_ne (a : α) : 𝓝[>] a ≤ 𝓝[≠] a :=
-  nhdsWithin_mono a fun _ => ne_of_gt
-#align nhds_right'_le_nhds_ne nhds_right'_le_nhds_ne
 
 end PartialOrder
 
