@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Topology.UnitInterval
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
@@ -27,16 +28,11 @@ instance : IsProbabilityMeasure (volume : Measure I) where
     rw [Measure.Subtype.volume_univ measurableSet_Icc.nullMeasurableSet, Real.volume_Icc, sub_zero,
       ENNReal.ofReal_one]
 
-theorem measurable_symm : Measurable symm := (measurable_subtype_coe.const_sub _).subtype_mk
+@[measurability]
+theorem measurable_symm : Measurable symm := continuous_symm.measurable
 
 /-- `unitInterval.symm` as a `MeasurableEquiv`. -/
 @[simps]
-def symm_measurableEquiv : I ≃ᵐ I where
-  toFun := σ
-  invFun := σ
-  left_inv := symm_symm
-  right_inv := symm_symm
-  measurable_toFun := measurable_symm
-  measurable_invFun := measurable_symm
+def symm_measurableEquiv : I ≃ᵐ I := symmHomeomorph.toMeasurableEquiv
 
 end unitInterval
