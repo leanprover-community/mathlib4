@@ -46,6 +46,8 @@ section Multichoose
 
 open Function Polynomial
 
+section Multichoose
+
 /-- A binomial ring is a ring for which ascending Pochhammer evaluations are uniquely divisible by
 suitable factorials.  We define this notion for as a mixin for non-associative semirings, but retain
 the ring name.  We introduce `Ring.multichoose` as the uniquely defined quotient. -/
