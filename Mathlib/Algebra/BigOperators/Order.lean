@@ -685,6 +685,7 @@ end StrictOrderedCommSemiring
 section LinearOrderedCommSemiring
 variable [LinearOrderedCommSemiring α] [ExistsAddOfLE α]
 
+/-- **Cauchy-Schwarz inequality** for finsets. -/
 lemma sum_mul_sq_le_sq_mul_sq (s : Finset ι) (f g : ι → α) :
     (∑ i in s, f i * g i) ^ 2 ≤ (∑ i in s, f i ^ 2) * ∑ i in s, g i ^ 2 := by
   nontriviality α

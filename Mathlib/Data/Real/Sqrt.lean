@@ -531,6 +531,7 @@ theorem Continuous.sqrt (h : Continuous f) : Continuous fun x => sqrt (f x) :=
 
 namespace Finset
 
+/-- **Cauchy-Schwarz inequality** for finsets using square roots. -/
 lemma sum_mul_le_sqrt_mul_sqrt {α : Type*} (s : Finset α) (f g : α → ℝ) :
     ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ 2).sqrt * (∑ i in s, g i ^ 2).sqrt :=
   (le_sqrt_of_sq_le <| sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul
