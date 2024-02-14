@@ -2,15 +2,11 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module combinatorics.quiver.subquiver
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.Notation
 import Mathlib.Combinatorics.Quiver.Basic
+
+#align_import combinatorics.quiver.subquiver from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 ## Wide subquivers
@@ -82,7 +78,7 @@ def wideSubquiverEquivSetTotal {V} [Quiver V] :
 #align quiver.wide_subquiver_equiv_set_total Quiver.wideSubquiverEquivSetTotal
 
 /-- An `L`-labelling of a quiver assigns to every arrow an element of `L`. -/
-def Labelling (V : Type u) [Quiver V] (L : Sort _) :=
+def Labelling (V : Type u) [Quiver V] (L : Sort*) :=
   ∀ ⦃a b : V⦄, (a ⟶ b) → L
 #align quiver.labelling Quiver.Labelling
 

@@ -2,17 +2,14 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.binary_products
-! leanprover-community/mathlib commit 3424a5932a77dcec2c177ce7d805acace6149299
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+
+#align_import category_theory.limits.constructions.binary_products from "leanprover-community/mathlib"@"3424a5932a77dcec2c177ce7d805acace6149299"
 
 /-!
 # Constructing binary product from pullbacks and terminal object.
@@ -49,7 +46,7 @@ def isBinaryProductOfIsTerminalIsPullback (F : Discrete WalkingPair ⥤ C) (c : 
     dsimp; rw [← J, ← J]
     apply hc.hom_ext
     rintro (_ | (_ | _)) <;> simp only [PullbackCone.mk_π_app_one, PullbackCone.mk_π_app]
-    exacts[(Category.assoc _ _ _).symm.trans (hc.fac_assoc c' WalkingCospan.left f).symm,
+    exacts [(Category.assoc _ _ _).symm.trans (hc.fac_assoc c' WalkingCospan.left f).symm,
       (hc.fac c' WalkingCospan.left).symm, (hc.fac c' WalkingCospan.right).symm]
 #align is_binary_product_of_is_terminal_is_pullback isBinaryProductOfIsTerminalIsPullback
 
@@ -138,8 +135,7 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
   fac s j :=
     Discrete.casesOn j fun j =>
       WalkingPair.casesOn j (hc.fac _ WalkingSpan.left) (hc.fac _ WalkingSpan.right)
-  uniq s m J :=
-    by
+  uniq s m J := by
     let c' :=
       PushoutCocone.mk (c.ι.app ⟨WalkingPair.left⟩ ≫ m) (c.ι.app ⟨WalkingPair.right⟩ ≫ m)
         (hX.hom_ext (f ≫ _) (g ≫ _))
@@ -148,7 +144,7 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
     rintro (_ | (_ | _)) <;>
       simp only [PushoutCocone.mk_ι_app_zero, PushoutCocone.mk_ι_app, Category.assoc]
     congr 1
-    exacts[(hc.fac c' WalkingSpan.left).symm, (hc.fac c' WalkingSpan.left).symm,
+    exacts [(hc.fac c' WalkingSpan.left).symm, (hc.fac c' WalkingSpan.left).symm,
       (hc.fac c' WalkingSpan.right).symm]
 #align is_binary_coproduct_of_is_initial_is_pushout isBinaryCoproductOfIsInitialIsPushout
 
@@ -217,4 +213,3 @@ noncomputable def coprodIsoPushout [HasInitial C] [HasPushouts C] (X Y : C)
     [HasBinaryCoproduct X Y] : X ⨿ Y ≅ pushout (initial.to X) (initial.to Y) :=
   colimit.isoColimitCocone (colimitCoconeOfInitialAndPushouts _)
 #align coprod_iso_pushout coprodIsoPushout
-

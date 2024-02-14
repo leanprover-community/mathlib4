@@ -2,17 +2,14 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.subobject.basic
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
+
+#align_import category_theory.subobject.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Subobjects
@@ -28,7 +25,7 @@ There is a coercion from `Subobject X` back to the ambient category `C`
 `P.arrow : (P : C) ⟶ X` is the inclusion morphism.
 
 We provide
-* `def pullback [HasPpullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
+* `def pullback [HasPullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
 * `def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y`
 * `def «exists_» [HasImages C] (f : X ⟶ Y) : Subobject X ⥤ Subobject Y`
 and prove their basic properties and relationships.
@@ -87,7 +84,7 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-!
 We now construct the subobject lattice for `X : C`,
-as the quotient by isomorphisms of `mono_over X`.
+as the quotient by isomorphisms of `MonoOver X`.
 
 Since `MonoOver X` is a thin category, we use `ThinSkeleton` to take the quotient.
 
@@ -139,7 +136,7 @@ end
 
 /-- Declare a function on subobjects of `X` by specifying a function on monomorphisms with
     codomain `X`. -/
-protected def lift {α : Sort _} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], α)
+protected def lift {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], α)
     (h :
       ∀ ⦃A B : C⦄ (f : A ⟶ X) (g : B ⟶ X) [Mono f] [Mono g] (i : A ≅ B),
         i.hom ≫ g = f → F f = F g) :
@@ -149,7 +146,7 @@ protected def lift {α : Sort _} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mon
 #align category_theory.subobject.lift CategoryTheory.Subobject.lift
 
 @[simp]
-protected theorem lift_mk {α : Sort _} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], α) {h A}
+protected theorem lift_mk {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], α) {h A}
     (f : A ⟶ X) [Mono f] : Subobject.lift F h (Subobject.mk f) = F f :=
   rfl
 #align category_theory.subobject.lift_mk CategoryTheory.Subobject.lift_mk
@@ -262,7 +259,7 @@ theorem mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ 
 theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
   Quotient.inductionOn' P fun Q => by
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
-    exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) (by aesop_cat) ≪≫ e⟩
+    exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) ≪≫ e⟩
 #align category_theory.subobject.mk_arrow CategoryTheory.Subobject.mk_arrow
 
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :
@@ -583,7 +580,7 @@ def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y :=
 
 theorem map_id (x : Subobject X) : (map (𝟙 X)).obj x = x := by
   induction' x using Quotient.inductionOn' with f
-  exact Quotient.sound ⟨MonoOver.mapId.app f⟩
+  exact Quotient.sound ⟨(MonoOver.mapId _).app f⟩
 #align category_theory.subobject.map_id CategoryTheory.Subobject.map_id
 
 theorem map_comp (f : X ⟶ Y) (g : Y ⟶ Z) [Mono f] [Mono g] (x : Subobject X) :
@@ -597,6 +594,7 @@ def mapIso {A B : C} (e : A ≅ B) : Subobject A ≌ Subobject B :=
   lowerEquivalence (MonoOver.mapIso e)
 #align category_theory.subobject.map_iso CategoryTheory.Subobject.mapIso
 
+-- Porting note: the note below doesn't seem true anymore
 -- @[simps] here generates a lemma `map_iso_to_order_iso_to_equiv_symm_apply`
 -- whose left hand side is not in simp normal form.
 /-- In fact, there's a type level bijection between the subobjects of isomorphic objects,
@@ -609,14 +607,14 @@ def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
   map_rel_iff' {A B} := by
     dsimp
     constructor
-    . intro h
+    · intro h
       apply_fun (map e.inv).obj at h
-      . simpa only [← map_comp, e.hom_inv_id, map_id] using h
-      . apply Functor.monotone
-    . intro h
-      apply_fun (map e.hom).obj  at h
-      . exact h
-      . apply Functor.monotone
+      · simpa only [← map_comp, e.hom_inv_id, map_id] using h
+      · apply Functor.monotone
+    · intro h
+      apply_fun (map e.hom).obj at h
+      · exact h
+      · apply Functor.monotone
 #align category_theory.subobject.map_iso_to_order_iso CategoryTheory.Subobject.mapIsoToOrderIso
 
 @[simp]
@@ -671,7 +669,6 @@ section Exists
 
 variable [HasImages C]
 
--- porting note: renamed `exists` as `exists_` because it is a reserved word
 /-- The functor from subobjects of `X` to subobjects of `Y` given by
 sending the subobject `S` to its "image" under `f`, usually denoted $\exists_f$.
 For instance, when `C` is the category of types,
@@ -680,20 +677,20 @@ viewing `Subobject X` as `Set X` this is just `Set.image f`.
 This functor is left adjoint to the `pullback f` functor (shown in `existsPullbackAdj`)
 provided both are defined, and generalises the `map f` functor, again provided it is defined.
 -/
-def exists_ (f : X ⟶ Y) : Subobject X ⥤ Subobject Y :=
-  lower (MonoOver.exists_ f)
-#align category_theory.subobject.exists CategoryTheory.Subobject.exists_
+def «exists» (f : X ⟶ Y) : Subobject X ⥤ Subobject Y :=
+  lower (MonoOver.exists f)
+#align category_theory.subobject.exists CategoryTheory.Subobject.exists
 
-/-- When `f : X ⟶ Y` is a monomorphism, `exists_ f` agrees with `map f`.
+/-- When `f : X ⟶ Y` is a monomorphism, `exists f` agrees with `map f`.
 -/
-theorem exists_iso_map (f : X ⟶ Y) [Mono f] : exists_ f = map f :=
+theorem exists_iso_map (f : X ⟶ Y) [Mono f] : «exists» f = map f :=
   lower_iso _ _ (MonoOver.existsIsoMap f)
 #align category_theory.subobject.exists_iso_map CategoryTheory.Subobject.exists_iso_map
 
-/-- `exists_ f : Subobject X ⥤ Subobject Y` is
+/-- `exists f : Subobject X ⥤ Subobject Y` is
 left adjoint to `pullback f : Subobject Y ⥤ Subobject X`.
 -/
-def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : exists_ f ⊣ pullback f :=
+def existsPullbackAdj (f : X ⟶ Y) [HasPullbacks C] : «exists» f ⊣ pullback f :=
   lowerAdjunction (MonoOver.existsPullbackAdj f)
 #align category_theory.subobject.exists_pullback_adj CategoryTheory.Subobject.existsPullbackAdj
 

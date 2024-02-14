@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.pi
-! leanprover-community/mathlib commit 744d59af0b28d0c42f631038627df9b85ae1d1ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
+
+#align_import category_theory.limits.pi from "leanprover-community/mathlib"@"744d59af0b28d0c42f631038627df9b85ae1d1ce"
 
 /-!
 # Limits in the category of indexed families of objects.
@@ -147,8 +144,8 @@ With the addition of
 `import CategoryTheory.Limits.Shapes.Types`
 we can use:
 ```
-local attribute [instance] hasLimit_of_hasLimit_comp_eval
-example : hasBinaryProducts (I → Type v₁) := ⟨by apply_instance⟩
+attribute [local instance] hasLimit_of_hasLimit_comp_eval
+example : hasBinaryProducts (I → Type v₁) := ⟨by infer_instance⟩
 ```
 -/
 

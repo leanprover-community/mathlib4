@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.opposite
-! leanprover-community/mathlib commit 8c75ef3517d4106e89fe524e6281d0b0545f47fc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Limits.Opposites
+
+#align_import category_theory.abelian.opposite from "leanprover-community/mathlib"@"a5ff45a1c92c278b03b52459a620cfd9c49ebc80"
 
 /-!
 # The opposite of an abelian category is abelian.
@@ -23,12 +20,13 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable (C : Type _) [Category C] [Abelian C]
+variable (C : Type*) [Category C] [Abelian C]
 
 -- porting note: these local instances do not seem to be necessary
 --attribute [local instance]
 --  hasFiniteLimits_of_hasEqualizers_and_finite_products
 --  hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts
+--  Abelian.hasFiniteBiproducts
 
 instance : Abelian Cᵒᵖ := by
   -- porting note: priorities of `Abelian.has_kernels` and `Abelian.has_cokernels` have
@@ -55,12 +53,10 @@ def kernelOpUnop : (kernel f.op).unop ≅ cokernel f where
   hom_inv_id := by
     rw [← unop_id, ← (cokernel.desc f _ _).unop_op, ← unop_comp]
     congr 1
-    dsimp
-    apply equalizer.hom_ext
+    ext
     simp [← op_comp]
   inv_hom_id := by
-    dsimp
-    apply coequalizer.hom_ext
+    ext
     simp [← unop_comp]
 #align category_theory.kernel_op_unop CategoryTheory.kernelOpUnop
 
@@ -77,12 +73,10 @@ def cokernelOpUnop : (cokernel f.op).unop ≅ kernel f where
   hom_inv_id := by
     rw [← unop_id, ← (kernel.lift f _ _).unop_op, ← unop_comp]
     congr 1
-    dsimp
-    apply coequalizer.hom_ext
+    ext
     simp [← op_comp]
   inv_hom_id := by
-    dsimp
-    apply equalizer.hom_ext
+    ext
     simp [← unop_comp]
 #align category_theory.cokernel_op_unop CategoryTheory.cokernelOpUnop
 

@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Moritz Doll
 -/
 
-import Mathlib.Tactic.Basic
-
 namespace Mathlib.Tactic
 
 /--
@@ -26,4 +24,4 @@ example : ∃ x : Nat, ∃ y : Nat, x = y := by
 -/
 
 macro "existsi " es:term,+ : tactic =>
-  `(tactic|refine ⟨$es,*, ?_⟩)
+  `(tactic| refine ⟨$es,*, ?_⟩)

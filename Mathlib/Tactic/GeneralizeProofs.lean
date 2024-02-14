@@ -3,23 +3,23 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Lean
+import Lean.Meta.AbstractNestedProofs
 import Mathlib.Lean.Expr.Basic
 
 /-!
 # The `generalize_proofs` tactic
 
-Generalize any proofs occuring in the goal or in chosen hypotheses, replacing them by
+Generalize any proofs occurring in the goal or in chosen hypotheses, replacing them by
 named hypotheses so that they can be referred to later in the proof easily.
 Commonly useful when dealing with functions like `Classical.choose` that produce data from proofs.
 
 For example:
 ```lean
-example : list.nth_le [1, 2] 1 dec_trivial = 2 := by
-  -- ⊢ [1, 2].nth_le 1 _ = 2
+example : List.nthLe [1, 2] 1 dec_trivial = 2 := by
+  -- ⊢ [1, 2].nthLe 1 _ = 2
   generalize_proofs h,
   -- h : 1 < [1, 2].length
-  -- ⊢ [1, 2].nth_le 1 h = 2
+  -- ⊢ [1, 2].nthLe 1 h = 2
 ```
 -/
 
@@ -39,7 +39,7 @@ structure State where
 
 /-- Monad used by the `generalizeProofs` tactic, carries an expr cache and state with
 names to use and previous generalizations -/
-abbrev M := MonadCacheT ExprStructEq Expr $ StateRefT State MetaM
+abbrev M := MonadCacheT ExprStructEq Expr <| StateRefT State MetaM
 
 /-- generalize the given e -/
 private def mkGen (e : Expr) : M Unit := do
@@ -53,7 +53,7 @@ private def mkGen (e : Expr) : M Unit := do
     | _ => mkFreshUserName `h
   modify fun s ↦ { s with curIdx := s.curIdx.push ⟨e, t, none⟩ }
 
-/-- Recursively generalize proofs occuring in e -/
+/-- Recursively generalize proofs occurring in e -/
 partial def visit (e : Expr) : M Expr := do
   if e.isAtomic then
     pure e
@@ -92,15 +92,15 @@ Generalize proofs in the goal, naming them with the provided list.
 
 For example:
 ```lean
-example : list.nth_le [1, 2] 1 dec_trivial = 2 := by
-  -- ⊢ [1, 2].nth_le 1 _ = 2
+example : List.nthLe [1, 2] 1 dec_trivial = 2 := by
+  -- ⊢ [1, 2].nthLe 1 _ = 2
   generalize_proofs h,
   -- h : 1 < [1, 2].length
-  -- ⊢ [1, 2].nth_le 1 h = 2
+  -- ⊢ [1, 2].nthLe 1 h = 2
 ```
 -/
 elab (name := generalizeProofs) "generalize_proofs"
-    hs:(ppSpace (colGt binderIdent))* loc:(ppSpace location)? : tactic => do
+    hs:(ppSpace colGt binderIdent)* loc:(location)? : tactic => do
   let ou := if loc.isSome then
     match expandLocation loc.get! with
     | .wildcard => #[]

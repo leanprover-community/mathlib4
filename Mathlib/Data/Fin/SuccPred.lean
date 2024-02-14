@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.fin.succ_pred
-! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Order.SuccPred.Basic
+
+#align_import data.fin.succ_pred from "leanprover-community/mathlib"@"7c523cb78f4153682c2929e3006c863bfef463d0"
 
 /-!
 # Successors and predecessors of `Fin n`
@@ -58,8 +55,7 @@ instance : ∀ {n : ℕ}, PredOrder (Fin n)
         rw [isMin_iff_eq_bot, eq_bot_iff, not_le, bot_eq_zero] at ha
         dsimp
         rw [if_neg ha.ne', lt_iff_val_lt_val, le_iff_val_le_val, coe_sub_one, if_neg ha.ne',
-          le_tsub_iff_right, Iff.comm]
-        exact Nat.lt_iff_add_one_le
+          Nat.lt_iff_add_one_le, Nat.le_sub_iff_add_le]
         exact ha)
       (by
         intro a ha

@@ -2,13 +2,10 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module data.prod.tprod
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Nodup
+
+#align_import data.prod.tprod from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 /-!
 # Finite products of types
 
@@ -27,7 +24,7 @@ construction/theorem that is easier to define/prove on binary products than on f
 * Then we can use the equivalence `List.TProd.piEquivTProd` below (or enhanced versions of it,
   like a `MeasurableEquiv` for product measures) to get the construction on `∀ i : ι, α i`, at
   least when assuming `[Fintype ι] [Encodable ι]` (using `Encodable.sortedUniv`).
-  Using `local attribute [instance] Fintype.toEncodable` we can get rid of the argument
+  Using `attribute [local instance] Fintype.toEncodable` we can get rid of the argument
   `[Encodable ι]`.
 
 ## Main definitions
@@ -100,8 +97,7 @@ theorem elim_of_ne (hj : j ∈ i :: l) (hji : j ≠ i) (v : TProd α (i :: l)) :
 
 @[simp]
 theorem elim_of_mem (hl : (i :: l).Nodup) (hj : j ∈ l) (v : TProd α (i :: l)) :
-    v.elim (mem_cons_of_mem _ hj) = TProd.elim v.2 hj :=
-  by
+    v.elim (mem_cons_of_mem _ hj) = TProd.elim v.2 hj := by
   apply elim_of_ne
   rintro rfl
   exact hl.not_mem hj
@@ -113,7 +109,7 @@ theorem elim_mk : ∀ (l : List ι) (f : ∀ i, α i) {i : ι} (hi : i ∈ l), (
     · subst hji
       simp
     · rw [TProd.elim_of_ne _ hji, snd_mk, elim_mk is]
-    termination_by elim_mk l f j hj => l.length
+  termination_by l f j hj => l.length
 #align list.tprod.elim_mk List.TProd.elim_mk
 
 @[ext]
@@ -175,14 +171,13 @@ theorem mk_preimage_tprod :
 #align set.mk_preimage_tprod Set.mk_preimage_tprod
 
 theorem elim_preimage_pi [DecidableEq ι] {l : List ι} (hnd : l.Nodup) (h : ∀ i, i ∈ l)
-    (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.tprod l t :=
-  by
+    (t : ∀ i, Set (α i)) : TProd.elim' h ⁻¹' pi univ t = Set.tprod l t := by
   have h2 : { i | i ∈ l } = univ := by
     ext i
     simp [h]
   rw [← h2, ← mk_preimage_tprod, preimage_preimage]
   simp only [TProd.mk_elim hnd h]
-  dsimp; rfl
+  dsimp
 #align set.elim_preimage_pi Set.elim_preimage_pi
 
 end Set

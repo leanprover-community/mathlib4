@@ -3,10 +3,7 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Elab.Tactic.Basic
-import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Tactic.NormNum
+import Lean.Meta.Tactic.Simp.Types
 
 /-!
 # A monad for tracking and deduplicating atoms
@@ -14,6 +11,8 @@ import Mathlib.Tactic.NormNum
 This monad is used by tactics like `ring` and `abel` to keep uninterpreted atoms in a consistent
 order, and also to allow unifying atoms up to a specified transparency mode.
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib.Tactic
 open Lean Meta
@@ -46,7 +45,6 @@ put it in the list of atoms and return the new index, otherwise. -/
 def AtomM.addAtom (e : Expr) : AtomM Nat := do
   let c ← get
   for h : i in [:c.atoms.size] do
-    have : i < c.atoms.size := h.2
     if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
       return i
   modifyGet fun c ↦ (c.atoms.size, { c with atoms := c.atoms.push e })

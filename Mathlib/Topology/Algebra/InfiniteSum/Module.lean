@@ -2,21 +2,18 @@
 Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yury Kudryashov, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module topology.algebra.infinite_sum.module
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Module.Basic
 
+#align_import topology.algebra.infinite_sum.module from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
+
 /-! # Infinite sums in topological vector spaces -/
 
 
-variable {ι R R₂ M M₂ : Type _}
+variable {ι κ R R₂ M M₂ : Type*}
 
-section SmulConst
+section SMulConst
 
 variable [Semiring R] [TopologicalSpace R] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
   [ContinuousSMul R M] {f : ι → R}
@@ -29,11 +26,43 @@ theorem Summable.smul_const (hf : Summable f) (a : M) : Summable fun z => f z �
   (hf.hasSum.smul_const _).summable
 #align summable.smul_const Summable.smul_const
 
-theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : (∑' z, f z • a) = (∑' z, f z) • a :=
+theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : ∑' z, f z • a = (∑' z, f z) • a :=
   (hf.hasSum.smul_const _).tsum_eq
 #align tsum_smul_const tsum_smul_const
 
-end SmulConst
+end SMulConst
+
+/-!
+Note we cannot derive the `mul` lemmas from these `smul` lemmas, as the `mul` versions do not
+require associativity, but `Module` does.
+-/
+section tsum_smul_tsum
+
+variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [TopologicalSpace R] [TopologicalSpace M] [T3Space M]
+variable [ContinuousAdd M] [ContinuousSMul R M]
+variable {f : ι → R} {g : κ → M} {s : R} {t u : M}
+
+theorem HasSum.smul_eq (hf : HasSum f s) (hg : HasSum g t)
+    (hfg : HasSum (fun x : ι × κ => f x.1 • g x.2) u) : s • t = u :=
+  have key₁ : HasSum (fun i => f i • t) (s • t) := hf.smul_const t
+  have this : ∀ i : ι, HasSum (fun c : κ => f i • g c) (f i • t) := fun i => hg.const_smul (f i)
+  have key₂ : HasSum (fun i => f i • t) u := HasSum.prod_fiberwise hfg this
+  key₁.unique key₂
+
+theorem HasSum.smul (hf : HasSum f s) (hg : HasSum g t)
+    (hfg : Summable fun x : ι × κ => f x.1 • g x.2) :
+    HasSum (fun x : ι × κ => f x.1 • g x.2) (s • t) :=
+  let ⟨_u, hu⟩ := hfg
+  (hf.smul_eq hg hu).symm ▸ hu
+
+/-- Scalar product of two infinites sums indexed by arbitrary types. -/
+theorem tsum_smul_tsum (hf : Summable f) (hg : Summable g)
+    (hfg : Summable fun x : ι × κ => f x.1 • g x.2) :
+    ((∑' x, f x) • ∑' y, g y) = ∑' z : ι × κ, f z.1 • g z.2 :=
+  hf.hasSum.smul_eq hg.hasSum hfg.hasSum
+
+end tsum_smul_tsum
 
 section HasSum
 
@@ -49,7 +78,7 @@ protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M�
   simpa only using hf.map φ.toLinearMap.toAddMonoidHom φ.continuous
 #align continuous_linear_map.has_sum ContinuousLinearMap.hasSum
 
-alias ContinuousLinearMap.hasSum ← HasSum.mapL
+alias HasSum.mapL := ContinuousLinearMap.hasSum
 set_option linter.uppercaseLean3 false in
 #align has_sum.mapL HasSum.mapL
 
@@ -58,7 +87,7 @@ protected theorem ContinuousLinearMap.summable {f : ι → M} (φ : M →SL[σ] 
   (hf.hasSum.mapL φ).summable
 #align continuous_linear_map.summable ContinuousLinearMap.summable
 
-alias ContinuousLinearMap.summable ← Summable.mapL
+alias Summable.mapL := ContinuousLinearMap.summable
 set_option linter.uppercaseLean3 false in
 #align summable.mapL Summable.mapL
 
@@ -86,7 +115,7 @@ protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ]
 #align continuous_linear_equiv.summable ContinuousLinearEquiv.summable
 
 theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
-    {y : M₂} : (∑' z, e (f z)) = y ↔ (∑' z, f z) = e.symm y := by
+    {y : M₂} : (∑' z, e (f z)) = y ↔ ∑' z, f z = e.symm y := by
   by_cases hf : Summable f
   · exact
       ⟨fun h => (e.hasSum.mp ((e.summable.mpr hf).hasSum_iff.mpr h)).tsum_eq, fun h =>

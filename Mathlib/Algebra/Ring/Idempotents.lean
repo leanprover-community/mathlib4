@@ -2,20 +2,18 @@
 Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module algebra.ring.idempotents
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Order.Notation
+import Mathlib.Tactic.Conv
+
+#align_import algebra.ring.idempotents from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
 /-!
 # Idempotents
 
-This file defines idempotents for an arbitary multiplication and proves some basic results,
+This file defines idempotents for an arbitrary multiplication and proves some basic results,
 including:
 
 * `IsIdempotentElem.mul_of_commute`: In a semigroup, the product of two commuting idempotents is
@@ -31,7 +29,7 @@ projection, idempotent
 -/
 
 
-variable {M N S M₀ M₁ R G G₀ : Type _}
+variable {M N S M₀ M₁ R G G₀ : Type*}
 
 variable [Mul M] [Monoid N] [Semigroup S] [MulZeroClass M₀] [MulOneClass M₁] [NonAssocRing R]
   [Group G] [CancelMonoidWithZero G₀]
@@ -44,8 +42,8 @@ def IsIdempotentElem (p : M) : Prop :=
 
 namespace IsIdempotentElem
 
-theorem of_isIdempotent [IsIdempotent M (· * ·)] (a : M) : IsIdempotentElem a :=
-  IsIdempotent.idempotent a
+theorem of_isIdempotent [Std.IdempotentOp (α := M) (· * ·)] (a : M) : IsIdempotentElem a :=
+  Std.IdempotentOp.idempotent a
 #align is_idempotent_elem.of_is_idempotent IsIdempotentElem.of_isIdempotent
 
 theorem eq {p : M} (h : IsIdempotentElem p) : p * p = p :=
@@ -122,7 +120,7 @@ instance : HasCompl { p : R // IsIdempotentElem p } :=
   ⟨fun p => ⟨1 - p, p.prop.one_sub⟩⟩
 
 @[simp]
-theorem coe_compl (p : { p : R // IsIdempotentElem p }) : ↑(pᶜ) = (1 : R) - ↑p :=
+theorem coe_compl (p : { p : R // IsIdempotentElem p }) : ↑pᶜ = (1 : R) - ↑p :=
   rfl
 #align is_idempotent_elem.coe_compl IsIdempotentElem.coe_compl
 

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
-
-! This file was ported from Lean 3 source module ring_theory.valuation.quotient
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
+
+#align_import ring_theory.valuation.quotient from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
 # The valuation on a quotient ring
@@ -23,7 +20,7 @@ on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
 
 namespace Valuation
 
-variable {R Γ₀ : Type _} [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀]
+variable {R Γ₀ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀]
 
 variable (v : Valuation R Γ₀)
 
@@ -52,7 +49,6 @@ theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
   ext fun _ => rfl
 #align valuation.on_quot_comap_eq Valuation.onQuot_comap_eq
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem self_le_supp_comap (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
     J ≤ (v.comap (Ideal.Quotient.mk J)).supp := by
   rw [comap_supp, ← Ideal.map_le_iff_le_comap]
@@ -67,7 +63,6 @@ theorem comap_onQuot_eq (J : Ideal R) (v : Valuation (R ⧸ J) Γ₀) :
     rfl
 #align valuation.comap_on_quot_eq Valuation.comap_onQuot_eq
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The quotient valuation on `R / J` has support `(supp v) / J` if `J ⊆ supp v`. -/
 theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
     supp (v.onQuot hJ) = (supp v).map (Ideal.Quotient.mk J) := by
@@ -89,7 +84,7 @@ end Valuation
 
 namespace AddValuation
 
-variable {R Γ₀ : Type _}
+variable {R Γ₀ : Type*}
 
 variable [CommRing R] [LinearOrderedAddCommMonoidWithTop Γ₀]
 
@@ -114,8 +109,7 @@ theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :
   Valuation.onQuot_comap_eq v hJ
 #align add_valuation.on_quot_comap_eq AddValuation.onQuot_comap_eq
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
-theorem comap_supp {S : Type _} [CommRing S] (f : S →+* R) :
+theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Valuation.comap_supp v f
 #align add_valuation.comap_supp AddValuation.comap_supp
@@ -131,7 +125,6 @@ theorem comap_onQuot_eq (J : Ideal R) (v : AddValuation (R ⧸ J) Γ₀) :
   Valuation.comap_onQuot_eq J v
 #align add_valuation.comap_on_quot_eq AddValuation.comap_onQuot_eq
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The quotient valuation on `R / J` has support `(supp v) / J` if `J ⊆ supp v`. -/
 theorem supp_quot {J : Ideal R} (hJ : J ≤ supp v) :
     supp (v.onQuot hJ) = (supp v).map (Ideal.Quotient.mk J) :=

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.split_simplicial_object
-! leanprover-community/mathlib commit dd1f8496baa505636a82748e6b652165ea888733
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+
+#align_import algebraic_topology.split_simplicial_object from "leanprover-community/mathlib"@"dd1f8496baa505636a82748e6b652165ea888733"
 
 /-!
 
@@ -17,7 +14,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 In this file, we introduce the notion of split simplicial object.
 If `C` is a category that has finite coproducts, a splitting
-`s : Splitting X` of a simplical object `X` in `C` consists
+`s : Splitting X` of a simplicial object `X` in `C` consists
 of the datum of a sequence of objects `s.N : ℕ → C` (which
 we shall refer to as "nondegenerate simplices") and a
 sequence of morphisms `s.ι n : s.N n → X _[n]` that have
@@ -45,7 +42,7 @@ open Simplicial
 
 universe u
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 namespace SimplicialObject
 
@@ -100,7 +97,6 @@ instance : Fintype (IndexSet Δ) :=
       simp only [unop_op, Sigma.mk.inj_iff, Fin.mk.injEq] at h₁
       have h₂ : Δ₁ = Δ₂ := by
         ext1
-        simp at h₁
         simpa only [Fin.mk_eq_mk] using h₁.1
       subst h₂
       refine' ext _ _ rfl _
@@ -187,8 +183,8 @@ def epiComp {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : IndexSet Δ₁) (p : Δ�
 
 variable {Δ' : SimplexCategoryᵒᵖ} (θ : Δ ⟶ Δ')
 
-/-- When `A : index_set Δ` and `θ : Δ → Δ'` is a morphism in `simplex_categoryᵒᵖ`,
-an element in `index_set Δ'` can be defined by using the epi-mono factorisation
+/-- When `A : IndexSet Δ` and `θ : Δ → Δ'` is a morphism in `SimplexCategoryᵒᵖ`,
+an element in `IndexSet Δ'` can be defined by using the epi-mono factorisation
 of `θ.unop ≫ A.e`. -/
 def pull : IndexSet Δ' :=
   mk (factorThruImage (θ.unop ≫ A.e))
@@ -212,76 +208,47 @@ def summand (A : IndexSet Δ) : C :=
   N A.1.unop.len
 #align simplicial_object.splitting.summand SimplicialObject.Splitting.summand
 
-variable [HasFiniteCoproducts C]
-
-/-- The coproduct of the family `summand N Δ` -/
-@[simp]
-def coprod :=
-  ∐ summand N Δ
-#align simplicial_object.splitting.coprod SimplicialObject.Splitting.coprod
-
-variable {Δ}
-
-/-- The inclusion of a summand in the coproduct. -/
-@[simp]
-def ιCoprod (A : IndexSet Δ) : N A.1.unop.len ⟶ coprod N Δ :=
-  Sigma.ι (summand N Δ) A
-#align simplicial_object.splitting.ι_coprod SimplicialObject.Splitting.ιCoprod
-
-variable {N}
-
-/-- The canonical morphism `coprod N Δ ⟶ X.obj Δ` attached to a sequence
-of objects `N` and a sequence of morphisms `N n ⟶ X _[n]`. -/
-@[simp]
-def map (Δ : SimplexCategoryᵒᵖ) : coprod N Δ ⟶ X.obj Δ :=
-  Sigma.desc fun A => φ A.1.unop.len ≫ X.map A.e.op
-#align simplicial_object.splitting.map SimplicialObject.Splitting.map
+/-- The cofan for `summand N Δ` induced by morphisms `N n ⟶ X_ [n]` for all `n : ℕ`. -/
+def cofan' (Δ : SimplexCategoryᵒᵖ) : Cofan (summand N Δ) :=
+  Cofan.mk (X.obj Δ) (fun A => φ A.1.unop.len ≫ X.map A.e.op)
 
 end Splitting
-
-variable [HasFiniteCoproducts C]
 
 --porting note: removed @[nolint has_nonempty_instance]
 /-- A splitting of a simplicial object `X` consists of the datum of a sequence
 of objects `N`, a sequence of morphisms `ι : N n ⟶ X _[n]` such that
-for all `Δ : SimplexCategoryhᵒᵖ`, the canonical map `Splitting.map X ι Δ`
+for all `Δ : SimplexCategoryᵒᵖ`, the canonical map `Splitting.map X ι Δ`
 is an isomorphism. -/
 structure Splitting (X : SimplicialObject C) where
+  /-- The "nondegenerate simplices" `N n` for all `n : ℕ`. -/
   N : ℕ → C
+  /-- The "inclusion" `N n ⟶ X _[n]` for all `n : ℕ`. -/
   ι : ∀ n, N n ⟶ X _[n]
-  map_isIso : ∀ Δ : SimplexCategoryᵒᵖ, IsIso (Splitting.map X ι Δ)
+  /-- For each `Δ`, `X.obj Δ` identifies to the coproduct of the objects `N A.1.unop.len`
+  for all `A : IndexSet Δ`.  -/
+  isColimit' : ∀ Δ : SimplexCategoryᵒᵖ, IsColimit (Splitting.cofan' N X ι Δ)
 #align simplicial_object.splitting SimplicialObject.Splitting
 
 namespace Splitting
 
 variable {X Y : SimplicialObject C} (s : Splitting X)
 
-attribute [instance] Splitting.map_isIso
-#align simplicial_object.splitting.map_is_iso SimplicialObject.Splitting.map_isIso
+/-- The cofan for `summand s.N Δ` induced by a splitting of a simplicial object.  -/
+def cofan (Δ : SimplexCategoryᵒᵖ) : Cofan (summand s.N Δ) :=
+  Cofan.mk (X.obj Δ) (fun A => s.ι A.1.unop.len ≫ X.map A.e.op)
 
-/-- The isomorphism on simplices given by the axiom `Splitting.map_isIso` -/
-@[simps!]
-def iso (Δ : SimplexCategoryᵒᵖ) : coprod s.N Δ ≅ X.obj Δ :=
-  asIso (Splitting.map X s.ι Δ)
-#align simplicial_object.splitting.iso SimplicialObject.Splitting.iso
-
-/-- Via the isomorphism `s.iso Δ`, this is the inclusion of a summand
-in the direct sum decomposition given by the splitting `s : Splitting X`. -/
-def ιSummand {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) : s.N A.1.unop.len ⟶ X.obj Δ :=
-  Splitting.ιCoprod s.N A ≫ (s.iso Δ).hom
-#align simplicial_object.splitting.ι_summand SimplicialObject.Splitting.ιSummand
+/-- The cofan `s.cofan Δ` is colimit. -/
+def isColimit (Δ : SimplexCategoryᵒᵖ) : IsColimit (s.cofan Δ) := s.isColimit' Δ
 
 @[reassoc]
-theorem ιSummand_eq {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
-    s.ιSummand A = s.ι A.1.unop.len ≫ X.map A.e.op := by
-  dsimp only [ιSummand, Iso.hom]
-  erw [colimit.ι_desc, Cofan.mk_ι_app]
-#align simplicial_object.splitting.ι_summand_eq SimplicialObject.Splitting.ιSummand_eq
+theorem cofan_inj_eq {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
+    (s.cofan Δ).inj  A = s.ι A.1.unop.len ≫ X.map A.e.op := rfl
+#align simplicial_object.splitting.ι_summand_eq SimplicialObject.Splitting.cofan_inj_eq
 
-theorem ιSummand_id (n : ℕ) : s.ιSummand (IndexSet.id (op [n])) = s.ι n := by
-  erw [ιSummand_eq, X.map_id, comp_id]
+theorem cofan_inj_id (n : ℕ) : (s.cofan _).inj (IndexSet.id (op [n])) = s.ι n := by
+  erw [cofan_inj_eq, X.map_id, comp_id]
   rfl
-#align simplicial_object.splitting.ι_summand_id SimplicialObject.Splitting.ιSummand_id
+#align simplicial_object.splitting.ι_summand_id SimplicialObject.Splitting.cofan_inj_id
 
 /-- As it is stated in `Splitting.hom_ext`, a morphism `f : X ⟶ Y` from a split
 simplicial object to any simplicial object is determined by its restrictions
@@ -292,18 +259,15 @@ def φ (f : X ⟶ Y) (n : ℕ) : s.N n ⟶ Y _[n] :=
 #align simplicial_object.splitting.φ SimplicialObject.Splitting.φ
 
 @[reassoc (attr := simp)]
-theorem ιSummand_comp_app (f : X ⟶ Y) {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
-    s.ιSummand A ≫ f.app Δ = s.φ f A.1.unop.len ≫ Y.map A.e.op := by
-  simp only [ιSummand_eq_assoc, φ, assoc]
+theorem cofan_inj_comp_app (f : X ⟶ Y) {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
+    (s.cofan Δ).inj A ≫ f.app Δ = s.φ f A.1.unop.len ≫ Y.map A.e.op := by
+  simp only [cofan_inj_eq_assoc, φ, assoc]
   erw [NatTrans.naturality]
-#align simplicial_object.splitting.ι_summand_comp_app SimplicialObject.Splitting.ιSummand_comp_app
+#align simplicial_object.splitting.ι_summand_comp_app SimplicialObject.Splitting.cofan_inj_comp_app
 
 theorem hom_ext' {Z : C} {Δ : SimplexCategoryᵒᵖ} (f g : X.obj Δ ⟶ Z)
-    (h : ∀ A : IndexSet Δ, s.ιSummand A ≫ f = s.ιSummand A ≫ g) : f = g := by
-  rw [← cancel_epi (s.iso Δ).hom]
-  apply colimit.hom_ext
-  rintro ⟨A⟩
-  simpa only [ιSummand_eq, iso_hom, map, colimit.ι_desc_assoc, Cofan.mk_ι_app] using h A
+    (h : ∀ A : IndexSet Δ, (s.cofan Δ).inj A ≫ f = (s.cofan Δ).inj A ≫ g) : f = g :=
+  Cofan.IsColimit.hom_ext (s.isColimit Δ) _ _ h
 #align simplicial_object.splitting.hom_ext' SimplicialObject.Splitting.hom_ext'
 
 theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g := by
@@ -313,22 +277,20 @@ theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g :
   induction' Δ using Opposite.rec with Δ
   induction' Δ using SimplexCategory.rec with n
   dsimp
-  simp only [s.ιSummand_comp_app, h]
+  simp only [s.cofan_inj_comp_app, h]
 #align simplicial_object.splitting.hom_ext SimplicialObject.Splitting.hom_ext
 
 /-- The map `X.obj Δ ⟶ Z` obtained by providing a family of morphisms on all the
 terms of decomposition given by a splitting `s : Splitting X`  -/
 def desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s.N A.1.unop.len ⟶ Z) :
     X.obj Δ ⟶ Z :=
-  (s.iso Δ).inv ≫ Sigma.desc F
+  Cofan.IsColimit.desc (s.isColimit Δ) F
 #align simplicial_object.splitting.desc SimplicialObject.Splitting.desc
 
 @[reassoc (attr := simp)]
 theorem ι_desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s.N A.1.unop.len ⟶ Z)
-    (A : IndexSet Δ) : s.ιSummand A ≫ s.desc Δ F = F A := by
-  dsimp only [ιSummand, desc]
-  simp only [assoc, Iso.hom_inv_id_assoc, ιCoprod]
-  erw [colimit.ι_desc, Cofan.mk_ι_app]
+    (A : IndexSet Δ) : (s.cofan Δ).inj A ≫ s.desc Δ F = F A := by
+  apply Cofan.IsColimit.fac
 #align simplicial_object.splitting.ι_desc SimplicialObject.Splitting.ι_desc
 
 /-- A simplicial object that is isomorphic to a split simplicial object is split. -/
@@ -336,20 +298,17 @@ theorem ι_desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s
 def ofIso (e : X ≅ Y) : Splitting Y where
   N := s.N
   ι n := s.ι n ≫ e.hom.app (op [n])
-  map_isIso Δ := by
-    convert (inferInstance : IsIso ((s.iso Δ).hom ≫ e.hom.app Δ))
-    apply colimit.hom_ext
-    simp [map]
+  isColimit' Δ := IsColimit.ofIsoColimit (s.isColimit Δ ) (Cofan.ext (e.app Δ)
+    (fun A => by simp [cofan, cofan']))
 #align simplicial_object.splitting.of_iso SimplicialObject.Splitting.ofIso
 
 @[reassoc]
-theorem ιSummand_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : IndexSet Δ₁) (p : Δ₁ ⟶ Δ₂)
-    [Epi p.unop] : s.ιSummand A ≫ X.map p = s.ιSummand (A.epiComp p) := by
-  dsimp [ιSummand]
-  erw [colimit.ι_desc, colimit.ι_desc, Cofan.mk_ι_app, Cofan.mk_ι_app]
-  dsimp only [IndexSet.epiComp, IndexSet.e]
-  rw [op_comp, X.map_comp, assoc, Quiver.Hom.op_unop]
-#align simplicial_object.splitting.ι_summand_epi_naturality SimplicialObject.Splitting.ιSummand_epi_naturality
+theorem cofan_inj_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : IndexSet Δ₁) (p : Δ₁ ⟶ Δ₂)
+    [Epi p.unop] : (s.cofan Δ₁).inj A ≫ X.map p = (s.cofan Δ₂).inj (A.epiComp p) := by
+  dsimp [cofan]
+  rw [assoc, ← X.map_comp]
+  rfl
+#align simplicial_object.splitting.ι_summand_epi_naturality SimplicialObject.Splitting.cofan_inj_epi_naturality
 
 end Splitting
 
@@ -361,7 +320,9 @@ in `C` equipped with a splitting, and morphisms are morphisms of simplicial obje
 which are compatible with the splittings. -/
 @[ext]
 structure Split where
+  /-- the underlying simplicial object -/
   X : SimplicialObject C
+  /-- a splitting of the simplicial object -/
   s : Splitting X
 #align simplicial_object.split SimplicialObject.Split
 
@@ -380,7 +341,9 @@ def mk' {X : SimplicialObject C} (s : Splitting X) : Split C :=
 /-- Morphisms in `SimplicialObject.Split C` are morphisms of simplicial objects that
 are compatible with the splittings. -/
 structure Hom (S₁ S₂ : Split C) where
+  /-- the morphism between the underlying simplicial objects -/
   F : S₁.X ⟶ S₂.X
+  /-- the morphism between the "nondegenerate" `n`-simplices for all `n : ℕ` -/
   f : ∀ n : ℕ, S₁.s.N n ⟶ S₂.s.N n
   comm : ∀ n : ℕ, S₁.s.ι n ≫ F.app (op [n]) = f n ≫ S₂.s.ι n := by aesop_cat
 #align simplicial_object.split.hom SimplicialObject.Split.Hom
@@ -458,11 +421,11 @@ theorem comp_f {S₁ S₂ S₃ : Split C} (Φ₁₂ : S₁ ⟶ S₂) (Φ₂₃ :
 #align simplicial_object.split.comp_f SimplicialObject.Split.comp_f
 
 @[reassoc (attr := simp 1100)]
-theorem ιSummand_naturality_symm {S₁ S₂ : Split C} (Φ : S₁ ⟶ S₂) {Δ : SimplexCategoryᵒᵖ}
+theorem cofan_inj_naturality_symm {S₁ S₂ : Split C} (Φ : S₁ ⟶ S₂) {Δ : SimplexCategoryᵒᵖ}
     (A : Splitting.IndexSet Δ) :
-    S₁.s.ιSummand A ≫ Φ.F.app Δ = Φ.f A.1.unop.len ≫ S₂.s.ιSummand A := by
-  erw [S₁.s.ιSummand_eq, S₂.s.ιSummand_eq, assoc, Φ.F.naturality, ← Φ.comm_assoc ]
-#align simplicial_object.split.ι_summand_naturality_symm SimplicialObject.Split.ιSummand_naturality_symm
+    (S₁.s.cofan Δ).inj A ≫ Φ.F.app Δ = Φ.f A.1.unop.len ≫ (S₂.s.cofan Δ).inj A := by
+  erw [S₁.s.cofan_inj_eq, S₂.s.cofan_inj_eq, assoc, Φ.F.naturality, ← Φ.comm_assoc]
+#align simplicial_object.split.ι_summand_naturality_symm SimplicialObject.Split.cofan_inj_naturality_symm
 
 variable (C)
 
@@ -487,11 +450,11 @@ set_option linter.uppercaseLean3 false in
 in split simplicial objects is a natural transformation of functors
 `SimplicialObject.Split C ⥤ C` -/
 @[simps]
-def natTransιSummand {Δ : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) :
+def natTransCofanInj {Δ : SimplexCategoryᵒᵖ} (A : Splitting.IndexSet Δ) :
     evalN C A.1.unop.len ⟶ forget C ⋙ (evaluation SimplexCategoryᵒᵖ C).obj Δ where
-  app S := S.s.ιSummand A
-  naturality _ _ Φ := (ιSummand_naturality_symm Φ A).symm
-#align simplicial_object.split.nat_trans_ι_summand SimplicialObject.Split.natTransιSummand
+  app S := (S.s.cofan Δ).inj A
+  naturality _ _ Φ := (cofan_inj_naturality_symm Φ A).symm
+#align simplicial_object.split.nat_trans_ι_summand SimplicialObject.Split.natTransCofanInj
 
 end Split
 

@@ -7,8 +7,7 @@ The integers, with addition, multiplication, and subtraction.
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Mathlib.Init.ZeroOne
-import Std.Data.Int.Lemmas
+import Std.Data.Int.Order
 
 open Nat
 
@@ -19,6 +18,10 @@ open Nat
 notation "ℤ" => Int
 
 namespace Int
+
+protected theorem coe_nat_eq (n : ℕ) : ↑n = Int.ofNat n :=
+  rfl
+#align int.coe_nat_eq Int.coe_nat_eq
 
 /-- The number `0 : ℤ`, as a standalone definition. -/
 @[deprecated] protected def zero : ℤ := ofNat 0

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
-
-! This file was ported from Lean 3 source module topology.algebra.module.weak_dual
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.BilinearMap
+
+#align_import topology.algebra.module.weak_dual from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Weak dual topology
@@ -72,7 +69,7 @@ open Filter
 
 open Topology
 
-variable {α 𝕜 𝕝 R E F M : Type _}
+variable {α 𝕜 𝕝 R E F M : Type*}
 
 section WeakTopology
 
@@ -84,7 +81,7 @@ def WeakBilin [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMono
 
 namespace WeakBilin
 
--- Porting note: the next two instance should be derived from the definition
+-- Porting note: the next two instances should be derived from the definition
 instance instAddCommMonoid [CommSemiring 𝕜] [a : AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommMonoid (WeakBilin B) := a
 
@@ -170,7 +167,6 @@ variable [AddCommGroup E] [Module 𝕜 E]
 
 variable [AddCommGroup F] [Module 𝕜 F]
 
-set_option synthInstance.etaExperiment true
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
@@ -183,10 +179,6 @@ instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (Wea
     refine' cast (congr_arg _ _) (eval_continuous B (-y))
     ext x
     simp only [map_neg, Function.comp_apply, LinearMap.neg_apply]
-    -- Porting note: mathlib3 proof was done here
-    rw [← (B x).neg_apply]
-    congr
-    exact (map_neg B x).symm
 
 end Ring
 
@@ -214,7 +206,7 @@ theorem topDualPairing_apply (v : E →L[𝕜] 𝕜) (x : E) : topDualPairing �
 
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
 functionals `fun v => v x` are continuous. -/
-def WeakDual (𝕜 E : Type _) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
 #align weak_dual WeakDual
@@ -237,14 +229,17 @@ instance instContinuousAdd : ContinuousAdd (WeakDual 𝕜 E) :=
 instance instInhabited : Inhabited (WeakDual 𝕜 E) :=
   ContinuousLinearMap.inhabited
 
+instance instFunLike : FunLike (WeakDual 𝕜 E) E 𝕜 :=
+  ContinuousLinearMap.funLike
+
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
   ContinuousLinearMap.continuousSemilinearMapClass
 #align weak_dual.weak_dual.continuous_linear_map_class WeakDual.instContinuousLinearMapClass
 
-/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
+/-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 directly. -/
 instance : CoeFun (WeakDual 𝕜 E) fun _ => E → 𝕜 :=
-  FunLike.hasCoeToFun
+  DFunLike.hasCoeToFun
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/

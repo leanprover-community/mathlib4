@@ -6,6 +6,7 @@ Authors: Arthur Paulino, Patrick Massot
 
 import Lean
 import Mathlib.Util.Tactic
+import Mathlib.Lean.Expr.Basic
 
 namespace Mathlib.Tactic
 
@@ -15,7 +16,7 @@ open Lean Meta Parser Elab Tactic
 def renameBVarHyp (mvarId : MVarId) (fvarId : FVarId) (old new : Name) :
     MetaM Unit :=
   modifyLocalDecl mvarId fvarId fun ldecl ↦
-    ldecl.setType $ ldecl.type.renameBVar old new
+    ldecl.setType <| ldecl.type.renameBVar old new
 
 /-- Renames a bound variable in the target. -/
 def renameBVarTarget (mvarId : MVarId) (old new : Name) : MetaM Unit :=
@@ -26,7 +27,7 @@ def renameBVarTarget (mvarId : MVarId) (old new : Name) : MetaM Unit :=
 * `rename_bvar old new at h` does the same in hypothesis `h`.
 
 ```lean
-example (P : ℕ →  ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l m :=
+example (P : ℕ → ℕ → Prop) (h : ∀ n, ∃ m, P n m) : ∀ l, ∃ m, P l m :=
 begin
   rename_bvar n q at h, -- h is now ∀ (q : ℕ), ∃ (m : ℕ), P q m,
   rename_bvar m n, -- target is now ∀ (l : ℕ), ∃ (n : ℕ), P k n,
@@ -35,7 +36,7 @@ end
 ```
 Note: name clashes are resolved automatically.
 -/
-elab "rename_bvar " old:ident " → " new:ident loc?:(ppSpace location)? : tactic => do
+elab "rename_bvar " old:ident " → " new:ident loc?:(location)? : tactic => do
   let mvarId ← getMainGoal
   match loc? with
   | none => renameBVarTarget mvarId old.getId new.getId

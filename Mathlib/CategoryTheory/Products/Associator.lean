@@ -2,13 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.products.associator
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Products.Basic
+
+#align_import category_theory.products.associator from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 The associator functor `((C × D) × E) ⥤ (C × (D × E))` and its inverse form an equivalence.
@@ -46,8 +43,8 @@ def inverseAssociator : C × D × E ⥤ (C × D) × E
 -/
 def associativity : (C × D) × E ≌ C × D × E :=
   Equivalence.mk (associator C D E) (inverseAssociator C D E)
-    (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
-    (NatIso.ofComponents (fun X => eqToIso (by simp)) (by aesop_cat))
+    (NatIso.ofComponents fun X => eqToIso (by simp))
+    (NatIso.ofComponents fun X => eqToIso (by simp))
 #align category_theory.prod.associativity CategoryTheory.prod.associativity
 
 instance associatorIsEquivalence : IsEquivalence (associator C D E) :=

@@ -2,15 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.group.ulift
-! leanprover-community/mathlib commit 564bcc44d2b394a50c0cd6340c14a6b02a50a99a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Logic.Nontrivial.Basic
+
+#align_import algebra.group.ulift from "leanprover-community/mathlib"@"564bcc44d2b394a50c0cd6340c14a6b02a50a99a"
 
 /-!
 # `ULift` instances for groups and monoids
@@ -25,7 +23,7 @@ We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 
 universe u v
 
-variable {α : Type u} {β : Type _} {x y : ULift.{v} α}
+variable {α : Type u} {β : Type*} {x y : ULift.{v} α}
 
 namespace ULift
 
@@ -89,12 +87,12 @@ theorem smul_down [SMul α β] (a : α) (b : ULift.{v} β) : (a • b).down = a 
 #align ulift.smul_down ULift.smul_down
 #align ulift.vadd_down ULift.vadd_down
 
-@[to_additive existing (reorder := 1) smul]
+@[to_additive existing (reorder := 1 2) smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 #align ulift.has_pow ULift.pow
 
-@[to_additive existing (attr := simp) (reorder := 1) smul_down]
+@[to_additive existing (attr := simp) (reorder := 1 2) smul_down]
 theorem pow_down [Pow α β] (a : ULift.{v} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 #align ulift.pow_down ULift.pow_down

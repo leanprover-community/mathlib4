@@ -5,11 +5,12 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Std.Data.Nat.Lemmas
 import Std.Data.List.Basic
 /-!
 Definitions for `List` not (yet) in `Std`
 -/
+
+set_option autoImplicit true
 
 
 open Decidable List
@@ -35,8 +36,8 @@ theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
-| []       => default
-| (a :: _) => a
+  | []       => default
+  | (a :: _) => a
 #align list.head List.headI
 
 @[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
@@ -80,6 +81,3 @@ theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂
 #align list.le_eq_not_gt List.le_eq_not_gt
 
 end List
-
-#align list.replicate List.replicate
-#align list.length_replicate List.length_replicate

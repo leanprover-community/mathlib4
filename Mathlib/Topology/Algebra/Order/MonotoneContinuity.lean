@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Heather Macbeth
-
-! This file was ported from Lean 3 source module topology.algebra.order.monotone_continuity
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Basic
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.algebra.order.monotone_continuity from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Continuity of monotone functions
@@ -32,7 +29,7 @@ open Topology
 
 section LinearOrder
 
-variable {α β : Type _} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 variable [LinearOrder β] [TopologicalSpace β] [OrderTopology β]
 
@@ -86,7 +83,7 @@ theorem continuousWithinAt_right_of_monotoneOn_of_closure_image_mem_nhdsWithin [
     {f : α → β} {s : Set α} {a : α} (h_mono : MonotoneOn f s) (hs : s ∈ 𝓝[≥] a)
     (hfs : closure (f '' s) ∈ 𝓝[≥] f a) : ContinuousWithinAt f (Ici a) a := by
   refine' continuousWithinAt_right_of_monotoneOn_of_exists_between h_mono hs fun b hb => _
-  rcases(mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hb).1 hfs with ⟨b', ⟨hab', hbb'⟩, hb'⟩
+  rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hb).1 hfs with ⟨b', ⟨hab', hbb'⟩, hb'⟩
   rcases exists_between hab' with ⟨c', hc'⟩
   rcases mem_closure_iff.1 (hb' ⟨hc'.1.le, hc'.2⟩) (Ioo (f a) b') isOpen_Ioo hc' with
     ⟨_, hc, ⟨c, hcs, rfl⟩⟩
@@ -302,13 +299,12 @@ this for an `OrderIso` between to partial orders with order topology.
 
 namespace OrderIso
 
-variable {α β : Type _} [PartialOrder α] [PartialOrder β] [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [PartialOrder α] [PartialOrder β] [TopologicalSpace α] [TopologicalSpace β]
   [OrderTopology α] [OrderTopology β]
 
 protected theorem continuous (e : α ≃o β) : Continuous e := by
-  rw [‹OrderTopology β›.topology_eq_generate_intervals]
-  refine' continuous_generateFrom fun s hs => _
-  rcases hs with ⟨a, rfl | rfl⟩
+  rw [‹OrderTopology β›.topology_eq_generate_intervals, continuous_generateFrom_iff]
+  rintro s ⟨a, rfl | rfl⟩
   · rw [e.preimage_Ioi]
     apply isOpen_lt'
   · rw [e.preimage_Iio]

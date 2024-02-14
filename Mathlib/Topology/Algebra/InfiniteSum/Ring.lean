@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.infinite_sum.ring
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
+
+#align_import topology.algebra.infinite_sum.ring from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Infinite sum in a ring
@@ -27,7 +24,7 @@ open Filter Finset Function
 
 open BigOperators Classical
 
-variable {ι κ R α : Type _}
+variable {ι κ R α : Type*}
 
 section NonUnitalNonAssocSemiring
 
@@ -54,21 +51,21 @@ section tsum
 
 variable [T2Space α]
 
-theorem Summable.tsum_mul_left (a) (hf : Summable f) : (∑' i, a * f i) = a * ∑' i, f i :=
+theorem Summable.tsum_mul_left (a) (hf : Summable f) : ∑' i, a * f i = a * ∑' i, f i :=
   (hf.hasSum.mul_left _).tsum_eq
 #align summable.tsum_mul_left Summable.tsum_mul_left
 
-theorem Summable.tsum_mul_right (a) (hf : Summable f) : (∑' i, f i * a) = (∑' i, f i) * a :=
+theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' i, f i) * a :=
   (hf.hasSum.mul_right _).tsum_eq
 #align summable.tsum_mul_right Summable.tsum_mul_right
 
-theorem Commute.tsum_right (a) (h : ∀ i, _root_.Commute a (f i)) : _root_.Commute a (∑' i, f i) :=
+theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑' i, f i) :=
   if hf : Summable f then
     (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
   else (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
 #align commute.tsum_right Commute.tsum_right
 
-theorem Commute.tsum_left (a) (h : ∀ i, _root_.Commute (f i) a) : _root_.Commute (∑' i, f i) a :=
+theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑' i, f i) a :=
   (Commute.tsum_right _ fun i => (h i).symm).symm
 #align commute.tsum_left Commute.tsum_left
 
@@ -113,21 +110,21 @@ theorem summable_div_const_iff (h : a ≠ 0) : (Summable fun i => f i / a) ↔ S
   simpa only [div_eq_mul_inv] using summable_mul_right_iff (inv_ne_zero h)
 #align summable_div_const_iff summable_div_const_iff
 
-theorem tsum_mul_left [T2Space α] : (∑' x, a * f x) = a * ∑' x, f x :=
+theorem tsum_mul_left [T2Space α] : ∑' x, a * f x = a * ∑' x, f x :=
   if hf : Summable f then hf.tsum_mul_left a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_left_iff ha).mp hf), mul_zero]
 #align tsum_mul_left tsum_mul_left
 
-theorem tsum_mul_right [T2Space α] : (∑' x, f x * a) = (∑' x, f x) * a :=
+theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a :=
   if hf : Summable f then hf.tsum_mul_right a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_right_iff ha).mp hf), zero_mul]
 #align tsum_mul_right tsum_mul_right
 
-theorem tsum_div_const [T2Space α] : (∑' x, f x / a) = (∑' x, f x) / a := by
+theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
 #align tsum_div_const tsum_div_const
 
@@ -138,7 +135,7 @@ end DivisionSemiring
 
 In this section, we prove various results about `(∑' x : ι, f x) * (∑' y : κ, g y)`. Note that we
 always assume that the family `λ x : ι × κ, f x.1 * g x.2` is summable, since there is no way to
-deduce this from the summmabilities of `f` and `g` in general, but if you are working in a normed
+deduce this from the summabilities of `f` and `g` in general, but if you are working in a normed
 space, you may want to use the analogous lemmas in `Analysis/NormedSpace/Basic`
 (e.g `tsum_mul_tsum_of_summable_norm`).
 
@@ -170,7 +167,7 @@ theorem HasSum.mul (hf : HasSum f s) (hg : HasSum g t)
 #align has_sum.mul HasSum.mul
 
 /-- Product of two infinites sums indexed by arbitrary types.
-    See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are abolutely summable. -/
+    See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are absolutely summable. -/
 theorem tsum_mul_tsum (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ι × κ => f x.1 * g x.2) :
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × κ, f z.1 * g z.2 :=
@@ -187,46 +184,56 @@ We prove two versions of the Cauchy product formula. The first one is
 involving `Nat` subtraction.
 In order to avoid `Nat` subtraction, we also provide `tsum_mul_tsum_eq_tsum_sum_antidiagonal`,
 where the `n`-th term is a sum over all pairs `(k, l)` such that `k+l=n`, which corresponds to the
-`Finset` `Finset.Nat.antidiagonal n`
+`Finset` `Finset.antidiagonal n`.
+This in fact allows us to generalize to any type satisfying `[Finset.HasAntidiagonal A]`
 -/
 
 
 section CauchyProduct
 
-variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : ℕ → α}
+section HasAntidiagonal
+variable {A : Type*} [AddCommMonoid A] [HasAntidiagonal A]
+variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : A → α}
 
 /- The family `(k, l) : ℕ × ℕ ↦ f k * g l` is summable if and only if the family
-`(n, k, l) : Σ (n : ℕ), Nat.antidiagonal n ↦ f k * g l` is summable. -/
+`(n, k, l) : Σ (n : ℕ), antidiagonal n ↦ f k * g l` is summable. -/
 theorem summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
-    (Summable fun x : ℕ × ℕ => f x.1 * g x.2) ↔
-      Summable fun x : Σn : ℕ, Nat.antidiagonal n => f (x.2 : ℕ × ℕ).1 * g (x.2 : ℕ × ℕ).2 :=
-  Nat.sigmaAntidiagonalEquivProd.summable_iff.symm
+    (Summable fun x : A × A => f x.1 * g x.2) ↔
+      Summable fun x : Σn : A, antidiagonal n => f (x.2 : A × A).1 * g (x.2 : A × A).2 :=
+  Finset.sigmaAntidiagonalEquivProd.summable_iff.symm
 #align summable_mul_prod_iff_summable_mul_sigma_antidiagonal summable_mul_prod_iff_summable_mul_sigma_antidiagonal
 
 variable [T3Space α] [TopologicalSemiring α]
 
 theorem summable_sum_mul_antidiagonal_of_summable_mul
-    (h : Summable fun x : ℕ × ℕ => f x.1 * g x.2) :
-    Summable fun n => ∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2 := by
+    (h : Summable fun x : A × A => f x.1 * g x.2) :
+    Summable fun n => ∑ kl in antidiagonal n, f kl.1 * g kl.2 := by
   rw [summable_mul_prod_iff_summable_mul_sigma_antidiagonal] at h
   conv => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype]
   exact h.sigma' fun n => (hasSum_fintype _).summable
 #align summable_sum_mul_antidiagonal_of_summable_mul summable_sum_mul_antidiagonal_of_summable_mul
 
 /-- The **Cauchy product formula** for the product of two infinites sums indexed by `ℕ`, expressed
-by summing on `Finset.Nat.antidiagonal`.
+by summing on `Finset.antidiagonal`.
 
 See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm` if `f` and `g` are absolutely
 summable. -/
 theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable f) (hg : Summable g)
-    (hfg : Summable fun x : ℕ × ℕ => f x.1 * g x.2) :
-    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl in Nat.antidiagonal n, f kl.1 * g kl.2 := by
+    (hfg : Summable fun x : A × A => f x.1 * g x.2) :
+    ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl in antidiagonal n, f kl.1 * g kl.2 := by
   conv_rhs => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype]
-  rw [tsum_mul_tsum hf hg hfg, ← Nat.sigmaAntidiagonalEquivProd.tsum_eq (_ : ℕ × ℕ → α)]
+  rw [tsum_mul_tsum hf hg hfg, ← sigmaAntidiagonalEquivProd.tsum_eq (_ : A × A → α)]
   exact
     tsum_sigma' (fun n => (hasSum_fintype _).summable)
       (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg)
 #align tsum_mul_tsum_eq_tsum_sum_antidiagonal tsum_mul_tsum_eq_tsum_sum_antidiagonal
+
+end HasAntidiagonal
+
+section Nat
+
+variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : ℕ → α}
+variable [T3Space α] [TopologicalSemiring α]
 
 theorem summable_sum_mul_range_of_summable_mul (h : Summable fun x : ℕ × ℕ => f x.1 * g x.2) :
     Summable fun n => ∑ k in range (n + 1), f k * g (n - k) := by
@@ -245,5 +252,7 @@ theorem tsum_mul_tsum_eq_tsum_sum_range (hf : Summable f) (hg : Summable g)
   simp_rw [← Nat.sum_antidiagonal_eq_sum_range_succ fun k l => f k * g l]
   exact tsum_mul_tsum_eq_tsum_sum_antidiagonal hf hg hfg
 #align tsum_mul_tsum_eq_tsum_sum_range tsum_mul_tsum_eq_tsum_sum_range
+
+end Nat
 
 end CauchyProduct

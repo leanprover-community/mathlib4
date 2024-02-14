@@ -3,7 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-
+import Lean.Elab.ElabRules
 import Mathlib.Util.Tactic
 
 /-!
@@ -17,7 +17,7 @@ open Lean Meta Elab.Tactic
 namespace Mathlib.Tactic
 
 /-- The parser for swap rules -/
-syntax swapRule := ident " ↔ "? ident
+syntax swapRule := ident " ↔"? ppSpace ident
 
 /--
 `swap_var swap_rule₁, swap_rule₂, ⋯` applies `swap_rule₁` then `swap_rule₂` then `⋯`.

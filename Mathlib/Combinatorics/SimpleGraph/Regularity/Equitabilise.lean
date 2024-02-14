@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.regularity.equitabilise
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Partition.Equipartition
+
+#align_import combinatorics.simple_graph.regularity.equitabilise from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 
 /-!
 # Equitabilising a partition
@@ -24,6 +21,10 @@ This file allows to blow partitions up into parts of controlled size. Given a pa
 * `Finpartition.equitabilise`: `P.equitabilise h` where `h : a * m + b * (m + 1)` is a partition
   with `a` parts of size `m` and `b` parts of size `m + 1` which almost refines `P`.
 * `Finpartition.exists_equipartition_card_eq`: We can find equipartitions of arbitrary size.
+
+## References
+
+[Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
 
 
@@ -31,7 +32,7 @@ open Finset Nat
 
 namespace Finpartition
 
-variable {α : Type _} [DecidableEq α] {s t : Finset α} {m n a b : ℕ} {P : Finpartition s}
+variable {α : Type*} [DecidableEq α] {s t : Finset α} {m n a b : ℕ} {P : Finpartition s}
 
 /-- Given a partition `P` of `s`, as well as a proof that `a * m + b * (m + 1) = s.card`, we can
 find a new partition `Q` of `s` where each part has size `m` or `m + 1`, every part of `P` is the
@@ -41,12 +42,12 @@ union of parts of `Q` plus at most `m` extra elements, there are `b` parts of si
 theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     ∃ Q : Finpartition s,
       (∀ x : Finset α, x ∈ Q.parts → x.card = m ∨ x.card = m + 1) ∧
-        (∀ x, x ∈ P.parts → (x \ (Q.parts.filter fun y => y ⊆ x).bunionᵢ id).card ≤ m) ∧
+        (∀ x, x ∈ P.parts → (x \ (Q.parts.filter fun y => y ⊆ x).biUnion id).card ≤ m) ∧
           (Q.parts.filter fun i => card i = m + 1).card = b := by
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
   · refine' ⟨⊥, by simp, _, by simpa using hs.symm⟩
-    simp only [le_zero_iff, card_eq_zero, mem_bunionᵢ, exists_prop, mem_filter, id.def, and_assoc,
+    simp only [le_zero_iff, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id.def, and_assoc,
       sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
@@ -63,16 +64,15 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
   -- `n` will be the size of the smallest part
   set n := if 0 < a then m else m + 1 with hn
   -- Some easy facts about it
-  obtain ⟨hn₀, hn₁, hn₂, hn₃⟩ :
-    0 < n ∧ n ≤ m + 1 ∧ n ≤ a * m + b * (m + 1) ∧
-      ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = s.card - n :=
-    by
+  obtain ⟨hn₀, hn₁, hn₂, hn₃⟩ : 0 < n ∧ n ≤ m + 1 ∧ n ≤ a * m + b * (m + 1) ∧
+      ite (0 < a) (a - 1) a * m + ite (0 < a) b (b - 1) * (m + 1) = s.card - n := by
     rw [hn, ← hs]
     split_ifs with h <;> rw [tsub_mul, one_mul]
-    · refine' ⟨m_pos, le_succ _, le_add_right (le_mul_of_pos_left ‹0 < a›), _⟩
-      rw [tsub_add_eq_add_tsub (le_mul_of_pos_left h)]
-    · refine' ⟨succ_pos', le_rfl, le_add_left (le_mul_of_pos_left <| hab.resolve_left ‹¬0 < a›), _⟩
-      rw [← add_tsub_assoc_of_le (le_mul_of_pos_left <| hab.resolve_left ‹¬0 < a›)]
+    · refine' ⟨m_pos, le_succ _, le_add_right (Nat.le_mul_of_pos_left _ ‹0 < a›), _⟩
+      rw [tsub_add_eq_add_tsub (Nat.le_mul_of_pos_left _ h)]
+    · refine' ⟨succ_pos', le_rfl,
+        le_add_left (Nat.le_mul_of_pos_left _ <| hab.resolve_left ‹¬0 < a›), _⟩
+      rw [← add_tsub_assoc_of_le (Nat.le_mul_of_pos_left _ <| hab.resolve_left ‹¬0 < a›)]
   /- We will call the inductive hypothesis on a partition of `s \ t` for a carefully chosen `t ⊆ s`.
     To decide which, however, we must distinguish the case where all parts of `P` have size `m` (in
     which case we take `t` to be an arbitrary subset of `s` of size `n`) from the case where at
@@ -90,14 +90,14 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     refine' ⟨R.extend ht.ne_empty sdiff_disjoint (sdiff_sup_cancel hts), _, _, _⟩
     · simp only [extend_parts, mem_insert, forall_eq_or_imp, and_iff_left hR₁, htn, hn]
       exact ite_eq_or_eq _ _ _
-    · exact fun x hx => (card_le_of_subset <| sdiff_subset _ _).trans (lt_succ_iff.1 <| h _ hx)
-    simp_rw [extend_parts, filter_insert, htn, hn, m.succ_ne_self.symm.ite_eq_right_iff]
+    · exact fun x hx => (card_le_card <| sdiff_subset _ _).trans (Nat.lt_succ_iff.1 <| h _ hx)
+    simp_rw [extend_parts, filter_insert, htn, m.succ_ne_self.symm.ite_eq_right_iff]
     split_ifs with ha
     · rw [hR₃, if_pos ha]
     rw [card_insert_of_not_mem, hR₃, if_neg ha, tsub_add_cancel_of_le]
     · exact hab.resolve_left ha
     · intro H; exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
-  push_neg  at h
+  push_neg at h
   obtain ⟨u, hu₁, hu₂⟩ := h
   obtain ⟨t, htu, htn⟩ := exists_smaller_set _ _ (hn₁.trans hu₂)
   have ht : t.Nonempty := by rwa [← card_pos, htn]
@@ -111,20 +111,20 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     exact ite_eq_or_eq _ _ _
   · conv in _ ∈ _ => rw [← insert_erase hu₁]
     simp only [and_imp, mem_insert, forall_eq_or_imp, Ne.def, extend_parts]
-    refine' ⟨_, fun x hx => (card_le_of_subset _).trans <| hR₂ x _⟩
-    · simp only [filter_insert, if_pos htu, bunionᵢ_insert, mem_erase, id.def]
+    refine' ⟨_, fun x hx => (card_le_card _).trans <| hR₂ x _⟩
+    · simp only [filter_insert, if_pos htu, biUnion_insert, mem_erase, id.def]
       obtain rfl | hut := eq_or_ne u t
       · rw [sdiff_eq_empty_iff_subset.2 (subset_union_left _ _)]
         exact bot_le
       refine'
-        (card_le_of_subset fun i => _).trans
+        (card_le_card fun i => _).trans
           (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i => hut <| i.antisymm htu, rfl⟩)
-      -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined diferently
-      simp only [not_exists, not_and, mem_bunionᵢ, and_imp, mem_union, mem_filter, mem_sdiff,
+      -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined differently
+      simp only [not_exists, not_and, mem_biUnion, and_imp, mem_union, mem_filter, mem_sdiff,
         id.def, not_or]
       exact fun hi₁ hi₂ hi₃ =>
         ⟨⟨hi₁, hi₂⟩, fun x hx hx' => hi₃ _ hx <| hx'.trans <| sdiff_subset _ _⟩
-    · apply sdiff_subset_sdiff Subset.rfl (bunionᵢ_subset_bunionᵢ_of_subset_left _ _)
+    · apply sdiff_subset_sdiff Subset.rfl (biUnion_subset_biUnion_of_subset_left _ _)
       exact filter_subset_filter _ (subset_insert _ _)
     simp only [avoid, ofErase, mem_erase, mem_image, bot_eq_empty]
     exact
@@ -187,14 +187,14 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
 #align finpartition.card_filter_equitabilise_small Finpartition.card_filter_equitabilise_small
 
 theorem card_parts_equitabilise (hm : m ≠ 0) : (P.equitabilise h).parts.card = a + b := by
-  rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or, card_union_eq,
-    P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
+  rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or,
+    card_union_of_disjoint, P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
   -- Porting note: was `infer_instance`
   exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀
 #align finpartition.card_parts_equitabilise Finpartition.card_parts_equitabilise
 
 theorem card_parts_equitabilise_subset_le :
-    t ∈ P.parts → (t \ ((P.equitabilise h).parts.filter fun u => u ⊆ t).bunionᵢ id).card ≤ m :=
+    t ∈ P.parts → (t \ ((P.equitabilise h).parts.filter fun u => u ⊆ t).biUnion id).card ≤ m :=
   (Classical.choose_spec <| P.equitabilise_aux h).2.1 t
 #align finpartition.card_parts_equitabilise_subset_le Finpartition.card_parts_equitabilise_subset_le
 

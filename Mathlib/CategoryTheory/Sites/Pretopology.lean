@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.sites.pretopology
-! leanprover-community/mathlib commit 9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Grothendieck
+
+#align_import category_theory.sites.pretopology from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
 /-!
 # Grothendieck pretopologies
@@ -68,7 +65,7 @@ structure Pretopology where
   coverings : ∀ X : C, Set (Presieve X)
   has_isos : ∀ ⦃X Y⦄ (f : Y ⟶ X) [IsIso f], Presieve.singleton f ∈ coverings X
   pullbacks : ∀ ⦃X Y⦄ (f : Y ⟶ X) (S), S ∈ coverings X → pullbackArrows f S ∈ coverings Y
-  Transitive :
+  transitive :
     ∀ ⦃X : C⦄ (S : Presieve X) (Ti : ∀ ⦃Y⦄ (f : Y ⟶ X), S f → Presieve Y),
       S ∈ coverings X → (∀ ⦃Y⦄ (f) (H : S f), Ti f H ∈ coverings Y) → S.bind Ti ∈ coverings X
 #align category_theory.pretopology CategoryTheory.Pretopology
@@ -100,7 +97,7 @@ instance : OrderTop (Pretopology C) where
     { coverings := fun _ => Set.univ
       has_isos := fun _ _ _ _ => Set.mem_univ _
       pullbacks := fun _ _ _ _ _ => Set.mem_univ _
-      Transitive := fun _ _ _ _ _ => Set.mem_univ _ }
+      transitive := fun _ _ _ _ _ => Set.mem_univ _ }
   le_top _ _ _ _ := Set.mem_univ _
 
 instance : Inhabited (Pretopology C) :=
@@ -123,7 +120,7 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   transitive' := by
     rintro X S ⟨R', hR', RS⟩ R t
     choose t₁ t₂ t₃ using t
-    refine' ⟨_, K.Transitive _ _ hR' fun _ f hf => t₂ (RS _ hf), _⟩
+    refine' ⟨_, K.transitive _ _ hR' fun _ f hf => t₂ (RS _ hf), _⟩
     rintro Y _ ⟨Z, g, f, hg, hf, rfl⟩
     apply t₃ (RS _ hg) _ hf
 #align category_theory.pretopology.to_grothendieck CategoryTheory.Pretopology.toGrothendieck
@@ -143,7 +140,7 @@ def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
   pullbacks X Y f R hR := by
     simp only [Set.mem_def, Sieve.pullbackArrows_comm]
     apply J.pullback_stable f hR
-  Transitive X S Ti hS hTi := by
+  transitive X S Ti hS hTi := by
     apply J.transitive hS
     intro Y f
     rintro ⟨Z, g, f, hf, rfl⟩
@@ -181,12 +178,12 @@ def trivial : Pretopology C where
     rintro ⟨Z, g, i, rfl⟩
     refine' ⟨pullback g f, pullback.snd, _, _⟩
     · refine' ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨_, by aesop_cat⟩⟩⟩
-      apply pullback.hom_ext
+      ext
       · rw [assoc, pullback.lift_fst, ← pullback.condition_assoc]
         simp
       · simp
     · apply pullback_singleton
-  Transitive := by
+  transitive := by
     rintro X S Ti ⟨Z, g, i, rfl⟩ hS
     rcases hS g (singleton_self g) with ⟨Y, f, i, hTi⟩
     refine' ⟨_, f ≫ g, _, _⟩

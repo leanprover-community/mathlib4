@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Group.zero
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+
+#align_import algebra.category.Group.zero from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of (commutative) (additive) groups has a zero object.
@@ -32,7 +29,7 @@ theorem isZero_of_subsingleton (G : GroupCat) [Subsingleton G] : IsZero G := by
   refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
   · ext x
     have : x = 1 := Subsingleton.elim _ _
-    rw [this, Hom.map_one, Hom.map_one]
+    rw [this, map_one, map_one]
   · ext
     apply Subsingleton.elim
 set_option linter.uppercaseLean3 false in
@@ -53,7 +50,7 @@ theorem isZero_of_subsingleton (G : CommGroupCat) [Subsingleton G] : IsZero G :=
   refine' ⟨fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => _⟩⟩⟩
   · ext x
     have : x = 1 := Subsingleton.elim _ _
-    rw [this, Hom.map_one, Hom.map_one]
+    rw [this, map_one, map_one]
   · ext
     apply Subsingleton.elim
 set_option linter.uppercaseLean3 false in

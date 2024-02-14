@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Gadgil, Mario Carneiro
 -/
 import Mathlib.Lean.Meta
-import Lean.Elab.Tactic.Location
+import Mathlib.Lean.Elab.Tactic.Basic
 
 /-!
 # `trans` tactic
@@ -13,14 +13,19 @@ This implements the `trans` tactic, which can apply transitivity theorems with a
 variable argument.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic
 open Lean Meta Elab
 
 initialize registerTraceClass `Tactic.trans
 
+/-- Discrimation tree settings for the `trans` extension. -/
+def transExt.config : WhnfCoreConfig := {}
+
 /-- Environment extension storing transitivity lemmas -/
 initialize transExt :
-    SimpleScopedEnvExtension (Name × Array (DiscrTree.Key true)) (DiscrTree Name true) ←
+    SimpleScopedEnvExtension (Name × Array DiscrTree.Key) (DiscrTree Name) ←
   registerSimpleScopedEnvExtension {
     addEntry := fun dt (n, ks) ↦ dt.insertCore ks n
     initial := {}
@@ -40,7 +45,7 @@ initialize registerBuiltinAttribute {
     let some xyHyp := xs.pop.back? | fail
     let .app (.app _ _) _ ← inferType yzHyp | fail
     let .app (.app _ _) _ ← inferType xyHyp | fail
-    let key ← withReducible <| DiscrTree.mkPath rel
+    let key ← withReducible <| DiscrTree.mkPath rel transExt.config
     transExt.add (decl, key) kind
 }
 
@@ -49,8 +54,8 @@ def _root_.Trans.simple {a b c : α} [Trans r r r] : r a b → r b c → r a c :
 
 /-- Composition using the `Trans` class in the general case. -/
 def _root_.Trans.het {a : α} {b : β} {c : γ}
-  {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
-  [Trans r s t] : r a b → s b c → t a c := trans
+    {r : α → β → Sort u} {s : β → γ → Sort v} {t : outParam (α → γ → Sort w)}
+    [Trans r s t] : r a b → s b c → t a c := trans
 
 
 open Lean.Elab.Tactic
@@ -67,7 +72,7 @@ def getExplicitFuncArg? (e : Expr) : MetaM (Option <| Expr × Expr) := do
 
 /-- solving `tgt ← mkAppM' rel #[x, z]` given `tgt = f z` -/
 def getExplicitRelArg? (tgt f z : Expr) : MetaM (Option <| Expr × Expr) := do
-  match f  with
+  match f with
   | Expr.app rel x => do
     let check: Bool ← do
       try
@@ -104,8 +109,8 @@ that is, a relation which has a transitivity lemma tagged with the attribute [tr
 * `trans s` replaces the goal with the two subgoals `t ~ s` and `s ~ u`.
 * If `s` is omitted, then a metavariable is used instead.
 -/
-elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
-  let tgt ← getMainTarget
+elab "trans" t?:(ppSpace colGt term)? : tactic => withMainContext do
+  let tgt ← getMainTarget''
   let (rel, x, z) ←
     match tgt with
     | Expr.app f z =>
@@ -126,7 +131,9 @@ elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
     let t'? ← t?.mapM (elabTermWithHoles · ty (← getMainTag))
     let s ← saveState
     trace[Tactic.trans]"trying homogeneous case"
-    for lem in (← (transExt.getState (← getEnv)).getUnify rel).push ``Trans.simple do
+    let lemmas :=
+      (← (transExt.getState (← getEnv)).getUnify rel transExt.config).push ``Trans.simple
+    for lem in lemmas do
       trace[Tactic.trans]"trying lemma {lem}"
       try
         liftMetaTactic fun g ↦ do
@@ -144,8 +151,8 @@ elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
   trace[Tactic.trans]"trying heterogeneous case"
   let t'? ← t?.mapM (elabTermWithHoles · none (← getMainTag))
   let s ← saveState
-  for lem in (← (transExt.getState (← getEnv)).getUnify rel).push
-      ``HEq.trans |>.push ``HEq.trans  do
+  for lem in (← (transExt.getState (← getEnv)).getUnify rel transExt.config).push
+      ``HEq.trans |>.push ``HEq.trans do
     try
       liftMetaTactic fun g ↦ do
         trace[Tactic.trans]"trying lemma {lem}"
@@ -171,3 +178,9 @@ elab "trans" t?:(ppSpace (colGt term))? : tactic => withMainContext do
 
   throwError m!"no applicable transitivity lemma found for {indentExpr tgt}
 "
+
+syntax "transitivity" (ppSpace colGt term)? : tactic
+set_option hygiene false in
+macro_rules
+  | `(tactic| transitivity) => `(tactic| trans)
+  | `(tactic| transitivity $e) => `(tactic| trans $e)

@@ -2,23 +2,20 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-
-! This file was ported from Lean 3 source module category_theory.equivalence
-! leanprover-community/mathlib commit 9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.Tactic.Slice
+import Mathlib.Tactic.CategoryTheory.Slice
+
+#align_import category_theory.equivalence from "leanprover-community/mathlib"@"9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef"
 /-!
 # Equivalence of categories
 
 An equivalence of categories `C` and `D` is a pair of functors `F : C ⥤ D` and `G : D ⥤ C` such
 that `η : 𝟭 C ≅ F ⋙ G` and `ε : G ⋙ F ≅ 𝟭 D`. In many situations, equivalences are a better
-notion of "sameness" of categories than the stricter isomorphims of categories.
+notion of "sameness" of categories than the stricter isomorphism of categories.
 
 Recall that one way to express that two functors `F : C ⥤ D` and `G : D ⥤ C` are adjoint is using
 two natural transformations `η : 𝟭 C ⟶ F ⋙ G` and `ε : G ⋙ F ⟶ 𝟭 D`, called the unit and the
@@ -88,7 +85,7 @@ structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Categ
   unitIso : 𝟭 C ≅ functor ⋙ inverse
   /-- The composition `inverse ⋙ functor` is also isomorphic to the identity -/
   counitIso : inverse ⋙ functor ≅ 𝟭 D
-  /-- The natural isomorphism compose to the identity -/
+  /-- The natural isomorphisms compose to the identity. -/
   functor_unitIso_comp :
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
       𝟙 (functor.obj X) := by aesop_cat
@@ -104,23 +101,25 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace Equivalence
 
+attribute [pp_dot] functor inverse unitIso counitIso
+
 /-- The unit of an equivalence of categories. -/
-abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
+@[pp_dot] abbrev unit (e : C ≌ D) : 𝟭 C ⟶ e.functor ⋙ e.inverse :=
   e.unitIso.hom
 #align category_theory.equivalence.unit CategoryTheory.Equivalence.unit
 
 /-- The counit of an equivalence of categories. -/
-abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
+@[pp_dot] abbrev counit (e : C ≌ D) : e.inverse ⋙ e.functor ⟶ 𝟭 D :=
   e.counitIso.hom
 #align category_theory.equivalence.counit CategoryTheory.Equivalence.counit
 
 /-- The inverse of the unit of an equivalence of categories. -/
-abbrev unitInv (e : C ≌ D) : e.functor ⋙ e.inverse ⟶ 𝟭 C :=
+@[pp_dot] abbrev unitInv (e : C ≌ D) : e.functor ⋙ e.inverse ⟶ 𝟭 C :=
   e.unitIso.inv
 #align category_theory.equivalence.unit_inv CategoryTheory.Equivalence.unitInv
 
 /-- The inverse of the counit of an equivalence of categories. -/
-abbrev counitInv (e : C ≌ D) : 𝟭 D ⟶ e.inverse ⋙ e.functor :=
+@[pp_dot] abbrev counitInv (e : C ≌ D) : 𝟭 D ⟶ e.inverse ⋙ e.functor :=
   e.counitIso.inv
 #align category_theory.equivalence.counit_inv CategoryTheory.Equivalence.counitInv
 
@@ -158,24 +157,21 @@ theorem functor_unit_comp (e : C ≌ D) (X : C) :
 
 @[simp]
 theorem counitInv_functor_comp (e : C ≌ D) (X : C) :
-    e.counitInv.app (e.functor.obj X) ≫ e.functor.map (e.unitInv.app X) = 𝟙 (e.functor.obj X) :=
-  by
+    e.counitInv.app (e.functor.obj X) ≫ e.functor.map (e.unitInv.app X) = 𝟙 (e.functor.obj X) := by
   erw [Iso.inv_eq_inv (e.functor.mapIso (e.unitIso.app X) ≪≫ e.counitIso.app (e.functor.obj X))
       (Iso.refl _)]
   exact e.functor_unit_comp X
 #align category_theory.equivalence.counit_inv_functor_comp CategoryTheory.Equivalence.counitInv_functor_comp
 
 theorem counitInv_app_functor (e : C ≌ D) (X : C) :
-    e.counitInv.app (e.functor.obj X) = e.functor.map (e.unit.app X) :=
-  by
+    e.counitInv.app (e.functor.obj X) = e.functor.map (e.unit.app X) := by
   symm
   erw [← Iso.comp_hom_eq_id (e.counitIso.app _), functor_unit_comp]
   rfl
 #align category_theory.equivalence.counit_inv_app_functor CategoryTheory.Equivalence.counitInv_app_functor
 
 theorem counit_app_functor (e : C ≌ D) (X : C) :
-    e.counit.app (e.functor.obj X) = e.functor.map (e.unitInv.app X) :=
-  by
+    e.counit.app (e.functor.obj X) = e.functor.map (e.unitInv.app X) := by
   erw [← Iso.hom_comp_eq_id (e.functor.mapIso (e.unitIso.app X)), functor_unit_comp]
   rfl
 #align category_theory.equivalence.counit_app_functor CategoryTheory.Equivalence.counit_app_functor
@@ -184,8 +180,7 @@ theorem counit_app_functor (e : C ≌ D) (X : C) :
   http://globular.science/1905.001 -/
 @[simp]
 theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
-    e.unit.app (e.inverse.obj Y) ≫ e.inverse.map (e.counit.app Y) = 𝟙 (e.inverse.obj Y) :=
-  by
+    e.unit.app (e.inverse.obj Y) ≫ e.inverse.map (e.counit.app Y) = 𝟙 (e.inverse.obj Y) := by
   rw [← id_comp (e.inverse.map _), ← map_id e.inverse, ← counitInv_functor_comp, map_comp]
   dsimp
   rw [← Iso.hom_inv_id_assoc (e.unitIso.app _) (e.inverse.map (e.functor.map _)), app_hom, app_inv]
@@ -210,8 +205,7 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
 
 @[simp]
 theorem inverse_counitInv_comp (e : C ≌ D) (Y : D) :
-    e.inverse.map (e.counitInv.app Y) ≫ e.unitInv.app (e.inverse.obj Y) = 𝟙 (e.inverse.obj Y) :=
-  by
+    e.inverse.map (e.counitInv.app Y) ≫ e.unitInv.app (e.inverse.obj Y) = 𝟙 (e.inverse.obj Y) := by
   erw [Iso.inv_eq_inv (e.unitIso.app (e.inverse.obj Y) ≪≫ e.inverse.mapIso (e.counitIso.app Y))
       (Iso.refl _)]
   exact e.unit_inverse_comp Y
@@ -262,10 +256,9 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
 #align category_theory.equivalence.adjointify_η CategoryTheory.Equivalence.adjointifyη
 
 theorem adjointify_η_ε (X : C) :
-    F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) :=
-  by
+    F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
   dsimp [adjointifyη,Trans.trans]
-  simp
+  simp only [comp_id, assoc, map_comp]
   have := ε.hom.naturality (F.map (η.inv.app X)); dsimp at this; rw [this]; clear this
   rw [← assoc _ _ (F.map _)]
   have := ε.hom.naturality (ε.inv.app <| F.obj X); dsimp at this; rw [this]; clear this
@@ -292,7 +285,7 @@ instance : Inhabited (C ≌ C) :=
   ⟨refl⟩
 
 /-- Equivalence of categories is symmetric. -/
-@[symm, simps]
+@[symm, simps, pp_dot]
 def symm (e : C ≌ D) : D ≌ C :=
   ⟨e.inverse, e.functor, e.counitIso.symm, e.unitIso.symm, e.inverse_counitInv_comp⟩
 #align category_theory.equivalence.symm CategoryTheory.Equivalence.symm
@@ -300,7 +293,7 @@ def symm (e : C ≌ D) : D ≌ C :=
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Equivalence of categories is transitive. -/
-@[trans, simps]
+@[trans, simps, pp_dot]
 def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E
     where
   functor := e.functor ⋙ f.functor
@@ -329,16 +322,14 @@ def funInvIdAssoc (e : C ≌ D) (F : C ⥤ E) : e.functor ⋙ e.inverse ⋙ F �
 
 @[simp]
 theorem funInvIdAssoc_hom_app (e : C ≌ D) (F : C ⥤ E) (X : C) :
-    (funInvIdAssoc e F).hom.app X = F.map (e.unitInv.app X) :=
-  by
+    (funInvIdAssoc e F).hom.app X = F.map (e.unitInv.app X) := by
   dsimp [funInvIdAssoc]
   aesop_cat
 #align category_theory.equivalence.fun_inv_id_assoc_hom_app CategoryTheory.Equivalence.funInvIdAssoc_hom_app
 
 @[simp]
 theorem funInvIdAssoc_inv_app (e : C ≌ D) (F : C ⥤ E) (X : C) :
-    (funInvIdAssoc e F).inv.app X = F.map (e.unit.app X) :=
-  by
+    (funInvIdAssoc e F).inv.app X = F.map (e.unit.app X) := by
   dsimp [funInvIdAssoc]
   aesop_cat
 #align category_theory.equivalence.fun_inv_id_assoc_inv_app CategoryTheory.Equivalence.funInvIdAssoc_inv_app
@@ -351,16 +342,14 @@ def invFunIdAssoc (e : C ≌ D) (F : D ⥤ E) : e.inverse ⋙ e.functor ⋙ F �
 
 @[simp]
 theorem invFunIdAssoc_hom_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
-    (invFunIdAssoc e F).hom.app X = F.map (e.counit.app X) :=
-  by
+    (invFunIdAssoc e F).hom.app X = F.map (e.counit.app X) := by
   dsimp [invFunIdAssoc]
   aesop_cat
 #align category_theory.equivalence.inv_fun_id_assoc_hom_app CategoryTheory.Equivalence.invFunIdAssoc_hom_app
 
 @[simp]
 theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
-    (invFunIdAssoc e F).inv.app X = F.map (e.counitInv.app X) :=
-  by
+    (invFunIdAssoc e F).inv.app X = F.map (e.counitInv.app X) := by
   dsimp [invFunIdAssoc]
   aesop_cat
 #align category_theory.equivalence.inv_fun_id_assoc_inv_app CategoryTheory.Equivalence.invFunIdAssoc_inv_app
@@ -369,8 +358,8 @@ theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
 @[simps! functor inverse unitIso counitIso]
 def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E :=
   Equivalence.mk ((whiskeringLeft _ _ _).obj e.inverse) ((whiskeringLeft _ _ _).obj e.functor)
-    (NatIso.ofComponents (fun F => (e.funInvIdAssoc F).symm) (by aesop_cat))
-    (NatIso.ofComponents (fun F => e.invFunIdAssoc F) (by aesop_cat))
+    (NatIso.ofComponents fun F => (e.funInvIdAssoc F).symm)
+    (NatIso.ofComponents fun F => e.invFunIdAssoc F)
 #align category_theory.equivalence.congr_left CategoryTheory.Equivalence.congrLeft
 
 /-- If `C` is equivalent to `D`, then `E ⥤ C` is equivalent to `E ⥤ D`. -/
@@ -378,11 +367,9 @@ def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E :=
 def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D :=
   Equivalence.mk ((whiskeringRight _ _ _).obj e.functor) ((whiskeringRight _ _ _).obj e.inverse)
     (NatIso.ofComponents
-      (fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _)
-      (by aesop_cat))
+      fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _)
     (NatIso.ofComponents
-      (fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor)
-      (by aesop_cat))
+      fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor)
 #align category_theory.equivalence.congr_right CategoryTheory.Equivalence.congrRight
 
 section CancellationLemmas
@@ -488,11 +475,11 @@ end Equivalence
 class IsEquivalence (F : C ⥤ D) where mk' ::
   /-- The inverse functor to `F` -/
   inverse : D ⥤ C
-  /-- Composition `F ⋙  inverse` is isomorphic to the identity. -/
+  /-- Composition `F ⋙ inverse` is isomorphic to the identity. -/
   unitIso : 𝟭 C ≅ F ⋙ inverse
-  /-- Composition `inverse ⋙ F` is isomorphic to the identity. =-/
+  /-- Composition `inverse ⋙ F` is isomorphic to the identity. -/
   counitIso : inverse ⋙ F ≅ 𝟭 D
-  /-- We natural isomorphisms are inverse -/
+  /-- The natural isomorphisms are inverse. -/
   functor_unitIso_comp :
     ∀ X : C,
       F.map ((unitIso.hom : 𝟭 C ⟶ F ⋙ inverse).app X) ≫ counitIso.hom.app (F.obj X) =
@@ -580,6 +567,12 @@ instance isEquivalenceTrans (F : C ⥤ D) (G : D ⥤ E) [IsEquivalence F] [IsEqu
   IsEquivalence.ofEquivalence (Equivalence.trans (asEquivalence F) (asEquivalence G))
 #align category_theory.functor.is_equivalence_trans CategoryTheory.Functor.isEquivalenceTrans
 
+instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringLeft C D E).obj F) :=
+  (inferInstance : IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse)
+
+instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D).obj F) :=
+  (inferInstance : IsEquivalence (Equivalence.congrRight F.asEquivalence).functor)
+
 end Functor
 
 namespace Equivalence
@@ -595,15 +588,21 @@ theorem inverse_inv (E : C ≌ D) : E.inverse.inv = E.functor :=
 #align category_theory.equivalence.inverse_inv CategoryTheory.Equivalence.inverse_inv
 
 @[simp]
-theorem functor_asEquivalence (E : C ≌ D) : E.functor.asEquivalence = E :=
-  by
+theorem isEquivalence_unitIso (E : C ≌ D) : IsEquivalence.unitIso = E.unitIso :=
+  rfl
+
+@[simp]
+theorem isEquivalence_counitIso (E : C ≌ D) : IsEquivalence.counitIso = E.counitIso :=
+  rfl
+
+@[simp]
+theorem functor_asEquivalence (E : C ≌ D) : E.functor.asEquivalence = E := by
   cases E
   congr
 #align category_theory.equivalence.functor_as_equivalence CategoryTheory.Equivalence.functor_asEquivalence
 
 @[simp]
-theorem inverse_asEquivalence (E : C ≌ D) : E.inverse.asEquivalence = E.symm :=
-  by
+theorem inverse_asEquivalence (E : C ≌ D) : E.inverse.asEquivalence = E.symm := by
   cases E
   congr
 #align category_theory.equivalence.inverse_as_equivalence CategoryTheory.Equivalence.inverse_asEquivalence
@@ -614,16 +613,14 @@ namespace IsEquivalence
 
 @[simp]
 theorem fun_inv_map (F : C ⥤ D) [IsEquivalence F] (X Y : D) (f : X ⟶ Y) :
-    F.map (F.inv.map f) = F.asEquivalence.counit.app X ≫ f ≫ F.asEquivalence.counitInv.app Y :=
-  by
+    F.map (F.inv.map f) = F.asEquivalence.counit.app X ≫ f ≫ F.asEquivalence.counitInv.app Y := by
   erw [NatIso.naturality_2]
   rfl
 #align category_theory.is_equivalence.fun_inv_map CategoryTheory.IsEquivalence.fun_inv_map
 
 @[simp]
 theorem inv_fun_map (F : C ⥤ D) [IsEquivalence F] (X Y : C) (f : X ⟶ Y) :
-    F.inv.map (F.map f) = F.asEquivalence.unitInv.app X ≫ f ≫ F.asEquivalence.unit.app Y :=
-  by
+    F.inv.map (F.map f) = F.asEquivalence.unitInv.app X ≫ f ≫ F.asEquivalence.unit.app Y := by
   erw [NatIso.naturality_1]
   rfl
 #align category_theory.is_equivalence.inv_fun_map CategoryTheory.IsEquivalence.inv_fun_map
@@ -650,8 +647,7 @@ def ofIso {F G : C ⥤ D} (e : F ≅ G) (hF : IsEquivalence F) : IsEquivalence G
 
 /-- Compatibility of `ofIso` with the composition of isomorphisms of functors -/
 theorem ofIso_trans {F G H : C ⥤ D} (e : F ≅ G) (e' : G ≅ H) (hF : IsEquivalence F) :
-    ofIso e' (ofIso e hF) = ofIso (e ≪≫ e') hF :=
-  by
+    ofIso e' (ofIso e hF) = ofIso (e ≪≫ e') hF := by
   dsimp [ofIso]
   congr 1 <;> ext X <;> dsimp [NatIso.hcomp]
   · simp only [id_comp, assoc, Functor.map_comp]
@@ -659,8 +655,7 @@ theorem ofIso_trans {F G H : C ⥤ D} (e : F ≅ G) (e' : G ≅ H) (hF : IsEquiv
 #align category_theory.is_equivalence.of_iso_trans CategoryTheory.IsEquivalence.ofIso_trans
 
 /-- Compatibility of `ofIso` with identity isomorphisms of functors -/
-theorem ofIso_refl (F : C ⥤ D) (hF : IsEquivalence F) : ofIso (Iso.refl F) hF = hF :=
-  by
+theorem ofIso_refl (F : C ⥤ D) (hF : IsEquivalence F) : ofIso (Iso.refl F) hF = hF := by
   rcases hF with ⟨Finv, Funit, Fcounit, Fcomp⟩
   dsimp [ofIso]
   congr 1 <;> ext X <;> dsimp [NatIso.hcomp]
@@ -680,7 +675,7 @@ def equivOfIso {F G : C ⥤ D} (e : F ≅ G) : IsEquivalence F ≃ IsEquivalence
 
 /-- If `G` and `F ⋙ G` are equivalence of categories, then `F` is also an equivalence. -/
 @[simp]
-def cancelCompRight {E : Type _} [Category E] (F : C ⥤ D) (G : D ⥤ E) (hG : IsEquivalence G)
+def cancelCompRight {E : Type*} [Category E] (F : C ⥤ D) (G : D ⥤ E) (hG : IsEquivalence G)
     (_ : IsEquivalence (F ⋙ G)) : IsEquivalence F :=
   ofIso (Functor.associator F G G.inv ≪≫ NatIso.hcomp (Iso.refl F) hG.unitIso.symm ≪≫ rightUnitor F)
     (Functor.isEquivalenceTrans (F ⋙ G) G.inv)
@@ -688,7 +683,7 @@ def cancelCompRight {E : Type _} [Category E] (F : C ⥤ D) (G : D ⥤ E) (hG : 
 
 /-- If `F` and `F ⋙ G` are equivalence of categories, then `G` is also an equivalence. -/
 @[simp]
-def cancelCompLeft {E : Type _} [Category E] (F : C ⥤ D) (G : D ⥤ E) (hF : IsEquivalence F)
+def cancelCompLeft {E : Type*} [Category E] (F : C ⥤ D) (G : D ⥤ E) (hF : IsEquivalence F)
     (_ : IsEquivalence (F ⋙ G)) : IsEquivalence G :=
   ofIso
     ((Functor.associator F.inv F G).symm ≪≫ NatIso.hcomp hF.counitIso (Iso.refl G) ≪≫ leftUnitor G)
@@ -752,9 +747,9 @@ noncomputable def ofFullyFaithfullyEssSurj (F : C ⥤ D) [Full F] [Faithful F] [
   IsEquivalence.mk (equivalenceInverse F)
     (NatIso.ofComponents (fun X => (F.preimageIso <| F.objObjPreimageIso <| F.obj X).symm)
       fun f => by
-      apply F.map_injective
-      aesop_cat)
-    (NatIso.ofComponents F.objObjPreimageIso (by aesop_cat))
+        apply F.map_injective
+        aesop_cat)
+    (NatIso.ofComponents F.objObjPreimageIso)
 #align category_theory.equivalence.of_fully_faithfully_ess_surj CategoryTheory.Equivalence.ofFullyFaithfullyEssSurj
 
 @[simp]
@@ -769,11 +764,11 @@ theorem inverse_map_inj_iff (e : C ≌ D) {X Y : D} (f g : X ⟶ Y) :
   functor_map_inj_iff e.symm f g
 #align category_theory.equivalence.inverse_map_inj_iff CategoryTheory.Equivalence.inverse_map_inj_iff
 
-instance essSurjInducedFunctor {C' : Type _} (e : C' ≃ D) : EssSurj (inducedFunctor e) where
+instance essSurjInducedFunctor {C' : Type*} (e : C' ≃ D) : EssSurj (inducedFunctor e) where
   mem_essImage Y := ⟨e.symm Y, by simpa using ⟨default⟩⟩
 #align category_theory.equivalence.ess_surj_induced_functor CategoryTheory.Equivalence.essSurjInducedFunctor
 
-noncomputable instance inducedFunctorOfEquiv {C' : Type _} (e : C' ≃ D) :
+noncomputable instance inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
     IsEquivalence (inducedFunctor e) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 #align category_theory.equivalence.induced_functor_of_equiv CategoryTheory.Equivalence.inducedFunctorOfEquiv
@@ -784,5 +779,63 @@ noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [Full F] [Faithful 
 #align category_theory.equivalence.fully_faithful_to_ess_image CategoryTheory.Equivalence.fullyFaithfulToEssImage
 
 end Equivalence
+
+namespace Iso
+
+variable {E : Type u₃} [Category.{v₃} E] {F : C ⥤ E} {G : C ⥤ D} {H : D ⥤ E}
+
+/-- Construct an isomorphism `F ⋙ H.inv ≅ G` from an isomorphism `F ≅ G ⋙ H`. -/
+@[simps!]
+def compInvIso [h : IsEquivalence H] (i : F ≅ G ⋙ H) : F ⋙ H.inv ≅ G :=
+  isoWhiskerRight i H.inv ≪≫
+    associator G H H.inv ≪≫ isoWhiskerLeft G h.unitIso.symm ≪≫ G.rightUnitor
+#align category_theory.comp_inv_iso CategoryTheory.Iso.compInvIso
+
+/-- Construct an isomorphism `F ⋙ H.inverse ≅ G` from an isomorphism `F ≅ G ⋙ H.functor`. -/
+@[simps!]
+def compInverseIso {H : D ≌ E} (i : F ≅ G ⋙ H.functor) : F ⋙ H.inverse ≅ G :=
+  i.compInvIso
+
+/-- Construct an isomorphism `G ≅ F ⋙ H.inv` from an isomorphism `G ⋙ H ≅ F`. -/
+@[simps!]
+def isoCompInv [IsEquivalence H] (i : G ⋙ H ≅ F) : G ≅ F ⋙ H.inv :=
+  (compInvIso i.symm).symm
+#align category_theory.iso_comp_inv CategoryTheory.Iso.isoCompInv
+
+/-- Construct an isomorphism `G ≅ F ⋙ H.inverse` from an isomorphism `G ⋙ H.functor ≅ F`. -/
+@[simps!]
+def isoCompInverse {H : D ≌ E} (i : G ⋙ H.functor ≅ F) : G ≅ F ⋙ H.inverse :=
+  i.isoCompInv
+
+/-- Construct an isomorphism `G.inv ⋙ F ≅ H` from an isomorphism `F ≅ G ⋙ H`. -/
+@[simps!]
+def invCompIso [h : IsEquivalence G] (i : F ≅ G ⋙ H) : G.inv ⋙ F ≅ H :=
+  isoWhiskerLeft G.inv i ≪≫
+    (associator G.inv G H).symm ≪≫ isoWhiskerRight h.counitIso H ≪≫ H.leftUnitor
+#align category_theory.inv_comp_iso CategoryTheory.Iso.invCompIso
+
+/-- Construct an isomorphism `G.inverse ⋙ F ≅ H` from an isomorphism `F ≅ G.functor ⋙ H`. -/
+@[simps!]
+def inverseCompIso {G : C ≌ D} (i : F ≅ G.functor ⋙ H) : G.inverse ⋙ F ≅ H :=
+  i.invCompIso
+
+/-- Construct an isomorphism `H ≅ G.inv ⋙ F` from an isomorphism `G ⋙ H ≅ F`. -/
+@[simps!]
+def isoInvComp [IsEquivalence G] (i : G ⋙ H ≅ F) : H ≅ G.inv ⋙ F :=
+  (invCompIso i.symm).symm
+#align category_theory.iso_inv_comp CategoryTheory.Iso.isoInvComp
+
+/-- Construct an isomorphism `H ≅ G.inverse ⋙ F` from an isomorphism `G.functor ⋙ H ≅ F`. -/
+@[simps!]
+def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse ⋙ F :=
+  i.isoInvComp
+
+end Iso
+
+-- deprecated on 2024-02-07
+@[deprecated] alias compInvIso := Iso.compInvIso
+@[deprecated] alias isoCompInv := Iso.isoCompInv
+@[deprecated] alias invCompIso := Iso.invCompIso
+@[deprecated] alias isoInvComp := Iso.isoInvComp
 
 end CategoryTheory
