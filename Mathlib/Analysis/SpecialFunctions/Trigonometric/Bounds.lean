@@ -80,7 +80,7 @@ lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x �
     interior_subset hx
 
 /-- **Jordan's inequality** for negative values. -/
-lemma sin_le_two_div_pi_mul (hx₀ : x ≤ 0) (hx : -(π / 2) ≤ x) : sin x ≤ 2 / π * x := by
+lemma sin_le_two_div_pi_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x := by
   simpa using two_div_pi_mul_le_sin (neg_nonneg.2 hx₀) (neg_le.2 hx)
 
 lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
