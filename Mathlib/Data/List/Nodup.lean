@@ -339,7 +339,7 @@ theorem nodup_join {L : List (List α)} :
 
 theorem nodup_bind {l₁ : List α} {f : α → List β} :
     Nodup (l₁.bind f) ↔
-      (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (fun a b : α => Disjoint (f a) (f b)) l₁ := by
+      (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (Disjoint on f) l₁ := by
   simp only [List.bind, nodup_join, pairwise_map, and_comm, and_left_comm, mem_map, exists_imp,
       and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)

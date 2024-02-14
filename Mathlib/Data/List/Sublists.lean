@@ -366,7 +366,7 @@ theorem Pairwise.sublists' {R} :
 #align list.pairwise.sublists' List.Pairwise.sublists'
 
 theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
-    Pairwise (fun l₁ l₂ => Lex R (reverse l₁) (reverse l₂)) (sublists l) := by
+    Pairwise (Lex R on reverse) (sublists l) := by
   have := (pairwise_reverse.2 H).sublists'
   rwa [sublists'_reverse, pairwise_map] at this
 #align list.pairwise_sublists List.pairwise_sublists
