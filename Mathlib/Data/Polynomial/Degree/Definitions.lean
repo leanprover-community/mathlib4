@@ -1685,6 +1685,10 @@ theorem leadingCoeff_pow (p : R[X]) (n : ℕ) : leadingCoeff (p ^ n) = leadingCo
   (leadingCoeffHom : R[X] →* R).map_pow p n
 #align polynomial.leading_coeff_pow Polynomial.leadingCoeff_pow
 
+theorem leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
+    a.leadingCoeff ∣ p.leadingCoeff :=
+  map_dvd leadingCoeffHom hap
+
 end NoZeroDivisors
 
 end Polynomial

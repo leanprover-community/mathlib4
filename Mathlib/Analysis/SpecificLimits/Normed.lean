@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.specific_limits.normed from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -518,7 +518,7 @@ theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * 
 theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : ((1 - x) * ∑' i : ℕ, x ^ i) = 1 := by
   have := (NormedRing.summable_geometric_of_norm_lt_one x h).hasSum.mul_left (1 - x)
   refine' tendsto_nhds_unique this.tendsto_sum_nat _
-  have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (nhds 1) := by
+  have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
     simpa using tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
   convert← this
   rw [← mul_neg_geom_sum, Finset.mul_sum]
@@ -693,6 +693,72 @@ theorem Antitone.tendsto_alternating_series_of_tendsto_zero (hfa : Antitone f)
     ∃ l, Tendsto (fun n ↦ ∑ i in range (n + 1), (-1) ^ i * f i) atTop (𝓝 l) :=
   cauchySeq_tendsto_of_complete <| hfa.cauchySeq_alternating_series_of_tendsto_zero hf0
 #align antitone.tendsto_alternating_series_of_tendsto_zero Antitone.tendsto_alternating_series_of_tendsto_zero
+
+end
+
+/-! ### Partial sum bounds on alternating convergent series -/
+
+section
+
+variable {E : Type*} [OrderedRing E] [TopologicalSpace E] [OrderClosedTopology E]
+  {l : E} {f : ℕ → E}
+
+/-- Partial sums of an alternating monotone series with an even number of terms provide
+upper bounds on the limit. -/
+theorem Monotone.tendsto_le_alternating_series
+    (hfl : Tendsto (fun n ↦ ∑ i in range n, (-1) ^ i * f i) atTop (𝓝 l))
+    (hfm : Monotone f) (k : ℕ) : l ≤ ∑ i in range (2 * k), (-1) ^ i * f i := by
+  have ha : Antitone (fun n ↦ ∑ i in range (2 * n), (-1) ^ i * f i) := by
+    refine' antitone_nat_of_succ_le (fun n ↦ _)
+    rw [show 2 * (n + 1) = 2 * n + 1 + 1 by ring, sum_range_succ, sum_range_succ]
+    simp_rw [_root_.pow_succ, show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, one_mul,
+      ← sub_eq_add_neg, sub_le_iff_le_add]
+    gcongr
+    exact hfm (by omega)
+  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by omega) tendsto_id)) _
+
+/-- Partial sums of an alternating monotone series with an odd number of terms provide
+lower bounds on the limit. -/
+theorem Monotone.alternating_series_le_tendsto
+    (hfl : Tendsto (fun n ↦ ∑ i in range n, (-1) ^ i * f i) atTop (𝓝 l))
+    (hfm : Monotone f) (k : ℕ) : ∑ i in range (2 * k + 1), (-1) ^ i * f i ≤ l := by
+  have hm : Monotone (fun n ↦ ∑ i in range (2 * n + 1), (-1) ^ i * f i) := by
+    refine' monotone_nat_of_le_succ (fun n ↦ _)
+    rw [show 2 * (n + 1) = 2 * n + 1 + 1 by ring,
+      sum_range_succ _ (2 * n + 1 + 1), sum_range_succ _ (2 * n + 1)]
+    simp_rw [_root_.pow_succ, show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, neg_neg, one_mul,
+      ← sub_eq_add_neg, sub_add_eq_add_sub, le_sub_iff_add_le]
+    gcongr
+    exact hfm (by omega)
+  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by omega) tendsto_id)) _
+
+/-- Partial sums of an alternating antitone series with an even number of terms provide
+lower bounds on the limit. -/
+theorem Antitone.alternating_series_le_tendsto
+    (hfl : Tendsto (fun n ↦ ∑ i in range n, (-1) ^ i * f i) atTop (𝓝 l))
+    (hfa : Antitone f) (k : ℕ) : ∑ i in range (2 * k), (-1) ^ i * f i ≤ l := by
+  have hm : Monotone (fun n ↦ ∑ i in range (2 * n), (-1) ^ i * f i) := by
+    refine' monotone_nat_of_le_succ (fun n ↦ _)
+    rw [show 2 * (n + 1) = 2 * n + 1 + 1 by ring, sum_range_succ, sum_range_succ]
+    simp_rw [_root_.pow_succ, show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, one_mul,
+      ← sub_eq_add_neg, le_sub_iff_add_le]
+    gcongr
+    exact hfa (by omega)
+  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by omega) tendsto_id)) _
+
+/-- Partial sums of an alternating antitone series with an odd number of terms provide
+upper bounds on the limit. -/
+theorem Antitone.tendsto_le_alternating_series
+    (hfl : Tendsto (fun n ↦ ∑ i in range n, (-1) ^ i * f i) atTop (𝓝 l))
+    (hfa : Antitone f) (k : ℕ) : l ≤ ∑ i in range (2 * k + 1), (-1) ^ i * f i := by
+  have ha : Antitone (fun n ↦ ∑ i in range (2 * n + 1), (-1) ^ i * f i) := by
+    refine' antitone_nat_of_succ_le (fun n ↦ _)
+    rw [show 2 * (n + 1) = 2 * n + 1 + 1 by ring, sum_range_succ, sum_range_succ]
+    simp_rw [_root_.pow_succ, show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, neg_neg, one_mul,
+      ← sub_eq_add_neg, sub_add_eq_add_sub, sub_le_iff_le_add]
+    gcongr
+    exact hfa (by omega)
+  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by omega) tendsto_id)) _
 
 end
 
