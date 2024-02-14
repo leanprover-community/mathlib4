@@ -72,7 +72,6 @@ import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
-import Mathlib.Tactic.Replace
 import Mathlib.Tactic.Rewrites
 import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Says
