@@ -5,7 +5,6 @@ Authors: Simon Hudon, Harun Khan
 -/
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.BitVec.Defs
-import Mathlib.Tactic.Abel
 
 /-!
 # Basic Theorems About Bitvectors
