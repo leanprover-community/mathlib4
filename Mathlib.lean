@@ -4214,6 +4214,7 @@ import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Order.Bounded
 import Mathlib.Topology.Order.Category.AlexDisc
 import Mathlib.Topology.Order.Category.FrameAdjunction
