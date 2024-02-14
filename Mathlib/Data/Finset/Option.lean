@@ -72,6 +72,9 @@ theorem mem_insertNone {s : Finset α} : ∀ {o : Option α}, o ∈ insertNone s
   | some a => Multiset.mem_cons.trans <| by simp
 #align finset.mem_insert_none Finset.mem_insertNone
 
+lemma forall_mem_insertNone {s : Finset α} {p : Option α → Prop} :
+    (∀ a ∈ insertNone s, p a) ↔ p none ∧ ∀ a ∈ s, p a := by simp [Option.forall]
+
 theorem some_mem_insertNone {s : Finset α} {a : α} : some a ∈ insertNone s ↔ a ∈ s := by simp
 #align finset.some_mem_insert_none Finset.some_mem_insertNone
 
@@ -94,6 +97,9 @@ def eraseNone : Finset (Option α) →o Finset α :=
 theorem mem_eraseNone {s : Finset (Option α)} {x : α} : x ∈ eraseNone s ↔ some x ∈ s := by
   simp [eraseNone]
 #align finset.mem_erase_none Finset.mem_eraseNone
+
+lemma forall_mem_eraseNone {s : Finset (Option α)} {p : Option α → Prop} :
+    (∀ a ∈ eraseNone s, p a) ↔ ∀ a : α, (a : Option α) ∈ s → p a := by simp [Option.forall]
 
 theorem eraseNone_eq_biUnion [DecidableEq α] (s : Finset (Option α)) :
     eraseNone s = s.biUnion Option.toFinset := by

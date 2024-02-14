@@ -257,10 +257,25 @@ theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   AlgHom.map_mul _ _ _
 #align polynomial.aeval_mul Polynomial.aeval_mul
 
+theorem comp_eq_aeval : p.comp q = aeval q p := rfl
+
 theorem aeval_comp {A : Type*} [CommSemiring A] [Algebra R A] (x : A) :
     aeval x (p.comp q) = aeval (aeval x q) p :=
   eval₂_comp (algebraMap R A)
 #align polynomial.aeval_comp Polynomial.aeval_comp
+
+/-- Two polynomials `p` and `q` such that `p(q(X))=X` and `q(p(X))=X`
+  induces an automorphism of the polynomial algebra. -/
+@[simps!]
+def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R[X] ≃ₐ[R] R[X] := by
+  refine AlgEquiv.ofAlgHom (aeval p) (aeval q) ?_ ?_ <;>
+    exact AlgHom.ext fun _ ↦ by simp [← comp_eq_aeval, comp_assoc, hpq, hqp]
+
+/-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
+  with inverse `p(X) ↦ p(X-t)`. -/
+@[simps!]
+def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
+  algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
 theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
   algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
@@ -281,12 +296,18 @@ theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A
   rw [← aeval_def, aeval_algHom, aeval_X_left, AlgHom.comp_id]
 #align polynomial.eval_unique Polynomial.eval_unique
 
-theorem aeval_algHom_apply {F : Type*} [AlgHomClass F R A B] (f : F) (x : A) (p : R[X]) :
+theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
+    (f : F) (x : A) (p : R[X]) :
     aeval (f x) p = f (aeval x p) := by
   refine' Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq => _)
     (by simp [AlgHomClass.commutes])
   rw [map_add, hp, hq, ← map_add, ← map_add]
 #align polynomial.aeval_alg_hom_apply Polynomial.aeval_algHom_apply
+
+@[simp]
+lemma coe_aeval_mk_apply {S : Subalgebra R A} (h : x ∈ S) :
+    (aeval (⟨x, h⟩ : S) p : A) = aeval x p :=
+  (aeval_algHom_apply S.val (⟨x, h⟩ : S) p).symm
 
 theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = (f : A →ₐ[R] B).comp (aeval x) :=
   aeval_algHom (f : A →ₐ[R] B) x
@@ -348,6 +369,23 @@ theorem _root_.Algebra.adjoin_singleton_eq_range_aeval (x : A) :
     Algebra.adjoin R {x} = (Polynomial.aeval x).range := by
   rw [← Algebra.map_top, ← adjoin_X, AlgHom.map_adjoin, Set.image_singleton, aeval_X]
 #align algebra.adjoin_singleton_eq_range_aeval Algebra.adjoin_singleton_eq_range_aeval
+
+@[simp]
+theorem aeval_mem_adjoin_singleton :
+    aeval x p ∈ Algebra.adjoin R {x} := by
+  simpa only [Algebra.adjoin_singleton_eq_range_aeval] using Set.mem_range_self p
+
+instance instCommSemiringAdjoinSingleton :
+    CommSemiring <| Algebra.adjoin R {x} :=
+  { mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
+      obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
+      obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Submonoid.mk_mul_mk, ← AlgHom.map_mul,
+        mul_comm p' q'] }
+
+instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
+    CommRing <| Algebra.adjoin R {x} :=
+  { mul_comm := mul_comm }
 
 variable {R}
 
@@ -454,7 +492,7 @@ section CommRing
 variable [CommRing S] {f : R →+* S}
 
 theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_eval : p ∣ f.eval z)
-    (dvd_terms : ∀ (j) (_ : j ≠ i), p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
+    (dvd_terms : ∀ j ≠ i, p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
   by_cases hi : i ∈ f.support
   · rw [eval, eval₂_eq_sum, sum_def] at dvd_eval
     rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.not_mem_erase _ _)] at dvd_eval
@@ -468,7 +506,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
 #align polynomial.dvd_term_of_dvd_eval_of_dvd_terms Polynomial.dvd_term_of_dvd_eval_of_dvd_terms
 
 theorem dvd_term_of_isRoot_of_dvd_terms {r p : S} {f : S[X]} (i : ℕ) (hr : f.IsRoot r)
-    (h : ∀ (j) (_ : j ≠ i), p ∣ f.coeff j * r ^ j) : p ∣ f.coeff i * r ^ i :=
+    (h : ∀ j ≠ i, p ∣ f.coeff j * r ^ j) : p ∣ f.coeff i * r ^ i :=
   dvd_term_of_dvd_eval_of_dvd_terms i (Eq.symm hr ▸ dvd_zero p) h
 #align polynomial.dvd_term_of_is_root_of_dvd_terms Polynomial.dvd_term_of_isRoot_of_dvd_terms
 
@@ -518,5 +556,29 @@ theorem aeval_endomorphism {M : Type*} [CommRing R] [AddCommGroup M] [Module R M
   rw [aeval_def, eval₂_eq_sum]
   exact map_sum (LinearMap.applyₗ v) _ _
 #align polynomial.aeval_endomorphism Polynomial.aeval_endomorphism
+
+section StableSubmodule
+
+variable {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  {q : Submodule R M} {m : M} (hm : m ∈ q) (p : R[X])
+
+lemma aeval_apply_smul_mem_of_le_comap'
+    [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (a : A)
+    (hq : q ≤ q.comap (Algebra.lsmul R R M a)) :
+    aeval a p • m ∈ q := by
+  refine p.induction_on (M := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
+    (fun n t hmq ↦ ?_)
+  · simp_rw [map_add, add_smul]
+    exact Submodule.add_mem q h₁ h₂
+  · dsimp only at hmq ⊢
+    rw [pow_succ, mul_left_comm, map_mul, aeval_X, mul_smul]
+    rw [← q.map_le_iff_le_comap] at hq
+    exact hq ⟨_, hmq, rfl⟩
+
+lemma aeval_apply_smul_mem_of_le_comap (f : Module.End R M) (hq : q ≤ q.comap f) :
+    aeval f p m ∈ q :=
+  aeval_apply_smul_mem_of_le_comap' hm p f hq
+
+end StableSubmodule
 
 end Polynomial

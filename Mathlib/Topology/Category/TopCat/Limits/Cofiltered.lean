@@ -70,17 +70,13 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
   · rintro ⟨j, V, hV, rfl⟩
     let U : ∀ i, Set (F.obj i) := fun i => if h : i = j then by rw [h]; exact V else Set.univ
     refine' ⟨U, {j}, _, _⟩
-    · rintro i h
-      rw [Finset.mem_singleton] at h
-      dsimp
-      rw [dif_pos h]
-      subst h
-      exact hV
-    · dsimp
-      simp
+    · simp only [Finset.mem_singleton]
+      rintro i rfl
+      simpa
+    · simp
   · rintro ⟨U, G, h1, h2⟩
     obtain ⟨j, hj⟩ := IsCofiltered.inf_objs_exists G
-    let g : ∀ (e) (_he : e ∈ G), j ⟶ e := fun _ he => (hj he).some
+    let g : ∀ e ∈ G, j ⟶ e := fun _ he => (hj he).some
     let Vs : J → Set (F.obj j) := fun e => if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
     let V : Set (F.obj j) := ⋂ (e : J) (_he : e ∈ G), Vs e
     refine' ⟨j, V, _, _⟩

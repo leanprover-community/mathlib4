@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean
-import Lean.Elab.AuxDef
 import Std.Lean.Command
 
 /-!
@@ -39,7 +38,7 @@ structures into a single projection.
 The only functional difference from `Lean.PrettyPrinter.Delaborator.delabProjectionApp` is
 the `walkUp` function. -/
 @[delab app]
-partial def delabProjectionApp' : Delab := whenPPOption getPPCollapseStructureProjections $ do
+partial def delabProjectionApp' : Delab := whenPPOption getPPCollapseStructureProjections <| do
   let e@(Expr.app fn _) ← getExpr | failure
   let .const c@(.str _ f) _ := fn.getAppFn | failure
   let env ← getEnv

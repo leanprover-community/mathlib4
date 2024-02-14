@@ -419,7 +419,7 @@ example {x y z w : ℕ} : true := by
 -- example : ∫ x in Icc 0 1, real.exp x ≤ ∫ x in Icc 0 1, real.exp (x+1) := by
 --   mono
 --   · exact real.continuous_exp.locally_integrable.integrable_on_is_compact is_compact_Icc
---   · exact (real.continuous_exp.comp $ continuous_add_right 1)
+--   · exact (real.continuous_exp.comp <| continuous_add_right 1)
 --       .locally_integrable.integrable_on_is_compact is_compact_Icc
 --   intro x
 --   dsimp only

@@ -5,10 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.Analysis.BoxIntegral.Partition.Additive
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 #align_import analysis.box_integral.divergence_theorem from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 
@@ -245,8 +242,8 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     /- At a point `x ∉ s`, we unfold the definition of Fréchet differentiability, then use
         an estimate we proved earlier in this file. -/
     rcases exists_pos_mul_lt ε0 (2 * c) with ⟨ε', ε'0, hlt⟩
-    rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1 ((Hd x hx).def ε'0) with
-      ⟨δ, δ0, Hδ⟩
+    rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1 ((Hd x hx).isLittleO.def ε'0)
+      with ⟨δ, δ0, Hδ⟩
     refine' ⟨δ, δ0, fun J hle hJδ hxJ hJc => _⟩
     simp only [BoxAdditiveMap.volume_apply, Box.volume_apply, dist_eq_norm]
     refine' (norm_volume_sub_integral_face_upper_sub_lower_smul_le _

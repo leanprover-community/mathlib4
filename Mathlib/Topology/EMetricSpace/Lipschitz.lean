@@ -41,8 +41,6 @@ coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` 
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
 
-set_option autoImplicit true
-
 universe u v w x
 
 open Filter Function Set Topology NNReal ENNReal Bornology
@@ -313,8 +311,8 @@ protected theorem continuousOn (hf : LipschitzOnWith K f s) : ContinuousOn f s :
   hf.uniformContinuousOn.continuousOn
 #align lipschitz_on_with.continuous_on LipschitzOnWith.continuousOn
 
-theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) (hx : x ∈ s) (hy : y ∈ s)
-    (hr : edist x y ≤ r) :
+theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
+    {r : ℝ≥0∞} (hr : edist x y ≤ r) :
     edist (f x) (f y) ≤ K * r :=
   (h hx hy).trans <| ENNReal.mul_left_mono hr
 
@@ -337,12 +335,11 @@ protected theorem prod {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith K
   exact max_le_max (hf hx hy) (hg hx hy)
 
 theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α) (t : Set β)
-    (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (fun a => f a b) s)
-    (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) :
+    (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (f · b) s) (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) :
     EMetric.diam (Set.image2 f s t) ≤ ↑K₁ * EMetric.diam s + ↑K₂ * EMetric.diam t := by
-  apply EMetric.diam_le
-  rintro _ ⟨a₁, b₁, ha₁, hb₁, rfl⟩ _ ⟨a₂, b₂, ha₂, hb₂, rfl⟩
-  refine' (edist_triangle _ (f a₂ b₁) _).trans _
+  simp only [EMetric.diam_le_iff, forall_image2_iff]
+  intro a₁ ha₁ b₁ hb₁ a₂ ha₂ b₂ hb₂
+  refine (edist_triangle _ (f a₂ b₁) _).trans ?_
   exact
     add_le_add
       ((hf₁ b₁ hb₁ ha₁ ha₂).trans <| ENNReal.mul_left_mono <| EMetric.edist_le_diam_of_mem ha₁ ha₂)

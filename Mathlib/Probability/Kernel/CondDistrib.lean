@@ -69,6 +69,15 @@ instance [MeasurableSpace β] : IsMarkovKernel (condDistrib Y X μ) := by
 
 variable {mβ : MeasurableSpace β} {s : Set Ω} {t : Set β} {f : β × Ω → F}
 
+/-- If the singleton `{x}` has non-zero mass for `μ.map X`, then for all `s : Set Ω`,
+`condDistrib Y X μ x s = (μ.map X {x})⁻¹ * μ.map (fun a => (X a, Y a)) ({x} ×ˢ s)` . -/
+lemma condDistrib_apply_of_ne_zero [MeasurableSingletonClass β]
+    (hY : Measurable Y) (x : β) (hX : μ.map X {x} ≠ 0) (s : Set Ω) :
+    condDistrib Y X μ x s = (μ.map X {x})⁻¹ * μ.map (fun a => (X a, Y a)) ({x} ×ˢ s) := by
+  rw [condDistrib, condKernel_apply_of_ne_zero _ s]
+  · rw [Measure.fst_map_prod_mk hY]
+  · rwa [Measure.fst_map_prod_mk hY]
+
 section Measurability
 
 theorem measurable_condDistrib (hs : MeasurableSet s) :
@@ -109,9 +118,7 @@ end Measurability
 /-- `condDistrib` is a.e. uniquely defined as the kernel satisfying the defining property of
 `condKernel`. -/
 theorem condDistrib_ae_eq_of_measure_eq_compProd (hX : Measurable X) (hY : Measurable Y)
-    (κ : kernel β Ω) [IsFiniteKernel κ]
-    (hκ : μ.map (fun x => (X x, Y x)) =
-      (kernel.const Unit (μ.map X) ⊗ₖ kernel.prodMkLeft Unit κ) ()) :
+    (κ : kernel β Ω) [IsFiniteKernel κ] (hκ : μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ) :
     ∀ᵐ x ∂μ.map X, κ x = condDistrib Y X μ x := by
   have heq : μ.map X = (μ.map (fun x => (X x, Y x))).fst
   · ext s hs

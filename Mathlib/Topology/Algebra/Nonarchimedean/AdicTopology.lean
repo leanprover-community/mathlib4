@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.UniformRing
 
 #align_import topology.algebra.nonarchimedean.adic_topology from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
@@ -57,7 +56,7 @@ theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n •
       suffices ∀ i j : ℕ, ∃ k, I ^ k ≤ I ^ i ∧ I ^ k ≤ I ^ j by
         simpa only [smul_eq_mul, mul_top, Algebra.id.map_eq_id, map_id, le_inf_iff] using this
       intro i j
-      exact ⟨max i j, pow_le_pow (le_max_left i j), pow_le_pow (le_max_right i j)⟩
+      exact ⟨max i j, pow_le_pow_right (le_max_left i j), pow_le_pow_right (le_max_right i j)⟩
     leftMul := by
       suffices ∀ (a : R) (i : ℕ), ∃ j : ℕ, a • I ^ j ≤ I ^ i by
         simpa only [smul_top_eq_map, Algebra.id.map_eq_id, map_id] using this
@@ -70,7 +69,7 @@ theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n •
         simpa only [smul_top_eq_map, Algebra.id.map_eq_id, map_id] using this
       intro n
       use n
-      rintro a ⟨x, b, _hx, hb, rfl⟩
+      rintro a ⟨x, _hx, b, hb, rfl⟩
       exact (I ^ n).smul_mem x hb }
 #align ideal.adic_basis Ideal.adic_basis
 
@@ -119,8 +118,8 @@ theorem adic_module_basis :
   { inter := fun i j =>
       ⟨max i j,
         le_inf_iff.mpr
-          ⟨smul_mono_left <| pow_le_pow (le_max_left i j),
-            smul_mono_left <| pow_le_pow (le_max_right i j)⟩⟩
+          ⟨smul_mono_left <| pow_le_pow_right (le_max_left i j),
+            smul_mono_left <| pow_le_pow_right (le_max_right i j)⟩⟩
     smul := fun m i =>
       ⟨(I ^ i • ⊤ : Ideal R), ⟨i, by simp⟩, fun a a_in => by
         replace a_in : a ∈ I ^ i := by simpa [(I ^ i).mul_top] using a_in
@@ -201,7 +200,7 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
     · exfalso
       exact Nat.not_succ_le_zero 0 hn
     rw [← pow_mul, Nat.succ_mul]
-    apply Ideal.pow_le_pow
+    apply Ideal.pow_le_pow_right
     apply Nat.le_add_left
 #align is_ideal_adic_pow is_ideal_adic_pow
 

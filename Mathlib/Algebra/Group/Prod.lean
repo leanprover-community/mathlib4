@@ -12,15 +12,16 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 /-!
 # Monoid, group etc structures on `M × N`
 
-In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`. We also prove
-trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
+In this file we define one-binop (`Monoid`, `Group` etc) structures on `M × N`.
+We also prove trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
 
 * `fst M N : M × N →* M`, `snd M N : M × N →* N`: projections `Prod.fst` and `Prod.snd`
   as `MonoidHom`s;
 * `inl M N : M →* M × N`, `inr M N : N →* M × N`: inclusions of first/second monoid
   into the product;
 * `f.prod g` : `M →* N × P`: sends `x` to `(f x, g x)`;
-* `f.coprod g : M × N →* P`: sends `(x, y)` to `f x * g y`;
+* When `P` is commutative, `f.coprod g : M × N →* P` sends `(x, y)` to `f x * g y`
+  (without the commutativity assumption on `P`, see `MonoidHom.noncommPiCoprod`);
 * `f.prodMap g : M × N → M' × N'`: `prod.map f g` as a `MonoidHom`,
   sends `(x, y)` to `(f x, g y)`.
 
@@ -441,10 +442,12 @@ section Coprod
 variable [Mul M] [Mul N] [CommSemigroup P] (f : M →ₙ* P) (g : N →ₙ* P)
 
 /-- Coproduct of two `MulHom`s with the same codomain:
-`f.coprod g (p : M × N) = f p.1 * g p.2`. -/
+  `f.coprod g (p : M × N) = f p.1 * g p.2`.
+  (Commutative codomain; for the general case, see `MulHom.noncommCoprod`) -/
 @[to_additive
-      "Coproduct of two `AddHom`s with the same codomain:
-      `f.coprod g (p : M × N) = f p.1 + g p.2`."]
+    "Coproduct of two `AddHom`s with the same codomain:
+    `f.coprod g (p : M × N) = f p.1 + g p.2`.
+    (Commutative codomain; for the general case, see `AddHom.noncommCoprod`)"]
 def coprod : M × N →ₙ* P :=
   f.comp (fst M N) * g.comp (snd M N)
 #align mul_hom.coprod MulHom.coprod
@@ -565,6 +568,10 @@ theorem snd_comp_inr : (snd M N).comp (inr M N) = id N :=
 #align monoid_hom.snd_comp_inr MonoidHom.snd_comp_inr
 #align add_monoid_hom.snd_comp_inr AddMonoidHom.snd_comp_inr
 
+@[to_additive]
+theorem commute_inl_inr (m : M) (n : N) : Commute (inl M N m) (inr M N n) :=
+  Commute.prod (.one_right m) (.one_left n)
+
 section Prod
 
 variable [MulOneClass P]
@@ -652,10 +659,12 @@ section Coprod
 variable [CommMonoid P] (f : M →* P) (g : N →* P)
 
 /-- Coproduct of two `MonoidHom`s with the same codomain:
-`f.coprod g (p : M × N) = f p.1 * g p.2`. -/
+  `f.coprod g (p : M × N) = f p.1 * g p.2`.
+  (Commutative case; for the general case, see `MonoidHom.noncommCoprod`.)-/
 @[to_additive
-      "Coproduct of two `AddMonoidHom`s with the same codomain:
-      `f.coprod g (p : M × N) = f p.1 + g p.2`."]
+    "Coproduct of two `AddMonoidHom`s with the same codomain:
+    `f.coprod g (p : M × N) = f p.1 + g p.2`.
+    (Commutative case; for the general case, see `AddHom.noncommCoprod`.)"]
 def coprod : M × N →* P :=
   f.comp (fst M N) * g.comp (snd M N)
 #align monoid_hom.coprod MonoidHom.coprod

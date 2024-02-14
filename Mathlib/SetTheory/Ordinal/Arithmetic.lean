@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Data.Nat.SuccPred
 
 #align_import set_theory.ordinal.arithmetic from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
@@ -512,7 +513,7 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
               rintro ⟨⟩ <;> constructor <;> assumption⟩
 #align ordinal.add_le_of_limit Ordinal.add_le_of_limit
 
-theorem add_isNormal (a : Ordinal) : IsNormal ((· + ·) a) :=
+theorem add_isNormal (a : Ordinal) : IsNormal (a + ·) :=
   ⟨fun b => (add_lt_add_iff_left a).2 (lt_succ b), fun _b l _c => add_le_of_limit l⟩
 #align ordinal.add_is_normal Ordinal.add_isNormal
 
@@ -800,7 +801,7 @@ theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ 
           exact mul_le_of_limit_aux h H⟩
 #align ordinal.mul_le_of_limit Ordinal.mul_le_of_limit
 
-theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal ((· * ·) a) :=
+theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
   -- Porting note: `dsimp only` is required for beta reduction.
   ⟨fun b => by
       dsimp only
@@ -2345,7 +2346,7 @@ theorem nat_cast_pos {n : ℕ} : (0 : Ordinal) < n ↔ 0 < n :=
 
 @[simp, norm_cast]
 theorem nat_cast_sub (m n : ℕ) : ((m - n : ℕ) : Ordinal) = m - n := by
-  cases' le_total m n with h h
+  rcases le_total m n with h | h
   · rw [tsub_eq_zero_iff_le.2 h, Ordinal.sub_eq_zero_iff_le.2 (nat_cast_le.2 h)]
     rfl
   · apply (add_left_cancel n).1
@@ -2407,11 +2408,8 @@ namespace Ordinal
 
 theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
     a < b + c ↔ ∃ c' < c, a < b + c' := by
-  -- Porting note: `have` & `dsimp` are required for beta reduction.
-  have := IsNormal.bsup_eq.{u, u} (add_isNormal b) h
-  dsimp only at this
   -- Porting note: `bex_def` is required.
-  rw [← this, lt_bsup, bex_def]
+  rw [← IsNormal.bsup_eq.{u, u} (add_isNormal b) h, lt_bsup, bex_def]
 #align ordinal.lt_add_of_limit Ordinal.lt_add_of_limit
 
 theorem lt_omega {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
