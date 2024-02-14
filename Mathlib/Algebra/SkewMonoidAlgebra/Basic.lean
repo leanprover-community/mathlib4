@@ -553,7 +553,7 @@ section Algebra
 
 /-- `Finsupp.single 1` as a `RingHom` -/
 def singleOneRingHom [Semiring k] [Monoid G] [MulSemiringAction G k] :
-  k →+* SkewMonoidAlgebra k G :=
+    k →+* SkewMonoidAlgebra k G :=
   { Finsupp.singleAddHom 1 with
     map_one' := rfl
     map_mul' := fun x y => by
