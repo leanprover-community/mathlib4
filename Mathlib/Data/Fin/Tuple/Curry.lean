@@ -46,9 +46,8 @@ theorem curry_uncurry {n} (f : Function.OfArity α β n) :
   match n with
   | 0 => rfl
   | n + 1 => funext fun a => by
-    dsimp [curry, uncurry, Function.comp_def]
-    simp only [Fin.cons_zero, Fin.cons_succ]
-    rw [curry_uncurry]
+    dsimp [curry, uncurry]
+    exact curry_uncurry _
 
 @[simp]
 theorem uncurry_curry {n} (f : (Fin n → α) → β) :
