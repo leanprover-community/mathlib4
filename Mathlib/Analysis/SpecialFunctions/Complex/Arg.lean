@@ -16,9 +16,7 @@ such that for `x ≠ 0`, `sin (arg x) = x.im / x.abs` and `cos (arg x) = x.re / 
 while `arg 0` defaults to `0`
 -/
 
-noncomputable section
-
-open Filter Set
+open Filter Metric Set
 open scoped ComplexConjugate Real Topology
 
 namespace Complex
@@ -355,6 +353,7 @@ theorem arg_inv (x : ℂ) : arg x⁻¹ = if arg x = π then π else -arg x := by
 
 @[simp] lemma abs_arg_inv (x : ℂ) : |x⁻¹.arg| = |x.arg| := by rw [arg_inv]; split_ifs <;> simp [*]
 
+-- TODO: Replace the next two lemmas by general facts about periodic functions
 lemma abs_eq_one_iff' : abs x = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * I) = x := by
   rw [abs_eq_one_iff]
   constructor
@@ -366,6 +365,9 @@ lemma abs_eq_one_iff' : abs x = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * I) 
       ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
   · rintro ⟨θ, _, rfl⟩
     exact ⟨θ, rfl⟩
+
+lemma image_exp_Ioc_eq_sphere : (fun θ : ℝ ↦ exp (θ * I)) '' Set.Ioc (-π) π = sphere 0 1 := by
+  ext; simpa using abs_eq_one_iff'.symm
 
 theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im z < 0 := by
   rcases le_or_lt 0 (re z) with hre | hre
