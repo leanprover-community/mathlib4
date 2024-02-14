@@ -32,6 +32,8 @@ theorem nrRealPlaces_eq_zero [IsCyclotomicExtension {n} ℚ K]
   have := IsCyclotomicExtension.numberField {n} ℚ K
   apply (IsCyclotomicExtension.zeta_spec n ℚ K).nrRealPlaces_eq_zero_of_two_lt hn
 
+variable (n)
+
 theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K] :
     haveI := IsCyclotomicExtension.numberField {n} ℚ K
     NrComplexPlaces K = φ n / 2 := by
