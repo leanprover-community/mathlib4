@@ -12,15 +12,16 @@ partial
 instance : ToExpr LawvereExpr where
   toExpr := aux
   toTypeExpr := .const ``LawvereExpr []
-where aux := fun
+where aux :=
+  let typeExpr : Expr := .const ``LawvereExpr []
+  fun
   | .proj inputs output => mkApp2 (.const ``LawvereExpr.proj []) (toExpr inputs) (toExpr output)
   | .op opName output rest =>
     mkApp3 (.const ``LawvereExpr.op []) (toExpr opName) (toExpr output) <|
-      let exprs := rest.map aux
-      mkApp2 (.const ``List.toArray [0]) (.const ``LawvereExpr []) <|
-        exprs.foldr
-          (fun a b => mkApp3 (.const ``List.cons [0]) (.const ``LawvereExpr []) a b)
-          (.app (.const ``List.nil [0]) (.const ``LawvereExpr []))
+      letI exprs := rest.map aux
+      mkApp2 (.const ``List.toArray [0]) typeExpr <| exprs.foldr
+        (fun a b => mkApp3 (.const ``List.cons [0]) typeExpr a b)
+        (.app (.const ``List.nil [0]) typeExpr)
 
 structure LawvereOp where
   name : Name
