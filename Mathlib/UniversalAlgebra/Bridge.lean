@@ -1,5 +1,6 @@
 import Lean
 import Mathlib.Tactic
+import Mathlib.UniversalAlgebra.Presentation
 
 open Lean Meta
 

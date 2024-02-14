@@ -10,6 +10,11 @@ inductive ProdWord (S : Type u) : Type u where
   | prod : ProdWord S → ProdWord S → ProdWord S
   | nil : ProdWord S
 
+def ProdWord.toList {S : Type u} : ProdWord S → List S := fun
+  | .of X => [X]
+  | .prod A B => A.toList ++ B.toList
+  | .nil => []
+
 def ProdWord.unpack {S : Type u} : ProdWord S → Array S
   | .of X => #[X]
   | .prod a b => a.unpack ++ b.unpack

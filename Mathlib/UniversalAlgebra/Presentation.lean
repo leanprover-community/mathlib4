@@ -3,16 +3,16 @@ import Mathlib.UniversalAlgebra.LawvereTheory
 universe u v
 
 structure LawverePresentation (S : Type u) where
-  hom : ProdWord S → S → Type v
-  rel : {X Y : ProdWord S} → LawvereWord hom X Y → LawvereWord hom X Y → Prop
+  hom : List S → S → Type v
+  rel : {X Y : List S} → LawvereWord hom X Y → LawvereWord hom X Y → Prop
 
 namespace LawverePresentation
 
 variable {S : Type*} (P : LawverePresentation S)
 
 def lawvereTheory : LawvereTheory S where
-  hom X Y := Quotient (LawvereSetoid P.rel X Y)
-  id X := Quotient.mk _ <| LawvereWord.id X
+  hom X Y := Quotient (LawvereSetoid P.rel X.toList Y.toList)
+  id X := Quotient.mk _ <| LawvereWord.id X.toList
   comp := fun f g => Quotient.liftOn₂ f g
     (fun F G => Quotient.mk _ (F.comp G))
     (fun a₁ a₂ b₁ b₂ h₁ h₂ => Quotient.sound <| LawvereRel.comp_congr h₁ h₂)
