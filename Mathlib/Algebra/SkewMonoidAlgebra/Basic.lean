@@ -257,7 +257,7 @@ variable [Semiring R]
 
 /-- `liftNC` as a `RingHom`, for when `f x` and `g y` commute -/
 def liftNCRingHom (f : k →+* R) (g : G →* R)
-  (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
+    (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
     SkewMonoidAlgebra k G →+* R :=
   { liftNC (f : k →+ R) g with
     map_one' := liftNC_one _ _
