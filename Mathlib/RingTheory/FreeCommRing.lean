@@ -374,7 +374,7 @@ protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommR
 #align free_ring.coe_surjective FreeRing.coe_surjective
 
 theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
-      @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
+    @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
   funext x
   erw [castFreeCommRing, toFreeCommRing, FreeRing.lift, Equiv.coe_trans, Function.comp,
     FreeAbelianGroup.liftMonoid_coe (FreeMonoid.lift FreeCommRing.of)]

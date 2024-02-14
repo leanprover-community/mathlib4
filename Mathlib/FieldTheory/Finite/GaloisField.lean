@@ -65,7 +65,7 @@ variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 /-- A finite field with `p ^ n` elements.
 Every field with the same cardinality is (non-canonically)
 isomorphic to this field. -/
-def GaloisField  := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
+def GaloisField := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
 -- deriving Field -- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
 #align galois_field GaloisField
 

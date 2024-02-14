@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Data.Real.Basic
-import Mathlib.LinearAlgebra.LinearPMap
 
 #align_import analysis.convex.cone.basic from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
@@ -23,29 +21,11 @@ We define `Convex.toCone` to be the minimal cone that includes a given convex se
 
 ## Main statements
 
-We prove two extension theorems:
-* `riesz_extension`:
-  [M. Riesz extension theorem](https://en.wikipedia.org/wiki/M._Riesz_extension_theorem) says that
-  if `s` is a convex cone in a real vector space `E`, `p` is a submodule of `E`
-  such that `p + s = E`, and `f` is a linear function `p → ℝ` which is
-  nonnegative on `p ∩ s`, then there exists a globally defined linear function
-  `g : E → ℝ` that agrees with `f` on `p`, and is nonnegative on `s`.
-* `exists_extension_of_le_sublinear`:
-  Hahn-Banach theorem: if `N : E → ℝ` is a sublinear map, `f` is a linear map
-  defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`,
-  then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
-  for all `x`
+In `Mathlib/Analysis/Convex/Cone/Extension.lean` we prove
+the M. Riesz extension theorem and a form of the Hahn-Banach theorem.
 
-In `Mathlib/Analysis/Convex/Cone/Dual.lean`, we prove the following theorems:
-* `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`:
-  This variant of the
-  [hyperplane separation theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
-  states that given a nonempty, closed, convex cone `K` in a complete, real inner product space `H`
-  and a point `b` disjoint from it, there is a vector `y` which separates `b` from `K` in the sense
-  that for all points `x` in `K`, `0 ≤ ⟪x, y⟫_ℝ` and `⟪y, b⟫_ℝ < 0`. This is also a geometric
-  interpretation of the
-  [Farkas lemma](https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation).
-* `ConvexCone.inner_dual_cone_of_inner_dual_cone_eq_self`:
+In `Mathlib/Analysis/Convex/Cone/Dual.lean` we prove
+a variant of the hyperplane separation theorem.
 
 ## Implementation notes
 
@@ -60,6 +40,7 @@ While `Convex 𝕜` is a predicate on sets, `ConvexCone 𝕜 E` is a bundled con
 
 
 assert_not_exists NormedSpace
+assert_not_exists Real
 
 open Set LinearMap
 
@@ -114,6 +95,7 @@ theorem ext {S T : ConvexCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :
   SetLike.ext h
 #align convex_cone.ext ConvexCone.ext
 
+@[aesop safe apply (rule_sets [SetLike])]
 theorem smul_mem {c : 𝕜} {x : E} (hc : 0 < c) (hx : x ∈ S) : c • x ∈ S :=
   S.smul_mem' hc hx
 #align convex_cone.smul_mem ConvexCone.smul_mem
@@ -227,27 +209,9 @@ protected theorem convex : Convex 𝕜 (S : Set E) :=
 
 end Module
 
-end OrderedSemiring
-
-section LinearOrderedField
-
-variable [LinearOrderedField 𝕜]
-
-section AddCommMonoid
+section Maps
 
 variable [AddCommMonoid E] [AddCommMonoid F] [AddCommMonoid G]
-
-section MulAction
-
-variable [MulAction 𝕜 E] (S : ConvexCone 𝕜 E)
-
-theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : E} : c • x ∈ S ↔ x ∈ S :=
-  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ S.smul_mem (inv_pos.2 hc) h, S.smul_mem hc⟩
-#align convex_cone.smul_mem_iff ConvexCone.smul_mem_iff
-
-end MulAction
-
-section Module
 
 variable [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 G]
 
@@ -258,6 +222,10 @@ def map (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 E) : ConvexCone 𝕜 F where
   add_mem' := fun _ ⟨x₁, hx₁, hy₁⟩ _ ⟨x₂, hx₂, hy₂⟩ =>
     hy₁ ▸ hy₂ ▸ f.map_add x₁ x₂ ▸ mem_image_of_mem f (S.add_mem hx₁ hx₂)
 #align convex_cone.map ConvexCone.map
+
+@[simp, norm_cast]
+theorem coe_map (S : ConvexCone 𝕜 E) (f : E →ₗ[𝕜] F) : (S.map f : Set F) = f '' S :=
+  rfl
 
 @[simp]
 theorem mem_map {f : E →ₗ[𝕜] F} {S : ConvexCone 𝕜 E} {y : F} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
@@ -305,9 +273,25 @@ theorem mem_comap {f : E →ₗ[𝕜] F} {S : ConvexCone 𝕜 F} {x : E} : x ∈
   Iff.rfl
 #align convex_cone.mem_comap ConvexCone.mem_comap
 
-end Module
+end Maps
 
-end AddCommMonoid
+end OrderedSemiring
+
+section LinearOrderedField
+
+variable [LinearOrderedField 𝕜]
+
+section MulAction
+
+variable [AddCommMonoid E]
+
+variable [MulAction 𝕜 E] (S : ConvexCone 𝕜 E)
+
+theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : E} : c • x ∈ S ↔ x ∈ S :=
+  ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ S.smul_mem (inv_pos.2 hc) h, S.smul_mem hc⟩
+#align convex_cone.smul_mem_iff ConvexCone.smul_mem_iff
+
+end MulAction
 
 section OrderedAddCommGroup
 
@@ -459,19 +443,19 @@ theorem pointed_zero : (0 : ConvexCone 𝕜 E).Pointed := by rw [Pointed, mem_ze
 
 instance instAdd : Add (ConvexCone 𝕜 E) :=
   ⟨fun K₁ K₂ =>
-    { carrier := { z | ∃ x y : E, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = z }
+    { carrier := { z | ∃ x ∈ K₁, ∃ y ∈ K₂, x + y = z }
       smul_mem' := by
-        rintro c hc _ ⟨x, y, hx, hy, rfl⟩
+        rintro c hc _ ⟨x, hx, y, hy, rfl⟩
         rw [smul_add]
-        use c • x, c • y, K₁.smul_mem hc hx, K₂.smul_mem hc hy
+        use c • x, K₁.smul_mem hc hx, c • y, K₂.smul_mem hc hy
       add_mem' := by
-        rintro _ ⟨x₁, x₂, hx₁, hx₂, rfl⟩ y ⟨y₁, y₂, hy₁, hy₂, rfl⟩
-        use x₁ + y₁, x₂ + y₂, K₁.add_mem hx₁ hy₁, K₂.add_mem hx₂ hy₂
+        rintro _ ⟨x₁, hx₁, x₂, hx₂, rfl⟩ y ⟨y₁, hy₁, y₂, hy₂, rfl⟩
+        use x₁ + y₁, K₁.add_mem hx₁ hy₁, x₂ + y₂, K₂.add_mem hx₂ hy₂
         abel }⟩
 
 @[simp]
 theorem mem_add {K₁ K₂ : ConvexCone 𝕜 E} {a : E} :
-    a ∈ K₁ + K₂ ↔ ∃ x y : E, x ∈ K₁ ∧ y ∈ K₂ ∧ x + y = a :=
+    a ∈ K₁ + K₂ ↔ ∃ x ∈ K₁, ∃ y ∈ K₂, x + y = a :=
   Iff.rfl
 #align convex_cone.mem_add ConvexCone.mem_add
 
@@ -481,8 +465,8 @@ instance instAddZeroClass : AddZeroClass (ConvexCone 𝕜 E) where
 
 instance instAddCommSemigroup : AddCommSemigroup (ConvexCone 𝕜 E) where
   add := Add.add
-  add_assoc _ _ _ := SetLike.coe_injective <| Set.addCommSemigroup.add_assoc _ _ _
-  add_comm _ _ := SetLike.coe_injective <| Set.addCommSemigroup.add_comm _ _
+  add_assoc _ _ _ := SetLike.coe_injective <| add_assoc _ _ _
+  add_comm _ _ := SetLike.coe_injective <| add_comm _ _
 
 end Module
 
@@ -696,162 +680,3 @@ theorem convexHull_toCone_eq_sInf (s : Set E) :
 #align convex_hull_to_cone_eq_Inf convexHull_toCone_eq_sInf
 
 end ConeFromConvex
-
-/-!
-### M. Riesz extension theorem
-
-Given a convex cone `s` in a vector space `E`, a submodule `p`, and a linear `f : p → ℝ`, assume
-that `f` is nonnegative on `p ∩ s` and `p + s = E`. Then there exists a globally defined linear
-function `g : E → ℝ` that agrees with `f` on `p`, and is nonnegative on `s`.
-
-We prove this theorem using Zorn's lemma. `RieszExtension.step` is the main part of the proof.
-It says that if the domain `p` of `f` is not the whole space, then `f` can be extended to a larger
-subspace `p ⊔ span ℝ {y}` without breaking the non-negativity condition.
-
-In `RieszExtension.exists_top` we use Zorn's lemma to prove that we can extend `f`
-to a linear map `g` on `⊤ : Submodule E`. Mathematically this is the same as a linear map on `E`
-but in Lean `⊤ : Submodule E` is isomorphic but is not equal to `E`. In `riesz_extension`
-we use this isomorphism to prove the theorem.
--/
-
-
-variable [AddCommGroup E] [Module ℝ E]
-
-namespace RieszExtension
-
-open Submodule
-
-variable (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
-
-/-- Induction step in M. Riesz extension theorem. Given a convex cone `s` in a vector space `E`,
-a partially defined linear map `f : f.domain → ℝ`, assume that `f` is nonnegative on `f.domain ∩ p`
-and `p + s = E`. If `f` is not defined on the whole `E`, then we can extend it to a larger
-submodule without breaking the non-negativity condition. -/
-theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
-    (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) (hdom : f.domain ≠ ⊤) :
-    ∃ g, f < g ∧ ∀ x : g.domain, (x : E) ∈ s → 0 ≤ g x := by
-  obtain ⟨y, -, hy⟩ : ∃ y ∈ ⊤, y ∉ f.domain :=
-    @SetLike.exists_of_lt (Submodule ℝ E) _ _ _ _ (lt_top_iff_ne_top.2 hdom)
-  obtain ⟨c, le_c, c_le⟩ :
-      ∃ c, (∀ x : f.domain, -(x : E) - y ∈ s → f x ≤ c) ∧
-        ∀ x : f.domain, (x : E) + y ∈ s → c ≤ f x := by
-    set Sp := f '' { x : f.domain | (x : E) + y ∈ s }
-    set Sn := f '' { x : f.domain | -(x : E) - y ∈ s }
-    suffices (upperBounds Sn ∩ lowerBounds Sp).Nonempty by
-      simpa only [Set.Nonempty, upperBounds, lowerBounds, ball_image_iff] using this
-    refine' exists_between_of_forall_le (Nonempty.image f _) (Nonempty.image f (dense y)) _
-    · rcases dense (-y) with ⟨x, hx⟩
-      rw [← neg_neg x, AddSubgroupClass.coe_neg, ← sub_eq_add_neg] at hx
-      exact ⟨_, hx⟩
-    rintro a ⟨xn, hxn, rfl⟩ b ⟨xp, hxp, rfl⟩
-    have := s.add_mem hxp hxn
-    rw [add_assoc, add_sub_cancel'_right, ← sub_eq_add_neg, ← AddSubgroupClass.coe_sub] at this
-    replace := nonneg _ this
-    rwa [f.map_sub, sub_nonneg] at this
-  -- Porting note: removed an unused `have`
-  refine' ⟨f.supSpanSingleton y (-c) hy, _, _⟩
-  · refine' lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => _⟩
-    replace H := LinearPMap.domain_mono.monotone H
-    rw [LinearPMap.domain_supSpanSingleton, sup_le_iff, span_le, singleton_subset_iff] at H
-    exact hy H.2
-  · rintro ⟨z, hz⟩ hzs
-    rcases mem_sup.1 hz with ⟨x, hx, y', hy', rfl⟩
-    rcases mem_span_singleton.1 hy' with ⟨r, rfl⟩
-    simp only [Subtype.coe_mk] at hzs
-    erw [LinearPMap.supSpanSingleton_apply_mk _ _ _ _ _ hx, smul_neg, ← sub_eq_add_neg, sub_nonneg]
-    rcases lt_trichotomy r 0 with (hr | hr | hr)
-    · have : -(r⁻¹ • x) - y ∈ s := by
-        rwa [← s.smul_mem_iff (neg_pos.2 hr), smul_sub, smul_neg, neg_smul, neg_neg, smul_smul,
-          mul_inv_cancel hr.ne, one_smul, sub_eq_add_neg, neg_smul, neg_neg]
-      -- Porting note: added type annotation and `by exact`
-      replace : f (r⁻¹ • ⟨x, hx⟩) ≤ c := le_c (r⁻¹ • ⟨x, hx⟩) (by exact this)
-      rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
-        smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this
-    · subst r
-      simp only [zero_smul, add_zero] at hzs ⊢
-      apply nonneg
-      exact hzs
-    · have : r⁻¹ • x + y ∈ s := by
-        rwa [← s.smul_mem_iff hr, smul_add, smul_smul, mul_inv_cancel hr.ne', one_smul]
-      -- Porting note: added type annotation and `by exact`
-      replace : c ≤ f (r⁻¹ • ⟨x, hx⟩) := c_le (r⁻¹ • ⟨x, hx⟩) (by exact this)
-      rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne',
-        one_mul] at this
-#align riesz_extension.step RieszExtension.step
-
-theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)
-    (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
-    ∃ q ≥ p, q.domain = ⊤ ∧ ∀ x : q.domain, (x : E) ∈ s → 0 ≤ q x := by
-  set S := { p : E →ₗ.[ℝ] ℝ | ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x }
-  have hSc : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub
-  · intro c hcs c_chain y hy
-    clear hp_nonneg hp_dense p
-    have cne : c.Nonempty := ⟨y, hy⟩
-    have hcd : DirectedOn (· ≤ ·) c := c_chain.directedOn
-    refine' ⟨LinearPMap.sSup c hcd, _, fun _ ↦ LinearPMap.le_sSup hcd⟩
-    rintro ⟨x, hx⟩ hxs
-    have hdir : DirectedOn (· ≤ ·) (LinearPMap.domain '' c) :=
-      directedOn_image.2 (hcd.mono fun h ↦ LinearPMap.domain_mono.monotone h)
-    rcases (mem_sSup_of_directed (cne.image _) hdir).1 hx with ⟨_, ⟨f, hfc, rfl⟩, hfx⟩
-    have : f ≤ LinearPMap.sSup c hcd := LinearPMap.le_sSup _ hfc
-    convert ← hcs hfc ⟨x, hfx⟩ hxs using 1
-    exact this.2 rfl
-  obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ S hSc p hp_nonneg
-  · refine' ⟨q, hpq, _, hqs⟩
-    contrapose! hq
-    have hqd : ∀ y, ∃ x : q.domain, (x : E) + y ∈ s := fun y ↦
-      let ⟨x, hx⟩ := hp_dense y
-      ⟨ofLe hpq.left x, hx⟩
-    rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
-    exact ⟨r, hr, hqr.le, hqr.ne'⟩
-#align riesz_extension.exists_top RieszExtension.exists_top
-
-end RieszExtension
-
-/-- M. **Riesz extension theorem**: given a convex cone `s` in a vector space `E`, a submodule `p`,
-and a linear `f : p → ℝ`, assume that `f` is nonnegative on `p ∩ s` and `p + s = E`. Then
-there exists a globally defined linear function `g : E → ℝ` that agrees with `f` on `p`,
-and is nonnegative on `s`. -/
-theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
-    (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
-    (dense : ∀ y, ∃ x : f.domain, (x : E) + y ∈ s) :
-    ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x ∈ s, 0 ≤ g x := by
-  rcases RieszExtension.exists_top s f nonneg dense
-    with ⟨⟨g_dom, g⟩, ⟨-, hfg⟩, rfl : g_dom = ⊤, hgs⟩
-  refine' ⟨g.comp (LinearMap.id.codRestrict ⊤ fun _ ↦ trivial), _, _⟩
-  · exact fun x => (hfg rfl).symm
-  · exact fun x hx => hgs ⟨x, _⟩ hx
-#align riesz_extension riesz_extension
-
-/-- **Hahn-Banach theorem**: if `N : E → ℝ` is a sublinear map, `f` is a linear map
-defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`,
-then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
-for all `x`. -/
-theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ)
-    (N_hom : ∀ c : ℝ, 0 < c → ∀ x, N (c • x) = c * N x) (N_add : ∀ x y, N (x + y) ≤ N x + N y)
-    (hf : ∀ x : f.domain, f x ≤ N x) :
-    ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x, g x ≤ N x := by
-  let s : ConvexCone ℝ (E × ℝ) :=
-    { carrier := { p : E × ℝ | N p.1 ≤ p.2 }
-      smul_mem' := fun c hc p hp =>
-        calc
-          N (c • p.1) = c * N p.1 := N_hom c hc p.1
-          _ ≤ c * p.2 := mul_le_mul_of_nonneg_left hp hc.le
-      add_mem' := fun x hx y hy => (N_add _ _).trans (add_le_add hx hy) }
-  set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
-  have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by
-    simpa using le_trans (hf ⟨x.1.1, x.2.1⟩) hx
-  have hf'_dense : ∀ y : E × ℝ, ∃ x : f'.domain, ↑x + y ∈ s
-  · rintro ⟨x, y⟩
-    refine' ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, _⟩
-    simp only [ConvexCone.mem_mk, mem_setOf_eq, Prod.fst_add, Prod.snd_add, zero_add,
-      sub_add_cancel, le_rfl]
-  obtain ⟨g, g_eq, g_nonneg⟩ := riesz_extension s f' hf'_nonneg hf'_dense
-  replace g_eq : ∀ (x : f.domain) (y : ℝ), g (x, y) = y - f x := fun x y ↦
-    (g_eq ⟨(x, y), ⟨x.2, trivial⟩⟩).trans (sub_eq_neg_add _ _).symm
-  refine ⟨-g.comp (inl ℝ E ℝ), fun x ↦ ?_, fun x ↦ ?_⟩
-  · simp [g_eq x 0]
-  · calc -g (x, 0) = g (0, N x) - g (x, N x) := by simp [← map_sub, ← map_neg]
-      _ = N x - g (x, N x) := by simpa using g_eq 0 (N x)
-      _ ≤ N x := by simpa using g_nonneg ⟨x, N x⟩ (le_refl (N x))
-#align exists_extension_of_le_sublinear exists_extension_of_le_sublinear

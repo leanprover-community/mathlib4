@@ -5,6 +5,7 @@ Authors: Moritz Doll, Robert Y. Lewis
 -/
 
 import Mathlib.Tactic.Zify
+import Mathlib.Data.Int.Basic
 import Std.Tactic.GuardExpr
 
 private axiom test_sorry : ∀ {α}, α
@@ -44,4 +45,9 @@ example (a b c : ℕ) (h : a - b < c) (hab : b ≤ a) : True := by
 example (a b c : ℕ) (h : a + b ≠ c) : True := by
   zify at h
   guard_hyp h : (a + b : ℤ) ≠ c
+  trivial
+
+example (a b c : ℕ) (h : a - b ∣ c) (h2 : b ≤ a) : True := by
+  zify [h2] at h
+  guard_hyp h : (a : ℤ) - b ∣ c
   trivial

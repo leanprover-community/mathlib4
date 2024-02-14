@@ -60,7 +60,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
   haveI : SeparableSpace (range g ∩ s : Set E) :=
     (hgm.isSeparable_range.mono (inter_subset_left _ _)).separableSpace
   obtain ⟨y₀, h₀⟩ : (range g ∩ s).Nonempty := by
-    rcases(hf.and hfg).exists with ⟨x₀, h₀⟩
+    rcases (hf.and hfg).exists with ⟨x₀, h₀⟩
     exact ⟨f x₀, by simp only [h₀.2, mem_range_self], h₀.1⟩
   rw [integral_congr_ae hfg]; rw [integrable_congr hfg] at hfi
   have hg : ∀ᵐ x ∂μ, g x ∈ closure (range g ∩ s) := by
@@ -325,13 +325,13 @@ a.e., then either this function is a.e. equal to its average value, or the norm 
 is strictly less than `C`. -/
 theorem ae_eq_const_or_norm_average_lt_of_norm_le_const [StrictConvexSpace ℝ E]
     (h_le : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ ‖⨍ x, f x ∂μ‖ < C := by
-  cases' le_or_lt C 0 with hC0 hC0
+  rcases le_or_lt C 0 with hC0 | hC0
   · have : f =ᵐ[μ] 0 := h_le.mono fun x hx => norm_le_zero_iff.1 (hx.trans hC0)
     simp only [average_congr this, Pi.zero_apply, average_zero]
     exact Or.inl this
   by_cases hfi : Integrable f μ; swap
   · simp [average_eq, integral_undef hfi, hC0, ENNReal.toReal_pos_iff]
-  cases' (le_top : μ univ ≤ ∞).eq_or_lt with hμt hμt; · simp [average_eq, hμt, hC0]
+  rcases (le_top : μ univ ≤ ∞).eq_or_lt with hμt | hμt; · simp [average_eq, hμt, hC0]
   haveI : IsFiniteMeasure μ := ⟨hμt⟩
   replace h_le : ∀ᵐ x ∂μ, f x ∈ closedBall (0 : E) C; · simpa only [mem_closedBall_zero_iff]
   simpa only [interior_closedBall _ hC0.ne', mem_ball_zero_iff] using
@@ -345,7 +345,7 @@ strictly less than `(μ univ).toReal * C`. -/
 theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ E] [IsFiniteMeasure μ]
     (h_le : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
     f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨ ‖∫ x, f x ∂μ‖ < (μ univ).toReal * C := by
-  cases' eq_or_ne μ 0 with h₀ h₀; · left; simp [h₀, EventuallyEq]
+  rcases eq_or_ne μ 0 with h₀ | h₀; · left; simp [h₀, EventuallyEq]
   have hμ : 0 < (μ univ).toReal := by
     simp [ENNReal.toReal_pos_iff, pos_iff_ne_zero, h₀, measure_lt_top]
   refine' (ae_eq_const_or_norm_average_lt_of_norm_le_const h_le).imp_right fun H => _

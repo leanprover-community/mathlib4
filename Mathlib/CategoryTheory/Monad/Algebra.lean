@@ -199,7 +199,14 @@ def adj : T.free ⊣ T.forget :=
           right_inv := fun f => by
             dsimp only [forget_obj]
             rw [← T.η.naturality_assoc, Y.unit]
-            apply Category.comp_id } }
+            apply Category.comp_id },
+      -- This used to be automatic before leanprover/lean4#2644
+      homEquiv_naturality_right := by
+        intros
+        -- This doesn't look good:
+        simp
+        dsimp
+        simp }
 #align category_theory.monad.adj CategoryTheory.Monad.adj
 
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.

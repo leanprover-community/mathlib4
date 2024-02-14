@@ -10,14 +10,18 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 /-!
 # The `arctan` function.
 
-Inequalities, derivatives,
-and `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whole line.
+Inequalities, identities and `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)`
+and the whole line.
+
+The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add_pi` or
+`arctan_add_eq_sub_pi` depending on whether `x * y < 1` and `0 < x`. As an application of
+`arctan_add` we give four Machin-like formulas (linear combinations of arctangents equal to
+`π / 4 = arctan 1`), including John Machin's original one at
+`four_mul_arctan_inv_5_sub_arctan_inv_239`.
 -/
 
 
 noncomputable section
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Real
 
@@ -45,14 +49,6 @@ theorem tan_two_mul {x : ℝ} : tan (2 * x) = 2 * tan x / (1 - tan x ^ 2) := by
   norm_cast at *
 #align real.tan_two_mul Real.tan_two_mul
 
-theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ k * π / 2 := by
-  rw [← Complex.ofReal_ne_zero, Complex.ofReal_tan, Complex.tan_ne_zero_iff]; norm_cast
-#align real.tan_ne_zero_iff Real.tan_ne_zero_iff
-
-theorem tan_eq_zero_iff {θ : ℝ} : tan θ = 0 ↔ ∃ k : ℤ, θ = k * π / 2 := by
-  rw [← not_iff_not, not_exists, ← Ne, tan_ne_zero_iff]
-#align real.tan_eq_zero_iff Real.tan_eq_zero_iff
-
 theorem tan_int_mul_pi_div_two (n : ℤ) : tan (n * π / 2) = 0 :=
   tan_eq_zero_iff.mpr (by use n)
 #align real.tan_int_mul_pi_div_two Real.tan_int_mul_pi_div_two
@@ -74,7 +70,7 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne.def]
   rw [cos_eq_zero_iff]
   rintro hx_gt hx_lt ⟨r, hxr_eq⟩
-  cases' le_or_lt 0 r with h h
+  rcases le_or_lt 0 r with h | h
   · rw [lt_iff_not_ge] at hx_lt
     refine' hx_lt _
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, mul_le_mul_right (half_pos pi_pos)]
@@ -202,6 +198,94 @@ theorem arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (sqrt (1 - x 
   · linarith only [arcsin_pos.2 h]
 #align real.arccos_eq_arctan Real.arccos_eq_arctan
 
+theorem arctan_inv_of_pos {x : ℝ} (h : 0 < x) : arctan x⁻¹ = π / 2 - arctan x := by
+  rw [← arctan_tan (x := _ - _), tan_pi_div_two_sub, tan_arctan]
+  · norm_num
+    exact (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
+  · rw [sub_lt_self_iff, ← arctan_zero]
+    exact tanOrderIso.symm.strictMono h
+
+theorem arctan_inv_of_neg {x : ℝ} (h : x < 0) : arctan x⁻¹ = -(π / 2) - arctan x := by
+  have := arctan_inv_of_pos (neg_pos.mpr h)
+  rwa [inv_neg, arctan_neg, neg_eq_iff_eq_neg, neg_sub', arctan_neg, neg_neg] at this
+
+section ArctanAdd
+
+lemma arctan_ne_mul_pi_div_two {x : ℝ} : ∀ (k : ℤ), arctan x ≠ (2 * k + 1) * π / 2 := by
+  by_contra!
+  obtain ⟨k, h⟩ := this
+  obtain ⟨lb, ub⟩ := arctan_mem_Ioo x
+  rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_right (by positivity)] at lb
+  rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_right (by positivity)] at ub
+  norm_cast at lb ub; change -1 < _ at lb; omega
+
+lemma arctan_add_arctan_lt_pi_div_two {x y : ℝ} (h : x * y < 1) : arctan x + arctan y < π / 2 := by
+  cases' le_or_lt y 0 with hy hy
+  · rw [← add_zero (π / 2), ← arctan_zero]
+    exact add_lt_add_of_lt_of_le (arctan_lt_pi_div_two _) (tanOrderIso.symm.monotone hy)
+  · rw [← lt_div_iff hy, ← inv_eq_one_div] at h
+    replace h : arctan x < arctan y⁻¹ := tanOrderIso.symm.strictMono h
+    rwa [arctan_inv_of_pos hy, lt_tsub_iff_right] at h
+
+theorem arctan_add {x y : ℝ} (h : x * y < 1) :
+    arctan x + arctan y = arctan ((x + y) / (1 - x * y)) := by
+  rw [← arctan_tan (x := _ + _)]
+  · congr
+    conv_rhs => rw [← tan_arctan x, ← tan_arctan y]
+    exact tan_add' ⟨arctan_ne_mul_pi_div_two, arctan_ne_mul_pi_div_two⟩
+  · rw [neg_lt, neg_add, ← arctan_neg, ← arctan_neg]
+    rw [← neg_mul_neg] at h
+    exact arctan_add_arctan_lt_pi_div_two h
+  · exact arctan_add_arctan_lt_pi_div_two h
+
+theorem arctan_add_eq_add_pi {x y : ℝ} (h : 1 < x * y) (hx : 0 < x) :
+    arctan x + arctan y = arctan ((x + y) / (1 - x * y)) + π := by
+  have hy : 0 < y := by
+    have := mul_pos_iff.mp (zero_lt_one.trans h)
+    simpa [hx, hx.asymm]
+  have k := arctan_add (mul_inv x y ▸ inv_lt_one h)
+  rw [arctan_inv_of_pos hx, arctan_inv_of_pos hy, show _ + _ = π - (arctan x + arctan y) by ring,
+    sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', sub_eq_add_neg, ← arctan_neg, add_comm] at k
+  convert k.symm using 3
+  field_simp
+  rw [show -x + -y = -(x + y) by ring, show x * y - 1 = -(1 - x * y) by ring, neg_div_neg_eq]
+
+theorem arctan_add_eq_sub_pi {x y : ℝ} (h : 1 < x * y) (hx : x < 0) :
+    arctan x + arctan y = arctan ((x + y) / (1 - x * y)) - π := by
+  rw [← neg_mul_neg] at h
+  have k := arctan_add_eq_add_pi h (neg_pos.mpr hx)
+  rw [show _ / _ = -((x + y) / (1 - x * y)) by ring, ← neg_inj] at k
+  simp only [arctan_neg, neg_add, neg_neg, ← sub_eq_add_neg _ π] at k
+  exact k
+
+theorem two_mul_arctan {x : ℝ} (h₁ : -1 < x) (h₂ : x < 1) :
+    2 * arctan x = arctan (2 * x / (1 - x ^ 2)) := by
+  rw [two_mul, arctan_add (by nlinarith)]; congr 1; ring
+
+theorem two_mul_arctan_add_pi {x : ℝ} (h : 1 < x) :
+    2 * arctan x = arctan (2 * x / (1 - x ^ 2)) + π := by
+  rw [two_mul, arctan_add_eq_add_pi (by nlinarith) (by linarith)]; congr 2; ring
+
+theorem two_mul_arctan_sub_pi {x : ℝ} (h : x < -1) :
+    2 * arctan x = arctan (2 * x / (1 - x ^ 2)) - π := by
+  rw [two_mul, arctan_add_eq_sub_pi (by nlinarith) (by linarith)]; congr 2; ring
+
+theorem arctan_inv_2_add_arctan_inv_3 : arctan 2⁻¹ + arctan 3⁻¹ = π / 4 := by
+  rw [arctan_add] <;> norm_num
+
+theorem two_mul_arctan_inv_2_sub_arctan_inv_7 : 2 * arctan 2⁻¹ - arctan 7⁻¹ = π / 4 := by
+  rw [two_mul_arctan, ← arctan_one, sub_eq_iff_eq_add, arctan_add] <;> norm_num
+
+theorem two_mul_arctan_inv_3_add_arctan_inv_7 : 2 * arctan 3⁻¹ + arctan 7⁻¹ = π / 4 := by
+  rw [two_mul_arctan, arctan_add] <;> norm_num
+
+/-- **John Machin's 1706 formula**, which he used to compute π to 100 decimal places. -/
+theorem four_mul_arctan_inv_5_sub_arctan_inv_239 : 4 * arctan 5⁻¹ - arctan 239⁻¹ = π / 4 := by
+  rw [show 4 * arctan _ = 2 * (2 * _) by ring, two_mul_arctan, two_mul_arctan, ← arctan_one,
+    sub_eq_iff_eq_add, arctan_add] <;> norm_num
+
+end ArctanAdd
+
 @[continuity]
 theorem continuous_arctan : Continuous arctan :=
   continuous_subtype_val.comp tanOrderIso.toHomeomorph.continuous_invFun
@@ -211,8 +295,8 @@ theorem continuousAt_arctan {x : ℝ} : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 #align real.continuous_at_arctan Real.continuousAt_arctan
 
-/-- `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
-def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ where
+/-- `Real.tan` as a `PartialHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
+def tanPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan
   source := Ioo (-(π / 2)) (π / 2)
@@ -223,18 +307,18 @@ def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   right_inv' y _ := tan_arctan y
   open_source := isOpen_Ioo
   open_target := isOpen_univ
-  continuous_toFun := continuousOn_tan_Ioo
-  continuous_invFun := continuous_arctan.continuousOn
-#align real.tan_local_homeomorph Real.tanLocalHomeomorph
+  continuousOn_toFun := continuousOn_tan_Ioo
+  continuousOn_invFun := continuous_arctan.continuousOn
+#align real.tan_local_homeomorph Real.tanPartialHomeomorph
 
 @[simp]
-theorem coe_tanLocalHomeomorph : ⇑tanLocalHomeomorph = tan :=
+theorem coe_tanPartialHomeomorph : ⇑tanPartialHomeomorph = tan :=
   rfl
-#align real.coe_tan_local_homeomorph Real.coe_tanLocalHomeomorph
+#align real.coe_tan_local_homeomorph Real.coe_tanPartialHomeomorph
 
 @[simp]
-theorem coe_tanLocalHomeomorph_symm : ⇑tanLocalHomeomorph.symm = arctan :=
+theorem coe_tanPartialHomeomorph_symm : ⇑tanPartialHomeomorph.symm = arctan :=
   rfl
-#align real.coe_tan_local_homeomorph_symm Real.coe_tanLocalHomeomorph_symm
+#align real.coe_tan_local_homeomorph_symm Real.coe_tanPartialHomeomorph_symm
 
 end Real

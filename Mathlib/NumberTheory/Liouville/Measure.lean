@@ -31,8 +31,6 @@ open scoped Filter BigOperators ENNReal Topology NNReal
 
 open Filter Set Metric MeasureTheory Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 theorem setOf_liouvilleWith_subset_aux :
     { x : ℝ | ∃ p > 2, LiouvilleWith p x } ⊆
       ⋃ m : ℤ, (· + (m : ℝ)) ⁻¹' ⋃ n > (0 : ℕ),
@@ -101,7 +99,7 @@ theorem volume_iUnion_setOf_liouvilleWith :
           Int.toNat_coe_nat, ← Nat.cast_succ, ENNReal.coe_mul, ENNReal.coe_nat]
       _ = _ := by
         have : 1 - r ≠ 0 := by linarith
-        rw [ENNReal.coe_eq_coe]
+        rw [ENNReal.coe_inj]
         simp [add_mul, div_eq_mul_inv, NNReal.rpow_neg, NNReal.rpow_sub' _ this, mul_add,
           mul_left_comm]
   refine' ne_top_of_le_ne_top (ENNReal.tsum_coe_ne_top_iff_summable.2 _) (ENNReal.tsum_le_tsum this)

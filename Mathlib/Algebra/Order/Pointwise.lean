@@ -180,8 +180,6 @@ variable {K : Type*} [LinearOrderedField K] {a b r : K} (hr : 0 < r)
 
 open Set
 
--- Porting note: Removing `include hr`
-
 theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Ioo]

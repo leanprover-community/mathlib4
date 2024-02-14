@@ -78,7 +78,7 @@ infixl:25 " ≃+*o " => OrderRingIso
 /-- `OrderRingHomClass F α β` states that `F` is a type of ordered semiring homomorphisms.
 You should extend this typeclass when you extend `OrderRingHom`. -/
 class OrderRingHomClass (F : Type*) (α β : outParam <| Type*) [NonAssocSemiring α] [Preorder α]
-  [NonAssocSemiring β] [Preorder β] extends RingHomClass F α β where
+  [NonAssocSemiring β] [Preorder β] [FunLike F α β] extends RingHomClass F α β : Prop where
   /-- The proposition that the function preserves the order. -/
   monotone (f : F) : Monotone f
 #align order_ring_hom_class OrderRingHomClass
@@ -86,10 +86,14 @@ class OrderRingHomClass (F : Type*) (α β : outParam <| Type*) [NonAssocSemirin
 /-- `OrderRingIsoClass F α β` states that `F` is a type of ordered semiring isomorphisms.
 You should extend this class when you extend `OrderRingIso`. -/
 class OrderRingIsoClass (F : Type*) (α β : outParam (Type*)) [Mul α] [Add α] [LE α] [Mul β]
-  [Add β] [LE β] extends RingEquivClass F α β where
+  [Add β] [LE β] [EquivLike F α β] extends RingEquivClass F α β : Prop where
   /-- The proposition that the function preserves the order bijectively. -/
   map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
 #align order_ring_iso_class OrderRingIsoClass
+
+section Hom
+
+variable [FunLike F α β]
 
 -- See note [lower priority instance]
 instance (priority := 100) OrderRingHomClass.toOrderAddMonoidHomClass [NonAssocSemiring α]
@@ -104,6 +108,12 @@ instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass [NonA
     OrderMonoidWithZeroHomClass F α β :=
   { ‹OrderRingHomClass F α β› with }
 #align order_ring_hom_class.to_order_monoid_with_zero_hom_class OrderRingHomClass.toOrderMonoidWithZeroHomClass
+
+end Hom
+
+section Equiv
+
+variable [EquivLike F α β]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderRingIsoClass.toOrderIsoClass [Mul α] [Add α] [LE α]
@@ -121,6 +131,12 @@ instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass [NonAssocSemiri
     }
 #align order_ring_iso_class.to_order_ring_hom_class OrderRingIsoClass.toOrderRingHomClass
 
+end Equiv
+
+section Hom
+
+variable [FunLike F α β]
+
 -- porting note: OrderRingHomClass.toOrderRingHom is new
 /-- Turn an element of a type `F` satisfying `OrderRingHomClass F α β` into an actual
 `OrderRingHom`. This is declared as the default coercion from `F` to `α →+*o β`. -/
@@ -135,6 +151,12 @@ instance [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
     [OrderRingHomClass F α β] : CoeTC F (α →+*o β) :=
   ⟨OrderRingHomClass.toOrderRingHom⟩
 
+end Hom
+
+section Equiv
+
+variable [EquivLike F α β]
+
 -- porting note: OrderRingIsoClass.toOrderRingIso is new
 /-- Turn an element of a type `F` satisfying `OrderRingIsoClass F α β` into an actual
 `OrderRingIso`. This is declared as the default coercion from `F` to `α ≃+*o β`. -/
@@ -148,6 +170,8 @@ def OrderRingIsoClass.toOrderRingIso [Mul α] [Add α] [LE α] [Mul β] [Add β]
 instance [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [OrderRingIsoClass F α β] :
     CoeTC F (α ≃+*o β) :=
   ⟨OrderRingIsoClass.toOrderRingIso⟩
+
+end Equiv
 
 /-! ### Ordered ring homomorphisms -/
 
@@ -170,24 +194,21 @@ def toOrderMonoidWithZeroHom (f : α →+*o β) : α →*₀o β :=
   { f with }
 #align order_ring_hom.to_order_monoid_with_zero_hom OrderRingHom.toOrderMonoidWithZeroHom
 
-instance : OrderRingHomClass (α →+*o β) α β
+instance : FunLike (α →+*o β) α β
     where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
     -- porting note: needed to add the following line
-    exact MonoidHom.monoidHomClass.coe_injective' h
+    exact DFunLike.coe_injective' h
+
+instance : OrderRingHomClass (α →+*o β) α β
+    where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   monotone f := f.monotone'
-
--- porting note: These helper instances are unhelpful in Lean 4, so omitting:
--- /-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
--- directly. -/
--- instance : CoeFun (α →+*o β) fun _ => α → β :=
---   ⟨fun f => f.toFun⟩
 
 theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
   rfl
@@ -195,7 +216,7 @@ theorem toFun_eq_coe (f : α →+*o β) : f.toFun = f :=
 
 @[ext]
 theorem ext {f g : α →+*o β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align order_ring_hom.ext OrderRingHom.ext
 
 @[simp]
@@ -255,7 +276,7 @@ theorem coe_copy (f : α →+*o β) (f' : α → β) (h : f' = f) : ⇑(f.copy f
 #align order_ring_hom.coe_copy OrderRingHom.coe_copy
 
 theorem copy_eq (f : α →+*o β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  FunLike.ext' h
+  DFunLike.ext' h
 #align order_ring_hom.copy_eq OrderRingHom.copy_eq
 
 variable (α)
@@ -329,7 +350,7 @@ theorem id_comp (f : α →+*o β) : (OrderRingHom.id β).comp f = f :=
 @[simp]
 theorem cancel_right {f₁ f₂ : β →+*o γ} {g : α →+*o β} (hg : Surjective g) :
     f₁.comp g = f₂.comp g ↔ f₁ = f₂ :=
-  ⟨fun h => ext <| hg.forall.2 <| FunLike.ext_iff.1 h, fun h => by rw [h]⟩
+  ⟨fun h => ext <| hg.forall.2 <| DFunLike.ext_iff.1 h, fun h => by rw [h]⟩
 #align order_ring_hom.cancel_right OrderRingHom.cancel_right
 
 @[simp]
@@ -346,7 +367,7 @@ instance [Preorder β] : Preorder (OrderRingHom α β) :=
   Preorder.lift ((⇑) : _ → α → β)
 
 instance [PartialOrder β] : PartialOrder (OrderRingHom α β) :=
-  PartialOrder.lift _ FunLike.coe_injective
+  PartialOrder.lift _ DFunLike.coe_injective
 
 end OrderRingHom
 
@@ -366,7 +387,7 @@ def toOrderIso (f : α ≃+*o β) : α ≃o β :=
   ⟨f.toRingEquiv.toEquiv, f.map_le_map_iff'⟩
 #align order_ring_iso.to_order_iso OrderRingIso.toOrderIso
 
-instance : OrderRingIsoClass (α ≃+*o β) α β
+instance : EquivLike (α ≃+*o β) α β
     where
   coe f := f.toFun
   inv f := f.invFun
@@ -374,17 +395,14 @@ instance : OrderRingIsoClass (α ≃+*o β) α β
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g
     congr
-  map_add f := f.map_add'
-  map_mul f := f.map_mul'
-  map_le_map_iff f _ _ := f.map_le_map_iff'
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
--- porting note: These helper instances are unhelpful in Lean 4, so omitting:
-/-- Helper instance for when there's too many metavariables to apply `FunLike.has_coe_to_fun`
-directly. -/
--- instance : CoeFun (α ≃+*o β) fun _ => α → β :=
---   FunLike.has_coe_to_fun
+instance : OrderRingIsoClass (α ≃+*o β) α β
+    where
+  map_add f := f.map_add'
+  map_mul f := f.map_mul'
+  map_le_map_iff f _ _ := f.map_le_map_iff'
 
 theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
   rfl
@@ -392,7 +410,7 @@ theorem toFun_eq_coe (f : α ≃+*o β) : f.toFun = f :=
 
 @[ext]
 theorem ext {f g : α ≃+*o β} (h : ∀ a, f a = g a) : f = g :=
-  FunLike.ext f g h
+  DFunLike.ext f g h
 #align order_ring_iso.ext OrderRingIso.ext
 
 @[simp]
@@ -420,9 +438,9 @@ theorem coe_toRingEquiv (f : α ≃+*o β) : ⇑(f : α ≃+* β) = f :=
   rfl
 #align order_ring_iso.coe_to_ring_equiv OrderRingIso.coe_toRingEquiv
 
--- Porting note: needed to add FunLike.coe on the lhs, bad Equiv coercion otherwise
+-- Porting note: needed to add DFunLike.coe on the lhs, bad Equiv coercion otherwise
 @[simp, norm_cast]
-theorem coe_toOrderIso (f : α ≃+*o β) : FunLike.coe (f : α ≃o β) = f :=
+theorem coe_toOrderIso (f : α ≃+*o β) : DFunLike.coe (f : α ≃o β) = f :=
   rfl
 #align order_ring_iso.coe_to_order_iso OrderRingIso.coe_toOrderIso
 
@@ -505,9 +523,8 @@ theorem symm_trans_self (e : α ≃+*o β) : e.symm.trans e = OrderRingIso.refl 
   ext e.right_inv
 #align order_ring_iso.symm_trans_self OrderRingIso.symm_trans_self
 
-theorem symm_bijective : Bijective (OrderRingIso.symm : α ≃+*o β → β ≃+*o α) :=
-  ⟨fun f g h => f.symm_symm.symm.trans <| (congr_arg OrderRingIso.symm h).trans g.symm_symm,
-    fun f => ⟨f.symm, f.symm_symm⟩⟩
+theorem symm_bijective : Bijective (OrderRingIso.symm : (α ≃+*o β) → β ≃+*o α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align order_ring_iso.symm_bijective OrderRingIso.symm_bijective
 
 end LE
@@ -538,7 +555,7 @@ theorem coe_toOrderRingHom_refl : (OrderRingIso.refl α : α →+*o α) = OrderR
 #align order_ring_iso.coe_to_order_ring_hom_refl OrderRingIso.coe_toOrderRingHom_refl
 
 theorem toOrderRingHom_injective : Injective (toOrderRingHom : α ≃+*o β → α →+*o β) :=
-  fun f g h => FunLike.coe_injective <| by convert FunLike.ext'_iff.1 h using 0
+  fun f g h => DFunLike.coe_injective <| by convert DFunLike.ext'_iff.1 h using 0
 #align order_ring_iso.to_order_ring_hom_injective OrderRingIso.toOrderRingHom_injective
 
 end NonAssocSemiring
@@ -559,7 +576,7 @@ instance OrderRingHom.subsingleton [LinearOrderedField α] [LinearOrderedField �
     Subsingleton (α →+*o β) :=
   ⟨fun f g => by
     ext x
-    by_contra' h' : f x ≠ g x
+    by_contra! h' : f x ≠ g x
     wlog h : f x < g x generalizing α β with h₂
     -- porting note: had to add the `generalizing` as there are random variables
     -- `F γ δ` flying around in context.

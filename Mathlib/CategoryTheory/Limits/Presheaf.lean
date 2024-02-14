@@ -390,7 +390,7 @@ noncomputable def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type 
   · intro P₁ P₂ f
     apply (isColimitOfPreserves L₁ (colimitOfRepresentable P₁)).hom_ext
     intro j
-    dsimp only [id.def, IsColimit.comp_coconePointsIsoOfNatIso_hom, isoWhiskerLeft_hom]
+    dsimp only [id.def, isoWhiskerLeft_hom]
     have :
       (L₁.mapCocone (coconeOfRepresentable P₁)).ι.app j ≫ L₁.map f =
         (L₁.mapCocone (coconeOfRepresentable P₂)).ι.app
@@ -459,7 +459,8 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     intros X Y f
     ext t
     dsimp
-    rw [yonedaEquiv_naturality', yonedaEquiv_symm_map]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [yonedaEquiv_naturality', yonedaEquiv_symm_map]
     simpa using (s.ι.naturality
       (CostructuredArrow.homMk' (CostructuredArrow.mk (yonedaEquiv.symm t)) f.unop)).symm
   fac := by
@@ -468,14 +469,16 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     apply yonedaEquiv.injective
     rw [yonedaEquiv_comp]
     dsimp only
-    rw [Equiv.symm_apply_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Equiv.symm_apply_apply]
     rfl
   uniq := by
     intro s j h
     ext V x
     obtain ⟨t, rfl⟩ := yonedaEquiv.surjective x
     dsimp
-    rw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
     exact congr_arg _ (h (CostructuredArrow.mk t))
 
 end ArbitraryUniverses

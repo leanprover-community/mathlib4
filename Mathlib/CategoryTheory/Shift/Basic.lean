@@ -3,6 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin, Andrew Yang
 -/
+import Mathlib.Algebra.Group.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Discrete
@@ -128,8 +129,13 @@ def hasShiftMk (h : ShiftMkCore C A) : HasShift C A :=
   ⟨{ Discrete.functor h.F with
       ε := h.zero.inv
       μ := fun m n => (h.add m.as n.as).inv
-      μ_natural := by
-        rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨Y'⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨⟨⟨rfl⟩⟩⟩
+      μ_natural_left := by
+        rintro ⟨X⟩ ⟨Y⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨X'⟩
+        ext
+        dsimp
+        simp
+      μ_natural_right := by
+        rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨⟨⟨rfl⟩⟩⟩
         ext
         dsimp
         simp
@@ -714,7 +720,7 @@ lemma map_hasShiftOfFullyFaithful_add_hom_app (a b : A) (X : C) :
 lemma map_hasShiftOfFullyFaithful_add_inv_app (a b : A) (X : C) :
     F.map ((hasShiftOfFullyFaithful_add F s i a b).inv.app X) =
       (i b).hom.app ((s a).obj X) ≫ ((i a).hom.app X)⟦b⟧' ≫
-        (shiftFunctorAdd D a b).inv.app (F.obj X) ≫ (i (a + b)).inv.app X  := by
+        (shiftFunctorAdd D a b).inv.app (F.obj X) ≫ (i (a + b)).inv.app X := by
   dsimp [hasShiftOfFullyFaithful_add]
   simp
 #align category_theory.map_has_shift_of_fully_faithful_add_inv_app CategoryTheory.map_hasShiftOfFullyFaithful_add_inv_app
@@ -749,7 +755,7 @@ def hasShiftOfFullyFaithful :
         congr 1
         erw [(i n).hom.naturality]
         dsimp
-        simp )
+        simp)
       add_zero_hom_app := fun n X => F.map_injective (by
         have := dcongr_arg (fun a => (i a).hom.app X) (add_zero n)
         simp [this, ← NatTrans.naturality_assoc, eqToHom_map,
