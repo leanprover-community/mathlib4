@@ -863,6 +863,8 @@ theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBody
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT_mem K f).mp h_mem⟩
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 /-- A version of `exists_ne_zero_mem_ideal_lt` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K 1 < volume (convexBodyLT K f)) :
     ∃ a ∈ 𝓞 K, a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
@@ -907,6 +909,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   · rw [← Nat.cast_sum, sum_mult_eq, Nat.cast_pos]
     exact finrank_pos
 
+/- Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     (h : (minkowskiBound K 1) ≤ volume (convexBodySum K B)) :
     ∃ a ∈ 𝓞 K, a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by

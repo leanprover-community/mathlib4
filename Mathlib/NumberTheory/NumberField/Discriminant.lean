@@ -147,6 +147,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
         div_pow, inv_eq_one_div, div_pow, one_pow, zpow_coe_nat]
       ring
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧
       |Algebra.norm ℚ (a:K)| ≤ (4 / π) ^ NrComplexPlaces K *
