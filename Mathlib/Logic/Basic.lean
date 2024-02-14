@@ -475,7 +475,7 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ a → b := Decidable.not_and_not_r
 /-! ### De Morgan's laws -/
 
 #align decidable.not_and_distrib Decidable.not_and_iff_or_not_not
-#align decidable.not_and_distrib' Decidable.not_and_iff_or_not_not
+#align decidable.not_and_distrib' Decidable.not_and_iff_or_not_not'
 
 /-- One of **de Morgan's laws**: the negation of a conjunction is logically equivalent to the
 disjunction of the negations. -/
