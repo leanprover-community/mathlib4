@@ -79,12 +79,16 @@ theorem isProbabilityMeasure {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
       restrict_apply, Set.univ_inter, smul_eq_mul]
     exact ENNReal.inv_mul_cancel hns hnt
 
-instance uniformMeasure.isProbabilityMeasure {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞) :
+instance uniformMeasure.isProbabilityMeasure {s : Set E} {hns : μ s ≠ 0} {hnt : μ s ≠ ∞} :
     IsProbabilityMeasure (uniformMeasure s μ) :=
   MeasureTheory.UniformMeasure.isProbabilityMeasure hns hnt
 
-instance uniformMeasure.isFiniteMeasure {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞) :
-    IsFiniteMeasure (uniformMeasure s μ) := (isProbabilityMeasure hns hnt).toIsFiniteMeasure
+instance uniformMeasure.isFiniteMeasure {s : Set E} {hns : μ s ≠ 0} {hnt : μ s ≠ ∞} :
+    IsFiniteMeasure (uniformMeasure s μ) := by
+  apply uniformMeasure.isProbabilityMeasure.toIsFiniteMeasure
+  exact hns
+  exact hnt
+
 
 theorem toMeasurable_eq {s : Set E} :
     uniformMeasure (toMeasurable μ s) μ = uniformMeasure s μ := by
