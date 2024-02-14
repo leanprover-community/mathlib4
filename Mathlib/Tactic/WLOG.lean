@@ -100,14 +100,10 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     unless replacedFVars.all revertedFVars.contains do
       return (revertedFVars, replacedFVars, HTypeResult.unreplaceable)
     let revertedFVars := revertedFVars.filter (not ∘ replacedFVars.contains)
-    /- If `HSuffix` depends on a replaced fvar which, in turn, depends on a *reverted* fvar, throw
-    an error (see below). -/
-    let rvf := (← collectForwardDeps lctx <| revertedFVars.map Expr.fvar).map Expr.fvarId!
-    let isIllFormed ← dependsOnPred HSuffix fun fvarId =>
-      replacedFVars.contains fvarId && rvf.contains fvarId
+    -- If `HSuffix` depends on a replaced fvar, throw an error (see below).
+    let isIllFormed ← dependsOnPred HSuffix replacedFVars.contains
     if isIllFormed then
-      let offending ← replacedFVars.filterM fun fvarId =>
-        pure (rvf.contains fvarId) <&&> exprDependsOn HSuffix fvarId
+      let offending ← replacedFVars.filterM <| exprDependsOn HSuffix
       return (revertedFVars, replacedFVars, .illFormed offending)
     let HType ← withFreshCache do mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix
     return (revertedFVars, replacedFVars, .ok HType))
@@ -122,9 +118,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
         {indentD (revertedFVars.map Expr.fvar).toList}"
     | .illFormed offending => do
       throwError "{indentD HSuffix}\n\
-        depends on the replaced hypotheses{indentD (offending.map Expr.fvar).toList}\n\
-        which in turn depend on the reverted hypotheses\
-        {indentD (revertedFVars.map Expr.fvar).toList}"
+        depends on the replaced hypotheses{indentD (offending.map Expr.fvar).toList}"
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
   is obtained through `introNP` -/
   let HExpr ← mkFreshExprSyntheticOpaqueMVar HType
