@@ -322,6 +322,24 @@ example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 -- example {r : ℝ≥0} : 0 ≤ ((r : ℝ) : ereal) := by positivity
 -- example {r : ℝ≥0} : 0 < ((r + 1 : ℝ) : ereal) := by positivity
 
+/-! ## Big operators -/
+
+example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j in range n, a j^2 := by positivity
+example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j in s, a j ^ 2 := by positivity
+example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j : Fin 8, ∑ i in range n, (a j ^ 2 + i ^ 2) := by positivity
+example (n : ℕ) (a : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (a j ^ 2 + 1) := by positivity
+example (a : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (a j ^ 2 + 1) := by
+  have : Finset.Nonempty {1} := singleton_nonempty 1
+  positivity
+example (s : Finset ℕ) : 0 ≤ ∑ j in s, j := by positivity
+example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
+example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
+
+-- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
+-- `0` because of the `hf` assumption
+set_option linter.unusedVariables false in
+example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n in Finset.range 10, f n := by positivity
+
 /- ## Other extensions -/
 
 example [Zero β] [PartialOrder β] [FunLike F α β] [NonnegHomClass F α β]

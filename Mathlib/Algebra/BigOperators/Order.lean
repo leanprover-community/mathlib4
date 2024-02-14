@@ -820,13 +820,26 @@ end AbsoluteValue
 namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
 
+/-- Prove that a finset is nonempty from a local assumption or from the fact that the finset is
+`univ` in a nonempty fintype.
+
+Note that this does not do any complicated reasoning: the only ways it can prove `s` is nonempty is
+if there is a local `s.Nonempty` hypothesis or `s = (univ : Finset α)` and `Nonempty α` can be
+synthesized by TC inference.
+
+TODO: Replace by an aesop ruleset? -/
+def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
+    MetaM Q(Finset.Nonempty $s) := do
+  try
+    let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s) | failure
+    pure $ .fvar fv
+  catch _ => do
+    let ~q(@univ _ $fi) := s | failure
+    let _no ← synthInstanceQ q(Nonempty $α)
+    pure $ q(Finset.univ_nonempty (α := $α))
+
 /-- The `positivity` extension which proves that `∑ i in s, f i` is nonnegative if `f` is, and
 positive if each `f i` is and `s` is nonempty.
-
-Note that this does not do any complicated reasoning. In particular, it does not try to feed in the
-`i ∈ s` hypothesis to local assumptions, and the only ways it can prove `s` is nonempty is if there
-is a local `s.Nonempty` hypothesis or `s = (univ : Finset α)` and `Nonempty α` can be synthesized by
-TC inference.
 
 TODO: The following example does not work
 ```
@@ -844,20 +857,7 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
     -- Try to show that the sum is positive
     try
       let .positive pbody := rbody | failure -- Fail if the body is not provably positive
-      -- TODO: If we replace the next line by
-      -- let ps : Q(Finset.Nonempty $s) ← do
-      -- then the type-ascription is ignored. See leanprover/lean4#3126
-      let (ps : Q(Finset.Nonempty $s)) ← do
-        try
-          match s with
-          | ~q(@univ _ $fi) => do
-            let _no ← synthInstanceQ q(Nonempty $ι)
-            return q(Finset.univ_nonempty (α := $ι))
-          | _ => throwError "`s` is not `univ`"
-        catch _ => do
-          let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s)
-            | failure -- Fail if the set is not provably nonempty
-          pure (.fvar fv)
+      let ps ← proveFinsetNonempty s
       let pα' ← synthInstanceQ q(OrderedCancelAddCommMonoid $α)
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
@@ -872,21 +872,5 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
       proof.check
       return .nonnegative proof
   | _ => throwError "not Finset.sum"
-
-example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j in range n, a j^2 := by positivity
-example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j in s, a j^2 := by positivity
-example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j : Fin 8, ∑ i in range n, (a j^2 + i ^ 2) := by positivity
-example (n : ℕ) (a : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (a j^2 + 1) := by positivity
-example (a : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (a j^2 + 1) := by
-  have : Finset.Nonempty {1} := singleton_nonempty 1
-  positivity
-example (s : Finset ℕ) : 0 ≤ ∑ j in s, j := by positivity
-example (s : Finset ℕ) : 0 ≤ s.sum id := by positivity
-example (s : Finset ℕ) (f : ℕ → ℕ) (a : ℕ) : 0 ≤ s.sum (f a) := by positivity
-
--- Make sure that the extension doesn't produce an invalid term by accidentally unifying `?n` with
--- `0` because of the `hf` assumption
-set_option linter.unusedVariables false in
-example (f : ℕ → ℕ) (hf : 0 ≤ f 0) : 0 ≤ ∑ n in Finset.range 10, f n := by positivity
 
 end Mathlib.Meta.Positivity
