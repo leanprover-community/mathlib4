@@ -6,9 +6,10 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Logic.Relation
+import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
 
-#align_import set_theory.game.pgame from "leanprover-community/mathlib"@"dc9e5ba64653e017743ba5d2c28e42f9f486bf99"
+#align_import set_theory.game.pgame from "leanprover-community/mathlib"@"8900d545017cd21961daa2a1734bb658ef52c618"
 
 /-!
 # Combinatorial (pre-)games.
@@ -730,6 +731,60 @@ theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
     0 ≤ (x.moveRight j).moveLeft (leftResponse h j) :=
   Classical.choose_spec <| (zero_le.1 h) j
 #align pgame.left_response_spec SetTheory.PGame.leftResponse_spec
+
+/-- An explicit upper bound for a family of pre-games, whose left moves are the union of the left
+moves of all the pre-games in the family. -/
+def upperBound {ι : Type u} (f : ι → PGame.{u}) : PGame :=
+  ⟨Σ i, (f i).LeftMoves, PEmpty, fun x => moveLeft _ x.2, PEmpty.elim⟩
+#align pgame.upper_bound SetTheory.PGame.upperBound
+
+instance upperBound_rightMoves_empty {ι : Type u} (f : ι → PGame.{u}) :
+    IsEmpty (upperBound f).RightMoves := instIsEmptyPEmpty
+#align pgame.upper_bound_right_moves_empty SetTheory.PGame.upperBound_rightMoves_empty
+
+lemma le_upperBound {ι : Type u} (f : ι → PGame.{u}) (i : ι) : f i ≤ upperBound f := by
+  rw [upperBound, le_iff_forall_lf]
+  dsimp
+  simp only [and_true_iff, IsEmpty.forall_iff]
+  exact fun j ↦ @moveLeft_lf (upperBound f) ⟨i, j⟩
+#align pgame.le_upper_bound SetTheory.PGame.le_upperBound
+
+lemma upperBound_mem_upperBounds (s : Set PGame.{u}) [Small.{u} s] :
+    upperBound (Subtype.val ∘ (equivShrink s).symm) ∈ upperBounds s := fun i hi ↦ by
+  simpa using le_upperBound (Subtype.val ∘ (equivShrink s).symm) (equivShrink s ⟨i, hi⟩)
+#align pgame.upper_bound_mem_upper_bounds SetTheory.PGame.upperBound_mem_upperBounds
+
+/-- A small set `s` of pre-games is bounded above. -/
+lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s :=
+  ⟨_, upperBound_mem_upperBounds s⟩
+#align pgame.bdd_above_of_small SetTheory.PGame.bddAbove_of_small
+
+/-- An explicit lower bound for a family of pre-games, whose right moves are the union of the right
+moves of all the pre-games in the family. -/
+def lowerBound {ι : Type u} (f : ι → PGame.{u}) : PGame :=
+  ⟨PEmpty, Σ i, (f i).RightMoves, PEmpty.elim, fun x => moveRight _ x.2⟩
+#align pgame.lower_bound SetTheory.PGame.lowerBound
+
+instance lowerBound_leftMoves_empty {ι : Type u} (f : ι → PGame.{u}) :
+    IsEmpty (lowerBound f).LeftMoves := instIsEmptyPEmpty
+#align pgame.lower_bound_left_moves_empty SetTheory.PGame.lowerBound_leftMoves_empty
+
+lemma lowerBound_le {ι : Type u} (f : ι → PGame.{u}) (i : ι) : lowerBound f ≤ f i := by
+  rw [lowerBound, le_iff_forall_lf]
+  dsimp
+  simp only [IsEmpty.forall_iff, true_and_iff]
+  exact fun j ↦ @lf_moveRight (lowerBound f) ⟨i, j⟩
+#align pgame.lower_bound_le SetTheory.PGame.lowerBound_le
+
+lemma lowerBound_mem_lowerBounds (s : Set PGame.{u}) [Small.{u} s] :
+    lowerBound (Subtype.val ∘ (equivShrink s).symm) ∈ lowerBounds s := fun i hi => by
+  simpa using lowerBound_le (Subtype.val ∘ (equivShrink s).symm) (equivShrink s ⟨i, hi⟩)
+#align pgame.lower_bound_mem_lower_bounds SetTheory.PGame.lowerBound_mem_lowerBounds
+
+/-- A small set `s` of pre-games is bounded below. -/
+lemma bddBelow_of_small (s : Set PGame.{u}) [Small.{u} s] : BddBelow s :=
+  ⟨_, lowerBound_mem_lowerBounds s⟩
+#align pgame.bdd_below_of_small SetTheory.PGame.bddBelow_of_small
 
 /-- The equivalence relation on pre-games. Two pre-games `x`, `y` are equivalent if `x ≤ y` and
 `y ≤ x`.
