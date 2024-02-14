@@ -26,9 +26,7 @@ about finite sets and gives ways to manipulate `Set.Finite` expressions.
 
 ## Implementation
 
-A finite set is defined to be a set whose coercion to a type has a `Fintype` instance.
-Since `Set.Finite` is `Prop`-valued, this is the mere fact that the `Fintype` instance
-exists.
+A finite set is defined to be a set whose coercion to a type has a `Finite` instance.
 
 There are two components to finiteness constructions. The first is `Fintype` instances for each
 construction. This gives a way to actually compute a `Finset` that represents the set, and these
@@ -51,12 +49,8 @@ variable {α : Type u} {β : Type v} {ι : Sort w} {γ : Type x}
 
 namespace Set
 
-/-- A set is finite if there is a `Finset` with the same elements.
-This is represented as there being a `Fintype` instance for the set
-coerced to a type.
-
-Note: this is a custom inductive type rather than `Nonempty (Fintype s)`
-so that it won't be frozen as a local instance. -/
+/-- A set is finite if the corresponding `Subtype` is finite,
+i.e., if there exists a natural `n : ℕ` and an equivalence `s ≃ Fin n`. -/
 protected def Finite (s : Set α) : Prop := Finite s
 #align set.finite Set.Finite
 
