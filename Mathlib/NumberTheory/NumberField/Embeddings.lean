@@ -1054,15 +1054,10 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
     · rw [← Complex.abs_re_eq_abs] at him
       have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by linarith)
-      rw [Complex.norm_eq_abs, ← him] at this
-      by_cases hpos : 0 ≤ (f ζ).re
-      · rw [_root_.abs_of_nonneg hpos] at this
-        left; exact this
-      · rw [_root_.abs_of_neg (not_le.1 hpos)] at this
-        right; simp [← this]
+      rwa [Complex.norm_eq_abs, ← him, ← abs_one, abs_eq_abs] at this
   cases hre with
   | inl hone =>
-    refine hζ'.ne_one (by linarith) <| Complex.ext (by simp [hone]) (by simp [him])
+    exact hζ'.ne_one (by linarith) <| Complex.ext (by simp [hone]) (by simp [him])
   | inr hnegone =>
     replace hζ' := hζ'.eq_orderOf
     simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
