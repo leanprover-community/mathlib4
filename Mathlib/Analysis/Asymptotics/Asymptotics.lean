@@ -2147,6 +2147,10 @@ theorem IsLittleO.right_isBigO_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂)
   ((h.def' one_half_pos).right_le_add_of_lt_one one_half_lt_one).isBigO
 #align asymptotics.is_o.right_is_O_add Asymptotics.IsLittleO.right_isBigO_add
 
+theorem IsLittleO.right_isBigO_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
+    f₂ =O[l] (f₂ + f₁) :=
+  add_comm f₁ f₂ ▸ h.right_isBigO_add
+
 /-- If `f x = O(g x)` along `cofinite`, then there exists a positive constant `C` such that
 `‖f x‖ ≤ C * ‖g x‖` whenever `g x ≠ 0`. -/
 theorem bound_of_isBigO_cofinite (h : f =O[cofinite] g'') :
