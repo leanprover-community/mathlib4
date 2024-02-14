@@ -302,7 +302,7 @@ theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : C
   continuous_def.2 fun _ _ => isOpen_discrete _
 #align continuous_of_discrete_topology continuous_of_discreteTopology
 
-/-- A function to a discrete topological space is continuous if and only iff the preimage of every
+/-- A function to a discrete topological space is continuous if and only if the preimage of every
 singleton is open. -/
 theorem continuous_discrete_rng [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β]
     {f : α → β} : Continuous f ↔ ∀ b : β, IsOpen (f ⁻¹' {b}) :=
