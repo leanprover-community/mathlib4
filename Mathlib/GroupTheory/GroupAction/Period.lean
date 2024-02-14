@@ -40,14 +40,14 @@ theorem period_gt_of_moved {m : M} {a : α} {n : ℕ} (period_pos : 0 < period m
 theorem period_le_of_fixed {m : M} {a : α} {n : ℕ} (n_pos : 0 < n) (fixed : m ^ n • a = a) :
     period m a ≤ n := by
   rw [period_eq_minimalPeriod]
-  rw [fixed_iff_isPeriodicPt] at fixed
+  rw [← isPeriodicPt_smul_iff] at fixed
   exact Function.IsPeriodicPt.minimalPeriod_le n_pos fixed
 
 /-- If for some `n`, `m ^ n • a = a`, then `0 < period m a`. -/
 @[to_additive]
 theorem period_pos_of_fixed {m : M} {a : α} {n : ℕ} (n_pos : 0 < n) (fixed : m ^ n • a = a) :
     0 < period m a := by
-  rw [fixed_iff_isPeriodicPt] at fixed
+  rw [← isPeriodicPt_smul_iff] at fixed
   rw [period_eq_minimalPeriod]
   exact Function.IsPeriodicPt.minimalPeriod_pos n_pos fixed
 

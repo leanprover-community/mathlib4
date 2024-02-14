@@ -654,7 +654,7 @@ theorem pow_period_smul (m : M) (a : α) : m ^ (period m a) • a = a := by
   rw [period_eq_minimalPeriod, ← smul_iterate_apply, iterate_minimalPeriod]
 
 @[to_additive]
-lemma fixed_iff_isPeriodicPt {m : M} {a : α} {n : ℕ} :
+lemma isPeriodicPt_smul_iff {m : M} {a : α} {n : ℕ} :
     IsPeriodicPt (m • ·) n a ↔ m ^ n • a = a := by
   rw [← smul_iterate_apply, IsPeriodicPt, IsFixedPt]
 
@@ -669,7 +669,7 @@ This also holds for negative powers/multiples.
 @[to_additive]
 theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α} :
     m ^ n • a = a ↔ period m a ∣ n := by
-  rw [period_eq_minimalPeriod, ← isPeriodicPt_iff_minimalPeriod_dvd, fixed_iff_isPeriodicPt]
+  rw [period_eq_minimalPeriod, ← isPeriodicPt_iff_minimalPeriod_dvd, isPeriodicPt_smul_iff]
 
 @[to_additive]
 theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
