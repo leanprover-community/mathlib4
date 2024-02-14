@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 import Lean.Elab.Tactic.Calc
 import Std.CodeAction
-import Std.Data.Json
 
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.SelectPanelUtils

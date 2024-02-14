@@ -4,11 +4,7 @@
  [{"url": "https://github.com/leanprover/std4",
    "type": "git",
    "subDir": null,
-<<<<<<< HEAD
-   "rev": "420a537fbce3bdbecbad56ddf690a374a1c5aa6b",
-=======
-   "rev": "868bf6609ed0598105a3ff07e89394244ab1fa15",
->>>>>>> origin/master
+   "rev": "e7389853667763b5c4b043adc8303c1fbc5577b7",
    "name": "std",
    "manifestFile": "lake-manifest.json",
    "inputRev": "bump/nightly-2024-02-8",
@@ -26,7 +22,7 @@
   {"url": "https://github.com/leanprover-community/aesop",
    "type": "git",
    "subDir": null,
-   "rev": "bf360cdc197b49b80d2e47ed3113fe8304111fee",
+   "rev": "7520fbdf1a73a196de25662f40b80cb70d554e4e",
    "name": "aesop",
    "manifestFile": "lake-manifest.json",
    "inputRev": "bump/nightly-2024-02-08",
