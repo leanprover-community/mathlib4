@@ -759,7 +759,7 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
       simp
     · simp only [← this, Functor.comp_obj, Functor.map_comp, Equivalence.fun_inv_map,
         Functor.id_obj, Category.assoc, Iso.inv_hom_id_app, Category.comp_id]
-      erw [e.toAdjunction.left_triangle_components_assoc]
+      rw [reassoc_of% e.functor_unit_comp]
 
 instance (F : C ⥤ D) [IsEquivalence F] :
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a ↦ F.map (π a)) :=
