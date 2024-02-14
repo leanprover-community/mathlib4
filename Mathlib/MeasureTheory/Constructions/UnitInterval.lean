@@ -32,7 +32,7 @@ instance : IsProbabilityMeasure (volume : Measure I) where
 theorem measurable_symm : Measurable symm := continuous_symm.measurable
 
 /-- `unitInterval.symm` as a `MeasurableEquiv`. -/
-@[simps]
+@[simps!]
 def symmMeasurableEquiv : I ≃ᵐ I := symmHomeomorph.toMeasurableEquiv
 
 end unitInterval
