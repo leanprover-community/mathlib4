@@ -146,7 +146,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     norm_cast
     rw [complex_abs_of_int_eq_natAbs]
 
-/-This should work for complex `k`  (with a condition on `k.re`and taking the power out of the abs)
+/--This should work for complex `k`  (with a condition on `k.re`and taking the power out of the abs)
 but last I checked we were missing some lemmas about this -/
 lemma bound (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
     ((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs)^k ≤
