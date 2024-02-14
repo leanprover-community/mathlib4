@@ -42,14 +42,14 @@ attribute [pp_dot] Equivalence.toAdjunction
 /-- Transport `Limits.HasZeroMorphisms` along an equivalence. -/
 def Limits.HasZeroMorphisms.transport (e : C ≌ D) [Limits.HasZeroMorphisms C] :
     Limits.HasZeroMorphisms D where
-  Zero X Y := ⟨e.counitInv.app _ ≫ e.functor.map 0 ≫ e.counit.app _⟩
+  zero X Y := ⟨e.counitInv.app _ ≫ e.functor.map 0 ≫ e.counit.app _⟩
   zero_comp X {Y Z} f := show (_ ≫ _ ≫ _) ≫ _ = _ ≫ _ ≫ _ by
-    conv_rhs => rw [←zero_comp _ (e.inverse.map f)]
+    conv_rhs => rw [← zero_comp _ (e.inverse.map f)]
     simp_rw [Functor.map_comp, e.fun_inv_map, Category.assoc, Iso.inv_hom_id_app, Functor.id_obj,
       Category.comp_id]
   comp_zero {X Y} f Z := show _ ≫ (_ ≫ _ ≫ _) = _ ≫ _ ≫ _ by
-    conv_rhs => rw [←comp_zero (e.inverse.map f)]
-    simp_rw [Functor.map_comp, e.fun_inv_map, ←Category.assoc, Iso.inv_hom_id_app, Functor.id_obj,
+    conv_rhs => rw [← comp_zero (e.inverse.map f)]
+    simp_rw [Functor.map_comp, e.fun_inv_map, ← Category.assoc, Iso.inv_hom_id_app, Functor.id_obj,
       Category.id_comp]
 
 
@@ -62,11 +62,6 @@ theorem toAdjunction_unit {e : C ≌ D} :
 theorem toAdjunction_counit {e : C ≌ D} :
     e.toAdjunction.counit = e.counit :=
   rfl
-
-#check IsEquivalence
-
-#check Functor.mapCone
-
 
 /-- Transport a binary bicone along an equivalence.
 
@@ -92,7 +87,7 @@ def Functor.comapCone (e : C ⥤ D) [IsEquivalence e] (F : E ⥤ C) (c : Cone (F
 See also `CategoryTheory.Functor.mapBinaryBicone` -/
 @[simps]
 def Limits.BinaryBicone.transport [Limits.HasZeroMorphisms C]  [Limits.HasZeroMorphisms D]
-  (e : C ≌ D) {X Y : D} (b : BinaryBicone (e.inverse.obj X) (e.inverse.obj Y)) :
+    (e : C ≌ D) {X Y : D} (b : BinaryBicone (e.inverse.obj X) (e.inverse.obj Y)) :
     BinaryBicone X Y where
   pt := e.functor.obj b.pt
   fst := (e.toAdjunction.homEquiv _ _).symm b.fst
@@ -100,30 +95,30 @@ def Limits.BinaryBicone.transport [Limits.HasZeroMorphisms C]  [Limits.HasZeroMo
   inl := (e.symm.toAdjunction.homEquiv _ _) b.inl
   inr := (e.symm.toAdjunction.homEquiv _ _) b.inr
   inl_fst := by
-    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit, Functor.id_obj,
-      Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
-    slice_lhs 2 3 => rw [←Functor.map_comp, b.inl_fst, Functor.map_id]
+    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit,
+      Functor.id_obj, Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, b.inl_fst, Functor.map_id]
     simp only [toAdjunction_unit, toAdjunction_counit]
     rw [Equivalence.unit, Equivalence.symm_unitIso]
     simp
   inl_snd := by
-    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit, Functor.id_obj,
-      Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
-    slice_lhs 2 3 => rw [←Functor.map_comp, b.inl_snd, Functor.map_zero]
+    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit,
+      Functor.id_obj, Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, b.inl_snd, Functor.map_zero]
     simp only [toAdjunction_unit, toAdjunction_counit]
     rw [Equivalence.unit, Equivalence.symm_unitIso]
     simp
   inr_fst := by
-    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit, Functor.id_obj,
-      Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
-    slice_lhs 2 3 => rw [←Functor.map_comp, b.inr_fst, Functor.map_zero]
+    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit,
+      Functor.id_obj, Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, b.inr_fst, Functor.map_zero]
     simp only [toAdjunction_unit, toAdjunction_counit]
     rw [Equivalence.unit, Equivalence.symm_unitIso]
     simp
   inr_snd := by
-    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit, Functor.id_obj,
-      Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
-    slice_lhs 2 3 => rw [←Functor.map_comp, b.inr_snd, Functor.map_id]
+    simp only [Equivalence.symm_functor, Equivalence.symm_inverse, Adjunction.homEquiv_unit,
+      Functor.id_obj, Functor.comp_obj, Adjunction.homEquiv_counit, Category.assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, b.inr_snd, Functor.map_id]
     simp only [toAdjunction_unit, toAdjunction_counit]
     rw [Equivalence.unit, Equivalence.symm_unitIso]
     simp
@@ -144,10 +139,9 @@ def Functor.mapBinaryBiconeInv [Limits.HasZeroMorphisms C] [Limits.HasZeroMorphi
     BinaryBicone X Y :=
   Limits.BinaryBicone.transport e.asEquivalence.symm b
 
-
 @[simp]
 theorem Functor.mapBinaryBiconeInv_toCone [Limits.HasZeroMorphisms C]
-  [Limits.HasZeroMorphisms D]
+    [Limits.HasZeroMorphisms D]
     (e : D ⥤ C) [IsEquivalence e] {X Y : D} (b : BinaryBicone (e.obj X) (e.obj Y)) :
     (e.mapBinaryBiconeInv b).toCone =
       (e.mapConeInv <|
@@ -157,16 +151,20 @@ theorem Functor.mapBinaryBiconeInv_toCone [Limits.HasZeroMorphisms C]
       -- (BinaryFan.mk (P := e.inv.obj b.pt)
       --       (e.inv.map b.fst ≫ e.asEquivalence.unitInv.app X)
       --       (e.inv.map b.snd ≫ e.asEquivalence.unitInv.app Y))
-            := rfl
+            := sorry
 
-def Limits.BinaryBiproductData.transport [Limits.HasZeroMorphisms C]  [Limits.HasZeroMorphisms D]
-  (e : C ≌ D) {X Y : D} (b : BinaryBiproductData (e.inverse.obj X) (e.inverse.obj Y)) :
+def Limits.BinaryBicone.IsBilimit.transport [Limits.HasZeroMorphisms C] [Limits.HasZeroMorphisms D]
+    (e : C ≌ D) {X Y : D} {b : BinaryBicone (e.inverse.obj X) (e.inverse.obj Y)} (hb : b.IsBilimit) :
+    (b.transport e).IsBilimit where
+  isColimit := letI := hb.isColimit; sorry -- mkCofanColimit _ _ _ _
+  isLimit := letI := hb.isLimit; sorry
+
+/-- Transport `Limits.BinaryBiproductData` along an equivalence. -/
+def Limits.BinaryBiproductData.transport [Limits.HasZeroMorphisms C] [Limits.HasZeroMorphisms D]
+    (e : C ≌ D) {X Y : D} (b : BinaryBiproductData (e.inverse.obj X) (e.inverse.obj Y)) :
     BinaryBiproductData X Y where
       bicone := b.bicone.transport e
-      isBilimit := {
-        isLimit := CategoryTheory.Limits.HasLimit.isoOfEquivalence e _
-        isColimit := mkCofanColimit  _ _ _ _
-      }
+      isBilimit := b.isBilimit.transport e
 
 /-- Transport `Limits.HasBinaryBiproduct` along an equivalence. -/
 theorem Limits.HasBinaryBiproduct.transport
@@ -181,7 +179,8 @@ theorem Limits.HasBinaryBiproduct.transport
 
 end
 
-variable {C : Type u} [Category.{v} C] [Limits.HasZeroMorphisms C] [Limits.HasBinaryBiproducts C] [Limits.HasZeroObject C]
+variable {C : Type u} [Category.{v} C]
+variable [Limits.HasZeroMorphisms C] [Limits.HasBinaryBiproducts C] [Limits.HasZeroObject C]
 
 /-- If `C` is monoidal and skeletal, it is a monoid.
 See note [reducible non-instances]. -/
@@ -205,9 +204,12 @@ instance (X Y : Skeleton C) : Limits.HasBinaryBiproduct X Y :=
 
 noncomputable instance : Limits.HasBinaryBiproducts (Skeleton C) where
   has_binary_biproduct := inferInstance
+
 /--
 The skeleton of a category with biproducts can be viewed as an additive monoid, where the addition
 is given by the biproduct, and satisfies the monoid axioms since it is a skeleton.
 -/
 noncomputable instance Skeleton.instAddCommMonoid : AddCommMonoid (Skeleton C) :=
   addCommMonoidOfSkeletal (skeletonIsSkeleton _).skel
+
+#lint
