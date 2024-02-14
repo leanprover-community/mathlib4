@@ -225,9 +225,9 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     · exact (H hf).elim
   -- Fix some nonzero continuous function with compact support `g`.
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
-      ∃ (g : C(G, ℝ)), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_pos : 0 < ∫ x, g x ∂μ := g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero
-    g_comp g_nonneg g_one
+    ∃ (g : C(G, ℝ)), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_pos : 0 < ∫ x, g x ∂μ :=
+    g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one
   -- The proportionality constant we are looking for will be the ratio of the integrals of `g`
   -- with respect to `μ'` and `μ`.
   let c : ℝ := (∫ x, g x ∂μ) ⁻¹ * (∫ x, g x ∂μ')
@@ -296,9 +296,9 @@ lemma haarScalarFactor_pos_of_isOpenPosMeasure (μ' μ : Measure G) [IsFiniteMea
   · simp [haarScalarFactor, hG] at H
   -- Fix some nonzero continuous function with compact support `g`.
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
-      ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_pos : 0 < ∫ x, g x ∂μ' := g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero
-    g_comp g_nonneg g_one
+    ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_pos : 0 < ∫ x, g x ∂μ' :=
+    g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one
   have := integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport μ' μ g_cont g_comp
   simp only [H, zero_smul, integral_zero_measure] at this
   linarith
@@ -308,9 +308,9 @@ lemma haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G) [IsFini
     [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ] [IsMulLeftInvariant μ']
     [IsOpenPosMeasure μ] {c : ℝ≥0} : haarScalarFactor (c • μ') μ = c • haarScalarFactor μ' μ := by
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
-      ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 := ne_of_gt
-    (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+    ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
+    ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
   apply NNReal.coe_injective
   calc
     haarScalarFactor (c • μ') μ = (∫ x, g x ∂(c • μ')) / ∫ x, g x ∂μ :=
@@ -326,9 +326,9 @@ lemma haarScalarFactor_self_eq_one (μ : Measure G) [IsFiniteMeasureOnCompacts �
   by_cases hG : LocallyCompactSpace G; swap
   · simp [haarScalarFactor, hG]
   obtain ⟨⟨g, g_cont⟩, g_comp, g_nonneg, g_one⟩ :
-      ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
-  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 := ne_of_gt
-    (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
+    ∃ g : C(G, ℝ), HasCompactSupport g ∧ 0 ≤ g ∧ g 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_g_ne_zero : ∫ x, g x ∂μ ≠ 0 :=
+    ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
   apply NNReal.coe_injective
   calc
     haarScalarFactor μ μ = (∫ x, g x ∂μ) / ∫ x, g x ∂μ :=
