@@ -1253,10 +1253,12 @@ theorem mono_measure {ν : Measure α} (hf : AEStronglyMeasurable f μ) (h : ν 
   ⟨hf.mk f, hf.stronglyMeasurable_mk, Eventually.filter_mono (ae_mono h) hf.ae_eq_mk⟩
 #align measure_theory.ae_strongly_measurable.mono_measure MeasureTheory.AEStronglyMeasurable.mono_measure
 
-protected theorem mono' {ν : Measure α} (h : AEStronglyMeasurable f μ) (h' : ν ≪ μ) :
-    AEStronglyMeasurable f ν :=
-  ⟨h.mk f, h.stronglyMeasurable_mk, h' h.ae_eq_mk⟩
-#align measure_theory.ae_strongly_measurable.mono' MeasureTheory.AEStronglyMeasurable.mono'
+protected lemma mono_ac (h : ν ≪ μ) (hμ : AEStronglyMeasurable f μ) : AEStronglyMeasurable f ν :=
+  let ⟨g, hg, hg'⟩ := hμ; ⟨g, hg, h.ae_eq hg'⟩
+#align measure_theory.ae_strongly_measurable.mono' MeasureTheory.AEStronglyMeasurable.mono_ac
+#align measure_theory.ae_strongly_measurable_of_absolutely_continuous MeasureTheory.AEStronglyMeasurable.mono_ac
+
+@[deprecated] protected alias mono' := AEStronglyMeasurable.mono_ac
 
 theorem mono_set {s t} (h : s ⊆ t) (ht : AEStronglyMeasurable f (μ.restrict t)) :
     AEStronglyMeasurable f (μ.restrict s) :=
@@ -1904,10 +1906,6 @@ theorem _root_.aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGr
     simp only [Ne.def, ENNReal.coe_eq_zero] at h'x
     simpa only [NNReal.coe_eq_zero, Ne.def] using h'x
 #align ae_strongly_measurable_with_density_iff aestronglyMeasurable_withDensity_iff
-
-lemma of_absolutelyContinuous (h : ν ≪ μ) (hμ : AEStronglyMeasurable g μ) :
-    AEStronglyMeasurable g ν := let ⟨g₁, hg₁, hg₁'⟩ := hμ; ⟨g₁, hg₁, h.ae_eq hg₁'⟩
-#align measure_theory.ae_strongly_measurable_of_absolutely_continuous MeasureTheory.AEStronglyMeasurable.of_absolutelyContinuous
 
 end AEStronglyMeasurable
 
