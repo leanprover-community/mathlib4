@@ -11,6 +11,7 @@ import Mathlib.Data.Int.SuccPred
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Order.Circular
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.Set.Lattice
 
 #align_import algebra.order.to_interval_mod from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 

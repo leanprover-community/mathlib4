@@ -8,10 +8,10 @@ import Mathlib.Data.Nat.Cast.Order
 
 /-! # Bernoulli's inequality -/
 
-variable {α : Type*}
+variable {R : Type*}
 
 section OrderedSemiring
-variable [OrderedSemiring α] {a : α}
+variable [OrderedSemiring R] {a : R}
 
 /-- **Bernoulli's inequality**. This version works for semirings but requires
 additional hypotheses `0 ≤ a * a` and `0 ≤ (1 + a) * (1 + a)`. -/
@@ -28,7 +28,7 @@ lemma one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a)) (
           simp only [Nat.cast_add, add_mul, mul_add, one_mul, mul_one, ← one_add_one_eq_two,
             Nat.cast_one, add_assoc, add_right_inj]
           simp only [← add_assoc, add_comm _ (↑n * a)]
-          simp only [add_assoc, (n.cast_commute (_ : α)).left_comm]
+          simp only [add_assoc, (n.cast_commute (_ : R)).left_comm]
           simp only [add_comm, add_left_comm]
       _ ≤ (1 + a) * (1 + a) * (1 + a) ^ n :=
         mul_le_mul_of_nonneg_left (one_add_mul_le_pow' Hsq Hsq' H _) Hsq'
@@ -38,7 +38,7 @@ lemma one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a)) (
 end OrderedSemiring
 
 section LinearOrderedRing
-variable [LinearOrderedRing α] {a : α} {n : ℕ}
+variable [LinearOrderedRing R] {a : R} {n : ℕ}
 
 /-- **Bernoulli's inequality** for `n : ℕ`, `-2 ≤ a`. -/
 lemma one_add_mul_le_pow (H : -2 ≤ a) (n : ℕ) : 1 + n * a ≤ (1 + a) ^ n :=

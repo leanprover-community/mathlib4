@@ -3,8 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.Algebra.Module.Submodule.Localization
+import Mathlib.LinearAlgebra.Dimension.DivisionRing
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Rank of localization

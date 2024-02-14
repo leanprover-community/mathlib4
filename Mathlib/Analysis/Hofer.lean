@@ -27,11 +27,7 @@ open Filter Finset
 
 local notation "d" => dist
 
-@[simp]
-theorem pos_div_pow_pos {α : Type*} [LinearOrderedSemifield α] {a b : α} (ha : 0 < a) (hb : 0 < b)
-    (k : ℕ) : 0 < a / b ^ k :=
-  div_pos ha (pow_pos hb k)
-#align pos_div_pow_pos pos_div_pow_pos
+#noalign pos_div_pow_pos
 
 theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (ε_pos : 0 < ε)
     {ϕ : X → ℝ} (cont : Continuous ϕ) (nonneg : ∀ y, 0 ≤ ϕ y) : ∃ ε' > 0, ∃ x' : X,
@@ -46,7 +42,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
     ∀ k : ℕ, ∀ x', d x' x ≤ 2 * ε ∧ 2 ^ k * ϕ x ≤ ϕ x' → ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y
   · intro k x'
     push_neg at H
-    have := H (ε / 2 ^ k) (by simp [ε_pos]) x' (by simp [ε_pos.le, one_le_two])
+    have := H (ε / 2 ^ k) (by positivity) x' (by simp [ε_pos.le, one_le_two])
     simpa [reformulation] using this
   clear reformulation
   haveI : Nonempty X := ⟨x⟩
@@ -74,10 +70,10 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
         d (u 0) (u (n + 1)) ≤ ∑ i in r, d (u i) (u <| i + 1) := dist_le_range_sum_dist u (n + 1)
         _ ≤ ∑ i in r, ε / 2 ^ i :=
           (sum_le_sum fun i i_in => (IH i <| Nat.lt_succ_iff.mp <| Finset.mem_range.mp i_in).1)
-        _ = ∑ i in r, (1 / 2) ^ i * ε := by
+        _ = (∑ i in r, (1 / 2 : ℝ) ^ i) * ε := by
+          rw [Finset.sum_mul]
           congr with i
           field_simp
-        _ = (∑ i in r, ((1 : ℝ) / 2) ^ i) * ε := Finset.sum_mul.symm
         _ ≤ 2 * ε := by gcongr; apply sum_geometric_two_le
     have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by
       refine' @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => _
