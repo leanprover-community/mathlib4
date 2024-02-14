@@ -6,7 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Int.Basic
-import Mathlib.Data.Rat.NNRat
+import Mathlib.Data.NNRat.Defs
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.Logic.Basic
@@ -622,8 +622,6 @@ section Nat
 variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R) (M)
 
---include R
-
 theorem Nat.noZeroSMulDivisors : NoZeroSMulDivisors ℕ M :=
   ⟨by
     intro c x
@@ -678,7 +676,6 @@ section Nat
 
 variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R M)
---include R
 
 theorem self_eq_neg {v : M} : v = -v ↔ v = 0 := by
   rw [← two_nsmul_eq_zero R M, two_smul, add_eq_zero_iff_eq_neg]
