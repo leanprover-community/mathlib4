@@ -264,6 +264,9 @@ alias ⟨Nonempty.of_inv, Nonempty.inv⟩ := inv_nonempty_iff
 
 attribute [to_additive] Nonempty.inv Nonempty.of_inv
 
+@[to_additive (attr := simp)]
+theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := image_eq_empty
+
 @[to_additive (attr := mono)]
 theorem inv_subset_inv (h : s ⊆ t) : s⁻¹ ⊆ t⁻¹ :=
   image_subset_image h
