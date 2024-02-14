@@ -81,13 +81,19 @@ instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_eq_abs, abs_ofReal, ← Real.norm_eq_abs,
       norm_algebraMap']
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
 /-- The module structure from `Module.complexToReal` is a normed space. -/
 instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E :=
   NormedSpace.restrictScalars ℝ ℂ E
 #align normed_space.complex_to_real NormedSpace.complexToReal
+
+-- see Note [lower instance priority]
+/-- The algebra structure from `Algebra.complexToReal` is a normed algebra. -/
+instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [SeminormedRing A]
+    [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
+  NormedAlgebra.restrictScalars ℝ ℂ A
 
 theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
