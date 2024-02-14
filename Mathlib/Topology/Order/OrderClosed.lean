@@ -199,7 +199,7 @@ section OrderClosedTopology
 
 section Preorder
 
-variable [TopologicalSpace α] [Preorder α] [t : OrderClosedTopology α] {s : Set α}
+variable [TopologicalSpace α] [Preorder α] [t : OrderClosedTopology α]
 
 namespace Subtype
 
@@ -869,21 +869,3 @@ theorem eventually_gt_nhds (hab : b < a) : ∀ᶠ x in 𝓝 a, b < x := Ioi_mem_
 
 end OrderClosedTopology
 
-variable [TopologicalSpace α] [Preorder α] {s : Set α}
-
--- TODO: Prove the pi and prod instance for `∀ x : α, (𝓝[<] x).NeBot`
-
-lemma IsAntichain.interior_eq_empty [hα : ∀ x : α, (𝓝[<] x).NeBot] (hs : IsAntichain (· ≤ ·) s) :
-    interior s = ∅ := by
-  refine eq_empty_of_forall_not_mem fun x hx ↦ ?_
-  have : _ ∈ 𝓝[<] x := inter_mem_inf (mem_interior_iff_mem_nhds.1 hx) $ mem_principal_self _
-  obtain ⟨y, hy, hxy⟩ := Filter.NeBot.nonempty_of_mem (hα _) this
-  exact hs.not_lt hy (interior_subset hx) hxy
-#align is_antichain.interior_eq_empty IsAntichain.interior_eq_empty
-
-lemma IsAntichain.interior_eq_empty' [hα : ∀ x : α, (𝓝[>] x).NeBot] (hs : IsAntichain (· ≤ ·) s) :
-    interior s = ∅ := by
-  refine eq_empty_of_forall_not_mem fun x hx ↦ ?_
-  have : _ ∈ 𝓝[>] x := inter_mem_inf (mem_interior_iff_mem_nhds.1 hx) $ mem_principal_self _
-  obtain ⟨y, hy, hyx⟩ := Filter.NeBot.nonempty_of_mem (hα _) this
-  exact hs.not_lt (interior_subset hx) hy hyx
