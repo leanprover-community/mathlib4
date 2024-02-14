@@ -6,6 +6,7 @@ Authors: Adomas Baliuka
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+import Mathlib.Tactic.FunProp.Differentiable
 
 /-!
 # Properties of Shannon binary entropy
