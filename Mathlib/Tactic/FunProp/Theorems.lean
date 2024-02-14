@@ -105,7 +105,7 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
     | .letE yName yType (.app (.fvar gId) (.bvar 0)) (.app (.app (.fvar fId) (.bvar 1)) (.bvar 0)) dep =>
       let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
       let .some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
-      return .some <| .comp argId_f argId_g
+      return .some <| .letE argId_f argId_g
     | .lam Name yType (.app (.app (.fvar fId) (.bvar 1)) (.bvar 0)) yBi =>
       -- fun x y => f x y
       let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
