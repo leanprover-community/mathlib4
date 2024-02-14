@@ -105,6 +105,8 @@ set_option maxRecDepth 8000 in
 example : Nat.Prime (2 ^ 25 - 39) := by norm_num1
 example : ¬ Nat.Prime ((2 ^ 19 - 1) * (2 ^ 25 - 39)) := by norm_num1
 
+example : Nat.Prime 317 := by norm_num (config := {decide := false})
+
 example : Nat.minFac 0 = 2 := by norm_num1
 example : Nat.minFac 1 = 1 := by norm_num1
 example : Nat.minFac (9 - 7) = 2 := by norm_num1
@@ -266,43 +268,40 @@ example : Nat.minFac 851 = 23 := by norm_num1
 -- example : Nat.factors 851 = [23, 37] := by norm_num1
 
 /-
-example : ¬ squarefree 0 := by norm_num
-example : squarefree 1 := by norm_num
-example : squarefree 2 := by norm_num
-example : squarefree 3 := by norm_num
-example : ¬ squarefree 4 := by norm_num
-example : squarefree 5 := by norm_num
-example : squarefree 6 := by norm_num
-example : squarefree 7 := by norm_num
-example : ¬ squarefree 8 := by norm_num
-example : ¬ squarefree 9 := by norm_num
-example : squarefree 10 := by norm_num
-example : squarefree (2*3*5*17) := by norm_num
-example : ¬ squarefree (2*3*5*5*17) := by norm_num
-example : squarefree 251 := by norm_num
-example : squarefree (3 : ℤ) :=
-begin
+example : ¬ Squarefree 0 := by norm_num1
+example : Squarefree 1 := by norm_num1
+example : Squarefree 2 := by norm_num1
+example : Squarefree 3 := by norm_num1
+example : ¬ Squarefree 4 := by norm_num1
+example : Squarefree 5 := by norm_num1
+example : Squarefree 6 := by norm_num1
+example : Squarefree 7 := by norm_num1
+example : ¬ Squarefree 8 := by norm_num1
+example : ¬ Squarefree 9 := by norm_num1
+example : Squarefree 10 := by norm_num1
+example : Squarefree (2*3*5*17) := by norm_num1
+example : ¬ Squarefree (2*3*5*5*17) := by norm_num1
+example : Squarefree 251 := by norm_num1
+example : Squarefree (3 : ℤ) := by
   -- `norm_num` should fail on this example, instead of producing an incorrect proof.
-  success_if_fail { norm_num },
-  exact irreducible.squarefree (prime.irreducible
-    (Int.prime_iff_Nat_abs_prime.mpr (by norm_num)))
-end
-example : @squarefree ℕ multiplicative.monoid 1 :=
-begin
+  fail_if_success norm_num1
+  exact Irreducible.squarefree (Prime.irreducible
+    (Int.prime_iff_natAbs_prime.mpr (by norm_num)))
+
+example : @Squarefree ℕ Multiplicative.monoid 1 := by
   -- `norm_num` should fail on this example, instead of producing an incorrect proof.
-  success_if_fail { norm_num },
+  -- fail_if_success norm_num1
   -- the statement was deliberately wacky, let's fix it
-  change squarefree (multiplicative.of_add 1 : multiplicative ℕ),
-  rIntros x ⟨dx, hd⟩,
-  revert x dx,
-  rw multiplicative.of_add.surjective.forall₂,
-  Intros x dx h,
-  simp_rw [←of_add_add, multiplicative.of_add.injective.eq_iff] at h,
-  cases x,
-  { simp [is_unit_one], exact is_unit_one },
-  { simp only [Nat.succ_add, Nat.add_succ] at h,
-    cases h },
-end
+  change Squarefree (Multiplicative.ofAdd 1 : Multiplicative ℕ)
+  rintro x ⟨dx, hd⟩
+  revert x dx
+  rw [Multiplicative.ofAdd.surjective.forall₂]
+  intros x dx h
+  simp_rw [← ofAdd_add, Multiplicative.ofAdd.injective.eq_iff] at h
+  cases x
+  · simp [isUnit_one]
+  · simp only [Nat.succ_add, Nat.add_succ] at h
+    cases h
 -/
 
 example : Nat.fib 0 = 0 := by norm_num1
@@ -331,23 +330,22 @@ open BigOperators
 
 -- Lists:
 -- `by decide` closes the three goals below.
-/-
-example : ([1, 2, 1, 3]).sum = 7 := by norm_num only
-example : (List.range 10).sum = 45 := by norm_num only
-example : (List.finRange 10).sum = 45 := by norm_num only
--/
--- example : (([1, 2, 1, 3] : List ℚ).map (fun i => i^2)).sum = 15 := by norm_num [-List.map] --TODO
+example : ([1, 2, 1, 3]).sum = 7 := by norm_num (config := {decide := true}) only
+example : (List.range 10).sum = 45 := by norm_num (config := {decide := true}) only
+example : (List.finRange 10).sum = 45 := by norm_num (config := {decide := true}) only
+
+example : (([1, 2, 1, 3] : List ℚ).map (fun i => i^2)).sum = 15 := by norm_num
 
 -- Multisets:
 -- `by decide` closes the three goals below.
-/-
-example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num only
-example : ((1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).map (fun i => i^2)).sum = 15 := by norm_num only
-example : (Multiset.range 10).sum = 45 := by norm_num only
-example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num only
--/
--- example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by -- TODO
---   norm_num [-Multiset.map_cons]
+example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num (config := {decide := true}) only
+example : ((1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).map (fun i => i^2)).sum = 15 := by
+  norm_num (config := {decide := true}) only
+example : (Multiset.range 10).sum = 45 := by norm_num (config := {decide := true}) only
+example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num (config := {decide := true}) only
+
+example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by
+  norm_num
 
 -- Finsets:
 example : Finset.prod (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (λ x => x) = 2 := by norm_num1
@@ -384,14 +382,12 @@ example (f : ℕ → α) : ∑ i in Finset.mk {0, 1, 2} dec_trivial, f i = f 0 +
 -/
 
 -- Combined with other `norm_num` extensions:
-/-
 example : ∏ i in Finset.range 9, Nat.sqrt (i + 1) = 96 := by norm_num1
-example : ∏ i in {1, 4, 9, 16}, Nat.sqrt i = 24 := by norm_num1
-example : ∏ i in Finset.Icc 0 8, Nat.sqrt (i + 1) = 96 := by norm_num1
+-- example : ∏ i in {1, 4, 9, 16}, Nat.sqrt i = 24 := by norm_num1
+-- example : ∏ i in Finset.Icc 0 8, Nat.sqrt (i + 1) = 96 := by norm_num1
 
 -- Nested operations:
-example : ∑ i : Fin 2, ∑ j : Fin 2, ![![0, 1], ![2, 3]] i j = 6 := by norm_num1
--/
+-- example : ∑ i : Fin 2, ∑ j : Fin 2, ![![0, 1], ![2, 3]] i j = 6 := by norm_num1
 
 end big_operators
 

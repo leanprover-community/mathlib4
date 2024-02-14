@@ -270,13 +270,13 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
 
 open Tactic in
 /-- Constructs a simp context from the simp argument syntax. -/
-def getSimpContext (args : Syntax) (simpOnly := false) :
-    TacticM Simp.Context := do
+def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Context := do
+  let config ← elabSimpConfigCore cfg
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
   let mut { ctx, simprocs := _, starArg } ←
     elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
-    { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
+      { config, simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
   unless starArg do return ctx
   let mut simpTheorems := ctx.simpTheorems
   for h in ← getPropHyps do
@@ -294,9 +294,8 @@ Elaborates a call to `norm_num only? [args]` or `norm_num1`.
   of `simp` will be used, not any of the post-processing that `simp only` does without lemmas
 -/
 -- FIXME: had to inline a bunch of stuff from `mkSimpContext` and `simpLocation` here
-def elabNormNum (args : Syntax) (loc : Syntax)
-    (simpOnly := false) (useSimp := true) : TacticM Unit := do
-  let ctx ← getSimpContext args (!useSimp || simpOnly)
+def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) : TacticM Unit := do
+  let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let g ← getMainGoal
   let res ← match expandOptLocation loc with
   | .targets hyps simplifyTarget => normNumAt g ctx (← getFVarIds hyps) simplifyTarget useSimp
@@ -316,12 +315,13 @@ over numerical types such as `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ` and some general 
 and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`, where `A` and `B` are
 numerical expressions. It also has a relatively simple primality prover.
 -/
-elab (name := normNum) "norm_num" only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
-  elabNormNum args loc (simpOnly := only.isSome) (useSimp := true)
+elab (name := normNum)
+    "norm_num" cfg:(config ?) only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
+  elabNormNum cfg args loc (simpOnly := only.isSome) (useSimp := true)
 
 /-- Basic version of `norm_num` that does not call `simp`. -/
 elab (name := normNum1) "norm_num1" loc:(location ?) : tactic =>
-  elabNormNum mkNullNode loc (simpOnly := true) (useSimp := false)
+  elabNormNum mkNullNode mkNullNode loc (simpOnly := true) (useSimp := false)
 
 open Lean Elab Tactic
 
@@ -329,14 +329,15 @@ open Lean Elab Tactic
 
 /-- Elaborator for `norm_num1` conv tactic. -/
 @[tactic normNum1Conv] def elabNormNum1Conv : Tactic := fun _ ↦ withMainContext do
-  let ctx ← getSimpContext mkNullNode true
+  let ctx ← getSimpContext mkNullNode mkNullNode true
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := false))
 
-@[inherit_doc normNum] syntax (name := normNumConv) "norm_num" &" only"? (simpArgs)? : conv
+@[inherit_doc normNum] syntax (name := normNumConv)
+    "norm_num" (config)? &" only"? (simpArgs)? : conv
 
 /-- Elaborator for `norm_num` conv tactic. -/
 @[tactic normNumConv] def elabNormNumConv : Tactic := fun stx ↦ withMainContext do
-  let ctx ← getSimpContext stx[2] !stx[1].isNone
+  let ctx ← getSimpContext stx[1] stx[3] !stx[2].isNone
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := true))
 
 /--
@@ -355,6 +356,6 @@ Unlike `norm_num`, this command does not fail when no simplifications are made.
 
 `#norm_num` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := normNumCmd) "#norm_num" o:(&" only")?
+macro (name := normNumCmd) "#norm_num" cfg:(config)? o:(&" only")?
     args:(Parser.Tactic.simpArgs)? " :"? ppSpace e:term : command =>
-  `(command| #conv norm_num $[only%$o]? $(args)? => $e)
+  `(command| #conv norm_num $(cfg)? $[only%$o]? $(args)? => $e)
