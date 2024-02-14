@@ -5,7 +5,6 @@ Authors: Anne Baanen, Mario Carneiro
 -/
 
 import Mathlib.Tactic.SimpRw
-import Std.Tactic.GuardExpr
 
 private axiom test_sorry : ∀ {α}, α
 

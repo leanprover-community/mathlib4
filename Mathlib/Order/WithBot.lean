@@ -86,12 +86,12 @@ theorem some_eq_coe (a : α) : (Option.some a : WithBot α) = (↑a : WithBot α
 
 @[simp]
 theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
-  fun.
+  nofun
 #align with_bot.bot_ne_coe WithBot.bot_ne_coe
 
 @[simp]
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
-  fun.
+  nofun
 #align with_bot.coe_ne_bot WithBot.coe_ne_bot
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
@@ -525,7 +525,7 @@ theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = ma
 
 instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) where
   wf :=
-  have not_lt_bot : ∀ a : WithBot α, ¬ a < ⊥ := (fun.)
+  have not_lt_bot : ∀ a : WithBot α, ¬ a < ⊥ := (nofun)
   have acc_bot := ⟨_, by simp [not_lt_bot]⟩
   .intro fun
     | ⊥ => acc_bot
@@ -651,12 +651,12 @@ theorem some_eq_coe (a : α) : (Option.some a : WithTop α) = (↑a : WithTop α
 
 @[simp]
 theorem top_ne_coe : ⊤ ≠ (a : WithTop α) :=
-  fun.
+  nofun
 #align with_top.top_ne_coe WithTop.top_ne_coe
 
 @[simp]
 theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
-  fun.
+  nofun
 #align with_top.coe_ne_top WithTop.coe_ne_top
 
 /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/

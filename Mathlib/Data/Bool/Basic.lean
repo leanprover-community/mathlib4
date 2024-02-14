@@ -65,7 +65,7 @@ theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = 
 
 #align bool.to_bool_eq decide_eq_decide
 
-theorem not_false' : ¬false := fun.
+theorem not_false' : ¬false := nofun
 #align bool.not_ff Bool.not_false'
 
 -- Porting note: new theorem

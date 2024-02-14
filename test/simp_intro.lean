@@ -1,4 +1,3 @@
-import Std.Tactic.GuardExpr
 import Mathlib.Tactic.SimpIntro
 
 set_option autoImplicit true

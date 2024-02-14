@@ -1,7 +1,7 @@
 import Mathlib.Lean.Expr.ReplaceRec
-import Mathlib.Tactic.RunCmd
 import Mathlib.Init.Data.Nat.Notation
 import Std.Tactic.GuardMsgs
+import Std.Tactic.RunCmd
 
 open Lean Meta Elab Command
 

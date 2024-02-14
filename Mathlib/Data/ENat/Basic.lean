@@ -138,12 +138,12 @@ theorem recTopCoe_coe {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
 theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
-  fun.
+  nofun
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]
 theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
-  fun.
+  nofun
 
 --Porting note: new theorem copied from `WithTop`
 @[simp]

@@ -30,7 +30,7 @@ def push {n} (m : UFModel n) (k) (le : n ≤ k) : UFModel k where
   rank_lt i := by
     simp; split <;> rename_i h
     · simp [(m.parent ⟨i, h⟩).2, h]; exact m.rank_lt _
-    · intro.
+    · nofun
 
 def setParent {n} (m : UFModel n) (x y : Fin n) (h : m.rank x < m.rank y) : UFModel n where
   parent i := if x.1 = i then y else m.parent i
@@ -86,7 +86,7 @@ theorem get_eq {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m) :
 theorem get_eq' {arr : Array α} {m : Fin arr.size → β} (H : Agrees arr f m)
     (i) : f (arr.get i) = m i := H.get_eq ..
 
-theorem empty {f : α → β} {g : Fin 0 → β} : Agrees #[] f g := mk' rfl λ.
+theorem empty {f : α → β} {g : Fin 0 → β} : Agrees #[] f g := mk' rfl nofun
 
 theorem push {arr : Array α} {n} {m : Fin n → β} (H : Agrees arr f m)
     (k) (hk : k = n + 1) (x) (m' : Fin k → β)
@@ -176,7 +176,7 @@ def rank (self : UnionFind α) (i : Nat) : Nat :=
 
 def rankMaxAux (self : UnionFind α) : ∀ (i : Nat),
     {k : Nat // ∀ j < i, ∀ h, (self.arr.get ⟨j, h⟩).rank ≤ k}
-  | 0 => ⟨0, λ.⟩
+  | 0 => ⟨0, nofun⟩
   | i+1 => by
     let ⟨k, H⟩ := rankMaxAux self i
     refine ⟨max k (if h : _ then (self.arr.get ⟨i, h⟩).rank else 0), fun j hj h ↦ ?_⟩

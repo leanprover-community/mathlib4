@@ -58,7 +58,6 @@ instance : Std.Associative (α := List α) Append.append where
 #align list.cons_injective List.cons_injective
 
 #align list.cons_inj List.cons_inj
-
 #align list.cons_eq_cons List.cons_eq_cons
 
 theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
@@ -273,7 +272,7 @@ theorem forall_mem_of_forall_mem_cons {p : α → Prop} {a : α} {l : List α} (
 #align list.forall_mem_append List.forall_mem_append
 
 theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
-  fun.
+  nofun
 #align list.not_exists_mem_nil List.not_exists_mem_nilₓ -- bExists change
 
 -- Porting note: bExists in Lean3 and And in Lean4

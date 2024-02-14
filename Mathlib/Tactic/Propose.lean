@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Lean.Meta.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
@@ -36,7 +37,7 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic.Propose
 
-open Lean Meta Std.Tactic TryThis
+open Lean Meta Std.Tactic Tactic.TryThis
 
 initialize registerTraceClass `Tactic.propose
 
@@ -51,8 +52,7 @@ initialize proposeLemmas : DeclCache (DiscrTree Name) ←
       let (mvars, _, _) ← forallMetaTelescope constInfo.type
       let mut lemmas := lemmas
       for m in mvars do
-        let path ← DiscrTree.mkPath (← inferType m) discrTreeConfig
-        lemmas := lemmas.insertIfSpecific path name
+        lemmas ← lemmas.insertIfSpecific (← inferType m) name discrTreeConfig
       pure lemmas
 
 /-- Shortcut for calling `solveByElim`. -/
