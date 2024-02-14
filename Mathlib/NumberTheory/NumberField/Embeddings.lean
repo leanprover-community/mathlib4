@@ -517,8 +517,8 @@ theorem prod_eq_abs_norm (x : K) :
   · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_rat_cast]
 #align number_field.infinite_place.prod_eq_abs_norm NumberField.InfinitePlace.prod_eq_abs_norm
 
-theorem ge_one_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
-    (h : ∀ ⦃z⦄, z ≠ w → z a < 1) :  1 ≤ w a := by
+theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
+    (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by
   suffices (1:ℝ) ≤ |(Algebra.norm ℚ) (a:K)| by
     contrapose! this
     rw [← InfinitePlace.prod_eq_abs_norm, ← Finset.prod_const_one]
