@@ -222,12 +222,14 @@ because `P` would be a hypothesis while trying to simplify `Q`.-/
 
 -- See library note [iff_true].
 @[simp]
-theorem exists_inl_eq_of_inl_eq_iff_true (x : α ⊕ β) (y : α) : (Sum.inl y = x → ∃ y', Sum.inl y' = x) ↔ True :=
+theorem exists_inl_eq_of_inl_eq_iff_true (x : α ⊕ β) (y : α) :
+    (Sum.inl y = x → ∃ y', Sum.inl y' = x) ↔ True :=
   iff_true_intro <| fun h ↦ ⟨y, h⟩
 
 -- See library note [iff_true].
 @[simp]
-theorem exists_inr_eq_of_inr_eq_iff_true (x : α ⊕ β) (y : β) : (Sum.inr y = x → ∃ y, Sum.inr y = x) ↔ True :=
+theorem exists_inr_eq_of_inr_eq_iff_true (x : α ⊕ β) (y : β) :
+    (Sum.inr y = x → ∃ y, Sum.inr y = x) ↔ True :=
   iff_true_intro <| fun h ↦ ⟨y, h⟩
 
 namespace LiftRel

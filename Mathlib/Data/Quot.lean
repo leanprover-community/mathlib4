@@ -359,8 +359,8 @@ theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
 #align surjective_quotient_mk surjective_quotient_mk'
 
 @[simp]
-theorem Quot.exists_lift_iff {f : ι → α} {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = f y) (x : α) :
-    (∃ y, Quot.lift f hf y = x) ↔ ∃ y, f y = x := by
+theorem Quot.exists_lift_iff {f : ι → α} {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = f y)
+    (x : α) : (∃ y, Quot.lift f hf y = x) ↔ ∃ y, f y = x := by
   simp [(surjective_quot_mk r).exists]
 
 @[simp]
@@ -826,8 +826,8 @@ theorem Quotient.exists_rep'' {s : Setoid α} (q : Quotient s) : ∃ y, Quotient
   exists_rep q
 
 @[simp]
-theorem exists_liftOn'_iff {f : ι → α} {_ : Setoid ι} (hf : ∀ a b, Setoid.r a b → f a = f b) (x : α) :
-    (∃ y, Quotient.liftOn' y f hf = x) ↔ ∃ y, f y = x :=
+theorem exists_liftOn'_iff {f : ι → α} {_ : Setoid ι} (hf : ∀ a b, Setoid.r a b → f a = f b)
+    (x : α) : (∃ y, Quotient.liftOn' y f hf = x) ↔ ∃ y, f y = x :=
   Quot.exists_lift_iff hf x
 
 section
