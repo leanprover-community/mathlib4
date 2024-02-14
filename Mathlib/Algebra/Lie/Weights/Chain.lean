@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Oliver Nash. All rights reserved.
+Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
@@ -10,11 +10,26 @@ import Mathlib.LinearAlgebra.Trace
 /-!
 # Chains of roots and weights
 
-TODO Explain. Note also called "string" of roots / weights by some authors.
+Given roots `α` and `β` of a Lie algebra, together with elements `x` in the `α`-root space and
+`y` in the `β`-root space, it follows from the Leibniz identity that `⁅x, y⁆` is either zero or
+belongs to the `α + β`-root space. Iterating this operation leads to the study of families of
+roots of the form `k • α + β`. Such a family is known as the `α`-chain through `β` (or sometimes,
+the `α`-string through `β`) and the study of the sum of the corresponding root spaces is an
+important technique.
 
-## Main definitions
+More generally if `α` is a root and `χ` is a weight of a representation, it is useful to study the
+`α`-chain through `χ`.
 
-TODO
+We provide basic definitions and results to support `α`-chain techniques in this file.
+
+## Main definitions / results
+
+ * `LieModule.weightSpaceChain`: given weights `χ₁`, `χ₂` together with integers `p` and `q`, this
+   is the direct sum of the weight spaces `k • χ₁ + χ₂` for `p < k < q`.
+ * `LieModule.trace_toEndomorphism_weightSpaceChain_eq_zero`: given a root `α` relative to a Cartan
+   subalgebra `H`, there is a natural ideal `(rootSpaceProductNegSelf α).range` in `H`. This lemma
+   states that this ideal acts by trace-zero endomorphisms on the sum of root spaces of any
+   `α`-chain provided the weight spaces at the endpoints are both trivial.
 
 -/
 
