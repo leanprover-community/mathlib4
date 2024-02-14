@@ -864,6 +864,28 @@ theorem skewProd_symm_apply (f : M →ₗ[R] M₄) (x) :
 
 end
 
+section Unique
+
+variable [Semiring R]
+variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Module R M] [Module R M₂]
+
+/-- Multiplying by the trivial module from the left does not change the structure.
+
+This is the `LinearEquiv` version of `AddEquiv.uniqueProd`. -/
+@[simps!]
+def uniqueProd [Unique M₂] : (M₂ × M) ≃ₗ[R] M :=
+  AddEquiv.uniqueProd.toLinearEquiv (by simp [AddEquiv.uniqueProd])
+
+/-- Multiplying by the trivial module from the right does not change the structure.
+
+This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
+@[simps!]
+def prodUnique [Unique M₂] : (M × M₂) ≃ₗ[R] M :=
+  AddEquiv.prodUnique.toLinearEquiv (by simp [AddEquiv.prodUnique])
+
+end Unique
+
 end LinearEquiv
 
 namespace LinearMap
