@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Algebra.Module.Prod
 
 #align_import algebra.algebra.prod from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
@@ -93,7 +94,7 @@ theorem snd_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (snd R B C).comp (pro
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  FunLike.coe_injective Pi.prod_fst_snd
+  DFunLike.coe_injective Pi.prod_fst_snd
 #align alg_hom.prod_fst_snd AlgHom.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of

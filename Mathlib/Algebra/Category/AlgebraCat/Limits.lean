@@ -100,7 +100,7 @@ def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v,
          _⟩, _⟩, _, _⟩, _⟩)
       (fun s => _)
   · intro j j' f
-    exact FunLike.congr_fun (Cone.w s f) v
+    exact DFunLike.congr_fun (Cone.w s f) v
   · -- Porting note: we could add a custom `ext` lemma here.
     apply Subtype.ext
     ext j

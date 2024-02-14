@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Topology.ExtremallyDisconnected
-import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Profinite.Basic
 /-!
@@ -36,6 +35,7 @@ can be lifted along epimorphisms).
 universe u
 
 open CategoryTheory
+open scoped Topology
 
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
 structure Stonean where
@@ -105,7 +105,7 @@ instance : ConcreteCategory Stonean where
   forget := toCompHaus ⋙ forget _
 
 instance : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort _
-instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X (fun _ => Y) := ConcreteCategory.funLike
+instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X Y := ConcreteCategory.instFunLike
 
 /-- Stonean spaces are topological spaces. -/
 instance instTopologicalSpace (X : Stonean.{u}) : TopologicalSpace X :=
@@ -189,7 +189,7 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   let C := Set.range f
   have hC : IsClosed C := (isCompact_range f.continuous).isClosed
   let U := Cᶜ
-  have hUy : U ∈ nhds y := by
+  have hUy : U ∈ 𝓝 y := by
     simp only [Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
   obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
   classical

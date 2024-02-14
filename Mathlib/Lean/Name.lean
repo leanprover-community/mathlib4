@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Std.Data.HashMap.Basic
 import Std.Lean.SMap
-import Mathlib.Lean.Expr.Basic
+import Std.Lean.Name
 
 /-!
 # Additional functions on `Lean.Name`.

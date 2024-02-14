@@ -124,7 +124,7 @@ theorem abs_two : Complex.abs 2 = 2 := abs_ofNat 2
 @[simp]
 theorem range_abs : range Complex.abs = Ici 0 :=
   Subset.antisymm
-    (by simp only [range_subset_iff, Ici, mem_setOf_eq, map_nonneg, forall_const])
+    (by simp only [range_subset_iff, Ici, mem_setOf_eq, apply_nonneg, forall_const])
     (fun x hx => ⟨x, Complex.abs_of_nonneg hx⟩)
 #align complex.range_abs Complex.range_abs
 
@@ -254,7 +254,7 @@ theorem range_normSq : range normSq = Ici 0 :=
 
 /-! ### Cauchy sequences -/
 
-local notation "abs'" => Abs.abs
+local notation "abs'" => _root_.abs
 
 theorem isCauSeq_re (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).re := fun ε ε0 =>
   (f.cauchy ε0).imp fun i H j ij =>
@@ -262,8 +262,8 @@ theorem isCauSeq_re (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).
 #align complex.is_cau_seq_re Complex.isCauSeq_re
 
 theorem isCauSeq_im (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).im := fun ε ε0 =>
-  (f.cauchy ε0).imp fun i H j ij =>
-    lt_of_le_of_lt (by simpa using abs_im_le_abs (f j - f i)) (H _ ij)
+  (f.cauchy ε0).imp fun i H j ij ↦ by
+    simpa only [← ofReal_sub, abs_ofReal, sub_re] using (abs_im_le_abs _).trans_lt $ H _ ij
 #align complex.is_cau_seq_im Complex.isCauSeq_im
 
 /-- The real part of a complex Cauchy sequence, as a real Cauchy sequence. -/
