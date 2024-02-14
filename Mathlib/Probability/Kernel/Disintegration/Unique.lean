@@ -8,21 +8,6 @@ import Mathlib.Probability.Kernel.Disintegration
 /-!
 # Disintegration of measures on product spaces
 
-Let `ρ` be a finite measure on `α × Ω`, where `Ω` is a standard Borel space. In mathlib terms, `Ω`
-verifies `[Nonempty Ω] [MeasurableSpace Ω] [StandardBorelSpace Ω]`.
-Then there exists a kernel `ρ.condKernel : kernel α Ω` such that for any measurable set
-`s : Set (α × Ω)`, `ρ s = ∫⁻ a, ρ.condKernel a {x | (a, x) ∈ s} ∂ρ.fst`.
-
-In terms of kernels, `ρ.condKernel` is such that for any measurable space `γ`, we
-have a disintegration of the constant kernel from `γ` with value `ρ`:
-`kernel.const γ ρ = (kernel.const γ ρ.fst) ⊗ₖ (kernel.prodMkLeft γ (condKernel ρ))`,
-where `ρ.fst` is the marginal measure of `ρ` on `α`. In particular, `ρ = ρ.fst ⊗ₘ ρ.condKernel`.
-
-In order to obtain a disintegration for any standard Borel space, we use that these spaces embed
-measurably into `ℝ`: it then suffices to define a suitable kernel for `Ω = ℝ`. In the real case,
-we define a conditional kernel by taking for each `a : α` the measure associated to the Stieltjes
-function `condCDF ρ a` (the conditional cumulative distribution function).
-
 ## Main statements
 
 * `ProbabilityTheory.eq_condKernel_of_measure_eq_compProd`: a.e. uniqueness of `Measure.condKernel`

@@ -135,44 +135,44 @@ end BorelSnd
 section StandardBorel
 
 noncomputable
-def kernel.condKernelReal (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] : kernel (α × ℝ) ℝ :=
+def kernel.condKernelReal (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] : kernel (α × ℝ) ℝ :=
   cdfKernel _ (isKernelCDF_mLimsupCDF κ)
 
-instance (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] : IsMarkovKernel (kernel.condKernelReal κ) := by
+instance (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] : IsMarkovKernel (kernel.condKernelReal κ) := by
   unfold kernel.condKernelReal; infer_instance
 
-lemma kernel.eq_compProd_condKernelReal (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] :
+lemma kernel.eq_compProd_condKernelReal (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] :
     κ = kernel.fst κ ⊗ₖ kernel.condKernelReal κ :=
   kernel.eq_compProd_cdfKernel (isKernelCDF_mLimsupCDF κ)
 
 noncomputable
-def condKernelBorelAux (κ : kernel α (ℝ × Ω')) [IsMarkovKernel κ] : kernel (α × ℝ) Ω' :=
+def condKernelBorelAux (κ : kernel α (ℝ × Ω')) [IsFiniteKernel κ] : kernel (α × ℝ) Ω' :=
   let f := measurableEmbedding_real Ω'
   let hf := measurableEmbedding_measurableEmbedding_real Ω'
   let κ' := kernel.map κ (Prod.map (id : ℝ → ℝ) f) (measurable_id.prod_map hf.measurable)
   condKernelBorelSnd κ (isKernelCDF_mLimsupCDF κ')
 
-instance instIsMarkovKernel_condKernelBorelAux (κ : kernel α (ℝ × Ω')) [IsMarkovKernel κ] :
+instance instIsMarkovKernel_condKernelBorelAux (κ : kernel α (ℝ × Ω')) [IsFiniteKernel κ] :
     IsMarkovKernel (condKernelBorelAux κ) := by
   rw [condKernelBorelAux]
   infer_instance
 
-lemma compProd_fst_condKernelBorelAux (κ : kernel α (ℝ × Ω')) [IsMarkovKernel κ] :
+lemma compProd_fst_condKernelBorelAux (κ : kernel α (ℝ × Ω')) [IsFiniteKernel κ] :
     kernel.fst κ ⊗ₖ condKernelBorelAux κ = κ := by
   rw [condKernelBorelAux, compProd_fst_condKernelBorelSnd]
 
 noncomputable
-def condKernelBorel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] : kernel (α × Ω) Ω' :=
+def condKernelBorel (κ : kernel α (Ω × Ω')) [IsFiniteKernel κ] : kernel (α × Ω) Ω' :=
   let f := measurableEmbedding_real Ω
   let hf := measurableEmbedding_measurableEmbedding_real Ω
   let κ' := kernel.map κ (Prod.map f (id : Ω' → Ω')) (hf.measurable.prod_map measurable_id)
   kernel.comap (condKernelBorelAux κ') (Prod.map (id : α → α) f)
     (measurable_id.prod_map hf.measurable)
 
-instance instIsMarkovKernel_condKernelBorel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] :
+instance instIsMarkovKernel_condKernelBorel (κ : kernel α (Ω × Ω')) [IsFiniteKernel κ] :
     IsMarkovKernel (condKernelBorel κ) := by rw [condKernelBorel]; infer_instance
 
-lemma compProd_fst_condKernelBorel (κ : kernel α (Ω × Ω')) [IsMarkovKernel κ] :
+lemma compProd_fst_condKernelBorel (κ : kernel α (Ω × Ω')) [IsFiniteKernel κ] :
     kernel.fst κ ⊗ₖ condKernelBorel κ = κ := by
   let f := measurableEmbedding_real Ω
   let hf := measurableEmbedding_measurableEmbedding_real Ω
@@ -345,7 +345,7 @@ instance instCountableOrStandardBorel_of_standardBorelSpace [h : StandardBorelSp
 open Classical in
 noncomputable
 def kernel.condKernel [h : CountableOrStandardBorel α β]
-    (κ : kernel α (β × Ω')) [IsMarkovKernel κ] :
+    (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
     kernel (α × β) Ω' :=
   if hα : Countable α ∧ MeasurableSingletonClass α then
     letI := hα.1; letI := hα.2; condKernelCountable κ
@@ -353,13 +353,13 @@ def kernel.condKernel [h : CountableOrStandardBorel α β]
     letI := h.countableOrStandardBorel.resolve_left hα; condKernelBorel κ
 
 instance instIsMarkovKernel_condKernel [CountableOrStandardBorel α β]
-    (κ : kernel α (β × Ω')) [IsMarkovKernel κ] :
+    (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
     IsMarkovKernel (kernel.condKernel κ) := by
   unfold kernel.condKernel
   split_ifs <;> infer_instance
 
 lemma compProd_fst_condKernel [hαβ : CountableOrStandardBorel α β]
-    (κ : kernel α (β × Ω')) [IsMarkovKernel κ] :
+    (κ : kernel α (β × Ω')) [IsFiniteKernel κ] :
     kernel.fst κ ⊗ₖ kernel.condKernel κ = κ := by
   unfold kernel.condKernel
   split_ifs with h

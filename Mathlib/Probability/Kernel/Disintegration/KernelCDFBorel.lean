@@ -267,20 +267,20 @@ lemma m_le_one (κ : kernel α (ℝ × β)) (a : α) (s : Set β) (n : ℕ) (t :
   simp only [mem_prod, mem_setOf_eq, and_imp]
   exact fun h _ ↦ h
 
-lemma snorm_m_le_one (κ : kernel α (ℝ × β)) [IsMarkovKernel (kernel.fst κ)]
+lemma snorm_m_le (κ : kernel α (ℝ × β)) [IsFiniteKernel (kernel.fst κ)]
     (a : α) (s : Set β) (n : ℕ) :
-    snorm (M κ a s n) 1 (kernel.fst κ a) ≤ 1 := by
+    snorm (M κ a s n) 1 (kernel.fst κ a) ≤ kernel.fst κ a univ := by
   refine (snorm_le_of_ae_bound (C := 1) (ae_of_all _ (fun x ↦ ?_))).trans ?_
   · simp only [Real.norm_eq_abs, abs_of_nonneg (m_nonneg κ a s n x), m_le_one κ a s n x]
   · simp
 
-lemma integrable_m (κ : kernel α (ℝ × β)) [IsMarkovKernel (kernel.fst κ)]
+lemma integrable_m (κ : kernel α (ℝ × β)) [IsFiniteKernel (kernel.fst κ)]
     (a : α) {s : Set β} (hs : MeasurableSet s) (n : ℕ) :
     Integrable (M κ a s n) (kernel.fst κ a) := by
   rw [← memℒp_one_iff_integrable]
   refine ⟨Measurable.aestronglyMeasurable ?_, ?_⟩
   · exact measurable_m_right κ a hs n
-  · exact (snorm_m_le_one κ a s n).trans_lt ENNReal.one_lt_top
+  · exact (snorm_m_le κ a s n).trans_lt (measure_lt_top _ _)
 
 lemma set_integral_m_I (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) (n : ℕ) (k : ℤ) :
@@ -321,7 +321,7 @@ lemma set_integral_m_I (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
   rw [div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel h0, mul_one]
   exact measure_ne_top _ _
 
-lemma integral_m (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma integral_m (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) (n : ℕ) :
     ∫ t, M κ a s n t ∂(kernel.fst κ a) = (κ a (univ ×ˢ s)).toReal := by
   rw [← integral_univ, ← iUnion_I n, iUnion_prod_const, measure_iUnion]
@@ -336,7 +336,7 @@ lemma integral_m (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
   congr with k
   rw [set_integral_m_I _ _ hs]
 
-lemma set_integral_m (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma set_integral_m (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) (n : ℕ) {A : Set ℝ} (hA : MeasurableSet[ℱ n] A) :
     ∫ t in A, M κ a s n t ∂(kernel.fst κ a) = (κ a (A ×ˢ s)).toReal := by
   refine MeasurableSpace.induction_on_inter (m := ℱ n) (s := {s | ∃ k, s = I n k})
@@ -376,13 +376,13 @@ lemma set_integral_m (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
       rw [Function.onFun, Set.disjoint_prod]
       exact Or.inl (hf_disj hij)
 
-lemma set_integral_m_of_le (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma set_integral_m_of_le (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) {n m : ℕ} (hnm : n ≤ m)
     {A : Set ℝ} (hA : MeasurableSet[ℱ n] A) :
     ∫ t in A, M κ a s m t ∂(kernel.fst κ a) = (κ a (A ×ˢ s)).toReal :=
   set_integral_m κ a hs m (ℱ.mono hnm A hA)
 
-lemma condexp_m (κ : kernel α (ℝ × β)) [IsMarkovKernel κ] (a : α) {s : Set β}
+lemma condexp_m (κ : kernel α (ℝ × β)) [IsFiniteKernel κ] (a : α) {s : Set β}
     (hs : MeasurableSet s) {i j : ℕ} (hij : i ≤ j) :
     (kernel.fst κ a)[M κ a s j | ℱ i] =ᵐ[kernel.fst κ a] M κ a s i := by
   symm
@@ -394,7 +394,7 @@ lemma condexp_m (κ : kernel α (ℝ × β)) [IsMarkovKernel κ] (a : α) {s : S
     rw [set_integral_m κ a hs i ht, set_integral_m_of_le κ a hs hij ht]
   · exact StronglyMeasurable.aeStronglyMeasurable' (stronglyMeasurable_ℱ_m κ a s i)
 
-lemma martingale_m (κ : kernel α (ℝ × β)) [IsMarkovKernel κ] (a : α) {s : Set β}
+lemma martingale_m (κ : kernel α (ℝ × β)) [IsFiniteKernel κ] (a : α) {s : Set β}
     (hs : MeasurableSet s) :
     Martingale (M κ a s) ℱ (kernel.fst κ a) :=
   ⟨adapted_m κ a s, fun _ _ ↦ condexp_m κ a hs⟩
@@ -545,24 +545,26 @@ lemma tendsto_m_atTop_of_antitone (κ : kernel α (ℝ × β)) [IsFiniteKernel �
   rw [← m_empty κ a n t]
   exact tendsto_m_atTop_empty_of_antitone κ a s hs hs_iInter hs_meas n t
 
-lemma tendsto_m_limitProcess (κ : kernel α (ℝ × β)) (a : α) [IsMarkovKernel κ]
+lemma tendsto_m_limitProcess (κ : kernel α (ℝ × β)) (a : α) [IsFiniteKernel κ]
     {s : Set β} (hs : MeasurableSet s) :
     ∀ᵐ t ∂(kernel.fst κ a),
       Tendsto (fun n ↦ M κ a s n t) atTop (𝓝 (ℱ.limitProcess (M κ a s) (kernel.fst κ a) t)) := by
-  refine Submartingale.ae_tendsto_limitProcess (martingale_m κ a hs).submartingale (R := 1) ?_
-  intro n
-  rw [ENNReal.coe_one]
-  exact snorm_m_le_one κ a s n
+  refine Submartingale.ae_tendsto_limitProcess (martingale_m κ a hs).submartingale
+    (R := (kernel.fst κ a univ).toNNReal) (fun n ↦ ?_)
+  refine (snorm_m_le κ a s n).trans_eq ?_
+  rw [ENNReal.coe_toNNReal]
+  exact measure_ne_top _ _
 
-lemma limitProcess_mem_L1 (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma limitProcess_mem_L1 (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Memℒp (ℱ.limitProcess (M κ a s) (kernel.fst κ a)) 1 (kernel.fst κ a) := by
-  refine Submartingale.memℒp_limitProcess (martingale_m κ a hs).submartingale (R := 1) ?_
-  intro n
-  rw [ENNReal.coe_one]
-  exact snorm_m_le_one κ a s n
+  refine Submartingale.memℒp_limitProcess (martingale_m κ a hs).submartingale
+    (R := (kernel.fst κ a univ).toNNReal) (fun n ↦ ?_)
+  refine (snorm_m_le κ a s n).trans_eq ?_
+  rw [ENNReal.coe_toNNReal]
+  exact measure_ne_top _ _
 
-lemma tendsto_snorm_one_m_limitProcess (κ : kernel α (ℝ × β)) (a : α) [IsMarkovKernel κ]
+lemma tendsto_snorm_one_m_limitProcess (κ : kernel α (ℝ × β)) (a : α) [IsFiniteKernel κ]
     {s : Set β} (hs : MeasurableSet s) :
     Tendsto
       (fun n ↦ snorm (M κ a s n - ℱ.limitProcess (M κ a s) (kernel.fst κ a)) 1 (kernel.fst κ a))
@@ -596,7 +598,7 @@ lemma tendsto_snorm_restrict_zero {α β ι : Type*} {mα : MeasurableSpace α} 
   · exact fun _ ↦ zero_le _
   · exact fun _ ↦ snorm_restrict_le _
 
-lemma tendsto_snorm_one_restrict_m_limitProcess (κ : kernel α (ℝ × β)) (a : α) [IsMarkovKernel κ]
+lemma tendsto_snorm_one_restrict_m_limitProcess (κ : kernel α (ℝ × β)) (a : α) [IsFiniteKernel κ]
     {s : Set β} (hs : MeasurableSet s) (A : Set ℝ) :
     Tendsto (fun n ↦ snorm (M κ a s n - ℱ.limitProcess (M κ a s) (kernel.fst κ a)) 1
         ((kernel.fst κ a).restrict A))
@@ -607,12 +609,12 @@ noncomputable
 def MLimsup (κ : kernel α (ℝ × β)) (a : α) (s : Set β) (t : ℝ) : ℝ :=
   limsup (fun n ↦ M κ a s n t) atTop
 
-lemma mLimsup_ae_eq_limitProcess (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma mLimsup_ae_eq_limitProcess (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     MLimsup κ a s =ᵐ[kernel.fst κ a] ℱ.limitProcess (M κ a s) (kernel.fst κ a) := by
   filter_upwards [tendsto_m_limitProcess κ a hs] with t ht using ht.limsup_eq
 
-lemma tendsto_m_mLimsup (κ : kernel α (ℝ × β)) (a : α) [IsMarkovKernel κ]
+lemma tendsto_m_mLimsup (κ : kernel α (ℝ × β)) (a : α) [IsFiniteKernel κ]
     {s : Set β} (hs : MeasurableSet s) :
     ∀ᵐ t ∂(kernel.fst κ a),
       Tendsto (fun n ↦ M κ a s n t) atTop (𝓝 (MLimsup κ a s t)) := by
@@ -679,21 +681,21 @@ lemma mLimsup_univ (κ : kernel α (ℝ × β)) [IsFiniteKernel κ] (a : α) :
   simp_rw [ht]
   rw [limsup_const] -- should be simp
 
-lemma snorm_mLimsup_le_one (κ : kernel α (ℝ × β)) [IsMarkovKernel (kernel.fst κ)]
+lemma snorm_mLimsup_le (κ : kernel α (ℝ × β)) [IsFiniteKernel (kernel.fst κ)]
     (a : α) (s : Set β) :
-    snorm (fun t ↦ MLimsup κ a s t) 1 (kernel.fst κ a) ≤ 1 := by
+    snorm (fun t ↦ MLimsup κ a s t) 1 (kernel.fst κ a) ≤ kernel.fst κ a univ := by
   refine (snorm_le_of_ae_bound (C := 1) (ae_of_all _ (fun t ↦ ?_))).trans ?_
   · simp only [Real.norm_eq_abs, abs_of_nonneg (mLimsup_nonneg κ a s t),
       mLimsup_le_one κ a s t]
   · simp
 
-lemma integrable_mLimsup (κ : kernel α (ℝ × β)) [IsMarkovKernel (kernel.fst κ)]
+lemma integrable_mLimsup (κ : kernel α (ℝ × β)) [IsFiniteKernel (kernel.fst κ)]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun t ↦ MLimsup κ a s t) (kernel.fst κ a) := by
   rw [← memℒp_one_iff_integrable]
   refine ⟨Measurable.aestronglyMeasurable ?_, ?_⟩
   · exact measurable_mLimsup_right κ hs a
-  · exact (snorm_mLimsup_le_one κ a s).trans_lt ENNReal.one_lt_top
+  · exact (snorm_mLimsup_le κ a s).trans_lt (measure_lt_top _ _)
 
 lemma tendsto_integral_of_L1' {ι G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
     {μ : Measure α}
@@ -729,7 +731,7 @@ lemma tendsto_set_integral_of_L1' {ι G : Type*} [NormedAddCommGroup G] [NormedS
   simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
   exact hF
 
-lemma tendsto_set_integral_m (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma tendsto_set_integral_m (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) (A : Set ℝ) :
     Tendsto (fun i ↦ ∫ x in A, M κ a s i x ∂(kernel.fst κ) a) atTop
       (𝓝 (∫ x in A, MLimsup κ a s x ∂(kernel.fst κ) a)) := by
@@ -741,7 +743,7 @@ lemma tendsto_set_integral_m (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
   refine EventuallyEq.sub EventuallyEq.rfl ?_
   exact (mLimsup_ae_eq_limitProcess κ a hs).symm
 
-lemma set_integral_mLimsup_of_measurableSet (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma set_integral_mLimsup_of_measurableSet (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) (n : ℕ)
     {A : Set ℝ} (hA : MeasurableSet[ℱ n] A) :
     ∫ t in A, MLimsup κ a s t ∂(kernel.fst κ a) = (κ a (A ×ˢ s)).toReal := by
@@ -759,12 +761,12 @@ lemma set_integral_mLimsup_of_measurableSet (κ : kernel α (ℝ × β)) [IsMark
   have h := tendsto_set_integral_m κ a hs A
   rw [h.limsup_eq]
 
-lemma integral_mLimsup (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma integral_mLimsup (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫ t, MLimsup κ a s t ∂(kernel.fst κ a) = (κ a (univ ×ˢ s)).toReal := by
   rw [← integral_univ, set_integral_mLimsup_of_measurableSet κ a hs 0 MeasurableSet.univ]
 
-lemma set_integral_mLimsup (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma set_integral_mLimsup (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set ℝ} (hA : MeasurableSet A) :
     ∫ t in A, MLimsup κ a s t ∂(kernel.fst κ a) = (κ a (A ×ˢ s)).toReal := by
   have hA' : MeasurableSet[⨆ n, ℱ n] A := by rwa [iSup_ℱ]
@@ -802,17 +804,18 @@ lemma set_integral_mLimsup (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
         exact fun i ↦ (hf i).prod hs
     · rwa [iSup_ℱ] at hf
 
-lemma tendsto_integral_mLimsup_of_monotone (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma tendsto_integral_mLimsup_of_monotone (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
-    Tendsto (fun m ↦ ∫ t, MLimsup κ a (s m) t ∂(kernel.fst κ a)) atTop (𝓝 1) := by
+    Tendsto (fun m ↦ ∫ t, MLimsup κ a (s m) t ∂(kernel.fst κ a)) atTop (𝓝 (κ a univ).toReal) := by
   simp_rw [integral_mLimsup κ a (hs_meas _)]
-  rw [← ENNReal.one_toReal]
-  have h_cont := ENNReal.continuousOn_toReal.continuousAt (x := 1) ?_
+  have h_cont := ENNReal.continuousOn_toReal.continuousAt (x := κ a univ) ?_
   swap
   · rw [mem_nhds_iff]
-    refine ⟨Iio 2, fun x hx ↦ ne_top_of_lt (?_ : x < 2), isOpen_Iio, ENNReal.one_lt_two⟩
-    simpa using hx
+    refine ⟨Iio (κ a univ + 1), fun x hx ↦ ne_top_of_lt (?_ : x < κ a univ + 1), isOpen_Iio, ?_⟩
+    · simpa using hx
+    · simp only [mem_Iio]
+      exact ENNReal.lt_add_right (measure_ne_top _ _) one_ne_zero
   refine h_cont.tendsto.comp ?_
   have h := tendsto_measure_iUnion (s := fun n ↦ univ ×ˢ s n) (μ := κ a) ?_
   swap; · intro n m hnm x; simp only [mem_prod, mem_univ, true_and]; exact fun h ↦ hs hnm h
@@ -820,7 +823,7 @@ lemma tendsto_integral_mLimsup_of_monotone (κ : kernel α (ℝ × β)) [IsMarko
   rw [← prod_iUnion, hs_iUnion]
   simp only [univ_prod_univ, measure_univ]
 
-lemma tendsto_integral_mLimsup_of_antitone (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma tendsto_integral_mLimsup_of_antitone (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Antitone s) (hs_iInter : ⋂ i, s i = ∅)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     Tendsto (fun m ↦ ∫ t, MLimsup κ a (s m) t ∂(kernel.fst κ a)) atTop (𝓝 0) := by
@@ -934,7 +937,7 @@ theorem tendsto_atTop_atBot_iff_of_antitone {α β : Type*}
     Tendsto f atTop atBot ↔ ∀ b : β, ∃ a : α, f a ≤ b :=
   @tendsto_atTop_atTop_iff_of_monotone _ βᵒᵈ _ _ _ _ hf
 
-lemma tendsto_mLimsup_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma tendsto_mLimsup_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 1) := by
@@ -970,7 +973,7 @@ lemma tendsto_mLimsup_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [IsMarko
             rw [← ofReal_norm_eq_coe_nnnorm, Real.norm_eq_abs, ENNReal.ofReal_le_one,
               abs_of_nonneg (hF_nonneg _)]
             exact hF_le_one _
-      _ < ⊤ := by simp only [lintegral_const, measure_univ, mul_one, ENNReal.one_lt_top]
+      _ < ⊤ := by simp only [lintegral_const, measure_univ, one_mul, measure_lt_top]
    -- it suffices to show that the limit `F` is 1 a.e.
   suffices ∀ᵐ t ∂(kernel.fst κ a), F t = 1 by
     filter_upwards [this] with t ht_eq
@@ -989,12 +992,12 @@ lemma tendsto_mLimsup_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [IsMarko
   have h_integral' :
     Tendsto (fun m : ℕ ↦ ∫ t, MLimsup κ a (s m) t ∂(kernel.fst κ a)) atTop
       (𝓝 (∫ _, 1 ∂(kernel.fst κ a))) := by
-    rw [integral_const, measure_univ]
-    simp only [ENNReal.one_toReal, smul_eq_mul, mul_one]
+    rw [integral_const, kernel.fst_apply' _ _ MeasurableSet.univ]
+    simp only [smul_eq_mul, mul_one]
     exact tendsto_integral_mLimsup_of_monotone κ a s hs hs_iUnion hs_meas
   exact tendsto_nhds_unique h_integral h_integral'
 
-lemma tendsto_mLimsup_atTop_ae_of_antitone (κ : kernel α (ℝ × β)) [IsMarkovKernel κ]
+lemma tendsto_mLimsup_atTop_ae_of_antitone (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Antitone s) (hs_iInter : ⋂ i, s i = ∅)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun m ↦ MLimsup κ a (s m) t) atTop (𝓝 0) := by
@@ -1031,7 +1034,9 @@ lemma tendsto_mLimsup_atTop_ae_of_antitone (κ : kernel α (ℝ × β)) [IsMarko
             rw [← ofReal_norm_eq_coe_nnnorm, Real.norm_eq_abs, ENNReal.ofReal_le_one,
               abs_of_nonneg (hF_nonneg _)]
             exact hF_le_one _
-      _ < ⊤ := by simp only [lintegral_const, measure_univ, mul_one, ENNReal.one_lt_top]
+      _ < ⊤ := by
+            simp only [lintegral_const, one_mul]
+            exact measure_lt_top _ _
    -- it suffices to show that the limit `F` is 0 a.e.
   suffices ∀ᵐ t ∂(kernel.fst κ a), F t = 0 by
     filter_upwards [this] with t ht_eq
@@ -1086,7 +1091,7 @@ theorem tendsto_nat_ceil_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSem
   refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
   simp only [Nat.ceil_natCast, le_refl]
 
-lemma tendsto_atTop_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) :
+lemma tendsto_atTop_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun q ↦ mLimsupIic κ a t q) atTop (𝓝 1) := by
   suffices ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun (n : ℕ) ↦ mLimsupIic κ a t n) atTop (𝓝 1) by
     filter_upwards [this] with t ht
@@ -1109,7 +1114,7 @@ lemma tendsto_atTop_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ]
   filter_upwards [tendsto_mLimsup_atTop_ae_of_monotone κ a s hs hs_iUnion hs_meas]
     with x hx using hx
 
-lemma tendsto_atBot_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) :
+lemma tendsto_atBot_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun q ↦ mLimsupIic κ a t q) atBot (𝓝 0) := by
   suffices ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun q ↦ mLimsupIic κ a t (-q)) atTop (𝓝 0) by
     filter_upwards [this] with t ht
@@ -1144,17 +1149,17 @@ lemma tendsto_atBot_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ]
   rw [mLimsupIic]
   simp
 
-lemma set_integral_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ]
+lemma set_integral_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ]
     (a : α) (q : ℚ) {A : Set ℝ} (hA : MeasurableSet A) :
     ∫ t in A, mLimsupIic κ a t q ∂(kernel.fst κ a) = (κ a (A ×ˢ Iic (q : ℝ))).toReal :=
   set_integral_mLimsup κ a measurableSet_Iic hA
 
-lemma integrable_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel (kernel.fst κ)]
+lemma integrable_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel (kernel.fst κ)]
     (a : α) (q : ℚ) :
     Integrable (fun t ↦ mLimsupIic κ a t q) (kernel.fst κ a) :=
   integrable_mLimsup _ _ measurableSet_Iic
 
-lemma bddBelow_range_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel (kernel.fst κ)]
+lemma bddBelow_range_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel (kernel.fst κ)]
     (a : α) (t : ℝ) (q : ℚ) :
     BddBelow (range fun (r : Ioi q) ↦ mLimsupIic κ a t r) := by
   refine ⟨0, ?_⟩
@@ -1162,12 +1167,12 @@ lemma bddBelow_range_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel (k
   rintro x ⟨y, rfl⟩
   exact mLimsupIic_nonneg _ _ _ _
 
-lemma integrable_iInf_rat_gt_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) (q : ℚ) :
+lemma integrable_iInf_rat_gt_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] (a : α) (q : ℚ) :
     Integrable (fun t ↦ ⨅ r : Ioi q, mLimsupIic κ a t r) (kernel.fst κ a) := by
   rw [← memℒp_one_iff_integrable]
   refine ⟨Measurable.aestronglyMeasurable ?_, ?_⟩
   · exact measurable_iInf fun i ↦ measurable_mLimsupIic_right κ a i
-  refine (?_ : _ ≤ (1 : ℝ≥0∞)).trans_lt ENNReal.one_lt_top
+  refine (?_ : _ ≤ (kernel.fst κ a univ : ℝ≥0∞)).trans_lt (measure_lt_top _ _)
   refine (snorm_le_of_ae_bound (C := 1) (ae_of_all _ (fun t ↦ ?_))).trans ?_
   · rw [Real.norm_eq_abs, abs_of_nonneg]
     · refine ciInf_le_of_le ?_ ?_ ?_
@@ -1177,7 +1182,7 @@ lemma integrable_iInf_rat_gt_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovK
     · exact le_ciInf fun r ↦ mLimsupIic_nonneg κ a t r
   · simp
 
-lemma set_integral_iInf_rat_gt_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ]
+lemma set_integral_iInf_rat_gt_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ]
     (a : α) (q : ℚ) {A : Set ℝ} (hA : MeasurableSet A) :
     ∫ t in A, ⨅ r : Ioi q, mLimsupIic κ a t r ∂(kernel.fst κ a)
       = (κ a (A ×ˢ Iic (q : ℝ))).toReal := by
@@ -1201,7 +1206,7 @@ lemma set_integral_iInf_rat_gt_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarko
     · exact (integrable_iInf_rat_gt_mLimsupIic _ _ _).integrableOn
     · exact fun t ↦ le_ciInf (fun r ↦ monotone_mLimsupIic _ _ _ (le_of_lt r.prop))
 
-lemma iInf_rat_gt_mLimsupIic_eq (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) :
+lemma iInf_rat_gt_mLimsupIic_eq (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), ∀ q : ℚ, ⨅ r : Ioi q, mLimsupIic κ a t r = mLimsupIic κ a t q := by
   rw [ae_all_iff]
   refine fun q ↦ ae_eq_of_forall_set_integral_eq_of_sigmaFinite (μ := kernel.fst κ a) ?_ ?_ ?_
@@ -1216,7 +1221,7 @@ end Iic_Q
 
 section Rat
 
-lemma isRatStieltjesPoint_mLimsupIic_ae (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] (a : α) :
+lemma isRatStieltjesPoint_mLimsupIic_ae (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), IsRatStieltjesPoint (fun p q ↦ mLimsupIic κ p.1 p.2 q) (a, t) := by
   filter_upwards [tendsto_atTop_mLimsupIic κ a, tendsto_atBot_mLimsupIic κ a,
     iInf_rat_gt_mLimsupIic_eq κ a] with t ht_top ht_bot ht_iInf
@@ -1228,7 +1233,7 @@ lemma isRatStieltjesPoint_mLimsupIic_ae (κ : kernel α (ℝ × ℝ)) [IsMarkovK
   · exact ht_bot
   · exact ht_iInf
 
-lemma isRatKernelCDF_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] :
+lemma isRatKernelCDF_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] :
     IsRatKernelCDF (fun p : α × ℝ ↦ mLimsupIic κ p.1 p.2) κ (kernel.fst κ) where
   measurable := measurable_mLimsupIic κ
   isRatStieltjesPoint_ae := isRatStieltjesPoint_mLimsupIic_ae κ
@@ -1240,10 +1245,10 @@ end Rat
 section KernelCDF
 
 noncomputable
-def mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] : α × ℝ → StieltjesFunction :=
+def mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] : α × ℝ → StieltjesFunction :=
   todo3 (fun p : α × ℝ ↦ mLimsupIic κ p.1 p.2) (isRatKernelCDF_mLimsupIic κ).measurable
 
-lemma isKernelCDF_mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsMarkovKernel κ] :
+lemma isKernelCDF_mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] :
     IsKernelCDF (mLimsupCDF κ) κ (kernel.fst κ) :=
   isKernelCDF_todo3 (isRatKernelCDF_mLimsupIic κ)
 
