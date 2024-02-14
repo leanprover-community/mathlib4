@@ -141,19 +141,10 @@ variable [Module.Finite K L] [IsAlgClosed E]
 /-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/
 theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
     discr K b ≠ 0 := by
-  cases isEmpty_or_nonempty ι
--- Porting note: the following proof was `simp [discr]`. Variations like `exact this` do not work.
-  · have : det (traceMatrix K ↑b) ≠ 0 := by simp
-    unfold discr
-    convert this
-  · have :=
-      span_eq_top_of_linearIndependent_of_card_eq_finrank b.linearIndependent
-        (finrank_eq_card_basis b).symm
-    classical
-    rw [discr_def, traceMatrix]
-    simp_rw [← Basis.mk_apply b.linearIndependent this.ge]
-    rw [← traceMatrix, traceMatrix_of_basis, ← BilinForm.nondegenerate_iff_det_ne_zero]
-    exact traceForm_nondegenerate _ _
+  classical
+  rw [discr_def, traceMatrix]
+  rw [← traceMatrix, traceMatrix_of_basis, ← BilinForm.nondegenerate_iff_det_ne_zero]
+  exact traceForm_nondegenerate _ _
 #align algebra.discr_not_zero_of_basis Algebra.discr_not_zero_of_basis
 
 /-- If `b` is a basis of a finite separable field extension `L/K`,
