@@ -36,9 +36,6 @@ universe u v
 
 variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ ProfiniteMax.{u, v}} (C : Cone F)
 
--- include hC
--- Porting note: I just add `(hC : IsLimit C)` explicitly as a hypothesis to all the theorems
-
 /-- If `X` is a cofiltered limit of profinite sets, then any clopen subset of `X` arises from
 a clopen set in one of the terms in the limit.
 -/
