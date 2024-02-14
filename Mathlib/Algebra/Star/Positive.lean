@@ -55,7 +55,7 @@ Regarding naming of lemmas: whenever a lemma involves a hypothesis of the form `
 it will be referenced as `nonneg` in the declaration name. However, when the hypothesis is
 `x : Positive R`, the declaration name will use `positive` (or `Positive`), not `pos`, so as to
 avoid confusion with `0 < x`. -/
-abbrev Positive (R : Type _) [Zero R] [Preorder R] := {x : R // 0 ≤ x}
+abbrev Positive (R : Type*) [Zero R] [Preorder R] := {x : R // 0 ≤ x}
 
 theorem Positive.coe_nonneg [Zero R] [Preorder R] (x : Positive R) : (0 : R) ≤ x := x.property
 

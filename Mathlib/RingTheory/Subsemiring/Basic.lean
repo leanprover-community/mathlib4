@@ -1354,15 +1354,6 @@ attribute [nolint simpNF] RingEquiv.subsemiringMap_symm_apply_coe RingEquiv.subs
 
 end RingEquiv
 
-/-- The set of nonnegative elements in an ordered semiring, as a subsemiring. -/
-@[simps]
-def Subsemiring.nonneg {R : Type _} [OrderedSemiring R] : Subsemiring R where
-  carrier := Set.Ici 0
-  mul_mem' := mul_nonneg
-  one_mem' := zero_le_one
-  add_mem' := add_nonneg
-  zero_mem' := le_rfl
-
 /-! ### Actions by `Subsemiring`s
 
 These are just copies of the definitions about `Submonoid` starting from `submonoid.mul_action`.
