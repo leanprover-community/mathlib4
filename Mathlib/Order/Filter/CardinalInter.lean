@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
 import Mathlib.Order.Filter.Basic
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Filters with a cardinal intersection property
