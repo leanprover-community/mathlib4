@@ -3,8 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Range
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Init.Data.List.Instances
 
 #align_import data.int.range from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 
@@ -49,7 +49,7 @@ instance decidableLELE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     apply decidable_of_iff (∀ r ∈ range m (n + 1), P r)
     apply Iff.intro <;> intros h _ _
     · intro _; apply h
-      simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
+      simp_all only [mem_range_iff, and_imp, and_self, lt_add_one_iff]
     · simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
 #align int.decidable_le_le Int.decidableLELE
 

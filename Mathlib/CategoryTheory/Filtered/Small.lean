@@ -156,9 +156,9 @@ noncomputable def factoringCompInclusion : factoring F ⋙ inclusion F ≅ F :=
 instance : IsFilteredOrEmpty (SmallFilteredIntermediate F) :=
   IsFilteredOrEmpty.of_equivalence (equivSmallModel _)
 
-instance [_root_.Nonempty D] : IsFiltered (SmallFilteredIntermediate F) :=
+instance [Nonempty D] : IsFiltered (SmallFilteredIntermediate F) :=
   { (inferInstance : IsFilteredOrEmpty _) with
-    Nonempty := Nonempty.map (factoring F).obj inferInstance }
+    nonempty := Nonempty.map (factoring F).obj inferInstance }
 
 end SmallFilteredIntermediate
 
@@ -289,9 +289,9 @@ noncomputable def factoringCompInclusion : factoring F ⋙ inclusion F ≅ F :=
 instance : IsCofilteredOrEmpty (SmallCofilteredIntermediate F) :=
   IsCofilteredOrEmpty.of_equivalence (equivSmallModel _)
 
-instance [_root_.Nonempty D] : IsCofiltered (SmallCofilteredIntermediate F) :=
+instance [Nonempty D] : IsCofiltered (SmallCofilteredIntermediate F) :=
   { (inferInstance : IsCofilteredOrEmpty _) with
-    Nonempty := Nonempty.map (factoring F).obj inferInstance }
+    nonempty := Nonempty.map (factoring F).obj inferInstance }
 
 end SmallCofilteredIntermediate
 

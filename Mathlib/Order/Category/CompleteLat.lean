@@ -50,12 +50,12 @@ instance : BundledHom @CompleteLatticeHom where
   toFun _ _ f := f.toFun
   id := @CompleteLatticeHom.id
   comp := @CompleteLatticeHom.comp
-  hom_ext _ _ _ _ h := FunLike.coe_injective h
+  hom_ext _ _ _ _ h := DFunLike.coe_injective h
 
 deriving instance LargeCategory for CompleteLat
 
-instance : ConcreteCategory CompleteLat :=
-  by dsimp [CompleteLat]; infer_instance
+instance : ConcreteCategory CompleteLat := by
+  dsimp [CompleteLat]; infer_instance
 
 instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
   forget₂ :=

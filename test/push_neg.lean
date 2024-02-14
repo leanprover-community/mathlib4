@@ -156,6 +156,22 @@ example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get 
   push_neg at h
   exact h
 
+example (s : Set α) (h : ¬s.Nonempty) : s = ∅ := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ¬ s = ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : s ≠ ∅) : s.Nonempty := by
+  push_neg at h
+  exact h
+
+example (s : Set α) (h : ∅ ≠ s) : s.Nonempty := by
+  push_neg at h
+  exact h
+
 namespace no_proj
 
 structure G (V : Type) where

@@ -178,7 +178,7 @@ def reverse : Flow τ α where
 -- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by continuity
 @[continuity]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
-  rw [←curry_uncurry ϕ.toFun]
+  rw [← curry_uncurry ϕ.toFun]
   apply continuous_curry
   exact ϕ.cont'
 

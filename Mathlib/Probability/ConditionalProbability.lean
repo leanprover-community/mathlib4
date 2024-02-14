@@ -3,7 +3,7 @@ Copyright (c) 2022 Rishikesh Vaishnav. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rishikesh Vaishnav
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Typeclasses
 
 #align_import probability.conditional_probability from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -75,8 +75,8 @@ def cond (s : Set Ω) : Measure Ω :=
 
 end Definitions
 
-scoped notation μ "[" s "|" t "]" => ProbabilityTheory.cond μ t s
-scoped notation:60 μ "[|" t "]" => ProbabilityTheory.cond μ t
+@[inherit_doc] scoped notation μ "[" s "|" t "]" => ProbabilityTheory.cond μ t s
+@[inherit_doc] scoped notation:60 μ "[|" t "]" => ProbabilityTheory.cond μ t
 
 /-- The conditional probability measure of any finite measure on any set of positive measure
 is a probability measure. -/

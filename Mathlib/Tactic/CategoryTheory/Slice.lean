@@ -49,7 +49,7 @@ def evalSlice (a b : Nat) : TacticM Unit := do
       evalTactic (← `(conv| congr))
       evalTactic (← `(tactic| rotate_left))
   let k ← iterateUntilFailureCount
-    <| evalTactic (← `(conv| rw [←Category.assoc]))
+    <| evalTactic (← `(conv| rw [← Category.assoc]))
   let c := k+1+a-b
   iterateRange c c <| evalTactic (← `(conv| congr))
   let _ ← iterateUntilFailureWithResults do

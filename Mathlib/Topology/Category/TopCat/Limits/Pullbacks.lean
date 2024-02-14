@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Limits.Products
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 #align_import topology.category.Top.limits.pullbacks from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
@@ -51,7 +50,7 @@ abbrev pullbackSnd (f : X ⟶ Z) (g : Y ⟶ Z) : TopCat.of { p : X × Y // f p.1
 def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
   PullbackCone.mk (pullbackFst f g) (pullbackSnd f g)
     (by
-      dsimp [pullbackFst, pullbackSnd, Function.comp]
+      dsimp [pullbackFst, pullbackSnd, Function.comp_def]
       ext ⟨x, h⟩
       -- Next 2 lines were
       -- `rw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk]`
@@ -170,10 +169,35 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
-    rw [←comp_apply, prod.comp_lift, ←comp_apply, limit.lift_π] <;>
+    rw [← comp_apply, ← comp_apply, limit.lift_π] <;>
     -- This used to be `simp` before leanprover/lean4#2644
     aesop_cat
 #align Top.range_pullback_to_prod TopCat.range_pullback_to_prod
+
+/-- The pullback along an embedding is (isomorphic to) the preimage. -/
+noncomputable
+def pullbackHomeoPreimage
+    {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    (f : X → Z) (hf : Continuous f) (g : Y → Z) (hg : Embedding g) :
+    { p : X × Y // f p.1 = g p.2 } ≃ₜ f ⁻¹' Set.range g where
+  toFun := fun x ↦ ⟨x.1.1, _, x.2.symm⟩
+  invFun := fun x ↦ ⟨⟨x.1, Exists.choose x.2⟩, (Exists.choose_spec x.2).symm⟩
+  left_inv := by
+    intro x
+    ext <;> dsimp
+    apply hg.inj
+    convert x.prop
+    exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
+  right_inv := fun x ↦ rfl
+  continuous_toFun := by
+    apply Continuous.subtype_mk
+    exact continuous_fst.comp continuous_subtype_val
+  continuous_invFun := by
+    apply Continuous.subtype_mk
+    refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.toInducing.continuous_iff.mpr ?_⟩
+    convert hf.comp continuous_subtype_val
+    ext x
+    exact Exists.choose_spec x.2
 
 theorem inducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     Inducing <| ⇑(prod.lift pullback.fst pullback.snd : pullback f g ⟶ X ⨯ Y) :=
@@ -195,7 +219,7 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   ext
   constructor
   · rintro ⟨y, rfl⟩
-    simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range, ←comp_apply, limit.lift_π,
+    simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range, ← comp_apply, limit.lift_π,
       PullbackCone.mk_pt, PullbackCone.mk_π_app]
     simp only [comp_apply, exists_apply_eq_apply, and_self]
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
@@ -207,7 +231,7 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
   apply Concrete.limit_ext
   rintro (_ | _ | _) <;>
-  simp only [←comp_apply, Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
+  simp only [← comp_apply, Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
   · simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply,
       pullbackFst_apply, hx₁]
     rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
@@ -310,7 +334,7 @@ theorem embedding_of_pullback_embeddings {X Y S : TopCat} {f : X ⟶ S} {g : Y �
   convert H₂.comp (snd_embedding_of_left_embedding H₁ g)
   erw [← coe_comp]
   congr
-  rw [←limit.w _ WalkingCospan.Hom.inr]
+  rw [← limit.w _ WalkingCospan.Hom.inr]
   rfl
 #align Top.embedding_of_pullback_embeddings TopCat.embedding_of_pullback_embeddings
 
@@ -339,7 +363,7 @@ theorem openEmbedding_of_pullback_open_embeddings {X Y S : TopCat} {f : X ⟶ S}
   convert H₂.comp (snd_openEmbedding_of_left_openEmbedding H₁ g)
   erw [← coe_comp]
   congr
-  rw [←(limit.w _ WalkingCospan.Hom.inr)]
+  rw [← limit.w _ WalkingCospan.Hom.inr]
   rfl
 #align Top.open_embedding_of_pullback_open_embeddings TopCat.openEmbedding_of_pullback_open_embeddings
 

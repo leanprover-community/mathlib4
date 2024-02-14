@@ -132,14 +132,8 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarOrderedRing R] [Algebra
       dsimp
       simp only [star_add, star_sub, star_mul, star_ofNat, star_one, T.A₀_sa, T.A₁_sa, T.B₀_sa,
         T.B₁_sa, mul_comm B₀, mul_comm B₁]
-    rw [idem']
-    conv_rhs =>
-      arg 2
-      arg 1
-      rw [← sa]
-    convert smul_le_smul_of_nonneg (R := ℝ) (star_mul_self_nonneg P) _
-    · simp
-    · norm_num
+    simpa only [← idem', sa]
+      using smul_nonneg (by norm_num : (0 : ℝ) ≤ 1 / 4) (star_mul_self_nonneg P)
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add] using i₁
 set_option linter.uppercaseLean3 false in
@@ -222,26 +216,9 @@ theorem tsirelson_inequality [OrderedRing R] [StarOrderedRing R] [Algebra ℝ R]
       simp only [star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa, T.B₁_sa]
     have Q_sa : star Q = Q := by
       simp only [star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa, T.B₁_sa]
-    have P2_nonneg : 0 ≤ P ^ 2 := by
-      rw [sq]
-      conv =>
-        congr
-        skip
-        congr
-        rw [← P_sa]
-      convert (star_mul_self_nonneg P)
-    have Q2_nonneg : 0 ≤ Q ^ 2 := by
-      rw [sq]
-      conv =>
-        congr
-        skip
-        congr
-        rw [← Q_sa]
-      convert (star_mul_self_nonneg Q)
-    convert smul_le_smul_of_nonneg (add_nonneg P2_nonneg Q2_nonneg)
-        (le_of_lt (show 0 < √2⁻¹ by norm_num))
-    -- `norm_num` can't directly show `0 ≤ √2⁻¹`
-    simp
+    have P2_nonneg : 0 ≤ P ^ 2 := by simpa only [P_sa, sq] using star_mul_self_nonneg P
+    have Q2_nonneg : 0 ≤ Q ^ 2 := by simpa only [Q_sa, sq] using star_mul_self_nonneg Q
+    exact smul_nonneg (by positivity) (add_nonneg P2_nonneg Q2_nonneg)
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add, w, Nat.cast_zero] using pos
 #align tsirelson_inequality tsirelson_inequality

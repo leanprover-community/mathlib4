@@ -137,7 +137,6 @@ theorem degrees_one : degrees (1 : MvPolynomial σ R) = 0 :=
 theorem degrees_add [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).degrees ≤ p.degrees ⊔ q.degrees := by
   simp_rw [degrees_def]; exact supDegree_add_le
-
 #align mv_polynomial.degrees_add MvPolynomial.degrees_add
 
 theorem degrees_sum {ι : Type*} [DecidableEq σ] (s : Finset ι) (f : ι → MvPolynomial σ R) :
@@ -275,7 +274,7 @@ theorem vars_X [Nontrivial R] : (X n : MvPolynomial σ R).vars = {n} := by
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.vars_X MvPolynomial.vars_X
 
-theorem mem_vars (i : σ) : i ∈ p.vars ↔ ∃ (d : σ →₀ ℕ) (_ : d ∈ p.support), i ∈ d.support := by
+theorem mem_vars (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
   classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff, exists_prop]
 #align mv_polynomial.mem_vars MvPolynomial.mem_vars
 
@@ -307,7 +306,6 @@ theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars �
   simp_rw [vars]
   convert Multiset.toFinset_subset.mpr <| Multiset.Le.subset (degrees_mul φ ψ)
   convert (Multiset.toFinset_add φ.degrees ψ.degrees).symm
-
 #align mv_polynomial.vars_mul MvPolynomial.vars_mul
 
 @[simp]
@@ -417,7 +415,6 @@ theorem vars_eq_support_biUnion_support [DecidableEq σ] :
     p.vars = p.support.biUnion Finsupp.support := by
   ext i
   rw [mem_vars, Finset.mem_biUnion]
-  simp
 #align mv_polynomial.vars_eq_support_bUnion_support MvPolynomial.vars_eq_support_biUnion_support
 
 end Map
@@ -450,8 +447,12 @@ theorem degreeOf_eq_sup (n : σ) (f : MvPolynomial σ R) :
 
 theorem degreeOf_lt_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} (h : 0 < d) :
     degreeOf n f < d ↔ ∀ m : σ →₀ ℕ, m ∈ f.support → m n < d := by
-  rwa [degreeOf_eq_sup n f, Finset.sup_lt_iff]
+  rwa [degreeOf_eq_sup, Finset.sup_lt_iff]
 #align mv_polynomial.degree_of_lt_iff MvPolynomial.degreeOf_lt_iff
+
+lemma degreeOf_le_iff {n : σ} {f : MvPolynomial σ R} {d : ℕ} :
+    degreeOf n f ≤ d ↔ ∀ m ∈ support f, m n ≤ d := by
+  rw [degreeOf_eq_sup, Finset.sup_le_iff]
 
 @[simp]
 theorem degreeOf_zero (n : σ) : degreeOf n (0 : MvPolynomial σ R) = 0 := by
@@ -550,9 +551,13 @@ theorem le_totalDegree {p : MvPolynomial σ R} {s : σ →₀ ℕ} (h : s ∈ p.
 theorem totalDegree_le_degrees_card (p : MvPolynomial σ R) :
     p.totalDegree ≤ Multiset.card p.degrees := by
   classical
-    rw [totalDegree_eq]
-    exact Finset.sup_le fun s hs => Multiset.card_le_of_le <| Finset.le_sup hs
+  rw [totalDegree_eq]
+  exact Finset.sup_le fun s hs => Multiset.card_le_card <| Finset.le_sup hs
 #align mv_polynomial.total_degree_le_degrees_card MvPolynomial.totalDegree_le_degrees_card
+
+theorem totalDegree_le_of_support_subset (h : p.support ⊆ q.support) :
+    totalDegree p ≤ totalDegree q :=
+  Finset.sup_mono h
 
 @[simp]
 theorem totalDegree_C (a : R) : (C a : MvPolynomial σ R).totalDegree = 0 := by
@@ -654,6 +659,11 @@ theorem totalDegree_finset_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolyno
     exact (MvPolynomial.totalDegree_add _ _).trans (max_le_max le_rfl hind)
 #align mv_polynomial.total_degree_finset_sum MvPolynomial.totalDegree_finset_sum
 
+lemma degreeOf_le_totalDegree (f : MvPolynomial σ R) (i : σ) : f.degreeOf i ≤ f.totalDegree :=
+  degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (·.trans_le zero_le') fun h ↦
+    (Finset.single_le_sum (fun _ _ ↦ zero_le') <| Finsupp.mem_support_iff.mpr h).trans
+    (le_totalDegree hd)
+
 theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)
     (h : f.totalDegree < n * Fintype.card σ) {d : σ →₀ ℕ} (hd : d ∈ f.support) : ∃ i, d i < n := by
   contrapose! h
@@ -727,7 +737,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
       rintro rfl
       contradiction
     rw [Finsupp.prod, Finset.prod_eq_zero hi, mul_zero]
-    rw [hp, zero_pow (Nat.pos_of_ne_zero <| Finsupp.mem_support_iff.mp hi)]
+    rw [hp, zero_pow (Finsupp.mem_support_iff.1 hi)]
     rw [mem_vars]
     exact ⟨d, hd, hi⟩
 #align mv_polynomial.eval₂_hom_eq_constant_coeff_of_vars MvPolynomial.eval₂Hom_eq_constantCoeff_of_vars

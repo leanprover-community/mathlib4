@@ -67,7 +67,7 @@ private theorem no_collision : Disjoint {beattySeq r k | k} {beattySeq' s k | k}
     add_sub_cancel, ← div_lt_iff hrs.symm.pos, ← le_div_iff hrs.symm.pos] at h₂
   have h₃ := add_lt_add_of_le_of_lt h₁.1 h₂.1
   have h₄ := add_lt_add_of_lt_of_le h₁.2 h₂.2
-  simp_rw [div_eq_inv_mul, ← right_distrib, inv_eq_one_div, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
+  simp_rw [div_eq_inv_mul, ← right_distrib, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
   rw [← Int.cast_one] at h₄
   simp_rw [← Int.cast_add, Int.cast_lt, Int.lt_add_one_iff] at h₃ h₄
   exact h₄.not_lt h₃
@@ -79,7 +79,7 @@ private theorem no_anticollision :
   intro ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩
   have h₃ := add_lt_add_of_lt_of_le h₁₁ h₂₁
   have h₄ := add_lt_add_of_le_of_lt h₁₂ h₂₂
-  simp_rw [div_eq_inv_mul, ← right_distrib, inv_eq_one_div, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
+  simp_rw [div_eq_inv_mul, ← right_distrib, hrs.inv_add_inv_conj, one_mul] at h₃ h₄
   rw [← Int.cast_one, ← add_assoc, add_lt_add_iff_right, add_right_comm] at h₄
   simp_rw [← Int.cast_add, Int.cast_lt, Int.lt_add_one_iff] at h₃ h₄
   exact h₄.not_lt h₃
@@ -117,8 +117,8 @@ theorem compl_beattySeq {r s : ℝ} (hrs : r.IsConjugateExponent s) :
   ext j
   by_cases h₁ : j ∈ {beattySeq r k | k} <;> by_cases h₂ : j ∈ {beattySeq' s k | k}
   · exact (Set.not_disjoint_iff.2 ⟨j, h₁, h₂⟩ (Beatty.no_collision hrs)).elim
-  · simp only [Set.mem_compl_iff, h₁, h₂]
-  · simp only [Set.mem_compl_iff, h₁, h₂]
+  · simp only [Set.mem_compl_iff, h₁, h₂, not_true_eq_false]
+  · simp only [Set.mem_compl_iff, h₁, h₂, not_false_eq_true]
   · have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hrs.pos).resolve_left h₁
     have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hrs.symm.pos).resolve_left h₂
     exact (Beatty.no_anticollision hrs ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
@@ -126,6 +126,8 @@ theorem compl_beattySeq {r s : ℝ} (hrs : r.IsConjugateExponent s) :
 theorem compl_beattySeq' {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     {beattySeq' r k | k}ᶜ = {beattySeq s k | k} := by
   rw [← compl_beattySeq hrs.symm, compl_compl]
+
+open scoped symmDiff
 
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1, and `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺'_s` partition the positive integers. -/
@@ -165,7 +167,7 @@ theorem Irrational.beattySeq'_pos_eq {r : ℝ} (hr : Irrational r) :
   refine ⟨(Int.floor_le _).lt_of_ne fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
   exact (hr.int_mul hk.ne').ne_int ⌊k * r⌋ h.symm
 
-/-- Rayleigh's theorem on Beatty sequences. Let `r` be an irrational number greater than 1, and
+/-- **Rayleigh's theorem** on Beatty sequences. Let `r` be an irrational number greater than 1, and
 `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers. -/
 theorem Irrational.beattySeq_symmDiff_beattySeq_pos {r s : ℝ}
     (hrs : r.IsConjugateExponent s) (hr : Irrational r) :

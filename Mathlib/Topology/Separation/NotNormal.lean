@@ -26,7 +26,7 @@ https://en.wikipedia.org/wiki/Moore_plane#Proof_that_the_Moore_plane_is_not_norm
 theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
     [DiscreteTopology s] : #s < 𝔠 := by
   -- Proof by contradiction: assume `𝔠 ≤ #s`
-  by_contra' h
+  by_contra! h
   -- Choose a countable dense set `t : Set X`
   rcases exists_countable_dense X with ⟨t, htc, htd⟩
   haveI := htc.to_subtype
@@ -46,7 +46,7 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
       exact mk_le_of_injective hfi
     -- Since `t` is dense, restriction `C(X, ℝ) → C(t, ℝ)` is injective, hence `#C(X, ℝ) ≤ #C(t, ℝ)`
     _ ≤ #C(t, ℝ) := mk_le_of_injective <| ContinuousMap.injective_restrict htd
-    _ ≤ #(t → ℝ) := mk_le_of_injective FunLike.coe_injective
+    _ ≤ #(t → ℝ) := mk_le_of_injective DFunLike.coe_injective
     -- Since `t` is countable, we have `#(t → ℝ) ≤ 𝔠`
     _ ≤ 𝔠 := by
       rw [mk_arrow, mk_real, lift_uzero, lift_continuum, continuum, ← power_mul]

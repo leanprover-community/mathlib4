@@ -223,7 +223,7 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
   apply Finset.sum_congr rfl
   intro σ _
   congr 1
-  by_cases i = σ j
+  by_cases h : i = σ j
   · -- Everything except `(i , j)` (= `(σ j , j)`) is given by A, and the rest is a single `1`.
     congr
     ext j'
@@ -266,7 +266,7 @@ theorem adjugate_reindex (e : m ≃ n) (A : Matrix m m α) :
 /-- Since the map `b ↦ cramer A b` is linear in `b`, it must be multiplication by some matrix. This
 matrix is `A.adjugate`. -/
 theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
-    cramer A b = A.adjugate.mulVec b := by
+    cramer A b = A.adjugate *ᵥ b := by
   nth_rw 2 [← A.transpose_transpose]
   rw [← adjugate_transpose, adjugate_def]
   have : b = ∑ i, b i • Pi.single i 1 := by
@@ -309,7 +309,7 @@ theorem adjugate_smul (r : α) (A : Matrix n n α) :
 if the determinant is not a unit. A sufficient (but still not necessary) condition is that `A.det`
 divides `b`. -/
 @[simp]
-theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A.mulVec (cramer A b) = A.det • b := by
+theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A *ᵥ cramer A b = A.det • b := by
   rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec_assoc, one_mulVec]
 #align matrix.mul_vec_cramer Matrix.mulVec_cramer
 
@@ -372,7 +372,7 @@ theorem _root_.AlgHom.map_adjugate {R A B : Type*} [CommSemiring R] [CommRing A]
 
 theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.card n - 1) := by
   -- get rid of the `- 1`
-  cases' (Fintype.card n).eq_zero_or_pos with h_card h_card
+  rcases (Fintype.card n).eq_zero_or_pos with h_card | h_card
   · haveI : IsEmpty n := Fintype.card_eq_zero_iff.mp h_card
     rw [h_card, Nat.zero_sub, pow_zero, adjugate_subsingleton, det_one]
   replace h_card := tsub_add_cancel_of_le h_card.nat_succ_le

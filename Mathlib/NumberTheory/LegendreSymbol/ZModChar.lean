@@ -67,13 +67,13 @@ theorem χ₄_int_eq_if_mod_four (n : ℤ) :
     χ₄ n = if n % 2 = 0 then 0 else if n % 4 = 1 then 1 else -1 := by
   have help : ∀ m : ℤ, 0 ≤ m → m < 4 → χ₄ m = if m % 2 = 0 then 0 else if m = 1 then 1 else -1 := by
     decide
-  rw [← Int.emod_emod_of_dvd n (by norm_num : (2 : ℤ) ∣ 4), ← ZMod.int_cast_mod n 4]
+  rw [← Int.emod_emod_of_dvd n (by decide : (2 : ℤ) ∣ 4), ← ZMod.int_cast_mod n 4]
   exact help (n % 4) (Int.emod_nonneg n (by norm_num)) (Int.emod_lt n (by norm_num))
 #align zmod.χ₄_int_eq_if_mod_four ZMod.χ₄_int_eq_if_mod_four
 
 theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
-    χ₄ n = if n % 2 = 0 then 0 else if n % 4 = 1 then 1 else -1 := by
-  exact_mod_cast χ₄_int_eq_if_mod_four n
+    χ₄ n = if n % 2 = 0 then 0 else if n % 4 = 1 then 1 else -1 :=
+  mod_cast χ₄_int_eq_if_mod_four n
 #align zmod.χ₄_nat_eq_if_mod_four ZMod.χ₄_nat_eq_if_mod_four
 
 /-- Alternative description of `χ₄ n` for odd `n : ℕ` in terms of powers of `-1` -/
@@ -88,7 +88,7 @@ theorem χ₄_eq_neg_one_pow {n : ℕ} (hn : n % 2 = 1) : χ₄ n = (-1) ^ (n / 
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → ite (m = 1) (1 : ℤ) (-1) = (-1) ^ (m / 2) := by decide
   exact
     help (n % 4) (Nat.mod_lt n (by norm_num))
-      ((Nat.mod_mod_of_dvd n (by norm_num : 2 ∣ 4)).trans hn)
+      ((Nat.mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn)
 #align zmod.χ₄_eq_neg_one_pow ZMod.χ₄_eq_neg_one_pow
 
 /-- If `n % 4 = 1`, then `χ₄ n = 1`. -/
@@ -162,13 +162,13 @@ theorem χ₈_int_eq_if_mod_eight (n : ℤ) :
   have help :
     ∀ m : ℤ, 0 ≤ m → m < 8 → χ₈ m = if m % 2 = 0 then 0 else if m = 1 ∨ m = 7 then 1 else -1 := by
     decide
-  rw [← Int.emod_emod_of_dvd n (by norm_num : (2 : ℤ) ∣ 8), ← ZMod.int_cast_mod n 8]
+  rw [← Int.emod_emod_of_dvd n (by decide : (2 : ℤ) ∣ 8), ← ZMod.int_cast_mod n 8]
   exact help (n % 8) (Int.emod_nonneg n (by norm_num)) (Int.emod_lt n (by norm_num))
 #align zmod.χ₈_int_eq_if_mod_eight ZMod.χ₈_int_eq_if_mod_eight
 
 theorem χ₈_nat_eq_if_mod_eight (n : ℕ) :
-    χ₈ n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 7 then 1 else -1 := by
-  exact_mod_cast χ₈_int_eq_if_mod_eight n
+    χ₈ n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 7 then 1 else -1 :=
+  mod_cast χ₈_int_eq_if_mod_eight n
 #align zmod.χ₈_nat_eq_if_mod_eight ZMod.χ₈_nat_eq_if_mod_eight
 
 /-- Define the second primitive quadratic character on `ZMod 8`, `χ₈'`.
@@ -195,24 +195,24 @@ theorem χ₈'_int_eq_if_mod_eight (n : ℤ) :
   have help :
     ∀ m : ℤ, 0 ≤ m → m < 8 → χ₈' m = if m % 2 = 0 then 0 else if m = 1 ∨ m = 3 then 1 else -1 := by
     decide
-  rw [← Int.emod_emod_of_dvd n (by norm_num : (2 : ℤ) ∣ 8), ← ZMod.int_cast_mod n 8]
+  rw [← Int.emod_emod_of_dvd n (by decide : (2 : ℤ) ∣ 8), ← ZMod.int_cast_mod n 8]
   exact help (n % 8) (Int.emod_nonneg n (by norm_num)) (Int.emod_lt n (by norm_num))
 #align zmod.χ₈'_int_eq_if_mod_eight ZMod.χ₈'_int_eq_if_mod_eight
 
 theorem χ₈'_nat_eq_if_mod_eight (n : ℕ) :
-    χ₈' n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 3 then 1 else -1 := by
-  exact_mod_cast χ₈'_int_eq_if_mod_eight n
+    χ₈' n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 3 then 1 else -1 :=
+  mod_cast χ₈'_int_eq_if_mod_eight n
 #align zmod.χ₈'_nat_eq_if_mod_eight ZMod.χ₈'_nat_eq_if_mod_eight
 
 /-- The relation between `χ₄`, `χ₈` and `χ₈'` -/
-theorem χ₈'_eq_χ₄_mul_χ₈ (a : ZMod 8) : χ₈' a = χ₄ a * χ₈ a := by
+theorem χ₈'_eq_χ₄_mul_χ₈ (a : ZMod 8) : χ₈' a = χ₄ (cast a) * χ₈ a := by
     --porting note: was `decide!`
   fin_cases a
   all_goals decide
 #align zmod.χ₈'_eq_χ₄_mul_χ₈ ZMod.χ₈'_eq_χ₄_mul_χ₈
 
 theorem χ₈'_int_eq_χ₄_mul_χ₈ (a : ℤ) : χ₈' a = χ₄ a * χ₈ a := by
-  rw [← @cast_int_cast 8 (ZMod 4) _ 4 _ (by norm_num) a]
+  rw [← @cast_int_cast 8 (ZMod 4) _ 4 _ (by decide) a]
   exact χ₈'_eq_χ₄_mul_χ₈ a
 #align zmod.χ₈'_int_eq_χ₄_mul_χ₈ ZMod.χ₈'_int_eq_χ₄_mul_χ₈
 

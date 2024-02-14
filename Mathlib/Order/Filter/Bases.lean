@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Set.Countable
 import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.Ker
 
 #align_import order.filter.bases from "leanprover-community/mathlib"@"996b0ff959da753a555053a480f36e5f264d4207"
 
@@ -165,7 +166,7 @@ namespace FilterBasis
 /-- The filter associated to a filter basis. -/
 protected def filter (B : FilterBasis α) : Filter α where
   sets := { s | ∃ t ∈ B, t ⊆ s }
-  univ_sets := B.nonempty.imp <| fun s s_in => ⟨s_in, s.subset_univ⟩
+  univ_sets := B.nonempty.imp fun s s_in => ⟨s_in, s.subset_univ⟩
   sets_of_superset := fun ⟨s, s_in, h⟩ hxy => ⟨s, s_in, Set.Subset.trans h hxy⟩
   inter_sets := fun ⟨_s, s_in, hs⟩ ⟨_t, t_in, ht⟩ =>
     let ⟨u, u_in, u_sub⟩ := B.inter_sets s_in t_in
@@ -274,7 +275,7 @@ theorem hasBasis_iff : l.HasBasis p s ↔ ∀ t, t ∈ l ↔ ∃ i, p i ∧ s i 
 #align filter.has_basis_iff Filter.hasBasis_iffₓ
 
 theorem HasBasis.ex_mem (h : l.HasBasis p s) : ∃ i, p i :=
-  (h.mem_iff.mp univ_mem).imp <| fun _ => And.left
+  (h.mem_iff.mp univ_mem).imp fun _ => And.left
 #align filter.has_basis.ex_mem Filter.HasBasis.ex_mem
 
 protected theorem HasBasis.nonempty (h : l.HasBasis p s) : Nonempty ι :=
@@ -355,6 +356,11 @@ theorem HasBasis.to_hasBasis (hl : l.HasBasis p s) (h : ∀ i, p i → ∃ i', p
     let ⟨i, hi, hss'⟩ := h' i' hi'
     hl.mem_iff.2 ⟨i, hi, hss'⟩
 #align filter.has_basis.to_has_basis Filter.HasBasis.to_hasBasis
+
+protected lemma HasBasis.congr (hl : l.HasBasis p s) {p' s'} (hp : ∀ i, p i ↔ p' i)
+    (hs : ∀ i, p i → s i = s' i) : l.HasBasis p' s' :=
+  ⟨fun t ↦ by simp only [hl.mem_iff, ← hp]; exact exists_congr fun i ↦
+    and_congr_right fun hi ↦ hs i hi ▸ Iff.rfl⟩
 
 theorem HasBasis.to_subset (hl : l.HasBasis p s) {t : ι → Set α} (h : ∀ i, p i → t i ⊆ s i)
     (ht : ∀ i, p i → t i ∈ l) : l.HasBasis p t :=
@@ -455,8 +461,8 @@ theorem HasBasis.ge_iff (hl' : l'.HasBasis p' s') : l ≤ l' ↔ ∀ i', p' i' �
 #align filter.has_basis.ge_iff Filter.HasBasis.ge_iff
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
-theorem HasBasis.le_iff (hl : l.HasBasis p s) : l ≤ l' ↔ ∀ t ∈ l', ∃ i, p i ∧ s i ⊆ t :=
-  by simp only [le_def, hl.mem_iff]
+theorem HasBasis.le_iff (hl : l.HasBasis p s) : l ≤ l' ↔ ∀ t ∈ l', ∃ i, p i ∧ s i ⊆ t := by
+  simp only [le_def, hl.mem_iff]
 #align filter.has_basis.le_iff Filter.HasBasis.le_iffₓ
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
@@ -576,8 +582,9 @@ theorem hasBasis_principal (t : Set α) : (𝓟 t).HasBasis (fun _ : Unit => Tru
   ⟨fun U => by simp⟩
 #align filter.has_basis_principal Filter.hasBasis_principal
 
-theorem hasBasis_pure (x : α) : (pure x : Filter α).HasBasis (fun _ : Unit => True) fun _ => {x} :=
-  by simp only [← principal_singleton, hasBasis_principal]
+theorem hasBasis_pure (x : α) :
+    (pure x : Filter α).HasBasis (fun _ : Unit => True) fun _ => {x} := by
+  simp only [← principal_singleton, hasBasis_principal]
 #align filter.has_basis_pure Filter.hasBasis_pure
 
 theorem HasBasis.sup' (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
@@ -749,7 +756,7 @@ theorem inf_neBot_iff_frequently_right {f g : Filter α} :
 #align filter.inf_ne_bot_iff_frequently_right Filter.inf_neBot_iff_frequently_right
 
 theorem HasBasis.eq_biInf (h : l.HasBasis p s) : l = ⨅ (i) (_ : p i), 𝓟 (s i) :=
-  eq_biInf_of_mem_iff_exists_mem <| fun {_} => by simp only [h.mem_iff, mem_principal, exists_prop]
+  eq_biInf_of_mem_iff_exists_mem fun {_} => by simp only [h.mem_iff, mem_principal, exists_prop]
 #align filter.has_basis.eq_binfi Filter.HasBasis.eq_biInf
 
 theorem HasBasis.eq_iInf (h : l.HasBasis (fun _ => True) s) : l = ⨅ i, 𝓟 (s i) := by
@@ -823,7 +830,7 @@ protected theorem HasBasis.biInter_mem {f : Set α → Set β} (h : HasBasis l p
 #align filter.has_basis.bInter_mem Filter.HasBasis.biInter_mem
 
 protected theorem HasBasis.ker (h : HasBasis l p s) : l.ker = ⋂ (i) (_ : p i), s i :=
-  l.ker_def.trans $ h.biInter_mem monotone_id
+  l.ker_def.trans <| h.biInter_mem monotone_id
 #align filter.has_basis.sInter_sets Filter.HasBasis.ker
 
 variable {ι'' : Type*} [Preorder ι''] (l) (s'' : ι'' → Set α)
@@ -944,6 +951,10 @@ theorem mem_prod_self_iff {s} : s ∈ la ×ˢ la ↔ ∃ t ∈ la, t ×ˢ t ⊆ 
   la.basis_sets.prod_self.mem_iff
 #align filter.mem_prod_self_iff Filter.mem_prod_self_iff
 
+lemma eventually_prod_self_iff {r : α → α → Prop} :
+    (∀ᶠ x in la ×ˢ la, r x.1 x.2) ↔ ∃ t ∈ la, ∀ x ∈ t, ∀ y ∈ t, r x y :=
+  mem_prod_self_iff.trans <| by simp only [prod_subset_iff, mem_setOf_eq]
+
 theorem HasAntitoneBasis.prod {ι : Type*} [LinearOrder ι] {f : Filter α} {g : Filter β}
     {s : ι → Set α} {t : ι → Set β} (hf : HasAntitoneBasis f s) (hg : HasAntitoneBasis g t) :
     HasAntitoneBasis (f ×ˢ g) fun n => s n ×ˢ t n :=
@@ -1034,7 +1045,7 @@ theorem countable_biInf_eq_iInf_seq [CompleteLattice α] {B : Set ι} (Bcbl : B.
 
 theorem countable_biInf_eq_iInf_seq' [CompleteLattice α] {B : Set ι} (Bcbl : B.Countable)
     (f : ι → α) {i₀ : ι} (h : f i₀ = ⊤) : ∃ x : ℕ → ι, ⨅ t ∈ B, f t = ⨅ i, f (x i) := by
-  cases' B.eq_empty_or_nonempty with hB Bnonempty
+  rcases B.eq_empty_or_nonempty with hB | Bnonempty
   · rw [hB, iInf_emptyset]
     use fun _ => i₀
     simp [h]

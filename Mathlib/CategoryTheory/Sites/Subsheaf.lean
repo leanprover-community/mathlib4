@@ -5,8 +5,9 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Adjunction.Evaluation
-import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Adhesive
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 #align_import category_theory.sites.subsheaf from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

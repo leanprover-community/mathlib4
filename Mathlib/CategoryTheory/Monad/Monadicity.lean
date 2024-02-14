@@ -296,7 +296,7 @@ class PreservesColimitOfIsSplitPair (G : D ⥤ C) where
 instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [PreservesColimitOfIsSplitPair G] :
     PreservesColimit (parallelPair f g) G := PreservesColimitOfIsSplitPair.out f g
 
-instance [PreservesColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAdjoint G))),
+instance [PreservesColimitOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
    PreservesColimit (parallelPair ((leftAdjoint G).map A.a)
       (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj A.A))) G :=
   fun _ => PreservesColimitOfIsSplitPair.out _ _
@@ -309,7 +309,7 @@ class ReflectsColimitOfIsSplitPair (G : D ⥤ C) where
 instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [ReflectsColimitOfIsSplitPair G] :
     ReflectsColimit (parallelPair f g) G := ReflectsColimitOfIsSplitPair.out f g
 
-instance [ReflectsColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAdjoint G))),
+instance [ReflectsColimitOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
     ReflectsColimit (parallelPair ((leftAdjoint G).map A.a)
       (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj A.A))) G :=
   fun _ => ReflectsColimitOfIsSplitPair.out _ _
@@ -359,7 +359,7 @@ class CreatesColimitOfIsSplitPair (G : D ⥤ C) where
 instance {A B} (f g : A ⟶ B) [G.IsSplitPair f g] [CreatesColimitOfIsSplitPair G] :
     CreatesColimit (parallelPair f g) G := CreatesColimitOfIsSplitPair.out f g
 
-instance [CreatesColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAdjoint G))),
+instance [CreatesColimitOfIsSplitPair G] : ∀ (A : Algebra (toMonad (ofRightAdjoint G))),
     CreatesColimit (parallelPair ((leftAdjoint G).map A.a)
       (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj A.A))) G :=
   fun _ => CreatesColimitOfIsSplitPair.out _ _
