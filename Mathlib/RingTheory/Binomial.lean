@@ -193,7 +193,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
     | negSucc n =>
       simp only [Int.multichoose, nsmul_eq_mul]
       rw [mul_comm, mul_assoc, ← Nat.cast_mul, mul_comm _ (k.factorial),
-        ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_int_eq_descFactorial,
+        ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_eval_eq_descFactorial,
         ascPochhammer_smeval_eq_eval, ← Int.neg_ofNat_succ,
         ascPochhammer_eval_neg_eq_descPochhammer]
 

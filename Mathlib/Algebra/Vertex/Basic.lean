@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 
-import Mathlib.Algebra.Module.LinearMap
-import Mathlib.RingTheory.HahnSeries
 import Mathlib.Algebra.Vertex.Defs
 
 /-!

@@ -5,7 +5,7 @@ Authors: Scott Carnahan
 -/
 
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Set.Finite
 

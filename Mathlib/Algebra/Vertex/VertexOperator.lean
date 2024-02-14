@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.LaurentSeries
 
@@ -357,7 +357,7 @@ theorem composite_ncoef_smul (A B : VertexOperator R V) (m n k : ℤ) (f : ℕ �
     simp only [HahnSeries.zero_coeff, map_zero, smul_zero, Finset.sum_const_zero]
   · have h₃ : HahnSeries.order (B x) ≤ HahnSeries.order (B (r • x)) := by
       rw [@LinearMap.map_smul]
-      refine HahnSeries.smul_order_leq r (B x) ?_
+      refine HahnSeries.le_order_smul r (B x) ?_
       simp_all only [map_smul, forall_const, ne_eq, not_false_eq_true]
     have h₄ : Int.toNat (-k - HahnSeries.order (B (r • x))) ≤
         Int.toNat (-k - HahnSeries.order (B x)) := by
