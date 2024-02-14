@@ -66,21 +66,27 @@ def Lean.StructureInfo.elabOperations (info : StructureInfo) :
   return out
 
 partial
-def Lean.Expr.parseLawvereExpr (e : Expr) (sorts : Array Expr) (ops : Array LawvereOp)
-    (inputs : Array ℕ) :
+def Lean.Expr.parseLawvereExpr
+    (e : Expr)
+    (sortFVars : Array Expr)
+    (inputFVars : Array Expr)
+    (ops : Array LawvereOp) :
     MetaM LawvereExpr :=
   match e with
   | .app .. => do
     let (nm, args) := e.getAppFnArgs
-    let some ⟨nm, inputs, output⟩ := ops.find? fun op => op.name == nm | throwError "ERROR1"
     let args ← args.filterM fun e => do
       let tp ← Meta.inferType e
-      return sorts.contains tp
-    let args ← args.mapM fun e => e.parseLawvereExpr sorts ops inputs
+      return sortFVars.contains tp
+    let some ⟨nm, _, output⟩ := ops.find? fun e => e.name == nm | throwError "ERROR"
+    let args ← args.mapM fun e => e.parseLawvereExpr sortFVars inputFVars ops
     return .op nm output args
   | e => do
-    let tp ← Meta.inferType e
-    let some output := sorts.getIdx? tp | throwError "ERROR2"
+    let inputs ← inputFVars.mapM fun e => do
+      let tp ← Meta.inferType e
+      let some idx := sortFVars.getIdx? tp | throwError "ERROR"
+      return idx
+    let some output := inputFVars.getIdx? e | throwError "ERROR"
     return .proj inputs output
 
 def Lean.StructureInfo.elabAxioms (info : StructureInfo) :
@@ -100,19 +106,16 @@ def Lean.StructureInfo.elabAxioms (info : StructureInfo) :
           let (nm, _) := (← Meta.inferType fvar).getAppFnArgs
           if nm == info.structName then return out
         return out
-      let sorts := fvars[:idxOfStruct].toArray.pop
-      let inputs := fvars[idxOfStruct:].toArray
+      let sortFVars := fvars[:idxOfStruct].toArray.pop
+      let inputFVars := fvars[idxOfStruct:].toArray
       let .app (.app (.app (.const ``Eq ..) S) lhs) rhs := body | throwError "ERROR"
-      let some sortIndex := sorts.getIdx? S | throwError "ERROR"
-      let inputs : Array (MetaM (Option ℕ)) := inputs.map fun e => do
+      let some sortIndex := sortFVars.getIdx? S | throwError "ERROR"
+      let lhs ← lhs.parseLawvereExpr sortFVars inputFVars operations
+      let rhs ← rhs.parseLawvereExpr sortFVars inputFVars operations
+      let inputs ← inputFVars.mapM fun e => do
         let tp ← Meta.inferType e
-        let idx := sorts.getIdx? tp
+        let some idx := sortFVars.getIdx? tp | throwError "ERROR"
         return idx
-      let inputs : Array (Option ℕ) ← inputs.mapM id
-      let inputs : Option (Array ℕ) := inputs.mapM id
-      let some inputs := inputs | throwError "ERROR2"
-      let lhs ← lhs.parseLawvereExpr sorts operations inputs
-      let rhs ← rhs.parseLawvereExpr sorts operations inputs
       return .mk c.projFn inputs sortIndex lhs rhs
     out := out.push new
   return out
@@ -125,12 +128,17 @@ def foobar (str : Name) : MetaM Unit := do
   let axs ← strInfo.elabAxioms
   IO.println <| repr axs
 
-class AA (X Y : Type*) where
-  one : X
-  two : Y → X → Y
-  mul1 : X → X → X
-  ff : X → Y
-  mul4 : X → X → X → Y → X → Y
-  one_mul (x : X) : ff (mul1 one x) = ff x
+class Module' (R M : Type*) where
+  addR : R → R → R
+  mulR : R → R → R
+  oneR : R
+  zeroR : R
+  smul : R → M → M
+  addM : M → M → M
+  zeroM : M
+  addR_assoc (x y z : R) : addR (addR x y) z = addR x (addR y z)
+  mulR_assoc (x y z : R) : mulR (mulR x y) z = mulR x (mulR y z)
+  addR_comm (x y : R) : addR x y = addR y x
 
-#eval foobar `AA
+
+#eval foobar `Module'
