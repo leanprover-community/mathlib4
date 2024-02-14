@@ -41,8 +41,6 @@ to define the complex logarithm of a nonvanishing function on a simply connected
 
 open Complex Topology Set Metric
 
-set_option autoImplicit true
-
 open scoped Interval
 
 namespace Complex
