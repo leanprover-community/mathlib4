@@ -703,7 +703,7 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
 @[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
 #align nat.find_eq_zero Nat.find_eq_zero
 
-lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :  Nat.find hp ≤ Nat.find hq :=
+lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
   Nat.find_min' _ (h _ (Nat.find_spec hq))
 #align nat.find_mono Nat.find_mono
 
@@ -714,17 +714,17 @@ lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
 lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0) :
     Nat.find h₁ = Nat.find h₂ + 1 := by
   refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn ↦ _⟩
-  cases' n with n
+  cases n
   exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 #align nat.find_comp_succ Nat.find_comp_succ
 
 end Find
 
-/-! ### `find_greatest` -/
+/-! ### `Nat.findGreatest` -/
 
 section FindGreatest
 
-/-- `find_greatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
+/-- `Nat.findGreatest P n` is the largest `i ≤ bound` such that `P i` holds, or `0` if no such `i`
 exists -/
 def findGreatest (P : ℕ → Prop) [DecidablePred P] : ℕ → ℕ
   | 0 => 0
