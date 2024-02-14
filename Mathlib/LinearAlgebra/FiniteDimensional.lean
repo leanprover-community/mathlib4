@@ -948,7 +948,8 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty 
 #align span_eq_top_of_linear_independent_of_card_eq_finrank LinearIndependent.span_eq_top_of_card_eq_finrank
 
 @[deprecated] -- 2024-02-14
-alias span_eq_top_of_linearIndependent_of_card_eq_finrank := LinearIndependent.span_eq_top_of_card_eq_finrank
+alias span_eq_top_of_linearIndependent_of_card_eq_finrank :=
+  LinearIndependent.span_eq_top_of_card_eq_finrank
 
 /-- A linear independent family of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]
