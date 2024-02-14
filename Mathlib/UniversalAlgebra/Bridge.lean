@@ -4,7 +4,9 @@ import Mathlib.Tactic
 open Lean Meta
 
 inductive LawvereExpr : Type where
-  | proj (output : ℕ) : LawvereExpr
+  -- inputs is part of the data
+  | proj (inputs : Array ℕ) (output : ℕ) : LawvereExpr
+  -- inputs can be computed recursively in this case.
   | op (opName : Name) (output : ℕ) : Array LawvereExpr → LawvereExpr
 deriving Repr
 
@@ -64,18 +66,22 @@ def Lean.StructureInfo.elabOperations (info : StructureInfo) :
   return out
 
 partial
-def Lean.Expr.parseLawvereExpr
-    (sorts : Array Expr) (ops : Array LawvereOp) (e : Expr) : MetaM LawvereExpr :=
+def Lean.Expr.parseLawvereExpr (e : Expr) (sorts : Array Expr) (ops : Array LawvereOp)
+    (inputs : Array ℕ) :
+    MetaM LawvereExpr :=
   match e with
   | .app .. => do
     let (nm, args) := e.getAppFnArgs
-    let some op := ops.find? fun op => nm == op.name | throwError "ERROR"
-    let rest ← args.mapM fun e => e.parseLawvereExpr sorts ops
-    return .op op.name op.output rest
+    let some ⟨nm, inputs, output⟩ := ops.find? fun op => op.name == nm | throwError "ERROR1"
+    let args ← args.filterM fun e => do
+      let tp ← Meta.inferType e
+      return sorts.contains tp
+    let args ← args.mapM fun e => e.parseLawvereExpr sorts ops inputs
+    return .op nm output args
   | e => do
-    match sorts.getIdx? e with
-    | some idx => return .proj idx
-    | none => throwError "ERROR2"
+    let tp ← Meta.inferType e
+    let some output := sorts.getIdx? tp | throwError "ERROR2"
+    return .proj inputs output
 
 def Lean.StructureInfo.elabAxioms (info : StructureInfo) :
     MetaM (Array LawvereAxiom) := do
@@ -105,9 +111,9 @@ def Lean.StructureInfo.elabAxioms (info : StructureInfo) :
       let inputs : Array (Option ℕ) ← inputs.mapM id
       let inputs : Option (Array ℕ) := inputs.mapM id
       let some inputs := inputs | throwError "ERROR2"
-      return .mk c.projFn inputs sortIndex
-        (← lhs.parseLawvereExpr sorts operations)
-        (← rhs.parseLawvereExpr sorts operations)
+      let lhs ← lhs.parseLawvereExpr sorts operations inputs
+      let rhs ← rhs.parseLawvereExpr sorts operations inputs
+      return .mk c.projFn inputs sortIndex lhs rhs
     out := out.push new
   return out
 
@@ -126,6 +132,5 @@ class AA (X Y : Type*) where
   ff : X → Y
   mul4 : X → X → X → Y → X → Y
   one_mul (x : X) : ff (mul1 one x) = ff x
-  onke_mul (x : X) : ff (mul1 one x) = ff x
 
 #eval foobar `AA
