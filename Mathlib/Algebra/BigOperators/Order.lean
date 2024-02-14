@@ -829,14 +829,14 @@ synthesized by TC inference.
 
 TODO: Replace by an aesop ruleset? -/
 def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
-    MetaM Q(Finset.Nonempty $s) := do
-  try
-    let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s) | failure
-    pure $ .fvar fv
-  catch _ => do
-    let ~q(@univ _ $fi) := s | failure
-    let _no ← synthInstanceQ q(Nonempty $α)
-    pure $ q(Finset.univ_nonempty (α := $α))
+    MetaM (Option Q(Finset.Nonempty $s)) := do
+  if let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s) then
+    return some (.fvar fv)
+  else if let ~q(@univ _ $fi) := s then
+    if let .some _no ← trySynthInstanceQ q(Nonempty $α) then
+      return some q(Finset.univ_nonempty)
+    else return none
+  else return none
 
 /-- The `positivity` extension which proves that `∑ i in s, f i` is nonnegative if `f` is, and
 positive if each `f i` is and `s` is nonempty.
@@ -852,25 +852,25 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.sum _ $ι $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
-    have body : Q($α) := Expr.betaRev f #[i]
+    have body : Q($α) := .betaRev f #[i]
     let rbody ← core zα pα body
-    -- Try to show that the sum is positive
-    try
-      let .positive pbody := rbody | failure -- Fail if the body is not provably positive
-      let ps ← proveFinsetNonempty s
-      let pα' ← synthInstanceQ q(OrderedCancelAddCommMonoid $α)
+    let p_pos : Option Q(0 < $e) := ← (do
+      let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
+      let .some ps ← proveFinsetNonempty s | pure none
+      let .some pα' ← trySynthInstanceQ q(OrderedCancelAddCommMonoid $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return .positive q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps)
-    -- Try to show that the sum is nonnegative
-    catch _ => do
+      return some q(@sum_pos $ι $α $pα' $f $s (fun i _ ↦ $pr i) $ps))
+    -- Try to show that the sum is positive
+    if let some p_pos := p_pos then
+      return .positive p_pos
+    -- Fall back to showing that the sum is nonnegative
+    else
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
       let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
       assertInstancesCommute
-      let proof := q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
-      proof.check
-      return .nonnegative proof
+      return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 end Mathlib.Meta.Positivity
