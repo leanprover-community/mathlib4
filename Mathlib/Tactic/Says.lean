@@ -5,7 +5,7 @@ Authors: Kim Liesinger
 -/
 import Std.Data.String.Basic
 import Std.Tactic.GuardMsgs
-import Std.Tactic.TryThis
+import Lean.Meta.Tactic.TryThis
 import Std.Linter.UnreachableTactic
 import Qq.Match
 
@@ -27,7 +27,7 @@ runs `X` and verifies that it still prints "Try this: Y".
 -/
 
 open Lean Elab Tactic
-open Std.Tactic.TryThis
+open Lean.Meta.Tactic.TryThis
 
 namespace Mathlib.Tactic.Says
 

@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Lean.Meta.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
@@ -36,7 +37,7 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic.Propose
 
-open Lean Meta Std.Tactic TryThis
+open Lean Meta Std.Tactic Tactic.TryThis
 
 initialize registerTraceClass `Tactic.propose
 

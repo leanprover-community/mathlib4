@@ -13,6 +13,7 @@ import Mathlib.Control.Basic
 import Mathlib.Data.MLList.Dedup
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.DiscrTree
+import Lean.Meta.Tactic.TryThis
 import Lean.Elab.Tactic.Location
 
 /-!
@@ -44,7 +45,7 @@ end Lean.Meta
 
 namespace Mathlib.Tactic.Rewrites
 
-open Lean Meta Std.Tactic TryThis
+open Lean Meta Std.Tactic Tactic.TryThis
 
 initialize registerTraceClass `Tactic.rewrites
 initialize registerTraceClass `Tactic.rewrites.lemmas
