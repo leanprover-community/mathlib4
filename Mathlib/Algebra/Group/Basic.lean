@@ -655,7 +655,7 @@ end DivisionCommMonoid
 
 section Group
 
-variable [Group G] {a b c d : G} {n : ℤ}
+variable [Group G] {a b c d : G} {i : ℤ}
 
 @[to_additive (attr := simp)]
 theorem div_eq_inv_self : a / b = b⁻¹ ↔ a = 1 := by rw [div_eq_mul_inv, mul_left_eq_self]
@@ -927,11 +927,11 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 #align left_inverse_neg_add_add_right leftInverse_neg_add_add_right
 
 @[to_additive (attr := simp) natAbs_nsmul_eq_zero]
-lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
+lemma pow_natAbs_eq_one : a ^ i.natAbs = 1 ↔ a ^ i = 1 := by cases i <;> simp
 
 -- TODO: Is this lemma really useful?
-@[to_additive] lemma exists_pow_eq_one_of_zpow_eq_one (hn : n ≠ 0) (h : a ^ n = 1) :
-    ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := ⟨_, Int.natAbs_pos.2 hn, pow_natAbs_eq_one.2 h⟩
+@[to_additive] lemma exists_pow_eq_one_of_zpow_eq_one (hi : i ≠ 0) (h : a ^ i = 1) :
+    ∃ n : ℕ, 0 < n ∧ a ^ n = 1 := ⟨_, Int.natAbs_pos.2 hi, pow_natAbs_eq_one.2 h⟩
 #align exists_npow_eq_one_of_zpow_eq_one exists_pow_eq_one_of_zpow_eq_one
 #align exists_nsmul_eq_zero_of_zsmul_eq_zero exists_nsmul_eq_zero_of_zsmul_eq_zero
 
