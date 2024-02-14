@@ -92,23 +92,6 @@ theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [IsROrC 𝕜] {E : 
       IsROrC.norm_ofReal, abs_of_nonneg hr.le]
     exact (mul_le_iff_le_one_right hr).symm
 
-instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y] [Unique Y] :
-    TietzeExtension.{u, v} Y where
-  exists_restrict_eq' _ _ f := ⟨.const _ default, by ext x; exact Subsingleton.elim _ _⟩
-
--- why don't we have this instance?
-instance {X : Type*} [PartialOrder X] (x : X) : Unique (Set.Icc x x) where
-  default := ⟨x, Set.left_mem_Icc.mpr le_rfl⟩
-  uniq y := Subtype.ext <| have h := Set.mem_Icc.mp y.property; le_antisymm h.2 h.1
-
-theorem Set.instTietzeExtensionIcc {a b : ℝ} (hab : a ≤ b) :
-    TietzeExtension.{u, 0} (Icc a b) := by
-  by_cases hab' : a = b
-  · exact .of_homeo <| .setCongr (show Icc a b = Icc b b by rw [hab'])
-  · replace hab := lt_of_le_of_ne hab hab'
-    have := Metric.instTietzeExtensionClosedBall ℝ ((a + b) / 2) (show 0 < (b - a) / 2 by linarith)
-    exact .of_homeo <| .setCongr (Real.Icc_eq_closedBall a b)
-
 variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
 variable (𝕜 : Type v) [IsROrC 𝕜] [TietzeExtension.{u, v} 𝕜]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
@@ -134,13 +117,4 @@ theorem exists_norm_eq_restrict_eq (f : s →ᵇ E) :
   rw [hx]
   exact g'.norm_le (norm_nonneg g') |>.mp le_rfl x
 
-theorem exists_forall_mem_Icc_restrict_eq (f : s →ᵇ ℝ) {a b : ℝ}  (hf : ∀ x, f x ∈ Set.Icc a b)
-    (hle : a ≤ b) : ∃ g : X →ᵇ ℝ, (∀ x, g x ∈ Set.Icc a b) ∧ g.restrict s = f := by
-  have := Set.instTietzeExtensionIcc hle
-  obtain ⟨g, hg_mem, hg⟩ := (f : C(s, ℝ)).exists_forall_mem_restrict_eq hs hf
-  let g' : X →ᵇ ℝ := by
-    refine .ofNormedAddCommGroup g (map_continuous g) (max |a| |b|) fun x ↦ ?_
-    simp only [Set.mem_Icc] at hg_mem
-    simp only [Real.norm_eq_abs]
-    exact abs_le_max_abs_abs (hg_mem x).1 (hg_mem x).2
-  exact ⟨g', hg_mem, by ext x; congrm($(hg) x)⟩
+end BoundedContinuousFunction
