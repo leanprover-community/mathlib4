@@ -2319,8 +2319,6 @@ variable {X₁ X₂ X₃ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ 
 
 variable (f₄ : X₃ ⟶ Y₂) [HasPullback f₁ f₂] [HasPullback f₃ f₄]
 
--- include f₁ f₂ f₃ f₄ Porting note: removed
-
 local notation "Z₁" => pullback f₁ f₂
 
 local notation "Z₂" => pullback f₃ f₄
@@ -2519,8 +2517,6 @@ canonical isomorphism between them. -/
 variable {X₁ X₂ X₃ Z₁ Z₂ : C} (g₁ : Z₁ ⟶ X₁) (g₂ : Z₁ ⟶ X₂) (g₃ : Z₂ ⟶ X₂)
 
 variable (g₄ : Z₂ ⟶ X₃) [HasPushout g₁ g₂] [HasPushout g₃ g₄]
-
--- include g₁ g₂ g₃ g₄ Porting note: removed
 
 local notation "Y₁" => pushout g₁ g₂
 
