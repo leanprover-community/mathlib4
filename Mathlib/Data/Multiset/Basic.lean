@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Set.List
 import Mathlib.Data.List.Perm
 import Mathlib.Init.Quot -- Porting note: added import
+import Mathlib.Order.Hom.Basic
 
 #align_import data.multiset.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
@@ -589,7 +590,7 @@ theorem cons_le_cons (a : α) : s ≤ t → a ::ₘ s ≤ a ::ₘ t :=
 #align multiset.cons_le_cons Multiset.cons_le_cons
 
 @[simp] lemma cons_lt_cons_iff : a ::ₘ s < a ::ₘ t ↔ s < t :=
-lt_iff_lt_of_le_iff_le' (cons_le_cons_iff _) (cons_le_cons_iff _)
+  lt_iff_lt_of_le_iff_le' (cons_le_cons_iff _) (cons_le_cons_iff _)
 
 lemma cons_lt_cons (a : α) (h : s < t) : a ::ₘ s < a ::ₘ t := cons_lt_cons_iff.2 h
 
@@ -850,7 +851,7 @@ def strongInductionOn {p : Multiset α → Sort*} (s : Multiset α) (ih : ∀ s,
     p s :=
     (ih s) fun t _h =>
       strongInductionOn t ih
-termination_by _ => card s
+termination_by card s
 decreasing_by exact card_lt_card _h
 #align multiset.strong_induction_on Multiset.strongInductionOnₓ -- Porting note: reorderd universes
 
@@ -877,7 +878,7 @@ def strongDownwardInduction {p : Multiset α → Sort*} {n : ℕ}
     card s ≤ n → p s :=
   H s fun {t} ht _h =>
     strongDownwardInduction H t ht
-termination_by _ => n - card s
+termination_by n - card s
 decreasing_by simp_wf; have := (card_lt_card _h); omega
 -- Porting note: reorderd universes
 #align multiset.strong_downward_induction Multiset.strongDownwardInductionₓ
@@ -1384,8 +1385,10 @@ theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Functi
 
 theorem map_erase_of_mem [DecidableEq α] [DecidableEq β] (f : α → β)
     (s : Multiset α) {x : α} (h : x ∈ s) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction' s using Multiset.induction_on with y s ih; simp
-  rcases eq_or_ne y x with rfl | hxy; simp
+  induction' s using Multiset.induction_on with y s ih
+  · simp
+  rcases eq_or_ne y x with rfl | hxy
+  · simp
   replace h : x ∈ s := by simpa [hxy.symm] using h
   rw [s.erase_cons_tail hxy, map_cons, map_cons, ih h, erase_cons_tail_of_mem (mem_map_of_mem f h)]
 
