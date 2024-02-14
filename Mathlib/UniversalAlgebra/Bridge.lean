@@ -195,25 +195,3 @@ elab "lawvere_context%" i:ident : term => do
 class MM (R : Type*) where
   A : R
   h (a : R) : A = a
-
-#eval (lawvere_context% Module')
-
-#eval runLawvereM `Module' do
-  let names ← LawvereM.sortNames
-  IO.println names
-  let ops ← LawvereM.operations
-  IO.println "OPS"
-  for ⟨nm, input, output⟩ in ops do
-    IO.println "---"
-    IO.println nm
-    IO.println input
-    IO.println output
-  let axioms ← LawvereM.axioms
-  IO.println "AXIOMS"
-  for ⟨nm, h1, h2, h3, h4⟩  in axioms do
-    IO.println "---"
-    IO.println nm
-    IO.println h1
-    IO.println h2
-    IO.println <| repr h3
-    IO.println <| repr h4
