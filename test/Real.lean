@@ -11,6 +11,8 @@ unsafe def testRepr (r : ℝ) (s : String) : Lean.Elab.Command.CommandElabM Unit
 unless toString (repr r) = s do throwError "got {repr r}"
 
 -- FIXME temporarily commented out: unsafe can't run outside of a declaration.
+-- Fixed in https://github.com/leanprover/lean4/pull/3324, which will land in nightly-2024-02-15.
+-- Mathlib tracking issue at https://github.com/leanprover-community/mathlib4/issues/10535
 
 -- run_cmd unsafe testRepr 0 "Real.ofCauchy (sorry /- 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ... -/)"
 -- run_cmd unsafe testRepr 1 "Real.ofCauchy (sorry /- 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ... -/)"
