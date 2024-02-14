@@ -362,13 +362,6 @@ instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
 protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
     x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t := .rfl
 
-/-- `Clopens` as a subtype -/
-def equivSubtype : Clopens α ≃ {s : Set α // IsClopen s} where
-  toFun s := ⟨s.1, s.2⟩
-  invFun s := ⟨s.1, s.2⟩
-  left_inv _ := by simp
-  right_inv _ := by simp
-
 end Clopens
 
 end TopologicalSpace
