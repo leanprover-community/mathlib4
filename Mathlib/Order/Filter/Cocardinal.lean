@@ -10,7 +10,7 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 # The cocardinal filter
 
 In this file we define `Filter.cocardinal hc`: the filter of sets with cardinality less than
-  `c` that satisfies `c ≥ Cardinal.aleph0`.
+  `c` that satisfies `Cardinal.aleph0 < c`.
 
 -/
 
@@ -43,7 +43,8 @@ with a certain cardinality. -/
 def ofCardinalUnion {c : Cardinal} (hc : Cardinal.aleph0 ≤ c) (p : Set α → Prop)
     (hUnion : ∀ S : Set (Set α), (Cardinal.mk S < c) → (∀ s ∈ S, p s) → p (⋃₀ S))
     (hmono : ∀ t, p t → ∀ s ⊆ t, p s) : Filter α := by
-  refine .ofCardinalInter hc {s | p sᶜ} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ hmono sᶜ ht tᶜ (compl_subset_compl.2 hsub)
+  refine .ofCardinalInter hc {s | p sᶜ} (fun S hSc hSp ↦ ?_)
+    fun s t ht hsub ↦ hmono sᶜ ht tᶜ (compl_subset_compl.2 hsub)
   rw [mem_setOf_eq, compl_sInter]
   exact hUnion (compl '' S) (lt_of_le_of_lt Cardinal.mk_image_le hSc) (ball_image_iff.2 hSp)
 
