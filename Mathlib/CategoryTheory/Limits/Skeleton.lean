@@ -184,7 +184,7 @@ end
 variable {C : Type u} [Category.{v} C]
 variable [Limits.HasZeroMorphisms C] [Limits.HasBinaryBiproducts C] [Limits.HasZeroObject C]
 
-/-- If `C` is monoidal and skeletal, it is a monoid.
+/-- If `C` has binary biproducts and is skeletal, it is a commutative additive monoid.
 See note [reducible non-instances]. -/
 @[reducible]
 noncomputable def addCommMonoidOfSkeletal (hC : Skeletal C) : AddCommMonoid C where
