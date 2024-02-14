@@ -173,13 +173,6 @@ def runLawvereM {α : Type} (className : Name) (e : LawvereM α) :
   let axioms ← strInfo.elabAxioms
   e.run <| .mk className numSorts sortNames ops axioms
 
-class Module' (R M : Type*) where
-  ff : R → M → R
-  gg : R → R → R
-  hh : M → M → M
-  hh_assoc (x y z : M) : hh (hh x y) z = hh x (hh y z)
-  ff_gg (r s : R) (m : M) : ff (gg r s) m = gg r s
-
 def LawvereM.numSorts : LawvereM ℕ := return (← read).numSort
 def LawvereM.sortNames : LawvereM (Array Name) := return (← read).sortNames
 def LawvereM.operations : LawvereM (Array LawvereOp) := return (← read).operations
@@ -191,7 +184,3 @@ elab "lawvere_context%" i:ident : term => do
     let ctx ← read
     IO.println <| repr ctx
     return toExpr ctx
-
-class MM (R : Type*) where
-  A : R
-  h (a : R) : A = a
