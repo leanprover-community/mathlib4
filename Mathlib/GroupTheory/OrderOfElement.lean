@@ -1160,7 +1160,7 @@ section PowIsSubgroup
 
 /-- A nonempty idempotent subset of a finite cancellative monoid is a submonoid -/
 @[to_additive "A nonempty idempotent subset of a finite cancellative add monoid is a submonoid"]
-def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Fintype M] (S : Set M)
+def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Finite M] (S : Set M)
     (hS1 : S.Nonempty) (hS2 : S * S = S) : Submonoid M :=
   have pow_mem : ∀ a : M, a ∈ S → ∀ n : ℕ, a ^ (n + 1) ∈ S := fun a ha =>
     Nat.rec (by rwa [Nat.zero_eq, zero_add, pow_one]) fun n ih =>
@@ -1176,7 +1176,7 @@ def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Fintype M] (S : Set 
 
 /-- A nonempty idempotent subset of a finite group is a subgroup -/
 @[to_additive "A nonempty idempotent subset of a finite add group is a subgroup"]
-def subgroupOfIdempotent {G : Type*} [Group G] [Fintype G] (S : Set G) (hS1 : S.Nonempty)
+def subgroupOfIdempotent {G : Type*} [Group G] [Finite G] (S : Set G) (hS1 : S.Nonempty)
     (hS2 : S * S = S) : Subgroup G :=
   { submonoidOfIdempotent S hS1 hS2 with
     carrier := S
