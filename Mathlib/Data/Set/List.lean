@@ -36,7 +36,7 @@ theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l |
 #align set.range_list_map_coe Set.range_list_map_coe
 
 @[simp]
-theorem exists_nthLe_eq (x : α) : (∃ k : Fin l.length, List.nthLe l k k.2 = x) ↔ x ∈ l := by
+theorem exists_nthLe_eq (x : α) : (∃ k : Fin l.length, l.nthLe k k.2 = x) ↔ x ∈ l := by
   rw [mem_iff_get]
   exact ⟨fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩, fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩⟩
 
