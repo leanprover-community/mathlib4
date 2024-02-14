@@ -131,6 +131,12 @@ theorem coprodᵢ_cofinite {α : ι → Type*} [Finite ι] :
 set_option linter.uppercaseLean3 false in
 #align filter.Coprod_cofinite Filter.coprodᵢ_cofinite
 
+theorem cofinite_sum : (cofinite : Filter (α ⊕ b)) = map Sum.inl cofinite ⊔ map Sum.inr cofinite :=
+  Filter.coext fun s => by
+    simp only [mem_cofinite, compl_compl, ge_iff_le, mem_sup, mem_map, preimage_compl,
+      finite_preimage_inl_and_inr]
+
+@[simp]
 theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite s := by
   simp [l.basis_sets.disjoint_iff_right]
 #align filter.disjoint_cofinite_left Filter.disjoint_cofinite_left
