@@ -1197,11 +1197,11 @@ theorem iInf_inf_eq : ⨅ x, f x ⊓ g x = (⨅ x, f x) ⊓ ⨅ x, g x :=
   @iSup_sup_eq αᵒᵈ _ _ _ _
 #align infi_inf_eq iInf_inf_eq
 
-lemma Equiv.biSup_comp {α ι ι' : Type*} [CompleteLattice α] {g : ι' → α} (e : ι ≃ ι') (s : Set ι') :
+lemma Equiv.biSup_comp {ι ι' : Type*} {g : ι' → α} (e : ι ≃ ι') (s : Set ι') :
     ⨆ i ∈ e.symm '' s, g (e i) = ⨆ i ∈ s, g i := by
   simpa only [iSup_subtype'] using (image e.symm s).symm.iSup_comp (g := g ∘ (↑))
 
-lemma Equiv.biInf_comp {α ι ι' : Type*} [CompleteLattice α] {g : ι' → α} (e : ι ≃ ι') (s : Set ι') :
+lemma Equiv.biInf_comp {ι ι' : Type*} {g : ι' → α} (e : ι ≃ ι') (s : Set ι') :
     ⨅ i ∈ e.symm '' s, g (e i) = ⨅ i ∈ s, g i :=
   e.biSup_comp s (α := αᵒᵈ)
 

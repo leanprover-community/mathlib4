@@ -62,7 +62,7 @@ lemma weightSpaceChain_def' :
 @[simp]
 lemma weightSpaceChain_neg :
     weightSpaceChain M (-χ₁) χ₂ (-q) (-p) = weightSpaceChain M χ₁ χ₂ p q := by
-  let e : ℤ ≃ ℤ := ⟨(- ·), (- ·), neg_neg, neg_neg⟩ -- TODO: surely this has a name?
+  let e : ℤ ≃ ℤ := neg_involutive.toPerm
   simp_rw [weightSpaceChain, ← e.biSup_comp (Ioo p q)]
   simp [-mem_Ioo, neg_mem_Ioo_iff]
 
