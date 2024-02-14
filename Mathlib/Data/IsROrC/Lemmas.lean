@@ -92,7 +92,7 @@ namespace Polynomial
 
 open ComplexConjugate in
 lemma aeval_conj (p : ℝ[X]) (z : K) : aeval (conj z) p = conj (aeval z p) :=
-  aeval_algHom_apply (@IsROrC.conjAe K _ : K →ₐ[ℝ] K) z p
+  aeval_algHom_apply (IsROrC.conjAe (K := K)) z p
 
 lemma aeval_ofReal (p : ℝ[X]) (x : ℝ) : aeval (IsROrC.ofReal x : K) p = eval x p :=
   aeval_algHom_apply IsROrC.ofRealAm x p
