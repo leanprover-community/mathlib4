@@ -839,6 +839,9 @@ theorem integral_undef {f : α → G} (h : ¬Integrable f μ) : ∫ a, f a ∂μ
   · simp [integral, hG]
 #align measure_theory.integral_undef MeasureTheory.integral_undef
 
+theorem Integrable.of_integral_ne_zero {f : α → G} (h : ∫ a, f a ∂μ ≠ 0) : Integrable f μ :=
+  Not.imp_symm integral_undef h
+
 theorem integral_non_aestronglyMeasurable {f : α → G} (h : ¬AEStronglyMeasurable f μ) :
     ∫ a, f a ∂μ = 0 :=
   integral_undef <| not_and_of_not_left _ h
@@ -861,8 +864,8 @@ theorem integral_zero' : integral μ (0 : α → G) = 0 :=
 
 variable {α G}
 
-theorem integrable_of_integral_eq_one {f : α → ℝ} (h : ∫ x, f x ∂μ = 1) : Integrable f μ := by
-  contrapose h; rw [integral_undef h]; exact zero_ne_one
+theorem integrable_of_integral_eq_one {f : α → ℝ} (h : ∫ x, f x ∂μ = 1) : Integrable f μ :=
+  .of_integral_ne_zero <| h ▸ one_ne_zero
 #align measure_theory.integrable_of_integral_eq_one MeasureTheory.integrable_of_integral_eq_one
 
 theorem integral_add {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :

@@ -218,7 +218,7 @@ theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
 theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
-  · linarith [(map_nonneg _ _ : 0 ≤ w x)]
+  · linarith [(apply_nonneg _ _ : 0 ≤ w x)]
   · simp only [ne_eq, map_eq_zero, coe_ne_zero x, not_false_eq_true]
   · refine (ne_of_gt ?_)
     rw [mult]; split_ifs <;> norm_num

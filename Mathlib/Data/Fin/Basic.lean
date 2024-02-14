@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
@@ -996,6 +995,11 @@ theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
 theorem eq_castSucc_or_eq_last {n : Nat} (i : Fin (n + 1)) :
     (∃ j : Fin n, i = j.castSucc) ∨ i = last n := i.lastCases (Or.inr rfl) (Or.inl ⟨·, rfl⟩)
 
+theorem exists_fin_succ' {P : Fin (n + 1) → Prop} :
+    (∃ i, P i) ↔ (∃ i : Fin n, P i.castSucc) ∨ P (.last _) :=
+  ⟨fun ⟨i, h⟩ => Fin.lastCases Or.inr (fun i hi => Or.inl ⟨i, hi⟩) i h,
+   fun h => h.elim (fun ⟨i, hi⟩ => ⟨i.castSucc, hi⟩) (fun h => ⟨.last _, h⟩)⟩
+
 /--
 The `Fin.castSucc_zero` in `Std` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
@@ -1483,10 +1487,9 @@ instance neg (n : ℕ) : Neg (Fin n) :=
 instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
   { Fin.addCommMonoid n, Fin.neg n with
     add_left_neg := fun ⟨a, ha⟩ =>
-      Fin.ext <|
-        _root_.trans (Nat.mod_add_mod _ _ _) <| by
-          rw [Fin.val_zero', tsub_add_cancel_of_le, Nat.mod_self]
-          exact le_of_lt ha
+      Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
+        rw [Fin.val_zero', Nat.sub_add_cancel, Nat.mod_self]
+        exact le_of_lt ha
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
       Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
     sub := Fin.sub }
@@ -1517,8 +1520,6 @@ protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl
 #align fin.coe_neg Fin.coe_neg
 
-protected theorem coe_sub (a b : Fin n) : ((a - b : Fin n) : ℕ) = (a + (n - b)) % n := by
-  cases a; cases b; rfl
 #align fin.coe_sub Fin.coe_sub
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
@@ -1547,34 +1548,12 @@ theorem coe_sub_one {n} (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a 
   · simp
   split_ifs with h
   · simp [h]
-  rw [sub_eq_add_neg, val_add_eq_ite, coe_neg_one, if_pos, add_comm, add_tsub_add_eq_tsub_left]
+  rw [sub_eq_add_neg, val_add_eq_ite, coe_neg_one, if_pos, add_comm, Nat.add_sub_add_left]
   conv_rhs => rw [add_comm]
   rw [add_le_add_iff_left, Nat.one_le_iff_ne_zero]
   rwa [Fin.ext_iff] at h
 #align fin.coe_sub_one Fin.coe_sub_one
-
-theorem coe_sub_iff_le {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = a - b ↔ b ≤ a := by
-  cases n; · exact @finZeroElim (fun _ => _) a
-  rw [le_iff_val_le_val, Fin.coe_sub, ← add_tsub_assoc_of_le b.is_lt.le a]
-  rcases le_or_lt (b : ℕ) a with h | h
-  · simp [← tsub_add_eq_add_tsub h, val_fin_le.mp h,
-      Nat.mod_eq_of_lt ((Nat.sub_le _ _).trans_lt a.is_lt)]
-  · rw [Nat.mod_eq_of_lt, tsub_eq_zero_of_le h.le, tsub_eq_zero_iff_le, ← not_iff_not]
-    · simpa [b.is_lt.trans_le le_add_self] using h
-    · rwa [tsub_lt_iff_left (b.is_lt.le.trans le_add_self), add_lt_add_iff_right]
 #align fin.coe_sub_iff_le Fin.coe_sub_iff_le
-
-theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b ↔ a < b := by
-  cases' n with n
-  · exact @finZeroElim (fun _ => _) a
-  rw [lt_iff_val_lt_val, Fin.coe_sub, add_comm]
-  rcases le_or_lt (b : ℕ) a with h | h
-  · refine iff_of_false ?_ (not_lt_of_le h)
-    simpa [add_tsub_assoc_of_le h] using
-      ((Nat.mod_lt _ (Nat.succ_pos _)).trans_le le_self_add).ne
-  · simp [← tsub_tsub_assoc b.is_lt.le h.le, ← tsub_add_eq_add_tsub b.is_lt.le,
-      Nat.mod_eq_of_lt (tsub_lt_self (Nat.succ_pos _) (tsub_pos_of_lt h)), val_fin_le.mp _]
-    exact h
 #align fin.coe_sub_iff_lt Fin.coe_sub_iff_lt
 
 @[simp]
