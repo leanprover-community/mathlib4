@@ -30,10 +30,10 @@ variable (K : Type u) [Field K] [NumberField K]
 theorem three_pid [h : IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   have hpos : 0 < 3 := by norm_num
   have hp : Fact (Nat.Prime ((3 : ℕ+) : ℕ)) := ⟨Nat.prime_three⟩
-  have hodd : (3 : ℕ+) ≠ 2 := by decide
+  have hlt : (2 : ℕ+) < 3 := by decide
   apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
   have hemb : NrComplexPlaces K = 1 := by
-    rw [← Nat.mul_right_inj (show 2 ≠ 0 from by omega), nrComplexPlaces_eq_finrank_odd_prime K hodd,
+    rw [← Nat.mul_right_inj (show 2 ≠ 0 from by omega), nrComplexPlaces_eq_finrank K hlt,
       IsCyclotomicExtension.finrank (n := 3) K (cyclotomic.irreducible_rat hpos),
       totient_prime hp.1]
     rfl
@@ -51,10 +51,10 @@ theorem three_pid [h : IsCyclotomicExtension {3} ℚ K] : IsPrincipalIdealRing (
 theorem five_pid [h : IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (𝓞 K) := by
   have hpos : 0 < 5 := by norm_num
   have hp : Fact (Nat.Prime ((5 : ℕ+) : ℕ)) := ⟨by decide⟩
-  have hodd : (5 : ℕ+) ≠ 2 := by decide
+  have hlt : (2 : ℕ+) < 5 := by decide
   apply RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
   have hemb : NrComplexPlaces K = 2 := by
-    rw [← Nat.mul_right_inj (show 2 ≠ 0 from by omega), nrComplexPlaces_eq_finrank_odd_prime K hodd,
+    rw [← Nat.mul_right_inj (show 2 ≠ 0 from by omega), nrComplexPlaces_eq_finrank K hlt,
       IsCyclotomicExtension.finrank (n := 5) K (cyclotomic.irreducible_rat hpos),
       totient_prime hp.1]
     rfl
@@ -62,7 +62,7 @@ theorem five_pid [h : IsCyclotomicExtension {5} ℚ K] : IsPrincipalIdealRing (�
     (cyclotomic.irreducible_rat hpos), hemb, totient_prime hp.1]
   simp only [Int.reduceNeg, show ((5 : ℕ+) : ℕ) = 5 by rfl, succ_sub_succ_eq_sub, tsub_zero,
     reduceDiv, even_two, Even.neg_pow, one_pow, cast_ofNat, Int.reducePow, one_mul, Int.cast_abs,
-    Int.int_cast_ofNat, div_pow, gt_iff_lt, show ((4! : ℕ) : ℝ) = 24 by rfl, abs_of_pos
+    Int.int_cast_ofNat, div_pow, gt_iff_lt, show 4! = 24 by rfl, abs_of_pos
     (show (0 : ℝ) < 125 from by norm_num)]
   suffices (2 * (3 ^ 2 / 4 ^ 2) * (4 ^ 4 / 24)) ^ 2 < (2 * (π ^ 2 / 4 ^ 2) * (4 ^ 4 / 24)) ^ 2 by
     exact lt_trans (by norm_num) this
