@@ -10,11 +10,11 @@ import Mathlib.NumberTheory.NumberField.Embeddings
 /-!
 # Cyclotomic extensions of `ℚ` are totally complex number fields.
 We prove that cyclotomic extensions of `ℚ` are totally complex, meaning that
-`NrRealPlaces K = 0` if `IsCyclotomicExtension {p ^ (k + 1)} ℚ K` and `p` is odd.
+`NrRealPlaces K = 0` if `IsCyclotomicExtension {n} ℚ K` and `2 < n`.
 
 ## Main results
-* `nrRealPlaces_eq_zero_odd_prime_pow`: If `K` is a `p ^ (k + 1)` cyclotomic extension of
-`ℚ`, where `p` is an odd prime, then there are no real places of `K`.
+* `nrRealPlaces_eq_zero`: If `K` is a `n`-th cyclotomic extension of `ℚ`, where `2 < n`,
+then there are no real places of `K`.
 -/
 
 universe u
