@@ -132,6 +132,7 @@ protected def Hom.pathGraph {n m : ℕ} (hnm : n ≤ m) : pathGraph n →g pathG
 protected theorem Hom.pathGraph_val {n m : ℕ} (hnm : n ≤ m) (u : Fin n) :
     (Hom.pathGraph hnm u).val = u.val := rfl
 
+/-- Create a walk from a path graph homomorphism starting on the `i`-th element. -/
 def Walk.ofPathGraphHom_end (G : SimpleGraph α) {n : ℕ} (hom : pathGraph (n + 1) →g G)
     (i : Fin (n + 1)) :
     G.Walk (hom i) (hom ⊤) :=
