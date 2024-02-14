@@ -133,6 +133,7 @@ theorem Limits.BinaryBicone.transport_toCone [Limits.HasZeroMorphisms C]
             (e.functor.map b.snd ≫ e.counit.app Y)) :=
   rfl
 
+/-- An inverse to `Functor.mapBinaryBicone`. -/
 @[simps!]
 def Functor.mapBinaryBiconeInv [Limits.HasZeroMorphisms C] [Limits.HasZeroMorphisms D]
     (e : D ⥤ C) [IsEquivalence e] {X Y : D} (b : BinaryBicone (e.obj X) (e.obj Y)) :
@@ -153,6 +154,7 @@ theorem Functor.mapBinaryBiconeInv_toCone [Limits.HasZeroMorphisms C]
       --       (e.inv.map b.snd ≫ e.asEquivalence.unitInv.app Y))
             := sorry
 
+/-- Transport `Limits.BinaryBicone.IsBilimit` along an equivalence. -/
 def Limits.BinaryBicone.IsBilimit.transport [Limits.HasZeroMorphisms C] [Limits.HasZeroMorphisms D]
     (e : C ≌ D) {X Y : D} {b : BinaryBicone (e.inverse.obj X) (e.inverse.obj Y)} (hb : b.IsBilimit) :
     (b.transport e).IsBilimit where
@@ -211,5 +213,3 @@ is given by the biproduct, and satisfies the monoid axioms since it is a skeleto
 -/
 noncomputable instance Skeleton.instAddCommMonoid : AddCommMonoid (Skeleton C) :=
   addCommMonoidOfSkeletal (skeletonIsSkeleton _).skel
-
-#lint
