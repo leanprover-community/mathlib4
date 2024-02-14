@@ -125,7 +125,7 @@ end Finite
 section Fintype
 variable [Fintype ι] {s t : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
 
--- TODO: Generalise those lemmas so that they also apply to `ℝ` and `euclidean_space ι ℝ`
+-- TODO: Generalise those lemmas so that they also apply to `ℝ` and `EuclideanSpace ι ℝ`
 lemma dist_inf_sup (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
   refine' congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ _)
   simp only [Real.nndist_eq', sup_eq_max, inf_eq_min, max_sub_min_eq_abs, Pi.inf_apply,
@@ -244,16 +244,7 @@ section Finite
 
 variable [Finite ι] {s t : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
 
-lemma IsAntichain.interior_eq_empty [Nonempty ι] (hs : IsAntichain (· ≤ ·) s) : interior s = ∅ := by
-  cases nonempty_fintype ι
-  refine' eq_empty_of_forall_not_mem fun x hx ↦ _
-  have hx' := interior_subset hx
-  rw [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at hx
-  obtain ⟨ε, hε, hx⟩ := hx
-  refine hs.not_lt hx' (hx ?_) $ lt_add_of_pos_right _ $ const_pos.2 $ (by positivity : 0 < ε / 2)
-  unfold const
-  simpa [@pi_norm_const ι ℝ _ _ _ (ε / 2), abs_of_nonneg hε.le]
-#align is_antichain.interior_eq_empty IsAntichain.interior_eq_empty
+example [Nonempty ι] (hs : IsAntichain (· ≤ ·) s) : interior s = ∅ := IsAntichain.interior_eq_empty hs
 
 /-!
 #### Note
