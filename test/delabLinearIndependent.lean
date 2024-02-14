@@ -5,6 +5,7 @@ set_option pp.unicode.fun true
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] {s : Set V} {x : V}
 
 -- FIXME temporarily removing this to get a build on nightly-testing
+-- Mathlib tracking issue at https://github.com/leanprover-community/mathlib4/issues/10536
 
 -- variable (h : LinearIndependent K (fun b => b : s → V)) in
 -- /-- info: h : LinearIndependent K fun (b : ↑s) ↦ ↑b -/

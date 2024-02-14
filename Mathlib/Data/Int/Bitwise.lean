@@ -192,7 +192,6 @@ theorem bit1_ne_zero (m : ℤ) : bit1 m ≠ 0 := by simpa only [bit0_zero] using
 
 end deprecated
 
-@[simp]
 theorem testBit_bit_zero (b) : ∀ n, testBit (bit b n) 0 = b
   | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_bit_zero
   | -[n+1] => by
