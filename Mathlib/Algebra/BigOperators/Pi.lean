@@ -163,7 +163,7 @@ lemma card_filter_piFinset_eq_of_mem [∀ a, DecidableEq (α a)] (s : ∀ i, Fin
     simp only [dif_neg (Ne.symm hb)]
   have h₂ : ∏ j, (t j).card = ∏ j, ∑ a in t j, 1 := by simp
   rw [h₁, h₂, prod_univ_sum]
-  simp only [prod_const_one, ←Finset.card_eq_sum_ones]
+  simp only [prod_const_one, ← Finset.card_eq_sum_ones]
   congr 1
   ext f
   simp only [mem_filter, mem_piFinset]
