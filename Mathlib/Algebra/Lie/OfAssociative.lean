@@ -129,6 +129,8 @@ instance Module.End.lieModule : LieModule R (Module.End R M) M :=
   LieModule.ofAssociativeModule
 #align module.End.lie_module Module.End.lieModule
 
+@[simp] lemma Module.End.lieModule_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
+
 end AssociativeRepresentation
 
 namespace AlgHom
