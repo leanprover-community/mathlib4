@@ -153,37 +153,115 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal
     | of _, star, _ => PUnit.unit
     | star, star, _ => PUnit.unit
 #align category_theory.with_terminal.map CategoryTheory.WithTerminal.map
-/-- `map` preserves identities.-/
-theorem map_id (D : Type*) [Category D]  : map (𝟭  D) = 𝟭 (WithTerminal D) := by
-  unfold map
-  apply Functor.ext
-  intro X Y f
-  match X, Y, f with
-  | of x, of y, f => simp only [Functor.id_obj, Functor.id_map, eqToHom_refl, Category.comp_id,
-    Category.id_comp]
-                     rfl
-  | of x, star, _ => rfl
-  | star, star, _ => rfl
-  intro X
-  match X with
-  | of x => rfl
-  | star => rfl
-/-- `map` preserves compositions.-/
-theorem map_comp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) (G:D⥤ E) :
-    map (F⋙G) = (map F )⋙ (map G) := by
-  unfold map
-  apply Functor.ext
-  intro X Y f
-  match X, Y, f with
-  | of x, of y, f => simp only [Functor.id_obj, Functor.id_map, eqToHom_refl, Category.comp_id,
-    Category.id_comp]
-                     rfl
-  | of x, star, _ => rfl
-  | star, star, _ => rfl
-  intro X
-  match X with
-  | of x => rfl
-  | star => rfl
+
+/--A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithTerminal C)`.-/
+def mapId  (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithTerminal C) where
+  hom := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+  inv := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+
+/--A natural isomorphism between the functor `map (F⋙G) ` and `map F ⋙ map G `.-/
+def mapComp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) (G:D⥤ E) :
+    map (F⋙G) ≅ map F ⋙ map G where
+  hom := {app := fun X =>  eqToHom (by cases X <;> rfl)}
+  inv := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
+
+/--From a natrual transformation of functors `C⥤D`, the induced natural transformation
+of functors `WithTerminal C ⥤ WithTerminal D`. -/
+def map₂  {D : Type*} [Category D]  {F G: C ⥤ D} (η : F ⟶ G) :
+    map F ⟶ map G where
+  app := fun X =>
+        match X with
+        | of x => η.app x
+        | star => 𝟙 (star)
+  naturality := by
+          intro X Y f
+          match X, Y, f with
+          | of x, of y, f => exact η.naturality f
+          | of x, star, _ => rfl
+          | star, star, _ => rfl
+
+/-- The pseudofunctor from `Cat` to `Cat` defined with `WithTerminal`.-/
+def pseudofunctor: Pseudofunctor Cat Cat where
+  obj C :=Cat.of (WithTerminal C)
+  map {C D} F := map F
+  map₂ := map₂
+  mapId C := mapId C
+  mapComp {C D E} F G  := mapComp F G
+  map₂_id := by
+        intros
+        apply NatTrans.ext
+        funext X
+        cases X <;> rfl
+  map₂_comp := by
+        intros
+        apply NatTrans.ext
+        funext X
+        cases X <;> rfl
+  map₂_whisker_left := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold mapComp map  map₂
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Category.comp_id, Category.id_comp]
+      rfl
+    · rfl
+  map₂_whisker_right := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold mapComp map  map₂
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Category.comp_id, Category.id_comp]
+      rfl
+    · rfl
+  map₂_associator := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app,NatTrans.comp_app]
+      simp only [Bicategory.Strict.associator_eqToIso, eqToIso_refl, Iso.refl_hom, Cat.comp_obj]
+      unfold map₂ mapComp map
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Cat.comp_map, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Bicategory.whiskerRight, whiskerRight_app, down_id, Functor.map_id, Bicategory.whiskerLeft,
+        whiskerLeft_app, Category.comp_id, Category.id_comp]
+    · rfl
+  map₂_left_unitor := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold map₂ mapComp mapId map
+      simp only [Cat.comp_obj, Cat.comp_map, Cat.id_map, Bicategory.Strict.leftUnitor_eqToIso,
+        eqToIso_refl, Iso.refl_hom, Functor.comp_obj, Functor.comp_map, eqToHom_refl,
+        Bicategory.whiskerRight, Functor.id_obj, Functor.id_map, whiskerRight_app, Category.id_comp]
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Category.comp_id]
+      rw [← Functor.map_id]
+      rfl
+    · rfl
+  map₂_right_unitor := by
+    intros
+    apply NatTrans.ext
+    funext X
+    cases X
+    · rw [NatTrans.comp_app,NatTrans.comp_app]
+      unfold map₂ mapComp mapId map
+      simp [Bicategory.whiskerLeft]
+      rw [NatTrans.id_app,NatTrans.id_app]
+      simp only [Cat.comp_obj, Category.comp_id]
+      rw [← Functor.map_id]
+      rfl
+    · rfl
+
+
 instance {X : WithTerminal C} : Unique (X ⟶ star) where
   default :=
     match X with
@@ -498,33 +576,20 @@ def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D
     | star, star, _ => PUnit.unit
 
 #align category_theory.with_initial.map CategoryTheory.WithInitial.map
-/--`map` preserves identities.-/
-theorem map_id (D : Type*) [Category D]  : map (𝟭  D) = 𝟭 (WithInitial D) := by
-  unfold map
-  apply Functor.ext
-  intro X Y f
-  match X, Y, f with
-  | of x, of y, f => simp only [Functor.id_obj, Functor.id_map, eqToHom_refl, Category.comp_id,
-    Category.id_comp]
-                     rfl
-  | star, of x, _ => rfl
-  | star, star, _ => rfl
-  intro X
-  match X with
-  | of x => rfl
-  | star => rfl
 
+/--A natural isomorphism between the functor `map (𝟭 C)` and `𝟭 (WithInitial C)`.-/
 def mapId  (C : Type*) [Category C] : map (𝟭 C) ≅ 𝟭 (WithInitial C) where
   hom := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
   inv := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
 
+/--A natural isomorphism between the functor `map (F⋙G) ` and `map F ⋙ map G `.-/
 def mapComp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) (G:D⥤ E) :
-    map (F⋙G) ≅ (map F) ⋙ (map G) where
+    map (F⋙G) ≅ map F ⋙ map G where
   hom := {app := fun X =>  eqToHom (by cases X <;> rfl)}
   inv := {app  := fun X =>  eqToHom (by cases X <;> rfl)}
 
 /--From a natrual transformation of functors `C⥤D`, the induced natural transformation
-of functors `WithInitial C⥤ WithInitial D` -/
+of functors `WithInitial C ⥤ WithInitial D`. -/
 def map₂  {D : Type*} [Category D]  {F G: C ⥤ D} (η : F ⟶ G) :
     map F ⟶ map G where
   app := fun X =>
@@ -538,7 +603,8 @@ def map₂  {D : Type*} [Category D]  {F G: C ⥤ D} (η : F ⟶ G) :
           | star, of x, _ => rfl
           | star, star, _ => rfl
 
-def psedofunctor: Pseudofunctor Cat Cat where
+/-- The pseudofunctor from `Cat` to `Cat` defined with `WithInitial`.-/
+def pseudofunctor: Pseudofunctor Cat Cat where
   obj C :=Cat.of (WithInitial C)
   map {C D} F := map F
   map₂ := map₂
@@ -618,26 +684,6 @@ def psedofunctor: Pseudofunctor Cat Cat where
       rfl
     · rfl
 
-
-
-
-
-/--`map` preserves compositions.-/
-theorem map_comp {D : Type*} [Category D] {E : Type*} [Category E] (F : C⥤ D) (G:D⥤ E) :
-    map (F⋙G) = (map F )⋙ (map G) := by
-  unfold map
-  apply Functor.ext
-  intro X Y f
-  match X, Y, f with
-  | of x, of y, f => simp only [Functor.id_obj, Functor.id_map, eqToHom_refl, Category.comp_id,
-    Category.id_comp]
-                     rfl
-  | star, of x,  _ => rfl
-  | star, star, _ => rfl
-  intro X
-  match X with
-  | of x => rfl
-  | star => rfl
 
 
 instance {X : WithInitial C} : Unique (star ⟶ X) where
@@ -844,40 +890,6 @@ def equivToComma  {D : Type*} [Category D] :
        inv := {app := fun G =>  eqToHom (commFromFunc_comp_funcFromComma G) } })
     ({ hom := {app := fun G =>  eqToHom (funcFromComma_comp_commaFromFunc G)}
        inv := {app := fun G =>  eqToHom (funcFromComma_comp_commaFromFunc G).symm }})
-
-
-
-
-/--From a natrual transformation of functors `C⥤D`, the induced natural transformation
-of functors `WithInitial C⥤ WithInitial D` -/
-def mapNatTrans  {D : Type*} [Category D]  {F G: C ⥤ D} (η : F ⟶ G) :
-    map F ⟶ map G where
-  app := fun X =>
-        match X with
-        | of x => η.app x
-        | star => 𝟙 (star)
-  naturality := by
-          intro X Y f
-          match X, Y, f with
-          | of x, of y, f => exact η.naturality f
-          | star, of x, _ => rfl
-          | star, star, _ => rfl
-
-/--The functor taking `C⥤D` to `WithInitial C ⥤ WithInitial D`.-/
-def mapFunc  {D : Type*} [Category D]  : (C⥤D)⥤ (WithInitial C ⥤ WithInitial D) where
-  obj:= map
-  map:= mapNatTrans
-
-/--Given an equivalence between two categories `C` and `D` we get an equivalance between the
-categories  `WithInitial C` and  `WithInitial D  `.-/
-def mapEquiv {D : Type*} [Category D]  (e: C ≌ D) : WithInitial C ≌ WithInitial D :=
-  Equivalence.mk (map e.functor) (map e.inverse)
-   ((eqToIso (map_id C).symm).trans
- ((Functor.mapIso mapFunc  e.unitIso).trans
-   (eqToIso (map_comp e.functor e.inverse))))
-    ( (eqToIso (map_comp e.inverse e.functor).symm).trans
-          ((Functor.mapIso mapFunc e.counitIso).trans (eqToIso (map_id D))))
-
 
 
 end WithInitial
