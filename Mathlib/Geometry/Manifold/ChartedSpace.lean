@@ -112,7 +112,7 @@ composition of partial equivs with `≫`.
 
 noncomputable section
 
-open Topology
+open TopologicalSpace Topology
 
 universe u
 
@@ -555,16 +555,20 @@ sometimes as a real manifold over `ℝ^(2n)`.
 -/
 @[ext]
 class ChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M] where
+  /-- The atlas of charts in the `ChartedSpace`. -/
   protected atlas : Set (PartialHomeomorph M H)
+  /-- The preferred chart at each point in the charted space. -/
   protected chartAt : M → PartialHomeomorph M H
   protected mem_chart_source : ∀ x, x ∈ (chartAt x).source
   protected chart_mem_atlas : ∀ x, chartAt x ∈ atlas
 #align charted_space ChartedSpace
 
+/-- The atlas of charts in a `ChartedSpace`. -/
 abbrev atlas (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] : Set (PartialHomeomorph M H) :=
   ChartedSpace.atlas
 
+/-- The preferred chart at a point `x` in a charted space `M`. -/
 abbrev chartAt (H : Type*) [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
     [ChartedSpace H M] (x : M) : PartialHomeomorph M H :=
   ChartedSpace.chartAt x
@@ -988,6 +992,15 @@ instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) :
   simp only [and_self_iff]
 #align has_groupoid_continuous_groupoid hasGroupoid_continuousGroupoid
 
+/-- If `G` is closed under restriction, the transition function between
+  the restriction of two charts `e` and `e'` lies in `G`. -/
+theorem StructureGroupoid.trans_restricted {e e' : PartialHomeomorph M H} {G : StructureGroupoid H}
+    (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
+    [HasGroupoid M G] [ClosedUnderRestriction G] {s : Opens M} (hs : Nonempty s) :
+    (e.subtypeRestr hs).symm ≫ₕ e'.subtypeRestr hs ∈ G :=
+  G.mem_of_eqOnSource (closedUnderRestriction' (G.compatible he he')
+    (e.isOpen_inter_preimage_symm s.2)) (e.subtypeRestr_symm_trans_subtypeRestr hs e')
+
 section MaximalAtlas
 
 variable (M) (G : StructureGroupoid H)
@@ -1043,6 +1056,15 @@ theorem StructureGroupoid.compatible_of_mem_maximalAtlas {e e' : PartialHomeomor
     _ ≈ (e.symm ≫ₕ e').restr s := by rw [restr_trans]
   exact G.mem_of_eqOnSource C (Setoid.symm D)
 #align structure_groupoid.compatible_of_mem_maximal_atlas StructureGroupoid.compatible_of_mem_maximalAtlas
+
+open PartialHomeomorph in
+/-- The maximal atlas of a structure groupoid is stable under equivalence. -/
+lemma StructureGroupoid.mem_maximalAtlas_of_eqOnSource {e e' : PartialHomeomorph M H} (h : e' ≈ e)
+    (he : e ∈ G.maximalAtlas M) : e' ∈ G.maximalAtlas M := by
+  intro e'' he''
+  obtain ⟨l, r⟩ := mem_maximalAtlas_iff.mp he e'' he''
+  exact ⟨G.mem_of_eqOnSource l (EqOnSource.trans' (EqOnSource.symm' h) (e''.eqOnSource_refl)),
+         G.mem_of_eqOnSource r (EqOnSource.trans' (e''.symm).eqOnSource_refl h)⟩
 
 variable (G)
 
@@ -1146,13 +1168,28 @@ variable (s : Opens M)
 
 /-- An open subset of a charted space is naturally a charted space. -/
 protected instance instChartedSpace : ChartedSpace H s where
-  atlas := ⋃ x : s, {(chartAt H x.1).subtypeRestr s ⟨x⟩}
-  chartAt x := (chartAt H x.1).subtypeRestr s ⟨x⟩
+  atlas := ⋃ x : s, {(chartAt H x.1).subtypeRestr ⟨x⟩}
+  chartAt x := (chartAt H x.1).subtypeRestr ⟨x⟩
   mem_chart_source x := ⟨trivial, mem_chart_source H x.1⟩
   chart_mem_atlas x := by
     simp only [mem_iUnion, mem_singleton_iff]
     use x
 #align topological_space.opens.charted_space TopologicalSpace.Opens.instChartedSpace
+
+/-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
+ of some chart on `M`. -/
+lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he : e ∈ atlas H s) :
+    ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
+  rcases he with ⟨xset, ⟨x, hx⟩, he⟩
+  exact ⟨x, mem_singleton_iff.mp (by convert hx ▸ he)⟩
+
+/-- If `t` is a non-empty open subset of `H`,
+  every chart of `t` is the restriction of some chart on `H`. -/
+-- XXX: can I unify this with `chart_eq`?
+lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H}
+    (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht := by
+  rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
+  exact ⟨x, mem_singleton_iff.mp (by convert hx ▸ he')⟩
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
 `HasGroupoid G` is naturally `HasGroupoid G`. -/
@@ -1163,7 +1200,7 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
     rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']
     refine' G.mem_of_eqOnSource _
-      (subtypeRestr_symm_trans_subtypeRestr s _ (chartAt H x) (chartAt H x'))
+      (subtypeRestr_symm_trans_subtypeRestr (s := s) _ (chartAt H x) (chartAt H x'))
     apply closedUnderRestriction'
     · exact G.compatible (chart_mem_atlas _ _) (chart_mem_atlas _ _)
     · exact isOpen_inter_preimage_symm (chartAt _ _) s.2
@@ -1172,23 +1209,40 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
 theorem chartAt_subtype_val_symm_eventuallyEq (U : Opens M) {x : U} :
     (chartAt H x.val).symm =ᶠ[𝓝 (chartAt H x.val x.val)] Subtype.val ∘ (chartAt H x).symm := by
   set e := chartAt H x.val
-  have heUx_nhds : (e.subtypeRestr U ⟨x⟩).target ∈ 𝓝 (e x) := by
-    apply (e.subtypeRestr U ⟨x⟩).open_target.mem_nhds
+  have heUx_nhds : (e.subtypeRestr ⟨x⟩).target ∈ 𝓝 (e x) := by
+    apply (e.subtypeRestr ⟨x⟩).open_target.mem_nhds
     exact e.map_subtype_source ⟨x⟩ (mem_chart_source _ _)
-  exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn U ⟨x⟩)
+  exact Filter.eventuallyEq_of_mem heUx_nhds (e.subtypeRestr_symm_eqOn ⟨x⟩)
 
 theorem chartAt_inclusion_symm_eventuallyEq {U V : Opens M} (hUV : U ≤ V) {x : U} :
     (chartAt H (Set.inclusion hUV x)).symm
     =ᶠ[𝓝 (chartAt H (Set.inclusion hUV x) (Set.inclusion hUV x))]
     Set.inclusion hUV ∘ (chartAt H x).symm := by
   set e := chartAt H (x : M)
-  have heUx_nhds : (e.subtypeRestr U ⟨x⟩).target ∈ 𝓝 (e x) := by
-    apply (e.subtypeRestr U ⟨x⟩).open_target.mem_nhds
+  have heUx_nhds : (e.subtypeRestr ⟨x⟩).target ∈ 𝓝 (e x) := by
+    apply (e.subtypeRestr ⟨x⟩).open_target.mem_nhds
     exact e.map_subtype_source ⟨x⟩ (mem_chart_source _ _)
   exact Filter.eventuallyEq_of_mem heUx_nhds <| e.subtypeRestr_symm_eqOn_of_le ⟨x⟩
     ⟨Set.inclusion hUV x⟩ hUV
 #align topological_space.opens.chart_at_inclusion_symm_eventually_eq TopologicalSpace.Opens.chartAt_inclusion_symm_eventuallyEq
 end TopologicalSpace.Opens
+
+/-- Restricting a chart of `M` to an open subset `s` yields a chart in the maximal atlas of `s`.
+
+NB. We cannot deduce membership in `atlas H s` in general: by definition, this atlas contains
+precisely the restriction of each preferred chart at `x ∈ s` --- whereas `atlas H M`
+can contain more charts than these. -/
+lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
+    (he : e ∈ atlas H M) {s : Opens M} (hs : Nonempty s) {G : StructureGroupoid H} [HasGroupoid M G]
+    [ClosedUnderRestriction G] : e.subtypeRestr hs ∈ G.maximalAtlas s := by
+  intro e' he'
+  -- `e'` is the restriction of some chart of `M` at `x`,
+  obtain ⟨x, this⟩ := Opens.chart_eq hs he'
+  rw [this]
+  -- The transition functions between the unrestricted charts lie in the groupoid,
+  -- the transition functions of the restriction are the restriction of the transition function.
+  exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) hs,
+         G.trans_restricted (chart_mem_atlas H (x : M)) he hs⟩
 
 /-! ### Structomorphisms -/
 
@@ -1274,5 +1328,47 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
       have : F₂ ∈ G := G.mem_of_eqOnSource A (Setoid.symm this)
       exact this }
 #align structomorph.trans Structomorph.trans
+
+/-- Restricting a chart to its source `s ⊆ M` yields a chart in the maximal atlas of `s`. -/
+theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
+    {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
+    (hs : Nonempty e.source) [HasGroupoid M G] [ClosedUnderRestriction G] :
+    let s := { carrier := e.source, is_open' := e.open_source : Opens M };
+    let t := { carrier := e.target, is_open' := e.open_target : Opens H };
+    ∀ c' ∈ atlas H t, e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ c' ∈ G.maximalAtlas s := by
+  intro s t c' hc'
+  have : Nonempty t := nonempty_coe_sort.mpr (e.mapsTo.nonempty (nonempty_coe_sort.mp hs))
+  obtain ⟨x, hc'⟩ := Opens.chart_eq this hc'
+  -- As H has only one chart, `chartAt H x` is the identity: i.e., `c'` is the inclusion.
+  rw [hc', (chartAt_self_eq)]
+  -- Our expression equals this chart, at least on its source.
+  rw [PartialHomeomorph.subtypeRestr_def, PartialHomeomorph.trans_refl]
+  let goal := e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ (t.partialHomeomorphSubtypeCoe this)
+  have : goal ≈ e.subtypeRestr (s := s) hs :=
+    (goal.eqOnSource_iff (e.subtypeRestr (s := s) hs)).mpr ⟨by simp, by intro _ _; rfl⟩
+  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he hs)
+
+/-- Each chart of a charted space is a structomorphism between its source and target. -/
+def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
+    [HasGroupoid M G] [ClosedUnderRestriction G] :
+    let s : Opens M := { carrier := e.source, is_open' := e.open_source }
+    let t : Opens H := { carrier := e.target, is_open' := e.open_target }
+    Structomorph G s t := by
+  intro s t
+  by_cases h : Nonempty e.source
+  · exact { e.toHomeomorphSourceTarget with
+      mem_groupoid :=
+        -- The atlas of H on itself has only one chart, hence c' is the inclusion.
+        -- Then, compatibility of `G` *almost* yields our claim --- except that `e` is a chart
+        -- on `M` and `c` is one on `s`: we need to show that restricting `e` to `s` and composing
+        -- with `c'` yields a chart in the maximal atlas of `s`.
+        fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
+          (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
+  · have : IsEmpty s := not_nonempty_iff.mp h
+    have : IsEmpty t := isEmpty_coe_sort.mpr
+      (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp this))
+    exact { Homeomorph.empty with
+      -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.
+      mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
 
 end HasGroupoid

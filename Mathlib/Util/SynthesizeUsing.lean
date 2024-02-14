@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Lean.Elab.Tactic.Basic
+import Qq
 
 /-!
 # `SynthesizeUsing`
@@ -11,7 +12,7 @@ import Lean.Elab.Tactic.Basic
 This is a slight simplification of the `solve_aux` tactic in Lean3.
 -/
 
-open Lean Elab Tactic Meta
+open Lean Elab Tactic Meta Qq
 
 /--
 `synthesizeUsing type tac` synthesizes an element of type `type` using tactic `tac`.
@@ -22,7 +23,8 @@ returned expression.
 -- In Lean3 this was called `solve_aux`,
 -- and took a `TacticM α` and captured the produced value in `α`.
 -- As this was barely used, we've simplified here.
-def synthesizeUsing (type : Expr) (tac : TacticM Unit) : MetaM (List MVarId × Expr) := do
+def synthesizeUsing {u : Level} (type : Q(Sort u)) (tac : TacticM Unit) :
+    MetaM (List MVarId × Q($type)) := do
   let m ← mkFreshExprMVar type
   let goals ← (Term.withoutErrToSorry <| run m.mvarId! tac).run'
   return (goals, ← instantiateMVars m)
@@ -32,7 +34,7 @@ def synthesizeUsing (type : Expr) (tac : TacticM Unit) : MetaM (List MVarId × E
 
 The tactic must solve for all goals, in contrast to `synthesizeUsing`.
 -/
-def synthesizeUsing' (type : Expr) (tac : TacticM Unit) : MetaM Expr := do
+def synthesizeUsing' {u : Level} (type : Q(Sort u)) (tac : TacticM Unit) : MetaM Q($type) := do
   let (goals, e) ← synthesizeUsing type tac
   -- Note: doesn't use `tac *> Tactic.done` since that just adds a message
   -- rather than raising an error.
@@ -52,7 +54,8 @@ let (gs, e) ← synthesizeUsingTactic ty (← `(tactic| congr!))
 The tactic `tac` is allowed to leave goals open, and these remain as metavariables in the
 returned expression.
 -/
-def synthesizeUsingTactic (type : Expr) (tac : Syntax) : MetaM (List MVarId × Expr) := do
+def synthesizeUsingTactic {u : Level} (type : Q(Sort u)) (tac : Syntax) :
+    MetaM (List MVarId × Q($type)) := do
   synthesizeUsing type (do evalTactic tac)
 
 /--
@@ -82,5 +85,5 @@ def simpTerm (e : Expr) : MetaM Expr := do
 elab "simpTerm% " t:term : term => do simpTerm (← Term.elabTerm t none)
 ```
 -/
-def synthesizeUsingTactic' (type : Expr) (tac : Syntax) : MetaM Expr := do
+def synthesizeUsingTactic' {u : Level} (type : Q(Sort u)) (tac : Syntax) : MetaM Q($type) := do
   synthesizeUsing' type (do evalTactic tac)

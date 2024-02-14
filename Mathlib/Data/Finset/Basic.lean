@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Set.Lattice
+import Mathlib.Algebra.Order.WithZero
 
 #align_import data.finset.basic from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
@@ -3355,6 +3356,16 @@ theorem toFinset_bind_dedup [DecidableEq β] (m : Multiset α) (f : α → Multi
     (m.dedup.bind f).toFinset = (m.bind f).toFinset := by simp_rw [toFinset, dedup_bind_dedup]
 #align multiset.to_finset_bind_dedup Multiset.toFinset_bind_dedup
 
+@[simp]
+theorem toFinset_range (n : ℕ) :
+    Multiset.toFinset (Multiset.range n) = Finset.range n := by
+  ext; simp
+
+@[simp]
+theorem toFinset_filter (s : Multiset α) (p : α → Prop) [DecidablePred p] :
+    Multiset.toFinset (s.filter p) = s.toFinset.filter p := by
+  ext; simp
+
 instance isWellFounded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) := by
   classical
   exact Subrelation.isWellFounded (InvImage _ toFinset) toFinset_ssubset.2
@@ -3490,6 +3501,15 @@ theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
 theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
   simp [Finset.nonempty_iff_ne_empty]
 #align list.to_finset_nonempty_iff List.toFinset_nonempty_iff
+
+@[simp]
+theorem toFinset_range (n : ℕ) : (List.range n).toFinset = Finset.range n := by
+  ext; simp
+
+@[simp]
+theorem toFinset_filter (s : List α) (p : α → Bool) :
+    (s.filter p).toFinset = s.toFinset.filter (p ·) := by
+  ext; simp [List.mem_filter]
 
 end List
 
@@ -3915,30 +3935,9 @@ end Pairwise
 end Finset
 
 namespace Equiv
+variable [DecidableEq α] {s t : Finset α}
 
 open Finset
-
-/--
-Inhabited types are equivalent to `Option β` for some `β` by identifying `default α` with `none`.
--/
-def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
-    Σβ : Type u, α ≃ Option β :=
-  ⟨{ x : α // x ≠ default },
-    { toFun := fun x : α => if h : x = default then none else some ⟨x, h⟩
-      invFun := Option.elim' default (↑)
-      left_inv := fun x => by
-        dsimp only
-        split_ifs <;> simp [*]
-      right_inv := by
-        rintro (_ | ⟨x, h⟩)
-        · simp
-        · dsimp only
-          split_ifs with hi
-          · simp [h] at hi
-          · simp }⟩
-#align equiv.sigma_equiv_option_of_inhabited Equiv.sigmaEquivOptionOfInhabited
-
-variable [DecidableEq α] {s t : Finset α}
 
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
