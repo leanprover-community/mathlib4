@@ -161,19 +161,6 @@ variable (x y : BitVec w)
 @[simp] lemma toFin_neg : toFin (-x) = -(toFin x) := by
   rw [neg_eq_zero_sub]; rfl
 
-@[simp] lemma toFin_and : toFin (x &&& y) = toFin x &&& toFin y := by
-  apply toFin_inj.mpr; simp only [ofFin_and]
-
-@[simp] lemma toFin_or  : toFin (x ||| y) = toFin x ||| toFin y := by
-  apply toFin_inj.mpr; simp only [ofFin_or]
-
-@[simp] lemma toFin_xor : toFin (x ^^^ y) = toFin x ^^^ toFin y := by
-  apply toFin_inj.mpr; simp only [ofFin_xor]
-
-@[simp] lemma toFin_add : toFin (x + y)   = toFin x + toFin y   := rfl
-@[simp] lemma toFin_sub : toFin (x - y)   = toFin x - toFin y   := rfl
-@[simp] lemma toFin_mul : toFin (x * y)   = toFin x * toFin y   := rfl
-
 -- These should be simp, but Std's simp-lemmas do not allow this yet.
 lemma toFin_zero : toFin (0 : BitVec w) = 0 := rfl
 lemma toFin_one  : toFin (1 : BitVec w) = 1 := by
