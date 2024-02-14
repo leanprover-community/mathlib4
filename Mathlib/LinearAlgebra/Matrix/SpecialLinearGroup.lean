@@ -256,17 +256,10 @@ section center
 
 theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) (i : n) :
     A = A.val i i • (1 : Matrix n n R) := by
-  have hA := Subgroup.mem_center_iff.mp A.property
-  replace hA (t : TransvectionStruct n R) := hA ⟨t.toMatrix, by simp⟩
-  conv at hA =>
-    intro t
-    rewrite [Subtype.ext_iff]
-  obtain ⟨r, hr⟩ := mem_range_scalar_of_commute_transvectionStruct hA
-  have : A.val i i = r := by
-    rewrite [← hr]
-    simp
-  rewrite [this, ← hr, @smul_one_eq_diagonal]
-  simp
+  obtain ⟨r, hr⟩ := mem_range_scalar_of_commute_transvectionStruct fun t =>
+    Subtype.ext_iff.mp $ Subgroup.mem_center_iff.mp A.property ⟨t.toMatrix, by simp⟩
+  have : A.val i i = r := by rw [← hr]; simp
+  simp [this, ← hr, @smul_one_eq_diagonal]
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
 in which the scalars are the `n`-th roots of `1`.-/
@@ -279,22 +272,16 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
     have hA2 := center_scalar ⟨A, hA⟩ i
     refine (and_iff_left hA2).mpr ?_
     have hA1 : det A.val = (1 : R) := det_coe A
-    rewrite [hA2, det_smul_of_tower] at hA1
-    revert hA1
-    simp
+    rw [hA2, det_smul_of_tower] at hA1
+    simpa using hA1
   · wlog hn : IsEmpty n
-    · haveI : Nonempty n := not_isEmpty_iff.mp hn
-      let i : n := Classical.arbitrary n
-      intro h
-      rewrite [Subgroup.mem_center_iff]
-      intro B
-      obtain ⟨_, hA⟩ := h i
-      rewrite [ext_iff, coe_mul, coe_mul, hA]
+    · let i : n := @Classical.arbitrary n (not_isEmpty_iff.mp hn)
+      rw [Subgroup.mem_center_iff]
+      intro h _; obtain ⟨_, hA⟩ := h i
+      rw [ext_iff, coe_mul, coe_mul, hA]
       simp
     · have hA : A = 1 := by rw [@ext_iff, @IsEmpty.forall_iff n, ← Bool.coe_true]
-      intro _
-      rw [hA]
-      exact Subgroup.one_mem _
+      aesop
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
 in which the scalars are the `n`-th roots of `1`.-/
@@ -308,11 +295,8 @@ noncomputable def center_iso_RootsOfUnity :
     exact {
       toFun := fun _ => 1
       invFun := fun _ => 1
-      left_inv := by
-        intro A
-        exact SetCoe.ext (h A).symm
-      right_inv := by
-        intro x
+      left_inv := fun A => SetCoe.ext (h A).symm
+      right_inv := fun x => by
         refine SetCoe.ext ?_
         have := mem_rootsOfUnity 1 x.val |>.mp x.property
         simpa using this.symm
@@ -324,22 +308,13 @@ noncomputable def center_iso_RootsOfUnity :
       toFun := fun A => rootsOfUnity.mkOfPowEq (A.val i i) <| by
         simp [mem_center_iff.mp A.property i |>.1]
       invFun := fun a => ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
-        rewrite [Subgroup.mem_center_iff]
-        intro _
-        aesop⟩
-      left_inv := by
-        intro A
-        refine SetCoe.ext <| SetCoe.ext ?_
-        conv_rhs => rw [center_scalar A i]
-      right_inv := fun a => by
-        refine SetCoe.ext <| Units.eq_iff.mp ?_
-        simp [instHSMul, SMul.smul]
+        rw [Subgroup.mem_center_iff]; aesop⟩
+      left_inv := fun A => by refine SetCoe.ext $ SetCoe.ext ?_; conv_rhs => rw [center_scalar A i]
+      right_inv := fun a => by refine SetCoe.ext $ Units.eq_iff.mp ?_; simp [instHSMul, SMul.smul]
       map_mul' := fun A B => by
         simp only
         have hAB : (A * B).val.val = A.val.val * B.val.val := by simp
-        conv_lhs =>
-          arg 1
-          rewrite [hAB, center_scalar _ i]
+        conv_lhs => arg 1; rw [hAB, center_scalar _ i]
         refine SetCoe.ext <| Units.eq_iff.mp ?_
         simp [mul_comm (B.val i i) (A.val i i)]
     }
