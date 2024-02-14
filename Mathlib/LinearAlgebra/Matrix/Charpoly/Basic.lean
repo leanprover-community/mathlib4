@@ -35,7 +35,7 @@ universe u v w
 
 open Polynomial Matrix BigOperators Polynomial
 
-variable {R : Type u} [CommRing R]
+variable {R S : Type*} [CommRing R] [CommRing S]
 variable {m n : Type*} [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n]
 variable (M₁₁ : Matrix m m R) (M₁₂ : Matrix m n R) (M₂₁ : Matrix n m R) (M₂₂ M : Matrix n n R)
 variable (i j : n)
@@ -86,6 +86,11 @@ theorem charmatrix_reindex (e : n ≃ m) :
   all_goals simp [h]
 #align charmatrix_reindex charmatrix_reindex
 
+lemma charmatrix_map (M : Matrix n n R) (f : R →+* S) :
+    charmatrix (M.map f) = (charmatrix M).map (Polynomial.map f) := by
+  ext i j
+  by_cases h : i = j <;> simp [h, charmatrix, diagonal]
+
 lemma charmatrix_fromBlocks :
     charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
       fromBlocks (charmatrix M₁₁) (- M₁₂.map C) (- M₂₁.map C) (charmatrix M₂₂) := by
@@ -106,7 +111,12 @@ theorem charpoly_reindex (e : n ≃ m)
   rw [charmatrix_reindex, Matrix.det_reindex_self]
 #align matrix.charpoly_reindex Matrix.charpoly_reindex
 
+lemma charpoly_map (M : Matrix n n R) (f : R →+* S) :
+    (M.map f).charpoly = M.charpoly.map f := by
+  rw [charpoly, charmatrix_map, ← Polynomial.coe_mapRingHom, charpoly, RingHom.map_det]
+  rfl
 @[simp]
+
 lemma charpoly_fromBlocks_zero₁₂ :
     (fromBlocks M₁₁ 0 M₂₁ M₂₂).charpoly = (M₁₁.charpoly * M₂₂.charpoly) := by
   simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
