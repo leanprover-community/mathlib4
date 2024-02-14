@@ -197,22 +197,26 @@ def Language.IsContextFree (L : Language T) : Prop :=
 
 section closure_reversal
 
-private def reverseRule {N : Type uN} (r : ContextFreeRule T N) : ContextFreeRule T N :=
+/-- Rules for a grammar for a reversed language. -/
+def ContextFreeRule.reverse {N : Type uN} (r : ContextFreeRule T N) : ContextFreeRule T N :=
   ⟨r.input, r.output.reverse⟩
 
-private def reverseGrammar (g : ContextFreeGrammar T) : ContextFreeGrammar T :=
-  ⟨g.NT, g.initial, g.rules.map reverseRule⟩
+/-- Grammar for a reversed language. -/
+def ContextFreeGrammar.reverse (g : ContextFreeGrammar T) : ContextFreeGrammar T :=
+  ⟨g.NT, g.initial, g.rules.map .reverse⟩
 
-private lemma reverseRule_reverseRule {N : Type uN} : Function.Involutive (@reverseRule T N) := by
+lemma ContextFreeRule.reverse_reverse {N : Type uN} :
+    Function.Involutive (@ContextFreeRule.reverse T N) := by
   intro x
-  simp [reverseRule]
+  simp [ContextFreeRule.reverse]
 
-private lemma reverseGrammar_reverseGrammar : Function.Involutive (@reverseGrammar T) := by
+lemma ContextFreeGrammar.reverse_reverse :
+    Function.Involutive (@ContextFreeGrammar.reverse T) := by
   intro x
-  simp [reverseGrammar, reverseRule_reverseRule]
+  simp [ContextFreeGrammar.reverse, ContextFreeRule.reverse_reverse]
 
-private lemma derives_reverse {g : ContextFreeGrammar T} {s : List (Symbol T g.NT)}
-    (hgs : (reverseGrammar g).Derives [Symbol.nonterminal (reverseGrammar g).initial] s) :
+lemma ContextFreeGrammar.reverse_derives (g : ContextFreeGrammar T) {s : List (Symbol T g.NT)}
+    (hgs : g.reverse.Derives [Symbol.nonterminal g.reverse.initial] s) :
     g.Derives [Symbol.nonterminal g.initial] s.reverse := by
   induction hgs with
   | refl =>
@@ -220,22 +224,21 @@ private lemma derives_reverse {g : ContextFreeGrammar T} {s : List (Symbol T g.N
     apply ContextFreeGrammar.Derives.refl
   | tail _ orig ih =>
     apply ContextFreeGrammar.Derives.trans_produces ih
-    rcases orig with ⟨r, rin, rewr⟩
-    simp only [reverseGrammar, List.mem_map] at rin
-    rcases rin with ⟨r₀, rin₀, r_of_r₀⟩
+    obtain ⟨r, rin, rewr⟩ := orig
+    simp only [ContextFreeGrammar.reverse, List.mem_map] at rin
+    obtain ⟨r₀, rin₀, rfl⟩ := rin
     use r₀
     constructor
     · exact rin₀
     rw [ContextFreeRule.rewrites_iff] at rewr ⊢
     rcases rewr with ⟨p, q, rfl, rfl⟩
     use q.reverse, p.reverse
-    rw [← r_of_r₀]
-    simp [reverseRule]
+    simp [ContextFreeRule.reverse]
 
-private lemma reversed_word_in_original_language {g : ContextFreeGrammar T} {w : List T}
-    (hgw : w ∈ (reverseGrammar g).language) :
+lemma ContextFreeGrammar.reverse_mem_language_of_mem_reverse_language (g : ContextFreeGrammar T)
+    {w : List T} (hgw : w ∈ g.reverse.language) :
     w.reverse ∈ g.language := by
-  convert derives_reverse hgw
+  convert g.reverse_derives hgw
   simp [List.map_reverse]
 
 /-- The class of context-free languages is closed under reversal. -/
@@ -244,17 +247,15 @@ theorem Language.IsContextFree.reverse {L : Language T} (CFL : L.IsContextFree) 
   cases CFL with
   | intro g hgL =>
     rw [← hgL]
-    use reverseGrammar g
+    use g.reverse
     apply Set.eq_of_subset_of_subset
-    · apply reversed_word_in_original_language
+    · apply ContextFreeGrammar.reverse_mem_language_of_mem_reverse_language
     · intro w hwg
-      have pre_reversal : ∃ g₀, g = reverseGrammar g₀
-      · use reverseGrammar g
-        rw [reverseGrammar_reverseGrammar]
-      cases' pre_reversal with g₀ pre_rev
-      rw [pre_rev] at hwg ⊢
-      have finished_modulo_reverses := reversed_word_in_original_language hwg
-      rw [reverseGrammar_reverseGrammar]
+      obtain ⟨g₀, rfl⟩ : ∃ g₀ : ContextFreeGrammar T, g = g₀.reverse
+      · use g.reverse
+        rw [ContextFreeGrammar.reverse_reverse]
+      rw [ContextFreeGrammar.reverse_reverse]
+      have finished_modulo_reverses := g₀.reverse_mem_language_of_mem_reverse_language hwg
       rw [List.reverse_reverse] at finished_modulo_reverses
       exact finished_modulo_reverses
 
