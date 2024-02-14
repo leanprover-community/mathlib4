@@ -172,15 +172,14 @@ section GaloisRep
 /-! ### Galois representative of fiber
 
 If `X` is any object, then its fiber is represented by some Galois object: There exists
-a Galois object `A`, a morphism `A ⟶ X` and an element in the fiber of `A` such that the
-evaluation at `a` is bijective.
+a Galois object `A` and an element `a` in the fiber of `A` such that the
+evaluation at `a` from `A ⟶ X` to `F.obj X` is bijective.
 
 To show this we consider the product `∏ (fun _ : F.obj X ↦ X)` and let `A`
-be the connected component whose fiber contains the element in the fiber of the self product
+be the connected component whose fiber contains the element `a` in the fiber of the self product
 that has at each index `x : F.obj X` the element `x`.
 
-This `A` is Galois and taking the composition `A ⟶ ∏ (fun _ : F.obj X ↦ X) ⟶ X` yields
-the result.
+This `A` is Galois and evaluation at `a` is bijective.
 
 Reference: Lenstra, 3.14
 
