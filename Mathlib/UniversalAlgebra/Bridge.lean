@@ -4,17 +4,33 @@ import Mathlib.Tactic
 open Lean Meta
 
 inductive LawvereExpr : Type where
-  -- inputs is part of the data
   | proj (inputs : Array ℕ) (output : ℕ) : LawvereExpr
-  -- inputs can be computed recursively in this case.
   | op (opName : Name) (output : ℕ) : Array LawvereExpr → LawvereExpr
 deriving Repr
+
+partial
+instance : ToExpr LawvereExpr where
+  toExpr := aux
+  toTypeExpr := .const ``LawvereExpr []
+where aux := fun
+  | .proj inputs output => mkApp2 (.const ``LawvereExpr.proj []) (toExpr inputs) (toExpr output)
+  | .op opName output rest =>
+    mkApp3 (.const ``LawvereExpr.op []) (toExpr opName) (toExpr output) <|
+      let exprs := rest.map aux
+      mkApp2 (.const ``List.toArray [0]) (.const ``LawvereExpr []) <|
+        exprs.foldr
+          (fun a b => mkApp3 (.const ``List.cons [0]) (.const ``LawvereExpr []) a b)
+          (.app (.const ``List.nil [0]) (.const ``LawvereExpr []))
 
 structure LawvereOp where
   name : Name
   inputs : Array ℕ
   output : ℕ
 deriving Repr
+
+instance : ToExpr LawvereOp where
+  toExpr C := mkApp3 (.const ``LawvereOp.mk []) (toExpr C.name) (toExpr C.inputs) (toExpr C.output)
+  toTypeExpr := .const ``LawvereOp []
 
 structure LawvereAxiom where
   name : Name
@@ -23,6 +39,11 @@ structure LawvereAxiom where
   lhs : LawvereExpr
   rhs : LawvereExpr
 deriving Repr
+
+instance : ToExpr LawvereAxiom where
+  toExpr C := mkApp5 (.const ``LawvereAxiom.mk [])
+    (toExpr C.name) (toExpr C.inputs) (toExpr C.output) (toExpr C.lhs) (toExpr C.rhs)
+  toTypeExpr := .const ``LawvereAxiom []
 
 def Lean.StructureInfo.getType (info : StructureInfo) : MetaM Expr := do
   let env ← getEnv
@@ -120,25 +141,78 @@ def Lean.StructureInfo.elabAxioms (info : StructureInfo) :
     out := out.push new
   return out
 
-def foobar (str : Name) : MetaM Unit := do
+structure LawvereContext where
+  className : Name
+  numSort : Nat
+  sortNames : Array Name
+  operations : Array LawvereOp
+  axioms : Array LawvereAxiom
+deriving Repr
+
+instance : ToExpr LawvereContext where
+  toExpr C := mkApp5 (.const ``LawvereContext.mk [])
+    (toExpr C.className)
+    (toExpr C.numSort)
+    (toExpr C.sortNames)
+    (toExpr C.operations)
+    (toExpr C.axioms)
+  toTypeExpr := .const ``LawvereContext []
+
+abbrev LawvereM := ReaderT LawvereContext MetaM
+
+def runLawvereM {α : Type} (className : Name) (e : LawvereM α) :
+    MetaM α := do
   let env ← getEnv
-  let strInfo ← getStructureInfo? env str
+  let strInfo ← getStructureInfo? env className
+  let numSorts ← strInfo.telescope fun as _ => return as.size
+  let sortNames ← strInfo.telescope fun as _ => as.filterMapM fun e => do
+    let .fvar id := e | return none
+    return ← id.getUserName
   let ops ← strInfo.elabOperations
-  IO.println <| repr ops
-  let axs ← strInfo.elabAxioms
-  IO.println <| repr axs
+  let axioms ← strInfo.elabAxioms
+  e.run <| .mk className numSorts sortNames ops axioms
 
 class Module' (R M : Type*) where
-  addR : R → R → R
-  mulR : R → R → R
-  oneR : R
-  zeroR : R
-  smul : R → M → M
-  addM : M → M → M
-  zeroM : M
-  addR_assoc (x y z : R) : addR (addR x y) z = addR x (addR y z)
-  mulR_assoc (x y z : R) : mulR (mulR x y) z = mulR x (mulR y z)
-  addR_comm (x y : R) : addR x y = addR y x
+  ff : R → M → R
+  gg : R → R → R
+  hh : M → M → M
+  hh_assoc (x y z : M) : hh (hh x y) z = hh x (hh y z)
+  ff_gg (r s : R) (m : M) : ff (gg r s) m = gg r s
 
+def LawvereM.numSorts : LawvereM ℕ := return (← read).numSort
+def LawvereM.sortNames : LawvereM (Array Name) := return (← read).sortNames
+def LawvereM.operations : LawvereM (Array LawvereOp) := return (← read).operations
+def LawvereM.axioms : LawvereM (Array LawvereAxiom) := return (← read).axioms
 
-#eval foobar `Module'
+elab "lawvere_context%" i:ident : term => do
+  let nm := i.getId
+  runLawvereM nm do
+    let ctx ← read
+    IO.println <| repr ctx
+    return toExpr ctx
+
+class MM (R : Type*) where
+  A : R
+  h (a : R) : A = a
+
+#eval (lawvere_context% Module')
+
+#eval runLawvereM `Module' do
+  let names ← LawvereM.sortNames
+  IO.println names
+  let ops ← LawvereM.operations
+  IO.println "OPS"
+  for ⟨nm, input, output⟩ in ops do
+    IO.println "---"
+    IO.println nm
+    IO.println input
+    IO.println output
+  let axioms ← LawvereM.axioms
+  IO.println "AXIOMS"
+  for ⟨nm, h1, h2, h3, h4⟩  in axioms do
+    IO.println "---"
+    IO.println nm
+    IO.println h1
+    IO.println h2
+    IO.println <| repr h3
+    IO.println <| repr h4
