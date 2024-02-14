@@ -336,7 +336,7 @@ lemma DilationEquiv.smulTorsor_ratio {c : P} {k : 𝕜} (hk : k ≠ 0) {x y : E}
 
 @[simp]
 lemma DilationEquiv.smulTorsor_preimage_ball {c : P} {k : 𝕜} (hk : k ≠ 0) :
-    smulTorsor c hk ⁻¹' (Metric.ball c ‖k‖₊) = Metric.ball (0 : E) 1 := by
+    smulTorsor c hk ⁻¹' (Metric.ball c ‖k‖) = Metric.ball (0 : E) 1 := by
   aesop (add simp norm_smul)
 
 end
