@@ -33,6 +33,6 @@ theorem measurable_symm : Measurable symm := continuous_symm.measurable
 
 /-- `unitInterval.symm` as a `MeasurableEquiv`. -/
 @[simps]
-def symm_measurableEquiv : I ≃ᵐ I := symmHomeomorph.toMeasurableEquiv
+def symmMeasurableEquiv : I ≃ᵐ I := symmHomeomorph.toMeasurableEquiv
 
 end unitInterval
