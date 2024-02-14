@@ -1206,7 +1206,7 @@ theorem SimpleFunc.aestronglyMeasurable {_ : MeasurableSpace α} {μ : Measure �
 
 namespace AEStronglyMeasurable
 
-variable {m : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β] [TopologicalSpace γ]
+variable {m : MeasurableSpace α} {μ ν : Measure α} [TopologicalSpace β] [TopologicalSpace γ]
   {f g : α → β}
 
 section Mk
@@ -1905,8 +1905,7 @@ theorem _root_.aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGr
     simpa only [NNReal.coe_eq_zero, Ne.def] using h'x
 #align ae_strongly_measurable_with_density_iff aestronglyMeasurable_withDensity_iff
 
-lemma of_absolutelyContinuous {α β : Type*} [MeasurableSpace α] [TopologicalSpace β]
-    {μ ν : Measure α} (h : ν ≪ μ) (g : α → β) (hμ : AEStronglyMeasurable g μ) :
+lemma of_absolutelyContinuous (h : ν ≪ μ) (hμ : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable g ν := let ⟨g₁, hg₁, hg₁'⟩ := hμ; ⟨g₁, hg₁, h.ae_eq hg₁'⟩
 #align measure_theory.ae_strongly_measurable_of_absolutely_continuous MeasureTheory.AEStronglyMeasurable.of_absolutelyContinuous
 
