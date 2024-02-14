@@ -182,8 +182,8 @@ end
 
 /-! ## `CommRing` -/
 
-@[simp] lemma negOne_eq_allOnes (w : Nat) : -1#w = allOnes w  := rfl
-@[simp] lemma natCast_eq (x w : Nat) : Nat.cast x = x#w       := rfl
+lemma negOne_eq_allOnes (w : Nat) : -1#w = allOnes w  := rfl
+lemma natCast_eq (x w : Nat) : Nat.cast x = x#w       := rfl
 
 theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = Int.cast z := by
   cases w
