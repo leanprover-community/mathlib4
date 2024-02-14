@@ -33,7 +33,7 @@ theorem period_gt_of_moved {m : M} {a : α} {n : ℕ} (period_pos : 0 < period m
   by_contra period_le_n
   rw [not_le] at period_le_n
   apply moved _ period_pos period_le_n
-  exact smul_pow_period_fixed m a
+  exact pow_period_smul m a
 
 /-- If for some `n`, `m ^ n • a = a`, then `period m a ≤ n`. -/
 @[to_additive]

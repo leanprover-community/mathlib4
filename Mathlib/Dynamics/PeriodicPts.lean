@@ -636,10 +636,10 @@ variable {G : Type u} [Group G] [MulAction G α]
 variable {M : Type u} [Monoid M] [MulAction M α]
 
 /--
-The period of a multiplicative action of `g` on `a` is the smallest `n` such that `g ^ n • a = a`,
-or `0` if such an `n` does not exist.
+The period of a multiplicative action of `g` on `a` is the smallest positive `n` such that
+`g ^ n • a = a`, or `0` if such an `n` does not exist.
 -/
-@[to_additive "The period of an additive action of `g` on `a` is the smallest `n`
+@[to_additive "The period of an additive action of `g` on `a` is the smallest positive `n`
 such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist."]
 noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m • x) a
 
@@ -648,36 +648,31 @@ noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m •
 theorem period_eq_minimalPeriod {m : M} {a : α} :
     MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
 
-@[to_additive]
-lemma smul_pow_eq_function_pow (m : M) (a : α) (n : ℕ): m ^ n • a = (fun x => m • x)^[n] a := by
-  rw [smul_iterate]
-
-/-- `m ^ (period m a)` fixes `a` -/
-@[to_additive (attr := simp) "`(period m a) • m` fixes `a`"]
-theorem smul_pow_period_fixed (m : M) (a : α) : m ^ (period m a) • a = a := by
-  rw [period_eq_minimalPeriod, smul_pow_eq_function_pow, iterate_minimalPeriod]
+/-- `m ^ (period m a)` fixes `a`. -/
+@[to_additive (attr := simp) "`(period m a) • m` fixes `a`."]
+theorem pow_period_smul (m : M) (a : α) : m ^ (period m a) • a = a := by
+  rw [period_eq_minimalPeriod, ← smul_iterate_apply, iterate_minimalPeriod]
 
 @[to_additive]
 lemma fixed_iff_isPeriodicPt {m : M} {a : α} {n : ℕ} :
-    m ^ n • a = a ↔ IsPeriodicPt (fun x => m • x) n a := by
-  rw [smul_pow_eq_function_pow]
-  rfl
+    IsPeriodicPt (m • ·) n a ↔ m ^ n • a = a := by
+  rw [← smul_iterate_apply, IsPeriodicPt, IsFixedPt]
 
 /-! ### Multiples of `MulAction.period`
 
-It is easy to convince onself that if `g ^ n • a = a` (resp. `(n • g) +ᵥ a = a`),
+It is easy to convince oneself that if `g ^ n • a = a` (resp. `(n • g) +ᵥ a = a`),
 then `n` must be a multiple of `period g a`.
 
 This also holds for negative powers/multiples.
 -/
 
 @[to_additive]
-theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α}:
+theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α} :
     m ^ n • a = a ↔ period m a ∣ n := by
   rw [period_eq_minimalPeriod, ← isPeriodicPt_iff_minimalPeriod_dvd, fixed_iff_isPeriodicPt]
 
 @[to_additive]
-theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α}:
+theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
     g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
   rcases j with n | n
   · rw [Int.ofNat_eq_coe, zpow_ofNat, Int.coe_nat_dvd, pow_smul_eq_iff_period_dvd]
@@ -685,22 +680,22 @@ theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α}:
       pow_smul_eq_iff_period_dvd]
 
 @[to_additive (attr := simp)]
-theorem pow_smul_plus_period (n o : ℕ) (m : M) (a : α):
+theorem pow_smul_plus_period (n o : ℕ) (m : M) (a : α) :
     m ^ (n + (period m a) * o) • a = m ^ n • a := by
   rw [pow_add, mul_smul, pow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
 
 @[to_additive (attr := simp)]
-theorem zpow_smul_plus_period (i j : ℤ) (g : G) (a : α):
+theorem zpow_smul_plus_period (i j : ℤ) (g : G) (a : α) :
     g ^ (i + (period g a : ℤ) * j) • a = g ^ i • a := by
   rw [zpow_add, mul_smul, zpow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
 
 @[to_additive (attr := simp)]
-theorem pow_smul_mod_period (n : ℕ) {m : M} {a : α}:
+theorem pow_smul_mod_period (n : ℕ) {m : M} {a : α} :
     m ^ (n % period m a) • a = m ^ n • a := by
   conv_rhs => rw [← Nat.mod_add_div n (period m a), pow_smul_plus_period]
 
 @[to_additive (attr := simp)]
-theorem zpow_smul_mod_period (j : ℤ) {g : G} {a : α}:
+theorem zpow_smul_mod_period (j : ℤ) {g : G} {a : α} :
     g ^ (j % (period g a : ℤ)) • a = g ^ j • a := by
   conv_rhs => rw [← Int.emod_add_ediv j (period g a), zpow_smul_plus_period]
 
