@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Set.Lattice
+import Mathlib.Algebra.Order.WithZero
 
 #align_import data.finset.basic from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
@@ -3934,30 +3935,9 @@ end Pairwise
 end Finset
 
 namespace Equiv
+variable [DecidableEq α] {s t : Finset α}
 
 open Finset
-
-/--
-Inhabited types are equivalent to `Option β` for some `β` by identifying `default α` with `none`.
--/
-def sigmaEquivOptionOfInhabited (α : Type u) [Inhabited α] [DecidableEq α] :
-    Σβ : Type u, α ≃ Option β :=
-  ⟨{ x : α // x ≠ default },
-    { toFun := fun x : α => if h : x = default then none else some ⟨x, h⟩
-      invFun := Option.elim' default (↑)
-      left_inv := fun x => by
-        dsimp only
-        split_ifs <;> simp [*]
-      right_inv := by
-        rintro (_ | ⟨x, h⟩)
-        · simp
-        · dsimp only
-          split_ifs with hi
-          · simp [h] at hi
-          · simp }⟩
-#align equiv.sigma_equiv_option_of_inhabited Equiv.sigmaEquivOptionOfInhabited
-
-variable [DecidableEq α] {s t : Finset α}
 
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
