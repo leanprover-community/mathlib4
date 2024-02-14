@@ -114,6 +114,8 @@ theorem toNat_top : toNat ⊤ = 0 :=
   rfl
 #align enat.to_nat_top ENat.toNat_top
 
+@[simp] theorem toNat_eq_zero : toNat n = 0 ↔ n = 0 ∨ n = ⊤ := WithTop.untop'_eq_self_iff
+
 --Porting note: new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
