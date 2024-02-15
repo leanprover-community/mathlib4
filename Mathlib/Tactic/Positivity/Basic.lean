@@ -8,7 +8,6 @@ import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.HaveI
 import Qq
 
 /-!
