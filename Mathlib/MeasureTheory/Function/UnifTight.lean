@@ -138,7 +138,7 @@ theorem lintegral_indicator_compl_le
     {g : α → ℝ≥0∞} (haemg : AEMeasurable g μ) (hg : ∫⁻ a, g a ∂μ < ∞)
     {ε : ℝ} (hε : 0 < ε) :
     ∃ (s : Set α) (_ : MeasurableSet s) (_ : μ s < ∞),
-      ∫⁻ a, (sᶜ.indicator g) a ∂μ ≤ ENNReal.ofReal ε := by
+      ∫⁻ a in sᶜ, g a ∂μ ≤ ENNReal.ofReal ε := by
   -- come up with an a.e. equal measurable replacement `f` for `g`
   have hmf := haemg.measurable_mk
   have hgf := haemg.ae_eq_mk
@@ -146,8 +146,6 @@ theorem lintegral_indicator_compl_le
   have hf := calc
     ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := (lintegral_congr_ae hgf).symm
     _            < ∞ := hg
-  simp (config := { zeta := false } /- prevent let expansion -/)
-    only [lintegral_congr_ae hgf.indicator]
   have hmeas_lt : ∀ M : ℕ, MeasurableSet { x | f x < 1 / (↑M + 1) } := by
     intro M
     apply measurableSet_lt hmf measurable_const
@@ -175,8 +173,9 @@ theorem lintegral_indicator_compl_le
   -- rewrite limit to be more usable and get the sufficiently large M, so the integral is < ε
   rw [lintegral_zero, ENNReal.tendsto_atTop_zero] at this
   obtain ⟨M, hM⟩ := this (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
-  simp only [true_and_iff, ge_iff_le, zero_tsub, zero_le, sub_zero, zero_add, coe_nnnorm,
-    Set.mem_Icc] at hM
+  simp (config := { zeta := false } /- prevent let expansion -/)
+    only [true_and_iff, ge_iff_le, zero_tsub, zero_le, sub_zero, zero_add, coe_nnnorm,
+      Set.mem_Icc] at hM
   -- the target estimate is now in hM
   have hM := hM M le_rfl
   -- let s be the complement of the integration domain in hM,
@@ -193,6 +192,8 @@ theorem lintegral_indicator_compl_le
         meas_ge_le_lintegral_div hmf.aemeasurable (by norm_num) (by norm_num)
     _ < ∞ := by apply div_lt_top hf.ne (by norm_num)
   set s := { x | 1 / (↑M + 1) ≤ f x }
+  -- replace `f` by `g`
+  rw [← lintegral_congr_ae hgf.indicator, lintegral_indicator _ hms.compl] at hM
   -- fulfill the goal
   use s, hms, hμs, hM
 
@@ -221,6 +222,7 @@ theorem Memℒp.snorm_indicator_compl_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
   have haemnpf := haemnf.pow_const p.toReal
   -- use core result for lintegral (needs only AEMeasurable), the target estimate will be in `hsfε`
   obtain ⟨s, hms, hμs, hsfε⟩ := lintegral_indicator_compl_le haemnpf hsnf hεp
+  rw [← lintegral_indicator _ hms.compl] at hsfε
   use s, hms, hμs
   -- move indicator through function compositions, XXX: is this simp-able?
   rw [← Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal)] at hsfε
@@ -234,7 +236,7 @@ theorem Memℒp.snorm_indicator_compl_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
   rw [Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal)] at hsfε
   -- commute ENNReal coersion with rpow, use rpow monotonicity
   rw [← ofReal_rpow_of_pos (by assumption)] at hsfε
-  rw [← ENNReal.rpow_le_rpow_iff hirp_pos, ENNReal.rpow_inv_rpow_self] at hsfε
+  rw [← ENNReal.rpow_le_rpow_iff hirp_pos, ENNReal.rpow_inv_rpow_self hrp_pos.ne'] at hsfε
   -- convert lintegral to snorm
   rw [← snorm_eq_lintegral_rpow_nnnorm hp_nz hp_top] at hsfε
   exact hsfε
