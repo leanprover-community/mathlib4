@@ -82,23 +82,23 @@ alias ⟨dist_eq, _⟩ := congruent_iff_dist_eq
 alias ⟨_, of_dist_eq⟩ := congruent_iff_dist_eq
 
 /-- A congruence follows from pairwise preserved extended distance. -/
-lemma of_Pairwise_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [DecidableEq ι]
+lemma of_pairwise_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [DecidableEq ι]
     (h : Pairwise (fun i₁ i₂ => (edist (v₁ i₁) (v₁ i₂) =
       edist (v₂ i₁) (v₂ i₂)))) : v₁ ≅ v₂ :=
   fun i₁ i₂ => if g : i₁ = i₂ then by rw [g]; simp else h g
 
 /-- A congruence follows from pairwise preserved non-negative distance. -/
-lemma of_Pairwise_nndist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] [DecidableEq ι]
+lemma of_pairwise_nndist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] [DecidableEq ι]
     (h : Pairwise (fun i₁ i₂ => (nndist (v₁ i₁) (v₁ i₂) = nndist (v₂ i₁) (v₂ i₂)))) : v₁ ≅ v₂ :=
-  of_Pairwise_edist_eq (fun i₁ i₂ hn => by
+  of_pairwise_edist_eq (fun i₁ i₂ hn => by
     simp only [edist_nndist]
     norm_cast
     exact h hn)
 
 /-- A congruence follows from pairwise preserved distance. -/
-lemma of_Pairwise_dist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] [DecidableEq ι]
+lemma of_pairwise_dist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] [DecidableEq ι]
     (h : Pairwise (fun i₁ i₂ => dist (v₁ i₁) (v₁ i₂) = dist (v₂ i₁) (v₂ i₂))) : v₁ ≅ v₂ :=
-  of_Pairwise_nndist_eq (fun i₁ i₂ hn => by
+  of_pairwise_nndist_eq (fun i₁ i₂ hn => by
     have := h hn
     simp only [dist_nndist] at this
     norm_cast at this)
