@@ -43,5 +43,5 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const { owner, repo, number: issue_number  } = context.issue;
+            const { owner, repo, number: issue_number } = context.issue;
             await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['maintainer-merge'] });
