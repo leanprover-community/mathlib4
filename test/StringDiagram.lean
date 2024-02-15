@@ -24,3 +24,17 @@ lemma yang_baxter {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶
     (α_ _ ..).hom ≫ V₁ ◁ R V₂ V₃ ≫ (α_ _ ..).inv ≫ R _ _ ▷ _ ≫ (α_ _ ..).hom ≫ _ ◁ R _ _ := by
   with_panel_widgets [SelectionPanel]
     exact w.elim
+
+example {X Y : C} (f : X ⟶ Y) (g : X ⊗ X ⊗ Y ⟶ Y ⊗ X ⊗ Y) (w : False) : f ▷ (X ⊗ Y) = g := by
+  with_panel_widgets [SelectionPanel]
+    -- the widget does't work
+    simp only [MonoidalCategory.whiskerRight_tensor]
+    -- now the widget works
+    exact w.elim
+
+example {X Y : C} (f : X ⟶ Y) (g : 𝟙_ C ⊗ X ⟶ 𝟙_ C ⊗ Y) (w : False) : 𝟙_ C ◁ f = g := by
+  with_panel_widgets [SelectionPanel]
+    -- the widget does't work
+    simp only [MonoidalCategory.id_whiskerLeft]
+    -- now the widget works
+    exact w.elim
