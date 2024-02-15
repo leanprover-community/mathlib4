@@ -2,7 +2,7 @@ import Lean
 import Mathlib.Tactic
 import Mathlib.UniversalAlgebra.Presentation
 
-open Lean Meta
+open Lean Meta Elab Command
 
 inductive LawvereExpr : Type where
   | proj (inputs : Array ℕ) (output : ℕ) : LawvereExpr
@@ -183,5 +183,18 @@ elab "lawvere_context%" i:ident : term => do
   let nm := i.getId
   runLawvereM nm do
     let ctx ← read
-    IO.println <| repr ctx
     return toExpr ctx
+
+def mkFiniteType (name : Name) (names : Array Name) : CommandElabM Unit := do
+  let idents := names.map mkIdent
+  let stx ← `(command|inductive $(mkIdent name) where $[| $idents:ident]* deriving Fintype)
+  elabCommand stx
+
+#eval mkFiniteType `aaa #[`a,`v]
+
+class AA (X : Type*) where
+  x : X
+  y : X
+  h : x = y
+
+#eval lawvere_context% AA
