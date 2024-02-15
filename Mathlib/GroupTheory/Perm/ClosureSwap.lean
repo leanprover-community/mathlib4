@@ -52,9 +52,11 @@ theorem SubmonoidClass.swap_mem_trans {a b c : α} {C} [SetLike C (Perm α)]
   rw [swap_comm, ← swap_mul_swap_mul_swap hab' hac]
   exact mul_mem (mul_mem hbc hab) hbc
 
-private theorem orbit_closure_aux (S : Set G) (T : Set α) {a : α} (hS : ∀ g ∈ S, g⁻¹ ∈ S)
-    (subset : T ⊆ orbit (closure S) a) (not_mem : a ∉ T) (nonempty : T.Nonempty) :
-    ∃ σ ∈ S, ∃ a ∈ T, σ • a ∉ T := by
+/-- Given a symmetric generating set of a permutation group, if T is a nonempty proper subset of 
+an orbit, then there exists a generator that sends some element of T into the complement of T. -/
+theorem exists_smul_not_mem_of_subset_orbit_closure (S : Set G) (T : Set α) {a : α}
+    (hS : ∀ g ∈ S, g⁻¹ ∈ S) (subset : T ⊆ orbit (closure S) a) (not_mem : a ∉ T)
+    (nonempty : T.Nonempty) : ∃ σ ∈ S, ∃ a ∈ T, σ • a ∉ T := by
   have key0 : ¬ closure S ≤ stabilizer G T
   · have ⟨b, hb⟩ := nonempty
     obtain ⟨σ, rfl⟩ := subset hb
