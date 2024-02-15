@@ -73,7 +73,7 @@ open scoped BigOperators RightActions
 
 namespace TrivSqZeroExt
 
-open MulOpposite (op)
+open MulOpposite
 
 section Basic
 
@@ -488,7 +488,7 @@ variable (R)
 theorem inr_mul_inr [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] (m₁ m₂ : M) :
     (inr m₁ * inr m₂ : tsze R M) = 0 :=
   ext (mul_zero _) <|
-    show (0 : R) • m₂ + (0 : Rᵐᵒᵖ) • m₁ = 0 by rw [zero_smul, zero_add, zero_smul]
+    show (0 : R) •> m₂ + m₁ <• (0 : R) = 0 by rw [zero_smul, zero_add, op_zero, zero_smul]
 #align triv_sq_zero_ext.inr_mul_inr TrivSqZeroExt.inr_mul_inr
 
 end
@@ -523,7 +523,7 @@ instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMul
         show (1 : R) •> x.2 + (0 : M) <• x.1 = x.2 by rw [one_smul, smul_zero, add_zero]
     mul_one := fun x =>
       ext (mul_one x.1) <|
-        show x.1 • (0 : M) + (1 : Rᵐᵒᵖ) • x.2 = x.2 by rw [smul_zero, zero_add, one_smul] }
+        show x.1 • (0 : M) + x.2 <• (1 : R) = x.2 by rw [smul_zero, zero_add, MulOpposite.op_one, one_smul] }
 
 instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) :=
   { TrivSqZeroExt.addMonoid, TrivSqZeroExt.one with
@@ -626,8 +626,7 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
     intro n
     induction' n with n ih
     · simp
-    · rw [pow_succ', MulOpposite.op_mul, mul_smul, mul_smul, ← h,
-        smul_comm (_ : R) (op x.fst) x.snd, ih]
+    · rw [pow_succ', op_mul, mul_smul, mul_smul, ← h, smul_comm (_ : R) (op x.fst) x.snd, ih]
   simp_rw [snd_pow_eq_sum, ← smul_comm (_ : R) (_ : Rᵐᵒᵖ), this, smul_smul, ← pow_add]
   match n with
   | 0 => rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
@@ -661,7 +660,7 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
         show
           (x.1 * y.1) •> z.2 + (x.1 •> y.2 + x.2 <• y.1) <• z.1 =
             x.1 •> (y.1 •> z.2 + y.2 <• z.1) + x.2 <• (y.1 * z.1)
-          by simp_rw [smul_add, ← mul_smul, add_assoc, smul_comm, MulOpposite.op_mul]
+          by simp_rw [smul_add, ← mul_smul, add_assoc, smul_comm, op_mul]
     npow := fun n x => x ^ n
     npow_zero := fun x => ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
     npow_succ := fun n x =>
@@ -762,7 +761,7 @@ instance algebra' : Algebra S (tsze R M) :=
         show algebraMap S R s •> x.snd + (0 : M) <• x.fst
             = x.fst •> (0 : M) + x.snd <• algebraMap S R s by
           rw [smul_zero, smul_zero, add_zero, zero_add]
-          rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, MulOpposite.op_one, smul_assoc,
+          rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, op_one, smul_assoc,
             one_smul, smul_assoc, one_smul]
     smul_def' := fun r x =>
       ext (Algebra.smul_def _ _) <|
