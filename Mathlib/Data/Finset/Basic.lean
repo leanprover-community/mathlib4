@@ -4014,8 +4014,8 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   -- Aesop expects to operate on goals, so we're going to make a new goal.
   let goal ← Lean.Meta.mkFreshExprMVar q(Finset.Nonempty $s)
   let mvar := goal.mvarId!
-  -- We want this to be fast, so use only the basic and `Finset.Nonempty` specific rules.
-  let rulesets ← Aesop.Frontend.getGlobalRuleSets #[`builtin, `Finset.Nonempty]
+  -- We want this to be fast, so use only the basic and `Finset.Nonempty`-specific rules.
+  let rulesets ← Aesop.Frontend.getGlobalRuleSets #[`builtin, `finsetNonempty]
   -- Fail if the new goal is not closed.
   let rules ← Aesop.mkLocalRuleSet rulesets { terminal := true, generateScript := false }
   let (remainingGoals, _) ← Aesop.search mvar (.some rules)

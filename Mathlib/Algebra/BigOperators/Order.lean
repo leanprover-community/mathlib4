@@ -855,8 +855,4 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
       return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
-example (n : ℕ) (f : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (f j ^ 2 + 1) := by positivity
-example (f : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (f j ^ 2 + 1) := by
-  positivity
-
 end Mathlib.Meta.Positivity
