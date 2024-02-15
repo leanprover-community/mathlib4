@@ -44,7 +44,7 @@ structure Config where
   /-- Stack of used theorem, used to prevent trivial loops. -/
   thmStack    : List Origin := []
   /-- Maximum number of steps `fun_prop` can take. -/
-  maxSteps := 100
+  maxSteps := 1000
 deriving Inhabited
 
 /-- -/
