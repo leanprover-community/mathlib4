@@ -171,6 +171,6 @@ theorem pairwiseDisjoint_unique {y : α}
   refine exists_unique_of_exists_of_unique ?ex ?unique
   · simpa only [mem_iUnion, exists_prop] using hy
   · rintro i j ⟨his, hi⟩ ⟨hjs, hj⟩
-    exact hsf.elim his hjs <| not_disjoint_iff.mpr ⟨y, ⟨hi, hj⟩⟩
+    exact h_disjoint.elim his hjs <| not_disjoint_iff.mpr ⟨y, ⟨hi, hj⟩⟩
 
 end
