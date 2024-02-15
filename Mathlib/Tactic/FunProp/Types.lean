@@ -43,7 +43,9 @@ structure Config where
   maxTransitionDepth := 20
   /-- Stack of used theorem, used to prevent trivial loops. -/
   thmStack    : List Origin := []
-deriving Inhabited 
+  /-- Maximum number of steps `fun_prop` can take. -/
+  maxSteps := 100
+deriving Inhabited
 
 /-- -/
 structure State where
@@ -52,11 +54,14 @@ structure State where
   cache        : Simp.Cache := {}
   /-- The number of used transition theorems. -/
   transitionDepth := 0
+  /-- Count the number of steps and stop when maxSteps is reached. -/
+  numSteps := 0
 
 /-- Log used theorem -/
 def Config.addThm (cfg : Config) (thmId : Origin) :
     Config :=
   {cfg with thmStack := thmId :: cfg.thmStack}
+
 
 /-- -/
 abbrev FunPropM := ReaderT FunProp.Config $ StateT FunProp.State MetaM
@@ -72,3 +77,11 @@ def getLastUsedTheoremName : FunPropM (Option Name) := do
   match (← read).thmStack.head? with
   | .some (.decl n) => return n
   | _ => return none
+
+
+/-- Increase heartbeat, throws error when maxHeartbeat was reached -/
+def increaseSteps : FunPropM Unit := do
+  let numSteps := (← get).numSteps
+  if numSteps > (← read).maxSteps then
+     throwError "fun_prop failed, maximum number of steps exceeded"
+  modify (fun s => {s with numSteps := s.numSteps + 1})

@@ -131,8 +131,12 @@ instance : Obj (α -o β) := ⟨⟩
 -- this is some form of cartesion closedness with homs `α ->> β`
 @[fun_prop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := silentSorry
 
+@[fun_prop] theorem conHom_lin_in_fn' (f : α → β ->> γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
+
 -- analogous theorem with `α -o β` does no hold
 @[fun_prop] theorem linHom_lin (f : α -o β) : Lin f := silentSorry
+@[fun_prop] theorem linHom_lin_in_fn' (f : α → β -o γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
+
 
 set_option pp.coercions false in
 set_option pp.notation false in
@@ -270,5 +274,21 @@ example (f : α → α → α) (hf : Con (fun (x,y) => f x y)) : Con (fun x : α
 example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (hg : Lin g)  : Lin (fun x => f x (g x)) := by fun_prop
 
 
--- is working up to here
+example : Con fun (a : α ->> α) => a x := by fun_prop
 
+-- this used to crash
+example (f : α → (α ->> α)) (hf : Con f) : Con fun x => ((f x) : α → α) := by fun_prop
+example : Con (fun f : (α ->> α ->> α) => (f x : α → α)) := by fun_prop
+
+
+example : Lin (fun f : (α ->> α ->> α) => (f x : α → α)) := by fun_prop
+example (y): Lin (fun f : (α ->> α ->> α) => f x y) := by fun_prop
+example : Lin (fun f : (α -o α ->> α) => (f x : α → α)) := by fun_prop
+example (y): Lin (fun f : (α ->> α -o α) => f x y) := by fun_prop
+
+
+example (f : α -o α ->> α) (y) : Lin (fun x  => f x y) := by fun_prop
+example (f : α ->> α -o α ->> α) (y) : Lin (fun x  => f y x y) := by fun_prop
+
+example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
+example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop

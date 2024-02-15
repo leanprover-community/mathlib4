@@ -142,8 +142,6 @@ def tryTheoremWithHint (e : Expr) (thmName : Name) (hint : Array (Nat × Expr)) 
   return (← r.addExtraArgs extraArgs)
 
 
-#check Lean.indentExpr
-
 def applyIdRule (funTransDecl : FunTransDecl) (e X : Expr) : SimpM Simp.Step := do
   trace[Meta.Tactic.fun_trans.step] "id case"
 
@@ -205,8 +203,23 @@ def applyApplyRule (funTransDecl : FunTransDecl) (e x Y : Expr) : SimpM Simp.Ste
     | trace[Meta.Tactic.fun_trans] "missing proj rule to prove `{← ppExpr e}`"
       return .continue
 
+  -- todo: use projDep rules if no proj rules were provided
+
   for thm in thms do
     let .proj id_x id_Y := thm.thmArgs | continue
+
+    if let .some r ← tryTheoremWithHint e thm.thmName #[(id_x,x),(id_Y,Y)] then
+      return .visit r
+
+  return .continue
+
+def applyApplyDepRule (funTransDecl : FunTransDecl) (e x Y : Expr) : SimpM Simp.Step := do
+  let .some thms ← getLambdaTheorems funTransDecl.funTransName .projDep e.getAppNumArgs
+    | trace[Meta.Tactic.fun_trans] "missing projDep rule to prove `{← ppExpr e}`"
+      return .continue
+
+  for thm in thms do
+    let .projDep id_x id_Y := thm.thmArgs | continue
 
     if let .some r ← tryTheoremWithHint e thm.thmName #[(id_x,x),(id_Y,Y)] then
       return .visit r
@@ -227,6 +240,39 @@ def applyPiRule (funTransDecl : FunTransDecl) (e f : Expr) : SimpM Simp.Step := 
   return .continue
 
 
+def applyMorphismTheorems (e : Expr) : SimpM (Option Simp.Result) := do
+
+  let ext := (morTheoremsExt.getState (← getEnv))
+
+  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
+  let candidates := candidates.map (·.1) |>.flatten
+
+  trace[Meta.Tactic.fun_trans]
+    "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+
+  for c in candidates do
+    if let .some r ← tryTheoremWithHint e c.thmName #[] then
+      return .some r
+
+  return none
+
+def applyFVarTheorems (e : Expr) : SimpM (Option Simp.Result) := do
+
+  let ext := (fvarTheoremsExt.getState (← getEnv))
+
+  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
+  let candidates := candidates.map (·.1) |>.flatten
+
+  trace[Meta.Tactic.fun_trans]
+    "candidate fvar theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+
+  for c in candidates do
+    if let .some r ← tryTheoremWithHint e c.thmName #[] then
+      return .some r
+
+  return none
+
+
 def letCase (funTransDecl : FunTransDecl) (e f : Expr) : SimpM Simp.Step := do
   trace[Meta.Tactic.fun_trans.step] "let case"
 
@@ -237,21 +283,46 @@ def letCase (funTransDecl : FunTransDecl) (e f : Expr) : SimpM Simp.Step := do
 
   applyLetRule funTransDecl e f g
 
+
 def bvarAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.FunctionData) : SimpM Simp.Step := do
   trace[Meta.Tactic.fun_trans.step] "bvar app case"
   if let .some (f,g) ← fData.nontrivialDecomposition then
     return ← applyCompRule funTransDecl e f g
   else
-    return .continue
-    -- if fData.args.size = 1 then
-    --   let x := fData.args.size
-    --   return ← applyApplyRule funTransDecl e fDat
+    if fData.args.size = 1 then
+      let x := fData.args[0]!
+      if x.coe.isSome then
+        trace[Meta.Tactic.fun_trans.step] "morphism apply case"
+        if let .some r ← applyMorphismTheorems e then
+          return .visit r
+        return .continue
+      else
+        let x := x.expr
+        let .forallE xName X Y bi ← withLCtx fData.lctx fData.insts do inferType fData.fn
+          | return .continue
+
+        if Y.hasLooseBVars then
+          let Y := Expr.lam xName X Y bi
+          return ← applyApplyDepRule funTransDecl e x Y
+        else
+          return ← applyApplyRule funTransDecl e x Y
+    else
+      -- can we get here?
+      throwError "fun_trans bug: bvar app unhandled case"
+
 
 def fvarAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.FunctionData) : SimpM Simp.Step := do
   trace[Meta.Tactic.fun_trans.step] "fvar app case"
   if let .some (f,g) ← fData.nontrivialDecomposition then
     return ← applyCompRule funTransDecl e f g
-  return .continue
+  else
+    if let .some r ← applyMorphismTheorems e then
+      return .visit r
+
+    if let .some r ← applyFVarTheorems e then
+      return .visit r
+
+    return .continue
 
 def constAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.FunctionData) : SimpM Simp.Step := do
   trace[Meta.Tactic.fun_trans.step] "const app case on {← ppExpr e}"
@@ -285,7 +356,6 @@ partial def funTransImpl (e : Expr) : SimpM Simp.Step := do
   let .some (funTransDecl, f) ← getFunTrans? e | return .continue
 
   trace[Meta.Tactic.fun_trans.step] s!"runing fun_trans on {← ppExpr e}"
-
 
   let f ← FunProp.funPropNormalizeFun f
   -- somehow normalize f

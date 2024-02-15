@@ -189,7 +189,7 @@ structure GeneralTheorems where
 abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
 
 /-- -/
-initialize transitionTheoremsExt : GeneralTheoremsExt ←
+initialize morTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
@@ -197,8 +197,9 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
       {d with theorems := e.keys.foldl (FunProp.RefinedDiscrTree.insertDTExpr · · e) d.theorems}
   }
 
+
 /-- -/
-initialize morTheoremsExt : GeneralTheoremsExt ←
+initialize fvarTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
@@ -245,7 +246,8 @@ Examples:
 inductive Theorem where
   | lam        (thm : LambdaTheorem)
   | function   (thm : FunctionTheorem)
-  | general    (thm : GeneralTheorem)
+  | mor        (thm : GeneralTheorem)
+  | fvar       (thm : GeneralTheorem)
 
 
 /-- -/
@@ -292,7 +294,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
-      let keys := ← FunProp.RefinedDiscrTree.mkDTExprs b'
+      let keys := ← FunProp.RefinedDiscrTree.mkDTExprs (b'.getArg! 1)
       let thm : GeneralTheorem := {
         funTransName := funTransName
         thmName := declName
@@ -300,7 +302,15 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         priority  := prio
       }
 
-      return .general thm
+      let n := fData.args.size
+      if n = 1 &&
+         fData.args[0]!.coe.isNone &&
+         fData.args[0]!.expr == fData.mainVar then
+        return .fvar thm
+      else if (n > 0) && fData.args[n-1]!.coe.isSome then
+        return .mor thm
+      else
+        throwError "unrecognized theoremType `{← ppExpr b}`"
     | _ =>
       throwError "unrecognized theoremType `{← ppExpr b}`"
 
@@ -325,8 +335,15 @@ main arguments: {thm.mainArgs}
 applied arguments: {thm.appliedArgs}
 form: {repr thm.form}"
     functionTheoremsExt.add thm attrKind
-  | .general thm =>
+  | .mor thm =>
     trace[Meta.Tactic.fun_trans.attr] "\
-general theorem: {thm.thmName}
-function transformation: {thm.funTransName}"
+morphism theorem: {thm.thmName}
+function transformation: {thm.funTransName}
+discr tree key: {thm.keys}"
     morTheoremsExt.add thm attrKind
+  | .fvar thm =>
+    trace[Meta.Tactic.fun_trans.attr] "\
+fvar theorem: {thm.thmName}
+function transformation: {thm.funTransName}
+discr tree key: {thm.keys}"
+    fvarTheoremsExt.add thm attrKind

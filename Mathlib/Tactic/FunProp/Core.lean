@@ -554,20 +554,6 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
   -- return none
 
 
-/-- Prove function property of `fun f => f x₁ ... xₙ`. -/
-def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (f : FunctionData)
-    (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
-
-  match f.args.size with
-  | 0 => throwError "funProp bug: invalid use of `bvarAppCase`"
-  | 1 =>
-    if f.args[0]!.coe.isNone then
-      applyProjRule funPropDecl e f.args[0]!.expr (← f.domainType) funProp
-    else
-      throwError "funProp unhandled case: {← ppExpr e}"
-  | _ => removeArgRule funPropDecl e (← f.toExpr) funProp
-
-
 /-- Prove function property of using "morphism theorems" e.g. bundled linear map is linear map.  -/
 def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
@@ -622,6 +608,21 @@ def applyTransitionRules (funPropDecl : FunPropDecl) (e : Expr)
 
   trace[Meta.Tactic.fun_prop.step] "no theorem matched"
   return none
+
+
+/-- Prove function property of `fun f => f x₁ ... xₙ`. -/
+def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (f : FunctionData)
+    (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
+
+  unless f.args.size ≠ 0 do throwError "funProp bug: invalid use of `bvarAppCase` on {← ppExpr e}"
+  let n := f.args.size
+  if f.args[n-1]!.coe.isSome then
+    applyMorRules funPropDecl e f funProp
+  else
+    if n = 1 then
+      applyProjRule funPropDecl e f.args[0]!.expr (← f.domainType) funProp
+    else
+      removeArgRule funPropDecl e (← f.toExpr) funProp
 
 
 
@@ -745,6 +746,8 @@ mutual
 
     let .some (funPropDecl, f) ← getFunProp? e
       | return none
+
+    increaseSteps
 
     withTraceNode `Meta.Tactic.fun_prop
       (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do

@@ -130,6 +130,34 @@ def FunctionData.getCoeAppNumArgs? (f : FunctionData) : Option Nat :=
 
     return none
 
+
+/-- Decomposes `fun x => f y₁ ... yₙ` into `(fun g => g yₙ) ∘ (fun x y => f y₁ ... yₙ₋₁ y)`
+
+Returns none if:
+  - `n=0`
+  - `yₙ` contains `x`
+  - `n=1` and `(fun x y => f y)` is identity function i.e. `x=f` -/
+def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
+  unless fData.args.size > 0 do return none
+  withLCtx fData.lctx fData.insts do
+    let n := fData.args.size
+    let x := fData.mainVar
+    let yₙ := fData.args[n-1]!
+
+    if yₙ.expr.containsFVar x.fvarId! then
+      return none
+
+    if fData.args.size = 1 &&
+       fData.mainVar == fData.fn then
+      return none
+
+    let gBody' := Mor.mkAppN fData.fn fData.args[:n-1]
+    let gBody' := if let .some coe := yₙ.coe then coe.app gBody' else gBody'
+    let g' ← mkLambdaFVars #[x] gBody'
+    let f' := Expr.lam `f (← inferType gBody') (.app (.bvar 0) (yₙ.expr)) default
+    return (f',g')
+
+
 /-- Decompose function `f = (← fData.toExpr)` into composition of two functions.
 
 Returns none if the decomposition would produce identity function. -/
@@ -145,10 +173,8 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
     let fn := fData.fn
     let mut args := fData.args
 
-    -- todo: support case when `fn` contains `x`
-    --       but can we have non trivial decomposition when `fn` contains `x`?
     if fn.containsFVar xId then
-      return none
+      return ← fData.peeloffArgDecomposition
 
     let mut yVals : Array Expr := #[]
     let mut yVars : Array Expr := #[]

@@ -155,8 +155,12 @@ instance : Obj (α -o β) := ⟨⟩
 -- this is some form of cartesion closedness with homs `α ->> β`
 @[fun_prop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := silentSorry
 
+@[fun_prop] theorem conHom_lin_in_fn' (f : α → β ->> γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
+
 -- analogous theorem with `α -o β` does no hold
 @[fun_prop] theorem linHom_lin (f : α -o β) : Lin f := silentSorry
+@[fun_prop] theorem linHom_lin_in_fn' (f : α → β -o γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
+
 
 set_option pp.coercions false in
 set_option pp.notation false in
@@ -220,6 +224,27 @@ theorem prod_mk_deriv_at (fst : α → β) (snd : α → γ) (x) (hfst : ConAt f
 @[fun_trans] theorem add_deriv' (x y : α → β) (hx : Con x) (hy : Con y) :
     deriv (fun w => x w + y w) = fun w dw => deriv x w dw + deriv y w dw := by fun_trans
 
+set_option trace.Meta.Tactic.fun_trans.attr true
+
+
+-- TODO: this should be fvar theorem
+@[fun_trans] theorem linMap_deriv
+    (f : α → β) (hf : Lin f):
+    deriv (fun x => f x) = fun x dx => f dx := silentSorry
+
+-- @[fun_trans] theorem linHom_deriv_arg
+--     (f : α -o β) :
+--     deriv (fun x => f x) = fun x dx => f dx := silentSorry
+
+
+@[fun_trans] theorem conHom_deriv_fun
+    (f : α → β ->> γ) (y : β) (hf : Con f) :
+    deriv (fun x => (f x) y) = fun x dx => deriv f x dx y := silentSorry
+
+
+@[fun_trans] theorem conHom_deriv
+    (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) :
+    deriv (fun x => (f x) (g x)) = fun x dx => deriv (fun (x,y) => f x y) (x, g x) (dx, deriv g x dx) := silentSorry
 
 
 example : deriv (fun x : α => x / (x + x))
@@ -227,13 +252,25 @@ example : deriv (fun x : α => x / (x + x))
           (fun x dx => (dx * (x + x) - (dx + dx) * x) / ((x + x) * (x + x))) := by fun_trans (disch:=apply silentSorry)
 
 
-set_option trace.Meta.Tactic.fun_trans true in
-set_option trace.Meta.Tactic.fun_trans.step true in
-set_option trace.Meta.Tactic.fun_trans.discharge true in
+example (x) : deriv (fun f : (α → α) => f x) = fun f df => df x := by fun_trans
 example (x y) : deriv (fun f : (α → α → α) => f x y) = fun f df => df x y := by fun_trans
+example : deriv (fun (f : (α → α → α)) x y => f y x) = fun f df x y => df y x := by fun_trans
 
 
-set_option trace.Meta.Tactic.fun_trans true in
-set_option trace.Meta.Tactic.fun_trans.step true in
-set_option trace.Meta.Tactic.fun_trans.discharge true in
-example : deriv (fun (f : (α → α → α)) x y => f y x) = fun f df x y => df y x := by fun_trans; rfl
+-- set_option trace.Meta.Tactic.fun_trans true
+-- set_option trace.Meta.Tactic.fun_trans.step true
+
+example : deriv (fun f : (α ->> α) => f x) = fun f df => df x := by fun_trans
+example (f : α -o (α → α)) (y) : deriv (fun x : α => f x y) = fun x dx => f dx y := by fun_trans
+example (f : α -o α) : deriv (fun x : α => f x) = fun x dx => f dx := by fun_trans
+
+
+-- set_option pp.funBinderTypes true in
+-- example (x)  : deriv (fun (f : α ->> α) => f (f x)) = sorry := by fun_trans
+-- example (x)  : deriv (fun (f : α -o α) => f (f x)) = sorry := by fun_trans
+
+
+-- crashes
+example : Con (fun f : (α ->> α ->> α) => (f x : α → α)) := by fun_prop
+
+-- example : deriv (fun f : (α ->> α ->> α) => (f x : α → α)) = fun f df y => df x y := by fun_trans
