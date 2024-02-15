@@ -80,7 +80,7 @@ section WithDivisionRing
 /-!
 ### Translations Between Computational Functions
 
-Here we  give some basic translations that hold by definition for the computational methods of a
+Here we give some basic translations that hold by definition for the computational methods of a
 continued fraction.
 -/
 

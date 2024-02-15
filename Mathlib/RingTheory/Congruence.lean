@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.Algebra.Hom.Ring.Defs
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.GroupTheory.Congruence
 
@@ -27,10 +27,7 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 ## TODO
 
 * Use this for `RingQuot` too.
-* Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`, such as:
-  * The `CompleteLattice` structure.
-  * The `conGen_eq` lemma, stating that
-    `ringConGen r = sInf {s : RingCon M | ∀ x y, r x y → s x y}`.
+* Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
 -/
 
 
@@ -77,7 +74,7 @@ variable [Add R] [Mul R] (c : RingCon R)
 
 --Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-instance : FunLike (RingCon R) R fun _ => R → Prop :=
+instance : FunLike (RingCon R) R (R → Prop) :=
   { coe := fun c => c.r,
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩
@@ -118,8 +115,15 @@ instance : Inhabited (RingCon R) :=
   ⟨ringConGen EmptyRelation⟩
 
 @[simp]
-theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ @Setoid.r _ s.toSetoid a b :=
+theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ s a b :=
   Iff.rfl
+
+/-- The map sending a congruence relation to its underlying binary relation is injective. -/
+theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injective H
+
+/-- Extensionality rule for congruence relations. -/
+theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
+  ext' <| by ext; apply H
 
 end Basic
 
@@ -234,7 +238,7 @@ theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Q
 
 end SMul
 
-section NegSubZsmul
+section NegSubZSMul
 
 variable [AddGroup R] [Mul R] (c : RingCon R)
 
@@ -252,29 +256,29 @@ theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
   rfl
 #align ring_con.coe_sub RingCon.coe_sub
 
-instance hasZsmul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
-#align ring_con.has_zsmul RingCon.hasZsmul
+instance hasZSMul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
+#align ring_con.has_zsmul RingCon.hasZSMul
 
 @[simp, norm_cast]
 theorem coe_zsmul (z : ℤ) (x : R) : (↑(z • x) : c.Quotient) = z • (x : c.Quotient) :=
   rfl
 #align ring_con.coe_zsmul RingCon.coe_zsmul
 
-end NegSubZsmul
+end NegSubZSMul
 
-section Nsmul
+section NSMul
 
 variable [AddMonoid R] [Mul R] (c : RingCon R)
 
-instance hasNsmul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
-#align ring_con.has_nsmul RingCon.hasNsmul
+instance hasNSMul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
+#align ring_con.has_nsmul RingCon.hasNSMul
 
 @[simp, norm_cast]
 theorem coe_nsmul (n : ℕ) (x : R) : (↑(n • x) : c.Quotient) = n • (x : c.Quotient) :=
   rfl
 #align ring_con.coe_nsmul RingCon.coe_nsmul
 
-end Nsmul
+end NSMul
 
 section Pow
 
@@ -414,5 +418,169 @@ def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient
 #align ring_con.mk' RingCon.mk'
 
 end Quotient
+
+/-! ### Lattice structure
+
+The API in this section is copied from `Mathlib/GroupTheory/Congruence.lean`
+-/
+
+
+section Lattice
+
+variable [Add R] [Mul R]
+
+/-- For congruence relations `c, d` on a type `M` with multiplication and addition, `c ≤ d` iff
+`∀ x y ∈ M`, `x` is related to `y` by `d` if `x` is related to `y` by `c`. -/
+instance : LE (RingCon R) where
+  le c d := ∀ ⦃x y⦄, c x y → d x y
+
+/-- Definition of `≤` for congruence relations. -/
+theorem le_def {c d : RingCon R} : c ≤ d ↔ ∀ {x y}, c x y → d x y :=
+  Iff.rfl
+
+/-- The infimum of a set of congruence relations on a given type with multiplication and
+addition. -/
+instance : InfSet (RingCon R) where
+  sInf S :=
+    { r := fun x y => ∀ c : RingCon R, c ∈ S → c x y
+      iseqv :=
+        ⟨fun x c _hc => c.refl x, fun h c hc => c.symm <| h c hc, fun h1 h2 c hc =>
+          c.trans (h1 c hc) <| h2 c hc⟩
+      add' := fun h1 h2 c hc => c.add (h1 c hc) <| h2 c hc
+      mul' := fun h1 h2 c hc => c.mul (h1 c hc) <| h2 c hc }
+
+/-- The infimum of a set of congruence relations is the same as the infimum of the set's image
+    under the map to the underlying equivalence relation. -/
+theorem sInf_toSetoid (S : Set (RingCon R)) : (sInf S).toSetoid = sInf ((·.toSetoid) '' S) :=
+  Setoid.ext' fun x y =>
+    ⟨fun h r ⟨c, hS, hr⟩ => by rw [← hr]; exact h c hS, fun h c hS => h c.toSetoid ⟨c, hS, rfl⟩⟩
+
+/-- The infimum of a set of congruence relations is the same as the infimum of the set's image
+    under the map to the underlying binary relation. -/
+@[simp, norm_cast]
+theorem coe_sInf (S : Set (RingCon R)) : ⇑(sInf S) = sInf ((⇑) '' S) := by
+  ext; simp only [sInf_image, iInf_apply, iInf_Prop_eq]; rfl
+
+@[simp, norm_cast]
+theorem coe_iInf {ι : Sort*} (f : ι → RingCon R) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
+  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp]
+
+instance : PartialOrder (RingCon R) where
+  le_refl _c _ _ := id
+  le_trans _c1 _c2 _c3 h1 h2 _x _y h := h2 <| h1 h
+  le_antisymm _c _d hc hd := ext fun _x _y => ⟨fun h => hc h, fun h => hd h⟩
+
+/-- The complete lattice of congruence relations on a given type with multiplication and
+addition. -/
+instance : CompleteLattice (RingCon R) where
+  __ := completeLatticeOfInf (RingCon R) fun s =>
+    ⟨fun r hr x y h => (h : ∀ r ∈ s, (r : RingCon R) x y) r hr,
+      fun _r hr _x _y h _r' hr' => hr hr' h⟩
+  inf c d :=
+    { toSetoid := c.toSetoid ⊓ d.toSetoid
+      mul' := fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩
+      add' := fun h1 h2 => ⟨c.add h1.1 h2.1, d.add h1.2 h2.2⟩ }
+  inf_le_left _ _ := fun _ _ h => h.1
+  inf_le_right _ _ := fun _ _ h => h.2
+  le_inf _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
+  top :=
+    { (⊤ : Setoid R) with
+      mul' := fun _ _ => trivial
+      add' := fun _ _ => trivial }
+  le_top _ := fun _ _ _h => trivial
+  bot :=
+    { (⊥ : Setoid R) with
+      mul' := congr_arg₂ _
+      add' := congr_arg₂ _ }
+  bot_le c := fun x _y h => h ▸ c.refl x
+
+@[simp, norm_cast]
+theorem coe_top : ⇑(⊤ : RingCon R) = ⊤ := rfl
+
+/-- The infimum of two congruence relations equals the infimum of the underlying binary
+operations. -/
+@[simp, norm_cast]
+theorem coe_inf {c d : RingCon R} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d := rfl
+
+/-- Definition of the infimum of two congruence relations. -/
+theorem inf_iff_and {c d : RingCon R} {x y} : (c ⊓ d) x y ↔ c x y ∧ d x y :=
+  Iff.rfl
+
+/-- The inductively defined smallest congruence relation containing a binary relation `r` equals
+    the infimum of the set of congruence relations containing `r`. -/
+theorem ringConGen_eq (r : R → R → Prop) :
+    ringConGen r = sInf {s : RingCon R | ∀ x y, r x y → s x y} :=
+  le_antisymm
+    (fun _x _y H =>
+      RingConGen.Rel.recOn H (fun _ _ h _ hs => hs _ _ h) (RingCon.refl _)
+        (fun _ => RingCon.symm _) (fun _ _ => RingCon.trans _)
+        (fun _ _ h1 h2 c hc => c.add (h1 c hc) <| h2 c hc)
+        (fun _ _ h1 h2 c hc => c.mul (h1 c hc) <| h2 c hc))
+    (sInf_le fun _ _ => RingConGen.Rel.of _ _)
+
+/-- The smallest congruence relation containing a binary relation `r` is contained in any
+    congruence relation containing `r`. -/
+theorem ringConGen_le {r : R → R → Prop} {c : RingCon R}
+    (h : ∀ x y, r x y → c x y) : ringConGen r ≤ c := by
+  rw [ringConGen_eq]; exact sInf_le h
+
+/-- Given binary relations `r, s` with `r` contained in `s`, the smallest congruence relation
+    containing `s` contains the smallest congruence relation containing `r`. -/
+theorem ringConGen_mono {r s : R → R → Prop} (h : ∀ x y, r x y → s x y) :
+    ringConGen r ≤ ringConGen s :=
+  ringConGen_le fun x y hr => RingConGen.Rel.of _ _ <| h x y hr
+
+/-- Congruence relations equal the smallest congruence relation in which they are contained. -/
+theorem ringConGen_of_ringCon (c : RingCon R) : ringConGen c = c :=
+  le_antisymm (by rw [ringConGen_eq]; exact sInf_le fun _ _ => id) RingConGen.Rel.of
+
+/-- The map sending a binary relation to the smallest congruence relation in which it is
+    contained is idempotent. -/
+theorem ringConGen_idem (r : R → R → Prop) : ringConGen (ringConGen r) = ringConGen r :=
+  ringConGen_of_ringCon _
+
+/-- The supremum of congruence relations `c, d` equals the smallest congruence relation containing
+    the binary relation '`x` is related to `y` by `c` or `d`'. -/
+theorem sup_eq_ringConGen (c d : RingCon R) : c ⊔ d = ringConGen fun x y => c x y ∨ d x y := by
+  rw [ringConGen_eq]
+  apply congr_arg sInf
+  simp only [le_def, or_imp, ← forall_and]
+
+/-- The supremum of two congruence relations equals the smallest congruence relation containing
+    the supremum of the underlying binary operations. -/
+theorem sup_def {c d : RingCon R} : c ⊔ d = ringConGen (⇑c ⊔ ⇑d) := by
+  rw [sup_eq_ringConGen]; rfl
+
+/-- The supremum of a set of congruence relations `S` equals the smallest congruence relation
+    containing the binary relation 'there exists `c ∈ S` such that `x` is related to `y` by
+    `c`'. -/
+theorem sSup_eq_ringConGen (S : Set (RingCon R)) :
+    sSup S = ringConGen fun x y => ∃ c : RingCon R, c ∈ S ∧ c x y := by
+  rw [ringConGen_eq]
+  apply congr_arg sInf
+  ext
+  exact ⟨fun h _ _ ⟨r, hr⟩ => h hr.1 hr.2, fun h r hS _ _ hr => h _ _ ⟨r, hS, hr⟩⟩
+
+/-- The supremum of a set of congruence relations is the same as the smallest congruence relation
+    containing the supremum of the set's image under the map to the underlying binary relation. -/
+theorem sSup_def {S : Set (RingCon R)} :
+    sSup S = ringConGen (sSup (@Set.image (RingCon R) (R → R → Prop) (⇑) S)) := by
+  rw [sSup_eq_ringConGen, sSup_image]
+  congr with (x y)
+  simp only [sSup_image, iSup_apply, iSup_Prop_eq, exists_prop, rel_eq_coe]
+
+variable (R)
+
+/-- There is a Galois insertion of congruence relations on a type with multiplication and addition
+`R` into binary relations on `R`. -/
+protected def gi : @GaloisInsertion (R → R → Prop) (RingCon R) _ _ ringConGen (⇑) where
+  choice r _h := ringConGen r
+  gc _r c :=
+    ⟨fun H _ _ h => H <| RingConGen.Rel.of _ _ h, fun H =>
+      ringConGen_of_ringCon c ▸ ringConGen_mono H⟩
+  le_l_u x := (ringConGen_of_ringCon x).symm ▸ le_refl x
+  choice_eq _ _ := rfl
+
+end Lattice
 
 end RingCon

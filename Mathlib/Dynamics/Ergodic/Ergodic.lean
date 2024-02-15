@@ -101,9 +101,9 @@ theorem preErgodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ 
   refine' ⟨fun hf => preErgodic_of_preErgodic_conjugate (h.symm e) hf _,
       fun hf => preErgodic_of_preErgodic_conjugate h hf _⟩
   · change (e.symm ∘ e) ∘ f ∘ e.symm = f ∘ e.symm
-    rw [MeasurableEquiv.symm_comp_self, comp.left_id]
+    rw [MeasurableEquiv.symm_comp_self, id_comp]
   · change e ∘ f = e ∘ f ∘ e.symm ∘ e
-    rw [MeasurableEquiv.symm_comp_self, comp.right_id]
+    rw [MeasurableEquiv.symm_comp_self, comp_id]
 #align measure_theory.measure_preserving.pre_ergodic_conjugate_iff MeasureTheory.MeasurePreserving.preErgodic_conjugate_iff
 
 theorem ergodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ μ') :

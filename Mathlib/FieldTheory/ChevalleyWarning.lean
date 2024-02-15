@@ -64,7 +64,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
   obtain ⟨i, hi⟩ : ∃ i, d i < q - 1; exact f.exists_degree_lt (q - 1) h hd
   calc
     (∑ x : σ → K, f.coeff d * ∏ i, x i ^ d i) = f.coeff d * ∑ x : σ → K, ∏ i, x i ^ d i :=
-      mul_sum.symm
+      (mul_sum ..).symm
     _ = 0 := (mul_eq_zero.mpr ∘ Or.inr) ?_
   calc
     (∑ x : σ → K, ∏ i, x i ^ d i) =
@@ -130,7 +130,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     · apply Finset.prod_eq_one
       intro i hi
       rw [hS] at hx
-      rw [hx i hi, zero_pow hq, sub_zero]
+      rw [hx i hi, zero_pow hq.ne', sub_zero]
     · obtain ⟨i, hi, hx⟩ : ∃ i : ι, i ∈ s ∧ eval x (f i) ≠ 0 := by
         simpa only [hS, not_forall, not_imp] using hx
       apply Finset.prod_eq_zero hi
@@ -151,7 +151,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     F.totalDegree ≤ ∑ i in s, (1 - f i ^ (q - 1)).totalDegree := totalDegree_finset_prod s _
     _ ≤ ∑ i in s, (q - 1) * (f i).totalDegree := (sum_le_sum fun i _ => ?_)
     -- see ↓
-    _ = (q - 1) * ∑ i in s, (f i).totalDegree := mul_sum.symm
+    _ = (q - 1) * ∑ i in s, (f i).totalDegree := (mul_sum ..).symm
     _ < (q - 1) * Fintype.card σ := by rwa [mul_lt_mul_left hq]
   -- Now we prove the remaining step from the preceding calculation
   show (1 - f i ^ (q - 1)).totalDegree ≤ (q - 1) * (f i).totalDegree

@@ -3,8 +3,12 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
+import Mathlib.Algebra.Parity
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linarith
 
 #align_import imo.imo2008_q2 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 

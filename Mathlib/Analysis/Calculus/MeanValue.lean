@@ -103,7 +103,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
   have A : ContinuousOn (fun x => (f x, B x)) (Icc a b) := hf.prod hB
   have : IsClosed s := by
     simp only [inter_comm]
-    exact A.preimage_closed_of_closed isClosed_Icc OrderClosedTopology.isClosed_le'
+    exact A.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
   apply this.Icc_subset_of_forall_exists_gt ha
   rintro x ⟨hxB : f x ≤ B x, xab⟩ y hy
   cases' hxB.lt_or_eq with hxB hxB
@@ -469,7 +469,7 @@ theorem norm_image_sub_le_of_norm_hasFDerivWithin_le
     simpa using ((hf (g t) (segm ht)).restrictScalars ℝ).comp_hasDerivWithinAt _
       AffineMap.hasDerivWithinAt_lineMap segm
   have bound : ∀ t ∈ Ico (0 : ℝ) 1, ‖f' (g t) (y - x)‖ ≤ C * ‖y - x‖ := fun t ht =>
-    le_of_op_norm_le _ (bound _ <| segm <| Ico_subset_Icc_self ht) _
+    le_of_opNorm_le _ (bound _ <| segm <| Ico_subset_Icc_self ht) _
   simpa using norm_image_sub_le_of_norm_deriv_le_segment_01' hD bound
 #align convex.norm_image_sub_le_of_norm_has_fderiv_within_le Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
 
@@ -1118,7 +1118,7 @@ Note that we don't require differentiability, since it is guaranteed at all but 
 one point by the strict monotonicity of `f'`. -/
 theorem StrictMonoOn.strictConvexOn_of_deriv {D : Set ℝ} (hD : Convex ℝ D) {f : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : StrictMonoOn (deriv f) (interior D)) : StrictConvexOn ℝ D f :=
-  strictConvexOn_of_slope_strict_mono_adjacent hD <| fun {x y z} hx hz hxy hyz => by
+  strictConvexOn_of_slope_strict_mono_adjacent hD fun {x y z} hx hz hxy hyz => by
     -- First we prove some trivial inclusions
     have hxzD : Icc x z ⊆ D := hD.ordConnected.out hx hz
     have hxyD : Icc x y ⊆ D := (Icc_subset_Icc_right hyz.le).trans hxzD

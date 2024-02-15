@@ -126,7 +126,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     · exact hgr (by simpa [norm_smul, mem_sphere_zero_iff_norm.mp hz] using ht)
     · exact analyticAt_const.add
         ((ContinuousLinearMap.smulRight (ContinuousLinearMap.id ℂ ℂ) z).analyticAt t)
-  by_cases ∀ z ∈ sphere (0 : E) 1, ∀ᶠ t in 𝓝 0, gray z t = gray z 0
+  by_cases h : ∀ z ∈ sphere (0 : E) 1, ∀ᶠ t in 𝓝 0, gray z t = gray z 0
   · left
     -- If g is eventually constant along every direction, then it is eventually constant
     refine eventually_of_mem (ball_mem_nhds z₀ hr) fun z hz => ?_
@@ -161,8 +161,8 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
 is analytic on a connected set `U`, then either it is constant on `U`, or it is open on `U` (in the
 sense that it maps any open set contained in `U` to an open set in `ℂ`). -/
 theorem AnalyticOn.is_constant_or_isOpen (hg : AnalyticOn ℂ g U) (hU : IsPreconnected U) :
-    (∃ w, ∀ z ∈ U, g z = w) ∨ ∀ (s) (_ : s ⊆ U), IsOpen s → IsOpen (g '' s) := by
-  by_cases ∃ z₀ ∈ U, ∀ᶠ z in 𝓝 z₀, g z = g z₀
+    (∃ w, ∀ z ∈ U, g z = w) ∨ ∀ s ⊆ U, IsOpen s → IsOpen (g '' s) := by
+  by_cases h : ∃ z₀ ∈ U, ∀ᶠ z in 𝓝 z₀, g z = g z₀
   · obtain ⟨z₀, hz₀, h⟩ := h
     exact Or.inl ⟨g z₀, hg.eqOn_of_preconnected_of_eventuallyEq analyticOn_const hU hz₀ h⟩
   · push_neg at h

@@ -416,13 +416,13 @@ theorem dist_eq_hammingDist (x y : Hamming β) :
 instance : PseudoMetricSpace (Hamming β) where
   dist_self := by
     push_cast
-    exact_mod_cast hammingDist_self
+    exact mod_cast hammingDist_self
   dist_comm := by
     push_cast
-    exact_mod_cast hammingDist_comm
+    exact mod_cast hammingDist_comm
   dist_triangle := by
     push_cast
-    exact_mod_cast hammingDist_triangle
+    exact mod_cast hammingDist_triangle
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   toUniformSpace := ⊥
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
@@ -436,13 +436,13 @@ instance : PseudoMetricSpace (Hamming β) where
       rw [mem_idRel] at hab
       rw [hab]
       refine' hs (lt_of_eq_of_lt _ hε)
-      exact_mod_cast hammingDist_self _
+      exact mod_cast hammingDist_self _
   toBornology := ⟨⊥, bot_le⟩
   cobounded_sets := by
     ext
     push_cast
     refine' iff_of_true (Filter.mem_sets.mpr Filter.mem_bot) ⟨Fintype.card ι, fun _ _ _ _ => _⟩
-    exact_mod_cast hammingDist_le_card_fintype
+    exact mod_cast hammingDist_le_card_fintype
 
 @[simp, push_cast]
 theorem nndist_eq_hammingDist (x y : Hamming β) :
@@ -466,7 +466,7 @@ theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = ha
 -- porting note: merged `SeminormedAddCommGroup` and `NormedAddCommGroup` instances
 
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
-  dist_eq := by push_cast; exact_mod_cast hammingDist_eq_hammingNorm
+  dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
 
 @[simp, push_cast]
 theorem nnnorm_eq_hammingNorm [∀ i, AddCommGroup (β i)] (x : Hamming β) :

@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.GeomSum
+import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 
@@ -73,7 +74,7 @@ theorem vandermonde_transpose_mul_vandermonde {n : ℕ} (v : Fin n → R) (i j) 
 #align matrix.vandermonde_transpose_mul_vandermonde Matrix.vandermonde_transpose_mul_vandermonde
 
 theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
-    det (vandermonde v) = ∏ i : Fin n, Finset.prod (Ioi i) (fun j => v j - v i) := by
+    det (vandermonde v) = ∏ i : Fin n, ∏ j in Ioi i, (v j - v i) := by
   unfold vandermonde
   induction' n with n ih
   · exact det_eq_one_of_card_eq_zero (Fintype.card_fin 0)
@@ -103,13 +104,13 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
       rw [Fin.succAbove_zero, Matrix.cons_val_succ, Fin.val_succ, mul_comm]
       exact (geom_sum₂_mul (v i.succ) (v 0) (j + 1 : ℕ)).symm
     _ =
-        (Finset.prod Finset.univ (fun i => v (Fin.succ i) - v 0)) *
+        (∏ i in Finset.univ, (v (Fin.succ i) - v 0)) *
           det fun i j : Fin n =>
             ∑ k in Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
       (det_mul_column (fun i => v (Fin.succ i) - v 0) _)
-    _ = (Finset.prod Finset.univ (fun i => v (Fin.succ i) - v 0)) *
+    _ = (∏ i in Finset.univ, (v (Fin.succ i) - v 0)) *
     det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) := congr_arg _ ?_
-    _ = ∏ i : Fin n.succ, Finset.prod (Ioi i) (fun j => v j - v i) := by
+    _ = ∏ i : Fin n.succ, ∏ j in Ioi i, (v j - v i) := by
       simp_rw [Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
       have h := ih (v ∘ Fin.succ)
       unfold Function.comp at h
@@ -184,5 +185,27 @@ theorem eq_zero_of_forall_pow_sum_mul_pow_eq_zero {R : Type*} [CommRing R] [IsDo
     (hfv : ∀ i : Fin n, (∑ j : Fin n, v j * f j ^ (i : ℕ)) = 0) : v = 0 :=
   eq_zero_of_vecMul_eq_zero (det_vandermonde_ne_zero_iff.mpr hf) (funext hfv)
 #align matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero Matrix.eq_zero_of_forall_pow_sum_mul_pow_eq_zero
+
+open Polynomial
+
+theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ}
+    (v : Fin n → R) (p : Fin n → R[X]) (h_deg : ∀ i, (p i).natDegree ≤ i) :
+    Matrix.of (fun i j => ((p j).eval (v i))) =
+    (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
+  ext i j
+  rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
+  simp only [eq_intCast, Int.cast_id, Matrix.vandermonde]
+  have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
+  rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
+  congr
+  ext k
+  rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
+
+theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
+    (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
+    (Matrix.vandermonde v).det = (Matrix.of (fun i j => ((p j).eval (v i)))).det := by
+  rw [Matrix.eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
+      Nat.le_of_eq (h_deg i)), Matrix.det_mul,
+      Matrix.det_matrixOfPolynomials p h_deg h_monic, mul_one]
 
 end Matrix

@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Scott Morrison
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Util.AtomM
-import Mathlib.Data.Int.Basic
 
 /-!
 # The `abel` tactic
@@ -299,7 +298,7 @@ lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
 def evalSMul' (eval : Expr → M (NormalExpr × Expr))
     (is_smulg : Bool) (orig e₁ e₂ : Expr) : M (NormalExpr × Expr) := do
   trace[abel] "Calling NormNum on {e₁}"
-  let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
+  let ⟨e₁', p₁, _, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
   let p₁ ← p₁.getDM (mkEqRefl e₁')
   match e₁'.int? with
   | some n => do
@@ -442,7 +441,7 @@ partial def abelNFCore
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
     let ctx' := { ctx with simpTheorems := #[← thms.foldlM (·.addConst ·) {:_}] }
     pure fun r' : Simp.Result ↦ do
-      Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
   let rec
     /-- The recursive case of `abelNF`.
     * `root`: true when the function is called directly from `abelNFCore`
@@ -452,7 +451,7 @@ partial def abelNFCore
       `go -> eval -> evalAtom -> go` which makes no progress.
     -/
     go root parent :=
-      let pre e :=
+      let pre : Simp.Simproc := fun e =>
         try
           guard <| root || parent != e -- recursion guard
           let e ← withReducible <| whnf e
@@ -462,8 +461,8 @@ partial def abelNFCore
           let r ← simp { expr := a, proof? := pa }
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
           pure (.done r)
-        catch _ => pure <| .visit { expr := e }
-      let post := (Simp.postDefault · fun _ ↦ none)
+        catch _ => pure <| .continue
+      let post : Simp.Simproc := Simp.postDefault #[]
       (·.1) <$> Simp.main parent ctx (methods := { pre, post }),
     /-- The `evalAtom` implementation passed to `eval` calls `go` if `cfg.recursive` is true,
     and does nothing otherwise. -/
@@ -480,6 +479,7 @@ def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit :
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
+    if r.expr == tgt then throwError "abel_nf made no progress"
     replaceMainGoal [← applySimpResultToTarget goal tgt r]
 
 /-- Use `abel_nf` to rewrite hypothesis `h`. -/
@@ -488,6 +488,7 @@ def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVa
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
   let myres ← abelNFCore s cfg tgt
+  if myres.expr == tgt then throwError "abel_nf made no progress"
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
@@ -513,7 +514,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic 
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
-    fun _ ↦ throwError "abel_nf failed"
+    fun _ ↦ throwError "abel_nf made no progress"
 
 @[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(location)? : tactic =>
   `(tactic| abel_nf ! $(cfg)? $(loc)?)

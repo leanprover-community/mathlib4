@@ -77,13 +77,13 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : ClosedEmbed
   · refine' (dist_le <| mul_nonneg h23.le hf.le).mpr fun x => _
     have hfx : -‖f‖ ≤ f x ∧ f x ≤ ‖f‖ := by
       simpa only [Real.norm_eq_abs, abs_le] using f.norm_coe_le_norm x
-    cases' le_total (f x) (-‖f‖ / 3) with hle₁ hle₁
+    rcases le_total (f x) (-‖f‖ / 3) with hle₁ | hle₁
     · calc
         |g (e x) - f x| = -‖f‖ / 3 - f x := by
           rw [hg₁ (mem_image_of_mem _ hle₁), Function.const_apply,
             abs_of_nonneg (sub_nonneg.2 hle₁)]
         _ ≤ 2 / 3 * ‖f‖ := by linarith
-    · cases' le_total (f x) (‖f‖ / 3) with hle₂ hle₂
+    · rcases le_total (f x) (‖f‖ / 3) with hle₂ | hle₂
       · simp only [neg_div] at *
         calc
           dist (g (e x)) (f x) ≤ |g (e x)| + |f x| := dist_le_norm_add_norm _ _
@@ -134,7 +134,7 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
     refine' tendsto_nhds_unique this (tendsto_iff_dist_tendsto_zero.2 _)
     refine' squeeze_zero (fun _ => dist_nonneg) hgf _
     rw [← zero_mul ‖f‖]
-    refine' (tendsto_pow_atTop_nhds_0_of_lt_1 _ _).mul tendsto_const_nhds <;> norm_num1
+    refine' (tendsto_pow_atTop_nhds_zero_of_lt_one _ _).mul tendsto_const_nhds <;> norm_num1
   refine' ⟨limUnder atTop g, le_antisymm _ _, hge⟩
   · rw [← dist_zero_left, ← g0]
     refine'
@@ -253,7 +253,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         · exact hlt.trans_le ((le_add_iff_nonneg_right _).2 <| (dgmem y).1)
       rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
       refine' ⟨x, hxy.le, _⟩
-      cases' le_total c (g y) with hc hc
+      rcases le_total c (g y) with hc | hc
       · simp [dg0 (Or.inr hc), (hg_mem y).2]
       · calc
           g y + dg y ≤ c + (c - a) := add_le_add hc (dgmem _).2
@@ -333,7 +333,7 @@ theorem exists_forall_mem_restrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (
   rcases exists_extension_forall_mem_of_closedEmbedding f hf hne
       (closedEmbedding_subtype_val hs) with
     ⟨g, hg, hgf⟩
-  exact ⟨g, hg, FunLike.coe_injective hgf⟩
+  exact ⟨g, hg, DFunLike.coe_injective hgf⟩
 #align bounded_continuous_function.exists_forall_mem_restrict_eq_of_closed BoundedContinuousFunction.exists_forall_mem_restrict_eq_of_closed
 
 end BoundedContinuousFunction

@@ -483,7 +483,7 @@ def localizationToStalk (x : PrimeSpectrum.Top R) :
 @[simp]
 theorem localizationToStalk_of (x : PrimeSpectrum.Top R) (f : R) :
     localizationToStalk R x (algebraMap _ (Localization _) f) = toStalk R x f :=
-  IsLocalization.lift_eq _ f
+  IsLocalization.lift_eq (S := Localization x.asIdeal.primeCompl) _ f
 #align algebraic_geometry.structure_sheaf.localization_to_stalk_of AlgebraicGeometry.StructureSheaf.localizationToStalk_of
 
 @[simp]
@@ -578,9 +578,9 @@ def stalkIso (x : PrimeSpectrum.Top R) :
   inv := localizationToStalk R x
   hom_inv_id := by
     ext U hxU s
-    simp only [FunctorToTypes.map_comp_apply, CommRingCat.forget_map,
-      CommRingCat.coe_of, Category.comp_id]
-    rw [comp_apply, comp_apply, stalkToFiberRingHom_germ']
+    -- Note: this `simp` was longer, but the line below had to become an `erw`
+    simp only [Category.comp_id]
+    erw [comp_apply, comp_apply, stalkToFiberRingHom_germ']
     obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
       exists_const _ _ s x hxU
     erw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']
@@ -626,7 +626,7 @@ def toBasicOpen (f : R) :
 @[simp]
 theorem toBasicOpen_mk' (s f : R) (g : Submonoid.powers s) :
     toBasicOpen R s (IsLocalization.mk' (Localization.Away s) f g) =
-      const R f g (PrimeSpectrum.basicOpen s) fun x hx => Submonoid.powers_subset hx g.2 :=
+      const R f g (PrimeSpectrum.basicOpen s) fun x hx => Submonoid.powers_le.2 hx g.2 :=
   (IsLocalization.lift_mk'_spec _ _ _ _).2 <| by
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [toOpen_eq_const, toOpen_eq_const]; rw [const_mul_cancel']

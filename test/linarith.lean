@@ -2,6 +2,7 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Interval
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
@@ -192,7 +193,7 @@ by linarith (config := {exfalso := false})
 example (x y : Rat)
     (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) : False := by
   fail_if_success
-    linarith (config := {split_hypotheses := false})
+    linarith (config := {splitHypotheses := false})
   linarith
 
 example (h : 1 < 0) (g : ¬ 37 < 42) (k : True) (l : (-7 : ℤ) < 5) : 3 < 7 := by
@@ -487,6 +488,12 @@ example (a b : Nat) (h1 : a < b + 1) (h2 : ¬ a = b) : a < b := by
 
 end
 
+-- Checks that splitNe handles metavariables and also that conjunction splitting occurs
+-- before splitNe splitting
+example (r : ℚ) (h' : 1 = r * 2) : 1 = 0 ∨ r = 1 / 2 := by
+  by_contra! h''
+  linarith (config := {splitNe := true})
+
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nlinarith
@@ -533,6 +540,60 @@ example {α : Type} [LinearOrderedCommRing α] (n : Nat) : (5 : α) - (n : α) �
 example {α : Type} [LinearOrderedCommRing α] (n : Nat) : -(n : α) ≤ 0 := by
   linarith
 
-example {α : Type} [LinearOrderedCommRing α] (n : Nat) (a : α) (h : a ≥ 2): a * (n : α) + 5 ≥ 4 := by
-  nlinarith
+example {α : Type} [LinearOrderedCommRing α]
+    (n : Nat) (a : α) (h : a ≥ 2) : a * (n : α) + 5 ≥ 4 := by nlinarith
 example (x : ℚ) (h : x * (2⁻¹ + 2 / 3) = 1) : x = 6 / 7 := by linarith
+
+example {α} [LinearOrderedCommSemiring α] (x : α) (_ : 0 ≤ x) : 0 ≤ 1 := by linarith
+
+example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
+  -- Make h₁'s type be a metavariable. At one point this caused the strengthenStrictInt
+  -- linarith preprocessor to fail.
+  change _ at h₁
+  linarith
+
+/-- error: unknown identifier 'garbage' -/
+#guard_msgs in
+example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
+  linarith [p _ garbage]
+
+/-- error: unknown identifier 'garbage' -/
+#guard_msgs in
+example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
+  nlinarith [p _ garbage]
+
+-- Commented out for now since `#guard_msgs` prints the metavariable numbers, which are
+-- subject to change.
+-- /--
+-- error: don't know how to synthesize placeholder for argument 'x'
+-- ...
+-- -/
+-- #guard_msgs in
+-- example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
+--   linarith [p _]
+
+/--
+error: Argument passed to linarith has metavariables:
+  p ?a
+-/
+#guard_msgs in
+example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
+  linarith [p ?a]
+
+/--
+error: Argument passed to nlinarith has metavariables:
+  p ?a
+-/
+#guard_msgs in
+example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
+  nlinarith [p ?a]
+
+open BigOperators
+
+example (h : False): True := by
+  have : ∑ k in Finset.empty, k^2 = 0 := by contradiction
+  have : ∀ k : Nat, 0 ≤ k := by
+    intro h
+    -- this should not panic:
+    nlinarith
+  trivial

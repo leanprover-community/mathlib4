@@ -67,7 +67,7 @@ class RepresentablyFlat (F : C ⥤ D) : Prop where
 
 attribute [instance] RepresentablyFlat.cofiltered
 
-attribute [local instance] IsCofiltered.Nonempty
+attribute [local instance] IsCofiltered.nonempty
 
 instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
   constructor
@@ -142,7 +142,7 @@ attribute [local instance] hasFiniteLimits_of_hasFiniteLimits_of_size
 theorem cofiltered_of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
   { cone_objs := fun A B => ⟨Limits.prod A B, Limits.prod.fst, Limits.prod.snd, trivial⟩
     cone_maps := fun _ _ f g => ⟨equalizer f g, equalizer.ι f g, equalizer.condition f g⟩
-    Nonempty := ⟨⊤_ C⟩ }
+    nonempty := ⟨⊤_ C⟩ }
 #align category_theory.cofiltered_of_has_finite_limits CategoryTheory.cofiltered_of_hasFiniteLimits
 
 theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [PreservesFiniteLimits F] :
@@ -184,36 +184,14 @@ theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
   simp [lift, ← Functor.map_comp]
 #align category_theory.preserves_finite_limits_of_flat.fac CategoryTheory.PreservesFiniteLimitsOfFlat.fac
 
-attribute [local simp] eqToHom_map
-
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
   -- We can make two cones over the diagram of `s` via `f₁` and `f₂`.
   let α₁ : (F.mapCone c).toStructuredArrow ⋙ map f₁ ⟶ s.toStructuredArrow :=
-    { app := fun X => eqToHom (by simp [← h₁])
-      naturality := fun j₁ j₂ φ => by
-        ext
-        -- porting note: Lean 3 proof was `simp` but `Comma.eqToHom_right`
-        -- isn't firing for some reason
-        -- Asked here https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20not.20using.20a.20simp.20lemma/near/353943416
-        -- I'm now doing `simp, rw [Comma.eqToHom_right, Comma.eqToHom_right], simp` but
-        -- I squeezed the first `simp`.
-        simp only [Functor.mapCone_pt, Functor.comp_obj, Cone.toStructuredArrow_obj,
-          Functor.mapCone_π_app, map_mk, mk_right, Functor.comp_map, Cone.toStructuredArrow_map,
-          comp_right, map_map_right, homMk_right]
-        rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
-        simp }
+    { app := fun X => eqToHom (by simp [← h₁]) }
   let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
-    { app := fun X => eqToHom (by simp [← h₂])
-      naturality := fun _ _ _ => by
-        ext
-        -- porting note: see comments above. `simp` should close this goal (and did in Lean 3)
-        simp only [Functor.mapCone_pt, Functor.comp_obj, Cone.toStructuredArrow_obj,
-          Functor.mapCone_π_app, map_mk, mk_right, Functor.comp_map, Cone.toStructuredArrow_map,
-          comp_right, map_map_right, homMk_right]
-        rw [Comma.eqToHom_right, Comma.eqToHom_right] -- this is a `simp` lemma
-        simp }
+    { app := fun X => eqToHom (by simp [← h₂]) }
   let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
     (Cones.postcompose (whiskerRight α₁ (pre s.pt K F) : _)).obj (c.toStructuredArrowCone F f₁)
   let c₂ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
@@ -228,15 +206,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     intro j
     injection c₀.π.naturality (BiconeHom.left j) with _ e₁
     injection c₀.π.naturality (BiconeHom.right j) with _ e₂
-    -- porting note: Lean 3 proof now finished with `simpa using e₁.symm.trans e₂`
-    -- This doesn't work for two reasons in Lean 4: firstly it seems that Lean 4 `simp`
-    -- expands `let` definitions by default, so we have to switch this off with `zeta = false`;
-    -- secondly, `simp` is not rewriting `Comma.eqToHom_right` for some reason (just like)
-    -- 30 lines above here
-    have e₃ := e₁.symm.trans e₂
-    simp (config := {zeta := false}) at e₃ -- should turn `e₃` into the goal
-    rw [Comma.eqToHom_right, Comma.eqToHom_right] at e₃ -- this is a `simp` lemma
-    simpa (config := {zeta := false}) using e₃
+    convert e₁.symm.trans e₂ <;> simp
   have : c.extend g₁.right = c.extend g₂.right := by
     unfold Cone.extend
     congr 1

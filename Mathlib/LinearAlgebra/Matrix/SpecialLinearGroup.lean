@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Wen Yang
 -/
 import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
@@ -70,6 +71,7 @@ def SpecialLinearGroup :=
 
 end
 
+@[inherit_doc]
 scoped[MatrixGroups] notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 
 namespace SpecialLinearGroup
@@ -124,6 +126,13 @@ instance : Pow (SpecialLinearGroup n R) ℕ where
 instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
 
+/-- The transpose of a matrix in `SL(n, R)` -/
+def transpose (A : SpecialLinearGroup n R) : SpecialLinearGroup n R :=
+  ⟨A.1.transpose, A.1.det_transpose ▸ A.2⟩
+
+@[inherit_doc]
+scoped postfix:1024 "ᵀ" => SpecialLinearGroup.transpose
+
 section CoeLemmas
 
 variable (A B : SpecialLinearGroup n R)
@@ -157,6 +166,10 @@ theorem det_coe : det ↑ₘA = 1 :=
 theorem coe_pow (m : ℕ) : ↑ₘ(A ^ m) = ↑ₘA ^ m :=
   rfl
 #align matrix.special_linear_group.coe_pow Matrix.SpecialLinearGroup.coe_pow
+
+@[simp]
+lemma coe_transpose (A : SpecialLinearGroup n R) : ↑ₘAᵀ = (↑ₘA)ᵀ :=
+  rfl
 
 theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg ≠ 0 := by
   rw [g.det_coe]
@@ -241,62 +254,70 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 
 section center
 
-variable [Inhabited n]
-
-theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) :
-    A = A.val default default • (1 : Matrix n n R) := by
-  have hA := Subgroup.mem_center_iff.mp A.property
-  replace hA (t : TransvectionStruct n R) := hA ⟨t.toMatrix, by simp⟩
-  conv at hA =>
-    intro t
-    rw [Subtype.ext_iff]
-  exact TransvectionStruct.comm_all_TransvectionStruct hA
+theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) (i : n) :
+    A = A.val i i • (1 : Matrix n n R) := by
+  obtain ⟨r, hr⟩ := mem_range_scalar_of_commute_transvectionStruct fun t =>
+    Subtype.ext_iff.mp $ Subgroup.mem_center_iff.mp A.property ⟨t.toMatrix, by simp⟩
+  have : A.val i i = r := by rw [← hr]; simp
+  simp [this, ← hr, @smul_one_eq_diagonal]
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
 in which the scalars are the `n`-th roots of `1`.-/
 theorem mem_center_iff {A : SpecialLinearGroup n R} :
     A ∈ Subgroup.center (SpecialLinearGroup n R) ↔
-    A.val default default ^ (Fintype.card n) = 1 ∧
-    A = A.val default default • (1 : Matrix n n R) := by
+    ∀ i, A.val i i ^ (Fintype.card n) = 1 ∧
+    A = A.val i i • (1 : Matrix n n R) := by
   constructor
-  · intro hA
-    have hA2 := center_scalar ⟨A, hA⟩
+  · intro hA i
+    have hA2 := center_scalar ⟨A, hA⟩ i
     refine (and_iff_left hA2).mpr ?_
     have hA1 : det A.val = (1 : R) := det_coe A
     rw [hA2, det_smul_of_tower] at hA1
-    revert hA1
-    simp
-  · intro ⟨_, hA⟩ _
-    rw [ext_iff]
-    simp only [coe_mul]
-    rw [hA]
-    simp
+    simpa using hA1
+  · wlog hn : IsEmpty n
+    · let i : n := @Classical.arbitrary n (not_isEmpty_iff.mp hn)
+      rw [Subgroup.mem_center_iff]
+      intro h _; obtain ⟨_, hA⟩ := h i
+      rw [ext_iff, coe_mul, coe_mul, hA]
+      simp
+    · have hA : A = 1 := by rw [@ext_iff, @IsEmpty.forall_iff n, ← Bool.coe_true]
+      aesop
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
 in which the scalars are the `n`-th roots of `1`.-/
-def center_iso_RootsOfUnity :
-    Subgroup.center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R
-    where
-  toFun A := rootsOfUnity.mkOfPowEq (A.val default default) <| by
-    simp [mem_center_iff.mp A.property |>.1]
-  invFun a := ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
-      intro _
-      aesop⟩
-  left_inv A := by
-    refine SetCoe.ext <| SetCoe.ext ?_
-    conv_rhs => rw [center_scalar A]
-  right_inv _ := by
-    refine SetCoe.ext <| Units.eq_iff.mp ?_
-    simp [instHSMul, SMul.smul]
-  map_mul' A B := by
-    simp only
-    have hAB : (A * B).val.val = A.val.val * B.val.val := by simp
-    conv_lhs =>
-      arg 1
-      rw [hAB, center_scalar]
-    refine SetCoe.ext <| Units.eq_iff.mp ?_
-    have := mul_comm (B.val default default) (A.val default default)
-    simp [this]
+noncomputable def center_iso_RootsOfUnity :
+    Subgroup.center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R := by
+  by_cases hn : IsEmpty n
+  · have h (A : Subgroup.center (SpecialLinearGroup n R)) : A.val = 1 := by
+      rw [@ext_iff, @IsEmpty.forall_iff n, ← Bool.coe_true]
+    replace hn' : Nat.toPNat' 0 = 1 := rfl
+    rw [Fintype.card_eq_zero, hn']
+    exact {
+      toFun := fun _ => 1
+      invFun := fun _ => 1
+      left_inv := fun A => SetCoe.ext (h A).symm
+      right_inv := fun x => by
+        refine SetCoe.ext ?_
+        have := mem_rootsOfUnity 1 x.val |>.mp x.property
+        simpa using this.symm
+      map_mul' := by simp
+    }
+  · haveI : Nonempty n := not_isEmpty_iff.mp hn
+    have i := Classical.arbitrary n
+    exact {
+      toFun := fun A => rootsOfUnity.mkOfPowEq (A.val i i) <| by
+        simp [mem_center_iff.mp A.property i |>.1]
+      invFun := fun a => ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
+        rw [Subgroup.mem_center_iff]; aesop⟩
+      left_inv := fun A => by refine SetCoe.ext $ SetCoe.ext ?_; conv_rhs => rw [center_scalar A i]
+      right_inv := fun a => by refine SetCoe.ext $ Units.eq_iff.mp ?_; simp [instHSMul, SMul.smul]
+      map_mul' := fun A B => by
+        simp only
+        have hAB : (A * B).val.val = A.val.val * B.val.val := by simp
+        conv_lhs => arg 1; rw [hAB, center_scalar _ i]
+        refine SetCoe.ext <| Units.eq_iff.mp ?_
+        simp [mul_comm (B.val i i) (A.val i i)]
+    }
 
 end center
 
@@ -320,7 +341,7 @@ variable [Fact (Even (Fintype.card n))]
 
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
-instance : Neg (SpecialLinearGroup n R) :=
+instance instNeg : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
     simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
 
@@ -380,11 +401,69 @@ theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g 
   simp_rw [eq_inv_of_mul_eq_one_right had, hg]
 #align matrix.special_linear_group.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero Matrix.SpecialLinearGroup.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero
 
+lemma isCoprime_row (A : SL(2, R)) (i : Fin 2): IsCoprime (A i 0) (A i 1) := by
+  refine match i with
+  | 0 => ⟨A 1 1, -(A 1 0), ?_⟩
+  | 1 => ⟨-(A 0 1), A 0 0, ?_⟩ <;>
+  · simp_rw [det_coe A ▸ det_fin_two A.1]
+    ring
+
+lemma isCoprime_col (A : SL(2, R)) (j : Fin 2): IsCoprime (A 0 j) (A 1 j) := by
+  refine match j with
+  | 0 => ⟨A 1 1, -(A 0 1), ?_⟩
+  | 1 => ⟨-(A 1 0), A 0 0, ?_⟩ <;>
+  · simp_rw [det_coe A ▸ det_fin_two A.1]
+    ring
+
 end SpecialCases
 
 end SpecialLinearGroup
 
 end Matrix
+
+namespace IsCoprime
+
+open Matrix MatrixGroups SpecialLinearGroup
+
+variable {R : Type*} [CommRing R]
+
+/-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
+entries as its left or right column. -/
+lemma exists_SL2_col {a b : R} (hab : IsCoprime a b) (j : Fin 2):
+    ∃ g : SL(2, R), g 0 j = a ∧ g 1 j = b := by
+  obtain ⟨u, v, h⟩ := hab
+  refine match j with
+  | 0 => ⟨⟨!![a, -v; b, u], ?_⟩, rfl, rfl⟩
+  | 1 => ⟨⟨!![v, a; -u, b], ?_⟩, rfl, rfl⟩ <;>
+  · rw [Matrix.det_fin_two_of, ← h]
+    ring
+
+/-- Given any pair of coprime elements of `R`, there exists a matrix in `SL(2, R)` having those
+entries as its top or bottom row. -/
+lemma exists_SL2_row {a b : R} (hab : IsCoprime a b) (i : Fin 2):
+    ∃ g : SL(2, R), g i 0 = a ∧ g i 1 = b := by
+  obtain ⟨u, v, h⟩ := hab
+  refine match i with
+  | 0 => ⟨⟨!![a, b; -v, u], ?_⟩, rfl, rfl⟩
+  | 1 => ⟨⟨!![v, -u; a, b], ?_⟩, rfl, rfl⟩ <;>
+  · rw [Matrix.det_fin_two_of, ← h]
+    ring
+
+/-- A vector with coprime entries, right-multiplied by a matrix in `SL(2, R)`, has
+coprime entries. -/
+lemma vecMulSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
+    IsCoprime ((v ᵥ* A.1) 0) ((v ᵥ* A.1) 1) := by
+  obtain ⟨g, hg⟩ := hab.exists_SL2_row 0
+  have : v = g 0 := funext fun t ↦ by { fin_cases t <;> tauto }
+  simpa only [this] using isCoprime_row (g * A) 0
+
+/-- A vector with coprime entries, left-multiplied by a matrix in `SL(2, R)`, has
+coprime entries. -/
+lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
+    IsCoprime ((A.1 *ᵥ v) 0) ((A.1 *ᵥ v) 1) := by
+  simpa only [← vecMul_transpose] using hab.vecMulSL A.transpose
+
+end IsCoprime
 
 namespace ModularGroup
 
@@ -403,12 +482,12 @@ This element acts naturally on the Euclidean plane as a rotation about the origi
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
 represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
 def S : SL(2, ℤ) :=
-  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of] ⟩
+  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of]⟩
 #align modular_group.S ModularGroup.S
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)` -/
 def T : SL(2, ℤ) :=
-  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of] ⟩
+  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of]⟩
 #align modular_group.T ModularGroup.T
 
 theorem coe_S : ↑ₘS = !![0, -1; 1, 0] :=

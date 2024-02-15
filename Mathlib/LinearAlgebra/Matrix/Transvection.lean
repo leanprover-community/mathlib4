@@ -237,14 +237,20 @@ theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
 #align matrix.transvection_struct.prod_mul_reverse_inv_prod Matrix.TransvectionStruct.prod_mul_reverse_inv_prod
 
 /-- `M` is a scalar matrix if it commutes with every nontrivial transvection (elementary matrix).-/
-theorem comm_all_TransvectionStruct [Inhabited n] {M : Matrix n n R}
-    (hM : ∀ t : TransvectionStruct n R, t.toMatrix * M = M * t.toMatrix) :
-    M = M default default • (1 : Matrix n n R) := by
-  refine StdBasisMatrix.comm_all_stdBasisMatrix_nondiag ?_
+theorem _root_.Matrix.mem_range_scalar_of_commute_transvectionStruct {M : Matrix n n R}
+    (hM : ∀ t : TransvectionStruct n R, Commute t.toMatrix M) :
+    M ∈ Set.range (Matrix.scalar n) := by
+  refine mem_range_scalar_of_commute_stdBasisMatrix ?_
   intro i j hij
-  have := hM ⟨i, j, hij, 1⟩
-  simp [toMatrix_mk, transvection, add_mul, mul_add] at this
-  exact this
+  simpa [transvection, mul_add, add_mul] using (hM ⟨i, j, hij, 1⟩).eq
+
+theorem _root_.Matrix.mem_range_scalar_iff_commute_transvectionStruct {M : Matrix n n R} :
+    M ∈ Set.range (Matrix.scalar n) ↔ ∀ t : TransvectionStruct n R, Commute t.toMatrix M := by
+  refine ⟨fun h t => ?_, mem_range_scalar_of_commute_transvectionStruct⟩
+  rw [mem_range_scalar_iff_commute_stdBasisMatrix] at h
+  refine (Commute.one_left M).add_left ?_
+  convert (h _ _ t.hij).smul_left t.c using 1
+  rw [smul_stdBasisMatrix, smul_eq_mul, mul_one]
 
 end
 
@@ -494,7 +500,8 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         rintro rfl
         cases i
         tauto
-      simp only [IH hnr.le, Ne.def, mul_transvection_apply_of_ne, Ne.symm h, inl.injEq]
+      simp only [IH hnr.le, Ne.def, mul_transvection_apply_of_ne, Ne.symm h, inl.injEq,
+        not_false_eq_true]
       rcases le_or_lt (n + 1) i with (hi | hi)
       · simp [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]

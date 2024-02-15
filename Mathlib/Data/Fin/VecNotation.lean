@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
-import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Data.Set.Image
 
 #align_import data.fin.vec_notation from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
@@ -405,7 +405,8 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
 -- Although proved by simp, extracting element 8 of a five-element
 -- vector does not work by simp unless this lemma is present.
 @[simp]
-theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by simp
+theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by
+  simp [eq_iff_true_of_subsingleton]
 #align matrix.empty_vec_alt0 Matrix.empty_vecAlt0
 
 @[simp]
@@ -427,12 +428,13 @@ theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
 -- Although proved by simp, extracting element 9 of a five-element
 -- vector does not work by simp unless this lemma is present.
 @[simp]
-theorem empty_vecAlt1 (α) {h} : vecAlt1 h (![] : Fin 0 → α) = ![] := by simp
+theorem empty_vecAlt1 (α) {h} : vecAlt1 h (![] : Fin 0 → α) = ![] := by
+  simp [eq_iff_true_of_subsingleton]
 #align matrix.empty_vec_alt1 Matrix.empty_vecAlt1
 
 end Val
 
-section Smul
+section SMul
 
 variable {M : Type*} [SMul M α]
 
@@ -447,7 +449,7 @@ theorem smul_cons (x : M) (y : α) (v : Fin n → α) : x • vecCons y v = vecC
   refine' Fin.cases _ _ i <;> simp
 #align matrix.smul_cons Matrix.smul_cons
 
-end Smul
+end SMul
 
 section Add
 

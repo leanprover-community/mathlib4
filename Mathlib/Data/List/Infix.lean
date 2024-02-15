@@ -22,9 +22,9 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 
 ## Notation
 
-`l₁ <+: l₂`: `l₁` is a prefix of `l₂`.
-`l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
-`l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
+* `l₁ <+: l₂`: `l₁` is a prefix of `l₂`.
+* `l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
+* `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
 open Nat
@@ -206,12 +206,12 @@ theorem suffix_iff_eq_append : l₁ <:+ l₂ ↔ take (length l₂ - length l₁
 #align list.suffix_iff_eq_append List.suffix_iff_eq_append
 
 theorem prefix_iff_eq_take : l₁ <+: l₂ ↔ l₁ = take (length l₁) l₂ :=
-  ⟨fun h => append_right_cancel <| (prefix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
+  ⟨fun h => append_cancel_right <| (prefix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
     fun e => e.symm ▸ take_prefix _ _⟩
 #align list.prefix_iff_eq_take List.prefix_iff_eq_take
 
 theorem suffix_iff_eq_drop : l₁ <:+ l₂ ↔ l₁ = drop (length l₂ - length l₁) l₂ :=
-  ⟨fun h => append_left_cancel <| (suffix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
+  ⟨fun h => append_cancel_left <| (suffix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
     fun e => e.symm ▸ drop_suffix _ _⟩
 #align list.suffix_iff_eq_drop List.suffix_iff_eq_drop
 
@@ -233,7 +233,7 @@ instance decidableSuffix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (
     @decidable_of_decidable_of_iff _ _
       (@instDecidableOr _ _ _ (l₁.decidableSuffix l₂))
       suffix_cons_iff.symm
-termination_by decidableSuffix l₁ l₂ => (l₁, l₂)
+termination_by l₁ l₂ => (l₁, l₂)
 #align list.decidable_suffix List.decidableSuffix
 
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
@@ -243,7 +243,7 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
     @decidable_of_decidable_of_iff _ _
       (@instDecidableOr _ _ (l₁.decidablePrefix (b :: l₂)) (l₁.decidableInfix l₂))
       infix_cons_iff.symm
-termination_by decidableInfix l₁ l₂ => (l₁, l₂)
+termination_by l₁ l₂ => (l₁, l₂)
 #align list.decidable_infix List.decidableInfix
 
 theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
@@ -259,7 +259,7 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
       | zero =>
         refine' iff_of_false _ (zero_lt_succ _).not_le
         rw [take_zero, take_nil]
-        simp only [take]
+        simp only [take, not_false_eq_true]
       | succ n =>
         simp only [length] at hm
         have specializedIH := @IH n ls (Nat.lt_of_succ_lt_succ hm)
@@ -469,9 +469,10 @@ theorem insert_nil (a : α) : insert a nil = [a] :=
   rfl
 #align list.insert_nil List.insert_nil
 
-theorem insert.def (a : α) (l : List α) : insert a l = if a ∈ l then l else a :: l :=
+theorem insert_eq_ite (a : α) (l : List α) : insert a l = if a ∈ l then l else a :: l := by
+  simp only [← elem_iff]
   rfl
-#align list.insert.def List.insert.def
+#align list.insert.def List.insert_eq_ite
 
 #align list.insert_of_mem List.insert_of_mem
 #align list.insert_of_not_mem List.insert_of_not_mem
