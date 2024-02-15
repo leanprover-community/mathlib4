@@ -238,4 +238,40 @@ theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := 
 example (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] :=
   (etaExpand_eq _).symm
 
+/-- `Matrix.diagonal` with better defeq for `Fin` -/
+def diagonalᵣ [Zero α] : ∀ {m} (_d : Fin m → α), Matrix (Fin m) (Fin m) α
+  | 0, _ => of ![]
+  | (_ + 1), d => of <| Matrix.vecCons
+    (Matrix.vecCons (d 0) (FinVec.const 0))
+    (FinVec.map (vecCons 0) (diagonalᵣ (vecTail d)))
+
+/-- This can be used to prove
+```lean
+example [Zero α] (d : Fin 3 → α) :
+    diagonal d = !![d 0, 0, 0; 0, d 1, 0; 0, 0, d 2] :=
+  (diagonalᵣ_eq _).symm
+```
+-/
+theorem diagonalᵣ_eq [Zero α] : ∀ {m} (d : Fin m → α), diagonalᵣ d = diagonal d
+  | 0, _ => Subsingleton.elim _ _
+  | (_ + 1), d => Matrix.ext fun i j => by
+    dsimp [diagonalᵣ]
+    induction i using Fin.cases with
+    | zero =>
+      induction j using Fin.cases with
+      | zero => simp
+      | succ => simp [diagonal_apply_ne' _ (Fin.succ_ne_zero _), FinVec.const_eq]
+    | succ =>
+      induction j using Fin.cases with
+      | zero => simp [diagonal_apply_ne _ (Fin.succ_ne_zero _)]
+      | succ =>
+        simp only [FinVec.map_eq, cons_val_succ, Function.comp_apply]
+        rw [←submatrix_apply (diagonal d), submatrix_diagonal d _ (Fin.succ_injective _),
+          diagonalᵣ_eq]
+        rfl
+
+example [Zero α] (d : Fin 3 → α) :
+    diagonal d = !![d 0, 0, 0; 0, d 1, 0; 0, 0, d 2] :=
+  (diagonalᵣ_eq _).symm
+
 end Matrix

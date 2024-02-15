@@ -27,6 +27,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `FinVec.map`
 * `FinVec.sum`
 * `FinVec.etaExpand`
+* `FinVec.id`
 * `FinVec.const`
 * `FinVec.single`
 -/
@@ -139,6 +140,23 @@ theorem exists_iff : ∀ {m} (P : (Fin m → α) → Prop), Exists P ↔ ∃ x, 
 example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀, a₁] :=
   (exists_iff _).symm
 
+protected def id : ∀ {m}, Fin m → Fin m
+  | 0 => ![]
+  | _ + 1 => Matrix.vecCons 0 (map Fin.succ id)
+
+/-- This can be use to prove
+```lean
+example : id = ![0, 1, 2] :=
+  id_eq.symm
+```
+-/
+theorem id_eq : ∀ {m}, @FinVec.id m = id
+  | 0 => Subsingleton.elim _ _
+  | _ + 1 => funext <| Fin.cases rfl fun i => by dsimp [FinVec.id]; rw [map_eq]; rfl
+
+example : id = ![0, 1, 2] :=
+  id_eq.symm
+
 def const : ∀ {m} (_a : α), Fin m → α
   | 0, _ => ![]
   | _ + 1, a => Matrix.vecCons a (const a)
@@ -146,12 +164,15 @@ def const : ∀ {m} (_a : α), Fin m → α
 /-- This can be use to prove
 ```lean
 example (x : α) : Function.const _ x = ![x, x, x] :=
-  const_eq _
+  (const_eq _).symm
 ```
 -/
 theorem const_eq : ∀ {m} (a : α), (const a : Fin m → α) = Function.const _ a
   | 0, _ => Subsingleton.elim _ _
   | _ + 1, a => funext <| Fin.cases rfl fun i => by rw [const, const_eq]; rfl
+
+example (x : α) : Function.const _ x = ![x, x, x] :=
+  (const_eq _).symm
 
 /-- `Pi.single` with better defeq for `Fin`. -/
 def single [Zero α] : ∀ {m} (_i : Fin m) (_a : α), Fin m → α
