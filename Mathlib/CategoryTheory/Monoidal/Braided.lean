@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.Opposite
 import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.CategoryTheory.CommSq
 
 #align_import category_theory.monoidal.braided from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
@@ -152,6 +153,30 @@ theorem yang_baxter_iso (X Y Z : C) :
       whiskerLeftIso X (β_ Y Z) ≪≫ (α_ X Z Y).symm ≪≫
       whiskerRightIso (β_ X Z) Y ≪≫ α_ Z X Y ≪≫
       whiskerLeftIso Z (β_ X Y) := Iso.ext (yang_baxter X Y Z)
+
+theorem hexagon_forward_iso (X Y Z : C) :
+    α_ X Y Z ≪≫ β_ X (Y ⊗ Z) ≪≫ α_ Y Z X =
+      whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫ whiskerLeftIso Y (β_ X Z) :=
+  Iso.ext (hexagon_forward X Y Z)
+
+theorem hexagon_reverse_iso (X Y Z : C) :
+    (α_ X Y Z).symm ≪≫ β_ (X ⊗ Y) Z ≪≫ (α_ Z X Y).symm =
+      whiskerLeftIso X (β_ Y Z) ≪≫ (α_ X Z Y).symm ≪≫ whiskerRightIso (β_ X Z) Y :=
+  Iso.ext (hexagon_reverse X Y Z)
+
+@[reassoc]
+theorem hexagon_forward_inv (X Y Z : C) :
+    (α_ Y Z X).inv ≫ (β_ X (Y ⊗ Z)).inv ≫ (α_ X Y Z).inv =
+      Y ◁ (β_ X Z).inv ≫ (α_ Y X Z).inv ≫ (β_ X Y).inv ▷ Z := by
+  convert congrArg Iso.inv (hexagon_forward_iso X Y Z) using 1
+  <;> exact (assoc _ _ _).symm
+
+@[reassoc]
+theorem hexagon_reverse_inv (X Y Z : C) :
+    (α_ Z X Y).hom ≫ (β_ (X ⊗ Y) Z).inv ≫ (α_ X Y Z).hom =
+      (β_ X Z).inv ▷ Y ≫ (α_ X Z Y).hom ≫ X ◁ (β_ Y Z).inv := by
+  convert congrArg Iso.inv (hexagon_reverse_iso X Y Z) using 1
+  <;> exact (assoc _ _ _).symm
 
 end BraidedCategory
 
@@ -710,8 +735,8 @@ monoidal opposite, upgraded to a braided functor. -/
   -- `id_tensorHom`, `tensorHom_id` should be simp lemmas when #6307 is merged
   -- we could then make this fully automated if we mark `yang_baxter` as simp
   -- should it be marked as such?
-  associativity X Y Z := Quiver.Hom.unmop_inj <| by
-    simp [id_tensorHom, tensorHom_id, yang_baxter]
+  associativity X Y Z := by
+    simp [id_tensorHom, tensorHom_id, ← yang_baxter_assoc]
   __ := mopFunctor C
 
 /-- The identity functor on `C`, viewed as a functor from the
@@ -719,8 +744,8 @@ monoidal opposite of `C` to `C`, upgraded to a braided functor. -/
 @[simps!] def unmopBraidedFunctor : BraidedFunctor Cᴹᵒᵖ C where
   μ X Y := (β_ (unmop X) (unmop Y)).hom
   ε := 𝟙 (𝟙_ C)
-  associativity X Y Z := Quiver.Hom.mop_inj <| by
-    simp [id_tensorHom, tensorHom_id, yang_baxter]
+  associativity X Y Z := by
+    simp [id_tensorHom, tensorHom_id, ← yang_baxter_assoc]
   __ := unmopFunctor C
 
 end MonoidalOpposite
@@ -731,28 +756,12 @@ This corresponds to the automorphism of the braid group swapping
 over-crossings and under-crossings. -/
 @[reducible] def reverseBraiding : BraidedCategory C where
   braiding X Y := (β_ Y X).symm
-  braiding_naturality_right X {_ _} f := by
-    -- why isn't `aesop_cat` able to solve this?
-    -- There's got to be a better way of automating the line below
-    simp_rw [Iso.symm_hom, Iso.comp_inv_eq, assoc, Iso.eq_inv_comp]
-    exact (braiding_naturality_left f X).symm
-  braiding_naturality_left {_ _} f Z := by
-    simp_rw [Iso.symm_hom, Iso.comp_inv_eq, assoc, Iso.eq_inv_comp]
-    exact (braiding_naturality_right Z f).symm
-  hexagon_forward := by
-    intros X Y Z
-    simp only [← Iso.symm_inv, ← Iso.trans_inv,
-               ← whiskerLeftIso_inv, ← whiskerRightIso_inv]
-    refine (Iso.inv_eq_inv _ _).mpr ?_
-    simp only [Iso.trans_hom, Iso.symm_symm_eq, Iso.symm_hom, assoc]
-    exact hexagon_reverse Y Z X
-  hexagon_reverse := by
-    intros X Y Z
-    simp only [← Iso.symm_inv, ← Iso.trans_inv,
-               ← whiskerLeftIso_inv, ← whiskerRightIso_inv]
-    refine (Iso.inv_eq_inv _ _).mpr ?_
-    simp only [Iso.trans_hom, Iso.symm_symm_eq, Iso.symm_hom, assoc]
-    exact hexagon_forward Z X Y
+  braiding_naturality_right X {_ _} f :=
+    CommSq.w <| .vert_inv <| .mk <| braiding_naturality_left f X
+  braiding_naturality_left {_ _} f Z :=
+    CommSq.w <| .vert_inv <| .mk <| braiding_naturality_right Z f
+  hexagon_forward X Y Z := hexagon_reverse_inv Y Z X
+  hexagon_reverse X Y Z := hexagon_forward_inv Z X Y
 
 lemma SymmetricCategory.reverseBraiding_eq (C : Type u₁) [Category.{v₁} C]
     [MonoidalCategory C] [i : SymmetricCategory C] :
