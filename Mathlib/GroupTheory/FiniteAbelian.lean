@@ -22,7 +22,7 @@ import Mathlib.Data.ZMod.Quotient
 open scoped DirectSum
 
 /-
-TODO: Here's a more general approach to dropping trivial factors from a direct sums:
+TODO: Here's a more general approach to dropping trivial factors from a direct sum:
 
 def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*} [DecidableEq ι] [DecidableEq κ]
     [∀ i, DecidableEq (α i)] [∀ j, DecidableEq (β j)] [∀ i, AddCommMonoid (α i)]
@@ -34,6 +34,7 @@ def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*} [Dec
     (⨁ i, α i) ≃+ ⨁ j, β j where
   toFun x := x.sum fun i a ↦ if ha : a = 0 then 0 else DFinsupp.single (f i ⟨a, 0, ha⟩) (F _ _ a)
   invFun y := y.sum fun j b ↦ if hb : b = 0 then 0 else DFinsupp.single (g j ⟨b, 0, hb⟩) (G _ _ b)
+  -- The two sorries here are probably doable with the existing machinery, but quite painful
   left_inv x := DFinsupp.ext fun i ↦ sorry
   right_inv y := DFinsupp.ext fun j ↦ sorry
   map_add' x₁ x₂ := by
@@ -43,7 +44,7 @@ def DirectSum.congr {ι κ : Type*} {α : ι → Type*} {β : κ → Type*} [Dec
     any_goals simp_all
     rw [← DFinsupp.single_add, ← map_add, ‹a₁ + a₂ = 0›, map_zero, DFinsupp.single_zero]
 
-private def myThing (ι : Type) [DecidableEq ι] (p : ι → ℕ) (n : ι → ℕ) :
+private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ) (n : ι → ℕ) :
     (⨁ i : {i // n i ≠ 0}, ZMod (p i ^ n i)) ≃+ ⨁ i, ZMod (p i ^ n i) :=
   DirectSum.congr
     (fun i _ ↦ i)
@@ -56,19 +57,19 @@ private def myThing (ι : Type) [DecidableEq ι] (p : ι → ℕ) (n : ι → �
     (fun j hj hi a ↦ rfl)
 -/
 
-private def myThingForward {ι : Type} [DecidableEq ι] (p : ι → ℕ) (n : ι → ℕ) :
+private def directSumNeZeroMulHom {ι : Type} [DecidableEq ι] (p : ι → ℕ) (n : ι → ℕ) :
     (⨁ i : {i // n i ≠ 0}, ZMod (p i ^ n i)) →+ ⨁ i, ZMod (p i ^ n i) :=
   DirectSum.toAddMonoid fun i ↦ DirectSum.of (fun i ↦ ZMod (p i ^ n i)) i
 
-private def myThing (ι : Type) [DecidableEq ι] (p : ι → ℕ) (n : ι → ℕ) :
+private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ) (n : ι → ℕ) :
     (⨁ i : {i // n i ≠ 0}, ZMod (p i ^ n i)) ≃+ ⨁ i, ZMod (p i ^ n i) where
-  toFun := myThingForward p n
+  toFun := directSumNeZeroMulHom p n
   invFun := DirectSum.toAddMonoid fun i ↦
     if h : n i = 0 then 0 else DirectSum.of (fun j : {i // n i ≠ 0} ↦ ZMod (p j ^ n j)) ⟨i, h⟩
   left_inv x := by
     induction' x using DirectSum.induction_on with i x x y hx hy
     · simp
-    · rw [myThingForward, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
+    · rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of, DirectSum.toAddMonoid_of,
         dif_neg i.prop]
     · rw [map_add, map_add, hx, hy]
   right_inv x := by
@@ -77,9 +78,9 @@ private def myThing (ι : Type) [DecidableEq ι] (p : ι → ℕ) (n : ι → �
     · rw [DirectSum.toAddMonoid_of]
       split_ifs with h
       · simp [(ZMod.subsingleton_iff.2 $ by rw [h, pow_zero]).elim x 0]
-      · simp_rw [myThingForward, DirectSum.toAddMonoid_of]
+      · simp_rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of]
     · rw [map_add, map_add, hx, hy]
-  map_add' := map_add (myThingForward p n)
+  map_add' := map_add (directSumNeZeroMulHom p n)
 
 universe u
 
@@ -150,7 +151,8 @@ lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddCommGroup G] [Finite G] :
   classical
   obtain ⟨ι, hι, p, hp, n, ⟨e⟩⟩ := AddCommGroup.equiv_directSum_zmod_of_finite G
   skip
-  refine' ⟨{i : ι // n i ≠ 0}, inferInstance, fun i ↦ p i ^ n i, _, ⟨e.trans (myThing ι _ _).symm⟩⟩
+  refine ⟨{i : ι // n i ≠ 0}, inferInstance, fun i ↦ p i ^ n i, ?_,
+    ⟨e.trans (directSumNeZeroMulEquiv ι _ _).symm⟩⟩
   rintro ⟨i, hi⟩
   exact one_lt_pow (hp _).one_lt hi
 
