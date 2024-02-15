@@ -234,18 +234,6 @@ instance _root_.AddSubgroupClass.zsmul {M S} [SubNegMonoid M] [SetLike S M]
   ⟨fun n a => ⟨n • a.1, zsmul_mem a.2 n⟩⟩
 #align add_subgroup_class.has_zsmul AddSubgroupClass.zsmul
 
-/-- Integral powers in a subgroup. -/
-@[to_additive]
-def zpow' {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} (n : ℤ) (a : H) : H :=
-  ⟨a.1 ^ n, zpow_mem a.2 n⟩
-
-/-- A subgroup of a group inherits an integer power. -/
-@[to_additive existing]
-instance zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
-  ⟨fun a n => zpow' n a⟩
-#align subgroup_class.has_zpow SubgroupClass.zpow
--- Porting note: additive align statement is given above
-
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_div (x y : H) : (x / y).1 = x.1 / y.1 :=
   rfl
@@ -256,14 +244,22 @@ variable (H)
 
 -- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
 /-- A subgroup of a `DivInvMonoid` inherits a `DivInvMonoid` structure. -/
-@[to_additive "An additive subgroup of an `AddGroup` inherits an `AddGroup` structure."]
-instance (priority := 75) toDivInvMonoid : DivInvMonoid H :=
+@[to_additive "An additive `SubNegMonoid` of an `AddGroup` inherits an `SubNegMonoid` structure."]
+instance (priority := 75) toDivInvMonoid
+    {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : DivInvMonoid H :=
   { SubmonoidClass.toMonoid _ with
-    zpow := zpow'
+    zpow := fun n a => ⟨a.1 ^ n, zpow_mem a.2 n⟩
     zpow_zero' := fun _ => Subtype.ext (zpow_zero _)
     zpow_succ' := fun _ _ => Subtype.ext (DivInvMonoid.zpow_succ' _ _)
     zpow_neg' := fun _ _ => Subtype.ext (DivInvMonoid.zpow_neg' _ _)
     div_eq_mul_inv := fun _ _ => Subtype.ext (div_eq_mul_inv _ _) }
+
+/-- A subgroup of a group inherits an integer power. -/
+@[to_additive existing]
+instance zpow {M S} [DivInvMonoid M] [SetLike S M] [SubgroupClass S M] {H : S} : Pow H ℤ :=
+  ⟨fun a n => DivInvMonoid.zpow n a⟩
+#align subgroup_class.has_zpow SubgroupClass.zpow
+-- Porting note: additive align statement is given above
 
 -- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
 /-- A subgroup of a group inherits a group structure. -/
@@ -286,9 +282,8 @@ instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [S
 /-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
 @[to_additive "An additive subgroup of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
 instance (priority := 75) toOrderedCommGroup {G : Type*} [OrderedCommGroup G] [SetLike S G]
-    [SubgroupClass S G] : OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    [SubgroupClass S G] : OrderedCommGroup H where
+  mul_le_mul_left := fun _ _ h _ => OrderedCommGroup.mul_le_mul_left _ _ h _
 #align subgroup_class.to_ordered_comm_group SubgroupClass.toOrderedCommGroup
 #align add_subgroup_class.to_ordered_add_comm_group AddSubgroupClass.toOrderedAddCommGroup
 
@@ -299,8 +294,7 @@ instance (priority := 75) toOrderedCommGroup {G : Type*} [OrderedCommGroup G] [S
         `LinearOrderedAddCommGroup`."]
 instance (priority := 75) toLinearOrderedCommGroup {G : Type*} [LinearOrderedCommGroup G]
     [SetLike S G] [SubgroupClass S G] : LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  { toOrderedCommGroup _, Subtype.linearOrder _ with }
 #align subgroup_class.to_linear_ordered_comm_group SubgroupClass.toLinearOrderedCommGroup
 #align add_subgroup_class.to_linear_ordered_add_comm_group AddSubgroupClass.toLinearOrderedAddCommGroup
 
@@ -774,7 +768,7 @@ theorem mk_eq_one_iff {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 :=
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
 instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
   { Submonoid.toMonoid _ with
-    zpow := fun n a => ⟨a.1 ^ n, H.zpow_mem a.2 n⟩
+    zpow := fun n a => a ^ n --  ⟨a.1 ^ n, H.zpow_mem a.2 n⟩
     zpow_zero' := fun _ => Subtype.ext (zpow_zero _)
     zpow_succ' := fun _ _ => Subtype.ext (DivInvMonoid.zpow_succ' _ _)
     zpow_neg' := fun _ _ => Subtype.ext (DivInvMonoid.zpow_neg' _ _)
@@ -783,11 +777,11 @@ instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
 #align subgroup.to_group Subgroup.toGroup
 #align add_subgroup.to_add_group AddSubgroup.toAddGroup
 
-/-- A subgroup of a group inherits an integer power -/
-@[to_additive existing]
-instance zpow : Pow H ℤ :=
-  ⟨fun a n => DivInvMonoid.zpow n a⟩
-#align subgroup.has_zpow Subgroup.zpow
+-- /-- A subgroup of a group inherits an integer power -/
+-- @[to_additive existing]
+-- instance zpow : Pow H ℤ :=
+--   ⟨fun a n => DivInvMonoid.zpow n a⟩
+-- #align subgroup.has_zpow Subgroup.zpow
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive "An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`."]

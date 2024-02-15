@@ -97,57 +97,61 @@ instance (priority := 75) toHasIntCast : IntCast s :=
 #align subring_class.to_has_int_cast SubringClass.toHasIntCast
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
+/-- A subring of a ring inherits a `AddGroupWithOne` structure -/
+instance (priority := 75) toAddGroupWithOne : AddGroupWithOne s :=
+  { toHasIntCast _, NonAssocSemiring.toAddCommMonoidWithOne, AddCommGroup.toAddGroup with
+    intCast_ofNat := fun _ => Subtype.ext <| AddGroupWithOne.intCast_ofNat _
+    intCast_negSucc := fun _ => Subtype.ext <| AddGroupWithOne.intCast_negSucc _ }
+
+-- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/
 instance (priority := 75) toRing : Ring s :=
-  Subtype.coe_injective.ring (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+  { SubsemiringClass.toSemiring _, AddSubgroupClass.toAddCommGroup _, toAddGroupWithOne _ with }
 #align subring_class.to_ring SubringClass.toRing
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClass S R] :
-    CommRing s :=
-  Subtype.coe_injective.commRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+    CommRing s where
+  mul_comm := mul_comm
 #align subring_class.to_comm_ring SubringClass.toCommRing
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
-instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] : IsDomain s :=
+instance (priority := 75) isDomain {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] :
+    IsDomain s :=
   NoZeroDivisors.to_isDomain _
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance (priority := 75) toOrderedRing {R} [OrderedRing R] [SetLike S R] [SubringClass S R] :
     OrderedRing s :=
-  Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+  { toRing _, AddSubgroupClass.toOrderedAddCommGroup _ with
+    zero_le_one := zero_le_one
+    mul_nonneg := fun _ _ h₁ h₂ => OrderedRing.mul_nonneg _ _ h₁ h₂
+    add_le_add_left := fun _ _ h c =>  OrderedRing.add_le_add_left _ _ h c }
 #align subring_class.to_ordered_ring SubringClass.toOrderedRing
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
 instance (priority := 75) toOrderedCommRing {R} [OrderedCommRing R] [SetLike S R]
-    [SubringClass S R] : OrderedCommRing s :=
-  Subtype.coe_injective.orderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+    [SubringClass S R] : OrderedCommRing s where
+  mul_comm := mul_comm
 #align subring_class.to_ordered_comm_ring SubringClass.toOrderedCommRing
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
 instance (priority := 75) toLinearOrderedRing {R} [LinearOrderedRing R] [SetLike S R]
     [SubringClass S R] : LinearOrderedRing s :=
-  Subtype.coe_injective.linearOrderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  { toOrderedRing _, SubsemiringClass.toLinearOrderedSemiring _ with
+    mul_pos := fun _ _ h₁ h₂ => StrictOrderedRing.mul_pos _ _ h₁ h₂ }
 #align subring_class.to_linear_ordered_ring SubringClass.toLinearOrderedRing
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
 instance (priority := 75) toLinearOrderedCommRing {R} [LinearOrderedCommRing R] [SetLike S R]
-    [SubringClass S R] : LinearOrderedCommRing s :=
-  Subtype.coe_injective.linearOrderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    [SubringClass S R] : LinearOrderedCommRing s where
+  mul_comm := mul_comm
 #align subring_class.to_linear_ordered_comm_ring SubringClass.toLinearOrderedCommRing
 
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
@@ -451,8 +455,8 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
 #align subring.coe_eq_zero_iff Subring.coe_eq_zero_iff
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
-instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
-  SubringClass.toCommRing s
+instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s where
+  mul_comm := mul_comm
 #align subring.to_comm_ring Subring.toCommRing
 
 /-- A subring of a non-trivial ring is non-trivial. -/
@@ -460,12 +464,8 @@ instance {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
   s.toSubsemiring.nontrivial
 
 /-- A subring of a ring with no zero divisors has no zero divisors. -/
-instance {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
+instance noZeroDivisors {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
   s.toSubsemiring.noZeroDivisors
-
-/-- A subring of a domain is a domain. -/
-instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
-  NoZeroDivisors.to_isDomain _
 
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
