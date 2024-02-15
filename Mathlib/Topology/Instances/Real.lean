@@ -156,7 +156,7 @@ section
 theorem closure_of_rat_image_lt {q : ℚ} :
     closure (((↑) : ℚ → ℝ) '' { x | q < x }) = { r | ↑q ≤ r } :=
   Subset.antisymm
-    ((isClosed_ge' _).closure_subset_iff.2
+    (isClosed_Ici.closure_subset_iff.2
       (image_subset_iff.2 fun p h => le_of_lt <| (@Rat.cast_lt ℝ _ _ _).2 h))
     fun x hx => mem_closure_iff_nhds.2 fun t ht =>
       let ⟨ε, ε0, hε⟩ := Metric.mem_nhds_iff.1 ht
