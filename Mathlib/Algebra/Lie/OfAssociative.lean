@@ -41,27 +41,6 @@ section OfAssociative
 
 variable {A : Type v} [Ring A]
 
-namespace Ring
-
-/-- The bracket operation for rings is the ring commutator, which captures the extent to which a
-ring is commutative. It is identically zero exactly when the ring is commutative. -/
-instance (priority := 100) instBracket : Bracket A A :=
-  ⟨fun x y => x * y - y * x⟩
-
-theorem lie_def (x y : A) : ⁅x, y⁆ = x * y - y * x :=
-  rfl
-#align ring.lie_def Ring.lie_def
-
-end Ring
-
-theorem commute_iff_lie_eq {x y : A} : Commute x y ↔ ⁅x, y⁆ = 0 :=
-  sub_eq_zero.symm
-#align commute_iff_lie_eq commute_iff_lie_eq
-
-theorem Commute.lie_eq {x y : A} (h : Commute x y) : ⁅x, y⁆ = 0 :=
-  sub_eq_zero_of_eq h
-#align commute.lie_eq Commute.lie_eq
-
 namespace LieRing
 
 /-- An associative ring gives rise to a Lie ring by taking the bracket to be the ring commutator. -/
