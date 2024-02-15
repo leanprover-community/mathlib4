@@ -603,24 +603,24 @@ lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : Q W ⋙ lift F hF = F :=
     dsimp [lift]
     rw [Q_map, Hom.map_mk, id_comp, comp_id, map_ofHom])
 
-lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ := by
-  refine' Functor.ext (fun X => Functor.congr_obj h X) _
-  rintro (X Y : C) f
-  obtain ⟨f, rfl⟩ := Hom.mk_surjective f
-  rw [show Hom.mk f = homMk (mk f.f f.s f.hs) by rfl,
-    ← Q_map_comp_Qinv f.f f.s f.hs, F₁.map_comp, F₂.map_comp, assoc]
-  erw [Functor.congr_hom h f.f]
-  rw [assoc, assoc]
-  congr 2
-  have := inverts W _ f.hs
-  rw [← cancel_epi (F₂.map ((Q W).map f.s)), ← F₂.map_comp_assoc,
-    Qiso_hom_inv_id, Functor.map_id, id_comp]
-  erw [Functor.congr_hom h.symm f.s]
-  dsimp
-  rw [assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp, ← F₁.map_comp,
-    Qiso_hom_inv_id]
-  dsimp
-  rw [F₁.map_id, comp_id]
+lemma uniq (F₁ F₂ : Localization W ⥤ E) (h : Q W ⋙ F₁ = Q W ⋙ F₂) : F₁ = F₂ :=
+  Functor.ext (fun X => Functor.congr_obj h X) (by
+    rintro (X Y : C) f
+    obtain ⟨f, rfl⟩ := Hom.mk_surjective f
+    rw [show Hom.mk f = homMk (mk f.f f.s f.hs) by rfl,
+      ← Q_map_comp_Qinv f.f f.s f.hs, F₁.map_comp, F₂.map_comp, assoc]
+    erw [Functor.congr_hom h f.f]
+    rw [assoc, assoc]
+    congr 2
+    have := inverts W _ f.hs
+    rw [← cancel_epi (F₂.map ((Q W).map f.s)), ← F₂.map_comp_assoc,
+      Qiso_hom_inv_id, Functor.map_id, id_comp]
+    erw [Functor.congr_hom h.symm f.s]
+    dsimp
+    rw [assoc, assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp, ← F₁.map_comp,
+      Qiso_hom_inv_id]
+    dsimp
+    rw [F₁.map_id, comp_id])
 
 end StrictUniversalPropertyFixedTarget
 
