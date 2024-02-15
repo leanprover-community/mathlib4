@@ -154,7 +154,7 @@ protected theorem indicator (hf : UnifIntegrable f p μ) (E : Set α) :
     _ ≤ snorm (s.indicator (f i)) p μ := snorm_indicator_le _
     _ ≤ ENNReal.ofReal ε := hε _ _ hs hμs
 
-/-- Uniform integrability is preserved by restriction of measure to measurable set. -/
+/-- Uniform integrability is preserved by restriction of measure to a set. -/
 protected theorem restrict (hf : UnifIntegrable f p μ) (E : Set α) :
     UnifIntegrable f p (μ.restrict E) := fun ε hε ↦ by
   obtain ⟨δ, hδ_pos, hδε⟩ := hf hε
