@@ -25,11 +25,11 @@ We provide basic definitions and results to support `α`-chain techniques in thi
 ## Main definitions / results
 
  * `LieModule.weightSpaceChain`: given weights `χ₁`, `χ₂` together with integers `p` and `q`, this
-   is the direct sum of the weight spaces `k • χ₁ + χ₂` for `p < k < q`.
+   is the sum of the weight spaces `k • χ₁ + χ₂` for `p < k < q`.
  * `LieModule.trace_toEndomorphism_weightSpaceChain_eq_zero`: given a root `α` relative to a Cartan
    subalgebra `H`, there is a natural ideal `(rootSpaceProductNegSelf α).range` in `H`. This lemma
    states that this ideal acts by trace-zero endomorphisms on the sum of root spaces of any
-   `α`-chain provided the weight spaces at the endpoints are both trivial.
+   `α`-chain, provided the weight spaces at the endpoints are both trivial.
 
 -/
 
@@ -74,7 +74,7 @@ open LieAlgebra
 
 variable {H : LieSubalgebra R L} [H.IsCartanSubalgebra] (α χ : H → R) (p q : ℤ)
 
-lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left (hq : weightSpace M (q • α + χ) = ⊥)
+lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right (hq : weightSpace M (q • α + χ) = ⊥)
     {x : L} {y : M} (hx : x ∈ rootSpace H α) (hy : y ∈ weightSpaceChain M α χ p q) :
     ⁅x, y⁆ ∈ weightSpaceChain M α χ p q := by
   rw [weightSpaceChain, iSup_subtype'] at hy
@@ -92,12 +92,12 @@ lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left (hq : weightSpace M (q
   · rw [lie_add]
     exact add_mem hz₁ hz₂
 
-lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right (hp : weightSpace M (p • α + χ) = ⊥)
+lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left (hp : weightSpace M (p • α + χ) = ⊥)
     {x : L} {y : M} (hx : x ∈ rootSpace H (-α)) (hy : y ∈ weightSpaceChain M α χ p q) :
     ⁅x, y⁆ ∈ weightSpaceChain M α χ p q := by
   replace hp : weightSpace M ((-p) • (-α) + χ) = ⊥ := by rwa [smul_neg, neg_smul, neg_neg]
   rw [← weightSpaceChain_neg] at hy ⊢
-  exact lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M (-α) χ (-q) (-p) hp hx hy
+  exact lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right M (-α) χ (-q) (-p) hp hx hy
 
 lemma trace_toEndomorphism_weightSpaceChain_eq_zero [IsNoetherian R L]
     (hp : weightSpace M (p • α + χ) = ⊥) (hq : weightSpace M (q • α + χ) = ⊥)
@@ -108,12 +108,12 @@ lemma trace_toEndomorphism_weightSpaceChain_eq_zero [IsNoetherian R L]
   · simp
   · let f : Module.End R (weightSpaceChain M α χ p q) :=
       { toFun := fun ⟨m, hm⟩ ↦ ⟨⁅(y : L), m⁆,
-          lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M α χ p q hq y.property hm⟩
+          lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right M α χ p q hq y.property hm⟩
         map_add' := fun _ _ ↦ by simp
         map_smul' := fun t m ↦ by simp }
     let g : Module.End R (weightSpaceChain M α χ p q) :=
       { toFun := fun ⟨m, hm⟩ ↦ ⟨⁅(z : L), m⁆,
-          lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right M α χ p q hp z.property hm⟩
+          lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M α χ p q hp z.property hm⟩
         map_add' := fun _ _ ↦ by simp
         map_smul' := fun t m ↦ by simp }
     have hfg : toEndomorphism R H _ (rootSpaceProductNegSelf α (y ⊗ₜ z)) = ⁅f, g⁆ := by ext; simp
