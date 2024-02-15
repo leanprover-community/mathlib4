@@ -44,6 +44,7 @@ namespace LoopAlgebra
 variable [CommRing R] [CommRing A] [Algebra R A] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
+/-- A loop algebra is the base change of a Lie algebra by the algebra of Laurent polynomials. -/
 abbrev LoopAlgebra := (LaurentPolynomial R ⊗[R] L)
 
 instance instLieRing : LieRing (LoopAlgebra R L) :=
