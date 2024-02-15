@@ -134,8 +134,9 @@ theorem finset_prod_mk {p : Finset β} {f : β → α} :
     (∏ i in p, Associates.mk (f i)) = Associates.mk (∏ i in p, f i) := by
   -- Porting note: added
   have : (fun i => Associates.mk (f i)) = Associates.mk ∘ f :=
-    funext <| fun x => Function.comp_apply
-  rw [Finset.prod_eq_multiset_prod, this, ←Multiset.map_map, prod_mk, ←Finset.prod_eq_multiset_prod]
+    funext fun x => Function.comp_apply
+  rw [Finset.prod_eq_multiset_prod, this, ← Multiset.map_map, prod_mk,
+    ← Finset.prod_eq_multiset_prod]
 #align associates.finset_prod_mk Associates.finset_prod_mk
 
 theorem rel_associated_iff_map_eq_map {p q : Multiset α} :
@@ -200,9 +201,17 @@ theorem Prime.dvd_finset_prod_iff {S : Finset α} {p : M} (pp : Prime p) (g : α
   ⟨pp.exists_mem_finset_dvd, fun ⟨_, ha1, ha2⟩ => dvd_trans ha2 (dvd_prod_of_mem g ha1)⟩
 #align prime.dvd_finset_prod_iff Prime.dvd_finset_prod_iff
 
+theorem Prime.not_dvd_finset_prod {S : Finset α} {p : M} (pp : Prime p) {g : α → M}
+    (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g := by
+  exact mt (Prime.dvd_finset_prod_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
+
 theorem Prime.dvd_finsupp_prod_iff {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p) :
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=
   Prime.dvd_finset_prod_iff pp _
 #align prime.dvd_finsupp_prod_iff Prime.dvd_finsupp_prod_iff
+
+theorem Prime.not_dvd_finsupp_prod {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p)
+    (hS : ∀ a ∈ f.support, ¬p ∣ g a (f a)) : ¬p ∣ f.prod g :=
+  Prime.not_dvd_finset_prod pp hS
 
 end CommMonoidWithZero

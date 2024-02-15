@@ -220,7 +220,7 @@ theorem ae_lineDeriv_sum_eq
       ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth le_top
     simp_rw [integral_lineDeriv_mul_eq hf g_lip g_comp]
     simp_rw [(g_smooth.differentiable le_top).differentiableAt.lineDeriv_eq_fderiv]
-    simp only [map_neg, map_sum, SMulHomClass.map_smul, smul_eq_mul, neg_mul]
+    simp only [map_neg, _root_.map_sum, SMulHomClass.map_smul, smul_eq_mul, neg_mul]
     simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
     exact S2
   suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by
@@ -357,7 +357,7 @@ theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f
   suffices H : ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ (A ∘ f) s x by
     filter_upwards [H] with x hx xs
     have : f = (A.symm ∘ A) ∘ f := by
-      simp only [ContinuousLinearEquiv.symm_comp_self, Function.comp.left_id]
+      simp only [ContinuousLinearEquiv.symm_comp_self, Function.id_comp]
     rw [this]
     exact A.symm.differentiableAt.comp_differentiableWithinAt x (hx xs)
   apply ae_differentiableWithinAt_of_mem_pi

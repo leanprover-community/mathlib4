@@ -79,7 +79,7 @@ theorem oangle_zero_right (x : V) : o.oangle x 0 = 0 := by simp [oangle]
 /-- If the two vectors passed to `oangle` are the same, the result is 0. -/
 @[simp]
 theorem oangle_self (x : V) : o.oangle x x = 0 := by
-  rw [oangle, kahler_apply_self]; norm_cast
+  rw [oangle, kahler_apply_self, ← ofReal_pow]; norm_cast
   convert QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
   apply arg_ofReal_of_nonneg
   positivity

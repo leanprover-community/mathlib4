@@ -107,7 +107,7 @@ theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
     IsRat a (.ofNat (Nat.succ n)) d → IsRat a⁻¹ (.ofNat d) (Nat.succ n) := by
   rintro ⟨_, rfl⟩
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
-  refine ⟨this, by simp⟩
+  exact ⟨this, by simp⟩
 
 theorem isRat_inv_one {α} [DivisionRing α] : {a : α} →
     IsNat a (nat_lit 1) → IsNat a⁻¹ (nat_lit 1)
@@ -159,7 +159,7 @@ such that `norm_num` successfully recognises `a`. -/
         let .isNat inst n pa := ra | failure
         haveI' : $n =Q nat_lit 1 := ⟨⟩
         assumeInstancesCommute
-        return .isNat inst n (q(isRat_inv_one $pa))
+        return .isNat inst n q(isRat_inv_one $pa)
     else if qa < 0 then
       if let some i := i then
         have lit : Q(ℕ) := na.appArg!

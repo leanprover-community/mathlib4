@@ -39,7 +39,7 @@ namespace MySubobject
 variables {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
-  ⟨MySubobject.carrier, λ p q h, by cases p; cases q; congr'⟩
+  ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
 
 @[simp] lemma mem_carrier {p : MySubobject X} : x ∈ p.carrier ↔ x ∈ (p : Set X) := Iff.rfl
 
@@ -62,7 +62,7 @@ end MySubobject
 
 An alternative to `SetLike` could have been an extensional `Membership` typeclass:
 ```
-class ExtMembership (α : out_param $ Type u) (β : Type v) extends Membership α β :=
+class ExtMembership (α : out_param <| Type u) (β : Type v) extends Membership α β :=
   (ext_iff : ∀ {s t : β}, s = t ↔ ∀ (x : α), x ∈ s ↔ x ∈ t)
 ```
 While this is equivalent, `SetLike` conveniently uses a carrier set projection directly.
@@ -108,11 +108,28 @@ variable {A : Type*} {B : Type*} [i : SetLike A B]
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
-instance (priority := 100) : Membership B A :=
+instance (priority := 100) instMembership : Membership B A :=
   ⟨fun x p => x ∈ (p : Set B)⟩
 
 instance (priority := 100) : CoeSort A (Type _) :=
   ⟨fun p => { x : B // x ∈ p }⟩
+
+section Delab
+open Lean PrettyPrinter.Delaborator SubExpr
+
+/-- For terms that match the `CoeSort` instance's body, pretty print as `↥S`
+rather than as `{ x // x ∈ S }`. The discriminating feature is that membership
+uses the `SetLike.instMembership` instance. -/
+@[delab app.Subtype]
+def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
+  let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
+  guard <| body.isAppOf ``Membership.mem
+  let #[_, _, inst, .bvar 0, _] := body.getAppArgs | failure
+  guard <| inst.isAppOfArity ``instMembership 3
+  let S ← withAppArg <| withBindingBody n <| withNaryArg 4 delab
+  `(↥$S)
+
+end Delab
 
 variable (p q : A)
 

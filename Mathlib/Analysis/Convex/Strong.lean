@@ -22,8 +22,6 @@ If `E` is an inner product space, this is equivalent to `x ↦ f x - m / 2 * ‖
 Prove derivative properties of strongly convex functions.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
-
 open Real
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -57,12 +55,12 @@ protected alias ⟨_, ConvexOn.uniformConvexOn_zero⟩ := uniformConvexOn_zero
 protected alias ⟨_, ConcaveOn.uniformConcaveOn_zero⟩ := uniformConcaveOn_zero
 
 lemma UniformConvexOn.mono (hψφ : ψ ≤ φ) (hf : UniformConvexOn s φ f) : UniformConvexOn s ψ f :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans $
-    sub_le_sub_left (mul_le_mul_of_nonneg_left (hψφ _) $ by positivity) _⟩
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans <|
+    sub_le_sub_left (mul_le_mul_of_nonneg_left (hψφ _) <| by positivity) _⟩
 
 lemma UniformConcaveOn.mono (hψφ : ψ ≤ φ) (hf : UniformConcaveOn s φ f) : UniformConcaveOn s ψ f :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans' $
-    add_le_add_left (mul_le_mul_of_nonneg_left (hψφ _) $ by positivity) _⟩
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans' <|
+    add_le_add_left (mul_le_mul_of_nonneg_left (hψφ _) <| by positivity) _⟩
 
 lemma UniformConvexOn.convexOn (hf : UniformConvexOn s φ f) (hφ : 0 ≤ φ) : ConvexOn ℝ s f := by
   simpa using hf.mono hφ
@@ -72,17 +70,17 @@ lemma UniformConcaveOn.concaveOn (hf : UniformConcaveOn s φ f) (hφ : 0 ≤ φ)
 
 lemma UniformConvexOn.strictConvexOn (hf : UniformConvexOn s φ f) (hφ : ∀ r, r ≠ 0 → 0 < φ r) :
     StrictConvexOn ℝ s f := by
-  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt $
+  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt <|
     sub_lt_self _ ?_⟩
-  rw [←sub_ne_zero, ←norm_pos_iff] at hxy
+  rw [← sub_ne_zero, ← norm_pos_iff] at hxy
   have := hφ _ hxy.ne'
   positivity
 
 lemma UniformConcaveOn.strictConcaveOn (hf : UniformConcaveOn s φ f) (hφ : ∀ r, r ≠ 0 → 0 < φ r) :
     StrictConcaveOn ℝ s f := by
-  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt' $
+  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt' <|
     lt_add_of_pos_right _ ?_⟩
-  rw [←sub_ne_zero, ←norm_pos_iff] at hxy
+  rw [← sub_ne_zero, ← norm_pos_iff] at hxy
   have := hφ _ hxy.ne'
   positivity
 
@@ -103,7 +101,7 @@ lemma UniformConvexOn.neg (hf : UniformConvexOn s φ f) : UniformConcaveOn s φ 
 
 lemma UniformConcaveOn.neg (hf : UniformConcaveOn s φ f) : UniformConvexOn s φ (-f) := by
   refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ le_of_neg_le_neg ?_⟩
-  simpa [add_comm, -neg_le_neg_iff, ←le_sub_iff_add_le', sub_eq_add_neg, neg_add]
+  simpa [add_comm, -neg_le_neg_iff, ← le_sub_iff_add_le', sub_eq_add_neg, neg_add]
     using hf.2 hx hy ha hb hab
 
 lemma UniformConvexOn.sub (hf : UniformConvexOn s φ f) (hg : UniformConcaveOn s ψ g) :
@@ -129,17 +127,17 @@ def StrongConcaveOn (s : Set E) (m : ℝ) : (E → ℝ) → Prop :=
 variable {s : Set E} {f : E → ℝ} {m n : ℝ}
 
 nonrec lemma StrongConvexOn.mono (hmn : m ≤ n) (hf : StrongConvexOn s n f) : StrongConvexOn s m f :=
-  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) $ by positivity
+  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) <| by positivity
 
 nonrec lemma StrongConcaveOn.mono (hmn : m ≤ n) (hf : StrongConcaveOn s n f) :
     StrongConcaveOn s m f :=
-  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) $ by positivity
+  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) <| by positivity
 
 @[simp] lemma strongConvexOn_zero : StrongConvexOn s 0 f ↔ ConvexOn ℝ s f := by
-  simp [StrongConvexOn, ←Pi.zero_def]
+  simp [StrongConvexOn, ← Pi.zero_def]
 
 @[simp] lemma strongConcaveOn_zero : StrongConcaveOn s 0 f ↔ ConcaveOn ℝ s f := by
-  simp [StrongConcaveOn, ←Pi.zero_def]
+  simp [StrongConcaveOn, ← Pi.zero_def]
 
 nonrec lemma StrongConvexOn.strictConvexOn (hf : StrongConvexOn s m f) (hm : 0 < m) :
     StrictConvexOn ℝ s f := hf.strictConvexOn fun r hr ↦ by positivity
@@ -175,6 +173,6 @@ lemma strongConvexOn_iff_convex :
 lemma strongConcaveOn_iff_convex :
     StrongConcaveOn s m f ↔ ConcaveOn ℝ s fun x ↦ f x + m / (2 : ℝ) * ‖x‖ ^ 2 := by
   refine and_congr_right fun _ ↦ forall₄_congr fun x _ y _ ↦ forall₅_congr fun a b ha hb hab ↦ ?_
-  simp_rw [←sub_le_iff_le_add, smul_eq_mul, aux_add ha hb hab, mul_assoc, mul_left_comm]
+  simp_rw [← sub_le_iff_le_add, smul_eq_mul, aux_add ha hb hab, mul_assoc, mul_left_comm]
 
 end InnerProductSpace

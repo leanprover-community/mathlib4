@@ -75,7 +75,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   obtain ⟨W', hxW', i₁, i₂, heq'⟩ := X.presheaf.germ_eq x.1 hxW hxW _ _ heq
   use W', i₁ ≫ Opens.infLELeft U V, hxW'
   rw [(X.presheaf.map i₂.op).map_one, (X.presheaf.map i₁.op).map_mul] at heq'
-  rw [← comp_apply, ←X.presheaf.map_comp, ←comp_apply, ←X.presheaf.map_comp, ←op_comp] at heq'
+  rw [← comp_apply, ← X.presheaf.map_comp, ← comp_apply, ← X.presheaf.map_comp, ← op_comp] at heq'
   exact isUnit_of_mul_eq_one _ _ heq'
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace.is_unit_res_of_is_unit_germ AlgebraicGeometry.RingedSpace.isUnit_res_of_isUnit_germ
@@ -100,7 +100,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     erw [germ_res_apply, germ_res_apply]
     apply (IsUnit.mul_right_inj (h ⟨z, (iVU x).le hzVx⟩)).mp
     -- Porting note : now need explicitly typing the rewrites
-    rw [←show X.presheaf.germ ⟨z, hzVx⟩ (X.presheaf.map (iVU x).op f) =
+    rw [← show X.presheaf.germ ⟨z, hzVx⟩ (X.presheaf.map (iVU x).op f) =
       X.presheaf.germ ⟨z, ((iVU x) ⟨z, hzVx⟩).2⟩ f from
       X.presheaf.germ_res_apply (iVU x) ⟨z, hzVx⟩ f]
     -- Porting note : change was not necessary in Lean3

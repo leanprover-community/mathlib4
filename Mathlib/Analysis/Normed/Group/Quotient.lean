@@ -5,6 +5,7 @@ Authors: Patrick Massot, Riccardo Brasca
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Data.Real.Sqrt
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
@@ -379,7 +380,7 @@ theorem IsQuotient.norm_lift {f : NormedAddGroupHom M N} (hquot : IsQuotient f) 
     (n : N) : ∃ m : M, f m = n ∧ ‖m‖ < ‖n‖ + ε := by
   obtain ⟨m, rfl⟩ := hquot.surjective n
   have nonemp : ((fun m' => ‖m + m'‖) '' f.ker).Nonempty := by
-    rw [Set.nonempty_image_iff]
+    rw [Set.image_nonempty]
     exact ⟨0, f.ker.zero_mem⟩
   rcases Real.lt_sInf_add_pos nonemp hε
     with ⟨_, ⟨⟨x, hx, rfl⟩, H : ‖m + x‖ < sInf ((fun m' : M => ‖m + m'‖) '' f.ker) + ε⟩⟩
@@ -461,22 +462,26 @@ theorem Submodule.Quotient.norm_mk_le (m : M) : ‖(Submodule.Quotient.mk m : M 
   quotient_norm_mk_le S.toAddSubgroup m
 #align submodule.quotient.norm_mk_le Submodule.Quotient.norm_mk_le
 
+instance Submodule.Quotient.instBoundedSMul (𝕜 : Type*)
+    [SeminormedCommRing 𝕜] [Module 𝕜 M] [BoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
+    BoundedSMul 𝕜 (M ⧸ S) :=
+  .of_norm_smul_le fun k x =>
+    -- porting note: this is `QuotientAddGroup.norm_lift_apply_le` for `f : M → M ⧸ S` given by
+    -- `x ↦ mk (k • x)`; todo: add scalar multiplication as `NormedAddGroupHom`, use it here
+    _root_.le_of_forall_pos_le_add fun ε hε => by
+      have := (nhds_basis_ball.tendsto_iff nhds_basis_ball).mp
+        ((@Real.uniformContinuous_const_mul ‖k‖).continuous.tendsto ‖x‖) ε hε
+      simp only [mem_ball, exists_prop, dist, abs_sub_lt_iff] at this
+      rcases this with ⟨δ, hδ, h⟩
+      obtain ⟨a, rfl, ha⟩ := Submodule.Quotient.norm_mk_lt x hδ
+      specialize h ‖a‖ ⟨by linarith, by linarith [Submodule.Quotient.norm_mk_le S a]⟩
+      calc
+        _ ≤ ‖k‖ * ‖a‖ := (quotient_norm_mk_le S.toAddSubgroup (k • a)).trans (norm_smul_le k a)
+        _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
+
 instance Submodule.Quotient.normedSpace (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 M] [SMul 𝕜 R]
-    [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) :=
-  { Submodule.Quotient.module' S with
-    norm_smul_le := fun k x =>
-      -- porting note: this is `QuotientAddGroup.norm_lift_apply_le` for `f : M → M ⧸ S` given by
-      -- `x ↦ mk (k • x)`; todo: add scalar multiplication as `NormedAddGroupHom`, use it here
-      le_of_forall_pos_le_add fun ε hε => by
-        have := (nhds_basis_ball.tendsto_iff nhds_basis_ball).mp
-          ((@Real.uniformContinuous_const_mul ‖k‖).continuous.tendsto ‖x‖) ε hε
-        simp only [mem_ball, exists_prop, dist, abs_sub_lt_iff] at this
-        rcases this with ⟨δ, hδ, h⟩
-        obtain ⟨a, rfl, ha⟩ := Submodule.Quotient.norm_mk_lt x hδ
-        specialize h ‖a‖ ⟨by linarith, by linarith [Submodule.Quotient.norm_mk_le S a]⟩
-        calc
-          _ ≤ ‖k‖ * ‖a‖ := (quotient_norm_mk_le S.toAddSubgroup (k • a)).trans_eq (norm_smul k a)
-          _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le }
+    [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) where
+  norm_smul_le := norm_smul_le
 #align submodule.quotient.normed_space Submodule.Quotient.normedSpace
 
 end Submodule

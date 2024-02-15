@@ -247,9 +247,7 @@ theorem mul {x y : K_hat R K} (hx : x.IsFiniteAdele) (hy : y.IsFiniteAdele) :
     have h_mul : Valued.v (x v * y v) = Valued.v (x v) * Valued.v (y v) :=
       Valued.v.map_mul' (x v) (y v)
     rw [mem_adicCompletionIntegers, Pi.mul_apply, h_mul]
-    exact
-      @mul_le_one' (WithZero (Multiplicative ℤ)) _ _ (OrderedCommMonoid.to_covariantClass_left _) _
-        _ hv.left hv.right
+    exact mul_le_one' hv.left hv.right
   exact (hx.union hy).subset h_subset
 #align dedekind_domain.prod_adic_completions.is_finite_adele.mul DedekindDomain.ProdAdicCompletions.IsFiniteAdele.mul
 

@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.asymptotics.specific_asymptotics from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -12,7 +13,7 @@ import Mathlib.Analysis.Asymptotics.Asymptotics
 # A collection of specific asymptotic results
 
 This file contains specific lemmas about asymptotics which don't have their place in the general
-theory developped in `Analysis.Asymptotics.Asymptotics`.
+theory developed in `Analysis.Asymptotics.Asymptotics`.
 -/
 
 
@@ -51,13 +52,6 @@ theorem pow_div_pow_eventuallyEq_atBot {p q : ℕ} :
   intro x hx
   simp [zpow_sub₀ hx.ne]
 #align pow_div_pow_eventually_eq_at_bot pow_div_pow_eventuallyEq_atBot
-
-theorem tendsto_zpow_atTop_atTop {n : ℤ} (hn : 0 < n) :
-    Tendsto (fun x : 𝕜 => x ^ n) atTop atTop := by
-  lift n to ℕ using hn.le
-  simp only [zpow_ofNat]
-  exact tendsto_pow_atTop (Nat.cast_pos.mp hn).ne'
-#align tendsto_zpow_at_top_at_top tendsto_zpow_atTop_atTop
 
 theorem tendsto_pow_div_pow_atTop_atTop {p q : ℕ} (hpq : q < p) :
     Tendsto (fun x : 𝕜 => x ^ p / x ^ q) atTop atTop := by

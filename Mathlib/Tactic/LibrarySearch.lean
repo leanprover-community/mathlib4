@@ -4,9 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Scott Morrison
 -/
 import Std.Util.Pickle
-import Mathlib.Tactic.Cache
-import Mathlib.Tactic.SolveByElim
+import Std.Util.Cache
+import Std.Lean.Parser
+import Std.Tactic.SolveByElim
+import Std.Tactic.TryThis
 import Std.Data.MLList.Heartbeats
+import Mathlib.Lean.Meta
+import Mathlib.Lean.Meta.DiscrTree
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Library search
@@ -26,10 +31,13 @@ example : Nat := by exact?
 
 namespace Mathlib.Tactic.LibrarySearch
 
-open Lean Meta Std.Tactic.TryThis
+open Lean Meta Std.Tactic TryThis
 
 initialize registerTraceClass `Tactic.librarySearch
 initialize registerTraceClass `Tactic.librarySearch.lemmas
+
+/-- Configuration for `DiscrTree`. -/
+def discrTreeConfig : WhnfCoreConfig := {}
 
 /--
 A "modifier" for a declaration.
@@ -47,30 +55,19 @@ instance : ToString DeclMod where
 
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
-    MetaM (Array (Array (DiscrTree.Key true) × (Name × DeclMod))) := do
+    MetaM (Array (Array DiscrTree.Key × (Name × DeclMod))) := do
   if constInfo.isUnsafe then return #[]
   if ← name.isBlackListed then return #[]
   withNewMCtxDepth do withReducible do
     let (_, _, type) ← forallMetaTelescope constInfo.type
-    let keys ← DiscrTree.mkPath type
+    let keys ← DiscrTree.mkPath type discrTreeConfig
     let mut r := #[(keys, (name, .none))]
     match type.getAppFnArgs with
     | (``Iff, #[lhs, rhs]) => do
-      return r.push (← DiscrTree.mkPath rhs, (name, .mp))
-        |>.push (← DiscrTree.mkPath lhs, (name, .mpr))
-    | _ => return r
-
-/-- Insert a lemma into the discrimination tree. -/
--- Recall that `apply?` caches the discrimination tree on disk.
--- If you are modifying this file, you will probably want to delete
--- `build/lib/MathlibExtras/LibrarySearch.extra`
--- so that the cache is rebuilt.
-def addLemma (name : Name) (constInfo : ConstantInfo)
-    (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
-  let mut lemmas := lemmas
-  for (key, value) in ← processLemma name constInfo do
-    lemmas := lemmas.insertIfSpecific key value
-  return lemmas
+      r := r.push (← DiscrTree.mkPath rhs discrTreeConfig, (name, .mp))
+        |>.push (← DiscrTree.mkPath lhs discrTreeConfig, (name, .mpr))
+    | _ => pure ()
+    return r.filter (DiscrTree.keysSpecific ·.1)
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
@@ -90,7 +87,7 @@ def cachePath : IO FilePath :=
   try
     return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
+    return ".lake" / "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
 /--
 Retrieve the current current of lemmas.
@@ -98,9 +95,9 @@ Retrieve the current current of lemmas.
 initialize librarySearchLemmas : DiscrTreeCache (Name × DeclMod) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, _r) ← unpickle (DiscrTree (Name × DeclMod) true) path
-    -- We can drop the `CompactedRegion` value; we do not plan to free it
-    DiscrTreeCache.mk "apply?: using cache" processLemma (init := some d)
+    -- We can drop the `CompactedRegion` value from `unpickle`; we do not plan to free it
+    let d := (·.1) <$> unpickle (DiscrTree (Name × DeclMod)) path
+    DiscrTreeCache.mk "apply?: using cache" processLemma (init := d)
   else
     buildDiscrTree
 
@@ -109,7 +106,8 @@ def solveByElim (goals : List MVarId) (required : List Expr) (exfalso := false) 
   -- There is only a marginal decrease in performance for using the `symm` option for `solveByElim`.
   -- (measured via `lake build && time lake env lean test/librarySearch.lean`).
   let cfg : SolveByElim.Config :=
-    { maxDepth := depth, exfalso := exfalso, symm := true, commitIndependentGoals := true }
+    { maxDepth := depth, exfalso := exfalso, symm := true, commitIndependentGoals := true,
+      transparency := ← getTransparency }
   let cfg := if !required.isEmpty then cfg.requireUsingAll required else cfg
   SolveByElim.solveByElim.processSyntax cfg false false [] [] #[] goals
 
@@ -281,8 +279,8 @@ elab_rules : tactic | `(tactic| apply? $[using $[$required],*]?) => do
   exact? (← getRef) required false
 
 elab tk:"library_search" : tactic => do
-  logWarning ("`library_search` has been renamed to `apply?`" ++
-    " (or `exact?` if you only want solutions closing the goal)")
+  logWarning "`library_search` has been renamed to `apply?` \
+    (or `exact?` if you only want solutions closing the goal)"
   exact? tk none false
 
 open Elab Term in

@@ -30,7 +30,6 @@ which seems less often useful.
 
 universe v u
 
-noncomputable section
 
 namespace CategoryTheory
 
@@ -152,11 +151,15 @@ def IsLimit.assoc {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : Bin
     rintro ⟨⟨⟩⟩ <;> simp
     · exact w ⟨WalkingPair.left⟩
     · specialize w ⟨WalkingPair.right⟩
-      simp at w
+      simp? at w says
+        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+          Functor.const_obj_obj, pair_obj_left] at w
       rw [← w]
       simp
     · specialize w ⟨WalkingPair.right⟩
-      simp at w
+      simp? at w says
+        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+          Functor.const_obj_obj, pair_obj_left] at w
       rw [← w]
       simp
 #align category_theory.limits.is_limit.assoc CategoryTheory.Limits.IsLimit.assoc
@@ -186,16 +189,7 @@ def BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y
 def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
     {t : BinaryFan s.pt X} (Q : IsLimit t) : t.pt ≅ X where
   hom := t.snd
-  inv :=
-    Q.lift
-      (BinaryFan.mk
-        (P.lift
-          { pt := X, π :=
-            -- Porting note: there is something fishy here:
-            -- `PEmpty.rec x x` should not even typecheck.
-            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } })
-        (𝟙 X))
-  -- Porting note: this should be automatable:
+  inv := Q.lift <| BinaryFan.mk (P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩) (𝟙 _)
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩
@@ -210,15 +204,7 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
 def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
     {t : BinaryFan X s.pt} (Q : IsLimit t) : t.pt ≅ X where
   hom := t.fst
-  inv :=
-    Q.lift
-      (BinaryFan.mk (𝟙 X)
-        (P.lift
-          { pt := X
-            π :=
-            -- Porting note: there is something fishy here:
-            -- `PEmpty.rec x x` should not even typecheck.
-            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } }))
+  inv := Q.lift <| BinaryFan.mk (𝟙 _) <| P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩
@@ -331,20 +317,24 @@ end MonoidalOfChosenFiniteProducts
 open MonoidalOfChosenFiniteProducts
 
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
-def monoidalOfChosenFiniteProducts : MonoidalCategory C := .ofTensorHom
-  (tensorUnit' := 𝒯.cone.pt)
-  (tensorObj := tensorObj ℬ)
-  (tensorHom := tensorHom ℬ)
-  (tensor_id := tensor_id ℬ)
-  (tensor_comp := tensor_comp ℬ)
-  (associator := BinaryFan.associatorOfLimitCone ℬ)
-  (leftUnitor := fun X ↦ BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X).isLimit)
-  (rightUnitor := fun X ↦ BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit)
-  (pentagon := pentagon ℬ)
-  (triangle := triangle 𝒯 ℬ)
-  (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
-  (rightUnitor_naturality := rightUnitor_naturality 𝒯 ℬ)
-  (associator_naturality := associator_naturality ℬ)
+def monoidalOfChosenFiniteProducts : MonoidalCategory C :=
+  letI : MonoidalCategoryStruct C :=
+    { tensorUnit := 𝒯.cone.pt
+      tensorObj := tensorObj ℬ
+      tensorHom := tensorHom ℬ
+      whiskerLeft := @fun X {_ _} g ↦ tensorHom ℬ (𝟙 X) g
+      whiskerRight := @fun{_ _} f Y ↦ tensorHom ℬ f (𝟙 Y)
+      associator := BinaryFan.associatorOfLimitCone ℬ
+      leftUnitor := fun X ↦ BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X).isLimit
+      rightUnitor := fun X ↦ BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit}
+  .ofTensorHom
+    (tensor_id := tensor_id ℬ)
+    (tensor_comp := tensor_comp ℬ)
+    (pentagon := pentagon ℬ)
+    (triangle := triangle 𝒯 ℬ)
+    (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
+    (rightUnitor_naturality := rightUnitor_naturality 𝒯 ℬ)
+    (associator_naturality := associator_naturality ℬ)
 #align category_theory.monoidal_of_chosen_finite_products CategoryTheory.monoidalOfChosenFiniteProducts
 
 namespace MonoidalOfChosenFiniteProducts

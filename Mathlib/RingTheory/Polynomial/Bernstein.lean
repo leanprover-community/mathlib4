@@ -87,16 +87,16 @@ theorem eval_at_0 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 0 = if ν = 0
   rw [bernsteinPolynomial]
   split_ifs with h
   · subst h; simp
-  · simp [zero_pow (Nat.pos_of_ne_zero h)]
+  · simp [zero_pow h]
 #align bernstein_polynomial.eval_at_0 bernsteinPolynomial.eval_at_0
 
 theorem eval_at_1 (n ν : ℕ) : (bernsteinPolynomial R n ν).eval 1 = if ν = n then 1 else 0 := by
   rw [bernsteinPolynomial]
   split_ifs with h
   · subst h; simp
-  · obtain w | w := (n - ν).eq_zero_or_pos
-    · simp [Nat.choose_eq_zero_of_lt ((tsub_eq_zero_iff_le.mp w).lt_of_ne (Ne.symm h))]
-    · simp [zero_pow w]
+  · obtain hνn | hnν := Ne.lt_or_lt h
+    · simp [zero_pow $ Nat.sub_ne_zero_of_lt hνn]
+    · simp [Nat.choose_eq_zero_of_lt hnν]
 #align bernstein_polynomial.eval_at_1 bernsteinPolynomial.eval_at_1
 
 theorem derivative_succ_aux (n ν : ℕ) :
@@ -118,7 +118,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
   · simp only [← mul_assoc]
     refine' congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
     -- Now it's just about binomial coefficients
-    exact_mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
+    exact mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
   · rw [← tsub_add_eq_tsub_tsub, ← mul_assoc, ← mul_assoc]; congr 1
     rw [mul_comm, ← mul_assoc, ← mul_assoc]; congr 1
     norm_cast
@@ -189,7 +189,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
         rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · simp only [not_le] at h
-    rw [tsub_eq_zero_iff_le.mpr (Nat.le_pred_of_lt h), eq_zero_of_lt R h]
+    rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
     simp [pos_iff_ne_zero.mp (pos_of_gt h)]
 #align bernstein_polynomial.iterate_derivative_at_0 bernsteinPolynomial.iterate_derivative_at_0
 
@@ -257,7 +257,8 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       simp only [Fin.val_last, Fin.init_def]
       dsimp
       apply not_mem_span_of_apply_not_mem_span_image (@Polynomial.derivative ℚ _ ^ (n - k))
-      simp only [not_exists, not_and, Submodule.mem_map, Submodule.span_image]
+      -- Note: #8386 had to change `span_image` into `span_image _`
+      simp only [not_exists, not_and, Submodule.mem_map, Submodule.span_image _]
       intro p m
       apply_fun Polynomial.eval (1 : ℚ)
       simp only [LinearMap.pow_apply]

@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Module.Prod
+import Mathlib.GroupTheory.GroupAction.Prod
 
 #align_import algebra.star.prod from "leanprover-community/mathlib"@"9abfa6f0727d5adc99067e325e15d1a9de17fd8e"
 

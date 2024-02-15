@@ -20,6 +20,7 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * `Z` is the initial object
 * `0` is the strict terminal object
 * cartesian product is the product
+* arbitrary direct product of a family of rings is the product object (Pi object)
 * `RingHom.eqLocus` is the equalizer
 
 -/
@@ -135,7 +136,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
       AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_coe, ← eq1, AlgHom.toRingHom_eq_coe,
       PushoutCocone.ι_app_right, ← eq2, Algebra.TensorProduct.productMap_apply_tmul]
     change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
-    rw [←h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+    rw [← h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_is_colimit CommRingCat.pushoutCoconeIsColimit
@@ -208,12 +209,46 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x
     dsimp at eq1 eq2
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [←eq1, ←eq2]
+    erw [← eq1, ← eq2]
     rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.prod_fan_is_limit CommRingCat.prodFanIsLimit
 
 end Product
+
+section Pi
+
+variable {ι : Type u} (R : ι → CommRingCat.{u})
+
+/--
+The categorical product of rings is the cartesian product of rings. This is its `Fan`.
+-/
+@[simps! pt]
+def piFan : Fan R :=
+  Fan.mk (CommRingCat.of ((i : ι) → R i)) (Pi.evalRingHom _)
+
+/--
+The categorical product of rings is the cartesian product of rings.
+-/
+def piFanIsLimit : IsLimit (piFan R) where
+  lift s := Pi.ringHom fun i ↦ s.π.1 ⟨i⟩
+  fac s i := by rfl
+  uniq s g h := DFunLike.ext _ _ fun x ↦ funext fun i ↦ DFunLike.congr_fun (h ⟨i⟩) x
+
+/--
+The categorical product and the usual product agrees
+-/
+def piIsoPi : ∏ R ≅ CommRingCat.of ((i : ι) → R i) :=
+  limit.isoLimitCone ⟨_, piFanIsLimit R⟩
+
+/--
+The categorical product and the usual product agrees
+-/
+def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
+    (∏ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
+  (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
+
+end Pi
 
 section Equalizer
 
@@ -323,7 +358,7 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
     change (m x).1 = (_, _)
     have eq1 := (congr_arg (fun f : s.pt →+* A => f x) e₁ : _)
     have eq2 := (congr_arg (fun f : s.pt →+* B => f x) e₂ : _)
-    rw [←eq1, ←eq2]
+    rw [← eq1, ← eq2]
     rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.pullback_cone_is_limit CommRingCat.pullbackConeIsLimit

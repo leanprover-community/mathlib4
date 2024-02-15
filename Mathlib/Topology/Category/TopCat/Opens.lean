@@ -125,7 +125,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The inclusion map from an open subset to the whole space, as a morphism in `TopCat`.
 -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def inclusion {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X where
   toFun := _
   continuous_toFun := continuous_subtype_val
@@ -183,6 +183,9 @@ theorem map_id_obj_unop (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).obj (unop U) = un
 @[simp 1100]
 theorem op_map_id_obj (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).op.obj U = U := by simp
 #align topological_space.opens.op_map_id_obj TopologicalSpace.Opens.op_map_id_obj
+
+@[simp]
+lemma map_top (f : X ⟶ Y) : (Opens.map f).obj ⊤ = ⊤ := rfl
 
 /-- The inclusion `U ⟶ (map f).obj ⊤` as a morphism in the category of open sets.
 -/
@@ -331,6 +334,10 @@ instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMa
 instance IsOpenMap.functor_faithful {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
     Faithful hf.functor where
 #align is_open_map.functor_faithful IsOpenMap.functor_faithful
+
+lemma OpenEmbedding.functor_obj_injective {X Y : TopCat} {f : X ⟶ Y} (hf : OpenEmbedding f) :
+    Function.Injective hf.isOpenMap.functor.obj :=
+  fun _ _ e ↦ Opens.ext (Set.image_injective.mpr hf.inj (congr_arg (↑· : Opens Y → Set Y) e))
 
 namespace TopologicalSpace.Opens
 
