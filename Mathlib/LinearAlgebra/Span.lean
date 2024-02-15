@@ -919,6 +919,40 @@ lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂]
   rw [← hf]
   exact LinearMap.range_domRestrict_eq_range_iff
 
+lemma biSup_comap_eq_top_of_range_eq_biSup {ι : Type*} (s : Set ι) (hs : s.Nonempty)
+    (p : ι → Submodule R₂ M₂) (f : M →ₛₗ[τ₁₂] M₂) (hf : LinearMap.range f = ⨆ i ∈ s, p i) :
+    ⨆ i ∈ s, (p i).comap f = ⊤ := by
+  -- What the hell? How did this proof get so ridiculous! Fix it!
+  obtain ⟨k, hk⟩ := hs
+  refine eq_top_iff.mpr fun x _ ↦ ?_
+  suffices ∀ y ∈ ⨆ i : s, p i, ∀ x, f x = y → x ∈ ⨆ i : s, (p i).comap f by
+    have foo : f x ∈ ⨆ i ∈ s, p i := by rw [← hf]; exact ⟨x, rfl⟩
+    rw [iSup_subtype'] at foo ⊢
+    exact this _ foo _ rfl
+  intro y hy
+  induction' hy using Submodule.iSup_induction' with i z hz z₁ z₂ hz₁ hz₂ hz₁' hz₂'
+  · intro m hm
+    replace hz : m ∈ (p i).comap f := by simpa [hm]
+    suffices (p i).comap f ≤ ⨆ (j : s), (p j).comap f from this hz
+    apply le_iSup _ i
+  · intro m hm
+    replace hm : ∀ i, m ∈ (p i).comap f := by simp [hm]
+    exact Submodule.mem_iSup_of_mem _ (hm (⟨k, hk⟩ : s))
+  · intro m hm
+    rw [iSup_subtype'] at hf
+    obtain ⟨y₁, rfl⟩ : z₁ ∈ LinearMap.range f := by rwa [hf]
+    obtain ⟨y₂, rfl⟩ : z₂ ∈ LinearMap.range f := by rwa [hf]
+    suffices ∃ m' ∈ LinearMap.ker f, m - m' ∈ ⨆ i : s, (p i).comap f by
+      obtain ⟨m', h₁, h₂⟩ := this
+      rw [← sub_add_cancel m m']
+      apply add_mem h₂
+      suffices m' ∈ (p (⟨k, hk⟩ : s)).comap f from Submodule.mem_iSup_of_mem _ this
+      simp only [LinearMap.mem_ker] at h₁
+      simp [h₁]
+    refine ⟨m - (y₁ + y₂), by simp [hm], ?_⟩
+    simp only [sub_sub_cancel]
+    exact add_mem (hz₁' y₁ rfl) (hz₂' y₂ rfl)
+
 end AddCommGroup
 
 section DivisionRing

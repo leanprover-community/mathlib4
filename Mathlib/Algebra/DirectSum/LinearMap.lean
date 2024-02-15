@@ -41,6 +41,9 @@ lemma toMatrix_directSum_collectedBasis_eq_blockDiagonal' {R M₁ M₂ : Type*} 
 
 variable [∀ i, Module.Finite R (N i)] [∀ i, Module.Free R (N i)]
 
+/-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
+
+See also `LinearMap.trace_restrict_eq_sum_trace_restrict`. -/
 lemma trace_eq_sum_trace_restrict [Fintype ι]
     {f : M →ₗ[R] M} (hf : ∀ i, MapsTo f (N i) (N i)) :
     trace R M f = ∑ i, trace R (N i) (f.restrict (hf i)) := by
@@ -85,5 +88,50 @@ lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
     restrict_commute h_comm.symm _ _
   rw [restrict_comp, trace_comp_eq_mul_of_commute_of_isNilpotent μ h_comm
     (f.isNilpotent_restrict_iSup_sub_algebraMap μ), hg, mul_zero]
+
+/-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
+
+Note that it is important the statement gives the user definitional control over `p` since the
+_type_ of the term `trace R p (f.restrict hp')` depends on `p`.
+
+TODO Turn `hp'` into an auto-param -/
+lemma trace_restrict_eq_sum_trace_restrict
+    (s : Finset ι) (h : CompleteLattice.Independent <| fun i : s ↦ N i)
+    {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i))
+    (p : Submodule R M) (hp : p = ⨆ i ∈ s, N i) (hp' : MapsTo f p p) :
+    trace R p (f.restrict hp') = ∑ i in s, trace R (N i) (f.restrict (hf i)) := by
+  -- TODO Tidy up poor proof bashed out below + extract lemmas
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · simp only [Finset.sum_empty]
+    simp only [Finset.not_mem_empty, not_false_eq_true, iSup_neg, iSup_bot] at hp
+    suffices f.restrict hp' = 0 by simp [this]
+    ext ⟨x, hx⟩
+    simp only [hp, Submodule.mem_bot] at hx
+    simp [hx]
+  let N' : s → Submodule R p := fun i ↦ (N i).comap p.subtype
+  have hNp : ∀ i ∈ s, N i ≤ p := fun i hi ↦ by simpa only [hp] using le_biSup N hi
+  let e : (i : s) → N' i ≃ₗ[R] N i := fun ⟨i, hi⟩ ↦ (N i).comapSubtypeEquivOfLe (hNp _ hi)
+  have _i1 : ∀ i, Module.Finite R (N' i) := fun i ↦ Module.Finite.equiv (e i).symm
+  have _i2 : ∀ i, Module.Free R (N' i) := fun i ↦ Module.Free.of_equiv (e i).symm
+  replace h : IsInternal N' := by
+    rw [isInternal_submodule_iff_independent_and_iSup_eq_top]
+    constructor <;> simp only
+    · let e : Submodule R p ≃o Set.Iic p := Submodule.MapSubtype.relIso p
+      have : (e ∘ fun i : s ↦ (N i).comap p.subtype) = fun i ↦ ⟨N i, hNp i i.property⟩ := by
+        ext i m
+        change m ∈ ((N i).comap p.subtype).map p.subtype ↔ _ -- TODO Missing `simp` lemmas
+        rw [Submodule.map_comap_subtype, inf_of_le_right (hNp i i.property)]
+      rw [← CompleteLattice.independent_map_orderIso_iff e, this]
+      exact CompleteLattice.independent_of_independent_coe_Iic_comp h
+    · rw [iSup_subtype]
+      apply Submodule.biSup_comap_eq_top_of_range_eq_biSup _ hs
+      simpa only [Submodule.range_subtype] using hp
+  have hf' : ∀ i, MapsTo (restrict f hp') (N' i) (N' i) := fun ⟨i, hi⟩ ⟨x, hx⟩ hx' ↦ by
+    simpa using hf i hx'
+  rw [trace_eq_sum_trace_restrict h hf', ← s.sum_coe_sort]
+  congr
+  ext i
+  suffices f.restrict (hf i) = (e i).conj ((f.restrict hp').restrict (hf' i)) by simp [this]
+  rfl
 
 end LinearMap
