@@ -340,14 +340,14 @@ def pairs {α : Type} : List α → List (α × α)
   | [_] => []
   | (x :: y :: ys) => (x, y) :: pairs (y :: ys)
 
-/-- `enumerateAux 2 [a, b, c, d]` is `[(2, a), (3, b), (4, c), (5, d)]`. -/
-def enumerateAux {α : Type} (i : Nat) : List α → List (Nat × α)
+/-- `enumerateFrom 2 [a, b, c, d]` is `[(2, a), (3, b), (4, c), (5, d)]`. -/
+def enumerateFrom {α : Type} (i : Nat) : List α → List (Nat × α)
   | [] => []
-  | (x :: xs) => (i, x) :: enumerateAux (i + 1) xs
+  | (x :: xs) => (i, x) :: enumerateFrom (i + 1) xs
 
 /-- `enumerate [a, b, c, d]` is `[(0, a), (1, b), (2, c), (3, d)]`. -/
 def enumerate {α : Type} : List α → List (Nat × α) :=
-  enumerateAux 0
+  enumerateFrom 0
 
 structure PenroseVar : Type where
   ident : String
@@ -427,7 +427,7 @@ def mkStringDiag (e : Expr) : MetaM Html := do
   DiagramBuilderM.run do
     let l := removeStructural (← eval e).toList
     /- Add 2-morphisms. -/
-    for (i, x) in enumerate l do
+    for (i, x) in enumerateFrom 1 l do
       let v : PenroseVar := ⟨"E", [i], ← x.core.e⟩
       addPenroseVar "Core" v
       let L := leftMor₁List x
@@ -461,52 +461,52 @@ def mkStringDiag (e : Expr) : MetaM Html := do
       /- Add constraints. -/
       for (j, (X, Y)) in enumerate (pairs L) do
         let v₁ : PenroseVar := ⟨"I_left", [i, j], X⟩
-        let v₂ : PenroseVar := ⟨"I_left", [i, j+1], Y⟩
+        let v₂ : PenroseVar := ⟨"I_left", [i, j + 1], Y⟩
         addInstruction s!"Left({v₁}, {v₂})"
       /- Add constraints. -/
       for (j, (X, Y)) in enumerate (pairs R) do
         let v₁ : PenroseVar := ⟨"I_right", [i, j], X⟩
-        let v₂ : PenroseVar := ⟨"I_right", [i, j+1], Y⟩
+        let v₂ : PenroseVar := ⟨"I_right", [i, j + 1], Y⟩
         addInstruction s!"Left({v₁}, {v₂})"
     /- Add constraints. -/
-    for (i, (x, y)) in enumerate (pairs l) do
+    for (i, (x, y)) in enumerateFrom 1 (pairs l) do
       let v₁ : PenroseVar := ⟨"E", [i], ← x.core.e⟩
       let v₂ : PenroseVar := ⟨"E", [i + 1], ← y.core.e⟩
       addInstruction s!"Above({v₁}, {v₂})"
     /- The top of the diagram. -/
     if let some x₀ := l.head? then
-      let v₀ : PenroseVar := ⟨"E", [0], ← x₀.core.e⟩
+      let v₀ : PenroseVar := ⟨"E", [1], ← x₀.core.e⟩
       let L := leftMor₁List x₀
       let C := (← x₀.core.src).toList
       let R := rightMor₁List x₀
       for (j, X) in enumerate (L ++ C ++ R) do
-        let v' : PenroseVar := ⟨"I_left", [100, j], X⟩
+        let v' : PenroseVar := ⟨"I_left", [0, j], X⟩
         addPenroseVar "Id" v'
         addInstruction s!"Above({v'}, {v₀})"
-        let v_mor : PenroseVar := ⟨"f", [0, j], X⟩
+        let v_mor : PenroseVar := ⟨"f", [1, j], X⟩
         modify fun st => { st with startPoint := st.startPoint.insert v_mor v' }
       for (j, (X, Y)) in enumerate (pairs (L ++ C ++ R)) do
-        let v₁ : PenroseVar := ⟨"I_left", [100, j], X⟩
-        let v₂ : PenroseVar := ⟨"I_left", [100, j+1], Y⟩
+        let v₁ : PenroseVar := ⟨"I_left", [0, j], X⟩
+        let v₂ : PenroseVar := ⟨"I_left", [0, j + 1], Y⟩
         addInstruction s!"Left({v₁}, {v₂})"
     /- The bottom of the diagram. -/
     if let some xₙ := l.getLast? then
-      let vₙ : PenroseVar := ⟨"E", [l.length - 1], ← xₙ.core.e⟩
+      let vₙ : PenroseVar := ⟨"E", [l.length], ← xₙ.core.e⟩
       let L := leftMor₁List xₙ
       let C := (← xₙ.core.tar).toList
       let R := rightMor₁List xₙ
       for (j, X) in enumerate (L ++ C ++ R) do
-        let v' : PenroseVar := ⟨"I_left", [l.length, j], X⟩
+        let v' : PenroseVar := ⟨"I_left", [l.length + 1, j], X⟩
         addPenroseVar "Id" v'
         addInstruction s!"Above({vₙ}, {v'})"
-        let v_mor : PenroseVar := ⟨"f", [l.length, j], X⟩
+        let v_mor : PenroseVar := ⟨"f", [l.length + 1, j], X⟩
         modify fun st => { st with endPoint := st.endPoint.insert v_mor v' }
       for (j, (X, Y)) in enumerate (pairs (L ++ C ++ R)) do
-        let v₁ : PenroseVar := ⟨"I_left", [l.length, j], X⟩
-        let v₂ : PenroseVar := ⟨"I_left", [l.length, j+1], Y⟩
+        let v₁ : PenroseVar := ⟨"I_left", [l.length + 1, j], X⟩
+        let v₂ : PenroseVar := ⟨"I_left", [l.length + 1, j + 1], Y⟩
         addInstruction s!"Left({v₁}, {v₂})"
     /- Add 1-morphisms as strings. -/
-    for (i, x) in enumerate l do
+    for (i, x) in enumerateFrom 1 l do
       let L := leftMor₁List x
       let C := (← x.core.src).toList
       let R := rightMor₁List x
@@ -522,7 +522,7 @@ def mkStringDiag (e : Expr) : MetaM Html := do
       let C' := (← xₙ.core.tar).toList
       let R := rightMor₁List xₙ
       for (j, X) in enumerate (L ++ C' ++ R) do
-        let v : PenroseVar := ⟨"f", [l.length, j], X⟩
+        let v : PenroseVar := ⟨"f", [l.length + 1, j], X⟩
         let st ← get
         if let .some vStart := st.startPoint.find? v then
           if let .some vEnd := st.endPoint.find? v then
