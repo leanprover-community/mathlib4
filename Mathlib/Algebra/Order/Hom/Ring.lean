@@ -25,6 +25,13 @@ Homomorphisms between ordered (semi)rings that respect the ordering.
 * `→+*o`: Ordered ring homomorphisms.
 * `≃+*o`: Ordered ring isomorphisms.
 
+## Implementation notes
+
+This file used to define typeclasses for order-preserving ring homomorphisms and isomorphisms.
+In #10544, we migrated from assumptions like `[FunLike F R S] [OrderRingHomClass F R S]`
+to assumptions like `[FunLike F R S] [OrderHomClass F R S] [RingHomClass F R S]`,
+making some typeclasses and instances irrelevant.
+
 ## Tags
 
 ordered ring homomorphism, order homomorphism
@@ -75,6 +82,7 @@ structure OrderRingIso (α β : Type*) [Mul α] [Mul β] [Add α] [Add β] [LE �
 @[inherit_doc]
 infixl:25 " ≃+*o " => OrderRingIso
 
+-- See module docstring for details
 #noalign order_ring_hom_class
 #noalign order_ring_iso_class
 #noalign order_ring_hom_class.to_order_add_monoid_hom_class
