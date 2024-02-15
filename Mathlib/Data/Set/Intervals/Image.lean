@@ -5,6 +5,7 @@ Authors: Kim Liesinger, Yaël Dillies
 -/
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Function
+import Mathlib.Order.Directed
 
 /-!
 # Monotone functions on intervals
@@ -428,3 +429,26 @@ lemma image_subtype_val_Ioo_Iio {a b : α} (c : Ioo a b) : Subtype.val '' Iio c 
   image_subtype_val_Ixx_Iix c (lt_trans · c.2.2)
 
 end Set
+
+section Preorder
+variable [Preorder α]
+
+lemma directedOn_le_Iic (b : α) : DirectedOn (· ≤ ·) (Iic b) :=
+  fun _x hx _y hy ↦ ⟨b, le_rfl, hx, hy⟩
+
+lemma directedOn_le_Icc (a b : α) : DirectedOn (· ≤ ·) (Icc a b) :=
+  fun _x hx _y hy ↦ ⟨b, right_mem_Icc.2 $ hx.1.trans hx.2, hx.2, hy.2⟩
+
+lemma directedOn_le_Ioc (a b : α) : DirectedOn (· ≤ ·) (Ioc a b) :=
+  fun _x hx _y hy ↦ ⟨b, right_mem_Ioc.2 $ hx.1.trans_le hx.2, hx.2, hy.2⟩
+
+lemma directedOn_ge_Ici (a : α) : DirectedOn (· ≥ ·) (Ici a) :=
+  fun _x hx _y hy ↦ ⟨a, le_rfl, hx, hy⟩
+
+lemma directedOn_ge_Icc (a b : α) : DirectedOn (· ≥ ·) (Icc a b) :=
+  fun _x hx _y hy ↦ ⟨a, left_mem_Icc.2 $ hx.1.trans hx.2, hx.1, hy.1⟩
+
+lemma directedOn_ge_Ico (a b : α) : DirectedOn (· ≥ ·) (Ico a b) :=
+  fun _x hx _y hy ↦ ⟨a, left_mem_Ico.2 $ hx.1.trans_lt hx.2, hx.1, hy.1⟩
+
+end Preorder
