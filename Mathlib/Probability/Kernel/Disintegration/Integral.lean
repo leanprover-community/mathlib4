@@ -6,31 +6,21 @@ Authors: Rémy Degenne
 import Mathlib.Probability.Kernel.Disintegration.Basic
 
 /-!
-# Integral
+# Lebesgue and Bochner integrals of conditional kernels
 
-## Main definitions
-
-* `FooBar`
+Integrals of `ProbabilityTheory.kernel.condKernel` and `MeasureTheory.Measure.condKerenl`.
 
 ## Main statements
 
-* `fooBar_unique`
+* `ProbabilityTheory.set_integral_condKernel`: the integral
+  `∫ b in s, ∫ ω in t, f (b, ω) ∂(kernel.condKernel κ (a, b)) ∂(kernel.fst κ a)` is equal to
+  `∫ x in s ×ˢ t, f x ∂(κ a)`.
+* `MeasureTheory.Measure.set_integral_condKernel`:
+  `∫ b in s, ∫ ω in t, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫ x in s ×ˢ t, f x ∂ρ`
 
-## Notation
+Corresponding statements for the Lebesgue integral and/or without the sets `s` and `t` are also
+provided.
 
-
-
-## Implementation details
-
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
-
-## Tags
-
-Foobars, barfoos
 -/
 
 open MeasureTheory ProbabilityTheory
