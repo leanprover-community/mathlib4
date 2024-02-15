@@ -485,18 +485,15 @@ instance : StarOrderedRing ℝ :=
 
 end Real
 
-instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 where
-  le_iff x y := by
+instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 :=
+  .ofLEIff fun x y => by
     constructor; swap
     · rintro ⟨p, -, rfl⟩
       exact le_self_add
-    rw [← NNReal.coe_le_coe, StarOrderedRing.le_iff]
-    rintro ⟨p, hp, h⟩
-    refine ⟨⟨p, (AddSubmonoid.closure_le.2
-      (range_subset_iff.2 fun x ↦ ?_) hp : p ∈ AddSubmonoid.nonneg ℝ)⟩, ?_, NNReal.coe_injective h⟩
-    · simp [mul_self_nonneg]
-    · exact AddSubmonoid.subset_closure
-        ⟨NNReal.sqrt _, by dsimp; rw [star_trivial, ← sqrt_mul, sqrt_mul_self]⟩
+    · intro h
+      obtain ⟨d, rfl⟩ := exists_add_of_le h
+      refine ⟨sqrt d, ?_⟩
+      simp only [star_trivial, mul_self_sqrt]
 
 open Real
 
