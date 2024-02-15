@@ -84,15 +84,10 @@ instance uniformMeasure.isFiniteMeasure {s : Set E} :
   measure_univ_lt_top := by
     unfold uniformMeasure
     have : (μ s)⁻¹ * μ s < ⊤ := by
-      by_cases hs : μ s = 0
-      · rw [hs, ENNReal.inv_zero, mul_zero ⊤]
-        exact ENNReal.zero_lt_top
-      · by_cases hsi : (μ s)⁻¹ = 0
-        · rw [hsi,zero_mul]
-          exact ENNReal.zero_lt_top
-        · rw [ENNReal.inv_eq_zero] at hsi
-          push_neg at *
-          exact ENNReal.mul_lt_top (ENNReal.inv_ne_top.mpr hs) hsi
+      have : (μ s)⁻¹ * μ s ≤ 1 := by
+        apply ENNReal.le_inv_iff_mul_le.mp
+        rfl
+      exact lt_of_le_of_lt this ENNReal.one_lt_top
     simp_all only [MeasurableSet.univ, restrict_apply, Set.univ_inter, le_refl, smul_toOuterMeasure,
       OuterMeasure.coe_smul, Pi.smul_apply, smul_eq_mul]
 
