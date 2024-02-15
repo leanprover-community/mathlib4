@@ -98,7 +98,7 @@ theorem nodup_iff_injective_get {l : List α} :
       · exact (h ⟨i, hi⟩ ⟨j, hj⟩ hij hg).elim
       · rfl
       · exact (h ⟨j, hj⟩ ⟨i, hi⟩ hji hg.symm).elim,
-      fun hinj i j hij h => Nat.ne_of_lt hij (Fin.veq_of_eq (hinj h))⟩
+      fun hinj i j hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (hinj h))⟩
 
 set_option linter.deprecated false in
 @[deprecated nodup_iff_injective_get]

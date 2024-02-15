@@ -58,7 +58,7 @@ theorem ofFn_eq_map {α n} {f : Fin n → α} : ofFn f = (finRange n).map f := b
 theorem nodup_ofFn_ofInjective {α n} {f : Fin n → α} (hf : Function.Injective f) :
     Nodup (ofFn f) := by
   rw [ofFn_eq_pmap]
-  exact (nodup_range n).pmap fun _ _ _ _ H => Fin.veq_of_eq <| hf H
+  exact (nodup_range n).pmap fun _ _ _ _ H => Fin.val_eq_of_eq <| hf H
 #align list.nodup_of_fn_of_injective List.nodup_ofFn_ofInjective
 
 theorem nodup_ofFn {α n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injective f := by

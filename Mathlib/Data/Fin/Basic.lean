@@ -100,7 +100,7 @@ variable {n m : ℕ}
 #align fin.fin_to_nat Fin.coeToNat
 
 theorem val_injective : Function.Injective (@Fin.val n) :=
-  @Fin.eq_of_veq n
+  @Fin.eq_of_val_eq n
 #align fin.val_injective Fin.val_injective
 
 /-- If you actually have an element of `Fin n`, then the `n` is always positive -/
