@@ -88,7 +88,7 @@ namespace BraidedCategory
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [BraidedCategory.{v} C]
 
-@[simp]
+@[simp, reassoc]
 theorem braiding_tensor_left (X Y Z : C) :
     (β_ (X ⊗ Y) Z).hom  =
       (α_ X Y Z).hom ≫ X ◁ (β_ Y Z).hom ≫ (α_ X Z Y).inv ≫
@@ -98,7 +98,7 @@ theorem braiding_tensor_left (X Y Z : C) :
   apply (cancel_mono (α_ Z X Y).inv).1
   simp [hexagon_reverse]
 
-@[simp]
+@[simp, reassoc]
 theorem braiding_tensor_right (X Y Z : C) :
     (β_ X (Y ⊗ Z)).hom  =
       (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
@@ -108,14 +108,14 @@ theorem braiding_tensor_right (X Y Z : C) :
   apply (cancel_mono (α_ Y Z X).hom).1
   simp [hexagon_forward]
 
-@[simp]
+@[simp, reassoc]
 theorem braiding_inv_tensor_left (X Y Z : C) :
     (β_ (X ⊗ Y) Z).inv  =
       (α_ Z X Y).inv ≫ (β_ X Z).inv ▷ Y ≫ (α_ X Z Y).hom ≫
         X ◁ (β_ Y Z).inv ≫ (α_ X Y Z).inv :=
   eq_of_inv_eq_inv (by simp)
 
-@[simp]
+@[simp, reassoc]
 theorem braiding_inv_tensor_right (X Y Z : C) :
     (β_ X (Y ⊗ Z)).inv  =
       (α_ Y Z X).hom ≫ Y ◁ (β_ X Z).inv ≫ (α_ Y X Z).inv ≫
@@ -133,13 +133,9 @@ theorem yang_baxter (X Y Z : C) :
     (Y ◁ (β_ X Z).hom) ≫ (α_ Y Z X).inv ≫ ((β_ Y Z).hom ▷ X) ≫ (α_ Z Y X).hom =
       (X ◁ (β_ Y Z).hom) ≫ (α_ X Z Y).inv ≫ ((β_ X Z).hom ▷ Y) ≫
       (α_ Z X Y).hom ≫ (Z ◁ (β_ X Y).hom) := by
-  have := (braiding_naturality_right_assoc X (β_ Y Z).hom (α_ Z Y X).hom).symm
-  refine Eq.trans (Eq.symm ?_) (Eq.trans this ?_)
-  · refine Eq.trans (congrArg (. ≫ _) (braiding_tensor_right X Y Z)) ?_
-    simp only [assoc]
-  · refine congrArg (_ ≫ .) ((Iso.eq_comp_inv _).mp ?_)
-    refine Eq.trans (braiding_tensor_right X Z Y) ?_
-    simp only [assoc]
+  rw [← braiding_tensor_right_assoc X Y Z, ← cancel_mono (α_ Z Y X).inv]
+  repeat rw [assoc]
+  rw [Iso.hom_inv_id, comp_id, ← braiding_naturality_right, braiding_tensor_right]
 
 theorem yang_baxter' (X Y Z : C) :
     ((β_ X Y).hom ▷ Z) ⊗≫ (Y ◁ (β_ X Z).hom) ⊗≫ ((β_ Y Z).hom ▷ X) =
