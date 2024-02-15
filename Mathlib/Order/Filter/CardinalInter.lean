@@ -44,9 +44,9 @@ class CardinalInterFilter (l : Filter α) (c : Cardinal.{u}) : Prop where
   their intersection belongs to `l` as well. -/
   cardinal_sInter_mem : ∀ S : Set (Set α), (#S < c) → (∀ s ∈ S, s ∈ l) → ⋂₀ S ∈ l
 
-variable {l : Filter α} [CardinalInterFilter l c]
+variable {l : Filter α}
 
-theorem cardinal_sInter_mem {S : Set (Set α)} (hSc : #S < c) :
+theorem cardinal_sInter_mem {S : Set (Set α)} [CardinalInterFilter l c] (hSc : #S < c) :
     ⋂₀ S ∈ l ↔ ∀ s ∈ S, s ∈ l := ⟨fun hS _s hs => mem_of_superset hS (sInter_subset_of_mem hs),
   CardinalInterFilter.cardinal_sInter_mem _ hSc⟩
 
@@ -77,8 +77,10 @@ theorem CardinalInterFilter.to_lower_cardinality (l : Filter α) [CardinalInterF
     cardinal_sInter_mem :=
       fun S hS a ↦ CardinalInterFilter.cardinal_sInter_mem S (lt_trans hS hac) a
 
-/-- NOTE: Some basic API to show that this works, initial reviews may concentrate on the above definitions
- first. -/
+-- NOTE: Some basic API to show that this works, initial reviews may concentrate on the above
+-- definitions first.
+variable [CardinalInterFilter l c]
+
 theorem cardinal_iInter_mem {s : ι → Set α} (hic : #ι < c) :
     (⋂ i, s i) ∈ l ↔ ∀ i, s i ∈ l := by
   rw [← sInter_range _]
