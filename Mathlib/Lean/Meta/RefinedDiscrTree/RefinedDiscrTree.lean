@@ -1086,7 +1086,7 @@ partial def getMatchWithScoreWithExtra (d : RefinedDiscrTree α) (e : Expr) (uni
   return result.qsort (·.2.1 > ·.2.1)
 where
   go (e : Expr) (numIgnored : Nat) : MetaM (Array (Array α × Nat × Nat)) := do
-  let result := GetUnify.getMatchWithScoreAux d (← mkDTExpr e config) unify config allowRootStar
+  let result ← getMatchWithScore d e unify config allowRootStar
   let result := result.map fun (a, b) => (a, b, numIgnored)
   match e with
   | .app e _ => return (← go e (numIgnored + 1)) ++ result
