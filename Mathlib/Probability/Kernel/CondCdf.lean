@@ -468,41 +468,42 @@ lemma isRatKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
 
 /-- Conditional cdf of the measure given the value on `α`, as a Stieltjes function. -/
 noncomputable def condCDF (ρ : Measure (α × ℝ)) (a : α) : StieltjesFunction :=
-  todo3 (fun a r ↦ (preCDF ρ r a).toReal) (fun _ ↦ measurable_preCDF.ennreal_toReal) a
+  stieltjesOfMeasurableRat (fun a r ↦ (preCDF ρ r a).toReal)
+    (fun _ ↦ measurable_preCDF.ennreal_toReal) a
 #align probability_theory.cond_cdf ProbabilityTheory.condCDF
 
-lemma condCDF_eq_todo3_unit_prod (ρ : Measure (α × ℝ)) (a : α) :
-    condCDF ρ a = todo3 (fun (p : Unit × α) r ↦ (preCDF ρ r p.2).toReal)
+lemma condCDF_eq_stieltjesOfMeasurableRat_unit_prod (ρ : Measure (α × ℝ)) (a : α) :
+    condCDF ρ a = stieltjesOfMeasurableRat (fun (p : Unit × α) r ↦ (preCDF ρ r p.2).toReal)
       (fun _ ↦ measurable_preCDF.ennreal_toReal.comp measurable_snd) ((), a) := by
   ext x
-  rw [condCDF, ← todo3_unit_prod]
+  rw [condCDF, ← stieltjesOfMeasurableRat_unit_prod]
 
 #noalign probability_theory.cond_cdf_eq_cond_cdf_rat
 
 /-- The conditional cdf is non-negative for all `a : α`. -/
 theorem condCDF_nonneg (ρ : Measure (α × ℝ)) (a : α) (r : ℝ) : 0 ≤ condCDF ρ a r :=
-  todo3_nonneg _ a r
+  stieltjesOfMeasurableRat_nonneg _ a r
 #align probability_theory.cond_cdf_nonneg ProbabilityTheory.condCDF_nonneg
 
 /-- The conditional cdf is lower or equal to 1 for all `a : α`. -/
 theorem condCDF_le_one (ρ : Measure (α × ℝ)) (a : α) (x : ℝ) : condCDF ρ a x ≤ 1 :=
-  todo3_le_one _ _ _
+  stieltjesOfMeasurableRat_le_one _ _ _
 #align probability_theory.cond_cdf_le_one ProbabilityTheory.condCDF_le_one
 
 /-- The conditional cdf tends to 0 at -∞ for all `a : α`. -/
 theorem tendsto_condCDF_atBot (ρ : Measure (α × ℝ)) (a : α) :
-    Tendsto (condCDF ρ a) atBot (𝓝 0) := tendsto_todo3_atBot _ _
+    Tendsto (condCDF ρ a) atBot (𝓝 0) := tendsto_stieltjesOfMeasurableRat_atBot _ _
 #align probability_theory.tendsto_cond_cdf_at_bot ProbabilityTheory.tendsto_condCDF_atBot
 
 /-- The conditional cdf tends to 1 at +∞ for all `a : α`. -/
 theorem tendsto_condCDF_atTop (ρ : Measure (α × ℝ)) (a : α) :
-    Tendsto (condCDF ρ a) atTop (𝓝 1) := tendsto_todo3_atTop _ _
+    Tendsto (condCDF ρ a) atTop (𝓝 1) := tendsto_stieltjesOfMeasurableRat_atTop _ _
 #align probability_theory.tendsto_cond_cdf_at_top ProbabilityTheory.tendsto_condCDF_atTop
 
 theorem condCDF_ae_eq (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (r : ℚ) :
     (fun a ↦ condCDF ρ a r) =ᵐ[ρ.fst] fun a ↦ (preCDF ρ r a).toReal := by
   filter_upwards [isRatStieltjesPoint_ae ρ] with a ha
-  rw [condCDF, todo3_eq, toCDFLike_of_isRatStieltjesPoint ha]
+  rw [condCDF, stieltjesOfMeasurableRat_eq, toCDFLike_of_isRatStieltjesPoint ha]
 #align probability_theory.cond_cdf_ae_eq ProbabilityTheory.condCDF_ae_eq
 
 theorem ofReal_condCDF_ae_eq (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (r : ℚ) :
@@ -514,7 +515,7 @@ theorem ofReal_condCDF_ae_eq (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (r 
 
 /-- The conditional cdf is a measurable function of `a : α` for all `x : ℝ`. -/
 theorem measurable_condCDF (ρ : Measure (α × ℝ)) (x : ℝ) : Measurable fun a => condCDF ρ a x :=
-  measurable_todo3 _ _
+  measurable_stieltjesOfMeasurableRat _ _
 #align probability_theory.measurable_cond_cdf ProbabilityTheory.measurable_condCDF
 
 #noalign probability_theory.set_lintegral_cond_cdf_rat
@@ -522,12 +523,12 @@ theorem measurable_condCDF (ρ : Measure (α × ℝ)) (x : ℝ) : Measurable fun
 theorem set_lintegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) {s : Set α}
     (hs : MeasurableSet s) :
     ∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x) := by
-  have h := set_lintegral_todo3 (isRatKernelCDF_preCDF ρ) () x hs
+  have h := set_lintegral_stieltjesOfMeasurableRat (isRatKernelCDF_preCDF ρ) () x hs
   simp only [kernel.const_apply] at h
   rw [← h]
   congr with a
   congr
-  exact condCDF_eq_todo3_unit_prod _ _
+  exact condCDF_eq_stieltjesOfMeasurableRat_unit_prod _ _
 #align probability_theory.set_lintegral_cond_cdf ProbabilityTheory.set_lintegral_condCDF
 
 theorem lintegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) :
@@ -537,7 +538,7 @@ theorem lintegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : �
 
 /-- The conditional cdf is a strongly measurable function of `a : α` for all `x : ℝ`. -/
 theorem stronglyMeasurable_condCDF (ρ : Measure (α × ℝ)) (x : ℝ) :
-    StronglyMeasurable fun a => condCDF ρ a x := stronglyMeasurable_todo3 _ _
+    StronglyMeasurable fun a => condCDF ρ a x := stronglyMeasurable_stieltjesOfMeasurableRat _ _
 #align probability_theory.strongly_measurable_cond_cdf ProbabilityTheory.stronglyMeasurable_condCDF
 
 theorem integrable_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) :

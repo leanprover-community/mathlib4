@@ -1,6 +1,45 @@
+/-
+Copyright (c) 2024 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne
+-/
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Kernel.Disintegration.BuildKernel
+
+/-!
+# KernelCDFBorel
+
+## Main definitions
+
+* `FooBar`
+
+## Main statements
+
+* `fooBar_unique`
+
+## Notation
+
+
+
+## Implementation details
+
+
+issue with the following: joint measurability
+
+def M' (κ : kernel α (ℝ × β)) (a : α) (s : Set β) (n : ℕ) (t : ℝ) : ℝ≥0∞ :=
+  (((κ a).restrict (univ ×ˢ s)).fst.trim (ℱ.le n)).rnDeriv (((kernel.fst κ a)).trim (ℱ.le n)) t
+
+
+## References
+
+* [F. Bar, *Quuxes*][bibkey]
+
+## Tags
+
+Foobars, barfoos
+-/
+
 
 open MeasureTheory Set Filter
 
@@ -8,16 +47,158 @@ open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {α Ω : Type*} {mα : MeasurableSpace α}
-  [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
+variable {α β : Type*} {mα : MeasurableSpace α}
 
-lemma tendsto_atTop_atBot_iff_of_antitone {α β : Type*}
-    [Nonempty α] [SemilatticeSup α] [Preorder β] {f : α → β}
-    (hf : Antitone f) :
-    Tendsto f atTop atBot ↔ ∀ b : β, ∃ a : α, f a ≤ b :=
-  @tendsto_atTop_atTop_iff_of_monotone _ βᵒᵈ _ _ _ _ hf
+section Move
 
-section Real
+lemma snorm_restrict_le [NormedAddCommGroup β] {p : ℝ≥0∞} {f : α → β} {μ : Measure α} (s : Set α) :
+    snorm f p (μ.restrict s) ≤ snorm f p μ :=
+  snorm_mono_measure f Measure.restrict_le_self
+
+lemma tendsto_snorm_restrict_zero {α β ι : Type*} {mα : MeasurableSpace α} [NormedAddCommGroup β]
+    {p : ℝ≥0∞} {f : ι → α → β} {μ : Measure α} {l : Filter ι}
+    (h : Tendsto (fun n ↦ snorm (f n) p μ) l (𝓝 0)) (s : Set α) :
+    Tendsto (fun n ↦ snorm (f n) p (μ.restrict s)) l (𝓝 0) := by
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h ?_ ?_
+  · exact fun _ ↦ zero_le _
+  · exact fun _ ↦ snorm_restrict_le _
+
+lemma tendsto_integral_of_L1' {ι G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+    {μ : Measure α}
+    (f : α → G) (hfi : Integrable f μ)
+    {F : ι → α → G} {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ)
+    (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0)) :
+    Tendsto (fun i ↦ ∫ x, F i x ∂μ) l (𝓝 (∫ x, f x ∂μ)) := by
+  refine tendsto_integral_of_L1 f hfi hFi ?_
+  simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
+  exact hF
+
+lemma tendsto_set_integral_of_L1 {ι G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+    {μ : Measure α}
+    (f : α → G) (hfi : Integrable f μ)
+    {F : ι → α → G} {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ)
+    (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖₊ ∂μ) l (𝓝 0)) (s : Set α) :
+    Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
+  refine tendsto_integral_of_L1 f hfi.restrict ?_ ?_
+  · filter_upwards [hFi] with i hi using hi.restrict
+  · simp_rw [← snorm_one_eq_lintegral_nnnorm] at hF ⊢
+    exact tendsto_snorm_restrict_zero hF s
+
+lemma tendsto_set_integral_of_L1' {ι G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+    {μ : Measure α}
+    (f : α → G) (hfi : Integrable f μ)
+    {F : ι → α → G} {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ)
+    (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0)) (s : Set α) :
+    Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
+  refine tendsto_set_integral_of_L1 f hfi hFi ?_ s
+  simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
+  exact hF
+
+lemma ae_eq_of_integral_eq_of_ae_le {μ : Measure α} {f g : α → ℝ} (hf : Integrable f μ)
+    (hg : Integrable g μ) (h_le : f ≤ᵐ[μ] g) (h_eq : ∫ a, f a ∂μ = ∫ a, g a ∂μ) :
+    f =ᵐ[μ] g := by
+  suffices g - f =ᵐ[μ] 0 by
+    filter_upwards [this] with a ha
+    symm
+    simpa only [Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using ha
+  have h_eq' : ∫ a, (g - f) a ∂μ = 0 := by
+    simp_rw [Pi.sub_apply]
+    rwa [integral_sub hg hf, sub_eq_zero, eq_comm]
+  rwa [integral_eq_zero_iff_of_nonneg_ae _ (hg.sub hf)] at h_eq'
+  filter_upwards [h_le] with a ha
+  simpa
+
+lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Monotone fun n ↦ f n x)
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
+    Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
+  let f' := fun n x ↦ f n x - f 0 x
+  have hf'_nonneg : ∀ᵐ x ∂μ, ∀ n, 0 ≤ f' n x := by
+    filter_upwards [h_mono] with a ha n
+    simp [ha (zero_le n)]
+  have hf'_meas : ∀ n, Integrable (f' n) μ := fun n ↦ (hf n).sub (hf 0)
+  suffices Tendsto (fun n ↦ ∫ x, f' n x ∂μ) atTop (𝓝 (∫ x, (F - f 0) x ∂μ)) by
+    rw [integral_sub' hF (hf 0)] at this
+    have h_sub : ∀ n, ∫ x, f' n x ∂μ = ∫ x, f n x ∂μ - ∫ x, f 0 x ∂μ := by
+      intro n
+      simp only
+      rw [integral_sub (hf n) (hf 0)]
+    simp_rw [h_sub] at this
+    have h1 : (fun n ↦ ∫ x, f n x ∂μ)
+        = fun n ↦ (∫ x, f n x ∂μ - ∫ x, f 0 x ∂μ) + ∫ x, f 0 x ∂μ := by ext n; abel
+    have h2 : ∫ x, F x ∂μ = (∫ x, F x ∂μ - ∫ x, f 0 x ∂μ) + ∫ x, f 0 x ∂μ := by abel
+    rw [h1, h2]
+    exact this.add tendsto_const_nhds
+  have hF_ge : 0 ≤ᵐ[μ] fun x ↦ (F - f 0) x := by
+    filter_upwards [h_tendsto, h_mono] with x hx_tendsto hx_mono
+    simp only [Pi.zero_apply, Pi.sub_apply, sub_nonneg]
+    exact ge_of_tendsto' hx_tendsto (fun n ↦ hx_mono (zero_le _))
+  rw [ae_all_iff] at hf'_nonneg
+  simp_rw [integral_eq_lintegral_of_nonneg_ae (hf'_nonneg _) (hf'_meas _).1]
+  rw [integral_eq_lintegral_of_nonneg_ae hF_ge (hF.1.sub (hf 0).1)]
+  have h_cont := ENNReal.continuousOn_toReal.continuousAt
+    (x := ∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ) ?_
+  swap
+  · rw [mem_nhds_iff]
+    refine ⟨Iio (∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ + 1), ?_, isOpen_Iio, ?_⟩
+    · intro x
+      simp only [Pi.sub_apply, mem_Iio, ne_eq, mem_setOf_eq]
+      exact ne_top_of_lt
+    · simp only [Pi.sub_apply, mem_Iio]
+      refine ENNReal.lt_add_right ?_ one_ne_zero
+      rw [← ofReal_integral_eq_lintegral_ofReal]
+      · exact ENNReal.ofReal_ne_top
+      · exact hF.sub (hf 0)
+      · exact hF_ge
+  refine h_cont.tendsto.comp ?_
+  refine lintegral_tendsto_of_tendsto_of_monotone ?_ ?_ ?_
+  · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennreal_ofReal
+  · filter_upwards [h_mono] with x hx
+    intro n m hnm
+    refine ENNReal.ofReal_le_ofReal ?_
+    simp only [tsub_le_iff_right, sub_add_cancel]
+    exact hx hnm
+  · filter_upwards [h_tendsto] with x hx
+    refine (ENNReal.continuous_ofReal.tendsto _).comp ?_
+    simp only [Pi.sub_apply]
+    exact Tendsto.sub hx tendsto_const_nhds
+
+lemma integral_tendsto_of_tendsto_of_antitone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Antitone fun n ↦ f n x)
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
+    Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
+  suffices Tendsto (fun n ↦ ∫ x, -f n x ∂μ) atTop (𝓝 (∫ x, -F x ∂μ)) by
+    suffices Tendsto (fun n ↦ ∫ x, - -f n x ∂μ) atTop (𝓝 (∫ x, - -F x ∂μ)) by
+      simp_rw [neg_neg] at this
+      exact this
+    convert this.neg <;> rw [integral_neg]
+  refine integral_tendsto_of_tendsto_of_monotone (fun n ↦ (hf n).neg) hF.neg ?_ ?_
+  · filter_upwards [h_mono] with x hx
+    intro n m hnm
+    simp only [neg_le_neg_iff]
+    exact hx hnm
+  · filter_upwards [h_tendsto] with x hx
+    exact hx.neg
+
+lemma tendsto_nat_ceil_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
+    Tendsto (fun x : α ↦ ⌈x⌉₊) atTop atTop := by
+  refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
+  simp only [Nat.ceil_natCast, le_refl]
+
+lemma isCoboundedUnder_le_of_eventually_le {ι α : Type*} [Preorder α] (l : Filter ι) [NeBot l]
+    {f : ι → α} {x : α} (hf : ∀ᶠ i in l, x ≤ f i) :
+    IsCoboundedUnder (· ≤ ·) l f :=
+  IsBoundedUnder.isCoboundedUnder_le ⟨x, hf⟩
+
+lemma isCoboundedUnder_le_of_le {ι α : Type*} [Preorder α] (l : Filter ι) [NeBot l] {f : ι → α}
+    {x : α} (hf : ∀ i, x ≤ f i) :
+    IsCoboundedUnder (· ≤ ·) l f :=
+  isCoboundedUnder_le_of_eventually_le l (eventually_of_forall hf)
+
+end Move
 
 section dissection_system
 
@@ -91,26 +272,7 @@ lemma I_succ_union (n : ℕ) (k : ℤ) : I (n+1) (2 * k) ∪ I (n+1) (2 * k + 1)
     norm_num
     rw [one_div, mul_add, ← mul_assoc, inv_mul_cancel two_ne_zero, one_mul]
 
--- todo : `Filtration` should be renamed to `filtration`
-def ℱ : Filtration ℕ (borel ℝ) where
-  seq := fun n ↦ MeasurableSpace.generateFrom {s | ∃ k, s = I n k}
-  mono' := by
-    refine monotone_nat_of_le_succ ?_
-    intro n
-    refine MeasurableSpace.generateFrom_le fun s ⟨k, hs⟩ ↦ ?_
-    rw [hs, ← I_succ_union n k]
-    refine MeasurableSet.union ?_ ?_
-    · exact MeasurableSpace.measurableSet_generateFrom ⟨2 * k, rfl⟩
-    · exact MeasurableSpace.measurableSet_generateFrom ⟨2 * k + 1, rfl⟩
-  le' := fun n ↦ by
-    refine MeasurableSpace.generateFrom_le fun s ⟨k, hs⟩ ↦ ?_
-    rw [hs]
-    exact measurableSet_I n k
-
-lemma measurableSet_ℱ_I (n : ℕ) (k : ℤ) : MeasurableSet[ℱ n] (I n k) :=
-  MeasurableSpace.measurableSet_generateFrom ⟨k, rfl⟩
-
-noncomputable def indexI (n : ℕ) (t : ℝ) : ℤ := Int.floor (t * 2^n)
+noncomputable def indexI (n : ℕ) (t : ℝ) : ℤ := Int.floor (t * 2 ^ n)
 
 lemma mem_I_indexI (n : ℕ) (t : ℝ) : t ∈ I n (indexI n t) := by
   rw [indexI, I]
@@ -135,15 +297,6 @@ lemma indexI_of_mem (n : ℕ) (k : ℤ) (t : ℝ) (ht : t ∈ I n k) : indexI n 
 lemma mem_I_iff_indexI (n : ℕ) (k : ℤ) (t : ℝ) : t ∈ I n k ↔ indexI n t = k :=
   ⟨fun h ↦ indexI_of_mem n k t h, fun h ↦ h ▸ mem_I_indexI n t⟩
 
-lemma measurable_indexI (n : ℕ) : Measurable[ℱ n] (indexI n) := by
-  unfold indexI
-  refine @measurable_to_countable' ℤ ℝ _ _ (ℱ n) _ (fun k ↦ ?_)
-  have : (fun t ↦ ⌊t * (2 : ℝ) ^ n⌋) ⁻¹' {k} = I n k := by
-    ext t
-    simp only [mem_I_iff_floor, mem_preimage, mem_singleton_iff]
-  rw [this]
-  exact measurableSet_ℱ_I n k
-
 lemma iUnion_I (n : ℕ) : ⋃ k, I n k = univ := by
   ext x
   simp only [mem_iUnion, mem_univ, iff_true]
@@ -163,7 +316,7 @@ lemma iUnion_ge_I (n : ℕ) (t : ℝ) :
 lemma iInter_biUnion_I (x : ℝ) : ⋂ n, ⋃ (k) (_ : indexI n x ≤ k), I n k = Ici x := by
   ext t
   simp [iUnion_ge_I]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ ?_, fun h n ↦ le_trans ?_ h⟩
   · by_contra h_lt
     push_neg at h_lt
     have h_pos : ∀ i, 0 < (2 : ℝ) ^ i := fun i ↦ by positivity
@@ -171,8 +324,7 @@ lemma iInter_biUnion_I (x : ℝ) : ⋂ n, ⋃ (k) (_ : indexI n x ≤ k), I n k 
     obtain ⟨i, hi⟩ : ∃ i, 1 < (x - t) * 2 ^ i := by
       suffices ∃ i : ℝ, 1 ≤ (x - t) * 2 ^ i by
         obtain ⟨i, hi⟩ := this
-        use ⌈i⌉₊ + 1
-        refine hi.trans_lt ?_
+        refine ⟨⌈i⌉₊ + 1, hi.trans_lt ?_⟩
         gcongr
         · simp [h_lt]
         · refine ((Real.rpow_lt_rpow_left_iff one_lt_two).mpr (?_ : i < ⌈i⌉₊ + 1)).trans_eq ?_
@@ -196,11 +348,37 @@ lemma iInter_biUnion_I (x : ℝ) : ⋂ n, ⋃ (k) (_ : indexI n x ≤ k), I n k 
     have h'' : ↑⌈x * 2 ^ i⌉ < 2 ^ i * x := h'.trans_lt hi
     rw [← not_le, mul_comm] at h''
     exact h'' (Int.le_ceil _)
-  · intro n
-    refine le_trans ?_ h
-    rw [← div_eq_mul_inv, div_le_iff]
+  · rw [← div_eq_mul_inv, div_le_iff]
     · exact Int.floor_le (x * 2 ^ n)
     · positivity
+
+-- todo : `Filtration` should be renamed to `filtration`
+def ℱ : Filtration ℕ (borel ℝ) where
+  seq := fun n ↦ MeasurableSpace.generateFrom {s | ∃ k, s = I n k}
+  mono' := by
+    refine monotone_nat_of_le_succ ?_
+    intro n
+    refine MeasurableSpace.generateFrom_le fun s ⟨k, hs⟩ ↦ ?_
+    rw [hs, ← I_succ_union n k]
+    refine MeasurableSet.union ?_ ?_
+    · exact MeasurableSpace.measurableSet_generateFrom ⟨2 * k, rfl⟩
+    · exact MeasurableSpace.measurableSet_generateFrom ⟨2 * k + 1, rfl⟩
+  le' := fun n ↦ by
+    refine MeasurableSpace.generateFrom_le fun s ⟨k, hs⟩ ↦ ?_
+    rw [hs]
+    exact measurableSet_I n k
+
+lemma measurableSet_ℱ_I (n : ℕ) (k : ℤ) : MeasurableSet[ℱ n] (I n k) :=
+  MeasurableSpace.measurableSet_generateFrom ⟨k, rfl⟩
+
+lemma measurable_indexI (n : ℕ) : Measurable[ℱ n] (indexI n) := by
+  unfold indexI
+  refine @measurable_to_countable' ℤ ℝ _ _ (ℱ n) _ (fun k ↦ ?_)
+  have : (fun t ↦ ⌊t * (2 : ℝ) ^ n⌋) ⁻¹' {k} = I n k := by
+    ext t
+    simp only [mem_I_iff_floor, mem_preimage, mem_singleton_iff]
+  rw [this]
+  exact measurableSet_ℱ_I n k
 
 lemma iSup_ℱ : ⨆ n, ℱ n = borel ℝ := by
   refine le_antisymm ?_ ?_
@@ -216,12 +394,7 @@ lemma iSup_ℱ : ⨆ n, ℱ n = borel ℝ := by
 
 end dissection_system
 
-variable {β : Type*} [MeasurableSpace β]
-
--- issue with the following: joint measurability
---noncomputable
---def M' (κ : kernel α (ℝ × β)) (a : α) (s : Set β) (n : ℕ) (t : ℝ) : ℝ≥0∞ :=
---  (((κ a).restrict (univ ×ˢ s)).fst.trim (ℱ.le n)).rnDeriv (((kernel.fst κ a)).trim (ℱ.le n)) t
+variable [MeasurableSpace β]
 
 noncomputable
 def M (κ : kernel α (ℝ × β)) (a : α) (s : Set β) (n : ℕ) (t : ℝ) : ℝ :=
@@ -301,8 +474,7 @@ lemma m_le_one (κ : kernel α (ℝ × β)) (a : α) (s : Set β) (n : ℕ) (t :
   simp only [mem_prod, mem_setOf_eq, and_imp]
   exact fun h _ ↦ h
 
-lemma snorm_m_le (κ : kernel α (ℝ × β)) [IsFiniteKernel (kernel.fst κ)]
-    (a : α) (s : Set β) (n : ℕ) :
+lemma snorm_m_le (κ : kernel α (ℝ × β)) (a : α) (s : Set β) (n : ℕ) :
     snorm (M κ a s n) 1 (kernel.fst κ a) ≤ kernel.fst κ a univ := by
   refine (snorm_le_of_ae_bound (C := 1) (ae_of_all _ (fun x ↦ ?_))).trans ?_
   · simp only [Real.norm_eq_abs, abs_of_nonneg (m_nonneg κ a s n x), m_le_one κ a s n x]
@@ -620,18 +792,6 @@ lemma tendsto_snorm_one_m_limitProcess (κ : kernel α (ℝ × β)) (a : α) [Is
         simp
       · simp
 
-lemma snorm_restrict_le [NormedAddCommGroup β] {p : ℝ≥0∞} {f : α → β} {μ : Measure α} (s : Set α) :
-    snorm f p (μ.restrict s) ≤ snorm f p μ :=
-  snorm_mono_measure f Measure.restrict_le_self
-
-lemma tendsto_snorm_restrict_zero {α β ι : Type*} {mα : MeasurableSpace α} [NormedAddCommGroup β]
-    {p : ℝ≥0∞} {f : ι → α → β} {μ : Measure α} {l : Filter ι}
-    (h : Tendsto (fun n ↦ snorm (f n) p μ) l (𝓝 0)) (s : Set α) :
-    Tendsto (fun n ↦ snorm (f n) p (μ.restrict s)) l (𝓝 0) := by
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h ?_ ?_
-  · exact fun _ ↦ zero_le _
-  · exact fun _ ↦ snorm_restrict_le _
-
 lemma tendsto_snorm_one_restrict_m_limitProcess (κ : kernel α (ℝ × β)) (a : α) [IsFiniteKernel κ]
     {s : Set β} (hs : MeasurableSet s) (A : Set ℝ) :
     Tendsto (fun n ↦ snorm (M κ a s n - ℱ.limitProcess (M κ a s) (kernel.fst κ a)) 1
@@ -675,35 +835,19 @@ lemma mLimsup_mono_set (κ : kernel α (ℝ × β)) (a : α) {s s' : Set β} (h 
   rw [MLimsup, MLimsup]
   refine limsup_le_limsup ?_ ?_ ?_
   · exact eventually_of_forall (fun n ↦ m_mono_set κ a h n t)
-  · -- todo: extract lemma (of find it)
-    refine ⟨0, ?_⟩
-    simp only [eventually_map, eventually_atTop, ge_iff_le, forall_exists_index]
-    intro x n h
-    specialize h n le_rfl
-    exact (m_nonneg _ _ _ _ _).trans h
-  · -- todo: extract lemma (of find it)
-    refine ⟨1, ?_⟩
-    simp only [eventually_map, eventually_atTop, ge_iff_le]
-    exact ⟨0, fun n _ ↦ m_le_one _ _ _ _ _⟩
+  · exact isCoboundedUnder_le_of_le atTop (fun i ↦ m_nonneg _ _ _ _ _)
+  · exact isBoundedUnder_of ⟨1, fun n ↦ m_le_one _ _ _ _ _⟩
 
 lemma mLimsup_nonneg (κ : kernel α (ℝ × β)) (a : α) (s : Set β) (t : ℝ) :
     0 ≤ MLimsup κ a s t := by
   refine le_limsup_of_frequently_le ?_ ?_
   · exact frequently_of_forall (fun n ↦ m_nonneg _ _ _ _ _)
-  · -- todo: extract lemma (of find it)
-    refine ⟨1, ?_⟩
-    simp only [eventually_map, eventually_atTop, ge_iff_le]
-    exact ⟨0, fun n _ ↦ m_le_one _ _ _ _ _⟩
+  · exact isBoundedUnder_of ⟨1, fun n ↦ m_le_one _ _ _ _ _⟩
 
 lemma mLimsup_le_one (κ : kernel α (ℝ × β)) (a : α) (s : Set β) (t : ℝ) :
     MLimsup κ a s t ≤ 1 := by
   refine limsup_le_of_le ?_ ?_
-  · -- todo: extract lemma (of find it)
-    refine ⟨0, ?_⟩
-    simp only [eventually_map, eventually_atTop, ge_iff_le, forall_exists_index]
-    intro x n h
-    specialize h n le_rfl
-    exact (m_nonneg _ _ _ _ _).trans h
+  · exact isCoboundedUnder_le_of_le atTop (fun i ↦ m_nonneg _ _ _ _ _)
   · exact eventually_of_forall (fun n ↦ m_le_one _ _ _ _ _)
 
 lemma mLimsup_univ (κ : kernel α (ℝ × β)) [IsFiniteKernel κ] (a : α) :
@@ -712,10 +856,9 @@ lemma mLimsup_univ (κ : kernel α (ℝ × β)) [IsFiniteKernel κ] (a : α) :
   rw [← ae_all_iff] at h
   filter_upwards [h] with t ht
   rw [MLimsup]
-  simp_rw [ht]
-  rw [limsup_const] -- should be simp
+  simp [ht]
 
-lemma snorm_mLimsup_le (κ : kernel α (ℝ × β)) [IsFiniteKernel (kernel.fst κ)]
+lemma snorm_mLimsup_le (κ : kernel α (ℝ × β))
     (a : α) (s : Set β) :
     snorm (fun t ↦ MLimsup κ a s t) 1 (kernel.fst κ a) ≤ kernel.fst κ a univ := by
   refine (snorm_le_of_ae_bound (C := 1) (ae_of_all _ (fun t ↦ ?_))).trans ?_
@@ -730,40 +873,6 @@ lemma integrable_mLimsup (κ : kernel α (ℝ × β)) [IsFiniteKernel (kernel.fs
   refine ⟨Measurable.aestronglyMeasurable ?_, ?_⟩
   · exact measurable_mLimsup_right κ hs a
   · exact (snorm_mLimsup_le κ a s).trans_lt (measure_lt_top _ _)
-
-lemma tendsto_integral_of_L1' {ι G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-    {μ : Measure α}
-    (f : α → G) (hfi : Integrable f μ)
-    {F : ι → α → G} {l : Filter ι}
-    (hFi : ∀ᶠ i in l, Integrable (F i) μ)
-    (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0)) :
-    Tendsto (fun i ↦ ∫ x, F i x ∂μ) l (𝓝 (∫ x, f x ∂μ)) := by
-  refine tendsto_integral_of_L1 f hfi hFi ?_
-  simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
-  exact hF
-
-lemma tendsto_set_integral_of_L1 {ι G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-    {μ : Measure α}
-    (f : α → G) (hfi : Integrable f μ)
-    {F : ι → α → G} {l : Filter ι}
-    (hFi : ∀ᶠ i in l, Integrable (F i) μ)
-    (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖₊ ∂μ) l (𝓝 0)) (s : Set α) :
-    Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
-  refine tendsto_integral_of_L1 f hfi.restrict ?_ ?_
-  · filter_upwards [hFi] with i hi using hi.restrict
-  · simp_rw [← snorm_one_eq_lintegral_nnnorm] at hF ⊢
-    exact tendsto_snorm_restrict_zero hF s
-
-lemma tendsto_set_integral_of_L1' {ι G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
-    {μ : Measure α}
-    (f : α → G) (hfi : Integrable f μ)
-    {F : ι → α → G} {l : Filter ι}
-    (hFi : ∀ᶠ i in l, Integrable (F i) μ)
-    (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0)) (s : Set α) :
-    Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
-  refine tendsto_set_integral_of_L1 f hfi hFi ?_ s
-  simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
-  exact hF
 
 lemma tendsto_set_integral_m (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) {s : Set β} (hs : MeasurableSet s) (A : Set ℝ) :
@@ -878,92 +987,6 @@ lemma tendsto_integral_mLimsup_of_antitone (κ : kernel α (ℝ × β)) [IsFinit
   convert h
   rw [← prod_iInter, hs_iInter]
   simp only [ne_eq, prod_empty, OuterMeasure.empty', forall_exists_index]
-
-lemma ae_eq_of_integral_eq_of_ae_le {μ : Measure α} {f g : α → ℝ} (hf : Integrable f μ)
-    (hg : Integrable g μ) (h_le : f ≤ᵐ[μ] g) (h_eq : ∫ a, f a ∂μ = ∫ a, g a ∂μ) :
-    f =ᵐ[μ] g := by
-  suffices g - f =ᵐ[μ] 0 by
-    filter_upwards [this] with a ha
-    symm
-    simpa only [Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using ha
-  have h_eq' : ∫ a, (g - f) a ∂μ = 0 := by
-    simp_rw [Pi.sub_apply]
-    rwa [integral_sub hg hf, sub_eq_zero, eq_comm]
-  rwa [integral_eq_zero_iff_of_nonneg_ae _ (hg.sub hf)] at h_eq'
-  filter_upwards [h_le] with a ha
-  simpa
-
-lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
-    (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Monotone fun n ↦ f n x)
-    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
-    Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
-  let f' := fun n x ↦ f n x - f 0 x
-  have hf'_nonneg : ∀ᵐ x ∂μ, ∀ n, 0 ≤ f' n x := by
-    filter_upwards [h_mono] with a ha n
-    simp [ha (zero_le n)]
-  have hf'_meas : ∀ n, Integrable (f' n) μ := fun n ↦ (hf n).sub (hf 0)
-  suffices Tendsto (fun n ↦ ∫ x, f' n x ∂μ) atTop (𝓝 (∫ x, (F - f 0) x ∂μ)) by
-    rw [integral_sub' hF (hf 0)] at this
-    have h_sub : ∀ n, ∫ x, f' n x ∂μ = ∫ x, f n x ∂μ - ∫ x, f 0 x ∂μ := by
-      intro n
-      simp only
-      rw [integral_sub (hf n) (hf 0)]
-    simp_rw [h_sub] at this
-    have h1 : (fun n ↦ ∫ x, f n x ∂μ)
-        = fun n ↦ (∫ x, f n x ∂μ - ∫ x, f 0 x ∂μ) + ∫ x, f 0 x ∂μ := by ext n; abel
-    have h2 : ∫ x, F x ∂μ = (∫ x, F x ∂μ - ∫ x, f 0 x ∂μ) + ∫ x, f 0 x ∂μ := by abel
-    rw [h1, h2]
-    exact this.add tendsto_const_nhds
-  have hF_ge : 0 ≤ᵐ[μ] fun x ↦ (F - f 0) x := by
-    filter_upwards [h_tendsto, h_mono] with x hx_tendsto hx_mono
-    simp only [Pi.zero_apply, Pi.sub_apply, sub_nonneg]
-    exact ge_of_tendsto' hx_tendsto (fun n ↦ hx_mono (zero_le _))
-  rw [ae_all_iff] at hf'_nonneg
-  simp_rw [integral_eq_lintegral_of_nonneg_ae (hf'_nonneg _) (hf'_meas _).1]
-  rw [integral_eq_lintegral_of_nonneg_ae hF_ge (hF.1.sub (hf 0).1)]
-  have h_cont := ENNReal.continuousOn_toReal.continuousAt
-    (x := ∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ) ?_
-  swap
-  · rw [mem_nhds_iff]
-    refine ⟨Iio (∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ + 1), ?_, isOpen_Iio, ?_⟩
-    · intro x
-      simp only [Pi.sub_apply, mem_Iio, ne_eq, mem_setOf_eq]
-      exact ne_top_of_lt
-    · simp only [Pi.sub_apply, mem_Iio]
-      refine ENNReal.lt_add_right ?_ one_ne_zero
-      rw [← ofReal_integral_eq_lintegral_ofReal]
-      · exact ENNReal.ofReal_ne_top
-      · exact hF.sub (hf 0)
-      · exact hF_ge
-  refine h_cont.tendsto.comp ?_
-  refine lintegral_tendsto_of_tendsto_of_monotone ?_ ?_ ?_
-  · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennreal_ofReal
-  · filter_upwards [h_mono] with x hx
-    intro n m hnm
-    refine ENNReal.ofReal_le_ofReal ?_
-    simp only [tsub_le_iff_right, sub_add_cancel]
-    exact hx hnm
-  · filter_upwards [h_tendsto] with x hx
-    refine (ENNReal.continuous_ofReal.tendsto _).comp ?_
-    simp only [Pi.sub_apply]
-    exact Tendsto.sub hx tendsto_const_nhds
-
-lemma integral_tendsto_of_tendsto_of_antitone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
-    (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Antitone fun n ↦ f n x)
-    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
-    Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
-  suffices Tendsto (fun n ↦ ∫ x, -f n x ∂μ) atTop (𝓝 (∫ x, -F x ∂μ)) by
-    suffices Tendsto (fun n ↦ ∫ x, - -f n x ∂μ) atTop (𝓝 (∫ x, - -F x ∂μ)) by
-      simp_rw [neg_neg] at this
-      exact this
-    convert this.neg <;> rw [integral_neg]
-  refine integral_tendsto_of_tendsto_of_monotone (fun n ↦ (hf n).neg) hF.neg ?_ ?_
-  · filter_upwards [h_mono] with x hx
-    intro n m hnm
-    simp only [neg_le_neg_iff]
-    exact hx hnm
-  · filter_upwards [h_tendsto] with x hx
-    exact hx.neg
 
 lemma tendsto_mLimsup_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ)
@@ -1114,11 +1137,6 @@ lemma mLimsupIic_nonneg (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : �
 lemma mLimsupIic_le_one (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) : mLimsupIic κ a t q ≤ 1 :=
   mLimsup_le_one κ a _ t
 
-theorem tendsto_nat_ceil_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
-    Tendsto (fun x : α ↦ ⌈x⌉₊) atTop atTop := by
-  refine Nat.ceil_mono.tendsto_atTop_atTop (fun x ↦ ⟨x, ?_⟩)
-  simp only [Nat.ceil_natCast, le_refl]
-
 lemma tendsto_atTop_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun q ↦ mLimsupIic κ a t q) atTop (𝓝 1) := by
   suffices ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun (n : ℕ) ↦ mLimsupIic κ a t n) atTop (𝓝 1) by
@@ -1187,8 +1205,7 @@ lemma integrable_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel (kerne
     Integrable (fun t ↦ mLimsupIic κ a t q) (kernel.fst κ a) :=
   integrable_mLimsup _ _ measurableSet_Iic
 
-lemma bddBelow_range_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel (kernel.fst κ)]
-    (a : α) (t : ℝ) (q : ℚ) :
+lemma bddBelow_range_mLimsupIic (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) :
     BddBelow (range fun (r : Ioi q) ↦ mLimsupIic κ a t r) := by
   refine ⟨0, ?_⟩
   rw [mem_lowerBounds]
@@ -1247,8 +1264,6 @@ lemma iInf_rat_gt_mLimsupIic_eq (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ
 
 end Iic_Q
 
-section Rat
-
 lemma isRatStieltjesPoint_mLimsupIic_ae (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), IsRatStieltjesPoint (fun p q ↦ mLimsupIic κ p.1 p.2 q) (a, t) := by
   filter_upwards [tendsto_atTop_mLimsupIic κ a, tendsto_atBot_mLimsupIic κ a,
@@ -1268,20 +1283,13 @@ lemma isRatKernelCDF_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ
   integrable := integrable_mLimsupIic κ
   isCDF := fun _ _ hs _ ↦ set_integral_mLimsupIic _ _ _ hs
 
-end Rat
-
-section KernelCDF
-
 noncomputable
 def mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] : α × ℝ → StieltjesFunction :=
-  todo3 (fun p : α × ℝ ↦ mLimsupIic κ p.1 p.2) (isRatKernelCDF_mLimsupIic κ).measurable
+  stieltjesOfMeasurableRat (fun p : α × ℝ ↦ mLimsupIic κ p.1 p.2)
+    (isRatKernelCDF_mLimsupIic κ).measurable
 
 lemma isKernelCDF_mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] :
     IsKernelCDF (mLimsupCDF κ) κ (kernel.fst κ) :=
-  isKernelCDF_todo3 (isRatKernelCDF_mLimsupIic κ)
-
-end KernelCDF
-
-end Real
+  isKernelCDF_stieltjesOfMeasurableRat (isRatKernelCDF_mLimsupIic κ)
 
 end ProbabilityTheory

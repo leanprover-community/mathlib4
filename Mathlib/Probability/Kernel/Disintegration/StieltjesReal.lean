@@ -225,15 +225,16 @@ variable {f : α → ℚ → ℝ} (hf : IsCDFLike f)
 
 /-- Conditional cdf of the measure given the value on `α`, as a plain function. This is an auxiliary
 definition used to define `cond_cdf`. -/
-noncomputable irreducible_def todo1 (f : α → ℚ → ℝ) : α → ℝ → ℝ :=
+noncomputable irreducible_def IsCDFLike.stieltjesFunctionAux (f : α → ℚ → ℝ) : α → ℝ → ℝ :=
   fun a t ↦ ⨅ r : { r' : ℚ // t < r' }, f a r
 
-lemma todo1_def' (f : α → ℚ → ℝ) (a : α) :
-    todo1 f a = fun (t : ℝ) ↦ ⨅ r : { r' : ℚ // t < r' }, f a r := by ext t; exact todo1_def f a t
+lemma IsCDFLike.stieltjesFunctionAux_def' (f : α → ℚ → ℝ) (a : α) :
+    IsCDFLike.stieltjesFunctionAux f a = fun (t : ℝ) ↦ ⨅ r : { r' : ℚ // t < r' }, f a r := by
+  ext t; exact IsCDFLike.stieltjesFunctionAux_def f a t
 
-lemma todo1_eq (a : α) (r : ℚ) :
-    todo1 f a r = f a r := by
-  rw [← hf.iInf_rat_gt_eq a r, todo1]
+lemma IsCDFLike.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
+    IsCDFLike.stieltjesFunctionAux f a r = f a r := by
+  rw [← hf.iInf_rat_gt_eq a r, IsCDFLike.stieltjesFunctionAux]
   refine Equiv.iInf_congr ?_ ?_
   · exact
       { toFun := fun t ↦ ⟨t.1, mod_cast t.2⟩
@@ -243,65 +244,69 @@ lemma todo1_eq (a : α) (r : ℚ) :
   · intro t
     simp only [Equiv.coe_fn_mk, Subtype.coe_mk]
 
-lemma todo1_unit_prod (a : α) :
-    todo1 (fun (p : Unit × α) ↦ f p.2) ((), a) = todo1 f a := by simp_rw [todo1_def']
+lemma IsCDFLike.stieltjesFunctionAux_unit_prod (a : α) :
+    IsCDFLike.stieltjesFunctionAux (fun (p : Unit × α) ↦ f p.2) ((), a) =
+  IsCDFLike.stieltjesFunctionAux f a := by simp_rw [IsCDFLike.stieltjesFunctionAux_def']
 
-lemma todo1_nonneg (a : α) (r : ℝ) : 0 ≤ todo1 f a r := by
+lemma IsCDFLike.stieltjesFunctionAux_nonneg (a : α) (r : ℝ) :
+    0 ≤ IsCDFLike.stieltjesFunctionAux f a r := by
   have : Nonempty { r' : ℚ // r < ↑r' } := by
     obtain ⟨r, hrx⟩ := exists_rat_gt r
     exact ⟨⟨r, hrx⟩⟩
-  rw [todo1_def]
+  rw [IsCDFLike.stieltjesFunctionAux_def]
   exact le_ciInf fun r' ↦ hf.nonneg a _
 
 lemma bddBelow_range_gt (a : α) (x : ℝ) :
     BddBelow (range fun r : { r' : ℚ // x < ↑r' } ↦ f a r) := by
   refine ⟨0, fun z ↦ ?_⟩; rintro ⟨u, rfl⟩; exact hf.nonneg a _
 
-lemma monotone_todo1 (a : α) : Monotone (todo1 f a) := by
+lemma IsCDFLike.monotone_stieltjesFunctionAux (a : α) :
+    Monotone (IsCDFLike.stieltjesFunctionAux f a) := by
   intro x y hxy
   have : Nonempty { r' : ℚ // y < ↑r' } := by
     obtain ⟨r, hrx⟩ := exists_rat_gt y
     exact ⟨⟨r, hrx⟩⟩
-  simp_rw [todo1_def]
+  simp_rw [IsCDFLike.stieltjesFunctionAux_def]
   refine le_ciInf fun r ↦ (ciInf_le ?_ ?_).trans_eq ?_
   · exact bddBelow_range_gt hf a x
   · exact ⟨r.1, hxy.trans_lt r.prop⟩
   · rfl
 
-lemma continuousWithinAt_todo1_Ici (a : α) (x : ℝ) :
-    ContinuousWithinAt (todo1 f a) (Ici x) x := by
+lemma  IsCDFLike.continuousWithinAt_stieltjesFunctionAux_Ici (a : α) (x : ℝ) :
+    ContinuousWithinAt (IsCDFLike.stieltjesFunctionAux f a) (Ici x) x := by
   rw [← continuousWithinAt_Ioi_iff_Ici]
-  convert Monotone.tendsto_nhdsWithin_Ioi (monotone_todo1 hf a) x
+  convert Monotone.tendsto_nhdsWithin_Ioi (monotone_stieltjesFunctionAux hf a) x
   rw [sInf_image']
-  have h' : ⨅ r : Ioi x, todo1 f a r = ⨅ r : { r' : ℚ // x < r' }, todo1 f a r := by
-    refine Real.iInf_Ioi_eq_iInf_rat_gt x ?_ (monotone_todo1 hf a)
+  have h' : ⨅ r : Ioi x, stieltjesFunctionAux f a r
+      = ⨅ r : { r' : ℚ // x < r' }, stieltjesFunctionAux f a r := by
+    refine Real.iInf_Ioi_eq_iInf_rat_gt x ?_ (monotone_stieltjesFunctionAux hf a)
     refine ⟨0, fun z ↦ ?_⟩
     rintro ⟨u, -, rfl⟩
-    exact todo1_nonneg hf a u
+    exact stieltjesFunctionAux_nonneg hf a u
   have h'' :
-    ⨅ r : { r' : ℚ // x < r' }, todo1 f a r =
+    ⨅ r : { r' : ℚ // x < r' }, stieltjesFunctionAux f a r =
       ⨅ r : { r' : ℚ // x < r' }, f a r := by
     congr with r
-    exact todo1_eq hf a r
+    exact stieltjesFunctionAux_eq hf a r
   rw [h', h'', ContinuousWithinAt]
   congr!
-  rw [todo1_def]
+  rw [stieltjesFunctionAux_def]
 
 /-! ### Conditional cdf -/
 
 
 /-- Conditional cdf of the measure given the value on `α`, as a Stieltjes function. -/
 noncomputable def IsCDFLike.stieltjesFunction (a : α) : StieltjesFunction where
-  toFun := todo1 f a
-  mono' := monotone_todo1 hf a
-  right_continuous' x := continuousWithinAt_todo1_Ici hf a x
+  toFun := stieltjesFunctionAux f a
+  mono' := monotone_stieltjesFunctionAux hf a
+  right_continuous' x := continuousWithinAt_stieltjesFunctionAux_Ici hf a x
 
 lemma IsCDFLike.stieltjesFunction_eq (a : α) (r : ℚ) : hf.stieltjesFunction a r = f a r :=
-  todo1_eq hf a r
+  stieltjesFunctionAux_eq hf a r
 
 /-- The conditional cdf is non-negative for all `a : α`. -/
 lemma IsCDFLike.stieltjesFunction_nonneg (a : α) (r : ℝ) : 0 ≤ hf.stieltjesFunction a r :=
-  todo1_nonneg hf a r
+  stieltjesFunctionAux_nonneg hf a r
 
 /-- The conditional cdf is lower or equal to 1 for all `a : α`. -/
 lemma IsCDFLike.stieltjesFunction_le_one (a : α) (x : ℝ) : hf.stieltjesFunction a x ≤ 1 := by
@@ -405,66 +410,77 @@ end Measure
 
 end IsCDFLike.stieltjesFunction
 
-section todo3
+section stieltjesOfMeasurableRat
 
 variable {f : α → ℚ → ℝ}
 
 noncomputable
-def todo3 (f : α → ℚ → ℝ) (hf : ∀ q, Measurable fun a ↦ f a q) : α → StieltjesFunction :=
+def stieltjesOfMeasurableRat (f : α → ℚ → ℝ) (hf : ∀ q, Measurable fun a ↦ f a q) :
+    α → StieltjesFunction :=
   (isCDFLike_toCDFLike hf).stieltjesFunction
 
-lemma todo3_eq (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (r : ℚ) :
-    todo3 f hf a r = toCDFLike f a r := IsCDFLike.stieltjesFunction_eq _ a r
+lemma stieltjesOfMeasurableRat_eq (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (r : ℚ) :
+    stieltjesOfMeasurableRat f hf a r = toCDFLike f a r := IsCDFLike.stieltjesFunction_eq _ a r
 
-lemma todo3_unit_prod (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
-    todo3 (fun (p : Unit × α) ↦ f p.2) (fun q ↦ (hf q).comp measurable_snd) ((), a)
-      = todo3 f hf a := by
-  simp_rw [todo3,IsCDFLike.stieltjesFunction, ← todo1_unit_prod a]
+lemma stieltjesOfMeasurableRat_unit_prod (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
+    stieltjesOfMeasurableRat (fun (p : Unit × α) ↦ f p.2)
+        (fun q ↦ (hf q).comp measurable_snd) ((), a)
+      = stieltjesOfMeasurableRat f hf a := by
+  simp_rw [stieltjesOfMeasurableRat,IsCDFLike.stieltjesFunction,
+    ← IsCDFLike.stieltjesFunctionAux_unit_prod a]
   congr with x
   congr 1 with p : 1
   cases p with
   | mk _ b => rw [← toCDFLike_unit_prod b]
 
 /-- The conditional cdf is non-negative for all `a : α`. -/
-lemma todo3_nonneg (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (r : ℝ) :
-    0 ≤ todo3 f hf a r := IsCDFLike.stieltjesFunction_nonneg _ a r
+lemma stieltjesOfMeasurableRat_nonneg (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (r : ℝ) :
+    0 ≤ stieltjesOfMeasurableRat f hf a r := IsCDFLike.stieltjesFunction_nonneg _ a r
 
 /-- The conditional cdf is lower or equal to 1 for all `a : α`. -/
-lemma todo3_le_one (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (x : ℝ) :
-    todo3 f hf a x ≤ 1 := IsCDFLike.stieltjesFunction_le_one _ a x
+lemma stieltjesOfMeasurableRat_le_one (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (x : ℝ) :
+    stieltjesOfMeasurableRat f hf a x ≤ 1 := IsCDFLike.stieltjesFunction_le_one _ a x
 
 /-- The conditional cdf tends to 0 at -∞ for all `a : α`. -/
-lemma tendsto_todo3_atBot (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
-    Tendsto (todo3 f hf a) atBot (𝓝 0) := IsCDFLike.tendsto_stieltjesFunction_atBot _ a
+lemma tendsto_stieltjesOfMeasurableRat_atBot (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
+    Tendsto (stieltjesOfMeasurableRat f hf a) atBot (𝓝 0) :=
+  IsCDFLike.tendsto_stieltjesFunction_atBot _ a
 
 /-- The conditional cdf tends to 1 at +∞ for all `a : α`. -/
-lemma tendsto_todo3_atTop (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
-    Tendsto (todo3 f hf a) atTop (𝓝 1) := IsCDFLike.tendsto_stieltjesFunction_atTop _ a
+lemma tendsto_stieltjesOfMeasurableRat_atTop (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
+    Tendsto (stieltjesOfMeasurableRat f hf a) atTop (𝓝 1) :=
+  IsCDFLike.tendsto_stieltjesFunction_atTop _ a
 
 /-- The conditional cdf is a measurable function of `a : α` for all `x : ℝ`. -/
-lemma measurable_todo3 (hf : ∀ q, Measurable fun a ↦ f a q) (x : ℝ) :
-    Measurable fun a ↦ todo3 f hf a x := IsCDFLike.measurable_stieltjesFunction _ x
+lemma measurable_stieltjesOfMeasurableRat (hf : ∀ q, Measurable fun a ↦ f a q) (x : ℝ) :
+    Measurable fun a ↦ stieltjesOfMeasurableRat f hf a x :=
+  IsCDFLike.measurable_stieltjesFunction _ x
 
 /-- The conditional cdf is a strongly measurable function of `a : α` for all `x : ℝ`. -/
-lemma stronglyMeasurable_todo3 (hf : ∀ q, Measurable fun a ↦ f a q) (x : ℝ) :
-    StronglyMeasurable fun a ↦ todo3 f hf a x := IsCDFLike.stronglyMeasurable_stieltjesFunction _ x
+lemma stronglyMeasurable_stieltjesOfMeasurableRat (hf : ∀ q, Measurable fun a ↦ f a q) (x : ℝ) :
+    StronglyMeasurable fun a ↦ stieltjesOfMeasurableRat f hf a x :=
+  IsCDFLike.stronglyMeasurable_stieltjesFunction _ x
 
 section Measure
 
-lemma measure_todo3_Iic (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (x : ℝ) :
-    (todo3 f hf a).measure (Iic x) = ENNReal.ofReal (todo3 f hf a x) :=
+lemma measure_stieltjesOfMeasurableRat_Iic (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (x : ℝ) :
+    (stieltjesOfMeasurableRat f hf a).measure (Iic x)
+      = ENNReal.ofReal (stieltjesOfMeasurableRat f hf a x) :=
   IsCDFLike.measure_stieltjesFunction_Iic _ _ _
 
-lemma measure_todo3_univ (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
-    (todo3 f hf a).measure univ = 1 := IsCDFLike.measure_stieltjesFunction_univ _ _
+lemma measure_stieltjesOfMeasurableRat_univ (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
+    (stieltjesOfMeasurableRat f hf a).measure univ = 1 :=
+  IsCDFLike.measure_stieltjesFunction_univ _ _
 
-instance instIsProbabilityMeasure_todo3 (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
-    IsProbabilityMeasure (todo3 f hf a).measure :=
+instance instIsProbabilityMeasure_stieltjesOfMeasurableRat
+    (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
+    IsProbabilityMeasure (stieltjesOfMeasurableRat f hf a).measure :=
   IsCDFLike.instIsProbabilityMeasure_stieltjesFunction _ _
 
-lemma measurable_measure_todo3 (hf : ∀ q, Measurable fun a ↦ f a q) :
-    Measurable fun a ↦ (todo3 f hf a).measure := IsCDFLike.measurable_measure_stieltjesFunction _
+lemma measurable_measure_stieltjesOfMeasurableRat (hf : ∀ q, Measurable fun a ↦ f a q) :
+    Measurable fun a ↦ (stieltjesOfMeasurableRat f hf a).measure :=
+  IsCDFLike.measurable_measure_stieltjesFunction _
 
 end Measure
 
-end todo3
+end stieltjesOfMeasurableRat
