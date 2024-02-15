@@ -302,7 +302,7 @@ theorem unifTight_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f : Fin
       -- Porting note: Original proof was `simp [← le_antisymm hi' hi]`
       ext; symm; rw [Fin.coe_ofNat_eq_mod, le_antisymm hi' hi, Nat.mod_succ_eq_iff_lt, Nat.lt_succ]
 
-/-- A finite sequence of Lp functions is uniformly integrable. -/
+/-- A finite sequence of Lp functions is uniformly tight. -/
 theorem unifTight_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {f : ι → α → β}
     (hf : ∀ i, Memℒp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
   obtain ⟨n, hn⟩ := Finite.exists_equiv_fin ι
