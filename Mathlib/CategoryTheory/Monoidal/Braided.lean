@@ -148,8 +148,8 @@ theorem yang_baxter' (X Y Z : C) :
 theorem yang_baxter_iso (X Y Z : C) :
     (α_ X Y Z).symm ≪≫ whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫
     whiskerLeftIso Y (β_ X Z) ≪≫ (α_ Y Z X).symm ≪≫
-    whiskerRightIso (β_ Y Z) X ≪≫ (α_ Z Y X)
-    = whiskerLeftIso X (β_ Y Z) ≪≫ (α_ X Z Y).symm ≪≫
+    whiskerRightIso (β_ Y Z) X ≪≫ (α_ Z Y X) =
+      whiskerLeftIso X (β_ Y Z) ≪≫ (α_ X Z Y).symm ≪≫
       whiskerRightIso (β_ X Z) Y ≪≫ α_ Z X Y ≪≫
       whiskerLeftIso Z (β_ X Y) := Iso.ext (yang_baxter X Y Z)
 
