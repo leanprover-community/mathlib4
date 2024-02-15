@@ -621,13 +621,8 @@ theorem snd_pow_eq_sum [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribM
 
 theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
     [DistribMulAction Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] (x : tsze R M) (n : ℕ)
-    (h : x.snd <• x.fst = x.fst •> x.snd) : snd (x ^ n) = n • x.fst ^ n.pred • x.snd := by
-  have : ∀ n : ℕ, x.snd <• x.fst ^ n = x.fst ^ n •> x.snd := by
-    intro n
-    induction' n with n ih
-    · simp
-    · rw [pow_succ', op_mul, mul_smul, mul_smul, ← h, smul_comm (_ : R) (op x.fst) x.snd, ih]
-  simp_rw [snd_pow_eq_sum, ← smul_comm (_ : R) (_ : Rᵐᵒᵖ), this, smul_smul, ← pow_add]
+    (h : x.snd <• x.fst = x.fst •> x.snd) : snd (x ^ n) = n • x.fst ^ n.pred •> x.snd := by
+  simp_rw [snd_pow_eq_sum, ← smul_comm (_ : R) (_ : Rᵐᵒᵖ), aux, smul_smul, ← pow_add]
   match n with
   | 0 => rw [Nat.pred_zero, pow_zero, List.range_zero, zero_smul, List.map_nil, List.sum_nil]
   | (Nat.succ n) =>
@@ -638,7 +633,18 @@ theorem snd_pow_of_smul_comm [Monoid R] [AddMonoid M] [DistribMulAction R M]
       obtain ⟨i, hi, rfl⟩ := hm
       rw [tsub_add_cancel_of_le (Nat.lt_succ_iff.mp hi)]
     · rw [List.length_map, List.length_range]
+where
+  aux : ∀ n : ℕ, x.snd <• x.fst ^ n = x.fst ^ n •> x.snd := by
+    intro n
+    induction' n with n ih
+    · simp
+    · rw [pow_succ', op_mul, mul_smul, mul_smul, ← h, smul_comm (_ : R) (op x.fst) x.snd, ih]
 #align triv_sq_zero_ext.snd_pow_of_smul_comm TrivSqZeroExt.snd_pow_of_smul_comm
+
+theorem snd_pow_of_smul_comm' [Monoid R] [AddMonoid M] [DistribMulAction R M]
+    [DistribMulAction Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] (x : tsze R M) (n : ℕ)
+    (h : x.snd <• x.fst = x.fst •> x.snd) : snd (x ^ n) = n • (x.snd <• x.fst ^ n.pred) := by
+  rw [snd_pow_of_smul_comm _ _ h, snd_pow_of_smul_comm.aux _ h]
 
 @[simp]
 theorem snd_pow [CommMonoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
