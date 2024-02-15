@@ -260,8 +260,8 @@ theorem cauchy_product {a b : ℕ → β} (ha : IsCauSeq abs fun m => ∑ n in r
     have hsumlesum :
       (∑ i in range (max N M + 1),
           abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) ≤
-        ∑ i in range (max N M + 1), abv (a i) * (ε / (2 * P))
-    · gcongr with m hmJ
+        ∑ i in range (max N M + 1), abv (a i) * (ε / (2 * P)) := by
+      gcongr with m hmJ
       exact le_of_lt
             (hN (K - m)
               (le_tsub_of_add_le_left
@@ -1926,10 +1926,9 @@ theorem cos_two_neg : cos 2 < 0 :=
 
 theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
     Real.exp x < 1 / (1 - x) := by
-  have H : 0 < 1 - (1 + x + x ^ 2) * (1 - x)
-  · calc
-      0 < x ^ 3 := by positivity
-      _ = 1 - (1 + x + x ^ 2) * (1 - x) := by ring
+  have H : 0 < 1 - (1 + x + x ^ 2) * (1 - x) := calc
+    0 < x ^ 3 := by positivity
+    _ = 1 - (1 + x + x ^ 2) * (1 - x) := by ring
   calc
     exp x ≤ _ := exp_bound' h1.le h2.le zero_lt_three
     _ ≤ 1 + x + x ^ 2 := by

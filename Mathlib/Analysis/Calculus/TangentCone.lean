@@ -125,8 +125,8 @@ theorem tangentCone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
   refine' ⟨c, d, _, ctop, clim⟩
-  suffices : Tendsto (fun n => x + d n) atTop (𝓝[t] x)
-  exact tendsto_principal.1 (tendsto_inf.1 this).2
+  suffices Tendsto (fun n => x + d n) atTop (𝓝[t] x) from
+    tendsto_principal.1 (tendsto_inf.1 this).2
   refine' (tendsto_inf.2 ⟨_, tendsto_principal.2 ds⟩).mono_right h
   simpa only [add_zero] using tendsto_const_nhds.add (tangentConeAt.lim_zero atTop ctop clim)
 #align tangent_cone_mono_nhds tangentCone_mono_nhds
