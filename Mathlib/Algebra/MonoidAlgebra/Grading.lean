@@ -37,7 +37,7 @@ noncomputable section
 
 namespace AddMonoidAlgebra
 
-variable {M : Type*} {ι : Type*} {R : Type*} [DecidableEq M]
+variable {M : Type*} {ι : Type*} {R : Type*}
 
 section
 
@@ -47,7 +47,8 @@ variable (R) [CommSemiring R]
 abbrev gradeBy (f : M → ι) (i : ι) : Submodule R R[M] where
   carrier := { a | ∀ m, m ∈ a.support → f m = i }
   zero_mem' m h := by cases h
-  add_mem' {a b} ha hb m h := Or.recOn (Finset.mem_union.mp (Finsupp.support_add h)) (ha m) (hb m)
+  add_mem' {a b} ha hb m h := by
+    classical exact (Finset.mem_union.mp (Finsupp.support_add h)).elim (ha m) (hb m)
   smul_mem' a m h := Set.Subset.trans Finsupp.support_smul h
 #align add_monoid_algebra.grade_by AddMonoidAlgebra.gradeBy
 
@@ -103,6 +104,7 @@ instance gradeBy.gradedMonoid [AddMonoid M] [AddMonoid ι] [CommSemiring R] (f :
     obtain rfl : m = 0 := Finset.mem_singleton.1 <| Finsupp.support_single_subset h
     apply map_zero
   mul_mem i j a b ha hb c hc := by
+    classical
     obtain ⟨ma, hma, mb, hmb, rfl⟩ : ∃ y ∈ a.support, ∃ z ∈ b.support, y + z = c :=
       Finset.mem_add.1 <| support_mul a b hc
     rw [map_add, ha ma hma, hb mb hmb]
@@ -150,6 +152,7 @@ theorem decomposeAux_single (m : M) (r : R) :
 
 theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     decomposeAux f ↑x = DirectSum.of (fun i => gradeBy R f i) i x := by
+  classical
   obtain ⟨x, hx⟩ := x
   revert hx
   refine' Finsupp.induction x _ _
