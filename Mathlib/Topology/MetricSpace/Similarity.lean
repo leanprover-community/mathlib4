@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
+Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Newell Jensen
 -/
@@ -8,14 +8,17 @@ import Mathlib.Topology.MetricSpace.Isometry
 /-!
 # Similarities
 
-In this file we define similarity, i.e., the equivalence between sets of points in
-a metric space where all corresponding pairwise distances have the same ratio.
-The motivating example are triangles in the plane.
+This file defines similarity, i.e., the equivalence between sets of points in a metric space
+where all corresponding pairwise distances have the same ratio. The motivating example are
+triangles in the plane.
 
+## Implementation notes
+
+See the [Zulip discussion](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Euclidean.20Geometry)
 
 ## Notation
 
-- `(v₁ ∼ v₂ : Prop)` represents that `(v₁ : ι → P₁)` and `(v₂ : ι → P₂)` are similar.
+* `(v₁ ∼ v₂ : Prop)` represents that `(v₁ : ι → P₁)` and `(v₂ : ι → P₂)` are similar.
 -/
 
 variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
@@ -25,30 +28,30 @@ noncomputable section
 /-- Similarity between indexed sets of vertices v₁ and v₂.
 Use `open scoped Similarity` to access the `v₁ ∼ v₂` notation. -/
 
-def similarity (v₁ : ι → P₁) (v₂ : ι → P₂)
+def Similarity (v₁ : ι → P₁) (v₂ : ι → P₂)
     [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] : Prop :=
   ∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = r * edist (v₂ i₁) (v₂ i₂))
 
 @[inherit_doc]
-scoped[Similarity] infixl:25 " ∼ " => similarity
+scoped[Similarity] infixl:25 " ∼ " => Similarity
 
 /-- Similarity holds if and only if and only if all extended distances are the same. -/
 lemma similarity_iff_exists_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] :
-    similarity v₁ v₂ ↔
-    (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = r * edist (v₂ i₁) (v₂ i₂))) :=
+    Similarity v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) =
+      r * edist (v₂ i₁) (v₂ i₂))) :=
   refl _
 
 /-- Similarity holds if and only if all non-negative distances are the same. -/
 lemma similarity_iff_exists_nndist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] :
-    similarity v₁ v₂ ↔
-    (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) = r * nndist (v₂ i₁) (v₂ i₂))) :=
+    Similarity v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) =
+      r * nndist (v₂ i₁) (v₂ i₂))) :=
   exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
   fun _ _ => by { rw [edist_nndist, edist_nndist]; norm_cast }
 
 /-- Similarity holds if and only if all distances are the same. -/
 lemma similarity_iff_exists_dist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] :
-    similarity v₁ v₂ ↔
-    (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) = r * dist (v₂ i₁) (v₂ i₂))) :=
+    Similarity v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) =
+      r * dist (v₂ i₁) (v₂ i₂))) :=
   similarity_iff_exists_nndist_eq.trans
   (exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
     fun _ _ => by { rw [dist_nndist, dist_nndist]; norm_cast })
@@ -74,9 +77,9 @@ alias ⟨exists_dist_eq, _⟩ := similarity_iff_exists_dist_eq
 alias ⟨_, of_exists_dist_eq⟩ := similarity_iff_exists_dist_eq
 
 /-- Similarity follows from Pairwise preserved extended distance. -/
-lemma of_pairwise_exists_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂]
-    [DecidableEq ι] {r : NNReal} (hr : r ≠ 0)
-    (h : Pairwise (fun i₁ i₂ => (edist (v₁ i₁) (v₁ i₂) = r * edist (v₂ i₁) (v₂ i₂)))) :
+lemma of_pairwise_exists_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [DecidableEq ι]
+    {r : NNReal} (hr : r ≠ 0) (h : Pairwise (fun i₁ i₂ => (edist (v₁ i₁) (v₁ i₂) =
+      r * edist (v₂ i₁) (v₂ i₂)))) :
     v₁ ∼ v₂ :=
   ⟨r, hr, fun i₁ i₂ => if g : i₁ = i₂ then by { rw [g]; simp } else h g⟩
 
