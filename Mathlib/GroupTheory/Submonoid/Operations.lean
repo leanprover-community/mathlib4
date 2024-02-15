@@ -1575,7 +1575,7 @@ def oneLE : Submonoid M where
 
 variable {M}
 
-@[to_additive (attr := simp)] lemma mem_oneLE : a ∈ oneLE M ↔ 1 ≤ a := Iff.rfl
+@[to_additive (attr := simp) mem_nonneg] lemma mem_oneLE : a ∈ oneLE M ↔ 1 ≤ a := Iff.rfl
 
 end Preorder
 

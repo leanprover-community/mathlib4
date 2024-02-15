@@ -38,7 +38,7 @@ square root
 set_option autoImplicit true
 
 open Set Filter
-open scoped Filter NNReal Topology
+open scoped BigOperators Filter NNReal Topology
 
 namespace NNReal
 
@@ -50,61 +50,56 @@ noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
 #align nnreal.sqrt NNReal.sqrt
 
-theorem sqrt_le_sqrt_iff : sqrt x ≤ sqrt y ↔ x ≤ y :=
-  sqrt.le_iff_le
-#align nnreal.sqrt_le_sqrt_iff NNReal.sqrt_le_sqrt_iff
-
-theorem sqrt_lt_sqrt_iff : sqrt x < sqrt y ↔ x < y :=
-  sqrt.lt_iff_lt
-#align nnreal.sqrt_lt_sqrt_iff NNReal.sqrt_lt_sqrt_iff
-
-theorem sqrt_eq_iff_sq_eq : sqrt x = y ↔ y ^ 2 = x :=
-  sqrt.toEquiv.apply_eq_iff_eq_symm_apply.trans eq_comm
-#align nnreal.sqrt_eq_iff_sq_eq NNReal.sqrt_eq_iff_sq_eq
-
-theorem sqrt_le_iff : sqrt x ≤ y ↔ x ≤ y ^ 2 :=
-  sqrt.to_galoisConnection _ _
-#align nnreal.sqrt_le_iff NNReal.sqrt_le_iff
-
-theorem le_sqrt_iff : x ≤ sqrt y ↔ x ^ 2 ≤ y :=
-  (sqrt.symm.to_galoisConnection _ _).symm
-#align nnreal.le_sqrt_iff NNReal.le_sqrt_iff
-
-@[simp]
-theorem sqrt_eq_zero : sqrt x = 0 ↔ x = 0 :=
-  sqrt_eq_iff_sq_eq.trans <| by rw [eq_comm, sq, zero_mul]
-#align nnreal.sqrt_eq_zero NNReal.sqrt_eq_zero
-
-@[simp]
-theorem sqrt_zero : sqrt 0 = 0 :=
-  sqrt_eq_zero.2 rfl
-#align nnreal.sqrt_zero NNReal.sqrt_zero
-
-@[simp]
-theorem sqrt_one : sqrt 1 = 1 :=
-  sqrt_eq_iff_sq_eq.2 <| one_pow _
-#align nnreal.sqrt_one NNReal.sqrt_one
-
-@[simp]
-theorem sq_sqrt (x : ℝ≥0) : sqrt x ^ 2 = x :=
-  sqrt.symm_apply_apply x
+@[simp] lemma sq_sqrt (x : ℝ≥0) : sqrt x ^ 2 = x := sqrt.symm_apply_apply _
 #align nnreal.sq_sqrt NNReal.sq_sqrt
 
-@[simp]
-theorem mul_self_sqrt (x : ℝ≥0) : sqrt x * sqrt x = x := by rw [← sq, sq_sqrt]
-#align nnreal.mul_self_sqrt NNReal.mul_self_sqrt
-
-@[simp]
-theorem sqrt_sq (x : ℝ≥0) : sqrt (x ^ 2) = x :=
-  sqrt.apply_symm_apply x
+@[simp] lemma sqrt_sq (x : ℝ≥0) : sqrt (x ^ 2) = x := sqrt.apply_symm_apply _
 #align nnreal.sqrt_sq NNReal.sqrt_sq
 
-@[simp]
-theorem sqrt_mul_self (x : ℝ≥0) : sqrt (x * x) = x := by rw [← sq, sqrt_sq x]
+@[simp] lemma mul_self_sqrt (x : ℝ≥0) : sqrt x * sqrt x = x := by rw [← sq, sq_sqrt]
+#align nnreal.mul_self_sqrt NNReal.mul_self_sqrt
+
+@[simp] lemma sqrt_mul_self (x : ℝ≥0) : sqrt (x * x) = x := by rw [← sq, sqrt_sq]
 #align nnreal.sqrt_mul_self NNReal.sqrt_mul_self
 
+lemma sqrt_le_sqrt : sqrt x ≤ sqrt y ↔ x ≤ y := sqrt.le_iff_le
+#align nnreal.sqrt_le_sqrt_iff NNReal.sqrt_le_sqrt
+
+lemma sqrt_lt_sqrt : sqrt x < sqrt y ↔ x < y := sqrt.lt_iff_lt
+#align nnreal.sqrt_lt_sqrt_iff NNReal.sqrt_lt_sqrt
+
+lemma sqrt_eq_iff_eq_sq : sqrt x = y ↔ x = y ^ 2 := sqrt.toEquiv.apply_eq_iff_eq_symm_apply
+#align nnreal.sqrt_eq_iff_sq_eq NNReal.sqrt_eq_iff_eq_sq
+
+lemma sqrt_le_iff_le_sq : sqrt x ≤ y ↔ x ≤ y ^ 2 := sqrt.to_galoisConnection _ _
+#align nnreal.sqrt_le_iff NNReal.sqrt_le_iff_le_sq
+
+lemma le_sqrt_iff_sq_le : x ≤ sqrt y ↔ x ^ 2 ≤ y := (sqrt.symm.to_galoisConnection _ _).symm
+#align nnreal.le_sqrt_iff NNReal.le_sqrt_iff_sq_le
+
+-- 2024-02-14
+@[deprecated] alias sqrt_le_sqrt_iff := sqrt_le_sqrt
+@[deprecated] alias sqrt_lt_sqrt_iff := sqrt_lt_sqrt
+@[deprecated] alias sqrt_le_iff := sqrt_le_iff_le_sq
+@[deprecated] alias le_sqrt_iff := le_sqrt_iff_sq_le
+@[deprecated] alias sqrt_eq_iff_sq_eq := sqrt_eq_iff_eq_sq
+
+@[simp] lemma sqrt_eq_zero : sqrt x = 0 ↔ x = 0 := by simp [sqrt_eq_iff_eq_sq]
+#align nnreal.sqrt_eq_zero NNReal.sqrt_eq_zero
+
+@[simp] lemma sqrt_eq_one : sqrt x = 1 ↔ x = 1 := by simp [sqrt_eq_iff_eq_sq]
+
+@[simp] lemma sqrt_zero : sqrt 0 = 0 := by simp
+#align nnreal.sqrt_zero NNReal.sqrt_zero
+
+@[simp] lemma sqrt_one : sqrt 1 = 1 := by simp
+#align nnreal.sqrt_one NNReal.sqrt_one
+
+@[simp] lemma sqrt_le_one : sqrt x ≤ 1 ↔ x ≤ 1 := by rw [← sqrt_one, sqrt_le_sqrt, sqrt_one]
+@[simp] lemma one_le_sqrt : 1 ≤ sqrt x ↔ 1 ≤ x := by rw [← sqrt_one, sqrt_le_sqrt, sqrt_one]
+
 theorem sqrt_mul (x y : ℝ≥0) : sqrt (x * y) = sqrt x * sqrt y := by
-  rw [sqrt_eq_iff_sq_eq, mul_pow, sq_sqrt, sq_sqrt]
+  rw [sqrt_eq_iff_eq_sq, mul_pow, sq_sqrt, sq_sqrt]
 #align nnreal.sqrt_mul NNReal.sqrt_mul
 
 /-- `NNReal.sqrt` as a `MonoidWithZeroHom`. -/
@@ -258,7 +253,7 @@ theorem sqrt_one : sqrt 1 = 1 := by simp [sqrt]
 
 @[simp]
 theorem sqrt_le_sqrt_iff (hy : 0 ≤ y) : sqrt x ≤ sqrt y ↔ x ≤ y := by
-  rw [sqrt, sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt_iff, Real.toNNReal_le_toNNReal_iff hy]
+  rw [sqrt, sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt, Real.toNNReal_le_toNNReal_iff hy]
 #align real.sqrt_le_sqrt_iff Real.sqrt_le_sqrt_iff
 
 @[simp]
@@ -267,11 +262,11 @@ theorem sqrt_lt_sqrt_iff (hx : 0 ≤ x) : sqrt x < sqrt y ↔ x < y :=
 #align real.sqrt_lt_sqrt_iff Real.sqrt_lt_sqrt_iff
 
 theorem sqrt_lt_sqrt_iff_of_pos (hy : 0 < y) : sqrt x < sqrt y ↔ x < y := by
-  rw [sqrt, sqrt, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt_iff, toNNReal_lt_toNNReal_iff hy]
+  rw [sqrt, sqrt, NNReal.coe_lt_coe, NNReal.sqrt_lt_sqrt, toNNReal_lt_toNNReal_iff hy]
 #align real.sqrt_lt_sqrt_iff_of_pos Real.sqrt_lt_sqrt_iff_of_pos
 
 theorem sqrt_le_sqrt (h : x ≤ y) : sqrt x ≤ sqrt y := by
-  rw [sqrt, sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt_iff]
+  rw [sqrt, sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
   exact toNNReal_le_toNNReal h
 #align real.sqrt_le_sqrt Real.sqrt_le_sqrt
 
@@ -280,7 +275,7 @@ theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : sqrt x < sqrt y :=
 #align real.sqrt_lt_sqrt Real.sqrt_lt_sqrt
 
 theorem sqrt_le_left (hy : 0 ≤ y) : sqrt x ≤ y ↔ x ≤ y ^ 2 := by
-  rw [sqrt, ← Real.le_toNNReal_iff_coe_le hy, NNReal.sqrt_le_iff, sq, ← Real.toNNReal_mul hy,
+  rw [sqrt, ← Real.le_toNNReal_iff_coe_le hy, NNReal.sqrt_le_iff_le_sq, sq, ← Real.toNNReal_mul hy,
     Real.toNNReal_le_toNNReal_iff (mul_self_nonneg y), sq]
 #align real.sqrt_le_left Real.sqrt_le_left
 
@@ -352,6 +347,18 @@ theorem sqrt_pos : 0 < sqrt x ↔ 0 < x :=
 
 alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 #align real.sqrt_pos_of_pos Real.sqrt_pos_of_pos
+
+lemma sqrt_le_sqrt_iff' (hx : 0 < x) : x.sqrt ≤ y.sqrt ↔ x ≤ y := by
+  obtain hy | hy := le_total y 0
+  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt $ sqrt_pos.2 hx).not_le
+      (hy.trans_lt hx).not_le
+  · exact sqrt_le_sqrt_iff hy
+
+@[simp] lemma one_le_sqrt : 1 ≤ x.sqrt ↔ 1 ≤ x := by
+  rw [← sqrt_one, sqrt_le_sqrt_iff' zero_lt_one, sqrt_one]
+
+@[simp] lemma sqrt_le_one : x.sqrt ≤ 1 ↔ x ≤ 1 := by
+  rw [← sqrt_one, sqrt_le_sqrt_iff zero_le_one, sqrt_one]
 
 end Real
 
@@ -478,6 +485,14 @@ instance : StarOrderedRing ℝ :=
 
 end Real
 
+instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
+  refine .ofLEIff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨d, rfl⟩ := exists_add_of_le h
+    refine ⟨sqrt d, ?_⟩
+    simp only [star_trivial, mul_self_sqrt]
+  · rintro ⟨p, -, rfl⟩
+    exact le_self_add
+
 open Real
 
 variable {α : Type*}
@@ -508,3 +523,13 @@ theorem ContinuousOn.sqrt (h : ContinuousOn f s) : ContinuousOn (fun x => sqrt (
 theorem Continuous.sqrt (h : Continuous f) : Continuous fun x => sqrt (f x) :=
   continuous_sqrt.comp h
 #align continuous.sqrt Continuous.sqrt
+
+namespace Finset
+
+/-- **Cauchy-Schwarz inequality** for finsets using square roots. -/
+lemma sum_mul_le_sqrt_mul_sqrt {α : Type*} (s : Finset α) (f g : α → ℝ) :
+    ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ 2).sqrt * (∑ i in s, g i ^ 2).sqrt :=
+  (le_sqrt_of_sq_le <| sum_mul_sq_le_sq_mul_sq _ _ _).trans_eq <| sqrt_mul
+    (sum_nonneg fun _ _ ↦ by positivity) _
+
+end Finset
