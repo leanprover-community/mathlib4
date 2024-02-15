@@ -26,6 +26,8 @@ open Equiv List MulAction Pointwise Set Subgroup
 
 variable {G α : Type*} [Group G] [MulAction G α] [DecidableEq α]
 
+/-- If the support of each element in a generating set of a permutation group is finite,
+then the support of every element in the group is finite. -/
 theorem finite_compl_fixedBy_closure_iff {S : Set G} :
     (∀ g ∈ closure S, (fixedBy α g)ᶜ.Finite) ↔ ∀ g ∈ S, (fixedBy α g)ᶜ.Finite :=
   ⟨fun h g hg ↦ h g (subset_closure hg), fun h g hg ↦ by
