@@ -5,6 +5,7 @@ Authors: Junyan Xu
 -/
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 import Mathlib.RingTheory.MvPolynomial.Tower
+import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Finsupp.WellFounded
 
 /-!
@@ -99,13 +100,11 @@ lemma surjective_accumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : Anti
     accumulate n m (inv_accumulate n m s) = s := funext <| fun ⟨i, hi⟩ ↦ by
   have := Nat.le_pred_of_lt hi
   revert hi
-  refine Nat.decreasingInduction' (fun i hi _ ih ↦ ?_) this ?_
-  · intro him
-    rw [m.sub_one, Nat.lt_pred_iff] at hi
+  refine Nat.decreasingInduction' (fun i hi _ ih him ↦ ?_) this fun hm ↦ ?_
+  · rw [Nat.lt_pred_iff] at hi
     rw [accumulate_rec (him.trans_le hmn) hi, ih hi, inv_accumulate, dif_pos him, dif_pos hi]
     exact Nat.sub_add_cancel (hs i.le_succ)
-  · intro hm
-    have := (Nat.succ_pred <| Nat.not_eq_zero_of_lt hm).symm
+  · have := (Nat.succ_pred <| Nat.not_eq_zero_of_lt hm).symm
     rw [accumulate_last (hm.trans_le hmn) this, inv_accumulate, dif_pos hm, dif_neg, Nat.sub_zero]
     · exact this.not_gt
     intro j hj
@@ -229,10 +228,10 @@ lemma supDegree_esymmAlgHom_monomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
   · rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_esymmAlgHom_monomial _ hnm]
 
 lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (hp : p.IsSymmetric) :
-    Antitone (ofLex <| p.supDegree toLex) := by
+    Antitone ↑(ofLex <| p.supDegree toLex) := by
   obtain rfl | h0 := eq_or_ne p 0
   · rw [supDegree_zero]; exact fun _ _ _ ↦ le_rfl
-  rw [Antitone]; by_contra' h
+  rw [Antitone]; by_contra! h
   obtain ⟨i, j, hle, hlt⟩ := h
   apply (le_sup (s := p.support) (f := toLex) _).not_lt
   pick_goal 3
@@ -266,13 +265,13 @@ lemma injective_esymmAlgHom_fin (h : n ≤ m) :
   rw [p.as_sum, map_sum (esymmAlgHom (Fin m) R n), ← Subalgebra.coe_eq_zero,
       AddSubmonoidClass.coe_finset_sum]
   refine sum_ne_zero_of_injOn_supDegree (D := toLex) (support_eq_empty.not.2 hp) (fun t ht ↦ ?_)
-    (fun t ht s hs he ↦ FunLike.ext' <| injective_accumulate h ?_)
+    (fun t ht s hs he ↦ DFunLike.ext' <| injective_accumulate h ?_)
   · rw [← esymmAlgHom_monomial, Ne, ← leadingCoeff_eq_zero toLex.injective,
         leadingCoeff_esymmAlgHom_monomial t h]
     rwa [mem_support_iff] at ht
   rw [mem_coe, mem_support_iff] at ht hs
   dsimp only [Function.comp] at he
-  rwa [← esymmAlgHom_monomial, ← esymmAlgHom_monomial, ← ofLex_inj, FunLike.ext'_iff,
+  rwa [← esymmAlgHom_monomial, ← esymmAlgHom_monomial, ← ofLex_inj, DFunLike.ext'_iff,
        supDegree_esymmAlgHom_monomial ht t h, supDegree_esymmAlgHom_monomial hs s h] at he
 
 lemma injective_esymmAlgHom (hn : n ≤ Fintype.card σ) :
@@ -286,9 +285,9 @@ lemma bijective_esymmAlgHom_fin (n : ℕ) :
   rintro ⟨p, hp⟩; rw [← AlgHom.mem_range]
   obtain rfl | h0 := eq_or_ne p 0; apply Subalgebra.zero_mem
   induction' he : p.supDegree toLex using WellFoundedLT.induction with t ih generalizing p; subst he
-  let t := Finsupp.equivFunOnFinite.symm (inv_accumulate n n <| ofLex <| p.supDegree toLex)
+  let t := Finsupp.equivFunOnFinite.symm (inv_accumulate n n <| ↑(ofLex <| p.supDegree toLex))
   have hd : (esymmAlgHom_monomial _ t <| p.leadingCoeff toLex).supDegree toLex = p.supDegree toLex
-  · rw [← ofLex_inj, FunLike.ext'_iff, supDegree_esymmAlgHom_monomial _ _ le_rfl]
+  · rw [← ofLex_inj, DFunLike.ext'_iff, supDegree_esymmAlgHom_monomial _ _ le_rfl]
     · exact surjective_accumulate le_rfl hp.antitone_supDegree
     · rwa [Ne, leadingCoeff_eq_zero toLex.injective]
   obtain he | hne := eq_or_ne p (esymmAlgHom_monomial _ t <| p.leadingCoeff toLex)
