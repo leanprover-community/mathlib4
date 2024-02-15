@@ -174,6 +174,10 @@ theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·)
 #align smul_iterate smul_iterate
 #align vadd_iterate vadd_iterate
 
+@[to_additive]
+lemma smul_iterate_apply [MulAction G H] {b : H} : (a • ·)^[n] b = a ^ n • b := by
+  rw [smul_iterate]
+
 @[to_additive (attr := simp)]
 theorem mul_left_iterate : (a * ·)^[n] = (a ^ n * ·) :=
   smul_iterate a n
