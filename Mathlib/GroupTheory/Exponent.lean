@@ -169,16 +169,21 @@ theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G,
 #align monoid.exponent_min Monoid.exponent_min
 #align add_monoid.exponent_min AddMonoid.exponent_min
 
-@[to_additive (attr := simp)]
-theorem exp_eq_one_of_subsingleton [Subsingleton G] : exponent G = 1 := by
-  apply le_antisymm
+@[to_additive AddMonoid.exp_eq_one_iff]
+theorem exp_eq_one_iff : exponent G = 1 ↔ Subsingleton G := by
+  refine ⟨fun eq_one => ⟨fun a b => ?a_eq_b⟩, fun h => le_antisymm ?le ?ge⟩
+  · rw [← pow_one a, ← pow_one b, ← eq_one, Monoid.pow_exponent_eq_one, Monoid.pow_exponent_eq_one]
   · apply exponent_min' _ Nat.one_pos
     simp [eq_iff_true_of_subsingleton]
   · apply Nat.succ_le_of_lt
     apply exponent_pos_of_exists 1 Nat.one_pos
     simp [eq_iff_true_of_subsingleton]
+
+@[to_additive (attr := simp) AddMonoid.exp_eq_one_of_subsingleton]
+theorem exp_eq_one_of_subsingleton [hs : Subsingleton G] : exponent G = 1 :=
+  exp_eq_one_iff.mpr hs
 #align monoid.exp_eq_one_of_subsingleton Monoid.exp_eq_one_of_subsingleton
-#align add_monoid.exp_eq_zero_of_subsingleton AddMonoid.exp_eq_zero_of_subsingleton
+#align add_monoid.exp_eq_zero_of_subsingleton AddMonoid.exp_eq_one_of_subsingleton
 
 @[to_additive addOrder_dvd_exponent]
 theorem order_dvd_exponent (g : G) : orderOf g ∣ exponent G :=
@@ -317,11 +322,6 @@ theorem _root_.Submonoid.exponent_top :
   simp only [Subtype.forall, Submonoid.mem_top, SubmonoidClass.mk_pow, ← OneMemClass.coe_eq_one,
     forall_true_left]
 
-variable (G) in
-@[to_additive (attr := simp)]
-theorem _root_.Submonoid.exponent_bot : Monoid.exponent (⊥ : Submonoid G) = 1 :=
-  Monoid.exp_eq_one_of_subsingleton
-
 @[to_additive]
 theorem _root_.Submonoid.pow_exponent_eq_one {S : Submonoid G} {g : G} (g_in_s : g ∈ S) :
     g ^ (Monoid.exponent S) = 1 := by
@@ -420,14 +420,10 @@ theorem exponent_eq_max'_orderOf [Fintype G] :
 
 end CancelCommMonoid
 
-end Monoid
+section LeftCancelMonoid
 
-section Group
-
-variable [Group G]
-
-@[to_additive AddGroup.one_lt_exponent]
-lemma Group.one_lt_exponent [Finite G] [Nontrivial G] :
+@[to_additive AddMonoid.one_lt_exponent]
+lemma one_lt_exponent [LeftCancelMonoid G] [Finite G] [Nontrivial G] :
     1 < Monoid.exponent G := by
   let _inst := Fintype.ofFinite G
   obtain ⟨g, hg⟩ := exists_ne (1 : G)
@@ -439,24 +435,17 @@ lemma Group.one_lt_exponent [Finite G] [Nontrivial G] :
   rintro ⟨x, -, hx⟩
   exact (orderOf_pos x).ne' hx
 
-@[to_additive AddGroup.exponent_eq_one_iff]
-theorem Group.exponent_eq_one_iff : Monoid.exponent G = 1 ↔ Subsingleton G :=
-  ⟨fun eq_one =>
-    ⟨fun a b => by
-      rw [← pow_one a, ← pow_one b, ← eq_one, Monoid.pow_exponent_eq_one,
-        Monoid.pow_exponent_eq_one]⟩,
-    fun h => Monoid.exp_eq_one_of_subsingleton⟩
+end LeftCancelMonoid
 
-@[to_additive]
-theorem inv_eq_of_exponent_eq_two (eq_two : Monoid.exponent G = 2) (g : G) :
-    g⁻¹ = g := by
-  rw [eq_comm, eq_inv_iff_mul_eq_one, ← pow_two, ← eq_two, Monoid.pow_exponent_eq_one]
+end Monoid
 
-@[to_additive]
-theorem commute_of_exponent_eq_two (eq_two : Monoid.exponent G = 2) (g h : G) :
-    Commute g h := by
-  rw [commute_iff_eq, ← mul_inv_eq_one, mul_inv_rev, inv_eq_of_exponent_eq_two eq_two,
-    inv_eq_of_exponent_eq_two eq_two, ← pow_two, ← eq_two, Monoid.pow_exponent_eq_one]
+section Group
+
+variable [Group G]
+
+@[to_additive (attr := deprecated Monoid.one_lt_exponent) AddGroup.one_lt_exponent]
+lemma Group.one_lt_exponent [Finite G] [Nontrivial G] :
+    1 < Monoid.exponent G := Monoid.one_lt_exponent
 
 @[to_additive]
 theorem Subgroup.exponent_toSubmonoid (H : Subgroup G) :
@@ -467,10 +456,6 @@ theorem Subgroup.exponent_toSubmonoid (H : Subgroup G) :
 @[to_additive (attr := simp)]
 theorem Subgroup.exponent_top : Monoid.exponent (⊤ : Subgroup G) = Monoid.exponent G := by
   rw [← Subgroup.exponent_toSubmonoid, top_toSubmonoid, Submonoid.exponent_top]
-
-@[to_additive (attr := simp)]
-theorem Subgroup.exponent_bot : Monoid.exponent (⊥ : Subgroup G) = 1 :=
-  Monoid.exp_eq_one_of_subsingleton
 
 @[to_additive]
 theorem Subgroup.pow_exponent_eq_one {H : Subgroup G} {g : G} (g_in_H : g ∈ H) :
