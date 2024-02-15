@@ -297,6 +297,14 @@ theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : C
   continuous_def.2 fun _ _ => isOpen_discrete _
 #align continuous_of_discrete_topology continuous_of_discreteTopology
 
+/-- A function to a discrete topological space is continuous if and only if the preimage of every
+singleton is open. -/
+theorem continuous_discrete_rng [TopologicalSpace α] [TopologicalSpace β] [DiscreteTopology β]
+    {f : α → β} : Continuous f ↔ ∀ b : β, IsOpen (f ⁻¹' {b}) :=
+  ⟨fun h b => (isOpen_discrete _).preimage h, fun h => ⟨fun s _ => by
+    rw [← biUnion_of_singleton s, preimage_iUnion₂]
+    exact isOpen_biUnion fun _ _ => h _⟩⟩
+
 @[simp]
 theorem nhds_discrete (α : Type*) [TopologicalSpace α] [DiscreteTopology α] : @nhds α _ = pure :=
   le_antisymm (fun _ s hs => (isOpen_discrete s).mem_nhds hs) pure_le_nhds
