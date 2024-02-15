@@ -1,5 +1,6 @@
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Setoid.Basic
+import Mathlib.Data.Countable.Small
 import Mathlib.Logic.Small.Defs
 import Mathlib.Tactic.Set
 import Mathlib.Tactic -- todo remove
@@ -45,8 +46,31 @@ theorem kerLift_injective (f : α → β) : Function.Injective (kerLift f) := by
 
 end Setoid
 
--- Throughout this file, `u` represents the small universe and `v` represents the big universe.
+namespace Small
+
 universe u v
+
+variable {α : Type v}
+
+instance small_union (s t : Set α) [Small.{u} s] [Small.{u} t] : Small.{u} (s ∪ t : Set α) := by
+  convert small_range fun x : s ⊕ t ↦ Sum.elim Subtype.val Subtype.val x
+  simp
+
+instance small_inter_left (s t : Set α) [Small.{u} s] : Small.{u} (s ∩ t : Set α) :=
+  small_subset (Set.inter_subset_left s t)
+
+instance small_inter_right (s t : Set α) [Small.{u} t] : Small.{u} (s ∩ t : Set α) :=
+  small_subset (Set.inter_subset_right s t)
+
+end Small
+
+noncomputable section
+
+/- Throughout this file we make use of three universes:
+- `u` represents the small universe which our sets must fit inside of.
+- `v` represents the big universe which the elements of our sets live in.
+- `w` represents an unrestricted universe which we use for other variables. -/
+universe u v w
 
 def SmallSet (α : Type v) : Type (max (u + 1) v) :=
   Quotient (Setoid.ker (fun ⟨_, f⟩ ↦ Set.range f : (ι : Type u) × (ι → α) → Set α))
@@ -54,16 +78,20 @@ def SmallSet (α : Type v) : Type (max (u + 1) v) :=
 namespace SmallSet
 
 variable {α : Type v}
+variable {ι : Type w} [Small.{u} ι]
 
-/-- Range of a function as a `SmallSet`.
+/-- The range of a function from a `Small.{u}` type as a `SmallSet.{u}`.
 
 This is the fundamental constructor for `SmallSet`.-/
-def range {β : Type u} (f : β → α) : SmallSet α := Quotient.mk'' ⟨β, f⟩
+def range (f : ι → α) : SmallSet.{u} α :=
+  Quotient.mk'' ⟨_, f ∘ (equivShrink ι).symm⟩
 
-/-- Interpret a `SmallSet α` as a `Set α`.
+-- def range {β : Type u} (f : β → α) : SmallSet α := Quotient.mk'' ⟨β, f⟩
+
+/-- Interpret a `SmallSet.{u} α` as a `Set α`.
 
 This is the fundamental eliminator for `SmallSet`.-/
-instance instSetLike : SetLike (SmallSet α) α where
+instance instSetLike : SetLike (SmallSet.{u} α) α where
   coe := Setoid.kerLift _
   coe_injective' := Setoid.kerLift_injective _
 
@@ -71,50 +99,57 @@ instance instSetLike : SetLike (SmallSet α) α where
 
 This is the defining equation for `SmallSet`.-/
 @[simp]
-theorem coe_range {ι : Type u} (f : ι → α) : (range f : Set α) = Set.range f := rfl
+theorem coe_range (f : ι → α) : (range f : Set α) = Set.range f :=
+  calc ↑(range f) = Set.range (f ∘ (equivShrink ι).symm) := rfl
+  _ = Set.range f := EquivLike.range_comp f _
 
 /-- All `SmallSet`s are constructed from `SmallSet.range`.-/
 @[eliminator]
-theorem inductionOn {P : SmallSet α → Prop} (s : SmallSet α) (h : ∀ (ι : Type u) (f : ι → α), P (range f)) : P s := by
-  induction s using Quotient.ind
-  apply h
+theorem inductionOn {P : SmallSet.{u} α → Prop} (s : SmallSet.{u} α)
+    (h : ∀ (ι : Type u) (f : ι → α), P (range f)) : P s := by
+  induction' s using Quotient.ind with x
+  rcases x with ⟨ι, f⟩
+  convert h ι f
+  rw [SetLike.ext'_iff, coe_range]
+  simp [SetLike.coe]
 
 @[simp, norm_cast]
-theorem mem_coe {a : α} {s : SmallSet α} : a ∈ (s : Set α) ↔ a ∈ (s : SmallSet α) :=
+theorem mem_coe {a : α} {s : SmallSet.{u} α} : a ∈ (s : Set α) ↔ a ∈ (s : SmallSet.{u} α) :=
   Iff.rfl
 
 @[simp]
-theorem setOf_mem {α} {s : SmallSet α} : { a | a ∈ s } = s :=
+theorem setOf_mem {α} {s : SmallSet.{u} α} : { a | a ∈ s } = s :=
   rfl
 
 @[simp]
-theorem coe_mem {s : SmallSet α} (x : (s : Set α)) : ↑x ∈ s :=
+theorem coe_mem {s : SmallSet.{u} α} (x : (s : Set α)) : ↑x ∈ s :=
   x.2
 
-theorem ext_iff {s₁ s₂ : SmallSet α} : s₁ = s₂ ↔ ∀ a, a ∈ s₁ ↔ a ∈ s₂ :=
+theorem ext_iff {s₁ s₂ : SmallSet.{u} α} : s₁ = s₂ ↔ ∀ a, a ∈ s₁ ↔ a ∈ s₂ :=
   SetLike.ext_iff
 
 @[ext]
-theorem ext {s₁ s₂ : SmallSet α} : (∀ a, a ∈ s₁ ↔ a ∈ s₂) → s₁ = s₂ :=
+theorem ext {s₁ s₂ : SmallSet.{u} α} : (∀ a, a ∈ s₁ ↔ a ∈ s₂) → s₁ = s₂ :=
   SetLike.ext
 
 @[simp, norm_cast]
-theorem coe_inj {s₁ s₂ : SmallSet α} : (s₁ : Set α) = s₂ ↔ s₁ = s₂ :=
+theorem coe_inj {s₁ s₂ : SmallSet.{u} α} : (s₁ : Set α) = s₂ ↔ s₁ = s₂ :=
   SetLike.coe_set_eq
 
 @[simp]
-theorem coe_eq_range {ι : Type u} {s : SmallSet α} (f : ι → α) : (s : Set α) = Set.range f ↔ s = range f := by
+theorem coe_eq_range {s : SmallSet.{u} α} (f : ι → α) :
+    (s : Set α) = Set.range f ↔ s = range f := by
   rw [← coe_range, coe_inj]
 
 @[simp]
-theorem range_eq_coe {ι : Type u} {s : SmallSet α} (f : ι → α) : Set.range f = s ↔ range f = s := by
+theorem range_eq_coe {s : SmallSet.{u} α} (f : ι → α) : Set.range f = s ↔ range f = s := by
   rw [← coe_range, coe_inj]
 
 @[simp]
-theorem mem_range {ι : Type u} (f : ι → α) (x : α) : x ∈ range f ↔ ∃ i, f i = x := by
+theorem mem_range (f : ι → α) (x : α) : x ∈ range f ↔ ∃ i, f i = x := by
   rw [← mem_coe, coe_range, Set.mem_range]
 
-noncomputable section Small
+section Small
 
 open Function
 
@@ -127,7 +162,7 @@ instance small_coe_sort (s : SmallSet.{u, v} α) : Small.{u, v} s := by
   --   ⟨⟨Set.range fInv, ⟨Equiv.ofBijective _ this⟩⟩⟩
   -- simp [Set.rangeSplitting_injective]
 
-theorem _root_.Set.small_coe_sort (s : Set α) :
+theorem _root_.Set.small_coe_sort_iff (s : Set α) :
     Small.{u} s ↔ ∃ (ι : Type u) (f : ι → α), s = Set.range f := by
   refine ⟨fun ⟨ι, ⟨f⟩⟩ ↦ ?_, fun ⟨ι, f, hf⟩ ↦ ?_⟩
   · use ι, Subtype.val ∘ f.symm
@@ -135,25 +170,25 @@ theorem _root_.Set.small_coe_sort (s : Set α) :
   · subst hf
     exact inferInstance
 
-def ofSet_of_small (s : Set α) [Small.{u} s] : SmallSet.{u} α :=
-  range (Subtype.val ∘ (equivShrink s).symm)
+def ofSet (s : Set α) [Small.{u} s] : SmallSet.{u} α :=
+  range (Subtype.val : s → α)
 
 @[simp]
-theorem coe_ofSet {s : Set α} {h : Small.{u} s} : (@ofSet_of_small α s h : Set α) = s := by
-  simp [ofSet_of_small]
+theorem coe_ofSet {s : Set α} [Small.{u} s] : (ofSet s : Set α) = s := by
+  simp [ofSet]
 
 @[simp]
-theorem mem_ofSet {s : Set α} {h : Small.{u} s} {x : α} : x ∈ @ofSet_of_small α s h ↔ x ∈ s := by
+theorem mem_ofSet {s : Set α} [Small.{u} s] {x : α} : x ∈ ofSet s ↔ x ∈ s := by
   rw [← mem_coe, coe_ofSet]
 
 @[simp]
-theorem ofSet_coe {s : SmallSet.{u} α} : ofSet_of_small s = s := by
+theorem ofSet_coe {s : SmallSet.{u} α} : ofSet s = s := by
   ext x
   simp
 
 def equiv_small_set : SmallSet.{u} α ≃o {s : Set α // Small.{u} s} where
   toFun s := ⟨s, inferInstance⟩
-  invFun := fun ⟨s, h⟩ ↦ ofSet_of_small s
+  invFun := fun ⟨s, h⟩ ↦ ofSet s
   left_inv s := by simp
   right_inv := by
     rintro ⟨s, h⟩
@@ -187,11 +222,6 @@ def equiv_small_set : SmallSet.{u} α ≃o {s : Set α // Small.{u} s} where
 -- end τ
 end Small
 
-/-- Like `range`, but indexed by a `u`-small type. -/
-def rangeS.{w} {ι : Type w} [Small.{u} ι] (f : ι → α) : SmallSet.{u} α := sorry
-
-#check rangeS
-
 instance : HasSubset (SmallSet α) where
   Subset := (· ≤ ·)
 
@@ -204,8 +234,8 @@ instance : HasSSubset (SmallSet α) where
 instance : IsStrictOrder (SmallSet α) (· ⊂ ·) :=
   inferInstanceAs (IsStrictOrder (SmallSet α) (· < ·))
 
-instance : Inter (SmallSet α) where
-  inter s t := sorry
+instance : Union (SmallSet α) where
+  union s t := ofSet (s ∪ t)
 
 instance : ConditionallyCompleteLattice (SmallSet α) where
   sup := (· ∩ ·)
