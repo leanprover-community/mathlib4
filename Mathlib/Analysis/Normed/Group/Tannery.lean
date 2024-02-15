@@ -36,7 +36,7 @@ See also:
 * `continuous_tsum` (continuity of infinite sums in a parameter)
 -/
 lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
-    [DecidableEq β] [NormedAddCommGroup G] [CompleteSpace G]
+    [NormedAddCommGroup G] [CompleteSpace G]
     {f : α → β → G} {g : β → G} {bound : β → ℝ} (h_sum : Summable bound)
     (hab : ∀ k : β, Tendsto (f · k) 𝓕 (𝓝 (g k)))
     (h_bound : ∀ n k, ‖f n k‖ ≤ bound k) :
@@ -60,7 +60,7 @@ lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
   let ⟨S, hS⟩ := h_sum
   obtain ⟨T, hT⟩ : ∃ (T : Finset β), dist (∑ b in T, bound b) S < ε / 3 := by
     rw [HasSum, Metric.tendsto_nhds] at hS
-    exact (fun ⟨T, h⟩ ↦ ⟨T, h _ le_rfl⟩) <| eventually_atTop.mp (hS _ (by positivity))
+    classical exact Eventually.exists <| hS _ (by positivity)
   have h1 : ∑' (k : (Tᶜ : Set β)), bound k < ε / 3 := by
     calc _ ≤ ‖∑' (k : (Tᶜ : Set β)), bound k‖ := Real.le_norm_self _
          _ = ‖S - ∑ b in T, bound b‖          := congrArg _ ?_
