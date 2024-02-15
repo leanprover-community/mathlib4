@@ -374,7 +374,7 @@ theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
       have h :
         const abv (lim f * lim g) - f * g =
           (const abv (lim f) - f) * g + const abv (lim f) * (const abv (lim g) - g) := by
-              apply Subtype.ext
+              apply FunLike.ext'
               rw [coe_add]
               simp [sub_mul, mul_sub]
       rw [h]
