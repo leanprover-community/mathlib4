@@ -356,12 +356,10 @@ maps it induces between Clifford algebras is also surjective.-/
 lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
     (hf : Function.Surjective f) : Function.Surjective (CliffordAlgebra.map f) :=
   CliffordAlgebra.induction
-  (fun r ↦ ⟨(algebraMap R (CliffordAlgebra Q₁)) r, by simp only [AlgHom.commutes]⟩)
-  (fun y ↦ let ⟨x, hx⟩ := hf y; ⟨CliffordAlgebra.ι Q₁ x, by simp only [map_apply_ι, hx]⟩)
-  (fun _ _ hy hy' ↦ let ⟨x, hx⟩ := hy; let ⟨x', hx'⟩ := hy'
-                           ⟨x * x' , by simp only [map_mul, hx, hx']⟩)
-  (fun _ _ hy hy' ↦ let ⟨x, hx⟩ := hy; let ⟨x', hx'⟩ := hy'
-                           ⟨x + x' , by simp only [map_add, hx, hx']⟩)
+    (fun r ↦ ⟨algebraMap R (CliffordAlgebra Q₁) r, by simp only [AlgHom.commutes]⟩)
+    (fun y ↦ let ⟨x, hx⟩ := hf y; ⟨CliffordAlgebra.ι Q₁ x, by simp only [map_apply_ι, hx]⟩)
+    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x * y, by simp only [map_mul, hx, hy]⟩)
+    (fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simp only [map_add, hx, hy]⟩)
 
 /-- Two `CliffordAlgebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/
