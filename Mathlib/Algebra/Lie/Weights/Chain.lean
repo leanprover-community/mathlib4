@@ -68,14 +68,16 @@ lemma weightSpaceChain_neg :
 
 end IsNilpotent
 
-section IsCartanSubalgebra
+section IsNilpotentSubalgebra
 
 open LieAlgebra
 
-variable {H : LieSubalgebra R L} [H.IsCartanSubalgebra] (α χ : H → R) (p q : ℤ)
+variable {H : LieSubalgebra R L} (α χ : H → R) (p q : ℤ)
 
-lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right (hq : weightSpace M (q • α + χ) = ⊥)
-    {x : L} {y : M} (hx : x ∈ rootSpace H α) (hy : y ∈ weightSpaceChain M α χ p q) :
+lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right [LieAlgebra.IsNilpotent R H]
+    (hq : weightSpace M (q • α + χ) = ⊥)
+    {x : L} (hx : x ∈ rootSpace H α)
+    {y : M} (hy : y ∈ weightSpaceChain M α χ p q) :
     ⁅x, y⁆ ∈ weightSpaceChain M α χ p q := by
   rw [weightSpaceChain, iSup_subtype'] at hy
   induction' hy using LieSubmodule.iSup_induction' with k z hz z₁ z₂ _ _ hz₁ hz₂
@@ -92,15 +94,18 @@ lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right (hq : weightSpace M (
   · rw [lie_add]
     exact add_mem hz₁ hz₂
 
-lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left (hp : weightSpace M (p • α + χ) = ⊥)
-    {x : L} {y : M} (hx : x ∈ rootSpace H (-α)) (hy : y ∈ weightSpaceChain M α χ p q) :
+lemma lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left [LieAlgebra.IsNilpotent R H]
+    (hp : weightSpace M (p • α + χ) = ⊥)
+    {x : L} (hx : x ∈ rootSpace H (-α))
+    {y : M} (hy : y ∈ weightSpaceChain M α χ p q) :
     ⁅x, y⁆ ∈ weightSpaceChain M α χ p q := by
   replace hp : weightSpace M ((-p) • (-α) + χ) = ⊥ := by rwa [smul_neg, neg_smul, neg_neg]
   rw [← weightSpaceChain_neg] at hy ⊢
   exact lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right M (-α) χ (-q) (-p) hp hx hy
 
-lemma trace_toEndomorphism_weightSpaceChain_eq_zero [IsNoetherian R L]
-    (hp : weightSpace M (p • α + χ) = ⊥) (hq : weightSpace M (q • α + χ) = ⊥)
+lemma trace_toEndomorphism_weightSpaceChain_eq_zero [IsNoetherian R L] [H.IsCartanSubalgebra]
+    (hp : weightSpace M (p • α + χ) = ⊥)
+    (hq : weightSpace M (q • α + χ) = ⊥)
     {x : H} (hx : x ∈ (rootSpaceProductNegSelf α).range) :
     LinearMap.trace R _ (toEndomorphism R H (weightSpaceChain M α χ p q) x) = 0 := by
   obtain ⟨t, rfl⟩ := hx
@@ -120,6 +125,6 @@ lemma trace_toEndomorphism_weightSpaceChain_eq_zero [IsNoetherian R L]
     simp [hfg]
   · rw [LieModuleHom.map_add, LieHom.map_add, map_add, h₁, h₂, zero_add]
 
-end IsCartanSubalgebra
+end IsNilpotentSubalgebra
 
 end LieModule
