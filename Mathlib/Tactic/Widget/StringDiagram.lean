@@ -12,11 +12,14 @@ namespace Mathlib.Tactic.Widget.StringDiagram
 open Lean Meta Elab
 open CategoryTheory
 
+structure Atom₁ : Type where
+  e : Expr
+
 /-- Expressions for 1-morphisms. -/
 inductive Mor₁ : Type
   | id : Expr → Mor₁
   | comp : Mor₁ → Mor₁ → Mor₁
-  | of : Expr → Mor₁
+  | of : Atom₁ → Mor₁
   deriving Inhabited
 
 def Mor₁.e : Mor₁ → MetaM Expr
@@ -24,18 +27,18 @@ def Mor₁.e : Mor₁ → MetaM Expr
     mkAppOptM ``MonoidalCategoryStruct.tensorUnit #[none, none, C]
   | .comp f g => do
     mkAppM ``MonoidalCategoryStruct.tensorObj #[← Mor₁.e f, ← Mor₁.e g]
-  | .of f => return f
+  | .of f => return f.e
 
 def Mor₁.toList : Mor₁ → List Expr
   | .id _ => []
   | .comp f g => f.toList ++ g.toList
-  | .of f => [f]
+  | .of f => [f.e]
 
 partial def toMor₁ (e : Expr) : Mor₁ :=
   match e.getAppFnArgs with
   | (``MonoidalCategoryStruct.tensorUnit, #[_, _, C]) => Mor₁.id C
   | (``MonoidalCategoryStruct.tensorObj, #[_, _, _, f, g]) => (toMor₁ f).comp (toMor₁ g)
-  | _ => Mor₁.of e
+  | _ => Mor₁.of ⟨e⟩
 
 /- Expressions for atomic structural 2-morphisms. -/
 inductive StructuralAtom : Type
@@ -59,7 +62,7 @@ def StructuralAtom.e : StructuralAtom → MetaM Expr
   | .rightUnitor f => do mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
   | .rightUnitorInv f => do mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
 
-def toStructuralAtom (e : Expr) : Option StructuralAtom := do
+def structuralAtom? (e : Expr) : Option StructuralAtom := do
   match e.getAppFnArgs with
   | (``CategoryStruct.id, #[_, _, f]) => return .id (toMor₁ f)
   | (``Iso.hom, #[_, _, _, _, η]) =>
@@ -82,30 +85,24 @@ structure Atom where
 
 /-- Expressions for atomic 2-Morphisms. -/
 inductive Core : Type
-  | StructuralAtom : StructuralAtom → Core
+  | ofStructural : StructuralAtom → Core
   | of : Atom → Core
   deriving Inhabited
 
 def Core.e : Core → MetaM Expr
-  | .StructuralAtom η => η.e
+  | .ofStructural η => η.e
   | .of a => return a.e
-
-/-- Interpret an `Expr` term as a `Core` term. -/
-def toCore (e : Expr) : Core :=
-  match toStructuralAtom e with
-  | some η => Core.StructuralAtom η
-  | none => Core.of ⟨e⟩
 
 /-- Expressions of the form `η ▷ f₁ ▷ ... ▷ fₙ`. -/
 inductive WhiskerRightExpr : Type
   | of (η : Core) : WhiskerRightExpr
-  | whisker (η : WhiskerRightExpr) (f : Expr) : WhiskerRightExpr
+  | whisker (η : WhiskerRightExpr) (f : Atom₁) : WhiskerRightExpr
   deriving Inhabited
 
 /-- Expressions of the form `f₁ ◁ ... ◁ fₙ ◁ η`. -/
 inductive WhiskerLeftExpr : Type
   | of (η : WhiskerRightExpr) : WhiskerLeftExpr
-  | whisker (f : Expr) (η : WhiskerLeftExpr) : WhiskerLeftExpr
+  | whisker (f : Atom₁) (η : WhiskerLeftExpr) : WhiskerLeftExpr
   deriving Inhabited
 
 /-- Normalized expressions for 2-morphisms. -/
@@ -133,31 +130,17 @@ def Core.tar (η : Core) : MetaM Mor₁ := do StringDiagram.tar (← η.e)
 
 /-- Construct a normalized expression from an atomic 2-morphism. -/
 def NormalExpr.mk (η : Core) : MetaM NormalExpr := do
-  return NormalExpr.cons (WhiskerLeftExpr.of (WhiskerRightExpr.of η)) (NormalExpr.id (← η.tar))
-
-/-- Interpret the expression `η ▷ f₁ ▷ ... ▷ fₙ` as `WhiskerRightExpr`.  -/
-partial def toWhiskerRightExpr (e : Expr) : MetaM WhiskerRightExpr := do
-  match (← inferType e).getAppFnArgs with
-  | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, f]) =>
-    return WhiskerRightExpr.whisker (← toWhiskerRightExpr η) f
-  | _ => return WhiskerRightExpr.of (toCore e)
+  return .cons (.of (.of η)) (.id (← η.tar))
 
 /-- The domain of a 2-morphism. -/
 def WhiskerRightExpr.src : WhiskerRightExpr → MetaM Mor₁
   | WhiskerRightExpr.of η => η.src
-  | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.src η).comp (.of f)
+  | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.src η).comp (Mor₁.of f)
 
 /-- The codomain of a 2-morphism. -/
 def WhiskerRightExpr.tar : WhiskerRightExpr → MetaM Mor₁
   | WhiskerRightExpr.of η => η.tar
-  | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.tar η).comp (.of f)
-
-/-- Interpret the expression `f₁ ◁ ... ◁ fₙ ◁ η` as `WhiskerLeftExpr`.  -/
-partial def toWhiskerLeftExpr (e : Expr) : MetaM WhiskerLeftExpr := do
-  match (← inferType e).getAppFnArgs with
-  | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
-    return WhiskerLeftExpr.whisker f (← toWhiskerLeftExpr η)
-  | _ => return WhiskerLeftExpr.of (← toWhiskerRightExpr e)
+  | WhiskerRightExpr.whisker η f => return (← WhiskerRightExpr.tar η).comp (Mor₁.of f)
 
 /-- The domain of a 2-morphism. -/
 def WhiskerLeftExpr.src : WhiskerLeftExpr → MetaM Mor₁
@@ -169,40 +152,37 @@ def WhiskerLeftExpr.tar : WhiskerLeftExpr → MetaM Mor₁
   | WhiskerLeftExpr.of η => WhiskerRightExpr.tar η
   | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.tar η)
 
-def NormalExpr.of (η : Expr) : MetaM NormalExpr := do
-  return .cons (← toWhiskerLeftExpr η) (.id <| ← tar η)
-
 def NormalExpr.src : NormalExpr → MetaM Mor₁
   | NormalExpr.id f => return f
-  | NormalExpr.cons η _ => WhiskerLeftExpr.src η
+  | NormalExpr.cons η _ => η.src
 
 def NormalExpr.tar : NormalExpr → MetaM Mor₁
   | NormalExpr.id f => return f
-  | NormalExpr.cons _ θ => tar θ
+  | NormalExpr.cons _ θ => θ.tar
 
 /-- Evaluate the expression `η ≫ θ` into a normalized form. -/
 def evalComp : NormalExpr → NormalExpr → NormalExpr
   | .id _, e => e
   | e, .id _ => e
-  | .cons f g, e => NormalExpr.cons f (evalComp g e)
+  | .cons f g, e => .cons f (evalComp g e)
 
 def NormalExpr.associator (f g h : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.StructuralAtom <| .associator f g h)
+  NormalExpr.mk (.ofStructural <| .associator f g h)
 
 def NormalExpr.associatorInv (f g h : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.StructuralAtom <| .associatorInv f g h)
+  NormalExpr.mk (.ofStructural <| .associatorInv f g h)
 
 def NormalExpr.leftUnitor (f : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.StructuralAtom <| .leftUnitor f)
+  NormalExpr.mk (.ofStructural <| .leftUnitor f)
 
 def NormalExpr.leftUnitorInv (f : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.StructuralAtom <| .leftUnitorInv f)
+  NormalExpr.mk (.ofStructural <| .leftUnitorInv f)
 
 def NormalExpr.rightUnitor (f : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.StructuralAtom <| .rightUnitor f)
+  NormalExpr.mk (.ofStructural <| .rightUnitor f)
 
 def NormalExpr.rightUnitorInv (f : Mor₁) : MetaM NormalExpr := do
-  NormalExpr.mk (.StructuralAtom <| .rightUnitorInv f)
+  NormalExpr.mk (.ofStructural <| .rightUnitorInv f)
 
 /-- Evaluate the expression `f ◁ η` into a normalized form. -/
 partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
@@ -225,7 +205,7 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
 /-- Evaluate the expression `η ▷ f` into a normalized form. -/
 partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
   | .id f, .of g => do
-    return .id (f.comp (toMor₁ g))
+    return .id (f.comp (.of g))
   | .cons (.of η) θ, .of f => do
     let η' := WhiskerRightExpr.whisker η f
     let θ' ← evalWhiskerRightExpr θ (.of f)
@@ -233,7 +213,7 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
   | .cons (.whisker f η) θ, .of h => do
     let g ← η.src
     let g' ← η.tar
-    let η' ← evalWhiskerLeftExpr (toMor₁ f) (← evalWhiskerRightExpr (.cons η (.id g')) (.of h))
+    let η' ← evalWhiskerLeftExpr (.of f) (← evalWhiskerRightExpr (.cons η (.id g')) (.of h))
     let θ' ← evalWhiskerRightExpr θ (.of h)
     return evalComp (← NormalExpr.associator (.of f) g (.of h)) (evalComp η' (evalComp (← NormalExpr.associatorInv (.of f) g' (.of h)) θ'))
   | η, .comp g h => do
@@ -246,25 +226,15 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
     let g ← η.tar
     return evalComp (← NormalExpr.rightUnitor f) (evalComp η (← NormalExpr.rightUnitorInv g))
 
-def StructuralAtom.toNormalExpr (η : StructuralAtom) : MetaM NormalExpr := do
-  match η with
-  | StructuralAtom.id f => return NormalExpr.id f
-  | StructuralAtom.associator f g h => NormalExpr.associator f g h
-  | StructuralAtom.associatorInv f g h => NormalExpr.associatorInv f g h
-  | StructuralAtom.leftUnitor f => NormalExpr.leftUnitor f
-  | StructuralAtom.leftUnitorInv f => NormalExpr.leftUnitorInv f
-  | StructuralAtom.rightUnitor f => NormalExpr.rightUnitor f
-  | StructuralAtom.rightUnitorInv f => NormalExpr.rightUnitorInv f
-
 def WhiskerRightExpr.e : WhiskerRightExpr → MetaM Expr
   | WhiskerRightExpr.of η => η.e
   | WhiskerRightExpr.whisker η f => do
-    mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, f]
+    mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, f.e]
 
 def WhiskerLeftExpr.e : WhiskerLeftExpr → MetaM Expr
   | WhiskerLeftExpr.of η => η.e
   | WhiskerLeftExpr.whisker f η => do
-    mkAppM ``MonoidalCategoryStruct.whiskerLeft #[f, ← η.e]
+    mkAppM ``MonoidalCategoryStruct.whiskerLeft #[f.e, ← η.e]
 
 def NormalExpr.e : NormalExpr → MetaM Expr
   | NormalExpr.id f => do mkAppM ``CategoryStruct.id #[← f.e]
@@ -283,28 +253,26 @@ def WhiskerLeftExpr.core : WhiskerLeftExpr → Core
   | WhiskerLeftExpr.of η => η.core
   | WhiskerLeftExpr.whisker _ η => η.core
 
-def WhiskerRightExpr.StructuralAtom? (η : WhiskerRightExpr) : Option WhiskerRightExpr :=
-  match η.core with
-  | .of _ => none
-  | .StructuralAtom _ => some η
-
-def WhiskerLeftExpr.StructuralAtom? (η : WhiskerLeftExpr) : Option WhiskerLeftExpr :=
-  match η.core with
-  | .of _ => none
-  | .StructuralAtom _ => some η
-
-def NormalExpr.StructuralAtom? : NormalExpr → Option NormalExpr
+def NormalExpr.structural? : NormalExpr → Option NormalExpr
   | NormalExpr.id f => some (.id f)
   | NormalExpr.cons η θ =>
-    match η.StructuralAtom?, θ.StructuralAtom? with
-    | some _, some _ => some (.cons η θ)
+    match η.core, θ.structural? with
+    | .ofStructural _, some _ => some (.cons η θ)
     | _, _ => none
+
+/-- Interpret an `Expr` term as a `Core` term. -/
+def toCore (e : Expr) : Core :=
+  match structuralAtom? e with
+  | some η => Core.ofStructural η
+  | none => Core.of ⟨e⟩
+
+def NormalExpr.of (η : Expr) : MetaM NormalExpr := do
+  return .cons (.of (.of (toCore η))) (.id <| ← StringDiagram.tar η)
 
 /-- Evaluate the expression of a 2-morphism into a normalized form. -/
 partial def eval (e : Expr) : MetaM NormalExpr := do
   match e.getAppFnArgs with
   | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) => return evalComp (← eval η) (← eval θ)
-  | (``CategoryStruct.id, #[_, _, f]) => return NormalExpr.id (.of f)
   | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) => evalWhiskerLeftExpr (toMor₁ f) (← eval η)
   | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) => evalWhiskerRightExpr (← eval η) (toMor₁ h)
   | _ => NormalExpr.of e
@@ -312,21 +280,21 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
 /-- Remove structural 2-morphisms. -/
 def removeStructural : List WhiskerLeftExpr → List WhiskerLeftExpr
   | [] => []
-  | η :: ηs => match η.StructuralAtom? with
-    | some _ => removeStructural ηs
-    | none => η :: (removeStructural ηs)
+  | η :: ηs => match η.core with
+    | .ofStructural _ => removeStructural ηs
+    | _ => η :: removeStructural ηs
 
 /-- Return `[f₁, ..., fₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
 def leftMor₁List (η : WhiskerLeftExpr) : List Expr :=
   match η with
   | WhiskerLeftExpr.of _ => []
-  | WhiskerLeftExpr.whisker f η => f :: leftMor₁List η
+  | WhiskerLeftExpr.whisker f η => f.e :: leftMor₁List η
 
 /-- Return `[gₙ, ..., g₁]` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
 def rightMor₁ListAux (η : WhiskerRightExpr) : List Expr :=
   match η with
   | WhiskerRightExpr.of _ => []
-  | WhiskerRightExpr.whisker η f => f :: rightMor₁ListAux η
+  | WhiskerRightExpr.whisker η f => f.e :: rightMor₁ListAux η
 
 /-- Return `[gₙ, ..., g₁]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
 def rightMor₁ListReversed (η : WhiskerLeftExpr) : List Expr :=
