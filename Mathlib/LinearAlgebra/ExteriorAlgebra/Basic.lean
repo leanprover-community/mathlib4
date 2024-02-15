@@ -334,7 +334,8 @@ variable (R)
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power.-/
 lemma ιMulti_range (n : ℕ) : Set.range (ιMulti R n) ⊆
-    (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n).carrier := by
+    ((LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n :
+    Submodule R (ExteriorAlgebra R M)) : Set (ExteriorAlgebra R M)) := by
   rw [Set.range_subset_iff]
   intro v
   rw [ιMulti_apply]
