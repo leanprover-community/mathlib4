@@ -240,6 +240,14 @@ protected theorem map_neg (a : R) : abv (-a) = abv a := by
 protected theorem map_sub (a b : R) : abv (a - b) = abv (b - a) := by rw [← neg_sub, abv.map_neg]
 #align absolute_value.map_sub AbsoluteValue.map_sub
 
+/-- Bound `abv (a + b)` from below -/
+protected theorem le_add (a b : R) : abv a - abv b ≤ abv (a + b) := by
+  simpa only [tsub_le_iff_right, add_neg_cancel_right, abv.map_neg] using abv.add_le (a + b) (-b)
+
+/-- Bound `abv (a - b)` from above -/
+lemma sub_le_add (a b : R) : abv (a - b) ≤ abv a + abv b := by
+  simpa only [← sub_eq_add_neg, AbsoluteValue.map_neg] using abv.add_le a (-b)
+
 end OrderedCommRing
 
 instance {R S : Type*} [Ring R] [OrderedCommRing S] [Nontrivial R] [IsDomain S] :
