@@ -34,11 +34,6 @@ and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ cond_cdf ρ a x` is
 The construction of the conditional cdf in this file follows the proof of Theorem 3.4 in
 [O. Kallenberg, Foundations of modern probability][kallenberg2021].
 
-## TODO
-
-* The conditional cdf can be used to define the cdf of a real measure by using the
-  conditional cdf of `(measure.dirac unit.star).prod μ : measure (unit × ℝ)`.
-
 -/
 
 
