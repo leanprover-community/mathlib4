@@ -487,13 +487,13 @@ end Real
 
 instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 :=
   .ofLEIff fun x y => by
-    constructor; swap
-    · rintro ⟨p, -, rfl⟩
-      exact le_self_add
+    constructor
     · intro h
       obtain ⟨d, rfl⟩ := exists_add_of_le h
       refine ⟨sqrt d, ?_⟩
       simp only [star_trivial, mul_self_sqrt]
+    · rintro ⟨p, -, rfl⟩
+      exact le_self_add
 
 open Real
 
