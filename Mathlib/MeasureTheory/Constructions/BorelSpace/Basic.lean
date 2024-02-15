@@ -338,7 +338,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem measurableSet_of_continuousAt {β} [EMetricSpace β] (f : α → β) :
     MeasurableSet { x | ContinuousAt f x } :=
-  (isGδ_setOf_continuousAt f).measurableSet
+  (IsGδ.setOf_continuousAt f).measurableSet
 #align measurable_set_of_continuous_at measurableSet_of_continuousAt
 
 theorem IsClosed.measurableSet (h : IsClosed s) : MeasurableSet s :=

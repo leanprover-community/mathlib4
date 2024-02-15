@@ -281,7 +281,7 @@ theorem IsGδ.dense_iUnion_interior_of_closed [Countable ι] {s : Set X} (hs : I
     refine' dense_iInter_of_isOpen hgo fun i x => _
     rw [closure_compl, interior_frontier (hc _)]
     exact id
-  refine' (hd.inter_of_Gδ hs (isGδ_iInter_of_isOpen fun i => (hgo i)) hgd).mono _
+  refine' (hd.inter_of_Gδ hs (.iInter_of_isOpen fun i => (hgo i)) hgd).mono _
   rintro x ⟨hxs, hxg⟩
   rw [mem_iInter] at hxg
   rcases mem_iUnion.1 (hU hxs) with ⟨i, hi⟩
@@ -313,21 +313,21 @@ set_option linter.uppercaseLean3 false in
 are dense. Formulated here with an index set which is a countable set in any type. -/
 theorem dense_biUnion_interior_of_closed {S : Set α} {f : α → Set X} (hc : ∀ s ∈ S, IsClosed (f s))
     (hS : S.Countable) (hU : ⋃ s ∈ S, f s = univ) : Dense (⋃ s ∈ S, interior (f s)) :=
-  isGδ_univ.dense_biUnion_interior_of_closed dense_univ hS hc hU.ge
+  IsGδ.univ.dense_biUnion_interior_of_closed dense_univ hS hc hU.ge
 #align dense_bUnion_interior_of_closed dense_biUnion_interior_of_closed
 
 /-- Baire theorem: if countably many closed sets cover the whole space, then their interiors
 are dense. Formulated here with `⋃₀`. -/
 theorem dense_sUnion_interior_of_closed {S : Set (Set X)} (hc : ∀ s ∈ S, IsClosed s)
     (hS : S.Countable) (hU : ⋃₀ S = univ) : Dense (⋃ s ∈ S, interior s) :=
-  isGδ_univ.dense_sUnion_interior_of_closed dense_univ hS hc hU.ge
+  IsGδ.univ.dense_sUnion_interior_of_closed dense_univ hS hc hU.ge
 #align dense_sUnion_interior_of_closed dense_sUnion_interior_of_closed
 
 /-- Baire theorem: if countably many closed sets cover the whole space, then their interiors
 are dense. Formulated here with an index set which is a countable type. -/
 theorem dense_iUnion_interior_of_closed [Countable ι] {f : ι → Set X} (hc : ∀ i, IsClosed (f i))
     (hU : ⋃ i, f i = univ) : Dense (⋃ i, interior (f i)) :=
-  isGδ_univ.dense_iUnion_interior_of_closed dense_univ hc hU.ge
+  IsGδ.univ.dense_iUnion_interior_of_closed dense_univ hc hU.ge
 #align dense_Union_interior_of_closed dense_iUnion_interior_of_closed
 
 /-- One of the most useful consequences of Baire theorem: if a countable union of closed sets
