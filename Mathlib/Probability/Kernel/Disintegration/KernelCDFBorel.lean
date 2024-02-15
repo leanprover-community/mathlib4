@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Kernel.Disintegration.BuildKernel
+import Mathlib.Probability.Kernel.Disintegration.CDFKernel
 
 /-!
 # KernelCDFBorel
