@@ -8,18 +8,22 @@ import Mathlib.Topology.MetricSpace.Isometry
 /-!
 # Congruences
 
-In this file we define congruence, i.e., the equivalence between sets of points in
-a metric space where all corresponding pairwise distances are the same. The motivating
-example are triangles in the plane.
+This file defines `Congruent`, i.e., the equivalence between sets of points in a metric
+space where all corresponding pairwise distances are the same. The motivating example are
+triangles in the plane.
 
 ## Main results
 
 In the case of an `EMetricSpace` we show an `IsometryEquiv` between the points:
 `Set.range v₁ ≃ᵢ Set.range v₂`.
 
+## Implementation notes
+
+See the [Zulip discussion](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Euclidean.20Geometry)
+
 ## Notation
 
-* `v₁ ≅ v₂`: for `congruence v₁ v₂`.
+* `v₁ ≅ v₂`: for `Congruent v₁ v₂`.
 -/
 
 variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
@@ -28,49 +32,49 @@ noncomputable section
 
 /-- A congruence between indexed sets of vertices v₁ and v₂.
 Use `open scoped Congruence` to access the `v₁ ≅ v₂` notation. -/
-def congruence (v₁ : ι → P₁) (v₂ : ι → P₂) [PseudoEMetricSpace P₁]
+def Congruent (v₁ : ι → P₁) (v₂ : ι → P₂) [PseudoEMetricSpace P₁]
     [PseudoEMetricSpace P₂] : Prop :=
   ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂))
 
 @[inherit_doc]
-scoped[Congruence] infixl:25 " ≅ " => congruence
+scoped[Congruence] infixl:25 " ≅ " => Congruent
 
 /-- A congruence holds if and only if all extended distances are the same. -/
-lemma congruence_iff_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] :
-    congruence v₁ v₂ ↔ (∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂))) :=
+lemma congruent_iff_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] :
+    Congruent v₁ v₂ ↔ (∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = edist (v₂ i₁) (v₂ i₂))) :=
   forall₂_congr (fun _ _ => by simp only [edist])
 
 /-- A congruence holds if and only if all non-negative distances are the same. -/
-lemma congruence_iff_nndist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] :
-    congruence v₁ v₂ ↔ (∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) = nndist (v₂ i₁) (v₂ i₂))) :=
+lemma congruent_iff_nndist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] :
+    Congruent v₁ v₂ ↔ (∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) = nndist (v₂ i₁) (v₂ i₂))) :=
   forall₂_congr (fun _ _ => by rw [edist_nndist, edist_nndist]; norm_cast )
 
 /-- A congruence holds if and only if all distances are the same. -/
-lemma congruence_iff_dist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] :
-    congruence v₁ v₂ ↔ (∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) = dist (v₂ i₁) (v₂ i₂))) :=
-  congruence_iff_nndist_eq.trans
+lemma congruent_iff_dist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] :
+    Congruent v₁ v₂ ↔ (∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) = dist (v₂ i₁) (v₂ i₂))) :=
+  congruent_iff_nndist_eq.trans
     (forall₂_congr (fun _ _ => by rw [dist_nndist, dist_nndist]; norm_cast))
 
 
 namespace Congruence
 
 /-- A congruence preserves extended distance. -/
-alias ⟨edist_eq, _⟩ := congruence_iff_edist_eq
+alias ⟨edist_eq, _⟩ := congruent_iff_edist_eq
 
 /-- A congruence follows from preserved extended distance. -/
-alias ⟨_, of_edist_eq⟩ := congruence_iff_edist_eq
+alias ⟨_, of_edist_eq⟩ := congruent_iff_edist_eq
 
 /-- A congruence preserves non-negative distance. -/
-alias ⟨nndist_eq, _⟩ := congruence_iff_nndist_eq
+alias ⟨nndist_eq, _⟩ := congruent_iff_nndist_eq
 
 /-- A congruence follows from preserved non-negative distance. -/
-alias ⟨_, of_nndist_eq⟩ := congruence_iff_nndist_eq
+alias ⟨_, of_nndist_eq⟩ := congruent_iff_nndist_eq
 
 /-- A congruence preserves distance. -/
-alias ⟨dist_eq, _⟩ := congruence_iff_dist_eq
+alias ⟨dist_eq, _⟩ := congruent_iff_dist_eq
 
 /-- A congruence follows from preserved distance. -/
-alias ⟨_, of_dist_eq⟩ := congruence_iff_dist_eq
+alias ⟨_, of_dist_eq⟩ := congruent_iff_dist_eq
 
 /-- A congruence follows from pairwise preserved extended distance. -/
 lemma of_Pairwise_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [DecidableEq ι]
@@ -136,7 +140,7 @@ lemma map_refl_apply (a : Set.range v₁) : congruence_map v₁ v₁ a = a := by
   rw [Subtype.ext_iff]
   apply Set.apply_rangeSplitting v₁
 
-/-- `congruence_map` does indeed preserve corresponding points -/
+/-- `congruence_map` preserves corresponding points. -/
 lemma map_sound (h : v₁ ≅ v₂) (i : ι) :
     (congruence_map v₁ v₂ (Set.rangeFactorization v₁ i)) = v₂ i := by
   unfold congruence_map
@@ -154,14 +158,14 @@ lemma map_comp (v₁ : ι → P₁) (h : v₂ ≅ v₃) :
     (congruence_map v₂ v₃) ∘ congruence_map v₁ v₂ = congruence_map v₁ v₃ :=
   funext <| fun a => map_comp_apply h a
 
-/-- `congruence_map v₁ v₂` and `congruence_map v₂ v₁` are inverses to eachother -/
+/-- `congruence_map v₁ v₂` and `congruence_map v₂ v₁` are inverses to eachother. -/
 lemma map_inverse_self (h : v₁ ≅ v₂) :
     Function.LeftInverse (congruence_map v₂ v₁) (congruence_map v₁ v₂) := by
   intro x
   rw [map_comp_apply <| Congruence.symm h]
   exact map_refl_apply x
 
-/-- `congruence_map` as an `IsometryEquiv` -/
+/-- `congruence_map` as an `IsometryEquiv`. -/
 protected def isometry (h : v₁ ≅ v₂) : Set.range v₁ ≃ᵢ Set.range v₂ :=
 { toFun := congruence_map v₁ v₂
   invFun := congruence_map v₂ v₁
