@@ -245,7 +245,7 @@ protected theorem le_add (a b : R) : abv a - abv b ≤ abv (a + b) := by
   simpa only [tsub_le_iff_right, add_neg_cancel_right, abv.map_neg] using abv.add_le (a + b) (-b)
 
 /-- Bound `abv (a - b)` from above -/
-lemma sub_le' (a b : R) : abv (a - b) ≤ abv a + abv b := by
+lemma sub_le_add (a b : R) : abv (a - b) ≤ abv a + abv b := by
   simpa only [← sub_eq_add_neg, AbsoluteValue.map_neg] using abv.add_le a (-b)
 
 end OrderedCommRing
