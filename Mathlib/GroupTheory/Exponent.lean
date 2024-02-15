@@ -317,6 +317,11 @@ theorem _root_.Submonoid.exponent_top :
   simp only [Subtype.forall, Submonoid.mem_top, SubmonoidClass.mk_pow, ← OneMemClass.coe_eq_one,
     forall_true_left]
 
+variable (G) in
+@[to_additive (attr := simp)]
+theorem _root_.Submonoid.exponent_bot : Monoid.exponent (⊥ : Submonoid G) = 1 :=
+  Monoid.exp_eq_one_of_subsingleton
+
 @[to_additive]
 theorem _root_.Submonoid.pow_exponent_eq_one {S : Submonoid G} {g : G} (g_in_s : g ∈ S) :
     g ^ (Monoid.exponent S) = 1 := by
@@ -465,7 +470,7 @@ theorem Subgroup.exponent_top : Monoid.exponent (⊤ : Subgroup G) = Monoid.expo
 
 @[to_additive (attr := simp)]
 theorem Subgroup.exponent_bot : Monoid.exponent (⊥ : Subgroup G) = 1 :=
-  Group.exponent_eq_one_iff.mpr Unique.instSubsingleton
+  Monoid.exp_eq_one_of_subsingleton
 
 @[to_additive]
 theorem Subgroup.pow_exponent_eq_one {H : Subgroup G} {g : G} (g_in_H : g ∈ H) :
