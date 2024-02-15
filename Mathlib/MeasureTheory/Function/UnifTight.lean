@@ -207,22 +207,20 @@ theorem Memℒp.snorm_indicator_compl_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
   have hp_pos := zero_lt_one.trans_le hp_one
   have hp_nz := hp_pos.ne'
   have hrp_pos : 0 < p.toReal := ENNReal.toReal_pos hp_nz hp_top
+  have hirp_pos : 0 < 1 / p.toReal := div_pos (by norm_num) hrp_pos
   have hεp : 0 < ε ^ p.toReal := by simp only [Real.rpow_pos_of_pos, hε]
   -- decode Memℒp into a.e. strong measurability and finite snorm
   obtain ⟨haesmf, hsnf⟩ := hf
   -- transform snorm to lintegral
-  rw [snorm_eq_snorm' (by assumption) (by assumption)] at hsnf
-  have hinpf := calc
-    ∫⁻ a, ‖f a‖₊ ^ p.toReal ∂μ
-      = (snorm' f p.toReal μ) ^ p.toReal := lintegral_rpow_nnnorm_eq_rpow_snorm' hrp_pos
-    _ < ∞                                := (rpow_lt_top_iff_of_pos hrp_pos).mpr hsnf
+  rw [snorm_eq_lintegral_rpow_nnnorm hp_nz hp_top] at hsnf
+  replace hsnf := (rpow_lt_top_iff_of_pos hirp_pos).mp hsnf
   -- get a.e. measurability for the integrand
   -- XXX: Why does `AEStronglyMeasurable.ennnorm` only give the weaker AEMeasurable?
   --      It would make sense to me to use `haesmf.ennnorm.aemeasurable` below.
   have haemnf := haesmf.ennnorm
   have haemnpf := haemnf.pow_const p.toReal
   -- use core result for lintegral (needs only AEMeasurable), the target estimate will be in `hsfε`
-  obtain ⟨s, hms, hμs, hsfε⟩ := lintegral_indicator_compl_le haemnpf hinpf hεp
+  obtain ⟨s, hms, hμs, hsfε⟩ := lintegral_indicator_compl_le haemnpf hsnf hεp
   use s, hms, hμs
   -- move indicator through function compositions, XXX: is this simp-able?
   rw [← Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal)] at hsfε
@@ -234,12 +232,11 @@ theorem Memℒp.snorm_indicator_compl_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
   rw [Function.comp_def nnnorm] at hsfε
   rw [Function.comp_def ENNReal.ofNNReal] at hsfε
   rw [Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal)] at hsfε
-  -- convert lintegral to snorm
-  rw [lintegral_rpow_nnnorm_eq_rpow_snorm' hrp_pos] at hsfε
-  rw [← snorm_eq_snorm' (by assumption) (by assumption)] at hsfε
   -- commute ENNReal coersion with rpow, use rpow monotonicity
   rw [← ofReal_rpow_of_pos (by assumption)] at hsfε
-  rw [ENNReal.rpow_le_rpow_iff hrp_pos] at hsfε
+  rw [← ENNReal.rpow_le_rpow_iff hirp_pos, ENNReal.rpow_inv_rpow_self] at hsfε
+  -- convert lintegral to snorm
+  rw [← snorm_eq_lintegral_rpow_nnnorm hp_nz hp_top] at hsfε
   exact hsfε
 
 /-- A constant function is tight. -/
