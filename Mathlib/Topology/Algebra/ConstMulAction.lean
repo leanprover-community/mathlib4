@@ -322,6 +322,9 @@ If the set of group elements `s` is finite and its action on the point `x` is in
 then one can construct an open set `t` such that for every pair `g ≠ h` of `s`,
 `g • t` is disjoint from `h • t`.
 -/
+@[to_additive "If the set of group elements `s` is finite and its action on the point `x` is
+injective, then one can construct an open set `t` such that for every pair `g ≠ h` of `s`,
+`g +ᵥ t` is disjoint from `h +ᵥ t`."]
 theorem Set.InjOn.t2_separation_smul {s : Set G} {x : α} (inj_on : s.InjOn (· • x))
     (s_finite : s.Finite) : ∃ t : Set α, IsOpen t ∧ x ∈ t ∧
       s.PairwiseDisjoint (fun g => g • t) := by
