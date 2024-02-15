@@ -140,7 +140,7 @@ theorem cond_apply (hms : MeasurableSet s) (t : Set Ω) : μ[t|s] = (μ s)⁻¹ 
   rw [cond, Measure.smul_apply, Measure.restrict_apply' hms, Set.inter_comm, smul_eq_mul]
 #align probability_theory.cond_apply ProbabilityTheory.cond_apply
 
- theorem cond_apply' (t : Set Ω) (hA : MeasurableSet t) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
+ theorem cond_apply' {t : Set Ω} (hA : MeasurableSet t) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
    rw [cond, Measure.smul_apply, Measure.restrict_apply hA, Set.inter_comm, smul_eq_mul]
 
 theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) : μ[s ∩ t|s] = μ[t|s] := by

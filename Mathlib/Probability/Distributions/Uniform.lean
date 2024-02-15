@@ -187,24 +187,24 @@ end IsUniform
 
 variable {X : Ω → E}
 
-lemma IsUniform.uniformMeasure {s : Set E} :
+lemma IsUniform.cond {s : Set E} :
     IsUniform (id : E → E) s (ProbabilityTheory.cond μ s) μ := by
   unfold IsUniform
   rw [Measure.map_id]
 
 /-- The density of the uniform measure on a set with respect to itself. This allows us to abstract
 away the choice of random variable and probability space. -/
-def uniformPDF {s : Set E} {x : E} : ℝ≥0∞ := s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x
+def uniformPDF (μ : Measure E := by volume_tac) (s : Set E) (x : E) : ℝ≥0∞ := s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x
 
 /-- Check that indeed any uniform random variable has the uniformPDF. -/
 lemma uniformPDF_eq_pdf {s : Set E} (hs : MeasurableSet s) (hu : pdf.IsUniform X s ℙ μ) :
-    @uniformPDF _ _ μ s  =ᵐ[μ] pdf X ℙ μ := by
+    uniformPDF μ s =ᵐ[μ] pdf X ℙ μ := by
   unfold uniformPDF
   exact Filter.EventuallyEq.trans (pdf.IsUniform.pdf_eq hs hu).symm (ae_eq_refl _)
 
 /-- Alternative way of writing the uniformPDF. -/
 lemma uniformPDF_ite {s : Set E} {x : E} :
-    @uniformPDF _ _ μ s x = if x ∈ s then (μ s)⁻¹ else 0 := by
+    uniformPDF μ s x = if x ∈ s then (μ s)⁻¹ else 0 := by
   unfold uniformPDF
   unfold Set.indicator
   rename_i inst x_1
