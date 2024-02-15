@@ -6,13 +6,14 @@ Authors: Josha Dekker
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 /-!
-# The convolution of measures
+# The multiplicative and additive convolution of measures
 
-In this file we define and prove properties about the convolution of two measures
+In this file we define and prove properties about the convolutions of two measures
 
-## Main definition
+## Main definitions
 
-* `MeasureTheory.Measure.conv`: The convolution of two measures.
+* `MeasureTheory.Measure *`: The multiplicative convolution of two measures.
+* `MeasureTheory.Measure.conv`: The additive convolution of two measures.
 
 ## Main results
 
@@ -29,73 +30,90 @@ namespace MeasureTheory
 
 namespace Measure
 
-/-- Convolutions of measures. They are defined for arbitrary measures on a monoid M that is also
-a measurable space. TODO: should get a to_additive version for AddMonoids -/
-def conv {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M) (ν : Measure M) :
+variable {M : Type*} [Monoid M] [MeasurableSpace M]
+
+/-- Multiplicative convolution of measures. They are defined for arbitrary measures on a monoid M
+  that is also a measurable space.-/
+@[to_additive conv]
+noncomputable def mconv (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (Measure.prod μ ν)
 
 /-- Scoped notation for the convolution of measures. -/
+scoped[MeasureTheory] infix:80 " * " => MeasureTheory.Measure.mconv
 scoped[MeasureTheory] infix:80 " * " => MeasureTheory.Measure.conv
 
 -- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
-theorem one_convolution {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
-    (μ : Measure M) [SFinite μ] : (Measure.dirac 1).conv μ = μ := by
-  unfold conv
+@[to_additive]
+theorem dirac_one_mconv [MeasurableMul₂ M]
+    (μ : Measure M) [SFinite μ] : ((Measure.dirac 1) : Measure M) * μ = μ := by
+  unfold mconv
   rw [MeasureTheory.Measure.dirac_prod]
   rw [map_map]
   simp only [Function.comp_def, one_mul, map_id']
   all_goals { measurability }
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/
-theorem convolution_one {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
-    (μ : Measure M) [SFinite μ] : μ.conv (Measure.dirac 1) = μ := by
-  unfold conv
+@[to_additive]
+theorem mconv_dirac_one [MeasurableMul₂ M]
+    (μ : Measure M) [SFinite μ] : μ * ((Measure.dirac 1) : Measure M) = μ := by
+  unfold mconv
   rw [MeasureTheory.Measure.prod_dirac, map_map]
   simp only [Function.comp_def, mul_one, map_id']
   all_goals { measurability }
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
-theorem convolution_zero {M : Type*} [Monoid M] [MeasurableSpace M]
+@[to_additive conv_zero]
+theorem mconv_zero
     (μ : Measure M) : (0 : Measure M) * μ = (0 : Measure M) := by
-  unfold conv
+  unfold mconv
   simp
 
 /-- Convolution of a measure μ with the zero measure returns the zero measure. -/
-theorem zero_convolution {M : Type*} [Monoid M] [MeasurableSpace M]
+@[to_additive zero_conv]
+theorem zero_mconv
     (μ : Measure M) : μ * (0 : Measure M) = (0 : Measure M) := by
-  unfold conv
+  unfold mconv
   simp
 
-theorem convolution_add {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+@[to_additive conv_add]
+theorem mconv_add [MeasurableMul₂ M]
     (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ] [SFinite ν] [SFinite ρ]:
     μ * (ν + ρ) = μ * ν + μ * ρ := by
-  unfold conv
+  unfold mconv
   rw [prod_add, map_add]
   measurability
 
-theorem add_convolution {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+@[to_additive add_conv]
+theorem add_mconv [MeasurableMul₂ M]
     (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ] [SFinite ν] [SFinite ρ]:
     (μ + ν) * ρ = μ * ρ + ν * ρ := by
-  unfold conv
+  unfold mconv
   rw [add_prod, map_add]
   measurability
 
   /-- Convolution of SFinite maps is SFinite. -/
-theorem sfinite_convolution_of_sfinite {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M)
+@[to_additive sfinite_conv_of_sfinite]
+theorem sfinite_mconv_of_sfinite (μ : Measure M)
     (ν : Measure M) [SFinite μ] [SFinite ν] : SFinite (μ * ν) :=
   instSFiniteMap (Measure.prod μ ν) fun x ↦ x.1 * x.2
 
 /-- To get commutativity, we need the underlying multiplication to be commutative. -/
-theorem convolution_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+@[to_additive conv_comm]
+theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M]
     (μ : Measure M) (ν : Measure M) [SFinite μ] [SFinite ν] : μ * ν = ν * μ := by
-  unfold conv
+  unfold mconv
   rw [← prod_swap, map_map]
   · simp [Function.comp_def, mul_comm]
   all_goals { measurability }
 
-theorem finite_of_finite_convolution {M : Type*} [Monoid M] [MeasurableSpace M] (μ : Measure M)
+@[to_additive finite_of_finite_conv]
+instance finite_of_finite_mconv (μ : Measure M)
     (ν : Measure M) [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteMeasure (μ * ν) := by
-have h : (μ * ν) Set.univ < ⊤ := by
-  unfold conv
-  exact IsFiniteMeasure.measure_univ_lt_top
-exact { measure_univ_lt_top := h}
+  have h : (μ * ν) Set.univ < ⊤ := by
+    unfold mconv
+    exact IsFiniteMeasure.measure_univ_lt_top
+  exact { measure_univ_lt_top := h}
+
+end Measure
+
+end MeasureTheory
