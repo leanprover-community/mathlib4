@@ -19,7 +19,12 @@ In the case of an `EMetricSpace` we show an `IsometryEquiv` between the points:
 
 ## Implementation notes
 
-See the [Zulip discussion](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Euclidean.20Geometry)
+After considering two possible approaches to defining congruence — either based on equal pairwise
+distances or the existence of an isometric equivalence — we have opted for the broader concept of
+equal pairwise distances. This notion is commonly employed in the literature across various metric
+spaces that lack an isometric equivalence.
+
+For more details see the [Zulip discussion](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Euclidean.20Geometry).
 
 ## Notation
 
