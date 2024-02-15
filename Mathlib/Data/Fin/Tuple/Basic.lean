@@ -979,6 +979,11 @@ theorem extractNth_insertNth (i : Fin (n + 1)) (x : α i) (p : ∀ j : Fin n, α
     extractNth i (i.insertNth x p) = (x, p) := by
   simp [extractNth]
 
+@[simp]
+theorem insertNth_extractNth (i : Fin (n + 1)) (f : ∀ j, α j) :
+    i.insertNth (extractNth i f).1 (extractNth i f).2 = f := by
+  simp [Fin.extractNth, Fin.insertNth_eq_iff]
+
 end InsertNth
 
 section Find

@@ -292,8 +292,8 @@ def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
     (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
   toFun f := i.extractNth f
   invFun f := i.insertNth f.1 f.2
-  left_inv f := by simp [Fin.extractNth, Fin.insertNth_eq_iff]
-  right_inv f := by simp only [Fin.extractNth_insertNth]
+  left_inv g := by simp
+  right_inv f := by simp
 #align equiv.pi_fin_succ_above_equiv Equiv.piFinSuccAbove
 #align equiv.pi_fin_succ_above_equiv_apply Equiv.piFinSuccAbove_apply
 #align equiv.pi_fin_succ_above_equiv_symm_apply Equiv.piFinSuccAbove_symm_apply
