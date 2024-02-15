@@ -42,8 +42,8 @@ def ofCardinalInter (hc : 2 < c) (l : Set (Set α))
         have : 1 < c := by
           apply lt_trans _ hc
           norm_num
-        simp_all only [mem_singleton_iff, insert_eq_of_mem, Cardinal.mk_fintype, Fintype.card_ofSubsingleton,
-          Nat.cast_one]
+        simp_all only [mem_singleton_iff, insert_eq_of_mem, Cardinal.mk_fintype,
+          Fintype.card_ofSubsingleton,Nat.cast_one]
       · rw [Cardinal.mk_insert, Cardinal.mk_singleton]
         · exact lt_of_eq_of_lt one_add_one_eq_two hc
         · exact h
@@ -58,12 +58,13 @@ def ofCardinalUnion (hc : 2 < c) (p : Set α → Prop)
   rw [mem_setOf_eq, compl_sInter]
   exact hUnion (compl '' S) (lt_of_le_of_lt Cardinal.mk_image_le hSc) (ball_image_iff.2 hSp)
 
--- Of course, this would generalise to the to-be-added CardinalInterFilter under a suitable definition for these.
+-- TO DO: Generalises, CardinalInterFilter generalisation of CountableInterFilter is in another PR.
 instance countableInter_ofCardinalnter (hc : Cardinal.aleph0 < c) (l : Set (Set α))
     (hp : ∀ S : Set (Set α), (Cardinal.mk S < c) → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) :
-    CountableInterFilter (Filter.ofCardinalInter ((Cardinal.nat_lt_aleph0 2).trans hc) l hp h_mono) where
-  countable_sInter_mem := fun S hS a ↦ hp S (lt_of_le_of_lt (Countable.le_aleph0 hS) hc) a
+    CountableInterFilter (Filter.ofCardinalInter ((Cardinal.nat_lt_aleph0 2).trans hc) l hp h_mono)
+  where
+    countable_sInter_mem := fun S hS a ↦ hp S (lt_of_le_of_lt (Countable.le_aleph0 hS) hc) a
 
 /-- The filter defined by all sets that have a complement with at most cardinality `c`. For a union
 of `c` sets of `c` elements to have `c` elements, we need that `c` is a regular cardinal. -/
