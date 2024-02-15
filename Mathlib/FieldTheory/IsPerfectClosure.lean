@@ -15,18 +15,38 @@ ring homomorphism `i : K →+* L`, as well as its basic properties.
 
 ## Main definitions
 
-- `IsPerfectClosure`: a ring homomorphism `i : K →+* L` makes `L` a perfect closure of `K`, if `L`
-  is perfect, `L / K` is purely inseparable, and the kernel of `i` is contained in the
-  `p`-nilradical of `K`.
+- `pNilradical`: the `p`-nilradical of a ring is an ideal consists of elements `x` such that
+  `x ^ p ^ n = 0` for some `n` (`mem_pNilradical`). It is equal to the nilradical if `p > 1`
+  (`pNilradical_eq_nilradical`), otherwise it is equal to zero (`pNilradical_eq_bot`).
 
-- `PerfectRing.lift`: a map from a purely inseparable ring extension `L` of `K` to a perfect ring
-  `M` over `K`.
+- `IsPRadical`: a ring homomorphism `i : K →+* L` of characteristic `p` rings is called `p`-radical,
+  if or any element `x` of `L` there is `n : ℕ` such that `x ^ (p ^ n)` is contained in `K`,
+  and the kernel of `i` is contained in the `p`-nilradical of `K`.
+  A generalization of purely inseparable extension for fields.
 
-- `IsPerfectClosure.equiv`: an isomorphism between two perfect closures.
+- `IsPerfectClosure`: a ring homomorphism `i : K →+* L` of characteristic `p` rings makes `L` a
+  perfect closure of `K`, if `L` is perfect, and `i` is `p`-radical.
+
+- `PerfectRing.lift`: if a `p`-radical ring homomorphism `K →+* L` is given, `M` is a perfect ring,
+  then any ring homomorphism `K →+* M` can be lifted to `L →+* M`.
+  This is similar to `IsAlgClosed.lift` and `IsSepClosed.lift`.
+
+- `PerfectRing.liftEquiv`: `K →+* M` is one-to-one correspondence to `L →+* M`,
+  given by `PerfectRing.lift`. This is a generalization to `PerfectClosure.lift`.
+
+- `IsPerfectClosure.equiv`: perfect closures of a ring are isomorphic.
 
 ## Main results
 
+- `IsPRadical.trans`: composition of `p`-radical ring homomorphisms is also `p`-radical.
+
 - `PerfectClosure.isPerfectClosure`: the absolute perfect closure `PerfectClosure` is a
+  perfect closure.
+
+- `IsPRadical.isPurelyInseparable`, `IsPurelyInseparable.isPRadical`: `p`-radical and
+  purely inseparable are equivalent for fields.
+
+- `perfectClosure.isPerfectClosure`: the (relative) perfect closure `perfectClosure` is a
   perfect closure.
 
 ## Tags
@@ -122,6 +142,7 @@ instance IsPRadical.of_id : IsPRadical (RingHom.id K) p where
     rw [RingHom.mem_ker, RingHom.id_apply] at h
     exact h ▸ Ideal.zero_mem _
 
+/-- Composition of `p`-radical ring homomorphisms is also `p`-radical. -/
 theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
     IsPRadical (f.comp i) p where
   pow_mem' x := by
@@ -185,9 +206,9 @@ theorem PerfectRing.lift_aux (x : L) : ∃ y : ℕ × K, i y.2 = x ^ p ^ y.1 := 
   exact ⟨(n, y), h⟩
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
-`i` is "purely inseparable" and `M` is a perfect ring, then one can define a map
-`L → M` which maps an element `x` of `L` to `y ^ (p ^ -n)` if `x ^ (p ^ n)` is equal to some
-element `y` of `K`. -/
+`i` is `p`-radical (in fact only the `IsPRadical.pow_mem` is required) and `M` is a perfect ring,
+then one can define a map `L → M` which maps an element `x` of `L` to `y ^ (p ^ -n)` if
+`x ^ (p ^ n)` is equal to some element `y` of `K`. -/
 def PerfectRing.liftAux (x : L) : M :=
   (iterateFrobeniusEquiv M p (Classical.choose (lift_aux i p x)).1).symm
     (j (Classical.choose (lift_aux i p x)).2)
@@ -222,8 +243,7 @@ section PerfectRing.lift
 variable [PerfectRing M p] [IsPRadical i p]
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
-`i` is "purely inseparable" and whose kernel is contained in the `p`-nilradical of `K`, and `M` is a
-perfect ring, then `PerfectRing.liftAux` is well-defined. -/
+`i` is `p`-radical, and `M` is a perfect ring, then `PerfectRing.liftAux` is well-defined. -/
 theorem PerfectRing.liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n) :
     liftAux i j p x = (iterateFrobeniusEquiv M p n).symm (j y) := by
   rw [liftAux]
@@ -242,9 +262,8 @@ theorem PerfectRing.liftAux_apply (x : L) (n : ℕ) (y : K) (h : i y = x ^ p ^ n
     add_comm m, add_comm m, pow_add, pow_mul, pow_add, pow_mul, ← sub_pow_expChar_pow, h, map_zero]
 
 /-- If `i : K →+* L` and `j : K →+* M` are ring homomorphisms of characteristic `p` rings, such that
-`i` is "purely inseparable", the kernel of `i` is contained in the `p`-nilradical of `K`, and `M` is
-a perfect ring, then `PerfectRing.liftAux` is a ring homomorphism. This is similar to
-`IsAlgClosed.lift` and `IsSepClosed.lift`. -/
+`i` is `p`-radical, and `M` is a perfect ring, then `PerfectRing.liftAux`
+is a ring homomorphism. This is similar to `IsAlgClosed.lift` and `IsSepClosed.lift`. -/
 def PerfectRing.lift : L →+* M where
   toFun := liftAux i j p
   map_one' := by simp [liftAux_apply i j p 1 0 1 (by rw [one_pow, map_one])]
@@ -304,8 +323,8 @@ theorem PerfectRing.comp_lift : lift i (f.comp i) p = f :=
 
 variable (M) in
 /-- If `i : K →+* L` is a homomorphisms of characteristic `p` rings, such that
-`i` is "purely inseparable", the kernel of `i` is contained in the `p`-nilradical of `K`,
-and `M` is a perfect ring of characteristic `p`, then `K →+* M` is one-to-one correspondence to
+`i` is `p`-radical, and `M` is a perfect ring of characteristic `p`,
+then `K →+* M` is one-to-one correspondence to
 `L →+* M`, given by `PerfectRing.lift`. This is a generalization to `PerfectClosure.lift`. -/
 def PerfectRing.liftEquiv : (K →+* M) ≃ (L →+* M) where
   toFun j := lift i j p
