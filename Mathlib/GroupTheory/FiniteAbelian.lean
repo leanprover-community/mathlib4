@@ -144,7 +144,7 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
 
 /-- **Structure theorem of finite abelian groups** : Any finite abelian group is a direct sum of
 some `ZMod (q i)` for some prime powers `q i > 1`. -/
-lemma AddCommGroup.equiv_directSum_zmod_of_finite' (G : Type*) [AddCommGroup G] [Finite G] :
+lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddCommGroup G] [Finite G] :
     ∃ (ι : Type) (_ : Fintype ι) (n : ι → ℕ),
       (∀ i, 1 < n i) ∧ Nonempty (G ≃+ ⨁ i, ZMod (n i)) := by
   classical
