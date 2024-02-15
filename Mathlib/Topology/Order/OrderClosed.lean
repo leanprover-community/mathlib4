@@ -112,6 +112,10 @@ theorem isClosed_Iic {a : α} : IsClosed (Iic a) :=
 #align is_closed_Iic isClosed_Iic
 #align is_closed_le' isClosed_Iic
 
+@[deprecated] -- 2024-02-15
+alias ClosedIicTopology.isClosed_le' := ClosedIicTopology.isClosed_Iic
+export ClosedIicTopology (isClosed_le')
+
 instance : ClosedIciTopology αᵒᵈ where
   isClosed_Ici _ := isClosed_Iic (α := α)
 
@@ -337,6 +341,10 @@ theorem isClosed_Ici {a : α} : IsClosed (Ici a) :=
   ClosedIciTopology.isClosed_Ici a
 #align is_closed_Ici isClosed_Ici
 #align is_closed_ge' isClosed_Ici
+
+@[deprecated] -- 2024-02-15
+alias ClosedIciTopology.isClosed_ge' := ClosedIciTopology.isClosed_Ici
+export ClosedIciTopology (isClosed_ge')
 
 instance : ClosedIicTopology αᵒᵈ where
   isClosed_Iic _ := isClosed_Ici (α := α)
