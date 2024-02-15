@@ -3,8 +3,6 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.FieldTheory.Subfield
 import Mathlib.FieldTheory.Tower
 
 #align_import field_theory.intermediate_field from "leanprover-community/mathlib"@"c596622fccd6e0321979d94931c964054dea2d26"
@@ -374,25 +372,13 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
   rfl
 #align intermediate_field.coe_smul IntermediateField.coe_smul
 
-/- More general form of `IntermediateField.algebra`.
-
-This instance should have low priority since it is slow to fail:
-before failing, it will cause a search through all `SMul K' K` instances,
-which can quickly get expensive.
--/
-instance (priority := 500) algebra' {K'} [CommSemiring K'] [SMul K' K] [Algebra K' L]
-    [IsScalarTower K' K L] :
-    Algebra K' S :=
-  S.toSubalgebra.algebra'
-#align intermediate_field.algebra' IntermediateField.algebra'
+#noalign intermediate_field.algebra'
 
 instance algebra : Algebra K S :=
   inferInstanceAs (Algebra K S.toSubsemiring)
 #align intermediate_field.algebra IntermediateField.algebra
 
-instance toAlgebra {R : Type*} [Semiring R] [Algebra L R] : Algebra S R :=
-  S.toSubalgebra.toAlgebra
-#align intermediate_field.to_algebra IntermediateField.toAlgebra
+#noalign intermediate_field.to_algebra
 
 @[simp] lemma algebraMap_apply (x : S) : algebraMap S L x = x := rfl
 
@@ -611,6 +597,12 @@ theorem toSubalgebra_injective :
   rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
 #align intermediate_field.to_subalgebra_injective IntermediateField.toSubalgebra_injective
 
+theorem map_injective (f : L →ₐ[K] L'):
+    Function.Injective (map f) := by
+  intro _ _ h
+  rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,
+    (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_injective.eq_iff] at h
+
 variable (S)
 
 theorem set_range_subset : Set.range (algebraMap K L) ⊆ S :=
@@ -647,6 +639,9 @@ instance hasLift {F : IntermediateField K L} :
     CoeOut (IntermediateField K F) (IntermediateField K L) :=
   ⟨lift⟩
 #align intermediate_field.has_lift IntermediateField.hasLift
+
+theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
+  map_injective F.val
 
 section RestrictScalars
 

@@ -23,7 +23,7 @@ namespace Function
 
 section
 
-variable {α β γ : Sort _} {f : α → β}
+variable {α β γ : Sort*} {f : α → β}
 
 /-- Evaluate a function at an argument. Useful if you want to talk about the partially applied
   `Function.eval x : (∀ x, β x) → β x`. -/
@@ -87,7 +87,7 @@ theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
   ⟨@I _ _, congr_arg f⟩
 #align function.injective.eq_iff Function.Injective.eq_iff
 
-theorem Injective.beq_eq [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β]
+theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
     (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
   by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
 
@@ -796,6 +796,20 @@ theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ �
 #align function.bijective.comp_right Function.Bijective.comp_right
 
 end Extend
+
+namespace FactorsThrough
+
+protected theorem rfl {f : α → β} : FactorsThrough f f := fun _ _ ↦ id
+
+theorem comp_left {f : α → β} {g : α → γ}  (h : FactorsThrough g f) (g' : γ → δ) :
+    FactorsThrough (g' ∘ g) f := fun _x _y hxy ↦
+  congr_arg g' (h hxy)
+
+theorem comp_right {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : δ → α) :
+    FactorsThrough (g ∘ g') (f ∘ g') := fun _x _y hxy ↦
+  h hxy
+
+end FactorsThrough
 
 theorem uncurry_def {α β γ} (f : α → β → γ) : uncurry f = fun p ↦ f p.1 p.2 :=
   rfl
