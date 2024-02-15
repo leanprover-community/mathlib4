@@ -354,16 +354,14 @@ theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
 /-- If a linear map preserves the quadratic forms and is surjective, then the algebra
 maps it induces between Clifford algebras is also surjective.-/
 lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
-    (hf : Function.Surjective f) : Function.Surjective (CliffordAlgebra.map f) := by
-  rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, Submodule.eq_top_iff']
-  intro y
-  apply CliffordAlgebra.induction (C := fun y ↦ y ∈ Submodule.map (CliffordAlgebra.map f) ⊤)
-  all_goals (simp only [Submodule.map_top, LinearMap.mem_range, forall_exists_index])
-  · exact fun r ↦ ⟨(algebraMap R (CliffordAlgebra Q₁)) r, by simp only [AlgHom.commutes]⟩
-  · exact fun y ↦ let ⟨x, hx⟩ := hf y; ⟨CliffordAlgebra.ι Q₁ x,
-      by simp only [map_apply_ι, hx]⟩
-  · exact fun _ _ x  hx x' hx' ↦ ⟨x * x', by simp only [map_mul, hx, hx']⟩
-  · exact fun _ _ x hx x' hx' ↦ ⟨x + x', by simp only [map_add, hx, hx']⟩
+    (hf : Function.Surjective f) : Function.Surjective (CliffordAlgebra.map f) :=
+  CliffordAlgebra.induction
+  (fun r ↦ ⟨(algebraMap R (CliffordAlgebra Q₁)) r, by simp only [AlgHom.commutes]⟩)
+  (fun y ↦ let ⟨x, hx⟩ := hf y; ⟨CliffordAlgebra.ι Q₁ x, by simp only [map_apply_ι, hx]⟩)
+  (fun _ _ hy hy' ↦ let ⟨x, hx⟩ := hy; let ⟨x', hx'⟩ := hy'
+                           ⟨x * x' , by simp only [map_mul, hx, hx']⟩)
+  (fun _ _ hy hy' ↦ let ⟨x, hx⟩ := hy; let ⟨x', hx'⟩ := hy'
+                           ⟨x + x' , by simp only [map_add, hx, hx']⟩)
 
 /-- Two `CliffordAlgebra`s are equivalent as algebras if their quadratic forms are
 equivalent. -/
