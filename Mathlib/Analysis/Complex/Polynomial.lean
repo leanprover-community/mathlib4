@@ -130,7 +130,7 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
     · exact nodup_roots ((separable_map (algebraMap ℚ ℂ)).mpr p_irr.separable)
   have h2 : Fintype.card p.Gal = Fintype.card (galActionHom p ℂ).range :=
     Fintype.card_congr (MonoidHom.ofInjective (galActionHom_injective p ℂ)).toEquiv
-  let conj := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
+  let conj' := restrict p ℂ (Complex.conjAe.restrictScalars ℚ)
   refine'
     ⟨galActionHom_injective p ℂ, fun x =>
       (congr_arg (Membership.mem x) (show (galActionHom p ℂ).range = ⊤ from _)).mpr
@@ -140,7 +140,7 @@ theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible
   · rw [h1]
     convert prime_degree_dvd_card p_irr p_deg using 1
     convert h2.symm
-  · exact ⟨conj, rfl⟩
+  · exact ⟨conj', rfl⟩
   · rw [← Equiv.Perm.card_support_eq_two]
     apply Nat.add_left_cancel
     rw [← p_roots, ← Set.toFinset_card (rootSet p ℝ), ← Set.toFinset_card (rootSet p ℂ)]
