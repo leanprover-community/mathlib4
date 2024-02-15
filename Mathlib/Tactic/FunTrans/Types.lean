@@ -5,6 +5,8 @@ Authors: Tomas Skrivan
 -/
 import Lean.Meta.Tactic.Simp.Types
 
+import Mathlib.Tactic.FunProp.Types
+
 /-!
 ## `funTrans`
 -/
@@ -13,6 +15,13 @@ namespace Mathlib
 open Lean Meta
 
 namespace Meta.FunTrans
+
+
+structure Config where
+  funPropConfig : FunProp.Config := {}
+deriving Inhabited
+
+initialize funTransConfig : IO.Ref Config ← IO.mkRef {}
 
 @[extern "mathlib_fun_trans"]
 opaque funTrans (e : Expr) : SimpM Simp.Step

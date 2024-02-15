@@ -142,23 +142,22 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
               thms.push e}
   }
 
+
 /-- -/
-def getTheoremsForFunction (funName : Name) (funTransName : Name) (nargs : Option Nat) :
+def getTheoremsForFunction (funName : Name) (funTransName : Name) (nargs : Option Nat) (mainArgs : Option (Array ℕ)) :
     CoreM (Array FunctionTheorem) := do
 
   let thms := (functionTheoremsExt.getState (← getEnv)).theorems.findD funName {}
               |>.findD funTransName #[]
 
-  trace[Meta.Tactic.fun_trans] "candidate theorems for {funName}: {thms.map fun thm => thm.thmName}"
+  let thms := thms
+      |>.filter (fun thm =>
+         (nargs.map (fun n => (thm.transAppliedArgs ≤ n : Bool))).getD true
+         &&
+         (mainArgs.map (fun args => FunProp.isOrderedSubsetOf args thm.mainArgs)).getD true)
+      |>.qsort (fun t t' => t'.transAppliedArgs < t.transAppliedArgs)
 
-
-  match nargs with
-  | none => return thms
-  | some n =>
-    let thms := thms
-        |>.filter (fun thm => thm.transAppliedArgs ≤ n)
-        |>.qsort (fun t t' => t'.transAppliedArgs < t.transAppliedArgs)
-    return thms
+  return thms
 
 
 

@@ -43,6 +43,7 @@ structure Config where
   maxTransitionDepth := 20
   /-- Stack of used theorem, used to prevent trivial loops. -/
   thmStack    : List Origin := []
+deriving Inhabited 
 
 /-- -/
 structure State where

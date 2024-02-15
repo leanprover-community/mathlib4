@@ -9,6 +9,7 @@ import Std.Tactic.Exact
 
 import Mathlib.Tactic.FunTrans.Theorems
 import Mathlib.Tactic.FunTrans.Types
+import Mathlib.Tactic.FunProp.Core
 
 /-!
 ## `funTrans` core tactic algorithm
@@ -18,6 +19,18 @@ namespace Mathlib
 open Lean Meta Qq
 
 namespace Meta.FunTrans
+
+def runFunProp (e : Expr) : SimpM (Option Expr) := do
+  let cache := (← get).cache
+  modify (fun s => { s with cache := {}}) -- hopefully this prevent duplicating the cache
+  let config : FunProp.Config := (← funTransConfig.get).funPropConfig
+  let state  : FunProp.State := { cache := cache }
+  let (result?, state) ← FunProp.funProp e |>.run config state
+  modify (fun simpState => { simpState with cache := state.cache })
+
+  match result? with
+  | .some r => return r.proof
+  | .none => return .none
 
 
 def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo) : SimpM Bool := do
@@ -37,6 +50,19 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo) :
       if (← isClass? type).isSome then
         if (← synthesizeInstance x type) then
           continue
+
+      trace[Meta.Tactic.fun_trans] "synthesizing arg {type}"
+
+      if (← isProp type) then
+
+        trace[Meta.Tactic.fun_trans] "running fun_prop on {type}"
+        if let .some r ← runFunProp type then
+          x.mvarId!.assign r
+          trace[Meta.Tactic.fun_trans] "success"
+          continue
+        else
+          trace[Meta.Tactic.fun_trans] "failed"
+
 
       trace[Meta.Tactic.fun_trans.discharge] "{← ppOrigin thmId}, failed to discharge hypotheses{indentExpr type}"
       return false
@@ -78,11 +104,11 @@ private def ppOrigin' (origin : Origin) : MetaM String := do
 
 
 def tryTheoremCore (lhs : Expr) (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr) (thmId : Origin) : SimpM (Option Simp.Result) := do
-  withTraceNode `Meta.Tactic.fun_prop
+  withTraceNode `Meta.Tactic.fun_trans
     (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
 
   unless (← isDefEq lhs e) do
-    trace[Meta.Tactic.fun_prop.unify] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
+    trace[Meta.Tactic.fun_trans.unify] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
 
   if ¬(← synthesizeArgs thmId xs bis) then
     return none
@@ -106,7 +132,7 @@ def tryTheoremWithHint (e : Expr) (thmName : Name) (hint : Array (Nat × Expr)) 
     for (id,v) in hint do
       xs[id]!.mvarId!.assignIfDefeq v
   catch _ =>
-    trace[Meta.Tactic.fun_prop.discharge]    "failed to use `{← ppOrigin (.decl thmName)}` on `{e}`"
+    trace[Meta.Tactic.fun_trans.discharge]    "failed to use `{← ppOrigin (.decl thmName)}` on `{e}`"
     return .none
 
   let extraArgsNum := e.getAppNumArgs - lhs.getAppNumArgs
@@ -155,7 +181,7 @@ def applyCompRule (funTransDecl : FunTransDecl) (e f g : Expr) : SimpM Simp.Step
 
   for thm in thms do
     let .comp id_f id_g := thm.thmArgs | continue
-
+    trace[Meta.Tactic.fun_trans] "trying comp theorem {thm.thmName}"
     if let .some r ← tryTheoremWithHint e thm.thmName #[(id_f,f),(id_g,g)] then
       return .visit r
 
@@ -183,7 +209,7 @@ def applyPiRule (funTransDecl : FunTransDecl) (e f : Expr) : SimpM Simp.Step := 
 def letCase (funTransDecl : FunTransDecl) (e f : Expr) : SimpM Simp.Step := do
   trace[Meta.Tactic.fun_trans.step] "let case"
 
-  let .lam xName xType (.letE yName yType yVal yBody dep) xBi := f | return .continue
+  let .lam xName xType (.letE yName yType yVal yBody _) xBi := f | return .continue
 
   let f := Expr.lam xName xType (.lam yName yType yBody .default) xBi
   let g := Expr.lam xName xType yVal .default
@@ -205,12 +231,18 @@ def constAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.Funct
 
   let .some funName ← fData.getFnConstName? | panic "fun_trans bug: incorrectly calling constAppCase!"
 
-  let thms ← getTheoremsForFunction funName funTransDecl.funTransName e.getAppNumArgs
+  let thms ← getTheoremsForFunction funName funTransDecl.funTransName e.getAppNumArgs fData.mainArgs
 
   trace[Meta.Tactic.fun_trans] "candidate theorems for {funName}: {thms.map fun thm => thm.thmName}"
 
 
   for thm in thms do
+    trace[Meta.Tactic.fun_trans] "trying {thm.thmName}"
+
+    if thm.form == .uncurried then
+      if let .some (f',g') ← fData.nontrivialDecomposition then
+         trace[Meta.Tactic.fun_trans] "succesfully decomposed"
+         return ← applyCompRule funTransDecl e f' g'
 
     if let .some r ← tryTheoremWithHint e thm.thmName #[] then
       return .visit r
@@ -229,13 +261,14 @@ partial def funTransImpl (e : Expr) : SimpM Simp.Step := do
   trace[Meta.Tactic.fun_trans.step] s!"runing fun_trans on {← ppExpr e}"
 
 
+  let f ← FunProp.funPropNormalizeFun f
   -- somehow normalize f
   -- that means unfold head functions like `id`, `Function.comp` or `HasUncurry.unucurry`
 
   -- bubble leading lets infront of function transformationx
   if f.isLet then
     return ← FunProp.letTelescope f fun xs b => do
-      trace[Meta.Tactic.fun_prop.step] "moving let bindings out"
+      trace[Meta.Tactic.fun_trans.step] "moving let bindings out"
       let e' := e.setArg funTransDecl.funArgId b
       return .visit { expr := ← mkLambdaFVars xs e' }
 

@@ -88,16 +88,16 @@ theorem deriv_add_at {α β} [Add β] (f g : α → β) (x : α) :
 
 @[fun_trans]
 theorem deriv_mul {α β} [Add β] [Mul β] (f g : α → β) :
-    deriv (fun x => f x + g x)
+    deriv (fun x => f x * g x)
     =
-    fun x dx => deriv f x dx + deriv g x dx := sorry
+    fun x dx => deriv f x dx * g x + deriv g x dx * f x := sorry
 
 
-@[fun_trans]
-theorem deriv_mul_at {α β} [Add β] [Mul β] (f g : α → β) (x : α) :
-    deriv (fun x => f x * g x) x
-    =
-    fun dx => deriv f x dx * g x + deriv g x dx * f x := sorry
+-- @[fun_trans]
+-- theorem deriv_mul_at {α β} [Add β] [Mul β] (f g : α → β) (x : α) :
+--     deriv (fun x => f x * g x) x
+--     =
+--     fun dx => deriv f x dx * g x + deriv g x dx * f x := sorry
 
 
 
@@ -150,16 +150,44 @@ example (f : β → γ) (g : α → β) (x dx) :
 
 
 
-example (f : α → α → α) :
-    deriv (fun x : α => let y1 := f x x; let y2 := f x y1; let y3 := f x y2; f x y3 ) = fun x dx => sorry := by
+example [Add α] [Mul α] :
+    deriv (fun x : α => let y1 := x * x; let y2 := x * y1; let y3 := x * y2; x * y3 )
+    =
+    fun x dx ↦ dx * (x * (x * (x * x))) + (dx * (x * (x * x)) + (dx * (x * x) + (dx * x + dx * x) * x) * x) * x := by
 
   conv =>
     lhs
     simp only [fun_trans]
 
 
+example [Add α] [Mul α] :
+    deriv (fun x : α => let y1 := x * x; let y2 := x * y1; let y3 := x * y2; x * y3 )
+    =
+    fun x dx ↦
+        let y := x * x;
+        let dy := dx * x + dx * x;
+        let y_1 := x * y;
+        let dy := dx * y + dy * x;
+        let y := x * y_1;
+        let dy := dx * y_1 + dy * x;
+        dx * y + dy * x := by
+
+  conv =>
+    lhs
+    simp (config := {zeta:=false}) only [fun_trans]
+
+
 example (f : α → α → α) :
-    deriv (fun x : α => let y1 := f x x; let y2 := f x y1; let y3 := f x y2; f x y3 ) = fun x dx => sorry := by
+    deriv (fun x : α => let y1 := f x x; let y2 := f x y1; let y3 := f x y2; f x y3 )
+    =
+    fun x dx ↦
+        let y := f x x;
+        let dy := deriv (fun x0x1 ↦ f x0x1.fst x0x1.snd) (x, x) (dx, dx);
+        let y_1 := f x y;
+        let dy := deriv (fun x0x1 ↦ f x0x1.fst x0x1.snd) (x, y) (dx, dy);
+        let y := f x y_1;
+        let dy := deriv (fun x0x1 ↦ f x0x1.fst x0x1.snd) (x, y_1) (dx, dy);
+        deriv (fun x0x1 ↦ f x0x1.fst x0x1.snd) (x, y) (dx, dy) := by
 
   conv =>
     lhs
