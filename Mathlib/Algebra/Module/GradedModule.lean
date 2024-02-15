@@ -337,6 +337,121 @@ lemma proj_smul_mem_right {i j : ℕ} (a : A) (m : M) (hm : m ∈ ℳ i) :
     · rfl
     · linarith
 
+lemma proj_smul_mem_left {i j : ℕ} (a : A) (m : M) (ha : a ∈ 𝒜 i) :
+    GradedModule.proj ℳ j (a • m) =
+    if i ≤ j
+    then a • GradedModule.proj ℳ (j - i) m
+    else 0 := by
+  by_cases a_ne_zero : a = 0
+  · subst a_ne_zero
+    rw [zero_smul, zero_smul, map_zero, ite_self]
+
+  classical
+  letI := isModule 𝒜 ℳ
+  rw [← DirectSum.sum_support_decompose ℳ (a • m), map_sum, Finset.sum_eq_single j,
+    proj_apply, decompose_of_mem_same (hx := SetLike.coe_mem _)]
+  pick_goal 2
+  · intro n _ hne; rw [proj_apply, decompose_of_mem_ne (hx := SetLike.coe_mem _) hne]
+  pick_goal 2
+  · intro hj
+    simpa using hj
+
+  have eq0 : decompose ℳ (a • m) = a • decompose ℳ m := (linearEquiv 𝒜 ℳ).1.map_smul a m
+  rw [eq0]
+  show ((DirectSum.decompose 𝒜 a • DirectSum.decompose ℳ m) j : M) = _
+  conv_lhs => rw [← DirectSum.sum_support_decompose ℳ m,
+    ← DirectSum.sum_support_decompose 𝒜 a, DirectSum.decompose_sum,
+    Finset.sum_smul, DirectSum.decompose_sum]
+
+  simp_rw [Finset.smul_sum]
+
+  rw [calc _
+    _ = ((∑ i in (decompose 𝒜 a).support, ∑ j in (decompose ℳ m).support,
+          decompose 𝒜 (decompose 𝒜 a i) • decompose ℳ (decompose ℳ m j)) j : M) := rfl
+    _ = ((∑ ik in (decompose 𝒜 a).support ×ˢ (decompose ℳ m).support,
+          decompose 𝒜 (decompose 𝒜 a ik.1) • decompose ℳ (decompose ℳ m ik.2)) j : M) := by
+        rw [Finset.sum_product]
+    _ = (∑ ik in (decompose 𝒜 a).support ×ˢ (decompose ℳ m).support,
+          ((decompose 𝒜 (decompose 𝒜 a ik.1) • decompose ℳ (decompose ℳ m ik.2)) j) : ℳ j) := by
+        congr 1
+        exact DFinsupp.finset_sum_apply _ _ _
+    _ = ∑ ik in (decompose 𝒜 a).support ×ˢ (decompose ℳ m).support,
+          ((decompose 𝒜 (decompose 𝒜 a ik.1) • decompose ℳ (decompose ℳ m ik.2)) j : M) := by
+        norm_cast
+    _ = ∑ ik in (decompose 𝒜 a).support ×ˢ (decompose ℳ m).support,
+          ((of (fun i ↦ ℳ i) (ik.1 + ik.2)
+            ⟨(decompose 𝒜 a ik.1 : A) • (decompose ℳ m ik.2 : M), _⟩) j : M) := by
+        refine Finset.sum_congr rfl fun ik _ ↦ ?_
+        simp only [decompose_coe, Gmodule.smul_def, Gmodule.smulAddMonoidHom_apply_of_of,
+          vadd_eq_add, SetLike.coe_eq_coe]
+        rfl
+    _ = ∑ ik in (decompose 𝒜 a).support ×ˢ (decompose ℳ m).support,
+          if ik.1 + ik.2 = j
+          then (decompose 𝒜 a ik.1 : A) • (decompose ℳ m ik.2 : M)
+          else 0 := by
+        refine Finset.sum_congr rfl fun ik _ ↦ ?_
+        rw [DirectSum.coe_of_apply]
+        split_ifs <;> rfl, Finset.sum_ite, Finset.sum_const_zero, add_zero]
+  by_cases hi : i ∈ (decompose 𝒜 a).support
+  pick_goal 2
+  · simp only [DFinsupp.mem_support_toFun, ne_eq, Subtype.ext_iff, decompose_of_mem_same 𝒜 ha,
+      ZeroMemClass.coe_zero, not_not] at hi
+    subst hi
+    simp_rw [decompose_zero, DirectSum.zero_apply, ZeroMemClass.coe_zero, zero_smul]
+    rw [ite_self, Finset.sum_const_zero]
+
+  by_cases hj : j - i ∈ (decompose ℳ m).support
+  pick_goal 2
+  · simp only [DFinsupp.mem_support_toFun, ne_eq, not_not, Subtype.ext_iff,
+      ZeroMemClass.coe_zero] at hj
+    rw [proj_apply, hj, smul_zero, ite_self]
+    convert Finset.sum_empty
+    rw [Finset.eq_empty_iff_forall_not_mem]
+    rintro ⟨i', j'⟩ h
+    simp only [Finset.mem_filter, Finset.mem_product, DFinsupp.mem_support_toFun, ne_eq] at h
+    have hii' : i = i'
+    · by_contra hii'
+      exact h.1.1 <| Subtype.ext <| DirectSum.decompose_of_mem_ne 𝒜 ha hii'
+    subst hii'
+    refine h.1.2 ?_
+    by_cases ineq : i ≤ j
+    · have hjj' : j' = j - i
+      · symm
+        rw [Nat.sub_eq_iff_eq_add ineq, add_comm, h.2]
+      subst hjj'
+      exact Subtype.ext hj
+    · simp only [not_le] at ineq
+      exfalso
+      linarith only [(h.2 : i + j' = j), ineq]
+
+  split_ifs with ineq
+  · trans ∑ ik in {(i, j - i)}, (decompose 𝒜 a ik.1 : A) • (decompose ℳ m ik.2 : M)
+    · refine Finset.sum_congr ?_ fun _ _ ↦ rfl
+      rw [Finset.eq_singleton_iff_unique_mem, Finset.mem_filter, Finset.mem_product]
+      refine ⟨⟨⟨hi, hj⟩, show i + (j - i) = j from Nat.add_sub_of_le ineq⟩, ?_⟩
+      rintro ⟨i', j'⟩ h
+      simp only [Finset.mem_filter, Finset.mem_product, DFinsupp.mem_support_toFun, ne_eq] at h
+      have hii' : i = i'
+      · by_contra hii'
+        exact h.1.1 <| Subtype.ext <| DirectSum.decompose_of_mem_ne 𝒜 ha hii'
+      subst hii'
+      have hjj' : j' = j - i
+      · symm
+        rw [Nat.sub_eq_iff_eq_add ineq, add_comm, h.2]
+      subst hjj'
+      rfl
+    · rw [Finset.sum_singleton, DirectSum.decompose_of_mem_same 𝒜 ha, proj_apply]
+  · convert Finset.sum_empty
+    rw [Finset.eq_empty_iff_forall_not_mem]
+    rintro ⟨i', j'⟩ h
+    simp only [Finset.mem_filter, Finset.mem_product, DFinsupp.mem_support_toFun, ne_eq] at h
+    simp only [not_le] at ineq
+    have hii' : i = i'
+    · by_contra hii'
+      exact h.1.1 <| Subtype.ext <| DirectSum.decompose_of_mem_ne 𝒜 ha hii'
+    subst hii'
+    linarith only [(h.2 : i + j' = j), ineq]
+
 end same_indexing_set
 
 end GradedModule
