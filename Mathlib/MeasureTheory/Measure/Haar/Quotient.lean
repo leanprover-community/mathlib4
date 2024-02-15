@@ -248,7 +248,7 @@ lemma QuotientGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [Norme
     _ = ∫ (x : G ⧸ Γ), g x * (QuotientGroup.automorphize f x) ∂μ_𝓕 := by simp [H₀]
   have H₁ : Integrable ((g ∘ π) * f) μ
   · have : AEStronglyMeasurable (fun (x : G) ↦ g (x : (G ⧸ Γ))) μ
-    · refine (AEStronglyMeasurable.mono' hg ?_).comp_measurable meas_π
+    · refine (hg.mono_ac  ?_).comp_measurable meas_π
       exact h𝓕.absolutelyContinuous_map
     refine Integrable.essSup_smul f_ℒ_1 this ?_
     have hg' : AEStronglyMeasurable (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) μ_𝓕 :=
@@ -294,7 +294,7 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
     _ = ∫ (x : G' ⧸ Γ'), g x * (QuotientAddGroup.automorphize f x) ∂μ_𝓕 := by simp [H₀]
   have H₁ : Integrable ((g ∘ π) * f) μ'
   · have : AEStronglyMeasurable (fun (x : G') ↦ g (x : (G' ⧸ Γ'))) μ'
-    · refine (AEStronglyMeasurable.mono' hg ?_).comp_measurable meas_π
+    · refine (hg.mono_ac ?_).comp_measurable meas_π
       exact h𝓕.absolutelyContinuous_map
     refine Integrable.essSup_smul f_ℒ_1 this ?_
     have hg' : AEStronglyMeasurable (fun x ↦ (‖g x‖₊ : ℝ≥0∞)) μ_𝓕 :=
