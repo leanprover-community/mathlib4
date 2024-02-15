@@ -756,6 +756,10 @@ theorem Icc_self (a : α) : Icc a a = {a} :=
   Set.ext <| by simp [Icc, le_antisymm_iff, and_comm]
 #align set.Icc_self Set.Icc_self
 
+instance instIccUnique : Unique (Set.Icc a a) where
+  default := ⟨a, by simp⟩
+  uniq y := Subtype.ext <| by simpa using y.2
+
 @[simp]
 theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
   refine' ⟨fun h => _, _⟩
