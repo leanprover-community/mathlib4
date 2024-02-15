@@ -576,6 +576,15 @@ theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - 
 
 end Int
 
+section Group
+variable {G : Type*} [Group G]
+
+@[to_additive (attr := simp) abs_zsmul_eq_zero]
+lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
+  rw [← Int.coe_natAbs, zpow_ofNat, pow_natAbs_eq_one]
+
+end Group
+
 section bit0_bit1
 variable {R}
 set_option linter.deprecated false
