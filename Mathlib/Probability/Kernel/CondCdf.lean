@@ -66,27 +66,6 @@ theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
   exact exists_rat_lt x
 #align real.Inter_Iic_rat Real.iInter_Iic_rat
 
--- todo after the port: move to order/filter/at_top_bot
-theorem atBot_le_nhds_bot {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
-    [OrderTopology α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
-  cases subsingleton_or_nontrivial α
-  · simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
-      eq_iff_true_of_subsingleton, imp_true_iff, exists_const]
-  have h : atBot.HasBasis (fun _ : α => True) Iic := @atBot_basis α _ _
-  have h_nhds : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) fun a => Iio a := @nhds_bot_basis α _ _ _ _ _
-  intro s
-  rw [h.mem_iff, h_nhds.mem_iff]
-  rintro ⟨a, ha_bot_lt, h_Iio_a_subset_s⟩
-  refine' ⟨⊥, trivial, _root_.trans _ h_Iio_a_subset_s⟩
-  simpa only [Iic_bot, singleton_subset_iff, mem_Iio]
-#align at_bot_le_nhds_bot atBot_le_nhds_bot
-
--- todo after the port: move to order/filter/at_top_bot
-theorem atTop_le_nhds_top {α : Type*} [TopologicalSpace α] [LinearOrder α] [OrderTop α]
-    [OrderTopology α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
-  @atBot_le_nhds_bot αᵒᵈ _ _ _ _
-#align at_top_le_nhds_top atTop_le_nhds_top
-
 end AuxLemmasToBeMoved
 
 namespace MeasureTheory.Measure
@@ -372,13 +351,7 @@ theorem tendsto_preCDF_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
   have h_exists : ∀ᵐ a ∂ρ.fst, ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) := by
     filter_upwards [monotone_preCDF ρ] with a ha
     have h_anti : Antitone fun r => preCDF ρ (-r) a := fun p q hpq => ha (neg_le_neg hpq)
-    have h_tendsto :
-      Tendsto (fun r => preCDF ρ (-r) a) atTop atBot ∨
-        ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) :=
-      tendsto_of_antitone h_anti
-    cases' h_tendsto with h_bot h_tendsto
-    · exact ⟨0, Tendsto.mono_right h_bot atBot_le_nhds_bot⟩
-    · exact h_tendsto
+    exact ⟨_, tendsto_atTop_iInf h_anti⟩
   classical
   let F : α → ℝ≥0∞ := fun a =>
     if h : ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) then h.choose else 0

@@ -582,7 +582,7 @@ section Group
 variable {G : Type*} [Group G]
 
 @[to_additive (attr := simp) abs_zsmul_eq_zero]
-lemma zpow_abs_eq_one (a : G) (i : ℤ) : a ^ |i| = 1 ↔ a ^ i = 1 := by
+lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
   rw [← Int.coe_natAbs, zpow_ofNat, pow_natAbs_eq_one]
 
 end Group

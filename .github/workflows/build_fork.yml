@@ -204,10 +204,12 @@ jobs:
         # but not if it was skipped.
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         run: |
+          # TODO: this is not doing anything currently, and needs to be integrated with put-unpacked
+          # lake exe cache commit || true
           # run this in CI if it gets an incorrect lake hash for existing cache files somehow
-          # lake exe cache pack! || true
-          lake exe cache commit || true
-          lake exe cache put || true
+          # lake exe cache put!
+          # do not try to upload files just downloaded
+          lake exe cache put-unpacked
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
@@ -269,7 +271,7 @@ jobs:
             # Tests use parts of ProofWidgets not imported by Mathlib.
             # Ensure everything has been built.
             lake build ProofWidgets
-            make -j 8 test"
+            make -k -j 8 test"
 
       - name: check for unused imports
         id: shake

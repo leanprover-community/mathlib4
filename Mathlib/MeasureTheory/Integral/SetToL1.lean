@@ -573,7 +573,7 @@ theorem norm_setToSimpleFunc_le_sum_opNorm {m : MeasurableSpace α} (T : Set α 
       refine' Finset.sum_le_sum fun b _ => _; simp_rw [ContinuousLinearMap.le_opNorm]
 #align measure_theory.simple_func.norm_set_to_simple_func_le_sum_op_norm MeasureTheory.SimpleFunc.norm_setToSimpleFunc_le_sum_opNorm
 
-@[deprecated norm_setToSimpleFunc_le_sum_opNorm]
+@[deprecated]
 alias norm_setToSimpleFunc_le_sum_op_norm :=
   norm_setToSimpleFunc_le_sum_opNorm -- deprecated on 2024-02-02
 
@@ -625,11 +625,11 @@ theorem setToSimpleFunc_indicator (T : Set α → F →L[ℝ] F') (hT_empty : T 
   swap; · rw [Finset.mem_singleton]; exact hx0
   rw [sum_singleton, (T _).map_zero, add_zero]
   congr
-  simp only [coe_piecewise, piecewise_eq_indicator, coe_const, Pi.const_zero,
+  simp only [coe_piecewise, piecewise_eq_indicator, coe_const, Function.const_zero,
     piecewise_eq_indicator]
   rw [indicator_preimage, ← Function.const_def, preimage_const_of_mem]
   swap; · exact Set.mem_singleton x
-  rw [← Pi.const_zero, ← Function.const_def, preimage_const_of_not_mem]
+  rw [← Function.const_zero, ← Function.const_def, preimage_const_of_not_mem]
   swap; · rw [Set.mem_singleton_iff]; exact Ne.symm hx0
   simp
 #align measure_theory.simple_func.set_to_simple_func_indicator MeasureTheory.SimpleFunc.setToSimpleFunc_indicator

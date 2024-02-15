@@ -89,9 +89,9 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     let w : ℕ → K := fun n => Classical.choose (h n)
     exact ⟨w, fun n => Classical.choose_spec (h n)⟩
   rcases exists_seq with ⟨w, hw⟩
-  have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (nhds δ) := by
-    have h : Tendsto (fun _ : ℕ => δ) atTop (nhds δ) := tendsto_const_nhds
-    have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (nhds δ) := by
+  have norm_tendsto : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 δ) := by
+    have h : Tendsto (fun _ : ℕ => δ) atTop (𝓝 δ) := tendsto_const_nhds
+    have h' : Tendsto (fun n : ℕ => δ + 1 / (n + 1)) atTop (𝓝 δ) := by
       convert h.add tendsto_one_div_add_atTop_nhds_zero_nat
       simp only [add_zero]
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
@@ -166,23 +166,10 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
       _ ≤ 2 * ((δ + div) * (δ + div) + (δ + div) * (δ + div)) - 4 * δ * δ := by gcongr
       _ = 8 * δ * div + 4 * div * div := by ring
     positivity
-    -- third goal : `Tendsto (fun (n : ℕ) => sqrt (b n)) atTop (𝓝 0)`
-    apply Tendsto.comp (f := b) (g := sqrt)
-    · have : Tendsto sqrt (nhds 0) (nhds (sqrt 0)) := continuous_sqrt.continuousAt
-      convert this
-      exact sqrt_zero.symm
-    have eq₁ : Tendsto (fun n : ℕ => 8 * δ * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert (tendsto_const_nhds (x := 8 * δ)).mul tendsto_one_div_add_atTop_nhds_zero_nat
-      simp only [mul_zero]
-    have : Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert (tendsto_const_nhds (x := 4)).mul tendsto_one_div_add_atTop_nhds_zero_nat
-      simp only [mul_zero]
-    have eq₂ :
-        Tendsto (fun n : ℕ => (4 : ℝ) * (1 / (n + 1)) * (1 / (n + 1))) atTop (nhds (0 : ℝ)) := by
-      convert this.mul tendsto_one_div_add_atTop_nhds_zero_nat
-      simp only [mul_zero]
-    convert eq₁.add eq₂
-    simp only [add_zero]
+    -- third goal : `Tendsto (fun (n : ℕ) => √(b n)) atTop (𝓝 0)`
+    suffices Tendsto (fun x ↦ sqrt (8 * δ * x + 4 * x * x) : ℝ → ℝ) (𝓝 0) (𝓝 0)
+      from this.comp tendsto_one_div_add_atTop_nhds_zero_nat
+    exact Continuous.tendsto' (by continuity) _ _ (by simp)
   -- Step 3: By completeness of `K`, let `w : ℕ → K` converge to some `v : K`.
   -- Prove that it satisfies all requirements.
   rcases cauchySeq_tendsto_of_isComplete h₁ (fun n => Subtype.mem _) seq_is_cauchy with
@@ -191,7 +178,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   use hv
   have h_cont : Continuous fun v => ‖u - v‖ :=
     Continuous.comp continuous_norm (Continuous.sub continuous_const continuous_id)
-  have : Tendsto (fun n => ‖u - w n‖) atTop (nhds ‖u - v‖)
+  have : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 ‖u - v‖)
   convert Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto
 #align exists_norm_eq_infi_of_complete_convex exists_norm_eq_iInf_of_complete_convex
