@@ -868,10 +868,10 @@ end Prod
 
 section Bool
 
-lemma continuous_bool_rng [TopologicalSpace X] {f : X → Bool} :
-    Continuous f ↔ IsClopen (f ⁻¹' {true}) := by
-  rw [continuous_discrete_rng, Bool.forall_bool, IsClopen, ← isOpen_compl_iff, ← preimage_compl,
-    Bool.compl_singleton, Bool.not_true]
+lemma continuous_bool_rng [TopologicalSpace X] {f : X → Bool} (b : Bool) :
+    Continuous f ↔ IsClopen (f ⁻¹' {b}) := by
+  rw [continuous_discrete_rng, Bool.forall_bool' b, IsClopen, ← isOpen_compl_iff, ← preimage_compl,
+    Bool.compl_singleton, and_comm]
 
 end Bool
 

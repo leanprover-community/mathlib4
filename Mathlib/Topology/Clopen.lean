@@ -146,7 +146,7 @@ protected theorem QuotientMap.isClopen_preimage {f : X → Y} (hf : QuotientMap 
 
 theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by
-  rw [continuous_bool_rng, preimage_boolIndicator_true]
+  rw [continuous_bool_rng true, preimage_boolIndicator_true]
 #align continuous_bool_indicator_iff_clopen continuous_boolIndicator_iff_isClopen
 
 theorem continuousOn_boolIndicator_iff_isClopen (s U : Set X) :
