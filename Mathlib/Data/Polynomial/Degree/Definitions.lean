@@ -55,6 +55,9 @@ def degree (p : R[X]) : WithBot ℕ :=
   p.support.max
 #align polynomial.degree Polynomial.degree
 
+theorem supDegree_eq_degree (p : R[X]) : p.toFinsupp.supDegree WithBot.some = p.degree :=
+  max_eq_sup_coe
+
 theorem degree_lt_wf : WellFounded fun p q : R[X] => degree p < degree q :=
   InvImage.wf degree wellFounded_lt
 #align polynomial.degree_lt_wf Polynomial.degree_lt_wf
@@ -133,6 +136,14 @@ theorem degree_eq_natDegree (hp : p ≠ 0) : degree p = (natDegree p : WithBot �
   have hn : degree p = some n := Classical.not_not.1 hn
   rw [natDegree, hn]; rfl
 #align polynomial.degree_eq_nat_degree Polynomial.degree_eq_natDegree
+
+theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegree := by
+  obtain rfl|h := eq_or_ne p 0
+  · simp
+  apply WithBot.coe_injective
+  rw [← AddMonoidAlgebra.supDegree_withBot_some_comp, Function.comp_id, supDegree_eq_degree,
+    degree_eq_natDegree h, Nat.cast_withBot]
+  rwa [support_toFinsupp, nonempty_iff_ne_empty, Ne, support_eq_empty]
 
 theorem degree_eq_iff_natDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
     p.degree = n ↔ p.natDegree = n := by rw [degree_eq_natDegree hp]; exact WithBot.coe_eq_coe
@@ -1684,6 +1695,10 @@ theorem leadingCoeffHom_apply (p : R[X]) : leadingCoeffHom p = leadingCoeff p :=
 theorem leadingCoeff_pow (p : R[X]) (n : ℕ) : leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
   (leadingCoeffHom : R[X] →* R).map_pow p n
 #align polynomial.leading_coeff_pow Polynomial.leadingCoeff_pow
+
+theorem leadingCoeff_dvd_leadingCoeff {a p : R[X]} (hap : a ∣ p) :
+    a.leadingCoeff ∣ p.leadingCoeff :=
+  map_dvd leadingCoeffHom hap
 
 end NoZeroDivisors
 
