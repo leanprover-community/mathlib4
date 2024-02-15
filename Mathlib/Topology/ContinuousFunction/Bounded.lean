@@ -544,9 +544,11 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
     We extract finitely many of these sets that cover the whole space, by compactness. -/
   rcases isCompact_univ.elim_finite_subcover_image (fun x _ => (hU x).2.1) fun x _ =>
       mem_biUnion (mem_univ _) (hU x).1 with
-    ⟨tα, _, ⟨_⟩, htα⟩
+    ⟨tα, _, hfin, htα⟩
+  rcases hfin.nonempty_fintype with ⟨_⟩
   -- `tα: Set α`, `htα : univ ⊆ ⋃x ∈ tα, U x`
-  rcases @finite_cover_balls_of_compact β _ _ isCompact_univ _ ε₂0 with ⟨tβ, _, ⟨_⟩, htβ⟩
+  rcases @finite_cover_balls_of_compact β _ _ isCompact_univ _ ε₂0 with ⟨tβ, _, hfin, htβ⟩
+  rcases hfin.nonempty_fintype with ⟨_⟩
   -- `tβ : Set β`, `htβ : univ ⊆ ⋃y ∈ tβ, ball y ε₂`
   -- Associate to every point `y` in the space a nearby point `F y` in `tβ`
   choose F hF using fun y => show ∃ z ∈ tβ, dist y z < ε₂ by simpa using htβ (mem_univ y)
