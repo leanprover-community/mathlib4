@@ -15,6 +15,7 @@ If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal s
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
 `Γ`, we can add further structure on `HahnSeries Γ R`.  When `R` is a semiring and `Γ = ℕ`, then
 we get the more familiar semiring of formal power series with coefficients in `R`.
+
 ## Main Definitions
   * `toPowerSeries` the isomorphism from `HahnSeries ℕ R` to `PowerSeries R`.
   * `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `HahnSeries ℕ R`.
@@ -22,6 +23,7 @@ we get the more familiar semiring of formal power series with coefficients in `R
 ## TODO
   * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
     `X : R[X]` and `X : PowerSeries R`
+
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/

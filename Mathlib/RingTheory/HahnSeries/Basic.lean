@@ -16,14 +16,13 @@ a linearly ordered abelian group and `R` is a field, in which case `HahnSeries �
 valued field, with value group `Γ`.
 These generalize Laurent series (with value group `ℤ`), and Laurent series are implemented that way
 in the file `RingTheory/LaurentSeries`.
+
 ## Main Definitions
   * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are partially well-ordered.
   * Laurent series over `R` are implemented as `HahnSeries ℤ R` in the file
     `RingTheory/LaurentSeries`.
-## TODO
-  * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
-    `X : R[X]` and `X : PowerSeries R`
+
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/

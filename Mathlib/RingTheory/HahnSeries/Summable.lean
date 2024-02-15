@@ -16,6 +16,7 @@ If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal s
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
 `Γ`, we can add further structure on `HahnSeries Γ R`.  We introduce valuations and a notion of
 summability for possibly infinite families of series.
+
 ## Main Definitions
   * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
     ordered.
@@ -26,6 +27,7 @@ summability for possibly infinite families of series.
   topology, because there are topologically summable families that do not satisfy the axioms of
   `HahnSeries.SummableFamily`, and formally summable families whose sums do not converge
   topologically.
+
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/

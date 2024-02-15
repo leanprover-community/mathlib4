@@ -16,6 +16,7 @@ If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal s
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
 `Γ`, we can add further structure on `HahnSeries Γ R`.  We prove some facts about multiplying
 Hahn series.
+
 ## Main Definitions
   * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
   of `HahnSeries Γ R` on `HahnModule Γ V` for an `R`-module `V`.
