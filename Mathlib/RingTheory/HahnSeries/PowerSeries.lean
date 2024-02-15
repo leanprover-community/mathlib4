@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.RingTheory.HahnSeries.Multiplication
+import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.Data.Finsupp.PWO
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 

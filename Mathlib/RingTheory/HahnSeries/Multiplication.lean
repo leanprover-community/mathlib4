@@ -5,11 +5,8 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.RingTheory.HahnSeries.Addition
-import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Data.Finsupp.PWO
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Data.Finset.MulAntidiagonal
-import Mathlib.Algebra.Order.Group.WithTop
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
@@ -55,7 +52,7 @@ set_option linter.uppercaseLean3 false
 
 open Finset Function
 
-open BigOperators Classical Pointwise Polynomial
+open BigOperators Classical Pointwise
 
 noncomputable section
 
@@ -438,8 +435,9 @@ variable {V : Type*} [AddCommMonoid V]
 private theorem mul_smul' [Semiring R] [Module R V] (x y : HahnSeries Γ R)
     (z : HahnModule Γ R V) : (x * y) • z = x • (y • z) := by
   ext b
-  rw [smul_coeff_left (x.isPWO_support.add y.isPWO_support) HahnSeries.support_mul_subset_add_support,
-    smul_coeff_right (y.isPWO_support.add z.isPWO_support) support_smul_subset_add_support]
+  rw [smul_coeff_left (x.isPWO_support.add y.isPWO_support)
+    HahnSeries.support_mul_subset_add_support, smul_coeff_right
+    (y.isPWO_support.add z.isPWO_support) support_smul_subset_add_support]
   simp only [HahnSeries.mul_coeff, smul_coeff, HahnSeries.add_coeff, sum_smul, smul_sum, sum_sigma']
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>

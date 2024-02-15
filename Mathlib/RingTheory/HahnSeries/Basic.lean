@@ -39,7 +39,7 @@ in the file `RingTheory/LaurentSeries`.
   * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
     `X : R[X]` and `X : PowerSeries R`
   * Equivalence between `HahnSeries Γ (HahnSeries Γ' R)` and `HahnSeries (Γ × Γ') R`
-
+  * Use Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber to iterate.
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 
@@ -139,20 +139,48 @@ theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :
 #align hahn_series.support_eq_empty_iff HahnSeries.support_eq_empty_iff
 
 /-!
--- See Mathlib.Data.MvPolynomial.Monad for join and bind operations
+/-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
 def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
-    HahnSeries (Γ × Γ') R where
+    HahnSeries (Γ ×ₗ Γ') R where
   coeff := fun g => coeff (coeff x g.1) g.2
   isPWO_support' := by
+    intro f hf
+    simp_all only
+    have hf' : ∀ n, (f n).1 ∈ Function.support fun g ↦ x.coeff g := by
+      intro n hn
+      simp_all only [Function.mem_support, ne_eq]
+      specialize hf n
+      rw [hn] at hf
+      exact hf rfl
+
     sorry
 
-def to_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ × Γ') R) :
+-- See Mathlib.Data.MvPolynomial.Monad for join and bind operations
+
+need a monotone pair. have:
+
+nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
+    ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
+  h.exists_monotone_subseq f hf
+#align set.is_pwo.exists_monotone_subseq Set.IsPWO.exists_monotone_subseq
+
+map sequence to Γ, get monotone subsequence (use ext property)
+if stationary at a ∈ Γ, look inside {a} × Γ', get monotone subsequence.
+if not stationary, use lex order.
+
+/-- Change a Hahn series on a lex product to a Hahn series with coefficients in a Hahn series. -/
+def to_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries (Γ ×ₗ Γ') R) :
     HahnSeries Γ (HahnSeries Γ' R) where
   coeff := fun g => {
     coeff := fun g' => coeff x (g, g')
     isPWO_support' := sorry
   }
   isPWO_support' := sorry
+
+  * Equivalence between `HahnSeries Γ (HahnSeries Γ' R)` and `HahnSeries (Γ × Γ') R`
+  * Use Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber to iterate. (need PWO version)
+
+
 -/
 
 /-- `single a r` is the Hahn series which has coefficient `r` at `a` and zero otherwise. -/
