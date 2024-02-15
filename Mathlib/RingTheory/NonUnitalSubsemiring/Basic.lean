@@ -51,8 +51,12 @@ open AddSubmonoidClass
 `NonUnitalSubsemiringClass`. -/
 /-- A non-unital subsemiring of a `NonUnitalNonAssocSemiring` inherits a
 `NonUnitalNonAssocSemiring` structure -/
-instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s :=
-  Subtype.coe_injective.nonUnitalNonAssocSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s where
+  left_distrib := fun _ _ _ => Subtype.ext <| left_distrib _ _ _
+  right_distrib := fun _ _ _ => Subtype.ext <| right_distrib _ _ _
+  zero_mul := fun _ => Subtype.ext <| zero_mul _
+  mul_zero := fun _ => Subtype.ext <| mul_zero _
+
 #align non_unital_subsemiring_class.to_non_unital_non_assoc_semiring NonUnitalSubsemiringClass.toNonUnitalNonAssocSemiring
 
 instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
@@ -72,14 +76,14 @@ theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
 
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
-    [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s :=
-  Subtype.coe_injective.nonUnitalSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+    [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s where
+  mul_assoc := mul_assoc
 #align non_unital_subsemiring_class.to_non_unital_semiring NonUnitalSubsemiringClass.toNonUnitalSemiring
 
 /-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/
 instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
-    [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s :=
-  Subtype.coe_injective.nonUnitalCommSemiring (↑) rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
+    [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s where
+  mul_comm := mul_comm
 #align non_unital_subsemiring_class.to_non_unital_comm_semiring NonUnitalSubsemiringClass.toNonUnitalCommSemiring
 
 /-! Note: currently, there are no ordered versions of non-unital rings. -/

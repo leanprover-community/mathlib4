@@ -93,23 +93,23 @@ namespace NonUnitalSubringClass
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
-instance (priority := 75) toNonUnitalNonAssocRing : NonUnitalNonAssocRing s :=
-  Subtype.val_injective.nonUnitalNonAssocRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+instance (priority := 75) toNonUnitalNonAssocRing : NonUnitalNonAssocRing s where
+  left_distrib := left_distrib
+  right_distrib := right_distrib
+  zero_mul := zero_mul
+  mul_zero := mul_zero
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance (priority := 75) toNonUnitalRing {R : Type*} [NonUnitalRing R] [SetLike S R]
-    [NonUnitalSubringClass S R] (s : S) : NonUnitalRing s :=
-  Subtype.val_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    [NonUnitalSubringClass S R] (s : S) : NonUnitalRing s where
+  mul_assoc := mul_assoc
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
 instance (priority := 75) toNonUnitalCommRing {R} [NonUnitalCommRing R] [SetLike S R]
-    [NonUnitalSubringClass S R] : NonUnitalCommRing s :=
-  Subtype.val_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    [NonUnitalSubringClass S R] : NonUnitalCommRing s where
+  mul_comm := mul_comm
 
 /-- The natural non-unital ring hom from a non-unital subring of a non-unital ring `R` to `R`. -/
 def subtype (s : S) : s →ₙ+* R :=
@@ -145,13 +145,11 @@ namespace NonUnitalSubring
 def toSubsemigroup (s : NonUnitalSubring R) : Subsemigroup R :=
   { s.toNonUnitalSubsemiring.toSubsemigroup with carrier := s.carrier }
 
-instance : SetLike (NonUnitalSubring R) R
-    where
+instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : NonUnitalSubringClass (NonUnitalSubring R) R
-    where
+instance : NonUnitalSubringClass (NonUnitalSubring R) R where
   zero_mem s := s.zero_mem'
   add_mem {s} := s.add_mem'
   mul_mem {s} := s.mul_mem'
@@ -302,9 +300,8 @@ protected theorem sum_mem {R : Type*} [NonUnitalNonAssocRing R] (s : NonUnitalSu
 
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance toNonUnitalRing {R : Type*} [NonUnitalRing R] (s : NonUnitalSubring R) :
-    NonUnitalRing s :=
-  Subtype.coe_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    NonUnitalRing s where
+  mul_assoc := mul_assoc
 
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
@@ -330,9 +327,8 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
 
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
 instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
-    NonUnitalCommRing s :=
-  Subtype.coe_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    NonUnitalCommRing s where
+  mul_comm := mul_comm
 
 /-! ## Partial order -/
 
