@@ -308,6 +308,31 @@ theorem lcm_order_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm orderOf
 #align monoid.lcm_order_eq_exponent Monoid.lcm_order_eq_exponent
 #align add_monoid.lcm_add_order_eq_exponent AddMonoid.lcm_addOrder_eq_exponent
 
+variable {H : Type*} [Monoid H]
+
+/--
+If there exists an injective, multiplication-preserving map from `G` to `H`,
+then the exponent of `G` divides the exponent of `H`.
+-/
+@[to_additive "If there exists an injective, addition-preserving map from `G` to `H`,
+then the exponent of `G` divides the exponent of `H`."]
+theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) :
+    Monoid.exponent G ∣ Monoid.exponent H :=
+  exponent_dvd_of_forall_pow_eq_one _ _ fun g => e_inj (by
+    rw [map_pow, pow_exponent_eq_one, map_one])
+
+/--
+If there exists a multiplication-preserving equivalence between `G` and `H`,
+then the exponent of `G` is equal to the exponent of `H`.
+-/
+@[to_additive "If there exists a addition-preserving equivalence between `G` and `H`,
+then the exponent of `G` is equal to the exponent of `H`."]
+theorem exponent_eq_of_mulEquiv (e : Nonempty (G ≃* H)) : Monoid.exponent G = Monoid.exponent H :=
+  let ⟨e'⟩ := e
+  Nat.dvd_antisymm
+    (exponent_dvd_of_monoidHom e' e'.injective)
+    (exponent_dvd_of_monoidHom e'.symm e'.symm.injective)
+
 end Monoid
 
 section Submonoid
@@ -317,10 +342,8 @@ variable [Monoid G]
 variable (G) in
 @[to_additive (attr := simp)]
 theorem _root_.Submonoid.exponent_top :
-    Monoid.exponent (⊤ : Submonoid G) = Monoid.exponent G := by
-  unfold Monoid.exponent Monoid.ExponentExists
-  simp only [Subtype.forall, Submonoid.mem_top, SubmonoidClass.mk_pow, ← OneMemClass.coe_eq_one,
-    forall_true_left]
+    Monoid.exponent (⊤ : Submonoid G) = Monoid.exponent G :=
+  exponent_eq_of_mulEquiv ⟨Submonoid.topEquiv⟩
 
 @[to_additive]
 theorem _root_.Submonoid.pow_exponent_eq_one {S : Submonoid G} {g : G} (g_in_s : g ∈ S) :
@@ -444,18 +467,17 @@ section Group
 variable [Group G]
 
 @[to_additive (attr := deprecated Monoid.one_lt_exponent) AddGroup.one_lt_exponent]
-lemma Group.one_lt_exponent [Finite G] [Nontrivial G] :
-    1 < Monoid.exponent G := Monoid.one_lt_exponent
+lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
+  Monoid.one_lt_exponent
 
 @[to_additive]
 theorem Subgroup.exponent_toSubmonoid (H : Subgroup G) :
-    Monoid.exponent H.toSubmonoid = Monoid.exponent H := by
-  unfold Monoid.exponent Monoid.ExponentExists
-  simp only [Subtype.forall, mem_toSubmonoid, SubmonoidClass.mk_pow, mk_eq_one_iff]
+    Monoid.exponent H.toSubmonoid = Monoid.exponent H :=
+  Monoid.exponent_eq_of_mulEquiv ⟨MulEquiv.subgroupCongr rfl⟩
 
 @[to_additive (attr := simp)]
-theorem Subgroup.exponent_top : Monoid.exponent (⊤ : Subgroup G) = Monoid.exponent G := by
-  rw [← Subgroup.exponent_toSubmonoid, top_toSubmonoid, Submonoid.exponent_top]
+theorem Subgroup.exponent_top : Monoid.exponent (⊤ : Subgroup G) = Monoid.exponent G :=
+  Monoid.exponent_eq_of_mulEquiv ⟨topEquiv⟩
 
 @[to_additive]
 theorem Subgroup.pow_exponent_eq_one {H : Subgroup G} {g : G} (g_in_H : g ∈ H) :
