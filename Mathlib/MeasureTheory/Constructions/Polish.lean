@@ -921,7 +921,7 @@ theorem isClopenable_iff_measurableSet
   · exact MeasurableSpace.measurableSet_generateFrom s_open
   infer_instance
 
-/-- The set of points for which a measurable sequence of functions converges to a given value
+/-- The set of points for which a sequence of measurable functions converges to a given value
 is measurable. -/
 @[measurability]
 lemma measurableSet_tendsto [MeasurableSpace γ] [Countable ι] {l : Filter ι} (l' : Filter γ)
@@ -934,6 +934,19 @@ lemma measurableSet_tendsto [MeasurableSpace γ] [Countable ι] {l : Filter ι} 
   simp only [hu.tendsto_iff hv.toHasBasis, true_imp_iff, true_and, setOf_forall, setOf_exists]
   exact .iInter fun n ↦ .iUnion fun _ ↦ .biInter (to_countable _) fun i _ ↦
     (v_meas n).2.preimage (hf i)
+
+/-- The set of points for which a sequence of measurable functions converges to a given function
+is measurable. -/
+@[measurability]
+lemma measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι]
+    {l : Filter ι} [l.IsCountablyGenerated]
+    [TopologicalSpace γ] [SecondCountableTopology γ] [PseudoMetrizableSpace γ]
+    [OpensMeasurableSpace γ]
+    {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) {g : β → γ} (hg : Measurable g) :
+    MeasurableSet { x | Tendsto (fun n ↦ f n x) l (𝓝 (g x)) } := by
+  letI := TopologicalSpace.pseudoMetrizableSpacePseudoMetric γ
+  simp_rw [tendsto_iff_dist_tendsto_zero (f := fun n ↦ f n _)]
+  exact measurableSet_tendsto (𝓝 0) (fun n ↦ (hf n).dist hg)
 
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
 @[measurability]
