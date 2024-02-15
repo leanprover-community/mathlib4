@@ -54,9 +54,6 @@ namespace BundledHom
 
 variable [𝒞 : BundledHom hom]
 
--- porting note: include not needed
--- include 𝒞
-
 set_option synthInstance.checkSynthOrder false in
 /-- Every `@BundledHom c _` defines a category with objects in `Bundled c`.
 
@@ -86,7 +83,7 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c)
 
 variable {hom}
 
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instFunLike
 
 /-- A version of `HasForget₂.mk'` for categories defined using `@BundledHom`. -/
 def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u}
@@ -104,9 +101,6 @@ variable {d : Type u → Type u}
 variable (hom)
 
 section
-
--- porting note: commented out
--- omit 𝒞
 
 /-- The `hom` corresponding to first forgetting along `F`, then taking the `hom` associated to `c`.
 
@@ -131,9 +125,6 @@ def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F)
 #align category_theory.bundled_hom.map CategoryTheory.BundledHom.map
 
 section
-
--- porting note: commented out
---omit 𝒞
 
 /-- We use the empty `ParentProjection` class to label functions like `CommMonoid.toMonoid`,
 which we would like to use to automatically construct `BundledHom` instances from.

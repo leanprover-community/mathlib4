@@ -67,14 +67,14 @@ variable [Ring k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : �
 instance : Inhabited (AffineBasis PUnit k PUnit) :=
   ⟨⟨id, affineIndependent_of_subsingleton k id, by simp⟩⟩
 
-instance funLike : FunLike (AffineBasis ι k P) ι fun _ => P where
+instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
   coe_injective' f g h := by cases f; cases g; congr
-#align affine_basis.fun_like AffineBasis.funLike
+#align affine_basis.fun_like AffineBasis.instFunLike
 
 @[ext]
 theorem ext {b₁ b₂ : AffineBasis ι k P} (h : (b₁ : ι → P) = b₂) : b₁ = b₂ :=
-  FunLike.coe_injective h
+  DFunLike.coe_injective h
 #align affine_basis.ext AffineBasis.ext
 
 theorem ind : AffineIndependent k b :=
@@ -269,24 +269,9 @@ noncomputable def coords : P →ᵃ[k] ι → k where
   toFun q i := b.coord i q
   linear :=
     { toFun := fun v i => -(b.basisOf i).sumCoords v
-      map_add' := fun v w => by
-        ext i
-        simp only [LinearMap.map_add, Pi.add_apply, neg_add]
-      map_smul' := fun t v => by
-        ext i
-        simp only [LinearMap.map_smul, Pi.smul_apply, smul_neg, RingHom.id_apply, mul_neg] }
-  map_vadd' p v := by
-    ext i
-    -- Porting note:
-    -- mathlib3 proof was:
-    -- simp only [linear_eq_sumCoords, LinearMap.coe_mk, LinearMap.neg_apply, Pi.vadd_apply',
-    --   AffineMap.map_vadd]
-    -- but now we need to `dsimp` before `AffineMap.map_vadd` works.
-    rw [LinearMap.coe_mk, Pi.vadd_apply']
-    dsimp
-    rw [AffineMap.map_vadd, linear_eq_sumCoords,
-        LinearMap.neg_apply]
-    simp only [ne_eq, Basis.coe_sumCoords, vadd_eq_add]
+      map_add' := fun v w => by ext; simp only [LinearMap.map_add, Pi.add_apply, neg_add]
+      map_smul' := fun t v => by ext; simp }
+  map_vadd' p v := by ext; simp
 #align affine_basis.coords AffineBasis.coords
 
 @[simp]

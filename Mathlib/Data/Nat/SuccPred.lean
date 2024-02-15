@@ -18,6 +18,7 @@ In this file, we show that `ℕ` is both an archimedean `succOrder` and an archi
 open Function Order
 
 namespace Nat
+variable {m n : ℕ}
 
 -- so that Lean reads `Nat.succ` through `succ_order.succ`
 @[reducible]
@@ -65,6 +66,8 @@ theorem pred_iterate (a : ℕ) : ∀ n, pred^[n] a = a - n
     rw [Function.iterate_succ', sub_succ]
     exact congr_arg _ (pred_iterate a n)
 #align nat.pred_iterate Nat.pred_iterate
+
+lemma le_succ_iff_eq_or_le : m ≤ n.succ ↔ m = n.succ ∨ m ≤ n := Order.le_succ_iff_eq_or_le
 
 instance : IsSuccArchimedean ℕ :=
   ⟨fun {a} {b} h => ⟨b - a, by rw [succ_eq_succ, succ_iterate, add_tsub_cancel_of_le h]⟩⟩

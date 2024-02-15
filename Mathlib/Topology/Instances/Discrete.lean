@@ -51,8 +51,8 @@ theorem bot_topologicalSpace_eq_generateFrom_of_pred_succOrder [PartialOrder α]
     · rw [h_singleton_eq_inter', ← Ioi_pred, ← Iio_succ]
     rw [inter_comm, Ici_inter_Iic, Icc_self a]
   rw [h_singleton_eq_inter]
-  -- Porting note: Specified instance for `IsOpen.inter` explicitly to fix an error.
-  apply @IsOpen.inter _ _ _ (generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a })
+  letI := Preorder.topology α
+  apply IsOpen.inter
   · exact isOpen_generateFrom_of_mem ⟨succ a, Or.inr rfl⟩
   · exact isOpen_generateFrom_of_mem ⟨pred a, Or.inl rfl⟩
 #align bot_topological_space_eq_generate_from_of_pred_succ_order bot_topologicalSpace_eq_generateFrom_of_pred_succOrder
@@ -96,7 +96,8 @@ theorem LinearOrder.bot_topologicalSpace_eq_generateFrom [LinearOrder α] [PredO
       rw [← Ioi_pred_of_not_isMin ha_bot] at h_singleton_eq_inter
       rw [h_singleton_eq_inter]
       -- Porting note: Specified instance for `IsOpen.inter` explicitly to fix an error.
-      apply @IsOpen.inter _ _ _ (generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a })
+      letI := Preorder.topology α
+      apply IsOpen.inter
       · exact isOpen_generateFrom_of_mem ⟨succ a, Or.inr rfl⟩
       · exact isOpen_generateFrom_of_mem ⟨pred a, Or.inl rfl⟩
 #align linear_order.bot_topological_space_eq_generate_from LinearOrder.bot_topologicalSpace_eq_generateFrom

@@ -29,25 +29,25 @@ to disable the compiler in a given file or a given section.
 This is a hack to work around mathlib4#7103. -/
 def elabSuppressCompilationDecl : CommandElab := fun
 | `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
-    $(recKind?)? def $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?) => do
+    $(recKind?)? def $id $sig:optDeclSig $val:declVal) => do
   elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
-    $(recKind?)? def $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?)
+    $(recKind?)? def $id $sig:optDeclSig $val:declVal)
 | `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
-    $(recKind?)? def $id $sig:optDeclSig $val:declVal deriving $derivs,* $(term?)? $(decr?)?) => do
+    $(recKind?)? def $id $sig:optDeclSig $val:declVal deriving $derivs,*) => do
   elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
-    $(recKind?)? def $id $sig:optDeclSig $val:declVal deriving $derivs,* $(term?)? $(decr?)?)
+    $(recKind?)? def $id $sig:optDeclSig $val:declVal deriving $derivs,*)
 | `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
-    $(recKind?)? $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal $(term?)?) => do
+    $(recKind?)? $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal) => do
   elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
-    $(recKind?)? $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal $(term?)?)
+    $(recKind?)? $(attrKind?)? instance $(prio?)? $(id?)? $sig:declSig $val:declVal)
 | `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
     $(recKind?)? example $sig:optDeclSig $val:declVal) => do
   elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
     $(recKind?)? example $sig:optDeclSig $val:declVal)
 | `($[$doc?:docComment]? $(attrs?)? $(vis?)? $[noncomputable]? $(unsafe?)?
-    $(recKind?)? abbrev $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?) => do
+    $(recKind?)? abbrev $id $sig:optDeclSig $val:declVal) => do
   elabDeclaration <| ← `($[$doc?:docComment]? $(attrs?)? $(vis?)? noncomputable $(unsafe?)?
-    $(recKind?)? abbrev $id $sig:optDeclSig $val:declVal $(term?)? $(decr?)?)
+    $(recKind?)? abbrev $id $sig:optDeclSig $val:declVal)
 | _ => throwUnsupportedSyntax
 
 /-- The command `unsuppress_compilation in def foo : ...` makes sure that the definition is
