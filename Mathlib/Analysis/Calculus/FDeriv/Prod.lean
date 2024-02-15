@@ -76,6 +76,7 @@ nonrec theorem HasFDerivWithinAt.prod (hf₁ : HasFDerivWithinAt f₁ f₁' s x)
   hf₁.prod hf₂
 #align has_fderiv_within_at.prod HasFDerivWithinAt.prod
 
+@[fun_prop]
 nonrec theorem HasFDerivAt.prod (hf₁ : HasFDerivAt f₁ f₁' x) (hf₂ : HasFDerivAt f₂ f₂' x) :
     HasFDerivAt (fun x => (f₁ x, f₂ x)) (f₁'.prod f₂') x :=
   hf₁.prod hf₂
@@ -151,10 +152,12 @@ protected theorem HasFDerivAtFilter.fst (h : HasFDerivAtFilter f₂ f₂' x L) :
   hasFDerivAtFilter_fst.comp x h tendsto_map
 #align has_fderiv_at_filter.fst HasFDerivAtFilter.fst
 
+@[fun_prop]
 theorem hasFDerivAt_fst : HasFDerivAt (@Prod.fst E F) (fst 𝕜 E F) p :=
   hasFDerivAtFilter_fst
 #align has_fderiv_at_fst hasFDerivAt_fst
 
+@[fun_prop]
 protected nonrec theorem HasFDerivAt.fst (h : HasFDerivAt f₂ f₂' x) :
     HasFDerivAt (fun x => (f₂ x).1) ((fst 𝕜 F G).comp f₂') x :=
   h.fst
@@ -252,10 +255,12 @@ protected theorem HasFDerivAtFilter.snd (h : HasFDerivAtFilter f₂ f₂' x L) :
   hasFDerivAtFilter_snd.comp x h tendsto_map
 #align has_fderiv_at_filter.snd HasFDerivAtFilter.snd
 
+@[fun_prop]
 theorem hasFDerivAt_snd : HasFDerivAt (@Prod.snd E F) (snd 𝕜 E F) p :=
   hasFDerivAtFilter_snd
 #align has_fderiv_at_snd hasFDerivAt_snd
 
+@[fun_prop]
 protected nonrec theorem HasFDerivAt.snd (h : HasFDerivAt f₂ f₂' x) :
     HasFDerivAt (fun x => (f₂ x).2) ((snd 𝕜 F G).comp f₂') x :=
   h.snd
@@ -339,6 +344,7 @@ protected theorem HasStrictFDerivAt.prodMap (hf : HasStrictFDerivAt f f' p.1)
   (hf.comp p hasStrictFDerivAt_fst).prod (hf₂.comp p hasStrictFDerivAt_snd)
 #align has_strict_fderiv_at.prod_map HasStrictFDerivAt.prodMap
 
+@[fun_prop]
 protected theorem HasFDerivAt.prodMap (hf : HasFDerivAt f f' p.1) (hf₂ : HasFDerivAt f₂ f₂' p.2) :
     HasFDerivAt (Prod.map f f₂) (f'.prodMap f₂') p :=
   (hf.comp p hasFDerivAt_fst).prod (hf₂.comp p hasFDerivAt_snd)
@@ -412,6 +418,11 @@ theorem hasFDerivAt_pi :
       ∀ i, HasFDerivAt (φ i) (φ' i) x :=
   hasFDerivAtFilter_pi
 #align has_fderiv_at_pi hasFDerivAt_pi
+
+@[fun_prop]
+theorem hasFDerivAt_pi'' (hφ : ∀ i, HasFDerivAt (φ i) (φ' i) x) :
+    HasFDerivAt (fun x i => φ i x) (ContinuousLinearMap.pi φ') x :=
+  hasFDerivAt_pi.2 hφ
 
 @[simp]
 theorem hasFDerivWithinAt_pi' :

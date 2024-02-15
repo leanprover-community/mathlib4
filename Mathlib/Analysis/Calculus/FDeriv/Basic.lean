@@ -151,6 +151,7 @@ def HasFDerivWithinAt (f : E → F) (f' : E →L[𝕜] F) (s : Set E) (x : E) :=
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x`. -/
+@[fun_prop]
 def HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
   HasFDerivAtFilter f f' x (𝓝 x)
 #align has_fderiv_at HasFDerivAt
@@ -1078,9 +1079,14 @@ theorem hasFDerivWithinAt_id (x : E) (s : Set E) : HasFDerivWithinAt id (id 𝕜
   hasFDerivAtFilter_id _ _
 #align has_fderiv_within_at_id hasFDerivWithinAt_id
 
+@[fun_prop]
 theorem hasFDerivAt_id (x : E) : HasFDerivAt id (id 𝕜 E) x :=
   hasFDerivAtFilter_id _ _
 #align has_fderiv_at_id hasFDerivAt_id
+
+@[fun_prop]
+theorem hasFDerivAt_id' (x : E) : HasFDerivAt (fun x => x)  (id 𝕜 E) x :=
+  hasFDerivAt_id x
 
 @[simp]
 theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
@@ -1149,6 +1155,7 @@ theorem hasFDerivWithinAt_const (c : F) (x : E) (s : Set E) :
   hasFDerivAtFilter_const _ _ _
 #align has_fderiv_within_at_const hasFDerivWithinAt_const
 
+@[fun_prop]
 theorem hasFDerivAt_const (c : F) (x : E) : HasFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
   hasFDerivAtFilter_const _ _ _
 #align has_fderiv_at_const hasFDerivAt_const

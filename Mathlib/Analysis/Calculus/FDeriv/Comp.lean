@@ -102,10 +102,16 @@ theorem HasFDerivWithinAt.comp_of_mem {g : F → G} {g' : F →L[𝕜] G} {t : S
 #align has_fderiv_within_at.comp_of_mem HasFDerivWithinAt.comp_of_mem
 
 /-- The chain rule. -/
+@[fun_prop]
 theorem HasFDerivAt.comp {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g g' (f x))
     (hf : HasFDerivAt f f' x) : HasFDerivAt (g ∘ f) (g'.comp f') x :=
   HasFDerivAtFilter.comp x hg hf hf.continuousAt
 #align has_fderiv_at.comp HasFDerivAt.comp
+
+@[fun_prop]
+theorem HasFDerivAt.comp' {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAt g g' (f x))
+    (hf : HasFDerivAt f f' x) : HasFDerivAt (fun x => g (f x)) (g'.comp f') x :=
+  HasFDerivAtFilter.comp x hg hf hf.continuousAt
 
 theorem DifferentiableWithinAt.comp {g : F → G} {t : Set F}
     (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : DifferentiableWithinAt 𝕜 f s x)
@@ -215,6 +221,7 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
     exact ihn.comp x hf hL
 #align has_fderiv_at_filter.iterate HasFDerivAtFilter.iterate
 
+@[fun_prop]
 protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasFDerivAt f^[n] (f' ^ n) x := by
   refine' HasFDerivAtFilter.iterate hf _ hx n

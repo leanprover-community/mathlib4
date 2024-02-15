@@ -75,6 +75,7 @@ nonrec theorem HasFDerivWithinAt.const_smul (h : HasFDerivWithinAt f f' s x) (c 
   h.const_smul c
 #align has_fderiv_within_at.const_smul HasFDerivWithinAt.const_smul
 
+@[fun_prop]
 nonrec theorem HasFDerivAt.const_smul (h : HasFDerivAt f f' x) (c : R) :
     HasFDerivAt (fun x => c • f x) (c • f') x :=
   h.const_smul c
@@ -135,6 +136,7 @@ nonrec theorem HasFDerivWithinAt.add (hf : HasFDerivWithinAt f f' s x)
   hf.add hg
 #align has_fderiv_within_at.add HasFDerivWithinAt.add
 
+@[fun_prop]
 nonrec theorem HasFDerivAt.add (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun x => f x + g x) (f' + g') x :=
   hf.add hg
@@ -186,6 +188,7 @@ nonrec theorem HasFDerivWithinAt.add_const (hf : HasFDerivWithinAt f f' s x) (c 
   hf.add_const c
 #align has_fderiv_within_at.add_const HasFDerivWithinAt.add_const
 
+@[fun_prop]
 nonrec theorem HasFDerivAt.add_const (hf : HasFDerivAt f f' x) (c : F) :
     HasFDerivAt (fun x => f x + c) f' x :=
   hf.add_const c
@@ -261,6 +264,7 @@ nonrec theorem HasFDerivWithinAt.const_add (hf : HasFDerivWithinAt f f' s x) (c 
   hf.const_add c
 #align has_fderiv_within_at.const_add HasFDerivWithinAt.const_add
 
+@[fun_prop]
 nonrec theorem HasFDerivAt.const_add (hf : HasFDerivAt f f' x) (c : F) :
     HasFDerivAt (fun x => c + f x) f' x :=
   hf.const_add c
@@ -347,6 +351,7 @@ theorem HasFDerivWithinAt.sum (h : ∀ i ∈ u, HasFDerivWithinAt (A i) (A' i) s
   HasFDerivAtFilter.sum h
 #align has_fderiv_within_at.sum HasFDerivWithinAt.sum
 
+@[fun_prop]
 theorem HasFDerivAt.sum (h : ∀ i ∈ u, HasFDerivAt (A i) (A' i) x) :
     HasFDerivAt (fun y => ∑ i in u, A i y) (∑ i in u, A' i) x :=
   HasFDerivAtFilter.sum h
@@ -407,6 +412,7 @@ nonrec theorem HasFDerivWithinAt.neg (h : HasFDerivWithinAt f f' s x) :
   h.neg
 #align has_fderiv_within_at.neg HasFDerivWithinAt.neg
 
+@[fun_prop]
 nonrec theorem HasFDerivAt.neg (h : HasFDerivAt f f' x) : HasFDerivAt (fun x => -f x) (-f') x :=
   h.neg
 #align has_fderiv_at.neg HasFDerivAt.neg
@@ -485,6 +491,7 @@ nonrec theorem HasFDerivWithinAt.sub (hf : HasFDerivWithinAt f f' s x)
   hf.sub hg
 #align has_fderiv_within_at.sub HasFDerivWithinAt.sub
 
+@[fun_prop]
 nonrec theorem HasFDerivAt.sub (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun x => f x - g x) (f' - g') x :=
   hf.sub hg
@@ -536,6 +543,7 @@ nonrec theorem HasFDerivWithinAt.sub_const (hf : HasFDerivWithinAt f f' s x) (c 
   hf.sub_const c
 #align has_fderiv_within_at.sub_const HasFDerivWithinAt.sub_const
 
+@[fun_prop]
 nonrec theorem HasFDerivAt.sub_const (hf : HasFDerivAt f f' x) (c : F) :
     HasFDerivAt (fun x => f x - c) f' x :=
   hf.sub_const c
@@ -544,6 +552,7 @@ nonrec theorem HasFDerivAt.sub_const (hf : HasFDerivAt f f' x) (c : F) :
 theorem hasStrictFDerivAt_sub_const {x : F} (c : F) : HasStrictFDerivAt (· - c) (id 𝕜 F) x :=
   (hasStrictFDerivAt_id x).sub_const c
 
+@[fun_prop]
 theorem hasFDerivAt_sub_const {x : F} (c : F) : HasFDerivAt (· - c) (id 𝕜 F) x :=
   (hasFDerivAt_id x).sub_const c
 
@@ -613,6 +622,7 @@ nonrec theorem HasFDerivWithinAt.const_sub (hf : HasFDerivWithinAt f f' s x) (c 
   hf.const_sub c
 #align has_fderiv_within_at.const_sub HasFDerivWithinAt.const_sub
 
+@[fun_prop]
 nonrec theorem HasFDerivAt.const_sub (hf : HasFDerivAt f f' x) (c : F) :
     HasFDerivAt (fun x => c - f x) (-f') x :=
   hf.const_sub c

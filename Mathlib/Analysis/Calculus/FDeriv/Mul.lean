@@ -70,6 +70,7 @@ theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
   (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x)).comp_hasFDerivWithinAt x <| hc.prod hd
 #align has_fderiv_within_at.clm_comp HasFDerivWithinAt.clm_comp
 
+@[fun_prop]
 theorem HasFDerivAt.clm_comp (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (fun y => (c y).comp (d y))
       ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
@@ -122,6 +123,7 @@ theorem HasFDerivWithinAt.clm_apply (hc : HasFDerivWithinAt c c' s x)
   (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x)).comp_hasFDerivWithinAt x (hc.prod hu)
 #align has_fderiv_within_at.clm_apply HasFDerivWithinAt.clm_apply
 
+@[fun_prop]
 theorem HasFDerivAt.clm_apply (hc : HasFDerivAt c c' x) (hu : HasFDerivAt u u' x) :
     HasFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
   (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x)).comp x (hc.prod hu)
@@ -178,6 +180,7 @@ theorem HasFDerivWithinAt.continuousMultilinear_apply_const (hc : HasFDerivWithi
     HasFDerivWithinAt (fun y ↦ (c y) u) (c'.flipMultilinear u) s x :=
   (ContinuousMultilinearMap.apply 𝕜 M H u).hasFDerivAt.comp_hasFDerivWithinAt x hc
 
+@[fun_prop]
 theorem HasFDerivAt.continuousMultilinear_apply_const (hc : HasFDerivAt c c' x) (u : ∀ i, M i) :
     HasFDerivAt (fun y ↦ (c y) u) (c'.flipMultilinear u) x :=
   (ContinuousMultilinearMap.apply 𝕜 M H u).hasFDerivAt.comp x hc
@@ -249,6 +252,7 @@ theorem HasFDerivWithinAt.smul (hc : HasFDerivWithinAt c c' s x) (hf : HasFDeriv
   (isBoundedBilinearMap_smul.hasFDerivAt (c x, f x)).comp_hasFDerivWithinAt x <| hc.prod hf
 #align has_fderiv_within_at.smul HasFDerivWithinAt.smul
 
+@[fun_prop]
 theorem HasFDerivAt.smul (hc : HasFDerivAt c c' x) (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x :=
   (isBoundedBilinearMap_smul.hasFDerivAt (c x, f x)).comp x <| hc.prod hf
@@ -367,11 +371,13 @@ theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivW
   apply mul_comm
 #align has_fderiv_within_at.mul HasFDerivWithinAt.mul
 
+@[fun_prop]
 theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
     HasFDerivAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) x :=
   ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasFDerivAt (a x, b x)).comp x (ha.prod hb)
 #align has_fderiv_at.mul' HasFDerivAt.mul'
 
+@[fun_prop]
 theorem HasFDerivAt.mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (fun y => c y * d y) (c x • d' + d x • c') x := by
   convert hc.mul' hd
@@ -578,6 +584,7 @@ operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`.
 TODO: prove that `Ring.inverse` is analytic and use it to prove a `HasStrictFDerivAt` lemma.
 TODO (low prio): prove a version without assumption `[CompleteSpace R]` but within the set of
 units. -/
+@[fun_prop]
 theorem hasFDerivAt_ring_inverse (x : Rˣ) :
     HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
   have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
@@ -640,6 +647,7 @@ open NormedRing ContinuousLinearMap Ring
 
 /-- At an invertible element `x` of a normed division algebra `R`, the Fréchet derivative of the
 inversion operation is the linear map `λ t, - x⁻¹ * t * x⁻¹`. -/
+@[fun_prop]
 theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) : HasFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x :=
   by simpa using hasFDerivAt_ring_inverse (Units.mk0 _ hx)
 #align has_fderiv_at_inv' hasFDerivAt_inv'
