@@ -2178,24 +2178,4 @@ theorem Monotone.tendsto_nhdsWithin_Ioi {α β : Type*} [LinearOrder α] [Topolo
 
 end ConditionallyCompleteLinearOrder
 
-section NhdsWithPos
-
-section LinearOrderedAddCommGroup
-
-variable [LinearOrder α] [Zero α] [TopologicalSpace α] [OrderTopology α]
-
-@[deprecated Ioo_mem_nhdsWithin_Ioi']
-theorem eventually_nhdsWithin_pos_mem_Ioo {ε : α} (h : 0 < ε) : ∀ᶠ x in 𝓝[>] 0, x ∈ Ioo 0 ε :=
-  Ioo_mem_nhdsWithin_Ioi' h
-#align eventually_nhds_within_pos_mem_Ioo eventually_nhdsWithin_pos_mem_Ioo
-
-@[deprecated Ioc_mem_nhdsWithin_Ioi']
-theorem eventually_nhdsWithin_pos_mem_Ioc {ε : α} (h : 0 < ε) : ∀ᶠ x in 𝓝[>] 0, x ∈ Ioc 0 ε :=
-  Ioc_mem_nhdsWithin_Ioi' h
-#align eventually_nhds_within_pos_mem_Ioc eventually_nhdsWithin_pos_mem_Ioc
-
-end LinearOrderedAddCommGroup
-
-end NhdsWithPos
-
 end OrderTopology
