@@ -335,10 +335,10 @@ theorem t2_separation_smul {x : α} {g : G} (gx_ne : g • x ≠ x) :
     exact fun h => (gx_ne h).elim
 
   let ⟨t, t_open, x_in_t, pw_disj⟩ := Set.InjOn.t2_separation_smul inj (toFinite {g, 1})
-  refine ⟨t, t_open, x_in_t, ?disj⟩
 
-  have := (pairwise_pair.mp pw_disj fun eq => gx_ne (eq.symm ▸ one_smul G x)).right
-  rwa [Function.onFun_apply, one_smul] at this
+  refine ⟨t, t_open, x_in_t, ?disj⟩
+  simpa [Function.onFun_apply Disjoint, one_smul] using
+    (pairwise_pair.mp pw_disj fun eq => gx_ne (eq.symm ▸ one_smul G x)).right
 
 
 end GroupSeparation
