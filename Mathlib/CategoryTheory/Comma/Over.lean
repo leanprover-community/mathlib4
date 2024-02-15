@@ -63,7 +63,7 @@ theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.
   simp only [eq_iff_true_of_subsingleton]
 #align category_theory.over.over_morphism.ext CategoryTheory.Over.OverMorphism.ext
 
--- @[simp] : Porting note : simp can prove this
+-- @[simp] : Porting note (#10618): simp can prove this
 theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
 #align category_theory.over.over_right CategoryTheory.Over.over_right
 
