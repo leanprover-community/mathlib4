@@ -390,7 +390,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
       tauto
     have B : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) ⟨0, y⟩ :=
       continuous_ofReal.continuousAt.prod_map continuousAt_id
-    exact ContinuousAt.comp (α := ℝ × ℂ) (f := fun p => ⟨↑p.1, p.2⟩) (x := ⟨0, y⟩) A B
+    exact A.comp_of_eq B rfl
   · -- x < 0 : difficult case
     suffices ContinuousAt (fun p => (-(p.1 : ℂ)) ^ p.2 * exp (π * I * p.2) : ℝ × ℂ → ℂ) (x, y) by
       refine' this.congr (eventually_of_mem (prod_mem_nhds (Iio_mem_nhds hx) univ_mem) _)
@@ -434,9 +434,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
   rw [this]
   refine' continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp _ _)
   · apply Real.continuousAt_rpow
-    simp only [Ne.def] at h
-    rw [← NNReal.coe_eq_zero x] at h
-    exact h
+    simpa using h
   · exact ((continuous_subtype_val.comp continuous_fst).prod_mk continuous_snd).continuousAt
 #align nnreal.continuous_at_rpow NNReal.continuousAt_rpow
 

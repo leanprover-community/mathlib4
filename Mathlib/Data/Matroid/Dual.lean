@@ -68,7 +68,7 @@ section dual
     exact disjoint_of_subset_left hB''₂.2 disjoint_compl_left
   indep_maximal := by
     rintro X - I'⟨hI'E, B, hB, hI'B⟩ hI'X
-    obtain ⟨I, hI⟩ :=  M.exists_basis (M.E \ X)
+    obtain ⟨I, hI⟩ := M.exists_basis (M.E \ X)
     obtain ⟨B', hB', hIB', hB'IB⟩ := hI.indep.exists_base_subset_union_base hB
     refine' ⟨(X \ B') ∩ M.E,
       ⟨_,subset_inter (subset_diff.mpr _) hI'E, (inter_subset_left _ _).trans (diff_subset _ _)⟩, _⟩

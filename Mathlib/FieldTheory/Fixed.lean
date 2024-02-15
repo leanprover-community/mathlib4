@@ -314,7 +314,7 @@ theorem linearIndependent_toLinearMap (R : Type u) (A : Type v) (B : Type w) [Co
     LinearIndependent B (AlgHom.toLinearMap : (A →ₐ[R] B) → A →ₗ[R] B) :=
   have : LinearIndependent B (LinearMap.ltoFun R A B ∘ AlgHom.toLinearMap) :=
     ((linearIndependent_monoidHom A B).comp ((↑) : (A →ₐ[R] B) → A →* B) fun _ _ hfg =>
-        AlgHom.ext fun _ => FunLike.ext_iff.1 hfg _ :
+        AlgHom.ext fun _ => DFunLike.ext_iff.1 hfg _ :
       _)
   this.of_comp _
 #align linear_independent_to_linear_map linearIndependent_toLinearMap
@@ -363,7 +363,7 @@ theorem toAlgHom_bijective (G : Type u) (F : Type v) [Group G] [Field F] [Finite
 #align fixed_points.to_alg_hom_bijective FixedPoints.toAlgHom_bijective
 
 /-- Bijection between G and algebra homomorphisms that fix the fixed points -/
-def toAlgHomEquiv (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G] [MulSemiringAction G F]
+def toAlgHomEquiv (G : Type u) (F : Type v) [Group G] [Field F] [Finite G] [MulSemiringAction G F]
     [FaithfulSMul G F] : G ≃ (F →ₐ[FixedPoints.subfield G F] F) :=
   Equiv.ofBijective _ (toAlgHom_bijective G F)
 #align fixed_points.to_alg_hom_equiv FixedPoints.toAlgHomEquiv
