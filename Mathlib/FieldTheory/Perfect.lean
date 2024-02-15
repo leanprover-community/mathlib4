@@ -308,6 +308,25 @@ theorem roots_expand_pow :
 theorem roots_expand : (expand R p f).roots = p • f.roots.map (frobeniusEquiv R p).symm := by
   conv_lhs => rw [← pow_one p, roots_expand_pow, iterateFrobeniusEquiv_eq_pow, pow_one]
 
+theorem roots_X_pow_char_pow_sub_C {y : R} :
+    (X ^ p ^ n - C y).roots = p ^ n • {(iterateFrobeniusEquiv R p n).symm y} := by
+  have H := roots_expand_pow (p := p) (n := n) (f := X - C y)
+  rwa [roots_X_sub_C, Multiset.map_singleton, map_sub, expand_X, expand_C] at H
+
+theorem roots_X_pow_char_pow_sub_C_pow {y : R} {m : ℕ} :
+    ((X ^ p ^ n - C y) ^ m).roots = (m * p ^ n) • {(iterateFrobeniusEquiv R p n).symm y} := by
+  rw [roots_pow, roots_X_pow_char_pow_sub_C, mul_smul]
+
+theorem roots_X_pow_char_sub_C {y : R} :
+    (X ^ p - C y).roots = p • {(frobeniusEquiv R p).symm y} := by
+  have H := roots_X_pow_char_pow_sub_C (p := p) (n := 1) (y := y)
+  rwa [pow_one, iterateFrobeniusEquiv_one] at H
+
+theorem roots_X_pow_char_sub_C_pow {y : R} {m : ℕ} :
+    ((X ^ p - C y) ^ m).roots = (m * p) • {(frobeniusEquiv R p).symm y} := by
+  have H := roots_X_pow_char_pow_sub_C_pow (p := p) (n := 1) (y := y) (m := m)
+  rwa [pow_one, iterateFrobeniusEquiv_one] at H
+
 theorem roots_expand_pow_map_iterateFrobenius :
     (expand R (p ^ n) f).roots.map (iterateFrobenius R p n) = p ^ n • f.roots := by
   simp_rw [← coe_iterateFrobeniusEquiv, roots_expand_pow, Multiset.map_nsmul,
