@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.LinearAlgebra.Alternating
+import Mathlib.LinearAlgebra.Alternating.Basic
 
 #align_import linear_algebra.exterior_algebra.basic from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
 
@@ -74,7 +74,7 @@ theorem ι_sq_zero (m : M) : ι R m * ι R m = 0 :=
   (CliffordAlgebra.ι_sq_scalar _ m).trans <| map_zero _
 #align exterior_algebra.ι_sq_zero ExteriorAlgebra.ι_sq_zero
 
-variable {A : Type _} [Semiring A] [Algebra R A]
+variable {A : Type*} [Semiring A] [Algebra R A]
 
 -- @[simp] -- Porting note: simp can prove this
 theorem comp_ι_sq_zero (g : ExteriorAlgebra R M →ₐ[R] A) (m : M) : g (ι R m) * g (ι R m) = 0 := by
@@ -138,7 +138,7 @@ theorem induction {C : ExteriorAlgebra R M → Prop}
 
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : ExteriorAlgebra R M →ₐ[R] R :=
-  ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun m => by simp⟩
+  ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun _ => by simp⟩
 #align exterior_algebra.algebra_map_inv ExteriorAlgebra.algebraMapInv
 
 variable (M)
@@ -252,9 +252,7 @@ theorem ι_range_disjoint_one :
 
 @[simp]
 theorem ι_add_mul_swap (x y : M) : ι R x * ι R y + ι R y * ι R x = 0 :=
-  calc
-    _ = ι R (y + x) * ι R (y + x) := by simp [mul_add, add_mul]
-    _ = _ := ι_sq_zero _
+  CliffordAlgebra.ι_mul_ι_add_swap_of_isOrtho <| .all _ _
 #align exterior_algebra.ι_add_mul_swap ExteriorAlgebra.ι_add_mul_swap
 
 theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
@@ -263,14 +261,13 @@ theorem ι_mul_prod_list {n : ℕ} (f : Fin n → M) (i : Fin n) :
   · exact i.elim0
   · rw [List.ofFn_succ, List.prod_cons, ← mul_assoc]
     by_cases h : i = 0
-    · rw [h, ι_sq_zero, MulZeroClass.zero_mul]
+    · rw [h, ι_sq_zero, zero_mul]
     · replace hn :=
-        congr_arg
-          ((· * ·) <| ι R <| f 0) (hn (fun i => f <| Fin.succ i) (i.pred h))
+        congr_arg (ι R (f 0) * ·) <| hn (fun i => f <| Fin.succ i) (i.pred h)
       simp only at hn
-      rw [Fin.succ_pred, ← mul_assoc, MulZeroClass.mul_zero] at hn
+      rw [Fin.succ_pred, ← mul_assoc, mul_zero] at hn
       refine' (eq_zero_iff_eq_zero_of_add_eq_zero _).mp hn
-      rw [← add_mul, ι_add_mul_swap, MulZeroClass.zero_mul]
+      rw [← add_mul, ι_add_mul_swap, zero_mul]
 #align exterior_algebra.ι_mul_prod_list ExteriorAlgebra.ι_mul_prod_list
 
 variable (R)
@@ -279,7 +276,7 @@ variable (R)
 
 This is a special case of `MultilinearMap.mkPiAlgebraFin`, and the exterior algebra version of
 `TensorAlgebra.tprod`. -/
-def ιMulti (n : ℕ) : AlternatingMap R M (ExteriorAlgebra R M) (Fin n) :=
+def ιMulti (n : ℕ) : M [Λ^Fin n]→ₗ[R] ExteriorAlgebra R M :=
   let F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
   { F with
     map_eq_zero_of_eq' := fun f x y hfxy hxy => by
@@ -297,7 +294,7 @@ def ιMulti (n : ℕ) : AlternatingMap R M (ExteriorAlgebra R M) (Fin n) :=
           rw [hfxy, ← Fin.succ_pred y (ne_of_lt h).symm]
           exact ι_mul_prod_list (f ∘ Fin.succ) _
         -- ignore the left-most term and induct on the remaining ones, decrementing indices
-        · convert MulZeroClass.mul_zero (ι R (f 0))
+        · convert mul_zero (ι R (f 0))
           refine'
             hn
               (fun i => f <| Fin.succ i) (x.pred hx)
@@ -332,6 +329,10 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
       simp_rw [Matrix.tail_cons]
       rfl
 #align exterior_algebra.ι_multi_succ_curry_left ExteriorAlgebra.ιMulti_succ_curryLeft
+
+/-- An `ExteriorAlgebra` over a nontrivial ring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (ExteriorAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
 
 end ExteriorAlgebra
 

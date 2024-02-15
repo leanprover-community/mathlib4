@@ -30,11 +30,11 @@ with respect to an ideal `I`:
 
 open Submodule
 
-variable {R : Type _} [CommRing R] (I : Ideal R)
+variable {R : Type*} [CommRing R] (I : Ideal R)
 
-variable (M : Type _) [AddCommGroup M] [Module R M]
+variable (M : Type*) [AddCommGroup M] [Module R M]
 
-variable {N : Type _} [AddCommGroup N] [Module R N]
+variable {N : Type*} [AddCommGroup N] [Module R N]
 
 /-- A module `M` is Hausdorff with respect to an ideal `I` if `⋂ I^n M = 0`. -/
 class IsHausdorff : Prop where
@@ -85,13 +85,12 @@ def Hausdorffification : Type _ :=
   M ⧸ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M)
 #align Hausdorffification Hausdorffification
 
-set_option maxHeartbeats 700000 in
 /-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
 In fact, this is only complete if the ideal is finitely generated. -/
 def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
   carrier := { f | ∀ {m n} (h : m ≤ n), liftQ _ (mkQ _) (by
       rw [ker_mkQ]
-      exact smul_mono (Ideal.pow_le_pow h) le_rfl)
+      exact smul_mono (Ideal.pow_le_pow_right h) le_rfl)
     (f n) = f m }
   zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
   add_mem' hf hg m n hmn := by
@@ -213,7 +212,6 @@ def of : M →ₗ[R] adicCompletion I M where
   map_smul' _ _ := rfl
 #align adic_completion.of adicCompletion.of
 
-set_option maxHeartbeats 700000 in
 @[simp]
 theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ _ x :=
   rfl
@@ -236,7 +234,6 @@ theorem eval_apply (n : ℕ) (f : adicCompletion I M) : eval I M n f = f.1 n :=
   rfl
 #align adic_completion.eval_apply adicCompletion.eval_apply
 
-set_option maxHeartbeats 700000 in
 theorem eval_of (n : ℕ) (x : M) : eval I M n (of I M x) = mkQ _ x :=
   rfl
 #align adic_completion.eval_of adicCompletion.eval_of

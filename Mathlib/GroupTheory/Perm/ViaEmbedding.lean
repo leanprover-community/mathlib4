@@ -13,7 +13,7 @@ import Mathlib.Logic.Equiv.Set
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Equiv
 

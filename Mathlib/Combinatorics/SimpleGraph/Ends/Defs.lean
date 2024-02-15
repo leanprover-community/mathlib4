@@ -88,8 +88,8 @@ namespace ComponentCompl
 /-- A `ComponentCompl` specialization of `Quot.lift`, where soundness has to be proved only
 for adjacent vertices.
 -/
-protected def lift {β : Sort _} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
-    (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K) (_ : G.Adj v w), f hv = f hw) : G.ComponentCompl K → β :=
+protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
+    (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K), G.Adj v w → f hv = f hw) : G.ComponentCompl K → β :=
   ConnectedComponent.lift (fun vv => f vv.prop) fun v w p => by
     induction' p with _ u v w a q ih
     · rintro _
@@ -159,7 +159,7 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
   refine' ComponentCompl.ind fun v vnK => _
   let C : G.ComponentCompl K := G.componentComplMk vnK
   let dis := Set.disjoint_iff.mp C.disjoint_right
-  by_contra' h
+  by_contra! h
   suffices Set.univ = (C : Set V) by exact dis ⟨hK.choose_spec, this ▸ Set.mem_univ hK.some⟩
   symm
   rw [Set.eq_univ_iff_forall]
@@ -176,7 +176,7 @@ If `K ⊆ L`, the components outside of `L` are all contained in a single compon
 -/
 @[reducible]
 def hom (h : K ⊆ L) (C : G.ComponentCompl L) : G.ComponentCompl K :=
-  C.map <| InduceHom Hom.id <| Set.compl_subset_compl.2 h
+  C.map <| induceHom Hom.id <| Set.compl_subset_compl.2 h
 #align simple_graph.component_compl.hom SimpleGraph.ComponentCompl.hom
 
 theorem subset_hom (C : G.ComponentCompl L) (h : K ⊆ L) : (C : Set V) ⊆ (C.hom h : Set V) := by

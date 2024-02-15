@@ -20,15 +20,14 @@ for those subobjects.
 -/
 
 
-variable {M G R : Type _}
+variable {M G R : Type*}
 
 variable [Monoid M] [Group G] [Semiring R]
 
 /-- A stronger version of `Submonoid.distribMulAction`. -/
 instance Submonoid.mulSemiringAction [MulSemiringAction M R] (H : Submonoid M) :
     MulSemiringAction H R :=
-  { inferInstanceAs (DistribMulAction H R), inferInstanceAs (MulDistribMulAction H R)
-    with smul := (· • ·) }
+  { inferInstanceAs (DistribMulAction H R), inferInstanceAs (MulDistribMulAction H R) with }
 #align submonoid.mul_semiring_action Submonoid.mulSemiringAction
 
 /-- A stronger version of `Subgroup.distribMulAction`. -/

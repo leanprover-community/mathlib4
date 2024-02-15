@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Order.Basic
 import Mathlib.Order.WellFounded
+import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Mathport.Notation
@@ -32,12 +33,9 @@ Related files are:
 -/
 
 
-variable {ι : Type _} {β : ι → Type _} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
+variable {ι : Type*} {β : ι → Type*} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
 
 namespace Pi
-
-instance {α : Type _} : ∀ [Inhabited α], Inhabited (Lex α) :=
-  @fun x => x
 
 /-- The lexicographic relation on `Π i : ι, β i`, where `ι` is ordered by `r`,
   and each `β i` is ordered by `s`. -/
@@ -76,7 +74,7 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y
 theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r) :
     IsTrichotomous (∀ i, β i) (Pi.Lex r @s) :=
   { trichotomous := fun a b => by
-      cases' eq_or_ne a b with hab hab
+      rcases eq_or_ne a b with hab | hab
       · exact Or.inr (Or.inl hab)
       · rw [Function.ne_iff] at hab
         let i := wf.min _ hab
@@ -222,24 +220,49 @@ instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, Parti
     let ⟨_, hb⟩ := exists_lt (ofLex a)
     ⟨_, toLex_strictMono hb⟩⟩
 
---We might want the analog of `Pi.orderedCancelCommMonoid` as well in the future.
+section OrderedMonoid
+
+variable [LinearOrder ι]
+
 @[to_additive]
-instance Lex.orderedCommGroup [LinearOrder ι] [∀ a, OrderedCommGroup (β a)] :
-    OrderedCommGroup (Lex (∀ i, β i)) :=
-  { Pi.commGroup with
-    mul_le_mul_left := fun x y hxy z =>
-      hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
-        Or.inr ⟨i, fun j hji =>
-          show z j * x j = z j * y j by rw [hi.1 j hji], mul_lt_mul_left' hi.2 _⟩ }
+instance Lex.orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid (β i)] :
+    OrderedCancelCommMonoid (Lex (∀ i, β i)) where
+  mul_le_mul_left _ _ hxy z :=
+    hxy.elim (fun hxyz => hxyz ▸ le_rfl) fun ⟨i, hi⟩ =>
+      Or.inr ⟨i, fun j hji => congr_arg (z j * ·) (hi.1 j hji), mul_lt_mul_left' hi.2 _⟩
+  le_of_mul_le_mul_left _ _ _ hxyz :=
+    hxyz.elim (fun h => (mul_left_cancel h).le) fun ⟨i, hi⟩ =>
+      Or.inr ⟨i, fun j hj => (mul_left_cancel <| hi.1 j hj), lt_of_mul_lt_mul_left' hi.2⟩
+
+@[to_additive]
+instance Lex.orderedCommGroup [∀ i, OrderedCommGroup (β i)] :
+    OrderedCommGroup (Lex (∀ i, β i)) where
+  mul_le_mul_left _ _ := mul_le_mul_left'
 #align pi.lex.ordered_comm_group Pi.Lex.orderedCommGroup
 #align pi.lex.ordered_add_comm_group Pi.Lex.orderedAddCommGroup
 
+@[to_additive]
+noncomputable instance Lex.linearOrderedCancelCommMonoid [IsWellOrder ι (· < ·)]
+    [∀ i, LinearOrderedCancelCommMonoid (β i)] :
+    LinearOrderedCancelCommMonoid (Lex (∀ i, β i)) where
+  __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
+  __ : OrderedCancelCommMonoid (Lex (∀ i, β i)) := inferInstance
+
+@[to_additive]
+noncomputable instance Lex.linearOrderedCommGroup [IsWellOrder ι (· < ·)]
+    [∀ i, LinearOrderedCommGroup (β i)] :
+    LinearOrderedCommGroup (Lex (∀ i, β i)) where
+  __ : LinearOrder (Lex (∀ i, β i)) := inferInstance
+  mul_le_mul_left _ _ := mul_le_mul_left'
+
+end OrderedMonoid
+
 /-- If we swap two strictly decreasing values in a function, then the result is lexicographically
 smaller than the original function. -/
-theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → α} {i j : ι} (h₁ : i < j)
+theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → α} {i j : ι} (h₁ : i ≤ j)
     (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f :=
-  ⟨i, fun k hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans h₁).ne), by
+  ⟨i, fun k hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
     simpa only [Pi.toLex_apply, Function.comp_apply, Equiv.swap_apply_left] using h₂⟩
-#align pi.lex_desc Pi.lex_desc
+#align pi.lex_desc Pi.lex_descₓ
 
 end Pi

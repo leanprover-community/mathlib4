@@ -20,7 +20,7 @@ Note that unlike the `Pi` instance, this requires `G` to be a group.
 
 universe u v w
 
-variable {G G' α β : Type _}
+variable {G G' α β : Type*}
 
 namespace Function.Embedding
 
@@ -62,6 +62,6 @@ instance [Group G] [MulAction G β] [MulAction Gᵐᵒᵖ β] [IsCentralScalar G
 
 @[to_additive]
 instance [Group G] [MulAction G β] : MulAction G (α ↪ β) :=
-  FunLike.coe_injective.mulAction _ coe_smul
+  DFunLike.coe_injective.mulAction _ coe_smul
 
 end Function.Embedding

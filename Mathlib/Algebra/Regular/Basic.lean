@@ -3,9 +3,10 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Commute
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Order.Monoid.Lemmas
-import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Tactic.NthRewrite
 
 #align_import algebra.regular.basic from "leanprover-community/mathlib"@"5cd3c25312f210fec96ba1edb2aebfb2ccf2010f"
 
@@ -28,7 +29,7 @@ The final goal is to develop part of the API to prove, eventually, results about
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
 section Mul
 
@@ -54,7 +55,7 @@ def IsRightRegular (c : R) :=
 
 /-- An add-regular element is an element `c` such that addition by `c` both on the left and
 on the right is injective. -/
-structure IsAddRegular {R : Type _} [Add R] (c : R) : Prop where
+structure IsAddRegular {R : Type*} [Add R] (c : R) : Prop where
   /-- An add-regular element `c` is left-regular -/
   left : IsAddLeftRegular c -- Porting note: It seems like to_additive is misbehaving
   /-- An add-regular element `c` is right-regular -/
@@ -70,6 +71,8 @@ structure IsRegular (c : R) : Prop where
   right : IsRightRegular c
 #align is_regular IsRegular
 
+attribute [simp] IsRegular.left IsRegular.right
+
 attribute [to_additive] IsRegular
 
 @[to_additive]
@@ -83,6 +86,15 @@ theorem IsLeftRegular.right_of_commute {a : R}
     (ca : ∀ b, Commute a b) (h : IsLeftRegular a) : IsRightRegular a :=
   fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
 #align is_left_regular.right_of_commute IsLeftRegular.right_of_commute
+
+theorem IsRightRegular.left_of_commute {a : R}
+    (ca : ∀ b, Commute a b) (h : IsRightRegular a) : IsLeftRegular a := by
+  simp_rw [@Commute.symm_iff R _ a] at ca
+  exact fun x y xy => h <| (ca x).trans <| xy.trans <| (ca y).symm
+
+theorem Commute.isRightRegular_iff {a : R} (ca : ∀ b, Commute a b) :
+    IsRightRegular a ↔ IsLeftRegular a :=
+  ⟨IsRightRegular.left_of_commute ca, IsLeftRegular.right_of_commute ca⟩
 
 theorem Commute.isRegular_iff {a : R} (ca : ∀ b, Commute a b) : IsRegular a ↔ IsLeftRegular a :=
   ⟨fun h => h.left, fun h => ⟨h, h.right_of_commute ca⟩⟩
@@ -136,7 +148,7 @@ an add-right-regular element, then `b` is add-right-regular."]
 theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b := by
   refine' fun x y xy => ab (_ : x * (b * a) = y * (b * a))
   rw [← mul_assoc, ← mul_assoc]
-  exact congr_fun (congr_arg (· * ·) xy) a
+  exact congr_arg (· * a) xy
 #align is_right_regular.of_mul IsRightRegular.of_mul
 #align is_add_right_regular.of_add IsAddRightRegular.of_add
 
@@ -266,6 +278,14 @@ theorem not_isRightRegular_zero [nR : Nontrivial R] : ¬IsRightRegular (0 : R) :
 theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRegular.ne_zero h rfl
 #align not_is_regular_zero not_isRegular_zero
 
+@[simp] lemma IsLeftRegular.mul_left_eq_zero_iff (hb : IsLeftRegular b) : b * a = 0 ↔ a = 0 := by
+  nth_rw 1 [← mul_zero b]
+  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, mul_zero]⟩
+
+@[simp] lemma IsRightRegular.mul_right_eq_zero_iff (hb : IsRightRegular b) : a * b = 0 ↔ a = 0 := by
+  nth_rw 1 [← zero_mul b]
+  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, zero_mul]⟩
+
 end MulZeroClass
 
 section MulOneClass
@@ -331,35 +351,26 @@ theorem IsUnit.isRegular (ua : IsUnit a) : IsRegular a := by
 
 end Monoid
 
-/-- Elements of a left cancel semigroup are left regular. -/
-@[to_additive "Elements of an add left cancel semigroup are add-left-regular."]
-theorem isLeftRegular_of_leftCancelSemigroup [LeftCancelSemigroup R]
-    (g : R) : IsLeftRegular g :=
+/-- If all multiplications cancel on the left then every element is left-regular. -/
+@[to_additive "If all additions cancel on the left then every element is add-left-regular."]
+theorem IsLeftRegular.all [Mul R] [IsLeftCancelMul R] (g : R) : IsLeftRegular g :=
   mul_right_injective g
-#align is_left_regular_of_left_cancel_semigroup isLeftRegular_of_leftCancelSemigroup
-#align is_add_left_regular_of_left_cancel_add_semigroup isAddLeftRegular_of_addLeftCancelSemigroup
+#align is_left_regular_of_left_cancel_semigroup IsLeftRegular.all
+#align is_add_left_regular_of_left_cancel_add_semigroup IsAddLeftRegular.all
 
-/-- Elements of a right cancel semigroup are right regular. -/
-@[to_additive "Elements of an add right cancel semigroup are add-right-regular"]
-theorem isRightRegular_of_rightCancelSemigroup [RightCancelSemigroup R]
-    (g : R) : IsRightRegular g :=
+/-- If all multiplications cancel on the right then every element is right-regular. -/
+@[to_additive "If all additions cancel on the right then every element is add-right-regular."]
+theorem IsRightRegular.all [Mul R] [IsRightCancelMul R] (g : R) : IsRightRegular g :=
   mul_left_injective g
-#align is_right_regular_of_right_cancel_semigroup isRightRegular_of_rightCancelSemigroup
-#align is_add_right_regular_of_right_cancel_add_semigroup   isAddRightRegular_of_addRightCancelSemigroup
+#align is_right_regular_of_right_cancel_semigroup IsRightRegular.all
+#align is_add_right_regular_of_right_cancel_add_semigroup IsLeftRegular.all
 
-section CancelMonoid
-
-variable [CancelMonoid R]
-
-/-- Elements of a cancel monoid are regular.  Cancel semigroups do not appear to exist. -/
-@[to_additive "Elements of an add cancel monoid are regular.
-Add cancel semigroups do not appear to exist."]
-theorem isRegular_of_cancelMonoid (g : R) : IsRegular g :=
+/-- If all multiplications cancel then every element is regular. -/
+@[to_additive "If all additions cancel then every element is add-regular."]
+theorem IsRegular.all [Mul R] [IsCancelMul R] (g : R) : IsRegular g :=
   ⟨mul_right_injective g, mul_left_injective g⟩
-#align is_regular_of_cancel_monoid isRegular_of_cancelMonoid
-#align is_add_regular_of_cancel_add_monoid isAddRegular_of_addCancelMonoid
-
-end CancelMonoid
+#align is_regular_of_cancel_monoid IsRegular.all
+#align is_add_regular_of_cancel_add_monoid IsAddRegular.all
 
 section CancelMonoidWithZero
 

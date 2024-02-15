@@ -3,10 +3,10 @@ Copyright (c) 2022 Siddhartha Prasad, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Prasad, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Tactic.Monotonicity.Attr
 
 #align_import algebra.order.kleene from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -54,7 +54,7 @@ open Function
 
 universe u
 
-variable {α β ι : Type _} {π : ι → Type _}
+variable {α β ι : Type*} {π : ι → Type*}
 
 /-- An idempotent semiring is a semiring with the additional property that addition is idempotent.
 -/
@@ -73,7 +73,7 @@ class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 #align idem_comm_semiring IdemCommSemiring
 
 /-- Notation typeclass for the Kleene star `∗`. -/
-class KStar (α : Type _) where
+class KStar (α : Type*) where
   protected kstar : α → α
 #align has_kstar KStar
 
@@ -88,7 +88,7 @@ star) that satisfies the following properties:
 * If `a * c + b ≤ c`, then `a∗ * b ≤ c`
 * If `c * a + b ≤ c`, then `b * a∗ ≤ c`
 -/
-class KleeneAlgebra (α : Type _) extends IdemSemiring α, KStar α where
+class KleeneAlgebra (α : Type*) extends IdemSemiring α, KStar α where
   protected one_le_kstar : ∀ a : α, 1 ≤ a∗
   protected mul_kstar_le_kstar : ∀ a : α, a * a∗ ≤ a∗
   protected kstar_mul_le_kstar : ∀ a : α, a∗ * a ≤ a∗
@@ -153,10 +153,10 @@ theorem add_eq_left_iff_le : a + b = a ↔ b ≤ a := by simp
 theorem add_eq_right_iff_le : a + b = b ↔ a ≤ b := by simp
 #align add_eq_right_iff_le add_eq_right_iff_le
 
-alias add_eq_left_iff_le ↔ _ LE.le.add_eq_left
+alias ⟨_, LE.le.add_eq_left⟩ := add_eq_left_iff_le
 #align has_le.le.add_eq_left LE.le.add_eq_left
 
-alias add_eq_right_iff_le ↔ _ LE.le.add_eq_right
+alias ⟨_, LE.le.add_eq_right⟩ := add_eq_right_iff_le
 #align has_le.le.add_eq_right LE.le.add_eq_right
 
 theorem add_le_iff : a + b ≤ c ↔ a ≤ c ∧ b ≤ c := by simp
@@ -167,15 +167,15 @@ theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
 #align add_le add_le
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddMonoid :
-    CanonicallyOrderedAddMonoid α :=
+instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddCommMonoid :
+    CanonicallyOrderedAddCommMonoid α :=
   { ‹IdemSemiring α› with
     add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
       exact sup_le_sup_left hbc _
     exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
     le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
-#align idem_semiring.to_canonically_ordered_add_monoid IdemSemiring.toCanonicallyOrderedAddMonoid
+#align idem_semiring.to_canonically_ordered_add_monoid IdemSemiring.toCanonicallyOrderedAddCommMonoid
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toCovariantClass_mul_le :

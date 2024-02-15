@@ -73,7 +73,13 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 /-- An exact pairing is a pair of objects `X Y : C` which admit
   a coevaluation and evaluation morphism which fulfill two triangle equalities. -/
 class ExactPairing (X Y : C) where
+  /-- Coevaluation of an exact pairing.
+
+  Do not use directly. Use `ExactPairing.coevaluation` instead. -/
   coevaluation' : 𝟙_ C ⟶ X ⊗ Y
+  /-- Evaluation of an exact pairing.
+
+  Do not use directly. Use `ExactPairing.evaluation` instead. -/
   evaluation' : Y ⊗ X ⟶ 𝟙_ C
   coevaluation_evaluation' :
     (𝟙 Y ⊗ coevaluation') ≫ (α_ _ _ _).inv ≫ (evaluation' ⊗ 𝟙 Y) = (ρ_ Y).hom ≫ (λ_ Y).inv := by
@@ -93,11 +99,14 @@ namespace ExactPairing
 variable (X Y : C)
 variable [ExactPairing X Y]
 
+/-- Coevaluation of an exact pairing. -/
 def coevaluation : 𝟙_ C ⟶ X ⊗ Y := @coevaluation' _ _ _ X Y _
+
+/-- Evaluation of an exact pairing. -/
 def evaluation : Y ⊗ X ⟶ 𝟙_ C := @evaluation' _ _ _ X Y _
 
-notation "η_" => ExactPairing.coevaluation
-notation "ε_" => ExactPairing.evaluation
+@[inherit_doc] notation "η_" => ExactPairing.coevaluation
+@[inherit_doc] notation "ε_" => ExactPairing.evaluation
 
 lemma coevaluation_evaluation :
     (𝟙 Y ⊗ η_ _ _) ≫ (α_ _ _ _).inv ≫ (ε_ X _ ⊗ 𝟙 Y) = (ρ_ Y).hom ≫ (λ_ Y).inv :=
@@ -121,12 +130,14 @@ instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
 
 /-- A class of objects which have a right dual. -/
 class HasRightDual (X : C) where
+  /-- The right dual of the object `X`. -/
   rightDual : C
   [exact : ExactPairing X rightDual]
 #align category_theory.has_right_dual CategoryTheory.HasRightDual
 
 /-- A class of objects which have a left dual. -/
 class HasLeftDual (Y : C) where
+  /-- The left dual of the object `X`. -/
   leftDual : C
   [exact : ExactPairing leftDual Y]
 #align category_theory.has_left_dual CategoryTheory.HasLeftDual
@@ -136,8 +147,8 @@ attribute [instance] HasLeftDual.exact
 
 open ExactPairing HasRightDual HasLeftDual MonoidalCategory
 
-prefix:1024 "ᘁ" => leftDual
-postfix:1024 "ᘁ" => rightDual
+@[inherit_doc] prefix:1024 "ᘁ" => leftDual
+@[inherit_doc] postfix:1024 "ᘁ" => rightDual
 
 instance hasRightDualUnit : HasRightDual (𝟙_ C) where
   rightDual := 𝟙_ C
@@ -175,8 +186,8 @@ def leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) : �
   (λ_ _).inv ≫ (η_ (ᘁX) X ⊗ 𝟙 _) ≫ ((𝟙 _ ⊗ f) ⊗ 𝟙 _) ≫ (α_ _ _ _).hom ≫ (𝟙 _ ⊗ ε_ _ _) ≫ (ρ_ _).hom
 #align category_theory.left_adjoint_mate CategoryTheory.leftAdjointMate
 
-notation f "ᘁ" => rightAdjointMate f
-notation "ᘁ" f => leftAdjointMate f
+@[inherit_doc] notation f "ᘁ" => rightAdjointMate f
+@[inherit_doc] notation "ᘁ" f => leftAdjointMate f
 
 @[simp]
 theorem rightAdjointMate_id {X : C} [HasRightDual X] : (𝟙 X)ᘁ = 𝟙 (Xᘁ) := by
@@ -310,8 +321,7 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
     have c :
       (α_ Y' (Y ⊗ Y') X).hom ≫
           (𝟙 Y' ⊗ (α_ Y Y' X).hom) ≫ (α_ Y' Y (Y' ⊗ X)).inv ≫ (α_ (Y' ⊗ Y) Y' X).inv =
-        (α_ _ _ _).inv ⊗ 𝟙 _
-    pure_coherence
+        (α_ _ _ _).inv ⊗ 𝟙 _ := by pure_coherence
     slice_lhs 4 7 => rw [c]
     slice_lhs 3 5 => rw [← comp_tensor_id, ← comp_tensor_id, coevaluation_evaluation]
     simp only [leftUnitor_conjugation]
@@ -325,8 +335,7 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
     have c :
       (α_ (Y ⊗ Y') Y Z).hom ≫
           (α_ Y Y' (Y ⊗ Z)).hom ≫ (𝟙 Y ⊗ (α_ Y' Y Z).inv) ≫ (α_ Y (Y' ⊗ Y) Z).inv =
-        (α_ _ _ _).hom ⊗ 𝟙 Z
-    pure_coherence
+        (α_ _ _ _).hom ⊗ 𝟙 Z := by pure_coherence
     slice_lhs 5 8 => rw [c]
     slice_lhs 4 6 => rw [← comp_tensor_id, ← comp_tensor_id, evaluation_coevaluation]
     simp only [leftUnitor_conjugation]
@@ -349,8 +358,7 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
     have c :
       (α_ X (Y ⊗ Y') Y).inv ≫
           ((α_ X Y Y').inv ⊗ 𝟙 Y) ≫ (α_ (X ⊗ Y) Y' Y).hom ≫ (α_ X Y (Y' ⊗ Y)).hom =
-        𝟙 _ ⊗ (α_ _ _ _).hom
-    pure_coherence
+        𝟙 _ ⊗ (α_ _ _ _).hom := by pure_coherence
     slice_lhs 4 7 => rw [c]
     slice_lhs 3 5 => rw [← id_tensor_comp, ← id_tensor_comp, evaluation_coevaluation]
     simp only [rightUnitor_conjugation]
@@ -364,8 +372,7 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
     have c :
       (α_ Z Y' (Y ⊗ Y')).inv ≫
           (α_ (Z ⊗ Y') Y Y').inv ≫ ((α_ Z Y' Y).hom ⊗ 𝟙 Y') ≫ (α_ Z (Y' ⊗ Y) Y').hom =
-        𝟙 _ ⊗ (α_ _ _ _).inv
-    pure_coherence
+        𝟙 _ ⊗ (α_ _ _ _).inv := by pure_coherence
     slice_lhs 5 8 => rw [c]
     slice_lhs 4 6 => rw [← id_tensor_comp, ← id_tensor_comp, coevaluation_evaluation]
     simp only [rightUnitor_conjugation]
@@ -433,8 +440,8 @@ structure shouldn't come from `has_left_dual` (e.g. in the category `FinVect k`,
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic).
 -/
-def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y
-    where isAdj := ⟨_, tensorLeftAdjunction (ᘁY) Y⟩
+def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y where
+  isAdj := ⟨_, tensorLeftAdjunction (ᘁY) Y⟩
 #align category_theory.closed_of_has_left_dual CategoryTheory.closedOfHasLeftDual
 
 /-- `tensorLeftHomEquiv` commutes with tensoring on the right -/
@@ -472,7 +479,7 @@ theorem tensorLeftHomEquiv_symm_coevaluation_comp_id_tensor {Y Y' Z : C} [ExactP
   slice_lhs 2 3 => rw [associator_inv_naturality]
   slice_lhs 3 4 => rw [tensor_id, id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
   slice_lhs 1 3 => rw [coevaluation_evaluation]
-  simp
+  simp [id_tensorHom]
 #align category_theory.tensor_left_hom_equiv_symm_coevaluation_comp_id_tensor CategoryTheory.tensorLeftHomEquiv_symm_coevaluation_comp_id_tensor
 
 @[simp]
@@ -499,7 +506,7 @@ theorem tensorRightHomEquiv_symm_coevaluation_comp_tensor_id {Y Y' Z : C} [Exact
   slice_lhs 2 3 => rw [associator_naturality]
   slice_lhs 3 4 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
   slice_lhs 1 3 => rw [evaluation_coevaluation]
-  simp
+  simp [tensorHom_id]
 #align category_theory.tensor_right_hom_equiv_symm_coevaluation_comp_tensor_id CategoryTheory.tensorRightHomEquiv_symm_coevaluation_comp_tensor_id
 
 @[simp]
@@ -510,7 +517,7 @@ theorem tensorLeftHomEquiv_id_tensor_comp_evaluation {Y Z : C} [HasLeftDual Z] (
   slice_lhs 3 4 => rw [← associator_naturality]
   slice_lhs 2 3 => rw [tensor_id, tensor_id_comp_id_tensor, ← id_tensor_comp_tensor_id]
   slice_lhs 3 5 => rw [evaluation_coevaluation]
-  simp
+  simp [id_tensorHom]
 #align category_theory.tensor_left_hom_equiv_id_tensor_comp_evaluation CategoryTheory.tensorLeftHomEquiv_id_tensor_comp_evaluation
 
 @[simp]
@@ -535,7 +542,7 @@ theorem tensorRightHomEquiv_tensor_id_comp_evaluation {X Y : C} [HasRightDual X]
   slice_lhs 3 4 => rw [← associator_inv_naturality]
   slice_lhs 2 3 => rw [tensor_id, id_tensor_comp_tensor_id, ← tensor_id_comp_id_tensor]
   slice_lhs 3 5 => rw [coevaluation_evaluation]
-  simp
+  simp [tensorHom_id]
 #align category_theory.tensor_right_hom_equiv_tensor_id_comp_evaluation CategoryTheory.tensorRightHomEquiv_tensor_id_comp_evaluation
 
 -- Next four lemmas passing `fᘁ` or `ᘁf` through (co)evaluations.

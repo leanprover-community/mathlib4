@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.Zsqrtd.Basic
-import Mathlib.Data.Complex.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Real.Archimedean
 
 #align_import number_theory.zsqrtd.gaussian_int from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 
@@ -174,7 +175,7 @@ theorem abs_coe_nat_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
 #align gaussian_int.abs_coe_nat_norm GaussianInt.abs_coe_nat_norm
 
 @[simp]
-theorem nat_cast_natAbs_norm {α : Type _} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
+theorem nat_cast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by
   rw [← Int.cast_ofNat, abs_coe_nat_norm]
 #align gaussian_int.nat_cast_nat_abs_norm GaussianInt.nat_cast_natAbs_norm
 

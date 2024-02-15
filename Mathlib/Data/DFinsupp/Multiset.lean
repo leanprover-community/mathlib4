@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Data.DFinsupp.Order
 
-#align_import data.dfinsupp.multiset from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
+#align_import data.dfinsupp.multiset from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -16,7 +16,7 @@ with `Multiset.toDFinsupp` the reverse equivalence.
 
 open Function
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type*} {β : α → Type*}
 
 namespace DFinsupp
 
@@ -60,7 +60,7 @@ theorem toDFinsupp_apply (s : Multiset α) (a : α) : Multiset.toDFinsupp s a = 
 
 @[simp]
 theorem toDFinsupp_support (s : Multiset α) : s.toDFinsupp.support = s.toFinset :=
-  (Finset.filter_eq_self _).mpr fun _ hx ↦ count_ne_zero.mpr <| Multiset.mem_toFinset.1 hx
+  Finset.filter_true_of_mem fun _ hx ↦ count_ne_zero.mpr <| Multiset.mem_toFinset.1 hx
 #align multiset.to_dfinsupp_support Multiset.toDFinsupp_support
 
 @[simp]

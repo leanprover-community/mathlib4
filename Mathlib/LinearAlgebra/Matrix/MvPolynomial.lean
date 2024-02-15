@@ -23,7 +23,7 @@ matrix determinant, multivariate polynomial
 
 set_option linter.uppercaseLean3 false
 
-variable {m n R S : Type _}
+variable {m n R S : Type*}
 
 namespace Matrix
 

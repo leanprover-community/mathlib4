@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Hull
 
 #align_import analysis.convex.join from "leanprover-community/mathlib"@"951bf1d9e98a2042979ced62c0620bcfb3587cf8"
 
@@ -20,7 +20,7 @@ open Set
 
 open BigOperators
 
-variable {ι : Sort _} {𝕜 E : Type _}
+variable {ι : Sort*} {𝕜 E : Type*}
 
 section OrderedSemiring
 

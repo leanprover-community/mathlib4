@@ -30,7 +30,7 @@ open Function Set
 
 section General
 
-variable {α β : Type _} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a b : α}
+variable {α β : Type*} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a b : α}
 
 protected theorem Symmetric.compl (h : Symmetric r) : Symmetric rᶜ := fun _ _ hr hr' =>
   hr <| h hr'
@@ -340,6 +340,16 @@ theorem Set.Subsingleton.isStrongAntichain (hs : s.Subsingleton) (r : α → α 
   hs.pairwise _
 #align set.subsingleton.is_strong_antichain Set.Subsingleton.isStrongAntichain
 
+variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
+
+lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
+    IsAntichain (· ≤ ·) s :=
+  fun _a ha _b hb hab' hab ↦ (hf ha hb $ hab.lt_of_ne hab').not_le (hf' ha hb hab)
+
+lemma IsAntichain.of_monotoneOn_strictAntiOn (hf : MonotoneOn f s) (hf' : StrictAntiOn f s) :
+    IsAntichain (· ≤ ·) s :=
+  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_lt (hf' ha hb $ hab.lt_of_ne hab')
+
 end General
 
 /-! ### Weak antichains -/
@@ -347,7 +357,7 @@ end General
 
 section Pi
 
-variable {ι : Type _} {α : ι → Type _} [∀ i, Preorder (α i)] {s t : Set (∀ i, α i)}
+variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {s t : Set (∀ i, α i)}
   {a b c : ∀ i, α i}
 
 

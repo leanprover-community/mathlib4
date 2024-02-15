@@ -3,6 +3,9 @@ import Mathlib.Util.AssertNoSorry
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Quot
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Real.Basic
+
+set_option autoImplicit true
 
 -- Enable this option for tracing:
 -- set_option trace.Tactic.librarySearch true
@@ -14,7 +17,7 @@ import Mathlib.Data.Nat.Prime
 -- Recall that `apply?` caches the discrimination tree on disk.
 -- If you are modifying the way that `apply?` indexes lemmas,
 -- while testing you will probably want to delete
--- `build/lib/MathlibExtras/LibrarySearch.extra`
+-- `.lake/build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
 
 -- We need to set this here, as the lakefile does not enable this during testing.
@@ -23,11 +26,11 @@ set_option pp.unicode.fun true
 
 noncomputable section
 
-/-- info: Try this: exact Nat.lt.base x -/
+/-- info: Try this: exact Nat.le.refl -/
 #guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
-/-- info: Try this: exact Nat.succ_pos 1 -/
+/-- info: Try this: exact Nat.le.step Nat.le.refl -/
 #guard_msgs in
 example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 
@@ -35,7 +38,7 @@ example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 #guard_msgs in
 example (x y : Nat) : x + y = y + x := by apply?
 
-/-- info: Try this: exact fun a ↦ Nat.add_le_add_right a k -/
+/-- info: Try this: exact fun a ↦ Nat.add_le_add a Nat.le.refl -/
 #guard_msgs in
 example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 
@@ -43,26 +46,26 @@ example (n m k : Nat) : n ≤ m → n + k ≤ m + k := by apply?
 #guard_msgs in
 example (ha : a > 0) (w : b ∣ c) : a * b ∣ a * c := by apply?
 
-/-- info: Try this: exact Int.one -/
-#guard_msgs in
+-- Could be any number of results (`Int.one`, `Int.zero`, etc)
+#guard_msgs (drop info) in
 example : Int := by apply?
 
-/-- info: Try this: Nat.lt.base x -/
+/-- info: Try this: Nat.le.refl -/
 #guard_msgs in
 example : x < x + 1 := exact?%
 
 /-- info: Try this: exact p -/
 #guard_msgs in
 example (P : Prop) (p : P) : P := by apply?
-/-- info: Try this: exact False.elim (np p) -/
+/-- info: Try this: exact (np p).elim -/
 #guard_msgs in
 example (P : Prop) (p : P) (np : ¬P) : false := by apply?
 /-- info: Try this: exact h x rfl -/
 #guard_msgs in
 example (X : Type) (P : Prop) (x : X) (h : ∀ x : X, x = x → P) : P := by apply?
 
-/-- info: Try this: exact fun a ↦ a -/
-#guard_msgs in
+-- Could be any number of results (`fun x ↦ x`, `id`, etc)
+#guard_msgs (drop info) in
 example (α : Prop) : α → α := by apply?
 
 -- Note: these examples no longer work after we turned off lemmas with discrimination key `#[*]`.
@@ -80,13 +83,13 @@ by apply?
 example (n m k : ℕ) : n * (m - k) = n * m - n * k :=
 by apply?
 
-/-- info: Try this: exact Eq.symm (Nat.mul_sub_left_distrib n m k) -/
+/-- info: Try this: exact (Nat.mul_sub_left_distrib n m k).symm -/
 #guard_msgs in
 example (n m k : ℕ) : n * m - n * k = n * (m - k) :=
 by apply?
 
-/-- info: Try this: exact eq_comm -/
-#guard_msgs in
+/- info: Try this: exact eq_comm -/
+#guard_msgs (drop info) in
 example {α : Type} (x y : α) : x = y ↔ y = x := by apply?
 
 /-- info: Try this: exact Nat.add_pos_left ha b -/
@@ -155,7 +158,7 @@ end synonym
 example : ∀ P : Prop, ¬(P ↔ ¬P) := by apply?
 
 -- We even find `iff` results:
-/-- info: Try this: exact Iff.mp (Nat.dvd_add_left h₁) h₂ -/
+/-- info: Try this: exact (Nat.dvd_add_left h₁).mp h₂ -/
 #guard_msgs in
 example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by apply?
 
@@ -167,29 +170,29 @@ example {a b c : ℕ} (h₁ : a ∣ c) (h₂ : a ∣ b + c) : a ∣ b := by appl
 opaque f : ℕ → ℕ
 axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 
-/-- info: Try this: exact Iff.mpr (F a b) h -/
+/-- info: Try this: exact (F a b).mpr h -/
 #guard_msgs in
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 
--- FIXME `apply? using x` is apparently partially broken at present.
--- This is returning `exact []`.
--- example (L _M : List (List ℕ)) : List ℕ := by apply? using L
-
-/-- info: Try this: exact List.iotaTR.go h P -/
+/-- info: Try this: exact List.findIdxs (fun a ↦ false) L -/
 #guard_msgs in
+example (L _M : List (List ℕ)) : List ℕ := by apply? using L
+
+-- Could be any number of results
+#guard_msgs (drop info) in
 example (P _Q : List ℕ) (h : ℕ) : List ℕ := by apply? using h, P
 
-/-- info: Try this: exact List.partitionMap f l -/
-#guard_msgs in
+-- Could be any number of results
+#guard_msgs (drop info) in
 example (l : List α) (f : α → β ⊕ γ) : List β × List γ := by
   apply? using f -- partitionMap f l
 
-/-- info: Try this: exact Nat.mul n m -/
-#guard_msgs in
+-- Could be any number of results (`Nat.mul n m`, `Nat.add n m`, etc)
+#guard_msgs (drop info) in
 example (n m : ℕ) : ℕ := by apply? using n, m
 
-/-- info: Try this: exact Nat.SOM.Mon.mul P Q -/
-#guard_msgs in
+-- Could be any number of results
+#guard_msgs (drop info) in
 example (P Q : List ℕ) (_h : ℕ) : List ℕ := by apply? using P, Q
 
 -- Check that we don't use sorryAx:
@@ -215,3 +218,24 @@ example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by exact?
 #guard_msgs in
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   exact?
+
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply.3F.20failure/near/402534407
+example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
+  exact? says exact fun a ↦ h' (h a)
+
+-- Removed until we come up with a way of handling nonspecific lemmas
+-- that does not pollute the output or cause too much slow-down.
+-- -- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Exact.3F.20fails.20on.20le_antisymm/near/388993167
+-- set_option linter.unreachableTactic false in
+-- example {x y : ℝ} (hxy : x ≤ y) (hyx : y ≤ x) : x = y := by
+--   -- This example non-deterministically picks between `le_antisymm hxy hyx` and `ge_antisymm hyx hxy`.
+--   first
+--   | exact? says exact le_antisymm hxy hyx
+--   | exact? says exact ge_antisymm hyx hxy
+
+-- Check that adding `with_reducible` prevents expensive kernel reductions.
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60exact.3F.60.20failure.3A.20.22maximum.20recursion.20depth.20has.20been.20reached.22/near/417649319
+/-- info: Try this: exact Nat.add_comm n m -/
+#guard_msgs in
+example (_h : List.range 10000 = List.range 10000) (n m : Nat) : n + m = m + n := by
+  with_reducible exact?

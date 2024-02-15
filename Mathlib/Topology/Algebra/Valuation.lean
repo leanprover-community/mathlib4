@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Valuation.ValuationSubring
 
 #align_import topology.algebra.valuation from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -37,27 +37,28 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      simp [Valuation.ltAddSubgroup]
+      simp only [ltAddSubgroup, ge_iff_le, Units.min_val, Units.val_le_val, lt_min_iff,
+        AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
+        forall_const, and_true]
       tauto
     mul := by
       rintro γ
       cases' exists_square_le γ with γ₀ h
       use γ₀
-      rintro - ⟨r, s, r_in, s_in, rfl⟩
+      rintro - ⟨r, r_in, s, s_in, rfl⟩
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
         _ < γ₀ * γ₀ := (mul_lt_mul₀ r_in s_in)
-        _ ≤ γ := by exact_mod_cast h
+        _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
       rcases GroupWithZero.eq_zero_or_unit (v x) with (Hx | ⟨γx, Hx⟩)
       · use (1 : Γ₀ˣ)
         rintro y _
         change v (x * y) < _
-        rw [Valuation.map_mul, Hx, MulZeroClass.zero_mul]
+        rw [Valuation.map_mul, Hx, zero_mul]
         exact Units.zero_lt γ
-      · simp only [image_subset_iff, setOf_subset_setOf, preimage_setOf_eq, Valuation.map_mul]
-        use γx⁻¹ * γ
+      · use γx⁻¹ * γ
         rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
         change (v (x * y) : Γ₀) < γ
         rw [Valuation.map_mul, Hx, mul_comm]
@@ -69,7 +70,7 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       · use 1
         rintro y _
         change v (y * x) < _
-        rw [Valuation.map_mul, Hx, MulZeroClass.mul_zero]
+        rw [Valuation.map_mul, Hx, mul_zero]
         exact Units.zero_lt γ
       · use γx⁻¹ * γ
         rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
@@ -128,7 +129,7 @@ theorem hasBasis_uniformity : (uniformity R).HasBasis (fun _ => True)
 
 theorem toUniformSpace_eq :
     toUniformSpace = @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
-  uniformSpace_eq
+  UniformSpace.ext
     ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
 #align valued.to_uniform_space_eq Valued.toUniformSpace_eq
 
@@ -156,7 +157,7 @@ instance (priority := 100) : TopologicalRing R :=
   (toUniformSpace_eq R Γ₀).symm ▸ v.subgroups_basis.toRingFilterBasis.isTopologicalRing
 
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
-    F.NeBot ∧ ∀ γ : Γ₀ˣ, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), (v (y - x) : Γ₀) < γ := by
+    F.NeBot ∧ ∀ γ : Γ₀ˣ, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), (v (y - x) : Γ₀) < γ := by
   rw [toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
   apply and_congr Iff.rfl
   simp_rw [Valued.v.subgroups_basis.mem_addGroupFilterBasis_iff]
@@ -166,5 +167,20 @@ theorem cauchy_iff {F : Filter R} : Cauchy F ↔
   · rintro h - ⟨γ, rfl⟩
     exact h γ
 #align valued.cauchy_iff Valued.cauchy_iff
+
+variable (R)
+
+/-- The unit ball of a valued ring is open. -/
+theorem integer_isOpen : IsOpen (_i.v.integer : Set R) := by
+  rw [isOpen_iff_mem_nhds]
+  intro x hx
+  rw [mem_nhds]
+  exact ⟨1,
+    fun y hy => (sub_add_cancel y x).symm ▸ le_trans (map_add _ _ _) (max_le (le_of_lt hy) hx)⟩
+
+/-- The valuation subring of a valued field is open. -/
+theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :
+    IsOpen (hv.v.valuationSubring : Set K) :=
+  integer_isOpen K
 
 end Valued

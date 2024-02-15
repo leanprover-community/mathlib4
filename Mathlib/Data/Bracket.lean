@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Lutz, Oliver Nash
 -/
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.TypeStar
 
 #align_import data.bracket from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -31,7 +32,7 @@ these are the Unicode "square with quill" brackets rather than the usual square 
     associative setting).
   3. for binary operations on substructures, like the commutator `⁅H, K⁆` of two subgroups `H` and
      `K` of a group. -/
-class Bracket (L M : Type _) where
+class Bracket (L M : Type*) where
   /-- `⁅x, y⁆` is the result of a bracket operation on elements `x` and `y`.
   It is supported by the `Bracket` typeclass. -/
   bracket : L → M → M

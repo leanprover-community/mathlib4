@@ -39,12 +39,12 @@ open Convex Pointwise
 /-- A *uniformly convex space* is a real normed space where the triangle inequality is strict with a
 uniform bound. Namely, over the `x` and `y` of norm `1`, `‖x + y‖` is uniformly bounded above
 by a constant `< 2` when `‖x - y‖` is uniformly bounded below by a positive constant. -/
-class UniformConvexSpace (E : Type _) [SeminormedAddCommGroup E] : Prop where
+class UniformConvexSpace (E : Type*) [SeminormedAddCommGroup E] : Prop where
   uniform_convex : ∀ ⦃ε : ℝ⦄,
     0 < ε → ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ = 1 → ∀ ⦃y⦄, ‖y‖ = 1 → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 - δ
 #align uniform_convex_space UniformConvexSpace
 
-variable {E : Type _}
+variable {E : Type*}
 
 section SeminormedAddCommGroup
 

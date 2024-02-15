@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Topology.LocalExtr
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.OrderClosed
 
 #align_import topology.algebra.order.extr_closure from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -21,7 +21,7 @@ open Filter Set
 
 open Topology
 
-variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Preorder Y]
   [OrderClosedTopology Y] {f g : X → Y} {s : Set X} {a : X}
 
 protected theorem IsMaxOn.closure (h : IsMaxOn f s a) (hc : ContinuousOn f (closure s)) :

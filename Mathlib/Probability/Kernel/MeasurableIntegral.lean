@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Basic
+import Mathlib.MeasureTheory.Constructions.Prod.Basic
 
 #align_import probability.kernel.measurable_integral from "leanprover-community/mathlib"@"28b2a92f2996d28e580450863c130955de0ed398"
 
@@ -29,7 +30,7 @@ open MeasureTheory ProbabilityTheory Function Set Filter
 
 open scoped MeasureTheory ENNReal Topology
 
-variable {α β γ : Type _} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
   {κ : kernel α β} {η : kernel (α × β) γ} {a : α}
 
 namespace ProbabilityTheory
@@ -133,8 +134,9 @@ variable [IsSFiniteKernel κ] [IsSFiniteKernel η]
 /-- Auxiliary lemma for `Measurable.lintegral_kernel_prod_right`. -/
 theorem kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : MeasurableSet t)
     (c : ℝ≥0∞) : Measurable fun a => ∫⁻ b, t.indicator (Function.const (α × β) c) (a, b) ∂κ a := by
-  simp_rw [lintegral_indicator_const_comp measurable_prod_mk_left ht _]
-  -- Porting note: `simp_rw` doesn't take, added the `conv` below
+  -- Porting note: was originally by
+  -- `simp_rw [lintegral_indicator_const_comp measurable_prod_mk_left ht _]`
+  -- but this has no effect, so added the `conv` below
   conv =>
     congr
     ext
@@ -184,7 +186,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right' {f : α × β → ℝ≥0
     Measurable fun a => ∫⁻ b, f (a, b) ∂κ a := by
   refine' Measurable.lintegral_kernel_prod_right _
   have : (uncurry fun (a : α) (b : β) => f (a, b)) = f := by
-    ext x; rw [← @Prod.mk.eta _ _ x, uncurry_apply_pair]
+    ext x; rw [uncurry_apply_pair]
   rwa [this]
 #align measurable.lintegral_kernel_prod_right' Measurable.lintegral_kernel_prod_right'
 
@@ -236,7 +238,7 @@ theorem _root_.Measurable.set_lintegral_kernel {f : β → ℝ≥0∞} (hf : Mea
 
 end Lintegral
 
-variable {E : Type _} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKernel η]
+variable {E : Type*} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKernel η]
 
 theorem measurableSet_kernel_integrable ⦃f : α → β → E⦄ (hf : StronglyMeasurable (uncurry f)) :
     MeasurableSet {x | Integrable (f x) (κ x)} := by
@@ -250,7 +252,7 @@ open ProbabilityTheory ProbabilityTheory.kernel
 
 namespace MeasureTheory
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [IsSFiniteKernel κ]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [IsSFiniteKernel κ]
   [IsSFiniteKernel η]
 
 theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
@@ -272,7 +274,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
     refine' Finset.stronglyMeasurable_sum _ fun x _ => _
     refine' (Measurable.ennreal_toReal _).stronglyMeasurable.smul_const _
-    simp (config := { singlePass := true }) only [SimpleFunc.coe_comp, preimage_comp]
+    simp only [SimpleFunc.coe_comp, preimage_comp]
     apply kernel.measurable_kernel_prod_mk_left
     exact (s n).measurableSet_fiber x
   have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂κ x) := by

@@ -22,7 +22,7 @@ When you update this file, you can also try to make a corresponding update in
 
 open Polynomial
 
-variable (R A B : Type _)
+variable (R A B : Type*)
 
 namespace Polynomial
 
@@ -40,6 +40,11 @@ variable {R B}
 theorem aeval_map_algebraMap (x : B) (p : R[X]) : aeval x (map (algebraMap R A) p) = aeval x p := by
   rw [aeval_def, aeval_def, eval₂_map, IsScalarTower.algebraMap_eq R A B]
 #align polynomial.aeval_map_algebra_map Polynomial.aeval_map_algebraMap
+
+@[simp]
+lemma eval_map_algebraMap (P : R[X]) (a : A) :
+    (map (algebraMap R A) P).eval a = aeval a P := by
+  rw [← aeval_map_algebraMap (A := A), coe_aeval_eq_eval]
 
 end Semiring
 

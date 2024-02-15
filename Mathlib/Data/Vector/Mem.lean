@@ -20,7 +20,7 @@ In particular we can avoid some assumptions about types being `Inhabited`,
 
 namespace Vector
 
-variable {α β : Type _} {n : ℕ} (a a' : α)
+variable {α β : Type*} {n : ℕ} (a a' : α)
 
 @[simp]
 theorem get_mem (i : Fin n) (v : Vector α n) : v.get i ∈ v.toList := by

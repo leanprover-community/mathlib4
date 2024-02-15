@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.Complex.Module
+import Mathlib.Data.Complex.Abs
 
 /-!
 # The partial order on the complex numbers
@@ -16,12 +16,12 @@ stemming from the structure of `ℂ` as a ⋆-ring (i.e., it becomes a `StarOrde
 with this order `ℂ` is a `StrictOrderedCommRing` and the coercion `(↑) : ℝ → ℂ` is an order
 embedding.
 
-Main definitions:
+This file only provides `Complex.partialOrder` and lemmas about it. Further structural classes are
+provided by `Mathlib/Data/IsROrC/Basic.lean` as
 
-* `Complex.partialOrder`
-* `Complex.strictOrderedCommRing`
-* `Complex.starOrderedRing`
-* `Complex.orderedSMul`
+* `IsROrC.toStrictOrderedCommRing`
+* `IsROrC.toStarOrderedRing`
+* `IsROrC.toOrderedSMul`
 
 These are all only available with `open scoped ComplexOrder`.
 -/
@@ -60,6 +60,11 @@ theorem lt_def {z w : ℂ} : z < w ↔ z.re < w.re ∧ z.im = w.im :=
   Iff.rfl
 #align complex.lt_def Complex.lt_def
 
+theorem nonneg_iff {z : ℂ} : 0 ≤ z ↔ 0 ≤ z.re ∧ 0 = z.im :=
+  le_def
+
+theorem pos_iff {z : ℂ} : 0 < z ↔ 0 < z.re ∧ 0 = z.im :=
+  lt_def
 
 @[simp, norm_cast]
 theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by simp [le_def, ofReal']
@@ -68,7 +73,6 @@ theorem real_le_real {x y : ℝ} : (x : ℂ) ≤ (y : ℂ) ↔ x ≤ y := by sim
 @[simp, norm_cast]
 theorem real_lt_real {x y : ℝ} : (x : ℂ) < (y : ℂ) ↔ x < y := by simp [lt_def, ofReal']
 #align complex.real_lt_real Complex.real_lt_real
-
 
 @[simp, norm_cast]
 theorem zero_le_real {x : ℝ} : (0 : ℂ) ≤ (x : ℂ) ↔ 0 ≤ x :=
@@ -96,51 +100,28 @@ theorem not_lt_zero_iff {z : ℂ} : ¬z < 0 ↔ 0 ≤ z.re ∨ z.im ≠ 0 :=
   not_lt_iff
 #align complex.not_lt_zero_iff Complex.not_lt_zero_iff
 
-theorem eq_re_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
-  ext
+theorem eq_re_of_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
+  apply Complex.ext
   rfl
   simp only [← (Complex.le_def.1 hz).2, Complex.zero_im, Complex.ofReal_im]
-#align complex.eq_re_of_real_le Complex.eq_re_ofReal_le
+#align complex.eq_re_of_real_le Complex.eq_re_of_ofReal_le
 
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℂ` is a strictly ordered ring.
--/
-protected def strictOrderedCommRing : StrictOrderedCommRing ℂ :=
-  { zero_le_one := ⟨zero_le_one, rfl⟩
-    add_le_add_left := fun w z h y => ⟨add_le_add_left h.1 _, congr_arg₂ (· + ·) rfl h.2⟩
-    mul_pos := fun z w hz hw => by
-      simp [lt_def, mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-    mul_comm := by intros; ext <;> ring_nf }
-#align complex.strict_ordered_comm_ring Complex.strictOrderedCommRing
+@[simp]
+lemma re_eq_abs {z : ℂ} : z.re = abs z ↔ 0 ≤ z :=
+  have : 0 ≤ abs z := apply_nonneg abs z
+  ⟨fun h ↦ ⟨h.symm ▸ this, (abs_re_eq_abs.1 <| h.symm ▸ _root_.abs_of_nonneg this).symm⟩,
+    fun ⟨h₁, h₂⟩ ↦ by rw [← abs_re_eq_abs.2 h₂.symm, _root_.abs_of_nonneg h₁]⟩
 
-scoped[ComplexOrder] attribute [instance] Complex.strictOrderedCommRing
+@[simp]
+lemma neg_re_eq_abs {z : ℂ} : -z.re = abs z ↔ z ≤ 0 := by
+  rw [← neg_re, ← abs.map_neg, re_eq_abs]
+  exact neg_nonneg.and <| eq_comm.trans neg_eq_zero
 
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℂ` is a star ordered ring.
-(That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
--/
-protected def starOrderedRing : StarOrderedRing ℂ :=
-  StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
-    refine' ⟨fun hr => ⟨Real.sqrt r.re, _⟩, fun h => _⟩
-    · have h₁ : 0 ≤ r.re := by
-        rw [le_def] at hr
-        exact hr.1
-      have h₂ : r.im = 0 := by
-        rw [le_def] at hr
-        exact hr.2.symm
-      ext
-      · simp only [ofReal_im, star_def, ofReal_re, sub_zero, conj_re, mul_re, mul_zero,
-          ← Real.sqrt_mul h₁ r.re, Real.sqrt_mul_self h₁]
-      · simp only [h₂, add_zero, ofReal_im, star_def, zero_mul, conj_im, mul_im, mul_zero,
-          neg_zero]
-    · obtain ⟨s, rfl⟩ := h
-      simp only [← normSq_eq_conj_mul_self, normSq_nonneg, zero_le_real, star_def]
-#align complex.star_ordered_ring Complex.starOrderedRing
+@[simp]
+lemma re_eq_neg_abs {z : ℂ} : z.re = -abs z ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_abs]
 
-scoped[ComplexOrder] attribute [instance] Complex.starOrderedRing
-
-protected theorem orderedSMul : OrderedSMul ℝ ℂ :=
-  OrderedSMul.mk' fun a b r hab hr => ⟨by simp [hr, hab.1.le], by simp [hab.2]⟩
-#align complex.ordered_smul Complex.orderedSMul
-
-scoped[ComplexOrder] attribute [instance] Complex.orderedSMul
+lemma monotone_ofReal : Monotone ofReal' := by
+  intro x y hxy
+  simp only [ofReal_eq_coe, real_le_real, hxy]
 
 end Complex

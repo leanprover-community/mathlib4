@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Algebra.Group.ConjFinite
-import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Commutator
 import Mathlib.GroupTheory.Coset
+import Mathlib.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.GroupAction.Hom
 
 #align_import group_theory.group_action.quotient from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -49,7 +49,7 @@ class QuotientAction : Prop where
 #align mul_action.quotient_action MulAction.QuotientAction
 
 /-- A typeclass for when an `AddAction β α` descends to the quotient `α ⧸ H`. -/
-class _root_.AddAction.QuotientAction {α : Type _} (β : Type _) [AddGroup α] [AddMonoid β]
+class _root_.AddAction.QuotientAction {α : Type u} (β : Type v) [AddGroup α] [AddMonoid β]
   [AddAction β α] (H : AddSubgroup α) : Prop where
   /-- The action fulfils a normality condition on summands that lie in `H`.
     This ensures that the action descends to an action on the quotient `α ⧸ H`. -/
@@ -65,7 +65,7 @@ instance left_quotientAction : QuotientAction α H :=
 #align add_action.left_quotient_action AddAction.left_quotientAction
 
 @[to_additive]
-instance right_quotientAction : QuotientAction (opposite (normalizer H)) H :=
+instance right_quotientAction : QuotientAction (normalizer H).op H :=
   ⟨fun b c _ _ => by
     rwa [smul_def, smul_def, smul_eq_mul_unop, smul_eq_mul_unop, mul_inv_rev, ← mul_assoc,
       mem_normalizer_iff'.mp b.prop, mul_assoc, mul_inv_cancel_left]⟩
@@ -83,7 +83,7 @@ instance right_quotientAction' [hH : H.Normal] : QuotientAction αᵐᵒᵖ H :=
 @[to_additive]
 instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   smul b :=
-    Quotient.map' ((· • ·) b) fun _ _ h =>
+    Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
   one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul β a)
   mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
@@ -101,7 +101,7 @@ theorem Quotient.smul_mk [QuotientAction β H] (b : β) (a : α) :
 
 @[to_additive (attr := simp)]
 theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
-    b • (a : α ⧸ H) = (b • a : α ⧸ H) :=
+    b • (a : α ⧸ H) = (↑(b • a) : α ⧸ H) :=
   rfl
 #align mul_action.quotient.smul_coe MulAction.Quotient.smul_coe
 #align add_action.quotient.vadd_coe AddAction.Quotient.vadd_coe
@@ -120,7 +120,7 @@ theorem Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : �
 #align add_action.quotient.coe_vadd_out' AddAction.Quotient.coe_vadd_out'
 
 theorem _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
-    q.out'⁻¹ * a ^ Function.minimalPeriod ((· • ·) a) q * q.out' ∈ H := by
+    q.out'⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out' ∈ H := by
   rw [mul_assoc, ← QuotientGroup.eq', QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out',
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
 #align quotient_group.out'_conj_pow_minimal_period_mem QuotientGroup.out'_conj_pow_minimalPeriod_mem
@@ -130,8 +130,8 @@ end QuotientAction
 open QuotientGroup
 
 /-- The canonical map to the left cosets. -/
-def _root_.MulActionHom.toQuotient (H : Subgroup α) : α →[α] α ⧸ H :=
-  ⟨(↑), Quotient.smul_coe H⟩
+def _root_.MulActionHom.toQuotient (H : Subgroup α) : α →[α] α ⧸ H where
+  toFun := (↑); map_smul' := Quotient.smul_coe H
 #align mul_action_hom.to_quotient MulActionHom.toQuotient
 
 @[simp]
@@ -189,7 +189,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 #align mul_action.injective_of_quotient_stabilizer MulAction.injective_ofQuotientStabilizer
 #align add_action.injective_of_quotient_stabilizer AddAction.injective_ofQuotientStabilizer
 
-/-- Orbit-stabilizer theorem. -/
+/-- **Orbit-stabilizer theorem**. -/
 @[to_additive "Orbit-stabilizer theorem."]
 noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ stabilizer α b :=
   Equiv.symm <|
@@ -307,9 +307,9 @@ theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fi
       "**Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
       `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is an additive group
       acting on `X` and `X/G`denotes the quotient of `X` by the relation `orbitRel G X`. "]
-noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σa : α, fixedBy α β a) ≃ Ω × α :=
+noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σa : α, fixedBy β a) ≃ Ω × α :=
   calc
-    (Σa : α, fixedBy α β a) ≃ { ab : α × β // ab.1 • ab.2 = ab.2 } :=
+    (Σa : α, fixedBy β a) ≃ { ab : α × β // ab.1 • ab.2 = ab.2 } :=
       (Equiv.subtypeProdEquivSigmaSubtype _).symm
     _ ≃ { ba : β × α // ba.2 • ba.1 = ba.1 } := (Equiv.prodComm α β).subtypeEquiv fun _ => Iff.rfl
     _ ≃ Σb : β, stabilizer α b :=
@@ -333,8 +333,8 @@ elements fixed by each `g ∈ G` is the number of orbits. -/
 @[to_additive
       "**Burnside's lemma** : given a finite additive group `G` acting on a set `X`,
       the average number of elements fixed by each `g ∈ G` is the number of orbits. "]
-theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a, Fintype <| fixedBy α β a]
-    [Fintype Ω] : (∑ a : α, Fintype.card (fixedBy α β a)) = Fintype.card Ω * Fintype.card α := by
+theorem sum_card_fixedBy_eq_card_orbits_mul_card_group [Fintype α] [∀ a : α, Fintype <| fixedBy β a]
+    [Fintype Ω] : (∑ a : α, Fintype.card (fixedBy β a)) = Fintype.card Ω * Fintype.card α := by
   rw [← Fintype.card_prod, ← Fintype.card_sigma,
     Fintype.card_congr (sigmaFixedByEquivOrbitsProdGroup α β)]
 #align mul_action.sum_card_fixed_by_eq_card_orbits_mul_card_group MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group
@@ -351,9 +351,19 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
 
 end MulAction
 
+set_option autoImplicit true in
+theorem ConjClasses.card_carrier [Group G] [Fintype G] (g : G) [Fintype (ConjClasses.mk g).carrier]
+    [Fintype <| MulAction.stabilizer (ConjAct G) g] : Fintype.card (ConjClasses.mk g).carrier =
+      Fintype.card G / Fintype.card (MulAction.stabilizer (ConjAct G) g) := by
+  classical
+  rw [Fintype.card_congr <| ConjAct.toConjAct (G := G) |>.toEquiv]
+  rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group (ConjAct G) g, Nat.mul_div_cancel]
+  simp_rw [ConjAct.orbit_eq_carrier_conjClasses]
+  exact Fintype.card_pos_iff.mpr inferInstance
+
 namespace Subgroup
 
-variable {G : Type _} [Group G] (H : Subgroup G)
+variable {G : Type*} [Group G] (H : Subgroup G)
 
 theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker := by
   apply le_antisymm
@@ -407,16 +417,16 @@ section conjClasses
 
 open Fintype
 
-theorem card_comm_eq_card_conjClasses_mul_card (G : Type _) [Group G] :
-    Nat.card { p : G × G // _root_.Commute p.1 p.2 } = Nat.card (ConjClasses G) * Nat.card G := by
+theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
+    Nat.card { p : G × G // Commute p.1 p.2 } = Nat.card (ConjClasses G) * Nat.card G := by
   classical
   rcases fintypeOrInfinite G; swap
   · rw [mul_comm, Nat.card_eq_zero_of_infinite, Nat.card_eq_zero_of_infinite, zero_mul]
   simp only [Nat.card_eq_fintype_card]
   -- Porting note: Changed `calc` proof into a `rw` proof.
-  rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype _root_.Commute), card_sigma,
-    sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // _root_.Commute a b })
-      (fun g ↦ card (MulAction.fixedBy (ConjAct G) G g))
+  rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype Commute), card_sigma,
+    sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // Commute a b })
+      (fun g ↦ card (MulAction.fixedBy G g))
       fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.to_eq,
     MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group]
   congr 1; apply card_congr'; congr; ext;

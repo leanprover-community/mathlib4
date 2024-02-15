@@ -6,6 +6,7 @@ Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudr
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Dynamics.FixedPoints.Topology
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 #align_import topology.metric_space.contracting from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -32,7 +33,7 @@ contracting map, fixed point, Banach fixed point theorem
 
 open NNReal Topology Classical ENNReal Filter Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A map is said to be `ContractingWith K`, if `K < 1` and `f` is `LipschitzWith K`. -/
 def ContractingWith [EMetricSpace α] (K : ℝ≥0) (f : α → α) :=

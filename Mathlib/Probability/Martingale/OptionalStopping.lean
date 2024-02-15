@@ -31,7 +31,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 
 namespace MeasureTheory
 
-variable {Ω : Type _} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {𝒢 : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
+variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {𝒢 : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
   {τ π : Ω → ℕ}
 
 -- We may generalize the below lemma to functions taking value in a `NormedLatticeAddCommGroup`.
@@ -215,7 +215,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       refine' ENNReal.ofReal_le_ofReal _
       rw [← stoppedValue_const f n]
       exact hsub.expected_stoppedValue_mono (hitting_isStoppingTime hsub.adapted measurableSet_Ici)
-        (isStoppingTime_const _ _) (fun ω => hitting_le ω) (fun _ => le_rfl : ∀ _, n ≤ n)
+        (isStoppingTime_const _ _) (fun ω => hitting_le ω) (fun _ => le_refl n)
 #align measure_theory.maximal_ineq MeasureTheory.maximal_ineq
 
 end Maximal

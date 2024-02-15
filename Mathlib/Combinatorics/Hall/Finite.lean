@@ -52,7 +52,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
     (s' : Finset { x' : ι | x' ≠ x }) : s'.card ≤ (s'.biUnion fun x' => (t x').erase a).card := by
   haveI := Classical.decEq ι
   specialize ha (s'.image fun z => z.1)
-  rw [Nonempty.image_iff, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
+  rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
   by_cases he : s'.Nonempty
   · have ha' : s'.card < (s'.biUnion fun x => t x).card := by
       convert ha he fun h => by simpa [← h] using mem_univ x using 2
@@ -62,7 +62,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
     rw [← erase_biUnion]
     by_cases hb : a ∈ s'.biUnion fun x => t x
     · rw [card_erase_of_mem hb]
-      exact Nat.le_pred_of_lt ha'
+      exact Nat.le_sub_one_of_lt ha'
     · rw [erase_eq_of_not_mem hb]
       exact Nat.le_of_lt ha'
   · rw [nonempty_iff_ne_empty, not_not] at he
@@ -147,7 +147,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
   rw [this, hus]
   refine' (tsub_le_tsub_right (ht _) _).trans _
   rw [← card_sdiff]
-  · refine' (card_le_of_subset _).trans le_rfl
+  · refine' (card_le_card _).trans le_rfl
     intro t
     simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union, exists_and_right,
       exists_imp]
@@ -210,7 +210,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
   · refine' hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x
     simp only [of_eq_true]
-    split_ifs with h <;> simp
+    split_ifs with h
     · exact hsf' ⟨x, h⟩
     · exact sdiff_subset _ _ (hsf'' ⟨x, h⟩)
 set_option linter.uppercaseLean3 false in
@@ -253,7 +253,7 @@ if every union of `k` of the sets has at least `k` elements.
 See `Finset.all_card_le_biUnion_card_iff_exists_injective` for a version
 where the `Finite ι` constraint is removed.
 -/
-theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type _} [Finite ι]
+theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type*} [Finite ι]
     [DecidableEq α] (t : ι → Finset α) :
     (∀ s : Finset ι, s.card ≤ (s.biUnion t).card) ↔
       ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
@@ -261,7 +261,7 @@ theorem Finset.all_card_le_biUnion_card_iff_existsInjective' {ι α : Type _} [F
   · exact HallMarriageTheorem.hall_hard_inductive
   · rintro ⟨f, hf₁, hf₂⟩ s
     rw [← card_image_of_injective s hf₁]
-    apply card_le_of_subset
+    apply card_le_card
     intro
     rw [mem_image, mem_biUnion]
     rintro ⟨x, hx, rfl⟩

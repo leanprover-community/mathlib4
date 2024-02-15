@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
-import Mathlib.GroupTheory.GroupAction.Pi
+import Mathlib.Data.Set.Image
 
 #align_import data.fin.vec_notation from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
@@ -61,7 +61,14 @@ def vecCons {n : ℕ} (h : α) (t : Fin n → α) : Fin n.succ → α :=
   Fin.cons h t
 #align matrix.vec_cons Matrix.vecCons
 
-/-- Construct a vector `Fin n → α` using `Matrix.vecEmpty` and `Matrix.vecCons`. -/
+/-- `![...]` notation is used to construct a vector `Fin n → α` using `Matrix.vecEmpty` and
+`Matrix.vecCons`.
+
+For instance, `![a, b, c] : Fin 3` is syntax for `vecCons a (vecCons b (vecCons c vecEmpty))`.
+
+Note that this should not be used as syntax for `Matrix` as it generates a term with the wrong type.
+The `!![a, b; c, d]` syntax (provided by `Matrix.matrixNotation`) should be used instead.
+-/
 syntax (name := vecNotation) "![" term,* "]" : term
 
 macro_rules
@@ -108,7 +115,7 @@ instance _root_.PiFin.hasRepr [Repr α] : Repr (Fin n → α) where
 
 end MatrixNotation
 
-variable {m n o : ℕ} {m' n' o' : Type _}
+variable {m n o : ℕ} {m' n' o' : Type*}
 
 theorem empty_eq (v : Fin 0 → α) : v = ![] :=
   Subsingleton.elim _ _
@@ -153,7 +160,7 @@ theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
 #align matrix.tail_cons Matrix.tail_cons
 
 @[simp]
-theorem empty_val' {n' : Type _} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
+theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
 #align matrix.empty_val' Matrix.empty_val'
 
@@ -258,11 +265,11 @@ which provides control of definitional equality for the vector length.
 This turns out to be helpful when providing simp lemmas to reduce `![a, b, c] n`, and also means
 that `vecAppend ho u v 0` is valid. `Fin.append u v 0` is not valid in this case because there is
 no `Zero (Fin (m + n))` instance. -/
-def vecAppend {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
-  Fin.append u v ∘ Fin.castIso ho
+def vecAppend {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
+  Fin.append u v ∘ Fin.cast ho
 #align matrix.vec_append Matrix.vecAppend
 
-theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
+theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
     vecAppend ho u v = fun i : Fin o =>
       if h : (i : ℕ) < m then u ⟨i, h⟩
       else v ⟨(i : ℕ) - m, (tsub_lt_iff_left (le_of_not_lt h)).2 (ho ▸ i.2)⟩ := by
@@ -277,7 +284,7 @@ theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m →
 -- Could become one again with change to `Nat.ble`:
 -- https://github.com/leanprover-community/mathlib4/pull/1741/files/#r1083902351
 @[simp]
-theorem vecAppend_apply_zero {α : Type _} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
+theorem vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
     (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
   dif_pos _
 #align matrix.vec_append_apply_zero Matrix.vecAppend_apply_zero
@@ -326,7 +333,6 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
   simp_rw [Function.comp, bit0, vecAlt0, vecAppend_eq_ite]
   split_ifs with h <;> congr
   · rw [Fin.val_mk] at h
-    simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk]
     exact (Nat.mod_eq_of_lt h).symm
   · rw [Fin.val_mk, not_lt] at h
     simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_eq_sub_mod h]
@@ -344,9 +350,8 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl 
     simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
     split_ifs with h <;> simp_rw [bit1, bit0] <;> congr
-    · simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk]
-      rw [Fin.val_mk] at h
-      erw [Nat.mod_eq_of_lt (Nat.lt_of_succ_lt h)]
+    · rw [Fin.val_mk] at h
+      rw [Nat.mod_eq_of_lt (Nat.lt_of_succ_lt h)]
       erw [Nat.mod_eq_of_lt h]
     · rw [Fin.val_mk, not_lt] at h
       simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_add_mod, Fin.val_one,
@@ -400,7 +405,8 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
 -- Although proved by simp, extracting element 8 of a five-element
 -- vector does not work by simp unless this lemma is present.
 @[simp]
-theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by simp
+theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by
+  simp [eq_iff_true_of_subsingleton]
 #align matrix.empty_vec_alt0 Matrix.empty_vecAlt0
 
 @[simp]
@@ -422,14 +428,15 @@ theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
 -- Although proved by simp, extracting element 9 of a five-element
 -- vector does not work by simp unless this lemma is present.
 @[simp]
-theorem empty_vecAlt1 (α) {h} : vecAlt1 h (![] : Fin 0 → α) = ![] := by simp
+theorem empty_vecAlt1 (α) {h} : vecAlt1 h (![] : Fin 0 → α) = ![] := by
+  simp [eq_iff_true_of_subsingleton]
 #align matrix.empty_vec_alt1 Matrix.empty_vecAlt1
 
 end Val
 
-section Smul
+section SMul
 
-variable {M : Type _} [SMul M α]
+variable {M : Type*} [SMul M α]
 
 @[simp]
 theorem smul_empty (x : M) (v : Fin 0 → α) : x • v = ![] :=
@@ -442,7 +449,7 @@ theorem smul_cons (x : M) (y : α) (v : Fin n → α) : x • vecCons y v = vecC
   refine' Fin.cases _ _ i <;> simp
 #align matrix.smul_cons Matrix.smul_cons
 
-end Smul
+end SMul
 
 section Add
 

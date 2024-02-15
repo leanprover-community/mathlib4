@@ -90,11 +90,11 @@ instance : SmallCategory (WalkingMulticospan fst snd) where
 
 @[simp] -- Porting note: added simp lemma
 lemma Hom.id_eq_id (X : WalkingMulticospan fst snd) :
-  Hom.id X = 𝟙 X := rfl
+    Hom.id X = 𝟙 X := rfl
 
 @[simp] -- Porting note: added simp lemma
 lemma Hom.comp_eq_comp {X Y Z : WalkingMulticospan fst snd}
-  (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
+    (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
 end WalkingMulticospan
 
@@ -138,12 +138,11 @@ instance : SmallCategory (WalkingMultispan fst snd) where
     rintro (_ | _) (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) (_ | _ | _) <;> rfl
 
 @[simp] -- Porting note: added simp lemma
-lemma Hom.id_eq_id (X : WalkingMultispan fst snd) :
-  Hom.id X = 𝟙 X := rfl
+lemma Hom.id_eq_id (X : WalkingMultispan fst snd) : Hom.id X = 𝟙 X := rfl
 
 @[simp] -- Porting note: added simp lemma
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan fst snd}
-  (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
+    (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
 end WalkingMultispan
 
@@ -358,7 +357,7 @@ theorem app_right_eq_ι_comp_snd (b) :
 #align category_theory.limits.multifork.app_right_eq_ι_comp_snd CategoryTheory.Limits.Multifork.app_right_eq_ι_comp_snd
 
 @[reassoc (attr := simp)]
-theorem hom_comp_ι (K₁ K₂ : Multifork I) (f : K₁ ⟶ K₂) (j : I.L) : f.Hom ≫ K₂.ι j = K₁.ι j :=
+theorem hom_comp_ι (K₁ K₂ : Multifork I) (f : K₁ ⟶ K₂) (j : I.L) : f.hom ≫ K₂.ι j = K₁.ι j :=
   f.w _
 #align category_theory.limits.multifork.hom_comp_ι CategoryTheory.Limits.Multifork.hom_comp_ι
 
@@ -484,7 +483,7 @@ variable (I : MulticospanIndex.{w} C) [HasProduct I.left] [HasProduct I.right]
 noncomputable def toPiForkFunctor : Multifork I ⥤ Fork I.fstPiMap I.sndPiMap where
   obj := Multifork.toPiFork
   map {K₁ K₂} f :=
-    { Hom := f.Hom
+    { hom := f.hom
       w := by
         rintro (_ | _)
         · apply limit.hom_ext
@@ -501,7 +500,7 @@ noncomputable def toPiForkFunctor : Multifork I ⥤ Fork I.fstPiMap I.sndPiMap w
 noncomputable def ofPiForkFunctor : Fork I.fstPiMap I.sndPiMap ⥤ Multifork I where
   obj := Multifork.ofPiFork I
   map {K₁ K₂} f :=
-    { Hom := f.Hom
+    { hom := f.hom
       w := by rintro (_ | _) <;> simp }
 #align category_theory.limits.multicospan_index.of_pi_fork_functor CategoryTheory.Limits.MulticospanIndex.ofPiForkFunctor
 
@@ -551,7 +550,7 @@ theorem snd_app_right (a) : K.ι.app (WalkingMultispan.left a) = I.snd a ≫ K.�
 #align category_theory.limits.multicofork.snd_app_right CategoryTheory.Limits.Multicofork.snd_app_right
 
 @[reassoc (attr := simp)] -- Porting note: added simp lemma
-lemma π_comp_hom (K₁ K₂ : Multicofork I) (f : K₁ ⟶ K₂) (b : I.R) : K₁.π b ≫ f.Hom = K₂.π b :=
+lemma π_comp_hom (K₁ K₂ : Multicofork I) (f : K₁ ⟶ K₂) (b : I.R) : K₁.π b ≫ f.hom = K₂.π b :=
   f.w _
 
 /-- Construct a multicofork using a collection `π` of morphisms. -/
@@ -638,10 +637,10 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         | WalkingMultispan.left a => (Sigma.ι I.left a : _) ≫ I.fstSigmaMap ≫ c.π
         | WalkingMultispan.right b => (Sigma.ι I.right b : _) ≫ c.π
       naturality := by
-        rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp
+        rintro (_ | _) (_ | _) (_ | _ | _)
         · simp
         · simp
-        · dsimp; rw [c.condition]; simp
+        · simp [c.condition]
         · simp }
 #align category_theory.limits.multicofork.of_sigma_cofork CategoryTheory.Limits.Multicofork.ofSigmaCofork
 
@@ -677,7 +676,7 @@ variable (I : MultispanIndex.{w} C) [HasCoproduct I.left] [HasCoproduct I.right]
 noncomputable def toSigmaCoforkFunctor : Multicofork I ⥤ Cofork I.fstSigmaMap I.sndSigmaMap where
   obj := Multicofork.toSigmaCofork
   map {K₁ K₂} f :=
-  { Hom := f.Hom
+  { hom := f.hom
     w := by
       rintro (_|_)
       all_goals {
@@ -691,7 +690,7 @@ noncomputable def toSigmaCoforkFunctor : Multicofork I ⥤ Cofork I.fstSigmaMap 
 noncomputable def ofSigmaCoforkFunctor : Cofork I.fstSigmaMap I.sndSigmaMap ⥤ Multicofork I where
   obj := Multicofork.ofSigmaCofork I
   map {K₁ K₂} f :=
-    { Hom := f.Hom
+    { hom := f.hom
       w := by --sorry --by rintro (_ | _) <;> simp
         rintro (_ | _)
         -- porting note; in mathlib3, `simp` worked. What seems to be happening is that

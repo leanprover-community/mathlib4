@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Data.Set.Lattice
 
 #align_import topology.algebra.module.character_space from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -23,7 +24,7 @@ C⋆-algebras.
 
 We define `WeakDual.characterSpace 𝕜 A` as a subset of the weak dual, which automatically puts the
 correct topology on the space. We then define `WeakDual.CharacterSpace.toAlgHom` which provides the
-algebra homomorphism corresponding to any element. We also provide `WeakDual.CharacterSpace.toClm`
+algebra homomorphism corresponding to any element. We also provide `WeakDual.CharacterSpace.toCLM`
 which provides the element as a continuous linear map. (Even though `WeakDual 𝕜 A` is a type copy of
 `A →L[𝕜] 𝕜`, this is often more convenient.)
 
@@ -38,12 +39,12 @@ namespace WeakDual
 
 /-- The character space of a topological algebra is the subset of elements of the weak dual that
 are also algebra homomorphisms. -/
-def characterSpace (𝕜 : Type _) (A : Type _) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+def characterSpace (𝕜 : Type*) (A : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [NonUnitalNonAssocSemiring A] [TopologicalSpace A] [Module 𝕜 A] :=
   {φ : WeakDual 𝕜 A | φ ≠ 0 ∧ ∀ x y : A, φ (x * y) = φ x * φ y}
 #align weak_dual.character_space WeakDual.characterSpace
 
-variable {𝕜 : Type _} {A : Type _}
+variable {𝕜 : Type*} {A : Type*}
 
 -- porting note: even though the capitalization of the namespace differs, it doesn't matter
 -- because there is no dot notation since `characterSpace` is only a type via `CoeSort`.
@@ -54,15 +55,17 @@ section NonUnitalNonAssocSemiring
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
   [NonUnitalNonAssocSemiring A] [TopologicalSpace A] [Module 𝕜 A]
 
+instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
+  coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
+  coe_injective' φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
+
 /-- Elements of the character space are continuous linear maps. -/
 instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace 𝕜 A) 𝕜 A 𝕜 where
-  coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
-  coe_injective' φ ψ h := by ext1; apply FunLike.ext; exact congr_fun h
   map_smulₛₗ φ := (φ : WeakDual 𝕜 A).map_smul
   map_add φ := (φ : WeakDual 𝕜 A).map_add
   map_continuous φ := (φ : WeakDual 𝕜 A).cont
 
--- porting note: moved because Lean 4 doesn't see the `FunLike` instance on `characterSpace 𝕜 A`
+-- porting note: moved because Lean 4 doesn't see the `DFunLike` instance on `characterSpace 𝕜 A`
 -- until the `ContinuousLinearMapClass` instance is declared
 @[simp, norm_cast]
 protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
@@ -71,23 +74,23 @@ protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 
 
 @[ext]
 theorem ext {φ ψ : characterSpace 𝕜 A} (h : ∀ x, φ x = ψ x) : φ = ψ :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align weak_dual.character_space.ext WeakDual.CharacterSpace.ext
 
 /-- An element of the character space, as a continuous linear map. -/
-def toClm (φ : characterSpace 𝕜 A) : A →L[𝕜] 𝕜 :=
+def toCLM (φ : characterSpace 𝕜 A) : A →L[𝕜] 𝕜 :=
   (φ : WeakDual 𝕜 A)
-#align weak_dual.character_space.to_clm WeakDual.CharacterSpace.toClm
+#align weak_dual.character_space.to_clm WeakDual.CharacterSpace.toCLM
 
 @[simp]
-theorem coe_toClm (φ : characterSpace 𝕜 A) : ⇑(toClm φ) = φ :=
+theorem coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
   rfl
-#align weak_dual.character_space.coe_to_clm WeakDual.CharacterSpace.coe_toClm
+#align weak_dual.character_space.coe_to_clm WeakDual.CharacterSpace.coe_toCLM
 
 /-- Elements of the character space are non-unital algebra homomorphisms. -/
 instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   { CharacterSpace.instContinuousLinearMapClass with
-    map_smul := fun φ => map_smul φ
+    map_smul := fun φ => map_smulₛₗ φ
     map_zero := fun φ => map_zero φ
     map_mul := fun φ => φ.prop.2 }
 
@@ -143,7 +146,7 @@ instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
   haveI map_one' : ∀ φ : characterSpace 𝕜 A, φ 1 = 1 := fun φ => by
     have h₁ : φ 1 * (1 - φ 1) = 0 := by rw [mul_sub, sub_eq_zero, mul_one, ← map_mul φ, one_mul]
     rcases mul_eq_zero.mp h₁ with (h₂ | h₂)
-    · have : ∀ a, φ (a * 1) = 0 := fun a => by simp only [map_mul φ, h₂, MulZeroClass.mul_zero]
+    · have : ∀ a, φ (a * 1) = 0 := fun a => by simp only [map_mul φ, h₂, mul_zero]
       exact False.elim (φ.prop.1 <| ContinuousLinearMap.ext <| by simpa only [mul_one] using this)
     · exact (sub_eq_zero.mp h₂).symm
   { CharacterSpace.instNonUnitalAlgHomClass with

@@ -23,7 +23,7 @@ open scoped Topology
 
 namespace ContDiffBump
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [HasContDiffBump E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [HasContDiffBump E]
   [MeasurableSpace E] {c : E} (f : ContDiffBump c) {x : E} {n : ℕ∞} {μ : Measure E}
 
 /-- A bump function normed so that `∫ x, f.normed μ x ∂μ = 1`. -/
@@ -131,8 +131,6 @@ theorem integral_le_measure_closedBall : ∫ x, f x ∂μ ≤ (μ (closedBall c 
     apply set_integral_mono f.integrable.integrableOn _ (fun x ↦ f.le_one)
     simp [measure_closedBall_lt_top]
   _ = (μ (closedBall c f.rOut)).toReal := by simp
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 theorem measure_closedBall_div_le_integral [IsAddHaarMeasure μ] (K : ℝ) (h : f.rOut ≤ K * f.rIn) :
     (μ (closedBall c f.rOut)).toReal / K ^ finrank ℝ E ≤ ∫ x, f x ∂μ := by

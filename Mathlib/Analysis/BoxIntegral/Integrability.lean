@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Measure.Regular
 
 #align_import analysis.box_integral.integrability from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -15,6 +14,8 @@ import Mathlib.MeasureTheory.Measure.Regular
 In this file we prove that any Bochner integrable function is McShane integrable (hence, it is
 Henstock and `GP` integrable) with the same integral. The proof is based on
 [Russel A. Gordon, *The integrals of Lebesgue, Denjoy, Perron, and Henstock*][Gordon55].
+
+We deduce that the same is true for the Riemann integral for continuous functions.
 
 ## Tags
 
@@ -71,7 +72,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
   simp only [mem_closedBall, dist_eq_norm, ← indicator_const_smul_apply,
     sum_indicator_eq_sum_filter, ← sum_smul, ← sub_smul, norm_smul, Real.norm_eq_abs, ←
     Prepartition.filter_boxes, ← Prepartition.measure_iUnion_toReal]
-  refine' mul_le_mul_of_nonneg_right _ (norm_nonneg y)
+  gcongr
   set t := (π.filter (π.tag · ∈ s)).iUnion
   change abs ((μ t).toReal - (μ (s ∩ I)).toReal) ≤ ε
   have htU : t ⊆ U ∩ I := by
@@ -112,8 +113,8 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   change μ.restrict I {x | f x ≠ 0} = 0 at hf
   set N : (ι → ℝ) → ℕ := fun x => ⌈‖f x‖⌉₊
   have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp
-  have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := by
-    refine' fun n => (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ _
+  have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := fun n ↦ by
+    refine (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ ?_
     cases' n with n
     · simpa [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne'] using measure_lt_top (μ.restrict I) _
     · refine' (measure_mono_null _ hf).le.trans_lt _
@@ -135,7 +136,8 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
       ‖(μ ↑J).toReal • f (π.tag J)‖ ≤ (μ J).toReal * n := fun J hJ ↦ by
     rw [TaggedPrepartition.mem_filter] at hJ
     rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
-    exact mul_le_mul_of_nonneg_left (hJ.2 ▸ Nat.le_ceil _) ENNReal.toReal_nonneg
+    gcongr
+    exact hJ.2 ▸ Nat.le_ceil _
   refine' (norm_sum_le_of_le _ this).trans _; clear this
   rw [← sum_mul, ← Prepartition.measure_iUnion_toReal]
   generalize hm : μ (π.filter fun J => N (π.tag J) = n).iUnion = m
@@ -207,7 +209,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   refine' BoxIntegral.HasIntegral.congr_ae _ hfg.symm hl
   clear! f
   /- Now consider the sequence of simple functions
-    `simple_func.approx_on g hg.measurable (range g ∪ {0}) 0 (by simp)`
+    `SimpleFunc.approxOn g hg.measurable (range g ∪ {0}) 0 (by simp)`
     approximating `g`. Recall some properties of this sequence. -/
   set f : ℕ → SimpleFunc (ι → ℝ) E :=
     SimpleFunc.approxOn g hg.measurable (range g ∪ {0}) 0 (by simp)
@@ -251,12 +253,12 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     (∑ J in π.boxes, ∫ x in J, f (Nx <| π.tag J) x ∂μ) _).trans _
   rw [add_mul, add_mul, one_mul]
   refine' add_le_add_three _ _ _
-  · /- Since each `f (Nx $ π.tag J)` is `ε`-close to `g (π.tag J)`, replacing the latter with
+  · /- Since each `f (Nx <| π.tag J)` is `ε`-close to `g (π.tag J)`, replacing the latter with
         the former in the formula for the integral sum changes the sum at most by `μ I * ε`. -/
     rw [← hπp.iUnion_eq, π.measure_iUnion_toReal, sum_mul, integralSum]
     refine' dist_sum_sum_le_of_le _ fun J _ => _; dsimp
     rw [dist_eq_norm, ← smul_sub, norm_smul, Real.norm_eq_abs, abs_of_nonneg ENNReal.toReal_nonneg]
-    refine' mul_le_mul_of_nonneg_left _ ENNReal.toReal_nonneg
+    gcongr
     rw [← dist_eq_norm']; exact hNxε _
   · /- We group the terms of both sums by the values of `Nx (π.tag J)`.
         For each `N`, the sum of Bochner integrals over the boxes is equal
@@ -300,5 +302,17 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     refine' norm_integral_le_of_norm_le (hfgi _ J hJ) (eventually_of_forall fun x => _)
     exact hfg_mono x (hNx (π.tag J))
 #align measure_theory.integrable_on.has_box_integral MeasureTheory.IntegrableOn.hasBoxIntegral
+
+/-- If `f : ℝⁿ → E` is continuous on a rectangular box `I`, then it is Box integrable on `I`
+w.r.t. a locally finite measure `μ` with the same integral. -/
+theorem ContinuousOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (μ : Measure (ι → ℝ))
+    [IsLocallyFiniteMeasure μ] {I : Box ι} (hc : ContinuousOn f (Box.Icc I))
+    (l : IntegrationParams) :
+    HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
+  obtain ⟨y, hy⟩ := BoxIntegral.integrable_of_continuousOn l hc μ
+  convert hy
+  have : IntegrableOn f I μ :=
+    IntegrableOn.mono_set (hc.integrableOn_compact I.isCompact_Icc) Box.coe_subset_Icc
+  exact HasIntegral.unique (IntegrableOn.hasBoxIntegral this ⊥ rfl) (HasIntegral.mono hy bot_le)
 
 end MeasureTheory

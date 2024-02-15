@@ -18,7 +18,7 @@ as well as the interaction of `List.Pairwise Disjoint` and the condition of
 
 open Finset
 
-variable {α ι ι' : Type _}
+variable {α ι ι' : Type*}
 
 instance [DecidableEq α] {r : α → α → Prop} [DecidableRel r] {s : Finset α} :
     Decidable ((s : Set α).Pairwise r) :=
@@ -75,7 +75,7 @@ end Set
 
 namespace List
 
-variable {β : Type _} [DecidableEq α] {r : α → α → Prop} {l : List α}
+variable {β : Type*} [DecidableEq α] {r : α → α → Prop} {l : List α}
 
 theorem pairwise_of_coe_toFinset_pairwise (hl : (l.toFinset : Set α).Pairwise r) (hn : l.Nodup) :
     l.Pairwise r := by

@@ -6,6 +6,7 @@ Authors: Johan Commelin, Scott Morrison
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.GradedObject
+import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 #align_import algebra.homology.homological_complex from "leanprover-community/mathlib"@"88bca0ce5d22ebfd9e73e682e51d60ea13b48347"
 
@@ -40,7 +41,7 @@ universe v u
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 variable (V : Type u) [Category.{v} V] [HasZeroMorphisms V]
 
@@ -93,12 +94,12 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
 #align homological_complex.ext HomologicalComplex.ext
 
 /-- The obvious isomorphism `K.X p ≅ K.X q` when `p = q`. -/
-def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) :
-  K.X p ≅ K.X q := eqToIso (by rw [h])
+def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) : K.X p ≅ K.X q :=
+  eqToIso (by rw [h])
 
 @[simp]
 lemma XIsoOfEq_rfl (K : HomologicalComplex V c) (p : ι) :
-  K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
+    K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_hom_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
@@ -149,27 +150,27 @@ end HomologicalComplex
 /-- An `α`-indexed chain complex is a `HomologicalComplex`
 in which `d i j ≠ 0` only if `j + 1 = i`.
 -/
-abbrev ChainComplex (α : Type _) [AddRightCancelSemigroup α] [One α] : Type _ :=
+abbrev ChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
   HomologicalComplex V (ComplexShape.down α)
 #align chain_complex ChainComplex
 
 /-- An `α`-indexed cochain complex is a `HomologicalComplex`
 in which `d i j ≠ 0` only if `i + 1 = j`.
 -/
-abbrev CochainComplex (α : Type _) [AddRightCancelSemigroup α] [One α] : Type _ :=
+abbrev CochainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] : Type _ :=
   HomologicalComplex V (ComplexShape.up α)
 #align cochain_complex CochainComplex
 
 namespace ChainComplex
 
 @[simp]
-theorem prev (α : Type _) [AddRightCancelSemigroup α] [One α] (i : α) :
+theorem prev (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
     (ComplexShape.down α).prev i = i + 1 :=
   (ComplexShape.down α).prev_eq' rfl
 #align chain_complex.prev ChainComplex.prev
 
 @[simp]
-theorem next (α : Type _) [AddGroup α] [One α] (i : α) : (ComplexShape.down α).next i = i - 1 :=
+theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down α).next i = i - 1 :=
   (ComplexShape.down α).next_eq' <| sub_add_cancel _ _
 #align chain_complex.next ChainComplex.next
 
@@ -192,12 +193,12 @@ end ChainComplex
 namespace CochainComplex
 
 @[simp]
-theorem prev (α : Type _) [AddGroup α] [One α] (i : α) : (ComplexShape.up α).prev i = i - 1 :=
+theorem prev (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.up α).prev i = i - 1 :=
   (ComplexShape.up α).prev_eq' <| sub_add_cancel _ _
 #align cochain_complex.prev CochainComplex.prev
 
 @[simp]
-theorem next (α : Type _) [AddRightCancelSemigroup α] [One α] (i : α) :
+theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
     (ComplexShape.up α).next i = i + 1 :=
   (ComplexShape.up α).next_eq' rfl
 #align cochain_complex.next CochainComplex.next
@@ -248,8 +249,8 @@ def id (A : HomologicalComplex V c) : Hom A A where f _ := 𝟙 _
 #align homological_complex.id HomologicalComplex.id
 
 /-- Composition of chain maps. -/
-def comp (A B C : HomologicalComplex V c) (φ : Hom A B) (ψ : Hom B C) : Hom A C
-    where f i := φ.f i ≫ ψ.f i
+def comp (A B C : HomologicalComplex V c) (φ : Hom A B) (ψ : Hom B C) : Hom A C where
+  f i := φ.f i ≫ ψ.f i
 #align homological_complex.comp HomologicalComplex.comp
 
 section
@@ -276,7 +277,7 @@ theorem id_f (C : HomologicalComplex V c) (i : ι) : Hom.f (𝟙 C) i = 𝟙 (C.
   rfl
 #align homological_complex.id_f HomologicalComplex.id_f
 
-@[simp]
+@[simp, reassoc]
 theorem comp_f {C₁ C₂ C₃ : HomologicalComplex V c} (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
     (f ≫ g).f i = f.f i ≫ g.f i :=
   rfl
@@ -360,6 +361,14 @@ def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
 end
 
 noncomputable section
+
+@[reassoc]
+lemma XIsoOfEq_hom_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
+    φ.f n ≫ (L.XIsoOfEq h).hom = (K.XIsoOfEq h).hom ≫ φ.f n' := by subst h; simp
+
+@[reassoc]
+lemma XIsoOfEq_inv_naturality {K L : HomologicalComplex V c} (φ : K ⟶ L) {n n' : ι} (h : n = n') :
+    φ.f n' ≫ (L.XIsoOfEq h).inv = (K.XIsoOfEq h).inv ≫ φ.f n := by subst h; simp
 
 -- porting note: removed @[simp] as the linter complained
 /-- If `C.d i j` and `C.d i j'` are both allowed, then we must have `j = j'`,
@@ -661,7 +670,7 @@ namespace ChainComplex
 
 section Of
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
@@ -700,7 +709,7 @@ end Of
 
 section OfHom
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n + 1) ≫ d_X n = 0) (Y : α → V)
   (d_Y : ∀ n, Y (n + 1) ⟶ Y n) (sq_Y : ∀ n, d_Y (n + 1) ≫ d_Y n = 0)
@@ -724,37 +733,16 @@ end OfHom
 
 section Mk
 
--- porting note: removed @[nolint has_nonempty_instance]
-/-- Auxiliary structure for setting up the recursion in `mk`.
-This is purely an implementation detail: for some reason just using the dependent 6-tuple directly
-results in `mk_aux` taking much longer (well over the `-T100000` limit) to elaborate.
--/
-structure MkStruct where
-  (X₀ X₁ X₂ : V)
-  d₀ : X₁ ⟶ X₀
-  d₁ : X₂ ⟶ X₁
-  s : d₁ ≫ d₀ = 0
-#align chain_complex.mk_struct ChainComplex.MkStruct
-
 variable {V}
 
-/-- Flatten to a tuple. -/
-def MkStruct.flat (t : MkStruct V) :
-    Σ' (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0 :=
-  ⟨t.X₀, t.X₁, t.X₂, t.d₀, t.d₁, t.s⟩
-#align chain_complex.mk_struct.flat ChainComplex.MkStruct.flat
 
 variable (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁) (s : d₁ ≫ d₀ = 0)
-  (succ :
-    ∀ t : Σ' (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0,
-      Σ' (X₃ : V) (d₂ : X₃ ⟶ t.2.2.1), d₂ ≫ t.2.2.2.2.1 = 0)
+  (succ : ∀ (S : ShortComplex V), Σ' (X₃ : V) (d₂ : X₃ ⟶ S.X₁), d₂ ≫ S.f = 0)
 
 /-- Auxiliary definition for `mk`. -/
-def mkAux : ∀ _ : ℕ, MkStruct V
-  | 0 => ⟨X₀, X₁, X₂, d₀, d₁, s⟩
-  | n + 1 =>
-    let p := mkAux n
-    ⟨p.X₁, p.X₂, (succ p.flat).1, p.d₁, (succ p.flat).2.1, (succ p.flat).2.2⟩
+def mkAux : ℕ → ShortComplex V
+  | 0 => ShortComplex.mk _ _ s
+  | n + 1 => ShortComplex.mk _ _ (succ (mkAux n)).2.2
 #align chain_complex.mk_aux ChainComplex.mkAux
 
 /-- An inductive constructor for `ℕ`-indexed chain complexes.
@@ -766,8 +754,8 @@ and returns the next object, its differential, and the fact it composes appropri
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
 def mk : ChainComplex V ℕ :=
-  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₀) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).d₀)
-    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).s
+  of (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).X₃) (fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).g)
+    fun n => (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero
 #align chain_complex.mk ChainComplex.mk
 
 @[simp]
@@ -795,10 +783,10 @@ theorem mk_d_1_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 1 0 = d₀ := by
 #align chain_complex.mk_d_1_0 ChainComplex.mk_d_1_0
 
 @[simp]
-theorem mk_d_2_0 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
+theorem mk_d_2_1 : (mk X₀ X₁ X₂ d₀ d₁ s succ).d 2 1 = d₁ := by
   change ite (2 = 1 + 1) (𝟙 X₂ ≫ d₁) 0 = d₁
   rw [if_pos rfl, Category.id_comp]
-#align chain_complex.mk_d_2_0 ChainComplex.mk_d_2_0
+#align chain_complex.mk_d_2_0 ChainComplex.mk_d_2_1
 
 -- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
 /-- A simpler inductive constructor for `ℕ`-indexed chain complexes.
@@ -808,13 +796,12 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₁ ⟶ X₀)
-    (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ' (X₂ : V) (d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0) :
+    (succ' : ∀ {X₀ X₁ : V} (f : X₁ ⟶ X₀), Σ' (X₂ : V) (d : X₂ ⟶ X₁), d ≫ f = 0) :
     ChainComplex V ℕ :=
-  mk X₀ X₁ (succ' ⟨X₀, X₁, d⟩).1 d (succ' ⟨X₀, X₁, d⟩).2.1 (succ' ⟨X₀, X₁, d⟩).2.2 fun t =>
-    succ' ⟨t.2.1, t.2.2.1, t.2.2.2.2.1⟩
+  mk _ _ _ _ _ (succ' d).2.2 (fun S => succ' S.f)
 #align chain_complex.mk' ChainComplex.mk'
 
-variable (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ' (X₂ : V) (d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0)
+variable (succ' : ∀ {X₀ X₁ : V} (f : X₁ ⟶ X₀), Σ' (X₂ : V) (d : X₂ ⟶ X₁), d ≫ f = 0)
 
 @[simp]
 theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=
@@ -928,7 +915,7 @@ namespace CochainComplex
 
 section Of
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
@@ -971,7 +958,7 @@ end Of
 
 section OfHom
 
-variable {V} {α : Type _} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n ≫ d_X (n + 1) = 0) (Y : α → V)
   (d_Y : ∀ n, Y n ⟶ Y (n + 1)) (sq_Y : ∀ n, d_Y n ≫ d_Y (n + 1) = 0)
@@ -1022,7 +1009,7 @@ variable (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂) (s :
       Σ' (X₃ : V) (d₂ : t.2.2.1 ⟶ X₃), t.2.2.2.2.1 ≫ d₂ = 0)
 
 /-- Auxiliary definition for `mk`. -/
-def mkAux : ∀ _ : ℕ, MkStruct V
+def mkAux : ℕ → MkStruct V
   | 0 => ⟨X₀, X₁, X₂, d₀, d₁, s⟩
   | n + 1 =>
     let p := mkAux n

@@ -15,7 +15,7 @@ The `R`-`AlgEquiv` between the localization of `R` away from `r` and
 
 open Polynomial AdjoinRoot Localization
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 -- Porting note: removed `IsLocalization.algHom_subsingleton` due to
 -- `cannot find synthesization order for instance`

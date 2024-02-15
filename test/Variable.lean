@@ -1,10 +1,11 @@
 import Mathlib.Tactic.Variable
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Module.LinearMap
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Std.Tactic.GuardMsgs
 
+set_option autoImplicit true
 namespace Tests
 
 -- Note about tests: these are just testing how `variable?` works, and for the algebra hierarchy

@@ -31,7 +31,7 @@ open Finset Finsupp Function
 
 open BigOperators Classical Pointwise
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finsupp
 
@@ -138,7 +138,7 @@ end Lattice
 
 section CanonicallyOrdered
 
-variable [CanonicallyOrderedAddMonoid α] [LocallyFiniteOrder α]
+variable [CanonicallyOrderedAddCommMonoid α] [LocallyFiniteOrder α]
 
 variable (f : ι →₀ α)
 

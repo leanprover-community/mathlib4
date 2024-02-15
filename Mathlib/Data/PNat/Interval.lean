@@ -102,7 +102,7 @@ theorem card_Ioo : (Ioo a b).card = b - a - 1 := by
 
 @[simp]
 theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
-  rw [←Nat.card_uIcc, ←map_subtype_embedding_uIcc, card_map]
+  rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
 #align pnat.card_uIcc PNat.card_uIcc
 
 -- porting note: `simpNF` says `simp` can prove this
@@ -127,7 +127,7 @@ theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
 
 -- porting note: `simpNF` says `simp` can prove this
 theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by
-  rw [←card_uIcc, Fintype.card_ofFinset]
+  rw [← card_uIcc, Fintype.card_ofFinset]
 #align pnat.card_fintype_uIcc PNat.card_fintype_uIcc
 
 end PNat

@@ -23,13 +23,13 @@ open CategoryTheory CategoryTheory.Category
 
 namespace CategoryTheory
 
-variable {C D : Type _} [Category C] [Category D] {L : C ⥤ D} {W : MorphismProperty C}
+variable {C D : Type*} [Category C] [Category D] {L : C ⥤ D} {W : MorphismProperty C}
 
 namespace Localization
 
 /-- If `L : C ⥤ D` satisfies the universal property of the localisation
 for `W : MorphismProperty C`, then `L.op` also does. -/
-def StrictUniversalPropertyFixedTarget.op {E : Type _} [Category E]
+def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category E]
     (h : StrictUniversalPropertyFixedTarget L W Eᵒᵖ) :
     StrictUniversalPropertyFixedTarget L.op W.op E where
   inverts := h.inverts.op

@@ -62,7 +62,6 @@ theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
   mt fun h => Fintype.nonempty_field_iff.mp ⟨h.toField⟩
 #align fintype.not_is_field_of_card_not_prime_pow Fintype.not_isField_of_card_not_prime_pow
 
-set_option synthInstance.maxHeartbeats 50000 in
 /-- Any infinite type can be endowed a field structure. -/
 theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by
   letI K := FractionRing (MvPolynomial α <| ULift.{u} ℚ)

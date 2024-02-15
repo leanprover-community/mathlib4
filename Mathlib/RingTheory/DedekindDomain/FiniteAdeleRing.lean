@@ -37,7 +37,7 @@ open Function Set IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
 
 namespace DedekindDomain
 
-variable (R K : Type _) [CommRing R] [IsDomain R] [IsDedekindDomain R] [Field K] [Algebra R K]
+variable (R K : Type*) [CommRing R] [IsDomain R] [IsDedekindDomain R] [Field K] [Algebra R K]
   [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- The product of all `adicCompletionIntegers`, where `v` runs over the maximal ideals of `R`. -/
@@ -214,7 +214,6 @@ theorem zero : (0 : K_hat R K).IsFiniteAdele := by
     have h_zero : (Valued.v (0 : v.adicCompletion K) : WithZero (Multiplicative ℤ)) = 0 :=
       Valued.v.map_zero'
     rw [h_zero]; exact zero_le_one' _
-  simp_rw [Pi.zero_apply, h_empty]
   -- Porting note: was `exact`, but `OfNat` got in the way.
   convert finite_empty
 #align dedekind_domain.prod_adic_completions.is_finite_adele.zero DedekindDomain.ProdAdicCompletions.IsFiniteAdele.zero
@@ -248,9 +247,7 @@ theorem mul {x y : K_hat R K} (hx : x.IsFiniteAdele) (hy : y.IsFiniteAdele) :
     have h_mul : Valued.v (x v * y v) = Valued.v (x v) * Valued.v (y v) :=
       Valued.v.map_mul' (x v) (y v)
     rw [mem_adicCompletionIntegers, Pi.mul_apply, h_mul]
-    exact
-      @mul_le_one' (WithZero (Multiplicative ℤ)) _ _ (OrderedCommMonoid.to_covariantClass_left _) _
-        _ hv.left hv.right
+    exact mul_le_one' hv.left hv.right
   exact (hx.union hy).subset h_subset
 #align dedekind_domain.prod_adic_completions.is_finite_adele.mul DedekindDomain.ProdAdicCompletions.IsFiniteAdele.mul
 
@@ -262,7 +259,6 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
     ext v; rw [mem_empty_iff_false, iff_false_iff]; intro hv
     rw [mem_setOf] at hv; apply hv; rw [mem_adicCompletionIntegers]
     exact le_of_eq Valued.v.map_one'
-  simp_rw [Pi.one_apply, h_empty]
   -- Porting note: was `exact`, but `OfNat` got in the way.
   convert finite_empty
 #align dedekind_domain.prod_adic_completions.is_finite_adele.one DedekindDomain.ProdAdicCompletions.IsFiniteAdele.one

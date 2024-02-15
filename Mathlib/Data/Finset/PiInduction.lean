@@ -3,8 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.Fintype.Card
 
 #align_import data.finset.pi_induction from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
@@ -29,13 +29,13 @@ finite set, finite type, induction, function
 
 open Function
 
-variable {ι : Type _} {α : ι → Type _} [Finite ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
+variable {ι : Type*} {α : ι → Type*} [Finite ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
 namespace Finset
 
 /-- General theorem for `Finset.induction_on_pi`-style induction principles. -/
 theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
-    (H_ex : ∀ (i) (s : Finset (α i)) (_ : s.Nonempty), ∃ x ∈ s, r i x (s.erase x))
+    (H_ex : ∀ (i) (s : Finset (α i)), s.Nonempty → ∃ x ∈ s, r i x (s.erase x))
     {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
       ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i),
@@ -43,7 +43,7 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
     p f := by
   cases nonempty_fintype ι
   induction' hs : univ.sigma f using Finset.strongInductionOn with s ihs generalizing f; subst s
-  cases' eq_empty_or_nonempty (univ.sigma f) with he hne
+  rcases eq_empty_or_nonempty (univ.sigma f) with he | hne
   · convert h0 using 1
     simpa [funext_iff] using he
   · rcases sigma_nonempty.1 hne with ⟨i, -, hi⟩
@@ -71,9 +71,7 @@ maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i
 See also `Finset.induction_on_pi_max` and `Finset.induction_on_pi_min` for specialized versions
 that require `∀ i, LinearOrder (α i)`.  -/
 theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
-    (step :
-      ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i) (_ : x ∉ g i),
-        p g → p (update g i (insert x (g i)))) :
+    (step : ∀ (g : ∀ i, Finset (α i)) (i : ι), ∀ x ∉ g i, p g → p (update g i (insert x (g i)))) :
     p f :=
   induction_on_pi_of_choice (fun _ x s ↦ x ∉ s) (fun _ s ⟨x, hx⟩ ↦ ⟨x, hx, not_mem_erase x s⟩) f
     h0 step

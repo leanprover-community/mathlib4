@@ -3,9 +3,7 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Init.Control.Lawful
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Common
 
 #align_import control.monad.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -38,7 +36,9 @@ functor, applicative, monad, simp
 
 -/
 
-attribute [ext] ReaderT.ext StateT.ext ExceptT.ext OptionT.ext
+set_option autoImplicit true
+
+attribute [ext] ReaderT.ext StateT.ext ExceptT.ext
 
 @[monad_norm]
 theorem map_eq_bind_pure_comp (m : Type u → Type v) [Monad m] [LawfulMonad m]

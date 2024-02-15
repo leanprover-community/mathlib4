@@ -25,7 +25,7 @@ symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
 
 ## Main statements
 
-* `is_symmetric.continuous`: if a symmetric operator is defined on a complete space, then
+* `IsSymmetric.continuous`: if a symmetric operator is defined on a complete space, then
   it is automatically continuous.
 
 ## Tags
@@ -38,7 +38,7 @@ open IsROrC
 
 open ComplexConjugate
 
-variable {𝕜 E E' F G : Type _} [IsROrC 𝕜]
+variable {𝕜 E E' F G : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
@@ -66,7 +66,7 @@ section Real
 /-- An operator `T` on an inner product space is symmetric if and only if it is
 `LinearMap.IsSelfAdjoint` with respect to the sesquilinear form given by the inner product. -/
 theorem isSymmetric_iff_sesqForm (T : E →ₗ[𝕜] E) :
-    T.IsSymmetric ↔ @LinearMap.IsSelfAdjoint 𝕜 E _ _ _ (starRingEnd 𝕜) sesqFormOfInner T :=
+    T.IsSymmetric ↔ LinearMap.IsSelfAdjoint (R := 𝕜) (M := E) sesqFormOfInner T :=
   ⟨fun h x y => (h y x).symm, fun h x y => (h y x).symm⟩
 #align linear_map.is_symmetric_iff_sesq_form LinearMap.isSymmetric_iff_sesqForm
 
@@ -139,7 +139,7 @@ theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) 
 
 section Complex
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 /-- A linear operator on a complex inner product space is symmetric precisely when
 `⟪T v, v⟫_ℂ` is real for all v.-/
@@ -170,13 +170,13 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
           I * ⟪T (x - (I : 𝕜) • y), x - (I : 𝕜) • y⟫) /
         4 := by
   rcases@I_mul_I_ax 𝕜 _ with (h | h)
-  · simp_rw [h, MulZeroClass.zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
+  · simp_rw [h, zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
       inner_add_right, inner_sub_left, inner_sub_right, hT x, ← inner_conj_symm x (T y)]
     suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫ by
       rw [conj_eq_iff_re.mpr this]
       ring
     · rw [← re_add_im ⟪T y, x⟫]
-      simp_rw [h, MulZeroClass.mul_zero, add_zero]
+      simp_rw [h, mul_zero, add_zero]
       norm_cast
   · simp_rw [map_add, map_sub, inner_add_left, inner_add_right, inner_sub_left, inner_sub_right,
       LinearMap.map_smul, inner_smul_left, inner_smul_right, IsROrC.conj_I, mul_add, mul_sub,

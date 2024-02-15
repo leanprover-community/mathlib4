@@ -50,6 +50,8 @@ distributive lattice.
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
 
+set_option autoImplicit true
+
 
 open Function Set
 
@@ -58,7 +60,7 @@ universe u v w
 variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
-class Order.Frame (α : Type _) extends CompleteLattice α where
+class Order.Frame (α : Type*) extends CompleteLattice α where
   inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
 #align order.frame Order.Frame
 
@@ -67,7 +69,7 @@ add_decl_doc Order.Frame.inf_sSup_le_iSup_inf
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
-class Order.Coframe (α : Type _) extends CompleteLattice α where
+class Order.Coframe (α : Type*) extends CompleteLattice α where
   iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 #align order.coframe Order.Coframe
 
@@ -78,7 +80,7 @@ open Order
 
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
-class CompleteDistribLattice (α : Type _) extends Frame α where
+class CompleteDistribLattice (α : Type*) extends Frame α where
   iInf_sup_le_sup_sInf : ∀ a s, ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 #align complete_distrib_lattice CompleteDistribLattice
 
@@ -129,7 +131,7 @@ theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
   refine le_trans ?_ (le_iSup _ a)
   refine le_iInf fun b => ?_
   obtain ⟨h, rfl, rfl⟩ := ha b
-  refine iInf_le _ _
+  exact iInf_le _ _
 
 instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     [CompletelyDistribLattice α] : CompleteDistribLattice α where
@@ -137,9 +139,9 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     _ = ⨅ b : s, ⨆ x : Bool, cond x a b := by simp_rw [iInf_subtype, iSup_bool_eq, cond]
     _ = _ := iInf_iSup_eq
     _ ≤ _ := iSup_le fun f => by
-      by_cases ∀ i, f i = false
-      case pos => simp [h, iInf_subtype, ← sInf_eq_iInf]
-      case neg =>
+      if h : ∀ i, f i = false then
+        simp [h, iInf_subtype, ← sInf_eq_iInf]
+      else
         have ⟨i, h⟩ : ∃ i, f i = true := by simpa using h
         refine le_trans (iInf_le _ i) ?_
         simp [h]
@@ -160,8 +162,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
     let lhs := ⨅ a, ⨆ b, g a b
     let rhs := ⨆ h : ∀ a, β a, ⨅ a, g a (h a)
     suffices lhs ≤ rhs from le_antisymm this le_iInf_iSup
-    by_cases ∃ x, rhs < x ∧ x < lhs
-    case pos =>
+    if h : ∃ x, rhs < x ∧ x < lhs then
       rcases h with ⟨x, hr, hl⟩
       suffices rhs ≥ x from nomatch not_lt.2 this hr
       have : ∀ a, ∃ b, x < g a b := fun a =>
@@ -170,7 +171,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
       choose f hf using this
       refine le_trans ?_ (le_iSup _ f)
       refine le_iInf fun a => le_of_lt (hf a)
-    case neg =>
+    else
       refine le_of_not_lt fun hrl : rhs < lhs => not_le_of_lt hrl ?_
       replace h : ∀ x, x ≤ rhs ∨ lhs ≤ x := by
         simpa only [not_exists, not_and_or, not_or, not_lt] using h
@@ -180,7 +181,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
       have : ∀ a, lhs ≤ g a (f a) := fun a =>
         (h (g a (f a))).resolve_left (by simpa using hf a)
       refine le_trans ?_ (le_iSup _ f)
-      refine le_iInf fun a => this _
+      exact le_iInf fun a => this _
 
 section Frame
 
@@ -211,20 +212,22 @@ instance Prod.frame (α β) [Frame α] [Frame β] : Frame (α × β) where
   inf_sSup_le_iSup_inf a s := by
     simp [Prod.le_def, sSup_eq_iSup, fst_iSup, snd_iSup, fst_iInf, snd_iInf, inf_iSup_eq]
 
-theorem iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) : (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a :=
-  by simp only [iSup_inf_eq]
+theorem iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) :
+    (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a := by
+  simp only [iSup_inf_eq]
 #align bsupr_inf_eq iSup₂_inf_eq
 
-theorem inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j :=
-  by simp only [inf_iSup_eq]
+theorem inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) :
+    (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j := by
+  simp only [inf_iSup_eq]
 #align inf_bsupr_eq inf_iSup₂_eq
 
-theorem iSup_inf_iSup {ι ι' : Type _} {f : ι → α} {g : ι' → α} :
+theorem iSup_inf_iSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
     ((⨆ i, f i) ⊓ ⨆ j, g j) = ⨆ i : ι × ι', f i.1 ⊓ g i.2 := by
   simp_rw [iSup_inf_eq, inf_iSup_eq, iSup_prod]
 #align supr_inf_supr iSup_inf_iSup
 
-theorem biSup_inf_biSup {ι ι' : Type _} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
+theorem biSup_inf_biSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
     ((⨆ i ∈ s, f i) ⊓ ⨆ j ∈ t, g j) = ⨆ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊓ g p.2 := by
   simp only [iSup_subtype', iSup_inf_iSup]
   exact (Equiv.surjective _).iSup_congr (Equiv.Set.prod s t).symm fun x => rfl
@@ -260,7 +263,7 @@ theorem disjoint_sSup_iff {s : Set α} : Disjoint a (sSup s) ↔ ∀ b ∈ s, Di
   simpa only [disjoint_comm] using @sSup_disjoint_iff
 #align disjoint_Sup_iff disjoint_sSup_iff
 
-theorem iSup_inf_of_monotone {ι : Type _} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
+theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
     (hf : Monotone f) (hg : Monotone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i := by
   refine' (le_iSup_inf_iSup f g).antisymm _
   rw [iSup_inf_iSup]
@@ -269,12 +272,12 @@ theorem iSup_inf_of_monotone {ι : Type _} [Preorder ι] [IsDirected ι (· ≤ 
   exact ⟨j, inf_le_inf (hf h₁) (hg h₂)⟩
 #align supr_inf_of_monotone iSup_inf_of_monotone
 
-theorem iSup_inf_of_antitone {ι : Type _} [Preorder ι] [IsDirected ι (swap (· ≤ ·))] {f g : ι → α}
+theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (· ≤ ·))] {f g : ι → α}
     (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i :=
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
 #align supr_inf_of_antitone iSup_inf_of_antitone
 
-instance Pi.frame {ι : Type _} {π : ι → Type _} [∀ i, Frame (π i)] : Frame (∀ i, π i) :=
+instance Pi.frame {ι : Type*} {π : ι → Type*} [∀ i, Frame (π i)] : Frame (∀ i, π i) :=
   { Pi.completeLattice with
     inf_sSup_le_iSup_inf := fun a s i => by
       simp only [sSup_apply, iSup_apply, inf_apply, inf_iSup_eq, ← iSup_subtype'']; rfl }
@@ -325,12 +328,12 @@ theorem sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ (i) (j), f
   @inf_iSup₂_eq αᵒᵈ _ _ _ _ _
 #align sup_binfi_eq sup_iInf₂_eq
 
-theorem iInf_sup_iInf {ι ι' : Type _} {f : ι → α} {g : ι' → α} :
+theorem iInf_sup_iInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} :
     ((⨅ i, f i) ⊔ ⨅ i, g i) = ⨅ i : ι × ι', f i.1 ⊔ g i.2 :=
   @iSup_inf_iSup αᵒᵈ _ _ _ _ _
 #align infi_sup_infi iInf_sup_iInf
 
-theorem biInf_sup_biInf {ι ι' : Type _} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
+theorem biInf_sup_biInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : Set ι} {t : Set ι'} :
     ((⨅ i ∈ s, f i) ⊔ ⨅ j ∈ t, g j) = ⨅ p ∈ s ×ˢ t, f (p : ι × ι').1 ⊔ g p.2 :=
   @biSup_inf_biSup αᵒᵈ _ _ _ _ _ _ _
 #align binfi_sup_binfi biInf_sup_biInf
@@ -339,17 +342,17 @@ theorem sInf_sup_sInf : sInf s ⊔ sInf t = ⨅ p ∈ s ×ˢ t, (p : α × α).1
   @sSup_inf_sSup αᵒᵈ _ _ _
 #align Inf_sup_Inf sInf_sup_sInf
 
-theorem iInf_sup_of_monotone {ι : Type _} [Preorder ι] [IsDirected ι (swap (· ≤ ·))] {f g : ι → α}
+theorem iInf_sup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (swap (· ≤ ·))] {f g : ι → α}
     (hf : Monotone f) (hg : Monotone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
   @iSup_inf_of_antitone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
 #align infi_sup_of_monotone iInf_sup_of_monotone
 
-theorem iInf_sup_of_antitone {ι : Type _} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
+theorem iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
     (hf : Antitone f) (hg : Antitone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
   @iSup_inf_of_monotone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
 #align infi_sup_of_antitone iInf_sup_of_antitone
 
-instance Pi.coframe {ι : Type _} {π : ι → Type _} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) :=
+instance Pi.coframe {ι : Type*} {π : ι → Type*} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) :=
   { Pi.completeLattice with
     iInf_sup_le_sup_sInf := fun a s i => by
       simp only [sInf_apply, iInf_apply, sup_apply, sup_iInf_eq, ← iInf_subtype'']; rfl }
@@ -382,7 +385,7 @@ instance Prod.completeDistribLattice (α β)
   __ := Prod.frame α β
   __ := Prod.coframe α β
 
-instance Pi.completeDistribLattice {ι : Type _} {π : ι → Type _}
+instance Pi.completeDistribLattice {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteDistribLattice (π i)] : CompleteDistribLattice (∀ i, π i) :=
   { Pi.frame, Pi.coframe with }
 #align pi.complete_distrib_lattice Pi.completeDistribLattice
@@ -402,7 +405,7 @@ instance Prod.completelyDistribLattice (α β)
   __ := Prod.completeLattice α β
   iInf_iSup_eq f := by ext <;> simp [fst_iSup, fst_iInf, snd_iSup, snd_iInf, iInf_iSup_eq]
 
-instance Pi.completelyDistribLattice {ι : Type _} {π : ι → Type _}
+instance Pi.completelyDistribLattice {ι : Type*} {π : ι → Type*}
     [∀ i, CompletelyDistribLattice (π i)] : CompletelyDistribLattice (∀ i, π i) where
   __ := Pi.completeLattice
   iInf_iSup_eq f := by ext i; simp only [iInf_apply, iSup_apply, iInf_iSup_eq]
@@ -423,7 +426,7 @@ instance Prod.completeBooleanAlgebra (α β)
   __ := Prod.booleanAlgebra α β
   __ := Prod.completeDistribLattice α β
 
-instance Pi.completeBooleanAlgebra {ι : Type _} {π : ι → Type _}
+instance Pi.completeBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) :=
   { Pi.booleanAlgebra, Pi.completeDistribLattice with }
 #align pi.complete_boolean_algebra Pi.completeBooleanAlgebra
@@ -482,7 +485,7 @@ instance Prod.completeAtomicBooleanAlgebra (α β)
   __ := Prod.booleanAlgebra α β
   __ := Prod.completelyDistribLattice α β
 
-instance Pi.completeAtomicBooleanAlgebra {ι : Type _} {π : ι → Type _}
+instance Pi.completeAtomicBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteAtomicBooleanAlgebra (π i)] : CompleteAtomicBooleanAlgebra (∀ i, π i) where
   __ := Pi.completeBooleanAlgebra
   iInf_iSup_eq f := by ext; rw [iInf_iSup_eq]
@@ -601,6 +604,9 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit := by
   (intros; trivial)
 
 instance completeBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
+
+instance completeLinearOrder : CompleteLinearOrder PUnit :=
+  { PUnit.completeBooleanAlgebra, PUnit.linearOrder with }
 
 @[simp]
 theorem sSup_eq : sSup s = unit :=

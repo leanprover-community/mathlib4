@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
 import Mathlib.Topology.Separation
+import Mathlib.Algebra.Group.Defs
 
 #align_import topology.algebra.semigroup from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -32,8 +33,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
      It will turn out that any minimal element is `{m}` for an idempotent `m : M`. -/
   let S : Set (Set M) :=
     { N | IsClosed N ∧ N.Nonempty ∧ ∀ (m) (_ : m ∈ N) (m') (_ : m' ∈ N), m * m' ∈ N }
-  obtain ⟨N, ⟨N_closed, ⟨m, hm⟩, N_mul⟩, N_minimal⟩ : ∃ N ∈ S, ∀ N' ∈ S, N' ⊆ N → N' = N
-  rotate_left -- Porting note: restore to `rsuffices`
+  rsuffices ⟨N, ⟨N_closed, ⟨m, hm⟩, N_mul⟩, N_minimal⟩ : ∃ N ∈ S, ∀ N' ∈ S, N' ⊆ N → N' = N
   · use m
     /- We now have an element `m : M` of a minimal subsemigroup `N`, and want to show `m + m = m`.
     We first show that every element of `N` is of the form `m' + m`.-/
@@ -67,8 +67,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
     convert
       @IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ _ _ hcnemp.coe_sort
         ((↑) : c → Set M) ?_ ?_ ?_ ?_
-    · simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq]
-      exact Set.sInter_eq_iInter
+    · exact Set.sInter_eq_iInter
     · refine' DirectedOn.directed_val (IsChain.directedOn hc.symm)
     exacts [fun i => (hcs i.prop).2.1, fun i => (hcs i.prop).1.isCompact, fun i => (hcs i.prop).1]
   · rw [Set.mem_sInter]
@@ -86,7 +85,7 @@ in some specified nonempty compact subsemigroup. -/
       some specified nonempty compact additive subsemigroup."]
 theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [TopologicalSpace M] [T2Space M]
     (continuous_mul_left : ∀ r : M, Continuous (· * r)) (s : Set M) (snemp : s.Nonempty)
-    (s_compact : IsCompact s) (s_add : ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s), x * y ∈ s) :
+    (s_compact : IsCompact s) (s_add : ∀ᵉ (x ∈ s) (y ∈ s), x * y ∈ s) :
     ∃ m ∈ s, m * m = m := by
   let M' := { m // m ∈ s }
   letI : Semigroup M' :=

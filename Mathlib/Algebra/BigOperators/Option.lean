@@ -21,13 +21,18 @@ open Function
 
 namespace Finset
 
-variable {α M : Type _} [CommMonoid M]
+variable {α M : Type*} [CommMonoid M]
 
 @[to_additive (attr := simp)]
 theorem prod_insertNone (f : Option α → M) (s : Finset α) :
     ∏ x in insertNone s, f x = f none * ∏ x in s, f (some x) := by simp [insertNone]
 #align finset.prod_insert_none Finset.prod_insertNone
 #align finset.sum_insert_none Finset.sum_insertNone
+
+@[to_additive]
+theorem mul_prod_eq_prod_insertNone (f : α → M) (x : M) (s : Finset α) :
+    x * ∏ i in s, f i = ∏ i in insertNone s, i.elim x f :=
+  (prod_insertNone (fun i => i.elim x f) _).symm
 
 @[to_additive]
 theorem prod_eraseNone (f : α → M) (s : Finset (Option α)) :

@@ -4,13 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro
 -/
 import Qq.MetaM
-import Mathlib.Logic.Nontrivial
-import Mathlib.Tactic.SolveByElim
+import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Tactic.Attr.Core
+import Std.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic.Nontriviality
-open Lean Elab Meta Tactic Linter Std.Linter UnreachableTactic Qq
+open Lean Elab Meta Tactic Qq Std.Tactic
 
 theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=
@@ -24,7 +27,7 @@ including `Subsingleton.le` and `eq_iff_true_of_subsingleton`.
 -/
 def nontrivialityByElim (α : Q(Type u)) (g : MVarId) (simpArgs : Array Syntax) : MetaM MVarId := do
   let p : Q(Prop) ← g.getType
-  guard (←instantiateMVars (← inferType p)).isProp
+  guard (← instantiateMVars (← inferType p)).isProp
   g.withContext do
     let g₁ ← mkFreshExprMVarQ q(Subsingleton $α → $p)
     let (_, g₁') ← g₁.mvarId!.intro1
@@ -61,25 +64,25 @@ The `nontriviality` tactic will first look for strict inequalities amongst the h
 and use these to derive the `Nontrivial` instance directly.
 
 Otherwise, it will perform a case split on `Subsingleton α ∨ Nontrivial α`, and attempt to discharge
-the `Subsingleton` goal using `simp [h₁, h₂, ..., hₙ, nontriviality]`, where `[h₁, h₂, ..., hₙ]` is 
+the `Subsingleton` goal using `simp [h₁, h₂, ..., hₙ, nontriviality]`, where `[h₁, h₂, ..., hₙ]` is
 a list of additional `simp` lemmas that can be passed to `nontriviality` using the syntax
 `nontriviality α using h₁, h₂, ..., hₙ`.
 
 ```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
-  nontriviality -- There is now a `nontrivial R` hypothesis available.
+  nontriviality -- There is now a `Nontrivial R` hypothesis available.
   assumption
 ```
 
 ```
 example {R : Type} [CommRing R] {r s : R} : r * s = s * r := by
-  nontriviality -- There is now a `nontrivial R` hypothesis available.
+  nontriviality -- There is now a `Nontrivial R` hypothesis available.
   apply mul_comm
 ```
 
 ```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : (2 : ℕ) ∣ 4 := by
-  nontriviality R -- there is now a `nontrivial R` hypothesis available.
+  nontriviality R -- there is now a `Nontrivial R` hypothesis available.
   dec_trivial
 ```
 
@@ -88,7 +91,7 @@ def myeq {α : Type} (a b : α) : Prop := a = b
 
 example {α : Type} (a b : α) (h : a = b) : myeq a b := by
   success_if_fail nontriviality α -- Fails
-  nontriviality α using myeq -- There is now a `nontrivial α` hypothesis available
+  nontriviality α using myeq -- There is now a `Nontrivial α` hypothesis available
   assumption
 ```
 -/
@@ -106,8 +109,8 @@ syntax (name := nontriviality) "nontriviality" (ppSpace colGt term)?
       if let some (α, _) := tgt.eq? then return α
       if let some (α, _) := tgt.app4? ``LE.le then return α
       if let some (α, _) := tgt.app4? ``LT.lt then return α
-      throwError "The goal is not an (in)equality, so you'll need to specify the desired {""
-        }`Nontrivial α` instance by invoking `nontriviality α`.")
+      throwError "The goal is not an (in)equality, so you'll need to specify the desired \
+        `Nontrivial α` instance by invoking `nontriviality α`.")
     let .sort u ← whnf (← inferType α) | unreachable!
     let some v := u.dec | throwError "not a type{indentExpr α}"
     let α : Q(Type v) := α

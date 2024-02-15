@@ -37,14 +37,16 @@ that a Lie submodule `N ⊆ M` is the limiting value for the upper central serie
 
 This is a characteristic property of Cartan subalgebras with the roles of `L`, `M`, `N` played by
 `H`, `L`, `H`, respectively. See `LieSubalgebra.isCartanSubalgebra_iff_isUcsLimit`. -/
-def LieSubmodule.IsUcsLimit {M : Type _} [AddCommGroup M] [Module R M] [LieRingModule L M]
+def LieSubmodule.IsUcsLimit {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M]
     [LieModule R L M] (N : LieSubmodule R L M) : Prop :=
   ∃ k, ∀ l, k ≤ l → (⊥ : LieSubmodule R L M).ucs l = N
 #align lie_submodule.is_ucs_limit LieSubmodule.IsUcsLimit
 
 namespace LieSubalgebra
 
-/-- A Cartan subalgebra is a nilpotent, self-normalizing subalgebra. -/
+/-- A Cartan subalgebra is a nilpotent, self-normalizing subalgebra.
+
+A _splitting_ Cartan subalgebra can be defined by mixing in `LieModule.IsTriangularizable R H L`. -/
 class IsCartanSubalgebra : Prop where
   nilpotent : LieAlgebra.IsNilpotent R H
   self_normalizing : H.normalizer = H

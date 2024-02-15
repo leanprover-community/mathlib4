@@ -35,7 +35,7 @@ open scoped Classical
 
 noncomputable section
 
-variable {ι X : Type _} [TopologicalSpace X] [NormalSpace X]
+variable {ι X : Type*} [TopologicalSpace X] [NormalSpace X]
 
 namespace ShrinkingLemma
 
@@ -151,7 +151,7 @@ def chainSup (c : Set (PartialRefinement u s)) (hc : IsChain (· ≤ ·) c) (ne 
     · simp_rw [not_exists, not_and, not_imp_not, chainSupCarrier, mem_iUnion₂] at hx
       haveI : Nonempty (PartialRefinement u s) := ⟨ne.some⟩
       choose! v hvc hiv using hx
-      rcases(hfin x hxs).exists_maximal_wrt v _ (mem_iUnion.1 (hU hxs)) with
+      rcases (hfin x hxs).exists_maximal_wrt v _ (mem_iUnion.1 (hU hxs)) with
         ⟨i, hxi : x ∈ u i, hmax : ∀ j, x ∈ u j → v i ≤ v j → v i = v j⟩
       rcases mem_iUnion.1 ((v i).subset_iUnion hxs) with ⟨j, hj⟩
       use j
@@ -185,7 +185,7 @@ theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i
   · intro j
     rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
   · refine' fun x hx => mem_iUnion.2 _
-    rcases em (∃ (j : _) (_ : j ≠ i), x ∈ v j) with (⟨j, hji, hj⟩ | h)
+    rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
       rwa [update_noteq hji]
     · push_neg at h

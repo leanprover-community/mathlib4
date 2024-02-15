@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Std.Data.MLList.Basic
-import Mathlib.Control.Traversable.Basic
+import Mathlib.Init.Control.Combinators
 
 /-!
 # Depth first search
@@ -17,6 +17,8 @@ This is useful in meta code for searching for solutions in the presence of alter
 It can be nice to represent the choices via a lazy list,
 so the later choices don't need to be evaluated while we do depth first search on earlier choices.
 -/
+
+set_option autoImplicit true
 
 section
 variable [Monad m] [Alternative m]

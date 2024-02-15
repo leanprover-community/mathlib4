@@ -22,7 +22,7 @@ noncomputable section
 
 open Finset Function
 
-variable {ι α : Type _}
+variable {ι α : Type*}
 
 namespace Finsupp
 
@@ -61,7 +61,7 @@ theorem indicator_injective : Injective fun f : ∀ i ∈ s, α => indicator s f
   intro a b h
   ext i hi
   rw [← indicator_of_mem hi a, ← indicator_of_mem hi b]
-  exact FunLike.congr_fun h i
+  exact DFunLike.congr_fun h i
 #align finsupp.indicator_injective Finsupp.indicator_injective
 
 theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := by

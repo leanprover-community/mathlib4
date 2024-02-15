@@ -10,6 +10,8 @@ import Mathlib.Data.ULift
 # Functions for splitting monadic lazy lists.
 -/
 
+set_option autoImplicit true
+
 namespace MLList
 
 variable {α β : Type u} {m : Type u → Type u} [Monad m]
