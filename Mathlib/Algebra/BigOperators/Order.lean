@@ -820,24 +820,6 @@ end AbsoluteValue
 namespace Mathlib.Meta.Positivity
 open Qq Lean Meta Finset
 
-/-- Prove that a finset is nonempty from a local assumption or from the fact that the finset is
-`univ` in a nonempty fintype.
-
-Note that this does not do any complicated reasoning: the only ways it can prove `s` is nonempty is
-if there is a local `s.Nonempty` hypothesis or `s = (univ : Finset α)` and `Nonempty α` can be
-synthesized by TC inference.
-
-TODO: Replace by an aesop ruleset? -/
-def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
-    MetaM (Option Q(Finset.Nonempty $s)) := do
-  if let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s) then
-    return some (.fvar fv)
-  else if let ~q(@univ _ $fi) := s then
-    if let .some _no ← trySynthInstanceQ q(Nonempty $α) then
-      return some q(Finset.univ_nonempty)
-    else return none
-  else return none
-
 /-- The `positivity` extension which proves that `∑ i in s, f i` is nonnegative if `f` is, and
 positive if each `f i` is and `s` is nonempty.
 
@@ -872,5 +854,9 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
       assertInstancesCommute
       return .nonnegative q(@sum_nonneg $ι $α $pα' $f $s fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
+
+example (n : ℕ) (f : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (f j ^ 2 + 1) := by positivity
+example (f : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (f j ^ 2 + 1) := by
+  positivity
 
 end Mathlib.Meta.Positivity

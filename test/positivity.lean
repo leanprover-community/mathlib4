@@ -325,11 +325,12 @@ example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 
 /-! ## Big operators -/
 
-example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j in range n, a j^2 := by positivity
-example (a : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j in s, a j ^ 2 := by positivity
-example (n : ℕ) (a : ℕ → ℤ) : 0 ≤ ∑ j : Fin 8, ∑ i in range n, (a j ^ 2 + i ^ 2) := by positivity
-example (n : ℕ) (a : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (a j ^ 2 + 1) := by positivity
-example (a : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (a j ^ 2 + 1) := by
+example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j in range n, f j ^ 2 := by positivity
+example (f : ULift.{2} ℕ → ℤ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ ∑ j in s, f j ^ 2 := by positivity
+example (n : ℕ) (f : ℕ → ℤ) : 0 ≤ ∑ j : Fin 8, ∑ i in range n, (f j ^ 2 + i ^ 2) := by positivity
+example (n : ℕ) (f : ℕ → ℤ) : 0 < ∑ j : Fin (n + 1), (f j ^ 2 + 1) := by positivity
+example (f : Empty → ℤ) : 0 ≤ ∑ j : Empty, f j ^ 2 := by positivity
+example (f : ℕ → ℤ) : 0 < ∑ j in ({1} : Finset ℕ), (f j ^ 2 + 1) := by
   have : Finset.Nonempty {1} := singleton_nonempty 1
   positivity
 example (s : Finset ℕ) : 0 ≤ ∑ j in s, j := by positivity
