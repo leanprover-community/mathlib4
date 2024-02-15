@@ -3,7 +3,7 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Image
 import Mathlib.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
 
@@ -14,10 +14,12 @@ import Mathlib.Init.Data.List.Lemmas
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
 
+set_option autoImplicit true
+
 
 open List
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 namespace List
 

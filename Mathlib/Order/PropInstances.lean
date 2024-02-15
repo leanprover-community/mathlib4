@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Disjoint
-import Mathlib.Order.WithBot
 
 #align_import order.prop_instances from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -15,6 +14,8 @@ import Mathlib.Order.WithBot
 Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
 
 -/
+
+set_option autoImplicit true
 
 
 /-- Propositions form a distributive lattice. -/
@@ -67,7 +68,7 @@ theorem inf_Prop_eq : (· ⊓ ·) = (· ∧ ·) :=
 
 namespace Pi
 
-variable {ι : Type _} {α' : ι → Type _} [∀ i, PartialOrder (α' i)]
+variable {ι : Type*} {α' : ι → Type*} [∀ i, PartialOrder (α' i)]
 
 theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     Disjoint f g ↔ ∀ i, Disjoint (f i) (g i) := by

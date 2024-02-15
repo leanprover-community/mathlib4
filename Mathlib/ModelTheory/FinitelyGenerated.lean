@@ -33,7 +33,7 @@ namespace Language
 
 open Structure
 
-variable {L : Language} {M : Type _} [L.Structure M]
+variable {L : Language} {M : Type*} [L.Structure M]
 
 namespace Substructure
 
@@ -78,13 +78,13 @@ theorem FG.sup {N₁ N₂ : L.Substructure M} (hN₁ : N₁.FG) (hN₂ : N₂.FG
   fg_def.2 ⟨t₁ ∪ t₂, ht₁.1.union ht₂.1, by rw [closure_union, ht₁.2, ht₂.2]⟩
 #align first_order.language.substructure.fg.sup FirstOrder.Language.Substructure.FG.sup
 
-theorem FG.map {N : Type _} [L.Structure N] (f : M →[L] N) {s : L.Substructure M} (hs : s.FG) :
+theorem FG.map {N : Type*} [L.Structure N] (f : M →[L] N) {s : L.Substructure M} (hs : s.FG) :
     (s.map f).FG :=
   let ⟨t, ht⟩ := fg_def.1 hs
   fg_def.2 ⟨f '' t, ht.1.image _, by rw [closure_image, ht.2]⟩
 #align first_order.language.substructure.fg.map FirstOrder.Language.Substructure.FG.map
 
-theorem FG.of_map_embedding {N : Type _} [L.Structure N] (f : M ↪[L] N) {s : L.Substructure M}
+theorem FG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.Substructure M}
     (hs : (s.map f.toHom).FG) : s.FG := by
   rcases hs with ⟨t, h⟩
   rw [fg_def]
@@ -118,7 +118,7 @@ theorem cg_iff_empty_or_exists_nat_generating_family {N : L.Substructure M} :
   rw [cg_def]
   constructor
   · rintro ⟨S, Scount, hS⟩
-    cases' eq_empty_or_nonempty (N : Set M) with h h
+    rcases eq_empty_or_nonempty (N : Set M) with h | h
     · exact Or.intro_left _ h
     obtain ⟨f, h'⟩ :=
       (Scount.union (Set.countable_singleton h.some)).exists_eq_range
@@ -153,13 +153,13 @@ theorem CG.sup {N₁ N₂ : L.Substructure M} (hN₁ : N₁.CG) (hN₂ : N₂.CG
   cg_def.2 ⟨t₁ ∪ t₂, ht₁.1.union ht₂.1, by rw [closure_union, ht₁.2, ht₂.2]⟩
 #align first_order.language.substructure.cg.sup FirstOrder.Language.Substructure.CG.sup
 
-theorem CG.map {N : Type _} [L.Structure N] (f : M →[L] N) {s : L.Substructure M} (hs : s.CG) :
+theorem CG.map {N : Type*} [L.Structure N] (f : M →[L] N) {s : L.Substructure M} (hs : s.CG) :
     (s.map f).CG :=
   let ⟨t, ht⟩ := cg_def.1 hs
   cg_def.2 ⟨f '' t, ht.1.image _, by rw [closure_image, ht.2]⟩
 #align first_order.language.substructure.cg.map FirstOrder.Language.Substructure.CG.map
 
-theorem CG.of_map_embedding {N : Type _} [L.Structure N] (f : M ↪[L] N) {s : L.Substructure M}
+theorem CG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.Substructure M}
     (hs : (s.map f.toHom).CG) : s.CG := by
   rcases hs with ⟨t, h1, h2⟩
   rw [cg_def]
@@ -211,12 +211,12 @@ theorem fg_iff : FG L M ↔ ∃ S : Set M, S.Finite ∧ closure L S = (⊤ : L.S
   rw [fg_def, Substructure.fg_def]
 #align first_order.language.Structure.fg_iff FirstOrder.Language.Structure.fg_iff
 
-theorem FG.range {N : Type _} [L.Structure N] (h : FG L M) (f : M →[L] N) : f.range.FG := by
+theorem FG.range {N : Type*} [L.Structure N] (h : FG L M) (f : M →[L] N) : f.range.FG := by
   rw [Hom.range_eq_map]
   exact (fg_def.1 h).map f
 #align first_order.language.Structure.fg.range FirstOrder.Language.Structure.FG.range
 
-theorem FG.map_of_surjective {N : Type _} [L.Structure N] (h : FG L M) (f : M →[L] N)
+theorem FG.map_of_surjective {N : Type*} [L.Structure N] (h : FG L M) (f : M →[L] N)
     (hs : Function.Surjective f) : FG L N := by
   rw [← Hom.range_eq_top] at hs
   rw [fg_def, ← hs]
@@ -232,12 +232,12 @@ theorem cg_iff : CG L M ↔ ∃ S : Set M, S.Countable ∧ closure L S = (⊤ : 
   rw [cg_def, Substructure.cg_def]
 #align first_order.language.Structure.cg_iff FirstOrder.Language.Structure.cg_iff
 
-theorem CG.range {N : Type _} [L.Structure N] (h : CG L M) (f : M →[L] N) : f.range.CG := by
+theorem CG.range {N : Type*} [L.Structure N] (h : CG L M) (f : M →[L] N) : f.range.CG := by
   rw [Hom.range_eq_map]
   exact (cg_def.1 h).map f
 #align first_order.language.Structure.cg.range FirstOrder.Language.Structure.CG.range
 
-theorem CG.map_of_surjective {N : Type _} [L.Structure N] (h : CG L M) (f : M →[L] N)
+theorem CG.map_of_surjective {N : Type*} [L.Structure N] (h : CG L M) (f : M →[L] N)
     (hs : Function.Surjective f) : CG L N := by
   rw [← Hom.range_eq_top] at hs
   rw [cg_def, ← hs]
@@ -258,7 +258,7 @@ instance (priority := 100) cg_of_fg [h : FG L M] : CG L M :=
 
 end Structure
 
-theorem Equiv.fg_iff {N : Type _} [L.Structure N] (f : M ≃[L] N) :
+theorem Equiv.fg_iff {N : Type*} [L.Structure N] (f : M ≃[L] N) :
     Structure.FG L M ↔ Structure.FG L N :=
   ⟨fun h => h.map_of_surjective f.toHom f.toEquiv.surjective, fun h =>
     h.map_of_surjective f.symm.toHom f.toEquiv.symm.surjective⟩
@@ -275,7 +275,7 @@ theorem Substructure.fg_iff_structure_fg (S : L.Substructure M) : S.FG ↔ Struc
 set_option linter.uppercaseLean3 false in
 #align first_order.language.substructure.fg_iff_Structure_fg FirstOrder.Language.Substructure.fg_iff_structure_fg
 
-theorem Equiv.cg_iff {N : Type _} [L.Structure N] (f : M ≃[L] N) :
+theorem Equiv.cg_iff {N : Type*} [L.Structure N] (f : M ≃[L] N) :
     Structure.CG L M ↔ Structure.CG L N :=
   ⟨fun h => h.map_of_surjective f.toHom f.toEquiv.surjective, fun h =>
     h.map_of_surjective f.symm.toHom f.toEquiv.symm.surjective⟩

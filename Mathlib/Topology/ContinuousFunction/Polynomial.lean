@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.UnitInterval
+import Mathlib.Algebra.Star.Subalgebra
 
 #align_import topology.continuous_function.polynomial from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -25,7 +25,7 @@ import Mathlib.Topology.UnitInterval
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
 open Polynomial
 
@@ -59,7 +59,7 @@ end
 
 section
 
-variable {α : Type _} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace R]
+variable {α : Type*} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace R]
   [TopologicalSemiring R]
 
 @[simp]
@@ -170,7 +170,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
   ext f
   fconstructor
   · rintro ⟨p, ⟨-, w⟩⟩
-    rw [FunLike.ext_iff] at w
+    rw [DFunLike.ext_iff] at w
     dsimp at w
     let q := p.comp ((b - a)⁻¹ • Polynomial.X + Polynomial.C (-a * (b - a)⁻¹))
     refine' ⟨q, ⟨_, _⟩⟩
@@ -220,7 +220,7 @@ theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
   · rw [pow_succ', ← mul_assoc, map_mul]
     exact mul_mem hn (Algebra.subset_adjoin <| Set.mem_singleton _)
 
-theorem polynomialFunctions.le_equalizer {A : Type _} [Semiring A] [Algebra R A] (s : Set R)
+theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] (s : Set R)
     (φ ψ : C(s, R) →ₐ[R] A)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
     polynomialFunctions s ≤ φ.equalizer ψ := by
@@ -233,7 +233,7 @@ theorem polynomialFunctions.starClosure_eq_adjoin_X [StarRing R] [ContinuousStar
     (polynomialFunctions s).starClosure = adjoin R {toContinuousMapOnAlgHom s X} := by
   rw [polynomialFunctions.eq_adjoin_X s, adjoin_eq_starClosure_adjoin]
 
-theorem polynomialFunctions.starClosure_le_equalizer {A : Type _} [StarRing R] [ContinuousStar R]
+theorem polynomialFunctions.starClosure_le_equalizer {A : Type*} [StarRing R] [ContinuousStar R]
     [Semiring A] [StarRing A] [Algebra R A] (s : Set R) (φ ψ : C(s, R) →⋆ₐ[R] A)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
     (polynomialFunctions s).starClosure ≤ StarAlgHom.equalizer φ ψ := by

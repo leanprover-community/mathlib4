@@ -5,7 +5,7 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Fintype.Card
 
 #align_import data.zmod.defs from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
@@ -70,7 +70,7 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
       rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
 #align fin.distrib Fin.instDistrib
 
-/-- Commutative ring structure on `fin n`. -/
+/-- Commutative ring structure on `Fin n`. -/
 instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
   { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
     one_mul := Fin.one_mul'
@@ -81,7 +81,7 @@ instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
     mul_zero := Fin.mul_zero' }
 #align fin.comm_ring Fin.instCommRing
 
-/-- Note this is more general than `fin.comm_ring` as it applies (vacuously) to `fin 0` too. -/
+/-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
   { toInvolutiveNeg := Fin.instInvolutiveNeg n
     mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
@@ -107,6 +107,8 @@ instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
 #align zmod.has_repr ZMod.repr
 
 namespace ZMod
+
+instance instUnique : Unique (ZMod 1) := Fin.uniqueFinOne
 
 instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
   | 0, h => (h.ne rfl).elim

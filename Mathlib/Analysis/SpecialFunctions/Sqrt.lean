@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.Deriv.Pow
 
 #align_import analysis.special_functions.sqrt from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -28,7 +28,7 @@ namespace Real
 
 /-- Local homeomorph between `(0, +∞)` and `(0, +∞)` with `toFun = (· ^ 2)` and
 `invFun = Real.sqrt`. -/
-noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
+noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   toFun x := x ^ 2
   invFun := sqrt
   source := Ioi 0
@@ -39,22 +39,22 @@ noncomputable def sqLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   right_inv' _ h := sq_sqrt (le_of_lt h)
   open_source := isOpen_Ioi
   open_target := isOpen_Ioi
-  continuous_toFun := (continuous_pow 2).continuousOn
-  continuous_invFun := continuousOn_id.sqrt
-#align real.sq_local_homeomorph Real.sqLocalHomeomorph
+  continuousOn_toFun := (continuous_pow 2).continuousOn
+  continuousOn_invFun := continuousOn_id.sqrt
+#align real.sq_local_homeomorph Real.sqPartialHomeomorph
 
 theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
     HasStrictDerivAt sqrt (1 / (2 * sqrt x)) x ∧ ∀ n, ContDiffAt ℝ n sqrt x := by
   cases' hx.lt_or_lt with hx hx
-  · rw [sqrt_eq_zero_of_nonpos hx.le, MulZeroClass.mul_zero, div_zero]
+  · rw [sqrt_eq_zero_of_nonpos hx.le, mul_zero, div_zero]
     have : sqrt =ᶠ[𝓝 x] fun _ => 0 := (gt_mem_nhds hx).mono fun x hx => sqrt_eq_zero_of_nonpos hx.le
     exact
       ⟨(hasStrictDerivAt_const x (0 : ℝ)).congr_of_eventuallyEq this.symm, fun n =>
         contDiffAt_const.congr_of_eventuallyEq this⟩
   · have : ↑2 * sqrt x ^ (2 - 1) ≠ 0 := by simp [(sqrt_pos.2 hx).ne', @two_ne_zero ℝ]
     constructor
-    · simpa using sqLocalHomeomorph.hasStrictDerivAt_symm hx this (hasStrictDerivAt_pow 2 _)
-    · exact fun n => sqLocalHomeomorph.contDiffAt_symm_deriv this hx (hasDerivAt_pow 2 (sqrt x))
+    · simpa using sqPartialHomeomorph.hasStrictDerivAt_symm hx this (hasStrictDerivAt_pow 2 _)
+    · exact fun n => sqPartialHomeomorph.contDiffAt_symm_deriv this hx (hasDerivAt_pow 2 (sqrt x))
         (contDiffAt_id.pow 2)
 #align real.deriv_sqrt_aux Real.deriv_sqrt_aux
 
@@ -110,7 +110,7 @@ end deriv
 
 section fderiv
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {n : ℕ∞} {s : Set E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {n : ℕ∞} {s : Set E}
   {x : E} {f' : E →L[ℝ] ℝ}
 
 theorem HasFDerivAt.sqrt (hf : HasFDerivAt f f' x) (hx : f x ≠ 0) :
@@ -177,4 +177,3 @@ theorem ContDiff.sqrt (hf : ContDiff ℝ n f) (h : ∀ x, f x ≠ 0) : ContDiff 
 #align cont_diff.sqrt ContDiff.sqrt
 
 end fderiv
-

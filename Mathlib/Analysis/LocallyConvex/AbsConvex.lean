@@ -40,7 +40,7 @@ open NormedField Set
 
 open BigOperators NNReal Pointwise Topology
 
-variable {𝕜 E F G ι : Type _}
+variable {𝕜 E F G ι : Type*}
 
 section NontriviallyNormedField
 
@@ -57,9 +57,9 @@ theorem nhds_basis_abs_convex :
   refine'
     (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => _) fun s hs =>
       ⟨s, ⟨hs.1, hs.2.2⟩, rfl.subset⟩
-  refine' ⟨convexHull ℝ (balancedCore 𝕜 s), _, convexHull_min (balancedCore_subset s) hs.2⟩
-  refine' ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull ℝ _), _⟩
-  refine' ⟨balanced_convexHull_of_balanced (balancedCore_balanced s), _⟩
+  refine ⟨convexHull ℝ (balancedCore 𝕜 s), ?_, convexHull_min (balancedCore_subset s) hs.2⟩
+  refine ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull ℝ _), ?_⟩
+  refine ⟨(balancedCore_balanced s).convexHull, ?_⟩
   exact convex_convexHull ℝ (balancedCore 𝕜 s)
 #align nhds_basis_abs_convex nhds_basis_abs_convex
 
@@ -152,7 +152,7 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
   dsimp only [gaugeSeminormFamily]
   rw [Seminorm.ball_zero_eq]
   simp_rw [gaugeSeminorm_toFun]
-  exact gauge_lt_one_eq_self_of_open s.coe_convex s.coe_zero_mem s.coe_isOpen
+  exact gauge_lt_one_eq_self_of_isOpen s.coe_convex s.coe_zero_mem s.coe_isOpen
 #align gauge_seminorm_family_ball gaugeSeminormFamily_ball
 
 variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
@@ -164,7 +164,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   refine' SeminormFamily.withSeminorms_of_hasBasis _ _
   refine' (nhds_basis_abs_convex_open 𝕜 E).to_hasBasis (fun s hs => _) fun s hs => _
   · refine' ⟨s, ⟨_, rfl.subset⟩⟩
-    convert(gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
+    convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
   refine' ⟨s, ⟨_, rfl.subset⟩⟩
   rw [SeminormFamily.basisSets_iff] at hs
@@ -173,7 +173,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   -- We have to show that the intersection contains zero, is open, balanced, and convex
   refine'
     ⟨mem_iInter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
-      isOpen_biInter (t.finite_toSet) fun S _ => _,
+      isOpen_biInter_finset fun S _ => _,
       balanced_iInter₂ fun _ _ => Seminorm.balanced_ball_zero _ _,
       convex_iInter₂ fun _ _ => Seminorm.convex_ball _ _ _⟩
   -- The only nontrivial part is to show that the ball is open

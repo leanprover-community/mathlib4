@@ -35,7 +35,7 @@ lie algebra, normalizer
 -/
 
 
-variable {R L M M' : Type _}
+variable {R L M M' : Type*}
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
@@ -47,7 +47,9 @@ namespace LieSubmodule
 
 variable (N : LieSubmodule R L M) {N₁ N₂ : LieSubmodule R L M}
 
-/-- The normalizer of a Lie submodule. -/
+/-- The normalizer of a Lie submodule.
+
+See also `LieSubmodule.idealizer`. -/
 def normalizer : LieSubmodule R L M where
   carrier := {m | ∀ x : L, ⁅x, m⁆ ∈ N}
   add_mem' hm₁ hm₂ x := by rw [lie_add]; exact N.add_mem' (hm₁ x) (hm₂ x)
@@ -61,6 +63,7 @@ theorem mem_normalizer (m : M) : m ∈ N.normalizer ↔ ∀ x : L, ⁅x, m⁆ �
   Iff.rfl
 #align lie_submodule.mem_normalizer LieSubmodule.mem_normalizer
 
+@[simp]
 theorem le_normalizer : N ≤ N.normalizer := by
   intro m hm
   rw [mem_normalizer]
@@ -92,12 +95,29 @@ theorem gc_top_lie_normalizer :
   top_lie_le_iff_le_normalizer
 #align lie_submodule.gc_top_lie_normalizer LieSubmodule.gc_top_lie_normalizer
 
-variable (R L M)
-
+variable (R L M) in
 theorem normalizer_bot_eq_maxTrivSubmodule :
     (⊥ : LieSubmodule R L M).normalizer = LieModule.maxTrivSubmodule R L M :=
   rfl
 #align lie_submodule.normalizer_bot_eq_max_triv_submodule LieSubmodule.normalizer_bot_eq_maxTrivSubmodule
+
+/-- The idealizer of a Lie submodule.
+
+See also `LieSubmodule.normalizer`. -/
+def idealizer : LieIdeal R L where
+  carrier := {x : L | ∀ m : M, ⁅x, m⁆ ∈ N}
+  add_mem' := fun {x} {y} hx hy m ↦ by rw [add_lie]; exact N.add_mem (hx m) (hy m)
+  zero_mem' := by simp
+  smul_mem' := fun t {x} hx m ↦ by rw [smul_lie]; exact N.smul_mem t (hx m)
+  lie_mem := fun {x} {y} hy m ↦ by rw [lie_lie]; exact sub_mem (N.lie_mem (hy m)) (hy ⁅x, m⁆)
+
+@[simp]
+lemma mem_idealizer {x : L} : x ∈ N.idealizer ↔ ∀ m : M, ⁅x, m⁆ ∈ N := Iff.rfl
+
+@[simp]
+lemma _root_.LieIdeal.idealizer_eq_normalizer (I : LieIdeal R L) :
+    I.idealizer = I.normalizer := by
+  ext x; exact forall_congr' fun y ↦ by simp only [← lie_skew x y, neg_mem_iff]
 
 end LieSubmodule
 

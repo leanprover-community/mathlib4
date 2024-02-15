@@ -40,8 +40,8 @@ variable (R L : Type u) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
 variable [NoZeroSMulDivisors R L] (halg : Algebra.IsAlgebraic R L)
 
 theorem cardinal_mk_le_sigma_polynomial :
-    #L ≤ #(Σ p : R[X], { x : L // x ∈ (p.map (algebraMap R L)).roots }) :=
-  @mk_le_of_injective L (Σ p : R[X], {x : L | x ∈ (p.map (algebraMap R L)).roots})
+    #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
+  @mk_le_of_injective L (Σ p : R[X], {x : L | x ∈ p.aroots L})
     (fun x : L =>
       let p := Classical.indefiniteDescription _ (halg x)
       ⟨p.1, x, by
@@ -55,7 +55,7 @@ theorem cardinal_mk_le_sigma_polynomial :
           p.2.2]⟩)
     fun x y => by
       intro h
-      simp at h
+      simp? at h says simp only [Set.coe_setOf, ne_eq, Set.mem_setOf_eq, Sigma.mk.inj_iff] at h
       refine' (Subtype.heq_iff_coe_eq _).1 h.2
       simp only [h.1, iff_self_iff, forall_true_iff]
 #align algebra.is_algebraic.cardinal_mk_le_sigma_polynomial Algebra.IsAlgebraic.cardinal_mk_le_sigma_polynomial
@@ -64,9 +64,9 @@ theorem cardinal_mk_le_sigma_polynomial :
 of the base ring or `ℵ₀` -/
 theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
   calc
-    #L ≤ #(Σ p : R[X], { x : L // x ∈ (p.map (algebraMap R L)).roots }) :=
+    #L ≤ #(Σ p : R[X], { x : L // x ∈ p.aroots L }) :=
       cardinal_mk_le_sigma_polynomial R L halg
-    _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ (p.map (algebraMap R L)).roots} := by
+    _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ p.aroots L} := by
       rw [← mk_sigma]; rfl
     _ ≤ Cardinal.sum.{u, u} fun _ : R[X] => ℵ₀ :=
       (sum_le_sum _ _ fun p => (Multiset.finite_toSet _).lt_aleph0.le)
@@ -87,15 +87,15 @@ section Classification
 
 noncomputable section
 
-variable {R L K : Type _} [CommRing R]
+variable {R L K : Type*} [CommRing R]
 
 variable [Field K] [Algebra R K]
 
 variable [Field L] [Algebra R L]
 
-variable {ι : Type _} (v : ι → K)
+variable {ι : Type*} (v : ι → K)
 
-variable {κ : Type _} (w : κ → L)
+variable {κ : Type*} (w : κ → L)
 
 variable (hv : AlgebraicIndependent R v)
 
@@ -207,13 +207,10 @@ private theorem ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p
 
 /-- Two uncountable algebraically closed fields are isomorphic
 if they have the same cardinality and the same characteristic. -/
-@[nolint defLemma]
 theorem ringEquivOfCardinalEqOfCharEq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < #K)
     (hKL : #K = #L) : Nonempty (K ≃+* L) := by
   rcases CharP.char_is_prime_or_zero K p with (hp | hp)
   · haveI : Fact p.Prime := ⟨hp⟩
-    letI : Algebra (ZMod p) K := ZMod.algebra _ _
-    letI : Algebra (ZMod p) L := ZMod.algebra _ _
     exact ringEquivOfCardinalEqOfCharP p hK hKL
   · simp only [hp] at *
     letI : CharZero K := CharP.charP_to_charZero K

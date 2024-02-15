@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Equivalence
 
-#align_import algebraic_topology.dold_kan.compatibility from "leanprover-community/mathlib"@"18ee599842a5d17f189fe572f0ed8cb1d064d772"
+#align_import algebraic_topology.dold_kan.compatibility from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-! Tools for compatibilities between Dold-Kan equivalences
 
@@ -36,6 +36,8 @@ but whose inverse functor is `G`.
 When extra assumptions are given, we shall also provide simplification lemmas for the
 unit and counit isomorphisms of `equivalence`.
 
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
+
 -/
 
 
@@ -47,7 +49,7 @@ namespace DoldKan
 
 namespace Compatibility
 
-variable {A A' B B' : Type _} [Category A] [Category A'] [Category B] [Category B'] (eA : A ≌ A')
+variable {A A' B B' : Type*} [Category A] [Category A'] [Category B] [Category B'] (eA : A ≌ A')
   (eB : B ≌ B') (e' : A' ≌ B') {F : A ⥤ B'} (hF : eA.functor ⋙ e'.functor ≅ F) {G : B ⥤ A}
   (hG : eB.functor ⋙ e'.inverse ≅ G ⋙ eA.functor)
 

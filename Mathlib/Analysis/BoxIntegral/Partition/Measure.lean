@@ -32,7 +32,7 @@ noncomputable section
 
 open scoped ENNReal BigOperators Classical BoxIntegral
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace BoxIntegral
 
@@ -93,8 +93,6 @@ end BoxIntegral
 
 open BoxIntegral BoxIntegral.Box
 
-variable [Fintype ι]
-
 namespace MeasureTheory
 
 namespace Measure
@@ -102,7 +100,7 @@ namespace Measure
 /-- If `μ` is a locally finite measure on `ℝⁿ`, then `fun J ↦ (μ J).toReal` is a box-additive
 function. -/
 @[simps]
-def toBoxAdditive (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ where
+def toBoxAdditive [Finite ι] (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] : ι →ᵇᵃ[⊤] ℝ where
   toFun J := (μ J).toReal
   sum_partition_boxes' J _ π hπ := by rw [← π.measure_iUnion_toReal, hπ.iUnion_eq]
 #align measure_theory.measure.to_box_additive MeasureTheory.Measure.toBoxAdditive
@@ -116,6 +114,8 @@ namespace BoxIntegral
 open MeasureTheory
 
 namespace Box
+
+variable [Fintype ι]
 
 -- @[simp] -- Porting note: simp normal form is `volume_apply'`
 theorem volume_apply (I : Box ι) :
@@ -138,13 +138,15 @@ end Box
 
 namespace BoxAdditiveMap
 
+variable [Fintype ι]
+
 /-- Box-additive map sending each box `I` to the continuous linear endomorphism
 `x ↦ (volume I).toReal • x`. -/
-protected def volume {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] : ι →ᵇᵃ E →L[ℝ] E :=
+protected def volume {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] : ι →ᵇᵃ E →L[ℝ] E :=
   (volume : Measure (ι → ℝ)).toBoxAdditive.toSMul
 #align box_integral.box_additive_map.volume BoxIntegral.BoxAdditiveMap.volume
 
-theorem volume_apply {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] (I : Box ι) (x : E) :
+theorem volume_apply {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (I : Box ι) (x : E) :
     BoxAdditiveMap.volume I x = (∏ j, (I.upper j - I.lower j)) • x := by
   rw [BoxAdditiveMap.volume, toSMul_apply]
   exact congr_arg₂ (· • ·) I.volume_apply rfl

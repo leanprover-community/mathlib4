@@ -37,7 +37,7 @@ open Classical Topology
 
 noncomputable section
 
-variable {ι : Type _} [Fintype ι] {I J : Box ι}
+variable {ι : Type*} [Fintype ι] {I J : Box ι}
 
 namespace Prepartition
 

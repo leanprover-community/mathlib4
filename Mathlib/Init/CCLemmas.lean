@@ -31,7 +31,7 @@ theorem and_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a ∧ b) = Fals
   h.symm ▸ propext (and_false_iff _)
 
 theorem and_eq_of_eq {a b : Prop} (h : a = b) : (a ∧ b) = a :=
-  h ▸ propext (and_self_iff _)
+  h ▸ propext and_self_iff
 
 theorem or_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a ∨ b) = True :=
   h.symm ▸ propext (true_or_iff _)
@@ -46,7 +46,7 @@ theorem or_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a ∨ b) = a :=
   h.symm ▸ propext (or_false_iff _)
 
 theorem or_eq_of_eq {a b : Prop} (h : a = b) : (a ∨ b) = a :=
-  h ▸ propext (or_self_iff _)
+  h ▸ propext or_self_iff
 
 theorem imp_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a → b) = b :=
   h.symm ▸ propext ⟨fun h ↦ h trivial, fun h₁ _ ↦ h₁⟩
@@ -82,15 +82,15 @@ theorem false_of_a_eq_not_a {a : Prop} (h : a = Not a) : False :=
 universe u
 
 theorem if_eq_of_eq_true {c : Prop} [d : Decidable c] {α : Sort u} (t e : α) (h : c = True) :
-  @ite α c d t e = t :=
+    @ite α c d t e = t :=
   if_pos (of_eq_true h)
 
 theorem if_eq_of_eq_false {c : Prop} [d : Decidable c] {α : Sort u} (t e : α) (h : c = False) :
-  @ite α c d t e = e :=
+    @ite α c d t e = e :=
   if_neg (not_of_eq_false h)
 
 theorem if_eq_of_eq (c : Prop) [d : Decidable c] {α : Sort u} {t e : α} (h : t = e) :
-  @ite α c d t e = t :=
+    @ite α c d t e = t :=
   match d with
   | isTrue _ => rfl
   | isFalse _ => Eq.symm h
@@ -118,11 +118,11 @@ theorem eq_true_of_not_eq_false {a : Prop} (h : Not a = False) : a = True :=
 theorem ne_of_eq_of_ne {α : Sort u} {a b c : α} (h₁ : a = b) (h₂ : b ≠ c) : a ≠ c :=
   h₁.symm ▸ h₂
 
-alias ne_of_eq_of_ne ← Eq.trans_ne
+alias Eq.trans_ne := ne_of_eq_of_ne
 #align eq.trans_ne Eq.trans_ne
 
 theorem ne_of_ne_of_eq {α : Sort u} {a b c : α} (h₁ : a ≠ b) (h₂ : b = c) : a ≠ c :=
   h₂ ▸ h₁
 
-alias ne_of_ne_of_eq ← Ne.trans_eq
+alias Ne.trans_eq := ne_of_ne_of_eq
 #align ne.trans_eq Ne.trans_eq

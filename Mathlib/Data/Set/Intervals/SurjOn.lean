@@ -17,7 +17,7 @@ permutations of interval endpoints.
 -/
 
 
-variable {α : Type _} {β : Type _} [LinearOrder α] [PartialOrder β] {f : α → β}
+variable {α : Type*} {β : Type*} [LinearOrder α] [PartialOrder β] {f : α → β}
 
 open Set Function
 

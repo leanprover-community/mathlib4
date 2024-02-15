@@ -34,6 +34,16 @@ theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y
 #align category_theory.tensor_apply CategoryTheory.tensor_apply
 
 @[simp]
+theorem whiskerLeft_apply (X : Type u) {Y Z : Type u} (f : Y ⟶ Z) (p : X ⊗ Y) :
+    (X ◁ f) p = (p.1, f p.2) :=
+  rfl
+
+@[simp]
+theorem whiskerRight_apply {Y Z : Type u} (f : Y ⟶ Z) (X : Type u) (p : Y ⊗ X) :
+    (f ▷ X) p = (f p.1, p.2) :=
+  rfl
+
+@[simp]
 theorem leftUnitor_hom_apply {X : Type u} {x : X} {p : PUnit} :
     ((λ_ X).hom : 𝟙_ (Type u) ⊗ X → X) (p, x) = x :=
   rfl
@@ -73,8 +83,8 @@ theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
 -- but it would be nice to state how monoidal functors preserve these.
 /-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st cartesian power
 of a type to the image of that type, tensored with the image of the nth cartesian power. -/
-noncomputable def MonoidalFunctor.mapPi {C : Type _} [Category C] [MonoidalCategory C]
-    (F : MonoidalFunctor (Type _) C) (n : ℕ) (β : Type _) :
+noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category C] [MonoidalCategory C]
+    (F : MonoidalFunctor (Type _) C) (n : ℕ) (β : Type*) :
     F.obj (Fin (n + 1) → β) ≅ F.obj β ⊗ F.obj (Fin n → β) :=
   Functor.mapIso _ (Equiv.piFinSucc n β).toIso ≪≫ (asIso (F.μ β (Fin n → β))).symm
 #align category_theory.monoidal_functor.map_pi CategoryTheory.MonoidalFunctor.mapPi

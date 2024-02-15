@@ -29,7 +29,7 @@ the map `G → (conjAct G)` to obtain our commensurator as a subgroup of `G`.
 -/
 
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
 /-- Two subgroups `H K` of `G` are commensurable if `H ⊓ K` has finite index in both `H` and `K` -/
 def Commensurable (H K : Subgroup G) : Prop :=

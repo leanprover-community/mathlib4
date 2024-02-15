@@ -5,11 +5,12 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Std.Data.Nat.Lemmas
 import Std.Data.List.Basic
 /-!
 Definitions for `List` not (yet) in `Std`
 -/
+
+set_option autoImplicit true
 
 
 open Decidable List

@@ -93,7 +93,7 @@ theorem adjMatrix_sq_of_ne {v w : V} (hvw : v ≠ w) :
   We use it to show that nonadjacent vertices have equal degrees. -/
 theorem adjMatrix_pow_three_of_not_adj {v w : V} (non_adj : ¬G.Adj v w) :
     (G.adjMatrix R ^ 3 : Matrix V V R) v w = degree G v := by
-  rw [pow_succ, mul_eq_mul, adjMatrix_mul_apply, degree, card_eq_sum_ones, Nat.cast_sum]
+  rw [pow_succ, adjMatrix_mul_apply, degree, card_eq_sum_ones, Nat.cast_sum]
   apply sum_congr rfl
   intro x hx
   rw [adjMatrix_sq_of_ne _ hG, Nat.cast_one]
@@ -114,8 +114,8 @@ theorem degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree
     ← adjMatrix_pow_three_of_not_adj ℕ hG hvw,
     ← adjMatrix_pow_three_of_not_adj ℕ hG fun h => hvw (G.symm h)]
   conv_lhs => rw [← transpose_adjMatrix]
-  simp only [pow_succ _ 2, sq, mul_eq_mul, ← transpose_mul, transpose_apply]
-  simp only [← mul_eq_mul, mul_assoc]
+  simp only [pow_succ _ 2, sq, ← transpose_mul, transpose_apply]
+  simp only [mul_assoc]
 #align theorems_100.friendship.degree_eq_of_not_adj Theorems100.Friendship.degree_eq_of_not_adj
 
 /-- Let `A` be the adjacency matrix of a graph `G`.
@@ -125,7 +125,7 @@ theorem degree_eq_of_not_adj {v w : V} (hvw : ¬G.Adj v w) : degree G v = degree
 theorem adjMatrix_sq_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R ^ 2 = of fun v w => if v = w then (d : R) else (1 : R) := by
   ext (v w); by_cases h : v = w
-  · rw [h, sq, mul_eq_mul, adjMatrix_mul_self_apply_self, hd]; simp
+  · rw [h, sq, adjMatrix_mul_self_apply_self, hd]; simp
   · rw [adjMatrix_sq_of_ne R hG h, of_apply, if_neg h]
 #align theorems_100.friendship.adj_matrix_sq_of_regular Theorems100.Friendship.adjMatrix_sq_of_regular
 
@@ -178,13 +178,13 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
   This essentially means that the graph has `d ^ 2 - d + 1` vertices. -/
 theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) = d * d := by
   have v := Classical.arbitrary V
-  trans (G.adjMatrix ℕ ^ 2).mulVec (fun _ => 1) v
+  trans ((G.adjMatrix ℕ ^ 2) *ᵥ (fun _ => 1)) v
   · rw [adjMatrix_sq_of_regular hG hd, mulVec, dotProduct, ← insert_erase (mem_univ v)]
     simp only [sum_insert, mul_one, if_true, Nat.cast_id, eq_self_iff_true, mem_erase, not_true,
       Ne.def, not_false_iff, add_right_inj, false_and_iff, of_apply]
     rw [Finset.sum_const_nat, card_erase_of_mem (mem_univ v), mul_one]; · rfl
     intro x hx; simp [(ne_of_mem_erase hx).symm]
-  · rw [sq, mul_eq_mul, ← mulVec_mulVec]
+  · rw [sq, ← mulVec_mulVec]
     simp only [adjMatrix_mulVec_const_apply_of_regular hd, neighborFinset,
       card_neighborSet_eq_degree, hd v, Function.const_def, adjMatrix_mulVec_apply _ _ (mulVec _ _),
       mul_one, sum_const, Set.toFinset_card, Algebra.id.smul_eq_mul, Nat.cast_id]
@@ -206,7 +206,7 @@ end Nonempty
 theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R * of (fun _ _ => 1) = of (fun _ _ => (d : R)) := by
   ext x
-  simp only [← hd x, degree, mul_eq_mul, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_coe,
+  simp only [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_coe,
     of_apply]
 #align theorems_100.friendship.adj_matrix_sq_mul_const_one_of_regular Theorems100.Friendship.adjMatrix_sq_mul_const_one_of_regular
 
@@ -254,7 +254,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   have := ZMod.trace_pow_card (G.adjMatrix (ZMod p))
   contrapose! this; clear this
   -- the trace is 0 mod p when computed one way
-  rw [trace_adjMatrix, zero_pow (Fact.out (p := p.Prime)).pos]
+  rw [trace_adjMatrix, zero_pow this.out.ne_zero]
   -- but the trace is 1 mod p when computed the other way
   rw [adjMatrix_pow_mod_p_of_regular hG dmod hd hp2]
   dsimp only [Fintype.card] at Vmod

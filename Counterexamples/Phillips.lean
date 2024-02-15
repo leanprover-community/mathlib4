@@ -261,7 +261,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     In this proof, we use explicit coercions `↑s` for `s : A` as otherwise the system tries to find
     a `CoeFun` instance on `↥A`, which is too costly.
     -/
-  by_contra' h
+  by_contra! h
   -- We will formulate things in terms of the type of countable subsets of `α`, as this is more
   -- convenient to formalize the inductive construction.
   let A : Set (Set α) := {t | t.Countable}
@@ -287,8 +287,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     refine' ⟨t, fun u => _⟩
     calc
       f (↑u \ ↑s) ≤ S := le_ciSup B _
-      _ = 2 * (S / 2) := by ring
-      _ ≤ 2 * f (↑t \ ↑s) := mul_le_mul_of_nonneg_left ht.le (by norm_num)
+      _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff' two_pos).1 ht.le
   choose! F hF using this
   -- iterate the above construction, by adding at each step a set with measure close to maximal in
   -- the complement of already chosen points. This is the set `s n` at step `n`.
@@ -313,12 +312,12 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction' n with n IH
-    · simp only [BoundedAdditiveMeasure.empty, id.def, Nat.cast_zero, MulZeroClass.zero_mul,
+    · simp only [BoundedAdditiveMeasure.empty, id.def, Nat.cast_zero, zero_mul,
         Function.iterate_zero, Subtype.coe_mk, Nat.zero_eq]
       rfl
-    · have : (↑(s (n + 1)) : Set α) = ↑(s (n + 1)) \ ↑(s n) ∪ ↑(s n) := by
-        simp only [Function.iterate_succ', union_comm, union_diff_self, Subtype.coe_mk,
-          union_diff_left, Function.comp]
+    · have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
+        simpa only [Function.iterate_succ', union_diff_self]
+          using (diff_union_of_subset <| subset_union_left _ _).symm
       rw [Nat.succ_eq_add_one, this, f.additive]
       swap; · exact disjoint_sdiff_self_left
       calc
@@ -333,7 +332,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
 theorem exists_discrete_support (f : BoundedAdditiveMeasure α) :
     ∃ s : Set α, s.Countable ∧ ∀ t : Set α, t.Countable → f (t \ s) = 0 := by
   rcases f.exists_discrete_support_nonpos with ⟨s₁, s₁_count, h₁⟩
-  rcases(-f).exists_discrete_support_nonpos with ⟨s₂, s₂_count, h₂⟩
+  rcases (-f).exists_discrete_support_nonpos with ⟨s₂, s₂_count, h₂⟩
   refine' ⟨s₁ ∪ s₂, s₁_count.union s₂_count, fun t ht => le_antisymm _ _⟩
   · have : t \ (s₁ ∪ s₂) = (t \ (s₁ ∪ s₂)) \ s₁ := by
       rw [diff_diff, union_comm, union_assoc, union_self]
@@ -435,21 +434,21 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
       have I :
         ‖ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s)‖ ≤ 1 := by
         apply norm_ofNormedAddCommGroup_le _ zero_le_one
-      apply le_trans (f.le_op_norm _)
+      apply le_trans (f.le_opNorm _)
       simpa using mul_le_mul_of_nonneg_left I (norm_nonneg f)⟩
 #align continuous_linear_map.to_bounded_additive_measure ContinuousLinearMap.toBoundedAdditiveMeasure
 
 @[simp]
-theorem continuousPart_evalClm_eq_zero [TopologicalSpace α] [DiscreteTopology α] (s : Set α)
-    (x : α) : (evalClm ℝ x).toBoundedAdditiveMeasure.continuousPart s = 0 :=
-  let f := (evalClm ℝ x).toBoundedAdditiveMeasure
+theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology α] (s : Set α)
+    (x : α) : (evalCLM ℝ x).toBoundedAdditiveMeasure.continuousPart s = 0 :=
+  let f := (evalCLM ℝ x).toBoundedAdditiveMeasure
   calc
     f.continuousPart s = f.continuousPart (s \ {x}) :=
       (continuousPart_apply_diff _ _ _ (countable_singleton x)).symm
     _ = f (univ \ f.discreteSupport ∩ (s \ {x})) := rfl
     _ = indicator (univ \ f.discreteSupport ∩ (s \ {x})) 1 x := rfl
     _ = 0 := by simp
-#align counterexample.phillips_1940.continuous_part_eval_clm_eq_zero Counterexample.Phillips1940.continuousPart_evalClm_eq_zero
+#align counterexample.phillips_1940.continuous_part_eval_clm_eq_zero Counterexample.Phillips1940.continuousPart_evalCLM_eq_zero
 
 theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
@@ -570,9 +569,9 @@ theorem countable_ne (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ
     {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f Hcont x)} ⊆
       {x | φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x ≠ ∅} := by
     intro x hx
+    simp only [mem_setOf] at *
     contrapose! hx
-    simp only [Classical.not_not, mem_setOf_eq] at hx
-    simp [apply_f_eq_continuousPart Hcont φ x hx]
+    exact apply_f_eq_continuousPart Hcont φ x hx |>.symm
   have B :
     {x | φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x ≠ ∅} ⊆
       ⋃ y ∈ φ.toBoundedAdditiveMeasure.discreteSupport, {x | y ∈ spf Hcont x} := by
@@ -639,7 +638,7 @@ theorem no_pettis_integral (Hcont : #ℝ = aleph 1) :
   simp only [integral_comp] at h
   have : g = 0 := by
     ext x
-    have : g x = evalClm ℝ x g := rfl
+    have : g x = evalCLM ℝ x g := rfl
     rw [this, ← h]
     simp
   simp only [this, ContinuousLinearMap.map_zero] at h

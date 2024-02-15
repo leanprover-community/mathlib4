@@ -21,7 +21,7 @@ function indeed satisfies the following recurrences:
 
 namespace GeneralizedContinuedFraction
 
-variable {K : Type _} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRing K]
+variable {K : Type*} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRing K]
 
 theorem continuantsAux_recurrence {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = some gp)
     (nth_conts_aux_eq : g.continuantsAux n = ppred)

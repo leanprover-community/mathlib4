@@ -12,6 +12,8 @@ import Mathlib.Data.Polynomial.Eval
 # Some lemmas relating polynomials and multivariable polynomials.
 -/
 
+set_option autoImplicit true
+
 namespace MvPolynomial
 
 theorem polynomial_eval_eval₂ [CommSemiring R] [CommSemiring S]

@@ -3,13 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Comma.Presheaf
 import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.ConeCategory
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.KanExtension
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Over
 
 #align_import category_theory.limits.presheaf from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -20,7 +19,8 @@ This file constructs an adjunction `yonedaAdjunction` between `(Cᵒᵖ ⥤ Type
 functor `A : C ⥤ ℰ`, where the right adjoint sends `(E : ℰ)` to `c ↦ (A.obj c ⟶ E)` (provided `ℰ`
 has colimits).
 
-This adjunction is used to show that every presheaf is a colimit of representables.
+This adjunction is used to show that every presheaf is a colimit of representables. This result is
+also known as the density theorem, the co-Yoneda lemma and the Ninja Yoneda lemma.
 
 Further, the left adjoint `colimitAdj.extendAlongYoneda : (Cᵒᵖ ⥤ Type u) ⥤ ℰ` satisfies
 `yoneda ⋙ L ≅ A`, that is, an extension of `A : C ⥤ ℰ` to `(Cᵒᵖ ⥤ Type u) ⥤ ℰ` through
@@ -30,6 +30,9 @@ sometimes known as the Yoneda extension, as proved in `extendAlongYonedaIsoKan`.
 `uniqueExtensionAlongYoneda` shows `extendAlongYoneda` is unique amongst cocontinuous functors
 with this property, establishing the presheaf category as the free cocompletion of a small category.
 
+We also give a direct pedestrian proof that every presheaf is a colimit of representables. This
+version of the proof is valid for any category `C`, even if it is not small.
+
 ## Tags
 colimit, representable, presheaf, free cocompletion
 
@@ -38,12 +41,16 @@ colimit, representable, presheaf, free cocompletion
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/
 
+set_option autoImplicit true
+
 
 namespace CategoryTheory
 
 open Category Limits
 
-universe u₁ u₂
+universe v₁ v₂ u₁ u₂
+
+section SmallCategory
 
 variable {C : Type u₁} [SmallCategory C]
 
@@ -76,8 +83,7 @@ def restrictedYonedaYoneda : restrictedYoneda (yoneda : C ⥤ Cᵒᵖ ⥤ Type u
       funext fun x => by
         dsimp
         have : x.app X (CategoryStruct.id (Opposite.unop X)) =
-            (x.app X (𝟙 (Opposite.unop X)))
-              := by rfl
+            (x.app X (𝟙 (Opposite.unop X))) := rfl
         rw [this]
         rw [← FunctorToTypes.naturality _ _ x f (𝟙 _)]
         simp only [id_comp, Functor.op_obj, Opposite.unop_op, yoneda_obj_map, comp_id]
@@ -383,7 +389,7 @@ noncomputable def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type 
   · intro P₁ P₂ f
     apply (isColimitOfPreserves L₁ (colimitOfRepresentable P₁)).hom_ext
     intro j
-    dsimp only [id.def, IsColimit.comp_coconePointsIsoOfNatIso_hom, isoWhiskerLeft_hom]
+    dsimp only [id.def, isoWhiskerLeft_hom]
     have :
       (L₁.mapCocone (coconeOfRepresentable P₁)).ι.app j ≫ L₁.map f =
         (L₁.mapCocone (coconeOfRepresentable P₂)).ι.app
@@ -428,5 +434,81 @@ noncomputable def isLeftAdjointOfPreservesColimits (L : (C ⥤ Type u₁) ⥤ �
   let _ := isLeftAdjointOfPreservesColimitsAux (e.functor ⋙ L : _)
   Adjunction.leftAdjointOfNatIso (e.invFunIdAssoc _)
 #align category_theory.is_left_adjoint_of_preserves_colimits CategoryTheory.isLeftAdjointOfPreservesColimits
+
+end SmallCategory
+
+section ArbitraryUniverses
+
+variable {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type v₁)
+
+/-- For a presheaf `P`, consider the forgetful functor from the category of representable
+    presheaves over `P` to the category of presheaves. There is a tautological cocone over this
+    functor whose leg for a natural transformation `V ⟶ P` with `V` representable is just that
+    natural transformation. -/
+@[simps]
+def tautologicalCocone : Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda) where
+  pt := P
+  ι := { app := fun X => X.hom }
+
+/-- The tautological cocone with point `P` is a colimit cocone, exhibiting `P` as a colimit of
+    representables.
+
+    Proposition 2.6.3(i) in [Kashiwara2006] -/
+def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
+  desc := fun s => by
+    refine' ⟨fun X t => yonedaEquiv (s.ι.app (CostructuredArrow.mk (yonedaEquiv.symm t))), _⟩
+    intros X Y f
+    ext t
+    dsimp
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [yonedaEquiv_naturality', yonedaEquiv_symm_map]
+    simpa using (s.ι.naturality
+      (CostructuredArrow.homMk' (CostructuredArrow.mk (yonedaEquiv.symm t)) f.unop)).symm
+  fac := by
+    intro s t
+    dsimp
+    apply yonedaEquiv.injective
+    rw [yonedaEquiv_comp]
+    dsimp only
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Equiv.symm_apply_apply]
+    rfl
+  uniq := by
+    intro s j h
+    ext V x
+    obtain ⟨t, rfl⟩ := yonedaEquiv.surjective x
+    dsimp
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
+    exact congr_arg _ (h (CostructuredArrow.mk t))
+
+variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
+
+/-- Given a functor `F : I ⥤ C`, a cocone `c` on `F ⋙ yoneda : I ⥤ Cᵒᵖ ⥤ Type v₁` induces a
+    functor `I ⥤ CostructuredArrow yoneda c.pt` which maps `i : I` to the leg
+    `yoneda.obj (F.obj i) ⟶ c.pt`. If `c` is a colimit cocone, then that functor is
+    final.
+
+    Proposition 2.6.3(ii) in [Kashiwara2006] -/
+theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsColimit c) :
+    Functor.Final (c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) := by
+  apply Functor.cofinal_of_isTerminal_colimit_comp_yoneda
+
+  suffices IsTerminal (colimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
+      CostructuredArrow.toOver yoneda c.pt)) by
+    apply IsTerminal.isTerminalOfObj (overEquivPresheafCostructuredArrow c.pt).inverse
+    apply IsTerminal.ofIso this
+    refine ?_ ≪≫ (preservesColimitIso (overEquivPresheafCostructuredArrow c.pt).inverse _).symm
+    apply HasColimit.isoOfNatIso
+    exact isoWhiskerLeft _
+      (CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow c.pt).isoCompInverse
+
+  apply IsTerminal.ofIso Over.mkIdTerminal
+  let isc : IsColimit ((Over.forget _).mapCocone _) := PreservesColimit.preserves
+    (colimit.isColimit ((c.toCostructuredArrow ⋙ CostructuredArrow.pre F yoneda c.pt) ⋙
+      CostructuredArrow.toOver yoneda c.pt))
+  exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)
+
+end ArbitraryUniverses
 
 end CategoryTheory

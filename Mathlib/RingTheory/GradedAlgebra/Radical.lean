@@ -28,7 +28,7 @@ This file contains a proof that the radical of any homogeneous ideal is a homoge
 Throughout this file, the indexing type `ι` of grading is assumed to be a
 `LinearOrderedCancelAddCommMonoid`. This might be stronger than necessary but cancelling
 property is strictly necessary; for a counterexample of how `Ideal.IsHomogeneous.isPrime_iff`
-fails for a non-cancellative set see `counterexample/homogeneous_prime_not_prime.lean`.
+fails for a non-cancellative set see `Counterexamples/HomogeneousPrimeNotPrime.lean`.
 
 ## Tags
 
@@ -40,7 +40,7 @@ open GradedRing DirectSum SetLike Finset
 
 open BigOperators
 
-variable {ι σ A : Type _}
+variable {ι σ A : Type*}
 
 variable [CommRing A]
 
@@ -48,7 +48,7 @@ variable [LinearOrderedCancelAddCommMonoid ι]
 
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 
-set_option maxHeartbeats 300000 in -- Porting note: This proof needs a long time to elaborate
+-- Porting note: This proof needs a long time to elaborate
 theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI : I.IsHomogeneous 𝒜)
     (I_ne_top : I ≠ ⊤)
     (homogeneous_mem_or_mem :
@@ -56,8 +56,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
     Ideal.IsPrime I :=
   ⟨I_ne_top, by
     intro x y hxy
-    by_contra rid
-    push_neg at rid
+    by_contra! rid
     obtain ⟨rid₁, rid₂⟩ := rid
     classical
       /-

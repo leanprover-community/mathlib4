@@ -3,7 +3,7 @@ Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
 -/
-import Std.Data.RBMap
+import Std.Data.RBMap.Basic
 import Mathlib.Data.Num.Basic
 import Mathlib.Order.Basic
 import Mathlib.Init.Data.Ordering.Basic
@@ -152,7 +152,7 @@ scoped infixr:65 " △ " => Tree.node ()
 compile_inductive% Tree
 
 @[elab_as_elim]
-def unitRecOn {motive : Tree Unit → Sort _} (t : Tree Unit) (base : motive nil)
+def unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
     -- Porting note: Old proof was `t.recOn base fun u => u.recOn ind` but
     -- structure eta makes it unnecessary (https://github.com/leanprover/lean4/issues/777).

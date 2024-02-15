@@ -30,8 +30,8 @@ open Classical ENNReal NNReal
 /-- If a function `f : α → β` is such that the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p < q`, then `f` is almost-everywhere
 measurable. It is even enough to have this for `p` and `q` in a countable dense set. -/
-theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type _}
-    {m : MeasurableSpace α} (μ : Measure α) {β : Type _} [CompleteLinearOrder β] [DenselyOrdered β]
+theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type*}
+    {m : MeasurableSpace α} (μ : Measure α) {β : Type*} [CompleteLinearOrder β] [DenselyOrdered β]
     [TopologicalSpace β] [OrderTopology β] [SecondCountableTopology β] [MeasurableSpace β]
     [BorelSpace β] (s : Set β) (s_count : s.Countable) (s_dense : Dense s) (f : α → β)
     (h : ∀ p ∈ s, ∀ q ∈ s, p < q → ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
@@ -84,7 +84,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       convert this
       ext y
       simp only [not_exists, exists_prop, mem_setOf_eq, mem_compl_iff, not_not_mem]
-    filter_upwards [this]with x hx
+    filter_upwards [this] with x hx
     apply (iInf_eq_of_forall_ge_of_forall_gt_exists_lt _ _).symm
     · intro i
       by_cases H : x ∈ u' i
@@ -110,7 +110,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
 /-- If a function `f : α → ℝ≥0∞` is such that the level sets `{f < p}` and `{q < f}` have measurable
 supersets which are disjoint up to measure zero when `p` and `q` are finite numbers satisfying
 `p < q`, then `f` is almost-everywhere measurable. -/
-theorem ENNReal.aemeasurable_of_exist_almost_disjoint_supersets {α : Type _} {m : MeasurableSpace α}
+theorem ENNReal.aemeasurable_of_exist_almost_disjoint_supersets {α : Type*} {m : MeasurableSpace α}
     (μ : Measure α) (f : α → ℝ≥0∞)
     (h : ∀ (p : ℝ≥0) (q : ℝ≥0), p < q →
       ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧

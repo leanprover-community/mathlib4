@@ -25,11 +25,10 @@ import Mathlib.MeasureTheory.Function.LpSpace
 
 set_option linter.uppercaseLean3 false
 
-open TopologicalSpace MeasureTheory LatticeOrderedCommGroup
-
+open TopologicalSpace MeasureTheory
 open scoped ENNReal
 
-variable {α E : Type _} {m : MeasurableSpace α} {μ : Measure α} {p : ℝ≥0∞}
+variable {α E : Type*} {m : MeasurableSpace α} {μ : Measure α} {p : ℝ≥0∞}
 
 namespace MeasureTheory
 

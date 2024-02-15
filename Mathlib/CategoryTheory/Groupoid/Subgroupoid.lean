@@ -419,7 +419,7 @@ end GeneratedSubgroupoid
 
 section Hom
 
-variable {D : Type _} [Groupoid D] (φ : C ⥤ D)
+variable {D : Type*} [Groupoid D] (φ : C ⥤ D)
 
 /-- A functor between groupoid defines a map of subgroupoids in the reverse direction
 by taking preimages.
@@ -445,7 +445,7 @@ theorem isNormal_comap {S : Subgroupoid D} (Sn : IsNormal S) : IsNormal (comap �
 #align category_theory.subgroupoid.is_normal_comap CategoryTheory.Subgroupoid.isNormal_comap
 
 @[simp]
-theorem comap_comp {E : Type _} [Groupoid E] (ψ : D ⥤ E) : comap (φ ⋙ ψ) = comap φ ∘ comap ψ :=
+theorem comap_comp {E : Type*} [Groupoid E] (ψ : D ⥤ E) : comap (φ ⋙ ψ) = comap φ ∘ comap ψ :=
   rfl
 #align category_theory.subgroupoid.comap_comp CategoryTheory.Subgroupoid.comap_comp
 
@@ -464,7 +464,7 @@ theorem ker_isNormal : (ker φ).IsNormal :=
 #align category_theory.subgroupoid.ker_is_normal CategoryTheory.Subgroupoid.ker_isNormal
 
 @[simp]
-theorem ker_comp {E : Type _} [Groupoid E] (ψ : D ⥤ E) : ker (φ ⋙ ψ) = comap φ (ker ψ) :=
+theorem ker_comp {E : Type*} [Groupoid E] (ψ : D ⥤ E) : ker (φ ⋙ ψ) = comap φ (ker ψ) :=
   rfl
 #align category_theory.subgroupoid.ker_comp CategoryTheory.Subgroupoid.ker_comp
 
@@ -688,7 +688,7 @@ theorem full_empty : full ∅ = (⊥ : Subgroupoid C) := by
 @[simp]
 theorem full_univ : full Set.univ = (⊤ : Subgroupoid C) := by
   ext
-  simp only [mem_full_iff, mem_univ, mem_top]
+  simp only [mem_full_iff, mem_univ, and_self, mem_top]
 #align category_theory.subgroupoid.full_univ CategoryTheory.Subgroupoid.full_univ
 
 theorem full_mono {D E : Set C} (h : D ≤ E) : full D ≤ full E := by

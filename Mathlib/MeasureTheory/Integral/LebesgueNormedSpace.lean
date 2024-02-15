@@ -3,7 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import measure_theory.integral.lebesgue_normed_space from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
@@ -15,10 +15,10 @@ open MeasureTheory Filter ENNReal Set
 
 open NNReal ENNReal
 
-variable {α β γ δ : Type _} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
+variable {α β γ δ : Type*} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α}
 
-theorem aemeasurable_withDensity_iff {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [TopologicalSpace.SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] {f : α → ℝ≥0}
+theorem aemeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] {f : α → ℝ≥0}
     (hf : Measurable f) {g : α → E} :
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ) • g x) μ := by
@@ -31,7 +31,7 @@ theorem aemeasurable_withDensity_iff {E : Type _} [NormedAddCommGroup E] [Normed
       rw [ae_restrict_iff' A]
       filter_upwards [hg']
       intro a ha h'a
-      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using h'a
+      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne.def, ENNReal.coe_eq_zero] using h'a
       rw [ha this]
     · filter_upwards [ae_restrict_mem A.compl]
       intro x hx
@@ -43,6 +43,6 @@ theorem aemeasurable_withDensity_iff {E : Type _} [NormedAddCommGroup E] [Normed
     filter_upwards [hg']
     intro x hx h'x
     rw [← hx, smul_smul, _root_.inv_mul_cancel, one_smul]
-    simp only [Ne.def, coe_eq_zero] at h'x
+    simp only [Ne.def, ENNReal.coe_eq_zero] at h'x
     simpa only [NNReal.coe_eq_zero, Ne.def] using h'x
 #align ae_measurable_with_density_iff aemeasurable_withDensity_iff

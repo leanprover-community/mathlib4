@@ -16,7 +16,7 @@ import Mathlib.Algebra.BigOperators.Basic
 We prove the Hales-Jewett theorem and deduce Van der Waerden's theorem as a corollary.
 
 The Hales-Jewett theorem is a result in Ramsey theory dealing with *combinatorial lines*. Given
-an 'alphabet' `α : Type _` and `a b : α`, an example of a combinatorial line in `α^5` is
+an 'alphabet' `α : Type*` and `a b : α`, an example of a combinatorial line in `α^5` is
 `{ (a, x, x, b, x) | x : α }`. See `Combinatorics.Line` for a precise general definition. The
 Hales-Jewett theorem states that for any fixed finite types `α` and `κ`, there exists a (potentially
 huge) finite type `ι` such that whenever `ι → α` is `κ`-colored (i.e. for any coloring
@@ -78,7 +78,7 @@ Formally, a line is represented by a word `l.idxFun : ι → Option α` which sa
 `l.idxFun i = some y`).
 
 When `α` has size `1` there can be many elements of `Line α ι` defining the same function. -/
-structure Line (α ι : Type _) where
+structure Line (α ι : Type*) where
   /-- The word representing a combinatorial line. `l.idxfun i = none` means that
   `l x i = x` for all `x` and `l.idxfun i = some y` means that `l x i = y`. -/
   idxFun : ι → Option α
@@ -108,7 +108,7 @@ instance (α ι) [Nonempty ι] : Inhabited (Line α ι) :=
   ⟨diagonal α ι⟩
 
 /-- The type of lines that are only one color except possibly at their endpoints. -/
-structure AlmostMono {α ι κ : Type _} (C : (ι → Option α) → κ) where
+structure AlmostMono {α ι κ : Type*} (C : (ι → Option α) → κ) where
   /-- The underlying line of an almost monochromatic line, where the coordinate dimension `α` is
   extended by an additional symbol `none`, thought to be marking the endpoint of the line. -/
   line : Line (Option α) ι
@@ -119,7 +119,7 @@ structure AlmostMono {α ι κ : Type _} (C : (ι → Option α) → κ) where
   has_color : ∀ x : α, C (line (some x)) = color
 #align combinatorics.line.almost_mono Combinatorics.Line.AlmostMono
 
-instance {α ι κ : Type _} [Nonempty ι] [Inhabited κ] :
+instance {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
     Inhabited (AlmostMono fun _ : ι → Option α => (default : κ)) :=
   ⟨{  line := default
       color := default
@@ -130,7 +130,7 @@ instance {α ι κ : Type _} [Nonempty ι] [Inhabited κ] :
 - the lines all have the same endpoint
 - the colors of the lines are distinct.
 Used in the proof `exists_mono_in_high_dimension`. -/
-structure ColorFocused {α ι κ : Type _} (C : (ι → Option α) → κ) where
+structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
   /-- The underlying multiset of almost monochromatic lines of a color-focused collection. -/
   lines : Multiset (AlmostMono C)
   /-- The common endpoint of the lines in the color-focused collection. -/
@@ -214,8 +214,9 @@ theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = 
   simp_rw [Line.diagonal, Option.getD_none]
 #align combinatorics.line.diagonal_apply Combinatorics.Line.diagonal_apply
 
-/-- The Hales-Jewett theorem. This version has a restriction on universe levels which is necessary
-for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic version. -/
+/-- The **Hales-Jewett theorem**. This version has a restriction on universe levels which is
+necessary for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic
+version. -/
 private theorem exists_mono_in_high_dimension' :
     ∀ (α : Type u) [Finite α] (κ : Type max v u) [Finite κ],
       ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
@@ -254,10 +255,10 @@ private theorem exists_mono_in_high_dimension' :
       ∀ r : ℕ,
         ∃ (ι : Type) (_ : Fintype ι),
           ∀ C : (ι → Option α) → κ,
-            (∃ s : ColorFocused C, Multiset.card s.lines = r) ∨ ∃ l, IsMono C l
-    -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
-    -- so we must be in the second case, where there is a monochromatic line.
-    · obtain ⟨ι, _inst, hι⟩ := key (Fintype.card κ + 1)
+            (∃ s : ColorFocused C, Multiset.card s.lines = r) ∨ ∃ l, IsMono C l by
+      -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
+      -- so we must be in the second case, where there is a monochromatic line.
+      obtain ⟨ι, _inst, hι⟩ := key (Fintype.card κ + 1)
       refine' ⟨ι, _inst, fun C => (hι C).resolve_left _⟩
       rintro ⟨s, sr⟩
       apply Nat.not_succ_le_self (Fintype.card κ)
@@ -338,12 +339,12 @@ end Line
 
 /-- A generalization of Van der Waerden's theorem: if `M` is a finitely colored commutative
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
-theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finset M) [Finite κ]
+theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none ) with hs
+  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
   refine'
     ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, _⟩, ∑ i in sᶜ, ((l.idxFun i).map _).getD 0,
       c, _⟩

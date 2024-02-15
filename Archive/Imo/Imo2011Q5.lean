@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alain Verberkmoes
 -/
 import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Tactic.Common
 
 #align_import imo.imo2011_q5 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 
@@ -23,7 +24,7 @@ open Int
 theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m n : ℤ, f (m - n) ∣ f m - f n) :
     ∀ m n : ℤ, f m ≤ f n → f m ∣ f n := by
   intro m n h_fm_le_fn
-  cases' lt_or_eq_of_le h_fm_le_fn with h_fm_lt_fn h_fm_eq_fn
+  rcases lt_or_eq_of_le h_fm_le_fn with h_fm_lt_fn | h_fm_eq_fn
   · -- m < n
     let d := f m - f (m - n)
     have h_fn_dvd_d : f n ∣ d := by

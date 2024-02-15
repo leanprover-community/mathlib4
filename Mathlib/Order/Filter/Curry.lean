@@ -45,7 +45,7 @@ uniform convergence, curried filters, product filters
 
 namespace Filter
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- This filter is characterized by `Filter.eventually_curry_iff`:
 `(∀ᶠ (x : α × β) in f.curry g, p x) ↔ ∀ᶠ (x : α) in f, ∀ᶠ (y : β) in g, p (x, y)`. Useful

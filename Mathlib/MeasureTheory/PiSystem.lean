@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 import Mathlib.Logic.Encodable.Lattice
-import Mathlib.MeasureTheory.MeasurableSpaceDef
+import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 #align_import measure_theory.pi_system from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
@@ -69,7 +69,7 @@ def IsPiSystem {α} (C : Set (Set α)) : Prop :=
 
 namespace MeasurableSpace
 
-theorem isPiSystem_measurableSet {α : Type _} [MeasurableSpace α] :
+theorem isPiSystem_measurableSet {α : Type*} [MeasurableSpace α] :
     IsPiSystem { s : Set α | MeasurableSet s } := fun _ hs _ ht _ => hs.inter ht
 #align measurable_space.is_pi_system_measurable_set MeasurableSpace.isPiSystem_measurableSet
 
@@ -130,7 +130,7 @@ theorem isPiSystem_iUnion_of_monotone {α ι} [SemilatticeSup ι] (p : ι → Se
 
 section Order
 
-variable {α : Type _} {ι ι' : Sort _} [LinearOrder α]
+variable {α : Type*} {ι ι' : Sort*} [LinearOrder α]
 
 theorem isPiSystem_image_Iio (s : Set α) : IsPiSystem (Iio '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ -
@@ -149,7 +149,21 @@ theorem isPiSystem_Ioi : IsPiSystem (range Ioi : Set (Set α)) :=
   @image_univ α _ Ioi ▸ isPiSystem_image_Ioi univ
 #align is_pi_system_Ioi isPiSystem_Ioi
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
+theorem isPiSystem_image_Iic (s : Set α) : IsPiSystem (Iic '' s) := by
+  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ -
+  exact ⟨a ⊓ b, inf_ind a b ha hb, Iic_inter_Iic.symm⟩
+
+theorem isPiSystem_Iic : IsPiSystem (range Iic : Set (Set α)) :=
+  @image_univ α _ Iic ▸ isPiSystem_image_Iic univ
+#align is_pi_system_Iic isPiSystem_Iic
+
+theorem isPiSystem_image_Ici (s : Set α) : IsPiSystem (Ici '' s) :=
+  @isPiSystem_image_Iic αᵒᵈ _ s
+
+theorem isPiSystem_Ici : IsPiSystem (range Ici : Set (Set α)) :=
+  @image_univ α _ Ici ▸ isPiSystem_image_Ici univ
+#align is_pi_system_Ici isPiSystem_Ici
+
 theorem isPiSystem_Ixx_mem {Ixx : α → α → Set α} {p : α → α → Prop}
     (Hne : ∀ {a b}, (Ixx a b).Nonempty → p a b)
     (Hi : ∀ {a₁ b₁ a₂ b₂}, Ixx a₁ b₁ ∩ Ixx a₂ b₂ = Ixx (max a₁ a₂) (min b₁ b₂)) (s t : Set α) :
@@ -159,7 +173,6 @@ theorem isPiSystem_Ixx_mem {Ixx : α → α → Set α} {p : α → α → Prop}
   exact fun H => ⟨l₁ ⊔ l₂, sup_ind l₁ l₂ hls₁ hls₂, u₁ ⊓ u₂, inf_ind u₁ u₂ hut₁ hut₂, Hne H, rfl⟩
 #align is_pi_system_Ixx_mem isPiSystem_Ixx_mem
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ixx {Ixx : α → α → Set α} {p : α → α → Prop}
     (Hne : ∀ {a b}, (Ixx a b).Nonempty → p a b)
     (Hi : ∀ {a₁ b₁ a₂ b₂}, Ixx a₁ b₁ ∩ Ixx a₂ b₂ = Ixx (max a₁ a₂) (min b₁ b₂)) (f : ι → α)
@@ -167,49 +180,41 @@ theorem isPiSystem_Ixx {Ixx : α → α → Set α} {p : α → α → Prop}
   simpa only [exists_range_iff] using isPiSystem_Ixx_mem (@Hne) (@Hi) (range f) (range g)
 #align is_pi_system_Ixx isPiSystem_Ixx
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ioo_mem (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l < u ∧ Ioo l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Ioo) (fun ⟨_, hax, hxb⟩ => hax.trans hxb) Ioo_inter_Ioo s t
 #align is_pi_system_Ioo_mem isPiSystem_Ioo_mem
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ioo (f : ι → α) (g : ι' → α) :
     @IsPiSystem α { S | ∃ l u, f l < g u ∧ Ioo (f l) (g u) = S } :=
   isPiSystem_Ixx (Ixx := Ioo) (fun ⟨_, hax, hxb⟩ => hax.trans hxb) Ioo_inter_Ioo f g
 #align is_pi_system_Ioo isPiSystem_Ioo
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ioc_mem (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l < u ∧ Ioc l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Ioc) (fun ⟨_, hax, hxb⟩ => hax.trans_le hxb) Ioc_inter_Ioc s t
 #align is_pi_system_Ioc_mem isPiSystem_Ioc_mem
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ioc (f : ι → α) (g : ι' → α) :
     @IsPiSystem α { S | ∃ i j, f i < g j ∧ Ioc (f i) (g j) = S } :=
   isPiSystem_Ixx (Ixx := Ioc) (fun ⟨_, hax, hxb⟩ => hax.trans_le hxb) Ioc_inter_Ioc f g
 #align is_pi_system_Ioc isPiSystem_Ioc
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ico_mem (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l < u ∧ Ico l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Ico) (fun ⟨_, hax, hxb⟩ => hax.trans_lt hxb) Ico_inter_Ico s t
 #align is_pi_system_Ico_mem isPiSystem_Ico_mem
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ico (f : ι → α) (g : ι' → α) :
     @IsPiSystem α { S | ∃ i j, f i < g j ∧ Ico (f i) (g j) = S } :=
   isPiSystem_Ixx (Ixx := Ico) (fun ⟨_, hax, hxb⟩ => hax.trans_lt hxb) Ico_inter_Ico f g
 #align is_pi_system_Ico isPiSystem_Ico
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Icc_mem (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l ≤ u ∧ Icc l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Icc) nonempty_Icc.1 (by exact Icc_inter_Icc) s t
 #align is_pi_system_Icc_mem isPiSystem_Icc_mem
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Icc (f : ι → α) (g : ι' → α) :
     @IsPiSystem α { S | ∃ i j, f i ≤ g j ∧ Icc (f i) (g j) = S } :=
   isPiSystem_Ixx (Ixx := Icc) nonempty_Icc.1 (by exact Icc_inter_Icc) f g
@@ -297,8 +302,6 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
           and_true_iff, true_and_iff] at h1 ⊢
       all_goals exact h1
     intro b h_b
-    -- Porting note: `simp only` required for a beta reduction
-    simp only []
     split_ifs with hbs hbt hbt
     · refine' h_pi b (f_s b) (h_s b hbs) (f_t' b) (h_t' b hbt) (Set.Nonempty.mono _ h_nonempty)
       exact Set.inter_subset_inter (Set.biInter_subset_of_mem hbs) (Set.biInter_subset_of_mem hbt)
@@ -347,7 +350,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
 
 section UnionInter
 
-variable {α ι : Type _}
+variable {α ι : Type*}
 
 /-! ### π-system generated by finite intersections of sets of a π-system family -/
 
@@ -524,7 +527,7 @@ end UnionInter
 
 namespace MeasurableSpace
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-! ## Dynkin systems and Π-λ theorem -/
 
@@ -538,7 +541,7 @@ variable {α : Type _}
 
   A Dynkin system is also known as a "λ-system" or a "d-system".
 -/
-structure DynkinSystem (α : Type _) where
+structure DynkinSystem (α : Type*) where
   /-- Predicate saying that a given set is contained in the Dynkin system. -/
   Has : Set α → Prop
   /-- A Dynkin system contains the empty set. -/
@@ -587,11 +590,11 @@ theorem has_union {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (
 theorem has_diff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
     d.Has (s₁ \ s₂) := by
   apply d.has_compl_iff.1
-  simp [diff_eq, compl_inter]
+  simp only [diff_eq, compl_inter, compl_compl]
   exact d.has_union (d.has_compl h₁) h₂ (disjoint_compl_left.mono_right h)
 #align measurable_space.dynkin_system.has_diff MeasurableSpace.DynkinSystem.has_diff
 
-instance : LE (DynkinSystem α) where le m₁ m₂ := m₁.Has ≤ m₂.Has
+instance instLEDynkinSystem : LE (DynkinSystem α) where le m₁ m₂ := m₁.Has ≤ m₂.Has
 
 theorem le_def {α} {a b : DynkinSystem α} : a ≤ b ↔ a.Has ≤ b.Has :=
   Iff.rfl

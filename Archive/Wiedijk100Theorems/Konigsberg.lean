@@ -75,7 +75,7 @@ lemma degree_eq_degree (v : Verts) : graph.degree v = degree v := by cases v <;>
 #align konigsberg.degree_eq_degree Konigsberg.degree_eq_degree
 
 lemma not_even_degree_iff (w : Verts) : ¬Even (degree w) ↔ w = V1 ∨ w = V2 ∨ w = V3 ∨ w = V4 := by
-  cases w <;> simp
+  cases w <;> decide
 
 lemma setOf_odd_degree_eq :
     {v | Odd (graph.degree v)} = {Verts.V1, Verts.V2, Verts.V3, Verts.V4} := by

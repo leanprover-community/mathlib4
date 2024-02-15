@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Yaël Dillies
 -/
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Order.Basic
 
 #align_import order.synonym from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
@@ -36,7 +36,7 @@ This file is similar to `Algebra.Group.TypeTags`.
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-! ### Order dual -/
 
@@ -124,7 +124,7 @@ theorem toDual_lt [LT α] {a : α} {b : αᵒᵈ} : toDual a < b ↔ ofDual b < 
 
 /-- Recursor for `αᵒᵈ`. -/
 @[elab_as_elim]
-protected def rec {C : αᵒᵈ → Sort _} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
+protected def rec {C : αᵒᵈ → Sort*} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
   h₂
 #align order_dual.rec OrderDual.rec
 
@@ -138,14 +138,14 @@ protected theorem «exists» {p : αᵒᵈ → Prop} : (∃ a, p a) ↔ ∃ a, p
   Iff.rfl
 #align order_dual.exists OrderDual.exists
 
-alias toDual_le_toDual ↔ _ _root_.LE.le.dual
+alias ⟨_, _root_.LE.le.dual⟩ := toDual_le_toDual
 
-alias toDual_lt_toDual ↔ _ _root_.LT.lt.dual
+alias ⟨_, _root_.LT.lt.dual⟩ := toDual_lt_toDual
 
-alias ofDual_le_ofDual ↔ _ _root_.LE.le.ofDual
+alias ⟨_, _root_.LE.le.ofDual⟩ := ofDual_le_ofDual
 #align has_le.le.of_dual LE.le.ofDual
 
-alias ofDual_lt_ofDual ↔ _ _root_.LT.lt.ofDual
+alias ⟨_, _root_.LT.lt.ofDual⟩ := ofDual_lt_ofDual
 #align has_lt.lt.of_dual LT.lt.ofDual
 
 end OrderDual
@@ -154,7 +154,7 @@ end OrderDual
 
 
 /-- A type synonym to equip a type with its lexicographic order. -/
-def Lex (α : Type _) :=
+def Lex (α : Type*) :=
   α
 #align lex Lex
 
@@ -203,5 +203,8 @@ theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
 #align of_lex_inj ofLex_inj
 
 /-- A recursor for `Lex`. Use as `induction x using Lex.rec`. -/
-protected def Lex.rec {β : Lex α → Sort _} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
+protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
 #align lex.rec Lex.rec
+
+@[simp] lemma Lex.forall {p : Lex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toLex a) := Iff.rfl
+@[simp] lemma Lex.exists {p : Lex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toLex a) := Iff.rfl

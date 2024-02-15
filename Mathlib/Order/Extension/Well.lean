@@ -72,7 +72,7 @@ theorem exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=
 end WellFounded
 
 /-- A type alias for `α`, intended to extend a well-founded order on `α` to a well-order. -/
-def WellOrderExtension (α : Type _) : Type _ := α
+def WellOrderExtension (α : Type*) : Type _ := α
 #align well_order_extension WellOrderExtension
 
 instance [Inhabited α] : Inhabited (WellOrderExtension α) := ‹_›

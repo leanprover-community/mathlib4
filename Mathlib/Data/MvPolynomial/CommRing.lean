@@ -21,7 +21,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommRing R]` (the coefficients)
++ `R : Type*` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
@@ -45,7 +45,7 @@ variable {R : Type u} {S : Type v}
 
 namespace MvPolynomial
 
-variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommRing
 
@@ -53,7 +53,7 @@ variable [CommRing R]
 
 variable {p q : MvPolynomial σ R}
 
-instance : CommRing (MvPolynomial σ R) :=
+instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
   AddMonoidAlgebra.commRing
 
 variable (σ a a')
@@ -189,7 +189,7 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
   classical
   rw [degreeOf_lt_iff h]
   intro m hm
-  by_contra' hc
+  by_contra! hc
   have h := support_sub σ f g hm
   simp only [mem_support_iff, Ne.def, coeff_sub, sub_eq_zero] at hm
   cases' Finset.mem_union.1 h with cf cg
@@ -213,6 +213,10 @@ theorem totalDegree_sub (a b : MvPolynomial σ R) :
     _ ≤ max a.totalDegree (-b).totalDegree := (totalDegree_add a (-b))
     _ = max a.totalDegree b.totalDegree := by rw [totalDegree_neg]
 #align mv_polynomial.total_degree_sub MvPolynomial.totalDegree_sub
+
+theorem totalDegree_sub_C_le (p : MvPolynomial σ R) (r : R) :
+    totalDegree (p - C r) ≤ totalDegree p :=
+  (totalDegree_sub _ _).trans_eq <| by rw [totalDegree_C, Nat.max_zero]
 
 end TotalDegree
 

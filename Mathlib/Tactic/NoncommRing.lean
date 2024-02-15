@@ -20,7 +20,7 @@ to close the goal, and if that doesn't succeed, defaults to `abel_nf`.
 namespace Mathlib.Tactic.NoncommRing
 
 section nat_lit_mul
-variable {R : Type _} [NonAssocSemiring R] (r : R) (n : ℕ)
+variable {R : Type*} [NonAssocSemiring R] (r : R) (n : ℕ)
 
 lemma nat_lit_mul_eq_nsmul [n.AtLeastTwo] : no_index (OfNat.ofNat n) * r = n • r := by
   simp only [nsmul_eq_mul, Nat.cast_eq_ofNat]
@@ -33,26 +33,28 @@ end nat_lit_mul
 
 An example:
 ```lean
-example {R : Type _} [Ring R] (a b c : R) : a * (b + c + c - b) = 2*a*c :=
+example {R : Type*} [Ring R] (a b c : R) : a * (b + c + c - b) = 2*a*c :=
 by noncomm_ring
 ```
 -/
 syntax (name := noncomm_ring) "noncomm_ring" : tactic
 macro_rules
   | `(tactic| noncomm_ring) => `(tactic| (
-      simp only [ -- Expand everything out.
-                  add_mul, mul_add, sub_eq_add_neg,
-                  -- Right associate all products.
-                  mul_assoc,
-                  -- Expand powers to numerals.
-                  pow_one, pow_zero, pow_succ,
-                  -- Replace multiplication by numerals with `zsmul`.
-                  one_mul, mul_one, zero_mul, mul_zero,
-                  nat_lit_mul_eq_nsmul, mul_nat_lit_eq_nsmul,
-                  -- Pull `zsmul n` out the front so `abel` can see them.
-                  mul_smul_comm, smul_mul_assoc,
-                  -- Pull out negations.
-                  neg_mul, mul_neg ] <;>
-      first | abel1 | abel_nf ))
+      (first | simp only [
+          -- Expand everything out.
+          add_mul, mul_add, sub_eq_add_neg,
+          -- Right associate all products.
+          mul_assoc,
+          -- Expand powers to numerals.
+          pow_one, pow_zero, pow_succ,
+          -- Replace multiplication by numerals with `zsmul`.
+          one_mul, mul_one, zero_mul, mul_zero,
+          nat_lit_mul_eq_nsmul, mul_nat_lit_eq_nsmul,
+          -- Pull `zsmul n` out the front so `abel` can see them.
+          mul_smul_comm, smul_mul_assoc,
+          -- Pull out negations.
+          neg_mul, mul_neg] |
+        fail "`noncomm_ring` simp lemmas don't apply; try `abel` instead") <;>
+      first | abel1 | abel_nf))
 
 end Mathlib.Tactic.NoncommRing

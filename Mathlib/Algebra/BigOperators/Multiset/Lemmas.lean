@@ -11,7 +11,7 @@ import Mathlib.Algebra.BigOperators.Multiset.Basic
 /-! # Lemmas about `Multiset.sum` and `Multiset.prod` requiring extra algebra imports -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Multiset
 
@@ -20,7 +20,7 @@ theorem dvd_prod [CommMonoid α] {s : Multiset α} {a : α} : a ∈ s → a ∣ 
 #align multiset.dvd_prod Multiset.dvd_prod
 
 @[to_additive]
-theorem prod_eq_one_iff [CanonicallyOrderedMonoid α] {m : Multiset α} :
+theorem prod_eq_one_iff [CanonicallyOrderedCommMonoid α] {m : Multiset α} :
     m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
   Quotient.inductionOn m fun l => by simpa using List.prod_eq_one_iff l
 #align multiset.prod_eq_one_iff Multiset.prod_eq_one_iff

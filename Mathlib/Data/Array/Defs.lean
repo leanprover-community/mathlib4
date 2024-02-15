@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Floris van Doorn
 -/
 
-import Lean
-
 /-!
 ## Definitions on Arrays
 
@@ -13,14 +11,16 @@ This file contains various definitions on `Array`. It does not contain
 proofs about these definitions, those are contained in other files in `Mathlib.Data.Array`.
 -/
 
+set_option autoImplicit true
+
 namespace Array
 
 /-- Permute the array using a sequence of indices defining a cyclic permutation.
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
   `(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
 def cyclicPermute! [Inhabited α] : Array α → List Nat → Array α
-| a, []      => a
-| a, i :: is => cyclicPermuteAux a is a[i]! i
+  | a, []      => a
+  | a, i :: is => cyclicPermuteAux a is a[i]! i
 where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
 | a, [], x, i0 => a.set! i0 x
 | a, i :: is, x, i0 =>

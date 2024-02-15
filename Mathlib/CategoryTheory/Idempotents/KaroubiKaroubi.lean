@@ -26,7 +26,7 @@ namespace Idempotents
 
 namespace KaroubiKaroubi
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 -- porting note: added to ease automation
 @[reassoc (attr := simp)]
@@ -34,8 +34,7 @@ lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by
   simpa only [hom_ext_iff, comp_f] using P.idem
 
 @[reassoc]
-lemma p_comm_f {P Q : Karoubi (Karoubi C)} (f : P ⟶ Q) :
-  P.p.f ≫ f.f.f = f.f.f ≫ Q.p.f := by
+lemma p_comm_f {P Q : Karoubi (Karoubi C)} (f : P ⟶ Q) : P.p.f ≫ f.f.f = f.f.f ≫ Q.p.f := by
   simpa only [hom_ext_iff, comp_f] using p_comm f
 
 attribute [local simp] p_comm_f
