@@ -52,7 +52,7 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 theorem tendsto_ENNReal_indicator_lt (f : α → ℝ≥0∞) (x : α) :
     Tendsto (fun M : ℕ => { x | f x < 1 / (↑M + 1) }.indicator f x) atTop (𝓝 0) := by
   by_cases hfx : f x ≠ 0
-  · refine' tendsto_atTop_of_eventually_const (i₀ := Nat.ceil (1 / f x).toReal) fun n hn => _
+  · refine tendsto_atTop_of_eventually_const (i₀ := Nat.ceil (1 / f x).toReal) fun n hn => ?_
     rw [Set.indicator_of_not_mem]
     simp only [not_lt, Set.mem_setOf_eq, one_div, inv_le_iff_inv_le]
     simp only [one_div, ge_iff_le, Nat.ceil_le] at hn
@@ -61,7 +61,7 @@ theorem tendsto_ENNReal_indicator_lt (f : α → ℝ≥0∞) (x : α) :
       _       ≤ .ofReal n              := ENNReal.ofReal_le_ofReal hn
       _       = ↑n                     := by norm_cast
       _       ≤ ↑n + 1                 := by norm_num
-  · refine' tendsto_atTop_of_eventually_const (i₀ := 0) fun n _ => _
+  · refine tendsto_atTop_of_eventually_const (i₀ := 0) fun n _ => ?_
     simp only [ne_eq, not_not] at hfx
     simp only [mem_setOf_eq, not_lt, indicator_apply_eq_zero]
     intro; assumption
@@ -126,7 +126,7 @@ protected theorem ae_eq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) 
     UnifTight g p μ := by
   intro ε hε
   obtain ⟨s, hμs, hfε⟩ := hf hε
-  refine' ⟨s, hμs, fun n => (le_of_eq <| snorm_congr_ae _).trans (hfε n)⟩
+  refine ⟨s, hμs, fun n => (le_of_eq <| snorm_congr_ae ?_).trans (hfε n)⟩
   filter_upwards [hfg n] with x hx
   simp only [indicator, mem_compl_iff, ite_not, hx]
 
@@ -162,9 +162,9 @@ theorem lintegral_indicator_compl_le
   -- use Lebesgue dominated convergence to show that the integrals eventually go to zero
   have : Tendsto (fun n : ℕ ↦ ∫⁻ a, { x | f x < 1 / (↑n + 1) }.indicator f a ∂μ)
       atTop (𝓝 (∫⁻ (_ : α), 0 ∂μ)) := by
-    refine' tendsto_lintegral_of_dominated_convergence _ hmeas _ hf.ne htendsto
+    refine tendsto_lintegral_of_dominated_convergence _ hmeas ?_ hf.ne htendsto
     -- show that the sequence is bounded by f (which is integrable)
-    refine' fun n => univ_mem' (id fun x => _)
+    refine fun n => univ_mem' (id fun x => ?_)
     by_cases hx : f x < 1 / (↑n + 1)
     · dsimp
       rwa [Set.indicator_of_mem]
@@ -284,7 +284,7 @@ theorem unifTight_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f : Fin
   have hgLp : ∀ i, Memℒp (g i) p μ := fun i => hfLp i
   obtain ⟨S, hμS, hFε⟩ := h hgLp hε
   obtain ⟨s, _, hμs, hfε⟩ := (hfLp n).snorm_indicator_compl_le hp_one hp_top hrε
-  refine' ⟨s ∪ S, (by measurability), fun i => _⟩
+  refine ⟨s ∪ S, (by measurability), fun i => ?_⟩
   by_cases hi : i.val < n
   · rw [(_ : f i = g ⟨i.val, hi⟩)]
     · rw [compl_union, ← indicator_indicator]
@@ -309,7 +309,7 @@ theorem unifTight_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {f 
   set g : Fin n → α → β := f ∘ hn.some.symm
   have hg : ∀ i, Memℒp (g i) p μ := fun _ => hf _
   obtain ⟨s, hμs, hfε⟩ := unifTight_fin hp_one hp_top hg hε
-  refine' ⟨s, hμs, fun i => _⟩
+  refine ⟨s, hμs, fun i => ?_⟩
   specialize hfε (hn.some i)
   unfold_let g at hfε
   simp_rw [Function.comp_apply, Equiv.symm_apply_apply] at hfε
@@ -342,7 +342,7 @@ theorem unifTight_of_tendsto_Lp_zero (hp : 1 ≤ p) (hp' : p ≠ ∞) (hf : ∀ 
   let F : Fin N → α → β := fun n => f n
   have hF : ∀ n, Memℒp (F n) p μ := fun n => hf n
   obtain ⟨s, hμs, hFε⟩ := unifTight_fin hp hp' hF hε
-  refine' ⟨s, hμs, fun n => _⟩
+  refine ⟨s, hμs, fun n => ?_⟩
   by_cases hn : n < N
   · exact hFε ⟨n, hn⟩
   · exact (snorm_indicator_le _).trans (hNε n (not_lt.mp hn))
@@ -353,7 +353,7 @@ theorem unifTight_of_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ ∞) (hf : ∀ n, Me
     UnifTight f p μ := by
   have : f = (fun _ => g) + fun n => f n - g := by ext1 n; simp
   rw [this]
-  refine' UnifTight.add _ _ (fun _ => hg.aestronglyMeasurable)
+  refine UnifTight.add ?_ ?_ (fun _ => hg.aestronglyMeasurable)
       fun n => (hf n).1.sub hg.aestronglyMeasurable
   · exact unifTight_const hp hp' hg
   · exact unifTight_of_tendsto_Lp_zero hp hp' (fun n => (hf n).sub hg) hfg
@@ -479,7 +479,7 @@ theorem tendsto_Lp_notFinite_of_tendstoInMeasure (hp : 1 ≤ p) (hp' : p ≠ ∞
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : Memℒp g p μ)
     (hui : UnifIntegrable f p μ) (hut : UnifTight f p μ)
     (hfg : TendstoInMeasure μ f atTop g) : Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) := by
-  refine' tendsto_of_subseq_tendsto fun ns hns => _
+  refine tendsto_of_subseq_tendsto fun ns hns => ?_
   obtain ⟨ms, _, hms'⟩ := TendstoInMeasure.exists_seq_tendsto_ae fun ε hε => (hfg ε hε).comp hns
   exact ⟨ms,
     tendsto_Lp_notFinite_of_tendsto_ae hp hp' (fun _ => hf _) hg
