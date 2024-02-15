@@ -30,10 +30,17 @@ simproc_decl fun_trans_simproc (_) := funTransImpl
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
-    withTraceNode `Meta.Tactic.fun_prop
+    withTraceNode `Meta.Tactic.fun_trans
       (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
       pure none
 
+private def stxToDischarge (stx : Option (TSyntax ``discharger)) : Expr → MetaM (Option Expr) := fun e => do
+  match stx with
+  | none => (emptyDischarge e)
+  | some d =>
+    match d with
+    | `(discharger| (discharger:=$tac)) => FunProp.tacticToDischarge (← `(tactic| ($tac))) e
+    | _ => emptyDischarge e
 
 
 @[tactic funTransTacStx]
@@ -41,7 +48,8 @@ def funTransTac : Tactic := fun stx => do
   match stx with
   | `(tactic| fun_trans $[$cfg]? $[$disch]? $[only]? $[[$a,*]]? $[$loc]?) => do
 
-    -- set option
+    funTransConfig.modify
+      fun c => { c with funPropConfig := { c.funPropConfig with disch := stxToDischarge disch}}
 
     let a := a.getD (Syntax.TSepArray.mk #[])
     if stx[3].isNone then
@@ -49,7 +57,8 @@ def funTransTac : Tactic := fun stx => do
     else
       evalTactic (← `(tactic| simp $[$cfg]? $[$disch]? only [↓fun_trans_simproc,$a,*]  $[$loc]?))
 
-    -- reset options
+    funTransConfig.modify
+      fun c => { c with funPropConfig := { c.funPropConfig with disch := emptyDischarge}}
 
   | _ => throwUnsupportedSyntax
 

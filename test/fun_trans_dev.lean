@@ -76,21 +76,25 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 ------------------------------------------------
 
 @[fun_prop]
+theorem prod_mk_ConAt (fst : α → β) (snd : α → γ) (x) (hfst : ConAt fst x) (hsnd : ConAt snd x)
+  : ConAt (fun x => (fst x, snd x)) x := silentSorry
+@[fun_prop]
 theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd)
-  : Con fun x => (fst x, snd x) := silentSorry
+  : Con fun x => (fst x, snd x) := by intro x; fun_prop
 @[fun_prop]
 theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd : Lin snd)
   : Lin fun x => (fst x, snd x) := silentSorry
 
 
 
-variable [Add α] [Add β] [Mul α] [Mul β] [Div α] [Div β] [Zero α] [Zero β]
+variable [Add α] [Add β] [Sub α] [Sub β] [Mul α] [Mul β] [Div α] [Div β] [Zero α] [Zero β]
 
 -- "simple form" of theorems
 @[fun_prop] theorem fst_Con : Con fun x : α×β => x.1 := silentSorry
 @[fun_prop] theorem snd_Con : Con fun x : α×β => x.2 := silentSorry
 @[fun_prop] theorem add_Con : Con (fun x : α×α => x.1 + x.2) := silentSorry
 @[fun_prop] theorem mul_Con : Con (fun x : α×α => x.1 * x.2) := silentSorry
+@[fun_prop] theorem div_ConAt (xy) (hxy : xy.2 ≠ 0) : ConAt (fun x : α×α => x.1 / x.2) xy := silentSorry
 
 
 -- "compositional form" of theorems
@@ -98,8 +102,11 @@ variable [Add α] [Add β] [Mul α] [Mul β] [Div α] [Div β] [Zero α] [Zero �
 @[fun_prop] theorem snd_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).2 := by fun_prop
 @[fun_prop] theorem add_Con' (x y : α → β) (hx : Con x) (hy : Con y) : Con (fun w => x w + y w) := by fun_prop
 @[fun_prop] theorem mul_Con' (x y : α → β) (hx : Con x) (hy : Con y) : Con (fun w => x w * y w) := by fun_prop
-@[fun_prop] theorem div_ConAt' (x y : α → β) (w) (hx : ConAt x w) (hy : ConAt y w) (hy' : y w ≠ 0) : ConAt (fun w => x w / y w) w := silentSorry
-@[fun_prop] theorem div_Con' (x y : α → β) (hx : Con x) (hy : Con y) (hy' : ∀ w, y w ≠ 0) : Con (fun w => x w / y w) := silentSorry
+
+@[fun_prop] theorem div_ConAt' (x y : α → β) (w) (hx : ConAt x w) (hy : ConAt y w) (hy' : y w ≠ 0) :
+    ConAt (fun w => x w / y w) w := by fun_prop (disch:=apply silentSorry)
+@[fun_prop] theorem div_Con' (x y : α → β) (hx : Con x) (hy : Con y) (hy' : ∀ w, y w ≠ 0) :
+    Con (fun w => x w / y w) := silentSorry
 
 
 
@@ -199,6 +206,7 @@ theorem prod_mk_deriv_at (fst : α → β) (snd : α → γ) (x) (hfst : ConAt f
 @[fun_trans] theorem snd_deriv : deriv (fun x : α×β => x.2) = fun x dx => dx.2 := silentSorry
 @[fun_trans] theorem add_deriv : deriv (fun x : α×α => x.1 + x.2) = fun x dx => dx.1 + dx.2 := silentSorry
 @[fun_trans] theorem mul_deriv : deriv (fun x : α×α => x.1 * x.2) = fun x dx => dx.1 * x.2 + dx.2 * x.1 := silentSorry
+@[fun_trans] theorem div_deriv : deriv (fun x : α×α => x.1 / x.2) = fun x dx => (dx.1 * x.2 - dx.2 * x.1) / (x.2*x.2) := silentSorry
 
 
 
@@ -211,3 +219,11 @@ theorem prod_mk_deriv_at (fst : α → β) (snd : α → γ) (x) (hfst : ConAt f
     deriv (fun x => (self x).2) = fun x dx => (deriv self x dx).2 := by fun_trans
 @[fun_trans] theorem add_deriv' (x y : α → β) (hx : Con x) (hy : Con y) :
     deriv (fun w => x w + y w) = fun w dw => deriv x w dw + deriv y w dw := by fun_trans
+
+
+
+-- set_option trace.Meta.Tactic.fun_trans true in
+-- set_option trace.Meta.Tactic.fun_trans.discharge true in
+example : deriv (fun x : α => x / (x + x))
+          =
+          (fun x dx => (dx * (x + x) - (dx + dx) * x) / ((x + x) * (x + x))) := by fun_trans (disch:=apply silentSorry)
