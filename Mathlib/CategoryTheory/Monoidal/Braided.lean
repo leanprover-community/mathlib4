@@ -652,13 +652,10 @@ attribute [reassoc] associator_monoidal
 
 end Tensor
 
-@[simps]
 instance : BraidedCategory Cᵒᵖ where
-  braiding X Y := Iso.op (β_ Y.unop X.unop)
-  braiding_naturality_right X {_ _} f :=
-    Quiver.Hom.unop_inj <| (braiding_naturality_left f.unop X.unop).symm
-  braiding_naturality_left {_ _} f Z :=
-    Quiver.Hom.unop_inj <| (braiding_naturality_right Z.unop f.unop).symm
+  braiding X Y := (β_ Y.unop X.unop).op
+  braiding_naturality_right X {_ _} f := Quiver.Hom.unop_inj <| by simp
+  braiding_naturality_left {_ _} f Z := Quiver.Hom.unop_inj <| by simp
   hexagon_forward X Y Z := Quiver.Hom.unop_inj <| by
     convert hexagon_reverse Y.unop Z.unop X.unop using 1
     <;> exact assoc _ _ _
@@ -666,27 +663,55 @@ instance : BraidedCategory Cᵒᵖ where
     convert hexagon_forward Z.unop X.unop Y.unop using 1
     <;> exact assoc _ _ _
 
+section OppositeLemmas
+
+open Opposite
+
+@[simp] lemma op_braiding (X Y : C) : (β_ X Y).op = β_ (op Y) (op X) := rfl
+@[simp] lemma unop_braiding (X Y : Cᵒᵖ) : (β_ X Y).unop = β_ (unop Y) (unop X) := rfl
+
+@[simp] lemma op_hom_braiding (X Y : C) : (β_ X Y).hom.op = (β_ (op Y) (op X)).hom := rfl
+@[simp] lemma unop_hom_braiding (X Y : Cᵒᵖ) : (β_ X Y).hom.unop = (β_ (unop Y) (unop X)).hom := rfl
+
+@[simp] lemma op_inv_braiding (X Y : C) : (β_ X Y).inv.op = (β_ (op Y) (op X)).inv := rfl
+@[simp] lemma unop_inv_braiding (X Y : Cᵒᵖ) : (β_ X Y).inv.unop = (β_ (unop Y) (unop X)).inv := rfl
+
+end OppositeLemmas
+
 namespace MonoidalOpposite
 
-@[simps]
 instance instBraiding : BraidedCategory Cᴹᵒᵖ where
-  braiding X Y := (β_ (unmop Y) (unmop X)).mop
-  braiding_naturality_right X {_ _} f := braiding_naturality_left f.unmop (unmop X)
-  braiding_naturality_left {_ _} f Z := braiding_naturality_right (unmop Z) f.unmop
-  hexagon_forward X Y Z := hexagon_reverse (unmop Z) (unmop Y) (unmop X)
-  hexagon_reverse X Y Z := hexagon_forward (unmop Z) (unmop Y) (unmop X)
+  braiding X Y := (β_ Y.unmop X.unmop).mop
+  braiding_naturality_right X {_ _} f := Quiver.Hom.unmop_inj <| by simp
+  braiding_naturality_left {_ _} f Z := Quiver.Hom.unmop_inj <| by simp
+  hexagon_forward X Y Z := Quiver.Hom.unmop_inj <| by simp
+  hexagon_reverse X Y Z := Quiver.Hom.unmop_inj <| by simp
+
+section MonoidalOppositeLemmas
+
+@[simp] lemma mop_braiding (X Y : C) : (β_ X Y).mop = β_ (mop Y) (mop X) := rfl
+@[simp] lemma unmop_braiding (X Y : Cᴹᵒᵖ) : (β_ X Y).unmop = β_ (unmop Y) (unmop X) := rfl
+
+@[simp] lemma mop_hom_braiding (X Y : C) : (β_ X Y).hom.mop = (β_ (mop Y) (mop X)).hom := rfl
+@[simp]
+lemma unmop_hom_braiding (X Y : Cᴹᵒᵖ) : (β_ X Y).hom.unmop = (β_ (unmop Y) (unmop X)).hom := rfl
+
+@[simp] lemma mop_inv_braiding (X Y : C) : (β_ X Y).inv.mop = (β_ (mop Y) (mop X)).inv := rfl
+@[simp]
+lemma unmop_inv_braiding (X Y : Cᴹᵒᵖ) : (β_ X Y).inv.unmop = (β_ (unmop Y) (unmop X)).inv := rfl
+
+end MonoidalOppositeLemmas
 
 /-- The identity functor on `C`, viewed as a functor from `C` to its
 monoidal opposite, upgraded to a braided functor. -/
 @[simps!] def mopBraidedFunctor : BraidedFunctor C Cᴹᵒᵖ where
   μ X Y := (β_ (mop X) (mop Y)).hom
   ε := 𝟙 (𝟙_ Cᴹᵒᵖ)
-  μ_natural_left {_ _} f Z := unmop_inj <| by simp
-  μ_natural_right {_ _} Z f := unmop_inj <| by simp
-  associativity X Y Z := unmop_inj <| by
+  -- `id_tensorHom`, `tensorHom_id` should be simp lemmas when #6307 is merged
+  -- we could then make this fully automated if we mark `yang_baxter` as simp
+  -- should it be marked as such?
+  associativity X Y Z := Quiver.Hom.unmop_inj <| by
     simp [id_tensorHom, tensorHom_id, yang_baxter]
-  left_unitality := by intro; erw [tensor_id, id_comp, braiding_rightUnitor]
-  right_unitality := by intro; erw [tensor_id, id_comp, braiding_leftUnitor]
   __ := mopFunctor C
 
 /-- The identity functor on `C`, viewed as a functor from the
@@ -694,11 +719,8 @@ monoidal opposite of `C` to `C`, upgraded to a braided functor. -/
 @[simps!] def unmopBraidedFunctor : BraidedFunctor Cᴹᵒᵖ C where
   μ X Y := (β_ (unmop X) (unmop Y)).hom
   ε := 𝟙 (𝟙_ C)
-  associativity X Y Z := mop_inj <| by
-    simp [id_tensorHom, tensorHom_id]
-    exact (yang_baxter Z Y X).symm
-  left_unitality := by intro; erw [tensor_id, id_comp, braiding_rightUnitor]
-  right_unitality := by intro; erw [tensor_id, id_comp, braiding_leftUnitor]
+  associativity X Y Z := Quiver.Hom.mop_inj <| by
+    simp [id_tensorHom, tensorHom_id, yang_baxter]
   __ := unmopFunctor C
 
 end MonoidalOpposite
@@ -709,12 +731,14 @@ This corresponds to the automorphism of the braid group swapping
 over-crossings and under-crossings. -/
 @[reducible] def reverseBraiding : BraidedCategory C where
   braiding X Y := (β_ Y X).symm
-  braiding_naturality_right := by
-    simp_rw [Iso.symm_hom, Iso.comp_inv_eq, assoc, Iso.eq_inv_comp,
-             braiding_naturality_left, implies_true]
-  braiding_naturality_left  := by
-    simp_rw [Iso.symm_hom, Iso.comp_inv_eq, assoc, Iso.eq_inv_comp,
-             braiding_naturality_right, implies_true]
+  braiding_naturality_right X {_ _} f := by
+    -- why isn't `aesop_cat` able to solve this?
+    -- There's got to be a better way of automating the line below
+    simp_rw [Iso.symm_hom, Iso.comp_inv_eq, assoc, Iso.eq_inv_comp]
+    exact (braiding_naturality_left f X).symm
+  braiding_naturality_left {_ _} f Z := by
+    simp_rw [Iso.symm_hom, Iso.comp_inv_eq, assoc, Iso.eq_inv_comp]
+    exact (braiding_naturality_right Z f).symm
   hexagon_forward := by
     intros X Y Z
     simp only [← Iso.symm_inv, ← Iso.trans_inv,
