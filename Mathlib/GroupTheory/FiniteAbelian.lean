@@ -76,7 +76,7 @@ private def myThing (ι : Type) [DecidableEq ι] (p : ι → ℕ) (n : ι → �
     · rw [map_zero, map_zero]
     · rw [DirectSum.toAddMonoid_of]
       split_ifs with h
-      · simp [(zmod_subsingleton.2 $ by rw [h, pow_zero]).elim x 0]
+      · simp [(ZMod.subsingleton_iff.2 $ by rw [h, pow_zero]).elim x 0]
       · simp_rw [myThingForward, DirectSum.toAddMonoid_of]
     · rw [map_add, map_add, hx, hy]
   map_add' := map_add (myThingForward p n)
