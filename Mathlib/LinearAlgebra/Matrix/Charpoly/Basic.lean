@@ -98,8 +98,6 @@ lemma charmatrix_fromBlocks :
   simp only [charmatrix]
   ext (i|i) (j|j) : 2 <;> simp [diagonal]
 
-namespace Matrix
-
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$.
 -/
 def charpoly (M : Matrix n n R) : R[X] :=
