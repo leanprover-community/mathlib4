@@ -256,7 +256,7 @@ theorem unifTight_const {g : α → β} (hp : 1 ≤ p) (hp_ne_top : p ≠ ∞) (
 theorem unifTight_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
     {f : ι → α → β} (hf : ∀ i, Memℒp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
   by_cases hε_top : ε = ∞
-  · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
+  · exact ⟨∅, by measurability, fun _ => hε_top.symm ▸ le_top⟩
   have hrε : 0 < ε.toReal := ENNReal.toReal_pos hε.ne' hε_top
   by_cases hι : Nonempty ι
   case neg => exact ⟨∅, (by measurability), fun i => False.elim <| hι <| Nonempty.intro i⟩
