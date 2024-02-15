@@ -673,7 +673,7 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
     let Y : ℕ → Ω → ℝ := fun n ↦ F ∘ (X n)
     have : ∀ᵐ (ω : Ω), Tendsto (fun (n : ℕ) ↦ (n : ℝ)⁻¹ • ∑ i in Finset.range n, Y i ω)
         atTop (𝓝 𝔼[Y 0]) := by
-      simp only [Pi.const_one, smul_eq_mul, ← div_eq_inv_mul]
+      simp only [Function.const_one, smul_eq_mul, ← div_eq_inv_mul]
       apply strong_law_ae_real
       · exact SimpleFunc.integrable_of_isFiniteMeasure
           ((SimpleFunc.piecewise s hs (SimpleFunc.const _ (1 : ℝ))
@@ -836,7 +836,7 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
       AEStronglyMeasurable (fun ω => (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) ℙ := by
     intro n
     exact AEStronglyMeasurable.const_smul (aestronglyMeasurable_sum _ fun i _ => hmeas i) _
-  refine' tendsto_Lp_of_tendstoInMeasure _ hp hp' havg (memℒp_const _) _
+  refine' tendsto_Lp_of_tendstoInMeasure hp hp' havg (memℒp_const _) _
     (tendstoInMeasure_of_tendsto_ae havg (strong_law_ae _ hint hindep hident))
   rw [(_ : (fun (n : ℕ) ω => (n : ℝ)⁻¹ • (∑ i in range n, X i ω))
             = fun (n : ℕ) => (n : ℝ)⁻¹ • (∑ i in range n, X i))]

@@ -68,7 +68,7 @@ namespace NNReal
 scoped notation "ℝ≥0" => NNReal
 
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
-instance : DenselyOrdered ℝ≥0 := Nonneg.densely_ordered
+instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
 instance : Archimedean ℝ≥0 := Nonneg.archimedean
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
@@ -616,6 +616,12 @@ theorem coe_min (x y : ℝ≥0) : ((min x y : ℝ≥0) : ℝ) = min (x : ℝ) (y
 theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 #align nnreal.zero_le_coe NNReal.zero_le_coe
+
+instance instOrderedSMul {M : Type*} [OrderedAddCommMonoid M] [Module ℝ M] [OrderedSMul ℝ M] :
+    OrderedSMul ℝ≥0 M where
+  smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) : _)
+  lt_of_smul_lt_smul_of_pos {a b c} hab _ :=
+    lt_of_smul_lt_smul_of_nonneg_left (by exact hab) (NNReal.coe_nonneg c)
 
 end NNReal
 
@@ -1190,14 +1196,14 @@ private alias ⟨_, nnreal_coe_pos⟩ := coe_pos
 
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0` to `ℝ`. -/
 @[positivity NNReal.toReal _]
-def evalNNRealtoReal : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app _ (a : Q(NNReal))) ← whnfR e | throwError "not NNReal.toReal"
-  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(nnreal_coe_pos $pa) : Expr))
-  | _ => pure (.nonnegative (q(NNReal.coe_nonneg $a) : Expr))
+def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(NNReal.toReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(nnreal_coe_pos $pa))
+    | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
+  | _, _, _ => throwError "not NNReal.toReal"
 
 end Mathlib.Meta.Positivity
