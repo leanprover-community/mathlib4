@@ -33,39 +33,40 @@ noncomputable section
 
 universe u v w
 
-open Polynomial Matrix BigOperators Polynomial
+namespace Matrix
+
+open BigOperators Finset Matrix Polynomial
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 variable {m n : Type*} [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n]
 variable (M₁₁ : Matrix m m R) (M₁₂ : Matrix m n R) (M₂₁ : Matrix n m R) (M₂₂ M : Matrix n n R)
 variable (i j : n)
 
-open Finset
 
 /-- The "characteristic matrix" of `M : Matrix n n R` is the matrix of polynomials $t I - M$.
 The determinant of this matrix is the characteristic polynomial.
 -/
 def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
   Matrix.scalar n (X : R[X]) - (C : R →+* R[X]).mapMatrix M
-#align charmatrix charmatrix
+#align charmatrix Matrix.charmatrix
 
 theorem charmatrix_apply :
     charmatrix M i j = (Matrix.diagonal fun _ : n => X) i j - C (M i j) :=
   rfl
-#align charmatrix_apply charmatrix_apply
+#align charmatrix_apply Matrix.charmatrix_apply
 
 @[simp]
 theorem charmatrix_apply_eq : charmatrix M i i = (X : R[X]) - C (M i i) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, map_apply,
     diagonal_apply_eq]
 
-#align charmatrix_apply_eq charmatrix_apply_eq
+#align charmatrix_apply_eq Matrix.charmatrix_apply_eq
 
 @[simp]
 theorem charmatrix_apply_ne (h : i ≠ j) : charmatrix M i j = -C (M i j) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, diagonal_apply_ne _ h,
     map_apply, sub_eq_neg_self]
-#align charmatrix_apply_ne charmatrix_apply_ne
+#align charmatrix_apply_ne Matrix.charmatrix_apply_ne
 
 theorem matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
   ext k i j
@@ -77,14 +78,14 @@ theorem matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
     split_ifs <;> simp
   · rw [charmatrix_apply_ne _ _ _ h, coeff_X, coeff_neg, coeff_C, coeff_C]
     split_ifs <;> simp [h]
-#align mat_poly_equiv_charmatrix matPolyEquiv_charmatrix
+#align mat_poly_equiv_charmatrix Matrix.matPolyEquiv_charmatrix
 
 theorem charmatrix_reindex (e : n ≃ m) :
     charmatrix (reindex e e M) = reindex e e (charmatrix M) := by
   ext i j x
   by_cases h : i = j
   all_goals simp [h]
-#align charmatrix_reindex charmatrix_reindex
+#align charmatrix_reindex Matrix.charmatrix_reindex
 
 lemma charmatrix_map (M : Matrix n n R) (f : R →+* S) :
     charmatrix (M.map f) = (charmatrix M).map (Polynomial.map f) := by
@@ -96,8 +97,6 @@ lemma charmatrix_fromBlocks :
       fromBlocks (charmatrix M₁₁) (- M₁₂.map C) (- M₂₁.map C) (charmatrix M₂₂) := by
   simp only [charmatrix]
   ext (i|i) (j|j) : 2 <;> simp [diagonal]
-
-namespace Matrix
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$.
 -/
