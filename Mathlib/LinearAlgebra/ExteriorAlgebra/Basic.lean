@@ -333,17 +333,14 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
 variable (R)
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power.-/
-lemma ιMulti_range (n : ℕ) : Set.range (ιMulti R n) ⊆
-    ((LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n :
-    Submodule R (ExteriorAlgebra R M)) : Set (ExteriorAlgebra R M)) := by
+lemma ιMulti_range (n : ℕ) :
+    Set.range (ιMulti R n (M := M)) ⊆ ↑(LinearMap.range (ι R (M := M)) ^ n) := by
   rw [Set.range_subset_iff]
   intro v
   rw [ιMulti_apply]
   apply Submodule.pow_subset_pow
   rw [Set.mem_pow]
-  existsi fun i => ⟨(ι R) (v i), by simp only [SetLike.mem_coe, LinearMap.mem_range,
-    ι_inj, exists_eq]⟩
-  simp only
+  exact ⟨fun i => ⟨ι R (v i), LinearMap.mem_range_self _ _⟩, rfl⟩
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
 of the exterior algebra.-/
