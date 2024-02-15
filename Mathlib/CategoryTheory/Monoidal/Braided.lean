@@ -131,17 +131,17 @@ theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
 
 @[reassoc]
 theorem yang_baxter (X Y Z : C) :
-    (α_ X Y Z).inv ≫ ((β_ X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫
-    (Y ◁ (β_ X Z).hom) ≫ (α_ Y Z X).inv ≫ ((β_ Y Z).hom ▷ X) ≫ (α_ Z Y X).hom =
-      (X ◁ (β_ Y Z).hom) ≫ (α_ X Z Y).inv ≫ ((β_ X Z).hom ▷ Y) ≫
-      (α_ Z X Y).hom ≫ (Z ◁ (β_ X Y).hom) := by
+    (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
+    Y ◁ (β_ X Z).hom ≫ (α_ Y Z X).inv ≫ (β_ Y Z).hom ▷ X ≫ (α_ Z Y X).hom =
+      X ◁ (β_ Y Z).hom ≫ (α_ X Z Y).inv ≫ (β_ X Z).hom ▷ Y ≫
+      (α_ Z X Y).hom ≫ Z ◁ (β_ X Y).hom := by
   rw [← braiding_tensor_right_assoc X Y Z, ← cancel_mono (α_ Z Y X).inv]
   repeat rw [assoc]
   rw [Iso.hom_inv_id, comp_id, ← braiding_naturality_right, braiding_tensor_right]
 
 theorem yang_baxter' (X Y Z : C) :
-    ((β_ X Y).hom ▷ Z) ⊗≫ (Y ◁ (β_ X Z).hom) ⊗≫ ((β_ Y Z).hom ▷ X) =
-      𝟙 _ ⊗≫ ((X ◁ (β_ Y Z).hom) ⊗≫ ((β_ X Z).hom ▷ Y) ⊗≫ (Z ◁ (β_ X Y).hom)) ⊗≫ 𝟙 _ := by
+    (β_ X Y).hom ▷ Z ⊗≫ Y ◁ (β_ X Z).hom ⊗≫ (β_ Y Z).hom ▷ X =
+      𝟙 _ ⊗≫ (X ◁ (β_ Y Z).hom ⊗≫ (β_ X Z).hom ▷ Y ⊗≫ Z ◁ (β_ X Y).hom) ⊗≫ 𝟙 _ := by
   rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
   convert yang_baxter X Y Z using 1
   all_goals coherence
