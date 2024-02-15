@@ -133,7 +133,7 @@ theorem IsGδ.union {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t
   exact (Sopen a ha).union (Topen b hb)
 #align is_Gδ.union IsGδ.union
 
--- porting note: TODO: add `iUnion` and `sUnion` versions
+-- TODO: add `iUnion` and `sUnion` versions
 /-- The union of finitely many Gδ sets is a Gδ set. -/
 theorem isGδ_biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i ∈ s, IsGδ (f i)) :
     IsGδ (⋃ i ∈ s, f i) := by
