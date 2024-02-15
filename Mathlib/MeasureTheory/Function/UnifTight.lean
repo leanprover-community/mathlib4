@@ -21,7 +21,7 @@ is also proved later in the file.
 * `MeasureTheory.UnifTight`:
   A sequence of functions `f` is uniformly tight if for all `ε > 0`, there
   exists some measurable set `s` with finite measure such that the Lp-norm of
-  `f i` restricted `sᶜ` is smaller than `ε` for all `i`.
+  `f i` restricted to `sᶜ` is smaller than `ε` for all `i`.
 
 # Main results
 
