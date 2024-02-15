@@ -244,7 +244,8 @@ theorem Memℒp.snorm_indicator_compl_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
 
 /-- A constant function is tight. -/
 theorem unifTight_const {g : α → β} (hp : 1 ≤ p) (hp_ne_top : p ≠ ∞) (hg : Memℒp g p μ) :
-    UnifTight (fun _ : ι => g) p μ := fun ε hε ↦ by
+    UnifTight (fun _ : ι => g) p μ := by
+  intro ε hε
   by_cases hε_top : ε = ∞
   · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
   have hrε : 0 < ε.toReal := ENNReal.toReal_pos hε.ne' hε_top
