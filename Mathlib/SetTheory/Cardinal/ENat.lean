@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Data.ENat.Basic
-import Mathlib.SetTheory.Cardinal.ToNat
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Conversion between `Cardinal` and `ℕ∞`
@@ -287,11 +287,5 @@ def ofENatHom : ℕ∞ →+*o Cardinal where
   map_zero' := ofENat_zero
   map_add' := ofENat_add
   monotone' := ofENat_mono
-
-@[simp] -- TODO: redefine `Cardinal.toNat` as the composition of `ENat.toNat` and `Cardinal.toENat`
-lemma toNat_toENat (a : Cardinal) : ENat.toNat (toENat a) = toNat a :=
-  match lt_or_le a ℵ₀ with
-  | .inl h => by lift a to ℕ using h; simp
-  | .inr h => by rw [toENat_eq_top.2 h, ENat.toNat_top, toNat_apply_of_aleph0_le h]
 
 end Cardinal
