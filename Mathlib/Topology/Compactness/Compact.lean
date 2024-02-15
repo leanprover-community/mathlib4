@@ -522,7 +522,7 @@ theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Se
     subst this
     obtain ⟨t, ht⟩ :=
       h₁.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
-    refine' ⟨t.image f', Set.Finite.intro inferInstance, le_antisymm _ _⟩
+    refine' ⟨t.image f', Set.toFinite _, le_antisymm _ _⟩
     · refine' Set.Subset.trans ht _
       simp only [Set.iUnion_subset_iff]
       intro i hi

@@ -233,19 +233,19 @@ theorem Filter.Tendsto.inv {f : α → G} {l : Filter α} {y : G} (h : Tendsto f
 
 variable [TopologicalSpace α] {f : α → G} {s : Set α} {x : α}
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.inv (hf : Continuous f) : Continuous fun x => (f x)⁻¹ :=
   continuous_inv.comp hf
 #align continuous.inv Continuous.inv
 #align continuous.neg Continuous.neg
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt (fun x => (f x)⁻¹) x :=
   continuousAt_inv.comp hf
 #align continuous_at.inv ContinuousAt.inv
 #align continuous_at.neg ContinuousAt.neg
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn (fun x => (f x)⁻¹) s :=
   continuous_inv.comp_continuousOn hf
 #align continuous_on.inv ContinuousOn.inv
@@ -504,7 +504,7 @@ instance AddGroup.continuousSMul_int {A} [AddGroup A] [TopologicalSpace A]
   ⟨continuous_prod_of_discrete_left.mpr continuous_zsmul⟩
 #align add_group.has_continuous_smul_int AddGroup.continuousSMul_int
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.zpow {f : α → G} (h : Continuous f) (z : ℤ) : Continuous fun b => f b ^ z :=
   (continuous_zpow z).comp h
 #align continuous.zpow Continuous.zpow
@@ -536,14 +536,14 @@ theorem ContinuousWithinAt.zpow {f : α → G} {x : α} {s : Set α} (hf : Conti
 #align continuous_within_at.zpow ContinuousWithinAt.zpow
 #align continuous_within_at.zsmul ContinuousWithinAt.zsmul
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousAt.zpow {f : α → G} {x : α} (hf : ContinuousAt f x) (z : ℤ) :
     ContinuousAt (fun x => f x ^ z) x :=
   Filter.Tendsto.zpow hf z
 #align continuous_at.zpow ContinuousAt.zpow
 #align continuous_at.zsmul ContinuousAt.zsmul
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem ContinuousOn.zpow {f : α → G} {s : Set α} (hf : ContinuousOn f s) (z : ℤ) :
     ContinuousOn (fun x => f x ^ z) s := fun x hx => (hf x hx).zpow z
 #align continuous_on.zpow ContinuousOn.zpow
@@ -1110,7 +1110,7 @@ theorem Filter.Tendsto.div_const' {c : G} {f : α → G} {l : Filter α} (h : Te
 
 variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
-@[to_additive (attr := continuity) sub]
+@[to_additive (attr := continuity, fun_prop) sub]
 theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
   continuous_div'.comp (hf.prod_mk hg : _)
 #align continuous.div' Continuous.div'
@@ -1126,7 +1126,7 @@ lemma continuous_div_right' (a : G) : Continuous (· / a) := continuous_id.div' 
 #align continuous_div_right' continuous_div_right'
 #align continuous_sub_right continuous_sub_right
 
-@[to_additive sub]
+@[to_additive (attr := fun_prop) sub]
 theorem ContinuousAt.div' {f g : α → G} {x : α} (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
     ContinuousAt (fun x => f x / g x) x :=
   Filter.Tendsto.div' hf hg
@@ -1140,7 +1140,7 @@ theorem ContinuousWithinAt.div' (hf : ContinuousWithinAt f s x) (hg : Continuous
 #align continuous_within_at.div' ContinuousWithinAt.div'
 #align continuous_within_at.sub ContinuousWithinAt.sub
 
-@[to_additive sub]
+@[to_additive (attr := fun_prop) sub]
 theorem ContinuousOn.div' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => f x / g x) s := fun x hx => (hf x hx).div' (hg x hx)
 #align continuous_on.div' ContinuousOn.div'
