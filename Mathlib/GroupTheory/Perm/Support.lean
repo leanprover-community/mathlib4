@@ -129,6 +129,7 @@ theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g)
     exact (h _ (List.mem_cons_self _ _)).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
 #align equiv.perm.disjoint_prod_right Equiv.Perm.disjoint_prod_right
 
+open scoped List in
 theorem disjoint_prod_perm {l₁ l₂ : List (Perm α)} (hl : l₁.Pairwise Disjoint) (hp : l₁ ~ l₂) :
     l₁.prod = l₂.prod :=
   hp.prod_eq' <| hl.imp Disjoint.commute
@@ -438,7 +439,7 @@ theorem support_swap {x y : α} (h : x ≠ y) : support (swap x y) = {x, y} := b
 
 theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y := by
   refine' ⟨fun h => _, fun h => support_swap h⟩
-  by_contra'
+  by_contra!
   rw [← this] at h
   simp only [swap_self, support_refl, pair_eq_singleton] at h
   have : x ∈ ∅ := by
@@ -635,7 +636,7 @@ theorem card_support_eq_two {f : Perm α} : f.support.card = 2 ↔ IsSwap f := b
 
 theorem Disjoint.card_support_mul (h : Disjoint f g) :
     (f * g).support.card = f.support.card + g.support.card := by
-  rw [← Finset.card_disjoint_union]
+  rw [← Finset.card_union_of_disjoint]
   · congr
     ext
     simp [h.support_mul]

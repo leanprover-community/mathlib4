@@ -13,8 +13,6 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 open Classical Real Topology Filter ComplexConjugate Finset Set
 
 namespace Complex
@@ -60,7 +58,7 @@ theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : (0 : ℂ) ^ x = a ↔ x ≠ 0 ∧
   constructor
   · intro hyp
     simp only [cpow_def, eq_self_iff_true, if_true] at hyp
-    by_cases x = 0
+    by_cases h : x = 0
     · subst h
       simp only [if_true, eq_self_iff_true] at hyp
       right
@@ -122,8 +120,8 @@ lemma cpow_int_mul (x : ℂ) (n : ℤ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := 
 
 lemma cpow_mul_int (x y : ℂ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by rw [mul_comm, cpow_int_mul]
 
-lemma cpow_nat_mul (x : ℂ) (n : ℕ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n := by
-  exact_mod_cast cpow_int_mul x n y
+lemma cpow_nat_mul (x : ℂ) (n : ℕ) (y : ℂ) : x ^ (n * y) = (x ^ y) ^ n :=
+  mod_cast cpow_int_mul x n y
 
 /-- See Note [no_index around OfNat.ofNat] -/
 lemma cpow_ofNat_mul (x : ℂ) (n : ℕ) [n.AtLeastTwo] (y : ℂ) :
@@ -218,6 +216,14 @@ theorem mul_cpow_ofReal_nonneg {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (r : �
   rw [cpow_def_of_ne_zero (mul_ne_zero ha'' hb''), log_ofReal_mul ha' hb'', ofReal_log ha,
     add_mul, exp_add, ← cpow_def_of_ne_zero ha'', ← cpow_def_of_ne_zero hb'']
 #align complex.mul_cpow_of_real_nonneg Complex.mul_cpow_ofReal_nonneg
+
+lemma natCast_mul_natCast_cpow (m n : ℕ) (s : ℂ) : (m * n : ℂ) ^ s = m ^ s * n ^ s :=
+  ofReal_nat_cast m ▸ ofReal_nat_cast n ▸ mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg s
+
+lemma natCast_cpow_natCast_mul (n m : ℕ) (z : ℂ) : (n : ℂ) ^ (m * z) = ((n : ℂ) ^ m) ^ z := by
+  refine cpow_nat_mul' (x := n) (n := m) ?_ ?_ z
+  · simp only [natCast_arg, mul_zero, Left.neg_neg_iff, pi_pos]
+  · simp only [natCast_arg, mul_zero, pi_pos.le]
 
 theorem inv_cpow_eq_ite (x : ℂ) (n : ℂ) :
     x⁻¹ ^ n = if x.arg = π then conj (x ^ conj n)⁻¹ else (x ^ n)⁻¹ := by

@@ -130,7 +130,7 @@ end Pullbacks
 
 section FiniteCoproducts
 
-variable {α : Type} [Fintype α] (X : α → Profinite.{u})
+variable {α : Type} [Finite α] (X : α → Profinite.{u})
 
 /--
 The coproduct of a finite family of objects in `Profinite`, constructed as the disjoint
@@ -224,8 +224,6 @@ instance : PreservesFiniteCoproducts profiniteToCompHaus := by
   exact CompHaus.finiteCoproduct.isColimit _
 
 instance : FinitaryExtensive Profinite :=
-  have := fullyFaithfulReflectsLimits profiniteToCompHaus
-  have := fullyFaithfulReflectsColimits profiniteToCompHaus
   finitaryExtensive_of_preserves_and_reflects profiniteToCompHaus
 
 end FiniteCoproducts

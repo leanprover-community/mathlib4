@@ -32,9 +32,7 @@ convex, convex body
 -/
 
 
-open Pointwise
-
-open NNReal
+open scoped Pointwise Topology NNReal
 
 variable {V : Type*}
 
@@ -86,6 +84,13 @@ protected theorem ext {K L : ConvexBody V} (h : (K : Set V) = L) : K = L :=
 theorem coe_mk (s : Set V) (h₁ h₂ h₃) : (mk s h₁ h₂ h₃ : Set V) = s :=
   rfl
 #align convex_body.coe_mk ConvexBody.coe_mk
+
+/-- A convex body that is symmetric contains `0`. -/
+theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, - x ∈ K) : 0 ∈ K := by
+  obtain ⟨x, hx⟩ := K.nonempty
+  rw [show 0 = (1/2 : ℝ) • x + (1/2 : ℝ) • (- x) by field_simp]
+  apply convex_iff_forall_pos.mp K.convex hx (h_symm x hx)
+  all_goals linarith
 
 section ContinuousAdd
 
@@ -156,6 +161,18 @@ instance : Module ℝ≥0 (ConvexBody V) where
   add_smul c d K := SetLike.ext' <| Convex.add_smul K.convex c.coe_nonneg d.coe_nonneg
   zero_smul K := SetLike.ext' <| Set.zero_smul_set K.nonempty
 
+theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h : a ≤ b) :
+    a • K ≤ b • K := by
+  rw [← SetLike.coe_subset_coe, coe_smul', coe_smul']
+  by_cases ha : a = 0
+  · rw [ha, Set.zero_smul_set K.nonempty, Set.zero_subset]
+    exact Set.mem_smul_set.mpr ⟨0, h_zero, smul_zero _⟩
+  · intro x hx
+    obtain ⟨y, hy, rfl⟩ := Set.mem_smul_set.mp hx
+    rw [← Set.mem_inv_smul_set_iff₀ ha, smul_smul]
+    exact Convex.mem_smul_of_zero_mem K.convex h_zero hy
+      (by rwa [← NNReal.mul_le_iff_le_inv ha, mul_one] : 1 ≤ a⁻¹ * b)
+
 end TVS
 
 section SeminormedAddCommGroup
@@ -190,6 +207,32 @@ theorem hausdorffEdist_coe : EMetric.hausdorffEdist (K : Set V) L = edist K L :=
   rw [edist_dist]
   exact (ENNReal.ofReal_toReal hausdorffEdist_ne_top).symm
 #align convex_body.Hausdorff_edist_coe ConvexBody.hausdorffEdist_coe
+
+open Filter
+
+/-- Let `K` be a convex body that contains `0` and let `u n` be a sequence of nonnegative real
+numbers that tends to `0`. Then the intersection of the dilated bodies `(1 + u n) • K` is equal
+to `K`. -/
+theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V) (h_zero : 0 ∈ K)
+    (hu : Tendsto u atTop (𝓝 0)) :
+    ⋂ n : ℕ, (1 + (u n : ℝ)) • (K : Set V) = K := by
+  ext x
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · obtain ⟨C, hC_pos, hC_bdd⟩ := K.isBounded.exists_pos_norm_le
+    rw [← K.isClosed.closure_eq, SeminormedAddCommGroup.mem_closure_iff]
+    rw [← NNReal.tendsto_coe, NormedAddCommGroup.tendsto_atTop] at hu
+    intro ε hε
+    obtain ⟨n, hn⟩ := hu (ε / C) (div_pos hε hC_pos)
+    obtain ⟨y, hyK, rfl⟩ := Set.mem_smul_set.mp (Set.mem_iInter.mp h n)
+    refine ⟨y, hyK, ?_⟩
+    rw [show (1 + u n : ℝ) • y - y = (u n : ℝ) • y by rw [add_smul, one_smul, add_sub_cancel'],
+      norm_smul, Real.norm_eq_abs]
+    specialize hn n le_rfl
+    rw [_root_.lt_div_iff' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn
+    refine lt_of_le_of_lt ?_ hn
+    exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
+  · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
+    exact (le_add_iff_nonneg_right _).mpr (by positivity)
 
 end SeminormedAddCommGroup
 

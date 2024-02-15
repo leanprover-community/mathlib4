@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 import Mathlib.Algebra.Star.Order
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
 import Mathlib.Topology.Instances.NNReal
-import Mathlib.Tactic.Positivity
 
 #align_import data.real.sqrt from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -208,7 +207,7 @@ theorem sqrt_mul_self (h : 0 ≤ x) : sqrt (x * x) = x :=
 theorem sqrt_eq_cases : sqrt x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 := by
   constructor
   · rintro rfl
-    cases' le_or_lt 0 x with hle hlt
+    rcases le_or_lt 0 x with hle | hlt
     · exact Or.inl ⟨mul_self_sqrt hle, sqrt_nonneg x⟩
     · exact Or.inr ⟨hlt, sqrt_eq_zero_of_nonpos hlt.le⟩
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
@@ -363,28 +362,28 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
 @[positivity NNReal.sqrt _]
-def evalNNRealSqrt : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app _ (a : Q(NNReal))) ← whnfR e | throwError "not NNReal.sqrt"
-  let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
-  let ra ← core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(NNReal.sqrt_pos_of_pos $pa) : Expr))
-  | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
+def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
+    let ra ← core  q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
+    | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
+  | _, _, _ => throwError "not NNReal.sqrt"
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
 @[positivity Real.sqrt _]
-def evalSqrt : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app _ (a : Q(Real))) ← whnfR e | throwError "not Real.sqrt"
-  let zα' ← synthInstanceQ (q(Zero Real) : Q(Type))
-  let pα' ← synthInstanceQ (q(PartialOrder Real) : Q(Type))
-  let ra ← catchNone <| core zα' pα' a
-  assertInstancesCommute
-  match ra with
-  | .positive pa => pure (.positive (q(Real.sqrt_pos_of_pos $pa) : Expr))
-  | _ => pure (.nonnegative (q(Real.sqrt_nonneg $a) : Expr))
+def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.sqrt $a) =>
+    let ra ← catchNone <| core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(Real.sqrt_pos_of_pos $pa))
+    | _ => pure (.nonnegative q(Real.sqrt_nonneg $a))
+  | _, _, _ => throwError "not Real.sqrt"
 
 end Mathlib.Meta.Positivity
 
@@ -392,7 +391,7 @@ namespace Real
 
 @[simp]
 theorem sqrt_mul (hx : 0 ≤ x) (y : ℝ) : sqrt (x * y) = sqrt x * sqrt y := by
-  simp_rw [sqrt, ← NNReal.coe_mul, NNReal.coe_eq, Real.toNNReal_mul hx, NNReal.sqrt_mul]
+  simp_rw [sqrt, ← NNReal.coe_mul, NNReal.coe_inj, Real.toNNReal_mul hx, NNReal.sqrt_mul]
 #align real.sqrt_mul Real.sqrt_mul
 
 @[simp]
@@ -417,7 +416,7 @@ theorem sqrt_div' (x) {y : ℝ} (hy : 0 ≤ y) : sqrt (x / y) = sqrt x / sqrt y 
 
 @[simp]
 theorem div_sqrt : x / sqrt x = sqrt x := by
-  cases' le_or_lt x 0 with h h
+  rcases le_or_lt x 0 with h | h
   · rw [sqrt_eq_zero'.mpr h, div_zero]
   · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
 #align real.div_sqrt Real.div_sqrt
@@ -495,15 +494,17 @@ nonrec theorem ContinuousWithinAt.sqrt (h : ContinuousWithinAt f s x) :
   h.sqrt
 #align continuous_within_at.sqrt ContinuousWithinAt.sqrt
 
+@[fun_prop]
 nonrec theorem ContinuousAt.sqrt (h : ContinuousAt f x) : ContinuousAt (fun x => sqrt (f x)) x :=
   h.sqrt
 #align continuous_at.sqrt ContinuousAt.sqrt
 
+@[fun_prop]
 theorem ContinuousOn.sqrt (h : ContinuousOn f s) : ContinuousOn (fun x => sqrt (f x)) s :=
   fun x hx => (h x hx).sqrt
 #align continuous_on.sqrt ContinuousOn.sqrt
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.sqrt (h : Continuous f) : Continuous fun x => sqrt (f x) :=
   continuous_sqrt.comp h
 #align continuous.sqrt Continuous.sqrt

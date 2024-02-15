@@ -3,7 +3,6 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Fintype.List
 import Mathlib.Data.List.Rotate
 
@@ -94,7 +93,7 @@ theorem nextOr_concat {xs : List α} {x : α} (d : α) (h : x ∉ xs) : nextOr (
 
 theorem nextOr_mem {xs : List α} {x d : α} (hd : d ∈ xs) : nextOr xs x d ∈ xs := by
   revert hd
-  suffices ∀ (xs' : List α) (_ : ∀ x ∈ xs, x ∈ xs') (_ : d ∈ xs'), nextOr xs x d ∈ xs' by
+  suffices ∀ xs' : List α, (∀ x ∈ xs, x ∈ xs') → d ∈ xs' → nextOr xs x d ∈ xs' by
     exact this xs fun _ => id
   intro xs' hxs' hd
   induction' xs with y ys ih
@@ -132,7 +131,7 @@ so it will match on first hit, ignoring later duplicates.
  * `prev [1, 2, 3, 4, 2] 2 _ = 1`
  * `prev [1, 1, 2] 1 _ = 2`
 -/
-def prev : ∀ (l : List α) (x : α) (_h : x ∈ l), α
+def prev : ∀ l : List α, ∀ x ∈ l, α
   | [], _, h => by simp at h
   | [y], _, _ => y
   | y :: z :: xs, x, h =>
@@ -410,7 +409,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
       length_reverse, Nat.mod_eq_of_lt (tsub_lt_self lpos Nat.succ_pos'),
       tsub_tsub_cancel_of_le (Nat.succ_le_of_lt lpos)]
     rw [← nthLe_reverse]
-    · simp [tsub_tsub_cancel_of_le (Nat.le_pred_of_lt hk)]
+    · simp [tsub_tsub_cancel_of_le (Nat.le_sub_one_of_lt hk)]
     · simpa using (Nat.sub_le _ _).trans_lt (tsub_lt_self lpos Nat.succ_pos')
     · simpa
 #align list.prev_reverse_eq_next List.prev_reverse_eq_next
@@ -614,7 +613,7 @@ theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
 
 /-- A `s : Cycle α` that is made up of at least two unique elements. -/
 def Nontrivial (s : Cycle α) : Prop :=
-  ∃ (x y : α) (_h : x ≠ y), x ∈ s ∧ y ∈ s
+  ∃ x y : α, x ≠ y ∧ x ∈ s ∧ y ∈ s
 #align cycle.nontrivial Cycle.Nontrivial
 
 @[simp]

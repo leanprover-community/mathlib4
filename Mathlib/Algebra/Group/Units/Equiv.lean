@@ -15,7 +15,8 @@ import Mathlib.Algebra.Group.Units.Hom
 variable {F α β A B M N P Q G H : Type*}
 
 /-- A group is isomorphic to its group of units. -/
-@[to_additive "An additive group is isomorphic to its group of additive units"]
+@[to_additive (attr := simps apply_val symm_apply)
+"An additive group is isomorphic to its group of additive units"]
 def toUnits [Group G] : G ≃* Gˣ where
   toFun x := ⟨x, x⁻¹, mul_inv_self _, inv_mul_self _⟩
   invFun x := x
@@ -25,11 +26,12 @@ def toUnits [Group G] : G ≃* Gˣ where
 #align to_units toUnits
 #align to_add_units toAddUnits
 
+#align coe_to_units val_toUnits_apply
+#align coe_to_add_units val_toAddUnits_apply
+
 @[to_additive (attr := simp)]
-theorem coe_toUnits [Group G] (g : G) : (toUnits g : G) = g :=
-  rfl
-#align coe_to_units coe_toUnits
-#align coe_to_add_units coe_toAddUnits
+lemma toUnits_val_apply {G : Type*} [Group G] (x : Gˣ) : toUnits (x : G) = x := by
+  simp_rw [MulEquiv.apply_eq_iff_symm_apply, toUnits_symm_apply]
 
 namespace Units
 
@@ -55,7 +57,7 @@ theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
 #align units.coe_map_equiv Units.coe_mapEquiv
 
 /-- Left multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }) apply)
+@[to_additive (attr := simps (config := .asFn) apply)
   "Left addition of an additive unit is a permutation of the underlying type."]
 def mulLeft (u : Mˣ) : Equiv.Perm M where
   toFun x := u * x
@@ -80,7 +82,7 @@ theorem mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
 #align add_units.add_left_bijective AddUnits.addLeft_bijective
 
 /-- Right multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }) apply)
+@[to_additive (attr := simps (config := .asFn) apply)
 "Right addition of an additive unit is a permutation of the underlying type."]
 def mulRight (u : Mˣ) : Equiv.Perm M where
   toFun x := x * u
@@ -120,7 +122,7 @@ protected def mulLeft (a : G) : Perm G :=
 #align equiv.add_left Equiv.addLeft
 
 @[to_additive (attr := simp)]
-theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (· * ·) a :=
+theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (a * ·) :=
   rfl
 #align equiv.coe_mul_left Equiv.coe_mulLeft
 #align equiv.coe_add_left Equiv.coe_addLeft

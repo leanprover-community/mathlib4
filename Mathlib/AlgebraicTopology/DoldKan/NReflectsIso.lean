@@ -63,7 +63,7 @@ instance : ReflectsIsomorphisms (N₁ : SimplicialObject C ⥤ Karoubi (ChainCom
               b := fun i => inv (f.app (op [n])) ≫ X.σ i }
       simp only [MorphComponents.id, ← id_φ, ← preComp_φ, preComp, ← postComp_φ, postComp,
         PInfty_f_naturality_assoc, IsIso.hom_inv_id_assoc, assoc, IsIso.inv_hom_id_assoc,
-        SimplicialObject.σ_naturality, h₁, h₂, h₃]⟩
+        SimplicialObject.σ_naturality, h₁, h₂, h₃, and_self]⟩
 
 theorem compatibility_N₂_N₁_karoubi :
     N₂ ⋙ (karoubiChainComplexEquivalence C ℕ).functor =

@@ -35,7 +35,7 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
     have lit : Q(ℕ) := mkRawNatLit n
     have k : Q(ℕ) := mkRawNatLit k
     haveI : $lit =Q $k + 2 := ⟨⟩
-    by exact q(OfNat.ofNat $lit)
+    q(OfNat.ofNat $lit)
 
 end Qq
 
@@ -120,7 +120,7 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
     step (c : Ineq) (pf npf : Expr) (coeff : ℕ) : MetaM (Ineq × Expr) := do
       let (iq, h') ← mkSingleCompZeroOf coeff npf
       let (nm, niq) := addIneq c iq
-      return (niq, ←mkAppM nm #[pf, h'])
+      return (niq, ← mkAppM nm #[pf, h'])
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do

@@ -7,7 +7,7 @@ import Mathlib.Algebra.Ring.Divisibility.Lemmas
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.Algebra.Lie.Engel
-import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Artinian
 
@@ -34,6 +34,8 @@ Basic definitions and properties of the above ideas are provided in this file.
   * `LieModule.iSup_ucs_eq_weightSpace_zero`
   * `LieModule.iInf_lowerCentralSeries_eq_posFittingComp`
   * `LieModule.isCompl_weightSpace_zero_posFittingComp`
+  * `LieModule.independent_weightSpace`
+  * `LieModule.iSup_weightSpace_eq_top`
 
 ## References
 
@@ -44,12 +46,12 @@ Basic definitions and properties of the above ideas are provided in this file.
 lie character, eigenvalue, eigenspace, weight, weight vector, root, root vector
 -/
 
-variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra.IsNilpotent R L]
+variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra.IsNilpotent R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieModule
 
-open LieAlgebra TensorProduct TensorProduct.LieModule
+open Set Function LieAlgebra TensorProduct TensorProduct.LieModule
 open scoped BigOperators TensorProduct
 
 section notation_weight_space_of
@@ -93,7 +95,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
       LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply, LinearMap.coe_comp,
       LinearMap.rTensor_tmul, LieModuleHom.map_add, LinearMap.add_apply, LieModuleHom.map_sub,
       LinearMap.sub_apply, LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply,
-      curry_apply, LinearMap.toFun_eq_coe, LinearMap.coe_restrictScalars]
+      TensorProduct.curry_apply, LinearMap.toFun_eq_coe, LinearMap.coe_restrictScalars]
     abel
   rsuffices ⟨k, hk⟩ : ∃ k : ℕ, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
@@ -114,7 +116,7 @@ protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
     ext m₁ m₂
     simp only [LinearMap.mul_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
       AlgebraTensorModule.curry_apply, LinearMap.toFun_eq_coe, LinearMap.lTensor_tmul,
-      curry_apply, LinearMap.coe_restrictScalars]
+      TensorProduct.curry_apply, LinearMap.coe_restrictScalars]
   rw [hf_comm.add_pow']
   simp only [TensorProduct.mapIncl, Submodule.subtype_apply, Finset.sum_apply, Submodule.coe_mk,
     LinearMap.coeFn_sum, TensorProduct.map_tmul, LinearMap.smul_apply]
@@ -177,6 +179,10 @@ theorem mem_weightSpace (χ : L → R) (m : M) :
     m ∈ weightSpace M χ ↔ ∀ x, ∃ k : ℕ, ((toEndomorphism R L M x - χ x • ↑1) ^ k) m = 0 := by
   simp [weightSpace, mem_weightSpaceOf]
 
+lemma weightSpace_le_weightSpaceOf (x : L) (χ : L → R) :
+    weightSpace M χ ≤ weightSpaceOf M (χ x) x :=
+  iInf_le _ x
+
 /-- See also the more useful form `LieModule.zero_weightSpace_eq_top_of_nilpotent`. -/
 @[simp]
 theorem zero_weightSpace_eq_top_of_nilpotent' [IsNilpotent R L M] :
@@ -204,26 +210,37 @@ theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
   exact ⟨k, by simp [hk x]⟩
 #align lie_module.zero_weight_space_eq_top_of_nilpotent LieModule.zero_weightSpace_eq_top_of_nilpotent
 
+theorem exists_weightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
+    ∃ k : ℕ,
+      weightSpace M χ ≤ LinearMap.ker ((toEndomorphism R L M x - algebraMap R _ (χ x)) ^ k) := by
+  use (toEndomorphism R L M x).maximalGeneralizedEigenspaceIndex (χ x)
+  intro m hm
+  replace hm : m ∈ (toEndomorphism R L M x).maximalGeneralizedEigenspace (χ x) :=
+    weightSpace_le_weightSpaceOf M x χ hm
+  rwa [Module.End.maximalGeneralizedEigenspace_eq] at hm
+
 variable (R) in
 theorem exists_weightSpace_zero_le_ker_of_isNoetherian
     [IsNoetherian R M] (x : L) :
     ∃ k : ℕ, weightSpace M (0 : L → R) ≤ LinearMap.ker (toEndomorphism R L M x ^ k) := by
-  use (toEndomorphism R L M x).maximalGeneralizedEigenspaceIndex 0
-  simp only [weightSpace, weightSpaceOf, LieSubmodule.iInf_coe_toSubmodule, Pi.zero_apply, iInf_le,
-    ← Module.End.generalizedEigenspace_zero,
-    ← (toEndomorphism R L M x).maximalGeneralizedEigenspace_eq]
+  simpa using exists_weightSpace_le_ker_of_isNoetherian M (0 : L → R) x
+
+lemma isNilpotent_toEndomorphism_sub_algebraMap [IsNoetherian R M] (χ : L → R) (x : L) :
+    _root_.IsNilpotent <| toEndomorphism R L (weightSpace M χ) x - algebraMap R _ (χ x) := by
+  have : toEndomorphism R L (weightSpace M χ) x - algebraMap R _ (χ x) =
+      (toEndomorphism R L M x - algebraMap R _ (χ x)).restrict
+        (fun m hm ↦ sub_mem (LieSubmodule.lie_mem _ hm) (Submodule.smul_mem _ _ hm)) := by
+    rfl
+  obtain ⟨k, hk⟩ := exists_weightSpace_le_ker_of_isNoetherian M χ x
+  use k
+  ext ⟨m, hm⟩
+  simpa [this, LinearMap.pow_restrict _, LinearMap.restrict_apply] using hk hm
 
 /-- A (nilpotent) Lie algebra acts nilpotently on the zero weight space of a Noetherian Lie
 module. -/
-theorem isNilpotent_toEndomorphism_weightSpace_zero [IsNoetherian R M]
-    (x : L) : _root_.IsNilpotent <| toEndomorphism R L (weightSpace M (0 : L → R)) x := by
-  obtain ⟨k, hk⟩ := exists_weightSpace_zero_le_ker_of_isNoetherian R M x
-  use k
-  ext ⟨m, hm⟩
-  rw [LinearMap.zero_apply, LieSubmodule.coe_zero, Submodule.coe_eq_zero, ←
-    LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism, LinearMap.pow_restrict, ←
-    SetLike.coe_eq_coe, LinearMap.restrict_apply, Submodule.coe_mk, Submodule.coe_zero]
-  exact hk hm
+theorem isNilpotent_toEndomorphism_weightSpace_zero [IsNoetherian R M] (x : L) :
+    _root_.IsNilpotent <| toEndomorphism R L (weightSpace M (0 : L → R)) x := by
+  simpa using isNilpotent_toEndomorphism_sub_algebraMap M (0 : L → R) x
 #align lie_module.is_nilpotent_to_endomorphism_weight_space_zero LieModule.isNilpotent_toEndomorphism_weightSpace_zero
 
 /-- By Engel's theorem, the zero weight space of a Noetherian Lie module is nilpotent. -/
@@ -390,7 +407,7 @@ lemma map_weightSpace_le :
 
 variable {f}
 
-lemma comap_weightSpace_eq_of_injective (hf : Function.Injective f) :
+lemma comap_weightSpace_eq_of_injective (hf : Injective f) :
     (weightSpace M₂ χ).comap f = weightSpace M χ := by
   refine le_antisymm (fun m hm ↦ ?_) ?_
   · simp only [LieSubmodule.mem_comap, mem_weightSpace] at hm
@@ -406,7 +423,7 @@ lemma comap_weightSpace_eq_of_injective (hf : Function.Injective f) :
   · rw [← LieSubmodule.map_le_iff_le_comap]
     exact map_weightSpace_le f
 
-lemma map_weightSpace_eq_of_injective (hf : Function.Injective f) :
+lemma map_weightSpace_eq_of_injective (hf : Injective f) :
     (weightSpace M χ).map f = weightSpace M₂ χ ⊓ f.range := by
   refine le_antisymm (le_inf_iff.mpr ⟨map_weightSpace_le f, LieSubmodule.map_le_range f⟩) ?_
   rintro - ⟨hm, ⟨m, rfl⟩⟩
@@ -438,7 +455,14 @@ lemma posFittingComp_map_incl_sup_of_codisjoint [IsNoetherian R M] [IsArtinian R
     (eventually_iInf_lowerCentralSeries_eq R L M)
   obtain ⟨hl₁, hl₂, hl₃⟩ := hl l (le_refl _)
   simp_rw [← iInf_lowerCentralSeries_eq_posFittingComp, hl₁, hl₂, hl₃,
-    LieSubmodule.lowerCentralSeries_map_eq_lcs, ←LieSubmodule.lcs_sup, lowerCentralSeries, h.eq_top]
+    LieSubmodule.lowerCentralSeries_map_eq_lcs, ← LieSubmodule.lcs_sup, lowerCentralSeries,
+    h.eq_top]
+
+lemma weightSpace_weightSpaceOf_map_incl (x : L) (χ : L → R) :
+    (weightSpace (weightSpaceOf M (χ x) x) χ).map (weightSpaceOf M (χ x) x).incl =
+    weightSpace M χ := by
+  simpa [map_weightSpace_eq_of_injective (weightSpaceOf M (χ x) x).injective_incl]
+    using weightSpace_le_weightSpaceOf M x χ
 
 end map_comap
 
@@ -470,11 +494,10 @@ private lemma isCompl_weightSpace_zero_posFittingComp_aux
     set M₁ₓ := posFittingCompOf R M x
     set M₀ₓ₀ := weightSpace M₀ₓ (0 : L → R)
     set M₀ₓ₁ := posFittingComp R L M₀ₓ
-    have h₀ : Function.Injective (LieSubmodule.incl M₀ₓ) := Subtype.coe_injective
     have h₁ : IsCompl M₀ₓ M₁ₓ := isCompl_weightSpaceOf_zero_posFittingCompOf R L M x
     have h₂ : IsCompl M₀ₓ₀ M₀ₓ₁ := h M₀ₓ hx.lt_top
     have h₃ : M₀ₓ₀.map M₀ₓ.incl = M₀ := by
-      rw [map_weightSpace_eq_of_injective h₀, inf_eq_left, LieSubmodule.range_incl]
+      rw [map_weightSpace_eq_of_injective M₀ₓ.injective_incl, inf_eq_left, LieSubmodule.range_incl]
       exact iInf_le _ x
     have h₄ : M₀ₓ₁.map M₀ₓ.incl ⊔ M₁ₓ = M₁ := by
       apply le_antisymm <| sup_le_iff.mpr
@@ -483,7 +506,8 @@ private lemma isCompl_weightSpace_zero_posFittingComp_aux
       exact sup_le_sup_left LieSubmodule.map_incl_le _
     rw [← h₃, ← h₄]
     apply Disjoint.isCompl_sup_right_of_isCompl_sup_left
-    · rw [disjoint_iff, ← LieSubmodule.map_inf h₀, h₂.inf_eq_bot, LieSubmodule.map_bot]
+    · rw [disjoint_iff, ← LieSubmodule.map_inf M₀ₓ.injective_incl, h₂.inf_eq_bot,
+        LieSubmodule.map_bot]
     · rwa [← LieSubmodule.map_sup, h₂.sup_eq_top, LieModuleHom.map_top, LieSubmodule.range_incl]
 
 /-- This is the Fitting decomposition of the Lie module `M`. -/
@@ -497,12 +521,150 @@ lemma isCompl_weightSpace_zero_posFittingComp :
   refine (LieSubmodule.wellFounded_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ ?_
   refine isCompl_weightSpace_zero_posFittingComp_aux R L N fun N' hN' ↦ ?_
   suffices : IsCompl (weightSpace (N'.map N.incl) 0) (posFittingComp R L (N'.map N.incl))
-  · have h_inj : Function.Injective N.incl := Subtype.coe_injective
-    let e := LieSubmodule.equivMapOfInjective N' h_inj
+  · let e := LieSubmodule.equivMapOfInjective N' N.injective_incl
     rw [← map_weightSpace_eq e, ← map_posFittingComp_eq e] at this
     exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mpr this
   exact hN _ (LieSubmodule.map_incl_lt_iff_lt_top.mpr hN')
 
 end fitting_decomposition
+
+lemma disjoint_weightSpaceOf [NoZeroSMulDivisors R M] {x : L} {φ₁ φ₂ : R} (h : φ₁ ≠ φ₂) :
+    Disjoint (weightSpaceOf M φ₁ x) (weightSpaceOf M φ₂ x) := by
+  rw [LieSubmodule.disjoint_iff_coe_toSubmodule]
+  exact Module.End.disjoint_iSup_generalizedEigenspace _ h
+
+lemma disjoint_weightSpace [NoZeroSMulDivisors R M] {χ₁ χ₂ : L → R} (h : χ₁ ≠ χ₂) :
+    Disjoint (weightSpace M χ₁) (weightSpace M χ₂) := by
+  obtain ⟨x, hx⟩ : ∃ x, χ₁ x ≠ χ₂ x := Function.ne_iff.mp h
+  exact (disjoint_weightSpaceOf R L M hx).mono
+    (weightSpace_le_weightSpaceOf M x χ₁) (weightSpace_le_weightSpaceOf M x χ₂)
+
+lemma injOn_weightSpace [NoZeroSMulDivisors R M] :
+    InjOn (fun (χ : L → R) ↦ weightSpace M χ) {χ | weightSpace M χ ≠ ⊥} := by
+  rintro χ₁ _ χ₂ hχ₂ (hχ₁₂ : weightSpace M χ₁ = weightSpace M χ₂)
+  contrapose! hχ₂
+  simpa [hχ₁₂] using disjoint_weightSpace R L M hχ₂
+
+lemma independent_weightSpace [NoZeroSMulDivisors R M] :
+    CompleteLattice.Independent fun (χ : L → R) ↦ weightSpace M χ := by
+  classical
+  suffices ∀ χ (s : Finset (L → R)) (_ : χ ∉ s),
+      Disjoint (weightSpace M χ) (s.sup fun (χ : L → R) ↦ weightSpace M χ) by
+    simpa only [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_weightSpace R L M),
+      Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.not_mem_erase χ)
+  intro χ₁ s
+  induction' s using Finset.induction_on with χ₂ s _ ih; simp
+  intro hχ₁₂
+  obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
+  specialize ih hχ₁
+  rw [Finset.sup_insert, disjoint_iff, LieSubmodule.eq_bot_iff]
+  rintro x ⟨hx, hx'⟩
+  simp only [SetLike.mem_coe, LieSubmodule.mem_coeSubmodule] at hx hx'
+  suffices x ∈ weightSpace M χ₂ by
+    rw [← LieSubmodule.mem_bot (R := R) (L := L), ← (disjoint_weightSpace R L M hχ₁₂).eq_bot]
+    exact ⟨hx, this⟩
+  obtain ⟨y, hy, z, hz, rfl⟩ := (LieSubmodule.mem_sup _ _ _).mp hx'; clear hx'
+  suffices ∀ l, ∃ (k : ℕ),
+      ((toEndomorphism R L M l - algebraMap R (Module.End R M) (χ₂ l)) ^ k) (y + z) ∈
+      weightSpace M χ₁ ⊓ Finset.sup s fun χ ↦ weightSpace M χ by
+    simpa only [ih.eq_bot, LieSubmodule.mem_bot, mem_weightSpace] using this
+  intro l
+  let g : Module.End R M := toEndomorphism R L M l - algebraMap R (Module.End R M) (χ₂ l)
+  obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_weightSpace _ _ _).mp hy l
+  refine ⟨k, (LieSubmodule.mem_inf _ _ _).mp ⟨?_, ?_⟩⟩
+  · exact LieSubmodule.mapsTo_pow_toEndomorphism_sub_algebraMap _ hx
+  · rw [map_add, hk, zero_add]
+    suffices (s.sup fun χ ↦ weightSpace M χ : Submodule R M).map (g ^ k) ≤
+        s.sup fun χ ↦ weightSpace M χ by
+      refine this (Submodule.mem_map_of_mem ?_)
+      simp_rw [← LieSubmodule.mem_coeSubmodule, Finset.sup_eq_iSup,
+        LieSubmodule.iSup_coe_toSubmodule, ← Finset.sup_eq_iSup] at hz
+      exact hz
+    simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := L → R), Submodule.map_iSup (ι := _ ∈ s),
+      LieSubmodule.iSup_coe_toSubmodule]
+    refine iSup₂_mono fun χ _ ↦ ?_
+    rintro - ⟨u, hu, rfl⟩
+    exact LieSubmodule.mapsTo_pow_toEndomorphism_sub_algebraMap _ hu
+
+lemma independent_weightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
+    CompleteLattice.Independent fun (χ : R) ↦ weightSpaceOf M χ x := by
+  rw [LieSubmodule.independent_iff_coe_toSubmodule]
+  exact (toEndomorphism R L M x).independent_generalizedEigenspace
+
+lemma finite_weightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
+    {χ : R | weightSpaceOf M χ x ≠ ⊥}.Finite :=
+  CompleteLattice.WellFounded.finite_ne_bot_of_independent
+    (LieSubmodule.wellFounded_of_noetherian R L M) (independent_weightSpaceOf R L M x)
+
+lemma finite_weightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
+    {χ : L → R | weightSpace M χ ≠ ⊥}.Finite :=
+  CompleteLattice.WellFounded.finite_ne_bot_of_independent
+    (LieSubmodule.wellFounded_of_noetherian R L M) (independent_weightSpace R L M)
+
+/-- The collection of weights of a Noetherian Lie module, bundled as a `Finset`. -/
+noncomputable abbrev weight [NoZeroSMulDivisors R M] [IsNoetherian R M] :=
+  (finite_weightSpace_ne_bot R L M).toFinset
+
+/-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
+any `x : L` is triangularizable. -/
+class IsTriangularizable : Prop :=
+  iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEndomorphism R L M x).generalizedEigenspace φ k = ⊤
+
+@[simp]
+lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
+    ⨆ (φ : R), weightSpaceOf M φ x = ⊤ := by
+  rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
+    LieSubmodule.top_coeSubmodule]
+  exact IsTriangularizable.iSup_eq_top x
+
+section field
+
+open FiniteDimensional
+
+variable (K)
+variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [LieAlgebra.IsNilpotent K L]
+  [FiniteDimensional K M]
+
+instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizable K L M :=
+  ⟨fun _ ↦ Module.End.iSup_generalizedEigenspace_eq_top _⟩
+
+instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
+  refine ⟨fun y ↦ ?_⟩
+  rw [← N.toEndomorphism_restrict_eq_toEndomorphism y]
+  exact Module.End.iSup_generalizedEigenspace_restrict_eq_top _ (IsTriangularizable.iSup_eq_top y)
+
+lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
+    ⨆ χ : L → K, weightSpace M χ = ⊤ := by
+  clear! R -- cf https://github.com/leanprover/lean4/issues/2452
+  induction' h_dim : finrank K M using Nat.strong_induction_on with n ih generalizing M
+  obtain h' | ⟨y : L, hy : ¬ ∃ φ, weightSpaceOf M φ y = ⊤⟩ :=
+    forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), weightSpaceOf M φ x = ⊤)
+  · choose χ hχ using h'
+    replace hχ : weightSpace M χ = ⊤ := by simpa only [weightSpace, hχ] using iInf_top
+    exact eq_top_iff.mpr <| hχ ▸ le_iSup (weightSpace M) χ
+  · replace hy : ∀ φ, finrank K (weightSpaceOf M φ y) < n := fun φ ↦ by
+      simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ)
+    replace ih : ∀ φ, ⨆ χ : L → K, weightSpace (weightSpaceOf M φ y) χ = ⊤ :=
+      fun φ ↦ ih _ (hy φ) (weightSpaceOf M φ y) rfl
+    replace ih : ∀ φ, ⨆ (χ : L → K) (_ : χ y = φ), weightSpace (weightSpaceOf M φ y) χ = ⊤ := by
+      intro φ
+      suffices ∀ χ : L → K, χ y ≠ φ → weightSpace (weightSpaceOf M φ y) χ = ⊥ by
+        specialize ih φ; rw [iSup_split, biSup_congr this] at ih; simpa using ih
+      intro χ hχ
+      rw [eq_bot_iff, ← (weightSpaceOf M φ y).ker_incl, LieModuleHom.ker,
+        ← LieSubmodule.map_le_iff_le_comap, map_weightSpace_eq_of_injective
+        (weightSpaceOf M φ y).injective_incl, LieSubmodule.range_incl, ← disjoint_iff_inf_le]
+      exact (disjoint_weightSpaceOf K L M hχ).mono_left (weightSpace_le_weightSpaceOf M y χ)
+    replace ih : ∀ φ, ⨆ (χ : L → K) (_ : χ y = φ), weightSpace M χ = weightSpaceOf M φ y := by
+      intro φ
+      have : ∀ (χ : L → K) (_ : χ y = φ), weightSpace M χ =
+          (weightSpace (weightSpaceOf M φ y) χ).map (weightSpaceOf M φ y).incl := fun χ hχ ↦ by
+        rw [← hχ, weightSpace_weightSpaceOf_map_incl]
+      simp_rw [biSup_congr this, ← LieSubmodule.map_iSup, ih, LieModuleHom.map_top,
+        LieSubmodule.range_incl]
+    simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using
+      iSup_weightSpaceOf_eq_top K L M y
+
+end field
 
 end LieModule

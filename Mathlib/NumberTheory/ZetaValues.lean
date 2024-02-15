@@ -28,8 +28,6 @@ zeta functions, in terms of Bernoulli polynomials.
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 3` odd.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open scoped Nat Real Interval
@@ -137,7 +135,7 @@ theorem bernoulliFourierCoeff_zero {k : ℕ} (hk : k ≠ 0) : bernoulliFourierCo
 theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
     bernoulliFourierCoeff k n = -k ! / (2 * π * I * n) ^ k := by
   rcases eq_or_ne n 0 with (rfl | hn)
-  · rw [bernoulliFourierCoeff_zero hk, Int.cast_zero, mul_zero, zero_pow' _ hk,
+  · rw [bernoulliFourierCoeff_zero hk, Int.cast_zero, mul_zero, zero_pow hk,
       div_zero]
   refine' Nat.le_induction _ (fun k hk h'k => _) k (Nat.one_le_iff_ne_zero.mpr hk)
   · rw [bernoulliFourierCoeff_recurrence 1 hn]
@@ -169,7 +167,7 @@ def periodizedBernoulli (k : ℕ) : 𝕌 → ℝ :=
 
 theorem periodizedBernoulli.continuous {k : ℕ} (hk : k ≠ 1) : Continuous (periodizedBernoulli k) :=
   AddCircle.liftIco_zero_continuous
-    (by exact_mod_cast (bernoulliFun_endpoints_eq_of_ne_one hk).symm)
+    (mod_cast (bernoulliFun_endpoints_eq_of_ne_one hk).symm)
     (Polynomial.continuous _).continuousOn
 #align periodized_bernoulli.continuous periodizedBernoulli.continuous
 
@@ -187,16 +185,14 @@ theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
       ∀ n : ℤ, -(k ! : ℂ) / (2 * π * I * n) ^ k = -k ! / (2 * π * I) ^ k * (1 / (n : ℂ) ^ k) := by
     intro n; rw [mul_one_div, div_div, ← mul_pow]
   simp_rw [this]
-  apply Summable.mul_left
-  rw [← summable_norm_iff]
+  refine Summable.mul_left _ <| .of_norm ?_
   have : (fun x : ℤ => ‖1 / (x : ℂ) ^ k‖) = fun x : ℤ => |1 / (x : ℝ) ^ k| := by
     ext1 x
     rw [norm_eq_abs, ← Complex.abs_ofReal]
     congr 1
     norm_cast
   simp_rw [this]
-  rw [summable_abs_iff]
-  exact Real.summable_one_div_int_pow.mpr (one_lt_two.trans_le hk)
+  rwa [summable_abs_iff, Real.summable_one_div_int_pow]
 #align summable_bernoulli_fourier summable_bernoulli_fourier
 
 theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k) {x : ℝ}
@@ -252,7 +248,7 @@ theorem hasSum_one_div_nat_pow_mul_fourier {k : ℕ} (hk : 2 ≤ k) {x : ℝ} (h
     congr 1
     rw [eq_div_iff, ← mul_pow, ← neg_eq_neg_one_mul, neg_neg, one_pow]
     apply pow_ne_zero; rw [neg_ne_zero]; exact one_ne_zero
-  · rw [Int.cast_zero, zero_pow (by linarith : 0 < k), div_zero, zero_mul, add_zero]
+  · rw [Int.cast_zero, zero_pow (by positivity : k ≠ 0), div_zero, zero_mul, add_zero]
 #align has_sum_one_div_nat_pow_mul_fourier hasSum_one_div_nat_pow_mul_fourier
 
 theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : x ∈ Icc (0 : ℝ) 1) :

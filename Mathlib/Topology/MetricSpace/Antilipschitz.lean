@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.UniformSpace.CompleteSeparated
+import Mathlib.Topology.EMetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.Bounded
 
 #align_import topology.metric_space.antilipschitz from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
@@ -78,7 +80,7 @@ theorem mul_le_nndist (hf : AntilipschitzWith K f) (x y : α) :
 #align antilipschitz_with.mul_le_nndist AntilipschitzWith.mul_le_nndist
 
 theorem mul_le_dist (hf : AntilipschitzWith K f) (x y : α) :
-    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := by exact_mod_cast hf.mul_le_nndist x y
+    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := mod_cast hf.mul_le_nndist x y
 #align antilipschitz_with.mul_le_dist AntilipschitzWith.mul_le_dist
 
 end AntilipschitzWith

@@ -252,6 +252,62 @@ theorem LieSubalgebra.toEndomorphism_mk (K : LieSubalgebra R L) {x : L} (hx : x 
   rfl
 #align lie_subalgebra.to_endomorphism_mk LieSubalgebra.toEndomorphism_mk
 
+section
+
+open BigOperators LieAlgebra LieModule
+
+lemma LieSubmodule.coe_toEndomorphism (N : LieSubmodule R L M) (x : L) (y : N) :
+    (toEndomorphism R L N x y : M) = toEndomorphism R L M x y := rfl
+
+lemma LieSubmodule.coe_toEndomorphism_pow (N : LieSubmodule R L M) (x : L) (y : N) (n : ℕ) :
+    ((toEndomorphism R L N x ^ n) y : M) = (toEndomorphism R L M x ^ n) y := by
+  induction n generalizing y with
+  | zero => rfl
+  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, LieSubmodule.coe_toEndomorphism]
+
+lemma LieSubalgebra.coe_ad (H : LieSubalgebra R L) (x y : H) :
+    (ad R H x y : L) = ad R L x y := rfl
+
+lemma LieSubalgebra.coe_ad_pow (H : LieSubalgebra R L) (x y : H) (n : ℕ) :
+    ((ad R H x ^ n) y : L) = (ad R L x ^ n) y :=
+  LieSubmodule.coe_toEndomorphism_pow R H L H.toLieSubmodule x y n
+
+variable {L M}
+
+local notation "φ" => LieModule.toEndomorphism R L M
+
+lemma LieModule.toEndomorphism_lie (x y : L) (z : M) :
+    (φ x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, φ x z⁆ := by
+  simp
+
+lemma LieAlgebra.ad_lie (x y z : L) :
+    (ad R L x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, ad R L x z⁆ :=
+  toEndomorphism_lie _ x y z
+
+open Finset in
+lemma LieModule.toEndomorphism_pow_lie (x y : L) (z : M) (n : ℕ) :
+    ((φ x) ^ n) ⁅y, z⁆ =
+      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((φ x) ^ ij.2) z⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Finset.sum_antidiagonal_choose_succ_nsmul
+      (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
+    simp only [pow_succ, LinearMap.mul_apply, ih, map_sum, map_nsmul, toEndomorphism_lie, nsmul_add,
+      sum_add_distrib]
+    rw [add_comm, add_left_cancel_iff, sum_congr rfl]
+    rintro ⟨i, j⟩ hij
+    rw [mem_antidiagonal] at hij
+    rw [Nat.choose_symm_of_eq_add hij.symm]
+
+open Finset in
+lemma LieAlgebra.ad_pow_lie (x y z : L) (n : ℕ) :
+    ((ad R L x) ^ n) ⁅y, z⁆ =
+      ∑ ij in antidiagonal n, n.choose ij.1 • ⁅((ad R L x) ^ ij.1) y, ((ad R L x) ^ ij.2) z⁆ :=
+  toEndomorphism_pow_lie _ x y z n
+
+end
+
 variable {R L M}
 
 namespace LieModule
@@ -273,7 +329,7 @@ end LieModule
 
 namespace LieSubmodule
 
-open LieModule
+open LieModule Set
 
 variable {N : LieSubmodule R L M} {x : L}
 
@@ -295,6 +351,11 @@ theorem toEndomorphism_restrict_eq_toEndomorphism (h := N.toEndomorphism_comp_su
     (toEndomorphism R L M x).restrict h = toEndomorphism R L N x := by
   ext; simp [LinearMap.restrict_apply]
 #align lie_submodule.to_endomorphism_restrict_eq_to_endomorphism LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism
+
+lemma mapsTo_pow_toEndomorphism_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
+    MapsTo ((toEndomorphism R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
+  rw [LinearMap.coe_pow]
+  exact MapsTo.iterate (fun m hm ↦ N.sub_mem (N.lie_mem hm) (N.smul_mem _ hm)) k
 
 end LieSubmodule
 

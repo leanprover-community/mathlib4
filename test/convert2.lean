@@ -1,5 +1,8 @@
-import Mathlib.Data.List.Defs
+import Mathlib.Data.List.BigOperators.Defs
 import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Convert
+
+set_option linter.unreachableTactic false
 
 -- Prior to #7945 this failed with `(kernel) declaration has metavariables '_example'`.
 /--

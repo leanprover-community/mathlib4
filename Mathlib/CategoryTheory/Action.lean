@@ -160,7 +160,7 @@ def endMulEquivSubgroup (H : Subgroup G) : End (objEquiv G (G ⧸ H) ↑(1 : G))
 #align category_theory.action_category.End_mul_equiv_subgroup CategoryTheory.ActionCategory.endMulEquivSubgroup
 
 /-- A target vertex `t` and a scalar `g` determine a morphism in the action groupoid. -/
-def homOfPair (t : X) (g : G) : @Quiver.Hom (ActionCategory G X) _ (g⁻¹ • t) t :=
+def homOfPair (t : X) (g : G) : @Quiver.Hom (ActionCategory G X) _ (g⁻¹ • t :) t :=
   Subtype.mk g (smul_inv_smul g t)
 #align category_theory.action_category.hom_of_pair CategoryTheory.ActionCategory.homOfPair
 

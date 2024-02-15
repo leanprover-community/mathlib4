@@ -97,21 +97,16 @@ end ExistsMulOfLE
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
   the integers or other nontrivial `OrderedAddCommGroup`s. -/
-class CanonicallyOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, Bot α where
-  /-- `⊥` is the least element -/
-  protected bot_le : ∀ x : α, ⊥ ≤ x
+class CanonicallyOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, OrderBot α where
   /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
   protected exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 #align canonically_ordered_add_monoid CanonicallyOrderedAddCommMonoid
-
+#align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAddCommMonoid.toOrderBot
 
 -- see Note [lower instance priority]
-instance (priority := 100) CanonicallyOrderedAddCommMonoid.toOrderBot (α : Type u)
-    [h : CanonicallyOrderedAddCommMonoid α] : OrderBot α :=
-  { h with }
-#align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAddCommMonoid.toOrderBot
+attribute [instance 100] CanonicallyOrderedAddCommMonoid.toOrderBot
 
 /-- A canonically ordered monoid is an ordered commutative monoid
   in which the ordering coincides with the divisibility relation,
@@ -123,21 +118,16 @@ instance (priority := 100) CanonicallyOrderedAddCommMonoid.toOrderBot (α : Type
   be more natural that collections of all things ≥ 1).
 -/
 @[to_additive]
-class CanonicallyOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, Bot α where
-  /-- `⊥` is the least element -/
-  protected bot_le : ∀ x : α, ⊥ ≤ x
+class CanonicallyOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, OrderBot α where
   /-- For `a ≤ b`, there is a `c` so `b = a * c`. -/
   protected exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
   /-- For any `a` and `b`, `a ≤ a * b` -/
   protected le_self_mul : ∀ a b : α, a ≤ a * b
-#align canonically_ordered_monoid CanonicallyOrderedCommMonoid
+#align canonically_ordered_monoid CanonicallyOrderedAddCommMonoid
+#align canonically_ordered_monoid.to_order_bot CanonicallyOrderedCommMonoid.toOrderBot
 
 -- see Note [lower instance priority]
-@[to_additive existing]
-instance (priority := 100) CanonicallyOrderedCommMonoid.toOrderBot (α : Type u)
-    [h : CanonicallyOrderedCommMonoid α] : OrderBot α :=
-  { h with }
-#align canonically_ordered_monoid.to_order_bot CanonicallyOrderedCommMonoid.toOrderBot
+attribute [instance 100] CanonicallyOrderedCommMonoid.toOrderBot
 
 -- see Note [lower instance priority]
 @[to_additive]
@@ -247,8 +237,7 @@ theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
 #align pos_iff_ne_zero pos_iff_ne_zero
 
 @[to_additive]
-theorem eq_one_or_one_lt : a = 1 ∨ 1 < a :=
-  (one_le a).eq_or_lt.imp_left Eq.symm
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
 #align eq_one_or_one_lt eq_one_or_one_lt
 #align eq_zero_or_pos eq_zero_or_pos
 
@@ -285,7 +274,7 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
 
 @[to_additive]
 theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔ ∃ c > 1, b = a * c := by
-  rw [lt_iff_le_and_ne, le_iff_exists_mul, ←exists_and_right]
+  rw [lt_iff_le_and_ne, le_iff_exists_mul, ← exists_and_right]
   apply exists_congr
   intro c
   rw [and_comm, and_congr_left_iff, gt_iff_lt]
@@ -359,9 +348,9 @@ instance (priority := 100) CanonicallyLinearOrderedCommMonoid.semilatticeSup : S
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by
-  cases' le_total a b with hb hb
+  rcases le_total a b with hb | hb
   · simp [hb, le_mul_right]
-  · cases' le_total a c with hc hc
+  · rcases le_total a c with hc | hc
     · simp [hc, le_mul_left]
     · simp [hb, hc]
 #align min_mul_distrib min_mul_distrib

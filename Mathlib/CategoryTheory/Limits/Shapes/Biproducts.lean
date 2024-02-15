@@ -711,10 +711,10 @@ instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
           split_ifs with h
           · obtain ⟨rfl, rfl⟩ := h
             simp
-          · simp at h
+          · simp only [Sigma.mk.inj_iff, not_and] at h
             by_cases w : j = j'
             · cases w
-              simp at h
+              simp only [heq_eq_eq, forall_true_left] at h
               simp [biproduct.ι_π_ne _ h]
             · simp [biproduct.ι_π_ne_assoc _ w] }
       isBilimit :=
@@ -1101,6 +1101,7 @@ section
 
 variable {C} [Unique J] (f : J → C)
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The limit bicone for the biproduct over an index type with exactly one term. -/
 @[simps]
 def limitBiconeOfUnique : LimitBicone f where
@@ -1403,8 +1404,7 @@ This is not an instance as typically in concrete categories there will be
 an alternative construction with nicer definitional properties.
 -/
 theorem hasBinaryBiproducts_of_finite_biproducts [HasFiniteBiproducts C] : HasBinaryBiproducts C :=
-  {
-    has_binary_biproduct := fun P Q =>
+  { has_binary_biproduct := fun P Q =>
       HasBinaryBiproduct.mk
         { bicone := (biproduct.bicone (pairFunction P Q)).toBinaryBicone
           isBilimit := (Bicone.toBinaryBiconeIsBilimit _).symm (biproduct.isBilimit _) } }
@@ -1975,6 +1975,21 @@ def isoZeroBiprod {X Y : C} [HasBinaryBiproduct X Y] (hY : IsZero X) : Y ≅ X �
         comp_zero]
     apply hY.eq_of_tgt
 #align category_theory.limits.iso_zero_biprod CategoryTheory.Limits.isoZeroBiprod
+
+@[simp]
+lemma biprod_isZero_iff (A B : C) [HasBinaryBiproduct A B] :
+    IsZero (biprod A B) ↔ IsZero A ∧ IsZero B := by
+  constructor
+  · intro h
+    simp only [IsZero.iff_id_eq_zero] at h ⊢
+    simp only [show 𝟙 A = biprod.inl ≫ 𝟙 (A ⊞ B) ≫ biprod.fst by simp,
+      show 𝟙 B = biprod.inr ≫ 𝟙 (A ⊞ B) ≫ biprod.snd by simp, h, zero_comp, comp_zero,
+      and_self]
+  · rintro ⟨hA, hB⟩
+    rw [IsZero.iff_id_eq_zero]
+    apply biprod.hom_ext
+    · apply hA.eq_of_tgt
+    · apply hB.eq_of_tgt
 
 end IsZero
 

@@ -32,8 +32,6 @@ open Matrix Matrix.SpecialLinearGroup
 
 open scoped Classical BigOperators MatrixGroups
 
-attribute [local instance] Fintype.card_fin_even
-
 /- Disable these instances as they are not the simp-normal form, and having them disabled ensures
 we state lemmas in this file without spurious `coe_fn` terms. -/
 attribute [-instance] Matrix.SpecialLinearGroup.instCoeFun
@@ -50,7 +48,7 @@ def UpperHalfPlane :=
   { point : ℂ // 0 < point.im }
 #align upper_half_plane UpperHalfPlane
 
-scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
+@[inherit_doc] scoped[UpperHalfPlane] notation "ℍ" => UpperHalfPlane
 
 open UpperHalfPlane
 
@@ -138,6 +136,34 @@ theorem im_ne_zero (z : ℍ) : z.im ≠ 0 :=
 theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
+
+end UpperHalfPlane
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: `UpperHalfPlane.im`. -/
+@[positivity UpperHalfPlane.im _]
+def evalUpperHalfPlaneIm : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(UpperHalfPlane.im $a) =>
+    assertInstancesCommute
+    pure (.positive q(@UpperHalfPlane.im_pos $a))
+  | _, _, _ => throwError "not UpperHalfPlane.im"
+
+/-- Extension for the `positivity` tactic: `UpperHalfPlane.coe`. -/
+@[positivity UpperHalfPlane.coe _]
+def evalUpperHalfPlaneCoe : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℂ), ~q(UpperHalfPlane.coe $a) =>
+    assertInstancesCommute
+    pure (.nonzero q(@UpperHalfPlane.ne_zero $a))
+  | _, _, _ => throwError "not UpperHalfPlane.coe"
+
+end Mathlib.Meta.Positivity
+
+namespace UpperHalfPlane
 
 theorem normSq_pos (z : ℍ) : 0 < Complex.normSq (z : ℂ) := by
   rw [Complex.normSq_pos]; exact z.ne_zero
@@ -357,9 +383,6 @@ theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
   smulAux'_im g z
 #align upper_half_plane.im_smul_eq_div_norm_sq UpperHalfPlane.im_smul_eq_div_normSq
 
--- Porting note FIXME: this instance isn't being found, but is needed here.
-instance : Fact (Even (Fintype.card (Fin 2))) := ⟨Nat.even_iff.mpr rfl⟩
-
 @[simp]
 theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
   ext1
@@ -487,8 +510,7 @@ theorem modular_T_smul (z : ℍ) : ModularGroup.T • z = (1 : ℝ) +ᵥ z := by
 #align upper_half_plane.modular_T_smul UpperHalfPlane.modular_T_smul
 
 theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 = 0) :
-    ∃ (u : { x : ℝ // 0 < x }) (v : ℝ),
-      ((· • ·) g : ℍ → ℍ) = (fun z => v +ᵥ z) ∘ fun z => u • z := by
+    ∃ (u : { x : ℝ // 0 < x }) (v : ℝ), (g • · : ℍ → ℍ) = (v +ᵥ ·) ∘ (u • ·) := by
   obtain ⟨a, b, ha, rfl⟩ := g.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero hc
   refine' ⟨⟨_, mul_self_pos.mpr ha⟩, b * a, _⟩
   ext1 ⟨z, hz⟩; ext1
@@ -500,9 +522,8 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_eq_zero (g : SL(2, ℝ)) (hc : ↑�
 
 theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : ↑ₘ[ℝ] g 1 0 ≠ 0) :
     ∃ (u : { x : ℝ // 0 < x }) (v w : ℝ),
-      ((· • ·) g : ℍ → ℍ) =
-        ((· +ᵥ ·) w : ℍ → ℍ) ∘
-          ((· • ·) ModularGroup.S : ℍ → ℍ) ∘ ((· +ᵥ ·) v : ℍ → ℍ) ∘ ((· • ·) u : ℍ → ℍ) := by
+      (g • · : ℍ → ℍ) =
+        (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
   have h_denom := denom_ne_zero g
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h
   replace hc : c ≠ 0; · simpa using hc

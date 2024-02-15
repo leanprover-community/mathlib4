@@ -38,7 +38,7 @@ lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by
   erw [← comp_apply, S.zero]
   rfl
 
-/-- The canonical additive morphism for `S.X₁ →+ AddMonoidHom.ker S.g` induced by `S.f`. -/
+/-- The canonical additive morphism `S.X₁ →+ AddMonoidHom.ker S.g` induced by `S.f`. -/
 @[simps!]
 def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g :=
     AddMonoidHom.mk' (fun x => ⟨S.f x, S.ab_zero_apply x⟩) (by aesop)
@@ -70,6 +70,13 @@ the abstract `S.cycles` of the homology API and the more concrete description as
 `AddMonoidHom.ker S.g`. -/
 noncomputable def abCyclesIso : S.cycles ≅ AddCommGroupCat.of (AddMonoidHom.ker S.g) :=
   S.abLeftHomologyData.cyclesIso
+
+@[simp]
+lemma abCyclesIso_inv_apply_iCycles (x : AddMonoidHom.ker S.g) :
+    S.iCycles (S.abCyclesIso.inv x) = x := by
+  dsimp only [abCyclesIso]
+  erw [← comp_apply, S.abLeftHomologyData.cyclesIso_inv_comp_iCycles]
+  rfl
 
 /-- Given a short complex `S` of abelian groups, this is the isomorphism between
 the abstract `S.homology` of the homology API and the more explicit

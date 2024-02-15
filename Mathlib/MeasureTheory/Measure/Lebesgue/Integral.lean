@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import measure_theory.measure.lebesgue.integral from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -57,7 +58,7 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
     Integrable f := by
   refine'
     @integrable_of_summable_norm_restrict ℝ ℤ E _ volume _ _ _ _ _ _ _ _
-      (summable_of_nonneg_of_le
+      (.of_nonneg_of_le
         (fun n : ℤ => mul_nonneg (norm_nonneg
             (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
             ENNReal.toReal_nonneg)

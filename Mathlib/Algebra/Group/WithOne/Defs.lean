@@ -3,8 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Order.WithBot
-import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Data.Option.Defs
+import Mathlib.Data.Option.NAry
+import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Tactic.Common
 
 #align_import algebra.group.with_one.defs from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
@@ -119,8 +123,7 @@ attribute [elab_as_elim] WithZero.recZeroCoe
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
       "Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
-def unone {x : WithOne α} (hx : x ≠ 1) : α :=
-  WithBot.unbot x hx
+def unone : ∀ {x : WithOne α}, x ≠ 1 → α | (x : α), _ => x
 #align with_one.unone WithOne.unone
 #align with_zero.unzero WithZero.unzero
 
@@ -131,8 +134,8 @@ theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
 #align with_zero.unzero_coe WithZero.unzero_coe
 
 @[to_additive (attr := simp) coe_unzero]
-theorem coe_unone {x : WithOne α} (hx : x ≠ 1) : ↑(unone hx) = x :=
-  WithBot.coe_unbot x hx
+lemma coe_unone : ∀ {x : WithOne α} (hx : x ≠ 1), unone hx = x
+  | (x : α), _ => rfl
 #align with_one.coe_unone WithOne.coe_unone
 #align with_zero.coe_unzero WithZero.coe_unzero
 
@@ -184,22 +187,30 @@ attribute [elab_as_elim] WithZero.cases_on
 instance mulOneClass [Mul α] : MulOneClass (WithOne α) where
   mul := (· * ·)
   one := 1
-  one_mul := (Option.liftOrGet_isLeftId _).1
-  mul_one := (Option.liftOrGet_isRightId _).1
-
-@[to_additive]
-instance monoid [Semigroup α] : Monoid (WithOne α) :=
-  { WithOne.mulOneClass with mul_assoc := (Option.liftOrGet_isAssociative _).1 }
-
-@[to_additive]
-instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) :=
-  { WithOne.monoid with mul_comm := (Option.liftOrGet_isCommutative _).1 }
+  one_mul := (Option.liftOrGet_isId _).left_id
+  mul_one := (Option.liftOrGet_isId _).right_id
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_mul [Mul α] (a b : α) : ((a * b : α) : WithOne α) = a * b :=
-  rfl
+lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl
 #align with_one.coe_mul WithOne.coe_mul
 #align with_zero.coe_add WithZero.coe_add
+
+@[to_additive]
+instance monoid [Semigroup α] : Monoid (WithOne α) where
+  __ := mulOneClass
+  mul_assoc a b c := match a, b, c with
+    | 1, b, c => by simp
+    | (a : α), 1, c => by simp
+    | (a : α), (b : α), 1 => by simp
+    | (a : α), (b : α), (c : α) => by simp_rw [← coe_mul, mul_assoc]
+
+@[to_additive]
+instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
+  mul_comm := fun a b => match a, b with
+    | (a : α), (b : α) => congr_arg some (mul_comm a b)
+    | (_ : α), 1 => rfl
+    | 1, (_ : α) => rfl
+    | 1, 1 => rfl
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
@@ -309,7 +320,7 @@ instance [One α] [Pow α ℤ] : Pow (WithZero α) ℤ :=
     | some x, n => ↑(x ^ n)⟩
 
 @[simp, norm_cast]
-theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n : α) = ((↑a : WithZero α) ^ n) :=
+theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n) = (↑a : WithZero α) ^ n :=
   rfl
 #align with_zero.coe_zpow WithZero.coe_zpow
 
@@ -367,18 +378,12 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α)
           rw [Nat.cast_succ, coe_add, coe_one]
       }
 
-instance semiring [Semiring α] : Semiring (WithZero α) :=
-  { WithZero.addMonoidWithOne, WithZero.addCommMonoid, WithZero.mulZeroClass,
-    WithZero.monoidWithZero with
-    left_distrib := fun a b c => by
-      cases' a with a; · rfl
-      cases' b with b <;> cases' c with c <;> try rfl
-      exact congr_arg some (left_distrib _ _ _),
-    right_distrib := fun a b c => by
-      cases' c with c
-      · change (a + b) * 0 = a * 0 + b * 0
-        simp
-      cases' a with a <;> cases' b with b <;> try rfl
-      exact congr_arg some (right_distrib _ _ _) }
-
 end WithZero
+
+-- Check that we haven't needed to import all the basic lemmas about groups,
+-- by asserting a random sample don't exist here:
+assert_not_exists inv_involutive
+assert_not_exists div_right_inj
+assert_not_exists pow_ite
+
+assert_not_exists Ring

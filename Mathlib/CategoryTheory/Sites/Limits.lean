@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 #align_import category_theory.sites.limits from "leanprover-community/mathlib"@"95e83ced9542828815f53a1096a4d373c1b08a77"

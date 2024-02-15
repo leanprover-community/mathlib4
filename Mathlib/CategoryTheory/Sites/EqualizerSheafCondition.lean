@@ -12,7 +12,7 @@ import Mathlib.Tactic.ApplyFun
 /-!
 # The equalizer diagram sheaf condition for a presieve
 
-In `Mathlib/CategoryTheory/Sites/IsSheafFor` it is defined what it means for a presheaf to be a
+In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
 sheaf *for* a particular presieve. In this file we provide equivalent conditions in terms of
 equalizer diagrams.
 
@@ -266,7 +266,7 @@ namespace Arrows
 open Presieve
 
 variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B) [UnivLE.{w, max v u}]
-    [(ofArrows X π).hasPullbacks]
+    [(Presieve.ofArrows X π).hasPullbacks]
 -- TODO: allow `I : Type w` 
 
 /--
@@ -339,7 +339,7 @@ theorem compatible_iff (x : FirstObj P X) : (Arrows.Compatible P π ((Types.prod
 `P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer.
 See <https://stacks.math.columbia.edu/tag/00VM>.
 -/
-theorem sheaf_condition : (ofArrows X π).IsSheafFor P ↔
+theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
     Nonempty (IsLimit (Fork.ofι (forkMap P X π) (w P X π))) := by
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
   erw [← Equiv.forall_congr_left (Types.productIso _).toEquiv.symm]

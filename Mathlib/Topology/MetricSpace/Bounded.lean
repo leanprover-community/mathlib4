@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PseudoMetric
+import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
@@ -28,7 +28,7 @@ diameter of a subset, and its relation to boundedness
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
 
-open Set Filter  Bornology
+open Set Filter Bornology
 open scoped ENNReal Uniformity Topology Pointwise
 
 universe u v w
@@ -136,7 +136,7 @@ theorem comap_dist_left_atTop (c : α) : comap (dist c) atTop = cobounded α := 
 @[simp]
 theorem tendsto_dist_right_atTop_iff (c : α) {f : β → α} {l : Filter β} :
     Tendsto (fun x ↦ dist (f x) c) l atTop ↔ Tendsto f l (cobounded α) := by
-  rw [← comap_dist_right_atTop c, tendsto_comap_iff]; rfl
+  rw [← comap_dist_right_atTop c, tendsto_comap_iff, Function.comp_def]
 
 @[simp]
 theorem tendsto_dist_left_atTop_iff (c : α) {f : β → α} {l : Filter β} :
@@ -171,6 +171,31 @@ theorem cobounded_le_cocompact : cobounded α ≤ cocompact α :=
   hasBasis_cocompact.ge_iff.2 fun _s hs ↦ hs.isBounded
 #align comap_dist_right_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
 #align comap_dist_left_at_top_le_cocompact Metric.cobounded_le_cocompactₓ
+
+theorem isCobounded_iff_closedBall_compl_subset {s : Set α} (c : α) :
+    IsCobounded s ↔ ∃ (r : ℝ), (Metric.closedBall c r)ᶜ ⊆ s := by
+  rw [← isBounded_compl_iff, isBounded_iff_subset_closedBall c]
+  apply exists_congr
+  intro r
+  rw [compl_subset_comm]
+
+theorem _root_.Bornology.IsCobounded.closedBall_compl_subset {s : Set α} (hs : IsCobounded s)
+    (c : α) : ∃ (r : ℝ), (Metric.closedBall c r)ᶜ ⊆ s :=
+  (isCobounded_iff_closedBall_compl_subset c).mp hs
+
+theorem closedBall_compl_subset_of_mem_cocompact {s : Set α} (hs : s ∈ cocompact α) (c : α) :
+    ∃ (r : ℝ), (Metric.closedBall c r)ᶜ ⊆ s :=
+  IsCobounded.closedBall_compl_subset (cobounded_le_cocompact hs) c
+
+theorem mem_cocompact_of_closedBall_compl_subset [ProperSpace α] (c : α)
+    (h : ∃ r, (closedBall c r)ᶜ ⊆ s) : s ∈ cocompact α := by
+  rcases h with ⟨r, h⟩
+  rw [Filter.mem_cocompact]
+  exact ⟨closedBall c r, isCompact_closedBall c r, h⟩
+
+theorem mem_cocompact_iff_closedBall_compl_subset [ProperSpace α] (c : α) :
+    s ∈ cocompact α ↔ ∃ r, (closedBall c r)ᶜ ⊆ s :=
+  ⟨(closedBall_compl_subset_of_mem_cocompact · _), mem_cocompact_of_closedBall_compl_subset _⟩
 
 /-- Characterization of the boundedness of the range of a function -/
 theorem isBounded_range_iff {f : β → α} : IsBounded (range f) ↔ ∃ C, ∀ x y, dist (f x) (f y) ≤ C :=
@@ -226,6 +251,11 @@ theorem disjoint_nhdsSet_cobounded {s : Set α} (hs : IsCompact s) : Disjoint (�
 
 theorem disjoint_cobounded_nhdsSet {s : Set α} (hs : IsCompact s) : Disjoint (cobounded α) (𝓝ˢ s) :=
   (disjoint_nhdsSet_cobounded hs).symm
+
+theorem exists_isBounded_image_of_tendsto {α β : Type*} [PseudoMetricSpace β]
+    {l : Filter α} {f : α → β} {x : β} (hf : Tendsto f l (𝓝 x)) :
+    ∃ s ∈ l, IsBounded (f '' s) :=
+  (l.basis_sets.map f).disjoint_iff_left.mp <| (disjoint_nhds_cobounded x).mono_left hf
 
 /-- If a function is continuous within a set `s` at every point of a compact set `k`, then it is
 bounded on some open neighborhood of `k` in `s`. -/
@@ -337,7 +367,7 @@ section Diam
 variable {s : Set α} {x y z : α}
 
 /-- The diameter of a set in a metric space. To get controllable behavior even when the diameter
-should be infinite, we express it in terms of the emetric.diameter -/
+should be infinite, we express it in terms of the `EMetric.diam` -/
 noncomputable def diam (s : Set α) : ℝ :=
   ENNReal.toReal (EMetric.diam s)
 #align metric.diam Metric.diam
@@ -543,10 +573,12 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]
-def evalDiam : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ s ← whnfR e | throwError "not Metric.diam"
-  let p ← mkAppOptM ``Metric.diam_nonneg #[none, none, s]
-  pure (.nonnegative p)
+def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Metric.diam _ $inst $s) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Metric.diam_nonneg))
+  | _, _, _ => throwError "not ‖ · ‖"
 
 end Mathlib.Meta.Positivity
 

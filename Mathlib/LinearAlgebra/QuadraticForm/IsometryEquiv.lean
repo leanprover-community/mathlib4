@@ -52,12 +52,14 @@ namespace IsometryEquiv
 
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} {Q₃ : QuadraticForm R M₃}
 
-instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
+instance : EquivLike (Q₁.IsometryEquiv Q₂) M₁ M₂ where
   coe f := f.toLinearEquiv
   inv f := f.toLinearEquiv.symm
   left_inv f := f.toLinearEquiv.left_inv
   right_inv f := f.toLinearEquiv.right_inv
   coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+
+instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
   map_add f := map_add f.toLinearEquiv
   map_smulₛₗ f := map_smulₛₗ f.toLinearEquiv
 
@@ -174,7 +176,7 @@ theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm
     ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_nondegenerate hQ
-  simp_rw [IsOrtho, associated_eq_self_apply] at hv₂
+  simp_rw [BilinForm.IsOrtho, associated_eq_self_apply] at hv₂
   exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 #align quadratic_form.equivalent_weighted_sum_squares_units_of_nondegenerate' QuadraticForm.equivalent_weightedSumSquares_units_of_nondegenerate'
 
