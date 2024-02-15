@@ -67,7 +67,7 @@ instance : AddSubgroupClass (LieSubmodule R L M) M where
   neg_mem {N} x hx := show -x ∈ N.toSubmodule from neg_mem hx
 
 instance instSmulMemClass : SMulMemClass (LieSubmodule R L M) R M where
-  smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
+  smul_mem {s} c _ h := s.smul_mem'  c h
 
 /-- The zero module is a Lie submodule of any Lie module. -/
 instance : Zero (LieSubmodule R L M) :=
