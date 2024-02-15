@@ -818,11 +818,11 @@ theorem mk_out' (a : α) : @Setoid.r α s₁ (Quotient.mk'' a : Quotient s₁).o
 attribute [simp] Quotient.exists_rep
 
 @[simp]
-theorem Quotient.exists_rep' {s : Setoid α} (q : Quotient s) : ∃ y, Quotient.mk' y = q :=
+theorem exists_rep' {s : Setoid α} (q : Quotient s) : ∃ y, Quotient.mk' y = q :=
   exists_rep q
 
 @[simp]
-theorem Quotient.exists_rep'' {s : Setoid α} (q : Quotient s) : ∃ y, Quotient.mk'' y = q :=
+theorem exists_rep'' {s : Setoid α} (q : Quotient s) : ∃ y, Quotient.mk'' y = q :=
   exists_rep q
 
 @[simp]

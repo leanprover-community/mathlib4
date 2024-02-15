@@ -70,7 +70,8 @@ variable {ι : Sort*}
 
 /-- Without `exists_rep`, `Set.range_quotient_mk` and `Set.mem_range`
 create a simp confluence issue. -/
-example [s : Setoid α] {q : Quotient s} : q ∈ Set.range (⟦·⟧) ↔ q ∈ Set.range (⟦·⟧) := by
+example [s : Setoid α] {q : Quotient s} :
+    q ∈ Set.range (⟦·⟧) ↔ q ∈ Set.range (⟦·⟧) := by
   conv =>
     congr
     · simp [-Set.range_quotient_mk, -Quotient.exists_rep]
@@ -80,17 +81,19 @@ example [s : Setoid α] {q : Quotient s} : q ∈ Set.range (⟦·⟧) ↔ q ∈ 
 
 /-- Without `exists_rep'`, `Set.range_quotient_mk'` and `Set.mem_range`
 create a simp confluence issue. -/
-example {s : Setoid α} {q : Quotient s} : q ∈ Set.range Quotient.mk' ↔ q ∈ Set.range Quotient.mk' := by
+example {s : Setoid α} {q : Quotient s} :
+    q ∈ Set.range Quotient.mk' ↔ q ∈ Set.range Quotient.mk' := by
   conv =>
     congr
-    · simp [-Set.range_quotient_mk', -exists_rep']
+    · simp [-Set.range_quotient_mk', -Quotient.exists_rep']
     · simp [-Set.mem_range, -exists_rep']
   fail_if_success simpa [-exists_rep']
   simp
 
 /-- Without `exists_rep''`, `Set.Quotient.range_mk''` and `Set.mem_range`
 create a simp confluence issue. -/
-example {s : Setoid α} {q : Quotient s} : q ∈ Set.range Quotient.mk'' ↔ q ∈ Set.range Quotient.mk'' := by
+example {s : Setoid α} {q : Quotient s} :
+    q ∈ Set.range Quotient.mk'' ↔ q ∈ Set.range Quotient.mk'' := by
   conv =>
     congr
     · simp [-Set.Quotient.range_mk'', -exists_rep'']
@@ -218,7 +221,9 @@ example (x : α ⊕ β) :
 
 /-- Without `exists_inl_eq_of_inl_eq_iff_true`, `Set.range_inl_inter_range_inr` and `Set.mem_range`
 create a simp confluence issue. -/
-example (x : α ⊕ β) : x ∉ Set.range Sum.inl ∩ Set.range Sum.inr ↔ x ∉ Set.range Sum.inl ∩ Set.range Sum.inr := by
+example (x : α ⊕ β) :
+    x ∈ Set.range Sum.inl ∩ Set.range Sum.inr ↔
+    x ∈ Set.range Sum.inl ∩ Set.range Sum.inr := by
   conv =>
     congr
     · simp [-Set.range_inl_inter_range_inr, -exists_inl_eq_of_inl_eq_iff_true]
@@ -228,7 +233,9 @@ example (x : α ⊕ β) : x ∉ Set.range Sum.inl ∩ Set.range Sum.inr ↔ x �
 
 /-- Without `exists_inr_eq_of_inr_eq_iff_true`, `Set.range_inr_inter_range_inl` and `Set.mem_range`
 create a simp confluence issue. -/
-example (x : α ⊕ β) : x ∉ Set.range Sum.inr ∩ Set.range Sum.inl ↔ x ∉ Set.range Sum.inr ∩ Set.range Sum.inl := by
+example (x : α ⊕ β) :
+    x ∈ Set.range Sum.inr ∩ Set.range Sum.inl ↔
+    x ∈ Set.range Sum.inr ∩ Set.range Sum.inl := by
   conv =>
     congr
     · simp [-Set.range_inr_inter_range_inl, -exists_inr_eq_of_inr_eq_iff_true]
@@ -251,7 +258,8 @@ theorem exists_apply_eq (i : ι) (x : α i) :
 /-- Without `exists_apply_eq`, `Set.range_eval` and `Set.mem_range`
 create a simp confluence issue. -/
 example {α : ι → Type*} [inst : ∀ (i : ι), Nonempty (α i)] (i : ι) (x : α i) :
-    x ∈ Set.range (Function.eval i : ((i' : ι) → α i') → α i) ↔ x ∈ Set.range (Function.eval i : ((i' : ι) → α i') → α i) := by
+    x ∈ Set.range (Function.eval i : ((i' : ι) → α i') → α i) ↔
+    x ∈ Set.range (Function.eval i : ((i' : ι) → α i') → α i) := by
   conv =>
     congr
     · simp [-Set.range_eval, -exists_apply_eq]
@@ -340,7 +348,8 @@ example [Inhabited α] (l : List α) (x : α) :
 /-- Without `exists_nthLe_eq`, `Set.range_list_nthLe` and `Set.mem_range`
 create a simp confluence issue. -/
 example (l : List α) (x : α) :
-    x ∈ (Set.range fun k : Fin l.length ↦ List.nthLe l ↑k k.prop) ↔ x ∈ (Set.range fun (k : Fin l.length) ↦ List.nthLe l ↑k k.prop) := by
+    x ∈ (Set.range fun k : Fin l.length ↦ l.nthLe ↑k k.prop) ↔
+    x ∈ (Set.range fun k : Fin l.length ↦ l.nthLe ↑k k.prop) := by
   conv =>
     congr
     · simp [-Set.range_list_nthLe, -exists_nthLe_eq]
