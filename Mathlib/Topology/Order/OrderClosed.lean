@@ -96,9 +96,20 @@ theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
   hs
 #align dense.order_dual Dense.orderDual
 
+section General
+variable [TopologicalSpace α] [Preorder α] {s : Set α}
+
+protected lemma BddAbove.of_closure : BddAbove (closure s) → BddAbove s :=
+  BddAbove.mono subset_closure
+
+protected lemma BddBelow.of_closure : BddBelow (closure s) → BddBelow s :=
+  BddBelow.mono subset_closure
+
+end General
+
 section ClosedIicTopology
 
-variable [TopologicalSpace α] [Preorder α] [t : ClosedIicTopology α]
+variable [TopologicalSpace α] [Preorder α] [ClosedIicTopology α] {s : Set α}
 
 instance : ClosedIciTopology αᵒᵈ where
   isClosed_ge' a := isClosed_le' (α := α) a
@@ -126,11 +137,23 @@ theorem le_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim
   le_of_tendsto lim (eventually_of_forall h)
 #align le_of_tendsto' le_of_tendsto'
 
+@[simp] lemma upperBounds_closure (s : Set α) : upperBounds (closure s : Set α) = upperBounds s :=
+  ext fun a ↦ by simp_rw [mem_upperBounds_iff_subset_Iic, isClosed_Iic.closure_subset_iff]
+#align upper_bounds_closure upperBounds_closure
+
+@[simp] lemma bddAbove_closure : BddAbove (closure s) ↔ BddAbove s := by
+  simp_rw [BddAbove, upperBounds_closure]
+#align bdd_above_closure bddAbove_closure
+
+protected alias ⟨_, BddAbove.closure⟩ := bddAbove_closure
+#align bdd_above.of_closure BddAbove.of_closure
+#align bdd_above.closure BddAbove.closure
+
 end ClosedIicTopology
 
 section ClosedIciTopology
 
-variable [TopologicalSpace α] [Preorder α] [t : ClosedIciTopology α]
+variable [TopologicalSpace α] [Preorder α] [ClosedIciTopology α] {s : Set α}
 
 instance : ClosedIicTopology αᵒᵈ where
   isClosed_le' a := isClosed_ge' (α := α) a
@@ -157,6 +180,18 @@ theorem ge_of_tendsto' {f : β → α} {a b : α} {x : Filter β} [NeBot x] (lim
     (h : ∀ c, b ≤ f c) : b ≤ a :=
   ge_of_tendsto lim (eventually_of_forall h)
 #align ge_of_tendsto' ge_of_tendsto'
+
+@[simp] lemma lowerBounds_closure (s : Set α) : lowerBounds (closure s : Set α) = lowerBounds s :=
+  ext fun a ↦ by simp_rw [mem_lowerBounds_iff_subset_Ici, isClosed_Ici.closure_subset_iff]
+#align lower_bounds_closure lowerBounds_closure
+
+@[simp] lemma bddBelow_closure : BddBelow (closure s) ↔ BddBelow s := by
+  simp_rw [BddBelow, lowerBounds_closure]
+#align bdd_below_closure bddBelow_closure
+
+protected alias ⟨_, BddBelow.closure⟩ := bddBelow_closure
+#align bdd_below.of_closure BddBelow.of_closure
+#align bdd_below.closure BddBelow.closure
 
 end ClosedIciTopology
 
