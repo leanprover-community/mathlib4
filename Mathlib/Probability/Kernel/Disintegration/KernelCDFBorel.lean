@@ -11,6 +11,12 @@ namespace ProbabilityTheory
 variable {α Ω : Type*} {mα : MeasurableSpace α}
   [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
 
+lemma tendsto_atTop_atBot_iff_of_antitone {α β : Type*}
+    [Nonempty α] [SemilatticeSup α] [Preorder β] {f : α → β}
+    (hf : Antitone f) :
+    Tendsto f atTop atBot ↔ ∀ b : β, ∃ a : α, f a ≤ b :=
+  @tendsto_atTop_atTop_iff_of_monotone _ βᵒᵈ _ _ _ _ hf
+
 section Real
 
 section dissection_system
@@ -958,12 +964,6 @@ lemma integral_tendsto_of_tendsto_of_antitone {μ : Measure α} {f : ℕ → α 
     exact hx hnm
   · filter_upwards [h_tendsto] with x hx
     exact hx.neg
-
-theorem tendsto_atTop_atBot_iff_of_antitone {α β : Type*}
-    [Nonempty α] [SemilatticeSup α] [Preorder β] {f : α → β}
-    (hf : Antitone f) :
-    Tendsto f atTop atBot ↔ ∀ b : β, ∃ a : α, f a ≤ b :=
-  @tendsto_atTop_atTop_iff_of_monotone _ βᵒᵈ _ _ _ _ hf
 
 lemma tendsto_mLimsup_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
     (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ)

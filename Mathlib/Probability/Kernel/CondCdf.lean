@@ -271,16 +271,8 @@ theorem tendsto_preCDF_atTop_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
   have h_le_one := preCDF_le_one ρ
   -- `preCDF` has a limit a.e.
   have h_exists : ∀ᵐ a ∂ρ.fst, ∃ l, Tendsto (fun r => preCDF ρ r a) atTop (𝓝 l) := by
-    filter_upwards [h_mono, h_le_one] with a ha_mono ha_le_one
-    have h_tendsto :
-      Tendsto (fun r => preCDF ρ r a) atTop atTop ∨
-        ∃ l, Tendsto (fun r => preCDF ρ r a) atTop (𝓝 l) :=
-      tendsto_of_monotone ha_mono
-    cases' h_tendsto with h_absurd h_tendsto
-    · rw [Monotone.tendsto_atTop_atTop_iff ha_mono] at h_absurd
-      obtain ⟨r, hr⟩ := h_absurd 2
-      exact absurd (hr.trans (ha_le_one r)) ENNReal.one_lt_two.not_le
-    · exact h_tendsto
+    filter_upwards [h_mono] with a ha_mono
+    exact ⟨_, tendsto_atTop_iSup ha_mono⟩
   classical
   -- let `F` be the pointwise limit of `preCDF` where it exists, and 0 elsewhere.
   let F : α → ℝ≥0∞ := fun a =>
