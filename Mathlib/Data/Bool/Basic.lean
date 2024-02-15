@@ -94,17 +94,21 @@ theorem default_bool : default = false :=
 theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
 #align bool.dichotomy Bool.dichotomy
 
+theorem forall_bool' {p : Bool → Prop} (b : Bool) : (∀ x, p x) ↔ p b ∧ p !b :=
+  ⟨fun h ↦ ⟨h _, h _⟩, fun ⟨h₁, h₂⟩ x ↦ by cases b <;> cases x <;> assumption⟩
+
 @[simp]
 theorem forall_bool {p : Bool → Prop} : (∀ b, p b) ↔ p false ∧ p true :=
-  ⟨fun h ↦ by simp [h], fun ⟨h₁, h₂⟩ b ↦ by cases b <;> assumption⟩
+  forall_bool' false
 #align bool.forall_bool Bool.forall_bool
+
+theorem exists_bool' {p : Bool → Prop} (b : Bool) : (∃ x, p x) ↔ p b ∨ p !b :=
+  ⟨fun ⟨x, hx⟩ ↦ by cases x <;> cases b <;> first | exact .inl ‹_› | exact .inr ‹_›,
+    fun h ↦ by cases h <;> exact ⟨_, ‹_›⟩⟩
 
 @[simp]
 theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
-  ⟨fun ⟨b, h⟩ ↦ by cases b; exact Or.inl h; exact Or.inr h,
-  fun h ↦ match h with
-  | .inl h => ⟨_, h⟩
-  | .inr h => ⟨_, h⟩⟩
+  exists_bool' false
 #align bool.exists_bool Bool.exists_bool
 
 /-- If `p b` is decidable for all `b : Bool`, then `∀ b, p b` is decidable -/
