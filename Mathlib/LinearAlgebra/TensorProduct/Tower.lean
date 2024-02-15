@@ -3,8 +3,9 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Algebra.Algebra.Tower
+import Mathlib.LinearAlgebra.Basic
+import Mathlib.LinearAlgebra.TensorProduct
 
 #align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
@@ -341,7 +342,7 @@ variable [Algebra A B] [IsScalarTower A B M]
 
 /-- Heterobasic version of `TensorProduct.assoc`:
 
-Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`.
+`B`-linear equivalence between `(M ⊗[A] P) ⊗[R] Q` and `M ⊗[A] (P ⊗[R] Q)`.
 
 Note this is especially useful with `A = R` (where it is a "more linear" version of
 `TensorProduct.assoc`), or with `B = A`. -/
@@ -367,6 +368,30 @@ theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
   rfl
 
 end assoc
+
+section cancelBaseChange
+variable [Algebra A B] [IsScalarTower A B M]
+
+/-- `B`-linear equivalence between `M ⊗[A] (A ⊗[R] N)` and `M ⊗[R] N`.
+In particular useful with `B = A`. -/
+def cancelBaseChange : M ⊗[A] (A ⊗[R] N) ≃ₗ[B] M ⊗[R] N := by
+  letI g : (M ⊗[A] A) ⊗[R] N ≃ₗ[B] M ⊗[R] N :=
+    AlgebraTensorModule.congr (AlgebraTensorModule.rid A B M) (LinearEquiv.refl R N)
+  exact (AlgebraTensorModule.assoc R A B M A N).symm ≪≫ₗ g
+
+variable {M P N Q}
+
+@[simp]
+theorem cancelBaseChange_tmul (m : M) (n : N) (a : A) :
+    cancelBaseChange R A B M N (m ⊗ₜ (a ⊗ₜ n)) = (a • m) ⊗ₜ n :=
+  rfl
+
+@[simp]
+theorem cancelBaseChange_symm_tmul (m : M) (n : N) :
+    (cancelBaseChange R A B M N).symm (m ⊗ₜ n) = m ⊗ₜ (1 ⊗ₜ n) :=
+  rfl
+
+end cancelBaseChange
 
 section leftComm
 

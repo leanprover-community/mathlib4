@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Chris Hughes All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Junyan Xu
+Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
@@ -19,11 +19,13 @@ As a consequence, the complex numbers are algebraically closed.
 
 We also provide some specific results about the Galois groups of ℚ-polynomials with specific numbers
 of non-real roots.
+
+We also show that an irreducible real polynomial has degree at most two.
 -/
 
-open Polynomial Bornology
+open Polynomial Bornology Complex
 
-open scoped Polynomial
+open scoped ComplexConjugate
 
 namespace Complex
 
@@ -105,7 +107,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
       exact ⟨(mem_rootSet.mp w.2).2, mt (hc0 w).mpr (Equiv.Perm.mem_support.mp hw)⟩
     · rintro ⟨hz1, hz2⟩
       exact ⟨⟨z, mem_rootSet.mpr ⟨hp, hz1⟩⟩, Equiv.Perm.mem_support.mpr (mt (hc0 _).mp hz2), rfl⟩
-  rw [← Finset.card_disjoint_union]
+  rw [← Finset.card_union_of_disjoint]
   · apply congr_arg Finset.card
     simp_rw [Finset.ext_iff, Finset.mem_union, ha, hb, hc]
     tauto
@@ -176,3 +178,47 @@ theorem galActionHom_bijective_of_prime_degree' {p : ℚ[X]} (p_irr : Irreducibl
 end Rationals
 
 end Polynomial.Gal
+
+lemma Polynomial.mul_star_dvd_of_aeval_eq_zero_im_ne_zero (p : ℝ[X]) {z : ℂ} (h0 : aeval z p = 0)
+    (hz : z.im ≠ 0) : (X - C ((starRingEnd ℂ) z)) * (X - C z) ∣ map (algebraMap ℝ ℂ) p := by
+  apply IsCoprime.mul_dvd
+  · exact isCoprime_X_sub_C_of_isUnit_sub <| .mk0 _ <| sub_ne_zero.2 <| mt conj_eq_iff_im.1 hz
+  · simpa [dvd_iff_isRoot, aeval_conj]
+  · simpa [dvd_iff_isRoot]
+
+/-- If `z` is a non-real complex root of a real polynomial,
+then `p` is divisible by a quadratic polynomial. -/
+lemma Polynomial.quadratic_dvd_of_aeval_eq_zero_im_ne_zero (p : ℝ[X]) {z : ℂ} (h0 : aeval z p = 0)
+    (hz : z.im ≠ 0) : X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2) ∣ p := by
+  rw [← map_dvd_map' (algebraMap ℝ ℂ)]
+  convert p.mul_star_dvd_of_aeval_eq_zero_im_ne_zero h0 hz
+  calc
+    map (algebraMap ℝ ℂ) (X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2))
+    _ = X ^ 2 - C (↑(2 * z.re) : ℂ) * X + C (‖z‖ ^ 2 : ℂ) := by simp
+    _ = (X - C (conj z)) * (X - C z) := by
+      rw [← add_conj, map_add, ← mul_conj', map_mul]
+      ring
+
+/-- An irreducible real polynomial has degree at most two. -/
+lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤ 2 := by
+  obtain ⟨z, hz⟩ : ∃ z : ℂ, aeval z p = 0 :=
+    IsAlgClosed.exists_aeval_eq_zero _ p (degree_pos_of_irreducible hp).ne'
+  cases eq_or_ne z.im 0 with
+  | inl hz0 =>
+    lift z to ℝ using hz0
+    erw [aeval_ofReal, IsROrC.ofReal_eq_zero] at hz
+    exact (degree_eq_one_of_irreducible_of_root hp hz).trans_le one_le_two
+  | inr hz0 =>
+    obtain ⟨q, rfl⟩ := p.quadratic_dvd_of_aeval_eq_zero_im_ne_zero hz hz0
+    have hd : degree (X ^ 2 - C (2 * z.re) * X + C (‖z‖ ^ 2)) = 2 := by
+      compute_degree!
+    have hq : IsUnit q := by
+      refine (of_irreducible_mul hp).resolve_left (mt isUnit_iff_degree_eq_zero.1 ?_)
+      rw [hd]
+      exact two_ne_zero
+    refine (degree_mul_le _ _).trans_eq ?_
+    rwa [isUnit_iff_degree_eq_zero.1 hq, add_zero]
+
+/-- An irreducible real polynomial has natural degree at most two. -/
+lemma Irreducible.nat_degree_le_two {p : ℝ[X]} (hp : Irreducible p) : natDegree p ≤ 2 :=
+  natDegree_le_iff_degree_le.2 hp.degree_le_two

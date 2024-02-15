@@ -34,7 +34,7 @@ section FiniteCoproducts
 
 open Limits
 
-variable {α : Type} [Fintype α] {B : Stonean.{u}}
+variable {α : Type} [Finite α] {B : Stonean.{u}}
   (X : α → Stonean.{u})
 
 /--
@@ -127,12 +127,12 @@ Limits.IsColimit.coconePointUniqueUpToIso
   (finiteCoproduct.isColimit' X) (Limits.colimit.isColimit _)
 
 /-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
-lemma finiteCoproduct.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
+lemma finiteCoproduct.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (finiteCoproduct.ι Z a) :=
   openEmbedding_sigmaMk (σ := fun a => (Z a))
 
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
-lemma Sigma.openEmbedding_ι {α : Type} [Fintype α] (Z : α → Stonean.{u}) (a : α) :
+lemma Sigma.openEmbedding_ι {α : Type} [Finite α] (Z : α → Stonean.{u}) (a : α) :
     OpenEmbedding (Sigma.ι Z a) := by
   refine' OpenEmbedding.of_comp _ (homeoOfIso (coproductIsoCoproduct Z).symm).openEmbedding _
   convert finiteCoproduct.openEmbedding_ι Z a
@@ -182,14 +182,14 @@ def pullback : Stonean where
     dsimp at U
     have h : IsClopen (f ⁻¹' (Set.range i))
     · constructor
-      · exact IsOpen.preimage f.continuous hi.open_range
       · refine' IsClosed.preimage f.continuous _
         apply IsCompact.isClosed
         simp only [← Set.image_univ]
         exact IsCompact.image isCompact_univ i.continuous
-    have hU' : IsOpen (Subtype.val '' U) := h.1.openEmbedding_subtype_val.isOpenMap U hU
+      · exact IsOpen.preimage f.continuous hi.open_range
+    have hU' : IsOpen (Subtype.val '' U) := h.2.openEmbedding_subtype_val.isOpenMap U hU
     have := ExtremallyDisconnected.open_closure _ hU'
-    rw [h.2.closedEmbedding_subtype_val.closure_image_eq U] at this
+    rw [h.1.closedEmbedding_subtype_val.closure_image_eq U] at this
     suffices hhU : closure U = Subtype.val ⁻¹' (Subtype.val '' (closure U))
     · rw [hhU]
       exact isOpen_induced this

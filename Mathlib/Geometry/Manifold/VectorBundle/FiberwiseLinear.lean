@@ -288,7 +288,7 @@ def smoothFiberwiseLinear : StructureGroupoid (B × F) where
     intro e he
     obtain ⟨U, hU, h⟩ := SmoothFiberwiseLinear.locality_aux₁ e he
     exact SmoothFiberwiseLinear.locality_aux₂ e U hU h
-  eq_on_source' := by
+  mem_of_eqOnSource' := by
     simp only [mem_aux]
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ hee'
     exact ⟨φ, U, hU, hφ, h2φ, Setoid.trans hee' heφ⟩

@@ -3,6 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
+import Aesop
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Cases
@@ -76,7 +77,7 @@ section Semigroup
 variable [Semigroup α]
 
 @[to_additive]
-instance Semigroup.to_isAssociative : IsAssociative α (· * ·) := ⟨mul_assoc⟩
+instance Semigroup.to_isAssociative : Std.Associative (α := α)  (· * ·) := ⟨mul_assoc⟩
 #align semigroup.to_is_associative Semigroup.to_isAssociative
 #align add_semigroup.to_is_associative AddSemigroup.to_isAssociative
 
@@ -105,7 +106,7 @@ theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
 end Semigroup
 
 @[to_additive]
-instance CommMagma.to_isCommutative [CommMagma G] : IsCommutative G (· * ·) := ⟨mul_comm⟩
+instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
 #align comm_semigroup.to_is_commutative CommMagma.to_isCommutative
 #align add_comm_semigroup.to_is_commutative AddCommMagma.to_isCommutative
 
@@ -290,6 +291,14 @@ theorem self_ne_mul_left : b ≠ a * b ↔ a ≠ 1 := self_eq_mul_left.not
 
 end RightCancelMonoid
 
+section CancelCommMonoid
+variable [CancelCommMonoid α] {a b c d : α}
+
+@[to_additive] lemma eq_iff_eq_of_mul_eq_mul (h : a * b = c * d) : a = c ↔ b = d := by aesop
+@[to_additive] lemma ne_iff_ne_of_mul_eq_mul (h : a * b = c * d) : a ≠ c ↔ b ≠ d := by aesop
+
+end CancelCommMonoid
+
 section InvolutiveInv
 
 variable [InvolutiveInv G] {a b : G}
@@ -410,7 +419,7 @@ end DivInvOneMonoid
 
 section DivisionMonoid
 
-variable [DivisionMonoid α] {a b c : α}
+variable [DivisionMonoid α] {a b c d : α}
 
 attribute [local simp] mul_assoc div_eq_mul_inv
 
@@ -470,6 +479,10 @@ theorem one_div_div : 1 / (a / b) = b / a := by simp
 theorem one_div_one_div : 1 / (1 / a) = a := by simp
 #align one_div_one_div one_div_one_div
 #align zero_sub_zero_sub zero_sub_zero_sub
+
+@[to_additive]
+theorem div_eq_div_iff_comm : a / b = c / d ↔ b / a = d / c :=
+  inv_inj.symm.trans <| by simp only [inv_div]
 
 @[to_additive SubtractionMonoid.toSubNegZeroMonoid]
 instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α :=
@@ -767,6 +780,10 @@ theorem mul_inv_eq_one : a * b⁻¹ = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_in
 theorem inv_mul_eq_one : a⁻¹ * b = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_inv, inv_inj]
 #align inv_mul_eq_one inv_mul_eq_one
 #align neg_add_eq_zero neg_add_eq_zero
+
+@[to_additive (attr := simp)]
+theorem conj_eq_one_iff : a * b * a⁻¹ = 1 ↔ b = 1 := by
+  rw [mul_inv_eq_one, mul_right_eq_self]
 
 @[to_additive]
 theorem div_left_injective : Function.Injective fun a ↦ a / b := by

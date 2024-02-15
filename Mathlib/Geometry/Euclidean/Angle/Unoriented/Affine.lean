@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.Convex.Between
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 import Mathlib.Analysis.NormedSpace.AffineIsometry
 
@@ -41,7 +42,7 @@ nonrec def angle (p1 p2 p3 : P) : ℝ :=
   angle (p1 -ᵥ p2 : V) (p3 -ᵥ p2)
 #align euclidean_geometry.angle EuclideanGeometry.angle
 
-scoped notation "∠" => EuclideanGeometry.angle
+@[inherit_doc] scoped notation "∠" => EuclideanGeometry.angle
 
 theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∠ y.1 y.2.1 y.2.2) x := by
