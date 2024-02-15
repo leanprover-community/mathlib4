@@ -160,8 +160,8 @@ def mop (f : X ≅ Y) : mop X ≅ mop Y where
   inv := f.inv.mop
   -- Porting note: it's a pity `attribute [aesop safe apply (rule_sets [CategoryTheory])] unmop_inj`
   -- doesn't automate these proofs.
-  hom_inv_id := unmop_inj (by simp)
-  inv_hom_id := unmop_inj (by simp)
+  hom_inv_id := unmop_inj (hom_inv_id f)
+  inv_hom_id := unmop_inj (inv_hom_id f)
 #align category_theory.iso.mop CategoryTheory.Iso.mop
 
 end Iso
@@ -179,6 +179,7 @@ open Opposite MonoidalCategory
 
 attribute [local simp] id_tensorHom tensorHom_id
 
+@[simps]
 instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   tensorObj X Y := op (unop X ⊗ unop Y)
   whiskerLeft X _ _ f := (X.unop ◁ f.unop).op
@@ -204,6 +205,7 @@ theorem op_tensorUnit : 𝟙_ Cᵒᵖ = op (𝟙_ C) :=
   rfl
 #align category_theory.op_tensor_unit CategoryTheory.op_tensorUnit
 
+@[simps]
 instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   tensorObj X Y := mop (unmop Y ⊗ unmop X)
   whiskerLeft X _ _ f := (f.unmop ▷ X.unmop).mop
@@ -232,9 +234,9 @@ theorem mop_tensorUnit : 𝟙_ Cᴹᵒᵖ = mop (𝟙_ C) :=
 variable (C)
 
 /-- The identity functor on `C`, viewed as a functor from `C` to its monoidal opposite. -/
-@[simps!] def mopFunctor : C ⥤ Cᴹᵒᵖ := Functor.mk ⟨mop, mop⟩
+@[simps!] def mopFunctor : C ⥤ Cᴹᵒᵖ := Functor.mk ⟨mop, .mop⟩
 /-- The identity functor on `C`, viewed as a functor from the monoidal opposite of `C` to `C`. -/
-@[simps!] def unmopFunctor : Cᴹᵒᵖ ⥤ C := Functor.mk ⟨unmop, unmop⟩
+@[simps!] def unmopFunctor : Cᴹᵒᵖ ⥤ C := Functor.mk ⟨unmop, .unmop⟩
 
 /-- The (identity) equivalence between `C` and its monoidal opposite. -/
 @[simps!] def MonoidalOpposite.underlyingEquiv : C ≌ Cᴹᵒᵖ := Equivalence.refl

@@ -128,6 +128,7 @@ theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
   rw [tensorHom_def' f g, tensorHom_def g f]
   simp_rw [Category.assoc, braiding_naturality_left, braiding_naturality_right_assoc]
 
+@[reassoc]
 theorem yang_baxter (X Y Z : C) :
     (α_ X Y Z).inv ≫ ((β_ X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫
     (Y ◁ (β_ X Z).hom) ≫ (α_ Y Z X).inv ≫ ((β_ Y Z).hom ▷ X) ≫ (α_ Z Y X).hom =
@@ -651,8 +652,23 @@ attribute [reassoc] associator_monoidal
 
 end Tensor
 
+@[simps]
+instance : BraidedCategory Cᵒᵖ where
+  braiding X Y := Iso.op (β_ Y.unop X.unop)
+  braiding_naturality_right X {_ _} f :=
+    Quiver.Hom.unop_inj <| (braiding_naturality_left f.unop X.unop).symm
+  braiding_naturality_left {_ _} f Z :=
+    Quiver.Hom.unop_inj <| (braiding_naturality_right Z.unop f.unop).symm
+  hexagon_forward X Y Z := Quiver.Hom.unop_inj <| by
+    convert hexagon_reverse Y.unop Z.unop X.unop using 1
+    <;> exact assoc _ _ _
+  hexagon_reverse X Y Z := Quiver.Hom.unop_inj <| by
+    convert hexagon_forward Z.unop X.unop Y.unop using 1
+    <;> exact assoc _ _ _
+
 namespace MonoidalOpposite
 
+@[simps]
 instance instBraiding : BraidedCategory Cᴹᵒᵖ where
   braiding X Y := (β_ (unmop Y) (unmop X)).mop
   braiding_naturality_right X {_ _} f := braiding_naturality_left f.unmop (unmop X)
@@ -665,18 +681,10 @@ monoidal opposite, upgraded to a braided functor. -/
 @[simps!] def mopBraidedFunctor : BraidedFunctor C Cᴹᵒᵖ where
   μ X Y := (β_ (mop X) (mop Y)).hom
   ε := 𝟙 (𝟙_ Cᴹᵒᵖ)
-  associativity X Y Z := by
-    simp only [tensorHom_id, id_tensorHom]
-    change (β_ (mop X) (mop Y)).hom ▷ (mop Z) ≫ (β_ (mop Y ⊗ mop X) (mop Z)).hom ≫
-              (α_ (mop Z) (mop Y) (mop X)).inv
-            = (α_ (mop X) (mop Y) (mop Z)).hom ≫ (mop X) ◁ (β_ (mop Y) (mop Z)).hom ≫
-                (β_ (mop X) (mop Z ⊗ mop Y)).hom
-    refine (α_ (mop X) (mop Y) (mop Z)).inv_comp_eq.mp ?_
-    simp only [← assoc]
-    refine (α_ (mop Z) (mop Y) (mop X)).comp_inv_eq.mpr ?_
-    simp only [braiding_tensor_left, braiding_tensor_right,
-               assoc, Iso.inv_hom_id, comp_id]
-    exact yang_baxter (mop X) (mop Y) (mop Z)
+  μ_natural_left {_ _} f Z := unmop_inj <| by simp
+  μ_natural_right {_ _} Z f := unmop_inj <| by simp
+  associativity X Y Z := unmop_inj <| by
+    simp [id_tensorHom, tensorHom_id, yang_baxter]
   left_unitality := by intro; erw [tensor_id, id_comp, braiding_rightUnitor]
   right_unitality := by intro; erw [tensor_id, id_comp, braiding_leftUnitor]
   __ := mopFunctor C
@@ -686,18 +694,9 @@ monoidal opposite of `C` to `C`, upgraded to a braided functor. -/
 @[simps!] def unmopBraidedFunctor : BraidedFunctor Cᴹᵒᵖ C where
   μ X Y := (β_ (unmop X) (unmop Y)).hom
   ε := 𝟙 (𝟙_ C)
-  associativity X Y Z := by
-    simp only [tensorHom_id, id_tensorHom]
-    change (β_ (unmop X) (unmop Y)).hom ▷ (unmop Z) ≫ (β_ (unmop Y ⊗ unmop X) (unmop Z)).hom
-              ≫ (α_ (unmop Z) (unmop Y) (unmop X)).inv
-            = (α_ (unmop X) (unmop Y) (unmop Z)).hom ≫ (unmop X) ◁ (β_ (unmop Y) (unmop Z)).hom
-              ≫ (β_ (unmop X) (unmop Z ⊗ unmop Y)).hom
-    refine (α_ (unmop X) (unmop Y) (unmop Z)).inv_comp_eq.mp ?_
-    simp only [← assoc]
-    refine (α_ (unmop Z) (unmop Y) (unmop X)).comp_inv_eq.mpr ?_
-    simp only [braiding_tensor_left, braiding_tensor_right,
-               assoc, Iso.inv_hom_id, comp_id]
-    exact yang_baxter (unmop X) (unmop Y) (unmop Z)
+  associativity X Y Z := mop_inj <| by
+    simp [id_tensorHom, tensorHom_id]
+    exact (yang_baxter Z Y X).symm
   left_unitality := by intro; erw [tensor_id, id_comp, braiding_rightUnitor]
   right_unitality := by intro; erw [tensor_id, id_comp, braiding_leftUnitor]
   __ := unmopFunctor C
