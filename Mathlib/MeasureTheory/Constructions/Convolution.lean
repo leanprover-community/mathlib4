@@ -32,14 +32,15 @@ namespace Measure
 
 variable {M : Type*} [Monoid M] [MeasurableSpace M]
 
-/-- Multiplicative convolution of measures. They are defined for arbitrary measures on a monoid M
-  that is also a measurable space.-/
-@[to_additive conv]
+/-- Multiplicative convolution of measures. -/
+@[to_additive conv "Additive convolution of measures."]
 noncomputable def mconv (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (Measure.prod μ ν)
 
-/-- Scoped notation for the convolution of measures. -/
+/-- Scoped notation for the multiplicative convolution of measures. -/
 scoped[MeasureTheory] infix:80 " * " => MeasureTheory.Measure.mconv
+
+/-- Scoped notation for the additive convolution of measures. -/
 scoped[MeasureTheory] infix:80 " * " => MeasureTheory.Measure.conv
 
 -- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
