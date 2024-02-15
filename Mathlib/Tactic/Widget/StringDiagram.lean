@@ -180,6 +180,7 @@ def NormalExpr.tar : NormalExpr → MetaM Mor₁
   | NormalExpr.id f => return f
   | NormalExpr.cons _ θ => tar θ
 
+/-- Evaluate the expression `η ≫ θ` into a normalized form. -/
 def evalComp : NormalExpr → NormalExpr → NormalExpr
   | .id _, e => e
   | e, .id _ => e
@@ -203,6 +204,7 @@ def NormalExpr.rightUnitor (f : Mor₁) : MetaM NormalExpr := do
 def NormalExpr.rightUnitorInv (f : Mor₁) : MetaM NormalExpr := do
   NormalExpr.mk (.StructuralAtom <| .rightUnitorInv f)
 
+/-- Evaluate the expression `f ◁ η` into a normalized form. -/
 partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
   | f, .id g => do
     return .id (f.comp g)
@@ -220,29 +222,7 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
     let g ← η.tar
     return evalComp (← NormalExpr.leftUnitor f) (evalComp η (← NormalExpr.leftUnitorInv g))
 
-/-- Return `[f₁, ..., fₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def leftMor₁List (η : WhiskerLeftExpr) : List Expr :=
-  match η with
-  | WhiskerLeftExpr.of _ => []
-  | WhiskerLeftExpr.whisker f η => f :: leftMor₁List η
-
-/-- Return `[gₙ, ..., g₁]` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def rightMor₁ListAux (η : WhiskerRightExpr) : List Expr :=
-  match η with
-  | WhiskerRightExpr.of _ => []
-  | WhiskerRightExpr.whisker η f => f :: rightMor₁ListAux η
-
-/-- Return `[gₙ, ..., g₁]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def rightMor₁ListReversed (η : WhiskerLeftExpr) : List Expr :=
-  match η with
-  | WhiskerLeftExpr.of η => rightMor₁ListAux η
-  | WhiskerLeftExpr.whisker _ η => rightMor₁ListReversed η
-
-/-- Return `[g₁, ..., gₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
-def rightMor₁List (η : WhiskerLeftExpr) : List Expr :=
-  (rightMor₁ListReversed η).reverse
-
-/-- Evaluate the expression `η ▷ f`. -/
+/-- Evaluate the expression `η ▷ f` into a normalized form. -/
 partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
   | .id f, .of g => do
     return .id (f.comp (toMor₁ g))
@@ -320,6 +300,7 @@ def NormalExpr.StructuralAtom? : NormalExpr → Option NormalExpr
     | some _, some _ => some (.cons η θ)
     | _, _ => none
 
+/-- Evaluate the expression of a 2-morphism into a normalized form. -/
 partial def eval (e : Expr) : MetaM NormalExpr := do
   match e.getAppFnArgs with
   | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) => return evalComp (← eval η) (← eval θ)
@@ -328,11 +309,40 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
   | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) => evalWhiskerRightExpr (← eval η) (toMor₁ h)
   | _ => NormalExpr.of e
 
+/-- Remove structural 2-morphisms. -/
 def removeStructural : List WhiskerLeftExpr → List WhiskerLeftExpr
   | [] => []
   | η :: ηs => match η.StructuralAtom? with
     | some _ => removeStructural ηs
     | none => η :: (removeStructural ηs)
+
+/-- Return `[f₁, ..., fₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
+def leftMor₁List (η : WhiskerLeftExpr) : List Expr :=
+  match η with
+  | WhiskerLeftExpr.of _ => []
+  | WhiskerLeftExpr.whisker f η => f :: leftMor₁List η
+
+/-- Return `[gₙ, ..., g₁]` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
+def rightMor₁ListAux (η : WhiskerRightExpr) : List Expr :=
+  match η with
+  | WhiskerRightExpr.of _ => []
+  | WhiskerRightExpr.whisker η f => f :: rightMor₁ListAux η
+
+/-- Return `[gₙ, ..., g₁]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
+def rightMor₁ListReversed (η : WhiskerLeftExpr) : List Expr :=
+  match η with
+  | WhiskerLeftExpr.of η => rightMor₁ListAux η
+  | WhiskerLeftExpr.whisker _ η => rightMor₁ListReversed η
+
+/-- Return `[g₁, ..., gₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
+def rightMor₁List (η : WhiskerLeftExpr) : List Expr :=
+  (rightMor₁ListReversed η).reverse
+
+def srcLists (η : WhiskerLeftExpr) : MetaM (List Expr × List Expr × List Expr) := do
+  return (leftMor₁List η, (← η.core.src).toList, rightMor₁List η)
+
+def tarLists (η : WhiskerLeftExpr) : MetaM (List Expr × List Expr × List Expr) := do
+  return (leftMor₁List η, (← η.core.tar).toList, rightMor₁List η)
 
 /-- `pairs [a, b, c, d]` is `[(a, b), (b, c), (c, d)]`. -/
 def pairs {α : Type} : List α → List (α × α)
@@ -430,10 +440,8 @@ def mkStringDiag (e : Expr) : MetaM Html := do
     for (i, x) in enumerateFrom 1 l do
       let v : PenroseVar := ⟨"E", [i], ← x.core.e⟩
       addPenroseVar "Core" v
-      let L := leftMor₁List x
-      let C := (← x.core.src).toList
+      let (L, C, R) ← srcLists x
       let C' := (← x.core.tar).toList
-      let R := rightMor₁List x
       for (j, X) in enumerate L do
         let v' : PenroseVar := ⟨"I_left", [i, j], X⟩
         addPenroseVar "Id" v'
@@ -476,9 +484,7 @@ def mkStringDiag (e : Expr) : MetaM Html := do
     /- The top of the diagram. -/
     if let some x₀ := l.head? then
       let v₀ : PenroseVar := ⟨"E", [1], ← x₀.core.e⟩
-      let L := leftMor₁List x₀
-      let C := (← x₀.core.src).toList
-      let R := rightMor₁List x₀
+      let (L, C, R) ← srcLists x₀
       for (j, X) in enumerate (L ++ C ++ R) do
         let v' : PenroseVar := ⟨"I_left", [0, j], X⟩
         addPenroseVar "Id" v'
@@ -492,24 +498,20 @@ def mkStringDiag (e : Expr) : MetaM Html := do
     /- The bottom of the diagram. -/
     if let some xₙ := l.getLast? then
       let vₙ : PenroseVar := ⟨"E", [l.length], ← xₙ.core.e⟩
-      let L := leftMor₁List xₙ
-      let C := (← xₙ.core.tar).toList
-      let R := rightMor₁List xₙ
-      for (j, X) in enumerate (L ++ C ++ R) do
+      let (L, C', R) ← tarLists xₙ
+      for (j, X) in enumerate (L ++ C' ++ R) do
         let v' : PenroseVar := ⟨"I_left", [l.length + 1, j], X⟩
         addPenroseVar "Id" v'
         addInstruction s!"Above({vₙ}, {v'})"
         let v_mor : PenroseVar := ⟨"f", [l.length + 1, j], X⟩
         modify fun st => { st with endPoint := st.endPoint.insert v_mor v' }
-      for (j, (X, Y)) in enumerate (pairs (L ++ C ++ R)) do
+      for (j, (X, Y)) in enumerate (pairs (L ++ C' ++ R)) do
         let v₁ : PenroseVar := ⟨"I_left", [l.length + 1, j], X⟩
         let v₂ : PenroseVar := ⟨"I_left", [l.length + 1, j + 1], Y⟩
         addInstruction s!"Left({v₁}, {v₂})"
     /- Add 1-morphisms as strings. -/
     for (i, x) in enumerateFrom 1 l do
-      let L := leftMor₁List x
-      let C := (← x.core.src).toList
-      let R := rightMor₁List x
+      let (L, C, R) ← srcLists x
       for (j, X) in enumerate (L ++ C ++ R) do
         let v : PenroseVar := ⟨"f", [i, j], X⟩
         let st ← get
@@ -518,9 +520,7 @@ def mkStringDiag (e : Expr) : MetaM Html := do
             addConstructor "Mor1" v "MakeString" [vStart, vEnd]
     /- Add strings in the last row. -/
     if let some xₙ := l.getLast? then
-      let L := leftMor₁List xₙ
-      let C' := (← xₙ.core.tar).toList
-      let R := rightMor₁List xₙ
+      let (L, C', R) ← tarLists xₙ
       for (j, X) in enumerate (L ++ C' ++ R) do
         let v : PenroseVar := ⟨"f", [l.length + 1, j], X⟩
         let st ← get
