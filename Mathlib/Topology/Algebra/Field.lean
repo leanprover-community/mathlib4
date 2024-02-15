@@ -3,6 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
 -/
+import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.LocalExtr
@@ -110,7 +111,7 @@ open Topology
 
 theorem IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
     IsLocalMax f⁻¹ a := by
-  filter_upwards [h1, h2]with z h3 h4 using(inv_le_inv h4 h2.self_of_nhds).mpr h3
+  filter_upwards [h1, h2] with z h3 h4 using(inv_le_inv h4 h2.self_of_nhds).mpr h3
 #align is_local_min.inv IsLocalMin.inv
 
 end LocalExtr
@@ -162,4 +163,3 @@ theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [Cont
 #align is_preconnected.eq_of_sq_eq IsPreconnected.eq_of_sq_eq
 
 end Preconnected
-

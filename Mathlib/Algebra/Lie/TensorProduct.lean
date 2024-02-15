@@ -17,6 +17,7 @@ Tensor products of Lie modules carry natural Lie module structures.
 lie module, tensor product, universal property
 -/
 
+suppress_compilation
 
 universe u v w w₁ w₂ w₃
 

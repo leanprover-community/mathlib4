@@ -21,7 +21,7 @@ section
 
 open scoped Topology ENNReal
 
-open Filter ENNReal spectrum CstarRing
+open Filter ENNReal spectrum CstarRing NormedSpace
 
 section UnitarySpectrum
 
@@ -91,7 +91,7 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] {a : A} (ha : IsSelf
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
   have hu := exp_mem_unitary_of_mem_skewAdjoint ℂ (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
-  have : _root_.exp ℂ (I • z) ∈ spectrum ℂ (_root_.exp ℂ (I • a)) := by
+  have : NormedSpace.exp ℂ (I • z) ∈ spectrum ℂ (NormedSpace.exp ℂ (I • a)) := by
     simpa only [Units.smul_def, Units.val_mk0] using
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by
@@ -126,7 +126,7 @@ namespace StarAlgHom
 
 variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CstarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B]
-  [hF : StarAlgHomClass F ℂ A B] (φ : F)
+  [FunLike F A B] [AlgHomClass F ℂ A B] [StarAlgHomClass F ℂ A B] (φ : F)
 
 /-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 theorem nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
@@ -164,13 +164,11 @@ open ContinuousMap Complex
 open scoped ComplexStarModule
 
 variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CstarRing A] [StarModule ℂ A] [hF : AlgHomClass F ℂ A ℂ]
+  [CstarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarAlgHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/
 noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass F A ℂ where
-  coe φ := φ
-  coe_injective' := FunLike.coe_injective'
   map_star φ a := by
     suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s
     · rw [← realPart_add_I_smul_imaginaryPart a]
@@ -185,14 +183,14 @@ noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/
-noncomputable def _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
-  { WeakDual.Complex.instStarHomClass, hF with coe := fun f => f }
+lemma _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
+  { WeakDual.Complex.instStarHomClass, hF with }
 #align alg_hom_class.star_alg_hom_class AlgHomClass.instStarAlgHomClass
 
 namespace CharacterSpace
 
 noncomputable instance instStarAlgHomClass : StarAlgHomClass (characterSpace ℂ A) ℂ A ℂ :=
-  { AlgHomClass.instStarAlgHomClass with coe := fun f => f }
+  { AlgHomClass.instStarAlgHomClass with }
 
 end CharacterSpace
 

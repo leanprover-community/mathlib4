@@ -242,7 +242,7 @@ theorem clift_apply_mk (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN w) :
 @[to_additive (attr := simp)]
 theorem clift_comp_mk (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN) :
     (clift f hM₁ hN₁ hM hN).comp mk = f :=
-  FunLike.ext' rfl
+  DFunLike.ext' rfl
 
 @[to_additive (attr := simp)]
 theorem mclosure_range_inl_union_inr :
@@ -275,7 +275,7 @@ then they are equal. -/
 theorem hom_ext {f g : M ∗ N →* P} (h₁ : f.comp inl = g.comp inl) (h₂ : f.comp inr = g.comp inr) :
     f = g :=
   MonoidHom.eq_of_eqOn_denseM mclosure_range_inl_union_inr <| eqOn_union.2
-    ⟨eqOn_range.2 <| FunLike.ext'_iff.1 h₁, eqOn_range.2 <| FunLike.ext'_iff.1 h₂⟩
+    ⟨eqOn_range.2 <| DFunLike.ext'_iff.1 h₁, eqOn_range.2 <| DFunLike.ext'_iff.1 h₂⟩
 
 @[to_additive (attr := simp)]
 theorem clift_mk :
@@ -322,7 +322,7 @@ theorem map_comp_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →*
 theorem map_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →* M'') (g' : N' →* N'')
     (f : M →* M') (g : N →* N') (x : M ∗ N) :
     map f' g' (map f g x) = map (f'.comp f) (g'.comp g) x :=
-  FunLike.congr_fun (map_comp_map f' g' f g) x
+  DFunLike.congr_fun (map_comp_map f' g' f g) x
 
 variable (M N)
 
@@ -347,7 +347,7 @@ variable {M N}
 
 @[to_additive (attr := simp)]
 theorem swap_swap (x : M ∗ N) : swap N M (swap M N x) = x :=
-  FunLike.congr_fun (swap_comp_swap _ _) x
+  DFunLike.congr_fun (swap_comp_swap _ _) x
 
 @[to_additive]
 theorem swap_comp_map (f : M →* M') (g : N →* N') :
@@ -357,7 +357,7 @@ theorem swap_comp_map (f : M →* M') (g : N →* N') :
 @[to_additive]
 theorem swap_map (f : M →* M') (g : N →* N') (x : M ∗ N) :
     swap M' N' (map f g x) = map g f (swap M N x) :=
-  FunLike.congr_fun (swap_comp_map f g) x
+  DFunLike.congr_fun (swap_comp_map f g) x
 
 @[to_additive (attr := simp)] theorem swap_comp_inl : (swap M N).comp inl = inr := rfl
 @[to_additive (attr := simp)] theorem swap_inl (x : M) : swap M N (inl x) = inr x := rfl
@@ -436,7 +436,7 @@ theorem lift_comp_swap (f : M →* P) (g : N →* P) : (lift f g).comp (swap N M
 
 @[to_additive (attr := simp)]
 theorem lift_swap (f : M →* P) (g : N →* P) (x : N ∗ M) : lift f g (swap N M x) = lift g f x :=
-  FunLike.congr_fun (lift_comp_swap f g) x
+  DFunLike.congr_fun (lift_comp_swap f g) x
 
 @[to_additive]
 theorem comp_lift {P' : Type*} [Monoid P'] (f : P →* P') (g₁ : M →* P) (g₂ : N →* P) :
@@ -463,7 +463,10 @@ section ToProd
 
 variable {M N : Type*} [Monoid M] [Monoid N]
 
-@[to_additive] instance : Monoid (M ∗ N) := Con.monoid _
+@[to_additive] instance : Monoid (M ∗ N) :=
+  { mul_assoc := (Con.monoid _).mul_assoc
+    one_mul := (Con.monoid _).one_mul
+    mul_one := (Con.monoid _).mul_one }
 
 /-- The natural projection `M ∗ N →* M`. -/
 @[to_additive "The natural projection `AddMonoid.Coprod M N →+ M`."]
@@ -570,9 +573,9 @@ theorem mk_of_inv_mul : ∀ x : G ⊕ H, mk (of (x.map Inv.inv Inv.inv)) * mk (o
 theorem con_mul_left_inv (x : FreeMonoid (G ⊕ H)) :
     coprodCon G H (ofList (x.toList.map (Sum.map Inv.inv Inv.inv)).reverse * x) 1 := by
   rw [← mk_eq_mk, map_mul, map_one]
-  induction x using FreeMonoid.recOn
-  case h0 => simp [map_one mk] -- TODO: fails without `[map_one mk]`
-  case ih x xs ihx =>
+  induction x using FreeMonoid.recOn with
+  | h0 => simp [map_one mk] -- TODO: fails without `[map_one mk]`
+  | ih x xs ihx =>
     simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ihx, ofList_singleton]
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 
@@ -634,7 +637,7 @@ variable {M N M' N' : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass M']
 
 /-- Lift two monoid equivalences `e : M ≃* N` and `e' : M' ≃* N'` to a monoid equivalence
 `(M ∗ M') ≃* (N ∗ N')`. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false })) "Lift two additive monoid
+@[to_additive (attr := simps! (config := .asFn)) "Lift two additive monoid
 equivalences `e : M ≃+ N` and `e' : M' ≃+ N'` to an additive monoid equivalence
 `(AddMonoid.Coprod M M') ≃+ (AddMonoid.Coprod N N')`."]
 def coprodCongr (e : M ≃* N) (e' : M' ≃* N') : (M ∗ M') ≃* (N ∗ N') :=
@@ -644,7 +647,7 @@ def coprodCongr (e : M ≃* N) (e' : M' ≃* N') : (M ∗ M') ≃* (N ∗ N') :=
 variable (M N)
 
 /-- A `MulEquiv` version of `Coprod.swap`. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false }))
+@[to_additive (attr := simps! (config := .asFn))
   "An `AddEquiv` version of `AddMonoid.Coprod.swap`."]
 def coprodComm : M ∗ N ≃* N ∗ M :=
   (Coprod.swap _ _).toMulEquiv (Coprod.swap _ _) (Coprod.swap_comp_swap _ _)
@@ -691,12 +694,12 @@ theorem coprodAssoc_symm_apply_inr_inr (x : P) :
 variable (M)
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def coprodPUnit : M ∗ PUnit ≃* M :=
   MonoidHom.toMulEquiv fst inl (hom_ext rfl <| Subsingleton.elim _ _) fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def punitCoprod : PUnit ∗ M ≃* M :=
   MonoidHom.toMulEquiv snd inr (hom_ext (Subsingleton.elim _ _) rfl) snd_comp_inr
 
@@ -709,13 +712,13 @@ namespace AddEquiv
 variable {M : Type*} [AddMonoid M]
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def coprodUnit : AddMonoid.Coprod M PUnit ≃+ M :=
   AddMonoidHom.toAddEquiv AddMonoid.Coprod.fst AddMonoid.Coprod.inl
     (AddMonoid.Coprod.hom_ext rfl <| Subsingleton.elim _ _) AddMonoid.Coprod.fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def punitCoprod : AddMonoid.Coprod PUnit M ≃+ M :=
   AddMonoidHom.toAddEquiv AddMonoid.Coprod.snd AddMonoid.Coprod.inr
     (AddMonoid.Coprod.hom_ext (Subsingleton.elim _ _) rfl) AddMonoid.Coprod.snd_comp_inr

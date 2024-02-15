@@ -3,7 +3,7 @@ Copyright (c) 2021 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Reflective
 
@@ -87,7 +87,7 @@ theorem toΓSpec_preim_basicOpen_eq (r : Γ.obj (op X)) :
 
 /-- `toΓSpecFun` is continuous. -/
 theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
-  apply isTopologicalBasis_basic_opens.continuous
+  rw [isTopologicalBasis_basic_opens.continuous_iff]
   rintro _ ⟨r, rfl⟩
   erw [X.toΓSpec_preim_basicOpen_eq r]
   exact (X.toRingedSpace.basicOpen r).2
@@ -100,6 +100,9 @@ def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
   toFun := X.toΓSpecFun
   continuous_toFun := X.toΓSpec_continuous
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_base AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
 
 variable (r : Γ.obj (op X))
 
@@ -166,7 +169,7 @@ theorem toΓSpecCApp_spec : toOpen _ (basicOpen r) ≫ X.toΓSpecCApp r = X.toTo
 @[simps app]
 def toΓSpecCBasicOpens :
     (inducedFunctor basicOpen).op ⋙ (structureSheaf (Γ.obj (op X))).1 ⟶
-      (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward X.toΓSpecBase).obj X.𝒪).1 where
+      (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪).1 where
   app r := X.toΓSpecCApp r.unop
   naturality r s f := by
     apply (StructureSheaf.to_basicOpen_epi (Γ.obj (op X)) r.unop).1
@@ -191,12 +194,11 @@ def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.
 theorem toΓSpecSheafedSpace_app_eq :
     X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
   have := TopCat.Sheaf.extend_hom_app (Spec.toSheafedSpace.obj (op (Γ.obj (op X)))).presheaf
-    ((TopCat.Sheaf.pushforward X.toΓSpecBase).obj X.𝒪)
+    ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪)
     isBasis_basic_opens X.toΓSpecCBasicOpens r
   dsimp at this
-  rw [←this]
+  rw [← this]
   dsimp
-  congr
 
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 
@@ -217,7 +219,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
       ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
-  -- Porting note : was `rw [←assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
+  -- Porting note : was `rw [← assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
   rw [toΓSpecSheafedSpace_app_spec_assoc]
   unfold ΓToStalk
   rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
@@ -299,9 +301,17 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       --Porting Note: Had to add the next four lines
       rw [comp_apply, comp_apply]
       dsimp [toΓSpecBase]
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+      -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
+      -- leanprover/lean4#2644
+      have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
+        = toΓSpecFun Y (f.val.base x) := by rw [ContinuousMap.coe_mk]
+      erw [this]
+      have : (ContinuousMap.mk (toΓSpecFun X) (toΓSpec_continuous _)) x
+        = toΓSpecFun X x := by rw [ContinuousMap.coe_mk]
+      erw [this]
       dsimp [toΓSpecFun]
-      rw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ ⟨x, trivial⟩).symm
@@ -444,6 +454,21 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
 end ΓSpec
+
+@[reassoc]
+theorem SpecΓIdentity_naturality {R S : CommRingCat} (f : R ⟶ S) :
+    (Scheme.Spec.map f.op).1.c.app (op ⊤) ≫ SpecΓIdentity.hom.app _ =
+      SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
+
+theorem SpecΓIdentity_hom_app_presheaf_obj {X : Scheme} (U : Opens X) :
+    SpecΓIdentity.hom.app (X.presheaf.obj (op U)) =
+      Scheme.Γ.map (Scheme.Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op).op).op ≫
+      (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).val.c.app (op ⊤) ≫
+      X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op := by
+  rw [ΓSpec.adjunction_unit_app_app_top]
+  dsimp [-SpecΓIdentity_hom_app]
+  rw [SpecΓIdentity_naturality_assoc, ← Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
+    op_id, CategoryTheory.Functor.map_id, Category.comp_id]
 
 /-! Immediate consequences of the adjunction. -/
 

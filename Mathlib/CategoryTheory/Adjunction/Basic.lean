@@ -187,6 +187,8 @@ theorem right_triangle : whiskerLeft G adj.unit ≫ whiskerRight adj.counit G = 
   simp
 #align category_theory.adjunction.right_triangle CategoryTheory.Adjunction.right_triangle
 
+variable (X Y)
+
 @[reassoc (attr := simp)]
 theorem left_triangle_components :
     F.map (adj.unit.app X) ≫ adj.counit.app (F.obj X) = 𝟙 (F.obj X) :=
@@ -194,10 +196,12 @@ theorem left_triangle_components :
 #align category_theory.adjunction.left_triangle_components CategoryTheory.Adjunction.left_triangle_components
 
 @[reassoc (attr := simp)]
-theorem right_triangle_components {Y : D} :
+theorem right_triangle_components :
     adj.unit.app (G.obj Y) ≫ G.map (adj.counit.app Y) = 𝟙 (G.obj Y) :=
   congr_arg (fun t : NatTrans _ (G ⋙ 𝟭 C) => t.app Y) adj.right_triangle
 #align category_theory.adjunction.right_triangle_components CategoryTheory.Adjunction.right_triangle_components
+
+variable {X Y}
 
 @[reassoc (attr := simp)]
 theorem counit_naturality {X Y : D} (f : X ⟶ Y) :
@@ -524,7 +528,7 @@ def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
       homEquiv_naturality_left_symm := fun {X'} {X} {Y} f g => by
         have := @he' C _ D _ G F_obj e he
         erw [← this, ← Equiv.apply_eq_iff_eq (e X' Y)]
-        simp [(he X' (F_obj X) Y (e X Y |>.symm g) (leftAdjointOfEquiv e he |>.map f)).symm]
+        simp only [leftAdjointOfEquiv_obj, Equiv.apply_symm_apply, assoc]
         congr
         rw [← he]
         simp
