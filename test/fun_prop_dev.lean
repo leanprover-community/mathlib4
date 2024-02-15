@@ -138,8 +138,6 @@ instance : Obj (α -o β) := ⟨⟩
 @[fun_prop] theorem linHom_lin_in_fn' (f : α → β -o γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
 
 
-set_option pp.coercions false in
-set_option pp.notation false in
 -- the only analoge is this theorem but that is alredy provable
 example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (hg : Lin g) : Lin (fun x => (f x) (g x)) := by fun_prop
 

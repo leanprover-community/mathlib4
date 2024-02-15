@@ -224,8 +224,6 @@ theorem prod_mk_deriv_at (fst : α → β) (snd : α → γ) (x) (hfst : ConAt f
 @[fun_trans] theorem add_deriv' (x y : α → β) (hx : Con x) (hy : Con y) :
     deriv (fun w => x w + y w) = fun w dw => deriv x w dw + deriv y w dw := by fun_trans
 
-set_option trace.Meta.Tactic.fun_trans.attr true
-
 
 -- TODO: this should be fvar theorem
 @[fun_trans] theorem linMap_deriv
