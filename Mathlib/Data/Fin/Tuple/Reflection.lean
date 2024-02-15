@@ -27,6 +27,8 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `FinVec.map`
 * `FinVec.sum`
 * `FinVec.etaExpand`
+* `FinVec.const`
+* `FinVec.single`
 -/
 
 
@@ -136,6 +138,64 @@ theorem exists_iff : ∀ {m} (P : (Fin m → α) → Prop), Exists P ↔ ∃ x, 
 
 example (P : (Fin 2 → α) → Prop) : (∃ f, P f) ↔ ∃ a₀ a₁, P ![a₀, a₁] :=
   (exists_iff _).symm
+
+def const : ∀ {m} (_a : α), Fin m → α
+  | 0, _ => ![]
+  | _ + 1, a => Matrix.vecCons a (const a)
+
+/-- This can be use to prove
+```lean
+example (x : α) : Function.const _ x = ![x, x, x] :=
+  const_eq _
+```
+-/
+theorem const_eq : ∀ {m} (a : α), (const a : Fin m → α) = Function.const _ a
+  | 0, _ => Subsingleton.elim _ _
+  | _ + 1, a => funext <| Fin.cases rfl fun i => by rw [const, const_eq]; rfl
+
+/-- `Pi.single` with better defeq for `Fin`. -/
+def single [Zero α] : ∀ {m} (_i : Fin m) (_a : α), Fin m → α
+  | 0 => fun _ _ => ![]
+  | _ + 1 => Fin.cases
+    (fun a => Matrix.vecCons a (const 0))
+    (fun i a => Matrix.vecCons 0 (single i a))
+
+-- TODO: move
+theorem _root_.Function.Injective.single_eq
+    {ι ι' α: Type*} [DecidableEq ι] [DecidableEq ι'] [Zero α] (i j : ι) (a : α) (f : ι → ι')
+    (hf : Function.Injective f) :
+    (Pi.single (f i) a : ι' → α) (f j) = (Pi.single i a : ι → α) j := by
+  simp [Pi.single_apply, hf.eq_iff]
+
+/-- This can be use to prove
+```lean
+example [Zero α] (x : α) : Pi.single 1 x = ![0, x, 0] :=
+  (single_eq _ _).symm
+```
+-/
+theorem single_eq [Zero α] : ∀ {m} (i : Fin m) (a : α),
+    (single i a : Fin m → α) = Pi.single i a
+  | 0, _, _ => Subsingleton.elim _ _
+  | _ + 1, i, a => by
+    funext j
+    induction i using Fin.cases with
+    | zero =>
+      induction j using Fin.cases with
+      | zero => rfl
+      | succ j =>
+        dsimp [single]
+        rw [Pi.single_eq_of_ne (Fin.succ_ne_zero _), const_eq]
+        rfl
+    | succ i =>
+      induction j using Fin.cases with
+      | zero => rfl
+      | succ j =>
+        dsimp [single]
+        rw [single_eq]
+        rw [Matrix.cons_val_succ, (Fin.succ_injective _).single_eq]
+
+example [Zero α] (x : α) : Pi.single 1 x = ![0, x, 0] :=
+  (single_eq _ _).symm
 
 /-- `Finset.univ.sum` with better defeq for `Fin`. -/
 def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
