@@ -319,9 +319,6 @@ end UnifTight
 
 section VitaliConvergence
 
-/- XXX: In the analogous place in `MeasureTheory.Function.UniformIntegrable`, the measure variable
-   is declared `(μ)` non-implicit. I don't see why, as in all relevant cases it can be
-   deduced from other arguments. -/
 variable {μ : Measure α} {p : ℝ≥0∞}
 
 variable {f : ℕ → α → β} {g : α → β}
