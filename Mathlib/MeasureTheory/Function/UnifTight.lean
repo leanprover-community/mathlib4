@@ -262,7 +262,7 @@ theorem unifTight_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top : p 
   case neg => exact ⟨∅, (by measurability), fun i => False.elim <| hι <| Nonempty.intro i⟩
   cases' hι with i
   obtain ⟨s, _, hμs, hfε⟩ := (hf i).snorm_indicator_compl_le hp_one hp_top hrε
-  refine' ⟨s, ne_of_lt hμs, fun j => _⟩
+  refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε
   exact (ENNReal.ofReal_toReal hε_top).symm
 
