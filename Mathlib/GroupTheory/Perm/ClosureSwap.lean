@@ -73,7 +73,8 @@ theorem swap_mem_closure_isSwap {S : Set (Perm α)} (hS : ∀ f ∈ S, f.IsSwap)
     swap x y ∈ closure S ↔ x ∈ orbit (closure S) y := by
   refine ⟨fun h ↦ ⟨⟨swap x y, h⟩, swap_apply_right x y⟩, fun hf ↦ ?_⟩
   by_contra h
-  have := orbit_closure_aux S {x | swap x y ∈ closure S} (fun f hf ↦ ?_) (fun z hz ↦ ?_) h ⟨y, ?_⟩
+  have := exists_smul_not_mem_of_subset_orbit_closure S {x | swap x y ∈ closure S}
+    (fun f hf ↦ ?_) (fun z hz ↦ ?_) h ⟨y, ?_⟩
   · obtain ⟨σ, hσ, a, ha, hσa⟩ := this
     obtain ⟨z, w, hzw, rfl⟩ := hS σ hσ
     have := ne_of_mem_of_not_mem ha hσa
