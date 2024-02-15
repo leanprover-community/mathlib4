@@ -1018,6 +1018,43 @@ theorem tendsto_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : 
 set_option linter.uppercaseLean3 false in
 #align measure_theory.tendsto_integral_of_L1 MeasureTheory.tendsto_integral_of_L1
 
+/-- If `F i → f` in `L1`, then `∫ x, F i x ∂μ → ∫ x, f x ∂μ`. -/
+lemma tendsto_integral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G} {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0)) :
+    Tendsto (fun i ↦ ∫ x, F i x ∂μ) l (𝓝 (∫ x, f x ∂μ)) := by
+  refine tendsto_integral_of_L1 f hfi hFi ?_
+  simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
+  exact hF
+
+lemma tendsto_snorm_restrict_zero {β ι : Type*} [NormedAddCommGroup β]
+    {p : ℝ≥0∞} {f : ι → α → β} {l : Filter ι}
+    (h : Tendsto (fun n ↦ snorm (f n) p μ) l (𝓝 0)) (s : Set α) :
+    Tendsto (fun n ↦ snorm (f n) p (μ.restrict s)) l (𝓝 0) := by
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h ?_ ?_
+  · exact fun _ ↦ zero_le _
+  · exact fun _ ↦ snorm_restrict_le _
+
+/-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
+lemma tendsto_set_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
+    {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖₊ ∂μ) l (𝓝 0))
+    (s : Set α) :
+    Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
+  refine tendsto_integral_of_L1 f hfi.restrict ?_ ?_
+  · filter_upwards [hFi] with i hi using hi.restrict
+  · simp_rw [← snorm_one_eq_lintegral_nnnorm] at hF ⊢
+    exact tendsto_snorm_restrict_zero hF s
+
+/-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
+lemma tendsto_set_integral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
+    {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0))
+    (s : Set α) :
+    Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
+  refine tendsto_set_integral_of_L1 f hfi hFi ?_ s
+  simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
+  exact hF
+
 /-- **Lebesgue dominated convergence theorem** provides sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their integrals.
   We could weaken the condition `bound_integrable` to require `HasFiniteIntegral bound μ` instead
@@ -1270,8 +1307,21 @@ theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f)
   · rw [← hf.le_iff_eq, Filter.EventuallyEq, Filter.EventuallyLE]
     simp only [Pi.zero_apply, ofReal_eq_zero]
   · exact (ENNReal.measurable_ofReal.comp_aemeasurable hfi.1.aemeasurable)
-
 #align measure_theory.integral_eq_zero_iff_of_nonneg_ae MeasureTheory.integral_eq_zero_iff_of_nonneg_ae
+
+lemma ae_eq_of_integral_eq_of_ae_le {f g : α → ℝ} (hf : Integrable f μ)
+    (hg : Integrable g μ) (h_le : f ≤ᵐ[μ] g) (h_eq : ∫ a, f a ∂μ = ∫ a, g a ∂μ) :
+    f =ᵐ[μ] g := by
+  suffices g - f =ᵐ[μ] 0 by
+    filter_upwards [this] with a ha
+    symm
+    simpa only [Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using ha
+  have h_eq' : ∫ a, (g - f) a ∂μ = 0 := by
+    simp_rw [Pi.sub_apply]
+    rwa [integral_sub hg hf, sub_eq_zero, eq_comm]
+  rwa [integral_eq_zero_iff_of_nonneg_ae _ (hg.sub hf)] at h_eq'
+  filter_upwards [h_le] with a ha
+  simpa
 
 theorem integral_eq_zero_iff_of_nonneg {f : α → ℝ} (hf : 0 ≤ f) (hfi : Integrable f μ) :
     ∫ x, f x ∂μ = 0 ↔ f =ᵐ[μ] 0 :=

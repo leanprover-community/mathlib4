@@ -9,9 +9,10 @@ import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 
 /-!
-
+# Cumulative distributions functions of Markov kernels
 
 -/
 
@@ -19,27 +20,6 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology
-
-lemma measurableSet_tendsto_nhds {β γ ι : Type*} [MeasurableSpace β]
-    [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ]
-    [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
-    [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) (c : γ) :
-    MeasurableSet { x | Tendsto (fun n ↦ f n x) l (𝓝 c) } := sorry
-
-lemma measurableSet_tendsto_fun {β γ ι : Type*} [MeasurableSpace β]
-    [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ]
-    [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
-    [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) {g : β → γ}
-    (hg : Measurable g) :
-    MeasurableSet { x | Tendsto (fun n ↦ f n x) l (𝓝 (g x)) } := by
-  letI := upgradePolishSpace γ
-  have : { x | Tendsto (fun n ↦ f n x) l (𝓝 (g x)) }
-      = { x | Tendsto (fun n ↦ dist (f n x) (g x)) l (𝓝 0) } := by
-    ext x
-    simp only [mem_setOf_eq]
-    rw [tendsto_iff_dist_tendsto_zero]
-  rw [this]
-  exact measurableSet_tendsto_nhds (fun n ↦ (hf n).dist hg) 0
 
 namespace ProbabilityTheory
 
@@ -223,8 +203,6 @@ section IsCDFLike.stieltjesFunction
 
 variable {f : α → ℚ → ℝ} (hf : IsCDFLike f)
 
-/-- Conditional cdf of the measure given the value on `α`, as a plain function. This is an auxiliary
-definition used to define `cond_cdf`. -/
 noncomputable irreducible_def IsCDFLike.stieltjesFunctionAux (f : α → ℚ → ℝ) : α → ℝ → ℝ :=
   fun a t ↦ ⨅ r : { r' : ℚ // t < r' }, f a r
 
@@ -292,10 +270,6 @@ lemma  IsCDFLike.continuousWithinAt_stieltjesFunctionAux_Ici (a : α) (x : ℝ) 
   congr!
   rw [stieltjesFunctionAux_def]
 
-/-! ### Conditional cdf -/
-
-
-/-- Conditional cdf of the measure given the value on `α`, as a Stieltjes function. -/
 noncomputable def IsCDFLike.stieltjesFunction (a : α) : StieltjesFunction where
   toFun := stieltjesFunctionAux f a
   mono' := monotone_stieltjesFunctionAux hf a
@@ -304,11 +278,9 @@ noncomputable def IsCDFLike.stieltjesFunction (a : α) : StieltjesFunction where
 lemma IsCDFLike.stieltjesFunction_eq (a : α) (r : ℚ) : hf.stieltjesFunction a r = f a r :=
   stieltjesFunctionAux_eq hf a r
 
-/-- The conditional cdf is non-negative for all `a : α`. -/
 lemma IsCDFLike.stieltjesFunction_nonneg (a : α) (r : ℝ) : 0 ≤ hf.stieltjesFunction a r :=
   stieltjesFunctionAux_nonneg hf a r
 
-/-- The conditional cdf is lower or equal to 1 for all `a : α`. -/
 lemma IsCDFLike.stieltjesFunction_le_one (a : α) (x : ℝ) : hf.stieltjesFunction a x ≤ 1 := by
   obtain ⟨r, hrx⟩ := exists_rat_gt x
   rw [← StieltjesFunction.iInf_rat_gt_eq]
@@ -316,7 +288,6 @@ lemma IsCDFLike.stieltjesFunction_le_one (a : α) (x : ℝ) : hf.stieltjesFuncti
   refine ciInf_le_of_le (bddBelow_range_gt hf a x) ?_ (hf.le_one _ _)
   exact ⟨r, hrx⟩
 
-/-- The conditional cdf tends to 0 at -∞ for all `a : α`. -/
 lemma IsCDFLike.tendsto_stieltjesFunction_atBot (a : α) :
     Tendsto (hf.stieltjesFunction a) atBot (𝓝 0) := by
   have h_exists : ∀ x : ℝ, ∃ q : ℚ, x < q ∧ ↑q < x + 1 := fun x ↦ exists_rat_btwn (lt_add_one x)
@@ -333,7 +304,6 @@ lemma IsCDFLike.tendsto_stieltjesFunction_atBot (a : α) :
   rw [Function.comp_apply, ← stieltjesFunction_eq hf]
   exact (hf.stieltjesFunction a).mono (h_exists x).choose_spec.1.le
 
-/-- The conditional cdf tends to 1 at +∞ for all `a : α`. -/
 lemma IsCDFLike.tendsto_stieltjesFunction_atTop (a : α) :
     Tendsto (hf.stieltjesFunction a) atTop (𝓝 1) := by
   have h_exists : ∀ x : ℝ, ∃ q : ℚ, x - 1 < q ∧ ↑q < x := fun x ↦ exists_rat_btwn (sub_one_lt x)
@@ -350,7 +320,6 @@ lemma IsCDFLike.tendsto_stieltjesFunction_atTop (a : α) :
   rw [Function.comp_apply, ← stieltjesFunction_eq hf]
   exact (hf.stieltjesFunction a).mono (le_of_lt (h_exists x).choose_spec.2)
 
-/-- The conditional cdf is a measurable function of `a : α` for all `x : ℝ`. -/
 lemma IsCDFLike.measurable_stieltjesFunction (x : ℝ) :
     Measurable fun a ↦ hf.stieltjesFunction a x := by
   have : (fun a ↦ hf.stieltjesFunction a x) = fun a ↦ ⨅ r : { r' : ℚ // x < r' }, f a ↑r := by
@@ -361,7 +330,6 @@ lemma IsCDFLike.measurable_stieltjesFunction (x : ℝ) :
   rw [this]
   exact measurable_iInf (fun q ↦ hf.measurable q)
 
-/-- The conditional cdf is a strongly measurable function of `a : α` for all `x : ℝ`. -/
 lemma IsCDFLike.stronglyMeasurable_stieltjesFunction (x : ℝ) :
     StronglyMeasurable fun a ↦ hf.stieltjesFunction a x :=
   (measurable_stieltjesFunction hf x).stronglyMeasurable
@@ -383,7 +351,6 @@ instance IsCDFLike.instIsProbabilityMeasure_stieltjesFunction (a : α) :
     IsProbabilityMeasure (hf.stieltjesFunction a).measure :=
   ⟨measure_stieltjesFunction_univ hf a⟩
 
-/-- The function `a ↦ (condCDF ρ a).measure` is measurable. -/
 lemma IsCDFLike.measurable_measure_stieltjesFunction :
     Measurable fun a ↦ (hf.stieltjesFunction a).measure := by
   rw [Measure.measurable_measure]
@@ -433,30 +400,24 @@ lemma stieltjesOfMeasurableRat_unit_prod (hf : ∀ q, Measurable fun a ↦ f a q
   cases p with
   | mk _ b => rw [← toCDFLike_unit_prod b]
 
-/-- The conditional cdf is non-negative for all `a : α`. -/
 lemma stieltjesOfMeasurableRat_nonneg (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (r : ℝ) :
     0 ≤ stieltjesOfMeasurableRat f hf a r := IsCDFLike.stieltjesFunction_nonneg _ a r
 
-/-- The conditional cdf is lower or equal to 1 for all `a : α`. -/
 lemma stieltjesOfMeasurableRat_le_one (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) (x : ℝ) :
     stieltjesOfMeasurableRat f hf a x ≤ 1 := IsCDFLike.stieltjesFunction_le_one _ a x
 
-/-- The conditional cdf tends to 0 at -∞ for all `a : α`. -/
 lemma tendsto_stieltjesOfMeasurableRat_atBot (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
     Tendsto (stieltjesOfMeasurableRat f hf a) atBot (𝓝 0) :=
   IsCDFLike.tendsto_stieltjesFunction_atBot _ a
 
-/-- The conditional cdf tends to 1 at +∞ for all `a : α`. -/
 lemma tendsto_stieltjesOfMeasurableRat_atTop (hf : ∀ q, Measurable fun a ↦ f a q) (a : α) :
     Tendsto (stieltjesOfMeasurableRat f hf a) atTop (𝓝 1) :=
   IsCDFLike.tendsto_stieltjesFunction_atTop _ a
 
-/-- The conditional cdf is a measurable function of `a : α` for all `x : ℝ`. -/
 lemma measurable_stieltjesOfMeasurableRat (hf : ∀ q, Measurable fun a ↦ f a q) (x : ℝ) :
     Measurable fun a ↦ stieltjesOfMeasurableRat f hf a x :=
   IsCDFLike.measurable_stieltjesFunction _ x
 
-/-- The conditional cdf is a strongly measurable function of `a : α` for all `x : ℝ`. -/
 lemma stronglyMeasurable_stieltjesOfMeasurableRat (hf : ∀ q, Measurable fun a ↦ f a q) (x : ℝ) :
     StronglyMeasurable fun a ↦ stieltjesOfMeasurableRat f hf a x :=
   IsCDFLike.stronglyMeasurable_stieltjesFunction _ x

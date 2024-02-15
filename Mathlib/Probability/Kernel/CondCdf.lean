@@ -11,23 +11,23 @@ import Mathlib.Probability.Kernel.Disintegration.BuildKernel
 /-!
 # Conditional cumulative distribution function
 
-Given `ρ : measure (α × ℝ)`, we define the conditional cumulative distribution function
-(conditional cdf) of `ρ`. It is a function `cond_cdf ρ : α → ℝ → ℝ` such that if `ρ` is a finite
-measure, then for all `a : α` `cond_cdf ρ a` is monotone and right-continuous with limit 0 at -∞
-and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ cond_cdf ρ a x` is measurable. For all
+Given `ρ : Measure (α × ℝ)`, we define the conditional cumulative distribution function
+(conditional cdf) of `ρ`. It is a function `condCDF ρ : α → ℝ → ℝ` such that if `ρ` is a finite
+measure, then for all `a : α` `condCDF ρ a` is monotone and right-continuous with limit 0 at -∞
+and limit 1 at +∞, and such that for all `x : ℝ`, `a ↦ condCDF ρ a x` is measurable. For all
 `x : ℝ` and measurable set `s`, that function satisfies
-`∫⁻ a in s, ennreal.of_real (cond_cdf ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
+`∫⁻ a in s, ennreal.of_real (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
 ## Main definitions
 
-* `probability_theory.cond_cdf ρ : α → stieltjes_function`: the conditional cdf of
-  `ρ : measure (α × ℝ)`. A `stieltjes_function` is a function `ℝ → ℝ` which is monotone and
+* `ProbabilityTheory.condCDF ρ : α → StieltjesFunction`: the conditional cdf of
+  `ρ : Measure (α × ℝ)`. A `StieltjesFunction` is a function `ℝ → ℝ` which is monotone and
   right-continuous.
 
 ## Main statements
 
-* `probability_theory.set_lintegral_cond_cdf`: for all `a : α` and `x : ℝ`, all measurable set `s`,
-  `∫⁻ a in s, ennreal.of_real (cond_cdf ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
+* `ProbabilityTheory.set_lintegral_condCDF`: for all `a : α` and `x : ℝ`, all measurable set `s`,
+  `∫⁻ a in s, ENNReal.ofReal (condCDF ρ a x) ∂ρ.fst = ρ (s ×ˢ Iic x)`.
 
 ## References
 
@@ -154,13 +154,11 @@ attribute [local instance] MeasureTheory.Measure.IsFiniteMeasure.IicSnd
 
 /-! ### Auxiliary definitions
 
-We build towards the definition of `probability_theory.cond_cdf`. We first define
-`probability_theory.pre_cdf`, a function defined on `α × ℚ` with the properties of a cdf almost
-everywhere. We then introduce `probability_theory.cond_cdf_rat`, a function on `α × ℚ` which has
-the properties of a cdf for all `a : α`. We finally extend to `ℝ`. -/
+We build towards the definition of `ProbabilityTheory.cond_cdf`. We first define
+`ProbabilityTheory.preCDF`, a function defined on `α × ℚ` with the properties of a cdf almost
+everywhere.  -/
 
-
-/-- `pre_cdf` is the Radon-Nikodym derivative of `ρ.IicSnd` with respect to `ρ.fst` at each
+/-- `preCDF` is the Radon-Nikodym derivative of `ρ.IicSnd` with respect to `ρ.fst` at each
 `r : ℚ`. This function `ℚ → α → ℝ≥0∞` is such that for almost all `a : α`, the function `ℚ → ℝ≥0∞`
 satisfies the properties of a cdf (monotone with limit 0 at -∞ and 1 at +∞, right-continuous).
 
@@ -321,7 +319,7 @@ theorem tendsto_preCDF_atTop_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
 theorem tendsto_preCDF_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCDF ρ r a) atBot (𝓝 0) := by
   -- We show first that `preCDF` has a limit in ℝ≥0∞ almost everywhere.
-  -- We then show that the integral of `pre_cdf` tends to 0, and that it also tends
+  -- We then show that the integral of `preCDF` tends to 0, and that it also tends
   -- to the integral of the limit. Since the limit has integral 0, it is equal to 0 a.e.
   suffices ∀ᵐ a ∂ρ.fst, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 0) by
     filter_upwards [this] with a ha

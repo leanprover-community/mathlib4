@@ -91,7 +91,7 @@ def condKernelBorelSnd (κ : kernel α (β × Ω)) {f : α × β → StieltjesFu
   let he := measurableEmbedding_measurableEmbedding_real Ω
   let x₀ := (range_nonempty e).choose
   kernel.comapRight
-    (kernel.piecewise (measurableSet_eq_one hf he.measurableSet_range)
+    (kernel.piecewise (measurableSet_cdfKernel_eq_one hf he.measurableSet_range)
       (cdfKernel f hf) (kernel.deterministic (fun _ ↦ x₀) measurable_const))
     he
 
@@ -324,7 +324,7 @@ section Measure
 variable {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 
 /-- Conditional kernel of a measure on a product space: a Markov kernel such that
-`ρ = ρ.fst ⊗ₘ ρ.condKernel` (see `ProbabilityTheory.measure_eq_compProd`). -/
+`ρ = ρ.fst ⊗ₘ ρ.condKernel` (see `MeasureTheory.Measure.compProd_fst_condKernel`). -/
 noncomputable
 def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
     kernel α Ω :=

@@ -195,8 +195,7 @@ theorem Measure.eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFini
       Measure.compProd_apply hs, Measure.compProd_apply (measurable_id.prod_map hf.measurable hs)]
     congr with a
     rw [kernel.map_apply']
-    · rfl
-    · exact measurable_prod_mk_left hs
+    exacts [rfl, measurable_prod_mk_left hs]
   suffices : ∀ᵐ x ∂ρ.fst, ∀ s, MeasurableSet s → ρ'.condKernel x s = ρ.condKernel x (f ⁻¹' s)
   · filter_upwards [hρ'', this] with x hx h
     rw [kernel.map_apply] at hx
@@ -216,8 +215,7 @@ theorem Measure.eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFini
     Measure.compProd_apply]
   · congr with a
     rw [kernel.map_apply']
-    · rfl
-    · exact measurable_prod_mk_left hs
+    exacts [rfl, measurable_prod_mk_left hs]
   · exact measurable_id.prod_map hf.measurable hs
 
 end Measure

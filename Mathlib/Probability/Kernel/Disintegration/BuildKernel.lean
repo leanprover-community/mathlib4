@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Disintegration.StieltjesReal
 import Mathlib.Probability.Kernel.MeasureCompProd
+import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 
 /-!
 
@@ -15,24 +16,6 @@ import Mathlib.Probability.Kernel.MeasureCompProd
 open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
-section AuxLemmasToBeMoved
-
-variable {α β ι : Type*}
-
-theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
-  ext1 x
-  simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
-  obtain ⟨r, hr⟩ := exists_rat_gt x
-  exact ⟨r, hr.le⟩
-#align real.Union_Iic_rat Real.iUnion_Iic_rat
-
-theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
-  ext1 x
-  simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
-  exact exists_rat_lt x
-#align real.Inter_Iic_rat Real.iInter_Iic_rat
-
-end AuxLemmasToBeMoved
 
 namespace ProbabilityTheory
 
@@ -79,8 +62,7 @@ lemma set_lintegral_stieltjesOfMeasurableRat [IsFiniteKernel μ] (hf : IsRatKern
     ∫⁻ t in s, ENNReal.ofReal (stieltjesOfMeasurableRat f hf.measurable (a, t) x) ∂(ν a)
       = μ a (s ×ˢ Iic x) := by
   -- We have the result for `x : ℚ` thanks to `set_lintegral_stieltjesOfMeasurableRat_rat`.
-  -- We use the equality `condCDF ρ a x = ⨅ r : {r' : ℚ // x < r'}, condCDF ρ a r` and a monotone
-  -- convergence argument to extend it to the reals.
+  -- We use  a monotone convergence argument to extend it to the reals.
   by_cases hρ_zero : (ν a).restrict s = 0
   · rw [hρ_zero, lintegral_zero_measure]
     have ⟨q, hq⟩ := exists_rat_gt x
@@ -193,7 +175,6 @@ structure IsKernelCDF (f : α × β → StieltjesFunction) (μ : kernel α (β �
   (tendsto_atBot_zero (p : α × β) : Tendsto (f p) atBot (𝓝 0))
   (set_integral (a : α) {s : Set β} (_hs : MeasurableSet s) (x : ℝ) :
     ∫ t in s, f (a, t) x ∂(ν a) = (μ a (s ×ˢ Iic x)).toReal)
--- todo: nonneg and le_one are consequences of tendsto_atTop_one and tendsto_atBot_zero
 
 lemma IsKernelCDF.nonneg (hf : IsKernelCDF f μ ν) (p : α × β) (x : ℝ) : 0 ≤ f p x :=
   Monotone.le_of_tendsto (f p).mono (hf.tendsto_atBot_zero p) x
@@ -451,7 +432,7 @@ lemma ae_cdfKernel_eq_one [IsFiniteKernel μ] [IsSFiniteKernel ν] (hf : IsKerne
   change cdfKernel f hf (a, t) sᶜ = 0 at ht
   rwa [prob_compl_eq_zero_iff hs] at ht
 
-lemma measurableSet_eq_one (hf : IsKernelCDF f μ ν) {s : Set ℝ} (hs : MeasurableSet s) :
+lemma measurableSet_cdfKernel_eq_one (hf : IsKernelCDF f μ ν) {s : Set ℝ} (hs : MeasurableSet s) :
     MeasurableSet {p | cdfKernel f hf p s = 1} :=
   (kernel.measurable_coe _ hs) (measurableSet_singleton 1)
 
