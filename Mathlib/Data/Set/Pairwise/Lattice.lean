@@ -169,13 +169,8 @@ theorem pairwiseDisjoint_unique {y : α}
     (h_disjoint : PairwiseDisjoint s f)
     (hy : y ∈ (⋃ i ∈ s, f i)) : ∃! i, i ∈ s ∧ y ∈ f i := by
   refine exists_unique_of_exists_of_unique ?ex ?unique
-  · rw [mem_iUnion] at hy
-    choose i hi using hy
-    use i
-    rw [mem_iUnion] at hi
-    exact exists_prop.mp hi
-  · intro i j hi hj
-    have : ¬Disjoint (f i) (f j) := not_disjoint_iff.mpr ⟨y, ⟨hi.2, hj.2⟩⟩
-    exact PairwiseDisjoint.elim h_disjoint hi.1 hj.1 this
+  · simpa only [mem_iUnion, exists_prop] using hy
+  · rintro i j ⟨his, hi⟩ ⟨hjs, hj⟩
+    exact hsf.elim his hjs <| not_disjoint_iff.mpr ⟨y, ⟨hi, hj⟩⟩
 
 end

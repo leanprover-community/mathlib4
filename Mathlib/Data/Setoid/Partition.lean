@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang
+Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan Commelin
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite
@@ -506,7 +506,10 @@ theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.
 /-- Combine functions with disjoint domains into a new function.
 You can use the regular expression `def.*piecewise` to search for
 other ways to define piecewise functions in mathlib4.-/
-def piecewise {β: Type*} (f : ι → α → β) : α → β := fun x => f (hs.index x) x
+def piecewise {β : Type*} (f : ι → α → β) : α → β := fun x => f (hs.index x) x
+
+lemma piecewise_apply {β : Type*} {f : ι → α → β} (x : α) : hs.piecewise f x = f (hs.index x) x :=
+  rfl
 
 open Function
 
@@ -515,25 +518,15 @@ domains and pairwise disjoint ranges can be glued together
 to form an injective function.-/
 theorem piecewise_inj {β : Type*} {f : ι → α → β}
     (h_injOn : ∀ i, InjOn (f i) (s i))
-    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)):
+    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)) :
     Injective (piecewise hs f) := by
-  intro x y hfxy
-  let i := index hs x
-  have hix : piecewise hs f x = f i x := rfl
-  let j := index hs y
-  have hjy : piecewise hs f y = f j y := rfl
-  have hz : piecewise hs f x ∈ (⋃ i' ∈ univ, (f i') '' (s i')) := by
-    simp only [mem_univ, iUnion_true, mem_iUnion, mem_image]
-    exact ⟨i, x, mem_index hs x, rfl⟩
-  choose k hk_exist hk_unique using pairwiseDisjoint_unique h_disjoint hz
-  set g := piecewise hs f
-  have hik : i = k := hk_unique i ⟨trivial, ⟨x, mem_index hs x, rfl⟩⟩
-  have hjk : j = k := hk_unique j ⟨trivial, ⟨y, mem_index hs y, by rw [hfxy, hjy]⟩⟩
-  have hij : i = j := hik.trans hjk.symm
-  rw [hix, hjy, hij] at hfxy
-  refine (h_injOn j) ?_ (mem_index hs y) hfxy
-  rw [← hij]
-  exact mem_index hs x
+  intro x y h
+  suffices hs.index x = hs.index y by
+    apply h_injOn (hs.index x) (hs.mem_index x) (this ▸ hs.mem_index y)
+    simpa only [piecewise_apply, this] using h
+  apply h_disjoint.elim trivial trivial
+  contrapose! h
+  exact h.ne_of_mem (mem_image_of_mem _ (hs.mem_index x)) (mem_image_of_mem _ (hs.mem_index y))
 
 /-- A family of bijective functions with pairwise disjoint
 domains and pairwise disjoint ranges can be glued together
@@ -547,12 +540,12 @@ theorem piecewise_bij {β : Type*} {f : ι → α → β}
     intro i
     refine BijOn.congr (hf i) ?_
     intro x hx
-    rw [hg, piecewise, hs.mem_iff_index_eq.mp hx]
+    rw [hg, piecewise_apply, hs.mem_iff_index_eq.mp hx]
   have hg_inj : InjOn g (⋃ i, s i) := by
     refine injOn_of_injective ?_ (⋃ (i : ι), s i)
     refine piecewise_inj hs (fun i ↦ BijOn.injOn (hf i)) ?h_disjoint
     simp only [fun i ↦ BijOn.image_eq (hf i)]
-    intro i _ j _ hij
+    rintro i - j - hij
     exact ht.disjoint hij
   rw [bijective_iff_bijOn_univ, ← hs.iUnion, ← ht.iUnion]
   exact bijOn_iUnion hg_bij hg_inj
