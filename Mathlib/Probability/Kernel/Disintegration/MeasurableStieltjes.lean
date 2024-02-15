@@ -151,7 +151,7 @@ lemma inf_gt_rat_defaultRatCDF (t : ℚ) :
       exact h.trans (mem_Ioi.mp x.prop).le
 
 lemma measurable_defaultRatCDF (α : Type*) [MeasurableSpace α] (q : ℚ) :
-  Measurable (fun (_ : α) ↦ defaultRatCDF q) := measurable_const
+    Measurable (fun (_ : α) ↦ defaultRatCDF q) := measurable_const
 
 lemma isCDFLike_defaultRatCDF (α : Type*) [MeasurableSpace α] :
     IsCDFLike (fun (_ : α) (q : ℚ) ↦ defaultRatCDF q) where
