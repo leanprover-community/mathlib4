@@ -1,6 +1,5 @@
 import Mathlib.Tactic.Widget.StringDiagram
 import ProofWidgets.Component.Panel.SelectionPanel
-import ProofWidgets.Component.Panel.GoalTypePanel
 
 /-! ## Example use of string diagram widgets -/
 
