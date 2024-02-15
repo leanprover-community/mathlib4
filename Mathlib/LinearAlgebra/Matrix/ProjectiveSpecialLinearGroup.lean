@@ -32,14 +32,14 @@ abbrev ProjectiveSpecialLinearGroup : Type _ :=
 /-- `PSL(n, R)` is the projective special linear group `SL(n, R)/Z(SL(n, R))`.-/
 scoped[MatrixGroups] notation "PSL(" n ", " R ")" => Matrix.ProjectiveSpecialLinearGroup (Fin n) R
 
-variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R] [Inhabited n]
+variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
     {α : Type*}
 
 namespace SpecialLinearGroup
 
 open SpecialLinearGroup
 
-/-- This is a converter to help you with `quotient.liftOn'` and `quotient.liftOn₂'`.
+/-- This is a converter to help you with `quotient.liftOn'` and `quotient.liftOn₂'` for `PSL(n, R)`.
 
 Example :
 ```lean
@@ -50,26 +50,22 @@ instance : SMul PSL(2, ℝ) ℍ where
     rw [SpecialLinearGroup.coset_center_iff] at hAB
 ```
 -/
-theorem coset_center_iff
+theorem coset_center_iff [Inhabited n]
     {A B : SpecialLinearGroup n R} : A⁻¹ * B ∈ Subgroup.center (SpecialLinearGroup n R) ↔
     ∃ (c : R), (c ^ Fintype.card n = 1 ∧ B.val = c • A.val) := by
   constructor
   · intro hAB
-    obtain ⟨hc, hAB⟩ := mem_center_iff.mp hAB
-    set c := (A⁻¹ * B).val default default
-    use c
+    obtain ⟨hc, hAB⟩ := mem_center_iff.mp hAB default
+    use (A⁻¹ * B).val default default
     replace hAB := congrArg (HMul.hMul A.val) hAB
     rw [coe_mul, ← mul_assoc, mul_smul, mul_one, ← coe_mul,
         @mul_inv_self, coe_one, one_mul] at hAB
     exact ⟨hc, hAB⟩
-  · intro hc
-    choose c hc hAB using hc
+  · intro ⟨c, hc, hAB⟩
     replace hAB := congrArg (HMul.hMul A⁻¹.val) hAB
     rw [@mul_smul, ← coe_mul, ← coe_mul, @mul_left_inv] at hAB
-    refine mem_center_iff.mpr ?_
-    have : (A⁻¹ * B) default default = c := by
-      rw [hAB, @smul_apply]
-      simp
+    refine mem_center_iff.mpr (fun i => ?_)
+    have : (A⁻¹ * B) i i = c := by rw [hAB, @smul_apply]; simp
     rw [this]
     exact ⟨hc, hAB⟩
 
@@ -77,7 +73,7 @@ section SL2
 
 variable [Fact (Even (Fintype.card n))] {hn : Fintype.card n = 2} [NoZeroDivisors R]
 
-/-- This is a converter to help you with `quotient.liftOn'` and `quotient.liftOn₂'`.
+/-- This is a converter to help you with `quotient.liftOn'` and `quotient.liftOn₂'` for `PSL(2, R)`.
 
 Example :
 ```lean
@@ -90,6 +86,8 @@ instance : SMul PSL(2, ℝ) ℍ where
 theorem coset_center_iff_2
     {A B : SpecialLinearGroup n R} : A⁻¹ * B ∈ Subgroup.center (SpecialLinearGroup n R) ↔
     (B = A ∨ B = -A) := by
+  have h : Nonempty n := by rw [← Fintype.card_pos_iff]; positivity
+  haveI : Inhabited n := Classical.inhabited_of_nonempty h
   rw [coset_center_iff]
   aesop
 
