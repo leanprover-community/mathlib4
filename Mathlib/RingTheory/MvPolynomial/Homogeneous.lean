@@ -165,7 +165,7 @@ end
 
 namespace IsHomogeneous
 
-variable [CommSemiring R] {φ ψ : MvPolynomial σ R} {m n : ℕ}
+variable [CommSemiring R] [CommSemiring S] {φ ψ : MvPolynomial σ R} {m n : ℕ}
 
 theorem coeff_eq_zero (hφ : IsHomogeneous φ n) (d : σ →₀ ℕ) (hd : ∑ i in d.support, d i ≠ n) :
     coeff d φ = 0 := by
@@ -205,6 +205,48 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     intro j hjs
     exact h j (Finset.mem_insert_of_mem hjs)
 #align mv_polynomial.is_homogeneous.prod MvPolynomial.IsHomogeneous.prod
+
+lemma C_mul (hφ : φ.IsHomogeneous m) (r : R) :
+    (C r * φ).IsHomogeneous m := by
+  simpa only [zero_add] using (isHomogeneous_C _ _).mul hφ
+
+lemma _root_.MvPolynomial.C_mul_X (r : R) (i : σ) :
+    (C r * X i).IsHomogeneous 1 :=
+  (isHomogeneous_X _ _).C_mul _
+
+lemma pow (hφ : φ.IsHomogeneous m) (n : ℕ) : (φ ^ n).IsHomogeneous (m * n) := by
+  rw [show φ ^ n = ∏ _i in Finset.range n, φ by simp]
+  rw [show m * n = ∑ _i in Finset.range n, m by simp [mul_comm]]
+  apply IsHomogeneous.prod _ _ _ (fun _ _ ↦ hφ)
+
+lemma _root_.MvPolynomial.isHomogeneous_X_pow (i : σ) (n : ℕ) :
+    (X (R := R) i ^ n).IsHomogeneous n := by
+  simpa only [one_mul] using (isHomogeneous_X _ _).pow n
+
+lemma _root_.MvPolynomial.isHomogeneous_C_mul_X_pow (r : R) (i : σ) (n : ℕ) :
+    (C r * X i ^ n).IsHomogeneous n :=
+  (isHomogeneous_X_pow _ _).C_mul _
+
+lemma eval₂ (hφ : φ.IsHomogeneous m) (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S)
+    (hf : ∀ r, (f r).IsHomogeneous 0) (hg : ∀ i, (g i).IsHomogeneous n) :
+    (eval₂ f g φ).IsHomogeneous (n * m) := by
+  apply IsHomogeneous.sum
+  intro i hi
+  rw [← zero_add (n * m)]
+  apply IsHomogeneous.mul (hf _) _
+  convert IsHomogeneous.prod _ _ (fun k ↦ n * i k) _
+  · rw [Finsupp.mem_support_iff] at hi
+    rw [← Finset.mul_sum, hφ hi]
+  · rintro k -
+    apply (hg k).pow
+
+lemma map (hφ : φ.IsHomogeneous n) (f : R →+* S) : (map f φ).IsHomogeneous n := by
+  simpa only [one_mul] using hφ.eval₂ _ _ (fun r ↦ isHomogeneous_C _ (f r)) (isHomogeneous_X _)
+
+lemma aeval [Algebra R S] (hφ : φ.IsHomogeneous m)
+    (g : σ → MvPolynomial τ S) (hg : ∀ i, (g i).IsHomogeneous n) :
+    (aeval g φ).IsHomogeneous (n * m) :=
+  hφ.eval₂ _ _ (fun _ ↦ isHomogeneous_C _ _) hg
 
 section CommRing
 
