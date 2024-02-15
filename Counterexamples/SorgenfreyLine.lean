@@ -312,7 +312,8 @@ theorem not_separatedNhds_rat_irrational_antidiag :
   have H : {x : ℝ | Irrational x} ⊆ ⋃ n, C n := fun x hx =>
     mem_iUnion.2 ⟨_, subset_closure ⟨hx, rfl⟩⟩
   have Hd : Dense (⋃ n, interior (C n)) :=
-    isGδ_irrational.dense_iUnion_interior_of_closed dense_irrational (fun _ => isClosed_closure) H
+    IsGδ.setOf_irrational.dense_iUnion_interior_of_closed dense_irrational
+      (fun _ => isClosed_closure) H
   obtain ⟨N, hN⟩ : ∃ n : ℕ+, (interior <| C n).Nonempty; exact nonempty_iUnion.mp Hd.nonempty
   /- Choose a rational number `r` in the interior of the closure of `C N`, then choose `n ≥ N > 0`
     such that `Ico r (r + n⁻¹) × Ico (-r) (-r + n⁻¹) ⊆ U`. -/
