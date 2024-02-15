@@ -62,6 +62,10 @@ instance small_inter_left (s t : Set α) [Small.{u} s] : Small.{u} (s ∩ t : Se
 instance small_inter_right (s t : Set α) [Small.{u} t] : Small.{u} (s ∩ t : Set α) :=
   small_subset (Set.inter_subset_right s t)
 
+example {α : Type u} (r : α → α → Prop) (a b : α) [IsSymm α r] : IsSymm α (¬ r · ·) := by
+  symm
+
+
 end Small
 
 noncomputable section
