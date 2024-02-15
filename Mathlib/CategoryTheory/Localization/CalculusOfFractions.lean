@@ -14,9 +14,9 @@ we introduce the class `W.HasLeftCalculusOfFractions`. The main
 result `Localization.exists_leftFraction` is that if `L : C ⥤ D`
 is a localization functor for `W`, then for any morphism `L.obj X ⟶ L.obj Y` in `D`,
 there exists an auxiliary object `Y' : C` and morphisms `g : X ⟶ Y'` and `s : Y ⟶ Y'`,
-with `W s`, such that the given morphism is a sort of fraction `g / s`, or more precisely of
-the form `L.map g ≫ (Localization.isoOfHom L W s hs).inv`. We also show that the functor
-`L.mapArrow : Arrow C ⥤ Arrow D` is essentially surjective.
+with `W s`, such that the given morphism is a sort of fraction `g / s`,
+or more precisely of the form `L.map g ≫ (Localization.isoOfHom L W s hs).inv`.
+We also show that the functor `L.mapArrow : Arrow C ⥤ Arrow D` is essentially surjective.
 
 ## References
 
