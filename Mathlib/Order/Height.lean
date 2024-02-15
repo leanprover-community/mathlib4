@@ -62,7 +62,7 @@ def subchain : Set (List α) :=
 #align set.subchain Set.subchain
 
 @[simp] -- porting note: new `simp`
-theorem nil_mem_subchain : [] ∈ s.subchain := ⟨trivial, fun _ ↦ fun.⟩
+theorem nil_mem_subchain : [] ∈ s.subchain := ⟨trivial, fun _ ↦ nofun⟩
 #align set.nil_mem_subchain Set.nil_mem_subchain
 
 variable {s} {l : List α} {a : α}

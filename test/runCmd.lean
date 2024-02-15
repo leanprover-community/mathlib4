@@ -1,5 +1,5 @@
 import Lean.Elab.Tactic.ElabTerm
-import Mathlib.Tactic.RunCmd
+import Std.Tactic.RunCmd
 
 open Lean Elab Tactic
 

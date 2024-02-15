@@ -1695,7 +1695,6 @@ import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.Data.IsROrC.Lemmas
-import Mathlib.Data.LazyList
 import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
@@ -3547,7 +3546,6 @@ import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Ring.PNat
 import Mathlib.Tactic.Ring.RingNF
-import Mathlib.Tactic.RunCmd
 import Mathlib.Tactic.Sat.FromLRAT
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.ScopedNS

@@ -11,7 +11,6 @@ import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Std.Lean.NameMapAttribute
 import Std.Data.Option.Basic
-import Std.Tactic.CoeExt -- just to copy the attribute
 import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Std.Tactic.Relation.Rfl -- just to copy the attribute
@@ -1136,7 +1135,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     warnAttr stx Std.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
     warnAttr stx Std.Tactic.symmExt (·.values.contains ·) thisAttr `symm src tgt
     warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
-    warnAttr stx Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src tgt
+    warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
     warnParametricAttr stx simpsAttr thisAttr `simps src tgt
