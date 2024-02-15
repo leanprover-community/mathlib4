@@ -215,7 +215,7 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
   | .comp f g, η => do
     let η' ← evalWhiskerLeftExpr f (← evalWhiskerLeftExpr g η)
     let h ← η.src
-    let h' ← η'.tar
+    let h' ← η.tar
     return evalComp (← NormalExpr.associator f g h) (evalComp η' (← NormalExpr.associatorInv f g h'))
   | .id, η => do
     let f ← η.src
