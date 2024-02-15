@@ -247,6 +247,10 @@ theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
 lemma mul_inv_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a * b⁻¹ ≤ 1 := by
   simpa only [← div_eq_mul_inv] using div_le_one_of_le h hb
 
+/-- `b⁻¹ * a` version of `div_le_one_of_le` -/
+lemma inv_mul_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 := by
+  simpa only [← div_eq_inv_mul] using div_le_one_of_le h hb
+
 /-!
 ### Bi-implications of inequalities using inversions
 -/
