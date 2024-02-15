@@ -644,7 +644,7 @@ such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist."]
 noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m • x) a
 
 /-- `MulAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
-@[to_additive]
+@[to_additive "`AddAction.period m a` is definitionally equal to `Function.minimalPeriod (m +ᵥ ·) a`"]
 theorem period_eq_minimalPeriod {m : M} {a : α} :
     MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
 
