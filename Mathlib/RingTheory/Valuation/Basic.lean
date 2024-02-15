@@ -148,17 +148,17 @@ variable (v : Valuation R Γ₀) {x y z : R}
 theorem coe_coe : ⇑(v : R →*₀ Γ₀) = v := rfl
 #align valuation.coe_coe Valuation.coe_coe
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_zero : v 0 = 0 :=
   v.map_zero'
 #align valuation.map_zero Valuation.map_zero
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_one : v 1 = 1 :=
   v.map_one'
 #align valuation.map_one Valuation.map_one
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
   v.map_mul'
 #align valuation.map_mul Valuation.map_mul
@@ -205,7 +205,7 @@ theorem map_sum_lt' {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg 
   v.map_sum_lt (ne_of_gt hg) hf
 #align valuation.map_sum_lt' Valuation.map_sum_lt'
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem map_pow : ∀ (x) (n : ℕ), v (x ^ n) = v x ^ n :=
   v.toMonoidWithZeroHom.toMonoidHom.map_pow
 #align valuation.map_pow Valuation.map_pow
@@ -224,7 +224,7 @@ def toPreorder : Preorder R :=
 #align valuation.to_preorder Valuation.toPreorder
 
 /-- If `v` is a valuation on a division ring then `v(x) = 0` iff `x = 0`. -/
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem zero_iff [Nontrivial Γ₀] (v : Valuation K Γ₀) {x : K} : v x = 0 ↔ x = 0 :=
   map_eq_zero v
 #align valuation.zero_iff Valuation.zero_iff

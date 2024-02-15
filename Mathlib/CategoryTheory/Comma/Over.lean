@@ -362,7 +362,7 @@ theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right =
   congr; simp only [eq_iff_true_of_subsingleton]
 #align category_theory.under.under_morphism.ext CategoryTheory.Under.UnderMorphism.ext
 
--- @[simp] Porting note: simp can prove this
+-- @[simp] Porting note (#10618): simp can prove this
 theorem under_left (U : Under X) : U.left = ⟨⟨⟩⟩ := by simp only
 #align category_theory.under.under_left CategoryTheory.Under.under_left
 

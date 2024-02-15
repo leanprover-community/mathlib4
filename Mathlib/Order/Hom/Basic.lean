@@ -826,7 +826,7 @@ protected theorem surjective (e : α ≃o β) : Function.Surjective e :=
   e.toEquiv.surjective
 #align order_iso.surjective OrderIso.surjective
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 -- @[simp]
 theorem apply_eq_iff_eq (e : α ≃o β) {x y : α} : e x = e y ↔ x = y :=
   e.toEquiv.apply_eq_iff_eq

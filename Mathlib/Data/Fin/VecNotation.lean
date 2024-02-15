@@ -179,12 +179,12 @@ theorem range_empty (u : Fin 0 → α) : Set.range u = ∅ :=
   Set.range_eq_empty _
 #align matrix.range_empty Matrix.range_empty
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem range_cons_empty (x : α) (u : Fin 0 → α) : Set.range (Matrix.vecCons x u) = {x} := by
   rw [range_cons, range_empty, Set.union_empty]
 #align matrix.range_cons_empty Matrix.range_cons_empty
 
--- @[simp] -- Porting note: simp can prove this (up to commutativity)
+-- @[simp] -- Porting note (#10618): simp can prove this (up to commutativity)
 theorem range_cons_cons_empty (x y : α) (u : Fin 0 → α) :
     Set.range (vecCons x <| vecCons y u) = {x, y} := by
   rw [range_cons, range_cons_empty, Set.singleton_union]
@@ -474,7 +474,7 @@ theorem add_cons (v : Fin n.succ → α) (y : α) (w : Fin n → α) :
   refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
 #align matrix.add_cons Matrix.add_cons
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem cons_add_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
     vecCons x v + vecCons y w = vecCons (x + y) (v + w) := by simp
 #align matrix.cons_add_cons Matrix.cons_add_cons
@@ -514,7 +514,7 @@ theorem sub_cons (v : Fin n.succ → α) (y : α) (w : Fin n → α) :
   refine' Fin.cases _ _ i <;> simp [vecHead, vecTail]
 #align matrix.sub_cons Matrix.sub_cons
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem cons_sub_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n → α) :
     vecCons x v - vecCons y w = vecCons (x - y) (v - w) := by simp
 #align matrix.cons_sub_cons Matrix.cons_sub_cons

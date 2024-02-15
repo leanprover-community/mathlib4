@@ -133,7 +133,7 @@ theorem ringChar_zmod_n (n : ℕ) : ringChar (ZMod n) = n := by
   exact ZMod.charP n
 #align zmod.ring_char_zmod_n ZMod.ringChar_zmod_n
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem nat_cast_self (n : ℕ) : (n : ZMod n) = 0 :=
   CharP.cast_eq_zero (ZMod n) n
 #align zmod.nat_cast_self ZMod.nat_cast_self
