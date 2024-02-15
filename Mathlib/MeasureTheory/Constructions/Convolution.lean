@@ -15,9 +15,6 @@ In this file we define and prove properties about the convolutions of two measur
 * `MeasureTheory.Measure.mconv`: The multiplicative convolution of two measures.
 * `MeasureTheory.Measure.conv`: The additive convolution of two measures.
 
-## Main results
-
-* add
 ## Implementation Notes
 
 ## Tags
