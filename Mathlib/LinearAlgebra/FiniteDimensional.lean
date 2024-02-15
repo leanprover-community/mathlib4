@@ -933,29 +933,30 @@ end Span
 
 section Basis
 
-theorem span_eq_top_of_linearIndependent_of_card_eq_finrank {ι : Type*} [hι : Nonempty ι]
-    [Fintype ι] {b : ι → V} (lin_ind : LinearIndependent K b)
+theorem LinearIndependent.span_eq_top_of_card_eq_finrank' {ι : Type*}
+    [Fintype ι] [FiniteDimensional K V] {b : ι → V} (lin_ind : LinearIndependent K b)
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ := by
-  by_cases fin : FiniteDimensional K V
-  · by_contra ne_top
-    have lt_top : span K (Set.range b) < ⊤ := lt_of_le_of_ne le_top ne_top
-    exact ne_of_lt (Submodule.finrank_lt lt_top)
-      (_root_.trans (finrank_span_eq_card lin_ind) card_eq)
-  · exfalso
-    apply ne_of_lt (Fintype.card_pos_iff.mpr hι)
-    symm
-    replace fin := (not_iff_not.2 IsNoetherian.iff_fg).2 fin
-    calc
-      Fintype.card ι = finrank K V := card_eq
-      _ = 0 := dif_neg (mt IsNoetherian.iff_rank_lt_aleph0.mpr fin)
-#align span_eq_top_of_linear_independent_of_card_eq_finrank span_eq_top_of_linearIndependent_of_card_eq_finrank
+  by_contra ne_top
+  rw [← finrank_span_eq_card lin_ind] at card_eq
+  exact ne_of_lt (Submodule.finrank_lt <| lt_top_iff_ne_top.2 ne_top) card_eq
+
+theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty ι]
+    [Fintype ι] {b : ι → V} (lin_ind : LinearIndependent K b)
+    (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ :=
+  have : FiniteDimensional K V := .of_finrank_pos <| card_eq ▸ Fintype.card_pos
+  lin_ind.span_eq_top_of_card_eq_finrank' card_eq
+#align span_eq_top_of_linear_independent_of_card_eq_finrank LinearIndependent.span_eq_top_of_card_eq_finrank
+
+@[deprecated] -- 2024-02-14
+alias span_eq_top_of_linearIndependent_of_card_eq_finrank :=
+  LinearIndependent.span_eq_top_of_card_eq_finrank
 
 /-- A linear independent family of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]
 noncomputable def basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [Fintype ι]
     {b : ι → V} (lin_ind : LinearIndependent K b) (card_eq : Fintype.card ι = finrank K V) :
     Basis ι K V :=
-  Basis.mk lin_ind <| (span_eq_top_of_linearIndependent_of_card_eq_finrank lin_ind card_eq).ge
+  Basis.mk lin_ind <| (lin_ind.span_eq_top_of_card_eq_finrank card_eq).ge
 #align basis_of_linear_independent_of_card_eq_finrank basisOfLinearIndependentOfCardEqFinrank
 
 @[simp]
