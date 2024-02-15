@@ -622,8 +622,6 @@ section Nat
 variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R) (M)
 
---include R
-
 theorem Nat.noZeroSMulDivisors : NoZeroSMulDivisors ℕ M :=
   ⟨by
     intro c x
@@ -678,7 +676,6 @@ section Nat
 
 variable [NoZeroSMulDivisors R M] [CharZero R]
 variable (R M)
---include R
 
 theorem self_eq_neg {v : M} : v = -v ↔ v = 0 := by
   rw [← two_nsmul_eq_zero R M, two_smul, add_eq_zero_iff_eq_neg]

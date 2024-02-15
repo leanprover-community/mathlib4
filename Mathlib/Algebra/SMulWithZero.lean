@@ -230,6 +230,7 @@ def smulMonoidWithZeroHom {α β : Type*} [MonoidWithZero α] [MulZeroOneClass �
 #align smul_monoid_with_zero_hom smulMonoidWithZeroHom
 #align smul_monoid_with_zero_hom_apply smulMonoidWithZeroHom_apply
 
--- This seems a bit incongruous, but #find_home! told me to put this here.
-instance NonUnitalNonAssocSemiring.DistribSMul [NonUnitalNonAssocSemiring R] : DistribSMul R R where
+-- This instance seems a bit incongruous in this file, but `#find_home!` told me to put it here.
+instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :
+    DistribSMul R R where
   smul_add := mul_add
