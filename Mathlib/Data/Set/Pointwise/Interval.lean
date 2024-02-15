@@ -359,11 +359,11 @@ theorem image_const_add_Iio : (fun x => a + x) '' Iio b = Iio (a + b) := by simp
 -/
 
 
--- @[simp] -- Porting note: simp can prove this
+@[deprecated]
 theorem image_add_const_Iic : (fun x => x + a) '' Iic b = Iic (b + a) := by simp
 #align set.image_add_const_Iic Set.image_add_const_Iic
 
--- @[simp] -- Porting note: simp can prove this
+@[deprecated]
 theorem image_add_const_Iio : (fun x => x + a) '' Iio b = Iio (b + a) := by simp
 #align set.image_add_const_Iio Set.image_add_const_Iio
 
@@ -540,7 +540,7 @@ theorem preimage_const_sub_uIcc : (fun x => a - x) ⁻¹' [[b, c]] = [[a - b, a 
 theorem image_const_add_uIcc : (fun x => a + x) '' [[b, c]] = [[a + b, a + c]] := by simp [add_comm]
 #align set.image_const_add_uIcc Set.image_const_add_uIcc
 
--- @[simp] -- Porting note: simp can prove this
+@[deprecated]
 theorem image_add_const_uIcc : (fun x => x + a) '' [[b, c]] = [[b + a, c + a]] := by simp
 #align set.image_add_const_uIcc Set.image_add_const_uIcc
 

@@ -217,7 +217,7 @@ theorem coe_C (r : R) : ((C R r : PowerSeries R) : LaurentSeries R) = HahnSeries
 set_option linter.uppercaseLean3 false in
 #align power_series.coe_C PowerSeries.coe_C
 
--- @[simp] -- Porting note: simp can prove this
+@[deprecated]
 theorem coe_X : ((X : PowerSeries R) : LaurentSeries R) = single 1 1 :=
   ofPowerSeries_X
 set_option linter.uppercaseLean3 false in

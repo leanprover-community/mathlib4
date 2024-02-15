@@ -89,7 +89,7 @@ theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
   repeat' rw [add_tsub_cancel_left]
 #align polynomial.rev_at_add Polynomial.revAt_add
 
--- @[simp] -- Porting note: simp can prove this
+@[deprecated]
 theorem revAt_zero (N : ℕ) : revAt N 0 = N := by simp
 #align polynomial.rev_at_zero Polynomial.revAt_zero
 

@@ -1623,7 +1623,7 @@ theorem singleton_vsub (a : β) : ({a} : Finset β) -ᵥ t = t.image (a -ᵥ ·)
   image₂_singleton_left
 #align finset.singleton_vsub Finset.singleton_vsub
 
--- @[simp] -- Porting note: simp can prove this
+@[deprecated]
 theorem singleton_vsub_singleton (a b : β) : ({a} : Finset β) -ᵥ {b} = {a -ᵥ b} :=
   image₂_singleton
 #align finset.singleton_vsub_singleton Finset.singleton_vsub_singleton
