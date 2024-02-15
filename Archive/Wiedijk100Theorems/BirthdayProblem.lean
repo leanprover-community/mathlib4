@@ -29,7 +29,7 @@ local notation "‖" x "‖" => Fintype.card x
 /-- **Birthday Problem**: set cardinality interpretation. -/
 theorem birthday :
     2 * ‖Fin 23 ↪ Fin 365‖ < ‖Fin 23 → Fin 365‖ ∧ 2 * ‖Fin 22 ↪ Fin 365‖ > ‖Fin 22 → Fin 365‖ := by
-  simp only [Nat.descFactorial, Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]
+  simp only [Fintype.card_fin, Fintype.card_embedding_eq, Fintype.card_fun]
   decide
 #align theorems_100.birthday Theorems100.birthday
 
