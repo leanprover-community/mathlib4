@@ -272,3 +272,64 @@ example (f : α → β -o γ) (hf : Lin (fun (x,y) => f x y)) (g : α → β) (h
 
 -- is working up to here
 
+----------------------------------------------------------------------------------------------------
+
+
+@[fun_prop]
+opaque HasDeriv (f : α → β) (f' : α → α → β) : Prop
+
+
+@[fun_prop]
+theorem hasDeriv_id : HasDeriv (fun x : α => x) (fun x dx => dx) := silentSorry
+
+@[fun_prop]
+theorem hasDeriv_const [Zero β]  (y:β): HasDeriv (fun x : α => y) (fun x dx => 0) := silentSorry
+
+@[fun_prop]
+theorem hasDeriv_comp
+    (f : β → γ) (f' : β → β → γ) (hf : HasDeriv f f')
+    (g : α → β) (g' : α → α → β) (hg : HasDeriv g g') :
+    HasDeriv (fun x => (f (g x))) (fun x dx => f' (g x) (g' x dx)) := silentSorry
+
+
+
+@[fun_prop]
+theorem hasDeriv_prod_mk'
+    (f : α → β) (f' : α → α → β) (hf : HasDeriv f f')
+    (g : α → γ) (g' : α → α → γ) (hg : HasDeriv g g') :
+    HasDeriv (fun x => (f x, g x)) (fun x dx => (f' x dx, g' x dx)) := silentSorry
+
+
+@[fun_prop]
+theorem hasDeriv_prod_fst
+    (f : α → β×γ) (f' : α → α → β×γ) (hf : HasDeriv f f') :
+    HasDeriv (fun x => (f x).1) (fun x dx => (f' x dx).1) := silentSorry
+
+@[fun_prop]
+theorem hasDeriv_prod_snd
+    (f : α → β×γ) (f' : α → α → β×γ) (hf : HasDeriv f f') :
+    HasDeriv (fun x => (f x).2) (fun x dx => (f' x dx).2) := silentSorry
+
+
+@[fun_prop]
+theorem hasDeriv_add
+    (f : α → β) (f' : α → α → β) (hf : HasDeriv f f')
+    (g : α → β) (g' : α → α → β) (hg : HasDeriv g g') :
+    HasDeriv (fun x => f x + g x) (fun x dx => f' x dx + g' x dx) := silentSorry
+
+@[fun_prop]
+theorem hasDeriv_mul [Mul β] [Add β]
+    (f : α → β) (f' : α → α → β) (hf : HasDeriv f f')
+    (g : α → β) (g' : α → α → β) (hg : HasDeriv g g') :
+    HasDeriv (fun x => f x * g x) (fun x dx => f' x dx * g x + g' x dx * f x) := silentSorry
+
+
+variable [Mul α]
+
+/--
+info: hasDeriv_mul (fun x => x * x) (fun x dx => dx * x + dx * x)
+  (hasDeriv_mul (fun x => x) (fun x dx => dx) hasDeriv_id (fun x => x) (fun x dx => dx) hasDeriv_id) (fun x => x)
+  (fun x dx => dx) hasDeriv_id : HasDeriv (fun x => x * x * x) fun x dx => (dx * x + dx * x) * x + dx * (x * x)
+-/
+#guard_msgs in
+#check ((by fun_prop) : HasDeriv (fun x : α => x * x * x) _)
