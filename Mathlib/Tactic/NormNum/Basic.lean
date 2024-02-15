@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.HaveI
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Int.Basic
 import Mathlib.Algebra.Invertible.Basic
-import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.Clear!
 import Mathlib.Data.Nat.Cast.Basic
 

@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 import Lean.Parser.Term
 import Std.Classes.SetNotation
+import Std.Util.ExtendedBinder
 import Mathlib.Mathport.Rename
 
 /-!
@@ -33,6 +34,8 @@ stuff which happens before mathlib3's data.set.basic .
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
 
 -/
+
+open Std.ExtendedBinder
 
 set_option autoImplicit true
 
@@ -80,7 +83,6 @@ instance : HasSubset (Set α) :=
 instance : EmptyCollection (Set α) :=
   ⟨λ _ => False⟩
 
-open Std.ExtendedBinder in
 syntax "{" extBinder " | " term "}" : term
 
 macro_rules
