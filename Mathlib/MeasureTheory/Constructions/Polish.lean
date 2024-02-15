@@ -924,26 +924,16 @@ theorem isClopenable_iff_measurableSet
 /-- The set of points for which a measurable sequence of functions converges to a given value
 is measurable. -/
 @[measurability]
-lemma measurableSet_tendsto_nhds [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ]
-    [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
-    [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) (c : γ) :
-    MeasurableSet { x | Tendsto (fun n ↦ f n x) l (𝓝 c) } := by
-  letI := upgradePolishSpace γ
+lemma measurableSet_tendsto [MeasurableSpace γ] [Countable ι] {l : Filter ι} (l' : Filter γ)
+    [l.IsCountablyGenerated] [l'.IsCountablyGenerated] [hl' : l'.IsMeasurablyGenerated]
+    {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) :
+    MeasurableSet { x | Tendsto (fun n ↦ f n x) l l' } := by
   rcases l.exists_antitone_basis with ⟨u, hu⟩
-  have h : ∀ x, HasAntitoneBasis (l.map (fun n ↦ f n x)) (fun n ↦ (fun n ↦ f n x) '' u n) :=
-    fun x ↦ hu.map (m := fun n ↦ f n x)
-  change MeasurableSet { x | l.map (fun n ↦ f n x) ≤ 𝓝 c }
-  simp_rw [Filter.HasBasis.le_basis_iff (h _).toHasBasis Metric.nhds_basis_ball_inv_nat_succ,
-    Set.setOf_forall]
-  refine MeasurableSet.biInter Set.countable_univ fun K _ ↦ ?_
-  simp_rw [Set.setOf_exists, true_and]
-  refine MeasurableSet.iUnion fun N ↦ ?_
-  simp_rw [image_subset_iff]
-  change MeasurableSet {x | ∀ i ∈ u N, i ∈ (fun n ↦ f n x) ⁻¹' Metric.ball c (1 / (K + 1))}
-  simp_rw [Set.setOf_forall]
-  refine MeasurableSet.biInter (to_countable (u N)) fun i _ ↦ ?_
-  simp only [one_div, mem_preimage, Metric.mem_ball]
-  exact measurableSet_lt (Measurable.dist (hf i) measurable_const) measurable_const
+  rcases (Filter.hasBasis_self.mpr hl'.exists_measurable_subset).exists_antitone_subbasis with
+    ⟨v, v_meas, hv⟩
+  simp only [hu.tendsto_iff hv.toHasBasis, true_imp_iff, true_and, setOf_forall, setOf_exists]
+  exact .iInter fun n ↦ .iUnion fun _ ↦ .biInter (to_countable _) fun i _ ↦
+    (v_meas n).2.preimage (hf i)
 
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
 @[measurability]
