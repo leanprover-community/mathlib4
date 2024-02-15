@@ -59,7 +59,12 @@ variable (n : ℕ+)
 theorem rootsOfUnity.integer_power_of_ringEquiv (g : L ≃+* L) :
     ∃ m : ℤ, ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ m : Lˣ) := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (g.restrictRootsOfUnity n).toMonoidHom
-  exact ⟨m, by simp [← hm]⟩
+  exact ⟨m, fun t ↦ Units.ext_iff.1 <| SetCoe.ext_iff.2 <| hm t⟩
+
+theorem rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
+    ∃ m : ℤ, ∀ t ∈ rootsOfUnity n L, g (t : Lˣ) = (t ^ m : Lˣ) := by
+  obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (g.restrictRootsOfUnity n).toMonoidHom
+  exact ⟨m, fun t ht ↦ Units.ext_iff.1 $ SetCoe.ext_iff.2 (hm ⟨t, ht⟩)⟩
 
 /-- `ModularCyclotomicCharacter_aux g n` is a non-canonical auxiliary integer `j`,
    only well-defined modulo the number of `n`'th roots of unity in `L`, such that `g(ζ)=ζ^j`
@@ -95,8 +100,10 @@ theorem spec (g : L ≃+* L) (n : ℕ+) :
     ∀ t : rootsOfUnity n L, g (t : Lˣ) = (t ^ (χ n g).val : Lˣ) := by
   rintro t
   rw [ModularCyclotomicCharacter_aux_spec g n t, ← zpow_ofNat, ModularCyclotomicCharacter.toFun,
-      ZMod.val_int_cast, ←Group.pow_eq_zpow_mod _ pow_card_eq_one]
+    ZMod.val_int_cast, ← Subgroup.coe_zpow]
+  exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| Group.pow_eq_zpow_mod _ pow_card_eq_one
 
+-- this is in the wrong place I guess
 lemma ext {G : Type _} [Group G] [Fintype G] [IsCyclic G]
     {d : ℕ} {a b : ZMod d} (hGcard : Fintype.card G = d) (h : ∀ t : G, t^a.val = t^b.val) :
   a = b := by
@@ -111,7 +118,7 @@ lemma id : χ n (RingEquiv.refl L) = 1 := by
   refine ext (G := rootsOfUnity n L) rfl ?_
   intro ζ
   ext
-  rw [← spec]
+  rw [Subgroup.coe_pow, ← spec]
   have : 1 ≤ Fintype.card { x // x ∈ rootsOfUnity n L } := Fin.size_positive'
   obtain (h | h) := this.lt_or_eq
   · have := Fact.mk h
@@ -125,12 +132,12 @@ lemma comp (g h : L ≃+* L) : χ n (g * h) =
   refine ext (G := rootsOfUnity n L) rfl ?_
   intro ζ
   ext
-  rw [← spec]
+  rw [Subgroup.coe_pow, ← spec]
   change g (h (ζ : Lˣ)) = _
-  rw [spec, spec, mul_comm, ← pow_mul, eq_comm]
+  rw [spec, ← Subgroup.coe_pow, spec, mul_comm, Subgroup.coe_pow, ← pow_mul, ← Subgroup.coe_pow]
   congr 2
   simp only [pow_eq_pow_iff_modEq, ← ZMod.nat_cast_eq_nat_cast_iff, SubmonoidClass.coe_pow,
-    ZMod.nat_cast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) orderOf_dvd_card_univ]
+    ZMod.nat_cast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) orderOf_dvd_card]
 
 end ModularCyclotomicCharacter
 
