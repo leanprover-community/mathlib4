@@ -82,7 +82,8 @@ theorem finiteDimensional [Algebra K S] (pb : PowerBasis K S) : FiniteDimensiona
   FiniteDimensional.of_fintype_basis pb.basis
 #align power_basis.finite_dimensional PowerBasis.finiteDimensional
 
-theorem finrank [Algebra K S] (pb : PowerBasis K S) : FiniteDimensional.finrank K S = pb.dim := by
+theorem finrank [StrongRankCondition R] (pb : PowerBasis R S) :
+    FiniteDimensional.finrank R S = pb.dim := by
   rw [FiniteDimensional.finrank_eq_card_basis pb.basis, Fintype.card_fin]
 #align power_basis.finrank PowerBasis.finrank
 
