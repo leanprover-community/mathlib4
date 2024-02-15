@@ -67,6 +67,12 @@ import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToStd
 import Mathlib.Tactic.FunProp.Types
+import Mathlib.Tactic.FunTrans.Attr
+import Mathlib.Tactic.FunTrans.Core
+import Mathlib.Tactic.FunTrans.Decl
+import Mathlib.Tactic.FunTrans.Elab
+import Mathlib.Tactic.FunTrans.Theorems
+import Mathlib.Tactic.FunTrans.Types
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
