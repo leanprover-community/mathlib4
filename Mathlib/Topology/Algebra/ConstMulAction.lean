@@ -302,22 +302,6 @@ section GroupSeparation
 variable [T2Space α]
 
 /--
-If the action of a group `G` on `α` is continuous, then for all points not fixed by `g : G`,
-there exists an open set `s` such that `x ∈ s` and `g • s` is disjoint from `s`.
--/
-@[to_additive "If the action of a group `G` on `α` is continuous, then for all points not fixed
-by `g : G`, there exists an open set `s` such that `x ∈ s` and `g +ᵥ s` is disjoint from `s`."]
-theorem t2_separation_smul {x : α} {g : G} (gx_ne : g • x ≠ x) :
-    ∃ s : Set α, IsOpen s ∧ x ∈ s ∧ Disjoint s (g • s) :=
-  let ⟨s, t, s_open, t_open, gx_in_s, x_in_t, disj_st⟩ := t2_separation gx_ne
-  ⟨g⁻¹ • s ∩ t,
-    (s_open.smul g⁻¹).inter t_open,
-    ⟨Set.mem_inv_smul_set_iff.mpr gx_in_s, x_in_t⟩,
-    by
-      rw [Set.smul_set_inter, smul_inv_smul]
-      exact (disj_st.symm.inter_left' _).inter_right _⟩
-
-/--
 If the set of group elements `s` is finite and its action on the point `x` is injective,
 then one can construct an open set `t` such that for every pair `g ≠ h` of `s`,
 `g • t` is disjoint from `h • t`.
@@ -337,6 +321,25 @@ theorem Set.InjOn.t2_separation_smul {s : Set G} {x : α} (inj_on : s.InjOn (· 
   · simp_rw [Set.mem_iInter, Set.mem_inv_smul_set_iff, ht, forall_true_iff]
   · simp only [Function.comp_apply, Set.le_eq_subset, Set.set_smul_subset_iff]
     exact Set.biInter_subset_of_mem g_in_s
+
+/--
+If the action of a group `G` on `α` is continuous, then for all points not fixed by `g : G`,
+there exists an open set `s` such that `x ∈ s` and `g • s` is disjoint from `s`.
+-/
+@[to_additive "If the action of a group `G` on `α` is continuous, then for all points not fixed
+by `g : G`, there exists an open set `s` such that `x ∈ s` and `g +ᵥ s` is disjoint from `s`."]
+theorem t2_separation_smul {x : α} {g : G} (gx_ne : g • x ≠ x) :
+    ∃ s : Set α, IsOpen s ∧ x ∈ s ∧ Disjoint s (g • s) := by
+  have inj : Set.InjOn (· • x) {g, 1} := by
+    rw [Set.injOn_pair, one_smul]
+    exact fun h => (gx_ne h).elim
+
+  let ⟨t, t_open, x_in_t, pw_disj⟩ := Set.InjOn.t2_separation_smul inj (toFinite {g, 1})
+  refine ⟨t, t_open, x_in_t, ?disj⟩
+
+  have := (pairwise_pair.mp pw_disj fun eq => gx_ne (eq.symm ▸ one_smul G x)).right
+  rwa [Function.onFun_apply, one_smul] at this
+
 
 end GroupSeparation
 
