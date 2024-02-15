@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
-import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.GroupTheory.GroupAction.Ring
@@ -34,16 +34,14 @@ This is a concrete implementation that is useful for simplicity and computabilit
 sequence, cauchy, abs val, absolute value
 -/
 
+assert_not_exists Finset
+assert_not_exists Module
+assert_not_exists Submonoid
+assert_not_exists FloorRing
+
 set_option autoImplicit true
 
 open IsAbsoluteValue
-
-theorem exists_forall_ge_and {α} [LinearOrder α] {P Q : α → Prop} :
-    (∃ i, ∀ j ≥ i, P j) → (∃ i, ∀ j ≥ i, Q j) → ∃ i, ∀ j ≥ i, P j ∧ Q j
-  | ⟨a, h₁⟩, ⟨b, h₂⟩ =>
-    let ⟨c, ac, bc⟩ := exists_ge_of_linear a b
-    ⟨c, fun _ hj => ⟨h₁ _ (le_trans ac hj), h₂ _ (le_trans bc hj)⟩⟩
-#align exists_forall_ge_and exists_forall_ge_and
 
 section
 
@@ -115,6 +113,27 @@ theorem cauchy₃ (hf : IsCauSeq abv f) {ε : α} (ε0 : 0 < ε) :
   ⟨i, fun _ ij _ jk => H _ (le_trans ij jk) _ ij⟩
 #align is_cau_seq.cauchy₃ IsCauSeq.cauchy₃
 
+lemma bounded (hf : IsCauSeq abv f) : ∃ r, ∀ i, abv (f i) < r := by
+  obtain ⟨i, h⟩ := hf _ zero_lt_one
+  set R : ℕ → α := @Nat.rec (fun _ => α) (abv (f 0)) fun i c => max c (abv (f i.succ)) with hR
+  have : ∀ i, ∀ j ≤ i, abv (f j) ≤ R i := by
+    refine' Nat.rec (by simp [hR]) _
+    rintro i hi j (rfl | hj)
+    · simp
+    · exact (hi j hj).trans (le_max_left _ _)
+  refine ⟨R i + 1, fun j ↦ ?_⟩
+  obtain hji | hij := le_total j i
+  · exact (this i _ hji).trans_lt (lt_add_one _)
+  · simpa using (abv_add abv _ _).trans_lt $ add_lt_add_of_le_of_lt (this i _ le_rfl) (h _ hij)
+
+lemma bounded' (hf : IsCauSeq abv f) (x : α) : ∃ r > x, ∀ i, abv (f i) < r :=
+  let ⟨r, h⟩ := hf.bounded
+  ⟨max r (x + 1), (lt_add_one x).trans_le (le_max_right _ _),
+    fun i ↦ (h i).trans_le (le_max_left _ _)⟩
+
+lemma const (x : β) : IsCauSeq abv fun _ ↦ x :=
+  fun ε ε0 ↦ ⟨0, fun j _ => by simpa [abv_zero] using ε0⟩
+
 theorem add (hf : IsCauSeq abv f) (hg : IsCauSeq abv g) : IsCauSeq abv (f + g) := fun _ ε0 =>
   let ⟨_, δ0, Hδ⟩ := rat_add_continuous_lemma abv ε0
   let ⟨i, H⟩ := exists_forall_ge_and (hf.cauchy₃ δ0) (hg.cauchy₃ δ0)
@@ -122,6 +141,20 @@ theorem add (hf : IsCauSeq abv f) (hg : IsCauSeq abv g) : IsCauSeq abv (f + g) :
     let ⟨H₁, H₂⟩ := H _ le_rfl
     Hδ (H₁ _ ij) (H₂ _ ij)⟩
 #align is_cau_seq.add IsCauSeq.add
+
+lemma mul (hf : IsCauSeq abv f) (hg : IsCauSeq abv g) : IsCauSeq abv (f * g) := fun _ ε0 =>
+  let ⟨_, _, hF⟩ := hf.bounded' 0
+  let ⟨_, _, hG⟩ := hg.bounded' 0
+  let ⟨_, δ0, Hδ⟩ := rat_mul_continuous_lemma abv ε0
+  let ⟨i, H⟩ := exists_forall_ge_and (hf.cauchy₃ δ0) (hg.cauchy₃ δ0)
+  ⟨i, fun j ij =>
+    let ⟨H₁, H₂⟩ := H _ le_rfl
+    Hδ (hF j) (hG i) (H₁ _ ij) (H₂ _ ij)⟩
+
+@[simp] lemma _root_.isCauSeq_neg : IsCauSeq abv (-f) ↔ IsCauSeq abv f := by
+  simp only [IsCauSeq, Pi.neg_apply, ← neg_sub', abv_neg]
+
+protected alias ⟨of_neg, neg⟩ := isCauSeq_neg
 
 end IsCauSeq
 
@@ -178,26 +211,10 @@ theorem cauchy₃ (f : CauSeq β abv) {ε} : 0 < ε → ∃ i, ∀ j ≥ i, ∀ 
   f.2.cauchy₃
 #align cau_seq.cauchy₃ CauSeq.cauchy₃
 
-theorem bounded (f : CauSeq β abv) : ∃ r, ∀ i, abv (f i) < r := by
-  cases' f.cauchy zero_lt_one with i h
-  set R : ℕ → α := @Nat.rec (fun _ => α) (abv (f 0)) fun i c => max c (abv (f i.succ)) with hR
-  have : ∀ i, ∀ j ≤ i, abv (f j) ≤ R i := by
-    refine' Nat.rec (by simp [hR]) _
-    rintro i hi j (rfl | hj)
-    · simp
-    exact (hi j hj).trans (le_max_left _ _)
-  refine' ⟨R i + 1, fun j => _⟩
-  cases' lt_or_le j i with ij ij
-  · exact lt_of_le_of_lt (this i _ (le_of_lt ij)) (lt_add_one _)
-  · have := lt_of_le_of_lt (abv_add abv _ _) (add_lt_add_of_le_of_lt (this i _ le_rfl) (h _ ij))
-    rw [add_sub, add_comm] at this
-    simpa using this
+theorem bounded (f : CauSeq β abv) : ∃ r, ∀ i, abv (f i) < r := f.2.bounded
 #align cau_seq.bounded CauSeq.bounded
 
-theorem bounded' (f : CauSeq β abv) (x : α) : ∃ r > x, ∀ i, abv (f i) < r :=
-  let ⟨r, h⟩ := f.bounded
-  ⟨max r (x + 1), lt_of_lt_of_le (lt_add_one _) (le_max_right _ _), fun i =>
-    lt_of_lt_of_le (h i) (le_max_left _ _)⟩
+theorem bounded' (f : CauSeq β abv) (x : α) : ∃ r > x, ∀ i, abv (f i) < r := f.2.bounded' x
 #align cau_seq.bounded' CauSeq.bounded'
 
 instance : Add (CauSeq β abv) :=
@@ -216,8 +233,7 @@ theorem add_apply (f g : CauSeq β abv) (i : ℕ) : (f + g) i = f i + g i :=
 variable (abv)
 
 /-- The constant Cauchy sequence. -/
-def const (x : β) : CauSeq β abv :=
-  ⟨fun _ => x, fun ε ε0 => ⟨0, fun j _ => by simpa [abv_zero] using ε0⟩⟩
+def const (x : β) : CauSeq β abv := ⟨fun _ ↦ x, IsCauSeq.const _⟩
 #align cau_seq.const CauSeq.const
 
 variable {abv}
@@ -282,16 +298,7 @@ theorem const_add (x y : β) : const (x + y) = const x + const y :=
   rfl
 #align cau_seq.const_add CauSeq.const_add
 
-instance : Mul (CauSeq β abv) :=
-  ⟨fun f g =>
-    ⟨f * g, fun _ ε0 =>
-      let ⟨_, _, hF⟩ := f.bounded' 0
-      let ⟨_, _, hG⟩ := g.bounded' 0
-      let ⟨_, δ0, Hδ⟩ := rat_mul_continuous_lemma abv ε0
-      let ⟨i, H⟩ := exists_forall_ge_and (f.cauchy₃ δ0) (g.cauchy₃ δ0)
-      ⟨i, fun j ij =>
-        let ⟨H₁, H₂⟩ := H _ le_rfl
-        Hδ (hF j) (hG i) (H₁ _ ij) (H₂ _ ij)⟩⟩⟩
+instance : Mul (CauSeq β abv) := ⟨fun f g ↦ ⟨f * g, f.2.mul g.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (f g : CauSeq β abv) : ⇑(f * g) = (f : ℕ → β) * g :=
@@ -307,8 +314,7 @@ theorem const_mul (x y : β) : const (x * y) = const x * const y :=
   rfl
 #align cau_seq.const_mul CauSeq.const_mul
 
-instance : Neg (CauSeq β abv) :=
-  ⟨fun f => ofEq (const (-1) * f) (fun x => -f x) fun i => by simp⟩
+instance : Neg (CauSeq β abv) := ⟨fun f ↦ ⟨-f, f.2.neg⟩⟩
 
 @[simp, norm_cast]
 theorem coe_neg (f : CauSeq β abv) : ⇑(-f) = -f :=
