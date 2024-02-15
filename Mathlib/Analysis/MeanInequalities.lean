@@ -328,8 +328,8 @@ namespace NNReal
 private theorem inner_le_Lp_mul_Lp_of_norm_le_one (f g : ι → ℝ≥0) {p q : ℝ}
     (hpq : p.IsConjExponent q) (hf : ∑ i in s, f i ^ p ≤ 1) (hg : ∑ i in s, g i ^ q ≤ 1) :
     ∑ i in s, f i * g i ≤ 1 := by
-  have hp_ne_zero : Real.toNNReal p ≠ 0 := (zero_lt_one.trans hpq.one_lt_nnreal).ne.symm
-  have hq_ne_zero : Real.toNNReal q ≠ 0 := (zero_lt_one.trans hpq.symm.one_lt_nnreal).ne.symm
+  have hp_ne_zero : Real.toNNReal p ≠ 0 := (zero_lt_one.trans hpq.toNNReal.one_lt).ne.symm
+  have hq_ne_zero : Real.toNNReal q ≠ 0 := (zero_lt_one.trans hpq.toNNReal.symm.one_lt).ne.symm
   calc
     ∑ i in s, f i * g i ≤ ∑ i in s, (f i ^ p / Real.toNNReal p + g i ^ q / Real.toNNReal q) :=
       Finset.sum_le_sum fun i _ => young_inequality_real (f i) (g i) hpq
