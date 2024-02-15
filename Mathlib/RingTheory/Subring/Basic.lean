@@ -79,7 +79,7 @@ class SubringClass (S : Type*) (R : Type u) [Ring R] [SetLike S R] extends
 #align subring_class SubringClass
 
 -- See note [lower instance priority]
-instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
+instance (priority := 75) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
     [SetLike S R] [Ring R] [h : SubringClass S R] : AddSubgroupClass S R :=
   { h with }
 #align subring_class.add_subgroup_class SubringClass.addSubgroupClass
@@ -406,8 +406,19 @@ protected theorem sum_mem {R : Type*} [Ring R] (s : Subring R) {ι : Type*} {t :
   sum_mem h
 #align subring.sum_mem Subring.sum_mem
 
+/-- A copy of the integers in a `Subring` -/
+instance (priority := 100) intCast : IntCast s :=
+  ⟨fun n => ⟨n, coe_int_mem s n⟩⟩
+
+/-- A subring of a ring inherits a `AddGroupWithOne` structure -/
+instance (priority := 100) toAddGroupWithOne : AddGroupWithOne s :=
+  { intCast _, NonAssocSemiring.toAddCommMonoidWithOne, s.toAddSubgroup.toAddCommGroup with
+    intCast_ofNat := fun _ => Subtype.ext <| AddGroupWithOne.intCast_ofNat _
+    intCast_negSucc := fun _ => Subtype.ext <| AddGroupWithOne.intCast_negSucc _ }
+
 /-- A subring of a ring inherits a ring structure -/
-instance toRing : Ring s := SubringClass.toRing s
+instance (priority := 100) toRing : Ring s :=
+  { Subsemiring.toSemiring _, AddSubgroupClass.toAddCommGroup _, toAddGroupWithOne _ with }
 #align subring.to_ring Subring.toRing
 
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
@@ -455,7 +466,8 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
 #align subring.coe_eq_zero_iff Subring.coe_eq_zero_iff
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
-instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s where
+instance (priority := 100) toCommRing {R} [CommRing R] (s : Subring R) : CommRing s where
+  toRing := s.toRing
   mul_comm := mul_comm
 #align subring.to_comm_ring Subring.toCommRing
 
@@ -464,17 +476,23 @@ instance {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
   s.toSubsemiring.nontrivial
 
 /-- A subring of a ring with no zero divisors has no zero divisors. -/
-instance noZeroDivisors {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
+instance (priority := 100) noZeroDivisors {R} [Ring R] [NoZeroDivisors R] (s : Subring R) :
+    NoZeroDivisors s :=
   s.toSubsemiring.noZeroDivisors
 
+/-- A subring of a domain is a domain. -/
+instance (priority := 100) isDomain {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
+  NoZeroDivisors.to_isDomain _
+
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
-  SubringClass.toOrderedRing s
+instance (priority := 100) toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
+  { s.toRing, s.toSubsemiring.toOrderedSemiring with
+    mul_nonneg := fun _ _ h₁ h₂ => OrderedRing.mul_nonneg _ _ h₁ h₂ }
 #align subring.to_ordered_ring Subring.toOrderedRing
 
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
-  SubringClass.toOrderedCommRing s
+instance toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) : OrderedCommRing s where
+  mul_comm := mul_comm
 #align subring.to_ordered_comm_ring Subring.toOrderedCommRing
 
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
@@ -484,8 +502,8 @@ instance toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) : LinearO
 
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
 instance toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
-    LinearOrderedCommRing s :=
-  SubringClass.toLinearOrderedCommRing s
+    LinearOrderedCommRing s where
+  mul_comm := mul_comm
 #align subring.to_linear_ordered_comm_ring Subring.toLinearOrderedCommRing
 
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
@@ -820,7 +838,7 @@ section DivisionRing
 
 variable {K : Type u} [DivisionRing K]
 
-instance : Field (center K) :=
+instance instFieldCenterOfDivisionRing : Field (center K) :=
   { inferInstanceAs (CommRing (center K)) with
     inv := fun a => ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
     mul_inv_cancel := fun ⟨a, ha⟩ h => Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne h
