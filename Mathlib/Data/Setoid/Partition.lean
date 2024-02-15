@@ -3,11 +3,8 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan Commelin
 -/
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Setoid.Basic
 import Mathlib.Order.Partition.Finpartition
-import Mathlib.Data.Set.Pairwise.Lattice
 
 #align_import data.setoid.partition from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
