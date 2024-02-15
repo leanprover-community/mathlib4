@@ -14,26 +14,26 @@ open CategoryTheory
 
 /-- Expressions for 1-morphisms. -/
 inductive Mor₁ : Type
-  | id : Mor₁
+  | id : Expr → Mor₁
   | comp : Mor₁ → Mor₁ → Mor₁
   | of : Expr → Mor₁
   deriving Inhabited
 
 def Mor₁.e : Mor₁ → MetaM Expr
-  | .id => do
-    mkAppM ``MonoidalCategoryStruct.tensorUnit #[]
+  | .id C => do
+    mkAppOptM ``MonoidalCategoryStruct.tensorUnit #[none, none, C]
   | .comp f g => do
     mkAppM ``MonoidalCategoryStruct.tensorObj #[← Mor₁.e f, ← Mor₁.e g]
   | .of f => return f
 
 def Mor₁.toList : Mor₁ → List Expr
-  | .id => []
+  | .id _ => []
   | .comp f g => f.toList ++ g.toList
   | .of f => [f]
 
 partial def toMor₁ (e : Expr) : Mor₁ :=
   match e.getAppFnArgs with
-  | (``MonoidalCategoryStruct.tensorUnit, #[_, _, _]) => Mor₁.id
+  | (``MonoidalCategoryStruct.tensorUnit, #[_, _, C]) => Mor₁.id C
   | (``MonoidalCategoryStruct.tensorObj, #[_, _, _, f, g]) => (toMor₁ f).comp (toMor₁ g)
   | _ => Mor₁.of e
 
@@ -217,7 +217,7 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
     let h ← η.src
     let h' ← η.tar
     return evalComp (← NormalExpr.associator f g h) (evalComp η' (← NormalExpr.associatorInv f g h'))
-  | .id, η => do
+  | .id _, η => do
     let f ← η.src
     let g ← η.tar
     return evalComp (← NormalExpr.leftUnitor f) (evalComp η (← NormalExpr.leftUnitorInv g))
@@ -241,7 +241,7 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
     let f ← η.src
     let f' ← η.tar
     return evalComp (← NormalExpr.associatorInv f g h) (evalComp η' (← NormalExpr.associator f' g h))
-  | η, .id => do
+  | η, .id _ => do
     let f ← η.src
     let g ← η.tar
     return evalComp (← NormalExpr.rightUnitor f) (evalComp η (← NormalExpr.rightUnitorInv g))
@@ -259,17 +259,17 @@ def StructuralAtom.toNormalExpr (η : StructuralAtom) : MetaM NormalExpr := do
 def WhiskerRightExpr.e : WhiskerRightExpr → MetaM Expr
   | WhiskerRightExpr.of η => η.e
   | WhiskerRightExpr.whisker η f => do
-    mkAppM ``MonoidalCategoryStruct.whiskerRight #[← WhiskerRightExpr.e η, f]
+    mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, f]
 
 def WhiskerLeftExpr.e : WhiskerLeftExpr → MetaM Expr
   | WhiskerLeftExpr.of η => η.e
   | WhiskerLeftExpr.whisker f η => do
-    mkAppM ``MonoidalCategoryStruct.whiskerLeft #[f, ← WhiskerLeftExpr.e η]
+    mkAppM ``MonoidalCategoryStruct.whiskerLeft #[f, ← η.e]
 
 def NormalExpr.e : NormalExpr → MetaM Expr
   | NormalExpr.id f => do mkAppM ``CategoryStruct.id #[← f.e]
   | NormalExpr.cons η (NormalExpr.id _) => η.e
-  | NormalExpr.cons η θ => do mkAppM ``CategoryStruct.comp #[← η.e, ← NormalExpr.e θ]
+  | NormalExpr.cons η θ => do mkAppM ``CategoryStruct.comp #[← η.e, ← θ.e]
 
 def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
   | NormalExpr.id _ => []
