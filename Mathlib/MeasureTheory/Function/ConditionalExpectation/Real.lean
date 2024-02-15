@@ -198,7 +198,7 @@ theorem Integrable.uniformIntegrable_condexp {ι : Type*} [IsFiniteMeasure μ] {
         (hmeas n 0)) one_ne_zero).2 _).trans (zero_le _)⟩
     filter_upwards [condexp_congr_ae (m := ℱ n) hne] with x hx
     simp only [zero_le', Set.setOf_true, Set.indicator_univ, Pi.zero_apply, hx, condexp_zero]
-  obtain ⟨δ, hδ, h⟩ := hg.snorm_indicator_le μ le_rfl ENNReal.one_ne_top hε
+  obtain ⟨δ, hδ, h⟩ := hg.snorm_indicator_le le_rfl ENNReal.one_ne_top hε
   set C : ℝ≥0 := ⟨δ, hδ.le⟩⁻¹ * (snorm g 1 μ).toNNReal with hC
   have hCpos : 0 < C := mul_pos (inv_pos.2 hδ) (ENNReal.toNNReal_pos hne hg.snorm_lt_top.ne)
   have : ∀ n, μ {x : α | C ≤ ‖(μ[g|ℱ n]) x‖₊} ≤ ENNReal.ofReal δ := by

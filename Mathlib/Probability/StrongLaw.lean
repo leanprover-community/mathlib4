@@ -836,7 +836,7 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
       AEStronglyMeasurable (fun ω => (n : ℝ) ⁻¹ • (∑ i in range n, X i ω)) ℙ := by
     intro n
     exact AEStronglyMeasurable.const_smul (aestronglyMeasurable_sum _ fun i _ => hmeas i) _
-  refine' tendsto_Lp_of_tendstoInMeasure _ hp hp' havg (memℒp_const _) _
+  refine' tendsto_Lp_of_tendstoInMeasure hp hp' havg (memℒp_const _) _
     (tendstoInMeasure_of_tendsto_ae havg (strong_law_ae _ hint hindep hident))
   rw [(_ : (fun (n : ℕ) ω => (n : ℝ)⁻¹ • (∑ i in range n, X i ω))
             = fun (n : ℕ) => (n : ℝ)⁻¹ • (∑ i in range n, X i))]
