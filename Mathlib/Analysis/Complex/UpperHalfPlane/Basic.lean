@@ -282,12 +282,15 @@ instance : MulAction GL(2, ℝ)⁺ ℍ where
 
 section ModularScalarTowers
 
-variable (Γ : Subgroup (SpecialLinearGroup (Fin 2) ℤ))
-
 instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
   MulAction.compHom ℍ <| SpecialLinearGroup.toGLPos.comp <| map (algebraMap R ℝ)
 #align upper_half_plane.SL_action UpperHalfPlane.SLAction
 
+namespace ModularGroup
+
+variable (Γ : Subgroup (SpecialLinearGroup (Fin 2) ℤ))
+
+/-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`. -/
 @[coe]
 def coe' : SL(2, ℤ) → GL(2, ℝ)⁺ := fun g => ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
 
@@ -306,50 +309,52 @@ theorem det_coe' : det (Units.val <| Subtype.val <| coe' g) = 1 := by
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
-#align upper_half_plane.SL_on_GL_pos UpperHalfPlane.SLOnGLPos
+#align upper_half_plane.SL_on_GL_pos UpperHalfPlane.ModularGroup.SLOnGLPos
 
 theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
     (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
   rfl
-#align upper_half_plane.SL_on_GL_pos_smul_apply UpperHalfPlane.SLOnGLPos_smul_apply
+#align upper_half_plane.SL_on_GL_pos_smul_apply UpperHalfPlane.ModularGroup.SLOnGLPos_smul_apply
 
 instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
   smul_assoc := by
     intro s g z
     simp only [SLOnGLPos_smul_apply]
     apply mul_smul'
-#align upper_half_plane.SL_to_GL_tower UpperHalfPlane.SL_to_GL_tower
+#align upper_half_plane.SL_to_GL_tower UpperHalfPlane.ModularGroup.SL_to_GL_tower
 
 instance subgroupGLPos : SMul Γ GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
-#align upper_half_plane.subgroup_GL_pos UpperHalfPlane.subgroupGLPos
+#align upper_half_plane.subgroup_GL_pos UpperHalfPlane.ModularGroup.subgroupGLPos
 
 theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
     (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
   rfl
-#align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.subgroup_on_glpos_smul_apply
+#align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.ModularGroup.subgroup_on_glpos_smul_apply
 
 instance subgroup_on_glpos : IsScalarTower Γ GL(2, ℝ)⁺ ℍ where
   smul_assoc := by
     intro s g z
     simp only [subgroup_on_glpos_smul_apply]
     apply mul_smul'
-#align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.subgroup_on_glpos
+#align upper_half_plane.subgroup_on_GL_pos UpperHalfPlane.ModularGroup.subgroup_on_glpos
 
 instance subgroupSL : SMul Γ SL(2, ℤ) :=
   ⟨fun s g => s * g⟩
-#align upper_half_plane.subgroup_SL UpperHalfPlane.subgroupSL
+#align upper_half_plane.subgroup_SL UpperHalfPlane.ModularGroup.subgroupSL
 
 theorem subgroup_on_SL_apply (s : Γ) (g : SL(2, ℤ)) (z : ℍ) :
     (s • g) • z = ((s : SL(2, ℤ)) * g) • z :=
   rfl
-#align upper_half_plane.subgroup_on_SL_apply UpperHalfPlane.subgroup_on_SL_apply
+#align upper_half_plane.subgroup_on_SL_apply UpperHalfPlane.ModularGroup.subgroup_on_SL_apply
 
 instance subgroup_to_SL_tower : IsScalarTower Γ SL(2, ℤ) ℍ where
   smul_assoc s g z := by
     rw [subgroup_on_SL_apply]
     apply MulAction.mul_smul
-#align upper_half_plane.subgroup_to_SL_tower UpperHalfPlane.subgroup_to_SL_tower
+#align upper_half_plane.subgroup_to_SL_tower UpperHalfPlane.ModularGroup.subgroup_to_SL_tower
+
+end ModularGroup
 
 end ModularScalarTowers
 
@@ -383,6 +388,15 @@ theorem im_smul_eq_div_normSq (g : GL(2, ℝ)⁺) (z : ℍ) :
   smulAux'_im g z
 #align upper_half_plane.im_smul_eq_div_norm_sq UpperHalfPlane.im_smul_eq_div_normSq
 
+theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
+    ((↑ₘg 1 0 : ℝ) * z.im) ^ 2 ≤ Complex.normSq (denom g z) := by
+  let c := (↑ₘg 1 0 : ℝ)
+  let d := (↑ₘg 1 1 : ℝ)
+  calc
+    (c * z.im) ^ 2 ≤ (c * z.im) ^ 2 + (c * z.re + d) ^ 2 := by nlinarith
+    _ = Complex.normSq (denom g z) := by dsimp [denom, Complex.normSq]; ring
+#align upper_half_plane.c_mul_im_sq_le_norm_sq_denom UpperHalfPlane.c_mul_im_sq_le_normSq_denom
+
 @[simp]
 theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
   ext1
@@ -394,47 +408,42 @@ theorem neg_smul (g : GL(2, ℝ)⁺) (z : ℍ) : -g • z = g • z := by
 
 section SLModularAction
 
+namespace ModularGroup
+
 variable (g : SL(2, ℤ)) (z : ℍ) (Γ : Subgroup SL(2, ℤ))
 
 @[simp]
 theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
   rfl
-#align upper_half_plane.sl_moeb UpperHalfPlane.sl_moeb
+#align upper_half_plane.sl_moeb UpperHalfPlane.ModularGroup.sl_moeb
 
 theorem subgroup_moeb (A : Γ) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
   rfl
-#align upper_half_plane.subgroup_moeb UpperHalfPlane.subgroup_moeb
+#align upper_half_plane.subgroup_moeb UpperHalfPlane.ModularGroup.subgroup_moeb
 
 @[simp]
 theorem subgroup_to_sl_moeb (A : Γ) (z : ℍ) : A • z = (A : SL(2, ℤ)) • z :=
   rfl
-#align upper_half_plane.subgroup_to_sl_moeb UpperHalfPlane.subgroup_to_sl_moeb
+#align upper_half_plane.subgroup_to_sl_moeb UpperHalfPlane.ModularGroup.subgroup_to_sl_moeb
 
 @[simp high]
 theorem SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
   simp only [coe_GLPos_neg, sl_moeb, coe_int_neg, neg_smul, coe']
-#align upper_half_plane.SL_neg_smul UpperHalfPlane.SL_neg_smul
+#align upper_half_plane.SL_neg_smul UpperHalfPlane.ModularGroup.SL_neg_smul
 
-theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
-    ((↑ₘg 1 0 : ℝ) * z.im) ^ 2 ≤ Complex.normSq (denom g z) := by
-  let c := (↑ₘg 1 0 : ℝ)
-  let d := (↑ₘg 1 1 : ℝ)
-  calc
-    (c * z.im) ^ 2 ≤ (c * z.im) ^ 2 + (c * z.re + d) ^ 2 := by nlinarith
-    _ = Complex.normSq (denom g z) := by dsimp [denom, Complex.normSq]; ring
-#align upper_half_plane.c_mul_im_sq_le_norm_sq_denom UpperHalfPlane.c_mul_im_sq_le_normSq_denom
-
-nonrec theorem SpecialLinearGroup.im_smul_eq_div_normSq :
+nonrec theorem im_smul_eq_div_normSq :
     (g • z).im = z.im / Complex.normSq (denom g z) := by
   convert im_smul_eq_div_normSq g z
   simp only [GeneralLinearGroup.val_det_apply, coe_GLPos_coe_GL_coe_matrix,
     Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul, coe']
-#align upper_half_plane.special_linear_group.im_smul_eq_div_norm_sq UpperHalfPlane.SpecialLinearGroup.im_smul_eq_div_normSq
+#align upper_half_plane.special_linear_group.im_smul_eq_div_norm_sq UpperHalfPlane.ModularGroup.im_smul_eq_div_normSq
 
 theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
     denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
   simp [denom, coe']
-#align upper_half_plane.denom_apply UpperHalfPlane.denom_apply
+#align upper_half_plane.denom_apply UpperHalfPlane.ModularGroup.denom_apply
+
+end ModularGroup
 
 end SLModularAction
 
