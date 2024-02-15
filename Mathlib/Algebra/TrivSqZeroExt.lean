@@ -769,9 +769,9 @@ instance algebra' : Algebra S (tsze R M) :=
           rw [smul_zero, smul_zero, add_zero, zero_add]
           rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, op_one, smul_assoc,
             one_smul, smul_assoc, one_smul]
-    smul_def' := fun r x =>
+    smul_def' := fun s x =>
       ext (Algebra.smul_def _ _) <|
-        show r • x.snd = algebraMap S R r •> x.snd + (0 : M) <• x.fst by
+        show s • x.snd = algebraMap S R s •> x.snd + (0 : M) <• x.fst by
           rw [smul_zero, add_zero, algebraMap_smul] }
 #align triv_sq_zero_ext.algebra' TrivSqZeroExt.algebra'
 
