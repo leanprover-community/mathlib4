@@ -70,10 +70,7 @@ noncomputable def discr (A : Type u) {B : Type v} [CommRing A] [CommRing B] [Alg
     [Fintype ι] (b : ι → B) := (traceMatrix A b).det
 #align algebra.discr Algebra.discr
 
-theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).det := by
--- Porting note: `unfold discr` was not necessary. `rfl` still does not work.
-  unfold discr
-  convert rfl
+theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).det := rfl
 
 variable {A C} in
 /-- Mapping a family of vectors along an `AlgEquiv` preserves the discriminant. -/
@@ -141,9 +138,7 @@ variable [Module.Finite K L] [IsAlgClosed E]
 /-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/
 theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
     discr K b ≠ 0 := by
-  classical
-  rw [discr_def, traceMatrix]
-  rw [← traceMatrix, traceMatrix_of_basis, ← BilinForm.nondegenerate_iff_det_ne_zero]
+  rw [discr_def, traceMatrix_of_basis, ← BilinForm.nondegenerate_iff_det_ne_zero]
   exact traceForm_nondegenerate _ _
 #align algebra.discr_not_zero_of_basis Algebra.discr_not_zero_of_basis
 
