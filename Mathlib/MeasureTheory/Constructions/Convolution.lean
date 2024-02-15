@@ -12,7 +12,7 @@ In this file we define and prove properties about the convolutions of two measur
 
 ## Main definitions
 
-* `MeasureTheory.Measure *`: The multiplicative convolution of two measures.
+* `MeasureTheory.Measure.mconv`: The multiplicative convolution of two measures.
 * `MeasureTheory.Measure.conv`: The additive convolution of two measures.
 
 ## Main results
