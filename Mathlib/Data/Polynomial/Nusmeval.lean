@@ -3,11 +3,12 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
+import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.PNatPowAssoc
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Data.Polynomial.Eval
 
 /-!
 # Scalar-multiple polynomial evaluation over commutative semirings
@@ -31,7 +32,7 @@ Reminder: A Non-unital non-associative `R`-algebra `A` is defined by the combina
 
 universe u v w x
 
-open Finset AddMonoidAlgebra
+open Finset
 
 open BigOperators
 
@@ -39,7 +40,7 @@ namespace Polynomial
 
 section NonUnital
 
-variable {R : Type u} [Semiring R] {p : R[X]} {S : Type v}
+variable {R : Type u} [Semiring R] {S : Type v}
 
 variable [AddCommMonoid S] [MulActionWithZero R S] [Pow S ℕ+] (p: ℕ+ →₀ R) (x : S)
 
@@ -71,7 +72,7 @@ end NonUnital
 
 section NonUnitalPowAssoc
 
-variable {R : Type u} [Semiring R] {p : R[X]} {S : Type v}
+variable {R : Type u} [Semiring R] {S : Type v}
 
 variable [NonUnitalNonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
 

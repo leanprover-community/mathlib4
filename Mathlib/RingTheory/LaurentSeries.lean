@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.LeastGreatest
 import Mathlib.RingTheory.Binomial
-import Mathlib.RingTheory.HahnSeries
+import Mathlib.RingTheory.HahnSeries.PowerSeries
+import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.Localization.FractionRing
 
 #align_import ring_theory.laurent_series from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
@@ -311,8 +311,6 @@ instance of_powerSeries_localization [CommRing R] :
     exact ⟨1, rfl⟩
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
--- Porting note: this instance is needed
-local instance {K : Type*} [Field K] : MonoidWithZero (HahnSeries ℤ K) := inferInstance in
 instance {K : Type*} [Field K] : IsFractionRing (PowerSeries K) (LaurentSeries K) :=
   IsLocalization.of_le (Submonoid.powers (PowerSeries.X : PowerSeries K)) _
     (powers_le_nonZeroDivisors_of_noZeroDivisors PowerSeries.X_ne_zero) fun _ hf =>
