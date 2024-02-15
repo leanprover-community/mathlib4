@@ -117,6 +117,14 @@ theorem exponent_eq_zero_of_order_zero {g : G} (hg : orderOf g = 0) : exponent G
 #align monoid.exponent_eq_zero_of_order_zero Monoid.exponent_eq_zero_of_order_zero
 #align add_monoid.exponent_eq_zero_of_order_zero AddMonoid.exponent_eq_zero_addOrder_zero
 
+/-- The exponent is zero iff for all nonzero `n`, one can find a `g` such that `g ^ n ≠ 1`. -/
+@[to_additive "The exponent is zero iff for all nonzero `n`, one can find a `g` such that
+`n • g ≠ 0`."]
+theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g ^ n ≠ 1 := by
+  rw [exponent_eq_zero_iff, ExponentExists]
+  push_neg
+  rfl
+
 @[to_additive exponent_nsmul_eq_zero]
 theorem pow_exponent_eq_one (g : G) : g ^ exponent G = 1 := by
   by_cases h : ExponentExists G
@@ -295,6 +303,13 @@ theorem lcm_order_eq_exponent [Fintype G] : (Finset.univ : Finset G).lcm orderOf
 #align monoid.lcm_order_eq_exponent Monoid.lcm_order_eq_exponent
 #align add_monoid.lcm_add_order_eq_exponent AddMonoid.lcm_addOrder_eq_exponent
 
+@[to_additive (attr := simp)]
+theorem _root_.Submonoid.exponent_top :
+    Monoid.exponent (⊤ : Submonoid G) = Monoid.exponent G := by
+  unfold Monoid.exponent Monoid.ExponentExists
+  simp only [Subtype.forall, Submonoid.mem_top, SubmonoidClass.mk_pow, ← OneMemClass.coe_eq_one,
+    forall_true_left]
+
 end Monoid
 
 section LeftCancelMonoid
@@ -403,6 +418,39 @@ lemma Group.one_lt_exponent [Group G] [Finite G] [Nontrivial G] :
   rw [Nat.pos_iff_ne_zero, Ne.def, Finset.lcm_eq_zero_iff]
   rintro ⟨x, -, hx⟩
   exact (orderOf_pos x).ne' hx
+
+@[to_additive AddGroup.exponent_eq_one_iff]
+theorem Group.exponent_eq_one_iff [Group G] : Monoid.exponent G = 1 ↔ Subsingleton G :=
+  ⟨fun eq_one =>
+    ⟨fun a b => by
+      rw [← pow_one a, ← pow_one b, ← eq_one, Monoid.pow_exponent_eq_one,
+        Monoid.pow_exponent_eq_one]⟩,
+    fun h => Monoid.exp_eq_one_of_subsingleton⟩
+
+@[to_additive]
+theorem inv_eq_of_exponent_eq_two [Group G] (eq_two : Monoid.exponent G = 2) (g : G) :
+    g⁻¹ = g := by
+  rw [eq_comm, eq_inv_iff_mul_eq_one, ← pow_two, ← eq_two, Monoid.pow_exponent_eq_one]
+
+@[to_additive]
+theorem commute_of_exponent_eq_two [Group G] (eq_two : Monoid.exponent G = 2) (g h : G) :
+    Commute g h := by
+  rw [commute_iff_eq, ← mul_inv_eq_one, mul_inv_rev, inv_eq_of_exponent_eq_two eq_two,
+    inv_eq_of_exponent_eq_two eq_two, ← pow_two, ← eq_two, Monoid.pow_exponent_eq_one]
+
+@[to_additive]
+theorem Subgroup.exponent_toSubmonoid [Group G] (H : Subgroup G) :
+    Monoid.exponent H.toSubmonoid = Monoid.exponent H := by
+  unfold Monoid.exponent Monoid.ExponentExists
+  simp only [Subtype.forall, mem_toSubmonoid, SubmonoidClass.mk_pow, mk_eq_one_iff]
+
+@[to_additive (attr := simp)]
+theorem Subgroup.exponent_top [Group G] : Monoid.exponent (⊤ : Subgroup G) = Monoid.exponent G := by
+  rw [← Subgroup.exponent_toSubmonoid, top_toSubmonoid, Submonoid.exponent_top]
+
+@[to_additive (attr := simp)]
+theorem Subgroup.exponent_bot [Group G] : Monoid.exponent (⊥ : Subgroup G) = 1 :=
+  Group.exponent_eq_one_iff.mpr Unique.instSubsingleton
 
 end Group
 
