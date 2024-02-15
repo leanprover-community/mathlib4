@@ -11,6 +11,7 @@ namespace Mathlib.Tactic.Widget.StringDiagram
 
 open Lean
 open CategoryTheory
+open MonoidalCategory
 
 open Lean.Meta Lean.Elab
 
