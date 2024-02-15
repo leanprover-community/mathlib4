@@ -1941,7 +1941,7 @@ theorem borelSpace_secondCountableTopology_t4_of_countablyGenerated (α : Type*)
 second countable t4 topology on `α` (i.e. a separable metrizable one) for which every
 open set is measurable. -/
 theorem opensMeasurableSpace_secondCountableTopology_t4_of_hasCountableSeparatingOn (α : Type*)
-  [m : MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
+    [m : MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
   ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
 rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
 rcases borelSpace_secondCountableTopology_t4_of_countablyGenerated (m := m') with ⟨τ, _, _, τm'⟩
