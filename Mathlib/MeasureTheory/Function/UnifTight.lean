@@ -266,7 +266,7 @@ theorem unifTight_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top : p 
   exact (ENNReal.ofReal_toReal hε_top).symm
 
 
-/-- This lemma is less general than `MeasureTheory.unifIntegrable_finite` which applies to
+/-- This lemma is less general than `MeasureTheory.unifTight_finite` which applies to
 all sequences indexed by a finite type. -/
 theorem unifTight_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
     (hf : ∀ i, Memℒp (f i) p μ) : UnifTight f p μ := by
