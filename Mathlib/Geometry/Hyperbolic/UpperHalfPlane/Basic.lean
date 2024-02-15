@@ -11,8 +11,8 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 
 ## Main definitions
 
-* `PSL2R.PSLsmul` and `PSL2R.PSLaction` : The action of `PSL(2, ℝ)` on `ℍ` is the projection of the action of `SL(2, ℝ)`
-  on `ℍ`.
+* `PSL2R.PSLsmul` and `PSL2R.PSLaction` : The action of `PSL(2, ℝ)` on `ℍ` is the projection of
+  the action of `SL(2, ℝ)` on `ℍ`.
 -/
 
 noncomputable section
