@@ -188,6 +188,20 @@ theorem expChar_of_injective_ringHom {R A : Type*}
   · haveI := charZero_of_injective_ringHom h; exact .zero
   haveI := charP_of_injective_ringHom h q; exact .prime hprime
 
+/-- If `R →+* A` is injective, and `A` is of exponential characteristic `p`, then `R` is also of
+exponential characteristic `p`. Similar to `RingHom.charZero`. -/
+theorem RingHom.expChar {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) [ExpChar A p] : ExpChar R p := by
+  cases ‹ExpChar A p› with
+  | zero => haveI := f.charZero; exact .zero
+  | prime hp => haveI := f.charP H p; exact .prime hp
+
+/-- If `R →+* A` is injective, then `R` is of exponential characteristic `p` if and only if `A` is
+also of exponential characteristic `p`. Similar to `RingHom.charZero_iff`. -/
+theorem RingHom.expChar_iff {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) : ExpChar R p ↔ ExpChar A p :=
+  ⟨fun _ ↦ expChar_of_injective_ringHom H p, fun _ ↦ f.expChar H p⟩
+
 /-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
 theorem expChar_of_injective_algebraMap {R A : Type*}
