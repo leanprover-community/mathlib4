@@ -222,8 +222,18 @@ theorem prod_mk_deriv_at (fst : α → β) (snd : α → γ) (x) (hfst : ConAt f
 
 
 
--- set_option trace.Meta.Tactic.fun_trans true in
--- set_option trace.Meta.Tactic.fun_trans.discharge true in
 example : deriv (fun x : α => x / (x + x))
           =
           (fun x dx => (dx * (x + x) - (dx + dx) * x) / ((x + x) * (x + x))) := by fun_trans (disch:=apply silentSorry)
+
+
+set_option trace.Meta.Tactic.fun_trans true in
+set_option trace.Meta.Tactic.fun_trans.step true in
+set_option trace.Meta.Tactic.fun_trans.discharge true in
+example (x y) : deriv (fun f : (α → α → α) => f x y) = fun f df => df x y := by fun_trans
+
+
+set_option trace.Meta.Tactic.fun_trans true in
+set_option trace.Meta.Tactic.fun_trans.step true in
+set_option trace.Meta.Tactic.fun_trans.discharge true in
+example : deriv (fun (f : (α → α → α)) x y => f y x) = fun f df x y => df y x := by fun_trans; rfl

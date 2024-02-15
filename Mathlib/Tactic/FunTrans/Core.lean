@@ -200,9 +200,30 @@ def applyLetRule (funTransDecl : FunTransDecl) (e f g : Expr) : SimpM Simp.Step 
 
   return .continue
 
+def applyApplyRule (funTransDecl : FunTransDecl) (e x Y : Expr) : SimpM Simp.Step := do
+  let .some thms ← getLambdaTheorems funTransDecl.funTransName .proj e.getAppNumArgs
+    | trace[Meta.Tactic.fun_trans] "missing proj rule to prove `{← ppExpr e}`"
+      return .continue
+
+  for thm in thms do
+    let .proj id_x id_Y := thm.thmArgs | continue
+
+    if let .some r ← tryTheoremWithHint e thm.thmName #[(id_x,x),(id_Y,Y)] then
+      return .visit r
+
+  return .continue
 
 def applyPiRule (funTransDecl : FunTransDecl) (e f : Expr) : SimpM Simp.Step := do
-  trace[Meta.Tactic.fun_trans.step] "id case"
+  let .some thms ← getLambdaTheorems funTransDecl.funTransName .pi e.getAppNumArgs
+    | trace[Meta.Tactic.fun_trans] "missing pi rule to prove `{← ppExpr e}`"
+      return .continue
+
+  for thm in thms do
+    let .pi id_f := thm.thmArgs | continue
+
+    if let .some r ← tryTheoremWithHint e thm.thmName #[(id_f,f)] then
+      return .visit r
+
   return .continue
 
 
@@ -218,7 +239,13 @@ def letCase (funTransDecl : FunTransDecl) (e f : Expr) : SimpM Simp.Step := do
 
 def bvarAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.FunctionData) : SimpM Simp.Step := do
   trace[Meta.Tactic.fun_trans.step] "bvar app case"
-  return .continue
+  if let .some (f,g) ← fData.nontrivialDecomposition then
+    return ← applyCompRule funTransDecl e f g
+  else
+    return .continue
+    -- if fData.args.size = 1 then
+    --   let x := fData.args.size
+    --   return ← applyApplyRule funTransDecl e fDat
 
 def fvarAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.FunctionData) : SimpM Simp.Step := do
   trace[Meta.Tactic.fun_trans.step] "fvar app case"
@@ -229,12 +256,11 @@ def fvarAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.Functi
 def constAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.FunctionData) : SimpM Simp.Step := do
   trace[Meta.Tactic.fun_trans.step] "const app case on {← ppExpr e}"
 
-  let .some funName ← fData.getFnConstName? | panic "fun_trans bug: incorrectly calling constAppCase!"
+  let .some funName ← fData.getFnConstName? | throwError "fun_trans bug: incorrectly calling constAppCase!"
 
   let thms ← getTheoremsForFunction funName funTransDecl.funTransName e.getAppNumArgs fData.mainArgs
 
   trace[Meta.Tactic.fun_trans] "candidate theorems for {funName}: {thms.map fun thm => thm.thmName}"
-
 
   for thm in thms do
     trace[Meta.Tactic.fun_trans] "trying {thm.thmName}"
