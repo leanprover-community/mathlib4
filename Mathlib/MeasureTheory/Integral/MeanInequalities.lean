@@ -323,8 +323,7 @@ theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (h
   have h_one_div_r : 1 / r = 1 / p - 1 / q := by rw [hpqr]; simp
   let p2 := q / p
   let q2 := p2.conjExponent
-  have hp2q2 : p2.IsConjExponent q2 :=
-    Real.isConjExponent_conjExponent (by simp [_root_.lt_div_iff, hpq, hp0_lt])
+  have hp2q2 : p2.IsConjExponent q2 := .conjExponent (by simp [_root_.lt_div_iff, hpq, hp0_lt])
   calc
     (∫⁻ a : α, (f * g) a ^ p ∂μ) ^ (1 / p) = (∫⁻ a : α, f a ^ p * g a ^ p ∂μ) ^ (1 / p) := by
       simp_rw [Pi.mul_apply, ENNReal.mul_rpow_of_nonneg _ _ hp0]
@@ -452,7 +451,7 @@ theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurab
     refine' lt_of_le_of_ne hp1 _
     symm
     exact h1
-  have hpq := Real.isConjExponent_conjExponent hp1_lt
+  have hpq := Real.IsConjExponent.conjExponent hp1_lt
   by_cases h0 : (∫⁻ a, (f + g) a ^ p ∂μ) = 0
   · rw [h0, @ENNReal.zero_rpow_of_pos (1 / p) (by simp [lt_of_lt_of_le zero_lt_one hp1])]
     exact zero_le _
