@@ -590,6 +590,10 @@ theorem card_eq_one : s.card = 1 ↔ ∃ a, s = {a} := by
   simp only [Multiset.card_eq_one, Finset.card, ← val_inj, singleton_val]
 #align finset.card_eq_one Finset.card_eq_one
 
+theorem _root_.Multiset.toFinset_card_eq_one_iff [DecidableEq α] (s : Multiset α) :
+    s.toFinset.card = 1 ↔ Multiset.card s ≠ 0 ∧ ∃ a : α, s = Multiset.card s • {a} := by
+  simp_rw [card_eq_one, Multiset.toFinset_eq_singleton_iff, exists_and_left]
+
 theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
     (∃ a ∉ s, insert a s = t) ↔ s ⊆ t ∧ s.card + 1 = t.card := by
   constructor

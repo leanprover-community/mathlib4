@@ -3313,6 +3313,21 @@ theorem toFinset_nsmul (s : Multiset α) : ∀ n ≠ 0, (n • s).toFinset = s.t
     · rw [add_nsmul, toFinset_add, one_nsmul, toFinset_nsmul s n h, Finset.union_idempotent]
 #align multiset.to_finset_nsmul Multiset.toFinset_nsmul
 
+theorem toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
+    s.toFinset = {a} ↔ card s ≠ 0 ∧ s = card s • {a} := by
+  refine ⟨fun H ↦ ⟨fun h ↦ ?_, ext' fun x ↦ ?_⟩, fun H ↦ ?_⟩
+  · rw [card_eq_zero.1 h, toFinset_zero] at H
+    exact Finset.singleton_ne_empty _ H.symm
+  · rw [count_nsmul, count_singleton]
+    by_cases hx : x = a
+    · simp_rw [hx, ite_true, mul_one, count_eq_card]
+      intro y hy
+      rw [← mem_toFinset, H, Finset.mem_singleton] at hy
+      exact hy.symm
+    have hx' : x ∉ s := fun h' ↦ hx <| by rwa [← mem_toFinset, H, Finset.mem_singleton] at h'
+    simp_rw [count_eq_zero_of_not_mem hx', hx, ite_false, mul_zero]
+  simpa only [toFinset_nsmul _ _ H.1, toFinset_singleton] using congr($(H.2).toFinset)
+
 @[simp]
 theorem toFinset_inter (s t : Multiset α) : toFinset (s ∩ t) = toFinset s ∩ toFinset t :=
   Finset.ext <| by simp
