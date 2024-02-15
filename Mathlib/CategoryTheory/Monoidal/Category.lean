@@ -360,7 +360,7 @@ lemma whiskerLeftIso_trans (W : C) {X Y Z : C} (f : X ≅ Y) (g : Y ≅ Z) :
 
 @[simp]
 lemma whiskerLeftIso_symm (W : C) {X Y : C} (f : X ≅ Y) :
-    whiskerLeftIso W f.symm = (whiskerLeftIso W f).symm := rfl
+    (whiskerLeftIso W f).symm = whiskerLeftIso W f.symm := rfl
 
 /-- The right whiskering of an isomorphism is an isomorphism. -/
 @[simps!]
@@ -388,7 +388,7 @@ lemma whiskerRightIso_trans {X Y Z : C} (f : X ≅ Y) (g : Y ≅ Z) (W : C) :
 
 @[simp]
 lemma whiskerRightIso_symm {X Y : C} (f : X ≅ Y) (W : C) :
-    whiskerRightIso f.symm W = (whiskerRightIso f W).symm := rfl
+    (whiskerRightIso f W).symm = whiskerRightIso f.symm W := rfl
 
 end MonoidalCategory
 
