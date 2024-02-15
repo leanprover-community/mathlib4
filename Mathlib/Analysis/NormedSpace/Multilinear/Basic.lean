@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
-import Mathlib.Algebra.Order.Group.DenselyOrdered
 
 #align_import analysis.normed_space.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
 
@@ -142,7 +141,7 @@ theorem bound_of_shell_of_continuous (hfc : Continuous f)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
   bound_of_shell_of_norm_map_coord_zero f (norm_map_coord_zero f hfc) hε hc hf m
 
-/-- If a multilinear map in finitely many variables on (semi)normed spaces is continuous, then it
+/-- If a multilinear map in finitely many variables on normed spaces is continuous, then it
 satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`, for some `C` which can be chosen to be
 positive. -/
 theorem exists_bound_of_continuous (hf : Continuous f) :
@@ -531,8 +530,7 @@ instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
 
 /-- An alias of `ContinuousMultilinearMap.normedSpace` with non-dependent types to help typeclass
 search. -/
-instance normedSpace' :
-    NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
+instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
   ContinuousMultilinearMap.normedSpace
 #align continuous_multilinear_map.normed_space' ContinuousMultilinearMap.normedSpace'
 
@@ -678,8 +676,8 @@ set_option linter.uppercaseLean3 false in
 #align continuous_multilinear_map.prodL ContinuousMultilinearMap.prodL
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearIsometryEquiv`. -/
-def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
-    [∀ i', NormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')] :
+def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
+    [∀ i', NormedSpace 𝕜 (E' i')] :
     @LinearIsometryEquiv 𝕜 𝕜 _ _ (RingHom.id 𝕜) _ _ _ (∀ i', ContinuousMultilinearMap 𝕜 E (E' i'))
       (ContinuousMultilinearMap 𝕜 E (∀ i, E' i)) _ _ (@Pi.module ι' _ 𝕜 _ _ fun _ => inferInstance)
       _ where
@@ -706,8 +704,7 @@ theorem norm_restrictScalars : ‖f.restrictScalars 𝕜'‖ = ‖f‖ := rfl
 variable (𝕜')
 
 /-- `ContinuousMultilinearMap.restrictScalars` as a `LinearIsometry`. -/
-def restrictScalarsₗᵢ :
-    ContinuousMultilinearMap 𝕜 E G →ₗᵢ[𝕜'] ContinuousMultilinearMap 𝕜' E G where
+def restrictScalarsₗᵢ : ContinuousMultilinearMap 𝕜 E G →ₗᵢ[𝕜'] ContinuousMultilinearMap 𝕜' E G where
   toFun := restrictScalars 𝕜'
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -715,8 +712,7 @@ def restrictScalarsₗᵢ :
 #align continuous_multilinear_map.restrict_scalarsₗᵢ ContinuousMultilinearMap.restrictScalarsₗᵢ
 
 /-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
-def restrictScalarsLinear :
-    ContinuousMultilinearMap 𝕜 E G →L[𝕜'] ContinuousMultilinearMap 𝕜' E G :=
+def restrictScalarsLinear : ContinuousMultilinearMap 𝕜 E G →L[𝕜'] ContinuousMultilinearMap 𝕜' E G :=
   (restrictScalarsₗᵢ 𝕜').toContinuousLinearMap
 #align continuous_multilinear_map.restrict_scalars_linear ContinuousMultilinearMap.restrictScalarsLinear
 
@@ -868,8 +864,7 @@ theorem norm_mkPiAlgebra_of_empty [IsEmpty ι] :
 #align continuous_multilinear_map.norm_mk_pi_algebra_of_empty ContinuousMultilinearMap.norm_mkPiAlgebra_of_empty
 
 @[simp]
-theorem norm_mkPiAlgebra [NormOneClass A] :
-    ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ = 1 := by
+theorem norm_mkPiAlgebra [NormOneClass A] : ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ = 1 := by
   cases isEmpty_or_nonempty ι
   · simp [norm_mkPiAlgebra_of_empty]
   · refine' le_antisymm norm_mkPiAlgebra_le _
@@ -996,7 +991,8 @@ def compContinuousMultilinearMapL :
 
 variable {𝕜 G G'}
 
-/-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled continuous linear equiv. -/
+/-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled
+continuous linear equiv. -/
 nonrec
 def _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL (g : G ≃L[𝕜] G') :
     ContinuousMultilinearMap 𝕜 E G ≃L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
@@ -1106,8 +1102,8 @@ theorem mkContinuousLinear_norm_le' (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G'
   exact LinearMap.mkContinuous_norm_le _ (le_max_right _ _) _
 #align multilinear_map.mk_continuous_linear_norm_le' MultilinearMap.mkContinuousLinear_norm_le'
 
-theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') {C : ℝ}
-    (hC : 0 ≤ C) (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ C :=
+theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') {C : ℝ} (hC : 0 ≤ C)
+    (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ C :=
   (mkContinuousLinear_norm_le' f C H).trans_eq (max_eq_left hC)
 #align multilinear_map.mk_continuous_linear_norm_le MultilinearMap.mkContinuousLinear_norm_le
 
@@ -1179,8 +1175,8 @@ theorem norm_compContinuous_linearIsometry_le (g : ContinuousMultilinearMap 𝕜
     LinearIsometry.norm_map, le_rfl]
 #align continuous_multilinear_map.norm_comp_continuous_linear_isometry_le ContinuousMultilinearMap.norm_compContinuous_linearIsometry_le
 
-theorem norm_compContinuous_linearIsometryEquiv
-    (g : ContinuousMultilinearMap 𝕜 E₁ G) (f : ∀ i, E i ≃ₗᵢ[𝕜] E₁ i) :
+theorem norm_compContinuous_linearIsometryEquiv (g : ContinuousMultilinearMap 𝕜 E₁ G)
+    (f : ∀ i, E i ≃ₗᵢ[𝕜] E₁ i) :
     ‖g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i)‖ = ‖g‖ := by
   apply le_antisymm (g.norm_compContinuous_linearIsometry_le fun i => (f i).toLinearIsometry)
   have : g = (g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i)).compContinuousLinearMap
