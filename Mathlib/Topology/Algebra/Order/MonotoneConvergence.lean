@@ -94,8 +94,8 @@ variable [Preorder α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atTop_isLUB (h_mono : Monotone f) (ha : IsLUB (Set.range f) a) :
     Tendsto f atTop (𝓝 a) := by
-  suffices : Tendsto (rangeFactorization f) atTop atTop
-  exact (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
+  suffices Tendsto (rangeFactorization f) atTop atTop from
+    (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
   exact h_mono.rangeFactorization.tendsto_atTop_atTop fun b => b.2.imp fun a ha => ha.ge
 #align tendsto_at_top_is_lub tendsto_atTop_isLUB
 

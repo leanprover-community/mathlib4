@@ -198,8 +198,7 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
   · rw [isNormal_iff_strictMono_limit]
     rintro ⟨h, h'⟩
     refine' ⟨h, fun o ho a h => _⟩
-    suffices : o ∈ f ⁻¹' Set.Iic a
-    exact Set.mem_preimage.1 this
+    suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
     rw [mem_closed_iff_sup (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
     exact
       ⟨_, out_nonempty_iff_ne_zero.2 ho.1, typein (· < ·), fun i => h _ (typein_lt_self i),
@@ -222,8 +221,8 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
     change ((enumOrdOrderIso hs) _).val = f x
     rw [OrderIso.apply_symm_apply]
   · rw [isClosed_iff_bsup] at h
-    suffices : enumOrd s a ≤ bsup.{u, u} a fun b (_ : b < a) => enumOrd s b
-    exact this.trans (bsup_le H)
+    suffices enumOrd s a ≤ bsup.{u, u} a fun b (_ : b < a) => enumOrd s b from
+      this.trans (bsup_le H)
     cases' enumOrd_surjective hs _
         (h ha.1 (fun b _ => enumOrd s b) fun b _ => enumOrd_mem hs b) with
       b hb

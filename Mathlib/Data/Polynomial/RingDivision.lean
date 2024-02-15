@@ -487,8 +487,8 @@ theorem eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
   have mul_eq := p.pow_mul_divByMonic_rootMultiplicity_eq t
   set m := p.rootMultiplicity t
   set g := p /ₘ (X - C t) ^ m
-  have : (g.comp (X + C t)).coeff 0 = g.eval t
-  · rw [coeff_zero_eq_eval_zero, eval_comp, eval_add, eval_X, eval_C, zero_add]
+  have : (g.comp (X + C t)).coeff 0 = g.eval t := by
+    rw [coeff_zero_eq_eval_zero, eval_comp, eval_add, eval_X, eval_C, zero_add]
   rw [← congr_arg (comp · <| X + C t) mul_eq, mul_comp, pow_comp, sub_comp, X_comp, C_comp,
     add_sub_cancel, ← reverse_leadingCoeff, reverse_X_pow_mul, reverse_leadingCoeff, trailingCoeff,
     Nat.le_zero.mp (natTrailingDegree_le_of_ne_zero <|
@@ -1094,8 +1094,8 @@ theorem mem_aroots [CommRing S] [IsDomain S] [Algebra T S]
 theorem aroots_mul [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {p q : T[X]} (hpq : p * q ≠ 0) :
     (p * q).aroots S = p.aroots S + q.aroots S := by
-  suffices : map (algebraMap T S) p * map (algebraMap T S) q ≠ 0
-  · rw [aroots_def, Polynomial.map_mul, roots_mul this]
+  suffices map (algebraMap T S) p * map (algebraMap T S) q ≠ 0 by
+    rw [aroots_def, Polynomial.map_mul, roots_mul this]
   rwa [← Polynomial.map_mul, Polynomial.map_ne_zero_iff
     (NoZeroSMulDivisors.algebraMap_injective T S)]
 
