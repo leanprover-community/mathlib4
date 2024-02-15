@@ -31,8 +31,8 @@ instance [Obj α] [Obj β] : Obj (α × β) := ⟨⟩
 instance [∀ x, Obj (E x)] : Obj ((x' : α) → E x') := ⟨⟩
 
 
-@[fun_prop] opaque Con {α β} [Obj α] [Obj β] (f : α → β) : Prop
 @[fun_prop] opaque ConAt {α β} [Obj α] [Obj β] (f : α → β) (a : α) : Prop
+@[fun_prop] def Con {α β} [Obj α] [Obj β] (f : α → β) : Prop:= ∀ x, ConAt f x
 @[fun_prop] opaque Lin {α β} [Obj α] [Obj β] (f : α → β) : Prop
 
 
@@ -84,18 +84,22 @@ theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd :
 
 
 
-variable [Add α] [Add β]
+variable [Add α] [Add β] [Mul α] [Mul β] [Div α] [Div β] [Zero α] [Zero β]
 
 -- "simple form" of theorems
 @[fun_prop] theorem fst_Con : Con fun x : α×β => x.1 := silentSorry
 @[fun_prop] theorem snd_Con : Con fun x : α×β => x.2 := silentSorry
 @[fun_prop] theorem add_Con : Con (fun x : α×α => x.1 + x.2) := silentSorry
+@[fun_prop] theorem mul_Con : Con (fun x : α×α => x.1 * x.2) := silentSorry
 
 
 -- "compositional form" of theorems
 @[fun_prop] theorem fst_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).1 := by fun_prop
 @[fun_prop] theorem snd_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).2 := by fun_prop
 @[fun_prop] theorem add_Con' (x y : α → β) (hx : Con x) (hy : Con y) : Con (fun w => x w + y w) := by fun_prop
+@[fun_prop] theorem mul_Con' (x y : α → β) (hx : Con x) (hy : Con y) : Con (fun w => x w * y w) := by fun_prop
+@[fun_prop] theorem div_ConAt' (x y : α → β) (w) (hx : ConAt x w) (hy : ConAt y w) (hy' : y w ≠ 0) : ConAt (fun w => x w / y w) w := silentSorry
+@[fun_prop] theorem div_Con' (x y : α → β) (hx : Con x) (hy : Con y) (hy' : ∀ w, y w ≠ 0) : Con (fun w => x w / y w) := silentSorry
 
 
 
@@ -189,8 +193,7 @@ theorem prod_mk_deriv_at (fst : α → β) (snd : α → γ) (x) (hfst : ConAt f
     fun dx => (deriv fst x dx, deriv snd x dx) := silentSorry
 
 
-variable [Add α] [Add β] [Mul α] [Mul β]
-set_option trace.Meta.Tactic.fun_trans.attr true
+
 -- "simple form" of theorems
 @[fun_trans] theorem fst_deriv : deriv (fun x : α×β => x.1) = fun x dx => dx.1 := silentSorry
 @[fun_trans] theorem snd_deriv : deriv (fun x : α×β => x.2) = fun x dx => dx.2 := silentSorry
@@ -199,25 +202,11 @@ set_option trace.Meta.Tactic.fun_trans.attr true
 
 
 
-example : Con fun x : α×β => x.2 := by fun_prop
-
 -- "compositional form" of theorems
-set_option trace.Meta.Tactic.fun_trans true
-set_option trace.Meta.Tactic.fun_trans.step true
-set_option trace.Meta.Tactic.fun_trans.discharge true
-set_option trace.Meta.Tactic.fun_trans.unify true
-set_option trace.Meta.Tactic.fun_prop true
-set_option trace.Meta.Tactic.fun_prop.step true
-set_option trace.Meta.Tactic.fun_prop.unify true
-set_option trace.Meta.Tactic.fun_prop.discharge true
 @[fun_trans] theorem fst_deriv' (self : α → β×γ) (hself : Con self) :
     deriv (fun x => (self x).1) = fun x dx => (deriv self x dx).1 := by (conv => lhs; fun_trans)
 @[fun_trans] theorem fst_deriv_at' (self : α → β×γ) (x) (hself : ConAt self x) :
     deriv (fun x => (self x).1) x = fun dx => (deriv self x dx).1 := by fun_trans
-
-example (self : α → β×γ) (x) (hself : ConAt self x) :
-    deriv (fun x => (self x).1) x = fun dx => (deriv self x dx).1 := by fun_trans
-
 @[fun_trans] theorem snd_deriv' (self : α → β×γ) (hself : Con self) :
     deriv (fun x => (self x).2) = fun x dx => (deriv self x dx).2 := by fun_trans
 @[fun_trans] theorem add_deriv' (x y : α → β) (hx : Con x) (hy : Con y) :
