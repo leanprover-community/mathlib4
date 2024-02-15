@@ -169,7 +169,7 @@ theorem get_tail (x : Vector α n) (i) :
   cases' i with i ih; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
-  rw [←h] at ih
+  rw [← h] at ih
   contradiction
 #align vector.nth_tail Vector.get_tail
 
@@ -628,7 +628,7 @@ theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i 
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
     (v.set i a).get j = v.get j := by
   cases v; cases i; cases j
-  simp [Vector.set, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
+  simp only [set, get_eq_get, toList_mk, Fin.cast_mk, ne_eq]
   rw [List.get_set_of_ne]
   · simpa using h
 #align vector.nth_update_nth_of_ne Vector.get_set_of_ne
@@ -723,7 +723,7 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) :
 
 variable (η : ApplicativeTransformation F G)
 
-protected theorem naturality {α β : Type _} (f : α → F β) (x : Vector α n) :
+protected theorem naturality {α β : Type u} (f : α → F β) (x : Vector α n) :
     η (x.traverse f) = x.traverse (@η _ ∘ f) := by
   induction' x using Vector.inductionOn with n x xs ih
   · simp! [functor_norm, cast, η.preserves_pure]
@@ -799,10 +799,10 @@ variable (ys : Vector β n)
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
   clear * - v₁ v₂
-  induction v₁, v₂ using inductionOn₂
-  case nil =>
+  induction v₁, v₂ using inductionOn₂ with
+  | nil =>
     exact Fin.elim0 i
-  case cons x xs y ys ih =>
+  | cons ih =>
     rw [map₂_cons]
     cases i using Fin.cases
     · simp only [get_zero, head_cons]

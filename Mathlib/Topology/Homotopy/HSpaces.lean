@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Homotopy.Path
+import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Topology.Homotopy.Basic
 
 #align_import topology.homotopy.H_spaces from "leanprover-community/mathlib"@"729d23f9e1640e1687141be89b106d3c8f9d10c0"
 
@@ -91,21 +92,17 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
     have hG : Continuous G :=
       (Continuous.comp HSpace.eHmul.1.1.2
-            (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
+          (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
         (Continuous.comp HSpace.eHmul.1.1.2
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exacts [Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.2 x, HSpace.eHmul.1.2 y⟩]
+      exact Prod.ext (HSpace.eHmul.1.2 x) (HSpace.eHmul.1.2 y)
     · rintro ⟨x, y⟩
-      exact Prod.mk.inj_iff.mpr ⟨HSpace.eHmul.1.3 x, HSpace.eHmul.1.3 y⟩
+      exact Prod.ext (HSpace.eHmul.1.3 x) (HSpace.eHmul.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp (Set.mem_singleton_iff.mp h)
-      exact
-        ⟨Prod.mk.inj_iff.mpr
-            ⟨HomotopyRel.eq_fst HSpace.eHmul t (Set.mem_singleton_iff.mpr h.1),
-              HomotopyRel.eq_fst HSpace.eHmul t (Set.mem_singleton_iff.mpr h.2)⟩,
-          Prod.mk.inj_iff.mpr ⟨(HSpace.eHmul.2 t x h.1).2, (HSpace.eHmul.2 t y h.2).2⟩⟩
+      replace h := Prod.mk.inj_iff.mp h
+      exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
     have hG : Continuous G :=
@@ -115,16 +112,12 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
           (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
-      exacts [Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.2 x, HSpace.hmulE.1.2 y⟩]
+      exact Prod.ext (HSpace.hmulE.1.2 x) (HSpace.hmulE.1.2 y)
     · rintro ⟨x, y⟩
-      exact Prod.mk.inj_iff.mpr ⟨HSpace.hmulE.1.3 x, HSpace.hmulE.1.3 y⟩
+      exact Prod.ext (HSpace.hmulE.1.3 x) (HSpace.hmulE.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp (Set.mem_singleton_iff.mp h)
-      exact
-        ⟨Prod.mk.inj_iff.mpr
-            ⟨HomotopyRel.eq_fst HSpace.hmulE t (Set.mem_singleton_iff.mpr h.1),
-              HomotopyRel.eq_fst HSpace.hmulE t (Set.mem_singleton_iff.mpr h.2)⟩,
-          Prod.mk.inj_iff.mpr ⟨(HSpace.hmulE.2 t x h.1).2, (HSpace.hmulE.2 t y h.2).2⟩⟩
+      replace h := Prod.mk.inj_iff.mp h
+      exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
 #align H_space.prod HSpace.prod
 
 
@@ -290,13 +283,13 @@ instance (x : X) : HSpace (Path x x) where
   hmul_e_e := refl_trans_refl
   eHmul :=
     { toHomotopy :=
-        ⟨⟨fun p : I × Path x x => delayReflLeft p.1 p.2, continuous_delayReflLeft⟩,
+        ⟨⟨fun p : I × Path x x ↦ delayReflLeft p.1 p.2, continuous_delayReflLeft⟩,
           delayReflLeft_zero, delayReflLeft_one⟩
-      prop' := by rintro t _ (rfl : _ = _); exact ⟨refl_trans_refl.symm, rfl⟩ }
+      prop' := by rintro t _ rfl; exact refl_trans_refl.symm }
   hmulE :=
     { toHomotopy :=
-        ⟨⟨fun p : I × Path x x => delayReflRight p.1 p.2, continuous_delayReflRight⟩,
+        ⟨⟨fun p : I × Path x x ↦ delayReflRight p.1 p.2, continuous_delayReflRight⟩,
           delayReflRight_zero, delayReflRight_one⟩
-      prop' := by rintro t _ (rfl : _ = _); exact ⟨refl_trans_refl.symm, rfl⟩ }
+      prop' := by rintro t _ rfl; exact refl_trans_refl.symm }
 
 end Path

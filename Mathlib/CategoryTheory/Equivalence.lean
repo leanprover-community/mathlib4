@@ -258,7 +258,7 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
   dsimp [adjointifyη,Trans.trans]
-  simp
+  simp only [comp_id, assoc, map_comp]
   have := ε.hom.naturality (F.map (η.inv.app X)); dsimp at this; rw [this]; clear this
   rw [← assoc _ _ (F.map _)]
   have := ε.hom.naturality (ε.inv.app <| F.obj X); dsimp at this; rw [this]; clear this
@@ -567,6 +567,12 @@ instance isEquivalenceTrans (F : C ⥤ D) (G : D ⥤ E) [IsEquivalence F] [IsEqu
   IsEquivalence.ofEquivalence (Equivalence.trans (asEquivalence F) (asEquivalence G))
 #align category_theory.functor.is_equivalence_trans CategoryTheory.Functor.isEquivalenceTrans
 
+instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringLeft C D E).obj F) :=
+  (inferInstance : IsEquivalence (Equivalence.congrLeft F.asEquivalence).inverse)
+
+instance (F : C ⥤ D) [IsEquivalence F] : IsEquivalence ((whiskeringRight E C D).obj F) :=
+  (inferInstance : IsEquivalence (Equivalence.congrRight F.asEquivalence).functor)
+
 end Functor
 
 namespace Equivalence
@@ -580,6 +586,14 @@ theorem functor_inv (E : C ≌ D) : E.functor.inv = E.inverse :=
 theorem inverse_inv (E : C ≌ D) : E.inverse.inv = E.functor :=
   rfl
 #align category_theory.equivalence.inverse_inv CategoryTheory.Equivalence.inverse_inv
+
+@[simp]
+theorem isEquivalence_unitIso (E : C ≌ D) : IsEquivalence.unitIso = E.unitIso :=
+  rfl
+
+@[simp]
+theorem isEquivalence_counitIso (E : C ≌ D) : IsEquivalence.counitIso = E.counitIso :=
+  rfl
 
 @[simp]
 theorem functor_asEquivalence (E : C ≌ D) : E.functor.asEquivalence = E := by
@@ -765,5 +779,63 @@ noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [Full F] [Faithful 
 #align category_theory.equivalence.fully_faithful_to_ess_image CategoryTheory.Equivalence.fullyFaithfulToEssImage
 
 end Equivalence
+
+namespace Iso
+
+variable {E : Type u₃} [Category.{v₃} E] {F : C ⥤ E} {G : C ⥤ D} {H : D ⥤ E}
+
+/-- Construct an isomorphism `F ⋙ H.inv ≅ G` from an isomorphism `F ≅ G ⋙ H`. -/
+@[simps!]
+def compInvIso [h : IsEquivalence H] (i : F ≅ G ⋙ H) : F ⋙ H.inv ≅ G :=
+  isoWhiskerRight i H.inv ≪≫
+    associator G H H.inv ≪≫ isoWhiskerLeft G h.unitIso.symm ≪≫ G.rightUnitor
+#align category_theory.comp_inv_iso CategoryTheory.Iso.compInvIso
+
+/-- Construct an isomorphism `F ⋙ H.inverse ≅ G` from an isomorphism `F ≅ G ⋙ H.functor`. -/
+@[simps!]
+def compInverseIso {H : D ≌ E} (i : F ≅ G ⋙ H.functor) : F ⋙ H.inverse ≅ G :=
+  i.compInvIso
+
+/-- Construct an isomorphism `G ≅ F ⋙ H.inv` from an isomorphism `G ⋙ H ≅ F`. -/
+@[simps!]
+def isoCompInv [IsEquivalence H] (i : G ⋙ H ≅ F) : G ≅ F ⋙ H.inv :=
+  (compInvIso i.symm).symm
+#align category_theory.iso_comp_inv CategoryTheory.Iso.isoCompInv
+
+/-- Construct an isomorphism `G ≅ F ⋙ H.inverse` from an isomorphism `G ⋙ H.functor ≅ F`. -/
+@[simps!]
+def isoCompInverse {H : D ≌ E} (i : G ⋙ H.functor ≅ F) : G ≅ F ⋙ H.inverse :=
+  i.isoCompInv
+
+/-- Construct an isomorphism `G.inv ⋙ F ≅ H` from an isomorphism `F ≅ G ⋙ H`. -/
+@[simps!]
+def invCompIso [h : IsEquivalence G] (i : F ≅ G ⋙ H) : G.inv ⋙ F ≅ H :=
+  isoWhiskerLeft G.inv i ≪≫
+    (associator G.inv G H).symm ≪≫ isoWhiskerRight h.counitIso H ≪≫ H.leftUnitor
+#align category_theory.inv_comp_iso CategoryTheory.Iso.invCompIso
+
+/-- Construct an isomorphism `G.inverse ⋙ F ≅ H` from an isomorphism `F ≅ G.functor ⋙ H`. -/
+@[simps!]
+def inverseCompIso {G : C ≌ D} (i : F ≅ G.functor ⋙ H) : G.inverse ⋙ F ≅ H :=
+  i.invCompIso
+
+/-- Construct an isomorphism `H ≅ G.inv ⋙ F` from an isomorphism `G ⋙ H ≅ F`. -/
+@[simps!]
+def isoInvComp [IsEquivalence G] (i : G ⋙ H ≅ F) : H ≅ G.inv ⋙ F :=
+  (invCompIso i.symm).symm
+#align category_theory.iso_inv_comp CategoryTheory.Iso.isoInvComp
+
+/-- Construct an isomorphism `H ≅ G.inverse ⋙ F` from an isomorphism `G.functor ⋙ H ≅ F`. -/
+@[simps!]
+def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse ⋙ F :=
+  i.isoInvComp
+
+end Iso
+
+-- deprecated on 2024-02-07
+@[deprecated] alias compInvIso := Iso.compInvIso
+@[deprecated] alias isoCompInv := Iso.isoCompInv
+@[deprecated] alias invCompIso := Iso.invCompIso
+@[deprecated] alias isoInvComp := Iso.isoInvComp
 
 end CategoryTheory

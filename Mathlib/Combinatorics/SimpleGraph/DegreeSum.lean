@@ -3,8 +3,10 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Dart
+import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.ZMod.Parity
 
@@ -39,8 +41,7 @@ simple graphs, sums, degree-sum formula, handshaking lemma
 
 
 open Finset
-
-open BigOperators
+open scoped BigOperators
 
 namespace SimpleGraph
 
@@ -78,16 +79,16 @@ theorem dart_card_eq_sum_degrees : Fintype.card G.Dart = ∑ v, G.degree v := by
   exact card_eq_sum_card_fiberwise (by simp)
 #align simple_graph.dart_card_eq_sum_degrees SimpleGraph.dart_card_eq_sum_degrees
 
-variable {G} [DecidableEq V]
+variable {G}
 
-theorem Dart.edge_fiber (d : G.Dart) :
+theorem Dart.edge_fiber [DecidableEq V] (d : G.Dart) :
     (univ.filter fun d' : G.Dart => d'.edge = d.edge) = {d, d.symm} :=
   Finset.ext fun d' => by simpa using dart_edge_eq_iff d' d
 #align simple_graph.dart.edge_fiber SimpleGraph.Dart.edge_fiber
 
 variable (G)
 
-theorem dart_edge_fiber_card (e : Sym2 V) (h : e ∈ G.edgeSet) :
+theorem dart_edge_fiber_card [DecidableEq V] (e : Sym2 V) (h : e ∈ G.edgeSet) :
     (univ.filter fun d : G.Dart => d.edge = e).card = 2 := by
   refine' Sym2.ind (fun v w h => _) e h
   let d : G.Dart := ⟨(v, w), h⟩
@@ -98,6 +99,7 @@ theorem dart_edge_fiber_card (e : Sym2 V) (h : e ∈ G.edgeSet) :
 #align simple_graph.dart_edge_fiber_card SimpleGraph.dart_edge_fiber_card
 
 theorem dart_card_eq_twice_card_edges : Fintype.card G.Dart = 2 * G.edgeFinset.card := by
+  classical
   rw [← card_univ]
   rw [@card_eq_sum_card_fiberwise _ _ _ Dart.edge _ G.edgeFinset fun d _h =>
       by rw [mem_edgeFinset]; apply Dart.edge_mem]
@@ -141,7 +143,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
       use v
       simp only [true_and_iff, mem_filter, mem_univ]
       exact h
-    rwa [← card_pos, hg, ← two_mul, zero_lt_mul_left] at hh
+    rwa [← card_pos, hg, ← two_mul, mul_pos_iff_of_pos_left] at hh
     exact zero_lt_two
   have hc : (fun w : V => w ≠ v ∧ Odd (G.degree w)) = fun w : V => Odd (G.degree w) ∧ w ≠ v := by
     ext w

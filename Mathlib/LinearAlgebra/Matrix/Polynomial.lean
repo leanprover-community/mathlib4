@@ -37,21 +37,22 @@ open Polynomial Matrix Equiv.Perm
 namespace Polynomial
 
 theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
-    natDegree (det ((X : α[X]) • A.map C + B.map C)) ≤ Fintype.card n := by
+    natDegree (det ((X : α[X]) • A.map C + B.map C : Matrix n n α[X])) ≤ Fintype.card n := by
   rw [det_apply]
   refine' (natDegree_sum_le _ _).trans _
   refine' Multiset.max_nat_le_of_forall_le _ _ _
-  simp only [forall_apply_eq_imp_iff', true_and_iff, Function.comp_apply, Multiset.map_map,
+  simp only [forall_apply_eq_imp_iff, true_and_iff, Function.comp_apply, Multiset.map_map,
     Multiset.mem_map, exists_imp, Finset.mem_univ_val]
   intro g
   calc
-    natDegree (sign g • ∏ i : n, (X • A.map C + B.map C) (g i) i) ≤
-        natDegree (∏ i : n, (X • A.map C + B.map C) (g i) i) := by
+    natDegree (sign g • ∏ i : n, (X • A.map C + B.map C : Matrix n n α[X]) (g i) i) ≤
+        natDegree (∏ i : n, (X • A.map C + B.map C : Matrix n n α[X]) (g i) i) := by
       cases' Int.units_eq_one_or (sign g) with sg sg
       · rw [sg, one_smul]
       · rw [sg, Units.neg_smul, one_smul, natDegree_neg]
-    _ ≤ ∑ i : n, natDegree (((X : α[X]) • A.map C + B.map C) (g i) i) :=
-      (natDegree_prod_le (Finset.univ : Finset n) fun i : n => (X • A.map C + B.map C) (g i) i)
+    _ ≤ ∑ i : n, natDegree (((X : α[X]) • A.map C + B.map C : Matrix n n α[X]) (g i) i) :=
+      (natDegree_prod_le (Finset.univ : Finset n) fun i : n =>
+        (X • A.map C + B.map C : Matrix n n α[X]) (g i) i)
     _ ≤ Finset.univ.card • 1 := (Finset.sum_le_card_nsmul _ _ 1 fun (i : n) _ => ?_)
     _ ≤ Fintype.card n := by simp [mul_one, Algebra.id.smul_eq_mul, Finset.card_univ]
   dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
@@ -88,10 +89,10 @@ theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
 theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :
     leadingCoeff (det ((X : α[X]) • (1 : Matrix n n α[X]) + A.map C)) = 1 := by
   cases subsingleton_or_nontrivial α
-  · simp
+  · simp [eq_iff_true_of_subsingleton]
   rw [← @det_one n, ← coeff_det_X_add_C_card _ A, leadingCoeff]
   simp only [Matrix.map_one, C_eq_zero, RingHom.map_one]
-  cases' (natDegree_det_X_add_C_le 1 A).eq_or_lt with h h
+  rcases (natDegree_det_X_add_C_le 1 A).eq_or_lt with h | h
   · simp only [RingHom.map_one, Matrix.map_one, C_eq_zero] at h
     rw [h]
   · -- contradiction. we have a hypothesis that the degree is less than |n|

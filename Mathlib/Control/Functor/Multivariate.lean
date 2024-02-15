@@ -10,12 +10,12 @@ import Mathlib.Data.TypeVec
 
 /-!
 
-Functors between the category of tuples of types, and the category Type
+# Functors between the category of tuples of types, and the category Type
 
 Features:
 
-`MvFunctor n` : the type class of multivariate functors
-`f <$$> x`    : notation for map
+* `MvFunctor n` : the type class of multivariate functors
+* `f <$$> x`    : notation for map
 
 -/
 
@@ -144,8 +144,9 @@ theorem LiftR_def (x y : F α) :
       ∃ u : F (Subtype_ R),
         (TypeVec.prod.fst ⊚ subtypeVal R) <$$> u = x ∧
           (TypeVec.prod.snd ⊚ subtypeVal R) <$$> u = y :=
-  exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' R)
-    (by simp only [map_map, comp_assoc, subtypeVal_toSubtype']; simp [comp])
+  exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' R) (by
+    simp only [map_map, comp_assoc, subtypeVal_toSubtype']
+    simp (config := { unfoldPartialApp := true }) [comp])
 #align mvfunctor.liftr_def MvFunctor.LiftR_def
 
 end LiftP'
@@ -192,7 +193,7 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     cases i <;> rfl
   · intros
     rw [MvFunctor.map_map]
-    dsimp [(· ⊚ ·)]
+    dsimp (config := { unfoldPartialApp := true }) [(· ⊚ ·)]
     suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val)
       by rw[this];
     ext i ⟨x, _⟩
@@ -228,7 +229,7 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
   · ext i ⟨x, _⟩ : 2
     cases i <;> rfl
   · intros
-    simp [MvFunctor.map_map, (· ⊚ ·)]
+    simp (config := { unfoldPartialApp := true }) [MvFunctor.map_map, (· ⊚ ·)]
     -- porting note: proof was
     -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
     -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl

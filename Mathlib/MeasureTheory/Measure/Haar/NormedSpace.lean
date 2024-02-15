@@ -3,6 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Sébastien Gouëzel
 -/
+import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Integral.Bochner
 
@@ -12,8 +13,6 @@ import Mathlib.MeasureTheory.Integral.Bochner
 # Basic properties of Haar measures on real vector spaces
 
 -/
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -55,7 +54,7 @@ end ContinuousLinearEquiv
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace ℝ F] [CompleteSpace F]
+  [NormedSpace ℝ F]
 
 variable {s : Set E}
 
@@ -64,6 +63,8 @@ integral of `f`. The formula we give works even when `f` is not integrable or `R
 thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_smul (f : E → F) (R : ℝ) :
     (∫ x, f (R • x) ∂μ) = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
+  by_cases hF : CompleteSpace F; swap
+  · simp [integral, hF]
   rcases eq_or_ne R 0 with (rfl | hR)
   · simp only [zero_smul, integral_const]
     rcases Nat.eq_zero_or_pos (finrank ℝ E) with (hE | hE)
@@ -72,7 +73,7 @@ theorem integral_comp_smul (f : E → F) (R : ℝ) :
       conv_rhs => rw [this]
       simp only [hE, pow_zero, inv_one, abs_one, one_smul, integral_const]
     · have : Nontrivial E := finrank_pos_iff.1 hE
-      simp only [zero_pow hE, measure_univ_of_isAddLeftInvariant, ENNReal.top_toReal, zero_smul,
+      simp only [zero_pow hE.ne', measure_univ_of_isAddLeftInvariant, ENNReal.top_toReal, zero_smul,
         inv_zero, abs_zero]
   · calc
       (∫ x, f (R • x) ∂μ) = ∫ y, f y ∂Measure.map (fun x => R • x) μ :=
@@ -137,7 +138,7 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
     (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ := by
   -- reduce to one-way implication
   suffices
-    ∀ {g : E → F} (hg : Integrable g μ) {S : ℝ} (hS : S ≠ 0), Integrable (fun x => g (S • x)) μ by
+    ∀ {g : E → F} (_ : Integrable g μ) {S : ℝ} (_ : S ≠ 0), Integrable (fun x => g (S • x)) μ by
     refine' ⟨fun hf => _, fun hf => this hf hR⟩
     convert this hf (inv_ne_zero hR)
     rw [← mul_smul, mul_inv_cancel hR, one_smul]
@@ -184,5 +185,25 @@ theorem Integrable.comp_div {g : ℝ → F} (hg : Integrable g) {R : ℝ} (hR : 
     Integrable fun x => g (x / R) :=
   (integrable_comp_div_iff g hR).2 hg
 #align measure_theory.integrable.comp_div MeasureTheory.Integrable.comp_div
+
+section InnerProductSpace
+
+variable {E' F' A : Type*}
+variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E'] [FiniteDimensional ℝ E']
+  [MeasurableSpace E'] [BorelSpace E']
+variable [NormedAddCommGroup F'] [InnerProductSpace ℝ F'] [FiniteDimensional ℝ F']
+  [MeasurableSpace F'] [BorelSpace F']
+
+variable (f : E' ≃ₗᵢ[ℝ] F')
+
+variable [NormedAddCommGroup A] [NormedSpace ℝ A]
+
+theorem integrable_comp (g : F' → A) : Integrable (g ∘ f) ↔ Integrable g :=
+  f.measurePreserving.integrable_comp_emb f.toMeasureEquiv.measurableEmbedding
+
+theorem integral_comp (g : F' → A) : ∫ (x : E'), g (f x) = ∫ (y : F'), g y :=
+  f.measurePreserving.integral_comp' (f := f.toMeasureEquiv) g
+
+end InnerProductSpace
 
 end MeasureTheory

@@ -66,7 +66,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
     [ConditionallyCompleteLinearOrderedField α] : Archimedean α :=
   archimedean_iff_nat_lt.2
     (by
-      by_contra' h
+      by_contra! h
       obtain ⟨x, h⟩ := h
       have := csSup_le _ _ (range_nonempty Nat.cast)
         (forall_range_iff.2 fun m =>
@@ -143,19 +143,20 @@ theorem cutMap_nonempty (a : α) : (cutMap β a).Nonempty :=
 
 theorem cutMap_bddAbove (a : α) : BddAbove (cutMap β a) := by
   obtain ⟨q, hq⟩ := exists_rat_gt a
-  exact ⟨q, ball_image_iff.2 fun r hr => by exact_mod_cast (hq.trans' hr).le⟩
+  exact ⟨q, ball_image_iff.2 fun r hr => mod_cast (hq.trans' hr).le⟩
 #align linear_ordered_field.cut_map_bdd_above LinearOrderedField.cutMap_bddAbove
 
 theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b := by
   refine (image_subset_iff.2 fun q hq => ?_).antisymm ?_
   · rw [mem_setOf_eq, ← sub_lt_iff_lt_add] at hq
     obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_rat_btwn hq
-    refine ⟨q₁, q - q₁, by rwa [coe_mem_cutMap_iff], ?_, add_sub_cancel'_right _ _⟩
+    refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel'_right _ _⟩
     · norm_cast
       rw [coe_mem_cutMap_iff]
-      exact_mod_cast sub_lt_comm.mp hq₁q
-  · rintro _ ⟨_, _, ⟨qa, ha, rfl⟩, ⟨qb, hb, rfl⟩, rfl⟩
-    refine' ⟨qa + qb, _, by norm_cast⟩
+      exact mod_cast sub_lt_comm.mp hq₁q
+  · rintro _ ⟨_, ⟨qa, ha, rfl⟩, _, ⟨qb, hb, rfl⟩, rfl⟩
+    -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
+    refine' ⟨qa + qb, _, by beta_reduce; norm_cast⟩
     rw [mem_setOf_eq, cast_add]
     exact add_lt_add ha hb
 #align linear_ordered_field.cut_map_add LinearOrderedField.cutMap_add
@@ -199,11 +200,11 @@ theorem inducedMap_rat (q : ℚ) : inducedMap α β (q : α) = q := by
 #align linear_ordered_field.induced_map_rat LinearOrderedField.inducedMap_rat
 
 @[simp]
-theorem inducedMap_zero : inducedMap α β 0 = 0 := by exact_mod_cast inducedMap_rat α β 0
+theorem inducedMap_zero : inducedMap α β 0 = 0 := mod_cast inducedMap_rat α β 0
 #align linear_ordered_field.induced_map_zero LinearOrderedField.inducedMap_zero
 
 @[simp]
-theorem inducedMap_one : inducedMap α β 1 = 1 := by exact_mod_cast inducedMap_rat α β 1
+theorem inducedMap_one : inducedMap α β 1 = 1 := mod_cast inducedMap_rat α β 1
 #align linear_ordered_field.induced_map_one LinearOrderedField.inducedMap_one
 
 variable {α β} {a : α} {b : β} {q : ℚ}
@@ -218,7 +219,7 @@ theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a :
     exact (inducedMap_mono α β).reflect_lt h
   · obtain ⟨q', hq, hqa⟩ := exists_rat_btwn hq
     apply lt_csSup_of_lt (cutMap_bddAbove β a) (coe_mem_cutMap_iff.mpr hqa)
-    exact_mod_cast hq
+    exact mod_cast hq
 #align linear_ordered_field.coe_lt_induced_map_iff LinearOrderedField.coe_lt_inducedMap_iff
 
 theorem lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q : α) < a :=
@@ -259,9 +260,9 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
   obtain ⟨q, hb, rfl⟩ := hb
   obtain ⟨q', hq', hqq', hqa⟩ := exists_rat_pow_btwn two_ne_zero hb (mul_self_pos.2 ha.ne')
   trans (q' : β) ^ 2
-  · exact_mod_cast hqq'.le
+  · exact mod_cast hqq'.le
   · rw [pow_two] at hqa ⊢
-    exact mul_self_le_mul_self (by exact_mod_cast hq'.le)
+    exact mul_self_le_mul_self (mod_cast hq'.le)
       (le_csSup (cutMap_bddAbove β a) <|
         coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
 #align linear_ordered_field.le_induced_map_mul_self_of_mem_cut_map LinearOrderedField.le_inducedMap_mul_self_of_mem_cutMap
@@ -280,7 +281,7 @@ theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : �
   push_cast
   obtain ⟨q', hq', hqa'⟩ := lt_inducedMap_iff.1 (lt_of_mul_self_lt_mul_self
     (inducedMap_nonneg ha.le) hqa)
-  exact mul_self_lt_mul_self (by exact_mod_cast hq.le) (hqa'.trans' <| by assumption_mod_cast)
+  exact mul_self_lt_mul_self (mod_cast hq.le) (hqa'.trans' <| by assumption_mod_cast)
 #align linear_ordered_field.exists_mem_cut_map_mul_self_of_lt_induced_map_mul_self LinearOrderedField.exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self
 
 variable (α β)

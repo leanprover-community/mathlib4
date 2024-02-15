@@ -345,7 +345,7 @@ def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D
         ext X
         simp only [NatTrans.comp_app, eqToHom_app, eqToHom_refl, comp_id, id_comp,
           NatTrans.hcomp_id_app, NatTrans.id_app, Functor.map_id]
-        rfl )
+        rfl)
   map_comp τ₁ τ₂ :=
     natTrans_hcomp_injective
       (by

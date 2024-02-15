@@ -166,7 +166,7 @@ scoped[Manifold]
 `EuclideanHalfSpace 1`.
 -/
 def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
-    LocalHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
+    PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
@@ -195,13 +195,13 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuous_toFun := by
+  continuousOn_toFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have : Continuous fun (z : ℝ) (_ : Fin 1) => z - x :=
       Continuous.sub (continuous_pi fun _ => continuous_id) continuous_const
     exact this.comp continuous_subtype_val
-  continuous_invFun := by
+  continuousOn_invFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have A : Continuous fun z : ℝ => min (z + x) y :=
@@ -214,7 +214,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
 `EuclideanHalfSpace 1`.
 -/
 def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
-    LocalHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
+    PartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | x < z.val }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun z := ⟨fun _ => y - z.val, sub_nonneg.mpr z.property.2⟩
@@ -244,13 +244,13 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuous_toFun := by
+  continuousOn_toFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have : Continuous fun (z : ℝ) (_ : Fin 1) => y - z :=
       continuous_const.sub (continuous_pi fun _ => continuous_id)
     exact this.comp continuous_subtype_val
-  continuous_invFun := by
+  continuousOn_invFun := by
     apply Continuous.continuousOn
     apply Continuous.subtype_mk
     have A : Continuous fun z : ℝ => max (y - z) x :=

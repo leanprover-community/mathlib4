@@ -58,12 +58,12 @@ macro_rules
 | `(tactic| aux_group₁ $[at $location]?) =>
   `(tactic| simp (config := {decide := false, failIfUnchanged := false}) only
     [commutatorElement_def, mul_one, one_mul,
-      ←zpow_neg_one, ←zpow_ofNat, ←zpow_mul,
+      ← zpow_neg_one, ← zpow_ofNat, ← zpow_mul,
       Int.ofNat_add, Int.ofNat_mul,
       Int.mul_neg_eq_neg_mul_symm, Int.neg_mul_eq_neg_mul_symm, neg_neg,
       one_zpow, zpow_zero, zpow_one, mul_zpow_neg_one,
-      ←mul_assoc,
-      ←zpow_add, ←zpow_add_one, ←zpow_one_add, zpow_trick, zpow_trick_one, zpow_trick_one',
+      ← mul_assoc,
+      ← zpow_add, ← zpow_add_one, ← zpow_one_add, zpow_trick, zpow_trick_one, zpow_trick_one',
       tsub_self, sub_self, add_neg_self, neg_add_self]
   $[at $location]?)
 

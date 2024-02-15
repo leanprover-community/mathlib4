@@ -27,7 +27,7 @@ variable {ι R K M M₁ M₂ M₃ V : Type*}
 
 namespace QuadraticForm
 
-variable [Semiring R]
+variable [CommSemiring R]
 
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
 
@@ -52,12 +52,14 @@ namespace IsometryEquiv
 
 variable {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} {Q₃ : QuadraticForm R M₃}
 
-instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
+instance : EquivLike (Q₁.IsometryEquiv Q₂) M₁ M₂ where
   coe f := f.toLinearEquiv
   inv f := f.toLinearEquiv.symm
   left_inv f := f.toLinearEquiv.left_inv
   right_inv f := f.toLinearEquiv.right_inv
   coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+
+instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
   map_add f := map_add f.toLinearEquiv
   map_smulₛₗ f := map_smulₛₗ f.toLinearEquiv
 
@@ -151,7 +153,7 @@ variable [Field K] [Invertible (2 : K)] [AddCommGroup V] [Module K V]
 squares. -/
 noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
     (v : Basis (Fin (FiniteDimensional.finrank K V)) K V)
-    (hv₁ : (associated (R₁ := K) Q).iIsOrtho v) :
+    (hv₁ : (associated (R := K) Q).iIsOrtho v) :
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
   refine' ⟨iso, fun m => _⟩
@@ -170,11 +172,11 @@ theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
 #align quadratic_form.equivalent_weighted_sum_squares QuadraticForm.equivalent_weightedSumSquares
 
 theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)
-    (hQ : (associated (R₁ := K) Q).Nondegenerate) :
+    (hQ : (associated (R := K) Q).Nondegenerate) :
     ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_nondegenerate hQ
-  simp_rw [IsOrtho, associated_eq_self_apply] at hv₂
+  simp_rw [BilinForm.IsOrtho, associated_eq_self_apply] at hv₂
   exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 #align quadratic_form.equivalent_weighted_sum_squares_units_of_nondegenerate' QuadraticForm.equivalent_weightedSumSquares_units_of_nondegenerate'
 
