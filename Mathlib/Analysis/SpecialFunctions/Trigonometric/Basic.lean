@@ -168,7 +168,7 @@ theorem pi_nonneg : 0 ≤ π :=
   pi_pos.le
 
 theorem pi_ne_zero : π ≠ 0 :=
-  ne_of_gt pi_pos
+  pi_pos.ne'
 #align real.pi_ne_zero Real.pi_ne_zero
 
 theorem pi_div_two_pos : 0 < π / 2 :=
