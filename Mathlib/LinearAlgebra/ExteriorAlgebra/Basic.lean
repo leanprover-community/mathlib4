@@ -349,7 +349,7 @@ lemma ιMulti_range (n : ℕ) : Set.range (ιMulti R n) ⊆
 of the exterior algebra.-/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
     Submodule.span R (Set.range (ιMulti R n)) =
-    (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n) := by
+    LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n := by
   refine le_antisymm (by rw [Submodule.span_le]; apply le_trans (ιMulti_range R n) (le_refl _)) ?_
   rw [Submodule.pow_eq_span_pow_set, Submodule.span_le]
   refine fun u hu ↦ Submodule.subset_span ?_
