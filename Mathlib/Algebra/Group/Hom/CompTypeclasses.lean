@@ -22,7 +22,8 @@ If `φ`, `ψ`… are monoid homs and `M`, `N`… are monoids, we define two clas
 
 Some basic lemmas are proved:
 * `MonoidHom.CompTriple.comp` asserts `MonoidHom.CompTriple φ ψ (ψ.comp φ)`
-* `MonoidHom.CompTriple.id_comp` asserts `MonoidHom.CompTriple φ ψ ψ` in the presence of `MonoidHom.isId φ`
+* `MonoidHom.CompTriple.id_comp` asserts `MonoidHom.CompTriple φ ψ ψ`
+  in the presence of `MonoidHom.isId φ`
 * its variant `MonoidHom.CompTriple.comp_id`
 
 It also introduces instances:
