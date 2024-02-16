@@ -51,15 +51,15 @@ lemma Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
     p.natTrailingDegree = 0 :=
   le_antisymm (natTrailingDegree_le_of_ne_zero h) zero_le'
 
-lemma Polynomial.Monic.eq_X_pow_of_of_natDegree_eq_natTrailingDegree
+lemma Polynomial.Monic.eq_X_pow_of_natTrailingDegree_eq_natDegree
     {R : Type*} [CommRing R] {p : Polynomial R}
-    (h₁ : p.Monic) (h₂ : p.natDegree = p.natTrailingDegree) :
+    (h₁ : p.Monic) (h₂ : p.natTrailingDegree = p.natDegree) :
     p = X ^ p.natDegree := by
   ext n
   obtain hn|rfl|hn := lt_trichotomy n p.natDegree
   · rw [coeff_X_pow, if_neg hn.ne]
-    rw [h₂] at hn
-    exact coeff_eq_zero_of_lt_natTrailingDegree hn
+    apply coeff_eq_zero_of_lt_natTrailingDegree
+    rwa [h₂]
   · rw [coeff_X_pow, if_pos rfl]
     exact h₁.leadingCoeff
   · rw [coeff_X_pow, if_neg hn.ne']
@@ -76,20 +76,29 @@ variable (φ : Module.End K M)
 
 open FiniteDimensional Polynomial
 
+lemma charpoly_natDegree : natDegree (charpoly φ) = finrank K M := by
+  rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
+
 open Module.Free in
 lemma charpoly_nilpotent_tfae :
-    List.TFAE
-    [ φ.charpoly = X ^ finrank K M
-    , ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0
-    , IsNilpotent φ
-    , natTrailingDegree φ.charpoly = finrank K M
-    ] := by
+    List.TFAE [
+      IsNilpotent φ,
+      φ.charpoly = X ^ finrank K M,
+      ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0,
+      natTrailingDegree φ.charpoly = finrank K M ] := by
   tfae_have 1 → 2
+  · intro h
+    rw [← sub_eq_zero]
+    apply IsNilpotent.eq_zero
+    rw [finrank_eq_card_chooseBasisIndex]
+    apply Matrix.isNilpotent_charpoly_sub_pow_of_isNilpotent
+    exact h.map (toMatrixAlgEquiv (chooseBasis K M))
+  tfae_have 2 → 3
   · intro h m
     use finrank K M
     suffices φ ^ finrank K M = 0 by simp only [this, LinearMap.zero_apply]
     simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
-  tfae_have 2 → 3
+  tfae_have 3 → 1
   · intro h
     obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp <| φ.eventually_iSup_ker_pow_eq
     use n
@@ -98,58 +107,42 @@ lemma charpoly_nilpotent_tfae :
     obtain ⟨k, hk⟩ := h x
     rw [← mem_ker] at hk
     exact Submodule.mem_iSup_of_mem _ hk
-  tfae_have 3 → 1
-  · intro h
-    rw [← sub_eq_zero]
-    apply IsNilpotent.eq_zero
-    rw [finrank_eq_card_chooseBasisIndex]
-    apply Matrix.isNilpotent_charpoly_sub_pow_of_isNilpotent
-    exact h.map (toMatrixAlgEquiv (chooseBasis K M))
-  tfae_have 1 → 4
-  · intro h
-    rw [h, natTrailingDegree_X_pow]
-  tfae_have 4 → 1
-  · intro h
-    -- extract `charpoly_natDegree`
-    have : natDegree (charpoly φ) = finrank K M := by
-      erw [Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
-    erw [Polynomial.Monic.eq_X_pow_of_of_natDegree_eq_natTrailingDegree (charpoly_monic _), this]
-    rw [h, this]
+  tfae_have 2 ↔ 4
+  · rw [← φ.charpoly_natDegree]
+    refine ⟨?_, φ.charpoly_monic.eq_X_pow_of_natTrailingDegree_eq_natDegree⟩
+    intro h
+    rw [← natTrailingDegree_X_pow (R := K) φ.charpoly.natDegree, ← h]
   tfae_finish
 
 open Module.Free in
 lemma hasEigenvalue_zero_tfae :
-    List.TFAE
-    [ constantCoeff φ.charpoly = 0
-    , ∃ (m : M), m ≠ 0 ∧ φ m = 0
-    , ⊥ < ker φ
-    , ker φ ≠ ⊥
-    , Module.End.HasEigenvalue φ 0
-    , IsRoot (minpoly K φ) 0
-    , LinearMap.det φ = 0 ] := by
-  tfae_have 3 → 4
-  · exact ne_of_gt
-  tfae_have 7 → 3
-  · exact bot_lt_ker_of_det_eq_zero
-  tfae_have 5 ↔ 6
+    List.TFAE [
+      Module.End.HasEigenvalue φ 0,
+      IsRoot (minpoly K φ) 0,
+      constantCoeff φ.charpoly = 0,
+      LinearMap.det φ = 0,
+      ⊥ < ker φ,
+      ∃ (m : M), m ≠ 0 ∧ φ m = 0 ] := by
+  tfae_have 1 ↔ 2
   · exact Module.End.hasEigenvalue_iff_isRoot
-  tfae_have 4 → 2
-  · contrapose!
-    intro h
-    ext x
-    simp only [mem_ker, Submodule.mem_bot]
-    constructor
-    · intro hx; contrapose! hx; exact h x hx
-    · rintro rfl; exact map_zero _
-  tfae_have 6 → 1
+  tfae_have 2 → 3
   · obtain ⟨F, hF⟩ := minpoly_dvd_charpoly φ
     simp only [IsRoot.def, constantCoeff_apply, coeff_zero_eq_eval_zero, hF, eval_mul]
     intro h; rw [h, zero_mul]
-  tfae_have 1 → 7
+  tfae_have 3 → 4
   · rw [← LinearMap.det_toMatrix (chooseBasis K M), Matrix.det_eq_sign_charpoly_coeff,
       constantCoeff_apply, charpoly]
     intro h; rw [h, mul_zero]
-  tfae_have 2 → 5
+  tfae_have 4 → 5
+  · exact bot_lt_ker_of_det_eq_zero
+  tfae_have 5 → 6
+  · contrapose!
+    simp only [not_bot_lt_iff, eq_bot_iff]
+    intro h x
+    simp only [mem_ker, Submodule.mem_bot]
+    contrapose!
+    apply h
+  tfae_have 6 → 1
   · rintro ⟨x, h1, h2⟩
     apply Module.End.hasEigenvalue_of_hasEigenvector ⟨_, h1⟩
     simpa only [Module.End.eigenspace_zero, mem_ker] using h2
@@ -157,14 +150,13 @@ lemma hasEigenvalue_zero_tfae :
 
 open Module.Free in
 lemma not_hasEigenvalue_zero_tfae :
-    List.TFAE
-    [ constantCoeff φ.charpoly ≠ 0
-    , ∀ (m : M), φ m = 0 → m = 0
-    , ker φ ≤ ⊥
-    , ker φ = ⊥
-    , ¬ Module.End.HasEigenvalue φ 0
-    , ¬ IsRoot (minpoly K φ) 0
-    , LinearMap.det φ ≠ 0 ] := by
+    List.TFAE [
+      ¬ Module.End.HasEigenvalue φ 0,
+      ¬ IsRoot (minpoly K φ) 0,
+      constantCoeff φ.charpoly ≠ 0,
+      LinearMap.det φ ≠ 0,
+      ker φ ≤ ⊥,
+      ∀ (m : M), φ m = 0 → m = 0 ] := by
   have := (hasEigenvalue_zero_tfae φ).not
   dsimp only [List.map] at this
   push_neg at this
@@ -175,11 +167,11 @@ lemma not_hasEigenvalue_zero_tfae :
 open Module.Free in
 lemma charpoly_eq_X_pow_iff :
     φ.charpoly = X ^ finrank K M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 :=
-  (charpoly_nilpotent_tfae φ).out 0 1
+  (charpoly_nilpotent_tfae φ).out 1 2
 
 lemma charpoly_constantCoeff_eq_zero_iff :
     constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 :=
-  (hasEigenvalue_zero_tfae φ).out 0 1
+  (hasEigenvalue_zero_tfae φ).out 2 5
 
 open Module.Free in
 lemma toMatrix_prodMap {M₁ M₂ ι₁ ι₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
@@ -259,7 +251,7 @@ lemma finrank_maximalGeneralizedEigenspace :
   rw [natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
   have hG : natTrailingDegree (charpoly G) = 0 := by
     apply Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
-    apply ((not_hasEigenvalue_zero_tfae G).out 0 1).mpr
+    apply ((not_hasEigenvalue_zero_tfae G).out 2 5).mpr
     intro x hx
     suffices x.1 ∈ V ⊓ W by
       rw [hVW.inf_eq_bot, Submodule.mem_bot] at this
@@ -271,7 +263,7 @@ lemma finrank_maximalGeneralizedEigenspace :
       rwa [pow_one]
     exact ⟨hxV, x.2⟩
   rw [hG, add_zero, eq_comm]
-  apply ((charpoly_nilpotent_tfae F).out 1 3).mp
+  apply ((charpoly_nilpotent_tfae F).out 2 3).mp
   simp only [Subtype.forall, Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero]
   rintro x ⟨n, hx⟩
   use n
