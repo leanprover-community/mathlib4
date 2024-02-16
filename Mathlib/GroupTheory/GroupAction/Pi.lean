@@ -3,8 +3,8 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Set.Function
 
 #align_import group_theory.group_action.pi from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
@@ -16,10 +16,10 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 
 ## See also
 
-* `GroupTheory.GroupAction.option`
-* `GroupTheory.GroupAction.prod`
-* `GroupTheory.GroupAction.sigma`
-* `GroupTheory.GroupAction.sum`
+* `GroupTheory.GroupAction.Option`
+* `GroupTheory.GroupAction.Prod`
+* `GroupTheory.GroupAction.Sigma`
+* `GroupTheory.GroupAction.Sum`
 -/
 
 
