@@ -953,56 +953,40 @@ def map (f : M →ₗ[R'] N) : TrivSqZeroExt R' M →ₐ[R'] TrivSqZeroExt R' N 
 @[simp]
 theorem map_inl (f : M →ₗ[R'] N) (r : R') :
     map f (inl r) = inl r := by
-  unfold map liftEquivOfComm
-  simp only [Equiv.toFun_as_coe, Equiv.trans_apply, Equiv.coe_fn_mk, liftEquiv_apply_apply, fst_inl,
-    snd_inl, map_zero, add_zero]
-  rfl
+  simp [map, liftEquivOfComm, Algebra.ofId_apply, algebraMap_eq_inl]
 
 @[simp]
 theorem map_inr (f : M →ₗ[R'] N) (x : M) :
     map f (inr x) = inr (f x) := by
-  unfold map liftEquivOfComm
-  simp only [Equiv.toFun_as_coe, Equiv.trans_apply, Equiv.coe_fn_mk, liftEquiv_apply_apply, fst_inr,
-    map_zero, snd_inr, LinearMap.coe_comp, Function.comp_apply, inrHom_apply, zero_add]
-
-@[simp]
-theorem map_comp_inl (f : M →ₗ[R'] N) :
-    (map f).toRingHom.comp (inlHom R' M) = inlHom R' N := by
-  ext r
-  all_goals (rw [← algebraMap_eq_inlHom, ← algebraMap_eq_inlHom])
-  all_goals (simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
-    Function.comp_apply, AlgHom.commutes])
-
-@[simp]
-theorem map_comp_inr (f : M →ₗ[R'] N) :
-    (map f).toLinearMap.comp (inrHom R' M) = (inrHom R' N).comp f := by
-  apply LinearMap.ext
-  simp only [LinearMap.coe_comp, Function.comp_apply, inrHom_apply, AlgHom.toLinearMap_apply,
-    map_inr, forall_const]
-
-@[simp]
-theorem fst_comp_map (f : M →ₗ[R'] N) :
-    (fstHom R' R' N).comp (map f) = fstHom R' R' M := by
-  apply algHom_ext
-  simp only [AlgHom.coe_comp, Function.comp_apply, map_inr, fstHom_apply, fst_inr, forall_const]
-
-@[simp]
-theorem snd_comp_map (f : M →ₗ[R'] N) :
-    (sndHom R' N).comp (map f).toLinearMap = f.comp (sndHom R' M) := by
-  apply linearMap_ext
-  · simp only [LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply, map_inl,
-    sndHom_apply, snd_inl, map_zero, forall_const]
-  · simp only [LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply, map_inr,
-    sndHom_apply, snd_inr, forall_const]
+  simp [map, liftEquivOfComm, Algebra.ofId_apply, algebraMap_eq_inl]
 
 @[simp]
 theorem fst_map (f : M →ₗ[R'] N) (x : TrivSqZeroExt R' M) : fst (map f x) = fst x := by
-  rw [← fstHom_apply (S := R'), ← AlgHom.comp_apply, fst_comp_map, fstHom_apply]
+  simp [map, liftEquivOfComm, Algebra.ofId_apply, algebraMap_eq_inl]
 
 @[simp]
 theorem snd_map (f : M →ₗ[R'] N) (x : TrivSqZeroExt R' M) : snd (map f x) = f (snd x) := by
-  rw [← sndHom_apply, ← AlgHom.toLinearMap_apply, ← LinearMap.comp_apply, snd_comp_map,
-    LinearMap.comp_apply, sndHom_apply]
+  simp [map, liftEquivOfComm, Algebra.ofId_apply, algebraMap_eq_inl]
+
+@[simp]
+theorem map_comp_inlAlgHom (f : M →ₗ[R'] N) :
+    (map f).comp (inlAlgHom R' R' M) = inlAlgHom R' R' N :=
+  AlgHom.ext <| map_inl _
+
+@[simp]
+theorem map_comp_inrHom (f : M →ₗ[R'] N) :
+    (map f).toLinearMap ∘ₗ inrHom R' M = inrHom R' N ∘ₗ f :=
+  LinearMap.ext <| map_inr _
+
+@[simp]
+theorem fstHom_comp_map (f : M →ₗ[R'] N) :
+    (fstHom R' R' N).comp (map f) = fstHom R' R' M :=
+  AlgHom.ext <| fst_map _
+
+@[simp]
+theorem sndHom_comp_map (f : M →ₗ[R'] N) :
+    sndHom R' N ∘ₗ (map f).toLinearMap = f ∘ₗ sndHom R' M :=
+  LinearMap.ext <| snd_map _
 
 theorem map_id : map (LinearMap.id : M →ₗ[R'] M) = AlgHom.id R' _ := by
   apply algHom_ext
