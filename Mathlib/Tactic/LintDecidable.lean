@@ -17,11 +17,7 @@ but don't use this assumption in the type.
     let type := info.type
     let names :=
       if Name.isPrefixOf `Decidable declName then #[`Fintype, `Encodable]
-      else if Name.isPrefixOf `Fintype declName
-        then #[`Decidable, `DecidableEq, `DecidablePred, `Encodable]
-        else if Name.isPrefixOf `Encodable declName
-        then #[`Decidable, `DecidableEq, `DecidablePred, `Fintype]
-        else #[`Decidable, `DecidableEq, `DecidablePred, `Fintype, `Encodable]
+      else #[`Decidable, `DecidableEq, `DecidablePred, `Inhabited, `Fintype, `Encodable]
     let mut impossibleArgs ← forallTelescopeReducing type fun args ty => do
       let argTys ← args.mapM inferType
       let ty ← ty.eraseProofs
