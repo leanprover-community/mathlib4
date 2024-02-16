@@ -356,7 +356,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α]
   · refine' (sub_nonpos_of_le <| (sq_le _ _).trans <| hGε.trans _).trans (sq_nonneg _)
     · exact mod_cast G.edgeDensity_nonneg _ _
     · exact mod_cast G.edgeDensity_le_one _ _
-    · exact div_le_div_of_le_left (by sz_positivity) (by norm_num) (by norm_num)
+    · exact div_le_div_of_nonneg_left (by sz_positivity) (by norm_num) (by norm_num)
   rw [← sub_nonneg] at hGε
   have : ↑(G.edgeDensity U V) - ε ^ 5 / ↑50 ≤
       (∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
@@ -410,7 +410,7 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : P.parts.card * 16 ^ P
     _ ≤ (star hP G ε hU V).card * (m + 1) * ((1 - (↑m)⁻¹) / U.card) :=
       (mul_le_mul_of_nonneg_right card_biUnion_star_le_m_add_one_card_star_mul (by positivity))
     _ ≤ (star hP G ε hU V).card * (m + ↑1) * ((↑1 - (↑m)⁻¹) / (↑4 ^ P.parts.card * m)) :=
-      (mul_le_mul_of_nonneg_left (div_le_div_of_le_left hm (by sz_positivity) <|
+      (mul_le_mul_of_nonneg_left (div_le_div_of_nonneg_left hm (by sz_positivity) <|
         pow_mul_m_le_card_part hP hU) (by positivity))
     _ ≤ (star hP G ε hU V).card / ↑4 ^ P.parts.card := by
       rw [mul_assoc, mul_comm ((4 : ℝ) ^ P.parts.card), ← div_div, ← mul_div_assoc, ← mul_comm_div]

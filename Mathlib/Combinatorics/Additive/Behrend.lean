@@ -256,7 +256,7 @@ theorem exists_large_sphere (n d : ℕ) :
   · simp
   obtain rfl | hd := d.eq_zero_or_pos
   · simp
-  refine' (div_le_div_of_le_left _ _ _).trans hk
+  refine' (div_le_div_of_nonneg_left _ _ _).trans hk
   · exact cast_nonneg _
   · exact cast_add_one_pos _
   simp only [← le_sub_iff_add_le', cast_mul, ← mul_sub, cast_pow, cast_sub hd, sub_sq, one_pow,
@@ -332,7 +332,7 @@ theorem exp_neg_two_mul_le {x : ℝ} (hx : 0 < x) : exp (-2 * x) < exp (2 - ⌈x
     apply (add_le_add_left h₁.le _).trans_eq
     rw [← add_assoc, sub_add_cancel]
     linarith
-  refine' lt_of_le_of_lt _ (div_lt_div_of_lt_left (exp_pos _) (cast_pos.2 <| ceil_pos.2 hx) h₁)
+  refine' lt_of_le_of_lt _ (div_lt_div_of_pos_left (exp_pos _) (cast_pos.2 <| ceil_pos.2 hx) h₁)
   refine' le_trans _ (div_le_div_of_le (add_nonneg hx.le zero_le_one) (exp_le_exp.2 h₂))
   rw [le_div_iff (add_pos hx zero_lt_one), ← le_div_iff' (exp_pos _), ← exp_sub, neg_mul,
     sub_neg_eq_add, two_mul, sub_add_add_cancel, add_comm _ x]
@@ -429,7 +429,7 @@ set_option linter.uppercaseLean3 false in
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dValue N := by
   apply div_lt_floor _
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
-  · apply le_trans _ (div_le_div_of_le_left _ _ (ceil_lt_mul _).le)
+  · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
     rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
     · norm_num; exact le_sqrt_log hN
     · norm_num1
