@@ -1021,7 +1021,7 @@ def domCongrAut : MulAut G →* MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A G wh
 /-- If `f : R →ₐ[k] S` is an algebra homomorphism between two `k`-algebras, then
 `Finsupp.mapRange f` is an algebra homomorphism between their monoid algebras. -/
 def mapRangeAlgHom {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
-    [Algebra k S] [Monoid G] {F} [AlgHomClass F k R S] (f : F) :
+    [Algebra k S] [Monoid G] {F} [FunLike F R S] [AlgHomClass F k R S] (f : F) :
     MonoidAlgebra R G →ₐ[k] MonoidAlgebra S G :=
   liftNCAlgHom (singleOneAlgHom.comp f) (of S G) (fun _ _ ↦ by
     dsimp [Commute, SemiconjBy]
@@ -1054,7 +1054,7 @@ lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R
 `Finsupp.mapRange f` is an algebra equivalence between their additive monoid algebras. -/
 @[simps!]
 def mapRangeAlgEquiv {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
-    [Algebra k S] [Monoid G] {F} [AlgEquivClass F k R S] (f : F) :
+    [Algebra k S] [Monoid G] {F} [EquivLike F R S] [AlgEquivClass F k R S] (f : F) :
     MonoidAlgebra R G ≃ₐ[k] MonoidAlgebra S G :=
   AlgEquiv.ofAlgHom
     (mapRangeAlgHom (AlgEquiv.toAlgHom f))
@@ -2232,7 +2232,8 @@ def domCongrAut : AddAut G →* A[G] ≃ₐ[k] A[G] where
 /-- If `f : R →ₐ[k] S` is an algebra homomorphism between two `k`-algebras, then
 `Finsupp.mapRange f` is an algebra homomorphism between their additive monoid algebras. -/
 def mapRangeAlgHom {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
-    [Algebra k S] [AddMonoid G] {F} [AlgHomClass F k R S] (f : F) : R[G] →ₐ[k] S[G] :=
+    [Algebra k S] [AddMonoid G] {F} [FunLike F R S] [AlgHomClass F k R S] (f : F) :
+    R[G] →ₐ[k] S[G] :=
   liftNCAlgHom (singleZeroAlgHom.comp f) (of S G) (fun _ _ ↦ by
     dsimp [Commute, SemiconjBy]
     rw [single_mul_single, single_mul_single, zero_add, mul_one, add_zero, one_mul])
@@ -2264,7 +2265,8 @@ lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R
 `Finsupp.mapRange f` is an algebra equivalence between their additive monoid algebras. -/
 @[simps!]
 def mapRangeAlgEquiv {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
-    [Algebra k S] [AddMonoid G] {F} [AlgEquivClass F k R S] (f : F) : R[G] ≃ₐ[k] S[G] :=
+    [Algebra k S] [AddMonoid G] {F} [EquivLike F R S] [AlgEquivClass F k R S] (f : F) :
+    R[G] ≃ₐ[k] S[G] :=
   AlgEquiv.ofAlgHom
     (mapRangeAlgHom (AlgEquiv.toAlgHom f))
     (mapRangeAlgHom (AlgEquiv.symm f).toAlgHom)

@@ -16,6 +16,7 @@ theorem linear_independent_exp_exists_prime_nat' (c : ℕ) : ∃ n0, ∀ n ≥ n
   obtain (rfl | c0) := c.eq_zero_or_pos
   · use 1
     intro n hn
+    rw [ge_iff_le, Nat.one_le_iff_ne_zero] at hn
     rw [zero_pow hn]
     exact Nat.factorial_pos _
   refine' ⟨2 * (c ^ 2 + 1), _⟩
