@@ -426,7 +426,7 @@ lemma leftInverse_map_iff {f : M →ₗ[R] N} {g : N →ₗ[R] M} :
     LeftInverse (map g) (map f) ↔ LeftInverse g f := by
   refine ⟨fun h x => ?_, fun h x => ?_⟩
   · simpa using h (ι _ x)
-  · exact CliffordAlgebra.leftInverse_map_if (Q₁ := 0) (Q₂ := 0)
+  · exact CliffordAlgebra.leftInverse_map_of_leftInverse (Q₁ := 0) (Q₂ := 0)
       { f with map_app' := fun _ => rfl } { g with map_app' := fun _ => rfl} h x
 
 /-- A morphism of modules that admits a linear retraction induces an injective morphism of
