@@ -139,6 +139,15 @@ protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
   Metric.isCompact_of_isClosed_isBounded (spectrum.isClosed a) (isBounded a)
 #align spectrum.is_compact spectrum.isCompact
 
+instance instCompactSpace [ProperSpace 𝕜] (a : A) : CompactSpace (spectrum 𝕜 a) :=
+  isCompact_iff_compactSpace.mp <| spectrum.isCompact a
+
+instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+    (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
+  rw [← isCompact_iff_compactSpace] at *
+  rw [← preimage_algebraMap ℝ]
+  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+
 theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
   refine' iSup₂_le fun k hk => _
   exact mod_cast norm_le_norm_of_mem hk
@@ -178,7 +187,8 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
   have hn : 0 < ((n + 1 : ℕ) : ℝ) := mod_cast Nat.succ_pos'
   convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
   all_goals dsimp
-  erw [coe_pow, ← rpow_nat_cast, ← rpow_mul, mul_one_div_cancel hn.ne', rpow_one]
+  rw [one_div, pow_rpow_inv_natCast]
+  positivity
   rw [Nat.cast_succ, ENNReal.coe_mul_rpow]
 #align spectrum.spectral_radius_le_pow_nnnorm_pow_one_div spectrum.spectralRadius_le_pow_nnnorm_pow_one_div
 
@@ -262,11 +272,11 @@ power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻
 radius `‖a‖₊⁻¹`. -/
 theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
-      (fun n => ContinuousMultilinearMap.mkPiField 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
+      (fun n => ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
   { r_le := by
       refine'
         le_of_forall_nnreal_lt fun r hr => le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => _
-      rw [← norm_toNNReal, norm_mkPiField, norm_toNNReal]
+      rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       cases' n with n
       · simp only [Nat.zero_eq, le_refl, mul_one, or_true_iff, le_max_iff, pow_zero]
       · refine'
@@ -335,10 +345,10 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
   refine' ENNReal.inv_le_inv.mp (le_of_forall_pos_nnreal_lt fun r r_pos r_lt => _)
   simp_rw [inv_limsup, ← one_div]
   let p : FormalMultilinearSeries ℂ ℂ A := fun n =>
-    ContinuousMultilinearMap.mkPiField ℂ (Fin n) (a ^ n)
+    ContinuousMultilinearMap.mkPiRing ℂ (Fin n) (a ^ n)
   suffices h : (r : ℝ≥0∞) ≤ p.radius
   · convert h
-    simp only [p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiField]
+    simp only [p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiRing]
     congr
     ext n
     rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), if_neg]

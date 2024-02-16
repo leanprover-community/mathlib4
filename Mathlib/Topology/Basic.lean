@@ -289,7 +289,7 @@ theorem subset_interior_iff : t ⊆ interior s ↔ ∃ U, IsOpen U ∧ t ⊆ U �
 lemma interior_subset_iff : interior s ⊆ t ↔ ∀ U, IsOpen U → U ⊆ s → U ⊆ t := by
   simp [interior]
 
-@[mono]
+@[mono, gcongr]
 theorem interior_mono (h : s ⊆ t) : interior s ⊆ interior t :=
   interior_maximal (Subset.trans interior_subset h) isOpen_interior
 #align interior_mono interior_mono
@@ -432,7 +432,7 @@ theorem IsClosed.mem_iff_closure_subset (hs : IsClosed s) :
   (hs.closure_subset_iff.trans Set.singleton_subset_iff).symm
 #align is_closed.mem_iff_closure_subset IsClosed.mem_iff_closure_subset
 
-@[mono]
+@[mono, gcongr]
 theorem closure_mono (h : s ⊆ t) : closure s ⊆ closure t :=
   closure_minimal (Subset.trans h subset_closure) isClosed_closure
 #align closure_mono closure_mono
@@ -1568,7 +1568,7 @@ theorem continuous_id : Continuous (id : X → X) :=
 #align continuous_id continuous_id
 
 -- This is needed due to reducibility issues with the `continuity` tactic.
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_id' : Continuous (fun (x : X) => x) := continuous_id
 
 theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
@@ -1577,7 +1577,7 @@ theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
 #align continuous.comp Continuous.comp
 
 -- This is needed due to reducibility issues with the `continuity` tactic.
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.comp' {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
 
@@ -1589,6 +1589,10 @@ nonrec theorem ContinuousAt.comp {g : Y → Z} (hg : ContinuousAt g (f x))
     (hf : ContinuousAt f x) : ContinuousAt (g ∘ f) x :=
   hg.comp hf
 #align continuous_at.comp ContinuousAt.comp
+
+@[fun_prop]
+theorem ContinuousAt.comp' {g : Y → Z} {x : X} (hg : ContinuousAt g (f x))
+    (hf : ContinuousAt f x) : ContinuousAt (fun x => g (f x)) x := ContinuousAt.comp hg hf
 
 /-- See note [comp_of_eq lemmas] -/
 theorem ContinuousAt.comp_of_eq {g : Y → Z} (hg : ContinuousAt g y)
@@ -1607,6 +1611,7 @@ theorem Continuous.tendsto' (hf : Continuous f) (x : X) (y : Y) (h : f x = y) :
   h ▸ hf.tendsto x
 #align continuous.tendsto' Continuous.tendsto'
 
+@[fun_prop]
 theorem Continuous.continuousAt (h : Continuous f) : ContinuousAt f x :=
   h.tendsto x
 #align continuous.continuous_at Continuous.continuousAt
@@ -1616,11 +1621,12 @@ theorem continuous_iff_continuousAt : Continuous f ↔ ∀ x, ContinuousAt f x :
     hf x <| hU.mem_nhds hx⟩
 #align continuous_iff_continuous_at continuous_iff_continuousAt
 
+@[fun_prop]
 theorem continuousAt_const : ContinuousAt (fun _ : X => y) x :=
   tendsto_const_nhds
 #align continuous_at_const continuousAt_const
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_const : Continuous fun _ : X => y :=
   continuous_iff_continuousAt.mpr fun _ => continuousAt_const
 #align continuous_const continuous_const
@@ -1639,10 +1645,12 @@ theorem continuousAt_id : ContinuousAt id x :=
   continuous_id.continuousAt
 #align continuous_at_id continuousAt_id
 
+@[fun_prop]
+theorem continuousAt_id' (y) : ContinuousAt (fun x : X => x) y := continuousAt_id
+
 theorem ContinuousAt.iterate {f : X → X} (hf : ContinuousAt f x) (hx : f x = x) (n : ℕ) :
     ContinuousAt f^[n] x :=
-  Nat.recOn n continuousAt_id fun n ihn =>
-    show ContinuousAt (f^[n] ∘ f) x from ContinuousAt.comp (hx.symm ▸ ihn) hf
+  Nat.recOn n continuousAt_id fun _n ihn ↦ ihn.comp_of_eq hf hx
 #align continuous_at.iterate ContinuousAt.iterate
 
 theorem continuous_iff_isClosed : Continuous f ↔ ∀ s, IsClosed s → IsClosed (f ⁻¹' s) :=

@@ -11,6 +11,7 @@ import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.Tactic.Linarith
+import Mathlib.Data.Finset.PiAntidiagonal
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -677,7 +678,7 @@ def truncFun (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
   ∑ m in Finset.Iio n, MvPolynomial.monomial m (coeff R m φ)
 #align mv_power_series.trunc_fun MvPowerSeries.truncFun
 
-theorem coeff_truncFun [DecidableEq σ] (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
+theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
     (truncFun n φ).coeff m = if m < n then coeff R m φ else 0 := by
   classical
   simp [truncFun, MvPolynomial.coeff_sum]
@@ -811,6 +812,50 @@ set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_dvd_iff MvPowerSeries.X_dvd_iff
 
 end Semiring
+
+section CommSemiring
+
+open Finset.HasAntidiagonal Finset
+
+variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
+
+/-- Coefficients of a product of power series -/
+theorem coeff_prod [DecidableEq σ]
+    (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
+    coeff R d (∏ j in s, f j) =
+      ∑ l in piAntidiagonal s d,
+        ∏ i in s, coeff R (l i) (f i) := by
+  induction s using Finset.induction_on generalizing d with
+  | empty =>
+    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, piAntidiagonal_empty]
+    split_ifs
+    · simp only [card_singleton, Nat.cast_one]
+    · simp only [card_empty, Nat.cast_zero]
+  | @insert a s ha ih =>
+    rw [piAntidiagonal_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
+    · apply Finset.sum_congr rfl
+      · simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
+        rintro u v rfl
+        rw [ih, Finset.mul_sum, ← Finset.sum_attach]
+        apply Finset.sum_congr rfl
+        simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
+          Subtype.forall]
+        rintro x -
+        rw [Finset.prod_congr rfl]
+        intro i hi
+        rw [Function.update_noteq]
+        exact ne_of_mem_of_not_mem hi ha
+    · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, mem_antidiagonal, ne_eq,
+        disjoint_left, mem_map, mem_attach, Function.Embedding.coeFn_mk, true_and, Subtype.exists,
+        exists_prop, not_exists, not_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+        Prod.forall, Prod.mk.injEq]
+      rintro u v rfl u' v' huv h k - l - hkl
+      obtain rfl : u' = u := by
+        simpa only [Finsupp.coe_update, Function.update_same] using DFunLike.congr_fun hkl a
+      simp only [add_right_inj] at huv
+      exact h rfl huv.symm
+
+end CommSemiring
 
 section Ring
 
@@ -1878,7 +1923,7 @@ theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
   rw [trunc, Ico_zero_eq_range, sum_range_succ, trunc, Ico_zero_eq_range]
 
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
-  rw [lt_succ_iff, natDegree_le_iff_coeff_eq_zero]
+  rw [Nat.lt_succ_iff, natDegree_le_iff_coeff_eq_zero]
   intros
   rw [coeff_trunc]
   split_ifs with h
@@ -2013,6 +2058,28 @@ set_option linter.uppercaseLean3 false in
 #align power_series.sub_const_eq_X_mul_shift PowerSeries.sub_const_eq_X_mul_shift
 
 end Ring
+
+section CommSemiring
+
+open Finset.HasAntidiagonal Finset
+
+variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
+
+/-- Coefficients of a product of power series -/
+theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
+    coeff R d (∏ j in s, f j) = ∑ l in piAntidiagonal s d, ∏ i in s, coeff R (l i) (f i) := by
+  simp only [coeff]
+  convert MvPowerSeries.coeff_prod _ _ _
+  rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]
+  intro x _
+  apply prod_congr rfl
+  intro i _
+  congr 2
+  simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
+    Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
+    Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
+
+end CommSemiring
 
 section CommRing
 

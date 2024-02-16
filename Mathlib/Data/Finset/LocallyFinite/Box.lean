@@ -3,21 +3,21 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Int.Cast.Prod
+import Mathlib.Algebra.Ring.Prod
 import Mathlib.Data.Int.Interval
 import Mathlib.Order.Disjointed
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Algebra.Order.Group.Prod
--- TODO: Why is the `OrderedRing` instance not under `Algebra.Order`?
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Zify
 
 /-!
 # Decomposing a locally finite ordered ring into boxes
 
 This file proves that any locally finite ordered ring can be decomposed into "boxes", namely
 differences of consecutive intervals.
+
+## Implementation notes
+
+We don't need the full ring structure, only that there is an embedding `ℕ → `
 -/
 
 /-! ### General locally finite ordered ring -/
@@ -42,9 +42,11 @@ lemma disjoint_box_succ_prod (n : ℕ) : Disjoint (box (n + 1)) (Icc (-n : α) n
 @[simp] lemma box_succ_union_prod (n : ℕ) :
     box (n + 1) ∪ Icc (-n : α) n = Icc (-n.succ : α) n.succ := Icc_neg_mono.disjointed_succ_sup _
 
-@[simp] lemma box_succ_disjUnion (n : ℕ) :
+lemma box_succ_disjUnion (n : ℕ) :
     (box (n + 1)).disjUnion (Icc (-n : α) n) (disjoint_box_succ_prod _) =
       Icc (-n.succ : α) n.succ := by rw [disjUnion_eq_union, box_succ_union_prod]
+
+@[simp] lemma zero_mem_box : (0 : α) ∈ box n ↔ n = 0 := by cases n <;> simp [box_succ_eq_sdiff]
 
 end Finset
 
@@ -83,6 +85,7 @@ lemma card_box : ∀ {n}, n ≠ 0 → (box n : Finset (ℤ × ℤ)).card = 8 * n
   | 0 => by simp [Prod.ext_iff]
   | n + 1 => by simp [box_succ_eq_sdiff, Prod.le_def]; omega
 
+-- TODO: Can this be generalised to locally finite archimedean ordered rings?
 lemma existsUnique_mem_box (x : ℤ × ℤ) : ∃! n : ℕ, x ∈ box n := by
   use max x.1.natAbs x.2.natAbs; simp only [mem_box, and_self_iff, forall_eq']
 
