@@ -12,11 +12,11 @@ import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 # Continuous Monoid Homs
 
-This file defines the space of continuous homomorphisms between two topological groups.
+This file defines the Pontryagin dual of a topological group.
 
 ## Main definitions
 
-* `PontryaginDual A`: The continuous homomorphisms `A →* circle`.
+* `PontryaginDual A`: The group of continuous homomorphisms `A →* circle`.
 -/
 
 open Pointwise Function
