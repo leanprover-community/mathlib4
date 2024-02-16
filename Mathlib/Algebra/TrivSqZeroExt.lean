@@ -970,8 +970,8 @@ theorem map_comp_inl (f : M →ₗ[R'] N) :
     (map f).toRingHom.comp (inlHom R' M) = inlHom R' N := by
   ext r
   all_goals (rw [← algebraMap_eq_inlHom, ← algebraMap_eq_inlHom])
-  all_goals (simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
-    AlgHom.commutes])
+  all_goals (simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+    Function.comp_apply, AlgHom.commutes])
 
 @[simp]
 theorem map_comp_inr (f : M →ₗ[R'] N) :
