@@ -19,9 +19,6 @@ so on) preserve `C^n` functions. We also expand the API around `C^n` functions.
 ## Main results
 
 * `ContDiff.comp` states that the composition of two `C^n` functions is `C^n`.
-* `norm_iteratedFDeriv_comp_le` gives the bound `n! * C * D ^ n` for the `n`-th derivative
-  of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
-  derivative of `f` is bounded by `D ^ i`.
 
 Similar results are given for `C^n` functions on domains.
 
