@@ -20,12 +20,12 @@ variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [IsDomain A] [Alge
 
 theorem DifferentiableAt.real_of_complex {e : ℂ → ℂ} {z : ℝ} (h : DifferentiableAt ℂ e ↑z) :
     DifferentiableAt ℝ (fun x : ℝ => e ↑x) z :=
-  (h.restrictScalars ℝ).comp z ofRealClm.differentiable.differentiableAt
+  (h.restrictScalars ℝ).comp z ofRealCLM.differentiable.differentiableAt
 #align differentiable_at.real_of_complex DifferentiableAt.real_of_complex
 
 theorem Differentiable.real_of_complex {e : ℂ → ℂ} (h : Differentiable ℂ e) :
     Differentiable ℝ fun x : ℝ => e ↑x :=
-  (h.restrictScalars ℝ).comp ofRealClm.differentiable
+  (h.restrictScalars ℝ).comp ofRealCLM.differentiable
 #align differentiable.real_of_complex Differentiable.real_of_complex
 
 theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
@@ -198,8 +198,11 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   intro q q_gt prime_q
   have q0 : 0 < q := Nat.Prime.pos prime_q
   obtain ⟨gp', -, h'⟩ := sumIderiv_sl' ℤ (X ^ (q - 1) * p ^ q) q0
-  simp_rw [RingHom.algebraMap_toAlgebra, map_id] at h'
-  specialize h' (RingHom.injective_int _) 0 (by rw [C_0, sub_zero])
+  simp_rw [RingHom.algebraMap_toAlgebra] at h'
+  simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Polynomial.map_mul,
+    Polynomial.map_pow, map_X, eq_intCast] at h'
+  specialize h' Function.injective_id 0 (by rw [Int.cast_zero, sub_zero])
+  erw [map_id] at h' -- TODO remove `erw`
   rw [eval_pow] at h'
   use p.eval 0 ^ q + q • aeval (0 : ℤ) gp'
   rw [exists_prop]
