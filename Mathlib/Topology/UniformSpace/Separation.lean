@@ -254,6 +254,21 @@ def separationSetoid (α : Type u) [UniformSpace α] : Setoid α :=
 
 attribute [local instance] separationSetoid
 
+theorem separation_prod {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) ≈ (a₂, b₂) ↔ a₁ ≈ a₂ ∧ b₁ ≈ b₂ :=
+  separationRel_iff_inseparable.trans <| inseparable_prod.trans <|
+    separationRel_iff_inseparable.symm.and separationRel_iff_inseparable.symm
+#align uniform_space.separation_prod UniformSpace.separation_prod
+
+theorem comap_quotient_eq_uniformity_aux :
+    Filter.comap
+      (fun p ↦ (Quotient.mk (separationSetoid α) p.1, Quotient.mk (separationSetoid α) p.2))
+      (map (fun p ↦ (⟦p.1⟧, ⟦p.2⟧)) (𝓤 α)) = 𝓤 α := by
+  refine le_antisymm (uniformity_hasBasis_open.ge_iff.2 ?_) le_comap_map
+  rintro U ⟨hU, hUo⟩
+  filter_upwards [preimage_mem_comap (image_mem_map hU)] with ⟨x, y⟩ ⟨(x', y'), h', h⟩
+  simp only [Prod.ext_iff, Quotient.eq, ← separation_prod] at h
+  exact ((separationRel_iff_inseparable.1 h).mem_open_iff hUo).1 h'
+
 instance separationSetoid.uniformSpace {α : Type u} [UniformSpace α] :
     UniformSpace (Quotient (separationSetoid α)) where
   toTopologicalSpace := instTopologicalSpaceQuotient
@@ -267,8 +282,9 @@ instance separationSetoid.uniformSpace {α : Type u} [UniformSpace α] :
     rintro _ _ ⟨_, ⟨⟨x, y⟩, hxyU, rfl, rfl⟩, ⟨⟨y', z⟩, hyzU, hy, rfl⟩⟩
     have : y' ⤳ y := separationRel_iff_specializes.1 (Quotient.exact hy)
     exact @hUs (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩
-  nhds_eq_comap_uniformity := Quotient.forall.2 fun x ↦ by
-    
+  nhds_eq_comap_uniformity := by
+    refine Quotient.forall.2 fun x ↦ ?_
+    sorry
    -- s := isOpen_coinduced.trans <| by
    --  simp only [_root_.isOpen_uniformity, Quotient.forall, mem_map', mem_setOf_eq]
    --  refine forall₂_congr fun x _ => ⟨fun h => ?_, fun h => mem_of_superset h ?_⟩
@@ -417,22 +433,6 @@ theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg 
 #align uniform_space.separation_quotient.map_comp UniformSpace.SeparationQuotient.map_comp
 
 end SeparationQuotient
-
-theorem separation_prod {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) ≈ (a₂, b₂) ↔ a₁ ≈ a₂ ∧ b₁ ≈ b₂ := by
-  constructor
-  · intro h
-    exact
-      ⟨separated_of_uniformContinuous uniformContinuous_fst h,
-        separated_of_uniformContinuous uniformContinuous_snd h⟩
-  · rintro ⟨eqv_α, eqv_β⟩ r r_in
-    rw [uniformity_prod] at r_in
-    rcases r_in with ⟨t_α, ⟨r_α, r_α_in, h_α⟩, t_β, ⟨r_β, r_β_in, h_β⟩, rfl⟩
-    let p_α := fun p : (α × β) × α × β => (p.1.1, p.2.1)
-    let p_β := fun p : (α × β) × α × β => (p.1.2, p.2.2)
-    have key_α : p_α ((a₁, b₁), (a₂, b₂)) ∈ r_α := by simp [eqv_α r_α r_α_in]
-    have key_β : p_β ((a₁, b₁), (a₂, b₂)) ∈ r_β := by simp [eqv_β r_β r_β_in]
-    exact ⟨h_α key_α, h_β key_β⟩
-#align uniform_space.separation_prod UniformSpace.separation_prod
 
 instance Separated.prod [SeparatedSpace α] [SeparatedSpace β] : SeparatedSpace (α × β) :=
   separated_def.2 fun _ _ H =>
