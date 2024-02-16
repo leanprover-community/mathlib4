@@ -9,34 +9,51 @@ import Mathlib.Probability.Kernel.Disintegration.KernelCDFBorel
 /-!
 # Disintegration of kernels and measures
 
-Let `ρ` be a finite measure on `α × Ω`, where `Ω` is a standard Borel space. In mathlib terms, `Ω`
-verifies `[Nonempty Ω] [MeasurableSpace Ω] [StandardBorelSpace Ω]`.
-Then there exists a kernel `ρ.condKernel : kernel α Ω` such that for any measurable set
-`s : Set (α × Ω)`, `ρ s = ∫⁻ a, ρ.condKernel a {x | (a, x) ∈ s} ∂ρ.fst`.
+Let `κ : kernel α (β × Ω)` be a finite kernel, where `Ω` is a standard Borel space. Then if `α` is
+countable or `β` is a standard Borel space, there exists a `kernel (α × β) Ω`, called conditional
+kernel and denoted by `kernel.condKernel κ` such that `κ = kernel.fst κ ⊗ₖ kernel.condKernel κ`.
+We also define a conditional kernel for a measure `ρ : Measure (β × Ω)`, where `Ω` is a standard
+Borel space. This is a `kernel β Ω` denoted by `ρ.condKernel` such that `ρ = ρ.fst ⊗ₘ ρ.condKernel`.
 
-In terms of kernels, `ρ.condKernel` is such that for any measurable space `γ`, we
-have a disintegration of the constant kernel from `γ` with value `ρ`:
-`kernel.const γ ρ = (kernel.const γ ρ.fst) ⊗ₖ (kernel.prodMkLeft γ (condKernel ρ))`,
-where `ρ.fst` is the marginal measure of `ρ` on `α`. In particular, `ρ = ρ.fst ⊗ₘ ρ.condKernel`.
+In order to obtain a disintegration for any standard Borel space `Ω`, we use that these spaces embed
+measurably into `ℝ`: it then suffices to define a suitable kernel for `Ω = ℝ`.
 
-In order to obtain a disintegration for any standard Borel space, we use that these spaces embed
-measurably into `ℝ`: it then suffices to define a suitable kernel for `Ω = ℝ`. In the real case,
-we define a conditional kernel by taking for each `a : α` the measure associated to the Stieltjes
-function `condCDF ρ a` (the conditional cumulative distribution function).
+For `κ : kernel α (β × ℝ)`, the construction of the conditional kernel proceeds as follows:
+* Build a measurable function `f : (α × β) → ℚ → ℝ` such that for all measurable sets
+  `s` and all `q : ℚ`, `∫ x in s, f (a, x) q ∂(kernel.fst κ a) = (κ a (s ×ˢ Iic (q : ℝ))).toReal`.
+  We restrict to `Q` here to be able to prove the measurability.
+* Extend that function to `(α × β) → StieltjesFunction`. See the file `MeasurableStieltjes.lean`.
+* Finally obtain from the measurable Stieltjes function a measure on `ℝ` for each element of `α × β`
+  in a measurable way: we have obtained a `kernel (α × β) ℝ`.
+  See the file `CDFKernel.lean` for that step.
+
+The first step (building the measurable function on `ℚ`) is done differently depending on whether
+`α` is countable or not.
+* If `α` is countable, we can provide for each `a : α` a function `f : β → ℚ → ℝ` and proceed as
+  above to obtain a `kernel β ℝ`. Since `α` is countable, measurability is not an issue and we can
+  put those together into a `kernel (α × β) ℝ`. The construction of that `f` is done in
+  the `CondCDF.lean` file.
+* If `α` is not countable, we can't proceed separately for each `a : α` and have to build a function
+  `f : α × β → ℚ → ℝ` which is measurable on the product. We are able to do so if `β` is standard
+  borel by reducing to the case `β = ℝ`. See the file `KernelCDFBorel.lean`.
+
+We define a class `CountableOrStandardBorel α β` which encodes the property
+`(Countable α ∧ MeasurableSingletonClass α) ∨ StandardBorelSpace β`. The conditional kernel is
+defined under that assumption.
+
+Properties of integrals involving `kernel.condKernel` are collated in the file `Integral.lean`.
+The conditional kernel is unique (almost everywhere w.r.t. `kernel.fst κ`): this is proved in the
+file `Unique.lean`.
 
 ## Main definitions
 
-* `MeasureTheory.Measure.condKernel ρ : kernel α Ω`: conditional kernel described above.
+* `ProbabilityTheory.kernel.condKernel κ : kernel (α × β) Ω`: conditional kernel described above.
+* `MeasureTheory.Measure.condKernel ρ : kernel β Ω`: conditional kernel of a measure.
 
 ## Main statements
 
-* `ProbabilityTheory.lintegral_condKernel`:
-  `∫⁻ a, ∫⁻ ω, f (a, ω) ∂(ρ.condKernel a) ∂ρ.fst = ∫⁻ x, f x ∂ρ`
-* `ProbabilityTheory.lintegral_condKernel_mem`:
-  `∫⁻ a, ρ.condKernel a {x | (a, x) ∈ s} ∂ρ.fst = ρ s`
-* `ProbabilityTheory.kernel.const_eq_compProd`:
-  `kernel.const γ ρ = (kernel.const γ ρ.fst) ⊗ₖ (kernel.prodMkLeft γ ρ.condKernel)`
-* `ProbabilityTheory.measure_eq_compProd`: `ρ = ρ.fst ⊗ₘ ρ.condKernel`
+* `ProbabilityTheory.kernel.compProd_fst_condKernel`: `kernel.fst κ ⊗ₖ kernel.condKernel κ = κ`
+* `MeasureTheory.Measure.compProd_fst_condKernel`: `ρ.fst ⊗ₘ ρ.condKernel = ρ`
 
 -/
 

@@ -15,17 +15,19 @@ import Mathlib.Probability.Kernel.Disintegration.AuxLemmas
 # Cumulative distributions functions of Markov kernels
 
 We provide tools to build a measurable function `α → StieltjesFunction` with limits 0 at -∞ and 1 at
-+∞ for all `a : α` from a measurable function `f : α → ℚ → ℝ`.
++∞ for all `a : α` from a measurable function `f : α → ℚ → ℝ`. The reason for going through `ℚ`
+instead of defining directly a Stieltjes function is that since `ℚ` is countable, building a
+measurable function is much easier.
 
-This is possible if `f a : ℚ → ℝ` satisfies a package of properties for all `a`: monotonicity,
-limits at +-∞ at a continuity property. We define `IsRatStieltjesPoint f a` to state that this is
-the case at `a` and define the property `IsRatCDF f` that `f` is measurable and
+This construction will be possible if `f a : ℚ → ℝ` satisfies a package of properties for all `a`:
+monotonicity, limits at +-∞ at a continuity property. We define `IsRatStieltjesPoint f a` to state
+that this is the case at `a` and define the property `IsRatCDF f` that `f` is measurable and
 `IsRatStieltjesPoint f a` for all `a`.
-The function `α → StieltjesFunction` obtained by extending `f` by continuity is then called
-`IsRatCDF.stieltjesFunction`.
+The function `α → StieltjesFunction` obtained by extending `f` by continuity from the right is then
+called `IsRatCDF.stieltjesFunction`.
 
 In applications, we will only have `IsRatStieltjesPoint f a` almost surely with respect to some
-measure. We thus define a modification
+measure. We thus define
 `toRatCDF (f : α → ℚ → ℝ) := fun a q ↦ if IsRatStieltjesPoint f a then f a q else defaultRatCDF q`,
 which satisfies the property `IsRatCDF (toRatCDF f)`.
 
