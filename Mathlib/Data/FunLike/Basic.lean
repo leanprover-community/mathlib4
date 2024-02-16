@@ -3,7 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Logic.Function.Basic
+import Mathlib.Data.Subtype
 import Mathlib.Util.CompileInductive
 
 #align_import data.fun_like.basic from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
@@ -250,3 +250,17 @@ protected theorem congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
 end DFunLike
 
 end NonDependent
+
+namespace Subtype
+variable {F α : Type*} {β : α → Type*} {p : F → Prop} [DFunLike F α β]
+
+instance instDFunLike : DFunLike {f // p f} α β where
+  coe f := f.1
+  coe_injective' := DFunLike.coe_injective.comp coe_injective
+
+@[simp] lemma coe_coe (f : {f // p f}) : ⇑f.1 = f := rfl
+@[simp] lemma mk_coe (f : F) (hf : p f) : ⇑(⟨f, hf⟩ : {f // p f}) = f := rfl
+@[simp] lemma coe_apply (f : {f // p f}) (a : α) : f.1 a = f a := rfl
+@[simp] lemma mk_apply (f : F) (hf : p f) (a : α) : (⟨f, hf⟩ : {f // p f}) a = f a := rfl
+
+end Subtype
