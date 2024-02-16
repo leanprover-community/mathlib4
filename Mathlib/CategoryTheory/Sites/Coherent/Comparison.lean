@@ -68,9 +68,11 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
     | of Y T hT =>
       apply Coverage.saturate.of
       simp only [Coverage.sup_covering, Set.mem_union] at hT
-      exact Or.elim hT
-        (fun ⟨α, x, X, π, ⟨h, _⟩⟩ ↦ ⟨α, x, X, π, ⟨h, inferInstance⟩⟩)
+      refine Or.elim hT
+        (fun ⟨α, x, X, π, h, ⟨hc⟩⟩ ↦ ⟨α, x, X, π, h, ?_⟩)
         (fun ⟨Z, f, ⟨h, _⟩⟩ ↦ ⟨Unit, inferInstance, fun _ ↦ Z, fun _ ↦ f, ⟨h, inferInstance⟩⟩)
+      have : IsIso (Sigma.desc π) := Cofan.isIsoSigmaDesc_of_isCoproduct _ hc
+      infer_instance
     | top => apply Coverage.saturate.top
     | transitive Y T => apply Coverage.saturate.transitive Y T<;> [assumption; assumption]
   · induction h with
@@ -102,10 +104,7 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
           apply Coverage.saturate.of
           simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
             Set.mem_setOf_eq]
-          refine Or.inl ⟨I, hI, X, φ, ⟨rfl, ?_⟩⟩
-          suffices Sigma.desc φ = 𝟙 _ by rw [this]; infer_instance
-          ext
-          simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Category.comp_id]
+          refine Or.inl ⟨I, hI, X, φ, rfl, ⟨coproductIsCoproduct _⟩⟩
         intro Q q hq
         simp only [Sieve.pullback_apply, Sieve.generate_apply]
         simp only [Sieve.generate_apply] at hq
