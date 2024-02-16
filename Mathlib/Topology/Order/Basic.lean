@@ -530,6 +530,17 @@ theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α} (hs : De
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
 
+@[deprecated OrderBot.atBot_eq] -- 2024-02-14
+theorem atBot_le_nhds_bot [OrderBot α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
+  rw [OrderBot.atBot_eq]
+  apply pure_le_nhds
+#align at_bot_le_nhds_bot atBot_le_nhds_bot
+
+@[deprecated OrderTop.atTop_eq] -- 2024-02-14
+theorem atTop_le_nhds_top [OrderTop α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
+  set_option linter.deprecated false in @atBot_le_nhds_bot αᵒᵈ _ _ _
+#align at_top_le_nhds_top atTop_le_nhds_top
+
 variable (α)
 
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
@@ -2166,25 +2177,5 @@ theorem Monotone.tendsto_nhdsWithin_Ioi {α β : Type*} [LinearOrder α] [Topolo
 #align monotone.tendsto_nhds_within_Ioi Monotone.tendsto_nhdsWithin_Ioi
 
 end ConditionallyCompleteLinearOrder
-
-section NhdsWithPos
-
-section LinearOrderedAddCommGroup
-
-variable [LinearOrder α] [Zero α] [TopologicalSpace α] [OrderTopology α]
-
-@[deprecated Ioo_mem_nhdsWithin_Ioi']
-theorem eventually_nhdsWithin_pos_mem_Ioo {ε : α} (h : 0 < ε) : ∀ᶠ x in 𝓝[>] 0, x ∈ Ioo 0 ε :=
-  Ioo_mem_nhdsWithin_Ioi' h
-#align eventually_nhds_within_pos_mem_Ioo eventually_nhdsWithin_pos_mem_Ioo
-
-@[deprecated Ioc_mem_nhdsWithin_Ioi']
-theorem eventually_nhdsWithin_pos_mem_Ioc {ε : α} (h : 0 < ε) : ∀ᶠ x in 𝓝[>] 0, x ∈ Ioc 0 ε :=
-  Ioc_mem_nhdsWithin_Ioi' h
-#align eventually_nhds_within_pos_mem_Ioc eventually_nhdsWithin_pos_mem_Ioc
-
-end LinearOrderedAddCommGroup
-
-end NhdsWithPos
 
 end OrderTopology

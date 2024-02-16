@@ -640,14 +640,14 @@ theorem IsPreconnected.subset_connectedComponentIn {x : α} {F : Set α} (hs : I
     (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ connectedComponentIn F x := by
   have : IsPreconnected (((↑) : F → α) ⁻¹' s) := by
     refine' inducing_subtype_val.isPreconnected_image.mp _
-    rwa [Subtype.image_preimage_coe, inter_eq_left.mpr hsF]
+    rwa [Subtype.image_preimage_coe, inter_eq_right.mpr hsF]
   have h2xs : (⟨x, hsF hxs⟩ : F) ∈ (↑) ⁻¹' s := by
     rw [mem_preimage]
     exact hxs
   have := this.subset_connectedComponent h2xs
   rw [connectedComponentIn_eq_image (hsF hxs)]
   refine' Subset.trans _ (image_subset _ this)
-  rw [Subtype.image_preimage_coe, inter_eq_left.mpr hsF]
+  rw [Subtype.image_preimage_coe, inter_eq_right.mpr hsF]
 #align is_preconnected.subset_connected_component_in IsPreconnected.subset_connectedComponentIn
 
 theorem IsConnected.subset_connectedComponent {x : α} {s : Set α} (H1 : IsConnected s)

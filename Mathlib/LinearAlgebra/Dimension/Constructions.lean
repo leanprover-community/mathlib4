@@ -399,17 +399,15 @@ variable [StrongRankCondition R]
 
 /-- The dimension of a submodule is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
-    finrank R s ≤ finrank R M := by
-  simpa only [Cardinal.toNat_lift] using
-    toNat_le_of_le_of_lt_aleph0 (rank_lt_aleph0 _ _) (rank_submodule_le s)
+    finrank R s ≤ finrank R M :=
+  toNat_le_toNat (rank_submodule_le s) (rank_lt_aleph0 _ _)
 #align submodule.finrank_le Submodule.finrank_le
 
 /-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
-    finrank R (M ⧸ s) ≤ finrank R M := by
-  simpa only [Cardinal.toNat_lift] using
-    toNat_le_of_le_of_lt_aleph0 (rank_lt_aleph0 _ _)
-      ((Submodule.mkQ s).rank_le_of_surjective (surjective_quot_mk _))
+    finrank R (M ⧸ s) ≤ finrank R M :=
+  toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective (surjective_quot_mk _))
+    (rank_lt_aleph0 _ _)
 #align submodule.finrank_quotient_le Submodule.finrank_quotient_le
 
 /-- Pushforwards of finite submodules have a smaller finrank. -/
