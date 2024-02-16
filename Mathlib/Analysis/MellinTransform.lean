@@ -226,8 +226,8 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
         ‖t ^ (s - 1) * f t‖ ≤ t ^ (s - 1 + -a) * d := by
       refine' (ae_restrict_mem measurableSet_Ioi).mono fun t ht => _
       have ht' : 0 < t := he'.trans ht
-      rw [norm_mul, rpow_add ht', ← norm_of_nonneg (rpow_nonneg_of_nonneg ht'.le (-a)), mul_assoc,
-        mul_comm _ d, norm_of_nonneg (rpow_nonneg_of_nonneg ht'.le _)]
+      rw [norm_mul, rpow_add ht', ← norm_of_nonneg (rpow_nonneg ht'.le (-a)), mul_assoc,
+        mul_comm _ d, norm_of_nonneg (rpow_nonneg ht'.le _)]
       gcongr
       exact he t ((le_max_left e 1).trans_lt ht).le
     refine' (HasFiniteIntegral.mul_const _ _).mono' this
@@ -261,7 +261,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
         exact ht.2
       · calc _ ≤ d * ‖t ^ (-b)‖ * ‖t ^ (s - 1)‖ := by gcongr
           _ = d * t ^ (s - b - 1) := ?_
-        simp_rw [norm_of_nonneg (rpow_nonneg_of_nonneg (le_of_lt ht.1) _), mul_assoc]
+        simp_rw [norm_of_nonneg (rpow_nonneg (le_of_lt ht.1) _), mul_assoc]
         rw [← rpow_add ht.1]
         congr 2
         abel
@@ -375,7 +375,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
     rw [Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos ht]
     rcases le_or_lt 1 t with h | h
     · refine' le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h _)
-        (rpow_nonneg_of_nonneg (zero_le_one.trans h) _)
+        (rpow_nonneg (zero_le_one.trans h) _)
       rw [sub_re, one_re, sub_le_sub_iff_right]
       rw [mem_ball_iff_norm, Complex.norm_eq_abs] at hz
       have hz' := (re_le_abs _).trans hz.le
@@ -398,7 +398,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
       refine' mellin_convergent_of_isBigO_scalar _ _ hw1' _ hw2
       · simp_rw [mul_comm]
         refine' hfc.norm.mul_continuousOn _ isOpen_Ioi
-        refine' Continuous.comp_continuousOn continuous_abs (continuousOn_log.mono _)
+        refine' Continuous.comp_continuousOn _root_.continuous_abs (continuousOn_log.mono _)
         exact subset_compl_singleton_iff.mpr not_mem_Ioi_self
       · refine (isBigO_rpow_top_log_smul hw2' hf_top).norm_left.congr_left fun t ↦ ?_
         simp only [norm_smul, Real.norm_eq_abs]

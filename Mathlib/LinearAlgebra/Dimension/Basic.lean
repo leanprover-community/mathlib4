@@ -3,9 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
 -/
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Quotient
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.LinearAlgebra.LinearIndependent
 
 #align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
 
@@ -181,7 +179,7 @@ variable {R : Type w} {S : Type v} [CommRing R] [Ring S] [Algebra R S]
   {R' : Type w'} {S' : Type v'} [CommRing R'] [Ring S'] [Algebra R' S']
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R' →+* R` and `j : S →+* S'` are injective ring
-homorphisms, such that `R' → R → S → S'` and `R' → S'` commute, then the rank of `S / R` is
+homomorphisms, such that `R' → R → S → S'` and `R' → S'` commute, then the rank of `S / R` is
 smaller than or equal to the rank of `S' / R'`. -/
 theorem lift_rank_le_of_injective_injective
     (i : R' →+* R) (j : S →+* S') (hi : Injective i) (hj : Injective j)
@@ -194,7 +192,7 @@ theorem lift_rank_le_of_injective_injective
   simp_rw [smul_def, AddMonoidHom.coe_coe, map_mul, this]
 
 /-- If `S / R` and `S' / R'` are algebras, `i : R →+* R'` is a surjective ring homomorphism,
-`j : S →+* S'` is an injective ring homorphism, such that `R → R' → S'` and `R → S → S'` commute,
+`j : S →+* S'` is an injective ring homomorphism, such that `R → R' → S'` and `R → S → S'` commute,
 then the rank of `S / R` is smaller than or equal to the rank of `S' / R'`. -/
 theorem lift_rank_le_of_surjective_injective
     (i : R →+* R') (j : S →+* S') (hi : Surjective i) (hj : Injective j)

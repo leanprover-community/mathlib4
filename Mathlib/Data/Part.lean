@@ -400,9 +400,7 @@ instance : PartialOrder (Part
 
 instance : OrderBot (Part α) where
   bot := none
-  bot_le := by
-    introv x
-    rintro ⟨⟨_⟩, _⟩
+  bot_le := by rintro x _ ⟨⟨_⟩, _⟩
 
 theorem le_total_of_le_of_le {x y : Part α} (z : Part α) (hx : x ≤ z) (hy : y ≤ z) :
     x ≤ y ∨ y ≤ x := by

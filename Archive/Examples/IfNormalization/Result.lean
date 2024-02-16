@@ -99,7 +99,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
           by_cases w = v <;> ◾⟩
     | some b =>
       have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
-  termination_by normalize e => e.normSize
+  termination_by e => e.normSize
 
 /-
 We recall the statement of the if-normalization problem.
