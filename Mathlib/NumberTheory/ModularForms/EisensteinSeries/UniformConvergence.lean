@@ -130,7 +130,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     have h1 : (x 0 : ℝ)^2/( _root_.abs (x 0 : ℝ))^2 = 1 := by
       simp only [_root_.sq_abs, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
         this, div_self]
-    convert h1.symm.le
+    exact h1.symm.le
   · right
     rw [H2,div_pow, Int.cast_natAbs (x 1),Int.cast_abs]
     have : (x 1 : ℝ) ≠ 0 := by
@@ -138,86 +138,92 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     have h1 : (x 1 : ℝ)^2/( _root_.abs (x 1 : ℝ))^2 = 1 := by
       simp only [_root_.sq_abs, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
         this, div_self]
-    convert h1.symm.le
+    exact h1.symm.le
 
-/--This should work for complex `k`  (with a condition on `k.re`and taking the power out of the abs)
-but last I checked we were missing some lemmas about this -/
-lemma bound (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) (k : ℕ) :
-    ((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs)^k ≤
-      Complex.abs (((x 0 : ℂ) * (z : ℂ) + (x 1 : ℂ)) ^ k) := by
-  by_cases hk : k ≠ 0
-  · let n := max (x 0).natAbs (x 1).natAbs
-    have h1 : ((n : ℝ) : ℂ)^k ≠ 0 := by
-      rw [pow_ne_zero_iff hk]
-      norm_cast
-      rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
-      exact hx
-    have hc : Complex.abs ((n : ℝ)^k : ℂ) = n^k := by
-      simp only [Nat.cast_max, map_pow, abs_ofReal, ge_iff_le, abs_nonneg, le_max_iff,
-        Nat.cast_nonneg, or_self]
-      congr
-      simp only [abs_eq_self, le_max_iff, Nat.cast_nonneg, or_self]
-    have h11 : ((x 0) * ↑z + (x 1)) ^ (k : ℤ) =
-      (((x 0 : ℝ) / (n : ℝ) ) * (z : ℂ) + (x 1 : ℝ) /(n : ℝ)) ^ (k : ℤ) * ((n : ℝ)^ (k : ℤ)) := by
-      simp only [Nat.cast_max] at h1
+lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) :
+    ((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs) ^ k ≤
+      (Complex.abs ((x 0 : ℂ) * (z : ℂ) + (x 1 : ℂ))) ^ k := by
+  by_cases hk0 : k ≠ 0
+  let n := max (x 0).natAbs (x 1).natAbs
+  have h11 : ((x 0) * ↑z + (x 1)) =
+      (((x 0 : ℝ) / (n : ℝ) ) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
       field_simp
-    cases' (div_max_sq_ge_one x hx) with H1 H2
-    · norm_cast at *
-      rw [h11]
-      simp only [hc, map_pow, map_mul, abs_ofReal, Complex.abs_abs, ge_iff_le, zpow_coe_nat] at *
-      apply mul_le_mul ?_ (by rfl)
-      simp only [Nat.cast_pow, Nat.cast_max, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self,
-        pow_nonneg]
-      apply pow_nonneg (Complex.abs.nonneg _) k
-      apply pow_le_pow_left (r_pos _).le (auxbound1 z (x 1 / n) H1)
-    · norm_cast at *
-      rw [h11]
-      simp only [hc, map_pow, map_mul, abs_ofReal, Complex.abs_abs, ge_iff_le, zpow_coe_nat] at *
-      apply mul_le_mul ?_ (by rfl)
-      simp only [Nat.cast_pow, Nat.cast_max, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self,
-        pow_nonneg]
-      apply pow_nonneg (Complex.abs.nonneg _) k
-      apply pow_le_pow_left (r_pos _).le (auxbound2 z (x 0 / n) H2)
-  · simp only [ne_eq, not_not] at hk
-    simp only [hk, pow_zero, Nat.cast_max, mul_one, map_one, le_refl]
+      rw [← mul_div, div_self]
+      simp
+      rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
+      norm_cast at *
+  rw [h11]
+  simp only [Nat.cast_max, ofReal_int_cast, map_mul, abs_ofReal, ge_iff_le]
+  rw [Real.mul_rpow (by apply apply_nonneg) (by apply abs_nonneg)]
+  cases' (div_max_sq_ge_one x hx) with H1 H2
+  · apply mul_le_mul
+    simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound1 z (x 1 / n) H1) hk)
+    norm_cast
+    apply Real.rpow_nonneg
+    rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
+    simp only [le_max_iff, Nat.cast_nonneg, or_self]
+    apply Real.rpow_nonneg (Complex.abs.nonneg _) k
+  · apply mul_le_mul
+    simpa using (Real.rpow_le_rpow (r_pos _).le (auxbound2 z (x 0 / n) H2) hk)
+    norm_cast
+    apply Real.rpow_nonneg
+    rw [mem_box_ne_zero_iff_ne_zero n x (by rw [Int.mem_box])] at hx
+    simp only [le_max_iff, Nat.cast_nonneg, or_self]
+    apply Real.rpow_nonneg (Complex.abs.nonneg _) k
+  · simp only [ne_eq, not_not] at hk0
+    simp only [hk0, Real.rpow_zero, Nat.cast_max, mul_one, map_one, le_refl]
 
-theorem eis_is_bounded_on_box (k : ℕ) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
-    (hx : (x 0, x 1) ∈ box n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤
-      (Complex.abs ((r z) ^ k * n ^ k))⁻¹ := by
+theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
+    (hx : (x 0, x 1) ∈ box n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)))) ^ (-k) ≤
+      ( ((r z) ^ (-k) * n ^ (-k))) := by
   by_cases hn : n = 0
   · rw [hn] at hx
     simp only [box_zero, Finset.mem_singleton, Prod.mk_eq_zero] at hx
-    by_cases hk : k = 0
-    rw [hk] at *
-    simp only [ pow_zero, map_one, inv_one, mul_one, le_refl]
+    by_cases hk0 : k = 0
+    rw [hk0] at *
+    simp  [ Real.rpow_zero, map_one, inv_one, mul_one, le_refl]
     rw [hx.1, hx.2]
-    have h1 : (0 : ℝ) ^ (k : ℕ) = 0 := by
-      simp only [pow_eq_zero_iff', ne_eq, true_and]
-      exact hk
+    simp only [Int.cast_zero, zero_mul, add_zero, map_zero]
+    have h1 : (0 : ℝ) ^ (-k)  = 0 := by
+      rw [Real.rpow_eq_zero_iff_of_nonneg (by rfl)]
+      simp only [ne_eq, neg_eq_zero, hk0, not_false_eq_true, and_self]
     simp only [Int.cast_zero, zero_mul, add_zero, map_pow, map_zero, h1, inv_zero, hn,
       CharP.cast_eq_zero, map_mul, abs_ofReal, mul_zero, le_refl]
   · have hx2 : x ≠ 0 := by
       rw [mem_box_ne_zero_iff_ne_zero n x hx]
       exact hn
     simp only [Int.mem_box] at hx
-    rw [inv_le_inv]
+    rw [Real.rpow_neg (by apply apply_nonneg), Real.rpow_neg ((r_pos z).le),
+      Real.rpow_neg (Nat.cast_nonneg n), ← mul_inv, inv_le_inv]
     simp only [← hx, map_mul, map_pow, abs_ofReal, abs_natCast, Nat.cast_max, ge_iff_le]
-    convert (bound z x hx2 k)
-    apply abs_eq_self.mpr ((r_pos z).le )
-    simp only [Nat.cast_max]
-    simp only [map_pow]
-    apply Complex.abs.pos (pow_ne_zero k (linear_ne_zero ![x 0, x 1] z ?_))
-    simp only [ne_eq, Matrix.cons_eq_zero_iff, Int.cast_eq_zero, Matrix.zero_empty, and_true,
-      not_and] at *
-    intro hg h1
-    have : x = ![x 0, x 1] := by
-      exact List.ofFn_inj.mp rfl
-    rw [this, hg,h1 ] at hx2
-    simp only [Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_self, not_true_eq_false] at *
-    have := r_pos z
-    apply Complex.abs.pos
-    norm_cast
-    positivity
+    convert (rpow_bound hk z x hx2)
+    · simp only [Nat.cast_max]
+    · apply Real.rpow_pos_of_pos
+      apply Complex.abs.pos ( (linear_ne_zero ![x 0, x 1] z ?_))
+      simp only [ne_eq, Matrix.cons_eq_zero_iff, Int.cast_eq_zero, Matrix.zero_empty, and_true,
+        not_and] at *
+      intro hg h1
+      have : x = ![x 0, x 1] := by
+        exact List.ofFn_inj.mp rfl
+      rw [this, hg, h1] at hx2
+      simp  [Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_self, not_true_eq_false] at *
+    · apply mul_pos (Real.rpow_pos_of_pos (r_pos z) _)
+      apply Real.rpow_pos_of_pos
+      norm_cast
+      exact Nat.pos_of_ne_zero hn
+
+theorem eis_is_bounded_on_box (k n : ℕ) (z : ℍ) (x : Fin 2 → ℤ)
+    (hx : (x 0, x 1) ∈ box n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤
+      (Complex.abs ((r z) ^ k * n ^ k))⁻¹ := by
+  have := eis_is_bounded_on_box_rpow (Nat.cast_nonneg k) z n x hx
+  norm_cast at *
+  simp_rw [zpow_neg, ← mul_inv] at this
+  have H : |r z ^ k * ↑(n ^ k)| = r z ^ k * ↑(n ^ k) := by
+    refine abs_eq_self.mpr ?_
+    apply mul_nonneg (pow_nonneg (r_pos z).le _)
+    simp only [Nat.cast_pow, ge_iff_le, Nat.cast_nonneg, pow_nonneg]
+  simp only [map_pow, zpow_coe_nat, H]
+  simpa using this
 
 lemma r_lower_bound_on_slice {A B : ℝ} (h : 0 < B) (z : upperHalfPlaneSlice A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z.1 := by
@@ -334,7 +340,7 @@ theorem eisensteinSeries_TendstoLocallyUniformlyOn {k : ℤ} (hk : 3 ≤ k) (N :
     simp only [zpow_coe_nat, one_div, Function.comp_apply]
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
-  have := eis_is_bounded_on_box k x (max (v.1 0).natAbs (v.1 1).natAbs ) v
+  have := eis_is_bounded_on_box k (max (v.1 0).natAbs (v.1 1).natAbs ) x v
   simp only [Nat.cast_max, Int.coe_natAbs, iff_true, zpow_coe_nat, one_div, map_pow,
     map_mul, abs_ofReal, abs_natCast, mul_inv_rev, eisSummand, norm_inv, norm_pow, norm_eq_abs,
     ge_iff_le] at *
