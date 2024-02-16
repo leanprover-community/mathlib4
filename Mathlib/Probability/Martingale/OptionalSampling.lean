@@ -35,12 +35,6 @@ open scoped MeasureTheory BigOperators ENNReal
 
 open TopologicalSpace
 
--- Porting note: move to `Topology/Instances/Discrete`
-instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable {α : Type*}
-    [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
-  @DiscreteTopology.secondCountableTopology_of_encodable _ _ _ (Encodable.ofCountable _)
-#align discrete_topology.second_countable_topology_of_countable DiscreteTopology.secondCountableTopology_of_countable
-
 namespace MeasureTheory
 
 namespace Martingale
