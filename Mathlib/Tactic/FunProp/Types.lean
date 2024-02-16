@@ -3,11 +3,11 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Lean.Meta.Tactic.Simp.Types
+import Std.Data.RBMap.Basic
+
+import Mathlib.Tactic.FunProp.FunctionData
 
 import Std.Lean.HashSet
-
-import Mathlib.Logic.Function.Basic
 
 /-!
 ## `funProp`
@@ -31,11 +31,31 @@ initialize registerTraceClass `Meta.Tactic.fun_prop.apply
 initialize registerTraceClass `Meta.Tactic.fun_prop.unfold
 initialize registerTraceClass `Meta.Tactic.fun_prop.cache
 
+inductive Origin where
+  | decl (name : Name)
+  | fvar (fvarId : FVarId)
+  deriving Inhabited, BEq
+
+def Origin.name (origin : Origin) : Name :=
+  match origin with
+  | .decl name => name
+  | .fvar id => id.name
+
+def Origin.getValue (origin : Origin) : MetaM Expr := do
+  match origin with
+  | .decl name => mkConstWithFreshMVarLevels name
+  | .fvar id => pure (.fvar id)
+
+def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
+  match fData.fn with
+  | .fvar id => .fvar id
+  | .const name _ => .decl name
+  | _ => .decl Name.anonymous
 
 /-- -/
 structure Config where
   /-- Name to unfold -/
-  constToUnfold : HashSet Name := .ofArray #[``id, ``Function.comp, ``Function.HasUncurry.uncurry]
+  constToUnfold : Std.RBSet Name Name.quickCmp := .ofArray #[`id, `Function.comp, `Function.HasUncurry.uncurry] _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
   /-- Maximal number of transitions between function properties
@@ -44,7 +64,7 @@ structure Config where
   /-- Stack of used theorem, used to prevent trivial loops. -/
   thmStack    : List Origin := []
   /-- Maximum number of steps `fun_prop` can take. -/
-  maxSteps := 1000
+  maxSteps := 100000
 deriving Inhabited
 
 /-- -/
@@ -78,6 +98,9 @@ def getLastUsedTheoremName : FunPropM (Option Name) := do
   | .some (.decl n) => return n
   | _ => return none
 
+def unfoldNamePred : FunPropM (Name → Bool) := do
+  let toUnfold := (← read).constToUnfold
+  return fun n => toUnfold.contains n
 
 /-- Increase heartbeat, throws error when maxHeartbeat was reached -/
 def increaseSteps : FunPropM Unit := do

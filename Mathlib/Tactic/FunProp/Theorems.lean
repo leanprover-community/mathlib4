@@ -6,6 +6,7 @@ Authors: Tomas Skrivan
 import Std.Data.RBMap.Alter
 
 import Mathlib.Tactic.FunProp.Decl
+import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
 
@@ -171,15 +172,14 @@ inductive TheoremForm where
   | uncurried | comp
   deriving Inhabited, BEq, Repr
 
-
 /-- theorem about specific function (either declared constant or free variable) -/
 structure FunctionTheorem where
   /-- function property name -/
   funPropName : Name
   /-- theorem name -/
-  thmName   : Name
+  thmOrigin   : Origin
   /-- function name -/
-  funName   : Name
+  funOrigin   : Origin
   /-- array of argument indices about which this theorem is about -/
   mainArgs  : Array Nat
   /-- total number of arguments applied to the function  -/
@@ -189,7 +189,6 @@ structure FunctionTheorem where
   /-- form of the theorem, see documentation of TheoremForm -/
   form : TheoremForm
   deriving Inhabited, BEq
-
 
 private local instance : Ord Name := ⟨Name.quickCmp⟩
 
@@ -202,7 +201,9 @@ structure FunctionTheorems where
 
 /-- return proof of function theorem -/
 def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
-  mkConstWithFreshMVarLevels thm.thmName
+  match thm.thmOrigin with
+  | .decl name => mkConstWithFreshMVarLevels name
+  | .fvar id => return .fvar id
 
 
 /-- -/
@@ -216,7 +217,7 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
     addEntry := fun d e =>
       {d with
         theorems :=
-          d.theorems.alter e.funName fun funProperties =>
+          d.theorems.alter e.funOrigin.name fun funProperties =>
             let funProperties := funProperties.getD {}
             funProperties.alter e.funPropName fun thms =>
               let thms := thms.getD #[]
@@ -335,11 +336,14 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         thmArgs := thmArgs
       }
 
-    let fData ← getFunctionData f
+    let .data fData ← getFunctionData? f
+      | throwError s!"function in invalid form {← ppExpr f}"
 
     match fData.fn with
     | .const funName _ =>
 
+      -- todo: more robust detection of compositional and uncurried form!!!
+      -- I think this detects `Continuous fun x => x + c` as compositional ...
       let dec ← fData.nontrivialDecomposition
 
       let form : TheoremForm := if dec.isNone then .uncurried else .comp
@@ -347,8 +351,8 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       return .function {
 -- funPropName funName fData.mainArgs fData.args.size thmForm
         funPropName := funPropName
-        thmName := declName
-        funName := funName
+        thmOrigin := .decl declName
+        funOrigin := .decl funName
         mainArgs := fData.mainArgs
         appliedArgs := fData.args.size
         priority := prio
@@ -385,9 +389,9 @@ type: {repr thm.thmArgs.type}"
     lambdaTheoremsExt.add thm attrKind
   | .function thm =>
     trace[Meta.Tactic.fun_prop.attr] "\
-function theorem: {thm.thmName}
+function theorem: {thm.thmOrigin.name}
 function property: {thm.funPropName}
-function name: {thm.funName}
+function name: {thm.funOrigin.name}
 main arguments: {thm.mainArgs}
 applied arguments: {thm.appliedArgs}
 form: {repr thm.form}"

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Tactic.FunProp
+import Mathlib.Logic.Function.Basic
+import Mathlib.Data.FunLike.Basic
 
 /-! # Tests for the `fun_prop` tactic
 
@@ -28,7 +30,6 @@ class Obj (α : Type _) : Type where
 instance [Obj α] [Obj β] : Obj (α × β) := ⟨⟩
 instance [∀ x, Obj (E x)] : Obj ((x' : α) → E x') := ⟨⟩
 
-
 @[fun_prop] opaque Con {α β} [Obj α] [Obj β] (f : α → β) : Prop
 @[fun_prop] opaque Lin {α β} [Obj α] [Obj β] (f : α → β) : Prop
 
@@ -43,6 +44,7 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 @[fun_prop] theorem Con_apply (x : α) : Con (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Con_applyDep (x : α) : Con (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Con_comp (f : β → γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => f (g x)) := silentSorry
+@[fun_prop] theorem Con_let (f : α → β → γ) (g : α → β) (hf : Con (fun (x,y) => f x y)) (hg : Con g) : Con (fun x => let y:= g x; f x y) := silentSorry
 @[fun_prop] theorem Con_pi (f : β → (i : α) → (E i)) (hf : ∀ i, Con (fun x => f x i)) : Con (fun x i => f x i) := silentSorry
 
 -- Lin is missing `const` theorem
@@ -53,11 +55,9 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 @[fun_prop] theorem Lin_pi {ι} (f : α → ι → γ) (hf : ∀ i, Lin (fun x => f x i)) : Lin (fun x i => f x i) := silentSorry
 
 
-
 -- transition theorem --
 ------------------------
 @[fun_prop] theorem lin_to_con (f : α → β) (hf : Lin f) : Con f := silentSorry
-
 
 
 -- theorems about function in the environment --
@@ -168,7 +168,9 @@ example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (h
 
 -- set_option profiler true
 -- set_option profiler.threshold 10
-
+set_option trace.Meta.Tactic.fun_prop true
+set_option trace.Meta.Tactic.fun_prop.step true
+set_option trace.Meta.Tactic.fun_prop.unify true
 example (f : α → β → γ) (hf : Con fun (x,y) => f x y)  : Con f := by fun_prop
 
 example : Con (fun x : α => x) := by fun_prop

@@ -5,7 +5,7 @@ Authors: Tomas Skrivan
 -/
 import Std.Data.RBMap.Alter
 
-import Mathlib.Tactic.LiftLets
+import Mathlib.Tactic.FunProp.ToStd
 
 /-!
 ## `funProp` environment extension that stores all registered coercions from a morphism to a function
@@ -72,44 +72,107 @@ initialize morCoeAttr : Unit ←
   }
 
 
-def isMorCoe (name : Name) : CoreM Bool := do
+namespace Mor
+
+def isMorCoeName (name : Name) : CoreM Bool := do
   return morCoeDeclsExt.getState (← getEnv) |>.contains name
 
-structure MorApp where
+def isMorCoe (e : Expr) : CoreM Bool := do
+  let .some (name,_) := e.getAppFn.const? | return false
+  isMorCoeName name
+
+structure App where
   coe : Expr
   fn  : Expr
   arg : Expr
 
 
-def isMorApp? (e : Expr) : CoreM (Option MorApp) := do
+def isMorApp? (e : Expr) : CoreM (Option App) := do
 
   let .app (.app coe f) x := e | return none
-  let .some n := coe.getAppFn.constName? | return none
-
-  if ← isMorCoe n then
+  if ← isMorCoe coe then
     return .some { coe := coe, fn := f, arg := x }
   else
     return none
 
-
-partial def morWhnfPred (e : Expr) (pred : Expr → MetaM Bool) (cfg : WhnfCoreConfig := {}) : MetaM Expr := do
+partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) (cfg : WhnfCoreConfig := {}) :
+    MetaM Expr := do
   whnfEasyCases e fun e => do
     let e ← whnfCore e cfg
 
     if let .some ⟨coe,f,x⟩ ← isMorApp? e then
-      let f ← morWhnfPred f pred cfg
+      let f ← whnfPred f pred cfg
       if cfg.zeta then
         return (coe.app f).app x
       else
-        return ← f.liftLets fun xs f' =>
+        return ← letTelescope f fun xs f' =>
           mkLambdaFVars xs ((coe.app f').app x)
 
     if (← pred e) then
         match (← unfoldDefinition? e) with
-        | some e => morWhnfPred e pred cfg
+        | some e => whnfPred e pred cfg
         | none   => return e
     else
       return e
 
+def whnf (e : Expr)  (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
+  whnfPred e (fun _ => return false) cfg
 
-def morWhnf (e : Expr)  (cfg : WhnfCoreConfig := {}) : MetaM Expr := morWhnfPred e (fun _ => return false) cfg
+
+/-- Argument of morphism application that stores corresponding coercion if necessary -/
+structure Arg where
+  /-- argument of type `α` -/
+  expr : Expr
+  /-- coercion `F → α → β` -/
+  coe : Option Expr := none
+  deriving Inhabited
+
+/-- Morphism application -/
+def app (f : Expr) (arg : Arg) : Expr :=
+  match arg.coe with
+  | .none => f.app arg.expr
+  | .some coe => (coe.app f).app arg.expr
+
+
+/-- Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism. -/
+partial def withApp {α} (e : Expr) (k : Expr → Array Arg → MetaM α) : MetaM α :=
+  go e #[]
+where
+  /-- -/
+  go : Expr → Array Arg →  MetaM α
+    | .mdata _ b, as => go b as
+    | .app (.app c f) x, as => do
+      if ← isMorCoe c then
+        go f (as.push { coe := c, expr := x})
+      else
+        go (.app c f) (as.push { expr := x})
+    | .app f a, as =>
+      go f (as.push { expr := a })
+    | f        , as => k f as.reverse
+
+
+/--
+If the given expression is a sequence of morphism applications `f a₁ .. aₙ`, return `f`.
+Otherwise return the input expression.
+-/
+def getAppFn (e : Expr) : MetaM Expr :=
+  match e with
+  | .mdata _ b => getAppFn b
+  | .app (.app c f) _ => do
+    if ← isMorCoe c then
+      getAppFn f
+    else
+      getAppFn (.app c f)
+  | .app f _ =>
+    getAppFn f
+  | e => return e
+
+/-- Given `f a₁ a₂ ... aₙ`, returns `#[a₁, ..., aₙ]` where `f` can be bundled morphism. -/
+def getAppArgs (e : Expr) : MetaM (Array Arg) := withApp e fun _ xs => return xs
+
+/-- `mkAppN f #[a₀, ..., aₙ]` ==> `f a₀ a₁ .. aₙ` where `f` can be bundled morphism. -/
+def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
+  xs.foldl (init := f) (fun f x =>
+    match x with
+    | ⟨x, .none⟩ => (f.app x)
+    | ⟨x, .some coe⟩ => (coe.app f).app x)

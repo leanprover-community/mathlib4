@@ -5,7 +5,8 @@ Authors: Tomas Skrivan
 -/
 import Lean
 
-import Mathlib.Tactic.FunProp.Mor
+import Std.Lean.Expr
+import Mathlib.Tactic.FunProp.MorExt
 
 /-!
 ## `funProp` data structure holding information about a function
@@ -17,33 +18,6 @@ namespace Mathlib
 open Lean Meta
 
 namespace Meta.FunProp
-
-
-/-- funProp-normal form of a function is of the form `fun x => f x₁ ... xₙ`.
-
-Throws and error if function can't be turned into funProp-normal form.
-
-Examples:
-In funProp-normal form
-```
-fun x => f x
-fun x => y + x
-```
-
-Not in funProp-normal form
-```
-fun x y => f x y
-HAdd.hAdd y
-```-/
-def funPropNormalizeFun (f : Expr) : MetaM Expr := do
-  let f := f.consumeMData.eta
-  lambdaTelescope f fun xs _ => do
-
-    if xs.size = 0 then
-      let X := (← inferType f).bindingDomain!
-      return (.lam `x X (f.app (.bvar 0)) default)
-    else
-      return f
 
 
 /-- Structure storing parts of a function in funProp-normal form. -/
@@ -67,12 +41,13 @@ def FunctionData.toExpr (f : FunctionData) : MetaM Expr := do
     let body := Mor.mkAppN f.fn f.args
     mkLambdaFVars #[f.mainVar] body
 
+/-- Is `f` an indentity function? -/
+def FunctionData.isIdentityFun (f : FunctionData) : Bool :=
+  (f.args.size = 0 && f.fn == f.mainVar)
+
 /-- Is `f` a constant function? -/
 def FunctionData.isConstantFun (f : FunctionData) : Bool :=
-  if f.mainArgs.size = 0 && !f.fn.containsFVar f.mainVar.fvarId! then
-    true
-  else
-    false
+  ((f.mainArgs.size = 0) && !(f.fn.containsFVar f.mainVar.fvarId!))
 
 /-- Domain type of `f`. -/
 def FunctionData.domainType (f : FunctionData) : MetaM Expr :=
@@ -93,9 +68,8 @@ def FunctionData.getFnConstName? (f : FunctionData) : MetaM (Option Name) := do
   | _ => return none
 
 
-/-- Get `FunctionData` for `f`. Throws if `f` can be put into funProp-normal form. -/
+/-- Get `FunctionData` for `f`. Throws if `f` can't be put into funProp-normal form. -/
 def getFunctionData (f : Expr) : MetaM FunctionData := do
-  let f ← funPropNormalizeFun f
   lambdaTelescope f fun xs b => do
 
     let xId := xs[0]!.fvarId!
@@ -115,20 +89,58 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
         mainArgs := mainArgs
       }
 
-/-- If `f` is in the form `fun x => @DFunLike.coe F α β self f x₁ ... xₙ` return the number of
-arguments of `DFunLike.coe` i.e. `n + 5`. -/
-def FunctionData.getCoeAppNumArgs? (f : FunctionData) : Option Nat :=
+inductive MaybeFunctionData where
+  /-- Can't generate function data as function body has let binder. -/
+  | letE (f : Expr)
+  /-- Can't generate function data as function body has lambda binder. -/
+  | lam (f : Expr)
+  /-- Function data has been successfully generated. -/
+  | data (fData : FunctionData)
 
-  if f.fn.isConstOf ``DFunLike.coe then
-    return f.args.size
-  else Id.run do
+/-- Get `FunctionData` for `f`. -/
+def getFunctionData? (f : Expr)
+    (unfoldPred : Name → Bool := fun _ => false) (cfg : WhnfCoreConfig := {}) :
+    MetaM MaybeFunctionData := do
 
-    for i' in [0:f.args.size] do
-      let i := (f.args.size - i') - 1
-      if f.args[i]!.coe.isSome then
-        return .some (i' + 6)
+  let unfold := fun e : Expr =>
+    if let .some n := e.getAppFn'.constName? then
+      pure (unfoldPred n)
+    else
+      pure false
 
-    return none
+  let .forallE xName xType _ _ ← inferType f | throwError "fun_prop bug: function expected"
+  withLocalDeclD xName xType fun x => do
+    let fx' ← Mor.whnfPred (f.app x) unfold cfg
+    let f' ← mkLambdaFVars #[x] fx'
+    match fx' with
+    | .letE .. => return .letE f'
+    | .lam  .. => return .lam f'
+    | _ => return .data (← getFunctionData f')
+
+
+inductive MorApplication where
+  | underApplied | exact | overApplied | none
+
+/--  -/
+def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := do
+  if let .some name := f.fn.constName? then
+    if ← Mor.isMorCoeName name then
+      let info ← getConstInfo name
+      let arity := info.type.forallArity
+      match compare arity f.args.size with
+      | .eq => return .exact
+      | .lt => return .overApplied
+      | .gt => return .underApplied
+  match f.args.size with
+  | 0 => return .none
+  | _ =>
+    let n := f.args.size
+    if f.args[n-1]!.coe.isSome then
+      return .exact
+    else if f.args.any (fun a => a.coe.isSome) then
+      return .overApplied
+    else
+      return .none
 
 
 /-- Decomposes `fun x => f y₁ ... yₙ` into `(fun g => g yₙ) ∘ (fun x y => f y₁ ... yₙ₋₁ y)`
