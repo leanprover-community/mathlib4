@@ -200,8 +200,7 @@ def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 #align exterior_algebra.ι_inv ExteriorAlgebra.ιInv
 
--- Porting note: In the type, changed `ιInv` to `ιInv.1`
-theorem ι_leftInverse : Function.LeftInverse ιInv.1 (ι R : M → ExteriorAlgebra R M) := fun x => by
+theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
   -- Porting note: Original proof didn't have `letI` and `haveI`
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -347,18 +346,15 @@ of the exterior algebra. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
     Submodule.span R (Set.range (ιMulti R n)) =
     LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n := by
-  refine le_antisymm (by rw [Submodule.span_le]; apply le_trans (ιMulti_range R n) (le_refl _)) ?_
+  refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) ?_
   rw [Submodule.pow_eq_span_pow_set, Submodule.span_le]
   refine fun u hu ↦ Submodule.subset_span ?_
-  obtain ⟨f, hfu⟩ := Set.mem_pow.mp hu
-  rw [Set.mem_range, ← hfu]
-  existsi fun i => ιInv (f i).1
+  obtain ⟨f, rfl⟩ := Set.mem_pow.mp hu
+  refine ⟨fun i => ιInv (f i).1, ?_⟩
   rw [ιMulti_apply]
-  congr
-  ext i
-  obtain ⟨v, hv⟩ := LinearMap.mem_range.mp (by simp only [SetLike.coe_mem] :
-    (f i).1 ∈ LinearMap.range (ι R (M := M)))
-  rw [← hv, ι_inj]; erw [ι_leftInverse]
+  congr with i
+  obtain ⟨v, hv⟩ := (f i).prop
+  rw [← hv, ι_leftInverse]
 
 /-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
 family of `n`fold exterior products of elements of `v`, seen as members of the exterior algebra. -/
@@ -442,10 +438,8 @@ open Function in
 @[simp]
 lemma leftInverse_map_iff {f : M →ₗ[R] N} {g : N →ₗ[R] M} :
     LeftInverse (map g) (map f) ↔ LeftInverse g f := by
-  refine ⟨fun h x => ?_, fun h x => ?_⟩
-  · simpa using h (ι _ x)
-  · exact CliffordAlgebra.leftInverse_map_of_leftInverse (Q₁ := 0) (Q₂ := 0)
-      { f with map_app' := fun _ => rfl } { g with map_app' := fun _ => rfl} h x
+  refine ⟨fun h x => ?_, fun h => CliffordAlgebra.leftInverse_map_of_leftInverse _ _ h⟩
+  simpa using h (ι _ x)
 
 /-- A morphism of modules that admits a linear retraction induces an injective morphism of
 exterior algebras. -/
