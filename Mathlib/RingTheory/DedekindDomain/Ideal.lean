@@ -110,9 +110,8 @@ theorem coe_ideal_le_self_mul_inv (I : Ideal R₁) :
 /-- `I⁻¹` is the inverse of `I` if `I` has an inverse. -/
 theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J = I⁻¹ := by
   have hI : I ≠ 0 := ne_zero_of_mul_eq_one I J h
-  suffices h' : I * (1 / I) = 1
-  · exact congr_arg Units.inv <|
-      @Units.ext _ _ (Units.mkOfMulEqOne _ _ h) (Units.mkOfMulEqOne _ _ h') rfl
+  suffices h' : I * (1 / I) = 1 from
+    congr_arg Units.inv <| @Units.ext _ _ (Units.mkOfMulEqOne _ _ h) (Units.mkOfMulEqOne _ _ h') rfl
   apply le_antisymm
   · apply mul_le.mpr _
     intro x hx y hy
@@ -226,8 +225,8 @@ theorem isPrincipal_inv (I : FractionalIdeal R₁⁰ K) [Submodule.IsPrincipal (
     (h : I ≠ 0) : Submodule.IsPrincipal I⁻¹.1 := by
   rw [val_eq_coe, isPrincipal_iff]
   use (generator (I : Submodule R₁ K))⁻¹
-  have hI : I * spanSingleton _ (generator (I : Submodule R₁ K))⁻¹ = 1
-  apply mul_generator_self_inv _ I h
+  have hI : I * spanSingleton _ (generator (I : Submodule R₁ K))⁻¹ = 1 :=
+    mul_generator_self_inv _ I h
   exact (right_inverse_eq _ I (spanSingleton _ (generator (I : Submodule R₁ K))⁻¹) hI).symm
 #align fractional_ideal.is_principal_inv FractionalIdeal.isPrincipal_inv
 

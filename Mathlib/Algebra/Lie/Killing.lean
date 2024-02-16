@@ -196,8 +196,8 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ' (-1 : R), smul_eq_mul]
     conv_lhs => rw [pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
       ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ, ← smul_assoc, this]
-  suffices : ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0
-  · apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
+  suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
+    apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
     aesop
   clear hm₁ m₁; intro x m₁ hm₁
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm₀
