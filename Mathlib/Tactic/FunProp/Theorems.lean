@@ -336,7 +336,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         thmArgs := thmArgs
       }
 
-    let .data fData ← getFunctionData? f
+    let .data fData ← getFunctionData? f defaultUnfoldPred
       | throwError s!"function in invalid form {← ppExpr f}"
 
     match fData.fn with
@@ -346,7 +346,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       -- I think this detects `Continuous fun x => x + c` as compositional ...
       let dec ← fData.nontrivialDecomposition
 
-      let form : TheoremForm := if dec.isNone then .uncurried else .comp
+      let form : TheoremForm := if dec.isSome || funName == ``Prod.mk then .comp else .uncurried
 
       return .function {
 -- funPropName funName fData.mainArgs fData.args.size thmForm

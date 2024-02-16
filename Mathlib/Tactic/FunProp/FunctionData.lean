@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
+import Qq
 
 import Std.Lean.Expr
 import Mathlib.Tactic.FunProp.MorExt
@@ -110,7 +111,7 @@ def getFunctionData? (f : Expr)
 
   let .forallE xName xType _ _ ← inferType f | throwError "fun_prop bug: function expected"
   withLocalDeclD xName xType fun x => do
-    let fx' ← Mor.whnfPred (f.app x) unfold cfg
+    let fx' ← Mor.whnfPred (f.beta #[x]).eta unfold cfg
     let f' ← mkLambdaFVars #[x] fx'
     match fx' with
     | .letE .. => return .letE f'
@@ -218,3 +219,56 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
       return none
 
     return (f, g)
+
+
+
+def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat) : MetaM (Option (Expr × Expr)) := do
+
+  unless isOrderedSubsetOf fData.mainArgs args do return none
+  unless ¬(fData.fn.containsFVar fData.mainVar.fvarId!) do return none
+
+  withLCtx fData.lctx fData.insts do
+
+  let gxs := args.map (fun i => fData.args[i]!.expr)
+
+  try
+    let gx ← mkProdElem gxs -- this can crash if we have dependent types
+    let g ← withLCtx fData.lctx fData.insts <| mkLambdaFVars #[fData.mainVar] gx
+
+    withLocalDeclD `y (← inferType gx) fun y => do
+
+      let ys ← mkProdSplitElem y gxs.size
+      let args' := (args.zip ys).foldl (init:=fData.args)
+          (fun args' (i,y) => args'.set! i { expr := y, coe := args'[i]!.coe })
+
+      let f ← mkLambdaFVars #[y] (Mor.mkAppN fData.fn args')
+      return (f,g)
+  catch _ =>
+    return none
+
+
+#exit
+
+#check @HAdd.hAdd
+
+open Lean Meta Qq in
+#eval show MetaM Unit from do
+
+  -- let f := q(fun x : Nat =>  (x + x) + 10)
+
+  -- let fData ← getFunctionData f
+
+  -- let .some (f,g) ← fData.decompositionOverArgs #[4] | throwError "decomposition failed"
+
+  -- IO.println s!"{← ppExpr f} ∘ {← ppExpr g}"
+
+
+  withLocalDeclDQ `f q(Nat → Nat → Nat → Nat) fun f => do
+
+    let f' := q(fun y => $f 1 y 2)
+
+    let fData ← getFunctionData f'
+
+    let .some (f,g) ← fData.decompositionOverArgs #[1,2] | throwError "decomposition failed"
+
+    IO.println s!"{← ppExpr f} ∘ {← ppExpr g}"

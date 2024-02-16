@@ -33,7 +33,6 @@ instance [∀ x, Obj (E x)] : Obj ((x' : α) → E x') := ⟨⟩
 @[fun_prop] opaque Con {α β} [Obj α] [Obj β] (f : α → β) : Prop
 @[fun_prop] opaque Lin {α β} [Obj α] [Obj β] (f : α → β) : Prop
 
-
 -- state basic lambda calculus rules --
 ---------------------------------------
 
@@ -62,7 +61,7 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
 -- theorems about function in the environment --
 ------------------------------------------------
-
+set_option trace.Meta.Tactic.fun_prop.attr true in
 @[fun_prop]
 theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd)
   : Con fun x => (fst x, snd x) := silentSorry
@@ -102,6 +101,8 @@ structure LinHom (α β) [Obj α] [Obj β] where
   lin : Lin toFun
 
 infixr:25 " -o " => LinHom
+
+attribute [fun_prop_coe] DFunLike.coe
 
 instance : FunLike (α ->> β) α β where
   coe := fun f => f.toFun
@@ -171,6 +172,7 @@ example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (h
 set_option trace.Meta.Tactic.fun_prop true
 set_option trace.Meta.Tactic.fun_prop.step true
 set_option trace.Meta.Tactic.fun_prop.unify true
+set_option trace.Meta.Tactic.fun_prop.discharge true
 example (f : α → β → γ) (hf : Con fun (x,y) => f x y)  : Con f := by fun_prop
 
 example : Con (fun x : α => x) := by fun_prop
@@ -313,3 +315,29 @@ example (f : α ->> α -o α ->> α) (y) : Lin (fun x  => f y x y) := by fun_pro
 
 example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
 example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
+
+
+noncomputable
+def foo : α ->> α ->> α := silentSorry
+noncomputable
+def bar : α ->> α ->> α := silentSorry
+
+
+@[fun_prop]
+theorem foo_lin : Lin fun x : α => foo x := silentSorry
+@[fun_prop]
+theorem bar_lin (y) : Lin fun x : α => bar x y := silentSorry
+
+example : Lin (foo : α → α ->> α) := by fun_prop
+example : Con (foo : α → α ->> α) := by fun_prop
+example : Lin (fun x : α => (foo x : α → α)) := by fun_prop
+example : Lin (fun x y : α => foo x y) := by fun_prop
+example (y) : Lin (fun x : α => foo x y) := by fun_prop
+
+example : Lin (fun x : α => (bar x : α → α)) := by fun_prop
+example : Lin (fun x y : α => bar x y) := by fun_prop
+example (y) : Lin (fun x : α => bar x y) := by fun_prop
+
+example : Lin (DFunLike.coe : (α ->> α) → (α → α)) := by fun_prop
+example : Con (DFunLike.coe : (α ->> α) → (α → α)) := by fun_prop
+example : Lin (DFunLike.coe : (α -o α) → (α → α)) := by fun_prop

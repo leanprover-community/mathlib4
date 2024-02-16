@@ -98,6 +98,9 @@ def getLastUsedTheoremName : FunPropM (Option Name) := do
   | .some (.decl n) => return n
   | _ => return none
 
+def defaultUnfoldPred : Name → Bool :=
+  #[`id,`Function.comp,`Function.HasUncurry.uncurry,`Function.uncurry].contains
+
 def unfoldNamePred : FunPropM (Name → Bool) := do
   let toUnfold := (← read).constToUnfold
   return fun n => toUnfold.contains n
