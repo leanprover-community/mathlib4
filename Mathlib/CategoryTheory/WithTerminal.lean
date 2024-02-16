@@ -988,7 +988,7 @@ def opWithInitialWithTerminalOp : 𝟭 (WithInitial Cᵒᵖ) ≅
  /-- A natural isomorphism between `𝟭 (WithTerminal C)` and
 `(withTerminalOpToOpWithInitial ⋙ opWithInitialToWithTerminalOp).unop`. -/
 def withTerminalOpOpWithInitial : 𝟭 (WithTerminal C) ≅
-     (withTerminalOpToOpWithInitial ⋙ opWithInitialToWithTerminalOp).unop where
+    (withTerminalOpToOpWithInitial ⋙ opWithInitialToWithTerminalOp).unop where
   hom := {
     app := fun X => match X with
       | WithTerminal.of x => 𝟙 _
