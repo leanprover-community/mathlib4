@@ -267,10 +267,13 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: distances are nonnegative. -/
 @[positivity Dist.dist _ _]
-def evalDist : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app (.app _ a) b ← whnfR e | throwError "not dist"
-  let p ← mkAppOptM ``dist_nonneg #[none, none, a, b]
-  pure (.nonnegative p)
+def evalDist : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Dist.dist $β $inst $a $b) =>
+    let _inst ← synthInstanceQ q(PseudoMetricSpace $β)
+    assertInstancesCommute
+    pure (.nonnegative q(dist_nonneg))
+  | _, _, _ => throwError "not dist"
 
 end Mathlib.Meta.Positivity
 
@@ -336,9 +339,7 @@ theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
 #align edist_ne_top edist_ne_top
 
 /-- `nndist x x` vanishes-/
-@[simp]
-theorem nndist_self (a : α) : nndist a a = 0 :=
-  (NNReal.coe_eq_zero _).1 (dist_self a)
+@[simp] theorem nndist_self (a : α) : nndist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
 #align nndist_self nndist_self
 
 -- porting note: `dist_nndist` and `coe_nndist` moved up
@@ -1697,7 +1698,7 @@ theorem continuous_dist : Continuous fun p : α × α => dist p.1 p.2 :=
   uniformContinuous_dist.continuous
 #align continuous_dist continuous_dist
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => dist (f b) (g b) :=
   continuous_dist.comp (hf.prod_mk hg : _)
@@ -1739,6 +1740,7 @@ theorem continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
   uniformContinuous_nndist.continuous
 #align continuous_nndist continuous_nndist
 
+@[fun_prop]
 protected theorem Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => nndist (f b) (g b) :=
   continuous_nndist.comp (hf.prod_mk hg : _)
@@ -1938,7 +1940,7 @@ theorem dist_pi_le_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 ≤ r) :
 theorem dist_pi_eq_iff {f g : ∀ b, π b} {r : ℝ} (hr : 0 < r) :
     dist f g = r ↔ (∃ i, dist (f i) (g i) = r) ∧ ∀ b, dist (f b) (g b) ≤ r := by
   lift r to ℝ≥0 using hr.le
-  simp_rw [← coe_nndist, NNReal.coe_eq, nndist_pi_eq_iff hr, NNReal.coe_le_coe]
+  simp_rw [← coe_nndist, NNReal.coe_inj, nndist_pi_eq_iff hr, NNReal.coe_le_coe]
 #align dist_pi_eq_iff dist_pi_eq_iff
 
 theorem dist_pi_le_iff' [Nonempty β] {f g : ∀ b, π b} {r : ℝ} :

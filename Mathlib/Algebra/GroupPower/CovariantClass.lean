@@ -30,7 +30,7 @@ section Left
 
 variable [CovariantClass M M (· * ·) (· ≤ ·)] {x : M}
 
-@[to_additive (attr := mono) nsmul_le_nsmul_right]
+@[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
 theorem pow_le_pow_left' [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {a b : M} (hab : a ≤ b) :
     ∀ i : ℕ, a ^ i ≤ b ^ i
   | 0 => by simp
@@ -55,7 +55,7 @@ theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
 #align pow_le_one' pow_le_one'
 #align nsmul_nonpos nsmul_nonpos
 
-@[to_additive nsmul_le_nsmul_left]
+@[to_additive (attr := gcongr) nsmul_le_nsmul_left]
 theorem pow_le_pow_right' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
   let ⟨k, hk⟩ := Nat.le.dest h
   calc
@@ -87,7 +87,7 @@ theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=
 #align pow_lt_one' pow_lt_one'
 #align nsmul_neg nsmul_neg
 
-@[to_additive nsmul_lt_nsmul_left]
+@[to_additive (attr := gcongr) nsmul_lt_nsmul_left]
 theorem pow_lt_pow_right' [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ} (ha : 1 < a)
     (h : n < m) : a ^ n < a ^ m := by
   rcases Nat.le.dest h with ⟨k, rfl⟩; clear h

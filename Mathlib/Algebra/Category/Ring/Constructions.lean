@@ -20,6 +20,7 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * `Z` is the initial object
 * `0` is the strict terminal object
 * cartesian product is the product
+* arbitrary direct product of a family of rings is the product object (Pi object)
 * `RingHom.eqLocus` is the equalizer
 
 -/
@@ -214,6 +215,40 @@ set_option linter.uppercaseLean3 false in
 #align CommRing.prod_fan_is_limit CommRingCat.prodFanIsLimit
 
 end Product
+
+section Pi
+
+variable {ι : Type u} (R : ι → CommRingCat.{u})
+
+/--
+The categorical product of rings is the cartesian product of rings. This is its `Fan`.
+-/
+@[simps! pt]
+def piFan : Fan R :=
+  Fan.mk (CommRingCat.of ((i : ι) → R i)) (Pi.evalRingHom _)
+
+/--
+The categorical product of rings is the cartesian product of rings.
+-/
+def piFanIsLimit : IsLimit (piFan R) where
+  lift s := Pi.ringHom fun i ↦ s.π.1 ⟨i⟩
+  fac s i := by rfl
+  uniq s g h := DFunLike.ext _ _ fun x ↦ funext fun i ↦ DFunLike.congr_fun (h ⟨i⟩) x
+
+/--
+The categorical product and the usual product agrees
+-/
+def piIsoPi : ∏ R ≅ CommRingCat.of ((i : ι) → R i) :=
+  limit.isoLimitCone ⟨_, piFanIsLimit R⟩
+
+/--
+The categorical product and the usual product agrees
+-/
+def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
+    (∏ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
+  (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
+
+end Pi
 
 section Equalizer
 

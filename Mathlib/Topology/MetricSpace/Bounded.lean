@@ -98,7 +98,7 @@ theorem _root_.Bornology.IsBounded.subset_closedBall_lt (h : IsBounded s) (a : �
 
 theorem isBounded_closure_of_isBounded (h : IsBounded s) : IsBounded (closure s) :=
   let ⟨C, h⟩ := isBounded_iff.1 h
-  isBounded_iff.2 ⟨C, fun _a ha _b hb => (isClosed_le' C).closure_subset <|
+  isBounded_iff.2 ⟨C, fun _a ha _b hb => isClosed_Iic.closure_subset <|
     map_mem_closure₂ continuous_dist ha hb h⟩
 #align metric.bounded_closure_of_bounded Metric.isBounded_closure_of_isBounded
 
@@ -573,10 +573,12 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: the diameter of a set is always nonnegative. -/
 @[positivity Metric.diam _]
-def evalDiam : PositivityExt where eval {_ _} _zα _pα e := do
-  let .app _ s ← whnfR e | throwError "not Metric.diam"
-  let p ← mkAppOptM ``Metric.diam_nonneg #[none, none, s]
-  pure (.nonnegative p)
+def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Metric.diam _ $inst $s) =>
+    assertInstancesCommute
+    pure (.nonnegative q(Metric.diam_nonneg))
+  | _, _, _ => throwError "not ‖ · ‖"
 
 end Mathlib.Meta.Positivity
 
