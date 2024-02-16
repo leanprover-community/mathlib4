@@ -72,13 +72,18 @@ def toSubfield : Subfield L :=
     inv_mem' := S.inv_mem' }
 #align intermediate_field.to_subfield IntermediateField.toSubfield
 
-instance : SubfieldClass (IntermediateField K L) L where
+instance (priority := 75) : SubfieldClass (IntermediateField K L) L where
   add_mem {s} := s.add_mem'
   zero_mem {s} := s.zero_mem'
   neg_mem {s} := s.neg_mem
   mul_mem {s} := s.mul_mem'
   one_mem {s} := s.one_mem'
   inv_mem {s} := s.inv_mem' _
+
+/-- An intermediate field inherits a field structure -/
+instance (priority := 100) toField : Field S :=
+  S.toSubfield.toField
+#align intermediate_field.to_field IntermediateField.toField
 
 --@[simp] Porting note: simp can prove it
 theorem mem_carrier {s : IntermediateField K L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
@@ -328,11 +333,6 @@ def Subfield.toIntermediateField (S : Subfield L) (algebra_map_mem : ∀ x, alge
 #align subfield.to_intermediate_field Subfield.toIntermediateField
 
 namespace IntermediateField
-
-/-- An intermediate field inherits a field structure -/
-instance toField : Field S :=
-  S.toSubfield.toField
-#align intermediate_field.to_field IntermediateField.toField
 
 @[simp, norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by
