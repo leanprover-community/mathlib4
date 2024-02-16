@@ -866,6 +866,15 @@ theorem embedding_prod_mk (x : X) : Embedding (Prod.mk x : Y → X × Y) :=
 
 end Prod
 
+section Bool
+
+lemma continuous_bool_rng [TopologicalSpace X] {f : X → Bool} (b : Bool) :
+    Continuous f ↔ IsClopen (f ⁻¹' {b}) := by
+  rw [continuous_discrete_rng, Bool.forall_bool' b, IsClopen, ← isOpen_compl_iff, ← preimage_compl,
+    Bool.compl_singleton, and_comm]
+
+end Bool
+
 section Sum
 
 open Sum
@@ -1716,12 +1725,12 @@ variable [TopologicalSpace X] {s : Set X} {t : Set s}
 theorem IsOpen.trans (ht : IsOpen t) (hs : IsOpen s) : IsOpen (t : Set X) := by
   rcases isOpen_induced_iff.mp ht with ⟨s', hs', rfl⟩
   rw [Subtype.image_preimage_coe]
-  exact hs'.inter hs
+  exact hs.inter hs'
 
 theorem IsClosed.trans (ht : IsClosed t) (hs : IsClosed s) : IsClosed (t : Set X) := by
   rcases isClosed_induced_iff.mp ht with ⟨s', hs', rfl⟩
   rw [Subtype.image_preimage_coe]
-  convert hs'.inter hs
+  exact hs.inter hs'
 
 end Monad
 
