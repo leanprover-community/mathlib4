@@ -340,10 +340,9 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
     match fData.fn with
     | .const funName _ =>
 
-      let .some (f',_) ← splitMorToComp f
-        | throwError s!"fun_prop bug: failed at detecting theorem type `{← ppExpr b}`"
+      let dec ← fData.nontrivialDecomposition
 
-      let form : TheoremForm := if (← isDefEq f' f) then .uncurried else .comp
+      let form : TheoremForm := if dec.isNone then .uncurried else .comp
 
       return .function {
 -- funPropName funName fData.mainArgs fData.args.size thmForm

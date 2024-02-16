@@ -77,12 +77,14 @@ variable [Add α] [Add β]
 @[fun_prop] theorem fst_Con : Con fun x : α×β => x.1 := silentSorry
 @[fun_prop] theorem snd_Con : Con fun x : α×β => x.2 := silentSorry
 @[fun_prop] theorem add_Con : Con (fun x : α×α => x.1 + x.2) := silentSorry
+@[fun_prop] theorem add_Lin : Lin (fun x : α×α => x.1 + x.2) := silentSorry
 
 
 -- "compositional form" of theorems
 @[fun_prop] theorem fst_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).1 := by fun_prop
 @[fun_prop] theorem snd_Con' (self : α → β×γ) (hself : Con self) : Con fun x => (self x).2 := by fun_prop
 @[fun_prop] theorem add_Con' (x y : α → β) (hx : Con x) (hy : Con y) : Con (fun w => x w + y w) := by fun_prop
+@[fun_prop] theorem add_Lin' (x y : α → β) (hx : Lin x) (hy : Lin y) : Lin (fun w => x w + y w) := by fun_prop
 
 
 
@@ -137,6 +139,25 @@ instance : Obj (α -o β) := ⟨⟩
 @[fun_prop] theorem linHom_lin (f : α -o β) : Lin f := silentSorry
 @[fun_prop] theorem linHom_lin_in_fn' (f : α → β -o γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
 
+
+def LinHom.mk' (f : α → β) (hf : Lin f := by fun_prop) : α -o β := mk f hf
+
+@[fun_prop] theorem linHom_mk' (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, Lin (f x ·)) : Lin (fun x => LinHom.mk' (f x)) := silentSorry
+
+
+section Notation
+open Lean Syntax Parser
+open TSyntax.Compat
+macro "fun" xs:explicitBinders " ⊸ " b:term : term => expandExplicitBinders ``LinHom.mk' xs b
+macro "fun" xs:explicitBinders " -o " b:term : term => expandExplicitBinders ``LinHom.mk' xs b
+end Notation
+
+
+example (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, Lin (f x ·)) :
+  Lin (fun x => fun y ⊸ f y (x+x)) := by fun_prop
+
+example (f : α → α → α → α) (hx : ∀ x y, Lin (f x y ·)) (hy : ∀ x z, Lin (f x · z)) (hz : ∀ y z, Lin (f · y z)) :
+    Lin (fun x => fun y z ⊸ f z (x+x) y) := by fun_prop
 
 -- the only analoge is this theorem but that is alredy provable
 example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (hg : Lin g) : Lin (fun x => (f x) (g x)) := by fun_prop

@@ -185,6 +185,8 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
       let yVal' := yVal.expr
       let yId ← withLCtx lctx insts mkFreshFVarId
       let yType ← withLCtx lctx insts (inferType yVal')
+      if yType.containsFVar fData.mainVar.fvarId! then
+        return none
       lctx := lctx.mkLocalDecl yId (xName.appendAfter (toString argId)) yType
       let yVar := Expr.fvar yId
       yVars := yVars.push yVar
