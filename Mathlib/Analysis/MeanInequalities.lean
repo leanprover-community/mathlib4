@@ -754,10 +754,8 @@ theorem inner_le_Lp_mul_Lq (hpq : p.IsConjugateExponent q) :
   replace H' : (∀ i ∈ s, f i ≠ ⊤) ∧ ∀ i ∈ s, g i ≠ ⊤ := by
     simpa [ENNReal.rpow_eq_top_iff, asymm hpq.pos, asymm hpq.symm.pos, hpq.pos, hpq.symm.pos,
       ENNReal.sum_eq_top_iff, not_or] using H'
-  have :=
-    ENNReal.coe_le_coe.2
-      (@NNReal.inner_le_Lp_mul_Lq _ s (fun i => ENNReal.toNNReal (f i))
-        (fun i => ENNReal.toNNReal (g i)) _ _ hpq)
+  have := ENNReal.coe_le_coe.2 (@NNReal.inner_le_Lp_mul_Lq _ s (fun i => ENNReal.toNNReal (f i))
+    (fun i => ENNReal.toNNReal (g i)) _ _ hpq)
   simp [← ENNReal.coe_rpow_of_nonneg, le_of_lt hpq.pos, le_of_lt hpq.one_div_pos,
     le_of_lt hpq.symm.pos, le_of_lt hpq.symm.one_div_pos] at this
   convert this using 1 <;> [skip; congr 2] <;> [skip; skip; simp; skip; simp] <;>

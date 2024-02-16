@@ -510,8 +510,8 @@ protected theorem mul_inv_cancel [IsDedekindDomain A] {I : FractionalIdeal A⁰ 
   obtain ⟨a, J, ha, hJ⟩ :
     ∃ (a : A) (aI : Ideal A), a ≠ 0 ∧ I = spanSingleton A⁰ (algebraMap A K a)⁻¹ * aI :=
     exists_eq_spanSingleton_mul I
-  suffices h₂ : I * (spanSingleton A⁰ (algebraMap _ _ a) * (J : FractionalIdeal A⁰ K)⁻¹) = 1
-  · rw [mul_inv_cancel_iff]
+  suffices h₂ : I * (spanSingleton A⁰ (algebraMap _ _ a) * (J : FractionalIdeal A⁰ K)⁻¹) = 1 by
+    rw [mul_inv_cancel_iff]
     exact ⟨spanSingleton A⁰ (algebraMap _ _ a) * (J : FractionalIdeal A⁰ K)⁻¹, h₂⟩
   subst hJ
   rw [mul_assoc, mul_left_comm (J : FractionalIdeal A⁰ K), coe_ideal_mul_inv, mul_one,
@@ -1150,8 +1150,8 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
     {L : Ideal R} (hL : L ∈ normalizedFactors I) :
     ↑(idealFactorsEquivOfQuotEquiv f ⟨L, dvd_of_mem_normalizedFactors hL⟩)
       ∈ normalizedFactors J := by
-  have hI : I ≠ ⊥
-  · intro hI
+  have hI : I ≠ ⊥ := by
+    intro hI
     rw [hI, bot_eq_zero, normalizedFactors_zero, ← Multiset.empty_eq_zero] at hL
     exact Finset.not_mem_empty _ hL
   refine mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors hI hJ hL

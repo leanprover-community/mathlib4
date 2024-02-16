@@ -326,8 +326,8 @@ case of an Abelian ideal (which has `M = L` and `N = I`). -/
 lemma traceForm_eq_zero_of_isTrivial [LieModule.IsTrivial I N] :
     trace R M (φ x ∘ₗ φ y) = 0 := by
   let hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)
-  suffices : (φ x ∘ₗ φ y).restrict hy' = 0
-  · simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
+  suffices (φ x ∘ₗ φ y).restrict hy' = 0 by
+    simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   ext n
   suffices ⁅y, (n : M)⁆ = 0 by simp [this]
   exact Submodule.coe_eq_zero.mpr (LieModule.IsTrivial.trivial (⟨y, hy⟩ : I) n)
