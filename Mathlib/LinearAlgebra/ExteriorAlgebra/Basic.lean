@@ -433,7 +433,7 @@ theorem ιInv_comp_map (f : M →ₗ[R] N) :
   haveI : IsCentralScalar R N := ⟨fun r m => rfl⟩
   unfold ιInv
   conv_lhs => rw [LinearMap.comp_assoc, ← AlgHom.comp_toLinearMap, toTrivSqZeroExt_comp_map,
-                AlgHom.comp_toLinearMap, ← LinearMap.comp_assoc, TrivSqZeroExt.snd_comp_map]
+                AlgHom.comp_toLinearMap, ← LinearMap.comp_assoc, TrivSqZeroExt.sndHom_comp_map]
 
 open Function in
 /-- For a linear map `f` from `M` to `N`,
