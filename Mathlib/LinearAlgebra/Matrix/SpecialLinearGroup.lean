@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Wen Yang
+Authors: Anne Baanen, Wen Yang, Oliver Nash
 -/
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Adjugate
@@ -255,6 +255,18 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 section center
 
 open Subgroup
+
+instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLinearGroup n R) := by
+  refine ⟨fun ⟨A, hA⟩ ⟨B, hB⟩ ↦ ?_⟩
+  ext i j
+  rcases isEmpty_or_nonempty n with hn | hn; · exfalso; exact IsEmpty.false i
+  rw [det_eq_elem_of_subsingleton _ i] at hA hB
+  simp only [Subsingleton.elim j i, hA, hB]
+
+@[simp]
+theorem center_eq_bot_of_subsingleton [Subsingleton n] :
+    center (SpecialLinearGroup n R) = ⊥ :=
+  eq_bot_iff.mpr fun x _ ↦ by rw [mem_bot, Subsingleton.elim x 1]
 
 theorem scalar_eq_self_of_mem_center
     {A : SpecialLinearGroup n R} (hA : A ∈ center (SpecialLinearGroup n R)) (i : n) :
