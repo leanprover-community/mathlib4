@@ -617,9 +617,19 @@ theorem mem_coclosedCompact : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ 
   simp only [hasBasis_coclosedCompact.mem_iff, and_assoc]
 #align filter.mem_coclosed_compact Filter.mem_coclosedCompact
 
-theorem mem_coclosed_compact' : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ sᶜ ⊆ t := by
+theorem mem_coclosedCompact' : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ sᶜ ⊆ t := by
   simp only [mem_coclosedCompact, compl_subset_comm]
-#align filter.mem_coclosed_compact' Filter.mem_coclosed_compact'
+#align filter.mem_coclosed_compact' Filter.mem_coclosedCompact'
+
+@[deprecated] -- 2024-02-15
+alias mem_coclosed_compact' := Filter.mem_coclosedCompact'
+
+/-- Complement of a set belongs to `coclosedCompact` if and only if its closure is compact. -/
+theorem compl_mem_coclosedCompact : sᶜ ∈ coclosedCompact X ↔ IsCompact (closure s) := by
+  rw [mem_coclosedCompact', compl_compl]
+  exact ⟨fun ⟨t, htcl, htco, hst⟩ ↦
+    htco.of_isClosed_subset isClosed_closure <| closure_minimal hst htcl, fun h ↦
+    ⟨closure s, isClosed_closure, h, subset_closure⟩⟩
 
 theorem cocompact_le_coclosedCompact : cocompact X ≤ coclosedCompact X :=
   iInf_mono fun _ => le_iInf fun _ => le_rfl
