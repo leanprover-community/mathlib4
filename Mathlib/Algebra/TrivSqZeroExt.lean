@@ -523,7 +523,7 @@ instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMul
         show (1 : R) •> x.2 + (0 : M) <• x.1 = x.2 by rw [one_smul, smul_zero, add_zero]
     mul_one := fun x =>
       ext (mul_one x.1) <|
-        show x.1 • (0 : M) + x.2 <• (1 : R) = x.2 by rw [smul_zero, zero_add, MulOpposite.op_one, one_smul] }
+        show x.1 • (0 : M) + x.2 <• (1 : R) = x.2 by rw [smul_zero, zero_add, op_one, one_smul] }
 
 instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) :=
   { TrivSqZeroExt.addMonoid, TrivSqZeroExt.one with
