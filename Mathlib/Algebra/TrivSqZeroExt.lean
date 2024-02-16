@@ -854,6 +854,13 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
         rw [← AlgHom.map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
 #align triv_sq_zero_ext.lift_aux TrivSqZeroExt.lift
 
+theorem lift_def (f : R →ₐ[S] A) (g : M →ₗ[S] A)
+    (hg : ∀ x y, g x * g y = 0)
+    (hfg : ∀ r x, g (r • x) = f r * g x)
+    (hgf : ∀ r x, g (op r • x) = g x * f r) (x : tsze R M) :
+    lift f g hg hfg hgf x = f x.fst + g x.snd :=
+  rfl
+
 @[simp]
 theorem lift_apply_inl (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (hg : ∀ x y, g x * g y = 0)
@@ -905,7 +912,7 @@ where the range of `g` has no non-zero products, and scaling the input to `g` on
 amounts to a corresponding multiplication by `f` in the output.
 
 This isomorphism is named to match the very similar `Complex.lift`. -/
-@[simps!]
+@[simps! apply symm_apply_coe]
 def liftEquiv :
     {fg : (R →ₐ[S] A) × (M →ₗ[S] A) //
       (∀ x y, fg.2 x * fg.2 y = 0) ∧
@@ -922,6 +929,7 @@ def liftEquiv :
   right_inv _F := algHom_ext' (lift_comp_inlHom _ _ _ _ _) (lift_comp_inrHom _ _ _ _ _)
 
 /-- A simplified version of `TrivSqZeroExt.liftEquiv` for the commutative case. -/
+@[simps! apply symm_apply_coe]
 def liftEquivOfComm :
     { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) := by
   refine Equiv.trans ?_ liftEquiv
@@ -951,22 +959,20 @@ def map (f : M →ₗ[R'] N) : TrivSqZeroExt R' M →ₐ[R'] TrivSqZeroExt R' N 
   liftEquivOfComm ⟨inrHom R' N ∘ₗ f, fun _ _ => inr_mul_inr _ _ _⟩
 
 @[simp]
-theorem map_inl (f : M →ₗ[R'] N) (r : R') :
-    map f (inl r) = inl r := by
-  simp [map, liftEquivOfComm, Algebra.ofId_apply, algebraMap_eq_inl]
+theorem map_inl (f : M →ₗ[R'] N) (r : R') : map f (inl r) = inl r := by
+  rw [map, liftEquivOfComm_apply, lift_apply_inl, Algebra.ofId_apply, algebraMap_eq_inl]
 
 @[simp]
-theorem map_inr (f : M →ₗ[R'] N) (x : M) :
-    map f (inr x) = inr (f x) := by
-  simp [map, liftEquivOfComm, Algebra.ofId_apply, algebraMap_eq_inl]
+theorem map_inr (f : M →ₗ[R'] N) (x : M) : map f (inr x) = inr (f x) := by
+  rw [map, liftEquivOfComm_apply, lift_apply_inr, LinearMap.comp_apply, inrHom_apply]
 
 @[simp]
 theorem fst_map (f : M →ₗ[R'] N) (x : TrivSqZeroExt R' M) : fst (map f x) = fst x := by
-  simp [map, liftEquivOfComm, Algebra.ofId_apply, algebraMap_eq_inl]
+  simp [map, lift_def, Algebra.ofId_apply, algebraMap_eq_inl]
 
 @[simp]
 theorem snd_map (f : M →ₗ[R'] N) (x : TrivSqZeroExt R' M) : snd (map f x) = f (snd x) := by
-  simp [map, liftEquivOfComm, Algebra.ofId_apply, algebraMap_eq_inl]
+  simp [map, lift_def, Algebra.ofId_apply, algebraMap_eq_inl]
 
 @[simp]
 theorem map_comp_inlAlgHom (f : M →ₗ[R'] N) :
