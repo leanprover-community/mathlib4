@@ -53,18 +53,18 @@ section AuxLemmasToBeMoved
 
 variable {α β ι : Type*}
 
-theorem Real.iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
-  ext1 x
-  simp only [mem_iUnion, mem_Iic, mem_univ, iff_true_iff]
-  obtain ⟨r, hr⟩ := exists_rat_gt x
-  exact ⟨r, hr.le⟩
-#align real.Union_Iic_rat Real.iUnion_Iic_rat
+-- todo: find nice place for the following two theorems 
+theorem notBddAbove_coe: ¬(BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
+  dsimp only [BddAbove, upperBounds]
+  rw [Set.not_nonempty_iff_eq_empty]
+  ext
+  simpa using  exists_rat_gt _
 
-theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
-  ext1 x
-  simp only [mem_iInter, mem_Iic, mem_empty_iff_false, iff_false_iff, not_forall, not_le]
-  exact exists_rat_lt x
-#align real.Inter_Iic_rat Real.iInter_Iic_rat
+theorem notBddBelow_coe: ¬(BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
+  dsimp only [BddBelow, lowerBounds]
+  rw [Set.not_nonempty_iff_eq_empty]
+  ext
+  simpa using exists_rat_lt _
 
 end AuxLemmasToBeMoved
 
@@ -131,7 +131,7 @@ theorem iInf_IicSnd_gt (t : ℚ) {s : Set α} (hs : MeasurableSet s) [IsFiniteMe
 theorem tendsto_IicSnd_atTop {s : Set α} (hs : MeasurableSet s) :
     Tendsto (fun r : ℚ => ρ.IicSnd r s) atTop (𝓝 (ρ.fst s)) := by
   simp_rw [ρ.IicSnd_apply _ hs, fst_apply hs, ← prod_univ]
-  rw [← Real.iUnion_Iic_rat, prod_iUnion]
+  rw [← iUnion_Iic_of_not_bddAbove_range notBddAbove_coe, prod_iUnion]
   refine' tendsto_measure_iUnion fun r q hr_le_q x => _
   simp only [mem_prod, mem_Iic, and_imp]
   refine' fun hxs hxr => ⟨hxs, hxr.trans _⟩
@@ -142,7 +142,7 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
     Tendsto (fun r : ℚ => ρ.IicSnd r s) atBot (𝓝 0) := by
   simp_rw [ρ.IicSnd_apply _ hs]
   have h_empty : ρ (s ×ˢ ∅) = 0 := by simp only [prod_empty, measure_empty]
-  rw [← h_empty, ← Real.iInter_Iic_rat, prod_iInter]
+  rw [← h_empty, ← iInter_Iic_eq_iff.mpr notBddBelow_coe, prod_iInter]
   suffices h_neg :
     Tendsto (fun r : ℚ => ρ (s ×ˢ Iic ↑(-r))) atTop (𝓝 (ρ (⋂ r : ℚ, s ×ˢ Iic ↑(-r))))
   · have h_inter_eq : ⋂ r : ℚ, s ×ˢ Iic ↑(-r) = ⋂ r : ℚ, s ×ˢ Iic (r : ℝ) := by
