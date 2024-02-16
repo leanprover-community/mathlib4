@@ -3111,7 +3111,7 @@ import Mathlib.Probability.Kernel.Condexp
 import Mathlib.Probability.Kernel.Disintegration.Basic
 import Mathlib.Probability.Kernel.Disintegration.CDFKernel
 import Mathlib.Probability.Kernel.Disintegration.CondCdf
-import Mathlib.Probability.Kernel.Disintegration.integral
+import Mathlib.Probability.Kernel.Disintegration.Integral
 import Mathlib.Probability.Kernel.Disintegration.KernelCDFBorel
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 import Mathlib.Probability.Kernel.Disintegration.Unique
