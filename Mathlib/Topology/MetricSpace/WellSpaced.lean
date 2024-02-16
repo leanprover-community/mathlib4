@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Newell Jensen. All rights reserved.
+Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson, Newell Jensen
 -/
