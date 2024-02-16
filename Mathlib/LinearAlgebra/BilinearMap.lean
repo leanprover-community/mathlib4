@@ -410,7 +410,6 @@ abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : LinearMap.Bili
     LinearMap.BilinForm R p :=
   f.compl₁₂ p.subtype p.subtype
 
-
 end CommSemiring
 
 section CommRing
