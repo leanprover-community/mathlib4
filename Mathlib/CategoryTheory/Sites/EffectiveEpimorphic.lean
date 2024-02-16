@@ -837,7 +837,7 @@ A functor preserves effective epimorphisms if it maps effective epimorphisms to 
 epimorphisms.
 -/
 class PreservesEffectiveEpis (F : C ⥤ D) : Prop where
-  /-- 
+  /--
   A functor preserves effective epimorphisms if it maps effective
   epimorphisms to effective epimorphisms.
   -/
