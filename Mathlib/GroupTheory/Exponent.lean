@@ -528,8 +528,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
 theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂]
     [FunLike F M₁ M₂] [MonoidHomClass F M₁ M₂]
     {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
-  rw [Monoid.exponent_dvd_iff_forall_pow_eq_one]
-  intro m₂
+  refine Monoid.exponent_dvd_of_forall_pow_eq_one fun m₂ ↦ ?_
   obtain ⟨m₁, rfl⟩ := hf m₂
   rw [← map_pow, pow_exponent_eq_one, map_one]
 
@@ -540,8 +539,7 @@ exponents of the constituent additive monoids."]
 theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, Monoid (M i)] :
     exponent ((i : ι) → M i) = lcm univ (exponent <| M ·) := by
   refine dvd_antisymm ?_ ?_
-  · rw [Monoid.exponent_dvd_iff_forall_pow_eq_one]
-    intro m
+  · refine exponent_dvd_of_forall_pow_eq_one fun m ↦ ?_
     ext i
     rw [Pi.pow_apply, Pi.one_apply, ← orderOf_dvd_iff_pow_eq_one]
     apply dvd_trans (Monoid.order_dvd_exponent (m i))
@@ -556,8 +554,7 @@ of the exponents of the individuaul additive monoids."]
 theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
     exponent (M₁ × M₂) = lcm (exponent M₁) (exponent M₂) := by
   refine dvd_antisymm ?_ (lcm_dvd ?_ ?_)
-  · rw [Monoid.exponent_dvd_iff_forall_pow_eq_one]
-    intro g
+  · refine exponent_dvd_of_forall_pow_eq_one fun g ↦ ?_
     ext1
     · rw [Prod.pow_fst, Prod.fst_one, ← orderOf_dvd_iff_pow_eq_one]
       exact dvd_trans (Monoid.order_dvd_exponent (g.1)) <| dvd_lcm_left _ _
