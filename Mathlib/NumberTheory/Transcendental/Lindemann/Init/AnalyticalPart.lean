@@ -82,7 +82,8 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
     apply Differentiable.comp
     apply @Differentiable.restrictScalars ℝ _ ℂ; exact Polynomial.differentiable _
     exact differentiable_id'.smul_const _
-  · refine' (continuous_const.mul ((continuous_id'.smul continuous_const).neg.cexp.mul _)).continuousOn
+  · refine'
+      (continuous_const.mul ((continuous_id'.smul continuous_const).neg.cexp.mul _)).continuousOn
     change Continuous ((fun y : ℂ => p.eval y) ∘ fun x : ℝ => x • s)
     exact p.continuous_aeval.comp (continuous_id'.smul continuous_const)
 #align integral_f_eq integral_f_eq
