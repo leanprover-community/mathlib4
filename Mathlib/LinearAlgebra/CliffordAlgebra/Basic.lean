@@ -351,6 +351,16 @@ theorem ι_range_map_map (f : Q₁ →qᵢ Q₂) :
   (ι_range_map_lift _ _).trans (LinearMap.range_comp _ _)
 #align clifford_algebra.ι_range_map_map CliffordAlgebra.ι_range_map_map
 
+open Function in
+/-- If `f` is a linear map from `M₁` to `M₂` that preserves the quadratic forms, and if it has
+a linear retraction `g` that also preserves the quadratic forms, then `CliffordAlgebra.map g`
+is a retraction of `CliffordAlgebra.map f`. -/
+lemma leftInverse_map_if {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
+    (g : Q₂ →qᵢ Q₁) (h : LeftInverse g f) : LeftInverse (map g) (map f) := by
+  refine fun x => ?_
+  replace h : g.comp f = QuadraticForm.Isometry.id Q₁ := DFunLike.ext _ _ h
+  rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
+
 /-- If a linear map preserves the quadratic forms and is surjective, then the algebra
 maps it induces between Clifford algebras is also surjective.-/
 lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
