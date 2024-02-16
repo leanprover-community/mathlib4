@@ -5,6 +5,8 @@ Authors: Tomas Skrivan
 -/
 import Std.Data.RBMap.Alter
 
+import Mathlib.Tactic.LiftLets
+
 /-!
 ## `funProp` environment extension that stores all registered coercions from a morphism to a function
 -/
@@ -16,38 +18,14 @@ open Lean Meta
 namespace Meta.FunProp
 
 
-/-- Morphism coercion
-
-Coercion from bundled morphism to function type
--/
-structure MorCoeDecl where
-  /-- function transformation name -/
-  morCoeName : Name
-  /--  -/
-  morId : Nat
-  /--  -/
-  argId : Nat
-  deriving Inhabited, BEq
-
-
 private local instance : Ord Name := ⟨Name.quickCmp⟩
 
 /-- -/
-structure MorCoeDecls where
-  /-- discriminatory tree for function properties -/
-  decls : Std.RBMap Name MorCoeDecl compare := {}
-  deriving Inhabited
-
-/-- -/
-abbrev MorCoeDeclsExt := SimpleScopedEnvExtension MorCoeDecl MorCoeDecls
-
-/-- -/
-initialize morCoeDeclsExt : MorCoeDeclsExt ←
+initialize morCoeDeclsExt : SimpleScopedEnvExtension Name (Std.RBSet Name compare) ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
     initial := {}
-    addEntry := fun d e =>
-      {d with decls := d.decls.insert e.morCoeName e}
+    addEntry := fun d n => d.insert n
   }
 
 
@@ -64,37 +42,19 @@ def addMorCoeDecl (declName : Name) : MetaM Unit := do
   -- coercion needs at least two arguments
   if n < 2 then throwError "invalid morphism coercion, expecting function of at least two arguments"
 
-  -- the last argument should be explicit it is the function argument
-  -- note: morphisms with functions as codomain are not supported
-  if ¬(← xs[n-1]!.fvarId!.getBinderInfo).isExplicit then
-    throwError "invalid morphism coercion, last argumet is expected to be explicit {(← xs[n-1]!.fvarId!.getBinderInfo).isExplicit}"
-  let argId := n-1
 
-  let fs ← ((Array.range (n-1)).zip xs[0:n-1].toArray)
-      |>.filterMapM (fun (i,x) => do
-        if (← x.fvarId!.getBinderInfo).isExplicit then
-          pure (Option.some i)
-        else
-          pure none)
+  let x := xs[n-1]!
+  let f := xs[n-2]!
+  if ¬(← x.fvarId!.getBinderInfo).isExplicit ||
+     ¬(← f.fvarId!.getBinderInfo).isExplicit then
+    throwError "invalid morphism coercion, last two argumets are expected to be explicit"
 
-  -- apart from the last argument there can be only one more explicit argument and that is
-  -- the morphism
-  if fs.size ≠ 1 then
-    throwError "invalid morphism coercion, expecting only two explicit arguments"
-  let morId := fs[0]!
-
-  let decl : MorCoeDecl := {
-    morCoeName := declName
-    morId := morId
-    argId := argId
-  }
-
-  modifyEnv fun env => morCoeDeclsExt.addEntry env decl
+  modifyEnv fun env => morCoeDeclsExt.addEntry env declName
 
   trace[Meta.Tactic.fun_prop.attr]
     "registered new morphism coercion `{declName}`
-     morphism: {← ppExpr xs[morId]!} : {← ppExpr (← inferType xs[morId]!)}
-     argument: {← ppExpr xs[argId]!} : {← ppExpr (← inferType xs[argId]!)}
+     morphism: {← ppExpr f} : {← ppExpr (← inferType f)}
+     argument: {← ppExpr x} : {← ppExpr (← inferType x)}
      return value: {← ppExpr b}"
 
 
@@ -110,3 +70,46 @@ initialize morCoeAttr : Unit ←
     erase := fun _declName =>
       throwError "can't remove `fun_prop_coe` attribute (not implemented yet)"
   }
+
+
+def isMorCoe (name : Name) : CoreM Bool := do
+  return morCoeDeclsExt.getState (← getEnv) |>.contains name
+
+structure MorApp where
+  coe : Expr
+  fn  : Expr
+  arg : Expr
+
+
+def isMorApp? (e : Expr) : CoreM (Option MorApp) := do
+
+  let .app (.app coe f) x := e | return none
+  let .some n := coe.getAppFn.constName? | return none
+
+  if ← isMorCoe n then
+    return .some { coe := coe, fn := f, arg := x }
+  else
+    return none
+
+
+partial def morWhnfPred (e : Expr) (pred : Expr → MetaM Bool) (cfg : WhnfCoreConfig := {}) : MetaM Expr := do
+  whnfEasyCases e fun e => do
+    let e ← whnfCore e cfg
+
+    if let .some ⟨coe,f,x⟩ ← isMorApp? e then
+      let f ← morWhnfPred f pred cfg
+      if cfg.zeta then
+        return (coe.app f).app x
+      else
+        return ← f.liftLets fun xs f' =>
+          mkLambdaFVars xs ((coe.app f').app x)
+
+    if (← pred e) then
+        match (← unfoldDefinition? e) with
+        | some e => morWhnfPred e pred cfg
+        | none   => return e
+    else
+      return e
+
+
+def morWhnf (e : Expr)  (cfg : WhnfCoreConfig := {}) : MetaM Expr := morWhnfPred e (fun _ => return false) cfg
