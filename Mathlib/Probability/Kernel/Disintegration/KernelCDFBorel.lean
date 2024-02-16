@@ -965,9 +965,10 @@ section Iic_Q
 noncomputable
 def mLimsupIic (κ : kernel α (ℝ × ℝ)) (a : α) (t : ℝ) (q : ℚ) : ℝ := MLimsup κ a (Set.Iic q) t
 
-lemma measurable_mLimsupIic (κ : kernel α (ℝ × ℝ)) (q : ℚ) :
-    Measurable (fun p : α × ℝ ↦ mLimsupIic κ p.1 p.2 q) :=
-  measurable_mLimsup κ measurableSet_Iic
+lemma measurable_mLimsupIic (κ : kernel α (ℝ × ℝ)) :
+    Measurable (fun p : α × ℝ ↦ mLimsupIic κ p.1 p.2) := by
+  rw [measurable_pi_iff]
+  exact fun _ ↦ measurable_mLimsup κ measurableSet_Iic
 
 lemma measurable_mLimsupIic_right (κ : kernel α (ℝ × ℝ)) (a : α) (q : ℚ) :
     Measurable (fun t ↦ mLimsupIic κ a t q) :=
@@ -1117,20 +1118,14 @@ lemma isRatStieltjesPoint_mLimsupIic_ae (κ : kernel α (ℝ × ℝ)) [IsFiniteK
     ∀ᵐ t ∂(kernel.fst κ a), IsRatStieltjesPoint (fun p q ↦ mLimsupIic κ p.1 p.2 q) (a, t) := by
   filter_upwards [tendsto_atTop_mLimsupIic κ a, tendsto_atBot_mLimsupIic κ a,
     iInf_rat_gt_mLimsupIic_eq κ a] with t ht_top ht_bot ht_iInf
-  constructor
-  · exact monotone_mLimsupIic κ a t
-  · exact mLimsupIic_nonneg κ a t
-  · exact mLimsupIic_le_one κ a t
-  · exact ht_top
-  · exact ht_bot
-  · exact ht_iInf
+  exact ⟨monotone_mLimsupIic κ a t, ht_top, ht_bot, ht_iInf⟩
 
 lemma isRatKernelCDF_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] :
     IsRatKernelCDF (fun p : α × ℝ ↦ mLimsupIic κ p.1 p.2) κ (kernel.fst κ) where
   measurable := measurable_mLimsupIic κ
   isRatStieltjesPoint_ae := isRatStieltjesPoint_mLimsupIic_ae κ
   integrable := integrable_mLimsupIic κ
-  isCDF := fun _ _ hs _ ↦ set_integral_mLimsupIic _ _ _ hs
+  set_integral := fun _ _ hs _ ↦ set_integral_mLimsupIic _ _ _ hs
 
 noncomputable
 def mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] : α × ℝ → StieltjesFunction :=

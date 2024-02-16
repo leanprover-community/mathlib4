@@ -27,22 +27,22 @@ variable {α β : Type*} [MeasurableSpace α] {mβ : MeasurableSpace β}
   {f : α × β → ℚ → ℝ} {μ : kernel α (β × ℝ)} {ν : kernel α β}
 
 structure IsRatKernelCDF (f : α × β → ℚ → ℝ) (μ : kernel α (β × ℝ)) (ν : kernel α β) : Prop :=
-  (measurable (q : ℚ) : Measurable fun p ↦ f p q)
+  (measurable : Measurable f)
   (isRatStieltjesPoint_ae (a : α) : ∀ᵐ t ∂(ν a), IsRatStieltjesPoint f (a, t))
   (integrable (a : α) (q : ℚ) : Integrable (fun t ↦ f (a, t) q) (ν a))
-  (isCDF (a : α) {s : Set β} (_hs : MeasurableSet s) (q : ℚ) :
+  (set_integral (a : α) {s : Set β} (_hs : MeasurableSet s) (q : ℚ) :
     ∫ t in s, f (a, t) q ∂(ν a) = (μ a (s ×ˢ Iic (q : ℝ))).toReal)
 
 lemma stieltjesOfMeasurableRat_ae_eq (hf : IsRatKernelCDF f μ ν) (a : α) (q : ℚ) :
     (fun t ↦ stieltjesOfMeasurableRat f hf.measurable (a, t) q) =ᵐ[ν a] fun t ↦ f (a, t) q := by
   filter_upwards [hf.isRatStieltjesPoint_ae a] with a ha
-  rw [stieltjesOfMeasurableRat_eq, toCDFLike_of_isRatStieltjesPoint ha]
+  rw [stieltjesOfMeasurableRat_eq, toRatCDF_of_isRatStieltjesPoint ha]
 
 lemma set_integral_stieltjesOfMeasurableRat_rat (hf : IsRatKernelCDF f μ ν) (a : α) (q : ℚ)
     {s : Set β} (hs : MeasurableSet s) :
     ∫ t in s, stieltjesOfMeasurableRat f hf.measurable (a, t) q ∂(ν a)
       = (μ a (s ×ˢ Iic (q : ℝ))).toReal := by
-  rw [set_integral_congr_ae hs (g := fun t ↦ f (a, t) q) ?_, hf.isCDF a hs]
+  rw [set_integral_congr_ae hs (g := fun t ↦ f (a, t) q) ?_, hf.set_integral a hs]
   filter_upwards [stieltjesOfMeasurableRat_ae_eq hf a q] with b hb using fun _ ↦ hb
 
 lemma set_lintegral_stieltjesOfMeasurableRat_rat [IsFiniteKernel μ] (hf : IsRatKernelCDF f μ ν)
@@ -74,7 +74,7 @@ lemma set_lintegral_stieltjesOfMeasurableRat [IsFiniteKernel μ] (hf : IsRatKern
     suffices (μ a (s ×ˢ Iic (q : ℝ))).toReal = 0 by
       rw [ENNReal.toReal_eq_zero_iff] at this
       simpa [measure_ne_top] using this
-    rw [← hf.isCDF a hs q]
+    rw [← hf.set_integral a hs q]
     simp [hρ_zero]
   have h : ∫⁻ t in s, ENNReal.ofReal (stieltjesOfMeasurableRat f hf.measurable (a, t) x) ∂(ν a)
       = ∫⁻ t in s, ⨅ r : { r' : ℚ // x < r' },

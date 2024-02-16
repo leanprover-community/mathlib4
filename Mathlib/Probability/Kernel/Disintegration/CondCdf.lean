@@ -173,6 +173,11 @@ theorem measurable_preCDF {ρ : Measure (α × ℝ)} {r : ℚ} : Measurable (pre
   Measure.measurable_rnDeriv _ _
 #align probability_theory.measurable_pre_cdf ProbabilityTheory.measurable_preCDF
 
+lemma measurable_preCDF' {ρ : Measure (α × ℝ)} :
+    Measurable fun a r ↦ ENNReal.toReal (preCDF ρ r a) := by
+    rw [measurable_pi_iff]
+    exact fun _ ↦ measurable_preCDF.ennreal_toReal
+
 theorem withDensity_preCDF (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
     ρ.fst.withDensity (preCDF ρ r) = ρ.IicSnd r :=
   Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq.mp (Measure.IicSnd_ac_fst ρ r)
@@ -425,10 +430,6 @@ lemma isRatStieltjesPoint_ae (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
       ((h2 r).trans_lt ENNReal.one_lt_top).ne
     rw [ENNReal.toReal_le_toReal (h_ne_top _) (h_ne_top _)]
     exact h1 hrr'
-  · exact fun _ ↦ ENNReal.toReal_nonneg
-  · refine fun r ↦ ENNReal.toReal_le_of_le_ofReal zero_le_one ?_
-    rw [ENNReal.ofReal_one]
-    exact h2 r
   · rw [← ENNReal.one_toReal, ENNReal.tendsto_toReal_iff]
     · exact h3
     · exact fun r ↦ ((h2 r).trans_lt ENNReal.one_lt_top).ne
@@ -455,24 +456,22 @@ theorem integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : �
 lemma isRatKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     IsRatKernelCDF (fun p r ↦ (preCDF ρ r p.2).toReal)
       (kernel.const Unit ρ) (kernel.const Unit ρ.fst) where
-  measurable q := measurable_preCDF.ennreal_toReal.comp measurable_snd
+  measurable := measurable_preCDF'.comp measurable_snd
   isRatStieltjesPoint_ae a := by
     filter_upwards [isRatStieltjesPoint_ae ρ] with a ha
-    exact ⟨ha.mono, ha.nonneg, ha.le_one, ha.tendsto_atTop_one, ha.tendsto_atBot_zero,
-      ha.iInf_rat_gt_eq⟩
+    exact ⟨ha.mono, ha.tendsto_atTop_one, ha.tendsto_atBot_zero, ha.iInf_rat_gt_eq⟩
   integrable _ q := integrable_preCDF ρ q
-  isCDF a s hs q := by rw [kernel.const_apply, kernel.const_apply, set_integral_preCDF_fst _ _ hs,
+  set_integral a s hs q := by rw [kernel.const_apply, kernel.const_apply, set_integral_preCDF_fst _ _ hs,
     Measure.IicSnd_apply _ _ hs]
 
 /-- Conditional cdf of the measure given the value on `α`, as a Stieltjes function. -/
 noncomputable def condCDF (ρ : Measure (α × ℝ)) (a : α) : StieltjesFunction :=
-  stieltjesOfMeasurableRat (fun a r ↦ (preCDF ρ r a).toReal)
-    (fun _ ↦ measurable_preCDF.ennreal_toReal) a
+  stieltjesOfMeasurableRat (fun a r ↦ (preCDF ρ r a).toReal) measurable_preCDF' a
 #align probability_theory.cond_cdf ProbabilityTheory.condCDF
 
 lemma condCDF_eq_stieltjesOfMeasurableRat_unit_prod (ρ : Measure (α × ℝ)) (a : α) :
     condCDF ρ a = stieltjesOfMeasurableRat (fun (p : Unit × α) r ↦ (preCDF ρ r p.2).toReal)
-      (fun _ ↦ measurable_preCDF.ennreal_toReal.comp measurable_snd) ((), a) := by
+      (measurable_preCDF'.comp measurable_snd) ((), a) := by
   ext x
   rw [condCDF, ← stieltjesOfMeasurableRat_unit_prod]
 
@@ -501,7 +500,7 @@ theorem tendsto_condCDF_atTop (ρ : Measure (α × ℝ)) (a : α) :
 theorem condCDF_ae_eq (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (r : ℚ) :
     (fun a ↦ condCDF ρ a r) =ᵐ[ρ.fst] fun a ↦ (preCDF ρ r a).toReal := by
   filter_upwards [isRatStieltjesPoint_ae ρ] with a ha
-  rw [condCDF, stieltjesOfMeasurableRat_eq, toCDFLike_of_isRatStieltjesPoint ha]
+  rw [condCDF, stieltjesOfMeasurableRat_eq, toRatCDF_of_isRatStieltjesPoint ha]
 #align probability_theory.cond_cdf_ae_eq ProbabilityTheory.condCDF_ae_eq
 
 theorem ofReal_condCDF_ae_eq (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (r : ℚ) :
