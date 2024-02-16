@@ -201,8 +201,6 @@ theorem order_dvd_exponent (g : G) : orderOf g ∣ exponent G :=
 theorem orderOf_le_exponent (h : ExponentExists G) (g : G) : orderOf g ≤ exponent G :=
   Nat.le_of_dvd h.exponent_pos (order_dvd_exponent g)
 
-variable (G)
-
 @[to_additive]
 theorem exponent_dvd_iff_forall_pow_eq_one {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, g ^ n = 1 := by
   rcases n.eq_zero_or_pos with (rfl | hpos)
@@ -222,16 +220,15 @@ theorem exponent_dvd_iff_forall_pow_eq_one {n : ℕ} : exponent G ∣ n ↔ ∀ 
     exact h₂.not_le h₃
 
 @[to_additive]
-theorem exponent_dvd_of_forall_pow_eq_one (n : ℕ) (hG : ∀ g : G, g ^ n = 1) :
-    exponent G ∣ n :=
-  (exponent_dvd_iff_forall_pow_eq_one G).mpr hG
+alias ⟨_, exponent_dvd_of_forall_pow_eq_one⟩ := exponent_dvd_iff_forall_pow_eq_one
 #align monoid.exponent_dvd_of_forall_pow_eq_one Monoid.exponent_dvd_of_forall_pow_eq_one
 #align add_monoid.exponent_dvd_of_forall_nsmul_eq_zero AddMonoid.exponent_dvd_of_forall_nsmul_eq_zero
 
-variable {G} in
 @[to_additive]
 theorem exponent_dvd {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, orderOf g ∣ n := by
   simp_rw [exponent_dvd_iff_forall_pow_eq_one, orderOf_dvd_iff_pow_eq_one]
+
+variable (G)
 
 @[to_additive (attr := deprecated)]
 theorem exponent_dvd_of_forall_orderOf_dvd (n : ℕ) (h : ∀ g : G, orderOf g ∣ n) : exponent G ∣ n :=
@@ -506,7 +503,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
 theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
     Nat.card G ∣ n ^ Group.rank G :=
   (card_dvd_exponent_pow_rank G).trans
-    (pow_dvd_pow_of_dvd ((Monoid.exponent_dvd_iff_forall_pow_eq_one G).mpr hG) (Group.rank G))
+    (pow_dvd_pow_of_dvd (Monoid.exponent_dvd_of_forall_pow_eq_one hG) (Group.rank G))
 #align card_dvd_exponent_pow_rank' card_dvd_exponent_pow_rank'
 #align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
 
@@ -588,7 +585,7 @@ lemma orderOf_eq_two_iff (hG : Monoid.exponent G = 2) {x : G} :
 theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣ 2) (a b : G) :
     Commute a b := by
   simp_rw [orderOf_dvd_iff_pow_eq_one] at h
-  rw [commute_def, ← mul_right_inj a, ← mul_left_inj b]
+  rw [commute_iff_eq, ← mul_right_inj a, ← mul_left_inj b]
   calc
     a * (a * b) * b = a ^ 2 * b ^ 2 := by simp only [pow_two]; group
     _ = 1 := by rw [h, h, mul_one]

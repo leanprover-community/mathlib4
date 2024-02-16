@@ -146,7 +146,7 @@ theorem IsTorsion.exponentExists (tG : IsTorsion G)
 /-- Finite groups are torsion groups. -/
 @[to_additive is_add_torsion_of_finite "Finite additive groups are additive torsion groups."]
 theorem isTorsion_of_finite [Finite G] : IsTorsion G :=
-  ExponentExists.isTorsion <| exponent_ne_zero.mp exponent_ne_zero_of_finite
+  ExponentExists.isTorsion .of_finite
 #align is_torsion_of_finite isTorsion_of_finite
 #align is_add_torsion_of_finite is_add_torsion_of_finite
 
