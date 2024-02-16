@@ -1,10 +1,26 @@
+/-
+Copyright (c) 2023 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.Positivity.Core
+
+/-!
+# Positivity extensions for finsets
+
+This file provides a few `positivity` extensions that cannot be in either the finset files (because
+they don't know about ordered fields) or in `Tactic.Positivity.Basic` (because it doesn't want to
+know about finiteness).
+-/
 
 open Finset
 namespace Mathlib.Meta.Positivity
 open Qq Lean Meta
 
+/-- Extension for `Finset.card`. `s.card` is positive if `s` is nonempty.
+
+It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.card _]
 def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
@@ -14,6 +30,7 @@ def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
     return .positive q(Finset.Nonempty.card_pos $ps)
   | _ => throwError "not Finset.card"
 
+/-- Extension for `Fintype.card`. `Fintype.card α` is positive if `α` is nonempty. -/
 @[positivity Fintype.card _]
 def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
@@ -24,7 +41,9 @@ def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
   | _ => throwError "not Fintype.card"
 
 example {α : Type*} {s : Finset α} (hs : s.Nonempty) : 0 < s.card := by positivity
+example {α : Type*} {s : Finset α} : 0 ≤ s.card := by positivity
 example {α : Type*} [Fintype α] [Nonempty α] : 0 < (univ : Finset α).card := by positivity
 example {α : Type*} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
+example {α : Type*} [Fintype α] : 0 ≤ Fintype.card α := by positivity
 
 end Mathlib.Meta.Positivity
