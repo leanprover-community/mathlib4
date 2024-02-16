@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Valuation.ValuationSubring
 
 #align_import topology.algebra.valuation from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -167,5 +167,20 @@ theorem cauchy_iff {F : Filter R} : Cauchy F ↔
   · rintro h - ⟨γ, rfl⟩
     exact h γ
 #align valued.cauchy_iff Valued.cauchy_iff
+
+variable (R)
+
+/-- The unit ball of a valued ring is open. -/
+theorem integer_isOpen : IsOpen (_i.v.integer : Set R) := by
+  rw [isOpen_iff_mem_nhds]
+  intro x hx
+  rw [mem_nhds]
+  exact ⟨1,
+    fun y hy => (sub_add_cancel y x).symm ▸ le_trans (map_add _ _ _) (max_le (le_of_lt hy) hx)⟩
+
+/-- The valuation subring of a valued field is open. -/
+theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :
+    IsOpen (hv.v.valuationSubring : Set K) :=
+  integer_isOpen K
 
 end Valued
