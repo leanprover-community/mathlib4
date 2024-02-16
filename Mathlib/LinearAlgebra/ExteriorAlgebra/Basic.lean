@@ -417,14 +417,13 @@ theorem ι_range_map_map (f : M →ₗ[R] N) :
     Submodule.map (ι R) (LinearMap.range f) :=
   CliffordAlgebra.ι_range_map_map _
 
-open TrivSqZeroExt in
 theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Module Rᵐᵒᵖ N]
     [IsCentralScalar R N] (f : M →ₗ[R] N) :
-    toTrivSqZeroExt.comp (map f) = (map' f).comp toTrivSqZeroExt := by
+    toTrivSqZeroExt.comp (map f) = (TrivSqZeroExt.map f).comp toTrivSqZeroExt := by
   apply hom_ext
   apply LinearMap.ext
   intro x
-  unfold map' map
+  unfold TrivSqZeroExt.map map
   simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
     AlgHom.toLinearMap_apply, CliffordAlgebra.map_apply_ι, toTrivSqZeroExt_ι,
     TrivSqZeroExt.lift_apply_inr, TrivSqZeroExt.inrHom_apply]
@@ -438,7 +437,7 @@ theorem ιInv_comp_map (f : M →ₗ[R] N) :
   haveI : IsCentralScalar R N := ⟨fun r m => rfl⟩
   unfold ιInv
   conv_lhs => rw [LinearMap.comp_assoc, ← AlgHom.comp_toLinearMap, toTrivSqZeroExt_comp_map,
-                AlgHom.comp_toLinearMap, ← LinearMap.comp_assoc, TrivSqZeroExt.snd_comp_map']
+                AlgHom.comp_toLinearMap, ← LinearMap.comp_assoc, TrivSqZeroExt.snd_comp_map]
 
 open Function in
 /-- For a linear map `f` from `M` to `N`,
@@ -458,7 +457,8 @@ lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f 
     Function.Injective (map f) :=
   let ⟨_, hgf⟩ := hf; (leftInverse_map_iff.mpr (DFunLike.congr_fun hgf)).injective
 
-/-- A surjective morphism of modules induces a surjective morphism of exterior algebras. -/
+/-- A morphism of modules is surjective if and only the morphism of exterior algebras that it
+induces is surjective. -/
 lemma map_surjective_iff {f : M →ₗ[R] N} :
     Function.Surjective f ↔ Function.Surjective (map f) := by
   refine ⟨fun h ↦ CliffordAlgebra.map_surjective _ h, fun h y ↦ ?_⟩
