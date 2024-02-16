@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
 
 -- move this
-lemma List.TFAE.not_iff {l : List (Prop)} :
+lemma List.TFAE.not_iff {l : List Prop} :
     TFAE (l.map Not) ↔ TFAE l := by
   simp only [TFAE, mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, not_iff_not]
 
@@ -46,7 +46,7 @@ lemma Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
     p.natTrailingDegree = 0 :=
   le_antisymm (natTrailingDegree_le_of_ne_zero h) zero_le'
 
-lemma Polynomial.eq_X_pow_of_monic_of_natDegree_eq_natTrailingDegree
+lemma Polynomial.Monic.eq_X_pow_of_of_natDegree_eq_natTrailingDegree
     {R : Type*} [CommRing R] {p : Polynomial R}
     (h₁ : p.Monic) (h₂ : p.natDegree = p.natTrailingDegree) :
     p = X ^ p.natDegree := by
@@ -126,7 +126,7 @@ lemma charpoly_nilpotent_tfae :
     -- extract `charpoly_natDegree`
     have : natDegree (charpoly φ) = finrank K M := by
       erw [Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
-    erw [Polynomial.eq_X_pow_of_monic_of_natDegree_eq_natTrailingDegree (charpoly_monic _), this]
+    erw [Polynomial.Monic.eq_X_pow_of_of_natDegree_eq_natTrailingDegree (charpoly_monic _), this]
     rw [h, this]
   tfae_finish
 
