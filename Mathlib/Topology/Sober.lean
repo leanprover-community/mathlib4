@@ -236,7 +236,7 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
   rw [← image_singleton, ← closure_image_closure continuous_subtype_val, H.genericPoint_spec.def]
   refine' (subset_closure_inter_of_isPreirreducible_of_isOpen h.2 (hS ⟨U, hU⟩) ⟨x, hx, hU'⟩).trans
     (closure_mono _)
-  rw [← Subtype.image_preimage_coe]
+  rw [inter_comm t, ← Subtype.image_preimage_coe]
   exact Set.image_subset _ subset_closure
 #align quasi_sober_of_open_cover quasiSober_of_open_cover
 

@@ -36,6 +36,10 @@ theorem Iic_disjoint_Ioi (h : a ≤ b) : Disjoint (Iic a) (Ioi b) :=
 #align set.Iic_disjoint_Ioi Set.Iic_disjoint_Ioi
 
 @[simp]
+theorem Iio_disjoint_Ici (h : a ≤ b) : Disjoint (Iio a) (Ici b) :=
+  disjoint_left.mpr fun _ ha hb => (h.trans_lt' ha).not_le hb
+
+@[simp]
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   (Iic_disjoint_Ioi h).mono le_rfl fun _ => And.left
 #align set.Iic_disjoint_Ioc Set.Iic_disjoint_Ioc
