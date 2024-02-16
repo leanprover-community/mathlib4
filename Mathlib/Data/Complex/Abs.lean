@@ -124,7 +124,7 @@ theorem abs_two : Complex.abs 2 = 2 := abs_ofNat 2
 @[simp]
 theorem range_abs : range Complex.abs = Ici 0 :=
   Subset.antisymm
-    (by simp only [range_subset_iff, Ici, mem_setOf_eq, map_nonneg, forall_const])
+    (by simp only [range_subset_iff, Ici, mem_setOf_eq, apply_nonneg, forall_const])
     (fun x hx => ⟨x, Complex.abs_of_nonneg hx⟩)
 #align complex.range_abs Complex.range_abs
 
@@ -237,10 +237,11 @@ theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
     div_le_iff (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
 #align complex.abs_im_div_abs_le_one Complex.abs_im_div_abs_le_one
 
-@[simp, norm_cast]
-theorem int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := by
-  rw [← ofReal_int_cast, abs_ofReal]
-#align complex.int_cast_abs Complex.int_cast_abs
+@[simp, norm_cast] lemma abs_intCast (n : ℤ) : abs n = |↑n| := by rw [← ofReal_int_cast, abs_ofReal]
+#align complex.int_cast_abs Complex.abs_intCast
+
+-- 2024-02-14
+@[deprecated] lemma int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := (abs_intCast _).symm
 
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
   simp [abs, sq, abs_def, Real.mul_self_sqrt (normSq_nonneg _)]
