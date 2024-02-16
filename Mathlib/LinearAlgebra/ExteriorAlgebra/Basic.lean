@@ -417,13 +417,18 @@ theorem ι_range_map_map (f : M →ₗ[R] N) :
     Submodule.map (ι R) (LinearMap.range f) :=
   CliffordAlgebra.ι_range_map_map _
 
-/-- A morphism of modules that is injective and admits a linear section induces an injective
-morphism of exterior algebras.-/
+open Function in
+/-- If a linear map `f` from `M` to `N` admits a linear retraction `g : M →ₗ[R] N`, then
+`ExteriorAlgebra.map g` is a retraction of `ExteriorAlgebra.map f`.-/
+lemma map_leftInverse_of_leftInverse {f : M →ₗ[R] N} {g : N →ₗ[R] M}
+    (h : g.comp f = LinearMap.id) : LeftInverse (map g) (map f) :=
+  fun _ ↦ by rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
+
+/-- A morphism of modules that admits a linear retraction induces an injective morphism of
+exterior algebras.-/
 lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f = LinearMap.id) :
     Function.Injective (map f) :=
-  let ⟨g, hgf⟩ := hf
-  Function.RightInverse.injective (g := map g) (fun _ ↦ by
-    rw [← AlgHom.comp_apply, map_comp_map, hgf, map_id]; simp only [AlgHom.coe_id, id_eq])
+  let ⟨_, hgf⟩ := hf; Function.LeftInverse.injective (map_leftInverse_of_leftInverse hgf)
 
 /-- A surjective morphism of modules induces a surjective morphism of exterior algebras.-/
 lemma map_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
