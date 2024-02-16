@@ -21,7 +21,7 @@ equalities.
 
 -/
 
-set_option autoImplicit true
+universe u
 
 /-- Define a `Group` structure on a Type by proving `∀ a, 1 * a = a` and
 `∀ a, a⁻¹ * a = 1`.

@@ -63,10 +63,10 @@ theorem coe_projIic (b x : α) : (projIic b x : α) = min b x := rfl
 theorem coe_projIcc (a b : α) (h : a ≤ b) (x : α) : (projIcc a b h x : α) = max a (min b x) := rfl
 #align set.coe_proj_Icc Set.coe_projIcc
 
-theorem projIci_of_le (hx : x ≤ a) : projIci a x = ⟨a, le_rfl⟩ := Subtype.ext $ max_eq_left hx
+theorem projIci_of_le (hx : x ≤ a) : projIci a x = ⟨a, le_rfl⟩ := Subtype.ext <| max_eq_left hx
 #align set.proj_Ici_of_le Set.projIci_of_le
 
-theorem projIic_of_le (hx : b ≤ x) : projIic b x = ⟨b, le_rfl⟩ := Subtype.ext $ min_eq_left hx
+theorem projIic_of_le (hx : b ≤ x) : projIic b x = ⟨b, le_rfl⟩ := Subtype.ext <| min_eq_left hx
 #align set.proj_Iic_of_le Set.projIic_of_le
 
 theorem projIcc_of_le_left (hx : x ≤ a) : projIcc a b h x = ⟨a, left_mem_Icc.2 h⟩ := by
@@ -163,7 +163,7 @@ theorem range_projIic : range (projIic a) = univ := projIic_surjective.range_eq
 
 @[simp]
 theorem range_projIcc : range (projIcc a b h) = univ :=
-  Function.Surjective.range_eq (projIcc_surjective h)
+  (projIcc_surjective h).range_eq
 #align set.range_proj_Icc Set.range_projIcc
 
 theorem monotone_projIci : Monotone (projIci a) := fun _ _ => max_le_max le_rfl
@@ -211,9 +211,9 @@ theorem IicExtend_apply (f : Iic b → β) (x : α) : IicExtend f x = f ⟨min b
   rfl
 #align set.Iic_extend_apply Set.IicExtend_apply
 
-theorem iccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
+theorem IccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
     IccExtend h f x = f ⟨max a (min b x), le_max_left _ _, max_le h (min_le_left _ _)⟩ := rfl
-#align set.Icc_extend_apply Set.iccExtend_apply
+#align set.Icc_extend_apply Set.IccExtend_apply
 
 @[simp]
 theorem range_IciExtend (f : Ici a → β) : range (IciExtend f) = range f := by
@@ -231,11 +231,11 @@ theorem IccExtend_range (f : Icc a b → β) : range (IccExtend h f) = range f :
 #align set.Icc_extend_range Set.IccExtend_range
 
 theorem IciExtend_of_le (f : Ici a → β) (hx : x ≤ a) : IciExtend f x = f ⟨a, le_rfl⟩ :=
-  congr_arg f $ projIci_of_le hx
+  congr_arg f <| projIci_of_le hx
 #align set.Ici_extend_of_le Set.IciExtend_of_le
 
 theorem IicExtend_of_le (f : Iic b → β) (hx : b ≤ x) : IicExtend f x = f ⟨b, le_rfl⟩ :=
-  congr_arg f $ projIic_of_le hx
+  congr_arg f <| projIic_of_le hx
 #align set.Iic_extend_of_le Set.IicExtend_of_le
 
 theorem IccExtend_of_le_left (f : Icc a b → β) (hx : x ≤ a) :
@@ -245,7 +245,7 @@ theorem IccExtend_of_le_left (f : Icc a b → β) (hx : x ≤ a) :
 
 theorem IccExtend_of_right_le (f : Icc a b → β) (hx : b ≤ x) :
     IccExtend h f x = f ⟨b, right_mem_Icc.2 h⟩ :=
-  congr_arg f $ projIcc_of_right_le h hx
+  congr_arg f <| projIcc_of_right_le h hx
 #align set.Icc_extend_of_right_le Set.IccExtend_of_right_le
 
 @[simp]
@@ -269,11 +269,11 @@ theorem IccExtend_right (f : Icc a b → β) : IccExtend h f b = f ⟨b, right_m
 #align set.Icc_extend_right Set.IccExtend_right
 
 theorem IciExtend_of_mem (f : Ici a → β) (hx : x ∈ Ici a) : IciExtend f x = f ⟨x, hx⟩ :=
-  congr_arg f $ projIci_of_mem hx
+  congr_arg f <| projIci_of_mem hx
 #align set.Ici_extend_of_mem Set.IciExtend_of_mem
 
 theorem IicExtend_of_mem (f : Iic b → β) (hx : x ∈ Iic b) : IicExtend f x = f ⟨x, hx⟩ :=
-  congr_arg f $ projIic_of_mem hx
+  congr_arg f <| projIic_of_mem hx
 #align set.Iic_extend_of_mem Set.IicExtend_of_mem
 
 theorem IccExtend_of_mem (f : Icc a b → β) (hx : x ∈ Icc a b) : IccExtend h f x = f ⟨x, hx⟩ :=
@@ -282,12 +282,12 @@ theorem IccExtend_of_mem (f : Icc a b → β) (hx : x ∈ Icc a b) : IccExtend h
 
 @[simp]
 theorem IciExtend_coe (f : Ici a → β) (x : Ici a) : IciExtend f x = f x :=
-  congr_arg f $ projIci_coe x
+  congr_arg f <| projIci_coe x
 #align set.Ici_extend_coe Set.IciExtend_coe
 
 @[simp]
 theorem IicExtend_coe (f : Iic b → β) (x : Iic b) : IicExtend f x = f x :=
-  congr_arg f $ projIic_coe x
+  congr_arg f <| projIic_coe x
 #align set.Iic_extend_coe Set.IicExtend_coe
 
 @[simp]
@@ -302,7 +302,7 @@ theorem IccExtend_eq_self (f : α → β) (ha : ∀ x < a, f x = f a) (hb : ∀ 
   ext x
   cases' lt_or_le x a with hxa hax
   · simp [IccExtend_of_le_left _ _ hxa.le, ha x hxa]
-  · cases' le_or_lt x b with hxb hbx
+  · rcases le_or_lt x b with hxb | hbx
     · lift x to Icc a b using ⟨hax, hxb⟩
       rw [IccExtend_val, comp_apply]
     · simp [IccExtend_of_right_le _ _ hbx.le, hb x hbx]

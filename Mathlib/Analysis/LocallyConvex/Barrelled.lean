@@ -173,7 +173,7 @@ protected theorem banach_steinhaus (H : ∀ k x, BddAbove (range fun i ↦ q k (
 domain is barrelled, the Banach-Steinhaus theorem is used to guarantee that the limit map
 is a *continuous* linear map as well.
 
-This actually works for any *countably generated* filter instead of `AtTop : Filter ℕ`,
+This actually works for any *countably generated* filter instead of `atTop : Filter ℕ`,
 but the proof ultimately goes back to sequences. -/
 protected def continuousLinearMapOfTendsto [T2Space F] {l : Filter α} [l.IsCountablyGenerated]
     [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F} (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
@@ -182,11 +182,11 @@ protected def continuousLinearMapOfTendsto [T2Space F] {l : Filter α} [l.IsCoun
   cont := by
     -- Since the filter `l` is countably generated and nontrivial, we can find a sequence
     -- `u : ℕ → α` that tends to `l`. By considering `g ∘ u` instead of `g`, we can thus assume
-    -- that `α = ℕ` and `l = AtTop`
+    -- that `α = ℕ` and `l = atTop`
     rcases l.exists_seq_tendsto with ⟨u, hu⟩
     -- We claim that the limit is continuous because it's a limit of an equicontinuous family.
     -- By the Banach-Steinhaus theorem, this equicontinuity will follow from pointwise boundedness.
-    refine (h.comp hu).continuous_of_equicontinuous_at (hq.banach_steinhaus ?_).equicontinuous
+    refine (h.comp hu).continuous_of_equicontinuous (hq.banach_steinhaus ?_).equicontinuous
     -- For `k` and `x` fixed, we need to show that `(i : ℕ) ↦ q k (g i x)` is bounded.
     intro k x
     -- This follows from the fact that this sequences converges (to `q k (f x)`) by hypothesis and

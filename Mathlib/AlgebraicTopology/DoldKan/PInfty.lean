@@ -7,7 +7,7 @@ import Mathlib.AlgebraicTopology.DoldKan.Projections
 import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
-#align_import algebraic_topology.dold_kan.p_infty from "leanprover-community/mathlib"@"31019c2504b17f85af7e0577585fad996935a317"
+#align_import algebraic_topology.dold_kan.p_infty from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 

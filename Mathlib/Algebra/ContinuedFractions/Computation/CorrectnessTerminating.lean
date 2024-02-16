@@ -8,6 +8,7 @@ import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
 
 #align_import algebra.continued_fractions.computation.correctness_terminating from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 

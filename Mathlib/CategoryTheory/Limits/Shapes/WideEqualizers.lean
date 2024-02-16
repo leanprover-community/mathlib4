@@ -75,7 +75,7 @@ instance : Inhabited (WalkingParallelFamily J) :=
 inductive WalkingParallelFamily.Hom (J : Type w) :
   WalkingParallelFamily J → WalkingParallelFamily J → Type w
   | id : ∀ X : WalkingParallelFamily.{w} J, WalkingParallelFamily.Hom J X X
-  | line : ∀ _ : J, WalkingParallelFamily.Hom J zero one
+  | line : J → WalkingParallelFamily.Hom J zero one
   deriving DecidableEq
 #align
   category_theory.limits.walking_parallel_family.hom
@@ -345,7 +345,7 @@ def Trident.IsLimit.mk [Nonempty J] (t : Trident f) (lift : ∀ s : Trident f, s
     only asks for a proof of facts that carry any mathematical content, and allows access to the
     same `s` for all parts. -/
 def Trident.IsLimit.mk' [Nonempty J] (t : Trident f)
-  (create : ∀ s : Trident f, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) :
+    (create : ∀ s : Trident f, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) :
     IsLimit t :=
   Trident.IsLimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
     (create s).2.2 (w zero)
@@ -511,7 +511,7 @@ theorem Cotrident.ofCocone_ι {F : WalkingParallelFamily J ⥤ C} (t : Cocone F)
 @[simps]
 def Trident.mkHom [Nonempty J] {s t : Trident f} (k : s.pt ⟶ t.pt)
     (w : k ≫ t.ι = s.ι := by aesop_cat) : s ⟶ t where
-  Hom := k
+  hom := k
   w := by
     rintro ⟨_ | _⟩
     · exact w
@@ -534,7 +534,7 @@ def Trident.ext [Nonempty J] {s t : Trident f} (i : s.pt ≅ t.pt)
 @[simps]
 def Cotrident.mkHom [Nonempty J] {s t : Cotrident f} (k : s.pt ⟶ t.pt)
     (w : s.π ≫ k = t.π := by aesop_cat) : s ⟶ t where
-  Hom := k
+  hom := k
   w := by
     rintro ⟨_ | _⟩
     · simpa using f (Classical.arbitrary J) ≫= w
@@ -546,7 +546,7 @@ it suffices to give an isomorphism between the cocone points
 and check that it commutes with the `π` morphisms.
 -/
 def Cotrident.ext [Nonempty J] {s t : Cotrident f} (i : s.pt ≅ t.pt)
-   (w : s.π ≫ i.hom = t.π := by aesop_cat) : s ≅ t where
+    (w : s.π ≫ i.hom = t.π := by aesop_cat) : s ≅ t where
   hom := Cotrident.mkHom i.hom w
   inv := Cotrident.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
 #align category_theory.limits.cotrident.ext CategoryTheory.Limits.Cotrident.ext
@@ -620,7 +620,7 @@ abbrev wideEqualizer.lift [Nonempty J] {W : C} (k : W ⟶ X) (h : ∀ j₁ j₂,
 
 @[reassoc (attr := simp 1100)]
 theorem wideEqualizer.lift_ι [Nonempty J] {W : C} (k : W ⟶ X)
-  (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) :
+    (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) :
     wideEqualizer.lift k h ≫ wideEqualizer.ι f = k :=
   limit.lift_π _ _
 #align category_theory.limits.wide_equalizer.lift_ι CategoryTheory.Limits.wideEqualizer.lift_ι
@@ -734,7 +734,7 @@ abbrev wideCoequalizer.desc [Nonempty J] {W : C} (k : Y ⟶ W) (h : ∀ j₁ j�
 
 @[reassoc (attr := simp 1100)]
 theorem wideCoequalizer.π_desc [Nonempty J] {W : C} (k : Y ⟶ W)
-  (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) :
+    (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) :
     wideCoequalizer.π f ≫ wideCoequalizer.desc k h = k :=
   colimit.ι_desc _ _
 #align category_theory.limits.wide_coequalizer.π_desc CategoryTheory.Limits.wideCoequalizer.π_desc

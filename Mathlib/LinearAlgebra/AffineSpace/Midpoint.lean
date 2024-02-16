@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 
 #align_import linear_algebra.affine_space.midpoint from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"

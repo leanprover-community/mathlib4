@@ -88,7 +88,7 @@ theorem isLUB_hasSum (h : ∀ i, 0 ≤ f i) (hf : HasSum f a) :
 
 theorem le_hasSum (hf : HasSum f a) (i : ι) (hb : ∀ j, j ≠ i → 0 ≤ f j) : f i ≤ a :=
   calc
-    f i = ∑ i in {i}, f i := Finset.sum_singleton.symm
+    f i = ∑ i in {i}, f i := by rw [sum_singleton]
     _ ≤ a := sum_le_hasSum _ (by simpa) hf
 #align le_has_sum le_hasSum
 
@@ -190,10 +190,10 @@ theorem tsum_pos (hsum : Summable g) (hg : ∀ i, 0 ≤ g i) (i : ι) (hi : 0 < 
 
 end OrderedAddCommGroup
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid α] [TopologicalSpace α] [OrderClosedTopology α] {f : ι → α}
-  {a : α}
+variable [CanonicallyOrderedAddCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α]
+  {f : ι → α} {a : α}
 
 theorem le_hasSum' (hf : HasSum f a) (i : ι) : f i ≤ a :=
   le_hasSum hf i fun _ _ => zero_le _
@@ -219,7 +219,7 @@ theorem isLUB_hasSum' (hf : HasSum f a) : IsLUB (Set.range fun s => ∑ i in s, 
   isLUB_of_tendsto_atTop (Finset.sum_mono_set f) hf
 #align is_lub_has_sum' isLUB_hasSum'
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 section LinearOrder
 
@@ -238,8 +238,9 @@ theorem hasSum_of_isLUB_of_nonneg [LinearOrderedAddCommMonoid α] [TopologicalSp
   tendsto_atTop_isLUB (Finset.sum_mono_set_of_nonneg h) hf
 #align has_sum_of_is_lub_of_nonneg hasSum_of_isLUB_of_nonneg
 
-theorem hasSum_of_isLUB [CanonicallyLinearOrderedAddMonoid α] [TopologicalSpace α] [OrderTopology α]
-    {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s => ∑ i in s, f i) b) : HasSum f b :=
+theorem hasSum_of_isLUB [CanonicallyLinearOrderedAddCommMonoid α] [TopologicalSpace α]
+    [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s => ∑ i in s, f i) b) :
+    HasSum f b :=
   tendsto_atTop_isLUB (Finset.sum_mono_set f) hf
 #align has_sum_of_is_lub hasSum_of_isLUB
 
@@ -255,7 +256,7 @@ theorem summable_abs_iff [LinearOrderedAddCommGroup α] [UniformSpace α] [Unifo
   _ ↔ Summable f := by simp only [summable_neg_iff, summable_subtype_and_compl]
 #align summable_abs_iff summable_abs_iff
 
-alias summable_abs_iff ↔ Summable.of_abs Summable.abs
+alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 #align summable.of_abs Summable.of_abs
 #align summable.abs Summable.abs
 
@@ -266,7 +267,7 @@ theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpac
     simpa using sum_le_hasSum s (fun a _ => hb.le) hf.hasSum
   obtain ⟨n, hn⟩ := Archimedean.arch (∑' _ : ι, b) hb
   have : ∀ s : Finset ι, s.card ≤ n := fun s => by
-    simpa [nsmul_le_nsmul_iff hb] using (H s).trans hn
+    simpa [nsmul_le_nsmul_iff_left hb] using (H s).trans hn
   have : Fintype ι := fintypeOfFinsetCardLe n this
   infer_instance
 

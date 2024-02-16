@@ -3,8 +3,9 @@ import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Init.Function
 import Mathlib.Data.Fintype.Card
--- import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Basic
 
+private axiom test_sorry : ∀ {α}, α
 
 set_option autoImplicit true
 open Function
@@ -14,7 +15,7 @@ example (f : ℕ → ℕ) (h : f x = f y) : x = y := by
   · guard_target = f x = f y
     assumption
   · guard_target = Injective f
-    sorry
+    exact test_sorry
 
 example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (f n)) : x = y := by
   apply_fun f ?foo
@@ -26,7 +27,7 @@ example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : ∀ n, Injective (
 -- Uses `refine`-style rules for placeholders:
 example (f : ℕ → ℕ → ℕ) : x = y := by
   fail_if_success apply_fun f _
-  sorry
+  exact test_sorry
 
 example (f : ℕ → ℕ → ℕ) (h : f 1 x = f 1 y) (hinj : Injective (f 1)) : x = y := by
   apply_fun f _ using hinj
@@ -54,7 +55,7 @@ example (f : ℕ → ℕ → ℕ) (h : f 1 x ≠ f 1 y) : x ≠ y := by
   case foo => exact 1
   assumption
 
-example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective $ g ∘ f) : Injective f := by
+example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) : Injective f := by
   intros x x' h
   apply_fun g at h
   exact H h
@@ -74,8 +75,6 @@ example (a b : Int) (h : a = b) : a + 1 = b + 1 := by
 example (P : Nat → Type) (Q : (n : Nat) -> P n) (a b : Nat) (h : a = b) : True := by
   fail_if_success apply_fun Q at h
   trivial
-
--- TODO restore and port these tests from mathlib3
 
 example (f : ℕ → ℕ) (a b : ℕ) (monof : Monotone f) (h : a ≤ b) : f a ≤ f b := by
   apply_fun f at h using monof
@@ -122,6 +121,26 @@ example (a b : List α) (P : a = b) : True := by
   apply_fun List.length at P
   trivial
 
+example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h -- TODO shouldn't need type ascription here
+  · exact h
+  · exact Monotone.add_const monotone_id 1
+
+example (a b : ℕ) (h : a < b) : a + 1 < b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h
+  · exact h
+  · exact StrictMono.add_const strictMono_id 1
+
+example (a b : ℕ) (h : a < b) : a + 1 < b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h using StrictMono.add_const strictMono_id 1
+  · exact h
+
+example (a b : ℕ) (h : a ≠ b) : a + 1 ≠ b + 1 := by
+  apply_fun (· + 1 : ℕ → ℕ) at h
+  · exact h
+  · exact add_left_injective 1
+
+-- TODO
 -- -- monotonicity will be proved by `mono` in the next example
 -- example (a b : ℕ) (h : a ≤ b) : a + 1 ≤ b + 1 :=
 -- begin
@@ -129,40 +148,31 @@ example (a b : List α) (P : a = b) : True := by
 --   exact h
 -- end
 
--- example {n : Type} [fintype n] {X : Type} [semiring X]
---   (f : matrix n n X → matrix n n X) (A B : matrix n n X) (h : A * B = 0) : f (A * B) = f 0 :=
--- begin
---   apply_fun f at h,
---   -- check that our β-reduction didn't mess things up:
---   -- (previously `apply_fun` was producing `f (A.mul B) = f 0`)
---   guard_hyp' h : f (A * B) = f 0,
---   exact h,
--- end
+example {n : Type} [Fintype n] {X : Type} [Semiring X]
+  (f : Matrix n n X → Matrix n n X) (A B : Matrix n n X) (h : A * B = 0) : f (A * B) = f 0 := by
+  apply_fun f at h
+  -- check that our β-reduction didn't mess things up:
+  -- (previously `apply_fun` was producing `f (A.mul B) = f 0`)
+  guard_hyp h :ₛ f (A * B) = f 0
+  exact h
 
--- -- Verify that `apply_fun` works with `fin.cast_succ`, even though it has an implicit argument.
--- example (n : ℕ) (a b : fin n) (H : a ≤ b) : a.cast_succ ≤ b.cast_succ :=
--- begin
---   apply_fun fin.cast_succ at H,
---   exact H,
--- end
+-- TODO
+-- -- Verify that `apply_fun` works with `Fin.castSucc`, even though it has an implicit argument.
+-- example (n : ℕ) (a b : Fin n) (H : a ≤ b) : a.castSucc ≤ b.castSucc :=
+--   apply_fun Fin.castSucc at H
+--   exact H
 
--- example (n m : ℕ) (f : ℕ ≃ ℕ) (h : f n = f m) : n = m :=
--- begin
---   apply_fun f,
---   assumption,
--- end
+example (n m : ℕ) (f : ℕ ≃ ℕ) (h : f n = f m) : n = m := by
+  apply_fun f
+  assumption
 
--- example (n m : ℕ) (f : ℕ ≃o ℕ) (h : f n ≤ f m) : n ≤ m :=
--- begin
---   apply_fun f,
---   assumption,
--- end
+example (n m : ℕ) (f : ℕ ≃o ℕ) (h : f n ≤ f m) : n ≤ m := by
+  apply_fun f
+  assumption
 
--- example (n m : ℕ) (f : ℕ ≃o ℕ) (h : f n < f m) : n < m :=
--- begin
---   apply_fun f,
---   assumption,
--- end
+example (n m : ℕ) (f : ℕ ≃o ℕ) (h : f n < f m) : n < m := by
+  apply_fun f
+  assumption
 
 example : ∀ m n : ℕ, m = n → (m < 2) = (n < 2) := by
   refine fun m n h => ?_
@@ -234,3 +244,29 @@ example (f : α ≃ β) (x y : α) (h : f x = f y) : x = y := by
 example (f : α ≃ β) (x y : α) (h : f x = f y) : (fun s => s) (x = y) := by
   apply_fun f
   exact h
+
+-- check that `apply_fun` uses the function provided to help elaborate the injectivity lemma
+example (x : ℕ) : x = x := by
+  apply_fun (Nat.cast : ℕ → ℚ) using Nat.cast_injective
+  rfl
+
+-- Check that locals are elaborated properly in apply_fun
+example : 1 = 1 := by
+  let f := fun (x : Nat) => x + 1
+  -- clearly false but for demo purposes only
+  have g : ∀ f, Function.Injective f
+  · exact test_sorry
+  apply_fun f using (g f)
+  rfl
+
+
+def funFamily (_i : ℕ) : Bool → Bool := id
+
+-- `apply_fun` should not silence errors in `assumption`
+set_option linter.unreachableTactic false in
+/--
+error: maximum recursion depth has been reached (use `set_option maxRecDepth <num>` to increase limit)
+-/
+#guard_msgs (error) in
+example (_h₁ : Function.Injective (funFamily ((List.range 128).map (fun _ => 0)).sum)) : true = true := by
+  apply_fun funFamily 0

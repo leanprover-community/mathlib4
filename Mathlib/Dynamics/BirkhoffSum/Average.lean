@@ -23,7 +23,8 @@ see `birkhoffAverage_congr_ring`.
 
 -/
 
-set_option autoImplicit true
+open Finset
+open scoped BigOperators
 
 section birkhoffAverage
 
@@ -55,7 +56,7 @@ theorem birkhoffAverage_one' (f : α → α) (g : α → M) : birkhoffAverage R 
   funext <| birkhoffAverage_one R f g
 
 theorem map_birkhoffAverage (S : Type*) {F N : Type*}
-    [DivisionSemiring S] [AddCommMonoid N] [Module S N]
+    [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
     [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffAverage R f g n x) = birkhoffAverage S f (g' ∘ g) n x := by
   simp only [birkhoffAverage, map_inv_nat_cast_smul g' R S, map_birkhoffSum]
@@ -79,7 +80,7 @@ end birkhoffAverage
 /-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
 is equal to `(n : R)⁻¹ • (g (f^[n] x) - g x)`. -/
-theorem birkhoffAverage_apply_sub_birkhoffAverage (R : Type*) [DivisionRing R]
+theorem birkhoffAverage_apply_sub_birkhoffAverage {α M : Type*} (R : Type*) [DivisionRing R]
     [AddCommGroup M] [Module R M] (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     birkhoffAverage R f g n (f x) - birkhoffAverage R f g n x =
       (n : R)⁻¹ • (g (f^[n] x) - g x) := by

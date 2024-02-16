@@ -124,7 +124,7 @@ theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Ty
     f.SurjectiveOnWith j.range.topologicalClosure (C + ε) := by
   replace hyp : ∀ h ∈ j.range, ∃ g, f g = h ∧ ‖g‖ ≤ C * ‖h‖
   · intro h h_in
-    rcases(j.mem_range _).mp h_in with ⟨k, rfl⟩
+    rcases (j.mem_range _).mp h_in with ⟨k, rfl⟩
     rw [hj]
     exact hyp k
   exact controlled_closure_of_complete hC hε hyp

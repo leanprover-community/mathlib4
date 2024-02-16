@@ -3,7 +3,8 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Defs
+import Mathlib.Order.Lattice
 
 #align_import order.monotone.monovary from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -319,7 +320,7 @@ protected theorem Monotone.monovary (hf : Monotone f) (hg : Monotone g) : Monova
 #align monotone.monovary Monotone.monovary
 
 protected theorem Monotone.antivary (hf : Monotone f) (hg : Antitone g) : Antivary f g :=
-  (hf.monovary (Antitone.dual_right hg)).dual_right
+  (hf.monovary hg.dual_right).dual_right
 #align monotone.antivary Monotone.antivary
 
 protected theorem Antitone.monovary (hf : Antitone f) (hg : Antitone g) : Monovary f g :=
@@ -327,7 +328,7 @@ protected theorem Antitone.monovary (hf : Antitone f) (hg : Antitone g) : Monova
 #align antitone.monovary Antitone.monovary
 
 protected theorem Antitone.antivary (hf : Antitone f) (hg : Monotone g) : Antivary f g :=
-  (hf.monovary (Monotone.dual_right hg)).dual_right
+  (hf.monovary hg.dual_right).dual_right
 #align antitone.antivary Antitone.antivary
 
 protected theorem MonotoneOn.monovaryOn (hf : MonotoneOn f s) (hg : MonotoneOn g s) :
@@ -336,7 +337,7 @@ protected theorem MonotoneOn.monovaryOn (hf : MonotoneOn f s) (hg : MonotoneOn g
 
 protected theorem MonotoneOn.antivaryOn (hf : MonotoneOn f s) (hg : AntitoneOn g s) :
     AntivaryOn f g s :=
-  (hf.monovaryOn (AntitoneOn.dual_right hg)).dual_right
+  (hf.monovaryOn hg.dual_right).dual_right
 #align monotone_on.antivary_on MonotoneOn.antivaryOn
 
 protected theorem AntitoneOn.monovaryOn (hf : AntitoneOn f s) (hg : AntitoneOn g s) :
@@ -346,7 +347,7 @@ protected theorem AntitoneOn.monovaryOn (hf : AntitoneOn f s) (hg : AntitoneOn g
 
 protected theorem AntitoneOn.antivaryOn (hf : AntitoneOn f s) (hg : MonotoneOn g s) :
     AntivaryOn f g s :=
-  (hf.monovaryOn (MonotoneOn.dual_right hg)).dual_right
+  (hf.monovaryOn hg.dual_right).dual_right
 #align antitone_on.antivary_on AntitoneOn.antivaryOn
 
 end Preorder

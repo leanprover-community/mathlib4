@@ -65,7 +65,7 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
     rw [IsScalarTower.algebraMap_eq R K, coeff_map, ← eval₂_map, eval₂_at_apply] at he
     rw [eval₂_eq_eval_map]; apply (injective_iff_map_eq_zero _).1 _ _ he
     · apply RingHom.injective
-  rw [IsScalarTower.algebraMap_eq R K _, ← map_map]
+  rw [aroots_def, IsScalarTower.algebraMap_eq R K _, ← map_map]
   refine' Multiset.mem_of_le (roots.le_of_dvd ((hf.map _).map _).ne_zero _) ha
   exact map_dvd (algebraMap K g.SplittingField) hd
 #align integral_closure.mem_lifts_of_monic_of_dvd_map integralClosure.mem_lifts_of_monic_of_dvd_map
@@ -153,7 +153,7 @@ open IsIntegrallyClosed
 theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R] {p : R[X]}
     (h : p.Monic) : Irreducible p ↔ Irreducible (p.map <| algebraMap R K) := by
   /- The ← direction follows from `IsPrimitive.irreducible_of_irreducible_map_of_injective`.
-       For the → direction, it is enought to show that if `(p.map $ algebraMap R K) = a * b` and
+       For the → direction, it is enought to show that if `(p.map <| algebraMap R K) = a * b` and
        `a` is not a unit then `b` is a unit -/
   refine'
     ⟨fun hp =>

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Convert
 
 #align_import control.equiv_functor from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
@@ -72,7 +73,7 @@ theorem mapEquiv_refl (α) : mapEquiv f (Equiv.refl α) = Equiv.refl (f α) := b
 
 @[simp]
 theorem mapEquiv_symm : (mapEquiv f e).symm = mapEquiv f e.symm :=
-  Equiv.ext $ mapEquiv_symm_apply f e
+  Equiv.ext <| mapEquiv_symm_apply f e
 #align equiv_functor.map_equiv_symm EquivFunctor.mapEquiv_symm
 
 /-- The composition of `mapEquiv`s is carried over the `EquivFunctor`.
@@ -82,7 +83,7 @@ or `map_comp_map` when not applied.
 @[simp]
 theorem mapEquiv_trans {γ : Type u₀} (ab : α ≃ β) (bc : β ≃ γ) :
     (mapEquiv f ab).trans (mapEquiv f bc) = mapEquiv f (ab.trans bc) :=
-  Equiv.ext $ fun x => by simp [mapEquiv, map_trans']
+  Equiv.ext fun x => by simp [mapEquiv, map_trans']
 #align equiv_functor.map_equiv_trans EquivFunctor.mapEquiv_trans
 
 end
@@ -103,7 +104,7 @@ theorem mapEquiv.injective (f : Type u₀ → Type u₁)
     (h : ∀ γ, Function.Injective (pure : γ → f γ)) :
       Function.Injective (@EquivFunctor.mapEquiv f _ α β) :=
   fun e₁ e₂ H =>
-    Equiv.ext $ fun x => h β (by simpa [EquivFunctor.map] using Equiv.congr_fun H (pure x))
+    Equiv.ext fun x => h β (by simpa [EquivFunctor.map] using Equiv.congr_fun H (pure x))
 #align equiv_functor.map_equiv.injective EquivFunctor.mapEquiv.injective
 
 end EquivFunctor

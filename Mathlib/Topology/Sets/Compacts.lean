@@ -418,12 +418,19 @@ theorem _root_.exists_positiveCompacts_subset [LocallyCompactSpace α] {U : Set 
   ⟨⟨⟨K, hKc⟩, ⟨x, hxK⟩⟩, hKU⟩
 #align exists_positive_compacts_subset exists_positiveCompacts_subset
 
+theorem _root_.IsOpen.exists_positiveCompacts_closure_subset [R1Space α] [LocallyCompactSpace α]
+    {U : Set α} (ho : IsOpen U) (hn : U.Nonempty) : ∃ K : PositiveCompacts α, closure ↑K ⊆ U :=
+  let ⟨K, hKU⟩ := exists_positiveCompacts_subset ho hn
+  ⟨K, K.isCompact.closure_subset_of_isOpen ho hKU⟩
+
 instance [CompactSpace α] [Nonempty α] : Inhabited (PositiveCompacts α) :=
   ⟨⊤⟩
 
 /-- In a nonempty locally compact space, there exists a compact set with nonempty interior. -/
-instance nonempty' [LocallyCompactSpace α] [Nonempty α] : Nonempty (PositiveCompacts α) :=
-  nonempty_of_exists <| exists_positiveCompacts_subset isOpen_univ univ_nonempty
+instance nonempty' [WeaklyLocallyCompactSpace α] [Nonempty α] : Nonempty (PositiveCompacts α) := by
+  inhabit α
+  rcases exists_compact_mem_nhds (default : α) with ⟨K, hKc, hK⟩
+  exact ⟨⟨K, hKc⟩, _, mem_interior_iff_mem_nhds.2 hK⟩
 #align topological_space.positive_compacts.nonempty' TopologicalSpace.PositiveCompacts.nonempty'
 
 /-- The product of two `TopologicalSpace.PositiveCompacts`, as a `TopologicalSpace.PositiveCompacts`
@@ -482,7 +489,7 @@ def toOpens (s : CompactOpens α) : Opens α := ⟨s, s.isOpen⟩
 /-- Reinterpret a compact open as a clopen. -/
 @[simps]
 def toClopens [T2Space α] (s : CompactOpens α) : Clopens α :=
-  ⟨s, s.isOpen, s.isCompact.isClosed⟩
+  ⟨s, s.isCompact.isClosed, s.isOpen⟩
 #align topological_space.compact_opens.to_clopens TopologicalSpace.CompactOpens.toClopens
 
 @[ext]

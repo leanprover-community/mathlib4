@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Murrills
 -/
-import Lean
 import Mathlib.Tactic.Core
 
 /-!
@@ -74,7 +73,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let fvars ← getFVarIdsAt goal xs
   let fvars := fvars.map Expr.fvar
   let lctx := (← goal.getDecl).lctx
-  let (revertedFVars, HType) ← liftMkBindingM <| fun ctx => (do
+  let (revertedFVars, HType) ← liftMkBindingM fun ctx => (do
     let f ← collectForwardDeps lctx fvars
     let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
     let HType ← withFreshCache do mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix
@@ -127,7 +126,6 @@ By default, the entire context is reverted. -/
 syntax (name := wlog) "wlog " binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
-open private Lean.Elab.Term.expandBinderIdent from Lean.Elab.Binders in
 elab_rules : tactic
 | `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
   withMainContext do

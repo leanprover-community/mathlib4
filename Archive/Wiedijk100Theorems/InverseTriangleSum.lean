@@ -5,6 +5,7 @@ Authors: Jalex Stark, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.FieldSimp
 
 #align_import wiedijk_100_theorems.inverse_triangle_sum from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
@@ -35,6 +36,6 @@ theorem Theorem100.inverse_triangle_sum :
   simp_rw [if_neg (Nat.succ_ne_zero _), Nat.succ_eq_add_one]
   have A : (n + 1 + 1 : ℚ) ≠ 0 := by norm_cast; norm_num
   push_cast
-  field_simp [Nat.cast_add_one_ne_zero]
+  field_simp
   ring
 #align theorem_100.inverse_triangle_sum Theorem100.inverse_triangle_sum

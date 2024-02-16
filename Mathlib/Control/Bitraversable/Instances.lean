@@ -46,7 +46,7 @@ instance : Bitraversable Prod where bitraverse := @Prod.bitraverse
 
 instance : LawfulBitraversable Prod := by
   constructor <;> intros <;> casesm _ × _ <;>
-    simp [bitraverse, Prod.bitraverse, functor_norm, -ApplicativeTransformation.app_eq_coe] <;> rfl
+    simp [bitraverse, Prod.bitraverse, functor_norm] <;> rfl
 
 open Functor
 
@@ -60,7 +60,7 @@ instance : Bitraversable Sum where bitraverse := @Sum.bitraverse
 
 instance : LawfulBitraversable Sum := by
   constructor <;> intros <;> casesm _ ⊕ _ <;>
-    simp [bitraverse, Sum.bitraverse, functor_norm, -ApplicativeTransformation.app_eq_coe] <;> rfl
+    simp [bitraverse, Sum.bitraverse, functor_norm] <;> rfl
 
 
 set_option linter.unusedVariables false in
@@ -102,9 +102,9 @@ instance (priority := 10) Bitraversable.traversable {α} : Traversable (t α) wh
 instance (priority := 10) Bitraversable.isLawfulTraversable [LawfulBitraversable t] {α} :
     LawfulTraversable (t α) := by
   constructor <;> intros <;>
-    simp [traverse, comp_tsnd, functor_norm, -ApplicativeTransformation.app_eq_coe]
+    simp [traverse, comp_tsnd, functor_norm]
   · simp [tsnd_eq_snd_id]; rfl
-  · simp [tsnd, binaturality, Function.comp, functor_norm, -ApplicativeTransformation.app_eq_coe]
+  · simp [tsnd, binaturality, Function.comp, functor_norm]
 #align bitraversable.is_lawful_traversable Bitraversable.isLawfulTraversable
 
 end
@@ -129,7 +129,7 @@ instance [LawfulTraversable F] [LawfulTraversable G] [LawfulBitraversable t] :
     LawfulBitraversable (bicompl t F G) := by
   constructor <;> intros <;>
     simp [bitraverse, Bicompl.bitraverse, bimap, traverse_id, bitraverse_id_id, comp_bitraverse,
-      functor_norm, -ApplicativeTransformation.app_eq_coe]
+      functor_norm]
   · simp [traverse_eq_map_id', bitraverse_eq_bimap_id]
   · dsimp only [bicompl]
     simp [binaturality, naturality_pf]
@@ -150,8 +150,7 @@ instance : Bitraversable (bicompr F t) where bitraverse := @Bicompr.bitraverse t
 
 instance [LawfulTraversable F] [LawfulBitraversable t] : LawfulBitraversable (bicompr F t) := by
   constructor <;> intros <;>
-    simp [bitraverse, Bicompr.bitraverse, bitraverse_id_id, functor_norm,
-      -ApplicativeTransformation.app_eq_coe]
+    simp [bitraverse, Bicompr.bitraverse, bitraverse_id_id, functor_norm]
   · simp [bitraverse_eq_bimap_id', traverse_eq_map_id']; rfl
   · dsimp only [bicompr]
     simp [naturality, binaturality']

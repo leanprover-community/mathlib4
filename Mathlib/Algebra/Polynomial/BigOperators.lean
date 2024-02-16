@@ -65,7 +65,7 @@ theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).
   · rw [degree_eq_natDegree h]
     suffices (l.map natDegree).maximum = ((l.map natDegree).foldr max 0 : ℕ) by
       rw [this]
-      simpa [this, Nat.cast_withBot] using natDegree_list_sum_le l
+      simpa using natDegree_list_sum_le l
     rw [← List.foldr_max_of_ne_nil]
     · congr
     contrapose! h
@@ -99,7 +99,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
       simpa using hl'
     have hdn : natDegree hd ≤ n := hl _ (List.mem_cons_self _ _)
     rcases hdn.eq_or_lt with (rfl | hdn')
-    · cases' h.eq_or_lt with h' h'
+    · rcases h.eq_or_lt with h' | h'
       · rw [← h', coeff_mul_degree_add_degree, leadingCoeff, leadingCoeff]
       · rw [coeff_eq_zero_of_natDegree_lt, coeff_eq_zero_of_natDegree_lt h', mul_zero]
         exact natDegree_mul_le.trans_lt (add_lt_add_left h' _)
@@ -142,10 +142,14 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     t.prod.leadingCoeff = (t.map leadingCoeff).prod := by
   induction' t using Multiset.induction_on with a t ih; · simp
   simp only [Multiset.map_cons, Multiset.prod_cons] at h ⊢
-  rw [Polynomial.leadingCoeff_mul'] <;>
-    · rw [ih]
-      simp [*]
-      apply right_ne_zero_of_mul h
+  rw [Polynomial.leadingCoeff_mul']
+  · rw [ih]
+    simp only [ne_eq]
+    apply right_ne_zero_of_mul h
+  · rw [ih]
+    exact h
+    simp only [ne_eq, not_false_eq_true]
+    apply right_ne_zero_of_mul h
 #align polynomial.leading_coeff_multiset_prod' Polynomial.leadingCoeff_multiset_prod'
 
 /-- The leading coefficient of a product of polynomials is equal to
@@ -263,9 +267,10 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
   rw [nextCoeff]; split_ifs with h
-  · rw [natDegree_multiset_prod_of_monic] at h <;> simp only [Multiset.mem_map] at *
+  · rw [natDegree_multiset_prod_of_monic] at h
     swap
-    · rintro _ ⟨_, _, rfl⟩
+    · simp only [Multiset.mem_map]
+      rintro _ ⟨_, _, rfl⟩
       apply monic_X_sub_C
     simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map] at h
     contrapose! h

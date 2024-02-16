@@ -30,7 +30,9 @@ set_option linter.uppercaseLean3 false
 
 /-- The category of two-pointed types. -/
 structure TwoP : Type (u + 1) where
+  /-- The underlying type of a two-pointed type. -/
   protected X : Type u
+  /-- The two points of a bipointed type, bundled together as a pair of distinct elements. -/
   toTwoPointing : TwoPointing X
 #align Twop TwoP
 
@@ -49,7 +51,7 @@ theorem coe_of {X : Type*} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointin
   rfl
 #align Twop.coe_of TwoP.coe_of
 
-alias of ← _root_.TwoPointing.TwoP
+alias _root_.TwoPointing.TwoP := of
 #align two_pointing.Twop TwoPointing.TwoP
 
 instance : Inhabited TwoP :=

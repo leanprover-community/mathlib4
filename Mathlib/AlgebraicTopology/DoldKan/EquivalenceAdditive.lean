@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.DoldKan.NCompGamma
 
-#align_import algebraic_topology.dold_kan.equivalence_additive from "leanprover-community/mathlib"@"19d6240dcc5e5c8bd6e1e3c588b92e837af76f9e"
+#align_import algebraic_topology.dold_kan.equivalence_additive from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-! The Dold-Kan equivalence for additive categories.
 

@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Monoid.Cancel.Basic
+import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
@@ -167,7 +169,7 @@ end
 
 namespace Submonoid
 
-variable {F : Type*} [mc : MonoidHomClass F M N]
+variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
 
 open Set
 
@@ -560,7 +562,7 @@ attribute [to_additive existing nSMul] nPow
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
-    (n : ℕ) : (x ^ n : M) = (x : M) ^ n :=
+    (n : ℕ) : ↑(x ^ n) = (x : M) ^ n :=
   rfl
 #align submonoid_class.coe_pow SubmonoidClass.coe_pow
 #align add_submonoid_class.coe_nsmul AddSubmonoidClass.coe_nsmul
@@ -645,8 +647,8 @@ instance (priority := 75) toLinearOrderedCancelCommMonoid {M} [LinearOrderedCanc
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
-def subtype : S' →* M :=
-  ⟨(⟨Subtype.val, rfl⟩ : OneHom S' M), by simp⟩
+def subtype : S' →* M where
+  toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 #align submonoid_class.subtype SubmonoidClass.subtype
 #align add_submonoid_class.subtype AddSubmonoidClass.subtype
 
@@ -778,8 +780,8 @@ instance toLinearOrderedCancelCommMonoid {M} [LinearOrderedCancelCommMonoid M] (
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
-def subtype : S →* M :=
-  ⟨(⟨Subtype.val, rfl⟩ : OneHom S M), by simp⟩
+def subtype : S →* M where
+  toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 #align submonoid.subtype Submonoid.subtype
 #align add_submonoid.subtype AddSubmonoid.subtype
 
@@ -953,7 +955,7 @@ theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Submonoid M) :
 
 @[to_additive (attr := simp)]
 theorem map_equiv_top (f : M ≃* N) : (⊤ : Submonoid M).map f.toMonoidHom = ⊤ :=
-  SetLike.coe_injective <| Set.image_univ.trans (Function.Surjective.range_eq f.surjective)
+  SetLike.coe_injective <| Set.image_univ.trans f.surjective.range_eq
 #align submonoid.map_equiv_top Submonoid.map_equiv_top
 #align add_submonoid.map_equiv_top AddSubmonoid.map_equiv_top
 
@@ -999,7 +1001,7 @@ end Submonoid
 
 namespace MonoidHom
 
-variable {F : Type*} [mc : MonoidHomClass F M N]
+variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
 
 open Submonoid
 
@@ -1373,6 +1375,12 @@ theorem eq_bot_iff_forall : S = ⊥ ↔ ∀ x ∈ S, x = (1 : M) :=
 #align add_submonoid.eq_bot_iff_forall AddSubmonoid.eq_bot_iff_forall
 
 @[to_additive]
+theorem eq_bot_of_subsingleton [Subsingleton S] : S = ⊥ := by
+  rw [eq_bot_iff_forall]
+  intro y hy
+  simpa using _root_.congr_arg ((↑) : S → M) <| Subsingleton.elim (⟨y, hy⟩ : S) 1
+
+@[to_additive]
 theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
   calc
     Nontrivial S ↔ ∃ x : S, x ≠ 1 := nontrivial_iff_exists_ne 1
@@ -1518,15 +1526,20 @@ instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' 
     IsScalarTower S α β :=
   ⟨fun a => (smul_assoc (a : M') : _)⟩
 
-@[to_additive]
-theorem smul_def [SMul M' α] {S : Submonoid M'} (g : S) (m : α) : g • m = (g : M') • m :=
-  rfl
+section SMul
+variable [SMul M' α] {S : Submonoid M'}
+
+@[to_additive] lemma smul_def (g : S) (a : α) : g • a = (g : M') • a := rfl
 #align submonoid.smul_def Submonoid.smul_def
 #align add_submonoid.vadd_def AddSubmonoid.vadd_def
 
-instance faithfulSMul [SMul M' α] [FaithfulSMul M' α] (S : Submonoid M') : FaithfulSMul S α :=
+@[to_additive (attr := simp)]
+lemma mk_smul (g : M') (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
+
+instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α :=
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
 
+end SMul
 end MulOneClass
 
 variable [Monoid M']
@@ -1548,3 +1561,61 @@ instance mulDistribMulAction [Monoid α] [MulDistribMulAction M' α] (S : Submon
   MulDistribMulAction.compHom _ S.subtype
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
+
+section Preorder
+variable (M)
+variable [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)] {a : M}
+
+/-- The submonoid of elements greater than `1`. -/
+@[to_additive (attr := simps) nonneg "The submonoid of nonnegative elements."]
+def oneLE : Submonoid M where
+  carrier := Set.Ici 1
+  mul_mem' := one_le_mul
+  one_mem' := le_rfl
+
+variable {M}
+
+@[to_additive (attr := simp) mem_nonneg] lemma mem_oneLE : a ∈ oneLE M ↔ 1 ≤ a := Iff.rfl
+
+end Preorder
+
+section MulZeroClass
+variable (α) [MulZeroOneClass α] [PartialOrder α] [PosMulStrictMono α] [ZeroLEOneClass α]
+  [NeZero (1 : α)] {a : α}
+
+/-- The submonoid of positive elements. -/
+@[simps] def pos : Submonoid α where
+  carrier := Set.Ioi 0
+  one_mem' := zero_lt_one
+  mul_mem' := mul_pos
+#align pos_submonoid Submonoid.pos
+
+variable {α}
+
+@[simp] lemma mem_pos : a ∈ pos α ↔ 0 < a := Iff.rfl
+#align mem_pos_monoid Submonoid.mem_pos
+
+end MulZeroClass
+end Submonoid
+
+end Actions
+
+section Units
+
+namespace Submonoid
+
+/-- The multiplicative equivalence between the type of units of `M` and the submonoid of unit
+elements of `M`. -/
+@[to_additive (attr := simps!) " The additive equivalence between the type of additive units of `M`
+  and the additive submonoid whose elements are the additive units of `M`. "]
+noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] :
+  Mˣ ≃* IsUnit.submonoid M where
+  toFun x := ⟨x, Units.isUnit x⟩
+  invFun x := x.prop.unit
+  left_inv x := IsUnit.unit_of_val_units _
+  right_inv x := by simp_rw [IsUnit.unit_spec]
+  map_mul' x y := by simp_rw [Units.val_mul]; rfl
+
+end Submonoid
+
+end Units

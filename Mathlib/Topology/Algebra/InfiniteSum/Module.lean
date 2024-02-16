@@ -11,9 +11,9 @@ import Mathlib.Topology.Algebra.Module.Basic
 /-! # Infinite sums in topological vector spaces -/
 
 
-variable {ι R R₂ M M₂ : Type*}
+variable {ι κ R R₂ M M₂ : Type*}
 
-section SmulConst
+section SMulConst
 
 variable [Semiring R] [TopologicalSpace R] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
   [ContinuousSMul R M] {f : ι → R}
@@ -30,7 +30,39 @@ theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : ∑' z, f z • 
   (hf.hasSum.smul_const _).tsum_eq
 #align tsum_smul_const tsum_smul_const
 
-end SmulConst
+end SMulConst
+
+/-!
+Note we cannot derive the `mul` lemmas from these `smul` lemmas, as the `mul` versions do not
+require associativity, but `Module` does.
+-/
+section tsum_smul_tsum
+
+variable [Semiring R] [AddCommMonoid M] [Module R M]
+variable [TopologicalSpace R] [TopologicalSpace M] [T3Space M]
+variable [ContinuousAdd M] [ContinuousSMul R M]
+variable {f : ι → R} {g : κ → M} {s : R} {t u : M}
+
+theorem HasSum.smul_eq (hf : HasSum f s) (hg : HasSum g t)
+    (hfg : HasSum (fun x : ι × κ => f x.1 • g x.2) u) : s • t = u :=
+  have key₁ : HasSum (fun i => f i • t) (s • t) := hf.smul_const t
+  have this : ∀ i : ι, HasSum (fun c : κ => f i • g c) (f i • t) := fun i => hg.const_smul (f i)
+  have key₂ : HasSum (fun i => f i • t) u := HasSum.prod_fiberwise hfg this
+  key₁.unique key₂
+
+theorem HasSum.smul (hf : HasSum f s) (hg : HasSum g t)
+    (hfg : Summable fun x : ι × κ => f x.1 • g x.2) :
+    HasSum (fun x : ι × κ => f x.1 • g x.2) (s • t) :=
+  let ⟨_u, hu⟩ := hfg
+  (hf.smul_eq hg hu).symm ▸ hu
+
+/-- Scalar product of two infinites sums indexed by arbitrary types. -/
+theorem tsum_smul_tsum (hf : Summable f) (hg : Summable g)
+    (hfg : Summable fun x : ι × κ => f x.1 • g x.2) :
+    ((∑' x, f x) • ∑' y, g y) = ∑' z : ι × κ, f z.1 • g z.2 :=
+  hf.hasSum.smul_eq hg.hasSum hfg.hasSum
+
+end tsum_smul_tsum
 
 section HasSum
 
@@ -46,7 +78,7 @@ protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M�
   simpa only using hf.map φ.toLinearMap.toAddMonoidHom φ.continuous
 #align continuous_linear_map.has_sum ContinuousLinearMap.hasSum
 
-alias ContinuousLinearMap.hasSum ← HasSum.mapL
+alias HasSum.mapL := ContinuousLinearMap.hasSum
 set_option linter.uppercaseLean3 false in
 #align has_sum.mapL HasSum.mapL
 
@@ -55,7 +87,7 @@ protected theorem ContinuousLinearMap.summable {f : ι → M} (φ : M →SL[σ] 
   (hf.hasSum.mapL φ).summable
 #align continuous_linear_map.summable ContinuousLinearMap.summable
 
-alias ContinuousLinearMap.summable ← Summable.mapL
+alias Summable.mapL := ContinuousLinearMap.summable
 set_option linter.uppercaseLean3 false in
 #align summable.mapL Summable.mapL
 

@@ -78,8 +78,8 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   convert hfg
   rw [hμ.eq_orderOf]
   -- Porting note: was `{occs := occurrences.pos [2]}`
-  conv_rhs => rw [← hμ.toRootsOfUnity_coe_val]
-  rw [orderOf_units, orderOf_subgroup]
+  conv_rhs => rw [← hμ.val_toRootsOfUnity_coe]
+  rw [orderOf_units, Subgroup.orderOf_coe]
 #align is_primitive_root.aut_to_pow_injective IsPrimitiveRoot.autToPow_injective
 
 end IsPrimitiveRoot
@@ -131,13 +131,13 @@ noncomputable def autEquivPow : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
 -- Porting note: was `rw ← hζ.coe_to_roots_of_unity_coe at key {occs := occurrences.pos [1, 5]}`.
       conv at key =>
         congr; congr
-        rw [← hζ.toRootsOfUnity_coe_val]
+        rw [← hζ.val_toRootsOfUnity_coe]
         rfl; rfl
-        rw [← hζ.toRootsOfUnity_coe_val]
+        rw [← hζ.val_toRootsOfUnity_coe]
       simp only [← rootsOfUnity.coe_pow] at key
       replace key := rootsOfUnity.coe_injective key
-      rw [pow_eq_pow_iff_modEq, ← orderOf_subgroup, ← orderOf_units, hζ.toRootsOfUnity_coe_val, ←
-        (zeta_spec n K L).eq_orderOf, ← ZMod.eq_iff_modEq_nat] at key
+      rw [pow_eq_pow_iff_modEq, ← Subgroup.orderOf_coe, ← orderOf_units, hζ.val_toRootsOfUnity_coe,
+        ← (zeta_spec n K L).eq_orderOf, ← ZMod.eq_iff_modEq_nat] at key
       simp only [ZMod.nat_cast_val, ZMod.cast_id', id.def] at key
       exact Units.ext key }
 #align is_cyclotomic_extension.aut_equiv_pow IsCyclotomicExtension.autEquivPow

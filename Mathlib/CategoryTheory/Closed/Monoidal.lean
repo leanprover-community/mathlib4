@@ -6,7 +6,6 @@ Authors: Scott Morrison, Bhavik Mehta
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
-import Mathlib.CategoryTheory.Functor.InvIsos
 
 #align_import category_theory.closed.monoidal from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
 
@@ -73,7 +72,11 @@ def unitClosed : Closed (𝟙_ C) where
                 right_inv := by aesop_cat }
             homEquiv_naturality_left_symm := fun f g => by
               dsimp
-              rw [leftUnitor_naturality_assoc] } }
+              rw [leftUnitor_naturality_assoc]
+            -- This used to be automatic before leanprover/lean4#2644
+            homEquiv_naturality_right := by  -- aesop failure
+              dsimp
+              simp }}
 #align category_theory.unit_closed CategoryTheory.unitClosed
 
 variable (A B : C) {X X' Y Y' Z : C}
@@ -131,12 +134,12 @@ notation A " ⟶[" C "] " B:10 => (@ihom C _ _ A _).obj B
 
 @[reassoc (attr := simp)]
 theorem ev_coev : (𝟙 A ⊗ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B) :=
-  Adjunction.left_triangle_components (ihom.adjunction A)
+  Adjunction.left_triangle_components (ihom.adjunction A) _
 #align category_theory.ihom.ev_coev CategoryTheory.ihom.ev_coev
 
 @[reassoc (attr := simp)]
 theorem coev_ev : (coev A).app (A ⟶[C] B) ≫ (ihom A).map ((ev A).app B) = 𝟙 (A ⟶[C] B) :=
-  Adjunction.right_triangle_components (ihom.adjunction A)
+  Adjunction.right_triangle_components (ihom.adjunction A) _
 #align category_theory.ihom.coev_ev CategoryTheory.ihom.coev_ev
 
 end ihom
@@ -161,12 +164,14 @@ def uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X) :=
   ((ihom.adjunction A).homEquiv _ _).symm
 #align category_theory.monoidal_closed.uncurry CategoryTheory.MonoidalClosed.uncurry
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (ihom.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 #align category_theory.monoidal_closed.hom_equiv_apply_eq CategoryTheory.MonoidalClosed.homEquiv_apply_eq
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
     ((ihom.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
@@ -301,12 +306,12 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 /-- Transport the property of being monoidal closed across a monoidal equivalence of categories -/
 noncomputable def ofEquiv (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
-    [h : MonoidalClosed D] : MonoidalClosed C
-    where closed X :=
+    [h : MonoidalClosed D] : MonoidalClosed C where
+  closed X :=
     { isAdj := by
         haveI q : Closed (F.obj X) := inferInstance
         haveI : IsLeftAdjoint (tensorLeft (F.obj X)) := q.isAdj
-        have i := compInvIso (MonoidalFunctor.commTensorLeft F X)
+        have i := (MonoidalFunctor.commTensorLeft F X).compInvIso
         exact Adjunction.leftAdjointOfNatIso i }
 #align category_theory.monoidal_closed.of_equiv CategoryTheory.MonoidalClosed.ofEquiv
 
@@ -321,7 +326,7 @@ theorem ofEquiv_curry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
       (F.1.1.adjunction.homEquiv Y ((ihom _).obj _))
         (MonoidalClosed.curry
           (F.1.1.inv.adjunction.homEquiv (F.1.1.obj X ⊗ F.1.1.obj Y) Z
-            ((compInvIso (F.commTensorLeft X)).hom.app Y ≫ f))) :=
+            ((F.commTensorLeft X).compInvIso.hom.app Y ≫ f))) :=
   rfl
 #align category_theory.monoidal_closed.of_equiv_curry_def CategoryTheory.MonoidalClosed.ofEquiv_curry_def
 
@@ -334,7 +339,7 @@ theorem ofEquiv_uncurry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor
     [MonoidalClosed D] {X Y Z : C}
     (f : Y ⟶ (@ihom _ _ _ X <| (MonoidalClosed.ofEquiv F).1 X).obj Z) :
     @MonoidalClosed.uncurry _ _ _ _ _ _ ((MonoidalClosed.ofEquiv F).1 _) f =
-      (compInvIso (F.commTensorLeft X)).inv.app Y ≫
+      (F.commTensorLeft X).compInvIso.inv.app Y ≫
         (F.1.1.inv.adjunction.homEquiv (F.1.1.obj X ⊗ F.1.1.obj Y) Z).symm
           (MonoidalClosed.uncurry
             ((F.1.1.adjunction.homEquiv Y ((ihom (F.1.1.obj X)).obj (F.1.1.obj Z))).symm f)) :=
@@ -343,5 +348,6 @@ theorem ofEquiv_uncurry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor
 end OfEquiv
 
 end MonoidalClosed
-
+attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq
+  CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
 end CategoryTheory

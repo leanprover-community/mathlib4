@@ -161,7 +161,7 @@ theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {b₁ b
     rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dif_pos, ←
       Walk.boxProdRight]
     simp [ofBoxProdLeft_boxProdRight]
-    exact⟨h, rfl⟩
+    exact ⟨h, rfl⟩
 #align simple_graph.walk.of_box_prod_left_box_prod_right SimpleGraph.Walk.ofBoxProdLeft_boxProdRight
 
 end Walk
@@ -173,7 +173,6 @@ protected theorem Preconnected.boxProd (hG : G.Preconnected) (hH : H.Preconnecte
   rintro x y
   obtain ⟨w₁⟩ := hG x.1 y.1
   obtain ⟨w₂⟩ := hH x.2 y.2
-  rw [← @Prod.mk.eta _ _ x, ← @Prod.mk.eta _ _ y]
   exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 #align simple_graph.preconnected.box_prod SimpleGraph.Preconnected.boxProd
 

@@ -3,11 +3,12 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.PUnit
 
 #align_import category_theory.limits.final from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
@@ -97,12 +98,12 @@ class Initial (F : C ⥤ D) : Prop where
 
 attribute [instance] Initial.out
 
-instance final_op_of_initial (F : C ⥤ D) [Initial F] : Final F.op
-    where out d := isConnected_of_equivalent (costructuredArrowOpEquivalence F (unop d))
+instance final_op_of_initial (F : C ⥤ D) [Initial F] : Final F.op where
+  out d := isConnected_of_equivalent (costructuredArrowOpEquivalence F (unop d))
 #align category_theory.functor.final_op_of_initial CategoryTheory.Functor.final_op_of_initial
 
-instance initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op
-    where out d := isConnected_of_equivalent (structuredArrowOpEquivalence F (unop d))
+instance initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op where
+  out d := isConnected_of_equivalent (structuredArrowOpEquivalence F (unop d))
 #align category_theory.functor.initial_op_of_final CategoryTheory.Functor.initial_op_of_final
 
 theorem final_of_initial_op (F : C ⥤ D) [Initial F.op] : Final F :=
@@ -249,7 +250,7 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G
               rw [← a, Functor.map_comp, Category.assoc, ← Functor.comp_map, c.w] at z
               rw [z]
             · rw [← Functor.map_comp_assoc] } }
-  map f := { Hom := f.Hom }
+  map f := { hom := f.hom }
 #align category_theory.functor.final.extend_cocone CategoryTheory.Functor.Final.extendCocone
 
 @[simp]
@@ -395,18 +396,18 @@ namespace Final
 theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
     (t : EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
     Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
-  induction t
-  case rel x y r =>
+  induction t with
+  | rel x y r =>
     obtain ⟨f, w⟩ := r
     fconstructor
     swap; fconstructor
     left; fconstructor
     exact StructuredArrow.homMk f
-  case refl => fconstructor
-  case symm x y _ ih =>
+  | refl => fconstructor
+  | symm x y _ ih =>
     apply zigzag_symmetric
     exact ih
-  case trans x y z _ _ ih₁ ih₂ =>
+  | trans x y z _ _ ih₁ ih₂ =>
     apply Relation.ReflTransGen.trans
     exact ih₁; exact ih₂
 #align category_theory.functor.final.zigzag_of_eqv_gen_quot_rel CategoryTheory.Functor.Final.zigzag_of_eqvGen_quot_rel
@@ -433,6 +434,16 @@ theorem cofinal_of_colimit_comp_coyoneda_iso_pUnit
     clear e y₁ y₂
     exact Final.zigzag_of_eqvGen_quot_rel t⟩
 #align category_theory.functor.final.cofinal_of_colimit_comp_coyoneda_iso_punit CategoryTheory.Functor.cofinal_of_colimit_comp_coyoneda_iso_pUnit
+
+/-- A variant of `cofinal_of_colimit_comp_coyoneda_iso_pUnit` where we bind the various claims
+    about `colimit (F ⋙ coyoneda.obj (Opposite.op d))` for each `d : D` into a single claim about
+    the presheaf `colimit (F ⋙ yoneda)`. -/
+theorem cofinal_of_isTerminal_colimit_comp_yoneda
+    (h : IsTerminal (colimit (F ⋙ yoneda))) : Final F := by
+  refine cofinal_of_colimit_comp_coyoneda_iso_pUnit _ (fun d => ?_)
+  refine Types.isTerminalEquivIsoPUnit _ ?_
+  let b := IsTerminal.isTerminalObj ((evaluation _ _).obj (Opposite.op d)) _ h
+  exact b.ofIso <| preservesColimitIso ((evaluation _ _).obj (Opposite.op d)) (F ⋙ yoneda)
 
 end LocallySmall
 
@@ -539,7 +550,7 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G
               rw [← a, Functor.map_comp, ← Functor.comp_map, ← Category.assoc, ← Category.assoc,
                 c.w, z, Category.assoc]
             · rw [← Functor.map_comp] } }
-  map f := { Hom := f.Hom }
+  map f := { hom := f.hom }
 #align category_theory.functor.initial.extend_cone CategoryTheory.Functor.Initial.extendCone
 
 @[simp]
@@ -759,8 +770,7 @@ theorem final_comp [hF : Final F] [hG : Final G] : Final (F ⋙ G) := by
   infer_instance
 
 theorem initial_comp [Initial F] [Initial G] : Initial (F ⋙ G) := by
-  suffices : Final (F ⋙ G).op
-  · exact initial_of_final_op _
+  suffices Final (F ⋙ G).op from initial_of_final_op _
   exact final_comp F.op G.op
 
 theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := by
@@ -780,8 +790,7 @@ theorem final_of_final_comp [hF : Final F] [hFG : Final (F ⋙ G)] : Final G := 
   exact fun H => IsIso.of_isIso_comp_left (colimit.pre _ (s₁.inverse ⋙ F ⋙ s₂.functor)) _
 
 theorem initial_of_initial_comp [Initial F] [Initial (F ⋙ G)] : Initial G := by
-  suffices : Final G.op
-  · exact initial_of_final_op _
+  suffices Final G.op from initial_of_final_op _
   have : Final (F.op ⋙ G.op) := show Final (F ⋙ G).op from inferInstance
   exact final_of_final_comp F.op G.op
 
@@ -854,7 +863,7 @@ adjoints preserve filteredness), as right adjoints are always final, see `final_
 -/
 theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered D :=
 { IsFilteredOrEmpty.of_final F with
-  Nonempty := Nonempty.map F.obj IsFiltered.Nonempty }
+  nonempty := Nonempty.map F.obj IsFiltered.nonempty }
 
 /-- Initial functors preserve cofilteredness.
 
@@ -862,7 +871,7 @@ This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which st
 adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
 -/
 theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
-  IsCofilteredOrEmpty D :=
+    IsCofilteredOrEmpty D :=
   have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_final F.op
   isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
 

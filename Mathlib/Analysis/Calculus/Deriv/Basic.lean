@@ -72,6 +72,10 @@ example (x : ℝ) : deriv (fun x ↦ cos (sin x) * exp x) x = (cos(sin(x))-sin(s
 by { simp, ring }
 ```
 
+The relationship between the derivative of a function and its definition from a standard
+undergraduate course as the limit of the slope `(f y - f x) / (y - x)` as `y` tends to `𝓝[≠] x`
+is developed in the file `Slope.lean`.
+
 ## Implementation notes
 
 Most of the theorems are direct restatements of the corresponding theorems
@@ -86,7 +90,7 @@ universe u v w
 
 noncomputable section
 
-open scoped Classical Topology BigOperators Filter ENNReal
+open scoped Classical Topology BigOperators Filter ENNReal NNReal
 
 open Filter Asymptotics Set
 
@@ -211,7 +215,7 @@ theorem hasStrictDerivAt_iff_hasStrictFDerivAt :
   Iff.rfl
 #align has_strict_deriv_at_iff_has_strict_fderiv_at hasStrictDerivAt_iff_hasStrictFDerivAt
 
-alias hasStrictDerivAt_iff_hasStrictFDerivAt ↔ HasStrictDerivAt.hasStrictFDerivAt _
+alias ⟨HasStrictDerivAt.hasStrictFDerivAt, _⟩ := hasStrictDerivAt_iff_hasStrictFDerivAt
 #align has_strict_deriv_at.has_strict_fderiv_at HasStrictDerivAt.hasStrictFDerivAt
 
 /-- Expressing `HasDerivAt f f' x` in terms of `HasFDerivAt` -/
@@ -220,7 +224,7 @@ theorem hasDerivAt_iff_hasFDerivAt {f' : F} :
   Iff.rfl
 #align has_deriv_at_iff_has_fderiv_at hasDerivAt_iff_hasFDerivAt
 
-alias hasDerivAt_iff_hasFDerivAt ↔ HasDerivAt.hasFDerivAt _
+alias ⟨HasDerivAt.hasFDerivAt, _⟩ := hasDerivAt_iff_hasFDerivAt
 #align has_deriv_at.has_fderiv_at HasDerivAt.hasFDerivAt
 
 theorem derivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
@@ -229,6 +233,12 @@ theorem derivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWith
   rw [fderivWithin_zero_of_not_differentiableWithinAt h]
   simp
 #align deriv_within_zero_of_not_differentiable_within_at derivWithin_zero_of_not_differentiableWithinAt
+
+theorem derivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : derivWithin f s x = 0 := by
+  rw [derivWithin, fderivWithin_zero_of_isolated h, ContinuousLinearMap.zero_apply]
+
+theorem derivWithin_zero_of_nmem_closure (h : x ∉ closure s) : derivWithin f s x = 0 := by
+  rw [derivWithin, fderivWithin_zero_of_nmem_closure h, ContinuousLinearMap.zero_apply]
 
 theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠ 0) :
     DifferentiableWithinAt 𝕜 f s x :=
@@ -252,7 +262,7 @@ theorem UniqueDiffWithinAt.eq_deriv (s : Set 𝕜) (H : UniqueDiffWithinAt 𝕜 
 
 theorem hasDerivAtFilter_iff_isLittleO :
     HasDerivAtFilter f f' x L ↔ (fun x' : 𝕜 => f x' - f x - (x' - x) • f') =o[L] fun x' => x' - x :=
-  Iff.rfl
+  hasFDerivAtFilter_iff_isLittleO ..
 #align has_deriv_at_filter_iff_is_o hasDerivAtFilter_iff_isLittleO
 
 theorem hasDerivAtFilter_iff_tendsto :
@@ -264,7 +274,7 @@ theorem hasDerivAtFilter_iff_tendsto :
 theorem hasDerivWithinAt_iff_isLittleO :
     HasDerivWithinAt f f' s x ↔
       (fun x' : 𝕜 => f x' - f x - (x' - x) • f') =o[𝓝[s] x] fun x' => x' - x :=
-  Iff.rfl
+  hasFDerivAtFilter_iff_isLittleO ..
 #align has_deriv_within_at_iff_is_o hasDerivWithinAt_iff_isLittleO
 
 theorem hasDerivWithinAt_iff_tendsto :
@@ -275,7 +285,7 @@ theorem hasDerivWithinAt_iff_tendsto :
 
 theorem hasDerivAt_iff_isLittleO :
     HasDerivAt f f' x ↔ (fun x' : 𝕜 => f x' - f x - (x' - x) • f') =o[𝓝 x] fun x' => x' - x :=
-  Iff.rfl
+  hasFDerivAtFilter_iff_isLittleO ..
 #align has_deriv_at_iff_is_o hasDerivAt_iff_isLittleO
 
 theorem hasDerivAt_iff_tendsto :
@@ -311,7 +321,7 @@ theorem hasDerivWithinAt_congr_set {s t : Set 𝕜} (h : s =ᶠ[𝓝 x] t) :
   hasFDerivWithinAt_congr_set h
 #align has_deriv_within_at_congr_set hasDerivWithinAt_congr_set
 
-alias hasDerivWithinAt_congr_set ↔ HasDerivWithinAt.congr_set _
+alias ⟨HasDerivWithinAt.congr_set, _⟩ := hasDerivWithinAt_congr_set
 #align has_deriv_within_at.congr_set HasDerivWithinAt.congr_set
 
 @[simp]
@@ -326,7 +336,7 @@ theorem hasDerivWithinAt_Ioi_iff_Ici [PartialOrder 𝕜] :
   rw [← Ici_diff_left, hasDerivWithinAt_diff_singleton]
 #align has_deriv_within_at_Ioi_iff_Ici hasDerivWithinAt_Ioi_iff_Ici
 
-alias hasDerivWithinAt_Ioi_iff_Ici ↔ HasDerivWithinAt.Ici_of_Ioi HasDerivWithinAt.Ioi_of_Ici
+alias ⟨HasDerivWithinAt.Ici_of_Ioi, HasDerivWithinAt.Ioi_of_Ici⟩ := hasDerivWithinAt_Ioi_iff_Ici
 #align has_deriv_within_at.Ici_of_Ioi HasDerivWithinAt.Ici_of_Ioi
 #align has_deriv_within_at.Ioi_of_Ici HasDerivWithinAt.Ioi_of_Ici
 
@@ -336,7 +346,7 @@ theorem hasDerivWithinAt_Iio_iff_Iic [PartialOrder 𝕜] :
   rw [← Iic_diff_right, hasDerivWithinAt_diff_singleton]
 #align has_deriv_within_at_Iio_iff_Iic hasDerivWithinAt_Iio_iff_Iic
 
-alias hasDerivWithinAt_Iio_iff_Iic ↔ HasDerivWithinAt.Iic_of_Iio HasDerivWithinAt.Iio_of_Iic
+alias ⟨HasDerivWithinAt.Iic_of_Iio, HasDerivWithinAt.Iio_of_Iic⟩ := hasDerivWithinAt_Iio_iff_Iic
 #align has_deriv_within_at.Iic_of_Iio HasDerivWithinAt.Iic_of_Iio
 #align has_deriv_within_at.Iio_of_Iic HasDerivWithinAt.Iio_of_Iic
 
@@ -345,7 +355,7 @@ theorem HasDerivWithinAt.Ioi_iff_Ioo [LinearOrder 𝕜] [OrderClosedTopology �
   hasFDerivWithinAt_inter <| Iio_mem_nhds h
 #align has_deriv_within_at.Ioi_iff_Ioo HasDerivWithinAt.Ioi_iff_Ioo
 
-alias HasDerivWithinAt.Ioi_iff_Ioo ↔ HasDerivWithinAt.Ioi_of_Ioo HasDerivWithinAt.Ioo_of_Ioi
+alias ⟨HasDerivWithinAt.Ioi_of_Ioo, HasDerivWithinAt.Ioo_of_Ioi⟩ := HasDerivWithinAt.Ioi_iff_Ioo
 #align has_deriv_within_at.Ioi_of_Ioo HasDerivWithinAt.Ioi_of_Ioo
 #align has_deriv_within_at.Ioo_of_Ioi HasDerivWithinAt.Ioo_of_Ioi
 
@@ -368,6 +378,7 @@ theorem HasDerivWithinAt.mono_of_mem (h : HasDerivWithinAt f f' t x) (hst : t �
     HasDerivWithinAt f f' s x :=
   HasFDerivWithinAt.mono_of_mem h hst
 #align has_deriv_within_at.mono_of_mem HasDerivWithinAt.mono_of_mem
+#align has_deriv_within_at.nhds_within HasDerivWithinAt.mono_of_mem
 
 theorem HasDerivAt.hasDerivAtFilter (h : HasDerivAt f f' x) (hL : L ≤ 𝓝 x) :
     HasDerivAtFilter f f' x L :=
@@ -410,11 +421,6 @@ theorem HasDerivWithinAt.union (hs : HasDerivWithinAt f f' s x) (ht : HasDerivWi
     HasDerivWithinAt f f' (s ∪ t) x :=
   hs.hasFDerivWithinAt.union ht.hasFDerivWithinAt
 #align has_deriv_within_at.union HasDerivWithinAt.union
-
-theorem HasDerivWithinAt.nhdsWithin (h : HasDerivWithinAt f f' s x) (ht : s ∈ 𝓝[t] x) :
-    HasDerivWithinAt f f' t x :=
-  (hasDerivWithinAt_inter' ht).1 (h.mono (inter_subset_right _ _))
-#align has_deriv_within_at.nhds_within HasDerivWithinAt.nhdsWithin
 
 theorem HasDerivWithinAt.hasDerivAt (h : HasDerivWithinAt f f' s x) (hs : s ∈ 𝓝 x) :
     HasDerivAt f f' x :=
@@ -467,12 +473,18 @@ theorem derivWithin_fderivWithin :
     smulRight (1 : 𝕜 →L[𝕜] 𝕜) (derivWithin f s x) = fderivWithin 𝕜 f s x := by simp [derivWithin]
 #align deriv_within_fderiv_within derivWithin_fderivWithin
 
+theorem norm_derivWithin_eq_norm_fderivWithin : ‖derivWithin f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
+  simp [← derivWithin_fderivWithin]
+
 theorem fderiv_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x :=
   rfl
 #align fderiv_deriv fderiv_deriv
 
 theorem deriv_fderiv : smulRight (1 : 𝕜 →L[𝕜] 𝕜) (deriv f x) = fderiv 𝕜 f x := by simp [deriv]
 #align deriv_fderiv deriv_fderiv
+
+theorem norm_deriv_eq_norm_fderiv : ‖deriv f x‖ = ‖fderiv 𝕜 f x‖ := by
+  simp [← deriv_fderiv]
 
 theorem DifferentiableAt.derivWithin (h : DifferentiableAt 𝕜 f x) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin f s x = deriv f x := by
@@ -516,11 +528,16 @@ theorem derivWithin_inter (ht : t ∈ 𝓝 x) : derivWithin f (s ∩ t) x = deri
   rw [fderivWithin_inter ht]
 #align deriv_within_inter derivWithin_inter
 
-theorem derivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x = deriv f x := by
-  unfold derivWithin
-  rw [fderivWithin_of_open hs hx]
-  rfl
-#align deriv_within_of_open derivWithin_of_open
+theorem derivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : derivWithin f s x = deriv f x := by
+  simp only [derivWithin, deriv, fderivWithin_of_mem_nhds h]
+
+theorem derivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) : derivWithin f s x = deriv f x :=
+  derivWithin_of_mem_nhds (hs.mem_nhds hx)
+#align deriv_within_of_open derivWithin_of_isOpen
+
+lemma deriv_eqOn {f' : 𝕜 → F} (hs : IsOpen s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
+    s.EqOn (deriv f) f' := fun x hx ↦ by
+  rw [← derivWithin_of_isOpen hs hx, (hf' _ hx).derivWithin <| hs.uniqueDiffWithinAt hx]
 
 theorem deriv_mem_iff {f : 𝕜 → F} {s : Set F} {x : 𝕜} :
     deriv f x ∈ s ↔
@@ -587,15 +604,39 @@ theorem HasDerivWithinAt.congr_of_eventuallyEq (h : HasDerivWithinAt f f' s x)
   HasDerivAtFilter.congr_of_eventuallyEq h h₁ hx
 #align has_deriv_within_at.congr_of_eventually_eq HasDerivWithinAt.congr_of_eventuallyEq
 
+theorem Filter.EventuallyEq.hasDerivWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
+    HasDerivWithinAt f₁ f' s x ↔ HasDerivWithinAt f f' s x :=
+  ⟨fun h' ↦ h'.congr_of_eventuallyEq h₁.symm hx.symm, fun h' ↦ h'.congr_of_eventuallyEq h₁ hx⟩
+
 theorem HasDerivWithinAt.congr_of_eventuallyEq_of_mem (h : HasDerivWithinAt f f' s x)
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : HasDerivWithinAt f₁ f' s x :=
   h.congr_of_eventuallyEq h₁ (h₁.eq_of_nhdsWithin hx)
 #align has_deriv_within_at.congr_of_eventually_eq_of_mem HasDerivWithinAt.congr_of_eventuallyEq_of_mem
 
+theorem Filter.EventuallyEq.hasDerivWithinAt_iff_of_mem (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
+    HasDerivWithinAt f₁ f' s x ↔ HasDerivWithinAt f f' s x :=
+  ⟨fun h' ↦ h'.congr_of_eventuallyEq_of_mem h₁.symm hx,
+  fun h' ↦ h'.congr_of_eventuallyEq_of_mem h₁ hx⟩
+
+theorem HasStrictDerivAt.congr_deriv (h : HasStrictDerivAt f f' x) (h' : f' = g') :
+    HasStrictDerivAt f g' x :=
+  h.congr_fderiv <| congr_arg _ h'
+
+theorem HasDerivAt.congr_deriv (h : HasDerivAt f f' x) (h' : f' = g') : HasDerivAt f g' x :=
+  HasFDerivAt.congr_fderiv h <| congr_arg _ h'
+
+theorem HasDerivWithinAt.congr_deriv (h : HasDerivWithinAt f f' s x) (h' : f' = g') :
+    HasDerivWithinAt f g' s x :=
+  HasFDerivWithinAt.congr_fderiv h <| congr_arg _ h'
+
 theorem HasDerivAt.congr_of_eventuallyEq (h : HasDerivAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasDerivAt f₁ f' x :=
   HasDerivAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ : _)
 #align has_deriv_at.congr_of_eventually_eq HasDerivAt.congr_of_eventuallyEq
+
+theorem Filter.EventuallyEq.hasDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
+    HasDerivAt f₀ f' x ↔ HasDerivAt f₁ f' x :=
+  ⟨fun h' ↦ h'.congr_of_eventuallyEq h.symm, fun h' ↦ h'.congr_of_eventuallyEq h⟩
 
 theorem Filter.EventuallyEq.derivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     derivWithin f₁ s x = derivWithin f s x := by
@@ -726,3 +767,45 @@ protected theorem HasDerivAt.continuousOn {f f' : 𝕜 → F} (hderiv : ∀ x �
 #align has_deriv_at.continuous_on HasDerivAt.continuousOn
 
 end Continuous
+
+/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
+only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
+theorem HasDerivAt.le_of_lip' {f : 𝕜 → F} {f' : F} {x₀ : 𝕜} (hf : HasDerivAt f f' x₀)
+    {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) :
+    ‖f'‖ ≤ C := by
+  simpa using HasFDerivAt.le_of_lip' hf.hasFDerivAt hC₀ hlip
+
+/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. -/
+theorem HasDerivAt.le_of_lipschitzOn {f : 𝕜 → F} {f' : F} {x₀ : 𝕜} (hf : HasDerivAt f f' x₀)
+    {s : Set 𝕜} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖f'‖ ≤ C := by
+  simpa using HasFDerivAt.le_of_lipschitzOn hf.hasFDerivAt hs hlip
+
+/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+then its derivative at `x₀` has norm bounded by `C`. -/
+theorem HasDerivAt.le_of_lipschitz {f : 𝕜 → F} {f' : F} {x₀ : 𝕜} (hf : HasDerivAt f f' x₀)
+    {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖f'‖ ≤ C := by
+  simpa using HasFDerivAt.le_of_lipschitz hf.hasFDerivAt hlip
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
+only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
+theorem norm_deriv_le_of_lip' {f : 𝕜 → F} {x₀ : 𝕜}
+    {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) :
+    ‖deriv f x₀‖ ≤ C := by
+  simpa [norm_deriv_eq_norm_fderiv] using norm_fderiv_le_of_lip' 𝕜 hC₀ hlip
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`.
+Version using `deriv`. -/
+theorem norm_deriv_le_of_lipschitzOn {f : 𝕜 → F} {x₀ : 𝕜} {s : Set 𝕜} (hs : s ∈ 𝓝 x₀)
+    {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖deriv f x₀‖ ≤ C := by
+  simpa [norm_deriv_eq_norm_fderiv] using norm_fderiv_le_of_lipschitzOn 𝕜 hs hlip
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz then
+its derivative at `x₀` has norm bounded by `C`.
+Version using `deriv`. -/
+theorem norm_deriv_le_of_lipschitz {f : 𝕜 → F} {x₀ : 𝕜}
+    {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖deriv f x₀‖ ≤ C := by
+  simpa [norm_deriv_eq_norm_fderiv] using norm_fderiv_le_of_lipschitz 𝕜 hlip

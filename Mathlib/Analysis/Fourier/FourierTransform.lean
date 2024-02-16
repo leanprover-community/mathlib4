@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Complex.Circle
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 #align_import analysis.fourier.fourier_transform from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
@@ -104,9 +104,7 @@ theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : Multiplicative �
   ext1 w
   dsimp only [fourierIntegral, Function.comp_apply]
   conv in L _ => rw [← add_sub_cancel v v₀]
-  rw [integral_add_right_eq_self fun v : V => e[-L (v - v₀) w] • f v]
-  dsimp only
-  rw [← integral_smul]
+  rw [integral_add_right_eq_self fun v : V => e[-L (v - v₀) w] • f v, ← integral_smul]
   congr 1 with v
   rw [← smul_assoc, smul_eq_mul, ← Submonoid.coe_mul, ← e.map_mul, ← ofAdd_add, ←
     LinearMap.neg_apply, ← sub_eq_add_neg, ← LinearMap.sub_apply, LinearMap.map_sub, neg_sub]
@@ -161,13 +159,12 @@ theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W 
 #align vector_fourier.fourier_integral_add VectorFourier.fourierIntegral_add
 
 /-- The Fourier integral of an `L^1` function is a continuous function. -/
-theorem fourierIntegral_continuous [TopologicalSpace.FirstCountableTopology W] (he : Continuous e)
+theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e)
     (hL : Continuous fun p : V × W => L p.1 p.2) {f : V → E} (hf : Integrable f μ) :
     Continuous (fourierIntegral e μ L f) := by
   apply continuous_of_dominated
   · exact fun w => ((fourier_integral_convergent_iff he hL w).mp hf).1
   · refine' fun w => ae_of_all _ fun v => _
-    · exact fun v => ‖f v‖
     · rw [norm_smul, Complex.norm_eq_abs, abs_coe_circle, one_mul]
   · exact hf.norm
   · rw [continuous_induced_rng] at he
@@ -265,7 +262,7 @@ theorem fourierIntegral_def (f : ℝ → E) (w : ℝ) :
   rfl
 #align real.fourier_integral_def Real.fourierIntegral_def
 
-scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
+@[inherit_doc] scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
 
 theorem fourierIntegral_eq_integral_exp_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
     (f : ℝ → E) (w : ℝ) :

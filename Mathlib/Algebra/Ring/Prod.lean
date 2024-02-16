@@ -7,6 +7,7 @@ import Mathlib.Data.Int.Cast.Prod
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Order.Group.Prod
+import Mathlib.Algebra.Order.Ring.Defs
 
 #align_import algebra.ring.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -153,7 +154,7 @@ theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
 #align non_unital_ring_hom.snd_comp_prod NonUnitalRingHom.snd_comp_prod
 
 theorem prod_unique (f : R →ₙ+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align non_unital_ring_hom.prod_unique NonUnitalRingHom.prod_unique
 
 end Prod
@@ -240,7 +241,7 @@ theorem snd_comp_prod : (snd S T).comp (f.prod g) = g :=
 #align ring_hom.snd_comp_prod RingHom.snd_comp_prod
 
 theorem prod_unique (f : R →+* S × T) : ((fst S T).comp f).prod ((snd S T).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply, Prod.mk.eta]
+  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
 #align ring_hom.prod_unique RingHom.prod_unique
 
 end Prod
@@ -352,7 +353,7 @@ def prodZeroRing : R ≃+* R × S where
   map_add' := by simp
   map_mul' := by simp
   left_inv x := rfl
-  right_inv x := by cases x; simp
+  right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 #align ring_equiv.prod_zero_ring RingEquiv.prodZeroRing
 #align ring_equiv.prod_zero_ring_symm_apply RingEquiv.prodZeroRing_symm_apply
 #align ring_equiv.prod_zero_ring_apply RingEquiv.prodZeroRing_apply
@@ -365,7 +366,7 @@ def zeroRingProd : R ≃+* S × R where
   map_add' := by simp
   map_mul' := by simp
   left_inv x := rfl
-  right_inv x := by cases x; simp
+  right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 #align ring_equiv.zero_ring_prod RingEquiv.zeroRingProd
 #align ring_equiv.zero_ring_prod_symm_apply RingEquiv.zeroRingProd_symm_apply
 #align ring_equiv.zero_ring_prod_apply RingEquiv.zeroRingProd_apply

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Prod
 
 #align_import algebra.triv_sq_zero_ext from "leanprover-community/mathlib"@"ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d"
@@ -40,11 +41,16 @@ Many of the later results in this file are only stated for the commutative `R'` 
   `TrivSqZeroExt R M`.
 * `triv_sq_zero_ext.algebra`: the associated `R`-algebra structure.
 * `TrivSqZeroExt.lift`: the universal property of the trivial square-zero extension; algebra
+  morphisms `TrivSqZeroExt R M →ₐ[S] A` are uniquely defined by an algebra morphism `f : R →ₐ[S] A`
+  on `R` and a linear map `g : M →ₗ[S] A` on `M` such that:
+  * `g x * g y = 0`: the elements of `M` continue to square to zero.
+  * `g (r • x) = f r * g x` and `g (op r • x) = g x * f r`: left and right actions are preserved by
+    `g`.
+* `TrivSqZeroExt.lift`: the universal property of the trivial square-zero extension; algebra
   morphisms `TrivSqZeroExt R M →ₐ[R] A` are uniquely defined by linear maps `M →ₗ[R] A` for
   which the product of any two elements in the range is zero.
 
 -/
-
 
 universe u v w
 
@@ -335,7 +341,7 @@ theorem inl_smul [Monoid S] [AddMonoid M] [SMul S R] [DistribMulAction S M] (s :
 
 theorem inl_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → R) :
     (inl (∑ i in s, f i) : tsze R M) = ∑ i in s, inl (f i) :=
-  (LinearMap.inl ℕ _ _).map_sum
+  map_sum (LinearMap.inl ℕ _ _) _ _
 #align triv_sq_zero_ext.inl_sum TrivSqZeroExt.inl_sum
 
 end
@@ -374,7 +380,7 @@ theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S M] (r : S) (m : M)
 
 theorem inr_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → M) :
     (inr (∑ i in s, f i) : tsze R M) = ∑ i in s, inr (f i) :=
-  (LinearMap.inr ℕ _ _).map_sum
+  map_sum (LinearMap.inr ℕ _ _) _ _
 #align triv_sq_zero_ext.inr_sum TrivSqZeroExt.inr_sum
 
 end
@@ -498,6 +504,16 @@ theorem inr_mul_inl [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒ�
   ext (zero_mul r) <|
     show (0 : R) • (0 : M) + op r • m = op r • m by rw [smul_zero, zero_add]
 #align triv_sq_zero_ext.inr_mul_inl TrivSqZeroExt.inr_mul_inl
+
+theorem inl_mul_eq_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+    (r : R) (x : tsze R M) :
+    inl r * x = r • x :=
+  ext rfl (by dsimp; rw [smul_zero, add_zero])
+
+theorem mul_inl_eq_op_smul [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+    (x : tsze R M) (r : R) :
+    x * inl r = op r • x :=
+  ext rfl (by dsimp; rw [smul_zero, zero_add])
 
 instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     MulOneClass (tsze R M) :=
@@ -768,7 +784,7 @@ theorem algebraMap_eq_inl' (s : S) : algebraMap S (tsze R M) s = inl (algebraMap
   rfl
 #align triv_sq_zero_ext.algebra_map_eq_inl' TrivSqZeroExt.algebraMap_eq_inl'
 
-/-- The canonical `R`-algebra projection `TrivSqZeroExt R M → R`. -/
+/-- The canonical `S`-algebra projection `TrivSqZeroExt R M → R`. -/
 @[simps]
 def fstHom : tsze R M →ₐ[S] R where
   toFun := fst
@@ -779,6 +795,16 @@ def fstHom : tsze R M →ₐ[S] R where
   commutes' _r := fst_inl M _
 #align triv_sq_zero_ext.fst_hom TrivSqZeroExt.fstHom
 
+/-- The canonical `S`-algebra inclusion `R → TrivSqZeroExt R M`. -/
+@[simps]
+def inlAlgHom : R →ₐ[S] tsze R M where
+  toFun := inl
+  map_one' := inl_one _
+  map_mul' := inl_mul _
+  map_zero' := inl_zero (M := M)
+  map_add' := inl_add _
+  commutes' _r := (algebraMap_eq_inl' _ _ _ _).symm
+
 variable {R R' S M}
 
 theorem algHom_ext {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'] A⦄
@@ -788,64 +814,127 @@ theorem algHom_ext {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R']
 #align triv_sq_zero_ext.alg_hom_ext TrivSqZeroExt.algHom_ext
 
 @[ext]
-theorem algHom_ext' {A} [Semiring A] [Algebra R' A] ⦃f g : tsze R' M →ₐ[R'] A⦄
-    (h : f.toLinearMap.comp (inrHom R' M) = g.toLinearMap.comp (inrHom R' M)) : f = g :=
-  algHom_ext <| LinearMap.congr_fun h
+theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A⦄
+    (hinl : f.comp (inlAlgHom S R M) = g.comp (inlAlgHom S R M))
+    (hinr : f.toLinearMap.comp (inrHom R M |>.restrictScalars S) =
+      g.toLinearMap.comp (inrHom R M |>.restrictScalars S)) : f = g :=
+  AlgHom.toLinearMap_injective <|
+    linearMap_ext (AlgHom.congr_fun hinl) (LinearMap.congr_fun hinr)
 #align triv_sq_zero_ext.alg_hom_ext' TrivSqZeroExt.algHom_ext'
 
-variable {A : Type*} [Semiring A] [Algebra R' A]
+variable {A : Type*} [Semiring A] [Algebra S A] [Algebra R' A]
 
-/-- There is an alg_hom from the trivial square zero extension to any `R`-algebra with a submodule
-whose products are all zero.
+/--
+Assemble an algebra morphism `TrivSqZeroExt R M →ₐ[S] A` from separate morphisms on `R` and `M`.
 
-See `TrivSqZeroExt.lift` for this as an equiv. -/
-def liftAux (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) : tsze R' M →ₐ[R'] A :=
+Namely, we require that for an algebra morphism `f : R →ₐ[S] A` and a linear map `g : M →ₗ[S] A`,
+we have:
+
+* `g x * g y = 0`: the elements of `M` continue to square to zero.
+* `g (r • x) = f r * g x` and `g (op r • x) = g x * f r`: scalar multiplication on the left and
+  right is sent to left- and right- multiplication by the image under `f`.
+
+See `TrivSqZeroExt.liftEquiv` for this as an equiv; namely that any such algebra morphism can be
+factored in this way.
+
+When `R` is commutative, this can be invoked with `f = Algebra.ofId R A`, which satisfies `hfg` and
+`hgf`. This version is captured as an equiv by `TrivSqZeroExt.liftEquivOfComm`. -/
+def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
+    (hg : ∀ x y, g x * g y = 0)
+    (hfg : ∀ r x, g (r • x) = f r * g x)
+    (hgf : ∀ r x, g (op r • x) = g x * f r) : tsze R M →ₐ[S] A :=
   AlgHom.ofLinearMap
-    ((Algebra.linearMap R' A).comp (fstHom R' R' M).toLinearMap + f.comp (sndHom R' M))
-    (show algebraMap R' A 1 + f (0 : M) = 1 by rw [map_zero, map_one, add_zero])
+    ((f.comp <| fstHom S R M).toLinearMap + g ∘ₗ (sndHom R M |>.restrictScalars S))
+    (show f 1 + g (0 : M) = 1 by rw [map_zero, map_one, add_zero])
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
-        simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul, hf, smul_zero,
+        simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul, hg, smul_zero,
           op_smul_eq_smul]
-        rw [← RingHom.map_mul, LinearMap.map_add, ← Algebra.commutes _ (f _), ← Algebra.smul_def, ←
-          Algebra.smul_def, add_right_comm, add_assoc, LinearMap.map_smul, LinearMap.map_smul])
-#align triv_sq_zero_ext.lift_aux TrivSqZeroExt.liftAux
+        rw [← AlgHom.map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
+#align triv_sq_zero_ext.lift_aux TrivSqZeroExt.lift
 
 @[simp]
-theorem liftAux_apply_inr (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) (m : M) :
-    liftAux f hf (inr m) = f m :=
-  show algebraMap R' A 0 + f m = f m by rw [RingHom.map_zero, zero_add]
-#align triv_sq_zero_ext.lift_aux_apply_inr TrivSqZeroExt.liftAux_apply_inr
+theorem lift_apply_inl (f : R →ₐ[S] A) (g : M →ₗ[S] A)
+    (hg : ∀ x y, g x * g y = 0)
+    (hfg : ∀ r x, g (r • x) = f r * g x)
+    (hgf : ∀ r x, g (op r • x) = g x * f r)
+    (r : R) :
+    lift f g hg hfg hgf (inl r) = f r :=
+  show f r + g 0 = f r by rw [map_zero, add_zero]
 
 @[simp]
-theorem liftAux_comp_inrHom (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) :
-    (liftAux f hf).toLinearMap.comp (inrHom R' M) = f :=
-  LinearMap.ext <| liftAux_apply_inr f hf
-#align triv_sq_zero_ext.lift_aux_comp_inr_hom TrivSqZeroExt.liftAux_comp_inrHom
+theorem lift_apply_inr (f : R →ₐ[S] A) (g : M →ₗ[S] A)
+    (hg : ∀ x y, g x * g y = 0)
+    (hfg : ∀ r x, g (r • x) = f r * g x)
+    (hgf : ∀ r x, g (op r • x) = g x * f r)
+    (m : M) :
+    lift f g hg hfg hgf (inr m) = g m :=
+  show f 0 + g m = g m by rw [map_zero, zero_add]
+#align triv_sq_zero_ext.lift_aux_apply_inr TrivSqZeroExt.lift_apply_inr
 
--- When applied to `inr` itself, `lift_aux` is the identity.
 @[simp]
-theorem liftAux_inrHom : liftAux (inrHom R' M) (inr_mul_inr R') = AlgHom.id R' (tsze R' M) :=
-  algHom_ext' <| liftAux_comp_inrHom _ _
-#align triv_sq_zero_ext.lift_aux_inr_hom TrivSqZeroExt.liftAux_inrHom
+theorem lift_comp_inlHom (f : R →ₐ[S] A) (g : M →ₗ[S] A)
+    (hg : ∀ x y, g x * g y = 0)
+    (hfg : ∀ r x, g (r • x) = f r * g x)
+    (hgf : ∀ r x, g (op r • x) = g x * f r) :
+    (lift f g hg hfg hgf).comp (inlAlgHom S R M) = f :=
+  AlgHom.ext <| lift_apply_inl f g hg hfg hgf
+
+@[simp]
+theorem lift_comp_inrHom (f : R →ₐ[S] A) (g : M →ₗ[S] A)
+    (hg : ∀ x y, g x * g y = 0)
+    (hfg : ∀ r x, g (r • x) = f r * g x)
+    (hgf : ∀ r x, g (op r • x) = g x * f r) :
+    (lift f g hg hfg hgf).toLinearMap.comp (inrHom R M |>.restrictScalars S) = g :=
+  LinearMap.ext <| lift_apply_inr f g hg hfg hgf
+#align triv_sq_zero_ext.lift_aux_comp_inr_hom TrivSqZeroExt.lift_comp_inrHom
+
+/-- When applied to `inr` and `inl` themselves, `lift` is the identity. -/
+@[simp]
+theorem lift_inlAlgHom_inrHom :
+    lift (inlAlgHom _ _ _) (inrHom R M |>.restrictScalars S)
+      (inr_mul_inr R) (fun _ _ => (inl_mul_inr _ _).symm) (fun _ _ => (inr_mul_inl _ _).symm) =
+    AlgHom.id S (tsze R M) :=
+  algHom_ext' (lift_comp_inlHom _ _ _ _ _) (lift_comp_inrHom _ _ _ _ _)
+#align triv_sq_zero_ext.lift_aux_inr_hom TrivSqZeroExt.lift_inlAlgHom_inrHomₓ
 
 /-- A universal property of the trivial square-zero extension, providing a unique
-`TrivSqZeroExt R M →ₐ[R] A` for every linear map `M →ₗ[R] A` whose range has no non-zero
-products.
+`TrivSqZeroExt R M →ₐ[R] A` for every pair of maps `f : R →ₐ[S] A` and `g : M →ₗ[S] A`,
+where the range of `g` has no non-zero products, and scaling the input to `g` on the left or right
+amounts to a corresponding multiplication by `f` in the output.
 
 This isomorphism is named to match the very similar `Complex.lift`. -/
-@[simps]
-def lift : { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) where
-  toFun f := liftAux f f.prop
+@[simps!]
+def liftEquiv :
+    {fg : (R →ₐ[S] A) × (M →ₗ[S] A) //
+      (∀ x y, fg.2 x * fg.2 y = 0) ∧
+      (∀ r x, fg.2 (r • x) = fg.1 r * fg.2 x) ∧
+      (∀ r x, fg.2 (op r • x) = fg.2 x * fg.1 r)} ≃ (tsze R M →ₐ[S] A) where
+  toFun fg := lift fg.val.1 fg.val.2 fg.prop.1 fg.prop.2.1 fg.prop.2.2
   invFun F :=
-    ⟨F.toLinearMap.comp (inrHom R' M), fun _x _y =>
-      (F.map_mul _ _).symm.trans <| (F.congr_arg <| inr_mul_inr _ _ _).trans F.map_zero⟩
-  left_inv f := Subtype.ext <| liftAux_comp_inrHom _ f.prop
-  right_inv _F := algHom_ext' <| liftAux_comp_inrHom _ _
-#align triv_sq_zero_ext.lift TrivSqZeroExt.lift
+    ⟨(F.comp (inlAlgHom _ _ _), F.toLinearMap ∘ₗ (inrHom _ _ |>.restrictScalars _)),
+      (fun _x _y =>
+        (F.map_mul _ _).symm.trans <| (F.congr_arg <| inr_mul_inr _ _ _).trans F.map_zero),
+      (fun _r _x => (F.congr_arg (inl_mul_inr _ _).symm).trans (F.map_mul _ _)),
+      (fun _r _x => (F.congr_arg (inr_mul_inl _ _).symm).trans (F.map_mul _ _))⟩
+  left_inv _f := Subtype.ext <| Prod.ext (lift_comp_inlHom _ _ _ _ _) (lift_comp_inrHom _ _ _ _ _)
+  right_inv _F := algHom_ext' (lift_comp_inlHom _ _ _ _ _) (lift_comp_inrHom _ _ _ _ _)
 
-attribute [nolint simpNF] lift_symm_apply_coe
+/-- A simplified version of `TrivSqZeroExt.liftEquiv` for the commutative case. -/
+def liftEquivOfComm :
+    { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) := by
+  refine Equiv.trans ?_ liftEquiv
+  exact {
+    toFun := fun f => ⟨(Algebra.ofId _ _, f.val), f.prop,
+      fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply],
+      fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply, Algebra.commutes]⟩
+    invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩
+    left_inv := fun f => rfl
+    right_inv := fun fg => Subtype.ext <|
+      Prod.ext (AlgHom.toLinearMap_injective <| LinearMap.ext_ring <| by simp)
+      rfl }
+#align triv_sq_zero_ext.lift TrivSqZeroExt.liftEquiv
 
 end Algebra
 

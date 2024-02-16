@@ -23,7 +23,7 @@ namespace FreeMonoid
 
 variable {α : Type*}
 
-instance : StarSemigroup (FreeMonoid α) where
+instance : StarMul (FreeMonoid α) where
   star := List.reverse
   star_involutive := List.reverse_reverse
   star_mul := List.reverse_append

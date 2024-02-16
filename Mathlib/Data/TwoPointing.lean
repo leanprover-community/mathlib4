@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Sum.Basic
-import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Logic.Nonempty
 
 #align_import data.two_pointing from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
@@ -138,7 +138,7 @@ theorem sum_snd : (p.sum q).snd = Sum.inr q.snd :=
 
 /-- The `false`, `true` two-pointing of `Bool`. -/
 protected def bool : TwoPointing Bool :=
-  ⟨(false, true), Bool.ff_ne_tt⟩
+  ⟨(false, true), Bool.false_ne_true⟩
 #align two_pointing.bool TwoPointing.bool
 
 @[simp]

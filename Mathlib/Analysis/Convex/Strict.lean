@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Basic
-import Mathlib.Topology.Algebra.Order.Group
+import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Algebra.Group.Basic
 
 #align_import analysis.convex.strict from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
@@ -109,12 +110,13 @@ protected theorem StrictConvex.convex (hs : StrictConvex 𝕜 s) : Convex 𝕜 s
 #align strict_convex.convex StrictConvex.convex
 
 /-- An open convex set is strictly convex. -/
-protected theorem Convex.strictConvex_of_open (h : IsOpen s) (hs : Convex 𝕜 s) : StrictConvex 𝕜 s :=
+protected theorem Convex.strictConvex_of_isOpen (h : IsOpen s) (hs : Convex 𝕜 s) :
+    StrictConvex 𝕜 s :=
   fun _ hx _ hy _ _ _ ha hb hab => h.interior_eq.symm ▸ hs hx hy ha.le hb.le hab
-#align convex.strict_convex_of_open Convex.strictConvex_of_open
+#align convex.strict_convex_of_open Convex.strictConvex_of_isOpen
 
 theorem IsOpen.strictConvex_iff (h : IsOpen s) : StrictConvex 𝕜 s ↔ Convex 𝕜 s :=
-  ⟨StrictConvex.convex, Convex.strictConvex_of_open h⟩
+  ⟨StrictConvex.convex, Convex.strictConvex_of_isOpen h⟩
 #align is_open.strict_convex_iff IsOpen.strictConvex_iff
 
 theorem strictConvex_singleton (c : E) : StrictConvex 𝕜 ({c} : Set E) :=
@@ -243,7 +245,7 @@ variable [ContinuousAdd E] {s t : Set E}
 
 theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
     StrictConvex 𝕜 (s + t) := by
-  rintro _ ⟨v, w, hv, hw, rfl⟩ _ ⟨x, y, hx, hy, rfl⟩ h a b ha hb hab
+  rintro _ ⟨v, hv, w, hw, rfl⟩ _ ⟨x, hx, y, hy, rfl⟩ h a b ha hb hab
   rw [smul_add, smul_add, add_add_add_comm]
   obtain rfl | hvx := eq_or_ne v x
   · refine' interior_mono (add_subset_add (singleton_subset_iff.2 hv) Subset.rfl) _
@@ -272,7 +274,7 @@ theorem StrictConvex.vadd (hs : StrictConvex 𝕜 s) (x : E) : StrictConvex 𝕜
 
 end continuous_add
 
-section ContinuousSmul
+section ContinuousSMul
 
 variable [LinearOrderedField 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
   [LinearMap.CompatibleSMul E E 𝕜 𝕝] {s : Set E} {x : E}
@@ -288,7 +290,7 @@ theorem StrictConvex.affinity [ContinuousAdd E] (hs : StrictConvex 𝕜 s) (z : 
   (hs.smul c).vadd z
 #align strict_convex.affinity StrictConvex.affinity
 
-end ContinuousSmul
+end ContinuousSMul
 
 end AddCommGroup
 
@@ -443,7 +445,7 @@ theorem strictConvex_iff_ordConnected : StrictConvex 𝕜 s ↔ s.OrdConnected :
   strictConvex_iff_convex.trans convex_iff_ordConnected
 #align strict_convex_iff_ord_connected strictConvex_iff_ordConnected
 
-alias strictConvex_iff_ordConnected ↔ StrictConvex.ordConnected _
+alias ⟨StrictConvex.ordConnected, _⟩ := strictConvex_iff_ordConnected
 #align strict_convex.ord_connected StrictConvex.ordConnected
 
 end
