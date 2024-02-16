@@ -947,10 +947,8 @@ variable {N P : Type*} [AddCommMonoid N] [Module R' N] [Module R'ᵐᵒᵖ N] [I
 
 Note that we cannot neatly state the non-commutative case, as we do not have morphisms of bimodules.
 -/
-def map (f : M →ₗ[R'] N) : TrivSqZeroExt R' M →ₐ[R'] TrivSqZeroExt R' N := by
-  refine TrivSqZeroExt.liftEquivOfComm.toFun ⟨(TrivSqZeroExt.inrHom R' N).comp f, ?_⟩
-  intro x y
-  simp only [LinearMap.coe_comp, Function.comp_apply, inrHom_apply, inr_mul_inr]
+def map (f : M →ₗ[R'] N) : TrivSqZeroExt R' M →ₐ[R'] TrivSqZeroExt R' N :=
+  liftEquivOfComm ⟨inrHom R' N ∘ₗ f, fun _ _ => inr_mul_inr _ _ _⟩
 
 @[simp]
 theorem map_inl (f : M →ₗ[R'] N) (r : R') :
