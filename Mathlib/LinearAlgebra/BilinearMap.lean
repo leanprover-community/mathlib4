@@ -403,7 +403,7 @@ variable (R M) in
 /-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`.
 
 This should eventually replace `_root_.BilinForm`. -/
-abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
+protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
 
 /-- The restriction of a bilinear form to a submodule. -/
 abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : BilinForm R M) : BilinForm R p :=
