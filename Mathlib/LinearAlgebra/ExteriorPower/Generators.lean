@@ -6,7 +6,35 @@ Authors: Sophie Morel
 import Mathlib.LinearAlgebra.ExteriorPower.Basic
 import Mathlib.Order.Extension.Well
 
-/-! Add description. -/
+/-!
+# Basis of the exterior power
+
+We construct generating families and bases for the exterior powers of a module.
+
+## Definitions
+
+* `ExteriorPower.BasisOfBasis`: If `b` is a basis of `M` (indexed by a linearly ordered type),
+the basis of the `n`th exterior power of `M` formed by the `n`-fold exterior products of elements
+of `b`.
+
+## Theorems
+
+* `ExteriorPower.Finite`: The `n`th exterior power of a finite module is a finite module.
+
+* `ExteriorPower.span_top_of_span_top` and `ExteriorPower.span_top_of_span_top'`: If a family of
+vectors spans `M`, then the family of its `n`-fold exterior products spans `Λ[R]^n M`. (We give
+versions in the exterior algebra and in the exterior power.)
+
+* `ExteriorPower.FreeOfFree`: If `M` is a free module, then so is its `n`th exterior power.
+
+* `ExteriorPower.FinrankOfFiniteFree`: If `R` satisfies the strong rank condition and `M` is
+finite free of rank `r`, then the `n`th exterior power of `M` is of finrank `Nat.choose r n`.
+
+* `ExteriorPower.ιMulti_family_linearIndependent_field`: If `R` is a field, and if `v` is a
+linearly independent family of vectors (indexed by a linearly ordered type), then the family of
+its `n`-fold exterior products is also linearly independent.
+
+-/
 
 universe u v uM uN uN' uN'' uE uF
 
@@ -263,7 +291,7 @@ lemma ιMulti_family_linearIndependent_ofBasis {I : Type*} [LinearOrder I] (b : 
   (fun ⟨_, _⟩ ↦ by simp only [Function.comp_apply]; apply linearFormOfBasis_apply_diag)
 
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), the basis of the `n`th
-exterior power of `M` formed by the `n`-fold exterior products of elements of `b`.. -/
+exterior power of `M` formed by the `n`-fold exterior products of elements of `b`. -/
 noncomputable def BasisOfBasis {I : Type*} [LinearOrder I] (b : Basis I R M) :
     Basis {s : Finset I // Finset.card s = n} R ((Λ[R]^n) M) :=
   Basis.mk (v := ιMulti_family R n b) (ιMulti_family_linearIndependent_ofBasis _ _ _)

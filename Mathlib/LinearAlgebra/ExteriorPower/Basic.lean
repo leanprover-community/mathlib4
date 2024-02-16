@@ -6,11 +6,45 @@ Authors: Sophie Morel
 import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 import Mathlib.LinearAlgebra.TensorPower
 
-/-! Add description.
+/-!
+# Exterior powers
 
+We introduce the exterior powers of a module `M` over a commutative ring `R`.
 
-This file introduces the notation `Λ[R]^n M` for `ExteriorPower R n M`, which in turn is
-an abbreviation for `LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n`.
+## Notation
+
+The `n`th exterior power of the `R`-module `M` is denoted by `ExteriorPower R n M`; it is a module
+over `R`, defined as `LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n`.
+We also introduce the notation `Λ[R]^n M` for `ExteriorPower R n M`.
+
+## Definitions
+
+* `ExteriorPower.ιMulti` is the canonical alternating map on `M` with values in `Λ[R]^n M`.
+
+* If `f` is a `R`-linear map from `M` to `N`, then `ExteriorPower.map n f` is the linear map
+between `n`th exterior powers induced by `f`.
+
+* `ExteriorPower.toTensorPower`: linear map from the `n`th exterior power to the `n`th
+tensor power (coming from `MultilinearMap.alternatization` via the universal property of
+exterior powers).
+
+## Theorems
+
+* The image of `ExteriorPower.ιMulti` spans `Λ[R]^n M`.
+
+* `ExteriorPower.liftAlternatingEquiv` (universal property of the `n`th exterior power of `M`):
+the linear equivalence between linear maps from `Λ[R]^n M` to a module `N` and `n`-fold
+alternating maps from `M` to `N`.
+
+* `ExteriorPower.map_injective_field`: If `f : M →ₗ[R] N` is injective and `R` is a field, then
+`ExteriorPower.map n f` is injective.
+
+* `ExteriorPower.map_surjective`: If `f : M →ₗ[R] N` is surjective, then `ExteriorPower.map n f`
+is surjective.
+
+* `ExteriorPower.mem_exteriorPower_is_mem_finite`: Every element of `Λ[R]^n M` is in the image of
+`Λ[R]^n P` for some finitely generated submodule `P` of `M`.
+
 -/
 
 open BigOperators
@@ -88,7 +122,7 @@ lemma lhom_ext ⦃f : (Λ[R]^n) M →ₗ[R] N⦄ ⦃g : (Λ[R]^n) M →ₗ[R] N�
 
 /-! The universal property of the `n`th exterior power of `M`: linear maps from
 `Λ[R]^n M` to a module `N` are in linear equivalence with `n`-fold alternating maps from
-`M` to `N`-/
+`M` to `N`. -/
 
 variable {R}
 
@@ -294,7 +328,9 @@ lemma toTensorPower_apply_ιMulti (v : Fin n → M) : toTensorPower R n M (ιMul
   rw [MultilinearMap.alternatization_apply]
   simp only [MultilinearMap.domDomCongr_apply]
 
-/-! Linear form on the exterior power induced by a family of linear forms on the module. -/
+/-! Linear form on the exterior power induced by a family of linear forms on the module. This
+is used to prove the linear independence of some families in the exterior power, cf.
+`ExteriorPower.linearFormOfBasis` and `ExteriorPower.ιMulti_family_linearIndependent_ofBasis`. -/
 
 /-- A family `f` indexed by `Fin n` of linear forms on `M` defines a linear form on the `n`th
 exterior power of `M`, by composing the map `ExteriorPower.toTensorPower` to the `n`th tensor
@@ -352,12 +388,6 @@ lemma alternatingFormOfFamily_apply (f : (_ : Fin n) → (M →ₗ[R] R)) (m : F
 
 variable {R}
 
-/-
-lemma _root_.Submodule.map_subtype (P Q : Submodule R M) (hPQ : P ≤ Q) :
-    ∃ (f : P →ₗ[R] Q), Q.subtype.comp f = P.subtype :=
-  ⟨Submodule.inclusion hPQ, Submodule.subtype_comp_inclusion P Q hPQ⟩
--/
-
 lemma sum_range_map (f : N →ₗ[R] M) (f' : N' →ₗ[R] M) (f'' : N''→ₗ[R] M)
     (hf : ∃ (g : N →ₗ[R] N''), f''.comp g = f) (hf' : ∃ (g' : N' →ₗ[R] N''), f''.comp g' = f') :
     LinearMap.range (map n f) ⊔ LinearMap.range (map n f') ≤ LinearMap.range (map n f'') := by
@@ -371,7 +401,7 @@ lemma sum_range_map (f : N →ₗ[R] M) (f' : N' →ₗ[R] M) (f'' : N''→ₗ[R
     LinearMap.comp_apply, LinearMap.comp_apply]
 
 /-- Every element of `Λ[R]^n M` is in the image of `Λ[R]^n P` for some finitely generated
-submodule P of M. -/
+submodule `P` of `M`. -/
 lemma mem_exteriorPower_is_mem_finite (x : (Λ[R]^n) M) :
     ∃ (P : Submodule R M), Submodule.FG P ∧ x ∈ LinearMap.range (map n (Submodule.subtype P)) := by
   have hx : x ∈ (⊤ : Submodule R ((Λ[R]^n) M)) := by simp only [Submodule.mem_top]
