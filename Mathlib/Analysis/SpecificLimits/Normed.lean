@@ -3,10 +3,12 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Sébastien Gouëzel, Yury G. Kudryashov, Dylan MacKenzie, Patrick Massot
 -/
+import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import analysis.specific_limits.normed from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
