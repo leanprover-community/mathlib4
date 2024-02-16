@@ -8,7 +8,6 @@ import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Apply
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Std.Data.Option.Basic
 import Std.Data.List.Basic
 import Std.Logic
 
