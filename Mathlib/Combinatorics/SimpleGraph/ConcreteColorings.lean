@@ -60,7 +60,6 @@ theorem pathGraph_Hom_coloring {α} (G : SimpleGraph α) (c : G.Coloring Prop) {
     have h_new_hom := ih new_hom hc0
     obtain (hu : u.val < n + 1) | (hu : u.val = n + 1) := u.is_le.lt_or_eq
     · exact h_new_hom ⟨u.val, hu⟩
-    -- c (hom u) ↔ Even ↑u
     let prev_last : Fin (n + 2) := ⟨n, (n + 1).le_succ⟩
     have hpgadj : (pathGraph (n + 2)).Adj prev_last u := by
       simp [pathGraph_adj, hu]

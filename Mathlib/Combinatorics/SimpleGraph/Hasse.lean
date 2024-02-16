@@ -167,10 +167,10 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
     | ⟨hom', hv, hw⟩ =>
       let fun' : Fin (length p + 1) → α := hom'.toFun
       let toFun : Fin (p.length + 2) → α := fun i =>
-        if i.val = 0 then
+        if h : i.val = 0 then
           u
         else
-          fun' ⟨i.val - 1, Nat.lt_succ_iff.mpr (Nat.sub_le_of_le_add (Nat.lt_succ.mp i.prop))⟩
+          fun' (i.pred (Fin.ne_of_vne h))
       let map_rel' : ∀ {a b}, (pathGraph (p.length + 2)).Adj a b → G.Adj (toFun a) (toFun b) := by
         intro (a : Fin (length p + 2)) (b : Fin (length p + 2))
         wlog hab : a ≤ b
@@ -186,28 +186,22 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
           exact ((pathGraph (p.length + 2)).loopless a h').elim
         | Or.inl ha, Or.inr _ =>
           have ha' : toFun a = u := by simp [toFun, ha]
-          have hb'' : toFun b = v := by
+          have hb : b = 1 := by
             simp only [pathGraph_adj, ha, add_eq_zero, and_false, or_false] at h'
-            simp only [toFun, h'.symm]
+            exact Fin.ext h'.symm
+          have hb' : toFun b = v := by
+            simp only [toFun, hb]
             exact hv
-          rw [ha', hb'']
+          rw [ha', hb']
           exact h
         | Or.inr ha, Or.inl hb =>
           have hba : b.val < a.val := hb.trans_lt (Nat.pos_of_ne_zero ha)
           apply (Nat.not_lt.mpr hab hba).elim
         | Or.inr ha, Or.inr hb =>
-          let a' : Fin (length p + 1) :=
-            ⟨a.val - 1, Nat.lt_succ_iff.mpr (Nat.sub_le_of_le_add (Nat.lt_succ.mp a.prop))⟩
-          have ha' : a = ⟨a'.val + 1, Nat.add_lt_add_right a'.prop 1⟩ := by
-            apply Fin.ext
-            simp only
-            exact (Nat.succ_pred ha).symm
-          let b' : Fin (length p + 1) :=
-            ⟨b.val - 1, Nat.lt_succ_iff.mpr (Nat.sub_le_of_le_add (Nat.lt_succ.mp b.prop))⟩
-          have hb' : b = ⟨b'.val + 1, Nat.add_lt_add_right b'.prop 1⟩ := by
-            apply Fin.ext
-            simp only
-            exact (Nat.succ_pred hb).symm
+          let a' : Fin (length p + 1) := a.pred (Fin.ne_of_vne ha)
+          have ha' : a = a'.succ := (a.succ_pred (Fin.ne_of_vne ha)).symm
+          let b' : Fin (length p + 1) := b.pred (Fin.ne_of_vne hb)
+          have hb' : b = b'.succ := (b.succ_pred (Fin.ne_of_vne hb)).symm
           have hab' : a.val + 1 = b.val := by
             simp only [pathGraph_adj] at h'
             apply h'.elim id ?_
@@ -216,7 +210,7 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
           rw [ha', hb']
           simp only [toFun]
           apply hom'.map_rel ?_
-          simp only [pathGraph_adj]
+          simp only [Fin.pred, pathGraph_adj, Fin.coe_subNat, Fin.val_succ]
           rw [← hab']
           exact Or.inl (Fin.mk_eq_mk.mp ha'.symm)
       let hom : pathGraph (p.length + 2) →g G := ⟨toFun, map_rel'⟩
@@ -225,7 +219,7 @@ def Walk.toPathGraphHomAux (G : SimpleGraph α) :
         simp only [length]
         rw [hhom' ⊥, hhom' ⊤]
         apply And.intro
-        · simp only [ite_eq_left_iff]
+        · simp only [dite_eq_left_iff]
           intro hbot
           exact (hbot rfl).elim
         · simp only [toFun, Nat.succ_ne_zero p.length]
