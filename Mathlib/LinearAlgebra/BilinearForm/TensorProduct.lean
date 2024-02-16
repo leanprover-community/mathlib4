@@ -22,7 +22,9 @@ import Mathlib.LinearAlgebra.TensorProduct.LinearMap
 
 ## Implementation notes
 
-BilinForm versions of some results in `LinearAlgebra.TensorProduct.LinearMap`.
+This file provides thin wrappers around the results in
+`Mathlib/LinearAlgebra/TensorProduct/LinearMap.lean`.
+Further theory should be developed in the generality of bilinear maps, not `BilinForm`.
 
 -/
 
@@ -49,8 +51,8 @@ variable (R A) in
 Note this is heterobasic; the bilinear form on the left can take values in an (commutative) algebra
 over the ring in which the right bilinear form is valued. -/
 def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
-  LinearMap.toBilin.toLinearMap ∘ₗ (LinearMap.tensorDistrib R A ∘ₗ
-    (TensorProduct.AlgebraTensorModule.congr toLin toLin ).toLinearMap)
+  LinearMap.toBilin.toLinearMap ∘ₗ LinearMap.tensorDistrib R A ∘ₗ
+    (TensorProduct.AlgebraTensorModule.congr toLin toLin).toLinearMap
 #align bilin_form.tensor_distrib BilinForm.tensorDistrib
 
 -- TODO: make the RHS `MulOpposite.op (B₂ m₂ m₂') • B₁ m₁ m₁'` so that this has a nicer defeq for
@@ -112,7 +114,7 @@ noncomputable def tensorDistribEquiv :
     BilinForm R M₁ ⊗[R] BilinForm R M₂ ≃ₗ[R] BilinForm R (M₁ ⊗[R] M₂) :=
   -- the same `LinearEquiv`s as from `tensorDistrib`,
   -- but with the inner linear map also as an equiv
-  (TensorProduct.AlgebraTensorModule.congr toLin toLin ) ≪≫ₗ LinearMap.tensorDistribEquiv R  ≪≫ₗ
+  TensorProduct.AlgebraTensorModule.congr toLin toLin ≪≫ₗ LinearMap.tensorDistribEquiv R ≪≫ₗ
   LinearMap.toBilin
 #align bilin_form.tensor_distrib_equiv BilinForm.tensorDistribEquiv
 
@@ -129,12 +131,8 @@ variable (R M₁ M₂) in
 @[simp]
 theorem tensorDistribEquiv_toLinearMap :
     (tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂)).toLinearMap = tensorDistrib R R := by
-  rw [tensorDistribEquiv, tensorDistrib, ← LinearMap.tensorDistribEquiv_toLinearMap]
-  ext B₁ B₂ : 3
-  simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_coe, LinearEquiv.trans_apply, AlgebraTensorModule.congr_tmul,
-    LinearMap.tensorDistribEquiv_apply, LinearMap.tensorDistribEquiv_toLinearMap,
-    LinearMap.coe_comp, Function.comp_apply]
+  rw [tensorDistribEquiv, tensorDistrib, ← LinearMap.tensorDistribEquiv_toLinearMap,
+    LinearEquiv.comp_coe, LinearEquiv.comp_coe]
 
 @[simp]
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :

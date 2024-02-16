@@ -54,6 +54,8 @@ def tensorDistrib : (M₁ →ₗ[A] M₁ →ₗ[A] A) ⊗[R] (M₂ →ₗ[R] M�
     (TensorProduct.lift.equiv A M₁ M₁ A)
     (TensorProduct.lift.equiv R _ _ _)).toLinearMap
 
+-- TODO: make the RHS `MulOpposite.op (B₂ m₂ m₂') • B₁ m₁ m₁'` so that this has a nicer defeq for
+-- `R = A` of `B₁ m₁ m₁' * B₂ m₂ m₂'`, as it did before the generalization in #6306.
 @[simp]
 theorem tensorDistrib_tmul (B₁ : M₁ →ₗ[A] M₁ →ₗ[A] A) (B₂ : M₂ →ₗ[R] M₂ →ₗ[R] R)
     (m₁ : M₁) (m₂ : M₂) (m₁' : M₁) (m₂' : M₂) :
