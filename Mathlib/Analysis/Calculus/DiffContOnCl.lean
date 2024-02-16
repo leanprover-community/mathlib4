@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.NormedSpace.Real
 
 #align_import analysis.calculus.diff_cont_on_cl from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 

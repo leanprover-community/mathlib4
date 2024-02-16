@@ -357,7 +357,7 @@ orthogonalization, but in the finite-dimensional case it follows more easily by 
 
 -- Porting note: unnecessary in Lean 3
 private theorem findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensional ℝ E :=
-  fact_finiteDimensional_of_finrank_eq_succ n
+  .of_fact_finrank_eq_succ n
 
 /-- Variant of the stereographic projection, for the sphere in an `n + 1`-dimensional inner product
 space `E`.  This version has codomain the Euclidean space of dimension `n`, and is obtained by
@@ -610,7 +610,7 @@ instance : LieGroup (𝓡 1) circle where
   smooth_inv := by
     apply ContMDiff.codRestrict_sphere
     simp only [← coe_inv_circle, coe_inv_circle_eq_conj]
-    exact Complex.conjCle.contDiff.contMDiff.comp contMDiff_coe_sphere
+    exact Complex.conjCLE.contDiff.contMDiff.comp contMDiff_coe_sphere
 
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is smooth. -/
 theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCircle :=

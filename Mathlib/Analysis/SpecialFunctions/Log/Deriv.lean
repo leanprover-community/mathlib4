@@ -265,7 +265,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
 #align real.abs_log_sub_add_sum_range_le Real.abs_log_sub_add_sum_range_le
 
 /-- Power series expansion of the logarithm around `1`. -/
-theorem hasSum_pow_div_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
+theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     HasSum (fun n : ℕ => x ^ (n + 1) / (n + 1)) (-log (1 - x)) := by
   rw [Summable.hasSum_iff_tendsto_nat]
   show Tendsto (fun n : ℕ => ∑ i : ℕ in range n, x ^ (i + 1) / (i + 1)) atTop (𝓝 (-log (1 - x)))
@@ -276,9 +276,9 @@ theorem hasSum_pow_div_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
       simpa
     simp only [pow_succ]
     refine' (tendsto_const_nhds.mul _).div_const _
-    exact tendsto_pow_atTop_nhds_0_of_lt_1 (abs_nonneg _) h
+    exact tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg _) h
   show Summable fun n : ℕ => x ^ (n + 1) / (n + 1)
-  · refine' .of_norm_bounded _ (summable_geometric_of_lt_1 (abs_nonneg _) h) fun i => _
+  · refine' .of_norm_bounded _ (summable_geometric_of_lt_one (abs_nonneg _) h) fun i => _
     calc
       ‖x ^ (i + 1) / (i + 1)‖ = |x| ^ (i + 1) / (i + 1) := by
         have : (0 : ℝ) ≤ i + 1 := le_of_lt (Nat.cast_add_one_pos i)
@@ -288,10 +288,11 @@ theorem hasSum_pow_div_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
         exact i.cast_nonneg
       _ ≤ |x| ^ i := by
         simpa [pow_succ'] using mul_le_of_le_one_right (pow_nonneg (abs_nonneg x) i) (le_of_lt h)
-#align real.has_sum_pow_div_log_of_abs_lt_1 Real.hasSum_pow_div_log_of_abs_lt_1
+#align real.has_sum_pow_div_log_of_abs_lt_1 Real.hasSum_pow_div_log_of_abs_lt_one
+@[deprecated] alias hasSum_pow_div_log_of_abs_lt_1 := hasSum_pow_div_log_of_abs_lt_one
 
 /-- Power series expansion of `log(1 + x) - log(1 - x)` for `|x| < 1`. -/
-theorem hasSum_log_sub_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
+theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * x ^ (2 * k + 1))
       (log (1 + x) - log (1 - x)) := by
   set term := fun n : ℕ => -1 * ((-x) ^ (n + 1) / ((n : ℝ) + 1)) + x ^ (n + 1) / (n + 1)
@@ -303,14 +304,15 @@ theorem hasSum_log_sub_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
     push_cast
     ring_nf
   rw [← h_term_eq_goal, (mul_right_injective₀ (two_ne_zero' ℕ)).hasSum_iff]
-  · have h₁ := (hasSum_pow_div_log_of_abs_lt_1 (Eq.trans_lt (abs_neg x) h)).mul_left (-1)
-    convert h₁.add (hasSum_pow_div_log_of_abs_lt_1 h) using 1
+  · have h₁ := (hasSum_pow_div_log_of_abs_lt_one (Eq.trans_lt (abs_neg x) h)).mul_left (-1)
+    convert h₁.add (hasSum_pow_div_log_of_abs_lt_one h) using 1
     ring_nf
   · intro m hm
     rw [range_two_mul, Set.mem_setOf_eq, ← Nat.even_add_one] at hm
     dsimp
     rw [Even.neg_pow hm, neg_one_mul, neg_add_self]
-#align real.has_sum_log_sub_log_of_abs_lt_1 Real.hasSum_log_sub_log_of_abs_lt_1
+#align real.has_sum_log_sub_log_of_abs_lt_1 Real.hasSum_log_sub_log_of_abs_lt_one
+@[deprecated] alias hasSum_log_sub_log_of_abs_lt_1 := hasSum_log_sub_log_of_abs_lt_one
 
 /-- Expansion of `log (1 + a⁻¹)` as a series in powers of `1 / (2 * a + 1)`. -/
 theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
@@ -321,7 +323,7 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
     · linarith
     · linarith
     · exact div_pos one_pos (by linarith)
-  convert hasSum_log_sub_log_of_abs_lt_1 h₁ using 1
+  convert hasSum_log_sub_log_of_abs_lt_one h₁ using 1
   have h₂ : (2 : ℝ) * a + 1 ≠ 0 := by linarith
   have h₃ := h.ne'
   rw [← log_div]
