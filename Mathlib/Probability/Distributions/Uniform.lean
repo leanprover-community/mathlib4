@@ -194,7 +194,7 @@ lemma IsUniform.cond {s : Set E} :
 
 /-- The density of the uniform measure on a set with respect to itself. This allows us to abstract
 away the choice of random variable and probability space. -/
-def uniformPDF (s : Set E) (x : E) (μ : Measure E)  : ℝ≥0∞ :=
+def uniformPDF (s : Set E) (x : E) (μ : Measure E := by volume_tac)  : ℝ≥0∞ :=
   s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x
 
 /-- Check that indeed any uniform random variable has the uniformPDF. -/
