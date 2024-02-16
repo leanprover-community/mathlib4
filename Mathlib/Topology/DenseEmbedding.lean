@@ -28,8 +28,7 @@ has to be `DenseInducing` (not necessarily injective).
 noncomputable section
 
 open Set Filter
-
-open Classical Topology Filter
+open scoped Topology
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
