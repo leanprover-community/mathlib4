@@ -53,7 +53,7 @@ section AuxLemmasToBeMoved
 
 variable {α β ι : Type*}
 
--- todo: find nice place for the following two theorems 
+-- todo: find nice place for the following two theorems
 theorem notBddAbove_coe: ¬(BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
   dsimp only [BddAbove, upperBounds]
   rw [Set.not_nonempty_iff_eq_empty]
