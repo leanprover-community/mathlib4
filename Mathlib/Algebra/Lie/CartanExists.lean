@@ -80,6 +80,29 @@ lemma charpoly_natDegree : natDegree (charpoly φ) = finrank K M := by
   rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
 
 open Module.Free in
+lemma toMatrix_prodMap {M₁ M₂ ι₁ ι₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
+    [Module K M₁] [Module K M₂]
+    [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁] [DecidableEq ι₂] [DecidableEq (ι₁ ⊕ ι₂)]
+    (b₁ : Basis ι₁ K M₁) (b₂ : Basis ι₂ K M₂)
+    (φ₁ : Module.End K M₁) (φ₂ : Module.End K M₂) :
+    toMatrix (b₁.prod b₂) (b₁.prod b₂) (φ₁.prodMap φ₂) =
+      Matrix.fromBlocks (toMatrix b₁ b₁ φ₁) 0 0 (toMatrix b₂ b₂ φ₂) := by
+  ext (i|i) (j|j) <;> simp [toMatrix]
+
+open Module.Free in
+lemma charpoly_prodMap {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
+    [Module K M₁] [Module K M₂] [Module.Finite K M₁] [Module.Finite K M₂]
+    [Module.Free K M₁] [Module.Free K M₂]
+    (φ₁ : Module.End K M₁) (φ₂ : Module.End K M₂) :
+    (φ₁.prodMap φ₂).charpoly = φ₁.charpoly * φ₂.charpoly := by
+  let b₁ := chooseBasis K M₁
+  let b₂ := chooseBasis K M₂
+  let b := b₁.prod b₂
+  classical
+  rw [← charpoly_toMatrix φ₁ b₁, ← charpoly_toMatrix φ₂ b₂, ← charpoly_toMatrix (φ₁.prodMap φ₂) b,
+    toMatrix_prodMap b₁ b₂ φ₁ φ₂, Matrix.charpoly_fromBlocks_zero₁₂]
+
+open Module.Free in
 lemma charpoly_nilpotent_tfae :
     List.TFAE [
       IsNilpotent φ,
@@ -172,29 +195,6 @@ lemma charpoly_eq_X_pow_iff :
 lemma charpoly_constantCoeff_eq_zero_iff :
     constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 :=
   (hasEigenvalue_zero_tfae φ).out 2 5
-
-open Module.Free in
-lemma toMatrix_prodMap {M₁ M₂ ι₁ ι₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
-    [Module K M₁] [Module K M₂]
-    [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁] [DecidableEq ι₂] [DecidableEq (ι₁ ⊕ ι₂)]
-    (b₁ : Basis ι₁ K M₁) (b₂ : Basis ι₂ K M₂)
-    (φ₁ : Module.End K M₁) (φ₂ : Module.End K M₂) :
-    toMatrix (b₁.prod b₂) (b₁.prod b₂) (φ₁.prodMap φ₂) =
-      Matrix.fromBlocks (toMatrix b₁ b₁ φ₁) 0 0 (toMatrix b₂ b₂ φ₂) := by
-  ext (i|i) (j|j) <;> simp [toMatrix]
-
-open Module.Free in
-lemma charpoly_prodMap {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
-    [Module K M₁] [Module K M₂] [Module.Finite K M₁] [Module.Finite K M₂]
-    [Module.Free K M₁] [Module.Free K M₂]
-    (φ₁ : Module.End K M₁) (φ₂ : Module.End K M₂) :
-    (φ₁.prodMap φ₂).charpoly = φ₁.charpoly * φ₂.charpoly := by
-  let b₁ := chooseBasis K M₁
-  let b₂ := chooseBasis K M₂
-  let b := b₁.prod b₂
-  classical
-  rw [← charpoly_toMatrix φ₁ b₁, ← charpoly_toMatrix φ₂ b₂, ← charpoly_toMatrix (φ₁.prodMap φ₂) b,
-    toMatrix_prodMap b₁ b₂ φ₁ φ₂, Matrix.charpoly_fromBlocks_zero₁₂]
 
 open Module.Free in
 lemma charpoly_eq_of_equiv {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
