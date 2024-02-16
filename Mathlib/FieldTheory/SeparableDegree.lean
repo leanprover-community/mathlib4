@@ -365,6 +365,9 @@ theorem natSepDegree_pow {n : ℕ} : (f ^ n).natSepDegree = if n = 0 then 0 else
   · simp only [h, zero_smul, Multiset.toFinset_zero, Finset.card_empty, ite_true]
   simp only [h, Multiset.toFinset_nsmul _ n h, ite_false]
 
+theorem natSepDegree_pow_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
+    (f ^ n).natSepDegree = f.natSepDegree := by simp_rw [natSepDegree_pow, hn, ite_false]
+
 theorem natSepDegree_X_pow {n : ℕ} : (X ^ n : F[X]).natSepDegree = if n = 0 then 0 else 1 := by
   simp only [natSepDegree_pow, natSepDegree_X]
 
@@ -518,93 +521,6 @@ theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
   exact ⟨_, y, h2, by rwa [h3, Multiset.map_nsmul, Multiset.map_singleton, Multiset.prod_nsmul,
     Multiset.prod_singleton] at h1⟩
 
-variable {E} in
--- TODO:
-lemma test1 {m : ℕ} {y : E} (hf : f.map (algebraMap F E) = (X - C y) ^ m) (hm : (m : F) ≠ 0) :
-    y ∈ (algebraMap F E).range := by
-  have := (_root_.map_ne_zero (algebraMap F E)).2 hm
-  rw [map_natCast] at this
-  use -(m : F)⁻¹ * f.nextCoeff
-  have hy := congr($(hf).nextCoeff)
-  rw [(monic_X_sub_C y).nextCoeff_pow, nextCoeff_X_sub_C,
-    nextCoeff_map (algebraMap F E).injective] at hy
-  rw [map_mul, hy]
-  field_simp; ring1
-
-/-- A monic polynomial over a field `F` of exponential characteristic `q` has separable degree one
-if and only if it is of the form `(X ^ (q ^ n) - C y) ^ m` for some non-zero natural number `m`,
-some natural number `n`, and some element `y` of `F`. -/
-theorem natSepDegree_eq_one_iff (q : ℕ) [ExpChar F q] (hm : f.Monic) :
-    f.natSepDegree = 1 ↔ ∃ (m n : ℕ) (y : F), m ≠ 0 ∧ f = (X ^ q ^ n - C y) ^ m := by
-  refine ⟨fun h ↦ ?_, fun ⟨m, n, y, hm, h⟩ ↦ ?_⟩
-  · obtain ⟨m, y, hm, hf⟩ := hm.map (algebraMap F (AlgebraicClosure F))
-      |>.eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (IsAlgClosed.splits _)
-        (by rwa [natSepDegree_map])
-    cases id ‹ExpChar F q› with
-    | zero =>
-      obtain ⟨z, hy⟩ := test1 hf (Nat.cast_ne_zero.2 hm)
-      refine ⟨m, 0, z, hm, map_injective _ (algebraMap F (AlgebraicClosure F)).injective ?_⟩
-      rw [hf, pow_zero, pow_one, Polynomial.map_pow, Polynomial.map_sub, map_X, map_C, hy]
-    | prime hq =>
-      haveI := Fact.mk hq
-      have hfin := multiplicity.finite_nat_iff.2 ⟨hq.ne_one, Nat.pos_of_ne_zero hm⟩
-      obtain ⟨c, h1, h2⟩ := multiplicity.exists_eq_pow_mul_and_not_dvd hfin
-      set n' := (multiplicity q m).get hfin
-      rw [h1, pow_mul, sub_pow_char_pow, ← map_pow (f := C)] at hf
-      obtain ⟨z, hy⟩ : y ^ q ^ n' ∈ (algebraMap F (AlgebraicClosure F)).range := by
-        rw [← expand_X, ← expand_C (q ^ n'), ← map_sub, ← map_pow] at hf
-        apply_fun contract (q ^ n') at hf
-        have hne := (expChar_pow_pos F q n').ne'
-        rw [contract_expand _ hne, ← map_contract hne] at hf
-        rw [← CharP.cast_eq_zero_iff F q c] at h2
-        exact test1 hf h2
-      refine ⟨c, n', z, fun h ↦ hm (by rwa [h, mul_zero] at h1),
-        map_injective _ (algebraMap F (AlgebraicClosure F)).injective ?_⟩
-      rw [hf, Polynomial.map_pow, Polynomial.map_sub, Polynomial.map_pow, map_X, map_C, hy]
-  simp_rw [h, natSepDegree_pow, hm, ite_false, natSepDegree_X_pow_char_pow_sub_C]
-
-/-- If a monic polynomial over a field `F` of exponential characteristic `q` has separable degree
-one, then it is of the form `(X ^ (q ^ n) - C y) ^ m` for some non-zero natural number `m`,
-some natural number `n`, and some element `y` of `F`, such that either `n = 0` or `y` has no
-`q`-th root in `F`. -/
-theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F q] (hm : f.Monic)
-    (h : f.natSepDegree = 1) : ∃ (m n : ℕ) (y : F),
-      m ≠ 0 ∧ (n = 0 ∨ y ∉ (frobenius F q).range) ∧ f = (X ^ q ^ n - C y) ^ m := by
-  cases id ‹ExpChar F q› with
-  | zero =>
-    obtain ⟨m, n, y, hne, hf⟩ := (hm.natSepDegree_eq_one_iff 1).1 h
-    simp_rw [one_pow, pow_one] at hf ⊢
-    exact ⟨m, 0, y, hne, .inl rfl, hf⟩
-  | prime hq =>
-    set! N := f.natDegree with hN; replace hN := hN.ge; clear_value N
-    induction N generalizing f with
-    | zero => linarith only [h, hN, natSepDegree_le_natDegree f]
-    | succ N ih =>
-      obtain ⟨m, n, y, hne, hf⟩ := (hm.natSepDegree_eq_one_iff q).1 h
-      by_cases hn : n = 0
-      · exact ⟨m, n, y, hne, .inl hn, hf⟩
-      by_cases hy : y ∈ (frobenius F q).range
-      · obtain ⟨z, rfl⟩ := hy
-        haveI := expChar_of_injective_ringHom (C_injective (R := F)) q
-        rw [frobenius_def, ← Nat.succ_pred hn, pow_succ', pow_mul, map_pow, ← sub_pow_expChar,
-          ← pow_mul] at hf
-        obtain ⟨m', n', y', h0, h1, h2⟩ := ih (monic_X_pow_sub_C z (expChar_pow_pos F q n.pred).ne')
-          (natSepDegree_X_pow_char_pow_sub_C q _ z) <| by
-            simp only [congr($(hf).natDegree), Polynomial.natDegree_pow, natDegree_X_pow_sub_C,
-              mul_comm q m, mul_assoc] at hN ⊢
-            have h1 := (Nat.le_mul_of_pos_left (q * q ^ n.pred) (Nat.pos_of_ne_zero hne)).trans hN
-            by_cases h2 : N = 0
-            · linarith only [h2, hq.two_le.trans
-                (Nat.le_mul_of_pos_right q (expChar_pow_pos F q n.pred)) |>.trans h1]
-            have h3 := calc N.succ
-              _ ≤ N + N := Nat.add_le_add (le_refl N) (Nat.one_le_iff_ne_zero.2 h2)
-              _ = 2 * N := by rw [two_mul]
-              _ ≤ q * N := Nat.mul_le_mul hq.two_le (le_refl N)
-            exact Nat.le_of_mul_le_mul_left (h1.trans h3) (expChar_pos F q)
-        rw [h2, ← pow_mul] at hf
-        exact ⟨_, n', y', mul_ne_zero h0 (mul_ne_zero (expChar_pos F q).ne' hne), h1, hf⟩
-      exact ⟨m, n, y, hne, .inr hy, hf⟩
-
 /-- If a monic irreducible polynomial over a field `F` of exponential characteristic `q` has
 separable degree one, then it is of the form `X ^ (q ^ n) - C y` for some natural number `n`,
 and some element `y` of `F`, such that either `n = 0` or `y` has no `q`-th root in `F`. -/
@@ -622,6 +538,38 @@ theorem eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible (q : ℕ) 
     rw [hf, ← Nat.succ_pred hn, pow_succ', pow_mul, ← hy, frobenius_def, map_pow,
       ← sub_pow_expChar] at hi
     exact not_irreducible_pow hq.ne_one hi
+
+/-- If a monic polynomial over a field `F` of exponential characteristic `q` has separable degree
+one, then it is of the form `(X ^ (q ^ n) - C y) ^ m` for some non-zero natural number `m`,
+some natural number `n`, and some element `y` of `F`, such that either `n = 0` or `y` has no
+`q`-th root in `F`. -/
+theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F q] (hm : f.Monic)
+    (h : f.natSepDegree = 1) : ∃ (m n : ℕ) (y : F),
+      m ≠ 0 ∧ (n = 0 ∨ y ∉ (frobenius F q).range) ∧ f = (X ^ q ^ n - C y) ^ m := by
+  obtain ⟨p, hM, hI, hf⟩ := exists_monic_irreducible_factor _ <| not_isUnit_of_natDegree_pos _
+    <| Nat.pos_of_ne_zero <| (natSepDegree_ne_zero_iff _).1 (h.symm ▸ Nat.one_ne_zero)
+  have hD := (h ▸ natSepDegree_le_of_dvd p f hf hm.ne_zero).antisymm <|
+    Nat.pos_of_ne_zero <| (natSepDegree_ne_zero_iff _).2 hI.natDegree_pos.ne'
+  obtain ⟨n, y, H, hp⟩ := hM.eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible q hI hD
+  have hF := multiplicity_finite_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
+  have hne := (multiplicity.pos_of_dvd hF hf).ne'
+  refine ⟨_, n, y, hne, H, ?_⟩
+  obtain ⟨c, hf, H⟩ := multiplicity.exists_eq_pow_mul_and_not_dvd hF
+  rw [hf, natSepDegree_mul_of_isCoprime _ c <| IsCoprime.pow_left <|
+    (hI.coprime_or_dvd c).resolve_right H, natSepDegree_pow_of_ne_zero _ hne, hD,
+    add_right_eq_self, natSepDegree_eq_zero_iff] at h
+  simpa only [eq_one_of_monic_natDegree_zero ((hM.pow _).of_mul_monic_left (hf ▸ hm)) h,
+    mul_one, ← hp] using hf
+
+/-- A monic polynomial over a field `F` of exponential characteristic `q` has separable degree one
+if and only if it is of the form `(X ^ (q ^ n) - C y) ^ m` for some non-zero natural number `m`,
+some natural number `n`, and some element `y` of `F`. -/
+theorem natSepDegree_eq_one_iff (q : ℕ) [ExpChar F q] (hm : f.Monic) :
+    f.natSepDegree = 1 ↔ ∃ (m n : ℕ) (y : F), m ≠ 0 ∧ f = (X ^ q ^ n - C y) ^ m := by
+  refine ⟨fun h ↦ ?_, fun ⟨m, n, y, hm, h⟩ ↦ ?_⟩
+  · obtain ⟨m, n, y, hm, -, h⟩ := hm.eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one q h
+    exact ⟨m, n, y, hm, h⟩
+  simp_rw [h, natSepDegree_pow, hm, ite_false, natSepDegree_X_pow_char_pow_sub_C]
 
 end Monic
 
