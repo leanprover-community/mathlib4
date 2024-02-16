@@ -417,6 +417,58 @@ theorem ι_range_map_map (f : M →ₗ[R] N) :
     Submodule.map (ι R) (LinearMap.range f) :=
   CliffordAlgebra.ι_range_map_map _
 
+def mapTriv [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Module Rᵐᵒᵖ N] [IsCentralScalar R N]
+    (f : M →ₗ[R] N) : TrivSqZeroExt R M →ₐ[R] TrivSqZeroExt R N := by
+  apply TrivSqZeroExt.lift (TrivSqZeroExt.inlAlgHom R R N) ((TrivSqZeroExt.inrHom R N).comp f)
+  · intro x y
+    simp only [LinearMap.coe_comp, Function.comp_apply, TrivSqZeroExt.inrHom_apply,
+      TrivSqZeroExt.inr_mul_inr]
+  · intro r x
+    simp only [map_smul, LinearMap.coe_comp, Function.comp_apply, TrivSqZeroExt.inrHom_apply,
+      TrivSqZeroExt.inlAlgHom_apply]
+    rw [TrivSqZeroExt.inl_mul_eq_smul]
+  · intro r x
+    simp only [op_smul_eq_smul, map_smul, LinearMap.coe_comp, Function.comp_apply,
+      TrivSqZeroExt.inrHom_apply, TrivSqZeroExt.inlAlgHom_apply]
+    rw [TrivSqZeroExt.mul_inl_eq_op_smul]
+    simp only [op_smul_eq_smul]
+
+theorem snd_comp_mapTriv [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Module Rᵐᵒᵖ N] [IsCentralScalar R N]
+    (f : M →ₗ[R] N) : (TrivSqZeroExt.sndHom R N).comp (mapTriv f).toLinearMap
+    = f.comp (TrivSqZeroExt.sndHom R M) := by
+  unfold mapTriv
+  apply TrivSqZeroExt.linearMap_ext
+  · intro r
+    simp only [LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply,
+      TrivSqZeroExt.lift_apply_inl, TrivSqZeroExt.inlAlgHom_apply, TrivSqZeroExt.sndHom_apply,
+      TrivSqZeroExt.snd_inl, map_zero]
+  · intro x
+    simp only [LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply,
+      TrivSqZeroExt.lift_apply_inr, TrivSqZeroExt.inrHom_apply, TrivSqZeroExt.sndHom_apply,
+      TrivSqZeroExt.snd_inr]
+
+theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Module Rᵐᵒᵖ N]
+    [IsCentralScalar R N] (f : M →ₗ[R] N) :
+    toTrivSqZeroExt.comp (map f) = (mapTriv f).comp toTrivSqZeroExt := by
+  apply hom_ext
+  apply LinearMap.ext
+  intro x
+  unfold mapTriv map
+  simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
+    AlgHom.toLinearMap_apply, CliffordAlgebra.map_apply_ι, toTrivSqZeroExt_ι,
+    TrivSqZeroExt.lift_apply_inr, TrivSqZeroExt.inrHom_apply]
+  rfl
+
+theorem ιInv_comp_map (f : M →ₗ[R] N) :
+    ιInv.comp (map f).toLinearMap = f.comp ιInv := by
+  letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+  haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
+  letI : Module Rᵐᵒᵖ N := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+  haveI : IsCentralScalar R N := ⟨fun r m => rfl⟩
+  unfold ιInv
+  conv_lhs => rw [LinearMap.comp_assoc, ← AlgHom.comp_toLinearMap, toTrivSqZeroExt_comp_map,
+                AlgHom.comp_toLinearMap, ← LinearMap.comp_assoc, snd_comp_mapTriv]
+
 open Function in
 /-- For a linear map `f` from `M` to `N`,
 `ExteriorAlgebra.map g` is a retraction of `ExteriorAlgebra.map f` iff
@@ -436,8 +488,13 @@ lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f 
   let ⟨_, hgf⟩ := hf; (leftInverse_map_iff.mpr (DFunLike.congr_fun hgf)).injective
 
 /-- A surjective morphism of modules induces a surjective morphism of exterior algebras. -/
-lemma map_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
-    Function.Surjective (map f) := CliffordAlgebra.map_surjective _ hf
+lemma map_surjective_iff {f : M →ₗ[R] N} :
+    Function.Surjective f ↔ Function.Surjective (map f) := by
+  refine ⟨fun h ↦ CliffordAlgebra.map_surjective _ h, fun h y ↦ ?_⟩
+  obtain ⟨x, hx⟩ := h (ι R y)
+  existsi ιInv x
+  rw [← LinearMap.comp_apply, ← ιInv_comp_map, LinearMap.comp_apply]
+  erw [hx, ExteriorAlgebra.ι_leftInverse]
 
 variable {K E F : Type*} [Field K] [AddCommGroup E]
   [Module K E] [AddCommGroup F] [Module K F]
