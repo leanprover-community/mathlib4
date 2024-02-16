@@ -7,9 +7,14 @@ Authors: Antoine Chambert-Loir
 import Mathlib.Init.Function
 
 /-!
-# Propositional typeclasses on several monoid homs
+# Propositional typeclasses on several maps
 
-This file contains typeclasses used in the definition of (semi)linear maps:
+This file contains typeclasses that are used in the definition of
+equivariant maps in the spirit what was initially developed
+by Frédéric Dupuis and Heather Macbeth for linear maps.
+
+* `CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
+* `isId φ`, which expresses that `φ = id`
 
 TODO :
 * align with RingHomCompTriple
@@ -51,7 +56,7 @@ lemma comp_inv {M N : Type*} {φ : M → N} {ψ : N → M}
     CompTriple φ ψ χ := {
   comp_eq := by simp only [isId.eq_id, h.id] }
 
-lemma apply {M N P : Type*}
+lemma comp_apply {M N P : Type*}
     {φ : M → N} {ψ : N → P} {χ : M → P} (h : CompTriple φ ψ χ) (x : M) :
   ψ (φ x) = χ x := by
   rw [← h.comp_eq, Function.comp_apply]

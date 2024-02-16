@@ -11,7 +11,23 @@ import Mathlib.Algebra.Group.Hom.Defs
 /-!
 # Propositional typeclasses on several monoid homs
 
-This file contains typeclasses used in the definition of (semi)linear maps:
+This file contains typeclasses used in the definition of equivariant maps,
+in the spirit what was initially developed by Frédéric Dupuis and Heather Macbeth for linear maps.
+However, we do not expect that all maps should be guessed automatically,
+as it happens for linear maps.
+
+If `φ`, `ψ`… are monoid homs and `M`, `N`… are monoids, we define two classes:
+* `MonoidHom.CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
+* `MonoidHom.CompTriple.isId φ`, which expresses that `φ = id`
+
+Some basic lemmas are proved:
+* `MonoidHom.CompTriple.comp` asserts `MonoidHom.CompTriple φ ψ (ψ.comp φ)`
+* `MonoidHom.CompTriple.id_comp` asserts `MonoidHom.CompTriple φ ψ ψ` in the presence of `MonoidHom.isId φ`
+* its variant `MonoidHom.CompTriple.comp_id`
+
+It also introduces instances:
+* `MonoidHom.CompTriple.isId (MonoidHom.id M)`
+* `MonoidHom.CompTriple φ ψ χ`, which expresses that `ψ.comp φ = χ`
 
 TODO :
 * align with RingHomCompTriple
@@ -56,7 +72,6 @@ instance {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ : CompTriple φ ψ
 lemma comp {φ : M →* N} {ψ : N →* P} :
     CompTriple φ ψ (ψ.comp φ) := {comp_eq := rfl}
 
-
 lemma comp_id {N P : Type*} [Monoid N] [Monoid P]
     {φ : N →* N} [isId φ] {ψ : N →* P} :
     CompTriple φ ψ ψ := {
@@ -71,9 +86,10 @@ lemma comp_inv {φ : M →* N} {ψ : N →* M} (h : Function.RightInverse φ ψ)
     {χ : M →* M} [isId χ] :
     CompTriple φ ψ χ := {
   comp_eq := by
-    simp only [isId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id, coe_mk, OneHom.coe_mk] }
+    simp only [isId.eq_id, ← DFunLike.coe_fn_eq, coe_comp, h.id]
+    rfl }
 
-lemma apply
+lemma comp_apply
     {φ : M →* N} {ψ : N →* P} {χ : M →* P} (h : CompTriple φ ψ χ) (x : M) :
   ψ (φ x) = χ x := by
   rw [← h.comp_eq, MonoidHom.comp_apply]
