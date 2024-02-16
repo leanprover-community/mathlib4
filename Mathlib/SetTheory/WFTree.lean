@@ -9,95 +9,89 @@ universe u v
 Unlike `WFTree`, `PreWFTree` is sensitive to the order and multiplicity of children.
 In other words, `PreWFTree` is to `WFTree` as `List` is to `Finset`.-/
 inductive PreWFTree (η : Type v) : Type (max (u + 1) v) where
-  | mk : (η → (ι : Type u) × (ι → PreWFTree η)) → PreWFTree η
+  | mk : (ι : Type u) → (ι → η × PreWFTree η) → PreWFTree η
 
 namespace PreWFTree
 
 variable {η : Type v}
 
-abbrev Index : PreWFTree.{u} η → η → Type u
-  | ⟨f⟩, e => (f e).1
+-- abbrev Index : PreWFTree.{u} η → η → Type u
+--   | ⟨f⟩, e => (f e).1
 
-abbrev child : (t : PreWFTree.{u} η) → (e : η) → t.Index e → PreWFTree.{u} η
-  | ⟨f⟩, e, i => (f e).2 i
+-- abbrev child : (t : PreWFTree.{u} η) → (e : η) → t.Index e → PreWFTree.{u} η
+--   | ⟨f⟩, e, i => (f e).2 i
 
-noncomputable def children (t : PreWFTree.{u} η) (e : η) : SmallSet.{u} (PreWFTree.{u} η) :=
-  SmallSet.range (t.child e)
+-- noncomputable def children' (t : PreWFTree.{u} η) (e : η) : SmallSet.{u} (PreWFTree.{u} η) :=
+--   SmallSet.range (t.child e)
 
-noncomputable def ofChildren (f : η → SmallSet.{u} (PreWFTree.{u} η)) : PreWFTree.{u} η :=
-  ⟨fun e ↦ ⟨Shrink.{u} (f e), fun x ↦ (equivShrink (f e)).symm x⟩⟩
+-- noncomputable def ofChildren' (f : η → SmallSet.{u} (PreWFTree.{u} η)) : PreWFTree.{u} η :=
+--   ⟨fun e ↦ ⟨Shrink.{u} (f e), fun x ↦ (equivShrink (f e)).symm x⟩⟩
 
-@[simp]
-lemma children_ofChildren (f : η → SmallSet.{u} (PreWFTree.{u} η)) :
-    children (ofChildren f) = f := by
-  ext e
-  simp only [children, ofChildren, SmallSet.mem_range, child]
-  refine ⟨fun ⟨i, h⟩ ↦ ?_, fun h ↦ ?_⟩
-  · generalize ht : (equivShrink ↥(f e)).symm i = t
-    rw [ht] at h
-    subst h
-    simp
-  · use (equivShrink (f e)) ⟨_, h⟩
-    simp
+-- @[simp]
+-- lemma children'_ofChildren' (f : η → SmallSet.{u} (PreWFTree.{u} η)) :
+--     children' (ofChildren' f) = f := by
+--   ext e
+--   simp only [children', ofChildren', SmallSet.mem_range, child]
+--   refine ⟨fun ⟨i, h⟩ ↦ ?_, fun h ↦ ?_⟩
+--   · generalize ht : (equivShrink ↥(f e)).symm i = t
+--     rw [ht] at h
+--     subst h
+--     simp
+--   · use (equivShrink (f e)) ⟨_, h⟩
+--     simp
 
 -- Not true!
 -- @[simp]
 -- lemma ofChildren_children (t : PreWFTree.{u} η) : ofChildren (children t) = t :=
 --   sorry
 
-noncomputable def children' : (t : PreWFTree.{u} η) → (e : η) → Set (PreWFTree.{u} η)
-  | ⟨f⟩, e => Set.range (f e).2
+noncomputable def children' : (t : PreWFTree.{u} η) → Set (η × PreWFTree.{u} η)
+  | ⟨_, f⟩ => Set.range f
 
-instance small_children' : ∀ (t : PreWFTree.{u} η) (e : η), Small.{u} (t.children' e)
-  | ⟨f⟩, e => inferInstanceAs (Small.{u} (Set.range (f e).2))
+instance small_children' : ∀ (t : PreWFTree.{u} η), Small.{u} t.children'
+  | ⟨_, f⟩ => inferInstanceAs (Small.{u} (Set.range f))
 
-noncomputable def ofChildren' (f : η → Set (PreWFTree.{u} η)) [∀ e, Small.{u} (f e)] :
+noncomputable def ofChildren' (s : Set (η × PreWFTree.{u} η)) [Small.{u} s] :
     PreWFTree.{u} η :=
-  ⟨fun e ↦ ⟨Shrink.{u} (f e), fun x ↦ (equivShrink (f e)).symm x⟩⟩
+  ⟨Shrink.{u} s, Subtype.val ∘ (equivShrink s).symm⟩
 
 @[simp]
-lemma children'_mk (f : (η → (ι : Type u) × (ι → PreWFTree η))) :
-    children' (mk f) = fun e ↦ Set.range (f e).2 := rfl
+lemma children'_mk (ι : Type u) (f : ι → η × PreWFTree η) :
+    children' ⟨ι, f⟩ = Set.range f := rfl
 
 @[simp]
-lemma children'_ofChildren' (f : η → Set (PreWFTree.{u} η)) [∀ e, Small.{u} (f e)] :
-    children' (ofChildren' f) = f := by
-  simp only [ofChildren', children'_mk]
-  funext e
-  have := EquivLike.range_comp (fun x : f e ↦ (x : PreWFTree.{u} η)) (equivShrink ↑(f e)).symm
-  rw [Function.comp_def] at this
-  simp [this]
+lemma children'_ofChildren' (s : Set (η × PreWFTree.{u} η)) [Small.{u} s] :
+    children' (ofChildren' s) = s := by
+  simp [ofChildren', children'_mk]
 
 #check PLift
 
 def IsChildOf (t₁ t₂ : PreWFTree.{u} η) : Prop :=
-  ∃ e, t₁ ∈ t₂.children' e
+  ∃ e, ⟨e, t₁⟩ ∈ t₂.children'
+
+#check PreWFTree.recOn
 
 instance : WellFoundedRelation (PreWFTree.{u} η) where
   rel := IsChildOf
   wf := by
     constructor
     intro t
-    apply PreWFTree.recOn (motive_1 := Acc IsChildOf) (motive_2 := fun ⟨ι, f⟩ ↦ ∀ i : ι, Acc IsChildOf (f i))
-    · intro f ih
-      constructor
-      intro t' ⟨e, ht'⟩
-      simp at ht'
-      specialize ih e
-      generalize f e = p at ih ht'
-      rcases p with ⟨ι, f'⟩
-      dsimp at ih ht'
-      specialize ih ht'.choose
-      rw [ht'.choose_spec] at ih
-      exact ih
+    apply PreWFTree.recOn (motive_1 := Acc IsChildOf) (motive_2 := fun ⟨_, s⟩ ↦ Acc IsChildOf s)
     · intro ι f ih
-      intro i
-      apply ih
+      constructor
+      intro c ⟨e, hc⟩
+      simp at hc
+      rcases hc with ⟨i, hfi⟩
+      specialize ih i
+      rw [hfi] at ih
+      exact ih
+    · intro _ c ih
+      exact ih
 
 def Equiv (t₁ t₂ : PreWFTree.{u} η) : Prop :=
-  ∀ e, Relator.BiTotal fun (⟨c₁, h₁⟩ : t₁.children' e) (⟨c₂, _⟩ : t₂.children' e) ↦
-    have : c₁.IsChildOf t₁ := ⟨e, h₁⟩
-    Equiv c₁ c₂
+  Relator.BiTotal fun (⟨⟨e₁, c₁⟩, h₁⟩ : t₁.children') (⟨⟨e₂, c₂⟩, _⟩ : t₂.children') ↦
+    have : c₁.IsChildOf t₁ := ⟨e₁, h₁⟩
+    e₁ = e₂ ∧ Equiv c₁ c₂
 termination_by t₁
 
 -- theorem equiv_iff (t₁ t₂ : PreWFTree.{u} η) :
@@ -107,34 +101,34 @@ termination_by t₁
 --   rw [Equiv]
 
 theorem equiv_iff' (t₁ t₂ : PreWFTree.{u} η) :
-    Equiv t₁ t₂ ↔ ∀ e,
-      (∀ c₁ ∈ t₁.children' e, ∃ c₂ ∈ t₂.children' e, Equiv c₁ c₂) ∧
-      ∀ c₂ ∈ t₂.children' e, ∃ c₁ ∈ t₁.children' e, Equiv c₁ c₂ := by
+    Equiv t₁ t₂ ↔ ∀ e c,
+      (⟨e, c⟩ ∈ t₁.children' → ∃ c₂, ⟨e, c₂⟩ ∈ t₂.children' ∧ Equiv c c₂) ∧
+      (⟨e, c⟩ ∈ t₂.children' → ∃ c₁, ⟨e, c₁⟩ ∈ t₁.children' ∧ Equiv c₁ c) := by
   rw [Equiv]
-  simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal]
+  simp [Relator.BiTotal, Relator.LeftTotal, Relator.RightTotal, forall_and]
 
 @[refl]
 protected theorem Equiv.refl (t : PreWFTree.{u} η) : Equiv t t := by
   rw [equiv_iff']
-  intro e
+  intro e c
   constructor
-  <;> exact fun c hc ↦ ⟨c, hc, have : c.IsChildOf t := ⟨e, hc⟩; Equiv.refl c⟩
+  <;> exact fun hc ↦ ⟨c, hc, have : c.IsChildOf t := ⟨e, hc⟩; Equiv.refl c⟩
 termination_by t
 
 protected theorem Equiv.euc {x y z : PreWFTree.{u} η} : Equiv x y → Equiv z y → Equiv x z := by
   rw [equiv_iff' x y, equiv_iff' z y, equiv_iff' x z]
-  intro hxy hzy e
+  intro hxy hzy e c
   specialize hxy e
   specialize hzy e
   constructor
-  · peel hxy.left with cx hcx h
+  · peel (hxy c).left with hcx h -- TODO: add destructuring to `peel`
     rcases h with ⟨cy, hcy, hcxy⟩
-    peel hzy.right cy hcy with cz hcz hcxz
-    have : cx.IsChildOf x := ⟨e, hcx⟩
+    peel (hzy cy).right hcy with cz hcz hcxz
+    have : c.IsChildOf x := ⟨e, hcx⟩
     exact Equiv.euc hcxy hcxz
-  · peel hzy.left with cz hcz h
+  · peel (hzy c).left with hcz h
     rcases h with ⟨cy, hcy, hczy⟩
-    peel hxy.right cy hcy with cx hcx hcxy
+    peel (hxy cy).right hcy with cx hcx hcxy
     have : cx.IsChildOf x := ⟨e, hcx⟩
     exact Equiv.euc hcxy hczy
 termination_by x
@@ -155,29 +149,31 @@ instance setoid : Setoid (PreWFTree.{u} η) :=
   ⟨Equiv, Equiv.refl, Equiv.symm, Equiv.trans⟩
 
 theorem equiv_iff {x y : PreWFTree.{u} η} :
-    Equiv x y ↔ ∀ e c,
-      (∃ c₁ ∈ x.children' e, Equiv c₁ c) ↔
-      (∃ c₂ ∈ y.children' e, Equiv c₂ c) := by
-  rw [equiv_iff', forall_congr']
+    x ≈ y ↔ ∀ e c,
+      (∃ c₁, ⟨e, c₁⟩ ∈ x.children' ∧ c₁ ≈ c) ↔
+      (∃ c₂, ⟨e, c₂⟩ ∈ y.children' ∧ c₂ ≈ c) := by
+  change Equiv x y ↔ ∀ e c, (∃ c₁, _ ∧ Equiv c₁ c) ↔ (∃ c₂, _ ∧ Equiv c₂ c)
+  rw [equiv_iff']
+  apply forall_congr'
   intro e
   constructor
-  · intro ⟨hxy, hyx⟩ z
+  · intro h z
     constructor
     · intro ⟨cx, hcx, hcxz⟩
-      have ⟨cy, hcy, hcxy⟩ := hxy cx hcx
+      have ⟨cy, hcy, hcxy⟩ := (h cx).left hcx
       use cy, hcy, hcxy.symm.euc hcxz.symm
     · intro ⟨cy, hcy, hcyz⟩
-      have ⟨cx, hcx, hcxy⟩ := hyx cy hcy
+      have ⟨cx, hcx, hcxy⟩ := (h cy).right hcy
       use cx, hcx, Equiv.trans hcxy hcyz
-  · intro h
+  · intro h c
     constructor
-    · intro cx hcx
+    · intro hcx
       conv => congr; ext; rw [Equiv.comm]
       rw [← h]
-      use cx, hcx, Equiv.refl cx
-    · intro cy hcy
+      use c, hcx, Equiv.refl c
+    · intro hcy
       rw [h]
-      use cy, hcy, Equiv.refl cy
+      use c, hcy, Equiv.refl c
 
 
 -- inductive Equiv' : PreWFTree.{u} η → PreWFTree.{u} η → Prop where
@@ -196,43 +192,54 @@ namespace WFTree
 
 variable {η : Type v}
 
-noncomputable def children' (t : WFTree.{u} η) (e : η) : Set (WFTree.{u} η) :=
-  Quotient.liftOn t (fun t ↦ (⟦·⟧) '' t.children' e) fun x y h ↦ by
-    ext z
+#check Prod.map
+
+noncomputable def children' (t : WFTree.{u} η) : Set (η × WFTree.{u} η) :=
+  Quotient.liftOn t (fun t ↦ {(e, c) | ∃ c', (e, c') ∈ t.children' ∧ ⟦c'⟧ = c}) fun x y h ↦ by
+    ext ez
+    rcases ez with ⟨e, z⟩
     induction' z using Quotient.ind with z
-    simp only [Set.mem_image]
-    convert PreWFTree.equiv_iff.mp h e z
-    <;> rw [Quotient.eq] -- simp [Quotient.eq] fails.. discrtree bug?
-    <;> rfl
-
-instance small_children' (t : WFTree.{u} η) (e : η) : Small.{u} (t.children' e) := by
-  induction' t using Quotient.ind with t
-  simp only [children', Quotient.lift_mk]
-  exact inferInstance
-
-noncomputable def ofChildren' (f : η → Set (WFTree.{u} η)) [∀ e, Small.{u} (f e)] : WFTree.{u} η :=
-  ⟦PreWFTree.ofChildren' fun e ↦ Quotient.out '' f e⟧
+    simpa [Set.mem_setOf_eq, Quotient.eq] using PreWFTree.equiv_iff.mp h e z
 
 @[simp]
-lemma children'_ofChildren' (f : η → Set (WFTree.{u} η)) [∀ e, Small.{u} (f e)] :
-    children' (ofChildren' f) = f := by
-  ext e t
+lemma _root_.exists_eq_right_left {α : Sort*} {p q : α → Prop} {a' : α} :
+    (∃ a, p a ∧ a = a' ∧ q a) ↔ p a' ∧ q a' := by aesop
+  -- constructor
+  -- · rintro ⟨a, hp, rfl, hq⟩
+  --   exact ⟨hp, hq⟩
+  -- · rintro ⟨hp, hq⟩
+  --   use a', hp, rfl, hq
+
+instance small_children' (t : WFTree.{u} η) : Small.{u} t.children' := by
+  induction' t using Quotient.ind with t
+  convert small_image (fun (e, c) ↦ (e, (⟦c⟧ : WFTree.{u} η))) t.children'
+  ext ec
+  rcases ec with ⟨e, c⟩
+  simp_rw [children', Quotient.lift_mk, Set.mem_setOf_eq, Set.mem_image, Prod.exists, Prod.mk.injEq]
+  rw [exists_comm]
+  simp
+
+noncomputable def ofChildren' (s : Set (η × WFTree.{u} η)) [Small.{u} s] : WFTree.{u} η :=
+  ⟦PreWFTree.ofChildren' ((fun ⟨e, c⟩ ↦ ⟨e, Quotient.out c⟩) '' s)⟧
+
+@[simp]
+lemma children'_ofChildren' (s : Set (η × WFTree.{u} η)) [Small.{u} s] :
+    children' (ofChildren' s) = s := by
+  ext c
+  rcases c with ⟨e, c⟩
   simp [children', ofChildren', Quotient.mk'_eq_mk]
+  aesop
 
 @[ext]
 lemma ext {t₁ t₂ : WFTree.{u} η} (h : t₁.children' = t₂.children') : t₁ = t₂ := by
   induction' t₁ using Quotient.ind with t₁
   induction' t₂ using Quotient.ind with t₂
   apply Quotient.sound
-  change t₁.Equiv t₂
   rw [PreWFTree.equiv_iff]
-  simp_rw [Function.funext_iff, Set.ext_iff] at h
+  rw [Set.ext_iff, Prod.forall] at h
   peel h with e h
   erw [Quotient.forall] at h
-  simp [children'] at h
-  convert h
-  <;> rw [Quotient.eq]
-  <;> rfl
+  simpa [children'] using h
 
 @[simp]
 lemma ofChildren'_children (t : WFTree.{u} η) : ofChildren' (children' t) = t := by
@@ -240,7 +247,7 @@ lemma ofChildren'_children (t : WFTree.{u} η) : ofChildren' (children' t) = t :
   simp
 
 noncomputable def ofChildren_equiv :
-    { f : η → Set (WFTree.{u} η) // ∀ e, Small.{u} (f e)} ≃ WFTree.{u} η where
+    { s : Set (η × WFTree.{u} η) // Small.{u} s} ≃ WFTree.{u} η where
   toFun := fun ⟨f, hf⟩ ↦ ofChildren' f
   invFun t := ⟨t.children', inferInstance⟩
   left_inv := fun ⟨f, hf⟩ ↦ by simp
