@@ -988,6 +988,7 @@ theorem sndHom_comp_map (f : M →ₗ[R'] N) :
     sndHom R' N ∘ₗ (map f).toLinearMap = f ∘ₗ sndHom R' M :=
   LinearMap.ext <| snd_map _
 
+@[simp]
 theorem map_id : map (LinearMap.id : M →ₗ[R'] M) = AlgHom.id R' _ := by
   apply algHom_ext
   simp only [map_inr, LinearMap.id_coe, id_eq, AlgHom.coe_id, forall_const]
