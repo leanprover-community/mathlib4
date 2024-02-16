@@ -393,7 +393,33 @@ def funcFromComma {D : Type*} [Category D]
   simp only [NatTrans.naturality, Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id,
     implies_true]
 
-/--The function `commaFromFunc` is left-inverse to `commaFromFunc` -/
+/-- A functor from `(WithInitial C ⥤ D)` to `Comma (Functor.const C)  (𝟭 (C ⥤ D))`.  -/
+def funcToComma {D : Type*} [Category D] :
+    (WithTerminal C ⥤ D) ⥤ Comma (𝟭 (C ⥤ D)) (Functor.const C)   where
+  obj G := {
+    left  := incl ⋙ G
+    right := G.obj star
+    hom := {
+      app := fun x => G.map (starTerminal.from (incl.obj x))
+      naturality := by
+       simp only [Functor.id_obj, Functor.comp_obj, Functor.const_obj_obj, Functor.comp_map, ←
+         G.map_comp, Limits.IsTerminal.comp_from, Functor.const_obj_map, Category.comp_id,
+         implies_true]
+    }
+  }
+  map η := {
+    left := whiskerLeft incl η
+    right := η.app star
+    w := by
+      apply NatTrans.ext
+      funext
+      simp only [Functor.id_obj, Functor.comp_obj, Functor.const_obj_obj,
+        Functor.id_map, NatTrans.comp_app, whiskerLeft_app, Functor.const_map_app,
+        NatTrans.naturality]
+  }
+
+
+/--The function `commaFromFunc` is left-inverse to `commaFromFunc`. -/
 theorem funcFromComma_comp_commaFromFunc {D : Type*} [Category D]
     (η : Comma (𝟭 (C ⥤ D)) (Functor.const C) ):
     commaFromFunc (funcFromComma η) = η := by
@@ -462,37 +488,6 @@ def equivToComma  {D : Type*} [Category D] :
        inv := {app := fun G =>  eqToHom (commFromFunc_comp_funcFromComma G) } })
     ({ hom := {app := fun G =>  eqToHom (funcFromComma_comp_commaFromFunc G)}
        inv := {app := fun G =>  eqToHom (funcFromComma_comp_commaFromFunc G).symm }})
-
-
-/--From a natrual transformation of functors `C⥤D`, the induced natural transformation
-of functors `WithTerminal C⥤ WithTerminal D` -/
-def mapNatTrans  {D : Type*} [Category D]  {F G: C ⥤ D} (η : F ⟶ G) :
-    map F ⟶ map G where
-  app := fun X =>
-        match X with
-        | of x => η.app x
-        | star => 𝟙 (star)
-  naturality := by
-          intro X Y f
-          match X, Y, f with
-          | of x, of y, f => exact η.naturality f
-          | of x, star, _ => rfl
-          | star, star, _ => rfl
-
-/--The functor taking `C⥤D` to `WithTerminal C ⥤ WithTerminal D`.-/
-def mapFunc  {D : Type*} [Category D]  : (C⥤D)⥤ (WithTerminal C ⥤ WithTerminal D) where
-  obj:= map
-  map:= mapNatTrans
-
-/--The extension of an equivalance `C ≌ D` to an equivalance `WithTerminal C ≌ WithTerminal D `.-/
-def mapEquiv {D : Type*} [Category D]  (e: C ≌ D) : WithTerminal C ≌ WithTerminal D :=
-  Equivalence.mk (map e.functor) (map e.inverse)
-   ((eqToIso (map_id C).symm).trans
- ((Functor.mapIso mapFunc e.unitIso).trans
-  (eqToIso (map_comp e.functor e.inverse))))
-    ( (eqToIso (map_comp e.inverse e.functor).symm).trans
-          ((Functor.mapIso mapFunc e.counitIso).trans (eqToIso (map_id D))))
-
 
 
 end WithTerminal
@@ -988,7 +983,7 @@ def opWithInitialWithTerminalOp : 𝟭 (WithInitial Cᵒᵖ) ≅
  /-- A natural isomorphism between `𝟭 (WithTerminal C)` and
 `(withTerminalOpToOpWithInitial ⋙ opWithInitialToWithTerminalOp).unop`. -/
 def withTerminalOpOpWithInitial : 𝟭 (WithTerminal C) ≅
-    (withTerminalOpToOpWithInitial ⋙ opWithInitialToWithTerminalOp).unop where
+     (withTerminalOpToOpWithInitial ⋙ opWithInitialToWithTerminalOp).unop where
   hom := {
     app := fun X => match X with
       | WithTerminal.of x => 𝟙 _
