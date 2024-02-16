@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.Topology.Instances.Matrix
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import number_theory.modular from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
@@ -64,7 +65,7 @@ open Complex hiding abs_two
 
 open Matrix hiding mul_smul
 
-open Matrix.SpecialLinearGroup UpperHalfPlane
+open Matrix.SpecialLinearGroup UpperHalfPlane ModularGroup
 
 noncomputable section
 
@@ -73,8 +74,6 @@ local notation "SL(" n ", " R ")" => SpecialLinearGroup (Fin n) R
 local macro "↑ₘ" t:term:80 : term => `(term| ($t : Matrix (Fin 2) (Fin 2) ℤ))
 
 open scoped UpperHalfPlane ComplexConjugate
-
-attribute [local instance] Fintype.card_fin_even
 
 namespace ModularGroup
 
@@ -290,7 +289,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
     Filter.Tendsto.exists_within_forall_le hs (tendsto_normSq_coprime_pair z)
   obtain ⟨g, -, hg⟩ := bottom_row_surj hp_coprime
   refine' ⟨g, fun g' => _⟩
-  rw [SpecialLinearGroup.im_smul_eq_div_normSq, SpecialLinearGroup.im_smul_eq_div_normSq,
+  rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
     div_le_div_left]
   · simpa [← hg] using hp ((↑ₘg') 1) (bottom_row_coprime g')
   · exact z.im_pos
@@ -381,7 +380,7 @@ theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by
     apply (lt_div_iff z.normSq_pos).mpr
     nlinarith
   convert this
-  simp only [SpecialLinearGroup.im_smul_eq_div_normSq]
+  simp only [ModularGroup.im_smul_eq_div_normSq]
   simp [denom, coe_S]
 #align modular_group.im_lt_im_S_smul ModularGroup.im_lt_im_S_smul
 
@@ -446,7 +445,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
   -- `g` has same max im property as `g₀`
   have hg₀' : ∀ g' : SL(2, ℤ), (g' • z).im ≤ (g • z).im := by
     have hg'' : (g • z).im = (g₀ • z).im := by
-      rw [SpecialLinearGroup.im_smul_eq_div_normSq, SpecialLinearGroup.im_smul_eq_div_normSq,
+      rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
         denom_apply, denom_apply, hg]
     simpa only [hg''] using hg₀
   constructor
@@ -501,7 +500,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
   calc
     9 * c ^ 4 < c ^ 4 * z.im ^ 2 * (g • z).im ^ 2 * 16 := by linarith
     _ = c ^ 4 * z.im ^ 4 / nsq ^ 2 * 16 := by
-      rw [SpecialLinearGroup.im_smul_eq_div_normSq, div_pow]
+      rw [ModularGroup.im_smul_eq_div_normSq, div_pow]
       ring
     _ ≤ 16 := by rw [← mul_pow]; linarith
 #align modular_group.abs_c_le_one ModularGroup.abs_c_le_one

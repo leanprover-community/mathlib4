@@ -5,7 +5,9 @@ Authors: Adam Topaz
 -/
 
 import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -700,7 +702,7 @@ end Regular
 
 section Epi
 
-variable [HasFiniteCoproducts C] (h : ∀ {α : Type} [Fintype α] {B : C}
+variable [HasFiniteCoproducts C] (h : ∀ {α : Type} [Finite α] {B : C}
     (X : α → C) (π : (a : α) → (X a ⟶ B)), EffectiveEpiFamily X π ↔ Epi (Sigma.desc π ))
 
 lemma effectiveEpi_iff_epi {X Y : C} (f : X ⟶ Y) : EffectiveEpi f ↔ Epi f := by

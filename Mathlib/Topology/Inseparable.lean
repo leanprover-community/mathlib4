@@ -98,6 +98,9 @@ theorem specializes_iff_nhds : x ⤳ y ↔ 𝓝 x ≤ 𝓝 y :=
   Iff.rfl
 #align specializes_iff_nhds specializes_iff_nhds
 
+theorem Specializes.not_disjoint (h : x ⤳ y) : ¬Disjoint (𝓝 x) (𝓝 y) := fun hd ↦
+  absurd (hd.mono_right h) <| by simp [NeBot.ne']
+
 theorem specializes_iff_pure : x ⤳ y ↔ pure x ≤ 𝓝 y :=
   (specializes_TFAE x y).out 0 1
 #align specializes_iff_pure specializes_iff_pure
@@ -552,39 +555,39 @@ theorem lift_comp_mk {f : X → α} (hf : ∀ x y, (x ~ᵢ y) → f x = f y) : l
 #align separation_quotient.lift_comp_mk SeparationQuotient.lift_comp_mk
 
 @[simp]
-theorem tendsto_lift_nhds_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {x : X} {l : Filter α} :
+theorem tendsto_lift_nhds_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {l : Filter α} :
     Tendsto (lift f hf) (𝓝 <| mk x) l ↔ Tendsto f (𝓝 x) l := by
   simp only [← map_mk_nhds, tendsto_map'_iff, lift_comp_mk]
 #align separation_quotient.tendsto_lift_nhds_mk SeparationQuotient.tendsto_lift_nhds_mk
 
 @[simp]
-theorem tendsto_lift_nhdsWithin_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {x : X}
+theorem tendsto_lift_nhdsWithin_mk {f : X → α} {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
     {s : Set (SeparationQuotient X)} {l : Filter α} :
     Tendsto (lift f hf) (𝓝[s] mk x) l ↔ Tendsto f (𝓝[mk ⁻¹' s] x) l := by
   simp only [← map_mk_nhdsWithin_preimage, tendsto_map'_iff, lift_comp_mk]
 #align separation_quotient.tendsto_lift_nhds_within_mk SeparationQuotient.tendsto_lift_nhdsWithin_mk
 
 @[simp]
-theorem continuousAt_lift {f : X → Y} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {x : X} :
+theorem continuousAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y}:
     ContinuousAt (lift f hf) (mk x) ↔ ContinuousAt f x :=
   tendsto_lift_nhds_mk
 #align separation_quotient.continuous_at_lift SeparationQuotient.continuousAt_lift
 
 @[simp]
-theorem continuousWithinAt_lift {f : X → Y} {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
-    {s : Set (SeparationQuotient X)} {x : X} :
+theorem continuousWithinAt_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
+    {s : Set (SeparationQuotient X)}:
     ContinuousWithinAt (lift f hf) s (mk x) ↔ ContinuousWithinAt f (mk ⁻¹' s) x :=
   tendsto_lift_nhdsWithin_mk
 #align separation_quotient.continuous_within_at_lift SeparationQuotient.continuousWithinAt_lift
 
 @[simp]
-theorem continuousOn_lift {f : X → Y} {hf : ∀ x y, (x ~ᵢ y) → f x = f y}
-    {s : Set (SeparationQuotient X)} : ContinuousOn (lift f hf) s ↔ ContinuousOn f (mk ⁻¹' s) := by
+theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (SeparationQuotient X)} :
+    ContinuousOn (lift f hf) s ↔ ContinuousOn f (mk ⁻¹' s) := by
   simp only [ContinuousOn, surjective_mk.forall, continuousWithinAt_lift, mem_preimage]
 #align separation_quotient.continuous_on_lift SeparationQuotient.continuousOn_lift
 
 @[simp]
-theorem continuous_lift {f : X → Y} {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
+theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     Continuous (lift f hf) ↔ Continuous f := by
   simp only [continuous_iff_continuousOn_univ, continuousOn_lift, preimage_univ]
 #align separation_quotient.continuous_lift SeparationQuotient.continuous_lift

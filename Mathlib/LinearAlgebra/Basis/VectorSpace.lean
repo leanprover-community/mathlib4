@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.LinearAlgebra.Projection
 
 #align_import linear_algebra.basis from "leanprover-community/mathlib"@"13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395"
 

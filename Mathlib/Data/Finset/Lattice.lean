@@ -90,8 +90,9 @@ theorem sup_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f 
 #align finset.sup_congr Finset.sup_congr
 
 @[simp]
-theorem _root_.map_finset_sup [SemilatticeSup β] [OrderBot β] [SupBotHomClass F α β] (f : F)
-    (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
+theorem _root_.map_finset_sup [SemilatticeSup β] [OrderBot β]
+    [FunLike F α β] [SupBotHomClass F α β]
+    (f : F) (s : Finset ι) (g : ι → α) : f (s.sup g) = s.sup (f ∘ g) :=
   Finset.cons_induction_on s (map_bot f) fun i s _ h => by
     rw [sup_cons, sup_cons, map_sup, h, Function.comp_apply]
 #align map_finset_sup map_finset_sup
@@ -305,7 +306,7 @@ theorem sup_set_eq_biUnion (s : Finset α) (f : α → Set β) : s.sup f = ⋃ x
 
 theorem sup_eq_sSup_image [CompleteLattice β] (s : Finset α) (f : α → β) :
     s.sup f = sSup (f '' s) :=
-  by classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.comp.left_id]
+  by classical rw [← Finset.coe_image, ← sup_id_eq_sSup, sup_image, Function.id_comp]
 #align finset.sup_eq_Sup_image Finset.sup_eq_sSup_image
 
 /-! ### inf -/
@@ -369,8 +370,9 @@ theorem inf_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f 
 #align finset.inf_congr Finset.inf_congr
 
 @[simp]
-theorem _root_.map_finset_inf [SemilatticeInf β] [OrderTop β] [InfTopHomClass F α β] (f : F)
-    (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) :=
+theorem _root_.map_finset_inf [SemilatticeInf β] [OrderTop β]
+    [FunLike F α β] [InfTopHomClass F α β]
+    (f : F) (s : Finset ι) (g : ι → α) : f (s.inf g) = s.inf (f ∘ g) :=
   Finset.cons_induction_on s (map_top f) fun i s _ h => by
     rw [inf_cons, inf_cons, map_inf, h, Function.comp_apply]
 #align map_finset_inf map_finset_inf
@@ -918,10 +920,17 @@ theorem comp_sup'_eq_sup'_comp [SemilatticeSup γ] {s : Finset β} (H : s.Nonemp
 #align finset.comp_sup'_eq_sup'_comp Finset.comp_sup'_eq_sup'_comp
 
 @[simp]
-theorem _root_.map_finset_sup' [SemilatticeSup β] [SupHomClass F α β] (f : F) {s : Finset ι} (hs)
-    (g : ι → α) : f (s.sup' hs g) = s.sup' hs (f ∘ g) :=
-  comp_sup'_eq_sup'_comp hs _ (map_sup f)
+theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClass F α β]
+    (f : F) {s : Finset ι} (hs) (g : ι → α) :
+    f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
+  refine' hs.cons_induction _ _ <;> intros <;> simp [*]
 #align map_finset_sup' map_finset_sup'
+
+lemma nsmul_sup' [LinearOrderedAddCommMonoid β] {s : Finset α}
+    (hs : s.Nonempty) (f : α → β) (n : ℕ) :
+    s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
+  let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
+  (map_finset_sup' ns hs _).symm
 
 /-- To rewrite from right to left, use `Finset.sup'_comp_eq_image`. -/
 @[simp]
@@ -1083,10 +1092,17 @@ theorem inf'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ 
 #align finset.inf'_congr Finset.inf'_congr
 
 @[simp]
-theorem _root_.map_finset_inf' [SemilatticeInf β] [InfHomClass F α β] (f : F) {s : Finset ι} (hs)
-    (g : ι → α) : f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
+theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClass F α β]
+    (f : F) {s : Finset ι} (hs) (g : ι → α) :
+    f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
   refine' hs.cons_induction _ _ <;> intros <;> simp [*]
 #align map_finset_inf' map_finset_inf'
+
+lemma nsmul_inf' [LinearOrderedAddCommMonoid β] {s : Finset α}
+    (hs : s.Nonempty) (f : α → β) (n : ℕ) :
+    s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
+  let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
+  (map_finset_inf' ns hs _).symm
 
 /-- To rewrite from right to left, use `Finset.inf'_comp_eq_image`. -/
 @[simp]

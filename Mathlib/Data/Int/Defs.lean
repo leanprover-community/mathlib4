@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Init.Data.Int.Basic
-import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Init.ZeroOne
+import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 
 /-!
@@ -17,6 +18,9 @@ open Nat
 
 namespace Int
 variable {m n : ℕ}
+
+-- TODO: Tag in Std
+attribute [simp] natAbs_pos
 
 instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 

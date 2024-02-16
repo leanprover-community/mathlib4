@@ -211,9 +211,9 @@ variable {α}
 
 /-- If `α` is equipped with the lower topology, then it is homeomorphic to `WithLower α`.
 -/
-def WithLowerHomeomorph : WithLower α ≃ₜ α :=
+def withLowerHomeomorph : WithLower α ≃ₜ α :=
   WithLower.ofLower.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
-#align lower_topology.with_lower_topology_homeomorph Topology.IsLower.WithLowerHomeomorph
+#align lower_topology.with_lower_topology_homeomorph Topology.IsLower.withLowerHomeomorph
 
 theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -324,7 +324,7 @@ variable {α}
 
 /-- If `α` is equipped with the upper topology, then it is homeomorphic to `WithUpper α`.
 -/
-def WithUpperHomeomorph : WithUpper α ≃ₜ α :=
+def withUpperHomeomorph : WithUpper α ≃ₜ α :=
   WithUpper.ofUpper.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
