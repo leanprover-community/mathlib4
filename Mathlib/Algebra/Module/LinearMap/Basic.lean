@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.Tactic.FunProp
 
 #align_import algebra.module.linear_map from "leanprover-community/mathlib"@"cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f"
 
@@ -65,6 +66,7 @@ variable {R R₁ R₂ R₃ k S S₃ T M M₁ M₂ M₃ N₁ N₂ N₃ ι : Type*
 `f (x + y) = f x + f y` and `f (c • x) = c • f x`. The predicate `IsLinearMap R f` asserts this
 property. A bundled version is available with `LinearMap`, and should be favored over
 `IsLinearMap` most of the time. -/
+@[fun_prop]
 structure IsLinearMap (R : Type u) {M : Type v} {M₂ : Type w} [Semiring R] [AddCommMonoid M]
   [AddCommMonoid M₂] [Module R M] [Module R M₂] (f : M → M₂) : Prop where
   /-- A linear map preserves addition. -/
@@ -407,6 +409,7 @@ theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsSca
 end
 
 variable (R) in
+@[fun_prop]
 theorem isLinearMap_of_compatibleSMul [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S]
     (f : M →ₗ[S] M₂) : IsLinearMap R f where
   map_add := map_add f
@@ -694,6 +697,7 @@ theorem mk'_apply {f : M → M₂} (H : IsLinearMap R f) (x : M) : mk' f H x = f
   rfl
 #align is_linear_map.mk'_apply IsLinearMap.mk'_apply
 
+@[fun_prop]
 theorem isLinearMap_smul {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (c : R) :
     IsLinearMap R fun z : M ↦ c • z := by
   refine' IsLinearMap.mk (smul_add c) _
@@ -701,6 +705,7 @@ theorem isLinearMap_smul {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Modul
   simp only [smul_smul, mul_comm]
 #align is_linear_map.is_linear_map_smul IsLinearMap.isLinearMap_smul
 
+@[fun_prop]
 theorem isLinearMap_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (a : M) :
     IsLinearMap R fun c : R ↦ c • a :=
   IsLinearMap.mk (fun x y ↦ add_smul x y a) fun x y ↦ mul_smul x y a
@@ -716,9 +721,10 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Semiring R] [AddCommGroup M] [AddCommGroup M₂]
-variable [Module R M] [Module R M₂]
+variable [Semiring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Module R M] [Module R M₂] [Module R M₃]
 
+@[fun_prop]
 theorem isLinearMap_neg : IsLinearMap R fun z : M ↦ -z :=
   IsLinearMap.mk neg_add fun x y ↦ (smul_neg x y).symm
 #align is_linear_map.is_linear_map_neg IsLinearMap.isLinearMap_neg
@@ -1000,3 +1006,47 @@ end Module
 end Actions
 
 end LinearMap
+
+namespace IsLinearMap
+
+section Semiring
+variable [Semiring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Module R M] [Module R M₂] [Module R M₃]
+
+@[fun_prop]
+theorem isLinearMap_id : IsLinearMap R (fun x : M ↦ x) := LinearMap.id.isLinear
+
+@[fun_prop]
+theorem isLinearMap_comp {f : M₂ → M₃} {g : M → M₂}
+    (hf : IsLinearMap R f) (hg : IsLinearMap R g) : IsLinearMap R (fun x : M ↦ f (g x)) :=
+  ((mk' _ hf).comp (mk' _ hg)).isLinear
+
+@[fun_prop]
+theorem isLinearMap_apply (x : M) : IsLinearMap R (fun f : M → M₂ ↦ f x) := by sorry
+
+@[fun_prop]
+theorem isLinearMap_pi (f : M → ι → M₂) (hf : ∀ i, IsLinearMap R (f · i)) :
+    IsLinearMap R (fun x i ↦ f x i) := by sorry
+
+@[fun_prop]
+theorem isLinearMap_add (f g : M → M₂) (hf : IsLinearMap R f) (hg : IsLinearMap R g) :
+    IsLinearMap R (fun x ↦ f x + g x) := ((mk' _ hf) + (mk' _ hg)).isLinear
+
+@[fun_prop]
+theorem isLinearMap_sub (f g : M → M₂) (hf : IsLinearMap R f) (hg : IsLinearMap R g) :
+    IsLinearMap R (fun x ↦ f x - g x) := ((mk' _ hf) - (mk' _ hg)).isLinear
+
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
+variable [Module R M] [Module R M₂] [Module R M₃]
+
+theorem isLinearMap_mk' (f : M → M₂ → M₃)
+    (hf₁ : ∀ y, IsLinearMap R (f · y)) (hf₂ : ∀ x, IsLinearMap R (f x ·)) :
+    IsLinearMap R (fun x => mk' (f x) (hf₂ x)) := sorry
+
+end CommSemiring
+
+end IsLinearMap
