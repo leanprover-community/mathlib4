@@ -395,6 +395,11 @@ instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
   exact ⟨⟨x', (mem_perfectClosure_iff_pow_mem p).2 ⟨n + 1, y, hy⟩⟩, by
     simp_rw [frobenius_def, SubmonoidClass.mk_pow, hx]⟩
 
+/-- If `E` is a perfect field, then the (relative) perfect closure
+`perfectClosure F E` is perfect. -/
+instance perfectClosure.perfectField [PerfectField E] : PerfectField (perfectClosure F E) :=
+  PerfectRing.toPerfectField _ (ringExpChar E)
+
 end perfectClosure
 
 section IsPurelyInseparable
