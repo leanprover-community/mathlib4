@@ -776,8 +776,7 @@ lemma SymmetricCategory.reverseBraiding_eq (C : Type u₁) [Category.{v₁} C]
 reversed braiding, upgraded to a braided functor. -/
 def SymmetricCategory.equivReverseBraiding (C : Type u₁) [Category.{v₁} C]
     [MonoidalCategory C] [SymmetricCategory C] :=
-  @BraidedFunctor.mk C _ _ _ C _ _ (reverseBraiding C) (.id C) $ fun X Y =>
-    (IsIso.eq_inv_comp _).mpr $ Eq.trans (id_comp _)
-    $ Eq.trans (braiding_swap_eq_inv_braiding Y X) (comp_id _).symm
+  @BraidedFunctor.mk C _ _ _ C _ _ (reverseBraiding C) (.id C) <| by
+    intros; simp [reverseBraiding, braiding_swap_eq_inv_braiding]
 
 end CategoryTheory
