@@ -27,7 +27,8 @@ has to be `DenseInducing` (not necessarily injective).
 
 noncomputable section
 
-open Set Topology Filter
+open Set Filter
+open scoped Topology
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
