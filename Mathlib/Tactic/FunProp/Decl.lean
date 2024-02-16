@@ -55,7 +55,7 @@ def addFunPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) 
 
   let info ← getConstInfo declName
 
-  let (xs,_,b) ← forallMetaTelescope info.type
+  let (xs,bi,b) ← forallMetaTelescope info.type
 
   if ¬b.isProp then
     throwError "invalid fun_prop declaration, has to be `Prop` valued function"
@@ -65,13 +65,12 @@ def addFunPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) 
   let path ← DiscrTree.mkPath e {}
 
   -- find the argument position of the function `f` in `P f`
-  let mut .some funArgId ← xs.reverse.findIdxM? fun x => do
-    if (← inferType x).isForall then
+  let mut .some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
+    if (← inferType x).isForall && bi.isExplicit then
       return true
     else
       return false
     | throwError "invalid fun_prop declaration, can't find argument of type `α → β`"
-  funArgId := xs.size - funArgId - 1
 
   let decl : FunPropDecl := {
     funPropName := declName
