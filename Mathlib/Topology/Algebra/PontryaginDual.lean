@@ -9,8 +9,7 @@ import Mathlib.Topology.Algebra.ContinuousMonoidHom
 #align_import topology.algebra.continuous_monoid_hom from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
-
-# Continuous Monoid Homs
+# Pontryagin dual
 
 This file defines the Pontryagin dual of a topological group.
 
