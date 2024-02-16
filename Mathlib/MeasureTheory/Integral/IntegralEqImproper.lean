@@ -869,7 +869,7 @@ variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m n 
 theorem integral_of_hasDerivAt_of_tendsto
     (hderiv : ∀ x, HasDerivAt f (f' x) x) (hf' : Integrable f')
     (hbot : Tendsto f atBot (𝓝 m)) (htop : Tendsto f atTop (𝓝 n)) : ∫ x, f' x = n - m := by
-  rewrite [← integral_univ, ← Set.Iic_union_Ioi (a := 0),
+  rw [← integral_univ, ← Set.Iic_union_Ioi (a := 0),
     integral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi hf'.integrableOn hf'.integrableOn,
     integral_Iic_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn hbot,
     integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn htop]

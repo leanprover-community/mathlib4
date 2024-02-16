@@ -187,17 +187,17 @@ theorem integrable_inv_one_add_sq : Integrable fun (x : ℝ) ↦ (1 + x ^ 2)⁻�
 theorem integral_Iic_inv_one_add_sq {i : ℝ} :
     ∫ (x : ℝ) in Set.Iic i, (1 + x ^ 2)⁻¹ = arctan i + (π / 2) :=
   integral_Iic_of_hasDerivAt_of_tendsto' (fun x _ => hasDerivAt_arctan' x)
-    integrable_inv_one_add_sq.integrableOn (tendsto_nhds_of_tendsto_nhdsWithin arctan_atBot)
+    integrable_inv_one_add_sq.integrableOn (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atBot)
     |>.trans (sub_neg_eq_add _ _)
 
 @[simp]
 theorem integral_Ioi_inv_one_add_sq {i : ℝ} :
     ∫ (x : ℝ) in Set.Ioi i, (1 + x ^ 2)⁻¹ = (π / 2) - arctan i :=
   integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => hasDerivAt_arctan' x)
-    integrable_inv_one_add_sq.integrableOn (tendsto_nhds_of_tendsto_nhdsWithin arctan_atTop)
+    integrable_inv_one_add_sq.integrableOn (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atTop)
 
 @[simp]
 theorem integral_univ_inv_one_add_sq : ∫ (x : ℝ), (1 + x ^ 2)⁻¹ = π :=
   (by ring : π = (π / 2) - (-(π / 2))) ▸ integral_of_hasDerivAt_of_tendsto hasDerivAt_arctan'
-    integrable_inv_one_add_sq (tendsto_nhds_of_tendsto_nhdsWithin arctan_atBot)
-    (tendsto_nhds_of_tendsto_nhdsWithin arctan_atTop)
+    integrable_inv_one_add_sq (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atBot)
+    (tendsto_nhds_of_tendsto_nhdsWithin tendsto_arctan_atTop)

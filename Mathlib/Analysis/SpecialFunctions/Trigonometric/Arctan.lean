@@ -177,10 +177,10 @@ theorem arctan_injective : arctan.Injective := arctan_strictMono.injective
 theorem arctan_eq_zero_iff {x : ℝ} : arctan x = 0 ↔ x = 0 :=
   .trans (by rw [arctan_zero]) arctan_injective.eq_iff
 
-theorem arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
+theorem tendsto_arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
   tendsto_Ioo_atTop.mp tanOrderIso.symm.tendsto_atTop
 
-theorem arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
+theorem tendsto_arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
   tendsto_Ioo_atBot.mp tanOrderIso.symm.tendsto_atBot
 
 theorem arctan_eq_of_tan_eq {x y : ℝ} (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
