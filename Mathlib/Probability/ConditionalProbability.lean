@@ -78,14 +78,51 @@ end Definitions
 @[inherit_doc] scoped notation μ "[" s "|" t "]" => ProbabilityTheory.cond μ t s
 @[inherit_doc] scoped notation:60 μ "[|" t "]" => ProbabilityTheory.cond μ t
 
+/-- The conditional probability measure of any measure on any set of finite positive measure
+is a probability measure. -/
+theorem cond_isProbabilityMeasure_of_finite (hcs : μ s ≠ 0) (hs : μ s ≠ ∞) :
+    IsProbabilityMeasure (μ[|s]) :=
+  ⟨by
+    unfold ProbabilityTheory.cond
+    simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
+      MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, smul_eq_mul]
+    exact ENNReal.inv_mul_cancel hcs hs⟩
+
 /-- The conditional probability measure of any finite measure on any set of positive measure
 is a probability measure. -/
 theorem cond_isProbabilityMeasure [IsFiniteMeasure μ] (hcs : μ s ≠ 0) :
-    IsProbabilityMeasure (μ[|s]) :=
-  ⟨by
-    rw [cond, Measure.smul_apply, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter]
-    exact ENNReal.inv_mul_cancel hcs (measure_ne_top _ s)⟩
+    IsProbabilityMeasure (μ[|s]) := cond_isProbabilityMeasure_of_finite μ hcs (measure_ne_top μ s)
 #align probability_theory.cond_is_probability_measure ProbabilityTheory.cond_isProbabilityMeasure
+
+instance cond_isFiniteMeasure :
+    IsFiniteMeasure (μ[|s]) where
+  measure_univ_lt_top := by
+    unfold ProbabilityTheory.cond
+    have : (μ s)⁻¹ * μ s < ⊤ := by
+      have : (μ s)⁻¹ * μ s ≤ 1 := by
+        apply ENNReal.le_inv_iff_mul_le.mp
+        rfl
+      exact lt_of_le_of_lt this ENNReal.one_lt_top
+    simp_all only [MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter,
+      le_refl, Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
+      smul_eq_mul]
+
+theorem cond_toMeasurable_eq :
+    μ[|(toMeasurable μ s)] = μ[|s] := by
+  unfold cond
+  by_cases hnt : μ s = ∞
+  · simp [hnt]
+  · simp [Measure.restrict_toMeasurable hnt]
+
+theorem cond_absolutelyContinuous :
+    μ[|s] ≪ μ := by
+  intro t ht
+  unfold ProbabilityTheory.cond
+  rw [Measure.smul_apply, smul_eq_mul]
+  apply mul_eq_zero.mpr
+  refine Or.inr (le_antisymm ?_ (zero_le _))
+  exact ht ▸ Measure.restrict_apply_le s t
+
 
 section Bayes
 
@@ -102,6 +139,9 @@ theorem cond_univ [IsProbabilityMeasure μ] : μ[|Set.univ] = μ := by
 theorem cond_apply (hms : MeasurableSet s) (t : Set Ω) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
   rw [cond, Measure.smul_apply, Measure.restrict_apply' hms, Set.inter_comm, smul_eq_mul]
 #align probability_theory.cond_apply ProbabilityTheory.cond_apply
+
+ theorem cond_apply' {t : Set Ω} (hA : MeasurableSet t) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
+   rw [cond, Measure.smul_apply, Measure.restrict_apply hA, Set.inter_comm, smul_eq_mul]
 
 theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) : μ[s ∩ t|s] = μ[t|s] := by
   rw [cond_apply _ hms, ← Set.inter_assoc, Set.inter_self, ← cond_apply _ hms]
