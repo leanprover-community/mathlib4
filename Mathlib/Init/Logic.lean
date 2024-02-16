@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 import Std.Tactic.Ext
-import Std.Tactic.Lint.Basic
 import Std.Tactic.Relation.Rfl
-import Std.Logic
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
