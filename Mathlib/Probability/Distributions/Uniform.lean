@@ -175,7 +175,7 @@ theorem mul_pdf_integrable (hcs : IsCompact s) (huX : IsUniform X s ℙ) :
 theorem integral_eq (huX : IsUniform X s ℙ) :
     ∫ x, X x ∂ℙ = (volume s)⁻¹.toReal * ∫ x in s, x := by
   rw [← smul_eq_mul, ← integral_smul_measure]
-  dsimp [IsUniform, ProbabilityTheory.cond] at huX
+  dsimp only [IsUniform, ProbabilityTheory.cond] at huX
   rw [← huX]
   by_cases hX : AEMeasurable X ℙ
   · exact (integral_map hX aestronglyMeasurable_id).symm
@@ -194,7 +194,7 @@ lemma IsUniform.cond {s : Set E} :
 
 /-- The density of the uniform measure on a set with respect to itself. This allows us to abstract
 away the choice of random variable and probability space. -/
-def uniformPDF (s : Set E) (x : E) (μ : Measure E := by volume_tac)  : ℝ≥0∞ :=
+def uniformPDF (s : Set E) (x : E) (μ : Measure E := by volume_tac) : ℝ≥0∞ :=
   s.indicator ((μ s)⁻¹ • (1 : E → ℝ≥0∞)) x
 
 /-- Check that indeed any uniform random variable has the uniformPDF. -/
