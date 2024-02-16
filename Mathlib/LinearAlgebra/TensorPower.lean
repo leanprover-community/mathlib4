@@ -295,4 +295,21 @@ theorem galgebra_toFun_def (r : R) :
 
 example : Algebra R (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
 
+variable (n : ℕ)
+
+variable (R)
+
+/-- A family `f` indexed by `Fin n` of linear forms on `M` defines a linear form on
+`⨂[R]^n M`, by multiplying the components of `f`.-/
+noncomputable def linearFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) : (⨂[R]^n) M →ₗ[R] R :=
+  PiTensorProduct.lift (MultilinearMap.compLinearMap (MultilinearMap.mkPiRing R (Fin n) 1) f)
+
+open BigOperators in
+@[simp]
+lemma linearFormOfFamily_apply_tprod (f : (_ : Fin n) → (M →ₗ[R] R)) (v : Fin n → M) :
+    linearFormOfFamily R n f (PiTensorProduct.tprod R v) = ∏ i, (f i (v i)) := by
+  unfold linearFormOfFamily
+  simp only [lift.tprod, MultilinearMap.compLinearMap_apply, MultilinearMap.mkPiRing_apply,
+    smul_eq_mul, _root_.mul_one]
+
 end TensorPower
