@@ -144,7 +144,7 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
 #align fin.coe_eq_coe Fin.val_eq_val
 
 theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
-  ⟨veq_of_eq, eq_of_veq⟩
+  ext_iff
 #align fin.eq_iff_veq Fin.eq_iff_veq
 
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
