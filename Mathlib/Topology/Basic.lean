@@ -1499,11 +1499,14 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
 
 open TopologicalSpace
 
-variable {f : X → Y} {s : Set X} {x : X} {y : Y}
-
-theorem continuous_def : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
+-- The curly braces are intentional, so this definition works well with simp
+-- when topologies are not those provided by instances.
+theorem continuous_def {_ : TopologicalSpace X} {_ : TopologicalSpace Y} {f : X → Y} :
+    Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 #align continuous_def continuous_def
+
+variable {f : X → Y} {s : Set X} {x : X} {y : Y}
 
 theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
     IsOpen (f ⁻¹' t) :=
