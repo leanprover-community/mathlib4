@@ -129,6 +129,21 @@ theorem braiding_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
   rw [tensorHom_def' f g, tensorHom_def g f]
   simp_rw [Category.assoc, braiding_naturality_left, braiding_naturality_right_assoc]
 
+@[reassoc (attr := simp)]
+theorem braiding_inv_naturality_right (X : C) {Y Z : C} (f : Y ⟶ Z) :
+    X ◁ f ≫ (β_ Z X).inv = (β_ Y X).inv ≫ f ▷ X :=
+  CommSq.w <| .vert_inv <| .mk <| braiding_naturality_left f X
+
+@[reassoc (attr := simp)]
+theorem braiding_inv_naturality_left {X Y : C} (f : X ⟶ Y) (Z : C) :
+    f ▷ Z ≫ (β_ Z Y).inv = (β_ Z X).inv ≫ Z ◁ f :=
+  CommSq.w <| .vert_inv <| .mk <| braiding_naturality_right Z f
+
+@[reassoc (attr := simp)]
+theorem braiding_inv_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    (f ⊗ g) ≫ (β_ Y' Y).inv = (β_ X' X).inv ≫ (g ⊗ f) :=
+  CommSq.w <| .vert_inv <| .mk <| braiding_naturality g f
+
 @[reassoc]
 theorem yang_baxter (X Y Z : C) :
     (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
@@ -168,15 +183,13 @@ theorem hexagon_reverse_iso (X Y Z : C) :
 theorem hexagon_forward_inv (X Y Z : C) :
     (α_ Y Z X).inv ≫ (β_ X (Y ⊗ Z)).inv ≫ (α_ X Y Z).inv =
       Y ◁ (β_ X Z).inv ≫ (α_ Y X Z).inv ≫ (β_ X Y).inv ▷ Z := by
-  convert congrArg Iso.inv (hexagon_forward_iso X Y Z) using 1
-  <;> exact (assoc _ _ _).symm
+  simp
 
 @[reassoc]
 theorem hexagon_reverse_inv (X Y Z : C) :
     (α_ Z X Y).hom ≫ (β_ (X ⊗ Y) Z).inv ≫ (α_ X Y Z).hom =
       (β_ X Z).inv ▷ Y ≫ (α_ X Z Y).hom ≫ X ◁ (β_ Y Z).inv := by
-  convert congrArg Iso.inv (hexagon_reverse_iso X Y Z) using 1
-  <;> exact (assoc _ _ _).symm
+  simp
 
 end BraidedCategory
 
@@ -681,12 +694,6 @@ instance : BraidedCategory Cᵒᵖ where
   braiding X Y := (β_ Y.unop X.unop).op
   braiding_naturality_right X {_ _} f := Quiver.Hom.unop_inj <| by simp
   braiding_naturality_left {_ _} f Z := Quiver.Hom.unop_inj <| by simp
-  hexagon_forward X Y Z := Quiver.Hom.unop_inj <| by
-    convert hexagon_reverse Y.unop Z.unop X.unop using 1
-    <;> exact assoc _ _ _
-  hexagon_reverse X Y Z := Quiver.Hom.unop_inj <| by
-    convert hexagon_forward Z.unop X.unop Y.unop using 1
-    <;> exact assoc _ _ _
 
 section OppositeLemmas
 
@@ -709,8 +716,6 @@ instance instBraiding : BraidedCategory Cᴹᵒᵖ where
   braiding X Y := (β_ Y.unmop X.unmop).mop
   braiding_naturality_right X {_ _} f := Quiver.Hom.unmop_inj <| by simp
   braiding_naturality_left {_ _} f Z := Quiver.Hom.unmop_inj <| by simp
-  hexagon_forward X Y Z := Quiver.Hom.unmop_inj <| by simp
-  hexagon_reverse X Y Z := Quiver.Hom.unmop_inj <| by simp
 
 section MonoidalOppositeLemmas
 
@@ -756,12 +761,8 @@ This corresponds to the automorphism of the braid group swapping
 over-crossings and under-crossings. -/
 @[reducible] def reverseBraiding : BraidedCategory C where
   braiding X Y := (β_ Y X).symm
-  braiding_naturality_right X {_ _} f :=
-    CommSq.w <| .vert_inv <| .mk <| braiding_naturality_left f X
-  braiding_naturality_left {_ _} f Z :=
-    CommSq.w <| .vert_inv <| .mk <| braiding_naturality_right Z f
-  hexagon_forward X Y Z := hexagon_reverse_inv Y Z X
-  hexagon_reverse X Y Z := hexagon_forward_inv Z X Y
+  braiding_naturality_right X {_ _} f := by simp
+  braiding_naturality_left {_ _} f Z := by simp
 
 lemma SymmetricCategory.reverseBraiding_eq (C : Type u₁) [Category.{v₁} C]
     [MonoidalCategory C] [i : SymmetricCategory C] :
