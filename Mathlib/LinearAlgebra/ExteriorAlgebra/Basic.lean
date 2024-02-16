@@ -455,6 +455,7 @@ lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f 
 
 /-- A morphism of modules is surjective if and only the morphism of exterior algebras that it
 induces is surjective. -/
+@[simp]
 lemma map_surjective_iff {f : M →ₗ[R] N} :
     Function.Surjective (map f) ↔ Function.Surjective f := by
   refine ⟨fun h y ↦ ?_, fun h ↦ CliffordAlgebra.map_surjective _ h⟩
