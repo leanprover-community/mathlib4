@@ -692,6 +692,9 @@ theorem coe_one : ((1 : S) : M) = 1 :=
 #align add_submonoid.coe_zero AddSubmonoid.coe_zero
 
 @[to_additive (attr := simp)]
+lemma mk_eq_one {a : M} {ha} : (⟨a, ha⟩ : S) = 1 ↔ a = 1 := by simp [← SetLike.coe_eq_coe]
+
+@[to_additive (attr := simp)]
 theorem mk_mul_mk (x y : M) (hx : x ∈ S) (hy : y ∈ S) :
     (⟨x, hx⟩ : S) * ⟨y, hy⟩ = ⟨x * y, S.mul_mem hx hy⟩ :=
   rfl
