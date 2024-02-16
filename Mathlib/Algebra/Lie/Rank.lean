@@ -74,7 +74,6 @@ lemma lieMatrixPoly_eval_eq_toMatrix (ij : ιM × ιM) (c : ι →₀ R) :
     · rintro l - hl; rw [Finsupp.single_eq_of_ne hl.symm, mul_zero]
     · simp only [Finset.mem_univ, not_true_eq_false, IsEmpty.forall_iff]
 
-@[simp]
 lemma lieMatrixPoly_eval_eq_lie (ij : ιM × ιM) (c : ι →₀ R) :
     MvPolynomial.eval c (lieMatrixPoly b bₘ ij) = bₘ.repr ⁅b.repr.symm c, bₘ ij.2⁆ ij.1 := by
   rw [lieMatrixPoly_eval_eq_toMatrix, Basis.repr_symm_apply, LinearMap.toMatrix_apply,
