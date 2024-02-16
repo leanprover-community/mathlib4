@@ -130,7 +130,7 @@ end Pullbacks
 
 section FiniteCoproducts
 
-variable {α : Type} [Fintype α] (X : α → Profinite.{u})
+variable {α : Type} [Finite α] (X : α → Profinite.{u})
 
 /--
 The coproduct of a finite family of objects in `Profinite`, constructed as the disjoint

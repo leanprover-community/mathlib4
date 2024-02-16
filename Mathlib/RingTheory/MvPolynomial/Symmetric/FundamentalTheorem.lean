@@ -100,13 +100,11 @@ lemma surjective_accumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : Anti
     accumulate n m (inv_accumulate n m s) = s := funext <| fun ⟨i, hi⟩ ↦ by
   have := Nat.le_pred_of_lt hi
   revert hi
-  refine Nat.decreasingInduction' (fun i hi _ ih ↦ ?_) this ?_
-  · intro him
-    rw [Nat.lt_pred_iff] at hi
+  refine Nat.decreasingInduction' (fun i hi _ ih him ↦ ?_) this fun hm ↦ ?_
+  · rw [Nat.lt_pred_iff] at hi
     rw [accumulate_rec (him.trans_le hmn) hi, ih hi, inv_accumulate, dif_pos him, dif_pos hi]
     exact Nat.sub_add_cancel (hs i.le_succ)
-  · intro hm
-    have := (Nat.succ_pred <| Nat.not_eq_zero_of_lt hm).symm
+  · have := (Nat.succ_pred <| Nat.not_eq_zero_of_lt hm).symm
     rw [accumulate_last (hm.trans_le hmn) this, inv_accumulate, dif_pos hm, dif_neg, Nat.sub_zero]
     · exact this.not_gt
     intro j hj
