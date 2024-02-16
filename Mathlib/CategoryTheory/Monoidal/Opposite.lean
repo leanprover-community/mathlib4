@@ -361,8 +361,8 @@ variable (C)
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]
 def MonoidalOpposite.tensorIso :
-    tensor Cᴹᵒᵖ ≅ (unmopFunctor C).prod (unmopFunctor C)
-                  ⋙ Prod.swap C C ⋙ tensor C ⋙ mopFunctor C :=
+    tensor Cᴹᵒᵖ ≅ (unmopFunctor C).prod (unmopFunctor C) ⋙
+      Prod.swap C C ⋙ tensor C ⋙ mopFunctor C :=
   Iso.refl _
 
 variable {C}
