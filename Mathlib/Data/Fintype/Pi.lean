@@ -96,6 +96,13 @@ lemma eval_image_piFinset (t : ∀ a, Finset (δ a)) (a : α) [DecidableEq (δ a
   choose f hf using ht
   exact ⟨fun b ↦ if h : a = b then h ▸ x else f _ h, by aesop, by simp⟩
 
+lemma eval_image_piFinset_const {β} [DecidableEq β] (t : Finset β) (a : α) :
+    ((piFinset fun _i : α ↦ t).image fun f ↦ f a) = t := by
+  obtain rfl | ht := t.eq_empty_or_nonempty
+  · haveI : Nonempty α := ⟨a⟩
+    simp
+  · exact eval_image_piFinset (fun _ ↦ t) a fun _ _ ↦ ht
+
 lemma filter_piFinset_of_not_mem [∀ a, DecidableEq (δ a)] (t : ∀ a, Finset (δ a)) (a : α)
     (x : δ a) (hx : x ∉ t a) : (piFinset t).filter (· a = x) = ∅ := by
   simp only [filter_eq_empty_iff, mem_piFinset]; rintro f hf rfl; exact hx (hf _)

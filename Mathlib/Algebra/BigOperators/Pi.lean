@@ -191,7 +191,7 @@ lemma card_filter_piFinset_eq (s : ∀ i, Finset (α i)) (i : ι) (a : α i) :
   · rw [card_filter_piFinset_eq_of_mem _ _ h]
   · rw [filter_piFinset_of_not_mem _ _ _ h, Finset.card_empty]
 
-lemma filter_piFinset_const_card (s : Finset κ) (i : ι) (x : κ) :
+lemma card_filter_piFinset_const (s : Finset κ) (i : ι) (x : κ) :
     ((piFinset fun _ ↦ s).filter fun f ↦ f i = x).card =
       if x ∈ s then s.card ^ (card ι - 1) else 0 :=
   (card_filter_piFinset_eq _ _ _).trans $ by
