@@ -356,11 +356,11 @@ variable (C)
 
 -- todo: upgrade to monoidal equivalence
 /-- The equivalence between `C` and its monoidal opposite's monoidal opposite. -/
-@[simps!] def MonoidalOpposite.double_dual_equiv : Cᴹᵒᵖᴹᵒᵖ ≌ C := Equivalence.refl
+@[simps!] def MonoidalOpposite.mopMopEquivalence : Cᴹᵒᵖᴹᵒᵖ ≌ C := Equivalence.refl
 
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]
-def MonoidalOpposite.tensor_iso :
+def MonoidalOpposite.tensorIso :
     tensor Cᴹᵒᵖ ≅ (unmopFunctor C).prod (unmopFunctor C)
                   ⋙ Prod.swap C C ⋙ tensor C ⋙ mopFunctor C :=
   Iso.refl _
@@ -369,37 +369,37 @@ variable {C}
 
 /-- The identification `X ⊗ - = mop (- ⊗ unmop X)` as a natural isomorphism. -/
 @[simps!]
-def MonoidalOpposite.tensorLeft_iso (X : Cᴹᵒᵖ) :
+def MonoidalOpposite.tensorLeftIso (X : Cᴹᵒᵖ) :
     tensorLeft X ≅ unmopFunctor C ⋙ tensorRight (unmop X) ⋙ mopFunctor C :=
   Iso.refl _
 
 /-- The identification `mop X ⊗ - = mop (- ⊗ X)` as a natural isomorphism. -/
 @[simps!]
-def MonoidalOpposite.tensorLeft_mop_iso (X : C) :
+def MonoidalOpposite.tensorLeftMopIso (X : C) :
     tensorLeft (mop X) ≅ unmopFunctor C ⋙ tensorRight X ⋙ mopFunctor C :=
   Iso.refl _
 
 /-- The identification `unmop X ⊗ - = unmop (mop - ⊗ X)` as a natural isomorphism. -/
 @[simps!]
-def MonoidalOpposite.tensorLeft_unmop_iso (X : Cᴹᵒᵖ) :
+def MonoidalOpposite.tensorLeftUnmopIso (X : Cᴹᵒᵖ) :
     tensorLeft (unmop X) ≅ mopFunctor C ⋙ tensorRight X ⋙ unmopFunctor C :=
   Iso.refl _
 
 /-- The identification `- ⊗ X = mop (unmop X ⊗ -)` as a natural isomorphism. -/
 @[simps!]
-def MonoidalOpposite.tensorRight_iso (X : Cᴹᵒᵖ) :
+def MonoidalOpposite.tensorRightIso (X : Cᴹᵒᵖ) :
     tensorRight X ≅ unmopFunctor C ⋙ tensorLeft (unmop X) ⋙ mopFunctor C :=
   Iso.refl _
 
 /-- The identification `- ⊗ mop X = mop (- ⊗ unmop X)` as a natural isomorphism. -/
 @[simps!]
-def MonoidalOpposite.tensorRight_mop_iso (X : C) :
+def MonoidalOpposite.tensorRightMopIso (X : C) :
     tensorRight (mop X) ≅ unmopFunctor C ⋙ tensorLeft X ⋙ mopFunctor C :=
   Iso.refl _
 
 /-- The identification `- ⊗ unmop X = unmop (X ⊗ mop -)` as a natural isomorphism. -/
 @[simps!]
-def MonoidalOpposite.tensorRight_unmop_iso (X : Cᴹᵒᵖ) :
+def MonoidalOpposite.tensorRightUnmopIso (X : Cᴹᵒᵖ) :
     tensorRight (unmop X) ≅ mopFunctor C ⋙ tensorLeft X ⋙ unmopFunctor C :=
   Iso.refl _
 
