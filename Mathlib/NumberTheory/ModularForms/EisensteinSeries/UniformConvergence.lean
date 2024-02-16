@@ -119,9 +119,11 @@ lemma ne_zero_if_max' {x : Fin 2 → ℤ} (hx : x ≠ 0)
   rw [fun_ne_zero_cases, h1, h0] at hx
   simp only [ne_eq, not_true_eq_false, or_self] at *
 
+example (a : ℤ) : (a.natAbs)^2 = a^2 := by exact Int.natAbs_eq_iff_sq_eq.mp rfl
+
 lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
-    (1 : ℝ) ≤ (x 0 / (max (x 0).natAbs (x 1).natAbs))^2 ∨
-      (1 : ℝ) ≤ (x 1 / (max (x 0).natAbs (x 1).natAbs))^2 := by
+    (1 : ℝ) ≤ (x 0 / (max (x 0).natAbs (x 1).natAbs)) ^ 2 ∨
+      (1 : ℝ) ≤ (x 1 / (max (x 0).natAbs (x 1).natAbs)) ^ 2 := by
   cases' (max_choice (x 0).natAbs (x 1).natAbs) with H1 H2
   · left
     rw [H1]
@@ -130,10 +132,10 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     have h1 : (x 0 : ℝ)^2/( _root_.abs (x 0 : ℝ))^2 = 1 := by
       simp only [_root_.sq_abs, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
         this, div_self]
-    simp only [ne_eq, max_eq_left_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
+    rw [div_pow]
     convert h1.symm.le
     norm_cast
-    rw [complex_abs_of_int_eq_natAbs]
+    exact Int.cast_natAbs (x 0)
   · right
     rw [H2]
     have : (x 1 : ℝ) ≠ 0 := by
@@ -141,10 +143,10 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     have h1 : (x 1 : ℝ)^2/( _root_.abs (x 1 : ℝ))^2 = 1 := by
       simp only [_root_.sq_abs, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
         this, div_self]
-    simp only [ne_eq, max_eq_right_iff, Int.cast_eq_zero, int_cast_abs, div_pow, ge_iff_le] at *
+    rw [div_pow]
     convert h1.symm.le
     norm_cast
-    rw [complex_abs_of_int_eq_natAbs]
+    exact Int.cast_natAbs (x 1)
 
 /--This should work for complex `k`  (with a condition on `k.re`and taking the power out of the abs)
 but last I checked we were missing some lemmas about this -/
