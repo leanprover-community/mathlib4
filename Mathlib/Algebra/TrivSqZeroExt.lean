@@ -939,9 +939,12 @@ def liftEquivOfComm :
 variable {N P : Type*} [AddCommMonoid N] [Module R' N] [Module R'ᵐᵒᵖ N] [IsCentralScalar R' N]
   [AddCommMonoid P] [Module R' P] [Module R'ᵐᵒᵖ P] [IsCentralScalar R' P]
 
-/-- Functoriality of `TrivSqZeroExt`if the ring is commutative : a linear map
+/-- Functoriality of `TrivSqZeroExt` when the ring is commutative: a linear map
 `f : M →ₗ[R'] N` induces a morphism of `R'`-algebras from `TrivSqZeroExt R' M` to
-`TrivSqZeroExt R' N`. -/
+`TrivSqZeroExt R' N`.
+
+Note that we cannot neatly state the non-commutative case, as we do not have morphisms of bimodules.
+-/
 def map' (f : M →ₗ[R'] N) : TrivSqZeroExt R' M →ₐ[R'] TrivSqZeroExt R' N := by
   apply TrivSqZeroExt.lift (TrivSqZeroExt.inlAlgHom R' R' N) ((TrivSqZeroExt.inrHom R' N).comp f)
   · intro x y
