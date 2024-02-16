@@ -389,7 +389,7 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
   -- It is enough to have in the context a term of `Fact (μ E < ∞)`, which is our `ffmE` below,
   -- which is automatically fed into `Restrict.isFiniteInstance`.
   have ffmE : Fact _ := { out := hfmE }
-  have hInner := tendsto_Lp_of_tendsto_ae_of_meas (μ.restrict E) hp hp' hf hg hgE' huiE hfgE
+  have hInner := tendsto_Lp_of_tendsto_ae_of_meas hp hp' hf hg hgE' huiE hfgE
   rw [ENNReal.tendsto_atTop_zero] at hInner
   -- get a sufficiently large N for given ε, and consider any n ≥ N
   obtain ⟨N, hfngε⟩ := hInner (ε / 3) hε'
@@ -501,7 +501,7 @@ theorem tendstoInMeasure_notFinite_iff_tendsto_Lp (hp : 1 ≤ p) (hp' : p ≠ �
     fun h =>
     ⟨tendstoInMeasure_of_tendsto_snorm (lt_of_lt_of_le zero_lt_one hp).ne'
         (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,
-      unifIntegrable_of_tendsto_Lp μ hp hp' hf hg h,
+      unifIntegrable_of_tendsto_Lp hp hp' hf hg h,
       unifTight_of_tendsto_Lp hp hp' hf hg h⟩⟩
 
 
