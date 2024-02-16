@@ -1725,12 +1725,12 @@ variable [TopologicalSpace X] {s : Set X} {t : Set s}
 theorem IsOpen.trans (ht : IsOpen t) (hs : IsOpen s) : IsOpen (t : Set X) := by
   rcases isOpen_induced_iff.mp ht with ⟨s', hs', rfl⟩
   rw [Subtype.image_preimage_coe]
-  exact hs'.inter hs
+  exact hs.inter hs'
 
 theorem IsClosed.trans (ht : IsClosed t) (hs : IsClosed s) : IsClosed (t : Set X) := by
   rcases isClosed_induced_iff.mp ht with ⟨s', hs', rfl⟩
   rw [Subtype.image_preimage_coe]
-  convert hs'.inter hs
+  exact hs.inter hs'
 
 end Monad
 

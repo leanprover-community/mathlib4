@@ -551,9 +551,10 @@ def restrict (s : Set α) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure α :
   (map (↑)).comp (comap ((↑) : s → α))
 #align measure_theory.outer_measure.restrict MeasureTheory.OuterMeasure.restrict
 
+-- TODO (kmill): change `m (t ∩ s)` to `m (s ∩ t)`
 @[simp]
 theorem restrict_apply (s t : Set α) (m : OuterMeasure α) : restrict s m t = m (t ∩ s) := by
-  simp [restrict]
+  simp [restrict, inter_comm t]
 #align measure_theory.outer_measure.restrict_apply MeasureTheory.OuterMeasure.restrict_apply
 
 @[mono]
@@ -796,11 +797,12 @@ theorem map_ofFunction {β} {f : α → β} (hf : Injective f) :
     simp [hf.preimage_image]
 #align measure_theory.outer_measure.map_of_function MeasureTheory.OuterMeasure.map_ofFunction
 
+-- TODO (kmill): change `m (t ∩ s)` to `m (s ∩ t)`
 theorem restrict_ofFunction (s : Set α) (hm : Monotone m) :
     restrict s (OuterMeasure.ofFunction m m_empty) =
       OuterMeasure.ofFunction (fun t => m (t ∩ s)) (by simp; simp [m_empty]) := by
       rw [restrict]
-      simp only [LinearMap.comp_apply]
+      simp only [inter_comm _ s, LinearMap.comp_apply]
       rw [comap_ofFunction _ (Or.inl hm)]
       simp only [map_ofFunction Subtype.coe_injective, Subtype.image_preimage_coe]
 #align measure_theory.outer_measure.restrict_of_function MeasureTheory.OuterMeasure.restrict_ofFunction

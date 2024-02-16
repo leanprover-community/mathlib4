@@ -412,6 +412,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
     refine measurable_generateFrom fun s hs ↦ .of_subtype_image ?_
     rw [preimage_comp, Subtype.image_preimage_coe]
     convert (hTm s hs).diff hvm using 1
+    rw [inter_comm]
     refine Set.ext fun x ↦ and_congr_left fun hxv ↦ ⟨fun hx ↦ ?_, fun hx ↦ hTf s hs hx⟩
     exact by_contra fun hx' ↦ hxv <| mem_biUnion hs ⟨hUf s hs hx, hx'⟩
 
