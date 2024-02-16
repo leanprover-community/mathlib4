@@ -104,8 +104,12 @@ theorem monic_X_pow_add {n : ℕ} (H : degree p ≤ n) : Monic (X ^ (n + 1) + p)
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_pow_add Polynomial.monic_X_pow_add
 
+theorem monic_X_pow_add_C {n : ℕ} (h : n ≠ 0) : (X ^ n + C a).Monic := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
+  exact monic_X_pow_add <| degree_C_le.trans Nat.WithBot.coe_nonneg
+
 theorem monic_X_add_C (x : R) : Monic (X + C x) :=
-  pow_one (X : R[X]) ▸ monic_X_pow_add degree_C_le
+  pow_one (X : R[X]) ▸ monic_X_pow_add_C one_ne_zero
 set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_add_C Polynomial.monic_X_add_C
 
