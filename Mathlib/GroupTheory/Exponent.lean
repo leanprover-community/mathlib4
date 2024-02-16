@@ -96,6 +96,14 @@ theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := b
   all_goals exact ⟨(op_injective <| · <| op ·), (unop_injective <| . <| unop .)⟩
 
 @[to_additive]
+theorem ExponentExists.isOfFinOrder (h : ExponentExists G) (g : G) : IsOfFinOrder g :=
+  isOfFinOrder_iff_pow_eq_one.mpr <| by peel 2 h; exact this g
+
+@[to_additive]
+theorem ExponentExists.orderOf_pos (h : ExponentExists G) (g : G) : 0 < orderOf g :=
+  h.isOfFinOrder g |>.orderOf_pos
+
+@[to_additive]
 theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
   rw [exponent]
   split_ifs with h
@@ -126,7 +134,7 @@ theorem exponent_eq_zero_iff : exponent G = 0 ↔ ¬ExponentExists G :=
 
 @[to_additive exponent_eq_zero_addOrder_zero]
 theorem exponent_eq_zero_of_order_zero {g : G} (hg : orderOf g = 0) : exponent G = 0 :=
-  exponent_eq_zero_iff.mpr fun ⟨n, hn, hgn⟩ => orderOf_eq_zero_iff'.mp hg n hn <| hgn g
+  exponent_eq_zero_iff.mpr fun h ↦ h.orderOf_pos g |>.ne' hg
 #align monoid.exponent_eq_zero_of_order_zero Monoid.exponent_eq_zero_of_order_zero
 #align add_monoid.exponent_eq_zero_of_order_zero AddMonoid.exponent_eq_zero_addOrder_zero
 
@@ -213,7 +221,7 @@ theorem exponent_dvd_iff_forall_pow_eq_one {n : ℕ} : exponent G ∣ n ↔ ∀ 
       exact hG
     exact h₂.not_le h₃
 
-@[to_additive (attr := deprecated)]
+@[to_additive]
 theorem exponent_dvd_of_forall_pow_eq_one (n : ℕ) (hG : ∀ g : G, g ^ n = 1) :
     exponent G ∣ n :=
   (exponent_dvd_iff_forall_pow_eq_one G).mpr hG
@@ -341,7 +349,7 @@ theorem ExponentExists.of_finite [Finite G] : ExponentExists G := by
   let _inst := Fintype.ofFinite G
   simp only [Monoid.ExponentExists]
   refine ⟨(Finset.univ : Finset G).lcm orderOf, ?_, fun g => ?_⟩
-  · simpa [pos_iff_ne_zero, Finset.lcm_eq_zero_iff] using fun x => (orderOf_pos x).ne'
+  · simpa [pos_iff_ne_zero, Finset.lcm_eq_zero_iff] using fun x => (_root_.orderOf_pos x).ne'
   · rw [← orderOf_dvd_iff_pow_eq_one, lcm_orderOf_eq_exponent]
     exact order_dvd_exponent g
 
