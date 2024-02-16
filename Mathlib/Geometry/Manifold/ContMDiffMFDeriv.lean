@@ -574,8 +574,8 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     haveI : Smooth I (I.prod 𝓘(𝕜, E)) (zeroSection E (TangentSpace I : M → Type _)) :=
       Bundle.smooth_zeroSection 𝕜 (TangentSpace I : M → Type _)
     this.mdifferentiableAt
-  have B :
-    fderivWithin 𝕜 (fun x' : E => (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v = (v, 0) := by
+  have B : fderivWithin 𝕜 (fun x' : E ↦ (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v
+      = (v, 0) := by
     rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prod]
     · simp
     · exact differentiableAt_id'

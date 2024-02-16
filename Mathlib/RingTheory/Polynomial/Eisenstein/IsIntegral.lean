@@ -290,7 +290,8 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     -- By induction hypothesis we can find `g : ℕ → R` such that
     -- `k ∈ range (j + 1) → Q.coeff k • B.gen ^ k = (algebraMap R L) p * g k • B.gen ^ k`-
     choose! g hg using hind
-    replace hg : ∀ k ∈ range (j + 1), Q.coeff k • B.gen ^ k = algebraMap R L p * g k • B.gen ^ k := by
+    replace hg : ∀ k ∈ range (j + 1), Q.coeff k • B.gen ^ k = algebraMap R L p * g k • B.gen ^ k :=
+        by
       intro k hk
       rw [hg k (mem_range_succ_iff.1 hk)
         (mem_range_succ_iff.2
