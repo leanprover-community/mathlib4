@@ -62,10 +62,6 @@ instance small_inter_left (s t : Set α) [Small.{u} s] : Small.{u} (s ∩ t : Se
 instance small_inter_right (s t : Set α) [Small.{u} t] : Small.{u} (s ∩ t : Set α) :=
   small_subset (Set.inter_subset_right s t)
 
-example {α : Type u} (r : α → α → Prop) (a b : α) [IsSymm α r] : IsSymm α (¬ r · ·) := by
-  symm
-
-
 end Small
 
 noncomputable section
@@ -226,6 +222,66 @@ def equiv_small_set : SmallSet.{u} α ≃o {s : Set α // Small.{u} s} where
 -- end τ
 end Small
 
+@[simp]
+theorem range_comp_equivLike {ι' E : Type*} [Small.{u} ι'] [EquivLike E ι ι']
+    (e : E) (f : ι' → α) : range (f ∘ ⇑e) = range f := by
+  rw [← coe_inj, coe_range, EquivLike.range_comp]
+  simp
+
+section univ
+
+open Function
+
+variable [Small.{u} α]
+
+def univ : SmallSet.{u} α :=
+  ofSet Set.univ
+
+@[simp]
+theorem coe_univ : ((univ : SmallSet.{u} α) : Set α) = Set.univ := by
+  simp [univ]
+
+@[simp]
+theorem mem_univ (x : α) : x ∈ univ := by
+  simp [univ]
+
+theorem range_iff_surjective {f : ι → α} : range f = univ ↔ Surjective f := by
+  rw [← coe_inj, coe_range, coe_univ]
+  exact Set.range_iff_surjective
+
+@[simp]
+theorem range_equivLike {E : Type*} [EquivLike E ι α] (e : E) :
+    range ⇑e = univ := by
+  rw [range_iff_surjective]
+  exact EquivLike.surjective e
+
+end univ
+
+section setOf
+
+variable {P : α → Prop} [Small.{u} {x // P x}]
+
+local instance : Small.{u} {x | P x} := by simpa
+
+protected def setOf (P : α → Prop) [Small.{u} {x // P x}] : SmallSet.{u} α :=
+  ofSet (setOf P)
+
+@[simp]
+theorem coe_setOf : (SmallSet.setOf P : Set α) = setOf P := by
+  simp [SmallSet.setOf]
+
+@[simp]
+theorem mem_setOf (x : α) : x ∈ SmallSet.setOf P ↔ P x := by
+  simp [SmallSet.setOf]
+
+@[simp]
+theorem range_subtype_val {P : α → Prop} [Small.{u} {x // P x}] :
+    range (Subtype.val : {x : α // P x} → α) = SmallSet.setOf P := by
+  rw [← coe_inj, coe_range, Subtype.range_val_subtype]
+  simp
+
+end setOf
+
 instance : HasSubset (SmallSet α) where
   Subset := (· ≤ ·)
 
@@ -242,7 +298,7 @@ instance : Union (SmallSet α) where
   union s t := ofSet (s ∪ t)
 
 instance : ConditionallyCompleteLattice (SmallSet α) where
-  sup := (· ∩ ·)
+  sup := (· ∪ ·)
   le_sup_left := sorry
   le_sup_right := sorry
   sup_le := sorry
