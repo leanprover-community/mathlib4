@@ -399,10 +399,16 @@ variable {R M}
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
+variable (R M) in
+/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`.
+
+This should eventually replace `_root_.BilinForm`. -/
+abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
+
 /-- The restriction of a bilinear form to a submodule. -/
-abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : M →ₗ[R] M →ₗ[R] R) :
-    p →ₗ[R] p →ₗ[R] R :=
+abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : BilinForm R M) : BilinForm R p :=
   f.compl₁₂ p.subtype p.subtype
+
 
 end CommSemiring
 
