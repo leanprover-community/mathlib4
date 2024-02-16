@@ -270,145 +270,6 @@ def removeArgRule (funPropDecl : FunPropDecl) (e f : Expr)
     applyCompRule funPropDecl e f' g' funProp
 
 
-
--- /-- Is this a valid local funProp hypothesis about free variable? -/
--- def isValidFVarHypothesis? (e : Expr) : MetaM (Option (FunPropDecl × FVarFunInfo))
-
-
-/-- Determina if `e` is talking about a free variable and about which arguments.
-
-For example:
- - for `Continuous f` this function returns fvar id of `f` and `#[0]`
- - for `Continuous fun x => f x y` this function returns fvar id of `f` and `#[1]`
- - for `Continuous fun (x,y) => f x y` this function returns fvar id of `f` and `#[0,1]`
- - for `Continuous fun xy => f xy.1 xy.2` this function returns fvar id of `f` and `#[0,1]`
-
-This function is assuming:
- - that `e` is talking about function property `funPropDecl`
- - the function `f` in `e` can't be expressed as composition of two non-trivial functions
-   this means that `f == (← splitLambdaToComp f).1` is true -/
-def isFVarFunProp (funPropDecl : FunPropDecl) (e : Expr) :
-    MetaM (Option (FVarId × Array Nat × Nat)) := do
-
-  return none
-  -- forallTelescope e fun _ e => do
-
-  -- let f := e.getArg! funPropDecl.funArgId |>.consumeMData
-
-  -- if f.isAppOfArity `Function.HasUncurry.uncurry 5 then
-  --   let f := f.appArg!
-  --   let .fvar fvarId := f
-  --     | return none
-  --   let n ← Mor.getArity f
-  --   return .some (fvarId, Array.range n, n)
-
-  -- let f := (← unfoldFunHeadRec? f).getD f
-
-  -- match (← whnf f) with
-  -- | .lam _ _ b _ =>
-  --   match Mor.getAppFn b with
-  --   | .fvar fvarId =>
-  --     let args := Mor.getAppArgs b
-  --     -- we do not check the exact form of arguments as we assume `f == (← splitLambdaToComp f).1`
-  --     -- thus checking for loose bvar should be enough
-  --     let ids := args
-  --       |>.mapIdx (fun i arg => if arg.expr.hasLooseBVars then some i.1 else none)
-  --       |>.filterMap id
-  --     return (fvarId, ids, args.size)
-  --   | _ => return none
-  -- | f =>
-  --   let n := Mor.getAppNumArgs f
-  --   match Mor.getAppFn f with
-  --   | .fvar fvarId =>  return (fvarId, #[n], n+1)
-  --   | _ => return none
-
-
-/-- Prove function property of free variable by using local hypothesis. -/
-def proveFVarFunPropFromLocalTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
-    (funProp : Expr → FunPropM (Option Result)) :
-    FunPropM (Option Result) := do
-
-  return none
-  -- let .fvar fvarId := fData.fn | return none
-  -- let args := fData.mainArgs
-  -- let numAppArgs := fData.args.size
-
-  -- let lctx ← getLCtx
-  -- for var in lctx do
-  --   let type ← instantiateMVars var.type
-
-  --   if (var.kind ≠ Lean.LocalDeclKind.auxDecl) then
-
-  --     let .some (funPropDecl', _) ← getFunProp? type.getForallBody
-  --       | continue
-  --     if funPropDecl'.funPropName ≠ funPropDecl.funPropName then
-  --       continue
-
-  --     trace[Meta.Tactic.fun_prop.step] "found potentially applicable local theorem {type}"
-
-  --     let .some (fvarId', args',numAppArgs') ← isFVarFunProp funPropDecl type
-  --       | trace[Meta.Tactic.fun_prop.step] "not fvar funProp"
-  --         continue
-  --     if fvarId != fvarId' then
-  --       trace[Meta.Tactic.fun_prop.step] "incorrect fvar"
-  --       continue
-
-  --     trace[Meta.Tactic.fun_prop.step] "is applicable"
-
-  --     -- this local theorem should be directly applicable to e
-  --     if args = args' && numAppArgs = numAppArgs' then
-
-  --       let .some r ← tryLocalTheorem? e var.fvarId funPropDecl.discharger funProp
-  --         | continue
-
-  --       trace[Meta.Tactic.fun_prop.apply] "local hypothesis {(Expr.fvar var.fvarId)}"
-  --       return .some r
-
-  --     if isOrderedSubsetOf args args' then
-
-  --       match compare numAppArgs numAppArgs' with
-  --       | .lt =>
-  --         return ← applyPiRule funPropDecl e (e.getArg! funPropDecl.funArgId) funProp
-  --       | .gt =>
-  --         return ← removeArgRule funPropDecl e (e.getArg! funPropDecl.funArgId) funProp
-  --       | .eq =>
-  --         let f := e.getArg! funPropDecl.funArgId
-
-  --         let .some (f', g') ← splitMorToCompOverArgs f args'
-  --           | continue
-
-  --         trace[Meta.Tactic.fun_prop.step] "goal split at `{f'} ∘ {g'}`"
-
-  --         return ← applyCompRule funPropDecl e f' g' funProp
-
-  -- trace[Meta.Tactic.fun_prop.discharge] "no applicable local hypothesis for {e}"
-  -- return none
-
-
-/-- Prove function property of using local hypothesis. -/
-def tryLocalTheorems (funPropDecl : FunPropDecl) (e : Expr)
-    (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
-
-  return none
-  -- let lctx ← getLCtx
-  -- for var in lctx do
-  --   let type ← instantiateMVars var.type
-
-  --   if (var.kind ≠ Lean.LocalDeclKind.auxDecl) then
-  --     let .some (funPropDecl', _) ← getFunProp? type.getForallBody
-  --       | continue
-  --     if funPropDecl'.funPropName ≠ funPropDecl.funPropName then
-  --       continue
-
-  --     let .some r ← tryLocalTheorem? e var.fvarId funPropDecl.discharger funProp
-  --       | continue
-
-  --     trace[Meta.Tactic.fun_prop.apply] "local hypothesis {(Expr.fvar var.fvarId)}"
-  --     return .some r
-
-  -- trace[Meta.Tactic.fun_prop.discharge] "no local hypothesis {e}"
-  -- return none
-
 /-- Prove function property of `fun x => let y := g x; f x y`. -/
 def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     (funProp : Expr → FunPropM (Option Result)) :
@@ -480,24 +341,6 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
     trace[Meta.Tactic.fun_prop.step] "no theorem matched"
     return none
-  -- match ← fData.isMorApplication with
-  -- | .none => return none
-  -- | .underApplied => applyPiRule funPropDecl e (← fData.toExpr) funProp
-  -- | .overApplied => removeArgRule funPropDecl e (← fData.toExpr) funProp
-  -- | .exact =>
-  --   let ext := morTheoremsExt.getState (← getEnv)
-  --   let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
-  --   let candidates := candidates.map (·.1) |>.flatten
-
-  --   trace[Meta.Tactic.fun_prop]
-  --     "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
-
-  --   for c in candidates do
-  --     if let .some r ← tryTheorem? e c.thmName funPropDecl.discharger funProp then
-  --       return r
-
-  --   trace[Meta.Tactic.fun_prop.step] "no theorem matched"
-  --   return none
 
 /-- Prove function property of using "transition theorems" e.g. continuity from linearity.  -/
 def applyTransitionRules (funPropDecl : FunPropDecl) (e : Expr)
@@ -516,31 +359,6 @@ def applyTransitionRules (funPropDecl : FunPropDecl) (e : Expr)
 
   trace[Meta.Tactic.fun_prop.step] "no theorem matched"
   return none
-  -- let ext := transitionTheoremsExt.getState (← getEnv)
-  -- let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
-  -- let candidates := candidates.map (·.1) |>.flatten
-
-  -- trace[Meta.Tactic.fun_prop]
-  --   "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
-
-  -- let d := (← get).transitionDepth
-  -- let md := (← read).maxTransitionDepth
-  -- if d ≥ md then
-  --   trace[Meta.Tactic.fun_prop] "maximum transition depth({d}) reached"
-  --   return none
-
-  -- for c in candidates do
-  --   if (← getLastUsedTheoremName) == .some c.thmName then
-  --     trace[Meta.Tactic.fun_prop]
-  --       "skipping {← ppOrigin (.decl c.thmName)}, can't use it twice in a row"
-  --     continue
-  --   if let .some r ← fun cfg state =>
-  --     let state := {state with transitionDepth := d+1}
-  --     tryTheorem? e c.thmName funPropDecl.discharger funProp (newMCtxDepth := false) cfg state
-  --     then return r
-
-  -- trace[Meta.Tactic.fun_prop.step] "no theorem matched"
-  -- return none
 
 def removeArgRule' (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
@@ -708,10 +526,12 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
-  let .some (funName,_) := fData.fn.const? | throwError "fun_prop bug: invelid use of const app case"
+  let .some (funName,_) := fData.fn.const?
+    | throwError "fun_prop bug: invelid use of const app case"
   let thms ← getDeclTheorems funPropDecl funName fData.mainArgs fData.args.size
 
-  trace[Meta.Tactic.fun_prop] s!"candidate theorems for {funName} {thms.map fun thm => thm.thmOrigin.name}"
+  trace[Meta.Tactic.fun_prop]
+    s!"candidate theorems for {funName} {thms.map fun thm => thm.thmOrigin.name}"
 
   if let .some r ← tryTheorems funPropDecl e fData thms funProp then
     return r
@@ -807,45 +627,5 @@ mutual
         | _ =>
           trace[Meta.Tactic.fun_prop.step] "unknown case, ctor: {f.ctorName}\n{e}"
           return none
-
-    -- match xBody.consumeMData.headBeta.consumeMData with
-    -- | (.bvar 0) =>
-    --   trace[Meta.Tactic.fun_prop.step] "case `P (fun x => x)\n{e}"
-    --   applyIdRule funPropDecl e xType funProp
-
-    -- | .letE .. =>
-    --   trace[Meta.Tactic.fun_prop.step] "case `P (fun x => let y := ..; ..)\n{e}"
-    --   letCase funPropDecl e f funProp
-
-    -- | .lam  .. =>
-    --   trace[Meta.Tactic.fun_prop.step] "case `P (fun x y => f x y)`\n{e}"
-    --   applyPiRule funPropDecl e f funProp
-
-    -- | .mvar .. => funProp (← instantiateMVars e)
-
-    -- | xBody => do
-
-    --   if ¬xBody.hasLooseBVars then
-    --     trace[Meta.Tactic.fun_prop.step] "case `P (fun x => y)`\n{e}"
-    --     applyConstRule funPropDecl e xType xBody funProp
-    --   else
-    --     let fData ← getFunctionData f
-
-    --     match fData.fn with
-    --     | .fvar id =>
-    --       if id == fData.mainVar.fvarId! then
-    --         trace[Meta.Tactic.fun_prop.step] "case `P (fun f => f x)`\n{e}"
-    --         bvarAppCase funPropDecl e fData funProp
-    --       else
-    --         trace[Meta.Tactic.fun_prop.step]
-    --           "case `P (fun x => f x)` where `f` is free variable\n{e}"
-    --         fvarAppCase funPropDecl e fData funProp
-    --     | .mvar .. =>
-    --       funProp (← instantiateMVars e)
-    --     | .const .. | .proj .. => do
-    --       constAppCase funPropDecl e fData funProp
-    --     | _ =>
-    --       trace[Meta.Tactic.fun_prop.step] "unknown case, ctor: {f.ctorName}\n{e}"
-    --       return none
 
 end
