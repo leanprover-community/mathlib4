@@ -1051,6 +1051,25 @@ theorem Homeomorph.toMeasurableEquiv_symm_coe (h : γ ≃ₜ γ₂) :
   rfl
 #align homeomorph.to_measurable_equiv_symm_coe Homeomorph.toMeasurableEquiv_symm_coe
 
+theorem Homeomorph.comap_borel {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    (h : α ≃ₜ β) : MeasurableSpace.comap h (borel β) = borel α := by
+  borelize α β
+  exact h.toMeasurableEquiv.measurableEmbedding.comap_eq
+
+/-- If `α` is a type with `TopologicalSpace` and `MeasurableSpace` instances, and some function
+`α → β` is both a homeomorphism and measure equivalence with some `BorelSpace` `β`,
+then `α` is also a `BorelSpace`.-/
+theorem Homeomorph.borelSpace_of_measurableEquiv {α β : Type*}
+    [TopologicalSpace α] [mα : MeasurableSpace α]
+    [TopologicalSpace β] [mβ : MeasurableSpace β] [BorelSpace β]
+    (h : α ≃ₜ β) (e : α ≃ᵐ β) (heq : h.toFun = e.toFun) : BorelSpace α :=
+  ⟨calc
+    mα = MeasurableSpace.comap e mβ := e.measurableEmbedding.comap_eq.symm
+    _ = MeasurableSpace.comap e.toFun mβ := rfl
+    _ = MeasurableSpace.comap h.toFun (borel β) := by rw[← heq, ← BorelSpace.measurable_eq]
+    _ = MeasurableSpace.comap h (borel β) := rfl
+    _ = borel α := by rw[h.comap_borel]⟩
+
 end Homeomorph
 
 @[measurability]
