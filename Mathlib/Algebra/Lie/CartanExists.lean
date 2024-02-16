@@ -41,16 +41,39 @@ lemma charpoly_fromBlocks_zero₁₂ :
 
 end Matrix
 
+-- move to Mathlib.SetTheory.Cardinal.Basic
+open Cardinal in
+lemma exists_subset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
+    ∃ s : Finset α, n ≤ s.card := by
+  obtain hα|hα := finite_or_infinite α
+  · let hα := Fintype.ofFinite α
+    use Finset.univ
+    simpa only [ge_iff_le, mk_fintype, Nat.cast_le] using h
+  · obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α n
+    exact ⟨s, hs.ge⟩
+
+-- move to Mathlib.Data.Polynomial.RingDivision
+open Cardinal Polynomial in
+lemma Polynomial.eq_zero_of_forall_eval_zero_of_natDegree_lt_card
+    {R : Type*} [CommRing R] [IsDomain R] (f : R[X])
+    (hf : ∀ r, f.eval r = 0) (hfR : f.natDegree < #R) :
+    f = 0 := by
+  contrapose! hf
+  exact exists_eval_ne_zero_of_natDegree_lt_card f hf hfR
+
+-- move to Mathlib.Data.Polynomial.Degree.TrailingDegree
 lemma Polynomial.natTrailingDegree_X_pow {R : Type*} [Semiring R] [Nontrivial R] (n : ℕ) :
     (X (R := R) ^ n).natTrailingDegree = n := by
   rw [← one_mul (X ^ _), natTrailingDegree_mul_X_pow one_ne_zero]
   simp only [natTrailingDegree_one, zero_add]
 
+-- move to Mathlib.Data.Polynomial.Degree.TrailingDegree
 lemma Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
     {R : Type*} [CommRing R] {p : Polynomial R} (h : constantCoeff p ≠ 0) :
     p.natTrailingDegree = 0 :=
   le_antisymm (natTrailingDegree_le_of_ne_zero h) zero_le'
 
+-- move to Mathlib.Data.Polynomial.Degree.TrailingDegree
 lemma Polynomial.Monic.eq_X_pow_of_natTrailingDegree_eq_natDegree
     {R : Type*} [CommRing R] {p : Polynomial R}
     (h₁ : p.Monic) (h₂ : p.natTrailingDegree = p.natDegree) :
@@ -65,6 +88,38 @@ lemma Polynomial.Monic.eq_X_pow_of_natTrailingDegree_eq_natDegree
   · rw [coeff_X_pow, if_neg hn.ne']
     exact coeff_eq_zero_of_natDegree_lt hn
 
+-- move to Mathlib.RingTheory.MvPolynomial.Homogeneous
+lemma _root_.MvPolynomial.IsHomogeneous.totalDegree_le {R : Type*} [CommSemiring R]
+    {σ : Type*} {n : ℕ} (F : MvPolynomial σ R) (hF : F.IsHomogeneous n) :
+    F.totalDegree ≤ n := by
+  apply Finset.sup_le
+  intro d hd
+  rw [MvPolynomial.mem_support_iff] at hd
+  rw [Finsupp.sum, hF hd]
+
+-- move to Mathlib.RingTheory.Polynomial.Basic
+open BigOperators MvPolynomial Polynomial in
+lemma _root_.MvPolynomial.aeval_natDegree_le {R : Type*} [CommSemiring R]
+    {σ : Type*} {m n : ℕ} (F : MvPolynomial σ R) (hF : F.totalDegree ≤ m)
+    (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ n) :
+    (MvPolynomial.aeval f F).natDegree ≤ m * n := by
+  rw [MvPolynomial.aeval_def, MvPolynomial.eval₂]
+  apply (Polynomial.natDegree_sum_le _ _).trans
+  simp only [Function.comp_apply]
+  apply Finset.sup_le
+  intro d hd
+  rw [← C_eq_algebraMap]
+  apply (Polynomial.natDegree_C_mul_le _ _).trans
+  apply (Polynomial.natDegree_prod_le _ _).trans
+  have : ∑ i in d.support, (d i) * n ≤ m * n := by
+    rw [← Finset.sum_mul]
+    apply mul_le_mul' (.trans _ hF) le_rfl
+    rw [MvPolynomial.totalDegree]
+    exact Finset.le_sup_of_le hd le_rfl
+  apply (Finset.sum_le_sum _).trans this
+  rintro i -
+  apply Polynomial.natDegree_pow_le.trans
+  exact mul_le_mul' le_rfl (hf i)
 
 -- move this
 namespace LinearMap
@@ -76,9 +131,11 @@ variable (φ : Module.End K M)
 
 open FiniteDimensional Polynomial
 
+-- move to (?) Mathlib.LinearAlgebra.Charpoly.Basic
 lemma charpoly_natDegree : natDegree (charpoly φ) = finrank K M := by
   rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
 
+-- move to Mathlib.LinearAlgebra.Matrix.ToLin
 open Module.Free in
 lemma toMatrix_prodMap {M₁ M₂ ι₁ ι₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
     [Module K M₁] [Module K M₂]
@@ -89,6 +146,7 @@ lemma toMatrix_prodMap {M₁ M₂ ι₁ ι₂ : Type*} [AddCommGroup M₁] [AddC
       Matrix.fromBlocks (toMatrix b₁ b₁ φ₁) 0 0 (toMatrix b₂ b₂ φ₂) := by
   ext (i|i) (j|j) <;> simp [toMatrix]
 
+-- move to Mathlib.LinearAlgebra.Charpoly.ToMatrix
 open Module.Free in
 lemma charpoly_prodMap {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
     [Module K M₁] [Module K M₂] [Module.Finite K M₁] [Module.Finite K M₂]
@@ -360,44 +418,13 @@ lemma lieCharpoly₁_map_eval (r : R) :
         map_smul, Finsupp.coe_add, Finsupp.coe_smul, MvPolynomial.eval_X, Pi.add_apply,
         Pi.smul_apply, smul_eq_mul, mul_comm r]
 
-lemma _root_.MvPolynomial.IsHomogeneous.totalDegree_le
-    {σ : Type*} {n : ℕ} (F : MvPolynomial σ R) (hF : F.IsHomogeneous n) :
-    F.totalDegree ≤ n := by
-  apply Finset.sup_le
-  intro d hd
-  rw [MvPolynomial.mem_support_iff] at hd
-  rw [Finsupp.sum, hF hd]
-
--- TODO: rename, move
-open BigOperators in
-lemma foo {σ : Type*} {m n : ℕ} (F : MvPolynomial σ R) (hF : F.totalDegree ≤ m)
-    (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ n) :
-    (MvPolynomial.aeval f F).natDegree ≤ m * n := by
-  rw [MvPolynomial.aeval_def, MvPolynomial.eval₂]
-  apply (Polynomial.natDegree_sum_le _ _).trans
-  simp only [Function.comp_apply]
-  apply Finset.sup_le
-  intro d hd
-  rw [← C_eq_algebraMap]
-  apply (Polynomial.natDegree_C_mul_le _ _).trans
-  apply (Polynomial.natDegree_prod_le _ _).trans
-  have : ∑ i in d.support, (d i) * n ≤ m * n := by
-    rw [← Finset.sum_mul]
-    apply mul_le_mul' (.trans _ hF) le_rfl
-    rw [MvPolynomial.totalDegree]
-    exact Finset.le_sup_of_le hd le_rfl
-  apply (Finset.sum_le_sum _).trans this
-  rintro i -
-  apply Polynomial.natDegree_pow_le.trans
-  exact mul_le_mul' le_rfl (hf i)
-
 lemma lieCharpoly₁_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly₁ R M x y).coeff i).natDegree ≤ j := by
   rw [finrank_eq_card_chooseBasisIndex] at hij
   classical
   have := lieCharpoly_coeff_isHomogeneous (chooseBasis R L) (chooseBasis R M) _ _ hij
   rw [← mul_one j, lieCharpoly₁, coeff_map]
-  apply foo _ _ this.totalDegree_le _ _
+  apply MvPolynomial.aeval_natDegree_le _ this.totalDegree_le _ _
   intro k
   apply Polynomial.natDegree_add_le_of_degree_le
   · apply (Polynomial.natDegree_C_mul_le _ _).trans
@@ -406,25 +433,7 @@ lemma lieCharpoly₁_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
 
 end engel_le_engel
 
--- move
-open Cardinal in
-lemma eq_zero_of_forall_eval_zero_of_natDegree_lt_card [IsDomain R] (f : R[X])
-    (hf : ∀ r, f.eval r = 0) (hfR : f.natDegree < #R) :
-    f = 0 := by
-  contrapose! hf
-  exact exists_eval_ne_zero_of_natDegree_lt_card f hf hfR
-
 end CommRing
-
-open Cardinal in
-lemma exists_subset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
-    ∃ s : Finset α, n ≤ s.card := by
-  obtain hα|hα := finite_or_infinite α
-  · let hα := Fintype.ofFinite α
-    use Finset.univ
-    simpa only [ge_iff_le, mk_fintype, Nat.cast_le] using h
-  · obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α n
-    exact ⟨s, hs.ge⟩
 
 section Field
 
@@ -579,11 +588,6 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   refine ⟨?_, ?_⟩
   · apply Nat.find_min hz'; omega
   · rw [← hn, hk, pow_succ, LinearMap.mul_apply]
-
-lemma foo {K V : Type*} [Field K] [AddCommGroup V] [Module K V] [Module.Finite K V]
-    (W₁ W₂ : Submodule K V) (h1 : W₁ ≤ W₂) (h2 : finrank K W₂ ≤ finrank K W₁) :
-    W₁ = W₂ := by
-  exact eq_of_le_of_finrank_le h1 h2
 
 open Cardinal in
 lemma exists_IsCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
