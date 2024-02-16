@@ -182,10 +182,9 @@ theorem comap_map_mk_uniformity : comap (Prod.map mk mk) (map (Prod.map mk mk) (
   simp only [Prod.map, Prod.ext_iff, mk_eq_mk] at hxy
   exact ((hxy.1.prod hxy.2).mem_open_iff hU.2).1 hyU
 
-instance instUniformSpace {α : Type u} [UniformSpace α] :
-    UniformSpace (SeparationQuotient α) :=
+instance instUniformSpace : UniformSpace (SeparationQuotient α) :=
   .ofNhdsEqComap
-    { uniformity := map (fun p : α × α => (mk p.1, mk p.2)) (𝓤 α)
+    { uniformity := map (Prod.map mk mk) (𝓤 α)
       refl := le_trans (by simpa using surjective_mk) (Filter.map_mono refl_le_uniformity)
       symm := tendsto_map' <| tendsto_map.comp tendsto_swap_uniformity
       comp := fun t ht ↦ by
@@ -197,16 +196,29 @@ instance instUniformSpace {α : Type u} [UniformSpace α] :
         exact @hUt (x, z) ⟨y', this.mem_open (UniformSpace.isOpen_ball _ hUo) hxyU, hyzU⟩ }
     inferInstance <| surjective_mk.forall.2 fun x ↦ comap_injective surjective_mk <| by
       conv_lhs => rw [comap_mk_nhds_mk, nhds_eq_comap_uniformity, ← comap_map_mk_uniformity]
-      simp only [Filter.comap_comap, (· ∘ ·), Prod.map]
-#align uniform_space.separation_setoid.uniform_space UniformSpace.separationSetoid.uniformSpace
+      simp only [Filter.comap_comap]; rfl
+
+end SeparationQuotient
+
+namespace UniformSpace
+
+alias SeparationQuotient := _root_.SeparationQuotient
+
+namespace SeparationQuotient
+
+instance instUniformSpace : UniformSpace (SeparationQuotient α) :=
+  _root_.SeparationQuotient.instUniformSpace
+#align uniform_space.separation_setoid.uniform_space UniformSpace.SeparationQuotient.instUniformSpace
+
+attribute [local instance] inseparableSetoid
 
 theorem uniformity_quotient :
-    𝓤 (Quotient (separationSetoid α)) = (𝓤 α).map fun p : α × α => (⟦p.1⟧, ⟦p.2⟧) :=
+    𝓤 (SeparationQuotient α) = (𝓤 α).map fun p : α × α => (⟦p.1⟧, ⟦p.2⟧) :=
   rfl
-#align uniform_space.uniformity_quotient UniformSpace.uniformity_quotient
+#align uniform_space.uniformity_quotient UniformSpace.SeparationQuotient.uniformity_quotient
 
 theorem uniformContinuous_quotient_mk' :
-    UniformContinuous (Quotient.mk' : α → Quotient (separationSetoid α)) :=
+    UniformContinuous (Quotient.mk' : α → SeparationQuotient α) :=
   le_rfl
 #align uniform_space.uniform_continuous_quotient_mk UniformSpace.uniformContinuous_quotient_mk'
 
