@@ -422,12 +422,8 @@ theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Mo
     toTrivSqZeroExt.comp (map f) = (TrivSqZeroExt.map f).comp toTrivSqZeroExt := by
   apply hom_ext
   apply LinearMap.ext
-  intro x
-  unfold TrivSqZeroExt.map map
   simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
-    AlgHom.toLinearMap_apply, CliffordAlgebra.map_apply_ι, toTrivSqZeroExt_ι,
-    TrivSqZeroExt.lift_apply_inr, TrivSqZeroExt.inrHom_apply]
-  rfl
+    AlgHom.toLinearMap_apply, map_apply_ι, toTrivSqZeroExt_ι, TrivSqZeroExt.map_inr, forall_const]
 
 theorem ιInv_comp_map (f : M →ₗ[R] N) :
     ιInv.comp (map f).toLinearMap = f.comp ιInv := by
@@ -460,8 +456,8 @@ lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f 
 /-- A morphism of modules is surjective if and only the morphism of exterior algebras that it
 induces is surjective. -/
 lemma map_surjective_iff {f : M →ₗ[R] N} :
-    Function.Surjective f ↔ Function.Surjective (map f) := by
-  refine ⟨fun h ↦ CliffordAlgebra.map_surjective _ h, fun h y ↦ ?_⟩
+    Function.Surjective (map f) ↔ Function.Surjective f := by
+  refine ⟨fun h y ↦ ?_, fun h ↦ CliffordAlgebra.map_surjective _ h⟩
   obtain ⟨x, hx⟩ := h (ι R y)
   existsi ιInv x
   rw [← LinearMap.comp_apply, ← ιInv_comp_map, LinearMap.comp_apply]

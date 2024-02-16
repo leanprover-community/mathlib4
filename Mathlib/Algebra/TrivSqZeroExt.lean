@@ -936,6 +936,8 @@ def liftEquivOfComm :
       rfl }
 #align triv_sq_zero_ext.lift TrivSqZeroExt.liftEquiv
 
+section map
+
 variable {N P : Type*} [AddCommMonoid N] [Module R' N] [Module R'ᵐᵒᵖ N] [IsCentralScalar R' N]
   [AddCommMonoid P] [Module R' P] [Module R'ᵐᵒᵖ P] [IsCentralScalar R' P]
 
@@ -1012,6 +1014,8 @@ theorem map_comp_map (f : M →ₗ[R'] N) (g : N →ₗ[R'] P) :
     map (g.comp f) = (map g).comp (map f) := by
   apply algHom_ext
   simp only [map_inr, LinearMap.coe_comp, Function.comp_apply, AlgHom.coe_comp, forall_const]
+
+end map
 
 end Algebra
 
