@@ -64,7 +64,7 @@ namespace LieModule
 
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
 the trace Form. See also `killingForm`. -/
-noncomputable def traceForm : LinerMap.BilinForm R L :=
+noncomputable def traceForm : LinearMap.BilinForm R L :=
   ((LinearMap.mul _ _).compl₁₂ (φ).toLinearMap (φ).toLinearMap).compr₂ (trace R M)
 
 lemma traceForm_apply_apply (x y : L) :
