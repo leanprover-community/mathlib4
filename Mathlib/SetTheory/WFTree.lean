@@ -1,4 +1,5 @@
 import Mathlib.SetTheory.SmallSet
+import Mathlib.SetTheory.Ordinal.Basic
 
 universe u v
 
@@ -10,6 +11,8 @@ Unlike `WFTree`, `PreWFTree` is sensitive to the order and multiplicity of child
 In other words, `PreWFTree` is to `WFTree` as `List` is to `Finset`.-/
 inductive PreWFTree (η : Type v) : Type (max (u + 1) v) where
   | mk : (ι : Type u) → (ι → η × PreWFTree η) → PreWFTree η
+
+-- TODO: attempt definition via WellFounded.fix
 
 namespace PreWFTree
 
@@ -51,9 +54,19 @@ noncomputable def children : (t : PreWFTree.{u} η) → Set (η × PreWFTree.{u}
 instance small_children : ∀ (t : PreWFTree.{u} η), Small.{u} t.children
   | ⟨_, f⟩ => inferInstanceAs (Small.{u} (Set.range f))
 
-noncomputable def ofChildren (s : Set (η × PreWFTree.{u} η)) [Small.{u} s] :
-    PreWFTree.{u} η :=
-  ⟨Shrink.{u} s, Subtype.val ∘ (equivShrink s).symm⟩
+instance : Inhabited (PreWFTree.{u} η) where
+  default := ⟨PEmpty, fun.⟩
+
+open Classical in
+/-- Only well-defined if `Small.{u} ↥s`. -/
+noncomputable def ofChildren (s : Set (η × PreWFTree.{u} η)) : PreWFTree.{u} η :=
+  if _ : Small.{u} s then
+    ⟨Shrink.{u} s, Subtype.val ∘ (equivShrink s).symm⟩
+  else default
+
+lemma ofChildren_def (s : Set (η × PreWFTree.{u} η)) [h : Small.{u} s] :
+    ofChildren s = ⟨Shrink.{u} s, Subtype.val ∘ (equivShrink s).symm⟩ := by
+  simp [ofChildren, h]
 
 @[simp]
 lemma children_mk (ι : Type u) (f : ι → η × PreWFTree η) :
@@ -62,21 +75,17 @@ lemma children_mk (ι : Type u) (f : ι → η × PreWFTree η) :
 @[simp]
 lemma children_ofChildren (s : Set (η × PreWFTree.{u} η)) [Small.{u} s] :
     children (ofChildren s) = s := by
-  simp [ofChildren, children_mk]
-
-#check PLift
+  simp [ofChildren_def, children_mk]
 
 def IsChildOf (t₁ t₂ : PreWFTree.{u} η) : Prop :=
-  ∃ e, ⟨e, t₁⟩ ∈ t₂.children
-
-#check PreWFTree.recOn
+  ∃ e, (e, t₁) ∈ t₂.children
 
 instance : WellFoundedRelation (PreWFTree.{u} η) where
   rel := IsChildOf
   wf := by
     constructor
     intro t
-    apply PreWFTree.recOn (motive_1 := Acc IsChildOf) (motive_2 := fun ⟨_, s⟩ ↦ Acc IsChildOf s)
+    apply PreWFTree.recOn (motive_1 := Acc IsChildOf) (motive_2 := fun (_, c) ↦ Acc IsChildOf c)
     · intro ι f ih
       constructor
       intro c ⟨e, hc⟩
@@ -150,7 +159,7 @@ instance setoid : Setoid (PreWFTree.{u} η) :=
 
 theorem equiv_iff {x y : PreWFTree.{u} η} :
     x ≈ y ↔ ∀ e c,
-      (∃ c₁, ⟨e, c₁⟩ ∈ x.children ∧ c₁ ≈ c) ↔
+      (∃ c₁, ⟨e, c₁⟩ ∈ x.children ∧ c₁ ≈ c) ↔ -- TODO: investigate commuting ∧
       (∃ c₂, ⟨e, c₂⟩ ∈ y.children ∧ c₂ ≈ c) := by
   change Equiv x y ↔ ∀ e c, (∃ c₁, _ ∧ Equiv c₁ c) ↔ (∃ c₂, _ ∧ Equiv c₂ c)
   rw [equiv_iff']
@@ -175,6 +184,62 @@ theorem equiv_iff {x y : PreWFTree.{u} η} :
       rw [h]
       use c, hcy, Equiv.refl c
 
+theorem exists_of_equiv {e : η} {x y c : PreWFTree.{u} η} (h : x ≈ y) (hc : (e, c) ∈ x.children) :
+    ∃ c', (e, c') ∈ y.children ∧ c' ≈ c := by
+  rw [equiv_iff] at h
+  rw [← h]
+  use c
+
+noncomputable def depth (t : PreWFTree.{u} η) : Ordinal.{u} :=
+  Ordinal.lsub.{u, u} fun x : Shrink.{u} t.children ↦ -- TODO: define Ordinal.sLsub for `Small.{u}` sets
+    let ⟨⟨e, c⟩, h⟩ := (equivShrink t.children).symm x
+    have : c.IsChildOf t := ⟨e, h⟩
+    depth c
+termination_by t
+
+theorem lt_depth_iff {t : PreWFTree.{u} η} {o : Ordinal.{u}} :
+    o < depth t ↔ ∃ e c, (e, c) ∈ t.children ∧ o ≤ depth c := by
+  rw [depth, Ordinal.lt_lsub_iff]
+  dsimp
+  constructor
+  · intro ⟨x, h⟩
+    set x' := (equivShrink t.children).symm x
+    rcases x' with ⟨⟨e, c⟩, hc⟩
+    use e, c
+  · intro ⟨e, c, hc, h⟩
+    refine ⟨equivShrink t.children ⟨(e, c), hc⟩, ?_⟩
+    simpa
+
+theorem depth_le_iff {t : PreWFTree.{u} η} {o : Ordinal.{u}} :
+    depth t ≤ o ↔ ∀ e c, (e, c) ∈ t.children → depth c < o := by
+  rw [depth, Ordinal.lsub_le_iff]
+  constructor
+  · intro h e c hc
+    simpa using h (equivShrink t.children ⟨(e, c), hc⟩)
+  · intro h x
+    let ⟨⟨e, c⟩, hc⟩ := (equivShrink t.children).symm x
+    simpa using h e c hc
+
+protected theorem IsChildOf.depth {t₁ t₂ : PreWFTree.{u} η} (h : t₁.IsChildOf t₂) :
+    depth t₁ < depth t₂ := by
+  rw [lt_depth_iff]
+  rcases h with ⟨e, ht₁⟩
+  use e, t₁
+
+theorem depth_le_of_equiv {x y : PreWFTree.{u} η} (h : x ≈ y) : depth x ≤ depth y := by
+  rw [depth_le_iff]
+  intro e cx hcx
+  have ⟨cy, hcy, hcxy⟩ := exists_of_equiv h hcx
+  have hcy' : cy.IsChildOf y := ⟨e, hcy⟩
+  calc depth cx ≤ depth cy := depth_le_of_equiv hcxy.symm
+  _ < depth y := hcy'.depth
+termination_by y
+
+theorem depth_eq_of_equiv {t₁ t₂ : PreWFTree.{u} η} (h : t₁ ≈ t₂) : depth t₁ = depth t₂ :=
+  le_antisymm (depth_le_of_equiv h) (depth_le_of_equiv h.symm)
+
+theorem wellFounded_depth : WellFounded ((· < ·) on depth.{u} (η := η)) :=
+  WellFounded.onFun Ordinal.lt_wf
 
 -- inductive Equiv' : PreWFTree.{u} η → PreWFTree.{u} η → Prop where
 -- | intro {t t'} (f : (e : η) → (t e).1 → (t' e).1) (g : (e : η) → (t' e).1 → (t e).1)
@@ -186,7 +251,7 @@ end PreWFTree
 /-- `WFTree.{u} η` is the type of well-founded trees with edges labelled by `η`
   and children as `u`-small sets. -/
 def WFTree (η : Type v) : Type (max (u + 1) v) :=
-  Quotient (PreWFTree.setoid.{u} (η := η))
+  Quotient (PreWFTree.setoid.{u} (η := η)) -- TODO: avoid quotient defeq abuse?
 
 namespace WFTree
 
@@ -219,8 +284,8 @@ instance small_children (t : WFTree.{u} η) : Small.{u} t.children := by
   rw [exists_comm]
   simp
 
-noncomputable def ofChildren (s : Set (η × WFTree.{u} η)) [Small.{u} s] : WFTree.{u} η :=
-  ⟦PreWFTree.ofChildren ((fun ⟨e, c⟩ ↦ ⟨e, Quotient.out c⟩) '' s)⟧
+noncomputable def ofChildren (s : Set (η × WFTree.{u} η)) : WFTree.{u} η :=
+  ⟦PreWFTree.ofChildren ((fun (e, c) ↦ (e, Quotient.out c)) '' s)⟧
 
 @[simp]
 lemma children_ofChildren (s : Set (η × WFTree.{u} η)) [Small.{u} s] :
@@ -248,9 +313,31 @@ lemma ofChildren_children (t : WFTree.{u} η) : ofChildren (children t) = t := b
 
 noncomputable def ofChildren_equiv :
     { s : Set (η × WFTree.{u} η) // Small.{u} s} ≃ WFTree.{u} η where
-  toFun := fun ⟨f, hf⟩ ↦ ofChildren f
+  toFun := fun ⟨f, _⟩ ↦ ofChildren f
   invFun t := ⟨t.children, inferInstance⟩
   left_inv := fun ⟨f, hf⟩ ↦ by simp
   right_inv t := by simp
+
+noncomputable def depth (t : WFTree.{u} η) : Ordinal.{u} :=
+  Quotient.liftOn t PreWFTree.depth fun _ _ ↦ PreWFTree.depth_eq_of_equiv
+
+-- def IsChildOf (t₁ t₂ : WFTree.{u} η) : Prop :=
+--   ∃ e, (e, t₁) ∈ t₂.children
+
+-- lemma isChildOf_iff {t₁ t₂ : WFTree.{u} η} : t₁.IsChildOf t₂ ↔ ∃ e, (e, t₁) ∈ t₂.children :=
+--   Iff.rfl
+
+@[local simp]
+private lemma mem_children_mk {e : η} {x : WFTree.{u} η} {y : PreWFTree.{u} η} :
+    (e, x) ∈ WFTree.children ⟦y⟧ ↔ ∃ c, ⟦c⟧ = x ∧ (e, c) ∈ y.children := by
+  induction' x using Quotient.ind with x
+  simp [children, PreWFTree.children]
+  aesop
+
+-- @[local simp]
+-- private lemma mk_isChildOf_mk {t₁ t₂ : PreWFTree.{u} η} :
+--     WFTree.IsChildOf ⟦t₁⟧ ⟦t₂⟧ ↔ ∃ c₁, c₁ ≈ t₁ ∧ c₁.IsChildOf t₂ := by
+--   simp [IsChildOf, children, PreWFTree.IsChildOf]
+--   aesop
 
 end WFTree
