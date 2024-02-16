@@ -861,6 +861,22 @@ theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
 
 end IicFTC
 
+section UnivFTC
+
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m n : E} [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [CompleteSpace E]
+
+theorem integral_of_hasDerivAt_of_tendsto
+    (hderiv : ∀ x, HasDerivAt f (f' x) x) (hf' : Integrable f')
+    (hbot : Tendsto f atBot (𝓝 m)) (htop : Tendsto f atTop (𝓝 n)) : ∫ x, f' x = n - m := by
+  rw [← integral_univ, ← Set.Iic_union_Ioi (a := 0),
+    integral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi hf'.integrableOn hf'.integrableOn,
+    integral_Iic_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn hbot,
+    integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn htop]
+  abel
+
+end UnivFTC
+
 section IoiChangeVariables
 
 open Real
