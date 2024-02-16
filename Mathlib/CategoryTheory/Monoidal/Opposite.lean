@@ -56,7 +56,7 @@ theorem unmop_inj_iff (x y : Cᴹᵒᵖ) : unmop x = unmop y ↔ x = y := unmop_
 theorem mop_unmop (X : Cᴹᵒᵖ) : mop (unmop X) = X := rfl
 #align category_theory.monoidal_opposite.mop_unmop CategoryTheory.MonoidalOpposite.mop_unmop
 
-@[simp]
+-- can't be simp bc after putting the lhs in whnf it's `X = X`
 theorem unmop_mop (X : C) : unmop (mop X) = X := rfl
 #align category_theory.monoidal_opposite.unmop_mop CategoryTheory.MonoidalOpposite.unmop_mop
 
@@ -140,16 +140,14 @@ theorem mop_id_unmop {X : Cᴹᵒᵖ} : (𝟙 (unmop X)).mop = 𝟙 X := rfl
 
 variable (C)
 
+/-- The identity functor on `C`, viewed as a functor from `C` to its monoidal opposite. -/
+@[simps obj map] -- need to specify `obj, map` or else we generate `mopFunctor_obj_unmop`
 def mopFunctor : C ⥤ Cᴹᵒᵖ := Functor.mk ⟨mop, .mop⟩
+/-- The identity functor on `C`, viewed as a functor from the monoidal opposite of `C` to `C`. -/
+@[simps obj map] -- not necessary but the symmetry with `mopFunctor` looks nicer
 def unmopFunctor : Cᴹᵒᵖ ⥤ C := Functor.mk ⟨unmop, .unmop⟩
 
 variable {C}
-
-@[simp] lemma mopFunctor_obj (X : C) : (mopFunctor C).obj X = mop X := rfl
-@[simp] lemma mopFunctor_map {X Y : C} (f : X ⟶ Y) : (mopFunctor C).map f = f.mop := rfl
-
-@[simp] lemma unmopFunctor_obj (X : Cᴹᵒᵖ) : (unmopFunctor C).obj X = unmop X := rfl
-@[simp] lemma unmopFunctor_map {X Y : Cᴹᵒᵖ} (f : X ⟶ Y) : (unmopFunctor C).map f = f.unmop := rfl
 
 namespace Iso
 
