@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.Data.Complex.Exponential
 import Mathlib.FieldTheory.GalConj
 
@@ -230,6 +231,7 @@ theorem ratCoeffEquiv_apply_apply (x : ratCoeff s) (i : K s) :
 theorem support_ratCoeffEquiv (x : ratCoeff s) :
     (ratCoeffEquiv s x).support = (x : AddMonoidAlgebra (K s) (K s)).support := by
   simp [Finsupp.support_mapRange_of_injective _ _ (AlgEquiv.injective _)]
+  rfl -- TODO better simps lemma
 #align support_rat_coeff_equiv support_ratCoeffEquiv
 
 section
@@ -378,6 +380,16 @@ instance : MulZeroClass (GalConjClasses ℚ (K s) →₀ F) where
   mul_zero a := by
     rw [mul_comm]
     exact graph_eq_empty.mp rfl
+
+instance : AddEquivClass (↥(mapDomainFixed s F) ≃ₗ[F] GalConjClasses ℚ (K s) →₀ F) _ _ := by
+  infer_instance
+
+instance : AddHomClass (↥(mapDomainFixed s F) ≃ₗ[F] GalConjClasses ℚ (K s) →₀ F) _ _ :=
+  AddEquivClass.instAddHomClass _
+
+instance : SMulHomClass ((GalConjClasses ℚ (K s) →₀ F) ≃ₗ[F] ↥(mapDomainFixed s F)) F
+    (GalConjClasses ℚ (K s) →₀ F) ↥(mapDomainFixed s F) :=
+  DistribMulActionHomClass.toSMulHomClass
 
 instance : CommRing (GalConjClasses ℚ (K s) →₀ F) :=
   { (inferInstance : AddCommGroup (GalConjClasses ℚ (K s) →₀ F)),
@@ -637,8 +649,9 @@ theorem linear_independent_exp_aux1 (s : Finset ℂ) (x : AddMonoidAlgebra (K s)
   let U' := ratCoeffEquiv s ⟨U, U_mem⟩
   have U'0 : U' ≠ 0
   · dsimp only
-    rw [AddEquivClass.map_ne_zero_iff, ZeroMemClass.zero_def]
+    rw [map_ne_zero_iff, ZeroMemClass.zero_def]
     exact fun h => absurd (Subtype.mk.inj h) U0
+    exact AlgEquiv.injective (ratCoeffEquiv s)
   have U'_ker : U' ∈ RingHom.ker (Eval s ℚ)
   · dsimp only
     rw [RingHom.mem_ker, ← Eval_ratCoeff]
@@ -711,7 +724,8 @@ theorem linear_independent_exp_aux_rat (u : ι → ℂ) (hu : ∀ i, IsIntegral 
     rw [Pi.zero_apply] at hi
     have h : f (u' i) ≠ 0
     · rwa [Finsupp.onFinset_apply, dif_pos, u'_inj.right_inv_of_invOfMemRange, Ne.def,
-        AddEquivClass.map_eq_zero_iff, ← ZeroMemClass.coe_eq_zero]
+        map_eq_zero_iff, ← ZeroMemClass.coe_eq_zero]
+      exact AlgEquiv.injective (Lift s)
       exact mem_image_of_mem _ (mem_univ _)
     intro f0
     rw [f0, Finsupp.zero_apply] at h
