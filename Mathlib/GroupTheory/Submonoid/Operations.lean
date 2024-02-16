@@ -4,9 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
+import Mathlib.Algebra.Parity
+import Mathlib.Algebra.GroupWithZero.Power
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Ring.Lemmas
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Data.NNRat.Lemmas
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
@@ -1619,3 +1622,53 @@ noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] :
 end Submonoid
 
 end Units
+
+open AddSubmonoid Set
+
+namespace Nat
+
+@[simp] lemma addSubmonoid_closure_one : closure ({1} : Set ℕ) = ⊤ := by
+  refine (eq_top_iff' _).2 $ Nat.rec (zero_mem _) ?_
+  simp_rw [Nat.succ_eq_add_one]
+  exact fun n hn ↦ AddSubmonoid.add_mem _ hn $ subset_closure $ Set.mem_singleton _
+
+end Nat
+
+namespace Rat
+
+@[simp] lemma addSubmonoid_closure_range_pow {n : ℕ} (hn₀ : n ≠ 0) (hn : Even n) :
+    closure (range fun x : ℚ ↦ x ^ n) = nonneg _ := by
+  refine le_antisymm (closure_le.2 $ range_subset_iff.2 hn.pow_nonneg) fun x hx ↦ ?_
+  suffices x = (x.num.natAbs * x.den ^ (n - 1)) • (x.den : ℚ)⁻¹ ^ n by
+    rw [this]; exact nsmul_mem (subset_closure $ mem_range_self _) _
+  rw [nsmul_eq_mul]
+  push_cast
+  rw [mul_assoc, pow_sub₀, pow_one, mul_right_comm, ← mul_pow, mul_inv_cancel, one_pow, one_mul,
+    ← Int.cast_ofNat, Int.coe_natAbs, abs_of_nonneg, ← div_eq_mul_inv, num_div_den]
+  rw [mem_nonneg] at hx
+  all_goals simp [x.den_pos.ne', Nat.one_le_iff_ne_zero, *]
+
+@[simp]
+lemma addSubmonoid_closure_range_mul_self : closure (range fun x : ℚ ↦ x * x) = nonneg _ := by
+  simpa only [sq] using addSubmonoid_closure_range_pow two_ne_zero even_two
+
+end Rat
+
+namespace NNRat
+
+@[simp] lemma addSubmonoid_closure_range_pow {n : ℕ} (hn₀ : n ≠ 0) :
+    closure (range fun x : ℚ≥0 ↦ x ^ n) = ⊤ := by
+  refine (eq_top_iff' _).2 fun x ↦ ?_
+  suffices x = (x.num * x.den ^ (n - 1)) • (x.den : ℚ≥0)⁻¹ ^ n by
+    rw [this]
+    exact nsmul_mem (subset_closure $ mem_range_self _) _
+  rw [nsmul_eq_mul]
+  push_cast
+  rw [mul_assoc, pow_sub₀, pow_one, mul_right_comm, ← mul_pow, mul_inv_cancel, one_pow, one_mul,
+    ← div_eq_mul_inv, num_div_den]
+  all_goals simp [x.den_pos.ne', Nat.one_le_iff_ne_zero, *]
+
+@[simp] lemma addSubmonoid_closure_range_mul_self : closure (range fun x : ℚ≥0 ↦ x * x) = ⊤ := by
+  simpa only [sq] using addSubmonoid_closure_range_pow two_ne_zero
+
+end NNRat
