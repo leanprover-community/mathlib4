@@ -508,7 +508,7 @@ lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
   set Spec := {I : Ideal R | I.IsPrime}
   obtain ⟨_, ⟨s, rfl⟩, H⟩ := set_has_minimal
     (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
-  refine ⟨⟨s, fun p ↦ ?_⟩⟩
+  refine Set.finite_def.2 ⟨s, fun p ↦ ?_⟩
   classical
   obtain ⟨q, hq1, hq2⟩ := p.2.inf_le'.mp <| inf_eq_right.mp <|
     inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)
