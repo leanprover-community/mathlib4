@@ -457,8 +457,8 @@ lemma traceForm_dualSubmodule_adjoin
   have pbgen : pb.gen = x := by simp
   have hpb : ⇑(BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
     _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
-  have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) = Submodule.span A (Set.range pb.basis) :=
-      by
+  have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
+      Submodule.span A (Set.range pb.basis) := by
     rw [← span_range_natDegree_eq_adjoin (minpoly.monic hAx) (minpoly.aeval _ _)]
     congr; ext y
     have : natDegree (minpoly A x) = natDegree (minpoly K x) := by

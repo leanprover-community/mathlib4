@@ -236,38 +236,38 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       exact h.2 i
   · simp only [mem_filter, mem_piAntidiagonal, mem_univ, exists_prop, true_and_iff, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
-    suffices hf' : f ∈ piAntidiagonal s n
-    simp only [mem_piAntidiagonal'] at hf'
-    refine' ⟨⟨∑ i in s, Multiset.replicate (f i / i) i, _, _⟩, _, _, _⟩
-    · intro i hi
-      simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
-      rcases hi with ⟨t, ht, z⟩
-      apply hs
-      rwa [Multiset.eq_of_mem_replicate z]
-    · simp_rw [Multiset.sum_sum, Multiset.sum_replicate, Nat.nsmul_eq_mul]
-      rw [← hf'.2]
-      refine' sum_congr rfl fun i hi => Nat.div_mul_cancel _
-      rcases hf₄ i hi with ⟨w, _, hw₂⟩
-      rw [← hw₂]
-      exact dvd_mul_left _ _
-    · intro i
-      simp_rw [Multiset.count_sum', Multiset.count_replicate, sum_ite_eq]
-      split_ifs with h
-      · rcases hf₄ i h with ⟨w, hw₁, hw₂⟩
-        rwa [← hw₂, Nat.mul_div_cancel _ (hs i h)]
-      · exact hc _ h
-    · intro i hi
-      rw [mem_sum] at hi
-      rcases hi with ⟨j, hj₁, hj₂⟩
-      rwa [Multiset.eq_of_mem_replicate hj₂]
-    · ext i
+    suffices hf' : f ∈ piAntidiagonal s n by
+      simp only [mem_piAntidiagonal'] at hf'
+      refine ⟨⟨∑ i in s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
+      · intro i hi
+        simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
+        rcases hi with ⟨t, ht, z⟩
+        apply hs
+        rwa [Multiset.eq_of_mem_replicate z]
+      · simp_rw [Multiset.sum_sum, Multiset.sum_replicate, Nat.nsmul_eq_mul]
+        rw [← hf'.2]
+        refine' sum_congr rfl fun i hi => Nat.div_mul_cancel _
+        rcases hf₄ i hi with ⟨w, _, hw₂⟩
+        rw [← hw₂]
+        exact dvd_mul_left _ _
+      · intro i
+        simp_rw [Multiset.count_sum', Multiset.count_replicate, sum_ite_eq]
+        split_ifs with h
+        · rcases hf₄ i h with ⟨w, hw₁, hw₂⟩
+          rwa [← hw₂, Nat.mul_div_cancel _ (hs i h)]
+        · exact hc _ h
+      · intro i hi
+        rw [mem_sum] at hi
+        rcases hi with ⟨j, hj₁, hj₂⟩
+        rwa [Multiset.eq_of_mem_replicate hj₂]
+      ext i
       simp_rw [Multiset.count_sum', Multiset.count_replicate, sum_ite_eq]
       simp only [ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, ite_mul,
         zero_mul, Finsupp.coe_mk]
       split_ifs with h
-      · apply Nat.div_mul_cancel
-        rcases hf₄ i h with ⟨w, _, hw₂⟩
-        apply Dvd.intro_left _ hw₂
+      apply Nat.div_mul_cancel
+      rcases hf₄ i h with ⟨w, _, hw₂⟩
+      apply Dvd.intro_left _ hw₂
       · apply symm
         rw [← Finsupp.not_mem_support_iff]
         exact not_mem_mono hf h

@@ -66,13 +66,13 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     rw [← coe_inj]; simp
   rw [this]; clear this
   -- The main proof is a simple calculation by rearranging one of the two sums
-  suffices hpair : ∀ k ∈ univ, a k + a (rev k) ≥ n + 1
-  calc
-    2 * ∑ i : Fin (m + 1), a i = ∑ i : Fin (m + 1), a i + ∑ i : Fin (m + 1), a i := two_mul _
-    _ = ∑ i : Fin (m + 1), a i + ∑ i : Fin (m + 1), a (rev i) := by rw [Equiv.sum_comp rev]
-    _ = ∑ i : Fin (m + 1), (a i + a (rev i)) := sum_add_distrib.symm
-    _ ≥ ∑ i : Fin (m + 1), (n + 1) := (sum_le_sum hpair)
-    _ = (m + 1) * (n + 1) := by rw [sum_const, card_fin, Nat.nsmul_eq_mul]
+  suffices hpair : ∀ k ∈ univ, a k + a (rev k) ≥ n + 1 by
+    calc
+      2 * ∑ i : Fin (m + 1), a i = ∑ i : Fin (m + 1), a i + ∑ i : Fin (m + 1), a i := two_mul _
+      _ = ∑ i : Fin (m + 1), a i + ∑ i : Fin (m + 1), a (rev i) := by rw [Equiv.sum_comp rev]
+      _ = ∑ i : Fin (m + 1), (a i + a (rev i)) := sum_add_distrib.symm
+      _ ≥ ∑ i : Fin (m + 1), (n + 1) := (sum_le_sum hpair)
+      _ = (m + 1) * (n + 1) := by rw [sum_const, card_fin, Nat.nsmul_eq_mul]
   -- It remains to prove the key inequality, by contradiction
   rintro k -
   by_contra! h : a k + a (rev k) < n + 1
