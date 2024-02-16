@@ -200,8 +200,7 @@ def ιInv : ExteriorAlgebra R M →ₗ[R] M := by
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 #align exterior_algebra.ι_inv ExteriorAlgebra.ιInv
 
--- Porting note: In the type, changed `ιInv` to `ιInv.1`
-theorem ι_leftInverse : Function.LeftInverse ιInv.1 (ι R : M → ExteriorAlgebra R M) := fun x => by
+theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → ExteriorAlgebra R M) := fun x => by
   -- Porting note: Original proof didn't have `letI` and `haveI`
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -332,41 +331,36 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
 
 variable (R)
 
-/-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power.-/
-lemma ιMulti_range (n : ℕ) : Set.range (ιMulti R n) ⊆
-    (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n).carrier := by
+/-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power. -/
+lemma ιMulti_range (n : ℕ) :
+    Set.range (ιMulti R n (M := M)) ⊆ ↑(LinearMap.range (ι R (M := M)) ^ n) := by
   rw [Set.range_subset_iff]
   intro v
   rw [ιMulti_apply]
   apply Submodule.pow_subset_pow
   rw [Set.mem_pow]
-  existsi fun i => ⟨(ι R) (v i), by simp only [SetLike.mem_coe, LinearMap.mem_range,
-    ι_inj, exists_eq]⟩
-  simp only
+  exact ⟨fun i => ⟨ι R (v i), LinearMap.mem_range_self _ _⟩, rfl⟩
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
-of the exterior algebra.-/
+of the exterior algebra. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
     Submodule.span R (Set.range (ιMulti R n)) =
-    (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n) := by
-  refine le_antisymm (by rw [Submodule.span_le]; apply le_trans (ιMulti_range R n) (le_refl _)) ?_
+    LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n := by
+  refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) ?_
   rw [Submodule.pow_eq_span_pow_set, Submodule.span_le]
   refine fun u hu ↦ Submodule.subset_span ?_
-  obtain ⟨f, hfu⟩ := Set.mem_pow.mp hu
-  rw [Set.mem_range, ← hfu]
-  existsi fun i => ιInv (f i).1
+  obtain ⟨f, rfl⟩ := Set.mem_pow.mp hu
+  refine ⟨fun i => ιInv (f i).1, ?_⟩
   rw [ιMulti_apply]
-  congr
-  ext i
-  obtain ⟨v, hv⟩ := LinearMap.mem_range.mp (by simp only [SetLike.coe_mem] :
-    (f i).1 ∈ LinearMap.range (ι R (M := M)))
-  rw [← hv, ι_inj]; erw [ι_leftInverse]
+  congr with i
+  obtain ⟨v, hv⟩ := (f i).prop
+  rw [← hv, ι_leftInverse]
 
 /-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
-family of `n`fold exterior products of elements of `v`, seen as members of the exterior algebra.-/
-noncomputable def ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M) :
-    {s : Finset I // Finset.card s = n} → ExteriorAlgebra R M :=
-  fun ⟨s, hs⟩ ↦ ιMulti R n (fun i => v (Finset.orderIsoOfFin s hs i))
+family of `n`fold exterior products of elements of `v`, seen as members of the exterior algebra. -/
+abbrev ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M)
+    (s : {s : Finset I // Finset.card s = n}) : ExteriorAlgebra R M :=
+  ιMulti R n fun i => v (Finset.orderIsoOfFin _ s.prop i)
 
 variable {R}
 
@@ -374,53 +368,44 @@ variable {R}
 instance [Nontrivial R] : Nontrivial (ExteriorAlgebra R M) :=
   (algebraMap_leftInverse M).injective.nontrivial
 
-/-! Functoriality of the exterior algebra.-/
+/-! Functoriality of the exterior algebra. -/
 
 variable {N : Type u4} {N' : Type u5} [AddCommGroup N] [Module R N] [AddCommGroup N'] [Module R N']
 
-/-- The morphism of exterior algebras induced by a linear map.-/
+/-- The morphism of exterior algebras induced by a linear map. -/
 def map (f : M →ₗ[R] N) : ExteriorAlgebra R M →ₐ[R] ExteriorAlgebra R N :=
-  CliffordAlgebra.map {f with map_app' := by intro _; simp only [AddHom.toFun_eq_coe,
-  LinearMap.coe_toAddHom, QuadraticForm.zero_apply]}
+  CliffordAlgebra.map { f with map_app' := fun _ => rfl }
 
 @[simp]
-theorem map_comp_ι (f : M →ₗ[R] N) :
-    LinearMap.comp (AlgHom.toLinearMap (map f)) (ι R) = LinearMap.comp (ι R) f :=
+theorem map_comp_ι (f : M →ₗ[R] N) : (map f).toLinearMap ∘ₗ ι R = ι R ∘ₗ f :=
   CliffordAlgebra.map_comp_ι _
 
 @[simp]
-theorem map_apply_ι (f : M →ₗ[R] N) (m : M) : (map f) ((ι R) m) = (ι R) (f m) :=
+theorem map_apply_ι (f : M →ₗ[R] N) (m : M) : map f (ι R m) = ι R (f m) :=
   CliffordAlgebra.map_apply_ι _ m
 
 @[simp]
 theorem map_apply_ιMulti {n : ℕ} (f : M →ₗ[R] N) (m : Fin n → M) :
-    (map f) ((ιMulti R n) m) = (ιMulti R n) (f ∘ m) := by
+    map f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
   rw [ιMulti_apply, ιMulti_apply, map_list_prod]
-  simp only [List.map_ofFn, Function.comp_apply]
-  apply congrArg; apply congrArg
-  ext i
-  simp only [Function.comp_apply, map_apply_ι]
+  simp only [List.map_ofFn, Function.comp, map_apply_ι]
 
 @[simp]
 theorem map_comp_ιMulti {n : ℕ} (f : M →ₗ[R] N) :
     (map f).toLinearMap.compAlternatingMap (ιMulti R n (M := M)) =
     (ιMulti R n (M := N)).compLinearMap f := by
   ext m
-  simp only [LinearMap.compAlternatingMap_apply, AlgHom.toLinearMap_apply, map_apply_ιMulti,
-    Function.comp_apply, AlternatingMap.compLinearMap_apply]
-  exact congrArg _ (by ext i; simp only [Function.comp_apply])
+  exact map_apply_ιMulti _ _
 
 @[simp]
 theorem map_id :
-    map (LinearMap.id) = AlgHom.id R (ExteriorAlgebra R M) :=
-CliffordAlgebra.map_id 0
+    map LinearMap.id = AlgHom.id R (ExteriorAlgebra R M) :=
+  CliffordAlgebra.map_id 0
 
 @[simp]
 theorem map_comp_map (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
-    AlgHom.comp (map g) (map f) = map (LinearMap.comp g f) := by
-  ext m
-  simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
-    AlgHom.toLinearMap_apply, map_apply_ι, map_comp_ι]
+    AlgHom.comp (map g) (map f) = map (LinearMap.comp g f) :=
+  CliffordAlgebra.map_comp_map _ _
 
 @[simp]
 theorem ι_range_map_map (f : M →ₗ[R] N) :
@@ -428,22 +413,55 @@ theorem ι_range_map_map (f : M →ₗ[R] N) :
     Submodule.map (ι R) (LinearMap.range f) :=
   CliffordAlgebra.ι_range_map_map _
 
-/-- A morphism of modules that is injective and admits a linear section induces an injective
-morphism of exterior algebras.-/
+theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Module Rᵐᵒᵖ N]
+    [IsCentralScalar R N] (f : M →ₗ[R] N) :
+    toTrivSqZeroExt.comp (map f) = (TrivSqZeroExt.map f).comp toTrivSqZeroExt := by
+  apply hom_ext
+  apply LinearMap.ext
+  simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
+    AlgHom.toLinearMap_apply, map_apply_ι, toTrivSqZeroExt_ι, TrivSqZeroExt.map_inr, forall_const]
+
+theorem ιInv_comp_map (f : M →ₗ[R] N) :
+    ιInv.comp (map f).toLinearMap = f.comp ιInv := by
+  letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+  haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
+  letI : Module Rᵐᵒᵖ N := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
+  haveI : IsCentralScalar R N := ⟨fun r m => rfl⟩
+  unfold ιInv
+  conv_lhs => rw [LinearMap.comp_assoc, ← AlgHom.comp_toLinearMap, toTrivSqZeroExt_comp_map,
+                AlgHom.comp_toLinearMap, ← LinearMap.comp_assoc, TrivSqZeroExt.sndHom_comp_map]
+
+open Function in
+/-- For a linear map `f` from `M` to `N`,
+`ExteriorAlgebra.map g` is a retraction of `ExteriorAlgebra.map f` iff
+`g` is a retraction of `f`. -/
+@[simp]
+lemma leftInverse_map_iff {f : M →ₗ[R] N} {g : N →ₗ[R] M} :
+    LeftInverse (map g) (map f) ↔ LeftInverse g f := by
+  refine ⟨fun h x => ?_, fun h => CliffordAlgebra.leftInverse_map_of_leftInverse _ _ h⟩
+  simpa using h (ι _ x)
+
+/-- A morphism of modules that admits a linear retraction induces an injective morphism of
+exterior algebras. -/
 lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f = LinearMap.id) :
     Function.Injective (map f) :=
-  let ⟨g, hgf⟩ := hf
-  Function.RightInverse.injective (g := map g) (fun _ ↦
-  by rw [← AlgHom.comp_apply, map_comp_map, hgf, map_id]; simp only [AlgHom.coe_id, id_eq])
+  let ⟨_, hgf⟩ := hf; (leftInverse_map_iff.mpr (DFunLike.congr_fun hgf)).injective
 
-/-- A surjective morphism of modules induces a surjective morphism of exterior algebras.-/
-lemma map_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
-    Function.Surjective (map f) := CliffordAlgebra.map_surjective _ hf
+/-- A morphism of modules is surjective if and only the morphism of exterior algebras that it
+induces is surjective. -/
+@[simp]
+lemma map_surjective_iff {f : M →ₗ[R] N} :
+    Function.Surjective (map f) ↔ Function.Surjective f := by
+  refine ⟨fun h y ↦ ?_, fun h ↦ CliffordAlgebra.map_surjective _ h⟩
+  obtain ⟨x, hx⟩ := h (ι R y)
+  existsi ιInv x
+  rw [← LinearMap.comp_apply, ← ιInv_comp_map, LinearMap.comp_apply]
+  erw [hx, ExteriorAlgebra.ι_leftInverse]
 
-variable {K E F: Type*} [Field K] [AddCommGroup E]
+variable {K E F : Type*} [Field K] [AddCommGroup E]
   [Module K E] [AddCommGroup F] [Module K F]
 
-/-- An injective morphism of vector spaces induces an injective morphism of exterior algebras.-/
+/-- An injective morphism of vector spaces induces an injective morphism of exterior algebras. -/
 lemma map_injective_field {f : E →ₗ[K] F} (hf : LinearMap.ker f = ⊥) :
     Function.Injective (map f) :=
   map_injective (LinearMap.exists_leftInverse_of_injective f hf)
