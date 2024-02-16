@@ -119,8 +119,6 @@ lemma ne_zero_if_max' {x : Fin 2 → ℤ} (hx : x ≠ 0)
   rw [fun_ne_zero_cases, h1, h0] at hx
   simp only [ne_eq, not_true_eq_false, or_self] at *
 
-example (a : ℤ) : (a.natAbs)^2 = a^2 := by exact Int.natAbs_eq_iff_sq_eq.mp rfl
-
 lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     (1 : ℝ) ≤ (x 0 / (max (x 0).natAbs (x 1).natAbs)) ^ 2 ∨
       (1 : ℝ) ≤ (x 1 / (max (x 0).natAbs (x 1).natAbs)) ^ 2 := by
