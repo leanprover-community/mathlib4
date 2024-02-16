@@ -2924,7 +2924,11 @@ import Mathlib.NumberTheory.SmoothNumbers
 import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.SumPrimeReciprocals
 import Mathlib.NumberTheory.SumTwoSquares
-import Mathlib.NumberTheory.Transcendental.LindemannWeierstrass
+import Mathlib.NumberTheory.Transcendental.Lindemann.Basic
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.ExistsLargePrime
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.SumAEvalARoots
 import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
