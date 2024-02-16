@@ -366,12 +366,11 @@ section CommMonoid
 variable [CommMonoid G]
 
 @[to_additive]
-theorem exists_orderOf_eq_exponent (h : ∀ g : G, 0 < orderOf g) (hG : ExponentExists G) :
-    ∃ g : G, orderOf g = exponent G := by
+theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf g = exponent G := by
   have he := hG.exponent_ne_zero
   have hne : (Set.range (orderOf : G → ℕ)).Nonempty := ⟨1, 1, orderOf_one⟩
   have hfin : (Set.range (orderOf : G → ℕ)).Finite := by
-    rwa [← exponent_ne_zero_iff_range_orderOf_finite h]
+    rwa [← exponent_ne_zero_iff_range_orderOf_finite hG.orderOf_pos]
   obtain ⟨t, ht⟩ := hne.cSup_mem hfin
   use t
   apply Nat.dvd_antisymm (order_dvd_exponent _)
@@ -399,10 +398,10 @@ theorem exists_orderOf_eq_exponent (h : ∀ g : G, 0 < orderOf g) (hG : Exponent
      simp [hp]
     rw [this]
     -- Porting note: convert made to_additive complain
-    apply Nat.pow_succ_factorization_not_dvd (h <| t ^ p ^ k).ne' hp
+    apply Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
   rw [(Commute.all _ g).orderOf_mul_eq_mul_orderOf_of_coprime hcoprime, hpk',
     hg, ha, hk, pow_add, pow_add, pow_one, ← mul_assoc, ← mul_assoc,
-    Nat.div_mul_cancel, mul_assoc, lt_mul_iff_one_lt_right <| h t, ← pow_succ']
+    Nat.div_mul_cancel, mul_assoc, lt_mul_iff_one_lt_right <| hG.orderOf_pos t, ← pow_succ']
   exact one_lt_pow hp.one_lt a.succ_ne_zero
   exact hpk
 
@@ -419,7 +418,7 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
     · simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
       exact orderOf_le_exponent he
     intro x hx
-    obtain ⟨g, hg⟩ := exists_orderOf_eq_exponent h he
+    obtain ⟨g, hg⟩ := exists_orderOf_eq_exponent he
     rw [← hg] at hx
     simp_rw [Set.mem_range, exists_exists_eq_and]
     exact ⟨g, hx⟩
