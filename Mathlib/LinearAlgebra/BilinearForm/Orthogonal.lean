@@ -37,9 +37,9 @@ open BigOperators
 
 universe u v w
 
-variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
-variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
+variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 
 variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 
@@ -104,7 +104,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
-variable {R₄ M₄ : Type*} [Ring R₄] [IsDomain R₄]
+variable {R₄ M₄ : Type*} [CommRing R₄] [IsDomain R₄]
 
 variable [AddCommGroup M₄] [Module R₄ M₄] {G : BilinForm R₄ M₄}
 
