@@ -92,13 +92,6 @@ theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
     Complex.abs (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
   abs_natCast n
 
-lemma complex_abs_of_int_eq_natAbs (a : ℤ) : Complex.abs a = a.natAbs := by
-  have : Complex.abs a = Complex.abs (a : ℝ) := by rfl
-  rw [this, Complex.abs_ofReal]
-  norm_cast
-  rw [Int.abs_eq_natAbs a]
-  rfl
-
 theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
   Real.mul_self_sqrt (normSq_nonneg _)
 #align complex.mul_self_abs Complex.mul_self_abs
