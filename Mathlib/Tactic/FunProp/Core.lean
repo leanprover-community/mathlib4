@@ -456,8 +456,30 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
 /-- Prove function property of using "morphism theorems" e.g. bundled linear map is linear map.  -/
 def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
+  trace[Meta.Tactic.fun_prop.step] "applying morphism theoresm to {← ppExpr e}"
 
-  return none
+  match ← fData.isMorApplication with
+  | .none => throwError "fun_prop bug: ivalid use of mor rules on {← ppExpr e}"
+  | .underApplied =>
+    applyPiRule funPropDecl e (← fData.toExpr) funProp
+  | .overApplied =>
+    let .some (f,g) ← fData.peeloffArgDecomposition | return none
+    applyCompRule funPropDecl e f g funProp
+  | .exact =>
+
+    let ext := morTheoremsExt.getState (← getEnv)
+    let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
+    let candidates := candidates.map (·.1) |>.flatten
+
+    trace[Meta.Tactic.fun_prop]
+      "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+
+    for c in candidates do
+      if let .some r ← tryTheorem? e (.decl c.thmName) funPropDecl.discharger funProp then
+        return r
+
+    trace[Meta.Tactic.fun_prop.step] "no theorem matched"
+    return none
   -- match ← fData.isMorApplication with
   -- | .none => return none
   -- | .underApplied => applyPiRule funPropDecl e (← fData.toExpr) funProp
@@ -481,6 +503,18 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 def applyTransitionRules (funPropDecl : FunPropDecl) (e : Expr)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
+  let ext := transitionTheoremsExt.getState (← getEnv)
+  let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
+  let candidates := candidates.map (·.1) |>.flatten
+
+  trace[Meta.Tactic.fun_prop]
+    "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+
+  for c in candidates do
+    if let .some r ← tryTheorem? e (.decl c.thmName) funPropDecl.discharger funProp then
+      return r
+
+  trace[Meta.Tactic.fun_prop.step] "no theorem matched"
   return none
   -- let ext := transitionTheoremsExt.getState (← getEnv)
   -- let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
@@ -515,7 +549,7 @@ def removeArgRule' (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   match fData.args.size with
   | 0 => throwError "fun_prop bug: invalid use of remove arg case {←ppExpr e}"
   | _ =>
-    let n := fData.args.size - 1
+    let n := fData.args.size
     let arg := fData.args[n-1]!
 
     if arg.coe.isSome then
@@ -547,66 +581,6 @@ def getDeclTheorems (funPropDecl : FunPropDecl) (funName : Name)
   let thms ← getTheoremsForFunction funName funPropDecl.funPropName
   -- todo: sorting and filtering
   return thms
-
-  -- let f ← fData.toExpr
-
-  -- -- todo: do unfolding when constructing FunctionData
-  -- if let .some f' ← unfoldFunHeadRec? f then
-  --   return ← funProp (e.setArg funPropDecl.funArgId f')
-
-  -- let .some functionName ← fData.getFnConstName?
-  --   | return none
-
-  -- let thms ← getTheoremsForFunction functionName funPropDecl.funPropName
-  -- let thms := thms.filter (fun thm => isOrderedSubsetOf fData.mainArgs thm.mainArgs)
-  -- trace[Meta.Tactic.fun_prop]
-  --   "applicable theorems for {functionName}: {thms.map fun thm => toString thm.thmOrigin.name}"
-
-  -- -- todo: sort theorems based on relevance
-
-  -- for thm in thms.reverse do
-  --   match compare thm.appliedArgs fData.args.size with
-  --   | .lt =>
-  --     if let .some prf ← removeArgRule funPropDecl e f funProp then
-  --       return prf
-  --   | .gt =>
-  --     if let .some prf ← applyPiRule funPropDecl e f funProp then
-  --       return prf
-  --   | .eq =>
-  --     match thm.form with
-  --     | .uncurried =>
-  --       if let .some (f',g') ← fData.nontrivialDecomposition then
-  --         if let .some r ← applyCompRule funPropDecl e f' g' funProp then
-  --           return r
-  --       else
-  --         if let .some r ← tryTheorem? e thm.thmOrigin.name funPropDecl.discharger funProp then
-  --           return r
-  --     | .comp =>
-  --       if let .some r ← tryTheorem? e thm.thmOrigin.name funPropDecl.discharger funProp then
-  --         return r
-
-  -- -- try morphism theorems
-  -- if let .some r ← applyMorRules funPropDecl e fData funProp then
-  --   return r
-
-  -- -- todo: do unfolding when constructing FunctionData
-  -- if let .some f' ← fData.unfold? then
-  --   let e := e.setArg funPropDecl.funArgId f'
-  --   if let .some r ← funProp e then
-  --     return r
-
-  -- -- if no theorems found try transition theorems
-  -- -- TODO: maybe count the number of theorems that actually unify
-  -- --       I'm worried that adding a theorem might prevent this branch from happening and break
-  -- --       previously working proof
-  -- if thms.size = 0 then
-  --   -- apply transition theorems only on functions that can't be decomposed
-  --   if let .some (f', g') ← fData.nontrivialDecomposition then
-  --     applyCompRule funPropDecl e f' g' funProp
-  --   else
-  --     return ← applyTransitionRules funPropDecl e funProp
-  -- else
-  --   return none
 
 
 def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
@@ -715,7 +689,20 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   else
     let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
     let thms ← getLocalTheorems funPropDecl (.fvar id) fData.mainArgs fData.args.size
-    tryTheorems funPropDecl e fData thms funProp
+
+    if let .some r ← tryTheorems funPropDecl e fData thms funProp then
+      return r
+
+    if (← fData.isMorApplication) != .none then
+      if let .some r ← applyMorRules funPropDecl e fData funProp then
+        return r
+
+    if (← fData.nontrivialDecomposition).isNone then
+      if let .some r ← applyTransitionRules funPropDecl e funProp then
+        return r
+
+    return none
+
 
 /-- Prove function property of `fun x => f x₁ ... xₙ` where `f` is declared function. -/
 def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
@@ -724,9 +711,20 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   let .some (funName,_) := fData.fn.const? | throwError "fun_prop bug: invelid use of const app case"
   let thms ← getDeclTheorems funPropDecl funName fData.mainArgs fData.args.size
 
-  trace[Meta.Tactic.fun_prop] s!"candidate theorems {thms.map fun thm => thm.thmOrigin.name}"
+  trace[Meta.Tactic.fun_prop] s!"candidate theorems for {funName} {thms.map fun thm => thm.thmOrigin.name}"
 
-  tryTheorems funPropDecl e fData thms funProp
+  if let .some r ← tryTheorems funPropDecl e fData thms funProp then
+    return r
+
+  if (← fData.isMorApplication) != .none then
+    if let .some r ← applyMorRules funPropDecl e fData funProp then
+      return r
+
+  if (← fData.nontrivialDecomposition).isNone then
+    if let .some r ← applyTransitionRules funPropDecl e funProp then
+      return r
+
+  return none
 
 
 /-- Cache result if it does not have any subgoals. -/
@@ -790,12 +788,12 @@ mutual
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f
       applyPiRule funPropDecl e f funProp
     | .data fData =>
-      let e := e.setArg funPropDecl.funArgId f -- update e with reduced f
+      let e := e.setArg funPropDecl.funArgId (← fData.toExpr) -- update e with reduced f
 
       if fData.isIdentityFun then
         applyIdRule funPropDecl e (← fData.domainType) funProp
       else if fData.isConstantFun then
-        applyConstRule funPropDecl e (← fData.domainType) fData.fn funProp
+        applyConstRule funPropDecl e (← fData.domainType) (Mor.mkAppN fData.fn fData.args) funProp
       else
         match fData.fn with
         | .fvar id =>

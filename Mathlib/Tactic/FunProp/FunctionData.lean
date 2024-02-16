@@ -121,6 +121,7 @@ def getFunctionData? (f : Expr)
 
 inductive MorApplication where
   | underApplied | exact | overApplied | none
+  deriving Inhabited, BEq
 
 /--  -/
 def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := do

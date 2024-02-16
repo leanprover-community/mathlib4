@@ -29,6 +29,7 @@ class Obj (α : Type _) : Type where
 
 instance [Obj α] [Obj β] : Obj (α × β) := ⟨⟩
 instance [∀ x, Obj (E x)] : Obj ((x' : α) → E x') := ⟨⟩
+instance : Obj Nat := ⟨⟩
 
 @[fun_prop] opaque Con {α β} [Obj α] [Obj β] (f : α → β) : Prop
 @[fun_prop] opaque Lin {α β} [Obj α] [Obj β] (f : α → β) : Prop
@@ -61,7 +62,6 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
 -- theorems about function in the environment --
 ------------------------------------------------
-set_option trace.Meta.Tactic.fun_prop.attr true in
 @[fun_prop]
 theorem prod_mk_Con (fst : α → β) (snd : α → γ) (hfst : Con fst) (hsnd : Con snd)
   : Con fun x => (fst x, snd x) := silentSorry
@@ -127,7 +127,6 @@ instance [Obj β] [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
 instance : Obj (α ->> β) := ⟨⟩
 instance : Obj (α -o β) := ⟨⟩
 
-
 -- morphism theorems i.e. theorems about `FunLike.coe` --
 ---------------------------------------------------------
 
@@ -167,12 +166,6 @@ example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (h
 
 ----------------------------------------------------------------------------------------------------
 
--- set_option profiler true
--- set_option profiler.threshold 10
-set_option trace.Meta.Tactic.fun_prop true
-set_option trace.Meta.Tactic.fun_prop.step true
-set_option trace.Meta.Tactic.fun_prop.unify true
-set_option trace.Meta.Tactic.fun_prop.discharge true
 example (f : α → β → γ) (hf : Con fun (x,y) => f x y)  : Con f := by fun_prop
 
 example : Con (fun x : α => x) := by fun_prop
@@ -247,6 +240,8 @@ example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) (x) : 
 example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) : Con fun x y => f y x x := by fun_prop
 
 example (f : α → β ->> γ) (hf : Con ↿f) (y) : Con fun x => f x y := by fun_prop
+example (f : α → β ->> γ) (x) : Con fun y : β => f x := by fun_prop
+example (f : α → β ->> γ) (x) : Con fun y : β => (f x : β → γ) := by fun_prop
 example (f : α → β ->> γ) (x) : Con fun y => f x y := by fun_prop
 example (f : α → α ->> (α → α)) (x) : Con fun y => f x y := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con ↿f) : Con fun x y => f y x x := by fun_prop

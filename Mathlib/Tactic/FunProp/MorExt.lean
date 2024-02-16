@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Std.Data.RBMap.Alter
+import Std.Lean.Expr
 
 import Mathlib.Tactic.FunProp.ToStd
 
@@ -77,9 +78,17 @@ namespace Mor
 def isMorCoeName (name : Name) : CoreM Bool := do
   return morCoeDeclsExt.getState (← getEnv) |>.contains name
 
-def isMorCoe (e : Expr) : CoreM Bool := do
+def isMorCoe (e : Expr) : MetaM Bool := do
   let .some (name,_) := e.getAppFn.const? | return false
-  isMorCoeName name
+  unless ← isMorCoeName name do return false
+  -- check it has arity 2
+  -- note: checking `(← inferType e).forallArity` can give different result are the return type
+  --       can be a function space
+  let info ← getConstInfo name
+  if info.type.forallArity - 2 = e.getAppNumArgs then
+    return true
+  else
+    return false
 
 structure App where
   coe : Expr
@@ -87,7 +96,7 @@ structure App where
   arg : Expr
 
 
-def isMorApp? (e : Expr) : CoreM (Option App) := do
+def isMorApp? (e : Expr) : MetaM (Option App) := do
 
   let .app (.app coe f) x := e | return none
   if ← isMorCoe coe then
