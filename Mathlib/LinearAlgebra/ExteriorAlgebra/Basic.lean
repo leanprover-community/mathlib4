@@ -419,8 +419,8 @@ theorem ι_range_map_map (f : M →ₗ[R] N) :
 
 open Function in
 /-- For a linear map `f` from `M` to `N`,
-`ExteriorAlgebra.map g` is a retraction of
-`ExteriorAlgebra.map f` iff `g` is a retractions of `f`. -/
+`ExteriorAlgebra.map g` is a retraction of `ExteriorAlgebra.map f` iff
+`g` is a retraction of `f`. -/
 @[simp]
 lemma leftInverse_map_iff {f : M →ₗ[R] N} {g : N →ₗ[R] M} :
     LeftInverse (map g) (map f) ↔ LeftInverse g f := by
