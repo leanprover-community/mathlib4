@@ -254,19 +254,25 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 
 section center
 
-theorem center_scalar (A : Subgroup.center (SpecialLinearGroup n R)) (i : n) :
-    A = A.val i i • (1 : Matrix n n R) := by
-  obtain ⟨r, hr⟩ := mem_range_scalar_of_commute_transvectionStruct fun t =>
-    Subtype.ext_iff.mp $ Subgroup.mem_center_iff.mp A.property ⟨t.toMatrix, by simp⟩
-  have : A.val i i = r := by rw [← hr]; simp
-  simp [this, ← hr, @smul_one_eq_diagonal]
+open Subgroup
 
-/-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
-in which the scalars are the `n`-th roots of `1`.-/
+theorem scalar_eq_self_of_mem_center
+    {A : SpecialLinearGroup n R} (hA : A ∈ center (SpecialLinearGroup n R)) (i : n) :
+    scalar n (A i i) = A := by
+  obtain ⟨r : R, hr : scalar n r = A⟩ := mem_range_scalar_of_commute_transvectionStruct fun t ↦
+    Subtype.ext_iff.mp <| Subgroup.mem_center_iff.mp hA ⟨t.toMatrix, by simp⟩
+  simp [← congr_fun₂ hr i i, ← hr]
+
+@[simp]
+theorem scalar_eq_coe_self_center
+    (A : center (SpecialLinearGroup n R)) (i : n) :
+    scalar n ((A : Matrix n n R) i i) = A :=
+  scalar_eq_self_of_mem_center A.property i
+
+/-- The center of a special linear group of degree `n` is the subgroup of scalar matrices, for which
+the scalars are the `n`-th roots of unity.-/
 theorem mem_center_iff {A : SpecialLinearGroup n R} :
-    A ∈ Subgroup.center (SpecialLinearGroup n R) ↔
-    ∀ i, A.val i i ^ (Fintype.card n) = 1 ∧
-    A = A.val i i • (1 : Matrix n n R) := by
+    A ∈ center (SpecialLinearGroup n R) ↔ ∃ (r : R), r ^ (Fintype.card n) = 1 ∧ scalar n r = A := by
   constructor
   · intro hA i
     have hA2 := center_scalar ⟨A, hA⟩ i
