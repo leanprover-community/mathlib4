@@ -332,7 +332,7 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
 
 variable (R)
 
-/-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power.-/
+/-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power. -/
 lemma ιMulti_range (n : ℕ) :
     Set.range (ιMulti R n (M := M)) ⊆ ↑(LinearMap.range (ι R (M := M)) ^ n) := by
   rw [Set.range_subset_iff]
@@ -343,7 +343,7 @@ lemma ιMulti_range (n : ℕ) :
   exact ⟨fun i => ⟨ι R (v i), LinearMap.mem_range_self _ _⟩, rfl⟩
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
-of the exterior algebra.-/
+of the exterior algebra. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
     Submodule.span R (Set.range (ιMulti R n)) =
     LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n := by
@@ -361,7 +361,7 @@ lemma ιMulti_span_fixedDegree (n : ℕ) :
   rw [← hv, ι_inj]; erw [ι_leftInverse]
 
 /-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
-family of `n`fold exterior products of elements of `v`, seen as members of the exterior algebra.-/
+family of `n`fold exterior products of elements of `v`, seen as members of the exterior algebra. -/
 def ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M) :
     {s : Finset I // Finset.card s = n} → ExteriorAlgebra R M :=
   fun s ↦ ιMulti R n (fun i => v (Finset.orderIsoOfFin _ s.prop i))
@@ -372,11 +372,11 @@ variable {R}
 instance [Nontrivial R] : Nontrivial (ExteriorAlgebra R M) :=
   (algebraMap_leftInverse M).injective.nontrivial
 
-/-! Functoriality of the exterior algebra.-/
+/-! Functoriality of the exterior algebra. -/
 
 variable {N : Type u4} {N' : Type u5} [AddCommGroup N] [Module R N] [AddCommGroup N'] [Module R N']
 
-/-- The morphism of exterior algebras induced by a linear map.-/
+/-- The morphism of exterior algebras induced by a linear map. -/
 def map (f : M →ₗ[R] N) : ExteriorAlgebra R M →ₐ[R] ExteriorAlgebra R N :=
   CliffordAlgebra.map { f with map_app' := fun _ => rfl }
 
@@ -430,19 +430,19 @@ lemma leftInverse_map_iff {f : M →ₗ[R] N} {g : N →ₗ[R] M} :
     rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
 
 /-- A morphism of modules that admits a linear retraction induces an injective morphism of
-exterior algebras.-/
+exterior algebras. -/
 lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f = LinearMap.id) :
     Function.Injective (map f) :=
   let ⟨_, hgf⟩ := hf; (leftInverse_map_iff.mpr (DFunLike.congr_fun hgf)).injective
 
-/-- A surjective morphism of modules induces a surjective morphism of exterior algebras.-/
+/-- A surjective morphism of modules induces a surjective morphism of exterior algebras. -/
 lemma map_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
     Function.Surjective (map f) := CliffordAlgebra.map_surjective _ hf
 
 variable {K E F : Type*} [Field K] [AddCommGroup E]
   [Module K E] [AddCommGroup F] [Module K F]
 
-/-- An injective morphism of vector spaces induces an injective morphism of exterior algebras.-/
+/-- An injective morphism of vector spaces induces an injective morphism of exterior algebras. -/
 lemma map_injective_field {f : E →ₗ[K] F} (hf : LinearMap.ker f = ⊥) :
     Function.Injective (map f) :=
   map_injective (LinearMap.exists_leftInverse_of_injective f hf)
