@@ -60,7 +60,7 @@ inductive RingMode where
   deriving Inhabited, BEq, Repr
 
 /-- Configuration for `ring_nf`. -/
-structure Config where
+structure Config extends RingConfig where
   /-- the reducibility setting to use when comparing atoms for defeq -/
   red := TransparencyMode.reducible
   /-- if true, atoms inside ring expressions will be reduced recursively -/
@@ -90,7 +90,7 @@ A tactic in the `RingNF.M` monad which will simplify expression `parent` to a no
 * `root`: true if this is a direct call to the function.
   `RingNF.M.run` sets this to `false` in recursive mode.
 -/
-def rewrite (parent : Expr) (root := true) : M Simp.Result :=
+def rewrite (cfg : RingConfig) (parent : Expr) (root := true) : M Simp.Result :=
   fun nctx rctx s ↦ do
     let pre : Simp.Simproc := fun e =>
       try
@@ -99,7 +99,7 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
         guard e.isApp -- all interesting ring expressions are applications
         let ⟨u, α, e⟩ ← inferTypeQ' e
         let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type u))
-        let c ← mkCache sα
+        let c ← mkCache sα cfg
         let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable sα c e rctx s with
         | none => eval sα c e rctx s -- `none` indicates that `eval` will find something algebraic.
         | some none => failure -- No point rewriting atoms
@@ -158,7 +158,7 @@ partial def M.run
     /-- The atom evaluator calls either `RingNF.rewrite` recursively,
     or nothing depending on `cfg.recursive`. -/
     evalAtom := if cfg.recursive
-      then fun e ↦ rewrite e false nctx rctx s
+      then fun e ↦ rewrite cfg.toRingConfig e false nctx rctx s
       else fun e ↦ pure { expr := e }
   x nctx rctx s
 
@@ -173,7 +173,7 @@ open Elab.Tactic Parser.Tactic
 def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
-  let r ← M.run s cfg <| rewrite tgt
+  let r ← M.run s cfg <| rewrite cfg.toRingConfig tgt
   if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
@@ -185,7 +185,7 @@ def ringNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
-  let myres ← M.run s cfg <| rewrite tgt
+  let myres ← M.run s cfg <| rewrite cfg.toRingConfig tgt
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
@@ -224,7 +224,7 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:(config ?) : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let s ← IO.mkRef {}
-  liftMetaMAtMain fun g ↦ M.run s cfg <| proveEq g
+  liftMetaMAtMain fun g ↦ M.run s cfg <| proveEq g cfg.toRingConfig
 
 @[inherit_doc ring1NF] macro "ring1_nf!" cfg:(config)? : tactic => `(tactic| ring1_nf ! $(cfg)?)
 
@@ -234,7 +234,8 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:(config ?) : tactic => do
     let mut cfg ← elabConfig stx[2]
     if tk.isSome then cfg := { cfg with red := .default }
     let s ← IO.mkRef {}
-    Conv.applySimpResult (← M.run s cfg <| rewrite (← instantiateMVars (← Conv.getLhs)))
+    Conv.applySimpResult (← M.run s cfg <|
+      rewrite cfg.toRingConfig (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
 @[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? : conv => `(conv| ring_nf ! $(cfg)?)
