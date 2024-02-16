@@ -428,7 +428,7 @@ theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
 
 /-- If `v : ι → M` is a family of vectors and there exists a family of linear forms
 `dv : ι → (M →ₗ[R] R)` such that `dv i (v j)` is `1` for `i = j` and `0` for `i ≠ j`, then
-`v` is linearly independent.-/
+`v` is linearly independent. -/
 theorem linearIndependent_of_dualFamily (v : ι → M) (dv : ι → (M →ₗ[R] R))
     (h1 : ∀ (a : ι) (b : ι), a ≠ b → (dv a) (v b) = 0) (h2 : ∀ (a : ι), (dv a) (v a) = 1) :
     LinearIndependent R v := by

@@ -28,7 +28,7 @@ variable {K : Type v} {E : Type uE} {F: Type uF} [Field K] [AddCommGroup E] [Mod
 variable (R M n)
 
 /--Definition of the `n`th exterior power of a `R`-module `M`. We introduce the notation
-`Λ[R]^n M` for `ExteriorPower R n M`.-/
+`Λ[R]^n M` for `ExteriorPower R n M`. -/
 @[reducible]
 def ExteriorPower := (LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n)
 
@@ -39,11 +39,11 @@ variable {M}
 
 namespace ExteriorPower
 
-/-! The canonical alternating from `Fin n → M` to `Λ[R]^n M`.-/
+/-! The canonical alternating from `Fin n → M` to `Λ[R]^n M`. -/
 
 /-- `ExteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `Λ[r]^n M`
 induced by `ExteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
-product of its entries.-/
+product of its entries. -/
 def ιMulti : AlternatingMap R M ((Λ[R]^n) M) (Fin n) :=
   AlternatingMap.codRestrict (ExteriorAlgebra.ιMulti R n) ((Λ[R]^n) M)
   (fun _ => ExteriorAlgebra.ιMulti_range R n (by simp only [Set.mem_range, exists_apply_eq_apply]))
@@ -54,12 +54,12 @@ def ιMulti : AlternatingMap R M ((Λ[R]^n) M) (Fin n) :=
   simp only [AlternatingMap.codRestrict_apply_coe]
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power. Variant of
-`ExteriorAlgebra.ιMulti_span_fixedDegree`, useful in rewrites.-/
+`ExteriorAlgebra.ιMulti_span_fixedDegree`, useful in rewrites. -/
 lemma ιMulti_span_fixedDegree :
     Submodule.span R (Set.range (ExteriorAlgebra.ιMulti R n)) = (Λ[R]^n) M :=
   ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
-/-- The image of `ExteriorPower.ιMulti` spans `Λ[R]^n M`.-/
+/-- The image of `ExteriorPower.ιMulti` spans `Λ[R]^n M`. -/
 lemma ιMulti_span :
     Submodule.span R (Set.range (ιMulti R n)) = (⊤ : Submodule R ((Λ[R]^n) M)) := by
   apply LinearMap.map_injective (Submodule.ker_subtype ((Λ[R]^n) M))
@@ -69,7 +69,7 @@ lemma ιMulti_span :
   exact ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
 /-- Two linear maps on `Λ[R]^n M` that agree on the image of `ExteriorPower.ιMulti`
-are equal.-/
+are equal. -/
 @[ext]
 lemma lhom_ext ⦃f : (Λ[R]^n) M →ₗ[R] N⦄ ⦃g : (Λ[R]^n) M →ₗ[R] N⦄
     (heq : (LinearMap.compAlternatingMap f) (ιMulti R n) =
@@ -92,7 +92,7 @@ lemma lhom_ext ⦃f : (Λ[R]^n) M →ₗ[R] N⦄ ⦃g : (Λ[R]^n) M →ₗ[R] N�
 
 variable {R}
 
-/-- Auxiliary construction for the definition of `ExteriorPower.liftAlternating`.-/
+/-- Auxiliary construction for the definition of `ExteriorPower.liftAlternating`. -/
 def liftAlternating_aux : (AlternatingMap R M N (Fin n)) →ₗ[R]
     ((i : ℕ) → AlternatingMap R M N (Fin i)) :=
   LinearMap.pi (fun i ↦ if h : i = n then by rw [h]; exact LinearMap.id else 0)
@@ -136,7 +136,7 @@ variable (R)
 /-- If `f` is an alternating map from `M` to `N`, `liftAlternating n f` is the corresponding
 linear map from `Λ[R]^n M` to `N` and `g` is a linear map from `N` to `N'`, then
 the alternating map `g.compAlternatingMap f` from `M` to `N'` corresponds to the linear
-map `g.comp (liftAlternating n f)` on `Λ[R]^n M`.-/
+map `g.comp (liftAlternating n f)` on `Λ[R]^n M`. -/
 @[simp]
 lemma liftAlternating_comp (g : N →ₗ[R] N') (f : AlternatingMap R M N (Fin n)) :
     liftAlternating n (g.compAlternatingMap f) = g.comp (liftAlternating n f) := by
@@ -145,7 +145,7 @@ lemma liftAlternating_comp (g : N →ₗ[R] N') (f : AlternatingMap R M N (Fin n
     Function.comp_apply, liftAlternating_apply_ιMulti]
 
 /-- The linear equivalence between `n`-fold alternating maps from `M` to `N` and linear maps from
-`Λ[R]^n M` to `N`.-/
+`Λ[R]^n M` to `N`. -/
 @[simps!]
 def liftAlternatingEquiv : AlternatingMap R M N (Fin n) ≃ₗ[R] (Λ[R]^n) M →ₗ[R] N :=
   LinearEquiv.ofLinear (liftAlternating n)
@@ -169,11 +169,11 @@ lemma liftAlternatingEquiv_apply (f :AlternatingMap R M N (Fin n)) (x : (Λ[R]^n
 lemma liftAlternatingEquiv_symm_apply (F : (Λ[R]^n) M →ₗ[R] N) (m : Fin n → M) :
     (ExteriorPower.liftAlternatingEquiv R n).symm F m = F.compAlternatingMap (ιMulti R n) m := rfl
 
-/-! Functoriality of the exterior powers.-/
+/-! Functoriality of the exterior powers. -/
 
 variable {R}
 
-/-- The linear map between `n`th exterior powers induced by a linear map between the modules.-/
+/-- The linear map between `n`th exterior powers induced by a linear map between the modules. -/
 def map (f : M →ₗ[R] N) : (Λ[R]^n) M →ₗ[R] (Λ[R]^n) N := by
   refine LinearMap.restrict (AlgHom.toLinearMap (ExteriorAlgebra.map f)) ?_
   intro x hx
@@ -218,9 +218,9 @@ theorem map_comp_map (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     LinearMap.restrict_coe_apply, ιMulti_apply, AlgHom.toLinearMap_apply,
     ExteriorAlgebra.map_apply_ιMulti, Function.comp.assoc]
 
-/-! Exactness properties of the exterior power functor.-/
+/-! Exactness properties of the exterior power functor. -/
 
-/-- If a linear map has a retraction, then the map it induces on exterior powers is injective.-/
+/-- If a linear map has a retraction, then the map it induces on exterior powers is injective. -/
 lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f = LinearMap.id) :
     Function.Injective (map n f) :=
   let ⟨g, hgf⟩ := hf
@@ -228,12 +228,12 @@ lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f 
     (fun _ ↦ by rw [← LinearMap.comp_apply, map_comp_map, hgf, map_id, LinearMap.id_coe, id_eq])
 
 /-- If the base ring is a field, then any injective linear map induces an injective map on
-exterior powers.-/
+exterior powers. -/
 lemma map_injective_field {f : E →ₗ[K] F} (hf : LinearMap.ker f = ⊥) :
     Function.Injective (map n f) :=
   map_injective n (LinearMap.exists_leftInverse_of_injective f hf)
 
-/-- If a linear map is surjective, then the map it induces on exterior powers is surjective.-/
+/-- If a linear map is surjective, then the map it induces on exterior powers is surjective. -/
 lemma map_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
     Function.Surjective (map n f) := by
   rw [← LinearMap.range_eq_top]
@@ -246,13 +246,13 @@ lemma map_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
   exact Set.range_iff_surjective.mpr (fun y ↦ ⟨fun i => Classical.choose (hf (y i)),
     by ext i; simp only [Function.comp_apply]; exact Classical.choose_spec (hf (y i))⟩)
 
-/-! From a family of vectors of `M` to a family of vectors if its `n`th exterior power.-/
+/-! From a family of vectors of `M` to a family of vectors if its `n`th exterior power. -/
 
 variable (R)
 
 /-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
 family of `n`fold exterior products of elements of `v`, seen as members of the
-`n`th exterior power.-/
+`n`th exterior power. -/
 noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) :
     {s : Finset I // Finset.card s = n} → (Λ[R]^n) M :=
   fun ⟨s, hs⟩ => ιMulti R n (fun i => v (Finset.orderIsoOfFin s hs i))
@@ -273,12 +273,12 @@ lemma map_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ
   simp only [Finset.coe_orderIsoOfFin_apply, Function.comp_apply, map_apply_ιMulti, ιMulti_apply]
   congr
 
-/-! Map to the tensor power.-/
+/-! Map to the tensor power. -/
 
 variable (M)
 
 /-- The linear map from the `n`th exterior power to the `n`th tensor power induced by
-`MultilinearMap.alternarization`.-/
+`MultilinearMap.alternarization`. -/
 noncomputable def toTensorPower : (Λ[R]^n) M →ₗ[R] (⨂[R]^n) M :=
   liftAlternatingEquiv R n
   (MultilinearMap.alternatization (PiTensorProduct.tprod R (s := fun (_ : Fin n) => M)))
@@ -294,12 +294,12 @@ lemma toTensorPower_apply_ιMulti (v : Fin n → M) : toTensorPower R n M (ιMul
   rw [MultilinearMap.alternatization_apply]
   simp only [MultilinearMap.domDomCongr_apply]
 
-/-! Linear form on the exterior power induced by a family of linear forms on the module.-/
+/-! Linear form on the exterior power induced by a family of linear forms on the module. -/
 
 /-- A family `f` indexed by `Fin n` of linear forms on `M` defines a linear form on the `n`th
 exterior power of `M`, by composing the map `ExteriorPower.toTensorPower` to the `n`th tensor
 power and then applying `TensorPower.linearFormOfFamily` (which takes the product of the
-components of `f`).-/
+components of `f`). -/
 noncomputable def linearFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) :
     (Λ[R]^n) M →ₗ[R] R :=
   LinearMap.comp (TensorPower.linearFormOfFamily R n f) (toTensorPower R n M)
@@ -319,7 +319,7 @@ lemma linearFormOfFamily_apply_ιMulti (f : (_ : Fin n) → (M →ₗ[R] R)) (m 
 /-- If `f` is a family of linear forms on `M` (index by `Fin n`) and `p` is a linear map
 from `N` to `M`, then the composition of `ExteriorPower.linearFormOfFamily R n f` and
 of `ExteriorPower.map p` is equal to the linear form induced by the family
-`fun i ↦ (f i).comp p`..-/
+`fun i ↦ (f i).comp p`.. -/
 lemma linearFormOfFamily_comp_map (f : (_ : Fin n) → (M →ₗ[R] R)) (p : N →ₗ[R] M) :
     (linearFormOfFamily R n f).comp (map n p) =
     linearFormOfFamily R n (fun (i : Fin n) => (f i).comp p) := by
@@ -339,7 +339,7 @@ lemma linearFormOfFamily_comp_map_apply (f : (_ : Fin n) → (M →ₗ[R] R))
 /-- A family `f` of linear forms on `M` indexed by `Fin n` defines an `n`-fold alternating form
 on `M`, by composing the linear form on `Λ[R]^n M` indeuced by `f` (defined in
 `ExteriorPower.linearFormOfFamily`) with the canonical `n`-fold alternating map from `M` to its
-`n`th exterior power.-/
+`n`th exterior power. -/
 noncomputable def alternatingFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) :
     AlternatingMap R M R (Fin n) :=
   (linearFormOfFamily R n f).compAlternatingMap (ιMulti R n)
@@ -371,7 +371,7 @@ lemma sum_range_map (f : N →ₗ[R] M) (f' : N' →ₗ[R] M) (f'' : N''→ₗ[R
     LinearMap.comp_apply, LinearMap.comp_apply]
 
 /-- Every element of `Λ[R]^n M` is in the image of `Λ[R]^n P` for some finitely generated
-submodule P of M.-/
+submodule P of M. -/
 lemma mem_exteriorPower_is_mem_finite (x : (Λ[R]^n) M) :
     ∃ (P : Submodule R M), Submodule.FG P ∧ x ∈ LinearMap.range (map n (Submodule.subtype P)) := by
   have hx : x ∈ (⊤ : Submodule R ((Λ[R]^n) M)) := by simp only [Submodule.mem_top]

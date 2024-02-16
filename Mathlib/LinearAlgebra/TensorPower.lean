@@ -299,14 +299,14 @@ variable (n : ℕ)
 
 variable (R)
 
-/-- A family `f` indexed by `Fin n` of linear forms on `M` defines a linear form on
-`⨂[R]^n M`, by multiplying the components of `f`.-/
+/-- A family `f` of linear forms on `M` indexed by `Fin n` defines a linear form on
+`⨂[R]^n M`, by multiplying the components of `f`. -/
 noncomputable def linearFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) : (⨂[R]^n) M →ₗ[R] R :=
   PiTensorProduct.lift (MultilinearMap.compLinearMap (MultilinearMap.mkPiRing R (Fin n) 1) f)
 
 open BigOperators in
 @[simp]
-lemma linearFormOfFamily_apply_tprod (f : (_ : Fin n) → (M →ₗ[R] R)) (v : Fin n → M) :
+theorem linearFormOfFamily_apply_tprod (f : (_ : Fin n) → (M →ₗ[R] R)) (v : Fin n → M) :
     linearFormOfFamily R n f (PiTensorProduct.tprod R v) = ∏ i, (f i (v i)) := by
   unfold linearFormOfFamily
   simp only [lift.tprod, MultilinearMap.compLinearMap_apply, MultilinearMap.mkPiRing_apply,
