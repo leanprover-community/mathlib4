@@ -13,7 +13,7 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 /-!
 # Uniform convergence of Eisenstein series
 
-We show that `eis` converges locally uniformly on `ℍ` to the Eisenstein series `E` of weight `k`
+We show that `eisSummand` converges locally uniformly on `ℍ` to the Eisenstein series of weight `k`
 and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`.
 -/
 
@@ -30,7 +30,7 @@ lemma mem_box_ne_zero_iff_ne_zero (n : ℕ) (x : Fin 2 → ℤ) (hx : (x 0, x 1)
   rw [fun_ne_zero_cases, hx.1, hx.2] at h
   · simp at h
   rintro hn rfl
-  simp [hn, eq_comm] at hx
+  simp only [Pi.zero_apply, Int.mem_box, Int.natAbs_zero, max_self, eq_comm, hn] at hx
 
 noncomputable section
 
@@ -60,7 +60,7 @@ theorem r_pos (z : ℍ) : 0 < r z := by
   simp only [r, lt_min_iff, im_pos, Real.sqrt_pos, r1_pos, and_self]
 
 theorem r1_bound (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) :
-    (z.im ^ 2 ) / (z.re ^ 2 + z.im ^ 2) ≤ (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 := by
+    (z.im ^ 2) / (z.re ^ 2 + z.im ^ 2) ≤ (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 := by
   have H1 : (δ * z.re + ε) ^ 2 + (δ * z.im) ^ 2 =
         δ ^ 2 * (z.re ^ 2 + z.im ^ 2) + ε * 2 * δ * z.re + ε^2 := by ring
   have H4 : (δ ^ 2 * (z.re ^ 2 + z.im ^ 2) + ε * 2 * δ * z.re + ε^2) * (z.re ^ 2 + z.im ^ 2)
@@ -91,7 +91,7 @@ theorem auxbound1 (z : ℍ) {δ : ℝ} (ε : ℝ) (hδ : 1 ≤ δ^2) : r z ≤ C
 
 theorem auxbound2 (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε^2) : r z ≤ Complex.abs (δ * (z : ℂ) + ε) := by
   rw [r, Complex.abs, min_le_iff]
-  have H1 : Real.sqrt (r1 z) ≤ Real.sqrt ((δ * (z : ℂ).re + ε) * (δ * (z : ℂ).re + ε ) +
+  have H1 : Real.sqrt (r1 z) ≤ Real.sqrt ((δ * (z : ℂ).re + ε) * (δ * (z : ℂ).re + ε) +
       δ * (z : ℂ).im * (δ * (z : ℂ).im)) := by
     rw [r1, Real.sqrt_le_sqrt_iff, ← pow_two, ← pow_two]
     apply r1_bound z δ hε
@@ -127,7 +127,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     rw [H1, div_pow, Int.cast_natAbs (x 0),Int.cast_abs]
     have : (x 0 : ℝ) ≠ 0 := by
       simpa using (ne_zero_if_max hx H1)
-    have h1 : (x 0 : ℝ)^2/( _root_.abs (x 0 : ℝ))^2 = 1 := by
+    have h1 : (x 0 : ℝ)^2/(_root_.abs (x 0 : ℝ))^2 = 1 := by
       simp only [_root_.sq_abs, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
         this, div_self]
     exact h1.symm.le
@@ -135,7 +135,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     rw [H2,div_pow, Int.cast_natAbs (x 1),Int.cast_abs]
     have : (x 1 : ℝ) ≠ 0 := by
       simpa using (ne_zero_if_max' hx H2)
-    have h1 : (x 1 : ℝ)^2/( _root_.abs (x 1 : ℝ))^2 = 1 := by
+    have h1 : (x 1 : ℝ)^2/(_root_.abs (x 1 : ℝ))^2 = 1 := by
       simp only [_root_.sq_abs, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff,
         this, div_self]
     exact h1.symm.le
@@ -146,7 +146,7 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
   by_cases hk0 : k ≠ 0
   let n := max (x 0).natAbs (x 1).natAbs
   have h11 : ((x 0) * ↑z + (x 1)) =
-      (((x 0 : ℝ) / (n : ℝ) ) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
+      (((x 0 : ℝ) / (n : ℝ)) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
       field_simp
       rw [← mul_div, div_self]
       simp
@@ -175,7 +175,7 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
 
 theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
     (hx : (x 0, x 1) ∈ box n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)))) ^ (-k) ≤
-      ( ((r z) ^ (-k) * n ^ (-k))) := by
+      (((r z) ^ (-k) * n ^ (-k))) := by
   by_cases hn : n = 0
   · rw [hn] at hx
     simp only [box_zero, Finset.mem_singleton, Prod.mk_eq_zero] at hx
@@ -199,7 +199,7 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
     convert (rpow_bound hk z x hx2)
     · simp only [Nat.cast_max]
     · apply Real.rpow_pos_of_pos
-      apply Complex.abs.pos ( (linear_ne_zero ![x 0, x 1] z ?_))
+      apply Complex.abs.pos (linear_ne_zero ![x 0, x 1] z ?_)
       simp only [ne_eq, Matrix.cons_eq_zero_iff, Int.cast_eq_zero, Matrix.zero_empty, and_true,
         not_and] at *
       intro hg h1
@@ -296,7 +296,7 @@ lemma summable_over_box {k : ℤ} (z : ℍ) (h : 3 ≤ k):
     norm_cast
     rw [zero_zpow k (by linarith), zero_zpow (k - 1) (by linarith)]
     simp only [inv_zero, mul_zero, box_zero, Finset.card_singleton, Nat.cast_one]
-  · rw [Int.card_box b0, zpow_sub_one₀ (a:= ( b: ℝ)) (Nat.cast_ne_zero.mpr b0) k]
+  · rw [Int.card_box b0, zpow_sub_one₀ (a:= (b: ℝ)) (Nat.cast_ne_zero.mpr b0) k]
     simp only [mul_inv_rev, inv_inv, Nat.cast_mul, Nat.cast_ofNat]
     ring_nf
 
@@ -324,7 +324,7 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
 end summability
 
 theorem eisensteinSeries_TendstoLocallyUniformlyOn {k : ℤ} (hk : 3 ≤ k) (N : ℕ)
-    (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
+    (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a)) =>
       (fun (z : ℍ) => ∑ x in s, eisSummand k x z))
         (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop ⊤ := by
   have hk0 : 0 ≤ k := by linarith
@@ -333,14 +333,14 @@ theorem eisensteinSeries_TendstoLocallyUniformlyOn {k : ℤ} (hk : 3 ≤ k) (N :
   simp only [Set.top_eq_univ, Set.subset_univ, eisensteinSeries, forall_true_left]
   intro K hK
   obtain ⟨A, B, hB, HABK⟩:= subset_slice_of_isCompact hK
-  have hu : Summable fun x : (gammaSet N a ) =>
+  have hu : Summable fun x : (gammaSet N a) =>
     (1/(r ⟨⟨A, B⟩, hB⟩) ^ k) * ((max (x.1 0).natAbs (x.1 1).natAbs : ℝ) ^ k)⁻¹ := by
-    apply (Summable.subtype (summable_upper_bound hk ⟨⟨A, B⟩, hB⟩) (gammaSet N a )).congr
+    apply (Summable.subtype (summable_upper_bound hk ⟨⟨A, B⟩, hB⟩) (gammaSet N a)).congr
     intro v
     simp only [zpow_coe_nat, one_div, Function.comp_apply]
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
-  have := eis_is_bounded_on_box k (max (v.1 0).natAbs (v.1 1).natAbs ) x v
+  have := eis_is_bounded_on_box k (max (v.1 0).natAbs (v.1 1).natAbs) x v
   simp only [Nat.cast_max, Int.coe_natAbs, iff_true, zpow_coe_nat, one_div, map_pow,
     map_mul, abs_ofReal, abs_natCast, mul_inv_rev, eisSummand, norm_inv, norm_pow, norm_eq_abs,
     ge_iff_le] at *
