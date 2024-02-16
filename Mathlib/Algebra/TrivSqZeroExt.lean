@@ -936,7 +936,8 @@ def liftEquivOfComm :
       rfl }
 #align triv_sq_zero_ext.lift TrivSqZeroExt.liftEquiv
 
-variable {N : Type*} [AddCommMonoid N] [Module R' N] [Module R'ᵐᵒᵖ N] [IsCentralScalar R' N]
+variable {N P : Type*} [AddCommMonoid N] [Module R' N] [Module R'ᵐᵒᵖ N] [IsCentralScalar R' N]
+  [AddCommMonoid P] [Module R' P] [Module R'ᵐᵒᵖ P] [IsCentralScalar R' P]
 
 /-- Functoriality of `TrivSqZeroExt`if the ring is commutative : a linear map
 `f : M →ₗ[R'] N` induces a morphism of `R'`-algebras from `TrivSqZeroExt R' M` to
@@ -956,6 +957,30 @@ def map' (f : M →ₗ[R'] N) : TrivSqZeroExt R' M →ₐ[R'] TrivSqZeroExt R' N
     rw [TrivSqZeroExt.mul_inl_eq_op_smul]
     simp only [op_smul_eq_smul]
 
+theorem map'_comp_inl (f : M →ₗ[R'] N) :
+    (map' f).toRingHom.comp (inlHom R' M) = inlHom R' N := by
+  ext r
+  simp only [map', AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+    inlHom_apply, lift_apply_inl, inlAlgHom_apply, fst_inl]
+  rw [← algebraMap_eq_inlHom, ← algebraMap_eq_inlHom]
+  simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+    AlgHom.commutes]
+
+theorem map'_comp_inr (f : M →ₗ[R'] N) :
+    (map' f).toLinearMap.comp (inrHom R' M) = (inrHom R' N).comp f := by
+  apply LinearMap.ext
+  unfold map'
+  simp only [LinearMap.coe_comp, Function.comp_apply, inrHom_apply, AlgHom.toLinearMap_apply,
+    lift_apply_inr, forall_const]
+
+theorem fst_comp_map' (f : M →ₗ[R'] N) :
+    (fstHom R' R' N).comp (map' f) = fstHom R' R' M := by
+  unfold map'
+  apply algHom_ext
+  intro x
+  simp only [AlgHom.coe_comp, Function.comp_apply, lift_apply_inr, LinearMap.coe_comp, inrHom_apply,
+    fstHom_apply, fst_inr]
+
 theorem snd_comp_map' (f : M →ₗ[R'] N) :
     (sndHom R' N).comp (map' f).toLinearMap = f.comp (sndHom R' M) := by
   unfold map'
@@ -968,6 +993,19 @@ theorem snd_comp_map' (f : M →ₗ[R'] N) :
     simp only [LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply,
       TrivSqZeroExt.lift_apply_inr, TrivSqZeroExt.inrHom_apply, TrivSqZeroExt.sndHom_apply,
       TrivSqZeroExt.snd_inr]
+
+theorem map'_id : map' (LinearMap.id : M →ₗ[R'] M) = AlgHom.id R' _ := by
+  unfold map'
+  apply algHom_ext
+  intro x
+  simp only [LinearMap.comp_id, lift_apply_inr, inrHom_apply, AlgHom.coe_id, id_eq]
+
+theorem map'_comp_map' (f : M →ₗ[R'] N) (g : N →ₗ[R'] P) :
+    map' (g.comp f) = (map' g).comp (map' f) := by
+  unfold map'
+  apply algHom_ext
+  intro x
+  simp only [lift_apply_inr, LinearMap.coe_comp, Function.comp_apply, inrHom_apply, AlgHom.coe_comp]
 
 end Algebra
 
