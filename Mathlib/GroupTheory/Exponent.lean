@@ -96,12 +96,12 @@ theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := b
   all_goals exact ⟨(op_injective <| · <| op ·), (unop_injective <| . <| unop .)⟩
 
 @[to_additive]
-theorem ExponentExists.isOfFinOrder (h : ExponentExists G) (g : G) : IsOfFinOrder g :=
+theorem ExponentExists.isOfFinOrder (h : ExponentExists G) {g : G} : IsOfFinOrder g :=
   isOfFinOrder_iff_pow_eq_one.mpr <| by peel 2 h; exact this g
 
 @[to_additive]
 theorem ExponentExists.orderOf_pos (h : ExponentExists G) (g : G) : 0 < orderOf g :=
-  h.isOfFinOrder g |>.orderOf_pos
+  h.isOfFinOrder.orderOf_pos
 
 @[to_additive]
 theorem exponent_ne_zero : exponent G ≠ 0 ↔ ExponentExists G := by
