@@ -506,6 +506,8 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   else
     let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
     let thms ← getLocalTheorems funPropDecl (.fvar id) fData.mainArgs fData.args.size
+    trace[Meta.Tactic.fun_prop]
+      s!"candidate local theorems for {←ppExpr (.fvar id)} {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
 
     if let .some r ← tryTheorems funPropDecl e fData thms funProp then
       return r
@@ -530,7 +532,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   let thms ← getDeclTheorems funPropDecl funName fData.mainArgs fData.args.size
 
   trace[Meta.Tactic.fun_prop]
-    s!"candidate theorems for {funName} {thms.map fun thm => thm.thmOrigin.name}"
+    s!"candidate theorems for {funName} {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
 
   if let .some r ← tryTheorems funPropDecl e fData thms funProp then
     return r
@@ -539,7 +541,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   let thms ← getLocalTheorems funPropDecl (.decl funName) fData.mainArgs fData.args.size
   if thms.size ≠ 0 then
     trace[Meta.Tactic.fun_prop]
-      s!"candidate local theorems for {funName} {thms.map fun thm => thm.thmOrigin.name}"
+      s!"candidate local theorems for {funName} {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
   if let .some r ← tryTheorems funPropDecl e fData thms funProp then
     return r
 
