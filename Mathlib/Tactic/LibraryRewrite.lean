@@ -191,7 +191,7 @@ def renderWithDiffs (n : Name) (diffs : AssocList SubExpr.Pos DiffTag) : MetaM H
 def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) : MetaM (Option String) := do
   if loc.loc matches .hypValue .. then return none
   let thm ← mkConstWithFreshMVarLevels rwLemma.name
-  let (mvars, _, eqn) ← forallMetaTelescopeReducing (← inferType thm)
+  let (mvars, _, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
   let target ← loc.rootExpr
   let subExpr ← Core.viewSubexpr loc.pos target
@@ -214,28 +214,33 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) : MetaM (
       s! " (config := \{ occs := .pos [{pos+1}]})"
   return some s! "rw{cfg} [{symm}{thm}]{location}"
 
-def renderResults (results : Array (RewriteLemma × String)) (range : Lsp.Range)
+def renderResults (results : Array (Array (RewriteLemma × String))) (range : Lsp.Range)
     (doc : FileWorker.EditableDocument) : MetaM Html := do
-  let htmls ← results.mapM fun (rwLemma, call) => do
-    let type ← renderWithDiffs rwLemma.name rwLemma.diffs
-    return <li>
-        <p> {type} </p>
-        <p> {Html.ofComponent MakeEditLink
-        (.ofReplaceRange doc.meta range call none)
-        #[ .text s! "{rwLemma.name}"]} </p>
-      </li>
+  let htmls ← results.mapM renderBlock
+  let htmls := htmls.concatMap (#[·, <hr/>])
   return <details «open»={true}>
       <summary className="mv2 pointer">{.text "Library rewrite options"}</summary>
-      {.element "ul" #[] htmls}
+      {.element "div" #[] htmls}
     </details>
+where
+  renderBlock (results : Array (RewriteLemma × String)) : MetaM Html := do
+    let htmls ← results.mapM fun (rwLemma, call) => do
+      let lemmaType ← renderWithDiffs rwLemma.name rwLemma.diffs
+      return <li>
+          <p> {lemmaType} </p>
+          <p> {Html.ofComponent MakeEditLink
+            (.ofReplaceRange doc.meta range call none)
+            #[.text s! "{rwLemma.name}"]} </p>
+        </li>
+    return <p> {.element "ul" #[] htmls} </p>
 
 /-- Return all potenital rewrite lemmata -/
-def getCandidates (e : Expr) : MetaM (Array RewriteLemma) := do
+def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
   let (localLemmas, libraryLemmas) ← getRewriteLemmas
   let localResults ← localLemmas.getMatchWithScore e (unify := true) (config := {})
   let libraryResults ← libraryLemmas.getMatchWithScore e (unify := true) (config := {})
   let allResults := localResults ++ libraryResults
-  return allResults.concatMap Prod.fst
+  return allResults
 
 /-- `Props` for interactive tactics.
     Keeps track of the range in the text document of the piece of syntax to replace. -/
@@ -285,8 +290,12 @@ def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask 
       let rwLemmas ← getCandidates subExpr
       if rwLemmas.isEmpty then
         return <p> No rewrite lemmata found. </p>
-      let results ← filterMapMetaMWithMaxHeartbeats rwLemmas fun rwLemma => OptionT.run do
-        return (rwLemma, ← rewriteCall loc rwLemma)
+      let results ← filterMapMetaMWithMaxHeartbeats rwLemmas fun (rwLemmas, _) => do
+        let result ← rwLemmas.filterMapM fun rwLemma => OptionT.run do
+          return (rwLemma, ← rewriteCall loc rwLemma)
+        if result.isEmpty then
+          return none
+        return result
       if results.isEmpty then
         return <p> No applicable rewrite lemmata found. </p>
       renderResults results props.replaceRange doc
