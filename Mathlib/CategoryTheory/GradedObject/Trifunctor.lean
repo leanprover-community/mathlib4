@@ -393,7 +393,7 @@ by composition of `p` and `q`. -/
 structure BifunctorComp₂₃IndexData :=
   /-- an auxiliary type -/
   I₂₃ : Type*
-  /-- a map `I₃ × I₃ → I₂₃` -/
+  /-- a map `I₂ × I₃ → I₂₃` -/
   p : I₂ × I₃ → I₂₃
   /-- a map `I₁ × I₂₃ → J` -/
   q : I₁ × I₂₃ → J
