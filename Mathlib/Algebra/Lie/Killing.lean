@@ -64,7 +64,7 @@ namespace LieModule
 
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
 the trace Form. See also `killingForm`. -/
-noncomputable def traceForm : L →ₗ[R] L →ₗ[R] R :=
+noncomputable def traceForm : LinearMap.BilinForm R L :=
   ((LinearMap.mul _ _).compl₁₂ (φ).toLinearMap (φ).toLinearMap).compr₂ (trace R M)
 
 lemma traceForm_apply_apply (x y : L) :
@@ -183,7 +183,7 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
 invariant (in the sense that the action of `L` is skew-adjoint wrt `B`) then components of the
 Fitting decomposition of `M` are orthogonal wrt `B`. -/
 lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
-    {B : M →ₗ[R] M →ₗ[R] R} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
+    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ weightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
     B m₀ m₁ = 0 := by
   replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
@@ -341,7 +341,7 @@ variable [Module.Free R L] [Module.Finite R L]
 /-- A finite, free (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
 
 This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
-noncomputable abbrev killingForm : L →ₗ[R] L →ₗ[R] R := LieModule.traceForm R L L
+noncomputable abbrev killingForm : LinearMap.BilinForm R L := LieModule.traceForm R L L
 
 lemma killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting
     (H : LieSubalgebra R L) [LieAlgebra.IsNilpotent R H]
