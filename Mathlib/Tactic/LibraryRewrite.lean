@@ -52,7 +52,7 @@ def updateRefinedDiscrTree (name : Name) (cinfo : ConstantInfo) (d : RefinedDisc
     : MetaM (RefinedDiscrTree RewriteLemma) := do
   if isBadDecl name cinfo (← getEnv) then
     return d
-  let (vars, _, eqn) ← forallMetaTelescopeReducing cinfo.type
+  let (vars, _, eqn) ← forallMetaTelescope cinfo.type
   let some (lhs, rhs) := matchEqn? eqn | return d
   let eqnPos := vars.foldl (init := SubExpr.Pos.root) (fun _ => ·.pushBindingBody)
   let lhsPos := eqnPos.pushAppFn.pushAppArg
