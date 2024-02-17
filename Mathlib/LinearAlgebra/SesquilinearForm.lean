@@ -242,7 +242,7 @@ theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p 
 
 end IsSymm
 
-theorem isSymm_iff_eq_flip {B : M →ₗ[R] M →ₗ[R] R} : B.IsSymm ↔ B = B.flip := by
+theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
   constructor <;> intro h
   · ext
     rw [← h, flip_apply, RingHom.id_apply]

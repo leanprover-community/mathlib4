@@ -142,7 +142,8 @@ structure QuadraticForm (R : Type u) (M : Type v) [CommSemiring R] [AddCommMonoi
     where
   toFun : M → R
   toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = a * a * toFun x
-  exists_companion' : ∃ B : M →ₗ[R] M →ₗ[R] R, ∀ x y, toFun (x + y) = toFun x + toFun y + B x y
+  exists_companion' :
+    ∃ B : LinearMap.BilinForm R M, ∀ x y, toFun (x + y) = toFun x + toFun y + B x y
 #align quadratic_form QuadraticForm
 
 namespace QuadraticForm
@@ -218,7 +219,7 @@ theorem map_smul (a : R) (x : M) : Q (a • x) = a * a * Q x :=
   Q.toFun_smul a x
 #align quadratic_form.map_smul QuadraticForm.map_smul
 
-theorem exists_companion : ∃ B : M →ₗ[R] M →ₗ[R] R, ∀ x y, Q (x + y) = Q x + Q y + B x y :=
+theorem exists_companion : ∃ B : LinearMap.BilinForm R M, ∀ x y, Q (x + y) = Q x + Q y + B x y :=
   Q.exists_companion'
 #align quadratic_form.exists_companion QuadraticForm.exists_companion
 
@@ -334,7 +335,7 @@ def polarBilin : BilinForm R M where
 
 /-- `QuadraticForm.polar` as a bilinear map -/
 @[simps!]
-def polarLinearMap₂ : M →ₗ[R] M →ₗ[R] R :=
+def polarLinearMap₂ : LinearMap.BilinForm R M :=
   LinearMap.mk₂ R (polar Q) (polar_add_left Q) (polar_smul_left Q) (polar_add_right Q)
   (polar_smul_right Q)
 
@@ -664,7 +665,7 @@ section Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- A bilinear map into `R` gives a quadratic form by applying the argument twice. -/
-def _root_.LinearMap.toQuadraticForm (B : M →ₗ[R] M →ₗ[R] R) : QuadraticForm R M where
+def _root_.LinearMap.toQuadraticForm (B : LinearMap.BilinForm R M) : QuadraticForm R M where
   toFun x := B x x
   toFun_smul a x := by
     simp only [SMulHomClass.map_smul, LinearMap.smul_apply, smul_eq_mul, mul_assoc]
