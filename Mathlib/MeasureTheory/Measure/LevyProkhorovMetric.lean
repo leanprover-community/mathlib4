@@ -248,51 +248,13 @@ variable [PseudoMetricSpace Ω] [OpensMeasurableSpace Ω]
 
 variable {Ω}
 
-/-
-#check lintegral_eq_lintegral_meas_le
-#check set_integral_eq_of_subset_of_ae_diff_eq_zero
-
--- TODO: Add in `MeasureTheory.Integral.SetIntegral`?
-/-- If a function vanishes almost everywhere on `t \ s` with `s ⊆ t`, then its (Lebesgue) integrals
-on `s` and `t` coincide if `t` is null-measurable. -/
-theorem set_lintegral_eq_of_subset_of_ae_diff_eq_zero {α : Type*} [MeasurableSpace α] (f : α → ℝ≥0∞)
-    (μ : Measure α) (s t : Set α) (ht : NullMeasurableSet t μ) (hts : s ⊆ t)
-    (h't : ∀ᵐ x ∂μ, x ∈ t \ s → f x = 0) :
-    ∫⁻ x in t, f x ∂μ = ∫⁻ x in s, f x ∂μ := by
-  sorry
-
--- TODO: Add to layercake
-lemma lintegral_eq_lintegral_Icc_meas_le {α : Type*} [MeasurableSpace α] {f : α → ℝ}
-    (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
-    {M : ℝ} (f_bdd : f ≤ᵐ[μ] (fun _ ↦ M)) (f_mble : AEMeasurable f μ) :
-    (∫⁻ ω, ENNReal.ofReal (f ω) ∂μ) = ∫⁻ t in Ioc 0 M, μ {a : α | t ≤ f a} := by
-  rw [lintegral_eq_lintegral_meas_le μ f_nn f_mble]
-  rw [set_lintegral_eq_of_subset_of_ae_diff_eq_zero _ _ _ _
-      measurableSet_Ioi.nullMeasurableSet Ioc_subset_Ioi_self ?_]
-  apply eventually_of_forall
-  intro t ht
-  have htM : M < t := by simp_all only [mem_diff, mem_Ioi, mem_Ioc, not_and, not_le]
-  have obs : μ {a | M < f a} = 0 := by
-    rw [measure_zero_iff_ae_nmem]
-    filter_upwards [f_bdd] with a ha
-    exact not_lt.mpr ha
-  exact measure_mono_null (fun a ha ↦ lt_of_lt_of_le htM ha) obs
-
-lemma BoundedContinuousFunction.lintegral_eq_lintegral_meas_le {α : Type*} [MeasurableSpace α]
-    [TopologicalSpace α] [OpensMeasurableSpace α]
-    (f : α →ᵇ ℝ) (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f) :
-    (∫⁻ ω, ENNReal.ofReal (f ω) ∂μ) = ∫⁻ t in Ioc 0 ‖f‖, μ {a : α | t ≤ f a} := by
-  rw [@lintegral_eq_lintegral_Icc_meas_le _ _ _ μ f_nn ‖f‖ ?_ f.continuous.measurable.aemeasurable]
-  exact eventually_of_forall (fun x ↦ BoundedContinuousFunction.apply_le_norm f x)
- -/
-
 /-- A version of the layer cake formula for bounded continuous functions which have finite integral:
 ∫ f dμ = ∫ t in (0, ‖f‖], μ {x | f(x) ≥ t} dt. -/
 lemma BoundedContinuousFunction.integral_eq_integral_meas_le_of_hasFiniteIntegral
     {α : Type*} [MeasurableSpace α] [TopologicalSpace α] [OpensMeasurableSpace α]
     (f : α →ᵇ ℝ) (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f) (hf : HasFiniteIntegral f μ) :
     (∫ ω, f ω ∂μ) = ∫ t in Ioc 0 ‖f‖, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
-  rw [integral_eq_integral_Icc_meas_le μ f_nn (M := ‖f‖) ?_ ?_]
+  rw [integral_eq_integral_Ioc_meas_le μ f_nn (M := ‖f‖) ?_ ?_]
   · exact eventually_of_forall (fun x ↦ BoundedContinuousFunction.apply_le_norm f x)
   · refine ⟨f.continuous.measurable.aestronglyMeasurable, hf⟩
 
