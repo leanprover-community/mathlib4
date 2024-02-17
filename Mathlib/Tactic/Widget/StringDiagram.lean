@@ -48,11 +48,9 @@ inductive StructuralAtom : Type
   | leftUnitorInv (f : Mor₁) : StructuralAtom
   | rightUnitor (f : Mor₁) : StructuralAtom
   | rightUnitorInv (f : Mor₁) : StructuralAtom
-  | id (f : Mor₁) : StructuralAtom
   deriving Inhabited
 
 def StructuralAtom.e : StructuralAtom → MetaM Expr
-  | .id f => do mkAppM ``CategoryStruct.id #[← f.e]
   | .associator f g h => do
     mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.associator #[← f.e, ← g.e, ← h.e]]
   | .associatorInv f g h => do
@@ -64,7 +62,6 @@ def StructuralAtom.e : StructuralAtom → MetaM Expr
 
 def structuralAtom? (e : Expr) : Option StructuralAtom := do
   match e.getAppFnArgs with
-  | (``CategoryStruct.id, #[_, _, f]) => return .id (toMor₁ f)
   | (``Iso.hom, #[_, _, _, _, η]) =>
     match η.getAppFnArgs with
     | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) => return .associator (toMor₁ f) (toMor₁ g) (toMor₁ h)
@@ -253,11 +250,21 @@ def WhiskerLeftExpr.core : WhiskerLeftExpr → Core
   | WhiskerLeftExpr.of η => η.core
   | WhiskerLeftExpr.whisker _ η => η.core
 
+def WhiskerRightExpr.structural? (η : WhiskerRightExpr) : Option WhiskerRightExpr :=
+  match η.core with
+  | .of _ => none
+  | .ofStructural _ => some η
+
+def WhiskerLeftExpr.structural? (η : WhiskerLeftExpr) : Option WhiskerLeftExpr :=
+  match η.core with
+  | .of _ => none
+  | .ofStructural _ => some η
+
 def NormalExpr.structural? : NormalExpr → Option NormalExpr
   | NormalExpr.id f => some (.id f)
   | NormalExpr.cons η θ =>
-    match η.core, θ.structural? with
-    | .ofStructural _, some _ => some (.cons η θ)
+    match η.structural?, θ.structural? with
+    | some _, some _ => some (.cons η θ)
     | _, _ => none
 
 /-- Interpret an `Expr` term as a `Core` term. -/
@@ -272,6 +279,7 @@ def NormalExpr.of (η : Expr) : MetaM NormalExpr := do
 /-- Evaluate the expression of a 2-morphism into a normalized form. -/
 partial def eval (e : Expr) : MetaM NormalExpr := do
   match e.getAppFnArgs with
+  | (``CategoryStruct.id, #[_, _, f]) => return NormalExpr.id (toMor₁ f)
   | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) => return evalComp (← eval η) (← eval θ)
   | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) => evalWhiskerLeftExpr (toMor₁ f) (← eval η)
   | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) => evalWhiskerRightExpr (← eval η) (toMor₁ h)
@@ -280,9 +288,9 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
 /-- Remove structural 2-morphisms. -/
 def removeStructural : List WhiskerLeftExpr → List WhiskerLeftExpr
   | [] => []
-  | η :: ηs => match η.core with
-    | .ofStructural _ => removeStructural ηs
-    | _ => η :: removeStructural ηs
+  | η :: ηs => match η.structural? with
+    | some _ => removeStructural ηs
+    | none => η :: removeStructural ηs
 
 /-- Return `[f₁, ..., fₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
 def leftMor₁List (η : WhiskerLeftExpr) : List Expr :=
