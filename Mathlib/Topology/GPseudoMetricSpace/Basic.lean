@@ -3,11 +3,10 @@ Copyright (c) 2024 Edward van de Meent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward van de Meent
 -/
-import Mathlib.Topology.Algebra.Order.Compact
-import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.Topology.Bornology.Constructions
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Data.Nat.Interval
+import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.GPseudoMetricSpace.IsOrderedAddCommMonoid
-import Mathlib.Data.Set.Pointwise.Interval
 /-!
 # General Pseudo-Metric Spaces
 
