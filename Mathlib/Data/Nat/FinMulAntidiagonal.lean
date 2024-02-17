@@ -8,6 +8,20 @@ import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Logic.Embedding.Basic
 open Nat BigOperators Finset
 
+/-!
+# Sets of tuples with a fixed product
+
+This file defines the finite set of `d`-tuples of natural numbers with a fixed product `n` as
+`Nat.finMulAntidiagonal`.
+
+## Main Results
+* There are `d^(ω n)` ways to write `n` as a product of `d` natural numbers, when `n` is squarefree
+(`card_finMulAntidiagonal_of_squarefree`)
+* There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
+(`card_pair_lcm_eq`)
+
+-/
+
 namespace Nat
 
 open Finset Nat.ArithmeticFunction
@@ -299,7 +313,7 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) :
   · apply Nat.gcd_dvd_left
   · apply Nat.gcd_dvd_right
 
-theorem card_lcm_eq {n : ℕ} (hn : Squarefree n) :
+theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
     Finset.card ((n.divisors ×ˢ n.divisors).filter fun ⟨x, y⟩ => x.lcm y = n) =
       3 ^ ω n := by
   rw [← card_finMulAntidiagonal_of_squarefree hn, eq_comm]
