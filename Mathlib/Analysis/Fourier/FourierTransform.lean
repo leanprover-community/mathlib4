@@ -5,7 +5,9 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+import Mathlib.MeasureTheory.Constructions.Prod.Integral
 
 #align_import analysis.fourier.fourier_transform from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -56,6 +58,7 @@ open MeasureTheory Filter
 open scoped Topology
 
 -- To avoid messing around with multiplicative vs. additive characters, we make a notation.
+/-- Notation for multiplicative character applied in an additive setting. -/
 scoped[FourierTransform] notation e "[" x "]" => (e (Multiplicative.ofAdd x) : ℂ)
 
 open FourierTransform
@@ -66,7 +69,9 @@ open FourierTransform
 namespace VectorFourier
 
 variable {𝕜 : Type*} [CommRing 𝕜] {V : Type*} [AddCommGroup V] [Module 𝕜 V] [MeasurableSpace V]
-  {W : Type*} [AddCommGroup W] [Module 𝕜 W] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {W : Type*} [AddCommGroup W] [Module 𝕜 W]
+  {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
+  [NormedAddCommGroup G] [NormedSpace ℂ G]
 
 section Defs
 
@@ -173,6 +178,55 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
 #align vector_fourier.fourier_integral_continuous VectorFourier.fourierIntegral_continuous
 
 end Continuous
+
+section Fubini
+
+variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
+  [TopologicalSpace W] [MeasurableSpace W] [BorelSpace W]
+  {e : Multiplicative 𝕜 →* 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
+  {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopology V]
+
+variable [CompleteSpace E] [CompleteSpace F]
+
+/-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
+Version where the multiplication is replaced by a general bilinear form `M`. -/
+theorem integral_bilin_fourierIntegral_eq_flip
+    {f : V → E} {g : W → F} {M : E →L[ℂ] F →L[ℂ] G} (he : Continuous e)
+    (hL : Continuous fun p : V × W => L p.1 p.2) (hf : Integrable f μ) (hg : Integrable g ν) :
+    ∫ ξ, M (fourierIntegral e μ L f ξ) (g ξ) ∂ν =
+      ∫ x, M (f x) (fourierIntegral e ν L.flip g x) ∂μ := by
+  by_cases hG : CompleteSpace G; swap; · simp [integral, hG]
+  calc
+  ∫ ξ, M (fourierIntegral e μ L f ξ) (g ξ) ∂ν
+    = ∫ ξ, M.flip (g ξ) (∫ x, e[-L x ξ] • f x ∂μ) ∂ν := rfl
+  _ = ∫ ξ, (∫ x, M.flip (g ξ) (e[-L x ξ] • f x) ∂μ) ∂ν := by
+    congr with ξ
+    apply (ContinuousLinearMap.integral_comp_comm _ _).symm
+    exact (fourier_integral_convergent_iff he hL _).1 hf
+  _ = ∫ x, (∫ ξ, M.flip (g ξ) (e[-L x ξ] • f x) ∂ν) ∂μ := by
+    rw [integral_integral_swap]
+    have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) :=
+      (hg.norm.prod_mul hf.norm).const_mul _
+    apply this.mono
+    · have A : AEStronglyMeasurable (fun (p : W × V) ↦ e[-L p.2 p.1] • f p.2) (ν.prod μ) := by
+        apply (Continuous.aestronglyMeasurable ?_).smul hf.1.snd
+        refine (continuous_induced_rng.mp he).comp (continuous_ofAdd.comp ?_)
+        exact (hL.comp continuous_swap).neg
+      exact M.flip.continuous₂.comp_aestronglyMeasurable (hg.1.fst.prod_mk A)
+    · apply eventually_of_forall
+      rintro ⟨ξ, x⟩
+      simp only [ofAdd_neg, map_inv, coe_inv_unitSphere, SMulHomClass.map_smul,
+        ContinuousLinearMap.flip_apply, Function.uncurry_apply_pair, norm_smul, norm_inv,
+        norm_eq_of_mem_sphere, inv_one, one_mul, norm_mul, norm_norm]
+      exact (M.le_opNorm₂ (f x) (g ξ)).trans (le_of_eq (by ring))
+  _ = ∫ x, (∫ ξ, M (f x) (e[-L.flip ξ x] • g ξ) ∂ν) ∂μ := by simp
+  _ = ∫ x, M (f x) (∫ ξ, e[-L.flip ξ x] • g ξ ∂ν) ∂μ := by
+    congr with x
+    apply ContinuousLinearMap.integral_comp_comm
+    apply (fourier_integral_convergent_iff he _ _).1 hg
+    exact hL.comp continuous_swap
+
+end Fubini
 
 end VectorFourier
 
