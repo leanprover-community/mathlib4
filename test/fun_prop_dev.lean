@@ -335,3 +335,14 @@ example (y) : Lin (fun x : α => bar x y) := by fun_prop
 example : Lin (fun (f : α ->> α) => (f : α → α)) := by fun_prop
 example : Con (fun (f : α ->> α) => (f : α → α)) := by fun_prop
 example : Lin (fun (f : α -o α) => (f : α → α)) := by fun_prop
+
+
+def iterate (n : Nat) (f : α → α) (x : α) : α :=
+  match n with
+  | 0 => x
+  | n+1 => iterate n f (f x)
+
+theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) := by
+  induction n <;> (simp[iterate]; fun_prop)
+
+

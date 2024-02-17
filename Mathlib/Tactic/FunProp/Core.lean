@@ -404,6 +404,8 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
   let mut thms : Array FunctionTheorem := #[]
   let lctx ← getLCtx
   for var in lctx do
+    if (var.kind = Lean.LocalDeclKind.auxDecl) then
+      continue
     let type ← instantiateMVars var.type
     let thm? : Option FunctionTheorem ←
       forallTelescopeReducing type fun _ b => do
@@ -530,6 +532,14 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   trace[Meta.Tactic.fun_prop]
     s!"candidate theorems for {funName} {thms.map fun thm => thm.thmOrigin.name}"
 
+  if let .some r ← tryTheorems funPropDecl e fData thms funProp then
+    return r
+
+  -- Try local theorems - this is useful for recursive functions
+  let thms ← getLocalTheorems funPropDecl (.decl funName) fData.mainArgs fData.args.size
+  if thms.size ≠ 0 then
+    trace[Meta.Tactic.fun_prop]
+      s!"candidate local theorems for {funName} {thms.map fun thm => thm.thmOrigin.name}"
   if let .some r ← tryTheorems funPropDecl e fData thms funProp then
     return r
 
