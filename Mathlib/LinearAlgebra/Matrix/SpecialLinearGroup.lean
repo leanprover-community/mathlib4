@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Wen Yang, Oliver Nash
+Authors: Anne Baanen, Wen Yang
 -/
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Adjugate
@@ -284,69 +284,45 @@ theorem scalar_eq_coe_self_center
 the scalars are the `n`-th roots of unity.-/
 theorem mem_center_iff {A : SpecialLinearGroup n R} :
     A ∈ center (SpecialLinearGroup n R) ↔ ∃ (r : R), r ^ (Fintype.card n) = 1 ∧ scalar n r = A := by
-  wlog hn : Subsingleton n
-  · constructor
-    have hn' : Nonempty n := not_isEmpty_iff.mp fun a ↦ hn IsEmpty.instSubsingleton
-    let i : n := Classical.arbitrary n
-    · intro hA
-      have hA1 := scalar_eq_self_of_mem_center hA i
-      use A i i
-      refine (and_iff_left hA1).mpr ?_
-      have hA2 : det A.val = (1 : R) := det_coe A
-      rw [← hA1] at hA2
-      clear hA1
-      aesop
-    · intro ⟨r, _, hr⟩
-      rw [Subgroup.mem_center_iff]
-      intro g
-      rw [ext_iff, coe_mul, coe_mul, ← hr]
-      simp [mul_comm]
-  · exact ⟨by aesop, by simp [Subsingleton.elim A 1]⟩
+  rcases isEmpty_or_nonempty n with hn | ⟨⟨i⟩⟩; · exact ⟨by aesop, by simp [Subsingleton.elim A 1]⟩
+  refine ⟨fun h ↦  ⟨A i i, ?_, ?_⟩, fun ⟨r, _, hr⟩ ↦ mem_center_iff.mpr fun B ↦ ?_⟩
+  · have : det ((scalar n) (A i i)) = 1 := (scalar_eq_self_of_mem_center h i).symm ▸ A.property
+    simpa using this
+  · exact scalar_eq_self_of_mem_center h i
+  · suffices ↑ₘ(B * A) = ↑ₘ(A * B) from Subtype.val_injective this
+    simpa only [coe_mul, ← hr] using (scalar_commute (n := n) r (Commute.all r) B).symm
 
-/-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
-in which the scalars are the `n`-th roots of `1`.-/
-noncomputable def center_iso_RootsOfUnity :
-    Subgroup.center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R := by
-  by_cases hn : IsEmpty n
-  · have h (A : Subgroup.center (SpecialLinearGroup n R)) : A.val = 1 := by
-      rw [@ext_iff, @IsEmpty.forall_iff n, ← Bool.coe_true]
-    replace hn' : Nat.toPNat' 0 = 1 := rfl
-    rw [Fintype.card_eq_zero, hn']
-    exact {
-      toFun := fun _ => 1
-      invFun := fun _ => 1
-      left_inv := fun A => SetCoe.ext (h A).symm
-      right_inv := fun x => by
-        refine SetCoe.ext ?_
-        simpa using (mem_rootsOfUnity 1 x.val |>.mp x.property).symm
-      map_mul' := by simp
-    }
-  · haveI : Nonempty n := not_isEmpty_iff.mp hn
-    replace hn : 0 < Fintype.card n := Fintype.card_pos
-    have i := Classical.arbitrary n
-    exact {
-      toFun := fun A => rootsOfUnity.mkOfPowEq (A.val i i) <| by
-        obtain ⟨r, hr, hr2⟩ := mem_center_iff.mp A.property
-        have : A.val i i = r := by rw [← hr2]; simp
-        simp [this, hr]
-      invFun := fun a => ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
-        rw [Subgroup.mem_center_iff]; aesop⟩
-      left_inv := fun A => by
-        refine SetCoe.ext $ SetCoe.ext ?_
-        obtain ⟨_, _, hr⟩ := mem_center_iff.mp A.property
-        simp only [← hr, instHSMul, SMul.smul, rootsOfUnity.val_mkOfPowEq_coe,
-          scalar_apply, diagonal]
-        aesop
-      right_inv := fun a => by refine SetCoe.ext $ Units.eq_iff.mp ?_; simp [instHSMul, SMul.smul]
-      map_mul' := fun A B => by
-        simp only
-        have hAB : (A * B).val.val = A.val.val * B.val.val := by simp
-        conv_lhs => arg 1; rw [hAB]
-        refine SetCoe.ext <| Units.eq_iff.mp ?_
-        obtain ⟨_, _, hA⟩ := mem_center_iff.mp A.property
-        obtain ⟨_, _, hB⟩ := mem_center_iff.mp B.property
-        simp [@mul_apply, ← hA, ← hB, scalar_apply, diagonal]
-    }
+/-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
+def center_equiv_rootsOfUnity' (i : n) :
+    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R where
+  toFun A := rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
+    have : Nonempty n := ⟨i⟩
+    obtain ⟨r, hr, hr'⟩ := mem_center_iff.mp A.property
+    replace hr' : A.val i i = r := by simp [← hr']
+    simp [hr, hr']
+  invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
+    Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
+  left_inv A := by
+    -- Your proof here
+    sorry
+  right_inv a := by
+    obtain ⟨⟨a, _⟩, ha⟩ := a
+    refine SetCoe.ext <| Units.eq_iff.mp <| by simp
+  map_mul' A B := by
+    -- Your proof here
+    sorry
+
+open Classical in
+/-- An equivalence of groups, from the center of the special linear group to the roots of unity.
+
+See also `center_equiv_rootsOfUnity'`. -/
+noncomputable def center_equiv_rootsOfUnity :
+    center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R :=
+  (isEmpty_or_nonempty n).by_cases
+  (fun hn ↦ by
+    rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, rootsOfUnity_one]
+    exact MulEquiv.mulEquivOfUnique)
+  (fun hn ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
 end center
 
