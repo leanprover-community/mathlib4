@@ -18,8 +18,13 @@ We show that the category of types has all (co)limits, by providing the usual co
 We also give a characterisation of filtered colimits in `Type`, via
 `colimit.ι F i xi = colimit.ι F j xj ↔ ∃ k (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj`.
 
-Finally, we prove the category of types has categorical images,
-and that these agree with the range of a function.
+Next, we prove the category of types has categorical images, and that these agree with the range of
+a function.
+
+Finally, we give the natural isomorphism between cones on `F` with cone point `X` and the type
+`lim Hom(X, F·)`, and similarly the natural isomorphism between cocones on `F` with cocone point `X`
+and the type `lim Hom(F·, X)`.
+
 -/
 
 set_option autoImplicit true
