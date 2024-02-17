@@ -48,7 +48,8 @@ with additional properties:
 
 noncomputable section
 
-open Classical Topology Filter TopologicalSpace Set Metric Function
+open scoped Topology Uniformity
+open Filter TopologicalSpace Set Metric Function
 
 variable {α : Type*} {β : Type*}
 
@@ -75,9 +76,11 @@ class UpgradedPolishSpace (α : Type*) extends MetricSpace α, SecondCountableTo
   CompleteSpace α
 #align upgraded_polish_space UpgradedPolishSpace
 
-instance (priority := 100) polishSpace_of_complete_second_countable [m : MetricSpace α]
-    [SecondCountableTopology α] [h' : CompleteSpace α] : PolishSpace α where
-  complete := ⟨m, rfl, h'⟩
+instance (priority := 100) polishSpace_of_complete_second_countable [UniformSpace α]
+    [SeparableSpace α] [CompleteSpace α] [(𝓤 α).IsCountablyGenerated] [T0Space α] :
+    PolishSpace α where
+  toSecondCountableTopology := UniformSpace.secondCountable_of_separable α
+  complete := ⟨UniformSpace.metricSpace α, rfl, ‹_›⟩
 #align polish_space_of_complete_second_countable polishSpace_of_complete_second_countable
 
 /-- Construct on a Polish space a metric (compatible with the topology) which is complete. -/
@@ -101,18 +104,16 @@ def upgradePolishSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
 
 namespace PolishSpace
 
-instance (priority := 100) t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] :
-    T2Space α := by
+instance (priority := 100) t3Space (α : Type*) [TopologicalSpace α] [PolishSpace α] :
+    T3Space α := by
   letI := upgradePolishSpace α
   infer_instance
-#align polish_space.t2_space PolishSpace.t2Space
+#align polish_space.t2_space PolishSpace.t3Space
 
 /-- A countable product of Polish spaces is Polish. -/
 instance pi_countable {ι : Type*} [Countable ι] {E : ι → Type*} [∀ i, TopologicalSpace (E i)]
     [∀ i, PolishSpace (E i)] : PolishSpace (∀ i, E i) := by
-  cases nonempty_encodable ι
   letI := fun i => upgradePolishSpace (E i)
-  letI : MetricSpace (∀ i, E i) := PiCountable.metricSpace
   infer_instance
 #align polish_space.pi_countable PolishSpace.pi_countable
 
@@ -137,7 +138,6 @@ instance sum [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [Polis
     PolishSpace (α ⊕ β) :=
   letI := upgradePolishSpace α
   letI := upgradePolishSpace β
-  letI : MetricSpace (α ⊕ β) := metricSpaceSum
   inferInstance
 #align polish_space.sum PolishSpace.sum
 
@@ -188,11 +188,44 @@ instance instPolishSpaceUniv [TopologicalSpace α] [PolishSpace α] :
   isClosed_univ.polishSpace
 #align measure_theory.set.univ.polish_space PolishSpace.instPolishSpaceUniv
 
-/-- A sequence of type synonyms of a given type `α`, useful in the proof of
-`exists_polishSpace_forall_le` to endow each copy with a different topology. -/
-@[nolint unusedArguments]
-def AuxCopy (α : Type*) {ι : Type*} (_i : ι) : Type _ := α
-#align polish_space.aux_copy PolishSpace.AuxCopy
+protected theorem _root_.CompletePseudometrizable.iInf {ι : Sort*} [Countable ι]
+    {t : ι → TopologicalSpace α} (ht₀ : ∃ i₀, @T0Space α (t i₀) ∧ ∀ i, t i ≤ t i₀)
+    (ht : ∀ i, ∃ u : UniformSpace α, CompleteSpace α ∧ 𝓤[u].IsCountablyGenerated ∧
+      u.toTopologicalSpace = t i) :
+    ∃ u : UniformSpace α, CompleteSpace α ∧
+      𝓤[u].IsCountablyGenerated ∧ u.toTopologicalSpace = ⨅ i, t i := by
+  choose u hcomp hcount hut using ht
+  obtain rfl : t = fun i ↦ (u i).toTopologicalSpace := (funext hut).symm
+  refine ⟨⨅ i, u i, ?_, ?_, UniformSpace.toTopologicalSpace_iInf⟩
+  · refine @CompleteSpace.mk α ?_ fun {f} hf ↦ ?_
+    rcases ht₀ with ⟨i₀, hsep₀, hi₀⟩
+    have hf' : ∀ i, Cauchy (uniformSpace := u i) f := fun i ↦ hf.mono_uniformSpace (iInf_le _ _)
+    choose x hfx using fun i ↦ @CompleteSpace.complete _ (u i) (hcomp i) f (hf' i)
+    have hx : ∀ i, x i = x i₀ := fun i ↦ by
+      let _ := u i₀
+      have := hf.1
+      exact tendsto_nhds_unique ((hfx i).trans <| nhds_mono (hi₀ i)) (hfx i₀)
+    use x i₀
+    rw [UniformSpace.toTopologicalSpace_iInf, nhds_iInf]
+    exact le_iInf fun i ↦ (hx i).symm ▸ hfx i
+  · rw [iInf_uniformity]
+    infer_instance
+
+protected theorem iInf {ι : Sort*} [Countable ι] {t : ι → TopologicalSpace α}
+    (ht₀ : ∃ i₀, ∀ i, t i ≤ t i₀) (ht : ∀ i, @PolishSpace α (t i)) : @PolishSpace α (⨅ i, t i) := by
+  rcases ht₀ with ⟨i₀, hi₀⟩
+  rcases CompletePseudometrizable.iInf ⟨i₀, by letI := t i₀; haveI := ht i₀; infer_instance, hi₀⟩
+    fun i ↦ by
+      letI := t i; haveI := ht i; letI := upgradePolishSpace α
+      exact ⟨inferInstance, inferInstance, inferInstance, rfl⟩
+    with ⟨u, hcomp, hcount, htop⟩
+  rw [← htop]
+  have : @SecondCountableTopology α u.toTopologicalSpace :=
+    htop.symm ▸ secondCountableTopology_iInf fun i ↦ letI := t i; (ht i).toSecondCountableTopology
+  have : @T1Space α u.toTopologicalSpace :=
+    htop.symm ▸ t1Space_antitone (iInf_le _ i₀) (by letI := t i₀; haveI := ht i₀; infer_instance)
+  infer_instance
+#noalign polish_space.aux_copy
 
 /-- Given a Polish space, and countably many finer Polish topologies, there exists another Polish
 topology which is finer than all of them.
@@ -201,49 +234,9 @@ Porting note: TODO: the topology `t'` is `t ⊓ ⨅ i, m i`. -/
 theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : TopologicalSpace α]
     [p : PolishSpace α] (m : ι → TopologicalSpace α) (hm : ∀ n, m n ≤ t)
     (h'm : ∀ n, @PolishSpace α (m n)) :
-    ∃ t' : TopologicalSpace α, (∀ n, t' ≤ m n) ∧ t' ≤ t ∧ @PolishSpace α t' := by
-  rcases isEmpty_or_nonempty ι with (hι | hι)
-  · exact ⟨t, fun i => (IsEmpty.elim hι i : _), le_rfl, p⟩
-  inhabit ι
-  /- Consider the product of infinitely many copies of `α`, each endowed with the topology `m n`.
-    This is a Polish space, as a product of Polish spaces. Pulling back this topology under the
-    diagonal embedding of `α`, one gets a Polish topology which is finer than all the `m n`. -/
-  letI : ∀ n : ι, TopologicalSpace (AuxCopy α n) := fun n => m n
-  haveI : ∀ n : ι, PolishSpace (AuxCopy α n) := fun n => h'm n
-  letI T : TopologicalSpace (∀ n : ι, AuxCopy α n) := inferInstance
-  let f : α → ∀ n : ι, AuxCopy α n := fun x _ => x
-  -- show that the induced topology is finer than all the `m n`.
-  have T_le_m : ∀ n, T.induced f ≤ m n := fun n ↦ by
-    rw [induced_to_pi]
-    exact iInf_le_of_le n (@induced_id _ (m n)).le
-  refine' ⟨T.induced f, fun n => T_le_m n, (T_le_m default).trans (hm default), _⟩
-  -- show that the new topology is Polish, as the pullback of a Polish topology under a closed
-  -- embedding.
-  have A : range f = ⋂ n, { x | x n = x default } := by
-    ext x
-    constructor
-    · rintro ⟨y, rfl⟩
-      exact mem_iInter.2 fun n => by simp only [mem_setOf_eq]
-    · refine fun hx ↦ ⟨x default, ?_⟩
-      ext1 n
-      symm
-      exact mem_iInter.1 hx n
-  have f_closed : IsClosed (range f) := by
-    rw [A]
-    refine isClosed_iInter fun n => ?_
-    have C : ∀ i : ι, Continuous fun x : ∀ n, AuxCopy α n => (id (x i) : α) := fun i ↦
-      have : Continuous (show AuxCopy α i → α from id) := continuous_id_of_le (hm i)
-      this.comp (continuous_apply i)
-    apply isClosed_eq (C n) (C default)
-  have K : @_root_.Embedding _ _ (T.induced f) T f := by
-    refine Function.Injective.embedding_induced fun x y hxy ↦ ?_
-    have : f x default = f y default := by rw [hxy]
-    exact this
-  have L : @ClosedEmbedding _ _ (T.induced f) T f := by
-    refine @ClosedEmbedding.mk _ _ (T.induced f) T f ?_ ?_
-    · exact K
-    · exact f_closed
-  exact @ClosedEmbedding.polishSpace _ _ (T.induced f) T (by infer_instance) _ L
+    ∃ t' : TopologicalSpace α, (∀ n, t' ≤ m n) ∧ t' ≤ t ∧ @PolishSpace α t' :=
+  ⟨⨅ i : Option ι, i.elim t m, fun i ↦ iInf_le _ (some i), iInf_le _ none,
+    .iInf ⟨none, Option.forall.2 ⟨le_rfl, hm⟩⟩ <| Option.forall.2 ⟨p, h'm⟩⟩
 #align polish_space.exists_polish_space_forall_le PolishSpace.exists_polishSpace_forall_le
 
 end PolishSpace
@@ -394,6 +387,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   /- Both sets `s` and `sᶜ` admit a Polish topology. So does their disjoint union `s ⊕ sᶜ`.
     Pulling back this topology by the canonical bijection with `α` gives the desired Polish
     topology in which `s` is both open and closed. -/
+  classical
   haveI : PolishSpace s := hs.polishSpace
   let t : Set α := sᶜ
   haveI : PolishSpace t := hs.isOpen_compl.polishSpace
