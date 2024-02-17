@@ -87,6 +87,7 @@ theorem _root_.Basis.prod_parallelepiped (v : Basis ι₁ ℝ E) (w : Basis ι�
   · simp [ht2, Prod.fst_sum]
   · simp [hs2, Prod.snd_sum]
 
+@[deprecated]
 theorem _root_.Basis.prod_addHaar (v : Basis ι₁ ℝ E) (w : Basis ι₂ ℝ F) :
     (v.prod w).addHaar = MeasureTheory.Measure.prod v.addHaar w.addHaar := by
   rw [(v.prod w).addHaar_eq_iff, Basis.prod_parallelepiped]
