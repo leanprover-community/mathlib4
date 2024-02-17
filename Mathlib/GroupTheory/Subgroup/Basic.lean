@@ -756,9 +756,8 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align subgroup.coe_zpow Subgroup.coe_zpow
 #align add_subgroup.coe_zsmul AddSubgroup.coe_zsmul
 
-@[to_additive]
-theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 :=
-  show (⟨g, h⟩ : H) = (⟨1, H.one_mem⟩ : H) ↔ g = 1 by simp
+@[to_additive] -- This can be proved by `Submonoid.mk_eq_one`
+theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := by simp
 #align subgroup.mk_eq_one_iff Subgroup.mk_eq_one
 #align add_subgroup.mk_eq_zero_iff AddSubgroup.mk_eq_zero
 
