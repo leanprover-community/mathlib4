@@ -248,10 +248,10 @@ theorem wellFounded_depth : WellFounded ((· < ·) on depth.{u} (η := η)) :=
 
 end PreWFTree
 
-/-- `WFTree.{u} η` is the type of well-founded trees with edges labelled by `η`
-  and children as `u`-small sets. -/
-def WFTree (η : Type v) : Type (max (u + 1) v) :=
-  Quotient (PreWFTree.setoid.{u} (η := η)) -- TODO: avoid quotient defeq abuse?
+/-- `WFTree.{u} η` is the type of well-founded trees with children labelled by `η` and each parent
+  restricted to having a `u`-small set of children. -/
+structure WFTree (η : Type v) : Type (max (u + 1) v) where
+  private ofQuotient :: (toQuotient : Quotient (PreWFTree.setoid.{u} (η := η)))
 
 namespace WFTree
 
@@ -260,9 +260,9 @@ variable {η : Type v}
 #check Prod.map
 
 noncomputable def children (t : WFTree.{u} η) : Set (η × WFTree.{u} η) :=
-  Quotient.liftOn t (fun t ↦ {(e, c) | ∃ c', (e, c') ∈ t.children ∧ ⟦c'⟧ = c}) fun x y h ↦ by
+  t.toQuotient.lift (fun t ↦ {(e, c) | ∃ c', (e, c') ∈ t.children ∧ ofQuotient ⟦c'⟧ = c}) fun x y h ↦ by
     ext ez
-    rcases ez with ⟨e, z⟩
+    rcases ez with ⟨e, ⟨z⟩⟩
     induction' z using Quotient.ind with z
     simpa [Set.mem_setOf_eq, Quotient.eq] using PreWFTree.equiv_iff.mp h e z
 
@@ -276,8 +276,9 @@ lemma _root_.exists_eq_right_left {α : Sort*} {p q : α → Prop} {a' : α} :
   --   use a', hp, rfl, hq
 
 instance small_children (t : WFTree.{u} η) : Small.{u} t.children := by
+  rcases t with ⟨t⟩
   induction' t using Quotient.ind with t
-  convert small_image (fun (e, c) ↦ (e, (⟦c⟧ : WFTree.{u} η))) t.children
+  convert small_image (fun (e, c) ↦ (e, ofQuotient ⟦c⟧)) t.children
   ext ec
   rcases ec with ⟨e, c⟩
   simp_rw [children, Quotient.lift_mk, Set.mem_setOf_eq, Set.mem_image, Prod.exists, Prod.mk.injEq]
@@ -285,7 +286,7 @@ instance small_children (t : WFTree.{u} η) : Small.{u} t.children := by
   simp
 
 noncomputable def ofChildren (s : Set (η × WFTree.{u} η)) : WFTree.{u} η :=
-  ⟦PreWFTree.ofChildren ((fun (e, c) ↦ (e, Quotient.out c)) '' s)⟧
+  ofQuotient ⟦PreWFTree.ofChildren ((fun (e, c) ↦ (e, c.toQuotient.out)) '' s)⟧
 
 @[simp]
 lemma children_ofChildren (s : Set (η × WFTree.{u} η)) [Small.{u} s] :
@@ -297,13 +298,14 @@ lemma children_ofChildren (s : Set (η × WFTree.{u} η)) [Small.{u} s] :
 
 @[ext]
 lemma ext {t₁ t₂ : WFTree.{u} η} (h : t₁.children = t₂.children) : t₁ = t₂ := by
+  rcases t₁ with ⟨t₁⟩
+  rcases t₂ with ⟨t₂⟩
   induction' t₁ using Quotient.ind with t₁
   induction' t₂ using Quotient.ind with t₂
-  apply Quotient.sound
-  rw [PreWFTree.equiv_iff]
+  rw [ofQuotient.injEq, Quotient.eq, PreWFTree.equiv_iff]
   rw [Set.ext_iff, Prod.forall] at h
   peel h with e h
-  erw [Quotient.forall] at h
+  replace h t := h (ofQuotient (⟦t⟧))
   simpa [children] using h
 
 @[simp]
@@ -311,15 +313,33 @@ lemma ofChildren_children (t : WFTree.{u} η) : ofChildren (children t) = t := b
   ext
   simp
 
-noncomputable def ofChildren_equiv :
-    { s : Set (η × WFTree.{u} η) // Small.{u} s} ≃ WFTree.{u} η where
-  toFun := fun ⟨f, _⟩ ↦ ofChildren f
-  invFun t := ⟨t.children, inferInstance⟩
-  left_inv := fun ⟨f, hf⟩ ↦ by simp
-  right_inv t := by simp
-
 noncomputable def depth (t : WFTree.{u} η) : Ordinal.{u} :=
-  Quotient.liftOn t PreWFTree.depth fun _ _ ↦ PreWFTree.depth_eq_of_equiv
+  t.toQuotient.lift PreWFTree.depth fun _ _ ↦ PreWFTree.depth_eq_of_equiv
+
+@[local simp]
+private lemma mem_children_mk {e : η} {x : WFTree.{u} η} {y : PreWFTree.{u} η} :
+    (e, x) ∈ (ofQuotient ⟦y⟧).children ↔ ∃ c, x = ofQuotient ⟦c⟧ ∧ (e, c) ∈ y.children := by
+  conv in (x = _) => rw [eq_comm]
+  rcases x with ⟨x⟩
+  induction' x using Quotient.ind with x
+  simp [children, PreWFTree.children]
+  aesop
+
+theorem lt_depth_iff {t : WFTree.{u} η} {o : Ordinal.{u}} :
+    o < depth t ↔ ∃ e c, (e, c) ∈ t.children ∧ o ≤ depth c := by
+  rcases t with ⟨t⟩
+  induction' t using Quotient.ind with t
+  rw [depth, Quotient.lift_mk, PreWFTree.lt_depth_iff]
+  aesop
+
+theorem depth_le_iff {t : WFTree.{u} η} {o : Ordinal.{u}} :
+    depth t ≤ o ↔ ∀ e c, (e, c) ∈ t.children → depth c < o := by
+  rcases t with ⟨t⟩
+  induction' t using Quotient.ind with t
+  rw [depth, Quotient.lift_mk, PreWFTree.depth_le_iff]
+  aesop
+
+
 
 -- def IsChildOf (t₁ t₂ : WFTree.{u} η) : Prop :=
 --   ∃ e, (e, t₁) ∈ t₂.children
@@ -327,17 +347,20 @@ noncomputable def depth (t : WFTree.{u} η) : Ordinal.{u} :=
 -- lemma isChildOf_iff {t₁ t₂ : WFTree.{u} η} : t₁.IsChildOf t₂ ↔ ∃ e, (e, t₁) ∈ t₂.children :=
 --   Iff.rfl
 
-@[local simp]
-private lemma mem_children_mk {e : η} {x : WFTree.{u} η} {y : PreWFTree.{u} η} :
-    (e, x) ∈ WFTree.children ⟦y⟧ ↔ ∃ c, ⟦c⟧ = x ∧ (e, c) ∈ y.children := by
-  induction' x using Quotient.ind with x
-  simp [children, PreWFTree.children]
-  aesop
 
 -- @[local simp]
 -- private lemma mk_isChildOf_mk {t₁ t₂ : PreWFTree.{u} η} :
 --     WFTree.IsChildOf ⟦t₁⟧ ⟦t₂⟧ ↔ ∃ c₁, c₁ ≈ t₁ ∧ c₁.IsChildOf t₂ := by
 --   simp [IsChildOf, children, PreWFTree.IsChildOf]
 --   aesop
+
+-- trivia
+
+noncomputable def ofChildren_equiv :
+    { s : Set (η × WFTree.{u} η) // Small.{u} s} ≃ WFTree.{u} η where
+  toFun := fun ⟨f, _⟩ ↦ ofChildren f
+  invFun t := ⟨t.children, inferInstance⟩
+  left_inv := fun ⟨f, hf⟩ ↦ by simp
+  right_inv t := by simp
 
 end WFTree
