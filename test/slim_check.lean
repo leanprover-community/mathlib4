@@ -3,6 +3,8 @@ import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Testing.SlimCheck.Functions
 
+private axiom test_sorry : ∀ {α}, α
+
 /--
 warning: Gave up 91 times
 ---
@@ -39,7 +41,7 @@ issue: 1 < 0 does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 example : true := by
@@ -54,7 +56,7 @@ issue: 116 < 100 does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257, maxSize := 200 })
-    admit
+    exact test_sorry
   trivial
 
 -- example (xs : List ℕ) (w : ∃ x ∈ xs, x < 3) : true := by
@@ -75,7 +77,7 @@ issue: 116 < 100 does not hold
 --   admit
 --   trivial
 
-example (x : ℕ) (h : 2 ∣ x) : true := by
+example (x : ℕ) (_h : 2 ∣ x) : true := by
   have : x < 100 := by
     success_if_fail_with_msg
     "
@@ -88,7 +90,7 @@ issue: 116 < 100 does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257, maxSize := 200 })
-    admit
+    exact test_sorry
   trivial
 
 example (α : Type) (xs ys : List α) : true := by
@@ -105,7 +107,7 @@ issue: [0, 1] = [1, 0] does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 example : true := by
@@ -147,7 +149,7 @@ open Function SlimCheck
 --   admit
 --   trivial
 
-example (f : ℤ → ℤ) (h : Injective f) (g : ℤ → ℤ) (h : Injective g) (i : ℤ) : true := by
+example (f : ℤ → ℤ) (_h : Injective f) (g : ℤ → ℤ) (_h : Injective g) (i : ℤ) : true := by
   have : f i = g i := by
     success_if_fail_with_msg
 "
@@ -163,10 +165,10 @@ issue: 0 = -2 does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
-example (f : ℤ → ℤ) (h : Injective f) : true := by
+example (f : ℤ → ℤ) (_h : Injective f) : true := by
   have : Monotone f := by
     success_if_fail_with_msg
     "
@@ -182,7 +184,7 @@ issue: 7 ≤ 1 does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 example (f : ℤ → ℤ) : true := by
@@ -200,7 +202,7 @@ issue: 0 = 1 does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 example (f : ℤ → ℤ) : true := by
@@ -218,11 +220,11 @@ issue: -1 ≤ -2 does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 open scoped List in
-example (xs ys : List ℤ) (h : xs ~ ys) : true := by
+example (xs ys : List ℤ) (_h : xs ~ ys) : true := by
   have : Array.qsort ⟨xs⟩ (fun x y => x != y) = Array.qsort ⟨ys⟩ (fun x y => x != y) := by
     success_if_fail_with_msg
     "
@@ -236,7 +238,7 @@ issue: #[-2, -1] = #[-1, -2] does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257, maxSize := 3, numRetries := 1 })
-    admit
+    exact test_sorry
   trivial
 
 example (x y : ℕ) : true := by
@@ -253,7 +255,7 @@ issue: 102 < 100 does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 example (x : ℤ) : true := by
@@ -269,7 +271,7 @@ issue: 3 ≤ 0 does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 example (x y : ℤ) : true := by
@@ -286,7 +288,7 @@ issue: 146 < 100 does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 example (x y : Prop) : true := by
@@ -303,7 +305,7 @@ issue: false does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 example (x y : Prop) : true := by
@@ -320,7 +322,7 @@ issue: false does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 example (x y : Prop) : true := by
@@ -339,7 +341,7 @@ issue: false does not hold
 -------------------
 "
       slim_check
-    admit
+    exact test_sorry
   trivial
 
 example (x y : Prop) : true := by
@@ -357,7 +359,7 @@ issue: false does not hold
 -------------------
 "
       slim_check
-    admit
+    exact test_sorry
   trivial
 
 example (x y : Prop) : true := by
@@ -374,7 +376,7 @@ issue: true ≠ true does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 -- TODO: fails without this line!
@@ -392,10 +394,10 @@ issue: ⋯ does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
-example (f : Π₀ n : ℕ, ℕ) : true := by
+example (f : Π₀ _n : ℕ, ℕ) : true := by
   have : f.update 0 0 = 0 := by
     success_if_fail_with_msg
     "
@@ -407,7 +409,7 @@ issue: ⋯ does not hold
 -------------------
 "
       slim_check (config := { randomSeed := some 257 })
-    admit
+    exact test_sorry
   trivial
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/slim_check.20question/near/412709012
