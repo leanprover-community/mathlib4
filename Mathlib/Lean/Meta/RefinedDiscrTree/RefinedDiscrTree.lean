@@ -810,6 +810,11 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
 
 end MkDTExpr
 
+def DTExpr.isSpecific : DTExpr → Bool
+  | .star _
+  | .const ``Eq #[.star _, .star _, .star _] => false
+  | _ => true
+
 /-- Return the encoding of `e` as a `DTExpr`.
 
 Warning: to account for potential η-reductions of `e`, use `mkDTExprs` instead.
@@ -823,9 +828,11 @@ def mkDTExpr (e : Expr) (config : WhnfCoreConfig)
 
 /-- Similar to `mkDTExpr`.
 Return all encodings of `e` as a `DTExpr`, taking potential further η-reductions into account. -/
-def mkDTExprs (e : Expr) (config : WhnfCoreConfig)
+def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (List DTExpr) :=
-  withReducible do (MkDTExpr.mkDTExprsAux e true).run' {} |>.run {config, fvarInContext}
+  withReducible do
+    let es ← (MkDTExpr.mkDTExprsAux e true).run' {} |>.run {config, fvarInContext}
+    return if onlySpecific then es.filter (·.isSpecific) else es
 
 
 /-! ## Inserting intro a RefinedDiscrTree -/
@@ -897,19 +904,22 @@ def insertDTExpr [BEq α] (d : RefinedDiscrTree α) (e : DTExpr) (v : α) : Refi
 /-- Insert the value `v` at index `e : Expr` in a `RefinedDiscrTree`.
 The argument `fvarInContext` allows you to specify which free variables in `e` will still be
 in the context when the `RefinedDiscrTree` is being used for lookup.
-It should return true only if the `RefinedDiscrTree` is built and used locally. -/
-def insert [BEq α] (d : RefinedDiscrTree α) (e : Expr) (v : α) (config : WhnfCoreConfig := {})
+It should return true only if the `RefinedDiscrTree` is built and used locally.
+
+if `onlySpecific := true`, then we filter out the patterns `*` and `Eq * * *`. -/
+def insert [BEq α] (d : RefinedDiscrTree α) (e : Expr) (v : α)
+  (onlySpecific : Bool := true) (config : WhnfCoreConfig := {})
   (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (RefinedDiscrTree α) := do
-  let keys ← mkDTExprs e config fvarInContext
+  let keys ← mkDTExprs e config onlySpecific fvarInContext
   return keys.foldl (insertDTExpr · · v) d
 
 /-- Insert the value `vLhs` at index `lhs`, and if `rhs` is indexed differently, then also
 insert the value `vRhs` at index `rhs`. -/
 def insertEqn [BEq α] (d : RefinedDiscrTree α) (lhs rhs : Expr) (vLhs vRhs : α)
-  (config : WhnfCoreConfig := {}) (fvarInContext : FVarId → Bool := fun _ => false)
-  : MetaM (RefinedDiscrTree α) := do
-  let keysLhs ← mkDTExprs lhs config fvarInContext
-  let keysRhs ← mkDTExprs rhs config fvarInContext
+  (onlySpecific : Bool := true) (config : WhnfCoreConfig := {})
+  (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (RefinedDiscrTree α) := do
+  let keysLhs ← mkDTExprs lhs config onlySpecific fvarInContext
+  let keysRhs ← mkDTExprs rhs config onlySpecific fvarInContext
   let d := keysLhs.foldl (insertDTExpr · · vLhs) d
   if keysLhs == keysRhs then
     return d
