@@ -28,14 +28,13 @@ lemma harmonic_zero : harmonic 0 = 0 :=
   rfl
 
 @[simp]
-lemma harmonic_succ (n : ℕ) : harmonic (n + 1) = harmonic n + (↑(n + 1))⁻¹ := by
-  apply Finset.sum_range_succ
+lemma harmonic_succ (n : ℕ) : harmonic (n + 1) = harmonic n + (↑(n + 1))⁻¹ :=
+  Finset.sum_range_succ ..
 
 lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n :=
-  Finset.sum_pos (fun _ _ => inv_pos.mpr (by norm_cast; linarith))
-  (by rwa [Finset.nonempty_range_iff])
+  Finset.sum_pos (fun _ _ => inv_pos.mpr (by norm_cast; linarith)) <|
+    Finset.nonempty_range_iff.mpr Hn
 
 lemma harmonic_eq_sum_Icc {n : ℕ} :  harmonic n = ∑ i in Finset.Icc 1 n, (↑i)⁻¹ := by
-  unfold harmonic
-  rw[Finset.range_eq_Ico, Finset.sum_Ico_add' (fun (i:ℕ) => (i:ℚ)⁻¹) 0 n (c:=1),
+  rw [harmonic, Finset.range_eq_Ico, Finset.sum_Ico_add' (fun (i : ℕ) ↦ (i : ℚ)⁻¹) 0 n (c := 1),
     Nat.Ico_succ_right]
