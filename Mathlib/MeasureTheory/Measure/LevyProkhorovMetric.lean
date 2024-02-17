@@ -54,7 +54,7 @@ noncomputable def levyProkhorovEDist (μ ν : Measure Ω) : ℝ≥0∞ :=
 /- This result is not placed in earlier more generic files, since it is rather specialized;
 it mixes measure and metric in a very particular way. -/
 lemma meas_le_of_le_of_forall_le_meas_thickening_add {ε₁ ε₂ : ℝ≥0∞} (μ ν : Measure Ω)
-    (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁):
+    (h_le : ε₁ ≤ ε₂) {B : Set Ω} (hε₁ : μ B ≤ ν (thickening ε₁.toReal B) + ε₁) :
     μ B ≤ ν (thickening ε₂.toReal B) + ε₂ := by
   by_cases ε_top : ε₂ = ∞
   · simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, ε_top, top_toReal,
@@ -236,9 +236,12 @@ open BoundedContinuousFunction
 
 variable {ι : Type*} (Ω : Type*) [MeasurableSpace Ω]
 
+/-- Coercion from the type synonym `LevyProkhorov (ProbabilityMeasure Ω)`
+to `ProbabilityMeasure Ω`. -/
 def levyProkhorov_to_probabilityMeasure (μ : LevyProkhorov (ProbabilityMeasure Ω)) :
     ProbabilityMeasure Ω := μ
 
+/-- Coercion from the type synonym `LevyProkhorov (FiniteMeasure Ω)` to `FiniteMeasure Ω`. -/
 def levyProkhorov_to_finiteMeasure (μ : LevyProkhorov (FiniteMeasure Ω)) :
     FiniteMeasure Ω := μ
 

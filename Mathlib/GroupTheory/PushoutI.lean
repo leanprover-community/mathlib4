@@ -143,7 +143,7 @@ theorem hom_ext_nonempty [hn : Nonempty ι]
       rw [← of_comp_eq_base i, ← MonoidHom.comp_assoc, h, MonoidHom.comp_assoc]
 
 /-- The equivalence that is part of the universal property of the pushout. A hom out of
-the pushout is just a morphism out of all groups in the pushout that satsifies a commutativity
+the pushout is just a morphism out of all groups in the pushout that satisfies a commutativity
 condition. -/
 @[simps]
 def homEquiv :

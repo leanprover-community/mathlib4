@@ -182,7 +182,9 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x)
 is the largest homogeneous ideal of `A` contained in `I`. -/
 def Ideal.homogeneousCore : HomogeneousIdeal 𝒜 :=
   ⟨Ideal.homogeneousCore' 𝒜 I,
-    Ideal.homogeneous_span _ _ fun _ h => (Subtype.image_preimage_coe _ _ ▸ h).2⟩
+    Ideal.homogeneous_span _ _ fun _ h => by
+      have := Subtype.image_preimage_coe (setOf (Homogeneous 𝒜)) (I : Set A)
+      exact (cast congr(_ ∈ $this) h).1⟩
 #align ideal.homogeneous_core Ideal.homogeneousCore
 
 theorem Ideal.homogeneousCore_mono : Monotone (Ideal.homogeneousCore 𝒜) :=

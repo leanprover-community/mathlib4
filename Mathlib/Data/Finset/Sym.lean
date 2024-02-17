@@ -165,7 +165,7 @@ end Sym2
 
 section Sym
 
-variable {n : ℕ} {m : Sym α n}
+variable {n : ℕ}
 
 -- Porting note: instance needed
 instance : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
@@ -186,7 +186,7 @@ theorem sym_succ : s.sym (n + 1) = s.sup fun a ↦ (s.sym n).image <| Sym.cons a
 #align finset.sym_succ Finset.sym_succ
 
 @[simp]
-theorem mem_sym_iff : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := by
+theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := by
   induction' n with n ih
   · refine' mem_singleton.trans ⟨_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
     rintro rfl
@@ -241,9 +241,7 @@ theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
 
 @[simp]
 theorem sym_nonempty : (s.sym n).Nonempty ↔ n = 0 ∨ s.Nonempty := by
-  simp_rw [nonempty_iff_ne_empty, Ne.def]
--- Porting note: using simp_rw does not work here, it does nothing...
-  rwa [sym_eq_empty, not_and_or, not_ne_iff]
+  simp only [nonempty_iff_ne_empty, ne_eq, sym_eq_empty, not_and_or, not_ne_iff]
 #align finset.sym_nonempty Finset.sym_nonempty
 
 @[simp]
@@ -273,7 +271,7 @@ theorem sym_fill_mem (a : α) {i : Fin (n + 1)} {m : Sym α (n - i)} (h : m ∈ 
     mem_insert.2 <| (Sym.mem_fill_iff.1 hb).imp And.right <| mem_sym_iff.1 h b
 #align finset.sym_fill_mem Finset.sym_fill_mem
 
-theorem sym_filterNe_mem (a : α) (h : m ∈ s.sym n) :
+theorem sym_filterNe_mem {m : Sym α n} (a : α) (h : m ∈ s.sym n) :
     (m.filterNe a).2 ∈ (Finset.erase s a).sym (n - (m.filterNe a).1) :=
   mem_sym_iff.2 fun b H ↦
     mem_erase.2 <| (Multiset.mem_filter.1 H).symm.imp Ne.symm <| mem_sym_iff.1 h b
