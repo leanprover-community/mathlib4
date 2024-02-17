@@ -29,7 +29,7 @@ continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of th
 
 universe v u
 
-open CategoryTheory Limits Opposite Functor Presieve regularCoverage
+open CategoryTheory Limits Opposite Functor Presieve regularTopology
 
 namespace CategoryTheory
 
@@ -37,8 +37,7 @@ variable {C : Type u} [Category.{v} C] (F : Cᵒᵖ ⥤ Type (max u v)) [Preregu
   [FinitaryPreExtensive C]
 
 theorem isSheaf_coherent_iff_regular_and_extensive : IsSheaf (coherentTopology C) F ↔
-    IsSheaf (extensiveCoverage C).toGrothendieck F ∧
-    IsSheaf (regularCoverage C).toGrothendieck F := by
+    IsSheaf (extensiveTopology C) F ∧ IsSheaf (regularTopology C) F := by
   rw [← extensive_regular_generate_coherent]
   exact isSheaf_sup (extensiveCoverage C) (regularCoverage C) F
 
@@ -99,7 +98,7 @@ theorem isSheaf_iff_preservesFiniteProducts
     IsSheaf (coherentTopology Stonean) F ↔ Nonempty (PreservesFiniteProducts F) := by
   rw [isSheaf_coherent_iff_regular_and_extensive, and_iff_left ?_]
   · exact CategoryTheory.isSheaf_iff_preservesFiniteProducts F
-  · rw [Presieve.isSheaf_coverage]
+  · rw [regularTopology, Presieve.isSheaf_coverage]
     intro X R ⟨Y, hR⟩
     have _ : R.regular := ⟨Y, hR⟩
     exact isSheafFor_regular_of_projective R F

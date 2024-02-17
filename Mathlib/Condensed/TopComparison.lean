@@ -28,7 +28,7 @@ We apply this API to `CompHaus` and define the functor
 
 universe w w' v u
 
-open CategoryTheory Opposite Limits regularCoverage ContinuousMap
+open CategoryTheory Opposite Limits regularTopology ContinuousMap
 
 variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{v})
   (X : (Type (max u v))) [TopologicalSpace X]

@@ -36,7 +36,7 @@ class Presieve.regular {X : C} (R : Presieve X) : Prop where
   single_epi : ∃ (Y : C) (f : Y ⟶ X), R = Presieve.ofArrows (fun (_ : Unit) ↦ Y)
     (fun (_ : Unit) ↦ f) ∧ EffectiveEpi f
 
-namespace regularCoverage
+namespace regularTopology
 
 /--
 The map to the explicit equalizer used in the sheaf condition.
@@ -97,19 +97,17 @@ def preservesPullbackIso {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*) (F : D
   hom := equalizer.lift (equalizer.ι _ _) (by
     simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
-    haveI := hasPullback_of_preservesPullback F π π
+    have := hasPullback_of_preservesPullback F π π
     have h := equalizer.condition (P.map (pullback.fst (f := (F.map π)) (g := (F.map π))).op)
       (P.map (pullback.snd).op)
-    have h₁ := PreservesPullback.iso_hom_fst F π π
-    have h₂ := PreservesPullback.iso_hom_snd F π π
-    simp only [← h₁, ← h₂, op_comp, Functor.map_comp, ← Category.assoc, h])
+    simp only [← PreservesPullback.iso_hom_fst, ← PreservesPullback.iso_hom_snd, op_comp,
+      Functor.map_comp, ← Category.assoc, h])
   inv := equalizer.lift (equalizer.ι _ _) (by
     simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
-    haveI := hasPullback_of_preservesPullback F π π
-    have h₁ := PreservesPullback.iso_inv_fst F π π
-    have h₂ := PreservesPullback.iso_inv_snd F π π
-    simp only [← h₁, ← h₂, op_comp, Functor.map_comp]
+    have := hasPullback_of_preservesPullback F π π
+    simp only [← PreservesPullback.iso_inv_fst, ← PreservesPullback.iso_inv_snd,
+      op_comp, Functor.map_comp]
     rw [← Category.assoc, equalizer.condition]
     rfl)
   hom_inv_id := by
@@ -237,21 +235,21 @@ lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Pro
 
 lemma EqualizerCondition.isSheaf_iff (F : Cᵒᵖ ⥤ Type*)
     [∀ ⦃X Y : C⦄ (π : X ⟶ Y) [EffectiveEpi π], HasPullback π π] [Preregular C] :
-    Presieve.IsSheaf (regularCoverage C).toGrothendieck F ↔ EqualizerCondition F := by
-  rw [Presieve.isSheaf_coverage]
+    Presieve.IsSheaf (regularTopology C) F ↔ EqualizerCondition F := by
+  rw [regularTopology, Presieve.isSheaf_coverage]
   refine ⟨fun h ↦ equalizerCondition_of_regular fun S ⟨Y, f, hh⟩ _ ↦ h S ⟨Y, f, hh⟩, ?_⟩
   rintro h X S ⟨Y, f, rfl, hf⟩
   exact @isSheafFor _ _ _ _ ⟨Y, f, rfl, hf⟩ ⟨fun g _ h ↦ by cases g; cases h; infer_instance⟩ _ h
 
 lemma isSheaf_of_projective (F : Cᵒᵖ ⥤ Type*) [Preregular C] [∀ (X : C), Projective X] :
-    IsSheaf (regularCoverage C).toGrothendieck F :=
+    IsSheaf (regularTopology C) F :=
   (isSheaf_coverage _ _).mpr fun S ⟨_, h⟩ ↦ have : S.regular := ⟨_, h⟩
     isSheafFor_regular_of_projective _ _
 
 /-- Every Yoneda-presheaf is a sheaf for the regular topology. -/
 theorem isSheaf_yoneda_obj [Preregular C] (W : C)  :
-    Presieve.IsSheaf (regularCoverage C).toGrothendieck (yoneda.obj W) := by
-  rw [isSheaf_coverage]
+    Presieve.IsSheaf (regularTopology C) (yoneda.obj W) := by
+  rw [regularTopology, isSheaf_coverage]
   intro X S ⟨_, hS⟩
   have : S.regular := ⟨_, hS⟩
   obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (R := S)
@@ -270,9 +268,9 @@ theorem isSheaf_yoneda_obj [Preregular C] (W : C)  :
   · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
 
 /-- The regular topology on any preregular category is subcanonical. -/
-theorem subcanonical [Preregular C] : Sheaf.Subcanonical (regularCoverage C).toGrothendieck :=
+theorem subcanonical [Preregular C] : Sheaf.Subcanonical (regularTopology C) :=
   Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
 
-end regularCoverage
+end regularTopology
 
 end CategoryTheory
