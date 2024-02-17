@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Widget.StringDiagram
 import ProofWidgets.Component.Panel.SelectionPanel
+import ProofWidgets.Component.Panel.GoalTypePanel
 
 /-! ## Example use of string diagram widgets -/
 
@@ -22,7 +23,7 @@ lemma left_triangle {X Y : C} (η : 𝟙_ _ ⟶ X ⊗ Y) (ε : Y ⊗ X ⟶ 𝟙_
 lemma yang_baxter {V₁ V₂ V₃ : C} (R : ∀ V₁ V₂ : C, V₁ ⊗ V₂ ⟶ V₂ ⊗ V₁) (w : False) :
     R V₁ V₂ ▷ V₃ ≫ (α_ _ ..).hom ≫ _ ◁ R _ _ ≫ (α_ _ ..).inv ≫ R _ _ ▷ _ ≫ (α_ _ ..).hom =
     (α_ _ ..).hom ≫ V₁ ◁ R V₂ V₃ ≫ (α_ _ ..).inv ≫ R _ _ ▷ _ ≫ (α_ _ ..).hom ≫ _ ◁ R _ _ := by
-  with_panel_widgets [SelectionPanel]
+  with_panel_widgets [GoalTypePanel]
     exact w.elim
 
 example {X Y : C} (f : X ⟶ Y) (g : X ⊗ X ⊗ Y ⟶ Y ⊗ X ⊗ Y) (w : False) : f ▷ (X ⊗ Y) = g := by

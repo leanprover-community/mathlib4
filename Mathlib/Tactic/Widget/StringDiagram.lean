@@ -512,12 +512,40 @@ def stringM? (e : Expr) : MetaM (Option Html) := do
   let e ← instantiateMVars e
   return some <| ← mkStringDiag e
 
+def stringLeftM? (e : Expr) : MetaM (Option Html) := do
+  let e ← instantiateMVars e
+  let some (_, lhs, _) := e.eq? | return none
+  return some <| ← mkStringDiag lhs
+
+def stringRightM? (e : Expr) : MetaM (Option Html) := do
+  let e ← instantiateMVars e
+  let some (_, _, rhs) := e.eq? | return none
+  return some <| ← mkStringDiag rhs
+
 @[expr_presenter]
 def stringPresenter : ExprPresenter where
   userName := "String diagram"
   layoutKind := .block
   present type := do
     if let some d ← stringM? type then
+      return d
+    throwError "Couldn't find a string diagram."
+
+@[expr_presenter]
+def stringPresenterLeft : ExprPresenter where
+  userName := "String diagram of LHS"
+  layoutKind := .block
+  present type := do
+    if let some d ← stringLeftM? type then
+      return d
+    throwError "Couldn't find a string diagram."
+
+@[expr_presenter]
+def stringPresenterRight : ExprPresenter where
+  userName := "String diagram of RHS"
+  layoutKind := .block
+  present type := do
+    if let some d ← stringRightM? type then
       return d
     throwError "Couldn't find a string diagram."
 
