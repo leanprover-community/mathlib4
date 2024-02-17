@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-! # Open mapping theorem for morphisms of topological groups
 

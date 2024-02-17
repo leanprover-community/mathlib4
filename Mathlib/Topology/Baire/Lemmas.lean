@@ -3,10 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.GDelta
-import Mathlib.Topology.Sets.Compacts
 
 #align_import topology.metric_space.baire from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
 
@@ -33,14 +30,12 @@ We also prove that in Baire spaces, the `residual` sets are exactly those contai
 
 noncomputable section
 
-open scoped Topology ENNReal
+open scoped Topology
 open Filter Set TopologicalSpace
 
 variable {X α : Type*} {ι : Sort*}
 
 section BaireTheorem
-
-open EMetric ENNReal
 
 variable [TopologicalSpace X] [BaireSpace X]
 
