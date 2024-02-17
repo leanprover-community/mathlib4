@@ -45,6 +45,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
     (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Monotone fun n ↦ f n x)
     (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
     Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
+  -- switch from the Bochner to the Lebesgue integral
   let f' := fun n x ↦ f n x - f 0 x
   have hf'_nonneg : ∀ᵐ x ∂μ, ∀ n, 0 ≤ f' n x := by
     filter_upwards [h_mono] with a ha n
@@ -69,21 +70,12 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   rw [ae_all_iff] at hf'_nonneg
   simp_rw [integral_eq_lintegral_of_nonneg_ae (hf'_nonneg _) (hf'_meas _).1]
   rw [integral_eq_lintegral_of_nonneg_ae hF_ge (hF.1.sub (hf 0).1)]
-  have h_cont := ENNReal.continuousOn_toReal.continuousAt
-    (x := ∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ) ?_
+  have h_cont := ENNReal.continuousAt_toReal (x := ∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ) ?_
   swap
-  · rw [mem_nhds_iff]
-    refine ⟨Iio (∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ + 1), ?_, isOpen_Iio, ?_⟩
-    · intro x
-      simp only [Pi.sub_apply, mem_Iio, ne_eq, mem_setOf_eq]
-      exact ne_top_of_lt
-    · simp only [Pi.sub_apply, mem_Iio]
-      refine ENNReal.lt_add_right ?_ one_ne_zero
-      rw [← ofReal_integral_eq_lintegral_ofReal]
-      · exact ENNReal.ofReal_ne_top
-      · exact hF.sub (hf 0)
-      · exact hF_ge
+  · rw [← ofReal_integral_eq_lintegral_ofReal (hF.sub (hf 0)) hF_ge]
+    exact ENNReal.ofReal_ne_top
   refine h_cont.tendsto.comp ?_
+  -- use the result for the Lebesgue integral
   refine lintegral_tendsto_of_tendsto_of_monotone ?_ ?_ ?_
   · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennreal_ofReal
   · filter_upwards [h_mono] with x hx
