@@ -1,67 +1,54 @@
+/-
+Copyright (c) 2024 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 import Mathlib.Data.Sign
 
-noncomputable section
-
-#check ExteriorAlgebra
-variable (R) [CommRing R] (n : ℕ)
 variable  (ι : Type) [LinearOrder ι]
+
+noncomputable section
 
 -- a list of indices, sorted
 abbrev Model.Index := {l : List ι // l.Sorted (· < ·) }
 
-def Model := Model.Index ι →₀ R
 
-instance : AddCommGroup (Model R ι) := by
-  unfold Model
-  infer_instance
-instance : Module R (Model R ι) := by
-  unfold Model
-  infer_instance
+variable {R : Type*} [CommRing R]
 
-variable {R ι} in
-def Model.ofFinsupp : ( Model.Index ι →₀ R) ≃ₗ[R] Model R ι :=
+variable {M : Type*} [AddCommGroup M] [Module R M]
+
+
+def Model (_Q : QuadraticForm R M) := Model.Index ι →₀ R
+
+
+variable (Q : QuadraticForm R M)
+instance : AddCommGroup (Model ι Q) := inferInstanceAs <| AddCommGroup (Model.Index ι →₀ R)
+instance : Module R (Model ι Q) := inferInstanceAs <| Module R (Model.Index ι →₀ R)
+
+variable {Q ι} in
+def Model.ofFinsupp : (Model.Index ι →₀ R) ≃ₗ[R] Model ι Q :=
   LinearEquiv.refl _ _
 
-instance : One (Model R ι) where
+instance : One (Model ι Q) where
   one := Model.ofFinsupp <| Finsupp.single ⟨[], by simp⟩ 1
-
--- (Finsupp.sum (↑(LinearEquiv.symm Model.ofFinsupp) 1) fun x r ↦
---     r • List.prod (List.map (fun x ↦ ↑f (Finsupp.single x 1)) ↑x)) =
---   1
 
 @[simp]
 lemma Model.ofFinsupp_symm_one :
-    Model.ofFinsupp.symm (1: Model R ι) = Finsupp.single ⟨[], by simp⟩ 1 := by
+    Model.ofFinsupp.symm (1 : Model ι Q) = Finsupp.single ⟨[], by simp⟩ 1 := by
   rfl
 
-  /-
-  # todos
-  define multiplication, prove associativity
-
-  instance : Ring (Model R ι)
-  instance : Algebra R (Model R ι)
-
-  square single should give quadratic form
-  -/
-
-variable { ι }
+variable {ι}
 
 @[simps]
 def Model.Index.single (i : ι) : Model.Index ι := ⟨[i], by simp⟩
 
-def Model.single ( i : ι ) : Model R ι :=
+def Model.single (i : ι) : Model ι Q :=
   Model.ofFinsupp <| Finsupp.single (Model.Index.single i) 1
 
 @[simp]
-lemma Model.ofFinsupp_single_single ( i : ι ) :
-  Model.ofFinsupp (Finsupp.single (Model.Index.single i) 1) = Model.single R i := rfl
-
-set_option pp.proofs.withType false
-
-#check Model.single ℤ (1 : Fin 3) + (3:ℤ) • Model.single ℤ (2 : Fin 3)
+lemma Model.ofFinsupp_single_single (i : ι) :
+  Model.ofFinsupp (Finsupp.single (.single i) 1) = Model.single Q i := rfl
 
 
 def merge_with_sign : SignType → List ι → List ι → List ι × SignType
@@ -75,7 +62,7 @@ def merge_with_sign : SignType → List ι → List ι → List ι × SignType
     else
       let ⟨m,s⟩ := merge_with_sign σ (a :: l) l'
       ⟨b :: m,s*(-1)^(List.length l +1)⟩
-  termination_by merge_with_sign s l₁ l₂ => List.length l₁ +  List.length l₂
+  termination_by s l₁ l₂ => List.length l₁ +  List.length l₂
 
 example : merge_with_sign 1 [1] [2] = ⟨[1,2],1⟩  := by
   unfold merge_with_sign
@@ -107,14 +94,14 @@ lemma single_mul_single_helper (i : ι) :
 -- def list_sort_concat
 open scoped BigOperators
 
-variable {R}
-def mul (v w : Model R ι) : Model R ι :=
+variable {Q}
+def mul (v w : Model ι Q) : Model ι Q :=
   (Model.ofFinsupp.symm v).sum fun i vi ↦
     (Model.ofFinsupp.symm w).sum fun j wj ↦
       let ⟨k,s⟩:=mul_helper i j
       Model.ofFinsupp <| Finsupp.single k (s * vi * wj)
 
-instance : Mul (Model R ι) where
+instance : Mul (Model ι Q) where
   -- multiply pairwise
   mul v w :=
   (Model.ofFinsupp.symm v).sum fun i vi ↦
@@ -124,7 +111,7 @@ instance : Mul (Model R ι) where
 
 #print instMulModel
 
-lemma single_mul_single (i : ι) : Model.single R i * Model.single R i = 0 := by
+lemma single_mul_single (i : ι) : Model.single Q i * Model.single Q i = 0 := by
   change Finsupp.sum _ _ = _
   dsimp only [mul,Model.single]
   simp
@@ -133,9 +120,9 @@ lemma single_mul_single (i : ι) : Model.single R i * Model.single R i = 0 := by
 #check Finsupp.sum_single_index
 
 
-instance : Ring (Model R ι) where
+instance : Ring (Model ι Q) where
   -- inheritance in lean 4 is (somewhat) broken currently
-  __ := inferInstanceAs (AddCommGroup (Model R ι))
+  __ := inferInstanceAs (AddCommGroup (Model ι Q))
 
   left_distrib := sorry
   right_distrib := sorry
@@ -146,7 +133,7 @@ instance : Ring (Model R ι) where
   one_mul := sorry
   mul_one := sorry
 
-instance : Algebra R (Model R ι) where
+instance : Algebra R (Model ι Q) where
   toFun := Finsupp.single ⟨[], by simp⟩
   map_one' := rfl
   map_mul' := sorry
@@ -159,16 +146,16 @@ instance : Algebra R (Model R ι) where
 variable {r: R}
 @[simp]
 lemma Model.ofFinsupp_symm_algebra_map :
-    Model.ofFinsupp.symm (algebraMap R (Model R ι) r) = Finsupp.single ⟨[], by simp⟩ r := by
+    Model.ofFinsupp.symm (algebraMap R (Model ι Q) r) = Finsupp.single ⟨[], by simp⟩ r := by
   rfl
 
 
-noncomputable def model_of_free_vsp : (ι →₀ R) →ₗ[R] Model R ι :=
+noncomputable def model_of_free_vsp : (ι →₀ R) →ₗ[R] Model ι Q :=
   Model.ofFinsupp.toLinearMap ∘ₗ Finsupp.lmapDomain R R (fun i ↦ Model.Index.single i)
 
 @[simp]
 lemma model_of_free_vsp_single (i : ι) :
-    model_of_free_vsp (Finsupp.single i (1 : R)) = Model.single R i := by
+    model_of_free_vsp (Finsupp.single i (1 : R)) = Model.single Q i := by
   unfold model_of_free_vsp
   simp
 
@@ -181,7 +168,7 @@ lemma two_vectors_square_zero (m: ι →₀ R) :
 variable {A : Type} [Ring A] [Algebra R A]
 variable {M : Type} [AddCommGroup M] [Module R M]
 
-def liftToFun ( f : (ι →₀ R) →ₗ[R] A ) ( hf : ∀ m, f m * f m = 0 ) : (Model R ι →ₐ[R] A) where
+def liftToFun ( f : (ι →₀ R) →ₗ[R] A ) ( hf : ∀ m, f m * f m = 0 ) : (Model ι Q →ₐ[R] A) where
   toFun m := (Model.ofFinsupp.symm m).sum $
     λ ⟨i, _⟩ r =>
     r • (
@@ -200,7 +187,7 @@ def liftToFun ( f : (ι →₀ R) →ₗ[R] A ) ( hf : ∀ m, f m * f m = 0 ) : 
     simp
     rw [@Algebra.algebraMap_eq_smul_one]
 
-def liftInvFun (F : Model R ι →ₐ[R] A) : { f : (ι →₀ R) →ₗ[R] A // ∀ m, f m * f m = 0 } where
+def liftInvFun (F : Model ι Q →ₐ[R] A) : { f : (ι →₀ R) →ₗ[R] A // ∀ m, f m * f m = 0 } where
   val := {
     toFun := fun v => F (model_of_free_vsp v)
     map_add' := by
@@ -219,7 +206,7 @@ def liftInvFun (F : Model R ι →ₐ[R] A) : { f : (ι →₀ R) →ₗ[R] A //
 @[simps! symm_apply]
 def lift :
     { f : (ι →₀ R) →ₗ[R] A // ∀ m, f m * f m = 0 }
-    ≃ (Model R ι →ₐ[R] A)
+    ≃ (Model ι Q →ₐ[R] A)
     where
       toFun := by
         intro f
@@ -230,12 +217,12 @@ def lift :
 
 @[simp]
 lemma liftToFun_composed_single (i : ι) (f : (ι →₀ R) →ₗ[R] A) (hf) :
-    liftToFun f hf (Model.single R i) = f (Finsupp.single i 1) := by
+    liftToFun f hf (Model.single Q i) = f (Finsupp.single i 1) := by
   sorry
 
 
 @[ext high]
-theorem Model.hom_ext {f g : Model R ι →ₐ[R] A} :
+theorem Model.hom_ext {f g : Model ι Q →ₐ[R] A} :
     f.toLinearMap.comp (model_of_free_vsp) = g.toLinearMap.comp (model_of_free_vsp) → f = g := by
   intro h
   apply lift.symm.injective
