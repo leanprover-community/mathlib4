@@ -408,7 +408,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       continue
     let type ← instantiateMVars var.type
     let thm? : Option FunctionTheorem ←
-      forallTelescopeReducing type fun _ b => do
+      forallTelescope type fun _ b => do
       let .some (decl,f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
