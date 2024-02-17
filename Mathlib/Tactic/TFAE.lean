@@ -219,12 +219,19 @@ elab_rules : tactic
     let Pi := tfaeList.get! (i'-1)
     let Pj := tfaeList.get! (j'-1)
     let type ← mkImplType Pi arr Pj
-    let proof? ← pf.mapM fun pf => Tactic.elabTermEnsuringType pf type
-    let (arrowGoal?, mainGoal) ← tfaeHaveCore goal h i j arr type proof?
+    let proofAndSideGoals? ← pf.mapM fun pf => elabTermWithHoles pf type `tfae_side false
+    if let some (val, _) := proofAndSideGoals? then
+      if val.findMVar? (· == goal) matches some _ then
+        throwError "'tfae_have' tactic failed, value{indentExpr val}\n\
+          depends on the main goal metavariable '{Expr.mvar goal}'"
+    let (arrowGoal?, mainGoal) ← tfaeHaveCore goal h i j arr type (proofAndSideGoals?.map (·.1))
     if let some arrowGoal := arrowGoal? then
       replaceMainGoal [arrowGoal, mainGoal]
     else
-      replaceMainGoal [mainGoal]
+      let sideGoals := match proofAndSideGoals? with
+        | some (_, sideGoals) => sideGoals
+        | none => []
+      replaceMainGoal ([mainGoal] ++ sideGoals)
 
 elab_rules : tactic
 | `(tactic| tfae_finish) => do

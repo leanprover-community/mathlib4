@@ -1,4 +1,5 @@
 import Mathlib.Tactic.TFAE
+import Mathlib.Tactic.SuccessIfFailWithMsg
 
 open List
 set_option autoImplicit true
@@ -136,6 +137,20 @@ example : TFAE [P, Q] := by
     guard_target =ₛ P → Q -- expected type is known
     exact pq
   tfae_have 1 ← 2 := qp
+  tfae_finish
+
+example : TFAE [P, Q] := by
+  have n : ℕ := 4
+  tfae_have 2 ← 1 := fun p => ?Qgoal
+  case Qgoal =>
+    guard_hyp n : ℕ
+    exact pq p
+  refine ?a
+  success_if_fail_with_msg "'tfae_have' tactic failed, value\n  \
+    (List.TFAE.out ?a 1 2).mpr\n\
+    depends on the main goal metavariable '?a'"
+    (tfae_have 1 ← 2 := ((?a).out 1 2 sorry sorry).mpr)
+  tfae_have 2 → 1 := qp
   tfae_finish
 
 end term
