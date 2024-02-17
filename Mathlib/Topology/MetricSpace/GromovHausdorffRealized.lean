@@ -222,8 +222,8 @@ private theorem dist_mem_candidates :
   exact ⟨fun x y => rfl, fun x y => rfl⟩
 
 /-- The distance on `X ⊕ Y` as a candidate -/
-def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Inhabited X]
-    [MetricSpace Y] [CompactSpace Y] [Inhabited Y] : Cb X Y :=
+def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X]
+    [MetricSpace Y] [CompactSpace Y] [Nonempty Y] : Cb X Y :=
   candidatesBOfCandidates _ dist_mem_candidates
 #align Gromov_Hausdorff.candidates_b_dist GromovHausdorff.candidatesBDist
 
