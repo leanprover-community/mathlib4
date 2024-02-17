@@ -275,7 +275,6 @@ theorem scalar_eq_self_of_mem_center
     Subtype.ext_iff.mp <| Subgroup.mem_center_iff.mp hA ⟨t.toMatrix, by simp⟩
   simp [← congr_fun₂ hr i i, ← hr]
 
-@[simp]
 theorem scalar_eq_coe_self_center
     (A : center (SpecialLinearGroup n R)) (i : n) :
     scalar n ((A : Matrix n n R) i i) = A :=
