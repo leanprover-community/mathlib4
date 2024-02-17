@@ -15,7 +15,7 @@ This file provides the tactics `tfae_have` and `tfae_finish` for proving goals o
 `TFAE [P₁, P₂, ...]`.
 -/
 
-open List Lean Meta Expr Elab.Term Elab.Tactic Mathlib.Tactic Qq
+open List Lean Meta Expr Elab Tactic Mathlib.Tactic Qq
 
 namespace Mathlib.Tactic.TFAE
 
@@ -163,7 +163,6 @@ def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax ``impArrow) : MetaM Name :
   | _ => throwErrorAt arr "expected '←', '→', or '↔'"
   return String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
 
-open Elab in
 /--
 The core of `tfae_have`, which behaves like mathlib's `have`.
 
@@ -177,7 +176,8 @@ def tfaeHaveCore (goal : MVarId) (name : Option (TSyntax `ident)) (i j : TSyntax
     TermElabM (Option MVarId × MVarId) :=
   goal.withContext do
     let n := (Syntax.getId <$> name).getD <|← mkTFAEHypName i j arrow
-    let (arrowGoal?, p) ← if let some pf := pf? then
+    let (arrowGoal?, p) ←
+      if let some pf := pf? then
         pure (none, pf)
       else
         let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
@@ -219,7 +219,7 @@ elab_rules : tactic
     let Pi := tfaeList.get! (i'-1)
     let Pj := tfaeList.get! (j'-1)
     let type ← mkImplType Pi arr Pj
-    let proof? ← pf.mapM fun pf => Elab.Tactic.elabTermEnsuringType pf type
+    let proof? ← pf.mapM fun pf => Tactic.elabTermEnsuringType pf type
     let (arrowGoal?, mainGoal) ← tfaeHaveCore goal h i j arr type proof?
     if let some arrowGoal := arrowGoal? then
       replaceMainGoal [arrowGoal, mainGoal]

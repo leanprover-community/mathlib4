@@ -130,9 +130,12 @@ axiom pq : P → Q
 axiom qp : Q → P
 
 example : TFAE [P, Q] := by
-  have n := 4
+  have n : ℕ := 4
   tfae_have 2 ← 1 := by
-    guard_hyp n : ℕ
+    guard_hyp n : ℕ -- hypotheses are accessible (context is correct)
+    guard_target =ₛ P → Q -- expected type is known
     exact pq
   tfae_have 1 ← 2 := qp
   tfae_finish
+
+end term
