@@ -276,7 +276,7 @@ theorem Ioc_inl_inr : Ioc (inl a₁) (inr b₂) = ∅ :=
   rfl
 #align sum.Ioc_inl_inr Sum.Ioc_inl_inr
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ := by
   rfl
 #align sum.Ioo_inl_inr Sum.Ioo_inl_inr
@@ -296,7 +296,7 @@ theorem Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
   rfl
 #align sum.Ioc_inr_inl Sum.Ioc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
   rfl
 #align sum.Ioo_inr_inl Sum.Ioo_inr_inl

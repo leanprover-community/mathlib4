@@ -44,7 +44,7 @@ def homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) : (X ⟶ Y)
       rw [Category.assoc, Category.assoc, β.inv_hom_id, α.inv_hom_id_assoc, Category.comp_id]
 #align category_theory.iso.hom_congr CategoryTheory.Iso.homCongr
 
--- @[simp, nolint simpNF] Porting note: dsimp can not prove this
+-- @[simp, nolint simpNF] Porting note (#10675): dsimp can not prove this
 @[simp]
 theorem homCongr_apply {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f : X ⟶ Y) :
     α.homCongr β f = α.inv ≫ f ≫ β.hom := by
