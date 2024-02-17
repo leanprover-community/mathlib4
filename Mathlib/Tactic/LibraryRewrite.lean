@@ -195,21 +195,22 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) : MetaM (
   let thm ← instantiateMVars (mkAppN thm mvars)
   let thm := Format.pretty <| ← ppExpr thm
   let symm := if rwLemma.symm then "← " else ""
-  let cfg := match positions.find? (· == loc.pos) with
-    | none => " /- couldn't find a suitable config -/"
+  let cfg := match positions.findIdx? (· == loc.pos) with
+    | none => " /- couldn't find a suitable occurrence -/"
     | some pos =>
       if positions.size == 1 then "" else
-      s! " (config := \{ occs := .pos [{pos}]})"
+      s! " (config := \{ occs := .pos [{pos+1}]})"
   return some s! "rw{cfg} [{symm}{thm}]{location}"
 
 def renderResults (results : Array (RewriteLemma × String)) (range : Lsp.Range)
     (doc : FileWorker.EditableDocument) : MetaM Html := do
   let htmls ← results.mapM fun (rwLemma, call) => do
     let type ← renderWithDiffs rwLemma.name rwLemma.diffs
-    return <li> <p> {type} </p> {Html.ofComponent MakeEditLink
-      (.ofReplaceRange doc.meta range call none)
-      #[ .text s! "{rwLemma.name}"]}
-
+    return <li>
+        <p> {type} </p>
+        <p> {Html.ofComponent MakeEditLink
+        (.ofReplaceRange doc.meta range call none)
+        #[ .text s! "{rwLemma.name}"]} </p>
       </li>
   return <details «open»={true}>
       <summary className="mv2 pointer">{.text "Library rewrite options"}</summary>
@@ -258,8 +259,10 @@ def filterMapMetaMWithMaxHeartbeats {α β} (as : Array α) (f : α → MetaM (O
 def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask Html) :=
   RequestM.asTask do
   let doc ← RequestM.readDoc
-  let some loc := props.selectedLocations.back? | return <p>Please shift-click an expression.</p>
-  let some goal := props.goals.find? (·.mvarId == loc.mvarId) | return <p>Couln't find the goal.</p>
+  let some loc := props.selectedLocations.back?
+    | return <p> rw??: Please shift-click an expression. </p>
+  let some goal := props.goals.find? (·.mvarId == loc.mvarId)
+    | return <p> Couln't find the goal. </p>
   goal.ctx.val.runMetaM {} do -- similar to `SelectInsertConv`
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
@@ -267,11 +270,11 @@ def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask 
       let subExpr ← Core.viewSubexpr loc.pos (← loc.expr)
       let rwLemmas ← getCandidates subExpr
       if rwLemmas.isEmpty then
-        return <p>No rewrite lemmata found.</p>
+        return <p> No rewrite lemmata found. </p>
       let results ← filterMapMetaMWithMaxHeartbeats rwLemmas fun rwLemma => OptionT.run do
         return (rwLemma, ← rewriteCall loc rwLemma)
       if results.isEmpty then
-        return <p>No applicable rewrite lemmata found.</p>
+        return <p> No applicable rewrite lemmata found. </p>
       renderResults results props.replaceRange doc
 
 @[widget_module]
