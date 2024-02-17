@@ -298,13 +298,13 @@ inductive DTExpr where
   | forall : DTExpr → DTExpr → DTExpr
   /-- A projection. It stores the structure name, projection index, struct body and arguments. -/
   | proj : Name → Nat → DTExpr → Array DTExpr → DTExpr
-deriving Inhabited, BEq
+deriving Inhabited, Repr
 
 private partial def DTExpr.format : DTExpr → Format
   | .star _                 => "*"
   | .opaque                 => "◾"
   | .const n as             => Std.format n ++ formatArgs as
-  | .fvar n as             => Std.format n.name ++ formatArgs as
+  | .fvar n as              => Std.format n.name ++ formatArgs as
   | .bvar i as              => "#" ++ Std.format i  ++ formatArgs as
   | .lit (Literal.natVal v) => Std.format v
   | .lit (Literal.strVal v) => repr v
@@ -332,6 +332,37 @@ partial def DTExpr.size : DTExpr → Nat
 | .forall d b => 1 + d.size + b.size
 | _ => 1
 
+private def DTExpr.beq (a b : DTExpr) : Bool :=
+  (go a b).run' {}
+where
+  go (a b : DTExpr) : StateM (HashMap MVarId MVarId) Bool :=
+    match a, b with
+    | .opaque           , .opaque            => pure true
+    | .const n₁ as₁     , .const n₂ as₂      => pure (n₁ == n₂) <&&> goArray as₁ as₂
+    | .fvar n₁ as₁      , .fvar n₂ as₂       => pure (n₁ == n₂) <&&> goArray as₁ as₂
+    | .bvar i₁ as₁      , .bvar i₂ as₂       => pure (i₁ == i₂) <&&> goArray as₁ as₂
+    | .lit li₁          , .lit li₂           => pure (li₁ == li₂)
+    | .sort             , .sort              => pure true
+    | .lam b₁           , .lam b₂            => go b₁ b₂
+    | .forall d₁ b₁     , .forall d₂ b₂      => go d₁ d₂ <&&> go b₁ b₂
+    | .proj n₁ i₁ a₁ as₁, .proj n₂ i₂ a₂ as₂ => pure (n₁ == n₂ && i₁ == i₂)
+                                            <&&> go a₁ a₂ <&&> goArray as₁ as₂
+    | .star none        , .star none         => pure true
+    | .star (some id₁)  , .star (some id₂)   => modifyGet fun map => match map.find? id₁ with
+      | some id => (id == id₂, map)
+      | none => (true, map.insert id₁ id₂)
+    | _ , _ => return false
+
+  goArray (as bs : Array DTExpr) : StateM (HashMap MVarId MVarId) Bool := do
+    if h : as.size = bs.size then
+      for g : i in [:as.size] do
+        unless ← go as[i] (bs[i]'(h ▸ g.2)) do
+          return false
+      return true
+    else
+      return false
+
+instance : BEq DTExpr := ⟨DTExpr.beq⟩
 
 /-! ## Encoding an Expr -/
 
