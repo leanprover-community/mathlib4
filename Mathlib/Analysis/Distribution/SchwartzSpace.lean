@@ -1081,7 +1081,7 @@ def integral (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
 
 @[simp]
 lemma integral_apply {μ : Measure D} [IsAddHaarMeasure μ] (f : 𝓢(D, V)) :
-  integral μ f = ∫ x, f x ∂μ := rfl
+    integral μ f = ∫ x, f x ∂μ := rfl
 
 end Integration
 
