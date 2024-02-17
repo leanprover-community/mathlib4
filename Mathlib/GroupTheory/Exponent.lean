@@ -358,7 +358,7 @@ then the exponent of `G` divides the exponent of `H`.
 then the exponent of `G` divides the exponent of `H`."]
 theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) :
     Monoid.exponent G ∣ Monoid.exponent H :=
-  exponent_dvd_of_forall_pow_eq_one _ _ fun g => e_inj (by
+  exponent_dvd_of_forall_pow_eq_one fun g => e_inj (by
     rw [map_pow, pow_exponent_eq_one, map_one])
 
 /--
