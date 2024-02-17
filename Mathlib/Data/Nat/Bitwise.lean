@@ -199,7 +199,7 @@ theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n 
   induction' n using Nat.binaryRec with b n hn
   · rfl
   · have : b = false := by simpa using h 0
-    rw [this, bit_false, bit0_val, hn fun i => by rw [← h (i + 1), testBit_succ], mul_zero]
+    rw [this, bit_false, bit0_val, hn fun i => by rw [← h (i + 1), testBit_succ]]
 #align nat.zero_of_test_bit_eq_ff Nat.zero_of_testBit_eq_false
 
 theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
@@ -453,8 +453,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
       rfl
     ) h fun j hj => by
       -- Porting note: this was originally `simp [hi' _ hj]`
-      rw [Nat.testBit_xor, hi' _ hj, Bool.xor, Bool.xor_false, eq_self_iff_true]
-      trivial
+      rw [Nat.testBit_xor, hi' _ hj, Bool.xor, Bool.xor_false]
 #align nat.lxor_trichotomy Nat.xor_trichotomy
 
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c :=
