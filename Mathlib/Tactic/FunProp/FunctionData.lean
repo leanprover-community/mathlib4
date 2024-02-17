@@ -7,7 +7,7 @@ import Lean
 import Qq
 
 import Std.Lean.Expr
-import Mathlib.Tactic.FunProp.MorExt
+import Mathlib.Tactic.FunProp.Mor
 
 /-!
 ## `funProp` data structure holding information about a function

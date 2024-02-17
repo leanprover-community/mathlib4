@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
-import Qq
 import Std.Tactic.Exact
 
 import Mathlib.Tactic.FunProp.Theorems
@@ -245,31 +244,6 @@ def applyPiRule (funPropDecl : FunPropDecl) (e f : Expr)
   tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f)] funPropDecl.discharger funProp
 
 
-/-- Changes the goal from `P fun x => f x₁ x₂ x₃` to `P fun x => f x₁ x₂`
-  TODO: be able to provide number of arguments -/
-def removeArgRule (funPropDecl : FunPropDecl) (e f : Expr)
-    (funProp : Expr → FunPropM (Option Result)) :
-    FunPropM (Option Result) := do
-
-  lambdaTelescope f fun xs b => do
-    if xs.size ≠ 1 then
-      throwError
-        "funProp bug: can't remove arguments from {← ppExpr f}, not a lambda with one argument"
-
-    let xId := xs[0]!.fvarId!
-
-    let .app fn z := b
-      | throwError "funProp bug: can't remove arguments from {← ppExpr f}, body not application"
-
-    if z.containsFVar xId then
-      return none
-
-    let f' := .lam `f (← inferType fn) (.app (.bvar 0) z) default
-    let g' ← mkLambdaFVars xs fn
-
-    applyCompRule funPropDecl e f' g' funProp
-
-
 /-- Prove function property of `fun x => let y := g x; f x y`. -/
 def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     (funProp : Expr → FunPropM (Option Result)) :
@@ -309,9 +283,33 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
       let f := Expr.lam xName xType (yBody.lowerLooseBVars 1 1) xBi
       funProp (e.setArg (funPropDecl.funArgId) f)
 
-
   | _ => throwError "expected expression of the form `fun x => lam y := ..; ..`"
   -- return none
+
+
+/-- Changes the goal from `P fun x => f x₁ x₂ x₃` to `P fun x => f x₁ x₂`
+  TODO: be able to provide number of arguments -/
+def removeArgRule (funPropDecl : FunPropDecl) (e f : Expr)
+    (funProp : Expr → FunPropM (Option Result)) :
+    FunPropM (Option Result) := do
+
+  lambdaTelescope f fun xs b => do
+    if xs.size ≠ 1 then
+      throwError
+        "funProp bug: can't remove arguments from {← ppExpr f}, not a lambda with one argument"
+
+    let xId := xs[0]!.fvarId!
+
+    let .app fn z := b
+      | throwError "funProp bug: can't remove arguments from {← ppExpr f}, body not application"
+
+    if z.containsFVar xId then
+      return none
+
+    let f' := .lam `f (← inferType fn) (.app (.bvar 0) z) default
+    let g' ← mkLambdaFVars xs fn
+
+    applyCompRule funPropDecl e f' g' funProp
 
 
 /-- Prove function property of using "morphism theorems" e.g. bundled linear map is linear map.  -/
@@ -379,24 +377,32 @@ def removeArgRule' (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
 
 /-- Prove function property of `fun f => f x₁ ... xₙ`. -/
-def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (f : FunctionData)
+def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
-  unless f.args.size ≠ 0 do throwError "funProp bug: invalid use of `bvarAppCase` on {← ppExpr e}"
-  let n := f.args.size
-  if f.args[n-1]!.coe.isSome then
-    applyMorRules funPropDecl e f funProp
+  if (← fData.isMorApplication) != .none then
+    applyMorRules funPropDecl e fData funProp
   else
-    if n = 1 then
-      applyProjRule funPropDecl e f.args[0]!.expr (← f.domainType) funProp
+    if let .some (f, g) ← fData.nontrivialDecomposition then
+      applyCompRule funPropDecl e f g funProp
     else
-      removeArgRule funPropDecl e (← f.toExpr) funProp
+      applyProjRule funPropDecl e fData.args[0]!.expr (← fData.domainType) funProp
 
 
 def getDeclTheorems (funPropDecl : FunPropDecl) (funName : Name)
     (mainArgs : Array Nat) (appliedArgs : Nat) : MetaM (Array FunctionTheorem) := do
 
   let thms ← getTheoremsForFunction funName funPropDecl.funPropName
+
+  let thms := thms
+    |>.filter (fun thm => (isOrderedSubsetOf mainArgs thm.mainArgs))
+    |>.qsort (fun t s =>
+      let dt := (Int.ofNat t.appliedArgs - Int.ofNat appliedArgs).natAbs
+      let ds := (Int.ofNat s.appliedArgs - Int.ofNat appliedArgs).natAbs
+      match compare dt ds with
+      | .lt => true
+      | .gt => false
+      | .eq => t.mainArgs.size < s.mainArgs.size)
   -- todo: sorting and filtering
   return thms
 

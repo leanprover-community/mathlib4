@@ -102,16 +102,15 @@ structure LinHom (α β) [Obj α] [Obj β] where
 
 infixr:25 " -o " => LinHom
 
-attribute [fun_prop_coe] DFunLike.coe
-
-instance : FunLike (α ->> β) α β where
+instance : CoeFun (α ->> β) (fun _ => α → β) where
   coe := fun f => f.toFun
-  coe_injective' := silentSorry
 
 instance : FunLike (α -o β) α β where
   coe := fun f => f.toFun
   coe_injective' := silentSorry
 
+attribute [fun_prop_coe] DFunLike.coe
+attribute [fun_prop_coe] ConHom.toFun
 
 instance : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
@@ -333,6 +332,6 @@ example : Lin (fun x : α => (bar x : α → α)) := by fun_prop
 example : Lin (fun x y : α => bar x y) := by fun_prop
 example (y) : Lin (fun x : α => bar x y) := by fun_prop
 
-example : Lin (DFunLike.coe : (α ->> α) → (α → α)) := by fun_prop
-example : Con (DFunLike.coe : (α ->> α) → (α → α)) := by fun_prop
-example : Lin (DFunLike.coe : (α -o α) → (α → α)) := by fun_prop
+example : Lin (fun (f : α ->> α) => (f : α → α)) := by fun_prop
+example : Con (fun (f : α ->> α) => (f : α → α)) := by fun_prop
+example : Lin (fun (f : α -o α) => (f : α → α)) := by fun_prop
