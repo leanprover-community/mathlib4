@@ -81,13 +81,19 @@ instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_eq_abs, abs_ofReal, ← Real.norm_eq_abs,
       norm_algebraMap']
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
 /-- The module structure from `Module.complexToReal` is a normed space. -/
 instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E :=
   NormedSpace.restrictScalars ℝ ℂ E
 #align normed_space.complex_to_real NormedSpace.complexToReal
+
+-- see Note [lower instance priority]
+/-- The algebra structure from `Algebra.complexToReal` is a normed algebra. -/
+instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [SeminormedRing A]
+    [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
+  NormedAlgebra.restrictScalars ℝ ℂ A
 
 theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
@@ -165,7 +171,7 @@ theorem norm_nat (n : ℕ) : ‖(n : ℂ)‖ = n :=
 #align complex.norm_nat Complex.norm_nat
 
 @[simp 1100]
-theorem norm_int {n : ℤ} : ‖(n : ℂ)‖ = |(n : ℝ)| := (int_cast_abs n).symm
+lemma norm_int {n : ℤ} : ‖(n : ℂ)‖ = |(n : ℝ)| := abs_intCast n
 #align complex.norm_int Complex.norm_int
 
 theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
@@ -694,9 +700,9 @@ open scoped ComplexOrder
 /-- The *slit plane* is the complex plane with the closed negative real axis removed. -/
 def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
-lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Iff.rfl
+lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
 
-lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := rfl
+lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := Set.setOf_or.symm
 
 lemma isOpen_slitPlane : IsOpen slitPlane :=
   (isOpen_lt continuous_const continuous_re).union (isOpen_ne_fun continuous_im continuous_const)

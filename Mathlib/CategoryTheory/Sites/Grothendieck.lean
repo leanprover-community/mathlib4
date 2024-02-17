@@ -26,8 +26,9 @@ Two explicit examples of Grothendieck topologies are given:
 as well as the complete lattice structure on Grothendieck topologies (which gives two additional
 explicit topologies: the discrete and trivial topologies.)
 
-A pretopology, or a basis for a topology is defined in `Pretopology.lean`. The topology associated
-to a topological space is defined in `Spaces.lean`.
+A pretopology, or a basis for a topology is defined in
+`Mathlib/CategoryTheory/Sites/Pretopology.lean`. The topology associated
+to a topological space is defined in `Mathlib/CategoryTheory/Sites/Spaces.lean`.
 
 ## Tags
 

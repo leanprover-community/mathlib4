@@ -522,7 +522,7 @@ theorem isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b : ι → Se
     subst this
     obtain ⟨t, ht⟩ :=
       h₁.elim_finite_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) (by rw [e])
-    refine' ⟨t.image f', Set.Finite.intro inferInstance, le_antisymm _ _⟩
+    refine' ⟨t.image f', Set.toFinite _, le_antisymm _ _⟩
     · refine' Set.Subset.trans ht _
       simp only [Set.iUnion_subset_iff]
       intro i hi
@@ -570,7 +570,8 @@ theorem cocompact_eq_cofinite (X : Type*) [TopologicalSpace X] [DiscreteTopology
   simp only [cocompact, hasBasis_cofinite.eq_biInf, isCompact_iff_finite]
 #align filter.cocompact_eq_cofinite Filter.cocompact_eq_cofinite
 
-@[simp] theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
+-- deprecated on 2024-02-07: see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`
+@[deprecated] theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
   (cocompact_eq_cofinite ℕ).trans Nat.cofinite_eq_atTop
 #align nat.cocompact_eq Nat.cocompact_eq
 
