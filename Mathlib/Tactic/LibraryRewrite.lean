@@ -21,6 +21,19 @@ instance : ToFormat RewriteLemma where
 def RewriteLemma.length (rwLemma : RewriteLemma) : Nat :=
   rwLemma.name.toString.length
 
+/--
+We want lemmas rewriting from left to right to show up earliest.
+After that, we want lemmas with shorter names to show up earliest.
+-/
+def RewriteLemma.lt (a b : RewriteLemma) : Bool :=
+  !a.symm && b.symm || a.symm == b.symm &&
+    (a.length < b.length || a.length == b.length &&
+      a.name.lt b.name)
+
+instance : LT RewriteLemma := ⟨fun a b => RewriteLemma.lt a b⟩
+instance (a b : RewriteLemma) : Decidable (a < b) :=
+  inferInstanceAs (Decidable (RewriteLemma.lt a b))
+
 def RewriteLemma.diffs (rwLemma : RewriteLemma) : Lean.AssocList SubExpr.Pos Widget.DiffTag :=
   .cons rwLemma.insertedPos .wasInserted
   (.cons rwLemma.deletedPos .wasDeleted .nil)
@@ -87,7 +100,7 @@ where
     return (currentTree, ← updateRefinedDiscrTree name cinfo libraryTree)
 
   sortLemmas : Array RewriteLemma → Array RewriteLemma :=
-    Array.qsort (lt := (·.length < ·.length))
+    Array.qsort (lt := (· < ·))
 
   post
     | (currentTree, libraryTree) => do
