@@ -610,13 +610,11 @@ lemma integral_eq_integral_Ioc_meas_le {α : Type*} [MeasurableSpace α] {f : α
   rw [f_intble.integral_eq_integral_meas_le f_nn]
   rw [set_integral_eq_of_subset_of_ae_diff_eq_zero
       measurableSet_Ioi.nullMeasurableSet Ioc_subset_Ioi_self ?_]
-  apply eventually_of_forall
-  intro t ht
+  apply eventually_of_forall (fun t ht ↦ ?_)
   have htM : M < t := by simp_all only [mem_diff, mem_Ioi, mem_Ioc, not_and, not_le]
   have obs : μ {a | M < f a} = 0 := by
     rw [measure_zero_iff_ae_nmem]
-    filter_upwards [f_bdd] with a ha
-    exact not_lt.mpr ha
+    filter_upwards [f_bdd] with a ha using not_lt.mpr ha
   rw [ENNReal.toReal_eq_zero_iff]
   exact Or.inl <| measure_mono_null (fun a ha ↦ lt_of_lt_of_le htM ha) obs
 
