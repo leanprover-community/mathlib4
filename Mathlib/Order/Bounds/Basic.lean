@@ -7,7 +7,7 @@ import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.Directed
 
-#align_import order.bounds.basic from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
+#align_import order.bounds.basic from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
 
 /-!
 # Upper / lower bounds
@@ -89,6 +89,12 @@ theorem mem_upperBounds : a ∈ upperBounds s ↔ ∀ x ∈ s, x ≤ a :=
 theorem mem_lowerBounds : a ∈ lowerBounds s ↔ ∀ x ∈ s, a ≤ x :=
   Iff.rfl
 #align mem_lower_bounds mem_lowerBounds
+
+lemma mem_upperBounds_iff_subset_Iic : a ∈ upperBounds s ↔ s ⊆ Iic a := Iff.rfl
+#align mem_upper_bounds_iff_subset_Iic mem_upperBounds_iff_subset_Iic
+
+lemma mem_lowerBounds_iff_subset_Ici : a ∈ lowerBounds s ↔ s ⊆ Ici a := Iff.rfl
+#align mem_lower_bounds_iff_subset_Ici mem_lowerBounds_iff_subset_Ici
 
 theorem bddAbove_def : BddAbove s ↔ ∃ x, ∀ y ∈ s, y ≤ x :=
   Iff.rfl

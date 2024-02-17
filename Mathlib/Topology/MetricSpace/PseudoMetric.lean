@@ -1698,7 +1698,7 @@ theorem continuous_dist : Continuous fun p : α × α => dist p.1 p.2 :=
   uniformContinuous_dist.continuous
 #align continuous_dist continuous_dist
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => dist (f b) (g b) :=
   continuous_dist.comp (hf.prod_mk hg : _)
@@ -1740,6 +1740,7 @@ theorem continuous_nndist : Continuous fun p : α × α => nndist p.1 p.2 :=
   uniformContinuous_nndist.continuous
 #align continuous_nndist continuous_nndist
 
+@[fun_prop]
 protected theorem Continuous.nndist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => nndist (f b) (g b) :=
   continuous_nndist.comp (hf.prod_mk hg : _)

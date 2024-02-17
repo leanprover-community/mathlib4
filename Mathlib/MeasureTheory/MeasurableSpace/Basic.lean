@@ -612,7 +612,7 @@ theorem MeasurableSet.subtype_image {s : Set α} {t : Set s} (hs : MeasurableSet
     MeasurableSet t → MeasurableSet (((↑) : s → α) '' t) := by
   rintro ⟨u, hu, rfl⟩
   rw [Subtype.image_preimage_coe]
-  exact hu.inter hs
+  exact hs.inter hu
 #align measurable_set.subtype_image MeasurableSet.subtype_image
 
 @[measurability]

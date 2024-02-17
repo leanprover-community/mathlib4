@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Fin.OrderHom
+import Mathlib.Algebra.Ring.Hom.Defs
 
 #align_import data.fintype.basic from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
 
@@ -623,12 +624,12 @@ def ofIsEmpty [IsEmpty α] : Fintype α :=
   ⟨∅, isEmptyElim⟩
 #align fintype.of_is_empty Fintype.ofIsEmpty
 
-/-- Note: this lemma is specifically about `Fintype.of_isEmpty`. For a statement about
+/-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
 @[simp]
-theorem univ_of_isEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
+theorem univ_ofIsEmpty [IsEmpty α] : @univ α Fintype.ofIsEmpty = ∅ :=
   rfl
-#align fintype.univ_of_is_empty Fintype.univ_of_isEmpty
+#align fintype.univ_of_is_empty Fintype.univ_ofIsEmpty
 
 instance : Fintype Empty := Fintype.ofIsEmpty
 instance : Fintype PEmpty := Fintype.ofIsEmpty
