@@ -214,12 +214,13 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) : MetaM (
       s! " (config := \{ occs := .pos [{pos+1}]})"
   return some s! "rw{cfg} [{symm}{thm}]{location}"
 
-def renderResults (results : Array (Array (RewriteLemma × String))) (range : Lsp.Range)
-    (doc : FileWorker.EditableDocument) : MetaM Html := do
+def renderResults (results : Array (Array (RewriteLemma × String))) (isEverything : Bool)
+    (range : Lsp.Range) (doc : FileWorker.EditableDocument) : MetaM Html := do
   let htmls ← results.mapM renderBlock
   let htmls := htmls.concatMap (#[·, <hr/>])
+  let title := s! "{if isEverything then "All" else "Some"} rewrite suggestions:"
   return <details «open»={true}>
-      <summary className="mv2 pointer">{.text "Library rewrite options"}</summary>
+      <summary className="mv2 pointer"> {.text title}</summary>
       {.element "div" #[] htmls}
     </details>
 where
@@ -246,30 +247,40 @@ def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
     Keeps track of the range in the text document of the piece of syntax to replace. -/
 structure InteractiveTacticProps extends PanelWidgetProps where
   replaceRange : Lsp.Range
+  factor : Nat
 deriving RpcEncodable
 
 @[specialize]
-def filterMapMetaMWithMaxHeartbeats {α β} (as : Array α) (f : α → MetaM (Option β))
-  (maxTotal := 10000) (max := 1000) : MetaM (Array β) :=
+def filterLemmata {α β} (ass : Array (Array α × Nat)) (f : α → MetaM (Option β))
+  (maxTotal := 10000) (max := 1000) : MetaM (Array (Array β × Nat) × Bool) :=
   let maxTotal := maxTotal * 1000
   let max := max * 1000
   withCatchingRuntimeEx do
   let startHeartbeats ← IO.getNumHeartbeats
   let mut currHeartbeats := startHeartbeats
-  let mut bs := #[]
-  for a in as do
-    try
-      if let some b ← withTheReader Core.Context ({· with
-          initHeartbeats := currHeartbeats
-          maxHeartbeats := max }) do
-            withoutCatchingRuntimeEx (f a) then
-        bs := bs.push b
-    catch _ =>
-      pure ()
-    currHeartbeats ← IO.getNumHeartbeats
+  let mut bss := #[]
+  let mut isEverything := true
+  for (as, n) in ass do
+    let mut bs := #[]
+    for a in as do
+      try
+        if let some b ← withTheReader Core.Context ({· with
+            initHeartbeats := currHeartbeats
+            maxHeartbeats := max }) do
+              withoutCatchingRuntimeEx (f a) then
+          bs := bs.push b
+      catch _ =>
+        isEverything := false
+
+      currHeartbeats ← IO.getNumHeartbeats
+      if currHeartbeats - startHeartbeats > maxTotal then
+        break
+
+    unless bs.isEmpty do
+      bss := bss.push (bs, n)
     if currHeartbeats - startHeartbeats > maxTotal then
-      break
-  return bs
+      return (bss, false)
+  return (bss, isEverything)
 
 @[server_rpc_method]
 def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask Html) :=
@@ -289,21 +300,33 @@ def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask 
       let rwLemmas ← getCandidates subExpr
       if rwLemmas.isEmpty then
         return <p> No rewrite lemmata found. </p>
-      let results ← filterMapMetaMWithMaxHeartbeats rwLemmas fun (rwLemmas, _) => do
-        let result ← rwLemmas.filterMapM fun rwLemma => OptionT.run do
-          return (rwLemma, ← rewriteCall loc rwLemma)
-        if result.isEmpty then
-          return none
-        return result
+      let (results, isEverything) ← filterLemmata rwLemmas (fun rwLemma => OptionT.run do
+        return (rwLemma, ← rewriteCall loc rwLemma))
+        (max := props.factor * 1000) (maxTotal := props.factor * 10000)
       if results.isEmpty then
         return <p> No applicable rewrite lemmata found. </p>
-      renderResults results props.replaceRange doc
+      renderResults (results.map (·.1)) isEverything props.replaceRange doc
 
 @[widget_module]
 def LibraryRewrite : Component InteractiveTacticProps :=
   mk_rpc_widget% LibraryRewrite.rpc
 
-elab stx:"rw??" : tactic => do
-  let some range := (← getFileMap).rangeOfStx? stx | return
-  Widget.savePanelWidgetInfo (hash LibraryRewrite.javascript)
-    (pure $ json% { replaceRange : $(range) }) stx
+/--
+After writing `rw??`, you can shift-click an expression in the fist tactic state goal,
+which makes a list of rewrite suggestions appear for rewriting the selected expression.
+Clicking on the lemma name of a suggestion will paste the rewrite tactic into the editor.
+
+`rw??` is limited to run for a short amount of time, but if you want it to run for longer,
+you can specify a factor by which to increase the available heartbeats.
+If all possible results have been listed, it says `All rewrite results:`.
+-/
+syntax (name := rw??) "rw??" (num)? : tactic
+
+@[tactic Mathlib.Tactic.LibraryRewrite.rw??]
+def elabRw?? : Elab.Tactic.Tactic := fun stx => match stx with
+  | `(tactic| rw?? $(factor)?) => do
+    let some range := (← getFileMap).rangeOfStx? stx | return
+    let factor := match factor with | some n => n.raw.isNatLit?.getD 1 | none => 1
+    Widget.savePanelWidgetInfo (hash LibraryRewrite.javascript)
+      (pure $ json% { replaceRange : $(range), factor : $(factor) }) stx
+  | _ => Elab.throwUnsupportedSyntax
