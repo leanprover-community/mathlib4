@@ -79,7 +79,8 @@ structure SchwartzMap where
   decay' : ∀ k n : ℕ, ∃ C : ℝ, ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n toFun x‖ ≤ C
 #align schwartz_map SchwartzMap
 
--- mathport name: «expr𝓢( , )»
+/-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
+  any power of `‖x‖`. -/
 scoped[SchwartzMap] notation "𝓢(" E ", " F ")" => SchwartzMap E F
 
 variable {E F}
@@ -1030,11 +1031,9 @@ lemma integrable_pow_mul (f : 𝓢(D, V)) {μ : Measure D} (k : ℕ) [IsAddHaarM
     Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
   let l := finrank ℝ D + 1 + k
   obtain ⟨C, C_nonneg, hC⟩ : ∃ C, 0 ≤ C ∧ ∀ x, (1 + ‖x‖) ^ l * ‖f x‖ ≤ C := by
-    let m : ℕ × ℕ := (l, 0)
-    refine ⟨2 ^ m.1 * (Finset.Iic m).sup (fun m => SchwartzMap.seminorm ℝ m.1 m.2) f, by positivity,
-      fun x ↦ ?_⟩
-    simpa using f.one_add_le_sup_seminorm_apply (m := m) (k := l) (n := 0) le_rfl le_rfl x
-  have : Integrable (fun x : D => C * (1 + ‖x‖) ^ (-((finrank ℝ D + 1 : ℕ) : ℝ))) μ := by
+    use 2 ^ l * (Finset.Iic (l, 0)).sup (fun m ↦ SchwartzMap.seminorm ℝ m.1 m.2) f, by positivity
+    simpa using f.one_add_le_sup_seminorm_apply (m := (l, 0)) (k := l) (n := 0) le_rfl le_rfl
+  have : Integrable (fun x : D ↦ C * (1 + ‖x‖) ^ (-((finrank ℝ D + 1 : ℕ) : ℝ))) μ := by
     apply (integrable_one_add_norm ?_).const_mul
     exact Nat.cast_lt.mpr Nat.le.refl
   apply this.mono ((aestronglyMeasurable_id.norm.pow _).mul f.continuous.aestronglyMeasurable.norm)
@@ -1067,8 +1066,7 @@ def integral (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
         apply integral_nonneg
         intro
         positivity
-      refine ⟨by positivity, fun f ↦ ?_⟩
-      apply (norm_integral_le_integral_norm f).trans
+      refine ⟨by positivity, fun f ↦ (norm_integral_le_integral_norm f).trans ?_⟩
       have h : ∀ x, ‖f x‖ ≤ (1 + ‖x‖)^(-(l : ℝ)) *
           (2^l * ((Finset.Iic m).sup (fun m => SchwartzMap.seminorm ℝ m.1 m.2) f)) := by
         intro x
