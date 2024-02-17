@@ -327,13 +327,11 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
 
 theorem exp_neg_two_mul_le {x : ℝ} (hx : 0 < x) : exp (-2 * x) < exp (2 - ⌈x⌉₊) / ⌈x⌉₊ := by
   have h₁ := ceil_lt_add_one hx.le
-  have h₂ : 1 - x ≤ 2 - ⌈x⌉₊ := by
-    rw [_root_.le_sub_iff_add_le]
-    apply (add_le_add_left h₁.le _).trans_eq
-    rw [← add_assoc, sub_add_cancel]
-    linarith
-  refine' lt_of_le_of_lt _ (div_lt_div_of_pos_left (exp_pos _) (cast_pos.2 <| ceil_pos.2 hx) h₁)
-  refine' le_trans _ (div_le_div_of_le (add_nonneg hx.le zero_le_one) (exp_le_exp.2 h₂))
+  have h₂ : 1 - x ≤ 2 - ⌈x⌉₊ := by linarith
+  calc
+    _ ≤ exp (1 - x) / (x + 1) := ?_
+    _ ≤ exp (2 - ⌈x⌉₊) / (x + 1) := by gcongr
+    _ < _ := by gcongr
   rw [le_div_iff (add_pos hx zero_lt_one), ← le_div_iff' (exp_pos _), ← exp_sub, neg_mul,
     sub_neg_eq_add, two_mul, sub_add_add_cancel, add_comm _ x]
   exact le_trans (le_add_of_nonneg_right zero_le_one) (add_one_le_exp _)
