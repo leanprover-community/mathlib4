@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2024 Edward van de Meent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Edward van de Meent.
+Authors: Edward van de Meent
 -/
-import Mathlib.Topology.Bornology.Basic
-import Mathlib.Tactic
+import Mathlib.Topology.Algebra.Order.Compact
+import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.GPseudoMetricSpace.IsOrderedAddCommMonoid
-
+import Mathlib.Data.Set.Pointwise.Interval
 /-!
 # General Pseudo-Metric Spaces
 
@@ -33,7 +34,7 @@ Because of this, the field is set as protected, and a function
 -/
 
 open Set Filter Bornology
-open scoped BigOperators Topology
+open scoped BigOperators
 
 /-- Construct a bornology from a generic distance function and metric space axioms.
 this is not declared as an instance, as it would lead to multiple instances of bornology on α,
