@@ -22,7 +22,7 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 
 namespace Nat
 
-open Nat BigOperators Finset Nat.ArithmeticFunction
+open BigOperators Finset ArithmeticFunction
 
 /--
   The `Finset` of all `d`-tuples of natural numbers whose product is `n`. Defined to be `∅` when
