@@ -298,7 +298,7 @@ inductive DTExpr where
   | forall : DTExpr → DTExpr → DTExpr
   /-- A projection. It stores the structure name, projection index, struct body and arguments. -/
   | proj : Name → Nat → DTExpr → Array DTExpr → DTExpr
-deriving Inhabited, Repr
+deriving Inhabited, BEq, Repr
 
 private partial def DTExpr.format : DTExpr → Format
   | .star _                 => "*"
@@ -332,7 +332,7 @@ partial def DTExpr.size : DTExpr → Nat
 | .forall d b => 1 + d.size + b.size
 | _ => 1
 
-private def DTExpr.beq (a b : DTExpr) : Bool :=
+private def DTExpr.eqv (a b : DTExpr) : Bool :=
   (go a b).run' {}
 where
   go (a b : DTExpr) : StateM (HashMap MVarId MVarId) Bool :=
@@ -361,8 +361,6 @@ where
       return true
     else
       return false
-
-instance : BEq DTExpr := ⟨DTExpr.beq⟩
 
 /-! ## Encoding an Expr -/
 
@@ -952,7 +950,7 @@ def insertEqn [BEq α] (d : RefinedDiscrTree α) (lhs rhs : Expr) (vLhs vRhs : �
   let keysLhs ← mkDTExprs lhs config onlySpecific fvarInContext
   let keysRhs ← mkDTExprs rhs config onlySpecific fvarInContext
   let d := keysLhs.foldl (insertDTExpr · · vLhs) d
-  if keysLhs == keysRhs then
+  if @List.beq _ ⟨DTExpr.eqv⟩ keysLhs keysRhs then
     return d
   else
     return keysRhs.foldl (insertDTExpr · · vRhs) d
