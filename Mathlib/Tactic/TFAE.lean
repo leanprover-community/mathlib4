@@ -24,35 +24,34 @@ syntax impArrow := " → " <|> " ↔ " <|> " ← "
 
 /--
 `tfae_have` introduces hypotheses for proving goals of the form `TFAE [P₁, P₂, ...]`. Specifically,
-`tfae_have i arrow j` introduces a hypothesis of type `Pᵢ arrow Pⱼ` to the local context,
-where `arrow` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices (beginning
-at 1) used to specify the propositions `P₁, P₂, ...` that appear in the `TFAE` goal list. A proof
-is required afterward, typically via a tactic block.
+`tfae_have i <arrow> j` introduces a hypothesis of type `Pᵢ <arrow> Pⱼ` to the local context,
+where `<arrow>` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices (beginning
+at 1) used to specify the propositions `P₁, P₂, ...` that appear in the `TFAE` goal list.
+
+A proof can be supplied immediately via `:=` or afterwards via a tactic block, like mathlib's
+`have`.
 
 ```lean
 example (h : P → R) : TFAE [P, Q, R] := by
-  tfae_have 1 → 3
-  · exact h
+  tfae_have 1 → 3 := h
   ...
 ```
 The resulting context now includes `tfae_1_to_3 : P → R`.
 
 The introduced hypothesis can be given a custom name, in analogy to `have` syntax:
 ```lean
-tfae_have h : 2 ↔ 3
+tfae_have h' : 2 ↔ 3
 ```
 
 Once sufficient hypotheses have been introduced by `tfae_have`, `tfae_finish` can be used to close
-the goal.
+the goal. The following example uses both tactic block and `:=` syntax for `tfae_have`.
 
 ```lean
 example : TFAE [P, Q, R] := by
-  tfae_have 1 → 2
-  · /- proof of P → Q -/
+  tfae_have 1 → 2 := sorry /- term of type P → Q -/
   tfae_have 2 → 1
-  · /- proof of Q → P -/
-  tfae_have 2 ↔ 3
-  · /- proof of Q ↔ R -/
+  · admit /- proof of Q → P -/
+  tfae_have 2 ↔ 3 := by admit /- proof of Q ↔ R -/
   tfae_finish
 ```
 -/
@@ -67,12 +66,9 @@ of hypotheses of the form `Pᵢ → Pⱼ` or `Pᵢ ↔ Pⱼ` have been introduce
 Example:
 ```lean
 example : TFAE [P, Q, R] := by
-  tfae_have 1 → 2
-  · /- proof of P → Q -/
-  tfae_have 2 → 1
-  · /- proof of Q → P -/
-  tfae_have 2 ↔ 3
-  · /- proof of Q ↔ R -/
+  tfae_have 1 → 2 := sorry /- proof of P → Q -/
+  tfae_have 2 → 1 := sorry /- proof of Q → P -/
+  tfae_have 2 ↔ 3 := sorry /- proof of Q ↔ R -/
   tfae_finish
 ```
 -/
@@ -168,7 +164,14 @@ def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax ``impArrow) : MetaM Name :
   return String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
 
 open Elab in
-/-- The core of `tfae_have`, which behaves like `haveLetCore` in `Mathlib.Tactic.Have`. -/
+/--
+The core of `tfae_have`, which behaves like mathlib's `have`.
+
+Given the type `t` of the implication, we include `tfae_i_<rel>_j : t` as a local decl in the
+context of `goal` and return the updated version. If a proof `pf : t` is optionally supplied, we
+return `(none, mainGoal)`. Otherwise, when `pf? := none`, `t` is used as the type of a new goal
+`arrowGoal`, and we return `(some arrowGoal, mainGoal)`.
+-/
 def tfaeHaveCore (goal : MVarId) (name : Option (TSyntax `ident)) (i j : TSyntax `num)
     (arrow : TSyntax ``impArrow) (t : Expr) (pf? : Option Expr) :
     TermElabM (Option MVarId × MVarId) :=
