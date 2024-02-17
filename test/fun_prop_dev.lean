@@ -39,7 +39,7 @@ instance : Obj Nat := ⟨⟩
 
 variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
-@[fun_prop] theorem Con_id : Con (fun x : α => x) := silentSorry
+@[fun_prop] theorem Con_id : Con (id : α → α) := silentSorry
 @[fun_prop] theorem Con_const (y : β) : Con (fun x : α => y) := silentSorry
 @[fun_prop] theorem Con_apply (x : α) : Con (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Con_applyDep (x : α) : Con (fun f : (x' : α) → E x' => f x) := silentSorry
@@ -51,7 +51,7 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 @[fun_prop] theorem Lin_id : Lin (fun x : α => x) := silentSorry
 @[fun_prop] theorem Lin_apply (x : α) : Lin (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Lin_applyDep (x : α) : Lin (fun f : (x' : α) → E x' => f x) := silentSorry
-@[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (fun x => f (g x)) := silentSorry
+@[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (f ∘ g) := silentSorry
 @[fun_prop] theorem Lin_pi {ι} (f : α → ι → γ) (hf : ∀ i, Lin (fun x => f x i)) : Lin (fun x i => f x i) := silentSorry
 
 

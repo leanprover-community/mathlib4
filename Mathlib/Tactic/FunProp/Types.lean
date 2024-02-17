@@ -60,9 +60,11 @@ structure Config where
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
   /-- Maximal number of transitions between function properties
   e.g. inferring differentiability from linearity -/
-  maxTransitionDepth := 20
+  maxDepth := 200
+  /-- current depth -/
+  depth := 0
   /-- Stack of used theorem, used to prevent trivial loops. -/
-  thmStack    : List Origin := []
+  thmStack : List Origin := []
   /-- Maximum number of steps `fun_prop` can take. -/
   maxSteps := 100000
 deriving Inhabited
@@ -78,10 +80,12 @@ structure State where
   numSteps := 0
 
 /-- Log used theorem -/
-def Config.addThm (cfg : Config) (thmId : Origin) :
-    Config :=
+def Config.addThm (cfg : Config) (thmId : Origin) : Config :=
   {cfg with thmStack := thmId :: cfg.thmStack}
 
+/-- Log used theorem -/
+def Config.increaseDepth (cfg : Config) : Config :=
+  {cfg with depth := cfg.depth + 1}
 
 /-- -/
 abbrev FunPropM := ReaderT FunProp.Config $ StateT FunProp.State MetaM
@@ -97,6 +101,13 @@ def getLastUsedTheoremName : FunPropM (Option Name) := do
   match (← read).thmStack.head? with
   | .some (.decl n) => return n
   | _ => return none
+
+/-- Puts the theorem to the stack of used theorems. -/
+def withTheorem {α} (thmOrigin : Origin) (go : FunPropM α) : FunPropM α := do
+  let cfg ← read
+  if cfg.depth > cfg.maxDepth then
+    throwError "fun_prop error; maximum depth reached!"
+  withReader (fun cfg => cfg.addThm thmOrigin |>.increaseDepth) do go
 
 def defaultUnfoldPred : Name → Bool :=
   #[`id,`Function.comp,`Function.HasUncurry.uncurry,`Function.uncurry].contains

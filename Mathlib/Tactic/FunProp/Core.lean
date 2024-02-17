@@ -63,7 +63,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
       -- try function property
       if (← isFunProp type.getForallBody) then
-        if let .some ⟨proof⟩ ← withReader (·.addThm thmId) (funProp type) then
+        if let .some ⟨proof⟩ ← funProp type then
           if (← isDefEq x proof) then
             continue
           else do
@@ -121,6 +121,9 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
     (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
+
+  -- add theorem to the stack
+  withTheorem thmId do
 
   if (← isDefEq type e) then
 
