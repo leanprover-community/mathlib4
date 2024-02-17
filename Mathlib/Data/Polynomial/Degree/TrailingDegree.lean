@@ -452,12 +452,12 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma trailingDegree_X_pow (n : ℕ) :
-    (X (R := R) ^ n).trailingDegree = n := by
+    (X ^ n : R[X]).trailingDegree = n := by
   rw [X_pow_eq_monomial, trailingDegree_monomial one_ne_zero]
 
 @[simp]
 lemma natTrailingDegree_X_pow (n : ℕ) :
-    (X (R := R) ^ n).natTrailingDegree = n := by
+    (X ^ n : R[X]).natTrailingDegree = n := by
   rw [X_pow_eq_monomial, natTrailingDegree_monomial one_ne_zero]
 
 end NonzeroSemiring
@@ -531,11 +531,9 @@ lemma Monic.eq_X_pow_of_natTrailingDegree_eq_natDegree
     p = X ^ p.natDegree := by
   ext n
   rw [coeff_X_pow]
-  obtain hn|rfl|hn := lt_trichotomy n p.natDegree
-  · rw [if_neg hn.ne, coeff_eq_zero_of_lt_natTrailingDegree]
-    rwa [h₂]
-  · rw [if_pos rfl]
-    exact h₁.leadingCoeff
+  obtain hn | rfl | hn := lt_trichotomy n p.natDegree
+  · rw [if_neg hn.ne, coeff_eq_zero_of_lt_natTrailingDegree (h₂ ▸ hn)]
+  · simpa only [if_pos rfl] using h₁.leadingCoeff
   · rw [if_neg hn.ne', coeff_eq_zero_of_natDegree_lt hn]
 
 end Semiring
