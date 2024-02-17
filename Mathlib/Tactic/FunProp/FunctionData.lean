@@ -98,6 +98,11 @@ inductive MaybeFunctionData where
   /-- Function data has been successfully generated. -/
   | data (fData : FunctionData)
 
+def MaybeFunctionData.get (fData : MaybeFunctionData) : MetaM Expr :=
+  match fData with
+  | .letE f | .lam f => pure f
+  | .data d => d.toExpr
+
 /-- Get `FunctionData` for `f`. -/
 def getFunctionData? (f : Expr)
     (unfoldPred : Name → Bool := fun _ => false) (cfg : WhnfCoreConfig := {}) :

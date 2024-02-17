@@ -329,14 +329,16 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
 
-    if let .some thmArgs ← detectLambdaTheoremArgs f xs then
+    let fData? ← getFunctionData? f defaultUnfoldPred {zeta:=false}
+
+    if let .some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {
         funPropName := funPropName
         thmName := declName
         thmArgs := thmArgs
       }
 
-    let .data fData ← getFunctionData? f defaultUnfoldPred
+    let .data fData := fData?
       | throwError s!"function in invalid form {← ppExpr f}"
 
     match fData.fn with
@@ -368,11 +370,16 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         priority  := prio
       }
       -- todo: maybe do a little bit more careful detection of morphism and transition theorems
-      let lastArg := fData.args[fData.args.size-1]!
-      if lastArg.coe.isSome then
-        return .mor thm
-      else
-        return .transition thm
+      match (← fData.isMorApplication) with
+      | .exact => return .mor thm
+      | .underApplied | .overApplied =>
+        throwError "fun_prop theorem about morphism coercion has to be in fully applied form"
+      | .none =>
+        if fData.fn.isFVar && (fData.args.size == 1) &&
+           (fData.args[0]!.expr == fData.mainVar) then
+          return .transition thm
+
+        throwError "Not a valid `fun_prop` theorem!"
     | _ =>
       throwError "unrecognized theoremType `{← ppExpr b}`"
 

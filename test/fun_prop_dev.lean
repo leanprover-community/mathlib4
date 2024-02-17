@@ -55,6 +55,7 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 @[fun_prop] theorem Lin_pi {ι} (f : α → ι → γ) (hf : ∀ i, Lin (fun x => f x i)) : Lin (fun x i => f x i) := silentSorry
 
 
+
 -- transition theorem --
 ------------------------
 @[fun_prop] theorem lin_to_con (f : α → β) (hf : Lin f) : Con f := silentSorry
@@ -75,8 +76,8 @@ variable [Add α] [Add β]
 -- "simple form" of theorems
 @[fun_prop] theorem fst_Con : Con fun x : α×β => x.1 := silentSorry
 @[fun_prop] theorem snd_Con : Con fun x : α×β => x.2 := silentSorry
-@[fun_prop] theorem add_Con : Con (fun x : α×α => x.1 + x.2) := silentSorry
-@[fun_prop] theorem add_Lin : Lin (fun x : α×α => x.1 + x.2) := silentSorry
+@[fun_prop] theorem add_Con : Con (Function.uncurry (fun x y : α => x + y)) := silentSorry
+@[fun_prop] theorem add_Lin : Lin ↿(fun x y : α => x + y) := silentSorry
 
 
 -- "compositional form" of theorems
@@ -165,7 +166,7 @@ example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (h
 
 ----------------------------------------------------------------------------------------------------
 
-example (f : α → β → γ) (hf : Con fun (x,y) => f x y)  : Con f := by fun_prop
+example (f : α → β → γ) (hf : Con fun (x,y) => f x y) : Con f := by fun_prop
 
 example : Con (fun x : α => x) := by fun_prop
 example (y : β) : Con (fun _ : α => y) := by fun_prop
@@ -315,7 +316,6 @@ noncomputable
 def foo : α ->> α ->> α := silentSorry
 noncomputable
 def bar : α ->> α ->> α := silentSorry
-
 
 @[fun_prop]
 theorem foo_lin : Lin fun x : α => foo x := silentSorry
