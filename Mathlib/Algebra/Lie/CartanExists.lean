@@ -43,7 +43,7 @@ end Matrix
 
 -- move to Mathlib.SetTheory.Cardinal.Basic
 open Cardinal in
-lemma exists_subset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
+lemma exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
     ∃ s : Finset α, n ≤ s.card := by
   obtain hα|hα := finite_or_infinite α
   · let hα := Fintype.ofFinite α
@@ -538,7 +538,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
       apply lieCharpoly₁_coeff_natDegree
       suffices finrank K Q + r = finrank K L by omega
       apply Submodule.finrank_quotient_add_finrank
-    obtain ⟨s, hs⟩ := exists_subset_le_card K _ hLK
+    obtain ⟨s, hs⟩ := exists_finset_le_card K _ hLK
     use s \ t
     refine ⟨?_, ?_⟩
     · refine le_trans ?_ (Finset.le_card_sdiff _ _)
