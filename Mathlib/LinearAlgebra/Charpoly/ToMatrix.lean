@@ -23,11 +23,8 @@ of `f` in any basis.
 universe u v w
 
 variable {R : Type u} {M : Type v} {M₁ M₂ : Type*} [CommRing R] [Nontrivial R]
-variable [AddCommGroup M] [AddCommGroup M₁] [AddCommGroup M₂]
-variable [Module R M] [Module R M₁] [Module R M₂]
-variable [Module.Free R M] [Module.Finite R M₁] [Module.Finite R M₂]
-variable [Module.Finite R M] [Module.Free R M₁] [Module.Free R M₂]
-variable (f : M →ₗ[R] M) (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂)
+variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
+variable (f : M →ₗ[R] M)
 
 open Matrix
 
@@ -88,7 +85,10 @@ theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis
     _ = f.charpoly := rfl
 #align linear_map.charpoly_to_matrix LinearMap.charpoly_toMatrix
 
-lemma charpoly_prodMap : (f₁.prodMap f₂).charpoly = f₁.charpoly * f₂.charpoly := by
+lemma charpoly_prodMap [AddCommGroup M₁] [AddCommGroup M₂] [Module R M₁] [Module R M₂]
+    [Module.Finite R M₁] [Module.Finite R M₂] [Module.Free R M₁] [Module.Free R M₂]
+    (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂) :
+    (f₁.prodMap f₂).charpoly = f₁.charpoly * f₂.charpoly := by
   let b₁ := chooseBasis R M₁
   let b₂ := chooseBasis R M₂
   let b := b₁.prod b₂
