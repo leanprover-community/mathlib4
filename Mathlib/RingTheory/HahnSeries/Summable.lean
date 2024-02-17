@@ -14,18 +14,10 @@ import Mathlib.RingTheory.Valuation.Basic
 # Hahn Series
 If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`, with the most studied case being when `Γ` is
-a linearly ordered abelian group and `R` is a field, in which case `HahnSeries Γ R` is a
-valued field, with value group `Γ`.
-
-These generalize Laurent series (with value group `ℤ`), and Laurent series are implemented that way
-in the file `RingTheory/LaurentSeries`.
+`Γ`, we can add further structure on `HahnSeries Γ R`.  We introduce valuations and a notion of
+summability for possibly infinite families of series.
 
 ## Main Definitions
-  * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
-  formal series over `Γ` with coefficients in `R`, whose supports are partially well-ordered.
-  * If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
-  * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
   * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
     ordered.
   * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of their supports
@@ -35,17 +27,9 @@ in the file `RingTheory/LaurentSeries`.
   topology, because there are topologically summable families that do not satisfy the axioms of
   `HahnSeries.SummableFamily`, and formally summable families whose sums do not converge
   topologically.
-  * Laurent series over `R` are implemented as `HahnSeries ℤ R` in the file
-    `RingTheory/LaurentSeries`.
-
-## TODO
-  * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
-    `X : R[X]` and `X : PowerSeries R`
-  * Equivalence between `HahnSeries Γ (HahnSeries Γ' R)` and `HahnSeries (Γ × Γ') R`
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
-
 -/
 
 set_option linter.uppercaseLean3 false

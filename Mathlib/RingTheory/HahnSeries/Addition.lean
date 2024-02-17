@@ -12,20 +12,14 @@ import Mathlib.RingTheory.HahnSeries.Basic
 # Additive properties of Hahn series
 If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`, with the most studied case being when `Γ` is
-a linearly ordered abelian group and `R` is a field, in which case `HahnSeries Γ R` is a
-valued field, with value group `Γ`.
-
-These generalize Laurent series (with value group `ℤ`), and Laurent series are implemented that way
-in the file `RingTheory/LaurentSeries`.
+`Γ`, we can add further structure on `HahnSeries Γ R`.  When `R` has an addition operation,
+`HahnSeries Γ R` also has addition by adding coefficients.
 
 ## Main Definitions
-
   * If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
-
 -/
 
 set_option linter.uppercaseLean3 false
