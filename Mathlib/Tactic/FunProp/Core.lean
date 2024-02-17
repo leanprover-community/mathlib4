@@ -46,7 +46,7 @@ sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
 
 /-- Synthesize arguments `xs` either with typeclass synthesis, with funProp or with discharger. -/
 def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
-    (discharge? : Expr → MetaM (Option Expr)) (funProp : Expr → FunPropM (Option Result)) :
+    (funProp : Expr → FunPropM (Option Result)) :
     FunPropM Bool := do
   let mut postponed : Array Expr := #[]
   for x in xs, bi in bis do
@@ -82,16 +82,6 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
                 "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
               return false
 
-        -- try function property specific discharger
-        if (← isProp type) then
-          if let .some proof ← discharge? type then
-            if (← isDefEq x proof) then
-              continue
-            else do
-              trace[Meta.Tactic.fun_prop.discharge]
-                "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
-              return false
-
       if ¬(← isProp type) then
         postponed := postponed.push x
         continue
@@ -117,8 +107,7 @@ private def ppOrigin' (origin : Origin) : MetaM String := do
 
 /-- Try to apply theorem - core function -/
 def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr)
-    (thmId : Origin) (discharge? : Expr → MetaM (Option Expr))
-    (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
+    (thmId : Origin) (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
     (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
 
@@ -127,7 +116,7 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 
   if (← isDefEq type e) then
 
-    if ¬(← synthesizeArgs thmId xs bis discharge? funProp) then
+    if ¬(← synthesizeArgs thmId xs bis funProp) then
       return none
     let proof ← instantiateMVars (mkAppN val xs)
 
@@ -141,7 +130,6 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
 /-- Try to apply a theorem provided some of the theorem arguments. -/
 def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     (hint : Array (Nat×Expr))
-    (discharge? : Expr → MetaM (Option Expr))
     (funProp : Expr → FunPropM (Option Result)) (newMCtxDepth : Bool := false) :
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
@@ -154,9 +142,10 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
         for (id,v) in hint do
           xs[id]!.mvarId!.assignIfDefeq v
       catch _ =>
-        trace[Meta.Tactic.fun_trans.discharge]    "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
+        trace[Meta.Tactic.fun_trans.discharge]
+          "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
 
-    tryTheoremCore xs bis thmProof type e thmOrigin discharge? funProp
+    tryTheoremCore xs bis thmProof type e thmOrigin funProp
 
   if newMCtxDepth then
     withNewMCtxDepth go
@@ -165,10 +154,9 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
 
 
 /-- Try to apply a theorem -/
-def tryTheorem? (e : Expr) (thmOrigin : Origin) (discharge? : Expr → MetaM (Option Expr))
-    (funProp : Expr → FunPropM (Option Result)) (newMCtxDepth : Bool := false) :
-    FunPropM (Option Result) :=
-  tryTheoremWithHint? e thmOrigin #[] discharge? funProp newMCtxDepth
+def tryTheorem? (e : Expr) (thmOrigin : Origin) (funProp : Expr → FunPropM (Option Result))
+    (newMCtxDepth : Bool := false) : FunPropM (Option Result) :=
+  tryTheoremWithHint? e thmOrigin #[] funProp newMCtxDepth
 
 
 /-- Apply lambda calculus rule P fun x => x` -/
@@ -181,7 +169,7 @@ def applyIdRule (funPropDecl : FunPropDecl) (e X : Expr)
       return none
   let .id id_X := thm.thmArgs | return none
 
-  tryTheoremWithHint? e (.decl thm.thmName) #[(id_X,X)] funPropDecl.discharger funProp
+  tryTheoremWithHint? e (.decl thm.thmName) #[(id_X,X)] funProp
 
 /-- Apply lambda calculus rule P fun x => y` -/
 def applyConstRule (funPropDecl : FunPropDecl) (e X y : Expr)
@@ -194,7 +182,7 @@ def applyConstRule (funPropDecl : FunPropDecl) (e X y : Expr)
       return none
   let .const id_X id_y := thm.thmArgs | return none
 
-  tryTheoremWithHint? e (.decl thm.thmName) #[(id_X,X),(id_y,y)] funPropDecl.discharger funProp
+  tryTheoremWithHint? e (.decl thm.thmName) #[(id_X,X),(id_y,y)] funProp
 
 /-- Apply lambda calculus rule P fun f => f i` -/
 def applyProjRule (funPropDecl : FunPropDecl) (e x XY : Expr)
@@ -206,7 +194,7 @@ def applyProjRule (funPropDecl : FunPropDecl) (e x XY : Expr)
   if ¬(Y.hasLooseBVars) then
     if let .some thm := ext.theorems.find? (funPropDecl.funPropName, .proj) then
       let .proj id_x id_Y := thm.thmArgs | return none
-      return ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funPropDecl.discharger funProp
+      return ← tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funProp
 
   -- dependent case
   -- can also handle non-dependent cases if non-dependent theorem is not available
@@ -218,7 +206,7 @@ def applyProjRule (funPropDecl : FunPropDecl) (e x XY : Expr)
       return none
   let .projDep id_x id_Y := thm.thmArgs | return none
 
-  tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funPropDecl.discharger funProp
+  tryTheoremWithHint? e (.decl thm.thmName) #[(id_x,x),(id_Y,Y)] funProp
 
 /-- Apply lambda calculus rule `P f → P g → P fun x => f (g x)` -/
 def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
@@ -231,7 +219,7 @@ def applyCompRule (funPropDecl : FunPropDecl) (e f g : Expr)
       return none
   let .comp id_f id_g := thm.thmArgs | return none
 
-  tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f),(id_g,g)] funPropDecl.discharger funProp
+  tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f),(id_g,g)] funProp
 
 /-- Apply lambda calculus rule `∀ y, P (f · y) → P fun x y => f x y` -/
 def applyPiRule (funPropDecl : FunPropDecl) (e f : Expr)
@@ -244,7 +232,7 @@ def applyPiRule (funPropDecl : FunPropDecl) (e f : Expr)
       return none
   let .pi id_f := thm.thmArgs | return none
 
-  tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f)] funPropDecl.discharger funProp
+  tryTheoremWithHint? e (.decl thm.thmName) #[(id_f,f)] funProp
 
 
 /-- Prove function property of `fun x => let y := g x; f x y`. -/
@@ -337,7 +325,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
 
     for c in candidates do
-      if let .some r ← tryTheorem? e (.decl c.thmName) funPropDecl.discharger funProp then
+      if let .some r ← tryTheorem? e (.decl c.thmName) funProp then
         return r
 
     trace[Meta.Tactic.fun_prop.step] "no theorem matched"
@@ -355,7 +343,7 @@ def applyTransitionRules (funPropDecl : FunPropDecl) (e : Expr)
     "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
 
   for c in candidates do
-    if let .some r ← tryTheorem? e (.decl c.thmName) funPropDecl.discharger funProp then
+    if let .some r ← tryTheorem? e (.decl c.thmName) funProp then
       return r
 
   trace[Meta.Tactic.fun_prop.step] "no theorem matched"
@@ -475,7 +463,7 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       continue
     | .eq =>
       if thm.form == .comp then
-        if let .some r ← tryTheorem? e thm.thmOrigin funPropDecl.discharger funProp then
+        if let .some r ← tryTheorem? e thm.thmOrigin funProp then
           return r
       else
 
@@ -484,7 +472,7 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
             dec? := .some (← fData.nontrivialDecomposition)
           match dec? with
           | .some .none =>
-            if let .some r ← tryTheorem? e thm.thmOrigin funPropDecl.discharger funProp then
+            if let .some r ← tryTheorem? e thm.thmOrigin funProp then
               return r
           | .some (.some (f,g)) =>
             trace[Meta.Tactic.fun_prop.step]

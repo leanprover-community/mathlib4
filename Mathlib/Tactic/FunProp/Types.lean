@@ -60,7 +60,7 @@ structure Config where
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
   /-- Maximal number of transitions between function properties
   e.g. inferring differentiability from linearity -/
-  maxDepth := 200
+  maxDepth := 1000
   /-- current depth -/
   depth := 0
   /-- Stack of used theorem, used to prevent trivial loops. -/

@@ -28,8 +28,6 @@ structure FunPropDecl where
   /-- argument index of a function this function property talks about.
   For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
-  /-- Custom discharger for this function property. -/
-  dischargeStx? : Option (TSyntax `tactic)
   deriving Inhabited, BEq
 
 /-- -/
@@ -51,7 +49,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
   }
 
 /-- -/
-def addFunPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) : MetaM Unit := do
+def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
@@ -76,7 +74,6 @@ def addFunPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) 
     funPropName := declName
     path := path
     funArgId := funArgId
-    dischargeStx? := dischargeStx?
   }
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl
@@ -147,8 +144,3 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
 
     return result?
 
-/-- -/
-def FunPropDecl.discharger (funPropDecl : FunPropDecl) (e : Expr) : MetaM (Option Expr) := do
-    let .some stx := funPropDecl.dischargeStx?
-      | return none
-    tacticToDischarge stx e
