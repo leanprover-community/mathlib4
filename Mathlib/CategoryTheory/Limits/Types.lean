@@ -697,8 +697,10 @@ noncomputable def coyonedaCompLimIsoCones (F : J ⥤ C) :
     coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ lim ≅ F.cones :=
   NatIso.ofComponents (fun X => limitCompCoyonedaIsoCone F X.unop)
 
+variable (J) (C) in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
     naturally in `F` and `X`. -/
+@[simps!]
 noncomputable def whiskeringLimYonedaIsoCones : whiskeringLeft _ _ _ ⋙
     (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj coyoneda ≅ cones J C :=
   NatIso.ofComponents coyonedaCompLimIsoCones
