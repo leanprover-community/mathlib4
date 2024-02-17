@@ -181,7 +181,7 @@ that has at each index `x : F.obj X` the element `x`.
 
 This `A` is Galois and evaluation at `a` is bijective.
 
-Reference: Lenstra, 3.14
+Reference: [lenstraGSchemes, 3.14]
 
 -/
 
@@ -201,7 +201,7 @@ private noncomputable def mkSelfProdFib : F.obj (selfProd F X) :=
   (PreservesProduct.iso F _).inv ((Concrete.productEquiv (fun _ : F.obj X ↦ F.obj X)).symm id)
 
 @[simp]
-lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProdFib F X) = t := by
+private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProdFib F X) = t := by
   rw [← congrFun (piComparison_comp_π F _ t), FintypeCat.comp_apply,
     ← PreservesProduct.iso_hom]
   simp only [mkSelfProdFib, FintypeCat.inv_hom_id_apply]
@@ -253,10 +253,11 @@ private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
     rw [← map_comp, Pi.map'_comp_π, Category.comp_id, mkSelfProdFib_map_π F X (fiberPerm h b t)]
     rfl
 
-/- `fiso` is obtained by considering `u` and `selfProdPermIncl h b`. Both
+/- There exists an automorphism `f` of `A` that maps `b` to `a`.
+`f` is obtained by considering `u` and `selfProdPermIncl h b`. Both
 are inclusions of `A` into `selfProd F X` mapping `b` respectively `a` to the same element
 in the fiber of `selfProd F X`. Applying `connected_component_unique` yields the result. -/
-private lemma subobj_selfProd_trans (b : F.obj A) : ∃ (fiso : A ≅ A), F.map fiso.hom b = a := by
+private lemma subobj_selfProd_trans (b : F.obj A) : ∃ (f : A ≅ A), F.map f.hom b = a := by
   apply connected_component_unique F b a u (selfProdPermIncl h b)
   exact selfProdTermIncl_fib_eq h b
 
@@ -285,23 +286,23 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
 
 /-- Any element in the fiber of an object `X` is the evaluation of a morphism from a
 Galois object. -/
-lemma exists_map_from_galois_of_fiber (X : C) (x : F.obj X) :
+lemma exists_hom_from_galois_of_fiber (X : C) (x : F.obj X) :
     ∃ (A : C) (f : A ⟶ X) (a : F.obj A), IsGalois A ∧ F.map f a = x := by
   obtain ⟨A, a, h1, h2⟩ := exists_galois_representative F X
   obtain ⟨f, hf⟩ := h2.surjective x
   exact ⟨A, f, a, h1, hf⟩
 
-/-- Any object with non-empty fiber admits a map from a Galois object. -/
-lemma exists_map_from_galois_of_fiber_nonempty (X : C) (h : Nonempty (F.obj X)) :
+/-- Any object with non-empty fiber admits a hom from a Galois object. -/
+lemma exists_hom_from_galois_of_fiber_nonempty (X : C) (h : Nonempty (F.obj X)) :
     ∃ (A : C) (_ : A ⟶ X), IsGalois A := by
   obtain ⟨x⟩ := h
-  obtain ⟨A, f, a, h1, _⟩ := exists_map_from_galois_of_fiber F X x
+  obtain ⟨A, f, a, h1, _⟩ := exists_hom_from_galois_of_fiber F X x
   exact ⟨A, f, h1⟩
 
-/-- Any connected object admits a map from a Galois object. -/
-lemma exists_map_from_galois_of_connected (X : C) [IsConnected X] :
+/-- Any connected object admits a hom from a Galois object. -/
+lemma exists_hom_from_galois_of_connected (X : C) [IsConnected X] :
     ∃ (A : C) (_ : A ⟶ X), IsGalois A :=
-  exists_map_from_galois_of_fiber_nonempty F X inferInstance
+  exists_hom_from_galois_of_fiber_nonempty F X inferInstance
 
 end GaloisRep
 
