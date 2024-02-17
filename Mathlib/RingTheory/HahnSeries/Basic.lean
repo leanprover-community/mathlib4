@@ -21,25 +21,11 @@ in the file `RingTheory/LaurentSeries`.
 ## Main Definitions
   * If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of
   formal series over `Γ` with coefficients in `R`, whose supports are partially well-ordered.
-  * If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
-  * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
-  * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
-    ordered.
-  * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of their supports
-  is well-founded and only finitely many are nonzero at any given coefficient. They have a formal
-  sum, `HahnSeries.SummableFamily.hsum`, which can be bundled as a `LinearMap` as
-  `HahnSeries.SummableFamily.lsum`. Note that this is different from `Summable` in the valuation
-  topology, because there are topologically summable families that do not satisfy the axioms of
-  `HahnSeries.SummableFamily`, and formally summable families whose sums do not converge
-  topologically.
   * Laurent series over `R` are implemented as `HahnSeries ℤ R` in the file
     `RingTheory/LaurentSeries`.
 
 ## TODO
-  * Build an API for the variable `X` (defined to be `single 1 1 : HahnSeries Γ R`) in analogy to
-    `X : R[X]` and `X : PowerSeries R`
   * Equivalence between `HahnSeries Γ (HahnSeries Γ' R)` and `HahnSeries (Γ × Γ') R`
-  * Use Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber to iterate.
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 
@@ -139,9 +125,17 @@ theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :
 #align hahn_series.support_eq_empty_iff HahnSeries.support_eq_empty_iff
 
 /-!
+
+First, show that the support of `x`, as a function `Γ → HahnSeries Γ' R`, is equal to the image of
+the support of `of_iterate x` under projection.
+Second, for any `c ∈ Γ`, show that the support of `coeff x c` is equal to the fiber of the support
+of `of_iterate x` over `c` -- Function.support_along_fiber_subset
+
+Then, invoke something from WellFoundedSet: partiallyWellOrderedOn_subsetProdLex
+
 /-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
 def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
-    HahnSeries (Γ ×ₗ Γ') R where
+    HahnSeries (Γ × Γ') R where
   coeff := fun g => coeff (coeff x g.1) g.2
   isPWO_support' := by
     intro f hf
@@ -154,6 +148,7 @@ def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries �
       exact hf rfl
 
     sorry
+
 
 -- See Mathlib.Data.MvPolynomial.Monad for join and bind operations
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Init.Data.Sigma.Lex
+import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.Antichain
 import Mathlib.Order.OrderIsoNat
@@ -813,6 +814,59 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
       rw [← List.cons_head!_tail (hnil (g (m - g 0))), ← List.cons_head!_tail (hnil (g n'))]
       exact List.SublistForall₂.cons (hg _ _ (le_of_lt mn)) hmn
 #align set.partially_well_ordered_on.partially_well_ordered_on_sublist_forall₂ Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_sublistForall₂
+
+theorem partiallyWellOrderedOn_subsetProdLex [PartialOrder α] [Preorder β] (s : Set (α ×ₗ β))
+    (hα : ((fun (x : α ×ₗ β) => x.1)'' s).IsPWO)
+    (hβ : ∀ a, ((fun (x : α ×ₗ β) => x.1) ⁻¹' {a}).IsPWO) : s.IsPWO := by
+  intro f hf
+  rw [isPWO_iff_exists_monotone_subseq] at hα
+  have hg : ∃ (g : (ℕ ↪o ℕ)), Monotone fun n => (f (g n)).1 :=
+    hα (fun n => (f n).1) (fun k => mem_image_of_mem (fun x => x.1) (hf k))
+  let g : (ℕ ↪o ℕ) := Exists.choose hg
+  have hhg : ∀ n, (f (g 0)).1 ≤ (f (g n)).1 := fun n => hg.choose_spec <| Nat.zero_le n
+  by_cases hc : ∃ n, (f (g 0)).1 < (f (g n)).1
+  · use (g 0), (g (Exists.choose hc))
+    let n := Exists.choose hc
+    constructor
+    · by_contra hx
+      rw [Nat.not_lt] at hx
+      have hhc : (f (g 0)).1 < (f (g n)).1 := hc.choose_spec
+      have hhg : g n = g 0 := by simp_all only [OrderEmbedding.le_iff_le, nonpos_iff_eq_zero]
+      simp_all [hhg]
+    · refine (Prod.Lex.le_iff (f (g 0)) _).mpr ?_
+      left
+      exact hc.choose_spec
+  · have hhc : ∀ n, (f (g 0)).1 = (f (g n)).1 := by
+      intro n
+      rw [@not_exists] at hc
+      exact (LE.le.not_lt_iff_eq (hhg n)).mp (hc n)
+    specialize hβ (f (g 0)).1
+    rw [isPWO_iff_exists_monotone_subseq] at hβ
+    specialize hβ fun n => f (g n)
+    specialize hβ fun n => mem_preimage.mpr (mem_singleton_iff.mpr (hhc n).symm)
+    let g' := Exists.choose hβ
+    use (g (g' 0)), (g (g' 1))
+    constructor
+    · simp only [OrderEmbedding.lt_iff_lt, zero_lt_one]
+    · simp only [ge_iff_le]
+      exact hβ.choose_spec <| Nat.le.step Nat.le.refl
+
+/-!
+theorem partiallyWellOrderedOn_imageProdLex [PartialOrder α] [Preorder β] (s : Set (α ×ₗ β))
+    (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => x.1)'' s).IsPWO := by
+  intro f hf
+
+  sorry
+
+theorem partiallyWellOrderedOn_fiberProdLex [PartialOrder α] [Preorder β] (s : Set (α ×ₗ β))
+    (hαβ : s.IsPWO) (a : α) : ((fun (x : α ×ₗ β) => x.1) ⁻¹' {a}).IsPWO := by
+  sorry
+
+theorem partiallyWellOrderedOn_ProdLex_iff [PartialOrder α] [Preorder β] (s : Set (α ×ₗ β)) :
+    s.IsPWO ↔ ((fun (x : α ×ₗ β) => x.1)'' s).IsPWO ∧
+    ∀ a, ((fun (x : α ×ₗ β) => x.1) ⁻¹' {a}).IsPWO := by
+  sorry
+-/
 
 end Set.PartiallyWellOrderedOn
 
