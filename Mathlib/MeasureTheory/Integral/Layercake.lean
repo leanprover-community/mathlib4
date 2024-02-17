@@ -603,7 +603,7 @@ theorem Integrable.integral_eq_integral_meas_le
   filter_upwards [meas_le_ae_eq_meas_lt μ (volume.restrict (Ioi 0)) f] with t ht
   exact congrArg ENNReal.toReal ht.symm
 
-lemma integral_eq_integral_Icc_meas_le {α : Type*} [MeasurableSpace α] {f : α → ℝ}
+lemma integral_eq_integral_Ioc_meas_le {α : Type*} [MeasurableSpace α] {f : α → ℝ}
     (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
     {M : ℝ} (f_bdd : f ≤ᵐ[μ] (fun _ ↦ M)) (f_intble : Integrable f μ) :
     (∫ ω, f ω ∂μ) = ∫ t in Ioc 0 M, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
@@ -619,7 +619,6 @@ lemma integral_eq_integral_Icc_meas_le {α : Type*} [MeasurableSpace α] {f : α
     exact not_lt.mpr ha
   rw [ENNReal.toReal_eq_zero_iff]
   exact Or.inl <| measure_mono_null (fun a ha ↦ lt_of_lt_of_le htM ha) obs
-
 
 end LayercakeIntegral
 
