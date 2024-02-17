@@ -71,8 +71,8 @@ def RewriteCache := DeclCache (RefinedDiscrTree RewriteLemma × RefinedDiscrTree
 def RewriteCache.mk (profilingName : String)
   (init : Option (RefinedDiscrTree RewriteLemma) := none) :
     IO RewriteCache :=
-  DeclCache.mk profilingName (pre := pre) ({}, {})
-    addDecl addLibraryDecl (post := post)
+  DeclCache.mk profilingName pre ({}, {})
+    addDecl addLibraryDecl post
 where
   pre := do
     let .some libraryTree := init | failure
@@ -115,7 +115,7 @@ end
 
 
 /-- The `Expr` at a `SubExpr.GoalsLocation`. -/
-def _root_.Lean.SubExpr.GoalsLocation.expr : SubExpr.GoalsLocation → MetaM Expr
+def _root_.Lean.SubExpr.GoalsLocation.rootExpr : SubExpr.GoalsLocation → MetaM Expr
   | ⟨mvarId, .hyp fvarId⟩        => mvarId.withContext fvarId.getType
   | ⟨mvarId, .hypType fvarId _⟩  => mvarId.withContext fvarId.getType
   | ⟨mvarId, .hypValue fvarId _⟩ => mvarId.withContext do return (← fvarId.getDecl).value
@@ -180,9 +180,8 @@ def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) : MetaM (
   let thm ← mkConstWithFreshMVarLevels rwLemma.name
   let (mvars, _, eqn) ← forallMetaTelescopeReducing (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
-  let target ← loc.expr
+  let target ← loc.rootExpr
   let subExpr ← Core.viewSubexpr loc.pos target
-  if subExpr.hasLooseBVars then return none
   let lhs := if rwLemma.symm then rhs else lhs
   unless ← isDefEq lhs subExpr do return none
   -- the part below should ideally be computed lazily.
@@ -217,7 +216,7 @@ def renderResults (results : Array (RewriteLemma × String)) (range : Lsp.Range)
       {.element "ul" #[] htmls}
     </details>
 
-/-- Return all potenital rewrite lemmas-/
+/-- Return all potenital rewrite lemmata -/
 def getCandidates (e : Expr) : MetaM (Array RewriteLemma) := do
   let (localLemmas, libraryLemmas) ← getRewriteLemmas
   let localResults ← localLemmas.getMatchWithScore e (unify := true) (config := {})
@@ -267,7 +266,9 @@ def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask 
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
-      let subExpr ← Core.viewSubexpr loc.pos (← loc.expr)
+      let subExpr ← Core.viewSubexpr loc.pos (← loc.rootExpr)
+      if subExpr.hasLooseBVars then
+        return <p> rw doesn't work with bound variables. </p>
       let rwLemmas ← getCandidates subExpr
       if rwLemmas.isEmpty then
         return <p> No rewrite lemmata found. </p>
