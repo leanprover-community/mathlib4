@@ -117,7 +117,6 @@ def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a 
 instance : Inhabited (PrelaxFunctor B B) :=
   ⟨PrelaxFunctor.id B⟩
 
--- porting note: `by exact` was not necessary in mathlib3
 /-- Composition of prelax functors. -/
 @[simps]
 def comp (F : PrelaxFunctor B C) (G : PrelaxFunctor C D) : PrelaxFunctor B D :=
