@@ -702,7 +702,7 @@ end Regular
 
 section Epi
 
-variable [HasFiniteCoproducts C] (h : ∀ {α : Type} [Fintype α] {B : C}
+variable [HasFiniteCoproducts C] (h : ∀ {α : Type} [Finite α] {B : C}
     (X : α → C) (π : (a : α) → (X a ⟶ B)), EffectiveEpiFamily X π ↔ Epi (Sigma.desc π ))
 
 lemma effectiveEpi_iff_epi {X Y : C} (f : X ⟶ Y) : EffectiveEpi f ↔ Epi f := by
@@ -747,8 +747,7 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
       (effectiveEpiFamilyStructOfEquivalence_aux e X π ε h) a)
     simp only [Functor.id_obj, Functor.comp_obj, Function.comp_apply, Functor.map_comp,
         Category.assoc, Equivalence.fun_inv_map, Iso.inv_hom_id_app, Category.comp_id] at this
-    rw [this]
-    exact e.toAdjunction.left_triangle_components_assoc _ _
+    simp [this]
   uniq ε h m hm := by
     simp only [Functor.comp_obj, Adjunction.homEquiv_counit, Functor.id_obj,
       Equivalence.toAdjunction_counit]
@@ -757,9 +756,7 @@ def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ 
     specialize this (e.unit.app _ ≫ e.inverse.map m) fun a ↦ ?_
     · rw [← congrArg e.inverse.map (hm a)]
       simp
-    · simp only [← this, Functor.comp_obj, Functor.map_comp, Equivalence.fun_inv_map,
-        Functor.id_obj, Category.assoc, Iso.inv_hom_id_app, Category.comp_id]
-      erw [e.toAdjunction.left_triangle_components_assoc]
+    · simp [← this]
 
 instance (F : C ⥤ D) [IsEquivalence F] :
     EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a ↦ F.map (π a)) :=
@@ -840,7 +837,10 @@ A functor preserves effective epimorphisms if it maps effective epimorphisms to 
 epimorphisms.
 -/
 class PreservesEffectiveEpis (F : C ⥤ D) : Prop where
-  /-- A functor preserves epimorphisms if it maps epimorphisms to epimorphisms. -/
+  /--
+  A functor preserves effective epimorphisms if it maps effective
+  epimorphisms to effective epimorphisms.
+  -/
   preserves : ∀ {X Y : C} (f : X ⟶ Y) [EffectiveEpi f], EffectiveEpi (F.map f)
 
 instance map_effectiveEpi (F : C ⥤ D) [F.PreservesEffectiveEpis] {X Y : C} (f : X ⟶ Y)
