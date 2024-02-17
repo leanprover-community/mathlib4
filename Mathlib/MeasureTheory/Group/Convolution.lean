@@ -55,13 +55,13 @@ theorem mconv_dirac_one [MeasurableMul₂ M]
   all_goals { measurability }
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
-@[to_additive conv_zero]
+@[to_additive (attr := simp) conv_zero]
 theorem mconv_zero (μ : Measure M) : (0 : Measure M) ∗ μ = (0 : Measure M) := by
   unfold mconv
   simp
 
 /-- Convolution of a measure μ with the zero measure returns the zero measure. -/
-@[to_additive zero_conv]
+@[to_additive (attr := simp) zero_conv]
 theorem zero_mconv (μ : Measure M) : μ ∗ (0 : Measure M) = (0 : Measure M) := by
   unfold mconv
   simp
