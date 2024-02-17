@@ -225,9 +225,9 @@ theorem card_unique [Unique α] [h : Fintype α] : Fintype.card α = 1 :=
 /-- Note: this lemma is specifically about `Fintype.ofIsEmpty`. For a statement about
 arbitrary `Fintype` instances, use `Fintype.card_eq_zero`. -/
 @[simp]
-theorem card_of_isEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
+theorem card_ofIsEmpty [IsEmpty α] : @Fintype.card α Fintype.ofIsEmpty = 0 :=
   rfl
-#align fintype.card_of_is_empty Fintype.card_of_isEmpty
+#align fintype.card_of_is_empty Fintype.card_ofIsEmpty
 
 end Fintype
 
@@ -339,10 +339,6 @@ theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
 theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : s.card ≤ n := by
   simpa only [Fintype.card_fin] using s.card_le_univ
 #align card_finset_fin_le card_finset_fin_le
-
-theorem Fin.equiv_iff_eq {m n : ℕ} : Nonempty (Fin m ≃ Fin n) ↔ m = n :=
-  ⟨fun ⟨h⟩ => by simpa using Fintype.card_congr h, fun h => ⟨Equiv.cast <| h ▸ rfl⟩⟩
-#align fin.equiv_iff_eq Fin.equiv_iff_eq
 
 --@[simp] Porting note: simp can prove it
 theorem Fintype.card_subtype_eq (y : α) [Fintype { x // x = y }] :
@@ -511,7 +507,7 @@ theorem card_range_le {α β : Type*} (f : α → β) [Fintype α] [Fintype (Set
   Fintype.card_le_of_surjective (fun a => ⟨f a, by simp⟩) fun ⟨_, a, ha⟩ => ⟨a, by simpa using ha⟩
 #align fintype.card_range_le Fintype.card_range_le
 
-theorem card_range {α β F : Type*} [EmbeddingLike F α β] (f : F) [Fintype α]
+theorem card_range {α β F : Type*} [FunLike F α β] [EmbeddingLike F α β] (f : F) [Fintype α]
     [Fintype (Set.range f)] : Fintype.card (Set.range f) = Fintype.card α :=
   Eq.symm <| Fintype.card_congr <| Equiv.ofInjective _ <| EmbeddingLike.injective f
 #align fintype.card_range Fintype.card_range

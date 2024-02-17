@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
+import Mathlib.Analysis.NormedSpace.Basic
 
 #align_import data.is_R_or_C.basic from "leanprover-community/mathlib"@"baa88307f3e699fa7054ef04ec79fa4f056169cb"
 
@@ -1135,7 +1136,7 @@ theorem ofRealCLM_apply : (ofRealCLM : ℝ → K) = ofReal :=
   rfl
 #align is_R_or_C.of_real_clm_apply IsROrC.ofRealCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
   ofRealLI.continuous
 #align is_R_or_C.continuous_of_real IsROrC.continuous_ofReal

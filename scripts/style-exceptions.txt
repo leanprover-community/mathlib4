@@ -31,7 +31,7 @@ Mathlib/Data/ByteArray.lean : line 5 : ERR_COP : Malformed or missing copyright 
 Mathlib/Data/ByteArray.lean : line 5 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/Complex/Exponential.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2046 lines, try to split it up
 Mathlib/Data/DFinsupp/Basic.lean : line 1 : ERR_NUM_LIN : 2500 file contains 2395 lines, try to split it up
-Mathlib/Data/Fin/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2010 lines, try to split it up
+Mathlib/Data/Fin/Basic.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2228 lines, try to split it up
 Mathlib/Data/Finset/Basic.lean : line 1 : ERR_NUM_LIN : 4100 file contains 3992 lines, try to split it up
 Mathlib/Data/Finset/Lattice.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2240 lines, try to split it up
 Mathlib/Data/Finset/Pointwise.lean : line 1 : ERR_NUM_LIN : 2700 file contains 2550 lines, try to split it up
@@ -82,7 +82,6 @@ Mathlib/Lean/Exception.lean : line 8 : ERR_MOD : Module docstring missing, or to
 Mathlib/Lean/Expr/ReplaceRec.lean : line 12 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/LinearAlgebra/AffineSpace/AffineSubspace.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1900 lines, try to split it up
-Mathlib/LinearAlgebra/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1522 lines, try to split it up
 Mathlib/LinearAlgebra/Basis.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1646 lines, try to split it up
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1847 lines, try to split it up
 Mathlib/LinearAlgebra/LinearIndependent.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1537 lines, try to split it up
@@ -164,7 +163,6 @@ Mathlib/Topology/Category/Profinite/Nobeling.lean : line 1 : ERR_NUM_LIN : 2000 
 Mathlib/Topology/Constructions.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1731 lines, try to split it up
 Mathlib/Topology/ContinuousFunction/Bounded.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1649 lines, try to split it up
 Mathlib/Topology/Instances/ENNReal.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1713 lines, try to split it up
-Mathlib/Topology/MetricSpace/HausdorffDistance.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1543 lines, try to split it up
 Mathlib/Topology/MetricSpace/PseudoMetric.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2098 lines, try to split it up
 Mathlib/Topology/Order/Basic.lean : line 1 : ERR_NUM_LIN : 3100 file contains 2983 lines, try to split it up
 Mathlib/Topology/PartialHomeomorph.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1513 lines, try to split it up

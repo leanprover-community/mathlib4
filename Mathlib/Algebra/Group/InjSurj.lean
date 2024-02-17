@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Tactic.Spread
 
 #align_import algebra.group.inj_surj from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
@@ -48,14 +49,24 @@ protected def semigroup [Semigroup M₂] (f : M₁ → M₂) (hf : Injective f)
 #align function.injective.semigroup Function.Injective.semigroup
 #align function.injective.add_semigroup Function.Injective.addSemigroup
 
+/-- A type endowed with `*` is a commutative magma, if it admits a surjective map that preserves
+`*` from a commutative magma. -/
+@[to_additive (attr := reducible) -- See note [reducible non-instances]
+"A type endowed with `+` is an additive commutative semigroup, if it admits
+a surjective map that preserves `+` from an additive commutative semigroup."]
+protected def commMagma [CommMagma M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : CommMagma M₁ where
+  mul_comm x y := hf <| by rw [mul, mul, mul_comm]
+
 /-- A type endowed with `*` is a commutative semigroup, if it admits an injective map that
 preserves `*` to a commutative semigroup.  See note [reducible non-instances]. -/
 @[to_additive (attr := reducible)
 "A type endowed with `+` is an additive commutative semigroup,if it admits
 an injective map that preserves `+` to an additive commutative semigroup."]
 protected def commSemigroup [CommSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
-    (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₁ :=
-  { hf.semigroup f mul with mul_comm := fun x y => hf <| by erw [mul, mul, mul_comm] }
+    (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₁ where
+  toSemigroup := hf.semigroup f mul
+  __ := hf.commMagma f mul
 #align function.injective.comm_semigroup Function.Injective.commSemigroup
 #align function.injective.add_comm_semigroup Function.Injective.addCommSemigroup
 
@@ -378,10 +389,19 @@ protected def semigroup [Semigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
 @[to_additive (attr := reducible)
 "A type endowed with `+` is an additive commutative semigroup, if it admits
 a surjective map that preserves `+` from an additive commutative semigroup."]
+protected def commMagma [CommMagma M₁] (f : M₁ → M₂) (hf : Surjective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : CommMagma M₂ where
+  mul_comm := hf.forall₂.2 fun x y => by erw [← mul, ← mul, mul_comm]
+
+/-- A type endowed with `*` is a commutative semigroup, if it admits a surjective map that preserves
+`*` from a commutative semigroup. See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)
+"A type endowed with `+` is an additive commutative semigroup, if it admits
+a surjective map that preserves `+` from an additive commutative semigroup."]
 protected def commSemigroup [CommSemigroup M₁] (f : M₁ → M₂) (hf : Surjective f)
-    (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₂ :=
-  { hf.semigroup f mul with
-    mul_comm := hf.forall₂.2 fun x y => by erw [← mul, ← mul, mul_comm] }
+    (mul : ∀ x y, f (x * y) = f x * f y) : CommSemigroup M₂ where
+  toSemigroup := hf.semigroup f mul
+  __ := hf.commMagma f mul
 #align function.surjective.comm_semigroup Function.Surjective.commSemigroup
 #align function.surjective.add_comm_semigroup Function.Surjective.addCommSemigroup
 
