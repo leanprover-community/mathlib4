@@ -11,32 +11,36 @@ open Lean Meta Server
 structure RewriteLemma where
   name : Name
   symm : Bool
-  deletedPos : SubExpr.Pos
-  insertedPos : SubExpr.Pos
+  numParams : Nat
 deriving BEq, Inhabited
-
-instance : ToFormat RewriteLemma where
-  format := fun {name, symm, ..} => s! "{if symm then "← " else ""}{name}"
 
 def RewriteLemma.length (rwLemma : RewriteLemma) : Nat :=
   rwLemma.name.toString.length
 
 /--
-We want lemmas rewriting from left to right to show up earliest.
-After that, we want lemmas with shorter names to show up earliest.
+We sort lemmata by the following conditions in order:
+- left-to-right rewrites come first
+- number of parameters
+- length of the name
+- alphabetical order
 -/
 def RewriteLemma.lt (a b : RewriteLemma) : Bool :=
   !a.symm && b.symm || a.symm == b.symm &&
-    (a.length < b.length || a.length == b.length &&
-      a.name.lt b.name)
+    (a.numParams < b.numParams || a.numParams == b.numParams &&
+      (a.length < b.length || a.length == b.length &&
+        Name.lt a.name b.name))
 
 instance : LT RewriteLemma := ⟨fun a b => RewriteLemma.lt a b⟩
 instance (a b : RewriteLemma) : Decidable (a < b) :=
   inferInstanceAs (Decidable (RewriteLemma.lt a b))
 
 def RewriteLemma.diffs (rwLemma : RewriteLemma) : Lean.AssocList SubExpr.Pos Widget.DiffTag :=
-  .cons rwLemma.insertedPos .wasInserted
-  (.cons rwLemma.deletedPos .wasDeleted .nil)
+  let eqnPos := rwLemma.numParams.fold (init := SubExpr.Pos.root) fun _ => .pushBindingBody
+  let lhsPos := eqnPos.pushAppFn.pushAppArg
+  let rhsPos := eqnPos.pushAppArg
+  let (lhsPos, rhsPos) := if rwLemma.symm then (rhsPos, lhsPos) else (lhsPos, rhsPos)
+  .cons rhsPos .wasInserted <|
+    .cons lhsPos .wasDeleted .nil
 
 /-- similar to `Name.isBlackListed`. -/
 def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
@@ -67,24 +71,20 @@ def updateRefinedDiscrTree (name : Name) (cinfo : ConstantInfo) (d : RefinedDisc
     return d
   let (vars, _, eqn) ← forallMetaTelescope cinfo.type
   let some (lhs, rhs) := matchEqn? eqn | return d
-  let eqnPos := vars.foldl (init := SubExpr.Pos.root) (fun _ => ·.pushBindingBody)
-  let lhsPos := eqnPos.pushAppFn.pushAppArg
-  let rhsPos := eqnPos.pushAppArg
   d.insertEqn lhs rhs
-    { name, symm := false, deletedPos := lhsPos, insertedPos := rhsPos }
-    { name, symm := true,  deletedPos := rhsPos, insertedPos := lhsPos }
+    { name, symm := false, numParams := vars.size }
+    { name, symm := true,  numParams := vars.size }
 
 section
 
-open Std Tactic
 
 @[reducible]
-def RewriteCache := DeclCache (RefinedDiscrTree RewriteLemma × RefinedDiscrTree RewriteLemma)
+def RewriteCache := Std.Tactic.DeclCache (RefinedDiscrTree RewriteLemma × RefinedDiscrTree RewriteLemma)
 
 def RewriteCache.mk (profilingName : String)
   (init : Option (RefinedDiscrTree RewriteLemma) := none) :
     IO RewriteCache :=
-  DeclCache.mk profilingName pre ({}, {})
+  Std.Tactic.DeclCache.mk profilingName pre ({}, {})
     addDecl addLibraryDecl post
 where
   pre := do
@@ -264,9 +264,8 @@ def filterMapMetaMWithMaxHeartbeats {α β} (as : Array α) (f : α → MetaM (O
           maxHeartbeats := max }) do
             withoutCatchingRuntimeEx (f a) then
         bs := bs.push b
-    catch ex =>
-      unless ex.isMaxHeartbeat do
-        throw ex
+    catch _ =>
+      pure ()
     currHeartbeats ← IO.getNumHeartbeats
     if currHeartbeats - startHeartbeats > maxTotal then
       break
