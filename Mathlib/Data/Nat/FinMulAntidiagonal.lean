@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Arend Mellendijk
+Authors: Arend Mellendijk
 -/
 
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Logic.Embedding.Basic
-open Nat BigOperators Finset
 
 /-!
 # Sets of tuples with a fixed product
@@ -19,12 +18,11 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 (`card_finMulAntidiagonal_of_squarefree`)
 * There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
 (`card_pair_lcm_eq`)
-
 -/
 
 namespace Nat
 
-open Finset Nat.ArithmeticFunction
+open Nat BigOperators Finset Nat.ArithmeticFunction
 
 /--
   The `Finset` of all `d`-tuples of natural numbers whose product is `n`. Defined to be `∅` when
@@ -83,7 +81,7 @@ theorem finMulAntidiagonal_one {d : ℕ} :
   ext f; simp only [mem_finMulAntidiagonal, and_true, mem_singleton]
   constructor
   · intro ⟨hf, _⟩; ext i;
-    rw [←Nat.dvd_one, ←hf];
+    rw [← Nat.dvd_one, ← hf];
     exact dvd_prod_of_mem f (mem_univ _)
   · rintro rfl; simp only [prod_const_one, implies_true, ne_eq, one_ne_zero, not_false_eq_true,
     and_self]
@@ -93,7 +91,7 @@ theorem finMulAntidiagonal_empty_of_ne_one {n : ℕ} (hn : n ≠ 1) :
   ext; simp [hn.symm]
 
 theorem dvd_of_mem_finMulAntidiagonal {n d : ℕ} {f : Fin d → ℕ} (hf : f ∈ finMulAntidiagonal d n)
-  (i : Fin d) : f i ∣ n := by
+    (i : Fin d) : f i ∣ n := by
   rw [mem_finMulAntidiagonal] at hf
   rw [← hf.1]
   exact dvd_prod_of_mem f (mem_univ i)
