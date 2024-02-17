@@ -191,12 +191,18 @@ def renderWithDiffs (n : Name) (diffs : AssocList SubExpr.Pos DiffTag) : MetaM H
 def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) : MetaM (Option String) := do
   if loc.loc matches .hypValue .. then return none
   let thm ← mkConstWithFreshMVarLevels rwLemma.name
-  let (mvars, _, eqn) ← forallMetaTelescope (← inferType thm)
+  let (mvars, bis, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
   let target ← loc.rootExpr
   let subExpr ← Core.viewSubexpr loc.pos target
   let lhs := if rwLemma.symm then rhs else lhs
   unless ← isDefEq lhs subExpr do return none
+  -- we need to check that all instances can be synthesized
+  for mvar in mvars, bi in bis do
+    if bi.isInstImplicit then
+      unless (← trySynthInstance (← inferType mvar)) matches .some _ do
+        return none
+
   -- the part below should ideally be computed lazily.
   let lhs ← instantiateMVars lhs
   let positions ← findPositions lhs target
