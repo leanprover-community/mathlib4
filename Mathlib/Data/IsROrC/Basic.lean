@@ -1136,7 +1136,7 @@ theorem ofRealCLM_apply : (ofRealCLM : ℝ → K) = ofReal :=
   rfl
 #align is_R_or_C.of_real_clm_apply IsROrC.ofRealCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
   ofRealLI.continuous
 #align is_R_or_C.continuous_of_real IsROrC.continuous_ofReal
