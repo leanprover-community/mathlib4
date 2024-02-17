@@ -82,23 +82,29 @@ attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type u) (P : Type v) where
+  /-- `a +ᵥ b` computes the sum of `a` and `b`. The meaning of this notation is type-dependent,
+  but it is intended to be used for left actions. -/
   vadd : G → P → P
 #align has_vadd VAdd
 
 /-- Type class for the `-ᵥ` notation. -/
 class VSub (G : outParam (Type*)) (P : Type*) where
+  /-- `a -ᵥ b` computes the difference of `a` and `b`. The meaning of this notation is
+  type-dependent, but it is intended to be used for additive torsors. -/
   vsub : P → P → G
 #align has_vsub VSub
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 @[to_additive (attr := ext)]
 class SMul (M : Type u) (α : Type v) where
+  /-- `a • b` computes the product of `a` and `b`. The meaning of this notation is type-dependent,
+  but it is intended to be used for left actions. -/
   smul : M → α → α
 #align has_smul SMul
 
-infixl:65 " +ᵥ " => HVAdd.hVAdd
-infixl:65 " -ᵥ " => VSub.vsub
-infixr:73 " • " => HSMul.hSMul
+@[inherit_doc] infixl:65 " +ᵥ " => HVAdd.hVAdd
+@[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
+@[inherit_doc] infixr:73 " • " => HSMul.hSMul
 
 /-!
 We have a macro to make `x • y` notation participate in the expression tree elaborator,
@@ -113,7 +119,7 @@ variable [Ring R] [AddCommMonoid M] [Module R M] (r : R) (N : Submodule R M) (m 
 ```
 Without the macro, the expression would elaborate as `m + ↑(r • n : ↑N) : M`.
 With the macro, the expression elaborates as `m + r • (↑n : M) : M`.
-To get the first intepretation, one can write `m + (r • n :)`.
+To get the first interpretation, one can write `m + (r • n :)`.
 
 Here is a quick review of the expression tree elaborator:
 1. It builds up an expression tree of all the immediately accessible operations
@@ -284,16 +290,16 @@ theorem mul_assoc : ∀ a b c : G, a * b * c = a * (b * c) :=
 
 end Semigroup
 
-/-- A commutative addition is a type with an addition which commutes-/
+/-- A commutative additive magma is a type with an addition which commutes. -/
 @[ext]
 class AddCommMagma (G : Type u) extends Add G where
-  /-- Addition is commutative in an additive commutative semigroup. -/
+  /-- Addition is commutative in an commutative additive magma. -/
   protected add_comm : ∀ a b : G, a + b = b + a
 
-/-- A commutative multiplication is a type with a multiplication which commutes-/
+/-- A commutative multiplicative magma is a type with a multiplication which commutes. -/
 @[ext]
 class CommMagma (G : Type u) extends Mul G where
-  /-- Multiplication is commutative in a commutative semigroup. -/
+  /-- Multiplication is commutative in a commutative multiplicative magma. -/
   protected mul_comm : ∀ a b : G, a * b = b * a
 
 attribute [to_additive] CommMagma
