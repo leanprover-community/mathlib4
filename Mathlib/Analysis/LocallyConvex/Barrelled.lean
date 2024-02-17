@@ -5,7 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Semicontinuous
-import Mathlib.Topology.MetricSpace.Baire
+import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle
