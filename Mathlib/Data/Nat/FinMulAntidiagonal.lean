@@ -51,7 +51,8 @@ where
             simp only [Fin.cons_zero, Fin.cons_succ]
             exact (true_and_iff (a * ∏ x : Fin d, g x ≠ 0)).mpr hab
           · intro ⟨rfl, hf⟩
-            exact ⟨_, _, ⟨rfl, hf⟩, _, ⟨rfl, by exact right_ne_zero_of_mul hf⟩, Fin.cons_self_tail f⟩}
+            exact ⟨_, _, ⟨rfl, hf⟩, _, ⟨rfl, by exact right_ne_zero_of_mul hf⟩,
+              Fin.cons_self_tail f⟩}
 
 @[simp]
 theorem mem_finMulAntidiagonal {d n : ℕ} {f : (Fin d) → ℕ} :
@@ -80,7 +81,7 @@ theorem finMulAntidiagonal_empty_of_ne_one {n : ℕ} (hn : n ≠ 1) :
 theorem dvd_of_mem_finMulAntidiagonal {n d : ℕ} {f : Fin d → ℕ} (hf : f ∈ finMulAntidiagonal d n)
   (i : Fin d) : f i ∣ n := by
   rw [mem_finMulAntidiagonal] at hf
-  rw [←hf.1]
+  rw [← hf.1]
   exact dvd_prod_of_mem f (mem_univ i)
 
 theorem ne_zero_of_mem_finMulAntidiagonal {d n : ℕ} {f : Fin d → ℕ}
@@ -122,8 +123,8 @@ lemma image_apply_finMulAntidiagonal {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
     obtain ⟨i', hi_ne⟩ := exists_ne i
     use fun j => if j = i then k else if j = i' then r else 1
     simp only [ite_true, and_true, hn]
-    rw [←Finset.mul_prod_erase (a:=i) (h:=mem_univ _),
-      ←Finset.mul_prod_erase (a:= i')]
+    rw [← Finset.mul_prod_erase (a:=i) (h:=mem_univ _),
+      ← Finset.mul_prod_erase (a:= i')]
     · rw [if_neg hi_ne, if_pos rfl, if_pos rfl, prod_eq_one]
       · refine ⟨by ring, hn⟩
       intro j hj
@@ -163,8 +164,8 @@ lemma finMulAntidiagonal_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree 
   apply Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp.1, hi, hj⟩
   apply Nat.coprime_of_squarefree_mul
   apply hn.squarefree_of_dvd
-  rw [←hf.1, ←Finset.mul_prod_erase _ _ (his),
-    ←Finset.mul_prod_erase _ _ (mem_erase.mpr ⟨hij, mem_univ _⟩), ←mul_assoc]
+  rw [← hf.1, ← Finset.mul_prod_erase _ _ (his),
+    ← Finset.mul_prod_erase _ _ (mem_erase.mpr ⟨hij, mem_univ _⟩), ← mul_assoc]
   apply Nat.dvd_mul_right
 
 private def primeFactorsPiBij (d n : ℕ) :
@@ -216,11 +217,11 @@ private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
   funext i
   have : t i ∣ n := dvd_of_mem_finMulAntidiagonal ht _
   trans (∏ p in n.primeFactors.attach, if p.1 ∣ t i then p else 1)
-  · rw [Nat.primeFactorsPiBij, ←prod_filter]
+  · rw [Nat.primeFactorsPiBij, ← prod_filter]
     congr
     ext ⟨p, hp⟩
     refine ⟨by rintro rfl; apply hf, fun h => (hf_unique p hp i h).symm⟩
-  rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ←Finset.prod_filter]
+  rw [prod_attach (f:=fun p => if p ∣ t i then p else 1), ← Finset.prod_filter]
   rw [filter_primeFactors this hn.ne_zero]
   apply prod_primeFactors_of_squarefree $ hn.squarefree_of_dvd this
 
@@ -232,7 +233,7 @@ theorem card_finMulAntidiagonal_pi (d n : ℕ) (hn : Squarefree n) :
 
 theorem card_finMulAntidiagonal_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     (finMulAntidiagonal d n).card = d ^ ω n := by
-  rw [←card_finMulAntidiagonal_pi d n hn, Finset.card_pi, Finset.prod_const,
+  rw [← card_finMulAntidiagonal_pi d n hn, Finset.card_pi, Finset.prod_const,
     cardDistinctFactors_apply, List.card_toFinset, Finset.card_fin]
 
 @[reducible]
@@ -247,14 +248,14 @@ private theorem f_img {n : ℕ} (hn : Squarefree n) (a : Fin 3 → ℕ)
   (ha : a ∈ finMulAntidiagonal 3 n) :
     f a ha ∈ Finset.filter (fun ⟨x, y⟩ => x.lcm y = n) (n.divisors ×ˢ n.divisors) := by
   rw [mem_filter, Finset.mem_product, mem_divisors, mem_divisors]
-  refine ⟨⟨⟨?_, hn.ne_zero⟩, ⟨?_, hn.ne_zero⟩⟩, ?_⟩ <;> rw [f, ←finMulAntidiagonal_three a ha]
+  refine ⟨⟨⟨?_, hn.ne_zero⟩, ⟨?_, hn.ne_zero⟩⟩, ?_⟩ <;> rw [f, ← finMulAntidiagonal_three a ha]
   · apply dvd_mul_right
   · use a 1; ring
   dsimp only
   rw [lcm_mul_left, Nat.Coprime.lcm_eq_mul]
   · ring
   refine coprime_of_squarefree_mul (hn.squarefree_of_dvd ?_)
-  use a 0; rw [←finMulAntidiagonal_three a ha]; ring
+  use a 0; rw [← finMulAntidiagonal_three a ha]; ring
 
 private theorem f_inj {n : ℕ} :
     ∀ (a b : Fin 3 → ℕ) (ha : a ∈ finMulAntidiagonal 3 n) (hb : b ∈ finMulAntidiagonal 3 n),
@@ -290,7 +291,7 @@ private theorem f_surj {n : ℕ} (hn : n ≠ 0) :
     · rw [Fin.prod_univ_three a]
       simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two,
         Matrix.tail_cons]
-      rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ←hb.2, lcm,
+      rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
         Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
   use a; use ha
   apply Prod.ext <;> simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]
