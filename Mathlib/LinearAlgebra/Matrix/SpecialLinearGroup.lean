@@ -285,21 +285,24 @@ theorem scalar_eq_coe_self_center
 the scalars are the `n`-th roots of unity.-/
 theorem mem_center_iff {A : SpecialLinearGroup n R} :
     A ∈ center (SpecialLinearGroup n R) ↔ ∃ (r : R), r ^ (Fintype.card n) = 1 ∧ scalar n r = A := by
-  constructor
-  · intro hA i
-    have hA2 := center_scalar ⟨A, hA⟩ i
-    refine (and_iff_left hA2).mpr ?_
-    have hA1 : det A.val = (1 : R) := det_coe A
-    rw [hA2, det_smul_of_tower] at hA1
-    simpa using hA1
-  · wlog hn : IsEmpty n
-    · let i : n := @Classical.arbitrary n (not_isEmpty_iff.mp hn)
-      rw [Subgroup.mem_center_iff]
-      intro h _; obtain ⟨_, hA⟩ := h i
-      rw [ext_iff, coe_mul, coe_mul, hA]
-      simp
-    · have hA : A = 1 := by rw [@ext_iff, @IsEmpty.forall_iff n, ← Bool.coe_true]
+  wlog hn : Subsingleton n
+  · constructor
+    have hn' : Nonempty n := not_isEmpty_iff.mp fun a ↦ hn IsEmpty.instSubsingleton
+    let i : n := Classical.arbitrary n
+    · intro hA
+      have hA1 := scalar_eq_self_of_mem_center hA i
+      use A i i
+      refine (and_iff_left hA1).mpr ?_
+      have hA2 : det A.val = (1 : R) := det_coe A
+      rw [← hA1] at hA2
+      clear hA1
       aesop
+    · intro ⟨r, _, hr⟩
+      rw [Subgroup.mem_center_iff]
+      intro g
+      rw [ext_iff, coe_mul, coe_mul, ← hr]
+      simp [mul_comm]
+  · exact ⟨by aesop, by simp [Subsingleton.elim A 1]⟩
 
 /-- The center of a special linear group of degree `n` is a subgroup composed of scalar matrices,
 in which the scalars are the `n`-th roots of `1`.-/
@@ -316,25 +319,34 @@ noncomputable def center_iso_RootsOfUnity :
       left_inv := fun A => SetCoe.ext (h A).symm
       right_inv := fun x => by
         refine SetCoe.ext ?_
-        have := mem_rootsOfUnity 1 x.val |>.mp x.property
-        simpa using this.symm
+        simpa using (mem_rootsOfUnity 1 x.val |>.mp x.property).symm
       map_mul' := by simp
     }
   · haveI : Nonempty n := not_isEmpty_iff.mp hn
+    replace hn : 0 < Fintype.card n := Fintype.card_pos
     have i := Classical.arbitrary n
     exact {
       toFun := fun A => rootsOfUnity.mkOfPowEq (A.val i i) <| by
-        simp [mem_center_iff.mp A.property i |>.1]
+        obtain ⟨r, hr, hr2⟩ := mem_center_iff.mp A.property
+        have : A.val i i = r := by rw [← hr2]; simp
+        simp [this, hr]
       invFun := fun a => ⟨⟨a.val • (1 : Matrix n n R), by aesop⟩, by
         rw [Subgroup.mem_center_iff]; aesop⟩
-      left_inv := fun A => by refine SetCoe.ext $ SetCoe.ext ?_; conv_rhs => rw [center_scalar A i]
+      left_inv := fun A => by
+        refine SetCoe.ext $ SetCoe.ext ?_
+        obtain ⟨_, _, hr⟩ := mem_center_iff.mp A.property
+        simp only [← hr, instHSMul, SMul.smul, rootsOfUnity.val_mkOfPowEq_coe,
+          scalar_apply, diagonal]
+        aesop
       right_inv := fun a => by refine SetCoe.ext $ Units.eq_iff.mp ?_; simp [instHSMul, SMul.smul]
       map_mul' := fun A B => by
         simp only
         have hAB : (A * B).val.val = A.val.val * B.val.val := by simp
-        conv_lhs => arg 1; rw [hAB, center_scalar _ i]
+        conv_lhs => arg 1; rw [hAB]
         refine SetCoe.ext <| Units.eq_iff.mp ?_
-        simp [mul_comm (B.val i i) (A.val i i)]
+        obtain ⟨_, _, hA⟩ := mem_center_iff.mp A.property
+        obtain ⟨_, _, hB⟩ := mem_center_iff.mp B.property
+        simp [@mul_apply, ← hA, ← hB, scalar_apply, diagonal]
     }
 
 end center
