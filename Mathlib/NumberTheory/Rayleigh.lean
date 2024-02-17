@@ -3,7 +3,7 @@ Copyright (c) 2023 Jason Yuen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jason Yuen
 -/
-import Mathlib.Data.Real.ConjugateExponents
+import Mathlib.Data.Real.ConjExponents
 import Mathlib.Data.Real.Irrational
 
 /-!
@@ -55,7 +55,7 @@ noncomputable def beattySeq' (r : ℝ) : ℤ → ℤ :=
 
 namespace Beatty
 
-variable {r s : ℝ} (hrs : r.IsConjugateExponent s) {j k : ℤ}
+variable {r s : ℝ} (hrs : r.IsConjExponent s) {j k : ℤ}
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Then `B_r` and `B'_s` are disjoint (i.e. no collision exists).
 -/
@@ -112,7 +112,7 @@ end Beatty
 
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1, and `1/r + 1/s = 1`. Then the complement of `B_r` is `B'_s`. -/
-theorem compl_beattySeq {r s : ℝ} (hrs : r.IsConjugateExponent s) :
+theorem compl_beattySeq {r s : ℝ} (hrs : r.IsConjExponent s) :
     {beattySeq r k | k}ᶜ = {beattySeq' s k | k} := by
   ext j
   by_cases h₁ : j ∈ {beattySeq r k | k} <;> by_cases h₂ : j ∈ {beattySeq' s k | k}
@@ -123,7 +123,7 @@ theorem compl_beattySeq {r s : ℝ} (hrs : r.IsConjugateExponent s) :
     have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hrs.symm.pos).resolve_left h₂
     exact (Beatty.no_anticollision hrs ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim
 
-theorem compl_beattySeq' {r s : ℝ} (hrs : r.IsConjugateExponent s) :
+theorem compl_beattySeq' {r s : ℝ} (hrs : r.IsConjExponent s) :
     {beattySeq' r k | k}ᶜ = {beattySeq s k | k} := by
   rw [← compl_beattySeq hrs.symm, compl_compl]
 
@@ -131,7 +131,7 @@ open scoped symmDiff
 
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1, and `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺'_s` partition the positive integers. -/
-theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
+theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.IsConjExponent s) :
     {beattySeq r k | k > 0} ∆ {beattySeq' s k | k > 0} = {n | 0 < n} := by
   apply Set.eq_of_subset_of_subset
   · rintro j (⟨⟨k, hk, hjk⟩, -⟩ | ⟨⟨k, hk, hjk⟩, -⟩)
@@ -154,7 +154,7 @@ theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.IsConjugateExpone
     Set.not_mem_compl_iff, Set.mem_compl_iff, and_self, and_self]
   exact or_not
 
-theorem beattySeq'_symmDiff_beattySeq_pos {r s : ℝ} (hrs : r.IsConjugateExponent s) :
+theorem beattySeq'_symmDiff_beattySeq_pos {r s : ℝ} (hrs : r.IsConjExponent s) :
     {beattySeq' r k | k > 0} ∆ {beattySeq s k | k > 0} = {n | 0 < n} := by
   rw [symmDiff_comm, beattySeq_symmDiff_beattySeq'_pos hrs.symm]
 
@@ -170,6 +170,6 @@ theorem Irrational.beattySeq'_pos_eq {r : ℝ} (hr : Irrational r) :
 /-- **Rayleigh's theorem** on Beatty sequences. Let `r` be an irrational number greater than 1, and
 `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers. -/
 theorem Irrational.beattySeq_symmDiff_beattySeq_pos {r s : ℝ}
-    (hrs : r.IsConjugateExponent s) (hr : Irrational r) :
+    (hrs : r.IsConjExponent s) (hr : Irrational r) :
     {beattySeq r k | k > 0} ∆ {beattySeq s k | k > 0} = {n | 0 < n} := by
   rw [← hr.beattySeq'_pos_eq, beattySeq'_symmDiff_beattySeq_pos hrs]
