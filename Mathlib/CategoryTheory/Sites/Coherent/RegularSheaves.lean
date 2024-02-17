@@ -84,10 +84,10 @@ theorem equalizerCondition_iff_isIso_lift (P : Cᵒᵖ ⥤ Type*) : EqualizerCon
     rw [equalizerCondition_iff_isIso_lift_aux_comp, ← isIso_iff_bijective]
     infer_instance
 
-/-- TODO: move to right place and correct generality -/
+/-- An auxiliary isomorphism of two pullbacks used in the proof of `mapToEqualizer_pullback_comp` -/
 @[simps]
 noncomputable
-def preservesPullbackIso {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*) (F : D ⥤ C)
+def mapToEqualizer_pullback_comp_aux {D : Type*} [Category D] (P : Cᵒᵖ ⥤ Type*) (F : D ⥤ C)
     {X B : D} (π : X ⟶ B) [HasPullback π π] [PreservesLimit (cospan π π) F] :
     haveI := hasPullback_of_preservesPullback F π π
     (equalizer (P.map (pullback.fst (f := (F.map π)) (g := (F.map π))).op)
@@ -128,9 +128,10 @@ theorem mapToEqualizer_pullback_comp {D : Type*} [Category D] (P : Cᵒᵖ ⥤ T
     (equalizer.lift ((F.op ⋙ P).map π.op)
       (equalizerCondition_iff_isIso_lift_w (F.op ⋙ P) π)) =
     (equalizer.lift (P.map (F.map π).op)
-      (equalizerCondition_iff_isIso_lift_w P (F.map π))) ≫ (preservesPullbackIso P F π).hom := by
+      (equalizerCondition_iff_isIso_lift_w P (F.map π))) ≫
+        (mapToEqualizer_pullback_comp_aux P F π).hom := by
   simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
-    Quiver.Hom.unop_op, preservesPullbackIso]
+    Quiver.Hom.unop_op, mapToEqualizer_pullback_comp_aux]
   apply equalizer.hom_ext
   simp only [Functor.comp_obj, Functor.op_obj, unop_op, Functor.comp_map, Functor.op_map,
     Quiver.Hom.unop_op, Category.assoc]
@@ -159,9 +160,11 @@ theorem equalizerCondition_of_natIso_aux
     ← i.hom.naturality (pullback.snd (f := π) (g := π)).op, ← Category.assoc, equalizer.condition]
   simp
 
-/-- TODO: move to right place and correct generality -/
+/--
+An auxiliary isomorphism of two equalizers used in the proof of `equalizerCondition_of_natIso`
+-/
 noncomputable
-def equalizerIso_of_natIso {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ ⥤ Type _} (i : P ≅ P') {X B : C}
+def equalizerCondition_of_natIso_aux₂ {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ ⥤ Type _} (i : P ≅ P') {X B : C}
     (π : X ⟶ B) [HasPullback π π] :
     equalizer (P.map (pullback.fst (f := π) (g := π)).op) (P.map pullback.snd.op) ≅
     equalizer (P'.map (pullback.fst (f := π) (g := π)).op) (P'.map pullback.snd.op) where
@@ -180,9 +183,9 @@ theorem equalizerCondition_of_natIso {P : Cᵒᵖ ⥤ Type*} {P' : Cᵒᵖ ⥤ T
   have h : equalizer.lift (P'.map π.op) (equalizerCondition_iff_isIso_lift_w P' π) =
       i.inv.app (op B) ≫
       equalizer.lift (P.map π.op) (equalizerCondition_iff_isIso_lift_w P π) ≫
-      (equalizerIso_of_natIso i π).hom := by
+      (equalizerCondition_of_natIso_aux₂ i π).hom := by
     apply equalizer.hom_ext
-    simp [equalizerIso_of_natIso]
+    simp [equalizerCondition_of_natIso_aux₂]
   rw [h]
   infer_instance
 
