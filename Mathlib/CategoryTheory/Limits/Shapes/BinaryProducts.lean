@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.Tactic.DeriveFintype
 
 #align_import category_theory.limits.shapes.binary_products from "leanprover-community/mathlib"@"fec1d95fc61c750c1ddbb5b1f7f48b8e811a80d7"
 
@@ -43,7 +44,7 @@ namespace CategoryTheory.Limits
 inductive WalkingPair : Type
   | left
   | right
-  deriving DecidableEq, Inhabited
+  deriving DecidableEq, Inhabited, Fintype
 #align category_theory.limits.walking_pair CategoryTheory.Limits.WalkingPair
 
 open WalkingPair

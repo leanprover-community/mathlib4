@@ -5,6 +5,8 @@ Authors: Scott Morrison, Markus Himmel
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.FinCategory
+import Mathlib.Tactic.DeriveFintype
 
 #align_import category_theory.limits.shapes.equalizers from "leanprover-community/mathlib"@"4698e35ca56a0d4fa53aa5639c3364e0a77f4eba"
 
@@ -61,7 +63,7 @@ universe v v₂ u u₂
 inductive WalkingParallelPair : Type
   | zero
   | one
-  deriving DecidableEq, Inhabited
+  deriving DecidableEq, Inhabited, Fintype
 #align category_theory.limits.walking_parallel_pair CategoryTheory.Limits.WalkingParallelPair
 
 open WalkingParallelPair
@@ -80,6 +82,12 @@ attribute [-simp, nolint simpNF] WalkingParallelPairHom.id.sizeOf_spec
 
 /-- Satisfying the inhabited linter -/
 instance : Inhabited (WalkingParallelPairHom zero one) where default := WalkingParallelPairHom.left
+
+instance : (x y : WalkingParallelPair) → Fintype (WalkingParallelPairHom x y)
+  | zero, zero => ⟨{ .id zero }, by intro x; cases x; simp⟩
+  | zero, one => ⟨{ .left, .right }, by intro x; cases x; all_goals simp⟩
+  | one, zero => ⟨∅, by intro x; cases x⟩
+  | one, one => ⟨{ .id one }, by intro x; cases x; simp⟩
 
 open WalkingParallelPairHom
 
@@ -115,6 +123,9 @@ instance walkingParallelPairHomCategory : SmallCategory WalkingParallelPair wher
   id_comp := id_comp
   assoc := assoc
 #align category_theory.limits.walking_parallel_pair_hom_category CategoryTheory.Limits.walkingParallelPairHomCategory
+
+instance walkingParallelPairFinCategory : FinCategory WalkingParallelPair where
+  fintypeHom j j' := (inferInstance : Fintype (WalkingParallelPairHom j j'))
 
 @[simp]
 theorem walkingParallelPairHom_id (X : WalkingParallelPair) : WalkingParallelPairHom.id X = 𝟙 X :=
