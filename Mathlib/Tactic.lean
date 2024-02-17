@@ -55,7 +55,6 @@ import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.FunProp.AEMeasurable
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.FunProp.ContDiff
-import Mathlib.Tactic.FunProp.Continuous
 import Mathlib.Tactic.FunProp.Core
 import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Differentiable

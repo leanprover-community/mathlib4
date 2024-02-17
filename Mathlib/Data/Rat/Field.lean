@@ -3,8 +3,8 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Data.Rat.Defs
+import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Data.Rat.Order
 
 #align_import data.rat.basic from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
 
@@ -44,5 +44,7 @@ instance field : Field ℚ :=
 
 -- Extra instances to short-circuit type class resolution
 instance divisionRing : DivisionRing ℚ := by infer_instance
+
+instance instLinearOrderedField : LinearOrderedField ℚ := { field, instLinearOrderedCommRing with }
 
 end Rat
