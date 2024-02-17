@@ -720,7 +720,7 @@ def mkCLM [RingHomIsometric σ] (A : (D → E) → F → G)
 #align schwartz_map.mk_clm SchwartzMap.mkCLM
 
 /-- Define a continuous semilinear map from Schwartz space to a normed space. -/
-def mkDistribution [RingHomIsometric σ] (A : 𝓢(D, E) → G)
+def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
     (hadd : ∀ (f g : 𝓢(D, E)), A (f + g) = A f + A g)
     (hsmul : ∀ (a : 𝕜) (f : 𝓢(D, E)), A (a • f) = σ a • A f)
     (hbound : ∃ (s : Finset (ℕ × ℕ)) (C : ℝ), 0 ≤ C ∧ ∀ (f : 𝓢(D, E)),
@@ -1053,9 +1053,9 @@ lemma integrable (f : 𝓢(D, V)) {μ : Measure D} [IsAddHaarMeasure μ] :
   (f.integrable_pow_mul (μ := μ) 0).mono f.continuous.aestronglyMeasurable
     (eventually_of_forall (fun _ ↦ by simp))
 
-/-- The integral as a linear map from Schwartz space to the codomain. -/
+/-- The integral as a continuous linear map from Schwartz space to the codomain. -/
 def integral (μ : Measure D) [IsAddHaarMeasure μ] : 𝓢(D, V) →L[ℝ] V :=
-  mkDistribution (fun f ↦ ∫ x, f x ∂μ)
+  mkCLMtoNormedSpace (fun f ↦ ∫ x, f x ∂μ)
     (fun f g ↦ integral_add f.integrable g.integrable)
     (fun a f ↦ integral_smul a f)
     (by
@@ -1123,7 +1123,7 @@ variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 /-- The inclusion map from Schwartz functions to bounded continuous functions as a continuous linear
 map. -/
 def toBoundedContinuousFunctionCLM : 𝓢(E, F) →L[𝕜] E →ᵇ F :=
-  mkDistribution toBoundedContinuousFunction (by intro f g; ext; exact add_apply)
+  mkCLMtoNormedSpace toBoundedContinuousFunction (by intro f g; ext; exact add_apply)
     (by intro a f; ext; exact smul_apply)
     (⟨{0}, 1, zero_le_one, by
       simpa [BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)
@@ -1185,8 +1185,8 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
   rfl
 
 @[simp] theorem toZeroAtInfty_toBCF (f : 𝓢(E, F)) :
-    f.toZeroAtInfty.toBCF = f.toBoundedContinuousFunction := by
-  ext; rfl
+    f.toZeroAtInfty.toBCF = f.toBoundedContinuousFunction :=
+  rfl
 
 variable (𝕜 E F)
 variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -1194,7 +1194,7 @@ variable [IsROrC 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/
 def toZeroAtInftyCLM : 𝓢(E, F) →L[𝕜] C₀(E, F) :=
-  mkDistribution toZeroAtInfty (by intro f g; ext; exact add_apply)
+  mkCLMtoNormedSpace toZeroAtInfty (by intro f g; ext; exact add_apply)
     (by intro a f; ext; exact smul_apply)
     (⟨{0}, 1, zero_le_one, by simpa [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm,
       BoundedContinuousFunction.norm_le (apply_nonneg _ _)] using norm_le_seminorm 𝕜 ⟩)

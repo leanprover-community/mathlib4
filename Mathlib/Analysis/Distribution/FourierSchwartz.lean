@@ -17,8 +17,7 @@ differentiable, with an explicit derivative given by a Fourier transform. See
 `SchwartzMap.hasFDerivAt_fourier`.
 -/
 
-open Real Complex TopologicalSpace SchwartzSpace SchwartzMap MeasureTheory MeasureTheory.Measure
-  VectorFourier
+open Real Complex TopologicalSpace SchwartzMap MeasureTheory MeasureTheory.Measure VectorFourier
 
 noncomputable section
 
