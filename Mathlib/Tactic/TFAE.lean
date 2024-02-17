@@ -56,7 +56,7 @@ example : TFAE [P, Q, R] := by
   tfae_finish
 ```
 -/
-syntax (name := tfaeHave) "tfae_have " (ident " : ")? num impArrow num : tactic
+syntax (name := tfaeHave) "tfae_have " (ident " : ")? num impArrow num (":=" term)? : tactic
 
 /--
 `tfae_finish` is used to close goals of the form `TFAE [P₁, P₂, ...]` once a sufficient collection
@@ -170,17 +170,20 @@ def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax ``impArrow) : MetaM Name :
 open Elab in
 /-- The core of `tfae_have`, which behaves like `haveLetCore` in `Mathlib.Tactic.Have`. -/
 def tfaeHaveCore (goal : MVarId) (name : Option (TSyntax `ident)) (i j : TSyntax `num)
-    (arrow : TSyntax ``impArrow) (t : Expr) : TermElabM (MVarId × MVarId) :=
+    (arrow : TSyntax ``impArrow) (t : Expr) (pf? : Option Expr) :
+    TermElabM (Option MVarId × MVarId) :=
   goal.withContext do
     let n := (Syntax.getId <$> name).getD <|← mkTFAEHypName i j arrow
-    let (goal1, t, p) ← do
-      let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
-      pure (p.mvarId!, t, p)
-    let (fv, goal2) ← (← MVarId.assert goal n t p).intro1P
+    let (arrowGoal?, p) ← if let some pf := pf? then
+        pure (none, pf)
+      else
+        let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
+        pure (some p.mvarId!, p)
+    let (fv, mainGoal) ← (← MVarId.assert goal n t p).intro1P
     if let some stx := name then
-      goal2.withContext do
+      mainGoal.withContext do
         Term.addTermInfo' (isBinder := true) stx (mkFVar fv)
-    pure (goal1, goal2)
+    pure (arrowGoal?, mainGoal)
 
 /-- Turn syntax for a given index into a natural number, as long as it lies between `1` and
 `maxIndex`. -/
@@ -203,7 +206,7 @@ def mkImplType (Pi : Q(Prop)) (arr : TSyntax ``impArrow) (Pj : Q(Prop)) : MetaM 
 /-! # Tactic implementation -/
 
 elab_rules : tactic
-| `(tactic| tfae_have $[$h:ident : ]? $i:num $arr:impArrow $j:num) => do
+| `(tactic| tfae_have $[$h:ident : ]? $i:num $arr:impArrow $j:num $[:= $pf:term]?) => do
   let goal ← getMainGoal
   goal.withContext do
     let (_, tfaeList) ← getTFAEList (← goal.getType)
@@ -213,8 +216,12 @@ elab_rules : tactic
     let Pi := tfaeList.get! (i'-1)
     let Pj := tfaeList.get! (j'-1)
     let type ← mkImplType Pi arr Pj
-    let (goal1, goal2) ← tfaeHaveCore goal h i j arr type
-    replaceMainGoal [goal1, goal2]
+    let proof? ← pf.mapM fun pf => Elab.Tactic.elabTermEnsuringType pf type
+    let (arrowGoal?, mainGoal) ← tfaeHaveCore goal h i j arr type proof?
+    if let some arrowGoal := arrowGoal? then
+      replaceMainGoal [arrowGoal, mainGoal]
+    else
+      replaceMainGoal [mainGoal]
 
 elab_rules : tactic
 | `(tactic| tfae_finish) => do

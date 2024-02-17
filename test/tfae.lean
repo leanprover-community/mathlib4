@@ -121,3 +121,18 @@ example (h₁ : P → Q) (h₂ : Q → P) : TFAE [P, Q] := by
   tfae_finish
 
 end context
+
+section term
+
+axiom P : Prop
+axiom Q : Prop
+axiom pq : P → Q
+axiom qp : Q → P
+
+example : TFAE [P, Q] := by
+  have n := 4
+  tfae_have 2 ← 1 := by
+    guard_hyp n : ℕ
+    exact pq
+  tfae_have 1 ← 2 := qp
+  tfae_finish
