@@ -757,10 +757,10 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align add_subgroup.coe_zsmul AddSubgroup.coe_zsmul
 
 @[to_additive]
-theorem mk_eq_one_iff {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 :=
+theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 :=
   show (⟨g, h⟩ : H) = (⟨1, H.one_mem⟩ : H) ↔ g = 1 by simp
-#align subgroup.mk_eq_one_iff Subgroup.mk_eq_one_iff
-#align add_subgroup.mk_eq_zero_iff AddSubgroup.mk_eq_zero_iff
+#align subgroup.mk_eq_one_iff Subgroup.mk_eq_one
+#align add_subgroup.mk_eq_zero_iff AddSubgroup.mk_eq_zero
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
@@ -980,7 +980,7 @@ theorem bot_or_exists_ne_one (H : Subgroup G) : H = ⊥ ∨ ∃ x ∈ H, x ≠ (
 @[to_additive]
 lemma ne_bot_iff_exists_ne_one {H : Subgroup G} : H ≠ ⊥ ↔ ∃ a : ↥H, a ≠ 1 := by
   rw [← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one]
-  simp only [ne_eq, Subtype.exists, mk_eq_one_iff, exists_prop]
+  simp only [ne_eq, Subtype.exists, mk_eq_one, exists_prop]
 
 /-- The inf of two subgroups is their intersection. -/
 @[to_additive "The inf of two `AddSubgroup`s is their intersection."]
