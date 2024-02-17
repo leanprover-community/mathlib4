@@ -29,7 +29,9 @@ open CategoryTheory CategoryTheory.Limits
 
 universe v u w
 
-namespace CategoryTheory.Limits.Types
+namespace CategoryTheory.Limits
+
+namespace Types
 
 section limit_characterization
 
@@ -668,4 +670,55 @@ instance : HasImageMaps (Type u) where
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
         erw [p, Classical.choose_spec x.2]⟩⟩) rfl
 
-end CategoryTheory.Limits.Types
+end Types
+
+open Functor Opposite
+
+variable {J : Type v} [SmallCategory J] {C : Type u} [Category.{v} C]
+
+/-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`. -/
+@[simps]
+noncomputable def limitCompYonedaIsoCocone (F : J ⥤ C) (X : C) :
+    limit (F.op ⋙ yoneda.obj X) ≅ (F ⟶ (const J).obj X) where
+  hom := fun x => ⟨fun j => limit.π (F.op ⋙ yoneda.obj X) (Opposite.op j) x,
+    fun j j' f => by simpa using congrFun (limit.w (F.op ⋙ yoneda.obj X) f.op) x⟩
+  inv := fun ι => Types.Limit.mk _ (fun j => ι.app j.unop) (by simp)
+
+/-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
+    naturally in `X`. -/
+@[simps!]
+noncomputable def yonedaCompLimIsoCocones (F : J ⥤ C) :
+    yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙ lim ≅ F.cocones :=
+  NatIso.ofComponents (limitCompYonedaIsoCocone F)
+
+variable (J) (C) in
+/-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
+    naturally in `F` and `X`. -/
+@[simps!]
+noncomputable def opHomCompWhiskeringLimYonedaIsoCocones : opHom _ _ ⋙ whiskeringLeft _ _ _ ⋙
+      (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj yoneda ≅ cocones J C :=
+  NatIso.ofComponents (fun F => yonedaCompLimIsoCocones F.unop)
+
+/-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`. -/
+@[simps]
+noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
+    limit (F ⋙ coyoneda.obj (op X)) ≅ ((const J).obj X ⟶ F) where
+  hom := fun x => ⟨fun j => limit.π (F ⋙ coyoneda.obj (op X)) j x,
+    fun j j' f => by simpa using (congrFun (limit.w (F ⋙ coyoneda.obj (op X)) f) x).symm⟩
+  inv := fun ι => Types.Limit.mk _ (fun j => ι.app j)
+    fun j j' f => by simpa using (ι.naturality f).symm
+
+/-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
+    naturally in `X`. -/
+@[simps!]
+noncomputable def coyonedaCompLimIsoCones (F : J ⥤ C) :
+    coyoneda ⋙ (whiskeringLeft _ _ _).obj F ⋙ lim ≅ F.cones :=
+  NatIso.ofComponents (fun X => limitCompCoyonedaIsoCone F X.unop)
+
+/-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
+    naturally in `F` and `X`. -/
+noncomputable def whiskeringLimYonedaIsoCones : whiskeringLeft _ _ _ ⋙
+    (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj coyoneda ≅ cones J C :=
+  NatIso.ofComponents coyonedaCompLimIsoCones
+
+end CategoryTheory.Limits
