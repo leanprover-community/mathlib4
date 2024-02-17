@@ -327,19 +327,18 @@ theorem compiler_correctness
     generalize dζ₂ : step (Instruction.sto t) ζ₁ = ζ₂
     generalize dζ₃ : outcome (compile _ e_s₂ (t + 1)) ζ₂ = ζ₃
     generalize dζ₄ : step (Instruction.add t) ζ₃ = ζ₄
-    have hζ₁ : ζ₁ ≃[t] { η with ac := ν₁ } := by
-      calc
-        ζ₁ = outcome (compile map e_s₁ t) η := by simp_all
-        _ ≃[t] { η with ac := ν₁ } := by apply e_ih_s₁ <;> assumption
+    have hζ₁ : ζ₁ ≃[t] { η with ac := ν₁ } := calc
+      ζ₁ = outcome (compile map e_s₁ t) η := by simp_all
+      _ ≃[t] { η with ac := ν₁ } := by apply e_ih_s₁ <;> assumption
     have hζ₁_ν₁ : ζ₁.ac = ν₁ := by simp_all [StateEq]
-    have hζ₂ : ζ₂ ≃[t + 1]/ac write t ν₁ η := by calc
-        ζ₂ = step (Instruction.sto t) ζ₁ := by simp_all
-        _ = write t ζ₁.ac ζ₁ := by simp [step]
-        _ = write t ν₁ ζ₁ := by simp_all
-        _ ≃[t + 1] write t ν₁ { η with ac := ν₁ } := by apply stateEq_implies_write_eq hζ₁
-        _ ≃[t + 1]/ac write t ν₁ η := by
-          apply stateEqRs_implies_write_eq_rs
-          simp [StateEqRs]
+    have hζ₂ : ζ₂ ≃[t + 1]/ac write t ν₁ η := calc
+      ζ₂ = step (Instruction.sto t) ζ₁ := by simp_all
+      _ = write t ζ₁.ac ζ₁ := by simp [step]
+      _ = write t ν₁ ζ₁ := by simp_all
+      _ ≃[t + 1] write t ν₁ { η with ac := ν₁ } := by apply stateEq_implies_write_eq hζ₁
+      _ ≃[t + 1]/ac write t ν₁ η := by
+        apply stateEqRs_implies_write_eq_rs
+        simp [StateEqRs]
     have ht' : ∀ x, loc x map < t + 1 := by
       intros
       apply lt_trans (ht _) (Register.lt_succ_self _)
@@ -349,7 +348,7 @@ theorem compiler_correctness
         read (loc x map) ζ₂ = read (loc x map) (write t ν₁ η) := hζ₂ _ (ht' _)
         _ = read (loc x map) η := by simp only [loc] at ht; simp [(ht _).ne]
         _ = ξ x := hmap x
-    have hζ₃ : ζ₃ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := by calc
+    have hζ₃ : ζ₃ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := calc
       ζ₃ = outcome (compile map e_s₂ (t + 1)) ζ₂ := by simp_all
       _ ≃[t + 1] { ζ₂ with ac := ν₂ } := by apply e_ih_s₂ <;> assumption
       _ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := by simp [StateEq]; apply hζ₂
@@ -359,7 +358,7 @@ theorem compiler_correctness
       cases' hζ₃ with _ hζ₃
       specialize hζ₃ t (Register.lt_succ_self _)
       simp_all
-    have hζ₄ : ζ₄ ≃[t + 1] { write t ν₁ η with ac := ν } := by calc
+    have hζ₄ : ζ₄ ≃[t + 1] { write t ν₁ η with ac := ν } := calc
       ζ₄ = step (Instruction.add t) ζ₃ := by simp_all
       _  = { ζ₃ with ac := read t ζ₃ + ζ₃.ac } := by simp [step]
       _  = { ζ₃ with ac := ν } := by simp_all

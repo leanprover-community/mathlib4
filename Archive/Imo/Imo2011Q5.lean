@@ -30,10 +30,9 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
     have h_fn_dvd_d : f n ∣ d := by
       rw [← sub_sub_self m n]
       exact hdvd m (m - n)
-    have h_d_lt_fn : d < f n := by
-      calc
-        d < f m := sub_lt_self _ (hpos (m - n))
-        _ < f n := h_fm_lt_fn
+    have h_d_lt_fn : d < f n := calc
+      d < f m := sub_lt_self _ (hpos (m - n))
+      _ < f n := h_fm_lt_fn
     have h_neg_d_lt_fn : -d < f n := by
       calc
         -d = f (m - n) - f m := neg_sub _ _
