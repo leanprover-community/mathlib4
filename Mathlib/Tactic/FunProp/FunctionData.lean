@@ -124,6 +124,14 @@ def getFunctionData? (f : Expr)
     | _ => return .data (← getFunctionData f')
 
 
+def FunctionData.unfoldHeadFVar? (fData : FunctionData) : MetaM (Option Expr) := do
+  let .fvar id := fData.fn | return none
+  let .some val ← id.getValue? | return none
+  let f ← withLCtx fData.lctx fData.insts do
+    mkLambdaFVars #[fData.mainVar] (Mor.mkAppN val fData.args)
+  return f
+
+
 inductive MorApplication where
   | underApplied | exact | overApplied | none
   deriving Inhabited, BEq

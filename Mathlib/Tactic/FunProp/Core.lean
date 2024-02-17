@@ -512,6 +512,11 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let .some r ← tryTheorems funPropDecl e fData thms funProp then
       return r
 
+    if let .some f ← fData.unfoldHeadFVar? then
+      let e' := e.setArg funPropDecl.funArgId f
+      if let .some r ← funProp e' then
+        return r
+
     if (← fData.isMorApplication) != .none then
       if let .some r ← applyMorRules funPropDecl e fData funProp then
         return r

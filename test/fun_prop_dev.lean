@@ -346,3 +346,4 @@ theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) :
   induction n <;> (simp[iterate]; fun_prop)
 
 
+example : let f := fun x : α => x; Con f := by fun_prop
