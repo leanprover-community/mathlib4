@@ -24,13 +24,13 @@ given `IsOrderedAddCommMonoid α` and `LinearOrder α`
 given `IsOrderedCancelAddCommMonoid α` and `LinearOrder α`
 -/
 /--mixin for saying adding a constant does not change the order-/
-class IsOrderedAddCommMonoid (α : Type*) [PartialOrder α] [AddCommMonoid α] where
+class IsOrderedAddCommMonoid (α : Type*) [PartialOrder α] [AddCommMonoid α] : Prop where
   /- Adding a constant on the left does not change the order -/
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c, c + a ≤ c + b
 
 /--mixin for saying removing the adding of a constant does not change the order-/
 class IsOrderedCancelAddCommMonoid
-  (α :Type*) [PartialOrder α] [AddCommMonoid α] extends IsOrderedAddCommMonoid α where
+  (α :Type*) [PartialOrder α] [AddCommMonoid α] extends IsOrderedAddCommMonoid α : Prop where
   /- Removing the adding of a constant on the left does not change the order-/
   protected le_of_add_le_add_left : ∀ (a b c : α), a + b ≤ a + c → b ≤ c
 
