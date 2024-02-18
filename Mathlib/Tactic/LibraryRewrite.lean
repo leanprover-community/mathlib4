@@ -18,15 +18,15 @@ def RewriteLemma.length (rwLemma : RewriteLemma) : Nat :=
   rwLemma.name.toString.length
 
 /--
-We sort lemmata by the following conditions in order:
-- left-to-right rewrites come first
+We sort lemmata by the following conditions (in order):
 - number of parameters
+- left-to-right rewrites come first
 - length of the name
 - alphabetical order
 -/
 def RewriteLemma.lt (a b : RewriteLemma) : Bool :=
-  !a.symm && b.symm || a.symm == b.symm &&
-    (a.numParams < b.numParams || a.numParams == b.numParams &&
+  (a.numParams < b.numParams || a.numParams == b.numParams &&
+    !a.symm && b.symm || a.symm == b.symm &&
       (a.length < b.length || a.length == b.length &&
         Name.lt a.name b.name))
 
@@ -318,13 +318,13 @@ def LibraryRewrite : Component InteractiveTacticProps :=
   mk_rpc_widget% LibraryRewrite.rpc
 
 /--
-After writing `rw??`, you can shift-click an expression in the fist tactic state goal,
-which makes a list of rewrite suggestions appear for rewriting the selected expression.
-Clicking on the lemma name of a suggestion will paste the rewrite tactic into the editor.
+After writing `rw??`, shift-click an expression in the tactic state.
+This creates a list of rewrite suggestions for the selected expression.
+Clicking on the lemma name of a suggestion will paste the `rw` tactic into the editor.
 
-`rw??` is limited to run for a short amount of time, but if you want it to run for longer,
-you can specify a factor by which to increase the available heartbeats.
-If all possible results have been listed, it says `All rewrite results:`.
+`rw??` is constrained in runtime. To increase the maximum heartbeats, specify a factor by which
+to increase it, e.g. `rw?? 5` for 5 times as high a maximum.
+If all potential results have been checked successfully, it will say `All rewrite results:`.
 -/
 syntax (name := rw??) "rw??" (num)? : tactic
 
