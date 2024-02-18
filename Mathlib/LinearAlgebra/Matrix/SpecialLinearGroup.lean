@@ -108,6 +108,13 @@ theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, ↑ₘA i j = ↑ₘB i j
   (SpecialLinearGroup.ext_iff A B).mpr
 #align matrix.special_linear_group.ext Matrix.SpecialLinearGroup.ext
 
+instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLinearGroup n R) := by
+  refine ⟨fun ⟨A, hA⟩ ⟨B, hB⟩ ↦ ?_⟩
+  ext i j
+  rcases isEmpty_or_nonempty n with hn | hn; · exfalso; exact IsEmpty.false i
+  rw [det_eq_elem_of_subsingleton _ i] at hA hB
+  simp only [Subsingleton.elim j i, hA, hB]
+
 instance hasInv : Inv (SpecialLinearGroup n R) :=
   ⟨fun A => ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
 #align matrix.special_linear_group.has_inv Matrix.SpecialLinearGroup.hasInv
@@ -255,13 +262,6 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 section center
 
 open Subgroup
-
-instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLinearGroup n R) := by
-  refine ⟨fun ⟨A, hA⟩ ⟨B, hB⟩ ↦ ?_⟩
-  ext i j
-  rcases isEmpty_or_nonempty n with hn | hn; · exfalso; exact IsEmpty.false i
-  rw [det_eq_elem_of_subsingleton _ i] at hA hB
-  simp only [Subsingleton.elim j i, hA, hB]
 
 @[simp]
 theorem center_eq_bot_of_subsingleton [Subsingleton n] :
