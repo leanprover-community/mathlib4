@@ -61,7 +61,7 @@ variable {K : Type v} {E : Type uE} {F: Type uF} [Field K] [AddCommGroup E] [Mod
 
 variable (R M n)
 
-/--Definition of the `n`th exterior power of a `R`-module `M`. We introduce the notation
+/-- Definition of the `n`th exterior power of a `R`-module `M`. We introduce the notation
 `Λ[R]^n M` for `ExteriorPower R n M`. -/
 @[reducible]
 def ExteriorPower := (LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n)
