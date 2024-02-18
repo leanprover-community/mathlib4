@@ -591,8 +591,8 @@ theorem iIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : ι} 
       simp [hn_ne_a, hn_mem, hft1_mem n hn_mem]
   have h_f_mem_pi : ∀ n ∈ s, f n ∈ π n := fun x hxS => h_f_mem x (by simp [hxS])
   have h_t1 : t1 = ⋂ n ∈ s, f n := by
-    suffices h_forall : ∀ n ∈ s, f n = ft1 n
-    · rw [ht1_eq]
+    suffices h_forall : ∀ n ∈ s, f n = ft1 n by
+      rw [ht1_eq]
       ext x
       simp_rw [Set.mem_iInter]
       conv => lhs; intro i hns; rw [← h_forall i hns]

@@ -299,8 +299,8 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
 /-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
 lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
-  have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit)
-  · erw [orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
+  have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
+    erw [orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
       (AlgEquiv.algHomUnitsEquiv K L).injective]
     rw [← orderOf_units]
     rfl

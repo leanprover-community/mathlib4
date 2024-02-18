@@ -3,15 +3,14 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
 -/
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
 import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
-import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Parity
-import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
 

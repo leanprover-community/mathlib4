@@ -487,6 +487,13 @@ theorem exists_ge_of_linear [LinearOrder α] (a b : α) : ∃ c, a ≤ c ∧ b �
   | Or.inr h => ⟨_, le_rfl, h⟩
 #align exists_ge_of_linear exists_ge_of_linear
 
+lemma exists_forall_ge_and [LinearOrder α] {p q : α → Prop} :
+    (∃ i, ∀ j ≥ i, p j) → (∃ i, ∀ j ≥ i, q j) → ∃ i, ∀ j ≥ i, p j ∧ q j
+  | ⟨a, ha⟩, ⟨b, hb⟩ =>
+    let ⟨c, hac, hbc⟩ := exists_ge_of_linear a b
+    ⟨c, fun _d hcd ↦ ⟨ha _ $ hac.trans hcd, hb _ $ hbc.trans hcd⟩⟩
+#align exists_forall_ge_and exists_forall_ge_and
+
 theorem lt_imp_lt_of_le_imp_le {β} [LinearOrder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b → c ≤ d) (h : d < c) : b < a :=
   lt_of_not_le fun h' ↦ (H h').not_lt h

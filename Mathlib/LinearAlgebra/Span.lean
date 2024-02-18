@@ -933,8 +933,8 @@ theorem wcovBy_span_singleton_sup (x : V) (p : Submodule K V) : WCovBy p ((K ∙
     simpa [mem_sup, mem_span_singleton] using hqp.le hyq
   rcases eq_or_ne c 0 with rfl | hc
   · simp [hz] at hyp
-  · have : x ∈ q
-    · rwa [q.add_mem_iff_left (hpq.le hz), q.smul_mem_iff hc] at hyq
+  · have : x ∈ q := by
+      rwa [q.add_mem_iff_left (hpq.le hz), q.smul_mem_iff hc] at hyq
     simp [hpq.le, this]
 
 /-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `CovBy` version. -/
