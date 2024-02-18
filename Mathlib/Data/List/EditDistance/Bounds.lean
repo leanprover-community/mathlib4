@@ -64,8 +64,7 @@ theorem le_suffixLevenshtein_cons_minimum (xs : List α) (y ys) :
   simp only [suffixLevenshtein_eq_tails_map]
   apply List.le_minimum_of_forall_le
   intro b m
-  replace m : ∃ a_1, a_1 <:+ a ∧ levenshtein C a_1 ys = b
-  · simpa using m
+  replace m : ∃ a_1, a_1 <:+ a ∧ levenshtein C a_1 ys = b := by simpa using m
   obtain ⟨a', suff', rfl⟩ := m
   apply List.minimum_le_of_mem'
   simp only [List.mem_map, List.mem_tails]

@@ -218,8 +218,8 @@ theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
     clear ao
     revert h'
     apply not_lt_of_le
-    suffices e : (omega^log omega o) * ↑n + o = o
-    · simpa only [e] using le_add_right ((omega^log omega o) * ↑n) o
+    suffices e : (omega^log omega o) * ↑n + o = o by
+      simpa only [e] using le_add_right ((omega^log omega o) * ↑n) o
     induction' n with n IH
     · simp [Nat.cast_zero, mul_zero, zero_add]
     simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]

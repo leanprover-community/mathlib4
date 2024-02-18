@@ -67,8 +67,8 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     exists_mem_of_measure_ne_zero_of_ae h
       (IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div μ s 1)
   let I : ι → Set (AddCircle T) := fun j => closedBall d (T / (2 * ↑(n j)))
-  replace hd : Tendsto (fun j => μ (s ∩ I j) / μ (I j)) l (𝓝 1)
-  · let δ : ι → ℝ := fun j => T / (2 * ↑(n j))
+  replace hd : Tendsto (fun j => μ (s ∩ I j) / μ (I j)) l (𝓝 1) := by
+    let δ : ι → ℝ := fun j => T / (2 * ↑(n j))
     have hδ₀ : ∀ᶠ j in l, 0 < δ j :=
       (hu₂.eventually_gt_atTop 0).mono fun j hj => div_pos hT₀ <| by positivity
     have hδ₁ : Tendsto δ l (𝓝[>] 0) := by
@@ -131,8 +131,8 @@ theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fu
     measurePreserving_add_left volume (DivisibleBy.div x <| n - 1)
   suffices e ∘ f ∘ e.symm = fun y => n • y by
     rw [← he.ergodic_conjugate_iff, this]; exact ergodic_zsmul h
-  replace h : n - 1 ≠ 0
-  · rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
+  replace h : n - 1 ≠ 0 := by
+    rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
   have hnx : n • DivisibleBy.div x (n - 1) = x + DivisibleBy.div x (n - 1) := by
     conv_rhs => congr; rw [← DivisibleBy.div_cancel x h]
     rw [sub_smul, one_smul, sub_add_cancel]
