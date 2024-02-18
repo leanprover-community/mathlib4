@@ -326,7 +326,7 @@ lemma BasisOfBasis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
   · simp only [linearFormOfBasis_apply_nondiag R n b hs ht heq, Basis.coord_apply,
       Basis.repr_self_apply, Subtype.mk.injEq, Ne.symm heq, ite_false]
 
-/-! Freeness and dimension of `Λ[R]^n M. -/
+/-! ### Freeness and dimension of `Λ[R]^n M. -/
 
 /-- If `M` is a free module, then so is its `n`th exterior power. -/
 lemma FreeOfFree (hfree : Module.Free R M) : Module.Free R ((Λ[R]^n) M) :=
