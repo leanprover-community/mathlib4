@@ -129,7 +129,7 @@ instance : Full (incl : C ⥤ _) where
 instance : Faithful (incl : C ⥤ _) where
 
 /-- Map `WithTerminal` with respect to a functor `F : C ⥤ D`. -/
-@[simp]
+@[simps]
 def map {D : Type*} [Category D] (F : C ⥤ D) : WithTerminal C ⥤ WithTerminal D where
   obj X :=
     match X with
