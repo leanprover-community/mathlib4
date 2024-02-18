@@ -21,13 +21,14 @@ The counterexample we use is $B (x, y) (x', y') ↦ xy' + x'y$ where `x y x' y' 
 variable (F : Type*) [Nontrivial F] [CommRing F] [CharP F 2]
 
 open LinearMap
+open LinearMap (BilinForm)
 
 namespace Counterexample
 
 set_option linter.uppercaseLean3 false
 
 /-- The bilinear form we will use as a counterexample, over some field `F` of characteristic two. -/
-def B : (F × F) →ₗ[F] (F × F) →ₗ[F] F :=
+def B : BilinForm F (F × F) :=
   (mul F F).compl₁₂ (fst _ _ _) (snd _ _ _) + (mul F F).compl₁₂ (snd _ _ _) (fst _ _ _)
 #align counterexample.B Counterexample.B
 
