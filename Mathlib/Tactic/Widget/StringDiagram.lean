@@ -79,23 +79,29 @@ def StructuralAtom.e : StructuralAtom → MetaM Expr
     mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.associator #[← f.e, ← g.e, ← h.e]]
   | .associatorInv f g h => do
     mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.associator #[← f.e, ← g.e, ← h.e]]
-  | .leftUnitor f => do mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.leftUnitor #[← f.e]]
-  | .leftUnitorInv f => do mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.leftUnitor #[← f.e]]
-  | .rightUnitor f => do mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
-  | .rightUnitorInv f => do mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
+  | .leftUnitor f => do
+    mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.leftUnitor #[← f.e]]
+  | .leftUnitorInv f => do
+    mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.leftUnitor #[← f.e]]
+  | .rightUnitor f => do
+    mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
+  | .rightUnitorInv f => do
+    mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
 
 /-- Construct a `StructuralAtom` expression from a Lean expression. -/
 def structuralAtom? (e : Expr) : Option StructuralAtom := do
   match e.getAppFnArgs with
   | (``Iso.hom, #[_, _, _, _, η]) =>
     match η.getAppFnArgs with
-    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) => return .associator (toMor₁ f) (toMor₁ g) (toMor₁ h)
+    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
+      return .associator (toMor₁ f) (toMor₁ g) (toMor₁ h)
     | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => return .leftUnitor (toMor₁ f)
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => return .rightUnitor (toMor₁ f)
     | _ => none
   | (``Iso.inv, #[_, _, _, _, η]) =>
     match η.getAppFnArgs with
-    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) => return .associatorInv (toMor₁ f) (toMor₁ g) (toMor₁ h)
+    | (``MonoidalCategoryStruct.associator, #[_, _, _, f, g, h]) =>
+      return .associatorInv (toMor₁ f) (toMor₁ g) (toMor₁ h)
     | (``MonoidalCategoryStruct.leftUnitor, #[_, _, _, f]) => return .leftUnitorInv (toMor₁ f)
     | (``MonoidalCategoryStruct.rightUnitor, #[_, _, _, f]) => return .rightUnitorInv (toMor₁ f)
     | _ => none
@@ -236,7 +242,8 @@ partial def evalWhiskerLeftExpr : Mor₁ → NormalExpr → MetaM NormalExpr
     let η' ← evalWhiskerLeftExpr f (← evalWhiskerLeftExpr g η)
     let h ← η.src
     let h' ← η.tar
-    return evalComp (← NormalExpr.associator f g h) (evalComp η' (← NormalExpr.associatorInv f g h'))
+    return evalComp (← NormalExpr.associator f g h)
+      (evalComp η' (← NormalExpr.associatorInv f g h'))
   | .id _, η => do
     let f ← η.src
     let g ← η.tar
@@ -255,12 +262,14 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
     let g' ← η.tar
     let η' ← evalWhiskerLeftExpr (.of f) (← evalWhiskerRightExpr (.cons η (.id g')) (.of h))
     let θ' ← evalWhiskerRightExpr θ (.of h)
-    return evalComp (← NormalExpr.associator (.of f) g (.of h)) (evalComp η' (evalComp (← NormalExpr.associatorInv (.of f) g' (.of h)) θ'))
+    return evalComp (← NormalExpr.associator (.of f) g (.of h))
+      (evalComp η' (evalComp (← NormalExpr.associatorInv (.of f) g' (.of h)) θ'))
   | η, .comp g h => do
     let η' ← evalWhiskerRightExpr (← evalWhiskerRightExpr η g) h
     let f ← η.src
     let f' ← η.tar
-    return evalComp (← NormalExpr.associatorInv f g h) (evalComp η' (← NormalExpr.associator f' g h))
+    return evalComp (← NormalExpr.associatorInv f g h)
+      (evalComp η' (← NormalExpr.associator f' g h))
   | η, .id _ => do
     let f ← η.src
     let g ← η.tar
@@ -320,8 +329,10 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
   match e.getAppFnArgs with
   | (``CategoryStruct.id, #[_, _, f]) => return NormalExpr.id (toMor₁ f)
   | (``CategoryStruct.comp, #[_, _, _, _, _, η, θ]) => return evalComp (← eval η) (← eval θ)
-  | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) => evalWhiskerLeftExpr (toMor₁ f) (← eval η)
-  | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) => evalWhiskerRightExpr (← eval η) (toMor₁ h)
+  | (``MonoidalCategoryStruct.whiskerLeft, #[_, _, _, f, _, _, η]) =>
+    evalWhiskerLeftExpr (toMor₁ f) (← eval η)
+  | (``MonoidalCategoryStruct.whiskerRight, #[_, _, _, _, _, η, h]) =>
+    evalWhiskerRightExpr (← eval η) (toMor₁ h)
   | _ => NormalExpr.of e
 
 /-- Remove structural 2-morphisms. -/
