@@ -312,8 +312,8 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
 
 @[simp] lemma posFittingCompOf_le_lowerCentralSeries (x : L) (k : ℕ) :
     posFittingCompOf R M x ≤ lowerCentralSeries R L M k := by
-  suffices : ∀ m l, (toEndomorphism R L M x ^ l) m ∈ lowerCentralSeries R L M l
-  · intro m hm
+  suffices ∀ m l, (toEndomorphism R L M x ^ l) m ∈ lowerCentralSeries R L M l by
+    intro m hm
     obtain ⟨n, rfl⟩ := (mem_posFittingCompOf R x m).mp hm k
     exact this n k
   intro m l
@@ -417,8 +417,8 @@ lemma comap_weightSpace_eq_of_injective (hf : Injective f) :
              f ∘ₗ (toEndomorphism R L M x - χ x • ↑1) := by ext; simp
     obtain ⟨k, hk⟩ := hm x
     use k
-    suffices : f (((toEndomorphism R L M x - χ x • ↑1) ^ k) m) = 0
-    · rw [← f.map_zero] at this; exact hf this
+    suffices f (((toEndomorphism R L M x - χ x • ↑1) ^ k) m) = 0 by
+      rw [← f.map_zero] at this; exact hf this
     simpa [hk] using (LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute h k) m).symm
   · rw [← LieSubmodule.map_le_iff_le_comap]
     exact map_weightSpace_le f
@@ -514,14 +514,14 @@ private lemma isCompl_weightSpace_zero_posFittingComp_aux
 lemma isCompl_weightSpace_zero_posFittingComp :
     IsCompl (weightSpace M 0) (posFittingComp R L M) := by
   let P : LieSubmodule R L M → Prop := fun N ↦ IsCompl (weightSpace N 0) (posFittingComp R L N)
-  suffices : P ⊤
-  · let e := LieModuleEquiv.ofTop R L M
+  suffices P ⊤ by
+    let e := LieModuleEquiv.ofTop R L M
     rw [← map_weightSpace_eq e, ← map_posFittingComp_eq e]
     exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mp this
   refine (LieSubmodule.wellFounded_of_isArtinian R L M).induction (C := P) _ fun N hN ↦ ?_
   refine isCompl_weightSpace_zero_posFittingComp_aux R L N fun N' hN' ↦ ?_
-  suffices : IsCompl (weightSpace (N'.map N.incl) 0) (posFittingComp R L (N'.map N.incl))
-  · let e := LieSubmodule.equivMapOfInjective N' N.injective_incl
+  suffices IsCompl (weightSpace (N'.map N.incl) 0) (posFittingComp R L (N'.map N.incl)) by
+    let e := LieSubmodule.equivMapOfInjective N' N.injective_incl
     rw [← map_weightSpace_eq e, ← map_posFittingComp_eq e] at this
     exact (LieSubmodule.orderIsoMapComap e).isCompl_iff.mpr this
   exact hN _ (LieSubmodule.map_incl_lt_iff_lt_top.mpr hN')
