@@ -622,11 +622,11 @@ theorem tfae_modEq :
       ((toIcoMod_eq_iff hp).2 ⟨Set.Ioo_subset_Ico_self hi, i, (sub_add_cancel b _).symm⟩).trans
         ((toIocMod_eq_iff hp).2 ⟨Set.Ioo_subset_Ioc_self hi, i, (sub_add_cancel b _).symm⟩).symm
   tfae_have : 4 → 3
-  · intro h
+  | h => by
     rw [← h, Ne, eq_comm, add_right_eq_self]
     exact hp.ne'
   tfae_have : 1 → 4
-  · intro h
+  | h => by
     rw [h, eq_comm, toIocMod_eq_iff, Set.right_mem_Ioc]
     refine' ⟨lt_add_of_pos_right a hp, toIcoDiv hp a b - 1, _⟩
     rw [sub_one_zsmul, add_add_add_comm, add_right_neg, add_zero]

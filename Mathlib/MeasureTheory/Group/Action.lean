@@ -164,8 +164,7 @@ theorem smulInvariantMeasure_tfae :
         ∀ c : G, MeasurePreserving (c • ·) μ μ] := by
   tfae_have : 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
   tfae_have : 1 → 6
-  · intro h c
-    exact (measurePreserving_smul c μ).map_eq
+  | h, c => (measurePreserving_smul c μ).map_eq
   tfae_have : 6 → 7 := fun H c => ⟨measurable_const_smul c, H c⟩
   tfae_have : 7 → 4 := fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
   tfae_have : 4 → 5 := fun H c s => by
@@ -173,7 +172,7 @@ theorem smulInvariantMeasure_tfae :
       apply H
   tfae_have : 5 → 3 := fun H c s _ => H c s
   tfae_have : 3 → 2
-  · intro H c s hs
+  | H, c, s, hs => by
     rw [preimage_smul]
     exact H c⁻¹ s hs
   tfae_finish

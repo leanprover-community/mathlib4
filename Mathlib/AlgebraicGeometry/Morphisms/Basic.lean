@@ -246,7 +246,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
         ∃ (ι : Type u) (U : ι → Opens Y.carrier) (_ : iSup U = ⊤) (hU' : ∀ i, IsAffineOpen (U i)),
           ∀ i, @P _ _ (f ∣_ U i) (hU' i)] := by
   tfae_have : 1 → 4
-  · intro H U g h₁ h₂
+  | H, U, g, h₁, h₂ => by
     -- Porting note : I need to add `i1` manually, so to save some typing, named this variable
     set U' : Opens _ := ⟨_, h₂.base_open.open_range⟩
     replace H := H ⟨U', rangeIsAffineOpenOfOpenImmersion g⟩
@@ -254,8 +254,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
     rw [← P.toProperty_apply] at H ⊢
     rwa [← hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]
   tfae_have : 4 → 3
-  · intro H 𝒰 h𝒰 i
-    apply H
+  | H, 𝒰, h𝒰, i => by apply H
   tfae_have : 3 → 2 := fun H => ⟨Y.affineCover, inferInstance, H Y.affineCover⟩
   tfae_have : 2 → 1
   · rintro ⟨𝒰, h𝒰, H⟩; exact targetAffineLocallyOfOpenCover hP f 𝒰 H
@@ -272,7 +271,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
     convert H
     all_goals ext1; exact Subtype.range_coe
   tfae_have : 1 → 5
-  · intro H
+  | H => by
     refine ⟨Y.carrier, fun x => (Scheme.Hom.opensRange <| Y.affineCover.map x),
       ?_, fun i => rangeIsAffineOpenOfOpenImmersion _, ?_⟩
     · rw [eq_top_iff]; intro x _; erw [Opens.mem_iSup]; exact ⟨x, Y.affineCover.Covers x⟩
@@ -398,22 +397,22 @@ theorem PropertyIsLocalAtTarget.openCover_TFAE {P : MorphismProperty Scheme}
   tfae_have : 2 → 1
   · rintro ⟨𝒰, H⟩; exact hP.3 f 𝒰 H
   tfae_have : 1 → 4
-  · intro H U; exact hP.2 f U H
+  | H, U => hP.2 f U H
   tfae_have : 4 → 3
-  · intro H 𝒰 i
+  | H, 𝒰, i => by
     rw [← hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]
     exact H <| Scheme.Hom.opensRange (𝒰.map i)
   tfae_have : 3 → 2 := fun H => ⟨Y.affineCover, H Y.affineCover⟩
   tfae_have : 4 → 5
-  · intro H U g hg
+  | H, U, g, hg => by
     rw [← hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]
     apply H
   tfae_have : 5 → 4
-  · intro H U
+  | H, U => by
     erw [hP.1.cancel_left_isIso]
     apply H
   tfae_have : 4 → 6
-  · intro H; exact ⟨PUnit, fun _ => ⊤, ciSup_const, fun _ => H _⟩
+  | H => ⟨PUnit, fun _ => ⊤, ciSup_const, fun _ => H _⟩
   tfae_have : 6 → 2
   · rintro ⟨ι, U, hU, H⟩
     refine' ⟨Y.openCoverOfSuprEqTop U hU, _⟩
@@ -574,7 +573,7 @@ theorem AffineTargetMorphismProperty.IsLocal.diagonal_affine_openCover_TFAE
   tfae_have : 4 → 3
   · introv H h𝒰; apply H
   tfae_have : 3 → 2
-  · exact fun H => ⟨Y.affineCover, inferInstance, H Y.affineCover⟩
+  | H => ⟨Y.affineCover, inferInstance, H Y.affineCover⟩
   tfae_have : 2 → 5
   · rintro ⟨𝒰, h𝒰, H⟩
     refine' ⟨𝒰, inferInstance, fun _ => Scheme.affineCover _, inferInstance, _⟩

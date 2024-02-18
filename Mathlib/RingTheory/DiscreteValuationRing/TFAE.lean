@@ -174,8 +174,7 @@ theorem tfae_of_isNoetherianRing_of_localRing_of_isDomain
   tfae_have : 1 → 2 := fun _ ↦ inferInstance
   tfae_have : 2 → 1 := fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
   tfae_have : 1 → 4
-  · intro H
-    exact ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal hP)⟩
+  | H => ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal hP)⟩
   tfae_have : 4 → 3 :=
     fun ⟨h₁, h₂⟩ ↦ { h₁ with maximalOfPrime := (h₂ _ · · ▸ maximalIdeal.isMaximal R) }
   tfae_have : 3 → 5 := fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R

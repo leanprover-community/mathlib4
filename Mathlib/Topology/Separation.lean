@@ -1781,12 +1781,12 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
       interior_compl, compl_subset_compl]
   tfae_have : 5 → 6 := fun h a => (h a).antisymm (𝓝 _).le_lift'_closure
   tfae_have : 6 → 4
-  · intro H a s hs
+  | H, a, s, hs => by
     rw [← H] at hs
     rcases (𝓝 a).basis_sets.lift'_closure.mem_iff.mp hs with ⟨U, hU, hUs⟩
     exact ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, hUs⟩
   tfae_have : 4 → 2
-  · intro H s a ha
+  | H, s, a, ha => by
     have ha' : sᶜ ∈ 𝓝 a := by rwa [← mem_interior_iff_mem_nhds, interior_compl]
     rcases H _ _ ha' with ⟨U, hU, hUc, hUs⟩
     refine' disjoint_of_disjoint_of_mem disjoint_compl_left _ hU

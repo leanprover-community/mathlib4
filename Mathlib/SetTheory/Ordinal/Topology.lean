@@ -95,7 +95,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
   · simp only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter', nhds_left_eq_nhds]
     exact id
   tfae_have : 2 → 3
-  · intro h
+  | h => by
     rcases (s ∩ Iic a).eq_empty_or_nonempty with he | hne
     · simp [he] at h
     · refine ⟨hne, (isLUB_of_mem_closure ?_ h).csSup_eq hne⟩

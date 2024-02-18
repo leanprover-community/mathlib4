@@ -302,11 +302,11 @@ theorem local_hom_TFAE (f : R →+* S) :
   tfae_have : 2 → 4 := Set.image_subset_iff.1
   tfae_have : 3 ↔ 4 := Ideal.map_le_iff_le_comap
   tfae_have : 4 → 1
-  · intro h
+  | h => by
     constructor
     exact fun x => not_imp_not.1 (@h x)
   tfae_have : 1 → 5
-  · intro
+  | _ => by
     ext
     exact not_iff_not.2 (isUnit_map_iff f _)
   tfae_have : 5 → 4 := fun h => le_of_eq h.symm

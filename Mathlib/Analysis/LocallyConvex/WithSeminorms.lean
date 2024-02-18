@@ -684,7 +684,7 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type*}
   tfae_have : 3 → 2 := UniformEquicontinuous.equicontinuous
   tfae_have : 2 → 1 := fun H ↦ H 0
   tfae_have : 3 → 5
-  · intro H
+  | H => by
     have : ∀ᶠ x in 𝓝 0, ∀ k, q i (f k x) ≤ 1 := by
       filter_upwards [Metric.equicontinuousAt_iff_right.mp (H.equicontinuous 0) 1 one_pos]
         with x hx k

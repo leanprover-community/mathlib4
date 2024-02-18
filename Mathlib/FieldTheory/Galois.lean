@@ -435,9 +435,9 @@ theorem tfae [FiniteDimensional F E] :
   tfae_have : 1 → 2 :=
     fun h => OrderIso.map_bot (@intermediateFieldEquivSubgroup F _ E _ _ _ h).symm
   tfae_have : 1 → 3
-  · intro; exact card_aut_eq_finrank F E
+  | _ => card_aut_eq_finrank F E
   tfae_have : 1 → 4
-  · intro; exact is_separable_splitting_field F E
+  | _ => is_separable_splitting_field F E
   tfae_have : 2 → 1 := of_fixedField_eq_bot F E
   tfae_have : 3 → 1 := of_card_aut_eq_finrank F E
   tfae_have : 4 → 1

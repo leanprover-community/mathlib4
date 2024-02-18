@@ -875,7 +875,7 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
   · rintro ⟨u, hau, hu⟩
     exact mem_of_superset (Ioo_mem_nhdsWithin_Ioi ⟨le_refl a, hau⟩) hu
   tfae_have : 1 → 4
-  · intro h
+  | h => by
     rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
     rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
     refine' ⟨u, au, fun x hx => _⟩
