@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct.LinearMap
+import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
@@ -44,7 +44,7 @@ noncomputable def tensorDistrib :
   -- while `letI`s would produce a better term than `let`, they would make this already-slow
   -- definition even slower.
   let toQ := LinearMap.toQuadraticFormLinearMap A A (M₁ ⊗[R] M₂)
-  let tmulB := LinearMap.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
+  let tmulB := LinearMap.BilinForm.tensorDistrib R A (M₁ := M₁) (M₂ := M₂)
   let toB := AlgebraTensorModule.map
       (QuadraticForm.associated : QuadraticForm A M₁ →ₗ[A] (M₁ →ₗ[A] M₁ →ₗ[A] A))
       (QuadraticForm.associated : QuadraticForm R M₂ →ₗ[R] (M₂ →ₗ[R] M₂ →ₗ[R] R))
@@ -56,7 +56,7 @@ noncomputable def tensorDistrib :
 theorem tensorDistrib_tmul (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) (m₁ : M₁) (m₂ : M₂) :
     tensorDistrib R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₂ m₂ • Q₁ m₁ :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
-  (LinearMap.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
+  (LinearMap.BilinForm.tensorDistrib_tmul _ _ _ _ _ _).trans <| congr_arg₂ _
     (associated_eq_self_apply _ _ _) (associated_eq_self_apply _ _ _)
 
 /-- The tensor product of two quadratic forms, a shorthand for dot notation. -/
@@ -92,15 +92,17 @@ theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
   tensorDistrib_tmul _ _ _ _
 
 theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
-    associated (R := A) (Q.baseChange A) = (associated (R := R) Q).baseChange₂ A := by
-  dsimp only [QuadraticForm.baseChange, LinearMap.baseChange₂]
+    associated (R := A) (Q.baseChange A) = (associated (R := R) Q).baseChange A := by
+  dsimp only [QuadraticForm.baseChange, LinearMap.baseChange]
   rw [associated_tmul (QuadraticForm.sq (R := A)) Q, associated_sq]
+  exact rfl
 
 theorem polarLinearMap₂_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
-    polarLinearMap₂ (Q.baseChange A) = (polarLinearMap₂ Q).baseChange₂ A := by
-  rw [QuadraticForm.baseChange, LinearMap.baseChange₂, polarLinearMap₂_tmul, LinearMap.tmul,
-    ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
-    smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
+    polarLinearMap₂ (Q.baseChange A) = (polarLinearMap₂ Q).baseChange A := by
+  rw [QuadraticForm.baseChange, LinearMap.BilinForm.baseChange, polarLinearMap₂_tmul,
+    LinearMap.tmul, ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R,
+    coe_associatedHom, associated_sq, smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two,
+    one_smul]
 
 end CommRing
 

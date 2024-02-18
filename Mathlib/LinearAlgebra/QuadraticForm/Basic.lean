@@ -818,7 +818,7 @@ where `S` is a commutative subring of `R`.
 Over a commutative ring, use `QuadraticForm.associated`, which gives an `R`-linear map.  Over a
 general ring with no nontrivial distinguished commutative subring, use `QuadraticForm.associated'`,
 which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
-def associatedHom : QuadraticForm R M →ₗ[S]  M →ₗ[R] M →ₗ[R] R :=
+def associatedHom : QuadraticForm R M →ₗ[S]  LinearMap.BilinForm R M :=
   -- TODO: this `center` stuff is vertigial from an incorrect non-commutative version, but we leave
   -- it behind to make a future refactor to a *correct* non-commutative version easier in future.
   (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
@@ -916,7 +916,7 @@ variable [Invertible (2 : R)]
 -- the more general `associatedHom` and place it in the previous section.
 /-- `associated` is the linear map that sends a quadratic form over a commutative ring to its
 associated symmetric bilinear form. -/
-abbrev associated : QuadraticForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
+abbrev associated : QuadraticForm R M →ₗ[R] LinearMap.BilinForm R M :=
   associatedHom R
 #align quadratic_form.associated QuadraticForm.associated
 
