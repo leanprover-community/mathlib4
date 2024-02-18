@@ -56,7 +56,7 @@ variable [Lattice α]
 section Group
 variable [Group α] [CovariantClass α α (· * ·) (· ≤ ·)]
   [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a : α}
-  
+
 #noalign has_pos_part
 #noalign has_neg_part
 #noalign lattice_ordered_comm_group.has_one_lattice_has_pos_part
