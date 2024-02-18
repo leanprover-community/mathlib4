@@ -250,22 +250,11 @@ def WhiskerLeftExpr.core : WhiskerLeftExpr → Core
   | WhiskerLeftExpr.of η => η.core
   | WhiskerLeftExpr.whisker _ η => η.core
 
-def WhiskerRightExpr.structural? (η : WhiskerRightExpr) : Option WhiskerRightExpr :=
+/-- Return `ture` if `η` is a structural 2-morphism. -/
+def WhiskerLeftExpr.isStructural (η : WhiskerLeftExpr) : Bool :=
   match η.core with
-  | .of _ => none
-  | .ofStructural _ => some η
-
-def WhiskerLeftExpr.structural? (η : WhiskerLeftExpr) : Option WhiskerLeftExpr :=
-  match η.core with
-  | .of _ => none
-  | .ofStructural _ => some η
-
-def NormalExpr.structural? : NormalExpr → Option NormalExpr
-  | NormalExpr.id f => some (.id f)
-  | NormalExpr.cons η θ =>
-    match η.structural?, θ.structural? with
-    | some _, some _ => some (.cons η θ)
-    | _, _ => none
+  | .of _ => false
+  | .ofStructural _ => true
 
 /-- Interpret an `Expr` term as a `Core` term. -/
 def toCore (e : Expr) : Core :=
@@ -288,9 +277,9 @@ partial def eval (e : Expr) : MetaM NormalExpr := do
 /-- Remove structural 2-morphisms. -/
 def removeStructural : List WhiskerLeftExpr → List WhiskerLeftExpr
   | [] => []
-  | η :: ηs => match η.structural? with
-    | some _ => removeStructural ηs
-    | none => η :: removeStructural ηs
+  | η :: ηs => match η.isStructural with
+    | true => removeStructural ηs
+    | false => η :: removeStructural ηs
 
 /-- Return `[f₁, ..., fₙ]` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
 def leftMor₁List (η : WhiskerLeftExpr) : List Expr :=
