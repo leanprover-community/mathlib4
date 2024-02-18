@@ -12,6 +12,10 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 This file relates the Euclidean geometric notion of angle between complex numbers to the argument of
 their quotient.
 
+## TODO
+
+Prove the corresponding results for oriented angles.
+
 ## Tags
 
 arc-length, arc-distance
