@@ -23,7 +23,7 @@ universe v u
 
 namespace CategoryTheory
 
-noncomputable instance typesMonoidal : MonoidalCategory.{u} (Type u) :=
+instance typesMonoidal : MonoidalCategory.{u} (Type u) :=
   monoidalOfChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
 #align category_theory.types_monoidal CategoryTheory.typesMonoidal
 
@@ -83,10 +83,10 @@ theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
 -- but it would be nice to state how monoidal functors preserve these.
 /-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st cartesian power
 of a type to the image of that type, tensored with the image of the nth cartesian power. -/
-noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category C] [MonoidalCategory C]
+def MonoidalFunctor.mapPi {C : Type*} [Category C] [MonoidalCategory C]
     (F : MonoidalFunctor (Type _) C) (n : ℕ) (β : Type*) :
     F.obj (Fin (n + 1) → β) ≅ F.obj β ⊗ F.obj (Fin n → β) :=
-  Functor.mapIso _ (Equiv.piFinSucc n β).toIso ≪≫ (asIso (F.μ β (Fin n → β))).symm
+  Functor.mapIso _ (Equiv.piFinSucc n β).toIso ≪≫ (F.μIso β (Fin n → β)).symm
 #align category_theory.monoidal_functor.map_pi CategoryTheory.MonoidalFunctor.mapPi
 
 end CategoryTheory

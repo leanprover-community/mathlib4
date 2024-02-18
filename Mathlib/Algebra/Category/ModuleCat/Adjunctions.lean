@@ -70,24 +70,26 @@ variable [CommRing R]
 
 attribute [local ext] TensorProduct.ext
 
+-- if these are implementation details, should they be private?
 /-- (Implementation detail) The unitor for `Free R`. -/
-def ε : 𝟙_ (ModuleCat.{u} R) ⟶ (free R).obj (𝟙_ (Type u)) :=
-  Finsupp.lsingle PUnit.unit
-#align Module.free.ε ModuleCat.Free.ε
+def εIso : 𝟙_ (ModuleCat.{u} R) ≅ (free R).obj (𝟙_ (Type u)) :=
+  .symm <| LinearEquiv.toModuleIso' <| Finsupp.LinearEquiv.finsuppUnique R R PUnit
+#align Module.free.ε ModuleCat.Free.εIso
 
--- This lemma has always been bad, but lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
-theorem ε_apply (r : R) : ε R r = Finsupp.single PUnit.unit r :=
-  rfl
-#align Module.free.ε_apply ModuleCat.Free.ε_apply
+lemma εIso_hom : (εIso R).hom = Finsupp.lsingle PUnit.unit := by
+  ext
+  refine (LinearEquiv.symm_apply_eq _).mpr ?_
+  erw [Finsupp.lsingle_apply, Finsupp.single_apply]
+  exact eq_ite_iff.mpr (Or.inl ⟨rfl, rfl⟩)
 
 /-- (Implementation detail) The tensorator for `Free R`. -/
-def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (α ⊗ β) :=
+def μIso (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (α ⊗ β) :=
   (finsuppTensorFinsupp' R α β).toModuleIso
-#align Module.free.μ ModuleCat.Free.μ
+#align Module.free.μ ModuleCat.Free.μIso
 
 theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').hom = (μ R X X').hom ≫ (free R).map (f ⊗ g) := by
+    ((free R).map f ⊗ (free R).map g) ≫ (μIso R Y Y').hom =
+      (μIso R X X').hom ≫ (free R).map (f ⊗ g) := by
   intros
   -- Porting note: broken ext
   apply TensorProduct.ext
@@ -112,7 +114,8 @@ theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
 
 theorem left_unitality (X : Type u) :
     (λ_ ((free R).obj X)).hom =
-      (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).hom ≫ map (free R).obj (λ_ X).hom := by
+      ((εIso R).hom ⊗ 𝟙 ((free R).obj X)) ≫
+        (μIso R (𝟙_ (Type u)) X).hom ≫ map (free R).obj (λ_ X).hom := by
   intros
   -- Porting note: broken ext
   apply TensorProduct.ext
@@ -124,6 +127,7 @@ theorem left_unitality (X : Type u) :
   intro x'
   -- Porting note: used to be dsimp [ε, μ]
   let q : X →₀ R := ((λ_ (of R (X →₀ R))).hom) (1 ⊗ₜ[R] Finsupp.single x 1)
+  rw [εIso_hom]
   change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
     (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
@@ -133,7 +137,8 @@ theorem left_unitality (X : Type u) :
 
 theorem right_unitality (X : Type u) :
     (ρ_ ((free R).obj X)).hom =
-      (𝟙 ((free R).obj X) ⊗ ε R) ≫ (μ R X (𝟙_ (Type u))).hom ≫ map (free R).obj (ρ_ X).hom := by
+      (𝟙 ((free R).obj X) ⊗ (εIso R).hom) ≫
+        (μIso R X (𝟙_ (Type u))).hom ≫ map (free R).obj (ρ_ X).hom := by
   intros
   -- Porting note: broken ext
   apply TensorProduct.ext
@@ -145,6 +150,7 @@ theorem right_unitality (X : Type u) :
   intro x'
   -- Porting note: used to be dsimp [ε, μ]
   let q : X →₀ R := ((ρ_ (of R (X →₀ R))).hom) (Finsupp.single x 1 ⊗ₜ[R] 1)
+  rw [εIso_hom]
   change q x' = Finsupp.mapDomain (ρ_ X).hom (finsuppTensorFinsupp' R X (𝟙_ (Type u))
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single PUnit.unit 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
@@ -153,9 +159,10 @@ theorem right_unitality (X : Type u) :
 #align Module.free.right_unitality ModuleCat.Free.right_unitality
 
 theorem associativity (X Y Z : Type u) :
-    ((μ R X Y).hom ⊗ 𝟙 ((free R).obj Z)) ≫ (μ R (X ⊗ Y) Z).hom ≫ map (free R).obj (α_ X Y Z).hom =
-      (α_ ((free R).obj X) ((free R).obj Y) ((free R).obj Z)).hom ≫
-        (𝟙 ((free R).obj X) ⊗ (μ R Y Z).hom) ≫ (μ R X (Y ⊗ Z)).hom := by
+    ((μIso R X Y).hom ⊗ 𝟙 ((free R).obj Z)) ≫ (μIso R (X ⊗ Y) Z).hom ≫
+      map (free R).obj (α_ X Y Z).hom =
+    (α_ ((free R).obj X) ((free R).obj Y) ((free R).obj Z)).hom ≫
+        (𝟙 ((free R).obj X) ⊗ (μIso R Y Z).hom) ≫ (μIso R X (Y ⊗ Z)).hom := by
   intros
   -- Porting note: broken ext
   apply TensorProduct.ext
@@ -188,32 +195,13 @@ theorem associativity (X Y Z : Type u) :
 @[simps]
 instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
   -- Send `R` to `PUnit →₀ R`
-  (ε := ε R)
+  (ε := (εIso R).hom)
   -- Send `(α →₀ R) ⊗ (β →₀ R)` to `α × β →₀ R`
-  (μ := fun X Y => (μ R X Y).hom)
+  (μ := fun X Y => (μIso R X Y).hom)
   (μ_natural := fun {_} {_} {_} {_} f g ↦ μ_natural R f g)
   (left_unitality := left_unitality R)
   (right_unitality := right_unitality R)
   (associativity := associativity R)
-
-instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
-  refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
-  · -- Porting note: broken ext
-    apply LinearMap.ext_ring
-    -- Porting note: simp used to be able to close this goal
-    dsimp
-    erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
-      Finsupp.single_eq_same, id_apply]
-  · -- Porting note: broken ext
-    apply Finsupp.lhom_ext'
-    intro ⟨⟩
-    apply LinearMap.ext_ring
-    apply Finsupp.ext
-    intro ⟨⟩
-    -- Porting note: simp used to be able to close this goal
-    dsimp
-    erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
-      Finsupp.single_eq_same]
 
 end Free
 
@@ -223,14 +211,26 @@ variable [CommRing R]
 
 /-- The free functor `Type u ⥤ ModuleCat R`, as a monoidal functor. -/
 def monoidalFree : MonoidalFunctor (Type u) (ModuleCat.{u} R) :=
-  { LaxMonoidalFunctor.of (free R).obj with
-    -- Porting note: used to be dsimp
-    ε_isIso := (by infer_instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _))
-    μ_isIso := fun X Y => by dsimp; infer_instance }
+  let F := LaxMonoidalFunctor.of (free R).obj
+  .mk' (free R) (Free.εIso R) (Free.μIso R) F.μ_natural_left F.μ_natural_right
+    F.associativity F.left_unitality F.right_unitality
 #align Module.monoidal_free ModuleCat.monoidalFree
 
 example (X Y : Type u) : (free R).obj (X × Y) ≅ (free R).obj X ⊗ (free R).obj Y :=
   ((monoidalFree R).μIso X Y).symm
+
+variable {R}
+
+@[simp] lemma monoidalFree_obj (X : Type u) :
+    (monoidalFree R).obj X = ModuleCat.of R (X →₀ R) := rfl
+@[simp] lemma monoidalFree_map {X Y} (f : X ⟶ Y) :
+    (monoidalFree R).map f = Finsupp.lmapDomain _ _ f := rfl
+
+variable (R)
+
+@[simp] lemma monoidalFree_εIso_hom :
+    (monoidalFree R).εIso.hom = Finsupp.lsingle PUnit.unit :=
+  Free.εIso_hom R
 
 end ModuleCat
 

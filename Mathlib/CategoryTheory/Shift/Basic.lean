@@ -126,31 +126,25 @@ attribute [local simp] eqToHom_map
 /-- Constructs a `HasShift C A` instance from `ShiftMkCore`. -/
 @[simps]
 def hasShiftMk (h : ShiftMkCore C A) : HasShift C A :=
-  ⟨{ Discrete.functor h.F with
-      ε := h.zero.inv
-      μ := fun m n => (h.add m.as n.as).inv
-      μ_natural_left := by
-        rintro ⟨X⟩ ⟨Y⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨X'⟩
+  ⟨MonoidalFunctor.mk' (Discrete.functor h.F) h.zero.symm
+    (fun m n => (h.add m.as n.as).symm)
+    (by rintro ⟨X⟩ ⟨Y⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨X'⟩
         ext
         dsimp
-        simp
-      μ_natural_right := by
-        rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨⟨⟨rfl⟩⟩⟩
+        simp)
+    (by rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨⟨⟨rfl⟩⟩⟩
         ext
         dsimp
-        simp
-      associativity := by
-        rintro ⟨m₁⟩ ⟨m₂⟩ ⟨m₃⟩
+        simp)
+    (by rintro ⟨m₁⟩ ⟨m₂⟩ ⟨m₃⟩
         ext X
-        simp [endofunctorMonoidalCategory, h.assoc_inv_app_assoc]
-      left_unitality := by
-        rintro ⟨n⟩
+        simp [endofunctorMonoidalCategory, h.assoc_inv_app_assoc])
+    (by rintro ⟨n⟩
         ext X
-        simp [endofunctorMonoidalCategory, h.zero_add_inv_app, ← Functor.map_comp]
-      right_unitality := by
-        rintro ⟨n⟩
+        simp [endofunctorMonoidalCategory, h.zero_add_inv_app, ← Functor.map_comp])
+    (by rintro ⟨n⟩
         ext X
-        simp [endofunctorMonoidalCategory, h.add_zero_inv_app]}⟩
+        simp [endofunctorMonoidalCategory, h.add_zero_inv_app])⟩
 #align category_theory.has_shift_mk CategoryTheory.hasShiftMk
 
 end
@@ -202,24 +196,11 @@ lemma ShiftMkCore.shiftFunctor_eq (h : ShiftMkCore C A) (a : A) :
 #align category_theory.shift_mk_core.shift_functor_eq CategoryTheory.ShiftMkCore.shiftFunctor_eq
 
 lemma ShiftMkCore.shiftFunctorZero_eq (h : ShiftMkCore C A) :
-    letI := hasShiftMk C A h;
-    shiftFunctorZero C A = h.zero := by
-  letI := hasShiftMk C A h
-  dsimp [shiftFunctorZero]
-  change (shiftFunctorZero C A).symm.symm = h.zero.symm.symm
-  congr 1
-  ext
-  rfl
+    letI := hasShiftMk C A h; shiftFunctorZero C A = h.zero := rfl
 #align category_theory.shift_mk_core.shift_functor_zero_eq CategoryTheory.ShiftMkCore.shiftFunctorZero_eq
 
 lemma ShiftMkCore.shiftFunctorAdd_eq (h : ShiftMkCore C A) (a b : A) :
-    letI := hasShiftMk C A h;
-    shiftFunctorAdd C a b = h.add a b := by
-  letI := hasShiftMk C A h
-  change (shiftFunctorAdd C a b).symm.symm = (h.add a b).symm.symm
-  congr 1
-  ext
-  rfl
+    letI := hasShiftMk C A h; shiftFunctorAdd C a b = h.add a b := rfl
 #align category_theory.shift_mk_core.shift_functor_add_eq CategoryTheory.ShiftMkCore.shiftFunctorAdd_eq
 
 set_option quotPrecheck false in

@@ -340,7 +340,9 @@ def project : MonoidalFunctor (F C) D where
   -- In any case I don't understand why we need to specify `using Quotient.recOn`.
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
   ε := 𝟙 _
+  ε_inv := 𝟙 _
   μ X Y := 𝟙 _
+  μ_inv X Y := 𝟙 _
   μ_natural_left := fun f _ => by
     induction' f using Quotient.recOn
     · dsimp

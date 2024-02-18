@@ -26,7 +26,7 @@ with respect to the new monoidal structure on `D`.
 
 universe v₁ v₂ u₁ u₂
 
-noncomputable section
+section
 
 open CategoryTheory
 
@@ -123,20 +123,17 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
 /--
 We can upgrade `F` to a monoidal functor from `D` to `E` with the induced structure.
 -/
-@[simps]
+@[simps!]
 def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
     (fData : InducingFunctorData F) :
     letI := induced F fData
-    MonoidalFunctor D C :=
+    MonoidalFunctor D C := by
   letI := induced F fData
-  { toFunctor := F
-    ε := fData.εIso.hom
-    μ := fun X Y => (fData.μIso X Y).hom
-    μ_natural_left := by cases fData; aesop_cat
-    μ_natural_right := by cases fData; aesop_cat
-    associativity := by cases fData; aesop_cat
-    left_unitality := by cases fData; aesop_cat
-    right_unitality := by cases fData; aesop_cat }
+  apply MonoidalFunctor.mk'
+  case F => exact F
+  case εIso => exact fData.εIso
+  case μIso => exact fData.μIso
+  all_goals cases fData; aesop_cat
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
@@ -213,17 +210,15 @@ instance (e : C ≌ D) : IsEquivalence (toTransported e).toFunctor :=
 /-- The unit isomorphism upgrades to a monoidal isomorphism. -/
 @[simps! hom inv]
 def transportedMonoidalUnitIso (e : C ≌ D) :
-    LaxMonoidalFunctor.id C ≅
-      (toTransported e).toLaxMonoidalFunctor ⊗⋙ (fromTransported e).toLaxMonoidalFunctor :=
-  asIso (monoidalCounit (fromTransported e)) |>.symm
+    MonoidalFunctor.id C ≅ (toTransported e) ⊗⋙ (fromTransported e) :=
+  (Equivalence.monoidalCounitIso (fromTransported e)).symm
 #align category_theory.monoidal.transported_monoidal_unit_iso CategoryTheory.Monoidal.transportedMonoidalUnitIso
 
 /-- The counit isomorphism upgrades to a monoidal isomorphism. -/
 @[simps! hom inv]
 def transportedMonoidalCounitIso (e : C ≌ D) :
-    (fromTransported e).toLaxMonoidalFunctor ⊗⋙ (toTransported e).toLaxMonoidalFunctor ≅
-      LaxMonoidalFunctor.id (Transported e) :=
-  asIso (monoidalUnit (fromTransported e)) |>.symm
+    fromTransported e ⊗⋙ toTransported e ≅ MonoidalFunctor.id (Transported e) :=
+  (Equivalence.monoidalUnitIso (fromTransported e)).symm
 #align category_theory.monoidal.transported_monoidal_counit_iso CategoryTheory.Monoidal.transportedMonoidalCounitIso
 
 end CategoryTheory.Monoidal

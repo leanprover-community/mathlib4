@@ -85,14 +85,13 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
     have s_g := (σ (p + 1)).s_g
     have f_r := (σ (p + 1)).f_r
     dsimp at s_g f_r ⊢
-    simp? [mappingCone.ext_from_iff _ (p + 1) _ rfl, reassoc_of% f_r, reassoc_of% s_g] says
-      simp only [Cochain.ofHom_v, id_comp, comp_sub, sub_comp, assoc, reassoc_of% s_g,
-        ShortComplex.Splitting.s_r_assoc, ShortComplex.map_X₃, eval_obj, ShortComplex.map_X₁,
-        zero_comp, comp_zero, reassoc_of% f_r, zero_sub, sub_neg_eq_add,
-        mappingCone.ext_from_iff _ (p + 1) _ rfl, comp_add, mappingCone.inl_v_fst_v_assoc,
-        mappingCone.inl_v_snd_v_assoc, shiftFunctor_obj_X', sub_zero, add_zero, comp_id,
-        mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc, add_left_eq_self,
-        neg_eq_zero, true_and]
+    simp only [Cochain.ofHom_v, id_comp, comp_sub, sub_comp, assoc, reassoc_of% s_g,
+      ShortComplex.Splitting.s_r_assoc, ShortComplex.map_X₃, eval_obj, ShortComplex.map_X₁,
+      zero_comp, comp_zero, reassoc_of% f_r, zero_sub, sub_neg_eq_add,
+      mappingCone.ext_from_iff _ (p + 1) _ rfl, comp_add, mappingCone.inl_v_fst_v_assoc,
+      mappingCone.inl_v_snd_v_assoc, shiftFunctor_obj_X', sub_zero, add_zero, comp_id,
+      mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc, add_left_eq_self,
+      neg_eq_zero, true_and]
     rw [← comp_f_assoc, S.zero, zero_f, zero_comp]
   inv_hom_id := by
     subst hpq
@@ -103,7 +102,6 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
       mappingCone.inl_v_snd_v_assoc, mappingCone.inr_f_snd_v_assoc, zero_sub, sub_neg_eq_add, ← h]
     abel
 
-/-- The canonical isomorphism `mappingCone (homOfDegreewiseSplit S σ) ≅ S.X₂⟦(1 : ℤ)⟧`. -/
 @[simps!]
 noncomputable def mappingConeHomOfDegreewiseSplitIso :
     mappingCone (homOfDegreewiseSplit S σ) ≅ S.X₂⟦(1 : ℤ)⟧ :=
@@ -112,9 +110,15 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
     have r_f := (σ (p + 1 + 1)).r_f
     have s_g := (σ (p + 1)).s_g
     dsimp at r_f s_g
-    simp [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
+    simp only [shiftFunctor_obj_X', mappingConeHomOfDegreewiseSplitXIso, ShortComplex.map_X₂,
+      eval_obj, Cochain.ofHom_v, ShortComplex.map_X₁, XIsoOfEq_rfl, Iso.refl_hom, id_comp,
+      shiftFunctor_obj_d', Int.negOnePow_one, Units.neg_smul, one_smul, comp_neg, sub_comp, assoc,
+      Hom.comm, neg_sub, comp_sub, mappingCone.ext_from_iff _ _ _ rfl,
+      mappingCone.inl_v_snd_v_assoc, zero_comp, mappingCone.inl_v_fst_v_assoc, zero_sub,
       mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by linarith),
-      cocycleOfDegreewiseSplit, r_f]
+      homOfDegreewiseSplit_f, cocycleOfDegreewiseSplit, Cocycle.mk_coe, Cochain.mk_v,
+      mappingCone.inr_f_fst_v_assoc, comp_zero, mappingCone.inr_f_snd_v_assoc, r_f, comp_id,
+      sub_zero, mappingCone.inr_f_d_assoc, neg_comp, sub_neg_eq_add, zero_add, and_true]
     rw [← S.g.comm_assoc, reassoc_of% s_g]
     abel)
 

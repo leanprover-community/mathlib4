@@ -61,25 +61,46 @@ instance : MonoidalCategoryStruct (FullSubcategory P) where
   leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
   rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
 
+@[reducible]
+private def subcategoryInducingData :
+    Monoidal.InducingFunctorData (fullSubcategoryInclusion P) where
+  εIso := Iso.refl _
+  μIso := fun _ _ => Iso.refl _
+
 /--
 When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
   `C`.
 -/
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
-  Monoidal.induced (fullSubcategoryInclusion P)
-    { μIso := fun X Y => eqToIso rfl
-      εIso := eqToIso rfl }
+  Monoidal.induced (fullSubcategoryInclusion P) (subcategoryInducingData P)
 #align category_theory.monoidal_category.full_monoidal_subcategory CategoryTheory.MonoidalCategory.fullMonoidalSubcategory
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
 ("forgetting" the condition).
 -/
-@[simps]
-def fullMonoidalSubcategoryInclusion : MonoidalFunctor (FullSubcategory P) C where
-  toFunctor := fullSubcategoryInclusion P
-  ε := 𝟙 _
-  μ X Y := 𝟙 _
+def fullMonoidalSubcategoryInclusion : MonoidalFunctor (FullSubcategory P) C :=
+  Monoidal.fromInduced (fullSubcategoryInclusion P) (subcategoryInducingData P)
 #align category_theory.monoidal_category.full_monoidal_subcategory_inclusion CategoryTheory.MonoidalCategory.fullMonoidalSubcategoryInclusion
+
+variable {P}
+
+@[simp]
+lemma fullMonoidalSubcategoryInclusion_obj (X : FullSubcategory P) :
+    (fullMonoidalSubcategoryInclusion P).obj X = X.obj := rfl
+
+@[simp]
+lemma fullMonoidalSubcategoryInclusion_map {X Y} (f : X ⟶ Y) :
+    (fullMonoidalSubcategoryInclusion P).map f = f := rfl
+
+@[simp]
+lemma fullMonoidalSubcategoryInclusion_μIso (X Y : FullSubcategory P) :
+    (fullMonoidalSubcategoryInclusion P).μIso X Y = Iso.refl _ := rfl
+
+variable (P)
+
+@[simp]
+lemma fullMonoidalSubcategoryInclusion_εIso :
+    (fullMonoidalSubcategoryInclusion P).εIso = Iso.refl (𝟙_ C) := rfl
 
 instance fullMonoidalSubcategory.full : Full (fullMonoidalSubcategoryInclusion P).toFunctor :=
   FullSubcategory.full P
@@ -114,18 +135,31 @@ instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R (FullSu
 
 end
 
-variable {P} {P' : C → Prop} [MonoidalPredicate P']
+variable {P} {P' : C → Prop} [MonoidalPredicate P'] (h : ∀ ⦃X⦄, P X → P' X)
 
 -- needed for `aesop_cat`
 attribute [local simp] FullSubcategory.comp_def FullSubcategory.id_def in
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
-@[simps]
-def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
-    MonoidalFunctor (FullSubcategory P) (FullSubcategory P') where
-  toFunctor := FullSubcategory.map h
-  ε := 𝟙 _
-  μ X Y := 𝟙 _
+def fullMonoidalSubcategory.map :
+    MonoidalFunctor (FullSubcategory P) (FullSubcategory P') :=
+  .mk' (FullSubcategory.map h) (Iso.refl _) (fun _ _ => Iso.refl _)
+
+@[simp]
+lemma fullMonoidalSubcategory.map_obj (X : FullSubcategory P) :
+    (map h).obj X = (FullSubcategory.map h).obj X := rfl
+
+@[simp]
+lemma fullMonoidalSubcategory.map_map {X Y} (f : X ⟶ Y) :
+    (map h).map f = f := rfl
+
+@[simp]
+lemma fullMonoidalSubcategory.map_εIso :
+    (map h).εIso = Iso.refl _ := rfl
+
+@[simp]
+lemma fullMonoidalSubcategory.map_μIso (X Y : FullSubcategory P) :
+    (map h).μIso X Y = Iso.refl _ := rfl
 
 #align category_theory.monoidal_category.full_monoidal_subcategory.map CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.map
 
@@ -154,10 +188,8 @@ instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).
 -/
-@[simps!]
 def fullBraidedSubcategoryInclusion : BraidedFunctor (FullSubcategory P) C where
   toMonoidalFunctor := fullMonoidalSubcategoryInclusion P
-  braided X Y := by rw [IsIso.eq_inv_comp]; aesop_cat
 #align category_theory.monoidal_category.full_braided_subcategory_inclusion CategoryTheory.MonoidalCategory.fullBraidedSubcategoryInclusion
 
 instance fullBraidedSubcategory.full : Full (fullBraidedSubcategoryInclusion P).toFunctor :=
@@ -170,14 +202,52 @@ instance fullBraidedSubcategory.faithful : Faithful (fullBraidedSubcategoryInclu
 
 variable {P}
 
+
+@[simp]
+lemma fullBraidedSubcategoryInclusion_obj (X : FullSubcategory P) :
+    (fullBraidedSubcategoryInclusion P).obj X = X.obj := rfl
+
+@[simp]
+lemma fullBraidedSubcategoryInclusion_map {X Y} (f : X ⟶ Y) :
+    (fullBraidedSubcategoryInclusion P).map f = f := rfl
+
+@[simp]
+lemma fullBraidedSubcategoryInclusion_μIso (X Y : FullSubcategory P) :
+    (fullBraidedSubcategoryInclusion P).μIso X Y = Iso.refl _ := rfl
+
+variable (P)
+
+@[simp]
+lemma fullBraidedSubcategoryInclusion_εIso :
+    (fullBraidedSubcategoryInclusion P).εIso = Iso.refl (𝟙_ C) := rfl
+
+variable {P}
+
 /-- An implication of predicates `P → P'` induces a braided functor between full braided
 subcategories. -/
-@[simps!]
 def fullBraidedSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
-    BraidedFunctor (FullSubcategory P) (FullSubcategory P') where
-  toMonoidalFunctor := fullMonoidalSubcategory.map h
-  braided X Y := by rw [IsIso.eq_inv_comp]; aesop_cat
+    BraidedFunctor (FullSubcategory P) (FullSubcategory P') :=
+  BraidedFunctor.mk' (fullMonoidalSubcategory.map h) <| by
+    intros
+    rw [Iso.eq_inv_comp]
+    aesop_cat
 #align category_theory.monoidal_category.full_braided_subcategory.map CategoryTheory.MonoidalCategory.fullBraidedSubcategory.map
+
+@[simp]
+lemma fullBraidedSubcategory.map_obj (X : FullSubcategory P) :
+    (map h).obj X = (FullSubcategory.map h).obj X := rfl
+
+@[simp]
+lemma fullBraidedSubcategory.map_map {X Y} (f : X ⟶ Y) :
+    (map h).map f = f := rfl
+
+@[simp]
+lemma fullBraidedSubcategory.map_εIso :
+    (map h).εIso = Iso.refl _ := rfl
+
+@[simp]
+lemma fullBraidedSubcategory.map_μIso (X Y : FullSubcategory P) :
+    (map h).μIso X Y = Iso.refl _ := rfl
 
 instance fullBraidedSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
     Full (fullBraidedSubcategory.map h).toFunctor :=

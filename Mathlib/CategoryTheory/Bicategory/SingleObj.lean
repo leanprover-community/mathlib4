@@ -76,25 +76,18 @@ to the original monoidal category.
 
 We subsequently show this is an equivalence.
 -/
-@[simps]
-def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.star C)) C where
-  obj X := X
-  map f := f
-  ε := 𝟙 _
-  μ X Y := 𝟙 _
+@[simps!]
+def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.star C)) C :=
+  MonoidalFunctor.mk' (Functor.id C) (Iso.refl _) (fun _ _ => Iso.refl _)
 #align category_theory.monoidal_single_obj.End_monoidal_star_functor CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctor
 
 /-- The equivalence between the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
 and the original monoidal category.
 -/
-noncomputable def endMonoidalStarFunctorIsEquivalence :
-    IsEquivalence (endMonoidalStarFunctor C).toFunctor where
-  inverse :=
-    { obj := fun X => X
-      map := fun f => f }
-  unitIso := NatIso.ofComponents fun X => asIso (𝟙 _)
-  counitIso := NatIso.ofComponents fun X => asIso (𝟙 _)
+def endMonoidalStarFunctorIsEquivalence :
+    IsEquivalence (endMonoidalStarFunctor C).toFunctor :=
+  inferInstanceAs (IsEquivalence (Functor.id C))
 #align category_theory.monoidal_single_obj.End_monoidal_star_functor_is_equivalence CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctorIsEquivalence
 
 end MonoidalSingleObj

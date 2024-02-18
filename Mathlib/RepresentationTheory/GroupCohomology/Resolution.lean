@@ -167,7 +167,7 @@ which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`) sending `(g₀, 
 def diagonalSucc (n : ℕ) :
     diagonal k G (n + 1) ≅ leftRegular k G ⊗ trivial k G ((Fin n → G) →₀ k) :=
   (linearization k G).mapIso (actionDiagonalSucc G n) ≪≫
-    (asIso ((linearization k G).μ (Action.leftRegular G) _)).symm ≪≫
+    ((linearization k G).μIso (Action.leftRegular G) _).symm ≪≫
       tensorIso (Iso.refl _) (linearizationTrivialIso k G (Fin n → G))
 #align group_cohomology.resolution.diagonal_succ groupCohomology.resolution.diagonalSucc
 
@@ -186,9 +186,9 @@ theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     TensorProduct.lid_symm_apply, finsuppTensorFinsupp_symm_single, LinearEquiv.coe_toLinearMap] -/
   change (𝟙 ((linearization k G).1.obj (Action.leftRegular G)).V
       ⊗ (linearizationTrivialIso k G (Fin n → G)).hom.hom)
-    ((inv ((linearization k G).μ (Action.leftRegular G) { V := Fin n → G, ρ := 1 })).hom
+    (((linearization k G).μIso (Action.leftRegular G) { V := Fin n → G, ρ := 1 }).inv.hom
       ((lmapDomain k k (actionDiagonalSucc G n).hom.hom) (single f a))) = _
-  simp only [CategoryTheory.Functor.map_id, linearization_μ_inv_hom]
+  simp only [CategoryTheory.Functor.map_id, linearization_μIso_inv_hom]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [lmapDomain_apply, mapDomain_single, LinearEquiv.coe_toLinearMap, finsuppTensorFinsupp',
     LinearEquiv.trans_symm, LinearEquiv.trans_apply, lcongr_symm, Equiv.refl_symm]
@@ -322,7 +322,7 @@ open groupCohomology.resolution
 
 /-- Given a `k`-linear `G`-representation `A`, the set of representation morphisms
 `Hom(k[Gⁿ⁺¹], A)` is `k`-linearly isomorphic to the set of functions `Gⁿ → A`. -/
-noncomputable def diagonalHomEquiv :
+def diagonalHomEquiv :
     (Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
   Linear.homCongr k
         ((diagonalSucc k G n).trans ((Representation.ofMulAction k G G).repOfTprodIso 1))
