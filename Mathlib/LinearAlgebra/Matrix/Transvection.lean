@@ -396,8 +396,8 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     ∀ k : ℕ,
       k ≤ r →
         (((listTransvecCol M).drop k).prod * M) (inl i) (inr unit) =
-          if k ≤ i then 0 else M (inl i) (inr unit)
-  · simpa only [List.drop, _root_.zero_le, ite_true] using H 0 (zero_le _)
+          if k ≤ i then 0 else M (inl i) (inr unit) by
+    simpa only [List.drop, _root_.zero_le, ite_true] using H 0 (zero_le _)
   intro k hk
   -- porting note: `apply` didn't work anymore, because of the implicit arguments
   refine' Nat.decreasingInduction' _ hk _
@@ -470,8 +470,8 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     ∀ k : ℕ,
       k ≤ r →
         (M * ((listTransvecRow M).take k).prod) (inr unit) (inl i) =
-          if k ≤ i then M (inr unit) (inl i) else 0
-  · have A : (listTransvecRow M).length = r := by simp [listTransvecRow]
+          if k ≤ i then M (inr unit) (inl i) else 0 by
+    have A : (listTransvecRow M).length = r := by simp [listTransvecRow]
     rw [← List.take_length (listTransvecRow M), A]
     have : ¬r ≤ i := by simp
     simpa only [this, ite_eq_right_iff] using H r le_rfl
@@ -727,8 +727,8 @@ theorem diagonal_transvection_induction (P : Matrix n n 𝕜 → Prop) (M : Matr
   have PD : P (diagonal D) := hdiag D (by simp [h])
   suffices H :
     ∀ (L₁ L₂ : List (TransvectionStruct n 𝕜)) (E : Matrix n n 𝕜),
-      P E → P ((L₁.map toMatrix).prod * E * (L₂.map toMatrix).prod)
-  · rw [h]
+      P E → P ((L₁.map toMatrix).prod * E * (L₂.map toMatrix).prod) by
+    rw [h]
     apply H L L'
     exact PD
   intro L₁ L₂ E PE

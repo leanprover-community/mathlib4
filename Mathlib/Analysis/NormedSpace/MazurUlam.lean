@@ -78,8 +78,7 @@ theorem midpoint_fixed {x y : PE} :
     rintro ⟨e, he⟩
     simp only [Subtype.coe_mk, le_div_iff' (zero_lt_two' ℝ), ← hf_dist]
     exact le_ciSup h_bdd ⟨f e, hf_maps_to he⟩
-  replace : c ≤ 0
-  · linarith
+  replace : c ≤ 0 := by linarith
   refine' fun e hx hy => dist_le_zero.1 (le_trans _ this)
   exact le_ciSup h_bdd ⟨e, hx, hy⟩
 #align isometry_equiv.midpoint_fixed IsometryEquiv.midpoint_fixed

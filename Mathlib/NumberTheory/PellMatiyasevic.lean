@@ -992,8 +992,7 @@ theorem eq_pow_of_pell {m n k} :
       Nat.le_of_dvd hj0
         (modEq_zero_iff_dvd.1 <|
           (yn_modEq_a_sub_one hw1 j).symm.trans <| modEq_zero_iff_dvd.2 ⟨z, yj.symm⟩)
-    have hnka : n ^ k < xn hw1 j
-    calc
+    have hnka : n ^ k < xn hw1 j := calc
       n ^ k ≤ n ^ j := Nat.pow_le_pow_of_le_right hn0 (le_trans kw wj)
       _ < (w + 1) ^ j := (Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) hj0.ne')
       _ ≤ xn hw1 j := xn_ge_a_pow hw1 j

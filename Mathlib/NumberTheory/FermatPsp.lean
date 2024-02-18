@@ -258,8 +258,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
     rwa [← hc] at this
   -- Used to prove that `2 * p` divides `A * B - 1`
   have ha₅ : 2 * p * (b ^ 2 - 1) ∣ (b ^ 2 - 1) * (A * B - 1) := by
-    suffices q : 2 * p * (b ^ 2 - 1) ∣ b * (b ^ (p - 1) - 1) * (b ^ p + b)
-    · rwa [ha₁]
+    suffices q : 2 * p * (b ^ 2 - 1) ∣ b * (b ^ (p - 1) - 1) * (b ^ p + b) by rwa [ha₁]
     -- We already proved that `b ^ 2 - 1 ∣ b ^ (p - 1) - 1`.
     -- Since `2 ∣ b ^ p + b` and `p ∣ b ^ p + b`, if we show that 2 and p are coprime, then we
     -- know that `2 * p ∣ b ^ p + b`
@@ -306,8 +305,8 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
       AB_id_helper _ _ b_ge_two (p_prime.odd_of_ne_two p_gt_two.ne.symm)]
   have AB_dvd : b ^ 2 - 1 ∣ b ^ (2 * p) - 1 := by
     simpa only [one_pow, pow_mul] using nat_sub_dvd_pow_sub_pow _ 1 p
-  suffices h : p * (b ^ 2 - 1) < b ^ (2 * p) - 1
-  · have h₁ : p * (b ^ 2 - 1) / (b ^ 2 - 1) < (b ^ (2 * p) - 1) / (b ^ 2 - 1) :=
+  suffices h : p * (b ^ 2 - 1) < b ^ (2 * p) - 1 by
+    have h₁ : p * (b ^ 2 - 1) / (b ^ 2 - 1) < (b ^ (2 * p) - 1) / (b ^ 2 - 1) :=
       Nat.div_lt_div_of_lt_of_dvd AB_dvd h
     have h₂ : 0 < b ^ 2 - 1 := by
       linarith [show 3 ≤ b ^ 2 - 1 from le_tsub_of_add_le_left (show 4 ≤ b ^ 2 by nlinarith)]
@@ -315,13 +314,13 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   rw [Nat.mul_sub_left_distrib, mul_one, pow_mul]
   conv_rhs => rw [← Nat.sub_add_cancel (show 1 ≤ p by linarith)]
   rw [pow_succ (b ^ 2)]
-  suffices h : p * b ^ 2 < (b ^ 2) ^ (p - 1) * b ^ 2
-  · apply gt_of_ge_of_gt
+  suffices h : p * b ^ 2 < (b ^ 2) ^ (p - 1) * b ^ 2 by
+    apply gt_of_ge_of_gt
     · exact tsub_le_tsub_left (one_le_of_lt p_gt_two) ((b ^ 2) ^ (p - 1) * b ^ 2)
     · have : p ≤ p * b ^ 2 := Nat.le_mul_of_pos_right _ (show 0 < b ^ 2 by nlinarith)
       exact tsub_lt_tsub_right_of_le this h
-  suffices h : p < (b ^ 2) ^ (p - 1)
-  · have : 4 ≤ b ^ 2 := by nlinarith
+  suffices h : p < (b ^ 2) ^ (p - 1) by
+    have : 4 ≤ b ^ 2 := by nlinarith
     have : 0 < b ^ 2 := by linarith
     exact mul_lt_mul_of_pos_right h this
   rw [← pow_mul, Nat.mul_sub_left_distrib, mul_one]

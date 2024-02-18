@@ -230,8 +230,8 @@ theorem totient_prime {p : ℕ} (hp : p.Prime) : φ p = p - 1 := by
 
 theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Prime := by
   refine' ⟨fun h => _, totient_prime⟩
-  replace hp : 1 < p
-  · apply lt_of_le_of_ne
+  replace hp : 1 < p := by
+    apply lt_of_le_of_ne
     · rwa [succ_le_iff]
     · rintro rfl
       rw [totient_one, tsub_self] at h

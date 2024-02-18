@@ -36,8 +36,8 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     that its limit points in `U` still belong to it, from which the inclusion `U ⊆ u` will follow
     by connectedness. -/
   let u := {x | f =ᶠ[𝓝 x] 0}
-  suffices main : closure u ∩ U ⊆ u
-  · have Uu : U ⊆ u :=
+  suffices main : closure u ∩ U ⊆ u by
+    have Uu : U ⊆ u :=
       hU.subset_of_closure_inter_subset isOpen_setOf_eventually_nhds ⟨z₀, h₀, hfz₀⟩ main
     intro z hz
     simpa using mem_of_mem_nhds (Uu hz)

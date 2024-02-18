@@ -304,8 +304,8 @@ theorem map_sub_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x - y) ≤ g :
 #align valuation.map_sub_le Valuation.map_sub_le
 
 theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) := by
-  suffices : ¬v (x + y) < max (v x) (v y)
-  exact or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
+  suffices ¬v (x + y) < max (v x) (v y) from
+    or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
   intro h'
   wlog vyx : v y < v x generalizing x y
   · refine' this h.symm _ (h.lt_or_lt.resolve_right vyx)

@@ -148,8 +148,8 @@ theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Con
     rw [hsx.convexHull_eq] at hx
     exact hx.2 (mem_singleton _)
   rintro hx
-  suffices h : s \ {x} = convexHull 𝕜 (s \ {x})
-  · rw [h]
+  suffices h : s \ {x} = convexHull 𝕜 (s \ {x}) by
+    rw [h]
     exact convex_convexHull 𝕜 _
   exact
     Subset.antisymm (subset_convexHull 𝕜 _) fun y hy =>

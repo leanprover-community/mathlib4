@@ -19,9 +19,6 @@ so on) preserve `C^n` functions. We also expand the API around `C^n` functions.
 ## Main results
 
 * `ContDiff.comp` states that the composition of two `C^n` functions is `C^n`.
-* `norm_iteratedFDeriv_comp_le` gives the bound `n! * C * D ^ n` for the `n`-th derivative
-  of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
-  derivative of `f` is bounded by `D ^ i`.
 
 Similar results are given for `C^n` functions on domains.
 
@@ -1982,14 +1979,14 @@ theorem contDiffOn_succ_iff_derivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s₂) 
   intro _
   constructor
   · intro h
-    have : derivWithin f₂ s₂ = (fun u : 𝕜 →L[𝕜] F => u 1) ∘ fderivWithin 𝕜 f₂ s₂
-    · ext x; rfl
+    have : derivWithin f₂ s₂ = (fun u : 𝕜 →L[𝕜] F => u 1) ∘ fderivWithin 𝕜 f₂ s₂ := by
+      ext x; rfl
     simp_rw [this]
     apply ContDiff.comp_contDiffOn _ h
     exact (isBoundedBilinearMap_apply.isBoundedLinearMap_left _).contDiff
   · intro h
-    have : fderivWithin 𝕜 f₂ s₂ = smulRight (1 : 𝕜 →L[𝕜] 𝕜) ∘ derivWithin f₂ s₂
-    · ext x; simp [derivWithin]
+    have : fderivWithin 𝕜 f₂ s₂ = smulRight (1 : 𝕜 →L[𝕜] 𝕜) ∘ derivWithin f₂ s₂ := by
+      ext x; simp [derivWithin]
     simp only [this]
     apply ContDiff.comp_contDiffOn _ h
     have : IsBoundedBilinearMap 𝕜 fun _ : (𝕜 →L[𝕜] 𝕜) × F => _ := isBoundedBilinearMap_smulRight

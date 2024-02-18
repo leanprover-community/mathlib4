@@ -110,8 +110,8 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
   let ιEE' := algebraMap E (SplittingField (g.map ιFE))
   obtain ⟨c, hc⟩ := primitive_element_inf_aux_exists_c (ιEE'.comp ιFE) (ιEE' α) (ιEE' β) f g
   let γ := α + c • β
-  suffices β_in_Fγ : β ∈ F⟮γ⟯
-  · use γ
+  suffices β_in_Fγ : β ∈ F⟮γ⟯ by
+    use γ
     apply le_antisymm
     · rw [adjoin_le_iff]
       have α_in_Fγ : α ∈ F⟮γ⟯ := by
@@ -128,8 +128,8 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
   have map_g_ne_zero : g.map ιFE ≠ 0 := map_ne_zero (minpoly.ne_zero hβ)
   have h_ne_zero : h ≠ 0 :=
     mt EuclideanDomain.gcd_eq_zero_iff.mp (not_and.mpr fun _ => map_g_ne_zero)
-  suffices p_linear : p.map (algebraMap F⟮γ⟯ E) = C h.leadingCoeff * (X - C β)
-  · have finale : β = algebraMap F⟮γ⟯ E (-p.coeff 0 / p.coeff 1) := by
+  suffices p_linear : p.map (algebraMap F⟮γ⟯ E) = C h.leadingCoeff * (X - C β) by
+    have finale : β = algebraMap F⟮γ⟯ E (-p.coeff 0 / p.coeff 1) := by
       rw [map_div₀, RingHom.map_neg, ← coeff_map, ← coeff_map, p_linear]
       -- Porting note: had to add `-map_add` to avoid going in the wrong direction.
       simp [mul_sub, coeff_C, mul_div_cancel_left β (mt leadingCoeff_eq_zero.mp h_ne_zero),

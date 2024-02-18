@@ -980,8 +980,7 @@ theorem isLimit_add_iff {a b} : IsLimit (a + b) ↔ IsLimit b ∨ b = 0 ∧ IsLi
     left
     rw [← add_sub_cancel a b]
     apply sub_isLimit h
-    suffices : a + 0 < a + b
-    simpa only [add_zero] using this
+    suffices a + 0 < a + b by simpa only [add_zero] using this
     rwa [add_lt_add_iff_left, Ordinal.pos_iff_ne_zero]
   rcases h with (h | ⟨rfl, h⟩); exact add_isLimit a h; simpa only [add_zero]
 #align ordinal.is_limit_add_iff Ordinal.isLimit_add_iff

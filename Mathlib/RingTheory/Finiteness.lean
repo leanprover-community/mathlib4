@@ -406,8 +406,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
       -- by h, s is then below (and equal to) the sup of the spans of finitely many elements.
       obtain ⟨u, ⟨huspan, husup⟩⟩ := h (sp '' ↑s) (le_of_eq sSup')
       have ssup : s = u.sup id := by
-        suffices : u.sup id ≤ s
-        exact le_antisymm husup this
+        suffices u.sup id ≤ s from le_antisymm husup this
         rw [sSup', Finset.sup_id_eq_sSup]
         exact sSup_le_sSup huspan
       -- Porting note: had to split this out of the `obtain`

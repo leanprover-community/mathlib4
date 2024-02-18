@@ -196,8 +196,8 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ' (-1 : R), smul_eq_mul]
     conv_lhs => rw [pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
       ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ, ← smul_assoc, this]
-  suffices : ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0
-  · apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
+  suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
+    apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
     aesop
   clear hm₁ m₁; intro x m₁ hm₁
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm₀
@@ -326,8 +326,8 @@ case of an Abelian ideal (which has `M = L` and `N = I`). -/
 lemma traceForm_eq_zero_of_isTrivial [LieModule.IsTrivial I N] :
     trace R M (φ x ∘ₗ φ y) = 0 := by
   let hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)
-  suffices : (φ x ∘ₗ φ y).restrict hy' = 0
-  · simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
+  suffices (φ x ∘ₗ φ y).restrict hy' = 0 by
+    simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   ext n
   suffices ⁅y, (n : M)⁆ = 0 by simp [this]
   exact Submodule.coe_eq_zero.mpr (LieModule.IsTrivial.trivial (⟨y, hy⟩ : I) n)

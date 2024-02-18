@@ -118,7 +118,7 @@ theorem tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable [IsFiniteMeasure μ
   rw [Metric.tendstoUniformlyOn_iff] at hunif
   obtain ⟨N, hN⟩ := eventually_atTop.1 (hunif ε hε)
   refine' ⟨N, fun n hn => _⟩
-  suffices : { x : α | ε ≤ dist (f n x) (g x) } ⊆ t; exact (measure_mono this).trans ht
+  suffices { x : α | ε ≤ dist (f n x) (g x) } ⊆ t from (measure_mono this).trans ht
   rw [← Set.compl_subset_compl]
   intro x hx
   rw [Set.mem_compl_iff, Set.nmem_setOf_iff, dist_comm, not_le]

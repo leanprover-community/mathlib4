@@ -116,8 +116,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
     fun a' ha' => ha'.symm ▸ (p.mem_support_iff a).2 fun ha => zero_ne_one <| ha.symm.trans h,
     fun h => _root_.trans (symm <| tsum_eq_single a
       fun a' ha' => (p.apply_eq_zero_iff a').2 (h.symm ▸ ha')) p.tsum_coe⟩
-  suffices : 1 < ∑' a, p a
-  exact ne_of_lt this p.tsum_coe.symm
+  suffices 1 < ∑' a, p a from ne_of_lt this p.tsum_coe.symm
   have : 0 < ∑' b, ite (b = a) 0 (p b) := lt_of_le_of_ne' zero_le'
     ((tsum_ne_zero_iff ENNReal.summable).2
       ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩)
@@ -205,9 +204,9 @@ theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support �
     have hsa : s.indicator p a < p a := hs'.symm ▸ (p.apply_pos_iff a).2 hap
     exact ENNReal.tsum_lt_tsum (p.tsum_coe_indicator_ne_top s)
       (fun x => Set.indicator_apply_le fun _ => le_rfl) hsa
-  · suffices : ∀ (x) (_ : x ∉ s), p x = 0
-    exact _root_.trans (tsum_congr
-      fun a => (Set.indicator_apply s p a).trans (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
+  · suffices ∀ (x) (_ : x ∉ s), p x = 0 from
+      _root_.trans (tsum_congr
+        fun a => (Set.indicator_apply s p a).trans (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
     exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.not_mem_subset h ha
 #align pmf.to_outer_measure_apply_eq_one_iff PMF.toOuterMeasure_apply_eq_one_iff
 

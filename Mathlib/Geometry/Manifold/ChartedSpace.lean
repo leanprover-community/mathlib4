@@ -294,8 +294,8 @@ def idGroupoid (H : Type u) [TopologicalSpace H] : StructureGroupoid H where
         rw [restr_source, open_s.interior_eq]
         exact ⟨hx, xs⟩
       cases' hs with hs hs
-      · replace hs : PartialHomeomorph.restr e s = PartialHomeomorph.refl H
-        · simpa only using hs
+      · replace hs : PartialHomeomorph.restr e s = PartialHomeomorph.refl H := by
+          simpa only using hs
         have : (e.restr s).source = univ := by
           rw [hs]
           simp

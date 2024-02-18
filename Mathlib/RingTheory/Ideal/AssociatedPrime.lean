@@ -146,8 +146,8 @@ theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J
     apply hJ.1
     rwa [Submodule.span_singleton_eq_bot.mpr rfl, Submodule.annihilator_bot] at e
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mkₐ_surjective R _ x
-  replace e : ∀ {y}, y ∈ J ↔ x * y ∈ I
-  · intro y
+  replace e : ∀ {y}, y ∈ J ↔ x * y ∈ I := by
+    intro y
     rw [e, Submodule.mem_annihilator_span_singleton, ← map_smul, smul_eq_mul, mul_comm,
       Ideal.Quotient.mkₐ_eq_mk, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero]
   apply le_antisymm

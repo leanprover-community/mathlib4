@@ -357,8 +357,8 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
         (he.closed_range.union <| isClosed_Ici.preimage g.continuous)
         (isClosed_singleton.preimage g.continuous) hd (sub_nonneg.2 hac.le) with
       ⟨dg, dg0, dga, dgmem⟩
-    replace hgf : ∀ x, (g + dg) (e x) = f x
-    · intro x
+    replace hgf : ∀ x, (g + dg) (e x) = f x := by
+      intro x
       simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
     refine' ⟨g + dg, fun y => _, funext hgf⟩
     · have hay : a < (g + dg) y := by
@@ -390,8 +390,8 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
       (he.closed_range.union <| isClosed_Iic.preimage g.continuous)
       (isClosed_singleton.preimage g.continuous) hd (sub_nonneg.2 hcb.le) with
     ⟨dg, dg0, dgb, dgmem⟩
-  replace hgf : ∀ x, (g - dg) (e x) = f x
-  · intro x
+  replace hgf : ∀ x, (g - dg) (e x) = f x := by
+    intro x
     simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
   refine' ⟨g - dg, fun y => _, funext hgf⟩
   · have hyb : (g - dg) y < b := by

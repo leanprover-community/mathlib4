@@ -379,8 +379,8 @@ function on the positive reals which satisfies `f 1 = 1` and `f (x + 1) = x * f 
 theorem eq_Gamma_of_log_convex {f : ℝ → ℝ} (hf_conv : ConvexOn ℝ (Ioi 0) (log ∘ f))
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = y * f y) (hf_pos : ∀ {y : ℝ}, 0 < y → 0 < f y)
     (hf_one : f 1 = 1) : EqOn f Gamma (Ioi (0 : ℝ)) := by
-  suffices : EqOn (log ∘ f) (log ∘ Gamma) (Ioi (0 : ℝ))
-  exact fun x hx => log_injOn_pos (hf_pos hx) (Gamma_pos_of_pos hx) (this hx)
+  suffices EqOn (log ∘ f) (log ∘ Gamma) (Ioi (0 : ℝ)) from
+    fun x hx ↦ log_injOn_pos (hf_pos hx) (Gamma_pos_of_pos hx) (this hx)
   intro x hx
   have e1 := BohrMollerup.tendsto_logGammaSeq hf_conv ?_ hx
   · rw [Function.comp_apply (f := log) (g := f) (x := 1), hf_one, log_one, sub_zero] at e1

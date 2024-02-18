@@ -848,8 +848,8 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : MvPolynomial σ R) : C r ∣ φ ↔ �
 #align mv_polynomial.C_dvd_iff_dvd_coeff MvPolynomial.C_dvd_iff_dvd_coeff
 
 @[simp] lemma isRegular_X : IsRegular (X n : MvPolynomial σ R) := by
-  suffices : IsLeftRegular (X n : MvPolynomial σ R)
-  · exact ⟨this, this.right_of_commute <| Commute.all _⟩
+  suffices IsLeftRegular (X n : MvPolynomial σ R) from
+    ⟨this, this.right_of_commute <| Commute.all _⟩
   intro P Q (hPQ : (X n) * P = (X n) * Q)
   ext i
   rw [← coeff_X_mul i n P, hPQ, coeff_X_mul i n Q]
@@ -1677,26 +1677,26 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     (hs : ∀ i ∈ p.support, f (p.coeff i) ∈ s) {v : σ → S} (hv : ∀ i, v i ∈ s) :
     MvPolynomial.eval₂ f v p ∈ s := by
   classical
-    replace hs : ∀ i, f (p.coeff i) ∈ s
-    · intro i
-      by_cases hi : i ∈ p.support
-      · exact hs i hi
-      · rw [MvPolynomial.not_mem_support_iff.1 hi, f.map_zero]
-        exact zero_mem s
-    induction' p using MvPolynomial.induction_on''' with a a b f ha _ ih
-    · simpa using hs 0
-    rw [eval₂_add, eval₂_monomial]
-    refine' add_mem (mul_mem _ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => _)
-    · have := hs a -- Porting note: was `simpa only [...]`
-      rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
-        if_pos rfl] at this
-    have := hs i
-    rw [coeff_add, coeff_monomial] at this
-    split_ifs at this with h
-    · subst h
-      rw [MvPolynomial.not_mem_support_iff.1 ha, map_zero]
-      exact zero_mem _
-    · rwa [zero_add] at this
+  replace hs : ∀ i, f (p.coeff i) ∈ s := by
+    intro i
+    by_cases hi : i ∈ p.support
+    · exact hs i hi
+    · rw [MvPolynomial.not_mem_support_iff.1 hi, f.map_zero]
+      exact zero_mem s
+  induction' p using MvPolynomial.induction_on''' with a a b f ha _ ih
+  · simpa using hs 0
+  rw [eval₂_add, eval₂_monomial]
+  refine' add_mem (mul_mem _ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => _)
+  · have := hs a -- Porting note: was `simpa only [...]`
+    rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
+      if_pos rfl] at this
+  have := hs i
+  rw [coeff_add, coeff_monomial] at this
+  split_ifs at this with h
+  · subst h
+    rw [MvPolynomial.not_mem_support_iff.1 ha, map_zero]
+    exact zero_mem _
+  · rwa [zero_add] at this
 #align mv_polynomial.eval₂_mem MvPolynomial.eval₂_mem
 
 theorem eval_mem {p : MvPolynomial σ S} {s : subS} (hs : ∀ i ∈ p.support, p.coeff i ∈ s) {v : σ → S}

@@ -317,11 +317,10 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
   have hdg : Differentiable ℂ g := differentiable_exp.const_add _
   replace hs : (g ⁻¹' s).Countable := (hs.preimage (add_right_injective c)).preimage_cexp
   have h_maps : MapsTo g R A := by rintro z ⟨h, -⟩; simpa [dist_eq, abs_exp, hle] using h.symm
-  replace hc : ContinuousOn (f ∘ g) R; exact hc.comp hdg.continuous.continuousOn h_maps
-  replace hd :
-    ∀ z ∈ Ioo (min a b) (max a b) ×ℂ Ioo (min 0 (2 * π)) (max 0 (2 * π)) \ g ⁻¹' s,
-      DifferentiableAt ℂ (f ∘ g) z
-  · refine' fun z hz => (hd (g z) ⟨_, hz.2⟩).comp z (hdg _)
+  replace hc : ContinuousOn (f ∘ g) R := hc.comp hdg.continuous.continuousOn h_maps
+  replace hd : ∀ z ∈ Ioo (min a b) (max a b) ×ℂ Ioo (min 0 (2 * π)) (max 0 (2 * π)) \ g ⁻¹' s,
+      DifferentiableAt ℂ (f ∘ g) z := by
+    refine' fun z hz => (hd (g z) ⟨_, hz.2⟩).comp z (hdg _)
     simpa [dist_eq, abs_exp, hle, and_comm] using hz.1.1
   simpa [circleMap, exp_periodic _, sub_eq_zero, ← exp_add] using
     integral_boundary_rect_eq_zero_of_differentiable_on_off_countable _ ⟨a, 0⟩ ⟨b, 2 * π⟩ _ hs hc hd

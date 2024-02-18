@@ -242,8 +242,8 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     simp only [Set.Finite.mem_toFinset, Set.mem_diff, Set.mem_singleton_iff] at hZ'
     exact hZ'.1.2 <| le_antisymm (H.2 hZ'.1.1.1 hZ'.2) hZ'.2
 
-  have hU1 : U = (⋃ (x : ι), x.1) ᶜ
-  · rw [Set.compl_eq_univ_diff]
+  have hU1 : U = (⋃ (x : ι), x.1) ᶜ := by
+    rw [Set.compl_eq_univ_diff]
     refine le_antisymm (Set.diff_subset_diff le_top <| subset_refl _) ?_
     rw [← Set.compl_eq_univ_diff]
     refine Set.compl_subset_iff_union.mpr (le_antisymm le_top ?_)

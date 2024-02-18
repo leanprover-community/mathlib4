@@ -173,15 +173,15 @@ decreasing_by all_goals { simp_wf; omega }
 
 lemma reciprocalFactors_even {n : ℕ} (h0 : n ≠ 0) (h2 : Even n) :
     reciprocalFactors n = 3 :: reciprocalFactors (n / 2) := by
-  have h1 : n ≠ 1
-  · rintro rfl
+  have h1 : n ≠ 1 := by
+    rintro rfl
     norm_num at h2
   rw [reciprocalFactors, dif_neg h0, dif_neg h1, if_pos h2]
 
 lemma reciprocalFactors_odd {n : ℕ} (h1 : n ≠ 1) (h2 : Odd n) :
     reciprocalFactors n = n % 4 * n :: reciprocalFactors (n / 4 + 1) := by
-  have h0 : n ≠ 0
-  · rintro rfl
+  have h0 : n ≠ 0 := by
+    rintro rfl
     norm_num at h2
   rw [reciprocalFactors, dif_neg h0, dif_neg h1, if_neg (Nat.odd_iff_not_even.mp h2)]
 

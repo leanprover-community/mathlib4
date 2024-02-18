@@ -123,8 +123,8 @@ theorem ascPochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (ascPochhammer
 
 theorem ascPochhammer_succ_right (n : ℕ) :
     ascPochhammer S (n + 1) = ascPochhammer S n * (X + (n : S[X])) := by
-  suffices h : ascPochhammer ℕ (n + 1) = ascPochhammer ℕ n * (X + (n : ℕ[X]))
-  · apply_fun Polynomial.map (algebraMap ℕ S) at h
+  suffices h : ascPochhammer ℕ (n + 1) = ascPochhammer ℕ n * (X + (n : ℕ[X])) by
+    apply_fun Polynomial.map (algebraMap ℕ S) at h
     simpa only [ascPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_nat_cast] using h
   induction' n with n ih
@@ -300,8 +300,8 @@ theorem descPochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (descPochhamm
 
 theorem descPochhammer_succ_right (n : ℕ) :
     descPochhammer R (n + 1) = descPochhammer R n * (X - (n : R[X])) := by
-  suffices h : descPochhammer ℤ (n + 1) = descPochhammer ℤ n * (X - (n : ℤ[X]))
-  · apply_fun Polynomial.map (algebraMap ℤ R) at h
+  suffices h : descPochhammer ℤ (n + 1) = descPochhammer ℤ n * (X - (n : ℤ[X])) by
+    apply_fun Polynomial.map (algebraMap ℤ R) at h
     simpa [descPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_int_cast] using h
   induction' n with n ih

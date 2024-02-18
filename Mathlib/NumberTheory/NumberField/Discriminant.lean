@@ -249,10 +249,10 @@ variable {ι ι'} (K) [Field K] [DecidableEq ι] [DecidableEq ι'] [Fintype ι] 
 theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     {b : Basis ι ℚ K} {b' : Basis ι' ℚ K} (h : ∀ i j, IsIntegral ℤ (b.toMatrix b' i j))
     (h' : ∀ i j, IsIntegral ℤ (b'.toMatrix b i j)) : discr ℚ b = discr ℚ b' := by
-  replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j)
-  · intro i j
+  replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j) := by
+    intro i j
     convert h' i ((b.indexEquiv b').symm j)
--- Porting note: `simp; rfl` was `simpa`.
+  -- Porting note: `simp; rfl` was `simpa`.
     simp; rfl
   classical
   rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,

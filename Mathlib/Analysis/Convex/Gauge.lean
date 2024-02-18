@@ -379,8 +379,8 @@ theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s 
   have H₁ : Tendsto (fun r : ℝ ↦ r⁻¹ • x) (𝓝[<] 1) (𝓝 ((1 : ℝ)⁻¹ • x)) :=
     ((tendsto_id.inv₀ one_ne_zero).smul tendsto_const_nhds).mono_left inf_le_left
   rw [inv_one, one_smul] at H₁
-  have H₂ : ∀ᶠ r in 𝓝[<] (1 : ℝ), x ∈ r • s ∧ 0 < r ∧ r < 1
-  · filter_upwards [H₁ (mem_interior_iff_mem_nhds.1 hx), Ioo_mem_nhdsWithin_Iio' one_pos]
+  have H₂ : ∀ᶠ r in 𝓝[<] (1 : ℝ), x ∈ r • s ∧ 0 < r ∧ r < 1 := by
+    filter_upwards [H₁ (mem_interior_iff_mem_nhds.1 hx), Ioo_mem_nhdsWithin_Iio' one_pos]
     intro r h₁ h₂
     exact ⟨(mem_smul_set_iff_inv_smul_mem₀ h₂.1.ne' _ _).2 h₁, h₂⟩
   rcases H₂.exists with ⟨r, hxr, hr₀, hr₁⟩
@@ -411,8 +411,8 @@ theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₂ : IsOpen s
 
 theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : Absorbent ℝ s)
     (h : gauge s x ≤ 1) : x ∈ closure s := by
-  have : ∀ᶠ r : ℝ in 𝓝[<] 1, r • x ∈ s
-  · filter_upwards [Ico_mem_nhdsWithin_Iio' one_pos] with r ⟨hr₀, hr₁⟩
+  have : ∀ᶠ r : ℝ in 𝓝[<] 1, r • x ∈ s := by
+    filter_upwards [Ico_mem_nhdsWithin_Iio' one_pos] with r ⟨hr₀, hr₁⟩
     apply gauge_lt_one_subset_self hc hs₀ ha
     rw [mem_setOf_eq, gauge_smul_of_nonneg hr₀]
     exact mul_lt_one_of_nonneg_of_lt_one_left hr₀ hr₁ h
@@ -460,8 +460,8 @@ theorem continuousAt_gauge (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) : Continuo
   have ha : Absorbent ℝ s := absorbent_nhds_zero hs₀
   refine (nhds_basis_Icc_pos _).tendsto_right_iff.2 fun ε hε₀ ↦ ?_
   rw [← map_add_left_nhds_zero, eventually_map]
-  have : ε • s ∩ -(ε • s) ∈ 𝓝 0
-  · exact inter_mem ((set_smul_mem_nhds_zero_iff hε₀.ne').2 hs₀)
+  have : ε • s ∩ -(ε • s) ∈ 𝓝 0 :=
+    inter_mem ((set_smul_mem_nhds_zero_iff hε₀.ne').2 hs₀)
       (neg_mem_nhds_zero _ ((set_smul_mem_nhds_zero_iff hε₀.ne').2 hs₀))
   filter_upwards [this] with y hy
   constructor
@@ -603,8 +603,8 @@ theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x
   · apply le_antisymm
     · rw [← gauge_ball hr]
       exact gauge_mono (absorbent_ball_zero hr') ball_subset_closedBall x
-    · suffices : ∀ᶠ R in 𝓝[>] r, ‖x‖ / R ≤ gauge (closedBall 0 r) x
-      · refine le_of_tendsto ?_ this
+    · suffices ∀ᶠ R in 𝓝[>] r, ‖x‖ / R ≤ gauge (closedBall 0 r) x by
+        refine le_of_tendsto ?_ this
         exact tendsto_const_nhds.div inf_le_left hr'.ne'
       filter_upwards [self_mem_nhdsWithin] with R hR
       rw [← gauge_ball (hr.trans hR.out.le)]

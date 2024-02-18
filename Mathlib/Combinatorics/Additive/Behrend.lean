@@ -414,8 +414,8 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
     Nat.pow_le_pow_left (Nat.sub_le _ _) _
   apply this.trans
   suffices ((2 * dValue N) ^ nValue N : ℝ) ≤ N from mod_cast this
-  suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (nValue N : ℝ)⁻¹
-  · rw [← rpow_nat_cast]
+  suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (nValue N : ℝ)⁻¹ by
+    rw [← rpow_nat_cast]
     apply (rpow_le_rpow (mul_nonneg zero_le_two (cast_nonneg _)) i (cast_nonneg _)).trans
     rw [← rpow_mul (cast_nonneg _), inv_mul_cancel, rpow_one]
     rw [cast_ne_zero]

@@ -1311,8 +1311,8 @@ def ord (c : Cardinal) : Ordinal :=
   let F := fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2
   Quot.liftOn c F
     (by
-      suffices : ∀ {α β}, α ≈ β → F α ≤ F β
-      exact fun α β h => (this h).antisymm (this (Setoid.symm h))
+      suffices ∀ {α β}, α ≈ β → F α ≤ F β from
+        fun α β h => (this h).antisymm (this (Setoid.symm h))
       rintro α β ⟨f⟩
       refine' le_ciInf_iff'.2 fun i => _
       haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2

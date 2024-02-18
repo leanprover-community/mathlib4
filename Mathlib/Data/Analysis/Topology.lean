@@ -278,6 +278,6 @@ def Compact.Realizer [TopologicalSpace α] (s : Set α) :=
 
 instance [TopologicalSpace α] : Inhabited (Compact.Realizer (∅ : Set α)) :=
   ⟨fun {f} F x h hF ↦ by
-    suffices : f = ⊥; exact absurd this h
+    suffices f = ⊥ from absurd this h
     rw [← F.eq, eq_bot_iff]
     exact λ s _ ↦ ⟨x, hF.trans s.empty_subset⟩⟩

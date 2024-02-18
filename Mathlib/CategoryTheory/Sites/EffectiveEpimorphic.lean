@@ -707,8 +707,8 @@ variable [HasFiniteCoproducts C] (h : ∀ {α : Type} [Finite α] {B : C}
 
 lemma effectiveEpi_iff_epi {X Y : C} (f : X ⟶ Y) : EffectiveEpi f ↔ Epi f := by
   rw [effectiveEpi_iff_effectiveEpiFamily, h]
-  have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f))
-  · simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
+  have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f)) := by
+    simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
   refine ⟨?_, fun _ ↦ epi_of_epi_fac w.symm⟩
   intro
   rw [w]

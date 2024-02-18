@@ -369,7 +369,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
 
 /-- A Liouville number is a Liouville number with any real exponent. -/
 protected theorem liouvilleWith (hx : Liouville x) (p : ℝ) : LiouvilleWith p x := by
-  suffices : LiouvilleWith ⌈p⌉₊ x; exact this.mono (Nat.le_ceil p)
+  suffices LiouvilleWith ⌈p⌉₊ x from this.mono (Nat.le_ceil p)
   refine ⟨1, ((eventually_gt_atTop 1).and_frequently (hx.frequently_exists_num ⌈p⌉₊)).mono ?_⟩
   rintro b ⟨_hb, a, hne, hlt⟩
   refine ⟨a, hne, ?_⟩

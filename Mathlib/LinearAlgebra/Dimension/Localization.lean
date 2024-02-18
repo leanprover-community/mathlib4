@@ -57,8 +57,8 @@ lemma IsLocalizedModule.lift_rank_eq :
     apply (IsLocalization.map_units S (sec (g i)).2).mul_left_injective
     classical
     let u := fun (i : s) ↦ (t.erase i).prod (fun j ↦ (sec (g j)).2)
-    have : f (t.sum fun i ↦ u i • (sec (g i)).1 • i) = f 0
-    · convert congr_arg (t.prod (fun j ↦ (sec (g j)).2) • ·) hg
+    have : f (t.sum fun i ↦ u i • (sec (g i)).1 • i) = f 0 := by
+      convert congr_arg (t.prod (fun j ↦ (sec (g j)).2) • ·) hg
       · simp only [map_sum, map_smul, Submonoid.smul_def, Finset.smul_sum]
         apply Finset.sum_congr rfl
         intro j hj

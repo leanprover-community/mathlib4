@@ -95,10 +95,8 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
         suffices Sieve.pullback ψ ((Sieve.pullback F) Z) ∈ GrothendieckTopology.sieves
           ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck R by assumption
         apply GrothendieckTopology.pullback_stable'
-        suffices Coverage.saturate ((extensiveCoverage C) ⊔ (regularCoverage C)) Xs
-          (Z.pullback F) by assumption
-        suffices : Sieve.generate (Presieve.ofArrows X φ) ≤ Z.pullback F
-        · apply Coverage.saturate_of_superset _ this
+        suffices Sieve.generate (Presieve.ofArrows X φ) ≤ Z.pullback F by
+          apply Coverage.saturate_of_superset _ this
           apply Coverage.saturate.of
           simp only [Coverage.sup_covering, extensiveCoverage, regularCoverage, Set.mem_union,
             Set.mem_setOf_eq]

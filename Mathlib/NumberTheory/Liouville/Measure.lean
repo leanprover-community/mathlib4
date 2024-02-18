@@ -51,10 +51,10 @@ theorem setOf_liouvilleWith_subset_aux :
   rintro b ⟨⟨a, -, hlt⟩, hb⟩
   rw [rpow_neg b.cast_nonneg, ← one_div, ← Nat.cast_succ] at hlt
   refine' ⟨a, _, hlt⟩
-  replace hb : (1 : ℝ) ≤ b; exact Nat.one_le_cast.2 hb
+  replace hb : (1 : ℝ) ≤ b := Nat.one_le_cast.2 hb
   have hb0 : (0 : ℝ) < b := zero_lt_one.trans_le hb
-  replace hlt : |x - a / b| < 1 / b
-  · refine' hlt.trans_le (one_div_le_one_div_of_le hb0 _)
+  replace hlt : |x - a / b| < 1 / b := by
+    refine' hlt.trans_le (one_div_le_one_div_of_le hb0 _)
     calc
       (b : ℝ) = (b : ℝ) ^ (1 : ℝ) := (rpow_one _).symm
       _ ≤ (b : ℝ) ^ (2 + 1 / (n + 1 : ℕ) : ℝ) :=
@@ -81,7 +81,7 @@ theorem volume_iUnion_setOf_liouvilleWith :
   rw [measure_iUnion_null_iff]; intro m; rw [measure_preimage_add_right]; clear m
   refine' (measure_biUnion_null_iff <| to_countable _).2 fun n (hn : 1 ≤ n) => _
   generalize hr : (2 + 1 / n : ℝ) = r
-  replace hr : 2 < r; · simp [← hr, zero_lt_one.trans_le hn]
+  replace hr : 2 < r := by simp [← hr, zero_lt_one.trans_le hn]
   clear hn n
   refine' measure_setOf_frequently_eq_zero _
   simp only [setOf_exists, ← exists_prop, ← Real.dist_eq, ← mem_ball, setOf_mem_eq]

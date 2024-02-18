@@ -341,8 +341,8 @@ lemma reverse_charpoly (M : Matrix n n R) :
     simp [charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
   have hq : toLaurentAlg M.charpolyRev = q := by
     simp [charpolyRev, AlgHom.map_det, map_sub, map_smul', smul_eq_diagonal_mul]
-  suffices : t_inv ^ Fintype.card n * p = invert q
-  · apply toLaurent_injective
+  suffices t_inv ^ Fintype.card n * p = invert q by
+    apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
       invert.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
       ← mul_one (Fintype.card n : ℤ), ← T_pow, invert.map_pow, invert_T, mul_comm]

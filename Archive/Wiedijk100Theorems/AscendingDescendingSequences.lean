@@ -102,8 +102,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       rcases this with ⟨t, ht₁, ht₂⟩
       rw [mem_filter] at ht₁
       -- Ensure `t` ends at `i`.
-      have : t.max = i
-      simp only [ht₁.2.1]
+      have : t.max = i := by simp only [ht₁.2.1]
       -- Now our new subsequence is given by adding `j` at the end of `t`.
       refine' ⟨insert j t, _, _⟩
       -- First make sure it's valid, i.e., that this subsequence ends at `j` and is increasing

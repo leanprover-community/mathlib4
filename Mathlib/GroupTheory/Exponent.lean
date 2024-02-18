@@ -256,8 +256,8 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
       rw [bot_eq_zero, Nat.factorization_zero, Finsupp.zero_apply]
   rw [← Finsupp.mem_support_iff] at h
   obtain ⟨g, hg⟩ : ∃ g : G, g ^ (exponent G / p) ≠ 1 := by
-    suffices key : ¬exponent G ∣ exponent G / p
-    · rwa [exponent_dvd_iff_forall_pow_eq_one, not_forall] at key
+    suffices key : ¬exponent G ∣ exponent G / p by
+      rwa [exponent_dvd_iff_forall_pow_eq_one, not_forall] at key
     exact fun hd =>
       hp.one_lt.not_le
         ((mul_le_iff_le_one_left he).mp <|

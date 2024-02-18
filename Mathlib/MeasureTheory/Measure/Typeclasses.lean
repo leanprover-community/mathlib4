@@ -192,8 +192,8 @@ theorem abs_toReal_measure_sub_le_measure_symmDiff'
     |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal := by
   have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset (diff_subset s t) hs').ne
   have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset (diff_subset t s) ht').ne
-  suffices : (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal
-  · rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
+  suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
+    rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
     convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
   rw [measure_diff' s ht ht', measure_diff' t hs hs',
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (measure_union_ne_top hs' ht'),
@@ -1362,7 +1362,7 @@ theorem inf_of_right (h : μ.FiniteAtFilter g) : μ.FiniteAtFilter (f ⊓ g) :=
 theorem inf_ae_iff : μ.FiniteAtFilter (f ⊓ μ.ae) ↔ μ.FiniteAtFilter f := by
   refine' ⟨_, fun h => h.filter_mono inf_le_left⟩
   rintro ⟨s, ⟨t, ht, u, hu, rfl⟩, hμ⟩
-  suffices : μ t ≤ μ (t ∩ u); exact ⟨t, ht, this.trans_lt hμ⟩
+  suffices μ t ≤ μ (t ∩ u) from ⟨t, ht, this.trans_lt hμ⟩
   exact measure_mono_ae (mem_of_superset hu fun x hu ht => ⟨ht, hu⟩)
 #align measure_theory.measure.finite_at_filter.inf_ae_iff MeasureTheory.Measure.FiniteAtFilter.inf_ae_iff
 
@@ -1505,8 +1505,7 @@ sequence of open sets. -/
 noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [TopologicalSpace α]
   [SecondCountableTopology α] {m : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
   μ.FiniteSpanningSetsIn { K | IsOpen K } := by
-  suffices H : Nonempty (μ.FiniteSpanningSetsIn { K | IsOpen K })
-  exact H.some
+  suffices H : Nonempty (μ.FiniteSpanningSetsIn { K | IsOpen K }) from H.some
   cases isEmpty_or_nonempty α
   · exact
       ⟨{  set := fun _ => ∅

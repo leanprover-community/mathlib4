@@ -267,8 +267,8 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
       Tendsto.norm <| ((continuous_apply i).tendsto _).sub tendsto_const_nhds
   simp only [sub_self, norm_zero, Finset.sum_const_zero] at this
   refine' (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => _
-  replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹
-  · rw [← NNReal.coe_lt_coe]
+  replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹ := by
+    rw [← NNReal.coe_lt_coe]
     push_cast
     exact hg
   rw [LinearMap.ker_eq_bot]
@@ -386,8 +386,7 @@ instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
       exact ⟨n, le_of_lt hn⟩
     choose n hn using this
     use n
-    replace hn : ∀ i : Fin d, ‖(φ - (v.constrL <| u ∘ n)) (v i)‖ ≤ ε / (2 * C)
-    · simp [hn]
+    replace hn : ∀ i : Fin d, ‖(φ - (v.constrL <| u ∘ n)) (v i)‖ ≤ ε / (2 * C) := by simp [hn]
     have : C * (ε / (2 * C)) = ε / 2 := by
       rw [eq_div_iff (two_ne_zero : (2 : ℝ) ≠ 0), mul_comm, ← mul_assoc,
         mul_div_cancel' _ (ne_of_gt h_2C)]

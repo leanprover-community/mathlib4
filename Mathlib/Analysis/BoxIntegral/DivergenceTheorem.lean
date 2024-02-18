@@ -104,8 +104,8 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       simp only [← this, f'.map_sub]; abel
     · have : ∀ z ∈ Icc (I.lower i) (I.upper i), e z y ∈ (Box.Icc I) := fun z hz =>
         I.mapsTo_insertNth_face_Icc hz hy
-      replace hε : ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * diam (Box.Icc I)
-      · intro y hy
+      replace hε : ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * diam (Box.Icc I) := by
+        intro y hy
         refine' (hε y hy).trans (mul_le_mul_of_nonneg_left _ h0.le)
         rw [← dist_eq_norm]
         exact dist_le_diam_of_mem I.isCompact_Icc.isBounded hy hxI

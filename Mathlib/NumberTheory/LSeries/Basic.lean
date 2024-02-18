@@ -79,9 +79,9 @@ theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ArithmeticFunction ℂ} {
 
 theorem LSeriesSummable_iff_of_re_eq_re {f : ArithmeticFunction ℂ} {w z : ℂ} (h : w.re = z.re) :
     f.LSeriesSummable w ↔ f.LSeriesSummable z := by
-  suffices h :
-    ∀ n : ℕ, Complex.abs (f n) / Complex.abs (↑n ^ w) = Complex.abs (f n) / Complex.abs (↑n ^ z)
-  · simp [LSeriesSummable, ← summable_norm_iff, h, Complex.norm_eq_abs]
+  suffices h : ∀ n : ℕ,
+      Complex.abs (f n) / Complex.abs (↑n ^ w) = Complex.abs (f n) / Complex.abs (↑n ^ z) by
+    simp [LSeriesSummable, ← summable_norm_iff, h, Complex.norm_eq_abs]
   intro n
   cases' n with n; · simp
   apply congr rfl

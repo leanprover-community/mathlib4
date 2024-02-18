@@ -39,8 +39,8 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
   have hxmy : 0 < x - y := sub_pos.mpr hxy
   have hn : ∀ n : ℕ, 0 < n → (x - y) * (n : ℝ) ≤ x ^ n - y ^ n := by
     intro n _
-    have hterm : ∀ i : ℕ, i ∈ Finset.range n → 1 ≤ x ^ i * y ^ (n - 1 - i)
-    · intro i _
+    have hterm : ∀ i : ℕ, i ∈ Finset.range n → 1 ≤ x ^ i * y ^ (n - 1 - i) := by
+      intro i _
       calc
         1 ≤ x ^ i := one_le_pow_of_one_le hx.le i
         _ = x ^ i * 1 := by ring
@@ -80,8 +80,8 @@ theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
       1 = 1 * 2 / 2 := by field_simp
       _ < (x + 1) / 2 := by linarith
   have h_y_lt_y' : y < y' := by linarith
-  have hh : ∀ n, 0 < n → x ^ n - 1 < y' ^ n
-  · intro n hn
+  have hh : ∀ n, 0 < n → x ^ n - 1 < y' ^ n := by
+    intro n hn
     calc
       x ^ n - 1 < y ^ n := h n hn
       _ ≤ y' ^ n := by gcongr
@@ -199,7 +199,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
     intro n hn
     have hf1 : 1 ≤ f 1 := by
       have a_pos : (0 : ℝ) < a := Rat.cast_pos.mpr (zero_lt_one.trans ha1)
-      suffices : ↑a * 1 ≤ ↑a * f 1; rwa [← mul_le_mul_left a_pos]
+      suffices ↑a * 1 ≤ ↑a * f 1 by rwa [← mul_le_mul_left a_pos]
       calc
         ↑a * 1 = ↑a := mul_one (a : ℝ)
         _ = f a := hae.symm

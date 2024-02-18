@@ -121,8 +121,8 @@ variable {n : ℕ} {α : Type*}
 theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α := α) LE.le]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Monotone f) (j : Fin m) :
     j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
-  suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a
-  · refine ⟨h1 j, fun h ↦ ?_⟩
+  suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a by
+    refine ⟨h1 j, fun h ↦ ?_⟩
     by_contra! hc
     let p : Fin m → Prop := fun x ↦ f x ≤ a
     let q : Fin m → Prop := fun x ↦ x < Fintype.card {i // f i ≤ a}

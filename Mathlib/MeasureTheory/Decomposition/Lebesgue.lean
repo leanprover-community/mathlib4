@@ -627,9 +627,11 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
         rw [← @Classical.not_not (μA ≤ μA / 2)] at h'
         exact h' (not_le.2 (NNReal.half_lt_self h))
       intro c hc
-      have : ∃ n : ℕ, 1 / (n + 1 : ℝ) < c * (νA : ℝ)⁻¹; refine' exists_nat_one_div_lt _
-      · refine' mul_pos hc _
-        rw [_root_.inv_pos]; exact hb
+      have : ∃ n : ℕ, 1 / (n + 1 : ℝ) < c * (νA : ℝ)⁻¹ := by
+        refine' exists_nat_one_div_lt _
+        refine' mul_pos hc _
+        rw [_root_.inv_pos]
+        exact hb
       rcases this with ⟨n, hn⟩
       have hb₁ : (0 : ℝ) < (νA : ℝ)⁻¹ := by rw [_root_.inv_pos]; exact hb
       have h' : 1 / (↑n + 1) * νA < c := by
@@ -953,11 +955,9 @@ instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (μ ν : Mea
         nth_rw 1 [haveLebesgueDecomposition_add (μn n) (νn n)]
         suffices heq :
           (νn n).withDensity ((μn n).rnDeriv (νn n)) =
-            ν.withDensity ((S.set n).indicator ((μn n).rnDeriv (νn n)))
-        · rw [heq]
+            ν.withDensity ((S.set n).indicator ((μn n).rnDeriv (νn n))) by rw [heq]
         rw [hν, withDensity_indicator (S.set_mem n), restrict_sum _ (S.set_mem n)]
-        suffices hsumeq : (sum fun i : ℕ => (νn i).restrict (S.set n)) = νn n
-        · rw [hsumeq]
+        suffices hsumeq : (sum fun i : ℕ => (νn i).restrict (S.set n)) = νn n by rw [hsumeq]
         ext1 s hs
         rw [sum_apply _ hs, tsum_eq_single n, hνn, h₁, restrict_restrict (T.set_mem n), inter_self]
         · intro m hm

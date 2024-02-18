@@ -226,8 +226,8 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       cases' hx ⟨f.toHomUnits g, g, rfl⟩ with n hn
       rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
         eq_comm] at hn
-    replace hx1 : (x.val : R) - 1 ≠ 0  -- porting note: was `(x : R)`
-    exact fun h => hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
+    replace hx1 : (x.val : R) - 1 ≠ 0 := -- porting note: was `(x : R)`
+      fun h => hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
     let c := (univ.filter fun g => f.toHomUnits g = 1).card
     calc
       ∑ g : G, f g = ∑ g : G, (f.toHomUnits g : R) := rfl

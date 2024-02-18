@@ -254,8 +254,7 @@ example (x : ℕ) : x = x := by
 example : 1 = 1 := by
   let f := fun (x : Nat) => x + 1
   -- clearly false but for demo purposes only
-  have g : ∀ f, Function.Injective f
-  · exact test_sorry
+  have g : ∀ (f : ℕ → ℕ), Function.Injective f := test_sorry
   apply_fun f using (g f)
   rfl
 

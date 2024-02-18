@@ -117,8 +117,8 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
     ∃ q ≥ p, q.domain = ⊤ ∧ ∀ x : q.domain, (x : E) ∈ s → 0 ≤ q x := by
   set S := { p : E →ₗ.[ℝ] ℝ | ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x }
-  have hSc : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub
-  · intro c hcs c_chain y hy
+  have hSc : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub := by
+    intro c hcs c_chain y hy
     clear hp_nonneg hp_dense p
     have cne : c.Nonempty := ⟨y, hy⟩
     have hcd : DirectedOn (· ≤ ·) c := c_chain.directedOn
@@ -131,13 +131,13 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     convert ← hcs hfc ⟨x, hfx⟩ hxs using 1
     exact this.2 rfl
   obtain ⟨q, hqs, hpq, hq⟩ := zorn_nonempty_partialOrder₀ S hSc p hp_nonneg
-  · refine' ⟨q, hpq, _, hqs⟩
-    contrapose! hq
-    have hqd : ∀ y, ∃ x : q.domain, (x : E) + y ∈ s := fun y ↦
-      let ⟨x, hx⟩ := hp_dense y
-      ⟨Submodule.inclusion hpq.left x, hx⟩
-    rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
-    exact ⟨r, hr, hqr.le, hqr.ne'⟩
+  refine ⟨q, hpq, ?_, hqs⟩
+  contrapose! hq
+  have hqd : ∀ y, ∃ x : q.domain, (x : E) + y ∈ s := fun y ↦
+    let ⟨x, hx⟩ := hp_dense y
+    ⟨Submodule.inclusion hpq.left x, hx⟩
+  rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
+  exact ⟨r, hr, hqr.le, hqr.ne'⟩
 #align riesz_extension.exists_top RieszExtension.exists_top
 
 end RieszExtension
@@ -175,8 +175,8 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
   set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
   have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by
     simpa using le_trans (hf ⟨x.1.1, x.2.1⟩) hx
-  have hf'_dense : ∀ y : E × ℝ, ∃ x : f'.domain, ↑x + y ∈ s
-  · rintro ⟨x, y⟩
+  have hf'_dense : ∀ y : E × ℝ, ∃ x : f'.domain, ↑x + y ∈ s := by
+    rintro ⟨x, y⟩
     refine' ⟨⟨(0, N x - y), ⟨f.domain.zero_mem, trivial⟩⟩, _⟩
     simp only [ConvexCone.mem_mk, mem_setOf_eq, Prod.fst_add, Prod.snd_add, zero_add,
       sub_add_cancel, le_rfl]

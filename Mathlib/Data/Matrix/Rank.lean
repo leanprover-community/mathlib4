@@ -103,9 +103,9 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
 lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B * A).rank = B.rank := by
-  suffices : Function.Surjective A.mulVecLin
-  · rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
-    (LinearMap.range_eq_top.mpr this), ← rank]
+  suffices Function.Surjective A.mulVecLin by
+    rw [rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top _
+      (LinearMap.range_eq_top.mpr this), ← rank]
   intro v
   exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
 

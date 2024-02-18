@@ -506,7 +506,7 @@ lemma bar (x y : Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith
 
 example [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
   cases' h with x h
-  have : 0 ≤ x; · linarith
+  have : 0 ≤ x := by linarith
   trivial
 
 -- At one point, this failed, due to `mdata` interfering with `Expr.isEq`.

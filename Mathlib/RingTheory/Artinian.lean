@@ -453,8 +453,7 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
     refine H (Ideal.mul_le_left.trans (le_of_le_smul_of_le_jacobson_bot (fg_span_singleton _) le_rfl
       (le_sup_right.trans_eq (this.eq_of_not_lt (hJ' _ ?_)).symm)))
     exact lt_of_le_of_ne le_sup_left fun h => H <| h.symm ▸ le_sup_right
-  have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥
-  calc
+  have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥ := calc
     Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by rw [pow_succ, ← mul_assoc]
     _ ≤ J * Jac ^ n := (mul_le_mul (by rwa [mul_comm]) le_rfl)
     _ = ⊥ := by simp

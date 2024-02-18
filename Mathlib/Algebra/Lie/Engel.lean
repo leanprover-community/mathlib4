@@ -229,8 +229,8 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
   intro M _i1 _i2 _i3 _i4 h
   rw [← isNilpotent_range_toEndomorphism_iff]
   let L' := (toEndomorphism R L M).range
-  replace h : ∀ y : L', _root_.IsNilpotent (y : Module.End R M)
-  · rintro ⟨-, ⟨y, rfl⟩⟩
+  replace h : ∀ y : L', _root_.IsNilpotent (y : Module.End R M) := by
+    rintro ⟨-, ⟨y, rfl⟩⟩
     simp [h]
   change LieModule.IsNilpotent R L' M
   let s := {K : LieSubalgebra R L' | LieAlgebra.IsEngelian R K}

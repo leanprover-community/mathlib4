@@ -1203,7 +1203,7 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
 @[simp]
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
-  suffices : ∀ a b, Nat.succ^[a] b = b + a; exact this _ _
+  suffices ∀ a b, Nat.succ^[a] b = b + a from this _ _
   intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_succ, -Function.iterate_succ]
 #align onote.fast_growing_one ONote.fastGrowing_one
 
@@ -1212,7 +1212,7 @@ section
 @[simp]
 theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
   rw [@fastGrowing_succ 2 1 rfl]; funext i; rw [fastGrowing_one]
-  suffices : ∀ a b, (fun n : ℕ => 2 * n)^[a] b = (2 ^ a) * b; exact this _ _
+  suffices ∀ a b, (fun n : ℕ => 2 * n)^[a] b = (2 ^ a) * b from this _ _
   intro a b; induction a <;>
     simp [*, Function.iterate_succ', pow_succ, mul_assoc, -Function.iterate_succ]
 #align onote.fast_growing_two ONote.fastGrowing_two

@@ -295,9 +295,8 @@ def inducedAddHom : α →+ β :=
 @[simps!]
 def inducedOrderRingHom : α →+*o β :=
   { AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero (inducedAddHom α β) (by
-      suffices : ∀ x, 0 < x → inducedAddHom α β (x * x)
-          = inducedAddHom α β x * inducedAddHom α β x
-      · intro x
+      suffices ∀ x, 0 < x → inducedAddHom α β (x * x) = inducedAddHom α β x * inducedAddHom α β x by
+        intro x
         obtain h | rfl | h := lt_trichotomy x 0
         · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
