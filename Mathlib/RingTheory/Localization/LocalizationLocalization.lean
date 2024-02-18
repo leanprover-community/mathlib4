@@ -99,15 +99,15 @@ theorem localization_localization_exists_of_eq [IsLocalization N T] (x y : R) :
   rintro ⟨z, eq₁⟩
   rcases IsLocalization.surj M (z : S) with ⟨⟨z', s⟩, eq₂⟩
   dsimp only at eq₂
-  suffices : (algebraMap R S) (x * z' : R) = (algebraMap R S) (y * z')
-  · obtain ⟨c, eq₃ : ↑c * (x * z') = ↑c * (y * z')⟩ := (IsLocalization.eq_iff_exists M S).mp this
+  suffices (algebraMap R S) (x * z' : R) = (algebraMap R S) (y * z') by
+    obtain ⟨c, eq₃ : ↑c * (x * z') = ↑c * (y * z')⟩ := (IsLocalization.eq_iff_exists M S).mp this
     refine ⟨⟨c * z', ?_⟩, ?_⟩
     · rw [mem_localizationLocalizationSubmodule]
       refine ⟨z, c * s, ?_⟩
       rw [map_mul, ← eq₂, Submonoid.coe_mul, map_mul, mul_left_comm]
     · rwa [mul_comm _ z', mul_comm _ z', ← mul_assoc, ← mul_assoc] at eq₃
-  · rw [map_mul, map_mul, ← eq₂, ← mul_assoc, ← mul_assoc, mul_comm _ (z : S), eq₁,
-        mul_comm _ (z : S)]
+  rw [map_mul, map_mul, ← eq₂, ← mul_assoc, ← mul_assoc, mul_comm _ (z : S), eq₁,
+    mul_comm _ (z : S)]
 #align is_localization.localization_localization_eq_iff_exists IsLocalization.localization_localization_exists_of_eqₓ
 
 /-- Given submodules `M ⊆ R` and `N ⊆ S = M⁻¹R`, with `f : R →+* S` the localization map, we have
@@ -213,9 +213,9 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
       obtain ⟨⟨y₂, s₂⟩, e₂⟩ := IsLocalization.surj M x₂
       refine (Set.exists_image_iff (algebraMap R S) N fun c => c * x₁ = c * x₂).mpr.comp ?_
       dsimp only at e₁ e₂ ⊢
-      suffices : algebraMap R T (y₁ * s₂) = algebraMap R T (y₂ * s₁) →
-        ∃ a : N, algebraMap R S (a * (y₁ * s₂)) = algebraMap R S (a * (y₂ * s₁))
-      · have h₁ := @IsUnit.mul_left_inj T _ _ (algebraMap S T x₁) (algebraMap S T x₂)
+      suffices algebraMap R T (y₁ * s₂) = algebraMap R T (y₂ * s₁) →
+          ∃ a : N, algebraMap R S (a * (y₁ * s₂)) = algebraMap R S (a * (y₂ * s₁)) by
+        have h₁ := @IsUnit.mul_left_inj T _ _ (algebraMap S T x₁) (algebraMap S T x₂)
           (IsLocalization.map_units T ⟨(s₁ : R), h s₁.prop⟩)
         have h₂ := @IsUnit.mul_left_inj T _ _ ((algebraMap S T x₁) * (algebraMap R T s₁))
           ((algebraMap S T x₂) * (algebraMap R T s₁))
@@ -228,9 +228,9 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
           (IsLocalization.map_units S s₂).mul_left_inj] at this
         rw [h₂, h₁] at this
         simpa only [mul_comm] using this
-      · simp_rw [IsLocalization.eq_iff_exists N T, IsLocalization.eq_iff_exists M S]
-        intro ⟨a, e⟩
-        exact ⟨a, 1, by convert e using 1 <;> simp⟩ }
+      simp_rw [IsLocalization.eq_iff_exists N T, IsLocalization.eq_iff_exists M S]
+      intro ⟨a, e⟩
+      exact ⟨a, 1, by convert e using 1 <;> simp⟩ }
 #align is_localization.is_localization_of_submonoid_le IsLocalization.isLocalization_of_submonoid_le
 
 /-- If `M ≤ N` are submonoids of `R` such that `∀ x : N, ∃ m : R, m * x ∈ M`, then the

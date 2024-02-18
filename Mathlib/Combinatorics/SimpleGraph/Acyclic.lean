@@ -201,8 +201,8 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
     rfl
     case contra =>
-      suffices : (f x).takeUntil y hy = .cons h .nil
-      · rw [← take_spec _ hy] at h'
+      suffices (f x).takeUntil y hy = .cons h .nil by
+        rw [← take_spec _ hy] at h'
         simp [this, hf' _ _ ((hf _).dropUntil hy)] at h'
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
