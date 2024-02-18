@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relator
-import Mathlib.Init.Propext
 import Mathlib.Init.Data.Quot
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Use
