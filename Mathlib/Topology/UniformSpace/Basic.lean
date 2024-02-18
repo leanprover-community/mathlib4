@@ -651,6 +651,12 @@ theorem ball_inter_right (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ 
   ball_mono (inter_subset_right V W) x
 #align ball_inter_right ball_inter_right
 
+theorem ball_sInter {s : Set (Set (β × β))} {x: β} : ball x (⋂₀ s) = ⋂ i ∈ s, ball x i :=
+  preimage_sInter
+
+theorem ball_iInter {ι : Type*} {f : ι → Set (β × β)} {x : β} :
+    ball x (⋂ i : ι, f i) = ⋂ i : ι, ball x (f i) := preimage_iInter
+
 theorem mem_ball_symmetry {V : Set (β × β)} (hV : SymmetricRel V) {x y} :
     x ∈ ball y V ↔ y ∈ ball x V :=
   show (x, y) ∈ Prod.swap ⁻¹' V ↔ (x, y) ∈ V by
