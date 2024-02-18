@@ -25,11 +25,9 @@ forall Mor2 f {
 
     shape f.textBox = Rectangle {
         center: f.textBoxCenter
-        cornerRadius: 5
         -- Default size, will be overwritten dynamically.
         width: 50
         height: 30
-        fillColor: theme.tooltipBackground
         strokeColor: theme.tooltipBorder
     }
 
@@ -40,24 +38,21 @@ forall Mor2 f {
 }
 
 forall Id f {
-  f.textBox.strokeWidth = 0.5
+    -- TODO : put this when ProofWidget is updated.
+    -- f.textBox.fillColor = theme.background
+    f.textBox.fillColor = none()
+    f.textBox.cornerRadius = 12
+    f.textBox.strokeWidth = 0.
 }
 
 forall Core f {
-  f.textBox.strokeWidth = 1.5
+    f.textBox.fillColor = theme.tooltipBackground
+    f.textBox.cornerRadius = 5
+    f.textBox.strokeWidth = 1.
 }
 
 forall Mor2 A {
-    -- We optimize the sizes of every row and column in a grid which determines
-    -- object placement. Each object keeps track of the size of the grid column
-    -- to the right of it, and the grid row below it. Positioning predicates propagate
-    -- these, for example IsLeftHorizontal/IsRightHorizontal propagates gridBelow.
-    -- Sizes propagate to the right and downwards so that the leftmost, uppermost
-    -- object is the "root" of the diagram.
-    --
-    -- Penrose objectives are arbitrary reals, so to obtain a positive value we make
-    -- the it the square of an objective. The size of a grid row/column is then the minimal,
-    -- fixed size `gridMinSize` plus an optimized offset.
+    -- Inspired by `commutative.sty`.
     float preGridRight = ? in Grid
     float preGridBelow = ? in Grid
     float gridRight = preGridRight*preGridRight
@@ -80,10 +75,6 @@ forall Mor2 f, g where Above(f, g) {
 
 forall Mor1 X; Mor2 f; Mor2 g
 where X := MakeString(f, g) {
-    scalar X.x = ?
-    vec2 X.v1 = (X.x, f.center[1])
-    vec2 X.v2 = (X.x, g.center[1])
-
     shape X.shape = Line {
         start: f.center
         end: g.center
@@ -91,7 +82,9 @@ where X := MakeString(f, g) {
         strokeColor: theme.tooltipForeground
     }
 
+    -- We minimize the length of strings.
     encourage equal(abs(f.centerX - g.centerX), 0)
+
     f.textBox above X.shape
     g.textBox above X.shape
 }
