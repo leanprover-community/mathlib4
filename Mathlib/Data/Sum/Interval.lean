@@ -393,19 +393,19 @@ lemma Ioc_inl_inr : Ioc (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iic b)).map to
 lemma Ioo_inl_inr : Ioo (inlₗ a) (inrₗ b) = ((Ioi a).disjSum (Iio b)).map toLex.toEmbedding := rfl
 #align sum.lex.Ioo_inl_inr Sum.Lex.Ioo_inl_inr
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Icc_inr_inl : Icc (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Icc_inr_inl Sum.Lex.Icc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Ico_inr_inl : Ico (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ico_inr_inl Sum.Lex.Ico_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Ioc_inr_inl : Ioc (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ioc_inr_inl Sum.Lex.Ioc_inr_inl
 
-@[simp, nolint simpNF] -- Porting note: dsimp cannot prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp cannot prove this
 lemma Ioo_inr_inl : Ioo (inrₗ b) (inlₗ a) = ∅ := rfl
 #align sum.lex.Ioo_inr_inl Sum.Lex.Ioo_inr_inl
 
