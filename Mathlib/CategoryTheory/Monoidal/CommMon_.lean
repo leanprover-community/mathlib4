@@ -67,7 +67,8 @@ set_option linter.uppercaseLean3 false in
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext _ _ h
 
--- Porting note (#10688): the following two lemmas `id'` and `comp'` have been added to ease automation;
+-- Porting note (#10688): the following two lemmas `id'` and `comp'`
+-- have been added to ease automation;
 @[simp]
 lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
 
