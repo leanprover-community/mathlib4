@@ -28,9 +28,9 @@ structure Atom₁ : Type where
 
 /-- Expressions for 1-morphisms. -/
 inductive Mor₁ : Type
-  /-- Construct the expression for `𝟙_ C`. -/
+  /-- `id C` is the expression for `𝟙_ C`. -/
   | id : Expr → Mor₁
-  /-- Construct the expression for `X ⊗ Y` -/
+  /-- `comp X Y` is the expression for `X ⊗ Y` -/
   | comp : Mor₁ → Mor₁ → Mor₁
   /-- Construct the expression for an atomic 1-morphism. -/
   | of : Atom₁ → Mor₁
@@ -59,17 +59,17 @@ partial def toMor₁ (e : Expr) : Mor₁ :=
 
 /-- Expressions for atomic structural 2-morphisms. -/
 inductive StructuralAtom : Type
-  /-- Construct the expression for the associator. -/
+  /-- The expression for the associator `(α_ f g h).hom`. -/
   | associator (f g h : Mor₁) : StructuralAtom
-  /-- Construct the expression for the inverse of the associator. -/
+  /-- The expression for the inverse of the associator `(α_ f g h).inv`. -/
   | associatorInv (f g h : Mor₁) : StructuralAtom
-  /-- Construct the expression for the left unitor. -/
+  /-- The expression for the left unitor `(λ_ f).hom`. -/
   | leftUnitor (f : Mor₁) : StructuralAtom
-  /-- Construct the expression for the inverse of the left unitor. -/
+  /-- The expression for the inverse of the left unitor `(λ_ f).inv`. -/
   | leftUnitorInv (f : Mor₁) : StructuralAtom
-  /-- Construct the expression for the right unitor. -/
+  /-- The expression for the right unitor `(ρ_ f).hom`. -/
   | rightUnitor (f : Mor₁) : StructuralAtom
-  /-- Construct the expression for the inverse of the right unitor. -/
+  /-- The expression for the inverse of the right unitor `(ρ_ f).inv`. -/
   | rightUnitorInv (f : Mor₁) : StructuralAtom
   deriving Inhabited
 
