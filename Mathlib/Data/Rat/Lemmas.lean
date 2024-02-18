@@ -194,8 +194,7 @@ theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
 #align rat.mul_denom_eq_num Rat.mul_den_eq_num
 
 theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den = 1 ↔ n ∣ m := by
-  replace hn : (n : ℚ) ≠ 0
-  · rwa [Ne.def, ← Int.cast_zero, coe_int_inj]
+  replace hn : (n : ℚ) ≠ 0 := by rwa [Ne.def, ← Int.cast_zero, coe_int_inj]
   constructor
   · intro h
     -- Porting note: was `lift (m : ℚ) / n to ℤ using h with k hk`

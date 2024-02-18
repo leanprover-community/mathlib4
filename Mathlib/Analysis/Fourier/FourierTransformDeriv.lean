@@ -28,8 +28,8 @@ lemma Real.hasDerivAt_fourierChar (x : ℝ) :
     HasDerivAt (fun y : ℝ ↦ (fourierChar (Multiplicative.ofAdd y) : ℂ))
       (2 * π * I * (fourierChar (Multiplicative.ofAdd x) : ℂ)) x := by
   have h1 (y : ℝ) : (fourierChar (Multiplicative.ofAdd y) : ℂ) =
-    fourier 1 (y : UnitAddCircle)
-  · rw [fourierChar_apply, fourier_coe_apply]
+      fourier 1 (y : UnitAddCircle) := by
+    rw [fourierChar_apply, fourier_coe_apply]
     push_cast
     ring_nf
   simpa only [h1, Int.cast_one, ofReal_one, div_one, mul_one]
@@ -94,8 +94,8 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V]
   have h1 : ∀ᶠ w' in 𝓝 w, AEStronglyMeasurable (F w') μ :=
     eventually_of_forall (fun w' ↦ (h0 w').aestronglyMeasurable)
   have h2 : Integrable (F w) μ := h0 w
-  have h3 : AEStronglyMeasurable (F' w) μ
-  · simp only [F']
+  have h3 : AEStronglyMeasurable (F' w) μ := by
+    simp only [F']
     refine AEStronglyMeasurable.smul ?_ ?_
     · refine (continuous_subtype_val.comp (continuous_fourierChar.comp ?_)).aestronglyMeasurable
       exact continuous_ofAdd.comp (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg
@@ -105,8 +105,8 @@ theorem hasFDerivAt_fourier [CompleteSpace E] [MeasurableSpace V] [BorelSpace V]
       have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
         L.continuous.aestronglyMeasurable.prod_mk hf.1
       apply aux0.comp_aestronglyMeasurable aux1
-  have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v)
-  · refine ae_of_all _ (fun v w' _ ↦ ?_)
+  have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v) := by
+    refine ae_of_all _ (fun v w' _ ↦ ?_)
     exact norm_fderiv_fourier_transform_integrand_right_le L f v w'
   have h5 : Integrable B μ := by simpa only [← mul_assoc] using hf'.const_mul (2 * π * ‖L‖)
   have h6 : ∀ᵐ v ∂μ, ∀ w', w' ∈ Metric.ball w 1 → HasFDerivAt (fun x ↦ F x v) (F' w' v) w' :=
@@ -142,9 +142,9 @@ lemma hasDerivAt_fourierIntegral [CompleteSpace E]
     HasDerivAt (𝓕 f) (𝓕 (fun x : ℝ ↦ (-2 * ↑π * I * x) • f x) w) w := by
   have hf'' : Integrable (fun v : ℝ ↦ ‖v‖ * ‖f v‖) := by simpa only [norm_smul] using hf'.norm
   let L := ContinuousLinearMap.mul ℝ ℝ
-  have h_int : Integrable fun v ↦ mul_L L f v
-  · suffices : Integrable fun v ↦ ContinuousLinearMap.smulRight (L v) (f v)
-    · simpa only [mul_L, neg_smul, neg_mul, Pi.smul_apply] using this.smul (-2 * π * I)
+  have h_int : Integrable fun v ↦ mul_L L f v := by
+    suffices Integrable fun v ↦ ContinuousLinearMap.smulRight (L v) (f v) by
+      simpa only [mul_L, neg_smul, neg_mul, Pi.smul_apply] using this.smul (-2 * π * I)
     convert ((ContinuousLinearMap.ring_lmap_equiv_self ℝ
       E).symm.toContinuousLinearEquiv.toContinuousLinearMap).integrable_comp hf' using 2 with v
     apply ContinuousLinearMap.ext_ring

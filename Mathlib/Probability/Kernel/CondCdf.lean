@@ -144,8 +144,8 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
   have h_empty : ρ (s ×ˢ ∅) = 0 := by simp only [prod_empty, measure_empty]
   rw [← h_empty, ← Real.iInter_Iic_rat, prod_iInter]
   suffices h_neg :
-    Tendsto (fun r : ℚ => ρ (s ×ˢ Iic ↑(-r))) atTop (𝓝 (ρ (⋂ r : ℚ, s ×ˢ Iic ↑(-r))))
-  · have h_inter_eq : ⋂ r : ℚ, s ×ˢ Iic ↑(-r) = ⋂ r : ℚ, s ×ˢ Iic (r : ℝ) := by
+      Tendsto (fun r : ℚ => ρ (s ×ˢ Iic ↑(-r))) atTop (𝓝 (ρ (⋂ r : ℚ, s ×ˢ Iic ↑(-r)))) by
+    have h_inter_eq : ⋂ r : ℚ, s ×ˢ Iic ↑(-r) = ⋂ r : ℚ, s ×ˢ Iic (r : ℝ) := by
       ext1 x
       simp only [Rat.cast_eq_id, id.def, mem_iInter, mem_prod, mem_Iic]
       refine' ⟨fun h i => ⟨(h i).1, _⟩, fun h i => ⟨(h i).1, _⟩⟩ <;> have h' := h (-i)
@@ -351,13 +351,7 @@ theorem tendsto_preCDF_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
   have h_exists : ∀ᵐ a ∂ρ.fst, ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) := by
     filter_upwards [monotone_preCDF ρ] with a ha
     have h_anti : Antitone fun r => preCDF ρ (-r) a := fun p q hpq => ha (neg_le_neg hpq)
-    have h_tendsto :
-      Tendsto (fun r => preCDF ρ (-r) a) atTop atBot ∨
-        ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) :=
-      tendsto_of_antitone h_anti
-    cases' h_tendsto with h_bot h_tendsto
-    · exact ⟨0, Tendsto.mono_right h_bot atBot_le_nhds_bot⟩
-    · exact h_tendsto
+    exact ⟨_, tendsto_atTop_iInf h_anti⟩
   classical
   let F : α → ℝ≥0∞ := fun a =>
     if h : ∃ l, Tendsto (fun r => preCDF ρ (-r) a) atTop (𝓝 l) then h.choose else 0
@@ -365,8 +359,8 @@ theorem tendsto_preCDF_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
     filter_upwards [h_exists] with a ha
     simp_rw [dif_pos ha]
     exact ha.choose_spec
-  suffices h_lintegral_eq : ∫⁻ a, F a ∂ρ.fst = 0
-  · have hF_ae_meas : AEMeasurable F ρ.fst := by
+  suffices h_lintegral_eq : ∫⁻ a, F a ∂ρ.fst = 0 by
+    have hF_ae_meas : AEMeasurable F ρ.fst := by
       refine' aemeasurable_of_tendsto_metrizable_ae _ (fun n => _) h_tendsto
       exact measurable_preCDF.aemeasurable
     rw [lintegral_eq_zero_iff' hF_ae_meas] at h_lintegral_eq
