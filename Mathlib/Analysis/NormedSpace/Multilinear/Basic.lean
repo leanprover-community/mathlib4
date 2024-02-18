@@ -256,9 +256,8 @@ continuous. -/
 theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : Continuous f := by
   let D := max C 1
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
-  replace H : ∀ m, ‖f m‖ ≤ D * ∏ i, ‖m i‖
-  · intro m
-    apply le_trans (H m) (mul_le_mul_of_nonneg_right (le_max_left _ _) $ by positivity)
+  replace H (m) : ‖f m‖ ≤ D * ∏ i, ‖m i‖ :=
+    (H m).trans (mul_le_mul_of_nonneg_right (le_max_left _ _) $ by positivity)
   refine' continuous_iff_continuousAt.2 fun m => _
   refine'
     continuousAt_of_locally_lipschitz zero_lt_one
