@@ -74,7 +74,7 @@ class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
 /-- A commutative binary operation. -/
 @[deprecated Std.Commutative] -- 2024-02-02
 abbrev IsCommutative (α : Sort u) (op : α → α → α) := Std.Commutative op
-#align is_commutative IsCommutative
+#align is_commutative Std.Commutative
 
 instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → α → α)
     [Std.Commutative op] : IsSymmOp α α op where symm_op := Std.Commutative.comm
@@ -83,6 +83,7 @@ instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → 
 /-- An associative binary operation. -/
 @[deprecated Std.Associative] -- 2024-02-02
 abbrev IsAssociative (α : Sort u) (op : α → α → α) := Std.Associative op
+#align is_associative Std.Associative
 
 /-- A binary operation with a left identity. -/
 @[deprecated Std.LawfulLeftIdentity] -- 2024-02-02
