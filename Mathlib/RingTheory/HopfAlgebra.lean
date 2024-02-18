@@ -22,7 +22,7 @@ In this file we define `HopfAlgebra`, and provide instances for:
 * Uniqueness of Hopf algebra structure on a bialgebra (i.e. if the algebra and coalgebra structures
 agree then the antipodes must also agree).
 
-* S(1)=1 and S(ab)=S(b)S(a), so in particular if A is commutative then S is an algebra homomorphism.
+* `S 1 = 1` and `S (a * b) = S b * S a`, so in particular if A is commutative then S is an algebra homomorphism.
 
 * If H is commutative then S is necessarily a bijection (and I guess its square must be the
 identity?)
