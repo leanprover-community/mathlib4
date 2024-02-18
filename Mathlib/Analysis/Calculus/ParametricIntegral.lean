@@ -32,8 +32,8 @@ variable.
   - `F x` is ae-measurable for x near `x₀`,
   - `F x₀` is integrable,
   - `fun x ↦ F x a` has derivative `F' a : H →L[ℝ] E` at `x₀` which is ae-measurable,
-  - `fun x ↦ F x a` is locally Lipschitz near `x₀` for almost every `a`, with a Lipschitz bound which
-    is integrable with respect to `a`.
+  - `fun x ↦ F x a` is locally Lipschitz near `x₀` for almost every `a`,
+    with a Lipschitz bound which is integrable with respect to `a`.
 
   A subtle point is that the "near x₀" in the last condition has to be uniform in `a`. This is
   controlled by a positive number `ε`.
