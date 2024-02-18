@@ -80,19 +80,13 @@ theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ �
         (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
     · exact preservesLimitOfIsoDiagram F i.symm
     · apply hF
-      refine ⟨Empty, inferInstance, Empty.elim, IsEmpty.elim inferInstance, rfl, ⟨default,?_, ?_⟩⟩
-      · ext b
-        cases b
-      · simp only [eq_iff_true_of_subsingleton]
-    · refine ⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ?_⟩
-      suffices Sigma.desc (fun i ↦ Sigma.ι Z i) = 𝟙 _ by rw [this]; infer_instance
-      ext
-      simp
+      exact ⟨Empty, inferInstance, Empty.elim, IsEmpty.elim inferInstance, rfl,
+        ⟨Cofan.isColimitOfIsIsoSigmaDesc _⟩⟩
+    · exact ⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ⟨coproductIsCoproduct _⟩⟩
   · let _ := hF.some
     rw [Presieve.isSheaf_coverage]
     intro X R ⟨Y, α, Z, π, hR, hi⟩
-    have : IsIso (Sigma.desc (Cofan.inj (Cofan.mk X π))) := hi
-    have : R.Extensive := ⟨Y, α, Z, π, hR, ⟨Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X π)⟩⟩
+    have : R.Extensive := ⟨Y, α, Z, π, hR, hi⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts R F
 
 end CategoryTheory

@@ -618,6 +618,14 @@ lemma FinitaryPreExtensive.sigma_desc_iso [FinitaryPreExtensive C] {α : Type} [
     simp [pullback.condition]
   · exact fun j ↦ IsPullback.of_hasPullback f (π j.as)
 
+theorem FinitaryPreExtensive.isCoproduct_pullbacks [FinitaryPreExtensive C] {X Y : C} (f : Y ⟶ X)
+    {α : Type} [Finite α] (Z : α → C) (π : (a : α) → Z a ⟶ X) [∀ (a : α), HasPullback f (π a)]
+    (hc : IsColimit (Cofan.mk X π)) :
+    Nonempty (IsColimit (Cofan.mk Y (fun a ↦ pullback.fst (f := f) (g := π a)))) :=
+  FinitaryPreExtensive.isUniversal_finiteCoproducts hc (Cofan.mk Y _)
+    (Discrete.natTrans fun ⟨i⟩ ↦ pullback.snd) f (by ext; exact pullback.condition.symm)
+    (NatTrans.equifibered_of_discrete _) fun _ ↦ IsPullback.of_hasPullback _ _
+
 end FiniteCoproducts
 
 end Extensive

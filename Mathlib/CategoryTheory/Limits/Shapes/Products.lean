@@ -271,6 +271,16 @@ def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f))
     (Cofan.ext (@asIso _ _ _ _ _ hc) (fun _ => colimit.ι_desc _ _))
 
+theorem Cofan.isIsoSigmaDesc_of_isCoproduct {f : β → C} (c : Cofan f)
+    (hc : IsColimit c) : haveI : HasCoproduct f := ⟨c, hc⟩
+    IsIso (Sigma.desc c.inj) := by
+  have : HasCoproduct f := ⟨c, hc⟩
+  have h : Sigma.desc c.inj = (hc.coconePointUniqueUpToIso (coproductIsCoproduct _)).inv := by
+    simp [IsColimit.coconePointUniqueUpToIso, Sigma.desc, coproductIsCoproduct]
+    rfl
+  rw [h]
+  infer_instance
+
 /-- Construct a morphism between categorical products (indexed by the same type)
 from a family of morphisms between the factors.
 -/
