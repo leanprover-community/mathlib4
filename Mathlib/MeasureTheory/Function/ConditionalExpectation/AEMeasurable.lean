@@ -178,8 +178,8 @@ theorem AEStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on {α
     by_cases hxs : x ∈ s
     · simp [hxs, hx]
     · simp [hxs]
-  suffices : StronglyMeasurable[m₂] (s.indicator (hf.mk f))
-  exact AEStronglyMeasurable'.congr this.aeStronglyMeasurable' h_ind_eq
+  suffices StronglyMeasurable[m₂] (s.indicator (hf.mk f)) from
+    AEStronglyMeasurable'.congr this.aeStronglyMeasurable' h_ind_eq
   have hf_ind : StronglyMeasurable[m] (s.indicator (hf.mk f)) :=
     hf.stronglyMeasurable_mk.indicator hs_m
   exact
@@ -633,10 +633,10 @@ theorem Lp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ ∞) 
   suffices h_add_ae :
     ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, AEStronglyMeasurable' m f μ →
       AEStronglyMeasurable' m g μ → Disjoint (Function.support f) (Function.support g) →
-        P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g)
+        P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g) from
   -- Porting note: `P` should be an explicit argument to `Lp.induction_stronglyMeasurable_aux`, but
   -- it isn't?
-  exact Lp.induction_stronglyMeasurable_aux hm hp_ne_top h_ind h_add_ae h_closed f hf
+    Lp.induction_stronglyMeasurable_aux hm hp_ne_top h_ind h_add_ae h_closed f hf
   intro f g hf hg hfm hgm h_disj hPf hPg
   let s_f : Set α := Function.support (hfm.mk f)
   have hs_f : MeasurableSet[m] s_f := hfm.stronglyMeasurable_mk.measurableSet_support

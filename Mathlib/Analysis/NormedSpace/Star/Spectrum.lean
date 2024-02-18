@@ -170,16 +170,16 @@ variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [S
 See note [lower instance priority] -/
 noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass F A ℂ where
   map_star φ a := by
-    suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s
-    · rw [← realPart_add_I_smul_imaginaryPart a]
+    suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s by
+      rw [← realPart_add_I_smul_imaginaryPart a]
       simp only [map_add, map_smul, star_add, star_smul, hsa, selfAdjoint.star_val_eq]
-    · intro s
-      have := AlgHom.apply_mem_spectrum φ (s : A)
-      rw [selfAdjoint.val_re_map_spectrum s] at this
-      rcases this with ⟨⟨_, _⟩, _, heq⟩
-      simp only [Function.comp_apply] at heq
-      rw [← heq, IsROrC.star_def]
-      exact IsROrC.conj_ofReal _
+    intro s
+    have := AlgHom.apply_mem_spectrum φ (s : A)
+    rw [selfAdjoint.val_re_map_spectrum s] at this
+    rcases this with ⟨⟨_, _⟩, _, heq⟩
+    simp only [Function.comp_apply] at heq
+    rw [← heq, IsROrC.star_def]
+    exact IsROrC.conj_ofReal _
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/
