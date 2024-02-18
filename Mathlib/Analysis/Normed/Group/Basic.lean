@@ -1509,14 +1509,14 @@ theorem dist_self_mul_left (a b : E) : dist (a * b) a = ‖b‖ := by
 #align dist_self_add_left dist_self_add_left
 
 @[to_additive (attr := simp 1001)]
--- porting note: increase priority because `simp` can prove this
+-- porting note (#10618): increase priority because `simp` can prove this
 theorem dist_self_div_right (a b : E) : dist a (a / b) = ‖b‖ := by
   rw [div_eq_mul_inv, dist_self_mul_right, norm_inv']
 #align dist_self_div_right dist_self_div_right
 #align dist_self_sub_right dist_self_sub_right
 
 @[to_additive (attr := simp 1001)]
--- porting note: increase priority because `simp` can prove this
+-- porting note (#10618): increase priority because `simp` can prove this
 theorem dist_self_div_left (a b : E) : dist (a / b) a = ‖b‖ := by
   rw [dist_comm, dist_self_div_right]
 #align dist_self_div_left dist_self_div_left

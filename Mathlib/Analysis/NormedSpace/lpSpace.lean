@@ -372,7 +372,7 @@ theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
   rfl
 #align lp.coe_fn_add lp.coeFn_add
 
--- porting note: removed `@[simp]` because `simp` can prove this
+-- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i in s, f i) = ∑ i in s, ⇑(f i) := by
   simp

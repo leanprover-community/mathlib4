@@ -117,7 +117,7 @@ protected theorem zero_mem : (0 : M) ∈ N :=
   zero_mem N
 #align lie_submodule.zero_mem LieSubmodule.zero_mem
 
--- Porting note: @[simp] can prove this
+-- Porting note (#10618): @[simp] can prove this
 theorem mk_eq_zero {x} (h : x ∈ N) : (⟨x, h⟩ : N) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
 #align lie_submodule.mk_eq_zero LieSubmodule.mk_eq_zero
