@@ -1401,13 +1401,19 @@ theorem nat_succ (n : ℕ) : (n.succ : Cardinal) = succ ↑n := by
 theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 #align cardinal.succ_zero Cardinal.succ_zero
 
+theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
+    ∃ s : Finset α, n ≤ s.card := by
+  obtain hα|hα := finite_or_infinite α
+  · let hα := Fintype.ofFinite α
+    use Finset.univ
+    simpa only [mk_fintype, Nat.cast_le] using h
+  · obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α n
+    exact ⟨s, hs.ge⟩
+
 theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n) : #α ≤ n := by
-  refine' le_of_lt_succ (lt_of_not_ge fun hn => _)
-  rw [← Cardinal.nat_succ, ← lift_mk_fin n.succ] at hn
-  cases' hn with f
-  refine' (H <| Finset.univ.map f).not_lt _
-  rw [Finset.card_map, ← Fintype.card, Fintype.card_ulift, Fintype.card_fin]
-  exact n.lt_succ_self
+  contrapose! H
+  apply exists_finset_le_card α (n+1)
+  simpa only [nat_succ, succ_le_iff] using H
 #align cardinal.card_le_of Cardinal.card_le_of
 
 theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < b ^ a := by
