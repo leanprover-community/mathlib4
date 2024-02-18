@@ -160,6 +160,12 @@ lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 
 @[to_additive] lemma leOnePart_le_one : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 
+@[to_additive (attr := simp) posPart_pos] lemma one_lt_oneLePart (ha : 1 < a) : 1 < a⁺ᵐ := by
+  rwa [oneLePart_eq_self.2 ha.le]
+
+@[to_additive (attr := simp) negPart_pos] lemma one_lt_ltOnePart (ha : a < 1) : 1 < a⁻ᵐ := by
+  rwa [leOnePart_eq_inv.2 ha.le, one_lt_inv']
+
 @[to_additive (attr := simp)] lemma oneLePart_inv (a : α) : a⁻¹⁺ᵐ = a⁻ᵐ := rfl
 #align lattice_ordered_comm_group.neg_eq_pos_inv oneLePart_inv
 #align lattice_ordered_comm_group.neg_eq_pos_neg posPart_neg
@@ -263,6 +269,12 @@ variable [LinearOrder α] [Group α] [CovariantClass α α (· * ·) (· ≤ ·)
 
 @[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = ite (a ≤ 1) a⁻¹ 1 := by
   simp_rw [← one_le_inv']; rw [← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]; rfl
+
+@[to_additive (attr := simp) posPart_pos_iff] lemma one_lt_oneLePart_iff : 1 < a⁺ᵐ ↔ 1 < a :=
+  lt_iff_lt_of_le_iff_le $ (one_le_oneLePart _).le_iff_eq.trans oneLePart_eq_one
+
+@[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
+  lt_iff_lt_of_le_iff_le $ (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
 
 @[to_additive posPart_eq_of_posPart_pos]
 lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
