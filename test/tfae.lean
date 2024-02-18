@@ -19,21 +19,21 @@ axiom pq : P → Q
 axiom qp : Q → P
 
 example : TFAE [P, Q] := by
-  tfae_have 1 → 2
+  tfae_have : 1 → 2
   · exact pq
-  tfae_have 2 → 1
+  tfae_have : 2 → 1
   · exact qp
   tfae_finish
 
 example : TFAE [P, Q] := by
-  tfae_have 1 ↔ 2
+  tfae_have : 1 ↔ 2
   · exact Iff.intro pq qp
   tfae_finish
 
 example : TFAE [P, Q] := by
-  tfae_have 2 ← 1
+  tfae_have : 2 ← 1
   · exact pq
-  tfae_have 1 ← 2
+  tfae_have : 1 ← 2
   · exact qp
   tfae_finish
 
@@ -49,27 +49,27 @@ axiom qr : Q → R
 axiom rp : R → P
 
 example : TFAE [P, Q, R] := by
-  tfae_have 1 → 2
+  tfae_have : 1 → 2
   · exact pq
-  tfae_have 2 → 3
+  tfae_have : 2 → 3
   · exact qr
-  tfae_have 3 → 1
+  tfae_have : 3 → 1
   · exact rp
   tfae_finish
 
 example : TFAE [P, Q, R] := by
-  tfae_have 1 ↔ 2
+  tfae_have : 1 ↔ 2
   · exact Iff.intro pq (rp ∘ qr)
-  tfae_have 3 ↔ 2
+  tfae_have : 3 ↔ 2
   · exact Iff.intro (pq ∘ rp) qr
   tfae_finish
 
 example : TFAE [P, Q, R] := by
-  tfae_have 1 → 2
+  tfae_have : 1 → 2
   · exact pq
-  tfae_have 2 → 1
+  tfae_have : 2 → 1
   · exact rp ∘ qr
-  tfae_have 2 ↔ 3
+  tfae_have : 2 ↔ 3
   · exact Iff.intro qr (pq ∘ rp)
   tfae_finish
 
@@ -93,19 +93,19 @@ axiom h₆ : P₅ → P₃
 axiom h₇ : P₃ → P₂
 
 example : TFAE [P₁, P₂, P₃, P₄, P₅, P₆, P₇] := by
-  tfae_have 1 ↔ 2
+  tfae_have : 1 ↔ 2
   · exact h₁
-  tfae_have 1 → 6
+  tfae_have : 1 → 6
   · exact h₂
-  tfae_have 6 → 7
+  tfae_have : 6 → 7
   · exact h₃
-  tfae_have 7 → 4
+  tfae_have : 7 → 4
   · exact h₄
-  tfae_have 4 → 5
+  tfae_have : 4 → 5
   · exact h₅
-  tfae_have 5 → 3
+  tfae_have : 5 → 3
   · exact h₆
-  tfae_have 3 → 2
+  tfae_have : 3 → 2
   · exact h₇
   tfae_finish
 
@@ -115,7 +115,7 @@ section context
 
 example (n : ℕ) : List.TFAE [n = 1, n + 1 = 2] := by
   generalize n = m
-  tfae_have 1 ↔ 2; simp
+  tfae_have : 1 ↔ 2; simp
   tfae_finish
 
 example (h₁ : P → Q) (h₂ : Q → P) : TFAE [P, Q] := by
@@ -131,26 +131,38 @@ axiom pq : P → Q
 axiom qp : Q → P
 
 example : TFAE [P, Q] := by
-  have n : ℕ := 4
-  tfae_have 2 ← 1 := by
-    guard_hyp n : ℕ -- hypotheses are accessible (context is correct)
-    guard_target =ₛ P → Q -- expected type is known
-    exact pq
-  tfae_have 1 ← 2 := qp
+  tfae_have h : 1 → 2 := pq
+  guard_hyp h : P → Q
+  tfae_have _ : 1 ← 2 := qp
   tfae_finish
 
 example : TFAE [P, Q] := by
   have n : ℕ := 4
-  tfae_have 2 ← 1 := fun p => ?Qgoal
-  case Qgoal =>
-    guard_hyp n : ℕ
-    exact pq p
+  tfae_have : 1 → 2 := by
+    guard_hyp n : ℕ -- hypotheses are accessible (context is correct)
+    guard_target =ₛ P → Q -- expected type is known
+    exact pq
+  tfae_have : 1 ← 2 := qp
+  tfae_finish
+
+example : TFAE [P, Q] := by
+  have n : ℕ := 3
+  tfae_have : 2 ← 1 := fun p => ?Qgoal
+  case Qgoal => exact pq p
   refine ?a
-  success_if_fail_with_msg "'tfae_have' tactic failed, value\n  \
-    (List.TFAE.out ?a 1 2).mpr\n\
-    depends on the main goal metavariable '?a'"
-    (tfae_have 1 ← 2 := ((?a).out 1 2 sorry sorry).mpr)
-  tfae_have 2 → 1 := qp
+  fail_if_success (tfae_have : 1 ← 2 := ((?a).out 1 2 sorry sorry).mpr)
+  tfae_have : 2 → 1 := qp
+  tfae_finish
+
+example : TFAE [P, Q] := by
+  tfae_have : 1 → 2
+  | p => pq p
+  tfae_have : 2 → 1
+  | q => qp q
+  tfae_finish
+
+example : TFAE [P, Q] := by
+  tfae_have ⟨mp, mpr⟩ : 1 ↔ 2 := ⟨pq, qp⟩
   tfae_finish
 
 end term
