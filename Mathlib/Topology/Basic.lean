@@ -1841,7 +1841,7 @@ However, lemmas with this conclusion are not nice to use in practice because
 1. They confuse the elaborator. The following two examples fail, because of limitations in the
   elaboration process.
   ```
-  variables {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
+  variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
   example : Continuous (λ x : M, x + x) :=
   continuous_add.comp _
 
