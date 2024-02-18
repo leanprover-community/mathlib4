@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.OrderSynonym
-import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Order.Basic
 import Mathlib.Order.WellFounded
 import Mathlib.Mathport.Notation
 
