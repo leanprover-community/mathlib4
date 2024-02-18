@@ -160,7 +160,7 @@ def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ => i + j + k
   I₂₃ := I
   p := fun ⟨i₂, i₃⟩ => i₂ + i₃
   q := fun ⟨i₁₂, i₃⟩ => i₁₂ + i₃
-  hpq _ := add_assoc _ _ _
+  hpq _ := (add_assoc _ _ _).symm
 
 abbrev _root_.CategoryTheory.GradedObject.HasGoodTensor₁₂Tensor (X₁ X₂ X₃ : GradedObject I C) :=
   HasGoodTrifunctor₁₂Obj (curryObj (MonoidalCategory.tensor C))
