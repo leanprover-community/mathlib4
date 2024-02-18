@@ -255,9 +255,7 @@ theorem exists_pseudoMetricSpace_family_of_isOpen {s : Set X} (s_open : IsOpen s
         refine Set.iInter_mono fun i => ball_mono ?subset x
         let _inst := (UniformSpaceOf i.val.prop).toTopologicalSpace
         exact interior_subset
-      _ = ball x (⋂ (i : t), f i) := by
-        have := Set.Finite.fintype t_finite
-        rw [ball_iInter]
+      _ = ball x (⋂ (i : t), f i) := ball_iInter.symm
       _ ⊆ s := ball_subset
 
 end PseudoMetrics
