@@ -11,7 +11,7 @@ The goal of this file is to prove Fermats Last theorem in the case `n = 3`.
 
 ## Main results
 * `fermatLastTheoremThree_case_1`: the first case of Fermat Last Theorem when `n = 3`:
-  if `a b c : ℕ` are such that `¬ 3 ∣ a * b * c` then `a ^ 3 + b ^ 3 ≠ c ^ 3`.
+  if `a b c : ℕ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 
 ## TODO
 Prove case 2.
@@ -54,10 +54,10 @@ private lemma fermatLastTheoremThree_ZMod9_case_1 {a b c : ZMod 9}
   rcases ha with (ha | ha) <;> rcases hb with (hb | hb) <;> rcases hc with (hc | hc)
   all_goals simp only [ha, hb, hc]; decide
 
-/--If `a b c : ℕ` are such that `¬ 3 ∣ a * b * c` then `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
-theorem fermatLastTheoremThree_case_1 :
-    ∀ a b c : ℕ, ¬ 3 ∣ a * b * c → a ^ 3 + b ^ 3 ≠ c ^ 3 := by
-  intro a b c hdvd H
+/--If `a b c : ℕ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
+theorem fermatLastTheoremThree_case_1 {a b c : ℕ} (hdvd : ¬ 3 ∣ a * b * c) :
+    a ^ 3 + b ^ 3 ≠ c ^ 3 := by
+  intro H
   have hA := mem_of_coe_ne_zero <| fun h ↦
     hdvd <| (((nat_cast_zmod_eq_zero_iff_dvd _ _).1 h).mul_right b).mul_right c
   have hB := mem_of_coe_ne_zero <| fun h ↦
