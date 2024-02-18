@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Scott Morrison
 -/
-import Mathlib.CategoryTheory.GradedObject.Associator
+import Mathlib.CategoryTheory.GradedObject.Unitor
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.Tactic.Linarith
@@ -162,6 +162,16 @@ def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ => i + j + k
   q := fun ⟨i₁₂, i₃⟩ => i₁₂ + i₃
   hpq _ := (add_assoc _ _ _).symm
 
+variable (I) in
+@[reducible]
+def triangleIndexData : TriangleIndexData (r₁₂₃ : _ → I) (fun ⟨i₁, i₃⟩ => i₁ + i₃) where
+  p₁₂ := fun ⟨i₁, i₂⟩ => i₁ + i₂
+  p₂₃ := fun ⟨i₂, i₃⟩ => i₂ + i₃
+  hp₁₂ := fun _ => rfl
+  hp₂₃ := fun _ => (add_assoc _ _ _).symm
+  h₁ := add_zero
+  h₃ := zero_add
+
 abbrev _root_.CategoryTheory.GradedObject.HasGoodTensor₁₂Tensor (X₁ X₂ X₃ : GradedObject I C) :=
   HasGoodTrifunctor₁₂Obj (curryObj (MonoidalCategory.tensor C))
     (curryObj (MonoidalCategory.tensor C)) ρ₁₂ X₁ X₂ X₃
@@ -301,218 +311,6 @@ end
 
 section
 
-variable [DecidableEq I] [HasInitial C]
-  [∀ X₁, PreservesColimit (Functor.empty.{0} C)
-    ((curryObj (MonoidalCategory.tensor C)).obj X₁)]
-  [∀ X₂, PreservesColimit (Functor.empty.{0} C)
-    ((curryObj (MonoidalCategory.tensor C)).flip.obj X₂)]
-
-noncomputable def tensorUnit : GradedObject I C :=
-  fun i => if (i = 0) then (𝟙_ C) else initial C
-
-variable (C)
-
-noncomputable def tensorUnit₀' (i : I) (hi : i = 0) : (tensorUnit : GradedObject I C) i ≅ 𝟙_ C :=
-  eqToIso (by subst hi; simp [tensorUnit])
-
-variable (I)
-
-noncomputable def tensorUnit₀ : (tensorUnit : GradedObject I C) 0 ≅ 𝟙_ C :=
-  tensorUnit₀' _ _ rfl
-
-@[simp]
-lemma tensorUnit₀'_eq : tensorUnit₀' C 0 rfl = tensorUnit₀ I C := rfl
-
-variable {I}
-
-noncomputable def isInitialTensorUnitApply (i : I) (hi : i ≠ 0) :
-    IsInitial ((tensorUnit : GradedObject I C) i) := by
-  dsimp [tensorUnit]
-  rw [if_neg hi]
-  exact initialIsInitial
-
-variable {C}
-
-def isInitialTensor (X₁ X₂ : C) (hX₁ : IsInitial X₁) : IsInitial (X₁ ⊗ X₂) :=
-  IsInitial.isInitialObj ((curryObj (MonoidalCategory.tensor C)).flip.obj X₂) _ hX₁
-
-def tensorIsInitial (X₁ X₂ : C) (hX₂ : IsInitial X₂) : IsInitial (X₁ ⊗ X₂) :=
-  IsInitial.isInitialObj ((curryObj (MonoidalCategory.tensor C)).obj X₁) _ hX₂
-
-variable (X : GradedObject I C)
-
-@[simps! pt]
-noncomputable def unitTensorCofan (i : I) : TensorCofan tensorUnit X i :=
-  TensorCofan.mk _ _ _ (X i) (fun a b h =>
-    if ha : a = 0
-      then
-        ((tensorUnit₀' C a ha).hom ⊗ 𝟙 (X b) : tensorUnit a ⊗ X b ⟶ 𝟙_ C ⊗ X b) ≫
-          (leftUnitor (X b)).hom ≫ eqToHom (by
-            obtain rfl : b = i := by rw [← h, ha, zero_add]
-            rfl)
-      else IsInitial.to (isInitialTensor _ _ (isInitialTensorUnitApply _ _ ha)) _)
-
-@[simp]
-lemma unitTensorCofan_ι₀ (i : I) :
-    (unitTensorCofan X i).inj ⟨⟨0, i⟩, zero_add i⟩ =
-      ((tensorUnit₀ I C).hom ⊗ (𝟙 (X i))) ≫ (λ_ (X i)).hom := by
-  dsimp [unitTensorCofan]
-  rw [dif_pos rfl]
-  simp
-
-noncomputable def isColimitUnitTensorCofan (i : I) : IsColimit (unitTensorCofan X i) :=
-  mkCofanColimit _
-    (fun s => (leftUnitor (X i)).inv ≫
-      ((tensorUnit₀ I C).inv ⊗ 𝟙 (X i)) ≫ s.inj ⟨⟨0, i⟩, zero_add i⟩)
-    (fun s ⟨⟨a, b⟩, (hi : a + b = i)⟩ => by
-      by_cases h : a = 0
-      · subst h
-        obtain rfl : b = i := by rw [← hi, zero_add]
-        simp
-      · apply IsInitial.hom_ext
-        apply isInitialTensor
-        exact isInitialTensorUnitApply  _ _ h)
-    (fun s m hm => by
-      dsimp
-      rw [← hm ⟨⟨0, i⟩, zero_add i⟩ ]
-      simp)
-
-instance : HasTensor tensorUnit X :=
-  TensorCofan.hasTensor _ _ _ (fun i => isColimitUnitTensorCofan X i)
-
-noncomputable def leftUnitor :
-    tensorObj tensorUnit X ≅ X := isoMk _ _
-      (fun i => ((unitTensorCofan X i).iso (isColimitUnitTensorCofan X i)).symm)
-
-lemma leftUnitor_inv_apply (i : I) :
-    (leftUnitor X).inv i =
-      (λ_ _).inv ≫ ((tensorUnit₀ I C).inv ⊗ 𝟙 (X i)) ≫ ιTensorObj tensorUnit X 0 i i (zero_add i) := by
-  rfl
-
-lemma leftUnitor_inv_naturality {X₁ X₂ : GradedObject I C} (f : X₁ ⟶ X₂) :
-    f ≫ (leftUnitor X₂).inv = (leftUnitor X₁).inv ≫ tensorHom (𝟙 tensorUnit) f := by
-  ext i
-  dsimp
-  rw [leftUnitor_inv_apply, leftUnitor_inv_apply, assoc, assoc, ι_tensorHom,
-    leftUnitor_inv_naturality_assoc, id_tensor_comp_tensor_id_assoc]
-  dsimp
-  rw [tensor_id_comp_id_tensor_assoc]
-
-lemma leftUnitor_naturality {X₁ X₂ : GradedObject I C} (f : X₁ ⟶ X₂) :
-    tensorHom (𝟙 tensorUnit) f ≫ (leftUnitor X₂).hom = (leftUnitor X₁).hom ≫ f := by
-  rw [← cancel_mono (leftUnitor X₂).inv, assoc, assoc, Iso.hom_inv_id, comp_id,
-    leftUnitor_inv_naturality, Iso.hom_inv_id_assoc]
-
-@[reassoc (attr := simp)]
-lemma ιTensorObj_leftUnitor_hom (X : GradedObject I C) (i : I) :
-    ιTensorObj tensorUnit X 0 i i (zero_add i) ≫ (leftUnitor X).hom i =
-      ((tensorUnit₀ I C).hom ⊗ 𝟙 (X i)) ≫ (λ_ (X i)).hom := by
-  rw [← cancel_mono ((leftUnitor X).inv i), assoc, assoc,
-    iso_hom_inv_id_apply, comp_id, leftUnitor_inv_apply,
-    Iso.hom_inv_id_assoc, hom_inv_id_tensor_assoc, MonoidalCategory.tensor_id,
-    id_comp, id_comp]
-
-@[simps! pt]
-noncomputable def tensorUnitCofan (i : I) : TensorCofan X tensorUnit i :=
-  TensorCofan.mk _ _ _ (X i) (fun a b h =>
-    if hb : b = 0
-      then
-        (𝟙 (X a) ⊗ (tensorUnit₀' C b hb).hom) ≫ (rightUnitor (X a)).hom ≫ eqToHom (by
-          obtain rfl : a = i := by rw [← h, hb, add_zero]
-          rfl)
-      else IsInitial.to (tensorIsInitial _ _ (isInitialTensorUnitApply _ _ hb)) _)
-
-@[simp]
-lemma tensorUnitCofan_ι₀ (i : I) :
-    (tensorUnitCofan X i).inj ⟨⟨i, 0⟩, add_zero i⟩ =
-      (𝟙 (X i) ⊗ (tensorUnit₀ I C).hom) ≫ (rightUnitor (X i)).hom := by
-  dsimp [tensorUnitCofan]
-  rw [dif_pos rfl]
-  simp
-
-noncomputable def isColimitTensorUnitCofan (i : I) : IsColimit (tensorUnitCofan X i) :=
-  mkCofanColimit _
-    (fun s => (rightUnitor (X i)).inv ≫
-      (𝟙 (X i) ⊗ (tensorUnit₀ I C).inv) ≫ s.inj ⟨⟨i, 0⟩, add_zero i⟩)
-    (fun s ⟨⟨a, b⟩, (hi : a + b = i)⟩ => by
-      by_cases h : b = 0
-      · subst h
-        obtain rfl : a = i := by rw [← hi, add_zero]
-        simp
-      · apply IsInitial.hom_ext
-        apply tensorIsInitial
-        exact isInitialTensorUnitApply  _ _ h)
-    (fun s m hm => by
-      dsimp
-      rw [← hm ⟨⟨i, 0⟩, add_zero i⟩ ]
-      simp)
-
-instance : HasTensor X tensorUnit :=
-  TensorCofan.hasTensor _ _ _ (fun i => isColimitTensorUnitCofan X i)
-
-noncomputable def rightUnitor :
-    tensorObj X tensorUnit ≅ X := isoMk _ _
-      (fun i => ((tensorUnitCofan X i).iso (isColimitTensorUnitCofan X i)).symm)
-
-lemma rightUnitor_inv_apply (i : I) :
-    (rightUnitor X).inv i =
-      (ρ_ _).inv ≫ (𝟙 (X i) ⊗ (tensorUnit₀ I C).inv) ≫ ιTensorObj X tensorUnit i 0 i (add_zero i) := by
-  rfl
-
-lemma rightUnitor_inv_naturality {X₁ X₂ : GradedObject I C} (f : X₁ ⟶ X₂) :
-    f ≫ (rightUnitor X₂).inv = (rightUnitor X₁).inv ≫ tensorHom f (𝟙 tensorUnit) := by
-  ext i
-  dsimp
-  rw [rightUnitor_inv_apply, rightUnitor_inv_apply, assoc, assoc, ι_tensorHom,
-    rightUnitor_inv_naturality_assoc, tensor_id_comp_id_tensor_assoc]
-  dsimp
-  rw [id_tensor_comp_tensor_id_assoc]
-
-lemma rightUnitor_naturality {X₁ X₂ : GradedObject I C} (f : X₁ ⟶ X₂) :
-    tensorHom f (𝟙 tensorUnit) ≫ (rightUnitor X₂).hom = (rightUnitor X₁).hom ≫ f := by
-  rw [← cancel_mono (rightUnitor X₂).inv, assoc, assoc, Iso.hom_inv_id, comp_id,
-    rightUnitor_inv_naturality, Iso.hom_inv_id_assoc]
-
-@[reassoc (attr := simp)]
-lemma ιTensorObj_rightUnitor_hom (X : GradedObject I C) (i : I) :
-    ιTensorObj X tensorUnit i 0 i (add_zero i) ≫ (rightUnitor X).hom i =
-      (𝟙 (X i ) ⊗ (tensorUnit₀ I C).hom) ≫ (ρ_ (X i)).hom := by
-  rw [← cancel_mono ((rightUnitor X).inv i), assoc, assoc,
-    iso_hom_inv_id_apply, comp_id, rightUnitor_inv_apply,
-    Iso.hom_inv_id_assoc, ← MonoidalCategory.tensor_comp_assoc, id_comp,
-    Iso.hom_inv_id, MonoidalCategory.tensor_id, id_comp]
-
-lemma triangle (X₁ X₂ : GradedObject I C) [HasTensor X₁ X₂]
-    [HasTensor (tensorObj X₁ tensorUnit) X₂]
-    [HasTensor X₁ (tensorObj tensorUnit X₂)] [HasGoodTensor₁₂Tensor X₁ tensorUnit X₂]
-    [HasGoodTensorTensor₂₃ X₁ tensorUnit X₂] :
-  (associator X₁ tensorUnit X₂).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₂).hom =
-    tensorHom (rightUnitor X₁).hom (𝟙 X₂) := by
-  ext j i₁ k i₂ h
-  simp only [categoryOfGradedObjects_comp, ιTensorObj₃'_associator_hom_assoc]
-  by_cases h' : k = 0
-  · subst h'
-    rw [ιTensorObj₃_eq X₁ tensorUnit X₂ i₁ 0 i₂ j h i₂ (zero_add i₂),
-      ιTensorObj₃'_eq X₁ tensorUnit X₂ i₁ 0 i₂ j h i₁ (add_zero i₁), assoc, assoc,
-      ι_tensorHom, ι_tensorHom, categoryOfGradedObjects_id, categoryOfGradedObjects_id,
-      ← cancel_epi ((𝟙 (X₁ i₁) ⊗ (tensorUnit₀ I C).inv) ⊗ 𝟙 (X₂ i₂)),
-      associator_naturality_assoc (𝟙 (X₁ i₁)) (tensorUnit₀ I C).inv (𝟙 (X₂ i₂)),
-      ← MonoidalCategory.tensor_comp_assoc, ← MonoidalCategory.tensor_comp_assoc,
-      assoc, assoc, id_comp, id_comp, ιTensorObj_leftUnitor_hom,
-      ← MonoidalCategory.tensor_comp_assoc, id_comp, Iso.inv_hom_id, MonoidalCategory.tensor_id,
-      id_comp, triangle_assoc, ← MonoidalCategory.tensor_comp_assoc,
-      ← MonoidalCategory.tensor_comp_assoc, comp_id, comp_id, assoc, ιTensorObj_rightUnitor_hom,
-      ← MonoidalCategory.tensor_comp_assoc, id_comp, Iso.inv_hom_id, MonoidalCategory.tensor_id,
-      id_comp]
-  · apply IsInitial.hom_ext
-    apply isInitialTensor
-    apply tensorIsInitial
-    exact isInitialTensorUnitApply C k h'
-
-end
-
-section
-
 variable (X₁ X₂ X₃ X₄ : GradedObject I C)
   [HasTensor X₃ X₄]
   [HasTensor X₂ (tensorObj X₃ X₄)]
@@ -550,7 +348,7 @@ lemma tensorObj₄_ext {j : I} {A : C} (f g : tensorObj X₁ (tensorObj X₂ (te
 
 end
 
-section pentagon
+section Pentagon
 
 variable (X₁ X₂ X₃ X₄ : GradedObject I C)
   [HasTensor X₁ X₂] [HasTensor X₂ X₃] [HasTensor X₃ X₄]
@@ -619,7 +417,118 @@ lemma pentagon : tensorHom (associator X₁ X₂ X₃).hom (𝟙 X₄) ≫
     tensor_id, id_comp, Iso.inv_hom_id_assoc, ← tensor_comp, id_comp, Iso.inv_hom_id,
     tensor_id]
 
-end pentagon
+end Pentagon
+
+section TensorUnit
+
+variable [DecidableEq I] [HasInitial C]
+
+noncomputable def tensorUnit : GradedObject I C := (single₀ I).obj (𝟙_ C)
+
+noncomputable def tensorUnit₀ : (tensorUnit : GradedObject I C) 0 ≅ 𝟙_ C :=
+  singleObjApplyIso (0 : I) (𝟙_ C)
+
+noncomputable def isInitialTensorUnitApply (i : I) (hi : i ≠ 0) :
+    IsInitial ((tensorUnit : GradedObject I C) i) :=
+  isInitialSingleObjApply _ _ _ hi
+
+end TensorUnit
+
+section LeftUnitor
+
+variable [DecidableEq I] [HasInitial C]
+  [∀ X₂, PreservesColimit (Functor.empty.{0} C)
+    ((curryObj (MonoidalCategory.tensor C)).flip.obj X₂)]
+  (X X' : GradedObject I C)
+
+instance : HasTensor tensorUnit X :=
+  mapBifunctorLeftUnitor_hasMap (curryObj (MonoidalCategory.tensor C)) _
+    (leftUnitorNatIso C) _ zero_add _
+
+instance : HasMap (((mapBifunctor (curryObj (tensor C)) I I).toPrefunctor.obj
+    ((single₀ I).toPrefunctor.obj (𝟙_ C))).toPrefunctor.obj X) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
+  (inferInstance : HasTensor tensorUnit X)
+
+noncomputable def leftUnitor : tensorObj tensorUnit X ≅ X :=
+    mapBifunctorLeftUnitor (curryObj (MonoidalCategory.tensor C)) (𝟙_ C)
+      (leftUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) => i₁ + i₂) zero_add X
+
+lemma leftUnitor_inv_apply (i : I) :
+    (leftUnitor X).inv i = (λ_ (X i)).inv ≫ tensorUnit₀.inv ▷ (X i) ≫
+      ιTensorObj tensorUnit X 0 i i (zero_add i) := by
+  dsimp [leftUnitor, tensorUnit₀]
+  simp only [mapBifunctorLeftUnitor_inv_apply, Functor.id_obj, curryObj_obj_obj, tensor_obj,
+    leftUnitorNatIso_inv_app, curryObj_map_app, tensor_map, Iso.cancel_iso_inv_left]
+  simp only [MonoidalCategory.tensorHom_def, MonoidalCategory.whiskerLeft_id, comp_id]
+  rfl
+
+variable {X X'}
+
+@[reassoc (attr := simp)]
+lemma leftUnitor_naturality (φ : X ⟶ X') :
+    tensorHom (𝟙 (tensorUnit)) φ ≫ (leftUnitor X').hom =
+      (leftUnitor X).hom ≫ φ := by
+  apply mapBifunctorLeftUnitor_naturality
+
+end LeftUnitor
+
+section RightUnitor
+
+variable [DecidableEq I] [HasInitial C]
+  [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curryObj (MonoidalCategory.tensor C)).obj X₁)]
+  (X X' : GradedObject I C)
+
+instance : HasTensor X tensorUnit :=
+  mapBifunctorRightUnitor_hasMap (curryObj (MonoidalCategory.tensor C)) _
+    (rightUnitorNatIso C) _ add_zero _
+
+instance : HasMap (((mapBifunctor (curryObj (tensor C)) I I).toPrefunctor.obj X).obj
+    ((single₀ I).obj (𝟙_ C))) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
+  (inferInstance : HasTensor X tensorUnit)
+
+noncomputable def rightUnitor : tensorObj X tensorUnit ≅ X :=
+    mapBifunctorRightUnitor (curryObj (MonoidalCategory.tensor C)) (𝟙_ C)
+      (rightUnitorNatIso C) (fun (⟨i₁, i₂⟩ : I × I) => i₁ + i₂) add_zero X
+
+lemma rightUnitor_inv_apply (i : I) :
+    (rightUnitor X).inv i = (ρ_ (X i)).inv ≫ (X i) ◁ tensorUnit₀.inv ≫
+      ιTensorObj X tensorUnit i 0 i (add_zero i) := by
+  dsimp [rightUnitor, tensorUnit₀]
+  simp only [mapBifunctorRightUnitor_inv_apply, Functor.id_obj, Functor.flip_obj_obj,
+    curryObj_obj_obj, tensor_obj, rightUnitorNatIso_inv_app, curryObj_obj_map, tensor_map,
+    Iso.cancel_iso_inv_left]
+  simp only [MonoidalCategory.tensorHom_def, MonoidalCategory.whiskerRight_id, id_comp,
+    Iso.hom_inv_id]
+  rfl
+
+variable {X X'}
+
+@[reassoc (attr := simp)]
+lemma rightUnitor_naturality (φ : X ⟶ X') :
+    tensorHom φ (𝟙 (tensorUnit)) ≫ (rightUnitor X').hom =
+      (rightUnitor X).hom ≫ φ := by
+  apply mapBifunctorRightUnitor_naturality
+
+end RightUnitor
+
+section Triangle
+
+variable [DecidableEq I] [HasInitial C]
+  [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curryObj (MonoidalCategory.tensor C)).obj X₁)]
+  [∀ X₂, PreservesColimit (Functor.empty.{0} C)
+    ((curryObj (MonoidalCategory.tensor C)).flip.obj X₂)]
+  (X₁ X₃ : GradedObject I C) [HasTensor X₁ X₃]
+  [HasTensor (tensorObj X₁ tensorUnit) X₃] [HasTensor X₁ (tensorObj tensorUnit X₃)]
+  [HasGoodTensor₁₂Tensor X₁ tensorUnit X₃] [HasGoodTensorTensor₂₃ X₁ tensorUnit X₃]
+
+lemma triangle :
+    (associator X₁ tensorUnit X₃).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₃).hom =
+      tensorHom (rightUnitor X₁).hom (𝟙 X₃) := by
+  convert mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C)
+    (rightUnitorNatIso C) (leftUnitorNatIso C) (triangleIndexData I) X₁ X₃ (by simp)
+  all_goals assumption
+
+end Triangle
 
 end Monoidal
 
