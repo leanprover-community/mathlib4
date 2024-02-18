@@ -666,7 +666,7 @@ def _root_.LinearMap.toQuadraticForm (B : LinearMap.BilinForm R M) : QuadraticFo
 variable {B : M →ₗ[R] M →ₗ[R] R}
 
 @[simp]
-theorem toQuadraticForm_apply (B : M →ₗ[R] M →ₗ[R] R) (x : M) : B.toQuadraticForm x = B x x :=
+theorem toQuadraticForm_apply (B : LinearMap.BilinForm R M) (x : M) : B.toQuadraticForm x = B x x :=
   rfl
 #align bilin_form.to_quadratic_form_apply LinearMap.toQuadraticForm_apply
 
