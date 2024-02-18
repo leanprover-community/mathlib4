@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Join
-import Mathlib.Data.List.Pairwise
+import Mathlib.Data.Set.Image
 
 #align_import data.list.of_fn from "leanprover-community/mathlib"@"bf27744463e9620ca4e4ebe951fe83530ae6949b"
 
@@ -278,7 +278,7 @@ theorem ofFn_inj' {m n : ℕ} {f : Fin m → α} {g : Fin n → α} :
 
 /-- Note we can only state this when the two functions are indexed by defeq `n`. -/
 theorem ofFn_injective {n : ℕ} : Function.Injective (ofFn : (Fin n → α) → List α) := fun f g h =>
-  eq_of_heq $ by rw [ofFn_inj'] at h; cases h; rfl
+  eq_of_heq <| by rw [ofFn_inj'] at h; cases h; rfl
 #align list.of_fn_injective List.ofFn_injective
 
 /-- A special case of `List.ofFn_inj` for when the two functions are indexed by defeq `n`. -/

@@ -3,8 +3,8 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Bits
+import Mathlib.Algebra.GroupPower.Order
 
 #align_import data.nat.size from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
@@ -32,15 +32,7 @@ theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) 
 end
 
 #align nat.one_shiftl Nat.one_shiftLeft
-
-theorem zero_shiftLeft (n) : 0 <<< n = 0 := by simp
 #align nat.zero_shiftl Nat.zero_shiftLeft
-
-theorem shiftRight_eq_div_pow (m) : ∀ n, m >>> n = m / 2 ^ n
-  | 0 => (Nat.div_one _).symm
-  | k + 1 => by
-    rw [shiftRight_add, shiftRight_eq_div_pow m k]
-    simp [Nat.div_div_eq_div_mul, ← Nat.pow_succ]
 #align nat.shiftr_eq_div_pow Nat.shiftRight_eq_div_pow
 
 theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠ 0 := by
@@ -103,7 +95,7 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
   simp only [zero_add, one_mul] at this
   obtain rfl : n = 0 :=
     Nat.eq_zero_of_le_zero
-      (le_of_not_gt fun hn => ne_of_gt (pow_lt_pow_of_lt_right (by decide) hn) this)
+      (le_of_not_gt fun hn => ne_of_gt (pow_lt_pow_right (by decide) hn) this)
   rfl
 #align nat.size_shiftl' Nat.size_shiftLeft'
 
@@ -123,7 +115,7 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   by_cases h : bit b n = 0
   · apply this h
   rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul, ← bit0_val]
-  exact bit_lt_bit0 _ (by simpa [shiftRight_eq_div_pow] using IH)
+  exact bit_lt_bit0 _ (by simpa [shiftLeft_eq, shiftRight_eq_div_pow] using IH)
 #align nat.lt_size_self Nat.lt_size_self
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
@@ -156,7 +148,7 @@ theorem size_eq_zero {n : ℕ} : size n = 0 ↔ n = 0 := by
 #align nat.size_eq_zero Nat.size_eq_zero
 
 theorem size_pow {n : ℕ} : size (2 ^ n) = n + 1 :=
-  le_antisymm (size_le.2 <| pow_lt_pow_of_lt_right (by decide) (lt_succ_self _))
+  le_antisymm (size_le.2 <| pow_lt_pow_right (by decide) (lt_succ_self _))
     (lt_size.2 <| le_rfl)
 #align nat.size_pow Nat.size_pow
 

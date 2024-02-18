@@ -448,7 +448,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
   · simp_rw [Nat.cast_withBot, Finset.sup_lt_iff (WithBot.bot_lt_coe t.card), degree_mul]
     intro i hi
     have hs : 1 ≤ s.card := Nonempty.card_pos ⟨_, hi⟩
-    have hst' : s.card ≤ t.card := card_le_of_subset hst
+    have hst' : s.card ≤ t.card := card_le_card hst
     have H : t.card = 1 + (t.card - s.card) + (s.card - 1) := by
       rw [add_assoc, tsub_add_tsub_cancel hst' hs, ← add_tsub_assoc_of_le (hs.trans hst'),
         Nat.succ_add_sub_one, zero_add]
@@ -551,7 +551,7 @@ theorem eval_nodal_at_node {i : ι} (hi : i ∈ s) : eval (v i) (nodal s v) = 0 
 #align lagrange.eval_nodal_at_node Lagrange.eval_nodal_at_node
 
 theorem eval_nodal_not_at_node [Nontrivial R] [NoZeroDivisors R] {x : R}
-(hx : ∀ i ∈ s, x ≠ v i) : eval x (nodal s v) ≠ 0 := by
+    (hx : ∀ i ∈ s, x ≠ v i) : eval x (nodal s v) ≠ 0 := by
   simp_rw [nodal, eval_prod, prod_ne_zero_iff, eval_sub, eval_X, eval_C, sub_ne_zero]
   exact hx
 #align lagrange.eval_nodal_not_at_node Lagrange.eval_nodal_not_at_node

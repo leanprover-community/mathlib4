@@ -112,7 +112,7 @@ lemma ι_tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) 
     i₁ i₂ i₁₂ h).trans _
   rw [← assoc]
   congr 1
-  simp [curryObj]
+  simp [curryObj, MonoidalCategory.tensorHom_def]
 
 @[simp]
 noncomputable def whiskerLeft (X : GradedObject I C) {Y₁ Y₂ : GradedObject I C} (φ : Y₁ ⟶ Y₂)
@@ -150,24 +150,24 @@ lemma tensor_comp {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X�
 
 def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ => i + j + k
 
-@[reducible] def ρ₁₂ : Bifunctor₁₂BifunctorIndexData (r₁₂₃ : _ → I) where
+@[reducible] def ρ₁₂ : BifunctorComp₁₂IndexData (r₁₂₃ : _ → I) where
   I₁₂ := I
   p := fun ⟨i₁, i₂⟩ => i₁ + i₂
   q := fun ⟨i₁₂, i₃⟩ => i₁₂ + i₃
   hpq := fun _ => rfl
 
-@[reducible] def ρ₂₃ : BifunctorBifunctor₂₃IndexData (r₁₂₃ : _ → I) where
+@[reducible] def ρ₂₃ : BifunctorComp₂₃IndexData (r₁₂₃ : _ → I) where
   I₂₃ := I
   p := fun ⟨i₂, i₃⟩ => i₂ + i₃
   q := fun ⟨i₁₂, i₃⟩ => i₁₂ + i₃
   hpq _ := add_assoc _ _ _
 
 abbrev _root_.CategoryTheory.GradedObject.HasGoodTensor₁₂Tensor (X₁ X₂ X₃ : GradedObject I C) :=
-  HasGoodBifunctor₁₂BifunctorObj (curryObj (MonoidalCategory.tensor C))
+  HasGoodTrifunctor₁₂Obj (curryObj (MonoidalCategory.tensor C))
     (curryObj (MonoidalCategory.tensor C)) ρ₁₂ X₁ X₂ X₃
 
 abbrev _root_.CategoryTheory.GradedObject.HasGoodTensorTensor₂₃ (X₁ X₂ X₃ : GradedObject I C) :=
-  HasGoodBifunctorBifunctor₂₃Obj (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ρ₂₃ X₁ X₂ X₃
+  HasGoodTrifunctor₂₃Obj (curryObj (MonoidalCategory.tensor C)) (curryObj (MonoidalCategory.tensor C)) ρ₂₃ X₁ X₂ X₃
 
 section
 
@@ -365,7 +365,7 @@ noncomputable def isColimitUnitTensorCofan (i : I) : IsColimit (unitTensorCofan 
     (fun s => (leftUnitor (X i)).inv ≫
       ((tensorUnit₀ I C).inv ⊗ 𝟙 (X i)) ≫ s.inj ⟨⟨0, i⟩, zero_add i⟩)
     (fun s ⟨⟨a, b⟩, (hi : a + b = i)⟩ => by
-      by_cases a = 0
+      by_cases h : a = 0
       · subst h
         obtain rfl : b = i := by rw [← hi, zero_add]
         simp
@@ -435,7 +435,7 @@ noncomputable def isColimitTensorUnitCofan (i : I) : IsColimit (tensorUnitCofan 
     (fun s => (rightUnitor (X i)).inv ≫
       (𝟙 (X i) ⊗ (tensorUnit₀ I C).inv) ≫ s.inj ⟨⟨i, 0⟩, add_zero i⟩)
     (fun s ⟨⟨a, b⟩, (hi : a + b = i)⟩ => by
-      by_cases b = 0
+      by_cases h : b = 0
       · subst h
         obtain rfl : a = i := by rw [← hi, add_zero]
         simp
@@ -642,7 +642,7 @@ noncomputable instance monoidalCategory : MonoidalCategory (GradedObject I C) wh
   tensorHom_def f g := Monoidal.tensorHom_def f g
   whiskerLeft X _ _ φ := Monoidal.whiskerLeft X φ
   whiskerRight {_ _ φ Y} := Monoidal.whiskerRight φ Y
-  tensorUnit' := Monoidal.tensorUnit
+  tensorUnit := Monoidal.tensorUnit
   associator X₁ X₂ X₃ := Monoidal.associator X₁ X₂ X₃
   associator_naturality f₁ f₂ f₃ := Monoidal.associator_naturality f₁ f₂ f₃
   leftUnitor X := Monoidal.leftUnitor X

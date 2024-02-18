@@ -3,10 +3,11 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.CategoryTheory.Pi.Basic
-import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Set.Basic
 
 #align_import category_theory.graded_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -34,10 +35,9 @@ have a functor `map : GradedObject I C ⥤ GradedObject J C`.
 
 set_option autoImplicit true
 
-
-open CategoryTheory.Limits
-
 namespace CategoryTheory
+
+open Category Limits
 
 universe w v u
 
@@ -95,6 +95,7 @@ def isoMk (e : ∀ i, X i ≅ Y i) : X ≅ Y where
 
 variable {X Y}
 
+-- this lemma is not an instance as it may create a loop with `isIso_apply_of_isIso`
 lemma isIso_of_isIso_apply (f : X ⟶ Y) [hf : ∀ i, IsIso (f i)] :
     IsIso f := by
   change IsIso (isoMk X Y (fun i => asIso (f i))).hom
@@ -110,7 +111,7 @@ lemma iso_inv_hom_id_apply (e : X ≅ Y) (i : β) :
     e.inv i ≫ e.hom i = 𝟙 _ :=
   congr_fun e.inv_hom_id i
 
-instance (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := by
+instance isIso_apply_of_isIso (f : X ⟶ Y) [IsIso f] (i : β) : IsIso (f i) := by
   change IsIso ((eval i).map f)
   infer_instance
 
@@ -150,7 +151,7 @@ theorem comapEq_trans {β γ : Type w} {f g h : β → γ} (k : f = g) (l : g = 
 #align category_theory.graded_object.comap_eq_trans CategoryTheory.GradedObject.comapEq_trans
 
 @[simp]
-theorem eqToHom_apply {β : Type w} {X Y : ∀ _ : β, C} (h : X = Y) (b : β) :
+theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
     (eqToHom h : X ⟶ Y) b = eqToHom (by rw [h]) := by
   subst h
   rfl
@@ -254,7 +255,7 @@ instance : Faithful (total β C) where
     ext i
     replace w := Sigma.ι (fun i : β => X i) i ≫= w
     erw [colimit.ι_map, colimit.ι_map] at w
-    simp at *
+    simp? at * says simp only [Discrete.functor_obj, Discrete.natTrans_app] at *
     exact Mono.right_cancellation _ _ w
 
 end GradedObject
@@ -278,12 +279,12 @@ end GradedObject
 
 namespace GradedObject
 
-variable {I J : Type*} {C : Type*} [Category C]
+variable {I J K : Type*} {C : Type*} [Category C]
   (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
 /-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`
 for `i : I` such that `p i = j`. -/
-abbrev mapObjFun (j : J) := (fun (i : (p ⁻¹' {j})) => X i)
+abbrev mapObjFun (j : J) (i : p ⁻¹' {j}) : C := X i
 
 variable (j : J)
 
@@ -300,12 +301,12 @@ noncomputable def mapObj : GradedObject J C := fun j => ∐ (X.mapObjFun p j)
 /-- The canonical inclusion `X i ⟶ X.mapObj p j` when `i : I` and `j : J` are such
 that `p i = j`. -/
 noncomputable def ιMapObj (i : I) (j : J) (hij : p i = j) : X i ⟶ X.mapObj p j :=
-  Sigma.ι (fun (i' : (p ⁻¹' {j})) => X i') ⟨i, hij⟩
+  Sigma.ι (X.mapObjFun p j) ⟨i, hij⟩
 
 /-- Given `X : GradedObject I C`, `p : I → J` and `j : J`,
 `CofanMapObjFun X p j` is the type `Cofan (X.mapObjFun p j)`. The point object of
 such colimits cofans are isomorphic to `X.mapObj p j`, see `CofanMapObjFun.iso`. -/
-abbrev CofanMapObjFun (j : J) := Cofan (X.mapObjFun p j)
+abbrev CofanMapObjFun (j : J) : Type _ := Cofan (X.mapObjFun p j)
 
 -- in order to use the cofan API, some definitions below
 -- have a `simp` attribute rather than `simps`
@@ -411,6 +412,74 @@ noncomputable def map [∀ (j : J), HasColimitsOfShape (Discrete (p ⁻¹' {j}))
     GradedObject I C ⥤ GradedObject J C where
   obj X := X.mapObj p
   map φ := mapMap φ p
+
+variable {C} (X Y)
+variable (q : J → K) (r : I → K) (hpqr : ∀ i, q (p i) = r i)
+
+section
+
+variable (k : K) (c : ∀ (j : J), q j = k → X.CofanMapObjFun p j)
+  (hc : ∀ j hj, IsColimit (c j hj))
+  (c' : Cofan (fun (j : q ⁻¹' {k}) => (c j.1 j.2).pt)) (hc' : IsColimit c')
+
+/-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
+`X : GradedObject I C`, `k : K`, the datum of cofans `X.CofanMapObjFun p j` for all
+`j : J` and of a cofan for all the points of these cofans, this is a cofan of
+type `X.CofanMapObjFun r k`, which is a colimit (see `isColimitCofanMapObjComp`) if the
+given cofans are. -/
+@[simp]
+def cofanMapObjComp : X.CofanMapObjFun r k :=
+  CofanMapObjFun.mk _ _ _ c'.pt (fun i hi =>
+    (c (p i) (by rw [hpqr, hi])).inj ⟨i, rfl⟩ ≫ c'.inj (⟨p i, by
+      rw [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi]⟩))
+
+/-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
+`X : GradedObject I C`, `k : K`, the cofan constructed by `cofanMapObjComp` is a colimit.
+In other words, if we have, for all `j : J` such that `hj : q j = k`,
+a colimit cofan `c j hj` which computes the coproduct of the `X i` such that `p i = j`,
+and also a colimit cofan which computes the coproduct of the points of these `c j hj`, then
+the point of this latter cofan computes the coproduct of the `X i` such that `r i = k`.
+.-/
+@[simp]
+def isColimitCofanMapObjComp :
+    IsColimit (cofanMapObjComp X p q r hpqr k c c') :=
+  mkCofanColimit _
+    (fun s => Cofan.IsColimit.desc hc'
+      (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
+        (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by
+          simp only [Set.mem_preimage, Set.mem_singleton_iff, ← hpqr, hi, hj]⟩)))
+    (fun s ⟨i, (hi : r i = k)⟩ => by simp)
+    (fun s m hm => by
+      apply Cofan.IsColimit.hom_ext hc'
+      rintro ⟨j, rfl : q j = k⟩
+      apply Cofan.IsColimit.hom_ext (hc j rfl)
+      rintro ⟨i, rfl : p i = j⟩
+      dsimp
+      rw [Cofan.IsColimit.fac, Cofan.IsColimit.fac, ← hm]
+      dsimp
+      rw [assoc])
+
+lemma hasMap_comp [X.HasMap p] [(X.mapObj p).HasMap q] : X.HasMap r :=
+  fun k => ⟨_, isColimitCofanMapObjComp X p q r hpqr k _
+    (fun j _ => X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩
+
+end
+
+section HasZeroMorphisms
+
+end HasZeroMorphisms
+
+variable [HasZeroMorphisms C] [DecidableEq J] (i : I) (j : J)
+
+/-- The canonical inclusion `X i ⟶ X.mapObj p j` when `p i = j`, the zero morphism otherwise. -/
+noncomputable def ιMapObjOrZero : X i ⟶ X.mapObj p j :=
+  if h : p i = j
+    then X.ιMapObj p i j h
+    else 0
+
+lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dif_pos h
+
+lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
 
 end GradedObject
 

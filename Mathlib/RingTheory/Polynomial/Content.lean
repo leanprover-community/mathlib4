@@ -239,13 +239,12 @@ theorem IsPrimitive.content_eq_one {p : R[X]} (hp : p.IsPrimitive) : p.content =
   isPrimitive_iff_content_eq_one.mp hp
 #align polynomial.is_primitive.content_eq_one Polynomial.IsPrimitive.content_eq_one
 
-open Classical
-
 section PrimPart
 
 /-- The primitive part of a polynomial `p` is the primitive polynomial gained by dividing `p` by
   `p.content`. If `p = 0`, then `p.primPart = 1`.  -/
 noncomputable def primPart (p : R[X]) : R[X] :=
+  letI := Classical.decEq R
   if p = 0 then 1 else Classical.choose (C_content_dvd p)
 #align polynomial.prim_part Polynomial.primPart
 
@@ -358,8 +357,8 @@ theorem content_mul_aux {p q : R[X]} :
 theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
   classical
     suffices h :
-      ∀ (n : ℕ) (p q : R[X]), (p * q).degree < n → (p * q).content = p.content * q.content
-    · apply h
+        ∀ (n : ℕ) (p q : R[X]), (p * q).degree < n → (p * q).content = p.content * q.content by
+      apply h
       apply lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 (Nat.lt_succ_self _))
     intro n
     induction' n with n ih
@@ -379,11 +378,11 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
     rcases hpq with (hlt | heq)
     · apply ih _ _ hlt
     rw [← p.natDegree_primPart, ← q.natDegree_primPart, ← Nat.cast_inj (R := WithBot ℕ),
-      Nat.cast_add, ←degree_eq_natDegree p.primPart_ne_zero,
+      Nat.cast_add, ← degree_eq_natDegree p.primPart_ne_zero,
       ← degree_eq_natDegree q.primPart_ne_zero] at heq
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
-    suffices h : (q.primPart * p.primPart).content = 1
-    · rw [mul_assoc, content_C_mul, content_C_mul, mul_comm p.primPart, mul_assoc, content_C_mul,
+    suffices h : (q.primPart * p.primPart).content = 1 by
+      rw [mul_assoc, content_C_mul, content_C_mul, mul_comm p.primPart, mul_assoc, content_C_mul,
         content_C_mul, h, mul_one, content_primPart, content_primPart, mul_one, mul_one]
     rw [← normalize_content, normalize_eq_one, isUnit_iff_dvd_one,
       content_eq_gcd_leadingCoeff_content_eraseLead, leadingCoeff_mul, gcd_comm]
@@ -434,10 +433,10 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
       ⟨(p * q).natDegree, p * q, rfl, hp.mul hq, dvd_mul_right _ _, dvd_mul_left _ _⟩
     rcases Nat.find_spec h with ⟨r, rdeg, rprim, pr, qr⟩
     refine' ⟨r, rprim, fun s => ⟨_, fun rs => ⟨pr.trans rs, qr.trans rs⟩⟩⟩
-    suffices hs : ∀ (n : ℕ) (s : R[X]), s.natDegree = n → p ∣ s ∧ q ∣ s → r ∣ s
-    · apply hs s.natDegree s rfl
+    suffices hs : ∀ (n : ℕ) (s : R[X]), s.natDegree = n → p ∣ s ∧ q ∣ s → r ∣ s from
+      hs s.natDegree s rfl
     clear s
-    by_contra' con
+    by_contra! con
     rcases Nat.find_spec con with ⟨s, sdeg, ⟨ps, qs⟩, rs⟩
     have s0 : s ≠ 0 := by
       contrapose! rs
@@ -481,6 +480,7 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
 #align polynomial.dvd_iff_content_dvd_content_and_prim_part_dvd_prim_part Polynomial.dvd_iff_content_dvd_content_and_primPart_dvd_primPart
 
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
+  letI := Classical.decEq R
   normalizedGCDMonoidOfExistsLCM fun p q => by
     rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
         q.isPrimitive_primPart with
@@ -494,7 +494,7 @@ noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMono
     iterate 3 rw [dvd_iff_content_dvd_content_and_primPart_dvd_primPart hs]
     rw [content_mul, rprim.content_eq_one, mul_one, content_C, normalize_lcm, lcm_dvd_iff,
       primPart_mul (mul_ne_zero hpq rprim.ne_zero), rprim.primPart_eq,
-      IsUnit.mul_left_dvd _ _ _ (isUnit_primPart_C (lcm p.content q.content)), ← hr s.primPart]
+      (isUnit_primPart_C (lcm p.content q.content)).mul_left_dvd, ← hr s.primPart]
     tauto
 #align polynomial.normalized_gcd_monoid Polynomial.normalizedGcdMonoid
 

@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Floris van Doorn
 -/
 
-import Lean
-
 /-!
 ## Definitions on Arrays
 
@@ -21,8 +19,8 @@ namespace Array
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
   `(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
 def cyclicPermute! [Inhabited α] : Array α → List Nat → Array α
-| a, []      => a
-| a, i :: is => cyclicPermuteAux a is a[i]! i
+  | a, []      => a
+  | a, i :: is => cyclicPermuteAux a is a[i]! i
 where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
 | a, [], x, i0 => a.set! i0 x
 | a, i :: is, x, i0 =>

@@ -3,7 +3,8 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.HahnSeries
+import Mathlib.RingTheory.HahnSeries.PowerSeries
+import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.Localization.FractionRing
 
 #align_import ring_theory.laurent_series from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
@@ -72,7 +73,7 @@ theorem powerSeriesPart_coeff (x : LaurentSeries R) (n : ℕ) :
 @[simp]
 theorem powerSeriesPart_zero : powerSeriesPart (0 : LaurentSeries R) = 0 := by
   ext
-  simp
+  simp [(PowerSeries.coeff _ _).map_zero] -- Note: this doesn't get picked up any more
 #align laurent_series.power_series_part_zero LaurentSeries.powerSeriesPart_zero
 
 @[simp]
@@ -135,9 +136,8 @@ instance of_powerSeries_localization [CommRing R] :
       rfl
     · simp only [single_mul_single, mul_one, add_left_neg]
       rfl
-    · simp
-  surj' := by
-    intro z
+    · dsimp; rw [ofPowerSeries_X_pow]
+  surj' z := by
     by_cases h : 0 ≤ z.order
     · refine' ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, _⟩
       simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
@@ -149,21 +149,10 @@ instance of_powerSeries_localization [CommRing R] :
       refine' congr rfl _
       rw [ofPowerSeries_X_pow, Int.ofNat_natAbs_of_nonpos]
       exact le_of_not_ge h
-  eq_iff_exists' := by
-    intro x y
+  exists_of_eq {x y} := by
     rw [coe_algebraMap, ofPowerSeries_injective.eq_iff]
-    constructor
-    · rintro rfl
-      exact ⟨1, rfl⟩
-    · rintro ⟨⟨_, n, rfl⟩, hc⟩
-      rw [← sub_eq_zero, ← mul_sub, PowerSeries.ext_iff] at hc
-      rw [← sub_eq_zero, PowerSeries.ext_iff]
-      intro m
-      have h := hc (m + n)
-      simp only at h
-      rwa [LinearMap.map_zero, PowerSeries.X_pow_eq, PowerSeries.monomial,
-        add_comm m, PowerSeries.coeff, Finsupp.single_add, MvPowerSeries.coeff_add_monomial_mul,
-        one_mul] at h
+    rintro rfl
+    exact ⟨1, rfl⟩
 #align laurent_series.of_power_series_localization LaurentSeries.of_powerSeries_localization
 
 -- Porting note: this instance is needed
@@ -196,12 +185,12 @@ theorem coe_add : ((f + g : PowerSeries R) : LaurentSeries R) = f + g :=
   (ofPowerSeries ℤ R).map_add _ _
 #align power_series.coe_add PowerSeries.coe_add
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_sub : ((f' - g' : PowerSeries R') : LaurentSeries R') = f' - g' :=
   (ofPowerSeries ℤ R').map_sub _ _
 #align power_series.coe_sub PowerSeries.coe_sub
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_neg : ((-f' : PowerSeries R') : LaurentSeries R') = -f' :=
   (ofPowerSeries ℤ R').map_neg _
 #align power_series.coe_neg PowerSeries.coe_neg

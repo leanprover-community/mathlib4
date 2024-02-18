@@ -136,12 +136,12 @@ def Filter.ofCountableInter (l : Set (Set α))
     hp _ ((countable_singleton _).insert _) (insert_subset_iff.2 ⟨hs, singleton_subset_iff.2 ht⟩)
 #align filter.of_countable_Inter Filter.ofCountableInter
 
-instance Filter.countable_Inter_ofCountableInter (l : Set (Set α))
+instance Filter.countableInter_ofCountableInter (l : Set (Set α))
     (hp : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) :
     CountableInterFilter (Filter.ofCountableInter l hp h_mono) :=
   ⟨hp⟩
-#align filter.countable_Inter_of_countable_Inter Filter.countable_Inter_ofCountableInter
+#align filter.countable_Inter_of_countable_Inter Filter.countableInter_ofCountableInter
 
 @[simp]
 theorem Filter.mem_ofCountableInter {l : Set (Set α)}
@@ -149,6 +149,31 @@ theorem Filter.mem_ofCountableInter {l : Set (Set α)}
     {s : Set α} : s ∈ Filter.ofCountableInter l hp h_mono ↔ s ∈ l :=
   Iff.rfl
 #align filter.mem_of_countable_Inter Filter.mem_ofCountableInter
+
+/-- Construct a filter with countable intersection property.
+Similarly to `Filter.comk`, a set belongs to this filter if its complement satisfies the property.
+Similarly to `Filter.ofCountableInter`,
+this constructor deduces some properties from the countable intersection property
+which becomes the countable union property because we take complements of all sets.
+
+Another small difference from `Filter.ofCountableInter`
+is that this definition takes `p : Set α → Prop` instead of `Set (Set α)`. -/
+def Filter.ofCountableUnion (p : Set α → Prop)
+    (hUnion : ∀ S : Set (Set α), S.Countable → (∀ s ∈ S, p s) → p (⋃₀ S))
+    (hmono : ∀ t, p t → ∀ s ⊆ t, p s) : Filter α := by
+  refine .ofCountableInter {s | p sᶜ} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
+  · rw [mem_setOf_eq, compl_sInter]
+    exact hUnion _ (hSc.image _) (ball_image_iff.2 hSp)
+  · exact hmono _ ht _ (compl_subset_compl.2 hsub)
+
+instance Filter.countableInter_ofCountableUnion (p : Set α → Prop) (h₁ h₂) :
+    CountableInterFilter (Filter.ofCountableUnion p h₁ h₂) :=
+  countableInter_ofCountableInter ..
+
+@[simp]
+theorem Filter.mem_ofCountableUnion {p : Set α → Prop} {hunion hmono s} :
+    s ∈ ofCountableUnion p hunion hmono ↔ p sᶜ :=
+  Iff.rfl
 
 instance countableInterFilter_principal (s : Set α) : CountableInterFilter (𝓟 s) :=
   ⟨fun _ _ hS => subset_sInter hS⟩
