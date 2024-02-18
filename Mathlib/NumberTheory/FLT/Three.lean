@@ -58,11 +58,11 @@ private lemma fermatLastTheoremThree_ZMod9_case_1 {a b c : ZMod 9}
 theorem fermatLastTheoremThree_case_1 :
     ∀ a b c : ℕ, ¬ 3 ∣ a * b * c → a ^ 3 + b ^ 3 ≠ c ^ 3 := by
   intro a b c hdvd H
-  have hA := mem_of_coe_ne_zero <|
-    fun h ↦ hdvd <| (((nat_cast_zmod_eq_zero_iff_dvd _ _).1 h).mul_right b).mul_right c
-  have hB := mem_of_coe_ne_zero <|
-    fun h ↦ hdvd <| (((nat_cast_zmod_eq_zero_iff_dvd _ _).1 h).mul_left a).mul_right c
-  have hC := mem_of_coe_ne_zero <|
-    fun h ↦ hdvd <| mul_assoc a b c ▸ (((nat_cast_zmod_eq_zero_iff_dvd _ _).1 h).mul_left b).mul_left a
+  have hA := mem_of_coe_ne_zero <| fun h ↦
+    hdvd <| (((nat_cast_zmod_eq_zero_iff_dvd _ _).1 h).mul_right b).mul_right c
+  have hB := mem_of_coe_ne_zero <| fun h ↦
+    hdvd <| (((nat_cast_zmod_eq_zero_iff_dvd _ _).1 h).mul_left a).mul_right c
+  have hC := mem_of_coe_ne_zero <| fun h ↦
+    hdvd <| mul_assoc a b c ▸ (((nat_cast_zmod_eq_zero_iff_dvd _ _).1 h).mul_left b).mul_left a
   exact fermatLastTheoremThree_ZMod9_case_1 hA hB hC
     (by convert congr_arg ((↑) : ℕ → ZMod 9) H using 1 <;> simp)
