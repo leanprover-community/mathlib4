@@ -126,16 +126,11 @@ lemma lhom_ext ⦃f : (Λ[R]^n) M →ₗ[R] N⦄ ⦃g : (Λ[R]^n) M →ₗ[R] N�
 
 variable {R}
 
-/-- Auxiliary construction for the definition of `ExteriorPower.liftAlternating`. -/
-def liftAlternating_aux : (AlternatingMap R M N (Fin n)) →ₗ[R]
-    ((i : ℕ) → AlternatingMap R M N (Fin i)) :=
-  LinearMap.pi (fun i ↦ if h : i = n then by rw [h]; exact LinearMap.id else 0)
-
 /-- The linear map from `n`-fold alternating maps from `M` to `N` to linear maps from
 `Λ[R]^n M` to `N`-/
 def liftAlternating : (AlternatingMap R M N (Fin n)) →ₗ[R] (Λ[R]^n) M →ₗ[R] N where
   toFun f := LinearMap.domRestrict (LinearMap.comp (ExteriorAlgebra.liftAlternating (R := R)
-    (M := M) (N :=N)) (liftAlternating_aux n) f) ((Λ[R]^n) M)
+    (M := M) (N :=N)) (LinearMap.single n) f) ((Λ[R]^n) M)
   map_add' f g := by ext u; simp only [map_add, LinearMap.coe_comp, Function.comp_apply,
     LinearMap.compAlternatingMap_apply, LinearMap.domRestrict_apply, ιMulti_apply,
     LinearMap.add_apply, ExteriorAlgebra.liftAlternating_apply_ιMulti]
@@ -148,12 +143,9 @@ variable (R)
 @[simp] lemma liftAlternating_apply_ιMulti (f : AlternatingMap R M N (Fin n)) (a : Fin n → M) :
     liftAlternating n f (ιMulti R n a) = f a := by
   unfold liftAlternating
-  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_mk, AddHom.coe_mk,
-    LinearMap.domRestrict_apply]
-  rw [ιMulti_apply, ExteriorAlgebra.liftAlternating_apply_ιMulti]
-  unfold liftAlternating_aux
-  simp only [eq_mpr_eq_cast, LinearMap.pi_apply, cast_eq, dite_eq_ite, ite_true,
-    LinearMap.id_coe, id_eq]
+  simp only [LinearMap.coe_comp, LinearMap.coe_single, Function.comp_apply, LinearMap.coe_mk,
+    AddHom.coe_mk, LinearMap.domRestrict_apply, ιMulti_apply,
+    ExteriorAlgebra.liftAlternating_apply_ιMulti, Pi.single_eq_same]
 
 @[simp] lemma liftAlternating_comp_ιMulti (f : AlternatingMap R M N (Fin n)) :
     (LinearMap.compAlternatingMap (liftAlternating n f)) (ιMulti R n) = f := by
