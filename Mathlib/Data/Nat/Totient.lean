@@ -276,6 +276,11 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
     exact ⟨fun h => not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
 #align nat.totient_eq_one_iff Nat.totient_eq_one_iff
 
+theorem totient_le_one_dvd_two {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
+  cases' Nat.totient_eq_one_iff.1 (show a.totient = 1 by linarith [Nat.totient_pos han]) with h
+      h <;>
+    simp [h]
+
 /-! ### Euler's product formula for the totient function
 
 We prove several different statements of this formula. -/
