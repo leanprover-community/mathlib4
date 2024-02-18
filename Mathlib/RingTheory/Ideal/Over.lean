@@ -406,12 +406,12 @@ lemma exists_ideal_comap_le_prime (P : Ideal R) [P.IsPrime]
     ∃ Q ≥ I, Q.IsPrime ∧ Q.comap (algebraMap R S) ≤ P := by
   let Sₚ := Localization (Algebra.algebraMapSubmonoid S P.primeCompl)
   let Iₚ := I.map (algebraMap S Sₚ)
-  have hI' : Disjoint (Algebra.algebraMapSubmonoid S P.primeCompl : Set S) I
-  · rw [Set.disjoint_iff]
+  have hI' : Disjoint (Algebra.algebraMapSubmonoid S P.primeCompl : Set S) I := by
+    rw [Set.disjoint_iff]
     rintro _ ⟨⟨x, hx : x ∉ P, rfl⟩, hx'⟩
     exact (hx (hI hx')).elim
-  have : Iₚ ≠ ⊤
-  · rw [Ne.def, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
+  have : Iₚ ≠ ⊤ := by
+    rw [Ne.def, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
       (Algebra.algebraMapSubmonoid S P.primeCompl) Sₚ, not_exists]
     simp only [one_mul, IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S P.primeCompl),
       not_exists]

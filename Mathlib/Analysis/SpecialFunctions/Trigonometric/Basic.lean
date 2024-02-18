@@ -164,8 +164,11 @@ theorem pi_pos : 0 < π :=
   lt_of_lt_of_le (by norm_num) two_le_pi
 #align real.pi_pos Real.pi_pos
 
+theorem pi_nonneg : 0 ≤ π :=
+  pi_pos.le
+
 theorem pi_ne_zero : π ≠ 0 :=
-  ne_of_gt pi_pos
+  pi_pos.ne'
 #align real.pi_ne_zero Real.pi_ne_zero
 
 theorem pi_div_two_pos : 0 < π / 2 :=
@@ -182,8 +185,12 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-def evalRealPi : PositivityExt where eval {_ _} _ _ _ := do
-  pure (.positive (q(Real.pi_pos) : Lean.Expr))
+def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.pi) =>
+    assertInstancesCommute
+    pure (.positive q(Real.pi_pos))
+  | _, _, _ => throwError "not Real.pi"
 
 end Mathlib.Meta.Positivity
 
@@ -909,6 +916,16 @@ theorem tan_pi_div_four : tan (π / 4) = 1 := by
 @[simp]
 theorem tan_pi_div_two : tan (π / 2) = 0 := by simp [tan_eq_sin_div_cos]
 #align real.tan_pi_div_two Real.tan_pi_div_two
+
+@[simp]
+theorem tan_pi_div_six : tan (π / 6) = 1 / sqrt 3 := by
+  rw [tan_eq_sin_div_cos, sin_pi_div_six, cos_pi_div_six]
+  ring
+
+@[simp]
+theorem tan_pi_div_three : tan (π / 3) = sqrt 3 := by
+  rw [tan_eq_sin_div_cos, sin_pi_div_three, cos_pi_div_three]
+  ring
 
 theorem tan_pos_of_pos_of_lt_pi_div_two {x : ℝ} (h0x : 0 < x) (hxp : x < π / 2) : 0 < tan x := by
   rw [tan_eq_sin_div_cos]

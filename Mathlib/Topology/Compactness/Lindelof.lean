@@ -5,7 +5,7 @@ Authors: Josha Dekker
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Order.Filter.CountableInter
-import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Metrizable.Basic
 
 /-!
@@ -499,15 +499,27 @@ theorem IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
 theorem IsCompact.isLindelof (hs : IsCompact s) :
     IsLindelof s := by tauto
 
+/-- A σ-compact set `s` is Lindelöf-/
+theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
+    IsLindelof s := by
+  rw [IsSigmaCompact] at hs
+  rcases hs with ⟨K, ⟨hc, huniv⟩⟩
+  rw [← huniv]
+  have hl : ∀ n, IsLindelof (K n) := fun n ↦ IsCompact.isLindelof (hc n)
+  exact isLindelof_iUnion hl
+
 /-- A compact space `X` is Lindelöf. -/
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
   { isLindelof_univ := isCompact_univ.isLindelof}
+
+/-- A sigma-compact space `X` is Lindelöf. -/
+instance (priority := 100) [SigmaCompactSpace X] : LindelofSpace X :=
+  { isLindelof_univ := isSigmaCompact_univ.isLindelof}
 
 /-- `X` is a non-Lindelöf topological space if it is not a Lindelöf space. -/
 class NonLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a non-Lindelöf space, `Set.univ` is not a Lindelöf set. -/
   nonLindelof_univ : ¬IsLindelof (univ : Set X)
-
 
 lemma nonLindelof_univ (X : Type*) [TopologicalSpace X] [NonLindelofSpace X] :
     ¬IsLindelof (univ : Set X) :=
@@ -704,7 +716,7 @@ instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMet
   have h_dense : ∀ ε > 0, ∃ s : Set X, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
     intro ε hpos
     let U := fun (z : X) ↦ Metric.ball z ε
-    have hU : ∀ z, U z ∈ nhds z := by
+    have hU : ∀ z, U z ∈ 𝓝 z := by
       intro z
       have : IsOpen (U z) := Metric.isOpen_ball
       refine IsOpen.mem_nhds this ?hx

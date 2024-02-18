@@ -52,7 +52,6 @@ instance : LargeCategory.{u} GroupWithZeroCat where
   comp_id := MonoidWithZeroHom.id_comp
   assoc _ _ _ := MonoidWithZeroHom.comp_assoc _ _ _
 
--- porting note: was not necessary in mathlib
 instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
   ⟨fun f => f.toFun, fun f g h => by
     cases f
@@ -88,10 +87,6 @@ instance hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat where
         map := fun f => f.toMonoidHom }
 set_option linter.uppercaseLean3 false in
 #align GroupWithZero.has_forget_to_Mon GroupWithZeroCat.hasForgetToMon
-
--- porting note: this instance was not necessary in mathlib
-instance {X Y : GroupWithZeroCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →*₀ Y) := f
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]
