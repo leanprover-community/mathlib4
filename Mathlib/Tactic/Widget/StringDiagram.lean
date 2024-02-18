@@ -24,7 +24,7 @@ inductive Mor₁ : Type
 
 def Mor₁.e : Mor₁ → MetaM Expr
   | .id C => do
-    mkAppOptM ``MonoidalCategoryStruct.tensorUnit #[none, none, C]
+    mkAppOptM ``MonoidalCategoryStruct.tensorUnit #[C]
   | .comp f g => do
     mkAppM ``MonoidalCategoryStruct.tensorObj #[← Mor₁.e f, ← Mor₁.e g]
   | .of f => return f.e
@@ -36,7 +36,7 @@ def Mor₁.toList : Mor₁ → List Expr
 
 partial def toMor₁ (e : Expr) : Mor₁ :=
   match e.getAppFnArgs with
-  | (``MonoidalCategoryStruct.tensorUnit, #[_, _, C]) => Mor₁.id C
+  | (``MonoidalCategoryStruct.tensorUnit, #[C, _, _]) => Mor₁.id C
   | (``MonoidalCategoryStruct.tensorObj, #[_, _, _, f, g]) => (toMor₁ f).comp (toMor₁ g)
   | _ => Mor₁.of ⟨e⟩
 
