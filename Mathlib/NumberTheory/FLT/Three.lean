@@ -38,7 +38,7 @@ private lemma mem_of_coe_ne_zero {a : ℕ} (ha : (a : ZMod 3) ≠ 0) :
     (a : ZMod 9) ∈ ({1, 2, 4, 5, 7, 8} : Finset (ZMod 9)) :=
   mem_of_castHom_ne_zero (fun h ↦ ha <| by simpa using h)
 
-private lemma biz {a : ZMod 9} (ha : a ∈ ({1, 2, 4, 5, 7, 8} : Finset (ZMod 9))) :
+private lemma cube_mem_of_mem {a : ZMod 9} (ha : a ∈ ({1, 2, 4, 5, 7, 8} : Finset (ZMod 9))) :
     a ^ 3 ∈ ({1, 8} : Finset (ZMod 9)) := by
   fin_cases ha
   all_goals decide
@@ -49,7 +49,9 @@ private lemma fermatLastTheoremThree_ZMod9_case_1 {a b c : ZMod 9}
   (hc : c ∈ ({1, 2, 4, 5, 7, 8} : Finset (ZMod 9))) :
     a ^ 3 + b ^ 3 ≠ c ^ 3 := by
   have : Fact (1 < 9) := ⟨by norm_num⟩
-  replace ha := biz ha; replace hb := biz hb; replace hc := biz hc
+  replace ha := cube_mem_of_mem ha
+  replace hb := cube_mem_of_mem hb
+  replace hc := cube_mem_of_mem hc
   simp only [Finset.mem_insert, Finset.mem_singleton] at ha hb hc
   rcases ha with (ha | ha) <;> rcases hb with (hb | hb) <;> rcases hc with (hc | hc)
   all_goals simp only [ha, hb, hc]; decide
