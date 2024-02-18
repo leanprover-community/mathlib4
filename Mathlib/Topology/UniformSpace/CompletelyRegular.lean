@@ -37,7 +37,7 @@ completely regular space.
 ## TODO
 
 Provide a way to construct a uniformity from the definition of a completely regular spaces,
-fully deprecating completely regular spaces.
+fully deprecating `CompletelyRegularSpace`.
 
 ## References
 
@@ -235,7 +235,7 @@ theorem exists_pseudoMetricSpace_family_of_isOpen {s : Set X} (s_open : IsOpen s
     show ⋂ m ∈ t, @Metric.ball _ m x (iInf ε) ⊆ s
     calc
       _ = ⋂ (i : t'), @Metric.ball X (PseudoMetricSpaceOf i.val.prop) x (iInf ε) := by
-          simp_rw [Set.biInter_image, Set.iInter_subtype]
+        simp_rw [Set.biInter_image, Set.iInter_subtype]
       _ ⊆ ⋂ (i : t'), @Metric.ball _ (PseudoMetricSpaceOf i.val.prop) x (ε i) := by
         apply Set.iInter_mono
         intro i
