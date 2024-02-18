@@ -217,10 +217,10 @@ variable [Module R M₁] [Module R M₂]
   dsimp [polar]
   abel
 
-@[simp] theorem polarLinearMap₂_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
-    (Q₁.prod Q₂).polarLinearMap₂ =
-      Q₁.polarLinearMap₂.compl₁₂ (.fst R M₁ M₂) (.fst R M₁ M₂) +
-      Q₂.polarLinearMap₂.compl₁₂ (.snd R M₁ M₂) (.snd R M₁ M₂) :=
+@[simp] theorem polarBilin_prod (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
+    (Q₁.prod Q₂).polarBilin =
+      Q₁.polarBilin.compl₁₂ (.fst R M₁ M₂) (.fst R M₁ M₂) +
+      Q₂.polarBilin.compl₁₂ (.snd R M₁ M₂) (.snd R M₁ M₂) :=
   LinearMap.ext₂ <| polar_prod _ _
 
 @[simp] theorem associated_prod [Invertible (2 : R)]
@@ -229,7 +229,7 @@ variable [Module R M₁] [Module R M₂]
       (associated Q₁).compl₁₂ (.fst R M₁ M₂) (.fst R M₁ M₂) +
       (associated Q₂).compl₁₂ (.snd R M₁ M₂) (.snd R M₁ M₂) := by
   dsimp [associated, associatedHom]
-  rw [polarLinearMap₂_prod, smul_add]
+  rw [polarBilin_prod, smul_add]
   rfl
 
 end Ring
@@ -369,14 +369,14 @@ variable [Fintype ι]
   dsimp [polar]
   simp_rw [Finset.sum_sub_distrib, pi_apply, Pi.add_apply]
 
-@[simp] theorem polarLinearMap₂_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
-    (pi Q).polarLinearMap₂ = ∑ i, (Q i).polarLinearMap₂.compl₁₂ (.proj i) (.proj i) :=
+@[simp] theorem polarBilin_pi (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
+    (pi Q).polarBilin = ∑ i, (Q i).polarBilin.compl₁₂ (.proj i) (.proj i) :=
   LinearMap.ext₂ fun x y => (polar_pi _ _ _).trans <| by simp
 
 @[simp] theorem associated_pi [Invertible (2 : R)] (Q : ∀ i, QuadraticForm R (Mᵢ i)) :
     associated (pi Q) = ∑ i, (Q i).associated.compl₁₂ (.proj i) (.proj i) := by
   dsimp [associated, associatedHom]
-  rw [polarLinearMap₂_pi, Finset.smul_sum]
+  rw [polarBilin_pi, Finset.smul_sum]
   rfl
 
 end Ring
