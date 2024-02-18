@@ -176,17 +176,19 @@ theorem exists_pseudoMetricSpace_family_of_isOpen {s : Set X} (s_open : IsOpen s
   let ⟨V, V_in_unf, ball_subset⟩ := s_open x x_in_s
   rw [uniformity_eq_iInf_uniformSpaceOf] at V_in_unf
 
+  -- We firts obtain a family `t` of sets `r ∈ 𝓤 X`,
+  -- as well as a map `f` such that `∀ r ∈ t, f r ∈ 𝓤[UniformSpaceOf r]`.
   rw [← iInf_subtype (f := fun pair : { t : Set (X × X) // t ∈ 𝓤 X } =>
     @uniformity X <| UniformSpaceOf pair.prop), Filter.mem_iInf] at V_in_unf
-  have ⟨t', t'_finite, f, f_mem_unf, V_eq⟩ := V_in_unf
-  have t'_finite₂ : Finite t' := t'_finite
+  have ⟨t, t_finite, f, f_mem_unf, V_eq⟩ := V_in_unf
+  rw [Set.Finite] at t_finite
   rw [V_eq] at ball_subset
   clear V_in_unf s_open V_eq V
 
-  by_cases t'_nonempty : Nonempty t'; swap
+  by_cases t_nonempty : Nonempty t; swap
   {
-    -- If `t'` is empty, then `s = Set.univ`, we don't need to provide any pseudometric space.
-    rw [not_nonempty_iff] at t'_nonempty
+    -- If `t` is empty, then `s = Set.univ`, we don't need to provide any pseudometric space.
+    rw [not_nonempty_iff] at t_nonempty
     simp only [ball, Set.iInter_of_empty, Set.preimage_univ, Set.univ_subset_iff] at ball_subset
     rw [ball_subset]
     use ∅
@@ -197,13 +199,13 @@ theorem exists_pseudoMetricSpace_family_of_isOpen {s : Set X} (s_open : IsOpen s
     exact zero_lt_one
   }
 
-  -- A version of `interior ∘ f`, where each set `f ⟨i, i_in_unf⟩` is mapped to
+  -- We then construct a version of `interior ∘ f`, where each set `f ⟨i, i_in_unf⟩` is mapped to
   -- `interior[UniformSpaceOf i_in_unf] (f i)`.
-  let f' : t' → Set (X × X) := fun v =>
+  let f' : t → Set (X × X) := fun v =>
     let inst : TopologicalSpace X := (UniformSpaceOf v.val.prop).toTopologicalSpace
     @interior (X × X) (@instTopologicalSpaceProd _ _ inst inst) (f v)
 
-  have x_in_ball_V' : x ∈ ball x (⋂ i : t', f' i) := by
+  have x_in_ball_iInter : x ∈ ball x (⋂ i : t, f' i) := by
     apply UniformSpace.mem_ball_self
     rw [Filter.iInter_mem]
     intro i
@@ -211,19 +213,24 @@ theorem exists_pseudoMetricSpace_family_of_isOpen {s : Set X} (s_open : IsOpen s
     let _inst := UniformSpaceOf i.val.prop
     exact interior_mem_uniformity (f_mem_unf i)
 
-  have ball_isOpen : ∀ i : t', IsOpen[(UniformSpaceOf i.val.prop).toTopologicalSpace]
+  have ball_isOpen : ∀ i : t, IsOpen[(UniformSpaceOf i.val.prop).toTopologicalSpace]
       (ball x (f' i)) := fun i =>
     let _inst := UniformSpaceOf i.val.prop
     isOpen_ball _ isOpen_interior
 
+  -- Each `ball x (f' i)` is open in `UniformSpaceOf i_in_unf` and contains `x`,
+  -- so we can use the pseudometric associated with `i` to get a set of `ε`,
+  -- such that the metric ball associated with each `i` is a subset of the uniform ball
+  -- associated with `i`.
   simp_rw [UniformSpace.isOpen_uniformSpaceOf_iff] at ball_isOpen
   replace ball_isOpen := fun i => ball_isOpen i x
-    <| ball_mono (Set.iInter_subset _ i) x x_in_ball_V'
+    <| ball_mono (Set.iInter_subset _ i) x x_in_ball_iInter
   choose ε ε_pos ball_subset' using ball_isOpen
 
-  let t := (fun v => PseudoMetricSpaceOf v.prop) '' t'
-
-  refine ⟨t, Set.Finite.image _ t'_finite, ?topology_le, ⟨iInf ε, ?pos, ?subset⟩⟩
+  -- We finally just need to show that the family of pseudometric space associated
+  -- with elements of `t` and `iInf ε` satisfy our requirements.
+  let D := (fun v => PseudoMetricSpaceOf v.prop) '' t
+  refine ⟨D, Set.Finite.image _ t_finite, ?topology_le, ⟨iInf ε, ?pos, ?subset⟩⟩
   case pos =>
     rw [← sInf_range, Set.Finite.lt_cInf_iff (Set.finite_range ε) (Set.range_nonempty ε)]
     exact fun _ ⟨x, eq⟩ => eq ▸ ε_pos x
@@ -232,24 +239,24 @@ theorem exists_pseudoMetricSpace_family_of_isOpen {s : Set X} (s_open : IsOpen s
     rw [← eq]
     apply toTopologicalSpace_mono <| uniformity_le_uniformSpaceOf x.prop
   case subset =>
-    show ⋂ m ∈ t, @Metric.ball _ m x (iInf ε) ⊆ s
+    show ⋂ m ∈ D, @Metric.ball _ m x (iInf ε) ⊆ s
     calc
-      _ = ⋂ (i : t'), @Metric.ball X (PseudoMetricSpaceOf i.val.prop) x (iInf ε) := by
+      _ = ⋂ (i : t), @Metric.ball X (PseudoMetricSpaceOf i.val.prop) x (iInf ε) := by
         simp_rw [Set.biInter_image, Set.iInter_subtype]
-      _ ⊆ ⋂ (i : t'), @Metric.ball _ (PseudoMetricSpaceOf i.val.prop) x (ε i) := by
+      _ ⊆ ⋂ (i : t), @Metric.ball _ (PseudoMetricSpaceOf i.val.prop) x (ε i) := by
         apply Set.iInter_mono
         intro i
         let _inst := PseudoMetricSpaceOf i.val.prop
         apply Metric.ball_subset
         rw [dist_self, sub_nonneg]
         exact ciInf_le (Finite.bddBelow_range _) _
-      _ ⊆ ⋂ (i : t'), ball x (f' i) := Set.iInter_mono ball_subset'
-      _ ⊆ ⋂ (i : t'), ball x (f i) := by
+      _ ⊆ ⋂ (i : t), ball x (f' i) := Set.iInter_mono ball_subset'
+      _ ⊆ ⋂ (i : t), ball x (f i) := by
         refine Set.iInter_mono fun i => ball_mono ?subset x
         let _inst := (UniformSpaceOf i.val.prop).toTopologicalSpace
         exact interior_subset
-      _ = ball x (⋂ (i : t'), f i) := by
-        have := Set.Finite.fintype t'_finite
+      _ = ball x (⋂ (i : t), f i) := by
+        have := Set.Finite.fintype t_finite
         rw [ball_iInter]
       _ ⊆ s := ball_subset
 
