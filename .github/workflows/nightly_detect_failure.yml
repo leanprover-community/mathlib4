@@ -81,13 +81,9 @@ jobs:
       run: pip install zulip
 
     - name: Check last message and post if necessary
-      env:
-        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
-        ZULIP_EMAIL: 'github-mathlib4-bot@leanprover.zulipchat.com'
-        ZULIP_ORG_URL: 'https://leanprover.zulipchat.com'
       run: |
         import zulip
-        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key='${{ secrets.ZULIP_API_KEY }}', site='leanprover.zulipchat.com')
+        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key='${{ secrets.ZULIP_API_KEY }}', site='https://leanprover.zulipchat.com')
 
         # Get the last message in the 'CI failure on the nightly-testing branch' topic
         request = {
