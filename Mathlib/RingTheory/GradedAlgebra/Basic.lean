@@ -148,14 +148,12 @@ theorem coe_decompose_mul_add_of_right_mem [AddRightCancelMonoid ι] [GradedRing
 #align direct_sum.coe_decompose_mul_add_of_right_mem DirectSum.coe_decompose_mul_add_of_right_mem
 
 theorem decompose_mul_add_left [AddLeftCancelMonoid ι] [GradedRing 𝒜] (a : 𝒜 i) {b : A} :
-    decompose 𝒜 (↑a * b) (i + j) =
-      @GradedMonoid.GMul.mul ι (fun i => 𝒜 i) _ _ _ _ a (decompose 𝒜 b j) :=
+    decompose 𝒜 (↑a * b) (i + j) = a * decompose 𝒜 b j :=
   Subtype.ext <| coe_decompose_mul_add_of_left_mem 𝒜 a.2
 #align direct_sum.decompose_mul_add_left DirectSum.decompose_mul_add_left
 
 theorem decompose_mul_add_right [AddRightCancelMonoid ι] [GradedRing 𝒜] {a : A} (b : 𝒜 j) :
-    decompose 𝒜 (a * ↑b) (i + j) =
-      @GradedMonoid.GMul.mul ι (fun i => 𝒜 i) _ _ _ _ (decompose 𝒜 a i) b :=
+    decompose 𝒜 (a * ↑b) (i + j) = decompose 𝒜 a i * b :=
   Subtype.ext <| coe_decompose_mul_add_of_right_mem 𝒜 b.2
 #align direct_sum.decompose_mul_add_right DirectSum.decompose_mul_add_right
 

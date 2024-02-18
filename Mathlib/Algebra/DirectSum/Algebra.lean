@@ -47,9 +47,9 @@ section
 with an `R`-algebra structure. -/
 class GAlgebra where
   toFun : R →+ A 0
-  map_one : toFun 1 = GradedMonoid.GOne.one
+  map_one : toFun 1 = 1
   map_mul :
-    ∀ r s, GradedMonoid.mk _ (toFun (r * s)) = .mk _ (GradedMonoid.GMul.mul (toFun r) (toFun s))
+    ∀ r s, GradedMonoid.mk _ (toFun (r * s)) = .mk _ (toFun r * toFun s)
   commutes : ∀ (r) (x : GradedMonoid A), .mk _ (toFun r) * x = x * .mk _ (toFun r)
   smul_def : ∀ (r) (x : GradedMonoid A), r • x = .mk _ (toFun r) * x
 #align direct_sum.galgebra DirectSum.GAlgebra
@@ -113,8 +113,8 @@ coercions such as `Submodule.subtype (A i)`, and the `[GMonoid A]` structure ori
 `DirectSum.GMonoid.ofAddSubmodules`, in which case the proofs about `GOne` and `GMul`
 can be discharged by `rfl`. -/
 @[simps]
-def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1)
-    (hmul : ∀ {i j} (ai : A i) (aj : A j), f _ (GradedMonoid.GMul.mul ai aj) = f _ ai * f _ aj) :
+def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ (1 : A 0) = 1)
+    (hmul : ∀ {i j} (ai : A i) (aj : A j), f _ (ai * aj) = f _ ai * f _ aj) :
     (⨁ i, A i) →ₐ[R] B :=
   { toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul with
     toFun := toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul
@@ -143,7 +143,7 @@ This is the graded version of `LinearMap.mul`, and the linear version of `Direct
 @[simps]
 def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
   toFun a :=
-    { toFun := fun b => GradedMonoid.GMul.mul a b
+    { toFun := fun b => a * b
       map_smul' := fun r x => by
         injection (smul_comm r (GradedMonoid.mk _ a) (GradedMonoid.mk _ x)).symm
       map_add' := GNonUnitalNonAssocSemiring.mul_add _ }

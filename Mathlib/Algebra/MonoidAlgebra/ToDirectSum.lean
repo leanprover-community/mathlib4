@@ -156,7 +156,7 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
   simp only [AddMonoidHom.coe_comp, AddMonoidHom.coe_mul, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
     Function.comp_apply, toDirectSum_single, AddMonoidHom.id_apply, Finsupp.singleAddHom_apply,
     AddMonoidHom.coe_mulLeft]
-  erw [DirectSum.of_mul_of, Mul.gMul_mul]
+  erw [DirectSum.of_mul_of]
 #align add_monoid_algebra.to_direct_sum_mul AddMonoidAlgebra.toDirectSum_mul
 
 end AddMonoidAlgebra
