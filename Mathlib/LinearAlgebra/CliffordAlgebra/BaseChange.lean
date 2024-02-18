@@ -95,8 +95,7 @@ noncomputable def toBaseChange (Q : QuadraticForm R V) :
     intros v w
     rw [← TensorProduct.tmul_add, CliffordAlgebra.ι_mul_ι_add_swap,
       QuadraticForm.polarBilin_baseChange, LinearMap.BilinForm.baseChange_tmul, one_mul,
-      TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one,
-      QuadraticForm.polarBilin_apply_apply]
+      TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one, QuadraticForm.polarBilin_apply_apply]
 
 @[simp] theorem toBaseChange_ι (Q : QuadraticForm R V) (z : A) (v : V) :
     toBaseChange A Q (ι (Q.baseChange A) (z ⊗ₜ v)) = z ⊗ₜ ι Q v :=
