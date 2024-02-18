@@ -30,14 +30,14 @@ open scoped DirectSum
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 -- porting note: protected
 protected def GradedAlgebra.ι :
-    M →ₗ[R] ⨁ i : ℕ, ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i) :=
-  DirectSum.lof R ℕ (fun i => ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i)) 1 ∘ₗ
+    M →ₗ[R] ⨁ i : ℕ, ↥((Λ[R]^i) M) :=
+  DirectSum.lof R ℕ (fun i => ↥((Λ[R]^i) M)) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
 #align exterior_algebra.graded_algebra.ι ExteriorAlgebra.GradedAlgebra.ι
 
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
-      DirectSum.of (fun i : ℕ => ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i)) 1
+      DirectSum.of (fun i : ℕ => ↥((Λ[R]^i) M)) 1
         ⟨ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
   rfl
 #align exterior_algebra.graded_algebra.ι_apply ExteriorAlgebra.GradedAlgebra.ι_apply
@@ -53,8 +53,7 @@ theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebr
 /-- `ExteriorAlgebra.GradedAlgebra.ι` lifted to exterior algebra. This is
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 def GradedAlgebra.liftι :
-    ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ,
-    (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i : Submodule R (ExteriorAlgebra R M)) :=
+    ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ, ((Λ[R]^i) M : Submodule R (ExteriorAlgebra R M)) :=
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 

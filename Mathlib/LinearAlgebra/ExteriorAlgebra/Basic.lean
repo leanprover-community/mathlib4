@@ -66,6 +66,21 @@ def ι : M →ₗ[R] ExteriorAlgebra R M :=
   CliffordAlgebra.ι _
 #align exterior_algebra.ι ExteriorAlgebra.ι
 
+section ExteriorPower
+
+variable (n : ℕ) (N : Type u2) [AddCommGroup N] [Module R N]
+-- New variables `n` and `N`, to get the correct order of variables in the notation.
+
+/-- Definition of the `n`th exterior power of a `R`-module `N`. We introduce the notation
+`Λ[R]^n N` for `ExteriorPower R n N`. -/
+@[reducible]
+def ExteriorPower := (LinearMap.range (ι R : N →ₗ[R] ExteriorAlgebra R N) ^ n)
+
+@[inherit_doc]
+notation:100 "Λ[" R "]^" n:arg => ExteriorPower R n
+
+end ExteriorPower
+
 variable {R}
 
 /-- As well as being linear, `ι m` squares to zero. -/
@@ -333,7 +348,7 @@ variable (R)
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power. -/
 lemma ιMulti_range (n : ℕ) :
-    Set.range (ιMulti R n (M := M)) ⊆ ↑(LinearMap.range (ι R (M := M)) ^ n) := by
+    Set.range (ιMulti R n (M := M)) ⊆ ↑((Λ[R]^n) M) := by
   rw [Set.range_subset_iff]
   intro v
   rw [ιMulti_apply]
@@ -344,9 +359,8 @@ lemma ιMulti_range (n : ℕ) :
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
 of the exterior algebra. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
-    Submodule.span R (Set.range (ιMulti R n)) =
-    LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n := by
-  refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) ?_
+    Submodule.span R (Set.range (ιMulti R n)) = (Λ[R]^n) M := by
+  refine le_antisymm (b := (LinearMap.range (ι R)) ^ n) (Submodule.span_le.2 (ιMulti_range R n)) ?_
   rw [Submodule.pow_eq_span_pow_set, Submodule.span_le]
   refine fun u hu ↦ Submodule.subset_span ?_
   obtain ⟨f, rfl⟩ := Set.mem_pow.mp hu
