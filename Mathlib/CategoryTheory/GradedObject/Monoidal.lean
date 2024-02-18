@@ -96,6 +96,17 @@ lemma tensorObj_ext {A : C} {j : I} (f g : tensorObj X₁ X₂ j ⟶ A)
   rintro ⟨i₁, i₂⟩ hi
   exact h i₁ i₂ hi
 
+noncomputable def tensorObjDesc {A : C} {k : I}
+    (f : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = k), X₁ i₁ ⊗ X₂ i₂ ⟶ A) :
+    tensorObj X₁ X₂ k ⟶ A :=
+  mapBifunctorMapObjDesc f
+
+@[reassoc (attr := simp)]
+lemma ι_tensorObjDesc {A : C} {k : I}
+    (f : ∀ (i₁ i₂ : I) (_ : i₁ + i₂ = k), X₁ i₁ ⊗ X₂ i₂ ⟶ A) (i₁ i₂ : I) (hi : i₁ + i₂ = k) :
+    ιTensorObj X₁ X₂ i₁ i₂ k hi ≫ tensorObjDesc f = f i₁ i₂ hi := by
+  apply ι_mapBifunctorMapObjDesc
+
 end
 
 noncomputable def tensorHom {X₁ X₂ Y₁ Y₂ : GradedObject I C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) [HasTensor X₁ Y₁]
@@ -616,15 +627,15 @@ end
 section
 
 instance (n : ℕ) : Finite ((fun (i : ℕ × ℕ) => i.1 + i.2) ⁻¹' {n}) := by
-  refine' Finite.of_injective (fun ⟨⟨i₁, i₂⟩, (hi : i₁ + i₂ = n)⟩ =>
-    ((⟨i₁, by linarith⟩, ⟨i₂, by linarith⟩) : Fin (n + 1) × Fin (n + 1) )) _
+  refine Finite.of_injective (fun ⟨⟨i₁, i₂⟩, (hi : i₁ + i₂ = n)⟩ =>
+    ((⟨i₁, by linarith⟩, ⟨i₂, by linarith⟩) : Fin (n + 1) × Fin (n + 1) )) ?_
   rintro ⟨⟨i₁, i₂⟩, (hi : i₁ + i₂ = n)⟩ ⟨⟨j₁, j₂⟩, (hj : j₁ + j₂ = n)⟩ h
   simpa using h
 
 instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n }) := by
-  refine' Finite.of_injective (fun ⟨⟨i₁, i₂, i₃⟩, (hi : i₁ + i₂ + i₃ = n)⟩ =>
+  refine Finite.of_injective (fun ⟨⟨i₁, i₂, i₃⟩, (hi : i₁ + i₂ + i₃ = n)⟩ =>
     (⟨⟨i₁, by linarith⟩, ⟨i₂, by linarith⟩, ⟨i₃, by linarith⟩⟩ :
-      Fin (n+1) × Fin (n+1) × Fin (n+1))) _
+      Fin (n + 1) × Fin (n + 1) × Fin (n + 1))) ?_
   rintro ⟨⟨i₁, i₂, i₃⟩, hi : i₁ + i₂ + i₃ = n⟩ ⟨⟨j₁, j₂, j₃⟩, hj : j₁ + j₂ + j₃ = n⟩ h
   simpa using h
 
