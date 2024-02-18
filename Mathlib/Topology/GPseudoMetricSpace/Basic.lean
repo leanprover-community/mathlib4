@@ -39,8 +39,8 @@ open scoped BigOperators
 this is not declared as an instance, as it would lead to multiple instances of bornology on α,
 as well as a free type variable when trying to infer the instance. -/
 @[reducible]
-def Bornology.ofGDist {α : Type*} {β : Type*} [LinearOrderedAddCommMonoid β]
-    (gdist : α → α → β) (gdist_comm : ∀ x y, gdist x y = gdist y x)
+def Bornology.ofGDist {α : Type*} {β : Type*} [LinearOrder β] [AddCommMonoid β]
+    [IsOrderedAddCommMonoid β] (gdist : α → α → β) (gdist_comm : ∀ x y, gdist x y = gdist y x)
     (gdist_triangle : ∀ x y z, gdist x z ≤ gdist x y + gdist y z) : Bornology α :=
   Bornology.ofBounded { s : Set α | ∃ C, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → gdist x y ≤ C }
     ⟨0,fun x hx y => hx.elim⟩
@@ -62,21 +62,24 @@ def Bornology.ofGDist {α : Type*} {β : Type*} [LinearOrderedAddCommMonoid β]
 
 /-- the class of spaces α with a generic distance function on which return an element of type β -/
 @[ext]
-class GDist (α : Type*) (β : Type*) [LinearOrderedAddCommMonoid β] where
+class GDist
+    (α : Type*) (β : Type*) [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β] where
   /-- the generic distance function on α to β -/
   protected gdist : α → α → β
 
 
 /-- the generic distance function on a space α which returns an element of type β,
 with an explicit type parameter β for ease of inferring the return type-/
-def gdist (β : Type*) [LinearOrderedAddCommMonoid β]{α :Type*} [GDist α β] :α → α → β :=
+def gdist (β : Type*) [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
+    {α :Type*} [GDist α β] :α → α → β :=
   GDist.gdist
 
 export GDist (gdist)
 
 variable {α : Type*} {β : Type*}
-private theorem gdist_nonneg' [LinearOrderedAddCommMonoid β] {x y : α} (gdist : α → α → β)
-    (gdist_self : ∀ x : α, gdist x x = 0) (gdist_comm : ∀ x y : α, gdist x y = gdist y x)
+private theorem gdist_nonneg' [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β] {x y : α}
+    (gdist : α → α → β) (gdist_self : ∀ x : α, gdist x x = 0)
+    (gdist_comm : ∀ x y : α, gdist x y = gdist y x)
     (gdist_triangle : ∀ x y z : α, gdist x z ≤ gdist x y + gdist y z) : 0 ≤ gdist x y := by
   have : 0 ≤ gdist x y + gdist x y :=
     calc 0 = gdist x x := (gdist_self _).symm
@@ -92,13 +95,15 @@ function is not necessarily ℝ (or ℝ≥0∞), and as a result does not endow 
 space.
 -/
 class GPseudoMetricSpace
-    (α : Type*) (β : Type*) [LinearOrderedAddCommMonoid β] extends GDist α β where
+    (α : Type*) (β : Type*) [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
+    extends GDist α β where
   gdist_self : ∀ x : α, gdist x x = 0
   gdist_comm : ∀ x y : α, gdist x y = gdist y x
   gdist_triangle : ∀ x y z : α, gdist x z ≤ gdist x y + gdist y z
 
 
-lemma cobounded_sets [LinearOrderedAddCommMonoid β] (gdist : α → α → β)
+lemma cobounded_sets [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
+    (gdist : α → α → β)
     (gdist_comm : ∀ x y, gdist x y = gdist y x)
     (gdist_triangle : ∀ x y z, gdist x z ≤ gdist x y + gdist y z):
     (@Bornology.cobounded α (Bornology.ofGDist (gdist) gdist_comm gdist_triangle)
@@ -108,15 +113,15 @@ lemma cobounded_sets [LinearOrderedAddCommMonoid β] (gdist : α → α → β)
 
 
 @[ext]
-theorem GPseudoMetricSpace.ext [LinearOrderedAddCommMonoid β] {m m' : GPseudoMetricSpace α β}
-    (h : m.toGDist = m'.toGDist) : m = m' := by
+theorem GPseudoMetricSpace.ext [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
+    {m m' : GPseudoMetricSpace α β} (h : m.toGDist = m'.toGDist) : m = m' := by
   cases' m with d _ _ _ B hB
   cases' m' with d' _ _ _ B' hB'
   obtain rfl : d = d' := h
   congr
 
 section
-variable [LinearOrderedAddCommMonoid β] [GPseudoMetricSpace α β]
+variable [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β] [GPseudoMetricSpace α β]
 
 @[simp]
 theorem gdist_self (x : α) : gdist β x x = 0 :=
