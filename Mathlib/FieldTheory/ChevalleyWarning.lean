@@ -136,9 +136,9 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
       apply Finset.prod_eq_zero hi
       rw [pow_card_sub_one_eq_one (eval x (f i)) hx, sub_self]
   -- In particular, we can now show:
-  have key : ∑ x, eval x F = Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 }
-  rw [Fintype.card_of_subtype S hS, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one, ←
-    Fintype.sum_extend_by_zero S, sum_congr rfl fun x _ => hF x]
+  have key : ∑ x, eval x F = Fintype.card { x : σ → K // ∀ i ∈ s, eval x (f i) = 0 } := by
+    rw [Fintype.card_of_subtype S hS, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one, ←
+      Fintype.sum_extend_by_zero S, sum_congr rfl fun x _ => hF x]
   -- With these preparations under our belt, we will approach the main goal.
   show p ∣ Fintype.card { x // ∀ i : ι, i ∈ s → eval x (f i) = 0 }
   rw [← CharP.cast_eq_zero_iff K, ← key]

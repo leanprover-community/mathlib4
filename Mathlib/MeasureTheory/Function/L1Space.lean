@@ -353,8 +353,8 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
     rwa [← tendsto_iff_norm_sub_tendsto_zero]
   /- Therefore, by the dominated convergence theorem for nonnegative integration, have
     ` ∫ ‖f a - F n a‖ --> 0 ` -/
-  suffices h : Tendsto (fun n => ∫⁻ a, ENNReal.ofReal ‖F n a - f a‖ ∂μ) atTop (𝓝 (∫⁻ _ : α, 0 ∂μ))
-  · rwa [lintegral_zero] at h
+  suffices Tendsto (fun n => ∫⁻ a, ENNReal.ofReal ‖F n a - f a‖ ∂μ) atTop (𝓝 (∫⁻ _ : α, 0 ∂μ)) by
+    rwa [lintegral_zero] at this
   -- Using the dominated convergence theorem.
   refine' tendsto_lintegral_of_dominated_convergence' _ _ hb _ _
   -- Show `fun a => ‖f a - F n a‖` is almost everywhere measurable for all `n`

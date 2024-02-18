@@ -1320,7 +1320,7 @@ theorem Eventually.and_frequently {p q : α → Prop} {f : Filter α} (hp : ∀�
 
 theorem Frequently.exists {p : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x) : ∃ x, p x := by
   by_contra H
-  replace H : ∀ᶠ x in f, ¬p x; exact eventually_of_forall (not_exists.1 H)
+  replace H : ∀ᶠ x in f, ¬p x := eventually_of_forall (not_exists.1 H)
   exact hp H
 #align filter.frequently.exists Filter.Frequently.exists
 

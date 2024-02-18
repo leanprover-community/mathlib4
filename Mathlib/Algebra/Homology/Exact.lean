@@ -102,7 +102,7 @@ theorem Preadditive.exact_of_iso_of_exact {A₁ B₁ C₁ A₂ B₂ C₂ : V} (f
     (p : α.hom.right = β.hom.left) (h : Exact f₁ g₁) : Exact f₂ g₂ := by
   rw [Preadditive.exact_iff_homology'_zero] at h ⊢
   rcases h with ⟨w₁, ⟨i⟩⟩
-  suffices w₂ : f₂ ≫ g₂ = 0; exact ⟨w₂, ⟨(homology'.mapIso w₁ w₂ α β p).symm.trans i⟩⟩
+  suffices w₂ : f₂ ≫ g₂ = 0 from ⟨w₂, ⟨(homology'.mapIso w₁ w₂ α β p).symm.trans i⟩⟩
   rw [← cancel_epi α.hom.left, ← cancel_mono β.inv.right, comp_zero, zero_comp, ← w₁]
   have eq₁ := β.inv.w
   have eq₂ := α.hom.w
