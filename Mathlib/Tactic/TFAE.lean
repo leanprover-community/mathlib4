@@ -7,6 +7,7 @@ import Qq
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
+import Mathlib.Tactic.Have
 
 /-!
 # The Following Are Equivalent (TFAE)
@@ -61,6 +62,18 @@ private def tfaeHavePatDecl  := leading_parser (withAnonymousAntiquot := false)
 private def tfaeHaveDecl     := leading_parser (withAnonymousAntiquot := false)
   tfaeHaveIdDecl <|> (ppSpace >> tfaeHavePatDecl) <|> tfaeHaveEqnsDecl
 
+/--
+Patterned off of `haveIdLhs'` in `Mathlib.Tactic.Have`. This parser supports "Mathlib `have`"
+usage, which allows writing
+```lean
+  have : X
+  /- main goal is of type X -/
+```
+We omit `many (ppSpace >> letIdBinder)`, as it makes no sense to add extra arguments to a
+`tfae_have` decl.  -/
+private def tfaeHaveIdLhs' := leading_parser (withAnonymousAntiquot := false)
+  (ppSpace >> optBinderIdent) >> tfaeType
+
 end Parser
 
 open Parser
@@ -99,6 +112,8 @@ example : TFAE [P, Q] := by
   tfae_have hpq : 1 → 2 := sorry -- `hpq : P → Q`
   tfae_have _ : 1 → 2 := sorry -- inaccessible `h✝ : P → Q`
   tfae_have : 1 → 2 := f ?a -- `tfae_1_to_2 : P → Q`, and `?a` is a new goal
+  tfae_have : 1 → 2 -- create a goal of type `P → Q`
+  · admit /- proof of `P → Q` -/
   tfae_have : 1 → 2
   | p => f p -- match on `p : P` and prove `Q`
   tfae_have ⟨pq, qp⟩ : 1 ↔ 2 := sorry -- introduces `pq : P → Q`, `qp : Q → P`
@@ -107,6 +122,9 @@ example : TFAE [P, Q] := by
 ```
 -/
 syntax (name := tfaeHave) "tfae_have " tfaeHaveDecl : tactic
+
+@[inherit_doc tfaeHave]
+syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs' : tactic
 
 /--
 `tfae_finish` is used to close goals of the form `TFAE [P₁, P₂, ...]` once a sufficient collection
@@ -253,6 +271,12 @@ macro_rules
   let id := HygieneInfo.mkIdent hy (← mkTFAEId i arr j) (canonical := true)
   `(tfaeHave|tfae_have $id : $i $arr $j $alts)
 
+-- Mathlib `have`
+| `(tfaeHave'|tfae_have $hy:hygieneInfo : $i:num $arr:impArrow $j:num) => do
+  let id := HygieneInfo.mkIdent hy (← mkTFAEId i arr j) (canonical := true)
+  let id ← `(optBinderIdent|$id:ident)
+  `(tfaeHave'|tfae_have $id : $i $arr $j)
+
 elab_rules : tactic
 | `(tfaeHave|tfae_have $d:tfaeHaveDecl) => withMainContext do
   let goal ← getMainGoal
@@ -267,6 +291,16 @@ elab_rules : tactic
   | `(tfaeHaveDecl| $pat:term : $i:num $arr:impArrow $j:num := $t:term) =>
     let type ← elabTFAEHaveType tfaeList i arr j
     evalTactic <|← `(tactic|have $pat:term : $(← type.toSyntax) := $t)
+  | _ => throwUnsupportedSyntax
+
+-- Mathlib `have`
+| `(tfaeHave'|tfae_have $d:tfaeHaveIdLhs') => withMainContext do
+  let goal ← getMainGoal
+  let (_, tfaeList) ← getTFAEList (← goal.getType)
+  match d with
+  | `(tfaeHaveIdLhs'| $b : $i:num $arr:impArrow $j:num) =>
+    let type ← elabTFAEHaveType tfaeList i arr j
+    evalTactic <|← `(tactic|have $b : $(← type.toSyntax))
   | _ => throwUnsupportedSyntax
 
 
