@@ -13,10 +13,10 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 ## Main definitions
 
-* `LinearMap.BilinForm.tensorDistrib (B₁ ⊗ₜ B₂)`: the bilinear form on `M₁ ⊗ M₂` constructed by applying
-  `B₁` on `M₁` and `B₂` on `M₂`.
-* `LinearMap.BilinForm.tensorDistribEquiv`: `BilinForm.tensorDistrib` as an equivalence on finite free
-  modules.
+* `LinearMap.BilinForm.tensorDistrib (B₁ ⊗ₜ B₂)`: the bilinear form on `M₁ ⊗ M₂` constructed by
+  applying `B₁` on `M₁` and `B₂` on `M₂`.
+* `LinearMap.BilinForm.tensorDistribEquiv`: `BilinForm.tensorDistrib` as an equivalence on finite
+  free modules.
 
 -/
 
