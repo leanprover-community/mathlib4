@@ -107,18 +107,23 @@ creation, and matching. These are demonstrated below.
 
 ```lean
 example : TFAE [P, Q] := by
-
-  tfae_have : 1 → 2 := sorry -- `tfae_1_to_2 : P → Q`
-  tfae_have hpq : 1 → 2 := sorry -- `hpq : P → Q`
-  tfae_have _ : 1 → 2 := sorry -- inaccessible `h✝ : P → Q`
-  tfae_have : 1 → 2 := f ?a -- `tfae_1_to_2 : P → Q`, and `?a` is a new goal
-  tfae_have : 1 → 2 -- create a goal of type `P → Q`
-  · admit /- proof of `P → Q` -/
+  -- `tfae_1_to_2 : P → Q`:
+  tfae_have : 1 → 2 := sorry
+  -- `hpq : P → Q`:
+  tfae_have hpq : 1 → 2 := sorry
+  -- inaccessible `h✝ : P → Q`:
+  tfae_have _ : 1 → 2 := sorry
+  -- `tfae_1_to_2 : P → Q`, and `?a` is a new goal:
+  tfae_have : 1 → 2 := f ?a
+  -- create a goal of type `P → Q`:
   tfae_have : 1 → 2
-  | p => f p -- match on `p : P` and prove `Q`
-  tfae_have ⟨pq, qp⟩ : 1 ↔ 2 := sorry -- introduces `pq : P → Q`, `qp : Q → P`
-
-  tfae_finish
+  · exact (sorry : P → Q)
+  -- match on `p : P` and prove `Q`:
+  tfae_have : 1 → 2
+  | p => f p
+  -- introduces `pq : P → Q`, `qp : Q → P`:
+  tfae_have ⟨pq, qp⟩ : 1 ↔ 2 := sorry
+  ...
 ```
 -/
 syntax (name := tfaeHave) "tfae_have " tfaeHaveDecl : tactic
