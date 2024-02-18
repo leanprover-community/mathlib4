@@ -40,26 +40,26 @@ example {X Y : C} (f : X ⟶ Y) (g : 𝟙_ C ⊗ X ⟶ 𝟙_ C ⊗ Y) (w : False
     -- now the widget works
     exact w.elim
 
-elab "normalize " t:term : term => do
+elab "normalize% " t:term : term => do
   let e ← Lean.Elab.Term.elabTerm t none
   (← Mathlib.Tactic.Widget.StringDiagram.eval e).e
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 variable {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
 
-#guard_expr (normalize (X ◁ 𝟙 Y)) = 𝟙 (X ⊗ Y)
-#guard_expr (normalize (𝟙 X ▷ Y)) = 𝟙 (X ⊗ Y)
-#guard_expr (normalize (X ◁ (f ≫ g))) = X ◁ f ≫ X ◁ g
-#guard_expr (normalize ((f ≫ g) ▷ Y)) = f ▷ Y ≫ g ▷ Y
-#guard_expr (normalize 𝟙_ C ◁ f) = (λ_ _).hom ≫ f ≫ (λ_ _).inv
-#guard_expr (normalize (X ⊗ Y) ◁ f) = (α_ _ _ _).hom ≫ X ◁ Y ◁ f ≫ (α_ _ _ _).inv
-#guard_expr (normalize (f ▷ 𝟙_ C)) = (ρ_ _).hom ≫ f ≫ (ρ_ _).inv
-#guard_expr (normalize f ▷ (X ⊗ Y)) = (α_ _ _ _).inv ≫ f ▷ X ▷ Y ≫ (α_ _ _ _).hom
-#guard_expr (normalize ((X ◁ f) ▷ Y)) = (α_ _ _ _).hom ≫ X ◁ f ▷ Y ≫ (α_ _ _ _).inv
-#guard_expr (normalize (λ_ X).hom) = (λ_ X).hom
-#guard_expr (normalize (λ_ X).inv) = (λ_ X).inv
-#guard_expr (normalize (ρ_ X).hom) = (ρ_ X).hom
-#guard_expr (normalize (ρ_ X).inv) = (ρ_ X).inv
-#guard_expr (normalize (α_ X Y Z).hom) = (α_ _ _ _).hom
-#guard_expr (normalize (α_ X Y Z).inv) = (α_ _ _ _).inv
-#guard_expr (normalize (𝟙 (X ⊗ Y))) = 𝟙 (X ⊗ Y)
+#guard_expr (normalize% (X ◁ 𝟙 Y)) = 𝟙 (X ⊗ Y)
+#guard_expr (normalize% (𝟙 X ▷ Y)) = 𝟙 (X ⊗ Y)
+#guard_expr (normalize% (X ◁ (f ≫ g))) = X ◁ f ≫ X ◁ g
+#guard_expr (normalize% ((f ≫ g) ▷ Y)) = f ▷ Y ≫ g ▷ Y
+#guard_expr (normalize% 𝟙_ C ◁ f) = (λ_ _).hom ≫ f ≫ (λ_ _).inv
+#guard_expr (normalize% (X ⊗ Y) ◁ f) = (α_ _ _ _).hom ≫ X ◁ Y ◁ f ≫ (α_ _ _ _).inv
+#guard_expr (normalize% (f ▷ 𝟙_ C)) = (ρ_ _).hom ≫ f ≫ (ρ_ _).inv
+#guard_expr (normalize% f ▷ (X ⊗ Y)) = (α_ _ _ _).inv ≫ f ▷ X ▷ Y ≫ (α_ _ _ _).hom
+#guard_expr (normalize% ((X ◁ f) ▷ Y)) = (α_ _ _ _).hom ≫ X ◁ f ▷ Y ≫ (α_ _ _ _).inv
+#guard_expr (normalize% (λ_ X).hom) = (λ_ X).hom
+#guard_expr (normalize% (λ_ X).inv) = (λ_ X).inv
+#guard_expr (normalize% (ρ_ X).hom) = (ρ_ X).hom
+#guard_expr (normalize% (ρ_ X).inv) = (ρ_ X).inv
+#guard_expr (normalize% (α_ X Y Z).hom) = (α_ _ _ _).hom
+#guard_expr (normalize% (α_ X Y Z).inv) = (α_ _ _ _).inv
+#guard_expr (normalize% (𝟙 (X ⊗ Y))) = 𝟙 (X ⊗ Y)
