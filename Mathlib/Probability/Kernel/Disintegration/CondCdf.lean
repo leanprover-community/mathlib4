@@ -294,7 +294,7 @@ theorem tendsto_preCDF_atTop_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
   -- us that `F` is 1 a.e.
   have h_lintegral_eq : ∫⁻ a, F a ∂ρ.fst = ∫⁻ _, 1 ∂ρ.fst := by
     have h_lintegral :
-      Tendsto (fun r : ℕ => ∫⁻ a, preCDF ρ r a ∂ρ.fst) atTop (𝓝 (∫⁻ a, F a ∂ρ.fst)) := by
+        Tendsto (fun r : ℕ => ∫⁻ a, preCDF ρ r a ∂ρ.fst) atTop (𝓝 (∫⁻ a, F a ∂ρ.fst)) := by
       refine'
         lintegral_tendsto_of_tendsto_of_monotone
           (-- does this exist only for ℕ?
@@ -304,7 +304,7 @@ theorem tendsto_preCDF_atTop_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ]
       refine' fun n m hnm => ha _
       exact mod_cast hnm
     have h_lintegral' :
-      Tendsto (fun r : ℕ => ∫⁻ a, preCDF ρ r a ∂ρ.fst) atTop (𝓝 (∫⁻ _, 1 ∂ρ.fst)) := by
+        Tendsto (fun r : ℕ => ∫⁻ a, preCDF ρ r a ∂ρ.fst) atTop (𝓝 (∫⁻ _, 1 ∂ρ.fst)) := by
       rw [lintegral_one, Measure.fst_univ]
       exact (tendsto_lintegral_preCDF_atTop ρ).comp tendsto_nat_cast_atTop_atTop
     exact tendsto_nhds_unique h_lintegral h_lintegral'
@@ -351,7 +351,7 @@ theorem tendsto_preCDF_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
     filter_upwards [h_tendsto, h_lintegral_eq] with a ha_tendsto ha_eq
     rwa [ha_eq] at ha_tendsto
   have h_lintegral :
-    Tendsto (fun r => ∫⁻ a, preCDF ρ (-r) a ∂ρ.fst) atTop (𝓝 (∫⁻ a, F a ∂ρ.fst)) := by
+      Tendsto (fun r => ∫⁻ a, preCDF ρ (-r) a ∂ρ.fst) atTop (𝓝 (∫⁻ a, F a ∂ρ.fst)) := by
     refine'
       tendsto_lintegral_filter_of_dominated_convergence (fun _ => 1)
         (eventually_of_forall fun _ => measurable_preCDF) (eventually_of_forall fun _ => _) _
@@ -361,7 +361,7 @@ theorem tendsto_preCDF_atBot_zero (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ
       exact measure_ne_top _ _
   have h_lintegral' : Tendsto (fun r => ∫⁻ a, preCDF ρ (-r) a ∂ρ.fst) atTop (𝓝 0) := by
     have h_lintegral_eq :
-      (fun r => ∫⁻ a, preCDF ρ (-r) a ∂ρ.fst) = fun r : ℚ => ρ (univ ×ˢ Iic (-r : ℝ)) := by
+        (fun r => ∫⁻ a, preCDF ρ (-r) a ∂ρ.fst) = fun r : ℚ => ρ (univ ×ˢ Iic (-r : ℝ)) := by
       ext1 n
       rw [← set_lintegral_univ, set_lintegral_preCDF_fst ρ _ MeasurableSet.univ,
         Measure.IicSnd_univ]
@@ -426,8 +426,7 @@ lemma isRatStieltjesPoint_ae (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     tendsto_preCDF_atBot_zero ρ, inf_gt_preCDF ρ] with a h1 h2 h3 h4 h5
   constructor
   · intro r r' hrr'
-    have h_ne_top : ∀ r, preCDF ρ r a ≠ ∞ := fun r ↦
-      ((h2 r).trans_lt ENNReal.one_lt_top).ne
+    have h_ne_top : ∀ r, preCDF ρ r a ≠ ∞ := fun r ↦ ((h2 r).trans_lt ENNReal.one_lt_top).ne
     rw [ENNReal.toReal_le_toReal (h_ne_top _) (h_ne_top _)]
     exact h1 hrr'
   · rw [← ENNReal.one_toReal, ENNReal.tendsto_toReal_iff]
