@@ -68,14 +68,14 @@ protected noncomputable abbrev tmul (Q₁ : QuadraticForm A M₁) (Q₂ : Quadra
 theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     associated (R := A) (Q₁.tmul Q₂)
       = (associated (R := A) Q₁).tmul (associated (R := R) Q₂) := by
-  rw [QuadraticForm.tmul, tensorDistrib, LinearMap.tmul]
+  rw [QuadraticForm.tmul, tensorDistrib, LinearMap.BilinForm.tmul]
   dsimp
   convert associated_left_inverse A ((associated_isSymm A Q₁).tmul (associated_isSymm R Q₂))
 
 theorem polarLinearMap₂_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁)
     (Q₂ : QuadraticForm R M₂) :
     polarLinearMap₂ (Q₁.tmul Q₂) = ⅟(2 : A) • (polarLinearMap₂ Q₁).tmul (polarLinearMap₂ Q₂) := by
-  simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, LinearMap.tmul, tmul_smul,
+  simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, LinearMap.BilinForm.tmul, tmul_smul,
     ← smul_tmul', map_nsmul, associated_tmul]
   rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
     one_smul]
@@ -100,7 +100,7 @@ theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
 theorem polarLinearMap₂_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     polarLinearMap₂ (Q.baseChange A) = (polarLinearMap₂ Q).baseChange A := by
   rw [QuadraticForm.baseChange, LinearMap.BilinForm.baseChange, polarLinearMap₂_tmul,
-    LinearMap.tmul, ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R,
+    LinearMap.BilinForm.tmul, ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R,
     coe_associatedHom, associated_sq, smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two,
     one_smul]
 
