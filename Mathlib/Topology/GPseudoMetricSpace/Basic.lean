@@ -24,7 +24,8 @@ is commutative in its arguments, and satisifies the triangle inequality.
 
 Additional useful definitions:
 
-- `ball `
+- `ball x δ`: the set of points with distance to x strictly less than δ
+- `closedBall x δ`: the set of points with distance to x less than or equal to δ
 
 ## Implementation notes
 
@@ -192,6 +193,8 @@ theorem swap_gdist : Function.swap (gdist β) = (gdist β:α → α → β) := b
 theorem gdist_nonneg {x y : α} : 0 ≤ (gdist β x y) :=
   gdist_nonneg' (gdist β) gdist_self gdist_comm gdist_triangle
 end
+
+
 namespace GMetricSpace
 section non_cancel
 variable [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β] [GPseudoMetricSpace α β]
@@ -279,6 +282,8 @@ lemma sphere_subset_ball {r R : β} (h : r < R) : sphere x r ⊆ ball x R := fun
   (mem_sphere.1 hx).trans_lt h
 
 end non_cancel
+
+
 section cancel
 variable [LinearOrder β] [AddCommMonoid β] [IsOrderedCancelAddCommMonoid β] [GPseudoMetricSpace α β]
 variable {x y z : α} {δ ε ε₁ ε₂ : β} {s : Set α}
