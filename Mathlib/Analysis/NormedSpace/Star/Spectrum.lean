@@ -126,7 +126,7 @@ namespace StarAlgHom
 
 variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CstarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B]
-  [hF : StarAlgHomClass F ℂ A B] (φ : F)
+  [FunLike F A B] [AlgHomClass F ℂ A B] [StarAlgHomClass F ℂ A B] (φ : F)
 
 /-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 theorem nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
@@ -164,35 +164,33 @@ open ContinuousMap Complex
 open scoped ComplexStarModule
 
 variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CstarRing A] [StarModule ℂ A] [hF : AlgHomClass F ℂ A ℂ]
+  [CstarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarAlgHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/
 noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass F A ℂ where
-  coe φ := φ
-  coe_injective' := FunLike.coe_injective'
   map_star φ a := by
-    suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s
-    · rw [← realPart_add_I_smul_imaginaryPart a]
+    suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s by
+      rw [← realPart_add_I_smul_imaginaryPart a]
       simp only [map_add, map_smul, star_add, star_smul, hsa, selfAdjoint.star_val_eq]
-    · intro s
-      have := AlgHom.apply_mem_spectrum φ (s : A)
-      rw [selfAdjoint.val_re_map_spectrum s] at this
-      rcases this with ⟨⟨_, _⟩, _, heq⟩
-      simp only [Function.comp_apply] at heq
-      rw [← heq, IsROrC.star_def]
-      exact IsROrC.conj_ofReal _
+    intro s
+    have := AlgHom.apply_mem_spectrum φ (s : A)
+    rw [selfAdjoint.val_re_map_spectrum s] at this
+    rcases this with ⟨⟨_, _⟩, _, heq⟩
+    simp only [Function.comp_apply] at heq
+    rw [← heq, IsROrC.star_def]
+    exact IsROrC.conj_ofReal _
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/
-noncomputable def _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
-  { WeakDual.Complex.instStarHomClass, hF with coe := fun f => f }
+lemma _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
+  { WeakDual.Complex.instStarHomClass, hF with }
 #align alg_hom_class.star_alg_hom_class AlgHomClass.instStarAlgHomClass
 
 namespace CharacterSpace
 
 noncomputable instance instStarAlgHomClass : StarAlgHomClass (characterSpace ℂ A) ℂ A ℂ :=
-  { AlgHomClass.instStarAlgHomClass with coe := fun f => f }
+  { AlgHomClass.instStarAlgHomClass with }
 
 end CharacterSpace
 

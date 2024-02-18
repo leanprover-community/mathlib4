@@ -209,13 +209,13 @@ theorem dotProduct_adjMatrix [NonAssocSemiring α] (v : V) (vec : V → α) :
 
 @[simp]
 theorem adjMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
-    ((G.adjMatrix α).mulVec vec) v = ∑ u in G.neighborFinset v, vec u := by
+    (G.adjMatrix α *ᵥ vec) v = ∑ u in G.neighborFinset v, vec u := by
   rw [mulVec, adjMatrix_dotProduct]
 #align simple_graph.adj_matrix_mul_vec_apply SimpleGraph.adjMatrix_mulVec_apply
 
 @[simp]
 theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
-    ((G.adjMatrix α).vecMul vec) v = ∑ u in G.neighborFinset v, vec u := by
+    (vec ᵥ* G.adjMatrix α) v = ∑ u in G.neighborFinset v, vec u := by
   simp only [← dotProduct_adjMatrix, vecMul]
   refine' congr rfl _; ext x
   rw [← transpose_apply (adjMatrix α G) x v, transpose_adjMatrix]
@@ -243,18 +243,18 @@ theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix 
 variable {α}
 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
-    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp [degree]
+    (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp
 #align simple_graph.adj_matrix_mul_self_apply_self SimpleGraph.adjMatrix_mul_self_apply_self
 
 variable {G}
 
 -- @[simp] -- Porting note: simp can prove this
 theorem adjMatrix_mulVec_const_apply [Semiring α] {a : α} {v : V} :
-    (G.adjMatrix α).mulVec (Function.const _ a) v = G.degree v * a := by simp [degree]
+    (G.adjMatrix α *ᵥ Function.const _ a) v = G.degree v * a := by simp
 #align simple_graph.adj_matrix_mul_vec_const_apply SimpleGraph.adjMatrix_mulVec_const_apply
 
 theorem adjMatrix_mulVec_const_apply_of_regular [Semiring α] {d : ℕ} {a : α}
-    (hd : G.IsRegularOfDegree d) {v : V} : (G.adjMatrix α).mulVec (Function.const _ a) v = d * a :=
+    (hd : G.IsRegularOfDegree d) {v : V} : (G.adjMatrix α *ᵥ Function.const _ a) v = d * a :=
   by simp [hd v]
 #align simple_graph.adj_matrix_mul_vec_const_apply_of_regular SimpleGraph.adjMatrix_mulVec_const_apply_of_regular
 

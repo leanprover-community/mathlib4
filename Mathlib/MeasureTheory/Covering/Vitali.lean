@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Covering.VitaliFamily
+import Mathlib.Data.Set.Pairwise.Lattice
 
 #align_import measure_theory.covering.vitali from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -378,8 +379,8 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       have B : dist e (c b) ≤ r b := mem_closedBall.1 (hB b (ut bu) eb)
       simp only [mem_closedBall]
       linarith only [dist_triangle (c a) e (c b), A, B, bdiam]
-    suffices H : closedBall (c b'') (3 * r b'') ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)
-    exact H zb
+    suffices H : closedBall (c b'') (3 * r b'')
+        ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) from H zb
     exact subset_iUnion (fun a : { a // a ∉ w } => closedBall (c a) (3 * r a)) b''
   -- now that we have proved our main inclusion, we can use it to estimate the measure of the points
   -- in `ball x (r x)` not covered by `u`.
@@ -404,9 +405,9 @@ protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurabl
     VitaliFamily μ where
   setsAt x := { a | IsClosed a ∧ (interior a).Nonempty ∧
     ∃ r, a ⊆ closedBall x r ∧ μ (closedBall x (3 * r)) ≤ C * μ a }
-  MeasurableSet' x a ha := ha.1.measurableSet
+  measurableSet x a ha := ha.1.measurableSet
   nonempty_interior x a ha := ha.2.1
-  Nontrivial x ε εpos := by
+  nontrivial x ε εpos := by
     obtain ⟨r, μr, rpos, rε⟩ :
         ∃ r, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r) ∧ r ∈ Ioc (0 : ℝ) ε :=
       ((h x).and_eventually (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, εpos⟩)).exists

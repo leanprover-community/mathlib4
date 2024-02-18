@@ -326,9 +326,6 @@ protected def unit : 𝟭 (Presheaf C X) ⟶ Presheaf.stalkFunctor C p₀ ⋙ sk
   app 𝓕 := toSkyscraperPresheaf _ <| 𝟙 _
   naturality 𝓕 𝓖 f := by
     ext U; dsimp
-    -- Porting note : added the following `rw` and `dsimp` to make it compile
-    rw [NatTrans.comp_app, toSkyscraperPresheaf_app, NatTrans.comp_app, toSkyscraperPresheaf_app]
-    dsimp only [skyscraperPresheaf_obj, unop_op, Eq.ndrec, SkyscraperPresheafFunctor.map'_app]
     split_ifs with h
     · simp only [Category.id_comp, ← Category.assoc]; rw [comp_eqToHom_iff]
       simp only [Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id]
