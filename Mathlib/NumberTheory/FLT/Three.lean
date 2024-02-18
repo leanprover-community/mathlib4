@@ -47,7 +47,6 @@ private lemma fermatLastTheoremThree_ZMod9_case_1 {a b c : ZMod 9}
   (hb : b ∈ ({1, 2, 4, 5, 7, 8} : Finset (ZMod 9)))
   (hc : c ∈ ({1, 2, 4, 5, 7, 8} : Finset (ZMod 9))) :
     a ^ 3 + b ^ 3 ≠ c ^ 3 := by
-  have : Fact (1 < 9) := ⟨by norm_num⟩
   replace ha := cube_mem_of_mem ha
   replace hb := cube_mem_of_mem hb
   replace hc := cube_mem_of_mem hc
