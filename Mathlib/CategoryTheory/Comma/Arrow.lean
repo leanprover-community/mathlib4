@@ -64,12 +64,12 @@ theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
   rfl
 #align category_theory.arrow.id_right CategoryTheory.Arrow.id_right
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[simp, reassoc]
 theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).left = f.left ≫ g.left := rfl
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[simp, reassoc]
 theorem comp_right {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).right = f.right ≫ g.right := rfl
