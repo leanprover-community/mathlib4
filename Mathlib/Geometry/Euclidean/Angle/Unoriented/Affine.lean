@@ -159,7 +159,7 @@ theorem angle_self_of_ne (h : p ≠ p₀) : ∠ p p₀ p = 0 := angle_self $ vsu
 -- 2024-02-14
 @[deprecated] alias angle_eq_left := angle_self_left
 @[deprecated] alias angle_eq_right := angle_self_right
-@[deprecated] alias angle_eq_of_ne :=  angle_self_of_ne
+@[deprecated] alias angle_eq_of_ne := angle_self_of_ne
 
 /-- If the angle ∠ABC at a point is π, the angle ∠BAC is 0. -/
 theorem angle_eq_zero_of_angle_eq_pi_left {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : ∠ p2 p1 p3 = 0 := by
