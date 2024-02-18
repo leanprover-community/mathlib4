@@ -7,21 +7,36 @@ import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Presentation.Expr
 import Mathlib.CategoryTheory.Monoidal.Category
 
+
+/-!
+# String Diagrams
+
+This file provides tactic/meta infrastructure for displaying string diagrams for morphisms
+in monoidal categories in the infoview.
+
+-/
+
 namespace Mathlib.Tactic.Widget.StringDiagram
 
 open Lean Meta Elab
 open CategoryTheory
 
+/-- Expressions for atomic 1-morphisms. -/
 structure Atom₁ : Type where
+  /-- Extract a Lean expression from an `Atom₁` expression. -/
   e : Expr
 
 /-- Expressions for 1-morphisms. -/
 inductive Mor₁ : Type
+  /-- Construct the expression for `𝟙_ C`. -/
   | id : Expr → Mor₁
+  /-- Construct the expression for `X ⊗ Y` -/
   | comp : Mor₁ → Mor₁ → Mor₁
+  /-- Construct the expression for an atomic 1-morphism. -/
   | of : Atom₁ → Mor₁
   deriving Inhabited
 
+/-- Extract a Lean expression from a `Mor₁` expression. -/
 def Mor₁.e : Mor₁ → MetaM Expr
   | .id C => do
     mkAppOptM ``MonoidalCategoryStruct.tensorUnit #[C]
@@ -29,27 +44,36 @@ def Mor₁.e : Mor₁ → MetaM Expr
     mkAppM ``MonoidalCategoryStruct.tensorObj #[← Mor₁.e f, ← Mor₁.e g]
   | .of f => return f.e
 
+/-- Converts a 1-morphism into a list of its underlying expressions. -/
 def Mor₁.toList : Mor₁ → List Expr
   | .id _ => []
   | .comp f g => f.toList ++ g.toList
   | .of f => [f.e]
 
+/-- Construct a `Mor₁` expression from a Lean expression. -/
 partial def toMor₁ (e : Expr) : Mor₁ :=
   match e.getAppFnArgs with
   | (``MonoidalCategoryStruct.tensorUnit, #[C, _, _]) => Mor₁.id C
   | (``MonoidalCategoryStruct.tensorObj, #[_, _, _, f, g]) => (toMor₁ f).comp (toMor₁ g)
   | _ => Mor₁.of ⟨e⟩
 
-/- Expressions for atomic structural 2-morphisms. -/
+/-- Expressions for atomic structural 2-morphisms. -/
 inductive StructuralAtom : Type
+  /-- Construct the expression for the associator. -/
   | associator (f g h : Mor₁) : StructuralAtom
+  /-- Construct the expression for the inverse of the associator. -/
   | associatorInv (f g h : Mor₁) : StructuralAtom
+  /-- Construct the expression for the left unitor. -/
   | leftUnitor (f : Mor₁) : StructuralAtom
+  /-- Construct the expression for the inverse of the left unitor. -/
   | leftUnitorInv (f : Mor₁) : StructuralAtom
+  /-- Construct the expression for the right unitor. -/
   | rightUnitor (f : Mor₁) : StructuralAtom
+  /-- Construct the expression for the inverse of the right unitor. -/
   | rightUnitorInv (f : Mor₁) : StructuralAtom
   deriving Inhabited
 
+/-- Extract a Lean expression from a `StructuralAtom` expression. -/
 def StructuralAtom.e : StructuralAtom → MetaM Expr
   | .associator f g h => do
     mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.associator #[← f.e, ← g.e, ← h.e]]
@@ -60,6 +84,7 @@ def StructuralAtom.e : StructuralAtom → MetaM Expr
   | .rightUnitor f => do mkAppM ``Iso.hom #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
   | .rightUnitorInv f => do mkAppM ``Iso.inv #[← mkAppM ``MonoidalCategoryStruct.rightUnitor #[← f.e]]
 
+/-- Construct a `StructuralAtom` expression from a Lean expression. -/
 def structuralAtom? (e : Expr) : Option StructuralAtom := do
   match e.getAppFnArgs with
   | (``Iso.hom, #[_, _, _, _, η]) =>
@@ -78,33 +103,43 @@ def structuralAtom? (e : Expr) : Option StructuralAtom := do
 
 /-- Expressions for atomic (non-structural) 2-morphisms. -/
 structure Atom where
+  /-- Extract a Lean expression from an `Atom` expression. -/
   e : Expr
 
 /-- Expressions for atomic 2-Morphisms. -/
 inductive Core : Type
+  /-- Construct the expression for a structural 2-morphism. -/
   | ofStructural : StructuralAtom → Core
+  /-- Construct the expression for an atomic 2-morphism. -/
   | of : Atom → Core
   deriving Inhabited
 
+/-- Extract a Lean expression from a `Core` expression. -/
 def Core.e : Core → MetaM Expr
   | .ofStructural η => η.e
   | .of a => return a.e
 
 /-- Expressions of the form `η ▷ f₁ ▷ ... ▷ fₙ`. -/
 inductive WhiskerRightExpr : Type
+  /-- Construct the expression for a core 2-morphism. -/
   | of (η : Core) : WhiskerRightExpr
+  /-- Construct the expression for `η ▷ f`. -/
   | whisker (η : WhiskerRightExpr) (f : Atom₁) : WhiskerRightExpr
   deriving Inhabited
 
 /-- Expressions of the form `f₁ ◁ ... ◁ fₙ ◁ η`. -/
 inductive WhiskerLeftExpr : Type
+  /-- Construct the expression for a right-whiskered 2-morphism. -/
   | of (η : WhiskerRightExpr) : WhiskerLeftExpr
+  /-- Construct the expression for `f ◁ η`. -/
   | whisker (f : Atom₁) (η : WhiskerLeftExpr) : WhiskerLeftExpr
   deriving Inhabited
 
 /-- Normalized expressions for 2-morphisms. -/
 inductive NormalExpr : Type
+  /-- Construct the expression for `𝟙 f`. -/
   | id (f : Mor₁) : NormalExpr
+  /-- Construct the normalized expression of 2-morphisms recursively. -/
   | cons (head : WhiskerLeftExpr) (tail : NormalExpr) : NormalExpr
   deriving Inhabited
 
@@ -149,10 +184,12 @@ def WhiskerLeftExpr.tar : WhiskerLeftExpr → MetaM Mor₁
   | WhiskerLeftExpr.of η => WhiskerRightExpr.tar η
   | WhiskerLeftExpr.whisker f η => return (Mor₁.of f).comp (← WhiskerLeftExpr.tar η)
 
+/-- The domain of a 2-morphism. -/
 def NormalExpr.src : NormalExpr → MetaM Mor₁
   | NormalExpr.id f => return f
   | NormalExpr.cons η _ => η.src
 
+/-- The codomain of a 2-morphism. -/
 def NormalExpr.tar : NormalExpr → MetaM Mor₁
   | NormalExpr.id f => return f
   | NormalExpr.cons _ θ => θ.tar
@@ -163,21 +200,27 @@ def evalComp : NormalExpr → NormalExpr → NormalExpr
   | e, .id _ => e
   | .cons f g, e => .cons f (evalComp g e)
 
+/-- The associator as a term of `normalExpr`. -/
 def NormalExpr.associator (f g h : Mor₁) : MetaM NormalExpr := do
   NormalExpr.mk (.ofStructural <| .associator f g h)
 
+/-- The inverse of the associator as a term of `normalExpr`. -/
 def NormalExpr.associatorInv (f g h : Mor₁) : MetaM NormalExpr := do
   NormalExpr.mk (.ofStructural <| .associatorInv f g h)
 
+/-- The left unitor as a term of `normalExpr`. -/
 def NormalExpr.leftUnitor (f : Mor₁) : MetaM NormalExpr := do
   NormalExpr.mk (.ofStructural <| .leftUnitor f)
 
+/-- The inverse of the left unitor as a term of `normalExpr`. -/
 def NormalExpr.leftUnitorInv (f : Mor₁) : MetaM NormalExpr := do
   NormalExpr.mk (.ofStructural <| .leftUnitorInv f)
 
+/-- The right unitor as a term of `normalExpr`. -/
 def NormalExpr.rightUnitor (f : Mor₁) : MetaM NormalExpr := do
   NormalExpr.mk (.ofStructural <| .rightUnitor f)
 
+/-- The inverse of the right unitor as a term of `normalExpr`. -/
 def NormalExpr.rightUnitorInv (f : Mor₁) : MetaM NormalExpr := do
   NormalExpr.mk (.ofStructural <| .rightUnitorInv f)
 
@@ -223,29 +266,35 @@ partial def evalWhiskerRightExpr : NormalExpr → Mor₁ → MetaM NormalExpr
     let g ← η.tar
     return evalComp (← NormalExpr.rightUnitor f) (evalComp η (← NormalExpr.rightUnitorInv g))
 
+/-- Extract a Lean expression from a `WhiskerRightExpr` expression. -/
 def WhiskerRightExpr.e : WhiskerRightExpr → MetaM Expr
   | WhiskerRightExpr.of η => η.e
   | WhiskerRightExpr.whisker η f => do
     mkAppM ``MonoidalCategoryStruct.whiskerRight #[← η.e, f.e]
 
+/-- Extract a Lean expression from a `WhiskerLeftExpr` expression. -/
 def WhiskerLeftExpr.e : WhiskerLeftExpr → MetaM Expr
   | WhiskerLeftExpr.of η => η.e
   | WhiskerLeftExpr.whisker f η => do
     mkAppM ``MonoidalCategoryStruct.whiskerLeft #[f.e, ← η.e]
 
+/-- Extract a Lean expression from a `NormalExpr` expression. -/
 def NormalExpr.e : NormalExpr → MetaM Expr
   | NormalExpr.id f => do mkAppM ``CategoryStruct.id #[← f.e]
   | NormalExpr.cons η (NormalExpr.id _) => η.e
   | NormalExpr.cons η θ => do mkAppM ``CategoryStruct.comp #[← η.e, ← θ.e]
 
+/-- Convert a `NormalExpr` expression into a list of `WhiskerLeftExpr` expressions. -/
 def NormalExpr.toList : NormalExpr → List WhiskerLeftExpr
   | NormalExpr.id _ => []
   | NormalExpr.cons η θ => η :: NormalExpr.toList θ
 
+/-- Return `η` for `η ▷ g₁ ▷ ... ▷ gₙ`. -/
 def WhiskerRightExpr.core : WhiskerRightExpr → Core
   | WhiskerRightExpr.of η => η
   | WhiskerRightExpr.whisker η _ => η.core
 
+/-- Return `η` for `f₁ ◁ ... ◁ fₙ ◁ η ▷ g₁ ▷ ... ▷ gₙ`. -/
 def WhiskerLeftExpr.core : WhiskerLeftExpr → Core
   | WhiskerLeftExpr.of η => η.core
   | WhiskerLeftExpr.whisker _ η => η.core
@@ -262,6 +311,7 @@ def toCore (e : Expr) : Core :=
   | some η => Core.ofStructural η
   | none => Core.of ⟨e⟩
 
+/-- Construct a `NormalExpr` expression from a Lean expression for a core 2-morphism. -/
 def NormalExpr.of (η : Expr) : MetaM NormalExpr := do
   return .cons (.of (.of (toCore η))) (.id <| ← StringDiagram.tar η)
 
@@ -303,9 +353,11 @@ def rightMor₁ListReversed (η : WhiskerLeftExpr) : List Expr :=
 def rightMor₁List (η : WhiskerLeftExpr) : List Expr :=
   (rightMor₁ListReversed η).reverse
 
+/-- Returns domain 1-morphisms as a list of components.` -/
 def srcLists (η : WhiskerLeftExpr) : MetaM (List Expr × List Expr × List Expr) := do
   return (leftMor₁List η, (← η.core.src).toList, rightMor₁List η)
 
+/-- Returns codomain 1-morphisms as a list of components.` -/
 def tarLists (η : WhiskerLeftExpr) : MetaM (List Expr × List Expr × List Expr) := do
   return (leftMor₁List η, (← η.core.tar).toList, rightMor₁List η)
 
@@ -315,9 +367,13 @@ def pairs {α : Type} : List α → List (α × α)
   | [_] => []
   | (x :: y :: ys) => (x, y) :: pairs (y :: ys)
 
+/-- A type for Penrose variables. -/
 structure PenroseVar : Type where
+  /-- The identifier of the variable. -/
   ident : String
+  /-- The indices of the variable. -/
   indices : List ℕ
+  /-- The underlying expression of the variable. -/
   e : Expr
   deriving Inhabited, BEq, Hashable
 
@@ -331,6 +387,7 @@ abbrev ExprEmbeds := Array (String × Expr)
 
 open ProofWidgets
 
+/-- The state of a diagram builder. -/
 structure DiagramState where
   /-- The Penrose substance program.
   Note that `embeds` are added lazily at the end. -/
@@ -343,9 +400,11 @@ structure DiagramState where
   /-- The end point of a string. -/
   endPoint : HashMap PenroseVar PenroseVar := .empty
 
+/-- The monad for building a string diagram. -/
 abbrev DiagramBuilderM := StateT DiagramState MetaM
 
 open scoped Jsx in
+/-- Build a string diagram from state. -/
 def buildDiagram : DiagramBuilderM (Option Html) := do
   let st ← get
   if st.sub == "" && st.embeds.isEmpty then
@@ -383,6 +442,7 @@ def addConstructor (tp : String) (v : PenroseVar) (nm : String) (vs : List Penro
   let vs' := ", ".intercalate (vs.map (fun v => toString v))
   addInstruction s!"{tp} {v} := {nm} ({vs'})"
 
+/-- Run the program in the diagram builder monad. -/
 def DiagramBuilderM.run {α : Type} (x : DiagramBuilderM α) : MetaM α :=
   x.run' {}
 
@@ -492,16 +552,19 @@ def stringM? (e : Expr) : MetaM (Option Html) := do
   let e ← instantiateMVars e
   return some <| ← mkStringDiag e
 
+/-- Given an equality between 2-morphisms, return a string diagram of the LHS. Otherwise `none`. -/
 def stringLeftM? (e : Expr) : MetaM (Option Html) := do
   let e ← instantiateMVars e
   let some (_, lhs, _) := e.eq? | return none
   return some <| ← mkStringDiag lhs
 
+/-- Given an equality between 2-morphisms, return a string diagram of the RHS. Otherwise `none`. -/
 def stringRightM? (e : Expr) : MetaM (Option Html) := do
   let e ← instantiateMVars e
   let some (_, _, rhs) := e.eq? | return none
   return some <| ← mkStringDiag rhs
 
+/-- The string diagram widget. -/
 @[expr_presenter]
 def stringPresenter : ExprPresenter where
   userName := "String diagram"
@@ -511,6 +574,7 @@ def stringPresenter : ExprPresenter where
       return d
     throwError "Couldn't find a string diagram."
 
+/-- The string diagram widget. -/
 @[expr_presenter]
 def stringPresenterLeft : ExprPresenter where
   userName := "String diagram of LHS"
@@ -520,6 +584,7 @@ def stringPresenterLeft : ExprPresenter where
       return d
     throwError "Couldn't find a string diagram."
 
+/-- The string diagram widget. -/
 @[expr_presenter]
 def stringPresenterRight : ExprPresenter where
   userName := "String diagram of RHS"
