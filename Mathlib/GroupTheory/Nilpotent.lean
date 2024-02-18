@@ -895,8 +895,7 @@ theorem isNilpotent_of_finite_tFAE :
         ∀ (p : ℕ) (_hp : Fact p.Prime) (P : Sylow p G), (↑P : Subgroup G).Normal,
         Nonempty
           ((∀ p : (card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G)] := by
-  tfae_have : 1 → 2
-  · exact @normalizerCondition_of_isNilpotent _ _
+  tfae_have : 1 → 2 := @normalizerCondition_of_isNilpotent _ _
   tfae_have : 2 → 3
   · exact fun h H => NormalizerCondition.normal_of_coatom H h
   tfae_have : 3 → 4

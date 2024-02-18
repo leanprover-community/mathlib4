@@ -72,10 +72,8 @@ theorem effectiveEpi_tfae
     ] := by
   tfae_have : 1 → 2
   · intro; infer_instance
-  tfae_have : 2 ↔ 3
-  · exact epi_iff_surjective π
-  tfae_have : 3 → 1
-  · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
+  tfae_have : 2 ↔ 3 := epi_iff_surjective π
+  tfae_have : 3 → 1 := fun hπ ↦ ⟨⟨struct π hπ⟩⟩
   tfae_finish
 
 instance : Preregular CompHaus where

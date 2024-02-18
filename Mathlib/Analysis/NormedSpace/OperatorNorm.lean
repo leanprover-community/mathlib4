@@ -2237,12 +2237,9 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
       BddAbove (Set.range (‖f ·‖)),
       (⨆ i, (‖f i‖₊ : ENNReal)) < ⊤ ] := by
   -- `1 ↔ 2 ↔ 3` follows from `uniformEquicontinuous_of_equicontinuousAt_zero`
-  tfae_have : 1 → 3
-  · exact uniformEquicontinuous_of_equicontinuousAt_zero f
-  tfae_have : 3 → 2
-  · exact UniformEquicontinuous.equicontinuous
-  tfae_have : 2 → 1
-  · exact fun H ↦ H 0
+  tfae_have : 1 → 3 := uniformEquicontinuous_of_equicontinuousAt_zero f
+  tfae_have : 3 → 2 := UniformEquicontinuous.equicontinuous
+  tfae_have : 2 → 1 := fun H ↦ H 0
   -- `4 ↔ 5 ↔ 6 ↔ 7 ↔ 8 ↔ 9` is morally trivial, we just have to use a lot of rewriting
   -- and `congr` lemmas
   tfae_have : 4 ↔ 5

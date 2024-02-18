@@ -92,12 +92,9 @@ theorem noetherianSpace_TFAE :
   tfae_have : 1 ↔ 2
   · refine' (noetherianSpace_iff α).trans (Opens.compl_bijective.2.wellFounded_iff _)
     exact (@OrderIso.compl (Set α)).lt_iff_lt.symm
-  tfae_have : 1 ↔ 4
-  · exact noetherianSpace_iff_opens α
-  tfae_have : 1 → 3
-  · exact @NoetherianSpace.isCompact α _
-  tfae_have : 3 → 4
-  · exact fun h s => h s
+  tfae_have : 1 ↔ 4 := noetherianSpace_iff_opens α
+  tfae_have : 1 → 3 := @NoetherianSpace.isCompact α _
+  tfae_have : 3 → 4 := fun h s => h s
   tfae_finish
 #align topological_space.noetherian_space_tfae TopologicalSpace.noetherianSpace_TFAE
 

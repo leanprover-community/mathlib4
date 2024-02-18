@@ -256,8 +256,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
   tfae_have : 4 → 3
   · intro H 𝒰 h𝒰 i
     apply H
-  tfae_have : 3 → 2
-  · exact fun H => ⟨Y.affineCover, inferInstance, H Y.affineCover⟩
+  tfae_have : 3 → 2 := fun H => ⟨Y.affineCover, inferInstance, H Y.affineCover⟩
   tfae_have : 2 → 1
   · rintro ⟨𝒰, h𝒰, H⟩; exact targetAffineLocallyOfOpenCover hP f 𝒰 H
   tfae_have : 5 → 2
@@ -404,8 +403,7 @@ theorem PropertyIsLocalAtTarget.openCover_TFAE {P : MorphismProperty Scheme}
   · intro H 𝒰 i
     rw [← hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]
     exact H <| Scheme.Hom.opensRange (𝒰.map i)
-  tfae_have : 3 → 2
-  · exact fun H => ⟨Y.affineCover, H Y.affineCover⟩
+  tfae_have : 3 → 2 := fun H => ⟨Y.affineCover, H Y.affineCover⟩
   tfae_have : 4 → 5
   · intro H U g hg
     rw [← hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]

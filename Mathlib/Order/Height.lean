@@ -108,7 +108,7 @@ theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
 
 theorem le_chainHeight_TFAE (n : ℕ) :
     TFAE [↑n ≤ s.chainHeight, ∃ l ∈ s.subchain, length l = n, ∃ l ∈ s.subchain, n ≤ length l] := by
-  tfae_have : 1 → 2; · exact s.exists_chain_of_le_chainHeight
+  tfae_have : 1 → 2 := s.exists_chain_of_le_chainHeight
   tfae_have : 2 → 3; · rintro ⟨l, hls, he⟩; exact ⟨l, hls, he.ge⟩
   tfae_have : 3 → 1; · rintro ⟨l, hs, hn⟩; exact le_iSup₂_of_le l hs (WithTop.coe_le_coe.2 hn)
   tfae_finish

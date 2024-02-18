@@ -870,8 +870,7 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
   · rw [nhdsWithin_Ioc_eq_nhdsWithin_Ioi hab]
   tfae_have : 1 ↔ 3
   · rw [nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
-  tfae_have : 4 → 5
-  · exact fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
+  tfae_have : 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
   tfae_have : 5 → 1
   · rintro ⟨u, hau, hu⟩
     exact mem_of_superset (Ioo_mem_nhdsWithin_Ioi ⟨le_refl a, hau⟩) hu
@@ -1019,10 +1018,8 @@ theorem TFAE_mem_nhdsWithin_Ici {a b : α} (hab : a < b) (s : Set α) :
   · rw [nhdsWithin_Icc_eq_nhdsWithin_Ici hab]
   tfae_have : 1 ↔ 3
   · rw [nhdsWithin_Ico_eq_nhdsWithin_Ici hab]
-  tfae_have : 1 ↔ 5
-  · exact (nhdsWithin_Ici_basis' ⟨b, hab⟩).mem_iff
-  tfae_have : 4 → 5
-  · exact fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
+  tfae_have : 1 ↔ 5 := (nhdsWithin_Ici_basis' ⟨b, hab⟩).mem_iff
+  tfae_have : 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
   tfae_have : 5 → 4
   · rintro ⟨u, hua, hus⟩
     exact

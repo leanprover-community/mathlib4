@@ -151,7 +151,7 @@ theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
 
 theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
     Icc I.lower I.upper ⊆ Icc J.lower J.upper, J.lower ≤ I.lower ∧ I.upper ≤ J.upper] := by
-  tfae_have : 1 ↔ 2; exact Iff.rfl
+  tfae_have : 1 ↔ 2 := Iff.rfl
   tfae_have : 2 → 3
   · intro h
     simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h

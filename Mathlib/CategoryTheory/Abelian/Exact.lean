@@ -252,13 +252,11 @@ variable (Z)
 
 open List in
 theorem tfae_mono : TFAE [Mono f, kernel.ι f = 0, Exact (0 : Z ⟶ X) f] := by
-  tfae_have : 3 → 2
-  · exact kernel_ι_eq_zero_of_exact_zero_left Z
+  tfae_have : 3 → 2 := kernel_ι_eq_zero_of_exact_zero_left Z
   tfae_have : 1 → 3
   · intros
     exact exact_zero_left_of_mono Z
-  tfae_have : 2 → 1
-  · exact mono_of_kernel_ι_eq_zero _
+  tfae_have : 2 → 1 := mono_of_kernel_ι_eq_zero _
   tfae_finish
 #align category_theory.abelian.tfae_mono CategoryTheory.Abelian.tfae_mono
 
@@ -278,8 +276,7 @@ theorem tfae_epi : TFAE [Epi f, cokernel.π f = 0, Exact f (0 : Y ⟶ Z)] := by
   · rw [exact_iff]
     intro
     exact ⟨by simp, by simp [cokernel.π_of_epi]⟩
-  tfae_have : 2 → 1
-  · exact epi_of_cokernel_π_eq_zero _
+  tfae_have : 2 → 1 := epi_of_cokernel_π_eq_zero _
   tfae_finish
 #align category_theory.abelian.tfae_epi CategoryTheory.Abelian.tfae_epi
 
