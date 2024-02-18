@@ -326,15 +326,6 @@ def pairs {α : Type} : List α → List (α × α)
   | [_] => []
   | (x :: y :: ys) => (x, y) :: pairs (y :: ys)
 
-/-- `enumerateFrom 2 [a, b, c, d]` is `[(2, a), (3, b), (4, c), (5, d)]`. -/
-def enumerateFrom {α : Type} (i : Nat) : List α → List (Nat × α)
-  | [] => []
-  | (x :: xs) => (i, x) :: enumerateFrom (i + 1) xs
-
-/-- `enumerate [a, b, c, d]` is `[(0, a), (1, b), (2, c), (3, d)]`. -/
-def enumerate {α : Type} : List α → List (Nat × α) :=
-  enumerateFrom 0
-
 structure PenroseVar : Type where
   ident : String
   indices : List ℕ
@@ -413,12 +404,12 @@ def mkStringDiag (e : Expr) : MetaM Html := do
   DiagramBuilderM.run do
     let l := removeStructural (← eval e).toList
     /- Add 2-morphisms. -/
-    for (i, x) in enumerateFrom 1 l do
+    for (i, x) in l.enumFrom 1 do
       let v : PenroseVar := ⟨"E", [i], ← x.core.e⟩
       addPenroseVar "Core" v
       let (L, C, R) ← srcLists x
       let C' := (← x.core.tar).toList
-      for (j, X) in enumerate L do
+      for (j, X) in L.enum do
         let v' : PenroseVar := ⟨"I_left", [i, j], X⟩
         addPenroseVar "Id" v'
         addInstruction s!"Left({v'}, {v})"
@@ -427,7 +418,7 @@ def mkStringDiag (e : Expr) : MetaM Html := do
         modify fun st => { st with
           endPoint := st.endPoint.insert v_mor v'
           startPoint := st.startPoint.insert v_mor' v' }
-      for (j, X) in enumerate R do
+      for (j, X) in R.enum do
         let v' : PenroseVar := ⟨"I_right", [i, j], X⟩
         addPenroseVar "Id" v'
         addInstruction s!"Left({v}, {v'})"
@@ -436,24 +427,24 @@ def mkStringDiag (e : Expr) : MetaM Html := do
         modify fun st => { st with
           endPoint := st.endPoint.insert v_mor v'
           startPoint := st.startPoint.insert v_mor' v' }
-      for (j, X) in enumerate C do
+      for (j, X) in C.enum do
         let v_mor : PenroseVar := ⟨"f", [i, j + L.length], X⟩
         modify fun st => { st with endPoint := st.endPoint.insert v_mor v }
-      for (j, X) in enumerate C' do
+      for (j, X) in C'.enum do
         let v_mor' : PenroseVar := ⟨"f", [i + 1, j + L.length], X⟩
         modify fun st => { st with startPoint := st.startPoint.insert v_mor' v }
       /- Add constraints. -/
-      for (j, (X, Y)) in enumerate (pairs L) do
+      for (j, (X, Y)) in (pairs L).enum do
         let v₁ : PenroseVar := ⟨"I_left", [i, j], X⟩
         let v₂ : PenroseVar := ⟨"I_left", [i, j + 1], Y⟩
         addInstruction s!"Left({v₁}, {v₂})"
       /- Add constraints. -/
-      for (j, (X, Y)) in enumerate (pairs R) do
+      for (j, (X, Y)) in (pairs R).enum do
         let v₁ : PenroseVar := ⟨"I_right", [i, j], X⟩
         let v₂ : PenroseVar := ⟨"I_right", [i, j + 1], Y⟩
         addInstruction s!"Left({v₁}, {v₂})"
     /- Add constraints. -/
-    for (i, (x, y)) in enumerateFrom 1 (pairs l) do
+    for (i, (x, y)) in (pairs l).enumFrom 1 do
       let v₁ : PenroseVar := ⟨"E", [i], ← x.core.e⟩
       let v₂ : PenroseVar := ⟨"E", [i + 1], ← y.core.e⟩
       addInstruction s!"Above({v₁}, {v₂})"
@@ -461,13 +452,13 @@ def mkStringDiag (e : Expr) : MetaM Html := do
     if let some x₀ := l.head? then
       let v₀ : PenroseVar := ⟨"E", [1], ← x₀.core.e⟩
       let (L, C, R) ← srcLists x₀
-      for (j, X) in enumerate (L ++ C ++ R) do
+      for (j, X) in (L ++ C ++ R).enum do
         let v' : PenroseVar := ⟨"I_left", [0, j], X⟩
         addPenroseVar "Id" v'
         addInstruction s!"Above({v'}, {v₀})"
         let v_mor : PenroseVar := ⟨"f", [1, j], X⟩
         modify fun st => { st with startPoint := st.startPoint.insert v_mor v' }
-      for (j, (X, Y)) in enumerate (pairs (L ++ C ++ R)) do
+      for (j, (X, Y)) in (pairs (L ++ C ++ R)).enum do
         let v₁ : PenroseVar := ⟨"I_left", [0, j], X⟩
         let v₂ : PenroseVar := ⟨"I_left", [0, j + 1], Y⟩
         addInstruction s!"Left({v₁}, {v₂})"
@@ -475,20 +466,20 @@ def mkStringDiag (e : Expr) : MetaM Html := do
     if let some xₙ := l.getLast? then
       let vₙ : PenroseVar := ⟨"E", [l.length], ← xₙ.core.e⟩
       let (L, C', R) ← tarLists xₙ
-      for (j, X) in enumerate (L ++ C' ++ R) do
+      for (j, X) in (L ++ C' ++ R).enum do
         let v' : PenroseVar := ⟨"I_left", [l.length + 1, j], X⟩
         addPenroseVar "Id" v'
         addInstruction s!"Above({vₙ}, {v'})"
         let v_mor : PenroseVar := ⟨"f", [l.length + 1, j], X⟩
         modify fun st => { st with endPoint := st.endPoint.insert v_mor v' }
-      for (j, (X, Y)) in enumerate (pairs (L ++ C' ++ R)) do
+      for (j, (X, Y)) in (pairs (L ++ C' ++ R)).enum do
         let v₁ : PenroseVar := ⟨"I_left", [l.length + 1, j], X⟩
         let v₂ : PenroseVar := ⟨"I_left", [l.length + 1, j + 1], Y⟩
         addInstruction s!"Left({v₁}, {v₂})"
     /- Add 1-morphisms as strings. -/
-    for (i, x) in enumerateFrom 1 l do
+    for (i, x) in l.enumFrom 1 do
       let (L, C, R) ← srcLists x
-      for (j, X) in enumerate (L ++ C ++ R) do
+      for (j, X) in (L ++ C ++ R).enum do
         let v : PenroseVar := ⟨"f", [i, j], X⟩
         let st ← get
         if let .some vStart := st.startPoint.find? v then
@@ -497,7 +488,7 @@ def mkStringDiag (e : Expr) : MetaM Html := do
     /- Add strings in the last row. -/
     if let some xₙ := l.getLast? then
       let (L, C', R) ← tarLists xₙ
-      for (j, X) in enumerate (L ++ C' ++ R) do
+      for (j, X) in (L ++ C' ++ R).enum do
         let v : PenroseVar := ⟨"f", [l.length + 1, j], X⟩
         let st ← get
         if let .some vStart := st.startPoint.find? v then
