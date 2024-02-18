@@ -157,7 +157,7 @@ lemma units_iInf {ι : Sort*} (f : ι → Submonoid M) : (iInf f).units = ⨅ (i
 @[to_additive]
 lemma units_iInf₂ {ι : Sort*} {κ : ι → Sort*} (f : (i : ι) → κ i → Submonoid M) :
     (⨅ (i : ι), ⨅ (j : κ i), f i j).units = ⨅ (i : ι), ⨅ (j : κ i), (f i j).units :=
-    ofUnits_units_gc.u_iInf₂
+  ofUnits_units_gc.u_iInf₂
 
 @[to_additive (attr := simp)]
 lemma units_bot : (⊥ : Submonoid M).units = ⊥ := ofUnits_units_gci.u_bot
@@ -196,7 +196,7 @@ lemma exists_mem_ofUnits_val_eq (S : Subgroup Mˣ) {x : M} (h : x ∈ S.ofUnits)
     ∃ y ∈ S, y = x := h
 
 @[to_additive]
-lemma mem_of_mem_val_ofUnits (S : Subgroup Mˣ) {y : Mˣ} (hy : (y : M) ∈ S.ofUnits ) : y ∈ S :=
+lemma mem_of_mem_val_ofUnits (S : Subgroup Mˣ) {y : Mˣ} (hy : (y : M) ∈ S.ofUnits) : y ∈ S :=
   match hy with
   | ⟨_, hm, he⟩ => (Units.ext he) ▸ hm
 
@@ -211,7 +211,7 @@ lemma isUnit_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} (hx : x ∈ S.ofUnits) : 
 elements corresponding to a subgroup of units, produce a unit of `M` whose coercion is equal to
 `x`. "]
 noncomputable def unit_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} (h : x ∈ S.ofUnits) : Mˣ :=
-(Classical.choose h).copy x (Classical.choose_spec h).2.symm _ rfl
+  (Classical.choose h).copy x (Classical.choose_spec h).2.symm _ rfl
 
 @[to_additive]
 lemma unit_of_mem_ofUnits_spec_eq_of_val_mem (S : Subgroup Mˣ) {x : Mˣ} (h : (x : M) ∈ S.ofUnits) :
@@ -232,7 +232,7 @@ lemma unit_eq_unit_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} (h₁ : IsUnit x)
 @[to_additive]
 lemma unit_mem_of_mem_ofUnits (S : Subgroup Mˣ) {x : M} {h₁ : IsUnit x}
     (h₂ : x ∈ S.ofUnits) : h₁.unit ∈ S :=
-    S.unit_eq_unit_of_mem_ofUnits h₁ h₂ ▸ (S.unit_of_mem_ofUnits_spec_mem)
+  S.unit_eq_unit_of_mem_ofUnits h₁ h₂ ▸ (S.unit_of_mem_ofUnits_spec_mem)
 
 @[to_additive]
 lemma mem_ofUnits_of_isUnit_of_unit_mem (S : Subgroup Mˣ) {x : M} (h₁ : IsUnit x)
@@ -241,8 +241,8 @@ lemma mem_ofUnits_of_isUnit_of_unit_mem (S : Subgroup Mˣ) {x : M} (h₁ : IsUni
 @[to_additive]
 lemma mem_ofUnits_iff_exists_isUnit (S : Subgroup Mˣ) (x : M) :
     x ∈ S.ofUnits ↔ ∃ h : IsUnit x, h.unit ∈ S :=
-    ⟨fun h => ⟨S.isUnit_of_mem_ofUnits h, S.unit_mem_of_mem_ofUnits h⟩,
-    fun ⟨hm, he⟩ => S.mem_ofUnits_of_isUnit_of_unit_mem hm he⟩
+  ⟨fun h => ⟨S.isUnit_of_mem_ofUnits h, S.unit_mem_of_mem_ofUnits h⟩,
+  fun ⟨hm, he⟩ => S.mem_ofUnits_of_isUnit_of_unit_mem hm he⟩
 
 /-- The equivalence between the coercion of a subgroup `S` of `Mˣ` to a submonoid of `M` and
 the subgroup itself as a type. -/
@@ -273,44 +273,43 @@ lemma ofUnits_iSup {ι : Sort*} {f : ι → Subgroup Mˣ} :
 @[to_additive]
 lemma ofUnits_iSup₂ {ι : Sort*} {κ : ι → Sort*} (f : (i : ι) → κ i → Subgroup Mˣ) :
     (⨆ (i : ι), ⨆ (j : κ i), f i j).ofUnits = ⨆ (i : ι), ⨆ (j : κ i), (f i j).ofUnits :=
-    ofUnits_units_gc.l_iSup₂
+  ofUnits_units_gc.l_iSup₂
 
 @[to_additive]
 lemma ofUnits_injective : Function.Injective (ofUnits (M := M)) :=
-ofUnits_units_gci.l_injective
+  ofUnits_units_gci.l_injective
 
 @[to_additive (attr := simp)]
 lemma ofUnits_sup_units (S T : Subgroup Mˣ): (S.ofUnits ⊔ T.ofUnits).units = S ⊔ T :=
-ofUnits_units_gci.u_sup_l _ _
+  ofUnits_units_gci.u_sup_l _ _
 
 @[to_additive (attr := simp)]
 lemma ofUnits_inf_units (S T : Subgroup Mˣ): (S.ofUnits ⊓ T.ofUnits).units = S ⊓ T :=
-ofUnits_units_gci.u_inf_l _ _
+  ofUnits_units_gci.u_inf_l _ _
 
 @[to_additive]
 lemma ofUnits_right_inverse :
     Function.RightInverse (ofUnits (M := M)) (Submonoid.units (M := M)) :=
-    ofUnits_units_gci.u_l_leftInverse
+  ofUnits_units_gci.u_l_leftInverse
 
 @[to_additive]
 lemma ofUnits_strictMono : StrictMono (ofUnits (M := M)) := ofUnits_units_gci.strictMono_l
 
 lemma ofUnits_le_ofUnits_iff {S T : Subgroup Mˣ} : S.ofUnits ≤ T.ofUnits ↔ S ≤ T :=
-ofUnits_units_gci.l_le_l_iff
+  ofUnits_units_gci.l_le_l_iff
 
 /-- The equivalence between the top subgroup of `Mˣ` coerced to a submonoid `M` and the
 units of `M`. -/
 @[to_additive " The equivalence between the additive subgroup of additive units of
 `S` and the additive submonoid of additive unit elements of `S`.  "]
 noncomputable def ofUnitsTopEquiv : (⊤ : Subgroup Mˣ).ofUnits ≃* Mˣ :=
-(⊤ : Subgroup Mˣ).ofUnitsEquivType.trans topEquiv
+  (⊤ : Subgroup Mˣ).ofUnitsEquivType.trans topEquiv
 
 variable {G : Type*}  [Group G]
 
 @[to_additive]
 lemma mem_units_iff_val_mem (H : Subgroup G) (x : Gˣ): x ∈ H.units ↔ (x : G) ∈ H := by
-  simp_rw [Submonoid.mem_units_iff, mem_toSubmonoid, val_inv_eq_inv_val, inv_mem_iff,
-  and_self]
+  simp_rw [Submonoid.mem_units_iff, mem_toSubmonoid, val_inv_eq_inv_val, inv_mem_iff, and_self]
 
 @[to_additive]
 lemma mem_ofUnits_iff_toUnits_mem (H : Subgroup Gˣ) (x : G): x ∈ H.ofUnits ↔ (toUnits x) ∈ H := by
@@ -328,6 +327,6 @@ lemma val_mem_ofUnits_iff_mem (H : Subgroup Gˣ) (x : Gˣ) : (x : G) ∈ H.ofUni
 @[to_additive " The equivalence between the greatest subgroup of additive units
 contained within `T` and `T` itself. "]
 def unitsEquivSelf (H : Subgroup G) : H.units ≃* H :=
-H.unitsEquivUnitsType.trans toUnits.symm
+  H.unitsEquivUnitsType.trans toUnits.symm
 
 end Subgroup

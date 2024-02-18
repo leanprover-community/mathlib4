@@ -243,7 +243,7 @@ lemma isIso_of_mono_of_eqCardFiber {X Y : C} (f : X ⟶ Y) [Mono f]
 
 /-- Along a mono that is not an iso, the cardinality of the fiber strictly increases. -/
 lemma ltCardFiber_of_mono_of_notIso {X Y : C} (f : X ⟶ Y) [Mono f]
-    (h : ¬ IsIso f ) : Nat.card (F.obj X) < Nat.card (F.obj Y) := by
+    (h : ¬ IsIso f) : Nat.card (F.obj X) < Nat.card (F.obj Y) := by
   by_contra hlt
   apply h
   apply isIso_of_mono_of_eqCardFiber F f

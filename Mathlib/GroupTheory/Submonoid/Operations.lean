@@ -1495,8 +1495,7 @@ namespace Submonoid
 elements of `M`. -/
 @[to_additive (attr := simps!) " The additive equivalence between the type of additive units of `M`
   and the additive submonoid whose elements are the additive units of `M`. "]
-noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] :
-  Mˣ ≃* IsUnit.submonoid M where
+noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit
   left_inv x := IsUnit.unit_of_val_units _

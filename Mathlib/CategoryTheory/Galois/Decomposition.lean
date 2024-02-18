@@ -78,8 +78,8 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
   induction' n using Nat.strongRecOn with n hi
   intro X hn
   by_cases h : IsConnected X
-  exact has_decomp_connected_components_aux_conn X
-  by_cases nhi : (IsInitial X → False)
+  · exact has_decomp_connected_components_aux_conn X
+  by_cases nhi : IsInitial X → False
   · obtain ⟨Y, v, hni, hvmono, hvnoiso⟩ :=
       has_non_trivial_subobject_of_not_isConnected_of_not_initial X h nhi
     obtain ⟨Z, u, ⟨c⟩⟩ := PreGaloisCategory.monoInducesIsoOnDirectSummand v
@@ -100,17 +100,17 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
       Cofan.combPairHoms (Cofan.mk Y g₁) (Cofan.mk Z g₂) (BinaryCofan.mk v u), ?_⟩
     use Cofan.combPairIsColimit hc₁ hc₂ c
     refine ⟨fun i ↦ ?_, inferInstance⟩
-    cases i; exact hf₁ _; exact hf₂ _
-  · simp at nhi
+    cases i
+    · exact hf₁ _
+    · exact hf₂ _
+  · simp only [not_forall, not_false_eq_true] at nhi
     obtain ⟨hi⟩ := nhi
     exact has_decomp_connected_components_aux_initial X hi
 
 /-- In a Galois category, every object is the sum of connected objects. -/
 theorem has_decomp_connected_components (X : C) :
-    ∃ (ι : Type) (f : ι → C)
-    (g : (i : ι) → f i ⟶ X)
-    (_ : IsColimit (Cofan.mk X g)),
-    (∀ i, IsConnected (f i)) ∧ Finite ι := by
+    ∃ (ι : Type) (f : ι → C) (g : (i : ι) → f i ⟶ X) (_ : IsColimit (Cofan.mk X g)),
+      (∀ i, IsConnected (f i)) ∧ Finite ι := by
   let F := GaloisCategory.getFiberFunctor C
   exact has_decomp_connected_components_aux F (Nat.card <| F.obj X) X rfl
 

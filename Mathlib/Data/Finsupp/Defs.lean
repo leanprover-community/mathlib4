@@ -1061,10 +1061,10 @@ noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
   __ := Equiv.finsuppUnique
   map_add' _ _ := rfl
 
-  lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
-      AddEquiv.finsuppUnique.symm d = single () d := by
+lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
+    AddEquiv.finsuppUnique.symm d = single () d := by
   rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
-  rfl
+  simp [AddEquiv.finsuppUnique]
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
