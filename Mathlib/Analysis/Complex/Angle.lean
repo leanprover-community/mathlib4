@@ -33,7 +33,7 @@ quotient.
 Note that this does not hold when `x` or `y` is `0` as the LHS is `π / 2` while the RHS is `0`. -/
 lemma angle_eq_abs_arg (hx : x ≠ 0) (hy : y ≠ 0) : angle x y = |(x / y).arg| := by
   refine Real.arccos_eq_of_eq_cos (abs_nonneg _) (abs_arg_le_pi _) ?_
-  rw [Real.cos_abs , Complex.cos_arg (div_ne_zero hx hy)]
+  rw [Real.cos_abs, Complex.cos_arg (div_ne_zero hx hy)]
   have := (map_ne_zero Complex.abs).2 hx
   have := (map_ne_zero Complex.abs).2 hy
   simp [div_eq_mul_inv, Complex.normSq_eq_norm_sq]
