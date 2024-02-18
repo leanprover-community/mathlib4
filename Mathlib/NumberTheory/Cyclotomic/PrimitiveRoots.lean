@@ -189,6 +189,60 @@ theorem finrank (hirr : Irreducible (cyclotomic n K)) : finrank K L = (n : ℕ).
     (zeta_spec n K L).minpoly_eq_cyclotomic_of_irreducible hirr, natDegree_cyclotomic]
 #align is_cyclotomic_extension.finrank IsCyclotomicExtension.finrank
 
+/-- If `L` contains both a primitive `p`-th root of unity and `q`-th root of unity, and
+`Irreducible (cyclotomic (lcm p q) K)` (in particular for `K = ℚ`), then the `finrank K L` is at
+least `(lcm p q).totient`. -/
+theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p q : ℕ}  {x y : L}
+    (hx : IsPrimitiveRoot x p) (hy : IsPrimitiveRoot y q)
+    (hirr : Irreducible (cyclotomic (Nat.lcm p q) K)) :
+    (Nat.lcm p q).totient ≤ FiniteDimensional.finrank K L := by
+  rcases Nat.eq_zero_or_pos p with (rfl | hppos)
+  · simp
+  rcases Nat.eq_zero_or_pos q with (rfl | hqpos)
+  · simp
+  let k := Nat.lcm p q
+  have hkpos : 0 < k := Nat.pos_of_ne_zero (Nat.lcm_ne_zero hppos.ne' hqpos.ne')
+  let xu := (hx.isUnit hppos).unit
+  let yu := (hy.isUnit hqpos).unit
+  have hxmem : xu ∈ rootsOfUnity ⟨k, hkpos⟩ L :=  by
+    rw [mem_rootsOfUnity, PNat.mk_coe, ← Units.val_eq_one, Units.val_pow_eq_pow_val,
+      IsUnit.unit_spec]
+    exact (hx.pow_eq_one_iff_dvd _).2 (Nat.dvd_lcm_left _ _)
+  have hymem : yu ∈ rootsOfUnity ⟨k, hkpos⟩ L := by
+    rw [mem_rootsOfUnity, PNat.mk_coe, ← Units.val_eq_one, Units.val_pow_eq_pow_val,
+      IsUnit.unit_spec]
+    exact (hy.pow_eq_one_iff_dvd _).2 (Nat.dvd_lcm_right _ _)
+  have hxuord : orderOf (⟨xu, hxmem⟩ : rootsOfUnity ⟨k, hkpos⟩ L) = p := by
+    rw [← orderOf_injective (rootsOfUnity ⟨k, hkpos⟩ L).subtype Subtype.coe_injective,
+      Subgroup.coeSubtype, Subgroup.coe_mk, ← orderOf_units, IsUnit.unit_spec]
+    exact hx.eq_orderOf.symm
+  have hyuord : orderOf (⟨yu, hymem⟩ : rootsOfUnity ⟨k, hkpos⟩ L) = q := by
+    rw [← orderOf_injective (rootsOfUnity ⟨k, hkpos⟩ L).subtype Subtype.coe_injective,
+      Subgroup.coeSubtype, Subgroup.coe_mk, ← orderOf_units, IsUnit.unit_spec]
+    exact hy.eq_orderOf.symm
+  obtain ⟨g : rootsOfUnity ⟨k, hkpos⟩ L, hg⟩ :=
+    IsCyclic.exists_monoid_generator (α := rootsOfUnity ⟨k, hkpos⟩ L)
+  obtain ⟨nx, hnx⟩ := hg ⟨xu, hxmem⟩
+  obtain ⟨ny, hny⟩ := hg ⟨yu, hymem⟩
+  have H : orderOf g = k := by
+    refine' Nat.dvd_antisymm (orderOf_dvd_of_pow_eq_one _) (Nat.lcm_dvd _ _)
+    · have := (mem_rootsOfUnity _ _).1 g.2
+      simp only [PNat.mk_coe] at this
+      exact_mod_cast this
+    · rw [← hxuord, ← hnx, orderOf_pow]
+      exact Nat.div_dvd_of_dvd ((orderOf g).gcd_dvd_left nx)
+    · rw [← hyuord, ← hny, orderOf_pow]
+      exact Nat.div_dvd_of_dvd ((orderOf g).gcd_dvd_left ny)
+  have hroot := IsPrimitiveRoot.orderOf g
+  rw [H, ← IsPrimitiveRoot.coe_submonoidClass_iff, ← IsPrimitiveRoot.coe_units_iff] at hroot
+  conv at hroot =>
+    enter [2]
+    rw [show k = (⟨k, hkpos⟩ : ℕ+) by simp]
+  haveI := IsPrimitiveRoot.adjoin_isCyclotomicExtension K hroot
+  convert Submodule.finrank_le (Subalgebra.toSubmodule (Algebra.adjoin K ({g.1.1} : Set L)))
+  replace hirr : Irreducible (cyclotomic (⟨k, hkpos⟩ : ℕ+) K) := hirr
+  simpa using (IsCyclotomicExtension.finrank (Algebra.adjoin K ({g.1.1} : Set L)) hirr).symm
+
 end IsCyclotomicExtension
 
 end NoOrder
