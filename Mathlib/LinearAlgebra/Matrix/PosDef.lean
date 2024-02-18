@@ -152,7 +152,7 @@ def delabSqrt : Delab :=
 
 -- test for custom elaborator
 /--
-info: (_ : PosSemidef A).sqrt : Matrix n n 𝕜
+info: (⋯ : PosSemidef A).sqrt : Matrix n n 𝕜
 -/
 #guard_msgs in
 #check (id hA).sqrt
