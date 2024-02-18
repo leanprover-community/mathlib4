@@ -258,8 +258,8 @@ theorem to_maximal_ideal [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] {S :
       cases' (mem_iff_generator_dvd _).1 (hST <| generator_mem S) with z hz
       cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S) with
       | inl h =>
-        have hTS : T ≤ S
-        rwa [← T.span_singleton_generator, Ideal.span_le, singleton_subset_iff]
+        have hTS : T ≤ S := by
+          rwa [← T.span_singleton_generator, Ideal.span_le, singleton_subset_iff]
         exact (hxS <| hTS hxT).elim
       | inr h =>
         cases' (mem_iff_generator_dvd _).1 h with y hy
@@ -574,8 +574,8 @@ theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPr
   obtain ⟨a, ha⟩ : (I ⊔ span {y}).IsPrincipal :=
     Imax' (left_lt_sup.mpr (mt I.span_singleton_le_iff_mem.mp hy))
   -- Then `x ∈ I.colon (span {y})`, which is equal to `I` if it's not principal.
-  suffices He : ¬(I.colon (span {y})).IsPrincipal
-  · rw [← Imax _ ((nonPrincipals_def R).2 He) fun a ha =>
+  suffices He : ¬(I.colon (span {y})).IsPrincipal by
+    rw [← Imax _ ((nonPrincipals_def R).2 He) fun a ha =>
         Ideal.mem_colon_singleton.2 (mul_mem_right _ _ ha)]
     exact Ideal.mem_colon_singleton.2 hxy
   -- So suppose for the sake of contradiction that both `I ⊔ span {y}` and `I.colon (span {y})`

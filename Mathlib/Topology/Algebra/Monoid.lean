@@ -786,8 +786,7 @@ theorem continuousOn_finset_prod {f : ι → X → M} (s : Finset ι) {t : Set X
 @[to_additive]
 theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filter X}
     {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i in s, f i =ᶠ[l] ∏ i in s, g i := by
-  replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x
-  · rwa [eventually_all_finset]
+  replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x := by rwa [eventually_all_finset]
   filter_upwards [hs] with x hx
   simp only [Finset.prod_apply, Finset.prod_congr rfl hx]
 #align eventually_eq_prod eventuallyEq_prod

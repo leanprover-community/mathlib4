@@ -1295,8 +1295,8 @@ theorem map_injective_of_injective (hg : Injective g) (k : LocalizationMap (S.ma
   set i := map f (apply_coe_mem_map g S) k
   have ifkg (a : M) : i (f.toMap a) = k.toMap (g a) := map_eq f (apply_coe_mem_map g S) a
   let ⟨z', w', x, hxz, hxw⟩ := surj₂ f z w
-  have : k.toMap (g z') = k.toMap (g w')
-  · rw [← ifkg, ← ifkg, ← hxz, ← hxw, map_mul, map_mul, hizw]
+  have : k.toMap (g z') = k.toMap (g w') := by
+    rw [← ifkg, ← ifkg, ← hxz, ← hxw, map_mul, map_mul, hizw]
   obtain ⟨⟨_, c, hc, rfl⟩, eq⟩ := k.exists_of_eq _ _ this
   simp_rw [← map_mul, hg.eq_iff] at eq
   rw [← (f.map_units x).mul_left_inj, hxz, hxw, f.eq_iff_exists]
