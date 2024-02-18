@@ -205,8 +205,8 @@ theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
 
 theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 :=
   ⟨fun h => A.valuation_unit h.unit, fun h => by
-    have ha : (a : K) ≠ 0
-    · intro c
+    have ha : (a : K) ≠ 0 := by
+      intro c
       rw [c, A.valuation.map_zero] at h
       exact zero_ne_one h
     have ha' : (a : K)⁻¹ ∈ A := by rw [← valuation_le_one_iff, map_inv₀, h, inv_one]
