@@ -66,24 +66,32 @@ theorem IsOpen.isGδ {s : Set X} (h : IsOpen s) : IsGδ s :=
 #align is_open.is_Gδ IsOpen.isGδ
 
 @[simp]
-theorem isGδ_empty : IsGδ (∅ : Set X) :=
+protected theorem IsGδ.empty : IsGδ (∅ : Set X) :=
   isOpen_empty.isGδ
-#align is_Gδ_empty isGδ_empty
+#align is_Gδ_empty IsGδ.empty
+
+@[deprecated] alias isGδ_empty := IsGδ.empty -- 2024-02-15
 
 @[simp]
-theorem isGδ_univ : IsGδ (univ : Set X) :=
+protected theorem IsGδ.univ : IsGδ (univ : Set X) :=
   isOpen_univ.isGδ
-#align is_Gδ_univ isGδ_univ
+#align is_Gδ_univ IsGδ.univ
 
-theorem isGδ_biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set X}
+@[deprecated] alias isGδ_univ := IsGδ.univ -- 2024-02-15
+
+theorem IsGδ.biInter_of_isOpen {I : Set ι} (hI : I.Countable) {f : ι → Set X}
     (hf : ∀ i ∈ I, IsOpen (f i)) : IsGδ (⋂ i ∈ I, f i) :=
   ⟨f '' I, by rwa [ball_image_iff], hI.image _, by rw [sInter_image]⟩
-#align is_Gδ_bInter_of_open isGδ_biInter_of_isOpen
+#align is_Gδ_bInter_of_open IsGδ.biInter_of_isOpen
 
-theorem isGδ_iInter_of_isOpen [Countable ι'] {f : ι' → Set X} (hf : ∀ i, IsOpen (f i)) :
+@[deprecated] alias isGδ_biInter_of_isOpen := IsGδ.biInter_of_isOpen -- 2024-02-15
+
+theorem IsGδ.iInter_of_isOpen [Countable ι'] {f : ι' → Set X} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [sInter_range]⟩
-#align is_Gδ_Inter_of_open isGδ_iInter_of_isOpen
+#align is_Gδ_Inter_of_open IsGδ.iInter_of_isOpen
+
+@[deprecated] alias isGδ_iInter_of_isOpen := IsGδ.iInter_of_isOpen -- 2024-02-15
 
 lemma isGδ_iff_eq_iInter_nat {s : Set X} :
     IsGδ s ↔ ∃ (f : ℕ → Set X), (∀ n, IsOpen (f n)) ∧ s = ⋂ n, f n := by
@@ -94,33 +102,41 @@ lemma isGδ_iff_eq_iInter_nat {s : Set X} :
     · obtain ⟨f, hf⟩ : ∃ (f : ℕ → Set X), T = range f := Countable.exists_eq_range T_count hT
       exact ⟨f, by aesop, by simp [hf]⟩
   · rintro ⟨f, hf, rfl⟩
-    apply isGδ_iInter_of_isOpen hf
+    exact .iInter_of_isOpen hf
 
 alias ⟨IsGδ.eq_iInter_nat, _⟩ := isGδ_iff_eq_iInter_nat
 
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
-theorem isGδ_iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, IsGδ (s i)) : IsGδ (⋂ i, s i) := by
+protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, IsGδ (s i)) :
+    IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
   refine' ⟨⋃ i, T i, _, countable_iUnion hTc, (sInter_iUnion _).symm⟩
   simpa [@forall_swap ι'] using hTo
-#align is_Gδ_Inter isGδ_iInter
+#align is_Gδ_Inter IsGδ.iInter
 
-theorem isGδ_biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
+@[deprecated] alias isGδ_iInter := IsGδ.iInter
+
+theorem IsGδ.biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
   rw [biInter_eq_iInter]
-  haveI := hs.toEncodable
-  exact isGδ_iInter fun x => ht x x.2
-#align is_Gδ_bInter isGδ_biInter
+  haveI := hs.to_subtype
+  exact .iInter fun x => ht x x.2
+#align is_Gδ_bInter IsGδ.biInter
+
+@[deprecated] alias isGδ_biInter := IsGδ.biInter -- 2024-02-15
 
 /-- A countable intersection of Gδ sets is a Gδ set. -/
-theorem isGδ_sInter {S : Set (Set X)} (h : ∀ s ∈ S, IsGδ s) (hS : S.Countable) : IsGδ (⋂₀ S) := by
-  simpa only [sInter_eq_biInter] using isGδ_biInter hS h
-#align is_Gδ_sInter isGδ_sInter
+theorem IsGδ.sInter {S : Set (Set X)} (h : ∀ s ∈ S, IsGδ s) (hS : S.Countable) : IsGδ (⋂₀ S) := by
+  simpa only [sInter_eq_biInter] using IsGδ.biInter hS h
+#align is_Gδ_sInter IsGδ.sInter
+
+@[deprecated] -- 2024-02-15
+alias isGδ_sInter := IsGδ.sInter
 
 theorem IsGδ.inter {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∩ t) := by
   rw [inter_eq_iInter]
-  exact isGδ_iInter (Bool.forall_bool.2 ⟨ht, hs⟩)
+  exact .iInter (Bool.forall_bool.2 ⟨ht, hs⟩)
 #align is_Gδ.inter IsGδ.inter
 
 /-- The union of two Gδ sets is a Gδ set. -/
@@ -128,25 +144,38 @@ theorem IsGδ.union {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t
   rcases hs with ⟨S, Sopen, Scount, rfl⟩
   rcases ht with ⟨T, Topen, Tcount, rfl⟩
   rw [sInter_union_sInter]
-  apply isGδ_biInter_of_isOpen (Scount.prod Tcount)
+  refine .biInter_of_isOpen (Scount.prod Tcount) ?_
   rintro ⟨a, b⟩ ⟨ha, hb⟩
   exact (Sopen a ha).union (Topen b hb)
 #align is_Gδ.union IsGδ.union
 
--- TODO: add `iUnion` and `sUnion` versions
-/-- The union of finitely many Gδ sets is a Gδ set. -/
-theorem isGδ_biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i ∈ s, IsGδ (f i)) :
-    IsGδ (⋃ i ∈ s, f i) := by
-  refine' Finite.induction_on hs (by simp) _ h
-  simp only [ball_insert_iff, biUnion_insert]
-  exact fun _ _ ihs H => H.1.union (ihs H.2)
-#align is_Gδ_bUnion isGδ_biUnion
+/-- The union of finitely many Gδ sets is a Gδ set, `Set.sUnion` version. -/
+theorem IsGδ.sUnion {S : Set (Set X)} (hS : S.Finite) (h : ∀ s ∈ S, IsGδ s) : IsGδ (⋃₀ S) := by
+  induction S, hS using Set.Finite.dinduction_on with
+  | H0 => simp
+  | H1 _ _ ih =>
+    simp only [ball_insert_iff, sUnion_insert] at *
+    exact h.1.union (ih h.2)
 
-theorem IsClosed.isGδ {X} [UniformSpace X] [IsCountablyGenerated (𝓤 X)] {s : Set X}
+/-- The union of finitely many Gδ sets is a Gδ set, bounded indexed union version. -/
+theorem IsGδ.biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i ∈ s, IsGδ (f i)) :
+    IsGδ (⋃ i ∈ s, f i) := by
+  rw [← sUnion_image]
+  exact .sUnion (hs.image _) (ball_image_iff.2 h)
+#align is_Gδ_bUnion IsGδ.biUnion
+
+@[deprecated] -- 2024-02-15
+alias isGδ_biUnion := IsGδ.biUnion
+
+/-- The union of finitely many Gδ sets is a Gδ set, bounded indexed union version. -/
+theorem IsGδ.iUnion [Finite ι'] {f : ι' → Set X} (h : ∀ i, IsGδ (f i)) : IsGδ (⋃ i, f i) :=
+  .sUnion (finite_range _) <| forall_range_iff.2 h
+
+theorem IsClosed.isGδ {X : Type*} [UniformSpace X] [IsCountablyGenerated (𝓤 X)] {s : Set X}
     (hs : IsClosed s) : IsGδ s := by
   rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
   rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
-  refine' isGδ_biInter (to_countable _) fun n _ => IsOpen.isGδ _
+  refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
   exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
 #align is_closed.is_Gδ IsClosed.isGδ
 
@@ -154,13 +183,15 @@ section T1Space
 
 variable [T1Space X]
 
-theorem isGδ_compl_singleton (x : X) : IsGδ ({x}ᶜ : Set X) :=
+theorem IsGδ.compl_singleton (x : X) : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
-#align is_Gδ_compl_singleton isGδ_compl_singleton
+#align is_Gδ_compl_singleton IsGδ.compl_singleton
+
+@[deprecated] alias isGδ_compl_singleton := IsGδ.compl_singleton -- 2024-02-15
 
 theorem Set.Countable.isGδ_compl {s : Set X} (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
-  exact isGδ_biInter hs fun x _ => isGδ_compl_singleton x
+  exact .biInter hs fun x _ => .compl_singleton x
 #align set.countable.is_Gδ_compl Set.Countable.isGδ_compl
 
 theorem Set.Finite.isGδ_compl {s : Set X} (hs : s.Finite) : IsGδ sᶜ :=
@@ -177,14 +208,16 @@ theorem Finset.isGδ_compl (s : Finset X) : IsGδ (sᶜ : Set X) :=
 
 variable [FirstCountableTopology X]
 
-theorem isGδ_singleton (x : X) : IsGδ ({x} : Set X) := by
+protected theorem IsGδ.singleton (x : X) : IsGδ ({x} : Set X) := by
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
-  exact isGδ_biInter (to_countable _) fun n _ => (hU n).2.isGδ
-#align is_Gδ_singleton isGδ_singleton
+  exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
+#align is_Gδ_singleton IsGδ.singleton
+
+@[deprecated] alias isGδ_singleton := IsGδ.singleton -- 2024-02-15
 
 theorem Set.Finite.isGδ {s : Set X} (hs : s.Finite) : IsGδ s :=
-  Finite.induction_on hs isGδ_empty fun _ _ hs => (isGδ_singleton _).union hs
+  Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
 #align set.finite.is_Gδ Set.Finite.isGδ
 
 end T1Space
@@ -196,16 +229,18 @@ section ContinuousAt
 variable [TopologicalSpace X]
 
 /-- The set of points where a function is continuous is a Gδ set. -/
-theorem isGδ_setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (𝓤 Y)] (f : X → Y) :
+theorem IsGδ.setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (𝓤 Y)] (f : X → Y) :
     IsGδ { x | ContinuousAt f x } := by
   obtain ⟨U, _, hU⟩ := (@uniformity_hasBasis_open_symmetric Y _).exists_antitone_subbasis
   simp only [Uniform.continuousAt_iff_prod, nhds_prod_eq]
   simp only [(nhds_basis_opens _).prod_self.tendsto_iff hU.toHasBasis, forall_prop_of_true,
     setOf_forall, id]
-  refine' isGδ_iInter fun k => IsOpen.isGδ <| isOpen_iff_mem_nhds.2 fun x => _
+  refine .iInter fun k ↦ IsOpen.isGδ <| isOpen_iff_mem_nhds.2 fun x ↦ ?_
   rintro ⟨s, ⟨hsx, hso⟩, hsU⟩
   filter_upwards [IsOpen.mem_nhds hso hsx] with _ hy using ⟨s, ⟨hy, hso⟩, hsU⟩
-#align is_Gδ_set_of_continuous_at isGδ_setOf_continuousAt
+#align is_Gδ_set_of_continuous_at IsGδ.setOf_continuousAt
+
+@[deprecated] alias isGδ_setOf_continuousAt := IsGδ.setOf_continuousAt -- 2024-02-15
 
 end ContinuousAt
 
