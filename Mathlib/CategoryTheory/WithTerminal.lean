@@ -251,7 +251,6 @@ def pseudofunctor : Pseudofunctor Cat Cat where
       rfl
     · rfl
 
-
 instance {X : WithTerminal C} : Unique (X ⟶ star) where
   default :=
     match X with
