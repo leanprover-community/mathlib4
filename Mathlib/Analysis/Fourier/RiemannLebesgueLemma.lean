@@ -276,6 +276,42 @@ theorem tendsto_integral_exp_smul_cocompact_of_inner_product (μ : Measure V) [�
       A.toHomeomorph.toCocompactMap.cocompact_tendsto'
 #align tendsto_integral_exp_smul_cocompact_of_inner_product tendsto_integral_exp_smul_cocompact_of_inner_product
 
+lemma gaa : Continuous (fun (x : ℝ) ↦ (x : ℂ)) := Complex.continuous_ofReal
+
+lemma Filter.Tendsto.ofReal' {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
+    (hf : Tendsto f l (𝓝 x)) :
+    Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=
+  (Complex.continuous_ofReal.tendsto _).comp hf
+
+lemma foot (hf : Integrable f) :
+    Tendsto (fun (c : ℝ) ↦ (∫ v : V, Complex.exp (- c⁻¹ * ‖v‖^2) • f v))
+      atTop (𝓝 (∫ v : V, f v)) := by
+  apply tendsto_integral_filter_of_dominated_convergence _ _ _ hf.norm
+  · apply eventually_of_forall (fun v ↦ ?_)
+    nth_rewrite 2 [show f v = Complex.exp (- (0 : ℝ) * ‖v‖^2) • f v by simp]
+    apply (Tendsto.cexp _).smul_const
+    exact tendsto_inv_atTop_zero.ofReal'.neg.mul_const _
+  · apply eventually_of_forall (fun c ↦ ?_)
+    exact AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable (by continuity)) hf.1
+  · filter_upwards [Ici_mem_atTop (0 : ℝ)] with c (hc : 0 ≤ c)
+    apply eventually_of_forall (fun v ↦ ?_)
+    simp only [ofReal_inv, neg_mul, norm_smul, norm_eq_abs, abs_exp]
+    norm_cast
+    conv_rhs => rw [← one_mul (‖f v‖)]
+    gcongr
+    simp only [Real.exp_le_one_iff, Left.neg_nonpos_iff]
+    positivity
+
+
+
+
+
+
+
+
+
+#exit
+
 end InnerProductSpace
 
 section NoInnerProduct
