@@ -203,7 +203,7 @@ lemma ιTensorObj₃'_eq (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) (i�
     (h' : i₁ + i₂ = i₁₂) :
     ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h =
       (ιTensorObj X₁ X₂ i₁ i₂ i₁₂ h' ⊗ 𝟙 _) ≫
-        ιTensorObj (tensorObj X₁ X₂) X₃ i₁₂ i₃ j (by rw [←h', h]) := by
+        ιTensorObj (tensorObj X₁ X₂) X₃ i₁₂ i₃ j (by rw [← h', h]) := by
   subst h'
   rfl
 
