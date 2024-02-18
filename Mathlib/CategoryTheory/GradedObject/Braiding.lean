@@ -1,5 +1,22 @@
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
 import Mathlib.CategoryTheory.GradedObject.Monoidal
 import Mathlib.CategoryTheory.Monoidal.Braided
+/-!
+# The braided and symmetric category structures on graded objects
+
+In this file, we construct the braiding
+`GradedObject.Monoidal.braiding : tensorObj X Y ≅ tensorObj Y X`
+for two objects `X` and `Y` in `GradedObject I C`, when `I` is a commutative
+additive monoid (and suitable coproducts exist in a braided category `C`).
+
+When `C` is a braided cateogry and suitable assumptions are made, we obtain the braided category
+structure on `GradedObject I C` and show that it is symmetric if `C` is symmetric.
+
+-/
 
 namespace CategoryTheory
 
@@ -11,14 +28,14 @@ namespace GradedObject
 
 namespace Monoidal
 
+variable (X Y Z : GradedObject I C)
+
 section Braided
 
 variable [BraidedCategory C]
 
-variable (X Y Z : GradedObject I C)
-
-section
-
+/-- The braiding `tensorObj X Y ≅ tensorObj Y X` when `X` and `Y` are graded objects
+indexed by a commutative additive monoid. -/
 noncomputable def braiding [HasTensor X Y] [HasTensor Y X] : tensorObj X Y ≅ tensorObj Y X where
   hom k := tensorObjDesc (fun i j hij => (β_ _ _).hom ≫
     ιTensorObj Y X j i k (by simpa only [add_comm j i] using hij))
@@ -39,20 +56,14 @@ lemma braiding_naturality_left [HasTensor Y Z] [HasTensor Z Y] [HasTensor X Z] [
   dsimp [braiding]
   aesop_cat
 
-end
-
-section
-
-variable
-  [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z] [HasTensor Z X] [HasTensor X Z]
-  [HasTensor (tensorObj X Y) Z] [HasTensor X (tensorObj Y Z)]
-  [HasTensor (tensorObj Y Z) X] [HasTensor Y (tensorObj Z X)]
-  [HasTensor (tensorObj Y X) Z] [HasTensor Y (tensorObj X Z)]
-  [HasGoodTensor₁₂Tensor X Y Z] [HasGoodTensorTensor₂₃ X Y Z]
-  [HasGoodTensor₁₂Tensor Y Z X] [HasGoodTensorTensor₂₃ Y Z X]
-  [HasGoodTensor₁₂Tensor Y X Z] [HasGoodTensorTensor₂₃ Y X Z]
-
-lemma hexagon_forward :
+lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
+    [HasTensor Z X] [HasTensor X Z]
+    [HasTensor (tensorObj X Y) Z] [HasTensor X (tensorObj Y Z)]
+    [HasTensor (tensorObj Y Z) X] [HasTensor Y (tensorObj Z X)]
+    [HasTensor (tensorObj Y X) Z] [HasTensor Y (tensorObj X Z)]
+    [HasGoodTensor₁₂Tensor X Y Z] [HasGoodTensorTensor₂₃ X Y Z]
+    [HasGoodTensor₁₂Tensor Y Z X] [HasGoodTensorTensor₂₃ Y Z X]
+    [HasGoodTensor₁₂Tensor Y X Z] [HasGoodTensorTensor₂₃ Y X Z] :
     (associator X Y Z).hom ≫ (braiding X (tensorObj Y Z)).hom ≫ (associator Y Z X).hom =
       whiskerRight (braiding X Y).hom Z ≫ (associator Y X Z).hom ≫
         whiskerLeft Y (braiding X Z).hom := by
@@ -78,19 +89,14 @@ lemma hexagon_forward :
       (i₁ + i₃) (add_comm _ _ )]
   coherence
 
-end
-
-section
-
-variable [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X] [HasTensor Z Y] [HasTensor X Z]
-  [HasTensor (tensorObj X Y) Z] [HasTensor X (tensorObj Y Z)]
-  [HasTensor Z (tensorObj X Y)] [HasTensor (tensorObj Z X) Y]
-  [HasTensor X (tensorObj Z Y)] [HasTensor (tensorObj X Z) Y]
-  [HasGoodTensor₁₂Tensor X Y Z] [HasGoodTensorTensor₂₃ X Y Z]
-  [HasGoodTensor₁₂Tensor Z X Y] [HasGoodTensorTensor₂₃ Z X Y]
-  [HasGoodTensor₁₂Tensor X Z Y] [HasGoodTensorTensor₂₃ X Z Y]
-
-lemma hexagon_reverse :
+lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
+    [HasTensor Z Y] [HasTensor X Z]
+    [HasTensor (tensorObj X Y) Z] [HasTensor X (tensorObj Y Z)]
+    [HasTensor Z (tensorObj X Y)] [HasTensor (tensorObj Z X) Y]
+    [HasTensor X (tensorObj Z Y)] [HasTensor (tensorObj X Z) Y]
+    [HasGoodTensor₁₂Tensor X Y Z] [HasGoodTensorTensor₂₃ X Y Z]
+    [HasGoodTensor₁₂Tensor Z X Y] [HasGoodTensorTensor₂₃ Z X Y]
+    [HasGoodTensor₁₂Tensor X Z Y] [HasGoodTensorTensor₂₃ X Z Y]:
     (associator X Y Z).inv ≫ (braiding (tensorObj X Y) Z).hom ≫ (associator Z X Y).inv =
       whiskerLeft X (braiding Y Z).hom ≫ (associator X Z Y).inv ≫ whiskerRight (braiding X Z).hom Y := by
   ext k i₁ i₂ i₃ h
@@ -114,23 +120,13 @@ lemma hexagon_reverse :
     ιTensorObj₃'_eq Z X Y i₃ i₁ i₂ k (by rw [add_assoc, add_comm i₃, h]) (i₁ + i₃) (add_comm _ _)]
   coherence
 
-end
-
 end Braided
 
-section Symmetric
-
-variable [SymmetricCategory C]
-
-variable (X Y : GradedObject I C) [HasTensor X Y] [HasTensor Y X]
-
 @[reassoc (attr := simp)]
-lemma symmetry :
+lemma symmetry [SymmetricCategory C] [HasTensor X Y] [HasTensor Y X] :
     (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 _ := by
   dsimp [braiding]
   aesop_cat
-
-end Symmetric
 
 end Monoidal
 
