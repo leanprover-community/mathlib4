@@ -72,7 +72,7 @@ class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
 #align is_symm_op IsSymmOp
 
 /-- A commutative binary operation. -/
-@[deprecated IsCommutative]
+@[deprecated Std.Commutative] -- 2024-02-02
 abbrev IsCommutative (α : Sort u) (op : α → α → α) := Std.Commutative op
 #align is_commutative IsCommutative
 
@@ -81,16 +81,16 @@ instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → 
 #align is_symm_op_of_is_commutative isSymmOp_of_isCommutative
 
 /-- An associative binary operation. -/
-@[deprecated IsAssociative]
+@[deprecated Std.Associative] -- 2024-02-02
 abbrev IsAssociative (α : Sort u) (op : α → α → α) := Std.Associative op
 
 /-- A binary operation with a left identity. -/
-@[deprecated IsLeftId]
+@[deprecated Std.LawfulLeftIdentity] -- 2024-02-02
 abbrev IsLeftId (α : Sort u) (op : α → α → α) (o : outParam α) := Std.LawfulLeftIdentity op o
 #align is_left_id Std.LawfulLeftIdentity
 
 /-- A binary operation with a right identity. -/
-@[deprecated IsRightId]
+@[deprecated Std.LawfulRightIdentity] -- 2024-02-02
 abbrev IsRightId (α : Sort u) (op : α → α → α) (o : outParam α) := Std.LawfulRightIdentity op o
 #align is_right_id Std.LawfulRightIdentity
 
@@ -110,7 +110,7 @@ class IsRightCancel (α : Sort u) (op : α → α → α) : Prop where
   right_cancel : ∀ a b c, op a b = op c b → a = c
 #align is_right_cancel IsRightCancel
 
-@[deprecated IsIdempotent]
+@[deprecated Std.IdempotentOp] -- 2024-02-02
 abbrev IsIdempotent (α : Sort u) (op : α → α → α) := Std.IdempotentOp op
 #align is_idempotent Std.IdempotentOp
 
