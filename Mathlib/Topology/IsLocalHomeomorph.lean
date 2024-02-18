@@ -48,8 +48,8 @@ theorem isLocalHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
   · obtain ⟨e, hxe, rfl⟩ := h x hx
     exact ⟨e.source, e.open_source.mem_nhds hxe, e.openEmbedding_restrict⟩
   · obtain ⟨U, hU, emb⟩ := h x hx
-    have : OpenEmbedding ((interior U).restrict f)
-    · refine emb.comp ⟨embedding_inclusion interior_subset, ?_⟩
+    have : OpenEmbedding ((interior U).restrict f) := by
+      refine emb.comp ⟨embedding_inclusion interior_subset, ?_⟩
       rw [Set.range_inclusion]; exact isOpen_induced isOpen_interior
     obtain ⟨cont, inj, openMap⟩ := openEmbedding_iff_continuous_injective_open.mp this
     haveI : Nonempty X := ⟨x⟩
