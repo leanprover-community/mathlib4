@@ -23,6 +23,50 @@ namespace CategoryTheory
 
 open Category
 
+@[reassoc (attr := simp)]
+lemma Iso.map_hom_inv_id {C D : Type*} [Category C] [Category D] {X Y : C} (e : X ≅ Y)
+    (F : C ⥤ D) : F.map e.hom ≫ F.map e.inv = 𝟙 _ := by
+  rw [← F.map_comp, e.hom_inv_id, F.map_id]
+
+@[reassoc (attr := simp)]
+lemma Iso.map_inv_hom_id {C D : Type*} [Category C] [Category D] {X Y : C} (e : X ≅ Y)
+    (F : C ⥤ D) : F.map e.inv ≫ F.map e.hom = 𝟙 _ := by
+  rw [← F.map_comp, e.inv_hom_id, F.map_id]
+
+@[reassoc (attr := simp)]
+lemma Iso.map_hom_inv_id_apply {C D J : Type*} [Category C] [Category D] {X Y : GradedObject J C} (e : X ≅ Y)
+    (F : C ⥤ D) (j : J) : F.map (e.hom j) ≫ F.map (e.inv j) = 𝟙 _ := by
+  rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.hom_inv_id,
+    GradedObject.categoryOfGradedObjects_id, Functor.map_id]
+
+@[reassoc (attr := simp)]
+lemma Iso.map_inv_hom_id_apply {C D J : Type*} [Category C] [Category D] {X Y : GradedObject J C} (e : X ≅ Y)
+    (F : C ⥤ D) (j : J) : F.map (e.inv j) ≫ F.map (e.hom j) = 𝟙 _ := by
+  rw [← F.map_comp, ← GradedObject.categoryOfGradedObjects_comp, e.inv_hom_id,
+    GradedObject.categoryOfGradedObjects_id, Functor.map_id]
+
+@[reassoc (attr := simp)]
+lemma Iso.map_hom_inv_id_app {C D E : Type*} [Category C] [Category D] [Category E]
+    {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Y : D) : (F.map e.hom).app Y ≫ (F.map e.inv).app Y = 𝟙 _ := by
+  rw [← NatTrans.comp_app, ← F.map_comp, e.hom_inv_id, F.map_id, NatTrans.id_app]
+
+@[reassoc (attr := simp)]
+lemma Iso.map_inv_hom_id_app {C D E : Type*} [Category C] [Category D] [Category E]
+    {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Y : D) : (F.map e.inv).app Y ≫ (F.map e.hom).app Y = 𝟙 _ := by
+  rw [← NatTrans.comp_app, ← F.map_comp, e.inv_hom_id, F.map_id, NatTrans.id_app]
+
+@[reassoc (attr := simp)]
+lemma Iso.map_hom_inv_id_app_apply {C D E J : Type*} [Category C] [Category D] [Category E]
+    {X Y : GradedObject J C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) : (F.map (e.hom j)).app Y ≫ (F.map (e.inv j)).app Y = 𝟙 _ := by
+  rw [← NatTrans.comp_app, ← F.map_comp, GradedObject.iso_hom_inv_id_apply,
+    Functor.map_id, NatTrans.id_app]
+
+@[reassoc (attr := simp)]
+lemma Iso.map_inv_hom_id_app_apply {C D E J : Type*} [Category C] [Category D] [Category E]
+    {X Y : GradedObject J C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (j : J) (Y : D) : (F.map (e.inv j)).app Y ≫ (F.map (e.hom j)).app Y = 𝟙 _ := by
+  rw [← NatTrans.comp_app, ← F.map_comp, GradedObject.iso_inv_hom_id_apply,
+    Functor.map_id, NatTrans.id_app]
+
 variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   (F : C₁ ⥤ C₂ ⥤ C₃)
 
@@ -46,7 +90,6 @@ variable {I J K : Type*} (p : I × J → K)
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, graded objects `X : GradedObject I C₁` and
  `Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
 `k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
-@[simp]
 noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject J C₂)
   [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
     (((mapBifunctor F I J).obj X).obj Y).mapObj p
@@ -80,6 +123,37 @@ lemma ι_mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂
       (F.map (f i)).app (Y₁ j) ≫ (F.obj (X₂ i)).map (g j) ≫
         ιMapBifunctorMapObj F p X₂ Y₂ i j k h := by
   simp [ιMapBifunctorMapObj, mapBifunctorMapMap]
+
+@[ext]
+lemma mapBifunctorMapObj_ext {X : GradedObject I C₁} {Y : GradedObject J C₂} {A : C₃} {k : K}
+    [HasMap (((mapBifunctor F I J).obj X).obj Y) p]
+    {f g : mapBifunctorMapObj F p X Y k ⟶ A}
+    (h : ∀ (i : I) (j : J) (hij : p ⟨i, j⟩ = k),
+      ιMapBifunctorMapObj F p X Y i j k hij ≫ f = ιMapBifunctorMapObj F p X Y i j k hij ≫ g) :
+      f = g := by
+  apply mapObj_ext
+  rintro ⟨i, j⟩ hij
+  exact h i j hij
+
+section
+
+variable {X₁ X₂ : GradedObject I C₁} {Y₁ Y₂ : GradedObject J C₂}
+    [HasMap (((mapBifunctor F I J).obj X₁).obj Y₁) p]
+    [HasMap (((mapBifunctor F I J).obj X₂).obj Y₂) p]
+
+@[simps]
+noncomputable def mapBifunctorMapMapIso (e : X₁ ≅ X₂) (e' : Y₁ ≅ Y₂) :
+    mapBifunctorMapObj F p X₁ Y₁ ≅ mapBifunctorMapObj F p X₂ Y₂ where
+  hom := mapBifunctorMapMap F p e.hom e'.hom
+  inv := mapBifunctorMapMap F p e.inv e'.inv
+  hom_inv_id := by ext; simp
+  inv_hom_id := by ext; simp
+
+instance (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) [IsIso f] [IsIso g] :
+    IsIso (mapBifunctorMapMap F p f g) :=
+  (inferInstance : IsIso (mapBifunctorMapMapIso F p (asIso f) (asIso g)).hom)
+
+end
 
 attribute [local simp] mapBifunctorMapMap
 
