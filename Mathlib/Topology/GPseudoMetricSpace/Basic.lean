@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Nat.Interval
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.GPseudoMetricSpace.IsOrderedAddCommMonoid
+
 /-!
 # General Pseudo-Metric Spaces
 
@@ -26,6 +27,7 @@ Additional useful definitions:
 - `ball `
 
 ## Implementation notes
+
 Although `GDist α β` has a field `gdist : α → α → β`, in typical usecases lean has a hard time
 inferring the intended return type without type annotations.
 Because of this, the field is set as protected, and a function
@@ -67,7 +69,6 @@ class GDist
   /-- the generic distance function on α to β -/
   protected gdist : α → α → β
 
-
 /-- the generic distance function on a space α which returns an element of type β,
 with an explicit type parameter β for ease of inferring the return type-/
 def gdist (β : Type*) [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
@@ -101,7 +102,6 @@ class GPseudoMetricSpace
   gdist_comm : ∀ x y : α, gdist x y = gdist y x
   gdist_triangle : ∀ x y z : α, gdist x z ≤ gdist x y + gdist y z
 
-
 lemma cobounded_sets [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
     (gdist : α → α → β)
     (gdist_comm : ∀ x y, gdist x y = gdist y x)
@@ -110,7 +110,6 @@ lemma cobounded_sets [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid
     ).sets =
     { (s:Set α) | ∃ (C : β), ∀ x ∈ sᶜ, ∀ y ∈ sᶜ, (gdist x y ≤ C) } :=
   by intros; rfl
-
 
 @[ext]
 theorem GPseudoMetricSpace.ext [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β]
@@ -133,32 +132,26 @@ theorem gdist_comm (x y : α) : gdist β x y = gdist β y x :=
 theorem gdist_triangle (x y z : α) : gdist β x z ≤ gdist β x y + gdist β y z:=
   GPseudoMetricSpace.gdist_triangle x y z
 
-
 theorem gdist_triangle_left (x y z : α) : gdist β x y ≤ gdist β z x + gdist β z y := by
   rw [gdist_comm z]; apply gdist_triangle
 
-
 theorem gdist_triangle_right (x y z : α) : gdist β x y ≤ gdist β x z + gdist β y z := by
   rw [gdist_comm y]; apply gdist_triangle
-
 
 theorem gdist_triangle4 (x y z w : α) : gdist β x w ≤ gdist β x y + gdist β y z + gdist β z w :=
   calc
     gdist β x w ≤ gdist β x z + gdist β z w := gdist_triangle x z w
     _ ≤ (gdist β x y + gdist β y z + gdist β z w:β) := add_le_add_right (gdist_triangle x y z) _
 
-
 theorem gdist_triangle4_left (x₁ y₁ x₂ y₂ : α) :
     gdist β x₂ y₂ ≤ gdist β x₁ y₁ + (gdist β x₁ x₂ + gdist β y₁ y₂) := by
   rw [add_left_comm, gdist_comm x₁, ← add_assoc]
   apply gdist_triangle4
 
-
 theorem gdist_triangle4_right (x₁ y₁ x₂ y₂ : α) :
     gdist β x₁ y₁ ≤ gdist β x₁ x₂ + gdist β y₁ y₂ + gdist β x₂ y₂ := by
   rw [add_right_comm, gdist_comm y₁]
   apply gdist_triangle4
-
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.Ico` version. -/
 theorem gdist_le_Ico_sum_dist (f : ℕ → α) {m n} (h : m ≤ n) :
@@ -173,12 +166,10 @@ theorem gdist_le_Ico_sum_dist (f : ℕ → α) {m n} (h : m ≤ n) :
       _ = ∑ i in Finset.Ico m (n + 1), _ := by
       { rw [Nat.Ico_succ_right_eq_insert_Ico hle, Finset.sum_insert, add_comm]; simp }
 
-
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem gdist_le_range_sum_dist (f : ℕ → α) (n : ℕ) :
     gdist β (f 0) (f n) ≤ ∑ i in Finset.range n, gdist β (f i) (f (i + 1)) :=
   Nat.Ico_zero_eq_range ▸ gdist_le_Ico_sum_dist f (Nat.zero_le n)
-
 
 /-- A version of `gdist_le_Ico_sum_dist` with each intermediate distance replaced
 with an upper estimate. -/
@@ -188,7 +179,6 @@ theorem gdist_le_Ico_sum_of_dist_le {f : ℕ → α} {m n} (hmn : m ≤ n) {d : 
   le_trans (gdist_le_Ico_sum_dist f hmn) <|
     Finset.sum_le_sum fun _k hk => hd (Finset.mem_Ico.1 hk).1 (Finset.mem_Ico.1 hk).2
 
-
 /-- A version of `gdist_le_range_sum_dist` with each intermediate distance replaced
 with an upper estimate. -/
 theorem gdist_le_range_sum_of_dist_le {f : ℕ → α} (n : ℕ) {d : ℕ → β}
@@ -196,10 +186,8 @@ theorem gdist_le_range_sum_of_dist_le {f : ℕ → α} (n : ℕ) {d : ℕ → β
     gdist β (f 0) (f n) ≤ ∑ i in Finset.range n, d i :=
   Nat.Ico_zero_eq_range ▸ gdist_le_Ico_sum_of_dist_le (zero_le n) fun _ => hd
 
-
 theorem swap_gdist : Function.swap (gdist β) = (gdist β:α → α → β) := by
   funext x y; exact gdist_comm _ _
-
 
 theorem gdist_nonneg {x y : α} : 0 ≤ (gdist β x y) :=
   gdist_nonneg' (gdist β) gdist_self gdist_comm gdist_triangle
@@ -209,109 +197,83 @@ section non_cancel
 variable [LinearOrder β] [AddCommMonoid β] [IsOrderedAddCommMonoid β] [GPseudoMetricSpace α β]
 variable {x y z : α} {δ ε ε₁ ε₂ : β} {s : Set α}
 
-
 /-- `ball x ε` is the set of all points `y` with `dist y x < ε` -/
 def ball (x : α) (ε : β) : Set α :=
   { y | gdist β y x < ε }
-
 
 @[simp]
 theorem mem_ball : y ∈ ball x ε ↔ gdist β y x < ε :=
   Iff.rfl
 
-
 theorem mem_ball' : y ∈ ball x ε ↔ gdist β x y < ε := by rw [gdist_comm, mem_ball]
-
 
 theorem pos_of_mem_ball (hy : y ∈ ball x ε) : 0 < ε :=
   gdist_nonneg.trans_lt hy
 
-
 theorem mem_ball_self (h : 0 < ε) : x ∈ ball x ε := by
   rwa [mem_ball, gdist_self]
-
 
 @[simp]
 theorem nonempty_ball : (ball x ε).Nonempty ↔ 0 < ε :=
   ⟨fun ⟨_x, hx⟩ => pos_of_mem_ball hx, fun h => ⟨x, mem_ball_self h⟩⟩
 
-
 @[simp]
 theorem ball_eq_empty : ball x ε = ∅ ↔ ε ≤ 0 := by
   rw [← not_nonempty_iff_eq_empty, nonempty_ball, not_lt]
 
-
 @[simp]
 theorem ball_zero : ball x (0:β) = ∅ := by rw [ball_eq_empty]
-
 
 /-- `closedBall x ε` is the set of all points `y` with `dist y x ≤ ε` -/
 def closedBall (x : α) (ε : β) :=
   { y | gdist β y x ≤ ε }
 
-
 @[simp] theorem mem_closedBall : y ∈ closedBall x ε ↔ gdist β y x ≤ ε := Iff.rfl
 
-
 theorem mem_closedBall' : y ∈ closedBall x ε ↔ gdist β x y ≤ ε := by rw [gdist_comm, mem_closedBall]
-
 
 /-- `sphere x ε` is the set of all points `y` with `dist y x = ε` -/
 def sphere (x : α) (ε : β) := { y | gdist β y x = ε }
 
-
 @[simp] theorem mem_sphere : y ∈ sphere x ε ↔ gdist β y x = ε := Iff.rfl
 
-
 theorem mem_sphere' : y ∈ sphere x ε ↔ gdist β x y = ε := by rw [gdist_comm, mem_sphere]
-
 
 theorem ne_of_mem_sphere (h : y ∈ sphere x ε) (hε : ε ≠ 0) : y ≠ x :=
   ne_of_mem_of_not_mem h <| by simpa using hε.symm
 
-
 theorem nonneg_of_mem_sphere (hy : y ∈ sphere x ε) : 0 ≤ ε :=
   gdist_nonneg.trans_eq hy
-
 
 @[simp]
 theorem sphere_eq_empty_of_neg (hε : ε < 0) : sphere x ε = ∅ :=
   Set.eq_empty_iff_forall_not_mem.mpr fun _y hy => (nonneg_of_mem_sphere hy).not_lt hε
 
-
 theorem sphere_eq_empty_of_subsingleton [Subsingleton α] (hε : ε ≠ 0) : sphere x ε = ∅ :=
   Set.eq_empty_iff_forall_not_mem.mpr fun _ h => ne_of_mem_sphere h hε (Subsingleton.elim _ _)
-
 
 instance sphere_isEmpty_of_subsingleton [Subsingleton α] [NeZero ε] : IsEmpty (sphere x ε) := by
   rw [sphere_eq_empty_of_subsingleton (NeZero.ne ε)]; infer_instance
 
-
 theorem mem_closedBall_self (h : 0 ≤ ε) : x ∈ closedBall x ε := by
   rwa [mem_closedBall, gdist_self]
-
 
 @[simp]
 theorem nonempty_closedBall : (closedBall x ε).Nonempty ↔ 0 ≤ ε :=
   ⟨fun ⟨_x, hx⟩ => gdist_nonneg.trans hx, fun h => ⟨x, mem_closedBall_self h⟩⟩
 
-
 @[simp]
 theorem closedBall_eq_empty : closedBall x ε = ∅ ↔ ε < 0 := by
   rw [← not_nonempty_iff_eq_empty, nonempty_closedBall, not_le]
-
 
 /-- Closed balls and spheres coincide when the radius is non-positive -/
 theorem closedBall_eq_sphere_of_nonpos (hε : ε ≤ 0) : closedBall x ε = sphere x ε :=
   Set.ext fun _ => (hε.trans gdist_nonneg).le_iff_eq
 
-
 theorem ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _y hy =>
   mem_closedBall.2 (le_of_lt hy)
 
-
 theorem sphere_subset_closedBall : sphere x ε ⊆ closedBall x ε := fun _ => le_of_eq
-
 
 lemma sphere_subset_ball {r R : β} (h : r < R) : sphere x r ⊆ ball x R := fun _x hx ↦
   (mem_sphere.1 hx).trans_lt h
@@ -325,63 +287,49 @@ theorem closedBall_disjoint_ball (h : δ + ε ≤ gdist β x y) : Disjoint (clos
   Set.disjoint_left.mpr fun _a ha1 ha2 =>
     (h.trans <| gdist_triangle_left _ _ _).not_lt <| add_lt_add_of_le_of_lt ha1 ha2
 
-
 theorem ball_disjoint_closedBall
     (h : δ + ε ≤ gdist β x y) : Disjoint (ball x δ) (closedBall (y:α) (ε :β)) :=
   (closedBall_disjoint_ball <| by rwa [add_comm, gdist_comm]).symm
 
-
 theorem ball_disjoint_ball (h : δ + ε ≤ gdist β x y) : Disjoint (ball x δ) (ball y ε) :=
   (closedBall_disjoint_ball h).mono_left ball_subset_closedBall
-
 
 theorem closedBall_disjoint_closedBall (h : δ + ε < gdist β x y) :
     Disjoint (closedBall x δ) (closedBall y ε) :=
   Set.disjoint_left.mpr fun _a ha1 ha2 =>
     h.not_le <| (gdist_triangle_left _ _ _).trans <| add_le_add ha1 ha2
 
-
 theorem sphere_disjoint_ball : Disjoint (sphere x ε) (ball x ε) :=
   Set.disjoint_left.mpr fun _y hy₁ hy₂ => absurd hy₁ <| ne_of_lt hy₂
-
 
 @[simp]
 theorem ball_union_sphere : ball x ε ∪ sphere x ε = closedBall x ε :=
   Set.ext fun _y => (@le_iff_lt_or_eq β _ _ _).symm
 
-
 @[simp]
 theorem sphere_union_ball : sphere x ε ∪ ball x ε = closedBall x ε := by
   rw [union_comm, ball_union_sphere]
-
 
 @[simp]
 theorem closedBall_diff_sphere : closedBall x ε \ sphere x ε = ball x ε := by
   rw [← ball_union_sphere, Set.union_diff_cancel_right sphere_disjoint_ball.symm.le_bot]
 
-
 @[simp]
 theorem closedBall_diff_ball : closedBall x ε \ ball x ε = sphere x ε := by
   rw [← ball_union_sphere, Set.union_diff_cancel_left sphere_disjoint_ball.symm.le_bot]
 
-
 theorem mem_ball_comm : x ∈ ball y ε ↔ y ∈ ball x ε := by rw [mem_ball', mem_ball]
-
 
 theorem mem_closedBall_comm : x ∈ closedBall y ε ↔ y ∈ closedBall x ε := by
   rw [mem_closedBall', mem_closedBall]
 
-
 theorem mem_sphere_comm : x ∈ sphere y ε ↔ y ∈ sphere x ε := by rw [mem_sphere', mem_sphere]
-
 
 theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ := fun _y yx =>
   lt_of_lt_of_le (mem_ball.1 yx) h
 
-
 theorem closedBall_eq_bInter_ball : closedBall x ε = ⋂ δ > ε, ball x δ := by
   ext y; rw [mem_closedBall, ← forall_lt_iff_le', mem_iInter₂]; rfl
-
 
 theorem ball_subset_ball' (h : ε₁ + gdist β x y ≤ ε₂) : ball x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc
@@ -389,10 +337,8 @@ theorem ball_subset_ball' (h : ε₁ + gdist β x y ≤ ε₂) : ball x ε₁ �
     _ < ε₁ + gdist β x y := by exact add_lt_add_right hz _
     _ ≤ ε₂ := h
 
-
 theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ ⊆ closedBall x ε₂ :=
   fun _y (yx : _ ≤ ε₁) => le_trans yx h
-
 
 theorem closedBall_subset_closedBall' (h : ε₁ + gdist β x y ≤ ε₂) :
     closedBall x ε₁ ⊆ closedBall y ε₂ := fun z hz =>
@@ -401,10 +347,8 @@ theorem closedBall_subset_closedBall' (h : ε₁ + gdist β x y ≤ ε₂) :
     _ ≤ ε₁ + gdist β x y := add_le_add_right (mem_closedBall.1 hz) _
     _ ≤ ε₂ := h
 
-
 theorem closedBall_subset_ball (h : ε₁ < ε₂) : closedBall x ε₁ ⊆ ball x ε₂ :=
   fun y (yh : gdist β y x ≤ ε₁) => lt_of_le_of_lt yh h
-
 
 theorem closedBall_subset_ball' (h : ε₁ + gdist β x y < ε₂) :
     closedBall x ε₁ ⊆ ball y ε₂ := fun z hz =>
@@ -413,14 +357,12 @@ theorem closedBall_subset_ball' (h : ε₁ + gdist β x y < ε₂) :
     _ ≤ ε₁ + gdist β x y := add_le_add_right (mem_closedBall.1 hz) _
     _ < ε₂ := h
 
-
 theorem dist_le_add_of_nonempty_closedBall_inter_closedBall
     (h : (closedBall x ε₁ ∩ closedBall y ε₂).Nonempty) : gdist β x y ≤ ε₁ + ε₂ :=
   let ⟨z, hz⟩ := h
   calc
     gdist β x y ≤ gdist β z x + gdist β z y := gdist_triangle_left _ _ _
     _ ≤ ε₁ + ε₂ := add_le_add hz.1 hz.2
-
 
 theorem dist_lt_add_of_nonempty_closedBall_inter_ball (h : (closedBall x ε₁ ∩ ball y ε₂).Nonempty) :
     gdist β x y < ε₁ + ε₂ :=
@@ -429,13 +371,11 @@ theorem dist_lt_add_of_nonempty_closedBall_inter_ball (h : (closedBall x ε₁ �
     gdist β x y ≤ gdist β z x + gdist β z y := gdist_triangle_left _ _ _
     _ < ε₁ + ε₂ := add_lt_add_of_le_of_lt hz.1 hz.2
 
-
 theorem dist_lt_add_of_nonempty_ball_inter_closedBall (h : (ball x ε₁ ∩ closedBall y ε₂).Nonempty) :
     gdist β x y < ε₁ + ε₂ := by
   rw [inter_comm] at h
   rw [add_comm, gdist_comm]
   exact dist_lt_add_of_nonempty_closedBall_inter_ball h
-
 
 theorem dist_lt_add_of_nonempty_ball_inter_ball (h : (ball x ε₁ ∩ ball y ε₂).Nonempty) :
     gdist β x y < ε₁ + ε₂ :=
