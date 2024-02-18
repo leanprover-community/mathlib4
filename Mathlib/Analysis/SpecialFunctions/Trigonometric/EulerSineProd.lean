@@ -310,13 +310,10 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
   have : 𝓝 (Complex.sin (π * z)) = 𝓝 (Complex.sin (π * z) * 1) := by rw [mul_one]
   simp_rw [this, mul_div_assoc] at A
   convert (tendsto_mul_iff_of_ne_zero _ one_ne_zero).mp A
-  suffices :
-    Tendsto
-      (fun n : ℕ =>
+  suffices Tendsto (fun n : ℕ =>
         (∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) /
-          (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ))
-      atTop (𝓝 1)
-  exact this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
+          (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ)) atTop (𝓝 1) from
+    this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
   have : ContinuousOn (fun x : ℝ => Complex.cos (2 * z * x)) (Icc 0 (π / 2)) :=
     (Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).continuousOn
   convert tendsto_integral_cos_pow_mul_div this using 1

@@ -288,7 +288,7 @@ instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_zero w := w.1.map_zero
 
 instance : NonnegHomClass (InfinitePlace K) K ℝ where
-  map_nonneg w _ := w.1.nonneg _
+  apply_nonneg w _ := w.1.nonneg _
 
 @[simp]
 theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = Complex.abs (φ x) := rfl
@@ -792,10 +792,11 @@ lemma nat_card_stabilizer_eq_one_or_two :
     · right; simp [*]
   · push_neg at h
     left
-    convert show Nat.card ({1} : Set (K ≃ₐ[k] K)) = 1 by simp
-    ext
-    simp only [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_singleton_iff, or_iff_left_iff_imp]
-    exact fun x ↦ (h _ x).elim
+    trans Nat.card ({1} : Set (K ≃ₐ[k] K))
+    · congr with x
+      simp only [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_singleton_iff, or_iff_left_iff_imp,
+        h x, IsEmpty.forall_iff]
+    · simp
 
 variable {k w}
 

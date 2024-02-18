@@ -933,8 +933,8 @@ theorem wcovBy_span_singleton_sup (x : V) (p : Submodule K V) : WCovBy p ((K ∙
     simpa [mem_sup, mem_span_singleton] using hqp.le hyq
   rcases eq_or_ne c 0 with rfl | hc
   · simp [hz] at hyp
-  · have : x ∈ q
-    · rwa [q.add_mem_iff_left (hpq.le hz), q.smul_mem_iff hc] at hyq
+  · have : x ∈ q := by
+      rwa [q.add_mem_iff_left (hpq.le hz), q.smul_mem_iff hc] at hyq
     simp [hpq.le, this]
 
 /-- There is no vector subspace between `p` and `(K ∙ x) ⊔ p`, `CovBy` version. -/
@@ -1099,12 +1099,14 @@ def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
     (LinearEquiv.ofEq (range <| toSpanSingleton R M x) (R ∙ x) (span_singleton_eq_range R M x).symm)
 #align linear_equiv.to_span_nonzero_singleton LinearEquiv.toSpanNonzeroSingleton
 
+@[simp] theorem toSpanNonzeroSingleton_apply (t : R) :
+    LinearEquiv.toSpanNonzeroSingleton R M x h t =
+      (⟨t • x, Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self x)⟩ : R ∙ x) := by
+  rfl
+
 theorem toSpanNonzeroSingleton_one :
     LinearEquiv.toSpanNonzeroSingleton R M x h 1 =
-      (⟨x, Submodule.mem_span_singleton_self x⟩ : R ∙ x) := by
-  apply SetLike.coe_eq_coe.mp
-  have : ↑(toSpanNonzeroSingleton R M x h 1) = toSpanSingleton R M x 1 := rfl
-  rw [this, toSpanSingleton_one]
+      (⟨x, Submodule.mem_span_singleton_self x⟩ : R ∙ x) := by simp
 #align linear_equiv.to_span_nonzero_singleton_one LinearEquiv.toSpanNonzeroSingleton_one
 
 /-- Given a nonzero element `x` of a torsion-free module `M` over a ring `R`, the natural

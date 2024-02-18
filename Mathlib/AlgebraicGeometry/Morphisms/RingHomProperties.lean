@@ -85,8 +85,8 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff_of_isAffine (hP : RingHom.Re
     {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) :
     P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔
     P (Localization.awayMap (Scheme.Γ.map f.op) r) := by
-  have : IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r) ↑Γ(X ∣_ᵤ f⁻¹ᵁ Y.basicOpen r)
-  · rw [Scheme.preimage_basicOpen]
+  have : IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r) ↑Γ(X ∣_ᵤ f⁻¹ᵁ Y.basicOpen r) := by
+    rw [Scheme.preimage_basicOpen]
     show IsLocalization.Away (R := ↑Γ(X)) (Scheme.Γ.map f.op r)
       ↑Γ(X ∣_ᵤ X.basicOpen (Scheme.Γ.map f.op r))
     infer_instance

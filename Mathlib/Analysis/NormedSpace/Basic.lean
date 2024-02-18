@@ -324,14 +324,14 @@ section NNReal
 variable [NormOneClass 𝕜'] [NormedAlgebra ℝ 𝕜']
 
 @[simp]
-theorem norm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
+theorem norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
   (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
-#align norm_algebra_map_nnreal norm_algebraMap_nNReal
+#align norm_algebra_map_nnreal norm_algebraMap_nnreal
 
 @[simp]
-theorem nnnorm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
-  Subtype.ext <| norm_algebraMap_nNReal 𝕜' x
-#align nnnorm_algebra_map_nnreal nnnorm_algebraMap_nNReal
+theorem nnnorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
+  Subtype.ext <| norm_algebraMap_nnreal 𝕜' x
+#align nnnorm_algebra_map_nnreal nnnorm_algebraMap_nnreal
 
 end NNReal
 
@@ -414,16 +414,56 @@ instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedF
 
 section RestrictScalars
 
-variable (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
+section NormInstances
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : SeminormedAddCommGroup E] :
+variable {𝕜 𝕜' E : Type*}
+
+instance [I : SeminormedAddCommGroup E] :
     SeminormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-instance {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [I : NormedAddCommGroup E] :
+instance [I : NormedAddCommGroup E] :
     NormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
   I
+
+instance [I : NonUnitalSeminormedRing E] :
+    NonUnitalSeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance [I : NonUnitalNormedRing E] :
+    NonUnitalNormedRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance [I : SeminormedRing E] :
+    SeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance [I : NormedRing E] :
+    NormedRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance [I : NonUnitalSeminormedCommRing E] :
+    NonUnitalSeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance [I : NonUnitalNormedCommRing E] :
+    NonUnitalNormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance [I : SeminormedCommRing E] :
+    SeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+instance [I : NormedCommRing E] :
+    NormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+end NormInstances
+
+section NormedSpace
+
+variable (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
 
 /-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedSpace`. -/
@@ -452,5 +492,39 @@ inferred, and because it is likely to create instance diamonds.
 def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' _
 #align normed_space.restrict_scalars NormedSpace.restrictScalars
+
+end NormedSpace
+
+section NormedAlgebra
+
+variable (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  (E : Type*) [SeminormedRing E] [NormedAlgebra 𝕜' E]
+
+/-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
+`RestrictScalars.module` is additionally a `NormedAlgebra`. -/
+instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
+  { RestrictScalars.algebra 𝕜 𝕜' E with
+    norm_smul_le := norm_smul_le }
+
+-- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
+-- appropriately modified here.
+/-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
+This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
+-/
+def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
+    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+  I
+
+/-- Warning: This declaration should be used judiciously.
+Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
+
+This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
+rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
+inferred, and because it is likely to create instance diamonds.
+-/
+def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
+  RestrictScalars.normedAlgebra _ 𝕜' _
+
+end NormedAlgebra
 
 end RestrictScalars
