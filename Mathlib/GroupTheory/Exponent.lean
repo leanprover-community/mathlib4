@@ -415,15 +415,8 @@ theorem exponent_ne_zero_of_finite [Finite G] : exponent G ≠ 0 :=
 @[to_additive AddMonoid.one_lt_exponent]
 lemma one_lt_exponent [LeftCancelMonoid G] [Finite G] [Nontrivial G] :
     1 < Monoid.exponent G := by
-  let _inst := Fintype.ofFinite G
-  obtain ⟨g, hg⟩ := exists_ne (1 : G)
-  rw [← Monoid.lcm_orderOf_eq_exponent]
-  have hg' : 2 ≤ orderOf g := Nat.lt_of_le_of_ne (orderOf_pos g) <| by
-    simpa [eq_comm, orderOf_eq_one_iff] using hg
-  refine hg'.trans <| Nat.le_of_dvd ?_ <| Finset.dvd_lcm (by simp)
-  rw [Nat.pos_iff_ne_zero, Ne.def, Finset.lcm_eq_zero_iff]
-  rintro ⟨x, -, hx⟩
-  exact (orderOf_pos x).ne' hx
+  rw [Nat.one_lt_iff_ne_zero_and_ne_one]
+  exact ⟨exponent_ne_zero_of_finite, mt exp_eq_one_iff.mp (not_subsingleton G)⟩
 
 end LeftCancelMonoid
 
