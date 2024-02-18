@@ -1,5 +1,4 @@
 import Mathlib.Tactic.UnsetOption
-import Std.Tactic.RunCmd
 
 set_option pp.all true
 
