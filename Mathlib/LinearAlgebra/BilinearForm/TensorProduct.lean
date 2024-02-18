@@ -67,10 +67,10 @@ theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂)
 
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
 @[reducible]
-protected def _root_.LinearMap.tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) :
+protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) :
     BilinForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
-#align bilin_form.tmul LinearMap.tmul
+#align bilin_form.tmul LinearMap.BilinForm.tmul
 
 attribute [ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
@@ -143,7 +143,7 @@ theorem tensorDistribEquiv_toLinearMap :
   exact mul_comm _ _
 
 @[simp]
-theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗[R] BilinForm R M₂) :
+theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) B = tensorDistrib R R B :=
   DFunLike.congr_fun (tensorDistribEquiv_toLinearMap R M₁ M₂) B
 #align bilin_form.tensor_distrib_equiv_apply LinearMap.BilinForm.tensorDistribEquiv_apply
