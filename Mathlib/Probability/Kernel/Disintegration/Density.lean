@@ -74,18 +74,19 @@ variable {α β : Type*} {mα : MeasurableSpace α}
 
 section dissection_system
 
-def I (n : ℕ) (k : ℤ) : Set ℝ := Set.Ico (k * (2⁻¹ : ℝ) ^ n) ((k + 1) * ((2 : ℝ) ^ n)⁻¹)
+def IcoPowTwo (n : ℕ) (k : ℤ) : Set ℝ := Set.Ico (k * (2⁻¹ : ℝ) ^ n) ((k + 1) * ((2 : ℝ) ^ n)⁻¹)
 
-lemma mem_I_iff_mul {n : ℕ} {k : ℤ} (x : ℝ) : x ∈ I n k ↔ k ≤ x * 2 ^ n ∧ x * 2 ^ n < k + 1 := by
-  simp only [I, inv_pow, mem_Ico]
+lemma mem_IcoPowTwo_iff_mul {n : ℕ} {k : ℤ} (x : ℝ) :
+    x ∈ IcoPowTwo n k ↔ k ≤ x * 2 ^ n ∧ x * 2 ^ n < k + 1 := by
+  simp only [IcoPowTwo, inv_pow, mem_Ico]
   rw [← div_eq_mul_inv, div_le_iff, ← div_eq_mul_inv, lt_div_iff]
   · positivity
   · positivity
 
-lemma mem_I_iff_floor {n : ℕ} {k : ℤ} (x : ℝ) : x ∈ I n k ↔ ⌊x * 2 ^ n⌋ = k := by
-  simp [mem_I_iff_mul, Int.floor_eq_iff]
+lemma mem_IcoPowTwo_iff_floor {n : ℕ} {k : ℤ} (x : ℝ) : x ∈ IcoPowTwo n k ↔ ⌊x * 2 ^ n⌋ = k := by
+  simp [mem_IcoPowTwo_iff_mul, Int.floor_eq_iff]
 
-lemma measurableSet_I (n : ℕ) (k : ℤ) : MeasurableSet (I n k) := measurableSet_Ico
+lemma measurableSet_IcoPowTwo (n : ℕ) (k : ℤ) : MeasurableSet (IcoPowTwo n k) := measurableSet_Ico
 
 lemma Measure.iInf_Iic_gt_prod {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
     {s : Set α} (hs : MeasurableSet s) (t : ℚ) :
@@ -104,20 +105,21 @@ lemma Measure.iInf_Iic_gt_prod {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
     exact mod_cast hrr'
   · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 
-lemma pairwise_disjoint_I (n : ℕ) : Pairwise (Disjoint on fun k ↦ I n k) := by
+lemma pairwise_disjoint_IcoPowTwo (n : ℕ) : Pairwise (Disjoint on fun k ↦ IcoPowTwo n k) := by
   intro i j hij
   rw [Function.onFun, Set.disjoint_iff]
   intro x
-  simp only [mem_inter_iff, mem_I_iff_floor, mem_empty_iff_false, and_imp, imp_false]
+  simp only [mem_inter_iff, mem_IcoPowTwo_iff_floor, mem_empty_iff_false, and_imp, imp_false]
   intro hi hj
   rw [hi] at hj
   exact hij hj
 
-lemma I_succ_union (n : ℕ) (k : ℤ) : I (n+1) (2 * k) ∪ I (n+1) (2 * k + 1) = I n k := by
+lemma IcoPowTwo_succ_union (n : ℕ) (k : ℤ) :
+    IcoPowTwo (n+1) (2 * k) ∪ IcoPowTwo (n+1) (2 * k + 1) = IcoPowTwo n k := by
   ext x
   cases lt_or_le x ((2 * k + 1) * ((2 : ℝ) ^ (n+1))⁻¹) with
   | inl h =>
-    simp only [I, inv_pow, mem_Ico, Int.cast_mul, Int.int_cast_ofNat, Int.cast_add,
+    simp only [IcoPowTwo, inv_pow, mem_Ico, Int.cast_mul, Int.int_cast_ofNat, Int.cast_add,
       Int.cast_one, mem_union, h, and_true, not_le.mpr h, false_and, or_false]
     have : x < (k + 1) * (2 ^ n)⁻¹ := by
       refine h.trans_le ?_
@@ -130,7 +132,7 @@ lemma I_succ_union (n : ℕ) (k : ℤ) : I (n+1) (2 * k) ∪ I (n+1) (2 * k + 1)
     rw [pow_add, pow_one, mul_inv, mul_comm _ 2⁻¹, ← mul_assoc, mul_comm _ 2⁻¹, ← mul_assoc,
       inv_mul_cancel two_ne_zero, one_mul]
   | inr h =>
-    simp only [I, inv_pow, mem_Ico, Int.cast_mul, Int.int_cast_ofNat, Int.cast_add,
+    simp only [IcoPowTwo, inv_pow, mem_Ico, Int.cast_mul, Int.int_cast_ofNat, Int.cast_add,
       Int.cast_one, mem_union, not_lt.mpr h, and_false, h, true_and, false_or]
     have : k * (2 ^ n)⁻¹ ≤ x := by
       refine le_trans ?_ h
@@ -144,10 +146,10 @@ lemma I_succ_union (n : ℕ) (k : ℤ) : I (n+1) (2 * k) ∪ I (n+1) (2 * k + 1)
     norm_num
     rw [one_div, mul_add, ← mul_assoc, inv_mul_cancel two_ne_zero, one_mul]
 
-noncomputable def indexI (n : ℕ) (t : ℝ) : ℤ := Int.floor (t * 2 ^ n)
+noncomputable def indexIcoPowTwo (n : ℕ) (t : ℝ) : ℤ := Int.floor (t * 2 ^ n)
 
-lemma mem_I_indexI (n : ℕ) (t : ℝ) : t ∈ I n (indexI n t) := by
-  rw [indexI, I]
+lemma mem_IcoPowTwo_indexIcoPowTwo (n : ℕ) (t : ℝ) : t ∈ IcoPowTwo n (indexIcoPowTwo n t) := by
+  rw [indexIcoPowTwo, IcoPowTwo]
   simp only [inv_pow, mem_Ico]
   constructor
   · rw [← div_eq_mul_inv, div_le_iff]
@@ -157,37 +159,40 @@ lemma mem_I_indexI (n : ℕ) (t : ℝ) : t ∈ I n (indexI n t) := by
     · exact Int.lt_floor_add_one (t * 2 ^ n)
     · positivity
 
-lemma indexI_of_mem (n : ℕ) (k : ℤ) (t : ℝ) (ht : t ∈ I n k) : indexI n t = k := by
-  rw [indexI]
-  simp only [I, inv_pow, mem_Ico, ← div_eq_mul_inv] at ht
+lemma indexIcoPowTwo_of_mem (n : ℕ) (k : ℤ) (t : ℝ) (ht : t ∈ IcoPowTwo n k) :
+    indexIcoPowTwo n t = k := by
+  rw [indexIcoPowTwo]
+  simp only [IcoPowTwo, inv_pow, mem_Ico, ← div_eq_mul_inv] at ht
   rw [div_le_iff, lt_div_iff] at ht
   · rw [Int.floor_eq_iff]
     exact ht
   · positivity
   · positivity
 
-lemma mem_I_iff_indexI (n : ℕ) (k : ℤ) (t : ℝ) : t ∈ I n k ↔ indexI n t = k :=
-  ⟨fun h ↦ indexI_of_mem n k t h, fun h ↦ h ▸ mem_I_indexI n t⟩
+lemma mem_IcoPowTwo_iff_indexIcoPowTwo (n : ℕ) (k : ℤ) (t : ℝ) :
+    t ∈ IcoPowTwo n k ↔ indexIcoPowTwo n t = k :=
+  ⟨fun h ↦ indexIcoPowTwo_of_mem n k t h, fun h ↦ h ▸ mem_IcoPowTwo_indexIcoPowTwo n t⟩
 
-lemma iUnion_I (n : ℕ) : ⋃ k, I n k = univ := by
+lemma iUnion_IcoPowTwo (n : ℕ) : ⋃ k, IcoPowTwo n k = univ := by
   ext x
   simp only [mem_iUnion, mem_univ, iff_true]
-  exact ⟨indexI n x, mem_I_indexI n x⟩
+  exact ⟨indexIcoPowTwo n x, mem_IcoPowTwo_indexIcoPowTwo n x⟩
 
-lemma indexI_le_indexI_iff (n : ℕ) (t x : ℝ) :
-    indexI n t ≤ indexI n x ↔ ⌊t * 2 ^ n⌋ * (2 ^ n)⁻¹ ≤ x := by
-  simp only [indexI._eq_1]
+lemma indexIcoPowTwo_le_indexIcoPowTwo_iff (n : ℕ) (t x : ℝ) :
+    indexIcoPowTwo n t ≤ indexIcoPowTwo n x ↔ ⌊t * 2 ^ n⌋ * (2 ^ n)⁻¹ ≤ x := by
+  simp only [indexIcoPowTwo]
   rw [← div_eq_mul_inv, div_le_iff, Int.le_floor]
   positivity
 
-lemma iUnion_ge_I (n : ℕ) (t : ℝ) :
-    ⋃ (k) (_ : indexI n t ≤ k), I n k = Ici (⌊t * 2 ^ n⌋ * (2 ^ n)⁻¹ : ℝ) := by
+lemma iUnion_ge_IcoPowTwo (n : ℕ) (t : ℝ) :
+    ⋃ (k) (_ : indexIcoPowTwo n t ≤ k), IcoPowTwo n k = Ici (⌊t * 2 ^ n⌋ * (2 ^ n)⁻¹ : ℝ) := by
   ext x
-  simp [mem_I_iff_indexI, indexI_le_indexI_iff]
+  simp [mem_IcoPowTwo_iff_indexIcoPowTwo, indexIcoPowTwo_le_indexIcoPowTwo_iff]
 
-lemma iInter_biUnion_I (x : ℝ) : ⋂ n, ⋃ (k) (_ : indexI n x ≤ k), I n k = Ici x := by
+lemma iInter_biUnion_I (x : ℝ) :
+    ⋂ n, ⋃ (k) (_ : indexIcoPowTwo n x ≤ k), IcoPowTwo n k = Ici x := by
   ext t
-  simp [iUnion_ge_I]
+  simp [iUnion_ge_IcoPowTwo]
   refine ⟨fun h ↦ ?_, fun h n ↦ le_trans ?_ h⟩
   · by_contra h_lt
     push_neg at h_lt
@@ -226,31 +231,31 @@ lemma iInter_biUnion_I (x : ℝ) : ⋂ n, ⋃ (k) (_ : indexI n x ≤ k), I n k 
 
 -- todo : `Filtration` should be renamed to `filtration`
 def ℱ : Filtration ℕ (borel ℝ) where
-  seq := fun n ↦ MeasurableSpace.generateFrom {s | ∃ k, s = I n k}
+  seq := fun n ↦ MeasurableSpace.generateFrom {s | ∃ k, s = IcoPowTwo n k}
   mono' := by
     refine monotone_nat_of_le_succ ?_
     intro n
     refine MeasurableSpace.generateFrom_le fun s ⟨k, hs⟩ ↦ ?_
-    rw [hs, ← I_succ_union n k]
+    rw [hs, ← IcoPowTwo_succ_union n k]
     refine MeasurableSet.union ?_ ?_
     · exact MeasurableSpace.measurableSet_generateFrom ⟨2 * k, rfl⟩
     · exact MeasurableSpace.measurableSet_generateFrom ⟨2 * k + 1, rfl⟩
   le' := fun n ↦ by
     refine MeasurableSpace.generateFrom_le fun s ⟨k, hs⟩ ↦ ?_
     rw [hs]
-    exact measurableSet_I n k
+    exact measurableSet_IcoPowTwo n k
 
-lemma measurableSet_ℱ_I (n : ℕ) (k : ℤ) : MeasurableSet[ℱ n] (I n k) :=
+lemma measurableSet_ℱ_IcoPowTwo (n : ℕ) (k : ℤ) : MeasurableSet[ℱ n] (IcoPowTwo n k) :=
   MeasurableSpace.measurableSet_generateFrom ⟨k, rfl⟩
 
-lemma measurable_indexI (n : ℕ) : Measurable[ℱ n] (indexI n) := by
-  unfold indexI
+lemma measurable_indexIcoPowTwo (n : ℕ) : Measurable[ℱ n] (indexIcoPowTwo n) := by
   refine @measurable_to_countable' ℤ ℝ _ _ (ℱ n) _ (fun k ↦ ?_)
-  have : (fun t ↦ ⌊t * (2 : ℝ) ^ n⌋) ⁻¹' {k} = I n k := by
+  have : (fun t ↦ ⌊t * (2 : ℝ) ^ n⌋) ⁻¹' {k} = IcoPowTwo n k := by
     ext t
-    simp only [mem_I_iff_floor, mem_preimage, mem_singleton_iff]
+    simp only [mem_IcoPowTwo_iff_floor, mem_preimage, mem_singleton_iff]
+  unfold indexIcoPowTwo
   rw [this]
-  exact measurableSet_ℱ_I n k
+  exact measurableSet_ℱ_IcoPowTwo n k
 
 lemma iSup_ℱ : ⨆ n, ℱ n = borel ℝ := by
   refine le_antisymm ?_ ?_
@@ -262,7 +267,7 @@ lemma iSup_ℱ : ⨆ n, ℱ n = borel ℝ := by
     refine MeasurableSet.iInter (fun n ↦ ?_)
     refine MeasurableSet.biUnion ?_ (fun k _ ↦ ?_)
     · exact to_countable _
-    · exact le_iSup ℱ n _ (measurableSet_ℱ_I n k)
+    · exact le_iSup ℱ n _ (measurableSet_ℱ_IcoPowTwo n k)
 
 end dissection_system
 
@@ -275,37 +280,39 @@ variable {κ : kernel α (ℝ × β)} {ν : kernel α ℝ}
 noncomputable
 def densityProcess (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ) (a : α) (t : ℝ) (s : Set β) :
     ℝ :=
-  (κ a (I n (indexI n t) ×ˢ s) / ν a (I n (indexI n t))).toReal
+  (κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s) / ν a (IcoPowTwo n (indexIcoPowTwo n t))).toReal
 
 lemma densityProcess_def (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ) (a : α) (s : Set β) :
     (fun t ↦ densityProcess κ ν n a t s)
-      = fun t ↦ (κ a (I n (indexI n t) ×ˢ s) / ν a (I n (indexI n t))).toReal :=
+      = fun t ↦ (κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s)
+        / ν a (IcoPowTwo n (indexIcoPowTwo n t))).toReal :=
   rfl
 
 lemma measurable_densityProcess_aux (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ)
     {s : Set β} (hs : MeasurableSet s) :
-    Measurable (fun (p : α × ℝ) ↦
-      κ p.1 (I n (indexI n p.2) ×ˢ s) / ν p.1 (I n (indexI n p.2))) := by
-  change Measurable ((fun (p : α × ℤ) ↦
-    κ p.1 (I n p.2 ×ˢ s) / ν p.1 (I n p.2)) ∘ (fun (p : α × ℝ) ↦ (p.1, indexI n p.2)))
-  have h1 : Measurable (fun (p : α × ℤ) ↦ κ p.1 (I n p.2 ×ˢ s) / ν p.1 (I n p.2)) := by
+    Measurable (fun (p : α × ℝ) ↦ κ p.1 (IcoPowTwo n (indexIcoPowTwo n p.2) ×ˢ s)
+      / ν p.1 (IcoPowTwo n (indexIcoPowTwo n p.2))) := by
+  change Measurable ((fun (p : α × ℤ) ↦ κ p.1 (IcoPowTwo n p.2 ×ˢ s) / ν p.1 (IcoPowTwo n p.2))
+    ∘ (fun (p : α × ℝ) ↦ (p.1, indexIcoPowTwo n p.2)))
+  have h1 :
+      Measurable (fun (p : α × ℤ) ↦ κ p.1 (IcoPowTwo n p.2 ×ˢ s) / ν p.1 (IcoPowTwo n p.2)) := by
     refine Measurable.div ?_ ?_
-    · have h_swap : Measurable fun (p : ℤ × α) ↦ κ p.2 (I n p.1 ×ˢ s) := by
+    · have h_swap : Measurable fun (p : ℤ × α) ↦ κ p.2 (IcoPowTwo n p.1 ×ˢ s) := by
         refine measurable_uncurry_of_continuous_of_measurable
-          (u := fun k a ↦ κ a (I n k ×ˢ s)) ?_ ?_
+          (u := fun k a ↦ κ a (IcoPowTwo n k ×ˢ s)) ?_ ?_
         · exact fun _ ↦ continuous_bot
-        · exact fun _ ↦ kernel.measurable_coe _ ((measurableSet_I _ _).prod hs)
-      change Measurable ((fun (p : ℤ × α) ↦ κ p.2 (I n p.1 ×ˢ s)) ∘ Prod.swap)
+        · exact fun _ ↦ kernel.measurable_coe _ ((measurableSet_IcoPowTwo _ _).prod hs)
+      change Measurable ((fun (p : ℤ × α) ↦ κ p.2 (IcoPowTwo n p.1 ×ˢ s)) ∘ Prod.swap)
       exact h_swap.comp measurable_swap
-    · have h_swap : Measurable fun (p : ℤ × α) ↦ ν p.2 (I n p.1) := by
+    · have h_swap : Measurable fun (p : ℤ × α) ↦ ν p.2 (IcoPowTwo n p.1) := by
         refine measurable_uncurry_of_continuous_of_measurable
-          (u := fun k a ↦ ν a (I n k)) ?_ ?_
+          (u := fun k a ↦ ν a (IcoPowTwo n k)) ?_ ?_
         · exact fun _ ↦ continuous_bot
-        · exact fun _ ↦ kernel.measurable_coe _ (measurableSet_I _ _)
-      change Measurable ((fun (p : ℤ × α) ↦ ν p.2 (I n p.1)) ∘ Prod.swap)
+        · exact fun _ ↦ kernel.measurable_coe _ (measurableSet_IcoPowTwo _ _)
+      change Measurable ((fun (p : ℤ × α) ↦ ν p.2 (IcoPowTwo n p.1)) ∘ Prod.swap)
       exact h_swap.comp measurable_swap
   refine h1.comp (measurable_fst.prod_mk ?_)
-  exact (Measurable.mono (measurable_indexI n) (ℱ.le n) le_rfl).comp measurable_snd
+  exact (Measurable.mono (measurable_indexIcoPowTwo n) (ℱ.le n) le_rfl).comp measurable_snd
 
 lemma measurable_densityProcess (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ)
     {s : Set β} (hs : MeasurableSet s) :
@@ -328,11 +335,11 @@ lemma measurable_ℱ_densityProcess (κ : kernel α (ℝ × β)) (ν : kernel α
   rw [densityProcess_def]
   refine @Measurable.ennreal_toReal _ (ℱ n) _ ?_
   refine Measurable.div ?_ ?_
-  · change Measurable[ℱ n] ((fun k ↦ κ a (I n k ×ˢ s)) ∘ (indexI n))
-    refine Measurable.comp ?_ (measurable_indexI n)
+  · change Measurable[ℱ n] ((fun k ↦ κ a (IcoPowTwo n k ×ˢ s)) ∘ (indexIcoPowTwo n))
+    refine Measurable.comp ?_ (measurable_indexIcoPowTwo n)
     exact measurable_of_countable _
-  · change Measurable[ℱ n] ((fun k ↦ ν a (I n k)) ∘ (indexI n))
-    refine Measurable.comp ?_ (measurable_indexI n)
+  · change Measurable[ℱ n] ((fun k ↦ ν a (IcoPowTwo n k)) ∘ (indexIcoPowTwo n))
+    refine Measurable.comp ?_ (measurable_indexIcoPowTwo n)
     exact measurable_of_countable _
 
 lemma stronglyMeasurable_ℱ_densityProcess (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ)
@@ -349,16 +356,21 @@ lemma densityProcess_nonneg (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n
     0 ≤ densityProcess κ ν n a t s :=
   ENNReal.toReal_nonneg
 
+lemma apply_IcoPowTwo_le_of_fst_le (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : ℝ) (s : Set β) :
+    κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s) ≤ ν a (IcoPowTwo n (indexIcoPowTwo n t)) := by
+  calc κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s)
+    ≤ kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) := by
+        rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)]
+        refine measure_mono (fun x ↦ ?_)
+        simp only [mem_prod, mem_setOf_eq, and_imp]
+        exact fun h _ ↦ h
+  _ ≤ ν a (IcoPowTwo n (indexIcoPowTwo n t)) := hκν a _ (measurableSet_IcoPowTwo _ _)
+
 lemma densityProcess_le_one (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : ℝ) (s : Set β) :
     densityProcess κ ν n a t s ≤ 1 := by
   refine ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.div_le_of_le_mul ?_)
   rw [ENNReal.ofReal_one, one_mul]
-  calc κ a (I n (indexI n t) ×ˢ s) ≤ kernel.fst κ a (I n (indexI n t)) := by
-        rw [kernel.fst_apply' _ _ (measurableSet_I _ _)]
-        refine measure_mono (fun x ↦ ?_)
-        simp only [mem_prod, mem_setOf_eq, and_imp]
-        exact fun h _ ↦ h
-  _ ≤ ν a (I n (indexI n t)) := hκν a _ (measurableSet_I _ _)
+  exact apply_IcoPowTwo_le_of_fst_le hκν n a t s
 
 lemma snorm_densityProcess_le (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (s : Set β) :
     snorm (fun t ↦ densityProcess κ ν n a t s) 1 (ν a) ≤ ν a univ := by
@@ -377,39 +389,40 @@ lemma integrable_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel �
 
 lemma set_integral_densityProcess_I (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) (k : ℤ) :
-    ∫ t in I n k, densityProcess κ ν n a t s ∂(ν a) = (κ a (I n k ×ˢ s)).toReal := by
+    ∫ t in IcoPowTwo n k, densityProcess κ ν n a t s ∂(ν a)
+      = (κ a (IcoPowTwo n k ×ˢ s)).toReal := by
   simp_rw [densityProcess]
   rw [integral_toReal]
   rotate_left
   · refine Measurable.aemeasurable ?_
     have h := measurable_densityProcess_aux κ ν n hs
-    change Measurable
-      ((fun (p : α × ℝ) ↦ κ p.1 (I n (indexI n p.2) ×ˢ s) / ν p.1 (I n (indexI n p.2)))
-        ∘ (fun t ↦ (a, t)))
+    change Measurable ((fun (p : α × ℝ) ↦ κ p.1 (IcoPowTwo n (indexIcoPowTwo n p.2) ×ˢ s)
+      / ν p.1 (IcoPowTwo n (indexIcoPowTwo n p.2))) ∘ (fun t ↦ (a, t)))
     exact h.comp measurable_prod_mk_left
   · refine ae_of_all _ (fun t ↦ ?_)
-    by_cases h0 : ν a (I n (indexI n t)) = 0
-    · suffices κ a (I n (indexI n t) ×ˢ s) = 0 by simp [h0, this]
-      have h0' : kernel.fst κ a (I n (indexI n t)) = 0 :=
-        le_antisymm ((hκν a _ (measurableSet_I _ _)).trans h0.le) zero_le'
-      rw [kernel.fst_apply' _ _ (measurableSet_I _ _)] at h0'
+    by_cases h0 : ν a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
+    · suffices κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s) = 0 by simp [h0, this]
+      have h0' : kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0 :=
+        le_antisymm ((hκν a _ (measurableSet_IcoPowTwo _ _)).trans h0.le) zero_le'
+      rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)] at h0'
       refine measure_mono_null (fun x ↦ ?_) h0'
       simp only [mem_prod, mem_setOf_eq, and_imp]
       exact fun h _ ↦ h
     · refine ENNReal.div_lt_top ?_ h0
       exact measure_ne_top _ _
   congr
-  have : ∫⁻ t in I n k, κ a (I n (indexI n t) ×ˢ s) / ν a (I n (indexI n t)) ∂(ν a)
-      = ∫⁻ _ in I n k, κ a (I n k ×ˢ s) / ν a (I n k) ∂(ν a) := by
-    refine set_lintegral_congr_fun (measurableSet_I _ _) (ae_of_all _ (fun t ht ↦ ?_))
-    rw [indexI_of_mem _ _ _ ht]
+  have : ∫⁻ t in IcoPowTwo n k,
+        κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s) / ν a (IcoPowTwo n (indexIcoPowTwo n t)) ∂(ν a)
+      = ∫⁻ _ in IcoPowTwo n k, κ a (IcoPowTwo n k ×ˢ s) / ν a (IcoPowTwo n k) ∂(ν a) := by
+    refine set_lintegral_congr_fun (measurableSet_IcoPowTwo _ _) (ae_of_all _ (fun t ht ↦ ?_))
+    rw [indexIcoPowTwo_of_mem _ _ _ ht]
   rw [this]
   simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
-  by_cases h0 : ν a (I n k) = 0
+  by_cases h0 : ν a (IcoPowTwo n k) = 0
   · simp only [h0, mul_zero]
-    have h0' : kernel.fst κ a (I n k) = 0 :=
-      le_antisymm ((hκν a _ (measurableSet_I _ _)).trans h0.le) zero_le'
-    rw [kernel.fst_apply' _ _ (measurableSet_I _ _)] at h0'
+    have h0' : kernel.fst κ a (IcoPowTwo n k) = 0 :=
+      le_antisymm ((hκν a _ (measurableSet_IcoPowTwo _ _)).trans h0.le) zero_le'
+    rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)] at h0'
     refine (measure_mono_null ?_ h0').symm
     intro p
     simp only [mem_prod, mem_setOf_eq, and_imp]
@@ -420,13 +433,13 @@ lemma set_integral_densityProcess_I (hκν : kernel.fst κ ≤ ν) [IsFiniteKern
 lemma integral_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫ t, densityProcess κ ν n a t s ∂(ν a) = (κ a (univ ×ˢ s)).toReal := by
-  rw [← integral_univ, ← iUnion_I n, iUnion_prod_const, measure_iUnion]
+  rw [← integral_univ, ← iUnion_IcoPowTwo n, iUnion_prod_const, measure_iUnion]
   rotate_left
   · intro i j hij
     simp only [Set.disjoint_prod, disjoint_self, bot_eq_empty]
-    exact Or.inl (pairwise_disjoint_I n hij)
-  · exact fun k ↦ (measurableSet_I n k).prod hs
-  rw [integral_iUnion (measurableSet_I n) (pairwise_disjoint_I n)
+    exact Or.inl (pairwise_disjoint_IcoPowTwo n hij)
+  · exact fun k ↦ (measurableSet_IcoPowTwo n k).prod hs
+  rw [integral_iUnion (measurableSet_IcoPowTwo n) (pairwise_disjoint_IcoPowTwo n)
     (integrable_densityProcess hκν n a hs).integrableOn]
   rw [ENNReal.tsum_toReal_eq (fun _ ↦ measure_ne_top _ _)]
   congr with k
@@ -435,14 +448,14 @@ lemma integral_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ]
 lemma set_integral_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set ℝ} (hA : MeasurableSet[ℱ n] A) :
     ∫ t in A, densityProcess κ ν n a t s ∂(ν a) = (κ a (A ×ˢ s)).toReal := by
-  refine MeasurableSpace.induction_on_inter (m := ℱ n) (s := {s | ∃ k, s = I n k})
+  refine MeasurableSpace.induction_on_inter (m := ℱ n) (s := {s | ∃ k, s = IcoPowTwo n k})
     (C := fun A ↦ ∫ t in A, densityProcess κ ν n a t s ∂(ν a) = (κ a (A ×ˢ s)).toReal) rfl
     ?_ ?_ ?_ ?_ ?_ hA
   · rintro s ⟨i, rfl⟩ t ⟨j, rfl⟩ hst
     refine ⟨i, ?_⟩
     suffices i = j by rw [this, inter_self]
     by_contra h_ne
-    have h_disj := pairwise_disjoint_I n h_ne
+    have h_disj := pairwise_disjoint_IcoPowTwo n h_ne
     rw [nonempty_iff_ne_empty] at hst
     refine hst ?_
     rwa [Function.onFun, disjoint_iff_inter_eq_empty] at h_disj
@@ -502,20 +515,16 @@ lemma densityProcess_mono_set (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) 
     {s s' : Set β} (h : s ⊆ s') :
     densityProcess κ ν n a t s ≤ densityProcess κ ν n a t s' := by
   unfold densityProcess
-  by_cases h0 : ν a (I n (indexI n t)) = 0
+  by_cases h0 : ν a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
   · rw [h0, ENNReal.toReal_div, ENNReal.toReal_div]
     simp
-  have h_ne_top : ∀ s, κ a (I n (indexI n t) ×ˢ s) / ν a (I n (indexI n t)) ≠ ⊤ := by
+  have h_ne_top : ∀ s, κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s)
+      / ν a (IcoPowTwo n (indexIcoPowTwo n t)) ≠ ⊤ := by
     intro s
     rw [ne_eq, ENNReal.div_eq_top]
     simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
     refine fun h_top ↦ eq_top_mono ?_ h_top
-    calc κ a (I n (indexI n t) ×ˢ s) ≤ kernel.fst κ a (I n (indexI n t)) := by
-          rw [kernel.fst_apply' _ _ (measurableSet_I _ _)]
-          refine measure_mono (fun x ↦ ?_)
-          simp only [mem_prod, mem_setOf_eq, and_imp]
-          exact fun h _ ↦ h
-    _ ≤ ν a (I n (indexI n t)) := hκν a _ (measurableSet_I _ _)
+    exact apply_IcoPowTwo_le_of_fst_le hκν n a t s
   rw [ENNReal.toReal_le_toReal]
   · gcongr
     rw [prod_subset_prod_iff]
@@ -527,23 +536,18 @@ lemma densityProcess_mono_kernel_left {κ' : kernel α (ℝ × β)} (hκκ' : κ
     (hκ'ν : kernel.fst κ' ≤ ν) (n : ℕ) (a : α) (t : ℝ) {s : Set β} (hs : MeasurableSet s) :
     densityProcess κ ν n a t s ≤ densityProcess κ' ν n a t s := by
   unfold densityProcess
-  by_cases h0 : ν a (I n (indexI n t)) = 0
+  by_cases h0 : ν a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
   · rw [h0, ENNReal.toReal_div, ENNReal.toReal_div]
     simp
-  have h_le : κ' a (I n (indexI n t) ×ˢ s) ≤ ν a (I n (indexI n t)) := by
-    calc κ' a (I n (indexI n t) ×ˢ s) ≤ kernel.fst κ' a (I n (indexI n t)) := by
-          rw [kernel.fst_apply' _ _ (measurableSet_I _ _)]
-          refine measure_mono (fun x ↦ ?_)
-          simp only [mem_prod, mem_setOf_eq, and_imp]
-          exact fun h _ ↦ h
-    _ ≤ ν a (I n (indexI n t)) := hκ'ν a _ (measurableSet_I _ _)
+  have h_le : κ' a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s)
+      ≤ ν a (IcoPowTwo n (indexIcoPowTwo n t)) := apply_IcoPowTwo_le_of_fst_le hκ'ν n a t s
   rw [ENNReal.toReal_le_toReal]
   · gcongr
-    exact hκκ' _ _ ((measurableSet_I _ _).prod hs)
+    exact hκκ' _ _ ((measurableSet_IcoPowTwo _ _).prod hs)
   · rw [ne_eq, ENNReal.div_eq_top]
     simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
     refine fun h_top ↦ eq_top_mono ?_ h_top
-    exact (hκκ' _ _ ((measurableSet_I _ _).prod hs)).trans h_le
+    exact (hκκ' _ _ ((measurableSet_IcoPowTwo _ _).prod hs)).trans h_le
   · rw [ne_eq, ENNReal.div_eq_top]
     simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
@@ -552,26 +556,21 @@ lemma densityProcess_antitone_kernel_right {ν' : kernel α ℝ}
     (hνν' : ν ≤ ν') (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : ℝ) (s : Set β) :
     densityProcess κ ν' n a t s ≤ densityProcess κ ν n a t s := by
   unfold densityProcess
-  have h_le : κ a (I n (indexI n t) ×ˢ s) ≤ ν a (I n (indexI n t)) := by
-    calc κ a (I n (indexI n t) ×ˢ s) ≤ kernel.fst κ a (I n (indexI n t)) := by
-          rw [kernel.fst_apply' _ _ (measurableSet_I _ _)]
-          refine measure_mono (fun x ↦ ?_)
-          simp only [mem_prod, mem_setOf_eq, and_imp]
-          exact fun h _ ↦ h
-    _ ≤ ν a (I n (indexI n t)) := hκν a _ (measurableSet_I _ _)
-  by_cases h0 : ν a (I n (indexI n t)) = 0
-  · suffices κ a (I n (indexI n t) ×ˢ s) = 0 by
+  have h_le : κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s)
+      ≤ ν a (IcoPowTwo n (indexIcoPowTwo n t)) := apply_IcoPowTwo_le_of_fst_le hκν n a t s
+  by_cases h0 : ν a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
+  · suffices κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s) = 0 by
       simp only [this, ENNReal.zero_div, ENNReal.zero_toReal, h0, le_refl]
     exact le_antisymm (h_le.trans h0.le) zero_le'
-  have h0' : ν' a (I n (indexI n t)) ≠ 0 := by
+  have h0' : ν' a (IcoPowTwo n (indexIcoPowTwo n t)) ≠ 0 := by
     refine fun h ↦ h0 (le_antisymm (le_trans ?_ h.le) zero_le')
-    exact hνν' _ _ (measurableSet_I _ _)
+    exact hνν' _ _ (measurableSet_IcoPowTwo _ _)
   rw [ENNReal.toReal_le_toReal]
   · gcongr
-    exact hνν' _ _ (measurableSet_I _ _)
+    exact hνν' _ _ (measurableSet_IcoPowTwo _ _)
   · simp only [ne_eq, ENNReal.div_eq_top, h0', and_false, false_or, not_and, not_not]
     refine fun h_top ↦ eq_top_mono ?_ h_top
-    exact h_le.trans (hνν' _ _ (measurableSet_I _ _))
+    exact h_le.trans (hνν' _ _ (measurableSet_IcoPowTwo _ _))
   · simp only [ne_eq, ENNReal.div_eq_top, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
 
@@ -585,7 +584,7 @@ lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : kernel α (ℝ × β)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     Tendsto (fun m ↦ densityProcess κ ν n a t (s m)) atTop (𝓝 (densityProcess κ ν n a t ∅)) := by
   simp_rw [densityProcess]
-  by_cases h0 : ν a (I n (indexI n t)) = 0
+  by_cases h0 : ν a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
   · simp_rw [h0, ENNReal.toReal_div]
     simp
   refine (ENNReal.tendsto_toReal ?_).comp ?_
@@ -593,10 +592,11 @@ lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : kernel α (ℝ × β)
     push_neg
     simp
   refine ENNReal.Tendsto.div_const ?_ ?_
-  · have h := tendsto_measure_iInter (μ := κ a) (s := fun m ↦ I n (indexI n t) ×ˢ s m) ?_ ?_ ?_
+  · have h := tendsto_measure_iInter (μ := κ a)
+      (s := fun m ↦ IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s m) ?_ ?_ ?_
     · convert h
       rw [← prod_iInter, hs_iInter]
-    · exact fun n ↦ MeasurableSet.prod (measurableSet_I _ _) (hs_meas n)
+    · exact fun n ↦ MeasurableSet.prod (measurableSet_IcoPowTwo _ _) (hs_meas n)
     · intro m m' hmm'
       simp only [le_eq_subset, prod_subset_prod_iff, subset_rfl, true_and]
       exact Or.inl <| hs hmm'
@@ -910,39 +910,40 @@ section UnivFst
 
 lemma densityProcess_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (t : ℝ) :
     densityProcess κ (kernel.fst κ) n a t univ
-      = if kernel.fst κ a (I n (indexI n t)) = 0 then 0 else 1 := by
+      = if kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0 then 0 else 1 := by
   rw [densityProcess]
-  by_cases h : kernel.fst κ a (I n (indexI n t)) = 0
+  by_cases h : kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
   · simp [h]
-    by_cases h' : κ a (I n (indexI n t) ×ˢ univ) = 0
+    by_cases h' : κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ univ) = 0
     · simp [h']
     · rw [ENNReal.div_zero h']
       simp
   · simp only [h, ite_false]
-    rw [kernel.fst_apply' _ _ (measurableSet_I _ _)]
-    have : I n (indexI n t) ×ˢ univ = {p : ℝ × β | p.1 ∈ I n (indexI n t)} := by
+    rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)]
+    have : IcoPowTwo n (indexIcoPowTwo n t) ×ˢ univ
+        = {p : ℝ × β | p.1 ∈ IcoPowTwo n (indexIcoPowTwo n t)} := by
       ext x
       simp
     rw [this, ENNReal.div_self]
     · simp
-    · rwa [kernel.fst_apply' _ _ (measurableSet_I _ _)] at h
+    · rwa [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)] at h
     · exact measure_ne_top _ _
 
 lemma densityProcess_univ_ae (κ : kernel α (ℝ × β)) [IsFiniteKernel κ] (n : ℕ) (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), densityProcess κ (kernel.fst κ) n a t univ = 1 := by
   rw [ae_iff]
   have : {t | ¬ densityProcess κ (kernel.fst κ) n a t univ = 1}
-      ⊆ {t | kernel.fst κ a (I n (indexI n t)) = 0} := by
+      ⊆ {t | kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0} := by
     intro t ht
     simp only [mem_setOf_eq] at ht ⊢
     rw [densityProcess_univ] at ht
     simpa using ht
   refine measure_mono_null this ?_
-  have : {t | kernel.fst κ a (I n (indexI n t)) = 0}
-      ⊆ ⋃ (k) (_ : kernel.fst κ a (I n k) = 0), I n k := by
+  have : {t | kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0}
+      ⊆ ⋃ (k) (_ : kernel.fst κ a (IcoPowTwo n k) = 0), IcoPowTwo n k := by
     intro t ht
     simp only [mem_setOf_eq, mem_iUnion, exists_prop] at ht ⊢
-    exact ⟨indexI n t, ht, mem_I_indexI _ _⟩
+    exact ⟨indexIcoPowTwo n t, ht, mem_IcoPowTwo_indexIcoPowTwo _ _⟩
   refine measure_mono_null this ?_
   rw [measure_iUnion_null]
   simp
@@ -955,7 +956,7 @@ lemma tendsto_densityProcess_atTop_univ_of_monotone (κ : kernel α (ℝ × β))
   refine (ENNReal.tendsto_toReal ?_).comp ?_
   · rw [ne_eq, ENNReal.div_eq_top]
     push_neg
-    simp_rw [kernel.fst_apply' _ _ (measurableSet_I _ _)]
+    simp_rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)]
     constructor
     · refine fun h h0 ↦ h (measure_mono_null (fun x ↦ ?_) h0)
       simp only [mem_prod, mem_setOf_eq, and_imp]
@@ -963,11 +964,12 @@ lemma tendsto_densityProcess_atTop_univ_of_monotone (κ : kernel α (ℝ × β))
     · refine fun h_top ↦ eq_top_mono (measure_mono (fun x ↦ ?_)) h_top
       simp only [mem_prod, mem_setOf_eq, and_imp]
       exact fun h _ ↦ h
-  by_cases h0 : kernel.fst κ a (I n (indexI n t)) = 0
-  · rw [kernel.fst_apply' _ _ (measurableSet_I _ _)] at h0 ⊢
-    suffices ∀ m, κ a (I n (indexI n t) ×ˢ s m) = 0 by
+  by_cases h0 : kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
+  · rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)] at h0 ⊢
+    suffices ∀ m, κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s m) = 0 by
       simp only [this, h0, ENNReal.zero_div, tendsto_const_nhds_iff]
-      suffices κ a (I n (indexI n t) ×ˢ univ) = 0 by simp only [this, ENNReal.zero_div]
+      suffices κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ univ) = 0 by
+        simp only [this, ENNReal.zero_div]
       convert h0
       ext x
       simp only [mem_prod, mem_univ, and_true, mem_setOf_eq]
@@ -975,7 +977,8 @@ lemma tendsto_densityProcess_atTop_univ_of_monotone (κ : kernel α (ℝ × β))
     simp only [mem_prod, mem_setOf_eq, and_imp]
     exact fun h _ ↦ h
   refine ENNReal.Tendsto.div_const ?_ ?_
-  · have h := tendsto_measure_iUnion (μ := κ a) (s := fun m ↦ I n (indexI n t) ×ˢ s m) ?_
+  · have h := tendsto_measure_iUnion (μ := κ a)
+      (s := fun m ↦ IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s m) ?_
     swap
     · intro m m' hmm'
       simp only [le_eq_subset, prod_subset_prod_iff, subset_rfl, true_and]
