@@ -208,49 +208,31 @@ lemma liftAlternatingEquiv_symm_apply (F : (Λ[R]^n) M →ₗ[R] N) (m : Fin n �
 variable {R}
 
 /-- The linear map between `n`th exterior powers induced by a linear map between the modules. -/
-def map (f : M →ₗ[R] N) : (Λ[R]^n) M →ₗ[R] (Λ[R]^n) N := by
-  refine LinearMap.restrict (AlgHom.toLinearMap (ExteriorAlgebra.map f)) ?_
-  intro x hx
-  rw [← ιMulti_span_fixedDegree] at hx ⊢
-  have hx := Set.mem_image_of_mem (ExteriorAlgebra.map f) hx
-  rw [← Submodule.map_coe, LinearMap.map_span, ← Set.range_comp] at hx
-  erw [← (LinearMap.coe_compAlternatingMap (ExteriorAlgebra.map f).toLinearMap
-    (ExteriorAlgebra.ιMulti R n))] at hx
-  rw [ExteriorAlgebra.map_comp_ιMulti, AlternatingMap.coe_compLinearMap] at hx
-  exact Set.mem_of_mem_of_subset hx (Submodule.span_mono (Set.range_comp_subset_range _ _))
+def map (f : M →ₗ[R] N) : (Λ[R]^n) M →ₗ[R] (Λ[R]^n) N :=
+  liftAlternating _ (AlternatingMap.compLinearMap (ιMulti _ _) f)
 
 @[simp]
 theorem map_apply_ιMulti (f : M →ₗ[R] N) (m : Fin n → M) :
-    (map n f) ((ιMulti R n) m) = (ιMulti R n) (f ∘ m) := by
-  unfold map
-  rw [LinearMap.restrict_apply, ← SetCoe.ext_iff]
-  simp only [ιMulti_apply, AlgHom.toLinearMap_apply, ExteriorAlgebra.map_apply_ιMulti]
+    (map n f) ((ιMulti R n) m) = (ιMulti R n) (f ∘ m) :=
+  liftAlternating_apply_ιMulti _ _ _ _
 
 @[simp]
 theorem map_comp_ιMulti (f : M →ₗ[R] N) :
-    (map n f).compAlternatingMap (ιMulti R n (M := M)) = (ιMulti R n (M := N)).compLinearMap f := by
-  unfold map
-  ext m
-  simp only [LinearMap.compAlternatingMap_apply, LinearMap.restrict_coe_apply, ιMulti_apply,
-    AlgHom.toLinearMap_apply, ExteriorAlgebra.map_apply_ιMulti, AlternatingMap.compLinearMap_apply]
-  congr
+    (map n f).compAlternatingMap (ιMulti R n (M := M)) = (ιMulti R n (M := N)).compLinearMap f :=
+  liftAlternating_comp_ιMulti _ _ _
 
 @[simp]
 theorem map_id :
-    map n (LinearMap.id) = LinearMap.id (R := R) (M := (Λ[R]^n) M) := by
-  unfold map
-  ext m
-  simp only [ExteriorAlgebra.map_id, AlgHom.toLinearMap_id, LinearMap.compAlternatingMap_apply,
-    LinearMap.restrict_coe_apply, ιMulti_apply, LinearMap.id_coe, id_eq]
+    map n (LinearMap.id) = LinearMap.id (R := R) (M := (Λ[R]^n) M) :=
+  liftAlternating_ιMulti _ _
 
 @[simp]
 theorem map_comp_map (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     LinearMap.comp (map n g) (map n f) = map n (LinearMap.comp g f) := by
-  unfold map
-  ext m
+  ext M
   simp only [LinearMap.compAlternatingMap_apply, LinearMap.coe_comp, Function.comp_apply,
-    LinearMap.restrict_coe_apply, ιMulti_apply, AlgHom.toLinearMap_apply,
-    ExteriorAlgebra.map_apply_ιMulti, Function.comp.assoc]
+    map_apply_ιMulti, Function.comp_def, ιMulti_apply, map_comp_ιMulti,
+    AlternatingMap.compLinearMap_apply]
 
 /-! Exactness properties of the exterior power functor. -/
 
