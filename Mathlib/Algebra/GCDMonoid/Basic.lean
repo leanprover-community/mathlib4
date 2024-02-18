@@ -133,13 +133,13 @@ theorem normalize_apply (x : α) : normalize x = x * normUnit x :=
   rfl
 #align normalize_apply normalize_apply
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem normalize_zero : normalize (0 : α) = 0 :=
   normalize.map_zero
 #align normalize_zero normalize_zero
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem normalize_one : normalize (1 : α) = 1 :=
   normalize.map_one
@@ -951,7 +951,7 @@ theorem normUnit_eq_one (x : α) : normUnit x = 1 :=
   rfl
 #align norm_unit_eq_one normUnit_eq_one
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 -- @[simp]
 theorem normalize_eq (x : α) : normalize x = x :=
   mul_one x
