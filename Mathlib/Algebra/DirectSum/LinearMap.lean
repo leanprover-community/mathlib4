@@ -89,25 +89,31 @@ lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
   rw [restrict_comp, trace_comp_eq_mul_of_commute_of_isNilpotent μ h_comm
     (f.isNilpotent_restrict_iSup_sub_algebraMap μ), hg, mul_zero]
 
+lemma mapsTo_biSup_of_mapsTo (s : Set ι) {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i)) :
+    MapsTo f ↑(⨆ i ∈ s, N i) ↑(⨆ i ∈ s, N i) := by
+  intro x hx
+  induction' hx using Submodule.iSup_induction' with i m hm y z _ _ hy hz
+  · by_cases hi : i ∈ s
+    · apply Submodule.mem_iSup_of_mem i
+      simp only [hi, iSup_pos] at hm ⊢
+      exact hf i hm
+    · replace hm : m = 0 := by simpa [hi] using hm
+      simp [hm]
+  · simp
+  · rw [map_add]
+    exact add_mem hy hz
+
 /-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
 
 Note that it is important the statement gives the user definitional control over `p` since the
-_type_ of the term `trace R p (f.restrict hp')` depends on `p`.
-
-TODO Turn `hp'` into an auto-param -/
-lemma trace_restrict_eq_sum_trace_restrict
+_type_ of the term `trace R p (f.restrict hp')` depends on `p`. -/
+lemma trace_eq_sum_trace_restrict_of_eq_biSup
     (s : Finset ι) (h : CompleteLattice.Independent <| fun i : s ↦ N i)
     {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i))
-    (p : Submodule R M) (hp : p = ⨆ i ∈ s, N i) (hp' : MapsTo f p p) :
+    (p : Submodule R M) (hp : p = ⨆ i ∈ s, N i)
+    (hp' : MapsTo f p p := hp ▸ mapsTo_biSup_of_mapsTo (s : Set ι) hf) :
     trace R p (f.restrict hp') = ∑ i in s, trace R (N i) (f.restrict (hf i)) := by
   -- TODO Tidy up poor proof bashed out below + extract lemmas
-  rcases s.eq_empty_or_nonempty with rfl | hs
-  · simp only [Finset.sum_empty]
-    simp only [Finset.not_mem_empty, not_false_eq_true, iSup_neg, iSup_bot] at hp
-    suffices f.restrict hp' = 0 by simp [this]
-    ext ⟨x, hx⟩
-    simp only [hp, Submodule.mem_bot] at hx
-    simp [hx]
   let N' : s → Submodule R p := fun i ↦ (N i).comap p.subtype
   have hNp : ∀ i ∈ s, N i ≤ p := fun i hi ↦ by simpa only [hp] using le_biSup N hi
   let e : (i : s) → N' i ≃ₗ[R] N i := fun ⟨i, hi⟩ ↦ (N i).comapSubtypeEquivOfLe (hNp _ hi)
@@ -123,9 +129,8 @@ lemma trace_restrict_eq_sum_trace_restrict
         rw [Submodule.map_comap_subtype, inf_of_le_right (hNp i i.property)]
       rw [← CompleteLattice.independent_map_orderIso_iff e, this]
       exact CompleteLattice.independent_of_independent_coe_Iic_comp h
-    · rw [iSup_subtype]
-      apply Submodule.biSup_comap_eq_top_of_range_eq_biSup _ hs
-      simpa only [Submodule.range_subtype] using hp
+    · rw [iSup_subtype, hp]
+      exact Submodule.biSup_comap_subtype_eq_top (s : Set ι) N
   have hf' : ∀ i, MapsTo (restrict f hp') (N' i) (N' i) := fun ⟨i, hi⟩ ⟨x, hx⟩ hx' ↦ by
     simpa using hf i hx'
   rw [trace_eq_sum_trace_restrict h hf', ← s.sum_coe_sort]

@@ -878,7 +878,7 @@ end AddCommGroup
 
 section AddCommGroup
 
-variable [Semiring R] [Semiring R₂]
+variable [Ring R] [Ring R₂]
 
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 
@@ -919,39 +919,35 @@ lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂]
   rw [← hf]
   exact LinearMap.range_domRestrict_eq_range_iff
 
+@[simp]
+lemma biSup_comap_subtype_eq_top {ι : Type*} (s : Set ι) (p : ι → Submodule R M) :
+    ⨆ i ∈ s, (p i).comap (⨆ i ∈ s, p i).subtype = ⊤ := by
+  refine eq_top_iff.mpr fun ⟨x, hx⟩ _ ↦ ?_
+  suffices x ∈ (⨆ i ∈ s, (p i).comap (⨆ i ∈ s, p i).subtype).map (⨆ i ∈ s, (p i)).subtype by
+    obtain ⟨y, hy, rfl⟩ := Submodule.mem_map.mp this
+    exact hy
+  suffices ∀ i ∈ s, (comap (⨆ i ∈ s, p i).subtype (p i)).map (⨆ i ∈ s, p i).subtype = p i by
+    simpa only [map_iSup, biSup_congr this]
+  intro i hi
+  rw [map_comap_eq, range_subtype, inf_eq_right]
+  exact le_biSup p hi
+
+lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempty)
+    (p : ι → Submodule R₂ M₂) (hp : ⨆ i ∈ s, p i = ⊤)
+    (f : M →ₛₗ[τ₁₂] M₂) (hf : Surjective f) :
+    ⨆ i ∈ s, (p i).comap f = ⊤ := by
+  obtain ⟨k, hk⟩ := hs
+  suffices (⨆ i ∈ s, (p i).comap f) ⊔ LinearMap.ker f = ⊤ by
+    rw [← this, left_eq_sup]; exact le_trans f.ker_le_comap (le_biSup (fun i ↦ (p i).comap f) hk)
+  rw [iSup_subtype'] at hp ⊢
+  rw [← comap_map_eq, map_iSup_comap_of_sujective hf, hp, comap_top]
+
 lemma biSup_comap_eq_top_of_range_eq_biSup {ι : Type*} (s : Set ι) (hs : s.Nonempty)
     (p : ι → Submodule R₂ M₂) (f : M →ₛₗ[τ₁₂] M₂) (hf : LinearMap.range f = ⨆ i ∈ s, p i) :
     ⨆ i ∈ s, (p i).comap f = ⊤ := by
-  -- What the hell? How did this proof get so ridiculous! Fix it!
-  obtain ⟨k, hk⟩ := hs
-  refine eq_top_iff.mpr fun x _ ↦ ?_
-  suffices ∀ y ∈ ⨆ i : s, p i, ∀ x, f x = y → x ∈ ⨆ i : s, (p i).comap f by
-    have foo : f x ∈ ⨆ i ∈ s, p i := by rw [← hf]; exact ⟨x, rfl⟩
-    rw [iSup_subtype'] at foo ⊢
-    exact this _ foo _ rfl
-  intro y hy
-  induction' hy using Submodule.iSup_induction' with i z hz z₁ z₂ hz₁ hz₂ hz₁' hz₂'
-  · intro m hm
-    replace hz : m ∈ (p i).comap f := by simpa [hm]
-    suffices (p i).comap f ≤ ⨆ (j : s), (p j).comap f from this hz
-    apply le_iSup _ i
-  · intro m hm
-    replace hm : ∀ i, m ∈ (p i).comap f := by simp [hm]
-    exact Submodule.mem_iSup_of_mem _ (hm (⟨k, hk⟩ : s))
-  · intro m hm
-    rw [iSup_subtype'] at hf
-    obtain ⟨y₁, rfl⟩ : z₁ ∈ LinearMap.range f := by rwa [hf]
-    obtain ⟨y₂, rfl⟩ : z₂ ∈ LinearMap.range f := by rwa [hf]
-    suffices ∃ m' ∈ LinearMap.ker f, m - m' ∈ ⨆ i : s, (p i).comap f by
-      obtain ⟨m', h₁, h₂⟩ := this
-      rw [← sub_add_cancel m m']
-      apply add_mem h₂
-      suffices m' ∈ (p (⟨k, hk⟩ : s)).comap f from Submodule.mem_iSup_of_mem _ this
-      simp only [LinearMap.mem_ker] at h₁
-      simp [h₁]
-    refine ⟨m - (y₁ + y₂), by simp [hm], ?_⟩
-    simp only [sub_sub_cancel]
-    exact add_mem (hz₁' y₁ rfl) (hz₂' y₂ rfl)
+  suffices ⨆ i ∈ s, (p i).comap (LinearMap.range f).subtype = ⊤ by
+    rw [← biSup_comap_eq_top_of_surjective s hs _ this _ f.surjective_rangeRestrict]; rfl
+  exact hf ▸ biSup_comap_subtype_eq_top s p
 
 end AddCommGroup
 
@@ -985,7 +981,7 @@ open Submodule Function
 
 section AddCommGroup
 
-variable [Semiring R] [Semiring R₂]
+variable [Ring R] [Ring R₂]
 
 variable [AddCommGroup M] [AddCommGroup M₂]
 
