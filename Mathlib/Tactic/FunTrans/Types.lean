@@ -22,6 +22,3 @@ structure Config where
 deriving Inhabited
 
 initialize funTransConfig : IO.Ref Config ← IO.mkRef {}
-
-@[extern "mathlib_fun_trans"]
-opaque funTrans (e : Expr) : SimpM Simp.Step

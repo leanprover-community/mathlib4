@@ -347,7 +347,6 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       -- todo: more robust detection of compositional and uncurried form!!!
       -- I think this detects `Continuous fun x => x + c` as compositional ...
       let dec ← fData.nontrivialDecomposition
-
       let form : TheoremForm := if dec.isSome || funName == ``Prod.mk then .comp else .uncurried
 
       return .function {
@@ -362,7 +361,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
-      let keys := ← RefinedDiscrTree.mkDTExprs b'
+      let keys := ← RefinedDiscrTree.mkDTExprs b' {} false
       let thm : GeneralTheorem := {
         funPropName := funPropName
         thmName := declName

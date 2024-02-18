@@ -336,6 +336,8 @@ example : Lin (fun (f : α ->> α) => (f : α → α)) := by fun_prop
 example : Con (fun (f : α ->> α) => (f : α → α)) := by fun_prop
 example : Lin (fun (f : α -o α) => (f : α → α)) := by fun_prop
 
+example : Con (fun fx : (α ->> β)×α => fx.1 fx.2) := by fun_prop
+
 
 def iterate (n : Nat) (f : α → α) (x : α) : α :=
   match n with
@@ -347,3 +349,8 @@ theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) :
 
 
 example : let f := fun x : α => x; Con f := by fun_prop
+
+
+example (f g : α → β) (hf : Con f := by fun_prop) (hg : outParam (Con g)) :
+  Con (fun x => f x + g x) := by fun_prop
+

@@ -275,32 +275,6 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
       funProp (e.setArg (funPropDecl.funArgId) f)
 
   | _ => throwError "expected expression of the form `fun x => lam y := ..; ..`"
-  -- return none
-
-
-/-- Changes the goal from `P fun x => f x₁ x₂ x₃` to `P fun x => f x₁ x₂`
-  TODO: be able to provide number of arguments -/
-def removeArgRule (funPropDecl : FunPropDecl) (e f : Expr)
-    (funProp : Expr → FunPropM (Option Result)) :
-    FunPropM (Option Result) := do
-
-  lambdaTelescope f fun xs b => do
-    if xs.size ≠ 1 then
-      throwError
-        "funProp bug: can't remove arguments from {← ppExpr f}, not a lambda with one argument"
-
-    let xId := xs[0]!.fvarId!
-
-    let .app fn z := b
-      | throwError "funProp bug: can't remove arguments from {← ppExpr f}, body not application"
-
-    if z.containsFVar xId then
-      return none
-
-    let f' := .lam `f (← inferType fn) (.app (.bvar 0) z) default
-    let g' ← mkLambdaFVars xs fn
-
-    applyCompRule funPropDecl e f' g' funProp
 
 
 /-- Prove function property of using "morphism theorems" e.g. bundled linear map is linear map.  -/
@@ -349,7 +323,7 @@ def applyTransitionRules (funPropDecl : FunPropDecl) (e : Expr)
   trace[Meta.Tactic.fun_prop.step] "no theorem matched"
   return none
 
-def removeArgRule' (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
+def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
 
@@ -409,6 +383,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
     let type ← instantiateMVars var.type
     let thm? : Option FunctionTheorem ←
       forallTelescope type fun _ b => do
+      let b ← whnfR b
       let .some (decl,f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
@@ -434,7 +409,14 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
     if let .some thm := thm? then
       thms := thms.push thm
 
-  -- todo: sort
+  thms := thms
+    |>.qsort (fun t s =>
+      let dt := (Int.ofNat t.appliedArgs - Int.ofNat appliedArgs).natAbs
+      let ds := (Int.ofNat s.appliedArgs - Int.ofNat appliedArgs).natAbs
+      match compare dt ds with
+      | .lt => true
+      | .gt => false
+      | .eq => t.mainArgs.size < s.mainArgs.size)
 
   return thms
 
@@ -455,7 +437,7 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     match compare thm.appliedArgs fData.args.size with
     | .lt =>
       trace[Meta.Tactic.fun_prop] s!"removing argument to later use {← ppOrigin' thm.thmOrigin}"
-      if let .some r ← removeArgRule' funPropDecl e fData funProp then
+      if let .some r ← removeArgRule funPropDecl e fData funProp then
         return r
       continue
     | .gt =>

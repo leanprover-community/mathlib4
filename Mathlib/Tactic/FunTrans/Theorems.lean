@@ -96,9 +96,9 @@ structure FunctionTheorem where
   /-- total number of arguments applied to the function transformation  -/
   transAppliedArgs : Nat
   /-- theorem name -/
-  thmName   : Name
+  thmOrigin   : FunProp.Origin
   /-- function name -/
-  funName   : Name
+  funOrigin   : FunProp.Origin
   /-- array of argument indices about which this theorem is about -/
   mainArgs  : Array Nat
   /-- total number of arguments applied to the function  -/
@@ -121,7 +121,9 @@ structure FunctionTheorems where
 
 /-- return proof of function theorem -/
 def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
-  mkConstWithFreshMVarLevels thm.thmName
+  match thm.thmOrigin with
+  | .decl name => mkConstWithFreshMVarLevels name
+  | .fvar id => pure (.fvar id)
 
 
 /-- -/
@@ -135,7 +137,7 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
     addEntry := fun d e =>
       {d with
         theorems :=
-          d.theorems.alter e.funName fun funTrans =>
+          d.theorems.alter e.funOrigin.name fun funTrans =>
             let funTrans := funTrans.getD {}
             funTrans.alter e.funTransName fun thms =>
               let thms := thms.getD #[]
@@ -263,7 +265,9 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       | throwError "unrecognized function transformation `{← ppExpr lhs}`"
     let funTransName := decl.funTransName
 
-    if let .some thmArgs ← FunProp.detectLambdaTheoremArgs f xs then
+    let fData? ← FunProp.getFunctionData? f FunProp.defaultUnfoldPred {zeta:=false}
+
+    if let .some thmArgs ← FunProp.detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {
         funTransName := funTransName
         transAppliedArgs := lhs.getAppNumArgs
@@ -271,22 +275,22 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
         thmArgs := thmArgs
       }
 
-    let fData ← FunProp.getFunctionData f
+    let .data fData := fData?
+      | throwError s!"function in invalid form {← ppExpr f}"
 
     match fData.fn with
     | .const funName _ =>
 
-      let .some (f',_) ← fData.nontrivialDecomposition
-        | throwError s!"fun_trans bug: failed at detecting theorem type `{← ppExpr b}`"
-
-      let form : FunProp.TheoremForm := if (← isDefEq f' f) then .uncurried else .comp
+      let dec ← fData.nontrivialDecomposition
+      let form : FunProp.TheoremForm :=
+        if dec.isSome || funName == ``Prod.mk then .comp else .uncurried
 
       return .function {
 -- funTransName funName fData.mainArgs fData.args.size thmForm
         funTransName := funTransName
         transAppliedArgs := lhs.getAppNumArgs'
-        thmName := declName
-        funName := funName
+        thmOrigin := .decl declName
+        funOrigin := .decl funName
         mainArgs := fData.mainArgs
         appliedArgs := fData.args.size
         priority := prio
@@ -294,7 +298,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
-      let keys := ← FunProp.RefinedDiscrTree.mkDTExprs (b'.getArg! 1)
+      let keys := ← FunProp.RefinedDiscrTree.mkDTExprs (b'.getArg! 1) {} false
       let thm : GeneralTheorem := {
         funTransName := funTransName
         thmName := declName
@@ -327,10 +331,10 @@ type: {repr thm.thmArgs.type}"
     lambdaTheoremsExt.add thm attrKind
   | .function thm =>
     trace[Meta.Tactic.fun_trans.attr] "\
-function theorem: {thm.thmName}
+function theorem: {thm.thmOrigin.name}
 function transformation: {thm.funTransName}
 function transformation applied args: {thm.transAppliedArgs}
-function name: {thm.funName}
+function name: {thm.funOrigin.name}
 main arguments: {thm.mainArgs}
 applied arguments: {thm.appliedArgs}
 form: {repr thm.form}"

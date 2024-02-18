@@ -87,7 +87,7 @@ theorem prod_mk_Lin (fst : α → β) (snd : α → γ) (hfst : Lin fst) (hsnd :
 
 
 
-variable [Add α] [Add β] [Sub α] [Sub β] [Mul α] [Mul β] [Div α] [Div β] [Zero α] [Zero β]
+variable [Add α] [Add β] [Add γ] [Sub α] [Sub β] [Mul α] [Mul β] [Div α] [Div β] [Zero α] [Zero β]
 
 -- "simple form" of theorems
 @[fun_prop] theorem fst_Con : Con fun x : α×β => x.1 := silentSorry
@@ -117,6 +117,7 @@ structure ConHom (α β) [Obj α] [Obj β] where
   toFun : α → β
   con : Con toFun
 
+/-- `X ->> Y` is space of continuous maps from `X` to `Y` -/
 infixr:25 " ->> " => ConHom
 
 structure LinHom (α β) [Obj α] [Obj β] where
@@ -133,6 +134,7 @@ instance : FunLike (α -o β) α β where
   coe := fun f => f.toFun
   coe_injective' := silentSorry
 
+attribute [fun_prop_coe] DFunLike.coe
 
 instance : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
@@ -162,8 +164,6 @@ instance : Obj (α -o β) := ⟨⟩
 @[fun_prop] theorem linHom_lin_in_fn' (f : α → β -o γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
 
 
-set_option pp.coercions false in
-set_option pp.notation false in
 -- the only analoge is this theorem but that is alredy provable
 example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (hg : Lin g) : Lin (fun x => (f x) (g x)) := by fun_prop
 
@@ -189,6 +189,11 @@ opaque deriv (f : α → β) (x dx : α) : β := f x
 @[fun_trans] theorem deriv_pi_at (f : β → (i : α) → (E i)) (x) (hf : ∀ i, ConAt (fun x => f x i) x) :
     deriv (fun x i => f x i) x = fun dx i => deriv (f · i) x dx := silentSorry
 
+set_option pp.funBinderTypes true in
+set_option trace.Meta.Tactic.fun_trans true in
+set_option trace.Meta.Tactic.fun_trans.step true in
+set_option trace.Meta.Tactic.fun_trans.rewrite true in
+example : deriv (fun f : (α ->> α ->> α) => (f x : α → α)) = fun f df y => df x y := by fun_trans
 
 
 @[fun_trans]
@@ -212,7 +217,8 @@ theorem prod_mk_deriv_at (fst : α → β) (snd : α → γ) (x) (hfst : ConAt f
 @[fun_trans] theorem mul_deriv : deriv (fun x : α×α => x.1 * x.2) = fun x dx => dx.1 * x.2 + dx.2 * x.1 := silentSorry
 @[fun_trans] theorem div_deriv : deriv (fun x : α×α => x.1 / x.2) = fun x dx => (dx.1 * x.2 - dx.2 * x.1) / (x.2*x.2) := silentSorry
 
-
+example (c : α) : deriv (fun x : α => x + c) = fun x dx => dx + 0 := by fun_trans
+example (c : α) : deriv (fun x : α => c + x) = fun x dx => 0 + dx := by fun_trans
 
 -- "compositional form" of theorems
 @[fun_trans] theorem fst_deriv' (self : α → β×γ) (hself : Con self) :
@@ -230,45 +236,84 @@ theorem prod_mk_deriv_at (fst : α → β) (snd : α → γ) (x) (hfst : ConAt f
     (f : α → β) (hf : Lin f):
     deriv (fun x => f x) = fun x dx => f dx := silentSorry
 
--- @[fun_trans] theorem linHom_deriv_arg
---     (f : α -o β) :
---     deriv (fun x => f x) = fun x dx => f dx := silentSorry
+example (f : α -o β) :
+    deriv (fun x => f x) = fun x dx => f dx := by fun_trans
 
 
 @[fun_trans] theorem conHom_deriv_fun
     (f : α → β ->> γ) (y : β) (hf : Con f) :
-    deriv (fun x => (f x) y) = fun x dx => deriv f x dx y := silentSorry
-
+    deriv (fun x => DFunLike.coe (f x) y) = fun x dx => deriv f x dx y := silentSorry
 
 @[fun_trans] theorem conHom_deriv
     (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) :
-    deriv (fun x => (f x) (g x)) = fun x dx => deriv (fun (x,y) => f x y) (x, g x) (dx, deriv g x dx) := silentSorry
+    deriv (fun x => (f x) (g x))
+    =
+    fun x dx => deriv (fun xy : α×β => f xy.1 xy.2) (x, g x) (dx, deriv g x dx) := silentSorry
+
+
+-- this breaks the following
+-- @[fun_trans] theorem conHom_deriv_uncurried :
+--     deriv (fun fx : (α ->> β)×α => fx.1 fx.2) = fun fx dfx => deriv fx.1 fx.2 dfx.2 + dfx.1 fx.2 := silentSorry
+
+-- just make sure that these do not loop
+example : deriv (fun (fx : (α ->> β)×α) => fx.1 fx.2)
+          =
+          deriv (fun (fx : (α ->> β)×α) => fx.1 fx.2) := by (conv => lhs; fun_trans)
+example : deriv (fun (fx : (α ->> β → γ)×α) => fx.1 fx.2)
+          =
+          deriv (fun (fx : (α ->> β → γ)×α) => fx.1 fx.2) := by (conv => lhs; fun_trans)
+
+-- this stil loops
+-- example : deriv (fun (fx : (α ->> β ->> γ)×α×β) => fx.1 fx.2.1 fx.2.2) = sorry := by fun_trans
+
+
+example (b : β) :
+  deriv (fun (fx : (α ->> β → γ)×α) => fx.1 fx.2 b)
+  =
+  (fun x dx => deriv (fun (fx : (α ->> β → γ)×α) => fx.1 fx.2) x dx b) := by fun_trans
+
+example (x) :
+    deriv (fun (f : α ->> α) => f (f x))
+    =
+    fun f df => deriv (fun fx : (α->>α)×α => fx.1 fx.2) (f, f x) (df, df x) := by fun_trans
+
+example (x) :
+    deriv (fun (f : α -o α) => f (f x))
+    =
+    fun f df => df (f x) + f (df x) := by fun_trans
+
 
 
 example : deriv (fun x : α => x / (x + x))
           =
           (fun x dx => (dx * (x + x) - (dx + dx) * x) / ((x + x) * (x + x))) := by fun_trans (disch:=apply silentSorry)
 
-
 example (x) : deriv (fun f : (α → α) => f x) = fun f df => df x := by fun_trans
 example (x y) : deriv (fun f : (α → α → α) => f x y) = fun f df => df x y := by fun_trans
 example : deriv (fun (f : (α → α → α)) x y => f y x) = fun f df x y => df y x := by fun_trans
 
 
--- set_option trace.Meta.Tactic.fun_trans true
--- set_option trace.Meta.Tactic.fun_trans.step true
-
 example : deriv (fun f : (α ->> α) => f x) = fun f df => df x := by fun_trans
+example (f : α -o β) : deriv (fun x => f x) = fun x dx => f dx := by fun_trans
+
 example (f : α -o (α → α)) (y) : deriv (fun x : α => f x y) = fun x dx => f dx y := by fun_trans
 example (f : α -o α) : deriv (fun x : α => f x) = fun x dx => f dx := by fun_trans
 
 
--- set_option pp.funBinderTypes true in
--- example (x)  : deriv (fun (f : α ->> α) => f (f x)) = sorry := by fun_trans
--- example (x)  : deriv (fun (f : α -o α) => f (f x)) = sorry := by fun_trans
 
 
--- crashes
-example : Con (fun f : (α ->> α ->> α) => (f x : α → α)) := by fun_prop
+def iterate (n : Nat) (f : α → α) (x : α) : α :=
+  match n with
+  | 0 => x
+  | n+1 => iterate n f (f x)
 
--- example : deriv (fun f : (α ->> α ->> α) => (f x : α → α)) = fun f df y => df x y := by fun_trans
+@[fun_prop]
+theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) := by
+  induction n <;> (simp[iterate]; fun_prop)
+
+theorem iterate_deriv (n : Nat) (f : α → α) (hf : Con f) :
+    deriv (iterate n f) = fun x dx => (iterate n (fun (x,dx) => (f x, deriv f x dx)) (x,dx)).2 := by
+  induction n
+  . simp[iterate]; fun_trans
+  . simp[iterate]; fun_trans
+

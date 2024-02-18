@@ -26,7 +26,7 @@ syntax (name := funTransConvStx) "fun_trans" (config)? (discharger)? (&" only")?
   (" [" withoutPosition((simpStar <|> simpErase <|> simpLemma),*) "]")? : conv
 
 
-simproc_decl fun_trans_simproc (_) := funTransImpl
+simproc_decl fun_trans_simproc (_) := funTrans
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
@@ -48,6 +48,7 @@ def funTransTac : Tactic := fun stx => do
   match stx with
   | `(tactic| fun_trans $[$cfg]? $[$disch]? $[only]? $[[$a,*]]? $[$loc]?) => do
 
+    -- set fun_trans config
     funTransConfig.modify
       fun c => { c with funPropConfig := { c.funPropConfig with disch := stxToDischarge disch}}
 
@@ -57,8 +58,8 @@ def funTransTac : Tactic := fun stx => do
     else
       evalTactic (← `(tactic| simp $[$cfg]? $[$disch]? only [↓fun_trans_simproc,$a,*]  $[$loc]?))
 
-    funTransConfig.modify
-      fun c => { c with funPropConfig := { c.funPropConfig with disch := emptyDischarge}}
+    -- reset fun_trans config
+    funTransConfig.modify fun _ => {}
 
   | _ => throwUnsupportedSyntax
 
@@ -67,7 +68,10 @@ def funTransTac : Tactic := fun stx => do
 def funTransConv : Tactic := fun stx => do
   match stx with
   | `(conv| fun_trans $[$cfg]? $[$disch]? $[only]? $[[$a,*]]?) => do
-    -- set option
+
+    -- set fun_trans config
+    funTransConfig.modify
+      fun c => { c with funPropConfig := { c.funPropConfig with disch := stxToDischarge disch}}
 
     let a := a.getD (Syntax.TSepArray.mk #[])
     if stx[3].isNone then
@@ -75,11 +79,13 @@ def funTransConv : Tactic := fun stx => do
     else
       evalTactic (← `(conv| simp $[$cfg]? $[$disch]? only [↓fun_trans_simproc,$a,*]))
 
-  -- reset options
+    -- reset fun_trans config
+    funTransConfig.modify fun _ => {}
+
   | _ => throwUnsupportedSyntax
 
 
-#check Nat.add_eq
+
 
 example : Nat.add 1 2 = 2 := by fun_trans []; sorry
 example : Nat.add 1 2 = 2 := by fun_trans only [Nat.add_eq]; sorry
