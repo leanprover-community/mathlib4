@@ -182,7 +182,7 @@ theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : 
     haveI : IsAffine _ := U.2
     have := hP.2 (f ∣_ U.1)
     replace this := this (Y.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r) h
-    -- Porting note : the following 2 instances was not necessary
+    -- Porting note (#10670): the following 2 instances was not necessary
     haveI i1 : IsAffine (Y.restrict (Scheme.affineBasicOpen Y r).1.openEmbedding) :=
       (Scheme.affineBasicOpen Y r).2
     haveI i2 : IsAffine
@@ -210,7 +210,7 @@ theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : 
     · rintro ⟨r, hr⟩
       obtain ⟨r, hr', rfl⟩ := Finset.mem_image.mp hr
       specialize H ⟨r, hr'⟩
-      -- Porting note : the following 2 instances was not necessary
+      -- Porting note (#10670): the following 2 instances was not necessary
       haveI i1 : IsAffine (Y.restrict (Scheme.affineBasicOpen Y r).1.openEmbedding) :=
         (Scheme.affineBasicOpen Y r).2
       haveI i2 : IsAffine
@@ -226,7 +226,7 @@ theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : 
     exact ⟨⟨_, ⟨𝒰.f x, rfl⟩⟩, 𝒰.Covers x⟩
   · rintro ⟨_, i, rfl⟩
     specialize h𝒰 i
-    -- Porting note : the next instance was not necessary
+    -- Porting note (#10670): the next instance was not necessary
     haveI i1 : IsAffine (Y.restrict (S i).1.openEmbedding) := (S i).2
     rw [← P.toProperty_apply] at h𝒰 ⊢
     exact (hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr h𝒰

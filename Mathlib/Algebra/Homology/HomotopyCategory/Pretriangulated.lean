@@ -9,8 +9,8 @@ import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-! The pretriangulated structure on the homotopy category of complexes
 
-In this file, we shall define the pretriangulated structure on the homotopy
-category `HomotopyCategory C (ComplexShape.up ℤ)` of an additive category `C` (TODO).
+In this file, we define the pretriangulated structure on the homotopy
+category `HomotopyCategory C (ComplexShape.up ℤ)` of an additive category `C`.
 The distinguished triangles are the triangles that are isomorphic to the
 image in the homotopy category of the standard triangle
 `K ⟶ L ⟶ mappingCone φ ⟶ K⟦(1 : ℤ)⟧` for some morphism of
@@ -359,3 +359,110 @@ end Shift
 end mappingCone
 
 end CochainComplex
+
+namespace HomotopyCategory
+
+variable (C)
+
+namespace Pretriangulated
+
+/-- A triangle in `HomotopyCategory C (ComplexShape.up ℤ)` is distinguished if it is isomorphic to
+the triangle `CochainComplex.mappingCone.triangleh φ` for some morphism of cochain
+complexes `φ`. -/
+def distinguishedTriangles : Set (Triangle (HomotopyCategory C (ComplexShape.up ℤ))) :=
+  fun T => ∃ (X Y : CochainComplex C ℤ) (φ : X ⟶ Y),
+    Nonempty (T ≅ CochainComplex.mappingCone.triangleh φ)
+
+variable {C}
+
+lemma isomorphic_distinguished (T₁ : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))
+    (hT₁ : T₁ ∈ distinguishedTriangles C) (T₂ : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))
+    (e : T₂ ≅ T₁) : T₂ ∈ distinguishedTriangles C := by
+  obtain ⟨X, Y, f, ⟨e'⟩⟩ := hT₁
+  exact ⟨X, Y, f, ⟨e ≪≫ e'⟩⟩
+
+lemma contractible_distinguished (X : HomotopyCategory C (ComplexShape.up ℤ)) :
+    Pretriangulated.contractibleTriangle X ∈ distinguishedTriangles C := by
+  obtain ⟨X⟩ := X
+  refine' ⟨_, _, 𝟙 X, ⟨_⟩⟩
+  have h := (isZero_quotient_obj_iff _).2 ⟨CochainComplex.mappingCone.homotopyToZeroOfId X⟩
+  exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) h.isoZero.symm
+    (by simp) (h.eq_of_tgt _ _) (by dsimp; ext)
+
+lemma distinguished_cocone_triangle {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
+    ∃ (Z : HomotopyCategory C (ComplexShape.up ℤ)) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧),
+      Triangle.mk f g h ∈ distinguishedTriangles C := by
+  obtain ⟨X⟩ := X
+  obtain ⟨Y⟩ := Y
+  obtain ⟨f, rfl⟩ := (quotient _ _).map_surjective f
+  exact ⟨_, _, _, ⟨_, _, f, ⟨Iso.refl _⟩⟩⟩
+
+lemma rotate_distinguished_triangle' (T : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))
+    (hT : T ∈ distinguishedTriangles C) : T.rotate ∈ distinguishedTriangles C := by
+  obtain ⟨K, L, φ, ⟨e⟩⟩ := hT
+  exact ⟨_, _, _, ⟨(rotate _).mapIso e ≪≫ CochainComplex.mappingCone.rotateTrianglehIso φ⟩⟩
+
+lemma shift_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))
+    (hT : T ∈ distinguishedTriangles C) (n : ℤ) :
+      (Triangle.shiftFunctor _ n).obj T ∈ distinguishedTriangles C := by
+  obtain ⟨K, L, φ, ⟨e⟩⟩ := hT
+  exact ⟨_, _, _, ⟨Functor.mapIso _ e ≪≫ CochainComplex.mappingCone.shiftTrianglehIso φ n⟩⟩
+
+lemma invRotate_distinguished_triangle' (T : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))
+    (hT : T ∈ distinguishedTriangles C) : T.invRotate ∈ distinguishedTriangles C :=
+  isomorphic_distinguished _
+    (shift_distinguished_triangle _ (rotate_distinguished_triangle' _
+      (rotate_distinguished_triangle' _ hT)) _) _
+    ((invRotateIsoRotateRotateShiftFunctorNegOne _).app T)
+
+lemma rotate_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexShape.up ℤ))) :
+    T ∈ distinguishedTriangles C ↔ T.rotate ∈ distinguishedTriangles C := by
+  constructor
+  · exact rotate_distinguished_triangle' T
+  · intro hT
+    exact isomorphic_distinguished _ (invRotate_distinguished_triangle' T.rotate hT) _
+      ((triangleRotation _).unitIso.app T)
+
+lemma complete_distinguished_triangle_morphism
+    (T₁ T₂ : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))
+    (hT₁ : T₁ ∈ distinguishedTriangles C) (hT₂ : T₂ ∈ distinguishedTriangles C)
+    (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (fac : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
+    ∃ (c : T₁.obj₃ ⟶ T₂.obj₃), T₁.mor₂ ≫ c = b ≫ T₂.mor₂ ∧
+      T₁.mor₃ ≫ a⟦(1 : ℤ)⟧' = c ≫ T₂.mor₃ := by
+  obtain ⟨K₁, L₁, φ₁, ⟨e₁⟩⟩ := hT₁
+  obtain ⟨K₂, L₂, φ₂, ⟨e₂⟩⟩ := hT₂
+  obtain ⟨a', ha'⟩ : ∃ (a' : (quotient _ _).obj K₁ ⟶ (quotient _ _).obj K₂),
+    a' = e₁.inv.hom₁ ≫ a ≫ e₂.hom.hom₁ := ⟨_, rfl⟩
+  obtain ⟨b', hb'⟩ : ∃ (b' : (quotient _ _).obj L₁ ⟶ (quotient _ _).obj L₂),
+    b' = e₁.inv.hom₂ ≫ b ≫ e₂.hom.hom₂ := ⟨_, rfl⟩
+  obtain ⟨a'', rfl⟩ := (quotient _ _).map_surjective a'
+  obtain ⟨b'', rfl⟩ := (quotient _ _).map_surjective b'
+  have H : Homotopy (φ₁ ≫ b'') (a'' ≫ φ₂) := homotopyOfEq _ _ (by
+    have comm₁₁ := e₁.inv.comm₁
+    have comm₁₂ := e₂.hom.comm₁
+    dsimp at comm₁₁ comm₁₂
+    simp only [Functor.map_comp, ha', hb', reassoc_of% comm₁₁,
+      reassoc_of% fac, comm₁₂, assoc])
+  let γ := e₁.hom ≫ CochainComplex.mappingCone.trianglehMapOfHomotopy H ≫ e₂.inv
+  have comm₂ := γ.comm₂
+  have comm₃ := γ.comm₃
+  dsimp at comm₂ comm₃
+  simp only [ha', hb'] at comm₂ comm₃
+  exact ⟨γ.hom₃, by simpa using comm₂, by simpa using comm₃⟩
+
+end Pretriangulated
+
+instance : Pretriangulated (HomotopyCategory C (ComplexShape.up ℤ)) where
+  distinguishedTriangles := Pretriangulated.distinguishedTriangles C
+  isomorphic_distinguished := Pretriangulated.isomorphic_distinguished
+  contractible_distinguished := Pretriangulated.contractible_distinguished
+  distinguished_cocone_triangle := Pretriangulated.distinguished_cocone_triangle
+  rotate_distinguished_triangle := Pretriangulated.rotate_distinguished_triangle
+  complete_distinguished_triangle_morphism :=
+    Pretriangulated.complete_distinguished_triangle_morphism
+
+lemma mappingCone_triangleh_distinguished {X Y : CochainComplex C ℤ} (f : X ⟶ Y) :
+    CochainComplex.mappingCone.triangleh f ∈ distTriang (HomotopyCategory _ _) :=
+  ⟨_, _, f, ⟨Iso.refl _⟩⟩
+
+end HomotopyCategory

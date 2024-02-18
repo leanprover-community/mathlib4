@@ -20,7 +20,7 @@ integers of a `p ^ n`-th cyclotomic extension of `ℚ`.
   `ℤ` in `K`.
 * `IsCyclotomicExtension.Rat.cyclotomicRing_isIntegralClosure_of_prime_pow`: the integral
   closure of `ℤ` inside `CyclotomicField (p ^ k) ℚ` is `CyclotomicRing (p ^ k) ℤ ℚ`.
-* `IsCyclotomicExtension.Rat.absdiscr_prime_pow` and related results: the asbolute discriminant
+* `IsCyclotomicExtension.Rat.absdiscr_prime_pow` and related results: the absolute discriminant
   of cyclotomic fields.
 -/
 
