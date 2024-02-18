@@ -426,7 +426,7 @@ instance : Full (incl : C ⥤ _) where
 instance : Faithful (incl : C ⥤ _) where
 
 /-- Map `WithInitial` with respect to a functor `F : C ⥤ D`. -/
-@[simp]
+@[simps]
 def map {D : Type*} [Category D] (F : C ⥤ D) : WithInitial C ⥤ WithInitial D where
   obj X :=
     match X with
