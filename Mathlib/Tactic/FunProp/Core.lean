@@ -27,7 +27,7 @@ namespace Meta.FunProp
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
   match (← trySynthInstance type) with
   | LOption.some val =>
-    if (← /- withReducibleAndInstances <|-/ isDefEq x val) then
+    if (← withReducibleAndInstances <| isDefEq x val) then
       return true
     else
       trace[Meta.Tactic.fun_prop.discharge]
