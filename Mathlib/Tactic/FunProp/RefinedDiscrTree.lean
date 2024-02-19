@@ -239,9 +239,9 @@ def Trie.values! : Trie α → Array α
 /-- Return the children of a `Trie α`, assuming that it is not a leaf.
 The result is sorted by the `Key`'s -/
 def Trie.children! : Trie α → Array (Key × Trie α)
-| .node cs => cs
-| .path ks c => #[(ks[0]!, mkPath ks[1:] c)]
-| .values _ => panic! "did not expect .values constructor"
+  | .node cs => cs
+  | .path ks c => #[(ks[0]!, mkPath ks[1:] c)]
+  | .values _ => panic! "did not expect .values constructor"
 
 private partial def Trie.format [ToFormat α] : Trie α → Format
   | .node cs => Format.group $ Format.paren $
@@ -539,8 +539,8 @@ termination_by goalArity - args.size
 - `f = fun x => f x` to increase the arity to 6
 - `(f + g) a = f a + g a` to decrease the arity to 6
 - `(fun x => f x + g x) = f + g` to get rid of any lambdas in front -/
-def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : Name)
-    : OptionT MetaM (Expr × Expr × Expr × List FVarId) := do
+def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : Name) :
+    OptionT MetaM (Expr × Expr × Expr × List FVarId) := do
   let some (mkApp2 (.const instH' _) type inst) := args[3]? | failure
   guard (instH == instH')
   if args.size ≤ 6 then
@@ -562,8 +562,8 @@ def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : 
   distributeLambdas lambdas type lhs rhs
 where
   /-- use that `(fun x => f x + g x) = f + g` -/
-  distributeLambdas (lambdas : List FVarId) (type lhs rhs : Expr)
-      : MetaM (Expr × Expr × Expr × List FVarId) := match lambdas with
+  distributeLambdas (lambdas : List FVarId) (type lhs rhs : Expr) :
+    MetaM (Expr × Expr × Expr × List FVarId) := match lambdas with
     | fvarId :: lambdas => do
       let decl ← fvarId.getDecl
       let type := .forallE decl.userName decl.type (type.abstract #[.fvar fvarId]) decl.binderInfo
@@ -574,8 +574,8 @@ where
 
 /-- Normalize an application if the head is  `+`, `*`, `-` or `/`.
 Optionally return the `(type, lhs, rhs, lambdas)`. -/
-@[inline] def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId)
-    : MetaM (Option (Expr × Expr × Expr × List FVarId)) :=
+@[inline] def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
+    MetaM (Option (Expr × Expr × Expr × List FVarId)) :=
   match n with
   | ``HAdd.hAdd => reduceHBinOpAux args lambdas ``instHAdd ``Pi.instAdd
   | ``HMul.hMul => reduceHBinOpAux args lambdas ``instHMul ``Pi.instMul
@@ -586,8 +586,8 @@ Optionally return the `(type, lhs, rhs, lambdas)`. -/
 /-- Normalize an application of a unary operator like `Inv.inv`, using:
 - `f⁻¹ a = (f a)⁻¹` to decrease the arity to 3
 - `(fun x => (f a)⁻¹) = f⁻¹` to get rid of any lambdas in front -/
-def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name)
-    : OptionT MetaM (Expr × Expr × List FVarId) := do
+def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name) :
+    OptionT MetaM (Expr × Expr × List FVarId) := do
   guard (args.size ≥ 3)
   let mut type := args[0]!
   let mut inst := args[1]!
@@ -605,8 +605,8 @@ def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name)
   distributeLambdas lambdas type arg
 where
   /-- use that `(fun x => (f x)⁻¹) = f⁻¹` -/
-  distributeLambdas (lambdas : List FVarId) (type arg : Expr)
-      : MetaM (Expr × Expr × List FVarId) := match lambdas with
+  distributeLambdas (lambdas : List FVarId) (type arg : Expr) :
+    MetaM (Expr × Expr × List FVarId) := match lambdas with
     | fvarId :: lambdas => do
       let decl ← fvarId.getDecl
       let type := .forallE decl.userName decl.type (type.abstract #[.fvar fvarId]) decl.binderInfo
@@ -616,8 +616,8 @@ where
 
 /-- Normalize an application if the head is `⁻¹` or `-`.
 Optionally return the `(type, arg, lambdas)`. -/
-@[inline] def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId)
-    : MetaM (Option (Expr × Expr × List FVarId)) :=
+@[inline] def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
+    MetaM (Option (Expr × Expr × List FVarId)) :=
   match n with
   | ``Neg.neg => reduceUnOpAux args lambdas ``Pi.instNeg
   | ``Inv.inv => reduceUnOpAux args lambdas ``Pi.instInv
@@ -744,7 +744,7 @@ def etaPossibilities (e : Expr) (lambdas : List FVarId) (k : Expr → List FVarI
 /-- run `etaPossibilities`, and cache the result if there are multiple possibilities. -/
 @[specialize]
 def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId)
-  (k : Expr → List FVarId → M DTExpr) : M DTExpr :=
+    (k : Expr → List FVarId → M DTExpr) : M DTExpr :=
   match e, lambdas with
   | .app _ a, fvarId :: _ =>
     if isStarWithArg (.fvar fvarId) a then
@@ -912,8 +912,8 @@ partial def insertInTrie [BEq α] (keys : Array Key) (v : α) (i : Nat) : Trie �
 
 Warning: to accound for η-reduction, an entry may need to be added at multiple indexes,
 so it is recommended to use `RefinedDiscrTree.insert` for insertion. -/
-def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α)
-  : RefinedDiscrTree α :=
+def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α) :
+    RefinedDiscrTree α :=
   let k := keys[0]!
   match d.root.find? k with
   | none =>
@@ -937,16 +937,16 @@ It should return true only if the `RefinedDiscrTree` is built and used locally.
 
 if `onlySpecific := true`, then we filter out the patterns `*` and `Eq * * *`. -/
 def insert [BEq α] (d : RefinedDiscrTree α) (e : Expr) (v : α)
-  (onlySpecific : Bool := true) (config : WhnfCoreConfig := {})
-  (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (RefinedDiscrTree α) := do
+    (onlySpecific : Bool := true) (config : WhnfCoreConfig := {})
+    (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (RefinedDiscrTree α) := do
   let keys ← mkDTExprs e config onlySpecific fvarInContext
   return keys.foldl (insertDTExpr · · v) d
 
 /-- Insert the value `vLhs` at index `lhs`, and if `rhs` is indexed differently, then also
 insert the value `vRhs` at index `rhs`. -/
 def insertEqn [BEq α] (d : RefinedDiscrTree α) (lhs rhs : Expr) (vLhs vRhs : α)
-  (onlySpecific : Bool := true) (config : WhnfCoreConfig := {})
-  (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (RefinedDiscrTree α) := do
+    (onlySpecific : Bool := true) (config : WhnfCoreConfig := {})
+    (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (RefinedDiscrTree α) := do
   let keysLhs ← mkDTExprs lhs config onlySpecific fvarInContext
   let keysRhs ← mkDTExprs rhs config onlySpecific fvarInContext
   let d := keysLhs.foldl (insertDTExpr · · vLhs) d
@@ -986,8 +986,8 @@ private structure State where
 private abbrev M := ReaderT Context $ StateListM State
 
 /-- Return all values from `x` in an array, together with their scores. -/
-private def M.run (unify : Bool) (config : WhnfCoreConfig) (x : M (Trie α))
-  : Array (Array α × Nat) :=
+private def M.run (unify : Bool) (config : WhnfCoreConfig) (x : M (Trie α)) :
+    Array (Array α × Nat) :=
   ((x.run { unify, config }).run {}).toArray.map (fun (t, s) => (t.values!, s.score))
 
 /-- Increment the score by `n`. -/
@@ -1119,8 +1119,8 @@ def getMatchWithScore (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
 /-- Similar to `getMatchWithScore`, but also returns matches with prefixes of `e`.
 We store the score, followed by the number of ignored arguments. -/
 partial def getMatchWithScoreWithExtra (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
-    (config : WhnfCoreConfig) (allowRootStar : Bool := false)
-    : MetaM (Array (Array α × Nat × Nat)) := do
+    (config : WhnfCoreConfig) (allowRootStar : Bool := false) :
+    MetaM (Array (Array α × Nat × Nat)) := do
   let result ← go e 0
   return result.qsort (·.2.1 > ·.2.1)
 where

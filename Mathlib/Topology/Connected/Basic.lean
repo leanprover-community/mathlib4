@@ -315,8 +315,8 @@ protected theorem IsPreconnected.image [TopologicalSpace β] {s : Set α} (H : I
   rcases continuousOn_iff'.1 hf u hu with ⟨u', hu', u'_eq⟩
   rcases continuousOn_iff'.1 hf v hv with ⟨v', hv', v'_eq⟩
   -- Reformulate `huv : f '' s ⊆ u ∪ v` in terms of `u'` and `v'`
-  replace huv : s ⊆ u' ∪ v'
-  · rw [image_subset_iff, preimage_union] at huv
+  replace huv : s ⊆ u' ∪ v' := by
+    rw [image_subset_iff, preimage_union] at huv
     replace huv := subset_inter huv Subset.rfl
     rw [inter_distrib_right, u'_eq, v'_eq, ← inter_distrib_right] at huv
     exact (subset_inter_iff.1 huv).1
@@ -364,7 +364,7 @@ theorem Inducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α
   rintro u v hu' hv' huv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩
   rcases hf.isOpen_iff.1 hu' with ⟨u, hu, rfl⟩
   rcases hf.isOpen_iff.1 hv' with ⟨v, hv, rfl⟩
-  replace huv : f '' s ⊆ u ∪ v; · rwa [image_subset_iff]
+  replace huv : f '' s ⊆ u ∪ v := by rwa [image_subset_iff]
   rcases h u v hu hv huv ⟨f x, mem_image_of_mem _ hxs, hxu⟩ ⟨f y, mem_image_of_mem _ hys, hyv⟩ with
     ⟨_, ⟨z, hzs, rfl⟩, hzuv⟩
   exact ⟨z, hzs, hzuv⟩
@@ -640,14 +640,14 @@ theorem IsPreconnected.subset_connectedComponentIn {x : α} {F : Set α} (hs : I
     (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ connectedComponentIn F x := by
   have : IsPreconnected (((↑) : F → α) ⁻¹' s) := by
     refine' inducing_subtype_val.isPreconnected_image.mp _
-    rwa [Subtype.image_preimage_coe, inter_eq_left.mpr hsF]
+    rwa [Subtype.image_preimage_coe, inter_eq_right.mpr hsF]
   have h2xs : (⟨x, hsF hxs⟩ : F) ∈ (↑) ⁻¹' s := by
     rw [mem_preimage]
     exact hxs
   have := this.subset_connectedComponent h2xs
   rw [connectedComponentIn_eq_image (hsF hxs)]
   refine' Subset.trans _ (image_subset _ this)
-  rw [Subtype.image_preimage_coe, inter_eq_left.mpr hsF]
+  rw [Subtype.image_preimage_coe, inter_eq_right.mpr hsF]
 #align is_preconnected.subset_connected_component_in IsPreconnected.subset_connectedComponentIn
 
 theorem IsConnected.subset_connectedComponent {x : α} {s : Set α} (H1 : IsConnected s)

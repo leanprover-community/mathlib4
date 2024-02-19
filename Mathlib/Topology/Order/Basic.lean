@@ -530,21 +530,15 @@ theorem Dense.topology_eq_generateFrom [DenselyOrdered α] {s : Set α} (hs : De
       let _ := generateFrom (Ioi '' s ∪ Iio '' s)
       exact isOpen_iUnion fun x ↦ isOpen_iUnion fun h ↦ .basic _ <| .inr <| mem_image_of_mem _ h.1
 
+@[deprecated OrderBot.atBot_eq] -- 2024-02-14
 theorem atBot_le_nhds_bot [OrderBot α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
-  cases subsingleton_or_nontrivial α
-  · simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
-      eq_iff_true_of_subsingleton, imp_true_iff, exists_const]
-  have h : atBot.HasBasis (fun _ : α => True) Iic := @atBot_basis α _ _
-  have h_nhds : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) fun a => Iio a := @nhds_bot_basis α _ _ _ _ _
-  intro s
-  rw [h.mem_iff, h_nhds.mem_iff]
-  rintro ⟨a, ha_bot_lt, h_Iio_a_subset_s⟩
-  refine' ⟨⊥, trivial, _root_.trans _ h_Iio_a_subset_s⟩
-  simpa only [Iic_bot, singleton_subset_iff, mem_Iio]
+  rw [OrderBot.atBot_eq]
+  apply pure_le_nhds
 #align at_bot_le_nhds_bot atBot_le_nhds_bot
 
+@[deprecated OrderTop.atTop_eq] -- 2024-02-14
 theorem atTop_le_nhds_top [OrderTop α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
-  @atBot_le_nhds_bot αᵒᵈ _ _ _ _
+  set_option linter.deprecated false in @atBot_le_nhds_bot αᵒᵈ _ _ _
 #align at_top_le_nhds_top atTop_le_nhds_top
 
 variable (α)
@@ -570,16 +564,16 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
   have : ∀ x ∈ s, ∃ y, x ⋖ y := fun x => id
   choose! y hy using this
   have Hy : ∀ x z, x ∈ s → z < y x → z ≤ x := fun x z hx => (hy x hx).le_of_lt
-  suffices H : ∀ a : Set α, IsOpen a → Set.Countable { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a }
-  · have : s ⊆ ⋃ a ∈ countableBasis α, { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } := fun x hx => by
+  suffices H : ∀ a : Set α, IsOpen a → Set.Countable { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } by
+    have : s ⊆ ⋃ a ∈ countableBasis α, { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a } := fun x hx => by
       rcases (isBasis_countableBasis α).exists_mem_of_ne (hy x hx).ne with ⟨a, ab, xa, ya⟩
       exact mem_iUnion₂.2 ⟨a, ab, hx, xa, ya⟩
     refine Set.Countable.mono this ?_
     refine' Countable.biUnion (countable_countableBasis α) fun a ha => H _ _
     exact isOpen_of_mem_countableBasis ha
   intro a ha
-  suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x }
-  · exact H.of_diff (subsingleton_isBot α).countable
+  suffices H : Set.Countable { x | (x ∈ s ∧ x ∈ a ∧ y x ∉ a) ∧ ¬IsBot x } from
+    H.of_diff (subsingleton_isBot α).countable
   simp only [and_assoc]
   let t := { x | x ∈ s ∧ x ∈ a ∧ y x ∉ a ∧ ¬IsBot x }
   have : ∀ x ∈ t, ∃ z < x, Ioc z x ⊆ a := by
@@ -598,8 +592,8 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
       by_contra! H
       exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
-  suffices H : Ioc (z x) x = Ioo (z x) (y x)
-  · rw [H]
+  suffices H : Ioc (z x) x = Ioo (z x) (y x) by
+    rw [H]
     exact isOpen_Ioo
   exact Subset.antisymm (Ioc_subset_Ioo_right (hy x hx.1).lt) fun u hu => ⟨hu.1, Hy _ _ hx.1 hu.2⟩
 
@@ -2183,25 +2177,5 @@ theorem Monotone.tendsto_nhdsWithin_Ioi {α β : Type*} [LinearOrder α] [Topolo
 #align monotone.tendsto_nhds_within_Ioi Monotone.tendsto_nhdsWithin_Ioi
 
 end ConditionallyCompleteLinearOrder
-
-section NhdsWithPos
-
-section LinearOrderedAddCommGroup
-
-variable [LinearOrder α] [Zero α] [TopologicalSpace α] [OrderTopology α]
-
-@[deprecated Ioo_mem_nhdsWithin_Ioi']
-theorem eventually_nhdsWithin_pos_mem_Ioo {ε : α} (h : 0 < ε) : ∀ᶠ x in 𝓝[>] 0, x ∈ Ioo 0 ε :=
-  Ioo_mem_nhdsWithin_Ioi' h
-#align eventually_nhds_within_pos_mem_Ioo eventually_nhdsWithin_pos_mem_Ioo
-
-@[deprecated Ioc_mem_nhdsWithin_Ioi']
-theorem eventually_nhdsWithin_pos_mem_Ioc {ε : α} (h : 0 < ε) : ∀ᶠ x in 𝓝[>] 0, x ∈ Ioc 0 ε :=
-  Ioc_mem_nhdsWithin_Ioi' h
-#align eventually_nhds_within_pos_mem_Ioc eventually_nhdsWithin_pos_mem_Ioc
-
-end LinearOrderedAddCommGroup
-
-end NhdsWithPos
 
 end OrderTopology

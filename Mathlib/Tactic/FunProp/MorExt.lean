@@ -9,9 +9,8 @@ import Std.Lean.Expr
 import Mathlib.Tactic.FunProp.ToStd
 
 /-!
-## `funProp` environment extension that stores all registered coercions from a morphism to a function
+## `fun_prop` Environment extension that stores all registered morphism coercions.
 -/
-
 
 namespace Mathlib
 open Lean Meta
@@ -21,16 +20,17 @@ namespace Meta.FunProp
 
 private local instance : Ord Name := ⟨Name.quickCmp⟩
 
-/-- -/
+
+/-- Environment extension storing all morphism coercions. -/
 initialize morCoeDeclsExt : SimpleScopedEnvExtension Name (Std.RBSet Name compare) ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
-    initial := {}
+    initial := .ofArray #[`DFunLike.coe] _
     addEntry := fun d n => d.insert n
   }
 
 
-/-- -/
+/-- Register morphism coercion. -/
 def addMorCoeDecl (declName : Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
@@ -42,7 +42,6 @@ def addMorCoeDecl (declName : Name) : MetaM Unit := do
 
   -- coercion needs at least two arguments
   if n < 2 then throwError "invalid morphism coercion, expecting function of at least two arguments"
-
 
   let x := xs[n-1]!
   let f := xs[n-2]!
@@ -59,7 +58,7 @@ def addMorCoeDecl (declName : Name) : MetaM Unit := do
      return value: {← ppExpr b}"
 
 
-/-- Initialization of `funProp` attribute -/
+/-- Initialization of `fun_prop_coe` attribute -/
 initialize morCoeAttr : Unit ←
   registerBuiltinAttribute {
     name  := `fun_prop_coe

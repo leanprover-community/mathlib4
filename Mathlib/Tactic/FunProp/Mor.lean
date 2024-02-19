@@ -11,17 +11,16 @@ import Mathlib.Tactic.FunProp.MorExt
 
 
 /-!
-## `funProp` meta programming function like in Lean.Expr.* but for working with bundled morphisms
+## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.
 
 Function application in normal lean expression looks like `.app f x` but when we work with bundled
-morphism `f` it looks like `.app (.app coe f) x` where `f`. In mathlib the convention is that `coe`
-is application of `DFunLike.coe` and this is assumed through out this file. It does not work with
-Lean's `CoeFun.coe`.
+morphism `f` it looks like `.app (.app coe f) x` where `f`. In mathlib `coe` is usually
+`DFunLike.coe` but it can be any coercion that is registered with the `fun_prop_coe` attribute.
 
 The main difference when working with expression involving morphisms is that the notion the head of
 expression changes. For example in:
 ```
-  coe (f a) b = ⇑(f a) b
+  coe (f a) b
 ```
 the head of expression is considered to be `f` and not `coe`.
 -/
@@ -33,9 +32,11 @@ namespace Meta.FunProp
 
 namespace Mor
 
+/-- Is `name` a coerction from some function space to functiosn? -/
 def isMorCoeName (name : Name) : CoreM Bool := do
   return morCoeDeclsExt.getState (← getEnv) |>.contains name
 
+/-- Is `e` a coerction from some function space to functiosn? -/
 def isMorCoe (e : Expr) : MetaM Bool := do
   let .some (name,_) := e.getAppFn.const? | return false
   unless ← isMorCoeName name do return false
@@ -48,12 +49,16 @@ def isMorCoe (e : Expr) : MetaM Bool := do
   else
     return false
 
+/-- Morphism application -/
 structure App where
+  /-- morphism coercion -/
   coe : Expr
+  /-- bundled morphism -/
   fn  : Expr
+  /-- morphism argument -/
   arg : Expr
 
-
+/-- Is `e` morphism application? -/
 def isMorApp? (e : Expr) : MetaM (Option App) := do
 
   let .app (.app coe f) x := e | return none
@@ -62,6 +67,12 @@ def isMorApp? (e : Expr) : MetaM (Option App) := do
   else
     return none
 
+/--
+Weak normal head form of an expression involving morphism applications. Additionally, `pred`
+can specify which when to unfold definitions.
+
+For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
+ -/
 partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) (cfg : WhnfCoreConfig := {}) :
     MetaM Expr := do
   whnfEasyCases e fun e => do
@@ -82,6 +93,11 @@ partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) (cfg : WhnfCoreConf
     else
       return e
 
+/--
+Weak normal head form of an expression involving morphism applications.
+
+For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
+ -/
 def whnf (e : Expr)  (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
   whnfPred e (fun _ => return false) cfg
 

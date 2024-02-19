@@ -236,9 +236,9 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       exact h.2 i
   · simp only [mem_filter, mem_piAntidiagonal, mem_univ, exists_prop, true_and_iff, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
-    suffices hf' : f ∈ piAntidiagonal s n
+    have hf' : f ∈ piAntidiagonal s n := mem_piAntidiagonal.mpr ⟨hf, hf₃⟩
     simp only [mem_piAntidiagonal'] at hf'
-    refine' ⟨⟨∑ i in s, Multiset.replicate (f i / i) i, _, _⟩, _, _, _⟩
+    refine ⟨⟨∑ i in s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
     · intro i hi
       simp only [exists_prop, mem_sum, mem_map, Function.Embedding.coeFn_mk] at hi
       rcases hi with ⟨t, ht, z⟩
@@ -271,7 +271,6 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       · apply symm
         rw [← Finsupp.not_mem_support_iff]
         exact not_mem_mono hf h
-    · exact mem_piAntidiagonal.mpr ⟨hf, hf₃⟩
 #align theorems_100.partial_gf_prop Theorems100.partialGF_prop
 
 theorem partialOddGF_prop [Field α] (n m : ℕ) :
