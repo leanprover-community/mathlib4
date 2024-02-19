@@ -7,11 +7,14 @@ import Mathlib.Probability.Kernel.Disintegration.KernelCDFReal
 import Mathlib.Probability.Kernel.WithDensity
 
 /-!
-# Density
+# Radon-Nikodym derivative and Lebesgue decompusition for kernels
+
+Let `Ω` be a standard Borel space and `κ ν : kernel α Ω`. Then there exists... TODO
 
 ## Main definitions
 
-* `FooBar`
+* `ProbabilityTheory.kernel.rnDeriv`
+* `ProbabilityTheory.kernel.singularPart`
 
 ## Main statements
 
@@ -27,7 +30,7 @@ import Mathlib.Probability.Kernel.WithDensity
 
 ## References
 
-* [F. Bar, *Quuxes*][bibkey]
+Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
 
 ## Tags
 
@@ -42,91 +45,6 @@ namespace ProbabilityTheory
 
 variable {α : Type*} {mα : MeasurableSpace α}
 
-section aux
-
-lemma MeasurableEmbedding.comap_add {β : Type*} {mβ : MeasurableSpace β}
-    {f : α → β} (hf : MeasurableEmbedding f) {μ ν : Measure β} :
-    (μ + ν).comap f = μ.comap f + ν.comap f := by
-  ext s hs
-  rw [← Measure.comapₗ_eq_comap _ hf.injective (fun s hs ↦ hf.measurableSet_image.mpr hs) _ hs,
-    map_add]
-  simp only [Measure.add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply]
-  rw [← Measure.comapₗ_eq_comap _ hf.injective (fun s hs ↦ hf.measurableSet_image.mpr hs) _ hs,
-    ← Measure.comapₗ_eq_comap _ hf.injective (fun s hs ↦ hf.measurableSet_image.mpr hs) _ hs]
-
-@[simp]
-lemma kernel.map_id {β : Type*} {_ : MeasurableSpace β} {κ : kernel α β} :
-    kernel.map κ id measurable_id = κ := by ext a; rw [kernel.map_apply]; simp
-
-@[simp]
-lemma kernel.map_id' {β : Type*} {_ : MeasurableSpace β} {κ : kernel α β} :
-    kernel.map κ (fun a ↦ a) measurable_id = κ := kernel.map_id
-
-end aux
-
-section withDensity
-
-variable {β : Type*} {mβ : MeasurableSpace β} {κ : kernel α β}
-
-@[simp]
-lemma Measure.absolutelyContinuous_zero (μ : Measure α) : 0 ≪ μ :=
-  Measure.absolutelyContinuous_of_le (Measure.zero_le μ)
-
-nonrec lemma kernel.withDensity_absolutelyContinuous [IsSFiniteKernel κ]
-    (f : α → β → ℝ≥0∞) (a : α) :
-    kernel.withDensity κ f a ≪ κ a := by
-  by_cases hf : Measurable (Function.uncurry f)
-  · rw [kernel.withDensity_apply _ hf]
-    exact withDensity_absolutelyContinuous _ _
-  · rw [withDensity_of_not_measurable _ hf]
-    simp
-
-@[simp]
-lemma kernel.withDensity_one [IsSFiniteKernel κ] :
-    kernel.withDensity κ 1 = κ := by
-  ext a
-  rw [kernel.withDensity_apply _ measurable_const]
-  simp
-
-@[simp]
-lemma kernel.withDensity_one' [IsSFiniteKernel κ] :
-    kernel.withDensity κ (fun _ _ ↦ 1) = κ := kernel.withDensity_one
-
-lemma kernel.withDensity_sub_add [IsSFiniteKernel κ] {f g : α → β → ℝ≥0∞}
-    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g))
-    (hg_int : ∀ a, ∫⁻ x, g a x ∂(κ a) ≠ ∞) (hfg : ∀ a, g a ≤ᵐ[κ a] f a) :
-    kernel.withDensity κ (fun a x ↦ f a x - g a x) + kernel.withDensity κ g
-      = kernel.withDensity κ f := by
-  ext a s
-  simp only [coeFn_add, Pi.add_apply, Measure.add_toOuterMeasure, OuterMeasure.coe_add]
-  rw [kernel.withDensity_apply' _ hf, kernel.withDensity_apply' _ hg, kernel.withDensity_apply']
-  swap; · exact hf.sub hg
-  rw [lintegral_sub]
-  · rw [tsub_add_cancel_iff_le]
-    exact lintegral_mono_ae (ae_restrict_of_ae (hfg a))
-  · exact hg.comp measurable_prod_mk_left
-  · exact ((set_lintegral_le_lintegral _ _).trans_lt (hg_int a).lt_top).ne
-  · exact ae_restrict_of_ae (hfg a)
-
-nonrec lemma kernel.withDensity_mul [IsSFiniteKernel κ] {f : α → β → ℝ≥0} {g : α → β → ℝ≥0∞}
-    (hf : Measurable (Function.uncurry f)) (hg : Measurable (Function.uncurry g)) :
-    kernel.withDensity κ (fun a x ↦ f a x * g a x)
-      = kernel.withDensity (kernel.withDensity κ fun a x ↦ f a x) fun a x ↦ g a x := by
-  ext a : 1
-  rw [kernel.withDensity_apply]
-  swap; · exact (measurable_coe_nnreal_ennreal.comp hf).mul hg
-  suffices (Measure.withDensity (κ a) ((fun x ↦ (f a x : ℝ≥0∞)) * (fun x ↦ (g a x : ℝ≥0∞)))) =
-      (withDensity (withDensity κ fun a x ↦ f a x) fun a x ↦ g a x) a by
-    convert this
-  rw [withDensity_mul]
-  · rw [kernel.withDensity_apply _ hg, kernel.withDensity_apply]
-    exact measurable_coe_nnreal_ennreal.comp hf
-  · rw [measurable_coe_nnreal_ennreal_iff]
-    exact hf.comp measurable_prod_mk_left
-  · exact hg.comp measurable_prod_mk_left
-
-end withDensity
-
 section Real
 
 variable {κ ν : kernel α ℝ}
@@ -135,12 +53,6 @@ lemma fst_map_le_of_le (hκν : κ ≤ ν) :
     kernel.fst (kernel.map κ (fun a ↦ (a, ()))
       (@measurable_prod_mk_right ℝ Unit _ inferInstance _)) ≤ ν := by
   rwa [kernel.fst_map_prod _ measurable_id' measurable_const, kernel.map_id']
-
-lemma todo (κ : kernel α ℝ) (ν : kernel α ℝ) : κ ≤ κ + ν := by
-  -- todo improve this: `le_add_of_nonneg_right` should work on kernels
-  intro a
-  simp only [AddSubmonoid.coe_add, Pi.add_apply]
-  exact le_add_of_nonneg_right (Measure.zero_le (ν a))
 
 noncomputable
 def g (κ ν : kernel α ℝ) (a : α) (x : ℝ) : ℝ :=
@@ -170,17 +82,18 @@ lemma kernel.rnDerivReal_def (κ ν : kernel α ℝ) :
     kernel.rnDerivReal κ ν
       = fun a x ↦ ENNReal.ofReal (g κ (κ + ν) a x) / ENNReal.ofReal (1 - g κ (κ + ν) a x) := rfl
 
-lemma measurable_rnDerivReal : Measurable (fun p : α × ℝ ↦ kernel.rnDerivReal κ ν p.1 p.2) :=
+lemma measurable_rnDerivReal (κ ν : kernel α ℝ) :
+    Measurable (fun p : α × ℝ ↦ kernel.rnDerivReal κ ν p.1 p.2) :=
   (measurable_g κ _).ennreal_ofReal.div (measurable_const.sub (measurable_g κ _)).ennreal_ofReal
 
 lemma measurable_rnDerivReal_right (κ ν : kernel α ℝ) (a : α) :
     Measurable (fun x : ℝ ↦ kernel.rnDerivReal κ ν a x) := by
   change Measurable ((fun p : α × ℝ ↦ kernel.rnDerivReal κ ν p.1 p.2) ∘ (fun x ↦ (a, x)))
-  exact measurable_rnDerivReal.comp measurable_prod_mk_left
+  exact (measurable_rnDerivReal _ _).comp measurable_prod_mk_left
 
 lemma withDensity_g (κ ν : kernel α ℝ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
     kernel.withDensity (κ + ν) (fun a x ↦ Real.toNNReal (g κ (κ + ν) a x)) = κ := by
-  have h_le : κ ≤ κ + ν := todo κ ν
+  have h_le : κ ≤ κ + ν := le_add_of_nonneg_right bot_le
   ext a s hs
   rw [kernel.withDensity_apply']
   swap; exact (measurable_g _ _).ennreal_ofReal
@@ -198,7 +111,7 @@ lemma withDensity_g (κ ν : kernel α ℝ) [IsFiniteKernel κ] [IsFiniteKernel 
 
 lemma withDensity_one_sub_g (κ ν : kernel α ℝ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
     kernel.withDensity (κ + ν) (fun a x ↦ Real.toNNReal (1 - g κ (κ + ν) a x)) = ν := by
-  have h_le : κ ≤ κ + ν := todo κ ν
+  have h_le : κ ≤ κ + ν := le_add_of_nonneg_right bot_le
   suffices kernel.withDensity (κ + ν) (fun a x ↦ Real.toNNReal (1 - g κ (κ + ν) a x))
       + kernel.withDensity (κ + ν) (fun a x ↦ Real.toNNReal (g κ (κ + ν) a x)) = κ + ν by
     ext a s
@@ -222,7 +135,7 @@ lemma withDensity_one_sub_g (κ ν : kernel α ℝ) [IsFiniteKernel κ] [IsFinit
     calc ∫⁻ x, ENNReal.ofReal (g κ (κ + ν) a x) ∂(κ + ν) a
       ≤ ∫⁻ _, 1 ∂(κ + ν) a := by
           refine lintegral_mono (fun x ↦ ?_)
-          simp [g_le_one (todo κ ν)]
+          simp [g_le_one (le_add_of_nonneg_right bot_le)]
     _ < ⊤ := by rw [MeasureTheory.lintegral_const, one_mul]; exact measure_lt_top _ _
   · refine fun a ↦ ae_of_all _ (fun x ↦ ?_)
     simp only [ENNReal.ofReal_le_one]
@@ -271,7 +184,7 @@ lemma kernel.mutuallySingular_singularPartReal (κ ν : kernel α ℝ)
       · exact (measurable_g _ _).ennreal_ofReal
       · refine Measurable.mul ?_ ?_
         · exact (measurable_const.sub (measurable_g _ _)).ennreal_ofReal
-        · exact measurable_rnDerivReal
+        · exact measurable_rnDerivReal _ _
     refine ae_of_all _ (fun x hx ↦ ?_)
     simp only [mem_compl_iff, mem_setOf_eq] at hx
     simp_rw [rnDerivReal]
@@ -280,8 +193,8 @@ lemma kernel.mutuallySingular_singularPartReal (κ ν : kernel α ℝ)
     · rfl
     · rw [ne_eq, sub_eq_zero]
       exact Ne.symm hx
-    · simp [g_le_one (todo κ ν)]
-    · simp [lt_of_le_of_ne (g_le_one (todo κ ν)) hx]
+    · simp [g_le_one (le_add_of_nonneg_right bot_le)]
+    · simp [lt_of_le_of_ne (g_le_one (le_add_of_nonneg_right bot_le)) hx]
 
 lemma kernel.rnDerivReal_add_singularPartReal (κ ν : kernel α ℝ)
     [IsFiniteKernel κ] [IsFiniteKernel ν] :
@@ -295,7 +208,7 @@ lemma kernel.rnDerivReal_add_singularPartReal (κ ν : kernel α ℝ)
   rw [this, kernel.singularPartReal, add_comm, ← kernel.withDensity_mul]
   rotate_left
   · exact (measurable_const.sub (measurable_g _ _)).real_toNNReal
-  · exact measurable_rnDerivReal
+  · exact measurable_rnDerivReal _ _
   have h_coe : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
   have h_le : ∀ a x, ENNReal.ofReal (1 - g κ (κ + ν) a x) * kernel.rnDerivReal κ ν a x
       ≤ ENNReal.ofReal (g κ (κ + ν) a x) := by
@@ -307,17 +220,16 @@ lemma kernel.rnDerivReal_add_singularPartReal (κ ν : kernel α ℝ)
       mul_inv_cancel, one_mul]
     · rw [ne_eq, sub_eq_zero]
       exact Ne.symm hg_one
-    · simp [g_le_one (todo κ ν)]
-    · simp [lt_of_le_of_ne (g_le_one (todo κ ν)) hg_one]
+    · simp [g_le_one (le_add_of_nonneg_right bot_le)]
+    · simp [lt_of_le_of_ne (g_le_one (le_add_of_nonneg_right bot_le)) hg_one]
   rw [kernel.withDensity_sub_add, withDensity_g]
   all_goals simp_rw [h_coe]
   · exact (measurable_g _ _).ennreal_ofReal
-  · exact Measurable.mul (measurable_const.sub (measurable_g _ _)).ennreal_ofReal
-      measurable_rnDerivReal
+  · exact (measurable_const.sub (measurable_g _ _)).ennreal_ofReal.mul (measurable_rnDerivReal _ _)
   · intro a
     have : ∀ x, ENNReal.ofReal (1 - g κ (κ + ν) a x) * kernel.rnDerivReal κ ν a x ≤ 1 := by
       refine fun x ↦ (h_le a x).trans ?_
-      simp only [ENNReal.ofReal_le_one, g_le_one (todo κ ν)]
+      simp only [ENNReal.ofReal_le_one, g_le_one (le_add_of_nonneg_right bot_le)]
     refine ne_of_lt ?_
     calc ∫⁻ x, ENNReal.ofReal (1 - g κ (κ + ν) a x) * kernel.rnDerivReal κ ν a x ∂(κ + ν) a
       ≤ ∫⁻ _, 1 ∂(κ + ν) a := lintegral_mono this
@@ -401,11 +313,12 @@ lemma kernel.rnDeriv_add_singularPart (κ ν : kernel α Ω) [IsFiniteKernel κ]
     Measure.restrict_map hf.measurable (hf.measurableSet_image.mpr hs),
     MeasureTheory.lintegral_map _ hf.measurable, preimage_image_eq _ hf.injective]
   · exact measurable_rnDerivReal_right _ _ _
-  · exact measurable_rnDerivReal
+  · exact measurable_rnDerivReal _ _
   · change Measurable ((Function.uncurry fun a x ↦
         rnDerivReal (map κ f hf.measurable) (map ν f hf.measurable) a x)
       ∘ (fun p : α × Ω ↦ (p.1, f p.2)))
-    exact measurable_rnDerivReal.comp (measurable_fst.prod_mk (hf.measurable.comp measurable_snd))
+    exact (measurable_rnDerivReal _ _).comp
+      (measurable_fst.prod_mk (hf.measurable.comp measurable_snd))
 
 end StandardBorel
 

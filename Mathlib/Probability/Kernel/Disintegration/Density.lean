@@ -54,13 +54,6 @@ desired density function.
 
 The construction of the density process in this file follows the proof of Theorem 9.27 in
 [O. Kallenberg, Foundations of modern probability][kallenberg2021].
-
-## TODO
-
-The construction in this file can be used to obtain a kernel Radon-Nikodym defivative of
-`κ : kernel α Ω` with `Ω` standard Borel with respect to `ν : kernel α Ω`.
-See Theorem 1.28 in O. Kallenberg, Random Measures, Theory and Applications.
-
 -/
 
 
