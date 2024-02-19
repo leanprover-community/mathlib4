@@ -5,7 +5,6 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Types
 
 /-!
 # Final functors with filtered domain
