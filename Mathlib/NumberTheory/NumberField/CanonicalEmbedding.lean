@@ -532,7 +532,7 @@ theorem convexBodyLT_mem {x : K} :
     embedding_of_isReal_apply, Subtype.forall, ← ball_or_left, ← not_isReal_iff_isComplex, em,
     forall_true_left, norm_embedding_eq]
 
-theorem convexBodyLT_symmetric (x : E K) (hx : x ∈ (convexBodyLT K f)) :
+theorem convexBodyLT_neg_mem (x : E K) (hx : x ∈ (convexBodyLT K f)) :
     -x ∈ (convexBodyLT K f) := by
   simp only [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
     mem_ball_zero_iff, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
@@ -650,7 +650,7 @@ theorem convexBodyLT'_mem {x : K} :
     · rw [if_neg (by exact Subtype.ne_of_val_ne h_ne)]
       exact h₁ w h_ne
 
-theorem convexBodyLT'_symmetric (x : E K) (hx : x ∈ (convexBodyLT' K f w₀)) :
+theorem convexBodyLT'_neg_mem (x : E K) (hx : x ∈ (convexBodyLT' K f w₀)) :
     -x ∈ (convexBodyLT' K f w₀) := by
   simp [Set.mem_prod, Prod.fst_neg, Set.mem_pi, Set.mem_univ, Pi.neg_apply,
     mem_ball_zero_iff, norm_neg, Real.norm_eq_abs, forall_true_left, Subtype.forall,
@@ -837,7 +837,7 @@ theorem convexBodySum_mem {x : K} :
     ← Finset.sum_subtype_eq_sum_filter, Finset.subtype_univ, Nat.cast_one, one_mul, Nat.cast_ofNat]
   rfl
 
-theorem convexBodySum_symmetric {x : E K} (hx : x ∈ (convexBodySum K B)) :
+theorem convexBodySum_neg_mem {x : E K} (hx : x ∈ (convexBodySum K B)) :
     -x ∈ (convexBodySum K B) := by
   rw [Set.mem_setOf, convexBodySumFun_neg]
   exact hx
@@ -980,7 +980,7 @@ theorem exists_ne_zero_mem_ideal_lt (h : minkowskiBound K I < volume (convexBody
     change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)) : Set (E K))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
-    h_fund (convexBodyLT_symmetric K f) (convexBodyLT_convex K f) h
+    h_fund (convexBodyLT_neg_mem K f) (convexBodyLT_convex K f) h
   rw [mem_toAddSubgroup, mem_span_fractionalIdealLatticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT_mem K f).mp h_mem⟩
@@ -996,7 +996,7 @@ theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w
     change Countable (span ℤ (Set.range (fractionalIdealLatticeBasis K I)) : Set (E K))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
-    h_fund (convexBodyLT'_symmetric K f w₀) (convexBodyLT'_convex K f w₀) h
+    h_fund (convexBodyLT'_neg_mem K f w₀) (convexBodyLT'_convex K f w₀) h
   rw [mem_toAddSubgroup, mem_span_fractionalIdealLatticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT'_mem K f w₀).mp h_mem⟩
@@ -1089,7 +1089,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
     change DiscreteTopology (span ℤ (Set.range (fractionalIdealLatticeBasis K I)): Set (E K))
     infer_instance
   obtain ⟨⟨x, hx⟩, h_nz, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure
-      h_fund (fun _ ↦ convexBodySum_symmetric K B) (convexBodySum_convex K B)
+      h_fund (fun _ ↦ convexBodySum_neg_mem K B) (convexBodySum_convex K B)
       (convexBodySum_compact K B) h
   rw [mem_toAddSubgroup, mem_span_fractionalIdealLatticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
