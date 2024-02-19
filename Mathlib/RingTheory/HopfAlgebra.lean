@@ -48,22 +48,22 @@ class HopfAlgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extend
   S : A →ₗ[R] A
   /-- The antipode axioms for a Hopf algebra -/
   mul_rTensor_comul :
-    (LinearMap.mul' R A) ∘ₗ (S.rTensor A) ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
+    LinearMap.mul' R A ∘ₗ S.rTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
   mul_lTensor_comul :
-    (LinearMap.mul' R A) ∘ₗ (S.lTensor A) ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
+    LinearMap.mul' R A ∘ₗ S.lTensor A ∘ₗ comul = (Algebra.linearMap R A) ∘ₗ counit
 
 namespace HopfAlgebra
 
-variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [H : HopfAlgebra R A]
+variable {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 
 @[simp]
-theorem mul_rTensor_comul_apply (a : A) : LinearMap.mul' R A (S.rTensor A (H.comul a)) =
-    Algebra.linearMap R A (H.counit a) :=
+theorem mul_rTensor_comul_apply (a : A) :
+    LinearMap.mul' R A (S.rTensor A (Coalgebra.comul a)) = algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_rTensor_comul a
 
 @[simp]
-theorem mul_lTensor_comul_apply (a : A) : LinearMap.mul' R A (S.lTensor A (H.comul a)) =
-    Algebra.linearMap R A (H.counit a) :=
+theorem mul_lTensor_comul_apply (a : A) :
+    LinearMap.mul' R A (S.lTensor A (Coalgebra.comul a)) = algebraMap R A (Coalgebra.counit a) :=
   LinearMap.congr_fun mul_lTensor_comul a
 
 variable (R A)
