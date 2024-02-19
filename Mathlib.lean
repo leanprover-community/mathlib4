@@ -26,6 +26,7 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
@@ -364,6 +365,9 @@ import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Algebra
 import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.CauSeq.Basic
+import Mathlib.Algebra.Order.CauSeq.BigOperators
+import Mathlib.Algebra.Order.CauSeq.Completion
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Algebra.Order.CompleteField
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
@@ -699,6 +703,7 @@ import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Complex.Schwarz
 import Mathlib.Analysis.Complex.TaylorSeries
+import Mathlib.Analysis.Complex.Tietze
 import Mathlib.Analysis.Complex.UnitDisc.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
@@ -1696,7 +1701,6 @@ import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.Data.IsROrC.Lemmas
-import Mathlib.Data.LazyList
 import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
@@ -1988,9 +1992,7 @@ import Mathlib.Data.Rbtree.MinMax
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Cardinality
-import Mathlib.Data.Real.CauSeq
-import Mathlib.Data.Real.CauSeqCompletion
-import Mathlib.Data.Real.ConjugateExponents
+import Mathlib.Data.Real.ConjExponents
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Real.EReal
 import Mathlib.Data.Real.GoldenRatio
@@ -2285,6 +2287,7 @@ import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.GroupTheory.GroupAction.Option
+import Mathlib.GroupTheory.GroupAction.Period
 import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.GroupTheory.GroupAction.Quotient
@@ -2724,6 +2727,7 @@ import Mathlib.MeasureTheory.Function.UniformIntegrable
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Group.AddCircle
 import Mathlib.MeasureTheory.Group.Arithmetic
+import Mathlib.MeasureTheory.Group.Convolution
 import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Group.Integral
@@ -2790,6 +2794,7 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
@@ -3208,7 +3213,11 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.RingTheory.GradedAlgebra.Radical
-import Mathlib.RingTheory.HahnSeries
+import Mathlib.RingTheory.HahnSeries.Addition
+import Mathlib.RingTheory.HahnSeries.Basic
+import Mathlib.RingTheory.HahnSeries.Multiplication
+import Mathlib.RingTheory.HahnSeries.PowerSeries
+import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic

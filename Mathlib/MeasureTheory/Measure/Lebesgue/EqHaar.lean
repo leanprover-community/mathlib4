@@ -157,8 +157,8 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
     [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E)
     [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (hu : IsBounded (range u))
     (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
-  suffices H : ∀ R, μ (s ∩ closedBall 0 R) = 0
-  · apply le_antisymm _ (zero_le _)
+  suffices H : ∀ R, μ (s ∩ closedBall 0 R) = 0 by
+    apply le_antisymm _ (zero_le _)
     calc
       μ s ≤ ∑' n : ℕ, μ (s ∩ closedBall 0 n) := by
         conv_lhs => rw [← iUnion_inter_closedBall_nat s 0]
@@ -715,8 +715,8 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
   refine' tendsto_order.2 ⟨fun a' ha' => (ENNReal.not_lt_zero ha').elim, fun ε (εpos : 0 < ε) => _⟩
   rcases eq_or_ne (μ t) 0 with (h't | h't)
   · apply eventually_of_forall fun r => ?_
-    suffices H : μ (s ∩ ({x} + r • t)) = 0
-    · rw [H]; simpa only [ENNReal.zero_div] using εpos
+    suffices H : μ (s ∩ ({x} + r • t)) = 0 by
+      rw [H]; simpa only [ENNReal.zero_div] using εpos
     apply le_antisymm _ (zero_le _)
     calc
       μ (s ∩ ({x} + r • t)) ≤ μ ({x} + r • t) := measure_mono (inter_subset_right _ _)

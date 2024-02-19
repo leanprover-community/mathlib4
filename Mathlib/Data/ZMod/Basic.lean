@@ -854,6 +854,18 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
     right_inv := inv.2 }
 #align zmod.chinese_remainder ZMod.chineseRemainder
 
+lemma subsingleton_iff {n : ℕ} : Subsingleton (ZMod n) ↔ n = 1 := by
+  constructor
+  · obtain (_ | _ | n) := n
+    · simpa [ZMod] using not_subsingleton _
+    · simp [ZMod]
+    · simpa [ZMod] using not_subsingleton _
+  · rintro rfl
+    infer_instance
+
+lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
+  rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
+
 -- todo: this can be made a `Unique` instance.
 instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
   ⟨by decide⟩

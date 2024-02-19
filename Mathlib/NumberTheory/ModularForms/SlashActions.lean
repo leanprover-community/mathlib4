@@ -25,7 +25,7 @@ In the `ModularForm` locale, this provides
 -/
 
 
-open Complex UpperHalfPlane
+open Complex UpperHalfPlane ModularGroup
 
 open scoped UpperHalfPlane
 
