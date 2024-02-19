@@ -360,7 +360,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
     apply Finset.sum_congr rfl
     intro i hi
     rw [hs, Finset.mem_filter] at hi
-    rw [l.apply_none _ _ hi.right]
+    rw [l.apply_none _ _ hi.right, Subtype.coe_mk]
   · apply Finset.sum_congr rfl
     intro i hi
     rw [hs, Finset.compl_filter, Finset.mem_filter] at hi

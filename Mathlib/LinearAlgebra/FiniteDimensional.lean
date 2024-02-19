@@ -1266,7 +1266,8 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
     · rw [add_comm, pow_add]
       apply LinearMap.ker_le_ker_comp
     · rw [ker_pow_constant h m, add_comm m 1, ← add_assoc, pow_add, pow_add f k m,
-        LinearMap.mul_eq_comp, LinearMap.mul_eq_comp, LinearMap.ker_comp, LinearMap.ker_comp, h]
+        LinearMap.mul_eq_comp, LinearMap.mul_eq_comp, LinearMap.ker_comp, LinearMap.ker_comp, h,
+        Nat.add_one]
 #align module.End.ker_pow_constant Module.End.ker_pow_constant
 
 theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {m : ℕ}
