@@ -246,7 +246,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
 
 /-- If a `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
 `l ∣ 2 * n`. -/
-theorem _root_.IsPrimitiveRoot._dvd_of_isCyclotomicExtension [NumberField K]
+theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
     [IsCyclotomicExtension {n} ℚ K] {ζ : K} {l : ℕ} (hζ : IsPrimitiveRoot ζ l) (hl : l ≠ 0) :
     l ∣ 2 * n := by
   have hl : NeZero l := ⟨hl⟩
