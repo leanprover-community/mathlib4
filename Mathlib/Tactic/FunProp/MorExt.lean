@@ -25,7 +25,7 @@ private local instance : Ord Name := ⟨Name.quickCmp⟩
 initialize morCoeDeclsExt : SimpleScopedEnvExtension Name (Std.RBSet Name compare) ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
-    initial := {}
+    initial := .ofArray #[`DFunLike.coe] _
     addEntry := fun d n => d.insert n
   }
 
