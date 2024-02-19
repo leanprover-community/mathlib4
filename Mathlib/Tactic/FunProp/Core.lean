@@ -384,7 +384,7 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let .some (decl,f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
-      let .data fData ← getFunctionData? f defaultUnfoldPred | return none
+      let .data fData ← getFunctionData? f defaultUnfoldPred {zeta:=false} | return none
       unless (fData.getFnOrigin == funOrigin) do return none
 
       unless isOrderedSubsetOf mainArgs fData.mainArgs do return none
