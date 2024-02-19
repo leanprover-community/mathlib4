@@ -66,6 +66,10 @@ lemma weightSpaceChain_neg :
   simp_rw [weightSpaceChain, ← e.biSup_comp (Ioo p q)]
   simp [-mem_Ioo, neg_mem_Ioo_iff]
 
+lemma weightSpace_le_weightSpaceChain {k : ℤ} (hk : k ∈ Ioo p q) :
+    weightSpace M (k • χ₁ + χ₂) ≤ weightSpaceChain M χ₁ χ₂ p q :=
+  le_biSup (fun i ↦ weightSpace M (i • χ₁ + χ₂)) hk
+
 end IsNilpotent
 
 section IsNilpotentSubalgebra
