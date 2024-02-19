@@ -1464,7 +1464,8 @@ abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass �
 @[to_additive (attr := reducible) "A group homomorphism from an `AddCommGroup` to a
 `SeminormedAddGroup` induces a `SeminormedAddCommGroup` structure on the domain."]
 -- See note [reducible non-instances]
-abbrev SeminormedCommGroup.induced [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
+abbrev SeminormedCommGroup.induced
+    [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedCommGroup E :=
   { SeminormedGroup.induced E F f with
     mul_comm := mul_comm }
@@ -1477,7 +1478,8 @@ structure on the domain. -/
 @[to_additive (attr := reducible) "An injective group homomorphism from an `AddGroup` to a
 `NormedAddGroup` induces a `NormedAddGroup` structure on the domain."]
 -- See note [reducible non-instances]
-abbrev NormedGroup.induced [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) (h : Injective f) :
+abbrev NormedGroup.induced
+    [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) (h : Injective f) :
     NormedGroup E :=
   { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
 #align normed_group.induced NormedGroup.induced
