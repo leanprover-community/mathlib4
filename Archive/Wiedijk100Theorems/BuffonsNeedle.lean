@@ -221,8 +221,8 @@ lemma buffon_integral :
   rw [
     ← MeasureTheory.integral_map hBₘ.aemeasurable
       (needleCrossesIndicator_stronglyMeasurable l).aestronglyMeasurable,
-    hB, MeasureTheory.integral_smul_measure, needleSpace_volume d hd,
-    ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
+    hB, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, needleSpace_volume d hd,
+    ← ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
     ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul,
   ]
 
