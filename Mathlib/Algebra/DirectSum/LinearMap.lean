@@ -91,17 +91,9 @@ lemma trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
 
 lemma mapsTo_biSup_of_mapsTo (s : Set ι) {f : Module.End R M} (hf : ∀ i, MapsTo f (N i) (N i)) :
     MapsTo f ↑(⨆ i ∈ s, N i) ↑(⨆ i ∈ s, N i) := by
-  intro x hx
-  induction' hx using Submodule.iSup_induction' with i m hm y z _ _ hy hz
-  · by_cases hi : i ∈ s
-    · apply Submodule.mem_iSup_of_mem i
-      simp only [hi, iSup_pos] at hm ⊢
-      exact hf i hm
-    · replace hm : m = 0 := by simpa [hi] using hm
-      simp [hm]
-  · simp
-  · rw [map_add]
-    exact add_mem hy hz
+  replace hf : ∀ i, (N i).map f ≤ N i := fun i ↦ Submodule.map_le_iff_le_comap.mpr (hf i)
+  suffices (⨆ i ∈ s, N i).map f ≤ ⨆ i ∈ s, N i from Submodule.map_le_iff_le_comap.mp this
+  simpa only [Submodule.map_iSup] using iSup₂_mono <| fun i _ ↦ hf i
 
 /-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
 
