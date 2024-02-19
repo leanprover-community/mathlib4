@@ -455,3 +455,42 @@ theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
     simpa only [AlgEquiv.coe_algHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using
       AlgHom.spectrum_apply_subset (f : A ≃ₐ[R] B).symm (f a)
+
+/-! ### Restriction of the spectrum -/
+
+/-- Given an element `a : A` of an `S`-algebra, where `S` is itself an `R`-algebra, we say that
+the spectrum of `a` restricts via a function `f : S → R` if `f` is a left inverse of
+`algebraMap R S`, and `f` is a right inverse of `algebraMap R S` on `spectrum S a`.
+
+This is the property allows us to restrict a continuous functional calculus over `S` to a
+continuous functional calculus over `R`. -/
+structure SpectrumRestricts {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
+    [Algebra R S] [Algebra R A] [Algebra S A] (a : A) (f : S → R) : Prop where
+  /-- `f` is a right inverse of `algebraMap R S` when restricted to `spectrum S a`. -/
+  rightInvOn : (spectrum S a).RightInvOn f (algebraMap R S)
+  /-- `f` is a left inverse of `algebraMap R S`. -/
+  left_inv : Function.LeftInverse f (algebraMap R S)
+
+namespace SpectrumRestricts
+
+variable {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
+    [Algebra R S] [Algebra R A] [Algebra S A]
+
+theorem of_subset_range_algebraMap (a : A) (f : S → R) (hf : f.LeftInverse (algebraMap R S))
+    (h : spectrum S a ⊆ Set.range (algebraMap R S)) : SpectrumRestricts a f where
+  rightInvOn := fun s hs => by obtain ⟨r, rfl⟩ := h hs; rw [hf r]
+  left_inv := hf
+
+variable [IsScalarTower R S A] {a : A} {f : S → R} (h : SpectrumRestricts a f)
+
+theorem algebraMap_image : algebraMap R S '' spectrum R a = spectrum S a := by
+  refine' Set.eq_of_subset_of_subset _ fun s hs => ⟨f s, _⟩
+  simpa only [spectrum.preimage_algebraMap] using
+    (spectrum S a).image_preimage_subset (algebraMap R S)
+  exact ⟨spectrum.of_algebraMap_mem S ((h.rightInvOn hs).symm ▸ hs), h.rightInvOn hs⟩
+
+theorem image : f '' spectrum S a = spectrum R a := by
+  simp only [← h.algebraMap_image, Set.image_image, h.left_inv _, Set.image_id']
+
+theorem apply_mem {s : S} (hs : s ∈ spectrum S a) : f s ∈ spectrum R a :=
+  h.image ▸ ⟨s, hs, rfl⟩
