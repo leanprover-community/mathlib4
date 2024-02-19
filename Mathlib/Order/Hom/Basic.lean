@@ -742,8 +742,8 @@ end OrderEmbedding
 
 /-- `DFunLike.coe` as an `OrderEmbedding`. -/
 @[simps (config := .asFn)]
-def DFunLike.orderEmbeddingCoe {F α : Type*} {β : α → Type*} [DFunLike F α β]
-    [∀ a, Preorder (β a)] : F ↪o ∀ a, β a where
+def DFunLike.orderEmbeddingCoe {F α : Type*} {β : α → Type*} [DFunLike F α β] [∀ a, LE (β a)] :
+    F ↪o ∀ a, β a where
   toFun := coe
   inj' := coe_injective
   map_rel_iff' := .rfl
