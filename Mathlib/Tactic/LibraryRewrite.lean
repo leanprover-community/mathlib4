@@ -108,9 +108,9 @@ where
 
 def cachePath : IO System.FilePath := do
   try
-    return (← findOLean `LibraryRewrite.RewriteLemmas).withExtension "extra"
+    return (← findOLean `MathlibExtras.LibraryRewrites).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "LibraryRewrite" / "RewriteLemmas.extra"
+    return ".lake" / "build" / "lib" / "MathlibExtras" / "LibraryRewrites.extra"
 
 initialize cachedData : RewriteCache ← unsafe do
   let path ← cachePath
