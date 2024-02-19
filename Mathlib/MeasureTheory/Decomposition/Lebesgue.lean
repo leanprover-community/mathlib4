@@ -791,14 +791,14 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
     -- since we need `μ₁ + ν.withDensity ξ = μ`
     set μ₁ := μ - ν.withDensity ξ with hμ₁
     have hle : ν.withDensity ξ ≤ μ := by
-      intro B hB
+      refine le_iff.2 fun B hB ↦ ?_
       rw [hξ, withDensity_apply _ hB]
       simp_rw [iSup_apply]
       rw [lintegral_iSup (fun i => (iSup_mem_measurableLE _ hf₁ i).1) (iSup_monotone _)]
       exact iSup_le fun i => (iSup_mem_measurableLE _ hf₁ i).2 B hB
     have : IsFiniteMeasure (ν.withDensity ξ) := by
       refine' isFiniteMeasure_withDensity _
-      have hle' := hle univ MeasurableSet.univ
+      have hle' := hle univ
       rw [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ] at hle'
       exact ne_top_of_le_ne_top (measure_ne_top _ _) hle'
     refine' ⟨⟨μ₁, ξ⟩, hξm, _, _⟩
@@ -854,7 +854,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
     -- since `ν.withDensity ξ ≤ μ`, it is clear that `μ = μ₁ + ν.withDensity ξ`
     · rw [hμ₁]; ext1 A hA
       rw [Measure.coe_add, Pi.add_apply, Measure.sub_apply hA hle, add_comm,
-        add_tsub_cancel_of_le (hle A hA)]⟩
+        add_tsub_cancel_of_le (hle A)]⟩
 #align measure_theory.measure.have_lebesgue_decomposition_of_finite_measure MeasureTheory.Measure.haveLebesgueDecomposition_of_finiteMeasure
 
 attribute [local instance] haveLebesgueDecomposition_of_finiteMeasure
@@ -913,7 +913,7 @@ instance (priority := 100) haveLebesgueDecomposition_of_sigmaFinite (μ ν : Mea
             intro i; rw [sum_apply _ ((S.set_mem i).inter (hA₁ i)), tsum_eq_single i]
             · intro j hij
               rw [hμn, ← nonpos_iff_eq_zero]
-              refine' le_trans ((singularPart_le _ _) _ ((S.set_mem i).inter (hA₁ i))) (le_of_eq _)
+              refine (singularPart_le _ _ _).trans_eq ?_
               rw [restrict_apply ((S.set_mem i).inter (hA₁ i)), inter_comm, ← inter_assoc]
               have : Disjoint (S.set j) (S.set i) := h₂ hij
               rw [disjoint_iff_inter_eq_empty] at this
