@@ -244,6 +244,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   replace hirr : Irreducible (cyclotomic (⟨k, hkpos⟩ : ℕ+) K) := hirr
   simpa using (IsCyclotomicExtension.finrank (Algebra.adjoin K ({g.1.1} : Set L)) hirr).symm
 
+variable (n) in
 /-- If a `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
 `l ∣ 2 * n`. -/
 theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
