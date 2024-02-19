@@ -16,19 +16,22 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
-instance IsFilteredOrEmpty.IsPreconnected [IsFilteredOrEmpty C] : IsPreconnected C :=
-  zigzag_isPreconnected fun j j' => .trans (.single <| .inl <| .intro <| IsFiltered.leftToMax j j')
+instance (priority := 100) IsFilteredOrEmpty.isPreconnected [IsFilteredOrEmpty C] :
+    IsPreconnected C :=
+  zigzag_isPreconnected fun j j' => .trans
+    (.single <| .inl <| .intro <| IsFiltered.leftToMax j j')
     (.single <| .inr <| .intro <| IsFiltered.rightToMax j j')
 
-instance IsCofilteredOrEmpty.IsPreconnected [IsCofilteredOrEmpty C] : IsPreconnected C :=
+instance (priority := 100) IsCofilteredOrEmpty.isPreconnected [IsCofilteredOrEmpty C] :
+    IsPreconnected C :=
   zigzag_isPreconnected fun j j' => .trans
     (.single <| .inr <| .intro <| IsCofiltered.minToLeft j j')
     (.single <| .inl <| .intro <| IsCofiltered.minToRight j j')
 
-instance IsFiltered.IsConnected [IsFiltered C] : IsConnected C :=
-  { IsFilteredOrEmpty.IsPreconnected C with }
+instance (priority := 100) IsFiltered.isConnected [IsFiltered C] : IsConnected C :=
+  { IsFilteredOrEmpty.isPreconnected C with }
 
-instance IsCofiltered.IsConnected [IsCofiltered C] : IsConnected C :=
-  { IsCofilteredOrEmpty.IsPreconnected C with }
+instance (priority := 100) IsCofiltered.isConnected [IsCofiltered C] : IsConnected C :=
+  { IsCofilteredOrEmpty.isPreconnected C with }
 
 end CategoryTheory
