@@ -464,7 +464,7 @@ Given an `EffectiveEpiFamily X π` such that the coproduct of `X` exists, `Sigma
 -/
 noncomputable
 def effectiveEpiStructDescOfEffectiveEpiFamily {B : C} {α : Type*} (X : α → C)
-    (π : (a : α) → (X a ⟶ B)) [HasCoproduct X] [h : EffectiveEpiFamily X π] :
+    (π : (a : α) → (X a ⟶ B)) [HasCoproduct X] [EffectiveEpiFamily X π] :
     EffectiveEpiStruct (Sigma.desc π) := by
   simpa [coproductIsCoproduct] using
     effectiveEpiStructIsColimitDescOfEffectiveEpiFamily X _ (coproductIsCoproduct _) π
