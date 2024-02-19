@@ -138,7 +138,7 @@ inductive MorApplication where
   | underApplied
   /-- Of the form `⇑f x` i.e. morphism and one argument is provided. -/
   | exact
-  /-- Of the form `⇑f x y ...` i.e. additional applied arugments `y ...`. -/
+  /-- Of the form `⇑f x y ...` i.e. additional applied arguments `y ...`. -/
   | overApplied
   /-- Not a morphism application. -/
   | none
