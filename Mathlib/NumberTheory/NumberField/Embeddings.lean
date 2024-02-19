@@ -532,7 +532,7 @@ theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
   exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr ha)
 
 open scoped IntermediateField in
-theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt (x : 𝓞 K)
+theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
     {w : InfinitePlace K} (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1)
     (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) : ℚ⟮(x:K)⟯ = ⊤ := by
   rw [Field.primitive_element_iff_algHom_eq_of_eval ℚ ℂ ?_ _ w.embedding.toRatAlgHom]
@@ -555,6 +555,13 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt (x : 𝓞 K)
         zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal]
       exact h₃.resolve_left hw
   · exact fun x ↦ IsAlgClosed.splits_codomain (minpoly ℚ x)
+
+theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : InfinitePlace K}
+    (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1) (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) :
+    Algebra.adjoin ℚ {(x:K)} = ⊤ := by
+  rw [← IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite ℚ _)]
+  exact congr_arg IntermediateField.toSubalgebra <|
+    NumberField.is_primitive_element_of_infinitePlace_lt h₁ h₂ h₃
 
 open Fintype FiniteDimensional
 
