@@ -119,23 +119,21 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
 #align topological_space.is_topological_basis_of_subbasis TopologicalSpace.isTopologicalBasis_of_subbasis
 
-theorem isTopologicalBasis_of_nhds_hasBasis {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
-    (h_basis : ∀ (a : α), (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) :
-    IsTopologicalBasis s := by
-  constructor
-  · intro t₁ ht₁ t₂ ht₂ x hx
-    simpa [and_assoc] using (h_basis x).mem_iff.1 <|
-      (h_open _ ht₁).inter (h_open _ ht₂) |>.mem_nhds hx
-  · exact sUnion_eq_univ_iff.2 fun x ↦ (h_basis x).ex_mem
-  · refine ext_nhds fun x ↦ ?_
-    simpa only [nhds_generateFrom, and_comm] using (h_basis x).eq_biInf
+theorem IsTopologicalBasis.of_hasBasis_nhds {s : Set (Set α)}
+    (h_nhds : ∀ a, (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) : IsTopologicalBasis s where
+  exists_subset_inter t₁ ht₁ t₂ ht₂ x hx := by
+    simpa only [and_assoc, (h_nhds x).mem_iff]
+      using (inter_mem ((h_nhds _).mem_of_mem ⟨ht₁, hx.1⟩) ((h_nhds _).mem_of_mem ⟨ht₂, hx.2⟩))
+  sUnion_eq := sUnion_eq_univ_iff.2 fun x ↦ (h_nhds x).ex_mem
+  eq_generateFrom := ext_nhds fun x ↦ by
+    simpa only [nhds_generateFrom, and_comm] using (h_nhds x).eq_biInf
 
 /-- If a family of open sets `s` is such that every open neighbourhood contains some
 member of `s`, then `s` is a topological basis. -/
 theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
     (h_nhds : ∀ (a : α) (u : Set α), a ∈ u → IsOpen u → ∃ v ∈ s, a ∈ v ∧ v ⊆ u) :
     IsTopologicalBasis s :=
-  isTopologicalBasis_of_nhds_hasBasis h_open fun a ↦
+  .of_hasBasis_nhds <| fun a ↦
     (nhds_basis_opens a).to_hasBasis' (by simpa [and_assoc] using h_nhds a)
       fun t ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
 #align topological_space.is_topological_basis_of_open_of_nhds TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
@@ -250,14 +248,10 @@ theorem isTopologicalBasis_opens : IsTopologicalBasis { U : Set α | IsOpen U } 
 #align topological_space.is_topological_basis_opens TopologicalSpace.isTopologicalBasis_opens
 
 protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
-    (hf : Inducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) := by
-  refine' isTopologicalBasis_of_isOpen_of_nhds _ _
-  · rintro _ ⟨V, hV, rfl⟩
-    exact h.isOpen hV |>.preimage hf.continuous
-  · intro a U ha hU
-    rcases hf.basis_nhds (h.nhds_hasBasis (a := f a))
-      |>.mem_iff.1 (hU.mem_nhds ha) with ⟨V, ⟨hV, haV⟩, hVU⟩
-    exact ⟨f ⁻¹' V, mem_image_of_mem _ hV, haV, hVU⟩
+    (hf : Inducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) :=
+  .of_hasBasis_nhds fun a ↦ by
+    convert (hf.basis_nhds (h.nhds_hasBasis (a := f a))).to_image_id with s
+    aesop
 #align topological_space.is_topological_basis.inducing TopologicalSpace.IsTopologicalBasis.inducing
 
 protected theorem IsTopologicalBasis.induced [s : TopologicalSpace β] (f : α → β)
@@ -268,22 +262,16 @@ protected theorem IsTopologicalBasis.induced [s : TopologicalSpace β] (f : α �
 protected theorem IsTopologicalBasis.inf {t₁ t₂ : TopologicalSpace β} {B₁ B₂ : Set (Set β)}
     (h₁ : IsTopologicalBasis (t := t₁) B₁) (h₂ : IsTopologicalBasis (t := t₂) B₂) :
     IsTopologicalBasis (t := t₁ ⊓ t₂) (image2 (· ∩ ·) B₁ B₂) := by
-  let _ : TopologicalSpace β := t₁ ⊓ t₂
-  refine isTopologicalBasis_of_isOpen_of_nhds (t := _) ?_ ?_
-  · rintro _ ⟨u₁, hu₁, u₂, hu₂, rfl⟩
-    exact ((h₁.isOpen (t := t₁) hu₁).mono inf_le_left).inter
-      ((h₂.isOpen (t := t₂) hu₂).mono inf_le_right)
-  · rintro x u hu uo
-    rcases (nhds_inf (a := x)).symm ▸ (h₁.nhds_hasBasis (t := t₁)).inf (h₂.nhds_hasBasis (t := t₂))
-      |>.mem_iff.1 (uo.mem_nhds hu) with ⟨⟨s, t⟩, ⟨⟨hs, ha⟩, ht, hb⟩, hu⟩
-    exact ⟨s ∩ t, mem_image2_of_mem hs ht, ⟨ha, hb⟩, hu⟩
+  refine .of_hasBasis_nhds (t := ?_) fun a ↦ ?_
+  rw [nhds_inf (t₁ := t₁)]
+  convert ((h₁.nhds_hasBasis (t := t₁)).inf (h₂.nhds_hasBasis (t := t₂))).to_image_id
+  aesop
 
 protected theorem IsTopologicalBasis.inf' {γ} [s : TopologicalSpace β] {B₁ : Set (Set α)}
     {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) (f₁ : γ → α)
     (f₂ : γ → β) :
     IsTopologicalBasis (t := induced f₁ t ⊓ induced f₂ s) (image2 (f₁ ⁻¹' · ∩ f₂ ⁻¹' ·) B₁ B₂) := by
-  have := (h₁.induced f₁).inf (h₂.induced f₂)
-  rwa [image2_image_left, image2_image_right] at this
+  simpa only [image2_image_left, image2_image_right] using (h₁.induced f₁).inf (h₂.induced f₂)
 
 protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set (Set α)}
     {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) :
@@ -583,8 +571,7 @@ open TopologicalSpace
 theorem isTopologicalBasis_iInf {β : Type*} {ι : Type*} {t : ι → TopologicalSpace β}
     {T : ι → Set (Set β)} (h_basis : ∀ i, IsTopologicalBasis (t := t i) (T i)) :
     IsTopologicalBasis (t := ⨅ i, t i)
-      { S | ∃ (U : ι → Set β) (F : Finset ι),
-        (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ i ∈ F, U i } := by
+      { S | ∃ (U : ι → Set β) (F : Finset ι), (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ i ∈ F, U i } := by
   let _ := ⨅ i, t i
   refine isTopologicalBasis_of_isOpen_of_nhds ?_ ?_
   · rintro - ⟨U, F, hU, rfl⟩
@@ -905,18 +892,10 @@ topological bases on each of the parts of the space. -/
 theorem IsTopologicalBasis.sigma {s : ∀ i : ι, Set (Set (E i))}
     (hs : ∀ i, IsTopologicalBasis (s i)) :
     IsTopologicalBasis (⋃ i : ι, (fun u => (Sigma.mk i '' u : Set (Σi, E i))) '' s i) := by
-  apply isTopologicalBasis_of_isOpen_of_nhds
-  · intro u hu
-    obtain ⟨i, t, ts, rfl⟩ : ∃ (i : ι) (t : Set (E i)), t ∈ s i ∧ Sigma.mk i '' t = u := by
-      simpa only [mem_iUnion, mem_image] using hu
-    exact isOpenMap_sigmaMk _ ((hs i).isOpen ts)
-  · rintro ⟨i, x⟩ u hxu u_open
-    have hx : x ∈ Sigma.mk i ⁻¹' u := hxu
-    obtain ⟨v, vs, xv, hv⟩ : ∃ (v : Set (E i)), v ∈ s i ∧ x ∈ v ∧ v ⊆ Sigma.mk i ⁻¹' u :=
-      (hs i).exists_subset_of_mem_open hx (isOpen_sigma_iff.1 u_open i)
-    exact
-      ⟨Sigma.mk i '' v, mem_iUnion.2 ⟨i, mem_image_of_mem _ vs⟩, mem_image_of_mem _ xv,
-        image_subset_iff.2 hv⟩
+  refine .of_hasBasis_nhds fun a ↦ ?_
+  rw [Sigma.nhds_eq]
+  convert (((hs a.1).nhds_hasBasis).map _).to_image_id
+  aesop
 #align topological_space.is_topological_basis.sigma TopologicalSpace.IsTopologicalBasis.sigma
 
 /-- A countable disjoint union of second countable spaces is second countable. -/
