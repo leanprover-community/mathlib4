@@ -276,15 +276,16 @@ def link (self : UnionFind α) (x y : Fin self.size)
     have : UFModel.Agrees arr₁ (·.parent) parent :=
       hm.1.set (fun i h ↦ by simp [parent]; rw [if_neg h.symm]) (fun _ ↦ by simp [parent])
     have H1 : UFModel.Agrees arr₂ (·.parent) parent := by
-      -- todo: this should probably be tidied - it is nonterminal.
-      simp (config := {zetaDelta := true}); split
-      · exact this.set (fun i h ↦ by simp [h.symm]) (fun h ↦ by simp [ne, hm.parent_eq'])
+      simp only [arr₂, getElem_fin]; split
+      · exact this.set (fun i h ↦ by simp [h.symm]) fun _ ↦ by simp [ne, hm.parent_eq', ny, parent]
       · exact this
     have : UFModel.Agrees arr₁ (·.rank) (fun i : Fin n ↦ m.rank i) :=
       hm.2.set (fun i _ ↦ by simp) (fun _ ↦ by simp [nx, hm.rank_eq])
     let rank (i : Fin n) := if y.1 = i ∧ m.rank x = m.rank y then m.rank y + 1 else m.rank i
     have H2 : UFModel.Agrees arr₂ (·.rank) rank := by
-      simp (config := {zetaDelta := true}); split <;> (rename_i xy; simp [hm.rank_eq] at xy; simp [xy])
+      simp (config := {zetaDelta := true})
+      split <;> rename_i xy <;> simp only [hm.rank_eq] at xy <;>
+        simp only [xy, and_true, and_false, ↓reduceIte]
       · exact this.set (fun i h ↦ by rw [if_neg h.symm]) (fun h ↦ by simp [hm.rank_eq])
       · exact this
     exact ⟨H1, H2⟩
