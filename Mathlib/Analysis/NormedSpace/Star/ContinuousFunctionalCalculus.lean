@@ -92,9 +92,7 @@ theorem spectrum_star_mul_self_of_isStarNormal :
     rintro - ⟨φ, rfl⟩
     rw [gelfandTransform_apply_apply ℂ _ (star a' * a') φ, map_mul φ, map_star φ]
     rw [Complex.eq_coe_norm_of_nonneg (star_mul_self_nonneg _), ← map_star, ← map_mul]
-    exact
-      ⟨Complex.zero_le_real.2 (norm_nonneg _),
-        Complex.real_le_real.2 (AlgHom.norm_apply_le_self φ (star a' * a'))⟩
+    exact ⟨by positivity, Complex.real_le_real.2 (AlgHom.norm_apply_le_self φ (star a' * a'))⟩
 #align spectrum_star_mul_self_of_is_star_normal spectrum_star_mul_self_of_isStarNormal
 
 variable {a}
