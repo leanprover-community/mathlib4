@@ -136,9 +136,9 @@ end UnifTight
 /-- Core lemma to be used in `MeasureTheory.Memℒp.snorm_indicator_compl_le`. -/
 theorem lintegral_indicator_compl_le
     {g : α → ℝ≥0∞} (haemg : AEMeasurable g μ) (hg : ∫⁻ a, g a ∂μ ≠ ∞)
-    {ε : ℝ} (hε : 0 < ε) :
+    {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧
-      ∫⁻ a in sᶜ, g a ∂μ ≤ ENNReal.ofReal ε := by
+      ∫⁻ a in sᶜ, g a ∂μ ≤ ε := by
   replace hg := lt_top_iff_ne_top.mpr hg
   -- come up with an a.e. equal measurable replacement `f` for `g`
   have hmf := haemg.measurable_mk
@@ -173,7 +173,7 @@ theorem lintegral_indicator_compl_le
       · assumption
   -- rewrite limit to be more usable and get the sufficiently large M, so the integral is < ε
   rw [lintegral_zero, ENNReal.tendsto_atTop_zero] at this
-  obtain ⟨M, hM⟩ := this (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
+  obtain ⟨M, hM⟩ := this ε hε
   simp (config := { zeta := false } /- prevent let expansion -/)
     only [true_and_iff, ge_iff_le, zero_tsub, zero_le, sub_zero, zero_add, coe_nnnorm,
       Set.mem_Icc] at hM
@@ -201,11 +201,12 @@ theorem lintegral_indicator_compl_le
 /-- A single function that is `Memℒp f p μ` is tight wrt to `μ`. -/
 theorem Memℒp.snorm_indicator_compl_le (hp_top : p ≠ ∞)
     {f : α → β} (hf : Memℒp f p μ)
-    {ε : ℝ} (hε : 0 < ε) :
+    {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ (s : Set α) (_ : MeasurableSet s) (_ : μ s < ∞),
-      snorm (sᶜ.indicator f) p μ ≤ ENNReal.ofReal ε := by
+      snorm (sᶜ.indicator f) p μ ≤ ε := by
   -- The proof unwraps `Memℒp f p μ` and applies the analogous result for `lintegral`.
-  -- do some arithmetic that will come in useful
+  by_cases hfinε : ε ≠ ∞; swap -- first take care of `ε = ∞`
+  · rw [not_ne_iff.mp hfinε]; exact ⟨∅, by measurability⟩
   by_cases hp_nz : p ≠ 0; swap -- first take care of `p = 0`
   · simp only [ne_eq, not_not] at hp_nz
     use ∅, by measurability, by measurability
@@ -213,10 +214,11 @@ theorem Memℒp.snorm_indicator_compl_le (hp_top : p ≠ ∞)
     calc
       snorm f p μ = snorm f 0 μ := by congr
       _           = 0           := snorm_exponent_zero
-      _           ≤ .ofReal ε   := zero_le _
+      _           ≤ ε   := zero_le _
+  -- do some arithmetic that will come in useful
   have hrp_pos : 0 < p.toReal := ENNReal.toReal_pos hp_nz hp_top
   have hirp_pos : 0 < 1 / p.toReal := div_pos (by norm_num) hrp_pos
-  have hεp : 0 < ε ^ p.toReal := by simp only [Real.rpow_pos_of_pos, hε]
+  have hεp : 0 < ε ^ p.toReal := ENNReal.rpow_pos hε hfinε --simp only [Real.rpow_pos_of_pos, hε]
   -- decode Memℒp into a.e. strong measurability and finite snorm
   obtain ⟨haesmf, hsnf⟩ := hf
   -- transform snorm to lintegral
@@ -242,7 +244,6 @@ theorem Memℒp.snorm_indicator_compl_le (hp_top : p ≠ ∞)
   rw [Function.comp_def ENNReal.ofNNReal] at hsfε
   rw [Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal)] at hsfε
   -- commute ENNReal coersion with rpow, use rpow monotonicity
-  rw [← ofReal_rpow_of_pos (by assumption)] at hsfε
   rw [← ENNReal.rpow_le_rpow_iff hirp_pos, ENNReal.rpow_inv_rpow_self hrp_pos.ne'] at hsfε
   -- convert lintegral to snorm
   rw [← snorm_eq_lintegral_rpow_nnnorm hp_nz hp_top] at hsfε
@@ -254,23 +255,20 @@ theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : Memℒp g 
   intro ε hε
   by_cases hε_top : ε = ∞
   · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
-  have hrε : 0 < ε.toReal := ENNReal.toReal_pos hε.ne' hε_top
-  obtain ⟨s, _, hμs, hgε⟩ := hg.snorm_indicator_compl_le hp_ne_top hrε
-  exact ⟨s, ne_of_lt hμs, fun _ => hgε.trans_eq (ENNReal.ofReal_toReal hε_top)⟩
+  obtain ⟨s, _, hμs, hgε⟩ := hg.snorm_indicator_compl_le hp_ne_top hε
+  exact ⟨s, ne_of_lt hμs, fun _ => hgε⟩
 
 /-- A single function is tight. -/
 theorem unifTight_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
     {f : ι → α → β} (hf : ∀ i, Memℒp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
   by_cases hε_top : ε = ∞
   · exact ⟨∅, by measurability, fun _ => hε_top.symm ▸ le_top⟩
-  have hrε : 0 < ε.toReal := ENNReal.toReal_pos hε.ne' hε_top
   by_cases hι : Nonempty ι
   case neg => exact ⟨∅, (by measurability), fun i => False.elim <| hι <| Nonempty.intro i⟩
   cases' hι with i
-  obtain ⟨s, _, hμs, hfε⟩ := (hf i).snorm_indicator_compl_le hp_top hrε
+  obtain ⟨s, _, hμs, hfε⟩ := (hf i).snorm_indicator_compl_le hp_top hε
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
   convert hfε
-  exact (ENNReal.ofReal_toReal hε_top).symm
 
 
 /-- This lemma is less general than `MeasureTheory.unifTight_finite` which applies to
@@ -285,11 +283,10 @@ theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
   intro f hfLp ε hε
   by_cases hε_top : ε = ∞
   · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
-  have hrε : 0 < ε.toReal := ENNReal.toReal_pos hε.ne' hε_top
   let g : Fin n → α → β := fun k => f k
   have hgLp : ∀ i, Memℒp (g i) p μ := fun i => hfLp i
   obtain ⟨S, hμS, hFε⟩ := h hgLp hε
-  obtain ⟨s, _, hμs, hfε⟩ := (hfLp n).snorm_indicator_compl_le hp_top hrε
+  obtain ⟨s, _, hμs, hfε⟩ := (hfLp n).snorm_indicator_compl_le hp_top hε
   refine ⟨s ∪ S, (by measurability), fun i => ?_⟩
   by_cases hi : i.val < n
   · rw [(_ : f i = g ⟨i.val, hi⟩)]
@@ -301,7 +298,6 @@ theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
     · rw [compl_union, inter_comm, ← indicator_indicator]
       apply (snorm_indicator_le _).trans
       convert hfε
-      exact (ENNReal.ofReal_toReal hε_top).symm
     · have hi' := Fin.is_lt i
       rw [Nat.lt_succ_iff] at hi'
       rw [not_lt] at hi
@@ -377,11 +373,9 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
   · rw [not_ne_iff.mp hfinε]; exact ⟨0, fun n _ => le_top⟩
   by_cases hμ : μ = 0
   · rw [hμ]; use 0; intro n _; rw [snorm_measure_zero]; exact zero_le ε
-  have hε'' : ε / 3 ≠ ∞ := (ENNReal.div_lt_top (by assumption) (by norm_num)).ne
   have hε' : 0 < ε / 3 := ENNReal.div_pos hε.ne' (coe_ne_top)
-  have hrε' : 0 < (ε / 3).toReal := ENNReal.toReal_pos hε'.ne' (by assumption)
   -- use tightness to divide the domain into interior and exterior
-  obtain ⟨Eg, hmEg, hμEg, hgε⟩ := Memℒp.snorm_indicator_compl_le hp' hg' hrε'
+  obtain ⟨Eg, hmEg, hμEg, hgε⟩ := Memℒp.snorm_indicator_compl_le hp' hg' hε' --hrε'
   obtain ⟨Ef, hmEf, hμEf, hfε⟩ := hut.exists_measurableSet_indicator hε'.ne'
   have hmE := hmEf.union hmEg
   have hfmE := (measure_union_le Ef Eg).trans_lt (add_lt_top.mpr ⟨hμEf, hμEg⟩)
@@ -414,8 +408,7 @@ theorem tendsto_Lp_notFinite_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ �
       ≤ snorm (Efᶜ.indicator (Egᶜ.indicator g)) p μ := by
         unfold_let E; rw [compl_union, ← indicator_indicator]
     _ ≤ snorm (Egᶜ.indicator g) p μ := snorm_indicator_le _
-    _ ≤ .ofReal (ε / 3).toReal := hgε
-    _ = ε / 3 := ENNReal.ofReal_toReal hε''
+    _ ≤ ε / 3 := hgε
   have hmfnEc : AEStronglyMeasurable _ μ := ((hf n).indicator hmE.compl).aestronglyMeasurable
   have hfnEcε : snorm (Eᶜ.indicator (f n)) p μ ≤ ε / 3 := calc
     snorm (Eᶜ.indicator (f n)) p μ
