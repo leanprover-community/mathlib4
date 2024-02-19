@@ -727,6 +727,20 @@ theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * 
 #align is_unit_iff_exists_inv' isUnit_iff_exists_inv'
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
 
+@[to_additive]
+theorem isUnit_iff_exists_both_units [Monoid M] {a : M} : IsUnit a ↔ (∃ b, a * b = 1) ∧ (∃ c, c * a = 1):= by
+  constructor
+  · rintro ⟨⟨a, b, hab, hba⟩, rfl⟩
+    exact ⟨⟨b, hab⟩, ⟨b, hba⟩⟩
+  · rintro ⟨⟨b, hab⟩, ⟨c, hca⟩⟩
+    suffices b = c from ⟨⟨a, b, hab, this ▸ hca⟩, rfl⟩
+    calc
+      b = 1 * b := (one_mul b).symm
+      _ = (c * a) * b := congrArg (· * b) hca.symm
+      _ = c * (a * b) := mul_assoc c a b
+      _ = c * 1 := congrArg (c * ·) hab
+      _ = c := mul_one c
+
 /-- Multiplication by a `u : Mˣ` on the right doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)
 "Addition of a `u : AddUnits M` on the right doesn't affect `IsAddUnit`."]
