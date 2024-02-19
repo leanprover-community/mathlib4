@@ -440,8 +440,8 @@ theorem tfae [FiniteDimensional F E] :
   | _ => is_separable_splitting_field F E
   tfae_have : 2 → 1 := of_fixedField_eq_bot F E
   tfae_have : 3 → 1 := of_card_aut_eq_finrank F E
-  tfae_have : 4 → 1
-  · rintro ⟨h, hp1, _⟩; exact of_separable_splitting_field hp1
+  tfae_have : 4 → 1 := by
+    rintro ⟨h, hp1, _⟩; exact of_separable_splitting_field hp1
   tfae_finish
 #align is_galois.tfae IsGalois.tfae
 

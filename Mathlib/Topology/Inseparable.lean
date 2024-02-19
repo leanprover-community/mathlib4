@@ -79,10 +79,10 @@ theorem specializes_TFAE (x y : X) :
   tfae_have : 3 → 4 := fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
   tfae_have : 4 → 5 := fun h => h _ isClosed_closure (subset_closure <| mem_singleton _)
   tfae_have : 6 ↔ 5 := isClosed_closure.closure_subset_iff.trans singleton_subset_iff
-  tfae_have : 5 ↔ 7
-  · rw [mem_closure_iff_clusterPt, principal_singleton]
-  tfae_have : 5 → 1
-  · refine' fun h => (nhds_basis_opens _).ge_iff.2 _
+  tfae_have : 5 ↔ 7 := by
+    rw [mem_closure_iff_clusterPt, principal_singleton]
+  tfae_have : 5 → 1 := by
+    refine' fun h => (nhds_basis_opens _).ge_iff.2 _
     rintro s ⟨hy, ho⟩
     rcases mem_closure_iff.1 h s ho hy with ⟨z, hxs, rfl : z = x⟩
     exact ho.mem_nhds hxs

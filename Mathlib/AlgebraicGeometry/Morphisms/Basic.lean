@@ -256,10 +256,10 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
   tfae_have : 4 → 3
   | H, 𝒰, h𝒰, i => by apply H
   tfae_have : 3 → 2 := fun H => ⟨Y.affineCover, inferInstance, H Y.affineCover⟩
-  tfae_have : 2 → 1
-  · rintro ⟨𝒰, h𝒰, H⟩; exact targetAffineLocallyOfOpenCover hP f 𝒰 H
-  tfae_have : 5 → 2
-  · rintro ⟨ι, U, hU, hU', H⟩
+  tfae_have : 2 → 1 := by
+    rintro ⟨𝒰, h𝒰, H⟩; exact targetAffineLocallyOfOpenCover hP f 𝒰 H
+  tfae_have : 5 → 2 := by
+    rintro ⟨ι, U, hU, hU', H⟩
     refine' ⟨Y.openCoverOfSuprEqTop U hU, hU', _⟩
     intro i
     specialize H i
@@ -394,8 +394,8 @@ theorem PropertyIsLocalAtTarget.openCover_TFAE {P : MorphismProperty Scheme}
         ∀ U : Opens Y.carrier, P (f ∣_ U),
         ∀ {U : Scheme} (g : U ⟶ Y) [IsOpenImmersion g], P (pullback.snd : pullback f g ⟶ U),
         ∃ (ι : Type u) (U : ι → Opens Y.carrier) (_ : iSup U = ⊤), ∀ i, P (f ∣_ U i)] := by
-  tfae_have : 2 → 1
-  · rintro ⟨𝒰, H⟩; exact hP.3 f 𝒰 H
+  tfae_have : 2 → 1 := by
+    rintro ⟨𝒰, H⟩; exact hP.3 f 𝒰 H
   tfae_have : 1 → 4
   | H, U => hP.2 f U H
   tfae_have : 4 → 3
@@ -413,8 +413,8 @@ theorem PropertyIsLocalAtTarget.openCover_TFAE {P : MorphismProperty Scheme}
     apply H
   tfae_have : 4 → 6
   | H => ⟨PUnit, fun _ => ⊤, ciSup_const, fun _ => H _⟩
-  tfae_have : 6 → 2
-  · rintro ⟨ι, U, hU, H⟩
+  tfae_have : 6 → 2 := by
+    rintro ⟨ι, U, hU, H⟩
     refine' ⟨Y.openCoverOfSuprEqTop U hU, _⟩
     intro i
     rw [← hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]
@@ -568,19 +568,19 @@ theorem AffineTargetMorphismProperty.IsLocal.diagonal_affine_openCover_TFAE
         ∃ (𝒰 : Scheme.OpenCover.{u} Y) (_ : ∀ i, IsAffine (𝒰.obj i)) (𝒰' :
           ∀ i, Scheme.OpenCover.{u} (pullback f (𝒰.map i))) (_ : ∀ i j, IsAffine ((𝒰' i).obj j)),
           ∀ i j k, P (pullback.mapDesc ((𝒰' i).map j) ((𝒰' i).map k) pullback.snd)] := by
-  tfae_have : 1 → 4
-  · introv H hU hg _ _; apply P.diagonalOfTargetAffineLocally <;> assumption
-  tfae_have : 4 → 3
-  · introv H h𝒰; apply H
+  tfae_have : 1 → 4 := by
+    introv H hU hg _ _; apply P.diagonalOfTargetAffineLocally <;> assumption
+  tfae_have : 4 → 3 := by
+    introv H h𝒰; apply H
   tfae_have : 3 → 2
   | H => ⟨Y.affineCover, inferInstance, H Y.affineCover⟩
-  tfae_have : 2 → 5
-  · rintro ⟨𝒰, h𝒰, H⟩
+  tfae_have : 2 → 5 := by
+    rintro ⟨𝒰, h𝒰, H⟩
     refine' ⟨𝒰, inferInstance, fun _ => Scheme.affineCover _, inferInstance, _⟩
     intro i j k
     apply H
-  tfae_have : 5 → 1
-  · rintro ⟨𝒰, _, 𝒰', _, H⟩
+  tfae_have : 5 → 1 := by
+    rintro ⟨𝒰, _, 𝒰', _, H⟩
     exact diagonalTargetAffineLocallyOfOpenCover P hP f 𝒰 𝒰' H
   tfae_finish
 #align algebraic_geometry.affine_target_morphism_property.is_local.diagonal_affine_open_cover_tfae AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal.diagonal_affine_openCover_TFAE

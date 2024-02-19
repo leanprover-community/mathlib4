@@ -180,8 +180,8 @@ theorem tfae_of_isNoetherianRing_of_localRing_of_isDomain
   tfae_have : 3 → 5 := fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R
   tfae_have : 6 ↔ 5 := finrank_cotangentSpace_le_one_iff
   tfae_have : 5 → 7 := exists_maximalIdeal_pow_eq_of_principal R
-  tfae_have : 7 → 2
-  · rw [ValuationRing.iff_ideal_total]
+  tfae_have : 7 → 2 := by
+    rw [ValuationRing.iff_ideal_total]
     intro H
     constructor
     intro I J

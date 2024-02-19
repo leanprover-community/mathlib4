@@ -385,8 +385,8 @@ theorem affine_openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
   | H, 𝒰, _, i => by skip; apply H
   tfae_have : 3 → 2
   | H => by refine' ⟨X.affineCover, inferInstance, H _⟩
-  tfae_have : 2 → 1
-  · rintro ⟨𝒰, _, h𝒰⟩
+  tfae_have : 2 → 1 := by
+    rintro ⟨𝒰, _, h𝒰⟩
     exact sourceAffineLocally_of_source_openCover hP f 𝒰 h𝒰
   tfae_finish
 #align ring_hom.property_is_local.affine_open_cover_tfae RingHom.PropertyIsLocal.affine_openCover_TFAE
@@ -413,8 +413,8 @@ theorem openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
   | H, 𝒰, _, i => by skip; apply H
   tfae_have : 3 → 2
   | H => by refine' ⟨X.affineCover, H _⟩
-  tfae_have : 2 → 1
-  · rintro ⟨𝒰, h𝒰⟩
+  tfae_have : 2 → 1 := by
+    rintro ⟨𝒰, h𝒰⟩
     -- Porting note: this has metavariable if I put it directly into rw
     have := (hP.affine_openCover_TFAE f).out 0 1
     rw [this]
