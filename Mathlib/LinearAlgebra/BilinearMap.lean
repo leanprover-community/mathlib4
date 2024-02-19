@@ -232,7 +232,7 @@ def restrictScalars₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →�
 
 @[simp]
 theorem restrictScalars₂_apply (B : M →ₗ[R] N →ₗ[S] Pₗ) (x : M) (y : N) :
-  B.restrictScalars₂ R' S' x y = B x y := rfl
+    B.restrictScalars₂ R' S' x y = B x y := rfl
 
 theorem restrictScalars₂_injective : Function.Injective
     (LinearMap.restrictScalars₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
