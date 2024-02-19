@@ -99,7 +99,7 @@ namespace Equiv
 
 variable {α β : Type*} [Finite α]
 
-/-- If `e` is an equivalence between two subtypes of a fintype `α`, `e.toCompl`
+/-- If `e` is an equivalence between two subtypes of a finite type `α`, `e.toCompl`
 is an equivalence between the complement of those subtypes.
 
 See also `Equiv.compl`, for a computable version when a term of type
