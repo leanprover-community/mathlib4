@@ -878,7 +878,7 @@ end AddCommGroup
 
 section AddCommGroup
 
-variable [Ring R] [Ring R₂]
+variable [Semiring R] [Semiring R₂]
 
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 
@@ -942,7 +942,9 @@ lemma biSup_comap_eq_top_of_surjective {ι : Type*} (s : Set ι) (hs : s.Nonempt
   rw [iSup_subtype'] at hp ⊢
   rw [← comap_map_eq, map_iSup_comap_of_sujective hf, hp, comap_top]
 
-lemma biSup_comap_eq_top_of_range_eq_biSup {ι : Type*} (s : Set ι) (hs : s.Nonempty)
+lemma biSup_comap_eq_top_of_range_eq_biSup
+    {R R₂ : Type*} [Ring R] [Ring R₂] {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
+    [Module R M] [Module R₂ M₂] {ι : Type*} (s : Set ι) (hs : s.Nonempty)
     (p : ι → Submodule R₂ M₂) (f : M →ₛₗ[τ₁₂] M₂) (hf : LinearMap.range f = ⨆ i ∈ s, p i) :
     ⨆ i ∈ s, (p i).comap f = ⊤ := by
   suffices ⨆ i ∈ s, (p i).comap (LinearMap.range f).subtype = ⊤ by
@@ -981,7 +983,7 @@ open Submodule Function
 
 section AddCommGroup
 
-variable [Ring R] [Ring R₂]
+variable [Semiring R] [Semiring R₂]
 
 variable [AddCommGroup M] [AddCommGroup M₂]
 
