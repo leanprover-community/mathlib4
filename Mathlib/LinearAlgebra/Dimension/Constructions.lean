@@ -55,8 +55,8 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Quotient.mk_surjective M'
   let g : s ⊕ t → M := Sum.elim (f ·) (·)
-  suffices : LinearIndependent R g
-  · refine le_trans ?_ (le_ciSup (bddAbove_range.{v, v} _) ⟨_, this.to_subtype_range⟩)
+  suffices LinearIndependent R g by
+    refine le_trans ?_ (le_ciSup (bddAbove_range.{v, v} _) ⟨_, this.to_subtype_range⟩)
     rw [mk_range_eq _ this.injective, mk_sum, lift_id, lift_id]
   refine .sum_type (.of_comp M'.mkQ ?_) (ht.map' M'.subtype M'.ker_subtype) ?_
   · convert hs; ext x; exact hf x

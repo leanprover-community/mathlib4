@@ -174,8 +174,8 @@ variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace α]
 theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : ∃ x, IsLeast s x := by
   haveI : Nonempty s := ne_s.to_subtype
-  suffices : (s ∩ ⋂ x ∈ s, Iic x).Nonempty
-  · exact ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
+  suffices (s ∩ ⋂ x ∈ s, Iic x).Nonempty from
+    ⟨this.choose, this.choose_spec.1, mem_iInter₂.mp this.choose_spec.2⟩
   rw [biInter_eq_iInter]
   by_contra H
   rw [not_nonempty_iff_eq_empty] at H

@@ -2548,8 +2548,7 @@ theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monom
 with any other power series is `0`. -/
 theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order) :
     coeff R n (φ * ψ) = 0 := by
-  suffices : coeff R n (φ * ψ) = ∑ p in antidiagonal n, 0
-  rw [this, Finset.sum_const_zero]
+  suffices coeff R n (φ * ψ) = ∑ p in antidiagonal n, 0 by rw [this, Finset.sum_const_zero]
   rw [coeff_mul]
   apply Finset.sum_congr rfl
   intro x hx

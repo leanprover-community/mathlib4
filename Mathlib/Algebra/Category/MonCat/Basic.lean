@@ -80,7 +80,7 @@ instance : CoeSort MonCat (Type*) where
 @[to_additive]
 instance (X : MonCat) : Monoid X := X.str
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : MonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -206,7 +206,7 @@ instance : CoeSort CommMonCat (Type*) where
 @[to_additive]
 instance (X : CommMonCat) : CommMonoid X := X.str
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : CommMonCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
