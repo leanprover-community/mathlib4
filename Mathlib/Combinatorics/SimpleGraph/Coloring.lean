@@ -236,6 +236,39 @@ theorem Colorable.of_embedding {V' : Type*} {G' : SimpleGraph V'} (f : G ↪g G'
   ⟨(h.toColoring (by simp)).comp f⟩
 #align simple_graph.colorable.of_embedding SimpleGraph.Colorable.of_embedding
 
+theorem colorable_of_degree_lt [DecidableEq V] {n : ℕ} {v : V} [Fintype (neighborSet G v)]
+    (hc : (G.induce {x | x ≠ v}).Colorable n) (hd : G.degree v < n) : G.Colorable n := by
+  obtain ⟨C⟩ := hc
+  let neighborColors := G.neighborFinset v |>.subtype (· ≠ v) |>.image C
+  have nonempty_neighborColors_compl : neighborColorsᶜ.Nonempty := by
+    rw [← Finset.card_pos, Finset.card_compl, Fintype.card_fin]
+    refine Nat.sub_pos_of_lt <| Finset.card_image_le.trans_lt ?_
+    rw [Finset.card_subtype]
+    refine (G.neighborFinset v).card_filter_le (· ≠ v) |>.trans_lt ?_
+    rw [card_neighborFinset_eq_degree]
+    exact hd
+  let vColor := Finset.min' neighborColorsᶜ nonempty_neighborColors_compl
+  constructor
+  refine Coloring.mk (fun (x : V) => if hx : x = v then vColor else C ⟨x, hx⟩) ?_
+  intro x y hxy
+  wlog _ : x = v ∨ y ≠ v generalizing x y
+  · exact this hxy.symm (by tauto) |>.symm
+  by_cases hx : x = v
+  · rw [hx] at hxy
+    have hy : y ≠ v := hxy.symm.ne
+    simp only [reduceDite, hx, hy]
+    apply Ne.symm
+    refine ne_of_mem_of_not_mem (?_ : _ ∈ neighborColors) (?_ : _ ∉ neighborColors)
+    · have : y ∈ G.neighborFinset v := G.mem_neighborFinset v y |>.mpr hxy
+      exact Finset.mem_image_of_mem C
+        (show ⟨y, hy⟩ ∈ (G.neighborFinset v).subtype (· ≠ v) by simpa)
+    · rw [← Finset.mem_compl]
+      exact Finset.min'_mem neighborColorsᶜ nonempty_neighborColors_compl
+  · by_cases hy : y = v
+    · tauto
+    · simp only [reduceDite, hx, hy]
+      exact C.map_adj (show (G.induce {x | x ≠ v}).Adj ⟨x, hx⟩ ⟨y, hy⟩ by simpa) |>.ne
+
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
   constructor
