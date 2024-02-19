@@ -206,8 +206,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   obtain ⟨xu, rfl⟩ := hx.isUnit hppos
   let yu := (hy.isUnit hqpos).unit
   have hxmem : xu ∈ rootsOfUnity ⟨k, hkpos⟩ L :=  by
-    rw [mem_rootsOfUnity, PNat.mk_coe, ← Units.val_eq_one, Units.val_pow_eq_pow_val,
-      IsUnit.unit_spec]
+    rw [mem_rootsOfUnity, PNat.mk_coe, ← Units.val_eq_one, Units.val_pow_eq_pow_val]
     exact (hx.pow_eq_one_iff_dvd _).2 (Nat.dvd_lcm_left _ _)
   have hymem : yu ∈ rootsOfUnity ⟨k, hkpos⟩ L := by
     rw [mem_rootsOfUnity, PNat.mk_coe, ← Units.val_eq_one, Units.val_pow_eq_pow_val,
@@ -215,7 +214,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
     exact (hy.pow_eq_one_iff_dvd _).2 (Nat.dvd_lcm_right _ _)
   have hxuord : orderOf (⟨xu, hxmem⟩ : rootsOfUnity ⟨k, hkpos⟩ L) = p := by
     rw [← orderOf_injective (rootsOfUnity ⟨k, hkpos⟩ L).subtype Subtype.coe_injective,
-      Subgroup.coeSubtype, Subgroup.coe_mk, ← orderOf_units, IsUnit.unit_spec]
+      Subgroup.coeSubtype, Subgroup.coe_mk, ← orderOf_units]
     exact hx.eq_orderOf.symm
   have hyuord : orderOf (⟨yu, hymem⟩ : rootsOfUnity ⟨k, hkpos⟩ L) = q := by
     rw [← orderOf_injective (rootsOfUnity ⟨k, hkpos⟩ L).subtype Subtype.coe_injective,
