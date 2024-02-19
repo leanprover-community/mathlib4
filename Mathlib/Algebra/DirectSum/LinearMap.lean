@@ -113,30 +113,14 @@ lemma trace_eq_sum_trace_restrict_of_eq_biSup
     (p : Submodule R M) (hp : p = ⨆ i ∈ s, N i)
     (hp' : MapsTo f p p := hp ▸ mapsTo_biSup_of_mapsTo (s : Set ι) hf) :
     trace R p (f.restrict hp') = ∑ i in s, trace R (N i) (f.restrict (hf i)) := by
-  -- TODO Tidy up poor proof bashed out below + extract lemmas
   let N' : s → Submodule R p := fun i ↦ (N i).comap p.subtype
-  have hNp : ∀ i ∈ s, N i ≤ p := fun i hi ↦ by simpa only [hp] using le_biSup N hi
-  let e : (i : s) → N' i ≃ₗ[R] N i := fun ⟨i, hi⟩ ↦ (N i).comapSubtypeEquivOfLe (hNp _ hi)
+  replace h : IsInternal N' := hp ▸ isInternal_biSup_submodule_of_independent (s : Set ι) h
+  have hf' : ∀ i, MapsTo (restrict f hp') (N' i) (N' i) := fun i x hx' ↦ by simpa using hf i hx'
+  let e : (i : s) → N' i ≃ₗ[R] N i := fun ⟨i, hi⟩ ↦ (N i).comapSubtypeEquivOfLe (hp ▸ le_biSup N hi)
   have _i1 : ∀ i, Module.Finite R (N' i) := fun i ↦ Module.Finite.equiv (e i).symm
   have _i2 : ∀ i, Module.Free R (N' i) := fun i ↦ Module.Free.of_equiv (e i).symm
-  replace h : IsInternal N' := by
-    rw [isInternal_submodule_iff_independent_and_iSup_eq_top]
-    constructor <;> simp only
-    · let e : Submodule R p ≃o Set.Iic p := Submodule.MapSubtype.relIso p
-      have : (e ∘ fun i : s ↦ (N i).comap p.subtype) = fun i ↦ ⟨N i, hNp i i.property⟩ := by
-        ext i m
-        change m ∈ ((N i).comap p.subtype).map p.subtype ↔ _ -- TODO Missing `simp` lemmas
-        rw [Submodule.map_comap_subtype, inf_of_le_right (hNp i i.property)]
-      rw [← CompleteLattice.independent_map_orderIso_iff e, this]
-      exact CompleteLattice.independent_of_independent_coe_Iic_comp h
-    · rw [iSup_subtype, hp]
-      exact Submodule.biSup_comap_subtype_eq_top (s : Set ι) N
-  have hf' : ∀ i, MapsTo (restrict f hp') (N' i) (N' i) := fun ⟨i, hi⟩ ⟨x, hx⟩ hx' ↦ by
-    simpa using hf i hx'
   rw [trace_eq_sum_trace_restrict h hf', ← s.sum_coe_sort]
-  congr
-  ext i
-  suffices f.restrict (hf i) = (e i).conj ((f.restrict hp').restrict (hf' i)) by simp [this]
-  rfl
+  have : ∀ i : s, f.restrict (hf i) = (e i).conj ((f.restrict hp').restrict (hf' i)) := fun _ ↦ rfl
+  exact Finset.sum_congr rfl <| by simp [this]
 
 end LinearMap
