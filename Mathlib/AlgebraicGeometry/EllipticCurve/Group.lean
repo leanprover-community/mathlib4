@@ -17,8 +17,8 @@ under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurv
 
 Let `W` be a Weierstrass curve over a field `F` given by a Weierstrass equation $W(X, Y) = 0$ in
 affine coordinates. As in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`, the set of nonsingular
-rational points $W(F)$ of `W` consist of the unique point at infinity $0$ and nonsingular affine
-points $(x, y)$. With this description, there is an addition-preserving injection between $W(F)$
+rational points `W⟮F⟯` of `W` consist of the unique point at infinity $0$ and nonsingular affine
+points $(x, y)$. With this description, there is an addition-preserving injection between `W⟮F⟯`
 and the ideal class group of the coordinate ring $F[W] := F[X, Y] / \langle W(X, Y)\rangle$ of `W`.
 This is defined by mapping the point at infinity $0$ to the trivial ideal class and an affine point
 $(x, y)$ to the ideal class of the invertible fractional ideal $\langle X - x, Y - y\rangle$.
@@ -98,7 +98,7 @@ section Ring
 instance instIsDomainCoordinateRing [IsDomain R] [NormalizedGCDMonoid R] :
     IsDomain W.CoordinateRing :=
   (Quotient.isDomain_iff_prime _).mpr <| by
-    simpa only [span_singleton_prime W.polynomial_ne_zero, ← GCDMonoid.irreducible_iff_prime]
+    simpa only [span_singleton_prime W.polynomial_ne_zero, ← irreducible_iff_prime]
       using W.irreducible_polynomial
 #align weierstrass_curve.coordinate_ring.is_domain WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing
 
@@ -483,10 +483,10 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     rw [degree_mul, degree_pow, ← one_mul <| X ^ 3, ← C_1, degree_cubic <| one_ne_zero' R]
   rw [norm_smul_basis]
   by_cases hp : p = 0
-  · simpa only [hp, hdq, neg_zero, zero_sub, zero_mul, zero_pow zero_lt_two, degree_neg] using
+  · simpa only [hp, hdq, neg_zero, zero_sub, zero_mul, zero_pow two_ne_zero, degree_neg] using
       (max_bot_left _).symm
   · by_cases hq : q = 0
-    · simpa only [hq, hdp, sub_zero, zero_mul, mul_zero, zero_pow zero_lt_two] using
+    · simpa only [hq, hdp, sub_zero, zero_mul, mul_zero, zero_pow two_ne_zero] using
         (max_bot_right _).symm
     · rw [← not_congr degree_eq_bot] at hp hq
       -- porting note: BUG `cases` tactic does not modify assumptions in `hp'` and `hq'`
@@ -500,12 +500,12 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
           · convert (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>
-                exact WithBot.coe_lt_coe.mpr <| by linarith only [hpq]
+                exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
           · rw [sub_sub]
             convert (degree_sub_eq_left_of_degree_lt <| (degree_add_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdpq.trans_lt _, hdq.trans_lt _⟩).trans
               (max_eq_left_of_lt _).symm <;> rw [hdp] <;>
-                exact WithBot.coe_lt_coe.mpr <| by linarith only [hpq]
+                exact WithBot.coe_lt_coe.mpr <| by dsimp; linarith only [hpq]
 #align weierstrass_curve.coordinate_ring.degree_norm_smul_basis WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis
 
 variable {W}

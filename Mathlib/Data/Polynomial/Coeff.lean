@@ -58,7 +58,7 @@ theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
   exact Finsupp.smul_apply _ _ _
 #align polynomial.coeff_smul Polynomial.coeff_smul
 
-theorem support_smul [Monoid S] [DistribMulAction S R] (r : S) (p : R[X]) :
+theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
   simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
@@ -319,8 +319,8 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
 #align polynomial.mul_X_pow_eq_zero Polynomial.mul_X_pow_eq_zero
 
 theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
-  suffices : IsLeftRegular (X^n : R[X])
-  · exact ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
+  suffices IsLeftRegular (X^n : R[X]) from
+    ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
   intro P Q (hPQ : X^n * P = X^n * Q)
   ext i
   rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
