@@ -63,13 +63,6 @@ lemma preimage_val_eq_univ_of_subset (h : A ⊆ B) : A ↓∩ B = univ := by
   rw [eq_univ_iff_forall, Subtype.forall]
   exact h
 
-lemma preimage_val_subset_preimage_val_iff : A ↓∩ B ⊆ A ↓∩ C ↔ A ∩ B ⊆ A ∩ C := by
-  rw [inter_comm A, inter_comm A, ← Subtype.image_preimage_coe, ← Subtype.image_preimage_coe,
-    image_subset_image_iff Subtype.val_injective]
-
-lemma preimage_val_eq_iff : A ↓∩ B = A ↓∩ C ↔ A ∩ B = A ∩ C := by
-  rw [Subtype.preimage_val_eq_preimage_val_iff, inter_comm _ A, inter_comm _ A]
-
 lemma preimage_val_sUnion : A ↓∩ (⋃₀ S) = ⋃₀ { (A ↓∩ B) | B ∈ S } := by
   erw [sUnion_image]
   simp_rw [sUnion_eq_biUnion, preimage_iUnion]
@@ -86,7 +79,7 @@ lemma preimage_val_sInter_eq_sInter : A ↓∩ (⋂₀ S) = ⋂₀ ((A ↓∩ .)
 
 lemma eq_of_preimage_val_eq_of_subset (hB : B ⊆ A) (hC : C ⊆ A) (h : A ↓∩ B = A ↓∩ C) : B = C := by
   simp only [← inter_eq_right] at hB hC
-  simp only [preimage_val_eq_iff, hB, hC] at h
+  simp only [Subtype.preimage_val_eq_preimage_val_iff, hB, hC] at h
   exact h
 
 /-!
