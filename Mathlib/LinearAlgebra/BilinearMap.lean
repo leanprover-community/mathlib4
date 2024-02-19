@@ -222,12 +222,13 @@ then the restriction of scalars is a `R'`-`S'` bilinear map.
 In the case that `R = S` and `R' = S'` the compatibility condition can be easily deduced from
 the scalar tower assumptions
 `[Module R' R] [IsScalarTower R' R M] [IsScalarTower R' R N] [IsScalarTower R' R Pₗ]`. -/
-def restrictScalars₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ := LinearMap.mk₂' R' S'
-  (fun x y ↦ B x y)
-  (by intros; simp only [map_add, LinearMap.add_apply])
-  (by intros; simp only [LinearMap.map_smul_of_tower, LinearMap.smul_apply])
-  (fun x ↦ map_add (B x))
-  (fun _ x ↦ (B x).map_smul_of_tower _)
+def restrictScalars₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
+  LinearMap.mk₂' R' S'
+    (fun x y ↦ B x y)
+    (by intros; simp only [map_add, LinearMap.add_apply])
+    (by intros; simp only [LinearMap.map_smul_of_tower, LinearMap.smul_apply])
+    (fun x ↦ map_add (B x))
+    (fun _ x ↦ (B x).map_smul_of_tower _)
 
 @[simp]
 theorem restrictScalars₂_apply (B : M →ₗ[R] N →ₗ[S] Pₗ) (x : M) (y : N) :
@@ -238,7 +239,7 @@ theorem restrictScalars₂_injective : Function.Injective
   fun _ _ h ↦ ext₂ (congr_fun₂ h : _)
 
 @[simp]
-theorem restrictScalars₂_inj (B B' : M →ₗ[R] N →ₗ[S] Pₗ) :
+theorem restrictScalars₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
     B.restrictScalars₂ R' S' = B'.restrictScalars₂ R' S' ↔ B = B' :=
   (restrictScalars₂_injective R' S').eq_iff
 
