@@ -86,6 +86,8 @@ class IsFiltered extends IsFilteredOrEmpty C : Prop where
   [nonempty : Nonempty C]
 #align category_theory.is_filtered CategoryTheory.IsFiltered
 
+attribute [instance 100] IsFiltered.nonempty
+
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
     IsFilteredOrEmpty α
     where
