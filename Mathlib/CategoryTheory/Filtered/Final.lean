@@ -39,14 +39,14 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
     `C` is filtered, see `final_iff_isFiltered_structuredArrow`. -/
 theorem Functor.final_of_isFiltered_structuredArrow [∀ d, IsFiltered (StructuredArrow d F)] :
     Final F where
-  out _ := inferInstance
+  out _ := IsFiltered.isConnected _
 
 /-- If `CostructuredArrow F d` is filtered for any `d : D`, then `F : C ⥤ D` is initial. This is
     simply because cofiltered categories are connectged. More profoundly, the converse is also true
     if `C` is cofiltered, see `initial_iff_isCofiltered_costructuredArrow`. -/
 theorem Functor.initial_of_isCofiltered_costructuredArrow
     [∀ d, IsCofiltered (CostructuredArrow F d)] : Initial F where
-  out _ := inferInstance
+  out _ := IsCofiltered.isConnected _
 
 theorem isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C]
     (h₁ : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) (h₂ : ∀ {d : D} {c : C} (s s' : d ⟶ F.obj c),
