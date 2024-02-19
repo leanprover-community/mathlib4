@@ -7,6 +7,7 @@ import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
 import Mathlib.Mathport.Notation
 import Init.NotationExtra
+import Mathlib.Data.Sigma.Basic
 
 #align_import data.psigma.order from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
 
@@ -31,13 +32,14 @@ are.
 -/
 
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace PSigma
 
 /-- The notation `Σₗ' i, α i` refers to a sigma type which is locally equipped with the
 lexicographic order.-/
-notation3 "Σₗ' "(...)", "r:(scoped p => _root_.Lex (PSigma p)) => r
+-- TODO: make `Lex` be `Sort u -> Sort u` so we can remove `.{_+1, _+1}`
+notation3 "Σₗ' "(...)", "r:(scoped p => _root_.Lex (PSigma.{_+1, _+1} p)) => r
 
 namespace Lex
 

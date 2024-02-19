@@ -36,7 +36,7 @@ open Topology
 
 section DivisionRing
 
-variable {K : Type _} [DivisionRing K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [DivisionRing K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
 
 section ValuationTopologicalDivisionRing
 
@@ -137,7 +137,7 @@ namespace Valued
 
 open UniformSpace
 
-variable {K : Type _} [Field K] {Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
+variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
 
 local notation "hat " => Completion
 
@@ -167,11 +167,10 @@ instance (priority := 100) completable : CompletableTopField K :=
       · rw [mem_map]
         apply mem_of_superset (Filter.inter_mem M₀_in M₁_in)
         exact subset_preimage_image _ _
-      · rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨y_in₀, y_in₁⟩, rfl⟩
+      · rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨_, y_in₁⟩, rfl⟩
         simp only [mem_setOf_eq]
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
-        replace  := H₀ y y_in₀
         clear H₀
         apply Valuation.inversion_estimate
         · have : (v x : Γ₀) ≠ 0 := by
@@ -259,7 +258,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
     have vz₀_ne : (v z₀ : Γ₀) ≠ 0 := by rwa [Valuation.ne_zero_iff]
     refine' ⟨v z₀, _⟩
     rw [WithZeroTopology.tendsto_of_ne_zero vz₀_ne, eventually_comap]
-    filter_upwards [nhds_right]with x x_in a ha
+    filter_upwards [nhds_right] with x x_in a ha
     rcases x_in with ⟨y, y_in, rfl⟩
     have : (v (a * z₀⁻¹) : Γ₀) = 1 := by
       apply hV
@@ -287,7 +286,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← v.map_zero (R := K), ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
-    simp
+    simp only
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by
@@ -311,7 +310,6 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
         (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_fst).union
           (isClosed_le (cont.comp continuous_add) <| cont.comp continuous_snd)
     · intro x y
-      dsimp
       norm_cast
       rw [← le_max_iff]
       exact v.map_add x y
@@ -324,11 +322,11 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   ext x
   let γ₀ := extensionValuation x
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
-    cases' eq_or_ne γ₀ 0 with h h
+    rcases eq_or_ne γ₀ 0 with h | h
     · simp only [h, (Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
         iff_true_iff]
       apply subset_closure
-      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and_iff]; rfl ⟩
+      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and_iff]; rfl⟩
     · exact this h
   intro h
   have hγ₀ : extension ⁻¹' {γ₀} ∈ 𝓝 x :=
@@ -337,12 +335,10 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   rw [mem_closure_iff_nhds']
   refine' ⟨fun hx => _, fun hx s hs => _⟩
   · obtain ⟨⟨-, y, hy₁ : v y < (γ : Γ₀), rfl⟩, hy₂⟩ := hx _ hγ₀
-    replace hy₂ : v y = γ₀
-    · simpa using hy₂
+    replace hy₂ : v y = γ₀ := by simpa using hy₂
     rwa [← hy₂]
   · obtain ⟨y, hy₁, hy₂⟩ := Completion.denseRange_coe.mem_nhds (inter_mem hγ₀ hs)
-    replace hy₁ : v y = γ₀
-    · simpa using hy₁
+    replace hy₁ : v y = γ₀ := by simpa using hy₁
     rw [← hy₁] at hx
     exact ⟨⟨y, ⟨y, hx, rfl⟩⟩, hy₂⟩
 #align valued.closure_coe_completion_v_lt Valued.closure_coe_completion_v_lt

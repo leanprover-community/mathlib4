@@ -26,7 +26,7 @@ universe u v
 
 open Classical
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type*} {β : α → Type*}
 
 open OmegaCompletePartialOrder
 
@@ -37,7 +37,7 @@ functions `f`, such as the function that is defined iff its argument is not, fam
 halting problem. Instead, this requirement is limited to only functions that are `Continuous` in the
 sense of `ω`-complete partial orders, which excludes the example because it is not monotone
 (making the input argument less defined can make `f` more defined). -/
-class LawfulFix (α : Type _) [OmegaCompletePartialOrder α] extends Fix α where
+class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α →o α}, Continuous f → Fix.fix f = f (Fix.fix f)
 #align lawful_fix LawfulFix
 
@@ -77,13 +77,13 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     rw [dom_iff_mem] at h₁
     cases' h₁ with y h₁
     replace h₁ := approx_mono' f _ _ h₁
-    suffices : y = b
-    · subst this
+    suffices y = b by
+      subst this
       exact h₁
     cases' hh with i hh
     revert h₁; generalize succ (Nat.find h₀) = j; intro h₁
     wlog case : i ≤ j
-    · cases' le_total i j with H H <;> [skip; symm] <;> apply_assumption <;> assumption
+    · rcases le_total i j with H | H <;> [skip; symm] <;> apply_assumption <;> assumption
     replace hh := approx_mono f case _ _ hh
     apply Part.mem_unique h₁ hh
   · simp only [fix_def' (⇑f) h₀, not_exists, false_iff_iff, not_mem_none]
@@ -124,14 +124,14 @@ theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
 #align part.fix.le_f_of_mem_approx Part.Fix.le_f_of_mem_approx
 
 theorem approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
-  Stream'.mem_of_nth_eq rfl
+  Stream'.mem_of_get_eq rfl
 #align part.fix.approx_mem_approx_chain Part.Fix.approx_mem_approxChain
 
 end Fix
 
 open Fix
 
-variable {α : Type _}
+variable {α : Type*}
 
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
@@ -155,7 +155,7 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     dsimp [approx]
     rfl
   · apply ωSup_le _ _ _
-    simp only [Fix.approxChain, OrderHom.coe_fun_mk]
+    simp only [Fix.approxChain, OrderHom.coe_mk]
     intro y x
     apply approx_le_fix f
 #align part.fix_eq_ωSup Part.fix_eq_ωSup
@@ -163,7 +163,7 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
 theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
   rw [fix_eq_ωSup f]
   apply ωSup_le _ _ _
-  simp only [Fix.approxChain, OrderHom.coe_fun_mk]
+  simp only [Fix.approxChain, OrderHom.coe_mk]
   intro i
   induction i with
   | zero => dsimp [Fix.approx]; apply bot_le
@@ -219,7 +219,7 @@ instance lawfulFix {β} : LawfulFix (α → Part β) :=
   ⟨fun {_f} ↦ Part.fix_eq⟩
 #align pi.lawful_fix Pi.lawfulFix
 
-variable {γ : ∀ a : α, β a → Type _}
+variable {γ : ∀ a : α, β a → Type*}
 
 section Monotone
 

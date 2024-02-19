@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
 -/
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Data.Polynomial.DenomsClearable
 import Mathlib.Data.Real.Irrational
+import Mathlib.Topology.Algebra.Polynomial
 
 #align_import number_theory.liouville.basic from "leanprover-community/mathlib"@"04e80bb7e8510958cd9aacd32fe2dc147af0b9f1"
 
@@ -47,14 +49,14 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   have b0 : (b : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr bN0
   have bq0 : (0 : ℝ) < b * q := mul_pos (Nat.cast_pos.mpr bN0.bot_lt) qR0
   -- At a1, clear denominators...
-  replace a1 : |a * q - b * p| * q ^ (b + 1) < b * q
-  · rw [div_sub_div _ _ b0 qR0.ne', abs_div, div_lt_div_iff (abs_pos.mpr bq0.ne') (pow_pos qR0 _),
+  replace a1 : |a * q - b * p| * q ^ (b + 1) < b * q := by
+    rw [div_sub_div _ _ b0 qR0.ne', abs_div, div_lt_div_iff (abs_pos.mpr bq0.ne') (pow_pos qR0 _),
       abs_of_pos bq0, one_mul] at a1
-    exact_mod_cast a1
+    exact mod_cast a1
   -- At a0, clear denominators...
-  replace a0 : a * q - ↑b * p ≠ 0;
-  · rw [Ne.def, div_eq_div_iff b0 qR0.ne', mul_comm (p : ℝ), ← sub_eq_zero] at a0
-    exact_mod_cast a0
+  replace a0 : a * q - ↑b * p ≠ 0 := by
+    rw [Ne.def, div_eq_div_iff b0 qR0.ne', mul_comm (p : ℝ), ← sub_eq_zero] at a0
+    exact mod_cast a0
   -- Actually, `q` is a natural number
   lift q to ℕ using (zero_lt_one.trans q1).le
   -- Looks innocuous, but we now have an integer with non-zero absolute value: this is at
@@ -90,7 +92,7 @@ It is stated in more general form than needed: in the intended application, `Z =
 root of `f`, `ε` is small, `M` is a bound on the Lipschitz constant of `f` near `α`, `n` is
 the degree of the polynomial `f`.
 -/
-theorem exists_one_le_pow_mul_dist {Z N R : Type _} [PseudoMetricSpace R] {d : N → ℝ}
+theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N → ℝ}
     {j : Z → N → R} {f : R → R} {α : R} {ε M : ℝ}
     -- denominators are positive
     (d0 : ∀ a : N, 1 ≤ d a)
@@ -177,8 +179,8 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   -- non-zero (`f0`) polynomial `f`
   rintro ⟨f : ℤ[X], f0, ef0⟩
   -- Change `aeval x f = 0` to `eval (map _ f) = 0`, who knew.
-  replace ef0 : (f.map (algebraMap ℤ ℝ)).eval x = 0;
-  · rwa [aeval_def, ← eval_map] at ef0
+  replace ef0 : (f.map (algebraMap ℤ ℝ)).eval x = 0 := by
+    rwa [aeval_def, ← eval_map] at ef0
   -- There is a "large" real number `A` such that `(b + 1) ^ (deg f) * |f (x - a / (b + 1))| * A`
   -- is at least one.  This is obtained from lemma `exists_pos_real_of_irrational_root`.
   obtain ⟨A, hA, h⟩ : ∃ A : ℝ, 0 < A ∧ ∀ (a : ℤ) (b : ℕ),

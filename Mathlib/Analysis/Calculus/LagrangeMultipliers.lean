@@ -3,7 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Inverse
+import Mathlib.Analysis.Calculus.FDeriv.Prod
+import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 import Mathlib.LinearAlgebra.Dual
 
 #align_import analysis.calculus.lagrange_multipliers from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -33,7 +34,7 @@ open Filter Set
 
 open scoped Topology Filter BigOperators
 
-variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {f : E → F} {φ : E → ℝ} {x₀ : E}
   {f' : E →L[ℝ] F} {φ' : E →L[ℝ] ℝ}
 
@@ -104,13 +105,13 @@ there exist `Λ : ι → ℝ` and `Λ₀ : ℝ`, `(Λ, Λ₀) ≠ 0`, such that 
 
 See also `IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt` for a version that
 states `¬LinearIndependent ℝ _` instead of existence of `Λ` and `Λ₀`. -/
-theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type _} [Fintype ι]
+theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fintype ι]
     {f : ι → E → ℝ} {f' : ι → E →L[ℝ] ℝ} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
     ∃ (Λ : ι → ℝ) (Λ₀ : ℝ), (Λ, Λ₀) ≠ 0 ∧ (∑ i, Λ i • f' i) + Λ₀ • φ' = 0 := by
   letI := Classical.decEq ι
-  replace hextr : IsLocalExtrOn φ {x | (fun i => f i x) = fun i => f i x₀} x₀
-  · simpa only [Function.funext_iff] using hextr
+  replace hextr : IsLocalExtrOn φ {x | (fun i => f i x) = fun i => f i x₀} x₀ := by
+    simpa only [Function.funext_iff] using hextr
   rcases hextr.exists_linear_map_of_hasStrictFDerivAt (hasStrictFDerivAt_pi.2 fun i => hf' i)
       hφ' with
     ⟨Λ, Λ₀, h0, hsum⟩
@@ -128,7 +129,7 @@ Then the derivatives `f' i : E → L[ℝ] ℝ` and `φ' : E →L[ℝ] ℝ` are l
 See also `IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt` for a version that
 that states existence of Lagrange multipliers `Λ` and `Λ₀` instead of using
 `¬LinearIndependent ℝ _` -/
-theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type _} [Finite ι] {f : ι → E → ℝ}
+theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite ι] {f : ι → E → ℝ}
     {f' : ι → E →L[ℝ] ℝ} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
     ¬LinearIndependent ℝ (Option.elim' φ' f' : Option ι → E →L[ℝ] ℝ) := by
@@ -140,4 +141,3 @@ theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type _} [Finit
   · simpa only [Function.funext_iff, not_and_or, or_comm, Option.exists, Prod.mk_eq_zero, Ne.def,
       not_forall] using hΛ
 #align is_local_extr_on.linear_dependent_of_has_strict_fderiv_at IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt
-

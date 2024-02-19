@@ -25,7 +25,7 @@ open Real
 
 open EuclideanGeometry RealInnerProductSpace Real
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 namespace InnerProductGeometry
 
@@ -52,7 +52,7 @@ theorem mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, k ≠ 1 ∧
   have hzy : ⟪z, y⟫ = 0 := by
     rwa [inner_eq_zero_iff_angle_eq_pi_div_two, ← norm_add_eq_norm_sub_iff_angle_eq_pi_div_two,
       eq_comm]
-  have hzx : ⟪z, x⟫ = 0 := by rw [hxy, inner_smul_right, hzy, MulZeroClass.mul_zero]
+  have hzx : ⟪z, x⟫ = 0 := by rw [hxy, inner_smul_right, hzy, mul_zero]
   calc
     ‖x - y‖ * ‖x + y‖ = ‖(r - 1) • y‖ * ‖(r + 1) • y‖ := by simp [sub_smul, add_smul, hxy]
     _ = ‖r - 1‖ * ‖y‖ * (‖r + 1‖ * ‖y‖) := by simp_rw [norm_smul]
@@ -77,7 +77,7 @@ This section develops some results on spheres in Euclidean affine spaces.
 
 open InnerProductGeometry
 
-variable {P : Type _} [MetricSpace P] [NormedAddTorsor V P]
+variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 
 /-- If `P` is a point on the line `AB` and `Q` is equidistant from `A` and `B`, then
 `AP * BP = abs (BQ ^ 2 - PQ ^ 2)`. -/

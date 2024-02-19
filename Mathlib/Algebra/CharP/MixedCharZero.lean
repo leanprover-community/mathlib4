@@ -3,7 +3,6 @@ Copyright (c) 2022 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
-import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.LocalRing
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Tactic.FieldSimp
@@ -56,7 +55,7 @@ equivalent conditions.
 - Relate mixed characteristic in a local ring to p-adic numbers [NumberTheory.PAdics].
 -/
 
-variable (R : Type _) [CommRing R]
+variable (R : Type*) [CommRing R]
 
 /-!
 ### Mixed characteristic
@@ -93,8 +92,8 @@ theorem reduce_to_p_prime {P : Prop} :
     -- Krull's Thm: There exists a prime ideal `P` such that `I ≤ P`
     rcases Ideal.exists_le_maximal I hI_ne_top with ⟨M, hM_max, h_IM⟩
     let r := ringChar (R ⧸ M)
-    have r_pos : r ≠ 0
-    · have q_zero :=
+    have r_pos : r ≠ 0 := by
+      have q_zero :=
         congr_arg (Ideal.Quotient.factor I M h_IM) (CharP.cast_eq_zero (R ⧸ I) q)
       simp only [map_natCast, map_zero] at q_zero
       apply ne_zero_of_dvd_ne_zero (ne_of_gt q_pos)
@@ -126,8 +125,8 @@ theorem reduce_to_maximal_ideal {p : ℕ} (hp : Nat.Prime p) :
         -- Without this it seems that lean does not find `hr` as an instance.
         have hr := hr
         convert hr
-        have r_dvd_p : r ∣ p
-        · rw [← CharP.cast_eq_zero_iff (R ⧸ M) r p]
+        have r_dvd_p : r ∣ p := by
+          rw [← CharP.cast_eq_zero_iff (R ⧸ M) r p]
           convert congr_arg (Ideal.Quotient.factor I M hM_ge) (CharP.cast_eq_zero (R ⧸ I) p)
         symm
         apply (Nat.Prime.eq_one_or_self_of_dvd hp r r_dvd_p).resolve_left
@@ -230,7 +229,7 @@ noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
       intro a b
       field_simp
       trans (↑((a * b).num * a.den * b.den) : R)
-      · simp_rw [Int.cast_mul, Int.cast_ofNat, Rat.coe_pnatDen]
+      · simp_rw [Int.cast_mul, Int.cast_ofNat]
         ring
       rw [Rat.mul_num_den' a b]
       simp
@@ -238,7 +237,7 @@ noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
       intro a b
       field_simp
       trans (↑((a + b).num * a.den * b.den) : R)
-      · simp_rw [Int.cast_mul, Int.cast_ofNat, Rat.coe_pnatDen]
+      · simp_rw [Int.cast_mul, Int.cast_ofNat]
         ring
       rw [Rat.add_num_den' a b]
       simp }
@@ -251,8 +250,7 @@ end ConstructionAlgebraRat
 theorem of_not_mixedCharZero [CharZero R] (h : ∀ p > 0, ¬MixedCharZero R p) :
     ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI_ne_top
-  suffices h_charP : CharP (R ⧸ I) 0
-  · apply CharP.charP_to_charZero
+  suffices CharP (R ⧸ I) 0 from CharP.charP_to_charZero _
   cases CharP.exists (R ⧸ I) with
   | intro p hp =>
     cases p with
@@ -347,7 +345,7 @@ theorem split_by_characteristic (h_pos : ∀ p : ℕ, p ≠ 0 → CharP R p → 
     (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
   cases CharP.exists R with
   | intro p p_charP =>
-    by_cases p = 0
+    by_cases h : p = 0
     · rw [h] at p_charP
       haveI h0 : CharZero R := CharP.charP_to_charZero R
       exact split_equalCharZero_mixedCharZero R h_equal h_mixed

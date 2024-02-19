@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Set.Finite
 import Mathlib.Algebra.BigOperators.Basic
 
-#align_import data.finset.preimage from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
+#align_import data.finset.preimage from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
 /-!
 # Preimage of a `Finset` under an injective map.
@@ -25,7 +25,7 @@ namespace Finset
 
 section Preimage
 
-/-- Preimage of `s : Finset β` under a map `f` injective of `f ⁻¹' s` as a `Finset`.  -/
+/-- Preimage of `s : Finset β` under a map `f` injective on `f ⁻¹' s` as a `Finset`.  -/
 noncomputable def preimage (s : Finset β) (f : α → β) (hf : Set.InjOn f (f ⁻¹' ↑s)) : Finset α :=
   (s.finite_toSet.preimage hf).toFinset
 #align finset.preimage Finset.preimage
@@ -76,6 +76,11 @@ theorem preimage_compl [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype �
   Finset.coe_injective (by simp)
 #align finset.preimage_compl Finset.preimage_compl
 
+@[simp]
+lemma preimage_map (f : α ↪ β) (s : Finset α) : (s.map f).preimage f (f.injective.injOn _) = s :=
+  coe_injective <| by simp only [coe_preimage, coe_map, Set.preimage_image_eq _ f.injective]
+#align finset.preimage_map Finset.preimage_map
+
 theorem monotone_preimage {f : α → β} (h : Injective f) :
     Monotone fun s => preimage s f (h.injOn _) := fun _ _ H _ hx =>
   mem_preimage.2 (H <| mem_preimage.1 hx)
@@ -108,29 +113,25 @@ theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s 
 #align finset.preimage_subset Finset.preimage_subset
 
 theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
-    s ⊆ t.map f ↔ ∃ (u : _) (_ : u ⊆ t), s = u.map f := by
+    s ⊆ t.map f ↔ ∃ u, u ⊆ t ∧ s = u.map f := by
   classical
-    refine' ⟨fun h => ⟨_, preimage_subset h, _⟩, _⟩
-    · rw [map_eq_image, image_preimage, filter_true_of_mem]
-      exact fun x hx ↦ coe_map_subset_range _ _ (h hx)
-    · rintro ⟨u, hut, rfl⟩
-      exact map_subset_map.2 hut
+  simp_rw [← coe_subset, coe_map, subset_image_iff, map_eq_image, eq_comm]
 #align finset.subset_map_iff Finset.subset_map_iff
 
-theorem sigma_preimage_mk {β : α → Type _} [DecidableEq α] (s : Finset (Σa, β a)) (t : Finset α) :
+theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a)) (t : Finset α) :
     (t.sigma fun a => s.preimage (Sigma.mk a) <| sigma_mk_injective.injOn _) =
       s.filter fun a => a.1 ∈ t := by
   ext x
   simp [and_comm]
 #align finset.sigma_preimage_mk Finset.sigma_preimage_mk
 
-theorem sigma_preimage_mk_of_subset {β : α → Type _} [DecidableEq α] (s : Finset (Σa, β a))
+theorem sigma_preimage_mk_of_subset {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a))
     {t : Finset α} (ht : s.image Sigma.fst ⊆ t) :
     (t.sigma fun a => s.preimage (Sigma.mk a) <| sigma_mk_injective.injOn _) = s := by
   rw [sigma_preimage_mk, filter_true_of_mem <| image_subset_iff.1 ht]
 #align finset.sigma_preimage_mk_of_subset Finset.sigma_preimage_mk_of_subset
 
-theorem sigma_image_fst_preimage_mk {β : α → Type _} [DecidableEq α] (s : Finset (Σa, β a)) :
+theorem sigma_image_fst_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a)) :
     ((s.image Sigma.fst).sigma fun a => s.preimage (Sigma.mk a) <| sigma_mk_injective.injOn _) =
       s :=
   s.sigma_preimage_mk_of_subset (Subset.refl _)

@@ -23,13 +23,15 @@ More generally, a list of elements of `a` can be reinterpreted as a path from `s
 itself using `pathEquivList`.
 -/
 
+set_option autoImplicit true
+
 
 namespace Quiver
 
 /-- Type tag on `Unit` used to define single-object quivers. -/
 -- Porting note: Removed `deriving Unique`.
 @[nolint unusedArguments]
-def SingleObj (_ : Type _) : Type :=
+def SingleObj (_ : Type*) : Type :=
   Unit
 #align quiver.single_obj Quiver.SingleObj
 
@@ -40,7 +42,7 @@ instance : Unique (SingleObj α) where
 
 namespace SingleObj
 
-variable (α β γ : Type _)
+variable (α β γ : Type*)
 
 instance : Quiver (SingleObj α) :=
   ⟨fun _ _ => α⟩

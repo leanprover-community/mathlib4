@@ -54,9 +54,6 @@ namespace BundledHom
 
 variable [𝒞 : BundledHom hom]
 
--- porting note: include not needed
--- include 𝒞
-
 set_option synthInstance.checkSynthOrder false in
 /-- Every `@BundledHom c _` defines a category with objects in `Bundled c`.
 
@@ -86,13 +83,13 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c)
 
 variable {hom}
 
-attribute [local instance] ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.instFunLike
 
 /-- A version of `HasForget₂.mk'` for categories defined using `@BundledHom`. -/
 def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u}
     [BundledHom hom_d] (obj : ∀ ⦃α⦄, c α → d α)
     (map : ∀ {X Y : Bundled c}, (X ⟶ Y) → (Bundled.map @obj X ⟶ (Bundled.map @obj Y)))
-    (h_map : ∀ {X Y : Bundled c} (f : X ⟶ Y), ⇑map f = ⇑f) :
+    (h_map : ∀ {X Y : Bundled c} (f : X ⟶ Y), ⇑(map f) = ⇑f) :
     HasForget₂ (Bundled c) (Bundled d) :=
   HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) map (by
     intros X Y f
@@ -104,9 +101,6 @@ variable {d : Type u → Type u}
 variable (hom)
 
 section
-
--- porting note: commented out
--- omit 𝒞
 
 /-- The `hom` corresponding to first forgetting along `F`, then taking the `hom` associated to `c`.
 
@@ -132,9 +126,6 @@ def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F)
 
 section
 
--- porting note: commented out
---omit 𝒞
-
 /-- We use the empty `ParentProjection` class to label functions like `CommMonoid.toMonoid`,
 which we would like to use to automatically construct `BundledHom` instances from.
 
@@ -142,7 +133,7 @@ Once we've set up `MonCat` as the category of bundled monoids,
 this allows us to set up `CommMonCat` by defining an instance
 ```instance : ParentProjection (CommMonoid.toMonoid) := ⟨⟩```
 -/
-class ParentProjection (F : ∀ {α}, d α → c α)
+class ParentProjection (F : ∀ {α}, d α → c α) : Prop
 #align category_theory.bundled_hom.parent_projection CategoryTheory.BundledHom.ParentProjection
 
 end
@@ -154,8 +145,9 @@ instance bundledHomOfParentProjection (F : ∀ {α}, d α → c α) [ParentProje
   map hom @F
 #align category_theory.bundled_hom.bundled_hom_of_parent_projection CategoryTheory.BundledHom.bundledHomOfParentProjection
 
-instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] : HasForget₂ (Bundled d) (Bundled c)
-    where forget₂ :=
+instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] :
+    HasForget₂ (Bundled d) (Bundled c) where
+  forget₂ :=
     { obj := fun X => ⟨X, F X.2⟩
       map := @fun X Y f => f }
 #align category_theory.bundled_hom.forget₂ CategoryTheory.BundledHom.forget₂

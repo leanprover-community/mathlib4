@@ -20,7 +20,7 @@ open Nat Function
 
 namespace List
 
-variable {α β γ δ : Type _} {R S : α → β → Prop} {P : γ → δ → Prop} {Rₐ : α → α → Prop}
+variable {α β γ δ : Type*} {R S : α → β → Prop} {P : γ → δ → Prop} {Rₐ : α → α → Prop}
 
 open Relator
 
@@ -202,7 +202,7 @@ theorem forall₂_iff_zip {l₁ l₂} :
       · simp at h₁
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
-          (IH h₁ <| fun h => h₂ <| by
+          (IH h₁ fun h => h₂ <| by
             simp only [zip, zipWith, find?, mem_cons, Prod.mk.injEq]; right
             simpa [zip] using h)⟩
 #align list.forall₂_iff_zip List.forall₂_iff_zip
@@ -308,13 +308,6 @@ theorem rel_filterMap : ((R ⇒ Option.Rel P) ⇒ Forall₂ R ⇒ Forall₂ P) f
       | _, _, Option.Rel.none => rel_filterMap (@hfg) h₂
       | _, _, Option.Rel.some h => Forall₂.cons h (rel_filterMap (@hfg) h₂)
 #align list.rel_filter_map List.rel_filterMap
-
-@[to_additive]
-theorem rel_prod [Monoid α] [Monoid β] (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
-    (Forall₂ R ⇒ R) prod prod :=
-  rel_foldl hf h
-#align list.rel_prod List.rel_prod
-#align list.rel_sum List.rel_sum
 
 /-- Given a relation `R`, `sublist_forall₂ r l₁ l₂` indicates that there is a sublist of `l₂` such
   that `forall₂ r l₁ l₂`. -/

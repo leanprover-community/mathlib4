@@ -11,7 +11,7 @@ import Std.Tactic.HaveI
 This files implements the `haveI'` and `letI'` macros which have the same semantics as
 `haveI` and `letI`, but are `doElem`s and can be used inside do-notation.
 
-They need a backtick after their name for disambiguation with the term variants.
+They need an apostrophe after their name for disambiguation with the term variants.
 This is necessary because the do-notation has a hardcoded list of keywords which can appear both
 as term-mode and do-elem syntax (like for example `let` or `have`).
 -/

@@ -1,11 +1,9 @@
 /-
 Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot
+Authors: Amelia Livingston, Bryan Gin-ge Chen, Patrick Massot, Wen Yang, Johan Commelin
 -/
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Setoid.Basic
 import Mathlib.Order.Partition.Finpartition
 
 #align_import data.setoid.partition from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
@@ -39,7 +37,7 @@ setoid, equivalence, iseqv, relation, equivalence relation, partition, equivalen
 
 namespace Setoid
 
-variable {α : Type _}
+variable {α : Type*}
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2:
 -- warning: expanding binder collection (b «expr ∈ » c) -/
@@ -75,21 +73,21 @@ theorem mem_classes (r : Setoid α) (y) : { x | r.Rel x y } ∈ r.classes :=
   ⟨y, rfl⟩
 #align setoid.mem_classes Setoid.mem_classes
 
-theorem classes_ker_subset_fiber_set {β : Type _} (f : α → β) :
+theorem classes_ker_subset_fiber_set {β : Type*} (f : α → β) :
     (Setoid.ker f).classes ⊆ Set.range fun y => { x | f x = y } := by
   rintro s ⟨x, rfl⟩
   rw [Set.mem_range]
   exact ⟨f x, rfl⟩
 #align setoid.classes_ker_subset_fiber_set Setoid.classes_ker_subset_fiber_set
 
-theorem finite_classes_ker {α β : Type _} [Finite β] (f : α → β) : (Setoid.ker f).classes.Finite :=
+theorem finite_classes_ker {α β : Type*} [Finite β] (f : α → β) : (Setoid.ker f).classes.Finite :=
   (Set.finite_range _).subset <| classes_ker_subset_fiber_set f
 #align setoid.finite_classes_ker Setoid.finite_classes_ker
 
-theorem card_classes_ker_le {α β : Type _} [Fintype β] (f : α → β)
+theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
     [Fintype (Setoid.ker f).classes] : Fintype.card (Setoid.ker f).classes ≤ Fintype.card β := by
   classical exact
-      le_trans (Set.card_le_of_subset (classes_ker_subset_fiber_set f)) (Fintype.card_range_le _)
+      le_trans (Set.card_le_card (classes_ker_subset_fiber_set f)) (Fintype.card_range_le _)
 #align setoid.card_classes_ker_le Setoid.card_classes_ker_le
 
 /-- Two equivalence relations are equal iff all their equivalence classes are equal. -/
@@ -197,6 +195,33 @@ theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
   Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r.Rel y x }, ⟨x, rfl⟩, Setoid.refl _⟩
 #align setoid.sUnion_classes Setoid.sUnion_classes
 
+/-- The equivalence between the quotient by an equivalence relation and its
+type of equivalence classes. -/
+noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.classes r := by
+  let f (a : α) : Setoid.classes r := ⟨{ x | Setoid.r x a }, Setoid.mem_classes r a⟩
+  have f_respects_relation (a b : α) (a_rel_b : Setoid.r a b) : f a = f b := by
+    rw [Subtype.mk.injEq]
+    exact Setoid.eq_of_mem_classes (Setoid.mem_classes r a) (Setoid.symm a_rel_b)
+        (Setoid.mem_classes r b) (Setoid.refl b)
+  apply Equiv.ofBijective (Quot.lift f f_respects_relation)
+  constructor
+  · intro (q_a : Quotient r) (q_b : Quotient r) h_eq
+    induction' q_a using Quotient.ind with a
+    induction' q_b using Quotient.ind with b
+    simp only [Subtype.ext_iff, Quotient.lift_mk, Subtype.ext_iff] at h_eq
+    apply Quotient.sound
+    show a ∈ { x | Setoid.r x b }
+    rw [← h_eq]
+    exact Setoid.refl a
+  · rw [Quot.surjective_lift]
+    intro ⟨c, a, hc⟩
+    exact ⟨a, Subtype.ext hc.symm⟩
+
+@[simp]
+lemma quotientEquivClasses_mk_eq (r : Setoid α) (a : α) :
+    (quotientEquivClasses r (Quotient.mk r a) : Set α) = { x | r.Rel x a } :=
+  (@Subtype.ext_iff_val _ _ _ ⟨{ x | r.Rel x a }, Setoid.mem_classes r a⟩).mp rfl
+
 section Partition
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2:
@@ -299,7 +324,7 @@ def IsPartition.finpartition {c : Finset (Set α)} (hc : Setoid.IsPartition (c :
     Finpartition (Set.univ : Set α) where
   parts := c
   supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr <| eqv_classes_disjoint hc.2
-  supParts := c.sup_id_set_eq_sUnion.trans hc.sUnion_eq_univ
+  sup_parts := c.sup_id_set_eq_sUnion.trans hc.sUnion_eq_univ
   not_bot_mem := hc.left
 #align setoid.is_partition.finpartition Setoid.IsPartition.finpartition
 
@@ -309,7 +334,7 @@ end Setoid
 theorem Finpartition.isPartition_parts {α} (f : Finpartition (Set.univ : Set α)) :
     Setoid.IsPartition (f.parts : Set (Set α)) :=
   ⟨f.not_bot_mem,
-    Setoid.eqv_classes_of_disjoint_union (f.parts.sup_id_set_eq_sUnion.symm.trans f.supParts)
+    Setoid.eqv_classes_of_disjoint_union (f.parts.sup_id_set_eq_sUnion.symm.trans f.sup_parts)
       f.supIndep.pairwiseDisjoint⟩
 #align finpartition.is_partition_parts Finpartition.isPartition_parts
 
@@ -321,7 +346,7 @@ an index to an element of the corresponding set.
 
 This type is primarily useful for definitional control of `s` - if this is not needed, then
 `Setoid.ker index` by itself may be sufficient. -/
-structure IndexedPartition {ι α : Type _} (s : ι → Set α) where
+structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
   /-- two indexes are equal if they are equal in membership  -/
   eq_of_mem : ∀ {x i j}, x ∈ s i → x ∈ s j → i = j
   /-- sends an index to an element of the corresponding set-/
@@ -335,11 +360,11 @@ structure IndexedPartition {ι α : Type _} (s : ι → Set α) where
 #align indexed_partition IndexedPartition
 
 /-- The non-constructive constructor for `IndexedPartition`. -/
-noncomputable def IndexedPartition.mk' {ι α : Type _} (s : ι → Set α)
-    (dis : ∀ i j, i ≠ j → Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
+noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
+    (dis : Pairwise fun i j => Disjoint (s i) (s j)) (nonempty : ∀ i, (s i).Nonempty)
     (ex : ∀ x, ∃ i, x ∈ s i) : IndexedPartition s
     where
-  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis _ _ h).le_bot ⟨hxi, hxj⟩
+  eq_of_mem {_x _i _j} hxi hxj := by_contradiction fun h => (dis h).le_bot ⟨hxi, hxj⟩
   some i := (nonempty i).some
   some_mem i := (nonempty i).choose_spec
   index x := (ex x).choose
@@ -350,7 +375,7 @@ namespace IndexedPartition
 
 open Set
 
-variable {ι α : Type _} {s : ι → Set α} (hs : IndexedPartition s)
+variable {ι α : Type*} {s : ι → Set α} (hs : IndexedPartition s)
 
 /-- On a unique index set there is the obvious trivial partition -/
 instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι => (Set.univ : Set α)) :=
@@ -372,7 +397,7 @@ theorem iUnion : ⋃ i, s i = univ := by
   simp [hs.exists_mem x]
 #align indexed_partition.Union IndexedPartition.iUnion
 
-theorem disjoint : ∀ {i j}, i ≠ j → Disjoint (s i) (s j) := fun {_i _j} h =>
+theorem disjoint : Pairwise fun i j => Disjoint (s i) (s j) := fun {_i _j} h =>
   disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)
 #align indexed_partition.disjoint IndexedPartition.disjoint
 
@@ -474,5 +499,52 @@ theorem proj_fiber (x : hs.Quotient) : hs.proj ⁻¹' {x} = s (hs.equivQuotient.
     simp only [Set.mem_preimage, Set.mem_singleton_iff, hs.mem_iff_index_eq]
     exact Quotient.eq''
 #align indexed_partition.proj_fiber IndexedPartition.proj_fiber
+
+/-- Combine functions with disjoint domains into a new function.
+You can use the regular expression `def.*piecewise` to search for
+other ways to define piecewise functions in mathlib4.-/
+def piecewise {β : Type*} (f : ι → α → β) : α → β := fun x => f (hs.index x) x
+
+lemma piecewise_apply {β : Type*} {f : ι → α → β} (x : α) : hs.piecewise f x = f (hs.index x) x :=
+  rfl
+
+open Function
+
+/-- A family of injective functions with pairwise disjoint
+domains and pairwise disjoint ranges can be glued together
+to form an injective function.-/
+theorem piecewise_inj {β : Type*} {f : ι → α → β}
+    (h_injOn : ∀ i, InjOn (f i) (s i))
+    (h_disjoint : PairwiseDisjoint (univ : Set ι) fun i => (f i) '' (s i)) :
+    Injective (piecewise hs f) := by
+  intro x y h
+  suffices hs.index x = hs.index y by
+    apply h_injOn (hs.index x) (hs.mem_index x) (this ▸ hs.mem_index y)
+    simpa only [piecewise_apply, this] using h
+  apply h_disjoint.elim trivial trivial
+  contrapose! h
+  exact h.ne_of_mem (mem_image_of_mem _ (hs.mem_index x)) (mem_image_of_mem _ (hs.mem_index y))
+
+/-- A family of bijective functions with pairwise disjoint
+domains and pairwise disjoint ranges can be glued together
+to form a bijective function.-/
+theorem piecewise_bij {β : Type*} {f : ι → α → β}
+    {t : ι → Set β} (ht : IndexedPartition t)
+    (hf : ∀ i, BijOn (f i) (s i) (t i)) :
+    Bijective (piecewise hs f) := by
+  set g := piecewise hs f with hg
+  have hg_bij : ∀ i, BijOn g (s i) (t i) := by
+    intro i
+    refine BijOn.congr (hf i) ?_
+    intro x hx
+    rw [hg, piecewise_apply, hs.mem_iff_index_eq.mp hx]
+  have hg_inj : InjOn g (⋃ i, s i) := by
+    refine injOn_of_injective ?_ (⋃ (i : ι), s i)
+    refine piecewise_inj hs (fun i ↦ BijOn.injOn (hf i)) ?h_disjoint
+    simp only [fun i ↦ BijOn.image_eq (hf i)]
+    rintro i - j - hij
+    exact ht.disjoint hij
+  rw [bijective_iff_bijOn_univ, ← hs.iUnion, ← ht.iUnion]
+  exact bijOn_iUnion hg_bij hg_inj
 
 end IndexedPartition

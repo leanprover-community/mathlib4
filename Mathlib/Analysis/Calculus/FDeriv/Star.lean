@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Topology.Algebra.Module.Star
 
 #align_import analysis.calculus.fderiv.star from "leanprover-community/mathlib"@"ad84a13c884fd19e286fb7abb36f4b9ba7e2f615"
 
@@ -24,11 +24,11 @@ star operation; which as should be expected rules out `𝕜 = ℂ`.
 
 open Classical
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] [StarRing 𝕜] [TrivialStar 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [StarRing 𝕜] [TrivialStar 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [StarAddMonoid F] [NormedSpace 𝕜 F] [StarModule 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [StarAddMonoid F] [NormedSpace 𝕜 F] [StarModule 𝕜 F]
   [ContinuousStar F]
 
 variable {f : E → F} {f' : E →L[𝕜] F} (e : E →L[𝕜] F) {x : E} {s : Set E} {L : Filter E}

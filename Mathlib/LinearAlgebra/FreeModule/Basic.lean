@@ -3,10 +3,7 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Logic.Small.Basic
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.Data.Finsupp.Fintype
 import Mathlib.LinearAlgebra.TensorProductBasis
 
 #align_import linear_algebra.free_module.basic from "leanprover-community/mathlib"@"4e7e7009099d4a88a750de710909b95487bf0124"
@@ -29,7 +26,7 @@ Use `Finsupp.total_id_surjective` to prove that any module is the quotient of a 
 
 universe u v w z
 
-variable {ι : Type _} (R : Type u) (M : Type v) (N : Type z)
+variable {ι : Type*} (R : Type u) (M : Type v) (N : Type z)
 
 open TensorProduct DirectSum BigOperators
 
@@ -49,9 +46,6 @@ Note that if `M` does not fit in `w`, the reverse direction of this implication 
 `Module.Free.of_basis`. -/
 theorem Module.free_def [Small.{w,v} M] :
     Module.Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) :=
-  -- Porting note: this is required or Lean cannot solve universe constraints
-  -- The same error presents if inferInstance is called to solve `small`
-  have _small (s : Set M) : Small.{w} ↑s := small_of_injective (fun _ _ => (Subtype.val_inj).mp)
   ⟨fun h =>
     ⟨Shrink (Set.range h.exists_basis.some.2),
       ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩,
@@ -80,15 +74,19 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
 variable [AddCommMonoid N] [Module R N]
 
 /-- If `Module.Free R M` then `ChooseBasisIndex R M` is the `ι` which indexes the basis
-  `ι → M`. -/
-def ChooseBasisIndex :=
-  (exists_basis (R := R) (M := M)).some.1
+  `ι → M`. Note that this is defined such that this type is finite if `R` is trivial. -/
+def ChooseBasisIndex : Type _ :=
+  ((Module.free_iff_set R M).mp ‹_›).choose
 #align module.free.choose_basis_index Module.Free.ChooseBasisIndex
+
+/-- There is no hope of computing this, but we add the instance anyway to avoid fumbling with
+`open scoped Classical`. -/
+noncomputable instance : DecidableEq (ChooseBasisIndex R M) := Classical.decEq _
 
 /-- If `Module.Free R M` then `chooseBasis : ι → M` is the basis.
 Here `ι = ChooseBasisIndex R M`. -/
 noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
-  (exists_basis (R := R) (M := M)).some.2
+  ((Module.free_iff_set R M).mp ‹_›).choose_spec.some
 #align module.free.choose_basis Module.Free.chooseBasis
 
 /-- The isomorphism `M ≃ₗ[R] (ChooseBasisIndex R M →₀ R)`. -/
@@ -117,6 +115,9 @@ instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDiv
 instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
   (Module.Free.chooseBasis R M).index_nonempty
 
+theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
+  (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
+
 variable {R M N}
 
 theorem of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=
@@ -142,16 +143,18 @@ instance prod [Module.Free R N] : Module.Free R (M × N) :=
 #align module.free.prod Module.Free.prod
 
 /-- The product of finitely many free modules is free. -/
-instance pi (M : ι → Type _) [Finite ι] [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
+instance pi (M : ι → Type*) [Finite ι] [∀ i : ι, AddCommMonoid (M i)] [∀ i : ι, Module R (M i)]
     [∀ i : ι, Module.Free R (M i)] : Module.Free R (∀ i, M i) :=
   let ⟨_⟩ := nonempty_fintype ι
   of_basis <| Pi.basis fun i => chooseBasis R (M i)
 #align module.free.pi Module.Free.pi
 
 /-- The module of finite matrices is free. -/
-instance matrix {m n : Type _} [Finite m] [Finite n] : Module.Free R (Matrix m n M) :=
+instance matrix {m n : Type*} [Finite m] [Finite n] : Module.Free R (Matrix m n M) :=
   Module.Free.pi R _
 #align module.free.matrix Module.Free.matrix
+
+instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
 
 variable (ι)
 
@@ -176,12 +179,12 @@ instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :
   Module.Free.of_subsingleton R N
 #align module.free.of_subsingleton' Module.Free.of_subsingleton'
 
-instance dfinsupp {ι : Type _} (M : ι → Type _) [∀ i : ι, AddCommMonoid (M i)]
+instance dfinsupp {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (Π₀ i, M i) :=
   of_basis <| DFinsupp.basis fun i => chooseBasis R (M i)
 #align module.free.dfinsupp Module.Free.dfinsupp
 
-instance directSum {ι : Type _} (M : ι → Type _) [∀ i : ι, AddCommMonoid (M i)]
+instance directSum {ι : Type*} (M : ι → Type*) [∀ i : ι, AddCommMonoid (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] : Module.Free R (⨁ i, M i) :=
   Module.Free.dfinsupp R M
 #align module.free.direct_sum Module.Free.directSum
@@ -201,15 +204,5 @@ instance tensor : Module.Free R (M ⊗[R] N) :=
 #align module.free.tensor Module.Free.tensor
 
 end CommRing
-
-section DivisionRing
-
-variable [DivisionRing R] [AddCommGroup M] [Module R M]
-
-instance (priority := 100) of_divisionRing : Module.Free R M :=
-  of_basis (Basis.ofVectorSpace R M)
-#align module.free.of_division_ring Module.Free.of_divisionRing
-
-end DivisionRing
 
 end Module.Free

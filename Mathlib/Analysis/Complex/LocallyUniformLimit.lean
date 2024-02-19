@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
 import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Analysis.Calculus.Series
+import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+import Mathlib.Analysis.NormedSpace.FunctionSeries
 
 #align_import analysis.complex.locally_uniform_limit from "leanprover-community/mathlib"@"fe44cd36149e675eb5dec87acc7e8f1d6568e081"
 
@@ -27,9 +28,7 @@ open Set Metric MeasureTheory Filter Complex intervalIntegral
 
 open scoped Real Topology
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
-variable {E ι : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] {U K : Set ℂ}
+variable {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] {U K : Set ℂ}
   {z : ℂ} {M r δ : ℝ} {φ : Filter ι} {F : ι → ℂ → E} {f g : ℂ → E}
 
 namespace Complex
@@ -61,7 +60,7 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
   have h2 := circleIntegral.norm_integral_le_of_norm_le_const hr.le h1
   simp only [cderiv, norm_smul]
   refine' (mul_le_mul le_rfl h2 (norm_nonneg _) (norm_nonneg _)).trans (le_of_eq _)
-  field_simp [_root_.abs_of_nonneg Real.pi_pos.le, Real.pi_pos.ne.symm, hr.ne.symm]
+  field_simp [_root_.abs_of_nonneg Real.pi_pos.le]
   ring
 #align complex.norm_cderiv_le Complex.norm_cderiv_le
 
@@ -121,8 +120,7 @@ theorem tendstoUniformlyOn_deriv_of_cthickening_subset (hf : TendstoLocallyUnifo
     TendstoUniformlyOn (deriv ∘ F) (cderiv δ f) φ K := by
   have h1 : ∀ᶠ n in φ, ContinuousOn (F n) (cthickening δ K) := by
     filter_upwards [hF] with n h using h.continuousOn.mono hKU
-  have h2 : IsCompact (cthickening δ K) :=
-    isCompact_of_isClosed_bounded isClosed_cthickening hK.bounded.cthickening
+  have h2 : IsCompact (cthickening δ K) := hK.cthickening
   have h3 : TendstoUniformlyOn F f φ (cthickening δ K) :=
     (tendstoLocallyUniformlyOn_iff_forall_isCompact hU).mp hf (cthickening δ K) hKU h2
   apply (h3.cderiv hδ h1).congr
@@ -147,8 +145,8 @@ theorem _root_.TendstoLocallyUniformlyOn.differentiableOn [φ.NeBot]
   obtain ⟨K, ⟨hKx, hK⟩, hKU⟩ := (compact_basis_nhds x).mem_iff.mp (hU.mem_nhds hx)
   obtain ⟨δ, _, _, h1⟩ := exists_cthickening_tendstoUniformlyOn hf hF hK hU hKU
   have h2 : interior K ⊆ U := interior_subset.trans hKU
-  have h3 : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) (interior K)
-  filter_upwards [hF] with n h using h.mono h2
+  have h3 : ∀ᶠ n in φ, DifferentiableOn ℂ (F n) (interior K) := by
+    filter_upwards [hF] with n h using h.mono h2
   have h4 : TendstoLocallyUniformlyOn F f φ (interior K) := hf.mono h2
   have h5 : TendstoLocallyUniformlyOn (deriv ∘ F) (cderiv δ f) φ (interior K) :=
     h1.tendstoLocallyUniformlyOn.mono interior_subset

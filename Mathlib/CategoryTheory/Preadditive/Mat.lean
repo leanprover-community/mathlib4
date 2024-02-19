@@ -66,12 +66,12 @@ variable (C : Type u₁) [Category.{v₁} C] [Preadditive C]
 -/
 structure Mat_ where
   ι : Type
-  [F : Fintype ι]
+  [fintype : Fintype ι]
   X : ι → C
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_ CategoryTheory.Mat_
 
-attribute [instance] Mat_.F
+attribute [instance] Mat_.fintype
 
 namespace Mat_
 
@@ -107,8 +107,8 @@ instance : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
   comp f g := f.comp g
-  id_comp f := by simp [dite_comp]
-  comp_id f := by simp [comp_dite]
+  id_comp f := by simp (config := { unfoldPartialApp := true }) [dite_comp]
+  comp_id f := by simp (config := { unfoldPartialApp := true }) [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
     intros
@@ -187,8 +187,8 @@ and so the internal indexing of a biproduct may have nothing to do with the exte
 even though the construction we give uses a sigma type.
 See however `isoBiproductEmbedding`.
 -/
-instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
-    where out n :=
+instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
+  out n :=
     { has_biproduct := fun f =>
         hasBiproduct_of_total
           { pt := ⟨Σ j, (f j).ι, fun p => (f p.1).X p.2⟩
@@ -243,16 +243,16 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
               simp at hj
             simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp, ne_eq,
               Sigma.mk.inj_iff, not_and, id_def]
-            by_cases i' = i
+            by_cases h : i' = i
             · subst h
               rw [dif_pos rfl]
               simp only [heq_eq_eq, true_and]
-              by_cases j' = j
+              by_cases h : j' = j
               · subst h
                 simp
               · rw [dif_neg h, dif_neg (Ne.symm h)]
             · rw [dif_neg h, dif_neg]
-              tauto ) }
+              tauto) }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.has_finite_biproducts CategoryTheory.Mat_.hasFiniteBiproducts
 
@@ -260,7 +260,7 @@ end Mat_
 
 namespace Functor
 
-variable {C} {D : Type _} [Category.{v₁} D] [Preadditive D]
+variable {C} {D : Type*} [Category.{v₁} D] [Preadditive D]
 
 attribute [local simp] Mat_.id_apply eqToHom_map
 
@@ -287,7 +287,7 @@ set_option linter.uppercaseLean3 false in
 /-- Composite functors induce composite functors on matrix categories.
 -/
 @[simps!]
-def mapMatComp {E : Type _} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
+def mapMatComp {E : Type*} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
     (G : D ⥤ E) [Functor.Additive G] : (F ⋙ G).mapMat_ ≅ F.mapMat_ ⋙ G.mapMat_ :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
     ext
@@ -313,8 +313,8 @@ set_option linter.uppercaseLean3 false in
 
 namespace Embedding
 
-instance : Faithful (embedding C)
-    where map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
+instance : Faithful (embedding C) where
+  map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
 instance : Full (embedding C) where preimage f := f PUnit.unit PUnit.unit
 
@@ -387,7 +387,6 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
       F.map (M.isoBiproductEmbedding.hom ≫ biproduct.π _ i) := by
   dsimp [additiveObjIsoBiproduct]
   rw [biproduct.lift_π, Category.assoc]
-  dsimp [Functor.mapBiproduct]
   erw [biproduct.lift_π, ← F.map_comp]
   simp
 
@@ -429,6 +428,8 @@ theorem additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.additive_obj_iso_biproduct_naturality' CategoryTheory.Mat_.additiveObjIsoBiproduct_naturality'
 
+attribute [local simp] biproduct.lift_desc
+
 /-- Any additive functor `C ⥤ D` to a category `D` with finite biproducts extends to
 a functor `Mat_ C ⥤ D`. -/
 @[simps]
@@ -455,7 +456,6 @@ def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F
     (fun X =>
       { hom := biproduct.desc fun _ => 𝟙 (F.obj X)
         inv := biproduct.lift fun _ => 𝟙 (F.obj X) })
-    (by aesop_cat)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.embedding_lift_iso CategoryTheory.Mat_.embeddingLiftIso
 
@@ -560,7 +560,7 @@ open Matrix
 instance (R : Type u) [Semiring R] : Category (Mat R) where
   Hom X Y := Matrix X Y R
   id X := (1 : Matrix X X R)
-  comp f g := f ⬝ g
+  comp {X Y Z} f g := (show Matrix X Y R from f) * (show Matrix Y Z R from g)
   assoc := by intros; simp [Matrix.mul_assoc]
 
 namespace Mat
@@ -646,8 +646,8 @@ instance : Faithful (equivalenceSingleObjInverse R) where
 instance : Full (equivalenceSingleObjInverse R) where
   preimage f i j := MulOpposite.op (f i j)
 
-instance : EssSurj (equivalenceSingleObjInverse R)
-    where mem_essImage X :=
+instance : EssSurj (equivalenceSingleObjInverse R) where
+  mem_essImage X :=
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
 

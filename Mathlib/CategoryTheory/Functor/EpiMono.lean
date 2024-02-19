@@ -203,15 +203,15 @@ instance (priority := 100) preservesMonomorphisms_of_isRightAdjoint (F : C ⥤ D
 #align category_theory.functor.preserves_monomorphisms_of_is_right_adjoint CategoryTheory.Functor.preservesMonomorphisms_of_isRightAdjoint
 
 instance (priority := 100) reflectsMonomorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
-    ReflectsMonomorphisms F
-    where reflects {X} {Y} f hf :=
+    ReflectsMonomorphisms F where
+  reflects {X} {Y} f hf :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_mono (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 #align category_theory.functor.reflects_monomorphisms_of_faithful CategoryTheory.Functor.reflectsMonomorphisms_of_faithful
 
 instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
-    ReflectsEpimorphisms F
-    where reflects {X} {Y} f hf :=
+    ReflectsEpimorphisms F where
+  reflects {X} {Y} f hf :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_epi (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 #align category_theory.functor.reflects_epimorphisms_of_faithful CategoryTheory.Functor.reflectsEpimorphisms_of_faithful
@@ -292,7 +292,7 @@ theorem mono_map_iff_mono [hF₁ : PreservesMonomorphisms F] [hF₂ : ReflectsMo
 
 /-- If `F : C ⥤ D` is an equivalence of categories and `C` is a `split_epi_category`,
 then `D` also is. -/
-def splitEpiCategoryImpOfIsEquivalence [IsEquivalence F] [SplitEpiCategory C] :
+theorem splitEpiCategoryImpOfIsEquivalence [IsEquivalence F] [SplitEpiCategory C] :
     SplitEpiCategory D :=
   ⟨fun {X} {Y} f => by
     intro
@@ -306,7 +306,7 @@ end CategoryTheory.Functor
 
 namespace CategoryTheory.Adjunction
 
-variable {C D : Type _} [Category C] [Category D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
+variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
 
 theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [h₁ : F'.PreservesMonomorphisms]
     [h₂ : F.PreservesEpimorphisms] [StrongEpi f] : StrongEpi (F.map f) :=
@@ -321,11 +321,17 @@ instance strongEpi_map_of_isEquivalence [IsEquivalence F] (f : A ⟶ B) [_h : St
   F.asEquivalence.toAdjunction.strongEpi_map_of_strongEpi f
 #align category_theory.adjunction.strong_epi_map_of_is_equivalence CategoryTheory.Adjunction.strongEpi_map_of_isEquivalence
 
+instance (adj : F ⊣ F') {X : C} {Y : D} (f : F.obj X ⟶ Y) [hf : Mono f] [F.ReflectsMonomorphisms] :
+    Mono (adj.homEquiv _ _ f) :=
+  F.mono_of_mono_map <| by
+    rw [← (homEquiv adj X Y).symm_apply_apply f] at hf
+    exact mono_of_mono_fac adj.homEquiv_counit.symm
+
 end CategoryTheory.Adjunction
 
 namespace CategoryTheory.Functor
 
-variable {C D : Type _} [Category C] [Category D] {F : C ⥤ D} {A B : C} (f : A ⟶ B)
+variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {A B : C} (f : A ⟶ B)
 
 @[simp]
 theorem strongEpi_map_iff_strongEpi_of_isEquivalence [IsEquivalence F] :

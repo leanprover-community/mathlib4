@@ -26,7 +26,7 @@ stated via `[QuasiSober α] [T0Space α]`.
 
 open Set
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 section genericPoint
 
@@ -116,8 +116,8 @@ end genericPoint
 section Sober
 
 /-- A space is sober if every irreducible closed subset has a generic point. -/
-@[mk_iff quasiSober_iff]
-class QuasiSober (α : Type _) [TopologicalSpace α] : Prop where
+@[mk_iff]
+class QuasiSober (α : Type*) [TopologicalSpace α] : Prop where
   sober : ∀ {S : Set α}, IsIrreducible S → IsClosed S → ∃ x, IsGenericPoint x S
 #align quasi_sober QuasiSober
 
@@ -145,8 +145,9 @@ noncomputable def genericPoint [QuasiSober α] [IrreducibleSpace α] : α :=
   (IrreducibleSpace.isIrreducible_univ α).genericPoint
 #align generic_point genericPoint
 
-theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] : IsGenericPoint (genericPoint α) ⊤ :=
-  by simpa using (IrreducibleSpace.isIrreducible_univ α).genericPoint_spec
+theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] :
+    IsGenericPoint (genericPoint α) ⊤ := by
+  simpa using (IrreducibleSpace.isIrreducible_univ α).genericPoint_spec
 #align generic_point_spec genericPoint_spec
 
 @[simp]
@@ -235,7 +236,7 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
   rw [← image_singleton, ← closure_image_closure continuous_subtype_val, H.genericPoint_spec.def]
   refine' (subset_closure_inter_of_isPreirreducible_of_isOpen h.2 (hS ⟨U, hU⟩) ⟨x, hx, hU'⟩).trans
     (closure_mono _)
-  rw [← Subtype.image_preimage_coe]
+  rw [inter_comm t, ← Subtype.image_preimage_coe]
   exact Set.image_subset _ subset_closure
 #align quasi_sober_of_open_cover quasiSober_of_open_cover
 

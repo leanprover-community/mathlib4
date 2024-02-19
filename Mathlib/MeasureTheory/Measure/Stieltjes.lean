@@ -24,169 +24,6 @@ a Borel measure `f.measure`.
 * `f.measure_Icc` and `f.measure_Ico` are analogous.
 -/
 
-
-section MoveThis
-
--- Porting note: this section contains lemmas that should be moved to appropriate places after the
--- port to lean 4
-
-open Filter Set Topology
-
-theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f '' Ioi x))
-    (hf_mono : Monotone f) : ⨅ r : Ioi x, f r = ⨅ q : { q' : ℚ // x < q' }, f q := by
-  refine' le_antisymm _ _
-  · have : Nonempty { r' : ℚ // x < ↑r' } := by
-      obtain ⟨r, hrx⟩ := exists_rat_gt x
-      exact ⟨⟨r, hrx⟩⟩
-    refine' le_ciInf fun r => _
-    obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
-    refine' ciInf_set_le hf (hxy.trans _)
-    exact_mod_cast hyr
-  · refine' le_ciInf fun q => _
-    have hq := q.prop
-    rw [mem_Ioi] at hq
-    obtain ⟨y, hxy, hyq⟩ := exists_rat_btwn hq
-    refine' (ciInf_le _ _).trans _
-    · refine' ⟨hf.some, fun z => _⟩
-      rintro ⟨u, rfl⟩
-      suffices hfu : f u ∈ f '' Ioi x
-      exact hf.choose_spec hfu
-      exact ⟨u, u.prop, rfl⟩
-    · exact ⟨y, hxy⟩
-    · refine' hf_mono (le_trans _ hyq.le)
-      norm_cast
-#align infi_Ioi_eq_infi_rat_gt iInf_Ioi_eq_iInf_rat_gt
-
--- todo after the port: move to topology/algebra/order/left_right_lim
-theorem rightLim_eq_of_tendsto {α β : Type _} [LinearOrder α] [TopologicalSpace β]
-    [TopologicalSpace α] [OrderTopology α] [T2Space β] {f : α → β} {a : α} {y : β}
-    (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) : Function.rightLim f a = y :=
-  @leftLim_eq_of_tendsto αᵒᵈ _ _ _ _ _ _ f a y h h'
-#align right_lim_eq_of_tendsto rightLim_eq_of_tendsto
-
--- todo after the port: move to topology/algebra/order/left_right_lim
-theorem rightLim_eq_sInf {α β : Type _} [LinearOrder α] [TopologicalSpace β]
-    [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} (hf : Monotone f) {x : α}
-    [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
-    Function.rightLim f x = sInf (f '' Ioi x) :=
-  rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
-#align right_lim_eq_Inf rightLim_eq_sInf
-
--- todo after the port: move to order/filter/at_top_bot
-theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type _) [SemilatticeSup α] [Nonempty α]
-    [(atTop : Filter α).IsCountablyGenerated] :
-    ∃ xs : ℕ → α, Monotone xs ∧ Tendsto xs atTop atTop := by
-  haveI h_ne_bot : (atTop : Filter α).NeBot := atTop_neBot
-  obtain ⟨ys, h⟩ := exists_seq_tendsto (atTop : Filter α)
-  let xs : ℕ → α := fun n => Finset.sup' (Finset.range (n + 1)) Finset.nonempty_range_succ ys
-  have h_mono : Monotone xs := by
-    intro i j hij
-    rw [Finset.sup'_le_iff]
-    intro k hk
-    refine' Finset.le_sup'_of_le _ _ le_rfl
-    rw [Finset.mem_range] at hk ⊢
-    exact hk.trans_le (add_le_add_right hij _)
-  refine' ⟨xs, h_mono, _⟩
-  · refine' tendsto_atTop_atTop_of_monotone h_mono _
-    have : ∀ a : α, ∃ n : ℕ, a ≤ ys n := by
-      rw [tendsto_atTop_atTop] at h
-      intro a
-      obtain ⟨i, hi⟩ := h a
-      exact ⟨i, hi i le_rfl⟩
-    intro a
-    obtain ⟨i, hi⟩ := this a
-    refine' ⟨i, hi.trans _⟩
-    refine' Finset.le_sup'_of_le _ _ le_rfl
-    rw [Finset.mem_range_succ_iff]
-#align exists_seq_monotone_tendsto_at_top_at_top exists_seq_monotone_tendsto_atTop_atTop
-
-theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type _) [SemilatticeInf α] [Nonempty α]
-    [h2 : (atBot : Filter α).IsCountablyGenerated] :
-    ∃ xs : ℕ → α, Antitone xs ∧ Tendsto xs atTop atBot :=
-  @exists_seq_monotone_tendsto_atTop_atTop αᵒᵈ _ _ h2
-#align exists_seq_antitone_tendsto_at_top_at_bot exists_seq_antitone_tendsto_atTop_atBot
-
--- todo after the port: move to topology/algebra/order/monotone_convergence
-theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
-    {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Antitone f)
-    (hφ : Tendsto φ l atBot) : ⨆ i, f i = ⨆ i, f (φ i) :=
-  le_antisymm
-    (iSup_mono' fun i =>
-      Exists.imp (fun j (hj : φ j ≤ i) => hf hj) (hφ.eventually <| eventually_le_atBot i).exists)
-    (iSup_mono' fun i => ⟨φ i, le_rfl⟩)
-#align supr_eq_supr_subseq_of_antitone iSup_eq_iSup_subseq_of_antitone
-
-namespace MeasureTheory
-
--- todo after the port: move these lemmas to measure_theory/measure/measure_space?
-variable {α : Type _} {mα : MeasurableSpace α}
-
-theorem tendsto_measure_Ico_atTop [SemilatticeSup α] [NoMaxOrder α]
-    [(atTop : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
-    Tendsto (fun x => μ (Ico a x)) atTop (𝓝 (μ (Ici a))) := by
-  haveI : Nonempty α := ⟨a⟩
-  have h_mono : Monotone fun x => μ (Ico a x) := fun i j hij =>
-    measure_mono (Ico_subset_Ico_right hij)
-  convert tendsto_atTop_iSup h_mono
-  obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_monotone_tendsto_atTop_atTop α
-  have h_Ici : Ici a = ⋃ n, Ico a (xs n) := by
-    ext1 x
-    simp only [mem_Ici, mem_iUnion, mem_Ico, exists_and_left, iff_self_and]
-    intro
-    obtain ⟨y, hxy⟩ := NoMaxOrder.exists_gt x
-    obtain ⟨n, hn⟩ := tendsto_atTop_atTop.mp hxs_tendsto y
-    exact ⟨n, hxy.trans_le (hn n le_rfl)⟩
-  rw [h_Ici, measure_iUnion_eq_iSup, iSup_eq_iSup_subseq_of_monotone h_mono hxs_tendsto]
-  exact Monotone.directed_le fun i j hij => Ico_subset_Ico_right (hxs_mono hij)
-#align measure_theory.tendsto_measure_Ico_at_top MeasureTheory.tendsto_measure_Ico_atTop
-
-theorem tendsto_measure_Ioc_atBot [SemilatticeInf α] [NoMinOrder α]
-    [(atBot : Filter α).IsCountablyGenerated] (μ : Measure α) (a : α) :
-    Tendsto (fun x => μ (Ioc x a)) atBot (𝓝 (μ (Iic a))) := by
-  haveI : Nonempty α := ⟨a⟩
-  have h_mono : Antitone fun x => μ (Ioc x a) := fun i j hij =>
-    measure_mono (Ioc_subset_Ioc_left hij)
-  convert tendsto_atBot_iSup h_mono
-  obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_antitone_tendsto_atTop_atBot α
-  have h_Iic : Iic a = ⋃ n, Ioc (xs n) a := by
-    ext1 x
-    simp only [mem_Iic, mem_iUnion, mem_Ioc, exists_and_right, iff_and_self]
-    intro
-    obtain ⟨y, hxy⟩ := NoMinOrder.exists_lt x
-    obtain ⟨n, hn⟩ := tendsto_atTop_atBot.mp hxs_tendsto y
-    exact ⟨n, (hn n le_rfl).trans_lt hxy⟩
-  rw [h_Iic, measure_iUnion_eq_iSup, iSup_eq_iSup_subseq_of_antitone h_mono hxs_tendsto]
-  exact Monotone.directed_le fun i j hij => Ioc_subset_Ioc_left (hxs_mono hij)
-#align measure_theory.tendsto_measure_Ioc_at_bot MeasureTheory.tendsto_measure_Ioc_atBot
-
-theorem tendsto_measure_Iic_atTop [SemilatticeSup α] [(atTop : Filter α).IsCountablyGenerated]
-    (μ : Measure α) : Tendsto (fun x => μ (Iic x)) atTop (𝓝 (μ univ)) := by
-  cases isEmpty_or_nonempty α
-  · have h1 : ∀ x : α, Iic x = ∅ := fun x => Subsingleton.elim _ _
-    have h2 : (univ : Set α) = ∅ := Subsingleton.elim _ _
-    simp_rw [h1, h2]
-    exact tendsto_const_nhds
-  have h_mono : Monotone fun x => μ (Iic x) := fun i j hij => measure_mono (Iic_subset_Iic.mpr hij)
-  convert tendsto_atTop_iSup h_mono
-  obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_monotone_tendsto_atTop_atTop α
-  have h_univ : (univ : Set α) = ⋃ n, Iic (xs n) := by
-    ext1 x
-    simp only [mem_univ, mem_iUnion, mem_Iic, true_iff_iff]
-    obtain ⟨n, hn⟩ := tendsto_atTop_atTop.mp hxs_tendsto x
-    exact ⟨n, hn n le_rfl⟩
-  rw [h_univ, measure_iUnion_eq_iSup, iSup_eq_iSup_subseq_of_monotone h_mono hxs_tendsto]
-  exact Monotone.directed_le fun i j hij => Iic_subset_Iic.mpr (hxs_mono hij)
-#align measure_theory.tendsto_measure_Iic_at_top MeasureTheory.tendsto_measure_Iic_atTop
-
-theorem tendsto_measure_Ici_atBot [SemilatticeInf α] [h : (atBot : Filter α).IsCountablyGenerated]
-    (μ : Measure α) : Tendsto (fun x => μ (Ici x)) atBot (𝓝 (μ univ)) :=
-  @tendsto_measure_Iic_atTop αᵒᵈ _ _ h μ
-#align measure_theory.tendsto_measure_Ici_at_bot MeasureTheory.tendsto_measure_Ici_atBot
-
-end MeasureTheory
-
-end MoveThis
-
 noncomputable section
 
 open Classical Set Filter Function BigOperators ENNReal NNReal Topology MeasureTheory
@@ -217,6 +54,9 @@ instance instCoeFun : CoeFun StieltjesFunction fun _ => ℝ → ℝ :=
 
 initialize_simps_projections StieltjesFunction (toFun → apply)
 
+@[ext] lemma ext {f g : StieltjesFunction} (h : ∀ x, f x = g x) : f = g := by
+  exact (StieltjesFunction.mk.injEq ..).mpr (funext (by exact h))
+
 variable (f : StieltjesFunction)
 
 theorem mono : Monotone f :=
@@ -234,7 +74,7 @@ theorem rightLim_eq (f : StieltjesFunction) (x : ℝ) : Function.rightLim f x = 
 
 theorem iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : ⨅ r : Ioi x, f r = f x := by
   suffices Function.rightLim f x = ⨅ r : Ioi x, f r by rw [← this, f.rightLim_eq]
-  rw [rightLim_eq_sInf f.mono, sInf_image']
+  rw [f.mono.rightLim_eq_sInf, sInf_image']
   rw [← neBot_iff]
   infer_instance
 #align stieltjes_function.infi_Ioi_eq StieltjesFunction.iInf_Ioi_eq
@@ -242,7 +82,7 @@ theorem iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : ⨅ r : Ioi x, f r = f x
 theorem iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
     ⨅ r : { r' : ℚ // x < r' }, f r = f x := by
   rw [← iInf_Ioi_eq f x]
-  refine' (iInf_Ioi_eq_iInf_rat_gt _ _ f.mono).symm
+  refine' (Real.iInf_Ioi_eq_iInf_rat_gt _ _ f.mono).symm
   refine' ⟨f x, fun y => _⟩
   rintro ⟨y, hy_mem, rfl⟩
   exact f.mono (le_of_lt hy_mem)
@@ -280,7 +120,7 @@ noncomputable def _root_.Monotone.stieltjesFunction {f : ℝ → ℝ} (hf : Mono
     obtain ⟨y, xy, h'y⟩ : ∃ (y : ℝ), x < y ∧ Ioc x y ⊆ f ⁻¹' Ioo l u :=
       mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 (hf.tendsto_rightLim x (Ioo_mem_nhds hlu.1 hlu.2))
     change ∀ᶠ y in 𝓝[≥] x, rightLim f y ∈ s
-    filter_upwards [Ico_mem_nhdsWithin_Ici ⟨le_refl x, xy⟩]with z hz
+    filter_upwards [Ico_mem_nhdsWithin_Ici ⟨le_refl x, xy⟩] with z hz
     apply lus
     refine' ⟨hlu.1.trans_le (hf.rightLim hz.1), _⟩
     obtain ⟨a, za, ay⟩ : ∃ a : ℝ, z < a ∧ a < y := exists_between hz.2
@@ -320,7 +160,7 @@ theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
   refine'
     le_antisymm (iInf_le_of_le a <| iInf₂_le b Subset.rfl)
       (le_iInf fun a' => le_iInf fun b' => le_iInf fun h => ENNReal.coe_le_coe.2 _)
-  cases' le_or_lt b a with ab ab
+  rcases le_or_lt b a with ab | ab
   · rw [Real.toNNReal_of_nonpos (sub_nonpos.2 (f.mono ab))]
     apply zero_le
   cases' (Ioc_subset_Ioc_iff ab).1 h with h₁ h₂
@@ -362,7 +202,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
     exact this hf.toFinset _ (by simpa only [e] )
   clear ss b
   refine' fun s => Finset.strongInductionOn s fun s IH b cv => _
-  cases' le_total b a with ab ab
+  rcases le_total b a with ab | ab
   · rw [ENNReal.ofReal_eq_zero.2 (sub_nonpos.2 (f.mono ab))]
     exact zero_le _
   have := cv ⟨ab, le_rfl⟩
@@ -451,7 +291,7 @@ theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c
     le_trans
       (add_le_add (f.length_mono <| inter_subset_inter_left _ h)
         (f.length_mono <| diff_subset_diff_left h)) _
-  cases' le_total a c with hac hac <;> cases' le_total b c with hbc hbc
+  rcases le_total a c with hac | hac <;> rcases le_total b c with hbc | hbc
   · simp only [Ioc_inter_Ioi, f.length_Ioc, hac, _root_.sup_eq_max, hbc, le_refl, Ioc_eq_empty,
       max_eq_right, min_eq_left, Ioc_diff_Ioi, f.length_empty, zero_add, not_lt]
   · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_diff_Ioi, f.length_Ioc, min_eq_right,
@@ -521,7 +361,7 @@ theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a)
     exists_seq_strictMono_tendsto a
   have A : {a} = ⋂ n, Ioc (u n) a := by
     refine' Subset.antisymm (fun x hx => by simp [mem_singleton_iff.1 hx, u_lt_a]) fun x hx => _
-    simp at hx
+    simp? at hx says simp only [mem_iInter, mem_Ioc] at hx
     have : a ≤ x := le_of_tendsto' u_lim fun n => (hx n).1.le
     simp [le_antisymm this (hx 0).2]
   have L1 : Tendsto (fun n => f.measure (Ioc (u n) a)) atTop (𝓝 (f.measure {a})) := by
@@ -609,5 +449,39 @@ theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto
 instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
   ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
 #align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instIsLocallyFiniteMeasure
+
+lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction) {l : ℝ}
+    (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :
+    f = g := by
+  ext x
+  have hf := measure_Iic f hfl x
+  rw [hfg, measure_Iic g hgl x, ENNReal.ofReal_eq_ofReal_iff, eq_comm] at hf
+  · simpa using hf
+  · rw [sub_nonneg]
+    exact Monotone.le_of_tendsto g.mono hgl x
+  · rw [sub_nonneg]
+    exact Monotone.le_of_tendsto f.mono hfl x
+
+lemma eq_of_measure_of_eq (g : StieltjesFunction) {y : ℝ}
+    (hfg : f.measure = g.measure) (hy : f y = g y) :
+    f = g := by
+  ext x
+  cases le_total x y with
+  | inl hxy =>
+    have hf := measure_Ioc f x y
+    rw [hfg, measure_Ioc g x y, ENNReal.ofReal_eq_ofReal_iff, eq_comm, hy] at hf
+    · simpa using hf
+    · rw [sub_nonneg]
+      exact g.mono hxy
+    · rw [sub_nonneg]
+      exact f.mono hxy
+  | inr hxy =>
+    have hf := measure_Ioc f y x
+    rw [hfg, measure_Ioc g y x, ENNReal.ofReal_eq_ofReal_iff, eq_comm, hy] at hf
+    · simpa using hf
+    · rw [sub_nonneg]
+      exact g.mono hxy
+    · rw [sub_nonneg]
+      exact f.mono hxy
 
 end StieltjesFunction

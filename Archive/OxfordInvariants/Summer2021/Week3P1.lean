@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Data.Rat.Cast
 
 #align_import oxford_invariants.«2021summer».week3_p1 from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -72,7 +71,7 @@ natural.
 
 open scoped BigOperators
 
-variable {α : Type _} [LinearOrderedField α]
+variable {α : Type*} [LinearOrderedField α]
 
 theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ n, 0 < a i)
     (ha : ∀ i, i + 2 ≤ n → a (i + 1) ∣ a i + a (i + 2)) :
@@ -116,9 +115,9 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     rw [← @Nat.cast_le α, Nat.cast_mul, hb, ←
       div_le_iff' (a_pos _ <| n.le_succ.trans <| Nat.le_succ _), ←
       mul_div_mul_right _ _ (a_pos _ <| Nat.le_succ _).ne']
-    suffices h : ∀ i, i ∈ Finset.range (n + 1) → 0 ≤ (a 0 : α) * a (n + 1) / (a i * a (i + 1))
-    · exact Finset.single_le_sum h (Finset.self_mem_range_succ n)
-    refine' fun i _ => div_nonneg _ _ <;> refine' mul_nonneg _ _ <;> exact Nat.cast_nonneg _
+    suffices h : ∀ i, i ∈ Finset.range (n + 1) → 0 ≤ (a 0 : α) * a (n + 1) / (a i * a (i + 1)) from
+      Finset.single_le_sum h (Finset.self_mem_range_succ n)
+    refine fun i _ ↦ div_nonneg ?_ ?_ <;> refine mul_nonneg ?_ ?_ <;> exact Nat.cast_nonneg _
   -- Claim that the sum equals `(aₙ + aₙ₊₂)/aₙ₊₁ * b - (aₙ * b - a₀)/aₙ₊₁`
   refine' ⟨(a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1), _, _⟩
   -- Check that this indeed equals the sum

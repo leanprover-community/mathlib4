@@ -105,6 +105,10 @@ instance : CompactSpace circle :=
 instance : TopologicalGroup circle :=
   Metric.sphere.topologicalGroup
 
+instance : UniformGroup circle := by
+  convert topologicalGroup_is_uniform_of_compactSpace circle
+  exact unique_uniformity_of_compact rfl rfl
+
 /-- If `z` is a nonzero complex number, then `conj z / z` belongs to the unit circle. -/
 @[simps]
 def circle.ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : circle :=
@@ -113,8 +117,8 @@ def circle.ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : circle :=
 #align circle.of_conj_div_self circle.ofConjDivSelf
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
-def expMapCircle : C(ℝ, circle)
-    where toFun t := ⟨exp (t * I), by simp [exp_mul_I, abs_cos_add_sin_mul_I]⟩
+def expMapCircle : C(ℝ, circle) where
+  toFun t := ⟨exp (t * I), by simp [exp_mul_I, abs_cos_add_sin_mul_I]⟩
 #align exp_map_circle expMapCircle
 
 @[simp]
@@ -125,7 +129,7 @@ theorem expMapCircle_apply (t : ℝ) : ↑(expMapCircle t) = Complex.exp (t * Co
 @[simp]
 theorem expMapCircle_zero : expMapCircle 0 = 1 :=
   Subtype.ext <| by
-    rw [expMapCircle_apply, ofReal_zero, MulZeroClass.zero_mul, exp_zero, Submonoid.coe_one]
+    rw [expMapCircle_apply, ofReal_zero, zero_mul, exp_zero, Submonoid.coe_one]
 #align exp_map_circle_zero expMapCircle_zero
 
 @[simp]

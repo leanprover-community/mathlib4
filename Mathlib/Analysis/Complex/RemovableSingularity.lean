@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDerivAnalytic
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Complex.CauchyIntegral
 
@@ -23,8 +23,6 @@ open TopologicalSpace Metric Set Filter Asymptotics Function
 
 open scoped Topology Filter NNReal Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 universe u
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
@@ -37,8 +35,8 @@ theorem analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt {f : ℂ 
     (hd : ∀ᶠ z in 𝓝[≠] c, DifferentiableAt ℂ f z) (hc : ContinuousAt f c) : AnalyticAt ℂ f c := by
   rcases (nhdsWithin_hasBasis nhds_basis_closedBall _).mem_iff.1 hd with ⟨R, hR0, hRs⟩
   lift R to ℝ≥0 using hR0.le
-  replace hc : ContinuousOn f (closedBall c R)
-  · refine' fun z hz => ContinuousAt.continuousWithinAt _
+  replace hc : ContinuousOn f (closedBall c R) := by
+    refine' fun z hz => ContinuousAt.continuousWithinAt _
     rcases eq_or_ne z c with (rfl | hne)
     exacts [hc, (hRs ⟨hz, hne⟩).continuousAt]
   exact (hasFPowerSeriesOnBall_of_differentiable_off_countable (countable_singleton c) hc

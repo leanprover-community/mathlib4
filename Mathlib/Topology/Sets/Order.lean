@@ -17,13 +17,13 @@ In this file we define the type of clopen upper sets.
 
 open Set TopologicalSpace
 
-variable {α β : Type _} [TopologicalSpace α] [LE α] [TopologicalSpace β] [LE β]
+variable {α β : Type*} [TopologicalSpace α] [LE α] [TopologicalSpace β] [LE β]
 
 /-! ### Compact open sets -/
 
 
 /-- The type of clopen upper sets of a topological space. -/
-structure ClopenUpperSet (α : Type _) [TopologicalSpace α] [LE α] extends Clopens α where
+structure ClopenUpperSet (α : Type*) [TopologicalSpace α] [LE α] extends Clopens α where
   upper' : IsUpperSet carrier
 #align clopen_upper_set ClopenUpperSet
 
@@ -45,9 +45,9 @@ theorem upper (s : ClopenUpperSet α) : IsUpperSet (s : Set α) :=
   s.upper'
 #align clopen_upper_set.upper ClopenUpperSet.upper
 
-theorem clopen (s : ClopenUpperSet α) : IsClopen (s : Set α) :=
-  s.clopen'
-#align clopen_upper_set.clopen ClopenUpperSet.clopen
+theorem isClopen (s : ClopenUpperSet α) : IsClopen (s : Set α) :=
+  s.isClopen'
+#align clopen_upper_set.clopen ClopenUpperSet.isClopen
 
 /-- Reinterpret an upper clopen as an upper set. -/
 @[simps]

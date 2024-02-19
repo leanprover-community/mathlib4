@@ -15,7 +15,7 @@ This file defines equality modulo an element in a commutative group.
 
 ## Main definitions
 
-* `a ≡ b [PMOD p]`: `a` and `b` are congruent modulo a`p`.
+* `a ≡ b [PMOD p]`: `a` and `b` are congruent modulo `p`.
 
 ## See also
 
@@ -32,7 +32,7 @@ also unify with `Nat.ModEq`.
 
 namespace AddCommGroup
 
-variable {α : Type _}
+variable {α : Type*}
 
 section AddCommGroup
 
@@ -47,6 +47,7 @@ def ModEq (p a b : α) : Prop :=
   ∃ z : ℤ, b - a = z • p
 #align add_comm_group.modeq AddCommGroup.ModEq
 
+@[inherit_doc]
 notation:50 a " ≡ " b " [PMOD " p "]" => ModEq p a b
 
 @[refl, simp]
@@ -62,7 +63,7 @@ theorem modEq_comm : a ≡ b [PMOD p] ↔ b ≡ a [PMOD p] :=
   (Equiv.neg _).exists_congr_left.trans <| by simp [ModEq, ← neg_eq_iff_eq_neg]
 #align add_comm_group.modeq_comm AddCommGroup.modEq_comm
 
-alias modEq_comm ↔ ModEq.symm _
+alias ⟨ModEq.symm, _⟩ := modEq_comm
 #align add_comm_group.modeq.symm AddCommGroup.ModEq.symm
 
 attribute [symm] ModEq.symm
@@ -80,7 +81,7 @@ theorem neg_modEq_neg : -a ≡ -b [PMOD p] ↔ a ≡ b [PMOD p] :=
   modEq_comm.trans <| by simp [ModEq, neg_add_eq_sub]
 #align add_comm_group.neg_modeq_neg AddCommGroup.neg_modEq_neg
 
-alias neg_modEq_neg ↔ ModEq.of_neg ModEq.neg
+alias ⟨ModEq.of_neg, ModEq.neg⟩ := neg_modEq_neg
 #align add_comm_group.modeq.of_neg AddCommGroup.ModEq.of_neg
 #align add_comm_group.modeq.neg AddCommGroup.ModEq.neg
 
@@ -89,7 +90,7 @@ theorem modEq_neg : a ≡ b [PMOD -p] ↔ a ≡ b [PMOD p] :=
   modEq_comm.trans <| by simp [ModEq, ← neg_eq_iff_eq_neg]
 #align add_comm_group.modeq_neg AddCommGroup.modEq_neg
 
-alias modEq_neg ↔ ModEq.of_neg' ModEq.neg'
+alias ⟨ModEq.of_neg', ModEq.neg'⟩ := modEq_neg
 #align add_comm_group.modeq.of_neg' AddCommGroup.ModEq.of_neg'
 #align add_comm_group.modeq.neg' AddCommGroup.ModEq.neg'
 
@@ -175,10 +176,10 @@ theorem nsmul_modEq_nsmul [NoZeroSMulDivisors ℕ α] (hn : n ≠ 0) :
   exists_congr fun m => by rw [← smul_sub, smul_comm, smul_right_inj hn]
 #align add_comm_group.nsmul_modeq_nsmul AddCommGroup.nsmul_modEq_nsmul
 
-alias zsmul_modEq_zsmul ↔ ModEq.zsmul_cancel _
+alias ⟨ModEq.zsmul_cancel, _⟩ := zsmul_modEq_zsmul
 #align add_comm_group.modeq.zsmul_cancel AddCommGroup.ModEq.zsmul_cancel
 
-alias nsmul_modEq_nsmul ↔ ModEq.nsmul_cancel _
+alias ⟨ModEq.nsmul_cancel, _⟩ := nsmul_modEq_nsmul
 #align add_comm_group.modeq.nsmul_cancel AddCommGroup.ModEq.nsmul_cancel
 
 namespace ModEq
@@ -207,18 +208,18 @@ protected theorem sub_iff_right :
   (Equiv.subRight m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, ModEq]
 #align add_comm_group.modeq.sub_iff_right AddCommGroup.ModEq.sub_iff_right
 
-alias ModEq.add_iff_left ↔ add_left_cancel add
+alias ⟨add_left_cancel, add⟩ := ModEq.add_iff_left
 #align add_comm_group.modeq.add_left_cancel AddCommGroup.ModEq.add_left_cancel
 #align add_comm_group.modeq.add AddCommGroup.ModEq.add
 
-alias ModEq.add_iff_right ↔ add_right_cancel _
+alias ⟨add_right_cancel, _⟩ := ModEq.add_iff_right
 #align add_comm_group.modeq.add_right_cancel AddCommGroup.ModEq.add_right_cancel
 
-alias ModEq.sub_iff_left ↔ sub_left_cancel sub
+alias ⟨sub_left_cancel, sub⟩ := ModEq.sub_iff_left
 #align add_comm_group.modeq.sub_left_cancel AddCommGroup.ModEq.sub_left_cancel
 #align add_comm_group.modeq.sub AddCommGroup.ModEq.sub
 
-alias ModEq.sub_iff_right ↔ sub_right_cancel _
+alias ⟨sub_right_cancel, _⟩ := ModEq.sub_iff_right
 #align add_comm_group.modeq.sub_right_cancel AddCommGroup.ModEq.sub_right_cancel
 
 -- porting note: doesn't work
@@ -316,25 +317,36 @@ section AddCommGroupWithOne
 variable [AddCommGroupWithOne α] [CharZero α]
 
 @[simp, norm_cast]
-theorem int_cast_modEq_int_cast {a b z : ℤ} : a ≡ b [PMOD (z : α)] ↔ a ≡ b [PMOD z] := by
+theorem intCast_modEq_intCast {a b z : ℤ} : a ≡ b [PMOD (z : α)] ↔ a ≡ b [PMOD z] := by
   simp_rw [ModEq, ← Int.cast_mul_eq_zsmul_cast]
   norm_cast
-#align add_comm_group.int_cast_modeq_int_cast AddCommGroup.int_cast_modEq_int_cast
+#align add_comm_group.int_cast_modeq_int_cast AddCommGroup.intCast_modEq_intCast
 
 @[simp, norm_cast]
-theorem nat_cast_modEq_nat_cast {a b n : ℕ} : a ≡ b [PMOD (n : α)] ↔ a ≡ b [MOD n] := by
-  simp_rw [← Int.coe_nat_modEq_iff, ← modEq_iff_int_modEq, ← @int_cast_modEq_int_cast α,
+lemma intCast_modEq_intCast' {a b : ℤ} {n : ℕ} : a ≡ b [PMOD (n : α)] ↔ a ≡ b [PMOD (n : ℤ)] := by
+  simpa using intCast_modEq_intCast (α := α) (z := n)
+
+@[simp, norm_cast]
+theorem natCast_modEq_natCast {a b n : ℕ} : a ≡ b [PMOD (n : α)] ↔ a ≡ b [MOD n] := by
+  simp_rw [← Int.coe_nat_modEq_iff, ← modEq_iff_int_modEq, ← @intCast_modEq_intCast α,
     Int.cast_ofNat]
-#align add_comm_group.nat_cast_modeq_nat_cast AddCommGroup.nat_cast_modEq_nat_cast
+#align add_comm_group.nat_cast_modeq_nat_cast AddCommGroup.natCast_modEq_natCast
 
-alias int_cast_modEq_int_cast ↔ ModEq.of_int_cast ModEq.int_cast
-#align add_comm_group.modeq.of_int_cast AddCommGroup.ModEq.of_int_cast
-#align add_comm_group.modeq.int_cast AddCommGroup.ModEq.int_cast
+alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast
+#align add_comm_group.modeq.of_int_cast AddCommGroup.ModEq.of_intCast
+#align add_comm_group.modeq.int_cast AddCommGroup.ModEq.intCast
 
-alias nat_cast_modEq_nat_cast ↔ _root_.Nat.ModEq.of_nat_cast ModEq.nat_cast
-#align nat.modeq.of_nat_cast Nat.ModEq.of_nat_cast
-#align add_comm_group.modeq.nat_cast AddCommGroup.ModEq.nat_cast
+alias ⟨_root_.Nat.ModEq.of_natCast, ModEq.natCast⟩ := natCast_modEq_natCast
+#align nat.modeq.of_nat_cast Nat.ModEq.of_natCast
+#align add_comm_group.modeq.nat_cast AddCommGroup.ModEq.natCast
 
 end AddCommGroupWithOne
 
+section DivisionRing
+variable [DivisionRing α] {a b c p : α}
+
+@[simp] lemma div_modEq_div (hc : c ≠ 0) : a / c ≡ b / c [PMOD p] ↔ a ≡ b [PMOD (p * c)] := by
+  simp [ModEq, ← sub_div, div_eq_iff hc, mul_assoc]
+
+end DivisionRing
 end AddCommGroup

@@ -30,13 +30,13 @@ is computable and universe-polymorphic.
 
 open Function Multiset
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace Finset
 
 section Sigma
 
-variable {α : ι → Type _} {β : Type _} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
+variable {α : ι → Type*} {β : Type*} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
 
 /-- `s.sigma t` is the finset of dependent pairs `⟨i, a⟩` such that `i ∈ s` and `a ∈ t i`. -/
 protected def sigma : Finset (Σi, α i) :=
@@ -52,7 +52,7 @@ theorem mem_sigma {a : Σi, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t 
 
 @[simp, norm_cast]
 theorem coe_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) :
-    (s.sigma t : Set (Σi, α i)) = (s : Set ι).Sigma fun i => (t i : Set (α i)) :=
+    (s.sigma t : Set (Σ i, α i)) = (s : Set ι).sigma fun i ↦ (t i : Set (α i)) :=
   Set.ext fun _ => mem_sigma
 #align finset.coe_sigma Finset.coe_sigma
 
@@ -113,7 +113,7 @@ end Sigma
 
 section SigmaLift
 
-variable {α β γ : ι → Type _} [DecidableEq ι]
+variable {α β γ : ι → Type*} [DecidableEq ι]
 
 /-- Lifts maps `α i → β i → Finset (γ i)` to a map `Σ i, α i → Σ i, β i → Finset (Σ i, γ i)`. -/
 def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β) :

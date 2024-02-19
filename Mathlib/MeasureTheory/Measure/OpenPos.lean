@@ -29,7 +29,7 @@ namespace Measure
 
 section Basic
 
-variable {X Y : Type _} [TopologicalSpace X] {m : MeasurableSpace X} [TopologicalSpace Y]
+variable {X Y : Type*} [TopologicalSpace X] {m : MeasurableSpace X} [TopologicalSpace Y]
   [T2Space Y] (μ ν : Measure X)
 
 /-- A measure is said to be `IsOpenPosMeasure` if it is positive on nonempty open sets. -/
@@ -89,6 +89,7 @@ theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
     U =ᵐ[μ] (∅ : Set X) ↔ U = ∅ := by
   rw [ae_eq_empty, hU.measure_zero_iff_eq_empty]
 
+/-- An open null set w.r.t. an `IsOpenPosMeasure` is empty. -/
 theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
   (hU.measure_eq_zero_iff μ).mp h₀
 #align is_open.eq_empty_of_measure_zero IsOpen.eq_empty_of_measure_zero
@@ -108,6 +109,7 @@ theorem _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsP
     μ F = 1 ↔ F = univ := by
   rw [← measure_univ (μ := μ), hF.measure_eq_univ_iff_eq]
 
+/-- A null set has empty interior. -/
 theorem interior_eq_empty_of_null (hs : μ s = 0) : interior s = ∅ :=
   isOpen_interior.eq_empty_of_measure_zero <| measure_mono_null interior_subset hs
 #align measure_theory.measure.interior_eq_empty_of_null MeasureTheory.Measure.interior_eq_empty_of_null
@@ -152,7 +154,7 @@ theorem _root_.Continuous.ae_eq_iff_eq {f g : X → Y} (hf : Continuous f) (hg :
 variable {μ}
 
 theorem _root_.Continuous.isOpenPosMeasure_map [OpensMeasurableSpace X]
-    {Z : Type _} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
+    {Z : Type*} [TopologicalSpace Z] [MeasurableSpace Z] [BorelSpace Z]
     {f : X → Z} (hf : Continuous f) (hf_surj : Function.Surjective f) :
     (Measure.map f μ).IsOpenPosMeasure := by
   refine' ⟨fun U hUo hUne => _⟩
@@ -164,7 +166,7 @@ end Basic
 
 section LinearOrder
 
-variable {X Y : Type _} [TopologicalSpace X] [LinearOrder X] [OrderTopology X]
+variable {X Y : Type*} [TopologicalSpace X] [LinearOrder X] [OrderTopology X]
   {m : MeasurableSpace X} [TopologicalSpace Y] [T2Space Y] (μ : Measure X) [IsOpenPosMeasure μ]
 
 theorem measure_Ioi_pos [NoMaxOrder X] (a : X) : 0 < μ (Ioi a) :=
@@ -216,7 +218,7 @@ open MeasureTheory MeasureTheory.Measure
 
 namespace Metric
 
-variable {X : Type _} [PseudoMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
+variable {X : Type*} [PseudoMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
   [IsOpenPosMeasure μ]
 
 theorem measure_ball_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (ball x r) :=
@@ -228,7 +230,7 @@ theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBa
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 #align metric.measure_closed_ball_pos Metric.measure_closedBall_pos
 
-@[simp] lemma measure_closedBall_pos_iff {X : Type _} [MetricSpace X] {m : MeasurableSpace X}
+@[simp] lemma measure_closedBall_pos_iff {X : Type*} [MetricSpace X] {m : MeasurableSpace X}
     (μ : Measure X) [IsOpenPosMeasure μ] [NoAtoms μ] {x : X} {r : ℝ} :
     0 < μ (closedBall x r) ↔ 0 < r := by
   refine' ⟨fun h ↦ _, measure_closedBall_pos μ x⟩
@@ -239,7 +241,7 @@ end Metric
 
 namespace EMetric
 
-variable {X : Type _} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
+variable {X : Type*} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
   [IsOpenPosMeasure μ]
 
 theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (ball x r) :=
@@ -251,3 +253,39 @@ theorem measure_closedBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ 
 #align emetric.measure_closed_ball_pos EMetric.measure_closedBall_pos
 
 end EMetric
+
+section MeasureZero
+/-! ## Meagre sets and measure zero
+In general, neither of meagre and measure zero implies the other.
+- The set of Liouville numbers is a Lebesgue measure zero subset of ℝ, but is not meagre.
+(In fact, its complement is meagre. See `Real.disjoint_residual_ae`.)
+
+- The complement of the set of Liouville numbers in $[0,1]$ is meagre and has measure 1.
+For another counterexample, for all $α ∈ (0,1)$, there is a generalised Cantor set $C ⊆ [0,1]$
+of measure `α`. Cantor sets are nowhere dense (hence meagre). Taking a countable union of
+fat Cantor sets whose measure approaches 1 even yields a meagre set of measure 1.
+
+However, with respect to a measure which is positive on non-empty open sets, *closed* measure
+zero sets are nowhere dense and σ-compact measure zero sets in a Hausdorff space are meagre.
+-/
+
+variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] {s : Set X}
+  {μ : Measure X} [IsOpenPosMeasure μ]
+
+/-- A *closed* measure zero subset is nowhere dense. (Closedness is required: for instance, the
+rational numbers are countable (thus have measure zero), but are dense (hence not nowhere dense). -/
+lemma IsNowhereDense.of_isClosed_null (h₁s : IsClosed s) (h₂s : μ s = 0) :
+    IsNowhereDense s := h₁s.isNowhereDense_iff.mpr (interior_eq_empty_of_null h₂s)
+
+/-- A σ-compact measure zero subset is meagre.
+(More generally, every Fσ set of measure zero is meagre.) -/
+lemma IsMeagre.of_isSigmaCompact_null [T2Space X] (h₁s : IsSigmaCompact s) (h₂s : μ s = 0) :
+    IsMeagre s := by
+  rcases h₁s with ⟨K, hcompact, hcover⟩
+  have h (n : ℕ) : IsNowhereDense (K n) := by
+    have : μ (K n) = 0 := measure_mono_null (hcover ▸ subset_iUnion K n) h₂s
+    exact .of_isClosed_null (hcompact n).isClosed this
+  rw [isMeagre_iff_countable_union_isNowhereDense]
+  exact ⟨range K, fun t ⟨n, hn⟩ ↦ hn ▸ h n, countable_range K, hcover.symm.subset⟩
+
+end MeasureZero

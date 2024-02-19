@@ -29,8 +29,6 @@ individually.
 
 open scoped Nat BigOperators
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 open Nat hiding zero_le Prime
 
 open Finset multiplicity
@@ -39,8 +37,8 @@ namespace Imo2019Q4
 
 theorem upper_bound {k n : ℕ} (hk : k > 0)
     (h : (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
-  have h2 : ∑ i in range n, i < k
-  · suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i in range n, i : ℕ) by
+  have h2 : ∑ i in range n, i < k := by
+    suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i in range n, i : ℕ) by
       rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
       simp_rw [Int.coe_nat_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
     rw [h, multiplicity.Finset.prod Int.prime_two, Nat.cast_sum]
@@ -65,10 +63,10 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     _ ≤ k ! := by gcongr
   clear h h2
   induction' n, hn using Nat.le_induction with n' hn' IH
-  · norm_num
+  · decide
   let A := ∑ i in range n', i
-  have le_sum : ∑ i in range 6, i ≤ A
-  · apply sum_le_sum_of_subset
+  have le_sum : ∑ i in range 6, i ≤ A := by
+    apply sum_le_sum_of_subset
     simpa using hn'
   calc 2 ^ ((n' + 1) * (n' + 1))
       ≤ 2 ^ (n' * n' + 4 * n') := by gcongr <;> linarith
@@ -87,23 +85,21 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   -- The implication `←` holds.
   constructor
   swap
-  · rintro (h | h) <;> simp [Prod.ext_iff] at h <;> rcases h with ⟨rfl, rfl⟩ <;>
-    norm_num [prod_range_succ, succ_mul]
+  · rintro (h | h) <;> simp [Prod.ext_iff] at h <;> rcases h with ⟨rfl, rfl⟩ <;> decide
   intro h
   -- We know that n < 6.
   have := Imo2019Q4.upper_bound hk h
   interval_cases n
   -- n = 1
-  · left; congr; norm_num at h; rw [factorial_eq_one] at h; apply antisymm h
-    apply succ_le_of_lt hk
+  · norm_num at h; simp [le_antisymm h (succ_le_of_lt hk)]
   -- n = 2
-  · right; congr; rw [prod_range_succ] at h; norm_num at h; norm_cast at h; rw [← factorial_inj]
-    exact h; rw [h]; norm_num
-  all_goals exfalso; (repeat rw [prod_range_succ] at h); norm_num at h; norm_cast at h
+  · right; congr; norm_num [prod_range_succ] at h; norm_cast at h; rwa [← factorial_inj']
+    norm_num
+  all_goals exfalso; norm_num [prod_range_succ] at h; norm_cast at h
   -- n = 3
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> norm_num
+  · refine' monotone_factorial.ne_of_lt_of_lt_nat 5 _ _ _ h <;> decide
   -- n = 4
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 7 _ _ _ h <;> norm_num
+  · refine' monotone_factorial.ne_of_lt_of_lt_nat 7 _ _ _ h <;> decide
   -- n = 5
-  · refine' monotone_factorial.ne_of_lt_of_lt_nat 10 _ _ _ h <;> norm_num
+  · refine' monotone_factorial.ne_of_lt_of_lt_nat 10 _ _ _ h <;> decide
 #align imo2019_q4 imo2019_q4

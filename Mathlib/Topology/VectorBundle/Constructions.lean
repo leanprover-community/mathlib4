@@ -36,7 +36,7 @@ open Bundle Set FiberBundle Classical
 
 namespace Bundle.Trivial
 
-variable (𝕜 : Type _) (B : Type _) (F : Type _) [NontriviallyNormedField 𝕜] [NormedAddCommGroup F]
+variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] [TopologicalSpace B]
 
 instance trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where
@@ -73,9 +73,9 @@ end Bundle.Trivial
 
 section
 
-variable (𝕜 : Type _) {B : Type _} [NontriviallyNormedField 𝕜] [TopologicalSpace B] (F₁ : Type _)
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type _) [TopologicalSpace (TotalSpace F₁ E₁)]
-  (F₂ : Type _) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type _)
+variable (𝕜 : Type*) {B : Type*} [NontriviallyNormedField 𝕜] [TopologicalSpace B] (F₁ : Type*)
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*) [TopologicalSpace (TotalSpace F₁ E₁)]
+  (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)]
 
 namespace Trivialization
@@ -165,7 +165,7 @@ end
 
 section
 
-variable (R 𝕜 : Type _) {B : Type _} (F : Type _) (E : B → Type _) {B' : Type _} (f : B' → B)
+variable (R 𝕜 : Type*) {B : Type*} (F : Type*) (E : B → Type*) {B' : Type*} (f : B' → B)
 
 instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ E) x) := i _
 
@@ -174,10 +174,10 @@ instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x
 
 variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace B] [∀ x, AddCommMonoid (E x)]
-  [∀ x, Module 𝕜 (E x)] {K : Type _} [ContinuousMapClass K B' B]
+  [∀ x, Module 𝕜 (E x)] {K : Type*} [FunLike K B' B] [ContinuousMapClass K B' B]
 
 instance Trivialization.pullback_linear (e : Trivialization F (π F E)) [e.IsLinear 𝕜] (f : K) :
-    (@Trivialization.pullback _ _ _ B' _ _ _ _ _ _ _ e f).IsLinear 𝕜 where
+    (Trivialization.pullback (B' := B') e f).IsLinear 𝕜 where
   linear _ h := e.linear 𝕜 h
 #align trivialization.pullback_linear Trivialization.pullback_linear
 

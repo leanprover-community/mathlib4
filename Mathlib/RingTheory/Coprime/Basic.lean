@@ -3,28 +3,30 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.GroupTheory.GroupAction.Units
-import Mathlib.Algebra.Ring.Divisibility
-import Mathlib.Algebra.Hom.Ring
 import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.GroupTheory.GroupAction.Units
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.Ring
 
 #align_import ring_theory.coprime.basic from "leanprover-community/mathlib"@"a95b16cbade0f938fc24abd05412bde1e84bab9b"
 
 /-!
-# Coprime elements of a ring
+# Coprime elements of a ring or monoid
 
-## Main definitions
+## Main definition
 
 * `IsCoprime x y`: that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
-that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,
-e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
+that `a * x + b * y = 1`. Note that elements with no common divisors (`IsRelPrime`) are not
+necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
+The two notions are equivalent in Bézout rings, see `isRelPrime_iff_isCoprime`.
+
+This file also contains lemmas about `IsRelPrime` parallel to `IsCoprime`.
 
 See also `RingTheory.Coprime.Lemmas` for further development of coprime elements.
 -/
 
-
-open Classical
 
 universe u v
 
@@ -41,6 +43,7 @@ def IsCoprime : Prop :=
 
 variable {x y z}
 
+@[symm]
 theorem IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
   let ⟨a, b, H⟩ := H
   ⟨b, a, by rw [add_comm, H]⟩
@@ -70,11 +73,23 @@ theorem not_isCoprime_zero_zero [Nontrivial R] : ¬IsCoprime (0 : R) 0 :=
   mt isCoprime_zero_right.mp not_isUnit_zero
 #align not_coprime_zero_zero not_isCoprime_zero_zero
 
+lemma IsCoprime.intCast {R : Type*} [CommRing R] {a b : ℤ} (h : IsCoprime a b) :
+    IsCoprime (a : R) (b : R) := by
+  rcases h with ⟨u, v, H⟩
+  use u, v
+  rw_mod_cast [H]
+  exact Int.cast_one
+
 /-- If a 2-vector `p` satisfies `IsCoprime (p 0) (p 1)`, then `p ≠ 0`. -/
 theorem IsCoprime.ne_zero [Nontrivial R] {p : Fin 2 → R} (h : IsCoprime (p 0) (p 1)) : p ≠ 0 := by
   rintro rfl
   exact not_isCoprime_zero_zero h
 #align is_coprime.ne_zero IsCoprime.ne_zero
+
+theorem IsCoprime.ne_zero_or_ne_zero [Nontrivial R] (h : IsCoprime x y) : x ≠ 0 ∨ y ≠ 0 := by
+  apply not_or_of_imp
+  rintro rfl rfl
+  exact not_isCoprime_zero_zero h
 
 theorem isCoprime_one_left : IsCoprime 1 x :=
   ⟨1, 0, by rw [one_mul, zero_mul, add_zero]⟩
@@ -170,6 +185,9 @@ theorem IsCoprime.isUnit_of_dvd' {a b x : R} (h : IsCoprime a b) (ha : x ∣ a) 
   (h.of_isCoprime_of_dvd_left ha).isUnit_of_dvd hb
 #align is_coprime.is_unit_of_dvd' IsCoprime.isUnit_of_dvd'
 
+theorem IsCoprime.isRelPrime {a b : R} (h : IsCoprime a b) : IsRelPrime a b :=
+  fun _ ↦ h.isUnit_of_dvd'
+
 theorem IsCoprime.map (H : IsCoprime x y) {S : Type v} [CommSemiring S] (f : R →+* S) :
     IsCoprime (f x) (f y) :=
   let ⟨a, b, h⟩ := H
@@ -218,11 +236,36 @@ theorem IsCoprime.of_mul_add_right_right (h : IsCoprime x (z * x + y)) : IsCopri
   exact h.of_add_mul_right_right
 #align is_coprime.of_mul_add_right_right IsCoprime.of_mul_add_right_right
 
+theorem IsRelPrime.of_add_mul_left_left (h : IsRelPrime (x + y * z) y) : IsRelPrime x y :=
+  fun _ hx hy ↦ h (dvd_add hx <| dvd_mul_of_dvd_left hy z) hy
+
+theorem IsRelPrime.of_add_mul_right_left (h : IsRelPrime (x + z * y) y) : IsRelPrime x y :=
+  (mul_comm z y ▸ h).of_add_mul_left_left
+
+theorem IsRelPrime.of_add_mul_left_right (h : IsRelPrime x (y + x * z)) : IsRelPrime x y := by
+  rw [isRelPrime_comm] at h ⊢
+  exact h.of_add_mul_left_left
+
+theorem IsRelPrime.of_add_mul_right_right (h : IsRelPrime x (y + z * x)) : IsRelPrime x y :=
+  (mul_comm z x ▸ h).of_add_mul_left_right
+
+theorem IsRelPrime.of_mul_add_left_left (h : IsRelPrime (y * z + x) y) : IsRelPrime x y :=
+  (add_comm _ x ▸ h).of_add_mul_left_left
+
+theorem IsRelPrime.of_mul_add_right_left (h : IsRelPrime (z * y + x) y) : IsRelPrime x y :=
+  (add_comm _ x ▸ h).of_add_mul_right_left
+
+theorem IsRelPrime.of_mul_add_left_right (h : IsRelPrime x (x * z + y)) : IsRelPrime x y :=
+  (add_comm _ y ▸ h).of_add_mul_left_right
+
+theorem IsRelPrime.of_mul_add_right_right (h : IsRelPrime x (z * x + y)) : IsRelPrime x y :=
+  (add_comm _ y ▸ h).of_add_mul_right_right
+
 end CommSemiring
 
 section ScalarTower
 
-variable {R G : Type _} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass G R R]
+variable {R G : Type*} [CommSemiring R] [Group G] [MulAction G R] [SMulCommClass G R R]
   [IsScalarTower G R R] (x : G) (y z : R)
 
 theorem isCoprime_group_smul_left : IsCoprime (x • y) z ↔ IsCoprime y z :=
@@ -242,7 +285,7 @@ end ScalarTower
 
 section CommSemiringUnit
 
-variable {R : Type _} [CommSemiring R] {x : R} (hu : IsUnit x) (y z : R)
+variable {R : Type*} [CommSemiring R] {x : R} (hu : IsUnit x) (y z : R)
 
 theorem isCoprime_mul_unit_left_left : IsCoprime (x * y) z ↔ IsCoprime y z :=
   let ⟨u, hu⟩ := hu
@@ -377,7 +420,7 @@ theorem neg_neg_iff (x y : R) : IsCoprime (-x) (-y) ↔ IsCoprime x y :=
 
 end CommRing
 
-theorem sq_add_sq_ne_zero {R : Type _} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
+theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
   obtain ⟨ha, hb⟩ := (add_eq_zero_iff'
@@ -390,3 +433,72 @@ theorem sq_add_sq_ne_zero {R : Type _} [LinearOrderedCommRing R] {a b : R} (h : 
 #align is_coprime.sq_add_sq_ne_zero IsCoprime.sq_add_sq_ne_zero
 
 end IsCoprime
+
+namespace IsRelPrime
+
+variable {R} [CommRing R] {x y : R} (h : IsRelPrime x y) (z : R)
+
+theorem add_mul_left_left : IsRelPrime (x + y * z) y :=
+  @of_add_mul_left_left R _ _ _ (-z) <| by simpa only [mul_neg, add_neg_cancel_right] using h
+
+theorem add_mul_right_left : IsRelPrime (x + z * y) y :=
+  mul_comm z y ▸ h.add_mul_left_left z
+
+theorem add_mul_left_right : IsRelPrime x (y + x * z) :=
+  (h.symm.add_mul_left_left z).symm
+
+theorem add_mul_right_right : IsRelPrime x (y + z * x) :=
+  (h.symm.add_mul_right_left z).symm
+
+theorem mul_add_left_left : IsRelPrime (y * z + x) y :=
+  add_comm x _ ▸ h.add_mul_left_left z
+
+theorem mul_add_right_left : IsRelPrime (z * y + x) y :=
+  add_comm x _ ▸ h.add_mul_right_left z
+
+theorem mul_add_left_right : IsRelPrime x (x * z + y) :=
+  add_comm y _ ▸ h.add_mul_left_right z
+
+theorem mul_add_right_right : IsRelPrime x (z * x + y) :=
+  add_comm y _ ▸ h.add_mul_right_right z
+
+variable {z}
+
+theorem add_mul_left_left_iff : IsRelPrime (x + y * z) y ↔ IsRelPrime x y :=
+  ⟨of_add_mul_left_left, fun h ↦ h.add_mul_left_left z⟩
+
+theorem add_mul_right_left_iff : IsRelPrime (x + z * y) y ↔ IsRelPrime x y :=
+  ⟨of_add_mul_right_left, fun h ↦ h.add_mul_right_left z⟩
+
+theorem add_mul_left_right_iff : IsRelPrime x (y + x * z) ↔ IsRelPrime x y :=
+  ⟨of_add_mul_left_right, fun h ↦ h.add_mul_left_right z⟩
+
+theorem add_mul_right_right_iff : IsRelPrime x (y + z * x) ↔ IsRelPrime x y :=
+  ⟨of_add_mul_right_right, fun h ↦ h.add_mul_right_right z⟩
+
+theorem mul_add_left_left_iff {x y z : R} : IsRelPrime (y * z + x) y ↔ IsRelPrime x y :=
+  ⟨of_mul_add_left_left, fun h ↦ h.mul_add_left_left z⟩
+
+theorem mul_add_right_left_iff {x y z : R} : IsRelPrime (z * y + x) y ↔ IsRelPrime x y :=
+  ⟨of_mul_add_right_left, fun h ↦ h.mul_add_right_left z⟩
+
+theorem mul_add_left_right_iff {x y z : R} : IsRelPrime x (x * z + y) ↔ IsRelPrime x y :=
+  ⟨of_mul_add_left_right, fun h ↦ h.mul_add_left_right z⟩
+
+theorem mul_add_right_right_iff {x y z : R} : IsRelPrime x (z * x + y) ↔ IsRelPrime x y :=
+  ⟨of_mul_add_right_right, fun h ↦ h.mul_add_right_right z⟩
+
+theorem neg_left : IsRelPrime (-x) y := fun _ ↦ (h <| dvd_neg.mp ·)
+theorem neg_right : IsRelPrime x (-y) := h.symm.neg_left.symm
+protected theorem neg_neg : IsRelPrime (-x) (-y) := h.neg_left.neg_right
+
+theorem neg_left_iff (x y : R) : IsRelPrime (-x) y ↔ IsRelPrime x y :=
+  ⟨fun h ↦ neg_neg x ▸ h.neg_left, neg_left⟩
+
+theorem neg_right_iff (x y : R) : IsRelPrime x (-y) ↔ IsRelPrime x y :=
+  ⟨fun h ↦ neg_neg y ▸ h.neg_right, neg_right⟩
+
+theorem neg_neg_iff (x y : R) : IsRelPrime (-x) (-y) ↔ IsRelPrime x y :=
+  (neg_left_iff _ _).trans (neg_right_iff _ _)
+
+end IsRelPrime

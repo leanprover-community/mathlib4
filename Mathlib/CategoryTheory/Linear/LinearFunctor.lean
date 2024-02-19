@@ -25,10 +25,10 @@ for every two objects `X` and `Y`, the map
 
 namespace CategoryTheory
 
-variable (R : Type _) [Semiring R]
+variable (R : Type*) [Semiring R]
 
 /-- An additive functor `F` is `R`-linear provided `F.map` is an `R`-module morphism. -/
-class Functor.Linear {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D]
+class Functor.Linear {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   [Linear R C] [Linear R D] (F : C ⥤ D) [F.Additive] : Prop where
   /-- the functor induces a linear map on morphisms -/
   map_smul : ∀ {X Y : C} (f : X ⟶ Y) (r : R), F.map (r • f) = r • F.map f := by aesop_cat
@@ -41,7 +41,7 @@ namespace Functor
 section
 
 variable {R}
-variable {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] (F : C ⥤ D) [Additive F] [Linear R F]
 
 @[simp]
@@ -49,9 +49,13 @@ theorem map_smul {X Y : C} (r : R) (f : X ⟶ Y) : F.map (r • f) = r • F.map
   Functor.Linear.map_smul _ _
 #align category_theory.functor.map_smul CategoryTheory.Functor.map_smul
 
+@[simp]
+theorem map_units_smul {X Y : C} (r : Rˣ) (f : X ⟶ Y) : F.map (r • f) = r • F.map f := by
+  apply map_smul
+
 instance : Linear R (𝟭 C) where
 
-instance {E : Type _} [Category E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
+instance {E : Type*} [Category E] [Preadditive E] [CategoryTheory.Linear R E] (G : D ⥤ E)
     [Additive G] [Linear R G] : Linear R (F ⋙ G) where
 
 variable (R)
@@ -69,7 +73,7 @@ end
 
 section InducedCategory
 
-variable {C : Type _} {D : Type _} [Category D] [Preadditive D] [CategoryTheory.Linear R D]
+variable {C : Type*} {D : Type*} [Category D] [Preadditive D] [CategoryTheory.Linear R D]
   (F : C → D)
 
 instance inducedFunctorLinear : Functor.Linear R (inducedFunctor F) where
@@ -77,13 +81,13 @@ instance inducedFunctorLinear : Functor.Linear R (inducedFunctor F) where
 
 end InducedCategory
 
-instance fullSubcategoryInclusionLinear {C : Type _} [Category C] [Preadditive C]
+instance fullSubcategoryInclusionLinear {C : Type*} [Category C] [Preadditive C]
     [CategoryTheory.Linear R C] (Z : C → Prop) : (fullSubcategoryInclusion Z).Linear R where
 #align category_theory.functor.full_subcategory_inclusion_linear CategoryTheory.Functor.fullSubcategoryInclusionLinear
 
 section
 
-variable {R} {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
+variable {R} {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
   [Additive F]
 
 instance natLinear : F.Linear ℕ where
@@ -106,7 +110,7 @@ end Functor
 
 namespace Equivalence
 
-variable {C D : Type _} [Category C] [Category D] [Preadditive C] [Linear R C] [Preadditive D]
+variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Linear R C] [Preadditive D]
   [Linear R D]
 
 instance inverseLinear (e : C ≌ D) [e.functor.Additive] [e.functor.Linear R] :

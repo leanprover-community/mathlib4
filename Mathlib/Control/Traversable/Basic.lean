@@ -3,8 +3,8 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.List.Defs
 import Mathlib.Data.Option.Defs
+import Mathlib.Control.Functor
 
 #align_import control.traversable.basic from "leanprover-community/mathlib"@"1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a"
 
@@ -91,14 +91,14 @@ instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G 
 
 variable {F G}
 
-@[simp]
+-- This cannot be a `simp` lemma, as the RHS is a coercion which contains `η.app`.
 theorem app_eq_coe (η : ApplicativeTransformation F G) : η.app = η :=
   rfl
 #align applicative_transformation.app_eq_coe ApplicativeTransformation.app_eq_coe
 
 @[simp]
 theorem coe_mk (f : ∀ α : Type u, F α → G α) (pp ps) :
-  (ApplicativeTransformation.mk f @pp @ps) = f :=
+    (ApplicativeTransformation.mk f @pp @ps) = f :=
   rfl
 #align applicative_transformation.coe_mk ApplicativeTransformation.coe_mk
 
@@ -248,7 +248,7 @@ send the composition of applicative functors to the composition of the
 satisfy a naturality condition with respect to applicative
 transformations. -/
 class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
-    Type (u + 1) where
+    Prop where
   /-- `traverse` plays well with `pure` of the identity monad-/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
   /-- `traverse` plays well with composition of applicative functors. -/
@@ -277,10 +277,10 @@ section
 variable {F : Type u → Type v} [Applicative F]
 
 instance : Traversable Option :=
-  ⟨@Option.traverse⟩
+  ⟨Option.traverse⟩
 
 instance : Traversable List :=
-  ⟨@List.traverse⟩
+  ⟨List.traverse⟩
 
 end
 

@@ -42,7 +42,7 @@ instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 
 namespace ModEq
 
-@[refl]
+@[refl, simp]
 protected theorem refl (a : ℤ) : a ≡ a [ZMOD n] :=
   @rfl _ _
 #align int.modeq.refl Int.ModEq.refl
@@ -101,7 +101,7 @@ theorem modEq_iff_add_fac {a b n : ℤ} : a ≡ b [ZMOD n] ↔ ∃ t, b = a + n 
   exact exists_congr fun t => sub_eq_iff_eq_add'
 #align int.modeq_iff_add_fac Int.modEq_iff_add_fac
 
-alias modEq_iff_dvd ↔ ModEq.dvd modEq_of_dvd
+alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd
 #align int.modeq.dvd Int.ModEq.dvd
 #align int.modeq_of_dvd Int.modEq_of_dvd
 
@@ -129,7 +129,7 @@ protected theorem mul_left' (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD c * n
   obtain hc | rfl | hc := lt_trichotomy c 0
   · rw [← neg_modEq_neg, ← modEq_neg, ← neg_mul, ← neg_mul, ← neg_mul]
     simp only [ModEq, mul_emod_mul_of_pos _ _ (neg_pos.2 hc), h.eq]
-  · simp
+  · simp only [zero_mul, ModEq.rfl]
   · simp only [ModEq, mul_emod_mul_of_pos _ _ hc, h.eq]
 #align int.modeq.mul_left' Int.ModEq.mul_left'
 
@@ -223,14 +223,13 @@ lemma of_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
 theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
     a ≡ b [ZMOD m / gcd m c] := by
   letI d := gcd m c
-  have hmd := gcd_dvd_left m c
-  have hcd := gcd_dvd_right m c
   rw [modEq_iff_dvd] at h ⊢
   -- porting note: removed `show` due to leanprover-community/mathlib4#3305
   refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
-  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) hcd, sub_mul]
-    exact Int.ediv_dvd_ediv hmd h
-  · rw [gcd_div hmd hcd, natAbs_ofNat, Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
+  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) gcd_dvd_right, sub_mul]
+    exact Int.ediv_dvd_ediv gcd_dvd_left h
+  · rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat,
+      Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
 #align int.modeq.cancel_right_div_gcd Int.ModEq.cancel_right_div_gcd
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/
@@ -264,7 +263,7 @@ theorem add_modEq_left : n + a ≡ a [ZMOD n] := ModEq.symm <| modEq_iff_dvd.2 <
 theorem add_modEq_right : a + n ≡ a [ZMOD n] := ModEq.symm <| modEq_iff_dvd.2 <| by simp
 #align int.add_modeq_right Int.add_modEq_right
 
-theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.coprime n.natAbs) :
+theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.natAbs) :
     a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m * n] :=
   ⟨fun h => by
     rw [modEq_iff_dvd, modEq_iff_dvd] at h
@@ -286,13 +285,17 @@ theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * 
     _ ≡ b [ZMOD n] := by rw [add_zero]
 #align int.modeq_add_fac Int.modEq_add_fac
 
+theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
+  convert Int.modEq_add_fac (-c) ha using 1
+  ring
+
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] :=
   modEq_add_fac _ ModEq.rfl
 #align int.modeq_add_fac_self Int.modEq_add_fac_self
 
-theorem mod_coprime {a b : ℕ} (hab : Nat.coprime a b) : ∃ y : ℤ, a * y ≡ 1 [ZMOD b] :=
+theorem mod_coprime {a b : ℕ} (hab : Nat.Coprime a b) : ∃ y : ℤ, a * y ≡ 1 [ZMOD b] :=
   ⟨Nat.gcdA a b,
-    have hgcd : Nat.gcd a b = 1 := Nat.coprime.gcd_eq_one hab
+    have hgcd : Nat.gcd a b = 1 := Nat.Coprime.gcd_eq_one hab
     calc
       ↑a * Nat.gcdA a b ≡ ↑a * Nat.gcdA a b + ↑b * Nat.gcdB a b [ZMOD ↑b] :=
         ModEq.symm <| modEq_add_fac _ <| ModEq.refl _
@@ -311,7 +314,7 @@ theorem exists_unique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
 theorem exists_unique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=
   let ⟨z, hz1, hz2, hz3⟩ := exists_unique_equiv a hb
   ⟨z.natAbs, by
-    constructor <;> rw [ofNat_natAbs_eq_of_nonneg z hz1] <;> assumption⟩
+    constructor <;> rw [natAbs_of_nonneg hz1] <;> assumption⟩
 #align int.exists_unique_equiv_nat Int.exists_unique_equiv_nat
 
 theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=

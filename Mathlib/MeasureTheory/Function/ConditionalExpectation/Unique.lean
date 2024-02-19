@@ -33,7 +33,7 @@ open scoped ENNReal MeasureTheory
 
 namespace MeasureTheory
 
-variable {α E' F' 𝕜 : Type _} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α} [IsROrC 𝕜]
+variable {α E' F' 𝕜 : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {μ : Measure α} [IsROrC 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E' for an inner product space on which we compute integrals
   [NormedAddCommGroup E']
@@ -96,8 +96,8 @@ theorem Lp.ae_eq_of_forall_set_integral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (
     (hfg : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
     (hf_meas : AEStronglyMeasurable' m f μ) (hg_meas : AEStronglyMeasurable' m g μ) :
     f =ᵐ[μ] g := by
-  suffices h_sub : ⇑(f - g) =ᵐ[μ] 0
-  · rw [← sub_ae_eq_zero]; exact (Lp.coeFn_sub f g).symm.trans h_sub
+  suffices h_sub : ⇑(f - g) =ᵐ[μ] 0 by
+    rw [← sub_ae_eq_zero]; exact (Lp.coeFn_sub f g).symm.trans h_sub
   have hfg' : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → (∫ x in s, (f - g) x ∂μ) = 0 := by
     intro s hs hμs
     rw [integral_congr_ae (ae_restrict_of_ae (Lp.coeFn_sub f g))]

@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 # Gluing data
 
 We define `GlueData` as a family of data needed to glue topological spaces, schemes, etc. We
-provide the API to realize it as a multispan diagram, and also states lemmas about its
+provide the API to realize it as a multispan diagram, and also state lemmas about its
 interaction with a functor that preserves certain pullbacks.
 
 -/
@@ -228,29 +228,26 @@ instance π_epi : Epi D.π := by
 
 end
 
-theorem types_π_surjective (D : GlueData (Type _)) : Function.Surjective D.π :=
+theorem types_π_surjective (D : GlueData (Type*)) : Function.Surjective D.π :=
   (epi_iff_surjective _).mp inferInstance
 #align category_theory.glue_data.types_π_surjective CategoryTheory.GlueData.types_π_surjective
 
-theorem types_ι_jointly_surjective (D : GlueData (Type _)) (x : D.glued) :
+theorem types_ι_jointly_surjective (D : GlueData (Type v)) (x : D.glued) :
     ∃ (i : _) (y : D.U i), D.ι i y = x := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ D.diagram]
   rcases D.types_π_surjective x with ⟨x', rfl⟩
   --have := colimit.isoColimitCocone (Types.coproductColimitCocone _)
-  rw [← show (colimit.isoColimitCocone (Types.coproductColimitCocone _)).inv _ = x' from
+  rw [← show (colimit.isoColimitCocone (Types.coproductColimitCocone.{v, v} _)).inv _ = x' from
       ConcreteCategory.congr_hom
         (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
-  rcases(colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
+  rcases (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
   exact ⟨i, y, by
     simp [← Multicoequalizer.ι_sigmaπ, -Multicoequalizer.ι_sigmaπ]
     rfl ⟩
 #align category_theory.glue_data.types_ι_jointly_surjective CategoryTheory.GlueData.types_ι_jointly_surjective
 
 variable (F : C ⥤ C') [H : ∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
-
--- porting note: commented out include
--- include H
 
 instance (i j k : D.J) : HasPullback (F.map (D.f i j)) (F.map (D.f i k)) :=
   ⟨⟨⟨_, isLimitOfHasPullbackOfPreservesLimit F (D.f i j) (D.f i k)⟩⟩⟩
@@ -335,15 +332,9 @@ theorem diagramIso_inv_app_right (i : D.J) :
 
 variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F]
 
--- porting note: commented out omit
--- omit H
-
 theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
   ⟨⟨⟨_, PreservesColimit.preserves (colimit.isColimit _)⟩⟩⟩
 #align category_theory.glue_data.has_colimit_multispan_comp CategoryTheory.GlueData.hasColimit_multispan_comp
-
--- porting note: commented out include
--- include H
 
 attribute [local instance] hasColimit_multispan_comp
 
@@ -379,10 +370,8 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
     (hc : IsLimit ((D.mapGlueData F).vPullbackCone i j)) : IsLimit (D.vPullbackCone i j) := by
   apply isLimitOfReflects F
   apply (isLimitMapConePullbackConeEquiv _ _).symm _
-  let e :
-    cospan (F.map (D.ι i)) (F.map (D.ι j)) ≅
-      cospan ((D.mapGlueData F).ι i) ((D.mapGlueData F).ι j)
-  exact
+  let e : cospan (F.map (D.ι i)) (F.map (D.ι j)) ≅
+      cospan ((D.mapGlueData F).ι i) ((D.mapGlueData F).ι j) :=
     NatIso.ofComponents
       (fun x => by
         cases x
@@ -390,15 +379,12 @@ def vPullbackConeIsLimitOfMap (i j : D.J) [ReflectsLimit (cospan (D.ι i) (D.ι 
       (by rintro (_ | _) (_ | _) (_ | _ | _) <;> simp)
   apply IsLimit.postcomposeHomEquiv e _ _
   apply hc.ofIsoLimit
-  refine' Cones.ext (Iso.refl _) _
-  · rintro (_ | _ | _)
-    change _ = _ ≫ (_ ≫ _) ≫ _
-    all_goals change _ = 𝟙 _ ≫ _ ≫ _; aesop_cat
+  refine Cones.ext (Iso.refl _) ?_
+  rintro (_ | _ | _)
+  change _ = _ ≫ (_ ≫ _) ≫ _
+  all_goals change _ = 𝟙 _ ≫ _ ≫ _; aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.glue_data.V_pullback_cone_is_limit_of_map CategoryTheory.GlueData.vPullbackConeIsLimitOfMap
-
--- porting note: commenting out omit
--- omit H
 
 /-- If there is a forgetful functor into `Type` that preserves enough (co)limits, then `D.ι` will
 be jointly surjective. -/

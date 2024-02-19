@@ -27,20 +27,23 @@ this is the usual left or right quotient of a group by a subgroup.
 -- porting note: removed import
 -- import Mathlib.Tactic.Group
 
-variable {G : Type _} [Group G] {α : Type _} [Mul α] (J : Subgroup G) (g : G)
+variable {G : Type*} [Group G] {α : Type*} [Mul α] (J : Subgroup G) (g : G)
+
+open MulOpposite
+open scoped Pointwise
 
 namespace Doset
-
-open Pointwise
 
 /-- The double coset as an element of `Set α` corresponding to `s a t` -/
 def doset (a : α) (s t : Set α) : Set α :=
   s * {a} * t
 #align doset Doset.doset
 
-theorem mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y :=
-  ⟨fun ⟨_, y, ⟨x, _, hx, rfl, rfl⟩, hy, h⟩ => ⟨x, hx, y, hy, h.symm⟩, fun ⟨x, hx, y, hy, h⟩ =>
-    ⟨x * a, y, ⟨x, a, hx, rfl, rfl⟩, hy, h.symm⟩⟩
+lemma doset_eq_image2 (a : α) (s t : Set α) : doset a s t = Set.image2 (· * a * ·) s t := by
+  simp_rw [doset, Set.mul_singleton, ← Set.image2_mul, Set.image2_image_left]
+
+theorem mem_doset {s t : Set α} {a b : α} : b ∈ doset a s t ↔ ∃ x ∈ s, ∃ y ∈ t, b = x * a * y := by
+  simp only [doset_eq_image2, Set.mem_image2, eq_comm]
 #align doset.mem_doset Doset.mem_doset
 
 theorem mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
@@ -49,7 +52,7 @@ theorem mem_doset_self (H K : Subgroup G) (a : G) : a ∈ doset a H K :=
 
 theorem doset_eq_of_mem {H K : Subgroup G} {a b : G} (hb : b ∈ doset a H K) :
     doset b H K = doset a H K := by
-  obtain ⟨_, k, ⟨h, a, hh, rfl : _ = _, rfl⟩, hk, rfl⟩ := hb
+  obtain ⟨h, hh, k, hk, rfl⟩ := mem_doset.1 hb
   rw [doset, doset, ← Set.singleton_mul_singleton, ← Set.singleton_mul_singleton, mul_assoc,
     mul_assoc, Subgroup.singleton_mul_subgroup hk, ← mul_assoc, ← mul_assoc,
     Subgroup.subgroup_mul_singleton hh]
@@ -168,27 +171,27 @@ theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.un
 #align doset.union_quot_to_doset Doset.union_quotToDoset
 
 theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
-    ⋃ k : K, rightCoset (↑H) (a * k) = doset a H K := by
+    ⋃ k : K, op (a * k) • ↑H = doset a H K := by
   ext x
   simp only [mem_rightCoset_iff, exists_prop, mul_inv_rev, Set.mem_iUnion, mem_doset,
     Subgroup.mem_carrier, SetLike.mem_coe]
   constructor
   · rintro ⟨y, h_h⟩
     refine' ⟨x * (y⁻¹ * a⁻¹), h_h, y, y.2, _⟩
-    simp only [← mul_assoc, Subgroup.coe_mk, inv_mul_cancel_right, SubgroupClass.coe_inv]
+    simp only [← mul_assoc, Subgroup.coe_mk, inv_mul_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine' ⟨⟨y, hy⟩, _⟩
     simp only [hxy, ← mul_assoc, hx, mul_inv_cancel_right, Subgroup.coe_mk]
 #align doset.doset_union_right_coset Doset.doset_union_rightCoset
 
 theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
-    ⋃ h : H, leftCoset (h * a : G) K = doset a H K := by
+    ⋃ h : H, (h * a : G) • ↑K = doset a H K := by
   ext x
   simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doset]
   constructor
   · rintro ⟨y, h_h⟩
     refine' ⟨y, y.2, a⁻¹ * y⁻¹ * x, h_h, _⟩
-    simp only [← mul_assoc, one_mul, mul_right_inv, mul_inv_cancel_right, SubgroupClass.coe_inv]
+    simp only [← mul_assoc, one_mul, mul_right_inv, mul_inv_cancel_right, InvMemClass.coe_inv]
   · rintro ⟨x, hx, y, hy, hxy⟩
     refine' ⟨⟨x, hx⟩, _⟩
     simp only [hxy, ← mul_assoc, hy, one_mul, mul_left_inv, Subgroup.coe_mk, inv_mul_cancel_right]

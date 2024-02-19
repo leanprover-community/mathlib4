@@ -3,10 +3,10 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Int.Parity
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Tactic.Ring
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
 
 #align_import imo.imo1998_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
@@ -45,19 +45,19 @@ set_option linter.uppercaseLean3 false
 
 open scoped Classical
 
-variable {C J : Type _} (r : C → J → Prop)
+variable {C J : Type*} (r : C → J → Prop)
 
 namespace Imo1998Q2
 
 noncomputable section
 
 /-- An ordered pair of judges. -/
-abbrev JudgePair (J : Type _) :=
+abbrev JudgePair (J : Type*) :=
   J × J
 #align imo1998_q2.judge_pair Imo1998Q2.JudgePair
 
 /-- A triple consisting of contestant together with an ordered pair of judges. -/
-abbrev AgreedTriple (C J : Type _) :=
+abbrev AgreedTriple (C J : Type*) :=
   C × JudgePair J
 #align imo1998_q2.agreed_triple Imo1998Q2.AgreedTriple
 
@@ -168,7 +168,7 @@ theorem A_card_upper_bound {k : ℕ}
 
 end
 
-theorem add_sq_add_sq_sub {α : Type _} [Ring α] (x y : α) :
+theorem add_sq_add_sq_sub {α : Type*} [Ring α] (x y : α) :
     (x + y) * (x + y) + (x - y) * (x - y) = 2 * x * x + 2 * y * y := by noncomm_ring
 #align imo1998_q2.add_sq_add_sq_sub Imo1998Q2.add_sq_add_sq_sub
 
@@ -229,7 +229,7 @@ theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff]
   -- porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
-  · convert @Nat.cast_le ℚ _ _ _ _
+  · convert Nat.cast_le (α := ℚ)
     · aesop
     · norm_cast
   all_goals simp [ha, hb]

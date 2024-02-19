@@ -44,7 +44,7 @@ open MeasureTheory MeasurableSpace
 
 namespace ProbabilityTheory
 
-variable {Ω : Type _} [MeasurableSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω]
 
 /-- Given a set `s`, `condCount s` is the counting measure conditioned on `s`. In particular,
 `condCount s t` is the proportion of `s` that is contained in `t`.
@@ -138,7 +138,7 @@ theorem condCount_of_univ (hs : s.Finite) (hs' : s.Nonempty) : condCount s Set.u
 theorem condCount_inter (hs : s.Finite) :
     condCount s (t ∩ u) = condCount (s ∩ t) u * condCount s t := by
   by_cases hst : s ∩ t = ∅
-  · rw [hst, condCount_empty_meas, Measure.coe_zero, Pi.zero_apply, MulZeroClass.zero_mul,
+  · rw [hst, condCount_empty_meas, Measure.coe_zero, Pi.zero_apply, zero_mul,
       condCount_eq_zero_iff hs, ← Set.inter_assoc, hst, Set.empty_inter]
   rw [condCount, condCount, cond_apply _ hs.measurableSet, cond_apply _ hs.measurableSet,
     cond_apply _ (hs.inter_of_left _).measurableSet, mul_comm _ (Measure.count (s ∩ t)),

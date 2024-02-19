@@ -3,7 +3,6 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Data.Int.Parity
@@ -27,10 +26,8 @@ open Finset Polynomial FiniteField Equiv
 
 open scoped BigOperators
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
-
 /-- **Euler's four-square identity**. -/
-theorem euler_four_squares {R : Type _} [CommRing R] (a b c d x y z w : R) :
+theorem euler_four_squares {R : Type*} [CommRing R] (a b c d x y z w : R) :
     (a * x - b * y - c * z - d * w) ^ 2 + (a * y + b * x + c * w - d * z) ^ 2 +
       (a * z - b * w + c * x + d * y) ^ 2 + (a * w + b * z - c * y + d * x) ^ 2 =
       (a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) * (x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := by ring
@@ -60,6 +57,7 @@ theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2)
         rw [even_iff_two_dvd] at hxsuby hxaddy
         rw [Int.mul_ediv_cancel' hxsuby, Int.mul_ediv_cancel' hxaddy]
       _ = 2 * 2 * (((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2) := by
+        set_option simprocs false in
         simp [mul_add, pow_succ, mul_comm, mul_assoc, mul_left_comm]
 #align int.sq_add_sq_of_two_mul_sq_add_sq Int.sq_add_sq_of_two_mul_sq_add_sq
 
@@ -73,7 +71,7 @@ theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     2 ^ 2 * (k * ↑m) = ∑ i : Fin 4, (2 * ![a, b, c, d] i) ^ 2 := by
       simp [← h, Fin.sum_univ_succ, mul_add, mul_pow, add_assoc]
     _ < ∑ _i : Fin 4, m ^ 2 := Finset.sum_lt_sum_of_nonempty Finset.univ_nonempty fun i _ ↦ by
-      refine pow_lt_pow_of_lt_left ?_ (zero_le _) two_pos
+      refine pow_lt_pow_left ?_ (zero_le _) two_ne_zero
       fin_cases i <;> assumption
     _ = 2 ^ 2 * (m * m) := by simp; ring
 
@@ -85,14 +83,13 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   rcases Nat.sq_add_sq_zmodEq p (-1) with ⟨a, b, ha, hb, hab⟩
   rcases Int.modEq_iff_dvd.1 hab.symm with ⟨k, hk⟩
   rw [sub_neg_eq_add, mul_comm] at hk
-  have hk₀ : 0 < k
-  · refine pos_of_mul_pos_left ?_ (Nat.cast_nonneg p)
+  have hk₀ : 0 < k := by
+    refine pos_of_mul_pos_left ?_ (Nat.cast_nonneg p)
     rw [← hk]
     positivity
   lift k to ℕ using hk₀.le
-  refine ⟨a, b, k, Nat.cast_pos.1 hk₀, ?_, by exact_mod_cast hk⟩
-  replace hk : a ^ 2 + b ^ 2 + 1 ^ 2 + 0 ^ 2 = k * p
-  · exact_mod_cast hk
+  refine ⟨a, b, k, Nat.cast_pos.1 hk₀, ?_, mod_cast hk⟩
+  replace hk : a ^ 2 + b ^ 2 + 1 ^ 2 + 0 ^ 2 = k * p := mod_cast hk
   refine lt_of_sum_four_squares_eq_mul hk ?_ ?_ ?_ ?_
   · exact (mul_le_mul' le_rfl ha).trans_lt (Nat.mul_div_lt_iff_not_dvd.2 hodd.not_two_dvd_nat)
   · exact (mul_le_mul' le_rfl hb).trans_lt (Nat.mul_div_lt_iff_not_dvd.2 hodd.not_two_dvd_nat)
@@ -103,7 +100,7 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
 theorem exists_sq_add_sq_add_one_eq_k (p : ℕ) [Fact p.Prime] :
     ∃ (a b : ℤ) (k : ℕ), a ^ 2 + b ^ 2 + 1 = k * p ∧ k < p :=
   let ⟨a, b, k, _, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p
-  ⟨a, b, k, by exact_mod_cast hk, hkp⟩
+  ⟨a, b, k, mod_cast hk, hkp⟩
 #align int.exists_sq_add_sq_add_one_eq_k Int.exists_sq_add_sq_add_one_eq_k
 
 end Int
@@ -148,8 +145,8 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
       a.natAbs ^ 2 + b.natAbs ^ 2 + c.natAbs ^ 2 + d.natAbs ^ 2 = k ↔
         a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = k := by
     rw [← @Nat.cast_inj ℤ]; push_cast [sq_abs]; rfl
-  have hm : ∃ m < p, 0 < m ∧ ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = m * p
-  · obtain ⟨a, b, k, hk₀, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p
+  have hm : ∃ m < p, 0 < m ∧ ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = m * p := by
+    obtain ⟨a, b, k, hk₀, hkp, hk⟩ := exists_sq_add_sq_add_one_eq_mul p
     refine ⟨k, hkp, hk₀, a, b, 1, 0, ?_⟩
     simpa
   -- Take the minimal possible `m`
@@ -163,7 +160,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
   by_cases hm : 2 ∣ m
   · -- If `m` is an even number, then `(m / 2) * p` can be represented as a sum of four squares
     rcases hm with ⟨m, rfl⟩
-    rw [zero_lt_mul_left two_pos] at hm₀
+    rw [mul_pos_iff_of_pos_left two_pos] at hm₀
     have hm₂ : m < 2 * m := by simpa [two_mul]
     apply_fun (Nat.cast : ℕ → ℤ) at habcd
     push_cast [mul_assoc] at habcd
@@ -185,37 +182,37 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     -- The quotient `r` is not zero, because otherwise `f a = f b = f c = f d = 0`, hence
     -- `m` divides each `a`, `b`, `c`, `d`, thus `m ∣ p` which is impossible.
     rcases (zero_le r).eq_or_gt with rfl | hr₀
-    · replace hr : f a = 0 ∧ f b = 0 ∧ f c = 0 ∧ f d = 0; · simpa [and_assoc] using hr
+    · replace hr : f a = 0 ∧ f b = 0 ∧ f c = 0 ∧ f d = 0 := by simpa [and_assoc] using hr
       obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩, ⟨c, rfl⟩, ⟨d, rfl⟩⟩ : m ∣ a ∧ m ∣ b ∧ m ∣ c ∧ m ∣ d
-      · simp only [← ZMod.nat_cast_zmod_eq_zero_iff_dvd, ← hf_mod, hr, Int.cast_zero]
+      · simp only [← ZMod.nat_cast_zmod_eq_zero_iff_dvd, ← hf_mod, hr, Int.cast_zero, and_self]
       have : m * m ∣ m * p := habcd ▸ ⟨a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2, by ring⟩
       rw [mul_dvd_mul_iff_left hm₀.ne'] at this
       exact (hp.eq_one_or_self_of_dvd _ this).elim hm₁.ne' hmp.ne
     -- Since `2 * |f x| < m` for each `x ∈ {a, b, c, d}`, we have `r < m`
-    have hrm : r < m
-    · rw [mul_comm] at hr
+    have hrm : r < m := by
+      rw [mul_comm] at hr
       apply lt_of_sum_four_squares_eq_mul hr <;> apply hf_lt
     -- Now it suffices to represent `r * p` as a sum of four squares
     -- More precisely, we will represent `(m * r) * (m * p)` as a sum of squares of four numbers,
     -- each of them is divisible by `m`
     rsuffices ⟨w, x, y, z, hw, hx, hy, hz, h⟩ : ∃ w x y z : ℤ, ↑m ∣ w ∧ ↑m ∣ x ∧ ↑m ∣ y ∧ ↑m ∣ z ∧
       w ^ 2 + x ^ 2 + y ^ 2 + z ^ 2 = ↑(m * r) * ↑(m * p)
-    · have : (w / m) ^ 2 + (x / m) ^ 2 + (y / m) ^ 2 + (z / m) ^ 2 = ↑(r * p)
-      · refine mul_left_cancel₀ (pow_ne_zero 2 (Nat.cast_ne_zero.2 hm₀.ne')) ?_
+    · have : (w / m) ^ 2 + (x / m) ^ 2 + (y / m) ^ 2 + (z / m) ^ 2 = ↑(r * p) := by
+        refine mul_left_cancel₀ (pow_ne_zero 2 (Nat.cast_ne_zero.2 hm₀.ne')) ?_
         conv_rhs => rw [← Nat.cast_pow, ← Nat.cast_mul, sq m, mul_mul_mul_comm, Nat.cast_mul, ← h]
         simp only [mul_add, ← mul_pow, Int.mul_ediv_cancel', *]
       rw [← natAbs_iff] at this
       exact hmin r hrm ⟨hrm.trans hmp, hr₀, _, _, _, _, this⟩
     -- To do the last step, we apply the Euler's four square identity once more
-    replace hr : (f b) ^ 2 + (f a) ^ 2 + (f d) ^ 2 + (-f c) ^ 2 = ↑(m * r)
-    · rw [← natAbs_iff, natAbs_neg, ← hr]
+    replace hr : (f b) ^ 2 + (f a) ^ 2 + (f d) ^ 2 + (-f c) ^ 2 = ↑(m * r) := by
+      rw [← natAbs_iff, natAbs_neg, ← hr]
       ac_rfl
     have := congr_arg₂ (· * Nat.cast ·) hr habcd
     simp only [← _root_.euler_four_squares, Nat.cast_add, Nat.cast_pow] at this
     refine ⟨_, _, _, _, ?_, ?_, ?_, ?_, this⟩
     · simp [← ZMod.int_cast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
-    · suffices : ((a : ZMod m) ^ 2 + (b : ZMod m) ^ 2 + (c : ZMod m) ^ 2 + (d : ZMod m) ^ 2) = 0
-      · simpa [← ZMod.int_cast_zmod_eq_zero_iff_dvd, hf_mod, sq, add_comm, add_assoc,
+    · suffices ((a : ZMod m) ^ 2 + (b : ZMod m) ^ 2 + (c : ZMod m) ^ 2 + (d : ZMod m) ^ 2) = 0 by
+        simpa [← ZMod.int_cast_zmod_eq_zero_iff_dvd, hf_mod, sq, add_comm, add_assoc,
           add_left_comm] using this
       norm_cast
       simp [habcd]

@@ -16,11 +16,6 @@ Supplementary theorems about the `String` type.
 
 namespace String
 
--- TODO: upstream to std or remove
-theorem Iterator.hasNext_cons_addChar (c : Char) (cs : List Char) (i : Pos) :
-    hasNext ⟨⟨c :: cs⟩, i + c⟩ = hasNext ⟨⟨cs⟩, i⟩ := by
-  simp [hasNext, Nat.add_lt_add_iff_lt_right]
-
 /-- `<` on string iterators. This coincides with `<` on strings as lists. -/
 def ltb (s₁ s₂ : Iterator) : Bool :=
   if s₂.hasNext then
@@ -64,43 +59,42 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos) 
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ = ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ := by
   apply ltb.inductionOn ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ (motive := fun ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩ ↦
     ltb ⟨⟨c :: cs₁⟩, i₁ + c⟩ ⟨⟨c :: cs₂⟩, i₂ + c⟩ =
-    ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩) <;> simp <;>
+    ltb ⟨⟨cs₁⟩, i₁⟩ ⟨⟨cs₂⟩, i₂⟩) <;> simp only <;>
   intro ⟨cs₁⟩ ⟨cs₂⟩ i₁ i₂ <;>
   intros <;>
-  (conv => lhs; rw [ltb]) <;> (conv => rhs; rw [ltb]) <;>
-  simp [Iterator.hasNext_cons_addChar, *]
+  (conv => lhs; unfold ltb) <;> (conv => rhs; unfold ltb) <;>
+  simp only [Iterator.hasNext_cons_addChar, ite_false, ite_true, *]
   · rename_i h₂ h₁ heq ih
-    simp [Iterator.curr, get_cons_addChar, Iterator.next, next, *] at *
+    simp only [Iterator.next, next, heq, Iterator.curr, get_cons_addChar, ite_true] at ih ⊢
     repeat rw [Pos.addChar_right_comm _ c]
     exact ih
   · rename_i h₂ h₁ hne
-    simp [Iterator.curr, get_cons_addChar, *]
+    simp [Iterator.curr, get_cons_addChar, hne]
 
 @[simp]
 theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
-| ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
-  induction s₁ generalizing s₂ <;> cases s₂
-  · simp
-  · rename_i c₂ cs₂; apply iff_of_true
-    · rw [ltb]; simp; apply ne_false_of_eq_true; apply decide_eq_true
-      simp [endPos, utf8ByteSize, utf8ByteSize.go, csize_pos]
-    · apply List.nil_lt_cons
-  · rename_i c₁ cs₁ ih; apply iff_of_false
-    · rw [ltb]; simp
-    · apply not_lt_of_lt; apply List.nil_lt_cons
-  · rename_i c₁ cs₁ ih c₂ cs₂; rw [ltb]
-    simp [Iterator.hasNext, endPos, utf8ByteSize, utf8ByteSize.go, csize_pos, Iterator.curr, get,
-          utf8GetAux, Iterator.next, next]
-    split_ifs with h
-    · subst c₂
-      suffices ltb ⟨⟨c₁ :: cs₁⟩, ⟨csize c₁⟩⟩ ⟨⟨c₁ :: cs₂⟩, ⟨csize c₁⟩⟩ = ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩
-        by rw [Pos.zero_addChar_eq, this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
-      rw [← Pos.zero_addChar_eq]
-      apply ltb_cons_addChar
-    · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
-      cases e <;> rename_i h'
-      · contradiction
-      · assumption
+  | ⟨s₁⟩, ⟨s₂⟩ => show ltb ⟨⟨s₁⟩, 0⟩ ⟨⟨s₂⟩, 0⟩ ↔ s₁ < s₂ by
+    induction s₁ generalizing s₂ <;> cases s₂
+    · decide
+    · rename_i c₂ cs₂; apply iff_of_true
+      · unfold ltb; simp [Iterator.hasNext, csize_pos]
+      · apply List.nil_lt_cons
+    · rename_i c₁ cs₁ ih; apply iff_of_false
+      · unfold ltb; simp [Iterator.hasNext]
+      · apply not_lt_of_lt; apply List.nil_lt_cons
+    · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
+      simp only [Iterator.hasNext, Pos.byteIdx_zero, endPos, utf8ByteSize, utf8ByteSize.go,
+        add_pos_iff, csize_pos, or_true, decide_eq_true_eq, ↓reduceIte, Iterator.curr, get,
+        utf8GetAux, Iterator.next, next, Bool.ite_eq_true_distrib]
+      split_ifs with h
+      · subst c₂
+        suffices ltb ⟨⟨c₁ :: cs₁⟩, (0 : Pos) + c₁⟩ ⟨⟨c₁ :: cs₂⟩, (0 : Pos) + c₁⟩ =
+          ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩ by rw [this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
+        apply ltb_cons_addChar
+      · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
+        cases e <;> rename_i h'
+        · contradiction
+        · assumption
 #align string.lt_iff_to_list_lt String.lt_iff_toList_lt
 
 instance LE : LE String :=
@@ -137,12 +131,12 @@ theorem asString_inv_toList (s : String) : s.toList.asString = s :=
 #align string.to_list_singleton String.data_singleton
 
 theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
-| ⟨s⟩, h => by
-  cases s
-  · simp only at h
-  · rename_i c cs
-    simp only [toList, List.cons.injEq]
-    constructor <;> [rfl; simp [drop_eq]]
+  | ⟨s⟩, h => by
+    cases s with
+    | nil => simp at h
+    | cons c cs =>
+      simp only [toList, data_drop, List.drop_succ_cons, List.drop_zero, List.cons.injEq, and_true]
+      rfl
 #align string.to_list_nonempty String.toList_nonempty
 
 @[simp]
@@ -167,9 +161,9 @@ instance : LinearOrder String where
     apply le_total
   decidableLE := String.decidableLE
   compare_eq_compareOfLessAndEq a b := by
-    simp [compare, compareOfLessAndEq, toList, instLTString, List.instLTList, List.LT']
+    simp only [compare, compareOfLessAndEq, instLTString, List.instLTList, lt_iff_toList_lt, toList]
     split_ifs <;>
-    simp [List.lt_iff_lex_lt] at * <;>
+    simp only [List.lt_iff_lex_lt] at * <;>
     contradiction
 
 end String

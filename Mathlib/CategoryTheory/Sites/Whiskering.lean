@@ -27,21 +27,56 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-universe v₁ v₂ u₁ u₂ u₃
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-variable {A : Type u₂} [Category.{max v₁ u₁} A]
+variable {A : Type u₂} [Category.{v₂} A]
 
-variable {B : Type u₃} [Category.{max v₁ u₁} B]
+variable {B : Type u₃} [Category.{v₃} B]
 
-variable {J : GrothendieckTopology C}
+variable (J : GrothendieckTopology C)
 
 variable {U : C} (R : Presieve U)
 
 variable (F G H : A ⥤ B) (η : F ⟶ G) (γ : G ⟶ H)
 
+/-- Describes the property of a functor to "preserve sheaves". -/
+class GrothendieckTopology.HasSheafCompose : Prop where
+  /-- For every sheaf `P`, `P ⋙ F` is a sheaf. -/
+  isSheaf (P : Cᵒᵖ ⥤ A) (hP : Presheaf.IsSheaf J P) : Presheaf.IsSheaf J (P ⋙ F)
+
+variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
+
+/-- Composing a functor which `HasSheafCompose`, yields a functor between sheaf categories. -/
+@[simps]
+def sheafCompose : Sheaf J A ⥤ Sheaf J B where
+  obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
+  map η := ⟨whiskerRight η.val _⟩
+  map_id _ := Sheaf.Hom.ext _ _ <| whiskerRight_id _
+  map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
+set_option linter.uppercaseLean3 false in
+#align category_theory.Sheaf_compose CategoryTheory.sheafCompose
+
+variable {F G}
+
+/--
+If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
+`sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
+-/
+def sheafCompose_map : sheafCompose J F ⟶ sheafCompose J G where
+  app := fun X => .mk <| whiskerLeft _ η
+
+@[simp]
+lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
+
+@[simp]
+lemma sheafCompose_comp :
+    sheafCompose_map J (η ≫ γ) = sheafCompose_map J η ≫ sheafCompose_map J γ := rfl
+
 namespace GrothendieckTopology.Cover
+
+variable (F G) {J}
 
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : J.Cover X)
 
@@ -114,47 +149,30 @@ def mapMultifork :
 
 end GrothendieckTopology.Cover
 
-variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F]
-variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan G]
-variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan H]
-
-theorem Presheaf.IsSheaf.comp {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) :
-    Presheaf.IsSheaf J (P ⋙ F) := by
-  rw [Presheaf.isSheaf_iff_multifork] at hP ⊢
-  intro X S
-  obtain ⟨h⟩ := hP X S
-  replace h := isLimitOfPreserves F h
-  replace h := Limits.IsLimit.ofIsoLimit h (S.mapMultifork F P)
-  exact ⟨Limits.IsLimit.postcomposeHomEquiv (S.multicospanComp F P) _ h⟩
-#align category_theory.presheaf.is_sheaf.comp CategoryTheory.Presheaf.IsSheaf.comp
-
-variable (J)
-
-/-- Composing a sheaf with a functor preserving the appropriate limits yields a functor
-between sheaf categories. -/
-@[simps]
-def sheafCompose : Sheaf J A ⥤ Sheaf J B where
-  obj G := ⟨G.val ⋙ F, Presheaf.IsSheaf.comp _ G.2⟩
-  map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext _ _ <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf_compose CategoryTheory.sheafCompose
-
-variable {F G}
+/--
+Composing a sheaf with a functor preserving the limit of `(S.index P).multicospan` yields a functor
+between sheaf categories.
+-/
+instance hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
+    [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F] :
+    J.HasSheafCompose F where
+  isSheaf P hP := by
+    rw [Presheaf.isSheaf_iff_multifork] at hP ⊢
+    intro X S
+    obtain ⟨h⟩ := hP X S
+    replace h := isLimitOfPreserves F h
+    replace h := Limits.IsLimit.ofIsoLimit h (S.mapMultifork F P)
+    exact ⟨Limits.IsLimit.postcomposeHomEquiv (S.multicospanComp F P) _ h⟩
 
 /--
-If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
-`sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
+Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
+functor between sheaf categories.
+
+Note: the size of the limit that `F` is required to preserve in
+`hasSheafCompose_of_preservesMulticospan` is in general larger than this.
 -/
-def sheafCompose_map : sheafCompose J F ⟶ sheafCompose J G where
-  app := fun X => .mk <| whiskerLeft _ η
-
-@[simp]
-lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
-
-@[simp]
-lemma sheafCompose_comp :
-  sheafCompose_map J (η ≫ γ) = sheafCompose_map J η ≫ sheafCompose_map J γ := rfl
+instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, max u₁ v₁} F] :
+    J.HasSheafCompose F where
+  isSheaf _ hP := Presheaf.isSheaf_comp_of_isSheaf J _ F hP
 
 end CategoryTheory

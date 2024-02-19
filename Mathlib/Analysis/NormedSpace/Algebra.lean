@@ -29,7 +29,7 @@ normed algebra, character space, continuous functional calculus
 -/
 
 
-variable {𝕜 : Type _} {A : Type _}
+variable {𝕜 : Type*} {A : Type*}
 
 namespace WeakDual
 
@@ -38,7 +38,7 @@ namespace CharacterSpace
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem norm_le_norm_one (φ : characterSpace 𝕜 A) : ‖toNormedDual (φ : WeakDual 𝕜 A)‖ ≤ ‖(1 : A)‖ :=
-  ContinuousLinearMap.op_norm_le_bound _ (norm_nonneg (1 : A)) fun a =>
+  ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg (1 : A)) fun a =>
     mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ a)
 #align weak_dual.character_space.norm_le_norm_one WeakDual.CharacterSpace.norm_le_norm_one
 
@@ -48,7 +48,7 @@ instance [ProperSpace 𝕜] : CompactSpace (characterSpace 𝕜 A) := by
     intro φ hφ
     rw [Set.mem_preimage, mem_closedBall_zero_iff]
     exact (norm_le_norm_one ⟨φ, ⟨hφ.1, hφ.2⟩⟩ : _)
-  exact isCompact_of_isClosed_subset (isCompact_closedBall 𝕜 0 _) CharacterSpace.isClosed h
+  exact (isCompact_closedBall 𝕜 0 _).of_isClosed_subset CharacterSpace.isClosed h
 
 end CharacterSpace
 

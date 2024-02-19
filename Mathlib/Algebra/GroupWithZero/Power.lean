@@ -3,8 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.Data.Int.Bitwise
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Data.Int.Order.Basic
 
 #align_import algebra.group_with_zero.power from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
@@ -18,7 +18,7 @@ This generalises the integer power function on a division ring.
 
 section GroupWithZero
 
-variable {G₀ : Type _} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
+variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
 
 section NatPow
 
@@ -30,7 +30,7 @@ theorem pow_sub₀ (a : G₀) {m n : ℕ} (ha : a ≠ 0) (h : n ≤ m) : a ^ (m 
 
 theorem pow_sub_of_lt (a : G₀) {m n : ℕ} (h : n < m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
-  · rw [zero_pow (tsub_pos_of_lt h), zero_pow (n.zero_le.trans_lt h), zero_mul]
+  · rw [zero_pow (tsub_pos_of_lt h).ne', zero_pow h.ne_bot, zero_mul]
   · exact pow_sub₀ _ ha h.le
 #align pow_sub_of_lt pow_sub_of_lt
 
@@ -54,13 +54,13 @@ section ZPow
 
 open Int
 
-variable {G₀ : Type _} [GroupWithZero G₀]
+variable {G₀ : Type*} [GroupWithZero G₀]
 
 -- Porting note: removed `attribute [local ematch] le_of_lt`
 
 theorem zero_zpow : ∀ z : ℤ, z ≠ 0 → (0 : G₀) ^ z = 0
   | (n : ℕ), h => by
-    rw [zpow_ofNat, zero_pow']
+    rw [zpow_ofNat, zero_pow]
     simpa using h
   | -[n+1], _ => by simp
 #align zero_zpow zero_zpow
@@ -141,13 +141,6 @@ theorem Commute.zpow_zpow_self₀ (a : G₀) (m n : ℤ) : Commute (a ^ m) (a ^ 
   (Commute.refl a).zpow_zpow₀ m n
 #align commute.zpow_zpow_self₀ Commute.zpow_zpow_self₀
 
-set_option linter.deprecated false in
-theorem zpow_bit1₀ (a : G₀) (n : ℤ) : a ^ bit1 n = a ^ n * a ^ n * a := by
-  rw [← zpow_bit0, bit1, zpow_add', zpow_one]
-  right; left
-  apply bit1_ne_zero
-#align zpow_bit1₀ zpow_bit1₀
-
 theorem zpow_ne_zero_of_ne_zero {a : G₀} (ha : a ≠ 0) : ∀ z : ℤ, a ^ z ≠ 0
   | (_ : ℕ) => by
     rw [zpow_ofNat]
@@ -160,11 +153,6 @@ theorem zpow_ne_zero_of_ne_zero {a : G₀} (ha : a ≠ 0) : ∀ z : ℤ, a ^ z �
 theorem zpow_sub₀ {a : G₀} (ha : a ≠ 0) (z1 z2 : ℤ) : a ^ (z1 - z2) = a ^ z1 / a ^ z2 := by
   rw [sub_eq_add_neg, zpow_add₀ ha, zpow_neg, div_eq_mul_inv]
 #align zpow_sub₀ zpow_sub₀
-
-set_option linter.deprecated false in
-theorem zpow_bit1' (a : G₀) (n : ℤ) : a ^ bit1 n = (a * a) ^ n * a := by
-  rw [zpow_bit1₀, (Commute.refl a).mul_zpow]
-#align zpow_bit1' zpow_bit1'
 
 theorem zpow_eq_zero {x : G₀} {n : ℤ} (h : x ^ n = 0) : x = 0 :=
   by_contradiction fun hx => zpow_ne_zero_of_ne_zero hx n h
@@ -187,7 +175,7 @@ end ZPow
 
 section
 
-variable {G₀ : Type _} [CommGroupWithZero G₀]
+variable {G₀ : Type*} [CommGroupWithZero G₀]
 
 theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
   by_cases ha : a = 0
@@ -197,10 +185,7 @@ theorem div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
 
 end
 
-/-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
-`n : ℤ`, to `(f x)^n`. -/
-@[simp]
-theorem map_zpow₀ {F G₀ G₀' : Type _} [GroupWithZero G₀] [GroupWithZero G₀']
-    [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
-  map_zpow' f (map_inv₀ f) x n
-#align map_zpow₀ map_zpow₀
+-- Guard against import creep regression.
+assert_not_exists Int.bitwise_or
+assert_not_exists Set.range
+assert_not_exists Nat.gcdA

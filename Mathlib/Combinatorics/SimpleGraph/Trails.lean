@@ -18,7 +18,7 @@ as Eulerian circuits).
 ## Main definitions
 
 * `SimpleGraph.Walk.IsEulerian` is the predicate that a trail is an Eulerian trail.
-* `SimpleGraph.Walk.IsTrail.even_countp_edges_iff` gives a condition on the number of edges
+* `SimpleGraph.Walk.IsTrail.even_countP_edges_iff` gives a condition on the number of edges
   in a trail that can be incident to a given vertex.
 * `SimpleGraph.Walk.IsEulerian.even_degree_iff` gives a condition on the degrees of vertices
   when there exists an Eulerian trail.
@@ -39,7 +39,7 @@ Eulerian trails
 
 namespace SimpleGraph
 
-variable {V : Type _} {G : SimpleGraph V}
+variable {V : Type*} {G : SimpleGraph V}
 
 namespace Walk
 
@@ -51,13 +51,13 @@ def IsTrail.edgesFinset {u v : V} {p : G.Walk u v} (h : p.IsTrail) : Finset (Sym
 
 variable [DecidableEq V]
 
-theorem IsTrail.even_countp_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail) (x : V) :
-    Even (p.edges.countp fun e => x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
+theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail) (x : V) :
+    Even (p.edges.countP fun e => x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
   induction' p with u u v w huv p ih
   · simp
   · rw [cons_isTrail_iff] at ht
     specialize ih ht.1
-    simp only [List.countp_cons, Ne.def, edges_cons, Sym2.mem_iff]
+    simp only [List.countP_cons, Ne.def, edges_cons, Sym2.mem_iff]
     split_ifs with h
     · rw [decide_eq_true_eq] at h
       obtain (rfl | rfl) := h
@@ -80,7 +80,7 @@ theorem IsTrail.even_countp_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
           simp only [imp_false, eq_self_iff_true, not_true, Classical.not_not] at h'
           cases h'
           simp only [not_true, and_false, false_and] at h
-#align simple_graph.walk.is_trail.even_countp_edges_iff SimpleGraph.Walk.IsTrail.even_countp_edges_iff
+#align simple_graph.walk.is_trail.even_countp_edges_iff SimpleGraph.Walk.IsTrail.even_countP_edges_iff
 
 /-- An *Eulerian trail* (also known as an "Eulerian path") is a walk
 `p` that visits every edge exactly once.  The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows
@@ -101,7 +101,8 @@ theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsT
 
 theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {e : Sym2 V} :
     e ∈ p.edges ↔ e ∈ G.edgeSet :=
-  ⟨fun h => p.edges_subset_edgeSet h, fun he => by simpa using (h e he).ge⟩
+  ⟨ fun h => p.edges_subset_edgeSet h
+  , fun he => by apply List.count_pos_iff_mem.mp; simpa using (h e he).ge ⟩
 #align simple_graph.walk.is_eulerian.mem_edges_iff SimpleGraph.Walk.IsEulerian.mem_edges_iff
 
 /-- The edge set of an Eulerian graph is finite. -/
@@ -133,8 +134,8 @@ theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
 
 theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
-  convert ht.isTrail.even_countp_edges_iff x
-  rw [← Multiset.coe_countp, Multiset.countp_eq_card_filter, ← card_incidenceFinset_eq_degree]
+  convert ht.isTrail.even_countP_edges_iff x
+  rw [← Multiset.coe_countP, Multiset.countP_eq_card_filter, ← card_incidenceFinset_eq_degree]
   change Multiset.card _ = _
   congr 1
   convert_to _ = (ht.isTrail.edgesFinset.filter (Membership.mem x)).val

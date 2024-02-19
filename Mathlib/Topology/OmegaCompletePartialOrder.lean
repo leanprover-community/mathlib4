@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Topology.Basic
+import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
 
 #align_import topology.omega_complete_partial_order from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
@@ -65,6 +66,8 @@ theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpe
     SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
 #align Scott.is_open_sUnion Scott.isOpen_sUnion
 
+theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.fst
+
 end Scott
 
 /-- A Scott topological space is defined on preorders
@@ -84,7 +87,7 @@ instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
 
 section notBelow
 
-variable {α : Type _} [OmegaCompletePartialOrder α] (y : Scott α)
+variable {α : Type*} [OmegaCompletePartialOrder α] (y : Scott α)
 
 /-- `notBelow` is an open set in `Scott α` used
 to prove the monotonicity of continuous functions -/
@@ -93,17 +96,9 @@ def notBelow :=
 #align not_below notBelow
 
 theorem notBelow_isOpen : IsOpen (notBelow y) := by
-  have h : Monotone (notBelow y) := by
-    intro x y' h
-    simp only [notBelow, setOf, le_Prop_eq]
-    intro h₀ h₁
-    apply h₀ (le_trans h h₁)
-  exists h
-  rintro c
-  apply eq_of_forall_ge_iff
-  intro z
-  rw [ωSup_le_iff]
-  simp only [ωSup_le_iff, notBelow, mem_setOf_eq, le_Prop_eq, OrderHom.coe_fun_mk, Chain.map_coe,
+  have h : Monotone (notBelow y) := fun x z hle ↦ mt hle.trans
+  refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
+  simp only [ωSup_le_iff, notBelow, mem_setOf_eq, le_Prop_eq, OrderHom.coe_mk, Chain.map_coe,
     Function.comp_apply, exists_imp, not_forall]
 #align not_below_is_open notBelow_isOpen
 
@@ -122,26 +117,16 @@ theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωS
 theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : Continuous f) :
     OmegaCompletePartialOrder.Continuous' f := by
-  simp only [continuous_def, (· ⁻¹' ·)] at hf
-  have h : Monotone f := by
-    intro x y h
-    cases' hf { x | ¬x ≤ f y } (notBelow_isOpen _) with hf hf'
-    clear hf'
-    specialize hf h
-    simp only [preimage, mem_setOf_eq, le_Prop_eq] at hf
-    by_contra H
-    apply hf H le_rfl
-  exists h
-  intro c
-  apply eq_of_forall_ge_iff
-  intro z
-  specialize hf _ (notBelow_isOpen z)
-  cases' hf with _ hf_h
-  specialize hf_h c
-  simp only [notBelow, eq_iff_iff, mem_setOf_eq] at hf_h
+  have h : Monotone f := fun x y h ↦ by
+    have hf : IsUpperSet {x | ¬f x ≤ f y} := ((notBelow_isOpen (f y)).preimage hf).isUpperSet
+    simpa only [mem_setOf_eq, le_refl, not_true, imp_false, not_not] using hf h
+  refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
+  rcases (notBelow_isOpen z).preimage hf with ⟨hf, hf'⟩
+  specialize hf' c
+  simp only [OrderHom.coe_mk, mem_preimage, notBelow, mem_setOf_eq] at hf'
   rw [← not_iff_not]
-  simp only [ωSup_le_iff, hf_h, ωSup, iSup, sSup, mem_range, Chain.map_coe, Function.comp_apply,
-    eq_iff_iff, not_forall]
+  simp only [ωSup_le_iff, hf', ωSup, iSup, sSup, mem_range, Chain.map_coe, Function.comp_apply,
+    eq_iff_iff, not_forall, OrderHom.coe_mk]
   tauto
 #align Scott_continuous_of_continuous scottContinuous_of_continuous
 

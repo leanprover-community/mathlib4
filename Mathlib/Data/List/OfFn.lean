@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Join
-import Mathlib.Data.List.Pairwise
+import Mathlib.Data.Set.Image
 
 #align_import data.list.of_fn from "leanprover-community/mathlib"@"bf27744463e9620ca4e4ebe951fe83530ae6949b"
 
@@ -46,11 +46,11 @@ theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
 
 --Porting note: new theorem
 @[simp]
-theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.castIso (by simp) i) := by
+theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   have := Array.getElem_ofFn f i (by simpa using i.2)
   cases' i with i hi
   simp only [getElem, Array.get] at this
-  simp only [Fin.castIso_mk]
+  simp only [Fin.cast_mk]
   rw [← this]
   congr <;> simp [ofFn]
 
@@ -81,7 +81,7 @@ theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
 #align list.nth_le_of_fn' List.nthLe_ofFn'
 
 @[simp]
-theorem map_ofFn {β : Type _} {n : ℕ} (f : Fin n → α) (g : α → β) :
+theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     map g (ofFn f) = ofFn (g ∘ f) :=
   ext_get (by simp) fun i h h' => by simp
 #align list.map_of_fn List.map_ofFn
@@ -99,9 +99,9 @@ theorem map_ofFn {β : Type _} {n : ℕ} (f : Fin n → α) (g : α → β) :
 
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
-    ofFn f = ofFn fun i : Fin n => f (Fin.castIso h.symm i) := by
+    ofFn f = ofFn fun i : Fin n => f (Fin.cast h.symm i) := by
   subst h
-  simp_rw [Fin.castIso_refl, OrderIso.refl_apply]
+  simp_rw [Fin.cast_refl, id]
 #align list.of_fn_congr List.ofFn_congr
 
 /-- `ofFn` on an empty domain is the empty list. -/
@@ -148,7 +148,7 @@ theorem ofFn_add {m n} (f : Fin (m + n) → α) :
     List.ofFn f =
       (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
   induction' n with n IH
-  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.castIso_refl]
+  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.cast_refl]
     rfl
   · rw [ofFn_succ', ofFn_succ', IH, append_concat]
     rfl
@@ -178,7 +178,7 @@ theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
     calc
       m * i + j < m * (i + 1) := (add_lt_add_left j.prop _).trans_eq (mul_add_one (_ : ℕ) _).symm
       _ ≤ _ := Nat.mul_le_mul_left _ i.prop⟩) := by
-  simp_rw [mul_comm m n, mul_comm m, ofFn_mul, Fin.castIso_mk]
+  simp_rw [mul_comm m n, mul_comm m, ofFn_mul, Fin.cast_mk]
 #align list.of_fn_mul' List.ofFn_mul'
 
 theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
@@ -186,7 +186,6 @@ theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
   | a :: l => by
     rw [ofFn_succ]
     congr
-    simp only [Fin.val_succ]
     exact ofFn_get l
 
 set_option linter.deprecated false in
@@ -199,7 +198,7 @@ theorem ofFn_nthLe : ∀ l : List α, (ofFn fun i => nthLe l i i.2) = l :=
 -- is much more useful
 theorem mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
   simp only [mem_iff_get, Set.mem_range, get_ofFn]
-  exact ⟨fun ⟨i, hi⟩ => ⟨Fin.castIso (by simp) i, hi⟩, fun ⟨i, hi⟩ => ⟨Fin.castIso (by simp) i, hi⟩⟩
+  exact ⟨fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩, fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩⟩
 #align list.mem_of_fn List.mem_ofFn
 
 @[simp]
@@ -223,8 +222,8 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 @[simp]
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
-  simp only [pairwise_iff_get, (Fin.castIso (length_ofFn f)).surjective.forall, get_ofFn,
-    OrderIso.lt_iff_lt]
+  simp only [pairwise_iff_get, (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, get_ofFn,
+    lt_iff_not_le, Fin.cast_le_cast]
 #align list.pairwise_of_fn List.pairwise_ofFn
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/
@@ -234,7 +233,7 @@ def equivSigmaTuple : List α ≃ Σn, Fin n → α where
   invFun f := List.ofFn f.2
   left_inv := List.ofFn_get
   right_inv := fun ⟨_, f⟩ =>
-    Fin.sigma_eq_of_eq_comp_castIso (length_ofFn _) <| funext fun i => get_ofFn f i
+    Fin.sigma_eq_of_eq_comp_cast (length_ofFn _) <| funext fun i => get_ofFn f i
 #align list.equiv_sigma_tuple List.equivSigmaTuple
 #align list.equiv_sigma_tuple_symm_apply List.equivSigmaTuple_symm_apply
 #align list.equiv_sigma_tuple_apply_fst List.equivSigmaTuple_apply_fst
@@ -244,13 +243,13 @@ def equivSigmaTuple : List α ≃ Σn, Fin n → α where
 
 This can be used with `induction l using List.ofFnRec`. -/
 @[elab_as_elim]
-def ofFnRec {C : List α → Sort _} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) (l : List α) : C l :=
+def ofFnRec {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) (l : List α) : C l :=
   cast (congr_arg C l.ofFn_get) <|
     h l.length l.get
 #align list.of_fn_rec List.ofFnRec
 
 @[simp]
-theorem ofFnRec_ofFn {C : List α → Sort _} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
+theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C (List.ofFn f)) {n : ℕ}
     (f : Fin n → α) : @ofFnRec _ C h (List.ofFn f) = h _ f := by
   --Porting note: Old proof was
   -- equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
@@ -279,7 +278,7 @@ theorem ofFn_inj' {m n : ℕ} {f : Fin m → α} {g : Fin n → α} :
 
 /-- Note we can only state this when the two functions are indexed by defeq `n`. -/
 theorem ofFn_injective {n : ℕ} : Function.Injective (ofFn : (Fin n → α) → List α) := fun f g h =>
-  eq_of_heq $ by rw [ofFn_inj'] at h; cases h; rfl
+  eq_of_heq <| by rw [ofFn_inj'] at h; cases h; rfl
 #align list.of_fn_injective List.ofFn_injective
 
 /-- A special case of `List.ofFn_inj` for when the two functions are indexed by defeq `n`. -/

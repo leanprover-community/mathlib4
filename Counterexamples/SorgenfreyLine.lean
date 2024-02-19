@@ -5,11 +5,12 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Paracompact
-import Mathlib.Topology.MetricSpace.Metrizable
-import Mathlib.Topology.MetricSpace.EMetricParacompact
+import Mathlib.Topology.Compactness.Paracompact
+import Mathlib.Topology.Metrizable.Urysohn
+import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Topology.Separation.NotNormal
+import Mathlib.Topology.MetricSpace.Baire
 
 #align_import sorgenfrey_line from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -48,6 +49,7 @@ def SorgenfreyLine : Type := ℝ
 -- porting note: was deriving ConditionallyCompleteLinearOrder, LinearOrderedField, Archimedean
 #align counterexample.sorgenfrey_line Counterexample.SorgenfreyLine
 
+@[inherit_doc]
 scoped[SorgenfreyLine] notation "ℝₗ" => Counterexample.SorgenfreyLine
 open scoped SorgenfreyLine
 
@@ -86,9 +88,9 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
     iInf_iInf_eq_right, mem_Ico]
   simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal,
     ← inf_iInf, ← iInf_inf, this, iInf_subtype]
-  suffices : (⨅ x ∈ Ioi a, 𝓟 (Iio x)).HasBasis (a < ·) Iio; exact this.principal_inf _
-  refine' hasBasis_biInf_principal _ nonempty_Ioi
-  exact directedOn_iff_directed.2 (directed_of_inf fun x y hxy => Iio_subset_Iio hxy)
+  suffices (⨅ x ∈ Ioi a, 𝓟 (Iio x)).HasBasis (a < ·) Iio from this.principal_inf _
+  refine hasBasis_biInf_principal ?_ nonempty_Ioi
+  exact directedOn_iff_directed.2 <| Monotone.directed_ge fun x y hxy ↦ Iio_subset_Iio hxy
 #align counterexample.sorgenfrey_line.nhds_basis_Ico Counterexample.SorgenfreyLine.nhds_basis_Ico
 
 theorem nhds_basis_Ico_rat (a : ℝₗ) :
@@ -118,7 +120,7 @@ theorem nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasAntitoneBasis fun n : ℕ+ => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, monotone_const.Ico <| Antitone.const_add
     (fun k _l hkl => inv_le_inv_of_le (Nat.cast_pos.2 k.2)
-      (Nat.mono_cast $ Subtype.coe_le_coe.2 hkl)) _⟩
+      (Nat.mono_cast <| Subtype.coe_le_coe.2 hkl)) _⟩
 #align counterexample.sorgenfrey_line.nhds_antitone_basis_Ico_inv_pnat Counterexample.SorgenfreyLine.nhds_antitone_basis_Ico_inv_pnat
 
 theorem isOpen_iff {s : Set ℝₗ} : IsOpen s ↔ ∀ x ∈ s, ∃ y > x, Ico x y ⊆ s :=
@@ -166,7 +168,7 @@ instance : ContinuousAdd ℝₗ := by
   exact (continuous_add.tendsto _).inf (MapsTo.tendsto fun x hx => add_le_add hx.1 hx.2)
 
 theorem isClopen_Ici (a : ℝₗ) : IsClopen (Ici a) :=
-  ⟨isOpen_Ici a, isClosed_Ici⟩
+  ⟨isClosed_Ici, isOpen_Ici a⟩
 #align counterexample.sorgenfrey_line.is_clopen_Ici Counterexample.SorgenfreyLine.isClopen_Ici
 
 theorem isClopen_Iio (a : ℝₗ) : IsClopen (Iio a) := by
@@ -179,8 +181,8 @@ theorem isClopen_Ico (a b : ℝₗ) : IsClopen (Ico a b) :=
 
 instance : TotallyDisconnectedSpace ℝₗ :=
   ⟨fun _ _ hs x hx y hy =>
-    le_antisymm (hs.subset_clopen (isClopen_Ici x) ⟨x, hx, left_mem_Ici⟩ hy)
-      (hs.subset_clopen (isClopen_Ici y) ⟨y, hy, left_mem_Ici⟩ hx)⟩
+    le_antisymm (hs.subset_isClopen (isClopen_Ici x) ⟨x, hx, left_mem_Ici⟩ hy)
+      (hs.subset_isClopen (isClopen_Ici y) ⟨y, hy, left_mem_Ici⟩ hx)⟩
 
 instance : FirstCountableTopology ℝₗ :=
   ⟨fun x => (nhds_basis_Ico_rat x).isCountablyGenerated⟩
@@ -204,7 +206,7 @@ instance : T5Space ℝₗ := by
     (bUnion_mem_nhdsSet fun y hy => (isOpen_Ico y (Y y)).mem_nhds <| left_mem_Ico.2 (hY y hy))
   simp only [disjoint_iUnion_left, disjoint_iUnion_right, Ico_disjoint_Ico]
   intro y hy x hx
-  cases' le_total x y with hle hle
+  rcases le_total x y with hle | hle
   · calc
       min (X x) (Y y) ≤ X x := min_le_left _ _
       _ ≤ y := (not_lt.1 fun hyx => (hXd x hx).le_bot ⟨⟨hle, hyx⟩, subset_closure hy⟩)
@@ -247,7 +249,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
   obtain rfl : x + y = c := by
     change (x, y) ∈ {p : ℝₗ × ℝₗ | p.1 + p.2 = c}
     exact closure_minimal (hs : s ⊆ {x | x.1 + x.2 = c}) (isClosed_antidiagonal c) H
-  rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).1 left_mem_Ici with
+  rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 left_mem_Ici with
     ⟨⟨x', y'⟩, ⟨hx : x ≤ x', hy : y ≤ y'⟩, H⟩
   convert H
   · refine' hx.antisymm _
@@ -269,7 +271,7 @@ theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
 
 /-- An antidiagonal is a separable set but is not a separable space. -/
 theorem isSeparable_antidiagonal (c : ℝₗ) : IsSeparable {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
-  isSeparable_of_separableSpace _
+  .of_separableSpace _
 
 /-- An antidiagonal is a separable set but is not a separable space. -/
 theorem not_separableSpace_antidiagonal (c : ℝₗ) :
@@ -286,7 +288,7 @@ theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
 /-- The sets of rational and irrational points of the antidiagonal `{(x, y) | x + y = 0}` cannot be
 separated by open neighborhoods. This implies that `ℝₗ × ℝₗ` is not a normal space. -/
 theorem not_separatedNhds_rat_irrational_antidiag :
-  ¬SeparatedNhds {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ ∃ r : ℚ, ↑r = x.1}
+    ¬SeparatedNhds {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ ∃ r : ℚ, ↑r = x.1}
     {x : ℝₗ × ℝₗ | x.1 + x.2 = 0 ∧ Irrational (toReal x.1)} := by
   have h₀ : ∀ {n : ℕ+}, 0 < (n : ℝ)⁻¹ := inv_pos.2 (Nat.cast_pos.2 (PNat.pos _))
   have h₀' : ∀ {n : ℕ+} {x : ℝ}, x < x + (n : ℝ)⁻¹ := lt_add_of_pos_right _ h₀
@@ -311,7 +313,8 @@ theorem not_separatedNhds_rat_irrational_antidiag :
   have H : {x : ℝ | Irrational x} ⊆ ⋃ n, C n := fun x hx =>
     mem_iUnion.2 ⟨_, subset_closure ⟨hx, rfl⟩⟩
   have Hd : Dense (⋃ n, interior (C n)) :=
-    isGδ_irrational.dense_iUnion_interior_of_closed dense_irrational (fun _ => isClosed_closure) H
+    IsGδ.setOf_irrational.dense_iUnion_interior_of_closed dense_irrational
+      (fun _ => isClosed_closure) H
   obtain ⟨N, hN⟩ : ∃ n : ℕ+, (interior <| C n).Nonempty; exact nonempty_iUnion.mp Hd.nonempty
   /- Choose a rational number `r` in the interior of the closure of `C N`, then choose `n ≥ N > 0`
     such that `Ico r (r + n⁻¹) × Ico (-r) (-r + n⁻¹) ⊆ U`. -/

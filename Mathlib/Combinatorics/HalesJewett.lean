@@ -78,7 +78,7 @@ Formally, a line is represented by a word `l.idxFun : ι → Option α` which sa
 `l.idxFun i = some y`).
 
 When `α` has size `1` there can be many elements of `Line α ι` defining the same function. -/
-structure Line (α ι : Type _) where
+structure Line (α ι : Type*) where
   /-- The word representing a combinatorial line. `l.idxfun i = none` means that
   `l x i = x` for all `x` and `l.idxfun i = some y` means that `l x i = y`. -/
   idxFun : ι → Option α
@@ -99,8 +99,7 @@ def IsMono {α ι κ} (C : (ι → α) → κ) (l : Line α ι) : Prop :=
 #align combinatorics.line.is_mono Combinatorics.Line.IsMono
 
 /-- The diagonal line. It is the identity at every coordinate. -/
-def diagonal (α ι) [Nonempty ι] : Line α ι
-    where
+def diagonal (α ι) [Nonempty ι] : Line α ι where
   idxFun _ := none
   proper := ⟨Classical.arbitrary ι, rfl⟩
 #align combinatorics.line.diagonal Combinatorics.Line.diagonal
@@ -109,7 +108,7 @@ instance (α ι) [Nonempty ι] : Inhabited (Line α ι) :=
   ⟨diagonal α ι⟩
 
 /-- The type of lines that are only one color except possibly at their endpoints. -/
-structure AlmostMono {α ι κ : Type _} (C : (ι → Option α) → κ) where
+structure AlmostMono {α ι κ : Type*} (C : (ι → Option α) → κ) where
   /-- The underlying line of an almost monochromatic line, where the coordinate dimension `α` is
   extended by an additional symbol `none`, thought to be marking the endpoint of the line. -/
   line : Line (Option α) ι
@@ -120,7 +119,7 @@ structure AlmostMono {α ι κ : Type _} (C : (ι → Option α) → κ) where
   has_color : ∀ x : α, C (line (some x)) = color
 #align combinatorics.line.almost_mono Combinatorics.Line.AlmostMono
 
-instance {α ι κ : Type _} [Nonempty ι] [Inhabited κ] :
+instance {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
     Inhabited (AlmostMono fun _ : ι → Option α => (default : κ)) :=
   ⟨{  line := default
       color := default
@@ -131,7 +130,7 @@ instance {α ι κ : Type _} [Nonempty ι] [Inhabited κ] :
 - the lines all have the same endpoint
 - the colors of the lines are distinct.
 Used in the proof `exists_mono_in_high_dimension`. -/
-structure ColorFocused {α ι κ : Type _} (C : (ι → Option α) → κ) where
+structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
   /-- The underlying multiset of almost monochromatic lines of a color-focused collection. -/
   lines : Multiset (AlmostMono C)
   /-- The common endpoint of the lines in the color-focused collection. -/
@@ -148,29 +147,25 @@ instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C)
 
 /-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`,
 `l.map f` is the identity at `i` if `l` is, and constantly `f y` if `l` is constantly `y` at `i`. -/
-def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι
-    where
+def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι where
   idxFun i := (l.idxFun i).map f
   proper := ⟨l.proper.choose, by simp only [l.proper.choose_spec, Option.map_none']⟩
 #align combinatorics.line.map Combinatorics.Line.map
 
 /-- A point in `ι → α` and a line in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
-def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (Sum ι ι')
-    where
+def vertical {α ι ι'} (v : ι → α) (l : Line α ι') : Line α (Sum ι ι') where
   idxFun := Sum.elim (some ∘ v) l.idxFun
   proper := ⟨Sum.inr l.proper.choose, l.proper.choose_spec⟩
 #align combinatorics.line.vertical Combinatorics.Line.vertical
 
 /-- A line in `ι → α` and a point in `ι' → α` determine a line in `ι ⊕ ι' → α`. -/
-def horizontal {α ι ι'} (l : Line α ι) (v : ι' → α) : Line α (Sum ι ι')
-    where
+def horizontal {α ι ι'} (l : Line α ι) (v : ι' → α) : Line α (Sum ι ι') where
   idxFun := Sum.elim l.idxFun (some ∘ v)
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 #align combinatorics.line.horizontal Combinatorics.Line.horizontal
 
 /-- One line in `ι → α` and one in `ι' → α` together determine a line in `ι ⊕ ι' → α`. -/
-def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (Sum ι ι')
-    where
+def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (Sum ι ι') where
   idxFun := Sum.elim l.idxFun l'.idxFun
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 #align combinatorics.line.prod Combinatorics.Line.prod
@@ -219,15 +214,16 @@ theorem diagonal_apply {α ι} [Nonempty ι] (x : α) : Line.diagonal α ι x = 
   simp_rw [Line.diagonal, Option.getD_none]
 #align combinatorics.line.diagonal_apply Combinatorics.Line.diagonal_apply
 
-/-- The Hales-Jewett theorem. This version has a restriction on universe levels which is necessary
-for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic version. -/
+/-- The **Hales-Jewett theorem**. This version has a restriction on universe levels which is
+necessary for the proof. See `exists_mono_in_high_dimension` for a fully universe-polymorphic
+version. -/
 private theorem exists_mono_in_high_dimension' :
     ∀ (α : Type u) [Finite α] (κ : Type max v u) [Finite κ],
       ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
 -- The proof proceeds by induction on `α`.
   Finite.induction_empty_option
   (-- We have to show that the theorem is invariant under `α ≃ α'` for the induction to work.
-  @fun α α' e =>
+  fun {α α'} e =>
     forall_imp fun κ =>
       forall_imp fun _ =>
         Exists.imp fun ι =>
@@ -248,7 +244,7 @@ private theorem exists_mono_in_high_dimension' :
     -- empty.
     -- Then `Option α` has only one element, so any line is monochromatic.
     by_cases h : Nonempty α
-    on_goal 2 =>
+    case neg =>
       refine' ⟨Unit, inferInstance, fun C => ⟨diagonal _ Unit, C fun _ => none, ?_⟩⟩
       rintro (_ | ⟨a⟩)
       · rfl
@@ -259,10 +255,10 @@ private theorem exists_mono_in_high_dimension' :
       ∀ r : ℕ,
         ∃ (ι : Type) (_ : Fintype ι),
           ∀ C : (ι → Option α) → κ,
-            (∃ s : ColorFocused C, Multiset.card s.lines = r) ∨ ∃ l, IsMono C l
-    -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
-    -- so we must be in the second case, where there is a monochromatic line.
-    · obtain ⟨ι, _inst, hι⟩ := key (Fintype.card κ + 1)
+            (∃ s : ColorFocused C, Multiset.card s.lines = r) ∨ ∃ l, IsMono C l by
+      -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
+      -- so we must be in the second case, where there is a monochromatic line.
+      obtain ⟨ι, _inst, hι⟩ := key (Fintype.card κ + 1)
       refine' ⟨ι, _inst, fun C => (hι C).resolve_left _⟩
       rintro ⟨s, sr⟩
       apply Nat.not_succ_le_self (Fintype.card κ)
@@ -343,13 +339,12 @@ end Line
 
 /-- A generalization of Van der Waerden's theorem: if `M` is a finitely colored commutative
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
-theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finset M) [Finite κ]
+theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
-  skip
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none ) with hs
+  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
   refine'
     ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, _⟩, ∑ i in sᶜ, ((l.idxFun i).map _).getD 0,
       c, _⟩

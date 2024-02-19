@@ -54,7 +54,7 @@ namespace Polynomial
 
 open Polynomial
 
-variable {R S : Type _} [CommRing R] [CommRing S] (k : ℕ) (a : R)
+variable {R S : Type*} [CommRing R] [CommRing S] (k : ℕ) (a : R)
 
 /-- `dickson` is the `n`-th (generalised) Dickson polynomial of the `k`-th kind associated to the
 element `a ∈ R`. -/
@@ -108,7 +108,7 @@ theorem dickson_two_zero : ∀ n : ℕ, dickson 2 (0 : R) n = X ^ n
     norm_num
   | 1 => by simp only [dickson_one, pow_one]
   | n + 2 => by
-    simp only [dickson_add_two, C_0, MulZeroClass.zero_mul, sub_zero]
+    simp only [dickson_add_two, C_0, zero_mul, sub_zero]
     rw [dickson_two_zero (n + 1), pow_add X (n + 1) 1, mul_comm, pow_one]
 #align polynomial.dickson_two_zero Polynomial.dickson_two_zero
 
@@ -176,8 +176,7 @@ set_option linter.uppercaseLean3 false in
 `n`-th. -/
 theorem dickson_one_one_mul (m n : ℕ) :
     dickson 1 (1 : R) (m * n) = (dickson 1 1 m).comp (dickson 1 1 n) := by
-  have h : (1 : R) = Int.castRingHom R 1
-  simp only [eq_intCast, Int.cast_one]
+  have h : (1 : R) = Int.castRingHom R 1 := by simp only [eq_intCast, Int.cast_one]
   rw [h]
   simp only [← map_dickson (Int.castRingHom R), ← map_comp]
   congr 1
@@ -231,7 +230,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
     -- For every `x`, that set is finite (since it is governed by a quadratic equation).
     -- For the moment, we claim that all these sets together cover `K`.
     suffices (Set.univ : Set K) =
-        { x : K | ∃ y : K, x = y + y⁻¹ ∧ y ≠ 0 } >>= fun x => { y | x = y + y⁻¹ ∨ y = 0 } by
+        ⋃ x ∈ { x : K | ∃ y : K, x = y + y⁻¹ ∧ y ≠ 0 }, { y | x = y + y⁻¹ ∨ y = 0 }  by
       rw [this]
       clear this
       refine' h.biUnion fun x _ => _
@@ -241,9 +240,9 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
         intro H
         have : φ.eval 0 = 0 := by rw [H, eval_zero]
         simpa [eval_X, eval_one, eval_pow, eval_sub, sub_zero, eval_add, eval_mul,
-          MulZeroClass.mul_zero, sq, zero_add, one_ne_zero]
+          mul_zero, sq, zero_add, one_ne_zero]
       classical
-        convert(φ.roots ∪ {0}).toFinset.finite_toSet using 1
+        convert (φ.roots ∪ {0}).toFinset.finite_toSet using 1
         ext1 y
         simp only [Multiset.mem_toFinset, Set.mem_setOf_eq, Finset.mem_coe, Multiset.mem_union,
           mem_roots hφ, IsRoot, eval_add, eval_sub, eval_pow, eval_mul, eval_X, eval_C, eval_one,
@@ -266,8 +265,8 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
 #align polynomial.dickson_one_one_zmod_p Polynomial.dickson_one_one_zmod_p
 
 theorem dickson_one_one_charP (p : ℕ) [Fact p.Prime] [CharP R p] : dickson 1 (1 : R) p = X ^ p := by
-  have h : (1 : R) = ZMod.castHom (dvd_refl p) R 1
-  simp only [ZMod.castHom_apply, ZMod.cast_one']
+  have h : (1 : R) = ZMod.castHom (dvd_refl p) R 1 := by
+    simp only [ZMod.castHom_apply, ZMod.cast_one']
   rw [h, ← map_dickson (ZMod.castHom (dvd_refl p) R), dickson_one_one_zmod_p, Polynomial.map_pow,
     map_X]
 #align polynomial.dickson_one_one_char_p Polynomial.dickson_one_one_charP

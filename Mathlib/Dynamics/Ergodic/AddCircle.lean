@@ -3,10 +3,12 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.MeasureTheory.Group.AddCircle
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Set.Pointwise.Iterate
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.MeasureTheory.Covering.DensityTheorem
-import Mathlib.Data.Set.Pointwise.Iterate
+import Mathlib.MeasureTheory.Group.AddCircle
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 #align_import dynamics.ergodic.add_circle from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
 
@@ -41,7 +43,7 @@ variable {T : ℝ} [hT : Fact (0 < T)]
 rational angles with denominators tending to infinity, then it must be almost empty or almost full.
 -/
 theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
-    (hs : NullMeasurableSet s volume) {ι : Type _} {l : Filter ι} [l.NeBot] {u : ι → AddCircle T}
+    (hs : NullMeasurableSet s volume) {ι : Type*} {l : Filter ι} [l.NeBot] {u : ι → AddCircle T}
     (hu₁ : ∀ i, (u i +ᵥ s : Set _) =ᵐ[volume] s) (hu₂ : Tendsto (addOrderOf ∘ u) l atTop) :
     s =ᵐ[volume] (∅ : Set <| AddCircle T) ∨ s =ᵐ[volume] univ := by
   /- Sketch of proof:
@@ -57,7 +59,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   have hT₀ : 0 < T := hT.out
   have hT₁ : ENNReal.ofReal T ≠ 0 := by simpa
   rw [ae_eq_empty, ae_eq_univ_iff_measure_eq hs, AddCircle.measure_univ]
-  cases' eq_or_ne (μ s) 0 with h h; · exact Or.inl h
+  rcases eq_or_ne (μ s) 0 with h | h; · exact Or.inl h
   right
   obtain ⟨d, -, hd⟩ : ∃ d, d ∈ s ∧ ∀ {ι'} {l : Filter ι'} (w : ι' → AddCircle T) (δ : ι' → ℝ),
     Tendsto δ l (𝓝[>] 0) → (∀ᶠ j in l, d ∈ closedBall (w j) (1 * δ j)) →
@@ -65,8 +67,8 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
     exists_mem_of_measure_ne_zero_of_ae h
       (IsUnifLocDoublingMeasure.ae_tendsto_measure_inter_div μ s 1)
   let I : ι → Set (AddCircle T) := fun j => closedBall d (T / (2 * ↑(n j)))
-  replace hd : Tendsto (fun j => μ (s ∩ I j) / μ (I j)) l (𝓝 1)
-  · let δ : ι → ℝ := fun j => T / (2 * ↑(n j))
+  replace hd : Tendsto (fun j => μ (s ∩ I j) / μ (I j)) l (𝓝 1) := by
+    let δ : ι → ℝ := fun j => T / (2 * ↑(n j))
     have hδ₀ : ∀ᶠ j in l, 0 < δ j :=
       (hu₂.eventually_gt_atTop 0).mono fun j hj => div_pos hT₀ <| by positivity
     have hδ₁ : Tendsto δ l (𝓝[>] 0) := by
@@ -129,8 +131,8 @@ theorem ergodic_zsmul_add (x : AddCircle T) {n : ℤ} (h : 1 < |n|) : Ergodic fu
     measurePreserving_add_left volume (DivisibleBy.div x <| n - 1)
   suffices e ∘ f ∘ e.symm = fun y => n • y by
     rw [← he.ergodic_conjugate_iff, this]; exact ergodic_zsmul h
-  replace h : n - 1 ≠ 0
-  · rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
+  replace h : n - 1 ≠ 0 := by
+    rw [← abs_one] at h; rw [sub_ne_zero]; exact ne_of_apply_ne _ (ne_of_gt h)
   have hnx : n • DivisibleBy.div x (n - 1) = x + DivisibleBy.div x (n - 1) := by
     conv_rhs => congr; rw [← DivisibleBy.div_cancel x h]
     rw [sub_smul, one_smul, sub_add_cancel]

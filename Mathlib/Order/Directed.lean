@@ -1,14 +1,11 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
+Authors: Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Order.Lattice
-import Mathlib.Order.Max
-import Mathlib.Order.Bounds.Basic
 
-#align_import order.directed from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
+#align_import order.directed from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
 
 /-!
 # Directed indexed families and sets
@@ -24,6 +21,11 @@ directed iff each pair of elements has a shared upper bound.
   unbundled relation classes such as `IsTotal`.
 * `ScottContinuous`: Predicate stating that a function between preorders preserves `IsLUB` on
   directed sets.
+
+## TODO
+
+Define connected orders (the transitive symmetric closure of `≤` is everything) and show that
+(co)directed orders are connected.
 
 ## References
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
@@ -57,7 +59,7 @@ theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype
   simp [Directed, DirectedOn]; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
 #align directed_on_iff_directed directedOn_iff_directed
 
-alias directedOn_iff_directed ↔ DirectedOn.directed_val _
+alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 #align directed_on.directed_coe DirectedOn.directed_val
 
 theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
@@ -65,7 +67,7 @@ theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.ra
 #align directed_on_range directedOn_range
 
 -- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
-alias directedOn_range ↔ Directed.directedOn_range _
+alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
 #align directed.directed_on_range Directed.directedOn_range
 
 -- porting note: `attribute [protected]` doesn't work
@@ -83,9 +85,9 @@ theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)
   ⟨z, hz, h hx hz hxz, h hy hz hyz⟩
 #align directed_on.mono' DirectedOn.mono'
 
-theorem DirectedOn.mono {s : Set α} (h : DirectedOn r s) (H : ∀ {a b}, r a b → r' a b) :
+theorem DirectedOn.mono {s : Set α} (h : DirectedOn r s) (H : ∀ ⦃a b⦄, r a b → r' a b) :
     DirectedOn r' s :=
-  h.mono' fun _ _ _ _ => H
+  h.mono' fun _ _ _ _ h ↦ H h
 #align directed_on.mono DirectedOn.mono
 
 theorem directed_comp {ι} {f : ι → β} {g : β → α} : Directed r (g ∘ f) ↔ Directed (g ⁻¹'o r) f :=
@@ -104,22 +106,6 @@ theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Pro
   directed_comp.2 <| hf.mono hg
 #align directed.mono_comp Directed.mono_comp
 
-/-- A monotone function on a sup-semilattice is directed. -/
-theorem directed_of_sup [SemilatticeSup α] {f : α → β} {r : β → β → Prop}
-    (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f := fun a b =>
-  ⟨a ⊔ b, H le_sup_left, H le_sup_right⟩
-#align directed_of_sup directed_of_sup
-
-theorem Monotone.directed_le [SemilatticeSup α] [Preorder β] {f : α → β} :
-    Monotone f → Directed (· ≤ ·) f :=
-  directed_of_sup
-#align monotone.directed_le Monotone.directed_le
-
-theorem Antitone.directed_ge [SemilatticeSup α] [Preorder β] {f : α → β} (hf : Antitone f) :
-    Directed (· ≥ ·) f :=
-  directed_of_sup hf
-#align antitone.directed_ge Antitone.directed_ge
-
 /-- A set stable by supremum is `≤`-directed. -/
 theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊔ j ∈ S) : DirectedOn (· ≤ ·) S := fun a ha b hb =>
@@ -130,10 +116,10 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
     (hf : Directed (· ≤ ·) f) (he : Function.Injective e) :
     Directed (· ≤ ·) (Function.extend e f ⊥) := by
   intro a b
-  rcases(em (∃ i, e i = a)).symm with (ha | ⟨i, rfl⟩)
+  rcases (em (∃ i, e i = a)).symm with (ha | ⟨i, rfl⟩)
   · use b
     simp [Function.extend_apply' _ _ _ ha]
-  rcases(em (∃ i, e i = b)).symm with (hb | ⟨j, rfl⟩)
+  rcases (em (∃ i, e i = b)).symm with (hb | ⟨j, rfl⟩)
   · use e i
     simp [Function.extend_apply' _ _ _ hb]
   rcases hf i j with ⟨k, hi, hj⟩
@@ -141,26 +127,10 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
   simp only [he.extend_apply, *, true_and_iff]
 #align directed.extend_bot Directed.extend_bot
 
-/-- An antitone function on an inf-semilattice is directed. -/
-theorem directed_of_inf [SemilatticeInf α] {r : β → β → Prop} {f : α → β}
-    (hf : ∀ a₁ a₂, a₁ ≤ a₂ → r (f a₂) (f a₁)) : Directed r f := fun x y =>
-  ⟨x ⊓ y, hf _ _ inf_le_left, hf _ _ inf_le_right⟩
-#align directed_of_inf directed_of_inf
-
-theorem Monotone.directed_ge [SemilatticeInf α] [Preorder β] {f : α → β} (hf : Monotone f) :
-    Directed (· ≥ ·) f :=
-  directed_of_inf hf
-#align monotone.directed_ge Monotone.directed_ge
-
-theorem Antitone.directed_le [SemilatticeInf α] [Preorder β] {f : α → β} (hf : Antitone f) :
-    Directed (· ≤ ·) f :=
-  directed_of_inf hf
-#align antitone.directed_le Antitone.directed_le
-
 /-- A set stable by infimum is `≥`-directed. -/
 theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
-    (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S := fun a ha b hb =>
-  ⟨a ⊓ b, H ha hb, inf_le_left, inf_le_right⟩
+    (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S :=
+  directedOn_of_sup_mem (α := αᵒᵈ) H
 #align directed_on_of_inf_mem directedOn_of_inf_mem
 
 theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i j =>
@@ -169,7 +139,7 @@ theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i 
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
-class IsDirected (α : Type _) (r : α → α → Prop) : Prop where
+class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
   /-- For every pair of elements `a` and `b` there is a `c` such that `r a c` and `r b c` -/
   directed (a b : α) : ∃ c, r a c ∧ r b c
 #align is_directed IsDirected
@@ -179,7 +149,7 @@ theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ 
   IsDirected.directed _ _
 #align directed_of directed_of
 
-theorem directed_id [IsDirected α r] : Directed r id := by convert directed_of r
+theorem directed_id [IsDirected α r] : Directed r id := directed_of r
 #align directed_id directed_id
 
 theorem directed_id_iff : Directed r id ↔ IsDirected α r :=
@@ -200,8 +170,8 @@ theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
 #align directed_on_univ_iff directedOn_univ_iff
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r := by
-  rw [← directed_id_iff]; exact IsTotal.directed _
+instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r :=
+  directed_id_iff.1 <| IsTotal.directed _
 #align is_total.to_is_directed IsTotal.to_isDirected
 
 theorem isDirected_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) : IsDirected α s :=
@@ -226,9 +196,41 @@ instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirecte
   assumption
 #align order_dual.is_directed_le OrderDual.isDirected_le
 
+/-- A monotone function on an upwards-directed type is directed. -/
+theorem directed_of_isDirected_le [LE α] [IsDirected α (· ≤ ·)] {f : α → β} {r : β → β → Prop}
+    (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
+  directed_id.mono_comp H
+#align directed_of_sup directed_of_isDirected_le
+
+theorem Monotone.directed_le [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β} :
+    Monotone f → Directed (· ≤ ·) f :=
+  directed_of_isDirected_le
+#align monotone.directed_le Monotone.directed_le
+
+theorem Antitone.directed_ge [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β}
+    (hf : Antitone f) : Directed (· ≥ ·) f :=
+  directed_of_isDirected_le hf
+#align antitone.directed_ge Antitone.directed_ge
+
+/-- An antitone function on a downwards-directed type is directed. -/
+theorem directed_of_isDirected_ge [LE α] [IsDirected α (· ≥ ·)] {r : β → β → Prop} {f : α → β}
+    (hf : ∀ a₁ a₂, a₁ ≤ a₂ → r (f a₂) (f a₁)) : Directed r f :=
+  directed_of_isDirected_le (α := αᵒᵈ) fun _ _ ↦ hf _ _
+#align directed_of_inf directed_of_isDirected_ge
+
+theorem Monotone.directed_ge [Preorder α] [IsDirected α (· ≥ ·)] [Preorder β] {f : α → β}
+    (hf : Monotone f) : Directed (· ≥ ·) f :=
+  directed_of_isDirected_ge hf
+#align monotone.directed_ge Monotone.directed_ge
+
+theorem Antitone.directed_le [Preorder α] [IsDirected α (· ≥ ·)] [Preorder β] {f : α → β}
+    (hf : Antitone f) : Directed (· ≤ ·) f :=
+  directed_of_isDirected_ge hf
+#align antitone.directed_le Antitone.directed_le
+
 section Reflexive
 
-theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
+protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
     (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
   rintro x (rfl | hx) y (rfl | hy)
   · exact ⟨y, Set.mem_insert _ _, h _, h _⟩
@@ -309,6 +311,23 @@ theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : �
   ⟨b, a, h⟩
 #align exists_lt_of_directed_le exists_lt_of_directed_le
 
+variable [PartialOrder β] {f : α → β} {s : Set α}
+
+-- TODO: Generalise the following two lemmas to connected orders
+
+/-- If `f` is monotone and antitone on a directed order, then `f` is constant. -/
+lemma constant_of_monotone_antitone [IsDirected α (· ≤ ·)] (hf : Monotone f) (hf' : Antitone f)
+    (a b : α) : f a = f b := by
+  obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
+  exact le_antisymm ((hf hac).trans $ hf' hbc) ((hf hbc).trans $ hf' hac)
+
+/-- If `f` is monotone and antitone on a directed set `s`, then `f` is constant on `s`. -/
+lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn f s)
+    (hs : DirectedOn (· ≤ ·) s) : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → f a = f b := by
+  rintro a ha b hb
+  obtain ⟨c, hc, hac, hbc⟩ := hs _ ha _ hb
+  exact le_antisymm ((hf ha hc hac).trans $ hf' hb hc hbc) ((hf hb hc hbc).trans $ hf' ha hc hac)
+
 end Preorder
 
 -- see Note [lower instance priority]
@@ -332,40 +351,3 @@ instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsD
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
 #align order_bot.to_is_directed_ge OrderBot.to_isDirected_ge
-
-section ScottContinuous
-
-variable [Preorder α] {a : α}
-
-/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
-Scott topology.
-
-The dual notion
-
-```lean
-∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
-```
-
-does not appear to play a significant role in the literature, so is omitted here.
--/
-def ScottContinuous [Preorder β] (f : α → β) : Prop :=
-  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
-#align scott_continuous ScottContinuous
-
-protected theorem ScottContinuous.monotone [Preorder β] {f : α → β} (h : ScottContinuous f) :
-    Monotone f := by
-  intro a b hab
-  have e1 : IsLUB (f '' {a, b}) (f b) := by
-    apply h
-    · exact Set.insert_nonempty _ _
-    · exact directedOn_pair le_refl hab
-    · rw [IsLUB, upperBounds_insert, upperBounds_singleton,
-        Set.inter_eq_self_of_subset_right (Set.Ici_subset_Ici.mpr hab)]
-      exact isLeast_Ici
-  apply e1.1
-  rw [Set.image_pair]
-  exact Set.mem_insert _ _
-#align scott_continuous.monotone ScottContinuous.monotone
-
-end ScottContinuous

@@ -21,11 +21,11 @@ section
 
 open scoped Topology ENNReal
 
-open Filter ENNReal spectrum CstarRing
+open Filter ENNReal spectrum CstarRing NormedSpace
 
 section UnitarySpectrum
 
-variable {𝕜 : Type _} [NormedField 𝕜] {E : Type _} [NormedRing E] [StarRing E] [CstarRing E]
+variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing E] [CstarRing E]
   [NormedAlgebra 𝕜 E] [CompleteSpace E]
 
 theorem unitary.spectrum_subset_circle (u : unitary E) :
@@ -33,12 +33,12 @@ theorem unitary.spectrum_subset_circle (u : unitary E) :
   nontriviality E
   refine' fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm _ _)
   · simpa only [CstarRing.norm_coe_unitary u] using norm_le_norm_of_mem hk
-  · rw [← unitary.toUnits_apply_val u] at hk
+  · rw [← unitary.val_toUnits_apply u] at hk
     have hnk := ne_zero_of_mem_of_unit hk
     rw [← inv_inv (unitary.toUnits u), ← spectrum.map_inv, Set.mem_inv] at hk
     have : ‖k‖⁻¹ ≤ ‖(↑(unitary.toUnits u)⁻¹ : E)‖ :=
       by simpa only [norm_inv] using norm_le_norm_of_mem hk
-    simpa [←Units.inv_eq_val_inv] using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
+    simpa using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
 #align unitary.spectrum_subset_circle unitary.spectrum_subset_circle
 
 theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
@@ -52,7 +52,7 @@ section ComplexScalars
 
 open Complex
 
-variable {A : Type _} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
+variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CstarRing A]
 
 local notation "↑ₐ" => algebraMap ℂ A
@@ -91,7 +91,7 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] {a : A} (ha : IsSelf
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
   have hu := exp_mem_unitary_of_mem_skewAdjoint ℂ (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
-  have : _root_.exp ℂ (I • z) ∈ spectrum ℂ (_root_.exp ℂ (I • a)) := by
+  have : NormedSpace.exp ℂ (I • z) ∈ spectrum ℂ (NormedSpace.exp ℂ (I • a)) := by
     simpa only [Units.smul_def, Units.val_mk0] using
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by
@@ -124,9 +124,9 @@ end ComplexScalars
 
 namespace StarAlgHom
 
-variable {F A B : Type _} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
+variable {F A B : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CstarRing A] [NormedRing B] [NormedAlgebra ℂ B] [CompleteSpace B] [StarRing B] [CstarRing B]
-  [hF : StarAlgHomClass F ℂ A B] (φ : F)
+  [FunLike F A B] [AlgHomClass F ℂ A B] [StarAlgHomClass F ℂ A B] (φ : F)
 
 /-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 theorem nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
@@ -163,36 +163,34 @@ open ContinuousMap Complex
 
 open scoped ComplexStarModule
 
-variable {F A : Type _} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CstarRing A] [StarModule ℂ A] [hF : AlgHomClass F ℂ A ℂ]
+variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
+  [CstarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarAlgHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/
 noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass F A ℂ where
-  coe φ := φ
-  coe_injective' := FunLike.coe_injective'
   map_star φ a := by
-    suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s
-    · rw [← realPart_add_I_smul_imaginaryPart a]
+    suffices hsa : ∀ s : selfAdjoint A, (φ s)⋆ = φ s by
+      rw [← realPart_add_I_smul_imaginaryPart a]
       simp only [map_add, map_smul, star_add, star_smul, hsa, selfAdjoint.star_val_eq]
-    · intro s
-      have := AlgHom.apply_mem_spectrum φ (s : A)
-      rw [selfAdjoint.val_re_map_spectrum s] at this
-      rcases this with ⟨⟨_, _⟩, _, heq⟩
-      simp only [Function.comp_apply] at heq
-      rw [← heq, IsROrC.star_def]
-      exact IsROrC.conj_ofReal _
+    intro s
+    have := AlgHom.apply_mem_spectrum φ (s : A)
+    rw [selfAdjoint.val_re_map_spectrum s] at this
+    rcases this with ⟨⟨_, _⟩, _, heq⟩
+    simp only [Function.comp_apply] at heq
+    rw [← heq, IsROrC.star_def]
+    exact IsROrC.conj_ofReal _
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/
-noncomputable def _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
-  { WeakDual.Complex.instStarHomClass, hF with coe := fun f => f }
+lemma _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
+  { WeakDual.Complex.instStarHomClass, hF with }
 #align alg_hom_class.star_alg_hom_class AlgHomClass.instStarAlgHomClass
 
 namespace CharacterSpace
 
 noncomputable instance instStarAlgHomClass : StarAlgHomClass (characterSpace ℂ A) ℂ A ℂ :=
-  { AlgHomClass.instStarAlgHomClass with coe := fun f => f }
+  { AlgHomClass.instStarAlgHomClass with }
 
 end CharacterSpace
 

@@ -177,7 +177,7 @@ theorem arsinh_neg_iff : arsinh x < 0 ↔ x < 0 :=
 #align real.arsinh_neg_iff Real.arsinh_neg_iff
 
 theorem hasStrictDerivAt_arsinh (x : ℝ) : HasStrictDerivAt arsinh (sqrt (1 + x ^ 2))⁻¹ x := by
-  convert sinhHomeomorph.toLocalHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
+  convert sinhHomeomorph.toPartialHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
     (hasStrictDerivAt_sinh _) using 2
   exact (cosh_arsinh _).symm
 #align real.has_strict_deriv_at_arsinh Real.hasStrictDerivAt_arsinh
@@ -203,14 +203,14 @@ end Real
 
 open Real
 
-theorem Filter.Tendsto.arsinh {α : Type _} {l : Filter α} {f : α → ℝ} {a : ℝ}
+theorem Filter.Tendsto.arsinh {α : Type*} {l : Filter α} {f : α → ℝ} {a : ℝ}
     (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => arsinh (f x)) l (𝓝 (arsinh a)) :=
   (continuous_arsinh.tendsto _).comp h
 #align filter.tendsto.arsinh Filter.Tendsto.arsinh
 
 section Continuous
 
-variable {X : Type _} [TopologicalSpace X] {f : X → ℝ} {s : Set X} {a : X}
+variable {X : Type*} [TopologicalSpace X] {f : X → ℝ} {s : Set X} {a : X}
 
 nonrec theorem ContinuousAt.arsinh (h : ContinuousAt f a) :
     ContinuousAt (fun x => arsinh (f x)) a :=
@@ -234,7 +234,7 @@ end Continuous
 
 section fderiv
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E} {a : E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E} {a : E}
   {f' : E →L[ℝ] ℝ} {n : ℕ∞}
 
 theorem HasStrictFDerivAt.arsinh (hf : HasStrictFDerivAt f f' a) :

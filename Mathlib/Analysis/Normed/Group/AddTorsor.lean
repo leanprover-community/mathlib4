@@ -30,18 +30,18 @@ structure and require the distance to be the same as results from the
 norm (which in fact implies the distance yields a pseudometric space, but
 bundling just the distance and using an instance for the pseudometric space
 results in type class problems). -/
-class NormedAddTorsor (V : outParam <| Type _) (P : Type _) [outParam <| SeminormedAddCommGroup V]
+class NormedAddTorsor (V : outParam <| Type*) (P : Type*) [outParam <| SeminormedAddCommGroup V]
   [PseudoMetricSpace P] extends AddTorsor V P where
   dist_eq_norm' : ∀ x y : P, dist x y = ‖(x -ᵥ y : V)‖
 #align normed_add_torsor NormedAddTorsor
 
 /-- Shortcut instance to help typeclass inference out. -/
-instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type _} [NormedAddCommGroup V]
+instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormedAddCommGroup V]
     [MetricSpace P] [NormedAddTorsor V P] : AddTorsor V P :=
   NormedAddTorsor.toAddTorsor
 #align normed_add_torsor.to_add_torsor' NormedAddTorsor.toAddTorsor'
 
-variable {α V P W Q : Type _} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
+variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P :=
@@ -51,13 +51,13 @@ instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P 
 #align normed_add_torsor.to_has_isometric_vadd NormedAddTorsor.to_isometricVAdd
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
-instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V
-    where dist_eq_norm' := dist_eq_norm
+instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V where
+  dist_eq_norm' := dist_eq_norm
 #align seminormed_add_comm_group.to_normed_add_torsor SeminormedAddCommGroup.toNormedAddTorsor
 
 -- Because of the AddTorsor.nonempty instance.
 /-- A nonempty affine subspace of a `NormedAddTorsor` is itself a `NormedAddTorsor`. -/
-instance AffineSubspace.toNormedAddTorsor {R : Type _} [Ring R] [Module R V]
+instance AffineSubspace.toNormedAddTorsor {R : Type*} [Ring R] [Module R V]
     (s : AffineSubspace R P) [Nonempty s] : NormedAddTorsor s.direction s :=
   { AffineSubspace.toAddTorsor s with
     dist_eq_norm' := fun x y => NormedAddTorsor.dist_eq_norm' x.val y.val }
@@ -168,8 +168,7 @@ theorem nndist_vsub_cancel_right (x y z : P) : nndist (x -ᵥ z) (y -ᵥ z) = nn
 
 theorem dist_vadd_vadd_le (v v' : V) (p p' : P) :
     dist (v +ᵥ p) (v' +ᵥ p') ≤ dist v v' + dist p p' := by
-  -- porting note: added `()` and lemma name to help simp find a `@[simp]` lemma
-  simpa [(dist_vadd_cancel_right)] using dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
+  simpa using dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
 #align dist_vadd_vadd_le dist_vadd_vadd_le
 
 theorem nndist_vadd_vadd_le (v v' : V) (p p' : P) :
@@ -185,8 +184,7 @@ theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nndist p₁ p₃ + nndist p₂ p₄ := by
-  -- porting note: added `()` to help simp find a `@[simp]` lemma
-  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, (dist_vsub_vsub_le)]
+  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, dist_vsub_vsub_le]
 #align nndist_vsub_vsub_le nndist_vsub_vsub_le
 
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
@@ -205,11 +203,11 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedAddCommGroup V]
+def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   -- porting note: `edist_dist` is no longer an `autoParam`
-  edist_dist _ _ := by simp only [←ENNReal.ofReal_eq_coe_nnreal]
+  edist_dist _ _ := by simp only [← ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
@@ -220,7 +218,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedA
 
 /-- The distance defines a metric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [NormedAddCommGroup V]
+def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   edist_dist _ _ := by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
@@ -303,7 +301,7 @@ end
 
 section
 
-variable {R : Type _} [Ring R] [TopologicalSpace R] [Module R V] [ContinuousSMul R V]
+variable {R : Type*} [Ring R] [TopologicalSpace R] [Module R V] [ContinuousSMul R V]
 
 theorem Filter.Tendsto.lineMap {l : Filter α} {f₁ f₂ : α → P} {g : α → R} {p₁ p₂ : P} {c : R}
     (h₁ : Tendsto f₁ l (𝓝 p₁)) (h₂ : Tendsto f₂ l (𝓝 p₂)) (hg : Tendsto g l (𝓝 c)) :
@@ -328,11 +326,11 @@ theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed 
   -- This result is still true for any `AddTorsor` where `-ᵥ` is continuous,
   -- but we don't yet have a nice way to state it.
   refine IsSeqClosed.isClosed (fun u p husv hup ↦ ?_)
-  choose! a v hav using husv
-  rcases ht.isSeqCompact fun n ↦ (hav n).2.1 with ⟨q, hqt, φ, φ_mono, hφq⟩
-  refine ⟨p -ᵥ q, q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
-    (eventually_of_forall fun n ↦ ?_), hqt, vsub_vadd _ _⟩
-  convert (hav (φ n)).1 using 1
-  exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).2.2.symm
+  choose! a ha v hv hav using husv
+  rcases ht.isSeqCompact hv with ⟨q, hqt, φ, φ_mono, hφq⟩
+  refine ⟨p -ᵥ q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
+    (eventually_of_forall fun n ↦ ?_), q, hqt, vsub_vadd _ _⟩
+  convert ha (φ n) using 1
+  exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).symm
 
 end Pointwise

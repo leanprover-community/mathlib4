@@ -41,19 +41,19 @@ section Semimodule
 
 /-- A `LocallyConvexSpace` is a topological semimodule over an ordered semiring in which convex
 neighborhoods of a point form a neighborhood basis at that point. -/
-class LocallyConvexSpace (𝕜 E : Type _) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+class LocallyConvexSpace (𝕜 E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
     [TopologicalSpace E] : Prop where
   convex_basis : ∀ x : E, (𝓝 x).HasBasis (fun s : Set E => s ∈ 𝓝 x ∧ Convex 𝕜 s) id
 #align locally_convex_space LocallyConvexSpace
 
-variable (𝕜 E : Type _) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
+variable (𝕜 E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 theorem locallyConvexSpace_iff :
     LocallyConvexSpace 𝕜 E ↔ ∀ x : E, (𝓝 x).HasBasis (fun s : Set E => s ∈ 𝓝 x ∧ Convex 𝕜 s) id :=
   ⟨@LocallyConvexSpace.convex_basis _ _ _ _ _ _, LocallyConvexSpace.mk⟩
 #align locally_convex_space_iff locallyConvexSpace_iff
 
-theorem LocallyConvexSpace.ofBases {ι : Type _} (b : E → ι → Set E) (p : E → ι → Prop)
+theorem LocallyConvexSpace.ofBases {ι : Type*} (b : E → ι → Set E) (p : E → ι → Prop)
     (hbasis : ∀ x : E, (𝓝 x).HasBasis (p x) (b x)) (hconvex : ∀ x i, p x i → Convex 𝕜 (b x i)) :
     LocallyConvexSpace 𝕜 E :=
   ⟨fun x =>
@@ -77,13 +77,13 @@ end Semimodule
 
 section Module
 
-variable (𝕜 E : Type _) [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable (𝕜 E : Type*) [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [TopologicalAddGroup E]
 
-theorem LocallyConvexSpace.ofBasisZero {ι : Type _} (b : ι → Set E) (p : ι → Prop)
+theorem LocallyConvexSpace.ofBasisZero {ι : Type*} (b : ι → Set E) (p : ι → Prop)
     (hbasis : (𝓝 0).HasBasis p b) (hconvex : ∀ i, p i → Convex 𝕜 (b i)) :
     LocallyConvexSpace 𝕜 E := by
-  refine' LocallyConvexSpace.ofBases 𝕜 E (fun (x : E) (i : ι) => (· + ·) x '' b i) (fun _ => p)
+  refine' LocallyConvexSpace.ofBases 𝕜 E (fun (x : E) (i : ι) => (x + ·) '' b i) (fun _ => p)
     (fun x => _) fun x i hi => (hconvex i hi).translate x
   rw [← map_add_left_nhds_zero]
   exact hbasis.map _
@@ -111,7 +111,7 @@ end Module
 
 section LinearOrderedField
 
-variable (𝕜 E : Type _) [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable (𝕜 E : Type*) [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem LocallyConvexSpace.convex_open_basis_zero [LocallyConvexSpace 𝕜 E] :
@@ -146,7 +146,7 @@ end LinearOrderedField
 
 section LatticeOps
 
-variable {ι : Sort _} {𝕜 E F : Type _} [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
+variable {ι : Sort*} {𝕜 E F : Type*} [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E]
   [AddCommMonoid F] [Module 𝕜 F]
 
 theorem locallyConvexSpace_sInf {ts : Set (TopologicalSpace E)}
@@ -185,7 +185,7 @@ theorem locallyConvexSpace_induced {t : TopologicalSpace F} [LocallyConvexSpace 
   exact (LocallyConvexSpace.convex_basis <| f x).comap f
 #align locally_convex_space_induced locallyConvexSpace_induced
 
-instance Pi.locallyConvexSpace {ι : Type _} {X : ι → Type _} [∀ i, AddCommMonoid (X i)]
+instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMonoid (X i)]
     [∀ i, TopologicalSpace (X i)] [∀ i, Module 𝕜 (X i)] [∀ i, LocallyConvexSpace 𝕜 (X i)] :
     LocallyConvexSpace 𝕜 (∀ i, X i) :=
   locallyConvexSpace_iInf fun i => locallyConvexSpace_induced (LinearMap.proj i)

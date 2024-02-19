@@ -46,7 +46,7 @@ open SetLike DirectSum Set
 
 open BigOperators Pointwise DirectSum
 
-variable {ι σ R A : Type _}
+variable {ι σ R A : Type*}
 
 section HomogeneousDef
 
@@ -182,7 +182,9 @@ theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, Homogeneous 𝒜 x)
 is the largest homogeneous ideal of `A` contained in `I`. -/
 def Ideal.homogeneousCore : HomogeneousIdeal 𝒜 :=
   ⟨Ideal.homogeneousCore' 𝒜 I,
-    Ideal.homogeneous_span _ _ fun _ h => (Subtype.image_preimage_coe _ _ ▸ h).2⟩
+    Ideal.homogeneous_span _ _ fun _ h => by
+      have := Subtype.image_preimage_coe (setOf (Homogeneous 𝒜)) (I : Set A)
+      exact (cast congr(_ ∈ $this) h).1⟩
 #align ideal.homogeneous_core Ideal.homogeneousCore
 
 theorem Ideal.homogeneousCore_mono : Monotone (Ideal.homogeneousCore 𝒜) :=
@@ -271,7 +273,7 @@ theorem sup {I J : Ideal A} (HI : I.IsHomogeneous 𝒜) (HJ : J.IsHomogeneous �
   exact (Submodule.span_union _ _).symm
 #align ideal.is_homogeneous.sup Ideal.IsHomogeneous.sup
 
-protected theorem iSup {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
+protected theorem iSup {κ : Sort*} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
     (⨆ i, f i).IsHomogeneous 𝒜 := by
   simp_rw [iff_exists] at h ⊢
   choose s hs using h
@@ -281,19 +283,19 @@ protected theorem iSup {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHo
   exact funext hs
 #align ideal.is_homogeneous.supr Ideal.IsHomogeneous.iSup
 
-protected theorem iInf {κ : Sort _} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
+protected theorem iInf {κ : Sort*} {f : κ → Ideal A} (h : ∀ i, (f i).IsHomogeneous 𝒜) :
     (⨅ i, f i).IsHomogeneous 𝒜 := by
   intro i x hx
   simp only [Ideal.mem_iInf] at hx ⊢
   exact fun j => h _ _ (hx j)
 #align ideal.is_homogeneous.infi Ideal.IsHomogeneous.iInf
 
-theorem iSup₂ {κ : Sort _} {κ' : κ → Sort _} {f : ∀ i, κ' i → Ideal A}
+theorem iSup₂ {κ : Sort*} {κ' : κ → Sort*} {f : ∀ i, κ' i → Ideal A}
     (h : ∀ i j, (f i j).IsHomogeneous 𝒜) : (⨆ (i) (j), f i j).IsHomogeneous 𝒜 :=
   IsHomogeneous.iSup fun i => IsHomogeneous.iSup <| h i
 #align ideal.is_homogeneous.supr₂ Ideal.IsHomogeneous.iSup₂
 
-theorem iInf₂ {κ : Sort _} {κ' : κ → Sort _} {f : ∀ i, κ' i → Ideal A}
+theorem iInf₂ {κ : Sort*} {κ' : κ → Sort*} {f : ∀ i, κ' i → Ideal A}
     (h : ∀ i j, (f i j).IsHomogeneous 𝒜) : (⨅ (i) (j), f i j).IsHomogeneous 𝒜 :=
   IsHomogeneous.iInf fun i => IsHomogeneous.iInf <| h i
 #align ideal.is_homogeneous.infi₂ Ideal.IsHomogeneous.iInf₂
@@ -388,25 +390,25 @@ theorem toIdeal_sInf (ℐ : Set (HomogeneousIdeal 𝒜)) : (sInf ℐ).toIdeal = 
 #align homogeneous_ideal.to_ideal_Inf HomogeneousIdeal.toIdeal_sInf
 
 @[simp]
-theorem toIdeal_iSup {κ : Sort _} (s : κ → HomogeneousIdeal 𝒜) :
+theorem toIdeal_iSup {κ : Sort*} (s : κ → HomogeneousIdeal 𝒜) :
     (⨆ i, s i).toIdeal = ⨆ i, (s i).toIdeal := by
   rw [iSup, toIdeal_sSup, iSup_range]
 #align homogeneous_ideal.to_ideal_supr HomogeneousIdeal.toIdeal_iSup
 
 @[simp]
-theorem toIdeal_iInf {κ : Sort _} (s : κ → HomogeneousIdeal 𝒜) :
+theorem toIdeal_iInf {κ : Sort*} (s : κ → HomogeneousIdeal 𝒜) :
     (⨅ i, s i).toIdeal = ⨅ i, (s i).toIdeal := by
   rw [iInf, toIdeal_sInf, iInf_range]
 #align homogeneous_ideal.to_ideal_infi HomogeneousIdeal.toIdeal_iInf
 
 -- @[simp] -- Porting note: simp can prove this
-theorem toIdeal_iSup₂ {κ : Sort _} {κ' : κ → Sort _} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
+theorem toIdeal_iSup₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨆ (i) (j), s i j).toIdeal = ⨆ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iSup]
 #align homogeneous_ideal.to_ideal_supr₂ HomogeneousIdeal.toIdeal_iSup₂
 
 -- @[simp] -- Porting note: simp can prove this
-theorem toIdeal_iInf₂ {κ : Sort _} {κ' : κ → Sort _} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
+theorem toIdeal_iInf₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨅ (i) (j), s i j).toIdeal = ⨅ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iInf]
 #align homogeneous_ideal.to_ideal_infi₂ HomogeneousIdeal.toIdeal_iInf₂
@@ -634,19 +636,19 @@ variable [Semiring A]
 
 variable [DecidableEq ι]
 
-variable [CanonicallyOrderedAddMonoid ι]
+variable [CanonicallyOrderedAddCommMonoid ι]
 
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 open GradedRing SetLike.GradedMonoid DirectSum
 
-/-- For a graded ring `⨁ᵢ 𝒜ᵢ` graded by a `CanonicallyOrderedAddMonoid ι`, the irrelevant ideal
+/-- For a graded ring `⨁ᵢ 𝒜ᵢ` graded by a `CanonicallyOrderedAddCommMonoid ι`, the irrelevant ideal
 refers to `⨁_{i>0} 𝒜ᵢ`, or equivalently `{a | a₀ = 0}`. This definition is used in `Proj`
 construction where `ι` is always `ℕ` so the irrelevant ideal is simply elements with `0` as
 0-th coordinate.
 
 # Future work
-Here in the definition, `ι` is assumed to be `CanonicallyOrderedAddMonoid`. However, the notion
+Here in the definition, `ι` is assumed to be `CanonicallyOrderedAddCommMonoid`. However, the notion
 of irrelevant ideal makes sense in a more general setting by defining it as the ideal of elements
 with `0` as i-th coordinate for all `i ≤ 0`, i.e. `{a | ∀ (i : ι), i ≤ 0 → aᵢ = 0}`.
 -/

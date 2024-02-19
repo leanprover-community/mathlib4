@@ -17,7 +17,7 @@ namespace Multiset
 
 open List
 
-variable {α : Type _}
+variable {α : Type*}
 
 section sort
 
@@ -68,7 +68,11 @@ theorem sort_singleton (a : α) : sort r {a} = [a] :=
 end sort
 
 -- TODO: use a sort order if available, gh-18166
-unsafe instance [Repr α] : Repr (Multiset α) :=
-  ⟨fun s _ => "{" ++ Std.Format.joinSep (s.unquot.map repr) ", " ++ "}"⟩
+unsafe instance [Repr α] : Repr (Multiset α) where
+  reprPrec s _ :=
+    if Multiset.card s = 0 then
+      "0"
+    else
+      Std.Format.bracket "{" (Std.Format.joinSep (s.unquot.map repr) ("," ++ Std.Format.line)) "}"
 
 end Multiset

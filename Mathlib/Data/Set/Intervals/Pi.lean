@@ -21,7 +21,7 @@ usually include the corresponding products as proper subsets.
 -- porting note: Added, since dot notation no longer works on `Function.update`
 open Function
 
-variable {ι : Type _} {α : ι → Type _}
+variable {ι : Type*} {α : ι → Type*}
 
 namespace Set
 
@@ -45,7 +45,7 @@ theorem pi_univ_Icc : (pi univ fun i ↦ Icc (x i) (y i)) = Icc x y :=
 #align set.pi_univ_Icc Set.pi_univ_Icc
 
 theorem piecewise_mem_Icc {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, α i}
-    (h₁ : ∀ i ∈ s, f₁ i ∈ Icc (g₁ i) (g₂ i)) (h₂ : ∀ (i) (_ : i ∉ s), f₂ i ∈ Icc (g₁ i) (g₂ i)) :
+    (h₁ : ∀ i ∈ s, f₁ i ∈ Icc (g₁ i) (g₂ i)) (h₂ : ∀ i ∉ s, f₂ i ∈ Icc (g₁ i) (g₂ i)) :
     s.piecewise f₁ f₂ ∈ Icc g₁ g₂ :=
   ⟨le_piecewise (fun i hi ↦ (h₁ i hi).1) fun i hi ↦ (h₂ i hi).1,
     piecewise_le (fun i hi ↦ (h₁ i hi).2) fun i hi ↦ (h₂ i hi).2⟩
@@ -353,7 +353,9 @@ theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
   simp at ha'
-  simp [le_update_iff, update_le_iff, hxa, hay, hxa _, hay _, ← exists_or]
+  simp only [ge_iff_le, le_update_iff, ne_eq, not_and, not_forall, not_le, exists_prop, gt_iff_lt,
+    update_le_iff, mem_union, mem_iUnion, mem_Icc, hxa, hay _, implies_true, and_true, true_and,
+    hxa _, hay, ← exists_or]
   rcases ha' with ⟨w, hw⟩
   apply Exists.intro w
   cases lt_or_le (x' w) (a w) <;> simp_all

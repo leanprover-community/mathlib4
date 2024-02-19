@@ -25,6 +25,8 @@ In this file we define several notions of finiteness that are common in commutat
 
 -/
 
+set_option autoImplicit true
+
 open Function (Surjective)
 
 open BigOperators Polynomial
@@ -84,17 +86,17 @@ theorem equiv (hfp : FinitePresentation R A) (e : A ≃ₐ[R] B) : FinitePresent
   constructor
   · rw [AlgHom.coe_comp]
     exact Function.Surjective.comp e.surjective hf.1
-  suffices hker : (RingHom.ker (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom) = RingHom.ker f.toRingHom
-  · rw [hker]
+  suffices (RingHom.ker (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom) = RingHom.ker f.toRingHom by
+    rw [this]
     exact hf.2
-  · have hco : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom = RingHom.comp (e.toRingEquiv : A ≃+* B)
-      f.toRingHom := by
-      have h : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom =
-        e.toAlgHom.toRingHom.comp f.toRingHom := rfl
-      have h1 : ↑e.toRingEquiv = e.toAlgHom.toRingHom := rfl
-      rw [h, h1]
-    rw [RingHom.ker_eq_comap_bot, hco, ← Ideal.comap_comap, ← RingHom.ker_eq_comap_bot,
-      RingHom.ker_coe_equiv (AlgEquiv.toRingEquiv e), RingHom.ker_eq_comap_bot]
+  have hco : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom = RingHom.comp (e.toRingEquiv : A ≃+* B)
+    f.toRingHom := by
+    have h : (AlgHom.comp (e : A →ₐ[R] B) f).toRingHom =
+      e.toAlgHom.toRingHom.comp f.toRingHom := rfl
+    have h1 : ↑e.toRingEquiv = e.toAlgHom.toRingHom := rfl
+    rw [h, h1]
+  rw [RingHom.ker_eq_comap_bot, hco, ← Ideal.comap_comap, ← RingHom.ker_eq_comap_bot,
+    RingHom.ker_coe_equiv (AlgEquiv.toRingEquiv e), RingHom.ker_eq_comap_bot]
 #align algebra.finite_presentation.equiv Algebra.FinitePresentation.equiv
 
 variable (R)
@@ -155,7 +157,7 @@ theorem iff :
 variables are indexed by a fintype by a finitely generated ideal. -/
 theorem iff_quotient_mvPolynomial' :
     FinitePresentation R A ↔
-      ∃ (ι : Type _) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A),
+      ∃ (ι : Type*) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A),
         Surjective f ∧ f.toRingHom.ker.FG := by
   constructor
   · rintro ⟨n, f, hfs, hfk⟩
@@ -397,7 +399,7 @@ end ModuleAndAlgebra
 
 namespace RingHom
 
-variable {A B C : Type _} [CommRing A] [CommRing B] [CommRing C]
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is of `RingHom.FinitePresentation` if `B` is finitely presented as
 `A`-algebra. -/
@@ -473,7 +475,7 @@ end RingHom
 
 namespace AlgHom
 
-variable {R A B C : Type _} [CommRing R]
+variable {R A B C : Type*} [CommRing R]
 
 variable [CommRing A] [CommRing B] [CommRing C]
 

@@ -117,8 +117,8 @@ instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
   -- Porting note : was an `apply (config := { instances := false })`
   -- See https://github.com/leanprover/lean4/issues/2273
-  suffices : ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U)
-  · apply NatTrans.mono_of_mono_app
+  suffices ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U) from
+    NatTrans.mono_of_mono_app _
   intro U
   apply ConcreteCategory.mono_of_injective
   dsimp [toTotalQuotientPresheaf, CommRingCat.ofHom]
@@ -134,9 +134,9 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   intro x
   rw [map_zero]
   apply Submonoid.mem_iInf.mp hs x
-  -- Porting note : added `dsimp` to make `rw ←map_mul` work
+  -- Porting note : added `dsimp` to make `rw [← map_mul]` work
   dsimp
-  rw [←map_mul, e, map_zero]
+  rw [← map_mul, e, map_zero]
 
 end Presheaf
 

@@ -57,16 +57,15 @@ elab_rules : command
           throwTypeMismatchError none info.type newInfo.type declConst
         let newVal := newInfo.value?.get!.instantiateLevelParams newInfo.levelParams mvs
         unless (← isDefEq infoVal newVal) do
-          let err :=
-            m!"value mismatch{indentExpr declConst}\nhas value{indentExpr newVal}\n" ++
-            m!"but is expected to have value{indentExpr infoVal}"
+          let err := m!"\
+            value mismatch{indentExpr declConst}\nhas value{indentExpr newVal}\n\
+            but is expected to have value{indentExpr infoVal}"
           throwErrorAt val err
     else
       let (binders, type?) := expandOptDeclSig sig
       let views := #[{
         declId := newId, binders, type?, value := .missing,
-        ref := ← getRef, kind := default, modifiers := {}
-      : DefView}]
+        ref := ← getRef, kind := default, modifiers := {} : DefView}]
       liftTermElabM do
         let elabView := (← elabHeaders views)[0]!
         unless (← isDefEq info.type elabView.type) do

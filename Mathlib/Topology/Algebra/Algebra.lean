@@ -33,7 +33,7 @@ universe u v w
 
 section TopologicalAlgebra
 
-variable (R : Type _) (A : Type u)
+variable (R : Type*) (A : Type u)
 
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 
@@ -61,41 +61,37 @@ variable [ContinuousSMul R A]
 
 /-- The inclusion of the base ring in a topological algebra as a continuous linear map. -/
 @[simps]
-def algebraMapClm : R →L[R] A :=
+def algebraMapCLM : R →L[R] A :=
   { Algebra.linearMap R A with
     toFun := algebraMap R A
     cont := continuous_algebraMap R A }
-#align algebra_map_clm algebraMapClm
+#align algebra_map_clm algebraMapCLM
 
-theorem algebraMapClm_coe : ⇑(algebraMapClm R A) = algebraMap R A :=
+theorem algebraMapCLM_coe : ⇑(algebraMapCLM R A) = algebraMap R A :=
   rfl
-#align algebra_map_clm_coe algebraMapClm_coe
+#align algebra_map_clm_coe algebraMapCLM_coe
 
-theorem algebraMapClm_toLinearMap : (algebraMapClm R A).toLinearMap = Algebra.linearMap R A :=
+theorem algebraMapCLM_toLinearMap : (algebraMapCLM R A).toLinearMap = Algebra.linearMap R A :=
   rfl
-#align algebra_map_clm_to_linear_map algebraMapClm_toLinearMap
+#align algebra_map_clm_to_linear_map algebraMapCLM_toLinearMap
 
 end TopologicalAlgebra
 
 section TopologicalAlgebra
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 variable {A : Type u} [TopologicalSpace A]
 
 variable [Semiring A] [Algebra R A]
 
-instance Subalgebra.continuousSMul [TopologicalSpace R] [ContinuousSMul R A] (s : Subalgebra R A) :
-    ContinuousSMul R s :=
-  s.toSubmodule.continuousSMul
-#align subalgebra.has_continuous_smul Subalgebra.continuousSMul
+#align subalgebra.has_continuous_smul SMulMemClass.continuousSMul
 
 variable [TopologicalSemiring A]
 
 /-- The closure of a subalgebra in a topological algebra as a subalgebra. -/
 def Subalgebra.topologicalClosure (s : Subalgebra R A) : Subalgebra R A :=
-  {
-    s.toSubsemiring.topologicalClosure with
+  { s.toSubsemiring.topologicalClosure with
     carrier := closure (s : Set A)
     algebraMap_mem' := fun r => s.toSubsemiring.le_topologicalClosure (s.algebraMap_mem r) }
 #align subalgebra.topological_closure Subalgebra.topologicalClosure
@@ -115,7 +111,7 @@ theorem Subalgebra.le_topologicalClosure (s : Subalgebra R A) : s ≤ s.topologi
 #align subalgebra.le_topological_closure Subalgebra.le_topologicalClosure
 
 theorem Subalgebra.isClosed_topologicalClosure (s : Subalgebra R A) :
-    IsClosed (s.topologicalClosure : Set A) := by convert @isClosed_closure A _ s
+    IsClosed (s.topologicalClosure : Set A) := by convert @isClosed_closure A s _
 #align subalgebra.is_closed_topological_closure Subalgebra.isClosed_topologicalClosure
 
 theorem Subalgebra.topologicalClosure_minimal (s : Subalgebra R A) {t : Subalgebra R A} (h : s ≤ t)
@@ -134,7 +130,7 @@ but we don't have those, so we use the clunky approach of talking about
 an algebra homomorphism, and a separate homeomorphism,
 along with a witness that as functions they are the same.
 -/
-theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type _}
+theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type*}
     [TopologicalSpace B] [Ring B] [TopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
     (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
@@ -148,7 +144,7 @@ end TopologicalAlgebra
 
 section Ring
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 variable {A : Type u} [TopologicalSpace A]
 
@@ -171,6 +167,7 @@ def Algebra.elementalAlgebra (x : A) : Subalgebra R A :=
   (Algebra.adjoin R ({x} : Set A)).topologicalClosure
 #align algebra.elemental_algebra Algebra.elementalAlgebra
 
+@[aesop safe apply (rule_sets [SetLike])]
 theorem Algebra.self_mem_elementalAlgebra (x : A) : x ∈ Algebra.elementalAlgebra R x :=
   SetLike.le_def.mp (Subalgebra.le_topologicalClosure (Algebra.adjoin R ({x} : Set A))) <|
     Algebra.self_mem_adjoin_singleton R x
