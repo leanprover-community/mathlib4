@@ -217,8 +217,8 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
   by_cases h1 : n = 1
   · rw [h1, one_coe, one_right_iff] at hζ
     rw [hζ, show 1 = algebraMap K L 1 by simp, Algebra.norm_algebraMap, one_pow]
-  · replace h1 : 2 ≤ n
-    · by_contra! h
+  · replace h1 : 2 ≤ n := by
+      by_contra! h
       exact h1 (PNat.eq_one_of_lt_two h)
 -- Porting note: specyfing the type of `cyclotomic_coeff_zero K h1` was not needed.
     rw [← hζ.powerBasis_gen K, PowerBasis.norm_gen_eq_coeff_zero_minpoly, hζ.powerBasis_gen K, ←
@@ -354,8 +354,8 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
 -- Porting note: `using 1` was not needed.
     convert hη'.adjoin_isCyclotomicExtension K using 1
     rw [Nat.sub_add_comm hs]
-  replace hη : IsPrimitiveRoot (η₁ + 1) ↑(p ^ (k - s + 1))
-  · apply coe_submonoidClass_iff.1
+  replace hη : IsPrimitiveRoot (η₁ + 1) ↑(p ^ (k - s + 1)) := by
+    apply coe_submonoidClass_iff.1
     convert hη using 1
     rw [Nat.sub_add_comm hs, pow_coe]
 -- Porting note: the following `haveI` were not needed because the locale `cyclotomic` set them
@@ -469,8 +469,8 @@ theorem pow_sub_one_norm_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveRoot
       replace htwo :=
         eq_of_prime_pow_eq (prime_iff.1 hpri.out) (prime_iff.1 Nat.prime_two) (succ_pos _) htwo
       rwa [show 2 = ((2 : ℕ+) : ℕ) by decide, PNat.coe_inj] at htwo
-    replace hs : s = k
-    · rw [hp, ← PNat.coe_inj, PNat.pow_coe] at htwo
+    replace hs : s = k := by
+      rw [hp, ← PNat.coe_inj, PNat.pow_coe] at htwo
       nth_rw 2 [← pow_one 2] at htwo
       replace htwo := Nat.pow_right_injective rfl.le htwo
       rw [add_left_eq_self, Nat.sub_eq_zero_iff_le] at htwo
