@@ -102,6 +102,10 @@ protected def traverse (f : α → m β) (x : t' α) : m (t' β) :=
   eqv β <$> traverse f ((eqv α).symm x)
 #align equiv.traverse Equiv.traverse
 
+theorem traverse_def (f : α → m β) (x : t' α) :
+    Equiv.traverse eqv f x = eqv β <$> traverse f ((eqv α).symm x) :=
+  rfl
+
 /-- The function `Equiv.traverse` transfers a traversable functor
 instance across the equivalences `eqv`. -/
 protected def traversable : Traversable t' where
@@ -131,8 +135,7 @@ open LawfulTraversable Functor
 -- Porting note: Id.bind_eq is missing an `#align`.
 
 protected theorem id_traverse (x : t' α) : Equiv.traverse eqv (pure : α → Id α) x = x := by
-  -- Porting note: Changing this `simp` to an `rw` somehow breaks the proof of `comp_traverse`.
-  simp [Equiv.traverse]
+  rw [Equiv.traverse, id_traverse, Id.map_eq, apply_symm_apply]
 #align equiv.id_traverse Equiv.id_traverse
 
 protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
@@ -143,10 +146,8 @@ protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Equiv.traverse eqv f <$> Equiv.traverse eqv g x) := by
-  simp (config := { unfoldPartialApp := true }) [Equiv.traverse, comp_traverse, functor_norm]
-  congr
-  ext
-  simp
+  rw [traverse_def, comp_traverse, Comp.map_mk]
+  simp only [map_map, Function.comp_def, traverse_def, symm_apply_apply]
 #align equiv.comp_traverse Equiv.comp_traverse
 
 protected theorem naturality (f : α → F β) (x : t' α) :

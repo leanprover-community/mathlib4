@@ -141,6 +141,27 @@ theorem to_units_injective : Function.Injective (toUnits : unitary R → Rˣ) :=
 
 end Monoid
 
+section Map
+
+variable {F R S : Type*} [Monoid R] [StarMul R] [Monoid S] [StarMul S]
+variable [FunLike F R S] [StarHomClass F R S] [MonoidHomClass F R S] (f : F)
+
+lemma map_mem {r : R} (hr : r ∈ unitary R) : f r ∈ unitary S := by
+  rw [unitary.mem_iff] at hr
+  simpa [map_star, map_mul] using And.intro congr(f $(hr.1)) congr(f $(hr.2))
+
+/-- The group homomorphism between unitary subgroups of star monoids induced by a star
+homomorphism -/
+@[simps]
+def map : unitary R →* unitary S where
+  toFun := Subtype.map f (fun _ ↦ map_mem f)
+  map_one' := Subtype.ext <| map_one f
+  map_mul' _ _ := Subtype.ext <| map_mul f _ _
+
+lemma toUnits_comp_map : toUnits.comp (map f) = (Units.map f).comp toUnits := by ext; rfl
+
+end Map
+
 section CommMonoid
 
 variable [CommMonoid R] [StarMul R]

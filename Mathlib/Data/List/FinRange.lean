@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Scott Morrison, Alex Keizer
 -/
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Perm
+import Mathlib.Data.List.Range
 
 #align_import data.list.fin_range from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -52,7 +52,7 @@ theorem ofFn_id (n) : ofFn id = finRange n :=
 #align list.of_fn_id List.ofFn_id
 
 theorem ofFn_eq_map {α n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
-  rw [← ofFn_id, map_ofFn, Function.right_id]
+  rw [← ofFn_id, map_ofFn, Function.comp_id]
 #align list.of_fn_eq_map List.ofFn_eq_map
 
 theorem nodup_ofFn_ofInjective {α n} {f : Fin n → α} (hf : Function.Injective f) :
@@ -78,7 +78,7 @@ open List
 
 theorem Equiv.Perm.map_finRange_perm {n : ℕ} (σ : Equiv.Perm (Fin n)) :
     map σ (finRange n) ~ finRange n := by
-  rw [perm_ext ((nodup_finRange n).map σ.injective) <| nodup_finRange n]
+  rw [perm_ext_iff_of_nodup ((nodup_finRange n).map σ.injective) <| nodup_finRange n]
   simpa [mem_map, mem_finRange, true_and_iff, iff_true_iff] using σ.surjective
 #align equiv.perm.map_fin_range_perm Equiv.Perm.map_finRange_perm
 

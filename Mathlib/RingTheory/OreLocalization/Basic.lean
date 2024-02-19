@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
 -/
 import Mathlib.GroupTheory.MonoidLocalization
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.Tactic.NoncommRing
 
@@ -151,8 +151,7 @@ def liftExpand {C : Sort*} (P : R → S → C)
     have s₁vS : (s₁ : R) * v ∈ S := by
       rw [← hs₂, ← S.coe_mul]
       exact SetLike.coe_mem (s₂ * u)
-    replace hs₂ : s₂ * u = ⟨(s₁ : R) * v, s₁vS⟩
-    · ext; simp [hs₂]
+    replace hs₂ : s₂ * u = ⟨(s₁ : R) * v, s₁vS⟩ := by ext; simp [hs₂]
     rw [hP r₁ v s₁ s₁vS, hP r₂ u s₂ (by norm_cast; rwa [hs₂]), hr₂]
     simp only [← hs₂]; rfl
 #align ore_localization.lift_expand OreLocalization.liftExpand

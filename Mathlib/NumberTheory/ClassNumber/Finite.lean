@@ -121,7 +121,7 @@ theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
   apply (Int.cast_le.mpr (norm_le abv bS a hy')).trans_lt
   simp only [Int.cast_mul, Int.cast_pow]
   apply mul_lt_mul' le_rfl
-  · exact pow_lt_pow_of_lt_left this (Int.cast_nonneg.mpr y'_nonneg) (Fintype.card_pos_iff.mpr ⟨i⟩)
+  · exact pow_lt_pow_left this (Int.cast_nonneg.mpr y'_nonneg) (@Fintype.card_ne_zero _ _ ⟨i⟩)
   · exact pow_nonneg (Int.cast_nonneg.mpr y'_nonneg) _
   · exact Int.cast_pos.mpr (normBound_pos abv bS)
 #align class_group.norm_lt ClassGroup.norm_lt
@@ -355,7 +355,7 @@ set_option linter.uppercaseLean3 false in
 
 open scoped Classical
 
-/-- The main theorem: the class group of an integral closure `S` of `R` in an
+/-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 
 See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite

@@ -74,7 +74,7 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 #align part.to_option_is_none Part.toOption_isNone
 
 /-- `Part` extensionality -/
-theorem ext' : ∀ {o p : Part α} (_ : o.Dom ↔ p.Dom) (_ : ∀ h₁ h₂, o.get h₁ = p.get h₂), o = p
+theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
     have t : od = pd := propext H1
     cases t; rw [show o = p from funext fun p => H2 p p]
@@ -400,9 +400,7 @@ instance : PartialOrder (Part
 
 instance : OrderBot (Part α) where
   bot := none
-  bot_le := by
-    introv x
-    rintro ⟨⟨_⟩, _⟩
+  bot_le := by rintro x _ ⟨⟨_⟩, _⟩
 
 theorem le_total_of_le_of_le {x y : Part α} (z : Part α) (hx : x ≤ z) (hy : y ≤ z) :
     x ≤ y ∨ y ≤ x := by

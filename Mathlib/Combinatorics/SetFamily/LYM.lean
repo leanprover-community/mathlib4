@@ -66,12 +66,12 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
   let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
-    refine' card_le_of_subset _
+    refine' card_le_card _
     simp_rw [image_subset_iff, mem_bipartiteBelow]
     exact fun a ha => ⟨erase_mem_shadow hs ha, erase_subset _ _⟩
   refine' le_trans _ tsub_tsub_le_tsub_add
   rw [← (Set.Sized.shadow h𝒜) hs, ← card_compl, ← card_image_of_injOn (insert_inj_on' _)]
-  refine' card_le_of_subset fun t ht => _
+  refine' card_le_card fun t ht => _
   -- porting note: commented out the following line
   -- infer_instance
   rw [mem_bipartiteAbove] at ht
@@ -187,10 +187,10 @@ theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
   · simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
       zero_eq, zero_add, range_one, ge_iff_le, sum_singleton, nonpos_iff_eq_zero, tsub_zero,
       choose_self, cast_one, div_one, cast_le]
-    exact card_le_of_subset (slice_subset_falling _ _)
+    exact card_le_card (slice_subset_falling _ _)
   rw [succ_eq_add_one] at *
   rw [sum_range_succ, ← slice_union_shadow_falling_succ,
-    card_disjoint_union (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
+    card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
     add_comm]
   rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
   exact
@@ -242,7 +242,7 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     rw [mem_range] at hr
     refine' div_le_div_of_le_left _ _ _ <;> norm_cast
     · exact Nat.zero_le _
-    · exact choose_pos (lt_succ_iff.1 hr)
+    · exact choose_pos (Nat.lt_succ_iff.1 hr)
     · exact choose_le_middle _ _
 #align finset.is_antichain.sperner Finset.IsAntichain.sperner
 

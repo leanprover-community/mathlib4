@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Algebra.Classes
+import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
 #align_import data.option.defs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -21,15 +23,6 @@ namespace Option
 
 #align option.lift_or_get Option.liftOrGet
 
-/-- Lifts a relation `α → β → Prop` to a relation `Option α → Option β → Prop` by just adding
-`none ~ none`. -/
-inductive rel (r : α → β → Prop) : Option α → Option β → Prop
-  | /-- If `a ~ b`, then `some a ~ some b` -/
-    some {a b} : r a b → rel r (some a) (some b)
-  | /-- `none ~ none` -/
-    none : rel r none none
-#align option.rel Option.rel
-
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
 protected def traverse.{u, v}
     {F : Type u → Type v} [Applicative F] {α : Type*} {β : Type u} (f : α → F β) :
@@ -38,13 +31,7 @@ protected def traverse.{u, v}
   | some x => some <$> f x
 #align option.traverse Option.traverse
 
-/-- If you maybe have a monadic computation in a `[Monad m]` which produces a term of type `α`,
-then there is a naturally associated way to always perform a computation in `m` which maybe
-produces a result. -/
-def maybe.{u, v} {m : Type u → Type v} [Monad m] {α : Type u} : Option (m α) → m (Option α)
-  | none => pure none
-  | some fn => some <$> fn
-#align option.maybe Option.maybe
+#align option.maybe Option.sequence
 
 #align option.mmap Option.mapM
 #align option.melim Option.elimM
@@ -117,29 +104,27 @@ theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
 #align option.mem_to_list Option.mem_toList
 
-instance liftOrGet_isCommutative (f : α → α → α) [IsCommutative α f] :
-    IsCommutative (Option α) (liftOrGet f) :=
-  ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, IsCommutative.comm]⟩
+instance liftOrGet_isCommutative (f : α → α → α) [Std.Commutative f] :
+    Std.Commutative (liftOrGet f) :=
+  ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, Std.Commutative.comm]⟩
 
-instance liftOrGet_isAssociative (f : α → α → α) [IsAssociative α f] :
-    IsAssociative (Option α) (liftOrGet f) :=
-  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, IsAssociative.assoc]⟩
+instance liftOrGet_isAssociative (f : α → α → α) [Std.Associative f] :
+    Std.Associative (liftOrGet f) :=
+  ⟨fun a b c ↦ by cases a <;> cases b <;> cases c <;> simp [liftOrGet, Std.Associative.assoc]⟩
 
-instance liftOrGet_isIdempotent (f : α → α → α) [IsIdempotent α f] :
-    IsIdempotent (Option α) (liftOrGet f) :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet, IsIdempotent.idempotent]⟩
+instance liftOrGet_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
+    Std.IdempotentOp (liftOrGet f) :=
+  ⟨fun a ↦ by cases a <;> simp [liftOrGet, Std.IdempotentOp.idempotent]⟩
 
-instance liftOrGet_isLeftId (f : α → α → α) : IsLeftId (Option α) (liftOrGet f) none :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
-
-instance liftOrGet_isRightId (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
-  ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
+instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f) none where
+  left_id a := by cases a <;> simp [liftOrGet]
+  right_id a := by cases a <;> simp [liftOrGet]
 
 #align option.lift_or_get_comm Option.liftOrGet_isCommutative
 #align option.lift_or_get_assoc Option.liftOrGet_isAssociative
 #align option.lift_or_get_idem Option.liftOrGet_isIdempotent
-#align option.lift_or_get_is_left_id Option.liftOrGet_isLeftId
-#align option.lift_or_get_is_right_id Option.liftOrGet_isRightId
+#align option.lift_or_get_is_left_id Option.liftOrGet_isId
+#align option.lift_or_get_is_right_id Option.liftOrGet_isId
 
 /-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α

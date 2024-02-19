@@ -55,7 +55,7 @@ example (f : ℕ → ℕ → ℕ) (h : f 1 x ≠ f 1 y) : x ≠ y := by
   case foo => exact 1
   assumption
 
-example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective $ g ∘ f) : Injective f := by
+example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) : Injective f := by
   intros x x' h
   apply_fun g at h
   exact H h
@@ -254,8 +254,7 @@ example (x : ℕ) : x = x := by
 example : 1 = 1 := by
   let f := fun (x : Nat) => x + 1
   -- clearly false but for demo purposes only
-  have g : ∀ f, Function.Injective f
-  · exact test_sorry
+  have g : ∀ (f : ℕ → ℕ), Function.Injective f := test_sorry
   apply_fun f using (g f)
   rfl
 

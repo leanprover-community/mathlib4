@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Order.Hom.Basic
+import Mathlib.Util.AssertExists
 
 #align_import algebra.order.group.defs from "leanprover-community/mathlib"@"b599f4e4e5cf1fbcb4194503671d3d9e569c1fce"
 
@@ -705,13 +705,13 @@ section Right
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c d : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_le_div_iff_right (c : α) : a / c ≤ b / c ↔ a ≤ b := by
   simpa only [div_eq_mul_inv] using mul_le_mul_iff_right _
 #align div_le_div_iff_right div_le_div_iff_right
 #align sub_le_sub_iff_right sub_le_sub_iff_right
 
-@[to_additive sub_le_sub_right]
+@[to_additive (attr := gcongr) sub_le_sub_right]
 theorem div_le_div_right' (h : a ≤ b) (c : α) : a / c ≤ b / c :=
   (div_le_div_iff_right c).2 h
 #align div_le_div_right' div_le_div_right'
@@ -727,7 +727,7 @@ alias ⟨le_of_sub_nonneg, sub_nonneg_of_le⟩ := sub_nonneg
 #align sub_nonneg_of_le sub_nonneg_of_le
 #align le_of_sub_nonneg le_of_sub_nonneg
 
-@[to_additive (attr := simp) sub_nonpos]
+@[to_additive sub_nonpos]
 theorem div_le_one' : a / b ≤ 1 ↔ a ≤ b := by
   rw [← mul_le_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 #align div_le_one' div_le_one'
@@ -753,6 +753,10 @@ theorem div_le_iff_le_mul : a / c ≤ b ↔ a ≤ b * c := by
 #align div_le_iff_le_mul div_le_iff_le_mul
 #align sub_le_iff_le_add sub_le_iff_le_add
 
+-- Note: we intentionally don't have `@[simp]` for the additive version,
+-- since the LHS simplifies with `tsub_le_iff_right`
+attribute [simp] div_le_iff_le_mul
+
 -- TODO: Should we get rid of `sub_le_iff_le_add` in favor of
 -- (a renamed version of) `tsub_le_iff_right`?
 -- see Note [lower instance priority]
@@ -769,14 +773,14 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, ← mul_le_mul_iff_left a⁻¹, inv_mul_cancel_left,
     inv_mul_cancel_left, inv_le_inv_iff]
 #align div_le_div_iff_left div_le_div_iff_left
 #align sub_le_sub_iff_left sub_le_sub_iff_left
 
-@[to_additive sub_le_sub_left]
+@[to_additive (attr := gcongr) sub_le_sub_left]
 theorem div_le_div_left' (h : a ≤ b) (c : α) : c / b ≤ c / a :=
   (div_le_div_iff_left c).2 h
 #align div_le_div_left' div_le_div_left'
@@ -847,7 +851,7 @@ section Preorder
 
 variable [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
 
-@[to_additive sub_le_sub]
+@[to_additive (attr := gcongr) sub_le_sub]
 theorem div_le_div'' (hab : a ≤ b) (hcd : c ≤ d) : a / d ≤ b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_le_inv_mul_iff, mul_comm]
   exact mul_le_mul' hab hcd
@@ -874,7 +878,7 @@ theorem div_lt_div_iff_right (c : α) : a / c < b / c ↔ a < b := by
 #align div_lt_div_iff_right div_lt_div_iff_right
 #align sub_lt_sub_iff_right sub_lt_sub_iff_right
 
-@[to_additive sub_lt_sub_right]
+@[to_additive (attr := gcongr) sub_lt_sub_right]
 theorem div_lt_div_right' (h : a < b) (c : α) : a / c < b / c :=
   (div_lt_div_iff_right c).2 h
 #align div_lt_div_right' div_lt_div_right'
@@ -943,7 +947,7 @@ theorem inv_lt_div_iff_lt_mul : a⁻¹ < b / c ↔ c < a * b := by
 #align inv_lt_div_iff_lt_mul inv_lt_div_iff_lt_mul
 #align neg_lt_sub_iff_lt_add neg_lt_sub_iff_lt_add
 
-@[to_additive sub_lt_sub_left]
+@[to_additive (attr := gcongr) sub_lt_sub_left]
 theorem div_lt_div_left' (h : a < b) (c : α) : c / b < c / a :=
   (div_lt_div_iff_left c).2 h
 #align div_lt_div_left' div_lt_div_left'
@@ -1009,7 +1013,7 @@ section Preorder
 
 variable [Preorder α] [CovariantClass α α (· * ·) (· < ·)] {a b c d : α}
 
-@[to_additive sub_lt_sub]
+@[to_additive (attr := gcongr) sub_lt_sub]
 theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_comm b, mul_inv_lt_inv_mul_iff, mul_comm]
   exact mul_lt_mul_of_lt_of_lt hab hcd
@@ -1070,7 +1074,7 @@ theorem div_le_inv_mul_iff [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
 -- What is the point of this lemma?  See comment about `div_le_inv_mul_iff` above.
 -- Note: we intentionally don't have `@[simp]` for the additive version,
 -- since the LHS simplifies with `tsub_le_iff_right`
-@[to_additive, simp]
+@[to_additive]
 theorem div_le_div_flip {α : Type*} [CommGroup α] [LinearOrder α]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} : a / b ≤ b / a ↔ a ≤ b := by
   rw [div_eq_mul_inv b, mul_comm]
@@ -1093,7 +1097,7 @@ addition is monotone. -/
 class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
 
-/-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
+/-- A linearly ordered commutative group with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddCommMonoidWithTop α,
   SubNegMonoid α, Nontrivial α where
@@ -1191,7 +1195,11 @@ This is useful for constructing an `OrderedAddCommGroup`
 by choosing a positive cone in an existing `AddCommGroup`. -/
 -- Porting note: @[nolint has_nonempty_instance]
 structure PositiveCone (α : Type*) [AddCommGroup α] where
+  /-- The characteristic predicate of a positive cone. `nonneg a` means that `0 ≤ a` according to
+  the cone. -/
   nonneg : α → Prop
+  /-- The characteristic predicate of a positive cone. `pos a` means that `0 < a` according to
+  the cone. -/
   pos : α → Prop := fun a => nonneg a ∧ ¬nonneg (-a)
   pos_iff : ∀ a, pos a ↔ nonneg a ∧ ¬nonneg (-a) := by intros; rfl
   zero_nonneg : nonneg 0
@@ -1258,14 +1266,14 @@ section NormNumLemmas
 expected signatures.  -/
 variable [OrderedCommGroup α] {a b : α}
 
-@[to_additive neg_le_neg]
+@[to_additive (attr := gcongr) neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=
   -- Porting note: explicit type annotation was not needed before.
   (@inv_le_inv_iff α ..).mpr
 #align inv_le_inv' inv_le_inv'
 #align neg_le_neg neg_le_neg
 
-@[to_additive neg_lt_neg]
+@[to_additive (attr := gcongr) neg_lt_neg]
 theorem inv_lt_inv' : a < b → b⁻¹ < a⁻¹ :=
   -- Porting note: explicit type annotation was not needed before.
   (@inv_lt_inv_iff α ..).mpr

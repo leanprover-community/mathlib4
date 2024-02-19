@@ -413,7 +413,9 @@ theorem independent_ne_bot_iff_independent :
   refine ⟨fun h ↦ ?_, fun h ↦ h.comp Subtype.val_injective⟩
   simp only [independent_def] at h ⊢
   intro i
-  cases' eq_or_ne (t i) ⊥ with hi hi; simp [hi]
+  cases eq_or_ne (t i) ⊥ with
+  | inl hi => simp [hi]
+  | inr hi => ?_
   convert h ⟨i, hi⟩
   have : ∀ j, ⨆ (_ : t j = ⊥), t j = ⊥ := fun j ↦ by simp only [iSup_eq_bot, imp_self]
   rw [iSup_split _ (fun j ↦ t j = ⊥), iSup_subtype]
@@ -427,8 +429,7 @@ theorem Independent.injOn (ht : Independent t) : InjOn t {i | t i ≠ ⊥} := by
   suffices t j ≤ ⨆ (k) (_ : k ≠ i), t k by
     replace ht := (ht i).mono_right this
     rwa [h, disjoint_self] at ht
-  replace contra : j ≠ i
-  · exact Ne.symm contra
+  replace contra : j ≠ i := Ne.symm contra
   -- Porting note: needs explicit `f`
   exact @le_iSup₂ _ _ _ _ (fun x _ => t x) j contra
 

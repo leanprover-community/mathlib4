@@ -5,7 +5,6 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Int.Lemmas
 
 #align_import data.sign from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 /-!
@@ -34,7 +33,7 @@ namespace SignType
 
 -- Porting note: Added Fintype SignType manually
 instance : Fintype SignType :=
-   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> decide)
+   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp)
 
 instance : Zero SignType :=
   ⟨zero⟩
@@ -112,7 +111,7 @@ private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_: b ≤ a) : a = b :=
   cases a <;> cases b <;> trivial
 
 private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_: b ≤ c) : a ≤ c := by
-  cases a <;> cases b <;> cases c <;> first | tauto | constructor
+  cases a <;> cases b <;> cases c <;> tauto
 
 instance : LinearOrder SignType where
   le := (· ≤ ·)
@@ -286,6 +285,18 @@ theorem range_eq {α} (f : SignType → α) : Set.range f = {f zero, f neg, f po
   classical simp [Finset.coe_insert]
 #align sign_type.range_eq SignType.range_eq
 
+@[simp, norm_cast] lemma coe_mul {α} [MulZeroOneClass α] [HasDistribNeg α] (a b : SignType) :
+    ↑(a * b) = (a : α) * b :=
+  map_mul SignType.castHom _ _
+
+@[simp, norm_cast] lemma coe_pow {α} [MonoidWithZero α] [HasDistribNeg α] (a : SignType) (k : ℕ) :
+    ↑(a ^ k) = (a : α) ^ k :=
+  map_pow SignType.castHom _ _
+
+@[simp, norm_cast] lemma coe_zpow {α} [GroupWithZero α] [HasDistribNeg α] (a : SignType) (k : ℤ) :
+    ↑(a ^ k) = (a : α) ^ k :=
+  map_zpow₀ SignType.castHom _ _
+
 end SignType
 
 variable {α : Type*}
@@ -388,10 +399,6 @@ end OrderedSemiring
 section LinearOrderedRing
 
 variable [LinearOrderedRing α] {a b : α}
-
-/- I'm not sure why this is necessary, see https://leanprover.zulipchat.com/#narrow/stream/
-113488-general/topic/type.20class.20inference.20issues/near/276937942 -/
-attribute [local instance] LinearOrderedRing.decidableLT
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>
@@ -510,7 +517,7 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
   let ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
   ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
-    (@sum_attach _ _ t _ fun b => ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
+    (sum_attach t fun b ↦ ite (g b = a) (sgn b : ℤ) 0).trans <| hf _ ha⟩
 #align exists_signed_sum exists_signed_sum
 
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/

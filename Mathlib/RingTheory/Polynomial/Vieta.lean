@@ -35,8 +35,8 @@ section Semiring
 
 variable {R : Type*} [CommSemiring R]
 
-/-- A sum version of Vieta's formula for `Multiset`: the product of the linear terms `X + λ` where
-`λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
+/-- A sum version of **Vieta's formula** for `Multiset`: the product of the linear terms `X + λ`
+where `λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
 `esymm s` of the `λ`'s .-/
 theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
     (s.map fun r => X + C r).prod =
