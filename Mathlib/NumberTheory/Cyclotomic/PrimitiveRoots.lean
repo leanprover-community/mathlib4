@@ -244,6 +244,32 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   replace hirr : Irreducible (cyclotomic (⟨k, hkpos⟩ : ℕ+) K) := hirr
   simpa using (IsCyclotomicExtension.finrank (Algebra.adjoin K ({g.1.1} : Set L)) hirr).symm
 
+/-- If a `n`-th cyclotomic extension of `ℚ` contains a primitive `l`-th root of unity, then
+`l ∣ 2 * n`. -/
+theorem _root_.IsPrimitiveRoot._dvd_of_isCyclotomicExtension [NumberField K]
+    [IsCyclotomicExtension {n} ℚ K] {ζ : K} {l : ℕ} (hζ : IsPrimitiveRoot ζ l) (hl : l ≠ 0) :
+    l ∣ 2 * n := by
+  have hl : NeZero l := ⟨hl⟩
+  have hroot := IsCyclotomicExtension.zeta_spec n ℚ K
+  have key := IsPrimitiveRoot.lcm_totient_le_finrank hζ hroot (cyclotomic.irreducible_rat
+    <| Nat.lcm_pos (Nat.pos_of_ne_zero hl.1) n.2)
+  rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat n.2)] at key
+  rcases _root_.dvd_lcm_right l n with ⟨r, hr⟩
+  have ineq := Nat.totient_super_multiplicative n r
+  rw [← hr] at ineq
+  replace key := (mul_le_iff_le_one_right (Nat.totient_pos n.2)).mp (le_trans ineq key)
+  have rpos : 0 < r := by
+    refine Nat.pos_of_ne_zero (fun h ↦ ?_)
+    simp only [h, mul_zero, _root_.lcm_eq_zero_iff, PNat.ne_zero, or_false] at hr
+    exact hl.1 hr
+  replace key := (Nat.dvd_prime Nat.prime_two).1 (Nat.totient_le_one_dvd_two rpos key)
+  rcases key with (key | key)
+  · rw [key, mul_one] at hr
+    rw [← hr]
+    exact dvd_mul_of_dvd_right (_root_.dvd_lcm_left l ↑n) 2
+  · rw [key, mul_comm] at hr
+    simpa [← hr] using _root_.dvd_lcm_left _ _
+
 end IsCyclotomicExtension
 
 end NoOrder
