@@ -122,20 +122,135 @@ variable [K.HasTotal₁₂ c₁₂ c]
 
 noncomputable def total₁₂ : HomologicalComplex C c := (K.int₁₂ c₁₂).total c
 
-noncomputable def ιTotal₁₂ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+section
+
+variable (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+
+noncomputable def ιTotal₁₂
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j) :
     ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
   (K.X' i₃).ιTotal c₁₂ i₁ i₂ _ rfl ≫
     (K.int₁₂ c₁₂).ιTotal c (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩) i₃ j h
 
 @[reassoc]
-lemma ιTotal₁₂_eq (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+lemma ιTotal₁₂_eq
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j)
     (i₁₂ : I₁₂) (h' : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂) :
     K.ιTotal₁₂ c₁₂ c i₁ i₂ i₃ j h = (K.X' i₃).ιTotal c₁₂ i₁ i₂ i₁₂ h' ≫
     (K.int₁₂ c₁₂).ιTotal c i₁₂ i₃ j (by rw [← h', h]) := by
   subst h'
   rfl
+
+noncomputable def ιTotal₁₂OrZero :
+    ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
+  if h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j then
+    K.ιTotal₁₂ c₁₂ c i₁ i₂ i₃ j h
+  else 0
+
+noncomputable def ιTotal₁₂OrZero_eq (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j) :
+    K.ιTotal₁₂OrZero c₁₂ c i₁ i₂ i₃ j = K.ιTotal₁₂ c₁₂ c i₁ i₂ i₃ j h := dif_pos h
+
+noncomputable def ιTotal₁₂OrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) ≠ j) :
+    K.ιTotal₁₂OrZero c₁₂ c i₁ i₂ i₃ j = 0 := dif_neg h
+
+end
+
+section
+
+variable (i₁ i₁' : I₁) (h₁ : c₁.Rel i₁ i₁')
+  (i₂ i₂' : I₂) (h₂ : c₂.Rel i₂ i₂')
+  (i₃ i₃' : I₃) (h₃ : c₃.Rel i₃ i₃') (j : J)
+
+-- TODO: multiply with the correct signs
+
+noncomputable def d₁ : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
+  ((K.d i₁ (c₁.next i₁)).f i₂).f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
+
+noncomputable def d₂ : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
+  ((K.X i₁).d i₂ (c₂.next i₂)).f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
+
+noncomputable def d₃ : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
+  ((K.X i₁).X i₂).d i₃ (c₃.next i₃) ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
+
+lemma d₁_eq_zero (h : ¬ c₁.Rel i₁ (c₁.next i₁)) : K.d₁ c₁₂ c i₁ i₂ i₃ j = 0 := by
+  dsimp [d₁]
+  rw [HomologicalComplex.shape _ _ _ h, HomologicalComplex.zero_f,
+    HomologicalComplex.zero_f, zero_comp]
+
+lemma d₂_eq_zero (h : ¬ c₂.Rel i₂ (c₂.next i₂)) : K.d₂ c₁₂ c i₁ i₂ i₃ j = 0 := by
+  dsimp [d₂]
+  rw [HomologicalComplex.shape _ _ _ h, HomologicalComplex.zero_f, zero_comp]
+
+lemma d₃_eq_zero (h : ¬ c₃.Rel i₃ (c₃.next i₃)) : K.d₃ c₁₂ c i₁ i₂ i₃ j = 0 := by
+  dsimp [d₃]
+  rw [HomologicalComplex.shape _ _ _ h, zero_comp]
+
+section
+
+variable {i₁ i₁'}
+
+lemma d₁_eq' : K.d₁ c₁₂ c i₁ i₂ i₃ j =
+    ((K.d i₁ i₁').f i₂).f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _ := by
+  obtain rfl := c₁.next_eq' h₁
+  rfl
+
+lemma d₁_eq_zero'
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁', i₂), i₃) ≠ j) :
+    K.d₁ c₁₂ c i₁ i₂ i₃ j = 0 := by
+  rw [K.d₁_eq' c₁₂ c h₁, ιTotal₁₂OrZero_eq_zero _ _ _ _ _ _ _ h, comp_zero]
+
+lemma d₁_eq
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁', i₂), i₃) = j) :
+    K.d₁ c₁₂ c i₁ i₂ i₃ j = ((K.d i₁ i₁').f i₂).f i₃ ≫ ιTotal₁₂ K c₁₂ c i₁' i₂ i₃ j h := by
+  rw [K.d₁_eq' c₁₂ c h₁, ιTotal₁₂OrZero_eq _ _ _ _ _ _ _ h]
+
+end
+
+section
+
+variable {i₂ i₂'}
+
+lemma d₂_eq' : K.d₂ c₁₂ c i₁ i₂ i₃ j =
+    ((K.X i₁).d i₂ i₂').f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _ := by
+  obtain rfl := c₂.next_eq' h₂
+  rfl
+
+lemma d₂_eq_zero'
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂'), i₃) ≠ j) :
+    K.d₂ c₁₂ c i₁ i₂ i₃ j = 0 := by
+  rw [K.d₂_eq' c₁₂ c i₁ h₂, ιTotal₁₂OrZero_eq_zero _ _ _ _ _ _ _ h, comp_zero]
+
+lemma d₂_eq
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂'), i₃) = j) :
+    K.d₂ c₁₂ c i₁ i₂ i₃ j = ((K.X i₁).d i₂ i₂').f i₃ ≫ ιTotal₁₂ K c₁₂ c i₁ i₂' i₃ j h := by
+  rw [K.d₂_eq' c₁₂ c i₁ h₂, ιTotal₁₂OrZero_eq _ _ _ _ _ _ _ h]
+
+end
+
+section
+
+variable {i₃ i₃'}
+
+lemma d₃_eq' : K.d₃ c₁₂ c i₁ i₂ i₃ j =
+    ((K.X i₁).X i₂).d i₃ i₃' ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _ := by
+  obtain rfl := c₃.next_eq' h₃
+  rfl
+
+lemma d₃_eq_zero'
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃') ≠ j) :
+    K.d₃ c₁₂ c i₁ i₂ i₃ j = 0 := by
+  rw [K.d₃_eq' c₁₂ c i₁ i₂ h₃, ιTotal₁₂OrZero_eq_zero _ _ _ _ _ _ _ h, comp_zero]
+
+lemma d₃_eq
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃') = j) :
+    K.d₃ c₁₂ c i₁ i₂ i₃ j = ((K.X i₁).X i₂).d i₃ i₃' ≫ ιTotal₁₂ K c₁₂ c i₁ i₂ i₃' j h := by
+  rw [K.d₃_eq' c₁₂ c i₁ i₂ h₃, ιTotal₁₂OrZero_eq _ _ _ _ _ _ _ h]
+
+end
+
+end
 
 section
 
@@ -167,6 +282,51 @@ lemma total₁₂.hom_ext {A : C} {j : J} {f g : (K.total₁₂ c₁₂ c).X j �
     HomologicalComplex₂.total.hom_ext (fun i₁ i₂ h' => by
       simpa only [← ιTotal₁₂_eq_assoc _ c₁₂ c i₁ i₂ i₃ j
         (by rw [h', h]) i₁₂ h'] using hfg i₁ i₂ i₃ (by rw [h', h])))
+
+noncomputable def D₁ (j j' : J) : (K.total₁₂ c₁₂ c).X j ⟶ (K.total₁₂ c₁₂ c).X j' :=
+  K.total₁₂Desc (fun _ _ _ _ => K.d₁ _ _ _ _ _ _)
+
+noncomputable def D₂ (j j' : J) : (K.total₁₂ c₁₂ c).X j ⟶ (K.total₁₂ c₁₂ c).X j' :=
+  K.total₁₂Desc (fun _ _ _ _ => K.d₂ _ _ _ _ _ _)
+
+noncomputable def D₃ (j j' : J) : (K.total₁₂ c₁₂ c).X j ⟶ (K.total₁₂ c₁₂ c).X j' :=
+  K.total₁₂Desc (fun _ _ _ _ => K.d₃ _ _ _ _ _ _)
+
+@[reassoc (attr := simp)]
+lemma ι_D₁ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j j' : J)
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j) :
+    K.ιTotal₁₂ c₁₂ c i₁ i₂ i₃ j h ≫ K.D₁ c₁₂ c j j' = K.d₁ _ _ _ _ _ _ := by
+  simp [D₁]
+
+@[reassoc (attr := simp)]
+lemma ι_D₂ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j j' : J)
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j) :
+    K.ιTotal₁₂ c₁₂ c i₁ i₂ i₃ j h ≫ K.D₂ c₁₂ c j j' = K.d₂ _ _ _ _ _ _ := by
+  simp [D₂]
+
+@[reassoc (attr := simp)]
+lemma ι_D₃ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j j' : J)
+    (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j) :
+    K.ιTotal₁₂ c₁₂ c i₁ i₂ i₃ j h ≫ K.D₃ c₁₂ c j j' = K.d₃ _ _ _ _ _ _ := by
+  simp [D₃]
+
+/-lemma int₁₂_D₁ (j j' : J) :
+    (int₁₂ K c₁₂).D₁ c j j' = K.D₁ c₁₂ c j j' + K.D₂ c₁₂ c j j' := by
+  sorry
+
+lemma int₁₂_D₂ (j j' : J) : (int₁₂ K c₁₂).D₂ c j j' = K.D₃ c₁₂ c j j' :=
+  HomologicalComplex₂.total.hom_ext (fun i₁₂ i₃ h =>
+    HomologicalComplex₂.total.hom_ext (fun i₁ i₂ h' => by
+      dsimp
+      rw [HomologicalComplex₂.ι_D₂, ← K.ιTotal₁₂_eq_assoc c₁₂ c i₁ i₂ i₃ j (by rw [h', h]) i₁₂ h',
+        ι_D₃]
+      sorry))
+
+@[simp]
+lemma total₁₂_d (j j' : J) :
+    (K.total₁₂ c₁₂ c).d j j' = K.D₁ c₁₂ c j j' + K.D₂ c₁₂ c j j' + K.D₃ c₁₂ c j j' := by
+  dsimp [total₁₂]
+  rw [int₁₂_D₁, int₁₂_D₂]-/
 
 end
 
