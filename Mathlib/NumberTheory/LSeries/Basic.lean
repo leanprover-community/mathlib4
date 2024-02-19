@@ -100,8 +100,7 @@ lemma norm_LSeriesTerm_le_of_re_le_re (f : ArithmeticFunction ℂ) {w : ℂ} {z 
   · simp only [map_zero, CharP.cast_eq_zero, zero_div, norm_zero, le_refl]
   have hn' := norm_natCast_cpow_pos_of_pos hn w
   simp_rw [norm_div]
-  suffices : ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖
-  · exact div_le_div (norm_nonneg _) le_rfl hn' this
+  suffices H : ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖ from div_le_div (norm_nonneg _) le_rfl hn' H
   refine (one_le_div hn').mp ?_
   rw [← norm_div, ← cpow_sub _ _ <| cast_ne_zero.mpr hn.ne', norm_natCast_cpow_of_pos hn]
   exact Real.one_le_rpow (one_le_cast.mpr hn) <| by simp only [sub_re, sub_nonneg, h]
