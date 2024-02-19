@@ -1597,7 +1597,8 @@ import Mathlib.Data.Finset.Grade
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.Interval
 import Mathlib.Data.Finset.Lattice
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Data.Finset.LocallyFinite.Box
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.NatAntidiagonal
