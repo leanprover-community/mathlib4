@@ -29,8 +29,8 @@ vertical line if its projection onto the x-axis contains `0`.
 
 We define a random variable `N : Ω → ℝ` that is `1` if the needle crosses a vertical line, and `0`
 otherwise. This is defined as `fun ω => Set.indicator (needleProjX l (B ω).1 (B ω).2) 1 0`.
-
-As in many references, the problem is split into two cases, `l ≤ d` (`buffon_short`), and `l ≥ d`
+f
+As in many references, the problem is split into two cases, `l ≤ d` (`buffon_short`), and `d ≤ l`
 (`buffon_long`). For both cases, we show that
 ```
 ℙ[N] = (d * π) ⁻¹ *
@@ -44,7 +44,7 @@ In the short case `l ≤ d`, we show that `[-l * θ.sin/2, l * θ.sin/2] ⊆ [-d
 ```
 Which then concludes in the short case being `ℙ[N] = (2 * l) / (d * π)`.
 
-In the long case, `d ≥ l` (`buffon_long`), we show the outer integral simplifies to
+In the long case, `l ≤ d` (`buffon_long`), we show the outer integral simplifies to
 ```
 ∫ θ in 0..π, min d (θ.sin * l)
 ```
@@ -93,8 +93,8 @@ variable
     - `l > 0` is the length of the needle.
   -/
   (d l : ℝ)
-  (hd : d > 0)
-  (hl : l > 0)
+  (hd : 0 < d)
+  (hl : 0 < l)
 
   /- `B = (X, Θ)` is the joint random variable for the x-position and angle of the needle. -/
   (B : Ω → ℝ × ℝ)
@@ -175,7 +175,7 @@ lemma needleCrossesIndicator_integrable :
         (Measure.restrict ℙ (Set.Icc (-d / 2) (d / 2)))
         (Measure.restrict ℙ (Set.Icc 0 π))) := by
 
-  have needleCrossesIndicator_nonneg p : needleCrossesIndicator l p ≥ 0 := by
+  have needleCrossesIndicator_nonneg p : 0 ≤ needleCrossesIndicator l p := by
     apply Set.indicator_apply_nonneg
     simp only [Pi.one_apply, zero_le_one, implies_true]
 
@@ -289,7 +289,7 @@ theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
   apply Or.inl
   ring_nf
 
-  have : ∀ θ ∈ Set.Icc 0 π, θ.sin * l ≥ 0 := by
+  have : ∀ θ ∈ Set.Icc 0 π, 0 ≤ θ.sin * l := by
     intro θ hθ
     exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
 
@@ -335,7 +335,7 @@ lemma integral_zero_to_arcsin_min :
     ∫ θ in (0)..(d / l).arcsin, min d (θ.sin * l) = (1 - (1 - (d / l) ^ 2).sqrt) * l := by
   have : Set.EqOn (fun θ => min d (θ.sin * l)) (Real.sin · * l) (Set.uIcc 0 (d / l).arcsin) := by
     intro θ ⟨hθ₁, hθ₂⟩
-    have : (d / l).arcsin ≥ 0 := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
+    have : 0 ≤ (d / l).arcsin := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
     simp only [sup_eq_max, inf_eq_min, min_eq_left this, max_eq_right this] at hθ₁ hθ₂
 
     have hθ_mem : θ ∈ Set.Ioc (-(π / 2)) (π / 2) := by
@@ -350,7 +350,7 @@ lemma integral_zero_to_arcsin_min :
   The second of two adjacent integrals in the long case. In the range `(d / l).arcsin..(π / 2)`, we
   have that `d ≤ θ.sin * l`, and thus the integral is `∫ θ in (d / l).arcsin..(π / 2), d`.
 -/
-lemma integral_arcsin_to_pi_div_two_min (h : l ≥ d) :
+lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
     ∫ θ in (d / l).arcsin..(π / 2), min d (θ.sin * l) = (π / 2 - (d / l).arcsin) * d := by
   have : Set.EqOn (fun θ => min d (θ.sin * l)) (fun _ => d) (Set.uIcc (d / l).arcsin (π / 2)) := by
     intro θ ⟨hθ₁, hθ₂⟩
@@ -369,9 +369,9 @@ lemma integral_arcsin_to_pi_div_two_min (h : l ≥ d) :
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_const, smul_eq_mul]
 
 /--
-  Buffon's Needle, the short case (`l ≥ d`).
+  Buffon's Needle, the short case (`d ≤ l`).
 -/
-theorem buffon_long (h : l ≥ d) :
+theorem buffon_long (h : d ≤ l) :
     ℙ[N l B] = (2 * l) / (d * π) - 2 / (d * π) * ((l^2 - d^2).sqrt + d * (d / l).arcsin) + 1 := by
 
   simp only [
