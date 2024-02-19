@@ -193,7 +193,7 @@ variable {L} in
 /-- If `L` contains both a primitive `p`-th root of unity and `q`-th root of unity, and
 `Irreducible (cyclotomic (lcm p q) K)` (in particular for `K = ℚ`), then the `finrank K L` is at
 least `(lcm p q).totient`. -/
-theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p q : ℕ}  {x y : L}
+theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p q : ℕ} {x y : L}
     (hx : IsPrimitiveRoot x p) (hy : IsPrimitiveRoot y q)
     (hirr : Irreducible (cyclotomic (Nat.lcm p q) K)) :
     (Nat.lcm p q).totient ≤ FiniteDimensional.finrank K L := by
