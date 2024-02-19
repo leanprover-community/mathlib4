@@ -21,10 +21,6 @@ open Lean Meta Qq
 namespace Meta.FunProp
 
 
-def ppOrigin {m} [Monad m] [MonadEnv m] [MonadError m] : Origin → m MessageData
-  | .decl n => return m!"{← mkConstWithLevelParams n}"
-  | .fvar n => return mkFVar n
-
 /-- Synthesize instance of type `type` and
   1. assign it to `x` if `x` is meta variable
   2. check it is equal to `x` -/
@@ -99,11 +95,6 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
   return true
 
-
-private def ppOrigin' (origin : Origin) : MetaM String := do
-  match origin with
-  | .fvar id => return s!"{← ppExpr (.fvar id)} : {← ppExpr (← inferType (.fvar id))}"
-  | _ => pure (toString origin.name)
 
 /-- Try to apply theorem - core function -/
 def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr)
@@ -306,8 +297,8 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     return none
 
 /-- Prove function property of using "transition theorems" e.g. continuity from linearity.  -/
-def applyTransitionRules (funPropDecl : FunPropDecl) (e : Expr)
-    (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
+def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)) :
+    FunPropM (Option Result) := do
 
   let ext := transitionTheoremsExt.getState (← getEnv)
   let candidates ← ext.theorems.getMatchWithScore e false { iota := false, zeta := false }
@@ -323,6 +314,7 @@ def applyTransitionRules (funPropDecl : FunPropDecl) (e : Expr)
   trace[Meta.Tactic.fun_prop.step] "no theorem matched"
   return none
 
+/-- Try to remove applied argument. -/
 def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
@@ -353,7 +345,8 @@ def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     else
       applyProjRule funPropDecl e fData.args[0]!.expr (← fData.domainType) funProp
 
-
+/-- Get candidate theorems from the environment for function property `funPropDecl` and
+function `funName`. -/
 def getDeclTheorems (funPropDecl : FunPropDecl) (funName : Name)
     (mainArgs : Array Nat) (appliedArgs : Nat) : MetaM (Array FunctionTheorem) := do
 
@@ -371,7 +364,8 @@ def getDeclTheorems (funPropDecl : FunPropDecl) (funName : Name)
   -- todo: sorting and filtering
   return thms
 
-
+/-- Get candidate theorems from the local context for function property `funPropDecl` and
+function `funName`. -/
 def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
     (mainArgs : Array Nat) (appliedArgs : Nat) : MetaM (Array FunctionTheorem) := do
 
@@ -504,7 +498,7 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
         return r
 
     if (← fData.nontrivialDecomposition).isNone then
-      if let .some r ← applyTransitionRules funPropDecl e funProp then
+      if let .some r ← applyTransitionRules e funProp then
         return r
 
     return none
@@ -537,7 +531,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       return r
 
   if (← fData.nontrivialDecomposition).isNone then
-    if let .some r ← applyTransitionRules funPropDecl e funProp then
+    if let .some r ← applyTransitionRules e funProp then
       return r
 
   return none

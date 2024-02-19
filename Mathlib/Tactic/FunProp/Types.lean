@@ -31,28 +31,45 @@ initialize registerTraceClass `Meta.Tactic.fun_prop.apply
 initialize registerTraceClass `Meta.Tactic.fun_prop.unfold
 initialize registerTraceClass `Meta.Tactic.fun_prop.cache
 
+/-- Indicated origin of a function or a statement. -/
 inductive Origin where
+  /-- It is a constant defined in the environment. -/
   | decl (name : Name)
+  /-- It is a free variable in the local context. -/
   | fvar (fvarId : FVarId)
   deriving Inhabited, BEq
 
+/-- Name of the origin. -/
 def Origin.name (origin : Origin) : Name :=
   match origin with
   | .decl name => name
   | .fvar id => id.name
 
+/-- Get the expression specified by `origin`. -/
 def Origin.getValue (origin : Origin) : MetaM Expr := do
   match origin with
   | .decl name => mkConstWithFreshMVarLevels name
   | .fvar id => pure (.fvar id)
 
+/-- Pretty print `FunProp.Origin`. -/
+def ppOrigin {m} [Monad m] [MonadEnv m] [MonadError m] : Origin → m MessageData
+  | .decl n => return m!"{← mkConstWithLevelParams n}"
+  | .fvar n => return mkFVar n
+
+/-- Pretty print `FunProp.Origin`. Returns string unlike `ppOrigin`. -/
+def ppOrigin' (origin : Origin) : MetaM String := do
+  match origin with
+  | .fvar id => return s!"{← ppExpr (.fvar id)} : {← ppExpr (← inferType (.fvar id))}"
+  | _ => pure (toString origin.name)
+
+/-- Get origin of the head function. -/
 def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
   match fData.fn with
   | .fvar id => .fvar id
   | .const name _ => .decl name
   | _ => .decl Name.anonymous
 
-/-- -/
+/-- `fun_prop` configuration -/
 structure Config where
   /-- Name to unfold -/
   constToUnfold : Std.RBSet Name Name.quickCmp := .ofArray #[`id, `Function.comp, `Function.HasUncurry.uncurry] _
@@ -69,13 +86,11 @@ structure Config where
   maxSteps := 100000
 deriving Inhabited
 
-/-- -/
+/-- `fun_prop` state -/
 structure State where
   /-- Simp's cache is used as the `funProp` tactic is designed to be used inside of simp and utilize
   its cache -/
   cache        : Simp.Cache := {}
-  /-- The number of used transition theorems. -/
-  transitionDepth := 0
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
 
@@ -83,7 +98,7 @@ structure State where
 def Config.addThm (cfg : Config) (thmId : Origin) : Config :=
   {cfg with thmStack := thmId :: cfg.thmStack}
 
-/-- Log used theorem -/
+/-- Increase depth -/
 def Config.increaseDepth (cfg : Config) : Config :=
   {cfg with depth := cfg.depth + 1}
 
@@ -109,16 +124,19 @@ def withTheorem {α} (thmOrigin : Origin) (go : FunPropM α) : FunPropM α := do
     throwError "fun_prop error; maximum depth reached!"
   withReader (fun cfg => cfg.addThm thmOrigin |>.increaseDepth) do go
 
+/-- Default names to unfold -/
 def defaultUnfoldPred : Name → Bool :=
   #[`id,`Function.comp,`Function.HasUncurry.uncurry,`Function.uncurry].contains
 
+/-- Get predicate on names indicating if theys shoulds be unfolded. -/
 def unfoldNamePred : FunPropM (Name → Bool) := do
   let toUnfold := (← read).constToUnfold
   return fun n => toUnfold.contains n
 
-/-- Increase heartbeat, throws error when maxHeartbeat was reached -/
+/-- Increase heartbeat, throws error when `maxSteps` was reached -/
 def increaseSteps : FunPropM Unit := do
   let numSteps := (← get).numSteps
-  if numSteps > (← read).maxSteps then
-     throwError "fun_prop failed, maximum number of steps exceeded"
+  let maxSteps := (← read).maxSteps
+  if numSteps > maxSteps then
+     throwError s!"fun_prop failed, maximum number({maxSteps}) of steps exceeded"
   modify (fun s => {s with numSteps := s.numSteps + 1})

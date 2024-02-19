@@ -123,7 +123,8 @@ def getFunctionData? (f : Expr)
     | .lam  .. => return .lam f'
     | _ => return .data (← getFunctionData f')
 
-
+/-- If head function is a let-fvar unfold it and return resulting function.
+Return `none` otherwise. -/
 def FunctionData.unfoldHeadFVar? (fData : FunctionData) : MetaM (Option Expr) := do
   let .fvar id := fData.fn | return none
   let .some val ← id.getValue? | return none
@@ -131,12 +132,19 @@ def FunctionData.unfoldHeadFVar? (fData : FunctionData) : MetaM (Option Expr) :=
     mkLambdaFVars #[fData.mainVar] (Mor.mkAppN val fData.args)
   return f
 
-
+/-- Type of morphism application. -/
 inductive MorApplication where
-  | underApplied | exact | overApplied | none
+  /-- Of the form `⇑f` i.e. missing argument. -/
+  | underApplied
+  /-- Of the form `⇑f x` i.e. morphism and one argument is provided. -/
+  | exact
+  /-- Of the form `⇑f x y ...` i.e. additional applied arugments `y ...`. -/
+  | overApplied
+  /-- Not a morphism application. -/
+  | none
   deriving Inhabited, BEq
 
-/--  -/
+/-- Is function body of `f` a morphism application? What kind? -/
 def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := do
   if let .some name := f.fn.constName? then
     if ← Mor.isMorCoeName name then
@@ -187,7 +195,7 @@ def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM (Option 
 
 /-- Decompose function `f = (← fData.toExpr)` into composition of two functions.
 
-Returns none if the decomposition would produce identity function. -/
+Returns none if the decomposition would produce composition with identity function. -/
 def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
 
     let mut lctx := fData.lctx
@@ -235,8 +243,18 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
     return (f, g)
 
 
+/-- Decompose function `fun x => f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
 
-def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat) : MetaM (Option (Expr × Expr)) := do
+The result is:
+```
+(fun (yᵢ',yⱼ',...) => f y₁ .. yᵢ' .. yⱼ' .. yₙ) ∘ (fun x => (yᵢ, yⱼ, ...))
+```
+
+This is not possible if `yₗ` for `l ∉ #[i,j,...]` still contains `x`.
+In such case `none` is returned.
+-/
+def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat) :
+    MetaM (Option (Expr × Expr)) := do
 
   unless isOrderedSubsetOf fData.mainArgs args do return none
   unless ¬(fData.fn.containsFVar fData.mainVar.fvarId!) do return none
@@ -259,30 +277,3 @@ def FunctionData.decompositionOverArgs (fData : FunctionData) (args : Array Nat)
       return (f,g)
   catch _ =>
     return none
-
-
-#exit
-
-#check @HAdd.hAdd
-
-open Lean Meta Qq in
-#eval show MetaM Unit from do
-
-  -- let f := q(fun x : Nat =>  (x + x) + 10)
-
-  -- let fData ← getFunctionData f
-
-  -- let .some (f,g) ← fData.decompositionOverArgs #[4] | throwError "decomposition failed"
-
-  -- IO.println s!"{← ppExpr f} ∘ {← ppExpr g}"
-
-
-  withLocalDeclDQ `f q(Nat → Nat → Nat → Nat) fun f => do
-
-    let f' := q(fun y => $f 1 y 2)
-
-    let fData ← getFunctionData f'
-
-    let .some (f,g) ← fData.decompositionOverArgs #[1,2] | throwError "decomposition failed"
-
-    IO.println s!"{← ppExpr f} ∘ {← ppExpr g}"

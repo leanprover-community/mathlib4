@@ -30,16 +30,16 @@ structure FunPropDecl where
   funArgId : Nat
   deriving Inhabited, BEq
 
-/-- -/
+/-- Disctriminatory tree for function properties. -/
 structure FunPropDecls where
-  /-- discriminatory tree for function properties -/
+  /-- Discriminatory tree for function properties. -/
   decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
 /-- -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
-/-- -/
+/-- Extension storing all function properties. -/
 initialize funPropDeclsExt : FunPropDeclsExt ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
@@ -48,7 +48,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
       {d with decls := d.decls.insertCore e.path e}
   }
 
-/-- -/
+/-- Register new function property. -/
 def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
@@ -82,7 +82,8 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
     "added new function property `{declName}`\nlook up pattern is `{path}`"
 
 
-/-- -/
+/-- Is `e` a function property statement? If yes return function property declaration and
+the function it talks about. -/
 def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
   let ext := funPropDeclsExt.getState (← getEnv)
 
@@ -101,7 +102,7 @@ fun_prop bug: expression {← ppExpr e} matches multiple function properties
 
   return (decl,f)
 
-/-- -/
+/-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
 
 /-- Returns function property declaration from `e = P f`. -/
@@ -119,7 +120,7 @@ def getFunPropFun? (e : Expr) : MetaM (Option Expr) := do
 
 
 open Elab Term in
-/-- -/
+/-- Turn tactic syntax into a discharger function. -/
 def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Expr) := fun e =>
   withTraceNode `Meta.Tactic.fun_prop
     (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
@@ -143,4 +144,3 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
     let (result?, _) ← runTac?.run {} {}
 
     return result?
-
