@@ -11,7 +11,7 @@ import Mathlib.Mathport.Rename
 # Align statements for declarations from Std
 -/
 
-#align rat.ext Rat.ext
+#noalign rat.ext
 #align rat Rat
-#align rat.ext_iff Rat.ext_iff
+#noalign rat.ext_iff
 #align rat.floor Rat.floor

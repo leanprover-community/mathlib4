@@ -7,6 +7,7 @@ import Std.Util.Pickle
 import Std.Util.Cache
 import Std.Lean.Parser
 import Std.Tactic.SolveByElim
+import Std.Control.Nondet.Basic
 import Lean.Meta.Tactic.TryThis
 import Std.Data.MLList.Heartbeats
 import Std.Lean.Parser

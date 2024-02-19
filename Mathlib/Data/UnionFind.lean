@@ -261,13 +261,13 @@ def link (self : UnionFind α) (x y : Fin self.size)
     else
       let arr₁ := self.arr.set x {nx with parent := y}
       let arr₂ := if nx.rank = ny.rank then
-        arr₁.set ⟨y, by simp; exact y.2⟩ {ny with rank := ny.rank + 1}
+        arr₁.set ⟨y, by simp [arr₁]; exact y.2⟩ {ny with rank := ny.rank + 1}
       else arr₁
       ⟨arr₂, ?b⟩
   -- start proof
   case a =>
     let ⟨m, hm⟩ := self.model'
-    exact ⟨_, _, hm.setParent y x (by simpa [hm.rank_eq] using h) _ _ rfl rfl⟩
+    exact ⟨_, _, hm.setParent y x (by simpa [hm.rank_eq, nx, ny] using h) _ _ rfl rfl⟩
   case b =>
     let ⟨m, hm⟩ := self.model'; let n := self.size
     refine ⟨_, m.setParentBump x y (by simpa [hm.rank_eq] using h)

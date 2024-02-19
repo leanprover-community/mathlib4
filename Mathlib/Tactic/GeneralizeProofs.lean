@@ -5,6 +5,7 @@ Authors: Alex J. Best
 -/
 import Lean.Meta.AbstractNestedProofs
 import Lean.Meta.Tactic.Generalize
+import Lean.Elab.Tactic.Location
 import Mathlib.Lean.Expr.Basic
 
 /-!
