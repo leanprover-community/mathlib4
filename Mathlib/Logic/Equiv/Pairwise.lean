@@ -11,7 +11,7 @@ import Mathlib.Logic.Pairwise
 -/
 
 lemma EquivLike.pairwise_comp_iff {X : Type*} {Y : Type*} {F} [EquivLike F Y X]
-    (f : F) (p : X → X → Prop) : Pairwise (fun y z ↦ p (f y) (f z)) ↔ Pairwise p := by
+    (f : F) (p : X → X → Prop) : Pairwise (p on f) ↔ Pairwise p := by
   refine ⟨fun h ↦ fun i j hij ↦ ?_,
           fun h ↦ fun i j hij ↦ h <| (EquivLike.injective f).ne hij⟩
   convert h (?_ : EquivLike.inv f i ≠ EquivLike.inv f j)
