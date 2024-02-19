@@ -5,6 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Data.MvPolynomial.PDeriv
 
 /-!
 # Jacobian coordinates for Weierstrass curves
@@ -62,30 +63,9 @@ local notation "z" => 2
 
 local macro "matrix_simp" : tactic =>
   `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
-              Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
+    Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
 
 universe u
-
-lemma fin3_def {R : Type u} (P : Fin 3 → R) : P = ![P x, P y, P z] := by
-  ext n; fin_cases n <;> rfl
-
-private instance {R : Type u} [CommRing R] : SMul Rˣ <| Fin 3 → R :=
-  ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
-
-lemma smul_fin3 {R : Type u} [CommRing R] (P : Fin 3 → R) (u : Rˣ) :
-    u • P = ![u ^ 2 * P x, u ^ 3 * P y, u * P z] :=
-  rfl
-
-lemma smul_fin3_ext {R : Type u} [CommRing R] (P : Fin 3 → R) (u : Rˣ) :
-    (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z :=
-  ⟨rfl, rfl, rfl⟩
-
-private instance {R : Type u} [CommRing R] : MulAction Rˣ <| Fin 3 → R where
-  one_smul := fun _ => by
-    simp only [smul_fin3, Units.val_one, one_pow, one_mul, ← fin3_def]
-  mul_smul := fun u v P => by
-    simp only [smul_fin3, Units.val_mul, mul_pow, mul_assoc]
-    matrix_simp
 
 /-! ## Weierstrass curves -/
 
@@ -100,19 +80,41 @@ open MvPolynomial
 local macro "eval_simp" : tactic =>
   `(tactic| simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, eval_pow])
 
-variable (R : Type u) [CommRing R]
+local macro "pderiv_simp" : tactic =>
+  `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, pderiv_mul, pderiv_pow,
+    pderiv_C, pderiv_X_self, pderiv_X_of_ne one_ne_zero, pderiv_X_of_ne one_ne_zero.symm,
+    pderiv_X_of_ne (by decide : (2 : Fin 3) ≠ 0), pderiv_X_of_ne (by decide : (0 : Fin 3) ≠ 2),
+    pderiv_X_of_ne (by decide : (2 : Fin 3) ≠ 1), pderiv_X_of_ne (by decide : (1 : Fin 3) ≠ 2)])
 
-/-- The equivalence setoid for a point representative. -/
-def PointSetoid : Setoid <| Fin 3 → R :=
+variable {R : Type u} [CommRing R] (W : Jacobian R)
+
+lemma fin3_def (P : Fin 3 → R) : P = ![P x, P y, P z] := by
+  ext n; fin_cases n <;> rfl
+
+scoped instance instSMulPoint : SMul Rˣ <| Fin 3 → R :=
+  ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
+
+lemma smul_fin3 (P : Fin 3 → R) (u : Rˣ) :
+    u • P = ![u ^ 2 * P x, u ^ 3 * P y, u * P z] :=
+  rfl
+
+lemma smul_fin3_ext (P : Fin 3 → R) (u : Rˣ) :
+    (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z :=
+  ⟨rfl, rfl, rfl⟩
+
+scoped instance instMulActionPoint : MulAction Rˣ <| Fin 3 → R where
+  one_smul := fun _ => by
+    simp only [smul_fin3, Units.val_one, one_pow, one_mul, ← fin3_def]
+  mul_smul := fun u v P => by
+    simp only [smul_fin3, Units.val_mul, mul_pow, mul_assoc]
+    matrix_simp
+
+scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
-attribute [local instance] PointSetoid
-
 /-- The equivalence class of a point representative. -/
-abbrev PointClass : Type u :=
+abbrev PointClass (R : Type u) [CommRing R] : Type u :=
   MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
-
-variable {R} (W : Jacobian R)
 
 /-- The coercion to a Weierstrass curve in affine coordinates. -/
 @[pp_dot]
@@ -164,42 +166,54 @@ lemma equation_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.equation (u • P) ↔ W
     linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) (u : R) ^ 6 * h
   ⟨fun h => by convert this u⁻¹ h; rw [inv_smul_smul], this u⟩
 
-/-- The partial derivative $W_X(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $X$.
-
-TODO: define this in terms of `MvPolynomial.pderiv`. -/
+/-- The partial derivative $W_X(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $X$. -/
 @[pp_dot]
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
-  C W.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W.a₂) * X 0 * X 2 ^ 2 + C W.a₄ * X 2 ^ 4)
+  pderiv x W.polynomial
+
+lemma polynomialX_eq : W.polynomialX =
+    C W.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W.a₂) * X 0 * X 2 ^ 2 + C W.a₄ * X 2 ^ 4) := by
+  rw [polynomialX, polynomial]
+  pderiv_simp
+  ring1
 
 lemma eval_polynomialX (P : Fin 3 → R) : eval P W.polynomialX =
     W.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W.a₂ * P x * P z ^ 2 + W.a₄ * P z ^ 4) := by
-  rw [polynomialX]
+  rw [polynomialX_eq]
   eval_simp
 
-/-- The partial derivative $W_Y(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Y$.
-
-TODO: define this in terms of `MvPolynomial.pderiv`. -/
+/-- The partial derivative $W_Y(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Y$. -/
 @[pp_dot]
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
-  C 2 * X 1 + C W.a₁ * X 0 * X 2 + C W.a₃ * X 2 ^ 3
+  pderiv y W.polynomial
+
+lemma polynomialY_eq : W.polynomialY =
+    C 2 * X 1 + C W.a₁ * X 0 * X 2 + C W.a₃ * X 2 ^ 3 := by
+  rw [polynomialY, polynomial]
+  pderiv_simp
+  ring1
 
 lemma eval_polynomialY (P : Fin 3 → R) :
     eval P W.polynomialY = 2 * P y + W.a₁ * P x * P z + W.a₃ * P z ^ 3 := by
-  rw [polynomialY]
+  rw [polynomialY_eq]
   eval_simp
 
-/-- The partial derivative $W_Z(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Z$.
-
-TODO: define this in terms of `MvPolynomial.pderiv`. -/
+/-- The partial derivative $W_Z(X, Y, Z)$ of $W(X, Y, Z)$ with respect to $Z$. -/
 @[pp_dot]
 noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
-  C W.a₁ * X 0 * X 1 + C (3 * W.a₃) * X 1 * X 2 ^ 2
-    - (C (2 * W.a₂) * X 0 ^ 2 * X 2 + C (4 * W.a₄) * X 0 * X 2 ^ 3 + C (6 * W.a₆) * X 2 ^ 5)
+  pderiv z W.polynomial
+
+lemma polynomialZ_eq : W.polynomialZ =
+    C W.a₁ * X 0 * X 1 + C (3 * W.a₃) * X 1 * X 2 ^ 2
+      - (C (2 * W.a₂) * X 0 ^ 2 * X 2 + C (4 * W.a₄) * X 0 * X 2 ^ 3 + C (6 * W.a₆) * X 2 ^ 5) := by
+  rw [polynomialZ, polynomial]
+  pderiv_simp
+  ring1
 
 lemma eval_polynomialZ (P : Fin 3 → R) : eval P W.polynomialZ =
     W.a₁ * P x * P y + 3 * W.a₃ * P y * P z ^ 2
       - (2 * W.a₂ * P x ^ 2 * P z + 4 * W.a₄ * P x * P z ^ 3 + 6 * W.a₆ * P z ^ 5) := by
-  rw [polynomialZ]
+  rw [polynomialZ_eq]
   eval_simp
 
 /-- The proposition that a point representative $(x, y, z)$ in `W` is nonsingular.
@@ -257,8 +271,8 @@ def nonsingular_lift (P : PointClass R) : Prop :=
   P.lift W.nonsingular fun _ _ => propext ∘ W.nonsingular_of_equiv
 
 @[simp]
-lemma nonsingular_lift_eq (P : Fin 3 → R) : W.nonsingular_lift ⟦P⟧ = W.nonsingular P :=
-  rfl
+lemma nonsingular_lift_iff (P : Fin 3 → R) : W.nonsingular_lift ⟦P⟧ ↔ W.nonsingular P :=
+  Iff.rfl
 
 lemma nonsingular_lift_zero [Nontrivial R] : W.nonsingular_lift ⟦![1, 1, 0]⟧ :=
   W.nonsingular_zero
@@ -273,8 +287,8 @@ lemma nonsingular_lift_some (X Y : R) :
 
 variable {F : Type u} [Field F] {W : Jacobian F}
 
-lemma equiv_of_Zeq0 {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q) (hPz : P z = 0)
-    (hQz : Q z = 0) : P ≈ Q := by
+lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
+    (hPz : P z = 0) (hQz : Q z = 0) : P ≈ Q := by
   rw [fin3_def P, hPz] at hP ⊢
   rw [fin3_def Q, hQz] at hQ ⊢
   simp [nonsingular_iff, equation_iff] at hP hQ
@@ -290,24 +304,26 @@ lemma equiv_of_Zeq0 {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingul
   · field_simp [← hP.left, ← hQ.left]
     ring1
 
-lemma equiv_zero_of_Zeq0 {P : Fin 3 → F} (h : W.nonsingular P) (hPz : P z = 0) : P ≈ ![1, 1, 0] :=
-  equiv_of_Zeq0 h W.nonsingular_zero hPz rfl
+lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (h : W.nonsingular P) (hPz : P z = 0) :
+    P ≈ ![1, 1, 0] :=
+  equiv_of_Z_eq_zero h W.nonsingular_zero hPz rfl
 
-lemma equiv_some_of_Zne0 {P : Fin 3 → F} (hPz : P z ≠ 0) : P ≈ ![P x / P z ^ 2, P y / P z ^ 3, 1] :=
+lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
+    P ≈ ![P x / P z ^ 2, P y / P z ^ 3, 1] :=
   ⟨Units.mk0 _ hPz, by simp [smul_fin3, ← fin3_def P, mul_div_cancel' _ <| pow_ne_zero _ hPz]⟩
 
-lemma nonsingular_iff_affine_of_Zne0 {P : Fin 3 → F} (hPz : P z ≠ 0) :
+lemma nonsingular_iff_affine_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.nonsingular P ↔ W.toAffine.nonsingular (P x / P z ^ 2) (P y / P z ^ 3) :=
-  (W.nonsingular_of_equiv <| equiv_some_of_Zne0 hPz).trans <| W.nonsingular_some ..
+  (W.nonsingular_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| W.nonsingular_some ..
 
-lemma nonsingular_of_affine_of_Zne0 {P : Fin 3 → F}
+lemma nonsingular_of_affine_of_Z_ne_zero {P : Fin 3 → F}
     (h : W.toAffine.nonsingular (P x / P z ^ 2) (P y / P z ^ 3)) (hPz : P z ≠ 0) :
     W.nonsingular P :=
-  (nonsingular_iff_affine_of_Zne0 hPz).mpr h
+  (nonsingular_iff_affine_of_Z_ne_zero hPz).mpr h
 
-lemma nonsingular_affine_of_Zne0 {P : Fin 3 → F} (h : W.nonsingular P) (hPz : P z ≠ 0) :
+lemma nonsingular_affine_of_Z_ne_zero {P : Fin 3 → F} (h : W.nonsingular P) (hPz : P z ≠ 0) :
     W.toAffine.nonsingular (P x / P z ^ 2) (P y / P z ^ 3) :=
-  (nonsingular_iff_affine_of_Zne0 hPz).mp h
+  (nonsingular_iff_affine_of_Z_ne_zero hPz).mp h
 
 end Equation
 
