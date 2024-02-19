@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jovan Gerbscheid, Anand Rao
+-/
 import Lean
 import ProofWidgets
 import Mathlib.Lean.Meta.RefinedDiscrTree.RefinedDiscrTree
@@ -14,6 +19,7 @@ structure RewriteLemma where
   numParams : Nat
 deriving BEq, Inhabited
 
+/-- Return the string length of the lemma name. -/
 def RewriteLemma.length (rwLemma : RewriteLemma) : Nat :=
   rwLemma.name.toString.length
 
@@ -34,6 +40,8 @@ instance : LT RewriteLemma := ⟨fun a b => RewriteLemma.lt a b⟩
 instance (a b : RewriteLemma) : Decidable (a < b) :=
   inferInstanceAs (Decidable (RewriteLemma.lt a b))
 
+/-- Add red and green highlighting to the two sides of the equality.
+Red for the side that matches the clicked expression, and green for what will replace it. -/
 def RewriteLemma.diffs (rwLemma : RewriteLemma) : Lean.AssocList SubExpr.Pos Widget.DiffTag :=
   let eqnPos := rwLemma.numParams.fold (init := SubExpr.Pos.root) fun _ => .pushBindingBody
   let lhsPos := eqnPos.pushAppFn.pushAppArg
@@ -42,7 +50,7 @@ def RewriteLemma.diffs (rwLemma : RewriteLemma) : Lean.AssocList SubExpr.Pos Wid
   .cons rhsPos .wasInserted <|
     .cons lhsPos .wasDeleted .nil
 
-/-- similar to `Name.isBlackListed`. -/
+/-- Similar to `Name.isBlackListed`. -/
 def isBadDecl (name : Name) (cinfo : ConstantInfo) (env : Environment) : Bool :=
   (match cinfo with
     | .axiomInfo v => v.isUnsafe
@@ -65,8 +73,9 @@ def matchEqn? (e : Expr) : Option (Expr × Expr) :=
   | some (_, lhs, rhs) => some (lhs, rhs)
   | none => e.iff?
 
-def updateRefinedDiscrTree (name : Name) (cinfo : ConstantInfo) (d : RefinedDiscrTree RewriteLemma)
-    : MetaM (RefinedDiscrTree RewriteLemma) := do
+/-- Try adding the lemma to the `RefinedDiscrTree`. -/
+def updateDiscrTree (name : Name) (cinfo : ConstantInfo) (d : RefinedDiscrTree RewriteLemma) :
+    MetaM (RefinedDiscrTree RewriteLemma) := do
   if isBadDecl name cinfo (← getEnv) then
     return d
   let (vars, _, eqn) ← forallMetaTelescope cinfo.type
@@ -77,14 +86,15 @@ def updateRefinedDiscrTree (name : Name) (cinfo : ConstantInfo) (d : RefinedDisc
 
 section
 
+open Std.Tactic
 
 @[reducible]
-def RewriteCache := Std.Tactic.DeclCache (RefinedDiscrTree RewriteLemma × RefinedDiscrTree RewriteLemma)
+def RewriteCache := DeclCache (RefinedDiscrTree RewriteLemma × RefinedDiscrTree RewriteLemma)
 
-def RewriteCache.mk (profilingName : String)
+def RewriteCache.mk
   (init : Option (RefinedDiscrTree RewriteLemma) := none) :
     IO RewriteCache :=
-  Std.Tactic.DeclCache.mk profilingName pre ({}, {})
+  DeclCache.mk "rw??: init cache" pre ({}, {})
     addDecl addLibraryDecl post
 where
   pre := do
@@ -93,11 +103,11 @@ where
 
   addDecl (name : Name) (cinfo : ConstantInfo)
     | (currentTree, libraryTree) => do
-    return (← updateRefinedDiscrTree name cinfo currentTree, libraryTree)
+    return (← updateDiscrTree name cinfo currentTree, libraryTree)
 
   addLibraryDecl (name : Name) (cinfo : ConstantInfo)
     | (currentTree, libraryTree) => do
-    return (currentTree, ← updateRefinedDiscrTree name cinfo libraryTree)
+    return (currentTree, ← updateDiscrTree name cinfo libraryTree)
 
   sortLemmas : Array RewriteLemma → Array RewriteLemma :=
     Array.qsort (lt := (· < ·))
@@ -117,9 +127,9 @@ initialize cachedData : RewriteCache ← unsafe do
   if (← path.pathExists) then
     let (d, _r) ← unpickle (RefinedDiscrTree RewriteLemma) path
     -- We can drop the `CompactedRegion` value; we do not plan to free it
-    RewriteCache.mk "rewrite lemmas : using cache" (init := some d)
+    RewriteCache.mk (init := some d)
   else
-    RewriteCache.mk "rewrite lemmas : init cache"
+    RewriteCache.mk
 
 def getRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma × RefinedDiscrTree RewriteLemma) :=
   cachedData.get
@@ -146,8 +156,8 @@ def findPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
   let e ← instantiateMVars e
   let pHeadIdx := p.toHeadIndex
   let pNumArgs := p.headNumArgs
-  let rec visit (e : Expr) (pos : SubExpr.Pos) (positions : Array SubExpr.Pos)
-      : MetaM (Array SubExpr.Pos) := do
+  let rec visit (e : Expr) (pos : SubExpr.Pos) (positions : Array SubExpr.Pos) :
+      MetaM (Array SubExpr.Pos) := do
     let visitChildren : Array SubExpr.Pos → MetaM (Array SubExpr.Pos) :=
       match e with
       | .app f a         => visit f pos.pushAppFn

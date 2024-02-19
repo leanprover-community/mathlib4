@@ -1,8 +1,10 @@
 /-
-Copyright (c) 2023 J. W. Gerbscheid. All rights reserved.
+Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: J. W. Gerbscheid
+Authors: Jovan Gerbscheid
+-/
 
+/-!
 The combined state and list monad transformer.
 `StateListT σ α` is equivalent to `StateT σ (ListT α)` but more efficient.
 
@@ -39,19 +41,19 @@ variable {α β σ : Type u}
 namespace StateList
 
 private def toList : StateList σ α → List (α × σ)
-  | .cons a s l => (a, s) :: l.toList
   | .nil => []
+  | .cons a s l => (a, s) :: l.toList
 
 private def toList' : StateList σ α → List α
-  | .cons a _ l => a :: l.toList'
   | .nil => []
+  | .cons a _ l => a :: l.toList'
 
 private def map (f : α → β) : StateList σ α → StateList σ β
-  | .cons a s l   => .cons (f a) s (l.map f)
   | .nil => .nil
+  | .cons a s l => .cons (f a) s (l.map f)
 
-private def append : (xs ys : StateList σ α) → StateList σ α
-  | .nil,         bs => bs
+private def append : (as bs : StateList σ α) → StateList σ α
+  | .nil,        bs => bs
   | .cons a s l, bs => .cons a s (l.append bs)
 
 instance : Append (StateList σ α) := ⟨StateList.append⟩
@@ -85,7 +87,6 @@ def StateListT.run' [Functor m] (x : StateListT σ m α) (s : σ) : m (List α) 
 def StateListM (σ α : Type u) : Type u := StateListT σ Id α
 
 namespace StateListT
-section
 
 @[always_inline, inline]
 private def pure (a : α) : StateListT σ m α :=
@@ -129,12 +130,12 @@ protected def get : StateListT σ m σ :=
 /-- Set the state in `StateListT σ m`. -/
 @[always_inline, inline]
 protected def set : σ → StateListT σ m PUnit :=
-  fun s' _ => return StateList.nil.cons ⟨⟩ s'
+  fun s _ => return StateList.nil.cons ⟨⟩ s
 
 /-- Modify and get the state in `StateListT σ m`. -/
 @[always_inline, inline]
 protected def modifyGet (f : σ → α × σ) : StateListT σ m α :=
-  fun s => let a := f s; return StateList.nil.cons a.1 a.2
+  fun s => let (a, s) := f s; return StateList.nil.cons a s
 
 /-- Lift an action from `m α` to `StateListT σ m α`. -/
 @[always_inline, inline]
@@ -147,12 +148,11 @@ instance : MonadLift m (StateListT σ m) := ⟨StateListT.lift⟩
 instance : MonadFunctor m (StateListT σ m) := ⟨fun f x s => f (x s)⟩
 
 @[always_inline]
-instance{ε} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
-  throw    := StateListT.lift ∘ throwThe ε
-  tryCatch := fun x c s => tryCatchThe ε (x s) (fun e => c e s)
+instance (ε) [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
+  throw    := fun e => StateListT.lift (throw e)
+  tryCatch := fun x c s => tryCatch (x s) (fun e => c e s)
 }
 
-end
 end StateListT
 
 
