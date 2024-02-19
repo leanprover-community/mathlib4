@@ -574,8 +574,8 @@ where
 
 /-- Normalize an application if the head is  `+`, `*`, `-` or `/`.
 Optionally return the `(type, lhs, rhs, lambdas)`. -/
-@[inline] def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId)
-    : MetaM (Option (Expr × Expr × Expr × List FVarId)) :=
+@[inline] def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
+    MetaM (Option (Expr × Expr × Expr × List FVarId)) :=
   match n with
   | ``HAdd.hAdd => reduceHBinOpAux args lambdas ``instHAdd ``Pi.instAdd
   | ``HMul.hMul => reduceHBinOpAux args lambdas ``instHMul ``Pi.instMul
@@ -616,8 +616,8 @@ where
 
 /-- Normalize an application if the head is `⁻¹` or `-`.
 Optionally return the `(type, arg, lambdas)`. -/
-@[inline] def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId)
-    : MetaM (Option (Expr × Expr × List FVarId)) :=
+@[inline] def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
+    MetaM (Option (Expr × Expr × List FVarId)) :=
   match n with
   | ``Neg.neg => reduceUnOpAux args lambdas ``Pi.instNeg
   | ``Inv.inv => reduceUnOpAux args lambdas ``Pi.instInv
@@ -1119,8 +1119,8 @@ def getMatchWithScore (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
 /-- Similar to `getMatchWithScore`, but also returns matches with prefixes of `e`.
 We store the score, followed by the number of ignored arguments. -/
 partial def getMatchWithScoreWithExtra (d : RefinedDiscrTree α) (e : Expr) (unify : Bool)
-    (config : WhnfCoreConfig) (allowRootStar : Bool := false)
-    : MetaM (Array (Array α × Nat × Nat)) := do
+    (config : WhnfCoreConfig) (allowRootStar : Bool := false) :
+    MetaM (Array (Array α × Nat × Nat)) := do
   let result ← go e 0
   return result.qsort (·.2.1 > ·.2.1)
 where
