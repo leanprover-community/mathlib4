@@ -16,7 +16,7 @@ This file defines the discriminant of a number field.
 
 ## Main result
 
-* `NumberField.discr_gt_one`: **Hermite-Minkowski Theorem**. A nontrivial number field has
+* `NumberField.abs_discr_gt_two`: **Hermite-Minkowski Theorem**. A nontrivial number field has
 discriminant greater than `2`.
 
 * `NumberField.finite_of_discr_bdd`: **Hermite Theorem**. Let `N` be an integer. There are only
