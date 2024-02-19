@@ -218,8 +218,8 @@ lemma finiteCoproduct.ι_desc_apply {B : Profinite} {π : (a : α) → X a ⟶ B
 
 instance : PreservesFiniteCoproducts profiniteToCompHaus := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
-  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) profiniteToCompHaus
-  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) profiniteToCompHaus from
+    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (Profinite.finiteCoproduct.isColimit _)
   exact CompHaus.finiteCoproduct.isColimit _
 

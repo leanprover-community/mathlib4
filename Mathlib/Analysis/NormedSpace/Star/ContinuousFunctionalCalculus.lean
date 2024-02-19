@@ -126,7 +126,7 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
     if `star a * a` is invertible, then so is `a`. -/
   nontriviality A
   set a' : elementalStarAlgebra ℂ a := ⟨a, self_mem ℂ a⟩
-  suffices : IsUnit (star a' * a'); exact (IsUnit.mul_iff.1 this).2
+  suffices IsUnit (star a' * a') from (IsUnit.mul_iff.1 this).2
   replace h := (show Commute (star a) a from star_comm_self' a).isUnit_mul_iff.2 ⟨h.star, h⟩
   /- Since `a` is invertible, `‖star a * a‖ ≠ 0`, so `‖star a * a‖ • 1` is invertible in
     `elementalStarAlgebra ℂ a`, and so it suffices to show that the distance between this unit and
@@ -182,8 +182,8 @@ containing `x`. -/
 theorem StarSubalgebra.isUnit_coe_inv_mem {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A))
     {x : A} (h : IsUnit x) (hxS : x ∈ S) : ↑h.unit⁻¹ ∈ S := by
   have hx := h.star.mul h
-  suffices this : (↑hx.unit⁻¹ : A) ∈ S
-  · rw [← one_mul (↑h.unit⁻¹ : A), ← hx.unit.inv_mul, mul_assoc, IsUnit.unit_spec, mul_assoc,
+  suffices this : (↑hx.unit⁻¹ : A) ∈ S by
+    rw [← one_mul (↑h.unit⁻¹ : A), ← hx.unit.inv_mul, mul_assoc, IsUnit.unit_spec, mul_assoc,
       h.mul_val_inv, mul_one]
     exact mul_mem this (star_mem hxS)
   refine' le_of_isClosed_of_mem ℂ hS (mul_mem (star_mem hxS) hxS) _

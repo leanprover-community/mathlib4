@@ -59,7 +59,7 @@ instance : CoeSort GroupCat (Type*) where
 @[to_additive]
 instance (X : GroupCat) : Group X := X.str
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : GroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -121,7 +121,7 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance : Coe GroupCat.{u} MonCat.{u} where coe := (forget₂ GroupCat MonCat).obj
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance (G H : GroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 
@@ -208,7 +208,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.add_comm_group_instance AddCommGroupCat.addCommGroupInstance
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance {X Y : CommGroupCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe (f : X →* Y) := f
@@ -295,7 +295,7 @@ set_option linter.uppercaseLean3 false in
 @[to_additive]
 instance : Coe CommGroupCat.{u} CommMonCat.{u} where coe := (forget₂ CommGroupCat CommMonCat).obj
 
--- porting note: this instance was not necessary in mathlib
+-- porting note (#10670): this instance was not necessary in mathlib
 @[to_additive]
 instance (G H : CommGroupCat) : One (G ⟶ H) := (inferInstance : One (MonoidHom G H))
 

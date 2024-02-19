@@ -1440,8 +1440,8 @@ Then `f` tends to `x` along `l` restricted to `s` if and only if it tends to `x`
 theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : α → X} {l : Filter α} {s : Set α}
     (h : ∀ a ∉ s, f a = x) : Tendsto f (l ⊓ 𝓟 s) (𝓝 x) ↔ Tendsto f l (𝓝 x) := by
   rw [tendsto_iff_comap, tendsto_iff_comap]
-  replace h : 𝓟 sᶜ ≤ comap f (𝓝 x)
-  · rintro U ⟨t, ht, htU⟩ x hx
+  replace h : 𝓟 sᶜ ≤ comap f (𝓝 x) := by
+    rintro U ⟨t, ht, htU⟩ x hx
     have : f x ∈ t := (h x hx).symm ▸ mem_of_mem_nhds ht
     exact htU this
   refine' ⟨fun h' => _, le_trans inf_le_left⟩
@@ -1499,11 +1499,14 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
 
 open TopologicalSpace
 
-variable {f : X → Y} {s : Set X} {x : X} {y : Y}
-
-theorem continuous_def : Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
+-- The curly braces are intentional, so this definition works well with simp
+-- when topologies are not those provided by instances.
+theorem continuous_def {_ : TopologicalSpace X} {_ : TopologicalSpace Y} {f : X → Y} :
+    Continuous f ↔ ∀ s, IsOpen s → IsOpen (f ⁻¹' s) :=
   ⟨fun hf => hf.1, fun h => ⟨h⟩⟩
 #align continuous_def continuous_def
+
+variable {f : X → Y} {s : Set X} {x : X} {y : Y}
 
 theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
     IsOpen (f ⁻¹' t) :=
@@ -1568,7 +1571,7 @@ theorem continuous_id : Continuous (id : X → X) :=
 #align continuous_id continuous_id
 
 -- This is needed due to reducibility issues with the `continuity` tactic.
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_id' : Continuous (fun (x : X) => x) := continuous_id
 
 theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
@@ -1577,7 +1580,7 @@ theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
 #align continuous.comp Continuous.comp
 
 -- This is needed due to reducibility issues with the `continuity` tactic.
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.comp' {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
 
@@ -1589,6 +1592,10 @@ nonrec theorem ContinuousAt.comp {g : Y → Z} (hg : ContinuousAt g (f x))
     (hf : ContinuousAt f x) : ContinuousAt (g ∘ f) x :=
   hg.comp hf
 #align continuous_at.comp ContinuousAt.comp
+
+@[fun_prop]
+theorem ContinuousAt.comp' {g : Y → Z} {x : X} (hg : ContinuousAt g (f x))
+    (hf : ContinuousAt f x) : ContinuousAt (fun x => g (f x)) x := ContinuousAt.comp hg hf
 
 /-- See note [comp_of_eq lemmas] -/
 theorem ContinuousAt.comp_of_eq {g : Y → Z} (hg : ContinuousAt g y)
@@ -1607,6 +1614,7 @@ theorem Continuous.tendsto' (hf : Continuous f) (x : X) (y : Y) (h : f x = y) :
   h ▸ hf.tendsto x
 #align continuous.tendsto' Continuous.tendsto'
 
+@[fun_prop]
 theorem Continuous.continuousAt (h : Continuous f) : ContinuousAt f x :=
   h.tendsto x
 #align continuous.continuous_at Continuous.continuousAt
@@ -1616,11 +1624,12 @@ theorem continuous_iff_continuousAt : Continuous f ↔ ∀ x, ContinuousAt f x :
     hf x <| hU.mem_nhds hx⟩
 #align continuous_iff_continuous_at continuous_iff_continuousAt
 
+@[fun_prop]
 theorem continuousAt_const : ContinuousAt (fun _ : X => y) x :=
   tendsto_const_nhds
 #align continuous_at_const continuousAt_const
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_const : Continuous fun _ : X => y :=
   continuous_iff_continuousAt.mpr fun _ => continuousAt_const
 #align continuous_const continuous_const
@@ -1638,6 +1647,9 @@ theorem continuous_of_const (h : ∀ x y, f x = f y) : Continuous f :=
 theorem continuousAt_id : ContinuousAt id x :=
   continuous_id.continuousAt
 #align continuous_at_id continuousAt_id
+
+@[fun_prop]
+theorem continuousAt_id' (y) : ContinuousAt (fun x : X => x) y := continuousAt_id
 
 theorem ContinuousAt.iterate {f : X → X} (hf : ContinuousAt f x) (hx : f x = x) (n : ℕ) :
     ContinuousAt f^[n] x :=

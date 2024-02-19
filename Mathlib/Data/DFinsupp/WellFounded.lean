@@ -219,8 +219,8 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
     set e : (i : ι) → α i → β i := fun i ↦ toAntisymmetrization (· ≤ ·)
     let _ : ∀ i, Zero (β i) := fun i ↦ ⟨e i 0⟩
     have : WellFounded (DFinsupp.Lex (Function.swap <| @WellOrderingRel ι)
-      (fun _ ↦ (· < ·) : (i : ι) → β i → β i → Prop))
-    · have := IsTrichotomous.swap (@WellOrderingRel ι)
+        (fun _ ↦ (· < ·) : (i : ι) → β i → β i → Prop)) := by
+      have := IsTrichotomous.swap (@WellOrderingRel ι)
       refine Lex.wellFounded' ?_ (fun i ↦ IsWellFounded.wf) ?_
       · rintro i ⟨a⟩
         apply hbot

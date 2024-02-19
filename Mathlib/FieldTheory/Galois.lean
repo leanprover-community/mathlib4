@@ -114,8 +114,8 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   have H : IsIntegral F α := IsGalois.integral F α
   have h_sep : (minpoly F α).Separable := IsGalois.separable F α
   have h_splits : (minpoly F α).Splits (algebraMap F E) := IsGalois.splits F α
-  replace h_splits : Polynomial.Splits (algebraMap F F⟮α⟯) (minpoly F α)
-  · simpa using
+  replace h_splits : Polynomial.Splits (algebraMap F F⟮α⟯) (minpoly F α) := by
+    simpa using
       Polynomial.splits_comp_of_splits (algebraMap F E) iso.symm.toAlgHom.toRingHom h_splits
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
   rw [← IntermediateField.AdjoinSimple.card_aut_eq_finrank F E H h_sep h_splits]
