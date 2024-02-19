@@ -139,6 +139,7 @@ theorem lintegral_indicator_compl_le
     {ε : ℝ} (hε : 0 < ε) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧
       ∫⁻ a in sᶜ, g a ∂μ ≤ ENNReal.ofReal ε := by
+  replace hg := lt_top_iff_ne_top.mpr hg
   -- come up with an a.e. equal measurable replacement `f` for `g`
   have hmf := haemg.measurable_mk
   have hgf := haemg.ae_eq_mk
@@ -221,7 +222,7 @@ theorem Memℒp.snorm_indicator_compl_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
   have haemnf := haesmf.ennnorm
   have haemnpf := haemnf.pow_const p.toReal
   -- use core result for lintegral (needs only AEMeasurable), the target estimate will be in `hsfε`
-  obtain ⟨s, hms, hμs, hsfε⟩ := lintegral_indicator_compl_le haemnpf hsnf hεp
+  obtain ⟨s, hms, hμs, hsfε⟩ := lintegral_indicator_compl_le haemnpf hsnf.ne hεp
   rw [← lintegral_indicator _ hms.compl] at hsfε
   use s, hms, hμs
   -- move indicator through function compositions, XXX: is this simp-able?
