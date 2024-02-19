@@ -352,3 +352,14 @@ example : let f := fun x : α => x; Con f := by fun_prop
 
 example (f g : α → β) (hf : Con f := by fun_prop) (hg : outParam (Con g)) :
   Con (fun x => f x + g x) := by fun_prop
+
+
+opaque foo1 : α → α := id
+opaque foo2 : α → α := id
+
+@[fun_prop]
+theorem foo1_lin : Lin (foo1 : α → α) := silentSorry
+@[fun_prop]
+theorem foo2_lin : Lin (foo2 : α → α) := silentSorry
+
+example : Con (fun x : α => foo1 (foo2 x)) := by fun_prop
