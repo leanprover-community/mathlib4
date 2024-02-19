@@ -22,7 +22,7 @@ of `f` in any basis.
 
 universe u v w
 
-variable {R : Type u} {M : Type v} {M₁ M₂ : Type*} [CommRing R] [Nontrivial R]
+variable {R M M₁ M₂ : Type*} [CommRing R] [Nontrivial R]
 variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
 variable (f : M →ₗ[R] M)
 
