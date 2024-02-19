@@ -21,8 +21,8 @@ its image `f z₀`. The results extend in higher dimension to `g : E → ℂ`.
 The proof of the local version on `ℂ` goes through two main steps: first, assuming that the function
 is not constant around `z₀`, use the isolated zero principle to show that `‖f z‖` is bounded below
 on a small `sphere z₀ r` around `z₀`, and then use the maximum principle applied to the auxiliary
-function `(fun z ↦ ‖f z - v‖)` to show that any `v` close enough to `f z₀` is in `f '' ball z₀ r`. That
-second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
+function `(fun z ↦ ‖f z - v‖)` to show that any `v` close enough to `f z₀` is in `f '' ball z₀ r`.
+That second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
 
 ## Main results
 
