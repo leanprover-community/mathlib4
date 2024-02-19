@@ -430,14 +430,17 @@ instance [IsConnected J] : Full (Functor.const J : C ⥤ J ⥤ C) where
     ext j
     apply nat_trans_from_is_connected f (Classical.arbitrary J) j
 
-instance nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G] :
+theorem nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G] :
     ∀ x y : G, Nonempty (x ⟶ y) := by
   refine' equiv_relation _ _ @fun j₁ j₂ => Nonempty.intro
   exact
     ⟨fun j => ⟨𝟙 _⟩, @fun j₁ j₂ => Nonempty.map fun f => inv f, @fun _ _ _ => Nonempty.map2 (· ≫ ·)⟩
 #align category_theory.nonempty_hom_of_connected_groupoid CategoryTheory.nonempty_hom_of_preconnected_groupoid
 
+attribute [instance] nonempty_hom_of_preconnected_groupoid
+
 -- deprecated on 2024-02-19
-@[deprecated] alias nonempty_hom_of_connected_groupoid := nonempty_hom_of_preconnected_groupoid
+@[deprecated] alias nonempty_hom_of_connected_groupoid :=
+  nonempty_hom_of_preconnected_groupoid
 
 end CategoryTheory
