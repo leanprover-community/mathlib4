@@ -245,7 +245,7 @@ def pseudofunctor : Pseudofunctor Cat Cat where
       simp only [map, Cat.comp_obj, Cat.comp_map, Cat.id_map, map₂,
         Bicategory.Strict.rightUnitor_eqToIso, eqToIso_refl, Iso.refl_hom, mapComp_hom_app,
         Bicategory.whiskerLeft, whiskerLeft_app, mapId_hom_app, Category.id_comp]
-      rw [NatTrans.id_app,NatTrans.id_app]
+      rw [NatTrans.id_app, NatTrans.id_app]
       simp only [Cat.comp_obj, Category.comp_id]
       rw [← Functor.map_id]
       rfl
