@@ -16,8 +16,8 @@ This file defines the discriminant of a number field.
 
 ## Main result
 
-* `NumberField.abs_discr_gt_two`: **Hermite-Minkowski Theorem**. A nontrivial number field has
-  nontrivial discriminant.
+* `NumberField.discr_gt_one`: **Hermite-Minkowski Theorem**. A nontrivial number field has
+discriminant greater than `2`.
 
 * `NumberField.finite_of_discr_bdd`: **Hermite Theorem**. Let `N` be an integer. There are only
 finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
@@ -148,6 +148,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
         div_pow, inv_eq_one_div, div_pow, one_pow, zpow_coe_nat]
       ring
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧
       |Algebra.norm ℚ (a:K)| ≤ (4 / π) ^ NrComplexPlaces K *
@@ -197,7 +199,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
       refine le_trans (le_of_eq (by field_simp; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
       exact le_trans (by norm_num : (-2:ℝ) ≤ 0) (by positivity)
 
-/-- **Hermite-Minkowski Theorem**. A nontrivial number field has nontrivial discriminant. -/
+/-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
 theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
   have h₁ : 1 ≤ 3 * π / 4 := by
     rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
@@ -458,10 +460,10 @@ variable {ι ι'} (K) [Field K] [DecidableEq ι] [DecidableEq ι'] [Fintype ι] 
 theorem Algebra.discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K]
     {b : Basis ι ℚ K} {b' : Basis ι' ℚ K} (h : ∀ i j, IsIntegral ℤ (b.toMatrix b' i j))
     (h' : ∀ i j, IsIntegral ℤ (b'.toMatrix b i j)) : discr ℚ b = discr ℚ b' := by
-  replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j)
-  · intro i j
+  replace h' : ∀ i j, IsIntegral ℤ (b'.toMatrix (b.reindex (b.indexEquiv b')) i j) := by
+    intro i j
     convert h' i ((b.indexEquiv b').symm j)
--- Porting note: `simp; rfl` was `simpa`.
+  -- Porting note: `simp; rfl` was `simpa`.
     simp; rfl
   classical
   rw [← (b.reindex (b.indexEquiv b')).toMatrix_map_vecMul b', discr_of_matrix_vecMul,

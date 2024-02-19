@@ -37,11 +37,11 @@ This file contains basics about the separable degree of a field extension.
   closure of `E`, as a natural number. It is zero if `Field.Emb F E` is not finite.
   Note that if `E / F` is not algebraic, then this definition makes no mathematical sense.
 
-  **Remark:** the (infinite) separable degree `Field.sepDegree F E` for a general algebraic
-  extension `E / F` is defined to be the degree of `L / F`, where `L` is the (relative) separable
-  closure `separableClosure F E` of `E / F`, which is not defined in this file yet. Later we
-  will show that (`Field.finSepDegree_eq`), if `Field.Emb F E` is finite, then these two
-  definitions coincide.
+  **Remark:** the `Cardinal`-valued, potentially infinite separable degree `Field.sepDegree F E`
+  for a general algebraic extension `E / F` is defined to be the degree of `L / F`, where `L` is
+  the (relative) separable closure `separableClosure F E` of `F` in `E`, which is not defined in
+  this file yet. Later we will show that (`Field.finSepDegree_eq`), if `Field.Emb F E` is finite,
+  then these two definitions coincide.
 
 - `Polynomial.natSepDegree`: the separable degree of a polynomial is a natural number,
   defined to be the number of distinct roots of it over its splitting field.
@@ -66,8 +66,8 @@ This file contains basics about the separable degree of a field extension.
 - `Field.embProdEmbOfIsAlgebraic`, `Field.finSepDegree_mul_finSepDegree_of_isAlgebraic`:
   if `K / E / F` is a field extension tower, such that `K / E` is algebraic,
   then there is a non-canonical bijection `Field.Emb F E × Field.Emb E K ≃ Field.Emb F K`.
-  In particular, the separable degree satisfies the tower law: $[E:F]_s [K:E]_s = [K:F]_s$
-  (see also `FiniteDimensional.finrank_mul_finrank'`).
+  In particular, the separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$
+  (see also `FiniteDimensional.finrank_mul_finrank`).
 
 - `Polynomial.natSepDegree_le_natDegree`: the separable degree of a polynomial is smaller than
   its degree.
@@ -90,7 +90,7 @@ This file contains basics about the separable degree of a field extension.
 - `Irreducible.natSepDegree_dvd_natDegree`: the separable degree of an irreducible
   polynomial divides its degree.
 
-- `IntermediateField.finSepDegree_adjoin_simple_eq_natSepDegree`: the (finite) separable degree of
+- `IntermediateField.finSepDegree_adjoin_simple_eq_natSepDegree`: the separable degree of
   `F⟮α⟯ / F` is equal to the separable degree of the minimal polynomial of `α` over `F`.
 
 - `IntermediateField.finSepDegree_adjoin_simple_eq_finrank_iff`: if `α` is algebraic over `F`, then
@@ -141,7 +141,7 @@ as a natural number. It is defined to be zero if there are infinitely many of th
 Note that if `E / F` is not algebraic, then this definition makes no mathematical sense. -/
 def finSepDegree : ℕ := Nat.card (Emb F E)
 
-instance instNonemptyEmb : Nonempty (Emb F E) := ⟨IsScalarTower.toAlgHom F E _⟩
+instance instInhabitedEmb : Inhabited (Emb F E) := ⟨IsScalarTower.toAlgHom F E _⟩
 
 instance instNeZeroFinSepDegree [FiniteDimensional F E] : NeZero (finSepDegree F E) :=
   ⟨Nat.card_ne_zero.2 ⟨inferInstance, Fintype.finite <| minpoly.AlgHom.fintype _ _ _⟩⟩
@@ -200,7 +200,7 @@ namespace Field
 
 /-- A random bijection between `Field.Emb F E` and `E →ₐ[F] K` if `E = F(S)` such that every
 element `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`.
-Combined with `Field.instNonemptyEmb`, it can be viewed as a stronger version of
+Combined with `Field.instInhabitedEmb`, it can be viewed as a stronger version of
 `IntermediateField.nonempty_algHom_of_adjoin_splits`. -/
 def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits (algebraMap F K) (minpoly F s)) :
@@ -245,8 +245,8 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] (halg : Algebra.
           halg).restrictScalars F).symm
 
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
-(finite) separable degree satisfies the tower law
-$[E:F]_s [K:E]_s = [K:F]_s$. See also `FiniteDimensional.finrank_mul_finrank'`. -/
+separable degrees satisfy the tower law
+$[E:F]_s [K:E]_s = [K:F]_s$. See also `FiniteDimensional.finrank_mul_finrank`. -/
 theorem finSepDegree_mul_finSepDegree_of_isAlgebraic
     [Algebra E K] [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
     finSepDegree F E * finSepDegree E K = finSepDegree F K := by
@@ -334,8 +334,7 @@ theorem natSepDegree_eq_of_splits (h : f.Splits (algebraMap F E)) :
     f.natSepDegree = (f.aroots E).toFinset.card := by
   rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
     roots_map _ ((splits_id_iff_splits _).mpr <| SplittingField.splits f),
-    Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _)]
-  rfl
+    Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _), natSepDegree]
 
 variable (E) in
 /-- The separable degree of a polynomial is equal to
@@ -481,7 +480,7 @@ theorem natSepDegree_eq_one_iff_eq_X_pow_sub_C : (minpoly F x).natSepDegree = 1 
 
 /-- The minimal polynomial of an element `x` of `E / F` of exponential characteristic `q` has
 separable degree one if and only if `x ^ (q ^ n) ∈ F` for some `n : ℕ`. -/
-theorem natSepDegree_eq_one_iff_mem_pow : (minpoly F x).natSepDegree = 1 ↔
+theorem natSepDegree_eq_one_iff_pow_mem : (minpoly F x).natSepDegree = 1 ↔
     ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   convert_to _ ↔ ∃ (n : ℕ) (y : F), Polynomial.aeval x (X ^ q ^ n - C y) = 0
   · simp_rw [RingHom.mem_range, map_sub, map_pow, aeval_C, aeval_X, sub_eq_zero, eq_comm]
@@ -501,7 +500,7 @@ theorem natSepDegree_eq_one_iff_eq_X_sub_C_pow : (minpoly F x).natSepDegree = 1 
     ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ q ^ n := by
   haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
   haveI := expChar_of_injective_algebraMap (NoZeroSMulDivisors.algebraMap_injective E E[X]) q
-  refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_mem_pow q).2 ?_⟩
+  refine ⟨fun h ↦ ?_, fun ⟨n, h⟩ ↦ (natSepDegree_eq_one_iff_pow_mem q).2 ?_⟩
   · obtain ⟨n, y, h⟩ := (natSepDegree_eq_one_iff_eq_X_pow_sub_C q).1 h
     have hx := congr_arg (Polynomial.aeval x) h.symm
     rw [minpoly.aeval, map_sub, map_pow, aeval_X, aeval_C, sub_eq_zero, eq_comm] at hx
@@ -516,14 +515,15 @@ end minpoly
 
 namespace IntermediateField
 
-/-- The (finite) separable degree of `F⟮α⟯ / F` is equal to the separable degree of the
+/-- The separable degree of `F⟮α⟯ / F` is equal to the separable degree of the
 minimal polynomial of `α` over `F`. -/
 theorem finSepDegree_adjoin_simple_eq_natSepDegree {α : E} (halg : IsAlgebraic F α) :
     finSepDegree F F⟮α⟯ = (minpoly F α).natSepDegree := by
   have : finSepDegree F F⟮α⟯ = _ := Nat.card_congr
     (algHomAdjoinIntegralEquiv F (K := AlgebraicClosure F⟮α⟯) halg.isIntegral)
-  rw [this, Nat.card_eq_fintype_card, natSepDegree_eq_of_isAlgClosed (E := AlgebraicClosure F⟮α⟯)]
-  exact Eq.trans (by simp only [Multiset.mem_toFinset]) (Fintype.card_coe _)
+  rw [this, Nat.card_eq_fintype_card, natSepDegree_eq_of_isAlgClosed (E := AlgebraicClosure F⟮α⟯),
+    ← Fintype.card_coe]
+  simp_rw [Multiset.mem_toFinset]
 
 -- The separable degree of `F⟮α⟯ / F` divides the degree of `F⟮α⟯ / F`.
 -- Marked as `private` because it is a special case of `finSepDegree_dvd_finrank`.

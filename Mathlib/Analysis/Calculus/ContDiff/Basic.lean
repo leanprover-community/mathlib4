@@ -19,9 +19,6 @@ so on) preserve `C^n` functions. We also expand the API around `C^n` functions.
 ## Main results
 
 * `ContDiff.comp` states that the composition of two `C^n` functions is `C^n`.
-* `norm_iteratedFDeriv_comp_le` gives the bound `n! * C * D ^ n` for the `n`-th derivative
-  of `g ∘ f` assuming that the derivatives of `g` are bounded by `C` and the `i`-th
-  derivative of `f` is bounded by `D ^ i`.
 
 Similar results are given for `C^n` functions on domains.
 
@@ -906,6 +903,40 @@ theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} {n : ℕ�
 #align cont_diff.smul_right ContDiff.smulRight
 
 end SpecificBilinearMaps
+
+section ClmApplyConst
+
+/-- Application of a `ContinuousLinearMap` to a constant commutes with `iteratedFDerivWithin`. -/
+theorem iteratedFDerivWithin_clm_apply_const_apply
+    {s : Set E} (hs : UniqueDiffOn 𝕜 s) {n : ℕ∞} {c : E → F →L[𝕜] G} (hc : ContDiffOn 𝕜 n c s)
+    {i : ℕ} (hi : i ≤ n) {x : E} (hx : x ∈ s) {u : F} {m : Fin i → E} :
+    (iteratedFDerivWithin 𝕜 i (fun y ↦ (c y) u) s x) m = (iteratedFDerivWithin 𝕜 i c s x) m u := by
+  induction i generalizing x with
+  | zero => simp
+  | succ i ih =>
+    replace hi : i < n := lt_of_lt_of_le (by norm_cast; simp) hi
+    have h_deriv_apply : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i (fun y ↦ (c y) u) s) s :=
+      (hc.clm_apply contDiffOn_const).differentiableOn_iteratedFDerivWithin hi hs
+    have h_deriv : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i c s) s :=
+      hc.differentiableOn_iteratedFDerivWithin hi hs
+    simp only [iteratedFDerivWithin_succ_apply_left]
+    rw [← fderivWithin_continuousMultilinear_apply_const_apply (hs x hx) (h_deriv_apply x hx)]
+    rw [fderivWithin_congr' (fun x hx ↦ ih hi.le hx) hx]
+    rw [fderivWithin_clm_apply (hs x hx) (h_deriv.continuousMultilinear_apply_const _ x hx)
+      (differentiableWithinAt_const u)]
+    rw [fderivWithin_const_apply _ (hs x hx)]
+    simp only [ContinuousLinearMap.flip_apply, ContinuousLinearMap.comp_zero, zero_add]
+    rw [fderivWithin_continuousMultilinear_apply_const_apply (hs x hx) (h_deriv x hx)]
+
+/-- Application of a `ContinuousLinearMap` to a constant commutes with `iteratedFDeriv`. -/
+theorem iteratedFDeriv_clm_apply_const_apply
+    {n : ℕ∞} {c : E → F →L[𝕜] G} (hc : ContDiff 𝕜 n c)
+    {i : ℕ} (hi : i ≤ n) {x : E} {u : F} {m : Fin i → E} :
+    (iteratedFDeriv 𝕜 i (fun y ↦ (c y) u) x) m = (iteratedFDeriv 𝕜 i c x) m u := by
+  simp only [← iteratedFDerivWithin_univ]
+  exact iteratedFDerivWithin_clm_apply_const_apply uniqueDiffOn_univ hc.contDiffOn hi (mem_univ _)
+
+end ClmApplyConst
 
 /-- The natural equivalence `(E × F) × G ≃ E × (F × G)` is smooth.
 
@@ -1948,14 +1979,14 @@ theorem contDiffOn_succ_iff_derivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s₂) 
   intro _
   constructor
   · intro h
-    have : derivWithin f₂ s₂ = (fun u : 𝕜 →L[𝕜] F => u 1) ∘ fderivWithin 𝕜 f₂ s₂
-    · ext x; rfl
+    have : derivWithin f₂ s₂ = (fun u : 𝕜 →L[𝕜] F => u 1) ∘ fderivWithin 𝕜 f₂ s₂ := by
+      ext x; rfl
     simp_rw [this]
     apply ContDiff.comp_contDiffOn _ h
     exact (isBoundedBilinearMap_apply.isBoundedLinearMap_left _).contDiff
   · intro h
-    have : fderivWithin 𝕜 f₂ s₂ = smulRight (1 : 𝕜 →L[𝕜] 𝕜) ∘ derivWithin f₂ s₂
-    · ext x; simp [derivWithin]
+    have : fderivWithin 𝕜 f₂ s₂ = smulRight (1 : 𝕜 →L[𝕜] 𝕜) ∘ derivWithin f₂ s₂ := by
+      ext x; simp [derivWithin]
     simp only [this]
     apply ContDiff.comp_contDiffOn _ h
     have : IsBoundedBilinearMap 𝕜 fun _ : (𝕜 →L[𝕜] 𝕜) × F => _ := isBoundedBilinearMap_smulRight

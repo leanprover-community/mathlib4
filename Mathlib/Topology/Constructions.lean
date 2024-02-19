@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Topology.Maps
 import Mathlib.Order.Filter.Pi
+import Mathlib.Topology.NhdsSet
 
 #align_import topology.constructions from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
@@ -331,6 +332,7 @@ theorem continuous_fst : Continuous (@Prod.fst X Y) :=
 #align continuous_fst continuous_fst
 
 /-- Postcomposing `f` with `Prod.fst` is continuous -/
+@[fun_prop]
 theorem Continuous.fst {f : X → Y × Z} (hf : Continuous f) : Continuous fun x : X => (f x).1 :=
   continuous_fst.comp hf
 #align continuous.fst Continuous.fst
@@ -345,6 +347,7 @@ theorem continuousAt_fst {p : X × Y} : ContinuousAt Prod.fst p :=
 #align continuous_at_fst continuousAt_fst
 
 /-- Postcomposing `f` with `Prod.fst` is continuous at `x` -/
+@[fun_prop]
 theorem ContinuousAt.fst {f : X → Y × Z} {x : X} (hf : ContinuousAt f x) :
     ContinuousAt (fun x : X => (f x).1) x :=
   continuousAt_fst.comp hf
@@ -368,6 +371,7 @@ theorem continuous_snd : Continuous (@Prod.snd X Y) :=
 #align continuous_snd continuous_snd
 
 /-- Postcomposing `f` with `Prod.snd` is continuous -/
+@[fun_prop]
 theorem Continuous.snd {f : X → Y × Z} (hf : Continuous f) : Continuous fun x : X => (f x).2 :=
   continuous_snd.comp hf
 #align continuous.snd Continuous.snd
@@ -382,6 +386,7 @@ theorem continuousAt_snd {p : X × Y} : ContinuousAt Prod.snd p :=
 #align continuous_at_snd continuousAt_snd
 
 /-- Postcomposing `f` with `Prod.snd` is continuous at `x` -/
+@[fun_prop]
 theorem ContinuousAt.snd {f : X → Y × Z} {x : X} (hf : ContinuousAt f x) :
     ContinuousAt (fun x : X => (f x).2) x :=
   continuousAt_snd.comp hf
@@ -399,7 +404,7 @@ theorem ContinuousAt.snd'' {f : Y → Z} {x : X × Y} (hf : ContinuousAt f x.snd
   hf.comp continuousAt_snd
 #align continuous_at.snd'' ContinuousAt.snd''
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.prod_mk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => (f x, g x) :=
   continuous_prod_mk.2 ⟨hf, hg⟩
@@ -585,6 +590,14 @@ theorem prod_mem_nhds {s : Set X} {t : Set Y} {x : X} {y : Y} (hx : s ∈ 𝓝 x
   prod_mem_nhds_iff.2 ⟨hx, hy⟩
 #align prod_mem_nhds prod_mem_nhds
 
+theorem isOpen_setOf_disjoint_nhds_nhds : IsOpen { p : X × X | Disjoint (𝓝 p.1) (𝓝 p.2) } := by
+  simp only [isOpen_iff_mem_nhds, Prod.forall, mem_setOf_eq]
+  intro x y h
+  obtain ⟨U, hU, V, hV, hd⟩ := ((nhds_basis_opens x).disjoint_iff (nhds_basis_opens y)).mp h
+  exact mem_nhds_prod_iff'.mpr ⟨U, V, hU.2, hU.1, hV.2, hV.1, fun ⟨x', y'⟩ ⟨hx', hy'⟩ =>
+    disjoint_of_disjoint_of_mem hd (hU.2.mem_nhds hx') (hV.2.mem_nhds hy')⟩
+#align is_open_set_of_disjoint_nhds_nhds isOpen_setOf_disjoint_nhds_nhds
+
 theorem Filter.Eventually.prod_nhds {p : X → Prop} {q : Y → Prop} {x : X} {y : Y}
     (hx : ∀ᶠ x in 𝓝 x, p x) (hy : ∀ᶠ y in 𝓝 y, q y) : ∀ᶠ z : X × Y in 𝓝 (x, y), p z.1 ∧ q z.2 :=
   prod_mem_nhds hx hy
@@ -606,6 +619,7 @@ theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
   exact h.curry
 #align filter.eventually.curry_nhds Filter.Eventually.curry_nhds
 
+@[fun_prop]
 theorem ContinuousAt.prod {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) : ContinuousAt (fun x => (f x, g x)) x :=
   hf.prod_mk_nhds hg
@@ -851,6 +865,15 @@ theorem embedding_prod_mk (x : X) : Embedding (Prod.mk x : Y → X × Y) :=
   embedding_of_embedding_compose (Continuous.Prod.mk x) continuous_snd embedding_id
 
 end Prod
+
+section Bool
+
+lemma continuous_bool_rng [TopologicalSpace X] {f : X → Bool} (b : Bool) :
+    Continuous f ↔ IsClopen (f ⁻¹' {b}) := by
+  rw [continuous_discrete_rng, Bool.forall_bool' b, IsClopen, ← isOpen_compl_iff, ← preimage_compl,
+    Bool.compl_singleton, and_comm]
+
+end Bool
 
 section Sum
 
@@ -1216,12 +1239,12 @@ theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i :=
   simp only [continuous_iInf_rng, continuous_induced_rng, comp]
 #align continuous_pi_iff continuous_pi_iff
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_pi (h : ∀ i, Continuous fun a => f a i) : Continuous f :=
   continuous_pi_iff.2 h
 #align continuous_pi continuous_pi
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_apply (i : ι) : Continuous fun p : ∀ i, π i => p i :=
   continuous_iInf_dom continuous_induced_dom
 #align continuous_apply continuous_apply
@@ -1254,6 +1277,11 @@ theorem continuousAt_pi {f : X → ∀ i, π i} {x : X} :
     ContinuousAt f x ↔ ∀ i, ContinuousAt (fun y => f y i) x :=
   tendsto_pi_nhds
 #align continuous_at_pi continuousAt_pi
+
+@[fun_prop]
+theorem continuousAt_pi' {f : X → ∀ i, π i} {x : X} (hf : ∀ i, ContinuousAt (fun y => f y i) x) :
+    ContinuousAt f x :=
+  continuousAt_pi.2 hf
 
 theorem Pi.continuous_precomp' {ι' : Type*} (φ : ι' → ι) :
     Continuous (fun (f : (∀ i, π i)) (j : ι') ↦ f (φ j)) :=
@@ -1697,12 +1725,12 @@ variable [TopologicalSpace X] {s : Set X} {t : Set s}
 theorem IsOpen.trans (ht : IsOpen t) (hs : IsOpen s) : IsOpen (t : Set X) := by
   rcases isOpen_induced_iff.mp ht with ⟨s', hs', rfl⟩
   rw [Subtype.image_preimage_coe]
-  exact hs'.inter hs
+  exact hs.inter hs'
 
 theorem IsClosed.trans (ht : IsClosed t) (hs : IsClosed s) : IsClosed (t : Set X) := by
   rcases isClosed_induced_iff.mp ht with ⟨s', hs', rfl⟩
   rw [Subtype.image_preimage_coe]
-  convert hs'.inter hs
+  exact hs.inter hs'
 
 end Monad
 
@@ -1720,8 +1748,8 @@ theorem Filter.eventually_nhdsSet_prod_iff {p : X × Y → Prop} :
     (∀ᶠ q in 𝓝ˢ (s ×ˢ t), p q) ↔
       ∀ x ∈ s, ∀ y ∈ t,
           ∃ px : X → Prop, (∀ᶠ x' in 𝓝 x, px x') ∧ ∃ py : Y → Prop, (∀ᶠ y' in 𝓝 y, py y') ∧
-            ∀ {x : X}, px x → ∀ {y : Y}, py y → p (x, y) :=
-  by simp_rw [eventually_nhdsSet_iff_forall, Set.forall_prod_set, nhds_prod_eq, eventually_prod_iff]
+            ∀ {x : X}, px x → ∀ {y : Y}, py y → p (x, y) := by
+  simp_rw [eventually_nhdsSet_iff_forall, Set.forall_prod_set, nhds_prod_eq, eventually_prod_iff]
 
 theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {px : X → Prop} {py : Y → Prop}
     (hp : ∀ {x : X}, px x → ∀ {y : Y}, py y → p (x, y)) (hs : ∀ᶠ x in 𝓝ˢ s, px x)

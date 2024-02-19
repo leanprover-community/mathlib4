@@ -281,16 +281,12 @@ instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ :=
   coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)}
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
-  coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
   map_mul w _ _ := w.1.map_mul _ _
   map_one w := w.1.map_one
   map_zero w := w.1.map_zero
 
 instance : NonnegHomClass (InfinitePlace K) K ℝ where
-  coe w x := w x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
-  map_nonneg w _ := w.1.nonneg _
+  apply_nonneg w _ := w.1.nonneg _
 
 @[simp]
 theorem apply (φ : K →+* ℂ) (x : K) : (mk φ) x = Complex.abs (φ x) := rfl
@@ -415,9 +411,6 @@ theorem isReal_or_isComplex (w : InfinitePlace K) : IsReal w ∨ IsComplex w := 
   rw [← not_isReal_iff_isComplex]; exact em _
 #align number_field.infinite_place.is_real_or_is_complex NumberField.InfinitePlace.isReal_or_isComplex
 
-theorem ne_of_isReal_isComplex {w w' : InfinitePlace K} (h : IsReal w) (h' : IsComplex w') :
-    w ≠ w' := fun h_eq ↦ not_isReal_iff_isComplex.mpr h' (h_eq ▸ h)
-
 /-- The real embedding associated to a real infinite place. -/
 noncomputable def embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) : K →+* ℝ :=
   ComplexEmbedding.IsReal.embedding (isReal_iff.mp hw)
@@ -524,14 +517,14 @@ theorem prod_eq_abs_norm (x : K) :
   · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_rat_cast]
 #align number_field.infinite_place.prod_eq_abs_norm NumberField.InfinitePlace.prod_eq_abs_norm
 
-theorem ge_one_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
-    (h : ∀ ⦃z⦄, z ≠ w → z a < 1) :  1 ≤ w a := by
+theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
+    (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by
   suffices (1:ℝ) ≤ |(Algebra.norm ℚ) (a:K)| by
     contrapose! this
     rw [← InfinitePlace.prod_eq_abs_norm, ← Finset.prod_const_one]
     refine Finset.prod_lt_prod_of_nonempty (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
     · exact pow_pos (pos_iff.mpr ((Subalgebra.coe_eq_zero _).not.mpr ha)) _
-    · refine pow_lt_one (map_nonneg _ _) ?_ (by rw [mult]; split_ifs <;> norm_num)
+    · refine pow_lt_one (apply_nonneg _ _) ?_ (by rw [mult]; split_ifs <;> norm_num)
       by_cases hz : z = w
       · rwa [hz]
       · exact h hz
@@ -539,12 +532,12 @@ theorem ge_one_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
   exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr ha)
 
 open scoped IntermediateField in
-theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt (x : 𝓞 K)
+theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
     {w : InfinitePlace K} (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1)
     (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) : ℚ⟮(x:K)⟯ = ⊤ := by
   rw [Field.primitive_element_iff_algHom_eq_of_eval ℚ ℂ ?_ _ w.embedding.toRatAlgHom]
   · intro ψ hψ
-    have h : 1 ≤ w x := ge_one_of_lt_one h₁ h₂
+    have h : 1 ≤ w x := one_le_of_lt_one h₁ h₂
     have main : w = InfinitePlace.mk ψ.toRingHom := by
       erw [← norm_embedding_eq, hψ] at h
       contrapose! h
@@ -562,6 +555,13 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt (x : 𝓞 K)
         zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal]
       exact h₃.resolve_left hw
   · exact fun x ↦ IsAlgClosed.splits_codomain (minpoly ℚ x)
+
+theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : InfinitePlace K}
+    (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1) (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) :
+    Algebra.adjoin ℚ {(x:K)} = ⊤ := by
+  rw [← IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite ℚ _)]
+  exact congr_arg IntermediateField.toSubalgebra <|
+    NumberField.is_primitive_element_of_infinitePlace_lt h₁ h₂ h₃
 
 open Fintype FiniteDimensional
 
@@ -836,10 +836,11 @@ lemma nat_card_stabilizer_eq_one_or_two :
     · right; simp [*]
   · push_neg at h
     left
-    convert show Nat.card ({1} : Set (K ≃ₐ[k] K)) = 1 by simp
-    ext
-    simp only [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_singleton_iff, or_iff_left_iff_imp]
-    exact fun x ↦ (h _ x).elim
+    trans Nat.card ({1} : Set (K ≃ₐ[k] K))
+    · congr with x
+      simp only [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_singleton_iff, or_iff_left_iff_imp,
+        h x, IsEmpty.forall_iff]
+    · simp
 
 variable {k w}
 
