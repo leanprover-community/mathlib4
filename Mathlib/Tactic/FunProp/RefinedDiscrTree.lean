@@ -5,7 +5,6 @@ Authors: J. W. Gerbscheid
 -/
 import Mathlib.Tactic.FunProp.StateList
 import Std.Data.List.Basic
-import Lean.Meta
 import Mathlib.Data.Pi.Algebra
 
 /-!
