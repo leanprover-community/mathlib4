@@ -6,6 +6,8 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.Data.Set.Basic
 
 #align_import topology.category.Top.limits.products from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 

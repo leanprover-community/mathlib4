@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.LinearMap
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Semisimple
 import Mathlib.Algebra.Lie.Weights.Cartan
@@ -54,8 +55,6 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [Module.Free R M] [Module.Finite R M]
   [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 
-attribute [local instance] Module.free_of_finite_type_torsion_free'
-
 local notation "φ" => LieModule.toEndomorphism R L M
 
 open LinearMap (trace)
@@ -65,7 +64,7 @@ namespace LieModule
 
 /-- A finite, free representation of a Lie algebra `L` induces a bilinear form on `L` called
 the trace Form. See also `killingForm`. -/
-noncomputable def traceForm : L →ₗ[R] L →ₗ[R] R :=
+noncomputable def traceForm : LinearMap.BilinForm R L :=
   ((LinearMap.mul _ _).compl₁₂ (φ).toLinearMap (φ).toLinearMap).compr₂ (trace R M)
 
 lemma traceForm_apply_apply (x y : L) :
@@ -184,7 +183,7 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
 invariant (in the sense that the action of `L` is skew-adjoint wrt `B`) then components of the
 Fitting decomposition of `M` are orthogonal wrt `B`. -/
 lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
-    {B : M →ₗ[R] M →ₗ[R] R} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
+    {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = - B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ weightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
     B m₀ m₁ = 0 := by
   replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
@@ -197,8 +196,8 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ' (-1 : R), smul_eq_mul]
     conv_lhs => rw [pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_apply, ih, hB,
       ← (φ x).comp_apply, ← LinearMap.mul_eq_comp, ← pow_succ, ← smul_assoc, this]
-  suffices : ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0
-  · apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
+  suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
+    apply LieSubmodule.iSup_induction _ hm₁ this (map_zero _)
     aesop
   clear hm₁ m₁; intro x m₁ hm₁
   simp only [mem_weightSpace, Pi.zero_apply, zero_smul, sub_zero] at hm₀
@@ -327,8 +326,8 @@ case of an Abelian ideal (which has `M = L` and `N = I`). -/
 lemma traceForm_eq_zero_of_isTrivial [LieModule.IsTrivial I N] :
     trace R M (φ x ∘ₗ φ y) = 0 := by
   let hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)
-  suffices : (φ x ∘ₗ φ y).restrict hy' = 0
-  · simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
+  suffices (φ x ∘ₗ φ y).restrict hy' = 0 by
+    simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   ext n
   suffices ⁅y, (n : M)⁆ = 0 by simp [this]
   exact Submodule.coe_eq_zero.mpr (LieModule.IsTrivial.trivial (⟨y, hy⟩ : I) n)
@@ -342,7 +341,7 @@ variable [Module.Free R L] [Module.Finite R L]
 /-- A finite, free (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
 
 This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
-noncomputable abbrev killingForm : L →ₗ[R] L →ₗ[R] R := LieModule.traceForm R L L
+noncomputable abbrev killingForm : LinearMap.BilinForm R L := LieModule.traceForm R L L
 
 lemma killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting
     (H : LieSubalgebra R L) [LieAlgebra.IsNilpotent R H]
@@ -387,7 +386,7 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma killingForm_eq :
     killingForm R I = I.restrictBilinear (killingForm R L) :=
-  LieSubmodule.traceForm_eq_of_le_idealizer I I $ by simp
+  LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
 
 lemma restrictBilinear_killingForm :
     I.restrictBilinear (killingForm R L) = LieModule.traceForm R I L :=
@@ -407,7 +406,7 @@ namespace LieAlgebra
 
 /-- We say a Lie algebra is Killing if its Killing form is non-singular.
 
-NB: The is not standard terminology (the literature does not seem to name Lie algebras with this
+NB: This is not standard terminology (the literature does not seem to name Lie algebras with this
 property). -/
 class IsKilling : Prop :=
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
@@ -473,10 +472,13 @@ end LieAlgebra
 section Field
 
 open LieModule FiniteDimensional
-open Submodule (span)
+open Submodule (span subset_span)
 
-lemma LieModule.traceForm_eq_sum_finrank_nsmul_mul [LieAlgebra.IsNilpotent K L]
-    [LinearWeights K L M] [IsTriangularizable K L M] (x y : L) :
+namespace LieModule
+
+variable [LieAlgebra.IsNilpotent K L] [LinearWeights K L M] [IsTriangularizable K L M]
+
+lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     traceForm K L M x y = ∑ χ in weight K L M, finrank K (weightSpace M χ) • (χ x * χ y) := by
   have hxy : ∀ χ : L → K, MapsTo (toEndomorphism K L M x ∘ₗ toEndomorphism K L M y)
       (weightSpace M χ) (weightSpace M χ) :=
@@ -492,26 +494,24 @@ lemma LieModule.traceForm_eq_sum_finrank_nsmul_mul [LieAlgebra.IsNilpotent K L]
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ traceForm_weightSpace_eq K L M χ x y)
 
+lemma traceForm_eq_sum_finrank_nsmul :
+    traceForm K L M = ∑ χ : weight K L M, finrank K (weightSpace M (χ : L → K)) •
+      (weight.toLinear K L M χ).smulRight (weight.toLinear K L M χ) := by
+  ext
+  rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
+  simp
+
 -- The reverse inclusion should also hold: TODO prove this!
-lemma LieModule.dualAnnihilator_ker_traceForm_le_span_weight [LieAlgebra.IsNilpotent K L]
-    [LinearWeights K L M] [IsTriangularizable K L M] [FiniteDimensional K L] :
-    (LinearMap.ker (traceForm K L M)).dualAnnihilator ≤ span K (range (weight.toLinear K L M)) := by
-  intro g hg
-  simp only [Submodule.mem_dualAnnihilator, LinearMap.mem_ker] at hg
-  by_contra contra
-  obtain ⟨f : Module.Dual K (Module.Dual K L), hf, hf'⟩ :=
-    Submodule.exists_dual_map_eq_bot_of_nmem contra inferInstance
-  let x : L := (Module.evalEquiv K L).symm f
-  replace hf' : ∀ χ ∈ weight K L M, χ x = 0 := by
-    intro χ hχ
-    change weight.toLinear K L M ⟨χ, hχ⟩ x = 0
-    rw [Module.apply_evalEquiv_symm_apply, ← Submodule.mem_bot (R := K), ← hf', Submodule.mem_map]
-    exact ⟨weight.toLinear K L M ⟨χ, hχ⟩, Submodule.subset_span (mem_range_self _), rfl⟩
-  have hx : g x ≠ 0 := by simpa
-  refine hx (hg _ ?_)
-  ext y
-  rw [LieModule.traceForm_eq_sum_finrank_nsmul_mul, LinearMap.zero_apply]
-  exact Finset.sum_eq_zero fun χ hχ ↦ by simp [hf' χ hχ]
+lemma range_traceForm_le_span_weight :
+    LinearMap.range (traceForm K L M) ≤ span K (range (weight.toLinear K L M)) := by
+  rintro - ⟨x, rfl⟩
+  rw [LieModule.traceForm_eq_sum_finrank_nsmul, LinearMap.coeFn_sum, Finset.sum_apply]
+  refine Submodule.sum_mem _ fun χ _ ↦ ?_
+  simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, weight.toLinear_apply,
+    nsmul_eq_smul_cast (R := K)]
+  exact Submodule.smul_mem _ _ <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self χ
+
+end LieModule
 
 /-- Given a splitting Cartan subalgebra `H` of a finite-dimensional Lie algebra with non-singular
 Killing form, the corresponding roots span the dual space of `H`. -/
@@ -519,6 +519,8 @@ Killing form, the corresponding roots span the dual space of `H`. -/
 lemma LieAlgebra.IsKilling.span_weight_eq_top [FiniteDimensional K L] [IsKilling K L]
     (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [IsTriangularizable K H L] :
     span K (range (weight.toLinear K H L)) = ⊤ := by
-  simpa using LieModule.dualAnnihilator_ker_traceForm_le_span_weight K H L
+  refine eq_top_iff.mpr (le_trans ?_ (LieModule.range_traceForm_le_span_weight K H L))
+  rw [← traceForm_flip K H L, ← LinearMap.dualAnnihilator_ker_eq_range_flip,
+    ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.dualAnnihilator_bot]
 
 end Field

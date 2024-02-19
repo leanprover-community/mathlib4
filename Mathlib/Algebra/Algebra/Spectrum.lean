@@ -142,6 +142,20 @@ theorem mem_resolventSet_iff {r : R} {a : A} : r ∈ resolventSet R a ↔ IsUnit
 #align spectrum.mem_resolvent_set_iff spectrum.mem_resolventSet_iff
 
 @[simp]
+theorem algebraMap_mem_iff (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
+    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} {r : R} :
+    algebraMap R S r ∈ spectrum S a ↔ r ∈ spectrum R a := by
+  simp only [spectrum.mem_iff, Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
+
+protected alias ⟨of_algebraMap_mem, algebraMap_mem⟩ := spectrum.algebraMap_mem_iff
+
+@[simp]
+theorem preimage_algebraMap (S : Type*) {R A : Type*} [CommSemiring R] [CommSemiring S]
+    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} :
+    algebraMap R S ⁻¹' spectrum S a = spectrum R a :=
+  Set.ext fun _ => spectrum.algebraMap_mem_iff _
+
+@[simp]
 theorem resolventSet_of_subsingleton [Subsingleton A] (a : A) : resolventSet R a = Set.univ := by
   simp_rw [resolventSet, Subsingleton.elim (algebraMap R A _ - a) 1, isUnit_one, Set.setOf_true]
 #align spectrum.resolvent_set_of_subsingleton spectrum.resolventSet_of_subsingleton
@@ -367,11 +381,11 @@ theorem smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) :
 #align spectrum.smul_eq_smul spectrum.smul_eq_smul
 
 theorem nonzero_mul_eq_swap_mul (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
-  suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0}
-  · exact Set.eq_of_subset_of_subset (h a b) (h b a)
-  · rintro _ _ k ⟨k_mem, k_neq⟩
-    change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
-    exact ⟨unit_mem_mul_iff_mem_swap_mul.mp k_mem, k_neq⟩
+  suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0} from
+    Set.eq_of_subset_of_subset (h a b) (h b a)
+  rintro _ _ k ⟨k_mem, k_neq⟩
+  change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
+  exact ⟨unit_mem_mul_iff_mem_swap_mul.mp k_mem, k_neq⟩
 #align spectrum.nonzero_mul_eq_swap_mul spectrum.nonzero_mul_eq_swap_mul
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
@@ -395,7 +409,7 @@ section CommSemiring
 
 variable {F R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
-variable [AlgHomClass F R A B]
+variable [FunLike F A B] [AlgHomClass F R A B]
 
 local notation "σ" => spectrum R
 
@@ -416,7 +430,7 @@ section CommRing
 
 variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
-variable [AlgHomClass F R A R]
+variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R
 
@@ -436,7 +450,7 @@ end AlgHom
 
 @[simp]
 theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B] [Algebra R A]
-    [Algebra R B] [AlgEquivClass F R A B] (f : F) (a : A) :
+    [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) (a : A) :
     spectrum R (f a) = spectrum R a :=
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
     simpa only [AlgEquiv.coe_algHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using

@@ -75,7 +75,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     -- 🎉
     exact p
   · -- Otherwise, `b ≤ a`, and the interval is a subsingleton,
-    have : Subsingleton (Set.Icc a b) := (Set.subsingleton_coe _).mpr $ Set.subsingleton_Icc_of_ge h
+    have : Subsingleton (Set.Icc a b) := (Set.subsingleton_Icc_of_ge h).coe_sort
     apply Subsingleton.elim
 #align polynomial_functions_closure_eq_top polynomialFunctions_closure_eq_top
 
