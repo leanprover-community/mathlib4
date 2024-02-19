@@ -119,18 +119,25 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
 #align topological_space.is_topological_basis_of_subbasis TopologicalSpace.isTopologicalBasis_of_subbasis
 
+theorem isTopologicalBasis_of_nhds_hasBasis {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
+    (h_basis : ∀ (a : α), (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) :
+    IsTopologicalBasis s := by
+  constructor
+  · intro t₁ ht₁ t₂ ht₂ x hx
+    simpa [and_assoc] using (h_basis x).mem_iff.1 <|
+      (h_open _ ht₁).inter (h_open _ ht₂) |>.mem_nhds hx
+  · exact sUnion_eq_univ_iff.2 fun x ↦ (h_basis x).ex_mem
+  · refine ext_nhds fun x ↦ ?_
+    simpa only [nhds_generateFrom, and_comm] using (h_basis x).eq_biInf
+
 /-- If a family of open sets `s` is such that every open neighbourhood contains some
 member of `s`, then `s` is a topological basis. -/
 theorem isTopologicalBasis_of_isOpen_of_nhds {s : Set (Set α)} (h_open : ∀ u ∈ s, IsOpen u)
     (h_nhds : ∀ (a : α) (u : Set α), a ∈ u → IsOpen u → ∃ v ∈ s, a ∈ v ∧ v ⊆ u) :
-    IsTopologicalBasis s := by
-  have : ∀ (a : α), (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id := fun a ↦
+    IsTopologicalBasis s :=
+  isTopologicalBasis_of_nhds_hasBasis h_open fun a ↦
     (nhds_basis_opens a).to_hasBasis' (by simpa [and_assoc] using h_nhds a)
       fun t ⟨hts, hat⟩ ↦ (h_open _ hts).mem_nhds hat
-  refine ⟨fun t₁ ht₁ t₂ ht₂ x hx ↦ h_nhds _ _ hx ((h_open _ ht₁).inter (h_open _ ht₂)), ?_, ?_⟩
-  · exact sUnion_eq_univ_iff.2 fun x ↦ (this x).ex_mem
-  · refine ext_nhds fun x ↦ ?_
-    simpa only [nhds_generateFrom, and_comm] using (this x).eq_biInf
 #align topological_space.is_topological_basis_of_open_of_nhds TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
 
 /-- A set `s` is in the neighbourhood of `a` iff there is some basis set `t`, which
@@ -559,14 +566,14 @@ theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s :
   simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
 #align topological_space.is_separable_of_separable_space_subtype TopologicalSpace.IsSeparable.of_subtype
 
-@[deprecated IsSeparable.of_subtype] -- Since 2024/02/05
+@[deprecated] -- Since 2024/02/05
 alias isSeparable_of_separableSpace_subtype := IsSeparable.of_subtype
 
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
 #align topological_space.is_separable_of_separable_space TopologicalSpace.IsSeparable.of_separableSpace
 
-@[deprecated IsSeparable.of_separableSpace] -- Since 2024/02/05
+@[deprecated] -- Since 2024/02/05
 alias isSeparable_of_separableSpace := IsSeparable.of_separableSpace
 
 end TopologicalSpace
