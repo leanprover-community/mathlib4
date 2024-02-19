@@ -21,7 +21,7 @@ variable {α : Type u} {x y : ULift.{v} α}
 
 namespace ULift
 
-instance [RatCast α] : RatCast (ULift α) := ⟨λ a ↦ up a⟩
+instance [RatCast α] : RatCast (ULift α) := ⟨fun a ↦ up a⟩
 
 @[simp, norm_cast]
 theorem up_ratCast [RatCast α] (q : ℚ) : up (q : α) = q :=
