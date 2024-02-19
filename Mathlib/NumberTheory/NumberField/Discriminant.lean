@@ -112,7 +112,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
     refine le_of_eq ?_
     rw [convexBodySum_volume, ← ENNReal.ofReal_pow (by positivity), ← Real.rpow_nat_cast,
       ← Real.rpow_mul toReal_nonneg, div_mul_cancel, Real.rpow_one, ofReal_toReal, mul_comm,
-      mul_assoc, ← coe_mul, inv_mul_cancel (convexBodySumFactor_ne_zero K), coe_one, mul_one]
+      mul_assoc, ← coe_mul, inv_mul_cancel (convexBodySumFactor_ne_zero K), ENNReal.coe_one,
+      mul_one]
     · exact mul_ne_top (ne_of_lt (minkowskiBound_lt_top K I)) coe_ne_top
     · exact (Nat.cast_ne_zero.mpr (ne_of_gt finrank_pos))
   convert exists_ne_zero_mem_ideal_of_norm_le K I h_le
@@ -221,8 +222,9 @@ theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
 This section is devoted to the proof of Hermite theorem.
 
 Let `N` be an integer . We prove that the set `S` of finite extension `K` of `ℚ`
-(in some fixed extension `A` of `ℚ`) such that `|discr K| ≤ N` is finite by proving that there is
-a finite set `T ⊆ A` such that `∀ K ∈ S, ∃ x ∈ T, K = ℚ⟮x⟯` using `finite_of_finite_generating_set`.
+(in some fixed extension `A` of `ℚ`) such that `|discr K| ≤ N` is finite by proving, using
+`finite_of_finite_generating_set`, that there exists a finite set `T ⊆ A` such that
+`∀ K ∈ S, ∃ x ∈ T, K = ℚ⟮x⟯` .
 
 To find the set `T`, we construct a finite set `T₀` of polynomials in `ℤ[X]` containing, for each
 `K ∈ S`, the minimal polynomial of a primitive element of `K`. The set `T` is then the union of
@@ -238,7 +240,7 @@ Thus it follows from `mixedEmbedding.exists_primitive_element_lt_of_isComplex` a
 Therefore, the minimal polynomial of `x` belongs to some finite set `T₀` of polynomials.
 
 Since the primitive element `x` is constructed differently depending on wether `K` has a infinite
-real place or not, the theorem is proved in two parts:
+real place or not, the theorem is proved in two parts.
 -/
 
 namespace hermiteTheorem
@@ -299,6 +301,8 @@ theorem rank_le_rankOfDiscrBdd :
       exact le_trans (by norm_num) (Nat.one_le_cast.mpr (Nat.one_le_iff_ne_zero.mpr h_nz))
   · exact le_max_of_le_left h
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 /-- If `|discr K| ≤ N` then the Minkowski bound of `K` is less than `boundOfDiscrBdd`. -/
 theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K 1 < boundOfDiscBdd N := by
   have : boundOfDiscBdd N - 1 < boundOfDiscBdd N := by norm_num
@@ -309,7 +313,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K 1 < boundOfDiscBdd N
     coe_mul, ENNReal.coe_pow, coe_ofNat, show sqrt N = (1:ℝ≥0∞) * sqrt N by rw [one_mul]]
   gcongr
   · exact pow_le_one _ (by positivity) (by norm_num)
-  · rw [sqrt_le_sqrt_iff, ← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs]
+  · rw [sqrt_le_sqrt, ← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs]
     exact Int.cast_le.mpr hK
   · exact one_le_two
   · exact rank_le_rankOfDiscrBdd hK
@@ -322,6 +326,8 @@ theorem natDegree_le_rankOfDiscrBdd {a : K} (ha : a ∈ 𝓞 K) (h : ℚ⟮a⟯ 
 
 variable (N)
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 theorem finite_of_discr_bdd_of_isReal :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -362,8 +368,10 @@ theorem finite_of_discr_bdd_of_isReal :
   have := one_le_convexBodyLTFactor K
   convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
     (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
-  simp_rw [coe_one, one_mul]
+  simp_rw [ENNReal.coe_one, one_mul]
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -405,7 +413,7 @@ theorem finite_of_discr_bdd_of_isComplex :
   have := one_le_convexBodyLT'Factor K
   convert lt_of_le_of_lt (mul_right_mono (coe_le_coe.mpr this))
     (ENNReal.mul_lt_mul_left' (by positivity) coe_ne_top (minkowskiBound_lt_boundOfDiscBdd hK₂))
-  simp_rw [coe_one, one_mul]
+  simp_rw [ENNReal.coe_one, one_mul]
 
 /-- **Hermite Theorem**. Let `N` be an integer. There are only finitely many number fields
 (in some fixed extension of `ℚ`) of discriminant bounded by `N`. -/

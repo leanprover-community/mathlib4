@@ -558,6 +558,10 @@ noncomputable abbrev convexBodyLTFactor : ℝ≥0 :=
 theorem convexBodyLTFactor_ne_zero : convexBodyLTFactor K ≠ 0 :=
   mul_ne_zero (pow_ne_zero _ two_ne_zero) (pow_ne_zero _ pi_ne_zero)
 
+theorem one_le_convexBodyLTFactor : 1 ≤ convexBodyLTFactor K :=
+  one_le_mul₀ (one_le_pow_of_one_le one_le_two _)
+    (one_le_pow_of_one_le (le_trans one_le_two Real.two_le_pi) _)
+
 /-- The volume of `(ConvexBodyLt K f)` where `convexBodyLT K f` is the set of points `x`
 such that `‖x w‖ < f w` for all infinite places `w`. -/
 theorem convexBodyLT_volume :
@@ -992,6 +996,8 @@ theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w
   obtain ⟨a, ha, rfl⟩ := hx
   exact ⟨a, ha, by simpa using h_nz, (convexBodyLT'_mem K f w₀).mp h_mem⟩
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 /-- A version of `exists_ne_zero_mem_ideal_lt` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K 1 < volume (convexBodyLT K f)) :
     ∃ a ∈ 𝓞 K, a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
@@ -999,6 +1005,8 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K 1 < volume (c
   obtain ⟨⟨a, ha⟩, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   exact ⟨a, ha, h_nz, h_bd⟩
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 /-- A version of `exists_ne_zero_mem_ideal_lt'` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt' (w₀ : {w : InfinitePlace K // IsComplex w})
     (h : minkowskiBound K 1 < volume (convexBodyLT' K f w₀)) :
@@ -1008,6 +1016,8 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt' (w₀ : {w : InfinitePlace K // Is
   obtain ⟨⟨a, ha⟩, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   exact ⟨a, ha, h_nz, h_bd⟩
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : IsReal w₀) {B : ℝ≥0}
     (hB : minkowskiBound K 1 < convexBodyLTFactor K * B) :
     ∃ a ∈ 𝓞 K, ℚ⟮(a:K)⟯ = ⊤ ∧ (∀ w : InfinitePlace K, w a < max B 1) := by
@@ -1019,10 +1029,12 @@ theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : 
     exact hB
   obtain ⟨a, ha, h_nz, h_le⟩ := exists_ne_zero_mem_ringOfIntegers_lt K this
   refine ⟨a, ha, ?_, fun w ↦ lt_of_lt_of_le (h_le w) ?_⟩
-  · exact is_primitive_element_of_infinitePlace_lt ⟨a, ha⟩
-      (Subtype.ne_of_val_ne h_nz) (fun w h_ne ↦ by convert (if_neg h_ne) ▸ h_le w) (Or.inl hw₀)
+  · exact is_primitive_element_of_infinitePlace_lt (x := ⟨a, ha⟩) (Subtype.ne_of_val_ne h_nz)
+      (fun w h_ne ↦ by convert (if_neg h_ne) ▸ h_le w) (Or.inl hw₀)
   · split_ifs <;> simp
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀ : IsComplex w₀)
     {B : ℝ≥0} (hB : minkowskiBound K 1 < convexBodyLT'Factor K * B) :
     ∃ a ∈ 𝓞 K, ℚ⟮(a:K)⟯ = ⊤ ∧ (∀ w : InfinitePlace K, w a < Real.sqrt (1 + B ^ 2)) := by
@@ -1036,7 +1048,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
     exact hB
   obtain ⟨a, ha, h_nz, h_le, h_le₀⟩ := exists_ne_zero_mem_ringOfIntegers_lt' K ⟨w₀, hw₀⟩ this
   refine ⟨a, ha, ?_, fun w ↦ ?_⟩
-  · exact is_primitive_element_of_infinitePlace_lt ⟨a, ha⟩ (Subtype.ne_of_val_ne h_nz)
+  · exact is_primitive_element_of_infinitePlace_lt (x := ⟨a, ha⟩) (Subtype.ne_of_val_ne h_nz)
       (fun w h_ne ↦ by convert if_neg h_ne ▸ h_le w h_ne) (Or.inr h_le₀.1)
   · by_cases h_eq : w = w₀
     · rw [if_pos rfl] at h_le₀
@@ -1089,6 +1101,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
   · rw [← Nat.cast_sum, sum_mult_eq, Nat.cast_pos]
     exact finrank_pos
 
+/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
+attribute [-instance] FractionalIdeal.commSemiring in
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     (h : (minkowskiBound K 1) ≤ volume (convexBodySum K B)) :
     ∃ a ∈ 𝓞 K, a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
