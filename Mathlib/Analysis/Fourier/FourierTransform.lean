@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
+import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 #align_import analysis.fourier.fourier_transform from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -35,12 +36,17 @@ where `e [x]` is notational sugar for `(e (Multiplicative.ofAdd x) : ℂ)` (avai
 `fourier_transform`). This includes the cases `W` is the dual of `V` and `L` is the canonical
 pairing, or `W = V` and `L` is a bilinear form (e.g. an inner product).
 
-In namespace `fourier`, we consider the more familiar special case when `V = W = 𝕜` and `L` is the
+In namespace `Fourier`, we consider the more familiar special case when `V = W = 𝕜` and `L` is the
 multiplication map (but still allowing `𝕜` to be an arbitrary ring equipped with a measure).
 
 The most familiar case of all is when `V = W = 𝕜 = ℝ`, `L` is multiplication, `μ` is volume, and
 `e` is `Real.fourierChar`, i.e. the character `fun x ↦ exp ((2 * π * x) * I)`. The Fourier integral
-in this case is defined as `Real.fourierIntegral`.
+in this case is defined as `Real.fourierIntegral`, denoted with `𝓕`.
+
+Another familiar case is when `V = W` is an inner product space over `ℝ` and `L` is the scalar
+product. We specialize the definitions to this case in the namespace `InnerFourier`, and introduce
+two notations `𝓕ᵢ` for the Fourier transform in this case (the subscript `i` stands for
+"inner product") and `𝓕ᵢ⁻ f (v) = 𝓕ᵢ f (-v)` for the inverse Fourier transform.
 
 ## Main results
 
@@ -334,11 +340,13 @@ theorem fourierIntegral_eq_integral_exp_smul {E : Type*} [NormedAddCommGroup E] 
 
 end Real
 
-
 namespace InnerFourier
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {V : Type*} [NormedAddCommGroup V]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {V : Type*} [NormedAddCommGroup V]
   [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
+  {W : Type*} [NormedAddCommGroup W]
+  [InnerProductSpace ℝ W] [MeasurableSpace W] [BorelSpace W] [FiniteDimensional ℝ W]
 
 local notation "⟪" x ", " y "⟫" => @inner ℝ V _ x y
 
@@ -347,98 +355,45 @@ local notation "e" => Real.fourierChar
 variable (V)
 def innerₗ : V →ₗ[ℝ] V →ₗ[ℝ] ℝ := innerₛₗ ℝ
 
-@[simp] lemma flip_innerₗ : (innerₗ V).flip = innerₗ V := sorry
+@[simp] lemma flip_innerₗ : (innerₗ V).flip = innerₗ V := by
+  ext v w
+  exact real_inner_comm v w
 
 variable {V}
 
 @[simp] lemma innerₗ_apply (v w : V) : innerₗ V v w = ⟪v, w⟫ := rfl
 
-
 /-- The Fourier transform of a function on an inner product space. -/
 def fourierIntegral (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral Real.fourierChar volume (innerₗ V) f w
 
-lemma fourierIntegral_eq (f : V → E) (w : V) :
-    fourierIntegral f w = ∫ v, e[-⟪v, w⟫] • f v := rfl
-
 /-- The inverse Fourier transform of a function on an inner product space, defined as the Fourier
-transform but with opposite sign -/
+transform but with opposite sign in the exponential. -/
 def fourierIntegralInv (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral Real.fourierChar volume (-innerₗ V) f w
 
-lemma fourierIntegralInv_eq (f : V → E) (w : V) :
-    fourierIntegralInv f w = ∫ v, e[⟪v, w⟫] • f v := by
-  simp [fourierIntegralInv, VectorFourier.fourierIntegral]
-  rfl
-
 @[inherit_doc] scoped[FourierTransform] notation "𝓕ᵢ" => InnerFourier.fourierIntegral
-
 @[inherit_doc] scoped[FourierTransform] notation "𝓕ᵢ⁻" => InnerFourier.fourierIntegralInv
 
-lemma _root_.Filter.Tendsto.ofReal' {α : Type*} {l : Filter α} {f : α → ℝ} {x : ℝ}
-    (hf : Tendsto f l (𝓝 x)) :
-    Tendsto (fun x ↦ (f x : ℂ)) l (𝓝 (x : ℂ)) :=
-  (Complex.continuous_ofReal.tendsto _).comp hf
+lemma fourierIntegral_eq (f : V → E) (w : V) :
+    𝓕ᵢ f w = ∫ v, e[-⟪v, w⟫] • f v := rfl
 
-variable {f : V → E}
+lemma fourierIntegralInv_eq (f : V → E) (w : V) :
+    𝓕ᵢ⁻ f w = ∫ v, e[⟪v, w⟫] • f v := by
+  simp [fourierIntegralInv, VectorFourier.fourierIntegral]
 
-open Complex
+lemma fourierIntegralInv_eq_fourierIntegral_neg (f : V → E) (w : V) :
+    𝓕ᵢ⁻ f w = 𝓕ᵢ f (-w) := by
+  simp [fourierIntegral_eq, fourierIntegralInv_eq]
 
-lemma foot (hf : Integrable f) :
-    Tendsto (fun (c : ℝ) ↦ (∫ v : V, Complex.exp (- c⁻¹ * ‖v‖^2) • f v))
-      atTop (𝓝 (∫ v : V, f v)) := by
-  apply tendsto_integral_filter_of_dominated_convergence _ _ _ hf.norm
-  · apply eventually_of_forall (fun v ↦ ?_)
-    nth_rewrite 2 [show f v = Complex.exp (- (0 : ℝ) * ‖v‖^2) • f v by simp]
-    apply (Tendsto.cexp _).smul_const
-    exact tendsto_inv_atTop_zero.ofReal'.neg.mul_const _
-  · apply eventually_of_forall (fun c ↦ ?_)
-    exact AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable (by continuity)) hf.1
-  · filter_upwards [Ici_mem_atTop (0 : ℝ)] with c (hc : 0 ≤ c)
-    apply eventually_of_forall (fun v ↦ ?_)
-    simp only [ofReal_inv, neg_mul, norm_smul, norm_eq_abs, abs_exp]
-    norm_cast
-    conv_rhs => rw [← one_mul (‖f v‖)]
-    gcongr
-    simp only [Real.exp_le_one_iff, Left.neg_nonpos_iff]
-    positivity
+lemma fourierIntegral_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
+     𝓕ᵢ (f ∘ A) w = (𝓕ᵢ f) (A w) := by
+  simp only [fourierIntegral_eq, ofAdd_neg, map_inv, coe_inv_unitSphere, Function.comp_apply,
+    ← MeasurePreserving.integral_comp A.measurePreserving A.toHomeomorph.measurableEmbedding,
+    ← A.inner_map_map]
 
-lemma glou (hf : Integrable (𝓕ᵢ f)) (v : V) :
-    Tendsto (fun (c : ℝ) ↦ (∫ w : V, (cexp (- c⁻¹ * ‖w‖^2) * e[⟪w, v⟫]) • (𝓕ᵢ f) w)) atTop
-      (𝓝 (𝓕ᵢ⁻ (𝓕ᵢ f) v)) := by
-  have : Integrable (fun w ↦ e[⟪w, v⟫] • (𝓕ᵢ f) w) := by
-    have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg
-    simpa using
-      (VectorFourier.fourier_integral_convergent_iff Real.continuous_fourierChar B v).1 hf
-  convert foot this using 4 with c w
-  · simp [smul_smul]
-  · simp [fourierIntegralInv_eq]
-
-lemma glouglou [CompleteSpace E] (hf : Integrable f) (h'f : Integrable (𝓕ᵢ f)) (v : V) :
-    Tendsto (fun (c : ℝ) ↦ (∫ w : V, 𝓕ᵢ (fun w ↦ cexp (- c⁻¹ * ‖w‖^2) * e[⟪w, v⟫]) w • f w)) atTop
-      (𝓝 (𝓕ᵢ⁻ (𝓕ᵢ f) v)) := by
-  apply (glou h'f v).congr'
-  filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
-  have I : Integrable (fun w ↦ cexp (- c⁻¹ * ‖w‖^2) * e[⟪w, v⟫]) := by
-    have A : Integrable (fun (w : V) ↦ cexp (- c⁻¹ * ‖w‖^2)) := by
-    have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg
-    have Z := (VectorFourier.fourier_integral_convergent_iff Real.continuous_fourierChar B v).1 A
-    convert Z using 2 with w
-    simp [mul_comm]
-  simpa using (VectorFourier.integral_fourierIntegral_smul_eq_flip (L := innerₗ V)
-    Real.continuous_fourierChar continuous_inner I hf).symm
-
-
-
-
-
-
-
-
-
-
-
-#exit
-
+lemma fourierIntegralInv_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
+     𝓕ᵢ⁻ (f ∘ A) w = (𝓕ᵢ⁻ f) (A w) := by
+  simp [fourierIntegralInv_eq_fourierIntegral_neg, fourierIntegral_comp_linearIsometry]
 
 end InnerFourier
