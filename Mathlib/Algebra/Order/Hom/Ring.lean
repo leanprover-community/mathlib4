@@ -318,14 +318,6 @@ theorem cancel_left {f : β →+*o γ} {g₁ g₂ : α →+*o β} (hf : Injectiv
 
 end Preorder
 
-variable [NonAssocSemiring β]
-
-instance [Preorder β] : Preorder (OrderRingHom α β) :=
-  Preorder.lift ((⇑) : _ → α → β)
-
-instance [PartialOrder β] : PartialOrder (OrderRingHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
-
 end OrderRingHom
 
 /-! ### Ordered ring isomorphisms -/
@@ -344,8 +336,7 @@ def toOrderIso (f : α ≃+*o β) : α ≃o β :=
   ⟨f.toRingEquiv.toEquiv, f.map_le_map_iff'⟩
 #align order_ring_iso.to_order_iso OrderRingIso.toOrderIso
 
-instance : EquivLike (α ≃+*o β) α β
-    where
+instance : EquivLike (α ≃+*o β) α β where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
