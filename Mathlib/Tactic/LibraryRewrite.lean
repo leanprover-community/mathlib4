@@ -31,8 +31,8 @@ We sort lemmata by the following conditions (in order):
 - alphabetical order
 -/
 def RewriteLemma.lt (a b : RewriteLemma) : Bool :=
-  (a.numParams < b.numParams || a.numParams == b.numParams &&
-    !a.symm && b.symm || a.symm == b.symm &&
+  a.numParams < b.numParams || a.numParams == b.numParams &&
+    (!a.symm && b.symm || a.symm == b.symm &&
       (a.length < b.length || a.length == b.length &&
         Name.lt a.name b.name))
 
@@ -94,8 +94,7 @@ def RewriteCache := DeclCache (RefinedDiscrTree RewriteLemma × RefinedDiscrTree
 def RewriteCache.mk
   (init : Option (RefinedDiscrTree RewriteLemma) := none) :
     IO RewriteCache :=
-  DeclCache.mk "rw??: init cache" pre ({}, {})
-    addDecl addLibraryDecl post
+  DeclCache.mk "rw??: init cache" pre ({}, {}) addDecl addLibraryDecl post
 where
   pre := do
     let .some libraryTree := init | failure
@@ -109,12 +108,9 @@ where
     | (currentTree, libraryTree) => do
     return (currentTree, ← updateDiscrTree name cinfo libraryTree)
 
-  sortLemmas : Array RewriteLemma → Array RewriteLemma :=
-    Array.qsort (lt := (· < ·))
-
   post
     | (currentTree, libraryTree) => do
-    return (currentTree.mapArrays sortLemmas, libraryTree.mapArrays sortLemmas)
+    return (currentTree, libraryTree.mapArrays (·.qsort (· < ·)))
 
 def cachePath : IO System.FilePath := do
   try
@@ -131,8 +127,9 @@ initialize cachedData : RewriteCache ← unsafe do
   else
     RewriteCache.mk
 
-def getRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma × RefinedDiscrTree RewriteLemma) :=
-  cachedData.get
+def getRewriteLemmas : MetaM (RefinedDiscrTree RewriteLemma × RefinedDiscrTree RewriteLemma) := do
+  let (currentTree, libraryTree) ← cachedData.get
+  return (currentTree.mapArrays (·.qsort (· < ·)), libraryTree)
 
 end
 
