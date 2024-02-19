@@ -173,7 +173,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   refine' set_lintegral_mono measurable_const.nnnorm.coe_nnreal_ennreal
     (stronglyMeasurable_condexp.mono hnm).measurable.nnnorm.coe_nnreal_ennreal fun x hx => _
   rw [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
-  exact Subtype.mk_le_mk.2 hx.le
+  exact Subtype.mk_le_mk.2 (le_of_lt hx)
 #align measure_theory.ae_bdd_condexp_of_ae_bdd MeasureTheory.ae_bdd_condexp_of_ae_bdd
 
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to
