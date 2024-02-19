@@ -30,9 +30,9 @@ universe u v w u₁
 
 variable (ι : Type v) [dec_ι : DecidableEq ι] (β : ι → Type w)
 
-/-- `DirectSum β` is the direct sum of a family of additive commutative monoids `β i`.
+/-- `DirectSum ι β` is the direct sum of a family of additive commutative monoids `β i`.
 
-Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum β`. -/
+Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   -- Porting note: Failed to synthesize
   -- Π₀ i, β i deriving AddCommMonoid, Inhabited

@@ -215,7 +215,7 @@ lemma trace_toEndomorphism_eq_zero_of_mem_lcs
     simpa using hx
   refine Submodule.span_induction (p := fun x ↦ trace R _ (toEndomorphism R L M x) = 0) hx
     (fun y ⟨u, v, huv⟩ ↦ ?_) ?_ (fun u v hu hv ↦ ?_) (fun t u hu ↦ ?_)
-  · simp_rw [← huv, LieHom.map_lie, Ring.lie_def, map_sub, LinearMap.trace_mul_comm, sub_self]
+  · simp [← huv]
   · simp
   · simp [hu, hv]
   · simp [hu]
