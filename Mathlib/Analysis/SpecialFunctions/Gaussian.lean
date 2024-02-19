@@ -41,9 +41,28 @@ noncomputable section
 
 open Real Set MeasureTheory Filter Asymptotics
 
-open scoped Real Topology FourierTransform
+open scoped Real Topology FourierTransform RealInnerProductSpace
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
+
+section
+
+variable {𝕜 : Type*} [IsROrC 𝕜]
+
+variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
+
+variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+/- To move close to `inner_map_map`. -/
+/-- The adjoint of a linear isometric equivalence is its inverse. -/
+@[simp]
+theorem LinearIsometryEquiv.inner_map_eq_flip (f : E ≃ₗᵢ[𝕜] E') (x : E) (y : E') :
+    ⟪f x, y⟫_𝕜 = ⟪x, f.symm y⟫_𝕜 := by
+  conv_lhs => rw [← f.apply_symm_apply y, f.inner_map_map]
+
+end
 
 theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p) :
     (fun x : ℝ => exp (- b * x ^ p)) =o[atTop] fun x : ℝ => exp (-x) := by
@@ -568,6 +587,18 @@ theorem _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
   rw [integral_add_right_eq_self fun a : ℝ ↦ cexp (- -b * (↑a + ↑(c / (2 * b)).im * I) ^ 2),
     integral_cexp_neg_mul_sq_add_real_mul_I ((neg_re b).symm ▸ (neg_pos.mpr hb))]
 
+lemma _root_.integrable_cexp_quadratic' (hb : b.re < 0) (c d : ℂ) :
+    Integrable (fun (x : ℝ) ↦ cexp (b * x ^ 2 + c * x + d)) := by
+  have hb' : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
+  by_contra H
+  simpa [hb', pi_ne_zero, Complex.exp_ne_zero, integral_undef H]
+    using integral_cexp_quadratic hb c d
+
+lemma _root_.integrable_cexp_quadratic (hb : 0 < b.re) (c d : ℂ) :
+    Integrable (fun (x : ℝ) ↦ cexp (-b * x ^ 2 + c * x + d)) := by
+  have : (-b).re < 0 := by simpa using hb
+  exact integrable_cexp_quadratic' this c d
+
 theorem _root_.fourier_transform_gaussian (hb : 0 < b.re) (t : ℂ) :
     ∫ x : ℝ, cexp (I * t * x) * cexp (-b * x ^ 2) =
     (π / b) ^ (1 / 2 : ℂ) * cexp (-t ^ 2 / (4 * b)) := by
@@ -605,47 +636,43 @@ theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
 
 open scoped BigOperators
 
-theorem glukk (ι : Type*) [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
+theorem _root_.integrable_cexp_neg_mul_sum_add (ι : Type*) [Fintype ι] (hb : 0 < b.re) (c : ι → ℂ) :
     Integrable (fun (v : ι → ℝ) ↦ cexp (- b * ∑ i, (v i : ℂ) ^ 2 + ∑ i, c i * v i)) := by
   simp_rw [Finset.mul_sum, ← Finset.sum_add_distrib, Complex.exp_sum]
-  apply Integrable.fintype_prod (f := fun i (v : ℝ) ↦ cexp (-b * v^2 + c i * v)) (fun _i ↦ ?_)
+  apply Integrable.fintype_prod (f := fun i (v : ℝ) ↦ cexp (-b * v^2 + c i * v)) (fun i ↦ ?_)
   dsimp
-  sorry
+  convert integrable_cexp_quadratic hb (c i) 0 using 3 with x
+  simp only [add_zero]
 
-theorem glukk3 (ι : Type*) [Fintype ι] (hb : 0 < b.re) :
-    Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (- b * ‖v‖^2)) := by
+theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
+    (ι : Type*) [Fintype ι] (hb : 0 < b.re) (w : EuclideanSpace ℝ ι) (c : ℂ) :
+    Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (- b * ‖v‖^2 + c * ⟪w, v⟫)) := by
   have := EuclideanSpace.volume_preserving_measurableEquiv ι
   rw [← MeasurePreserving.integrable_comp_emb this.symm (MeasurableEquiv.measurableEmbedding _)]
   simp only [neg_mul, Function.comp_def]
-  convert glukk ι hb using 3 with v
+  convert integrable_cexp_neg_mul_sum_add ι hb (fun i ↦ c * w i) using 3 with v
   simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
-    EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, neg_mul, neg_inj,
-    mul_eq_mul_left_iff]
-  left
+    EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, PiLp.inner_apply,
+    IsROrC.inner_apply, conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul,
+    Finset.sum_neg_distrib, mul_assoc, add_left_inj, neg_inj]
   norm_cast
   rw [sq_sqrt]
-  exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
+  · simp [Finset.mul_sum]
+  · exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
 
-theorem glukk2 {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
-    [MeasurableSpace V] [BorelSpace V] (hb : 0 < b.re) :
-    Integrable (fun (v : V) ↦ cexp (-b * ‖v‖^2)) := by
+/-- In a real inner product space, the complex exponential of minus the square of the norm plus
+a scalar product is integrable. Useful when discussing the Fourier transform of a Gaussian. -/
+theorem integrable_cexp_neg_mul_sq_norm_add
+    {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
+    [MeasurableSpace V] [BorelSpace V] (hb : 0 < b.re) (w : V) (c : ℂ) :
+    Integrable (fun (v : V) ↦ cexp (-b * ‖v‖^2 + c * ⟪w, v⟫)) := by
   let e := (stdOrthonormalBasis ℝ V).repr.symm
   rw [← e.measurePreserving.integrable_comp_emb e.toHomeomorph.measurableEmbedding]
-  convert glukk3 (Fin (FiniteDimensional.finrank ℝ V)) hb with v
-  simp [LinearIsometryEquiv.norm_map]
-
-
-
-
-
-
-#exit
-
-rw [← ((EuclideanSpace.volume_preserving_measurableEquiv _).symm).measure_preimage
-      measurableSet_ball]
-
-#exit
-
+  convert integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
+    (Fin (FiniteDimensional.finrank ℝ V)) hb (e.symm w) c with v
+  simp only [neg_mul, Function.comp_apply, LinearIsometryEquiv.norm_map,
+    LinearIsometryEquiv.symm_symm, conj_trivial, ofReal_sum,
+    ofReal_mul, LinearIsometryEquiv.inner_map_eq_flip]
 
 end GaussianFourier
 
