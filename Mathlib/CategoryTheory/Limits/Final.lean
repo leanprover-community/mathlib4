@@ -457,6 +457,7 @@ then `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`
 def Final.colimitCompCoyonedaIso (d : D) [IsIso (colimit.pre (coyoneda.obj (op d)) F)] :
     colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit :=
   asIso (colimit.pre (coyoneda.obj (op d)) F) ≪≫ Coyoneda.colimitCoyonedaIso (op d)
+#align category_theory.functor.final.colimit_comp_coyoneda_iso CategoryTheory.Functor.Final.colimitCompCoyonedaIso
 
 end LocallySmall
 
