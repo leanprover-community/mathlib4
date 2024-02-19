@@ -261,7 +261,10 @@ theorem sub (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneou
 
 end CommRing
 
-lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
+/-- The homogeneous degree bounds the total degree.
+
+See also `MvPolynomial.IsHomogeneous.totalDegree` when `φ` is non-zero. -/
+lemma totalDegree_le_of_isHomogeneous (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
   apply Finset.sup_le
   intro d hd
   rw [mem_support_iff] at hd
