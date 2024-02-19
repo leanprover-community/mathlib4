@@ -728,7 +728,7 @@ theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * 
 #align is_add_unit_iff_exists_neg' isAddUnit_iff_exists_neg'
 
 @[to_additive]
-theorem isUnit_iff_exists_both_units [Monoid M] {a : M} :
+theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
     IsUnit a ↔ (∃ b, a * b = 1) ∧ (∃ c, c * a = 1):= by
   constructor
   · rintro ⟨⟨a, b, hab, hba⟩, rfl⟩
