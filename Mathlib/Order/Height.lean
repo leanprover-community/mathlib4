@@ -190,7 +190,7 @@ theorem chainHeight_le_chainHeight_TFAE (s : Set α) (t : Set β) :
   tfae_have : 1 ↔ 3 := by
     convert ← chainHeight_add_le_chainHeight_add s t 0 0 <;> apply add_zero
   tfae_have : 2 ↔ 3 := by
-    refine' forall₂_congr fun l hl ↦ _
+    refine' forall₂_congr fun l _ ↦ _
     simp_rw [← (le_chainHeight_TFAE t l.length).out 1 2, eq_comm]
   tfae_finish
 #align set.chain_height_le_chain_height_tfae Set.chainHeight_le_chainHeight_TFAE
