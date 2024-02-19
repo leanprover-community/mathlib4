@@ -440,7 +440,6 @@ theorem nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G
 attribute [instance] nonempty_hom_of_preconnected_groupoid
 
 -- deprecated on 2024-02-19
-@[deprecated] alias nonempty_hom_of_connected_groupoid :=
-  nonempty_hom_of_preconnected_groupoid
+@[deprecated] alias nonempty_hom_of_connected_groupoid := nonempty_hom_of_preconnected_groupoid
 
 end CategoryTheory
