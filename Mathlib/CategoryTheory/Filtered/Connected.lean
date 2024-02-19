@@ -28,9 +28,11 @@ instance (priority := 100) IsCofilteredOrEmpty.isPreconnected [IsCofilteredOrEmp
     (.single <| .inr <| .intro <| IsCofiltered.minToLeft j j')
     (.single <| .inl <| .intro <| IsCofiltered.minToRight j j')
 
+attribute [local instance] IsFiltered.nonempty in
 instance (priority := 100) IsFiltered.isConnected [IsFiltered C] : IsConnected C :=
   { IsFilteredOrEmpty.isPreconnected C with }
 
+attribute [local instance] IsCofiltered.nonempty in
 instance (priority := 100) IsCofiltered.isConnected [IsCofiltered C] : IsConnected C :=
   { IsCofilteredOrEmpty.isPreconnected C with }
 

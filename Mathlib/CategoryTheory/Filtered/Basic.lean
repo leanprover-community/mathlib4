@@ -86,8 +86,6 @@ class IsFiltered extends IsFilteredOrEmpty C : Prop where
   [nonempty : Nonempty C]
 #align category_theory.is_filtered CategoryTheory.IsFiltered
 
-attribute [instance 100] IsFiltered.nonempty
-
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
     IsFilteredOrEmpty α
     where
@@ -515,8 +513,6 @@ class IsCofiltered extends IsCofilteredOrEmpty C : Prop where
   /-- a cofiltered category must be non empty -/
   [nonempty : Nonempty C]
 #align category_theory.is_cofiltered CategoryTheory.IsCofiltered
-
-attribute [instance 100] IsCofiltered.nonempty
 
 instance (priority := 100) isCofilteredOrEmpty_of_semilatticeInf (α : Type u) [SemilatticeInf α] :
     IsCofilteredOrEmpty α where
