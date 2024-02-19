@@ -230,7 +230,7 @@ lemma withDensity_one_sub_g (κ ν : kernel α ℝ) [IsFiniteKernel κ] [IsFinit
 
 noncomputable
 def kernel.singularPartReal (κ ν : kernel α ℝ) [IsSFiniteKernel κ] [IsSFiniteKernel ν] :
-      kernel α ℝ :=
+    kernel α ℝ :=
     kernel.withDensity (κ + ν) (fun a x ↦ Real.toNNReal (g κ (κ + ν) a x)
       - Real.toNNReal (1 - g κ (κ + ν) a x) * kernel.rnDerivReal κ ν a x)
 
