@@ -248,8 +248,8 @@ protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α
   · rintro _ ⟨V, hV, rfl⟩
     exact h.isOpen hV |>.preimage hf.continuous
   · intro a U ha hU
-    rcases (hf.nhds_eq_comap a).symm ▸ (h.nhds_hasBasis (a := f a)).comap f
-      |>.mem_iff.1 (IsOpen.mem_nhds hU ha) with ⟨V, ⟨hV, haV⟩, hVU⟩
+    rcases hf.basis_nhds (h.nhds_hasBasis (a := f a))
+      |>.mem_iff.1 (hU.mem_nhds ha) with ⟨V, ⟨hV, haV⟩, hVU⟩
     exact ⟨f ⁻¹' V, mem_image_of_mem _ hV, haV, hVU⟩
 #align topological_space.is_topological_basis.inducing TopologicalSpace.IsTopologicalBasis.inducing
 
@@ -257,8 +257,6 @@ protected theorem IsTopologicalBasis.induced [s : TopologicalSpace β] (f : α �
     {T : Set (Set β)} (h : IsTopologicalBasis T) :
     IsTopologicalBasis (t := induced f s) ((preimage f) '' T) :=
   h.inducing (t := induced f s) (inducing_induced f)
-
-#check Filter.HasBasis
 
 protected theorem IsTopologicalBasis.inf {t₁ t₂ : TopologicalSpace β} {B₁ B₂ : Set (Set β)}
     (h₁ : IsTopologicalBasis (t := t₁) B₁) (h₂ : IsTopologicalBasis (t := t₂) B₂) :
@@ -273,11 +271,17 @@ protected theorem IsTopologicalBasis.inf {t₁ t₂ : TopologicalSpace β} {B₁
       |>.mem_iff.1 (uo.mem_nhds hu) with ⟨⟨s, t⟩, ⟨⟨hs, ha⟩, ht, hb⟩, hu⟩
     exact ⟨s ∩ t, mem_image2_of_mem hs ht, ⟨ha, hb⟩, hu⟩
 
+protected theorem IsTopologicalBasis.inf' {γ} [s : TopologicalSpace β] {B₁ : Set (Set α)}
+    {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) (f₁ : γ → α)
+    (f₂ : γ → β) :
+    IsTopologicalBasis (t := induced f₁ t ⊓ induced f₂ s) (image2 (f₁ ⁻¹' · ∩ f₂ ⁻¹' ·) B₁ B₂) := by
+  have := (h₁.induced f₁).inf (h₂.induced f₂)
+  rwa [image2_image_left, image2_image_right] at this
+
 protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set (Set α)}
     {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) :
-    IsTopologicalBasis (image2 (· ×ˢ ·) B₁ B₂) := by
-  have := (h₁.induced Prod.fst).inf (h₂.induced Prod.snd)
-  rwa [image2_image_left, image2_image_right] at this
+    IsTopologicalBasis (image2 (· ×ˢ ·) B₁ B₂) :=
+  h₁.inf' h₂ Prod.fst Prod.snd
 #align topological_space.is_topological_basis.prod TopologicalSpace.IsTopologicalBasis.prod
 
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
@@ -555,58 +559,58 @@ theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s :
   simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
 #align topological_space.is_separable_of_separable_space_subtype TopologicalSpace.IsSeparable.of_subtype
 
-@[deprecated] -- Since 2024/02/05
+@[deprecated IsSeparable.of_subtype] -- Since 2024/02/05
 alias isSeparable_of_separableSpace_subtype := IsSeparable.of_subtype
 
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
 #align topological_space.is_separable_of_separable_space TopologicalSpace.IsSeparable.of_separableSpace
 
-@[deprecated] -- Since 2024/02/05
+@[deprecated IsSeparable.of_separableSpace] -- Since 2024/02/05
 alias isSeparable_of_separableSpace := IsSeparable.of_separableSpace
 
 end TopologicalSpace
 
 open TopologicalSpace
 
+theorem isTopologicalBasis_iInf {β : Type*} {ι : Type*} {t : ι → TopologicalSpace β}
+    {T : ι → Set (Set β)} (h_basis : ∀ i, IsTopologicalBasis (t := t i) (T i)) :
+    IsTopologicalBasis (t := ⨅ i, t i)
+      { S | ∃ (U : ι → Set β) (F : Finset ι),
+        (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ i ∈ F, U i } := by
+  let _ := ⨅ i, t i
+  refine isTopologicalBasis_of_isOpen_of_nhds ?_ ?_
+  · rintro - ⟨U, F, hU, rfl⟩
+    refine isOpen_biInter_finset fun i hi ↦
+      (h_basis i).isOpen (t := t i) (hU i hi) |>.mono (iInf_le _ _)
+  · intro a u ha hu
+    rcases (nhds_iInf (t := t) (a := a)).symm ▸ hasBasis_iInf'
+      (fun i ↦ (h_basis i).nhds_hasBasis (t := t i)) |>.mem_iff.1 (hu.mem_nhds ha)
+      with ⟨⟨F, U⟩, ⟨hF, hU⟩, hUu⟩
+    refine ⟨_, ⟨U, hF.toFinset, ?_, rfl⟩, ?_, ?_⟩ <;> simp only [Finite.mem_toFinset, mem_iInter]
+    · exact fun i hi ↦ (hU i hi).1
+    · exact fun i hi ↦ (hU i hi).2
+    · exact hUu
+
+theorem isTopologicalBasis_iInf' {β : Type*} {ι : Type*} {X : ι → Type*}
+    [t : Π i, TopologicalSpace (X i)] {T : Π i, Set (Set (X i))}
+    (cond : ∀ i, IsTopologicalBasis (T i)) (f : Π i, β → X i) :
+    IsTopologicalBasis (t := ⨅ i, induced (f i) (t i))
+      { S | ∃ (U : ∀ i, Set (X i)) (F : Finset ι),
+        (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ (i) (_ : i ∈ F), f i ⁻¹' U i } := by
+  convert isTopologicalBasis_iInf (fun i ↦ (cond i).induced (f i)) with S
+  constructor <;> rintro ⟨U, F, hUT, hSU⟩
+  · exact ⟨fun i ↦ (f i) ⁻¹' (U i), F, fun i hi ↦ mem_image_of_mem _ (hUT i hi), hSU⟩
+  · choose! U' hU' hUU' using hUT
+    exact ⟨U', F, hU', hSU ▸ (.symm <| iInter₂_congr hUU')⟩
+#align is_topological_basis_infi isTopologicalBasis_iInf'
+
 theorem isTopologicalBasis_pi {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     {T : ∀ i, Set (Set (X i))} (cond : ∀ i, IsTopologicalBasis (T i)) :
     IsTopologicalBasis { S | ∃ (U : ∀ i, Set (X i)) (F : Finset ι),
       (∀ i, i ∈ F → U i ∈ T i) ∧ S = (F : Set ι).pi U } := by
-  refine' isTopologicalBasis_of_isOpen_of_nhds _ _
-  · rintro _ ⟨U, F, h1, rfl⟩
-    apply isOpen_set_pi F.finite_toSet
-    intro i hi
-    exact (cond i).isOpen (h1 i hi)
-  · intro a U ha hU
-    obtain ⟨I, t, hta, htU⟩ : ∃ (I : Finset ι) (t : ∀ i : ι, Set (X i)),
-        (∀ i, t i ∈ 𝓝 (a i)) ∧ Set.pi (↑I) t ⊆ U := by
-      rw [← Filter.mem_pi', ← nhds_pi]
-      exact hU.mem_nhds ha
-    have : ∀ i, ∃ V ∈ T i, a i ∈ V ∧ V ⊆ t i := fun i => (cond i).mem_nhds_iff.1 (hta i)
-    choose V hVT haV hVt using this
-    exact ⟨_, ⟨V, I, fun i _ => hVT i, rfl⟩, fun i _ => haV i, (pi_mono fun i _ => hVt i).trans htU⟩
+  simpa only [Set.pi_def] using isTopologicalBasis_iInf' cond eval
 #align is_topological_basis_pi isTopologicalBasis_pi
-
-theorem isTopologicalBasis_iInf {β : Type*} {ι : Type*} {X : ι → Type*}
-    [t : ∀ i, TopologicalSpace (X i)] {T : ∀ i, Set (Set (X i))}
-    (cond : ∀ i, IsTopologicalBasis (T i)) (f : ∀ i, β → X i) :
-    @IsTopologicalBasis β (⨅ i, induced (f i) (t i))
-      { S | ∃ (U : ∀ i, Set (X i)) (F : Finset ι),
-        (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ (i) (_ : i ∈ F), f i ⁻¹' U i } := by
-  letI := ⨅ i, induced (f i) (t i)
-  convert (isTopologicalBasis_pi cond).inducing (inducing_iInf_to_pi f)
-  ext V
-  constructor
-  · rintro ⟨U, F, h1, rfl⟩
-    refine' ⟨(F : Set ι).pi U, ⟨U, F, h1, rfl⟩, _⟩
-    simp_rw [pi_def, Set.preimage_iInter]
-    rfl
-  · rintro ⟨U, ⟨U, F, h1, rfl⟩, rfl⟩
-    refine' ⟨U, F, h1, _⟩
-    simp_rw [pi_def, Set.preimage_iInter]
-    rfl
-#align is_topological_basis_infi isTopologicalBasis_iInf
 
 theorem isTopologicalBasis_singletons (α : Type*) [TopologicalSpace α] [DiscreteTopology α] :
     IsTopologicalBasis { s | ∃ x : α, (s : Set α) = {x} } :=
