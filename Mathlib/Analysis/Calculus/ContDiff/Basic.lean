@@ -562,7 +562,7 @@ in any universe in `u, v, w, max u v, max v w, max u v w`, but it would be extre
 lead to a lot of duplication. Instead, we formulate the above proof when all spaces live in the same
 universe (where everything is fine), and then we deduce the general result by lifting all our spaces
 to a common universe. We use the trick that any space `H` is isomorphic through a continuous linear
-equiv to `ContinuousMultilinearMap (λ (i : Fin 0), E × F × G) H` to change the universe level,
+equiv to `ContinuousMultilinearMap (fun (i : Fin 0) ↦ E × F × G) H` to change the universe level,
 and then argue that composing with such a linear equiv does not change the fact of being `C^n`,
 which we have already proved previously.
 -/

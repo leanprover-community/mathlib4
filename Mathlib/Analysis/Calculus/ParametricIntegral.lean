@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 /-!
 # Derivatives of integrals depending on parameters
 
-A parametric integral is a function with shape `f = λ x : H, ∫ a : α, F x a ∂μ` for some
+A parametric integral is a function with shape `f = fun x : H ↦ ∫ a : α, F x a ∂μ` for some
 `F : H → α → E`, where `H` and `E` are normed spaces and `α` is a measured space with measure `μ`.
 
 We already know from `continuous_of_dominated` in `Mathlib/MeasureTheory/Integral/Bochner.lean` how
@@ -31,8 +31,8 @@ variable.
   - `F x` is ae-measurable for x near `x₀`,
   - `F x₀` is integrable,
   - `fun x ↦ F x a` has derivative `F' a : H →L[ℝ] E` at `x₀` which is ae-measurable,
-  - `λ x, F x a` is locally Lipschitz near `x₀` for almost every `a`, with a Lipschitz bound which
-    is integrable with respect to `a`.
+  - `fun x ↦ F x a` is locally Lipschitz near `x₀` for almost every `a`,
+    with a Lipschitz bound which is integrable with respect to `a`.
 
   A subtle point is that the "near x₀" in the last condition has to be uniform in `a`. This is
   controlled by a positive number `ε`.
