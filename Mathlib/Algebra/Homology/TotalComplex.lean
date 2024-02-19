@@ -264,6 +264,7 @@ namespace total
 
 variable {K L M}
 
+variable {c₁₂} in
 @[ext]
 lemma hom_ext {A : C} {i₁₂ : I₁₂} {f g : (K.total c₁₂).X i₁₂ ⟶ A}
     (h : ∀ (i₁ : I₁) (i₂ : I₂) (hi : ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂) = i₁₂),
@@ -320,6 +321,12 @@ variable (K) in
 lemma map_id : map (𝟙 K) c₁₂ = 𝟙 _ := by
   apply (HomologicalComplex.forget _ _).map_injective
   apply GradedObject.mapMap_id
+
+variable (K L) in
+@[simp]
+lemma map_zero : map (0 : K ⟶ L) c₁₂ = 0 := by
+  dsimp [map]
+  aesop_cat
 
 variable [M.HasTotal c₁₂]
 
