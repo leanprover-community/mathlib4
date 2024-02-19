@@ -135,10 +135,6 @@ lemma image_val_inter_self_left_eq_coe : ↑D ∩ A = ↑D :=
   inter_eq_left.2 image_val_subset
 
 @[simp]
-lemma subset_preimage_val_image_val_iff : D ⊆ A ↓∩ ↑E ↔ D ⊆ E := by
-  rw [preimage_image_eq _ Subtype.val_injective]
-
-@[simp]
 lemma image_val_inj : (D : Set α) = ↑E ↔ D = E := Subtype.val_injective.image_injective.eq_iff
 
 lemma image_val_injective : Function.Injective ((↑) : Set A → Set α) :=
@@ -161,5 +157,9 @@ lemma image_val_preimage_val_subset_self : ↑(A ↓∩ B) ⊆ B :=
 @[simp]
 lemma preimage_val_image_val_eq_self : A ↓∩ ↑D = D :=
   Function.Injective.preimage_image Subtype.val_injective _
+
+@[simp]
+lemma subset_preimage_val_image_val_iff : D ⊆ A ↓∩ ↑E ↔ D ⊆ E := by
+  rw [preimage_image_eq _ Subtype.val_injective]
 
 end Set
