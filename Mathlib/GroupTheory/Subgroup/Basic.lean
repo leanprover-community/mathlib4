@@ -2683,6 +2683,16 @@ theorem restrict_range (f : G →* N) : (f.restrict K).range = K.map f := by
 #align monoid_hom.restrict_range MonoidHom.restrict_range
 #align add_monoid_hom.restrict_range AddMonoidHom.restrict_range
 
+@[to_additive]
+lemma subtype_comp_range_le {K : Subgroup N} (f : G →* K) : (K.subtype.comp f).range ≤ K := by
+  rintro _ ⟨g, rfl⟩
+  exact SetLike.coe_mem <| f g
+
+@[to_additive]
+lemma subtype_comp_range_eq {K : Subgroup N} {f : G →* K} (hf : Function.Surjective f) :
+    (K.subtype.comp f).range = K :=
+  (subtype_comp_range_le f).antisymm fun x hx => ⟨_, Subtype.ext_iff.mp (hf ⟨x, hx⟩).choose_spec⟩
+
 /-- The canonical surjective group homomorphism `G →* f(G)` induced by a group
 homomorphism `G →* N`. -/
 @[to_additive
@@ -3563,6 +3573,17 @@ theorem subgroupMap_surjective (f : G →* G') (H : Subgroup G) :
 #align monoid_hom.subgroup_map_surjective MonoidHom.subgroupMap_surjective
 #align add_monoid_hom.add_subgroup_map_surjective AddMonoidHom.addSubgroupMap_surjective
 
+/-- The `MonoidHom` of subgroups induced by a `MonoidHom` of groups. -/
+@[to_additive "The `AddMonoidHom` of additive subgroups induced by an `AddMonoidHom` of additive
+groups."]
+def subgroupMap' (f : G →* G') {H : Subgroup G} {H' : Subgroup G'} (h : H.map f ≤ H') : H →* H' :=
+  f.submonoidMap' h
+
+@[to_additive]
+lemma subgroupMap'_injective (f : G →* G') {H : Subgroup G} {H' : Subgroup G'} {hf : H.map f ≤ H'}
+    (hf' : Function.Injective f) : Function.Injective <| f.subgroupMap' hf :=
+  f.submonoidMap'_injective hf'
+
 end MonoidHom
 
 namespace MulEquiv
@@ -3588,10 +3609,10 @@ lemma subgroupCongr_symm_apply (h : H = K) (x) :
     ((MulEquiv.subgroupCongr h).symm x : G) = x := rfl
 
 /-- A subgroup is isomorphic to its image under an isomorphism. If you only have an injective map,
-use `Subgroup.equiv_map_of_injective`. -/
+use `Subgroup.equivMapOfInjective`. -/
 @[to_additive
       "An additive subgroup is isomorphic to its image under an isomorphism. If you only
-      have an injective map, use `AddSubgroup.equiv_map_of_injective`."]
+      have an injective map, use `AddSubgroup.equivMapOfInjective`."]
 def subgroupMap (e : G ≃* G') (H : Subgroup G) : H ≃* H.map (e : G →* G') :=
   MulEquiv.submonoidMap (e : G ≃* G') H.toSubmonoid
 #align mul_equiv.subgroup_map MulEquiv.subgroupMap
