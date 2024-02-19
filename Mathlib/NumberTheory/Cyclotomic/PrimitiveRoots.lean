@@ -274,7 +274,7 @@ theorem _root_.IsPrimitiveRoot.exists_neg_pow_mul_pow_of_pow_eq_one [NumberField
     rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
     · simp [hζ.eq_orderOf]
     · simp [← hζ.eq_orderOf, Nat.odd_iff_not_even.1 hno]
-  obtain ⟨l, hl, hlroot⟩ := (_root_.isRoot_of_unity_iff k.2 _).1 hx
+  obtain ⟨l, hl, hlroot⟩ := (isRoot_of_unity_iff k.2 _).1 hx
   have hlzero : NeZero l := ⟨fun h ↦ by simp [h] at hl⟩
   have : NeZero (l : K) := ⟨NeZero.natCast_ne l K⟩
   rw [isRoot_cyclotomic_iff] at hlroot
