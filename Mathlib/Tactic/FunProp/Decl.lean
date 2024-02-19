@@ -3,7 +3,7 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Qq
+import Lean
 
 /-!
 ## `funProp` environment extension that stores all registered function properties
@@ -28,8 +28,6 @@ structure FunPropDecl where
   /-- argument index of a function this function property talks about.
   For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
-  /-- Custom discharger for this function property. -/
-  dischargeStx? : Option (TSyntax `tactic)
   deriving Inhabited, BEq
 
 /-- -/
@@ -51,11 +49,11 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
   }
 
 /-- -/
-def addFunPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) : MetaM Unit := do
+def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
-  let (xs,_,b) ← forallMetaTelescope info.type
+  let (xs,bi,b) ← forallMetaTelescope info.type
 
   if ¬b.isProp then
     throwError "invalid fun_prop declaration, has to be `Prop` valued function"
@@ -65,19 +63,17 @@ def addFunPropDecl (declName : Name) (dischargeStx? : Option (TSyntax `tactic)) 
   let path ← DiscrTree.mkPath e {}
 
   -- find the argument position of the function `f` in `P f`
-  let mut .some funArgId ← xs.reverse.findIdxM? fun x => do
-    if (← inferType x).isForall then
+  let mut .some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
+    if (← inferType x).isForall && bi.isExplicit then
       return true
     else
       return false
     | throwError "invalid fun_prop declaration, can't find argument of type `α → β`"
-  funArgId := xs.size - funArgId - 1
 
   let decl : FunPropDecl := {
     funPropName := declName
     path := path
     funArgId := funArgId
-    dischargeStx? := dischargeStx?
   }
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl
@@ -148,8 +144,3 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
 
     return result?
 
-/-- -/
-def FunPropDecl.discharger (funPropDecl : FunPropDecl) (e : Expr) : MetaM (Option Expr) := do
-    let .some stx := funPropDecl.dischargeStx?
-      | return none
-    tacticToDischarge stx e

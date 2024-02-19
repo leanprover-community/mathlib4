@@ -7,6 +7,7 @@ import Lean
 import Mathlib.Data.FunLike.Basic
 
 import Mathlib.Tactic.FunProp.ToStd
+import Mathlib.Tactic.FunProp.MorExt
 
 
 /-!
@@ -32,12 +33,65 @@ namespace Meta.FunProp
 
 namespace Mor
 
+def isMorCoeName (name : Name) : CoreM Bool := do
+  return morCoeDeclsExt.getState (← getEnv) |>.contains name
+
+def isMorCoe (e : Expr) : MetaM Bool := do
+  let .some (name,_) := e.getAppFn.const? | return false
+  unless ← isMorCoeName name do return false
+  -- check it has arity 2
+  -- note: checking `(← inferType e).forallArity` can give different result are the return type
+  --       can be a function space
+  let info ← getConstInfo name
+  if info.type.forallArity - 2 = e.getAppNumArgs then
+    return true
+  else
+    return false
+
+structure App where
+  coe : Expr
+  fn  : Expr
+  arg : Expr
+
+
+def isMorApp? (e : Expr) : MetaM (Option App) := do
+
+  let .app (.app coe f) x := e | return none
+  if ← isMorCoe coe then
+    return .some { coe := coe, fn := f, arg := x }
+  else
+    return none
+
+partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) (cfg : WhnfCoreConfig := {}) :
+    MetaM Expr := do
+  whnfEasyCases e fun e => do
+    let e ← whnfCore e cfg
+
+    if let .some ⟨coe,f,x⟩ ← isMorApp? e then
+      let f ← whnfPred f pred cfg
+      if cfg.zeta then
+        return (coe.app f).app x
+      else
+        return ← letTelescope f fun xs f' =>
+          mkLambdaFVars xs ((coe.app f').app x)
+
+    if (← pred e) then
+        match (← unfoldDefinition? e) with
+        | some e => whnfPred e pred cfg
+        | none   => return e
+    else
+      return e
+
+def whnf (e : Expr)  (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
+  whnfPred e (fun _ => return false) cfg
+
+
 /-- Argument of morphism application that stores corresponding coercion if necessary -/
 structure Arg where
   /-- argument of type `α` -/
   expr : Expr
   /-- coercion `F → α → β` -/
-  coe : Option Expr
+  coe : Option Expr := none
   deriving Inhabited
 
 /-- Morphism application -/
@@ -46,57 +100,42 @@ def app (f : Expr) (arg : Arg) : Expr :=
   | .none => f.app arg.expr
   | .some coe => (coe.app f).app arg.expr
 
-/-- Counts the number `n` of arguments for an expression `f a₁ .. aₙ` where `f` can be bundled
-morphism. -/
-partial def getAppNumArgs (e : Expr) :=
-  go e 0
-where
-  /-- -/
-  go : Expr → Nat → Nat
-    | .mdata _ b, n => go b n
-    | .app f _  , n =>
-      if f.isAppOfArity' ``DFunLike.coe 5 then
-        go f.appArg! (n + 1)
-      else
-        go f (n + 1)
-    | _        , n => n
 
 /-- Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism. -/
-def withApp {α} (e : Expr) (k : Expr → Array Arg → α) : α :=
-  let nargs := getAppNumArgs e
-  go e (mkArray nargs default) (nargs - 1)
+partial def withApp {α} (e : Expr) (k : Expr → Array Arg → MetaM α) : MetaM α :=
+  go e #[]
 where
   /-- -/
-  go : Expr → Array Arg → Nat → α
-    | .mdata _ b, as, i => go b as i
-    | .app (.app c f) a  , as, i =>
-      if c.isAppOfArity' ``DFunLike.coe 4 then
-        go f (as.set! i ⟨a,.some c⟩) (i-1)
+  go : Expr → Array Arg →  MetaM α
+    | .mdata _ b, as => go b as
+    | .app (.app c f) x, as => do
+      if ← isMorCoe c then
+        go f (as.push { coe := c, expr := x})
       else
-        go (.app c f) (as.set! i ⟨a,.none⟩) (i-1)
-    | .app f a  , as, i =>
-      go f (as.set! i ⟨a,.none⟩) (i-1)
-    | f        , as, _ => k f as
+        go (.app c f) (as.push { expr := x})
+    | .app f a, as =>
+      go f (as.push { expr := a })
+    | f        , as => k f as.reverse
+
 
 /--
 If the given expression is a sequence of morphism applications `f a₁ .. aₙ`, return `f`.
 Otherwise return the input expression.
 -/
-def getAppFn (e : Expr) : Expr :=
+def getAppFn (e : Expr) : MetaM Expr :=
   match e with
   | .mdata _ b => getAppFn b
-  | .app (.app c f) _ =>
-    if c.isAppOfArity' ``DFunLike.coe 4 then
+  | .app (.app c f) _ => do
+    if ← isMorCoe c then
       getAppFn f
     else
       getAppFn (.app c f)
   | .app f _ =>
     getAppFn f
-  | e => e
+  | e => return e
 
 /-- Given `f a₁ a₂ ... aₙ`, returns `#[a₁, ..., aₙ]` where `f` can be bundled morphism. -/
-def getAppArgs (e : Expr) : Array Arg := withApp e fun _ xs => xs
-
+def getAppArgs (e : Expr) : MetaM (Array Arg) := withApp e fun _ xs => return xs
 
 /-- `mkAppN f #[a₀, ..., aₙ]` ==> `f a₀ a₁ .. aₙ` where `f` can be bundled morphism. -/
 def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
@@ -104,115 +143,3 @@ def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
     match x with
     | ⟨x, .none⟩ => (f.app x)
     | ⟨x, .some coe⟩ => (coe.app f).app x)
-
-private partial def getTypeArityAux (type : Expr) (n:Nat) : MetaM Nat := do
-  forallTelescopeReducing type fun xs b => do
-    try
-      let c ← mkAppOptM ``DFunLike.coe #[b,none,none,none]
-      return ← getTypeArityAux (← inferType c) (xs.size-1 + n)
-    catch _ =>
-      return xs.size + n
-
-/-- Get arity of morphism `f`. To get maximal arity of morphism `f`, this function tries to
-synthesize instance of `FunLike` as many times as possible.
--/
-def getArity (f : Expr) : MetaM Nat := do
-  getTypeArityAux (← inferType f) 0
-
-/-- Arity of declared morphism with name `decl`. -/
-def constArity (decl : Name) : MetaM Nat := do
-  let info ← getConstInfo decl
-  return ← getTypeArityAux info.type 0
-
-/-- `(fun x => e) a` ==> `e[x/a]`
-
-An example when coercions are involved:
-`(fun x => ⇑((fun y => e) a)) b` ==> `e[y/a, x/b]`. -/
-def headBeta (e : Expr) : Expr :=
-  Mor.withApp e fun f xs =>
-    xs.foldl (init := f) fun e x =>
-      match x.coe with
-      | none => e.beta #[x.expr]
-      | .some c => (c.app e).app x.expr
-
-end Mor
-
-
-
-/--
-Split morphism function into composition by specifying over which arguments in the lambda body this
-split should be done.
- -/
-def splitMorToCompOverArgs (e : Expr) (argIds : Array Nat) : MetaM (Option (Expr × Expr)) := do
-  let e ←
-    if e.isLambda
-    then pure e
-    else do
-      let X := (← inferType e).bindingDomain!
-      pure (.lam `x X (.app e (.bvar 0)) default)
-
-  match e with
-  | .lam name _ _ _ =>
-    lambdaTelescope e λ xs b => do
-      let x := xs[0]!
-
-      let fn := Mor.getAppFn b
-      let mut args := Mor.getAppArgs b
-
-      let mut lctx ← getLCtx
-      let instances ← getLocalInstances
-
-      let mut yVals : Array Expr := #[]
-      let mut yVars : Array Expr := #[]
-
-      let xIds := xs.map fun x => x.fvarId!
-      let xIds' := xIds[1:].toArray
-
-      for argId in argIds do
-        let yVal := args[argId]!
-
-        -- abstract over trailing arguments
-        let xs'' := xIds'.filterMap
-          (fun xId => if yVal.expr.containsFVar xId then .some (Expr.fvar xId) else .none)
-        let yVal' ← mkLambdaFVars xs'' yVal.expr
-        let yId ← withLCtx lctx instances mkFreshFVarId
-        lctx := lctx.mkLocalDecl yId (name.appendAfter (toString argId)) (← inferType yVal')
-        let yVar := Expr.fvar yId
-        yVars := yVars.push yVar
-        yVals := yVals.push yVal'
-        args := args.set! argId ⟨Lean.mkAppN yVar xs'', yVal.coe⟩
-
-      let g  ← mkLambdaFVars #[x] (← mkProdElem yVals)
-      let f ← withLCtx lctx instances do
-        (mkLambdaFVars (yVars ++ xs[1:]) (Mor.mkAppN fn args))
-        >>=
-        mkUncurryFun yVars.size
-
-      -- `f` should not contain `x`
-      -- if they do then the split is unsuccessful
-      if f.containsFVar xIds[0]! then
-        return none
-
-      return (f, g)
-
-  | _ => return none
-
-
-/--
-Split morphism function into composition by specifying over which arguments in the lambda body this
-split should be done.
- -/
-def splitMorToComp (e : Expr) : MetaM (Option (Expr × Expr)) := do
-  match e with
-  | .lam .. =>
-    lambdaTelescope e λ xs b => do
-      let xId := xs[0]!.fvarId!
-
-      Mor.withApp b fun _ xs =>
-        let argIds := xs
-          |>.mapIdx (fun i x => if x.expr.containsFVar xId then .some i.1 else none)
-          |>.filterMap id
-        splitMorToCompOverArgs e argIds
-
-  | _ =>
-   splitMorToCompOverArgs e #[Mor.getAppNumArgs e]
