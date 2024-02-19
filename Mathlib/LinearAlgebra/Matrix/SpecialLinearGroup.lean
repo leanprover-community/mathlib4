@@ -293,6 +293,7 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
     simpa only [coe_mul, ← hr] using (scalar_commute (n := n) r (Commute.all r) B).symm
 
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
+@[simps]
 def center_equiv_rootsOfUnity' (i : n) :
     center (SpecialLinearGroup n R) ≃* rootsOfUnity (Fintype.card n).toPNat' R where
   toFun A := rootsOfUnity.mkOfPowEq (↑ₘA i i) <| by
