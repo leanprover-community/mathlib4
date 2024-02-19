@@ -91,6 +91,7 @@ variable {R : Type u} [CommRing R] (W : Jacobian R)
 lemma fin3_def (P : Fin 3 → R) : P = ![P x, P y, P z] := by
   ext n; fin_cases n <;> rfl
 
+/-- The scalar multiplication on a point representative. -/
 scoped instance instSMulPoint : SMul Rˣ <| Fin 3 → R :=
   ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
 
@@ -102,6 +103,7 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : Rˣ) :
     (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z :=
   ⟨rfl, rfl, rfl⟩
 
+/-- The multiplicative action on a point representative. -/
 scoped instance instMulActionPoint : MulAction Rˣ <| Fin 3 → R where
   one_smul := fun _ => by
     simp only [smul_fin3, Units.val_one, one_pow, one_mul, ← fin3_def]
@@ -109,6 +111,7 @@ scoped instance instMulActionPoint : MulAction Rˣ <| Fin 3 → R where
     simp only [smul_fin3, Units.val_mul, mul_pow, mul_assoc]
     matrix_simp
 
+/-- The equivalence setoid for a point representative. -/
 scoped instance instSetoidPoint : Setoid <| Fin 3 → R :=
   MulAction.orbitRel Rˣ <| Fin 3 → R
 
