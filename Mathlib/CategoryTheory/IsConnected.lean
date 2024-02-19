@@ -347,10 +347,23 @@ theorem equiv_relation [IsPreconnected J] (r : J → J → Prop) (hr : _root_.Eq
 #align category_theory.equiv_relation CategoryTheory.equiv_relation
 
 /-- In a connected category, any two objects are related by `Zigzag`. -/
-theorem isConnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
+theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
   equiv_relation _ zigzag_equivalence
     (@fun _ _ f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
-#align category_theory.is_connected_zigzag CategoryTheory.isConnected_zigzag
+#align category_theory.is_connected_zigzag CategoryTheory.isPreconnected_zigzag
+
+-- deprecated on 2024-02-19
+@[deprecated] alias isConnected_zigzag := isPreconnected_zigzag
+
+theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by
+  apply IsPreconnected.of_constant_of_preserves_morphisms
+  intro α F hF j j'
+  specialize h j j'
+  induction' h with j₁ j₂ _ hj ih
+  · rfl
+  · rw [ih]
+    rcases hj with (⟨⟨hj⟩⟩|⟨⟨hj⟩⟩)
+    exacts [hF hj, (hF hj).symm]
 
 theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by
   apply IsPreconnected.of_constant_of_preserves_morphisms
@@ -370,7 +383,7 @@ theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂
 
 theorem exists_zigzag' [IsConnected J] (j₁ j₂ : J) :
     ∃ l, List.Chain Zag j₁ l ∧ List.getLast (j₁ :: l) (List.cons_ne_nil _ _) = j₂ :=
-  List.exists_chain_of_relationReflTransGen (isConnected_zigzag _ _)
+  List.exists_chain_of_relationReflTransGen (isPreconnected_zigzag _ _)
 #align category_theory.exists_zigzag' CategoryTheory.exists_zigzag'
 
 /-- If any two objects in a nonempty category are linked by a sequence of (potentially reversed)
@@ -427,11 +440,16 @@ instance [IsConnected J] : Full (Functor.const J : C ⥤ J ⥤ C) where
     ext j
     apply nat_trans_from_is_connected f (Classical.arbitrary J) j
 
-instance nonempty_hom_of_connected_groupoid {G} [Groupoid G] [IsPreconnected G] :
+theorem nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G] :
     ∀ x y : G, Nonempty (x ⟶ y) := by
   refine' equiv_relation _ _ @fun j₁ j₂ => Nonempty.intro
   exact
     ⟨fun j => ⟨𝟙 _⟩, @fun j₁ j₂ => Nonempty.map fun f => inv f, @fun _ _ _ => Nonempty.map2 (· ≫ ·)⟩
-#align category_theory.nonempty_hom_of_connected_groupoid CategoryTheory.nonempty_hom_of_connected_groupoid
+#align category_theory.nonempty_hom_of_connected_groupoid CategoryTheory.nonempty_hom_of_preconnected_groupoid
+
+attribute [instance] nonempty_hom_of_preconnected_groupoid
+
+-- deprecated on 2024-02-19
+@[deprecated] alias nonempty_hom_of_connected_groupoid := nonempty_hom_of_preconnected_groupoid
 
 end CategoryTheory
