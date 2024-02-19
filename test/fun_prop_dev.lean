@@ -110,7 +110,6 @@ instance : FunLike (α -o β) α β where
   coe := fun f => f.toFun
   coe_injective' := silentSorry
 
-attribute [fun_prop_coe] DFunLike.coe
 attribute [fun_prop_coe] ConHom.toFun
 
 instance : HasUncurry (α ->> β) α β :=
@@ -353,6 +352,3 @@ example : let f := fun x : α => x; Con f := by fun_prop
 
 example (f g : α → β) (hf : Con f := by fun_prop) (hg : outParam (Con g)) :
   Con (fun x => f x + g x) := by fun_prop
-
-
-#check DFunLike.coe
