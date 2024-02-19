@@ -311,8 +311,9 @@ noncomputable def map : K.total c₁₂ ⟶ L.total c₁₂ where
     rw [comp_add, add_comp, mapMap_D₁, mapMap_D₂]
 
 @[simp]
-lemma forget_map : (HomologicalComplex.forget C c₁₂).map (map φ c₁₂) =
-  GradedObject.mapMap (toGradedObjectMap φ) _ := rfl
+lemma forget_map :
+    (HomologicalComplex.forget C c₁₂).map (map φ c₁₂) =
+      GradedObject.mapMap (toGradedObjectMap φ) _ := rfl
 
 variable (K) in
 @[simp]
