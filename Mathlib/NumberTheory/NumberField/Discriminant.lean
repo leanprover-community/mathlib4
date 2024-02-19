@@ -31,9 +31,9 @@ number field, discriminant
 
 namespace NumberField
 
-open NumberField Matrix NumberField.InfinitePlace FiniteDimensional
+open FiniteDimensional NumberField NumberField.InfinitePlace Matrix
 
-open scoped Real Classical nonZeroDivisors
+open scoped Classical Real nonZeroDivisors
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -221,23 +221,22 @@ theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
 ### Hermite Theorem
 This section is devoted to the proof of Hermite theorem.
 
-Let `N` be an integer . We prove that the set `S` of finite extension `K` of `ℚ`
+Let `N` be an integer . We prove that the set `S` of finite extensions `K` of `ℚ`
 (in some fixed extension `A` of `ℚ`) such that `|discr K| ≤ N` is finite by proving, using
 `finite_of_finite_generating_set`, that there exists a finite set `T ⊆ A` such that
 `∀ K ∈ S, ∃ x ∈ T, K = ℚ⟮x⟯` .
 
 To find the set `T`, we construct a finite set `T₀` of polynomials in `ℤ[X]` containing, for each
 `K ∈ S`, the minimal polynomial of a primitive element of `K`. The set `T` is then the union of
-roots in `A` of the polynomials in `T₀`. More explicitly, the set `T₀` is the set of all
-polynomials in `ℤ[X]` of degrees and coefficients bounded by some explicit constants depending
-only on `N`.
+roots in `A` of the polynomials in `T₀`. More precisely, the set `T₀` is the set of all polynomials
+in `ℤ[X]` of degrees and coefficients bounded by some explicit constants depending only on `N`.
 
 Indeed, we prove that, for any field `K` in `S`, its degree is bounded, see
 `rank_le_rankOfDiscrBdd`, and also its Minkowski bound, see `minkowskiBound_lt_boundOfDiscBdd`.
 Thus it follows from `mixedEmbedding.exists_primitive_element_lt_of_isComplex` and
-`exists_primitive_element_lt_of_isReal` that there exists an algebraic integer `x` of `K` such that
-`K = ℚ(x)` and the conjugates of `x` are all bounded by some quantity depending only on `N`.
-Therefore, the minimal polynomial of `x` belongs to some finite set `T₀` of polynomials.
+`mixedEmbedding.exists_primitive_element_lt_of_isReal` that there exists an algebraic integer
+`x` of `K` such that `K = ℚ(x)` and the conjugates of `x` are all bounded by some quantity
+depending only on `N`.
 
 Since the primitive element `x` is constructed differently depending on wether `K` has a infinite
 real place or not, the theorem is proved in two parts.
@@ -264,7 +263,7 @@ theorem finite_of_finite_generating_set {p : IntermediateField ℚ A → Prop}
 
 variable (N : ℕ)
 
-/-- An upper bound on the degree of a number field `K` with `|discr K| ≤ N`;
+/-- An upper bound on the degree of a number field `K` with `|discr K| ≤ N`,
 see `rank_le_rankOfDiscrBdd`. -/
 noncomputable abbrev rankOfDiscrBdd : ℕ :=
   max 1 (Nat.floor ((Real.log ((9 / 4 : ℝ) * N) / Real.log (3 * π / 4))))
