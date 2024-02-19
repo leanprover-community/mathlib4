@@ -172,6 +172,7 @@ def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ m
     | star, star, _ => rfl
 
 /-- The pseudofunctor from `Cat` to `Cat` defined with `WithTerminal`. -/
+@[simps]
 def pseudofunctor : Pseudofunctor Cat Cat where
   obj C := Cat.of (WithTerminal C)
   map := map
@@ -470,6 +471,7 @@ def map₂ {D : Type*} [Category D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ m
     | star, star, _ => rfl
 
 /-- The pseudofunctor from `Cat` to `Cat` defined with `WithInitial`. -/
+@[simps]
 def pseudofunctor : Pseudofunctor Cat Cat where
   obj C := Cat.of (WithInitial C)
   map := map
