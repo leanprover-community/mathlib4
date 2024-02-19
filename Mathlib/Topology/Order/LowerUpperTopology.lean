@@ -412,8 +412,7 @@ instance instIsUpperProd [Preorder α] [TopologicalSpace α] [IsUpper α]
     [OrderTop α] [Preorder β] [TopologicalSpace β] [IsUpper β] [OrderTop β] :
     IsUpper (α × β) where
   topology_eq_upperTopology := by
-    suffices : IsLower (α × β)ᵒᵈ
-    · exact IsLower.topology_eq_lowerTopology (α := (α × β)ᵒᵈ)
+    suffices IsLower (α × β)ᵒᵈ from IsLower.topology_eq_lowerTopology (α := (α × β)ᵒᵈ)
     exact instIsLowerProd (α := αᵒᵈ) (β := βᵒᵈ)
 
 section CompleteLattice_IsLower
