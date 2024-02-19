@@ -236,7 +236,7 @@ theorem restrictScalars₂_apply (B : M →ₗ[R] N →ₗ[S] Pₗ) (x : M) (y :
 
 theorem restrictScalars₂_injective : Function.Injective
     (LinearMap.restrictScalars₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
-  fun _ _ h ↦ ext₂ (congr_fun₂ h : _)
+    B.restrictScalars₂ R' S' x y = B x y := rfl
 
 @[simp]
 theorem restrictScalars₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
