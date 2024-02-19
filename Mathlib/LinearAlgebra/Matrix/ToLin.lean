@@ -885,6 +885,12 @@ theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
     Pi.single_apply]
 #align to_matrix_distrib_mul_action_to_linear_map toMatrix_distrib_mul_action_toLinearMap
 
+lemma LinearMap.toMatrix_prodMap [DecidableEq n] [DecidableEq m] [DecidableEq (n ⊕ m)]
+    (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :
+    toMatrix (v₁.prod v₂) (v₁.prod v₂) (φ₁.prodMap φ₂) =
+      Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) := by
+  ext (i|i) (j|j) <;> simp [toMatrix]
+
 end ToMatrix
 
 namespace Algebra
