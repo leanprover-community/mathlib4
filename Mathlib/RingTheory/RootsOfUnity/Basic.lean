@@ -95,6 +95,9 @@ theorem mem_rootsOfUnity' (k : ℕ+) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (�
   rw [mem_rootsOfUnity]; norm_cast
 #align mem_roots_of_unity' mem_rootsOfUnity'
 
+@[simp]
+theorem rootsOfUnity_one (M : Type*) [CommMonoid M] : rootsOfUnity 1 M = ⊥ := by ext; simp
+
 theorem rootsOfUnity.coe_injective {n : ℕ+} :
     Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
   Units.ext.comp fun _ _ => Subtype.eq
