@@ -58,8 +58,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {D : Type uD} [NormedAddC
 
 /-! ### Constants -/
 
--- porting note: TODO: prove `HasFTaylorSeriesUpToOn` theorems for zero and a constant
-
 @[simp]
 theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E => (0 : F)) = 0 := by
   induction' n with n IH
@@ -70,6 +68,17 @@ theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E => 
     rw [fderiv_const]
     rfl
 #align iterated_fderiv_zero_fun iteratedFDeriv_zero_fun
+
+@[simp]
+theorem iteratedFDerivWithin_zero_fun (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} :
+    iteratedFDerivWithin 𝕜 i (fun _ : E ↦ (0 : F)) s x = 0 := by
+  induction i generalizing x with
+  | zero => ext; simp
+  | succ i IH =>
+    ext m
+    rw [iteratedFDerivWithin_succ_apply_left, fderivWithin_congr (fun _ ↦ IH) (IH hx)]
+    rw [fderivWithin_const_apply _ (hs x hx)]
+    rfl
 
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
   contDiff_of_differentiable_iteratedFDeriv fun m _ => by
@@ -119,7 +128,6 @@ theorem contDiffOn_of_subsingleton [Subsingleton F] : ContDiffOn 𝕜 n f s := b
   rw [Subsingleton.elim f fun _ => 0]; exact contDiffOn_const
 #align cont_diff_on_of_subsingleton contDiffOn_of_subsingleton
 
--- porting note: TODO: add a `fderivWithin` version
 theorem iteratedFDeriv_succ_const (n : ℕ) (c : F) :
     (iteratedFDeriv 𝕜 (n + 1) fun _ : E => c) = 0 := by
   ext x
@@ -127,11 +135,26 @@ theorem iteratedFDeriv_succ_const (n : ℕ) (c : F) :
     iteratedFDeriv_zero_fun, comp_apply, LinearIsometryEquiv.map_zero]
 #align iterated_fderiv_succ_const iteratedFDeriv_succ_const
 
+theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 (n + 1) (fun _ : E ↦ c) s x = 0 := by
+  ext m
+  rw [iteratedFDerivWithin_succ_apply_right hs hx]
+  rw [iteratedFDerivWithin_congr (fun y hy ↦ fderivWithin_const_apply c (hs y hy)) hx]
+  rw [iteratedFDerivWithin_zero_fun hs hx]
+  simp [ContinuousMultilinearMap.zero_apply (R := 𝕜)]
+
 theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
     (iteratedFDeriv 𝕜 n fun _ : E => c) = 0 := by
   cases' Nat.exists_eq_succ_of_ne_zero hn with k hk
   rw [hk, iteratedFDeriv_succ_const]
 #align iterated_fderiv_const_of_ne iteratedFDeriv_const_of_ne
+
+theorem iteratedFDerivWithin_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 n (fun _ : E ↦ c) s x = 0 := by
+  cases n with
+  | zero => contradiction
+  | succ n => exact iteratedFDerivWithin_succ_const _ _ hs hx
 
 /-! ### Smoothness of linear functions -/
 
@@ -1428,6 +1451,25 @@ theorem ContDiff.sum {ι : Type*} {f : ι → E → F} {s : Finset ι}
     (h : ∀ i ∈ s, ContDiff 𝕜 n fun x => f i x) : ContDiff 𝕜 n fun x => ∑ i in s, f i x := by
   simp only [← contDiffOn_univ] at *; exact ContDiffOn.sum h
 #align cont_diff.sum ContDiff.sum
+
+theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ} {x : E}
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffOn 𝕜 i (f j) s) :
+    iteratedFDerivWithin 𝕜 i (∑ j in u, f j ·) s x =
+      ∑ j in u, iteratedFDerivWithin 𝕜 i (f j) s x := by
+  induction u using Finset.cons_induction with
+  | empty => ext; simp [hs, hx]
+  | @cons a u ha IH =>
+    simp only [Finset.mem_cons, forall_eq_or_imp] at h
+    simp only [Finset.sum_cons]
+    rw [iteratedFDerivWithin_add_apply' h.1 (ContDiffOn.sum h.2) hs hx, IH h.2]
+
+theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
+    (h : ∀ j ∈ u, ContDiff 𝕜 i (f j)) :
+    iteratedFDeriv 𝕜 i (∑ j in u, f j ·) = ∑ j in u, iteratedFDeriv 𝕜 i (f j) := by
+  simp only [← iteratedFDerivWithin_univ]
+  funext x
+  rw [Finset.sum_apply]
+  exact iteratedFDerivWithin_sum_apply uniqueDiffOn_univ trivial fun j hj ↦ (h j hj).contDiffOn
 
 /-! ### Product of two functions -/
 
