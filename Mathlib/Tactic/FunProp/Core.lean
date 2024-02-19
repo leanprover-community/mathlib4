@@ -308,8 +308,11 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
     "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
 
   for c in candidates do
-    if let .some r ← tryTheorem? e (.decl c.thmName) funProp then
-      return r
+    if ← previouslyUsedThm (.decl c.thmName) then
+      trace[Meta.Tactic.fun_prop] "skipping {c.thmName} to prevent potential loop"
+    else
+      if let .some r ← tryTheorem? e (.decl c.thmName) funProp then
+        return r
 
   trace[Meta.Tactic.fun_prop.step] "no theorem matched"
   return none
@@ -421,7 +424,7 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
   -- none - decomposition not tried
   -- some none - decomposition failed
-  -- some some (f, g) - succesfull decomposition
+  -- some some (f, g) - successful decomposition
   let mut dec? : Option (Option (Expr × Expr)) := none
 
   for thm in thms do

@@ -78,7 +78,7 @@ structure Config where
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
   /-- Maximal number of transitions between function properties
   e.g. inferring differentiability from linearity -/
-  maxDepth := 1000
+  maxDepth := 200
   /-- current depth -/
   depth := 0
   /-- Stack of used theorem, used to prevent trivial loops. -/
@@ -112,17 +112,17 @@ structure Result where
   /-- -/
   proof : Expr
 
-/-- Get the name of previously used theorem. -/
-def getLastUsedTheoremName : FunPropM (Option Name) := do
+/-- Check if previously used theorem was `thmOrigin`. -/
+def previouslyUsedThm (thmOrigin : Origin) : FunPropM Bool := do
   match (← read).thmStack.head? with
-  | .some (.decl n) => return n
-  | _ => return none
+  | .some thmOrigin' => return thmOrigin == thmOrigin'
+  | _ => return false
 
 /-- Puts the theorem to the stack of used theorems. -/
 def withTheorem {α} (thmOrigin : Origin) (go : FunPropM α) : FunPropM α := do
   let cfg ← read
   if cfg.depth > cfg.maxDepth then
-    throwError "fun_prop error; maximum depth reached!"
+    throwError s!"fun_prop error, maximum depth({cfg.maxDepth}) reached!"
   withReader (fun cfg => cfg.addThm thmOrigin |>.increaseDepth) do go
 
 /-- Default names to unfold -/
