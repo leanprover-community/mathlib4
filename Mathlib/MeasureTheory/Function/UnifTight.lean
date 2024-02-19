@@ -135,9 +135,9 @@ end UnifTight
 
 /-- Core lemma to be used in `MeasureTheory.Memℒp.snorm_indicator_compl_le`. -/
 theorem lintegral_indicator_compl_le
-    {g : α → ℝ≥0∞} (haemg : AEMeasurable g μ) (hg : ∫⁻ a, g a ∂μ < ∞)
+    {g : α → ℝ≥0∞} (haemg : AEMeasurable g μ) (hg : ∫⁻ a, g a ∂μ ≠ ∞)
     {ε : ℝ} (hε : 0 < ε) :
-    ∃ (s : Set α) (_ : MeasurableSet s) (_ : μ s < ∞),
+    ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧
       ∫⁻ a in sᶜ, g a ∂μ ≤ ENNReal.ofReal ε := by
   -- come up with an a.e. equal measurable replacement `f` for `g`
   have hmf := haemg.measurable_mk
