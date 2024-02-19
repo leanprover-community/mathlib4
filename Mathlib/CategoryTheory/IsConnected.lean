@@ -365,16 +365,6 @@ theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPrec
     rcases hj with (⟨⟨hj⟩⟩|⟨⟨hj⟩⟩)
     exacts [hF hj, (hF hj).symm]
 
-theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by
-  apply IsPreconnected.of_constant_of_preserves_morphisms
-  intro α F hF j j'
-  specialize h j j'
-  induction' h with j₁ j₂ _ hj ih
-  · rfl
-  · rw [ih]
-    rcases hj with (⟨⟨hj⟩⟩|⟨⟨hj⟩⟩)
-    exacts [hF hj, (hF hj).symm]
-
 /-- If any two objects in a nonempty category are related by `Zigzag`, the category is connected.
 -/
 theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsConnected J :=
