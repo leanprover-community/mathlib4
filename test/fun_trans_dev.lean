@@ -134,7 +134,6 @@ instance : FunLike (α -o β) α β where
   coe := fun f => f.toFun
   coe_injective' := silentSorry
 
-attribute [fun_prop_coe] DFunLike.coe
 
 instance : HasUncurry (α ->> β) α β :=
   ⟨fun f x => f x⟩
@@ -316,4 +315,3 @@ theorem iterate_deriv (n : Nat) (f : α → α) (hf : Con f) :
   induction n
   . simp[iterate]; fun_trans
   . simp[iterate]; fun_trans
-
