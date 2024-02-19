@@ -271,6 +271,24 @@ theorem _root_.IsPrimitiveRoot.dvd_of_isCyclotomicExtension [NumberField K]
   · rw [key, mul_comm] at hr
     simpa [← hr] using _root_.dvd_lcm_left _ _
 
+theorem _root_.IsPrimitiveRoot.exists_neg_pow_mul_pow_of_pow_eq_one [NumberField K]
+    [IsCyclotomicExtension {n} ℚ K] (hno : Odd (n : ℕ)) {ζ x : K} {k : ℕ+}
+    (hζ : IsPrimitiveRoot ζ n) (hx : x ^ (k : ℕ) = 1) : ∃ (r : ℕ), x = (-1) ^ r * ζ ^ r :=  by
+  have hnegζ : IsPrimitiveRoot (-ζ) (2 * n) := by
+    convert IsPrimitiveRoot.orderOf (-ζ)
+    rw [neg_eq_neg_one_mul, (Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime]
+    · simp [hζ.eq_orderOf]
+    · simp [← hζ.eq_orderOf, Nat.odd_iff_not_even.1 hno]
+  obtain ⟨l, hl, hlroot⟩ := (_root_.isRoot_of_unity_iff k.2 _).1 hx
+  have hlzero : NeZero l := ⟨fun h ↦ by simp [h] at hl⟩
+  have : NeZero (l : K) := ⟨NeZero.natCast_ne l K⟩
+  rw [isRoot_cyclotomic_iff] at hlroot
+  obtain ⟨a, ha⟩ := hlroot.dvd_of_isCyclotomicExtension n hlzero.1
+  replace hlroot : x ^ (2 * (n : ℕ)) = 1 := by rw [ha, pow_mul, hlroot.pow_eq_one, one_pow]
+  obtain ⟨s, -, hs⟩ := hnegζ.eq_pow_of_pow_eq_one hlroot (by simp)
+  rw [neg_pow] at hs
+  exact ⟨s, hs.symm⟩
+
 end IsCyclotomicExtension
 
 end NoOrder
