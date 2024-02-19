@@ -3463,6 +3463,7 @@ import Mathlib.Tactic.FunProp.Elab
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.Measurable
 import Mathlib.Tactic.FunProp.Mor
+import Mathlib.Tactic.FunProp.MorExt
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
 import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Tactic.FunProp.Theorems
