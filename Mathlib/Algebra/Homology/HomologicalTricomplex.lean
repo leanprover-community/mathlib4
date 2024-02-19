@@ -17,7 +17,7 @@ abbreviation for `HomologicalComplex (HomologicalComplex₂ C c₂ c₃) c₁`.
 
 -/
 
-open CategoryTheory Limits
+open CategoryTheory Category Limits
 
 variable {C : Type*} [Category C] {I₁ I₂ I₃ I₁₂ I₂₃ J : Type*}
   {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂} {c₃ : ComplexShape I₃}
@@ -147,11 +147,11 @@ noncomputable def ιTotal₁₂OrZero :
     K.ιTotal₁₂ c₁₂ c i₁ i₂ i₃ j h
   else 0
 
-noncomputable def ιTotal₁₂OrZero_eq (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+lemma ιTotal₁₂OrZero_eq (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) = j) :
     K.ιTotal₁₂OrZero c₁₂ c i₁ i₂ i₃ j = K.ιTotal₁₂ c₁₂ c i₁ i₂ i₃ j h := dif_pos h
 
-noncomputable def ιTotal₁₂OrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+lemma ιTotal₁₂OrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) ≠ j) :
     K.ιTotal₁₂OrZero c₁₂ c i₁ i₂ i₃ j = 0 := dif_neg h
 
@@ -163,47 +163,54 @@ variable (i₁ i₁' : I₁) (h₁ : c₁.Rel i₁ i₁')
   (i₂ i₂' : I₂) (h₂ : c₂.Rel i₂ i₂')
   (i₃ i₃' : I₃) (h₃ : c₃.Rel i₃ i₃') (j : J)
 
--- TODO: multiply with the correct signs
-
 noncomputable def d₁ : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
-  ((K.d i₁ (c₁.next i₁)).f i₂).f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
+  (ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) *
+    ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂)) •
+      ((K.d i₁ (c₁.next i₁)).f i₂).f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
 
 noncomputable def d₂ : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
+  (ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) *
+    ComplexShape.ε₂ c₁ c₂ c₁₂ (i₁, i₂)) •
   ((K.X i₁).d i₂ (c₂.next i₂)).f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
 
 noncomputable def d₃ : ((K.X i₁).X i₂).X i₃ ⟶ (K.total₁₂ c₁₂ c).X j :=
-  ((K.X i₁).X i₂).d i₃ (c₃.next i₃) ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
+  ComplexShape.ε₂ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃) •
+    ((K.X i₁).X i₂).d i₃ (c₃.next i₃) ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _
 
 lemma d₁_eq_zero (h : ¬ c₁.Rel i₁ (c₁.next i₁)) : K.d₁ c₁₂ c i₁ i₂ i₃ j = 0 := by
   dsimp [d₁]
   rw [HomologicalComplex.shape _ _ _ h, HomologicalComplex.zero_f,
-    HomologicalComplex.zero_f, zero_comp]
+    HomologicalComplex.zero_f, zero_comp, smul_zero]
 
 lemma d₂_eq_zero (h : ¬ c₂.Rel i₂ (c₂.next i₂)) : K.d₂ c₁₂ c i₁ i₂ i₃ j = 0 := by
   dsimp [d₂]
-  rw [HomologicalComplex.shape _ _ _ h, HomologicalComplex.zero_f, zero_comp]
+  rw [HomologicalComplex.shape _ _ _ h, HomologicalComplex.zero_f, zero_comp, smul_zero]
 
 lemma d₃_eq_zero (h : ¬ c₃.Rel i₃ (c₃.next i₃)) : K.d₃ c₁₂ c i₁ i₂ i₃ j = 0 := by
   dsimp [d₃]
-  rw [HomologicalComplex.shape _ _ _ h, zero_comp]
+  rw [HomologicalComplex.shape _ _ _ h, zero_comp, smul_zero]
 
 section
 
 variable {i₁ i₁'}
 
-lemma d₁_eq' : K.d₁ c₁₂ c i₁ i₂ i₃ j =
-    ((K.d i₁ i₁').f i₂).f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _ := by
+lemma d₁_eq' :
+    K.d₁ c₁₂ c i₁ i₂ i₃ j = (ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) *
+      ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂)) •
+        ((K.d i₁ i₁').f i₂).f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _ := by
   obtain rfl := c₁.next_eq' h₁
   rfl
 
 lemma d₁_eq_zero'
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁', i₂), i₃) ≠ j) :
     K.d₁ c₁₂ c i₁ i₂ i₃ j = 0 := by
-  rw [K.d₁_eq' c₁₂ c h₁, ιTotal₁₂OrZero_eq_zero _ _ _ _ _ _ _ h, comp_zero]
+  rw [K.d₁_eq' c₁₂ c h₁, ιTotal₁₂OrZero_eq_zero _ _ _ _ _ _ _ h, comp_zero, smul_zero]
 
 lemma d₁_eq
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁', i₂), i₃) = j) :
-    K.d₁ c₁₂ c i₁ i₂ i₃ j = ((K.d i₁ i₁').f i₂).f i₃ ≫ ιTotal₁₂ K c₁₂ c i₁' i₂ i₃ j h := by
+    K.d₁ c₁₂ c i₁ i₂ i₃ j = (ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) *
+      ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂)) •
+        ((K.d i₁ i₁').f i₂).f i₃ ≫ ιTotal₁₂ K c₁₂ c i₁' i₂ i₃ j h := by
   rw [K.d₁_eq' c₁₂ c h₁, ιTotal₁₂OrZero_eq _ _ _ _ _ _ _ h]
 
 end
@@ -213,18 +220,23 @@ section
 variable {i₂ i₂'}
 
 lemma d₂_eq' : K.d₂ c₁₂ c i₁ i₂ i₃ j =
-    ((K.X i₁).d i₂ i₂').f i₃ ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _ := by
+    (ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) *
+    ComplexShape.ε₂ c₁ c₂ c₁₂ (i₁, i₂)) • ((K.X i₁).d i₂ i₂').f i₃ ≫
+      K.ιTotal₁₂OrZero c₁₂ c _ _ _ _ := by
   obtain rfl := c₂.next_eq' h₂
   rfl
 
 lemma d₂_eq_zero'
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂'), i₃) ≠ j) :
     K.d₂ c₁₂ c i₁ i₂ i₃ j = 0 := by
-  rw [K.d₂_eq' c₁₂ c i₁ h₂, ιTotal₁₂OrZero_eq_zero _ _ _ _ _ _ _ h, comp_zero]
+  rw [K.d₂_eq' c₁₂ c i₁ h₂, ιTotal₁₂OrZero_eq_zero _ _ _ _ _ _ _ h, comp_zero, smul_zero]
 
 lemma d₂_eq
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂'), i₃) = j) :
-    K.d₂ c₁₂ c i₁ i₂ i₃ j = ((K.X i₁).d i₂ i₂').f i₃ ≫ ιTotal₁₂ K c₁₂ c i₁ i₂' i₃ j h := by
+    K.d₂ c₁₂ c i₁ i₂ i₃ j =
+      (ComplexShape.ε₁ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃) *
+        ComplexShape.ε₂ c₁ c₂ c₁₂ (i₁, i₂)) • ((K.X i₁).d i₂ i₂').f i₃ ≫
+          ιTotal₁₂ K c₁₂ c i₁ i₂' i₃ j h := by
   rw [K.d₂_eq' c₁₂ c i₁ h₂, ιTotal₁₂OrZero_eq _ _ _ _ _ _ _ h]
 
 end
@@ -234,18 +246,20 @@ section
 variable {i₃ i₃'}
 
 lemma d₃_eq' : K.d₃ c₁₂ c i₁ i₂ i₃ j =
-    ((K.X i₁).X i₂).d i₃ i₃' ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _ := by
+    ComplexShape.ε₂ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃) •
+      ((K.X i₁).X i₂).d i₃ i₃' ≫ K.ιTotal₁₂OrZero c₁₂ c _ _ _ _ := by
   obtain rfl := c₃.next_eq' h₃
   rfl
 
 lemma d₃_eq_zero'
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃') ≠ j) :
     K.d₃ c₁₂ c i₁ i₂ i₃ j = 0 := by
-  rw [K.d₃_eq' c₁₂ c i₁ i₂ h₃, ιTotal₁₂OrZero_eq_zero _ _ _ _ _ _ _ h, comp_zero]
+  rw [K.d₃_eq' c₁₂ c i₁ i₂ h₃, ιTotal₁₂OrZero_eq_zero _ _ _ _ _ _ _ h, comp_zero, smul_zero]
 
 lemma d₃_eq
     (h : ComplexShape.π c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ (i₁, i₂), i₃') = j) :
-    K.d₃ c₁₂ c i₁ i₂ i₃ j = ((K.X i₁).X i₂).d i₃ i₃' ≫ ιTotal₁₂ K c₁₂ c i₁ i₂ i₃' j h := by
+    K.d₃ c₁₂ c i₁ i₂ i₃ j = ComplexShape.ε₂ c₁₂ c₃ c (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃) •
+      ((K.X i₁).X i₂).d i₃ i₃' ≫ ιTotal₁₂ K c₁₂ c i₁ i₂ i₃' j h := by
   rw [K.d₃_eq' c₁₂ c i₁ i₂ h₃, ιTotal₁₂OrZero_eq _ _ _ _ _ _ _ h]
 
 end
@@ -310,23 +324,105 @@ lemma ι_D₃ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j j' : J)
     K.ιTotal₁₂ c₁₂ c i₁ i₂ i₃ j h ≫ K.D₃ c₁₂ c j j' = K.d₃ _ _ _ _ _ _ := by
   simp [D₃]
 
-/-lemma int₁₂_D₁ (j j' : J) :
+lemma D₁_shape (j j' : J) (h : ¬ c.Rel j j') : K.D₁ c₁₂ c j j' = 0 := by
+  ext i₁ i₂ i₃ h'
+  rw [ι_D₁, comp_zero]
+  by_cases h₁ : c₁.Rel i₁ (c₁.next i₁)
+  · rw [K.d₁_eq_zero' _ _ h₁]
+    intro h₂
+    apply h
+    rw [← h', ← h₂]
+    exact ComplexShape.rel_π₁ c₃ c (ComplexShape.rel_π₁ c₂ c₁₂ h₁ i₂) i₃
+  · rw [K.d₁_eq_zero _ _ _ _ _ _ h₁]
+
+lemma D₂_shape (j j' : J) (h : ¬ c.Rel j j') : K.D₂ c₁₂ c j j' = 0 := by
+  ext i₁ i₂ i₃ h'
+  rw [ι_D₂, comp_zero]
+  by_cases h₁ : c₂.Rel i₂ (c₂.next i₂)
+  · rw [K.d₂_eq_zero' _ _ _ h₁]
+    intro h₂
+    apply h
+    rw [← h', ← h₂]
+    exact ComplexShape.rel_π₁ c₃ c (ComplexShape.rel_π₂ c₁ c₁₂ i₁ h₁) i₃
+  · rw [K.d₂_eq_zero _ _ _ _ _ _ h₁]
+
+lemma D₃_shape (j j' : J) (h : ¬ c.Rel j j') : K.D₃ c₁₂ c j j' = 0 := by
+  ext i₁ i₂ i₃ h'
+  rw [ι_D₃, comp_zero]
+  by_cases h₁ : c₃.Rel i₃ (c₃.next i₃)
+  · rw [K.d₃_eq_zero' _ _ _ _ h₁]
+    intro h₂
+    apply h
+    rw [← h', ← h₂]
+    exact ComplexShape.rel_π₂ c₁₂ c _ h₁
+  · rw [K.d₃_eq_zero _ _ _ _ _ _ h₁]
+
+lemma int₁₂_D₁ (j j' : J) :
     (int₁₂ K c₁₂).D₁ c j j' = K.D₁ c₁₂ c j j' + K.D₂ c₁₂ c j j' := by
-  sorry
+  by_cases h₀ : c.Rel j j'
+  · apply total₁₂.hom_ext
+    intro i₁ i₂ i₃ h
+    rw [Preadditive.comp_add, ι_D₁, ι_D₂, K.ιTotal₁₂_eq c₁₂ c i₁ i₂ i₃ j h _ rfl, assoc,
+      HomologicalComplex₂.ι_D₁]
+    dsimp
+    let i₁₂ := ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
+    by_cases h₁ : c₁₂.Rel i₁₂ (c₁₂.next i₁₂)
+    · rw [(K.int₁₂ c₁₂).d₁_eq c h₁ i₃ j']; swap
+      · rw [← c.next_eq' h₀, ← h, ComplexShape.next_π₁ c₃ c h₁]
+      dsimp
+      simp only [Preadditive.add_comp, smul_add, Preadditive.comp_add, Linear.comp_units_smul,
+        HomologicalComplex₂.ι_D₁_assoc, HomologicalComplex₂.ι_D₂_assoc]
+      congr 1
+      · by_cases h₂ : c₁.Rel i₁ (c₁.next i₁)
+        · rw [(K.X' i₃).d₁_eq _ h₂ _ _ (ComplexShape.next_π₁ c₂ c₁₂ h₂ i₂).symm,
+            Linear.units_smul_comp, assoc, smul_smul, K.d₁_eq c₁₂ c h₂ i₂ i₃ j']; swap
+          · rw [← c.next_eq' h₀, ← h, ComplexShape.next_π₁ c₃ c h₁,
+              ComplexShape.next_π₁ c₂ c₁₂ h₂ i₂]
+          congr 2
+          symm
+          apply K.ιTotal₁₂_eq
+        · rw [(K.X' i₃).d₁_eq_zero _ _ _ _ h₂, zero_comp, smul_zero,
+            K.d₁_eq_zero _ _ _ _ _ _ h₂]
+      · by_cases h₂ : c₂.Rel i₂ (c₂.next i₂)
+        · rw [(K.X' i₃).d₂_eq _ _ h₂ _ (ComplexShape.next_π₂ c₁ c₁₂ i₁ h₂).symm,
+            Linear.units_smul_comp, assoc, smul_smul, K.d₂_eq c₁₂ c i₁ h₂ i₃ j']; swap
+          · rw [← c.next_eq' h₀, ← h, ← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₂,
+              ComplexShape.next_π₁ c₃ c h₁ i₃]
+          congr 2
+          symm
+          apply K.ιTotal₁₂_eq
+        · rw [(K.X' i₃).d₂_eq_zero _ _ _ _ h₂, zero_comp, smul_zero,
+            K.d₂_eq_zero _ _ _ _ _ _ h₂]
+    · rw [(K.int₁₂ c₁₂).d₁_eq_zero _ _ _ _ h₁, K.d₁_eq_zero, K.d₂_eq_zero, zero_add, comp_zero]
+      · intro h₂
+        have H := ComplexShape.rel_π₂ c₁ c₁₂ i₁ h₂
+        rw [c₁₂.next_eq' H] at h₁
+        exact h₁ H
+      · intro h₂
+        have H := ComplexShape.rel_π₁ c₂ c₁₂ h₂ i₂
+        rw [c₁₂.next_eq' H] at h₁
+        exact h₁ H
+  · rw [(K.int₁₂ c₁₂).D₁_shape _ _ _ h₀, K.D₁_shape _ _ _ _ h₀, K.D₂_shape _ _ _ _ h₀, zero_add]
 
 lemma int₁₂_D₂ (j j' : J) : (int₁₂ K c₁₂).D₂ c j j' = K.D₃ c₁₂ c j j' :=
-  HomologicalComplex₂.total.hom_ext (fun i₁₂ i₃ h =>
-    HomologicalComplex₂.total.hom_ext (fun i₁ i₂ h' => by
-      dsimp
-      rw [HomologicalComplex₂.ι_D₂, ← K.ιTotal₁₂_eq_assoc c₁₂ c i₁ i₂ i₃ j (by rw [h', h]) i₁₂ h',
-        ι_D₃]
-      sorry))
+  total₁₂.hom_ext (fun i₁ i₂ i₃ h => by
+    rw [ι_D₃, K.ιTotal₁₂_eq_assoc c₁₂ c i₁ i₂ i₃ j h _ rfl, HomologicalComplex₂.ι_D₂]
+    dsimp
+    by_cases h₁ : c₃.Rel i₃ (c₃.next i₃)
+    · by_cases h₂ : ComplexShape.π c₁₂ c₃ c
+        (ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, ComplexShape.next c₃ i₃) = j'
+      · rw [(K.int₁₂ c₁₂).d₂_eq c _ h₁ j' h₂, Linear.comp_units_smul, int₁₂_X_d,
+          GradedObject.ι_mapMap_assoc, K.d₃_eq c₁₂ c i₁ i₂ h₁ j' (by rw [← h₂])]
+        rfl
+      · rw [(K.int₁₂ c₁₂).d₂_eq_zero' c _ h₁ j' h₂, comp_zero,
+          K.d₃_eq_zero' c₁₂ c i₁ i₂ h₁ j' (fun h₃ => h₂ (by rw [← h₃]))]
+    · rw [(K.int₁₂ c₁₂).d₂_eq_zero c _ i₃ j' h₁, comp_zero, K.d₃_eq_zero c₁₂ c i₁ i₂ i₃ j' h₁])
 
 @[simp]
 lemma total₁₂_d (j j' : J) :
     (K.total₁₂ c₁₂ c).d j j' = K.D₁ c₁₂ c j j' + K.D₂ c₁₂ c j j' + K.D₃ c₁₂ c j j' := by
   dsimp [total₁₂]
-  rw [int₁₂_D₁, int₁₂_D₂]-/
+  rw [int₁₂_D₁, int₁₂_D₂]
 
 end
 
@@ -341,20 +437,40 @@ variable [K.HasTotal₂₃ c₂₃ c]
 noncomputable def total₂₃ : HomologicalComplex C c :=
   (K.int₂₃ c₂₃).total c
 
-noncomputable def ιTotal₂₃ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+section
+
+variable (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+
+noncomputable def ιTotal₂₃
     (h : ComplexShape.π c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) = j) :
     ((K.X i₁).X i₂).X i₃ ⟶ (K.total₂₃ c₂₃ c).X j :=
   (K.X i₁).ιTotal c₂₃ i₂ i₃ _ rfl ≫
     (K.int₂₃ c₂₃).ιTotal c i₁ (ComplexShape.π c₂ c₃ c₂₃ ⟨i₂, i₃⟩) j h
 
 @[reassoc]
-lemma ιTotal₂₃_eq (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+lemma ιTotal₂₃_eq
     (h : ComplexShape.π c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) = j)
     (i₂₃ : I₂₃) (h' : ComplexShape.π c₂ c₃ c₂₃ ⟨i₂, i₃⟩ = i₂₃) :
     K.ιTotal₂₃ c₂₃ c i₁ i₂ i₃ j h = (K.X i₁).ιTotal c₂₃ i₂ i₃ i₂₃ h' ≫
     (K.int₂₃ c₂₃).ιTotal c i₁ i₂₃ j (by rw [← h', h]) := by
   subst h'
   rfl
+
+noncomputable def ιTotal₂₃OrZero :
+    ((K.X i₁).X i₂).X i₃ ⟶ (K.total₂₃ c₂₃ c).X j :=
+  if h : ComplexShape.π c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) = j then
+    K.ιTotal₂₃ c₂₃ c i₁ i₂ i₃ j h
+  else 0
+
+lemma ιTotal₂₃OrZero_eq
+    (h : ComplexShape.π c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) = j) :
+    K.ιTotal₂₃OrZero c₂₃ c i₁ i₂ i₃ j = K.ιTotal₂₃ c₂₃ c i₁ i₂ i₃ j h := dif_pos h
+
+lemma ιTotal₂₃OrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j : J)
+    (h : ComplexShape.π c₁ c₂₃ c (i₁, ComplexShape.π c₂ c₃ c₂₃ (i₂, i₃)) ≠ j) :
+    K.ιTotal₂₃OrZero c₂₃ c i₁ i₂ i₃ j = 0 := dif_neg h
+
+end
 
 section
 
@@ -403,11 +519,7 @@ noncomputable def totalAssociatorX (j : J) : (K.total₁₂ c₁₂ c).X j ≅ (
 lemma totalAssociatorX_hom_d (j j' : J) :
     (K.totalAssociatorX c₁₂ c₂₃ c j).hom ≫ (K.total₂₃ c₂₃ c).d j j' =
       (K.total₁₂ c₁₂ c).d j j' ≫ (K.totalAssociatorX c₁₂ c₂₃ c j').hom := by
-  by_cases h₁ : c.Rel j j'
-  · ext i₁ i₂ i₃ h₂
-    dsimp
-    sorry
-  · simp only [HomologicalComplex.shape _ _ _ h₁, zero_comp, comp_zero]
+  sorry
 
 noncomputable def totalAssociator : K.total₁₂ c₁₂ c ≅ K.total₂₃ c₂₃ c :=
   HomologicalComplex.Hom.isoOfComponents (K.totalAssociatorX c₁₂ c₂₃ c)
