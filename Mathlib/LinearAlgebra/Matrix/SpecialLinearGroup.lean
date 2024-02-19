@@ -303,22 +303,17 @@ def center_equiv_rootsOfUnity' (i : n) :
   invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
     Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
   left_inv A := by
-    refine SetCoe.ext $ SetCoe.ext ?_
+    refine SetCoe.ext <| SetCoe.ext ?_
     obtain ⟨r, _, hr⟩ := mem_center_iff.mp A.property
-    simp only [instHSMul, SMul.smul, Submonoid.coe_subtype, ← hr, scalar_apply, diagonal, of_apply,
-      ↓reduceIte, SMul.comp.smul]
-    aesop
+    simpa [← hr, Submonoid.smul_def, Units.smul_def] using smul_one_eq_diagonal r
   right_inv a := by
     obtain ⟨⟨a, _⟩, ha⟩ := a
     refine SetCoe.ext <| Units.eq_iff.mp <| by simp
   map_mul' A B := by
-    simp only
-    have hAB : (A * B).val.val = A.val.val * B.val.val := by simp
-    conv_lhs => arg 1; rw [hAB]
-    refine SetCoe.ext <| Units.eq_iff.mp ?_
-    obtain ⟨_, _, hA⟩ := mem_center_iff.mp A.property
-    obtain ⟨_, _, hB⟩ := mem_center_iff.mp B.property
-    simp [@mul_apply, ← hA, ← hB, scalar_apply, diagonal]
+    ext
+    simp only [Submonoid.coe_mul, coe_mul, rootsOfUnity.val_mkOfPowEq_coe, Units.val_mul]
+    rw [← scalar_eq_coe_self_center A i, ← scalar_eq_coe_self_center B i]
+    simp
 
 open Classical in
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity.
