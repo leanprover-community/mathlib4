@@ -353,15 +353,15 @@ local notation "⟪" x ", " y "⟫" => @inner ℝ V _ x y
 local notation "e" => Real.fourierChar
 
 variable (V)
-def innerₗ : V →ₗ[ℝ] V →ₗ[ℝ] ℝ := innerₛₗ ℝ
+def _root_.innerₗ : V →ₗ[ℝ] V →ₗ[ℝ] ℝ := innerₛₗ ℝ
 
-@[simp] lemma flip_innerₗ : (innerₗ V).flip = innerₗ V := by
+@[simp] lemma _root_.flip_innerₗ : (innerₗ V).flip = innerₗ V := by
   ext v w
   exact real_inner_comm v w
 
 variable {V}
 
-@[simp] lemma innerₗ_apply (v w : V) : innerₗ V v w = ⟪v, w⟫ := rfl
+@[simp] lemma _root_.innerₗ_apply (v w : V) : innerₗ V v w = ⟪v, w⟫ := rfl
 
 /-- The Fourier transform of a function on an inner product space. -/
 def fourierIntegral (f : V → E) (w : V) : E :=
@@ -378,9 +378,17 @@ def fourierIntegralInv (f : V → E) (w : V) : E :=
 lemma fourierIntegral_eq (f : V → E) (w : V) :
     𝓕ᵢ f w = ∫ v, e[-⟪v, w⟫] • f v := rfl
 
+lemma fourierIntegral_eq' (f : V → E) (w : V) :
+    𝓕ᵢ f w = ∫ v, Complex.exp ((↑(-2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
+  simp_rw [fourierIntegral_eq, Real.fourierChar_apply, mul_neg, neg_mul]
+
 lemma fourierIntegralInv_eq (f : V → E) (w : V) :
     𝓕ᵢ⁻ f w = ∫ v, e[⟪v, w⟫] • f v := by
   simp [fourierIntegralInv, VectorFourier.fourierIntegral]
+
+lemma fourierIntegralInv_eq' (f : V → E) (w : V) :
+    𝓕ᵢ⁻ f w = ∫ v, Complex.exp ((↑(2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
+  simp_rw [fourierIntegralInv_eq, Real.fourierChar_apply]
 
 lemma fourierIntegralInv_eq_fourierIntegral_neg (f : V → E) (w : V) :
     𝓕ᵢ⁻ f w = 𝓕ᵢ f (-w) := by
