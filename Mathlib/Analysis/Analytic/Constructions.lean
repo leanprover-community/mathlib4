@@ -52,7 +52,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
       refine (isBigO_of_le _ fun n ↦ ?_).trans this.isBigO
       rw [norm_mul, norm_norm, norm_mul, norm_norm]
       refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-      rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
+      rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
       try apply le_max_left
       try apply le_max_right }
   · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
@@ -62,7 +62,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
     refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ λ n ↦ ?_).trans this)
     rw [norm_mul, norm_norm, ← add_mul, norm_mul]
     refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
-    rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
+    rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
     refine (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)).trans ?_
     apply Real.le_norm_self
 
@@ -211,7 +211,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
   apply le_antisymm
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← coe_one, ENNReal.coe_le_coe]
+    rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
     have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
     contrapose! this

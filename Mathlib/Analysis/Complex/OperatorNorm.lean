@@ -39,7 +39,7 @@ theorem reCLM_norm : ‖reCLM‖ = 1 :=
   le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _) <|
     calc
       1 = ‖reCLM 1‖ := by simp
-      _ ≤ ‖reCLM‖ := unit_le_op_norm _ _ (by simp)
+      _ ≤ ‖reCLM‖ := unit_le_opNorm _ _ (by simp)
 #align complex.re_clm_norm Complex.reCLM_norm
 
 @[simp]
@@ -52,7 +52,7 @@ theorem imCLM_norm : ‖imCLM‖ = 1 :=
   le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _) <|
     calc
       1 = ‖imCLM I‖ := by simp
-      _ ≤ ‖imCLM‖ := unit_le_op_norm _ _ (by simp)
+      _ ≤ ‖imCLM‖ := unit_le_opNorm _ _ (by simp)
 #align complex.im_clm_norm Complex.imCLM_norm
 
 @[simp]
