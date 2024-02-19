@@ -121,8 +121,8 @@ lemma LSeriesSummable.le_const_mul_rpow {f : ArithmeticFunction ℂ} {s : ℂ}
   replace h := h.norm
   by_contra! H
   obtain ⟨n, hn⟩ := H (tsum fun n ↦ ‖f n / n ^ s‖)
-  have hn₀ : 0 < n
-  · refine n.eq_zero_or_pos.resolve_left ?_
+  have hn₀ : 0 < n := by
+    refine n.eq_zero_or_pos.resolve_left ?_
     rintro rfl
     rw [map_zero, norm_zero, Nat.cast_zero, mul_neg_iff] at hn
     replace hn := hn.resolve_left <| fun hh ↦ hh.2.not_le <| Real.rpow_nonneg (le_refl 0) s.re
@@ -135,14 +135,13 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ArithmeticFunction ℂ} {x : ℝ
     (hs : x < s.re) (h : ∃ C, ∀ n, ‖f n‖ ≤ C * n ^ (x - 1)) :
     LSeriesSummable f s := by
   obtain ⟨C, hC⟩ := h
-  have hC₀ : 0 ≤ C
-  · specialize hC 1
+  have hC₀ : 0 ≤ C := by
+    specialize hC 1
     simp only [cast_one, Real.one_rpow, mul_one] at hC
     exact (norm_nonneg _).trans hC
-  have hsum : Summable fun n : ℕ ↦ ‖(C : ℂ) / n ^ (s + (1 - x))‖
-  · simp_rw [div_eq_mul_inv, norm_mul, ← cpow_neg]
-    have hsx : -s.re + x - 1 < -1
-    · linarith only [hs]
+  have hsum : Summable fun n : ℕ ↦ ‖(C : ℂ) / n ^ (s + (1 - x))‖ := by
+    simp_rw [div_eq_mul_inv, norm_mul, ← cpow_neg]
+    have hsx : -s.re + x - 1 < -1 := by linarith only [hs]
     refine Summable.mul_left _ <|
       Summable.of_norm_bounded_eventually_nat (fun n ↦ (n : ℝ) ^ (-s.re + x - 1)) ?_ ?_
     · simp only [Real.summable_nat_rpow, hsx]
