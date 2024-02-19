@@ -165,17 +165,19 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     have hm₂ : m < 2 * m := by simpa [two_mul]
     apply_fun (Nat.cast : ℕ → ℤ) at habcd
     push_cast [mul_assoc] at habcd
-    obtain ⟨_, _, _, _, h⟩ := sum_four_squares_of_two_mul_sum_four_squares habcd :=
-      hmin m hm₂ ⟨hm₂.trans hmp, hm₀, _, _, _, _, natAbs_iff.2 h⟩
+    obtain ⟨_, _, _, _, h⟩ := sum_four_squares_of_two_mul_sum_four_squares habcd
+    exact hmin m hm₂ ⟨hm₂.trans hmp, hm₀, _, _, _, _, natAbs_iff.2 h⟩
   · -- For each `x` in `a`, `b`, `c`, `d`, take a number `f x ≡ x [ZMOD m]` with least possible
     -- absolute value
-    obtain ⟨f, hf_lt, hf_mod⟩ : ∃ f : ℕ → ℤ, (∀ x, 2 * (f x).natAbs < m) ∧ ∀ x, (f x : ZMod m) = x := by
+    obtain ⟨f, hf_lt, hf_mod⟩ :
+        ∃ f : ℕ → ℤ, (∀ x, 2 * (f x).natAbs < m) ∧ ∀ x, (f x : ZMod m) = x := by
       refine ⟨fun x ↦ (x : ZMod m).valMinAbs, fun x ↦ ?_, fun x ↦ (x : ZMod m).coe_valMinAbs⟩
       exact (mul_le_mul' le_rfl (x : ZMod m).natAbs_valMinAbs_le).trans_lt
         (Nat.mul_div_lt_iff_not_dvd.2 hm)
     -- Since `|f x| ^ 2 = (f x) ^ 2 ≡ x ^ 2 [ZMOD m]`, we have
     -- `m ∣ |f a| ^ 2 + |f b| ^ 2 + |f c| ^ 2 + |f d| ^ 2`
-    obtain ⟨r, hr⟩ : m ∣ (f a).natAbs ^ 2 + (f b).natAbs ^ 2 + (f c).natAbs ^ 2 + (f d).natAbs ^ 2 := by
+    obtain ⟨r, hr⟩ :
+        m ∣ (f a).natAbs ^ 2 + (f b).natAbs ^ 2 + (f c).natAbs ^ 2 + (f d).natAbs ^ 2 := by
       simp only [← Int.coe_nat_dvd, ← ZMod.int_cast_zmod_eq_zero_iff_dvd]
       push_cast [hf_mod, sq_abs]
       norm_cast
