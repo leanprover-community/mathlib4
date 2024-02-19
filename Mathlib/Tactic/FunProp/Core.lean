@@ -531,7 +531,10 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     if let .some r ← applyMorRules funPropDecl e fData funProp then
       return r
 
-  if (← fData.nontrivialDecomposition).isNone then
+  if let .some (f,g) ← fData.nontrivialDecomposition then
+    if let .some r ← applyCompRule funPropDecl e f g funProp then
+      return r
+  else
     if let .some r ← applyTransitionRules e funProp then
       return r
 
