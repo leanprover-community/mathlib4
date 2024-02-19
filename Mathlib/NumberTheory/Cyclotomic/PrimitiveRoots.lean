@@ -203,7 +203,7 @@ theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p
   · simp
   let k := Nat.lcm p q
   have hkpos : 0 < k := Nat.pos_of_ne_zero (Nat.lcm_ne_zero hppos.ne' hqpos.ne')
-  let xu := (hx.isUnit hppos).unit
+  obtain ⟨xu, rfl⟩ := hx.isUnit hppos
   let yu := (hy.isUnit hqpos).unit
   have hxmem : xu ∈ rootsOfUnity ⟨k, hkpos⟩ L :=  by
     rw [mem_rootsOfUnity, PNat.mk_coe, ← Units.val_eq_one, Units.val_pow_eq_pow_val,
