@@ -21,6 +21,8 @@ in the do block are combined.
 
 -/
 
+/-! StateList -/
+
 namespace Mathlib.Meta.FunProp
 
 universe u v

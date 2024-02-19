@@ -27,7 +27,7 @@ namespace Meta.FunProp
 def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
   match (← trySynthInstance type) with
   | LOption.some val =>
-    if (← withReducibleAndInstances <| isDefEq x val) then
+    if (← /- withReducibleAndInstances <|-/ isDefEq x val) then
       return true
     else
       trace[Meta.Tactic.fun_prop.discharge]
@@ -483,7 +483,8 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
     let thms ← getLocalTheorems funPropDecl (.fvar id) fData.mainArgs fData.args.size
     trace[Meta.Tactic.fun_prop]
-      s!"candidate local theorems for {←ppExpr (.fvar id)} {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
+      s!"candidate local theorems for {←ppExpr (.fvar id)}
+         {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
 
     if let .some r ← tryTheorems funPropDecl e fData thms funProp then
       return r

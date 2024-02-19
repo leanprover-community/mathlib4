@@ -72,7 +72,8 @@ def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
 /-- `fun_prop` configuration -/
 structure Config where
   /-- Name to unfold -/
-  constToUnfold : Std.RBSet Name Name.quickCmp := .ofArray #[`id, `Function.comp, `Function.HasUncurry.uncurry] _
+  constToUnfold : Std.RBSet Name Name.quickCmp :=
+    .ofArray #[`id, `Function.comp, `Function.HasUncurry.uncurry] _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
   /-- Maximal number of transitions between function properties
