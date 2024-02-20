@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 #align_import measure_theory.integral.peak_function from "leanprover-community/mathlib"@"13b0d72fd8533ba459ac66e9a885e35ffabb32b2"
 
@@ -188,7 +189,7 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto_aux
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
-has a limit `a` at `x₀`, then `∫ φᵢ • g` converges to `a`. -/
+has a limit `a` at `x₀`, then `∫ φᵢ • g` converges to `a`. Version localized to a subset. -/
 theorem tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto
     (hs : MeasurableSet s) {t : Set α} (ht : MeasurableSet t) (hts : t ⊆ s) (h'ts : t ∈ 𝓝[s] x₀)
     (h't : μ t ≠ ∞) (hnφ : ∀ᶠ i in l, ∀ x ∈ s, 0 ≤ φ i x)
@@ -226,6 +227,23 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto
 #align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto
 @[deprecated] alias tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt :=
   tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto -- deprecated on 2024-02-20
+
+/-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
+integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
+has a limit `a` at `x₀`, then `∫ φᵢ • g` converges to `a`. -/
+theorem tendsto_integral_peak_smul_of_integrable_of_tendsto
+    {t : Set α} (ht : MeasurableSet t) (h'ts : t ∈ 𝓝 x₀)
+    (h't : μ t ≠ ∞) (hnφ : ∀ᶠ i in l, ∀ x, 0 ≤ φ i x)
+    (hlφ : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 l uᶜ)
+    (hiφ : Tendsto (fun i ↦ ∫ x in t, φ i x ∂μ) l (𝓝 1))
+    (h'iφ : ∀ᶠ i in l, AEStronglyMeasurable (φ i) μ)
+    (hmg : Integrable g μ) (hcg : Tendsto g (𝓝 x₀) (𝓝 a)) :
+    Tendsto (fun i : ι ↦ ∫ x, φ i x • g x ∂μ) l (𝓝 a) := by
+  suffices Tendsto (fun i : ι ↦ ∫ x in univ, φ i x • g x ∂μ) l (𝓝 a) by simpa
+  exact tendsto_set_integral_peak_smul_of_integrableOn_of_tendsto MeasurableSet.univ ht (x₀ := x₀)
+    (subset_univ _) (by simpa [nhdsWithin_univ]) h't (by simpa)
+    (by simpa [← compl_eq_univ_diff] using hlφ) hiφ
+    (by simpa) (by simpa) (by simpa [nhdsWithin_univ])
 
 /-!
 ### Peak functions of the form `x ↦ (c x) ^ n / ∫ (c y) ^ n`
@@ -378,12 +396,43 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuo
 #align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_continuous_on tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn
 
 /-!
-### Peak functions of the form `x ↦ c ^ (-dim) φ (c x)`
+### Peak functions of the form `x ↦ c ^ dim * φ (c x)`
 -/
+
+open FiniteDimensional Bornology
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]
 
-theorem glouk (f : F → ℝ) (hf : ∀ x, 0 ≤ f x) (h'f : ∫ x, f x ∂μ = 1)
-  (g : F → E) (hg : Integrable E) (h'g : ContinuousAt g 0) :
-  Tendsto (fun c ↦ ∫ )
+theorem glouk {φ : F → ℝ} (hφ : ∀ x, 0 ≤ φ x) (h'φ : ∫ x, φ x ∂μ = 1)
+    (h : Tendsto (fun x ↦ ‖x‖ ^ finrank ℝ F * φ x) (cobounded F) (𝓝 0))
+    (g : F → E) (hg : Integrable g μ) (h'g : ContinuousAt g 0) :
+    Tendsto (fun (c : ℝ) ↦ ∫ x, (c ^ (finrank ℝ F) * φ (c • x)) • g x ∂μ) atTop (𝓝 (g 0)) := by
+  have I : Integrable φ μ := (integrable_of_integral_eq_one h'φ)
+  apply tendsto_integral_peak_smul_of_integrable_of_tendsto (t := closedBall 0 1) (x₀ := 0)
+  · exact isClosed_ball.measurableSet
+  · exact closedBall_mem_nhds _ zero_lt_one
+  · exact (isCompact_closedBall 0 1).measure_ne_top
+  · filter_upwards [Ici_mem_atTop 0] with c (hc : 0 ≤ c) x using mul_nonneg (by positivity) (hφ _)
+  · intro u u_open hu
+    apply tendstoUniformlyOn_iff.2 (fun ε εpos ↦ ?_)
+    obtain ⟨δ, δpos, h'u⟩ : ∃ δ > 0, ball 0 δ ⊆ u := Metric.isOpen_iff.1 u_open _ hu
+    obtain ⟨M, hM⟩ : ∃ M, ∀ ⦃x : F⦄, x ∈ (closedBall 0 M)ᶜ →
+        ‖x‖ ^ finrank ℝ F * φ x < δ ^ finrank ℝ E * ε := by
+      simpa using (hasBasis_cobounded_compl_closedBall (0 : F)).eventually_iff.1
+        ((tendsto_order.1 h).2 (δ ^ finrank ℝ E * ε) (by positivity))
+    filter_upwards [Ici_mem_atTop (M / δ)] with c (hc : M / δ ≤ c) x hx
+    simp [abs_of_nonneg (hφ _)]
+    have : c • x ∈ (closedBall 0 M)ᶜ := sorry
+    have Z := hM this
+
+  · have : Tendsto (fun c ↦ ∫ (x : F) in closedBall 0 c, φ x ∂μ) atTop (𝓝 1) := by
+      rw [← h'φ]
+      exact (aecover_closedBall tendsto_id).integral_tendsto_of_countably_generated I
+    apply this.congr'
+    filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
+    rw [integral_mul_left, set_integral_comp_smul_of_pos _ _ _ hc, smul_eq_mul, ← mul_assoc,
+      mul_inv_cancel (by positivity), _root_.smul_closedBall _ _ zero_le_one]
+    simp [abs_of_nonneg hc.le]
+  · filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
+    exact (I.comp_smul hc.ne').aestronglyMeasurable.const_mul _
