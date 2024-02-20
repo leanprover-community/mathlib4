@@ -298,9 +298,6 @@ lemma cfc_eqOn_of_eq {f g : R → R} (h : cfc a f = cfc a g) (ha : p a := by cfc
   intro x hx
   congrm($(this) ⟨x, hx⟩)
 
--- MOVE ME
-attribute [fun_prop] continuous_one continuous_zero
-
 lemma cfc_const (r : R) (ha : p a := by cfc_tac) :
     cfc a (fun _ ↦ r) = algebraMap R A r := by
   have h₁ := cfc_apply a (fun _ : R ↦ r)
@@ -414,23 +411,6 @@ lemma cfc_eval_C (r : R) (ha : p a := by cfc_tac) :
     cfc a (C r).eval = algebraMap R A r := by
   simp [cfc_const a r]
 
--- MOVE ME
-attribute [fun_prop]
-  Polynomial.continuous
-  Polynomial.continuousOn
-  Polynomial.continuousAt
-
--- MOVE ME
-@[fun_prop]
-theorem Continuous.comp_continuousOn'
-    {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {g : β → γ}
-    {f : α → β} {s : Set α} (hg : Continuous g) (hf : ContinuousOn f s) :
-    ContinuousOn (fun x ↦ g (f x)) s :=
-  hg.comp_continuousOn hf
-
--- TODO: fix docstring of `ContinuousMap.compRightAlgHom`
--- can we get a better proof of this by using the underlying `StarAlgHom`?
--- answer: we could, but it's probably not any / much shorter.
 lemma cfc_map_polynomial (q : R[X]) (f : R → R) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
     cfc a (fun x ↦ q.eval (f x)) = aeval (cfc a f) q := by
