@@ -529,6 +529,14 @@ theorem ball_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Pro
 
 #align ne_of_apply_ne ne_of_apply_ne
 
+lemma ne_of_eq_of_ne (h₁ : a = b) (h₂ : b ≠ c) : a ≠ c := h₁.symm ▸ h₂
+lemma ne_of_ne_of_eq (h₁ : a ≠ b) (h₂ : b = c) : a ≠ c := h₂ ▸ h₁
+
+alias Eq.trans_ne := ne_of_eq_of_ne
+alias Ne.trans_eq := ne_of_ne_of_eq
+#align eq.trans_ne Eq.trans_ne
+#align ne.trans_eq Ne.trans_eq
+
 theorem eq_equivalence : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
 #align eq_equivalence eq_equivalence
