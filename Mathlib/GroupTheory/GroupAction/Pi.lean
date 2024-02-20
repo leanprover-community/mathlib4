@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Data.Set.Function
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Data.Set.Function
 
@@ -17,10 +16,10 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 
 ## See also
 
-* `GroupTheory.GroupAction.Option`
-* `GroupTheory.GroupAction.Prod`
-* `GroupTheory.GroupAction.Sigma`
-* `GroupTheory.GroupAction.Sum`
+* `GroupTheory.GroupAction.option`
+* `GroupTheory.GroupAction.prod`
+* `GroupTheory.GroupAction.sigma`
+* `GroupTheory.GroupAction.sum`
 -/
 
 

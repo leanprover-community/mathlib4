@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Jireh Loreaux
 -/
 import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.NormedSpace.WithLp
 import Mathlib.Data.Fintype.Order
 import Mathlib.LinearAlgebra.Matrix.Basis
+import Mathlib.Analysis.NormedSpace.WithLp
 
 #align_import analysis.normed_space.pi_Lp from "leanprover-community/mathlib"@"9d013ad8430ddddd350cff5c3db830278ded3c79"
 
