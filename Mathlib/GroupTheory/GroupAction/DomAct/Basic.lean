@@ -110,7 +110,8 @@ run_cmd
     `RightCancelSemigroup, `MulOneClass, `Monoid, `CommMonoid, `LeftCancelMonoid,
     `RightCancelMonoid, `CancelMonoid, `CancelCommMonoid, `InvolutiveInv, `DivInvMonoid,
     `InvOneClass, `DivInvOneMonoid, `DivisionMonoid, `DivisionCommMonoid, `Group,
-    `CommGroup].map Lean.mkIdent do
+    `CommGroup, `NonAssocSemiring, `NonUnitalSemiring, `NonAssocSemiring, `Semiring,
+    `Ring, `CommRing].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
     @[to_additive] instance [$n Mᵐᵒᵖ] : $n Mᵈᵐᵃ := ‹_›
   ))
