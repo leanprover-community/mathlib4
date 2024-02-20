@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.BundledSet.Weaken
 
 #align_import order.chain from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
@@ -289,96 +289,79 @@ end Chain
 
 /-! ### Flags -/
 
-
 /-- The type of flags, aka maximal chains, of an order. -/
-structure Flag (α : Type*) [LE α] where
-  /-- The `carrier` of a flag is the underlying set. -/
-  carrier : Set α
-  /-- By definition, a flag is a chain -/
-  Chain' : IsChain (· ≤ ·) carrier
-  /-- By definition, a flag is a maximal chain -/
-  max_chain' : ∀ ⦃s⦄, IsChain (· ≤ ·) s → carrier ⊆ s → carrier = s
+abbrev Flag (α : Type*) [LE α] := BundledSet α (IsMaxChain (· ≤ ·))
 #align flag Flag
 
-namespace Flag
+namespace BundledSet
 
 section LE
 
-variable [LE α] {s t : Flag α} {a : α}
+variable [LE α] {p : Set α → Prop}
 
-instance : SetLike (Flag α) α where
-  coe := carrier
-  coe_injective' s t h := by
-    cases s
-    cases t
-    congr
+instance (priority := low) [Implies p (IsMaxChain (· ≤ ·))] :
+    Implies p (IsChain (· ≤ ·)) :=
+  .comp' IsMaxChain.isChain
 
-@[ext]
-theorem ext : (s : Set α) = t → s = t :=
-  SetLike.ext'
-#align flag.ext Flag.ext
+theorem isChain_le [Implies p (IsChain (· ≤ ·))] (s : BundledSet α p) :
+    IsChain (· ≤ ·) (s : Set α) :=
+  Implies.implies s s.2
+#align flag.chain_le BundledSet.isChain_le
 
--- Porting note: `simp` can now prove this
--- @[simp]
-theorem mem_coe_iff : a ∈ (s : Set α) ↔ a ∈ s :=
-  Iff.rfl
-#align flag.mem_coe_iff Flag.mem_coe_iff
+instance (priority := low) [OrderTop α] [Implies p (IsMaxChain (· ≤ ·))] : Implies p (⊤ ∈ ·) :=
+  .comp' IsMaxChain.top_mem
 
-@[simp]
-theorem coe_mk (s : Set α) (h₁ h₂) : (mk s h₁ h₂ : Set α) = s :=
-  rfl
-#align flag.coe_mk Flag.coe_mk
+theorem top_mem [OrderTop α] [Implies p (⊤ ∈ ·)] (s : BundledSet α p) : (⊤ : α) ∈ s :=
+  mem_carrier.1 <| Implies.implies s s.2
+#align flag.top_mem BundledSet.top_mem
 
-@[simp]
-theorem mk_coe (s : Flag α) : mk (s : Set α) s.Chain' s.max_chain' = s :=
-  ext rfl
-#align flag.mk_coe Flag.mk_coe
+instance [OrderTop α] [Implies p (⊤ ∈ ·)]  (s : BundledSet α p) : OrderTop s :=
+  Subtype.orderTop s.top_mem
 
-theorem chain_le (s : Flag α) : IsChain (· ≤ ·) (s : Set α) :=
-  s.Chain'
-#align flag.chain_le Flag.chain_le
+instance (priority := low) [OrderBot α] [Implies p (IsMaxChain (· ≤ ·))] : Implies p (⊥ ∈ ·) :=
+  .comp' IsMaxChain.bot_mem
 
-protected theorem maxChain (s : Flag α) : IsMaxChain (· ≤ ·) (s : Set α) :=
-  ⟨s.chain_le, s.max_chain'⟩
-#align flag.max_chain Flag.maxChain
+theorem bot_mem [OrderBot α] [Implies p (⊥ ∈ ·)] (s : BundledSet α p) : (⊥ : α) ∈ s :=
+  mem_carrier.1 <| Implies.implies s s.2
+#align flag.bot_mem BundledSet.bot_mem
 
-theorem top_mem [OrderTop α] (s : Flag α) : (⊤ : α) ∈ s :=
-  s.maxChain.top_mem
-#align flag.top_mem Flag.top_mem
+instance [OrderBot α] [Implies p (⊥ ∈ ·)] (s : BundledSet α p) : OrderBot s :=
+  Subtype.orderBot s.bot_mem
 
-theorem bot_mem [OrderBot α] (s : Flag α) : (⊥ : α) ∈ s :=
-  s.maxChain.bot_mem
-#align flag.bot_mem Flag.bot_mem
+instance [BoundedOrder α] [Implies p (⊥ ∈ ·)] [Implies p (⊤ ∈ ·)] (s : BundledSet α p) :
+    BoundedOrder s :=
+  Subtype.boundedOrder s.bot_mem s.top_mem
+
+theorem isMaxChain [Implies p (IsMaxChain (· ≤ ·))] (s : BundledSet α p) :
+    IsMaxChain (· ≤ ·) (s : Set α) :=
+  Implies.implies s s.2
+#align flag.max_chain BundledSet.isMaxChain
+
+#align flag.ext BundledSet.ext
+#align flag.mem_coe_iff BundledSet.mem_carrier
+#noalign flag.coe_mk
+#noalign flag.mk_coe
 
 end LE
 
 section Preorder
 
-variable [Preorder α] {a b : α}
+variable [Preorder α] {p : Set α → Prop} [Implies p (IsChain (· ≤ ·))] {a b : α}
 
-protected theorem le_or_le (s : Flag α) (ha : a ∈ s) (hb : b ∈ s) : a ≤ b ∨ b ≤ a :=
-  s.chain_le.total ha hb
-#align flag.le_or_le Flag.le_or_le
-
-instance [OrderTop α] (s : Flag α) : OrderTop s :=
-  Subtype.orderTop s.top_mem
-
-instance [OrderBot α] (s : Flag α) : OrderBot s :=
-  Subtype.orderBot s.bot_mem
-
-instance [BoundedOrder α] (s : Flag α) : BoundedOrder s :=
-  Subtype.boundedOrder s.bot_mem s.top_mem
+protected theorem le_or_le (s : BundledSet α p) (ha : a ∈ s) (hb : b ∈ s) : a ≤ b ∨ b ≤ a :=
+  s.isChain_le.total ha hb
+#align flag.le_or_le BundledSet.le_or_le
 
 end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α]
+variable [PartialOrder α] {p : Set α → Prop} [Implies p (IsChain (· ≤ ·))]
 
-theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt_of_le
-#align flag.chain_lt Flag.chain_lt
+theorem isChain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.isChain_le.lt_of_le
+#align flag.chain_lt BundledSet.isChain_lt
 
-instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag α) :
+instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : BundledSet α p) :
     LinearOrder s :=
   { Subtype.partialOrder _ with
     le_total := fun a b => s.le_or_le a.2 b.2
@@ -387,8 +370,8 @@ instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag �
 
 end PartialOrder
 
+end BundledSet
+
 instance [LinearOrder α] : Unique (Flag α) where
   default := ⟨univ, isChain_of_trichotomous _, fun s _ => s.subset_univ.antisymm'⟩
-  uniq s := SetLike.coe_injective <| s.3 (isChain_of_trichotomous _) <| subset_univ _
-
-end Flag
+  uniq s := BundledSet.carrier_injective <| s.2.2 (isChain_of_trichotomous _) <| subset_univ _
