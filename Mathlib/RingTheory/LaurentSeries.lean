@@ -212,7 +212,8 @@ theorem coeff_coe (i : ℤ) :
       not_false_iff]
 #align power_series.coeff_coe PowerSeries.coeff_coe
 
--- Porting note (#10618): simp can prove this, and removed norm_cast attribute
+-- Porting note (#10618): simp can prove this
+-- Porting note: removed norm_cast attribute
 theorem coe_C (r : R) : ((C R r : PowerSeries R) : LaurentSeries R) = HahnSeries.C r :=
   ofPowerSeries_C _
 set_option linter.uppercaseLean3 false in
