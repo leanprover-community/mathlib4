@@ -143,12 +143,13 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   ext_iff.symm
 #align fin.coe_eq_coe Fin.val_eq_val
 
+@[deprecated ext_iff] -- 2024-02-20
 theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
   ext_iff
 #align fin.eq_iff_veq Fin.eq_iff_veq
 
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
-  ⟨vne_of_ne, ne_of_vne⟩
+  ext_iff.not
 #align fin.ne_iff_vne Fin.ne_iff_vne
 
 -- porting note: I'm not sure if this comment still applies.
@@ -540,8 +541,8 @@ section Monoid
 
 instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
   add := (· + ·)
-  add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
-  add_comm := by simp [eq_iff_veq, add_def, add_comm]
+  add_assoc := by simp [ext_iff, add_def, add_assoc]
+  add_comm := by simp [ext_iff, add_def, add_comm]
 #align fin.add_comm_semigroup Fin.addCommSemigroup
 
 --Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
@@ -551,7 +552,7 @@ protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
 
 --Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
 protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
-  simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
+  simp [ext_iff, add_def, mod_eq_of_lt (is_lt k)]
 #align fin.zero_add Fin.zero_add
 
 instance [NeZero n] : OfNat (Fin n) a where
@@ -577,8 +578,8 @@ section from_ad_hoc
 end from_ad_hoc
 
 instance (n) : AddCommSemigroup (Fin n) where
-  add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
-  add_comm := by simp [eq_iff_veq, add_def, add_comm]
+  add_assoc := by simp [ext_iff, add_def, add_assoc]
+  add_comm := by simp [ext_iff, add_def, add_comm]
 
 instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero_add := Fin.zero_add
@@ -687,7 +688,7 @@ theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a 
 @[simp] lemma nat_cast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
 
 @[simp] lemma nat_cast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
-  simp [eq_iff_veq, Nat.dvd_iff_mod_eq_zero]
+  simp [ext_iff, Nat.dvd_iff_mod_eq_zero]
 
 @[simp]
 theorem cast_nat_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
@@ -1675,7 +1676,7 @@ protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
   · simp [eq_iff_true_of_subsingleton]
   cases n
   · simp [fin_one_eq_zero]
-  simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
+  simp [ext_iff, mul_def, mod_eq_of_lt (is_lt k)]
 #align fin.mul_one Fin.mul_one'
 
 #align fin.mul_comm Fin.mul_comm
@@ -1684,11 +1685,11 @@ protected theorem one_mul' [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
   rw [Fin.mul_comm, Fin.mul_one']
 #align fin.one_mul Fin.one_mul'
 
-protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [eq_iff_veq, mul_def]
+protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [ext_iff, mul_def]
 #align fin.mul_zero Fin.mul_zero'
 
 protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
-  simp [eq_iff_veq, mul_def]
+  simp [ext_iff, mul_def]
 #align fin.zero_mul Fin.zero_mul'
 
 end Mul

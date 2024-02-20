@@ -442,7 +442,7 @@ theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
   · simp [finRotate_last]
   · cases i
     simp only [Fin.lt_iff_val_lt_val, Fin.val_last, Fin.val_mk] at h
-    simp [finRotate_of_lt h, Fin.eq_iff_veq, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
+    simp [finRotate_of_lt h, Fin.ext_iff, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
 #align fin_rotate_succ_apply finRotate_succ_apply
 
 -- porting note: was a @[simp]
