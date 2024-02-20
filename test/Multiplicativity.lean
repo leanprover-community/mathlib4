@@ -7,20 +7,20 @@ Authors: Arend Mellendijk
 import Mathlib.NumberTheory.ArithmeticFunction
 
 open scoped BigOperators
-open Nat ArithmeticFunction
+open ArithmeticFunction
 
 variable {R : Type*} [Field R]
 
 set_option linter.unusedVariables false
 
-example : IsMultiplicative μ := by multiplicativity
+example : IsMultiplicative μ := by arith_mult
 
-example : IsMultiplicative (ζ*ζ) := by multiplicativity
+example : IsMultiplicative (ζ*ζ) := by arith_mult
 
 example {R : Type*} [Field R] (f : ArithmeticFunction R) (hf : IsMultiplicative f) :
-    IsMultiplicative ((ζ:ArithmeticFunction R).pdiv f) := by multiplicativity
+    IsMultiplicative ((ζ:ArithmeticFunction R).pdiv f) := by arith_mult
 
 example (f g : ArithmeticFunction R) (hf : IsMultiplicative f) :
-    IsMultiplicative (prodPrimeFactors g |>.pmul f) := by multiplicativity
+    IsMultiplicative (prodPrimeFactors g |>.pmul f) := by arith_mult
 
-example (n : ℕ) : IsMultiplicative <| (σ n * pow (n+3)).ppow 2 := by multiplicativity
+example (n : ℕ) : IsMultiplicative <| (σ n * pow (n+3)).ppow 2 := by arith_mult

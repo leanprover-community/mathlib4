@@ -7,10 +7,10 @@ Authors: Arend Mellendijk
 import Aesop
 
 /-!
-# Multiplicativity Rule Set
+# arith_mult Rule Set
 
 This module defines the `IsMultiplicative` Aesop rule set which is used by the
-`multiplicativity` tactic. Aesop rule sets only become visible once the file in which
+`arith_mult` tactic. Aesop rule sets only become visible once the file in which
 they're declared is imported, so we must put this declaration into its own file.
 -/
 

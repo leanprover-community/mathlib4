@@ -4,38 +4,40 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
 
+import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Multiplicativity.Init
 
 /-!
 # Multiplicativity
 
-We define the multiplicativity tactic using aesop
+We define the arith_mult tactic using aesop
 
 -/
 
-namespace Nat.ArithmeticFunction
+namespace ArithmeticFunction
 
 /--
-The `multiplicativity` attribute used to tag `IsMultiplicative` statements for the
-`multiplicativity` tactic. -/
-macro "multiplicativity" : attr =>
+The `arith_mult` attribute used to tag `IsMultiplicative` statements for the
+`arith_mult` tactic. -/
+macro "arith_mult" : attr =>
   `(attr|aesop safe apply (rule_sets [$(Lean.mkIdent `IsMultiplicative):ident]))
 
 /--
-`multiplicativity` solves goals of the form `IsMultiplicative f` for `f : ArithmeticFunction R`
-by applying lemmas tagged with the user attribute `multiplicativity`. -/
-macro (name := multiplicativity) "multiplicativity" c:Aesop.tactic_clause* : tactic =>
+`arith_mult` solves goals of the form `IsMultiplicative f` for `f : ArithmeticFunction R`
+by applying lemmas tagged with the user attribute `arith_mult`. -/
+macro (name := arith_mult) "arith_mult" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  { aesop $c* (options :=
-  { destructProductsTransparency := .reducible, applyHypsTransparency := .default,
-    introsTransparency? := some .reducible, terminal := false } )
-  (simp_options := { enabled := false})
+  { aesop $c* (config :=
+  { destructProductsTransparency := .reducible,
+    applyHypsTransparency := .default,
+    introsTransparency? := some .reducible,
+    enableSimp := false} )
   (rule_sets [$(Lean.mkIdent `IsMultiplicative):ident])})
 
 /--
-`multiplicativity` solves goals of the form `IsMultiplicative f` for `f : ArithmeticFunction R`
-by applying lemmas tagged with the user attribute `multiplicativity`, and prints out the generated
+`arith_mult` solves goals of the form `IsMultiplicative f` for `f : ArithmeticFunction R`
+by applying lemmas tagged with the user attribute `arith_mult`, and prints out the generated
 proof term. -/
-macro (name := multiplicativity?) "multiplicativity?" c:Aesop.tactic_clause* : tactic =>
+macro (name := arith_mult?) "arith_mult?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  { show_term { multiplicativity $c* } })
+  { show_term { arith_mult $c* } })
