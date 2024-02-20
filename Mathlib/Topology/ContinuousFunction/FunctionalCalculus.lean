@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.ContinuousFunction.Algebra
 
 /-!
 # The continuous functional calculus
