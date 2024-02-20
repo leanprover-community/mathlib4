@@ -461,7 +461,7 @@ This is `TensorProduct.map` for an arbitrary family of modules.
 def map (f : Π i, s i →ₗ[R] t i) : (⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i :=
   lift <| (tprod R).compLinearMap f
 
-@[simp] lemma map_apply_tprod (f : Π i, s i →ₗ[R] t i) (x : Π i, s i) :
+@[simp] lemma map_tprod (f : Π i, s i →ₗ[R] t i) (x : Π i, s i) :
     map f (tprod R x) = tprod R fun i ↦ f i (x i) :=
   lift.tprod _
 
@@ -479,7 +479,7 @@ def piTensorHomMap : (⨂[R] i, s i →ₗ[R] t i) →ₗ[R] (⨂[R] i, s i) →
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-@[simp] lemma piTensorHomMap_apply_tprod_tprod (f : Π i, s i →ₗ[R] t i) (x : Π i, s i) :
+@[simp] lemma piTensorHomMap_tprod_tprod (f : Π i, s i →ₗ[R] t i) (x : Π i, s i) :
     piTensorHomMap (tprod R f) (tprod R x) = tprod R fun i ↦ f i (x i) := by
   simp [piTensorHomMap]
 
@@ -493,7 +493,7 @@ def map₂ (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) :
     (⨂[R] i, s i) →ₗ[R] (⨂[R] i, t i) →ₗ[R] ⨂[R] i, t' i:=
   lift <| LinearMap.compMultilinearMap piTensorHomMap <| (tprod R).compLinearMap f
 
-lemma map₂_apply_tprod_tprod (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) (x : Π i, s i) (y : Π i, t i) :
+lemma map₂_tprod_tprod (f : Π i, s i →ₗ[R] t i →ₗ[R] t' i) (x : Π i, s i) (y : Π i, t i) :
     map₂ f (tprod R x) (tprod R y) = tprod R fun i ↦ f i (x i) (y i) := by
   simp [map₂]
 
@@ -511,7 +511,7 @@ def piTensorHomMap₂ : (⨂[R] i, s i →ₗ[R] t i →ₗ[R] t' i) →ₗ[R]
   map_add' x y := by dsimp; ext; simp
   map_smul' r x := by dsimp; ext; simp
 
-@[simp] lemma piTensorHomMap₂_apply_tprod_tprod_tprod
+@[simp] lemma piTensorHomMap₂_tprod_tprod_tprod
     (f : ∀ i, s i →ₗ[R] t i →ₗ[R] t' i) (a : ∀ i, s i) (b : ∀ i, t i) :
     piTensorHomMap₂ (tprod R f) (tprod R a) (tprod R b) = tprod R (fun i ↦ f i (a i) (b i)) := by
   simp [piTensorHomMap₂]
