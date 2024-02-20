@@ -752,7 +752,7 @@ into a sum of monomials.
 -/
 partial def evalPowNat (char : ℕ) (rα : Option (Q(Ring $α))) (cpα : Option (Q(CharP $α $char)))
     (va : ExSum sα a) (n : Q(ℕ)) : Result (ExSum sα) q($a ^ $n) :=
-  -- TODO: optimize `(x + y)^p = x^p + y^p` if `p` divides the characteristic.
+  -- TODO: we could add a rule `(x + y)^n = x^n + y^n` if the characteristic is a prime `p ∣ n`.
   let nn := n.natLit!
   if nn = 1 then
     ⟨_, va, (q(pow_one $a) : Expr)⟩
