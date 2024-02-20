@@ -195,7 +195,7 @@ class Associator : Prop where
 variable [Associator c₁ c₂ c₃ c₁₂ c₂₃ c]
 
 lemma assoc (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
-      π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩ := by
+    π c₁₂ c₃ c ⟨π c₁ c₂ c₁₂ ⟨i₁, i₂⟩, i₃⟩ = π c₁ c₂₃ c ⟨i₁, π c₂ c₃ c₂₃ ⟨i₂, i₃⟩⟩ := by
   apply Associator.assoc
 
 lemma associator_ε₁_eq_mul (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) :
