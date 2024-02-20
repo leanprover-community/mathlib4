@@ -47,6 +47,52 @@ additional advantage of the unbundled approach is that expressions like `fun x :
 arguments to `cfc a`, and a bundled continuous counterpart can only make sense when the spectrum of
 `a` does not contain zero and when we have an `⁻¹` operation on the domain.
 
+A reader familiar with C⋆-algebra theory may be somewhat surprised at the level of abstraction here.
+For instance, why not require `A` to be an actual C⋆-algebra? Why define separate continuous
+functional calculi for `R := ℂ`, `ℝ` or `ℝ≥0` instead of simply using the continuous functional
+calculus for normal elements? The reason for both can be explained with a simple example,
+`A := Matrix n n ℝ`. In Mathlib, matrices are not equipped with a norm (nor even a metric), and so
+requiring `A` to be a C⋆-algbera is far too stringent. Likewise, `A` is not a `ℂ`-algebra, and so
+it is impossible to consider the `ℂ`-spectrum of `a : Matrix n n ℝ`.
+
+There is another, more practical reason to define separate continuous functional calculi for
+different scalar rings. It gives us the ability to use functions defined on these types, and the
+algebra of functions on them. For example, in `ℝ` it is quite natural to consider the functions
+`(·⁺ : ℝ → ℝ)` and `(·⁻ : ℝ → ℝ)` because the collection of such functions forms a lattice ordered
+group. If `a : A` is selfadjoint, and we define `a⁺ := cfc a (·⁺ : ℝ → ℝ)`, and likewise for `a⁻`,
+then the properties `a⁺ * a⁻ = 0 = a⁻ * a⁺` and `a = a⁺ - a⁻` are trivial consequences of the
+corresponding facts for functions. In contrast, if we had to do this for functions on `ℂ`, the
+proofs of these facts would be much more cumbersome.
+
+## Example
+
+The canonical example of the continuous functional calculus is when `A := Matrix n n ℂ`, `R := ℂ`
+and `p := IsStarNormal`. In this case, `spectrum ℂ a` consists of the eigenvalues of the normal
+matrix `a : Matrix n n ℂ`, and, because this set is discrete, any function is continuous on the
+spectrum. The continuous functional calculus allows us to make sense of expressions like `log a`
+(`:= cfc a log`), and when `0 ∉ spectrum ℂ a`, we get the nice property `exp (log a) = a`, which
+arises from the composition property `cfc (cfc log a) exp = cfc (exp ∘ log) a = cfc id a = a`, since
+`exp ∘ log = id` *on the spectrum of `a`*. Of course, there are other ways to make sense of `exp`
+and `log` for matrices (power series), and these agree with the continuous functional calculus.
+In fact, given `f : C(spectrum ℂ a, ℂ)`, `cfc a f` amounts to diagonalizing `a` (possible since `a`
+is normal), and applying `f` to the resulting diagonal entries. That is, if `a = u * d * star u`
+with `u` a unitary matrix and `d` diagonal, then `cfc a f = u * (d.map f) * star u`.
+
+In addition, if `a : Matrix n n ℂ` is positive semidefinite, then the `ℂ`-spectrum of `a` is
+contained in (the range of the coercion of) `ℝ≥0`. In this case, we get a continuous functional
+calculus with `R := ℝ≥0`. From this we can define `√a := cfc a NNReal.sqrt`, which is also
+positive semidefinite (because `cfc` preserves the predicate), and this is truly a square root since
+```
+√a * √a = cfc a NNReal.sqrt * cfc a NNReal.sqrt =
+  cfc a (NNReal.sqrt ^ 2) = cfc a id = a
+```
+The composition property allows us to show that, in fact, this is the *unique* positive semidefinite
+square root of `a` because, if `b` is any positive semidefinite square root, then
+```
+b = cfc b id = cfc b (NNReal.sqrt ∘ (· ^ 2)) =
+  cfc (cfc b (· ^ 2)) NNReal.sqrt = cfc a NNReal.sqrt = √a
+```
+
 ## Main statements
 
 + `ContinuousFunctionalCalculus R (p : A → Prop)`: a class stating that every `a : A` satisfying
@@ -59,9 +105,6 @@ arguments to `cfc a`, and a bundled continuous counterpart can only make sense w
   `cfcSpec` is not defined.
 + `cfc_units`: builds a unit from `cfc a f` when `f` is nonzero and continuous on the
   specturm of `a`.
-+ `SpectrumRestricts.cfc`: builds a continuous functional calculus over a subring of scalars.
-  This is use for automatically deriving the continuous functional calculi on selfadjoint or
-  positive elements from the one for normal elements.
 
 ## Main theorems
 
