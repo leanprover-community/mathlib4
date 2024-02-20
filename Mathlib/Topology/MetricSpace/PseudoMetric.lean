@@ -85,9 +85,8 @@ class Dist (α : Type*) where
   dist : α → α → ℝ
 #align has_dist Dist
 
-#check ℝ
 instance: IsOrderedAddCommMonoid ℝ where
-  add_le_add_left := fun a b a_1 c ↦ add_le_add_left a_1 c
+  add_le_add_left := fun _ _ a_1 c ↦ add_le_add_left a_1 c
 
 instance [Dist α] : GDist α ℝ where
   gdist := Dist.dist
