@@ -47,9 +47,9 @@ The multiplication in tensor product of rings is induced by `(xᵢ) * (yᵢ) = (
 def lmul : (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) →ₗ[R] (⨂[R] i, A i) :=
   PiTensorProduct.piTensorHomMap₂ <| tprod R fun _ ↦ LinearMap.mul _ _
 
-@[simp] lemma lmul_tprod_tprod (x y : (i : ι) → A i) :
+@[simp] lemma lmul_apply_tprod_tprod (x y : (i : ι) → A i) :
     lmul (tprod R x) (tprod R y) = tprod R (x * y) := by
-  simp only [lmul, piTensorHomMap₂_tprod_tprod_tprod, LinearMap.mul_apply']
+  simp only [lmul, piTensorHomMap₂_apply_tprod_tprod_tprod, LinearMap.mul_apply']
   rfl
 
 instance mul : Mul (⨂[R] i, A i) where
@@ -59,13 +59,13 @@ lemma mul_def (x y : ⨂[R] i, A i) : x * y = lmul x y := rfl
 
 @[simp] lemma tprod_mul_tprod (x y : (i : ι) → A i) :
     (tprod R x) * (tprod R y) = tprod R (x * y) :=
-  lmul_tprod_tprod x y
+  lmul_apply_tprod_tprod x y
 
 lemma smul_tprod_mul_smul_tprod (r s : R) (x y : Π i, A i) :
     (r • tprod R x) * (s • tprod R y) = (r * s) • (tprod R (x * y)) := by
   change lmul _ _ = _
   rw [map_smul, map_smul, mul_comm r s, mul_smul]
-  simp only [LinearMap.smul_apply, lmul_tprod_tprod]
+  simp only [LinearMap.smul_apply, lmul_apply_tprod_tprod]
 
 lemma zero_lmul (x : ⨂[R] i, A i) : lmul 0 x = 0 := by
   induction x using PiTensorProduct.induction_on <;> simp
@@ -124,7 +124,7 @@ lemma lmul_assoc (x y z : ⨂[R] i, A i) : lmul (lmul x y) z = lmul x (lmul y z)
       induction z using PiTensorProduct.induction_on with
       | C1 => simp [mul_assoc]
       | Cp hz1 hz2 =>
-        simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod, map_add] at hz1 hz2 ⊢
+        simp only [map_smul, LinearMap.smul_apply, lmul_apply_tprod_tprod, map_add] at hz1 hz2 ⊢
         rw [hz1, hz2]
     | Cp hy1 hy2 =>
       simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply] at hy1 hy2 ⊢
@@ -241,7 +241,7 @@ lemma lmul_comm (x y : ⨂[R] i, A i) : lmul x y = lmul y x :=  by
   | C1 =>
     induction y using PiTensorProduct.induction_on with
     | C1 =>
-      simp only [map_smul, LinearMap.smul_apply, lmul_tprod_tprod]
+      simp only [map_smul, LinearMap.smul_apply, lmul_apply_tprod_tprod]
       rw [smul_comm, mul_comm]
     | Cp hy1 hy2 =>
       simp only [map_smul, LinearMap.smul_apply, map_add, LinearMap.add_apply, smul_add] at hy1 hy2
