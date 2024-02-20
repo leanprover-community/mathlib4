@@ -170,7 +170,7 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
 #align young_diagram.cells_bot YoungDiagram.cells_bot
 
 -- porting note: removed `↑`, added `.cells` and changed proof
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
   refine' Set.eq_of_subset_of_subset _ _

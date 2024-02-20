@@ -318,7 +318,7 @@ theorem ext : (s : Set α) = t → s = t :=
   SetLike.ext'
 #align flag.ext Flag.ext
 
--- Porting note: `simp` can now prove this
+-- Porting note (#10618): `simp` can now prove this
 -- @[simp]
 theorem mem_coe_iff : a ∈ (s : Set α) ↔ a ∈ s :=
   Iff.rfl

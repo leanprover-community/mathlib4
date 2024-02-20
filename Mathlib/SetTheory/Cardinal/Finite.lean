@@ -147,7 +147,7 @@ theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by
   rw [card_eq_fintype_card, Fintype.card_ofSubsingleton a]
 #align nat.card_of_subsingleton Nat.card_of_subsingleton
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem card_unique [Unique α] : Nat.card α = 1 :=
   card_of_subsingleton default
 #align nat.card_unique Nat.card_unique

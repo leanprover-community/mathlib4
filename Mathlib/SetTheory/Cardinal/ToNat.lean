@@ -135,6 +135,8 @@ theorem aleph0_toNat : toNat ℵ₀ = 0 :=
 theorem mk_toNat_eq_card [Fintype α] : toNat #α = Fintype.card α := by simp
 #align cardinal.mk_to_nat_eq_card Cardinal.mk_toNat_eq_card
 
+-- porting note (#10618): simp can prove this
+-- @[simp]
 theorem zero_toNat : toNat 0 = 0 := map_zero _
 #align cardinal.zero_to_nat Cardinal.zero_toNat
 

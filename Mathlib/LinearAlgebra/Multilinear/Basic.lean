@@ -136,7 +136,7 @@ theorem coe_injective : Injective ((↑) : MultilinearMap R M₁ M₂ → (∀ i
   DFunLike.coe_injective
 #align multilinear_map.coe_injective MultilinearMap.coe_injective
 
-@[norm_cast] -- Porting note: Removed simp attribute, simp can prove this
+@[norm_cast] -- Porting note (#10618): Removed simp attribute, simp can prove this
 theorem coe_inj {f g : MultilinearMap R M₁ M₂} : (f : (∀ i, M₁ i) → M₂) = g ↔ f = g :=
   DFunLike.coe_fn_eq
 #align multilinear_map.coe_inj MultilinearMap.coe_inj

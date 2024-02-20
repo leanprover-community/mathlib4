@@ -199,32 +199,32 @@ protected theorem congr_fun {f g : 𝓕} (h : f = g) (x : E) :
   h ▸ rfl
 #align linear_isometry.congr_fun LinearIsometry.congr_fun
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_zero : f 0 = 0 :=
   f.toLinearMap.map_zero
 #align linear_isometry.map_zero LinearIsometry.map_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_add (x y : E) : f (x + y) = f x + f y :=
   f.toLinearMap.map_add x y
 #align linear_isometry.map_add LinearIsometry.map_add
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_neg (x : E) : f (-x) = -f x :=
   f.toLinearMap.map_neg x
 #align linear_isometry.map_neg LinearIsometry.map_neg
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_sub (x y : E) : f (x - y) = f x - f y :=
   f.toLinearMap.map_sub x y
 #align linear_isometry.map_sub LinearIsometry.map_sub
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_smulₛₗ (c : R) (x : E) : f (c • x) = σ₁₂ c • f x :=
   f.toLinearMap.map_smulₛₗ c x
 #align linear_isometry.map_smulₛₗ LinearIsometry.map_smulₛₗ
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 protected theorem map_smul [Module R E₂] (f : E →ₗᵢ[R] E₂) (c : R) (x : E) : f (c • x) = c • f x :=
   f.toLinearMap.map_smul c x
 #align linear_isometry.map_smul LinearIsometry.map_smul
@@ -760,7 +760,7 @@ theorem symm_apply_apply (x : E) : e.symm (e x) = x :=
   e.toLinearEquiv.symm_apply_apply x
 #align linear_isometry_equiv.symm_apply_apply LinearIsometryEquiv.symm_apply_apply
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_eq_zero_iff {x : E} : e x = 0 ↔ x = 0 :=
   e.toLinearEquiv.map_eq_zero_iff
 #align linear_isometry_equiv.map_eq_zero_iff LinearIsometryEquiv.map_eq_zero_iff
@@ -958,27 +958,27 @@ theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e :=
   rfl
 #align linear_isometry_equiv.coe_coe'' LinearIsometryEquiv.coe_coe''
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_zero : e 0 = 0 :=
   e.1.map_zero
 #align linear_isometry_equiv.map_zero LinearIsometryEquiv.map_zero
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_add (x y : E) : e (x + y) = e x + e y :=
   e.1.map_add x y
 #align linear_isometry_equiv.map_add LinearIsometryEquiv.map_add
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_sub (x y : E) : e (x - y) = e x - e y :=
   e.1.map_sub x y
 #align linear_isometry_equiv.map_sub LinearIsometryEquiv.map_sub
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_smulₛₗ (c : R) (x : E) : e (c • x) = σ₁₂ c • e x :=
   e.1.map_smulₛₗ c x
 #align linear_isometry_equiv.map_smulₛₗ LinearIsometryEquiv.map_smulₛₗ
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_smul [Module R E₂] {e : E ≃ₗᵢ[R] E₂} (c : R) (x : E) : e (c • x) = c • e x :=
   e.1.map_smul c x
 #align linear_isometry_equiv.map_smul LinearIsometryEquiv.map_smul
@@ -1010,7 +1010,7 @@ protected theorem surjective : Surjective e :=
   e.1.surjective
 #align linear_isometry_equiv.surjective LinearIsometryEquiv.surjective
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_eq_iff {x y : E} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 #align linear_isometry_equiv.map_eq_iff LinearIsometryEquiv.map_eq_iff

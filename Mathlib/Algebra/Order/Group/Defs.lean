@@ -250,7 +250,7 @@ theorem le_mul_inv_iff_mul_le : c ≤ a * b⁻¹ ↔ c * b ≤ a :=
 #align le_mul_inv_iff_mul_le le_mul_inv_iff_mul_le
 #align le_add_neg_iff_add_le le_add_neg_iff_add_le
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem mul_inv_le_one_iff_le : a * b⁻¹ ≤ 1 ↔ a ≤ b :=
   mul_inv_le_iff_le_mul.trans <| by rw [one_mul]
@@ -313,7 +313,7 @@ theorem lt_mul_inv_iff_mul_lt : c < a * b⁻¹ ↔ c * b < a :=
 #align lt_mul_inv_iff_mul_lt lt_mul_inv_iff_mul_lt
 #align lt_add_neg_iff_add_lt lt_add_neg_iff_add_lt
 
--- Porting note: `simp` can prove this
+-- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem inv_mul_lt_one_iff_lt : a * b⁻¹ < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, inv_mul_cancel_right, one_mul]

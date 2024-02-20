@@ -245,7 +245,7 @@ theorem mem_cons_of_mem {a b : α} {s : Multiset α} (h : a ∈ s) : a ∈ b ::�
   mem_cons.2 <| Or.inr h
 #align multiset.mem_cons_of_mem Multiset.mem_cons_of_mem
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem mem_cons_self (a : α) (s : Multiset α) : a ∈ a ::ₘ s :=
   mem_cons.2 (Or.inl rfl)
 #align multiset.mem_cons_self Multiset.mem_cons_self
@@ -2439,7 +2439,7 @@ theorem coe_count (a : α) (l : List α) : count a (ofList l) = l.count a := by
   rfl
 #align multiset.coe_count Multiset.coe_count
 
-@[simp, nolint simpNF] -- Porting note: simp can prove this at EOF, but not right now
+@[simp, nolint simpNF] -- Porting note (#10618): simp can prove this at EOF, but not right now
 theorem count_zero (a : α) : count a 0 = 0 :=
   rfl
 #align multiset.count_zero Multiset.count_zero

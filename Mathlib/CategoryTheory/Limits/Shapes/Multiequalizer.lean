@@ -787,7 +787,7 @@ abbrev lift (W : C) (k : ∀ a, W ⟶ I.left a)
   limit.lift _ (Multifork.ofι I _ k h)
 #align category_theory.limits.multiequalizer.lift CategoryTheory.Limits.Multiequalizer.lift
 
-@[reassoc] -- Porting note: simp can prove this, removed attribute
+@[reassoc] -- Porting note (#10618): simp can prove this, removed attribute
 theorem lift_ι (W : C) (k : ∀ a, W ⟶ I.left a)
     (h : ∀ b, k (I.fstTo b) ≫ I.fst b = k (I.sndTo b) ≫ I.snd b) (a) :
     Multiequalizer.lift I _ k h ≫ Multiequalizer.ι I a = k _ :=
@@ -872,7 +872,7 @@ abbrev desc (W : C) (k : ∀ b, I.right b ⟶ W)
   colimit.desc _ (Multicofork.ofπ I _ k h)
 #align category_theory.limits.multicoequalizer.desc CategoryTheory.Limits.Multicoequalizer.desc
 
-@[reassoc] -- Porting note: simp can prove this, removed attribute
+@[reassoc] -- Porting note (#10618): simp can prove this, removed attribute
 theorem π_desc (W : C) (k : ∀ b, I.right b ⟶ W)
     (h : ∀ a, I.fst a ≫ k (I.fstFrom a) = I.snd a ≫ k (I.sndFrom a)) (b) :
     Multicoequalizer.π I b ≫ Multicoequalizer.desc I _ k h = k _ :=

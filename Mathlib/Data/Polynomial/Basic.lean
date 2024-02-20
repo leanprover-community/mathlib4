@@ -445,7 +445,7 @@ theorem ofFinsupp_single (n : ℕ) (r : R) : (⟨Finsupp.single n r⟩ : R[X]) =
   simp [monomial]
 #align polynomial.of_finsupp_single Polynomial.ofFinsupp_single
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
   (monomial n).map_zero
 #align polynomial.monomial_zero_right Polynomial.monomial_zero_right
@@ -534,13 +534,13 @@ theorem smul_C {S} [SMulZeroClass S R] (s : S) (r : R) : s • C r = C (s • r)
 #align polynomial.smul_C Polynomial.smul_C
 
 set_option linter.deprecated false in
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_bit0 : C (bit0 a) = bit0 (C a) :=
   C_add
 #align polynomial.C_bit0 Polynomial.C_bit0
 
 set_option linter.deprecated false in
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_bit1 : C (bit1 a) = bit1 (C a) := by simp [bit1, C_bit0]
 #align polynomial.C_bit1 Polynomial.C_bit1
 
@@ -548,7 +548,7 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
   C.map_pow a n
 #align polynomial.C_pow Polynomial.C_pow
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem C_eq_nat_cast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
 #align polynomial.C_eq_nat_cast Polynomial.C_eq_nat_cast
@@ -1208,7 +1208,7 @@ theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q
   rw [← ofFinsupp_sub, coeff, coeff, coeff]; apply Finsupp.sub_apply
 #align polynomial.coeff_sub Polynomial.coeff_sub
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_self, monomial_zero_right]
 #align polynomial.monomial_neg Polynomial.monomial_neg

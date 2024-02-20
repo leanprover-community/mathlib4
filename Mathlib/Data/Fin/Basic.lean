@@ -236,11 +236,11 @@ instance {n : ℕ} : LinearOrder (Fin n) :=
 #align fin.mk_le_mk Fin.mk_le_mk
 #align fin.mk_lt_mk Fin.mk_lt_mk
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem min_val {a : Fin n} : min (a : ℕ) n = a := by simp
 #align fin.min_coe Fin.min_val
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem max_val {a : Fin n} : max (a : ℕ) n = n := by simp
 #align fin.max_coe Fin.max_val
 

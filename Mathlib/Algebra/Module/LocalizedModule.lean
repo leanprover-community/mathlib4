@@ -1062,7 +1062,7 @@ theorem mk'_mul_mk' {M M' : Type*} [Semiring M] [Semiring M'] [Algebra R M] [Alg
 
 variable {f}
 
-/-- Porting note: simp can prove this
+/-- Porting note (#10618): simp can prove this
 @[simp] -/
 theorem mk'_eq_iff {m : M} {s : S} {m' : M'} : mk' f m s = m' ↔ f m = s • m' := by
   rw [← smul_inj f s, Submonoid.smul_def, ← mk'_smul, ← Submonoid.smul_def, mk'_cancel]

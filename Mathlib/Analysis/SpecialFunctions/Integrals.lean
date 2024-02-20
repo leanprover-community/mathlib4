@@ -215,7 +215,7 @@ theorem intervalIntegrable_id : IntervalIntegrable (fun x => x) μ a b :=
   continuous_id.intervalIntegrable a b
 #align interval_integral.interval_integrable_id intervalIntegral.intervalIntegrable_id
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem intervalIntegrable_const : IntervalIntegrable (fun _ => c) μ a b :=
   continuous_const.intervalIntegrable a b
 #align interval_integral.interval_integrable_const intervalIntegral.intervalIntegrable_const
@@ -442,7 +442,7 @@ theorem integral_id : ∫ x in a..b, x = (b ^ 2 - a ^ 2) / 2 := by
   exact this
 #align integral_id integral_id
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem integral_one : (∫ _ in a..b, (1 : ℝ)) = b - a := by
   simp only [mul_one, smul_eq_mul, integral_const]
 #align integral_one integral_one

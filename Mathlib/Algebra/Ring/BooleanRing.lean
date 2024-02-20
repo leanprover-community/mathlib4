@@ -156,12 +156,12 @@ theorem ofBoolAlg_toBoolAlg (a : α) : ofBoolAlg (toBoolAlg a) = a :=
   rfl
 #align of_boolalg_to_boolalg ofBoolAlg_toBoolAlg
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem toBoolAlg_inj {a b : α} : toBoolAlg a = toBoolAlg b ↔ a = b :=
   Iff.rfl
 #align to_boolalg_inj toBoolAlg_inj
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b :=
   Iff.rfl
 #align of_boolalg_inj ofBoolAlg_inj
@@ -412,12 +412,12 @@ theorem ofBoolRing_toBoolRing (a : α) : ofBoolRing (toBoolRing a) = a :=
   rfl
 #align of_boolring_to_boolring ofBoolRing_toBoolRing
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem toBoolRing_inj {a b : α} : toBoolRing a = toBoolRing b ↔ a = b :=
   Iff.rfl
 #align to_boolring_inj toBoolRing_inj
 
--- Porting note: simp can prove this -- @[simp]
+-- Porting note (#10618): simp can prove this -- @[simp]
 theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a = b :=
   Iff.rfl
 #align of_boolring_inj ofBoolRing_inj

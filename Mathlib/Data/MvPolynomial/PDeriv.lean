@@ -119,7 +119,7 @@ theorem pderiv_mul {i : σ} {f g : MvPolynomial σ R} :
   simp only [(pderiv i).leibniz f g, smul_eq_mul, mul_comm, add_comm]
 #align mv_polynomial.pderiv_mul MvPolynomial.pderiv_mul
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem pderiv_C_mul {f : MvPolynomial σ R} {i : σ} : pderiv i (C a * f) = C a * pderiv i f := by
   rw [C_mul', Derivation.map_smul, C_mul']
 set_option linter.uppercaseLean3 false in
