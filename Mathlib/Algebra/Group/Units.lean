@@ -730,11 +730,9 @@ theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * 
 @[to_additive]
 theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
     IsUnit a ↔ (∃ b, a * b = 1) ∧ (∃ c, c * a = 1):= by
-  constructor
-  · rintro ⟨⟨a, b, hab, hba⟩, rfl⟩
-    exact ⟨⟨b, hab⟩, ⟨b, hba⟩⟩
-  · rintro ⟨⟨b, hab⟩, ⟨c, hca⟩⟩
-    exact ⟨⟨a, b, hab, left_inv_eq_right_inv hca hab ▸ hca⟩, rfl⟩
+  refine ⟨fun h => ⟨h.exists_right_inv, h.exists_left_inv⟩, ?_⟩
+  rintro ⟨⟨b, hab⟩, ⟨c, hca⟩⟩
+  exact ⟨⟨a, b, hab, left_inv_eq_right_inv hca hab ▸ hca⟩, rfl⟩
 
 /-- Multiplication by a `u : Mˣ` on the right doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)
