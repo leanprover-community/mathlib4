@@ -195,39 +195,69 @@ def renderWithDiffs (n : Name) (diffs : AssocList SubExpr.Pos DiffTag) : MetaM H
   let e := addDiffs diffs (← Widget.ppExprTagged ci.type)
   return <InteractiveCode fmt={e} />
 
-def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) : MetaM (Option String) := do
-  if loc.loc matches .hypValue .. then return none
+structure RewriteApplication extends RewriteLemma where
+  tactic : String
+  replacement : CodeWithInfos
+  -- lemmaWithInfos : CodeWithInfos
+  extraGoals : Array CodeWithInfos
+
+/-- Return `e` as a string for pasting into the editor. -/
+def toReadableString (e : Expr) : MetaM String :=
+  withOptions (·.setBool ``pp.universes false) do
+    return toString $ Format.pretty (← ppExpr e)
+
+def mkMap (k v : String) : Json :=
+  let map : RBMap String String compare := RBMap.empty.insert k v
+  toJson map
+
+def rewriteCall (loc : SubExpr.GoalsLocation) (rwLemma : RewriteLemma) :
+    MetaM (Option RewriteApplication) := do
   let thm ← mkConstWithFreshMVarLevels rwLemma.name
   let (mvars, bis, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
   let target ← loc.rootExpr
   let subExpr ← Core.viewSubexpr loc.pos target
-  let lhs := if rwLemma.symm then rhs else lhs
+  let (lhs, rhs) := if rwLemma.symm then (rhs, lhs) else (lhs, rhs)
   unless ← isDefEq lhs subExpr do return none
-  -- we need to check that all instances can be synthesized
-  for mvar in mvars, bi in bis do
-    if bi.isInstImplicit then
-      unless (← trySynthInstance (← inferType mvar)) matches .some _ do
-        return none
 
-  -- the part below should ideally be computed lazily.
-  let lhs ← instantiateMVars lhs
-  let positions ← findPositions lhs target
+  let mut extraGoals := #[]
+  for mvar in mvars, bi in bis do
+    let mvarId := mvar.mvarId!
+    -- we need to check that all instances can be synthesized
+    if bi.isInstImplicit then
+      unless (← trySynthInstance (← mvarId.getType)) matches .some _ do
+        return none
+    else if bi.isExplicit then
+      if !(← mvarId.isAssigned) then
+        -- if the userName has macro scopes, we can't use the name, so we use `?_` instead
+        if (← mvarId.getDecl).userName.hasMacroScopes then
+          mvarId.setUserName `«_»
+        let extraGoal ← instantiateMVars (← mvarId.getType)
+        extraGoals := extraGoals.push (← Widget.ppExprTagged extraGoal)
+
+  let replacement ← Widget.ppExprTagged (← instantiateMVars rhs)
+  -- let lemmaWithInfos := match ← Widget.ppExprTagged thm with
+  --   | .tag lemmaInfo _ => .tag lemmaInfo (.text (toString rwLemma.name))
+  --   | _ => .text (toString rwLemma.name)
+
   let location ← (do match loc.loc with
     | .hyp fvarId
     | .hypType fvarId _ => return s! " at {← fvarId.getUserName}"
     | _ => return "")
-  let thm ← instantiateMVars (mkAppN thm mvars)
-  let thm := Format.pretty <| ← ppExpr thm
   let symm := if rwLemma.symm then "← " else ""
+  let lhs ← instantiateMVars lhs
+  let positions ← findPositions lhs target
   let cfg := match positions.findIdx? (· == loc.pos) with
-    | none => " /- couldn't find a suitable occurrence -/"
+    | none => " /- Error: couldn't find a suitable occurrence -/"
     | some pos =>
       if positions.size == 1 then "" else
-      s! " (config := \{ occs := .pos [{pos+1}]})"
-  return some s! "rw{cfg} [{symm}{thm}]{location}"
+        s! " (config := \{ occs := .pos [{pos+1}]})"
+  let lemmaApplication ← toReadableString (← instantiateMVars (mkAppN thm mvars))
+  let tactic := s! "rw{cfg} [{symm}{lemmaApplication}]{location}"
+  return some { rwLemma with tactic, extraGoals, replacement }
 
-def renderResults (results : Array (Array (RewriteLemma × String))) (isEverything : Bool)
+
+def renderResults (results : Array (Array RewriteApplication)) (isEverything : Bool)
     (range : Lsp.Range) (doc : FileWorker.EditableDocument) : MetaM Html := do
   let htmls ← results.mapM renderBlock
   let htmls := htmls.concatMap (#[·, <hr/>])
@@ -237,16 +267,19 @@ def renderResults (results : Array (Array (RewriteLemma × String))) (isEverythi
       {.element "div" #[] htmls}
     </details>
 where
-  renderBlock (results : Array (RewriteLemma × String)) : MetaM Html := do
-    let htmls ← results.mapM fun (rwLemma, call) => do
-      let lemmaType ← renderWithDiffs rwLemma.name rwLemma.diffs
-      return <li>
-          <p> {lemmaType} </p>
-          <p> {Html.ofComponent MakeEditLink
-            (.ofReplaceRange doc.meta range call none)
-            #[.text s! "{rwLemma.name}"]} </p>
-        </li>
-    return <p> {.element "ul" #[] htmls} </p>
+  renderBlock (results : Array RewriteApplication) : MetaM Html := do
+    let htmls ← results.mapM fun rw => do
+      -- let lemmaType ← renderWithDiffs rw.name rw.diffs
+      let replacement := <p> <InteractiveCode fmt={rw.replacement} /> </p>
+      let extraGoals := rw.extraGoals.map
+        (<p> <strong «class»="goal-vdash">⊢ </strong> <InteractiveCode fmt={·} /> </p>)
+      let button := <p> {Html.ofComponent MakeEditLink
+            (.ofReplaceRange doc.meta range rw.tactic none)
+            #[.text s! "{rw.name}"]} </p>
+      let left := Html.element "div" #[("id", "left")] (#[replacement] ++ extraGoals)
+      let right := Html.element "div" #[("id", "rigth")] #[button]
+      return <li> <div «id»="container"> {left} {right} </div> </li>
+    return .element "ul" #[] htmls
 
 /-- Return all potenital rewrite lemmata -/
 def getCandidates (e : Expr) : MetaM (Array (Array RewriteLemma × Nat)) := do
@@ -301,6 +334,8 @@ def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask 
   let doc ← RequestM.readDoc
   let some loc := props.selectedLocations.back?
     | return <p> rw??: Please shift-click an expression. </p>
+  if loc.loc matches .hypValue .. then
+    return <p> rw doesn't work on the value of a let-bound free variable. </p>
   let some goal := props.goals.find? (·.mvarId == loc.mvarId)
     | return <p> Couln't find the goal. </p>
   goal.ctx.val.runMetaM {} do -- similar to `SelectInsertConv`
@@ -313,8 +348,7 @@ def LibraryRewrite.rpc (props : InteractiveTacticProps) : RequestM (RequestTask 
       let rwLemmas ← getCandidates subExpr
       if rwLemmas.isEmpty then
         return <p> No rewrite lemmata found. </p>
-      let (results, isEverything) ← filterLemmata rwLemmas (fun rwLemma => OptionT.run do
-        return (rwLemma, ← rewriteCall loc rwLemma))
+      let (results, isEverything) ← filterLemmata rwLemmas (rewriteCall loc)
         (max := props.factor * 1000) (maxTotal := props.factor * 10000)
       if results.isEmpty then
         return <p> No applicable rewrite lemmata found. </p>
