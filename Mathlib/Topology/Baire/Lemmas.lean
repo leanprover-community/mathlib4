@@ -14,7 +14,8 @@ A topological space is called a *Baire space*
 if a countable intersection of dense open subsets is dense.
 Baire theorems say that all completely metrizable spaces
 and all locally compact regular spaces are Baire spaces.
-We prove the theorems in other files.
+We prove the theorems in `Mathlib/Topology/Baire/CompleteMetrizable`
+and `Mathlib/Topology/Baire/LocallyCompactRegular`.
 
 In this file we prove various corollaries of Baire theorems.
 
