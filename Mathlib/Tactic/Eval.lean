@@ -28,7 +28,7 @@ example : 2^10 = eval% 2^10 := by
   -- goal is `2^10 = 1024`
   sorry
 ```
-This only works if a `ToExpr X` instance is available.
+This only works if a `Lean.ToExpr X` instance is available.
 -/
 syntax (name := eval_expr) "eval% " term : term
 
