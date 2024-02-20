@@ -59,9 +59,9 @@ noncomputable def hom :
     mappingCone g ⟶ mappingCone (mappingConeCompTriangle f g).mor₁ :=
   lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by dsimp; simp))
     (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_self 1)) (by
-    ext p _ rfl
-    simp [mappingConeCompTriangle, map, ext_from_iff _ _ _ rfl,
-      inl_v_d_assoc _ (p+1) p (p+2) (by linarith) (by linarith)])
+      ext p _ rfl
+      simp [mappingConeCompTriangle, map, ext_from_iff _ _ _ rfl,
+        inl_v_d_assoc _ (p+1) p (p+2) (by linarith) (by linarith)])
 
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes, this
 is the canonical morphism (which is an homotopy equivalence) from the mapping cone of
@@ -191,8 +191,7 @@ noncomputable instance : IsTriangulated (HomotopyCategory C (ComplexShape.up ℤ
     rintro ⟨X₁ : CochainComplex C ℤ⟩ ⟨X₂ : CochainComplex C ℤ⟩ ⟨X₃ : CochainComplex C ℤ⟩ u₁₂' u₂₃'
     obtain ⟨u₁₂, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective u₁₂'
     obtain ⟨u₂₃, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective u₂₃'
-    refine' ⟨_, _, _, _, _, _, _, _,
-      Iso.refl _, Iso.refl _, Iso.refl _, by simp, by simp,
+    refine' ⟨_, _, _, _, _, _, _, _, Iso.refl _, Iso.refl _, Iso.refl _, by simp, by simp,
         _, _, mappingCone_triangleh_distinguished u₁₂,
         _, _, mappingCone_triangleh_distinguished u₂₃,
         _, _, mappingCone_triangleh_distinguished (u₁₂ ≫ u₂₃), ⟨_⟩⟩
