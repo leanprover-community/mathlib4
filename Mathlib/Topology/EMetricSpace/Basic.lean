@@ -55,7 +55,7 @@ class EDist (α : Type*) where
 export EDist (edist)
 
 instance: IsOrderedAddCommMonoid ℝ≥0∞ where
-  add_le_add_left := fun a b a_1 c ↦ add_le_add_left a_1 c
+  add_le_add_left := fun _ _ a_1 c ↦ add_le_add_left a_1 c
 
 instance [EDist α] : GDist α ℝ≥0∞ where
   gdist := EDist.edist
