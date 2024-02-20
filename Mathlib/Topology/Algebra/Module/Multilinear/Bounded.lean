@@ -87,8 +87,8 @@ is von Neumann bounded.
 
 This version assumes that the codomain is a topological vector space.
 -/
-theorem Bornology.IsVonNBounded.image_multilinear [ContinuousSMul 𝕜 F] {s : Set (∀ i, E i)}
-    (hs : IsVonNBounded 𝕜 s) (f : ContinuousMultilinearMap 𝕜 E F) : IsVonNBounded 𝕜 (f '' s) := by
+theorem image_multilinear [ContinuousSMul 𝕜 F] {s : Set (∀ i, E i)} (hs : IsVonNBounded 𝕜 s)
+    (f : ContinuousMultilinearMap 𝕜 E F) : IsVonNBounded 𝕜 (f '' s) := by
   cases isEmpty_or_nonempty ι with
   | inl h =>
     exact (isBounded_iff_isVonNBounded _).1 <|
