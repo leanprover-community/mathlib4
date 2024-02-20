@@ -5,7 +5,7 @@ Authors: J. W. Gerbscheid
 -/
 import Mathlib.Tactic.FunProp.StateList
 import Std.Data.List.Basic
-import Mathlib.Data.Pi.Algebra
+import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
 We define discrimination trees for the purpose of unifying local expressions with library results.
