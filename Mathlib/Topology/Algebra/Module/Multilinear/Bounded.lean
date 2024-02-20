@@ -15,6 +15,14 @@ send von Neumann bounded sets to von Neumann bounded sets.
 We prove 2 versions of the theorem:
 one assumes that the index type is nonempty,
 and the other assumes that the codomain is a topological vector space.
+
+## Implementation notes
+
+We do not assume the index type `ι` to be finite.
+While for a nonzero continuous multilinear map
+the family `∀ i, E i` has to be essentially finite
+(more precisely, all but finitely many `E i` has to be trivial),
+proving theorems without a `[Finite ι]` assumption saves us some typeclass searches here and there.
 -/
 
 open Bornology Filter Set Function
