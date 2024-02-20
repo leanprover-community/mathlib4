@@ -429,7 +429,7 @@ def evalPosPart : PositivityExt where eval zα pα e := do
   | _ => throwError "not `posPart`"
 
 /-- Extension for `negPart`. `a⁻` is always nonegative. -/
-@[positivity _⁺]
+@[positivity _⁻]
 def evalNegPart : PositivityExt where eval _ _ e := do
   match e with
   | ~q(@negPart _ $instαlat $instαgrp $a) =>
@@ -438,7 +438,7 @@ def evalNegPart : PositivityExt where eval _ _ e := do
   | _ => throwError "not `negPart`"
 
 -- There seems to be a bug in `Positivity.core` that makes it fail (instead of returning `.none`) in
--- the first and third examples
+-- the first example
 example (a : ℤ) : 0 ≤ a⁺ := by positivity
 example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
 example (a : ℤ) : 0 ≤ a⁻ := by positivity
