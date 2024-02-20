@@ -10,8 +10,6 @@ import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import linear_algebra.matrix.special_linear_group from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"
 
-set_option profiler true
-
 /-!
 # The Special Linear group $SL(n, R)$
 
