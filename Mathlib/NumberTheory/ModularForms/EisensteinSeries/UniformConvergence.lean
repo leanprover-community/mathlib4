@@ -249,29 +249,21 @@ lemma r_lower_bound_on_slice {A B : ℝ} (h : 0 < B) (z : upperHalfPlaneSlice A 
 end bounding_functions
 
 section summability
+variable {ι κ α : Type*} [AddCommMonoid α] [TopologicalSpace α]
 
-lemma summable_lemma (f : (Fin 2 → ℤ) → ℝ) (h : ∀ y : (Fin 2 → ℤ), 0 ≤ f y)
-    (ι : ℕ → Finset (ℤ × ℤ)) (HI : ∀ y : ℤ × ℤ, ∃! i : ℕ, y ∈ ι i) :
-      Summable f ↔ Summable fun n : ℕ => ∑ x in ι n, f ![x.1, x.2] := by
-  let h2 := Equiv.trans (Equiv.sigmaEquiv ι HI) (piFinTwoEquiv fun _ => ℤ).symm
-  have h22 : ∀ y : Σ s : ℕ, (ι s), 0 ≤ (f ∘ h2) y := by
-    intro y
-    apply h
-  have h4 : Summable f ↔ Summable (f ∘ h2) := by rw [Equiv.summable_iff]
-  rw [h4, summable_sigma_of_nonneg h22]
-  constructor
-  · intro H
-    convert H.2
-    rw [← Finset.tsum_subtype]
-    rfl
-  · intro H
-    constructor
-    · intro x
-      simp only [Finset.coe_sort_coe, Equiv.coe_trans, Function.comp_apply, Equiv.sigmaEquiv]
-      convert (Finset.summable (ι x) (f ∘ (piFinTwoEquiv fun _ => ℤ).symm))
-    · convert H
-      rw [← Finset.tsum_subtype]
-      rfl
+/-- Equivalence between the sigma of a family of finsets of `β` and `β`. -/
+noncomputable def sigmaEquiv {ι κ : Type*} (s : κ → Set ι) (hs : ∀ i, ∃! j, i ∈ s j) :
+    (Σ j, s j) ≃ ι where
+  toFun x := x.2
+  invFun x := ⟨(hs x).choose, x, (hs x).choose_spec.1⟩
+  left_inv x := by ext; exacts [((hs x.2).choose_spec.2 x.1 x.2.2).symm, rfl]
+  right_inv x := by rfl
+
+lemma summable_partition {f : ι → ℝ} (hf : 0 ≤ f) {s : κ → Set ι} (hs : ∀ i, ∃! j, i ∈ s j) :
+    Summable f ↔ (∀ j, Summable fun i : s j ↦ f i) ∧ Summable fun j ↦ ∑' i : s j, f i := by
+  rw [← (sigmaEquiv s hs).summable_iff, summable_sigma_of_nonneg]
+  simp only [coe_sort_coe, sigmaEquiv, Equiv.coe_fn_mk, Function.comp_apply]
+  exact fun _ ↦ hf _
 
 lemma summable_r_pow {k : ℤ} (z : ℍ) (h : 3 ≤ k) :
     Summable fun n : ℕ => 8 / (r z) ^ k * ((n : ℝ) ^ (k - 1))⁻¹ := by
@@ -302,19 +294,17 @@ lemma summable_over_box {k : ℤ} (z : ℍ) (h : 3 ≤ k):
 
 lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 → ℤ) =>
     (1 / (r z) ^ k) * ((max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹ := by
-  rw [summable_lemma _ _ (fun (n : ℕ) => box n) Int.existsUnique_mem_box]
-  · have : ∀ n : ℕ, ∑ v in (box n : Finset (ℤ × ℤ)),
-      (1 / (r z) ^ k) * ((max v.1.natAbs v.2.natAbs: ℝ) ^ k)⁻¹ =
-        ∑ v in box n, (1 / (r z) ^ k) * ((n : ℝ)^k)⁻¹ := by
-      intro n
-      apply Finset.sum_congr rfl
-      intro x hx
-      simp only [Int.mem_box] at hx
-      congr
-      norm_cast
-    apply Summable.congr (summable_over_box z h)
-    intro b
-    apply (this b).symm
+  set f := fun x : Fin 2 → ℤ ↦ (1 / (r z) ^ k) * ((max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹
+  rw [← (piFinTwoEquiv _).symm.summable_iff,
+    summable_partition _ (s := fun n ↦ (box n : Finset (ℤ × ℤ))) Int.existsUnique_mem_box]
+  · simp_rw [coe_sort_coe, Finset.tsum_subtype]
+    simp only [one_div, piFinTwoEquiv_symm_apply, Function.comp_apply, Fin.cons_zero, Fin.cons_one]
+    refine ⟨fun n ↦ ?_, Summable.congr (summable_over_box z h) fun n ↦ Finset.sum_congr rfl
+      fun x hx ↦ ?_⟩
+    · simpa using (box n).summable (f ∘ (piFinTwoEquiv _).symm)
+    simp only [Int.mem_box] at hx
+    rw [← hx, one_div]
+    norm_cast
   · intro y
     apply mul_nonneg
     · simp only [one_div, inv_nonneg]
