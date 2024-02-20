@@ -74,9 +74,3 @@ def funPropTac : Tactic
 
 
   | _ => throwUnsupportedSyntax
-
-
--- \n\
---         Try running with discharger `fun_prop (disch:=aesop)` or a different discharger tactic like \
---         `assumption`, `linarith`, `omega` etc.\n\
---         Sometime it is usefull to run `fun_prop (disch:=trace_state; sorry)`
