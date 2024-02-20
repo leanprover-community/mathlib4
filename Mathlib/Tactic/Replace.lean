@@ -5,6 +5,16 @@ Authors: Arthur Paulino, Mario Carneiro
 -/
 import Mathlib.Tactic.Have
 
+/-!
+# Extending `replace`
+
+This file extends the `replace` tactic from `Std` to allow the addition of hypotheses to
+the context without requiring their proofs to be provided immediately.
+
+As a style choice, this should not be used in mathlib; but is provided for downstream users who
+preferred the old style.
+-/
+
 namespace Mathlib.Tactic
 
 open Lean Elab.Tactic

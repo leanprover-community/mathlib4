@@ -55,7 +55,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   init' : ∀ a b, s b (toRelEmbedding a) → ∃ a', toRelEmbedding a' = b
 #align initial_seg InitialSeg
 
--- Porting notes: Deleted `scoped[InitialSeg]`
+-- Porting note: Deleted `scoped[InitialSeg]`
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
 embedding whose range is an initial segment. That is, whenever `b < f a` in `β` then `b` is in the
 range of `f`. -/
@@ -243,7 +243,7 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
   down' : ∀ b, s b top ↔ ∃ a, toRelEmbedding a = b
 #align principal_seg PrincipalSeg
 
--- Porting notes: deleted `scoped[InitialSeg]`
+-- Porting note: deleted `scoped[InitialSeg]`
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an order
 embedding whose range is an open interval `(-∞, top)` for some element `top` of `β`. Such order
 embeddings are called principal segments -/
