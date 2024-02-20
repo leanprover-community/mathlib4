@@ -14,7 +14,7 @@ This file contains basics about the linearly disjoint of fields.
 
 ## Mathematical background
 
-(<https://en.wikipedia.org/wiki/Linearly_disjoint>) In mathematics, algebras `A`, `B` over a field
+(<https://en.wikipedia.org/wiki/Linearly_disjoint>) Subalgebras `A`, `B` over a field
 `F` inside some field extension `E` of `F` are said to be linearly disjoint over `F` if the
 following equivalent conditions are met:
 
@@ -57,26 +57,37 @@ linearly disjoint, linearly independent, tensor product
 
 open scoped Classical Polynomial TensorProduct
 
-open FiniteDimensional Polynomial IntermediateField Field
+open FiniteDimensional Polynomial IntermediateField
 
 noncomputable section
 
 universe u v w
 
-variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
+namespace Submodule
 
-variable (K : Type w) [Field K] [Algebra F K]
+variable {R : Type u} {S : Type v} [CommSemiring R] [Semiring S] [Algebra R S]
+
+variable (K L : Submodule R S)
+
+/-- Two submodules `K` and `L` in an algebra `S` over `R` are linearly disjoint if the map
+`K ⊗[R] L →ₗ[R] S` induced by multiplication in `S` is injective. -/
+protected def LinearDisjoint : Prop := Function.Injective <|
+    TensorProduct.lift <| ((LinearMap.domRestrict' L).comp <| .mul R S).domRestrict K
+
+-- ...
+
+end Submodule
 
 namespace IntermediateField
 
-variable {F E}
+variable {F : Type u} {E : Type v} [Field F] [Field E] [Algebra F E]
 
 variable (A B : IntermediateField F E)
 
 /-- Two intermediate fields `A` and `B` of `E / F` are called linearly disjoint, if any `F`-linearly
 independent subset of `A` remains linearly independent over `B`. Marked as `protected` because later
 we will define linearly disjoint for two abstract fields over a base field. -/
-protected def LinearDisjoint := ∀ ⦃a : Set A⦄, LinearIndependent F (fun x : a ↦ x.1) →
+protected def LinearDisjoint : Prop := ∀ ⦃a : Set A⦄, LinearIndependent F (fun x : a ↦ x.1) →
     LinearIndependent B (fun x : a ↦ x.1.1)
 
 theorem linearDisjoint_iff :
@@ -130,8 +141,11 @@ private lemma test1 {ιA ιB : Type*} (vA : ιA → A) (vB : ιB → B)
   simp_rw [Algebra.smul_def, map_mul, mul_comm (vA x).1 (vB y).1, ← mul_assoc]
   rfl
 
-variable (F E) in
-private lemma test2 {a b : Type*} {v : a → b →₀ F} (H : LinearIndependent F v) :
+-- TODO: waiting for
+-- <https://leanprover.zulipchat.com/#narrow/stream/217875/topic/Linearly.20disjoint/near/411691388>
+variable (E) in
+private lemma _root_.LinearIndependent.mapRange {a b : Type*} {v : a → b →₀ F}
+    (H : LinearIndependent F v) :
     LinearIndependent E fun x : a ↦ (v x).mapRange (algebraMap F E) (map_zero _) := by
   let f := Finsupp.total a _ F v
   obtain ⟨g, hg : g.comp f =  _⟩ := LinearMap.exists_leftInverse_of_injective _ H
@@ -165,8 +179,8 @@ private lemma test2 {a b : Type*} {v : a → b →₀ F} (H : LinearIndependent 
 `A` and `B` are linearly disjoint. -/
 theorem LinearDisjoint.of_basis_map {ιA : Type*} (bA : Basis ιA F A)
     (H : LinearIndependent B (A.val ∘ bA)) : A.LinearDisjoint B := fun a ha ↦ by
-  replace ha := test2 F B <|
-    ha.map' bA.repr.toLinearMap (LinearMap.ker_eq_bot_of_injective bA.repr.injective)
+  replace ha := ha.map' bA.repr.toLinearMap (LinearMap.ker_eq_bot_of_injective bA.repr.injective)
+    |>.mapRange B
   letI : Algebra B B := Algebra.id B
   letI : Module B B := Algebra.toModule
   letI : Module B (ιA →₀ B) := Finsupp.module ιA B
@@ -217,11 +231,12 @@ theorem LinearDisjoint.of_basis_mul {ιA ιB : Type*} (bA : Basis ιA F A) (bB :
   refine of_basis_map bA ?_
   rw [linearIndependent_iff] at H ⊢
   intro l hl
-  let L := Finsupp.finsuppProdEquiv.symm (l.mapRange bB.repr (map_zero _))
+  have h0 := bB.repr.map_zero
+  let L := Finsupp.finsuppProdEquiv.symm (l.mapRange bB.repr h0)
   have key : l = (Finsupp.finsuppProdEquiv L).mapRange
       (Finsupp.total ιB B F bB) (map_zero _) := by
     rw [Finsupp.finsuppProdEquiv.apply_symm_apply,
-      ← Finsupp.mapRange_comp _ rfl _ (map_zero _) (by rw [Function.comp_apply, map_zero]; rfl)]
+      ← Finsupp.mapRange_comp _ rfl _ h0 (by rw [Function.comp_apply, h0]; rfl)]
     convert l.mapRange_id.symm
     ext y
     exact congr_arg Subtype.val (bB.total_repr y)
@@ -305,11 +320,22 @@ theorem LinearDisjoint.inf_eq_bot (H : A.LinearDisjoint B) : A ⊓ B = ⊥ := bo
   change algebraMap F E (-s / t) = _
   rwa [map_div₀, map_neg, div_eq_iff this, neg_eq_iff_add_eq_zero, mul_comm]
 
-/-- If `A` and itself are linearly disjoint over `F`, then it is equal to `F`. -/
+/-- If `A` and `A` itself are linearly disjoint over `F`, then it is equal to `F`. -/
 theorem LinearDisjoint.eq_bot_of_self (H : A.LinearDisjoint A) : A = ⊥ :=
   inf_of_le_left (le_refl A) ▸ H.inf_eq_bot
 
+-- /-- If `A` and `B` have coprime degree over `F`, then they are linearly disjoint. -/
+-- theorem LinearDisjoint.of_finrank_coprime (H : (finrank F A).Coprime (finrank F B)) :
+--     A.LinearDisjoint B := by
+--   sorry
+
 end IntermediateField
+
+section Absolute
+
+variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
+
+variable (K : Type w) [Field K] [Algebra F K]
 
 /-- Two abstract fields `E` and `K` over `F` are called linearly disjoint, if their tensor product
 over `F` is a field. -/
@@ -321,3 +347,5 @@ variable {F E K} in
 and `K / F` are algebraic. -/
 proof_wanted LinearDisjoint.isAlgebraic (H : LinearDisjoint F E K) :
     Algebra.IsAlgebraic F E ∨ Algebra.IsAlgebraic F K
+
+end Absolute
