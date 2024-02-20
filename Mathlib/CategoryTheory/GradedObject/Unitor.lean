@@ -270,7 +270,7 @@ variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category C₁] [Category C
     (G.obj X₁).map (e₂.hom.app X₃) = (G.map (e₁.hom.app X₁)).app X₃)
 
 lemma mapBifunctor_triangle :
-    (mapBifunctorBifunctorAssociator associator τ.ρ₁₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃).hom ≫
+    (mapBifunctorAssociator associator τ.ρ₁₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃).hom ≫
     mapBifunctorMapMap G π (𝟙 X₁) (mapBifunctorLeftUnitor F₂ X₂ e₂ τ.p₂₃ τ.h₃ X₃).hom =
       mapBifunctorMapMap G π (mapBifunctorRightUnitor F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁).hom (𝟙 X₃) := by
   rw [← cancel_epi ((mapBifunctorMapMap G π (mapBifunctorRightUnitor F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁).inv (𝟙 X₃)))]
@@ -281,7 +281,7 @@ lemma mapBifunctor_triangle :
     ι_mapBifunctorMapMap]
   congr 2
   rw [← ιMapBifunctor₁₂BifunctorMapObj_eq_assoc F₁ G τ.ρ₁₂ _ _ _ i₁ 0 i₃ j
-    (by rw [τ.r_zero, hj]) i₁ (by simp), ι_mapBifunctorBifunctorAssociator_hom_assoc,
+    (by rw [τ.r_zero, hj]) i₁ (by simp), ι_mapBifunctorAssociator_hom_assoc,
     ιMapBifunctorBifunctor₂₃MapObj_eq_assoc G F₂ τ.ρ₂₃ _ _ _ i₁ 0 i₃ j
     (by rw [τ.r_zero, hj]) i₃ (by simp), ι_mapBifunctorMapMap]
   dsimp
