@@ -91,7 +91,7 @@ theorem Finite.exists_equiv_fin (α : Sort*) [h : Finite α] : ∃ n : ℕ, None
 #align finite.exists_equiv_fin Finite.exists_equiv_fin
 
 theorem Finite.of_equiv (α : Sort*) [h : Finite α] (f : α ≃ β) : Finite β :=
-  let ⟨e⟩ :=  h; ⟨f.symm.trans e⟩
+  let ⟨e⟩ := h; ⟨f.symm.trans e⟩
 #align finite.of_equiv Finite.of_equiv
 
 theorem Equiv.finite_iff (f : α ≃ β) : Finite α ↔ Finite β :=
