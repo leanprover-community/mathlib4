@@ -240,8 +240,8 @@ theorem cfcSpec_comp [UniqueContinuousFunctionalCalculus R A] (f : C(spectrum R 
     cfcSpec ha (g.comp f') = cfcSpec (cfcSpec_predicate ha f) g := by
   let φ : C(spectrum R (cfcSpec ha f), R) →⋆ₐ[R] A :=
     (cfcSpec ha).comp <| ContinuousMap.compStarAlgHom' R R f'
-  have := cfcSpec_eq_of_continuous_of_map_id (cfcSpec_predicate ha f) φ ?_ ?_
-  · exact DFunLike.congr_fun this.symm g
+  suffices cfcSpec (cfcSpec_predicate ha f) = φ from DFunLike.congr_fun this.symm g
+  refine cfcSpec_eq_of_continuous_of_map_id (cfcSpec_predicate ha f) φ ?_ ?_
   · exact (cfcSpec_closedEmbedding ha).continuous.comp f'.continuous_comp_left
   · simp only [StarAlgHom.comp_apply, ContinuousMap.compStarAlgHom'_apply]
     congr
@@ -254,7 +254,7 @@ section CFC
 
 -- right now these tactics are just wrappers, but potentially they could be more sophisticated.
 
-/-- a tactic used to automatically discharge goals relating to the continuous functional calculus,
+/-- A tactic used to automatically discharge goals relating to the continuous functional calculus,
 specifically whether the element satisfies the predicate. -/
 syntax (name := cfcTac) "cfc_tac" : tactic
 macro_rules
@@ -262,7 +262,7 @@ macro_rules
 
 -- if `fun_prop` is good enough, we'll just use that everywhere instead of this, but right now
 -- there are still a few rough edges. See #10724
-/-- a tactic used to automatically discharge goals relating to the continuous functional calculus,
+/-- A tactic used to automatically discharge goals relating to the continuous functional calculus,
 specifically concerning coninuity of the functions involved. -/
 syntax (name := cfcContTac) "cfc_cont_tac" : tactic
 macro_rules
@@ -326,13 +326,12 @@ lemma cfc_congr {f g : R → R} (hfg : (spectrum R a).EqOn f g) :
   · rw [cfc_apply (ha := h.1) (hf := h.2.congr hfg), cfc_apply (ha := h.1) (hf := h.2)]
     congr
     exact Set.restrict_eq_iff.mpr hfg
-  · classical
-    obtain (ha | hg) := Decidable.not_and_iff_or_not _ _ |>.mp h
+  · obtain (ha | hg) := not_and_or.mp h
     · simp [cfc_apply_of_not a ha]
     · rw [cfc_apply_of_not' a hg, cfc_apply_of_not']
       exact fun hf ↦ hg (hf.congr hfg.symm)
 
-lemma cfc_eqOn_of_eq {f g : R → R} (h : cfc a f = cfc a g) (ha : p a := by cfc_tac)
+lemma eqOn_of_cfc_eq {f g : R → R} (h : cfc a f = cfc a g) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
     (spectrum R a).EqOn f g := by
@@ -343,9 +342,8 @@ lemma cfc_eqOn_of_eq {f g : R → R} (h : cfc a f = cfc a g) (ha : p a := by cfc
 
 lemma cfc_const (r : R) (ha : p a := by cfc_tac) :
     cfc a (fun _ ↦ r) = algebraMap R A r := by
-  have h₁ := cfc_apply a (fun _ : R ↦ r)
-  have h₂ := AlgHomClass.commutes (cfcSpec ha (p := p)) r
-  exact h₁.trans <| Eq.trans (by congr) h₂
+  rw [cfc_apply a (fun _ : R ↦ r), ← AlgHomClass.commutes (cfcSpec ha (p := p)) r]
+  congr
 
 variable (R)
 
@@ -378,14 +376,12 @@ lemma cfc_mul (f g : R → R)
     congr
   · simp [cfc_apply_of_not a ha]
 
-lemma cfc_pow (f : R → R) (n : ℕ) (hn : n ≠ 0)
+lemma cfc_pow (f : R → R) (n : ℕ) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)  :
     cfc a (fun x ↦ (f x) ^ n) = cfc a f ^ n := by
-  have : ContinuousOn f (spectrum R a) := hf
-  by_cases ha : p a
-  · rw [cfc_apply a f, ← map_pow, cfc_apply a _]
-    congr
-  · simp [cfc_apply_of_not a ha, zero_pow hn]
+  have : ContinuousOn f (spectrum R a) := hf -- hack
+  rw [cfc_apply a f, ← map_pow, cfc_apply a _]
+  congr
 
 lemma cfc_add (f g : R → R)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
@@ -420,16 +416,13 @@ lemma cfc_star (f : R → R) : cfc a (fun x ↦ star (f x)) = star (cfc a f) := 
   · obtain ⟨ha, hf⟩ := h
     rw [cfc_apply a f, ← map_star, cfc_apply a _]
     congr
-  · classical
-    obtain (ha | hf) := Decidable.not_and_iff_or_not _ _ |>.mp h
+  · obtain (ha | hf) := not_and_or.mp h
     · simp [cfc_apply_of_not a ha]
     · rw [cfc_apply_of_not' a hf, cfc_apply_of_not', star_zero]
       exact fun hf_star ↦ hf <| by simpa using hf_star.star
 
 lemma cfc_pow_id (n : ℕ) (ha : p a := by cfc_tac) : cfc a (· ^ n : R → R) = a ^ n := by
-  nth_rw 2 [← cfcSpec_map_id (show p a from ha) (R := R)]
-  rw [cfc_apply a (· ^ n), ← map_pow]
-  congr
+  rw [cfc_pow a _, cfc_id' R a]
 
 lemma cfc_smul_id {S : Type*} [SMul S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]
@@ -466,7 +459,7 @@ lemma cfc_map_polynomial (q : R[X]) (f : R → R) (ha : p a := by cfc_tac)
     simp only [eval_add, map_add, ← hq₁, ← hq₂, cfc_add a (q₁.eval <| f ·) (q₂.eval <| f ·)]
   | h_monomial n r _ =>
     simp only [eval_mul, eval_C, eval_pow, eval_X, map_mul, aeval_C, map_pow, aeval_X]
-    rw [cfc_const_mul .., cfc_pow _ _ _ n.succ_ne_zero,
+    rw [cfc_const_mul .., cfc_pow _ _ (n + 1),
       ← smul_eq_mul, algebraMap_smul]
 
 lemma cfc_polynomial (q : R[X]) (ha : p a := by cfc_tac) :
@@ -584,7 +577,7 @@ lemma cfc_units_pow (a : A) (f : R → R) (hf' : ∀ x ∈ spectrum R a, f x ≠
   ext
   cases n with
   | zero => simp [cfc_one' R a]
-  | succ n => simp [cfc_pow a f _ n.succ_ne_zero]
+  | succ n => simp [cfc_pow a f _]
 
 lemma cfc_inv (a : A) (f : R → R) (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
     (ha : p a := by cfc_tac) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
@@ -635,7 +628,7 @@ lemma cfc_units_zpow (a : A) (f : R → R) (hf' : ∀ x ∈ spectrum R a, f x �
   | negSucc n =>
     simp only [zpow_negSucc, ← inv_pow]
     ext
-    exact cfc_pow (hf := hf.inv₀ hf') _ n.succ_ne_zero |>.symm
+    exact cfc_pow (hf := hf.inv₀ hf') _ |>.symm
 
 lemma cfc_zpow (a : Aˣ) (n : ℤ) (ha : p a := by cfc_tac) :
     cfc (a : A) (fun x : R ↦ x ^ n) = ↑(a ^ n) := by
@@ -643,7 +636,7 @@ lemma cfc_zpow (a : Aˣ) (n : ℤ) (ha : p a := by cfc_tac) :
   | ofNat n => simpa using cfc_pow_id (a : A) n
   | negSucc n =>
     simp only [zpow_negSucc, ← inv_pow, Units.val_pow_eq_pow_val]
-    have := cfc_pow (a : A) (fun x ↦ x⁻¹ : R → R) (n + 1) n.succ_ne_zero
+    have := cfc_pow (a : A) (fun x ↦ x⁻¹ : R → R) (n + 1)
     exact this.trans <| congr($(cfc_inv_id a) ^ (n + 1))
 
 lemma cfc_comp_zpow (a : Aˣ) (f : R → R) (n : ℤ) (ha : p a := by cfc_tac)
@@ -675,8 +668,7 @@ lemma cfc_neg (a : A) (f : R → R) : cfc a (fun x ↦ - (f x)) = - (cfc a f) :=
   · obtain ⟨ha, hf⟩ := h
     rw [cfc_apply a f, ← map_neg, cfc_apply ..]
     congr
-  · classical
-    obtain (ha | hf) := Decidable.not_and_iff_or_not _ _ |>.mp h
+  · obtain (ha | hf) := not_and_or.mp h
     · simp [cfc_apply_of_not a ha]
     · rw [cfc_apply_of_not' a hf, cfc_apply_of_not', neg_zero]
       exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
