@@ -364,7 +364,7 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   toFun := Fin.tail p ∘ (Fin.cast <| Nat.succ_pred_eq_of_pos <| Nat.pos_of_ne_zero len_pos)
   step i := p.step ⟨i.1 + 1, Nat.lt_pred_iff.mp i.2⟩
 
-lemma head_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
+@[simp] lemma head_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
     (p.tail len_pos).head = p 1 := by
   show p (Fin.succ _) = p 1
   congr
@@ -373,7 +373,7 @@ lemma head_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
   rw [Nat.mod_eq_of_lt]
   simpa only [lt_add_iff_pos_left, Nat.pos_iff_ne_zero]
 
-lemma last_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
+@[simp] lemma last_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
     (p.tail len_pos).last = p.last := by
   show p _ = p _
   congr
@@ -391,12 +391,10 @@ def eraseLast (p : RelSeries r) : RelSeries r where
   toFun i := p ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ tsub_le_self)⟩
   step i := p.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
 
-lemma head_eraseLast (p : RelSeries r) : p.eraseLast.head = p.head := rfl
+@[simp] lemma head_eraseLast (p : RelSeries r) : p.eraseLast.head = p.head := rfl
 
-lemma last_eraseLast (p : RelSeries r) :
-    p.eraseLast.last = p ⟨p.length.pred, lt_of_le_of_lt (Nat.pred_le _) Nat.le.refl⟩ := rfl
-
-
+@[simp] lemma last_eraseLast (p : RelSeries r) :
+    p.eraseLast.last = p ⟨p.length.pred, Nat.lt_succ_iff.2 (Nat.pred_le _)⟩ := rfl
 /--
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
 then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
