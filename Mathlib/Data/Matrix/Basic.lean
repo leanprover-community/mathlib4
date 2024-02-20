@@ -41,8 +41,8 @@ The locale `Matrix` gives the following notation:
 
 For convenience, `Matrix m n α` is defined as `m → n → α`, as this allows elements of the matrix
 to be accessed with `A i j`. However, it is not advisable to _construct_ matrices using terms of the
-form `λ i j, _` or even `(λ i j, _ : Matrix m n α)`, as these are not recognized by lean as having
-the right type. Instead, `Matrix.of` should be used.
+form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not recognized by Lean
+as having the right type. Instead, `Matrix.of` should be used.
 
 ## TODO
 
