@@ -542,10 +542,14 @@ partial def ExProd.evalNatCast
   (char : ℕ) (rα : Option (Q(Ring $α))) (cpα : Option (Q(CharP $α $char)))
   (va : ExProd sℕ a) : AtomM (Result (ExProd sα) q($a)) :=
   match va with
-  | .const c hc =>
+  | .const c hc => do
     have n : Q(ℕ) := a.appArg!
-    -- TODO: reduce `c` modulo the characteristic!
-    pure ⟨q(Nat.rawCast $n), .const c hc, (q(natCast_nat (R := $α) $n) : Expr)⟩
+    have : $a =Q Nat.rawCast $n := (← assertDefEqQ a q(Nat.rawCast $n)).down
+    match reduceResult sα char q($a : $α) rα cpα (.isNat q(inferInstance) n (q(⟨rfl⟩))) with
+    | .isNat _ lit pf => do
+      pure ⟨q(Nat.rawCast $lit), .const lit.natLit! none, q(($pf).out)⟩
+    | _ => do
+      pure ⟨q(Nat.rawCast $n), .const c hc, (q(natCast_nat (R := $α) $n) : Expr)⟩
   | .mul (e := a₂) va₁ va₂ va₃ => do
     let ⟨_, vb₁, pb₁⟩ ← va₁.evalNatCast char rα cpα
     let ⟨_, vb₃, pb₃⟩ ← va₃.evalNatCast char rα cpα
