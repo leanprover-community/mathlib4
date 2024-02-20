@@ -1440,8 +1440,8 @@ Then `f` tends to `x` along `l` restricted to `s` if and only if it tends to `x`
 theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : α → X} {l : Filter α} {s : Set α}
     (h : ∀ a ∉ s, f a = x) : Tendsto f (l ⊓ 𝓟 s) (𝓝 x) ↔ Tendsto f l (𝓝 x) := by
   rw [tendsto_iff_comap, tendsto_iff_comap]
-  replace h : 𝓟 sᶜ ≤ comap f (𝓝 x)
-  · rintro U ⟨t, ht, htU⟩ x hx
+  replace h : 𝓟 sᶜ ≤ comap f (𝓝 x) := by
+    rintro U ⟨t, ht, htU⟩ x hx
     have : f x ∈ t := (h x hx).symm ▸ mem_of_mem_nhds ht
     exact htU this
   refine' ⟨fun h' => _, le_trans inf_le_left⟩
@@ -1841,7 +1841,7 @@ However, lemmas with this conclusion are not nice to use in practice because
 1. They confuse the elaborator. The following two examples fail, because of limitations in the
   elaboration process.
   ```
-  variables {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
+  variable {M : Type*} [Add M] [TopologicalSpace M] [ContinuousAdd M]
   example : Continuous (λ x : M, x + x) :=
   continuous_add.comp _
 

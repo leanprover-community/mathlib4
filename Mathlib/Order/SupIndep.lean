@@ -429,8 +429,7 @@ theorem Independent.injOn (ht : Independent t) : InjOn t {i | t i ≠ ⊥} := by
   suffices t j ≤ ⨆ (k) (_ : k ≠ i), t k by
     replace ht := (ht i).mono_right this
     rwa [h, disjoint_self] at ht
-  replace contra : j ≠ i
-  · exact Ne.symm contra
+  replace contra : j ≠ i := Ne.symm contra
   -- Porting note: needs explicit `f`
   exact @le_iSup₂ _ _ _ _ (fun x _ => t x) j contra
 
