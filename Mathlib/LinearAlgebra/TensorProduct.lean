@@ -1337,8 +1337,8 @@ protected theorem add_left_neg (x : M ⊗[R] N) : -x + x = 0 :=
     (by rw [add_zero]; apply (Neg.aux R).map_zero)
     (fun x y => by convert (add_tmul (R := R) (-x) x y).symm; rw [add_left_neg, zero_tmul])
     fun x y hx hy => by
-    suffices : -x + x + (-y + y) = 0
-    · rw [← this]
+    suffices -x + x + (-y + y) = 0 by
+      rw [← this]
       unfold Neg.neg neg
       simp only
       rw [map_add]
