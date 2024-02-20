@@ -93,11 +93,11 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
 
   for x in postponed do
     if (← instantiateMVars x).isMVar then
-      logError s!"Failed to infer {← ppExpr (← inferType x)} \
+      logError s!"Failed to infer `({← ppExpr x} : {← ppExpr (← inferType x)})` \
       when applying theorem {← ppOrigin' thmId}."
 
       trace[Meta.Tactic.fun_prop]
-        "{← ppOrigin thmId}, failed to infer data {indentExpr x}"
+        "{← ppOrigin thmId}, failed to infer `({← ppExpr x} : {← ppExpr (← inferType x)})`"
       return false
 
   return true
@@ -121,7 +121,7 @@ def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type
     trace[Meta.Tactic.fun_prop.apply] "{← ppOrigin thmId}, \n{e}"
     return .some { proof := proof }
   else
-    trace[Meta.Tactic.fun_prop.unify] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
+    trace[Meta.Tactic.fun_prop] "failed to unify {← ppOrigin thmId}\n{type}\nwith\n{e}"
     return none
 
 
