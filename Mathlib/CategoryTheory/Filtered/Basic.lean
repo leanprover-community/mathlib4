@@ -5,8 +5,7 @@ Authors: Reid Barton, Scott Morrison
 -/
 import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.Limits.Cones
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.ULift
