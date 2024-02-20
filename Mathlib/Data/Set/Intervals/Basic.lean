@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
 import Mathlib.Order.MinMax
-import Mathlib.Data.Set.Prod
+import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Says
 
 #align_import data.set.intervals.basic from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
@@ -755,6 +755,10 @@ variable [PartialOrder α] {a b c : α}
 theorem Icc_self (a : α) : Icc a a = {a} :=
   Set.ext <| by simp [Icc, le_antisymm_iff, and_comm]
 #align set.Icc_self Set.Icc_self
+
+instance instIccUnique : Unique (Set.Icc a a) where
+  default := ⟨a, by simp⟩
+  uniq y := Subtype.ext <| by simpa using y.2
 
 @[simp]
 theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by

@@ -10,6 +10,7 @@ import Mathlib.Topology.Metrizable.Urysohn
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Topology.Separation.NotNormal
+import Mathlib.Topology.MetricSpace.Baire
 
 #align_import sorgenfrey_line from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
@@ -48,6 +49,7 @@ def SorgenfreyLine : Type := ℝ
 -- porting note: was deriving ConditionallyCompleteLinearOrder, LinearOrderedField, Archimedean
 #align counterexample.sorgenfrey_line Counterexample.SorgenfreyLine
 
+@[inherit_doc]
 scoped[SorgenfreyLine] notation "ℝₗ" => Counterexample.SorgenfreyLine
 open scoped SorgenfreyLine
 
@@ -166,7 +168,7 @@ instance : ContinuousAdd ℝₗ := by
   exact (continuous_add.tendsto _).inf (MapsTo.tendsto fun x hx => add_le_add hx.1 hx.2)
 
 theorem isClopen_Ici (a : ℝₗ) : IsClopen (Ici a) :=
-  ⟨isOpen_Ici a, isClosed_Ici⟩
+  ⟨isClosed_Ici, isOpen_Ici a⟩
 #align counterexample.sorgenfrey_line.is_clopen_Ici Counterexample.SorgenfreyLine.isClopen_Ici
 
 theorem isClopen_Iio (a : ℝₗ) : IsClopen (Iio a) := by
@@ -247,7 +249,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
   obtain rfl : x + y = c := by
     change (x, y) ∈ {p : ℝₗ × ℝₗ | p.1 + p.2 = c}
     exact closure_minimal (hs : s ⊆ {x | x.1 + x.2 = c}) (isClosed_antidiagonal c) H
-  rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).1 left_mem_Ici with
+  rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 left_mem_Ici with
     ⟨⟨x', y'⟩, ⟨hx : x ≤ x', hy : y ≤ y'⟩, H⟩
   convert H
   · refine' hx.antisymm _
@@ -269,7 +271,7 @@ theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
 
 /-- An antidiagonal is a separable set but is not a separable space. -/
 theorem isSeparable_antidiagonal (c : ℝₗ) : IsSeparable {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
-  isSeparable_of_separableSpace _
+  .of_separableSpace _
 
 /-- An antidiagonal is a separable set but is not a separable space. -/
 theorem not_separableSpace_antidiagonal (c : ℝₗ) :
@@ -311,7 +313,8 @@ theorem not_separatedNhds_rat_irrational_antidiag :
   have H : {x : ℝ | Irrational x} ⊆ ⋃ n, C n := fun x hx =>
     mem_iUnion.2 ⟨_, subset_closure ⟨hx, rfl⟩⟩
   have Hd : Dense (⋃ n, interior (C n)) :=
-    isGδ_irrational.dense_iUnion_interior_of_closed dense_irrational (fun _ => isClosed_closure) H
+    IsGδ.setOf_irrational.dense_iUnion_interior_of_closed dense_irrational
+      (fun _ => isClosed_closure) H
   obtain ⟨N, hN⟩ : ∃ n : ℕ+, (interior <| C n).Nonempty; exact nonempty_iUnion.mp Hd.nonempty
   /- Choose a rational number `r` in the interior of the closure of `C N`, then choose `n ≥ N > 0`
     such that `Ico r (r + n⁻¹) × Ico (-r) (-r + n⁻¹) ⊆ U`. -/

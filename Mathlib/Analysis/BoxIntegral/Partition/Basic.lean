@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Option
 import Mathlib.Analysis.BoxIntegral.Box.Basic
+import Mathlib.Data.Set.Pairwise.Lattice
 
 #align_import analysis.box_integral.partition.basic from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 

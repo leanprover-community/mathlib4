@@ -48,9 +48,6 @@ isometrically and in a way compatible with `f n`.
 
 -/
 
-set_option autoImplicit true
-
-
 noncomputable section
 
 universe u v w
@@ -496,8 +493,7 @@ def GlueSpace (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Type _ :=
   @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 #align metric.glue_space Metric.GlueSpace
 
--- porting note: TODO: w/o `@`, tries to generate some `[MetricSpace _]` before finding `X` `Y`
-instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (@GlueSpace X Y Z _ _ _ _ _ _ hΦ hΨ) :=
+instance (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : MetricSpace (GlueSpace hΦ hΨ) :=
   inferInstanceAs <| MetricSpace <|
     @UniformSpace.SeparationQuotient _ (gluePremetric hΦ hΨ).toUniformSpace
 
@@ -628,6 +624,7 @@ def InductiveLimit (I : ∀ n, Isometry (f n)) : Type _ :=
   @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace
 #align metric.inductive_limit Metric.InductiveLimit
 
+set_option autoImplicit true in
 instance : MetricSpace (InductiveLimit (f := f) I) :=
   inferInstanceAs <| MetricSpace <|
     @UniformSpace.SeparationQuotient _ (inductivePremetric I).toUniformSpace

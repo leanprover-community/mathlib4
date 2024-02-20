@@ -197,7 +197,7 @@ protected theorem bot_eq_zero : (⊥ : ι →₀ α) = 0 :=
 
 @[simp]
 theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
-  simp [FunLike.ext_iff, forall_and]
+  simp [DFunLike.ext_iff, forall_and]
 #align finsupp.add_eq_zero_iff Finsupp.add_eq_zero_iff
 
 theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=

@@ -77,6 +77,40 @@ def Isometry.inr (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) : Q
   toLinearMap := LinearMap.inr R _ _
   map_app' m₁ := by simp
 
+variable (M₂) in
+/-- `LinearMap.fst` as an isometry, when the second space has the zero quadratic form. -/
+@[simps!]
+def Isometry.fst (Q₁ : QuadraticForm R M₁) : (Q₁.prod (0 : QuadraticForm R M₂)) →qᵢ Q₁ where
+  toLinearMap := LinearMap.fst R _ _
+  map_app' m₁ := by simp
+
+variable (M₁) in
+/-- `LinearMap.snd` as an isometry, when the first space has the zero quadratic form. -/
+@[simps!]
+def Isometry.snd (Q₂ : QuadraticForm R M₂) : ((0 : QuadraticForm R M₁).prod Q₂) →qᵢ Q₂ where
+  toLinearMap := LinearMap.snd R _ _
+  map_app' m₁ := by simp
+
+@[simp]
+lemma Isometry.fst_comp_inl (Q₁ : QuadraticForm R M₁) :
+    (fst M₂ Q₁).comp (inl Q₁ (0 : QuadraticForm R M₂)) = .id _ :=
+  ext fun _ => rfl
+
+@[simp]
+lemma Isometry.snd_comp_inr (Q₂ : QuadraticForm R M₂) :
+    (snd M₁ Q₂).comp (inr (0 : QuadraticForm R M₁) Q₂) = .id _ :=
+  ext fun _ => rfl
+
+@[simp]
+lemma Isometry.snd_comp_inl (Q₂ : QuadraticForm R M₂) :
+    (snd M₁ Q₂).comp (inl (0 : QuadraticForm R M₁) Q₂) = 0 :=
+  ext fun _ => rfl
+
+@[simp]
+lemma Isometry.fst_comp_inr (Q₁ : QuadraticForm R M₁) :
+    (fst M₂ Q₁).comp (inr Q₁ (0 : QuadraticForm R M₂)) = 0 :=
+  ext fun _ => rfl
+
 theorem Equivalent.prod {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂}
     {Q₁' : QuadraticForm R N₁} {Q₂' : QuadraticForm R N₂} (e₁ : Q₁.Equivalent Q₁')
     (e₂ : Q₂.Equivalent Q₂') : (Q₁.prod Q₂).Equivalent (Q₁'.prod Q₂') :=
@@ -246,6 +280,30 @@ def Isometry.single [Fintype ι] [DecidableEq ι] (Q : ∀ i, QuadraticForm R (M
     Q i →qᵢ pi Q where
   toLinearMap := LinearMap.single i
   map_app' := pi_apply_single _ _
+
+/-- `LinearMap.proj` as an isometry, when all but one quadratic form is zero. -/
+@[simps!]
+def Isometry.proj [Fintype ι] [DecidableEq ι] (i : ι) (Q : QuadraticForm R (Mᵢ i)) :
+    pi (Pi.single i Q) →qᵢ Q where
+  toLinearMap := LinearMap.proj i
+  map_app' m := by
+    dsimp
+    rw [pi_apply, Fintype.sum_eq_single i (fun j hij => ?_), Pi.single_eq_same]
+    rw [Pi.single_eq_of_ne hij, zero_apply]
+
+/-- Note that `QuadraticForm.Isometry.id` would not be well-typed as the RHS. -/
+@[simp, nolint simpNF]  -- ignore the bogus "Left-hand side does not simplify" lint error
+theorem Isometry.proj_comp_single_of_same [Fintype ι] [DecidableEq ι]
+    (i : ι) (Q : QuadraticForm R (Mᵢ i)) :
+    (proj i Q).comp (single _ i) = .ofEq (Pi.single_eq_same _ _) :=
+  ext fun _ => Pi.single_eq_same _ _
+
+/-- Note that `0 : 0 →qᵢ Q` alone would not be well-typed as the RHS. -/
+@[simp]
+theorem Isometry.proj_comp_single_of_ne [Fintype ι] [DecidableEq ι]
+    {i j : ι} (h : i ≠ j) (Q : QuadraticForm R (Mᵢ i)) :
+    (proj i Q).comp (single _ j) = (0 : 0 →qᵢ Q).comp (ofEq (Pi.single_eq_of_ne h.symm _)) :=
+  ext fun _ => Pi.single_eq_of_ne h _
 
 theorem Equivalent.pi [Fintype ι] {Q : ∀ i, QuadraticForm R (Mᵢ i)}
     {Q' : ∀ i, QuadraticForm R (Nᵢ i)} (e : ∀ i, (Q i).Equivalent (Q' i)) :
