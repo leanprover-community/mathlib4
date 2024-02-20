@@ -429,9 +429,9 @@ theorem card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
   toFun t := ⟨Finsupp.single n t⟩
-  -- Porting note: Was `simp`.
+  -- porting note (#10745): was `simp`.
   map_add' x y := by simp; rw [ofFinsupp_add]
-  -- Porting note: Was `simp [← ofFinsupp_smul]`.
+  -- porting note (#10745): was `simp [← ofFinsupp_smul]`.
   map_smul' r x := by simp; rw [← ofFinsupp_smul, smul_single']
 #align polynomial.monomial Polynomial.monomial
 
@@ -686,7 +686,7 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f
 #align polynomial.to_finsupp_apply Polynomial.toFinsupp_apply
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
-  -- Porting note: Was `simp [← ofFinsupp_single, coeff, LinearMap.coe_mk]`.
+  -- porting note (#10745): was `simp [← ofFinsupp_single, coeff, LinearMap.coe_mk]`.
   rw [← ofFinsupp_single]
   simp only [coeff, LinearMap.coe_mk]
   rw [Finsupp.single_apply]
@@ -826,7 +826,7 @@ theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : ℕ →₀ R⟩
   rcases q with ⟨g : ℕ →₀ R⟩
-  -- Porting note: Was `simp [coeff, DFunLike.ext_iff]`
+  -- porting note (#10745): was `simp [coeff, DFunLike.ext_iff]`
   simpa [coeff] using DFunLike.ext_iff (f := f) (g := g)
 #align polynomial.ext_iff Polynomial.ext_iff
 
@@ -954,7 +954,7 @@ theorem support_X (H : ¬(1 : R) = 0) : (X : R[X]).support = singleton 1 := by
 
 theorem monomial_left_inj {a : R} (ha : a ≠ 0) {i j : ℕ} :
     monomial i a = monomial j a ↔ i = j := by
-  -- Porting note: Was `simp [← ofFinsupp_single, Finsupp.single_left_inj ha]`
+  -- porting note (#10745): was `simp [← ofFinsupp_single, Finsupp.single_left_inj ha]`
   rw [← ofFinsupp_single, ← ofFinsupp_single, ofFinsupp.injEq, Finsupp.single_left_inj ha]
 #align polynomial.monomial_left_inj Polynomial.monomial_left_inj
 
