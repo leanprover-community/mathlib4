@@ -313,8 +313,7 @@ theorem IsBaseChange.ofEquiv (e : M ≃ₗ[R] N) : IsBaseChange R e.toLinearMap 
     ext r q
     show (by let _ := I₂; exact r • q) = (by let _ := I₃; exact r • q)
     dsimp
-    rw [← one_smul R q, smul_smul, ← @smul_assoc _ _ _ (id _) (id _) (id _) I₄, smul_eq_mul,
-      mul_one]
+    rw [← one_smul R q, smul_smul, ← @smul_assoc _ _ _ (id _) (id _) (id _) I₄, smul_eq_mul]
   cases this
   refine'
     ⟨g.comp e.symm.toLinearMap, by

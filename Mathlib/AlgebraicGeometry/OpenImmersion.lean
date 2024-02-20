@@ -594,8 +594,7 @@ theorem range_pullback_to_base_of_left :
       Set.range f.1.base ∩ Set.range g.1.base := by
   rw [pullback.condition, Scheme.comp_val_base, coe_comp, Set.range_comp,
     range_pullback_snd_of_left, Opens.carrier_eq_coe,
-    Opens.map_obj, Opens.coe_mk, Set.image_preimage_eq_inter_range,
-    Set.inter_comm]
+    Opens.map_obj, Opens.coe_mk, Set.image_preimage_eq_inter_range]
 #align algebraic_geometry.IsOpenImmersion.range_pullback_to_base_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_to_base_of_left
 
 theorem range_pullback_to_base_of_right :
