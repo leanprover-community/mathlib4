@@ -367,11 +367,10 @@ then the exponent of `G` is equal to the exponent of `H`.
 -/
 @[to_additive "If there exists a addition-preserving equivalence between `G` and `H`,
 then the exponent of `G` is equal to the exponent of `H`."]
-theorem exponent_eq_of_mulEquiv (e : Nonempty (G ≃* H)) : Monoid.exponent G = Monoid.exponent H :=
-  let ⟨e'⟩ := e
+theorem exponent_eq_of_mulEquiv (e : G ≃* H) : Monoid.exponent G = Monoid.exponent H :=
   Nat.dvd_antisymm
-    (exponent_dvd_of_monoidHom e' e'.injective)
-    (exponent_dvd_of_monoidHom e'.symm e'.symm.injective)
+    (exponent_dvd_of_monoidHom e e.injective)
+    (exponent_dvd_of_monoidHom e.symm e.symm.injective)
 
 end Monoid
 
@@ -383,7 +382,7 @@ variable (G) in
 @[to_additive (attr := simp)]
 theorem _root_.Submonoid.exponent_top :
     Monoid.exponent (⊤ : Submonoid G) = Monoid.exponent G :=
-  exponent_eq_of_mulEquiv ⟨Submonoid.topEquiv⟩
+  exponent_eq_of_mulEquiv Submonoid.topEquiv
 
 @[to_additive]
 theorem _root_.Submonoid.pow_exponent_eq_one {S : Submonoid G} {g : G} (g_in_s : g ∈ S) :
@@ -531,11 +530,11 @@ theorem Group.exponent_dvd_nat_card : Monoid.exponent G ∣ Nat.card G :=
 @[to_additive]
 theorem Subgroup.exponent_toSubmonoid (H : Subgroup G) :
     Monoid.exponent H.toSubmonoid = Monoid.exponent H :=
-  Monoid.exponent_eq_of_mulEquiv ⟨MulEquiv.subgroupCongr rfl⟩
+  Monoid.exponent_eq_of_mulEquiv (MulEquiv.subgroupCongr rfl)
 
 @[to_additive (attr := simp)]
 theorem Subgroup.exponent_top : Monoid.exponent (⊤ : Subgroup G) = Monoid.exponent G :=
-  Monoid.exponent_eq_of_mulEquiv ⟨topEquiv⟩
+  Monoid.exponent_eq_of_mulEquiv topEquiv
 
 @[to_additive]
 theorem Subgroup.pow_exponent_eq_one {H : Subgroup G} {g : G} (g_in_H : g ∈ H) :
