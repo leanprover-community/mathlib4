@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.Algebra.Lie.Killing -- Move `LieModule.trace_toEndomorphism_weightSpace`, drop import
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Data.Int.Interval
 import Mathlib.LinearAlgebra.Trace
@@ -186,7 +185,7 @@ the restriction of every root to `I` vanishes (which cannot happen in a semisimp
 lemma exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero
     [IsDomain R] [IsPrincipalIdealRing R] [CharZero R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
     (hα : α ≠ 0) (hχ : weightSpace M χ ≠ ⊥) :
-    ∃ (a : ℤ) (b : ℕ), 0 < b ∧ ∀ x ∈ (rootSpaceProductNegSelf α).range, (a • α + b • χ) x = 0 := by
+    ∃ a b : ℤ, 0 < b ∧ ∀ x ∈ (rootSpaceProductNegSelf α).range, (a • α + b • χ) x = 0 := by
   obtain ⟨p, hp₀, q, hq₀, hp, hq⟩ := exists₂_weightSpace_smul_add_eq_bot M α χ hα
   let a := ∑ i in Finset.Ioo p q, finrank R (weightSpace M (i • α + χ)) • i
   let b := ∑ i in Finset.Ioo p q, finrank R (weightSpace M (i • α + χ))
@@ -195,7 +194,7 @@ lemma exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero
     refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
-  refine ⟨a, b, hb, fun x hx ↦ ?_⟩
+  refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
   let N : ℤ → Submodule R M := fun k ↦ weightSpace M (k • α + χ)
   have h₁ : CompleteLattice.Independent fun (i : Finset.Ioo p q) ↦ N i := by
     rw [← LieSubmodule.independent_iff_coe_toSubmodule]
@@ -209,7 +208,7 @@ lemma exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero
     LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (weightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism,
     trace_toEndomorphism_weightSpace, Pi.add_apply, Pi.smul_apply, smul_add, ← smul_assoc,
-    Finset.sum_add_distrib, ← Finset.sum_smul]
+    Finset.sum_add_distrib, ← Finset.sum_smul, coe_nat_zsmul]
 
 end IsCartanSubalgebra
 
