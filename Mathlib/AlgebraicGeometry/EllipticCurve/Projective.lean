@@ -31,8 +31,8 @@ given by a tuple consisting of $[x:y:z]$ and the nonsingular condition on any re
 
  * `WeierstrassCurve.Projective.PointClass`: the equivalence class of a point representative.
  * `WeierstrassCurve.Projective.toAffine`: the Weierstrass curve in affine coordinates.
- * `WeierstrassCurve.Projective.nonsingular`: the nonsingular condition on a point representative.
- * `WeierstrassCurve.Projective.nonsingular_lift`: the nonsingular condition on a point class.
+ * `WeierstrassCurve.Projective.Nonsingular`: the nonsingular condition on a point representative.
+ * `WeierstrassCurve.Projective.NonsingularLift`: the nonsingular condition on a point class.
 
 ## Main statements
 
@@ -137,23 +137,23 @@ lemma eval_polynomial (P : Fin 3 → R) : eval P W.polynomial =
 /-- The proposition that a point representative $(x, y, z)$ lies in `W`.
 In other words, $W(x, y, z) = 0$. -/
 @[pp_dot]
-def equation (P : Fin 3 → R) : Prop :=
+def Equation (P : Fin 3 → R) : Prop :=
   eval P W.polynomial = 0
 
-lemma equation_iff (P : Fin 3 → R) : W.equation P ↔
+lemma equation_iff (P : Fin 3 → R) : W.Equation P ↔
     P y ^ 2 * P z + W.a₁ * P x * P y * P z + W.a₃ * P y * P z ^ 2
       = P x ^ 3 + W.a₂ * P x ^ 2 * P z + W.a₄ * P x * P z ^ 2 + W.a₆ * P z ^ 3 := by
-  rw [equation, eval_polynomial, sub_eq_zero]
+  rw [Equation, eval_polynomial, sub_eq_zero]
 
-lemma equation_zero (Y : R) : W.equation ![0, Y, 0] :=
+lemma equation_zero (Y : R) : W.Equation ![0, Y, 0] :=
   (W.equation_iff ![0, Y, 0]).mpr <| by matrix_simp; ring1
 
-lemma equation_some (X Y : R) : W.equation ![X, Y, 1] ↔ W.toAffine.equation X Y := by
+lemma equation_some (X Y : R) : W.Equation ![X, Y, 1] ↔ W.toAffine.equation X Y := by
   rw [equation_iff, W.toAffine.equation_iff]
   congr! 1 <;> matrix_simp <;> ring1
 
-lemma equation_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.equation (u • P) ↔ W.equation P :=
-  have (u : Rˣ) {P : Fin 3 → R} (h : W.equation P) : W.equation <| u • P := by
+lemma equation_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.Equation (u • P) ↔ W.Equation P :=
+  have (u : Rˣ) {P : Fin 3 → R} (h : W.Equation P) : W.Equation <| u • P := by
     rw [equation_iff] at h ⊢
     linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) (u : R) ^ 3 * h
   ⟨fun h => by convert this u⁻¹ h; rw [inv_smul_smul], this u⟩
@@ -217,26 +217,26 @@ theorem polynomial_relation (P : Fin 3 → R) : 3 * eval P W.polynomial =
 /-- The proposition that a point representative $(x, y, z)$ in `W` is nonsingular.
 In other words, either $W_X(x, y, z) \ne 0$, $W_Y(x, y, z) \ne 0$, or $W_Z(x, y, z) \ne 0$. -/
 @[pp_dot]
-def nonsingular (P : Fin 3 → R) : Prop :=
-  W.equation P ∧ (eval P W.polynomialX ≠ 0 ∨ eval P W.polynomialY ≠ 0 ∨ eval P W.polynomialZ ≠ 0)
+def Nonsingular (P : Fin 3 → R) : Prop :=
+  W.Equation P ∧ (eval P W.polynomialX ≠ 0 ∨ eval P W.polynomialY ≠ 0 ∨ eval P W.polynomialZ ≠ 0)
 
-lemma nonsingular_iff (P : Fin 3 → R) : W.nonsingular P ↔ W.equation P ∧
+lemma nonsingular_iff (P : Fin 3 → R) : W.Nonsingular P ↔ W.Equation P ∧
     (W.a₁ * P y * P z ≠ 3 * P x ^ 2 + 2 * W.a₂ * P x * P z + W.a₄ * P z ^ 2 ∨
       P y * P z ≠ -P y * P z - W.a₁ * P x * P z - W.a₃ * P z ^ 2 ∨
       P y ^ 2 + W.a₁ * P x * P y + 2 * W.a₃ * P y * P z
         ≠ W.a₂ * P x ^ 2 + 2 * W.a₄ * P x * P z + 3 * W.a₆ * P z ^ 2) := by
-  rw [nonsingular, eval_polynomialX, eval_polynomialY, eval_polynomialZ, sub_ne_zero, sub_ne_zero,
+  rw [Nonsingular, eval_polynomialX, eval_polynomialY, eval_polynomialZ, sub_ne_zero, sub_ne_zero,
     ← sub_ne_zero (a := P y * P z)]
   congr! 4
   ring1
 
-lemma nonsingular_zero [Nontrivial R] : W.nonsingular ![0, 1, 0] :=
+lemma nonsingular_zero [Nontrivial R] : W.Nonsingular ![0, 1, 0] :=
   (W.nonsingular_iff ![0, 1, 0]).mpr ⟨W.equation_zero 1, by simp⟩
 
-lemma nonsingular_zero' [NoZeroDivisors R] {Y : R} (hy : Y ≠ 0) : W.nonsingular ![0, Y, 0] :=
+lemma nonsingular_zero' [NoZeroDivisors R] {Y : R} (hy : Y ≠ 0) : W.Nonsingular ![0, Y, 0] :=
   (W.nonsingular_iff ![0, Y, 0]).mpr ⟨W.equation_zero Y, by simpa⟩
 
-lemma nonsingular_some (X Y : R) : W.nonsingular ![X, Y, 1] ↔ W.toAffine.nonsingular X Y := by
+lemma nonsingular_some (X Y : R) : W.Nonsingular ![X, Y, 1] ↔ W.toAffine.nonsingular X Y := by
   rw [nonsingular_iff]
   matrix_simp
   simp only [W.toAffine.nonsingular_iff, equation_some, and_congr_right_iff,
@@ -244,8 +244,8 @@ lemma nonsingular_some (X Y : R) : W.nonsingular ![X, Y, 1] ↔ W.toAffine.nonsi
   intro h hX hY
   linear_combination (norm := ring1) 3 * h - X * hX - Y * hY
 
-lemma nonsingular_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.nonsingular (u • P) ↔ W.nonsingular P :=
-  have (u : Rˣ) {P : Fin 3 → R} (h : W.nonsingular <| u • P) : W.nonsingular P := by
+lemma nonsingular_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.Nonsingular (u • P) ↔ W.Nonsingular P :=
+  have (u : Rˣ) {P : Fin 3 → R} (h : W.Nonsingular <| u • P) : W.Nonsingular P := by
     rcases (W.nonsingular_iff _).mp h with ⟨h, h'⟩
     refine (W.nonsingular_iff P).mpr ⟨(W.equation_smul_iff P u).mp h, ?_⟩
     contrapose! h'
@@ -255,34 +255,34 @@ lemma nonsingular_smul_iff (P : Fin 3 → R) (u : Rˣ) : W.nonsingular (u • P)
       by linear_combination (norm := ring1) (u : R) ^ 2 * h'.right.right⟩
   ⟨this u, fun h => this u⁻¹ <| by rwa [inv_smul_smul]⟩
 
-lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W.nonsingular P ↔ W.nonsingular Q := by
+lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W.Nonsingular P ↔ W.Nonsingular Q := by
   rcases h with ⟨u, rfl⟩
   exact W.nonsingular_smul_iff Q u
 
 /-- The proposition that a point class on `W` is nonsingular. If `P` is a point representative,
-then `W.nonsingular_lift ⟦P⟧` is definitionally equivalent to `W.nonsingular P`. -/
+then `W.NonsingularLift ⟦P⟧` is definitionally equivalent to `W.Nonsingular P`. -/
 @[pp_dot]
-def nonsingular_lift (P : PointClass R) : Prop :=
-  P.lift W.nonsingular fun _ _ => propext ∘ W.nonsingular_of_equiv
+def NonsingularLift (P : PointClass R) : Prop :=
+  P.lift W.Nonsingular fun _ _ => propext ∘ W.nonsingular_of_equiv
 
 @[simp]
-lemma nonsingular_lift_iff (P : Fin 3 → R) : W.nonsingular_lift ⟦P⟧ ↔ W.nonsingular P :=
+lemma nonsingularLift_iff (P : Fin 3 → R) : W.NonsingularLift ⟦P⟧ ↔ W.Nonsingular P :=
   Iff.rfl
 
-lemma nonsingular_lift_zero [Nontrivial R] : W.nonsingular_lift ⟦![0, 1, 0]⟧ :=
+lemma nonsingularLift_zero [Nontrivial R] : W.NonsingularLift ⟦![0, 1, 0]⟧ :=
   W.nonsingular_zero
 
-lemma nonsingular_lift_zero' [NoZeroDivisors R] {Y : R} (hy : Y ≠ 0) :
-    W.nonsingular_lift ⟦![0, Y, 0]⟧ :=
+lemma nonsingularLift_zero' [NoZeroDivisors R] {Y : R} (hy : Y ≠ 0) :
+    W.NonsingularLift ⟦![0, Y, 0]⟧ :=
   W.nonsingular_zero' hy
 
-lemma nonsingular_lift_some (X Y : R) :
-    W.nonsingular_lift ⟦![X, Y, 1]⟧ ↔ W.toAffine.nonsingular X Y :=
+lemma nonsingularLift_some (X Y : R) :
+    W.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W.toAffine.nonsingular X Y :=
   W.nonsingular_some X Y
 
 variable {F : Type u} [Field F] {W : Projective F}
 
-lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nonsingular Q)
+lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q)
     (hPz : P z = 0) (hQz : Q z = 0) : P ≈ Q := by
   rw [fin3_def P, hPz] at hP ⊢
   rw [fin3_def Q, hQz] at hQ ⊢
@@ -290,7 +290,7 @@ lemma equiv_of_Z_eq_zero {P Q : Fin 3 → F} (hP : W.nonsingular P) (hQ : W.nons
   simp [pow_eq_zero hP.left.symm, pow_eq_zero hQ.left.symm] at *
   exact ⟨Units.mk0 (P y / Q y) <| div_ne_zero hP hQ, by simp [div_mul_cancel _ hQ]⟩
 
-lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (h : W.nonsingular P) (hPz : P z = 0) :
+lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z = 0) :
     P ≈ ![0, 1, 0] :=
   equiv_of_Z_eq_zero h W.nonsingular_zero hPz rfl
 
@@ -298,14 +298,14 @@ lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : P ≈ ![P x 
   ⟨Units.mk0 _ hPz, by simp [← fin3_def P, mul_div_cancel' _ hPz]⟩
 
 lemma nonsingular_iff_affine_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    W.nonsingular P ↔ W.toAffine.nonsingular (P x / P z) (P y / P z) :=
+    W.Nonsingular P ↔ W.toAffine.nonsingular (P x / P z) (P y / P z) :=
   (W.nonsingular_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| W.nonsingular_some ..
 
 lemma nonsingular_of_affine_of_Z_ne_zero {P : Fin 3 → F}
-    (h : W.toAffine.nonsingular (P x / P z) (P y / P z)) (hPz : P z ≠ 0) : W.nonsingular P :=
+    (h : W.toAffine.nonsingular (P x / P z) (P y / P z)) (hPz : P z ≠ 0) : W.Nonsingular P :=
   (nonsingular_iff_affine_of_Z_ne_zero hPz).mpr h
 
-lemma nonsingular_affine_of_Z_ne_zero {P : Fin 3 → F} (h : W.nonsingular P) (hPz : P z ≠ 0) :
+lemma nonsingular_affine_of_Z_ne_zero {P : Fin 3 → F} (h : W.Nonsingular P) (hPz : P z ≠ 0) :
     W.toAffine.nonsingular (P x / P z) (P y / P z) :=
   (nonsingular_iff_affine_of_Z_ne_zero hPz).mp h
 
