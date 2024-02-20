@@ -1145,7 +1145,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       dsimp only
       split_ifs with h h_1
       · rw [h, eq_zero_of_zero_dvd (dvd_lcm_left _ _), mul_zero, zero_mul]
-      · rw [h_1, eq_zero_of_zero_dvd (dvd_lcm_right _ _), mul_zero]
+      · rw [h_1, eq_zero_of_zero_dvd (dvd_lcm_right _ _)]
       rw [mul_comm, ← Classical.choose_spec (exists_gcd a b)]
     lcm_zero_left := fun a => eq_zero_of_zero_dvd (dvd_lcm_left _ _)
     lcm_zero_right := fun a => eq_zero_of_zero_dvd (dvd_lcm_right _ _)

@@ -596,7 +596,7 @@ def span.ringHom : SetSemiring A →+* Submodule R A where
   map_add' := span_union
   map_mul' s t := by
     dsimp only -- porting note: new, needed due to new-style structures
-    rw [SetSemiring.down_mul, span_mul_span, ← image_mul_prod]
+    rw [SetSemiring.down_mul, span_mul_span]
 #align submodule.span.ring_hom Submodule.span.ringHom
 
 section
