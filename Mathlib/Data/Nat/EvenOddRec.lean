@@ -57,8 +57,8 @@ from `P j` for all `j < 2 * i` and we can prove `P (2 * i + 1)` from `P j` for a
 then we have `P n` for all `n : ℕ`. -/
 @[elab_as_elim]
 noncomputable def evenOddStrongRec {P : ℕ → Sort*} (n : ℕ)
-    (h_even : ∀ n : ℕ, (∀ k : ℕ, k < 2 * n → P k) → P (2 * n))
-    (h_odd : ∀ n : ℕ, (∀ k : ℕ, k < 2 * n + 1 → P k) → P (2 * n + 1)) : P n :=
+    (h_even : ∀ n : ℕ, (∀ k < 2 * n, P k) → P (2 * n))
+    (h_odd : ∀ n : ℕ, (∀ k < 2 * n + 1, P k) → P (2 * n + 1)) : P n :=
   n.strongRecOn fun m ih => m.even_or_odd'.choose_spec.by_cases
     (fun h => h.symm ▸ h_even m.even_or_odd'.choose <| h ▸ ih)
     (fun h => h.symm ▸ h_odd m.even_or_odd'.choose <| h ▸ ih)
