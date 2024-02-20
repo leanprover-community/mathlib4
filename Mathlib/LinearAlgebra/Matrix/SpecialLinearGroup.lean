@@ -311,6 +311,7 @@ def center_equiv_rootsOfUnity' (i : n) :
     obtain ⟨⟨a, _⟩, ha⟩ := a
     refine SetCoe.ext <| Units.eq_iff.mp <| by simp
   map_mul' A B := by
+    dsimp
     ext
     simp only [Submonoid.coe_mul, coe_mul, rootsOfUnity.val_mkOfPowEq_coe, Units.val_mul]
     rw [← scalar_eq_coe_self_center A i, ← scalar_eq_coe_self_center B i]
