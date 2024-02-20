@@ -494,3 +494,8 @@ theorem image : f '' spectrum S a = spectrum R a := by
 
 theorem apply_mem {s : S} (hs : s ∈ spectrum S a) : f s ∈ spectrum R a :=
   h.image ▸ ⟨s, hs, rfl⟩
+
+theorem subset_preimage : spectrum S a ⊆ f ⁻¹' spectrum R a :=
+  h.image ▸ (spectrum S a).subset_preimage_image f
+
+end SpectrumRestricts
