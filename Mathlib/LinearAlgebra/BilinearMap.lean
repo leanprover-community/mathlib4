@@ -214,7 +214,7 @@ variable (R' S' : Type*)
 
 variable [Semiring R'] [Semiring S'] [Module R' M] [Module S' N] [Module R' Pₗ] [Module S' Pₗ]
 
-variable [SMulCommClass S' R' Pₗ] [SMulCommClass S R' Pₗ]
+variable [SMulCommClass S' R' Pₗ]
 
 variable [SMul S' S] [IsScalarTower S' S N] [IsScalarTower S' S Pₗ]
 
@@ -226,7 +226,9 @@ def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N �
   LinearMap.mk₂' R' S'
     (fun x y ↦ B x y)
     (fun _ _ _ ↦ B.map_add₂ _ _ _)
-    (by intros; simp only [LinearMap.map_smul_of_tower, LinearMap.smul_apply])
+    (fun r' m n ↦ by
+      dsimp only
+      rw [←smul_one_smul R r' m, map_smul₂, smul_one_smul])
     (fun x ↦ map_add (B x))
     (fun _ x ↦ (B x).map_smul_of_tower _)
 
