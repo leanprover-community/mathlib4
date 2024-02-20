@@ -29,9 +29,7 @@ noncomputable section
 open Topology InnerProductSpace Set
 
 variable {𝕜 F : Type*} [IsROrC 𝕜]
-
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
-
 variable {f : F → 𝕜} {f' x : F} {L : Filter F} {s : Set F}
 
 local notation "∇" => gradient
