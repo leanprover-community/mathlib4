@@ -522,9 +522,12 @@ theorem eq_of_abs_sub_nonpos (h : |a - b| ≤ 0) : a = b :=
   eq_of_abs_sub_eq_zero (le_antisymm h (abs_nonneg (a - b)))
 #align eq_of_abs_sub_nonpos eq_of_abs_sub_nonpos
 
-theorem abs_sub_pos_iff_ne : 0 < |a - b| ↔ a ≠ b :=
-  ⟨fun h eq => lt_irrefl (0 : α) (by rwa [eq, sub_self, abs_zero] at h),
-  fun h => lt_iff_not_le.mpr (mt eq_of_abs_sub_nonpos h)⟩
+@[simp]
+theorem abs_sub_nonpos : |a - b| ≤ 0 ↔ a = b :=
+  ⟨eq_of_abs_sub_nonpos, by rintro rfl; rw [sub_self, abs_zero]⟩
+
+theorem abs_sub_pos : 0 < |a - b| ↔ a ≠ b :=
+  not_le.symm.trans abs_sub_nonpos.not
 
 @[simp]
 theorem abs_eq_self : |a| = a ↔ 0 ≤ a := by
