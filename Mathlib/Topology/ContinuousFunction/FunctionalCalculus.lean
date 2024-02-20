@@ -52,7 +52,7 @@ arguments to `cfc a`, and a bundled continuous counterpart can only make sense w
 + `ContinuousFunctionalCalculus R (p : A → Prop)`: a class stating that every `a : A` satisfying
   `p a` has a star algebra homomorphism from the continuous `R`-valued functions on the
   `R`-spectrum of `a` into the algebra `A`. This map is a closed embedding, and satisfies the
-  **spectral mappping theorem**.
+  **spectral mapping theorem**.
 + `cfcSpec : p a → C(spectrum R a, R) →⋆ₐ[R] A`: the underlying star algebra homomorphism for an
   element satisfying property `p`.
 + `cfc : A → (R → R) → A`: an unbundled version of `cfcSpec` which takes the junk value `0` when
