@@ -255,11 +255,14 @@ theorem integral_boundary_rect_eq_zero_of_differentiable_on_off_countable (f : �
       I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -
       I • (∫ y : ℝ in z.im..w.im, f (re z + y * I)) = 0 := by
   -- porting note: `simp` fails to use `ContinuousLinearMap.coe_restrictScalars'`
+  -- after #10726 it does so this proof should be cleaned up
   have : ∀ z, I • (fderiv ℂ f z).restrictScalars ℝ 1 = (fderiv ℂ f z).restrictScalars ℝ I := fun z ↦
     by rw [(fderiv ℂ f _).coe_restrictScalars', ← (fderiv ℂ f _).map_smul, smul_eq_mul, mul_one]
+  simp only [ContinuousLinearMap.coe_restrictScalars'] at this
   refine (integral_boundary_rect_of_hasFDerivAt_real_off_countable f
     (fun z => (fderiv ℂ f z).restrictScalars ℝ) z w s hs Hc
-    (fun x hx => (Hd x hx).hasFDerivAt.restrictScalars ℝ) ?_).trans ?_ <;> simp [this]
+    (fun x hx => (Hd x hx).hasFDerivAt.restrictScalars ℝ) ?_).trans ?_ <;>
+      simp only [ContinuousLinearMap.coe_restrictScalars'] <;> simp_rw [this] <;> simp
 #align complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable
 
 /-- **Cauchy-Goursat theorem for a rectangle**: the integral of a complex differentiable function
