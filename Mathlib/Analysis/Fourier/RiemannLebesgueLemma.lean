@@ -35,11 +35,11 @@ equivalence to an inner-product space.
 ## Main results
 
 - `tendsto_integral_exp_inner_smul_cocompact` : for `V` a finite-dimensional real inner product
-  space and `f : V → E`, the function `λ w : V, ∫ v : V, exp (2 * π * ⟪w, v⟫ * I) • f v` tends to 0
-  along `cocompact V`.
+  space and `f : V → E`, the function `fun w : V ↦ ∫ v : V, exp (2 * π * ⟪w, v⟫ * I) • f v`
+  tends to 0 along `cocompact V`.
 - `tendsto_integral_exp_smul_cocompact` : for `V` a finite-dimensional real vector space (endowed
   with its unique Hausdorff topological vector space structure), and `W` the dual of `V`, the
-  function `λ w : W, ∫ v : V, exp (2 * π * w v * I) • f v` tends to along `cocompact W`.
+  function `fun w : W ↦ ∫ v : V, exp (2 * π * w v * I) • f v` tends to along `cocompact W`.
 - `Real.tendsto_integral_exp_smul_cocompact`: special case of functions on `ℝ`.
 - `Real.zero_at_infty_fourierIntegral` and `Real.zero_at_infty_vector_fourierIntegral`:
   reformulations explicitly using the Fourier integral.
