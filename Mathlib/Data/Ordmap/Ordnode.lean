@@ -596,7 +596,7 @@ Case conversion may be inaccurate. Consider using '#align ordnode.map Ordnode.ma
 the function is strictly monotone, i.e. `x < y → f x < f y`.
 
      partition (fun x ↦ x + 2) {1, 2, 4} = {2, 3, 6}
-     partition (λ x : ℕ, x - 2) {1, 2, 4} = precondition violation -/
+     partition (fun x : ℕ ↦ x - 2) {1, 2, 4} = precondition violation -/
 def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
   | node s l x r => node s (map f l) (f x) (map f r)

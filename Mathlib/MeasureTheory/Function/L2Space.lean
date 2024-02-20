@@ -18,8 +18,8 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
 
 * `mem_L1_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product `fun x ↦ ⟪f x, g x⟫`
   belongs to `Lp 𝕜 1 μ`.
-* `integrable_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product `λ x, ⟪f x, g x⟫`
-  is integrable.
+* `integrable_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product
+ `fun x ↦ ⟪f x, g x⟫` is integrable.
 * `L2.inner_product_space` : `Lp E 2 μ` is an inner product space.
 
 -/

@@ -2270,7 +2270,8 @@ end Continuous
 
 section ReApplyInnerSelf
 
-/-- Extract a real bilinear form from an operator `T`, by taking the pairing `λ x, re ⟪T x, x⟫`. -/
+/-- Extract a real bilinear form from an operator `T`,
+by taking the pairing `fun x ↦ re ⟪T x, x⟫`. -/
 def ContinuousLinearMap.reApplyInnerSelf (T : E →L[𝕜] E) (x : E) : ℝ :=
   re ⟪T x, x⟫
 #align continuous_linear_map.re_apply_inner_self ContinuousLinearMap.reApplyInnerSelf
