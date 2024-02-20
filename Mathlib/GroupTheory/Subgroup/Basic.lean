@@ -751,7 +751,7 @@ theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 #align subgroup.coe_pow Subgroup.coe_pow
 #align add_subgroup.coe_nsmul AddSubgroup.coe_nsmul
 
-@[to_additive (attr := norm_cast)] -- Porting note: dsimp can prove this
+@[to_additive (attr := norm_cast)] -- Porting note (#10685): dsimp can prove this
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 #align subgroup.coe_zpow Subgroup.coe_zpow

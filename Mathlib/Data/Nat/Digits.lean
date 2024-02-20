@@ -110,7 +110,7 @@ theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
   rfl
 #align nat.digits_one Nat.digits_one
 
--- @[simp] -- Porting note: dsimp can prove this
+-- @[simp] -- Porting note (#10685): dsimp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 #align nat.digits_one_succ Nat.digits_one_succ
