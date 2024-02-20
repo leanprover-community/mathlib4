@@ -219,7 +219,7 @@ instance : TotalComplexShapeSymmetry (up ℤ) (up ℤ) (up ℤ) where
 
 end ComplexShape
 
-/-- This typeclass expresses that the signs given by `TotalComplexShapeSymmetry c₁ c₂ c₁₂`
+/-- This typeclass expresses that the signs given by `[TotalComplexShapeSymmetry c₁ c₂ c₁₂]`
 and by `[TotalComplexShapeSymmetry c₂ c₁ c₁₂]` are compatible. -/
 class TotalComplexShapeSymmetrySymmetry [TotalComplexShape c₁ c₂ c₁₂]
     [TotalComplexShape c₂ c₁ c₁₂] [TotalComplexShapeSymmetry c₁ c₂ c₁₂]
