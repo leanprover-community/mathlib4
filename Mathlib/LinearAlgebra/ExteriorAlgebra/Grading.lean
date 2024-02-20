@@ -17,7 +17,6 @@ The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior
 ℕ-graded algebra.
 -/
 
-
 namespace ExteriorAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
@@ -30,8 +29,8 @@ open scoped DirectSum
 primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 -- porting note: protected
 protected def GradedAlgebra.ι :
-    M →ₗ[R] ⨁ i : ℕ, ↥((Λ[R]^i) M) :=
-  DirectSum.lof R ℕ (fun i => ↥((Λ[R]^i) M)) 1 ∘ₗ
+    M →ₗ[R] ⨁ i : ℕ, ↥((Λ[R]^i) M : Submodule R (ExteriorAlgebra R M)) :=
+  DirectSum.lof R ℕ (fun i => ↥((Λ[R]^i) M : Submodule R (ExteriorAlgebra R M))) 1 ∘ₗ
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
 #align exterior_algebra.graded_algebra.ι ExteriorAlgebra.GradedAlgebra.ι
 
@@ -41,6 +40,10 @@ theorem GradedAlgebra.ι_apply (m : M) :
         ⟨ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
   rfl
 #align exterior_algebra.graded_algebra.ι_apply ExteriorAlgebra.GradedAlgebra.ι_apply
+
+-- Defining this instance manually, because Lean doesn't seem to be able to synthesize it.
+instance thisshouldnotbenecessary : SetLike.GradedMonoid fun (i : ℕ) ↦ (Λ[R]^i) M :=
+  Submodule.nat_power_gradedMonoid (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M))
 
 -- Porting note: Lean needs to be reminded of this instance otherwise it cannot
 -- synthesize 0 in the next theorem
@@ -58,12 +61,10 @@ def GradedAlgebra.liftι :
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
 theorem GradedAlgebra.liftι_eq (i : ℕ)
-    (x : (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i :
-      Submodule R (ExteriorAlgebra R M))) :
+    (x : ((Λ[R]^i) M : Submodule R (ExteriorAlgebra R M))) :
     GradedAlgebra.liftι R M x =
     DirectSum.of (fun i =>
-      ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i :
-      Submodule R (ExteriorAlgebra R M))) i x := by
+      ↥((Λ[R]^i) M : Submodule R (ExteriorAlgebra R M))) i x := by
   cases' x with x hx
   dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
   -- Porting note: original statement was
@@ -83,7 +84,7 @@ theorem GradedAlgebra.liftι_eq (i : ℕ)
 
 /-- The exterior algebra is graded by the powers of the submodule `(ExteriorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
-    GradedAlgebra (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ · : ℕ → Submodule R _) :=
+    GradedAlgebra (fun (i : ℕ) ↦ ((Λ[R]^i) M : Submodule R _)) :=
   GradedAlgebra.ofAlgHom _
     (-- while not necessary, the `by apply` makes this elaborate faster
     by apply GradedAlgebra.liftι R M)
@@ -103,7 +104,7 @@ lemma ιMulti_span :
   rw [Submodule.eq_top_iff']
   intro x
   induction x
-    using DirectSum.Decomposition.inductionOn fun i => LinearMap.range (ι R (M := M)) ^ i with
+    using DirectSum.Decomposition.inductionOn fun i => (Λ[R]^i) M with
   | h_zero => exact Submodule.zero_mem _
   | h_add _ _ hm hm' => exact Submodule.add_mem _ hm hm'
   | h_homogeneous hm =>

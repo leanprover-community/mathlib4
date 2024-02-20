@@ -18,6 +18,11 @@ We construct the exterior algebra of a module `M` over a commutative semiring `R
 The exterior algebra of the `R`-module `M` is denoted as `ExteriorAlgebra R M`.
 It is endowed with the structure of an `R`-algebra.
 
+The `n`th exterior power of the `R`-module `M` is denoted by `exteriorPower R n M`; it is of
+type `Submodule R (ExteriorAlgebra R M)` and defined as `LinearMap.range (ExteriorAlgebra.ι R :
+M →ₗ[R] ExteriorAlgebra R M) ^ n`. We also introduce the notation `Λ[R]^n M` for
+`ExteriorPower R n M`.
+
 Given a linear morphism `f : M → A` from a module `M` to another `R`-algebra `A`, such that
 `cond : ∀ m : M, f m * f m = 0`, there is a (unique) lift of `f` to an `R`-algebra morphism,
 which is denoted `ExteriorAlgebra.lift R f cond`.
@@ -66,7 +71,7 @@ def ι : M →ₗ[R] ExteriorAlgebra R M :=
   CliffordAlgebra.ι _
 #align exterior_algebra.ι ExteriorAlgebra.ι
 
-section ExteriorPower
+section exteriorPower
 
 variable (n : ℕ) (N : Type u2) [AddCommGroup N] [Module R N]
 -- New variables `n` and `N`, to get the correct order of variables in the notation.
@@ -74,12 +79,12 @@ variable (n : ℕ) (N : Type u2) [AddCommGroup N] [Module R N]
 /-- Definition of the `n`th exterior power of a `R`-module `N`. We introduce the notation
 `Λ[R]^n N` for `ExteriorPower R n N`. -/
 @[reducible]
-def ExteriorPower := (LinearMap.range (ι R : N →ₗ[R] ExteriorAlgebra R N) ^ n)
+def exteriorPower := LinearMap.range (ι R : N →ₗ[R] ExteriorAlgebra R N) ^ n
 
 @[inherit_doc]
-notation:100 "Λ[" R "]^" n:arg => ExteriorPower R n
+notation:100 "Λ[" R "]^" n:arg => exteriorPower R n
 
-end ExteriorPower
+end exteriorPower
 
 variable {R}
 
