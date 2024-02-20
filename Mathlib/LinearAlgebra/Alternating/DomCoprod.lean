@@ -62,7 +62,7 @@ def domCoprod.summand (a : Mᵢ [Λ^ιa]→ₗ[R'] N₁) (b : Mᵢ [Λ^ιb]→�
       TensorProduct.smul_tmul']
     simp only [Sum.map_inr, Perm.sumCongrHom_apply, Perm.sumCongr_apply, Sum.map_inl,
       Function.comp_apply, Perm.coe_mul]
-    -- Porting note: Was `rw`.
+    -- Porting note (#10691): was `rw`.
     erw [← a.map_congr_perm fun i => v (σ₁ _), ← b.map_congr_perm fun i => v (σ₁ _)]
 #align alternating_map.dom_coprod.summand AlternatingMap.domCoprod.summand
 

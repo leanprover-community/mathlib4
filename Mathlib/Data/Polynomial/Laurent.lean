@@ -356,7 +356,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
   have : Function.Injective Int.ofNat := fun x y h => Int.ofNat_inj.mp h
   apply (toFinsuppIso R).injective
   rw [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply]
-  -- Porting note: was `rw`
+  -- Porting note (#10691): was `rw`
   erw [comapDomain.addMonoidHom_apply this]
   rw [toFinsuppIso_apply]
   -- Porting note: rewrote proof below relative to mathlib3.
