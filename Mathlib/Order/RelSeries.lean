@@ -353,7 +353,7 @@ def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r
 @[simp] lemma last_cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) :
     (p.cons newHead rel).last = p.last := by
   delta cons
-  rw [append_last]
+  rw [last_append]
 
 /--
 If a series `a₀ -r→ a₁ -r→ ...` has positive length, then `a₁ -r→ ...` is another series
@@ -364,6 +364,24 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   toFun := Fin.tail p ∘ (Fin.cast <| Nat.succ_pred_eq_of_pos <| Nat.pos_of_ne_zero len_pos)
   step i := p.step ⟨i.1 + 1, Nat.lt_pred_iff.mp i.2⟩
 
+lemma head_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
+    (p.tail len_pos).head = p 1 := by
+  show p (Fin.succ _) = p 1
+  congr
+  ext
+  show (1 : ℕ) = (1 : ℕ) % _
+  rw [Nat.mod_eq_of_lt]
+  simpa only [lt_add_iff_pos_left, Nat.pos_iff_ne_zero]
+
+lemma last_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
+    (p.tail len_pos).last = p.last := by
+  show p _ = p _
+  congr
+  ext
+  simp only [tail_length, Fin.val_succ, Fin.coe_cast, Fin.val_last]
+  exact Nat.succ_pred_eq_of_pos (by simpa [Nat.pos_iff_ne_zero] using len_pos)
+
+
 /--
 If a series ``a₀ -r→ a₁ -r→ ... -r→ aₙ``, then `a₀ -r→ a₁ -r→ ... -r→ aₙ₋₁` is
 another series -/
@@ -372,6 +390,12 @@ def eraseLast (p : RelSeries r) : RelSeries r where
   length := p.length - 1
   toFun i := p ⟨i, lt_of_lt_of_le i.2 (Nat.succ_le_succ tsub_le_self)⟩
   step i := p.step ⟨i, lt_of_lt_of_le i.2 tsub_le_self⟩
+
+lemma head_eraseLast (p : RelSeries r) : p.eraseLast.head = p.head := rfl
+
+lemma last_eraseLast (p : RelSeries r) :
+  p.eraseLast.last = p ⟨p.length.pred, lt_of_le_of_lt (Nat.pred_le _) Nat.le.refl⟩ := rfl
+
 
 /--
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
