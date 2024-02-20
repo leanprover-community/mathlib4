@@ -28,7 +28,6 @@ namespace CategoryTheory
 
 open Category
 
-
 namespace GradedObject
 
 variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
