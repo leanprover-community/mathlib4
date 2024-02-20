@@ -148,6 +148,7 @@ def increaseSteps : FunPropM Unit := do
      throwError s!"fun_prop failed, maximum number({maxSteps}) of steps exceeded"
   modify (fun s => {s with numSteps := s.numSteps + 1})
 
+/-- Log error message that will displayed to the user at the end. -/
 def logError (msg : String) : FunPropM Unit := do
   modify fun s =>
     {s with msgLog := msg::s.msgLog}

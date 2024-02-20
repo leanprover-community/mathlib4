@@ -838,6 +838,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
 
 end MkDTExpr
 
+/--  -/
 def DTExpr.isSpecific : DTExpr → Bool
   | .star _
   | .const ``Eq #[.star _, .star _, .star _] => false
@@ -1123,6 +1124,7 @@ partial def getMatchWithScoreWithExtra (d : RefinedDiscrTree α) (e : Expr) (uni
   let result ← go e 0
   return result.qsort (·.2.1 > ·.2.1)
 where
+  /-- go -/
   go (e : Expr) (numIgnored : Nat) : MetaM (Array (Array α × Nat × Nat)) := do
   let result ← getMatchWithScore d e unify config allowRootStar
   let result := result.map fun (a, b) => (a, b, numIgnored)
