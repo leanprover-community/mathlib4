@@ -8,6 +8,7 @@ import Mathlib.RingTheory.GradedAlgebra.Noetherian
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Algebra.HilbertSerre.AdditiveFunction
 import Mathlib.Algebra.Category.FGModuleCat.Abelian
+import Mathlib.RingTheory.GradedAlgebra.Subgrading
 
 /-!
 # Hilbert Serre Theorem
@@ -192,6 +193,49 @@ namespace induction.constructions
 variable {𝒜}
 variable {d : ℕ} (x : A) (deg_x : x ∈ 𝒜 d)
 
+def KER : HomogeneousSubmodule A ℳ where
+  carrier := {m : M | x • m = 0 }
+  add_mem' := by aesop
+  zero_mem' := by aesop
+  smul_mem' := by intros; simp only [Set.mem_setOf_eq]; rw [smul_comm]; aesop
+  is_homogeneous' i m (h : x • m = 0) := show x • _ = 0 by
+    have := GradedModule.proj_smul_mem_left (j := i + d) 𝒜 ℳ x m deg_x
+    rw [h, if_pos (by linarith), map_zero, GradedModule.proj_apply, Nat.add_sub_cancel] at this
+    exact this.symm
+
+lemma mem_KER_iff (a : M) : a ∈ KER ℳ x deg_x ↔ x • a = 0 := Iff.rfl
+
+variable [(i : ℕ) → (x : ↥(ℳ i)) → Decidable (x ≠ 0)] [(a : M) → Decidable (a ∈ KER ℳ x deg_x)]
+
+instance : DirectSum.Decomposition (KER ℳ x deg_x).grading :=
+  HomogeneousSubmodule.decomposition _
+
+open Pointwise
+
+abbrev COKER.den : HomogeneousSubmodule A ℳ :=
+{ toSubmodule := x • (⊤ : Submodule A M)
+  is_homogeneous' := by
+    intro i m hm
+    obtain ⟨m, -, rfl⟩ := hm
+    refine ⟨if d ≤ i then GradedModule.proj ℳ (i - d) m else 0, trivial, ?_⟩
+    show x • _ = GradedModule.proj ℳ i (x • m)
+    rw [GradedModule.proj_smul_mem_left 𝒜 ℳ x m deg_x]
+    split_ifs <;> aesop }
+
+abbrev COKER := M ⧸ (COKER.den ℳ x deg_x).toSubmodule
+
+instance : DirectSum.Decomposition (COKER.den ℳ x deg_x).quotientGrading :=
+  HomogeneousSubmodule.quotientDecomposition _
+
+instance : SetLike.GradedSMul 𝒜 (COKER.den ℳ x deg_x).quotientGrading :=
+  HomogeneousSubmodule.quotientGradedSMul _
+
+@[simps]
+def KER.componentEmb (n : ℕ) : (KER ℳ x deg_x).grading n →ₗ[𝒜 0] ℳ n where
+  toFun a := ⟨a.1, a.2⟩
+  map_add' := by intros; ext; rfl
+  map_smul' := by intros; ext; rfl
+
 @[simps]
 def smulBy (n : ℕ) : ℳ n →ₗ[𝒜 0] ℳ (d + n) where
   toFun m := ⟨x • m, SetLike.GradedSMul.smul_mem deg_x m.2⟩
@@ -199,157 +243,72 @@ def smulBy (n : ℕ) : ℳ n →ₗ[𝒜 0] ℳ (d + n) where
   map_smul' r m := Subtype.ext <|
     show (x : A) • (r : A) • (m : M) = (r : A) • (x : A) • (m : M) from smul_comm _ _ _
 
-def KER : Submodule A M where
-  carrier := {m : M | x • m = 0}
-  add_mem' {a b} (ha : x • a = 0) (hb : x • b = 0) := show x • (a + b) = 0 by
-    rw [smul_add, ha, hb, add_zero]
-  zero_mem' := show x • 0 = 0 from smul_zero _
-  smul_mem' {a m} (hm : x • m = 0) := show x • (a • m) = 0 by
-    rw [smul_comm, hm, smul_zero]
-
-lemma mem_KER_iff (a : M) : a ∈ KER x ↔ x • a = 0 := Iff.rfl
-
-def KERGradedPiece' (n : ℕ) : Submodule (𝒜 0) (ℳ n) :=
-  LinearMap.ker (smulBy ℳ x deg_x n)
-
-def KERGradedPiece (n : ℕ) : AddSubgroup (KER (M := M) x) where
-  carrier := {m | (m : M) ∈ ℳ n ∧ x • m = 0}
-  add_mem' := by
-    rintro m₁ m₂ ⟨hm₁, hm₁'⟩ ⟨hm₂, hm₂'⟩
-    refine ⟨AddSubgroup.add_mem _ hm₁ hm₂, ?_⟩
-    rw [smul_add, hm₁', hm₂', add_zero]
-  zero_mem' := ⟨AddSubgroup.zero_mem _, smul_zero _⟩
-  neg_mem' := by
-    rintro m ⟨hm1, hm2⟩
-    refine ⟨AddSubgroup.neg_mem _ hm1, ?_⟩
-    rw [smul_neg, hm2, neg_zero]
+instance (n : ℕ) : Module (𝒜 0) ((COKER.den ℳ x deg_x).quotientGrading n) :=
+DirectSum.GradeZero.module_at_i 𝒜 (COKER.den ℳ x deg_x).quotientGrading n
 
 
-open DirectSum
+def COKER.descComponent (n : ℕ) :
+    ℳ n →ₗ[𝒜 0] (COKER.den ℳ x deg_x).quotientGrading n where
+  toFun m := ⟨Quotient.mk'' m, by
+    simp only [Submodule.Quotient.mk''_eq_mk, HomogeneousSubmodule.quotientGrading,
+      HomogeneousSubmodule.quotientGradingEmb, Submodule.pointwise_smul_toAddSubgroup,
+      Submodule.top_toAddSubgroup, AddMonoidHom.mem_range]
+    use m
+    erw [QuotientAddGroup.map_mk']
+    rfl  ⟩
+  map_add' := by intros; ext; rfl
+  map_smul' := by intros; ext; rfl
 
-instance : AddCommGroup (⨁ (i : ℕ), KERGradedPiece ℳ x i) :=
-  DirectSum.addCommGroupSetLike _
-
-variable [(i : ℕ) → (x : ℳ i) → Decidable (x ≠ 0)]
-
-set_option synthInstance.maxHeartbeats 200000
-
-def KER.decompose : KER (M := M) x → ⨁ (i : ℕ), KERGradedPiece ℳ x i := fun k ↦
-  ∑ i in (DirectSum.decompose ℳ (k : M)).support, .of _ i
-    ⟨⟨GradedModule.proj ℳ (i : ℕ) (k : M), by
-      rw [mem_KER_iff]
-      have hk : x • (k : M) = 0 := k.2
-      apply_fun GradedModule.proj ℳ (i + d : ℕ) at hk
-      rwa [GradedModule.proj_smul_mem_left 𝒜 ℳ x (k : M) deg_x, if_pos,
-        Nat.add_sub_cancel, map_zero] at hk
-      linarith⟩, ⟨(DirectSum.decompose ℳ (k : M) (i : ℕ)).2, by
-        have hk : x • (k : M) = 0 := k.2
-        apply_fun GradedModule.proj ℳ (i + d : ℕ) at hk
-        rw [GradedModule.proj_smul_mem_left 𝒜 ℳ x (k : M) deg_x, if_pos (by linarith),
-          Nat.add_sub_cancel, map_zero] at hk
-        exact Subtype.ext hk⟩⟩
-
-lemma KER.coe_decompose_apply (k : KER (M := M) x) (j : ℕ) :
-    (KER.decompose ℳ x deg_x k j : M) =
-    if j ∈ (DirectSum.decompose ℳ (k : M)).support
-    then GradedModule.proj ℳ j (k : M)
-    else 0 := by
-  delta KER.decompose
-  erw [DFinsupp.finset_sum_apply,  AddSubmonoidClass.coe_finset_sum,
-        AddSubmonoidClass.coe_finset_sum]
-  simp_rw [DirectSum.coe_of_apply]
-  calc _
-    _ = ∑ i in (DirectSum.decompose ℳ (k : M)).support,
-          if i = j then GradedModule.proj ℳ i (k : M)
-          else 0 := by
-        refine Finset.sum_congr rfl fun i _ ↦ ?_
-        split_ifs <;> rfl
-  rw [Finset.sum_ite_eq']
-
-lemma KER.decompose_zero : KER.decompose ℳ x deg_x 0 = 0 := by
-  refine DFinsupp.ext fun i ↦ ?_
+-- `0 -> KERₘ -> ℳₙ` is exact
+lemma KER.componentEmb_injective (n : ℕ) : Function.Injective (KER.componentEmb ℳ x deg_x n) := by
+  intros a b h
   ext
-  rw [KER.coe_decompose_apply, DirectSum.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
-  split_ifs
-  · exact (GradedModule.proj ℳ i).map_zero
-  · rfl
+  rw [Subtype.ext_iff, componentEmb_apply_coe, componentEmb_apply_coe] at h
+  exact h
 
-set_option maxHeartbeats 1000000 in
-lemma KER.decompose_add (k₁ k₂ : KER (M := M) x) :
-    KER.decompose ℳ x deg_x (k₁ + k₂) =
-    KER.decompose ℳ x deg_x k₁ +
-    KER.decompose ℳ x deg_x k₂ := by
-  refine DFinsupp.ext fun i ↦ ?_
-  ext
-  rw [KER.coe_decompose_apply, DirectSum.add_apply, AddSubgroup.coe_add, Submodule.coe_add,
-    Submodule.coe_add, KER.coe_decompose_apply, KER.coe_decompose_apply]
-  split_ifs with h1 h2 h3 h4 h5 h6 h7
-  · rw [map_add]
-  · rw [map_add]
-    simp only [DFinsupp.mem_support_toFun, ne_eq, not_not, Subtype.ext_iff] at h3
-    rw [show GradedModule.proj ℳ i (k₂ : M) = 0 from h3]
-  · rw [map_add]
-    simp only [DFinsupp.mem_support_toFun, ne_eq, not_not, Subtype.ext_iff] at h2
-    rw [show GradedModule.proj ℳ i (k₁ : M) = 0 from h2]
-  · rw [map_add]
-    simp only [DFinsupp.mem_support_toFun, ne_eq, not_not, Subtype.ext_iff] at h2 h4
-    rw [show GradedModule.proj ℳ i (k₁ : M) = 0 from h2,
-      show GradedModule.proj ℳ i (k₂ : M) = 0 from h4]
-  · rw [← map_add]
-    simp only [DFinsupp.mem_support_toFun, ne_eq, not_not, Subtype.ext_iff] at h1
-    rw [show GradedModule.proj ℳ i (k₁ + k₂ : M) = 0 from h1]
-  · simp only [DFinsupp.mem_support_toFun, ne_eq, not_not, Subtype.ext_iff] at h1 h6
-    change GradedModule.proj ℳ i (k₁ + k₂ : M) = 0 at h1
-    change GradedModule.proj ℳ i (k₂ : M) = 0 at h6
-    rw [map_add] at h1
-    have h2 : (_ + _) - _ = 0 - 0 := congr_arg₂ (· - ·) h1 h6
-    rw [add_sub_assoc, sub_self, add_zero, sub_self] at h2
-    rw [h2, add_zero]
-  · simp only [DFinsupp.mem_support_toFun, ne_eq, not_not, Subtype.ext_iff] at h1 h5
-    change GradedModule.proj ℳ i (k₁ + k₂ : M) = 0 at h1
-    change GradedModule.proj ℳ i (k₁ : M) = 0 at h5
-    rw [map_add] at h1
-    have h2 : (_ + _) - _ = 0 - 0 := congr_arg₂ (· - ·) h1 h5
-    rw [add_comm, add_sub_assoc, sub_self, add_zero, sub_self] at h2
-    rw [h2, add_zero]
-  · rw [add_zero]
-
-lemma KER.decompose_leftInverse :
-    Function.LeftInverse ((DirectSum.coeAddMonoidHom fun i ↦ KERGradedPiece ℳ x i))
-      (KER.decompose ℳ x deg_x) := by
-  rintro ⟨k, hk⟩
-  ext
-  simp only [map_sum, DirectSum.coeAddMonoidHom_of, KER.decompose,
-    AddSubmonoid.coe_finset_sum, GradedModule.proj_apply, DirectSum.sum_support_decompose]
-
-set_option maxHeartbeats 1000000 in
-lemma KER.decompose_rightInverse :
-    Function.RightInverse ((DirectSum.coeAddMonoidHom fun i ↦ KERGradedPiece ℳ x i))
-      (KER.decompose ℳ x deg_x) := by
-  intro z
-  induction' z using DirectSum.induction_on with i z a b ha hb
-  · apply KER.decompose_zero
-  · rw [DirectSum.coeAddMonoidHom_of]
-    refine DFinsupp.ext fun j ↦ ?_
+-- `KERₙ -> ℳₙ -> ℳ_{d + n}` is exact
+lemma exact_KERComponentEmb_smulBy (n : ℕ) :
+    LinearMap.range (KER.componentEmb ℳ x deg_x n) = LinearMap.ker (smulBy ℳ x deg_x n) := by
+  ext m
+  fconstructor
+  · rintro ⟨⟨⟨m, (hm1 : x • m = 0)⟩, (hm2 : m ∈ ℳ n)⟩, rfl⟩
+    simp only [LinearMap.mem_ker]
     ext
-    rw [KER.coe_decompose_apply, DirectSum.coe_of_apply]
-    split_ifs with h1 h2 h3
-    · subst h2
-      rw [GradedModule.proj_apply, DirectSum.decompose_of_mem_same (hx := z.2.1)]
-    · rw [GradedModule.proj_apply, DirectSum.decompose_of_mem_ne (hx := z.2.1) (hij := h2)]
-      rfl
-    · subst h3
-      simp only [DFinsupp.mem_support_toFun, ne_eq, not_not] at h1
-      rw [Subtype.ext_iff, DirectSum.decompose_of_mem_same (hx := z.2.1)] at h1
-      exact h1.symm
-    · rfl
-  · rw [(DirectSum.coeAddMonoidHom fun i ↦ KERGradedPiece ℳ x i).map_add, KER.decompose_add,
-      ha, hb]
+    simpa only [smulBy_apply_coe, KER.componentEmb_apply_coe, ZeroMemClass.coe_zero]
+  · intro hm
+    simp only [LinearMap.mem_ker, Subtype.ext_iff, smulBy_apply_coe, ZeroMemClass.coe_zero] at hm
+    exact ⟨⟨⟨m, hm⟩, m.2⟩, rfl⟩
 
-def KERDecomposition : DirectSum.Decomposition (fun i : ℕ ↦ KERGradedPiece ℳ x i) where
-  decompose' := KER.decompose ℳ x deg_x
-  left_inv := KER.decompose_leftInverse ℳ x deg_x
-  right_inv := KER.decompose_rightInverse ℳ x deg_x
+-- `ℳₙ -> ℳ_{d + n} -> COKER_{d + n}` is exact
+lemma exact_smulBy_COKERDescComponent (n : ℕ) :
+    LinearMap.range (smulBy ℳ x deg_x n) = LinearMap.ker (COKER.descComponent ℳ x deg_x (d + n)) := by
+  ext m
+  fconstructor
+  · rintro ⟨m, rfl⟩
+    simp only [LinearMap.mem_ker]
+    ext
+    erw [QuotientAddGroup.eq_zero_iff]
+    simp only [smulBy_apply_coe, Submodule.pointwise_smul_toAddSubgroup,
+      Submodule.top_toAddSubgroup]
+    exact ⟨m, trivial, rfl⟩
+  · intro hm
+    erw [LinearMap.mem_ker, Subtype.ext_iff, QuotientAddGroup.eq_zero_iff] at hm
+    obtain ⟨m', -, (hm' : x • m' = m.1)⟩ := hm
+    refine ⟨⟨(DirectSum.decompose ℳ m' n), SetLike.coe_mem _⟩, ?_⟩
+    ext
+    simp only [Subtype.coe_eta, smulBy_apply_coe]
+    have eq0 := GradedModule.proj_smul_mem_left (j := d + n) 𝒜 ℳ x m' deg_x
+    rwa [if_pos (by linarith), GradedModule.proj_apply, GradedModule.proj_apply, add_comm,
+      Nat.add_sub_cancel, DirectSum.decompose_of_mem_same, hm', eq_comm] at eq0
+    convert m.2 using 1
+    rw [add_comm]
+
+-- `ℳ_{d + n} -> COKER_{d + n} ->` is exact
+lemma COKER.descComponent_surjective (n : ℕ) :
+    Function.Surjective (COKER.descComponent ℳ x deg_x (d + n)) := by
+  rintro ⟨_, ⟨m, rfl⟩⟩
+  induction' m using Quotient.inductionOn' with m
+  exact ⟨m, rfl⟩
 
 end induction.constructions
 

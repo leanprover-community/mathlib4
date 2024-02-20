@@ -137,7 +137,7 @@ instance : Decomposition A'.grading where
   left_inv := grading.decompose_leftInverse A'
   right_inv := grading.decompose_rightInverse A'
 
-instance : GradedRing A'.grading where
+instance gradedRing : GradedRing A'.grading where
   __ := inferInstanceAs <| SetLike.GradedMonoid A'.grading
   __ := inferInstanceAs <| Decomposition A'.grading
 
@@ -250,13 +250,13 @@ lemma grading.decompose_rightInverse :
     · rw [of_eq_of_ne, of_eq_of_ne] <;> aesop
   · simp [map_add, DirectSum.add_apply, hx, hy]
 
-instance : Decomposition p.grading where
+instance decomposition : Decomposition p.grading where
   decompose' := grading.decompose p
   left_inv := grading.decompose_leftInverse p
   right_inv := grading.decompose_rightInverse p
 
 variable [VAdd ιA ιM] [SetLike.GradedSMul 𝒜 ℳ]
-instance : SetLike.GradedSMul 𝒜 p.grading where
+instance gradedSMul : SetLike.GradedSMul 𝒜 p.grading where
   smul_mem _ _ _ _ ha hm := (inferInstance : SetLike.GradedSMul 𝒜 ℳ).smul_mem ha hm
 
 end submodule_grading
@@ -390,7 +390,6 @@ lemma quotientGrading.decompose_apply_mkQ_of_ne (i j : ιM) (m : M) (hm : m ∈ 
   erw [eq0, map_sum]
   simp only [Subtype.coe_eta, DFinsupp.sumAddHom_single, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
   rw [DFinsupp.finset_sum_apply]
-  -- conv_rhs => rw [← DirectSum.sum_support_decompose ℳ m]
   norm_cast
   apply Finset.sum_eq_zero
   intro k hk
@@ -431,8 +430,6 @@ lemma quotientGrading.decompose_leftInverse :
   rw [map_sum]
   rfl
 
-example : true := rfl
-
 lemma quotientGrading.decompose_rightInverse :
     Function.RightInverse (DirectSum.coeAddMonoidHom p.quotientGrading)
       (quotientGrading.decompose p) := by
@@ -462,16 +459,15 @@ lemma quotientGrading.decompose_rightInverse :
   · simp [hx, hy]
 
 
-instance : DirectSum.Decomposition p.quotientGrading where
+instance quotientDecomposition : DirectSum.Decomposition p.quotientGrading where
   decompose' := quotientGrading.decompose p
   left_inv := quotientGrading.decompose_leftInverse p
   right_inv := quotientGrading.decompose_rightInverse p
 
 
-instance : SetLike.GradedSMul 𝒜 p.quotientGrading where
+instance quotientGradedSMul : SetLike.GradedSMul 𝒜 p.quotientGrading where
   smul_mem := by
     intro i j a m ha hm
-    -- induction' m using Quotient.inductionOn' with m
     obtain ⟨x, rfl⟩ := hm
     induction' x using Quotient.inductionOn' with x
     cases' x with x hx
