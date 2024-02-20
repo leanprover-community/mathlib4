@@ -2401,7 +2401,6 @@ import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Init.Data.Subtype.Basic
 import Mathlib.Init.Function
-import Mathlib.Init.IteSimp
 import Mathlib.Init.Logic
 import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Init.Order.Defs
