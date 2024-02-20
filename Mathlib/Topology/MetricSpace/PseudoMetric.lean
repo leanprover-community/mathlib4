@@ -7,7 +7,6 @@ import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Data.Set.Pointwise.Interval
-import Mathlib.Topology.GPseudoMetricSpace.Basic
 
 /-!
 ## Pseudo-metric spaces
@@ -84,12 +83,6 @@ def Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x 
 class Dist (α : Type*) where
   dist : α → α → ℝ
 #align has_dist Dist
-
-instance: IsOrderedAddCommMonoid ℝ where
-  add_le_add_left := fun _ _ a_1 c ↦ add_le_add_left a_1 c
-
-instance [Dist α] : GDist α ℝ where
-  gdist := Dist.dist
 
 export Dist (dist)
 
