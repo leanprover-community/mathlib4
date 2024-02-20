@@ -32,7 +32,7 @@ This only works if a `Lean.ToExpr X` instance is available.
 -/
 syntax (name := eval_expr) "eval% " term : term
 
-@[term_elab eval_expr]
+@[term_elab eval_expr, inherit_doc eval_expr]
 unsafe def elabEvalExpr : Lean.Elab.Term.TermElab
 | `(term| eval% $stx) => fun exp => do
   let e ← Lean.Elab.Term.elabTermAndSynthesize stx exp
