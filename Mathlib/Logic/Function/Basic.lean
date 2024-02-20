@@ -681,8 +681,8 @@ theorem update_comm {α} [DecidableEq α] {β : α → Sort*} {a b : α} (h : a 
   · rw [dif_pos h₁, dif_pos h₂]
     cases h (h₂.symm.trans h₁)
   · rw [dif_pos h₁, dif_pos h₁, dif_neg h₂]
-  · rw [dif_neg h₁, dif_neg h₁, dif_pos h₂]
-  · rw [dif_neg h₁, dif_neg h₁, dif_neg h₂]
+  · rw [dif_neg h₁, dif_neg h₁]
+  · rw [dif_neg h₁, dif_neg h₁]
 #align function.update_comm Function.update_comm
 
 @[simp]
