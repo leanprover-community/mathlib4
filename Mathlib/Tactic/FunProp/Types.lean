@@ -69,11 +69,15 @@ def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
   | .const name _ => .decl name
   | _ => .decl Name.anonymous
 
+/-- Default names to be considered reducible by `fun_prop` -/
+def defaultNamesToUnfold : Array Name :=
+  #[`id, `Function.comp, `Function.HasUncurry.uncurry, `Function.uncurry]
+
 /-- `fun_prop` configuration -/
 structure Config where
   /-- Name to unfold -/
   constToUnfold : Std.RBSet Name Name.quickCmp :=
-    .ofArray #[`id, `Function.comp, `Function.HasUncurry.uncurry] _
+    .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
   /-- Maximal number of transitions between function properties
@@ -127,7 +131,7 @@ def withTheorem {α} (thmOrigin : Origin) (go : FunPropM α) : FunPropM α := do
 
 /-- Default names to unfold -/
 def defaultUnfoldPred : Name → Bool :=
-  #[`id,`Function.comp,`Function.HasUncurry.uncurry,`Function.uncurry].contains
+  defaultNamesToUnfold.contains
 
 /-- Get predicate on names indicating if theys shoulds be unfolded. -/
 def unfoldNamePred : FunPropM (Name → Bool) := do
