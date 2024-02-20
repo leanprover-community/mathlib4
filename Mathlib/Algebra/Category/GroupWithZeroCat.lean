@@ -60,10 +60,10 @@ instance {M N : GroupWithZeroCat} : FunLike (M ⟶ N) M N :=
     apply DFunLike.coe_injective'
     exact h⟩
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_id {X : GroupWithZeroCat} : (𝟙 X : X → X) = id := rfl
 
--- porting note: added
+-- Porting note (#10756): added lemma
 lemma coe_comp {X Y Z : GroupWithZeroCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
 instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
