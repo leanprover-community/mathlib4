@@ -749,27 +749,17 @@ protected def AlgHom.compLeftContinuous {α : Type*} [TopologicalSpace α] (g : 
 
 variable (A)
 
-/-- Precomposition of functions into a normed ring by a continuous map is an algebra homomorphism.
--/
+/-- Precomposition of functions into a topological semiring by a continuous map is an algebra
+homomorphism. -/
 @[simps]
 def ContinuousMap.compRightAlgHom {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     (f : C(α, β)) : C(β, A) →ₐ[R] C(α, A) where
   toFun g := g.comp f
-  map_zero' := by
-    ext
-    rfl
-  map_add' g₁ g₂ := by
-    ext
-    rfl
-  map_one' := by
-    ext
-    rfl
-  map_mul' g₁ g₂ := by
-    ext
-    rfl
-  commutes' r := by
-    ext
-    rfl
+  map_zero' := ext fun _ ↦ rfl
+  map_add'  _ _ := ext fun _ ↦ rfl
+  map_one' := ext fun _ ↦ rfl
+  map_mul' _ _ := ext fun _ ↦ rfl
+  commutes' _ := ext fun _ ↦ rfl
 #align continuous_map.comp_right_alg_hom ContinuousMap.compRightAlgHom
 
 variable {A}
