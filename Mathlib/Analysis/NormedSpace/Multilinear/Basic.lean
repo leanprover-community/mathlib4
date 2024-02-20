@@ -1,10 +1,10 @@
 /-
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 #align_import analysis.normed_space.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
 
@@ -48,7 +48,7 @@ suppress_compilation
 
 noncomputable section
 
-open scoped BigOperators NNReal Topology
+open scoped BigOperators NNReal Topology Uniformity
 open Finset Metric Function Filter
 
 /-
@@ -508,15 +508,56 @@ theorem opNorm_neg : ‖-f‖ = ‖f‖ := by
 alias op_norm_neg :=
   opNorm_neg -- deprecated on 2024-02-02
 
+variable (𝕜 E G) in
+/-- Operator seminorm on the space of continuous multilinear maps, as `Seminorm`.
+
+We use this seminorm
+to define a `SeminormedAddCommGroup` structure on `ContinuousMultilinearMap 𝕜 E G`,
+but we have to override the projection `UniformSpace`
+so that it is definitionally equal to the one coming from the topologies on `E` and `G`. -/
+protected def seminorm : Seminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G) :=
+  .ofSMulLE norm opNorm_zero opNorm_add_le fun c f ↦ opNorm_smul_le f c
+
+private lemma uniformity_eq_seminorm :
+    𝓤 (ContinuousMultilinearMap 𝕜 E G) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
+  refine (ContinuousMultilinearMap.seminorm 𝕜 E G).uniformity_eq_of_hasBasis
+    (ContinuousMultilinearMap.hasBasis_nhds_zero_of_basis Metric.nhds_basis_closedBall)
+    ?_ fun (s, r) ⟨hs, hr⟩ ↦ ?_
+  · rcases NormedField.exists_lt_norm 𝕜 1 with ⟨c, hc⟩
+    have hc₀ : 0 < ‖c‖ := one_pos.trans hc
+    simp only [hasBasis_nhds_zero.mem_iff, Prod.exists]
+    use 1, closedBall 0 ‖c‖, closedBall 0 1
+    suffices ∀ f : ContinuousMultilinearMap 𝕜 E G, (∀ x, ‖x‖ ≤ ‖c‖ → ‖f x‖ ≤ 1) → ‖f‖ ≤ 1 by
+      simpa [NormedSpace.isVonNBounded_closedBall, closedBall_mem_nhds, Set.subset_def, Set.MapsTo]
+    intro f hf
+    refine opNorm_le_bound _ (by positivity) <|
+      f.1.bound_of_shell_of_continuous f.2 (fun _ ↦ hc₀) (fun _ ↦ hc) fun x hcx hx ↦ ?_
+    calc
+      ‖f x‖ ≤ 1 := hf _ <| (pi_norm_le_iff_of_nonneg (norm_nonneg c)).2 fun i ↦ (hx i).le
+      _ = ∏ i : ι, 1 := by simp
+      _ ≤ ∏ i, ‖x i‖ := Finset.prod_le_prod (fun _ _ ↦ zero_le_one) fun i _ ↦ by
+        simpa only [div_self hc₀.ne'] using hcx i
+      _ = 1 * ∏ i, ‖x i‖ := (one_mul _).symm
+  · rcases (NormedSpace.isVonNBounded_iff' _ _ _).1 hs with ⟨ε, hε⟩
+    rcases exists_pos_mul_lt hr (ε ^ Fintype.card ι) with ⟨δ, hδ₀, hδ⟩
+    refine ⟨δ, hδ₀, fun f hf x hx ↦ ?_⟩
+    simp only [Seminorm.mem_ball_zero, mem_closedBall_zero_iff] at hf ⊢
+    replace hf : ‖f‖ ≤ δ := hf.le
+    replace hx : ‖x‖ ≤ ε := hε x hx
+    calc
+      ‖f x‖ ≤ ‖f‖ * ε ^ Fintype.card ι := le_opNorm_mul_pow_card_of_le f hx
+      _ ≤ δ * ε ^ Fintype.card ι := by have := (norm_nonneg x).trans hx; gcongr
+      _ ≤ r := (mul_comm _ _).trans_le hδ.le
+
+instance instPseudoMetricSpace : PseudoMetricSpace (ContinuousMultilinearMap 𝕜 E G) :=
+  .replaceUniformity
+    (ContinuousMultilinearMap.seminorm 𝕜 E G).toSeminormedAddCommGroup.toPseudoMetricSpace
+    uniformity_eq_seminorm
+
 /-- Continuous multilinear maps themselves form a seminormed space with respect to
     the operator norm. -/
 instance seminormedAddCommGroup :
-    SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
-  AddGroupSeminorm.toSeminormedAddCommGroup
-    { toFun := norm
-      map_zero' := opNorm_zero
-      neg' := opNorm_neg
-      add_le' := fun f g ↦ opNorm_add_le f g}
+    SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) := ⟨fun _ _ ↦ rfl⟩
 
 /-- An alias of `ContinuousMultilinearMap.seminormedAddCommGroup` with non-dependent types to help
 typeclass search. -/
