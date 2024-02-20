@@ -11,7 +11,7 @@ import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
 
 /-!
-## `fun_prop` enviroment extensions storing thorems for `fun_prop`
+## `fun_prop` environment extensions storing theorems for `fun_prop`
 -/
 
 namespace Mathlib
@@ -241,7 +241,7 @@ structure GeneralTheorem where
   funPropName   : Name
   /-- theorem name -/
   thmName     : Name
-  /-- discriminatory tree keys used to index this theorem -/
+  /-- discrimination tree keys used to index this theorem -/
   keys        : List RefinedDiscrTree.DTExpr
   /-- priority -/
   priority    : Nat  := eval_prio default

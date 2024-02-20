@@ -90,6 +90,8 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
         mainArgs := mainArgs
       }
 
+/-- Result of `getFunctionData?`. It returns function data if the function is in the form
+`fun x => f y₁ ... yₙ`. Two other cases are `fun x => let y := ...` or `fun x y => ...` -/
 inductive MaybeFunctionData where
   /-- Can't generate function data as function body has let binder. -/
   | letE (f : Expr)
@@ -98,6 +100,7 @@ inductive MaybeFunctionData where
   /-- Function data has been successfully generated. -/
   | data (fData : FunctionData)
 
+/-- Turn `MaybeFunctionData` to the function. -/
 def MaybeFunctionData.get (fData : MaybeFunctionData) : MetaM Expr :=
   match fData with
   | .letE f | .lam f => pure f
@@ -138,7 +141,7 @@ inductive MorApplication where
   | underApplied
   /-- Of the form `⇑f x` i.e. morphism and one argument is provided. -/
   | exact
-  /-- Of the form `⇑f x y ...` i.e. additional applied arugments `y ...`. -/
+  /-- Of the form `⇑f x y ...` i.e. additional applied arguments `y ...`. -/
   | overApplied
   /-- Not a morphism application. -/
   | none

@@ -3,8 +3,7 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Std.Data.RBMap.Alter
-import Std.Lean.Expr
+import Std.Data.RBMap.Basic
 
 import Mathlib.Tactic.FunProp.ToStd
 

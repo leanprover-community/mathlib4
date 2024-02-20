@@ -69,16 +69,20 @@ def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
   | .const name _ => .decl name
   | _ => .decl Name.anonymous
 
+/-- Default names to be considered reducible by `fun_prop` -/
+def defaultNamesToUnfold : Array Name :=
+  #[`id, `Function.comp, `Function.HasUncurry.uncurry, `Function.uncurry]
+
 /-- `fun_prop` configuration -/
 structure Config where
   /-- Name to unfold -/
   constToUnfold : Std.RBSet Name Name.quickCmp :=
-    .ofArray #[`id, `Function.comp, `Function.HasUncurry.uncurry] _
+    .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
   /-- Maximal number of transitions between function properties
   e.g. inferring differentiability from linearity -/
-  maxDepth := 1000
+  maxDepth := 200
   /-- current depth -/
   depth := 0
   /-- Stack of used theorem, used to prevent trivial loops. -/
@@ -94,6 +98,8 @@ structure State where
   cache        : Simp.Cache := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
+  /-- Log progress and failures messages that should be displayed to the user at the end. -/
+  msgLog : List String := []
 
 /-- Log used theorem -/
 def Config.addThm (cfg : Config) (thmId : Origin) : Config :=
@@ -112,22 +118,22 @@ structure Result where
   /-- -/
   proof : Expr
 
-/-- Get the name of previously used theorem. -/
-def getLastUsedTheoremName : FunPropM (Option Name) := do
+/-- Check if previously used theorem was `thmOrigin`. -/
+def previouslyUsedThm (thmOrigin : Origin) : FunPropM Bool := do
   match (← read).thmStack.head? with
-  | .some (.decl n) => return n
-  | _ => return none
+  | .some thmOrigin' => return thmOrigin == thmOrigin'
+  | _ => return false
 
 /-- Puts the theorem to the stack of used theorems. -/
 def withTheorem {α} (thmOrigin : Origin) (go : FunPropM α) : FunPropM α := do
   let cfg ← read
   if cfg.depth > cfg.maxDepth then
-    throwError "fun_prop error; maximum depth reached!"
+    throwError s!"fun_prop error, maximum depth({cfg.maxDepth}) reached!"
   withReader (fun cfg => cfg.addThm thmOrigin |>.increaseDepth) do go
 
 /-- Default names to unfold -/
 def defaultUnfoldPred : Name → Bool :=
-  #[`id,`Function.comp,`Function.HasUncurry.uncurry,`Function.uncurry].contains
+  defaultNamesToUnfold.contains
 
 /-- Get predicate on names indicating if theys shoulds be unfolded. -/
 def unfoldNamePred : FunPropM (Name → Bool) := do
@@ -141,3 +147,8 @@ def increaseSteps : FunPropM Unit := do
   if numSteps > maxSteps then
      throwError s!"fun_prop failed, maximum number({maxSteps}) of steps exceeded"
   modify (fun s => {s with numSteps := s.numSteps + 1})
+
+/-- Log error message that will displayed to the user at the end. -/
+def logError (msg : String) : FunPropM Unit := do
+  modify fun s =>
+    {s with msgLog := msg::s.msgLog}

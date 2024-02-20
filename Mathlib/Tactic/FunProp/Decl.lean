@@ -23,23 +23,24 @@ To use `funProp` to prove a function property `P : (α→β)→Prop` one has to 
 structure FunPropDecl where
   /-- function transformation name -/
   funPropName : Name
-  /-- path for discriminatory tree -/
+  /-- path for discrimination tree -/
   path : Array DiscrTree.Key
   /-- argument index of a function this function property talks about.
   For example, this would be 4 for `@Continuous α β _ _ f` -/
   funArgId : Nat
   deriving Inhabited, BEq
 
-/-- Disctriminatory tree for function properties. -/
+/-- Discrimination tree for function properties. -/
 structure FunPropDecls where
-  /-- Discriminatory tree for function properties. -/
+  /-- Discrimination tree for function properties. -/
   decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
 /-- -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
-/-- Extension storing all function properties. -/
+/-- Extension storing function properties tracked and used by the `fun_prop` attribute and tactic,
+including, for example, `Continuous`, `Measurable`, `Differentiable`, etc. -/
 initialize funPropDeclsExt : FunPropDeclsExt ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%

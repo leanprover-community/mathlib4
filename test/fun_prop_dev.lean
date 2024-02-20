@@ -55,6 +55,15 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 @[fun_prop] theorem Lin_pi {ι} (f : α → ι → γ) (hf : ∀ i, Lin (fun x => f x i)) : Lin (fun x i => f x i) := silentSorry
 
 
+-- this is to stress test detection of loops
+@[fun_prop]
+theorem kaboom (f : α → β) (hf : Con f) : Con f := hf
+
+-- currently only trivial loops are detected
+-- make it more sophisticated such that longer loops are detected
+-- @[fun_prop]
+-- theorem chabam (f : α → β) (hf : Con f) : Con f := hf
+
 
 -- transition theorem --
 ------------------------
@@ -363,3 +372,13 @@ theorem foo1_lin : Lin (foo1 : α → α) := silentSorry
 theorem foo2_lin : Lin (foo2 : α → α) := silentSorry
 
 example : Con (fun x : α => foo1 (foo2 x)) := by fun_prop
+
+
+def foo3 (x : α) := x + x
+example : Con (fun x : α => foo3 x) := by fun_prop [foo3]
+
+def myUncurry (f : α → β → γ) : α×β → γ := fun (x,y) => f x y
+def diag (f : α → α → α) (x : α) := f x x
+
+theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
+  fun_prop [diag,myUncurry]
