@@ -120,6 +120,20 @@ noncomputable def ιMapBifunctor
     (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ (mapBifunctor K₁ K₂ F c).X j :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).ιTotal c i₁ i₂ j h
 
+noncomputable def ιMapBifunctorOrZero (i₁ : I₁) (i₂ : I₂) (j : J) :
+    (F.obj (K₁.X i₁)).obj (K₂.X i₂) ⟶ (mapBifunctor K₁ K₂ F c).X j :=
+  if h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j then
+    ιMapBifunctor K₁ K₂ F c i₁ i₂ j h
+  else 0
+
+lemma ιMapBifunctorOrZero_eq_zero (i₁ : I₁) (i₂ : I₂) (j : J)
+    (h : ComplexShape.π c₁ c₂ c (i₁, i₂) ≠ j) :
+    ιMapBifunctorOrZero K₁ K₂ F c i₁ i₂ j = 0 := dif_neg h
+
+lemma ιMapBifunctorOrZero_eq (i₁ : I₁) (i₂ : I₂) (j : J)
+    (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
+    ιMapBifunctorOrZero K₁ K₂ F c i₁ i₂ j = ιMapBifunctor K₁ K₂ F c i₁ i₂ j h := dif_pos h
+
 section
 
 variable {K₁ K₂ F c}
