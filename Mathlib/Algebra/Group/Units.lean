@@ -735,12 +735,7 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
     exact ⟨⟨b, hab⟩, ⟨b, hba⟩⟩
   · rintro ⟨⟨b, hab⟩, ⟨c, hca⟩⟩
     suffices b = c from ⟨⟨a, b, hab, this ▸ hca⟩, rfl⟩
-    calc
-      b = 1 * b := (one_mul b).symm
-      _ = (c * a) * b := congrArg (· * b) hca.symm
-      _ = c * (a * b) := mul_assoc c a b
-      _ = c * 1 := congrArg (c * ·) hab
-      _ = c := mul_one c
+    exact (left_inv_eq_right_inv hca hab).symm  
 
 /-- Multiplication by a `u : Mˣ` on the right doesn't affect `IsUnit`. -/
 @[to_additive (attr := simp)
