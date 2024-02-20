@@ -225,8 +225,8 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
         finrank (ResidueField R) (CotangentSpace R) = 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
   have : finrank (ResidueField R) (CotangentSpace R) = 1 ↔
-    finrank (ResidueField R) (CotangentSpace R) ≤ 1
-  · simp [Nat.le_one_iff_eq_zero_or_eq_one, finrank_cotangentSpace_eq_zero_iff, h]
+      finrank (ResidueField R) (CotangentSpace R) ≤ 1 := by
+    simp [Nat.le_one_iff_eq_zero_or_eq_one, finrank_cotangentSpace_eq_zero_iff, h]
   rw [this]
   have : maximalIdeal R ≠ ⊥ := isField_iff_maximalIdeal_eq.not.mp h
   convert tfae_of_isNoetherianRing_of_localRing_of_isDomain R
