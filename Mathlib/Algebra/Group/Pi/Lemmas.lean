@@ -5,29 +5,16 @@ Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Pairwise
 
 #align_import algebra.group.pi from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"
 
 /-!
-# Pi instances for groups and monoids
+# Extra lemmas about products of monoids and groups
 
-This file defines instances for group, monoid, semigroup and related structures on Pi types.
--/
-
-/-
-  Porting notes:
-
-  See this Zulip discussion: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance]
-
-  * This file now includes the pi instances for `AddMonoidWithOne` and `AddGroupWithOne`
-  * This file relied on the `pi_instance` tactic, which was not available at the time of porting.
-    The comment `--pi_instance` is inserted before all fields which were previously derived by
-    `pi_instance`.
-  * This file previously gave data fields explicitly. Now previously-defined instances are sourced
-    via `with` as much as possible.
+This file proves lemmas about the instances defined in `Algebra.Group.Pi.Basic` that require more
+imports.
 -/
 
 universe u v w

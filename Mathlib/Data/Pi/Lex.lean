@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.OrderSynonym
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Data.Pi.Algebra
-import Mathlib.Mathport.Notation
 import Mathlib.Order.WellFounded
+import Mathlib.Mathport.Notation
 
 #align_import data.pi.lex from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 

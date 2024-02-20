@@ -14,14 +14,20 @@ import Mathlib.Tactic.Spread
 /-!
 # Instances and theorems on pi types
 
-This file provides basic definitions and notation instances for Pi types.
+This file provides instances for the typeclass defined in `Algebra.Group.Defs`. More sophisticated
+instances are defined in `Algebra.Group.Pi.Lemmas` files elsewhere.
 
-Instances of more sophisticated classes are defined in `Pi.lean` files elsewhere.
+## Porting note
 
-## TODO
-
-Restore `pi_instance` to golf the declarations here
+This file relied on the `pi_instance` tactic, which was not available at the time of porting. The
+comment `--pi_instance` is inserted before all fields which were previously derived by
+`pi_instance`. See this Zulip discussion:
+[https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/not.20porting.20pi_instance]
 -/
+
+-- We enforce to only import `Algebra.Group.Defs` and basic logic
+assert_not_exists Set.range
+assert_not_exists MonoidHom
 
 open Function
 
@@ -296,16 +302,16 @@ instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group,
 #align pi.comm_group Pi.commGroup
 #align pi.add_comm_group Pi.addCommGroup
 
-@[to_additive]
-instance [∀ i, Mul (f i)] [∀ i, IsLeftCancelMul (f i)] : IsLeftCancelMul (∀ i, f i) where
-  mul_left_cancel  _ _ _ h := funext fun _ => mul_left_cancel (congr_fun h _)
+@[to_additive] instance instIsLeftCancelMul [∀ i, Mul (f i)] [∀ i, IsLeftCancelMul (f i)] :
+    IsLeftCancelMul (∀ i, f i) where
+  mul_left_cancel  _ _ _ h := funext fun _ ↦ mul_left_cancel (congr_fun h _)
 
-@[to_additive]
-instance [∀ i, Mul (f i)] [∀ i, IsRightCancelMul (f i)] : IsRightCancelMul (∀ i, f i) where
-  mul_right_cancel  _ _ _ h := funext fun _ => mul_right_cancel (congr_fun h _)
+@[to_additive] instance instIsRightCancelMul [∀ i, Mul (f i)] [∀ i, IsRightCancelMul (f i)] :
+    IsRightCancelMul (∀ i, f i) where
+  mul_right_cancel  _ _ _ h := funext fun _ ↦ mul_right_cancel (congr_fun h _)
 
-@[to_additive]
-instance [∀ i, Mul (f i)] [∀ i, IsCancelMul (f i)] : IsCancelMul (∀ i, f i) where
+@[to_additive] instance instIsCancelMul [∀ i, Mul (f i)] [∀ i, IsCancelMul (f i)] :
+    IsCancelMul (∀ i, f i) where
 
 @[to_additive]
 instance leftCancelSemigroup [∀ i, LeftCancelSemigroup (f i)] : LeftCancelSemigroup (∀ i, f i) :=
