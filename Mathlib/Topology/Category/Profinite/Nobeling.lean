@@ -8,7 +8,6 @@ import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Init.Data.Bool.Lemmas
-import Mathlib.Init.IteSimp
 
 /-!
 
@@ -419,13 +418,9 @@ theorem prop_of_isGood  {l : Products I} (J : I → Prop) [∀ j, Decidable (J j
   suffices eval (π C J) l = 0 by
     rw [this]
     exact Submodule.zero_mem _
-  ext ⟨_, ⟨_, ⟨_, rfl⟩⟩⟩
-  rw [eval_eq, if_neg]
-  · rfl
-  · intro h
-    specialize h i hi
-    simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at h
-    exact h' h.1
+  ext ⟨_, _, _, rfl⟩
+  rw [eval_eq, if_neg fun h ↦ ?_, LocallyConstant.zero_apply]
+  simpa [Proj, h'] using h i hi
 
 end Products
 
@@ -546,9 +541,8 @@ theorem e_mem_of_eq_true {x : (π C (· ∈ s))} {a : I} (hx : x.val a = true) :
     e (π C (· ∈ s)) a ∈ factors C s x := by
   rcases x with ⟨_, z, hz, rfl⟩
   simp only [factors, List.mem_map, Finset.mem_sort]
-  refine ⟨a, ⟨?_, if_pos hx⟩⟩
-  simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hx
-  exact hx.1
+  refine ⟨a, ?_, if_pos hx⟩
+  aesop (add simp Proj)
 
 theorem one_sub_e_mem_of_false {x y : (π C (· ∈ s))} {a : I} (ha : y.val a = true)
     (hx : x.val a = false) : 1 - e (π C (· ∈ s)) a ∈ factors C s x := by
@@ -556,8 +550,7 @@ theorem one_sub_e_mem_of_false {x y : (π C (· ∈ s))} {a : I} (ha : y.val a =
   use a
   simp only [hx, ite_false, and_true]
   rcases y with ⟨_, z, hz, rfl⟩
-  simp only [Proj, Bool.ite_eq_true_distrib, if_false_right_eq_and] at ha
-  exact ha.1
+  aesop (add simp Proj)
 
 theorem factors_prod_eq_basis_of_ne {x y : (π C (· ∈ s))} (h : y ≠ x) :
     (factors C s x).prod y = 0 := by
@@ -865,10 +858,8 @@ theorem isClosed_proj (o : Ordinal) (hC : IsClosed C) : IsClosed (π C (ord I ·
   (continuous_proj (ord I · < o)).isClosedMap C hC
 
 theorem contained_proj (o : Ordinal) : contained (π C (ord I · < o)) o := by
-  intro x ⟨_, ⟨_, h⟩⟩ j hj
-  dsimp (config := { unfoldPartialApp := true }) [Proj] at h
-  simp only [← congr_fun h j, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hj
-  exact hj.1
+  intro x ⟨_, _, h⟩ j hj
+  aesop (add simp Proj)
 
 /-- The `ℤ`-linear map induced by precomposition of the projection `C → π C (ord I · < o)`. -/
 @[simps!]
