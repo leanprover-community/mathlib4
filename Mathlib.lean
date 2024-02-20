@@ -192,7 +192,8 @@ import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.PNatPowAssoc
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Semiconj.Defs
@@ -1914,7 +1915,6 @@ import Mathlib.Data.PNat.Prime
 import Mathlib.Data.PNat.Xgcd
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
-import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Pi.Interval
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Polynomial.AlgebraMap
