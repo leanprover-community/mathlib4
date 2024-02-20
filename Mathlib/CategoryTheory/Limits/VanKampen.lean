@@ -112,13 +112,18 @@ theorem IsVanKampenColimit.isUniversal {F : J ⥤ C} {c : Cocone F} (H : IsVanKa
   fun _ c' α f h hα => (H c' α f h hα).mpr
 #align category_theory.is_van_kampen_colimit.is_universal CategoryTheory.IsVanKampenColimit.isUniversal
 
-/-- A van Kampen colimit is a colimit. -/
-noncomputable def IsVanKampenColimit.isColimit {F : J ⥤ C} {c : Cocone F}
-    (h : IsVanKampenColimit c) : IsColimit c := by
-  refine' ((h c (𝟙 F) (𝟙 c.pt : _) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
-    (NatTrans.equifibered_of_isIso _)).mpr fun j => _).some
+/-- A universal colimit is a colimit. -/
+noncomputable def IsUniversalColimit.isColimit {F : J ⥤ C} {c : Cocone F}
+    (h : IsUniversalColimit c) : IsColimit c := by
+  refine ((h c (𝟙 F) (𝟙 c.pt : _) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
+    (NatTrans.equifibered_of_isIso _)) fun j => ?_).some
   haveI : IsIso (𝟙 c.pt) := inferInstance
   exact IsPullback.of_vert_isIso ⟨by erw [NatTrans.id_app, Category.comp_id, Category.id_comp]⟩
+
+/-- A van Kampen colimit is a colimit. -/
+noncomputable def IsVanKampenColimit.isColimit {F : J ⥤ C} {c : Cocone F}
+    (h : IsVanKampenColimit c) : IsColimit c :=
+  h.isUniversal.isColimit
 #align category_theory.is_van_kampen_colimit.is_colimit CategoryTheory.IsVanKampenColimit.isColimit
 
 theorem IsInitial.isVanKampenColimit [HasStrictInitialObjects C] {X : C} (h : IsInitial X) :
