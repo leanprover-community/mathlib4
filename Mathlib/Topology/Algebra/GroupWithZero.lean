@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Algebra.Group.Pi
 import Mathlib.Topology.Homeomorph
 
 #align_import topology.algebra.group_with_zero from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
