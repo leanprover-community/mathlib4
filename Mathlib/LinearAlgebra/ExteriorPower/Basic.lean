@@ -11,38 +11,40 @@ import Mathlib.LinearAlgebra.TensorPower
 
 We introduce the exterior powers of a module `M` over a commutative ring `R`.
 
+-- This notation is in another PR and should ultimately vanish from here
 ## Notation
 
-The `n`th exterior power of the `R`-module `M` is denoted by `ExteriorPower R n M`; it is a module
-over `R`, defined as `LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n`.
-We also introduce the notation `Λ[R]^n M` for `ExteriorPower R n M`.
+The `n`th exterior power of the `R`-module `M` is denoted by `exteriorPower R n M`; it is of
+type `Submodule R (ExteriorAlgebra R M)` and defined as `LinearMap.range (ExteriorAlgebra.ι R :
+M →ₗ[R] ExteriorAlgebra R M) ^ n`. We also introduce the notation `Λ[R]^n M` for
+`exteriorPower R n M`.
 
 ## Definitions
 
-* `ExteriorPower.ιMulti` is the canonical alternating map on `M` with values in `Λ[R]^n M`.
+* `exteriorPower.ιMulti` is the canonical alternating map on `M` with values in `Λ[R]^n M`.
 
-* If `f` is a `R`-linear map from `M` to `N`, then `ExteriorPower.map n f` is the linear map
+* If `f` is a `R`-linear map from `M` to `N`, then `exteriorPower.map n f` is the linear map
 between `n`th exterior powers induced by `f`.
 
-* `ExteriorPower.toTensorPower`: linear map from the `n`th exterior power to the `n`th
+* `exteriorPower.toTensorPower`: linear map from the `n`th exterior power to the `n`th
 tensor power (coming from `MultilinearMap.alternatization` via the universal property of
 exterior powers).
 
 ## Theorems
 
-* The image of `ExteriorPower.ιMulti` spans `Λ[R]^n M`.
+* The image of `exteriorPower.ιMulti` spans `Λ[R]^n M`.
 
-* `ExteriorPower.liftAlternatingEquiv` (universal property of the `n`th exterior power of `M`):
+* `exteriorPower.liftAlternatingEquiv` (universal property of the `n`th exterior power of `M`):
 the linear equivalence between linear maps from `Λ[R]^n M` to a module `N` and `n`-fold
 alternating maps from `M` to `N`.
 
-* `ExteriorPower.map_injective_field`: If `f : M →ₗ[R] N` is injective and `R` is a field, then
-`ExteriorPower.map n f` is injective.
+* `exteriorPower.map_injective_field`: If `f : M →ₗ[R] N` is injective and `R` is a field, then
+`exteriorPower.map n f` is injective.
 
-* `ExteriorPower.map_surjective`: If `f : M →ₗ[R] N` is surjective, then `ExteriorPower.map n f`
+* `exteriorPower.map_surjective`: If `f : M →ₗ[R] N` is surjective, then `exteriorPower.map n f`
 is surjective.
 
-* `ExteriorPower.mem_exteriorPower_is_mem_finite`: Every element of `Λ[R]^n M` is in the image of
+* `exteriorPower.mem_exteriorPower_is_mem_finite`: Every element of `Λ[R]^n M` is in the image of
 `Λ[R]^n P` for some finitely generated submodule `P` of `M`.
 
 -/
@@ -61,22 +63,24 @@ variable {K : Type v} {E : Type uE} {F: Type uF} [Field K] [AddCommGroup E] [Mod
 
 variable (R M n)
 
+-- This part should be erased if the other PR is merged.
 /-- Definition of the `n`th exterior power of a `R`-module `M`. We introduce the notation
-`Λ[R]^n M` for `ExteriorPower R n M`. -/
+`Λ[R]^n M` for `exteriorPower R n M`. -/
 @[reducible]
-def ExteriorPower := (LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n)
+def exteriorPower := (LinearMap.range (ExteriorAlgebra.ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n)
 
 @[inherit_doc]
-notation:100 "Λ[" R "]^" n:arg => ExteriorPower R n
+notation:100 "Λ[" R "]^" n:arg => exteriorPower R n
+-- End of part to erase.
 
 variable {M}
 
-namespace ExteriorPower
+namespace exteriorPower
 
 /-! The canonical alternating from `Fin n → M` to `Λ[R]^n M`. -/
 
-/-- `ExteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `Λ[r]^n M`
-induced by `ExteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
+/-- `exteriorAlgebra.ιMulti` is the alternating map from `Fin n → M` to `Λ[r]^n M`
+induced by `exteriorAlgebra.ιMulti`, i.e. sending a family of vectors `m : Fin n → M` to the
 product of its entries. -/
 def ιMulti : AlternatingMap R M ((Λ[R]^n) M) (Fin n) :=
   AlternatingMap.codRestrict (ExteriorAlgebra.ιMulti R n) ((Λ[R]^n) M)
@@ -93,7 +97,7 @@ lemma ιMulti_span_fixedDegree :
     Submodule.span R (Set.range (ExteriorAlgebra.ιMulti R n)) = (Λ[R]^n) M :=
   ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
-/-- The image of `ExteriorPower.ιMulti` spans `Λ[R]^n M`. -/
+/-- The image of `exteriorPower.ιMulti` spans `Λ[R]^n M`. -/
 lemma ιMulti_span :
     Submodule.span R (Set.range (ιMulti R n)) = (⊤ : Submodule R ((Λ[R]^n) M)) := by
   apply LinearMap.map_injective (Submodule.ker_subtype ((Λ[R]^n) M))
@@ -102,7 +106,7 @@ lemma ιMulti_span :
     Submodule.range_subtype]
   exact ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
-/-- Two linear maps on `Λ[R]^n M` that agree on the image of `ExteriorPower.ιMulti`
+/-- Two linear maps on `Λ[R]^n M` that agree on the image of `exteriorPower.ιMulti`
 are equal. -/
 @[ext]
 lemma lhom_ext ⦃f : (Λ[R]^n) M →ₗ[R] N⦄ ⦃g : (Λ[R]^n) M →ₗ[R] N⦄
@@ -189,11 +193,11 @@ def liftAlternatingEquiv : AlternatingMap R M N (Fin n) ≃ₗ[R] (Λ[R]^n) M �
         liftAlternating_comp_ιMulti, LinearMap.id_coe, id_eq])
 
 lemma liftAlternatingEquiv_apply (f :AlternatingMap R M N (Fin n)) (x : (Λ[R]^n) M) :
-    ExteriorPower.liftAlternatingEquiv R n f x = ExteriorPower.liftAlternating n f x := rfl
+    exteriorPower.liftAlternatingEquiv R n f x = exteriorPower.liftAlternating n f x := rfl
 
 @[simp]
 lemma liftAlternatingEquiv_symm_apply (F : (Λ[R]^n) M →ₗ[R] N) (m : Fin n → M) :
-    (ExteriorPower.liftAlternatingEquiv R n).symm F m = F.compAlternatingMap (ιMulti R n) m := rfl
+    (exteriorPower.liftAlternatingEquiv R n).symm F m = F.compAlternatingMap (ιMulti R n) m := rfl
 
 /-! Functoriality of the exterior powers. -/
 
@@ -304,10 +308,10 @@ lemma toTensorPower_apply_ιMulti (v : Fin n → M) : toTensorPower R n M (ιMul
 
 /-! Linear form on the exterior power induced by a family of linear forms on the module. This
 is used to prove the linear independence of some families in the exterior power, cf.
-`ExteriorPower.linearFormOfBasis` and `ExteriorPower.ιMulti_family_linearIndependent_ofBasis`. -/
+`exteriorPower.linearFormOfBasis` and `exteriorPower.ιMulti_family_linearIndependent_ofBasis`. -/
 
 /-- A family `f` indexed by `Fin n` of linear forms on `M` defines a linear form on the `n`th
-exterior power of `M`, by composing the map `ExteriorPower.toTensorPower` to the `n`th tensor
+exterior power of `M`, by composing the map `exteriorPower.toTensorPower` to the `n`th tensor
 power and then applying `TensorPower.linearFormOfFamily` (which takes the product of the
 components of `f`). -/
 noncomputable def linearFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) :
@@ -327,8 +331,8 @@ lemma linearFormOfFamily_apply_ιMulti (f : (_ : Fin n) → (M →ₗ[R] R)) (m 
     LinearMap.map_smul_of_tower, TensorPower.linearFormOfFamily_apply_tprod]
 
 /-- If `f` is a family of linear forms on `M` (index by `Fin n`) and `p` is a linear map
-from `N` to `M`, then the composition of `ExteriorPower.linearFormOfFamily R n f` and
-of `ExteriorPower.map p` is equal to the linear form induced by the family
+from `N` to `M`, then the composition of `exteriorPower.linearFormOfFamily R n f` and
+of `exteriorPower.map p` is equal to the linear form induced by the family
 `fun i ↦ (f i).comp p`.. -/
 lemma linearFormOfFamily_comp_map (f : (_ : Fin n) → (M →ₗ[R] R)) (p : N →ₗ[R] M) :
     (linearFormOfFamily R n f).comp (map n p) =
@@ -348,7 +352,7 @@ lemma linearFormOfFamily_comp_map_apply (f : (_ : Fin n) → (M →ₗ[R] R))
 
 /-- A family `f` of linear forms on `M` indexed by `Fin n` defines an `n`-fold alternating form
 on `M`, by composing the linear form on `Λ[R]^n M` indeuced by `f` (defined in
-`ExteriorPower.linearFormOfFamily`) with the canonical `n`-fold alternating map from `M` to its
+`exteriorPower.linearFormOfFamily`) with the canonical `n`-fold alternating map from `M` to its
 `n`th exterior power. -/
 noncomputable def alternatingFormOfFamily (f : (_ : Fin n) → (M →ₗ[R] R)) :
     AlternatingMap R M R (Fin n) :=
@@ -398,4 +402,4 @@ lemma mem_exteriorPower_is_mem_finite (x : (Λ[R]^n) M) :
     Function.comp_apply, ← hmx]
   congr
 
-end ExteriorPower
+end exteriorPower

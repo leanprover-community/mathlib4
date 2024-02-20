@@ -13,24 +13,24 @@ We construct generating families and bases for the exterior powers of a module.
 
 ## Definitions
 
-* `ExteriorPower.BasisOfBasis`: If `b` is a basis of `M` (indexed by a linearly ordered type),
+* `exteriorPower.BasisOfBasis`: If `b` is a basis of `M` (indexed by a linearly ordered type),
 the basis of the `n`th exterior power of `M` formed by the `n`-fold exterior products of elements
 of `b`.
 
 ## Theorems
 
-* `ExteriorPower.Finite`: The `n`th exterior power of a finite module is a finite module.
+* `exteriorPower.Finite`: The `n`th exterior power of a finite module is a finite module.
 
-* `ExteriorPower.span_top_of_span_top` and `ExteriorPower.span_top_of_span_top'`: If a family of
+* `exteriorPower.span_top_of_span_top` and `exteriorPower.span_top_of_span_top'`: If a family of
 vectors spans `M`, then the family of its `n`-fold exterior products spans `Λ[R]^n M`. (We give
 versions in the exterior algebra and in the exterior power.)
 
-* `ExteriorPower.FreeOfFree`: If `M` is a free module, then so is its `n`th exterior power.
+* `exteriorPower.FreeOfFree`: If `M` is a free module, then so is its `n`th exterior power.
 
-* `ExteriorPower.FinrankOfFiniteFree`: If `R` satisfies the strong rank condition and `M` is
+* `exteriorPower.FinrankOfFiniteFree`: If `R` satisfies the strong rank condition and `M` is
 finite free of rank `r`, then the `n`th exterior power of `M` is of finrank `Nat.choose r n`.
 
-* `ExteriorPower.ιMulti_family_linearIndependent_field`: If `R` is a field, and if `v` is a
+* `exteriorPower.ιMulti_family_linearIndependent_field`: If `R` is a field, and if `v` is a
 linearly independent family of vectors (indexed by a linearly ordered type), then the family of
 its `n`-fold exterior products is also linearly independent.
 
@@ -47,7 +47,7 @@ variable {K : Type v} {E : Type uE} {F: Type uF} [Field K] [AddCommGroup E] [Mod
 
 open BigOperators
 
-namespace ExteriorPower
+namespace exteriorPower
 
 /-! Finiteness of the exterior power. -/
 
@@ -151,7 +151,7 @@ lemma span_top_of_span_top {I : Type*} [LinearOrder I] {v : I → M}
       simp only [SetLike.mem_coe, Submodule.zero_mem]
 
 /-- If a family of vectors spans `M`, then the family of its `n`-fold exterior products spans
-`Λ[R]^n M`. This is a variant of `ExteriorPower.span_top_of_span_top` where we
+`Λ[R]^n M`. This is a variant of `exteriorPower.span_top_of_span_top` where we
 work in the exterior power and not the exterior algebra. -/
 lemma span_top_of_span_top' {I : Type*} [LinearOrder I]
     {v : I → M} (hv : Submodule.span R (Set.range v) = ⊤) :
@@ -167,7 +167,7 @@ lemma span_top_of_span_top' {I : Type*} [LinearOrder I]
   exact hw
 
 /-- If `v` is a family of vectors of `M` indexed by a linearly ordered type, then the span of the
-range of `ExteriorPower.ιMult_family R n v`, i.e. of the family of `n`-fold exterior products
+range of `exteriorPower.ιMult_family R n v`, i.e. of the family of `n`-fold exterior products
 of elements of `v`, is the image of the map of exterior powers induced by the inclusion of
 the span of `v` into `M`. -/
 lemma span_of_span {I : Type*} [LinearOrder I] (v : I → M) :
@@ -191,7 +191,7 @@ lemma span_of_span {I : Type*} [LinearOrder I] (v : I → M) :
 
 /-- If `b` is a basis of `M` indexed by a linearly ordered type `I` and `s` is a finset of
 `I` of cardinality `n`, then we get a linear form on the `n`th exterior power of `M` by
-applying the `ExteriorPower.linearFormOfFamily` construction to the fanily of linear forms
+applying the `exteriorPower.linearFormOfFamily` construction to the fanily of linear forms
 given by the coordinates of `b` indexed by elements of `s` (ordered using the given order on
 `I`). -/
 noncomputable def linearFormOfBasis {I : Type*} [LinearOrder I] (b : Basis I R M)
@@ -280,7 +280,7 @@ lemma linearFormOfBasis_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R
   simp only [Finset.coe_orderIsoOfFin_apply, Ne.symm hi, ite_false]
 
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), then the family
-`ExteriorPower.ιMulti R n b` of the `n`-fold exterior products of its elements is linearly
+`exteriorPower.ιMulti R n b` of the `n`-fold exterior products of its elements is linearly
 independent in the `n`th exterior power of `M`. -/
 lemma ιMulti_family_linearIndependent_ofBasis {I : Type*} [LinearOrder I] (b : Basis I R M) :
     LinearIndependent R (ιMulti_family R n b) :=
@@ -309,7 +309,7 @@ lemma BasisOfBasis_apply {I : Type*} [LinearOrder I] (b : Basis I R M)
 /-- If `b` is a basis of `M` indexed by a linearly ordered type `I` and `B` is the corresponding
 basis of the `n`th exterior power of `M`, indexed by the set of finsets `s` of `I` of cardinality
 `n`, then the coordinate function of `B` at `s` is the linear form on the `n`th exterior power
-defined by `b` and `s` in `ExteriorPower.linearFormOfBasis`. -/
+defined by `b` and `s` in `exteriorPower.linearFormOfBasis`. -/
 lemma BasisOfBasis_coord {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s : Finset I} (hs : Finset.card s = n) :
     Basis.coord (BasisOfBasis R n b) ⟨s, hs⟩ = linearFormOfBasis R n b hs := by
@@ -378,4 +378,4 @@ lemma nonemptyOfNonempty {I : Type*} [LinearOrder I]
   let v := Classical.choice hne
   Nonempty.intro ⟨ιMulti_family K n v, ιMulti_family_linearIndependent_field n v.2⟩
 
-end ExteriorPower
+end exteriorPower
