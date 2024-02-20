@@ -40,13 +40,13 @@ variable (f : ∀ i j, i ≤ j → G i ↪[L] G j)
 namespace DirectedSystem
 
 /-- A copy of `DirectedSystem.map_self` specialized to `L`-embeddings, as otherwise the
-`λ i j h, f i j h` can confuse the simplifier. -/
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem map_self [DirectedSystem G fun i j h => f i j h] (i x h) : f i i h x = x :=
   DirectedSystem.map_self (fun i j h => f i j h) i x h
 #align first_order.language.directed_system.map_self FirstOrder.Language.DirectedSystem.map_self
 
 /-- A copy of `DirectedSystem.map_map` specialized to `L`-embeddings, as otherwise the
-`λ i j h, f i j h` can confuse the simplifier. -/
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
   DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
