@@ -3,10 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Pi
-import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.GroupTheory.Abelianization
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Module.Basic
+import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.FreeGroup.Basic
 
 #align_import group_theory.free_abelian_group from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
@@ -117,7 +117,7 @@ protected theorem of (x : α) : lift f (of x) = f x := by
 
 protected theorem unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
     g x = lift f x :=
-  FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
+  DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
 #align free_abelian_group.lift.unique FreeAbelianGroup.lift.unique
 
 /-- See note [partially-applied ext lemmas]. -/

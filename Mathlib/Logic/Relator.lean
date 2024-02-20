@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 
-import Mathlib.Logic.Basic
+import Mathlib.Init.Function
 
 #align_import logic.relator from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -135,7 +135,7 @@ lemma rel_iff : ((·↔·) ⇒ (·↔·) ⇒ (·↔·)) (·↔·) (·↔·) :=
 #align relator.rel_iff Relator.rel_iff
 
 lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)) (·=·) (·=·) :=
-  fun _ _ h₁ _ _ h₂ => ⟨fun h => hr.right h₁ $ h.symm ▸ h₂, fun h => hr.left h₁ $ h.symm ▸ h₂⟩
+  fun _ _ h₁ _ _ h₂ => ⟨fun h => hr.right h₁ <| h.symm ▸ h₂, fun h => hr.left h₁ <| h.symm ▸ h₂⟩
 #align relator.rel_eq Relator.rel_eq
 
 open Function

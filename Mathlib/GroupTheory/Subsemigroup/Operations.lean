@@ -109,11 +109,11 @@ theorem Subsemigroup.toAddSubsemigroup_closure (S : Set M) :
 
 theorem AddSubsemigroup.toSubsemigroup'_closure (S : Set (Additive M)) :
     AddSubsemigroup.toSubsemigroup' (AddSubsemigroup.closure S) =
-      Subsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
+      Subsemigroup.closure (Additive.ofMul ⁻¹' S) :=
   le_antisymm
     (AddSubsemigroup.toSubsemigroup'.le_symm_apply.1 <|
       AddSubsemigroup.closure_le.2 (Subsemigroup.subset_closure (M := M)))
-    (Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := Additive M))
+    (Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := Additive M))
 #align add_subsemigroup.to_subsemigroup'_closure AddSubsemigroup.toSubsemigroup'_closure
 
 end
@@ -150,17 +150,17 @@ theorem AddSubsemigroup.toSubsemigroup_closure (S : Set A) :
       Subsemigroup.closure (Multiplicative.toAdd ⁻¹' S) :=
   le_antisymm
     (AddSubsemigroup.toSubsemigroup.to_galoisConnection.l_le <|
-      AddSubsemigroup.closure_le.2 $ Subsemigroup.subset_closure (M := Multiplicative A))
-    (Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := A))
+      AddSubsemigroup.closure_le.2 <| Subsemigroup.subset_closure (M := Multiplicative A))
+    (Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
 #align add_subsemigroup.to_subsemigroup_closure AddSubsemigroup.toSubsemigroup_closure
 
 theorem Subsemigroup.toAddSubsemigroup'_closure (S : Set (Multiplicative A)) :
     Subsemigroup.toAddSubsemigroup' (Subsemigroup.closure S) =
-    AddSubsemigroup.closure (Additive.ofMul ⁻¹' S) :=
+      AddSubsemigroup.closure (Multiplicative.ofAdd ⁻¹' S) :=
   le_antisymm
     (Subsemigroup.toAddSubsemigroup'.to_galoisConnection.l_le <|
-      Subsemigroup.closure_le.2 $ AddSubsemigroup.subset_closure (M := A))
-    (AddSubsemigroup.closure_le.2 $ Subsemigroup.subset_closure (M := Multiplicative A))
+      Subsemigroup.closure_le.2 <| AddSubsemigroup.subset_closure (M := A))
+    (AddSubsemigroup.closure_le.2 <| Subsemigroup.subset_closure (M := Multiplicative A))
 #align subsemigroup.to_add_subsemigroup'_closure Subsemigroup.toAddSubsemigroup'_closure
 
 end
@@ -373,8 +373,6 @@ theorem map_id (S : Subsemigroup M) : S.map (MulHom.id M) = S :=
 section GaloisCoinsertion
 
 variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Injective f)
-
---include hf
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
@@ -873,7 +871,7 @@ theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [Mul M'] [Mul N'] (f : M 
 def subsemigroupComap (f : M →ₙ* N) (N' : Subsemigroup N) :
     N'.comap f →ₙ* N' where
   toFun x := ⟨f x, x.prop⟩
-  map_mul' x y := Subtype.eq (@map_mul M N _ _ _ _ f x y)
+  map_mul' x y := Subtype.eq <| map_mul (M := M) (N := N) f x y
 #align mul_hom.subsemigroup_comap MulHom.subsemigroupComap
 #align add_hom.subsemigroup_comap AddHom.subsemigroupComap
 #align mul_hom.subsemigroup_comap_apply_coe MulHom.subsemigroupComap_apply_coe
@@ -887,7 +885,7 @@ See `MulEquiv.subsemigroupMap` for a variant for `MulEquiv`s. -/
 def subsemigroupMap (f : M →ₙ* N) (M' : Subsemigroup M) :
     M' →ₙ* M'.map f where
   toFun x := ⟨f x, ⟨x, x.prop, rfl⟩⟩
-  map_mul' x y := Subtype.eq <| @map_mul M N _ _ _ _ f x y
+  map_mul' x y := Subtype.eq <| map_mul (M := M) (N := N) f x y
 #align mul_hom.subsemigroup_map MulHom.subsemigroupMap
 #align add_hom.subsemigroup_map AddHom.subsemigroupMap
 #align mul_hom.subsemigroup_map_apply_coe MulHom.subsemigroupMap_apply_coe

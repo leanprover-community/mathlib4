@@ -303,8 +303,8 @@ lemma growsPolynomially_id : GrowsPolynomially (fun x => x) := by
 
 protected lemma GrowsPolynomially.mul {f g : ℝ → ℝ} (hf : GrowsPolynomially f)
     (hg : GrowsPolynomially g) : GrowsPolynomially fun x => f x * g x := by
-  suffices : GrowsPolynomially fun x => |f x| * |g x|
-  · cases eventually_atTop_nonneg_or_nonpos hf with
+  suffices GrowsPolynomially fun x => |f x| * |g x| by
+    cases eventually_atTop_nonneg_or_nonpos hf with
     | inl hf' =>
       cases eventually_atTop_nonneg_or_nonpos hg with
       | inl hg' =>
@@ -424,7 +424,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
            _ = 3/2 * f x := by ring
     have hx_lb : 1/2 * f x ≤ f x + g x := by
       calc f x + g x ≥ f x - ‖g x‖ := by
-                rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le_self (g x)
+                rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le (g x)
            _ ≥ f x - 1/2 * f x := by gcongr
            _ = 1/2 * f x := by ring
     intro u ⟨hu_lb, hu_ub⟩
@@ -435,7 +435,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
     refine ⟨?lb, ?ub⟩
     case lb =>
       calc f u + g u ≥ f u - ‖g u‖ := by
-                  rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le_self _
+                  rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le _
            _ ≥ f u - 1/2 * f u := by gcongr
            _ = 1/2 * f u := by ring
            _ ≥ 1/2 * (c₁ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).1
@@ -468,7 +468,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
            _ = 1/2 * f x := by ring
     have hx_lb : 3/2 * f x ≤ f x + g x := by
       calc f x + g x ≥ f x - ‖g x‖ := by
-                rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le_self (g x)
+                rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le (g x)
            _ ≥ f x + 1/2 * f x := by
                   rw [sub_eq_add_neg]
                   gcongr
@@ -484,7 +484,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
     refine ⟨?lb, ?ub⟩
     case lb =>
       calc f u + g u ≥ f u - ‖g u‖ := by
-                  rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le_self _
+                  rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le _
            _ ≥ f u + 1/2 * f u := by
                   rw [sub_eq_add_neg]
                   gcongr
@@ -516,8 +516,8 @@ protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially 
     intro u hu
     simp only [hx, inv_zero, mul_zero, Set.Icc_self, Set.mem_singleton_iff, hx' u hu.1]
   | inr hf_pos_or_neg =>
-    suffices : GrowsPolynomially fun x => |(f x)⁻¹|
-    · cases hf_pos_or_neg with
+    suffices GrowsPolynomially fun x => |(f x)⁻¹| by
+      cases hf_pos_or_neg with
       | inl hf' =>
         have hmain : (fun x => (f x)⁻¹) =ᶠ[atTop] fun x => |(f x)⁻¹| := by
           filter_upwards [hf'] with x hx₁

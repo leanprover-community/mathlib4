@@ -94,8 +94,8 @@ variable [Preorder α] [SupConvergenceClass α] {f : ι → α} {a : α}
 
 theorem tendsto_atTop_isLUB (h_mono : Monotone f) (ha : IsLUB (Set.range f) a) :
     Tendsto f atTop (𝓝 a) := by
-  suffices : Tendsto (rangeFactorization f) atTop atTop
-  exact (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
+  suffices Tendsto (rangeFactorization f) atTop atTop from
+    (SupConvergenceClass.tendsto_coe_atTop_isLUB _ _ ha).comp this
   exact h_mono.rangeFactorization.tendsto_atTop_atTop fun b => b.2.imp fun a ha => ha.ge
 #align tendsto_at_top_is_lub tendsto_atTop_isLUB
 
@@ -226,6 +226,12 @@ theorem tendsto_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
   if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_ciSup h_mono H⟩
   else Or.inl <| tendsto_atTop_atTop_of_monotone' h_mono H
 #align tendsto_of_monotone tendsto_of_monotone
+
+theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
+    Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
+  @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
+#align tendsto_of_antitone tendsto_of_antitone
 
 theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type*} [SemilatticeSup ι₁] [Preorder ι₂]
     [Nonempty ι₁] [TopologicalSpace α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]

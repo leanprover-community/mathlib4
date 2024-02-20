@@ -53,7 +53,7 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 * `nilpotent_iff_finite_descending_central_series` : `G` is nilpotent iff some descending central
     series reaches `⊥`.
 * `nilpotent_iff_lower` : `G` is nilpotent iff the lower central series reaches `⊥`.
-* The `nilpotency_class` can likeways be obtained from these equivalent
+* The `nilpotency_class` can likewise be obtained from these equivalent
   definitions, see `least_ascending_central_series_length_eq_nilpotencyClass`,
   `least_descending_central_series_length_eq_nilpotencyClass` and
   `lowerCentralSeries_length_eq_nilpotencyClass`.
@@ -477,7 +477,7 @@ theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
   exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
 #align subgroup.nilpotency_class_le Subgroup.nilpotencyClass_le
 
-instance (priority := 100) isNilpotent_of_subsingleton [Subsingleton G] : IsNilpotent G :=
+instance (priority := 100) Group.isNilpotent_of_subsingleton [Subsingleton G] : IsNilpotent G :=
   nilpotent_iff_lowerCentralSeries.2 ⟨0, Subsingleton.elim ⊤ ⊥⟩
 #align is_nilpotent_of_subsingleton isNilpotent_of_subsingleton
 
@@ -662,7 +662,7 @@ the group quotiented by its center. -/
 theorem nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Prop}
     (G : Type*) [Group G] [IsNilpotent G]
     (hbase : ∀ (G) [Group G] [Subsingleton G], P G)
-    (hstep : ∀ (G) [Group G] [IsNilpotent G], ∀ _ih : P (G ⧸ center G), P G) : P G := by
+    (hstep : ∀ (G) [Group G] [IsNilpotent G], P (G ⧸ center G) → P G) : P G := by
   obtain ⟨n, h⟩ : ∃ n, Group.nilpotencyClass G = n := ⟨_, rfl⟩
   induction' n with n ih generalizing G
   · haveI := nilpotencyClass_zero_iff_subsingleton.mp h
@@ -865,8 +865,8 @@ theorem IsPGroup.isNilpotent [Finite G] {p : ℕ} [hp : Fact (Nat.Prime p)] (h :
       have hcq : Fintype.card (G ⧸ center G) < Fintype.card G := by
         rw [card_eq_card_quotient_mul_card_subgroup (center G)]
         apply lt_mul_of_one_lt_right
-        exact Fintype.card_pos_iff.mpr One.nonempty
-        exact (Subgroup.one_lt_card_iff_ne_bot _).mpr (ne_of_gt h.bot_lt_center)
+        · exact Fintype.card_pos_iff.mpr One.instNonempty
+        · exact (Subgroup.one_lt_card_iff_ne_bot _).mpr (ne_of_gt h.bot_lt_center)
       have hnq : IsNilpotent (G ⧸ center G) := ih _ hcq (h.to_quotient (center G))
       exact of_quotient_center_nilpotent hnq
 #align is_p_group.is_nilpotent IsPGroup.isNilpotent
@@ -881,13 +881,13 @@ theorem isNilpotent_of_product_of_sylow_group
     let ps := (Fintype.card G).primeFactors
     have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
       intro p P
-      haveI : Fact (Nat.Prime ↑p) := Fact.mk $ Nat.prime_of_mem_primeFactors p.2
+      haveI : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
       exact P.isPGroup'.isNilpotent
     exact nilpotent_of_mulEquiv e
 #align is_nilpotent_of_product_of_sylow_group isNilpotent_of_product_of_sylow_group
 
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
-normal and iff all sylow groups are normal and iff the group is the direct product of its sylow
+normal and iff all Sylow groups are normal and iff the group is the direct product of its Sylow
 groups. -/
 theorem isNilpotent_of_finite_tFAE :
     List.TFAE
