@@ -176,7 +176,7 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
   have α : Q(Type v) := α
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
-  let c ← mkCache sα
+  let c ← mkCache sα {}
   let tgt := (← parse sα c e₁).sub (← parse sα c e₂)
   let rec
     /-- Parses a hypothesis and adds it to the `out` list. -/
