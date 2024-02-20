@@ -195,7 +195,7 @@ instance : Inf (StructureGroupoid H) :=
         intro x hex
         rcases hx x hex with ⟨s, hs⟩
         use s
-        exact And.intro hs.left (And.intro hs.right.left ?_)
+        refine And.intro hs.left (And.intro hs.right.left ?_)
       · exact hs.right.right.left
       · exact hs.right.right.right)
     (mem_of_eqOnSource' := fun e e' he hee' =>

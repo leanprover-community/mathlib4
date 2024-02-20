@@ -269,7 +269,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis [WeaklyLocallyCo
     ∃ (α : Type v) (c : α → X) (r : ∀ a, ι (c a)),
       (∀ a, p (c a) (r a)) ∧ ⋃ a, B (c a) (r a) = univ ∧ LocallyFinite fun a ↦ B (c a) (r a) :=
   let ⟨α, c, r, hp, hU, hfin⟩ :=
-    exactment_of_locallyCompact_sigmaCompact_of_nhds_basis_set isClosed_univ fun x _ ↦ hB x
+    refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set isClosed_univ fun x _ ↦ hB x
   ⟨α, c, r, fun a ↦ (hp a).2, univ_subset_iff.1 hU, hfin⟩
 #align refinement_of_locally_compact_sigma_compact_of_nhds_basis refinement_of_locallyCompact_sigmaCompact_of_nhds_basis
 
