@@ -225,7 +225,7 @@ then the restriction of scalars is a `R'`-`S'` bilinear map.-/
 def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
   LinearMap.mk₂' R' S'
     (fun x y ↦ B x y)
-    (by intros; simp only [map_add, LinearMap.add_apply])
+    (fun _ _ _ ↦ B.map_add₂ _ _ _)
     (by intros; simp only [LinearMap.map_smul_of_tower, LinearMap.smul_apply])
     (fun x ↦ map_add (B x))
     (fun _ x ↦ (B x).map_smul_of_tower _)
