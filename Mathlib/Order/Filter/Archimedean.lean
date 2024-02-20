@@ -91,7 +91,7 @@ theorem Rat.comap_cast_atTop [LinearOrderedField R] [Archimedean R] :
     comap ((↑) : ℚ → R) atBot = atBot :=
   comap_embedding_atBot (fun _ _ => Rat.cast_le) fun r =>
     let ⟨n, hn⟩ := exists_nat_ge (-r)
-    ⟨-n, by simpa [neg_le] ⟩
+    ⟨-n, by simpa [neg_le]⟩
 #align rat.comap_coe_at_bot Rat.comap_cast_atBot
 
 theorem tendsto_rat_cast_atTop_iff [LinearOrderedField R] [Archimedean R] {f : α → ℚ}
@@ -243,7 +243,7 @@ theorem Tendsto.atTop_zsmul_const {f : α → ℤ} (hr : 0 < r) (hf : Tendsto f 
     Tendsto (fun x => f x • r) l atTop := by
   refine' tendsto_atTop.mpr fun s => _
   obtain ⟨n : ℕ, hn : s ≤ n • r⟩ := Archimedean.arch s hr
-  replace hn : s ≤ (n : ℤ) • r; · simpa
+  replace hn : s ≤ (n : ℤ) • r := by simpa
   exact (tendsto_atTop.mp hf n).mono fun a ha => hn.trans (zsmul_le_zsmul hr.le ha)
 #align filter.tendsto.at_top_zsmul_const Filter.Tendsto.atTop_zsmul_const
 

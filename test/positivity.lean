@@ -32,6 +32,19 @@ example {a : ℤ} (ha : 0 ≤ a) : 0 ≤ a := by positivity
 example {a : ℤ} (ha : a ≠ 0) : a ≠ 0 := by positivity
 example {a : ℤ} (ha : a = 0) : 0 ≤ a := by positivity
 
+section
+
+variable [Zero α] [PartialOrder α] {a : α}
+
+example (ha : 0 < a) : 0 < a := by positivity
+example (ha : 0 < a) : 0 ≤ a := by positivity
+example (ha : 0 < a) : a ≠ 0 := by positivity
+example (ha : 0 ≤ a) : 0 ≤ a := by positivity
+example (ha : a ≠ 0) : a ≠ 0 := by positivity
+example (ha : a = 0) : 0 ≤ a := by positivity
+
+end
+
 /- ### Reversing hypotheses -/
 
 example {a : ℤ} (ha : a > 0) : 0 < a := by positivity
@@ -254,7 +267,7 @@ example : 0 ≤ max (-3 : ℤ) 5 := by positivity
 
 example (n : ℕ) : 0 < n.succ := by positivity
 example (n : ℕ) : 0 < n ! := by positivity
-example (n k : ℕ) : 0 < n.ascFactorial k := by positivity
+example (n k : ℕ) : 0 < (n+1).ascFactorial k := by positivity
 
 -- example {α : Type _} (s : Finset α) (hs : s.Nonempty) : 0 < s.card := by positivity
 -- example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
@@ -324,7 +337,8 @@ example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 
 /- ## Other extensions -/
 
-example [Zero β] [PartialOrder β] [NonnegHomClass F α β] (f : F) (x : α) : 0 ≤ f x := by positivity
+example [Zero β] [PartialOrder β] [FunLike F α β] [NonnegHomClass F α β]
+    (f : F) (x : α) : 0 ≤ f x := by positivity
 
 example [OrderedSemiring S] [Semiring R] (abv : R → S) [IsAbsoluteValue abv] (x : R) :
     0 ≤ abv x := by

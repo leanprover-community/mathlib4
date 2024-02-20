@@ -77,7 +77,7 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     change _ * _ ∈ _
     rw [smul_mul_assoc]
     refine' smul_mem _ _ _
-    exact subset_span ⟨t, z, hlp ht, hlq hz, rfl⟩
+    exact subset_span ⟨t, hlp ht, z, hlq hz, rfl⟩
 #align algebra.fg_trans Algebra.fg_trans
 
 end Algebra

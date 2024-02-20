@@ -263,7 +263,7 @@ theorem mem_univ [Inhabited α] : ∀ a, a ∈ @univ α _ :=
 
 @[congr]
 theorem univ_unique (I J : Inhabited α) : @univ _ I = @univ _ J :=
-  ext.2 <| fun a => refl (a ∈ univ)
+  ext.2 fun a => refl (a ∈ univ)
 #align semiquot.univ_unique Semiquot.univ_unique
 
 @[simp]

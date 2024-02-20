@@ -63,7 +63,7 @@ theorem int_large {m : ℤ} (h : 1 < m) : 1 < m.natAbs := by
 
 theorem not_prime_of_int_mul' {m n : ℤ} {c : ℕ} (hm : 1 < m) (hn : 1 < n) (hc : m * n = (c : ℤ)) :
     ¬Nat.Prime c :=
-  not_prime_of_int_mul (int_large hm) (int_large hn) hc
+  not_prime_of_int_mul (int_large hm).ne' (int_large hn).ne' hc
 #align imo1969_q1.not_prime_of_int_mul' Imo1969Q1.not_prime_of_int_mul'
 
 /-- Every natural number of the form `n^4 + 4*m^4` is not prime. -/

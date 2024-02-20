@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Order.Disjointed
 import Mathlib.Tactic.Measurability
 
@@ -75,6 +74,8 @@ end MeasureTheory
 open MeasureTheory
 
 section
+
+open scoped symmDiff
 
 @[simp, measurability]
 theorem MeasurableSet.empty [MeasurableSpace α] : MeasurableSet (∅ : Set α) :=
@@ -453,11 +454,11 @@ theorem generateFrom_sup_generateFrom {s t : Set (Set α)} :
 #align measurable_space.generate_from_sup_generate_from MeasurableSpace.generateFrom_sup_generateFrom
 
 theorem generateFrom_singleton_empty : generateFrom {∅} = (⊥ : MeasurableSpace α) :=
-  bot_unique $ generateFrom_le <| by simp [@MeasurableSet.empty α ⊥]
+  bot_unique <| generateFrom_le <| by simp [@MeasurableSet.empty α ⊥]
 #align measurable_space.generate_from_singleton_empty MeasurableSpace.generateFrom_singleton_empty
 
 theorem generateFrom_singleton_univ : generateFrom {Set.univ} = (⊥ : MeasurableSpace α) :=
-  bot_unique $ generateFrom_le <| by simp
+  bot_unique <| generateFrom_le <| by simp
 #align measurable_space.generate_from_singleton_univ MeasurableSpace.generateFrom_singleton_univ
 
 @[simp]

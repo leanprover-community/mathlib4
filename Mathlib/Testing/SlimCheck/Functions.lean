@@ -7,7 +7,6 @@ import Mathlib.Data.List.Sigma
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
 import Std.Data.List.Perm
@@ -82,7 +81,7 @@ namespace TotalFunction
 /-- Compose a total function with a regular function on the left -/
 def comp {γ : Type w} (f : β → γ) : TotalFunction α β → TotalFunction α γ
   | TotalFunction.withDefault m y => TotalFunction.withDefault
-    (m.map <| Sigma.map id <| fun _ => f) (f y)
+    (m.map <| Sigma.map id fun _ => f) (f y)
 
 /-- Apply a total function to an argument. -/
 def apply [DecidableEq α] : TotalFunction α β → α → β
