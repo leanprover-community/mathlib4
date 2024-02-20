@@ -11,7 +11,11 @@ import Mathlib.Topology.Algebra.ContinuousMonoidHom
 /-!
 # Pontryagin dual
 
-This file defines the Pontryagin dual of a topological group.
+This file defines the Pontryagin dual of a topological group. The Pontryagin dual of a topological
+group `A` is the topological group of continuous homomorphisms `A →* circle` with the compact-open
+topology. For example, `ℤ` and `circle` are Pontryagin duals of each other. This is an example of
+Pontryagin duality, which states that a locally compact abelian topological group is canonically
+isomorphic to its double dual.
 
 ## Main definitions
 
@@ -59,7 +63,7 @@ instance : FunLike (PontryaginDual A) A circle :=
 noncomputable instance : ContinuousMonoidHomClass (PontryaginDual A) A circle :=
   ContinuousMonoidHom.ContinuousMonoidHomClass
 
-/-- `PontryaginDual` is a functor. -/
+/-- `PontryaginDual` is a contravariant functor. -/
 noncomputable def map (f : ContinuousMonoidHom A B) :
     ContinuousMonoidHom (PontryaginDual B) (PontryaginDual A) :=
   f.compLeft circle
