@@ -43,7 +43,7 @@ theorem preimage_smul_setₛₗ [FunLike F M N] [SemilinearMapClass F σ M N] {c
         IsUnit.val_inv_mul, one_smul, map_one, ys]
     · simp only [smul_smul, IsUnit.mul_val_inv, one_smul, Units.inv_eq_val_inv]
   · rintro x ⟨y, hy, rfl⟩
-    refine' ⟨h y, hy, by simp only [RingHom.id_apply, map_smulₛₗ h]⟩
+    exact ⟨h y, hy, by simp only [RingHom.id_apply, map_smulₛₗ h]⟩
 #align preimage_smul_setₛₗ preimage_smul_setₛₗ
 
 variable (R)

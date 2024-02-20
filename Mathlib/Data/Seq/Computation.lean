@@ -825,11 +825,11 @@ theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
   induction' k with n IH generalizing s <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
   · simp only [ret_bind, Nat.zero_eq] at h
-    refine' ⟨e, _, _, results_pure _, h, rfl⟩
+    exact ⟨e, _, _, results_pure _, h, rfl⟩
   · have := congr_arg head (eq_thinkN h)
     contradiction
   · simp only [ret_bind] at h
-    refine' ⟨e, _, n + 1, results_pure _, h, rfl⟩
+    exact ⟨e, _, n + 1, results_pure _, h, rfl⟩
   · simp only [think_bind, results_think_iff] at h
     let ⟨a, m, n', h1, h2, e'⟩ := IH h
     rw [e']

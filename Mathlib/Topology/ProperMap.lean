@@ -209,7 +209,7 @@ theorem isProperMap_iff_isClosedMap_and_compact_fibers :
   · exact ⟨H.continuous, H.isClosedMap, fun y ↦ H.isCompact_preimage isCompact_singleton⟩
   · rw [isProperMap_iff_clusterPt]
   -- Let `ℱ : Filter X` and `y` some cluster point of `map f ℱ`.
-    refine ⟨H.1, fun ℱ y hy ↦ ?_⟩
+    exact ⟨H.1, fun ℱ y hy ↦ ?_⟩
   -- That means that the singleton `pure y` meets the "closure" of `map f ℱ`, by which we mean
   -- `Filter.lift' (map f ℱ) closure`. But `f` is closed, so
   -- `closure (map f ℱ) = map f (closure ℱ)` (see `IsClosedMap.lift'_closure_map_eq`).
@@ -219,7 +219,7 @@ theorem isProperMap_iff_isClosedMap_and_compact_fibers :
   -- Now, applying the compactness of `f ⁻¹' {y}` to the nontrivial filter
   -- `closure ℱ ⊓ 𝓟 (f ⁻¹' {y})`, we obtain that it has a cluster point `x ∈ f ⁻¹' {y}`.
     rcases H.2.2 y (f := Filter.lift' ℱ closure ⊓ 𝓟 (f ⁻¹' {y})) inf_le_right with ⟨x, hxy, hx⟩
-    refine ⟨x, hxy, ?_⟩
+    exact ⟨x, hxy, ?_⟩
   -- In particular `x` is a cluster point of `closure ℱ`. Since cluster points of `closure ℱ`
   -- are exactly cluster points of `ℱ` (see `clusterPt_lift'_closure_iff`), this completes
   -- the proof.
@@ -295,7 +295,7 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   · exact ⟨H.continuous, H.universally_closed _⟩
   · rw [isProperMap_iff_ultrafilter]
   -- Let `𝒰 : Ultrafilter X`, and assume that `f` tends to some `y` along `𝒰`.
-    refine ⟨H.1, fun 𝒰 y hy ↦ ?_⟩
+    exact ⟨H.1, fun 𝒰 y hy ↦ ?_⟩
   -- In `X × Filter X`, consider the closed set `F := closure {(x, ℱ) | ℱ = pure x}`
     let F : Set (X × Filter X) := closure {xℱ | xℱ.2 = pure xℱ.1}
   -- Since `f × id` is closed, the set `(f × id) '' F` is also closed.

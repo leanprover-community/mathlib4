@@ -110,7 +110,7 @@ theorem boundary_le_boundary_sup_sup_boundary_inf_left : ∂ a ≤ ∂ (a ⊔ b)
   simp only [boundary, sup_inf_left, sup_inf_right, sup_right_idem, le_inf_iff, sup_assoc,
     @sup_comm _ _ _ a]
   refine ⟨⟨⟨?_, ?_⟩, ⟨?_, ?_⟩⟩, ?_, ?_⟩ <;> try { exact le_sup_of_le_left inf_le_left } <;>
-    refine inf_le_of_right_le ?_
+    exact inf_le_of_right_le ?_
   · rw [hnot_le_iff_codisjoint_right, codisjoint_left_comm]
     exact codisjoint_hnot_left
   · refine le_sup_of_le_right ?_
