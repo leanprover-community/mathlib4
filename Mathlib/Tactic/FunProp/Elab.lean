@@ -10,8 +10,6 @@ import Mathlib.Tactic.FunProp.Core
 ## `funProp` tactic syntax
 -/
 
-#check Nat
-
 namespace Mathlib
 open Lean Meta Elab Tactic
 
@@ -54,8 +52,31 @@ def funPropTac : Tactic
       let goalType ← goal.getType
 
       let cfg : Config := {disch := disch, constToUnfold := .ofArray namesToUnfold _}
-      let (.some r, _) ← funProp goalType cfg |>.run {}
-        | throwError "funProp was unable to prove `{← Meta.ppExpr goalType}`"
+      let (r?, s) ← funProp goalType cfg |>.run {}
+      if let .some r := r? then
+        goal.assign r.proof
+      else
+        let mut msg := s!"`fun_prop` was unable to prove `{← Meta.ppExpr goalType}`\n\n"
+        if d.isSome then
+          msg := msg ++ "Try running with a different discharger tactic like \
+          `aesop`, `assumption`, `linarith`, `omega` etc.\n"
+        else
+          msg := msg ++ "Try running with discharger `fun_prop (disch:=aesop)` or with a different \
+          discharger tactic like `assumption`, `linarith`, `omega`.\n"
 
-      goal.assign r.proof
+        msg := msg ++ "Sometimes it is useful to run `fun_prop (disch:=trace_state; sorry)` \
+          which will print all the necessary subgoals for `fun_prop` to succeed.\n"
+        msg := msg ++ "\nPotential issues to fix:"
+        msg := s.msgLog.foldl (init := msg) (fun msg m => msg ++ "\n  " ++ m)
+        msg := msg ++ "\n\nFor more detailed information use \
+          `set_option trace.Meta.Tactic.fun_prop true`"
+        throwError msg
+
+
   | _ => throwUnsupportedSyntax
+
+
+-- \n\
+--         Try running with discharger `fun_prop (disch:=aesop)` or a different discharger tactic like \
+--         `assumption`, `linarith`, `omega` etc.\n\
+--         Sometime it is usefull to run `fun_prop (disch:=trace_state; sorry)`

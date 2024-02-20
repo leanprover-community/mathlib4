@@ -30,12 +30,12 @@ def synthesizeInstance (thmId : Origin) (x type : Expr) : MetaM Bool := do
     if (← withReducibleAndInstances <| isDefEq x val) then
       return true
     else
-      trace[Meta.Tactic.fun_prop.discharge]
+      trace[Meta.Tactic.fun_prop]
 "{← ppOrigin thmId}, failed to assign instance{indentExpr type}
 sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
       return false
   | _ =>
-    trace[Meta.Tactic.fun_prop.discharge]
+    trace[Meta.Tactic.fun_prop]
       "{← ppOrigin thmId}, failed to synthesize instance{indentExpr type}"
     return false
 
@@ -49,6 +49,8 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
     let type ← inferType x
     if bi.isInstImplicit then
       unless (← synthesizeInstance thmId x type) do
+        logError s!"Failed to synthesize instance {← ppExpr type} \
+        when applying theorem {← ppOrigin' thmId}."
         return false
     else if (← instantiateMVars x).isMVar then
 
@@ -63,7 +65,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
           if (← isDefEq x proof) then
             continue
           else do
-            trace[Meta.Tactic.fun_prop.discharge]
+            trace[Meta.Tactic.fun_prop]
               "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
             return false
       else
@@ -74,22 +76,27 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
             if (← isDefEq x proof) then
               continue
             else do
-              trace[Meta.Tactic.fun_prop.discharge]
+              trace[Meta.Tactic.fun_prop]
                 "{← ppOrigin thmId}, failed to assign proof{indentExpr type}"
               return false
+          else
+            logError s!"Failed to prove necessary assumption {← ppExpr type} \
+                        when applying theorem {← ppOrigin' thmId}."
 
       if ¬(← isProp type) then
         postponed := postponed.push x
         continue
       else
-
-        trace[Meta.Tactic.fun_prop.discharge]
+        trace[Meta.Tactic.fun_prop]
           "{← ppOrigin thmId}, failed to discharge hypotheses{indentExpr type}"
         return false
 
   for x in postponed do
     if (← instantiateMVars x).isMVar then
-      trace[Meta.Tactic.fun_prop.discharge]
+      logError s!"Failed to infer {← ppExpr (← inferType x)} \
+      when applying theorem {← ppOrigin' thmId}."
+
+      trace[Meta.Tactic.fun_prop]
         "{← ppOrigin thmId}, failed to infer data {indentExpr x}"
       return false
 
@@ -133,7 +140,7 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
         for (id,v) in hint do
           xs[id]!.mvarId!.assignIfDefeq v
       catch _ =>
-        trace[Meta.Tactic.fun_trans.discharge]
+        trace[Meta.Tactic.fun_trans]
           "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
 
     tryTheoremCore xs bis thmProof type e thmOrigin funProp
@@ -309,7 +316,7 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
 
   for c in candidates do
     if ← previouslyUsedThm (.decl c.thmName) then
-      trace[Meta.Tactic.fun_prop] "skipping {c.thmName} to prevent potential loop"
+      trace[Meta.Tactic.fun_prop] "skipping {c.thmName} to prevent potential infinite loop"
     else
       if let .some r ← tryTheorem? e (.decl c.thmName) funProp then
         return r
@@ -486,7 +493,7 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     let .fvar id := fData.fn | throwError "fun_prop bug: invalid use of fvar app case"
     let thms ← getLocalTheorems funPropDecl (.fvar id) fData.mainArgs fData.args.size
     trace[Meta.Tactic.fun_prop]
-      s!"candidate local theorems for {←ppExpr (.fvar id)}
+      s!"candidate local theorems for {←ppExpr (.fvar id)} \
          {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
 
     if let .some r ← tryTheorems funPropDecl e fData thms funProp then
@@ -505,6 +512,9 @@ def fvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       if let .some r ← applyTransitionRules e funProp then
         return r
 
+    if thms.size = 0 then
+      logError s!"No theorems found for `{← ppExpr (.fvar id)}` in order to prove {← ppExpr e}"
+
     return none
 
 
@@ -514,20 +524,21 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
 
   let .some (funName,_) := fData.fn.const?
     | throwError "fun_prop bug: invelid use of const app case"
-  let thms ← getDeclTheorems funPropDecl funName fData.mainArgs fData.args.size
+  let globalThms ← getDeclTheorems funPropDecl funName fData.mainArgs fData.args.size
 
   trace[Meta.Tactic.fun_prop]
-    s!"candidate theorems for {funName} {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
+    s!"candidate theorems for {funName} {← globalThms.mapM fun thm => ppOrigin' thm.thmOrigin}"
 
-  if let .some r ← tryTheorems funPropDecl e fData thms funProp then
+  if let .some r ← tryTheorems funPropDecl e fData globalThms funProp then
     return r
 
   -- Try local theorems - this is useful for recursive functions
-  let thms ← getLocalTheorems funPropDecl (.decl funName) fData.mainArgs fData.args.size
-  if thms.size ≠ 0 then
+  let localThms ← getLocalTheorems funPropDecl (.decl funName) fData.mainArgs fData.args.size
+  if localThms.size ≠ 0 then
     trace[Meta.Tactic.fun_prop]
-      s!"candidate local theorems for {funName} {← thms.mapM fun thm => ppOrigin' thm.thmOrigin}"
-  if let .some r ← tryTheorems funPropDecl e fData thms funProp then
+      s!"candidate local theorems for {funName} \
+        {← localThms.mapM fun thm => ppOrigin' thm.thmOrigin}"
+  if let .some r ← tryTheorems funPropDecl e fData localThms funProp then
     return r
 
   if (← fData.isMorApplication) != .none then
@@ -540,6 +551,10 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
   else
     if let .some r ← applyTransitionRules e funProp then
       return r
+
+  if globalThms.size = 0 &&
+     localThms.size = 0 then
+     logError s!"No theorems found for `{funName}` in order to prove {← ppExpr e}"
 
   return none
 

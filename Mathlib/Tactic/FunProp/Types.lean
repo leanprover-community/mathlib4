@@ -98,6 +98,8 @@ structure State where
   cache        : Simp.Cache := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
+  /-- Log progress and failures messages that should be displayed to the user at the end. -/
+  msgLog : List String := []
 
 /-- Log used theorem -/
 def Config.addThm (cfg : Config) (thmId : Origin) : Config :=
@@ -145,3 +147,7 @@ def increaseSteps : FunPropM Unit := do
   if numSteps > maxSteps then
      throwError s!"fun_prop failed, maximum number({maxSteps}) of steps exceeded"
   modify (fun s => {s with numSteps := s.numSteps + 1})
+
+def logError (msg : String) : FunPropM Unit := do
+  modify fun s =>
+    {s with msgLog := msg::s.msgLog}
