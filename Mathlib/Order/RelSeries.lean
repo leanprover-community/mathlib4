@@ -343,7 +343,7 @@ def reverse (p : RelSeries r) : RelSeries (fun (a b : α) ↦ r b a) where
     p.reverse i = p i.rev := rfl
 
 /--
-given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
+Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `a₀ -r→ a` holds, there is
 a series of length `n+1`: `a -r→ a₀ -r→ a₁ -r→ ... -r→ aₙ`.
 -/
 @[simps! length]
@@ -379,10 +379,9 @@ def eraseLast (p : RelSeries r) : RelSeries r where
 /--
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
 then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
-
 -/
 @[simps]
-def combine (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
+def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   length := p.length + q.length
   toFun i :=
     if H : i.1 < p.length
