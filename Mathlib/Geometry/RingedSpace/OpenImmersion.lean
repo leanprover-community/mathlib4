@@ -160,8 +160,8 @@ instance comp {Z : PresheafedSpace C} (f : X ⟶ Y) [hf : IsOpenImmersion f] (g 
       TopCat.Presheaf.pushforwardObj_obj, Opens.map_comp_obj]
     -- Porting note : was `apply (config := { instances := False }) ...`
     -- See https://github.com/leanprover/lean4/issues/2273
-    have : IsIso (g.c.app (op <| (h.functor).obj U))
-    · have : h.functor.obj U = hg.openFunctor.obj (hf.openFunctor.obj U) := by
+    have : IsIso (g.c.app (op <| (h.functor).obj U)) := by
+      have : h.functor.obj U = hg.openFunctor.obj (hf.openFunctor.obj U) := by
         ext1
         dsimp only [IsOpenMap.functor_obj_coe]
         -- Porting note : slightly more hand holding here: `g ∘ f` and `fun x => g (f x)`
@@ -169,8 +169,8 @@ instance comp {Z : PresheafedSpace C} (f : X ⟶ Y) [hf : IsOpenImmersion f] (g 
           ← Set.image_image]
       rw [this]
       infer_instance
-    have : IsIso (f.c.app (op <| (Opens.map g.base).obj ((IsOpenMap.functor h).obj U)))
-    · have : (Opens.map g.base).obj (h.functor.obj U) = hf.openFunctor.obj U := by
+    have : IsIso (f.c.app (op <| (Opens.map g.base).obj ((IsOpenMap.functor h).obj U))) := by
+      have : (Opens.map g.base).obj (h.functor.obj U) = hf.openFunctor.obj U := by
         ext1
         dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base]
         -- Porting note : slightly more hand holding here: `g ∘ f` and `fun x => g (f x)`
@@ -313,8 +313,8 @@ theorem ofRestrict_invApp {C : Type*} [Category C] (X : PresheafedSpace C) {Y : 
 theorem to_iso (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.base] : IsIso f := by
   -- Porting Note : was `apply (config := { instances := False }) ...`
   -- See https://github.com/leanprover/lean4/issues/2273
-  have : ∀ (U : (Opens Y)ᵒᵖ), IsIso (f.c.app U)
-  · intro U
+  have : ∀ (U : (Opens Y)ᵒᵖ), IsIso (f.c.app U) := by
+    intro U
     have : U = op (h.openFunctor.obj ((Opens.map f.base).obj (unop U))) := by
       induction U using Opposite.rec' with | h U => ?_
       cases U
@@ -322,8 +322,8 @@ theorem to_iso (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.base] : IsIso f
       congr
       exact (Set.image_preimage_eq _ ((TopCat.epi_iff_surjective _).mp h')).symm
     convert @IsOpenImmersion.c_iso _ _ _ _ _ h ((Opens.map f.base).obj (unop U))
-  have : IsIso f.base
-  · let t : X ≃ₜ Y :=
+  have : IsIso f.base := by
+    let t : X ≃ₜ Y :=
       (Homeomorph.ofEmbedding _ h.base_open.toEmbedding).trans
         { toFun := Subtype.val
           invFun := fun x =>
@@ -724,8 +724,9 @@ instance forgetMapIsOpenImmersion : PresheafedSpace.IsOpenImmersion ((forget).ma
 #align algebraic_geometry.SheafedSpace.is_open_immersion.forget_map_is_open_immersion AlgebraicGeometry.SheafedSpace.IsOpenImmersion.forgetMapIsOpenImmersion
 
 instance hasLimit_cospan_forget_of_left : HasLimit (cospan f g ⋙ forget) := by
-  have : HasLimit (cospan ((cospan f g ⋙ forget).map Hom.inl) ((cospan f g ⋙ forget).map Hom.inr))
-  · change HasLimit (cospan ((forget).map f) ((forget).map g))
+  have : HasLimit (cospan ((cospan f g ⋙ forget).map Hom.inl)
+      ((cospan f g ⋙ forget).map Hom.inr)) := by
+    change HasLimit (cospan ((forget).map f) ((forget).map g))
     infer_instance
   apply hasLimitOfIso (diagramIsoCospan _).symm
 #align algebraic_geometry.SheafedSpace.is_open_immersion.has_limit_cospan_forget_of_left AlgebraicGeometry.SheafedSpace.IsOpenImmersion.hasLimit_cospan_forget_of_left
@@ -736,8 +737,9 @@ instance hasLimit_cospan_forget_of_left' :
 #align algebraic_geometry.SheafedSpace.is_open_immersion.has_limit_cospan_forget_of_left' AlgebraicGeometry.SheafedSpace.IsOpenImmersion.hasLimit_cospan_forget_of_left'
 
 instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := by
-  have : HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr))
-  · change HasLimit (cospan ((forget).map g) ((forget).map f))
+  have : HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl)
+      ((cospan g f ⋙ forget).map Hom.inr)) := by
+    change HasLimit (cospan ((forget).map g) ((forget).map f))
     infer_instance
   apply hasLimitOfIso (diagramIsoCospan _).symm
 #align algebraic_geometry.SheafedSpace.is_open_immersion.has_limit_cospan_forget_of_right AlgebraicGeometry.SheafedSpace.IsOpenImmersion.hasLimit_cospan_forget_of_right
@@ -768,8 +770,8 @@ instance sheafedSpaceForgetPreservesOfLeft : PreservesLimit (cospan f g) (Sheafe
     inferInstance <| by
       have : PreservesLimit
         (cospan ((cospan f g ⋙ forget).map Hom.inl)
-          ((cospan f g ⋙ forget).map Hom.inr)) (PresheafedSpace.forget C)
-      · dsimp
+          ((cospan f g ⋙ forget).map Hom.inr)) (PresheafedSpace.forget C) := by
+        dsimp
         infer_instance
       apply preservesLimitOfIsoDiagram _ (diagramIsoCospan _).symm
 #align algebraic_geometry.SheafedSpace.is_open_immersion.SheafedSpace_forget_preserves_of_left AlgebraicGeometry.SheafedSpace.IsOpenImmersion.sheafedSpaceForgetPreservesOfLeft
@@ -1080,11 +1082,11 @@ instance forgetToTopPreservesPullbackOfLeft :
       (cospan ((cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map
         WalkingCospan.Hom.inl)
       ((cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map
-        WalkingCospan.Hom.inr)) (PresheafedSpace.forget CommRingCat)
-  · dsimp; infer_instance
+        WalkingCospan.Hom.inr)) (PresheafedSpace.forget CommRingCat) := by
+    dsimp; infer_instance
   have : PreservesLimit (cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace)
-    (PresheafedSpace.forget CommRingCat)
-  · apply preservesLimitOfIsoDiagram _ (diagramIsoCospan _).symm
+      (PresheafedSpace.forget CommRingCat) := by
+    apply preservesLimitOfIsoDiagram _ (diagramIsoCospan _).symm
   apply Limits.compPreservesLimit
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forget_to_Top_preserves_pullback_of_left AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetToTopPreservesPullbackOfLeft
 

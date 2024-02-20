@@ -17,7 +17,7 @@ differences of consecutive intervals.
 
 ## Implementation notes
 
-We don't need the full ring structure, only that there is an embedding `ℕ → `
+We don't need the full ring structure, only that there is an order embedding `ℤ → `
 -/
 
 /-! ### General locally finite ordered ring -/

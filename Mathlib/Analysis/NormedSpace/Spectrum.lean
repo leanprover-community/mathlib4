@@ -306,12 +306,12 @@ theorem isUnit_one_sub_smul_of_lt_inv_radius {a : A} {z : 𝕜} (h : ↑‖z‖�
   by_cases hz : z = 0
   · simp only [hz, isUnit_one, sub_zero, zero_smul]
   · let u := Units.mk0 z hz
-    suffices hu : IsUnit (u⁻¹ • (1 : A) - a)
-    · rwa [IsUnit.smul_sub_iff_sub_inv_smul, inv_inv u] at hu
-    · rw [Units.smul_def, ← Algebra.algebraMap_eq_smul_one, ← mem_resolventSet_iff]
-      refine' mem_resolventSet_of_spectralRadius_lt _
-      rwa [Units.val_inv_eq_inv_val, nnnorm_inv,
-        coe_inv (nnnorm_ne_zero_iff.mpr (Units.val_mk0 hz ▸ hz : (u : 𝕜) ≠ 0)), lt_inv_iff_lt_inv]
+    suffices hu : IsUnit (u⁻¹ • (1 : A) - a) by
+      rwa [IsUnit.smul_sub_iff_sub_inv_smul, inv_inv u] at hu
+    rw [Units.smul_def, ← Algebra.algebraMap_eq_smul_one, ← mem_resolventSet_iff]
+    refine mem_resolventSet_of_spectralRadius_lt ?_
+    rwa [Units.val_inv_eq_inv_val, nnnorm_inv,
+      coe_inv (nnnorm_ne_zero_iff.mpr (Units.val_mk0 hz ▸ hz : (u : 𝕜) ≠ 0)), lt_inv_iff_lt_inv]
 #align spectrum.is_unit_one_sub_smul_of_lt_inv_radius spectrum.isUnit_one_sub_smul_of_lt_inv_radius
 
 /-- In a Banach algebra `A` over `𝕜`, for `a : A` the function `fun z ↦ (1 - z • a)⁻¹` is
@@ -346,16 +346,16 @@ theorem limsup_pow_nnnorm_pow_one_div_le_spectralRadius (a : A) :
   simp_rw [inv_limsup, ← one_div]
   let p : FormalMultilinearSeries ℂ ℂ A := fun n =>
     ContinuousMultilinearMap.mkPiRing ℂ (Fin n) (a ^ n)
-  suffices h : (r : ℝ≥0∞) ≤ p.radius
-  · convert h
+  suffices h : (r : ℝ≥0∞) ≤ p.radius by
+    convert h
     simp only [p.radius_eq_liminf, ← norm_toNNReal, norm_mkPiRing]
     congr
     ext n
     rw [norm_toNNReal, ENNReal.coe_rpow_def ‖a ^ n‖₊ (1 / n : ℝ), if_neg]
     exact fun ha => (lt_self_iff_false _).mp
       (ha.2.trans_le (one_div_nonneg.mpr n.cast_nonneg : 0 ≤ (1 / n : ℝ)))
-  · have H₁ := (differentiableOn_inverse_one_sub_smul r_lt).hasFPowerSeriesOnBall r_pos
-    exact ((hasFPowerSeriesOnBall_inverse_one_sub_smul ℂ a).exchange_radius H₁).r_le
+  have H₁ := (differentiableOn_inverse_one_sub_smul r_lt).hasFPowerSeriesOnBall r_pos
+  exact ((hasFPowerSeriesOnBall_inverse_one_sub_smul ℂ a).exchange_radius H₁).r_le
 #align spectrum.limsup_pow_nnnorm_pow_one_div_le_spectral_radius spectrum.limsup_pow_nnnorm_pow_one_div_le_spectralRadius
 
 /-- **Gelfand's formula**: Given an element `a : A` of a complex Banach algebra, the
