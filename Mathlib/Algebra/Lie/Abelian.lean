@@ -316,7 +316,7 @@ variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L)
 
 @[simp]
 theorem LieSubmodule.trivial_lie_oper_zero [LieModule.IsTrivial L M] : ⁅I, N⁆ = ⊥ := by
-  suffices : ⁅I, N⁆ ≤ ⊥; exact le_bot_iff.mp this
+  suffices ⁅I, N⁆ ≤ ⊥ from le_bot_iff.mp this
   rw [lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
   rintro m ⟨x, n, h⟩; rw [trivial_lie_zero] at h; simp [← h]
 #align lie_submodule.trivial_lie_oper_zero LieSubmodule.trivial_lie_oper_zero

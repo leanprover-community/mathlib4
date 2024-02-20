@@ -779,14 +779,17 @@ theorem insert_image_compl_eq_range (f : α → β) (x : α) : insert (f x) (f '
   rw [← image_insert_eq, insert_eq, union_compl_self, image_univ]
 #align set.insert_image_compl_eq_range Set.insert_image_compl_eq_range
 
-theorem image_preimage_eq_inter_range {f : α → β} {t : Set β} : f '' (f ⁻¹' t) = t ∩ range f :=
+theorem image_preimage_eq_range_inter {f : α → β} {t : Set β} : f '' (f ⁻¹' t) = range f ∩ t :=
   ext fun x =>
-    ⟨fun ⟨x, hx, HEq⟩ => HEq ▸ ⟨hx, mem_range_self _⟩, fun ⟨hx, ⟨y, h_eq⟩⟩ =>
+    ⟨fun ⟨x, hx, HEq⟩ => HEq ▸ ⟨mem_range_self _, hx⟩, fun ⟨⟨y, h_eq⟩, hx⟩ =>
       h_eq ▸ mem_image_of_mem f <| show y ∈ f ⁻¹' t by rw [preimage, mem_setOf, h_eq]; exact hx⟩
+
+theorem image_preimage_eq_inter_range {f : α → β} {t : Set β} : f '' (f ⁻¹' t) = t ∩ range f := by
+  rw [image_preimage_eq_range_inter, inter_comm]
 #align set.image_preimage_eq_inter_range Set.image_preimage_eq_inter_range
 
 theorem image_preimage_eq_of_subset {f : α → β} {s : Set β} (hs : s ⊆ range f) :
-    f '' (f ⁻¹' s) = s := by rw [image_preimage_eq_inter_range, inter_eq_self_of_subset_left hs]
+    f '' (f ⁻¹' s) = s := by rw [image_preimage_eq_range_inter, inter_eq_self_of_subset_right hs]
 #align set.image_preimage_eq_of_subset Set.image_preimage_eq_of_subset
 
 theorem image_preimage_eq_iff {f : α → β} {s : Set β} : f '' (f ⁻¹' s) = s ↔ s ⊆ range f :=
@@ -852,7 +855,7 @@ theorem preimage_range_inter {f : α → β} {s : Set β} : f ⁻¹' (range f �
 #align set.preimage_range_inter Set.preimage_range_inter
 
 theorem preimage_image_preimage {f : α → β} {s : Set β} : f ⁻¹' (f '' (f ⁻¹' s)) = f ⁻¹' s := by
-  rw [image_preimage_eq_inter_range, preimage_inter_range]
+  rw [image_preimage_eq_range_inter, preimage_range_inter]
 #align set.preimage_image_preimage Set.preimage_image_preimage
 
 @[simp, mfld_simps]
@@ -1412,28 +1415,32 @@ theorem coe_image_univ (s : Set α) : ((↑) : s → α) '' Set.univ = s :=
 #align subtype.coe_image_univ Subtype.coe_image_univ
 
 @[simp]
-theorem image_preimage_coe (s t : Set α) : ((↑) : s → α) '' (((↑) : s → α) ⁻¹' t) = t ∩ s :=
-  image_preimage_eq_inter_range.trans <| congr_arg _ range_coe
+theorem image_preimage_coe (s t : Set α) : ((↑) : s → α) '' (((↑) : s → α) ⁻¹' t) = s ∩ t :=
+  image_preimage_eq_range_inter.trans <| congr_arg (· ∩ t) range_coe
 #align subtype.image_preimage_coe Subtype.image_preimage_coe
 
-theorem image_preimage_val (s t : Set α) : (Subtype.val : s → α) '' (Subtype.val ⁻¹' t) = t ∩ s :=
+theorem image_preimage_val (s t : Set α) : (Subtype.val : s → α) '' (Subtype.val ⁻¹' t) = s ∩ t :=
   image_preimage_coe s t
 #align subtype.image_preimage_val Subtype.image_preimage_val
 
 theorem preimage_coe_eq_preimage_coe_iff {s t u : Set α} :
-    ((↑) : s → α) ⁻¹' t = ((↑) : s → α) ⁻¹' u ↔ t ∩ s = u ∩ s := by
+    ((↑) : s → α) ⁻¹' t = ((↑) : s → α) ⁻¹' u ↔ s ∩ t = s ∩ u := by
   rw [← image_preimage_coe, ← image_preimage_coe, coe_injective.image_injective.eq_iff]
 #align subtype.preimage_coe_eq_preimage_coe_iff Subtype.preimage_coe_eq_preimage_coe_iff
+
+theorem preimage_coe_self_inter (s t : Set α) :
+    ((↑) : s → α) ⁻¹' (s ∩ t) = ((↑) : s → α) ⁻¹' t := by
+  rw [preimage_coe_eq_preimage_coe_iff, ← inter_assoc, inter_self]
 
 -- Porting note:
 -- @[simp] `simp` can prove this
 theorem preimage_coe_inter_self (s t : Set α) :
     ((↑) : s → α) ⁻¹' (t ∩ s) = ((↑) : s → α) ⁻¹' t := by
-  rw [preimage_coe_eq_preimage_coe_iff, inter_assoc, inter_self]
+  rw [inter_comm, preimage_coe_self_inter]
 #align subtype.preimage_coe_inter_self Subtype.preimage_coe_inter_self
 
 theorem preimage_val_eq_preimage_val_iff (s t u : Set α) :
-    (Subtype.val : s → α) ⁻¹' t = Subtype.val ⁻¹' u ↔ t ∩ s = u ∩ s :=
+    (Subtype.val : s → α) ⁻¹' t = Subtype.val ⁻¹' u ↔ s ∩ t = s ∩ u :=
   preimage_coe_eq_preimage_coe_iff
 #align subtype.preimage_val_eq_preimage_val_iff Subtype.preimage_val_eq_preimage_val_iff
 
@@ -1448,7 +1455,7 @@ theorem forall_set_subtype {t : Set α} (p : Set α → Prop) :
 
 theorem preimage_coe_nonempty {s t : Set α} :
     (((↑) : s → α) ⁻¹' t).Nonempty ↔ (s ∩ t).Nonempty := by
-  rw [inter_comm, ← image_preimage_coe, image_nonempty]
+  rw [← image_preimage_coe, image_nonempty]
 #align subtype.preimage_coe_nonempty Subtype.preimage_coe_nonempty
 
 theorem preimage_coe_eq_empty {s t : Set α} : ((↑) : s → α) ⁻¹' t = ∅ ↔ s ∩ t = ∅ := by

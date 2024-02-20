@@ -17,6 +17,7 @@ import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.Change
+import Mathlib.Tactic.Check
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Clean
 import Mathlib.Tactic.Clear!
@@ -55,7 +56,6 @@ import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.FunProp.AEMeasurable
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.FunProp.ContDiff
-import Mathlib.Tactic.FunProp.Continuous
 import Mathlib.Tactic.FunProp.Core
 import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Differentiable

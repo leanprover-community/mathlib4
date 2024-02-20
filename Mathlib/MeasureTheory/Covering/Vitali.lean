@@ -379,8 +379,8 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
       have B : dist e (c b) ≤ r b := mem_closedBall.1 (hB b (ut bu) eb)
       simp only [mem_closedBall]
       linarith only [dist_triangle (c a) e (c b), A, B, bdiam]
-    suffices H : closedBall (c b'') (3 * r b'') ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)
-    exact H zb
+    suffices H : closedBall (c b'') (3 * r b'')
+        ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) from H zb
     exact subset_iUnion (fun a : { a // a ∉ w } => closedBall (c a) (3 * r a)) b''
   -- now that we have proved our main inclusion, we can use it to estimate the measure of the points
   -- in `ball x (r x)` not covered by `u`.

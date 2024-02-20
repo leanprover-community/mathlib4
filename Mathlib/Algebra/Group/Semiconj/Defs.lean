@@ -140,6 +140,14 @@ theorem conj_mk (a x : G) : SemiconjBy a x (a * x * a⁻¹) := by
 #align semiconj_by.conj_mk SemiconjBy.conj_mk
 #align add_semiconj_by.conj_mk AddSemiconjBy.conj_mk
 
+@[to_additive (attr := simp)]
+theorem conj_iff {a x y b : G} :
+    SemiconjBy (b * a * b⁻¹) (b * x * b⁻¹) (b * y * b⁻¹) ↔ SemiconjBy a x y := by
+  unfold SemiconjBy
+  simp only [← mul_assoc, inv_mul_cancel_right]
+  repeat rw [mul_assoc]
+  rw [mul_left_cancel_iff, ← mul_assoc, ← mul_assoc, mul_right_cancel_iff]
+
 end Group
 
 end SemiconjBy
