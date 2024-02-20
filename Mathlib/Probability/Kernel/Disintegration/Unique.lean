@@ -26,7 +26,7 @@ variable {α β Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 
 section Kernel
 
-variable [CountableOrStandardBorel α β] {ρ : kernel α (β × Ω)} [IsFiniteKernel ρ]
+variable [CountableOrCountablyGenerated α β] {ρ : kernel α (β × Ω)} [IsFiniteKernel ρ]
 
 /-! ### Uniqueness
 
@@ -222,7 +222,7 @@ end Measure
 
 section KernelAndMeasure
 
-lemma kernel.condKernel_apply_eq_condKernel [CountableOrStandardBorel α β]
+lemma kernel.condKernel_apply_eq_condKernel [CountableOrCountablyGenerated α β]
     (κ : kernel α (β × Ω)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ b ∂(kernel.fst κ a), kernel.condKernel κ (a, b) = (κ a).condKernel b := by
   have : κ a = (κ a).fst
@@ -236,7 +236,7 @@ lemma kernel.condKernel_apply_eq_condKernel [CountableOrStandardBorel α β]
   filter_upwards [h] with b hb
   rw [← hb, kernel.comap_apply]
 
-lemma condKernel_const [CountableOrStandardBorel α β] (ρ : Measure (β × Ω)) [IsFiniteMeasure ρ]
+lemma condKernel_const [CountableOrCountablyGenerated α β] (ρ : Measure (β × Ω)) [IsFiniteMeasure ρ]
     (a : α) :
     ∀ᵐ b ∂ρ.fst, kernel.condKernel (kernel.const α ρ) (a, b) = ρ.condKernel b := by
   have h := kernel.condKernel_apply_eq_condKernel (kernel.const α ρ) a

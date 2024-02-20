@@ -1994,6 +1994,182 @@ instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [Measurabl
   rw [← forall_generateFrom_mem_iff_mem_iff, ← hb] at h
   simpa using h {y}
 
+def partitioned (f : ℕ → Set α) : ℕ → Set (Set α)
+  | 0 => {f 0, (f 0)ᶜ}
+  | n + 1 => ⋃ u ∈ partitioned f n, {u ∩ f (n + 1), u \ f (n + 1)}
+
+@[simp]
+lemma partitioned_zero (f : ℕ → Set α) : partitioned f 0 = {f 0, (f 0)ᶜ} := rfl
+
+lemma partitioned_succ (f : ℕ → Set α) (n : ℕ) :
+    partitioned f (n + 1) = ⋃ u ∈ partitioned f n, {u ∩ f (n + 1), u \ f (n + 1)} := rfl
+
+lemma disjoint_partitioned (f : ℕ → Set α) (n : ℕ) :
+    ∀ u ∈ partitioned f n, ∀ v ∈ partitioned f n, u ≠ v → Disjoint u v := by
+  induction n with
+  | zero =>
+    simp only [Nat.zero_eq, partitioned_zero, union_singleton, mem_insert_iff,
+      mem_singleton_iff, ne_eq, forall_eq_or_imp, forall_eq, not_true_eq_false, disjoint_self,
+      bot_eq_empty, compl_empty_iff, IsEmpty.forall_iff, true_and, and_true]
+    exact ⟨fun _ ↦ disjoint_compl_right, fun _ ↦ disjoint_compl_left⟩
+  | succ n ih =>
+    intro u hu v hv huv
+    rw [partitioned_succ] at hu hv
+    simp only [union_singleton, mem_iUnion, mem_insert_iff, mem_singleton_iff, exists_prop] at hu hv
+    obtain ⟨u', hu', hu'_eq⟩ := hu
+    obtain ⟨v', hv', hv'_eq⟩ := hv
+    rcases hu'_eq with rfl | rfl <;> rcases hv'_eq with rfl | rfl
+    · refine Disjoint.mono (inter_subset_left _ _) (inter_subset_left _ _) (ih u' hu' v' hv' ?_)
+      exact fun huv' ↦ huv (huv' ▸ rfl)
+    · by_cases huv' : u' = v'
+      · rw [huv']
+        exact Disjoint.mono_left (inter_subset_right _ _) Set.disjoint_sdiff_right
+      · exact Disjoint.mono (inter_subset_left _ _) (diff_subset _ _) (ih u' hu' v' hv' huv')
+    · by_cases huv' : u' = v'
+      · rw [huv']
+        exact Disjoint.mono_right (inter_subset_right _ _) Set.disjoint_sdiff_left
+      · exact Disjoint.mono (diff_subset _ _) (inter_subset_left _ _) (ih u' hu' v' hv' huv')
+    · refine Disjoint.mono (diff_subset _ _) (diff_subset _ _) (ih u' hu' v' hv' ?_)
+      refine fun huv' ↦ huv (huv' ▸ rfl)
+
+lemma sUnion_partitioned (f : ℕ → Set α) (n : ℕ) : ⋃₀ partitioned f n = univ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [partitioned_succ]
+    ext x
+    have : x ∈ ⋃₀ partitioned f n := by simp [ih]
+    simp only [mem_sUnion, mem_iUnion, mem_insert_iff, mem_singleton_iff, exists_prop, mem_univ,
+      iff_true] at this ⊢
+    obtain ⟨t, ht, hxt⟩ := this
+    by_cases hxf : x ∈ f (n + 1)
+    · exact ⟨t ∩ f (n + 1), ⟨t, ht, Or.inl rfl⟩, hxt, hxf⟩
+    · exact ⟨t \ f (n + 1), ⟨t, ht, Or.inr rfl⟩, hxt, hxf⟩
+
+lemma partitioned_finite (f : ℕ → Set α) (n : ℕ) : Set.Finite (partitioned f n) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [partitioned_succ]
+    have : Finite (partitioned f n) := Set.finite_coe_iff.mp ih
+    rw [← Set.finite_coe_iff]
+    refine Finite.Set.finite_biUnion (partitioned f n) _ (fun u _ ↦ ?_)
+    rw [Set.finite_coe_iff]
+    simp
+
+lemma todo [m : MeasurableSpace α] [h : CountablyGenerated α] :
+    ∃ s : ℕ → Set (Set α), (∀ n, Set.Finite (s n))
+      ∧ (∀ n, ∀ u ∈ s n, ∀ v ∈ s n, u ≠ v → Disjoint u v)
+      ∧ (∀ n, ⋃₀ s n = univ)
+      ∧ (∀ n, ∀ t ∈ s n, MeasurableSet[generateFrom (s (n + 1))] t)
+      ∧ m = generateFrom (⋃ n, s n) := by
+  obtain ⟨b, hb_count, hb_gen⟩ := h.isCountablyGenerated
+  cases Set.eq_empty_or_nonempty b with
+  | inl h_empty =>
+    refine ⟨fun _ ↦ {univ}, by simp, by simp, by simp, ?_⟩
+    simp only [iUnion_singleton_eq_range, range_const, generateFrom_singleton, mem_univ,
+      comap_const]
+    rw [hb_gen]
+    simp [h_empty]
+  | inr h_nonempty =>
+  let s₀ := h_nonempty.choose
+  let t : ℕ → Set α := enumerateCountable hb_count s₀
+  have ht_mem : ∀ n, t n ∈ b := enumerateCountable_mem hb_count h_nonempty.choose_spec
+  refine ⟨partitioned t, partitioned_finite t, disjoint_partitioned t, sUnion_partitioned t, ?_, ?_⟩
+  · intro n u hun
+    rw [← diff_union_inter u (t (n + 1))]
+    refine MeasurableSet.union ?_ ?_ <;>
+      · refine measurableSet_generateFrom ?_
+        rw [partitioned_succ]
+        simp_rw [mem_iUnion]
+        exact ⟨u, hun, by simp⟩
+  · rw [hb_gen]
+    refine le_antisymm (generateFrom_le fun u hu ↦ ?_) (generateFrom_le fun u hu ↦ ?_)
+    · obtain ⟨n, rfl⟩ : ∃ n, u = t n := by
+        have h := subset_range_enumerate hb_count s₀ hu
+        obtain ⟨n, hn⟩ := mem_range.mpr h
+        exact ⟨n, hn.symm⟩
+      suffices MeasurableSet[generateFrom (partitioned t n)] (t n) by
+        suffices h_le : generateFrom (partitioned t n) ≤ generateFrom (⋃ n, partitioned t n) by
+          exact h_le _ this
+        exact generateFrom_mono (subset_iUnion _ _)
+      cases n with
+      | zero =>
+        simp only [Nat.zero_eq, partitioned_zero]
+        refine measurableSet_generateFrom ?_
+        simp
+      | succ n =>
+        have : t (n + 1) = ⋃ u ∈ partitioned t n, u ∩ t (n + 1) := by
+          simp_rw [← iUnion_inter]
+          suffices ⋃ u ∈ partitioned t n, u = univ by simp only [this, univ_inter]
+          rw [← sUnion_eq_biUnion]
+          exact sUnion_partitioned _ _
+        rw [this]
+        refine MeasurableSet.biUnion (Finite.countable (partitioned_finite _ _)) (fun v hv ↦ ?_)
+        refine measurableSet_generateFrom ?_
+        rw [partitioned_succ]
+        simp only [mem_iUnion, mem_insert_iff, mem_singleton_iff, exists_prop]
+        exact ⟨v, hv, Or.inl rfl⟩
+    · simp only [mem_iUnion] at hu
+      obtain ⟨n, hun⟩ := hu
+      induction n generalizing u with
+      | zero =>
+        simp only [Nat.zero_eq, partitioned_zero, mem_insert_iff, mem_singleton_iff] at hun
+        rcases hun with rfl | rfl
+        · exact measurableSet_generateFrom (ht_mem _)
+        · exact (measurableSet_generateFrom (ht_mem _)).compl
+      | succ n ih =>
+        simp only [partitioned_succ, mem_iUnion, mem_insert_iff, mem_singleton_iff, exists_prop]
+          at hun
+        obtain ⟨v, hv, huv⟩ := hun
+        rcases huv with rfl | rfl
+        · exact MeasurableSet.inter (ih v hv) (measurableSet_generateFrom (ht_mem _))
+        · exact MeasurableSet.diff (ih v hv) (measurableSet_generateFrom (ht_mem _))
+
+def countablePartition (α : Type*) [MeasurableSpace α] [CountablyGenerated α] : ℕ → Set (Set α) :=
+  todo.choose
+
+lemma finite_countablePartition (α : Type*) [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
+    Set.Finite (countablePartition α n) :=
+  todo.choose_spec.1 n
+
+lemma disjoint_countablePartition [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) {s t : Set α}
+    (hs : s ∈ countablePartition α n) (ht : t ∈ countablePartition α n) (hst : s ≠ t) :
+    Disjoint s t :=
+  todo.choose_spec.2.1 n s hs t ht hst
+
+lemma sUnion_countablePartition (α : Type*) [MeasurableSpace α] [CountablyGenerated α] (n : ℕ) :
+    ⋃₀ countablePartition α n = univ :=
+  todo.choose_spec.2.2.1 n
+
+lemma measurableSet_succ_countablePartition [MeasurableSpace α] [CountablyGenerated α] (n : ℕ)
+    {s : Set α} (hs : s ∈ countablePartition α n) :
+    MeasurableSet[generateFrom (countablePartition α (n + 1))] s :=
+  todo.choose_spec.2.2.2.1 n s hs
+
+lemma generateFrom_iUnion_countablePartition (α : Type*) [m : MeasurableSpace α]
+    [CountablyGenerated α] :
+    generateFrom (⋃ n, countablePartition α n) = m :=
+  todo.choose_spec.2.2.2.2.symm
+
+lemma generateFrom_countablePartition_le_succ (α : Type*) [MeasurableSpace α] [CountablyGenerated α]
+    (n : ℕ) :
+    generateFrom (countablePartition α n) ≤ generateFrom (countablePartition α (n + 1)) :=
+  generateFrom_le (fun _ hs ↦ measurableSet_succ_countablePartition n hs)
+
+lemma generateFrom_countablePartition_le (α : Type*) [m : MeasurableSpace α] [CountablyGenerated α]
+    (n : ℕ) :
+    generateFrom (countablePartition α n) ≤ m := by
+  conv_rhs => rw [← generateFrom_iUnion_countablePartition α]
+  exact generateFrom_mono (subset_iUnion _ _)
+
+lemma measurableSet_countablePartition [m : MeasurableSpace α] [CountablyGenerated α] (n : ℕ)
+    {s : Set α} (hs : s ∈ countablePartition α n) :
+    MeasurableSet s := by
+  have : MeasurableSet[generateFrom (countablePartition α n)] s :=
+    measurableSet_generateFrom hs
+  exact generateFrom_countablePartition_le α n _ this
+
 variable (α)
 
 open Classical

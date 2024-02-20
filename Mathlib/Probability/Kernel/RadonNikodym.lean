@@ -49,7 +49,7 @@ section Real
 
 variable {κ ν : kernel α ℝ}
 
-lemma fst_map_le_of_le (hκν : κ ≤ ν) :
+lemma kernel.fst_map_prod_le_of_le (hκν : κ ≤ ν) :
     kernel.fst (kernel.map κ (fun a ↦ (a, ()))
       (@measurable_prod_mk_right ℝ Unit _ inferInstance _)) ≤ ν := by
   rwa [kernel.fst_map_prod _ measurable_id' measurable_const, kernel.map_id']
@@ -60,10 +60,10 @@ def g (κ ν : kernel α ℝ) (a : α) (x : ℝ) : ℝ :=
     (@measurable_prod_mk_right ℝ Unit _ inferInstance _)) ν a x univ
 
 lemma g_nonneg (hκν : κ ≤ ν) {a : α} {x : ℝ} : 0 ≤ g κ ν a x :=
-  mLimsup_nonneg (fst_map_le_of_le hκν) _ _ _
+  mLimsup_nonneg (kernel.fst_map_prod_le_of_le hκν) _ _ _
 
 lemma g_le_one (hκν : κ ≤ ν) {a : α} {x : ℝ} : g κ ν a x ≤ 1 :=
-  mLimsup_le_one (fst_map_le_of_le hκν) _ _ _
+  mLimsup_le_one (kernel.fst_map_prod_le_of_le hκν) _ _ _
 
 lemma measurable_g (κ : kernel α ℝ) (ν : kernel α ℝ) :
     Measurable (fun p : α × ℝ ↦ g κ ν p.1 p.2) :=
@@ -101,13 +101,13 @@ lemma withDensity_g (κ ν : kernel α ℝ) [IsFiniteKernel κ] [IsFiniteKernel 
   simp_rw [this]
   rw [← ofReal_integral_eq_lintegral_ofReal]
   · unfold g
-    rw [set_integral_mLimsup (fst_map_le_of_le h_le) a MeasurableSet.univ hs,
+    rw [set_integral_mLimsup (kernel.fst_map_prod_le_of_le h_le) a MeasurableSet.univ hs,
       ENNReal.ofReal_toReal, kernel.map_apply' _ _ _ (hs.prod MeasurableSet.univ)]
     · congr with x
       simp
     · exact measure_ne_top _ _
-  · exact (integrable_mLimsup (fst_map_le_of_le h_le) a MeasurableSet.univ).restrict
-  · exact ae_of_all _ (fun x ↦ mLimsup_nonneg (fst_map_le_of_le h_le) _ _ _)
+  · exact (integrable_mLimsup (kernel.fst_map_prod_le_of_le h_le) a MeasurableSet.univ).restrict
+  · exact ae_of_all _ (fun x ↦ mLimsup_nonneg (kernel.fst_map_prod_le_of_le h_le) _ _ _)
 
 lemma withDensity_one_sub_g (κ ν : kernel α ℝ) [IsFiniteKernel κ] [IsFiniteKernel ν] :
     kernel.withDensity (κ + ν) (fun a x ↦ Real.toNNReal (1 - g κ (κ + ν) a x)) = ν := by
@@ -124,7 +124,7 @@ lemma withDensity_one_sub_g (κ ν : kernel α ℝ) [IsFiniteKernel κ] [IsFinit
       at h
     rwa [withDensity_g, add_comm, ENNReal.add_right_inj (measure_ne_top _ _)] at h
   have h_nonneg : ∀ a x, 0 ≤ g κ (κ + ν) a x :=
-    fun _ _ ↦ mLimsup_nonneg (fst_map_le_of_le h_le) _ _ _
+    fun _ _ ↦ mLimsup_nonneg (kernel.fst_map_prod_le_of_le h_le) _ _ _
   have : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
   simp_rw [this, ENNReal.ofReal_sub _ (h_nonneg _ _), ENNReal.ofReal_one]
   rw [kernel.withDensity_sub_add]
@@ -139,13 +139,13 @@ lemma withDensity_one_sub_g (κ ν : kernel α ℝ) [IsFiniteKernel κ] [IsFinit
     _ < ⊤ := by rw [MeasureTheory.lintegral_const, one_mul]; exact measure_lt_top _ _
   · refine fun a ↦ ae_of_all _ (fun x ↦ ?_)
     simp only [ENNReal.ofReal_le_one]
-    exact mLimsup_le_one (fst_map_le_of_le h_le) _ _ _
+    exact mLimsup_le_one (kernel.fst_map_prod_le_of_le h_le) _ _ _
 
 noncomputable
 def kernel.singularPartReal (κ ν : kernel α ℝ) [IsSFiniteKernel κ] [IsSFiniteKernel ν] :
     kernel α ℝ :=
-    kernel.withDensity (κ + ν) (fun a x ↦ Real.toNNReal (g κ (κ + ν) a x)
-      - Real.toNNReal (1 - g κ (κ + ν) a x) * kernel.rnDerivReal κ ν a x)
+  kernel.withDensity (κ + ν) (fun a x ↦ Real.toNNReal (g κ (κ + ν) a x)
+    - Real.toNNReal (1 - g κ (κ + ν) a x) * kernel.rnDerivReal κ ν a x)
 
 lemma kernel.mutuallySingular_singularPartReal (κ ν : kernel α ℝ)
     [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) :
@@ -166,25 +166,22 @@ lemma kernel.mutuallySingular_singularPartReal (κ ν : kernel α ℝ)
     refine ae_of_all _ (fun x hx ↦ ?_)
     simp only [mem_setOf_eq] at hx
     simp [hx]
-  · rw [kernel.singularPartReal, kernel.withDensity_apply', lintegral_eq_zero_iff, EventuallyEq,
+  · have h_meas' : Measurable <| Function.uncurry fun a b ↦ ENNReal.ofReal (g κ (κ + ν) a b)
+        - ENNReal.ofReal (1 - g κ (κ + ν) a b) * rnDerivReal κ ν a b := by
+      refine (measurable_g _ _).ennreal_ofReal.sub (Measurable.mul ?_ (measurable_rnDerivReal _ _))
+      exact (measurable_const.sub (measurable_g _ _)).ennreal_ofReal
+    have h_meas : Measurable fun b ↦ ENNReal.ofReal (g κ (κ + ν) a b)
+        - ENNReal.ofReal (1 - g κ (κ + ν) a b) * rnDerivReal κ ν a b := by
+      change Measurable ((Function.uncurry fun a b ↦ ENNReal.ofReal (g κ (κ + ν) a b)
+        - ENNReal.ofReal (1 - g κ (κ + ν) a b) * rnDerivReal κ ν a b) ∘ (fun b ↦ (a, b)))
+      exact h_meas'.comp measurable_prod_mk_left
+    rw [kernel.singularPartReal, kernel.withDensity_apply', lintegral_eq_zero_iff, EventuallyEq,
       ae_restrict_iff]
     all_goals simp_rw [h_coe]
     rotate_left
-    · refine measurableSet_preimage (Measurable.sub ?_ ?_) (measurableSet_singleton _)
-      · exact (measurable_g_right _ _ _).ennreal_ofReal
-      · refine Measurable.mul ?_ ?_
-        · exact (measurable_const.sub (measurable_g_right _ _ _)).ennreal_ofReal
-        · exact measurable_rnDerivReal_right _ _ _
-    · refine Measurable.sub ?_ ?_
-      · exact (measurable_g_right _ _ _).ennreal_ofReal
-      · refine Measurable.mul ?_ ?_
-        · exact (measurable_const.sub (measurable_g_right _ _ _)).ennreal_ofReal
-        · exact measurable_rnDerivReal_right _ _ _
-    · refine Measurable.sub ?_ ?_
-      · exact (measurable_g _ _).ennreal_ofReal
-      · refine Measurable.mul ?_ ?_
-        · exact (measurable_const.sub (measurable_g _ _)).ennreal_ofReal
-        · exact measurable_rnDerivReal _ _
+    · exact measurableSet_preimage h_meas (measurableSet_singleton _)
+    · exact h_meas
+    · exact h_meas'
     refine ae_of_all _ (fun x hx ↦ ?_)
     simp only [mem_compl_iff, mem_setOf_eq] at hx
     simp_rw [rnDerivReal]

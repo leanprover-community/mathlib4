@@ -34,7 +34,7 @@ variable {α β Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 
 section Lintegral
 
-variable [CountableOrStandardBorel α β] {κ : kernel α (β × Ω)} [IsFiniteKernel κ]
+variable [CountableOrCountablyGenerated α β] {κ : kernel α (β × Ω)} [IsFiniteKernel κ]
   {f : β × Ω → ℝ≥0∞}
 
 lemma lintegral_condKernel_mem (a : α) {s : Set (β × Ω)} (hs : MeasurableSet s) :
@@ -84,7 +84,7 @@ end Lintegral
 
 section Integral
 
-variable [CountableOrStandardBorel α β] {κ : kernel α (β × Ω)} [IsFiniteKernel κ]
+variable [CountableOrCountablyGenerated α β] {κ : kernel α (β × Ω)} [IsFiniteKernel κ]
   {E : Type*} {f : β × Ω → E} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 lemma _root_.MeasureTheory.AEStronglyMeasurable.integral_kernel_condKernel (a : α)
@@ -131,7 +131,7 @@ variable {α β Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 
 section Lintegral
 
-variable [CountableOrStandardBorel α β] {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
+variable [CountableOrCountablyGenerated α β] {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
   {f : β × Ω → ℝ≥0∞}
 
 lemma lintegral_condKernel_mem {s : Set (β × Ω)} (hs : MeasurableSet s) :

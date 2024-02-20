@@ -95,6 +95,14 @@ theorem subset_range_enumerate {s : Set α} (h : s.Countable) (default : α) :
     simp [enumerateCountable, Encodable.encodek]⟩
 #align set.subset_range_enumerate Set.subset_range_enumerate
 
+lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
+    (n : ℕ) :
+    enumerateCountable h default n ∈ s := by
+  rw [enumerateCountable]
+  match @decode s (Countable.toEncodable h) n with
+  | none => exact h_mem
+  | some val => simp only [Subtype.coe_prop]
+
 end Enumerate
 
 theorem Countable.mono {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) (hs : s₂.Countable) : s₁.Countable :=

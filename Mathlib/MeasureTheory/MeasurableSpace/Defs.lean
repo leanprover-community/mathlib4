@@ -443,6 +443,10 @@ instance : CompleteLattice (MeasurableSpace α) :=
 
 instance : Inhabited (MeasurableSpace α) := ⟨⊤⟩
 
+@[simp]
+lemma generateFrom_empty : generateFrom (∅ : Set (Set α)) = ⊥ :=
+  le_bot_iff.mp (generateFrom_le (by simp))
+
 @[mono]
 theorem generateFrom_mono {s t : Set (Set α)} (h : s ⊆ t) : generateFrom s ≤ generateFrom t :=
   giGenerateFrom.gc.monotone_l h

@@ -54,32 +54,17 @@ desired density function.
 
 The construction of the density process in this file follows the proof of Theorem 9.27 in
 [O. Kallenberg, Foundations of modern probability][kallenberg2021].
+
+TODO: adapted to use countably generated sigma-algebras.
 -/
 
+variable {α β : Type*} {mα : MeasurableSpace α}
 
 open MeasureTheory Set Filter
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
 namespace ProbabilityTheory
-
-variable {α β : Type*} {mα : MeasurableSpace α}
-
-section dissection_system
-
-def IcoPowTwo (n : ℕ) (k : ℤ) : Set ℝ := Set.Ico (k * (2⁻¹ : ℝ) ^ n) ((k + 1) * ((2 : ℝ) ^ n)⁻¹)
-
-lemma mem_IcoPowTwo_iff_mul {n : ℕ} {k : ℤ} (x : ℝ) :
-    x ∈ IcoPowTwo n k ↔ k ≤ x * 2 ^ n ∧ x * 2 ^ n < k + 1 := by
-  simp only [IcoPowTwo, inv_pow, mem_Ico]
-  rw [← div_eq_mul_inv, div_le_iff, ← div_eq_mul_inv, lt_div_iff]
-  · positivity
-  · positivity
-
-lemma mem_IcoPowTwo_iff_floor {n : ℕ} {k : ℤ} (x : ℝ) : x ∈ IcoPowTwo n k ↔ ⌊x * 2 ^ n⌋ = k := by
-  simp [mem_IcoPowTwo_iff_mul, Int.floor_eq_iff]
-
-lemma measurableSet_IcoPowTwo (n : ℕ) (k : ℤ) : MeasurableSet (IcoPowTwo n k) := measurableSet_Ico
 
 lemma Measure.iInf_Iic_gt_prod {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
     {s : Set α} (hs : MeasurableSet s) (t : ℚ) :
@@ -98,272 +83,203 @@ lemma Measure.iInf_Iic_gt_prod {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
     exact mod_cast hrr'
   · exact ⟨⟨t + 1, lt_add_one _⟩, measure_ne_top ρ _⟩
 
-lemma pairwise_disjoint_IcoPowTwo (n : ℕ) : Pairwise (Disjoint on fun k ↦ IcoPowTwo n k) := by
-  intro i j hij
-  rw [Function.onFun, Set.disjoint_iff]
-  intro x
-  simp only [mem_inter_iff, mem_IcoPowTwo_iff_floor, mem_empty_iff_false, and_imp, imp_false]
-  intro hi hj
-  rw [hi] at hj
-  exact hij hj
-
-lemma IcoPowTwo_succ_union (n : ℕ) (k : ℤ) :
-    IcoPowTwo (n+1) (2 * k) ∪ IcoPowTwo (n+1) (2 * k + 1) = IcoPowTwo n k := by
-  ext x
-  cases lt_or_le x ((2 * k + 1) * ((2 : ℝ) ^ (n+1))⁻¹) with
-  | inl h =>
-    simp only [IcoPowTwo, inv_pow, mem_Ico, Int.cast_mul, Int.int_cast_ofNat, Int.cast_add,
-      Int.cast_one, mem_union, h, and_true, not_le.mpr h, false_and, or_false]
-    have : x < (k + 1) * (2 ^ n)⁻¹ := by
-      refine h.trans_le ?_
-      rw [pow_add, pow_one, mul_inv, mul_comm _ 2⁻¹, ← mul_assoc]
-      gcongr
-      rw [add_mul, one_mul, mul_comm, ← mul_assoc, inv_mul_cancel two_ne_zero, one_mul]
-      gcongr
-      norm_num
-    simp only [this, and_true]
-    rw [pow_add, pow_one, mul_inv, mul_comm _ 2⁻¹, ← mul_assoc, mul_comm _ 2⁻¹, ← mul_assoc,
-      inv_mul_cancel two_ne_zero, one_mul]
-  | inr h =>
-    simp only [IcoPowTwo, inv_pow, mem_Ico, Int.cast_mul, Int.int_cast_ofNat, Int.cast_add,
-      Int.cast_one, mem_union, not_lt.mpr h, and_false, h, true_and, false_or]
-    have : k * (2 ^ n)⁻¹ ≤ x := by
-      refine le_trans ?_ h
-      rw [pow_add, pow_one, mul_inv, mul_comm _ 2⁻¹, ← mul_assoc, mul_comm _ 2⁻¹, mul_add,
-        ← mul_assoc, inv_mul_cancel two_ne_zero, mul_one, one_mul, add_mul]
-      simp only [le_add_iff_nonneg_right, gt_iff_lt, inv_pos, zero_lt_two,
-        mul_nonneg_iff_of_pos_left, inv_nonneg]
-      positivity
-    simp only [this, true_and]
-    rw [pow_add, pow_one, mul_inv, mul_comm _ 2⁻¹, ← mul_assoc, mul_comm _ 2⁻¹, add_assoc]
-    norm_num
-    rw [one_div, mul_add, ← mul_assoc, inv_mul_cancel two_ne_zero, one_mul]
-
-noncomputable def indexIcoPowTwo (n : ℕ) (t : ℝ) : ℤ := Int.floor (t * 2 ^ n)
-
-lemma mem_IcoPowTwo_indexIcoPowTwo (n : ℕ) (t : ℝ) : t ∈ IcoPowTwo n (indexIcoPowTwo n t) := by
-  rw [indexIcoPowTwo, IcoPowTwo]
-  simp only [inv_pow, mem_Ico]
-  constructor
-  · rw [← div_eq_mul_inv, div_le_iff]
-    · exact Int.floor_le (t * 2 ^ n)
-    · positivity
-  · rw [← div_eq_mul_inv, lt_div_iff]
-    · exact Int.lt_floor_add_one (t * 2 ^ n)
-    · positivity
-
-lemma indexIcoPowTwo_of_mem (n : ℕ) (k : ℤ) (t : ℝ) (ht : t ∈ IcoPowTwo n k) :
-    indexIcoPowTwo n t = k := by
-  rw [indexIcoPowTwo]
-  simp only [IcoPowTwo, inv_pow, mem_Ico, ← div_eq_mul_inv] at ht
-  rw [div_le_iff, lt_div_iff] at ht
-  · rw [Int.floor_eq_iff]
-    exact ht
-  · positivity
-  · positivity
-
-lemma mem_IcoPowTwo_iff_indexIcoPowTwo (n : ℕ) (k : ℤ) (t : ℝ) :
-    t ∈ IcoPowTwo n k ↔ indexIcoPowTwo n t = k :=
-  ⟨fun h ↦ indexIcoPowTwo_of_mem n k t h, fun h ↦ h ▸ mem_IcoPowTwo_indexIcoPowTwo n t⟩
-
-lemma iUnion_IcoPowTwo (n : ℕ) : ⋃ k, IcoPowTwo n k = univ := by
-  ext x
-  simp only [mem_iUnion, mem_univ, iff_true]
-  exact ⟨indexIcoPowTwo n x, mem_IcoPowTwo_indexIcoPowTwo n x⟩
-
-lemma indexIcoPowTwo_le_indexIcoPowTwo_iff (n : ℕ) (t x : ℝ) :
-    indexIcoPowTwo n t ≤ indexIcoPowTwo n x ↔ ⌊t * 2 ^ n⌋ * (2 ^ n)⁻¹ ≤ x := by
-  simp only [indexIcoPowTwo]
-  rw [← div_eq_mul_inv, div_le_iff, Int.le_floor]
-  positivity
-
-lemma iUnion_ge_IcoPowTwo (n : ℕ) (t : ℝ) :
-    ⋃ (k) (_ : indexIcoPowTwo n t ≤ k), IcoPowTwo n k = Ici (⌊t * 2 ^ n⌋ * (2 ^ n)⁻¹ : ℝ) := by
-  ext x
-  simp [mem_IcoPowTwo_iff_indexIcoPowTwo, indexIcoPowTwo_le_indexIcoPowTwo_iff]
-
-lemma iInter_biUnion_I (x : ℝ) :
-    ⋂ n, ⋃ (k) (_ : indexIcoPowTwo n x ≤ k), IcoPowTwo n k = Ici x := by
-  ext t
-  simp [iUnion_ge_IcoPowTwo]
-  refine ⟨fun h ↦ ?_, fun h n ↦ le_trans ?_ h⟩
-  · by_contra h_lt
-    push_neg at h_lt
-    have h_pos : ∀ i, 0 < (2 : ℝ) ^ i := fun i ↦ by positivity
-    simp_rw [← div_eq_mul_inv, div_le_iff (h_pos _)] at h
-    obtain ⟨i, hi⟩ : ∃ i, 1 < (x - t) * 2 ^ i := by
-      suffices ∃ i : ℝ, 1 ≤ (x - t) * 2 ^ i by
-        obtain ⟨i, hi⟩ := this
-        refine ⟨⌈i⌉₊ + 1, hi.trans_lt ?_⟩
-        gcongr
-        · simp [h_lt]
-        · refine ((Real.rpow_lt_rpow_left_iff one_lt_two).mpr (?_ : i < ⌈i⌉₊ + 1)).trans_eq ?_
-          · refine (Nat.le_ceil _).trans_lt ?_
-            norm_num
-          · norm_cast
-      use Real.logb 2 ((x - t)⁻¹)
-      rw [Real.rpow_logb]
-      · rw [mul_inv_cancel]
-        rw [sub_ne_zero]
-        exact h_lt.ne'
-      · exact zero_lt_two
-      · simp
-      · simp [h_lt]
-    specialize h i
-    rw [mul_comm, mul_sub, lt_sub_iff_add_lt', mul_comm] at hi
-    have h' : ⌈x * 2 ^ i⌉ ≤ t * 2 ^ i + 1 := by
-      calc (⌈x * 2 ^ i⌉ : ℝ) ≤ ⌊x * 2 ^ i⌋ + 1 := by
-            exact mod_cast (Int.ceil_le_floor_add_one (x * 2 ^ i))
-      _ ≤ t * 2 ^ i + 1 := by gcongr
-    have h'' : ↑⌈x * 2 ^ i⌉ < 2 ^ i * x := h'.trans_lt hi
-    rw [← not_le, mul_comm] at h''
-    exact h'' (Int.le_ceil _)
-  · rw [← div_eq_mul_inv, div_le_iff]
-    · exact Int.floor_le (x * 2 ^ n)
-    · positivity
+variable {α β γ : Type*} {mα : MeasurableSpace α} {mγ : MeasurableSpace γ}
+  [MeasurableSpace.CountablyGenerated γ]
 
 -- todo : `Filtration` should be renamed to `filtration`
-def ℱ : Filtration ℕ (borel ℝ) where
-  seq := fun n ↦ MeasurableSpace.generateFrom {s | ∃ k, s = IcoPowTwo n k}
-  mono' := by
-    refine monotone_nat_of_le_succ ?_
-    intro n
-    refine MeasurableSpace.generateFrom_le fun s ⟨k, hs⟩ ↦ ?_
-    rw [hs, ← IcoPowTwo_succ_union n k]
-    refine MeasurableSet.union ?_ ?_
-    · exact MeasurableSpace.measurableSet_generateFrom ⟨2 * k, rfl⟩
-    · exact MeasurableSpace.measurableSet_generateFrom ⟨2 * k + 1, rfl⟩
-  le' := fun n ↦ by
-    refine MeasurableSpace.generateFrom_le fun s ⟨k, hs⟩ ↦ ?_
-    rw [hs]
-    exact measurableSet_IcoPowTwo n k
+def ℱ (γ : Type*) [m : MeasurableSpace γ] [MeasurableSpace.CountablyGenerated γ] :
+    Filtration ℕ m where
+  seq := fun n ↦ MeasurableSpace.generateFrom <| MeasurableSpace.countablePartition γ n
+  mono' := monotone_nat_of_le_succ (MeasurableSpace.generateFrom_countablePartition_le_succ _)
+  le' := MeasurableSpace.generateFrom_countablePartition_le γ
 
-lemma measurableSet_ℱ_IcoPowTwo (n : ℕ) (k : ℤ) : MeasurableSet[ℱ n] (IcoPowTwo n k) :=
-  MeasurableSpace.measurableSet_generateFrom ⟨k, rfl⟩
+lemma measurableSet_ℱ_countablePartition (n : ℕ) {s : Set γ}
+    (hs : s ∈ MeasurableSpace.countablePartition γ n) :
+    MeasurableSet[ℱ γ n] s :=
+  MeasurableSpace.measurableSet_generateFrom hs
 
-lemma measurable_indexIcoPowTwo (n : ℕ) : Measurable[ℱ n] (indexIcoPowTwo n) := by
-  refine @measurable_to_countable' ℤ ℝ _ _ (ℱ n) _ (fun k ↦ ?_)
-  have : (fun t ↦ ⌊t * (2 : ℝ) ^ n⌋) ⁻¹' {k} = IcoPowTwo n k := by
-    ext t
-    simp only [mem_IcoPowTwo_iff_floor, mem_preimage, mem_singleton_iff]
-  unfold indexIcoPowTwo
+lemma existsPartitionSet_mem (n : ℕ) (t : γ) :
+    ∃ s, s ∈ MeasurableSpace.countablePartition γ n ∧ t ∈ s := by
+  have h_univ := MeasurableSpace.sUnion_countablePartition γ n
+  have h_mem_univ := mem_univ t
+  rw [← h_univ] at h_mem_univ
+  simpa only [mem_sUnion] using h_mem_univ
+
+def partitionSet (n : ℕ) (t : γ) : Set γ :=
+  (existsPartitionSet_mem n t).choose
+
+lemma partitionSet_mem (n : ℕ) (t : γ) :
+    partitionSet n t ∈ MeasurableSpace.countablePartition γ n :=
+  (existsPartitionSet_mem n t).choose_spec.1
+
+lemma mem_partitionSet (n : ℕ) (t : γ) : t ∈ partitionSet n t :=
+  (existsPartitionSet_mem n t).choose_spec.2
+
+lemma mem_countablePartition_iff (n : ℕ) (t : γ) {s : Set γ}
+    (hs : s ∈ MeasurableSpace.countablePartition γ n) :
+    t ∈ s ↔ partitionSet n t = s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · by_contra h_ne
+    have h_disj : Disjoint s (partitionSet n t) :=
+      MeasurableSpace.disjoint_countablePartition n hs (partitionSet_mem n t) (Ne.symm h_ne)
+    refine absurd h_disj ?_
+    rw [not_disjoint_iff_nonempty_inter]
+    exact ⟨t, h, mem_partitionSet n t⟩
+  · rw [← h]
+    exact mem_partitionSet n t
+
+lemma partitionSet_of_mem {n : ℕ} {t : γ} {s : Set γ}
+    (hs : s ∈ MeasurableSpace.countablePartition γ n) (ht : t ∈ s) :
+    partitionSet n t = s := by
+  rwa [← mem_countablePartition_iff n t hs]
+
+lemma measurableSet_ℱ_partitionSet (n : ℕ) (t : γ) :
+    MeasurableSet[ℱ γ n] (partitionSet n t) :=
+  measurableSet_ℱ_countablePartition n (partitionSet_mem n t)
+
+lemma measurableSet_partitionSet (n : ℕ) (t : γ) :
+    MeasurableSet (partitionSet n t) :=
+  (ℱ γ).le n _ (measurableSet_ℱ_partitionSet n t)
+
+instance todo_move (n : ℕ) : Countable (MeasurableSpace.countablePartition γ n) :=
+  Set.Finite.countable (MeasurableSpace.finite_countablePartition _ _)
+
+lemma measurable_aux (n : ℕ) (m : MeasurableSpace (MeasurableSpace.countablePartition γ n)) :
+    @Measurable γ (MeasurableSpace.countablePartition γ n) (ℱ γ n) m
+      (fun c : γ ↦ ⟨partitionSet n c, partitionSet_mem n c⟩) := by
+  refine @measurable_to_countable' (MeasurableSpace.countablePartition γ n) γ m _
+    (ℱ γ n) _ (fun t ↦ ?_)
+  rcases t with ⟨t, ht⟩
+  suffices MeasurableSet[ℱ γ n] {x | partitionSet n x = t} by
+    convert this
+    ext x
+    simp
+  have : {x | partitionSet n x = t} = t := by
+    ext x
+    rw [mem_setOf_eq, mem_countablePartition_iff n x ht]
   rw [this]
-  exact measurableSet_ℱ_IcoPowTwo n k
+  exact measurableSet_ℱ_countablePartition _ ht
 
-lemma iSup_ℱ : ⨆ n, ℱ n = borel ℝ := by
-  refine le_antisymm ?_ ?_
-  · rw [iSup_le_iff]
-    exact ℱ.le
-  · conv_lhs => rw [borel_eq_generateFrom_Ici ℝ]
-    refine MeasurableSpace.generateFrom_le (fun s ⟨x, hx⟩ ↦ ?_)
-    rw [← hx, ← iInter_biUnion_I x]
-    refine MeasurableSet.iInter (fun n ↦ ?_)
-    refine MeasurableSet.biUnion ?_ (fun k _ ↦ ?_)
-    · exact to_countable _
-    · exact le_iSup ℱ n _ (measurableSet_ℱ_IcoPowTwo n k)
+lemma measurable_partitionSet (n : ℕ) : Measurable[ℱ γ n] (partitionSet n) := by
+  have : partitionSet n = (fun s : MeasurableSpace.countablePartition γ n ↦ (s : Set γ))
+      ∘ (fun t ↦ ⟨partitionSet n t, partitionSet_mem n t⟩) := rfl
+  rw [this]
+  refine Measurable.comp
+    (?_ : Measurable (fun s : MeasurableSpace.countablePartition γ n ↦ (s : Set γ))) ?_
+  · measurability
+  exact measurable_aux _ _
 
-end dissection_system
+lemma MeasurableSpace.generateFrom_iSup {ι : Type*} (s : ι → Set (Set α)) :
+    MeasurableSpace.generateFrom (⋃ i, s i) = ⨆ i, MeasurableSpace.generateFrom (s i) :=
+  (@MeasurableSpace.giGenerateFrom α).gc.l_iSup
+
+lemma iSup_ℱ (β : Type*) [m : MeasurableSpace β] [MeasurableSpace.CountablyGenerated β] :
+    ⨆ n, ℱ β n = m := by
+  conv_rhs => rw [← MeasurableSpace.generateFrom_iUnion_countablePartition β]
+  rw [MeasurableSpace.generateFrom_iSup]
+  rfl
 
 variable [MeasurableSpace β]
 
 section DensityProcess
 
-variable {κ : kernel α (ℝ × β)} {ν : kernel α ℝ}
+variable {κ : kernel α (γ × β)} {ν : kernel α γ}
 
 noncomputable
-def densityProcess (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ) (a : α) (t : ℝ) (s : Set β) :
+def densityProcess (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ) (a : α) (t : γ) (s : Set β) :
     ℝ :=
-  (κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s) / ν a (IcoPowTwo n (indexIcoPowTwo n t))).toReal
+  (κ a (partitionSet n t ×ˢ s) / ν a (partitionSet n t)).toReal
 
-lemma densityProcess_def (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ) (a : α) (s : Set β) :
+lemma densityProcess_def (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ) (a : α) (s : Set β) :
     (fun t ↦ densityProcess κ ν n a t s)
-      = fun t ↦ (κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s)
-        / ν a (IcoPowTwo n (indexIcoPowTwo n t))).toReal :=
+      = fun t ↦ (κ a (partitionSet n t ×ˢ s) / ν a (partitionSet n t)).toReal :=
   rfl
 
-lemma measurable_densityProcess_aux (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ)
+lemma measurable_densityProcess_ℱ_aux (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ)
     {s : Set β} (hs : MeasurableSet s) :
-    Measurable (fun (p : α × ℝ) ↦ κ p.1 (IcoPowTwo n (indexIcoPowTwo n p.2) ×ˢ s)
-      / ν p.1 (IcoPowTwo n (indexIcoPowTwo n p.2))) := by
-  change Measurable ((fun (p : α × ℤ) ↦ κ p.1 (IcoPowTwo n p.2 ×ˢ s) / ν p.1 (IcoPowTwo n p.2))
-    ∘ (fun (p : α × ℝ) ↦ (p.1, indexIcoPowTwo n p.2)))
-  have h1 :
-      Measurable (fun (p : α × ℤ) ↦ κ p.1 (IcoPowTwo n p.2 ×ˢ s) / ν p.1 (IcoPowTwo n p.2)) := by
+    Measurable[MeasurableSpace.prod mα (ℱ γ n)] (fun (p : α × γ) ↦
+      κ p.1 (partitionSet n p.2 ×ˢ s) / ν p.1 (partitionSet n p.2)) := by
+  change Measurable[MeasurableSpace.prod mα (ℱ γ n)]
+      ((fun (p : α × MeasurableSpace.countablePartition γ n) ↦ κ p.1 (↑p.2 ×ˢ s) / ν p.1 p.2)
+        ∘ (fun (p : α × γ) ↦ (p.1, ⟨partitionSet n p.2, partitionSet_mem n p.2⟩)))
+  have h1 : @Measurable _ _ (MeasurableSpace.prod mα ⊤) _
+      (fun (p : α × MeasurableSpace.countablePartition γ n) ↦ κ p.1 (↑p.2 ×ˢ s) / ν p.1 p.2) := by
     refine Measurable.div ?_ ?_
-    · have h_swap : Measurable fun (p : ℤ × α) ↦ κ p.2 (IcoPowTwo n p.1 ×ˢ s) := by
-        refine measurable_uncurry_of_continuous_of_measurable
-          (u := fun k a ↦ κ a (IcoPowTwo n k ×ˢ s)) ?_ ?_
-        · exact fun _ ↦ continuous_bot
-        · exact fun _ ↦ kernel.measurable_coe _ ((measurableSet_IcoPowTwo _ _).prod hs)
-      change Measurable ((fun (p : ℤ × α) ↦ κ p.2 (IcoPowTwo n p.1 ×ˢ s)) ∘ Prod.swap)
-      exact h_swap.comp measurable_swap
-    · have h_swap : Measurable fun (p : ℤ × α) ↦ ν p.2 (IcoPowTwo n p.1) := by
-        refine measurable_uncurry_of_continuous_of_measurable
-          (u := fun k a ↦ ν a (IcoPowTwo n k)) ?_ ?_
-        · exact fun _ ↦ continuous_bot
-        · exact fun _ ↦ kernel.measurable_coe _ (measurableSet_IcoPowTwo _ _)
-      change Measurable ((fun (p : ℤ × α) ↦ ν p.2 (IcoPowTwo n p.1)) ∘ Prod.swap)
-      exact h_swap.comp measurable_swap
-  refine h1.comp (measurable_fst.prod_mk ?_)
-  exact (Measurable.mono (measurable_indexIcoPowTwo n) (ℱ.le n) le_rfl).comp measurable_snd
+    · refine measurable_from_prod_countable ?_
+      rintro ⟨t, ht⟩
+      simp only
+      refine kernel.measurable_coe _ (MeasurableSet.prod ?_ hs)
+      exact MeasurableSpace.measurableSet_countablePartition _ ht
+    · refine measurable_from_prod_countable ?_
+      rintro ⟨t, ht⟩
+      simp only
+      exact kernel.measurable_coe _ (MeasurableSpace.measurableSet_countablePartition _ ht)
+  refine h1.comp ?_
+  refine measurable_fst.prod_mk ?_
+  change @Measurable (α × γ) (MeasurableSpace.countablePartition γ n)
+    (MeasurableSpace.prod mα (ℱ γ n)) ⊤
+    ((fun c : γ ↦ ⟨partitionSet n c, partitionSet_mem n c⟩) ∘ (fun p : α × γ ↦ p.2))
+  refine Measurable.comp ?_ measurable_snd
+  exact measurable_aux n ⊤
 
-lemma measurable_densityProcess (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ)
+lemma measurable_densityProcess_aux (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ)
     {s : Set β} (hs : MeasurableSet s) :
-    Measurable (fun (p : α × ℝ) ↦ densityProcess κ ν n p.1 p.2 s) :=
+    Measurable (fun (p : α × γ) ↦
+      κ p.1 (partitionSet n p.2 ×ˢ s) / ν p.1 (partitionSet n p.2)) := by
+  refine Measurable.mono (measurable_densityProcess_ℱ_aux κ ν n hs) ?_ le_rfl
+  exact sup_le_sup le_rfl (MeasurableSpace.comap_mono ((ℱ γ).le _))
+
+lemma measurable_densityProcess (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ)
+    {s : Set β} (hs : MeasurableSet s) :
+    Measurable (fun (p : α × γ) ↦ densityProcess κ ν n p.1 p.2 s) :=
   (measurable_densityProcess_aux κ ν n hs).ennreal_toReal
 
-lemma measurable_densityProcess_left (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ)
-    (t : ℝ) {s : Set β} (hs : MeasurableSet s) :
+lemma measurable_densityProcess_left (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ)
+    (t : γ) {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun a ↦ densityProcess κ ν n a t s) :=
   (measurable_densityProcess κ ν n hs).comp (measurable_id.prod_mk measurable_const)
 
-lemma measurable_densityProcess_right (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ)
+lemma measurable_densityProcess_right (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ)
     {s : Set β} (a : α) (hs : MeasurableSet s) :
     Measurable (fun t ↦ densityProcess κ ν n a t s) :=
   (measurable_densityProcess κ ν n hs).comp (measurable_const.prod_mk measurable_id)
 
-lemma measurable_ℱ_densityProcess (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ)
-    (a : α) (s : Set β) :
-    Measurable[ℱ n] (fun t ↦ densityProcess κ ν n a t s) := by
-  rw [densityProcess_def]
-  refine @Measurable.ennreal_toReal _ (ℱ n) _ ?_
-  refine Measurable.div ?_ ?_
-  · change Measurable[ℱ n] ((fun k ↦ κ a (IcoPowTwo n k ×ˢ s)) ∘ (indexIcoPowTwo n))
-    refine Measurable.comp ?_ (measurable_indexIcoPowTwo n)
-    exact measurable_of_countable _
-  · change Measurable[ℱ n] ((fun k ↦ ν a (IcoPowTwo n k)) ∘ (indexIcoPowTwo n))
-    refine Measurable.comp ?_ (measurable_indexIcoPowTwo n)
-    exact measurable_of_countable _
+lemma measurable_ℱ_densityProcess (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ)
+    (a : α) {s : Set β} (hs : MeasurableSet s) :
+    Measurable[ℱ γ n] (fun t ↦ densityProcess κ ν n a t s) := by
+  refine @Measurable.ennreal_toReal _ (ℱ γ n) _ ?_
+  exact (measurable_densityProcess_ℱ_aux κ ν n hs).comp measurable_prod_mk_left
 
-lemma stronglyMeasurable_ℱ_densityProcess (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ)
-    (a : α) (s : Set β) :
-    StronglyMeasurable[ℱ n] (fun t ↦ densityProcess κ ν n a t s) :=
-  (measurable_ℱ_densityProcess κ ν n a s).stronglyMeasurable
+lemma stronglyMeasurable_ℱ_densityProcess (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ)
+    (a : α) {s : Set β} (hs : MeasurableSet s) :
+    StronglyMeasurable[ℱ γ n] (fun t ↦ densityProcess κ ν n a t s) :=
+  (measurable_ℱ_densityProcess κ ν n a hs).stronglyMeasurable
 
-lemma adapted_densityProcess (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (a : α) (s : Set β) :
-    Adapted ℱ (fun n t ↦ densityProcess κ ν n a t s) :=
-  fun n ↦ stronglyMeasurable_ℱ_densityProcess κ ν n a s
+lemma adapted_densityProcess (κ : kernel α (γ × β)) (ν : kernel α γ) (a : α)
+  {s : Set β} (hs : MeasurableSet s) :
+    Adapted (ℱ γ) (fun n t ↦ densityProcess κ ν n a t s) :=
+  fun n ↦ stronglyMeasurable_ℱ_densityProcess κ ν n a hs
 
-lemma densityProcess_nonneg (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ)
-    (a : α) (t : ℝ) (s : Set β) :
+lemma densityProcess_nonneg (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ)
+    (a : α) (t : γ) (s : Set β) :
     0 ≤ densityProcess κ ν n a t s :=
   ENNReal.toReal_nonneg
 
-lemma apply_IcoPowTwo_le_of_fst_le (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : ℝ) (s : Set β) :
-    κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s) ≤ ν a (IcoPowTwo n (indexIcoPowTwo n t)) := by
-  calc κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s)
-    ≤ kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) := by
-        rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)]
+lemma apply_partitionSet_le_of_fst_le (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : γ) (s : Set β) :
+    κ a (partitionSet n t ×ˢ s) ≤ ν a (partitionSet n t) := by
+  calc κ a (partitionSet n t ×ˢ s)
+    ≤ kernel.fst κ a (partitionSet n t) := by
+        rw [kernel.fst_apply' _ _ (measurableSet_partitionSet _ _)]
         refine measure_mono (fun x ↦ ?_)
         simp only [mem_prod, mem_setOf_eq, and_imp]
         exact fun h _ ↦ h
-  _ ≤ ν a (IcoPowTwo n (indexIcoPowTwo n t)) := hκν a _ (measurableSet_IcoPowTwo _ _)
+  _ ≤ ν a (partitionSet n t) := hκν a _ (measurableSet_partitionSet _ _)
 
-lemma densityProcess_le_one (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : ℝ) (s : Set β) :
+lemma densityProcess_le_one (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : γ) (s : Set β) :
     densityProcess κ ν n a t s ≤ 1 := by
   refine ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.div_le_of_le_mul ?_)
   rw [ENNReal.ofReal_one, one_mul]
-  exact apply_IcoPowTwo_le_of_fst_le hκν n a t s
+  exact apply_partitionSet_le_of_fst_le hκν n a t s
 
 lemma snorm_densityProcess_le (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (s : Set β) :
     snorm (fun t ↦ densityProcess κ ν n a t s) 1 (ν a) ≤ ν a univ := by
@@ -381,41 +297,41 @@ lemma integrable_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel �
   · exact (snorm_densityProcess_le hκν n a s).trans_lt (measure_lt_top _ _)
 
 lemma set_integral_densityProcess_I (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
-    (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) (k : ℤ) :
-    ∫ t in IcoPowTwo n k, densityProcess κ ν n a t s ∂(ν a)
-      = (κ a (IcoPowTwo n k ×ˢ s)).toReal := by
+    (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {u : Set γ}
+    (hu : u ∈ MeasurableSpace.countablePartition γ n) :
+    ∫ t in u, densityProcess κ ν n a t s ∂(ν a) = (κ a (u ×ˢ s)).toReal := by
+  have hu_meas : MeasurableSet u := MeasurableSpace.measurableSet_countablePartition n hu
   simp_rw [densityProcess]
   rw [integral_toReal]
   rotate_left
   · refine Measurable.aemeasurable ?_
     have h := measurable_densityProcess_aux κ ν n hs
-    change Measurable ((fun (p : α × ℝ) ↦ κ p.1 (IcoPowTwo n (indexIcoPowTwo n p.2) ×ˢ s)
-      / ν p.1 (IcoPowTwo n (indexIcoPowTwo n p.2))) ∘ (fun t ↦ (a, t)))
+    change Measurable ((fun (p : α × _) ↦ κ p.1 (partitionSet n p.2 ×ˢ s)
+      / ν p.1 (partitionSet n p.2)) ∘ (fun t ↦ (a, t)))
     exact h.comp measurable_prod_mk_left
   · refine ae_of_all _ (fun t ↦ ?_)
-    by_cases h0 : ν a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
-    · suffices κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s) = 0 by simp [h0, this]
-      have h0' : kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0 :=
-        le_antisymm ((hκν a _ (measurableSet_IcoPowTwo _ _)).trans h0.le) zero_le'
-      rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)] at h0'
+    by_cases h0 : ν a (partitionSet n t) = 0
+    · suffices κ a (partitionSet n t ×ˢ s) = 0 by simp [h0, this]
+      have h0' : kernel.fst κ a (partitionSet n t) = 0 :=
+        le_antisymm ((hκν a _ (measurableSet_partitionSet _ _)).trans h0.le) zero_le'
+      rw [kernel.fst_apply' _ _ (measurableSet_partitionSet _ _)] at h0'
       refine measure_mono_null (fun x ↦ ?_) h0'
       simp only [mem_prod, mem_setOf_eq, and_imp]
       exact fun h _ ↦ h
     · refine ENNReal.div_lt_top ?_ h0
       exact measure_ne_top _ _
   congr
-  have : ∫⁻ t in IcoPowTwo n k,
-        κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s) / ν a (IcoPowTwo n (indexIcoPowTwo n t)) ∂(ν a)
-      = ∫⁻ _ in IcoPowTwo n k, κ a (IcoPowTwo n k ×ˢ s) / ν a (IcoPowTwo n k) ∂(ν a) := by
-    refine set_lintegral_congr_fun (measurableSet_IcoPowTwo _ _) (ae_of_all _ (fun t ht ↦ ?_))
-    rw [indexIcoPowTwo_of_mem _ _ _ ht]
+  have : ∫⁻ t in u, κ a (partitionSet n t ×ˢ s) / ν a (partitionSet n t) ∂(ν a)
+      = ∫⁻ _ in u, κ a (u ×ˢ s) / ν a u ∂(ν a) := by
+    refine set_lintegral_congr_fun hu_meas (ae_of_all _ (fun t ht ↦ ?_))
+    rw [partitionSet_of_mem hu ht]
   rw [this]
   simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
-  by_cases h0 : ν a (IcoPowTwo n k) = 0
+  by_cases h0 : ν a u = 0
   · simp only [h0, mul_zero]
-    have h0' : kernel.fst κ a (IcoPowTwo n k) = 0 :=
-      le_antisymm ((hκν a _ (measurableSet_IcoPowTwo _ _)).trans h0.le) zero_le'
-    rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)] at h0'
+    have h0' : kernel.fst κ a u = 0 :=
+      le_antisymm ((hκν a _ hu_meas).trans h0.le) zero_le'
+    rw [kernel.fst_apply' _ _ hu_meas] at h0'
     refine (measure_mono_null ?_ h0').symm
     intro p
     simp only [mem_prod, mem_setOf_eq, and_imp]
@@ -426,37 +342,44 @@ lemma set_integral_densityProcess_I (hκν : kernel.fst κ ≤ ν) [IsFiniteKern
 lemma integral_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫ t, densityProcess κ ν n a t s ∂(ν a) = (κ a (univ ×ˢ s)).toReal := by
-  rw [← integral_univ, ← iUnion_IcoPowTwo n, iUnion_prod_const, measure_iUnion]
+  rw [← integral_univ, ← MeasurableSpace.sUnion_countablePartition γ n, sUnion_eq_iUnion,
+    iUnion_prod_const, measure_iUnion]
   rotate_left
   · intro i j hij
     simp only [Set.disjoint_prod, disjoint_self, bot_eq_empty]
-    exact Or.inl (pairwise_disjoint_IcoPowTwo n hij)
-  · exact fun k ↦ (measurableSet_IcoPowTwo n k).prod hs
-  rw [integral_iUnion (measurableSet_IcoPowTwo n) (pairwise_disjoint_IcoPowTwo n)
-    (integrable_densityProcess hκν n a hs).integrableOn]
+    refine Or.inl (MeasurableSpace.disjoint_countablePartition n i.prop j.prop ?_)
+    rw [ne_eq, Subtype.coe_inj]
+    exact hij
+  · exact fun k ↦ (MeasurableSpace.measurableSet_countablePartition n k.prop).prod hs
+  rw [integral_iUnion]
+  rotate_left
+  · exact fun k ↦ MeasurableSpace.measurableSet_countablePartition n k.prop
+  · intro i j hij
+    refine MeasurableSpace.disjoint_countablePartition n i.prop j.prop ?_
+    rw [ne_eq, Subtype.coe_inj]
+    exact hij
+  · exact (integrable_densityProcess hκν n a hs).integrableOn
   rw [ENNReal.tsum_toReal_eq (fun _ ↦ measure_ne_top _ _)]
   congr with k
-  rw [set_integral_densityProcess_I hκν _ _ hs]
+  rw [set_integral_densityProcess_I hκν _ _ hs k.prop]
 
 lemma set_integral_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
-    (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set ℝ} (hA : MeasurableSet[ℱ n] A) :
+    (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet[ℱ γ n] A) :
     ∫ t in A, densityProcess κ ν n a t s ∂(ν a) = (κ a (A ×ˢ s)).toReal := by
-  refine MeasurableSpace.induction_on_inter (m := ℱ n) (s := {s | ∃ k, s = IcoPowTwo n k})
+  refine MeasurableSpace.induction_on_inter (m := ℱ γ n)
+    (s := MeasurableSpace.countablePartition γ n)
     (C := fun A ↦ ∫ t in A, densityProcess κ ν n a t s ∂(ν a) = (κ a (A ×ˢ s)).toReal) rfl
     ?_ ?_ ?_ ?_ ?_ hA
-  · rintro s ⟨i, rfl⟩ t ⟨j, rfl⟩ hst
-    refine ⟨i, ?_⟩
-    suffices i = j by rw [this, inter_self]
+  · rintro s hs t ht hst
+    suffices s = t by rwa [this, inter_self]
     by_contra h_ne
-    have h_disj := pairwise_disjoint_IcoPowTwo n h_ne
-    rw [nonempty_iff_ne_empty] at hst
-    refine hst ?_
-    rwa [Function.onFun, disjoint_iff_inter_eq_empty] at h_disj
+    rw [← not_disjoint_iff_nonempty_inter] at hst
+    exact hst <| MeasurableSpace.disjoint_countablePartition n hs ht h_ne
   · simp
-  · rintro _ ⟨k, rfl⟩
-    rw [set_integral_densityProcess_I hκν _ _ hs]
+  · rintro u hu
+    rw [set_integral_densityProcess_I hκν _ _ hs hu]
   · intro A hA hA_eq
-    have hA' : MeasurableSet A := ℱ.le _ _ hA
+    have hA' : MeasurableSet A := (ℱ γ).le _ _ hA
     have h := integral_add_compl hA' (integrable_densityProcess hκν n a hs)
     rw [hA_eq, integral_densityProcess hκν n a hs] at h
     have : Aᶜ ×ˢ s = univ ×ˢ s \ A ×ˢ s := by
@@ -469,10 +392,10 @@ lemma set_integral_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel
     · rw [ENNReal.toReal_le_toReal (measure_ne_top _ _) (measure_ne_top _ _)]
       exact measure_mono (by intro x; simp)
   · intro f hf_disj hf h_eq
-    rw [integral_iUnion (fun i ↦ ℱ.le n _ (hf i)) hf_disj
+    rw [integral_iUnion (fun i ↦ (ℱ γ).le n _ (hf i)) hf_disj
       (integrable_densityProcess hκν _ _ hs).integrableOn]
     simp_rw [h_eq]
-    rw [iUnion_prod_const, measure_iUnion _ (fun i ↦ (ℱ.le n _ (hf i)).prod hs)]
+    rw [iUnion_prod_const, measure_iUnion _ (fun i ↦ ((ℱ γ).le n _ (hf i)).prod hs)]
     · rw [ENNReal.tsum_toReal_eq]
       exact fun _ ↦ measure_ne_top _ _
     · intro i j hij
@@ -481,13 +404,13 @@ lemma set_integral_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel
 
 lemma set_integral_densityProcess_of_le (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ]
     [IsFiniteKernel ν] {n m : ℕ} (hnm : n ≤ m) (a : α) {s : Set β} (hs : MeasurableSet s)
-    {A : Set ℝ} (hA : MeasurableSet[ℱ n] A) :
+    {A : Set γ} (hA : MeasurableSet[ℱ γ n] A) :
     ∫ t in A, densityProcess κ ν m a t s ∂(ν a) = (κ a (A ×ˢ s)).toReal :=
-  set_integral_densityProcess hκν m a hs (ℱ.mono hnm A hA)
+  set_integral_densityProcess hκν m a hs ((ℱ γ).mono hnm A hA)
 
 lemma condexp_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
     {i j : ℕ} (hij : i ≤ j) (a : α) {s : Set β} (hs : MeasurableSet s) :
-    (ν a)[fun t ↦ densityProcess κ ν j a t s | ℱ i]
+    (ν a)[fun t ↦ densityProcess κ ν j a t s | ℱ γ i]
       =ᵐ[ν a] fun t ↦ densityProcess κ ν i a t s := by
   symm
   refine ae_eq_condexp_of_forall_set_integral_eq ?_ ?_ ?_ ?_ ?_
@@ -497,27 +420,26 @@ lemma condexp_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] 
   · intro t ht _
     rw [set_integral_densityProcess hκν i a hs ht,
       set_integral_densityProcess_of_le hκν hij a hs ht]
-  · exact StronglyMeasurable.aeStronglyMeasurable' (stronglyMeasurable_ℱ_densityProcess κ ν i a s)
+  · exact StronglyMeasurable.aeStronglyMeasurable' (stronglyMeasurable_ℱ_densityProcess κ ν i a hs)
 
 lemma martingale_densityProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
-    Martingale (fun n t ↦ densityProcess κ ν n a t s) ℱ (ν a) :=
-  ⟨adapted_densityProcess κ ν a s, fun _ _ h ↦ condexp_densityProcess hκν h a hs⟩
+    Martingale (fun n t ↦ densityProcess κ ν n a t s) (ℱ γ) (ν a) :=
+  ⟨adapted_densityProcess κ ν a hs, fun _ _ h ↦ condexp_densityProcess hκν h a hs⟩
 
-lemma densityProcess_mono_set (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : ℝ)
+lemma densityProcess_mono_set (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : γ)
     {s s' : Set β} (h : s ⊆ s') :
     densityProcess κ ν n a t s ≤ densityProcess κ ν n a t s' := by
   unfold densityProcess
-  by_cases h0 : ν a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
+  by_cases h0 : ν a (partitionSet n t) = 0
   · rw [h0, ENNReal.toReal_div, ENNReal.toReal_div]
     simp
-  have h_ne_top : ∀ s, κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s)
-      / ν a (IcoPowTwo n (indexIcoPowTwo n t)) ≠ ⊤ := by
+  have h_ne_top : ∀ s, κ a (partitionSet n t ×ˢ s) / ν a (partitionSet n t) ≠ ⊤ := by
     intro s
     rw [ne_eq, ENNReal.div_eq_top]
     simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
     refine fun h_top ↦ eq_top_mono ?_ h_top
-    exact apply_IcoPowTwo_le_of_fst_le hκν n a t s
+    exact apply_partitionSet_le_of_fst_le hκν n a t s
   rw [ENNReal.toReal_le_toReal]
   · gcongr
     rw [prod_subset_prod_iff]
@@ -525,59 +447,59 @@ lemma densityProcess_mono_set (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) 
   · exact h_ne_top s
   · exact h_ne_top s'
 
-lemma densityProcess_mono_kernel_left {κ' : kernel α (ℝ × β)} (hκκ' : κ ≤ κ')
-    (hκ'ν : kernel.fst κ' ≤ ν) (n : ℕ) (a : α) (t : ℝ) {s : Set β} (hs : MeasurableSet s) :
+lemma densityProcess_mono_kernel_left {κ' : kernel α (γ × β)} (hκκ' : κ ≤ κ')
+    (hκ'ν : kernel.fst κ' ≤ ν) (n : ℕ) (a : α) (t : γ) {s : Set β} (hs : MeasurableSet s) :
     densityProcess κ ν n a t s ≤ densityProcess κ' ν n a t s := by
   unfold densityProcess
-  by_cases h0 : ν a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
+  by_cases h0 : ν a (partitionSet n t) = 0
   · rw [h0, ENNReal.toReal_div, ENNReal.toReal_div]
     simp
-  have h_le : κ' a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s)
-      ≤ ν a (IcoPowTwo n (indexIcoPowTwo n t)) := apply_IcoPowTwo_le_of_fst_le hκ'ν n a t s
+  have h_le : κ' a (partitionSet n t ×ˢ s)
+      ≤ ν a (partitionSet n t) := apply_partitionSet_le_of_fst_le hκ'ν n a t s
   rw [ENNReal.toReal_le_toReal]
   · gcongr
-    exact hκκ' _ _ ((measurableSet_IcoPowTwo _ _).prod hs)
+    exact hκκ' _ _ ((measurableSet_partitionSet _ _).prod hs)
   · rw [ne_eq, ENNReal.div_eq_top]
     simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
     refine fun h_top ↦ eq_top_mono ?_ h_top
-    exact (hκκ' _ _ ((measurableSet_IcoPowTwo _ _).prod hs)).trans h_le
+    exact (hκκ' _ _ ((measurableSet_partitionSet _ _).prod hs)).trans h_le
   · rw [ne_eq, ENNReal.div_eq_top]
     simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
 
-lemma densityProcess_antitone_kernel_right {ν' : kernel α ℝ}
-    (hνν' : ν ≤ ν') (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : ℝ) (s : Set β) :
+lemma densityProcess_antitone_kernel_right {ν' : kernel α γ}
+    (hνν' : ν ≤ ν') (hκν : kernel.fst κ ≤ ν) (n : ℕ) (a : α) (t : γ) (s : Set β) :
     densityProcess κ ν' n a t s ≤ densityProcess κ ν n a t s := by
   unfold densityProcess
-  have h_le : κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s)
-      ≤ ν a (IcoPowTwo n (indexIcoPowTwo n t)) := apply_IcoPowTwo_le_of_fst_le hκν n a t s
-  by_cases h0 : ν a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
-  · suffices κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s) = 0 by
+  have h_le : κ a (partitionSet n t ×ˢ s)
+      ≤ ν a (partitionSet n t) := apply_partitionSet_le_of_fst_le hκν n a t s
+  by_cases h0 : ν a (partitionSet n t) = 0
+  · suffices κ a (partitionSet n t ×ˢ s) = 0 by
       simp only [this, ENNReal.zero_div, ENNReal.zero_toReal, h0, le_refl]
     exact le_antisymm (h_le.trans h0.le) zero_le'
-  have h0' : ν' a (IcoPowTwo n (indexIcoPowTwo n t)) ≠ 0 := by
+  have h0' : ν' a (partitionSet n t) ≠ 0 := by
     refine fun h ↦ h0 (le_antisymm (le_trans ?_ h.le) zero_le')
-    exact hνν' _ _ (measurableSet_IcoPowTwo _ _)
+    exact hνν' _ _ (measurableSet_partitionSet _ _)
   rw [ENNReal.toReal_le_toReal]
   · gcongr
-    exact hνν' _ _ (measurableSet_IcoPowTwo _ _)
+    exact hνν' _ _ (measurableSet_partitionSet _ _)
   · simp only [ne_eq, ENNReal.div_eq_top, h0', and_false, false_or, not_and, not_not]
     refine fun h_top ↦ eq_top_mono ?_ h_top
-    exact h_le.trans (hνν' _ _ (measurableSet_IcoPowTwo _ _))
+    exact h_le.trans (hνν' _ _ (measurableSet_partitionSet _ _))
   · simp only [ne_eq, ENNReal.div_eq_top, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
 
-lemma densityProcess_empty (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (n : ℕ) (a : α) (t : ℝ) :
+lemma densityProcess_empty (κ : kernel α (γ × β)) (ν : kernel α γ) (n : ℕ) (a : α) (t : γ) :
     densityProcess κ ν n a t ∅ = 0 := by
   simp [densityProcess]
 
-lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : kernel α (ℝ × β)) (ν : kernel α ℝ)
-    [IsFiniteKernel κ] (n : ℕ) (a : α) (t : ℝ)
+lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : kernel α (γ × β)) (ν : kernel α γ)
+    [IsFiniteKernel κ] (n : ℕ) (a : α) (t : γ)
     (s : ℕ → Set β) (hs : Antitone s) (hs_iInter : ⋂ i, s i = ∅)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     Tendsto (fun m ↦ densityProcess κ ν n a t (s m)) atTop (𝓝 (densityProcess κ ν n a t ∅)) := by
   simp_rw [densityProcess]
-  by_cases h0 : ν a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
+  by_cases h0 : ν a (partitionSet n t) = 0
   · simp_rw [h0, ENNReal.toReal_div]
     simp
   refine (ENNReal.tendsto_toReal ?_).comp ?_
@@ -586,10 +508,10 @@ lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : kernel α (ℝ × β)
     simp
   refine ENNReal.Tendsto.div_const ?_ ?_
   · have h := tendsto_measure_iInter (μ := κ a)
-      (s := fun m ↦ IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s m) ?_ ?_ ?_
+      (s := fun m ↦ partitionSet n t ×ˢ s m) ?_ ?_ ?_
     · convert h
       rw [← prod_iInter, hs_iInter]
-    · exact fun n ↦ MeasurableSet.prod (measurableSet_IcoPowTwo _ _) (hs_meas n)
+    · exact fun n ↦ MeasurableSet.prod (measurableSet_partitionSet _ _) (hs_meas n)
     · intro m m' hmm'
       simp only [le_eq_subset, prod_subset_prod_iff, subset_rfl, true_and]
       exact Or.inl <| hs hmm'
@@ -597,8 +519,8 @@ lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : kernel α (ℝ × β)
   · simp only [prod_empty, OuterMeasure.empty', ne_eq, not_true_eq_false, false_or, h0,
       not_false_iff]
 
-lemma tendsto_densityProcess_atTop_of_antitone (κ : kernel α (ℝ × β)) (ν : kernel α ℝ)
-    [IsFiniteKernel κ] (n : ℕ) (a : α) (t : ℝ)
+lemma tendsto_densityProcess_atTop_of_antitone (κ : kernel α (γ × β)) (ν : kernel α γ)
+    [IsFiniteKernel κ] (n : ℕ) (a : α) (t : γ)
     (s : ℕ → Set β) (hs : Antitone s) (hs_iInter : ⋂ i, s i = ∅)
     (hs_meas : ∀ n, MeasurableSet (s n)) :
     Tendsto (fun m ↦ densityProcess κ ν n a t (s m)) atTop (𝓝 0) := by
@@ -608,7 +530,7 @@ lemma tendsto_densityProcess_atTop_of_antitone (κ : kernel α (ℝ × β)) (ν 
 lemma tendsto_densityProcess_limitProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ]
     [IsFiniteKernel ν] (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∀ᵐ t ∂(ν a), Tendsto (fun n ↦ densityProcess κ ν n a t s) atTop
-      (𝓝 (ℱ.limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a) t)) := by
+      (𝓝 ((ℱ γ).limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a) t)) := by
   refine Submartingale.ae_tendsto_limitProcess (martingale_densityProcess hκν a hs).submartingale
     (R := (ν a univ).toNNReal) (fun n ↦ ?_)
   refine (snorm_densityProcess_le hκν n a s).trans_eq ?_
@@ -617,7 +539,7 @@ lemma tendsto_densityProcess_limitProcess (hκν : kernel.fst κ ≤ ν) [IsFini
 
 lemma limitProcess_mem_L1 (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
-    Memℒp (ℱ.limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a)) 1 (ν a) := by
+    Memℒp ((ℱ γ).limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a)) 1 (ν a) := by
   refine Submartingale.memℒp_limitProcess (martingale_densityProcess hκν a hs).submartingale
     (R := (ν a univ).toNNReal) (fun n ↦ ?_)
   refine (snorm_densityProcess_le hκν n a s).trans_eq ?_
@@ -627,7 +549,7 @@ lemma limitProcess_mem_L1 (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [Is
 lemma tendsto_snorm_one_densityProcess_limitProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ]
     [IsFiniteKernel ν] (a : α) {s : Set β} (hs : MeasurableSet s) :
     Tendsto (fun n ↦ snorm ((fun t ↦ densityProcess κ ν n a t s)
-        - ℱ.limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a)) 1 (ν a))
+        - (ℱ γ).limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a)) 1 (ν a))
       atTop (𝓝 0) := by
   refine Submartingale.tendsto_snorm_one_limitProcess ?_ ?_
   · exact (martingale_densityProcess hκν a hs).submartingale
@@ -647,20 +569,20 @@ lemma tendsto_snorm_one_densityProcess_limitProcess (hκν : kernel.fst κ ≤ �
       · simp
 
 lemma tendsto_snorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel κ] [IsFiniteKernel ν]
-    (hκν : kernel.fst κ ≤ ν) (a : α) {s : Set β} (hs : MeasurableSet s) (A : Set ℝ) :
+    (hκν : kernel.fst κ ≤ ν) (a : α) {s : Set β} (hs : MeasurableSet s) (A : Set γ) :
     Tendsto (fun n ↦ snorm ((fun t ↦ densityProcess κ ν n a t s)
-        - ℱ.limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a)) 1 ((ν a).restrict A))
+        - (ℱ γ).limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a)) 1 ((ν a).restrict A))
       atTop (𝓝 0) :=
   tendsto_snorm_restrict_zero (tendsto_snorm_one_densityProcess_limitProcess hκν a hs) A
 
 noncomputable
-def MLimsup (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (a : α) (t : ℝ) (s : Set β) : ℝ :=
+def MLimsup (κ : kernel α (γ × β)) (ν : kernel α γ) (a : α) (t : γ) (s : Set β) : ℝ :=
   limsup (fun n ↦ densityProcess κ ν n a t s) atTop
 
 lemma mLimsup_ae_eq_limitProcess (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     (fun t ↦ MLimsup κ ν a t s)
-      =ᵐ[ν a] ℱ.limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a) := by
+      =ᵐ[ν a] (ℱ γ).limitProcess (fun n t ↦ densityProcess κ ν n a t s) (ν a) := by
   filter_upwards [tendsto_densityProcess_limitProcess hκν a hs] with t ht using ht.limsup_eq
 
 lemma tendsto_m_mLimsup (hκν : kernel.fst κ ≤ ν) (a : α) [IsFiniteKernel κ] [IsFiniteKernel ν]
@@ -670,37 +592,37 @@ lemma tendsto_m_mLimsup (hκν : kernel.fst κ ≤ ν) (a : α) [IsFiniteKernel 
   filter_upwards [tendsto_densityProcess_limitProcess hκν a hs, mLimsup_ae_eq_limitProcess hκν a hs]
     with t h1 h2 using h2 ▸ h1
 
-lemma measurable_mLimsup (κ : kernel α (ℝ × β)) (ν : kernel α ℝ)
+lemma measurable_mLimsup (κ : kernel α (γ × β)) (ν : kernel α γ)
     {s : Set β} (hs : MeasurableSet s) :
-    Measurable (fun (p : α × ℝ) ↦ MLimsup κ ν p.1 p.2 s) :=
+    Measurable (fun (p : α × γ) ↦ MLimsup κ ν p.1 p.2 s) :=
   measurable_limsup (fun n ↦ measurable_densityProcess κ ν n hs)
 
-lemma measurable_mLimsup_left (κ : kernel α (ℝ × β)) (ν : kernel α ℝ) (t : ℝ)
+lemma measurable_mLimsup_left (κ : kernel α (γ × β)) (ν : kernel α γ) (t : γ)
     {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun a ↦ MLimsup κ ν a t s) := by
-  change Measurable ((fun (p : α × ℝ) ↦ MLimsup κ ν p.1 p.2 s) ∘ (fun a ↦ (a, t)))
+  change Measurable ((fun (p : α × γ) ↦ MLimsup κ ν p.1 p.2 s) ∘ (fun a ↦ (a, t)))
   exact (measurable_mLimsup κ ν hs).comp measurable_prod_mk_right
 
-lemma measurable_mLimsup_right (κ : kernel α (ℝ × β)) (ν : kernel α ℝ)
+lemma measurable_mLimsup_right (κ : kernel α (γ × β)) (ν : kernel α γ)
     {s : Set β} (hs : MeasurableSet s) (a : α) :
     Measurable (fun t ↦ MLimsup κ ν a t s) := by
-  change Measurable ((fun (p : α × ℝ) ↦ MLimsup κ ν p.1 p.2 s) ∘ (fun t ↦ (a, t)))
+  change Measurable ((fun (p : α × γ) ↦ MLimsup κ ν p.1 p.2 s) ∘ (fun t ↦ (a, t)))
   exact (measurable_mLimsup κ ν hs).comp measurable_prod_mk_left
 
-lemma mLimsup_mono_set (hκν : kernel.fst κ ≤ ν) (a : α) (t : ℝ) {s s' : Set β} (h : s ⊆ s') :
+lemma mLimsup_mono_set (hκν : kernel.fst κ ≤ ν) (a : α) (t : γ) {s s' : Set β} (h : s ⊆ s') :
     MLimsup κ ν a t s ≤ MLimsup κ ν a t s' := by
   refine limsup_le_limsup ?_ ?_ ?_
   · exact eventually_of_forall (fun n ↦ densityProcess_mono_set hκν n a t h)
   · exact isCoboundedUnder_le_of_le atTop (fun i ↦ densityProcess_nonneg _ _ _ _ _ _)
   · exact isBoundedUnder_of ⟨1, fun n ↦ densityProcess_le_one hκν _ _ _ _⟩
 
-lemma mLimsup_nonneg (hκν : kernel.fst κ ≤ ν) (a : α) (t : ℝ) (s : Set β) :
+lemma mLimsup_nonneg (hκν : kernel.fst κ ≤ ν) (a : α) (t : γ) (s : Set β) :
     0 ≤ MLimsup κ ν a t s := by
   refine le_limsup_of_frequently_le ?_ ?_
   · exact frequently_of_forall (fun n ↦ densityProcess_nonneg _ _ _ _ _ _)
   · exact isBoundedUnder_of ⟨1, fun n ↦ densityProcess_le_one hκν _ _ _ _⟩
 
-lemma mLimsup_le_one (hκν : kernel.fst κ ≤ ν) (a : α) (t : ℝ) (s : Set β) :
+lemma mLimsup_le_one (hκν : kernel.fst κ ≤ ν) (a : α) (t : γ) (s : Set β) :
     MLimsup κ ν a t s ≤ 1 := by
   refine limsup_le_of_le ?_ ?_
   · exact isCoboundedUnder_le_of_le atTop (fun i ↦ densityProcess_nonneg _ _ _ _ _ _)
@@ -722,7 +644,7 @@ lemma integrable_mLimsup (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel ν]
   · exact (snorm_mLimsup_le hκν a s).trans_lt (measure_lt_top _ _)
 
 lemma tendsto_set_integral_m (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
-    (a : α) {s : Set β} (hs : MeasurableSet s) (A : Set ℝ) :
+    (a : α) {s : Set β} (hs : MeasurableSet s) (A : Set γ) :
     Tendsto (fun i ↦ ∫ x in A, densityProcess κ ν i a x s ∂(ν a)) atTop
       (𝓝 (∫ x in A, MLimsup κ ν a x s ∂(ν a))) := by
   refine tendsto_set_integral_of_L1' (μ := ν a) (fun t ↦ MLimsup κ ν a t s)
@@ -735,7 +657,7 @@ lemma tendsto_set_integral_m (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] 
 /-- Auxiliary lemma for `set_integral_mLimsup`. -/
 lemma set_integral_mLimsup_of_measurableSet (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ]
     [IsFiniteKernel ν]
-    (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set ℝ} (hA : MeasurableSet[ℱ n] A) :
+    (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet[ℱ γ n] A) :
     ∫ t in A, MLimsup κ ν a t s ∂(ν a) = (κ a (A ×ˢ s)).toReal := by
   suffices ∫ t in A, MLimsup κ ν a t s ∂(ν a) = ∫ t in A, densityProcess κ ν n a t s ∂(ν a) by
     rw [this]
@@ -758,14 +680,14 @@ lemma integral_mLimsup (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFin
   rw [← integral_univ, set_integral_mLimsup_of_measurableSet hκν 0 a hs MeasurableSet.univ]
 
 lemma set_integral_mLimsup (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
-    (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set ℝ} (hA : MeasurableSet A) :
+    (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet A) :
     ∫ t in A, MLimsup κ ν a t s ∂(ν a) = (κ a (A ×ˢ s)).toReal := by
-  have hA' : MeasurableSet[⨆ n, ℱ n] A := by rwa [iSup_ℱ]
-  refine MeasurableSpace.induction_on_inter (m := ⨆ n, ℱ n)
+  have hA' : MeasurableSet[⨆ n, ℱ γ n] A := by rwa [iSup_ℱ]
+  refine MeasurableSpace.induction_on_inter (m := ⨆ n, ℱ γ n)
     (C := fun A ↦ ∫ t in A, MLimsup κ ν a t s ∂(ν a) = (κ a (A ×ˢ s)).toReal)
-    (MeasurableSpace.measurableSpace_iSup_eq ℱ) ?_ ?_ ?_ ?_ ?_ hA'
+    (MeasurableSpace.measurableSpace_iSup_eq (ℱ γ)) ?_ ?_ ?_ ?_ ?_ hA'
   · rintro s ⟨n, hs⟩ t ⟨m, ht⟩ _
-    exact ⟨max n m, (ℱ.mono (le_max_left n m) _ hs).inter (ℱ.mono (le_max_right n m) _ ht)⟩
+    exact ⟨max n m, ((ℱ γ).mono (le_max_left n m) _ hs).inter ((ℱ γ).mono (le_max_right n m) _ ht)⟩
   · simp
   · intro A ⟨n, hA⟩
     exact set_integral_mLimsup_of_measurableSet hκν n a hs hA
@@ -858,7 +780,7 @@ lemma tendsto_mLimsup_atTop_ae_of_antitone (hκν : kernel.fst κ ≤ ν) [IsFin
       linarith
     · exact h_tendsto
   -- let `F` be the pointwise limit of `fun m ↦ MLimsup κ a (s m) t` for all `t`
-  let F : ℝ → ℝ := fun t ↦ (h_exists t).choose
+  let F : γ → ℝ := fun t ↦ (h_exists t).choose
   have hF_tendsto : ∀ t, Tendsto (fun m ↦ MLimsup κ ν a t (s m)) atTop (𝓝 (F t)) :=
     fun t ↦ (h_exists t).choose_spec
   have hF_nonneg : ∀ t, 0 ≤ F t :=
@@ -885,7 +807,7 @@ lemma tendsto_mLimsup_atTop_ae_of_antitone (hκν : kernel.fst κ ≤ ν) [IsFin
     exact hF_tendsto t
   -- since `F` is nonnegative, proving that its integral is 0 is sufficient to get that
   -- `F` is 0 a.e.
-  suffices ∀ᵐ (t : ℝ) ∂(ν a), 0 = F t by filter_upwards [this] with a ha; simp [ha]
+  suffices ∀ᵐ (t : γ) ∂(ν a), 0 = F t by filter_upwards [this] with a ha; simp [ha]
   refine ae_eq_of_integral_eq_of_ae_le (integrable_const _) hF_int  (ae_of_all _ hF_nonneg) ?_
   have h_integral :
       Tendsto (fun m : ℕ ↦ ∫ t, MLimsup κ ν a t (s m) ∂(ν a)) atTop (𝓝 (∫ t, F t ∂(ν a))) := by
@@ -901,55 +823,62 @@ lemma tendsto_mLimsup_atTop_ae_of_antitone (hκν : kernel.fst κ ≤ ν) [IsFin
 
 section UnivFst
 
-lemma densityProcess_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (t : ℝ) :
+lemma densityProcess_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (t : γ) :
     densityProcess κ (kernel.fst κ) n a t univ
-      = if kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0 then 0 else 1 := by
+      = if kernel.fst κ a (partitionSet n t) = 0 then 0 else 1 := by
   rw [densityProcess]
-  by_cases h : kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
+  by_cases h : kernel.fst κ a (partitionSet n t) = 0
   · simp [h]
-    by_cases h' : κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ univ) = 0
+    by_cases h' : κ a (partitionSet n t ×ˢ univ) = 0
     · simp [h']
     · rw [ENNReal.div_zero h']
       simp
   · simp only [h, ite_false]
-    rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)]
-    have : IcoPowTwo n (indexIcoPowTwo n t) ×ˢ univ
-        = {p : ℝ × β | p.1 ∈ IcoPowTwo n (indexIcoPowTwo n t)} := by
+    rw [kernel.fst_apply' _ _ (measurableSet_partitionSet _ _)]
+    have : partitionSet n t ×ˢ univ = {p : γ × β | p.1 ∈ partitionSet n t} := by
       ext x
       simp
     rw [this, ENNReal.div_self]
     · simp
-    · rwa [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)] at h
+    · rwa [kernel.fst_apply' _ _ (measurableSet_partitionSet _ _)] at h
     · exact measure_ne_top _ _
 
-lemma densityProcess_univ_ae (κ : kernel α (ℝ × β)) [IsFiniteKernel κ] (n : ℕ) (a : α) :
+lemma densityProcess_univ_ae (κ : kernel α (γ × β)) [IsFiniteKernel κ] (n : ℕ) (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), densityProcess κ (kernel.fst κ) n a t univ = 1 := by
   rw [ae_iff]
   have : {t | ¬ densityProcess κ (kernel.fst κ) n a t univ = 1}
-      ⊆ {t | kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0} := by
+      ⊆ {t | kernel.fst κ a (partitionSet n t) = 0} := by
     intro t ht
     simp only [mem_setOf_eq] at ht ⊢
     rw [densityProcess_univ] at ht
     simpa using ht
   refine measure_mono_null this ?_
-  have : {t | kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0}
-      ⊆ ⋃ (k) (_ : kernel.fst κ a (IcoPowTwo n k) = 0), IcoPowTwo n k := by
+  have : {t | kernel.fst κ a (partitionSet n t) = 0}
+      ⊆ ⋃ (u) (_ : u ∈ MeasurableSpace.countablePartition γ n) (_ : kernel.fst κ a u = 0), u := by
     intro t ht
     simp only [mem_setOf_eq, mem_iUnion, exists_prop] at ht ⊢
-    exact ⟨indexIcoPowTwo n t, ht, mem_IcoPowTwo_indexIcoPowTwo _ _⟩
+    exact ⟨partitionSet n t, partitionSet_mem _ _, ht, mem_partitionSet _ _⟩
   refine measure_mono_null this ?_
-  rw [measure_iUnion_null]
-  simp
+  rw [measure_biUnion]
+  · simp
+  · exact (MeasurableSpace.finite_countablePartition _ _).countable
+  · intro s hs t ht hst
+    simp only [disjoint_iUnion_right, disjoint_iUnion_left]
+    exact fun _ _ ↦ MeasurableSpace.disjoint_countablePartition n hs ht hst
+  · intro s hs
+    by_cases h : kernel.fst κ a s = 0
+    · simp [h, MeasurableSpace.measurableSet_countablePartition n hs]
+    · simp [h]
 
-lemma tendsto_densityProcess_atTop_univ_of_monotone (κ : kernel α (ℝ × β))
-    (n : ℕ) (a : α) (t : ℝ) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ) :
+lemma tendsto_densityProcess_atTop_univ_of_monotone (κ : kernel α (γ × β))
+    (n : ℕ) (a : α) (t : γ) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ) :
     Tendsto (fun m ↦ densityProcess κ (kernel.fst κ) n a t (s m)) atTop
       (𝓝 (densityProcess κ (kernel.fst κ) n a t univ)) := by
   simp_rw [densityProcess]
   refine (ENNReal.tendsto_toReal ?_).comp ?_
   · rw [ne_eq, ENNReal.div_eq_top]
     push_neg
-    simp_rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)]
+    simp_rw [kernel.fst_apply' _ _ (measurableSet_partitionSet _ _)]
     constructor
     · refine fun h h0 ↦ h (measure_mono_null (fun x ↦ ?_) h0)
       simp only [mem_prod, mem_setOf_eq, and_imp]
@@ -957,11 +886,11 @@ lemma tendsto_densityProcess_atTop_univ_of_monotone (κ : kernel α (ℝ × β))
     · refine fun h_top ↦ eq_top_mono (measure_mono (fun x ↦ ?_)) h_top
       simp only [mem_prod, mem_setOf_eq, and_imp]
       exact fun h _ ↦ h
-  by_cases h0 : kernel.fst κ a (IcoPowTwo n (indexIcoPowTwo n t)) = 0
-  · rw [kernel.fst_apply' _ _ (measurableSet_IcoPowTwo _ _)] at h0 ⊢
-    suffices ∀ m, κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s m) = 0 by
+  by_cases h0 : kernel.fst κ a (partitionSet n t) = 0
+  · rw [kernel.fst_apply' _ _ (measurableSet_partitionSet _ _)] at h0 ⊢
+    suffices ∀ m, κ a (partitionSet n t ×ˢ s m) = 0 by
       simp only [this, h0, ENNReal.zero_div, tendsto_const_nhds_iff]
-      suffices κ a (IcoPowTwo n (indexIcoPowTwo n t) ×ˢ univ) = 0 by
+      suffices κ a (partitionSet n t ×ˢ univ) = 0 by
         simp only [this, ENNReal.zero_div]
       convert h0
       ext x
@@ -971,7 +900,7 @@ lemma tendsto_densityProcess_atTop_univ_of_monotone (κ : kernel α (ℝ × β))
     exact fun h _ ↦ h
   refine ENNReal.Tendsto.div_const ?_ ?_
   · have h := tendsto_measure_iUnion (μ := κ a)
-      (s := fun m ↦ IcoPowTwo n (indexIcoPowTwo n t) ×ˢ s m) ?_
+      (s := fun m ↦ partitionSet n t ×ˢ s m) ?_
     swap
     · intro m m' hmm'
       simp only [le_eq_subset, prod_subset_prod_iff, subset_rfl, true_and]
@@ -980,7 +909,7 @@ lemma tendsto_densityProcess_atTop_univ_of_monotone (κ : kernel α (ℝ × β))
     rw [← prod_iUnion, hs_iUnion]
   · exact Or.inr h0
 
-lemma tendsto_densityProcess_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [IsFiniteKernel κ]
+lemma tendsto_densityProcess_atTop_ae_of_monotone (κ : kernel α (γ × β)) [IsFiniteKernel κ]
     (n : ℕ) (a : α) (s : ℕ → Set β) (hs : Monotone s) (hs_iUnion : ⋃ i, s i = univ) :
     ∀ᵐ t ∂(kernel.fst κ a),
       Tendsto (fun m ↦ densityProcess κ (kernel.fst κ) n a t (s m)) atTop (𝓝 1) := by
@@ -988,7 +917,7 @@ lemma tendsto_densityProcess_atTop_ae_of_monotone (κ : kernel α (ℝ × β)) [
   rw [← ht]
   exact tendsto_densityProcess_atTop_univ_of_monotone κ n a t s hs hs_iUnion
 
-lemma mLimsup_univ (κ : kernel α (ℝ × β)) [IsFiniteKernel κ] (a : α) :
+lemma mLimsup_univ (κ : kernel α (γ × β)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), MLimsup κ (kernel.fst κ) a t univ = 1 := by
   have h := fun n ↦ densityProcess_univ_ae κ n a
   rw [← ae_all_iff] at h
@@ -1016,7 +945,7 @@ lemma tendsto_mLimsup_atTop_ae_of_monotone [IsFiniteKernel κ]
       exact absurd (hr.trans (h_le_one r t)) one_lt_two.not_le
     · exact h_tendsto
   -- let `F` be the pointwise limit of `fun m ↦ MLimsup κ a (s m) t` for all `t`
-  let F : ℝ → ℝ := fun t ↦ (h_exists t).choose
+  let F : γ → ℝ := fun t ↦ (h_exists t).choose
   have hF_tendsto : ∀ t, Tendsto (fun m ↦ MLimsup κ ν a t (s m)) atTop (𝓝 (F t)) :=
     fun t ↦ (h_exists t).choose_spec
   have hF_nonneg : ∀ t, 0 ≤ F t :=

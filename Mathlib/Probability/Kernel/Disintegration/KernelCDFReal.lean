@@ -31,22 +31,23 @@ open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {α : Type*} {mα : MeasurableSpace α} {κ : kernel α (ℝ × ℝ)} {ν : kernel α ℝ}
+variable {α γ : Type*} {mα : MeasurableSpace α} {mγ : MeasurableSpace γ}
+  [MeasurableSpace.CountablyGenerated γ] {κ : kernel α (γ × ℝ)} {ν : kernel α γ}
 
 noncomputable
-def mLimsupIic (κ : kernel α (ℝ × ℝ)) (ν : kernel α ℝ) (a : α) (t : ℝ) (q : ℚ) : ℝ :=
+def mLimsupIic (κ : kernel α (γ × ℝ)) (ν : kernel α γ) (a : α) (t : γ) (q : ℚ) : ℝ :=
   MLimsup κ ν a t (Set.Iic q)
 
-lemma measurable_mLimsupIic (κ : kernel α (ℝ × ℝ)) (ν : kernel α ℝ) :
-    Measurable (fun p : α × ℝ ↦ mLimsupIic κ ν p.1 p.2) := by
+lemma measurable_mLimsupIic (κ : kernel α (γ × ℝ)) (ν : kernel α γ) :
+    Measurable (fun p : α × γ ↦ mLimsupIic κ ν p.1 p.2) := by
   rw [measurable_pi_iff]
   exact fun _ ↦ measurable_mLimsup κ ν measurableSet_Iic
 
-lemma measurable_mLimsupIic_right (κ : kernel α (ℝ × ℝ)) (ν : kernel α ℝ) (a : α) (q : ℚ) :
+lemma measurable_mLimsupIic_right (κ : kernel α (γ × ℝ)) (ν : kernel α γ) (a : α) (q : ℚ) :
     Measurable (fun t ↦ mLimsupIic κ ν a t q) :=
   measurable_mLimsup_right _ _ measurableSet_Iic _
 
-lemma monotone_mLimsupIic (hκν : kernel.fst κ ≤ ν) (a : α) (t : ℝ) :
+lemma monotone_mLimsupIic (hκν : kernel.fst κ ≤ ν) (a : α) (t : γ) :
     Monotone (mLimsupIic κ ν a t) := by
   intro q r hqr
   rw [mLimsupIic, mLimsupIic]
@@ -54,15 +55,15 @@ lemma monotone_mLimsupIic (hκν : kernel.fst κ ≤ ν) (a : α) (t : ℝ) :
   refine Iic_subset_Iic.mpr ?_
   exact_mod_cast hqr
 
-lemma mLimsupIic_nonneg (hκν : kernel.fst κ ≤ ν) (a : α) (t : ℝ) (q : ℚ) :
+lemma mLimsupIic_nonneg (hκν : kernel.fst κ ≤ ν) (a : α) (t : γ) (q : ℚ) :
     0 ≤ mLimsupIic κ ν a t q :=
   mLimsup_nonneg hκν a t _
 
-lemma mLimsupIic_le_one (hκν : kernel.fst κ ≤ ν) (a : α) (t : ℝ) (q : ℚ) :
+lemma mLimsupIic_le_one (hκν : kernel.fst κ ≤ ν) (a : α) (t : γ) (q : ℚ) :
     mLimsupIic κ ν a t q ≤ 1 :=
   mLimsup_le_one hκν a t _
 
-lemma tendsto_atTop_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] (a : α) :
+lemma tendsto_atTop_mLimsupIic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a), Tendsto (fun q ↦ mLimsupIic κ (kernel.fst κ) a t q) atTop (𝓝 1) := by
   let ν := kernel.fst κ
   suffices ∀ᵐ t ∂(ν a), Tendsto (fun (n : ℕ) ↦ mLimsupIic κ ν a t n) atTop (𝓝 1) by
@@ -124,7 +125,7 @@ lemma tendsto_atBot_mLimsupIic (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ
   simp
 
 lemma set_integral_mLimsupIic (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ] [IsFiniteKernel ν]
-    (a : α) (q : ℚ) {A : Set ℝ} (hA : MeasurableSet A) :
+    (a : α) (q : ℚ) {A : Set γ} (hA : MeasurableSet A) :
     ∫ t in A, mLimsupIic κ ν a t q ∂(ν a) = (κ a (A ×ˢ Iic (q : ℝ))).toReal :=
   set_integral_mLimsup hκν a measurableSet_Iic hA
 
@@ -133,7 +134,7 @@ lemma integrable_mLimsupIic (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel ν]
     Integrable (fun t ↦ mLimsupIic κ ν a t q) (ν a) :=
   integrable_mLimsup hκν _ measurableSet_Iic
 
-lemma bddBelow_range_mLimsupIic (hκν : kernel.fst κ ≤ ν) (a : α) (t : ℝ) (q : ℚ) :
+lemma bddBelow_range_mLimsupIic (hκν : kernel.fst κ ≤ ν) (a : α) (t : γ) (q : ℚ) :
     BddBelow (range fun (r : Ioi q) ↦ mLimsupIic κ ν a t r) := by
   refine ⟨0, ?_⟩
   rw [mem_lowerBounds]
@@ -158,7 +159,7 @@ lemma integrable_iInf_rat_gt_mLimsupIic (hκν : kernel.fst κ ≤ ν) [IsFinite
 
 lemma set_integral_iInf_rat_gt_mLimsupIic (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel κ]
     [IsFiniteKernel ν]
-    (a : α) (q : ℚ) {A : Set ℝ} (hA : MeasurableSet A) :
+    (a : α) (q : ℚ) {A : Set γ} (hA : MeasurableSet A) :
     ∫ t in A, ⨅ r : Ioi q, mLimsupIic κ ν a t r ∂(ν a)
       = (κ a (A ×ˢ Iic (q : ℝ))).toReal := by
   refine le_antisymm ?_ ?_
@@ -193,27 +194,27 @@ lemma iInf_rat_gt_mLimsupIic_eq (hκν : kernel.fst κ ≤ ν) [IsFiniteKernel �
   · intro s hs _
     rw [set_integral_mLimsupIic hκν _ _ hs, set_integral_iInf_rat_gt_mLimsupIic hκν _ _ hs]
 
-lemma isRatStieltjesPoint_mLimsupIic_ae (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] (a : α) :
+lemma isRatStieltjesPoint_mLimsupIic_ae (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] (a : α) :
     ∀ᵐ t ∂(kernel.fst κ a),
       IsRatStieltjesPoint (fun p q ↦ mLimsupIic κ (kernel.fst κ) p.1 p.2 q) (a, t) := by
   filter_upwards [tendsto_atTop_mLimsupIic κ a, tendsto_atBot_mLimsupIic le_rfl a,
     iInf_rat_gt_mLimsupIic_eq le_rfl a] with t ht_top ht_bot ht_iInf
   exact ⟨monotone_mLimsupIic le_rfl a t, ht_top, ht_bot, ht_iInf⟩
 
-lemma isRatKernelCDF_mLimsupIic (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] :
-    IsRatKernelCDF (fun p : α × ℝ ↦ mLimsupIic κ (kernel.fst κ) p.1 p.2) κ (kernel.fst κ) where
+lemma isRatKernelCDF_mLimsupIic (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    IsRatKernelCDF (fun p : α × γ ↦ mLimsupIic κ (kernel.fst κ) p.1 p.2) κ (kernel.fst κ) where
   measurable := measurable_mLimsupIic κ (kernel.fst κ)
   isRatStieltjesPoint_ae := isRatStieltjesPoint_mLimsupIic_ae κ
   integrable := integrable_mLimsupIic le_rfl
   set_integral := fun _ _ hs _ ↦ set_integral_mLimsupIic le_rfl _ _ hs
 
 noncomputable
-def mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] :
-    α × ℝ → StieltjesFunction :=
-  stieltjesOfMeasurableRat (fun p : α × ℝ ↦ mLimsupIic κ (kernel.fst κ) p.1 p.2)
+def mLimsupCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
+    α × γ → StieltjesFunction :=
+  stieltjesOfMeasurableRat (fun p : α × γ ↦ mLimsupIic κ (kernel.fst κ) p.1 p.2)
     (isRatKernelCDF_mLimsupIic κ).measurable
 
-lemma isKernelCDF_mLimsupCDF (κ : kernel α (ℝ × ℝ)) [IsFiniteKernel κ] :
+lemma isKernelCDF_mLimsupCDF (κ : kernel α (γ × ℝ)) [IsFiniteKernel κ] :
     IsKernelCDF (mLimsupCDF κ) κ (kernel.fst κ) :=
   isKernelCDF_stieltjesOfMeasurableRat (isRatKernelCDF_mLimsupIic κ)
 
