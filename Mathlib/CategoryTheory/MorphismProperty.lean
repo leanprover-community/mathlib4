@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.Order.Closure
 
 #align_import category_theory.morphism_property from "leanprover-community/mathlib"@"7f963633766aaa3ebc8253100a5229dd463040c7"
 
@@ -35,19 +36,17 @@ noncomputable section
 
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C] {D : Type*} [Category D]
+variable (C : Type u) [Category.{v} C] {D : Type*} [Category D] {E : Type*} [Category E]
 
 /-- A `MorphismProperty C` is a class of morphisms between objects in `C`. -/
-def MorphismProperty :=
-  ∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop
+def MorphismProperty := ∀ ⦃X Y : C⦄, (X ⟶ Y) → Prop
 #align category_theory.morphism_property CategoryTheory.MorphismProperty
 
-instance : CompleteLattice (MorphismProperty C) := by
-  dsimp only [MorphismProperty]
-  infer_instance
+instance : CompleteLattice (MorphismProperty C) :=
+  inferInstanceAs (CompleteLattice (∀ ⦃X Y : C⦄, (X ⟶ Y) → Prop))
 
 instance : Inhabited (MorphismProperty C) :=
-  ⟨⊤⟩
+  inferInstanceAs (Inhabited (∀ ⦃X Y : C⦄, (X ⟶ Y) → Prop))
 
 lemma MorphismProperty.top_eq : (⊤ : MorphismProperty C) = fun _ _ _ => True := rfl
 
@@ -65,21 +64,20 @@ lemma top_apply {X Y : C} (f : X ⟶ Y) : (⊤ : MorphismProperty C) f := by
   simp only [top_eq]
 
 instance : HasSubset (MorphismProperty C) :=
-  ⟨fun P₁ P₂ => ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : P₁ f), P₂ f⟩
-
-instance : IsTrans (MorphismProperty C) (· ⊆ ·) :=
-  ⟨fun _ _ _ h₁₂ h₂₃ _ _ _ h => h₂₃ _ (h₁₂ _ h)⟩
-
-instance : Inter (MorphismProperty C) :=
-  ⟨fun P₁ P₂ _ _ f => P₁ f ∧ P₂ f⟩
+  ⟨fun P₁ P₂ => ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P₁ f → P₂ f⟩
 
 lemma subset_iff_le (P Q : MorphismProperty C) : P ⊆ Q ↔ P ≤ Q := Iff.rfl
 
+instance : IsTrans (MorphismProperty C) (· ⊆ ·) :=
+  inferInstanceAs (IsTrans (MorphismProperty C) (· ≤ ·))
+
+instance : Inter (MorphismProperty C) := ⟨Inf.inf⟩
+
 instance : IsAntisymm (MorphismProperty C) (· ⊆ ·) :=
-  ⟨fun P Q => by simpa only [subset_iff_le] using le_antisymm⟩
+  inferInstanceAs (IsAntisymm (MorphismProperty C) (· ≤ ·))
 
 instance : IsRefl (MorphismProperty C) (· ⊆ ·) :=
-  ⟨fun P => by simpa only [subset_iff_le] using le_refl P⟩
+  inferInstanceAs (IsRefl (MorphismProperty C) (· ≤ ·))
 
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
 @[simp]
@@ -99,23 +97,6 @@ theorem op_unop (P : MorphismProperty Cᵒᵖ) : P.unop.op = P :=
   rfl
 #align category_theory.morphism_property.op_unop CategoryTheory.MorphismProperty.op_unop
 
-/-- The inverse image of a `MorphismProperty D` by a functor `C ⥤ D` -/
-def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := fun _ _ f =>
-  P (F.map f)
-#align category_theory.morphism_property.inverse_image CategoryTheory.MorphismProperty.inverseImage
-
-/-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
-def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
-  ∃ (X' Y' : C)  (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
-
-lemma map_mem_map (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
-    (P.map F) (F.map f) := ⟨X, Y, f, hf, ⟨Iso.refl _⟩⟩
-
-lemma monotone_map (P Q : MorphismProperty C) (F : C ⥤ D) (h : P ⊆ Q) :
-    P.map F ⊆ Q.map F := by
-  intro X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
-  exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
-
 /-- A morphism property `RespectsIso` if it still holds when composed with an isomorphism -/
 def RespectsIso (P : MorphismProperty C) : Prop :=
   (∀ {X Y Z} (e : X ≅ Y) (f : Y ⟶ Z), P f → P (e.hom ≫ f)) ∧
@@ -130,26 +111,240 @@ theorem RespectsIso.unop {P : MorphismProperty Cᵒᵖ} (h : RespectsIso P) : Re
   ⟨fun e f hf => h.2 e.op f.op hf, fun e f hf => h.1 e.op f.op hf⟩
 #align category_theory.morphism_property.respects_iso.unop CategoryTheory.MorphismProperty.RespectsIso.unop
 
-/-- The closure by isomorphisms of a `MorphismProperty` -/
-def isoClosure (P : MorphismProperty C) : MorphismProperty C :=
-  fun _ _ f => ∃ (Y₁ Y₂ : C) (f' : Y₁ ⟶ Y₂) (_ : P f'), Nonempty (Arrow.mk f' ≅ Arrow.mk f)
+theorem RespectsIso.cancel_left_isIso {P : MorphismProperty C} (hP : RespectsIso P) {X Y Z : C}
+    (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] : P (f ≫ g) ↔ P g :=
+  ⟨fun h => by simpa using hP.1 (asIso f).symm (f ≫ g) h, hP.1 (asIso f) g⟩
+#align category_theory.morphism_property.respects_iso.cancel_left_is_iso CategoryTheory.MorphismProperty.RespectsIso.cancel_left_isIso
 
-lemma subset_isoClosure (P : MorphismProperty C) : P ⊆ P.isoClosure :=
-  fun _ _ f hf => ⟨_, _, f, hf, ⟨Iso.refl _⟩⟩
+theorem RespectsIso.cancel_right_isIso {P : MorphismProperty C} (hP : RespectsIso P) {X Y Z : C}
+    (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] : P (f ≫ g) ↔ P f :=
+  ⟨fun h => by simpa using hP.2 (asIso g).symm (f ≫ g) h, hP.2 (asIso g) f⟩
+#align category_theory.morphism_property.respects_iso.cancel_right_is_iso CategoryTheory.MorphismProperty.RespectsIso.cancel_right_isIso
+
+theorem RespectsIso.arrow_iso_iff {P : MorphismProperty C} (hP : RespectsIso P) {f g : Arrow C}
+    (e : f ≅ g) : P f.hom ↔ P g.hom := by
+  rw [← Arrow.inv_left_hom_right e.hom, hP.cancel_left_isIso, hP.cancel_right_isIso]
+#align category_theory.morphism_property.respects_iso.arrow_iso_iff CategoryTheory.MorphismProperty.RespectsIso.arrow_iso_iff
+
+theorem RespectsIso.arrow_mk_iso_iff {P : MorphismProperty C} (hP : RespectsIso P) {W X Y Z : C}
+    {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) : P f ↔ P g :=
+  hP.arrow_iso_iff e
+#align category_theory.morphism_property.respects_iso.arrow_mk_iso_iff CategoryTheory.MorphismProperty.RespectsIso.arrow_mk_iso_iff
+
+theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
+    (hP : ∀ (f g : Arrow C), (f ≅ g) → P f.hom → P g.hom) : RespectsIso P := by
+  constructor
+  · intro X Y Z e f hf
+    refine' hP (Arrow.mk f) (Arrow.mk (e.hom ≫ f)) (Arrow.isoMk e.symm (Iso.refl _) _) hf
+    dsimp
+    simp only [Iso.inv_hom_id_assoc, Category.comp_id]
+  · intro X Y Z e f hf
+    refine' hP (Arrow.mk f) (Arrow.mk (f ≫ e.hom)) (Arrow.isoMk (Iso.refl _) e _) hf
+    dsimp
+    simp only [Category.id_comp]
+#align category_theory.morphism_property.respects_iso.of_respects_arrow_iso CategoryTheory.MorphismProperty.RespectsIso.of_respects_arrow_iso
+
+/-- The closure by isomorphisms of a `MorphismProperty`. -/
+@[simps! apply]
+def isoClosure : ClosureOperator (MorphismProperty C) :=
+  have H1 _ := RespectsIso.of_respects_arrow_iso _ $
+    fun _ _ e ⟨_, _, _, h, ⟨e'⟩⟩ => ⟨_, _, _, h, ⟨e' ≪≫ e⟩⟩
+  have H2 := fun _ _ hle hQ _ _ _ ⟨_, _, _, hf, ⟨e⟩⟩ =>
+    (hQ.arrow_mk_iso_iff e).mp (hle _ _ _ hf)
+  .ofPred (fun P _ _ f => ∃ (Y₁ Y₂ : C) (f' : Y₁ ⟶ Y₂),
+                          P f' ∧ IsIsomorphic (Arrow.mk f') (Arrow.mk f))
+          RespectsIso (fun _ _ _ f hf => ⟨_, _, f, hf, ⟨Iso.refl _⟩⟩)
+          H1 H2
+
+lemma subset_isoClosure (P : MorphismProperty C) : P ⊆ isoClosure P :=
+  isoClosure.le_closure P
 
 lemma isoClosure_respectsIso (P : MorphismProperty C) :
-    RespectsIso P.isoClosure :=
-  ⟨fun e f ⟨_, _, f', hf', ⟨iso⟩⟩ =>
-    ⟨_, _, f', hf', ⟨Arrow.isoMk (asIso iso.hom.left ≪≫ e.symm)
-      (asIso iso.hom.right) (by simp)⟩⟩,
-  fun e f ⟨_, _, f', hf', ⟨iso⟩⟩ =>
-    ⟨_, _, f', hf', ⟨Arrow.isoMk (asIso iso.hom.left)
-      (asIso iso.hom.right ≪≫ e) (by simp)⟩⟩⟩
+    RespectsIso (isoClosure P) := isoClosure.isClosed_closure P
 
 lemma monotone_isoClosure (P Q : MorphismProperty C) (h : P ⊆ Q) :
-    P.isoClosure ⊆ Q.isoClosure := by
-  intro X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
-  exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
+    isoClosure P ⊆ isoClosure Q := isoClosure.mono h
+
+lemma RespectsIso.isoClosure_eq {P : MorphismProperty C} (hP : P.RespectsIso) :
+    isoClosure P = P := ClosureOperator.IsClosed.closure_eq hP
+
+lemma isoClosure_isoClosure (P : MorphismProperty C) :
+    isoClosure (isoClosure P) = isoClosure P := isoClosure.idempotent P
+
+lemma isoClosure_subset_iff (P Q : MorphismProperty C) (hQ : RespectsIso Q) :
+    isoClosure P ⊆ Q ↔ P ⊆ Q :=
+  ClosureOperator.IsClosed.closure_le_iff (show isoClosure.IsClosed Q from hQ)
+
+/-- The inverse image of a `MorphismProperty D` by a functor `C ⥤ D` -/
+def inverseImage (F : C ⥤ D) (P : MorphismProperty D) : MorphismProperty C :=
+  fun _ _ f => P (F.map f)
+#align category_theory.morphism_property.inverse_image CategoryTheory.MorphismProperty.inverseImage
+
+/-- The image (strictly) of a `MorphismProperty C` by a functor `C ⥤ D` -/
+def map (F : C ⥤ D) (P : MorphismProperty C) : MorphismProperty D := fun X Y f =>
+  ∃ (X' Y' : C) (f' : X' ⟶ Y'), P f' ∧ ∃ (hX : F.obj X' = X) (hY : F.obj Y' = Y),
+    F.map f' = eqToHom hX ≫ f ≫ eqToHom hY.symm
+
+lemma map_mem_map (F : C ⥤ D) {P : MorphismProperty C} {X Y : C} {f : X ⟶ Y}
+    (hf : P f) : (map F P) (F.map f) := ⟨X, Y, f, hf, rfl, rfl,
+  Eq.trans (Category.comp_id _).symm (Category.id_comp _).symm⟩
+
+lemma map_subset_iff (F : C ⥤ D) (P : MorphismProperty C) (Q : MorphismProperty D) :
+    map F P ⊆ Q ↔ ∀ (X Y : C) (f : X ⟶ Y), P f → Q (F.map f) where
+  mp h _ _ _ hf := h _ (map_mem_map F hf)
+  mpr := by
+    rintro H _ _ _ ⟨_, _, _, h1, rfl, rfl, h2⟩
+    refine Eq.subst (Eq.trans h2 ?_) (H _ _ _ h1)
+    exact Eq.trans (Category.id_comp _) (Category.comp_id _)
+
+lemma map_gc (F : C ⥤ D) : GaloisConnection (map F) (inverseImage F) :=
+  map_subset_iff F
+
+lemma monotone_inverseImage (F : C ⥤ D) (P Q : MorphismProperty D) (h : P ⊆ Q) :
+    inverseImage F P ⊆ inverseImage F Q := (map_gc F).monotone_u h
+
+lemma monotone_map (F : C ⥤ D) (P Q : MorphismProperty C) (h : P ⊆ Q) :
+    map F P ⊆ map F Q := (map_gc F).monotone_l h
+
+lemma map_inverseImage_subset (F : C ⥤ D) (P : MorphismProperty D) :
+    map F (inverseImage F P) ⊆ P := (map_gc F).l_u_le P
+
+lemma subset_inverseImage_map (P : MorphismProperty C) (F : C ⥤ D) :
+    P ⊆ inverseImage F (map F P) := (map_gc F).le_u_l P
+
+lemma RespectsIso.inverseImage {P : MorphismProperty D} (F : C ⥤ D)
+    (h : RespectsIso P) : RespectsIso (inverseImage F P) :=
+  RespectsIso.of_respects_arrow_iso _ $ fun _ _ =>
+    Iff.mp ∘ h.arrow_iso_iff ∘ F.mapArrow.mapIso
+#align category_theory.morphism_property.respects_iso.inverse_image CategoryTheory.MorphismProperty.RespectsIso.inverseImage
+
+lemma isoClosure_inverseImage_subset_inverseImage_isoClosure
+    (F : C ⥤ D) (P : MorphismProperty D) :
+    isoClosure (inverseImage F P) ⊆ inverseImage F (isoClosure P) :=
+  (isoClosure_subset_iff _ _ ((isoClosure_respectsIso _).inverseImage _)).mpr
+  $ monotone_inverseImage F _ _ $ subset_isoClosure P
+
+lemma map_id (P : MorphismProperty C) : map (𝟭 _) P = P :=
+  subset_antisymm ((map_subset_iff _ _ _).mpr (fun _ _ _ h => h))
+                  (@map_mem_map _ _ _ _ (𝟭 C) P)
+
+@[simp]
+lemma map_map (G : D ⥤ E) (F : C ⥤ D) (P : MorphismProperty C) :
+    map G (map F P) = map (F ⋙ G) P :=
+  subset_antisymm ((map_subset_iff _ _ _).mpr $ (map_subset_iff _ _ _).mpr
+                  $ fun _ _ _ h => map_mem_map _ h)
+                  ((map_subset_iff _ _ _).mpr $ fun _ _ _ h =>
+                    map_mem_map _ (map_mem_map _ h))
+
+/-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
+def essMap (F : C ⥤ D) (P : MorphismProperty C) : MorphismProperty D := fun _ _ f =>
+  ∃ (X' Y' : C)  (f' : X' ⟶ Y'), P f' ∧ Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
+
+lemma map_subset_essMap (F : C ⥤ D) (P : MorphismProperty C) : map F P ⊆ essMap F P :=
+  (map_subset_iff F P _).mpr (fun _ _ _ h => ⟨_, _, _, h, ⟨Iso.refl _⟩⟩)
+
+lemma map_mem_essMap (F : C ⥤ D) (P : MorphismProperty C) {X Y : C}
+    (f : X ⟶ Y) (hf : P f) : (essMap F P) (F.map f) :=
+  map_subset_essMap _ _ _ (map_mem_map _ hf)
+
+lemma essMap_respectsIso (F : C ⥤ D) (P : MorphismProperty C) :
+    (essMap F P).RespectsIso :=
+  RespectsIso.of_respects_arrow_iso  _
+  $ fun _ _ e ⟨_, _, _, h, ⟨e'⟩⟩ => ⟨_, _, _, h, ⟨e' ≪≫ e⟩⟩
+
+lemma essMap_eq_isoClosure_map (F : C ⥤ D) (P : MorphismProperty C) :
+    essMap F P = isoClosure (map F P) :=
+  subset_antisymm (fun _ _ _ ⟨_, _, _, h, e⟩ => ⟨_, _, _, map_mem_map _ h, e⟩)
+  $ (isoClosure_subset_iff _ _ (essMap_respectsIso _ _)).mpr (map_subset_essMap _ _)
+
+lemma mem_essMap_iff_mem_isoClosure_map (F : C ⥤ D) (P : MorphismProperty C)
+    (X Y : D) (f : X ⟶ Y) :
+    essMap F P f ↔ isoClosure (map F P) f :=
+  iff_of_eq (congrFun₃ (essMap_eq_isoClosure_map F P) _ _ _)
+
+lemma essMap_gc (F : C ⥤ D) :
+    GaloisConnection (Subtype.coind (essMap F) (essMap_respectsIso F))
+                     (inverseImage F ∘ Subtype.val) := by
+  refine Eq.mpr (congrArg₂ _ ?_ rfl) ((map_gc F).compose isoClosure.gi.gc)
+  exact funext (Subtype.eq ∘' essMap_eq_isoClosure_map F)
+
+lemma essMap_subset_iff (F : C ⥤ D) (P : MorphismProperty C)
+    {Q : MorphismProperty D} (hQ : RespectsIso Q) :
+    essMap F P ⊆ Q ↔ ∀ (X Y : C) (f : X ⟶ Y), P f → Q (F.map f) :=
+  essMap_gc F P ⟨Q, hQ⟩
+
+lemma monotone_essMap (F : C ⥤ D) (P Q : MorphismProperty C) (h : P ⊆ Q) :
+    essMap F P ⊆ essMap F Q := (essMap_gc F).monotone_l h
+
+lemma essMap_inverseImage_subset (F : C ⥤ D) (P : MorphismProperty D) :
+    essMap F (inverseImage F P) ⊆ isoClosure P :=
+  subset_trans (monotone_essMap F _ _
+                $ monotone_inverseImage F _ _ (subset_isoClosure P))
+               ((essMap_gc F).l_u_le ⟨isoClosure P, isoClosure_respectsIso _⟩)
+
+lemma subset_inverseImage_essMap (F : C ⥤ D) (P : MorphismProperty C) :
+    isoClosure P ⊆ inverseImage F (essMap F P) :=
+  (isoClosure_subset_iff _ _ ((essMap_respectsIso _ _).inverseImage _)).mpr
+  $ (essMap_gc F).le_u_l P
+
+@[simp]
+lemma essMap_isoClosure (F : C ⥤ D) (P : MorphismProperty C) :
+    essMap F (isoClosure P) = essMap F P :=
+  subset_antisymm ((essMap_gc F _ ⟨_, essMap_respectsIso F P⟩).mpr
+                    (subset_inverseImage_essMap F P))
+                  (monotone_essMap _ _ _ (subset_isoClosure _))
+
+lemma essMap_id_eq_isoClosure (P : MorphismProperty C) :
+    essMap (𝟭 _) P = isoClosure P :=
+  Eq.trans (essMap_eq_isoClosure_map _ _) (congrArg _ (map_id P))
+
+lemma essMap_id {P : MorphismProperty C} (hP : RespectsIso P) :
+    essMap (𝟭 _) P = P := by rw [essMap_id_eq_isoClosure, hP.isoClosure_eq]
+
+@[simp]
+lemma essMap_essMap (G : D ⥤ E) (F : C ⥤ D) (P : MorphismProperty C) :
+    essMap G (essMap F P) = essMap (F ⋙ G) P := by
+  rw [essMap_eq_isoClosure_map F P, essMap_isoClosure, essMap_eq_isoClosure_map,
+      map_map, ← essMap_eq_isoClosure_map]
+
+lemma essMap_eq_of_iso : {F G : C ⥤ D} → (F ≅ G) → ∀ P, essMap F P = essMap G P :=
+  suffices ∀ {F G : C ⥤ D}, (F ≅ G) → ∀ P, essMap F P ⊆ essMap G P
+  from fun e P => subset_antisymm (this e P) (this e.symm P); fun e _ =>
+  (essMap_subset_iff _ _ (essMap_respectsIso _ _)).mpr
+  $ fun X Y f h =>
+    ((essMap_respectsIso _ _).arrow_iso_iff
+    $ (((Functor.mapArrowFunctor C D).mapIso e).app ⟨X, Y, f⟩)).mpr
+  $ map_mem_essMap _ _ _ h
+
+lemma inverseImage_equivalence_inverse_eq_essMap_functor
+    (E : C ≌ D) {P : MorphismProperty D} (hP : RespectsIso P) :
+    inverseImage E.functor P = essMap E.inverse P := by
+  apply subset_antisymm
+  · intro X Y f hf
+    refine' ⟨_, _, _, hf, ⟨_⟩⟩
+    exact ((Functor.mapArrowFunctor _ _).mapIso E.unitIso.symm).app (Arrow.mk f)
+  · rw [essMap_subset_iff _ _ (hP.inverseImage E.functor)]
+    intro X Y f hf
+    exact (hP.arrow_mk_iso_iff
+      (((Functor.mapArrowFunctor _ _).mapIso E.counitIso).app (Arrow.mk f))).2 hf
+
+lemma inverseImage_equivalence_functor_eq_essMap_inverse (E : C ≌ D)
+    {Q : MorphismProperty C} (hQ : RespectsIso Q) :
+    inverseImage E.inverse Q = essMap E.functor Q :=
+  inverseImage_equivalence_inverse_eq_essMap_functor E.symm hQ
+
+lemma essMap_inverseImage_eq_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
+    {P : MorphismProperty D} (hP : RespectsIso P) :
+    essMap F (inverseImage F P) = P := by
+  erw [inverseImage_equivalence_inverse_eq_essMap_functor F.asEquivalence hP,
+       essMap_essMap, essMap_eq_of_iso F.asEquivalence.counitIso, essMap_id hP]
+
+lemma inverseImage_essMap_eq_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
+    {P : MorphismProperty C} (hP : RespectsIso P) :
+    inverseImage F (essMap F P) = P := by
+  erw [inverseImage_equivalence_inverse_eq_essMap_functor (F.asEquivalence)
+         (essMap_respectsIso F P), essMap_essMap,
+       essMap_eq_of_iso F.asEquivalence.unitIso.symm P, essMap_id hP]
 
 /-- A morphism property is `StableUnderComposition` if the composition of two such morphisms
 still falls in the class. -/
@@ -182,15 +377,15 @@ theorem StableUnderInverse.unop {P : MorphismProperty Cᵒᵖ} (h : StableUnderI
 /-- A morphism property is `StableUnderBaseChange` if the base change of such a morphism
 still falls in the class. -/
 def StableUnderBaseChange (P : MorphismProperty C) : Prop :=
-  ∀ ⦃X Y Y' S : C⦄ ⦃f : X ⟶ S⦄ ⦃g : Y ⟶ S⦄ ⦃f' : Y' ⟶ Y⦄ ⦃g' : Y' ⟶ X⦄ (_ : IsPullback f' g' g f)
-    (_ : P g), P g'
+  ∀ ⦃X Y Y' S : C⦄ ⦃f : X ⟶ S⦄ ⦃g : Y ⟶ S⦄ ⦃f' : Y' ⟶ Y⦄ ⦃g' : Y' ⟶ X⦄,
+    IsPullback f' g' g f → P g → P g'
 #align category_theory.morphism_property.stable_under_base_change CategoryTheory.MorphismProperty.StableUnderBaseChange
 
 /-- A morphism property is `StableUnderCobaseChange` if the cobase change of such a morphism
 still falls in the class. -/
 def StableUnderCobaseChange (P : MorphismProperty C) : Prop :=
-  ∀ ⦃A A' B B' : C⦄ ⦃f : A ⟶ A'⦄ ⦃g : A ⟶ B⦄ ⦃f' : B ⟶ B'⦄ ⦃g' : A' ⟶ B'⦄ (_ : IsPushout g f f' g')
-    (_ : P f), P f'
+  ∀ ⦃A A' B B' : C⦄ ⦃f : A ⟶ A'⦄ ⦃g : A ⟶ B⦄ ⦃f' : B ⟶ B'⦄ ⦃g' : A' ⟶ B'⦄,
+    IsPushout g f f' g' →  P f → P f'
 #align category_theory.morphism_property.stable_under_cobase_change CategoryTheory.MorphismProperty.StableUnderCobaseChange
 
 theorem StableUnderComposition.respectsIso {P : MorphismProperty C} (hP : StableUnderComposition P)
@@ -198,52 +393,8 @@ theorem StableUnderComposition.respectsIso {P : MorphismProperty C} (hP : Stable
   ⟨fun e _ hf => hP _ _ (hP' e) hf, fun e _ hf => hP _ _ hf (hP' e)⟩
 #align category_theory.morphism_property.stable_under_composition.respects_iso CategoryTheory.MorphismProperty.StableUnderComposition.respectsIso
 
-theorem RespectsIso.cancel_left_isIso {P : MorphismProperty C} (hP : RespectsIso P) {X Y Z : C}
-    (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] : P (f ≫ g) ↔ P g :=
-  ⟨fun h => by simpa using hP.1 (asIso f).symm (f ≫ g) h, hP.1 (asIso f) g⟩
-#align category_theory.morphism_property.respects_iso.cancel_left_is_iso CategoryTheory.MorphismProperty.RespectsIso.cancel_left_isIso
-
-theorem RespectsIso.cancel_right_isIso {P : MorphismProperty C} (hP : RespectsIso P) {X Y Z : C}
-    (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] : P (f ≫ g) ↔ P f :=
-  ⟨fun h => by simpa using hP.2 (asIso g).symm (f ≫ g) h, hP.2 (asIso g) f⟩
-#align category_theory.morphism_property.respects_iso.cancel_right_is_iso CategoryTheory.MorphismProperty.RespectsIso.cancel_right_isIso
-
-theorem RespectsIso.arrow_iso_iff {P : MorphismProperty C} (hP : RespectsIso P) {f g : Arrow C}
-    (e : f ≅ g) : P f.hom ↔ P g.hom := by
-  rw [← Arrow.inv_left_hom_right e.hom, hP.cancel_left_isIso, hP.cancel_right_isIso]
-#align category_theory.morphism_property.respects_iso.arrow_iso_iff CategoryTheory.MorphismProperty.RespectsIso.arrow_iso_iff
-
-theorem RespectsIso.arrow_mk_iso_iff {P : MorphismProperty C} (hP : RespectsIso P) {W X Y Z : C}
-    {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) : P f ↔ P g :=
-  hP.arrow_iso_iff e
-#align category_theory.morphism_property.respects_iso.arrow_mk_iso_iff CategoryTheory.MorphismProperty.RespectsIso.arrow_mk_iso_iff
-
-theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
-    (hP : ∀ (f g : Arrow C) (_ : f ≅ g) (_ : P f.hom), P g.hom) : RespectsIso P := by
-  constructor
-  · intro X Y Z e f hf
-    refine' hP (Arrow.mk f) (Arrow.mk (e.hom ≫ f)) (Arrow.isoMk e.symm (Iso.refl _) _) hf
-    dsimp
-    simp only [Iso.inv_hom_id_assoc, Category.comp_id]
-  · intro X Y Z e f hf
-    refine' hP (Arrow.mk f) (Arrow.mk (f ≫ e.hom)) (Arrow.isoMk (Iso.refl _) e _) hf
-    dsimp
-    simp only [Category.id_comp]
-#align category_theory.morphism_property.respects_iso.of_respects_arrow_iso CategoryTheory.MorphismProperty.RespectsIso.of_respects_arrow_iso
-
-lemma RespectsIso.isoClosure_eq {P : MorphismProperty C} (hP : P.RespectsIso) :
-    P.isoClosure = P := by
-  refine' le_antisymm _ (P.subset_isoClosure)
-  intro X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
-  exact (hP.arrow_mk_iso_iff e).1 hf'
-
-@[simp]
-lemma isoClosure_isoClosure (P : MorphismProperty C) :
-    P.isoClosure.isoClosure = P.isoClosure :=
-  P.isoClosure_respectsIso.isoClosure_eq
-
 theorem StableUnderBaseChange.mk {P : MorphismProperty C} [HasPullbacks C] (hP₁ : RespectsIso P)
-    (hP₂ : ∀ (X Y S : C) (f : X ⟶ S) (g : Y ⟶ S) (_ : P g), P (pullback.fst : pullback f g ⟶ X)) :
+    (hP₂ : ∀ (X Y S : C) (f : X ⟶ S) (g : Y ⟶ S), P g → P (pullback.fst : pullback f g ⟶ X)) :
     StableUnderBaseChange P := fun X Y Y' S f g f' g' sq hg => by
   let e := sq.flip.isoPullback
   rw [← hP₁.cancel_left_isIso e.inv, sq.flip.isoPullback_inv_fst]
@@ -308,7 +459,7 @@ theorem StableUnderBaseChange.pullback_map [HasPullbacks C] {P : MorphismPropert
 #align category_theory.morphism_property.stable_under_base_change.pullback_map CategoryTheory.MorphismProperty.StableUnderBaseChange.pullback_map
 
 theorem StableUnderCobaseChange.mk {P : MorphismProperty C} [HasPushouts C] (hP₁ : RespectsIso P)
-    (hP₂ : ∀ (A B A' : C) (f : A ⟶ A') (g : A ⟶ B) (_ : P f), P (pushout.inr : B ⟶ pushout f g)) :
+    (hP₂ : ∀ (A B A' : C) (f : A ⟶ A') (g : A ⟶ B), P f → P (pushout.inr : B ⟶ pushout f g)) :
     StableUnderCobaseChange P := fun A A' B B' f g f' g' sq hf => by
   let e := sq.flip.isoPushout
   rw [← hP₁.cancel_right_isIso _ e.hom, sq.flip.inr_isoPushout_hom]
@@ -352,7 +503,7 @@ theorem StableUnderBaseChange.unop {P : MorphismProperty Cᵒᵖ} (hP : StableUn
 `P.IsInvertedBy F` means that all morphisms in `P` are mapped by `F`
 to isomorphisms in `D`. -/
 def IsInvertedBy (P : MorphismProperty C) (F : C ⥤ D) : Prop :=
-  ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : P f), IsIso (F.map f)
+  ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P f → IsIso (F.map f)
 #align category_theory.morphism_property.is_inverted_by CategoryTheory.MorphismProperty.IsInvertedBy
 
 namespace IsInvertedBy
@@ -428,16 +579,6 @@ theorem stableUnderInverse {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F�
 
 end naturalityProperty
 
-theorem RespectsIso.inverseImage {P : MorphismProperty D} (h : RespectsIso P) (F : C ⥤ D) :
-    RespectsIso (P.inverseImage F) := by
-  constructor
-  all_goals
-    intro X Y Z e f hf
-    dsimp [MorphismProperty.inverseImage]
-    rw [F.map_comp]
-  exacts [h.1 (F.mapIso e) (F.map f) hf, h.2 (F.mapIso e) (F.map f) hf]
-#align category_theory.morphism_property.respects_iso.inverse_image CategoryTheory.MorphismProperty.RespectsIso.inverseImage
-
 theorem StableUnderComposition.inverseImage {P : MorphismProperty D} (h : StableUnderComposition P)
     (F : C ⥤ D) : StableUnderComposition (P.inverseImage F) := fun X Y Z f g hf hg => by
   simpa only [← F.map_comp] using h (F.map f) (F.map g) hf hg
@@ -457,87 +598,7 @@ def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
 def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
 #align category_theory.morphism_property.epimorphisms CategoryTheory.MorphismProperty.epimorphisms
 
-section
-
 variable {C}
-variable {X Y : C} (f : X ⟶ Y)
-
-@[simp]
-theorem isomorphisms.iff : (isomorphisms C) f ↔ IsIso f := by rfl
-#align category_theory.morphism_property.isomorphisms.iff CategoryTheory.MorphismProperty.isomorphisms.iff
-
-@[simp]
-theorem monomorphisms.iff : (monomorphisms C) f ↔ Mono f := by rfl
-#align category_theory.morphism_property.monomorphisms.iff CategoryTheory.MorphismProperty.monomorphisms.iff
-
-@[simp]
-theorem epimorphisms.iff : (epimorphisms C) f ↔ Epi f := by rfl
-#align category_theory.morphism_property.epimorphisms.iff CategoryTheory.MorphismProperty.epimorphisms.iff
-
-theorem isomorphisms.infer_property [hf : IsIso f] : (isomorphisms C) f :=
-  hf
-#align category_theory.morphism_property.isomorphisms.infer_property CategoryTheory.MorphismProperty.isomorphisms.infer_property
-
-theorem monomorphisms.infer_property [hf : Mono f] : (monomorphisms C) f :=
-  hf
-#align category_theory.morphism_property.monomorphisms.infer_property CategoryTheory.MorphismProperty.monomorphisms.infer_property
-
-theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
-  hf
-#align category_theory.morphism_property.epimorphisms.infer_property CategoryTheory.MorphismProperty.epimorphisms.infer_property
-
-end
-
-theorem RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
-  constructor <;>
-    · intro X Y Z e f
-      simp only [monomorphisms.iff]
-      intro
-      apply mono_comp
-#align category_theory.morphism_property.respects_iso.monomorphisms CategoryTheory.MorphismProperty.RespectsIso.monomorphisms
-
-theorem RespectsIso.epimorphisms : RespectsIso (epimorphisms C) := by
-  constructor <;>
-    · intro X Y Z e f
-      simp only [epimorphisms.iff]
-      intro
-      apply epi_comp
-#align category_theory.morphism_property.respects_iso.epimorphisms CategoryTheory.MorphismProperty.RespectsIso.epimorphisms
-
-theorem RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
-  constructor <;>
-    · intro X Y Z e f
-      simp only [isomorphisms.iff]
-      intro
-      infer_instance
-#align category_theory.morphism_property.respects_iso.isomorphisms CategoryTheory.MorphismProperty.RespectsIso.isomorphisms
-
-theorem StableUnderComposition.isomorphisms : StableUnderComposition (isomorphisms C) :=
-  fun X Y Z f g hf hg => by
-  rw [isomorphisms.iff] at hf hg ⊢
-  haveI := hf
-  haveI := hg
-  infer_instance
-#align category_theory.morphism_property.stable_under_composition.isomorphisms CategoryTheory.MorphismProperty.StableUnderComposition.isomorphisms
-
-theorem StableUnderComposition.monomorphisms : StableUnderComposition (monomorphisms C) :=
-  fun X Y Z f g hf hg => by
-  rw [monomorphisms.iff] at hf hg ⊢
-  haveI := hf
-  haveI := hg
-  apply mono_comp
-#align category_theory.morphism_property.stable_under_composition.monomorphisms CategoryTheory.MorphismProperty.StableUnderComposition.monomorphisms
-
-theorem StableUnderComposition.epimorphisms : StableUnderComposition (epimorphisms C) :=
-  fun X Y Z f g hf hg => by
-  rw [epimorphisms.iff] at hf hg ⊢
-  haveI := hf
-  haveI := hg
-  apply epi_comp
-#align category_theory.morphism_property.stable_under_composition.epimorphisms CategoryTheory.MorphismProperty.StableUnderComposition.epimorphisms
-
-variable {C}
-
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
@@ -601,116 +662,19 @@ lemma IsInvertedBy.iff_comp {C₁ C₂ C₃ : Type*} [Category C₁] [Category C
   · intro hF
     exact IsInvertedBy.of_comp W F hF G
 
-lemma isoClosure_subset_iff (P Q : MorphismProperty C) (hQ : RespectsIso Q) :
-    P.isoClosure ⊆ Q ↔ P ⊆ Q := by
-  constructor
-  · exact P.subset_isoClosure.trans
-  · intro h
-    exact (monotone_isoClosure _ _ h).trans (by rw [hQ.isoClosure_eq])
-
-lemma map_respectsIso (P : MorphismProperty C) (F : C ⥤ D) :
-    (P.map F).RespectsIso := by
-  apply RespectsIso.of_respects_arrow_iso
-  intro f g e ⟨X', Y', f', hf', ⟨e'⟩⟩
-  exact ⟨X', Y', f', hf', ⟨e' ≪≫ e⟩⟩
-
-lemma map_subset_iff (P : MorphismProperty C) (F : C ⥤ D)
-    (Q : MorphismProperty D) (hQ : RespectsIso Q):
-    P.map F ⊆ Q ↔ ∀ (X Y : C) (f : X ⟶ Y), P f → Q (F.map f) := by
-  constructor
-  · intro h X Y f hf
-    exact h (F.map f) (map_mem_map P F f hf)
-  · intro h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
-    exact (hQ.arrow_mk_iso_iff e).1 (h _ _ _ hf')
-
 lemma IsInvertedBy.iff_map_subset_isomorphisms (W : MorphismProperty C) (F : C ⥤ D) :
-    W.IsInvertedBy F ↔ W.map F ⊆ isomorphisms D := by
-  rw [map_subset_iff _ _ _ (RespectsIso.isomorphisms D)]
-  constructor
-  · intro h X Y f hf
-    exact h f hf
-  · intro h X Y f hf
-    exact h X Y f hf
-
-@[simp]
-lemma map_isoClosure (P : MorphismProperty C) (F : C ⥤ D) :
-    P.isoClosure.map F = P.map F := by
-  apply subset_antisymm
-  · rw [map_subset_iff _ _ _ (P.map_respectsIso F)]
-    intro X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
-    exact ⟨_, _, f', hf', ⟨F.mapArrow.mapIso e⟩⟩
-  · exact monotone_map _ _ _ (subset_isoClosure P)
-
-lemma map_id_eq_isoClosure (P : MorphismProperty C) :
-    P.map (𝟭 _) = P.isoClosure := by
-  apply subset_antisymm
-  · rw [map_subset_iff _ _ _ P.isoClosure_respectsIso]
-    intro X Y f hf
-    exact P.subset_isoClosure _ hf
-  · intro X Y f hf
-    exact hf
-
-lemma map_id (P : MorphismProperty C) (hP : RespectsIso P) :
-    P.map (𝟭 _) = P := by
-  rw [map_id_eq_isoClosure, hP.isoClosure_eq]
-
-@[simp]
-lemma map_map (P : MorphismProperty C) (F : C ⥤ D) {E : Type*} [Category E] (G : D ⥤ E) :
-    (P.map F).map G = P.map (F ⋙ G) := by
-  apply subset_antisymm
-  · rw [map_subset_iff _ _ _ (map_respectsIso _ (F ⋙ G))]
-    intro X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
-    exact ⟨X', Y', f', hf', ⟨G.mapArrow.mapIso e⟩⟩
-  · rw [map_subset_iff _ _ _ (map_respectsIso _ G)]
-    intro X Y f hf
-    exact map_mem_map _ _ _ (map_mem_map _ _ _ hf)
+    W.IsInvertedBy F ↔ W.map F ⊆ isomorphisms D :=
+  Iff.symm (map_subset_iff F W (isomorphisms D))
 
 lemma IsInvertedBy.map_iff {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) :
     (W.map F).IsInvertedBy G ↔ W.IsInvertedBy (F ⋙ G) := by
   simp only [IsInvertedBy.iff_map_subset_isomorphisms, map_map]
 
-lemma map_eq_of_iso (P : MorphismProperty C) {F G : C ⥤ D} (e : F ≅ G) :
-    P.map F = P.map G := by
-  revert F G e
-  suffices ∀ {F G : C ⥤ D} (_ : F ≅ G), P.map F ⊆ P.map G from
-    fun F G e => le_antisymm (this e) (this e.symm)
-  intro F G e X Y f ⟨X', Y', f', hf', ⟨e'⟩⟩
-  exact ⟨X', Y', f', hf', ⟨((Functor.mapArrowFunctor _ _).mapIso e.symm).app (Arrow.mk f') ≪≫ e'⟩⟩
-
-lemma map_inverseImage_subset (P : MorphismProperty D) (F : C ⥤ D) :
-    (P.inverseImage F).map F ⊆ P.isoClosure :=
-  fun _ _ _ ⟨_, _, f, hf, ⟨e⟩⟩ => ⟨_, _, F.map f, hf, ⟨e⟩⟩
-
-lemma inverseImage_equivalence_inverse_eq_map_functor
-    (P : MorphismProperty D) (hP : RespectsIso P) (E : C ≌ D) :
-    P.inverseImage E.functor = P.map E.inverse := by
-  apply subset_antisymm
-  · intro X Y f hf
-    refine' ⟨_, _, _, hf, ⟨_⟩⟩
-    exact ((Functor.mapArrowFunctor _ _).mapIso E.unitIso.symm).app (Arrow.mk f)
-  · rw [map_subset_iff _ _ _ (hP.inverseImage E.functor)]
-    intro X Y f hf
-    exact (hP.arrow_mk_iso_iff
-      (((Functor.mapArrowFunctor _ _).mapIso E.counitIso).app (Arrow.mk f))).2 hf
-
-lemma inverseImage_equivalence_functor_eq_map_inverse
-    (Q : MorphismProperty C) (hQ : RespectsIso Q) (E : C ≌ D) :
-    Q.inverseImage E.inverse = Q.map E.functor :=
-  inverseImage_equivalence_inverse_eq_map_functor Q hQ E.symm
-
-lemma map_inverseImage_eq_of_isEquivalence
-    (P : MorphismProperty D) (hP : P.RespectsIso) (F : C ⥤ D) [IsEquivalence F] :
-    (P.inverseImage F).map F = P := by
-  erw [P.inverseImage_equivalence_inverse_eq_map_functor hP F.asEquivalence, map_map,
-    P.map_eq_of_iso F.asEquivalence.counitIso, map_id _ hP]
-
-lemma inverseImage_map_eq_of_isEquivalence
-    (P : MorphismProperty C) (hP : P.RespectsIso) (F : C ⥤ D) [IsEquivalence F] :
-    (P.map F).inverseImage F = P := by
-  erw [((P.map F).inverseImage_equivalence_inverse_eq_map_functor
-    (P.map_respectsIso F) (F.asEquivalence)), map_map,
-    P.map_eq_of_iso F.asEquivalence.unitIso.symm, map_id _ hP]
+lemma IsInvertedBy.essMap_iff {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+    (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) :
+    (W.essMap F).IsInvertedBy G ↔ W.IsInvertedBy (F ⋙ G) := by
+  simp only [essMap_eq_isoClosure_map, isoClosure_iff, map_iff]
 
 section Diagonal
 
@@ -759,7 +723,7 @@ section Universally
 
 /-- `P.universally` holds for a morphism `f : X ⟶ Y` iff `P` holds for all `X ×[Y] Y' ⟶ Y'`. -/
 def universally (P : MorphismProperty C) : MorphismProperty C := fun X Y f =>
-  ∀ ⦃X' Y' : C⦄ (i₁ : X' ⟶ X) (i₂ : Y' ⟶ Y) (f' : X' ⟶ Y') (_ : IsPullback f' i₁ i₂ f), P f'
+  ∀ ⦃X' Y' : C⦄ (i₁ : X' ⟶ X) (i₂ : Y' ⟶ Y) (f' : X' ⟶ Y'), IsPullback f' i₁ i₂ f → P f'
 #align category_theory.morphism_property.universally CategoryTheory.MorphismProperty.universally
 
 theorem universally_respectsIso (P : MorphismProperty C) : P.universally.RespectsIso := by
@@ -1023,6 +987,98 @@ lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
   IsStableUnderFiniteProducts.isStableUnderProductsOfShape J
 
 end
+
+section
+
+variable {X Y : C} (f : X ⟶ Y)
+
+@[simp]
+theorem isomorphisms.iff : (isomorphisms C) f ↔ IsIso f := by rfl
+#align category_theory.morphism_property.isomorphisms.iff CategoryTheory.MorphismProperty.isomorphisms.iff
+
+@[simp]
+theorem monomorphisms.iff : (monomorphisms C) f ↔ Mono f := by rfl
+#align category_theory.morphism_property.monomorphisms.iff CategoryTheory.MorphismProperty.monomorphisms.iff
+
+@[simp]
+theorem epimorphisms.iff : (epimorphisms C) f ↔ Epi f := by rfl
+#align category_theory.morphism_property.epimorphisms.iff CategoryTheory.MorphismProperty.epimorphisms.iff
+
+theorem isomorphisms.infer_property [hf : IsIso f] : (isomorphisms C) f :=
+  hf
+#align category_theory.morphism_property.isomorphisms.infer_property CategoryTheory.MorphismProperty.isomorphisms.infer_property
+
+theorem monomorphisms.infer_property [hf : Mono f] : (monomorphisms C) f :=
+  hf
+#align category_theory.morphism_property.monomorphisms.infer_property CategoryTheory.MorphismProperty.monomorphisms.infer_property
+
+theorem epimorphisms.infer_property [hf : Epi f] : (epimorphisms C) f :=
+  hf
+#align category_theory.morphism_property.epimorphisms.infer_property CategoryTheory.MorphismProperty.epimorphisms.infer_property
+
+end
+
+variable (C)
+
+theorem RespectsIso.monomorphisms : RespectsIso (monomorphisms C) := by
+  constructor <;>
+    · intro X Y Z e f
+      simp only [monomorphisms.iff]
+      intro
+      apply mono_comp
+#align category_theory.morphism_property.respects_iso.monomorphisms CategoryTheory.MorphismProperty.RespectsIso.monomorphisms
+
+theorem RespectsIso.epimorphisms : RespectsIso (epimorphisms C) := by
+  constructor <;>
+    · intro X Y Z e f
+      simp only [epimorphisms.iff]
+      intro
+      apply epi_comp
+#align category_theory.morphism_property.respects_iso.epimorphisms CategoryTheory.MorphismProperty.RespectsIso.epimorphisms
+
+theorem RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
+  constructor <;>
+    · intro X Y Z e f
+      simp only [isomorphisms.iff]
+      intro
+      infer_instance
+#align category_theory.morphism_property.respects_iso.isomorphisms CategoryTheory.MorphismProperty.RespectsIso.isomorphisms
+
+theorem StableUnderComposition.isomorphisms : StableUnderComposition (isomorphisms C) :=
+  fun X Y Z f g hf hg => by
+  rw [isomorphisms.iff] at hf hg ⊢
+  haveI := hf
+  haveI := hg
+  infer_instance
+#align category_theory.morphism_property.stable_under_composition.isomorphisms CategoryTheory.MorphismProperty.StableUnderComposition.isomorphisms
+
+theorem StableUnderComposition.monomorphisms : StableUnderComposition (monomorphisms C) :=
+  fun X Y Z f g hf hg => by
+  rw [monomorphisms.iff] at hf hg ⊢
+  haveI := hf
+  haveI := hg
+  apply mono_comp
+#align category_theory.morphism_property.stable_under_composition.monomorphisms CategoryTheory.MorphismProperty.StableUnderComposition.monomorphisms
+
+theorem StableUnderComposition.epimorphisms : StableUnderComposition (epimorphisms C) :=
+  fun X Y Z f g hf hg => by
+  rw [epimorphisms.iff] at hf hg ⊢
+  haveI := hf
+  haveI := hg
+  apply epi_comp
+#align category_theory.morphism_property.stable_under_composition.epimorphisms CategoryTheory.MorphismProperty.StableUnderComposition.epimorphisms
+
+instance : IsMultiplicative (isomorphisms C) where
+  id_mem' X := isomorphisms.infer_property (𝟙 X)
+  stableUnderComposition := StableUnderComposition.isomorphisms C
+
+instance : IsMultiplicative (monomorphisms C) where
+  id_mem' X := monomorphisms.infer_property (𝟙 X)
+  stableUnderComposition := StableUnderComposition.monomorphisms C
+
+instance : IsMultiplicative (epimorphisms C) where
+  id_mem' X := epimorphisms.infer_property (𝟙 X)
+  stableUnderComposition := StableUnderComposition.epimorphisms C
 
 end MorphismProperty
 

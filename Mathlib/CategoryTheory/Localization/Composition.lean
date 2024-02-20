@@ -34,12 +34,12 @@ def StrictUniversalPropertyFixedTarget.comp
     (h₁ : StrictUniversalPropertyFixedTarget L₁ W₁ E)
     (h₂ : StrictUniversalPropertyFixedTarget L₂ W₂ E)
     (W₃ : MorphismProperty C₁) (hW₃ : W₃.IsInvertedBy (L₁ ⋙ L₂))
-    (hW₁₃ : W₁ ⊆ W₃) (hW₂₃ : W₂ ⊆ W₃.map L₁) :
+    (hW₁₃ : W₁ ⊆ W₃) (hW₂₃ : W₂ ⊆ W₃.essMap L₁) :
     StrictUniversalPropertyFixedTarget (L₁ ⋙ L₂) W₃ E where
   inverts := hW₃
   lift F hF := h₂.lift (h₁.lift F (MorphismProperty.IsInvertedBy.of_subset _ _  F hF hW₁₃)) (by
     refine' MorphismProperty.IsInvertedBy.of_subset _ _ _ _ hW₂₃
-    simpa only [MorphismProperty.IsInvertedBy.map_iff, h₁.fac F] using hF)
+    simpa only [MorphismProperty.IsInvertedBy.essMap_iff, h₁.fac F] using hF)
   fac F hF := by rw [Functor.assoc, h₂.fac, h₁.fac]
   uniq F₁ F₂ h := h₂.uniq _ _ (h₁.uniq _ _ (by simpa only [Functor.assoc] using h))
 
@@ -55,7 +55,7 @@ variable (L₁ W₁ L₂ W₂)
 
 lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
     (W₃ : MorphismProperty C₁) (hW₃ : W₃.IsInvertedBy (L₁ ⋙ L₂))
-    (hW₁₃ : W₁ ⊆ W₃) (hW₂₃ : W₂ ⊆ W₃.map L₁) :
+    (hW₁₃ : W₁ ⊆ W₃) (hW₂₃ : W₂ ⊆ W₃.essMap L₁) :
     (L₁ ⋙ L₂).IsLocalization W₃ := by
   -- The proof proceeds by reducing to the case of the constructed
   -- localized categories, which satisfy the strict universal property
@@ -66,13 +66,13 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   -- Then, we have a localizer morphism `Φ : LocalizerMorphism W₂ W₂'` which
   -- is a localized equivalence (because `E₂` is an equivalence).
   let E₂ := Localization.uniq L₁ W₁.Q W₁
-  let W₂' := W₂.map E₂.functor
+  let W₂' := W₂.essMap E₂.functor
   let Φ : LocalizerMorphism W₂ W₂' :=
     { functor := E₂.functor
       map := by
-        have eq := W₂.isoClosure.inverseImage_map_eq_of_isEquivalence
-          W₂.isoClosure_respectsIso E₂.functor
-        rw [MorphismProperty.map_isoClosure] at eq
+        have eq := MorphismProperty.inverseImage_essMap_eq_of_isEquivalence
+                      E₂.functor W₂.isoClosure_respectsIso
+        rw [MorphismProperty.essMap_isoClosure] at eq
         rw [eq]
         apply W₂.subset_isoClosure }
   have := LocalizerMorphism.IsLocalizedEquivalence.of_equivalence Φ (by rfl)
@@ -94,9 +94,10 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   have hW₃' : W₃.IsInvertedBy (W₁.Q ⋙ W₂'.Q) := by
     simpa only [← MorphismProperty.IsInvertedBy.iff_comp _ _ E₃.inverse,
       MorphismProperty.IsInvertedBy.iff_of_iso W₃ iso] using hW₃
-  have hW₂₃' : W₂' ⊆ W₃.map W₁.Q := (MorphismProperty.monotone_map _ _ E₂.functor hW₂₃).trans
-    (by simpa only [W₃.map_map]
-      using subset_of_eq (W₃.map_eq_of_iso (compUniqFunctor L₁ W₁.Q W₁)))
+  have hW₂₃' : W₂' ⊆ MorphismProperty.essMap W₁.Q W₃ :=
+    (MorphismProperty.monotone_essMap E₂.functor _ _ hW₂₃).trans
+      (by simpa only [W₃.essMap_essMap]
+        using subset_of_eq (W₃.essMap_eq_of_iso (compUniqFunctor L₁ W₁.Q W₁)))
   have : (W₁.Q ⋙ W₂'.Q).IsLocalization W₃ := by
     refine' IsLocalization.mk' _ _ _ _
     all_goals
@@ -108,11 +109,11 @@ lemma comp [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
 
 lemma of_comp (W₃ : MorphismProperty C₁)
     [L₁.IsLocalization W₁] [(L₁ ⋙ L₂).IsLocalization W₃]
-    (hW₁₃ : W₁ ⊆ W₃) (hW₂₃ : W₂ = W₃.map L₁) :
+    (hW₁₃ : W₁ ⊆ W₃) (hW₂₃ : W₂ = W₃.essMap L₁) :
     L₂.IsLocalization W₂ := by
     have : (L₁ ⋙ W₂.Q).IsLocalization W₃ :=
       comp L₁ W₂.Q W₁ W₂ W₃ (fun X Y f hf => Localization.inverts W₂.Q W₂ _
-        (by simpa only [hW₂₃] using W₃.map_mem_map _ _ hf)) hW₁₃
+        (by simpa only [hW₂₃] using W₃.map_mem_essMap _ _ hf)) hW₁₃
         (by rw [hW₂₃, MorphismProperty.subset_iff_le])
     exact IsLocalization.of_equivalence_target W₂.Q W₂ L₂
       (Localization.uniq (L₁ ⋙ W₂.Q) (L₁ ⋙ L₂) W₃)
