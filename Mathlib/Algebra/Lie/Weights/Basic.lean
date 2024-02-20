@@ -8,9 +8,10 @@ import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.Algebra.Lie.Engel
 import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
-import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Artinian
+import Mathlib.LinearAlgebra.Trace
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 #align_import algebra.lie.weights from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
