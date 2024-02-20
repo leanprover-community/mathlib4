@@ -761,7 +761,7 @@ theorem length_toList (s : Multiset α) : s.toList.length = card s := by
   rw [← coe_card, coe_toList]
 #align multiset.length_to_list Multiset.length_toList
 
-@[simp, nolint simpNF] -- Porting note: `dsimp` can not prove this, yet linter complains
+@[simp, nolint simpNF] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
 theorem card_zero : @card α 0 = 0 :=
   rfl
 #align multiset.card_zero Multiset.card_zero
@@ -1039,7 +1039,7 @@ theorem coe_erase (l : List α) (a : α) : erase (l : Multiset α) a = l.erase a
   rfl
 #align multiset.coe_erase Multiset.coe_erase
 
-@[simp, nolint simpNF] -- Porting note: `dsimp` can not prove this, yet linter complains
+@[simp, nolint simpNF] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
 theorem erase_zero (a : α) : (0 : Multiset α).erase a = 0 :=
   rfl
 #align multiset.erase_zero Multiset.erase_zero

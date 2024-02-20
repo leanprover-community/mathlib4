@@ -416,7 +416,7 @@ instance : SubgroupClass (Subgroup G) G where
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
-@[to_additive (attr := simp, nolint simpNF)] -- Porting note: dsimp can not prove this
+@[to_additive (attr := simp, nolint simpNF)] -- Porting note (#10675): dsimp can not prove this
 theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subgroup.mem_carrier Subgroup.mem_carrier

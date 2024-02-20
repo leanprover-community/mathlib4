@@ -1757,7 +1757,7 @@ noncomputable def mulEquivOfQuotient (f : Submonoid.LocalizationMap S N) : Local
 
 variable {f}
 
--- Porting note: dsimp can not prove this
+-- Porting note (#10675): dsimp can not prove this
 @[to_additive (attr := simp, nolint simpNF)]
 theorem mulEquivOfQuotient_apply (x) : mulEquivOfQuotient f x = (monoidOf S).lift f.map_units x :=
   rfl

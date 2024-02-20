@@ -195,7 +195,7 @@ theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := by
   rfl
 #align ordinal.type_def' Ordinal.type_def'
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := by
   rfl
 #align ordinal.type_def Ordinal.type_def
