@@ -254,10 +254,10 @@ example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * 
 example (x y : ℕ) : x + id y = y + id x := by ring!
 ```
 -/
-macro (name := ring) "ring" : tactic =>
-  `(tactic| first | ring1 | try_this ring_nf)
-@[inherit_doc ring] macro "ring!" : tactic =>
-  `(tactic| first | ring1! | try_this ring_nf!)
+macro (name := ring) "ring" cfg:(config)? : tactic =>
+  `(tactic| first | ring1 $(cfg)? | try_this ring_nf)
+@[inherit_doc ring] macro "ring!" cfg:(config)? : tactic =>
+  `(tactic| first | ring1! $(cfg)? | try_this ring_nf!)
 
 /--
 The tactic `ring` evaluates expressions in *commutative* (semi)rings.

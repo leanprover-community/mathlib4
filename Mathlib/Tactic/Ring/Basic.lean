@@ -291,7 +291,6 @@ partial def reduceCast (n : Q(ℕ)) (e : Q($α)) (instRing : Q(Ring $α))
   let rr ← evalIntMod.go _ _ ze q(IsInt.raw_refl $ne) _ <|
     .isNat q(instAddMonoidWithOne) n q(isNat_cast _ _ (IsNat.raw_refl $n))
   let ⟨zr, nr, pr⟩ ← rr.toInt q(Int.instRingInt)
-  dbgTrace s!"reduceCast: {e} % {n} => {ze} % {n} => {zr}, {nr}, {pr}" fun _ =>
   return .isInt instRing nr zr q(CharP.isInt_of_mod $instCharP $pe (IsNat.raw_refl _) $pr)
 
 /-- Given an expression `e : t` such that `t` is a ring of characteristic `n`,
@@ -301,7 +300,6 @@ partial def reduceResult? (char : ℕ) (e : Q($α)) (rα : Option (Q(Ring $α)))
   let rα ← rα
   let cpα ← cpα
   let ⟨ze, ne, pe⟩ ← r.toInt
-  dbgTrace s!"reduceResult {ze} % {char}" <| fun _ =>
   reduceCast (mkRawNatLit char) e rα cpα ze ne pe
 
 /-- Given an expression `e : t` such that `t` is a ring of characteristic `n`,
@@ -309,7 +307,7 @@ try to reduce `e` modulo `n`, or return the original. -/
 partial def reduceResult (char : ℕ) (e : Q($α)) (rα : Option (Q(Ring $α)))
     (cpα : Option (Q(CharP $α $char))) (r : NormNum.Result e) : NormNum.Result e :=
   match reduceResult? sα char e rα cpα r with
-  | some r' => dbgTrace "reduceResult succeeded" <| fun _ => r'
+  | some r' => r'
   | none => r
 
 end Reduce
@@ -943,17 +941,13 @@ def evalCastReduced :
     NormNum.Result e → Option (Result (ExSum sα) e)
   | .isNat _ (.lit (.natVal 0)) p => do
     assumeInstancesCommute
-    dbgTrace "evalCastReduced 0" <| fun _ =>
     pure ⟨_, .zero, q(cast_zero $p)⟩
   | .isNat _ lit p => do
     assumeInstancesCommute
-    dbgTrace s!"evalCastReduced isNat {lit}" <| fun _ =>
     pure ⟨_, (ExProd.mkNat sα lit.natLit!).2.toSum, (q(cast_pos $p):)⟩
   | .isNegNat rα lit p =>
-    dbgTrace s!"evalCastReduced isNegNat {lit}" <| fun _ =>
     pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
   | .isRat dα q n d p =>
-    dbgTrace s!"evalCastReduced isRat {q}" <| fun _ =>
     pure ⟨_, (ExProd.mkRat sα dα q n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
   | _ => none
 
@@ -1284,5 +1278,4 @@ elab (name := ring1) "ring1" tk:"!"? cfg:(config ?) : tactic => do
   liftMetaMAtMain fun g ↦ do
   AtomM.run (if tk.isSome then .default else .reducible) (proveEq g cfg)
 
-@[inherit_doc ring1] macro "ring1!" cfg:(config) : tactic => `(tactic| ring1 ! $cfg)
-@[inherit_doc ring1] macro "ring1!" : tactic => `(tactic| ring1 !)
+@[inherit_doc ring1] macro "ring1!" cfg:(config)? : tactic => `(tactic| ring1 ! $(cfg)?)
