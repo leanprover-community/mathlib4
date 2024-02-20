@@ -228,7 +228,7 @@ def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N �
     (fun _ _ _ ↦ B.map_add₂ _ _ _)
     (fun r' m n ↦ by
       dsimp only
-      rw [←smul_one_smul R r' m, map_smul₂, smul_one_smul])
+      rw [← smul_one_smul R r' m, map_smul₂, smul_one_smul])
     (fun x ↦ map_add (B x))
     (fun _ x ↦ (B x).map_smul_of_tower _)
 
