@@ -92,6 +92,16 @@ lemma zouguette (c : ℝ) (hc : 0 < c) :
   field_simp
   ring
 
+open Metric
+
+lemma approx_id {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α] (μ : Measure α) {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {ι : Type*} {l : Filter ι} {x₀ : α}
+    {f : ι → α → ℝ} (hf : ∀ᶠ i in l, ∀ x, 0 ≤ f i x)
+    (h'f : ∀ ε > 0, Tendsto (fun i ↦ ∫ x in closedBall x₀ ε, f i x ∂μ) l (𝓝 1))
+    (h''f : ∀ ε > 0, ∀ δ > 0, ∀ᶠ i in l, ∀ x ∈ (closedBall x₀ ε)ᶜ, f i x ≤ δ)
+    {g : α → E} (hg : ContinuousAt g x₀) (h'g : Integrable g μ) :
+    Tendsto (fun i ↦ ∫ x, f i x • g x ∂μ) l (𝓝 (g x₀)) := sorry
+
 lemma foufou (hf : Integrable f) (v : V) (h'f : ContinuousAt f v) :
     Tendsto (fun (c : ℝ) ↦
       ∫ w : V, ((π * c : ℂ) ^ (finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * c * ‖v - w‖ ^ 2)) • f w)
