@@ -720,7 +720,7 @@ theorem dropn_cons (a : α) (s) (n) : drop (cons a s) (n + 1) = drop s n := by
   induction n with
   | zero => simp [drop]
   | succ n n_ih =>
-    -- Porting note: Was `simp [*, drop]`.
+    -- porting note (#10745): was `simp [*, drop]`.
     simp [drop, ← n_ih]
 #align stream.wseq.dropn_cons Stream'.WSeq.dropn_cons
 
@@ -1009,7 +1009,7 @@ theorem exists_get?_of_mem {s : WSeq α} {a} (h : a ∈ s) : ∃ n, some a ∈ g
       apply ret_mem
     · cases' h with n h
       exists n + 1
-      -- Porting note: Was `simp [get?]`.
+      -- porting note (#10745): was `simp [get?]`.
       simpa [get?]
   · intro s' h
     cases' h with n h

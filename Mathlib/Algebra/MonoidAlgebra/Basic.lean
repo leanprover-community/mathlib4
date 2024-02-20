@@ -519,7 +519,7 @@ def of [MulOneClass G] : G →* MonoidAlgebra k G :=
 end
 
 theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by
-  -- Porting note: Was `simp`.
+  -- porting note (#10745): was `simp`.
   rw [of_apply, smul_single', mul_one]
 #align monoid_algebra.smul_of MonoidAlgebra.smul_of
 

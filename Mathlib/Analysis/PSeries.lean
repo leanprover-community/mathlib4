@@ -217,7 +217,7 @@ theorem Real.summable_nat_pow_inv {p : ℕ} :
 if and only if `1 < p`. -/
 theorem Real.summable_one_div_nat_pow {p : ℕ} :
     Summable (fun n => 1 / (n : ℝ) ^ p : ℕ → ℝ) ↔ 1 < p := by
-  -- Porting note: was `simp`
+  -- porting note (#10745): was `simp`
   simp only [one_div, Real.summable_nat_pow_inv]
 #align real.summable_one_div_nat_pow Real.summable_one_div_nat_pow
 

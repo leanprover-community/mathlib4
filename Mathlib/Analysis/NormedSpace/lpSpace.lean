@@ -502,7 +502,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
       add_le' := fun f g => by
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
-          · -- Porting note: was `simp [lp.eq_zero' f]`
+          · -- porting note (#10745): was `simp [lp.eq_zero' f]`
             rw [lp.eq_zero' f]
             simp only [zero_add, norm_zero, le_refl] -- porting note: just `simp` was slow
           refine' (lp.isLUB_norm (f + g)).2 _

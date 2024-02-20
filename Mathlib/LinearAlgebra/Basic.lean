@@ -408,7 +408,7 @@ theorem isLinearMap_sub {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M]
     IsLinearMap R fun x : M × M => x.1 - x.2 := by
   apply IsLinearMap.mk
   · intro x y
-    -- Porting note: was `simp [add_comm, add_left_comm, sub_eq_add_neg]`
+    -- porting note (#10745): was `simp [add_comm, add_left_comm, sub_eq_add_neg]`
     rw [Prod.fst_add, Prod.snd_add]
     abel
   · intro x y

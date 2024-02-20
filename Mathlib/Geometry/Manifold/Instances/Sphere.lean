@@ -223,7 +223,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
     have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp only [inner_smul_left, hvy, mul_zero]
     convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ hvy' using 2
-    -- Porting note: was simp [← split] but wasn't finding `norm_eq_of_mem_sphere`
+    -- porting note (#10745): was simp [← split] but wasn't finding `norm_eq_of_mem_sphere`
     · simp only [norm_eq_of_mem_sphere, Nat.cast_one, mul_one, ← split]
     · simp [norm_smul, hv, ← sq, sq_abs]
     · exact sq _

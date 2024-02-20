@@ -524,10 +524,10 @@ instance instCommSemiring : CommSemiring (A ⊗[R] B) where
       · intro a₂ b₂
         simp [mul_comm]
       · intro a₂ b₂ ha hb
-        -- porting note: was `simp` not `rw`
+        -- porting note (#10745): was `simp` not `rw`
         rw [mul_add, add_mul, ha, hb]
     · intro x₁ x₂ h₁ h₂
-      -- porting note: was `simp` not `rw`
+      -- porting note (#10745): was `simp` not `rw`
       rw [mul_add, add_mul, h₁, h₂]
 
 end CommSemiring
