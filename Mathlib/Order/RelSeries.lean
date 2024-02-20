@@ -216,13 +216,10 @@ def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
 
 lemma append_apply_left (p q : RelSeries r) (connect : r p.last q.head)
     (i : Fin (p.length + 1)) :
-    p.append q connect i = p i := by
+    p.append q connect ((i.castAdd (q.length + 1)).cast (by dsimp; abel)) = p i := by
   delta append
   simp only [Function.comp_apply]
   convert Fin.append_left _ _ _
-  ext
-  simp only [Fin.coe_cast, Fin.val_nat_cast, Fin.coe_castAdd, Nat.mod_succ_eq_iff_lt]
-  linarith [i.2]
 
 lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
     (i : Fin (q.length + 1)) :
@@ -411,16 +408,16 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
         · refine Nat.sub_lt_left_of_lt_add ?_ i.2
           rwa [not_lt] at h₁
 
-lemma combine_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :
-    p.combine q connect (Fin.castSucc <| Fin.castAdd q.length i) = p (Fin.castSucc i) := by
-  unfold combine
+lemma smash_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :
+    p.smash q connect (Fin.castSucc <| i.castAdd q.length) = p (Fin.castSucc i) := by
+  unfold smash
   dsimp
   rw [dif_pos i.2]
   rfl
 
-lemma combine_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
-    (i : Fin p.length) : p.combine q h (Fin.castAdd q.length i).succ = p i.succ := by
-  rw [combine_toFun]
+lemma smash_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
+    (i : Fin p.length) : p.smash q h (i.castAdd q.length).succ = p i.succ := by
+  rw [smash_toFun]
   split_ifs with H
   · congr
   · simp only [Fin.val_succ, Fin.coe_castAdd] at H
@@ -433,17 +430,17 @@ lemma combine_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
       change i.1 + 1 = p.length
       linarith [i.2]
 
-lemma combine_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
-    combine p q h (Fin.castSucc <| Fin.natAdd p.length i) = q (Fin.castSucc i) := by
-  rw [combine_toFun]
+lemma smash_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
+    smash p q h (Fin.castSucc <| i.natAdd p.length) = q (Fin.castSucc i) := by
+  rw [smash_toFun]
   split_ifs with H
   · simp only [Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left, not_lt_zero'] at H
   · congr
     exact Nat.add_sub_self_left _ _
 
 lemma combine_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
-    combine p q h (Fin.natAdd p.length i).succ = q i.succ := by
-  rw [combine_toFun]
+    smash p q h (i.natAdd p.length).succ = q i.succ := by
+  rw [smash_toFun]
   split_ifs with H
   · have H' : p.length < p.length + (i.1 + 1)
     · linarith
@@ -452,16 +449,16 @@ lemma combine_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.l
     simp only [Fin.val_succ, Fin.coe_natAdd]
     rw [add_assoc, Nat.add_sub_cancel_left]
 
-@[simp] lemma combine_head {p q : RelSeries r} (h : p.last = q.head) :
-    (combine p q h).head = p.head := by
-  delta head combine
+@[simp] lemma smash_head {p q : RelSeries r} (h : p.last = q.head) :
+    (smash p q h).head = p.head := by
+  delta head smash
   simp only [Fin.val_zero, Fin.zero_eta, ge_iff_le, zero_le, tsub_eq_zero_of_le, dite_eq_ite,
     ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
   intro H; convert h.symm; congr; aesop
 
-@[simp] lemma combine_last {p q : RelSeries r} (h : p.last = q.head) :
-    (combine p q h).last = q.last := by
-  delta combine last; aesop
+@[simp] lemma smash_last {p q : RelSeries r} (h : p.last = q.head) :
+    (smash p q h).last = q.last := by
+  delta smash last; aesop
 
 end RelSeries
 
